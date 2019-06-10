@@ -129,20 +129,20 @@ class FMTevent
 
 	size_t height() const
 		{
-		return (enveloppe.at(2).gety() - enveloppe.at(0).gety());
+		return ((enveloppe.at(2).gety() - enveloppe.at(0).gety())+1);
 		}
 
 	size_t width() const
 		{
-		return (enveloppe.at(1).getx() - enveloppe.at(0).getx());
+		return ((enveloppe.at(1).getx() - enveloppe.at(0).getx())+1);
 		}
 
 	string getstats() const
 		{
-		return ("Size of: " + to_string(size()) +
-			"Perimeter of " + to_string(perimeter()) +
-			"Height of " + to_string(height()) +
-			"Width of " + to_string(width()));
+		return (" "+to_string(size()) +" "+
+			to_string(perimeter()) +" "+
+			to_string(height()) +" "+
+			to_string(width()));
 		}
 
 	void erase(const FMTcoordinate& newlocation)
@@ -266,7 +266,7 @@ class FMTevent
         }
     virtual bool spread(const FMTspatialaction& action)
         {
-        while((elements.size() <= action.maximal_size) && (!active.empty()))
+        while((elements.size() < action.maximal_size) && (!active.empty()))
             {
             vector<FMTcoordinate>::iterator coord;
             for(size_t id = 0; id < action.neighbors_size; ++id)
@@ -284,7 +284,8 @@ class FMTevent
                 }
             coord = active.begin();
 			insert(*coord, &(territory->at(*coord)));
-            /*elements.insert(pair<Spatial::FMTcoordinate,const T*>(*coord,&(territory->at(*coord))));
+			/*coord->upenveloppe(enveloppe);
+            elements.insert(pair<Spatial::FMTcoordinate,const T*>(*coord,&(territory->at(*coord))));
             coord->upenveloppe(enveloppe);*/
             active.erase(active.begin());
             }

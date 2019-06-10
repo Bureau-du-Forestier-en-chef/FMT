@@ -1466,8 +1466,8 @@ namespace Models
      bool FMTlpmodel::solve()
         {
         solverinterface->initialSolve();
-        solverinterface->writeLp("C:/Mrnmicro/Applic/Cygwin64/home/cyrgu3/FMT/bin/Release/jesus_land");
-		return true;
+        //solverinterface->writeLp("C:/Mrnmicro/Applic/Cygwin64/home/cyrgu3/FMT/bin/Release/jesus_land");
+		return solverinterface->isProvenOptimal();
         }
 
      bool FMTlpmodel::getgoals(const vector<string>& goalsnames,

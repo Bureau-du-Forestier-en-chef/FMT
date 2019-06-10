@@ -71,18 +71,17 @@ namespace Spatial
 		//0//-//1//
 		//-//-//-//
 		//2//-//3//
-        if (y < enveloppe[0].y && x < enveloppe[0].x)
-            {
-            enveloppe[0] = *this;
-            }else if(y < enveloppe[1].y && x > enveloppe[1].x)
-                {
-                enveloppe[1] = *this;
-                }else if(y > enveloppe[2].y && x < enveloppe[2].x)
-                    {
-                    enveloppe[2] = *this;
-                    }else if(y > enveloppe[3].y && x > enveloppe[3].x)
-                        {
-                        enveloppe[3] = *this;
-                        }
+		int minx = min(enveloppe[0].x,x);
+		int maxx = max(enveloppe[1].x,x);
+		int miny = min(enveloppe[0].y,y);
+		int maxy = max(enveloppe[2].y,y);
+		enveloppe[0].x = minx;
+		enveloppe[0].y = miny;
+		enveloppe[1].x = maxx;
+		enveloppe[1].y = miny;
+		enveloppe[2].x = minx;
+		enveloppe[2].y = maxy;
+		enveloppe[3].x = maxx;
+		enveloppe[3].y = maxy;
         }
     }

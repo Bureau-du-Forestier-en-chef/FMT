@@ -542,11 +542,11 @@ FMTareaparser::FMTareaparser() :
                 ++theme_id;
                 }
             header_line+="AGE";
-            if  (gotlock)
-                {
-                header_line+=" LOCK";
-                }
             header_line+=" AREA";
+			if (gotlock)
+			{
+				header_line += " LOCK";
+			}
             areastream<<header_line<<"\n";
             for(const FMTactualdevelopment& area : areas)
                 {
