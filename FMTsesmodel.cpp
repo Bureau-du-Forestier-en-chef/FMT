@@ -168,4 +168,9 @@ namespace Models
 		{
 		return disturbances.getlastschedule(mapping.getcellsize(),actions,mapping);
 		}
+
+	string FMTsesmodel::getdisturbancestats() const
+		{
+		return disturbances.getpatchstats();
+		}
     }

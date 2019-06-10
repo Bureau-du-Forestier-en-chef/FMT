@@ -68,16 +68,19 @@ namespace Spatial
 
     void FMTcoordinate::upenveloppe(vector<FMTcoordinate>& enveloppe) const
         {
-        if (y > enveloppe[0].y && x > enveloppe[0].x)
+		//0//-//1//
+		//-//-//-//
+		//2//-//3//
+        if (y < enveloppe[0].y && x < enveloppe[0].x)
             {
             enveloppe[0] = *this;
             }else if(y < enveloppe[1].y && x > enveloppe[1].x)
                 {
                 enveloppe[1] = *this;
-                }else if(y < enveloppe[2].y && x < enveloppe[2].x)
+                }else if(y > enveloppe[2].y && x < enveloppe[2].x)
                     {
                     enveloppe[2] = *this;
-                    }else if(y > enveloppe[3].y && x < enveloppe[3].x)
+                    }else if(y > enveloppe[3].y && x > enveloppe[3].x)
                         {
                         enveloppe[3] = *this;
                         }

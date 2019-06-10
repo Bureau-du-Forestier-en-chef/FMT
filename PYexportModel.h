@@ -52,20 +52,24 @@ void exportModel()
             .def(init<Models::FMTmodel>())
 			.def_pickle(FMT_pickle_suite<FMTsesmodel>())
             .def("getmapping",&FMTsesmodel::getmapping)
-            .def("getdisturbances",&FMTsesmodel::getdisturbances/*,
+			.def("getschedule", &FMTsesmodel::getschedule,
+				"Get the non spatial schedule for the last period\n")
+            .def("getdisturbances",&FMTsesmodel::getdisturbances,
                  "Get all the disturbances of the simulation\n"
-                 "The disturbances stack present all the past disturbances",
-                 args("self","disturbances")*/)
-            .def("setinitialmapping",&FMTsesmodel::setinitialmapping/*,
+                 "The disturbances stack present all the past disturbances"
+                 /*args("self","disturbances")*/)
+            .def("setinitialmapping",&FMTsesmodel::setinitialmapping,
                  "Set the initial mapping\n"
-                 "Initial forest themes described to the model",
-                 args("self","mapping")*/)
+                 "Initial forest themes described to the model"
+                 /*args("self","mapping")*/)
             .def("setspactions",&FMTsesmodel::setspactions,
 				"Set a spatial actions list to the model\n"
 				"Model should contain the relative transitions\n"
 				"Actions will be simulated following the list ordering\n")
 			.def("getschedule",&FMTsesmodel::getschedule,
 				"Get the last simulated non spatial schedule\n")
+			.def("getdisturbancestats", &FMTsesmodel::getdisturbancestats,
+				"Get all disturbances stats (period,action,size,perimeter,Height,Width)\n")
             .def("simulate",&FMTsesmodel::simulate,
                  simulate_overloads(/*"Simulate a schedule based only on schedule (schedule_only = true)\n"
                                     "or using schedule and operability(schedule_only = false) and a (seed=0)",

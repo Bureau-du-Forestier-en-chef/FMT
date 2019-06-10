@@ -43,6 +43,7 @@ class FMTsesmodel : public FMTmodel
         map<string,double> simulate(const FMTschedule& schedule,
                         bool schedule_only = true,
                         unsigned int seed = 0);
+		string getdisturbancestats() const;
         FMTschedule getschedule() const;
     };
 

@@ -109,6 +109,42 @@ class FMTevent
 		return order;
 		}
 
+	size_t perimeter() const //gives perimeter
+		{
+		size_t total = 0;
+		for (typename map<FMTcoordinate, const T*>::const_iterator it = elements.begin(); it != elements.end(); it++)
+			{
+			for (int id = 0; id < 4; ++id)
+				{
+				const FMTcoordinate neighbor= it->first.at(id);
+				if (elements.find(neighbor)==elements.end())
+					{
+					++total;
+					}
+				}
+
+			}
+		return total;
+		}
+
+	size_t height() const
+		{
+		return (enveloppe.at(2).gety() - enveloppe.at(0).gety());
+		}
+
+	size_t width() const
+		{
+		return (enveloppe.at(1).getx() - enveloppe.at(0).getx());
+		}
+
+	string getstats() const
+		{
+		return ("Size of: " + to_string(size()) +
+			"Perimeter of " + to_string(perimeter()) +
+			"Height of " + to_string(height()) +
+			"Width of " + to_string(width()));
+		}
+
 	void erase(const FMTcoordinate& newlocation)
 		{
 		if (elements.find(newlocation)!= elements.end())

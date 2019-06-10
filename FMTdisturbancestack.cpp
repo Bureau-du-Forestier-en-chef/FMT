@@ -102,4 +102,24 @@ FMTschedule FMTdisturbancestack::getlastschedule(double cellsize,
 	}
 	return FMTschedule(period, mapping);
 	}
+
+string FMTdisturbancestack::getpatchstats() const
+	{
+	string result = "";
+	size_t period = 1;
+	for (const map<string, vector<FMTevent<FMTdevelopment>>>& dmap : data)
+		{
+		for (map<string, vector<FMTevent<FMTdevelopment>>>::const_iterator eit = dmap.begin(); eit != dmap.end(); eit++)
+			{
+			const string action = eit->first;
+			for(const FMTevent<FMTdevelopment>& ev : eit->second)
+				{ 
+				result += to_string(period) + " " + action +" "+ ev.getstats() + "\n";
+				}
+			}
+		++period;
+		}
+	return result;
+	}
+
 }

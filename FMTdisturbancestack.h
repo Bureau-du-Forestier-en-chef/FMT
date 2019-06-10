@@ -32,6 +32,7 @@ class FMTdisturbancestack
 		FMTschedule getlastschedule(double cellsize,
 			const vector<FMTaction>& actions,
 			const FMTlayer<FMTdevelopment>& forest) const;
+		string getpatchstats() const;
         template <typename T>
         vector<FMTlayer<string>> getlayers(const FMTlayer<T>& layer) const
             {
