@@ -119,6 +119,7 @@ void exportModel()
      class_<Models::FMTsamodel,bases<Models::FMTmodel>>("FMTsamodel",py_FMTsamodel_doc)
             .def(init<Models::FMTmodel>())
             .def("get_current_solution",&FMTsamodel::get_current_solution)
+            .def("get_new_solution",&FMTsamodel::get_new_solution)
             .def("setinitial_mapping",&FMTsamodel::setinitial_mapping,
                  "Set the initial mapping\n"
                  "Initial forest themes described to the model",
@@ -132,7 +133,11 @@ void exportModel()
             .def("get_cool_schedule_type",&FMTsamodel::getcoolingscheduletype,
                  "Return cooling schedule type associated with the model\n")
             .def("setschedule",&FMTsamodel::setschedule,
-                 "Set a cooling schedule by passing a FMTsaschedule\n");
+                 "Set a cooling schedule by passing a FMTsaschedule\n")
+            .def("buildperiod",&FMTsamodel::buildperiod,
+                 "Build each period one by one randomly\n")
+            .def("move",&FMTsamodel::move_solution,
+                 "Generate a new solution with the current by randomly replacing some cell\n");
     define_pylist<Models::FMTsamodel>();
     }
 

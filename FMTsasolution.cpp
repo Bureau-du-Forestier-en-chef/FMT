@@ -1,6 +1,7 @@
 #include "FMTsasolution.h"
 #include "FMTsamodel.h"
 #include <algorithm>
+#include <iostream>
 
 namespace Spatial
 {
@@ -44,7 +45,7 @@ FMTsasolution& FMTsasolution::operator = (const FMTsasolution& rhs)
 bool FMTsasolution::operator == (const FMTsasolution& rhs) const
     {
     for (map<FMTcoordinate,FMTgraph>::const_iterator mainsolutionit = this->mapping.begin();
-                                               mainsolutionit != this->mapping.end(); ++mainsolutionit)
+                                                     mainsolutionit != this->mapping.end(); ++mainsolutionit)
         {
             if (mainsolutionit->second != rhs.mapping.at(mainsolutionit->first))
             {
@@ -64,17 +65,18 @@ FMTgraphstats FMTsasolution::buildperiod(const FMTmodel& model,default_random_en
     if (!initial_map)
         {
             vector<vector<FMTevent<FMTgraph>>> events_id;
-            solution_stats = FMTgraphstats();
             for(map<FMTcoordinate,FMTgraph>::iterator graphit = this->mapping.begin(); graphit != this->mapping.end(); ++graphit)//change const_iterator to iterator because graph is modified
             {
                 FMTgraph* local_graph = &graphit->second;
                 std::queue<FMTvertex_descriptor> actives = local_graph->getactiveverticies();
                 FMTgraphstats stats = local_graph->randombuild(model,actives,generator,events_id,graphit->first);
+                cout<<string(local_graph->getstats())<<endl;
+                cin.get();
                 solution_stats += local_graph->getstats();
             }
             events.push_back(events_id);
         }
-    else {initial_map=false;}
+    else {initial_map=false;}//Keep it, its just to recreate the same mecanic as in lp model when we build period
     return solution_stats;
     }
 
@@ -129,6 +131,7 @@ const vector<vector<vector<FMTevent<FMTgraph>>>>& FMTsasolution::getevents() con
     }
 
 double FMTsasolution::getgraphsconstraint(const FMTmodel& model, const FMTconstraint& constraint)const
+    //Add all output and evaluate y value for each
     {
         double xvalue=0;
         for(map<FMTcoordinate,FMTgraph>::const_iterator graphit = this->mapping.begin(); graphit != this->mapping.end(); ++graphit)
