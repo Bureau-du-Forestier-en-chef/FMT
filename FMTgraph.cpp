@@ -241,11 +241,16 @@ FMTgraphstats FMTgraph::randombuild(const FMTmodel& model,std::queue<FMTvertex_d
 			int id = 0;
 			for (const FMTaction& action : model.actions)
 			{
-				if (active_development.operable(action, model.yields))
+                if (events_id.size()<id+1)//Add vector of event in events_id for each action id if it does not exist
+				{
+                    events_id.push_back(vector<FMTevent<FMTgraph>>());
+				}
+			    if (active_development.operable(action, model.yields))
 				{
                     operables.push_back(pair<size_t,int>(0,id));
                     vector<pair<size_t,int>> potentialevents = adjacentevents(events_id.at(id),localisation,id);
                     allpotentialevents.insert(allpotentialevents.end(),potentialevents.begin(),potentialevents.end());
+
 				}
 				++id;
 			}
@@ -258,7 +263,7 @@ FMTgraphstats FMTgraph::randombuild(const FMTmodel& model,std::queue<FMTvertex_d
                             luckyevent->insert(localisation,nullptr);
                         }
                 }
-            else
+            else// New event
                 {
                     pair<size_t,int> selectedevent = randomoperate(operables, model, actives, statsdiff, front_vertex,generator,active_development);
                     if (selectedevent.second != -1)

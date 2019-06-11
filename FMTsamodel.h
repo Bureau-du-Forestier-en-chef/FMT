@@ -33,16 +33,26 @@ class FMTsamodel : public FMTmodel
         FMTsamodel(const FMTsamodel& rhs);//Copy constructor
         FMTsamodel(const FMTmodel& rhs);//Copy constructor to use parent as argument in constructor
         FMTsamodel& operator = (const FMTsamodel& rhs);//Copy assignment operator
+
+        //Setting parameters for the model
+
         bool setschedule(const FMTlinearschedule& schedule);//To set a schedule for the simulated annealing
         //bool setschedule(FMTexponentialschedule schedule) const;// need to be created
         bool setinitial_mapping(const FMTforest& forest);
-        FMTsasolution get_current_solution()const;
         bool setspactions(const vector<FMTspatialaction>& lspactions);//Set spatial action see FMTspatialaction for info
+
+        //Get informations
+
+        FMTsasolution get_current_solution()const;
+        FMTsasolution get_new_solution()const;
         string getcoolingscheduletype()const{return cooling_schedule->get_schedule_type();};
+
+        //Functions to manipulate the model
+
         double cool_down(double temp)const{return cooling_schedule->reduce_temp(temp);};//Set a default cooling schedule to avoid crash
-        double evaluate() const;
+        double evaluate(double temp);
         FMTgraphstats buildperiod();
-        void move(FMTsamovetype movetype = FMTsamovetype::shotgun);
+        FMTgraphstats move_solution(FMTsamovetype movetype = FMTsamovetype::shotgun);
         bool comparesolutions() const;
         bool setmapidmodified(const vector<size_t>& id);
     };

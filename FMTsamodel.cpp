@@ -14,6 +14,7 @@ namespace Models
     {
 
     }
+
     FMTsamodel::FMTsamodel(const FMTsamodel& rhs):
         FMTmodel(rhs),
         generator(rhs.generator),
@@ -25,6 +26,7 @@ namespace Models
     {
 
     }
+
     FMTsamodel::FMTsamodel(const FMTmodel& rhs):
         FMTmodel(rhs),
         generator(),
@@ -36,6 +38,7 @@ namespace Models
     {
 
     }
+
     FMTsamodel& FMTsamodel::operator = (const FMTsamodel& rhs)
     {
         if (this!=&rhs)
@@ -61,11 +64,7 @@ namespace Models
         cooling_schedule = schedule
         }*///Need to build this class
 
-    FMTsasolution FMTsamodel::get_current_solution()const
-    {
-            return current_solution;
-    }
-     bool FMTsamodel::setspactions(const vector<FMTspatialaction>& lspactions)
+    bool FMTsamodel::setspactions(const vector<FMTspatialaction>& lspactions)
     {
 		vector<FMTtransition>newtransitions;
 		vector<FMTspatialaction>newspatials;
@@ -89,23 +88,40 @@ namespace Models
 		transitions = newtransitions;
 		return true;
     }
+    FMTsasolution FMTsamodel::get_current_solution()const
+    {
+            return current_solution;
+    }
+
+    FMTsasolution FMTsamodel::get_new_solution()const
+    {
+            return new_solution;
+    }
+
     bool FMTsamodel::setinitial_mapping(const FMTforest& forest)
     {
         current_solution = FMTsasolution(forest);
 		return true;
     }
-    double FMTsamodel::evaluate() const
+
+    double FMTsamodel::evaluate(double temp)
     {
+        if (!comparesolutions())// if compare solution return false ... which means they are different
+        {
+
+        }
         return 0.0;
     }
+
     FMTgraphstats FMTsamodel::buildperiod()
     {
         return current_solution.buildperiod(*this,generator);
     }
 
-    void FMTsamodel::move(FMTsamovetype movetype)
+    FMTgraphstats FMTsamodel::move_solution(FMTsamovetype movetype)
     {
         new_solution = current_solution.perturb(*this,generator,movetype);
+        return new_solution.getsolution_stats();
     }
 
     bool FMTsamodel::comparesolutions() const

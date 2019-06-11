@@ -80,6 +80,11 @@ void exportSpatial()
         "\n"
         "FMTsasolution\n"
         "\n";
+
+    enum_<Spatial::FMTsamovetype>("FMTsamovetype")
+		.value("shotgun", Spatial::FMTsamovetype::shotgun)
+		.value("cluster", Spatial::FMTsamovetype::cluster);
+
     define_FMTlayer<Graph::FMTgraph>();
     class_<Spatial::FMTsasolution,bases<FMTlayer<FMTgraph>>>("FMTsasolution",py_FMTsasolution_doc,no_init);
 
