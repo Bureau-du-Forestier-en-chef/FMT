@@ -35,6 +35,7 @@ void FMTforest::setperiod(int period)
 		}
 	}
 
+
 vector<FMTactualdevelopment>FMTforest::getarea() const
             {
             vector<FMTactualdevelopment>devs;
@@ -64,13 +65,30 @@ FMTforest FMTforest::grow() const
             }
 
 FMTforest FMTforest::operate(const vector<FMTevent<FMTdevelopment>>& cuts,const FMTspatialaction& action,const FMTtransition& Transition,
-                     const FMTyields& ylds,const vector<FMTtheme>& themes, boost::unordered_map<FMTdevelopment, FMTdevelopment>& cached_transitions) const
+                     const FMTyields& ylds,const vector<FMTtheme>& themes, boost::unordered_map<FMTdevelopment, FMTdevelopment>& cached_transitions,
+					FMTschedule& schedule) const
             {
             FMTforest newforest(FMTlayer<FMTdevelopment>(this->geotransform,this->maxx,this->maxy,this->SRS_WKT,this->cellsize));
+			//non spatial schedule 
+			///
+			if (schedule.elements.find(action) == schedule.elements.end())
+				{
+				schedule.elements[action] = map<FMTdevelopment, vector<double>>();
+				}
+			///
             for(const FMTevent<FMTdevelopment>& cut : cuts)
                 {
                 for(map<FMTcoordinate,const FMTdevelopment*>::const_iterator devit  = cut.elements.begin(); devit!= cut.elements.end(); devit++)
                     {
+					//keeping non spatial schedule
+					///
+					const FMTdevelopment lockclear = devit->second->clearlock();
+					if (schedule.elements.at(action).find(lockclear) == schedule.elements.at(action).end())
+						{
+						schedule.elements[action][lockclear] = vector<double>(1, 0.0);
+						}
+					schedule.elements[action][lockclear][0] += this->getcellsize();
+					///
                     const FMTdevelopment* dev = devit->second;
 					if (cached_transitions.find(*dev) == cached_transitions.end())
 						{

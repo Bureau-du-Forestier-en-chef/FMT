@@ -29,6 +29,7 @@ class FMTsesmodel : public FMTmodel
 		}
     protected:
         FMTforest mapping;
+		vector<FMTschedule> operatedschedule;
         FMTdisturbancestack disturbances;
         vector<FMTspatialaction>spactions;//should be FMTmodel action pointer....
     public:
@@ -44,7 +45,7 @@ class FMTsesmodel : public FMTmodel
                         bool schedule_only = true,
                         unsigned int seed = 0);
 		string getdisturbancestats() const;
-        FMTschedule getschedule() const;
+        vector<FMTschedule> getschedule() const;
     };
 
 }

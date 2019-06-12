@@ -29,9 +29,9 @@ class FMTdisturbancestack
         map<string,string>directmapping() const;
         void push(const map<string,vector<FMTevent<FMTdevelopment>>>& element);
         void add(const string& action,const vector<FMTevent<FMTdevelopment>>& events);
-		FMTschedule getlastschedule(double cellsize,
+		/*FMTschedule getlastschedule(double cellsize,
 			const vector<FMTaction>& actions,
-			const FMTlayer<FMTdevelopment>& forest) const;
+			const FMTlayer<FMTdevelopment>& forest) const;*/
 		string getpatchstats() const;
         template <typename T>
         vector<FMTlayer<string>> getlayers(const FMTlayer<T>& layer) const

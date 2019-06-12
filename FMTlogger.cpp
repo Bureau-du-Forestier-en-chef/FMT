@@ -2,6 +2,46 @@
 
 namespace Logging
 {
+	FMTlogger::FMTlogger()
+		{
+
+		}
+	FMTlogger::FMTlogger(const FMTlogger& rhs) : CoinMessageHandler(rhs), _msglevel(rhs._msglevel)
+		{
+
+		}
+	FMTlogger& FMTlogger::operator = (const FMTlogger& rhs)
+		{
+		if (this!=&rhs)
+			{
+			CoinMessageHandler::operator=(rhs);
+			_msglevel = rhs._msglevel;
+			}
+		return *this;
+		}
+
+	void FMTlogger::checkSeverity()
+		{
+
+		}
+
+	CoinMessageHandler* FMTlogger::clone() const
+		{
+		return new FMTlogger(*this);
+		}
+
+	int FMTlogger::print()
+		{
+		char buffer[COIN_MESSAGE_HANDLER_MAX_BUFFER_SIZE];
+		snprintf(buffer, sizeof(buffer), "%s\n", this->messageBuffer_);
+		#if defined(FMTPY)
+			PySys_WriteStdout(buffer);
+		#else
+			cout << buffer << flush;
+		#endif
+		return 0;
+		}
+
 	FMTlogger::FMTlogger(FMTlogtype type)
 		{
 		_msglevel = type;

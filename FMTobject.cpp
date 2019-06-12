@@ -41,7 +41,8 @@ namespace Exception
 		}
 	}
 
-	FMTobject::FMTobject() : _exhandler(make_shared<FMTdefaultexceptionhandler>())
+	FMTobject::FMTobject() : _exhandler(make_shared<FMTdefaultexceptionhandler>()), 
+		_logger(make_shared<Logging::FMTlogger>(Logging::FMTlogger(Logging::FMTlogtype::FMT_Warn)))
 	{
 		this->checksignals();
 		//_exhandler = make_shared<FMTdefaultexceptionhandler>();
@@ -53,12 +54,12 @@ namespace Exception
 
 	}
 
-	FMTobject::FMTobject(const shared_ptr<FMTexceptionhandler> exhandler) : _exhandler(move(exhandler))
+	FMTobject::FMTobject(const shared_ptr<FMTexceptionhandler> exhandler) : _exhandler(move(exhandler)), _logger()
 	{
 		this->checksignals();
 
 	}
-	FMTobject::FMTobject(const FMTobject& rhs) : _exhandler(move(rhs._exhandler))
+	FMTobject::FMTobject(const FMTobject& rhs) : _exhandler(move(rhs._exhandler)), _logger(move(rhs._logger))
 	{
 		this->checksignals();
 	}
@@ -68,14 +69,21 @@ namespace Exception
 		if (this != &rhs)
 		{
 			_exhandler = rhs._exhandler;
+			_logger = rhs._logger;
 		}
 		return *this;
 	}
+	void FMTobject::passinlogger(const std::shared_ptr<Logging::FMTlogger>& logger)
+		{
+		this->checksignals();
+		_logger = logger;
+		}
+
 	void FMTobject::passinexceptionhandler(const shared_ptr<FMTexceptionhandler>& exhandler)
-	{
+		{
 		this->checksignals();
 		_exhandler = exhandler;
-	}
+		}
 	void FMTobject::setdefaultexceptionhandler()
 	{
 		this->checksignals();
