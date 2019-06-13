@@ -7,7 +7,7 @@ namespace WSParser
 		rxsections(regex("^(\\*)([^\\s^\\t]*)", regex_constants::ECMAScript | regex_constants::icase)),
 		rxobjectives(regex("^(_MAXMIN|_MINMAX|_MAX|_MIN|_GOAL)([\\s\\t]*)(.+)([\\s\\t])((([\\d]*|#.+)(\\.\\.)(#.+|_LENGTH|[\\d]*))|(#.+|[\\d]*))", regex_constants::ECMAScript | regex_constants::icase)),
 		rxexclude(regex("^([\\s\\t]*)([^\\s^\\t]*)([\\s\\t]*)((([\\d]*|#.+)(\\.\\.)(#.+|_LENGTH|[\\d]*))|(#.+|[\\d]*))", regex_constants::ECMAScript | regex_constants::icase)),
-		rxconstraints("^(_EVEN|_NDY|_SEQ)([\\s\\t]*)(\\()((([^\\)^,]*)(,)([\\d]*%|[\\d]*)(,)([\\d]*%|[\\d]*))|(([^\\)^,]*)(,)([\\d]*%|[\\d]*))|([^\\)^,]*))(\\))([\\s\\t]*)((([\\d]*|#.+)(\\.\\.)(#.+|_LENGTH|[\\d]*))|(#.+|[\\d]*))", regex_constants::ECMAScript | regex_constants::icase),
+		rxconstraints("^(_EVEN|_NDY|_SEQ)([\\s\\t]*)(\\()((([^\\)^,]*)(,)([\\d]*%|[\\d]*)(,)([\\d]*%|[\\d]*))|(([^\\)^,]*)(,)([\\d]*%|[\\d]*))|([^\\)^,]*))(\\)*)([\\s\\t]*)((([\\d]*|#.+)(\\.\\.)(#.+|_LENGTH|[\\d]*))|(#.+|[\\d]*))", regex_constants::ECMAScript | regex_constants::icase),
 		//rxconstraints("^(_EVEN|_NDY|_SEQ)([\\s\\t]*)(\\()((([^\\s^\\t^,]*)(,)([\\d]*%|[\\d]*)(,)([\\d]*%|[\\d]*))|(([^\\s^\\t^,]*)(,)([\\d]*%|[\\d]*))|([^\\s^\\t^,]*))(\\))([\\s\\t]*)((([\\d]*|#.+)(\\.\\.)(#.+|_LENGTH|[\\d]*))|(#.+|[\\d]*))", regex_constants::ECMAScript | regex_constants::icase),
 		rxequations(regex("^(((.+)((<=)|(>=))(.+))|((.+)(=)(.+)))([\\s\\t])((([\\d]*|#.+)(\\.\\.)(#.+|_LENGTH|[\\d]*))|(#.+|[\\d]*))", regex_constants::ECMAScript | regex_constants::icase)),
 		rxgoal(regex("^(.+)(_GOAL)(\\()([^,]*)(,)([^\\)]*)(\\))", regex_constants::ECMAScript | regex_constants::icase)),
@@ -212,11 +212,22 @@ namespace WSParser
 			{
 			string target = string(kmatch[6])+string(kmatch[12]) + string(kmatch[15]);
 			boost::trim(target);
-			vector<FMToutput>::const_iterator target_out = find_if(outputs.begin(), outputs.end(), FMToutputcomparator(target));
+			if (target.find("(")!=string::npos)
+				{
+				target += ")";
+				}
+			map<string, double> nodes = getequation(target, constants, outputs, target.size());
+			nodes.erase("RHS");
+			FMToutput targetout = resume_output(nodes, outputs, themes, constants);
+
+			/*vector<FMToutput>::const_iterator target_out = find_if(outputs.begin(), outputs.end(), FMToutputcomparator(target));
 			if (target_out == outputs.end())
 				{
 				_exhandler->raise(FMTexc::WSundefined_output, _section, target + " at line " + to_string(_line), __LINE__, __FILE__);
-				}
+				}*/
+
+
+
 			string keyword = kmatch[1];
 			FMTconstrainttype ctype;
 
@@ -234,7 +245,7 @@ namespace WSParser
 				ctype = FMTconstrainttype::FMTsequence;
 			}
 			//constraint = FMTconstraint(ctype, *target_out);
-			constraint.setoutput(*target_out);
+			constraint.setoutput(targetout);
 			constraint.setconstrainttype(ctype);
 			//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "OPTIMIZE " << int(constraint.getconstrainttype()) << "\n";
 			string lower_variation = string(kmatch[14]) + string(kmatch[8]);
