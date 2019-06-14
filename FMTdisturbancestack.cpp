@@ -73,7 +73,7 @@ bool FMTdisturbancestack::allow(const FMTspatialaction& action,const FMTcoordina
     return true;
     }
 
-FMTschedule FMTdisturbancestack::getlastschedule(double cellsize,
+/*FMTschedule FMTdisturbancestack::getlastschedule(double cellsize,
 	const vector<FMTaction>& actions,
 	const FMTlayer<FMTdevelopment>& forest) const
 	{
@@ -101,7 +101,7 @@ FMTschedule FMTdisturbancestack::getlastschedule(double cellsize,
 		}
 	}
 	return FMTschedule(period, mapping);
-	}
+	}*/
 
 string FMTdisturbancestack::getpatchstats() const
 	{

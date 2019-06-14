@@ -37,7 +37,7 @@ namespace Spatial
         FMTforest getcopy(bool copydata = true) const;
         FMTforest grow() const;
         FMTforest operate(const vector<FMTevent<FMTdevelopment>>& cuts,const FMTspatialaction& action,const FMTtransition& Transition,
-                     const FMTyields& ylds,const vector<FMTtheme>& themes, boost::unordered_map<FMTdevelopment, FMTdevelopment>& cached_transitions) const;
+                     const FMTyields& ylds,const vector<FMTtheme>& themes, boost::unordered_map<FMTdevelopment, FMTdevelopment>& cached_transitions, FMTschedule& schedule) const;
         vector<FMTlayer<string>> getthemes(const vector<FMTtheme>& themes) const;
         FMTlayer<int>getage() const;
         FMTlayer<string>getlock() const;

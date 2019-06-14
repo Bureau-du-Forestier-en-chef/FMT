@@ -951,6 +951,19 @@ map<string, double> FMTgraph::getsource(const FMTmodel& model,
 	{
 		values[attribute_id.first] = 0;
 	}
+	//++period;
+	if (node.source.useinedges())//evaluate at the begining of the other period if inventory! what a major fuck
+		{
+		if (!node.source.getaction().empty())
+			{
+			if (period == 0)
+				{
+				return values;
+				}
+		}else {
+			++period;
+			}
+		}
 	vector<int>action_IDS;
 	if (validouputnode(model,node, action_IDS, period))
 	{

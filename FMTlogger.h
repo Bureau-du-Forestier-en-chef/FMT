@@ -4,6 +4,9 @@
 #include <boost/python.hpp>
 #include <boost/serialization/serialization.hpp>
 #include <boost/serialization/nvp.hpp>
+#include <CoinMessageHandler.hpp>
+
+
 
 using namespace std;
 
@@ -18,19 +21,25 @@ namespace Logging
 		};
 
 
-	class FMTlogger
+	class FMTlogger : public CoinMessageHandler
 		{
 		friend class boost::serialization::access;
 		template<class Archive>
 		void serialize(Archive& ar, const unsigned int version)
-		{
+			{
 			ar & BOOST_SERIALIZATION_NVP(_msglevel);
-		}
+			}
 		FMTlogtype _msglevel = FMT_Debug;
 		string getlevel(FMTlogtype ltype);
 		public:
 			FMTlogger(FMTlogtype type);
-			~FMTlogger() = default;
+			virtual ~FMTlogger() = default;
+			FMTlogger();
+			FMTlogger(const FMTlogger& rhs);
+			FMTlogger& operator = (const FMTlogger& rhs);
+			int print() override;
+			void checkSeverity() override;
+			CoinMessageHandler * clone() const override;
 			template<class T>
 			FMTlogger& operator<<(const T &msg)
 				{

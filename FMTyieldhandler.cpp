@@ -328,6 +328,7 @@ FMTyieldhandler::operator string() const
                             {
                             value *= vecvalue;
                             }
+						//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "mulyiply " <<age<<" "<<period<<" "<< value << "\n";
                         break;
                         }
                     case FMTyieldparserop::FMTwssum:
@@ -378,7 +379,7 @@ FMTyieldhandler::operator string() const
                         if (ddata->gettype() == FMTyldwstype::FMTageyld)
                             {
                             value = ddata->getpeak(srcsdata.begin()->first,age);
-							//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "peak " << value << "\n";
+							//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) <<"age "<< age <<" peak " << value << "\n";
                            // value = peak-age;
                             }
                         break;
@@ -451,7 +452,7 @@ FMTyieldhandler::operator string() const
 		double value = 0;
 		if (agetarget >= bases.back())//after and at back!
 			{
-			value = dls.back();
+			value = dls.back();//no if dls is larger thant bases get the corresponding agetarget!!!
 		}else if(agetarget < bases.front()) //before front!
 			{
 			value = (agetarget * (dls[0] / double(bases[0])));
@@ -527,14 +528,17 @@ FMTyieldhandler::operator string() const
                 }
 			if (peak > 0)
 				{
-				vector<double>peakvalues(bases.size(),0.0);
+				size_t agesize = static_cast<size_t>(targetage);
+				vector<double>peakvalues(max(agesize, bases.size())+1,0.0);//need to get the max between targetage and bases.size()!!!!
+				int peakage = bases[peak];
 				int id = 0;
-				for (const int& base : bases)
+				for (double& pvalue : peakvalues)
 					{
-					peakvalues[id]=(bases[peak]-base);
+					pvalue = (peakage -id);
 					++id;
 					}
-				value = getlinearvalue(peakvalues, targetage);
+				value = peakvalues.at(targetage);
+				//value = getlinearvalue(peakvalues, targetage);
 				/*if (lowindex!= highindex)
 					{
 					double bottom = (bases[peak] - bases[lowindex]);

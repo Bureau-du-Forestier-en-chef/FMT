@@ -23,7 +23,12 @@ class FMTevent
 		ar & BOOST_SERIALIZATION_NVP(enveloppe);
 		ar & BOOST_SERIALIZATION_NVP(order);
 	}
-
+	FMTcoordinate midposition() const
+		{
+		//get mid point of elements!
+		size_t midlocation = (elements.size() / 2);
+		return ((elements.begin() + midlocation)->first);
+		}
     protected:
         FMTcoordinate ignition;
         vector<FMTcoordinate>active;
@@ -104,11 +109,39 @@ class FMTevent
 		return (!(*this==rhs));
 		}
 
+	bool operator < (const FMTevent& rhs) const
+		{
+		return (this->midposition() < rhs.midposition);
+		}
+
+	/*set<FMTevent>geteventswithin(const set<FMTevent>& allevents, const unsigned int& distance) const;
+		{
+		//
+		set<FMTevent>nearevents;
+		set<FMTevent>::const_iterator itlower = allevents.lower_bound(*this);
+		size_t location = distance(allevents.begin(), itlower);
+		while (location >= 0 && (itlower - location)->within(distance,*this))
+			{
+			earevents.insert(*itlower);
+			--location;
+			}
+		set<FMTevent>::const_iterator itupper = allevents.upper_bound(*this);
+		location = 0;
+		while (itupper != allevents.end())
+			{
+
+			++location;
+			}
+
+		
+		}*/
+
 	int getorder() const
 		{
 		return order;
 		}
-
+	//https://www.umass.edu/landeco/research/fragstats/documents/fragstats.help.4.2.pdf
+	//metrics
 	size_t perimeter() const //gives perimeter
 		{
 		size_t total = 0;
@@ -135,6 +168,15 @@ class FMTevent
 	size_t width() const
 		{
 		return ((enveloppe.at(1).getx() - enveloppe.at(0).getx())+1);
+		}
+
+	FMTcoordinate averagecentroid() const
+		{
+		size_t startx = enveloppe.at(0).getx();
+		size_t starty = enveloppe.at(0).gety();
+		size_t plusx = enveloppe.at(1).getx() - startx;
+		size_t plusy = enveloppe.at(2).gety() - starty;
+		return FMTcoordinate(startx + plusx, starty + plusy);
 		}
 
 	string getstats() const

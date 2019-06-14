@@ -23,7 +23,7 @@ namespace Models
 			solverinterface = unique_ptr<OsiClpSolverInterface>(new OsiClpSolverInterface);
 			break;
 		}
-
+	solverinterface->passInMessageHandler(&*this->_logger);
 	}
 	void FMTlpmodel::copysolverinterface(const unique_ptr<OsiSolverInterface>& solver_ptr)
 	{
@@ -45,6 +45,7 @@ namespace Models
 			solverinterface = unique_ptr<OsiClpSolverInterface>(new OsiClpSolverInterface(*dynamic_cast<OsiClpSolverInterface*>(solver_ptr.get())));
 			break;
 		}
+	solverinterface->passInMessageHandler(&*this->_logger);
 	}
 	/*FMTlpmodel::FMTlpmodel() : FMTobject(), solvertype(), data(), solverinterface(), developments(), stats()
 	{

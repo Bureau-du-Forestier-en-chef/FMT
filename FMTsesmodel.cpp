@@ -2,13 +2,14 @@
 
 namespace Models
     {
-    FMTsesmodel::FMTsesmodel(): FMTmodel(),mapping(),disturbances(),spactions()
+    FMTsesmodel::FMTsesmodel(): FMTmodel(),mapping(), operatedschedule(),disturbances(),spactions()
         {
 
         }
     FMTsesmodel::FMTsesmodel(const FMTsesmodel& rhs):
         FMTmodel(rhs),
         mapping(rhs.mapping),
+		operatedschedule(rhs.operatedschedule),
         disturbances(rhs.disturbances),
         spactions(rhs.spactions)
         {
@@ -16,7 +17,7 @@ namespace Models
         }
     FMTsesmodel::FMTsesmodel(const FMTmodel& rhs):
         FMTmodel(rhs),
-        mapping(),disturbances(),spactions()
+        mapping(), operatedschedule(),disturbances(),spactions()
         {
 
         }
@@ -26,6 +27,7 @@ namespace Models
             {
             FMTmodel::operator = (rhs);
             mapping = rhs.mapping;
+			operatedschedule = rhs.operatedschedule;
             disturbances = rhs.disturbances;
             spactions = rhs.spactions;
             }
@@ -77,6 +79,7 @@ namespace Models
                              bool schedule_only,
                              unsigned int seed)
         {
+		FMTschedule newschedule(disturbances.data.size()+1,map<FMTaction, map<FMTdevelopment, vector<double>>>());
         default_random_engine generator(seed);
         const double total_area = schedule.area();
         map<string,double>targets;
@@ -121,11 +124,14 @@ namespace Models
 								if (events.size() > 0)
 									{ 
 									//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "GOT EVENs " << events.size() << "\n";
-									FMTforest newoperated = spatialy_allowable.operate(events, *acit, transitions[location], yields, themes,cached_operated[location]); //can also use caching here...
+									FMTforest newoperated = spatialy_allowable.operate(events, *acit, transitions[location], yields, themes,cached_operated[location], newschedule); //can also use caching here...
 									//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "OPERATED " << spatial_action.name << " " << newoperated.area() << "\n";
 									if (!newoperated.mapping.empty())
 										{
 										disturbances.add(acit->name, events);
+										//Fill the schedule here base on operated forest and acit!
+
+
 										mapping.replace(newoperated.mapping.begin(), newoperated.mapping.end());
 										targets[acit->name] -= (newoperated.area());
 										pass_allocated_area += (newoperated.area());
@@ -160,13 +166,15 @@ namespace Models
 			double total_action_area = schedule.actionarea(ait->first);
 			results[ait->first.name] = ((total_action_area - targets[ait->first.name]) / total_action_area);
 			}
+		operatedschedule.push_back(newschedule);
         return results;
         }
 
 
-	FMTschedule FMTsesmodel::getschedule() const
+	vector<FMTschedule> FMTsesmodel::getschedule() const
 		{
-		return disturbances.getlastschedule(mapping.getcellsize(),actions,mapping);
+		return operatedschedule;
+		//return disturbances.getlastschedule(mapping.getcellsize(),actions,mapping);
 		}
 
 	string FMTsesmodel::getdisturbancestats() const
