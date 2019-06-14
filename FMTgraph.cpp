@@ -1040,10 +1040,10 @@ void FMTgraph::cleanevents(vector<FMTevent<FMTgraph>>& events_id, const FMTcoord
 FMTgraphstats FMTgraph::clearfromperiod(const int& period, vector<vector<vector<FMTevent<FMTgraph>>>>& events,
                                         const FMTcoordinate& localisation)
     {
-        for (int location = this->size() ; location>=period ; --location)
+        for (int location = this->size()-1 ; location>=period ; --location)
         {
-            for (std::unordered_map<size_t, FMTvertex_descriptor>::iterator it = developments[location].begin();
-                it != developments[location].end(); it++)
+            for (std::unordered_map<size_t, FMTvertex_descriptor>::iterator it = developments.at(location).begin();
+                it != developments.at(location).end(); it++)
                 {
                     FMTvertex_descriptor vertex_location = it->second;
                     if (!(location == period && periodstart(vertex_location)))//Condition to keep periodstart at period
@@ -1086,12 +1086,7 @@ FMTgraph FMTgraph::partialcopy(const int& period, vector<vector<vector<FMTevent<
                                const FMTcoordinate& localisation) const
     {
         FMTgraph newgraph(*this);
-        cout<<"Old stats : \nVertex : "<<newgraph.stats.vertices<<endl;
-        cout<<"Edges : "<<newgraph.stats.edges<<endl;
         FMTgraphstats delstats = newgraph.clearfromperiod(period,events,localisation);
-        cout<<"New stats : \nVertex : "<<delstats.vertices<<" & " << newgraph.stats.vertices<<endl;
-        cout<<"Edges : "<<delstats.edges<< " & " <<newgraph.stats.edges<<endl;
-        cout<<"generating dev"<<endl;
         newgraph.generatedevelopments();
         return newgraph;
     }
@@ -1117,7 +1112,6 @@ FMTgraph FMTgraph::perturbgraph(const FMTmodel& model,default_random_engine& gen
                                 const FMTcoordinate& localisation, const int period) const
     {
         FMTgraph newgraph = partialcopy(period,events,localisation);
-        //cout<<"Start rebuild"<<endl;
         newgraph.nodescache.clear();
         while(this->size() != newgraph.size())
         {

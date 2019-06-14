@@ -102,7 +102,7 @@ FMTforest FMTsasolution::getforestperiod(const int& period) const
         {
             const FMTgraph* local_graph = &graphit->second;
             const vector<double> solutions(1,this->getcellsize());
-            vector<FMTactualdevelopment> actdev = local_graph->getperiodstopdev(period,&solutions[0]);
+            vector<FMTactualdevelopment> actdev = local_graph->getperiodstopdev(period,&solutions[0]);//
             forest.mapping[graphit->first]=FMTdevelopment(actdev.front());
         }
         return forest;
@@ -142,28 +142,33 @@ FMTsasolution FMTsasolution::perturb(FMTsamodel& model, default_random_engine& g
             uniform_int_distribution<int> celldistribution(0,map_lenght.size()-1);
             int numbercells = celldistribution(generator);//Get number of cell to perturb
             vector<size_t> ChangedId;
-            cout<< "Map size "<< map_lenght.size()<<endl;
-            cout<< "Number of cells to modify "<<numbercells<<endl;
+            //cout<< "Map size "<< map_lenght.size()<<endl;
+            //cout<< "Number of cells to modify "<<numbercells<<endl;
             for (int id = 0; id<numbercells; ++id)
             {
-                cout<<"+++++++++++++ NEW CELL ++++++++++++++"<<endl;
+                //cout<<"+++++++++++++ NEW CELL ++++++++++++++"<<endl;
                 map<FMTcoordinate,FMTgraph>::const_iterator luckygraph = this ->mapping.begin();
                 std::advance(luckygraph,map_lenght.at(id));
                 uniform_int_distribution<int> perioddistribution(1,luckygraph->second.size()-2);//period to change
                 int period = perioddistribution(generator);
-                cout<<"Random period : "<<period<<endl;
+
+                //cout<<"Random period : "<<period<<endl;
+
                 newsolution.solution_stats -= luckygraph->second.getstats();
-                cout<<"Iteration : "<<id<<endl;
-                cout<<"Cell : "<<map_lenght.at(id)<<endl;
+
+                //cout<<"Iteration : "<<id<<endl;
+                //cout<<"Cell : "<<map_lenght.at(id)<<endl;
+
                 FMTgraph newgraph = luckygraph -> second.perturbgraph(model,generator,newsolution.events,luckygraph->first,period);//perturb cell
-                cout<<"Newgraph generated"<<endl;
+
+                //cout<<"Newgraph generated"<<endl;
+
                 newsolution.solution_stats += newgraph.getstats();
                 newsolution.mapping[luckygraph->first] = newgraph;
                 ChangedId.push_back(map_lenght.at(id));
             }
-            cout<<"Setting mapid" <<endl;
+            //cout<<"Setting mapid" <<endl;
             bool mapid = model.setmapidmodified(ChangedId);
-            cout<<mapid<<endl;
             break;
         }
         case FMTsamovetype::cluster :
