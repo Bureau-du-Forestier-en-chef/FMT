@@ -127,27 +127,25 @@ std::queue<FMTvertex_descriptor> FMTgraph::initialize(const vector<FMTactualdeve
 		stats.vertices = 0;
 		for (const FMTactualdevelopment& development : actdevelopments)
 		{
-		    if (!this->containsdevelopment(development))
-                {
-                //P0
-				const FMTvertexproperties properties(development, constraint_id);
-				FMTvertex_descriptor newvertex = add_vertex(properties, data);
-				developments[0][boost::hash<FMTdevelopment>()(development)] = newvertex;
-				++stats.vertices;
-				//P1
-                FMTfuturdevelopment P1dev(development);
-                P1dev.period = 1;
-                const FMTvertexproperties P1properties(P1dev, constraint_id);
-                FMTvertex_descriptor P1vertex = add_vertex(P1properties, data);
-                developments[1][boost::hash<FMTdevelopment>()(P1dev)] = P1vertex;
-				++stats.vertices;
-                actives.push(P1vertex);
-                //Now set the edge!!
-				const FMTedgeproperties newedge(edge_id, stats.edges, proportion);
-				add_edge(newvertex,P1vertex, newedge, data);
-				++stats.edges;
-                }
-
+            //P0
+			const FMTvertexproperties properties(development, constraint_id);
+			FMTvertex_descriptor newvertex = add_vertex(properties, data);
+			developments[0][boost::hash<FMTdevelopment>()(development)] = newvertex;
+			++stats.vertices;
+            //P1
+            FMTfuturdevelopment P1dev(development);
+            P1dev.period = 1;
+            FMTvertex_descriptor tovertex;
+            tovertex = adddevelopment(P1dev);
+            /*const FMTvertexproperties P1properties(P1dev, constraint_id);
+            FMTvertex_descriptor P1vertex = add_vertex(P1properties, data);
+            developments[1][boost::hash<FMTdevelopment>()(P1dev)] = P1vertex;
+			++stats.vertices;*/
+            actives.push(tovertex);
+            //Now set the edge!!
+			const FMTedgeproperties newedge(edge_id, stats.edges, proportion);
+			add_edge(newvertex,tovertex, newedge, data);
+			++stats.edges;
 		}
 		return actives;
 	}
@@ -178,6 +176,7 @@ FMTgraphstats FMTgraph::build(const FMTmodel& model,std::queue<FMTvertex_descrip
 			const FMTedgeproperties newedge(-1, statsdiff.cols, 100);
 			++statsdiff.cols;
 			add_edge(front_vertex, next_period, newedge, data);
+			++stats.edges;
 		}
 
 		return (statsdiff - stats);
@@ -222,6 +221,7 @@ pair<size_t,int> FMTgraph::randomoperate(const vector<pair<size_t,int>>& operabl
                 FMTvertex_descriptor next_period = this->adddevelopment(grown_up); //getset
                 const FMTedgeproperties newedge(-1, 0, 100);
                 add_edge(front_vertex, next_period, newedge, data);
+                ++stats.edges;
                 return pair<size_t,int>(0,-1);
             }
     }
@@ -293,6 +293,7 @@ FMTgraphstats FMTgraph::naturalgrowth(std::queue<FMTvertex_descriptor> actives)
             FMTvertex_descriptor next_period = this->adddevelopment(grown_up); //getset
             const FMTedgeproperties newedge(-1, 0, 100);
             add_edge(front_vertex, next_period, newedge, data);
+            ++stats.edges;
 		}
 
 		return (statsdiff - stats);
@@ -333,7 +334,7 @@ FMTvertex_descriptor FMTgraph::adddevelopment(const FMTfuturdevelopment& futurde
 			const FMTvertexproperties properties(futurdevelopement, constraint_id);
 			FMTvertex_descriptor newvertex = add_vertex(properties, data);
 			developments[futurdevelopement.period][boost::hash<FMTdevelopment>()(futurdevelopement)] = newvertex;
-			//++stats.rows;
+			++stats.vertices;
 			return newvertex;
 		}
 		return getdevelopment(futurdevelopement);
@@ -373,14 +374,14 @@ void FMTgraph::addaction(const int& actionID,
 			{
 				tovertex = this->adddevelopment(*devpath.development);
 				actives.push(tovertex);
+
 			}
 			else {
 				tovertex = this->adddevelopment(*devpath.development);
 			}
 			//}
 			add_edge(out_vertex, tovertex, newedge, data);
-
-
+            ++stats.edges;
 		}
 	}
 
@@ -725,6 +726,7 @@ FMTgraphstats FMTgraph::buildschedule(const FMTmodel& model, std::queue<FMTverte
 		double proportion = 100;
 		const FMTedgeproperties newedge(id, variable_id, proportion);
 		add_edge(front_vertex, next_period, newedge, data);
+		++stats.edges;
 	}
 
 	//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << " op hit  " << op_hit << "\n";
