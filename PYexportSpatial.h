@@ -36,6 +36,7 @@ void exportSpatial()
         .def(init<Spatial::FMTforest>())
         .def("getarea",&Spatial::FMTforest::getarea)
         .def("grow",&Spatial::FMTforest::grow);
+     define_pylist<Spatial::FMTforest>();
 
     const char* py_FMTdiststack_doc =
         " ``FMTdisturbancestack`` class.\n"
@@ -86,7 +87,11 @@ void exportSpatial()
 		.value("cluster", Spatial::FMTsamovetype::cluster);
 
     define_FMTlayer<Graph::FMTgraph>();
-    class_<Spatial::FMTsasolution,bases<FMTlayer<FMTgraph>>>("FMTsasolution",py_FMTsasolution_doc,no_init);
+    class_<Spatial::FMTsasolution,bases<FMTlayer<FMTgraph>>>("FMTsasolution",py_FMTsasolution_doc,no_init)
+        .def("get_stats",&FMTsasolution::getsolution_stats)
+        .def("get_forest_at_period",&FMTsasolution::getforestperiod);
+
+    define_pylist<Spatial::FMTsasolution>();
 
     }
 

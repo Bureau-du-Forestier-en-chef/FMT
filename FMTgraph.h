@@ -56,7 +56,7 @@ class FMTgraph
 	void load(Archive& ar, const unsigned int version)
 	{
 		ar & BOOST_SERIALIZATION_NVP(data);
-		developments = generatedevelopments();
+		generatedevelopments();
 		ar & BOOST_SERIALIZATION_NVP(nodescache);
 		ar & BOOST_SERIALIZATION_NVP(stats);
 		ar & BOOST_SERIALIZATION_NVP(buildtype);
@@ -82,7 +82,7 @@ class FMTgraph
 		std::queue<FMTvertex_descriptor> initialize(const vector<FMTactualdevelopment>& actdevelopments);
 		FMTgraphstats build(const FMTmodel& model,
                             std::queue<FMTvertex_descriptor> actives);
-        vector<pair<size_t,int>> adjacentevents(const vector<FMTevent<FMTgraph>>& events, const FMTcoordinate& localisation,int& action_id) const;
+        vector<pair<size_t,int>> adjacentevents(const vector<FMTevent<FMTgraph>>& events, const FMTcoordinate& localisation,const int action_id) const;
         pair<size_t,int> randomoperate(const vector<pair<size_t,int>>& operables, const FMTmodel& model, std::queue<FMTvertex_descriptor>& actives,
                                             FMTgraphstats& statsdiff, const FMTvertex_descriptor& front_vertex, default_random_engine& generator,
                                             const FMTdevelopment& active_development);
@@ -90,6 +90,7 @@ class FMTgraph
                                     std::queue<FMTvertex_descriptor> actives, default_random_engine& generator,
                                     vector<vector<FMTevent<FMTgraph>>>& events_id, const FMTcoordinate& localisation);
         FMTgraphstats naturalgrowth(std::queue<FMTvertex_descriptor> actives);
+        vector<FMTactualdevelopment> getperiodstopdev(const int location,const double* solution) const;
 		map<string, double> getoutput(const FMTmodel& model, const FMToutput& output, int period, const double* solution) const;
 		FMTvertex_descriptor getdevelopment(const FMTdevelopment& developement) const;
 		const FMTdevelopment& getdevelopment(const FMTvertex_descriptor& descriptor) const;
@@ -137,12 +138,14 @@ class FMTgraph
 			int period, const FMTtheme& theme,
 			const double* solution) const;
         void cleanevents(vector<FMTevent<FMTgraph>>& events_id, const FMTcoordinate& localisation) const;
+        FMTgraphstats clearfromperiod(const int& period, vector<vector<vector<FMTevent<FMTgraph>>>>& events,
+                                        const FMTcoordinate& localisation);
         FMTgraph partialcopy(const int& period, vector<vector<vector<FMTevent<FMTgraph>>>>& events,
                                 const FMTcoordinate& localisation) const;
-        vector<std::unordered_map<size_t,FMTvertex_descriptor>> generatedevelopments() const;
+        void generatedevelopments();
         FMTgraph perturbgraph(const FMTmodel& model,default_random_engine& generator,
                               vector<vector<vector<FMTevent<FMTgraph>>>>& events,
-                              const FMTcoordinate& localisation, const int& period) const;
+                              const FMTcoordinate& localisation, const int period) const;
 
     };
 }

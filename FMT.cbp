@@ -54,6 +54,7 @@
 				<Option createStaticLib="1" />
 				<Compiler>
 					<Add option="-O3" />
+					<Add option="-DNDEBUG" />
 					<Add directory="../FMT" />
 				</Compiler>
 			</Target>

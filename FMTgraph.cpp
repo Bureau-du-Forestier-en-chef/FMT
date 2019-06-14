@@ -5,6 +5,7 @@
 #include "FMTyields.h"
 #include "FMTtransition.h"
 #include "FMTtheme.h"
+#include <assert.h>
 
 namespace Graph
 {
@@ -36,7 +37,7 @@ FMTgraph::FMTgraph(const FMTgraph& rhs):
     stats(rhs.stats),
     data(rhs.data)
     {
-        developments = generatedevelopments();
+        generatedevelopments();
     }
 
 FMTgraph& FMTgraph::operator = (const FMTgraph& rhs)
@@ -47,7 +48,7 @@ FMTgraph& FMTgraph::operator = (const FMTgraph& rhs)
 			nodescache = rhs.nodescache;
             stats=rhs.stats;
             data=rhs.data;
-            developments = generatedevelopments();
+            generatedevelopments();
             }
         return *this;
     }
@@ -182,7 +183,7 @@ FMTgraphstats FMTgraph::build(const FMTmodel& model,std::queue<FMTvertex_descrip
 		return (statsdiff - stats);
     }
 
-vector<pair<size_t,int>> FMTgraph::adjacentevents(const vector<FMTevent<FMTgraph>>& events, const FMTcoordinate& localisation,int& action_id) const
+vector<pair<size_t,int>> FMTgraph::adjacentevents(const vector<FMTevent<FMTgraph>>& events, const FMTcoordinate& localisation,const int action_id) const
     {
         vector<pair<size_t,int>> selectedevents;
         size_t indice = 0;
@@ -209,8 +210,10 @@ pair<size_t,int> FMTgraph::randomoperate(const vector<pair<size_t,int>>& operabl
                 statsdiff.cols = 0;
                 pair<size_t,int> selection = operables.at(distribution_select);
                 int action_id = selection.second;
-                const vector<FMTdevelopmentpath> paths = active_development.operate(model.actions.at(action_id), model.transitions[action_id], model.yields, model.themes);
+                const vector<FMTdevelopmentpath> paths = active_development.operate(model.actions.at(action_id), model.transitions.at(action_id), model.yields, model.themes);
+                size_t active_size = actives.size();
                 addaction(action_id, statsdiff, actives, front_vertex, paths);
+                assert(actives.size()==active_size);//Action returning on the same action == mega bug
                 return selection;
             }
          else
@@ -250,11 +253,10 @@ FMTgraphstats FMTgraph::randombuild(const FMTmodel& model,std::queue<FMTvertex_d
                     operables.push_back(pair<size_t,int>(0,id));
                     vector<pair<size_t,int>> potentialevents = adjacentevents(events_id.at(id),localisation,id);
                     allpotentialevents.insert(allpotentialevents.end(),potentialevents.begin(),potentialevents.end());
-
 				}
 				++id;
 			}
-			if (!allpotentialevents.empty())
+			if (!allpotentialevents.empty() && !operables.empty())
                 {
                     pair<size_t,int> selectedevent = randomoperate(allpotentialevents, model, actives, statsdiff, front_vertex, generator,active_development);
                     if (selectedevent.second != -1)
@@ -295,6 +297,23 @@ FMTgraphstats FMTgraph::naturalgrowth(std::queue<FMTvertex_descriptor> actives)
 
 		return (statsdiff - stats);
     }
+
+vector<FMTactualdevelopment> FMTgraph::getperiodstopdev(const int location,const double* actual_solution) const
+	{
+		vector<FMTactualdevelopment>all_period_stop_devs;
+		for (std::unordered_map<size_t, FMTvertex_descriptor>::const_iterator devit = developments[location].begin();
+			devit != developments[location].end(); devit++)
+		{
+            if (periodstop(devit->second))
+            {
+                double area = inarea(devit->second, actual_solution);
+                const FMTdevelopment& development = data[devit->second].get();
+                all_period_stop_devs.push_back(FMTactualdevelopment(development, area));
+            }
+		}
+		all_period_stop_devs.size();
+		return all_period_stop_devs;
+	}
 
 FMTvertex_descriptor FMTgraph::getdevelopment(const FMTdevelopment& developement) const
 	{
@@ -923,6 +942,10 @@ map<string, double> FMTgraph::getsource(const FMTmodel& model,
 	const FMToutputnode& node,
 	int period, const FMTtheme& theme,const double* solution) const
 {
+    if (node.source.useinedges())//evaluate at the begining of the other period if inventory! what a major fuck
+       {
+       ++period;
+       }
 	map<string, double>values; ///start here
 	for (auto attribute_id : theme.getvaluenames())
 	{
@@ -999,70 +1022,95 @@ void FMTgraph::cleanevents(vector<FMTevent<FMTgraph>>& events_id, const FMTcoord
         events_id = clean_events_id;
     }
 
+FMTgraphstats FMTgraph::clearfromperiod(const int& period, vector<vector<vector<FMTevent<FMTgraph>>>>& events,
+                                        const FMTcoordinate& localisation)
+    {
+        for (int location = this->size() ; location>=period ; --location)
+        {
+            for (std::unordered_map<size_t, FMTvertex_descriptor>::iterator it = developments[location].begin();
+                it != developments[location].end(); it++)
+                {
+                    FMTvertex_descriptor vertex_location = it->second;
+                    if (!(location == period && periodstart(vertex_location)))//Condition to keep periodstart at period
+                        {
+                            //Removing inedge
+                            FMTinedge_iterator inedge_iterator, inedge_end;
+                            for (tie(inedge_iterator, inedge_end) = in_edges(vertex_location, data); inedge_iterator != inedge_end; ++inedge_iterator)
+                            {
+                                FMTedgeproperties edgeprop = data[*inedge_iterator];
+                                int action_id = edgeprop.getactionID();
+                                if (action_id >= 0 && !events.empty())
+                                {
+                                    //cout<<"Deleting period : "<<location <<"\nAction id : "<<action_id<<endl;
+                                    cleanevents(events.at(period-1).at(action_id),localisation);//Period -1 to have the good period in index of events
+                                    //cout<<"cleanevents pass"<<endl;
+                                }
+
+                            }
+                            --stats.edges;
+                            //cout<<"Clearing edges"<<endl;
+                            clear_in_edges(vertex_location,data);
+                        }
+                }
+                   for (std::unordered_map<size_t, FMTvertex_descriptor>::iterator it = developments[location].begin();
+                    it != developments[location].end(); it++)
+                    {
+                        FMTvertex_descriptor vertex_location = it->second;
+                        if (!(location == period && periodstart(vertex_location)))//Condition to keep periodstart at period
+                            {
+                                //cout<<"Clearing vertex"<<endl;
+                                remove_vertex(vertex_location, data);
+                                --stats.vertices;
+                            }
+                    }
+        }
+    return stats;
+    }
+
 FMTgraph FMTgraph::partialcopy(const int& period, vector<vector<vector<FMTevent<FMTgraph>>>>& events,
                                const FMTcoordinate& localisation) const
     {
         FMTgraph newgraph(*this);
-        for (int location = period ; location<this->size() ; ++location)
-        {
-            for (std::unordered_map<size_t, FMTvertex_descriptor>::iterator it = newgraph.developments[location].begin();
-                it != newgraph.developments[location].end(); it++)
-                {
-                    FMTvertex_descriptor vertex_location = it->second;
-                    FMTvertexproperties vertex_properties = newgraph.data[vertex_location];
-                    if (!(location == period && periodstart(vertex_location)))//Condition to keep periodstart at luckyperiod
-                        {
-                            //Removing inedge
-                            FMTinedge_iterator inedge_iterator, inedge_end;
-                            for (tie(inedge_iterator, inedge_end) = in_edges(vertex_location, newgraph.data); inedge_iterator != inedge_end; ++inedge_iterator)
-                            {
-                                FMTedgeproperties edgeprop = newgraph.data[*inedge_iterator];
-                                int action_id = edgeprop.getactionID();
-                                if (action_id >= 0)
-                                {
-                                    cleanevents(events.at(period).at(action_id),localisation);
-                                }
-                                remove_edge(*inedge_iterator, newgraph.data);
-                                --newgraph.stats.edges;
-
-                            }
-                            //Removing vertex
-                            remove_vertex(vertex_location, newgraph.data);
-                            --newgraph.stats.vertices;
-                        }
-                }
-        }
-    newgraph.developments = newgraph.generatedevelopments();
-    return newgraph;
+        cout<<"Old stats : \nVertex : "<<newgraph.stats.vertices<<endl;
+        cout<<"Edges : "<<newgraph.stats.edges<<endl;
+        FMTgraphstats delstats = newgraph.clearfromperiod(period,events,localisation);
+        cout<<"New stats : \nVertex : "<<delstats.vertices<<" & " << newgraph.stats.vertices<<endl;
+        cout<<"Edges : "<<delstats.edges<< " & " <<newgraph.stats.edges<<endl;
+        cout<<"generating dev"<<endl;
+        newgraph.generatedevelopments();
+        return newgraph;
     }
 
-vector<std::unordered_map<size_t,FMTvertex_descriptor>> FMTgraph::generatedevelopments() const
+void FMTgraph::generatedevelopments()
     	{
-            vector<std::unordered_map<size_t,FMTvertex_descriptor>> newdev;
+            developments.clear();
             FMTvertex_iterator vertex, vend;
             for (boost::tie(vertex, vend) = vertices(data); vertex != vend; ++vertex)
             {
                 FMTvertexproperties properties = data[*vertex];
                 const FMTdevelopment dev = properties.get();
-                if ((dev.period) == newdev.size())
+                if ((dev.period) == developments.size())
                 {
-                    newdev.push_back(std::unordered_map<size_t, FMTvertex_descriptor>());
+                    developments.push_back(std::unordered_map<size_t, FMTvertex_descriptor>());
                 }
-                newdev[(dev.period)][boost::hash<FMTdevelopment>()(FMTdevelopment(dev))] = *vertex;
+                developments[(dev.period)][boost::hash<FMTdevelopment>()(FMTdevelopment(dev))] = *vertex;
             }
-        return newdev;
-    	}
+        }
 
 FMTgraph FMTgraph::perturbgraph(const FMTmodel& model,default_random_engine& generator,
                                 vector<vector<vector<FMTevent<FMTgraph>>>>& events,
-                                const FMTcoordinate& localisation, const int& period) const
+                                const FMTcoordinate& localisation, const int period) const
     {
         FMTgraph newgraph = partialcopy(period,events,localisation);
+        //cout<<"Start rebuild"<<endl;
         newgraph.nodescache.clear();
         while(this->size() != newgraph.size())
         {
             std::queue<FMTvertex_descriptor> actives = newgraph.getactiveverticies();
-            newgraph.randombuild(model,actives,generator,events.at(period),localisation);
+            FMTvertex_descriptor front_vertex = actives.front();
+			FMTvertexproperties front_properties = data[front_vertex];
+			int periodbuildevents = front_properties.get().period-1;//To have the good index in events
+            newgraph.randombuild(model,actives,generator,events.at(periodbuildevents),localisation);
         }
 
     return newgraph;

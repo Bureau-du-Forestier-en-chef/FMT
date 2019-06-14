@@ -40,6 +40,7 @@ namespace Graph
 	typedef graph_traits<FMTgraphdata>::vertex_iterator FMTvertex_iterator;
 	typedef graph_traits<FMTgraphdata>::edge_iterator FMTedge_iterator;
 	typedef std::pair<FMToutedge_iterator, FMToutedge_iterator> FMToutedge_pair;
+	typedef std::pair<FMTvertex_iterator,FMTvertex_iterator> FMTvertex_pair;
 
 
 }

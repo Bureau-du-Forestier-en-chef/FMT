@@ -4,6 +4,8 @@
 
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(simulate_overloads,simulate, 1, 3)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(buildperiod_overloads, buildperiod, 0, 1)
+BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(move_solution_overloads, move_solution, 0, 1)
+
 
 
 void exportModel()
@@ -120,6 +122,7 @@ void exportModel()
             .def(init<Models::FMTmodel>())
             .def("get_current_solution",&FMTsamodel::get_current_solution)
             .def("get_new_solution",&FMTsamodel::get_new_solution)
+            .def("compare_solutions",&FMTsamodel::comparesolutions)
             .def("setinitial_mapping",&FMTsamodel::setinitial_mapping,
                  "Set the initial mapping\n"
                  "Initial forest themes described to the model",
@@ -137,7 +140,7 @@ void exportModel()
             .def("buildperiod",&FMTsamodel::buildperiod,
                  "Build each period one by one randomly\n")
             .def("move",&FMTsamodel::move_solution,
-                 "Generate a new solution with the current by randomly replacing some cell\n");
+                 move_solution_overloads());
     define_pylist<Models::FMTsamodel>();
     }
 

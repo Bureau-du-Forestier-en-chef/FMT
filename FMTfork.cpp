@@ -89,6 +89,7 @@ FMTfork::FMTfork():FMTspec(),transitions(){}
             if (proportion > lastproportion)
                 {
                 singletrans = tran;
+                lastproportion = proportion;
                 }
             }
         singletrans.setproportion(100);
