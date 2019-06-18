@@ -445,8 +445,8 @@ vector<boost::dynamic_bitset<>> FMToutputsource::actionscombination(const boost:
 	}*/
 
 double FMToutputsource::getcoef(const FMTdevelopment& development,
-	const FMTyields& yields, FMTaction action,
-	vector<FMTdevelopmentpath> paths) const
+	const FMTyields& yields, const FMTaction& modelaction,
+	const vector<FMTdevelopmentpath>& paths) const
 	{
 	double coef = 1;
 	if (isvariable())
@@ -458,7 +458,7 @@ double FMToutputsource::getcoef(const FMTdevelopment& development,
 				coef = development.getinventorycoef(yields, yield);
 			}
 			else {
-				coef = development.getharvestcoef(paths, action, yields, yield);
+				coef = development.getharvestcoef(paths, modelaction, yields, yield);
 			}
 			}
 		}else if (istimeyield())

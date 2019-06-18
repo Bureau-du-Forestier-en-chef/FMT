@@ -103,6 +103,8 @@ class FMTlpmodel : public FMTmodel
 	//mutable std::unordered_map<size_t, map<string, double>>_source_cache;
 	void buildsolverinterface();
 	void copysolverinterface(const unique_ptr<OsiSolverInterface>& solver_ptr);
+	bool summarize(vector<int> variables,vector<double> coefficiants,
+					vector<int>& sumvariables, vector<double>& sumcoefficiants) const;
 		//bool containsdevelopment(const FMTdevelopment& developement) const;
 		/*map<string, double> getsource(const FMToutputnode& node,
 			 int period,

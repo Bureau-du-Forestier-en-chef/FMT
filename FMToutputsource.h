@@ -68,8 +68,8 @@ class FMToutputsource : public FMTspec
 		bool useinedges() const;
 		bool useoutedges() const;
 		double getcoef(const FMTdevelopment& development,
-			const FMTyields& yields, FMTaction action = FMTaction(),
-			vector<FMTdevelopmentpath> paths = vector<FMTdevelopmentpath>()) const;
+			const FMTyields& yields, const FMTaction& action,
+			const vector<FMTdevelopmentpath>& paths) const;
 		bool use(const FMTdevelopment& development, const FMTyields& ylds) const;
 		//size_t hash() const override;
 		size_t hash(int period = -1) const;

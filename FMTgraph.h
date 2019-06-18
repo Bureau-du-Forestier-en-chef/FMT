@@ -110,12 +110,12 @@ class FMTgraph
                                             const int& actionID) const;
 		bool validouputnode(const FMTmodel& model, const FMToutputnode& node,vector<int>& action_IDS, int period) const;
 		bool validgraphnode(const FMTmodel& model, bool& inedges, const FMTvertex_descriptor& vertex_descriptor,
-                            const FMToutputnode& node, const vector<int>& action_IDS,const vector<FMTaction>& selected) const;
+                            const FMToutputnode& node, const vector<int>& action_IDS,const vector<const FMTaction*>& selected) const;
 		void locatenodes(const FMTmodel& model, const vector<FMToutputnode>& nodes,int period,
                             vector<int>& variables,vector<double>& coefs,double multiplier = 1) const;//to look at
         bool anyoperables(const FMTvertex_descriptor& descriptor, const vector<int>& action_ids) const;
         map<int, int> getoutvariables(const FMTvertex_descriptor& out_vertex) const;
-        vector<FMTaction> selectedactions(const FMTmodel& model, const vector<int>& action_IDS) const;
+        vector<const FMTaction*> selectedactions(const FMTmodel& model, const vector<int>& action_IDS) const;
 		void constraintlenght(const FMTconstraint& constraint, int& start, int& stop) const;
 		FMTgraphstats getstats() const;
 		void setstats(const FMTgraphstats& newstats);
