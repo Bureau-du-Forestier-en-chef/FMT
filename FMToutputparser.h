@@ -16,7 +16,6 @@ class FMToutputparser : public FMTparser
     {
     //regex rxoperators;
     regex rxoutput;
-    //regex rxsources;
     regex rxsource;
     regex rxtar;
     regex rxgrp;

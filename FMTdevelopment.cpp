@@ -78,11 +78,11 @@ namespace Core{
             }
         return false;
         }
-	 bool FMTdevelopment::anyoperable(const vector<FMTaction>& actions, const FMTyields& ylds) const
+	 bool FMTdevelopment::anyoperable(const vector<const FMTaction*>& actions, const FMTyields& ylds) const
 		{
-		 for (const FMTaction& action : actions)
+		 for (const FMTaction* action : actions)
 			{
-			 if (this->operable(action,ylds))
+			 if (this->operable(*action,ylds))
 				{
 				return true;
 				}

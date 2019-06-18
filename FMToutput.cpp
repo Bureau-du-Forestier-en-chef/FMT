@@ -352,14 +352,19 @@ vector<FMToutputnode> FMToutput::getnodes() const
          //Logging::FMTlogger(Logging::FMTlogtype::FMT_Info)<<" source size "<<sources.size()<<"\n";
 		for (const FMToutputsource& source : sources)
 			{
-             //Logging::FMTlogger(Logging::FMTlogtype::FMT_Info)<<" element: "<< source.islevel()<<" "<<string(source)<<" "<<source.gettarget()<<" "<<source.getaction()<<"\n";
+             //Logging::FMTlogger(Logging::FMTlogtype::FMT_Info)<<" element: "<< source.getmask().getstr()<<" "<<source.isconstant()<<" "<<source.getvalue()<<" "<<"\n";
             if ((source.isvariable() || source.islevel()))
                 {
                 //Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) <<"non empty main? "<<!main_source.getmask().empty()<<"\n";
                 if (!main_source.getmask().empty()||main_source.isvariablelevel())
                     {
                     //Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) <<"added1 "<<string(main_source)<<" factor "<<string(main_factor)<<" constant "<<constant<<"\n";
-                    nodes.push_back(FMToutputnode(main_source, main_factor, constant));
+					FMToutputnode newnode(main_source, main_factor, constant);
+					if (!newnode.isnull())
+						{
+						//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "GOT NULL!!! " << string(main_source) << " factor ";
+						nodes.push_back(newnode);
+						}
                     }
 				main_factor = FMToutputsource(FMTotar::val, 1);
 				//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) <<"got source! "<<string(source)<<" "<<source.getaction()<<"\n";
@@ -369,7 +374,8 @@ vector<FMToutputnode> FMToutput::getnodes() const
             if (src_id!=0 && (op_id < operators.size()) && !operators.at(op_id).isfactor())
                 {
                 constant *= operators.at(op_id).call(0,1);
-                // Logging::FMTlogger(Logging::FMTlogtype::FMT_Info)<<" OPSSS "<< string(operators.at(op_id))<<" const: "<<constant<<"\n";
+                //Logging::FMTlogger(Logging::FMTlogtype::FMT_Info)<<" OPSSS1 "<< string(operators.at(op_id))<<"\n";
+				//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << " constant of1: " << constant << "\n";
                 }
             if (source.istimeyield())
 				{
@@ -377,9 +383,9 @@ vector<FMToutputnode> FMToutput::getnodes() const
 			}else if (source.isconstant() && (op_id < operators.size()) && operators.at(op_id).isfactor())
 				{
 				double value = source.getvalue();
-
+				//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << " OPSSS2 " << string(operators.at(op_id)) << "\n";
                 constant = operators.at(op_id).call(constant, value);
-               // Logging::FMTlogger(Logging::FMTlogtype::FMT_Info)<<" constant of: "<< constant<<"\n";
+               // Logging::FMTlogger(Logging::FMTlogtype::FMT_Info)<<" constant of2: "<< constant<<"\n";
 				}
 
 			if (src_id > 0)
@@ -393,10 +399,14 @@ vector<FMToutputnode> FMToutput::getnodes() const
 		//if (!main_source.empty())
 			//{
         //Logging::FMTlogger(Logging::FMTlogtype::FMT_Info)<<" done2: "<<string(main_source)<<"\n";
-        //Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) <<"added2 "<<string(main_source)<<" factor "<<string(main_factor)<<" constant "<<constant<<"\n";
+       // Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) <<"added2 "<<string(main_source)<<" factor "<<string(main_factor)<<" constant "<<constant<<"\n";
        if (main_source.isvariablelevel() || main_source.isvariable())
             {
-            nodes.push_back(FMToutputnode(main_source, main_factor, constant));
+		   FMToutputnode newnode(main_source, main_factor, constant);
+		   if (!newnode.isnull())
+				{
+			    nodes.push_back(newnode);
+				}
            }
 
 			//}

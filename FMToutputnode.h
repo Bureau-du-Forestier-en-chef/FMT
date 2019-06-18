@@ -16,8 +16,10 @@ class FMToutputnode
 		FMToutputnode(const FMToutputsource& lsource, const FMToutputsource& lfactor, const double& lconstant);
 		FMToutputnode(const FMToutputnode& rhs);
 		size_t hash(const int& period) const;
+		bool allowcashdeduction() const;
 		bool singleperiod() const;
 		bool ispastperiod() const;
+		bool isnull() const;
 		FMToutputnode setperiod(int period) const;
 		FMToutputnode& operator = (const FMToutputnode& rhs);
 		~FMToutputnode()=default;

@@ -48,7 +48,7 @@ class FMTdevelopment : public FMTobject
         bool operator != (const FMTdevelopment& rhs) const;
         FMTfuturdevelopment grow() const;
         bool operable(const FMTaction& action,const FMTyields& ylds) const;
-		bool anyoperable(const vector<FMTaction>& actions,const FMTyields& ylds) const;
+		bool anyoperable(const vector<const FMTaction*>& actions,const FMTyields& ylds) const;
         bool operator < (const FMTdevelopment& rhs) const;
         virtual operator string() const;
 		virtual double getarea() const;

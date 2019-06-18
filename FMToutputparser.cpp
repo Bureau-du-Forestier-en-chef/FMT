@@ -34,6 +34,8 @@ namespace WSParser
                 }
             return *this;
             }
+
+
         vector<FMToutput> FMToutputparser::read(const vector<FMTtheme>& themes,const vector<FMTaction>& actions,
 			const FMTyields& ylds,const FMTconstants& constants, const map<string, vector<string>>& actions_aggregate,string location)
             {
@@ -45,6 +47,8 @@ namespace WSParser
             bool insource = false;
 			bool processing_level = false;
 			int themetarget = -1;
+			size_t lastopt = 0;
+			size_t lastoutput = 0;
             if (FMTparser::tryopening(outputstream,location))
                 {
                 string line;
@@ -67,6 +71,8 @@ namespace WSParser
                                 outputs.push_back(FMToutput(name,description, themetarget,sources,operators));
 								}
                             sources.clear();
+							lastopt = 0;
+							lastoutput = 0;
                             operators.clear();
 							string outtype = string(kmatch[1]) + string(kmatch[12]);
 
@@ -120,7 +126,7 @@ namespace WSParser
                                     if (!processing_level && (isnum(strsrc) || constants.isconstant(strsrc)))
                                         {
                                         double value = getnum<double>(strsrc,constants);
-                                        sources.push_back(FMToutputsource(FMTotar::val,value));
+                                        //sources.push_back(FMToutputsource(FMTotar::val,value));
 										//Make sure it is not a adition or substraction!!!!
 										if (((!stroperators.empty() &&
 											(stroperators.at(0)=="+" || stroperators.at(0)=="-")) ||
@@ -130,6 +136,63 @@ namespace WSParser
 											{
 											_exhandler->raise(FMTexc::WSunsupported_output, _section, name + " at line " + to_string(_line), __LINE__, __FILE__);
 											}
+
+										if (!lastoperator.empty())
+											{
+											//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) <<"OPPPPS "<< lastoperator << "\n";
+											vector<FMToutputsource>newsources;
+											vector<FMToperator>newoperators;
+											size_t lastop = 0;
+											size_t id = 0;
+											for (; id < lastoutput; ++id)
+												{
+												newsources.push_back(sources.at(id));
+												if (id > 0)
+													{
+													newoperators.push_back(operators.at(lastop));
+													++lastop;
+													}
+												}
+											for (; id < sources.size(); ++ id)
+												{
+												//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << string(sources.at(id)) << "\n";
+												if (id > 0 && sources.at(id-1).isvariable())
+													{
+													if (sources.at(id).isconstant())
+														{
+														value=FMToperator(operators.at(lastop)).call(value, sources.at(id).getvalue());
+													}else {
+														//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "pushing lastop!" << "\n";
+														newoperators.push_back(FMToperator(lastoperator));
+														}
+													//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "pushing source!" << "\n";
+													newsources.push_back(FMToutputsource(FMTotar::val, value));
+													}
+												if (sources.at(id).isvariable() || sources.at(id).islevel())
+													{
+													newsources.push_back(sources.at(id));
+													}
+												if (id > 0)
+													{
+													newoperators.push_back(operators.at(lastop));
+													++lastop;
+													}
+												}
+											if (newsources.back().isvariable() || newsources.back().islevel())
+												{
+												newsources.push_back(FMToutputsource(FMTotar::val, value));
+												//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "pushing last op "<< lastoperator << "\n";
+												newoperators.push_back(FMToperator(lastoperator));
+												}
+
+											operators = newoperators;
+											sources = newsources;
+										}
+										else {
+											sources.push_back(FMToutputsource(FMTotar::val, value));
+
+										}
+
                                         }else if(processing_level)
                                         {
                                         vector<double>values;
@@ -155,15 +218,18 @@ namespace WSParser
                                             vector<string>values = spliter(strsrc,FMTparser::rxseparator);
                                             if(values.size()==1)
                                             {
+											//need to use get equation to simplify output!!!
                                             if (find_if(outputs.begin(),outputs.end(),FMToutputcomparator(strsrc))!=outputs.end())
                                                 {
                                                 vector<FMToutput>::iterator it = find_if(outputs.begin(),outputs.end(),FMToutputcomparator(strsrc));
 												if (!it->islevel() || (it->islevel() && !it->getsources().empty()))
 													{
+														lastoutput = sources.size();
 														for (const FMToutputsource& src : it->getsources())
 															{
 															sources.push_back(src);
 															}
+														lastopt = operators.size();
 														for (const FMToperator& src : it->getopes())
 															{
 															operators.push_back(src);
