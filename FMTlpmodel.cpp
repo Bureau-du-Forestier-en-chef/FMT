@@ -1404,6 +1404,37 @@ namespace Models
         return addmatrixelement(constraint,FMTmatrixelement::levelvariable,no_index,no_coefs,period);
         }
 
+	bool FMTlpmodel::summarize(vector<int> variables, vector<double> coefficiants,
+		vector<int>& sumvariables, vector<double>& sumcoefficiants) const
+		{
+		if (!variables.empty())
+			{
+			sumvariables.clear();
+			sumvariables.push_back(variables.back());
+			variables.pop_back();
+			sumcoefficiants.clear();
+			sumcoefficiants.push_back(coefficiants.back());
+			coefficiants.pop_back();
+			while (!variables.empty())
+			{
+				vector<int>::iterator var_it = std::find(sumvariables.begin(), sumvariables.end(), variables.back());
+				if (var_it != sumvariables.end())
+				{
+					size_t location = std::distance(sumvariables.begin(), var_it);
+					sumcoefficiants[location] += coefficiants.back();
+				}
+				else {
+					sumvariables.push_back(variables.back());
+					sumcoefficiants.push_back(coefficiants.back());
+				}
+				variables.pop_back();
+				coefficiants.pop_back();
+			}
+			return true;
+			}
+		return false;
+		}
+
 	FMTgraphstats FMTlpmodel::setobjective(const FMTconstraint& objective)
 		{
 		int first_period = 0;
@@ -1459,7 +1490,13 @@ namespace Models
                 //No goals set...
                 }
             }
-        solverinterface->setObjCoeffSet(&all_variables[0], &all_variables[all_variables.size()], &all_coefs[0]); //&all_variables[all_variables.size() - 1]
+		vector<int>objective_variables;
+		vector<double>objective_coefficiants;
+		if (summarize(all_variables, all_coefs, objective_variables, objective_coefficiants))
+			{
+			solverinterface->setObjCoeffSet(&objective_variables[0], &objective_variables[objective_variables.size()], &objective_coefficiants[0]);
+			}
+       //&all_variables[all_variables.size() - 1]
 		solverinterface->setObjSense(objective.sense());
 		return graph.getstats();
 		}
@@ -1510,61 +1547,68 @@ namespace Models
         {
         //matrix
         int element_id = 0;
-		FMTgraphstats oldstats = graph.getstats();
-        if (element_type == FMTmatrixelement::constraint)
-            {
-            element_id = oldstats.rows;
-            solverinterface->addRow(int(indexes.size()), &indexes[0], &coefs[0], lowerbound, upperbound);
-            ++oldstats.rows;
-            ++oldstats.output_rows;
-            }else{
-            element_id = oldstats.cols;
-            solverinterface->addCol(0, &indexes[0],&coefs[0],lowerbound, upperbound, 0);
-            ++oldstats.cols;
-            ++oldstats.output_cols;
-            }
-		graph.setstats(oldstats);
-        //listing
-        //if period = -1 then add it to all periods!
-        if (elements.size()!=(graph.size()-1) && period >= elements.size()) //just for resizing!
-            {
-            size_t location = 0;
-             if (period < 0)
-                {
-                location = graph.size();
-                }else{
-                location = period + 1;
-                }
-            size_t to_resize = location - elements.size();
-            /*Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "period: " << period << "\n";
-            Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "location: " << location << "\n";
-            Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "elements: " << elements.size() << "\n";
-            Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "Resize size: " << to_resize << "\n";*/
-            if (to_resize > 0)
-                {
-                for(size_t id = 0; id < to_resize; ++id)
-                    {
-                    elements.push_back(std::unordered_map<size_t,vector<vector<int>>>());
-                    //elements.push_back(vector<std::unordered_map<size_t,int>>(FMTmatrixelement::nr_items));
-                    }
-                }
+		vector<int>sumvariables;
+		vector<double>sumcoefficiants;
+		if (summarize(indexes, coefs, sumvariables, sumcoefficiants))
+			{
+			FMTgraphstats oldstats = graph.getstats();
+			if (element_type == FMTmatrixelement::constraint)
+			{
+				element_id = oldstats.rows;
+				solverinterface->addRow(int(sumvariables.size()), &sumvariables[0], &sumcoefficiants[0], lowerbound, upperbound);
+				++oldstats.rows;
+				++oldstats.output_rows;
+			}
+			else {
+				element_id = oldstats.cols;
+				solverinterface->addCol(0, &sumvariables[0], &sumcoefficiants[0], lowerbound, upperbound, 0);
+				++oldstats.cols;
+				++oldstats.output_cols;
+			}
+			graph.setstats(oldstats);
+			//listing
+			//if period = -1 then add it to all periods!
+			if (elements.size() != (graph.size() - 1) && period >= elements.size()) //just for resizing!
+			{
+				size_t location = 0;
+				if (period < 0)
+				{
+					location = graph.size();
+				}
+				else {
+					location = period + 1;
+				}
+				size_t to_resize = location - elements.size();
+				/*Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "period: " << period << "\n";
+				Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "location: " << location << "\n";
+				Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "elements: " << elements.size() << "\n";
+				Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "Resize size: " << to_resize << "\n";*/
+				if (to_resize > 0)
+				{
+					for (size_t id = 0; id < to_resize; ++id)
+					{
+						elements.push_back(std::unordered_map<size_t, vector<vector<int>>>());
+						//elements.push_back(vector<std::unordered_map<size_t,int>>(FMTmatrixelement::nr_items));
+					}
+				}
 
-            }
-        int starting = period;
-        int stoping = period+1;
-        if (period < 0) //add to all reference!!
-            {
-            starting = 0;
-            stoping = static_cast<int>(elements.size());
-            }
-        for (int locid = starting; locid < stoping;++locid)
-            {
-            if (elements[locid].find(constraint.hash())==elements[locid].end())
-                {
-                elements[locid][constraint.hash()] = vector<vector<int>>(FMTmatrixelement::nr_items);
-                }
-            elements[locid][constraint.hash()][element_type].push_back(element_id);
-            }
+			}
+			int starting = period;
+			int stoping = period + 1;
+			if (period < 0) //add to all reference!!
+			{
+				starting = 0;
+				stoping = static_cast<int>(elements.size());
+			}
+			for (int locid = starting; locid < stoping; ++locid)
+			{
+				if (elements[locid].find(constraint.hash()) == elements[locid].end())
+				{
+					elements[locid][constraint.hash()] = vector<vector<int>>(FMTmatrixelement::nr_items);
+				}
+				elements[locid][constraint.hash()][element_type].push_back(element_id);
+				}
+			}
         return element_id;
         }
 
