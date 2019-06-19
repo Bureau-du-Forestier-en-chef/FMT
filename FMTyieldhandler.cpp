@@ -367,7 +367,10 @@ FMTyieldhandler::operator string() const
 						values.erase(values.begin());
 						for (const double& yldvalue : values)
 							{
-							value /= yldvalue;
+							if (yldvalue != 0)
+								{
+								value /= yldvalue;
+								}
 							}
                         break;
                         }
@@ -426,17 +429,33 @@ FMTyieldhandler::operator string() const
 					case FMTyieldparserop::FMTwsequation:
 						{
 						FMTexpression expression = cdata->toexpression();
+						//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "evaluating equation  " << string(expression) << "\n";
 						const map<string, double>source_values = this->getsources(srcsdata, datas, age, period,resume_mask, age_only);
 						/*for (const FMTyieldhandler* tyld : datas)
 							{
 							Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "data size " << string(tyld->mask) << "\n";
 							}*/
 						value = expression.shuntingyard(source_values);
+						/*if (std::isnan(value) && source_values.find("YCOUTEXPLGSEPM_CT1")!= source_values.end())
+							{
+							//yCoutExplgSepm_Ct1  
+							value = 0;
+							Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "EQ: " << string(expression) << "\n";
+							Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "Value: " << value << "\n";
+							for (map<string, double>::const_iterator it = source_values.begin(); it!=source_values.end();it++)
+								{
+								Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) <<it->first<< "  " << it->second << "\n";
+								}
+							}*/
 						break;
 						}
                     default:
                     break;
                     }
+				/*if (std::isnan(value))
+					{
+					value = 0;
+					}*/
 				cdata->set(value, resume_mask, age, period, age_only); //cache_back the complex yield
 				//to help cache we should check at source so if all age base forget the period...
                 return value;

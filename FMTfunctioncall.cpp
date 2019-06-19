@@ -25,7 +25,7 @@ double FMTfunctioncall::call(const double& rhs) const
 	{
 		result = exp(rhs);
 	}
-	else if (FMTfkey::ln == key)
+	else if (FMTfkey::ln == key && rhs > 0)
 	{
 		result = log(rhs);
 	}
