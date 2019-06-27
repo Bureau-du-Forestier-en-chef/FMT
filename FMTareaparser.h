@@ -30,7 +30,7 @@ class FMTareaparser : public FMTparser
         regex rxcleanarea;
         void validate_raster(const vector<string>&data_rasters) const;
 		string getdisturbancepath(const string& location, const int& period) const;
-		vector<FMTGCBMtransition> getGCBMtransitions(const FMTlayer<string>& stacked_actions, 
+		vector<FMTGCBMtransition> getGCBMtransitions(const FMTlayer<string>& stacked_actions,
 													const FMTlayer<int>& ages,
 													const FMTforest& newfor,
 													const vector<FMTtheme>& themes) const;

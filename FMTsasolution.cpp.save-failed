@@ -1,4 +1,3 @@
-#include "FMTareaparser.h"
 #include "FMTsasolution.h"
 #include "FMTsamodel.h"
 #include <algorithm>
@@ -334,19 +333,16 @@ namespace Spatial
                             FMTlayer<int> action_layer(this->copyextent<int>());//Setting layer information
                             for (FMTevent<FMTgraph> event : action_id_v)//The event
                             {
-                                for (map<FMTcoordinate,const FMTgraph*>::const_iterator coordit = event.elements.begin(); coordit != event.elements.end(); ++coordit)
+                                for (map<FMTcoordinate,FMTgraph>::iterator coordit = event.elements.begin(); coordit != event.elements.end(); ++coordit)
                                 {
                                     action_layer.mapping[coordit->first]=action_id;
                                 }
-                            }
-                            if (action_layer.mapping.size()>0)
-                            {
-                                map<int,string> action_map;
-                                string action_name = model.getactions().at(action_id).name;
-                                action_map[action_id] = action_name;
-                                string out_location = out_path+action_name+"_events_period_"+std::to_string(period)+".tif";
-                                WSParser::FMTareaparser parser;
-                                parser.writelayer(action_layer,out_location,action_map);
+                            map<int,string> action_map();
+                            string action_name = model.getactions().at(action_id);
+                            action_map[action_id] = action_name;
+                            string out_location = out_path+"Period_"+string(period)+"_"+action_name+"_events.tif";
+                            WSParser::FMTareaparser::writelayer(action_layer,out_location,action_map);
+                            //writelayer(const Spatial::FMTlayer<T>& layer,string location,const map<T,string>& mapping) const;
                             }
                         }
                         action_id++;

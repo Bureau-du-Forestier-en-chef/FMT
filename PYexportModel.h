@@ -123,6 +123,7 @@ void exportModel()
             .def("get_current_solution",&FMTsamodel::get_current_solution)
             .def("get_new_solution",&FMTsamodel::get_new_solution)
             .def("compare_solutions",&FMTsamodel::comparesolutions)
+            .def("evaluate",&FMTsamodel::evaluate)
             .def("setinitial_mapping",&FMTsamodel::setinitial_mapping,
                  "Set the initial mapping\n"
                  "Initial forest themes described to the model",
@@ -140,7 +141,15 @@ void exportModel()
             .def("buildperiod",&FMTsamodel::buildperiod,
                  "Build each period one by one randomly\n")
             .def("move",&FMTsamodel::move_solution,
-                 move_solution_overloads());
+                 move_solution_overloads())
+            .def("acceptnew",&FMTsamodel::acceptnew,
+                 "Accept new solution as current solution and empty the new solution")
+            .def("write_outputs_at",&FMTsamodel::write_outputs_at,
+                 "Input : Path were you want the file with the outputs\n"
+                 "Write the for each constraint and period the output and the penalty in a file name outputs.csv")
+            .def("get_outputs",&FMTsamodel::get_outputs,
+                 "Write the outputs at the location set earlier\n"
+                 "Need to use write_outputs_at before launching the move");
     define_pylist<Models::FMTsamodel>();
     }
 

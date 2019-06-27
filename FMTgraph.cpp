@@ -527,7 +527,7 @@ void FMTgraph::locatenodes(const FMTmodel& model, const vector<FMToutputnode>& n
 		vector<int> action_IDS;
 		for (FMToutputnode output_node : nodes)
 			{
-			
+
 			//change the period if the node is single well a other potential cluster fuck
 			int node_period = period;
 
