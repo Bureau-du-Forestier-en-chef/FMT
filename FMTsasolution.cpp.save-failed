@@ -1,3 +1,4 @@
+#include "FMTareaparser.h"
 #include "FMTsasolution.h"
 #include "FMTsamodel.h"
 #include <algorithm>
@@ -153,6 +154,16 @@ namespace Spatial
 
     double FMTsasolution::getspatialpenalties(const FMTsamodel& model) const //Hardcoded because we need to put keyword in optimize section
     {
+        size_t period = 1;
+        for (const vector<vector<FMTevent<FMTgraph>>>& period_actions : model.getspatialactions())
+        {
+            size_t action_id = 0
+            for()
+            {
+
+            }
+            period++;
+        }
         //Return yvalue for each event
         //Use spatial actions as objectives
         return 0.0;
@@ -176,7 +187,7 @@ namespace Spatial
     FMTgraphstats FMTsasolution::buildperiod(const FMTmodel& model,default_random_engine& generator)
         {
             FMTgraphstats periodstats = FMTgraphstats();
-            vector<vector<FMTevent<FMTgraph>>> events_id;
+            vector<vector<FMTevent<FMTgraph>>> events_id(model.getactions().size());
             for(map<FMTcoordinate,FMTgraph>::iterator graphit = this->mapping.begin(); graphit != this->mapping.end(); ++graphit)//change const_iterator to iterator because graph is modified
             {
                 FMTgraph* local_graph = &graphit->second;
@@ -315,7 +326,7 @@ namespace Spatial
         return constraintvaluespenalties;
     }
 
-    void FMTsasolution::write_events(const FMTsamodel& model,const string out_path) const
+    void FMTsasolution::write_events(const vector<FMTaction> model_actions,const string out_path,const string addon) const
     {
       //One layer per action per period
         if (!events.empty())
@@ -325,24 +336,35 @@ namespace Spatial
             {
                 if (!period_v.empty())
                 {
+                    //cout<<"Period : "<<period<<endl;
                     int action_id = 0;
                     for (vector<FMTevent<FMTgraph>> action_id_v : period_v)//Vector of events in action_id
                     {
                         if (!action_id_v.empty())
                         {
                             FMTlayer<int> action_layer(this->copyextent<int>());//Setting layer information
+                            int event_id = 1; //To write in the map
+                            map<int,string> event_map;
                             for (FMTevent<FMTgraph> event : action_id_v)//The event
                             {
-                                for (map<FMTcoordinate,FMTgraph>::iterator coordit = event.elements.begin(); coordit != event.elements.end(); ++coordit)
+                                if (!event.empty())
                                 {
-                                    action_layer.mapping[coordit->first]=action_id;
+                                    //cout<<"Event_id : "<<event_id<<endl;
+                                    for (map<FMTcoordinate,const FMTgraph*>::const_iterator coordit = event.elements.begin(); coordit != event.elements.end(); ++coordit)
+                                    {
+
+                                        action_layer.mapping[coordit->first]=event_id;
+                                    }
+                                    event_id++;
+                                    event_map[event_id] = "Event_"+to_string(event_id);
                                 }
-                            map<int,string> action_map();
-                            string action_name = model.getactions().at(action_id);
-                            action_map[action_id] = action_name;
-                            string out_location = out_path+"Period_"+string(period)+"_"+action_name+"_events.tif";
-                            WSParser::FMTareaparser::writelayer(action_layer,out_location,action_map);
-                            //writelayer(const Spatial::FMTlayer<T>& layer,string location,const map<T,string>& mapping) const;
+                            }
+                            if (action_layer.mapping.size()>0)
+                            {
+                                string action_name = model_actions.at(action_id).name;
+                                string out_location = out_path+action_name+"_"+addon+"_events_period_"+std::to_string(period)+".tif";
+                                WSParser::FMTareaparser parser;
+                                parser.writelayer(action_layer,out_location,event_map);
                             }
                         }
                         action_id++;

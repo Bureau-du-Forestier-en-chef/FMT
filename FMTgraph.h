@@ -137,6 +137,7 @@ class FMTgraph
 			const FMToutputnode& node,
 			int period, const FMTtheme& theme,
 			const double* solution) const;
+        bool splittedevent(const FMTevent<FMTgraph>& event, vector<FMTevent<FMTgraph>>& splittedevents) const;
         void cleanevents(vector<FMTevent<FMTgraph>>& events_id, const FMTcoordinate& localisation) const;
         FMTgraphstats clearfromperiod(const int& period, vector<vector<vector<FMTevent<FMTgraph>>>>& events,
                                         const FMTcoordinate& localisation);

@@ -2,57 +2,58 @@
 #include <fstream>
 #include <iostream>
 #include <sys/stat.h>
+#include <time.h>
 
 namespace Models
 
 {
     FMTsamodel::FMTsamodel():
         FMTmodel(),
+        write_outputs(false),
+        outputs_write_location(),
+        number_of_moves(0),
         outputs_stream(),
         generator(),
         spactions(),
+        bests_solutions(),
+        mapidmodified(),
         cooling_schedule(),
         current_solution(),
-        new_solution(),
-        number_of_moves(0),
-        mapidmodified(),
-        bests_solutions(),
-        outputs_write_location(),
-        write_outputs(false)
+        new_solution()
     {
 
     }
 
     FMTsamodel::FMTsamodel(const FMTsamodel& rhs):
         FMTmodel(rhs),
+        write_outputs(rhs.write_outputs),
+        outputs_write_location(rhs.outputs_write_location),
+        number_of_moves(0),
         outputs_stream(),
         generator(rhs.generator),
         spactions(rhs.spactions),
+        bests_solutions(rhs.bests_solutions),
+        mapidmodified(),
         cooling_schedule(rhs.cooling_schedule->Clone()),
         current_solution(rhs.current_solution),
-        new_solution(rhs.new_solution),
-        number_of_moves(0),
-        mapidmodified(),
-        bests_solutions(rhs.bests_solutions),
-        outputs_write_location(rhs.outputs_write_location),
-        write_outputs(rhs.write_outputs)
+        new_solution(rhs.new_solution)
     {
         outputs_stream << rhs.outputs_stream.rdbuf();
     }
 
     FMTsamodel::FMTsamodel(const FMTmodel& rhs):
         FMTmodel(rhs),
+        write_outputs(false),
+        outputs_write_location(),
+        number_of_moves(0),
         outputs_stream(),
         generator(),
         spactions(),
+        bests_solutions(),
+        mapidmodified(),
         cooling_schedule(),
         current_solution(),
-        new_solution(),
-        number_of_moves(0),
-        mapidmodified(),
-        bests_solutions(),
-        outputs_write_location(),
-        write_outputs(false)
+        new_solution()
     {
 
     }
@@ -62,17 +63,17 @@ namespace Models
         if (this!=&rhs)
             {
             FMTmodel::operator = (rhs);
+            write_outputs = rhs.write_outputs;
+            outputs_write_location = rhs.outputs_write_location;
+            number_of_moves = rhs.number_of_moves;
             outputs_stream << rhs.outputs_stream.rdbuf();
             generator = rhs.generator;
             spactions = rhs.spactions;
+            bests_solutions = rhs.bests_solutions;
+            mapidmodified = rhs.mapidmodified;
             cooling_schedule = rhs.cooling_schedule->Clone();
             current_solution = rhs.current_solution;
             new_solution = rhs.new_solution;
-            number_of_moves = rhs.number_of_moves;
-            mapidmodified = rhs.mapidmodified;
-            bests_solutions = rhs.bests_solutions;
-            outputs_write_location = rhs.outputs_write_location;
-            write_outputs = rhs.write_outputs;
             }
         return *this;
     }
@@ -81,26 +82,6 @@ namespace Models
     {
         outputs_write_location = path;
         write_outputs = true;
-    }
-
-    void FMTsamodel::get_outputs()
-    {
-        if (!write_outputs)
-        {
-            _exhandler->raise(FMTexc::FMTinvalid_path,FMTwssect::Empty, "No path given to the function write_outputs_at ",__LINE__, __FILE__);
-        }
-        else
-        {
-            fstream outputFile;
-            string filename = outputs_write_location+"outputs.csv";
-            string headers = "Move,Constraint,Period,Output,Penalty,Best solution";
-            //cout<<"Creating file"<<endl;
-            outputFile.open(filename, std::fstream::in | std::fstream::out | std::fstream::trunc);
-            outputFile<<headers<<endl;
-            outputFile<<outputs_stream.rdbuf()<<endl;
-            outputs_stream.str("");
-        }
-
     }
 
     bool FMTsamodel::setschedule(const FMTlinearschedule& schedule)
@@ -136,6 +117,27 @@ namespace Models
 		transitions = newtransitions;
 		return true;
     }
+
+    void FMTsamodel::get_outputs()
+    {
+        if (!write_outputs)
+        {
+            _exhandler->raise(FMTexc::FMTinvalid_path,FMTwssect::Empty, "No path given to the function write_outputs_at ",__LINE__, __FILE__);
+        }
+        else
+        {
+            fstream outputFile;
+            string filename = outputs_write_location+"outputs.csv";
+            string headers = "Move,Constraint,Period,Output,Penalty,Best solution";
+            //cout<<"Creating file"<<endl;
+            outputFile.open(filename, std::fstream::in | std::fstream::out | std::fstream::trunc);
+            outputFile<<headers<<endl;
+            outputFile<<outputs_stream.rdbuf()<<endl;
+            outputs_stream.str("");
+        }
+
+    }
+
     FMTsasolution FMTsamodel::get_current_solution()const
     {
             return current_solution;
@@ -144,6 +146,41 @@ namespace Models
     FMTsasolution FMTsamodel::get_new_solution()const
     {
             return new_solution;
+    }
+
+    void FMTsamodel::write_solutions_events(string out_path)const
+    {
+        if (number_of_moves>0)
+        {
+            if (bests_solutions.size()==number_of_moves)
+            {
+                int best = bests_solutions.at(number_of_moves-1);
+                if (best<number_of_moves)
+                {
+                    current_solution.write_events(actions,out_path,"Current_best_solution");
+                    new_solution.write_events(actions,out_path,"New_less_good_solution");
+                }
+                else
+                {
+                    current_solution.write_events(actions,out_path,"Current_less_good_solution");
+                    new_solution.write_events(actions,out_path,"New_best_solution");
+                }
+            }
+            else
+            {
+                current_solution.write_events(actions,out_path,"Current_solution");
+                new_solution.write_events(actions,out_path,"New_solution");
+            }
+        }
+        else
+        {
+            current_solution.write_events(actions,out_path,"Initial_solution");
+        }
+    }
+
+    vector<FMTspatialaction> FMTsamodel::getspatialactions()const
+    {
+        return spactions;
     }
 
     bool FMTsamodel::setinitial_mapping(const FMTforest& forest)
@@ -218,8 +255,14 @@ namespace Models
 
 
     bool FMTsamodel::evaluate()
+
     //Get the output, evaluate the penalties and compare solutions
     {
+        //Time checking
+        clock_t start, end;
+        double cpu_time_used;
+        start = clock();
+        //
         bool evaluation;
         if (!comparesolutions())// if compare solution return false ... which means they are different
         {
@@ -280,6 +323,11 @@ namespace Models
                 }
             evaluation =  false;
         }
+        //Time checking
+        end = clock();
+        cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
+        cout<<"Time used : " <<cpu_time_used<<endl;
+        //
         return evaluation;
     }
 

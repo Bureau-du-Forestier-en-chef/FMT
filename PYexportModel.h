@@ -122,6 +122,7 @@ void exportModel()
             .def(init<Models::FMTmodel>())
             .def("get_current_solution",&FMTsamodel::get_current_solution)
             .def("get_new_solution",&FMTsamodel::get_new_solution)
+            .def("getspatialactions",&FMTsamodel::getspatialactions)
             .def("compare_solutions",&FMTsamodel::comparesolutions)
             .def("evaluate",&FMTsamodel::evaluate)
             .def("setinitial_mapping",&FMTsamodel::setinitial_mapping,
@@ -149,7 +150,8 @@ void exportModel()
                  "Write the for each constraint and period the output and the penalty in a file name outputs.csv")
             .def("get_outputs",&FMTsamodel::get_outputs,
                  "Write the outputs at the location set earlier\n"
-                 "Need to use write_outputs_at before launching the move");
+                 "Need to use write_outputs_at before launching the move")
+            .def("write_solutions_events",&FMTsamodel::write_solutions_events);
     define_pylist<Models::FMTsamodel>();
     }
 

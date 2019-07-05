@@ -52,17 +52,17 @@ class FMTsasolution : public FMTlayer<FMTgraph>
                                     const int& periodstart,const int& periodstop) const;
         double getgraphspenalties(const FMTsamodel& model, const FMTconstraint& constraint,
                                     const double& coef, vector<double>& output_vals, vector<double>& penalties_vals);
-        double getspatialpenalties(const FMTsamodel& model) const;
+        double getspatialpenalties(const FMTsamodel& model, map<string,vector<double>>& action_period_penalties) const;
         FMTforest getforestperiod(const int& period) const;
 
         //Function to manipulate solution
         FMTgraphstats buildperiod(const FMTmodel& model,default_random_engine& generator);
         FMTsasolution perturb( FMTsamodel& model, default_random_engine& generator,
                                FMTsamovetype movetype = FMTsamovetype::shotgun) const;
-        double applypenalty(const FMTconstraint& constraint, const double& value,
-                            const double& coef, const int& period) const;
+        double applypenalty(const double& upper,const double& lower,
+                            const double& value, const double& coef) const;
         std::unordered_map<string,vector<vector<double>>> evaluate(const FMTsamodel& model);
-        void write_events (const FMTsamodel& model,const string out_path) const;
+        void write_events(const vector<FMTaction> model_actions, const string out_path, const string addon = "") const;
     };
 }
 #endif // FMTSASOLUTION_H

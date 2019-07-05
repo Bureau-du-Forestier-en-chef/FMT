@@ -133,7 +133,7 @@ class FMTevent
 			++location;
 			}
 
-		
+
 		}*/
 
 	int getorder() const
@@ -244,12 +244,12 @@ class FMTevent
             }
         return minimaldistance;
         }
-	double minimaldistance(const vector<FMTevent>& events,const unsigned int& distance) const
+	double minimaldistance(const vector<FMTevent>& events,const unsigned int& distancel) const
 		{
-		double distancevalue = static_cast<double>(distance) + 1.0;
+		double distancevalue = static_cast<double>(distancel) + 1.0;
 		for (const FMTevent& element : events)
 			{
-			if (element.within(distance,element))
+			if (element.within(distancel,element))
 				{
 				double value = distance(element);
 				if (value < distancevalue)

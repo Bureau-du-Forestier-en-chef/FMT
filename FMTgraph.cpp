@@ -239,20 +239,33 @@ FMTgraphstats FMTgraph::randombuild(const FMTmodel& model,std::queue<FMTvertex_d
 			actives.pop();
 			FMTvertexproperties front_properties = data[front_vertex];
 			const FMTdevelopment active_development = front_properties.get();
-			vector<pair<size_t,int>> operables;
+			vector<pair<size_t,int>> operables;//size_t == event_id in the vector of events // int == action_id
 			vector<pair<size_t,int>> allpotentialevents;//vector of events with action_id in a pair to only pick one random
+			vector<vector<size_t>> action_adj_events(events_id.size());//Event index in case two adjacents events for one action
 			int id = 0;
 			for (const FMTaction& action : model.actions)
 			{
-                if (events_id.size()<id+1)//Add vector of event in events_id for each action id if it does not exist
+			    //Remove, see FMTsasolution line 180
+                /*if (events_id.size()<id+1)//Add vector of event in events_id for each action id if it does not exist
 				{
-                    events_id.push_back(vector<FMTevent<FMTgraph>>());
-				}
+				    vector<FMTevent<FMTgraph>> emptyvofevents;
+                    events_id.push_back(emptyvofevents);
+				}*/
 			    if (active_development.operable(action, model.yields))
 				{
                     operables.push_back(pair<size_t,int>(0,id));
-                    vector<pair<size_t,int>> potentialevents = adjacentevents(events_id.at(id),localisation,id);
-                    allpotentialevents.insert(allpotentialevents.end(),potentialevents.begin(),potentialevents.end());
+                    if (!events_id.at(id).empty())
+                    {
+                        vector<pair<size_t,int>> potentialevents = adjacentevents(events_id.at(id),localisation,id);
+                        allpotentialevents.insert(allpotentialevents.end(),potentialevents.begin(),potentialevents.end());
+                        if (potentialevents.size()>1)
+                        {
+                            for (const pair<size_t,int>& event : potentialevents)
+                            {
+                                action_adj_events[id].push_back(event.first);
+                            }
+                        }
+                    }
 				}
 				++id;
 			}
@@ -261,8 +274,33 @@ FMTgraphstats FMTgraph::randombuild(const FMTmodel& model,std::queue<FMTvertex_d
                     pair<size_t,int> selectedevent = randomoperate(allpotentialevents, model, actives, statsdiff, front_vertex, generator,active_development);
                     if (selectedevent.second != -1)
                         {
-                            FMTevent<FMTgraph>* luckyevent = &events_id.at(selectedevent.second).at(selectedevent.first);
-                            luckyevent->insert(localisation,nullptr);
+
+                            //To merge events that are in distance of 1 if there is more than 1
+                            if (!action_adj_events.at(selectedevent.second).empty())//Cause we only populate if there is more than 2
+                            {
+                                FMTevent<FMTgraph> mergearoundevents(localisation);
+                                mergearoundevents.insert(localisation,nullptr);//We dont do iginition or spread... So we need to add the FMTcoordinate to the elements
+                                vector<FMTevent<FMTgraph>>& events= events_id.at(selectedevent.second);
+                                vector<size_t>& events_indexes = action_adj_events.at(selectedevent.second);
+                                for (const size_t& event_index : events_indexes)
+                                {
+                                    FMTevent<FMTgraph>& event = events.at(event_index);
+                                    for (map<FMTcoordinate,const FMTgraph*>::const_iterator coordit = event.elements.begin(); coordit != event.elements.end(); ++coordit)
+                                    {
+                                        mergearoundevents.insert(coordit->first,nullptr);
+                                    }
+                                }
+                                for (map<FMTcoordinate,const FMTgraph*>::const_iterator coordit = mergearoundevents.elements.begin(); coordit != mergearoundevents.elements.end(); ++coordit)
+                                {
+                                    cleanevents(events,coordit->first);
+                                }
+                                events.push_back(mergearoundevents);
+                            }
+                            else
+                            {
+                                FMTevent<FMTgraph>& luckyevent = events_id.at(selectedevent.second).at(selectedevent.first);
+                                luckyevent.insert(localisation,nullptr);
+                            }
                         }
                 }
             else// New event
@@ -271,11 +309,12 @@ FMTgraphstats FMTgraph::randombuild(const FMTmodel& model,std::queue<FMTvertex_d
                     if (selectedevent.second != -1)
                         {
                             FMTevent<FMTgraph> newluckyevent(localisation);
-                            events_id.at(selectedevent.second).push_back(newluckyevent);
+                            newluckyevent.insert(localisation,nullptr);//We dont do iginition or spread... So we need to add the FMTcoordinate to the elements
+                            vector<FMTevent<FMTgraph>>& events= events_id.at(selectedevent.second);
+                            events.push_back(newluckyevent);
                         }
                 }
             }
-
 		return (statsdiff - stats);
     }
 
@@ -992,6 +1031,61 @@ map<string, double> FMTgraph::getsource(const FMTmodel& model,
 	return values;
 }
 
+bool FMTgraph::splittedevent(const FMTevent<FMTgraph>& event, vector<FMTevent<FMTgraph>>& splittedevents) const
+//Check if events are split maybe add it to FMTevent and add a parameters for distance
+    {
+        vector<map<FMTcoordinate,const FMTgraph*>::const_iterator> it_vect;
+        while(it_vect.size()<event.elements.size())
+        {
+            size_t iteration = 0;
+            size_t alloc_count = 0;
+            for (map<FMTcoordinate,const FMTgraph*>::const_iterator elemit = event.elements.begin();elemit!=event.elements.end();++elemit)
+            {
+                if (iteration == 0 && elemit==event.elements.begin())
+                {
+                    splittedevents.clear();
+                    FMTevent<FMTgraph> newevent(elemit->first);
+                    newevent.insert(elemit->first,nullptr);
+                    splittedevents.push_back(newevent);
+                    it_vect.push_back(elemit);
+                }
+                if (find(it_vect.begin(),it_vect.end(),elemit)==it_vect.end())//If not allocated
+                {
+                    FMTevent<FMTgraph>& lastevent = splittedevents.back();
+                    if (lastevent.withinc(1,elemit->first))//If in distance of 1
+                    {
+                        lastevent.insert(elemit->first,nullptr);
+                        it_vect.push_back(elemit);
+                        ++alloc_count;
+                    }
+                }
+            }
+            if(alloc_count==0)
+            {
+                for (map<FMTcoordinate,const FMTgraph*>::const_iterator elemit = event.elements.begin();elemit!=event.elements.end();++elemit)
+                {
+                    if (find(it_vect.begin(),it_vect.end(),elemit)==it_vect.end())
+                    {
+                        FMTevent<FMTgraph> newevent(elemit->first);
+                        newevent.insert(elemit->first,nullptr);
+                        splittedevents.push_back(newevent);
+                        it_vect.push_back(elemit);
+                        break;
+                    }
+                }
+
+            }
+            alloc_count==0;
+            ++iteration;
+        }
+        if (splittedevents.size()>1)
+        {
+            return true;
+        }
+        return false;
+    }
+
+
 void FMTgraph::cleanevents(vector<FMTevent<FMTgraph>>& events_id, const FMTcoordinate& localisation) const
     {
         vector<FMTevent<FMTgraph>> clean_events_id;
@@ -1000,12 +1094,20 @@ void FMTgraph::cleanevents(vector<FMTevent<FMTgraph>>& events_id, const FMTcoord
             if(event.withinc(0,localisation))
             {
                 event.erase(localisation);
-                if(event.empty())
+                if(!event.empty())
                 {
-                    break;
+                    vector<FMTevent<FMTgraph>> potentialysplittedevents;
+                    if (splittedevent(event,potentialysplittedevents))
+                    {
+                        clean_events_id.insert(clean_events_id.end(),potentialysplittedevents.begin(),potentialysplittedevents.end());
+                    }
+                    clean_events_id.push_back(event);
                 }
             }
-            clean_events_id.push_back(event);
+            else
+            {
+                clean_events_id.push_back(event);
+            }
         }
         events_id = clean_events_id;
     }

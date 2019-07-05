@@ -90,8 +90,7 @@ void exportSpatial()
     class_<Spatial::FMTsasolution,bases<FMTlayer<FMTgraph>>>("FMTsasolution",py_FMTsasolution_doc,no_init)
         .def("get_stats",&FMTsasolution::getsolution_stats)
         .def("getobjfvalue",&FMTsasolution::getobjfvalue)
-        .def("get_forest_at_period",&FMTsasolution::getforestperiod)
-        .def("write_events",&FMTsasolution::write_events);
+        .def("get_forest_at_period",&FMTsasolution::getforestperiod);
 
     define_pylist<Spatial::FMTsasolution>();
 

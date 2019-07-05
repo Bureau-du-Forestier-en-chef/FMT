@@ -20,15 +20,20 @@ namespace Spatial
         }
     double FMTcoordinate::distance(const FMTcoordinate& coord) const
         {
-        int distancex = (x - coord.x)^2;
+        //Should be
+        int distancex = (x - coord.x);
+        int distancey = (y - coord.y);
+        return sqrt(distancex*distancex+distancey*distancey);
+        //Was
+        /*int distancex = (x - coord.x)^2;
         int distancey = (y - coord.y)^2;
-        return sqrt(distancex - distancey);
+        return sqrt(distancex - distancey);*/
         }
     bool FMTcoordinate::within(unsigned int ldistance,const FMTcoordinate& coord) const
         {
         int distancex = (x - coord.x);
         int distancey = (y - coord.y);
-        if (static_cast<unsigned int>(abs(distancex))<=ldistance && 
+        if (static_cast<unsigned int>(abs(distancex))<=ldistance &&
 			(static_cast<unsigned int>(abs(distancey))<=ldistance))
             {
             if (this->distance(coord) <= double(ldistance))

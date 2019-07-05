@@ -19,17 +19,17 @@ namespace Models
 class FMTsamodel : public FMTmodel
     {
     protected:
+        bool write_outputs;
+        string outputs_write_location;
+        int number_of_moves;
         stringstream outputs_stream;
         default_random_engine generator;
         vector<FMTspatialaction> spactions;//should be FMTmodel action pointer...
+        vector<int> bests_solutions;
+        vector<size_t> mapidmodified;//Id in the map that are different between current and new solution
         unique_ptr<FMTsaschedule> cooling_schedule;
         FMTsasolution current_solution;
         FMTsasolution new_solution;
-        int number_of_moves;
-        vector<size_t> mapidmodified;//Id in the map that are different between current and new solution
-        vector<int> bests_solutions;
-        string outputs_write_location;
-        bool write_outputs;
 
 
     public:
@@ -42,7 +42,6 @@ class FMTsamodel : public FMTmodel
         //Setting parameters for the model
 
         void write_outputs_at(string path);
-        void get_outputs();
         bool setschedule(const FMTlinearschedule& schedule);//To set a schedule for the simulated annealing
         //bool setschedule(FMTexponentialschedule schedule) const;// need to be created
         bool setinitial_mapping(const FMTforest& forest);
@@ -50,9 +49,12 @@ class FMTsamodel : public FMTmodel
 
         //Get informations
 
+        void get_outputs();//Write outputs at outputs_write_location a the end of simulation
         FMTsasolution get_current_solution()const;
         FMTsasolution get_new_solution()const;
         string getcoolingscheduletype()const{return cooling_schedule->get_schedule_type();};
+        void write_solutions_events(string out_path)const;//Write events
+        vector<FMTspatialaction> getspatialactions()const;
 
         //Functions to manipulate the model
 
