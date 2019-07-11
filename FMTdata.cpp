@@ -146,7 +146,7 @@ FMTdata::operator string() const
 				value += source[varid]+",";
 				++varid;
 			}else {
-				value += to_string(data[numid]) + ",";
+				value += boost::lexical_cast<std::string>(data[numid]) + ",";
 				++numid;
 				}
 			}
@@ -160,7 +160,7 @@ FMTdata::operator string() const
 				{
 				value += srcval;
 			}else {
-				value += to_string(data[loc]);
+				value += boost::lexical_cast<std::string>(data[loc]);
 				}
 			loc += 1;
 			}
@@ -199,7 +199,8 @@ FMTexpression FMTdata::toexpression() const
 		{
 		if (val.empty())
 			{
-			vals[loc]=(to_string(data[loc]));
+			//vals[loc]=(to_string(data[loc]));
+			vals[loc] = boost::lexical_cast<std::string>(data[loc]);
 		}else {
 			vals[loc]=val;
 			}

@@ -1510,7 +1510,7 @@ namespace Models
      bool FMTlpmodel::solve()
         {
         solverinterface->initialSolve();
-        //solverinterface->writeLp("C:/Mrnmicro/Applic/Cygwin64/home/cyrgu3/FMT/bin/Release/jesus_land");
+        solverinterface->writeLp("C:/Users/cyrgu3/source/repos/FMT/x64/Release/PC_8437_U08762_Vg1_2023_vPF04_Prototype_20190221");
 		/*const double* solve = solverinterface->getColSolution();
 		for (size_t id = 0 ; id < solverinterface->getNumCols();++id)
 			{
