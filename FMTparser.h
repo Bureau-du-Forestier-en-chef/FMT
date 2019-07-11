@@ -159,6 +159,7 @@ class FMTparser: public FMTobject
         bool isnum(const string& value) const;
 		bool validate(const vector<FMTtheme>& themes,const string& mask) const;
 		bool checkmask(const vector<FMTtheme>& themes, const vector<string>& values,const string& mask) const;
+		//double getexactdouble(const string& value) const;
         template<typename T>
         T getnum(string value,const FMTconstants& constant, int period = 0)
             {

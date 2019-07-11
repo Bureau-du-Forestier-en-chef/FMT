@@ -337,10 +337,12 @@ FMTyieldhandler::operator string() const
                         for(map<string,double>::const_iterator srcit = source_values.begin();srcit!= source_values.end();srcit++)
                             {
                             value += srcit->second;
+							//value = std::round(value * 100000000) / 100000000;
                             }
                         for(const double& vecvalue : cdata->data)
                             {
                             value += vecvalue;
+							//value = std::round(value * 100000000) / 100000000;
                             }
                         break;
                         }
@@ -367,8 +369,16 @@ FMTyieldhandler::operator string() const
 						values.erase(values.begin());
 						for (const double& yldvalue : values)
 							{
-							value /= yldvalue;
+							if (yldvalue != 0)
+								{
+								value /= yldvalue;
+								//value = std::round(value * 100000000) / 100000000;
+								}
 							}
+						/*if (value > 0.091 && value < 0.092)
+							{
+							Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "out has " << value << "\n";
+							}*/
                         break;
                         }
                     case FMTyieldparserop::FMTwsytp:
@@ -426,17 +436,43 @@ FMTyieldhandler::operator string() const
 					case FMTyieldparserop::FMTwsequation:
 						{
 						FMTexpression expression = cdata->toexpression();
+						//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "evaluating equation  " << string(expression) << "\n";
 						const map<string, double>source_values = this->getsources(srcsdata, datas, age, period,resume_mask, age_only);
 						/*for (const FMTyieldhandler* tyld : datas)
 							{
 							Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "data size " << string(tyld->mask) << "\n";
 							}*/
 						value = expression.shuntingyard(source_values);
+						/*for (const string& srsc : expression.getinfix())
+							{
+							if (srsc!= "("&&srsc!= ")")
+								{
+								Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "data str " << srsc << "\n";
+								}
+							}*/
+
+						//value = std::floor(value * 100000) / 100000;
+						/*if (std::isnan(value) && source_values.find("YCOUTEXPLGSEPM_CT1")!= source_values.end())
+							{
+							//yCoutExplgSepm_Ct1  
+							value = 0;
+							Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "EQ: " << string(expression) << "\n";
+							Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "Value: " << value << "\n";
+							for (map<string, double>::const_iterator it = source_values.begin(); it!=source_values.end();it++)
+								{
+								Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) <<it->first<< "  " << it->second << "\n";
+								}
+							}*/
 						break;
 						}
                     default:
                     break;
                     }
+				/*if (std::isnan(value))
+					{
+					value = 0;
+					}*/
+				value = std::round(value * 100000000) / 100000000;
 				cdata->set(value, resume_mask, age, period, age_only); //cache_back the complex yield
 				//to help cache we should check at source so if all age base forget the period...
                 return value;

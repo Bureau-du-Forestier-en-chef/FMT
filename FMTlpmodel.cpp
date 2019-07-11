@@ -1418,15 +1418,21 @@ namespace Models
 			while (!variables.empty())
 			{
 				vector<int>::iterator var_it = std::find(sumvariables.begin(), sumvariables.end(), variables.back());
-				if (var_it != sumvariables.end())
-				{
-					size_t location = std::distance(sumvariables.begin(), var_it);
-					sumcoefficiants[location] += coefficiants.back();
-				}
-				else {
-					sumvariables.push_back(variables.back());
-					sumcoefficiants.push_back(coefficiants.back());
-				}
+				//if (!std::isnan(coefficiants.back()))
+				//{
+					if (var_it != sumvariables.end())
+					{
+						size_t location = std::distance(sumvariables.begin(), var_it);
+					
+
+						
+						sumcoefficiants[location] += coefficiants.back();
+					}
+					else {
+						sumvariables.push_back(variables.back());
+						sumcoefficiants.push_back(coefficiants.back());
+					}
+				//}
 				variables.pop_back();
 				coefficiants.pop_back();
 			}
@@ -1504,7 +1510,12 @@ namespace Models
      bool FMTlpmodel::solve()
         {
         solverinterface->initialSolve();
-        //solverinterface->writeLp("C:/Mrnmicro/Applic/Cygwin64/home/cyrgu3/FMT/bin/Release/jesus_land");
+        solverinterface->writeLp("C:/Users/cyrgu3/source/repos/FMT/x64/Release/PC_8437_U08762_Vg1_2023_vPF04_Prototype_20190221");
+		/*const double* solve = solverinterface->getColSolution();
+		for (size_t id = 0 ; id < solverinterface->getNumCols();++id)
+			{
+			Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "var  " << *(solve+id) << "\n";
+			}*/
 		return solverinterface->isProvenOptimal();
         }
 
@@ -1549,17 +1560,15 @@ namespace Models
         int element_id = 0;
 		vector<int>sumvariables;
 		vector<double>sumcoefficiants;
-		if (summarize(indexes, coefs, sumvariables, sumcoefficiants))
-			{
-			FMTgraphstats oldstats = graph.getstats();
-			if (element_type == FMTmatrixelement::constraint)
+		summarize(indexes, coefs, sumvariables, sumcoefficiants);
+		FMTgraphstats oldstats = graph.getstats();
+		if (element_type == FMTmatrixelement::constraint)
 			{
 				element_id = oldstats.rows;
 				solverinterface->addRow(int(sumvariables.size()), &sumvariables[0], &sumcoefficiants[0], lowerbound, upperbound);
 				++oldstats.rows;
 				++oldstats.output_rows;
-			}
-			else {
+			}else {
 				element_id = oldstats.cols;
 				solverinterface->addCol(0, &sumvariables[0], &sumcoefficiants[0], lowerbound, upperbound, 0);
 				++oldstats.cols;
@@ -1568,7 +1577,7 @@ namespace Models
 			graph.setstats(oldstats);
 			//listing
 			//if period = -1 then add it to all periods!
-			if (elements.size() != (graph.size() - 1) && period >= elements.size()) //just for resizing!
+		if (elements.size() != (graph.size() - 1) && period >= elements.size()) //just for resizing!
 			{
 				size_t location = 0;
 				if (period < 0)
@@ -1607,7 +1616,6 @@ namespace Models
 					elements[locid][constraint.hash()] = vector<vector<int>>(FMTmatrixelement::nr_items);
 				}
 				elements[locid][constraint.hash()][element_type].push_back(element_id);
-				}
 			}
         return element_id;
         }

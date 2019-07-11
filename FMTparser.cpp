@@ -403,6 +403,18 @@ bool FMTparser::isyld(const FMTyields& ylds,const string& value,FMTwssect sectio
      return false;
     }
 
+/*double FMTparser::getexactdouble(const string& value) const
+	{
+	size_t dot = value.find(".");
+	double result = stod(value);
+	if (dot != string::npos)//round for exact representation
+		{
+		size_t precision = (value.size() - dot);
+		result = round(result * precision) / precision;
+		}
+	return result;
+	}*/
+
 bool FMTparser::checkmask(const vector<FMTtheme>& themes, const vector<string>& values, const string& mask) const
 	{
 	bool returnvalue = true;

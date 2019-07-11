@@ -31,25 +31,27 @@ bool FMToperator::operator == (const FMToperator& rhs) const
 
 double FMToperator::call(const double& rhs1, const double& rhs2) const
     {
+	double returnval = 0;
     switch (key)
         {
         case FMTokey::add:
-            return rhs1 + rhs2;
+			returnval = rhs1 + rhs2;
         break;
         case FMTokey::sub:
-            return rhs1 - rhs2;
+			returnval = rhs1 - rhs2;
         break;
         case FMTokey::divide:
-            return rhs1 / rhs2;
+			returnval = rhs1 / rhs2;
         break;
         case FMTokey::multiply:
-            return rhs1 * rhs2;
+			returnval = rhs1 * rhs2;
         break;
         default:
-            return 0;
+			returnval = 0;
         break;
         };
-
+	//returnval = std::round(returnval * 100000000) / 100000000;
+	return returnval;
     }
 FMToperator::FMToperator(const FMToperator& rhs) : key(rhs.key)
     {
