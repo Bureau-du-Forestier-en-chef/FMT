@@ -61,7 +61,10 @@ void exportSpatial()
         .def_readwrite("adjacency",&Spatial::FMTspatialaction::adjacency)
         .def_readwrite("minimal_size",&Spatial::FMTspatialaction::minimal_size)
         .def_readwrite("maximal_size",&Spatial::FMTspatialaction::maximal_size)
-        .def_readwrite("neighbors_size",&Spatial::FMTspatialaction::neighbors_size);
+        .def_readwrite("neighbors_size",&Spatial::FMTspatialaction::neighbors_size)
+        .def_readwrite("greenup_weight",&Spatial::FMTspatialaction::greenup_weight)
+        .def_readwrite("adjacency_weight",&Spatial::FMTspatialaction::adjacency_weight)
+        .def_readwrite("size_weight",&Spatial::FMTspatialaction::size_weight);
     define_pylist<Spatial::FMTspatialaction>();
 
     class_<Spatial::FMTsaschedule, boost::noncopyable>("Abstract_FMTsaschedule",no_init);

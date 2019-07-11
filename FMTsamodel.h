@@ -10,7 +10,6 @@
 #include <memory>
 #include <vector>
 #include <random>
-#include <sstream>
 
 using namespace Spatial;
 
@@ -19,13 +18,13 @@ namespace Models
 class FMTsamodel : public FMTmodel
     {
     protected:
-        bool write_outputs;
         string outputs_write_location;
         int number_of_moves;
-        stringstream outputs_stream;
+        map<pair<int,string>,vector<vector<double>>> constraints_values_penalties;//move,constraint_name : period<output,penalty>
         default_random_engine generator;
         vector<FMTspatialaction> spactions;//should be FMTmodel action pointer...
         vector<int> bests_solutions;
+        vector<int> accepted_solutions;
         vector<size_t> mapidmodified;//Id in the map that are different between current and new solution
         unique_ptr<FMTsaschedule> cooling_schedule;
         FMTsasolution current_solution;
@@ -49,7 +48,8 @@ class FMTsamodel : public FMTmodel
 
         //Get informations
 
-        void get_outputs();//Write outputs at outputs_write_location a the end of simulation
+        int get_number_moves()const;
+        void get_outputs(const bool only_accepted = true) ;//Write outputs at outputs_write_location a the end of simulation
         FMTsasolution get_current_solution()const;
         FMTsasolution get_new_solution()const;
         string getcoolingscheduletype()const{return cooling_schedule->get_schedule_type();};
@@ -59,11 +59,9 @@ class FMTsamodel : public FMTmodel
         //Functions to manipulate the model
 
         void acceptnew();//Change new_solution to current and empty new_solution
-        void testprobability(double temp);
+        bool testprobability(const double temp,const double cur_obj, const double new_obj) ;//Metropolis criterion
         double cool_down(double temp)const{return cooling_schedule->reduce_temp(temp);};//Set a default cooling schedule to avoid crash
-        void write_outputs_stream(const string& constraint_string, const vector<double>& outputs, const vector<double>& penalties,bool initial_solution);
-        //void write_output_to_file(const string& constraint_string, const vector<double>& outputs, const vector<double>& penalties,bool initial_solution) const;
-        bool evaluate();//To compare the two solutions ... if new<current true
+        bool evaluate(const double temp);//To compare the two solutions ... if new<current true
         FMTgraphstats buildperiod();//To build initial solution
         FMTgraphstats move_solution(FMTsamovetype movetype = FMTsamovetype::shotgun);//move operator
         bool comparesolutions() const;//To verify if solutions are not identical

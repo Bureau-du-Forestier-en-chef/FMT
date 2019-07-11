@@ -552,7 +552,7 @@ bool FMTgraph::validgraphnode(const FMTmodel& model, bool& inedges, const FMTver
 				inedges = true;
 				return true;
 				}
-			}else if (out_degree(vertex_descriptor, data) > 1 && (anyoperables(vertex_descriptor, action_IDS))) //out edges
+			}else if (/*out_degree(vertex_descriptor, data) > 1 &&*/ (anyoperables(vertex_descriptor, action_IDS))) //out edges
 			{
 			return true;
 			}
@@ -1030,7 +1030,7 @@ map<string, double> FMTgraph::getsource(const FMTmodel& model,
 	}
 	return values;
 }
-
+/*
 bool FMTgraph::splittedevent(const FMTevent<FMTgraph>& event, vector<FMTevent<FMTgraph>>& splittedevents) const
 //Check if events are split maybe add it to FMTevent and add a parameters for distance
     {
@@ -1083,7 +1083,7 @@ bool FMTgraph::splittedevent(const FMTevent<FMTgraph>& event, vector<FMTevent<FM
             return true;
         }
         return false;
-    }
+    }*/
 
 
 void FMTgraph::cleanevents(vector<FMTevent<FMTgraph>>& events_id, const FMTcoordinate& localisation) const
@@ -1091,13 +1091,13 @@ void FMTgraph::cleanevents(vector<FMTevent<FMTgraph>>& events_id, const FMTcoord
         vector<FMTevent<FMTgraph>> clean_events_id;
         for (FMTevent<FMTgraph>& event:events_id)
         {
-            if(event.withinc(0,localisation))
+            if(event.contain(localisation))
             {
                 event.erase(localisation);
                 if(!event.empty())
                 {
                     vector<FMTevent<FMTgraph>> potentialysplittedevents;
-                    if (splittedevent(event,potentialysplittedevents))
+                    if (event.splittedevent(1,potentialysplittedevents))
                     {
                         clean_events_id.insert(clean_events_id.end(),potentialysplittedevents.begin(),potentialysplittedevents.end());
                     }

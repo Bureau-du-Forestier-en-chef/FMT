@@ -24,6 +24,12 @@ enum class FMTsasolutiontype
         derived,
         emptysolution,
     };
+
+enum class FMTsapenaltytype
+    {
+        linear,
+        exponential,
+    };
 class FMTsasolution : public FMTlayer<FMTgraph>
     {
     protected:
@@ -60,8 +66,8 @@ class FMTsasolution : public FMTlayer<FMTgraph>
         FMTsasolution perturb( FMTsamodel& model, default_random_engine& generator,
                                FMTsamovetype movetype = FMTsamovetype::shotgun) const;
         double applypenalty(const double& upper,const double& lower,
-                            const double& value, const double& coef) const;
-        std::unordered_map<string,vector<vector<double>>> evaluate(const FMTsamodel& model);
+                            const double& value, const double& coef, const FMTsapenaltytype penalty_type) const;
+        map<pair<int,string>,vector<vector<double>>> evaluate(const FMTsamodel& model, const int& move_num);
         void write_events(const vector<FMTaction> model_actions, const string out_path, const string addon = "") const;
     };
 }

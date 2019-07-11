@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <iostream>
 #include <limits>
+#include <math.h>
 
 namespace Spatial
 {
@@ -133,7 +134,7 @@ namespace Spatial
             double lower = 0;
             double upper = 0;
             constraint.getbounds(lower,upper,period);
-            double penalties = this->applypenalty(upper,lower,value,coef);
+            double penalties = this->applypenalty(upper,lower,value,coef,FMTsapenaltytype::linear);
             penalties_vals.push_back(penalties);
             sumpenalties+=penalties;
             period++;
@@ -145,6 +146,11 @@ namespace Spatial
     // See to ventilate by period and action for analysing results
     {
         vector<FMTspatialaction> spatialactions = model.getspatialactions();
+        vector<bool> SAspations;
+        for (const FMTspatialaction& spaction : spatialactions)
+        {
+            SAspations.push_back(spaction.simulated_annealing_valid());
+        }
         double spatialpenalties = 0;
         size_t period = 1;
         for (const vector<vector<FMTevent<FMTgraph>>>& period_actions : events)
@@ -155,46 +161,49 @@ namespace Spatial
                 for(const vector<FMTevent<FMTgraph>>& action_events : period_actions)
                 {
                     const FMTspatialaction& spaction = spatialactions.at(action_id);
-                    double action_penalties = 0;
-                    if(!action_events.empty())
+                    if(SAspations.at(action_id))
                     {
-                        //Getting events that can be considerate as neighbors
-                        vector<FMTevent<FMTgraph>> potential_neigbors;
-                        for (vector<vector<FMTevent<FMTgraph>>>::const_iterator action_events_it = period_actions.begin();action_events_it != period_actions.end();++action_events_it) //To navigate through neighbors
+                        double action_penalties = 0;
+                        if(!action_events.empty())
                         {
-                            for (vector<string>::const_iterator neighbors_it = spaction.neighbors.begin();neighbors_it!=spaction.neighbors.end();++neighbors_it)
+                            //Getting events that can be considerate as neighbors
+                            vector<FMTevent<FMTgraph>> potential_neigbors;
+                            for (vector<vector<FMTevent<FMTgraph>>>::const_iterator action_events_it = period_actions.begin();action_events_it != period_actions.end();++action_events_it) //To navigate through neighbors
                             {
-                                if (spatialactions.at(action_events_it-period_actions.begin()).name == *neighbors_it)//Where iterator is - begin == index so we compare the name of the action and neighbors in neighbors list
+                                for (vector<string>::const_iterator neighbors_it = spaction.neighbors.begin();neighbors_it!=spaction.neighbors.end();++neighbors_it)
                                 {
-                                    const vector<FMTevent<FMTgraph>> value = *action_events_it;
-                                    potential_neigbors.insert(potential_neigbors.end(),value.begin(),value.end());//Insert FMTevent<FMTgraph> of each action in neighbors
+                                    if (spatialactions.at(action_events_it-period_actions.begin()).name == *neighbors_it)//Where iterator is - begin == index so we compare the name of the action and neighbors in neighbors list
+                                    {
+                                        const vector<FMTevent<FMTgraph>> value = *action_events_it;
+                                        potential_neigbors.insert(potential_neigbors.end(),value.begin(),value.end());//Insert FMTevent<FMTgraph> of each action in neighbors
+                                    }
+
+                                }
+                            }
+                            const double maxsize = static_cast<double>(spaction.maximal_size);
+                            const double minsize = static_cast<double>(spaction.minimal_size);
+                            double spaction_penalties = 0;
+                            for (const FMTevent<FMTgraph>& event : action_events)
+                            {
+                                if (!event.empty())
+                                {
+                                    double eventpenalty = 0;
+                                    //Size penalty
+                                    double event_size = static_cast<double>(event.elements.size());
+                                    eventpenalty += applypenalty(maxsize,minsize,event_size,spaction.size_weight,FMTsapenaltytype::linear);
+                                    //Neighbors penalty
+                                    //Adjacency
+                                    eventpenalty += applypenalty(numeric_limits<double>::infinity(),spaction.adjacency,event.minimaldistance(potential_neigbors,spaction.adjacency),spaction.adjacency_weight,FMTsapenaltytype::linear);
+                                    //Greenup
+                                    action_penalties+=eventpenalty;
                                 }
 
                             }
                         }
-                        const double maxsize = static_cast<double>(spaction.maximal_size);
-                        const double minsize = static_cast<double>(spaction.minimal_size);
-                        double spaction_penalties = 0;
-                        for (const FMTevent<FMTgraph>& event : action_events)
-                        {
-                            if (!event.empty())
-                            {
-                                double eventpenalty = 0;
-                                //Size penalty
-                                double event_size = static_cast<double>(event.elements.size());
-                                eventpenalty += applypenalty(maxsize,minsize,event_size,1);
-                                //Neighbors penalty
-                                //Adjacency
-                                eventpenalty += applypenalty(numeric_limits<double>::infinity(),spaction.adjacency,event.minimaldistance(potential_neigbors,spaction.adjacency),1);
-                                //Greenup
-                                action_penalties+=eventpenalty;
-                            }
-
-                        }
+                        action_id++;
+                        action_period_penalties[spaction.name].push_back(action_penalties);
+                        spatialpenalties+=action_penalties;
                     }
-                    action_id++;
-                    action_period_penalties[spaction.name].push_back(action_penalties);
-                    spatialpenalties+=action_penalties;
                 }
             }
             period++;
@@ -292,38 +301,68 @@ namespace Spatial
         return newsolution;
     }
 
-    double FMTsasolution::applypenalty(const double& upper,const double& lower, const double& value, const double& coef)const
+    double FMTsasolution::applypenalty(const double& upper,const double& lower, const double& value, const double& coef, const FMTsapenaltytype penalty_type)const
     {
-        //Put penalty value
-            //Linear -x+lower bound
-            //x - upper bound if not infinite
-            //if between == 0
-        double penaltyvalue = 0;
-        if (!isinf(lower))//If lower is not infinite
+        switch(penalty_type)
         {
-            if(value<lower)//If value under lower bound penalize
-            {
-                penaltyvalue = -value+lower;
-            }
+            case FMTsapenaltytype::linear :
+                {
+                    double penaltyvalue = 0;
+                    //Put penalty value
+                    //Linear -x+lower bound
+                    //x - upper bound if not infinite
+                    //if between == 0
+                    if (!isinf(lower))//If lower is not infinite
+                    {
+                        if(value<lower)//If value under lower bound penalize
+                        {
+                            penaltyvalue = -value+lower;
+                        }
+                    }
+                    if (!isinf(upper))//If upper is not infinite
+                    {
+                        if (value>upper)//If value higher than upper bound penalize
+                        {
+                            penaltyvalue = value-upper;
+                        }
+                    }
+                    return penaltyvalue*coef;
+                }
+
+            case FMTsapenaltytype::exponential:
+                {
+                    double penaltyvalue = 0;
+                    if (!isinf(lower))//If lower is not infinite
+                    {
+                        if(value<lower)//If value under lower bound penalize
+                        {
+                            penaltyvalue = exp((value*-1)+lower);
+                        }
+                    }
+                        if (!isinf(upper))//If upper is not infinite
+                    {
+                        if (value>upper)//If value higher than upper bound penalize
+                        {
+                            penaltyvalue = exp(value-upper);
+                        }
+                    }
+                    return penaltyvalue*coef;
+                }
+
+            default :
+                break;
         }
-        if (!isinf(upper))//If upper is not infinite
-        {
-            if (value>upper)//If value higher than upper bound penalize
-            {
-                penaltyvalue = value-upper;
-            }
-        }
-        //cout<<"Period : "<<period<<"\nValue : "<<value<<"\n Penalty value : "<<penaltyvalue*coef<<endl;
-        return penaltyvalue*coef;
+
+
     }
 
-    std::unordered_map<string,vector<vector<double>>> FMTsasolution::evaluate(const FMTsamodel& model)
+    map<pair<int,string>,vector<vector<double>>> FMTsasolution::evaluate(const FMTsamodel& model, const int& move_num)
     {
         vector<FMTconstraint> constraints = model.getconstraints();
         FMTconstraint objective = constraints.front();
         double penalty_sense = 1;//objective.sense();
         vector<string>penalties = objective.getpenalties(penalty_sense);//Return values in penalty
-        std::unordered_map<string,vector<vector<double>>> constraintvaluespenalties;
+        map<pair<int,string>,vector<vector<double>>> constraintvaluespenalties;
         if (penalties.empty())
             {
                 _exhandler->raise(FMTexc::FMTunsupported_objective,FMTwssect::Optimize,"No penalties",__LINE__, __FILE__);
@@ -347,8 +386,8 @@ namespace Spatial
                             vector<double> output_vals;
                             vector<double> penalties_vals;
                             value = this->getgraphspenalties(model,constraint,coef, output_vals, penalties_vals);//apply weight in applypenalty
-                            constraintvaluespenalties[constraint.name].push_back(output_vals);
-                            constraintvaluespenalties[constraint.name].push_back(penalties_vals);
+                            constraintvaluespenalties[pair<int,string>(move_num,constraint.name)].push_back(output_vals);
+                            constraintvaluespenalties[pair<int,string>(move_num,constraint.name)].push_back(penalties_vals);
                         }
                     }
                     graphpenaltyvalue += value;
@@ -358,14 +397,15 @@ namespace Spatial
                 for (map<string,vector<double>>::const_iterator action_period_penalties_it = action_period_penalties.begin();action_period_penalties_it!=action_period_penalties.end();++action_period_penalties_it)
                 {
                     vector<double> penalties_vals = action_period_penalties_it->second;
-                    constraintvaluespenalties[action_period_penalties_it->first].push_back(vector<double>(penalties_vals.size(),0));//To keep the same structure as graph
-                    constraintvaluespenalties[action_period_penalties_it->first].push_back(penalties_vals);
+                    constraintvaluespenalties[pair<int,string>(move_num,action_period_penalties_it->first)].push_back(vector<double>(penalties_vals.size(),0));//To keep the same structure as graph
+                    constraintvaluespenalties[pair<int,string>(move_num,action_period_penalties_it->first)].push_back(penalties_vals);
                 }
             }
         return constraintvaluespenalties;
     }
 
     void FMTsasolution::write_events(const vector<FMTaction> model_actions,const string out_path,const string addon) const
+    //Add to parser
     {
       //One layer per action per period
         if (!events.empty())
@@ -394,8 +434,8 @@ namespace Spatial
 
                                         action_layer.mapping[coordit->first]=event_id;
                                     }
-                                    event_id++;
                                     event_map[event_id] = "Event_"+to_string(event_id);
+                                    event_id++;
                                 }
                             }
                             if (action_layer.mapping.size()>0)

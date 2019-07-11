@@ -1827,7 +1827,7 @@
 	"FMTdevelopment.h"
 	<boost/serialization/serialization.hpp>
 
-1553005682 c:\mrnmicro\applic\cygwin64\home\forbr3\fmt\fmtspatialaction.h
+1562858889 c:\mrnmicro\applic\cygwin64\home\forbr3\fmt\fmtspatialaction.h
 	"FMTaction.h"
 
 1560518910 c:\mrnmicro\applic\cygwin64\home\forbr3\fmt\fmtdisturbancestack.h
@@ -1839,7 +1839,7 @@
 	<map>
 	<boost/serialization/nvp.hpp>
 
-1562273030 c:\mrnmicro\applic\cygwin64\home\forbr3\fmt\fmtevent.h
+1562870816 c:\mrnmicro\applic\cygwin64\home\forbr3\fmt\fmtevent.h
 	"FMTcoordinate.h"
 	<random>
 	<limits>
@@ -2235,7 +2235,7 @@
 	<vector>
 	<map>
 
-1539716324 source:c:\mrnmicro\applic\cygwin64\home\forbr3\fmt\fmtspatialaction.cpp
+1562864098 source:c:\mrnmicro\applic\cygwin64\home\forbr3\fmt\fmtspatialaction.cpp
 	"FMTspatialaction.h"
 
 1550003028 source:c:\mrnmicro\applic\cygwin64\home\forbr3\fmt\fmttransition.cpp
@@ -2520,14 +2520,17 @@
 	<string>
 	<vector>
 
-1562268904 source:c:\mrnmicro\applic\cygwin64\home\forbr3\fmt\fmtsamodel.cpp
+1562871184 source:c:\mrnmicro\applic\cygwin64\home\forbr3\fmt\fmtsamodel.cpp
 	"FMTsamodel.h"
 	<fstream>
 	<iostream>
 	<sys/stat.h>
 	<time.h>
+	<stdio.h>
+	<boost/filesystem.hpp>
+	<cstring>
 
-1562264985 c:\mrnmicro\applic\cygwin64\home\forbr3\fmt\fmtsamodel.h
+1562871152 c:\mrnmicro\applic\cygwin64\home\forbr3\fmt\fmtsamodel.h
 	"FMTmodel.h"
 	"FMTspatialaction.h"
 	"FMTlayer.h"
@@ -2537,7 +2540,6 @@
 	<memory>
 	<vector>
 	<random>
-	<sstream>
 
 1557252666 c:\mrnmicro\applic\cygwin64\home\forbr3\fmt\fmtmodels.h
 	"FMTmodel.h"
@@ -2561,7 +2563,7 @@
 	<string>
 	<vector>
 
-1562267912 c:\mrnmicro\applic\cygwin64\home\forbr3\fmt\fmtsasolution.h
+1562777581 c:\mrnmicro\applic\cygwin64\home\forbr3\fmt\fmtsasolution.h
 	"FMTlayer.h"
 	"FMTforest.h"
 	"FMTgraphdescription.h"
@@ -2574,13 +2576,14 @@
 	<string>
 	<vector>
 
-1562268899 source:c:\mrnmicro\applic\cygwin64\home\forbr3\fmt\fmtsasolution.cpp
+1562865322 source:c:\mrnmicro\applic\cygwin64\home\forbr3\fmt\fmtsasolution.cpp
 	"FMTareaparser.h"
 	"FMTsasolution.h"
 	"FMTsamodel.h"
 	<algorithm>
 	<iostream>
 	<limits>
+	<math.h>
 
 1558110991 source:c:\mrnmicro\applic\cygwin64\home\forbr3\fmt\fmtlinearschedule.cpp
 	"FMTlinearschedule.h"
@@ -2594,19 +2597,19 @@
 1558468892 c:\mrnmicro\applic\cygwin64\home\forbr3\fmt\fmtversion.h
 	<string>
 
-1561143628 c:\mrnmicro\applic\cygwin64\home\forbr3\fmt\pydefinitions.h
+1562689769 c:\mrnmicro\applic\cygwin64\home\forbr3\fmt\pydefinitions.h
 
 1558722810 c:\mrnmicro\applic\cygwin64\home\forbr3\fmt\pyexportexceptions.h
 
 1558722873 c:\mrnmicro\applic\cygwin64\home\forbr3\fmt\pyexportcore.h
 
-1562090252 c:\mrnmicro\applic\cygwin64\home\forbr3\fmt\pyexportspatial.h
+1562618157 c:\mrnmicro\applic\cygwin64\home\forbr3\fmt\pyexportspatial.h
 
 1558723204 c:\mrnmicro\applic\cygwin64\home\forbr3\fmt\pyexportwsparser.h
 
 1559317825 c:\mrnmicro\applic\cygwin64\home\forbr3\fmt\pyexportgraph.h
 
-1562164721 c:\mrnmicro\applic\cygwin64\home\forbr3\fmt\pyexportmodel.h
+1562871686 c:\mrnmicro\applic\cygwin64\home\forbr3\fmt\pyexportmodel.h
 
 1558969468 source:c:\mrnmicro\applic\cygwin64\home\forbr3\fmt\pydefinitions.cpp
 	"PYdefinitions.h"
@@ -2640,7 +2643,7 @@
 	<queue>
 	<random>
 
-1562270146 source:c:\mrnmicro\applic\cygwin64\home\forbr3\fmt\fmtgraph.cpp
+1562870348 source:c:\mrnmicro\applic\cygwin64\home\forbr3\fmt\fmtgraph.cpp
 	"FMTgraph.h"
 	"FMTmodel.h"
 	"FMTaction.h"

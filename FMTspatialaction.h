@@ -30,6 +30,9 @@ namespace Spatial
             size_t minimal_size;
             size_t maximal_size;
             size_t neighbors_size;
+            double greenup_weight;
+            double adjacency_weight;
+            double size_weight;
             FMTspatialaction();
             FMTspatialaction(const FMTaction& action,
                      const vector<string>& lneighbors,
@@ -38,9 +41,20 @@ namespace Spatial
                      const size_t& lminimal_size,
                      const size_t& lmaximal_size,
                      const size_t& lneighbors_size);
+            FMTspatialaction(const FMTaction& action,
+                     const vector<string>& lneighbors,
+                     const size_t& lgreen_up,
+                     const size_t& ladjacency,
+                     const size_t& lminimal_size,
+                     const size_t& lmaximal_size,
+                     const size_t& lneighbors_size,
+                     double& lgreenup_weight,
+                     double& ladjacency_weight,
+                     double& lsize_weight);
             FMTspatialaction(const FMTaction& action);
             FMTspatialaction(const FMTspatialaction& rhs);
             FMTspatialaction& operator = (const FMTspatialaction& rhs);
+            bool simulated_annealing_valid()const;
         };
 }
 

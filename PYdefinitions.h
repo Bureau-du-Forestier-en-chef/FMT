@@ -42,6 +42,7 @@ void define_FMTlayer()
         .def("getprojection",&Spatial::FMTlayer<T>::getprojection)
         .def("getmapping",&Spatial::FMTlayer<T>::getmapping)
         .def("area",&Spatial::FMTlayer<T>::area)
+        .def("getcellsize",&Spatial::FMTlayer<T>::getcellsize)
         .def("__len__",&Spatial::FMTlayer<T>::size);
     boost::python::to_python_converter<map<Spatial::FMTcoordinate,T>,MapToDict<Spatial::FMTcoordinate,T>>();
     }

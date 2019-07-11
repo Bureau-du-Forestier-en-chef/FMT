@@ -295,6 +295,21 @@ class FMTevent
                 }
         return false;
         }
+    bool contain(const FMTcoordinate& coord)const
+        {
+            if (withinc(0,coord))
+            {
+                return true;
+            }
+            else
+            {
+                if (elements.find(coord)!=elements.end())
+                {
+                    return true;
+                }
+            }
+            return false;
+        }
     virtual bool ignit(const FMTspatialaction& action,const FMTcoordinate& ignit)
         {
         if ((1 <= action.maximal_size))
@@ -340,6 +355,59 @@ class FMTevent
         active.push_back(ignition);
         elements.clear();
         return false;
+        }
+
+    bool splittedevent(const unsigned int& distancel, vector<FMTevent>& splittedevents) const
+        //Check if events are split and fill vector of splitted events
+        {
+            vector<typename map<FMTcoordinate,const T*>::const_iterator> it_vect;
+            while(it_vect.size()<elements.size())
+            {
+                size_t iteration = 0;
+                size_t alloc_count = 0;
+                for (typename map<FMTcoordinate, const T*>::const_iterator elemit = elements.begin(); elemit != elements.end(); elemit++)
+                {
+                    if (iteration == 0 && elemit==elements.begin())
+                    {
+                        splittedevents.clear();
+                        FMTevent newevent(elemit->first);
+                        newevent.insert(elemit->first,nullptr);
+                        splittedevents.push_back(newevent);
+                        it_vect.push_back(elemit);
+                    }
+                    if (find(it_vect.begin(),it_vect.end(),elemit)==it_vect.end())//If not allocated
+                    {
+                        FMTevent& lastevent = splittedevents.back();
+                        if (lastevent.withinc(distancel,elemit->first))//If in distance of 1
+                        {
+                            lastevent.insert(elemit->first,nullptr);
+                            it_vect.push_back(elemit);
+                            ++alloc_count;
+                        }
+                    }
+                }
+                if(alloc_count==0)
+                {
+                    for (typename map<FMTcoordinate, const T*>::const_iterator elemit = elements.begin(); elemit != elements.end(); elemit++)
+                    {
+                        if (find(it_vect.begin(),it_vect.end(),elemit)==it_vect.end())
+                        {
+                            FMTevent newevent(elemit->first);
+                            newevent.insert(elemit->first,nullptr);
+                            splittedevents.push_back(newevent);
+                            it_vect.push_back(elemit);
+                            break;
+                        }
+                    }
+
+                }
+                ++iteration;
+            }
+            if (splittedevents.size()>1)
+            {
+                return true;
+            }
+            return false;
         }
     };
 }
