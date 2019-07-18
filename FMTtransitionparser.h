@@ -23,7 +23,7 @@ class FMTtransitionparser : public FMTparser
         FMTtransitionparser();
         FMTtransitionparser(const FMTtransitionparser& rhs);
         FMTtransitionparser& operator = (const FMTtransitionparser& rhs);
-        FMTmask getsource(const string& line, FMTspec& spec,const vector<FMTtheme>& themes,
+        FMTmask getsource(string& line, FMTspec& spec,const vector<FMTtheme>& themes,
                           FMTwssect section,const FMTconstants& constant,
                           const FMTyields& ylds);
         vector<FMTtransitionmask> getmasktran(const string& line,const vector<FMTtheme>& themes,

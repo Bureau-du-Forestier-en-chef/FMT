@@ -36,7 +36,7 @@ FMTtransitionparser& FMTtransitionparser::operator = (const FMTtransitionparser&
     return *this;
     }
 
-FMTmask FMTtransitionparser::getsource(const string& line, FMTspec& spec,const vector<FMTtheme>& themes,FMTwssect section,const FMTconstants& constants,const FMTyields& ylds)
+FMTmask FMTtransitionparser::getsource(string& line, FMTspec& spec,const vector<FMTtheme>& themes,FMTwssect section,const FMTconstants& constants,const FMTyields& ylds)
     {
     vector<string>elements = FMTparser::spliter(line,FMTparser::rxseparator);
     if (elements.size() == themes.size())

@@ -157,8 +157,8 @@ class FMTparser: public FMTobject
 		bool getforloops(string& line, const vector<FMTtheme>& themes, const FMTconstants& cons, vector<string>& allvalues, string& target);
         string getcleanlinewfor(ifstream& stream,const vector<FMTtheme>& themes,const FMTconstants& cons);
         bool isnum(const string& value) const;
-		bool validate(const vector<FMTtheme>& themes,const string& mask) const;
-		bool checkmask(const vector<FMTtheme>& themes, const vector<string>& values,const string& mask) const;
+		bool validate(const vector<FMTtheme>& themes,string& mask) const;
+		bool checkmask(const vector<FMTtheme>& themes, const vector<string>& values,string& mask) const;
 		//double getexactdouble(const string& value) const;
         template<typename T>
         T getnum(string value,const FMTconstants& constant, int period = 0)
