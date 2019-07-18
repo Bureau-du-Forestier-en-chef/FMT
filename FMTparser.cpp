@@ -415,30 +415,32 @@ bool FMTparser::isyld(const FMTyields& ylds,const string& value,FMTwssect sectio
 	return result;
 	}*/
 
-bool FMTparser::checkmask(const vector<FMTtheme>& themes, const vector<string>& values, const string& mask) const
+bool FMTparser::checkmask(const vector<FMTtheme>& themes, const vector<string>& values, string& mask) const
 	{
 	bool returnvalue = true;
-	if (themes.size() != values.size())
+	if (themes.size() > values.size())
 	{
 		_exhandler->raise(FMTexc::WSinvalid_maskrange, _section, mask + " at line " + to_string(_line), __LINE__, __FILE__);
 		returnvalue = false;
-	}
-	else {
+	}else {
 		int id = 0;
+		mask.clear();
 		for (const FMTtheme& theme : themes)
 		{
 			if (!theme.isattribute(values[id]) && !theme.isaggregate(values[id]) && values[id] != "?")
-			{
-				_exhandler->raise(FMTexc::WSundefined_attribute, _section, mask + " at line " + to_string(_line), __LINE__, __FILE__);
+				{
+				_exhandler->raise(FMTexc::WSundefined_attribute, _section, values[id] + " at line " + to_string(_line), __LINE__, __FILE__);
 				returnvalue = false;
-			}
+				}
+			mask +=values[id] + " ";
 			++id;
 		}
+		mask.pop_back();
 	}
 	return  returnvalue;
 	}
 
-bool FMTparser::validate(const vector<FMTtheme>& themes, const string& mask) const
+bool FMTparser::validate(const vector<FMTtheme>& themes, string& mask) const
 	{
 	vector<string>values;
 	boost::split(values, mask, boost::is_any_of(" /t"), boost::token_compress_on);
