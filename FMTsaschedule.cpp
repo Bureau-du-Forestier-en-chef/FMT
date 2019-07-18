@@ -44,7 +44,7 @@ namespace Spatial
 
     double FMTlinearschedule::reduce_temp(double& temp)
     {
-        return temp-decrement_model;
+        return temp*decrement_model;
     }
 
     string FMTlinearschedule::get_schedule_type()const

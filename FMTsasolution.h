@@ -18,13 +18,6 @@ enum class FMTsamovetype
         shotgun,
         cluster
     };
-enum class FMTsasolutiontype
-    {
-        initial,
-        derived,
-        emptysolution,
-    };
-
 enum class FMTsapenaltytype
     {
         linear,
@@ -35,30 +28,33 @@ class FMTsasolution : public FMTlayer<FMTgraph>
     protected:
         FMTgraphstats solution_stats;
         vector<vector<vector<FMTevent<FMTgraph>>>> events;//v1 period v2 action id v3 FMTevent<FMTgraph>
-        double objectivefunctionvalue;
-        FMTsasolutiontype type;
+        double objectivefunctionvalue;//Sum of all penalties
+        map<string,double> events_meansize;
 
     public:
+        map<string,pair<vector<double>,vector<double>>> constraint_outputs_penalties;
         FMTsasolution();
         FMTsasolution(const FMTforest& initialmap);
         virtual ~FMTsasolution()=default;
         FMTsasolution(const FMTsasolution& rhs);
         FMTsasolution& operator = (const FMTsasolution& rhs);
+        bool empty() const {return mapping.empty();};
         bool operator == (const FMTsasolution& rhs)const;
         bool operator != (const FMTsasolution& rhs)const;
 
         //Function to get info on the solution
 
+        map<string,double> geteventmeansize(const FMTsamodel& model);
         double getobjfvalue()const;
-        FMTsasolutiontype gettype() const;
         FMTgraphstats getsolution_stats() const;
         const vector<vector<vector<FMTevent<FMTgraph>>>>& getevents() const;
         getstartstop(const FMTconstraint& constraint, int& periodstart,int& periodstop) const;
-        vector<double> getobjective(const FMTmodel& model, const FMTconstraint& constraint,
+        vector<double> getgraphsoutputs(const FMTmodel& model, const FMTconstraint& constraint,
                                     const int& periodstart,const int& periodstop) const;
         double getgraphspenalties(const FMTsamodel& model, const FMTconstraint& constraint,
                                     const double& coef, vector<double>& output_vals, vector<double>& penalties_vals);
-        double getspatialpenalties(const FMTsamodel& model, map<string,vector<double>>& action_period_penalties) const;
+        double getspatialpenalties(const FMTsamodel& model, const FMTconstraint& constraint,
+                                    const double& coef, vector<double>& output_vals, vector<double>& penalties_vals) const;
         FMTforest getforestperiod(const int& period) const;
 
         //Function to manipulate solution
@@ -67,7 +63,7 @@ class FMTsasolution : public FMTlayer<FMTgraph>
                                FMTsamovetype movetype = FMTsamovetype::shotgun) const;
         double applypenalty(const double& upper,const double& lower,
                             const double& value, const double& coef, const FMTsapenaltytype penalty_type) const;
-        map<pair<int,string>,vector<vector<double>>> evaluate(const FMTsamodel& model, const int& move_num);
+        double evaluate(const FMTsamodel& model);
         void write_events(const vector<FMTaction> model_actions, const string out_path, const string addon = "") const;
     };
 }

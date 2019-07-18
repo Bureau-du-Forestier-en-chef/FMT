@@ -1752,7 +1752,7 @@
 	"ogrsf_frmts.h"
 	"gdal_rat.h"
 
-1556715301 c:\mrnmicro\applic\cygwin64\home\forbr3\fmt\fmtparser.h
+1562872940 c:\mrnmicro\applic\cygwin64\home\forbr3\fmt\fmtparser.h
 	<regex>
 	<iterator>
 	<iostream>
@@ -1827,8 +1827,9 @@
 	"FMTdevelopment.h"
 	<boost/serialization/serialization.hpp>
 
-1562858889 c:\mrnmicro\applic\cygwin64\home\forbr3\fmt\fmtspatialaction.h
+1563202521 c:\mrnmicro\applic\cygwin64\home\forbr3\fmt\fmtspatialaction.h
 	"FMTaction.h"
+	"FMTconstraint.h"
 
 1560518910 c:\mrnmicro\applic\cygwin64\home\forbr3\fmt\fmtdisturbancestack.h
 	"FMTlayer.h"
@@ -1839,7 +1840,7 @@
 	<map>
 	<boost/serialization/nvp.hpp>
 
-1562870816 c:\mrnmicro\applic\cygwin64\home\forbr3\fmt\fmtevent.h
+1562941088 c:\mrnmicro\applic\cygwin64\home\forbr3\fmt\fmtevent.h
 	"FMTcoordinate.h"
 	<random>
 	<limits>
@@ -1878,7 +1879,7 @@
 1547761382 source:c:\mrnmicro\applic\cygwin64\home\forbr3\fmt\fmtcut.cpp
 	"FMTcut.h"
 
-1556735020 source:c:\mrnmicro\applic\cygwin64\home\forbr3\fmt\fmtdata.cpp
+1562872940 source:c:\mrnmicro\applic\cygwin64\home\forbr3\fmt\fmtdata.cpp
 	"FMTdata.h"
 
 1539800384 source:c:\mrnmicro\applic\cygwin64\home\forbr3\fmt\fmtdebugexceptionhandler.cpp
@@ -1923,8 +1924,9 @@
 1544629372 source:c:\mrnmicro\applic\cygwin64\home\forbr3\fmt\fmtfreeexceptionhandler.cpp
 	"FMTfreeexceptionhandler.h"
 
-1547562958 source:c:\mrnmicro\applic\cygwin64\home\forbr3\fmt\fmtfunctioncall.cpp
+1562872940 source:c:\mrnmicro\applic\cygwin64\home\forbr3\fmt\fmtfunctioncall.cpp
 	"FMTfunctioncall.h"
+	"FMTlogger.h"
 
 1549999574 source:c:\mrnmicro\applic\cygwin64\home\forbr3\fmt\fmtfuturdevelopment.cpp
 	"FMTfuturdevelopment.h"
@@ -2106,7 +2108,7 @@
 	"FMToutputsource.h"
 	"FMToperator.h"
 
-1556631577 c:\mrnmicro\applic\cygwin64\home\forbr3\fmt\fmtconstraint.h
+1562954978 c:\mrnmicro\applic\cygwin64\home\forbr3\fmt\fmtconstraint.h
 	"FMToutput.h"
 	<vector>
 	<string>
@@ -2235,8 +2237,11 @@
 	<vector>
 	<map>
 
-1562864098 source:c:\mrnmicro\applic\cygwin64\home\forbr3\fmt\fmtspatialaction.cpp
+1563220077 source:c:\mrnmicro\applic\cygwin64\home\forbr3\fmt\fmtspatialaction.cpp
 	"FMTspatialaction.h"
+	"FMToutput.h"
+	<iostream>
+	<limits>
 
 1550003028 source:c:\mrnmicro\applic\cygwin64\home\forbr3\fmt\fmttransition.cpp
 	"FMTtransition.h"
@@ -2253,7 +2258,7 @@
 1544549183 source:c:\mrnmicro\applic\cygwin64\home\forbr3\fmt\fmtwarning.cpp
 	"FMTwarning.h"
 
-1560518910 source:c:\mrnmicro\applic\cygwin64\home\forbr3\fmt\fmtyieldhandler.cpp
+1562872940 source:c:\mrnmicro\applic\cygwin64\home\forbr3\fmt\fmtyieldhandler.cpp
 	"FMTyieldhandler.h"
 
 1551710100 source:c:\mrnmicro\applic\cygwin64\home\forbr3\fmt\fmtyields.cpp
@@ -2277,7 +2282,7 @@
 1556647772 source:c:\mrnmicro\applic\cygwin64\home\forbr3\fmt\fmtlandscapeparser.cpp
 	"FMTlandscapeparser.h"
 
-1560879539 source:c:\mrnmicro\applic\cygwin64\home\forbr3\fmt\fmtlpmodel.cpp
+1562872940 source:c:\mrnmicro\applic\cygwin64\home\forbr3\fmt\fmtlpmodel.cpp
 	"FMTlpmodel.h"
 
 1560879539 c:\mrnmicro\applic\cygwin64\home\forbr3\fmt\fmtlpmodel.h
@@ -2414,7 +2419,7 @@
 	"CoinHelperFunctions.hpp"
 	<cassert>
 
-1556802026 source:c:\mrnmicro\applic\cygwin64\home\forbr3\fmt\fmtoperator.cpp
+1562872940 source:c:\mrnmicro\applic\cygwin64\home\forbr3\fmt\fmtoperator.cpp
 	"FMToperator.h"
 
 1560518910 source:c:\mrnmicro\applic\cygwin64\home\forbr3\fmt\fmtoptimizationparser.cpp
@@ -2432,7 +2437,7 @@
 1560879539 source:c:\mrnmicro\applic\cygwin64\home\forbr3\fmt\fmtoutputsource.cpp
 	"FMToutputsource.h"
 
-1556723296 source:c:\mrnmicro\applic\cygwin64\home\forbr3\fmt\fmtparser.cpp
+1562872940 source:c:\mrnmicro\applic\cygwin64\home\forbr3\fmt\fmtparser.cpp
 	"FMTparser.h"
 	<boost/filesystem.hpp>
 
@@ -2520,7 +2525,7 @@
 	<string>
 	<vector>
 
-1562871184 source:c:\mrnmicro\applic\cygwin64\home\forbr3\fmt\fmtsamodel.cpp
+1563471024 source:c:\mrnmicro\applic\cygwin64\home\forbr3\fmt\fmtsamodel.cpp
 	"FMTsamodel.h"
 	<fstream>
 	<iostream>
@@ -2530,7 +2535,7 @@
 	<boost/filesystem.hpp>
 	<cstring>
 
-1562871152 c:\mrnmicro\applic\cygwin64\home\forbr3\fmt\fmtsamodel.h
+1563470958 c:\mrnmicro\applic\cygwin64\home\forbr3\fmt\fmtsamodel.h
 	"FMTmodel.h"
 	"FMTspatialaction.h"
 	"FMTlayer.h"
@@ -2563,7 +2568,7 @@
 	<string>
 	<vector>
 
-1562777581 c:\mrnmicro\applic\cygwin64\home\forbr3\fmt\fmtsasolution.h
+1563458722 c:\mrnmicro\applic\cygwin64\home\forbr3\fmt\fmtsasolution.h
 	"FMTlayer.h"
 	"FMTforest.h"
 	"FMTgraphdescription.h"
@@ -2576,7 +2581,7 @@
 	<string>
 	<vector>
 
-1562865322 source:c:\mrnmicro\applic\cygwin64\home\forbr3\fmt\fmtsasolution.cpp
+1563391763 source:c:\mrnmicro\applic\cygwin64\home\forbr3\fmt\fmtsasolution.cpp
 	"FMTareaparser.h"
 	"FMTsasolution.h"
 	"FMTsamodel.h"
@@ -2603,13 +2608,13 @@
 
 1558722873 c:\mrnmicro\applic\cygwin64\home\forbr3\fmt\pyexportcore.h
 
-1562618157 c:\mrnmicro\applic\cygwin64\home\forbr3\fmt\pyexportspatial.h
+1563390616 c:\mrnmicro\applic\cygwin64\home\forbr3\fmt\pyexportspatial.h
 
 1558723204 c:\mrnmicro\applic\cygwin64\home\forbr3\fmt\pyexportwsparser.h
 
 1559317825 c:\mrnmicro\applic\cygwin64\home\forbr3\fmt\pyexportgraph.h
 
-1562871686 c:\mrnmicro\applic\cygwin64\home\forbr3\fmt\pyexportmodel.h
+1563460653 c:\mrnmicro\applic\cygwin64\home\forbr3\fmt\pyexportmodel.h
 
 1558969468 source:c:\mrnmicro\applic\cygwin64\home\forbr3\fmt\pydefinitions.cpp
 	"PYdefinitions.h"
@@ -2643,7 +2648,7 @@
 	<queue>
 	<random>
 
-1562870348 source:c:\mrnmicro\applic\cygwin64\home\forbr3\fmt\fmtgraph.cpp
+1562941161 source:c:\mrnmicro\applic\cygwin64\home\forbr3\fmt\fmtgraph.cpp
 	"FMTgraph.h"
 	"FMTmodel.h"
 	"FMTaction.h"

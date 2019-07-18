@@ -20,13 +20,15 @@ class FMTsamodel : public FMTmodel
     protected:
         string outputs_write_location;
         int number_of_moves;
-        map<pair<int,string>,vector<vector<double>>> constraints_values_penalties;//move,constraint_name : period<output,penalty>
+        int last_write;
+        vector<map<string,pair<vector<double>,vector<double>>>> constraints_values_penalties;//move,constraint_name : <outputs,penalties>
         default_random_engine generator;
         vector<FMTspatialaction> spactions;//should be FMTmodel action pointer...
         vector<int> bests_solutions;
         vector<int> accepted_solutions;
         vector<size_t> mapidmodified;//Id in the map that are different between current and new solution
         unique_ptr<FMTsaschedule> cooling_schedule;
+        FMTsasolution best_solution;
         FMTsasolution current_solution;
         FMTsasolution new_solution;
 
@@ -40,6 +42,7 @@ class FMTsamodel : public FMTmodel
 
         //Setting parameters for the model
 
+        double warmup(const double initprob,bool keep_best=false,int iternum = 1000);
         void write_outputs_at(string path);
         bool setschedule(const FMTlinearschedule& schedule);//To set a schedule for the simulated annealing
         //bool setschedule(FMTexponentialschedule schedule) const;// need to be created
@@ -54,6 +57,7 @@ class FMTsamodel : public FMTmodel
         FMTsasolution get_new_solution()const;
         string getcoolingscheduletype()const{return cooling_schedule->get_schedule_type();};
         void write_solutions_events(string out_path)const;//Write events
+        void get_events_mean_size(string path);
         vector<FMTspatialaction> getspatialactions()const;
 
         //Functions to manipulate the model
@@ -61,7 +65,7 @@ class FMTsamodel : public FMTmodel
         void acceptnew();//Change new_solution to current and empty new_solution
         bool testprobability(const double temp,const double cur_obj, const double new_obj) ;//Metropolis criterion
         double cool_down(double temp)const{return cooling_schedule->reduce_temp(temp);};//Set a default cooling schedule to avoid crash
-        bool evaluate(const double temp);//To compare the two solutions ... if new<current true
+        bool evaluate(const double temp,bool keep_track = true);//To compare the two solutions ... if new<current true
         FMTgraphstats buildperiod();//To build initial solution
         FMTgraphstats move_solution(FMTsamovetype movetype = FMTsamovetype::shotgun);//move operator
         bool comparesolutions() const;//To verify if solutions are not identical

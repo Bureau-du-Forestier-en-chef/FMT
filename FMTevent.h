@@ -297,16 +297,9 @@ class FMTevent
         }
     bool contain(const FMTcoordinate& coord)const
         {
-            if (withinc(0,coord))
+            if (elements.find(coord)!=elements.end())
             {
                 return true;
-            }
-            else
-            {
-                if (elements.find(coord)!=elements.end())
-                {
-                    return true;
-                }
             }
             return false;
         }
@@ -357,6 +350,18 @@ class FMTevent
         return false;
         }
 
+    bool whithinelements(unsigned int dist, const FMTcoordinate& location) const
+    {
+        for (typename map<FMTcoordinate, const T*>::const_iterator elemit = elements.begin(); elemit != elements.end(); elemit++)
+        {
+             if (elemit->first.within(dist,location))
+             {
+                return true;
+             }
+        }
+        return false;
+    }
+
     bool splittedevent(const unsigned int& distancel, vector<FMTevent>& splittedevents) const
         //Check if events are split and fill vector of splitted events
         {
@@ -378,7 +383,7 @@ class FMTevent
                     if (find(it_vect.begin(),it_vect.end(),elemit)==it_vect.end())//If not allocated
                     {
                         FMTevent& lastevent = splittedevents.back();
-                        if (lastevent.withinc(distancel,elemit->first))//If in distance of 1
+                        if (lastevent.whithinelements(distancel,elemit->first))//If in distance of 1
                         {
                             lastevent.insert(elemit->first,nullptr);
                             it_vect.push_back(elemit);
