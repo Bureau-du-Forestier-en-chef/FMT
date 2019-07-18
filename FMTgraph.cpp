@@ -188,7 +188,7 @@ vector<pair<size_t,int>> FMTgraph::adjacentevents(const vector<FMTevent<FMTgraph
         size_t indice = 0;
         for (const FMTevent<FMTgraph>& event:events)
         {
-            if(event.withinc(1,localisation))
+            if(event.whithinelements(1,localisation))
             {
                 selectedevents.push_back(pair<size_t,int>(indice,action_id));
             }

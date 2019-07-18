@@ -1,4 +1,7 @@
 #include "FMTspatialaction.h"
+#include "FMToutput.h"
+#include <iostream>
+#include <limits>
 
 namespace Spatial
 {
@@ -39,9 +42,9 @@ namespace Spatial
                      const size_t& lminimal_size,
                      const size_t& lmaximal_size,
                      const size_t& lneighbors_size,
-                     double& lgreenup_weight,
-                     double& ladjacency_weight,
-                     double& lsize_weight):
+                     const double& lgreenup_weight,
+                     const double& ladjacency_weight,
+                     const double& lsize_weight):
                          FMTaction(action),
                          neighbors(lneighbors),
                          green_up(lgreen_up),
@@ -94,14 +97,15 @@ namespace Spatial
             }
         return *this;
         }
+
     bool FMTspatialaction::simulated_annealing_valid()const
     {
         if (!( greenup_weight == 0 && adjacency_weight == 0 && size_weight == 0))
         {
             if  (
-                    ((  minimal_size>0 || maximal_size>0 ) && size_weight !=0) ||
-                    (   adjacency>0 && adjacency_weight!=0) ||
-                    (   green_up>0 && greenup_weight!=0)
+                    ((  minimal_size>0 || maximal_size>0 ) && size_weight>0) ||
+                    (   adjacency>0 && adjacency_weight>0) ||
+                    (   green_up>0 && greenup_weight>0)
                 )
             {
                 return true;
@@ -109,4 +113,60 @@ namespace Spatial
         }
         return false;
     }
+
+    vector<FMTconstraint> FMTspatialaction::to_constraints() const
+    {
+        vector<FMTconstraint> constraints;
+        double max_all = std::numeric_limits<double>::max();
+        int stopperiod = numeric_limits<int>::max();
+        int startperiod = 0;
+        if ( minimal_size>0 || maximal_size>0 )
+        {
+            FMTconstraint newconst(FMTconstrainttype::FMTspatialsize,FMToutput(name));
+            string target = "RHS";
+            double maxsize = static_cast<double>(maximal_size);
+            double minsize = static_cast<double>(minimal_size);
+            newconst.addbounds(FMTyldbounds(FMTwssect::Optimize, target, maxsize, minsize));
+			if(size_weight>0)
+            {
+                string gtarget = "GOAL_"+name;
+                double sizew = size_weight;
+                newconst.addbounds(FMTyldbounds(FMTwssect::Optimize,gtarget,sizew,sizew));
+            }
+            newconst.setbounds(FMTperbounds(FMTwssect::Optimize, stopperiod, startperiod));
+            constraints.push_back(newconst);
+        }
+        if (adjacency>0)
+        {
+            FMTconstraint newconst(FMTconstrainttype::FMTspatialadjacency,FMToutput(name));
+            string target = "RHS";
+            double adjac = static_cast<double>(adjacency);
+			newconst.addbounds(FMTyldbounds(FMTwssect::Optimize,target,max_all,adjac));
+            if (adjacency_weight>0)
+            {
+                string gtarget = "GOAL_"+name;
+                double adjacw = adjacency_weight;
+                newconst.addbounds(FMTyldbounds(FMTwssect::Optimize,gtarget,adjacw,adjacw));
+            }
+            newconst.setbounds(FMTperbounds(FMTwssect::Optimize, stopperiod, startperiod));
+            constraints.push_back(newconst);
+        }
+        if ( green_up>0)
+        {
+            FMTconstraint newconst(FMTconstrainttype::FMTspatialgreenup,FMToutput(name));
+            string target = "RHS";
+            double gup = static_cast<double>(green_up);
+			newconst.addbounds(FMTyldbounds(FMTwssect::Optimize, target, max_all, gup));
+			if (greenup_weight>0)
+			{
+                string gtarget = "GOAL_"+name;
+                double gupw = greenup_weight;
+                newconst.addbounds(FMTyldbounds(FMTwssect::Optimize, gtarget,gupw,gupw));
+			}
+			newconst.setbounds(FMTperbounds(FMTwssect::Optimize, stopperiod, startperiod));
+            constraints.push_back(newconst);
+        }
+        return constraints;
+    }
+
 }

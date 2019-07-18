@@ -14,6 +14,7 @@ namespace Models
         FMTmodel(),
         outputs_write_location(),
         number_of_moves(0),
+        last_write(0),
         constraints_values_penalties(),
         generator(),
         spactions(),
@@ -21,6 +22,7 @@ namespace Models
         accepted_solutions(),
         mapidmodified(),
         cooling_schedule(),
+        best_solution(),
         current_solution(),
         new_solution()
     {
@@ -31,6 +33,7 @@ namespace Models
         FMTmodel(rhs),
         outputs_write_location(rhs.outputs_write_location),
         number_of_moves(0),
+        last_write(0),
         constraints_values_penalties(rhs.constraints_values_penalties),
         generator(rhs.generator),
         spactions(rhs.spactions),
@@ -38,6 +41,7 @@ namespace Models
         accepted_solutions(rhs.accepted_solutions),
         mapidmodified(),
         cooling_schedule(rhs.cooling_schedule->Clone()),
+        best_solution(rhs.best_solution),
         current_solution(rhs.current_solution),
         new_solution(rhs.new_solution)
     {
@@ -48,6 +52,7 @@ namespace Models
         FMTmodel(rhs),
         outputs_write_location(),
         number_of_moves(0),
+        last_write(0),
         constraints_values_penalties(),
         generator(),
         spactions(),
@@ -55,6 +60,7 @@ namespace Models
         accepted_solutions(),
         mapidmodified(),
         cooling_schedule(),
+        best_solution(),
         current_solution(),
         new_solution()
     {
@@ -68,6 +74,7 @@ namespace Models
             FMTmodel::operator = (rhs);
             outputs_write_location = rhs.outputs_write_location;
             number_of_moves = rhs.number_of_moves;
+            last_write = rhs.last_write;
             constraints_values_penalties = rhs.constraints_values_penalties;
             generator = rhs.generator;
             spactions = rhs.spactions;
@@ -75,13 +82,47 @@ namespace Models
             accepted_solutions = rhs.accepted_solutions;
             mapidmodified = rhs.mapidmodified;
             cooling_schedule = rhs.cooling_schedule->Clone();
+            best_solution=rhs.best_solution;
             current_solution = rhs.current_solution;
             new_solution = rhs.new_solution;
             }
         return *this;
     }
 
-     void FMTsamodel::write_outputs_at(string path)
+    double FMTsamodel::warmup(const double initprob,bool keep_best,int iternum)
+    {
+        FMTsasolution best=current_solution;//Put it as current at the end
+        int iter = iternum;
+        double sum_delta = 0;
+        size_t num_delta = 0;
+        while (iter>0)
+        {
+            move_solution();
+            if(evaluate(0,false))//The temp need to be 0 to do only greedy to track what is upgraded because we accept every solution
+            {
+                double delta = current_solution.getobjfvalue()-new_solution.getobjfvalue();
+                sum_delta += delta;
+                ++num_delta;
+                if (keep_best)
+                {
+                    if (best.getobjfvalue()>new_solution.getobjfvalue())
+                    {
+                        best = new_solution;
+                    }
+                }
+            }
+            acceptnew();
+            --iter;
+        }
+        current_solution=best;
+        number_of_moves = 0;
+        new_solution = FMTsasolution();
+        mapidmodified = vector<size_t>();
+        cout<<sum_delta<<" : "<<num_delta<<endl;
+        return -(sum_delta/num_delta)/log(initprob);
+    }
+
+    void FMTsamodel::write_outputs_at(string path)
     {
         outputs_write_location = path;
         if (boost::filesystem::exists(path+"outputs.csv"))
@@ -118,6 +159,14 @@ namespace Models
 				newtransitions.push_back(*trn_iterator);
 				newspatials.push_back(spaction);
 				newbaseactions.push_back(spaction);
+				if (spaction.simulated_annealing_valid())
+                {
+                    vector<FMTconstraint> newconst = spaction.to_constraints();
+                    for (FMTconstraint& constraint : newconst)
+                    {
+                        constraints.push_back(constraint);
+                    }
+                }
 			}else{
 				_exhandler->raise(FMTexc::WSinvalid_transition,FMTwssect::Transition, "Missing transition case for action : " + spaction.name,__LINE__, __FILE__);
 				return false;
@@ -126,6 +175,17 @@ namespace Models
         spactions = lspactions;
 		actions = newbaseactions;
 		transitions = newtransitions;
+		//Test spatial actions to constraints because bounds are not set ???
+		/*for(FMTconstraint& constraint : constraints){
+                                                        cout<<constraint.name<<" : "<<constraint.getconstrainttype()<<endl;
+                                                        double upper = 0;
+                                                        double lower = 0;
+                                                        double coef = 0;
+                                                        string name;
+                                                        constraint.getbounds(lower,upper,0);
+                                                        constraint.getgoal(name,coef);
+                                                        cout<<upper<<" : "<<lower<<"      "<<name<<" : "<<coef<<endl;
+                                                    }*/
 		return true;
     }
 
@@ -145,9 +205,51 @@ namespace Models
             fstream outputFile;
             string filename = outputs_write_location+"outputs.csv";
             string headers = "Move,Constraint,Period,Output,Penalty,Best solution,Last accepted";
-            //cout<<"Creating file"<<endl;
             outputFile.open(filename, std::fstream::in | std::fstream::out | std::fstream::app);
-            for (map<pair<int,string>,vector<vector<double>>>::const_iterator mapit = constraints_values_penalties.begin(); mapit != constraints_values_penalties.end(); ++mapit)
+            int move_num = last_write;
+            if (move_num==0)
+            {
+                outputFile<<headers<<endl;
+            }
+            for (const map<string,pair<vector<double>,vector<double>>>& move_info : constraints_values_penalties)
+            {
+                for (map<string,pair<vector<double>,vector<double>>>::const_iterator mapit = move_info.begin(); mapit != move_info.end(); ++mapit)
+                {
+                    const string& cname = mapit->first;
+                    const vector<double>& outputs = mapit->second.first;
+                    const vector<double>& penalties = mapit->second.second;
+                    for (int i = 0 ; i < outputs.size() ; ++i )
+                    {
+                        if (move_num==0)
+                        {
+                            outputFile<<move_num<<","<<cname<<","<<i+1<<","<<outputs.at(i)<<","<<penalties.at(i)<<","<<0<<","<<0<<endl;
+                        }
+                        else
+                        {
+                            const int& best = bests_solutions.at(move_num-1);
+                            const int& last_accepted = accepted_solutions.at(move_num-1);
+                            if (only_accepted)
+                            {
+                                if ( best == move_num || last_accepted == move_num )
+                                {
+                                outputFile<<move_num<<","<<cname<<","<<i+1<<","<<outputs.at(i)<<","<<penalties.at(i)<<","<<best<<","<<last_accepted<<endl;
+                                }
+                            }
+                            else
+                            {
+                                outputFile<<move_num<<","<<cname<<","<<i+1<<","<<outputs.at(i)<<","<<penalties.at(i)<<","<<best<<","<<last_accepted<<endl;
+                            }
+                        }
+                    }
+                }
+            ++move_num;
+            }
+            constraints_values_penalties.clear();
+            outputFile.close();
+            last_write = move_num;
+        }
+    }
+            /*for (map<pair<int,string>,vector<vector<double>>>::const_iterator mapit = constraints_values_penalties.begin(); mapit != constraints_values_penalties.end(); ++mapit)
             {
                 const int& move_num = mapit->first.first;
                 const string& constraint_name = mapit->first.second;
@@ -184,8 +286,9 @@ namespace Models
                 }
             }
             constraints_values_penalties.clear();
+            outputFile.close();
         }
-    }
+    }*/
 
     FMTsasolution FMTsamodel::get_current_solution()const
     {
@@ -202,12 +305,38 @@ namespace Models
         if (number_of_moves>0)
         {
             current_solution.write_events(actions,out_path,"Current_solution");
-            new_solution.write_events(actions,out_path);
+            new_solution.write_events(actions,out_path,"New_solution");
         }
         else
         {
             current_solution.write_events(actions,out_path,"Current_solution");
         }
+    }
+
+    void FMTsamodel::get_events_mean_size(string path)
+    {
+        fstream outputFile;
+        string filename = path+"events_mean_size.csv";
+        outputFile.open(filename, std::fstream::in | std::fstream::out | std::fstream::app);
+        outputFile<<"solution,constraint,events_mean_size"<<endl;
+        map<string,double> c = current_solution.geteventmeansize(*this);
+        for(map<string,double>::const_iterator mapit = c.begin();mapit!=c.end();++mapit)
+        {
+            const string& cname = mapit->first;
+            const double& mean = mapit->second;
+            outputFile<<"Current"<<","<<cname<<","<<mean<<endl;
+        }
+        if (number_of_moves>0)
+        {
+            map<string,double> n = new_solution.geteventmeansize(*this);
+            for(map<string,double>::const_iterator mapit = n.begin();mapit!=n.end();++mapit)
+            {
+                const string& cname = mapit->first;
+                const double& mean = mapit->second;
+                outputFile<<"New"<<","<<cname<<","<<mean<<endl;
+            }
+        }
+        outputFile.close();
     }
 
     vector<FMTspatialaction> FMTsamodel::getspatialactions()const
@@ -239,7 +368,7 @@ namespace Models
         return false;
     }
 
-    bool FMTsamodel::evaluate(const double temp)
+    bool FMTsamodel::evaluate(const double temp,bool keep_track)
     //Get the output, evaluate the penalties and compare solutions
     {
         /*//Time checking
@@ -247,70 +376,75 @@ namespace Models
         double cpu_time_used;
         start = clock();
         //*/
-        bool evaluation;
         if (!comparesolutions())// if compare solution return false ... which means they are different
         {
+            double cur_obj = 0;
             if ( number_of_moves == 1)//Evaluate initial solution and write results
             {
-                map<pair<int,string>,vector<vector<double>>> constraint_infos = current_solution.evaluate(*this,0);
-                constraints_values_penalties.insert(constraint_infos.begin(),constraint_infos.end());
+                cur_obj = current_solution.evaluate(*this);
+                if (keep_track){constraints_values_penalties.push_back(current_solution.constraint_outputs_penalties);}
+            }
+            else
+            {
+                cur_obj = current_solution.getobjfvalue();
             }
             //Evaluate new solution
-            map<pair<int,string>,vector<vector<double>>> constraint_infos = new_solution.evaluate(*this,number_of_moves);
-            constraints_values_penalties.insert(constraint_infos.begin(),constraint_infos.end());
-            const double new_obj = new_solution.getobjfvalue();
-            const double cur_obj = current_solution.getobjfvalue();
+            const double new_obj = new_solution.evaluate(*this);
+            if (keep_track){constraints_values_penalties.push_back(new_solution.constraint_outputs_penalties);}
             if (new_obj<cur_obj)
             {
-                bests_solutions.push_back(number_of_moves);//To keep track of best moves
-                accepted_solutions.push_back(number_of_moves);
-                evaluation = true;
+                if (keep_track)
+                {
+                    bests_solutions.push_back(number_of_moves);//To keep track of best moves
+                    accepted_solutions.push_back(number_of_moves);
+                }
+                return true;
             }
             else
             {
                 if (testprobability(temp,cur_obj,new_obj))
                 {
-                    int last_best = bests_solutions.back();
-                    bests_solutions.push_back(last_best);//Keep the last best move
-                    accepted_solutions.push_back(number_of_moves);
+                    if (keep_track)
+                    {
+                        int last_best = bests_solutions.back();
+                        bests_solutions.push_back(last_best);//Keep the last best move
+                        accepted_solutions.push_back(number_of_moves);
+                    }
+                    return true;
                 }
                 if (!bests_solutions.empty())
                 {
-                    int last_best = bests_solutions.back();
-                    bests_solutions.push_back(last_best);//Keep the last best move
-                    int last_accepted = accepted_solutions.back();
-                    accepted_solutions.push_back(last_accepted);
+                    if(keep_track)
+                    {
+                        int last_best = bests_solutions.back();
+                        bests_solutions.push_back(last_best);//Keep the last best move
+                        int last_accepted = accepted_solutions.back();
+                        accepted_solutions.push_back(last_accepted);
+                    }
+                    return false;
                 }
                 else//Case the initial solution is better
                 {
-                    bests_solutions.push_back(0);
-                    accepted_solutions.push_back(0);
+                    if (keep_track)
+                    {
+                        bests_solutions.push_back(0);
+                        accepted_solutions.push_back(0);
+                    }
+                    return false;
                 }
-                evaluation = false;
             }
         }
         else
         {
-            if (!bests_solutions.empty())
-                {
-                    int last_best = bests_solutions.back();
-                    bests_solutions.push_back(last_best);//Keep the last best move
-                    int last_accepted = accepted_solutions.back();
-                    accepted_solutions.push_back(last_accepted);
-                }
-            else//Case the initial solution is better
-                {
-                    bests_solutions.push_back(0);
-                    accepted_solutions.push_back(0);
-                }
-            evaluation =  false;
+            cout<<"No difference in move "+to_string(number_of_moves)<<endl;
+            return false;
         }
         /*//Time checking
         end = clock();
         cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
         cout<<"Time used to evaluate: " <<cpu_time_used<<endl;
         //*/
-        return evaluation;
+
     }
 
     FMTgraphstats FMTsamodel::buildperiod()

@@ -2,7 +2,7 @@
 #define FMTSPACT_H_INCLUDED
 
 #include "FMTaction.h"
-
+#include "FMTconstraint.h"
 using namespace Core;
 
 namespace Spatial
@@ -48,13 +48,14 @@ namespace Spatial
                      const size_t& lminimal_size,
                      const size_t& lmaximal_size,
                      const size_t& lneighbors_size,
-                     double& lgreenup_weight,
-                     double& ladjacency_weight,
-                     double& lsize_weight);
+                     const double& lgreenup_weight,
+                     const double& ladjacency_weight,
+                     const double& lsize_weight);
             FMTspatialaction(const FMTaction& action);
             FMTspatialaction(const FMTspatialaction& rhs);
             FMTspatialaction& operator = (const FMTspatialaction& rhs);
             bool simulated_annealing_valid()const;
+            vector<FMTconstraint> to_constraints() const;
         };
 }
 

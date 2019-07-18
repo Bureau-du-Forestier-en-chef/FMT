@@ -6,6 +6,8 @@ BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(simulate_overloads,simulate, 1, 3)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(buildperiod_overloads, buildperiod, 0, 1)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(move_solution_overloads, move_solution, 0, 1)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(get_outputs_overloads, get_outputs, 0, 1)
+BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(warmup_overloads, warmup, 1, 3)
+BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(evaluate_overloads, evaluate, 1, 2)
 
 
 
@@ -124,8 +126,7 @@ void exportModel()
             .def("get_current_solution",&FMTsamodel::get_current_solution)
             .def("get_new_solution",&FMTsamodel::get_new_solution)
             .def("getspatialactions",&FMTsamodel::getspatialactions)
-            .def("compare_solutions",&FMTsamodel::comparesolutions)
-            .def("evaluate",&FMTsamodel::evaluate)
+            .def("evaluate",&FMTsamodel::evaluate,evaluate_overloads())
             .def("setinitial_mapping",&FMTsamodel::setinitial_mapping,
                  "Set the initial mapping\n"
                  "Initial forest themes described to the model",
@@ -149,9 +150,11 @@ void exportModel()
             .def("write_outputs_at",&FMTsamodel::write_outputs_at,
                  "Input : Path were you want the file with the outputs\n"
                  "Write the for each constraint and period the output and the penalty in a file name outputs.csv")
+            .def("get_events_mean_size",&FMTsamodel::get_events_mean_size)
             .def("get_outputs",&FMTsamodel::get_outputs,get_outputs_overloads())
             .def("write_solutions_events",&FMTsamodel::write_solutions_events)
-            .def("get_number_moves",&FMTsamodel::get_number_moves);
+            .def("get_number_moves",&FMTsamodel::get_number_moves)
+            .def("warmup",&FMTsamodel::warmup,warmup_overloads());
     define_pylist<Models::FMTsamodel>();
     }
 

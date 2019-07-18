@@ -26,7 +26,10 @@ enum  FMTconstrainttype
 	FMTevenflow = 5,
 	FMTnondeclining = 6,
 	FMTsequence = 7,
-	FMTstandard = 8
+	FMTstandard = 8,
+	FMTspatialsize = 9,
+	FMTspatialadjacency = 10,
+	FMTspatialgreenup = 11
 };
 
 
