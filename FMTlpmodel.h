@@ -124,6 +124,7 @@ class FMTlpmodel : public FMTmodel
 		bool specificinitialsolve();
 		bool setsolution(int period, const FMTschedule& schedule);
 		bool boundsolution(int period);
+		bool unboundsolution(int period);
 		FMTschedule getsolution(int period) const;
 		FMTgraphstats getstats() const;
 		bool operator == (const FMTlpmodel& rhs) const;
