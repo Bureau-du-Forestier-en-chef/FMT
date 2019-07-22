@@ -27,6 +27,8 @@ class FMTactualdevelopment : public FMTdevelopment
 		FMTactualdevelopment(const FMTdevelopment& rhs, double larea);
 		FMTactualdevelopment& operator = (const FMTactualdevelopment& rhs);
 		bool operator == (const FMTactualdevelopment& rhs) const;
+		bool operator != (const FMTactualdevelopment& rhs) const;
+		bool operator < (const FMTactualdevelopment& rhs) const;
 		operator string() const override;
 		double getarea() const override;
 		unique_ptr<FMTdevelopment> Clone() const override;

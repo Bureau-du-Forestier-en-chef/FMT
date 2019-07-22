@@ -38,6 +38,7 @@ void exportCore()
 				.def("__len__", &Core::FMTmask::operator bool)
                 .def("__str__",&Core::FMTmask::operator string)
 				.def("__eq__", &Core::FMTmask::operator ==)
+				.def("__ne__", &Core::FMTmask::operator !=)
                 .def("to_string",&Core::FMTmask::to_string)
                 .def("__hash__",&boost::pyhash<Core::FMTmask>);
 			class_<Core::FMTdevelopment>("FMTdevelopment")
@@ -47,6 +48,7 @@ void exportCore()
                 .def_readwrite("lock", &Core::FMTdevelopment::lock)
                 .def_readwrite("mask", &Core::FMTdevelopment::mask)
 				.def("__eq__", &Core::FMTdevelopment::operator ==)
+				.def("__ne__", &Core::FMTdevelopment::operator !=)
                 .def("__lt__",&Core::FMTdevelopment::operator <)
                 .def("grow",&Core::FMTdevelopment::grow)
                 .def("operable",&Core::FMTdevelopment::operable)
@@ -55,7 +57,10 @@ void exportCore()
                 .setattr("__hash__",&boost::pyhash<Core::FMTdevelopment>);
             class_<Core::FMTspec>("FMTspec");
             class_<Core::FMTactualdevelopment,bases<Core::FMTdevelopment>>("FMTactualdevelopment")
-                .def_readwrite("area", &Core::FMTactualdevelopment::area);
+                .def_readwrite("area", &Core::FMTactualdevelopment::area)
+				.def("__eq__", &Core::FMTactualdevelopment::operator ==)
+				.def("__ne__", &Core::FMTactualdevelopment::operator !=)
+				.def("__lt__", &Core::FMTactualdevelopment::operator <);
             class_<Core::FMTfuturdevelopment,bases<Core::FMTdevelopment>>("FMTfuturdevelopment");
 
             //Need preprocessor here
