@@ -83,7 +83,7 @@ namespace Models
 
     double FMTsamodel::warmup(const double initprob,bool keep_best,int iternum)
     {
-        FMTsasolution best=current_solution;//Put it as current at the end
+        FMTsasolution first=current_solution;//Put it as current at the end
         int iter = iternum;
         double sum_delta = 0;
         size_t num_delta = 0;
@@ -95,21 +95,18 @@ namespace Models
                 double delta = current_solution.getobjfvalue()-new_solution.getobjfvalue();
                 sum_delta += delta;
                 ++num_delta;
-                if (keep_best)
-                {
-                    if (best.getobjfvalue()>new_solution.getobjfvalue())
-                    {
-                        best = new_solution;
-                    }
-                }
             }
             acceptnew();
             --iter;
         }
-        current_solution=best;
+        if (!keep_best)
+        {
+            current_solution=first;
+        }
         get_outputs("warmup_");
         number_of_moves = 0;
         new_solution = FMTsasolution();
+        best_solution = FMTsasolution();
         mapidmodified = vector<size_t>();
         return -(sum_delta/num_delta)/log(initprob);
     }
@@ -309,6 +306,13 @@ namespace Models
                 const double& mean = mapit->second;
                 outputFile<<"New"<<","<<cname<<","<<mean<<endl;
             }
+            map<string,double> b = best_solution.geteventmeansize(*this);
+            for(map<string,double>::const_iterator mapit = n.begin();mapit!=n.end();++mapit)
+            {
+                const string& cname = mapit->first;
+                const double& mean = mapit->second;
+                outputFile<<"Best"<<","<<cname<<","<<mean<<endl;
+            }
         }
         outputFile.close();
     }
@@ -353,20 +357,23 @@ namespace Models
         if (!comparesolutions())// if compare solution return false ... which means they are different
         {
             double cur_obj = 0;
+            double best_obj = 0;
             if ( number_of_moves == 1)//Evaluate initial solution and write results
             {
-                best_solution = current_solution;
                 cur_obj = current_solution.evaluate(*this);
+                best_solution = current_solution;
+                best_obj = best_solution.getobjfvalue();
                 accepted_solutions.push_back(0);
                 constraints_values_penalties.push_back(current_solution.constraint_outputs_penalties);
             }
             else
             {
                 cur_obj = current_solution.getobjfvalue();
+                best_obj = best_solution.getobjfvalue();
             }
             //Evaluate new solution
             const double new_obj = new_solution.evaluate(*this);
-            if (best_solution.getobjfvalue()>new_obj)//If new is better than the last_best
+            if (best_obj>new_obj)//If new is better than the last_best
             {
                 best_solution=new_solution;
                 accepted_solutions.push_back(number_of_moves);
