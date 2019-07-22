@@ -14,11 +14,9 @@ namespace Models
         FMTmodel(),
         outputs_write_location(),
         number_of_moves(0),
-        last_write(0),
         constraints_values_penalties(),
         generator(),
         spactions(),
-        bests_solutions(),
         accepted_solutions(),
         mapidmodified(),
         cooling_schedule(),
@@ -33,11 +31,9 @@ namespace Models
         FMTmodel(rhs),
         outputs_write_location(rhs.outputs_write_location),
         number_of_moves(0),
-        last_write(0),
         constraints_values_penalties(rhs.constraints_values_penalties),
         generator(rhs.generator),
         spactions(rhs.spactions),
-        bests_solutions(rhs.bests_solutions),
         accepted_solutions(rhs.accepted_solutions),
         mapidmodified(),
         cooling_schedule(rhs.cooling_schedule->Clone()),
@@ -52,11 +48,9 @@ namespace Models
         FMTmodel(rhs),
         outputs_write_location(),
         number_of_moves(0),
-        last_write(0),
         constraints_values_penalties(),
         generator(),
         spactions(),
-        bests_solutions(),
         accepted_solutions(),
         mapidmodified(),
         cooling_schedule(),
@@ -74,11 +68,9 @@ namespace Models
             FMTmodel::operator = (rhs);
             outputs_write_location = rhs.outputs_write_location;
             number_of_moves = rhs.number_of_moves;
-            last_write = rhs.last_write;
             constraints_values_penalties = rhs.constraints_values_penalties;
             generator = rhs.generator;
             spactions = rhs.spactions;
-            bests_solutions = rhs.bests_solutions;
             accepted_solutions = rhs.accepted_solutions;
             mapidmodified = rhs.mapidmodified;
             cooling_schedule = rhs.cooling_schedule->Clone();
@@ -98,7 +90,7 @@ namespace Models
         while (iter>0)
         {
             move_solution();
-            if(evaluate(0,false))//The temp need to be 0 to do only greedy to track what is upgraded because we accept every solution
+            if(evaluate(0))//The temp need to be 0 to do only greedy to track what is upgraded because we accept every solution
             {
                 double delta = current_solution.getobjfvalue()-new_solution.getobjfvalue();
                 sum_delta += delta;
@@ -115,10 +107,10 @@ namespace Models
             --iter;
         }
         current_solution=best;
+        get_outputs("warmup_");
         number_of_moves = 0;
         new_solution = FMTsasolution();
         mapidmodified = vector<size_t>();
-        cout<<sum_delta<<" : "<<num_delta<<endl;
         return -(sum_delta/num_delta)/log(initprob);
     }
 
@@ -136,9 +128,9 @@ namespace Models
 
     }
 
-    bool FMTsamodel::setschedule(const FMTlinearschedule& schedule)
+    bool FMTsamodel::setschedule(const FMTexponentialschedule& schedule)
     {
-        cooling_schedule = unique_ptr<FMTlinearschedule>(new FMTlinearschedule(schedule));
+        cooling_schedule = unique_ptr<FMTexponentialschedule>(new FMTexponentialschedule(schedule));
         return true;
     }
     /*bool FMTsamodel::setschedule(FMTexponentialschedule schedule) const;
@@ -194,7 +186,7 @@ namespace Models
         return number_of_moves;
     }
 
-    void FMTsamodel::get_outputs(const bool only_accepted)
+    void FMTsamodel::get_outputs(string addon)
     {
         if (outputs_write_location.empty())
         {
@@ -203,11 +195,11 @@ namespace Models
         else
         {
             fstream outputFile;
-            string filename = outputs_write_location+"outputs.csv";
-            string headers = "Move,Constraint,Period,Output,Penalty,Best solution,Last accepted";
+            string filename = outputs_write_location+addon+"outputs.csv";
+            string headers = "Move,Constraint,Period,Output,Penalty";
             outputFile.open(filename, std::fstream::in | std::fstream::out | std::fstream::app);
-            int move_num = last_write;
-            if (move_num==0)
+            vector<int>::const_iterator move_num=accepted_solutions.begin();
+            if (*move_num==0)
             {
                 outputFile<<headers<<endl;
             }
@@ -220,33 +212,14 @@ namespace Models
                     const vector<double>& penalties = mapit->second.second;
                     for (int i = 0 ; i < outputs.size() ; ++i )
                     {
-                        if (move_num==0)
-                        {
-                            outputFile<<move_num<<","<<cname<<","<<i+1<<","<<outputs.at(i)<<","<<penalties.at(i)<<","<<0<<","<<0<<endl;
-                        }
-                        else
-                        {
-                            const int& best = bests_solutions.at(move_num-1);
-                            const int& last_accepted = accepted_solutions.at(move_num-1);
-                            if (only_accepted)
-                            {
-                                if ( best == move_num || last_accepted == move_num )
-                                {
-                                outputFile<<move_num<<","<<cname<<","<<i+1<<","<<outputs.at(i)<<","<<penalties.at(i)<<","<<best<<","<<last_accepted<<endl;
-                                }
-                            }
-                            else
-                            {
-                                outputFile<<move_num<<","<<cname<<","<<i+1<<","<<outputs.at(i)<<","<<penalties.at(i)<<","<<best<<","<<last_accepted<<endl;
-                            }
-                        }
+                            outputFile<<*move_num<<","<<cname<<","<<i+1<<","<<outputs.at(i)<<","<<penalties.at(i)<<endl;
                     }
                 }
-            ++move_num;
+                ++move_num;
             }
             constraints_values_penalties.clear();
+            accepted_solutions.clear();
             outputFile.close();
-            last_write = move_num;
         }
     }
             /*for (map<pair<int,string>,vector<vector<double>>>::const_iterator mapit = constraints_values_penalties.begin(); mapit != constraints_values_penalties.end(); ++mapit)
@@ -306,6 +279,7 @@ namespace Models
         {
             current_solution.write_events(actions,out_path,"Current_solution");
             new_solution.write_events(actions,out_path,"New_solution");
+            best_solution.write_events(actions,out_path,"Best_solution");
         }
         else
         {
@@ -368,7 +342,7 @@ namespace Models
         return false;
     }
 
-    bool FMTsamodel::evaluate(const double temp,bool keep_track)
+    bool FMTsamodel::evaluate(const double temp)
     //Get the output, evaluate the penalties and compare solutions
     {
         /*//Time checking
@@ -381,8 +355,10 @@ namespace Models
             double cur_obj = 0;
             if ( number_of_moves == 1)//Evaluate initial solution and write results
             {
+                best_solution = current_solution;
                 cur_obj = current_solution.evaluate(*this);
-                if (keep_track){constraints_values_penalties.push_back(current_solution.constraint_outputs_penalties);}
+                accepted_solutions.push_back(0);
+                constraints_values_penalties.push_back(current_solution.constraint_outputs_penalties);
             }
             else
             {
@@ -390,61 +366,32 @@ namespace Models
             }
             //Evaluate new solution
             const double new_obj = new_solution.evaluate(*this);
-            if (keep_track){constraints_values_penalties.push_back(new_solution.constraint_outputs_penalties);}
-            if (new_obj<cur_obj)
+            if (best_solution.getobjfvalue()>new_obj)//If new is better than the last_best
             {
-                if (keep_track)
-                {
-                    bests_solutions.push_back(number_of_moves);//To keep track of best moves
-                    accepted_solutions.push_back(number_of_moves);
-                }
+                best_solution=new_solution;
+                accepted_solutions.push_back(number_of_moves);
+                constraints_values_penalties.push_back(new_solution.constraint_outputs_penalties);
                 return true;
             }
-            else
+            if (cur_obj>new_obj)
             {
-                if (testprobability(temp,cur_obj,new_obj))
-                {
-                    if (keep_track)
-                    {
-                        int last_best = bests_solutions.back();
-                        bests_solutions.push_back(last_best);//Keep the last best move
-                        accepted_solutions.push_back(number_of_moves);
-                    }
-                    return true;
-                }
-                if (!bests_solutions.empty())
-                {
-                    if(keep_track)
-                    {
-                        int last_best = bests_solutions.back();
-                        bests_solutions.push_back(last_best);//Keep the last best move
-                        int last_accepted = accepted_solutions.back();
-                        accepted_solutions.push_back(last_accepted);
-                    }
-                    return false;
-                }
-                else//Case the initial solution is better
-                {
-                    if (keep_track)
-                    {
-                        bests_solutions.push_back(0);
-                        accepted_solutions.push_back(0);
-                    }
-                    return false;
-                }
+                accepted_solutions.push_back(number_of_moves);
+                constraints_values_penalties.push_back(new_solution.constraint_outputs_penalties);
+                return true;
+            }
+            if (testprobability(temp,cur_obj,new_obj))
+            {
+                accepted_solutions.push_back(number_of_moves);
+                constraints_values_penalties.push_back(new_solution.constraint_outputs_penalties);
+                return true;
             }
         }
-        else
-        {
-            cout<<"No difference in move "+to_string(number_of_moves)<<endl;
-            return false;
-        }
+        return false;
         /*//Time checking
         end = clock();
         cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
         cout<<"Time used to evaluate: " <<cpu_time_used<<endl;
         //*/
-
     }
 
     FMTgraphstats FMTsamodel::buildperiod()

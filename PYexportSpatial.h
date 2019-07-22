@@ -69,14 +69,14 @@ void exportSpatial()
 
     class_<Spatial::FMTsaschedule, boost::noncopyable>("Abstract_FMTsaschedule",no_init);
 
-    const char* py_FMTlinearschedule_doc =
+    const char* py_FMTexposchedule_doc =
         " ``FMTlinearschedule`` class.\n"
         "\n"
         "FMTlinearschedule(double cooling_rate)\n"
         "Simulated annealing cooling schedule\n"
         "\n";
 
-    class_<Spatial::FMTlinearschedule,bases<FMTsaschedule>>("FMTlinearschedule",py_FMTlinearschedule_doc)
+    class_<Spatial::FMTexponentialschedule,bases<FMTsaschedule>>("FMTexponentialschedule",py_FMTexposchedule_doc)
         .def(init<double>());
 
     const char* py_FMTsasolution_doc =

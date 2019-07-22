@@ -23,14 +23,14 @@ class FMTsaschedule
         virtual unique_ptr<FMTsaschedule> Clone()const;
     };
 
-class FMTlinearschedule : public FMTsaschedule
+class FMTexponentialschedule : public FMTsaschedule
     {
     protected:
-        double decrement_model;
+        double alpha;
         string schedule_type;
     public:
-        FMTlinearschedule(double delta = 0.1);
-        ~FMTlinearschedule()=default;
+        FMTexponentialschedule(double lalpha = 0.9);
+        ~FMTexponentialschedule()=default;
         double reduce_temp(double& temp);
         string get_schedule_type()const;
         unique_ptr<FMTsaschedule> Clone()const;

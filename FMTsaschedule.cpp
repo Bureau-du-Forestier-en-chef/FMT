@@ -34,27 +34,27 @@ namespace Spatial
     }
 
 
-//FMTlinearschedule
+//FMTexponentialschedule
 
 
-    FMTlinearschedule::FMTlinearschedule(double delta): FMTsaschedule(),decrement_model(delta),schedule_type("linear")
+    FMTexponentialschedule::FMTexponentialschedule(double lalpha): FMTsaschedule(),alpha(lalpha),schedule_type("exponential")
     {
         //Constructor
     }
 
-    double FMTlinearschedule::reduce_temp(double& temp)
+    double FMTexponentialschedule::reduce_temp(double& temp)
     {
-        return temp*decrement_model;
+        return temp*alpha;
     }
 
-    string FMTlinearschedule::get_schedule_type()const
+    string FMTexponentialschedule::get_schedule_type()const
     {
         return schedule_type;
     }
 
-    unique_ptr<FMTsaschedule> FMTlinearschedule::Clone()const
+    unique_ptr<FMTsaschedule> FMTexponentialschedule::Clone()const
     {
-        return unique_ptr<FMTsaschedule>(new FMTlinearschedule(*this));
+        return unique_ptr<FMTsaschedule>(new FMTexponentialschedule(*this));
     }
 
 }
