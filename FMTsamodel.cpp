@@ -103,6 +103,10 @@ namespace Models
         {
             current_solution=first;
         }
+        else
+        {
+            current_solution=best_solution;
+        }
         get_outputs("warmup_");
         number_of_moves = 0;
         new_solution = FMTsasolution();
