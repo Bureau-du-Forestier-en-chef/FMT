@@ -20,7 +20,7 @@ namespace Core
 	}
 	bool FMTactualdevelopment::operator == (const FMTactualdevelopment& rhs) const
 	{
-		return FMTdevelopment::operator==(rhs);
+		return FMTdevelopment::operator==(rhs) && area == rhs.area;
 	}
 
 	FMTactualdevelopment::operator string() const
@@ -42,6 +42,10 @@ namespace Core
 
 
 	}
+	bool FMTactualdevelopment::operator != (const FMTactualdevelopment& rhs) const
+		{
+		return !(*this == rhs);
+		}
 	double FMTactualdevelopment::getarea() const
 		{
 		return area;
@@ -50,6 +54,11 @@ namespace Core
 	unique_ptr<FMTdevelopment> FMTactualdevelopment::Clone() const
 		{
 		return unique_ptr<FMTdevelopment>(new FMTactualdevelopment(*this));
+		}
+
+	bool FMTactualdevelopment::operator < (const FMTactualdevelopment& rhs) const
+		{
+		return (FMTdevelopment::operator < (rhs) && area < rhs.area);
 		}
 
 }

@@ -413,7 +413,8 @@ FMTareaparser::FMTareaparser() :
              const unsigned int ysize = ageband->GetYSize();
              return Spatial::FMTlayer<FMTdevelopment>(mapping,pad,xsize,ysize,projection,cellsize);
              }
-    vector<FMTactualdevelopment>FMTareaparser::readvectors(const vector<FMTtheme>& themes,const string& data_vectors,const string& agefield,const string& areafield,double agefactor,double areafactor,string lockfield) const
+    vector<FMTactualdevelopment>FMTareaparser::readvectors(const vector<FMTtheme>& themes,const string& data_vectors,
+		const string& agefield,const string& areafield,double agefactor,double areafactor,string lockfield,double minimalarea) const
         {
         GDALAllRegister();
         GDALDataset* dataset = getvectordataset(data_vectors);
@@ -434,34 +435,37 @@ FMTareaparser::FMTareaparser() :
             {
             int age  = int(feature->GetFieldAsInteger(age_field)*agefactor);
             double area = (feature->GetFieldAsDouble(area_field)*areafactor);
-            int lock = 0;
-            if (lock_field!=-1)
-                {
-                string slock =feature->GetFieldAsString(lock_field);
-                slock.erase(0,5);
-                if (isvalid(slock))
-                    {
-                    lock = stoi(slock);
-                    }
-                }
-            vector<string>masks(themes_fields.size());
-            for(map<int,int>::const_iterator it=themes_fields.begin(); it!=themes_fields.end(); ++it)
-                {
-                const string attribute = feature->GetFieldAsString(it->second);
-                masks[it->first] = attribute;
-                }
-            string tmask = boost::algorithm::join(masks," ");
-			//FMTmask mask = validate(themes, tmask);
-            if (!validate(themes, tmask)) continue;
-			FMTmask mask(tmask,themes);
-            FMTactualdevelopment dev(mask,age,lock,area);
-            vector<FMTactualdevelopment>::iterator it = find(devs.begin(),devs.end(),dev);
-            if (it!=devs.end())
-                {
-                it->area+=area;
-                }else{
-                devs.push_back(dev);
-                }
+			if (area > minimalarea)
+				{
+				int lock = 0;
+				if (lock_field!=-1)
+					{
+					string slock =feature->GetFieldAsString(lock_field);
+					slock.erase(0,5);
+					if (isvalid(slock))
+						{
+						lock = stoi(slock);
+						}
+					}
+				vector<string>masks(themes_fields.size());
+				for(map<int,int>::const_iterator it=themes_fields.begin(); it!=themes_fields.end(); ++it)
+					{
+					const string attribute = feature->GetFieldAsString(it->second);
+					masks[it->first] = attribute;
+					}
+				string tmask = boost::algorithm::join(masks," ");
+				//FMTmask mask = validate(themes, tmask);
+				if (!validate(themes, tmask)) continue;
+				FMTmask mask(tmask,themes);
+				FMTactualdevelopment dev(mask,age,lock,area);
+				vector<FMTactualdevelopment>::iterator it = find(devs.begin(),devs.end(),dev);
+				if (it!=devs.end())
+					{
+					it->area+=area;
+					}else{
+					devs.push_back(dev);
+					}
+			}
             OGRFeature::DestroyFeature(feature);
             }
         return devs;

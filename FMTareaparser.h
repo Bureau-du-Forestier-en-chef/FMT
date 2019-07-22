@@ -63,7 +63,8 @@ class FMTareaparser : public FMTparser
 
         vector<FMTactualdevelopment>readvectors(const vector<FMTtheme>& themes,const string& data_vectors,
                                    const string& agefield,const string& areafield,double agefactor = 1.0,
-                                   double areafactor = 1,string lockfield = "") const;
+                                   double areafactor = 1,string lockfield = "",
+								   double minimal_area = 0.0) const;
 
         bool write(const vector<FMTactualdevelopment>& areas, string location);
     };
