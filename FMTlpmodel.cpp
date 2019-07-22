@@ -386,6 +386,30 @@ namespace Models
     return false;
 	}
 
+	bool FMTlpmodel::unboundsolution(int period)
+		{
+		if (graph.size() > period && period > 0)
+			{
+			vector<int>variable_index;
+			vector<double>bounds;
+			for (const auto& descriptors : graph.getperiodverticies(period))
+				{
+				const FMTvertex_descriptor vertex_descriptor = descriptors.second;
+				map<int, int>variables = graph.getoutvariables(vertex_descriptor);
+				for (map<int, int>::const_iterator varit = variables.begin(); varit != variables.end(); varit++)
+					{
+					if (std::find(variable_index.begin(), variable_index.end(), varit->second) == variable_index.end())
+						{
+						variable_index.push_back(varit->second);
+						bounds.push_back(-COIN_DBL_MAX);
+						bounds.push_back(COIN_DBL_MAX);
+						}
+					}
+				}
+			solverinterface->setColSetBounds(&variable_index[0], &variable_index.back() - 1, &bounds[0]);
+			}
+		}
+
 	bool FMTlpmodel::setsolution(int period, const FMTschedule& schedule)
 	{
 		if (graph.size() > period && period > 0)
