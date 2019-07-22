@@ -48,7 +48,7 @@ class FMTsasolution : public FMTlayer<FMTgraph>
         double getobjfvalue()const;
         FMTgraphstats getsolution_stats() const;
         const vector<vector<vector<FMTevent<FMTgraph>>>>& getevents() const;
-        getstartstop(const FMTconstraint& constraint, int& periodstart,int& periodstop) const;
+        void getstartstop(const FMTconstraint& constraint, int& periodstart,int& periodstop) const;
         vector<double> getgraphsoutputs(const FMTmodel& model, const FMTconstraint& constraint,
                                     const int& periodstart,const int& periodstop) const;
         double getgraphspenalties(const FMTsamodel& model, const FMTconstraint& constraint,

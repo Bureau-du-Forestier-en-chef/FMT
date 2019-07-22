@@ -112,7 +112,7 @@ namespace Spatial
         return events;
     }
 
-    FMTsasolution::getstartstop(const FMTconstraint& constraint,int& periodstart,int& periodstop) const
+    void FMTsasolution::getstartstop(const FMTconstraint& constraint,int& periodstart,int& periodstop) const
     {
         map<FMTcoordinate,FMTgraph>::const_iterator graphit = this->mapping.begin();
         const FMTgraph* local_graph = &graphit->second;
@@ -446,8 +446,7 @@ namespace Spatial
             default :
                 break;
         }
-
-
+    return 0;
     }
 
     double FMTsasolution::evaluate(const FMTsamodel& model)
@@ -511,6 +510,7 @@ namespace Spatial
                     constraintvaluespenalties[pair<int,string>(move_num,action_period_penalties_it->first)].push_back(vector<double>(penalties_vals.size(),0));//To keep the same structure as graph
                     constraintvaluespenalties[pair<int,string>(move_num,action_period_penalties_it->first)].push_back(penalties_vals);
                 }*/
+        return 0;
         }
 
     void FMTsasolution::write_events(const vector<FMTaction> model_actions,const string out_path,const string addon) const
