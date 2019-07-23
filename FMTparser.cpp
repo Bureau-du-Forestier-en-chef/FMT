@@ -17,7 +17,9 @@ FMTwssect FMTparser::from_extension(const string& ext)
     {
     vector<string>extensions={".run",".lan",".are",".act",".trn",".yld",".out",".opt",".con",".seq",".lif",
 							"._lan","._are","._act","._trn","._yld","._out","._opt","._con","._seq","._lif" };
-    vector<string>::const_iterator it = find(extensions.begin(), extensions.end(),ext);
+	string lowercase = ext;
+	boost::to_lower(lowercase);
+    vector<string>::const_iterator it = find(extensions.begin(), extensions.end(), lowercase);
     size_t id = (it - extensions.begin());
 	//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "build stats: " <<ext<<" "<< id << "\n";
     switch (id)
