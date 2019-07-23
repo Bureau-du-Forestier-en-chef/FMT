@@ -388,7 +388,7 @@ namespace Models
 
 	bool FMTlpmodel::unboundsolution(int period)
 		{
-		if (graph.size() > period && period > 0)
+		if (graph.size() > period && period > 0)//period >0 to not select actual developments!
 			{
 			vector<int>variable_index;
 			vector<double>bounds;
@@ -407,7 +407,9 @@ namespace Models
 					}
 				}
 			solverinterface->setColSetBounds(&variable_index[0], &variable_index.back() - 1, &bounds[0]);
+			return true;
 			}
+		return false;
 		}
 
 	bool FMTlpmodel::setsolution(int period, const FMTschedule& schedule)

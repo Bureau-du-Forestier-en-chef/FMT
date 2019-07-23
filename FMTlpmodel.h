@@ -134,6 +134,8 @@ class FMTlpmodel : public FMTmodel
 		FMTgraphstats buildperiod(FMTschedule schedule = FMTschedule());
 		FMTgraphstats setobjective(const FMTconstraint& objective);
 		FMTgraphstats setconstraint(const FMTconstraint& constraint);
+		/*bool unboundconstraint(const FMTconstraint& constraint, int period);
+		bool boundconstraint(const FMTconstraint& constraint, int period);*/
 		bool solve();
 		FMTlpmodel& operator = (const FMTlpmodel& rhs);
 		~FMTlpmodel() = default;
