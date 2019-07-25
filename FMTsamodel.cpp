@@ -101,11 +101,11 @@ namespace Models
             g_move_solution(mean_ratio,mean_ratio);//Systematicaly evaluate the mean_ratio
             if(evaluate(0))//The temp need to be 0 to do only greedy to track what is upgraded because we accept every solution
             {
-                double delta = current_solution.getobjfvalue()-new_solution.getobjfvalue();
+                double delta = fabs(current_solution.getobjfvalue()-new_solution.getobjfvalue());
                 sum_delta += delta;
                 ++num_delta;
-                acceptnew();
             }
+            acceptnew();
             --iter;
         }
         if (!keep_best)
