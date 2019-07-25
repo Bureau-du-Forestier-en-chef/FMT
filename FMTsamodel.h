@@ -18,6 +18,7 @@ namespace Models
 class FMTsamodel : public FMTmodel
     {
     protected:
+        double min_ratio_moves,max_ratio_moves;
         string outputs_write_location;
         int number_of_moves;
         vector<map<string,pair<vector<double>,vector<double>>>> constraints_values_penalties;//move,constraint_name : <outputs,penalties>
@@ -40,11 +41,12 @@ class FMTsamodel : public FMTmodel
 
         //Setting parameters for the model
 
-        double warmup(const double initprob,bool keep_best=false,int iternum = 1000);
+        double warmup(const double initprob,bool keep_best=false);
         void write_outputs_at(string path);
         bool setschedule(const FMTexponentialschedule& schedule);//To set a schedule for the simulated annealing
         bool setinitial_mapping(const FMTforest& forest);
         bool setspactions(const vector<FMTspatialaction>& lspactions);//Set spatial action see FMTspatialaction for info
+        bool set_min_max_moves(const double min_r,const double max_r);
 
         //Get informations
 
@@ -64,7 +66,8 @@ class FMTsamodel : public FMTmodel
         double cool_down(double temp)const{return cooling_schedule->reduce_temp(temp);};//Set a default cooling schedule to avoid crash
         bool evaluate(const double temp);//To compare the two solutions ... if new<current true
         FMTgraphstats buildperiod();//To build initial solution
-        FMTgraphstats move_solution(FMTsamovetype movetype = FMTsamovetype::shotgun);//move operator
+        FMTgraphstats move_solution(FMTsamovetype movetype = FMTsamovetype::shotgun);//move_operator
+        FMTgraphstats g_move_solution(const double min_ratio,const double max_ratio, FMTsamovetype movetype = FMTsamovetype::shotgun);//overloading move operator
         bool comparesolutions() const;//To verify if solutions are not identical
         bool setmapidmodified(const vector<size_t>& id);
     };

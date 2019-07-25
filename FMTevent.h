@@ -380,7 +380,7 @@ class FMTevent
                         splittedevents.push_back(newevent);
                         it_vect.push_back(elemit);
                     }
-                    if (find(it_vect.begin(),it_vect.end(),elemit)==it_vect.end())//If not allocated
+                    if (find(it_vect.begin(),it_vect.end(),elemit)==it_vect.end())//If not already allocated
                     {
                         FMTevent& lastevent = splittedevents.back();
                         if (lastevent.whithinelements(distancel,elemit->first))//If in distance of 1

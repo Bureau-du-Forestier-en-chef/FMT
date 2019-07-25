@@ -6,7 +6,7 @@ BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(simulate_overloads,simulate, 1, 3)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(buildperiod_overloads, buildperiod, 0, 1)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(move_solution_overloads, move_solution, 0, 1)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(get_outputs_overloads, get_outputs, 0, 1)
-BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(warmup_overloads, warmup, 1, 3)
+BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(warmup_overloads, warmup, 1, 2)
 
 
 
@@ -135,6 +135,7 @@ void exportModel()
 				"Set a spatial actions list to the model\n"
 				"Model should contain the relative transitions\n"
 				"Actions will be simulated following the list ordering\n")
+            .def("set_min_max_moves",&FMTsamodel::set_min_max_moves)
             .def("cool_down",&FMTsamodel::cool_down,
                  "Reduce temperature according to the cooling schedule\n")
             .def("get_cool_schedule_type",&FMTsamodel::getcoolingscheduletype,
