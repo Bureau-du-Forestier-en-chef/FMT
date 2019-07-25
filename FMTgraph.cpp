@@ -1101,7 +1101,7 @@ void FMTgraph::cleanevents(vector<FMTevent<FMTgraph>>& events_id, const FMTcoord
                     {
                         clean_events_id.insert(clean_events_id.end(),potentialysplittedevents.begin(),potentialysplittedevents.end());
                     }
-                    clean_events_id.push_back(event);
+                    else{clean_events_id.push_back(event);}
                 }
             }
             else

@@ -5,6 +5,8 @@
 #include <iostream>
 #include <limits>
 #include <math.h>
+#include <cmath>
+#include <cfloat>
 
 namespace Spatial
 {
@@ -157,7 +159,7 @@ namespace Spatial
             double lower = 0;
             double upper = 0;
             constraint.getbounds(lower,upper,period);
-            double penalties = this->applypenalty(upper,lower,value,coef,FMTsapenaltytype::linear);
+            double penalties = this->applypenalty(upper,lower,value,coef,FMTsapenaltytype::exponential);
             penalties_vals.push_back(penalties);
             sumpenalties+=penalties;
             period++;
@@ -238,75 +240,6 @@ namespace Spatial
         return spatialpenalties;
     }
 
-    /*double FMTsasolution::getspatialpenalties(const FMTsamodel& model, map<string,vector<double>>& action_period_penalties) const //Use of spatial actions as objectives
-    // See to ventilate by period and action for analysing results
-    {
-        vector<FMTspatialaction> spatialactions = model.getspatialactions();
-        double spatialpenalties = 0;
-        size_t period = 1;
-        vector<FMTspatialaction>::iterator actionit = find(spatialactions.begin(),spatialactions.end(),constraint.name);
-        int action_id = std::distance(spatialactions.begin(), actionit);
-        for (const vector<vector<FMTevent<FMTgraph>>>& period_actions : events)
-        {
-            int period_penalty = 0;
-            if (!period_actions.empty())
-            {
-                size_t action_id = 0;
-                for(const vector<FMTevent<FMTgraph>>& action_events : period_actions)
-                {
-                    const FMTspatialaction& spaction = spatialactions.at(action_id);
-                    if(spaction.simulated_annealing_valid())
-                    {
-                        double action_penalties = 0;
-                        if(!action_events.empty())
-                        {
-                            //Getting events that can be considerate as neighbors
-                            vector<FMTevent<FMTgraph>> potential_neigbors;
-                            for (vector<vector<FMTevent<FMTgraph>>>::const_iterator action_events_it = period_actions.begin();action_events_it != period_actions.end();++action_events_it) //To navigate through neighbors
-                            {
-                                for (vector<string>::const_iterator neighbors_it = spaction.neighbors.begin();neighbors_it!=spaction.neighbors.end();++neighbors_it)
-                                {
-                                    if (spatialactions.at(action_events_it-period_actions.begin()).name == *neighbors_it)//Where iterator is - begin == index so we compare the name of the action and neighbors in neighbors list
-                                    {
-                                        const vector<FMTevent<FMTgraph>> value = *action_events_it;
-                                        potential_neigbors.insert(potential_neigbors.end(),value.begin(),value.end());//Insert FMTevent<FMTgraph> of each action in neighbors
-                                    }
-
-                                }
-                            }
-                            const double maxsize = static_cast<double>(spaction.maximal_size);
-                            const double minsize = static_cast<double>(spaction.minimal_size);
-                            double spaction_penalties = 0;
-                            for (const FMTevent<FMTgraph>& event : action_events)
-                            {
-                                if (!event.empty())
-                                {
-                                    double eventpenalty = 0;
-                                    //Size penalty
-                                    double event_size = static_cast<double>(event.elements.size());
-                                    eventpenalty += applypenalty(maxsize,minsize,event_size,spaction.size_weight,FMTsapenaltytype::linear);
-                                    //Neighbors penalty
-                                    //Adjacency
-                                    eventpenalty += applypenalty(numeric_limits<double>::infinity(),spaction.adjacency,event.minimaldistance(potential_neigbors,spaction.adjacency),spaction.adjacency_weight,FMTsapenaltytype::linear);
-                                    //Greenup
-                                    action_penalties+=eventpenalty;
-                                }
-
-                            }
-                        }
-                        action_period_penalties[spaction.name].push_back(action_penalties);
-                        spatialpenalties+=action_penalties;
-                    }
-                    action_id++;
-                }
-            }
-            period++;
-        }
-        //Return yvalue for each event
-        //Use spatial actions as objectives
-        return spatialpenalties;
-    }*/
-
     FMTforest FMTsasolution::getforestperiod(const int& period) const
     {
         FMTforest forest(this->copyextent<FMTdevelopment>());//Setting layer information
@@ -338,7 +271,7 @@ namespace Spatial
             return periodstats;
         }
 
-    FMTsasolution FMTsasolution::perturb(FMTsamodel& model, default_random_engine& generator,FMTsamovetype movetype) const
+    FMTsasolution FMTsasolution::perturb(FMTsamodel& model, default_random_engine& generator,FMTsamovetype movetype,const double min_ratio, const double max_ratio) const
     {
         FMTsasolution newsolution(*this);
         newsolution.events_meansize.clear();
@@ -353,8 +286,10 @@ namespace Spatial
                 lsize = i;
                 ++i;
             }
+            int min_cells = max(int((map_lenght.size()-1)*min_ratio),1);
+            int max_cells = max(int((map_lenght.size()-1)*max_ratio),1);
             shuffle(map_lenght.begin(),map_lenght.end(),generator);//shuffle all indices in the map
-            uniform_int_distribution<int> celldistribution(0,map_lenght.size()-1);
+            uniform_int_distribution<int> celldistribution(min_cells,max_cells);
             int numbercells = celldistribution(generator);//Get number of cell to perturb
             vector<size_t> ChangedId;
             //cout<< "Map size "<< map_lenght.size()<<endl;
@@ -395,6 +330,46 @@ namespace Spatial
         return newsolution;
     }
 
+    double FMTsasolution::exponentialpenalty(const double& xvalue,
+                        const double& xlowerbound, const double& xupperbound,
+                        const double& maxpenalty,
+                        double curvelength,
+                        double slope) const
+    {
+    //https://en.wikipedia.org/wiki/Exponential_distribution
+    //change slope between 1 to 2 (1  = more linear)
+    //If no curvelength find one
+    if (!curvelength)
+        {
+         if (xlowerbound != -DBL_MAX)
+            {
+            curvelength = abs(xlowerbound);
+            }else if(xupperbound != DBL_MAX)
+                {
+                curvelength =  abs(xupperbound);
+                }
+        }
+    if (curvelength != 0)
+        {
+        double basefive = 0;
+        if (xvalue < xlowerbound)
+            {
+            basefive=(5.0/curvelength)*xvalue;
+            if (xvalue < 0)
+                {
+                basefive=5-(5.0/curvelength)*(abs(xvalue)-abs(xlowerbound));
+                }
+            }else if(xvalue > xupperbound)
+                {
+                basefive = 5-((5.0/curvelength)*(xvalue-xupperbound));
+                }else{
+                    return 0;
+                }
+        return min((slope*exp(-slope*(basefive)))*maxpenalty,maxpenalty);
+        }
+    return 0;
+    }
+
     double FMTsasolution::applypenalty(const double& upper,const double& lower, const double& value, const double& coef, const FMTsapenaltytype penalty_type)const
     {
         switch(penalty_type)
@@ -425,22 +400,25 @@ namespace Spatial
 
             case FMTsapenaltytype::exponential:
                 {
-                    double penaltyvalue = 0;
-                    if (!isinf(lower))//If lower is not infinite
+                    double lowerl = lower;
+                    double upperl = upper;
+                    double maxpenalty = 0;
+                    if (isinf(lower))//If lower is infinite
                     {
-                        if(value<lower)//If value under lower bound penalize
-                        {
-                            penaltyvalue = exp((value*-1)+lower);
-                        }
+                        lowerl = -DBL_MAX;
+                        maxpenalty = upper*coef;
+
                     }
-                        if (!isinf(upper))//If upper is not infinite
+                        if (isinf(upper))//If upper is infinite
                     {
-                        if (value>upper)//If value higher than upper bound penalize
-                        {
-                            penaltyvalue = exp(value-upper);
-                        }
+                        upperl = DBL_MAX;
+                        maxpenalty = lower*coef;
                     }
-                    return penaltyvalue*coef;
+                    else
+                    {
+                        maxpenalty = (max(lower,upper))*coef;
+                    }
+                    return exponentialpenalty(value,lowerl,upperl,maxpenalty);
                 }
 
             default :
@@ -478,10 +456,13 @@ namespace Spatial
                         {
                             vector<double> output_vals;
                             vector<double> penalties_vals;
-                            value = this->getgraphspenalties(model,constraint,coef, output_vals, penalties_vals);//apply weight in applypenalty
                             if ( type == FMTconstrainttype::FMTspatialadjacency  || type == FMTspatialsize || type == FMTspatialgreenup )//Case spatial are in the section optimize
                             {
                                 value = this->getspatialpenalties(model,constraint,coef, output_vals, penalties_vals);
+                            }
+                            else
+                            {
+                                value = this->getgraphspenalties(model,constraint,coef, output_vals, penalties_vals);//apply weight in applypenalty
                             }
                             constraint_outputs_penalties[constraint.name+to_string(constraint.getconstrainttype())] = pair<vector<double>,vector<double>>(output_vals,penalties_vals);
                         }

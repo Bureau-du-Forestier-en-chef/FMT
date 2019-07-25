@@ -60,7 +60,12 @@ class FMTsasolution : public FMTlayer<FMTgraph>
         //Function to manipulate solution
         FMTgraphstats buildperiod(const FMTmodel& model,default_random_engine& generator);
         FMTsasolution perturb( FMTsamodel& model, default_random_engine& generator,
-                               FMTsamovetype movetype = FMTsamovetype::shotgun) const;
+                               FMTsamovetype movetype = FMTsamovetype::shotgun,
+                               const double min_ratio=0, const double max_ratio=1) const;
+        double exponentialpenalty( const double& xvalue, const double& xlowerbound, const double& xupperbound,
+                                    const double& maxpenalty,
+                                    double curvelength = 0,
+                                    double slope = 1) const;
         double applypenalty(const double& upper,const double& lower,
                             const double& value, const double& coef, const FMTsapenaltytype penalty_type) const;
         double evaluate(const FMTsamodel& model);

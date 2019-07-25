@@ -12,6 +12,8 @@ namespace Models
 {
     FMTsamodel::FMTsamodel():
         FMTmodel(),
+        min_ratio_moves(0),
+        max_ratio_moves(1),
         outputs_write_location(),
         number_of_moves(0),
         constraints_values_penalties(),
@@ -29,6 +31,8 @@ namespace Models
 
     FMTsamodel::FMTsamodel(const FMTsamodel& rhs):
         FMTmodel(rhs),
+        min_ratio_moves(rhs.min_ratio_moves),
+        max_ratio_moves(rhs.max_ratio_moves),
         outputs_write_location(rhs.outputs_write_location),
         number_of_moves(0),
         constraints_values_penalties(rhs.constraints_values_penalties),
@@ -46,6 +50,8 @@ namespace Models
 
     FMTsamodel::FMTsamodel(const FMTmodel& rhs):
         FMTmodel(rhs),
+        min_ratio_moves(0),
+        max_ratio_moves(1),
         outputs_write_location(),
         number_of_moves(0),
         constraints_values_penalties(),
@@ -66,6 +72,8 @@ namespace Models
         if (this!=&rhs)
             {
             FMTmodel::operator = (rhs);
+            min_ratio_moves = rhs.min_ratio_moves;
+            max_ratio_moves = rhs.max_ratio_moves;
             outputs_write_location = rhs.outputs_write_location;
             number_of_moves = rhs.number_of_moves;
             constraints_values_penalties = rhs.constraints_values_penalties;
@@ -81,22 +89,23 @@ namespace Models
         return *this;
     }
 
-    double FMTsamodel::warmup(const double initprob,bool keep_best,int iternum)
+    double FMTsamodel::warmup(const double initprob,bool keep_best)
     {
         FMTsasolution first=current_solution;//Put it as current at the end
-        int iter = iternum;
+        double mean_ratio = (max_ratio_moves - min_ratio_moves)/2;
+        int iter = mean_ratio*first.mapping.size()*10;
         double sum_delta = 0;
         size_t num_delta = 0;
         while (iter>0)
         {
-            move_solution();
+            g_move_solution(mean_ratio,mean_ratio);//Systematicaly evaluate the mean_ratio
             if(evaluate(0))//The temp need to be 0 to do only greedy to track what is upgraded because we accept every solution
             {
                 double delta = current_solution.getobjfvalue()-new_solution.getobjfvalue();
                 sum_delta += delta;
                 ++num_delta;
+                acceptnew();
             }
-            acceptnew();
             --iter;
         }
         if (!keep_best)
@@ -108,6 +117,7 @@ namespace Models
             current_solution=best_solution;
         }
         get_outputs("warmup_");
+        //Only to reset samodel parameters to default
         number_of_moves = 0;
         new_solution = FMTsasolution();
         best_solution = FMTsasolution();
@@ -180,6 +190,13 @@ namespace Models
                                                         cout<<upper<<" : "<<lower<<"      "<<name<<" : "<<coef<<endl;
                                                     }*/
 		return true;
+    }
+
+    bool FMTsamodel::set_min_max_moves(const double min_r,const double max_r)
+    {
+        min_ratio_moves = min_r;
+        max_ratio_moves = max_r;
+        return true;
     }
 
     int FMTsamodel::get_number_moves()const
@@ -412,8 +429,13 @@ namespace Models
 
     FMTgraphstats FMTsamodel::move_solution(FMTsamovetype movetype)
     {
+        return g_move_solution(min_ratio_moves,max_ratio_moves,movetype);
+    }
+
+    FMTgraphstats FMTsamodel::g_move_solution (const double min_ratio, const double max_ratio, FMTsamovetype movetype)
+    {
         number_of_moves ++;
-        new_solution = current_solution.perturb(*this,generator,movetype);
+        new_solution = current_solution.perturb(*this,generator,movetype,min_ratio,max_ratio);
         return new_solution.getsolution_stats();
     }
 
