@@ -324,7 +324,8 @@ vector<FMTmodel>FMTmodelparser::readproject(const string& primary_location,
 	vector<FMTmodel>models;
 	map<string, vector<int>>commons;
 	map<FMTwssect, string>bases = getprimary(primary_location);
-	if (std::find(scenarios.begin(),scenarios.end(),"ROOT")!=scenarios.end() ||scenarios.empty()) //load the modelroot!
+	bool tookroot = (std::find(scenarios.begin(), scenarios.end(), "ROOT") != scenarios.end());
+	if (tookroot ||scenarios.empty()) //load the modelroot!
 		{
 		FMTmodel scenario = referenceread(commons,
 			models,
@@ -343,44 +344,47 @@ vector<FMTmodel>FMTmodelparser::readproject(const string& primary_location,
 	boost::filesystem::path primary_path(primary_location);
 	string main_name = primary_path.stem().string();
 	boost::filesystem::path scenarios_path = (primary_path.parent_path() / boost::filesystem::path("Scenarios"));
-	boost::filesystem::directory_iterator end_itr;
-	string model_name;
-	for (boost::filesystem::directory_iterator itr(scenarios_path); itr != end_itr; ++itr)
+	if (boost::filesystem::is_directory(scenarios_path))
 		{
-		if (boost::filesystem::is_directory(itr->path()))
+		boost::filesystem::directory_iterator end_itr;
+		string model_name;
+		for (boost::filesystem::directory_iterator itr(scenarios_path); itr != end_itr; ++itr)
 			{
-			model_name = itr->path().stem().string();
-			if (scenarios.empty()||std::find(scenarios.begin(), scenarios.end(), model_name) != scenarios.end())
+			if (boost::filesystem::is_directory(itr->path()))
 				{
-					map<FMTwssect, string>scenario_files = bases;
-					boost::filesystem::directory_iterator end_fileitr;
-					for (boost::filesystem::directory_iterator fileitr(itr->path()); fileitr != end_fileitr; ++fileitr)
+				model_name = itr->path().stem().string();
+				if (scenarios.empty()||std::find(scenarios.begin(), scenarios.end(), model_name) != scenarios.end())
 					{
-						if (boost::filesystem::is_regular_file(fileitr->path()))
+						map<FMTwssect, string>scenario_files = bases;
+						boost::filesystem::directory_iterator end_fileitr;
+						for (boost::filesystem::directory_iterator fileitr(itr->path()); fileitr != end_fileitr; ++fileitr)
 						{
-							string extension = boost::filesystem::extension(fileitr->path().string());
-							FMTwssect section = from_extension(extension);
-							string file_name = fileitr->path().stem().string();
-							if (section != FMTwssect::Empty && file_name == main_name)
+							if (boost::filesystem::is_regular_file(fileitr->path()))
 							{
-								scenario_files[section] = fileitr->path().string();
+								string extension = boost::filesystem::extension(fileitr->path().string());
+								FMTwssect section = from_extension(extension);
+								string file_name = fileitr->path().stem().string();
+								if (section != FMTwssect::Empty && file_name == main_name)
+								{
+									scenario_files[section] = fileitr->path().string();
+								}
 							}
 						}
+						//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << model_name << "\n";
+						FMTmodel scenario = referenceread(commons,
+							models,
+							scenario_files.at(FMTwssect::Constants),
+							scenario_files.at(FMTwssect::Landscape),
+							scenario_files.at(FMTwssect::Lifespan),
+							scenario_files.at(FMTwssect::Area),
+							scenario_files.at(FMTwssect::Yield),
+							scenario_files.at(FMTwssect::Action),
+							scenario_files.at(FMTwssect::Transition),
+							scenario_files.at(FMTwssect::Outputs),
+							scenario_files.at(FMTwssect::Optimize),true);
+						models.back().name = model_name;
+						//models.push_back(scenario);
 					}
-					//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << model_name << "\n";
-					FMTmodel scenario = referenceread(commons,
-						models,
-						scenario_files.at(FMTwssect::Constants),
-						scenario_files.at(FMTwssect::Landscape),
-						scenario_files.at(FMTwssect::Lifespan),
-						scenario_files.at(FMTwssect::Area),
-						scenario_files.at(FMTwssect::Yield),
-						scenario_files.at(FMTwssect::Action),
-						scenario_files.at(FMTwssect::Transition),
-						scenario_files.at(FMTwssect::Outputs),
-						scenario_files.at(FMTwssect::Optimize),true);
-					models.back().name = model_name;
-					//models.push_back(scenario);
 				}
 			}
 		}
