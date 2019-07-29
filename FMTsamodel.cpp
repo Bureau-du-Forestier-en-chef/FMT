@@ -21,6 +21,7 @@ namespace Models
         spactions(),
         accepted_solutions(),
         mapidmodified(),
+        probabs(),
         cooling_schedule(),
         best_solution(),
         current_solution(),
@@ -40,6 +41,7 @@ namespace Models
         spactions(rhs.spactions),
         accepted_solutions(rhs.accepted_solutions),
         mapidmodified(),
+        probabs(rhs.probabs),
         cooling_schedule(rhs.cooling_schedule->Clone()),
         best_solution(rhs.best_solution),
         current_solution(rhs.current_solution),
@@ -59,6 +61,7 @@ namespace Models
         spactions(),
         accepted_solutions(),
         mapidmodified(),
+        probabs(),
         cooling_schedule(),
         best_solution(),
         current_solution(),
@@ -81,6 +84,7 @@ namespace Models
             spactions = rhs.spactions;
             accepted_solutions = rhs.accepted_solutions;
             mapidmodified = rhs.mapidmodified;
+            probabs = rhs.probabs;
             cooling_schedule = rhs.cooling_schedule->Clone();
             best_solution=rhs.best_solution;
             current_solution = rhs.current_solution;
@@ -89,24 +93,54 @@ namespace Models
         return *this;
     }
 
-    double FMTsamodel::warmup(const double initprob,bool keep_best)
+    double FMTsamodel::warmup(const double initprob,bool keep_best,FMTsawarmuptype type)
     {
         FMTsasolution first=current_solution;//Put it as current at the end
+        double temp = 0;
         double mean_ratio = (max_ratio_moves - min_ratio_moves)/2;
         int iter = mean_ratio*first.mapping.size()*10;
-        double sum_delta = 0;
-        size_t num_delta = 0;
-        while (iter>0)
+        switch(type)
         {
-            g_move_solution(mean_ratio,mean_ratio);//Systematicaly evaluate the mean_ratio
-            if(evaluate(0))//The temp need to be 0 to do only greedy to track what is upgraded because we accept every solution
+        case FMTsawarmuptype::log :
             {
-                double delta = fabs(current_solution.getobjfvalue()-new_solution.getobjfvalue());
-                sum_delta += delta;
-                ++num_delta;
+                double sum_delta = 0;
+                size_t num_delta = 0;
+                while (iter>0)
+                {
+                    g_move_solution(mean_ratio,mean_ratio);//Systematicaly evaluate the mean_ratio
+                    if(evaluate(0))//The temp need to be 0 to do only greedy to track what is upgraded because we accept every solution
+                    {
+                        double delta = current_solution.getobjfvalue()-new_solution.getobjfvalue();
+                        sum_delta += delta;
+                        ++num_delta;
+                    }
+                    acceptnew();
+                    --iter;
+                }
+                temp = -(sum_delta/num_delta)/log(initprob);
+                break;
             }
-            acceptnew();
-            --iter;
+        case FMTsawarmuptype::bigdelta :
+            {
+                double maxdelta = 0;
+                while (iter>0)
+                {
+                    g_move_solution(mean_ratio,mean_ratio);//Systematicaly evaluate the mean_ratio
+                    evaluate(0);//The temp need to be 0 to do only greedy to track what is upgraded because we accept every solution
+                    double delta = fabs(current_solution.getobjfvalue()-new_solution.getobjfvalue());
+                    if (delta>maxdelta)
+                    {
+                            maxdelta = delta;
+                    }
+                    acceptnew();
+                    --iter;
+                }
+                temp = maxdelta;
+                break;
+            }
+        default :
+            break;
+
         }
         if (!keep_best)
         {
@@ -122,7 +156,7 @@ namespace Models
         new_solution = FMTsasolution();
         best_solution = FMTsasolution();
         mapidmodified = vector<size_t>();
-        return -(sum_delta/num_delta)/log(initprob);
+        return temp;
     }
 
     void FMTsamodel::write_outputs_at(string path)
@@ -214,9 +248,10 @@ namespace Models
         {
             fstream outputFile;
             string filename = outputs_write_location+addon+"outputs.csv";
-            string headers = "Move,Constraint,Period,Output,Penalty";
+            string headers = "Move,Constraint,Period,Output,Penalty,P";
             outputFile.open(filename, std::fstream::in | std::fstream::out | std::fstream::app);
             vector<int>::const_iterator move_num=accepted_solutions.begin();
+            vector<double>::const_iterator probs=probabs.begin();
             if (*move_num==0)
             {
                 outputFile<<headers<<endl;
@@ -230,13 +265,15 @@ namespace Models
                     const vector<double>& penalties = mapit->second.second;
                     for (int i = 0 ; i < outputs.size() ; ++i )
                     {
-                            outputFile<<*move_num<<","<<cname<<","<<i+1<<","<<outputs.at(i)<<","<<penalties.at(i)<<endl;
+                            outputFile<<*move_num<<","<<cname<<","<<i+1<<","<<outputs.at(i)<<","<<penalties.at(i)<<","<<*probs<<endl;
                     }
                 }
                 ++move_num;
+                ++probs;
             }
             constraints_values_penalties.clear();
             accepted_solutions.clear();
+            probabs.clear();
             outputFile.close();
         }
     }
@@ -355,11 +392,10 @@ namespace Models
         new_solution = FMTsasolution();
     }
 
-    bool FMTsamodel::testprobability(const double temp,const double cur_obj, const double new_obj) //Metropolis criterion
+    bool FMTsamodel::testprobability(const double& p) //Metropolis criterion
     {
-        uniform_real_distribution<double> r_dist(0.0,1.0);
-        const double r = r_dist(generator);
-        const double p = exp(((-1*cur_obj)-new_obj)/temp);
+        uniform_real_distribution<double> r_dist(0.0,1);
+        double r = r_dist(generator);
         if (p > r)
         {
             return true;
@@ -379,6 +415,7 @@ namespace Models
         {
             double cur_obj = 0;
             double best_obj = 0;
+            double p = 0;
             if ( number_of_moves == 1)//Evaluate initial solution and write results
             {
                 cur_obj = current_solution.evaluate(*this);
@@ -394,22 +431,22 @@ namespace Models
             }
             //Evaluate new solution
             const double new_obj = new_solution.evaluate(*this);
-            if (best_obj>new_obj)//If new is better than the last_best
+            if (best_obj>new_obj)
             {
                 best_solution=new_solution;
-                accepted_solutions.push_back(number_of_moves);
-                constraints_values_penalties.push_back(new_solution.constraint_outputs_penalties);
-                return true;
             }
-            if (cur_obj>new_obj)
+            if ( cur_obj>new_obj )//If new is better than the last_best
+            {
+                p = 1;
+            }
+            else
+                {
+                    p = exp((-1*(cur_obj)-new_obj)/temp);
+                }
+            if (testprobability(p))
             {
                 accepted_solutions.push_back(number_of_moves);
-                constraints_values_penalties.push_back(new_solution.constraint_outputs_penalties);
-                return true;
-            }
-            if (testprobability(temp,cur_obj,new_obj))
-            {
-                accepted_solutions.push_back(number_of_moves);
+                probabs.push_back(p);
                 constraints_values_penalties.push_back(new_solution.constraint_outputs_penalties);
                 return true;
             }
