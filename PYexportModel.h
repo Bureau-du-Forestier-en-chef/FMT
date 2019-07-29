@@ -6,7 +6,7 @@ BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(simulate_overloads,simulate, 1, 3)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(buildperiod_overloads, buildperiod, 0, 1)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(move_solution_overloads, move_solution, 0, 1)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(get_outputs_overloads, get_outputs, 0, 1)
-BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(warmup_overloads, warmup, 1, 2)
+BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(warmup_overloads, warmup, 1, 3)
 
 
 
@@ -114,6 +114,10 @@ void exportModel()
 		//.def("setgraph", &Models::FMTlpmodel::setgraph);
 
 	define_pylist<Models::FMTlpmodel>();
+
+	enum_<Models::FMTsawarmuptype>("FMTsawarmuptype")
+		.value("log", Models::FMTsawarmuptype::log)
+		.value("delta", Models::FMTsawarmuptype::bigdelta);
 
 	const char* py_FMTsamodel_doc =
         " ``FMTsamodel`` class.\n"

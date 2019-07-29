@@ -15,6 +15,11 @@ using namespace Spatial;
 
 namespace Models
 {
+   enum class FMTsawarmuptype
+   {
+        log,
+        bigdelta
+    };
 class FMTsamodel : public FMTmodel
     {
     protected:
@@ -26,6 +31,7 @@ class FMTsamodel : public FMTmodel
         vector<FMTspatialaction> spactions;//should be FMTmodel action pointer...
         vector<int> accepted_solutions;
         vector<size_t> mapidmodified;//Id in the map that are different between current and new solution
+        vector<double> probabs;
         unique_ptr<FMTsaschedule> cooling_schedule;
         FMTsasolution best_solution;
         FMTsasolution current_solution;
@@ -41,7 +47,7 @@ class FMTsamodel : public FMTmodel
 
         //Setting parameters for the model
 
-        double warmup(const double initprob,bool keep_best=false);
+        double warmup(const double initprob,bool keep_best=false, FMTsawarmuptype type = FMTsawarmuptype::log);
         void write_outputs_at(string path);
         bool setschedule(const FMTexponentialschedule& schedule);//To set a schedule for the simulated annealing
         bool setinitial_mapping(const FMTforest& forest);
@@ -62,7 +68,7 @@ class FMTsamodel : public FMTmodel
         //Functions to manipulate the model
 
         void acceptnew();//Change new_solution to current and empty new_solution
-        bool testprobability(const double temp,const double cur_obj, const double new_obj) ;//Metropolis criterion
+        bool testprobability(const double& p) ;//Metropolis criterion
         double cool_down(double temp)const{return cooling_schedule->reduce_temp(temp);};//Set a default cooling schedule to avoid crash
         bool evaluate(const double temp);//To compare the two solutions ... if new<current true
         FMTgraphstats buildperiod();//To build initial solution
