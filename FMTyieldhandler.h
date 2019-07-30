@@ -46,6 +46,7 @@ class FMTyieldhandler
         double get(const vector<const FMTyieldhandler*>& datas,
                    const string yld,const int& age,const int& period, const FMTmask& resume_mask) const;
 		int getlastbase() const;
+		const vector<int>& getbases() const;
 		double getlinearvalue(const vector<double>& dls, const int& agetarget) const;
 		double getlastvalue(const string yld) const;
         map<string,double> getsources(const map<string, const FMTyieldhandler*>& srcdata, const vector<const FMTyieldhandler*>& datas,
