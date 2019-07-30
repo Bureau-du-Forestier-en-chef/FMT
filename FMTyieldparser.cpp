@@ -327,7 +327,12 @@ FMTyields FMTyieldparser::read(const vector<FMTtheme>& themes,const FMTconstants
                                        // }
                                     }else if(!sided)
                                         {
-                                        actualyield->push_base(getnum<int>(values[0],constants));
+										int newbase = getnum<int>(values[0], constants);
+										const vector<int>& bases = actualyield->getbases();
+										if (std::find(bases.begin(), bases.end(), newbase)==bases.end())
+											{
+											actualyield->push_base(newbase);
+											}
                                         values.erase(values.begin());
                                         int id = 0;
                                         for(const string& value : values)

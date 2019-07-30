@@ -526,6 +526,11 @@ FMTyieldhandler::operator string() const
 		return bases.back();
 		}
 
+	const vector<int>& FMTyieldhandler::getbases() const
+		{
+		return bases;
+		}
+
 	double FMTyieldhandler::getlastvalue(const string yld) const
 		{
 		map<string, FMTdata>::const_iterator it = elements.find(yld);
