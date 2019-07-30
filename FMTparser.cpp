@@ -219,6 +219,7 @@ vector<string>FMTparser::getcat(GDALDataset* dataset,int bandid) const
     int id = 0;
     while(names[id])
         {
+		boost::to_upper(names[id]);
         values.push_back(names[id]);
         ++id;
         }
@@ -445,7 +446,7 @@ bool FMTparser::checkmask(const vector<FMTtheme>& themes, const vector<string>& 
 bool FMTparser::validate(const vector<FMTtheme>& themes, string& mask) const
 	{
 	vector<string>values;
-	boost::split(values, mask, boost::is_any_of(" /t"), boost::token_compress_on);
+	boost::split(values, mask, boost::is_any_of(" \t"), boost::token_compress_on);
 	return checkmask(themes, values,mask);
 	}
 
