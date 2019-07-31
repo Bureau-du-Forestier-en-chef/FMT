@@ -163,7 +163,8 @@ namespace Core
         lower = 0;
         upper = 0;
 		map<string, FMTyldbounds> thebounds = this->getyldsbounds();
-        if (type == FMTconstrainttype::FMTstandard)
+        if (type == FMTconstrainttype::FMTstandard || type == FMTconstrainttype::FMTspatialadjacency ||
+            type == FMTconstrainttype::FMTspatialgreenup || type == FMTconstrainttype::FMTspatialsize )
             {
             lower = thebounds.at("RHS").getlower();
             upper = thebounds.at("RHS").getupper();
@@ -423,33 +424,52 @@ namespace Core
 				}
 			case FMTconstrainttype::FMTstandard:
 				{
-				map<string, FMTyldbounds> thebounds = this->getyldsbounds();
-				double lower_b = thebounds.at("RHS").getlower();
-				double upper_b = thebounds.at("RHS").getupper();
-				string opt_str = "";
-				if (lower_b == upper_b)
-				{
-					opt_str = "=";
-					opt_str += to_string(lower_b);
+                standardstring(line,period_bounds,goal);
+				break;
 				}
-				else if (upper_b == numeric_limits<double>::infinity())
-					{
-					opt_str = ">=";
-					opt_str += to_string(lower_b);
+            case FMTconstrainttype::FMTspatialadjacency:
+                {
+                standardstring(line,period_bounds,goal);
+				break;
 				}
-				else {
-					opt_str = "<=";
-					opt_str += to_string(upper_b);
+            case FMTconstrainttype::FMTspatialgreenup:
+                {
+                standardstring(line,period_bounds,goal);
+				break;
 				}
-
-				line += (this->name +" "+ opt_str+" " + goal);
-				line += " " + period_bounds + "\n";
+            case FMTconstrainttype::FMTspatialsize :
+                {
+                standardstring(line,period_bounds,goal);
 				break;
 				}
 			default:
 			break;
 			}
 		return line;
+		}
+
+		FMTconstraint::standardstring(string& line, string& period_bounds, string& goal) const
+		{
+		    map<string, FMTyldbounds> thebounds = this->getyldsbounds();
+            double lower_b = thebounds.at("RHS").getlower();
+            double upper_b = thebounds.at("RHS").getupper();
+            string opt_str = "";
+            if (lower_b == upper_b)
+            {
+                opt_str = "=";
+                opt_str += to_string(lower_b);
+            }
+            else if (upper_b == numeric_limits<double>::infinity())
+                {
+                opt_str = ">=";
+                opt_str += to_string(lower_b);
+                }
+            else {
+                opt_str = "<=";
+                opt_str += to_string(upper_b);
+            }
+            line += (this->name +" "+ opt_str+" " + goal);
+            line += " " + period_bounds + "\n";
 		}
 
 }

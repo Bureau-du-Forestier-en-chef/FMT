@@ -107,7 +107,7 @@ namespace Models
                 size_t num_delta = 0;
                 while (iter>0)
                 {
-                    g_move_solution(mean_ratio,mean_ratio);//Systematicaly evaluate the mean_ratio
+                    g_move_solution(max_ratio_moves,max_ratio_moves);//Systematicaly evaluate the mean_ratio
                     if(evaluate(0))//The temp need to be 0 to do only greedy to track what is upgraded because we accept every solution
                     {
                         double delta = current_solution.getobjfvalue()-new_solution.getobjfvalue();
@@ -213,7 +213,7 @@ namespace Models
 		actions = newbaseactions;
 		transitions = newtransitions;
 		//Test spatial actions to constraints because bounds are not set ???
-		/*for(FMTconstraint& constraint : constraints){
+		for(FMTconstraint& constraint : constraints){
                                                         cout<<constraint.name<<" : "<<constraint.getconstrainttype()<<endl;
                                                         double upper = 0;
                                                         double lower = 0;
@@ -222,7 +222,8 @@ namespace Models
                                                         constraint.getbounds(lower,upper,0);
                                                         constraint.getgoal(name,coef);
                                                         cout<<upper<<" : "<<lower<<"      "<<name<<" : "<<coef<<endl;
-                                                    }*/
+                                                        cout<<string(constraint)<<endl;
+                                                    }
 		return true;
     }
 

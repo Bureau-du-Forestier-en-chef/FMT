@@ -169,7 +169,7 @@ namespace Spatial
 
     double FMTsasolution::getspatialpenalties(const FMTsamodel& model, const FMTconstraint& constraint,
                                             const double& coef, vector<double>& output_vals, vector<double>& penalties_vals) const //Use of spatial actions as objectives
-    // See to add greenup eventualy
+    // See to add greenup eventualy and set by bounds and period the shit
     {
         vector<FMTspatialaction> spatialactions = model.getspatialactions();
         double spatialpenalties = 0;
@@ -447,6 +447,8 @@ namespace Spatial
                     FMTconstrainttype type = constraint.getconstrainttype();
                     double value = 0;
                     string name;
+                    string cname = boost::replace_all_copy(string(constraint),"\n","");
+                    boost::replace_all(cname,","," ");
                     double coef = 1;
                     constraint.getgoal(name,coef);
                     if (!name.empty())
@@ -464,7 +466,7 @@ namespace Spatial
                             {
                                 value = this->getgraphspenalties(model,constraint,coef, output_vals, penalties_vals);//apply weight in applypenalty
                             }
-                            constraint_outputs_penalties[constraint.name+to_string(constraint.getconstrainttype())] = pair<vector<double>,vector<double>>(output_vals,penalties_vals);
+                            constraint_outputs_penalties[cname+to_string(constraint.getconstrainttype())] = pair<vector<double>,vector<double>>(output_vals,penalties_vals);
                         }
                         else//Case spatialobjectives are set with spatial action
                             {
@@ -474,7 +476,7 @@ namespace Spatial
                                 {
                                     value = this->getspatialpenalties(model,constraint,coef, output_vals, penalties_vals);
                                 }
-                                constraint_outputs_penalties[constraint.name+to_string(constraint.getconstrainttype())] = pair<vector<double>,vector<double>>(output_vals,penalties_vals);
+                                constraint_outputs_penalties[cname+to_string(constraint.getconstrainttype())] = pair<vector<double>,vector<double>>(output_vals,penalties_vals);
                             }
                     }
                     penalty_value += value;
