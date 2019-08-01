@@ -468,7 +468,17 @@ namespace Core
                 opt_str = "<=";
                 opt_str += to_string(upper_b);
             }
-            line += (this->name +" "+ opt_str+" " + goal);
+            if (this->type == FMTconstrainttype::FMTspatialsize)
+            {
+                if (upper_b!=lower_b || upper_b != numeric_limits<double>::infinity())
+                {
+                    line += (to_string(lower_b)+"<= "+this->name +" "+ opt_str+" " + goal);
+                }
+            }
+            else
+            {
+                line += (this->name +" "+ opt_str+" " + goal);
+            }
             line += " " + period_bounds + "\n";
 		}
 

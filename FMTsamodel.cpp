@@ -16,6 +16,7 @@ namespace Models
         max_ratio_moves(1),
         outputs_write_location(),
         number_of_moves(0),
+        last_written(0),
         constraints_values_penalties(),
         generator(),
         spactions(),
@@ -36,6 +37,7 @@ namespace Models
         max_ratio_moves(rhs.max_ratio_moves),
         outputs_write_location(rhs.outputs_write_location),
         number_of_moves(0),
+        last_written(0),
         constraints_values_penalties(rhs.constraints_values_penalties),
         generator(rhs.generator),
         spactions(rhs.spactions),
@@ -56,6 +58,7 @@ namespace Models
         max_ratio_moves(1),
         outputs_write_location(),
         number_of_moves(0),
+        last_written(0),
         constraints_values_penalties(),
         generator(),
         spactions(),
@@ -107,8 +110,8 @@ namespace Models
                 size_t num_delta = 0;
                 while (iter>0)
                 {
-                    g_move_solution(max_ratio_moves,max_ratio_moves);//Systematicaly evaluate the mean_ratio
-                    if(evaluate(0))//The temp need to be 0 to do only greedy to track what is upgraded because we accept every solution
+                    move_solution();
+                    if(evaluate(0,true))//The temp need to be 0 to do only greedy to track what is upgraded because we accept every solution
                     {
                         double delta = current_solution.getobjfvalue()-new_solution.getobjfvalue();
                         sum_delta += delta;
@@ -118,6 +121,27 @@ namespace Models
                     --iter;
                 }
                 temp = -(sum_delta/num_delta)/log(initprob);
+                break;
+            }
+        case FMTsawarmuptype::logmax :
+            {
+                double maxdelta = 0;
+                while (iter>0)
+                {
+                    move_solution();
+                    if(evaluate(0,true))//The temp need to be 0 to do only greedy to track what is upgraded because we accept every solution
+                    {
+                        double delta = fabs(new_solution.getobjfvalue()-current_solution.getobjfvalue());
+                        if (delta>maxdelta)
+                        {
+                            maxdelta = delta;
+                        }
+                    }
+                    acceptnew();
+                    --iter;
+                    cout<<maxdelta<<" : delta at iter num "<<number_of_moves<<endl;
+                }
+                temp = -(maxdelta)/log(initprob);
                 break;
             }
         case FMTsawarmuptype::bigdelta :
@@ -138,6 +162,58 @@ namespace Models
                 temp = maxdelta;
                 break;
             }
+        case FMTsawarmuptype::bootstrapmagic :
+            {
+                vector<double> penalties;
+                while(iter > 0)
+                {
+                    move_solution();
+                    evaluate(0,true);
+                    if (number_of_moves == 1)
+                    {
+                        penalties.push_back(current_solution.getobjfvalue());
+                    }
+                    penalties.push_back(new_solution.getobjfvalue());
+                    iter++;
+                }
+                //Bootstrap
+                int sample_size = 0;
+                int sample_num = 0;
+                uniform_int_distribution<int> penalties_distribution(0,penalties.size()-1);
+                vector<pair<double,double>> pmin_max;
+                while(sample_num<100)
+                {
+                    vector<double> sample;
+                    while (sample_size<100)
+                    {
+                        int lucky_penalty = penalties_distribution(generator);
+                        sample.push_back(penalties.at(lucky_penalty));
+                        sample_size++;
+                    }
+                    pmin_max.push_back(pair<double,double>(*min_element(sample.begin(),sample.end()),*max_element(sample.begin(),sample.end())));
+                }
+                //Magie
+                double tempmin = *max_element(penalties.begin(),penalties.end());
+                double templ = tempmin;
+                double pcalculate = 0;
+                while (pcalculate>=initprob)
+                {
+                    double totemin=0;
+                    double totemax=0;
+                    for (const pair<double,double>& min_max : pmin_max)
+                    {
+                        totemin+=exp(-min_max.first/templ);
+                        totemax+=exp(min_max.second/templ);
+                    }
+                    pcalculate = totemax/totemin;
+                    cout<<pcalculate<<endl;
+                    if (pcalculate<initprob)
+                    {
+                        templ+=tempmin*0.05;
+                    }
+                }
+                temp = templ;
+            }
         default :
             break;
 
@@ -153,6 +229,7 @@ namespace Models
         get_outputs("warmup_");
         //Only to reset samodel parameters to default
         number_of_moves = 0;
+        last_written = 0 ;
         new_solution = FMTsasolution();
         best_solution = FMTsasolution();
         mapidmodified = vector<size_t>();
@@ -212,8 +289,8 @@ namespace Models
         spactions = lspactions;
 		actions = newbaseactions;
 		transitions = newtransitions;
-		//Test spatial actions to constraints because bounds are not set ???
-		for(FMTconstraint& constraint : constraints){
+		//Test spatial actions to constraints
+		/*for(FMTconstraint& constraint : constraints){
                                                         cout<<constraint.name<<" : "<<constraint.getconstrainttype()<<endl;
                                                         double upper = 0;
                                                         double lower = 0;
@@ -223,7 +300,7 @@ namespace Models
                                                         constraint.getgoal(name,coef);
                                                         cout<<upper<<" : "<<lower<<"      "<<name<<" : "<<coef<<endl;
                                                         cout<<string(constraint)<<endl;
-                                                    }
+                                                    }*/
 		return true;
     }
 
@@ -251,7 +328,17 @@ namespace Models
             string filename = outputs_write_location+addon+"outputs.csv";
             string headers = "Move,Constraint,Period,Output,Penalty,P";
             outputFile.open(filename, std::fstream::in | std::fstream::out | std::fstream::app);
-            vector<int>::const_iterator move_num=accepted_solutions.begin();
+            vector<int>::const_iterator move_num;
+            if (constraints_values_penalties.size()==accepted_solutions.size())
+            {
+                move_num=accepted_solutions.begin();
+            }
+            else
+                {
+                    vector<int> moves(constraints_values_penalties.size());
+                    iota(moves.begin(),moves.end(),last_written);
+                    move_num =moves.begin();
+                }
             vector<double>::const_iterator probs=probabs.begin();
             if (*move_num==0)
             {
@@ -272,6 +359,7 @@ namespace Models
                 ++move_num;
                 ++probs;
             }
+            last_written = *move_num;
             constraints_values_penalties.clear();
             accepted_solutions.clear();
             probabs.clear();
@@ -404,7 +492,7 @@ namespace Models
         return false;
     }
 
-    bool FMTsamodel::evaluate(const double temp)
+    bool FMTsamodel::evaluate(const double temp,bool all_data)
     //Get the output, evaluate the penalties and compare solutions
     {
         /*//Time checking
@@ -432,6 +520,10 @@ namespace Models
             }
             //Evaluate new solution
             const double new_obj = new_solution.evaluate(*this);
+            if (all_data)
+            {
+                constraints_values_penalties.push_back(new_solution.constraint_outputs_penalties);
+            }
             if (best_obj>new_obj)
             {
                 best_solution=new_solution;
@@ -448,7 +540,10 @@ namespace Models
             {
                 accepted_solutions.push_back(number_of_moves);
                 probabs.push_back(p);
-                constraints_values_penalties.push_back(new_solution.constraint_outputs_penalties);
+                if (!all_data)
+                {
+                    constraints_values_penalties.push_back(new_solution.constraint_outputs_penalties);
+                }
                 return true;
             }
         }
