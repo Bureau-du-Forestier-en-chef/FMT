@@ -7,6 +7,7 @@ BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(buildperiod_overloads, buildperiod, 0, 1)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(move_solution_overloads, move_solution, 0, 1)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(get_outputs_overloads, get_outputs, 0, 1)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(warmup_overloads, warmup, 1, 3)
+BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(evaluate_overloads, evaluate, 1, 2)
 
 
 
@@ -117,7 +118,9 @@ void exportModel()
 
 	enum_<Models::FMTsawarmuptype>("FMTsawarmuptype")
 		.value("log", Models::FMTsawarmuptype::log)
-		.value("delta", Models::FMTsawarmuptype::bigdelta);
+		.value("delta", Models::FMTsawarmuptype::bigdelta)
+		.value("logmax", Models::FMTsawarmuptype::logmax)
+		.value("bootstrapmagic", Models::FMTsawarmuptype::bootstrapmagic);
 
 	const char* py_FMTsamodel_doc =
         " ``FMTsamodel`` class.\n"
@@ -130,7 +133,7 @@ void exportModel()
             .def("get_current_solution",&FMTsamodel::get_current_solution)
             .def("get_new_solution",&FMTsamodel::get_new_solution)
             .def("getspatialactions",&FMTsamodel::getspatialactions)
-            .def("evaluate",&FMTsamodel::evaluate)
+            .def("evaluate",&FMTsamodel::evaluate,evaluate_overloads())
             .def("setinitial_mapping",&FMTsamodel::setinitial_mapping,
                  "Set the initial mapping\n"
                  "Initial forest themes described to the model",

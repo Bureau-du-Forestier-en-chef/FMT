@@ -153,7 +153,6 @@ namespace Spatial
         double sumpenalties=0;//Sum of penalties for each period
         output_vals = getgraphsoutputs(model,constraint,periodstart,periodstop);
         int period = periodstart;
-        vector<vector<double>> constraint_infos;
         for  (const double& value : output_vals)
         {
             double lower = 0;
@@ -173,13 +172,17 @@ namespace Spatial
     {
         vector<FMTspatialaction> spatialactions = model.getspatialactions();
         double spatialpenalties = 0;
+        double lower=0;
+        double upper=0;
         vector<FMTspatialaction>::iterator actionit = find_if(spatialactions.begin(),spatialactions.end(),[constraint] (const FMTspatialaction& spaction) {return spaction.name == constraint.name;});
         int action_id = std::distance(spatialactions.begin(), actionit);
         FMTspatialaction spaction = spatialactions.at(action_id);
+        size_t period = 1;
         for (const vector<vector<FMTevent<FMTgraph>>>& period_actions : events)
         {
             if (!period_actions.empty())
             {
+                constraint.getbounds(lower,upper,period);
                 vector<FMTevent<FMTgraph>> action_events = period_actions.at(action_id);
                 if(!action_events.empty())
                 {
@@ -204,10 +207,10 @@ namespace Spatial
                         {
                             if (!event.empty())
                             {
-                                double event_val = event.minimaldistance(potential_neigbors,spaction.adjacency);
+                                double event_val = event.minimaldistance(potential_neigbors,lower);
                                 output_val+=event_val;
                                 //Fix FMTconstraint and change upper lower for constraint
-                                penalties_val += applypenalty(numeric_limits<double>::infinity(),spaction.adjacency,event_val,spaction.adjacency_weight,FMTsapenaltytype::linear);
+                                penalties_val += applypenalty(numeric_limits<double>::infinity(),lower,event_val,coef,FMTsapenaltytype::linear);
                             }
                         }
                         output_vals.push_back(output_val);
@@ -216,8 +219,8 @@ namespace Spatial
                     }
                     if (constraint.getconstrainttype()==FMTconstrainttype::FMTspatialsize)
                     {
-                        const double maxsize = static_cast<double>(spaction.maximal_size);
-                        const double minsize = static_cast<double>(spaction.minimal_size);
+                        const double maxsize = static_cast<double>(upper);
+                        const double minsize = static_cast<double>(lower);
                         double output_val = 0;
                         double penalties_val = 0;
                         for (const FMTevent<FMTgraph>& event : action_events)
@@ -227,7 +230,7 @@ namespace Spatial
                                 double event_val = static_cast<double>(event.elements.size());
                                 output_val+=event_val;
                                 //Fix FMTconstraint and change upper lower for constraint and coef
-                                penalties_val += applypenalty(maxsize,minsize,event_val,spaction.size_weight,FMTsapenaltytype::linear);
+                                penalties_val += applypenalty(maxsize,minsize,event_val,coef,FMTsapenaltytype::linear);
                             }
                         }
                         output_vals.push_back(output_val);
@@ -236,6 +239,7 @@ namespace Spatial
                     }
                 }
             }
+            period++;
         }
         return spatialpenalties;
     }
