@@ -448,7 +448,7 @@ namespace Core
 		return line;
 		}
 
-		FMTconstraint::standardstring(string& line, string& period_bounds, string& goal) const
+		void FMTconstraint::standardstring(string& line, string& period_bounds, string& goal) const
 		{
 		    map<string, FMTyldbounds> thebounds = this->getyldsbounds();
             double lower_b = thebounds.at("RHS").getlower();

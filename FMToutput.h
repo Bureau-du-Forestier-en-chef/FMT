@@ -27,7 +27,6 @@ class FMToutput
 		ar & BOOST_SERIALIZATION_NVP(sources);
 		ar & BOOST_SERIALIZATION_NVP(operators);
 		ar & BOOST_SERIALIZATION_NVP(theme_target);
-		ar & BOOST_SERIALIZATION_NVP(level);
 		ar & BOOST_SERIALIZATION_NVP(name);
 		ar & BOOST_SERIALIZATION_NVP(description);
 	}
@@ -35,7 +34,7 @@ class FMToutput
     vector<FMToutputsource>sources;
     vector<FMToperator>operators;
 	int theme_target;
-	bool level;
+	//bool level;
     public:
         string name,description;
     FMToutput();
@@ -67,6 +66,7 @@ class FMToutput
     vector<FMToutputsource> getsources() const;
     vector<FMToperator> getopes() const;
 	FMTtheme targettheme(const vector<FMTtheme>& themes) const;
+	int targetthemeid() const;
 	vector<string>getdecomposition(const vector<FMTtheme>& themes) const;
     };
 

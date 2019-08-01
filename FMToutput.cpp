@@ -318,20 +318,29 @@ FMToutput FMToutput::boundto(const vector<FMTtheme>& themes, const FMTperbounds&
 		}
 	if (!bound.empty())
 		{
-		newoutput.name = newoutput.name + "["+ to_string(bound.getlower()) +"]";
-		}
-	for (FMToutputsource& source : newoutput.sources)
-		{
-		if (!bound.empty())
+		if (bound.getlower()==bound.getupper())//single bounded
 			{
-			source.setbounds(bound);
+			newoutput.name = newoutput.name + "[" + to_string(bound.getlower()) + "]";
+			}else {
+			newoutput.name = "_SUM(" + newoutput.name + ")";
 			}
-		if (!attribute.empty())
+		
+		}
+	if (!newoutput.islevel())
+		{
+		for (FMToutputsource& source : newoutput.sources)
 			{
-			FMTmask oldmask = FMTmask(source.getmask());
-			if (oldmask.set(themes.at(theme_target),attribute))
+			if (!bound.empty())
 				{
-				source.setmask(oldmask);
+					source.setbounds(bound);
+				}
+				if (!attribute.empty())
+				{
+					FMTmask oldmask = FMTmask(source.getmask());
+					if (oldmask.set(themes.at(theme_target), attribute))
+					{
+						source.setmask(oldmask);
+					}
 				}
 			}
 		}
@@ -501,6 +510,11 @@ vector<string> FMToutput::getdecomposition(const vector<FMTtheme>& themes) const
 			}
 		}
 	return validdecomp;
+	}
+
+int FMToutput::targetthemeid() const
+	{
+	return theme_target;
 	}
 
 FMTtheme FMToutput::targettheme(const vector<FMTtheme>& themes) const

@@ -661,6 +661,7 @@ void FMTgraph::locatenodes(const FMTmodel& model, const vector<FMToutputnode>& n
 			}
 		}
 
+
 bool FMTgraph::anyoperables(const FMTvertex_descriptor& descriptor, const vector<int>& action_ids) const
 	{
 		map<int, int> variables = getoutvariables(descriptor);

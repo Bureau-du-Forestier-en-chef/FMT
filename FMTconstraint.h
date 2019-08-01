@@ -69,7 +69,7 @@ class FMTconstraint: public FMToutput,public FMTspec
 		void setconstrainttype(FMTconstrainttype ltype);
 		FMTconstrainttype getconstrainttype() const;
 		operator string() const;
-		standardstring(string& line, string& period_bounds, string& goal) const;
+		void standardstring(string& line, string& period_bounds, string& goal) const;
 		~FMTconstraint()=default;
 	};
 }

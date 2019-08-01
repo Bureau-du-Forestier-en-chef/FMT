@@ -13,8 +13,9 @@ namespace WSParser
 		rxgoal(regex("^(.+)(_GOAL)(\\()([^,]*)(,)([^\\)]*)(\\))", regex_constants::ECMAScript | regex_constants::icase)),
 		//rxoutput("^([^\\(\\[]*)|(\\()([^)]*)(\\))|(\\[)((#.+|[\\d]*))(\\])", regex_constants::ECMAScript | regex_constants::icase),
 		rxoutput("^(.+)(\\()([^)]*)(\\))(\\[)(#.+|[-\\d]*)(\\])|(.+)(\\()([^)]*)(\\))|(.+)(\\[)(#.+|[-\\d]*)(\\])|(.+)", regex_constants::ECMAScript | regex_constants::icase),
-
-		rxpenalty("^(_PENALTY)(\\()([^\\)]*)(\\))", regex_constants::ECMAScript | regex_constants::icase)
+		//rxoutput("^(\\b_SUM\\(\\b)|(.+)(\\()([^)]*)(\\))(\\[)(#.+|[-\\d]*)(\\])|(.+)(\\()([^)]*)(\\))|(.+)(\\[)(#.+|[-\\d]*)(\\])|(.+)(\\))|(.+)", regex_constants::ECMAScript | regex_constants::icase),
+		rxpenalty("^(_PENALTY)(\\()([^\\)]*)(\\))", regex_constants::ECMAScript | regex_constants::icase),
+		ineach()
 		{
 
 		}
@@ -28,7 +29,8 @@ namespace WSParser
 		rxequations(rhs.rxequations),
 		rxgoal(rhs.rxgoal),
 		rxoutput(rhs.rxoutput),
-		rxpenalty(rhs.rxpenalty)
+		rxpenalty(rhs.rxpenalty),
+		ineach(rhs.ineach)
 		{
 
 		}
@@ -45,6 +47,7 @@ namespace WSParser
 			rxgoal = rhs.rxgoal;
 			rxoutput = rhs.rxoutput;
 			rxpenalty = rhs.rxpenalty;
+			ineach = rhs.ineach;
 			}
 		return *this;
 		}
@@ -156,12 +159,22 @@ namespace WSParser
             if (regex_search(output_it->first, out_match, rxoutput))
                     {
                     string output_name = string(out_match[1])+ string(out_match[8]) + string(out_match[12])+ string(out_match[16]);
-                    vector<FMToutput>::const_iterator target_out = find_if(outputs.begin(), outputs.end(), FMToutputcomparator(output_name));
+					//string output_name = string(out_match[2]) + string(out_match[9]) + string(out_match[13]) + string(out_match[17]) + string(out_match[19]);
+					string allperiods;
+					boost::erase_all(output_name, " ");
+					if (output_name.find("_SUM(")!=string::npos)
+						{
+						allperiods = "SUM(";
+						boost::erase_all(output_name, "_SUM(");
+						}
+					vector<FMToutput>::const_iterator target_out = find_if(outputs.begin(), outputs.end(), FMToutputcomparator(output_name));
                     if (target_out == outputs.end())
                         {
                         _exhandler->raise(FMTexc::WSundefined_output, _section, output_name + " at line " + to_string(_line), __LINE__, __FILE__);
                         }
                         string target_attribute = string(out_match[3])+string(out_match[10]);
+						//string target_attribute = string(out_match[4]) + string(out_match[11]);
+						boost::trim(target_attribute);
                         FMTtheme targeted_theme = target_out->targettheme(themes);
                         if (!target_attribute.empty())
                             {
@@ -174,6 +187,7 @@ namespace WSParser
                                         }
                             }
                         string target_period = string(out_match[6]) + string(out_match[14]);
+						//string target_period = string(out_match[7]) + string(out_match[15]);
                         int inttarget_period = -1;
                         FMTperbounds bounding;
                         if (!target_period.empty())
@@ -181,6 +195,12 @@ namespace WSParser
                                 inttarget_period = getnum<int>(target_period, constants);
                                 bounding = FMTperbounds(FMTwssect::Optimize, inttarget_period, inttarget_period);
 								}
+						if (!allperiods.empty())
+							{
+							int minbound = 1;
+							int maxbound = numeric_limits<int>::max();
+							bounding = FMTperbounds(FMTwssect::Optimize,maxbound, minbound);
+							}
                         //copy the output and the specify the attribute and the periods!!!
                         FMToutput newoutput = target_out->boundto(themes, bounding, target_attribute);
                         newoutput *= output_it->second;
@@ -466,8 +486,8 @@ namespace WSParser
 			FMToptimizationsection section = FMToptimizationsection::none;
 			while (optimizestream.is_open())
 				{
-				line = getcleanlinewfor(optimizestream, themes, constants);
-
+				//line = getcleanlinewfor(optimizestream, themes, constants);
+				line = getoptline(optimizestream, themes, constants, outputs);
 				if (!line.empty())
 					{
 				FMToptimizationsection newsection = getsection(line);
@@ -574,5 +594,83 @@ namespace WSParser
                 }
 			optimizestream.close();
 			}
+		}
+
+	std::queue<string> FMToptimizationparser::geteachlines(const string& line, const vector<FMToutput>& outputs, const vector<FMTtheme>& themes) const
+		{
+		int themeid = -1;
+		vector<FMToutput>::const_iterator target_out;
+		string subline = line;
+		string keyword = "_EACH";
+		while (subline.find(keyword)!= string::npos)
+			{
+			boost::erase_all(subline, " ");
+			int endoutputlocation = static_cast<int>((subline.find(keyword)))-1;
+			//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "line " << subline << "\n";
+			char outchar = subline.at(endoutputlocation);
+			while (outchar == '(') //emptystuff
+				{
+				--endoutputlocation;
+				//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << outchar <<" " << endoutputlocation << "\n";
+				if (endoutputlocation >= 0)
+					{
+					outchar = line.at(endoutputlocation);
+					}
+				}
+			//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info)<< endoutputlocation << "starting at " << outchar << "\n";
+			string output_name = "";
+			while (!FMToperator(string(1, outchar)).valid()
+				&& outchar!='(' && endoutputlocation >=0)
+				{
+				output_name.insert(output_name.begin(),outchar);
+				--endoutputlocation;
+				if (endoutputlocation >= 0)
+					{
+					outchar = line.at(endoutputlocation);
+					}
+				}
+			target_out = find_if(outputs.begin(), outputs.end(), FMToutputcomparator(output_name));
+			if (target_out==outputs.end())
+				{
+				_exhandler->raise(FMTexc::WSundefined_output, _section, output_name + " at line " + to_string(_line), __LINE__, __FILE__);
+				}
+			if (themeid >= 0)
+				{
+				if (themeid != target_out->targetthemeid())
+					{
+					_exhandler->raise(FMTexc::FMTinvalid_constraint, _section, "Non matching _EACH outputs attributes at line " + to_string(_line), __LINE__, __FILE__);
+					}
+				}
+			themeid = target_out->targetthemeid();
+			boost::replace_all(subline, keyword, "");
+			//remove _EACH in subline
+			//subline
+			}
+		std::queue<string>valuestoreplace;
+		for (const string& value : target_out->getdecomposition(themes))
+			{
+			valuestoreplace.push(boost::replace_all_copy(line, "_EACH", value));
+			}
+		return valuestoreplace;
+		}
+
+	string FMToptimizationparser::getoptline(ifstream& stream, const vector<FMTtheme>& themes,
+		const FMTconstants& cons, const vector<FMToutput>& outputs)
+		{
+		string line = ""; 
+		if (!ineach.empty())
+			{
+			line = ineach.front();
+			ineach.pop();
+		}else {
+			line = getcleanlinewfor(stream, themes, cons);
+			if (line.find("_EACH") != string::npos)
+				{
+				ineach = geteachlines(line, outputs, themes);
+				line = ineach.front();
+				ineach.pop();
+				}
+			}	
+		return line;
 		}
 }

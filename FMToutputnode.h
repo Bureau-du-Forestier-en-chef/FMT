@@ -18,6 +18,7 @@ class FMToutputnode
 		size_t hash(const int& period) const;
 		bool allowcashdeduction() const;
 		bool singleperiod() const;
+		bool multiperiod() const;
 		bool ispastperiod() const;
 		bool isnull() const;
 		FMToutputnode setperiod(int period) const;

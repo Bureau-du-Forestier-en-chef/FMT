@@ -19,6 +19,11 @@ namespace Core
 		return (!source.emptyperiod() && source.getperiodlowerbound() == source.getperiodupperbound());
 		}
 
+	bool FMToutputnode::multiperiod() const
+		{
+		return (!source.emptyperiod() && source.getperiodlowerbound() != source.getperiodupperbound());
+		}
+
 	bool FMToutputnode::isnull() const
 		{
 		return ((factor.isconstant() && factor.getvalue() == 0) || constant == 0);
