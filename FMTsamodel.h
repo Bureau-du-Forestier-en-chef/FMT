@@ -18,7 +18,9 @@ namespace Models
    enum class FMTsawarmuptype
    {
         log,
-        bigdelta
+        bigdelta,
+        logmax,
+        bootstrapmagic
     };
 class FMTsamodel : public FMTmodel
     {
@@ -26,6 +28,7 @@ class FMTsamodel : public FMTmodel
         double min_ratio_moves,max_ratio_moves;
         string outputs_write_location;
         int number_of_moves;
+        int last_written;
         vector<map<string,pair<vector<double>,vector<double>>>> constraints_values_penalties;//move,constraint_name : <outputs,penalties>
         default_random_engine generator;
         vector<FMTspatialaction> spactions;//should be FMTmodel action pointer...
@@ -70,7 +73,7 @@ class FMTsamodel : public FMTmodel
         void acceptnew();//Change new_solution to current and empty new_solution
         bool testprobability(const double& p) ;//Metropolis criterion
         double cool_down(double temp)const{return cooling_schedule->reduce_temp(temp);};//Set a default cooling schedule to avoid crash
-        bool evaluate(const double temp);//To compare the two solutions ... if new<current true
+        bool evaluate(const double temp,bool all_data=false);//To compare the two solutions ... if new<current true
         FMTgraphstats buildperiod();//To build initial solution
         FMTgraphstats move_solution(FMTsamovetype movetype = FMTsamovetype::shotgun);//move_operator
         FMTgraphstats g_move_solution(const double min_ratio,const double max_ratio, FMTsamovetype movetype = FMTsamovetype::shotgun);//overloading move operator
