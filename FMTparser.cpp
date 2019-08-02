@@ -432,7 +432,8 @@ bool FMTparser::checkmask(const vector<FMTtheme>& themes, const vector<string>& 
 		{
 			if (!theme.isattribute(values[id]) && !theme.isaggregate(values[id]) && values[id] != "?")
 				{
-				_exhandler->raise(FMTexc::WSundefined_attribute, _section, values[id] + " at line " + to_string(_line), __LINE__, __FILE__);
+				string message = values[id] + " at theme " + to_string(theme.getid()) +" at line " + to_string(_line);
+				_exhandler->raise(FMTexc::WSundefined_attribute, _section, message, __LINE__, __FILE__);
 				returnvalue = false;
 				}
 			mask +=values[id] + " ";

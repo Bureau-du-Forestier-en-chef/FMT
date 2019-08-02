@@ -566,10 +566,9 @@ void FMTgraph::locatenodes(const FMTmodel& model, const vector<FMToutputnode>& n
 		vector<int> action_IDS;
 		for (FMToutputnode output_node : nodes)
 			{
-
 			//change the period if the node is single well a other potential cluster fuck
+			
 			int node_period = period;
-
 			if (output_node.source.useinedges())//evaluate at the begining of the other period if inventory! what a major fuck
                 {
                 ++node_period;
@@ -601,6 +600,23 @@ void FMTgraph::locatenodes(const FMTmodel& model, const vector<FMToutputnode>& n
                         }
                     }
                 }
+			vector<int>targetedperiods;
+			if (output_node.multiperiod())
+				{
+				int minperiod = max(output_node.source.getperiodlowerbound(), 1);
+				int maxperiod = min(output_node.source.getperiodupperbound(), static_cast<int>(developments.size() - 2));
+				for (int periodid = minperiod; periodid <= maxperiod;++periodid)
+					{
+					int local_period = periodid;
+					if (output_node.source.useinedges())
+						{
+						++local_period;
+						}
+					targetedperiods.push_back(local_period);
+					}
+			}else {
+				targetedperiods.push_back(node_period);
+				}
 
             if (!output_node.source.isvariablelevel())
                 {
@@ -610,52 +626,55 @@ void FMTgraph::locatenodes(const FMTmodel& model, const vector<FMToutputnode>& n
                     bool inedges = false;
 					vector<FMTdevelopmentpath>paths;
 					FMTaction optimization_action;
-                    for (std::unordered_map<size_t, FMTvertex_descriptor>::const_iterator it = developments[node_period ].begin();
-                        it != developments[node_period ].end(); it++)
-                        {
-                        if (validgraphnode(model,inedges, it->second, output_node, action_IDS, selected))
-                            {
-                            const FMTdevelopment& development = data[it->second].get();
-                            //Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << " got  "<<string(development) << "\n";
-                            if (inedges)
-                                {
-                                //Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << " in edges!  " << "\n";
-                                double coef = 1;
-                                coef = output_node.source.getcoef(development, model.yields, optimization_action,paths) * output_node.factor.getcoef(development, model.yields, optimization_action,paths) * output_node.constant;
-                                if (node_period  == 0)
-                                    {
+					for (const int localnodeperiod : targetedperiods)
+						{ 
+						for (std::unordered_map<size_t, FMTvertex_descriptor>::const_iterator it = developments[localnodeperiod].begin();
+							it != developments[localnodeperiod].end(); it++)
+							{
+							if (validgraphnode(model,inedges, it->second, output_node, action_IDS, selected))
+								{
+								const FMTdevelopment& development = data[it->second].get();
+								//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << " got  "<<string(development) << "\n";
+								if (inedges)
+									{
+									//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << " in edges!  " << "\n";
+									double coef = 1;
+									coef = output_node.source.getcoef(development, model.yields, optimization_action,paths) * output_node.factor.getcoef(development, model.yields, optimization_action,paths) * output_node.constant;
+									if (localnodeperiod == 0)
+										{
 
-                                    map<int, int>vars = getoutvariables(it->second);
-                                    variables.push_back(vars.at(-1));
-                                    coefs.push_back(coef*multiplier);
-                                }else {
-                                    FMTinedge_iterator inedge_iterator, inedge_end;
-                                    for (tie(inedge_iterator, inedge_end) = in_edges(it->second, data); inedge_iterator != inedge_end; ++inedge_iterator)
-                                        {
-                                        FMTedgeproperties edgeprop = data[*inedge_iterator];
-                                        variables.push_back(edgeprop.getvariable());
-                                        coefs.push_back((edgeprop.getproportion() / 100)*coef*multiplier);
-                                        }
-                                    }
-                            }else {
-                                int actionID = 0;
-                                map<int,int>outvars = getoutvariables(it->second);
-                                for (const FMTaction* act : selected)
-                                    {
-                                    if (outvars.find(action_IDS.at(actionID))!=outvars.end())
-                                        {
-                                        double action_value = 0;
-                                        paths = getpaths(it->second, action_IDS.at(actionID));
-                                        double action_coef = output_node.source.getcoef(development, model.yields, *act, paths) * output_node.factor.getcoef(development, model.yields,*act,paths) * output_node.constant;
-                                        //variables.push_back(outvars.at(actionID));
-                                        variables.push_back(outvars.at(action_IDS.at(actionID)));
-                                        coefs.push_back(action_coef*multiplier);
-                                        }
-                                    ++actionID;
-                                    }
-                                }
-                            }
-                        }
+										map<int, int>vars = getoutvariables(it->second);
+										variables.push_back(vars.at(-1));
+										coefs.push_back(coef*multiplier);
+									}else {
+										FMTinedge_iterator inedge_iterator, inedge_end;
+										for (tie(inedge_iterator, inedge_end) = in_edges(it->second, data); inedge_iterator != inedge_end; ++inedge_iterator)
+											{
+											FMTedgeproperties edgeprop = data[*inedge_iterator];
+											variables.push_back(edgeprop.getvariable());
+											coefs.push_back((edgeprop.getproportion() / 100)*coef*multiplier);
+											}
+										}
+								}else {
+									int actionID = 0;
+									map<int,int>outvars = getoutvariables(it->second);
+									for (const FMTaction* act : selected)
+										{
+										if (outvars.find(action_IDS.at(actionID))!=outvars.end())
+											{
+											double action_value = 0;
+											paths = getpaths(it->second, action_IDS.at(actionID));
+											double action_coef = output_node.source.getcoef(development, model.yields, *act, paths) * output_node.factor.getcoef(development, model.yields,*act,paths) * output_node.constant;
+											//variables.push_back(outvars.at(actionID));
+											variables.push_back(outvars.at(action_IDS.at(actionID)));
+											coefs.push_back(action_coef*multiplier);
+											}
+										++actionID;
+										}
+									}
+								}
+							}
+						}
                     }
                 }
 			}

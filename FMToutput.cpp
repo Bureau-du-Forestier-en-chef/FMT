@@ -330,16 +330,19 @@ FMToutput FMToutput::boundto(const vector<FMTtheme>& themes, const FMTperbounds&
 		{
 		for (FMToutputsource& source : newoutput.sources)
 			{
-			if (!bound.empty())
+			if (source.isvariable())
 				{
-					source.setbounds(bound);
-				}
-				if (!attribute.empty())
-				{
-					FMTmask oldmask = FMTmask(source.getmask());
-					if (oldmask.set(themes.at(theme_target), attribute))
+				if (!bound.empty())
 					{
-						source.setmask(oldmask);
+						source.setbounds(bound);
+					}
+					if (!attribute.empty())
+					{
+						FMTmask oldmask = FMTmask(source.getmask());
+						if (oldmask.set(themes.at(theme_target), attribute))
+						{
+							source.setmask(oldmask);
+						}
 					}
 				}
 			}
