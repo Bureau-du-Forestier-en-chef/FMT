@@ -177,12 +177,12 @@ namespace Models
                     iter++;
                 }
                 //Bootstrap
-                int sample_size = 0;
                 int sample_num = 0;
                 uniform_int_distribution<int> penalties_distribution(0,penalties.size()-1);
                 vector<pair<double,double>> pmin_max;
                 while(sample_num<100)
                 {
+                    int sample_size = 0;
                     vector<double> sample;
                     while (sample_size<100)
                     {
@@ -191,12 +191,13 @@ namespace Models
                         sample_size++;
                     }
                     pmin_max.push_back(pair<double,double>(*min_element(sample.begin(),sample.end()),*max_element(sample.begin(),sample.end())));
+                    sample_num++;
                 }
                 //Magie
                 double tempmin = *max_element(penalties.begin(),penalties.end());
                 double templ = tempmin;
                 double pcalculate = 0;
-                while (pcalculate>=initprob)
+                while (pcalculate<=initprob)
                 {
                     double totemin=0;
                     double totemax=0;
@@ -213,6 +214,7 @@ namespace Models
                     }
                 }
                 temp = templ;
+                break;
             }
         default :
             break;
