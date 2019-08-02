@@ -441,6 +441,7 @@ FMTareaparser::FMTareaparser() :
 				if (lock_field!=-1)
 					{
 					string slock =feature->GetFieldAsString(lock_field);
+					boost::to_upper(slock);
 					slock.erase(0,5);
 					if (isvalid(slock))
 						{
@@ -450,7 +451,8 @@ FMTareaparser::FMTareaparser() :
 				vector<string>masks(themes_fields.size());
 				for(map<int,int>::const_iterator it=themes_fields.begin(); it!=themes_fields.end(); ++it)
 					{
-					const string attribute = feature->GetFieldAsString(it->second);
+					string attribute = feature->GetFieldAsString(it->second);
+					boost::to_upper(attribute);
 					masks[it->first] = attribute;
 					}
 				string tmask = boost::algorithm::join(masks," ");
