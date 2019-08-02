@@ -204,7 +204,7 @@ namespace Models
                     for (const pair<double,double>& min_max : pmin_max)
                     {
                         totemin+=exp(-min_max.first/templ);
-                        totemax+=exp(min_max.second/templ);
+                        totemax+=exp(-min_max.second/templ);
                     }
                     pcalculate = totemax/totemin;
                     cout<<pcalculate<<endl;
