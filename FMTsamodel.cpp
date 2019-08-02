@@ -174,7 +174,7 @@ namespace Models
                         penalties.push_back(current_solution.getobjfvalue());
                     }
                     penalties.push_back(new_solution.getobjfvalue());
-                    iter++;
+                    --iter;
                 }
                 //Bootstrap
                 int sample_num = 0;
