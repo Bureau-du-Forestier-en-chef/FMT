@@ -3,11 +3,11 @@
 
 
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(simulate_overloads,simulate, 1, 3)
-BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(buildperiod_overloads, buildperiod, 0, 1)
+BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(buildperiod_overloads, buildperiod, 0, 2)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(move_solution_overloads, move_solution, 0, 1)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(get_outputs_overloads, get_outputs, 0, 1)
+BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(getLPoutputoverloads,getoutput, 2, 3)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(warmup_overloads, warmup, 1, 3)
-
 
 
 void exportModel()
@@ -105,7 +105,7 @@ void exportModel()
 		.def("setconstraint", &Models::FMTlpmodel::setconstraint)
 		.def("solve", &Models::FMTlpmodel::solve)
 		.def("specificinitialsolve", &Models::FMTlpmodel::specificinitialsolve)
-		.def("getoutput", &Models::FMTlpmodel::getoutput)
+		.def("getoutput", &Models::FMTlpmodel::getoutput,getLPoutputoverloads())
 		//.def("getarea", &Models::FMTlpmodel::getarea)
 		.def("__eq__", &Models::FMTlpmodel::operator ==)
 		.def("__ne__", &Models::FMTlpmodel::operator !=)

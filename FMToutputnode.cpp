@@ -62,9 +62,10 @@ namespace Core
 
 		}
 
-	size_t FMToutputnode::hash(const int& period) const
+	size_t FMToutputnode::hash(const int& period, size_t typeofout) const
 		{
 		size_t seed = 0;
+		boost::hash_combine(seed, typeofout);
 		boost::hash_combine(seed, source.hash(period));
 		boost::hash_combine(seed, factor.hash(period));
 		boost::hash_combine(seed, constant);
