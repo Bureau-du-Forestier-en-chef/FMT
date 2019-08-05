@@ -222,6 +222,7 @@ vector<FMTevent<FMTdevelopment>> FMTforest::buildharvest(const double& target,
     int tooclosecall = 0;
     int initdone = 0;
     int spreaddone = 0;
+	bool check_adjacency = (std::find(targetaction.neighbors.begin(), targetaction.neighbors.end(), targetaction.name) != targetaction.neighbors.end());
     if(!mapping.empty())
         {
         shuffle(locations.begin(),locations.end(),generator);
@@ -237,16 +238,19 @@ vector<FMTevent<FMTdevelopment>> FMTforest::buildharvest(const double& target,
                 if (newcut.spread(targetaction))
                     {
                     ++spreaddone;
-                    bool tooclose = false;
-                    for (const FMTevent<FMTdevelopment>& cut : cuts)
-                        {
-                        if(cut.within(targetaction.adjacency,newcut))
-                            {
-                            tooclose = true;
-                            ++tooclosecall;
-                            break;
-                            }
-                        }
+					bool tooclose = false;
+					if (check_adjacency)
+						{
+						for (const FMTevent<FMTdevelopment>& cut : cuts)
+							{
+							if (cut.within(targetaction.adjacency, newcut))
+								{
+								tooclose = true;
+								++tooclosecall;
+								break;
+								}
+							}	
+						}
                     if(!tooclose)
                         {
                         cuts.push_back(newcut);

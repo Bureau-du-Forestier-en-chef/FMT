@@ -130,8 +130,9 @@ class FMTlpmodel : public FMTmodel
 		bool operator == (const FMTlpmodel& rhs) const;
 		bool operator != (const FMTlpmodel& rhs) const;
 		map<string, double> getoutput(const FMToutput& output,
-			int period);
-		FMTgraphstats buildperiod(FMTschedule schedule = FMTschedule());
+			int period, FMToutputlevel level = FMToutputlevel::standard);
+		FMTgraphstats buildperiod(FMTschedule schedule = FMTschedule(),
+			bool forcepartialbuild = false);
 		FMTgraphstats setobjective(const FMTconstraint& objective);
 		FMTgraphstats setconstraint(const FMTconstraint& constraint);
 		/*bool unboundconstraint(const FMTconstraint& constraint, int period);

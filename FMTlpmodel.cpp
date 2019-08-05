@@ -1022,13 +1022,13 @@ namespace Models
 		//return actuals(period);
 		}*/
 
-	map<string, double> FMTlpmodel::getoutput(const FMToutput& output,int period)
+	map<string, double> FMTlpmodel::getoutput(const FMToutput& output,int period, FMToutputlevel level)
 	{
 		const double* solution = solverinterface->getColSolution();
-		return graph.getoutput(*this, output, period, solution);
+		return graph.getoutput(*this, output, period, solution,level);
 	}
 
-	FMTgraphstats FMTlpmodel::buildperiod(FMTschedule schedule)
+	FMTgraphstats FMTlpmodel::buildperiod(FMTschedule schedule, bool forcepartialbuild)
 	{
 		/*if ((developments.size() == (period) || (period == 1)))
 		{*/
@@ -1049,7 +1049,7 @@ namespace Models
 			else {
 				actives = graph.getactiveverticies();
 			}
-			if (schedule.empty()) // full build
+			if (!forcepartialbuild && schedule.empty()) // full build
 			{
 				buildstats = graph.build(*this,actives);
 				graph.setbuildtype(FMTgraphbuild::fullbuild);

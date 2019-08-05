@@ -72,7 +72,7 @@ class FMToutputsource : public FMTspec
 			const vector<FMTdevelopmentpath>& paths) const;
 		bool use(const FMTdevelopment& development, const FMTyields& ylds) const;
 		//size_t hash() const override;
-		size_t hash(int period = -1) const;
+		size_t hash(int period = -1, size_t typeofout = 0) const;
 		/*vector<boost::dynamic_bitset<>> getclassifiers(const vector<FMTaction>& actions,
 			const map<string, vector<string>>& aggregates,
 			const int& maxage, const int& maxperiod,const int& period) const;*/
