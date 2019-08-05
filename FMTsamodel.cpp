@@ -111,7 +111,7 @@ namespace Models
                 while (iter>0)
                 {
                     move_solution();
-                    if(evaluate(0,true))//The temp need to be 0 to do only greedy to track what is upgraded because we accept every solution
+                    if(evaluate(0))//The temp need to be 0 to do only greedy to track what is upgraded because we accept every solution
                     {
                         double delta = current_solution.getobjfvalue()-new_solution.getobjfvalue();
                         sum_delta += delta;
@@ -129,7 +129,7 @@ namespace Models
                 while (iter>0)
                 {
                     move_solution();
-                    if(evaluate(0,true))//The temp need to be 0 to do only greedy to track what is upgraded because we accept every solution
+                    if(evaluate(0))//The temp need to be 0 to do only greedy to track what is upgraded because we accept every solution
                     {
                         double delta = fabs(new_solution.getobjfvalue()-current_solution.getobjfvalue());
                         if (delta>maxdelta)
@@ -168,12 +168,13 @@ namespace Models
                 while(iter > 0)
                 {
                     move_solution();
-                    evaluate(0,true);
+                    evaluate(0);
                     if (number_of_moves == 1)
                     {
                         penalties.push_back(current_solution.getobjfvalue());
                     }
                     penalties.push_back(new_solution.getobjfvalue());
+                    acceptnew();
                     --iter;
                 }
                 //Bootstrap
@@ -330,17 +331,7 @@ namespace Models
             string filename = outputs_write_location+addon+"outputs.csv";
             string headers = "Move,Constraint,Period,Output,Penalty,P";
             outputFile.open(filename, std::fstream::in | std::fstream::out | std::fstream::app);
-            vector<int>::const_iterator move_num;
-            if (constraints_values_penalties.size()==accepted_solutions.size())
-            {
-                move_num=accepted_solutions.begin();
-            }
-            else
-                {
-                    vector<int> moves(constraints_values_penalties.size());
-                    iota(moves.begin(),moves.end(),last_written);
-                    move_num =moves.begin();
-                }
+            vector<int>::const_iterator move_num=accepted_solutions.begin();
             vector<double>::const_iterator probs=probabs.begin();
             if (*move_num==0)
             {
@@ -522,10 +513,6 @@ namespace Models
             }
             //Evaluate new solution
             const double new_obj = new_solution.evaluate(*this);
-            if (all_data)
-            {
-                constraints_values_penalties.push_back(new_solution.constraint_outputs_penalties);
-            }
             if (best_obj>new_obj)
             {
                 best_solution=new_solution;
@@ -542,10 +529,7 @@ namespace Models
             {
                 accepted_solutions.push_back(number_of_moves);
                 probabs.push_back(p);
-                if (!all_data)
-                {
-                    constraints_values_penalties.push_back(new_solution.constraint_outputs_penalties);
-                }
+                constraints_values_penalties.push_back(new_solution.constraint_outputs_penalties);
                 return true;
             }
         }
