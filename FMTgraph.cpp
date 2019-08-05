@@ -928,45 +928,62 @@ size_t FMTgraph::nedges() const
 	return num_edges(data);
 	}
 
-map<string, double> FMTgraph::getoutput(const FMTmodel& model,const FMToutput& output,int period,const double* solution) const
+map<string, double> FMTgraph::getoutput(const FMTmodel& model,const FMToutput& output,
+	int period,const double* solution,FMToutputlevel level) const
 	{
 	FMTtheme targettheme;
-	vector<string>target_attributes = output.getdecomposition(model.themes);
-	if (!target_attributes.empty())
-		{
-			targettheme = output.targettheme(model.themes);
-		}
-		bool schedule_graph = false;
-		if (buildtype == FMTgraphbuild::schedulebuild)
-		{
-			schedule_graph = true;
-		}
-		target_attributes.push_back("Total");
+	vector<string>target_attributes; 
 		map<string, double>results;
-		for (const string& attribute : target_attributes)
-		{
-			results[attribute] = 0;
-		}
+		if (level != FMToutputlevel::developpement)
+			{
+			if (level== FMToutputlevel::standard)
+				{
+				target_attributes = output.getdecomposition(model.themes);
+				if (!target_attributes.empty() && level == FMToutputlevel::standard)
+					{
+					targettheme = output.targettheme(model.themes);
+					}
+				}
+			target_attributes.push_back("Total");
+			for (const string& attribute : target_attributes)
+				{
+				results[attribute] = 0;
+				}
+			}
 		if (!output.islevel())
 		{
 			for (const FMToutputnode& output_node : output.getnodes())
 			{
 				//caching with FMToutputnode ?
 				map<string, double> srcvalues;
-				if (nodescache.find(output_node.source.hash(period)) != nodescache.end())//hash on node source only!
+				//get the level of output to get decent hashing
+				size_t outid = static_cast<int>(level);
+				if (nodescache.find(output_node.source.hash(period, outid)) != nodescache.end())//hash on node source only!
 				{
 					//Multiply by the factor and constant before usage!!!
-					srcvalues = nodescache.at(output_node.hash(period));
+					srcvalues = nodescache.at(output_node.hash(period, outid));
 				}
 				else {
-					srcvalues = getsource(model, output_node, period, targettheme, solution);
+					srcvalues = getsource(model, output_node, period, targettheme, solution,level);
 					//if nodes allow hashing like * constant not like * ytimeyield then cash it!!
 					//before cashing the node turn it into non multiplied form to allow other nodes to use it
-					nodescache[output_node.hash(period)] = srcvalues;
+					nodescache[output_node.hash(period, outid)] = srcvalues;
 				}
-				for (const string& attribute : target_attributes)
-				{
-					results[attribute] += srcvalues[attribute];
+				if (level == FMToutputlevel::developpement)
+					{
+					for (map<string, double>::const_iterator mit = srcvalues.begin(); mit!= srcvalues.end();mit++)
+						{
+						if (results.find(mit->first)==results.end())
+							{
+							results[mit->first] = 0;
+							}
+						results[mit->first] += mit->second;
+						}
+				}else {
+					for (const string& attribute : target_attributes)
+						{
+						results[attribute] += srcvalues[attribute];
+						}
 				}
 
 			}
@@ -974,15 +991,19 @@ map<string, double> FMTgraph::getoutput(const FMTmodel& model,const FMToutput& o
 	return results;
 	}
 
+
 map<string, double> FMTgraph::getsource(const FMTmodel& model,
 	const FMToutputnode& node,
-	int period, const FMTtheme& theme,const double* solution) const
+	int period, const FMTtheme& theme,const double* solution, FMToutputlevel level) const
 {
 	map<string, double>values; ///start here
-	for (auto attribute_id : theme.getvaluenames())
-	{
-		values[attribute_id.first] = 0;
-	}
+	if (level== FMToutputlevel::standard)
+		{
+		for (auto attribute_id : theme.getvaluenames())
+			{
+			values[attribute_id.first] = 0;
+			}
+		}
 	//++period;
 	if (node.source.useinedges())//evaluate at the begining of the other period if inventory! what a major fuck
 		{
@@ -1010,7 +1031,17 @@ map<string, double> FMTgraph::getsource(const FMTmodel& model,
 			if (validgraphnode(model,inedges, it->second, node, action_IDS, selected))
 			{
 				const FMTdevelopment& development = data[it->second].get();
-				const string value = development.mask.get(theme);
+				string value;
+				if (level == FMToutputlevel::standard)
+					{
+					value = development.mask.get(theme);
+				}else if(level == FMToutputlevel::developpement)
+					{
+					value = string(development);//It's unique so yeah!
+					values[value] = 0;
+				}else {
+					value = "Total";
+					}
 				if (inedges)
 				{
 					double coef = 1;
@@ -1041,12 +1072,15 @@ map<string, double> FMTgraph::getsource(const FMTmodel& model,
 			}
 
 		}
-		double total = 0;
-		for (auto valit : values)
-		{
-			total += valit.second;
-		}
-		values["Total"] = total;
+		if (level == FMToutputlevel::standard)
+			{
+			double total = 0;
+			for (auto valit : values)
+				{
+				total += valit.second;
+				}	
+			values["Total"] = total;
+			}
 	}
 	return values;
 }

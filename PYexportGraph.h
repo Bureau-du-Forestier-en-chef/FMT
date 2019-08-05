@@ -21,6 +21,12 @@ void exportGraph()
 		"Graph stats\n"
 		"\n";
 
+	enum_<Graph::FMToutputlevel>("FMToutputlevel")
+		.value("standard", Graph::FMToutputlevel::standard)
+		.value("totalonly", Graph::FMToutputlevel::totalonly)
+		.value("developpement", Graph::FMToutputlevel::developpement)
+		.export_values();
+
 	class_<Graph::FMTgraphstats>("FMTgraphstats", py_FMTgraphstats_doc)
 		.def_readwrite("cols", &Graph::FMTgraphstats::cols)
 		.def_readwrite("rows", &Graph::FMTgraphstats::rows)

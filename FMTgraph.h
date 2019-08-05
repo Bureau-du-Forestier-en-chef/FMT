@@ -41,6 +41,13 @@ enum class FMTgraphbuild
 		nobuild = 3
 	};
 
+enum FMToutputlevel
+	{
+	standard = 1,
+	totalonly = 2,
+	developpement = 3
+	};
+
 class FMTgraph
     {
 	friend class boost::serialization::access;
@@ -91,7 +98,8 @@ class FMTgraph
                                     vector<vector<FMTevent<FMTgraph>>>& events_id, const FMTcoordinate& localisation);
         FMTgraphstats naturalgrowth(std::queue<FMTvertex_descriptor> actives);
         vector<FMTactualdevelopment> getperiodstopdev(const int location,const double* solution) const;
-		map<string, double> getoutput(const FMTmodel& model, const FMToutput& output, int period, const double* solution) const;
+		map<string, double> getoutput(const FMTmodel& model, const FMToutput& output,
+			int period, const double* solution,FMToutputlevel level = FMToutputlevel::standard) const;
 		FMTvertex_descriptor getdevelopment(const FMTdevelopment& developement) const;
 		const FMTdevelopment& getdevelopment(const FMTvertex_descriptor& descriptor) const;
 		FMTvertex_descriptor adddevelopment(const FMTfuturdevelopment& futurdevelopement);
@@ -136,7 +144,7 @@ class FMTgraph
 		map<string, double> getsource(const FMTmodel& model,
 			const FMToutputnode& node,
 			int period, const FMTtheme& theme,
-			const double* solution) const;
+			const double* solution, FMToutputlevel level = FMToutputlevel::standard) const;
         bool splittedevent(const FMTevent<FMTgraph>& event, vector<FMTevent<FMTgraph>>& splittedevents) const;
         void cleanevents(vector<FMTevent<FMTgraph>>& events_id, const FMTcoordinate& localisation) const;
         FMTgraphstats clearfromperiod(const int& period, vector<vector<vector<FMTevent<FMTgraph>>>>& events,
