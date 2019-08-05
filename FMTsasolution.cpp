@@ -159,6 +159,10 @@ namespace Spatial
             double upper = 0;
             constraint.getbounds(lower,upper,period);
             double penalties = this->applypenalty(upper,lower,value,coef,FMTsapenaltytype::exponential);
+            //Debug
+            /*cout<<constraint.name<<" Upper : "<<upper<<" Lower : "<<lower<<endl;
+            cout<<value<<" "<<penalties<<endl;
+            cin.get();*/
             penalties_vals.push_back(penalties);
             sumpenalties+=penalties;
             period++;

@@ -120,12 +120,27 @@ namespace Spatial
         double max_all = std::numeric_limits<double>::infinity();
         int stopperiod = numeric_limits<int>::max();
         int startperiod = 1;
-        if ( minimal_size>0 || maximal_size>0 )
+        if ( minimal_size>0)
+        {
+            FMTconstraint newconst(FMTconstrainttype::FMTspatialsize,FMToutput(name));
+            string target = "RHS";
+            double minsize = static_cast<double>(minimal_size);
+            newconst.addbounds(FMTyldbounds(FMTwssect::Optimize, target, max_all, minsize));
+			if(size_weight>0)
+            {
+                string gtarget = "GOAL_"+name;
+                double sizew = size_weight;
+                newconst.addbounds(FMTyldbounds(FMTwssect::Optimize,gtarget,sizew,sizew));
+            }
+            newconst.setbounds(FMTperbounds(FMTwssect::Optimize, stopperiod, startperiod));
+            constraints.push_back(newconst);
+        }
+        if (maximal_size>0)
         {
             FMTconstraint newconst(FMTconstrainttype::FMTspatialsize,FMToutput(name));
             string target = "RHS";
             double maxsize = static_cast<double>(maximal_size);
-            double minsize = static_cast<double>(minimal_size);
+            double minsize = 0;
             newconst.addbounds(FMTyldbounds(FMTwssect::Optimize, target, maxsize, minsize));
 			if(size_weight>0)
             {
