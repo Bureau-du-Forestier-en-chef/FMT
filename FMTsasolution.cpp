@@ -77,7 +77,7 @@ namespace Spatial
 
     map<string,double> FMTsasolution::geteventmeansize(const FMTsamodel& model)
     {
-            size_t action_id = 0;
+            /*size_t action_id = 0;
             vector<FMTspatialaction>spatialactions = model.getspatialactions();
             for (const FMTspatialaction& spaction : spatialactions)
                 double size_sum = 0;
@@ -97,7 +97,7 @@ namespace Spatial
                 events_meansize[spaction.name]=mean;
                 ++action_id;
                 }
-        return events_meansize;
+        return events_meansize;*/
     }
 
     double FMTsasolution::getobjfvalue()const
