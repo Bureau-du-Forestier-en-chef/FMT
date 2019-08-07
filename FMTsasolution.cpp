@@ -80,11 +80,11 @@ namespace Spatial
             size_t action_id = 0;
             vector<FMTspatialaction>spatialactions = model.getspatialactions();
             for (const FMTspatialaction& spaction : spatialactions)
+                double size_sum = 0;
+                size_t num_event = 0;
                 for (const vector<vector<FMTevent<FMTgraph>>>& period_actions : events)
                 {
                     const vector<FMTevent<FMTgraph>>& action_events = period_actions.at(action_id);
-                    double size_sum = 0;
-                    size_t num_event = 0;
                     for(const FMTevent<FMTgraph>& event : action_events)
                     {
                         if (!event.empty())
@@ -132,7 +132,7 @@ namespace Spatial
                 const FMTgraph* local_graph = &graphit->second;
                 for (int period = periodstart ; period<=periodstop ; ++period)
                     {
-                        map<string, double> output = local_graph->getoutput(model,constraint,period,&solutions[0]);
+                        map<string, double> output = local_graph->getoutput(model,constraint,period,&solutions[0],FMToutputlevel::totalonly);
                         double totalperiod = output.at("Total");
                         periods_values[period-1]+=totalperiod;
                         //cout<<"Period "<<period<<"\nOutput "<<totalperiod<<endl;
@@ -373,7 +373,8 @@ namespace Spatial
                 }else{
                     return 0;
                 }
-        return min((slope*exp(-slope*(basefive)))*maxpenalty,maxpenalty);
+        return (slope*exp(-slope*(basefive)))*maxpenalty;
+        //return min((slope*exp(-slope*(basefive)))*maxpenalty,maxpenalty);
         }
     return 0;
     }
