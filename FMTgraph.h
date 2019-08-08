@@ -75,6 +75,7 @@ class FMTgraph
         vector<std::unordered_map<size_t,FMTvertex_descriptor>> developments;
 		mutable std::unordered_map<size_t, map<string, double>>nodescache; //Quand le graph change faire nodescache.clear()
         FMTgraphstats stats;
+		void updatevarsmap(map<int,double>& variables,const int& var,const double& coef) const;
     public:
         FMTgraph();
         ~FMTgraph()=default;
@@ -120,12 +121,15 @@ class FMTgraph
 		bool validgraphnode(const FMTmodel& model, bool& inedges, const FMTvertex_descriptor& vertex_descriptor,
                             const FMToutputnode& node, const vector<int>& action_IDS,const vector<const FMTaction*>& selected) const;
 		void locatenodes(const FMTmodel& model, const vector<FMToutputnode>& nodes,int period,
-                            vector<int>& variables,vector<double>& coefs,double multiplier = 1) const;//to look at
+                            /*vector<int>& variables,vector<double>& coefs*/
+					map<int, double>& variables,double multiplier = 1) const;//to look at
         bool anyoperables(const FMTvertex_descriptor& descriptor, const vector<int>& action_ids) const;
         map<int, int> getoutvariables(const FMTvertex_descriptor& out_vertex) const;
+		vector<std::pair<const int*,const int*>>getoutvariablesnactionsptr(const FMTvertex_descriptor& out_vertex) const;
         vector<const FMTaction*> selectedactions(const FMTmodel& model, const vector<int>& action_IDS) const;
-		void constraintlenght(const FMTconstraint& constraint, int& start, int& stop) const;
+		bool constraintlenght(const FMTconstraint& constraint, int& start, int& stop) const;
 		FMTgraphstats getstats() const;
+		FMTgraphstats* getstatsptr();
 		void setstats(const FMTgraphstats& newstats);
 		FMTgraphstats buildschedule(const FMTmodel& model, std::queue<FMTvertex_descriptor> actives,
 			const FMTschedule& schedule);

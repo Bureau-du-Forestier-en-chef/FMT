@@ -1062,7 +1062,8 @@ namespace Models
 			//FMTgraph<solvertype>::hashlast(actions, yields);
 			//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "build done" << "\n";
 			//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "build stats: " << string(buildstats) << "\n";
-			FMTgraphstats newstats = this->updatematrix(graph.getperiodverticies(graph.size() - 2), buildstats);
+			size_t location = static_cast<int>(graph.size() - 2);
+			FMTgraphstats newstats = this->updatematrix(graph.getperiodverticies(location), buildstats);
 			//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "update matrix done" << "\n";
 			//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "new stats: " << string(newstats) << "\n";
 			graph.setstats(newstats);
@@ -1279,101 +1280,217 @@ namespace Models
                     Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) <<string(src)<<"\n";
                     Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "targetss " <<src.emptyperiod()<<" "<<src.getperiodlowerbound()<<" "<<src.getperiodupperbound()<< "\n";
                     }*/
-
-			FMTconstrainttype constraint_type = constraint.getconstrainttype();
-			vector<FMToutputnode>all_nodes = constraint.getnodes(); //
 			int first_period = 0;
             int last_period = 0;
-            graph.constraintlenght(constraint,first_period, last_period);
-			double lowerbound = 0;
-			double upperbound = 0;
+			if (graph.constraintlenght(constraint, first_period, last_period))
+				{
+				FMTconstrainttype constraint_type = constraint.getconstrainttype();
+				vector<FMToutputnode>all_nodes = constraint.getnodes(); //
+				double lowerbound = 0;
+				double upperbound = 0;
+				double coef_multiplier_lower = 1;
+				double coef_multiplier_upper = 1;
+				double lower_variation = 0;
+				double upper_variation = 0;
+				constraint.getvariations(lower_variation,upper_variation);
+				/*coef_multiplier_lower += 1;
+				coef_multiplier_upper += 1;*/
+				//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << " start period :"<<first_period << "\n";
+				//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << " stop period :"<<last_period << "\n";
+				for (int period = first_period; period <= last_period; ++period)
+					{
+					//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) <<" on period "<<period<<"\n";
+					if (constraint_type == FMTconstrainttype::FMTevenflow)
+						{
+						coef_multiplier_upper = 1+lower_variation;
+						coef_multiplier_lower = 1-lower_variation;
+						lowerbound = 0;
+						upperbound = 0;
+						}else if(constraint_type == FMTconstrainttype::FMTnondeclining)
+							{
+							lowerbound = numeric_limits<double>::lowest();
+							upperbound = 0;
+							}else if(constraint_type == FMTconstrainttype::FMTsequence)
+								{
+								coef_multiplier_upper = 1+lower_variation;
+								coef_multiplier_lower = 1-upper_variation;
+								lowerbound = 0;
+								upperbound = 0;
+								}else{
+								constraint.getbounds(lowerbound,upperbound,period);
+								}
+						//vector<int>all_variables;
+					   // vector<double>all_coefs;
+						map<int,double>all_variables;
+						size_t left_location = 0;
+						//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << " on period :"<<period << "\n";
+						graph.locatenodes(*this,all_nodes, period, all_variables, /*all_coefs,*/coef_multiplier_lower);
+						//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "1. got  n variables :"<< all_variables.size()<<" PEriod "<<period << "\n";
 
-            double coef_multiplier_lower = 1;
-            double coef_multiplier_upper = 1;
-            double lower_variation = 0;
-            double upper_variation = 0;
-            constraint.getvariations(lower_variation,upper_variation);
-            /*coef_multiplier_lower += 1;
-            coef_multiplier_upper += 1;*/
-            //Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << " start period :"<<first_period << "\n";
-            //Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << " stop period :"<<last_period << "\n";
-            for (int period = first_period; period <= last_period; ++period)
-                {
-                //Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) <<" on period "<<period<<"\n";
-                if (constraint_type == FMTconstrainttype::FMTevenflow)
-                    {
-                    coef_multiplier_upper = 1+lower_variation;
-                    coef_multiplier_lower = 1-lower_variation;
-                    lowerbound = 0;
-                    upperbound = 0;
-                    }else if(constraint_type == FMTconstrainttype::FMTnondeclining)
-                        {
-                        lowerbound = numeric_limits<double>::lowest();
-                        upperbound = 0;
-                        }else if(constraint_type == FMTconstrainttype::FMTsequence)
-                            {
-                            coef_multiplier_upper = 1+lower_variation;
-                            coef_multiplier_lower = 1-upper_variation;
-                            lowerbound = 0;
-                            upperbound = 0;
-                            }else{
-                            constraint.getbounds(lowerbound,upperbound,period);
-                            }
-                    vector<int>all_variables;
-                    vector<double>all_coefs;
-                    size_t left_location = 0;
-                    //Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << " on period :"<<period << "\n";
-                    graph.locatenodes(*this,all_nodes, period, all_variables, all_coefs,coef_multiplier_lower);
-                    //Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << " got  constraint nodes size of :"<<all_nodes.size() << "\n";
-
-                    //Check for goals!!!
-                    if (constraint.isgoal())
-                        {
-                        int goal_variable = addmatrixelement(constraint,FMTmatrixelement::goalvariable,all_variables,
-                                             all_coefs,period);
-                        all_variables.push_back(goal_variable);
-                        all_coefs.push_back(1);
-                        }
-                    if (constraint.acrossperiod())
-                        {
-                        left_location = all_coefs.size();
-                        graph.locatenodes(*this,all_nodes, (period + 1), all_variables, all_coefs,-1);
-                        //ismultiple!
-                        if (coef_multiplier_lower!= 1)
-                            {
-                            lowerbound = numeric_limits<double>::lowest();
-                            upperbound = 0;
-                            }
-                        }
-                    //level part
-                    locatelevels(all_nodes, period, all_variables, all_coefs,constraint);
+						//Check for goals!!!
+						if (constraint.isgoal())
+							{
+							int goal_variable = addmatrixelement(constraint,FMTmatrixelement::goalvariable,all_variables,
+												 /*all_coefs,*/period);
+							//all_variables.push_back(goal_variable);
+						   // all_coefs.push_back(1);
+							all_variables[goal_variable] = 1;
+							}
+						if (constraint.acrossperiod())
+							{
+							//left_location = all_coefs.size();
+							//left_location = all_variables.size();
+							graph.locatenodes(*this,all_nodes, (period + 1), all_variables,/* all_coefs,*/-1);
+							//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "2. got  n variables :" << all_variables.size() << " PEriod " << period << "\n";
+							//ismultiple!
+							if (coef_multiplier_lower!= 1)
+								{
+								lowerbound = numeric_limits<double>::lowest();
+								upperbound = 0;
+								}
+							}
+						//level part
+						locatelevels(all_nodes, period, all_variables, /*all_coefs,*/constraint);
 
 
 
-                    int lower_constraint_id = addmatrixelement(constraint,FMTmatrixelement::constraint,all_variables,
-                                             all_coefs,period,lowerbound, upperbound);
+						int lower_constraint_id = addmatrixelement(constraint,FMTmatrixelement::constraint,all_variables,
+												 /*all_coefs,*/period,lowerbound, upperbound);
 
-                    //ismultiple
-                    if (constraint.acrossperiod() && coef_multiplier_lower != 1)
-                        {
-                        for(size_t id = 0 ; id < left_location; ++id)
-                            {
-                            all_coefs[id] /= coef_multiplier_lower;
-                            all_coefs[id] *= coef_multiplier_upper;
-                            }
-                        lowerbound = 0;
-                        upperbound = numeric_limits<double>::max();
-                        int upper_constraint_id = addmatrixelement(constraint,FMTmatrixelement::constraint,all_variables,
-                                            all_coefs,period,lowerbound, upperbound);
+						//ismultiple
+						if (constraint.acrossperiod() && coef_multiplier_lower != 1)
+							{
+							/*for(size_t id = 0 ; id < left_location; ++id)
+								{
+								all_coefs[id] /= coef_multiplier_lower;
+								all_coefs[id] *= coef_multiplier_upper;
+								}*/
+							for (map<int,double>::iterator varit = all_variables.begin();varit!= all_variables.end();varit++)
+								{
+								varit->second /= coef_multiplier_lower;
+								varit->second *= coef_multiplier_upper;
+								}
 
-                        }
-                    }
+							lowerbound = 0;
+							upperbound = numeric_limits<double>::max();
+							int upper_constraint_id = addmatrixelement(constraint,FMTmatrixelement::constraint,all_variables,
+												/*all_coefs,*/period,lowerbound, upperbound);
+
+							}
+						}
+				}
+			}
+		return graph.getstats();
+		}
+
+	FMTgraphstats FMTlpmodel::removeconstraint(const FMTconstraint& constraint, int period)
+		{
+		//clear node variables caching 
+		if (elements.size() > period && elements.at(period).find(constraint.hash())!= elements.at(period).end())
+			{
+			vector<vector<int>>all_elements = elements.at(period).at(constraint.hash());
+			elements.at(period).erase(elements.at(period).find(constraint.hash()));
+			int maxrowid = -1;
+			int removedrow = -1;
+			int maxcolid = -1;
+			vector<int>colstoremove;
+			if (!all_elements.at(FMTmatrixelement::constraint).empty())
+				{
+				maxrowid = *max_element(all_elements.at(FMTmatrixelement::constraint).begin(), all_elements.at(FMTmatrixelement::constraint).end());
+				removedrow = all_elements.at(FMTmatrixelement::constraint).size();
+				solverinterface->deleteRows(removedrow, &all_elements.at(FMTmatrixelement::constraint)[0]);
+				graph.getstatsptr()->rows -= removedrow;
+				}
+			
+
+			if (!all_elements.at(FMTmatrixelement::goalvariable).empty())
+				{
+				maxcolid = *max_element(all_elements.at(FMTmatrixelement::goalvariable).begin(), all_elements.at(FMTmatrixelement::goalvariable).end());
+				colstoremove = all_elements.at(FMTmatrixelement::goalvariable);
+				}
+
+			if (!all_elements.at(FMTmatrixelement::levelvariable).empty())
+				{
+				//check if the level is still use somewhere else
+				bool candelete = true;
+				for (const int& levelid : all_elements.at(FMTmatrixelement::levelvariable))
+					{
+					for (std::unordered_map<size_t, vector<vector<int>>>::iterator elit = elements.at(period).begin(); elit != elements.at(period).end(); elit++)
+						{
+						if (std::find(elit->second.at(FMTmatrixelement::levelvariable).begin(), elit->second.at(FMTmatrixelement::levelvariable).end(),levelid)!= elit->second.at(FMTmatrixelement::levelvariable).end())
+							{
+							candelete = false;
+							break;
+							}	
+						}
+					if (candelete)
+						{
+						colstoremove.push_back(levelid);
+						if (levelid> maxcolid)
+							{
+							maxcolid = levelid;
+							}
+						}
+					}
+				}
+
+			if (!colstoremove.empty())
+				{
+				int colssize = static_cast<int>(colstoremove.size());
+				solverinterface->deleteCols(colssize, &colstoremove[0]);
+				graph.getstatsptr()->output_cols -= colssize;
+				}
+
+
+			for (size_t locperiod = period; locperiod < elements.size(); ++locperiod)
+					{
+					for (std::unordered_map<size_t, vector<vector<int>>>::iterator elit = elements.at(locperiod).begin(); elit != elements.at(locperiod).end(); elit++)
+						{
+						if (maxrowid!=-1)
+							{
+							for (int& rowid : elit->second.at(FMTmatrixelement::constraint))
+								{
+									if (rowid > maxrowid)
+									{
+										rowid -= removedrow;
+									}
+								}
+							}
+						if (maxcolid!=-1)
+							{
+							int rcolsize = static_cast<int>(colstoremove.size());
+							for (int& colid : elit->second.at(FMTmatrixelement::levelvariable))
+								{
+								if (colid > maxcolid)
+									{
+									colid -= rcolsize;
+									}
+								}
+							for (int& colid : elit->second.at(FMTmatrixelement::objectivevariable))
+								{
+									if (colid > maxcolid)
+									{
+										colid -= rcolsize;
+									}
+								}
+							for (int& colid : elit->second.at(FMTmatrixelement::goalvariable))
+								{
+									if (colid > maxcolid)
+									{
+										colid -= rcolsize;
+									}
+								}
+
+							}
+				
+						}
+					}
 			}
 		return graph.getstats();
 		}
 
      void FMTlpmodel::locatelevels(const vector<FMToutputnode>& nodes,int period,
-            vector<int>& variables,vector<double>& coefs,const FMTconstraint& constraint)
+            /*vector<int>& variables,vector<double>& coefs*/map<int,double>& variables,const FMTconstraint& constraint)
             {
             vector<string>level_names = constraint.getvariablelevels();
             if (!level_names.empty())
@@ -1385,8 +1502,9 @@ namespace Models
                         string level_name = level_names.front();
                         level_names.erase(level_names.begin());
                         int level_index = getsetlevel(constraint,level_name,period);
-                        variables.push_back(level_index);
-                        coefs.push_back(node.constant);
+						variables[level_index] = node.constant;
+                        //variables.push_back(level_index);
+                       // coefs.push_back(node.constant);
                         }
                     }
                 }
@@ -1425,15 +1543,30 @@ namespace Models
                 }
             }
         //If no conresponding level found create one!
-        vector<int>no_index;
-        vector<double>no_coefs;
-        return addmatrixelement(constraint,FMTmatrixelement::levelvariable,no_index,no_coefs,period);
+        //vector<int>no_index;
+        //vector<double>no_coefs;
+		map<int, double>no_index;
+        return addmatrixelement(constraint,FMTmatrixelement::levelvariable,no_index/*,no_coefs*/,period);
         }
 
-	bool FMTlpmodel::summarize(vector<int> variables, vector<double> coefficiants,
+	bool FMTlpmodel::summarize(/*vector<int> variables, vector<double> coefficiants*/const map<int, double>& variables,
 		vector<int>& sumvariables, vector<double>& sumcoefficiants) const
 		{
 		if (!variables.empty())
+			{
+			sumvariables.clear();
+			sumcoefficiants.clear();
+			sumvariables.reserve(variables.size());
+			sumcoefficiants.reserve(variables.size());
+			for (map<int,double>::const_iterator varit = variables.begin();varit!=variables.end();varit++)
+				{
+				sumvariables.push_back(varit->first);
+				sumcoefficiants.push_back(varit->second);
+				}
+			return true;
+			}
+		return false;
+		/*if (!variables.empty())
 			{
 			sumvariables.clear();
 			sumvariables.push_back(variables.back());
@@ -1464,7 +1597,7 @@ namespace Models
 			}
 			return true;
 			}
-		return false;
+		return false;*/
 		}
 
 	FMTgraphstats FMTlpmodel::setobjective(const FMTconstraint& objective)
@@ -1477,14 +1610,15 @@ namespace Models
 		/*Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "first period " <<first_period << "\n";
 		Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "last period " <<last_period << "\n";*/
 		vector<FMToutputnode>all_nodes = objective.getnodes();
-		vector<int>all_variables;
-		vector<double>all_coefs;
+		//vector<int>all_variables;
+		//vector<double>all_coefs;
+		map<int, double>all_variables;
 		if (!objective.extravariables())//simple to
 			{
 			for (int period = first_period; period <= last_period; ++period)
 				{
-				graph.locatenodes(*this,all_nodes, period, all_variables, all_coefs);
-				locatelevels(all_nodes, period, all_variables, all_coefs,objective);
+				graph.locatenodes(*this,all_nodes, period, all_variables/*, all_coefs*/);
+				locatelevels(all_nodes, period, all_variables/*, all_coefs*/,objective);
 				}
 		}else {
 			double lowerbound = 0;
@@ -1496,27 +1630,30 @@ namespace Models
 			}else {
 				lowerbound = numeric_limits<double>::lowest();
 				}
-			int variable_id = addmatrixelement(objective,FMTmatrixelement::objectivevariable,all_variables,all_coefs);
+			int variable_id = addmatrixelement(objective,FMTmatrixelement::objectivevariable,all_variables/*,all_coefs*/);
 			for (int period = first_period; period <= last_period; ++period)
 				{
-				vector<int>period_variables;
-				vector<double>period_coefs;
-				graph.locatenodes(*this,all_nodes, period, period_variables, period_coefs);
-				locatelevels(all_nodes, period, all_variables, all_coefs,objective);
-				period_variables.push_back(variable_id);
-				period_coefs.push_back(-1);
-				int constraint_id = addmatrixelement(objective,FMTmatrixelement::constraint,period_variables,
-                                         period_coefs,period,lowerbound, upperbound);
+				//vector<int>period_variables;
+				//vector<double>period_coefs;
+				map<int, double>period_variables;
+				graph.locatenodes(*this,all_nodes, period, period_variables/*, period_coefs*/);
+				locatelevels(all_nodes, period, all_variables,/* all_coefs,*/objective);
+				//period_variables.push_back(variable_id);
+				//period_coefs.push_back(-1);
+				period_variables[variable_id] = -1;
+				int constraint_id = addmatrixelement(objective,FMTmatrixelement::constraint,period_variables/*,
+                                         period_coefs*/,period,lowerbound, upperbound);
 
 				}
-            all_variables.push_back(variable_id);
-            all_coefs.push_back(1.0);
+			all_variables[variable_id] = 1.0;
+            //all_variables.push_back(variable_id);
+           // all_coefs.push_back(1.0);
 			}
         if (objective.isgoal()) //process goal system...other constraints add to be added first!!
             {
             double penalty_sense = 1;
             vector<string>targets = objective.getpenalties(penalty_sense);
-            if (!getgoals(targets,all_variables,all_coefs,penalty_sense))
+            if (!getgoals(targets,all_variables,/*all_coefs,*/penalty_sense))
                 {
                // Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "nothing found!! " <<penalty_sense << "\n";
                 //No goals set...
@@ -1524,7 +1661,7 @@ namespace Models
             }
 		vector<int>objective_variables;
 		vector<double>objective_coefficiants;
-		if (summarize(all_variables, all_coefs, objective_variables, objective_coefficiants))
+		if (summarize(all_variables, /*all_coefs,*/ objective_variables, objective_coefficiants))
 			{
 			solverinterface->setObjCoeffSet(&objective_variables[0], &objective_variables[objective_variables.size()], &objective_coefficiants[0]);
 			}
@@ -1536,7 +1673,7 @@ namespace Models
      bool FMTlpmodel::solve()
         {
         solverinterface->initialSolve();
-        solverinterface->writeLp("C:/Users/cyrgu3/source/repos/FMT/x64/Release/PC_8437_U08762_Vg1_2023_vPF04_Prototype_20190221");
+        solverinterface->writeLp("C:/Users/cyrgu3/source/repos/FMT/x64/Release/test");
 		/*const double* solve = solverinterface->getColSolution();
 		for (size_t id = 0 ; id < solverinterface->getNumCols();++id)
 			{
@@ -1545,8 +1682,8 @@ namespace Models
 		return solverinterface->isProvenOptimal();
         }
 
-     bool FMTlpmodel::getgoals(const vector<string>& goalsnames,
-                               vector<int>& index,vector<double>& coefs,const double& sense)const
+     bool FMTlpmodel::getgoals(const vector<string>& goalsnames, map<int, double>& index
+                               /*vector<int>& index,vector<double>& coefs*/,const double& sense)const
         {
         bool found_something = false;
         for (const FMTconstraint& constraint : constraints)
@@ -1568,8 +1705,9 @@ namespace Models
                         if (!constraint_elements.at(FMTmatrixelement::goalvariable).empty())
                             {
                             found_something = true;
-                            index.push_back(constraint_elements.at(FMTmatrixelement::goalvariable).at(0));
-                            coefs.push_back(value);
+                            //index.push_back(constraint_elements.at(FMTmatrixelement::goalvariable).at(0));
+                            //coefs.push_back(value);
+							index[constraint_elements.at(FMTmatrixelement::goalvariable).at(0)] = value;
                             }
                         }
                     }
@@ -1579,28 +1717,29 @@ namespace Models
         }
 
     int FMTlpmodel::addmatrixelement(const FMTconstraint& constraint,
-                     const FMTmatrixelement& element_type,const vector<int>& indexes,const vector<double>& coefs,
+                     const FMTmatrixelement& element_type,const map<int,double>& indexes,/*const vector<int>& indexes,const vector<double>& coefs,*/
                      int period,double lowerbound,double upperbound)
         {
         //matrix
         int element_id = 0;
 		vector<int>sumvariables;
 		vector<double>sumcoefficiants;
-		summarize(indexes, coefs, sumvariables, sumcoefficiants);
-		FMTgraphstats oldstats = graph.getstats();
+		summarize(indexes,/* coefs,*/ sumvariables, sumcoefficiants);
+		//FMTgraphstats oldstats = graph.getstats();
+		FMTgraphstats* stats = graph.getstatsptr();
 		if (element_type == FMTmatrixelement::constraint)
 			{
-				element_id = oldstats.rows;
+				element_id = stats->rows;
 				solverinterface->addRow(int(sumvariables.size()), &sumvariables[0], &sumcoefficiants[0], lowerbound, upperbound);
-				++oldstats.rows;
-				++oldstats.output_rows;
+				++stats->rows;
+				++stats->output_rows;
 			}else {
-				element_id = oldstats.cols;
+				element_id = stats->cols;
 				solverinterface->addCol(0, &sumvariables[0], &sumcoefficiants[0], lowerbound, upperbound, 0);
-				++oldstats.cols;
-				++oldstats.output_cols;
+				++stats->cols;
+				++stats->output_cols;
 			}
-			graph.setstats(oldstats);
+			//graph.setstats(oldstats);
 			//listing
 			//if period = -1 then add it to all periods!
 		if (elements.size() != (graph.size() - 1) && period >= elements.size()) //just for resizing!
@@ -1659,6 +1798,8 @@ namespace Models
 		{
 		return graph.getstats();
 		}
+
+
 
 	bool FMTlpmodel::specificinitialsolve()
 		{

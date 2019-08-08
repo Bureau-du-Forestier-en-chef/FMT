@@ -39,6 +39,8 @@ namespace Graph
 			bool operator != (const FMTedgeproperties& rhs) const;
 			bool operator < (const FMTedgeproperties& rhs) const;
 			string variablename() const;
+			const int* getvariableptr() const;
+			const int* getactionptr() const;
 			
 		};
 	}

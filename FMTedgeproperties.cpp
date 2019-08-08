@@ -80,4 +80,13 @@ namespace Graph
 		return stype + to_string(variableID);
 		}
 
+	const int* FMTedgeproperties::getvariableptr() const
+		{
+		return &variableID;
+		}
+	const int* FMTedgeproperties::getactionptr() const
+		{
+		return &action;
+		}
+
 }

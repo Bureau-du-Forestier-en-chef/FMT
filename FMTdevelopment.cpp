@@ -58,11 +58,16 @@ namespace Core{
         return newdev;
         }
 
+	bool FMTdevelopment::worthtestingoperability(const FMTaction& action) const
+		{
+		return (((action.lock && lock == 0) || !action.lock) &&
+			action.getagelowerbound() <= age && age <= action.getageupperbound() &&
+			action.getperiodlowerbound() <= period && period <= action.getperiodupperbound());
+		}
+
      bool FMTdevelopment::operable(const FMTaction& action,const FMTyields& ylds) const
         {
-        if (((action.lock && lock ==0)||!action.lock) &&
-			action.getagelowerbound() <= age && age <= action.getageupperbound() &&
-			action.getperiodlowerbound() <= period && period <= action.getperiodupperbound())
+        if (worthtestingoperability(action))
             {
 			const vector<const FMTspec*>it = action.findsets(mask);
             if (!it.empty())
@@ -89,6 +94,22 @@ namespace Core{
 			}
 		 return false;
 		}
+
+	 vector<int> FMTdevelopment::anyworthtestingoperability(const vector<const FMTaction*>& actions, const vector<int>& action_IDS) const
+		{
+		vector<int>potentials;
+		int id = 0;
+		for (const FMTaction* action : actions)
+			{
+			 if (this->worthtestingoperability(*action))
+				{
+				 potentials.push_back(action_IDS.at(id));
+				}
+			 ++id;
+			}
+		 return potentials;
+		}
+
      /*vector<FMTdevelopment> FMTdevelopment::operate(const FMTaction& action,const FMTtransition& Transition,
                                     const FMTyields& ylds,const vector<FMTtheme>& themes) const
         {
@@ -190,22 +211,28 @@ namespace Core{
 
 	bool FMTdevelopment::is(const FMTspec& specification, const FMTyields& ylds) const
 		{
-		map<string, double>yields;
-		if (!specification.emptyylds())
+		if (specification.empty())
 			{
-			yields = ylds.getylds(*this, specification);
-			for (const string& yield : specification.getylds())
+			return true;
+		}else{
+			map<string, double> yields;
+			if (!specification.emptyylds())
+			{
+				yields = ylds.getylds(*this, specification);
+				for (const string& yield : specification.getylds())
 				{
-				if (yields.find(yield) == yields.end())
+					if (yields.find(yield) == yields.end())
 					{
-					_exhandler->raise(FMTexc::FMTmissingyield,
-						FMTwssect::Empty, yield + " for development type " + string(*this), __LINE__, __FILE__);
+						_exhandler->raise(FMTexc::FMTmissingyield,
+							FMTwssect::Empty, yield + " for development type " + string(*this), __LINE__, __FILE__);
 					}
 				}
 			}
-		if (specification.allow(period, age, lock, yields))
-			{
-			return true;
+			if (specification.allow(period, age, lock, yields))
+				{
+				return true;
+				}
+			
 			}
 		return false;
 		}

@@ -100,23 +100,23 @@ class FMTlpmodel : public FMTmodel
 		vector<vector<int>>>>elements;
 	void buildsolverinterface();
 	void copysolverinterface(const unique_ptr<OsiSolverInterface>& solver_ptr);
-	bool summarize(vector<int> variables,vector<double> coefficiants,
+	bool summarize(/*vector<int> variables,vector<double> coefficiants*/const map<int, double>& variables ,
 					vector<int>& sumvariables, vector<double>& sumcoefficiants) const;
 	FMTgraphstats initializematrix();
 	FMTgraphstats updatematrix(const std::unordered_map<size_t, FMTvertex_descriptor>& targets,
 			const FMTgraphstats& newstats);
 		int addmatrixelement(const FMTconstraint& constraint,
-                     const FMTmatrixelement& element_type,const vector<int>& indexes,const vector<double>& coefs,
+                     const FMTmatrixelement& element_type, const map<int, double>& indexes,/*const vector<int>& indexes,const vector<double>& coefs,*/
                      int period = -1,
                      double lowerbound = COIN_DBL_MIN,double upperbound = COIN_DBL_MAX);
-        bool getgoals(const vector<string>& goalsnames,
-                      vector<int>& index,vector<double>& coefs,const double& sense) const;
+        bool getgoals(const vector<string>& goalsnames,map<int,double>& index
+                      /*vector<int>& index,vector<double>& coefs*/,const double& sense) const;
         int getsetlevel(const FMTconstraint& constraint,const string& variable_level,int period);
 
         vector<vector<int>>getmatrixelement(const FMTconstraint& constraint,int period) const;
 		unique_ptr<OsiSolverInterface>& getsolverinterface();
         void locatelevels(const vector<FMToutputnode>& nodes,int period,
-            vector<int>& variables,vector<double>& coefs,const FMTconstraint& constraint);
+            /*vector<int>& variables,vector<double>& coefs*/map<int, double>& variables,const FMTconstraint& constraint);
 	public:
 		FMTlpmodel(const FMTmodel& base, FMTsolverinterface lsolvertype);
 		FMTlpmodel();
@@ -135,6 +135,7 @@ class FMTlpmodel : public FMTmodel
 			bool forcepartialbuild = false);
 		FMTgraphstats setobjective(const FMTconstraint& objective);
 		FMTgraphstats setconstraint(const FMTconstraint& constraint);
+		FMTgraphstats removeconstraint(const FMTconstraint& constraint, int period);
 		/*bool unboundconstraint(const FMTconstraint& constraint, int period);
 		bool boundconstraint(const FMTconstraint& constraint, int period);*/
 		bool solve();

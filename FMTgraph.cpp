@@ -547,12 +547,12 @@ bool FMTgraph::validgraphnode(const FMTmodel& model, bool& inedges, const FMTver
 			{
 				if ((development.period == 0 || periodstart(vertex_descriptor)) &&
 					(action_IDS.empty() || (!action_IDS.empty() &&
-					(((buildtype == FMTgraphbuild::schedulebuild) && development.anyoperable(selected, model.yields)) || anyoperables(vertex_descriptor, action_IDS)))))
+					(((buildtype == FMTgraphbuild::schedulebuild) && development.anyoperable(selected, model.yields)) || anyoperables(vertex_descriptor, development.anyworthtestingoperability(selected,action_IDS))))))
 				{
 				inedges = true;
 				return true;
 				}
-			}else if (/*out_degree(vertex_descriptor, data) > 1 &&*/ (anyoperables(vertex_descriptor, action_IDS))) //out edges
+			}else if (/*out_degree(vertex_descriptor, data) > 1 &&*/ (anyoperables(vertex_descriptor, development.anyworthtestingoperability(selected, action_IDS)))) //out edges
 			{
 			return true;
 			}
@@ -561,7 +561,7 @@ bool FMTgraph::validgraphnode(const FMTmodel& model, bool& inedges, const FMTver
 	}
 
 void FMTgraph::locatenodes(const FMTmodel& model, const vector<FMToutputnode>& nodes, int period,
-                            vector<int>& variables, vector<double>& coefs,double multiplier) const
+                            /*vector<int>& variables, vector<double>& coefs*/map<int,double>& variables,double multiplier) const
 		{
 		vector<int> action_IDS;
 		for (FMToutputnode output_node : nodes)
@@ -603,6 +603,7 @@ void FMTgraph::locatenodes(const FMTmodel& model, const vector<FMToutputnode>& n
 			vector<int>targetedperiods;
 			if (output_node.multiperiod())
 				{
+				Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "IN multiperiod " << "\n";
 				int minperiod = max(output_node.source.getperiodlowerbound(), 1);
 				int maxperiod = min(output_node.source.getperiodupperbound(), static_cast<int>(developments.size() - 2));
 				for (int periodid = minperiod; periodid <= maxperiod;++periodid)
@@ -628,6 +629,7 @@ void FMTgraph::locatenodes(const FMTmodel& model, const vector<FMToutputnode>& n
 					FMTaction optimization_action;
 					for (const int localnodeperiod : targetedperiods)
 						{ 
+						//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << " got  n variables :" <<string(output_node.source)<<" "<< variables.size() << " PEriod " << localnodeperiod<<" node period "<<node_period << "\n";
 						for (std::unordered_map<size_t, FMTvertex_descriptor>::const_iterator it = developments[localnodeperiod].begin();
 							it != developments[localnodeperiod].end(); it++)
 							{
@@ -644,15 +646,21 @@ void FMTgraph::locatenodes(const FMTmodel& model, const vector<FMToutputnode>& n
 										{
 
 										map<int, int>vars = getoutvariables(it->second);
-										variables.push_back(vars.at(-1));
-										coefs.push_back(coef*multiplier);
+										double varcoef = coef * multiplier;
+										updatevarsmap(variables, vars.at(-1), varcoef);
+										//variables.push_back(vars.at(-1));
+										//coefs.push_back(coef*multiplier);
 									}else {
 										FMTinedge_iterator inedge_iterator, inedge_end;
 										for (tie(inedge_iterator, inedge_end) = in_edges(it->second, data); inedge_iterator != inedge_end; ++inedge_iterator)
 											{
 											FMTedgeproperties edgeprop = data[*inedge_iterator];
-											variables.push_back(edgeprop.getvariable());
-											coefs.push_back((edgeprop.getproportion() / 100)*coef*multiplier);
+											//variables.push_back(edgeprop.getvariable());
+											//coefs.push_back((edgeprop.getproportion() / 100)*coef*multiplier);
+											double varcoef = (edgeprop.getproportion() / 100)*coef*multiplier;
+											//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << " var  " << edgeprop.getvariable() << "\n";
+											updatevarsmap(variables, edgeprop.getvariable(), varcoef);
+
 											}
 										}
 								}else {
@@ -665,9 +673,11 @@ void FMTgraph::locatenodes(const FMTmodel& model, const vector<FMToutputnode>& n
 											double action_value = 0;
 											paths = getpaths(it->second, action_IDS.at(actionID));
 											double action_coef = output_node.source.getcoef(development, model.yields, *act, paths) * output_node.factor.getcoef(development, model.yields,*act,paths) * output_node.constant;
-											//variables.push_back(outvars.at(actionID));
-											variables.push_back(outvars.at(action_IDS.at(actionID)));
-											coefs.push_back(action_coef*multiplier);
+											//variables.push_back(outvars.at(action_IDS.at(actionID)));
+											//coefs.push_back(action_coef*multiplier);
+											double varcoef = action_coef * multiplier;
+											//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << " var  " << outvars.at(action_IDS.at(actionID)) << "\n";
+											updatevarsmap(variables, outvars.at(action_IDS.at(actionID)), varcoef);
 											}
 										++actionID;
 										}
@@ -683,15 +693,26 @@ void FMTgraph::locatenodes(const FMTmodel& model, const vector<FMToutputnode>& n
 
 bool FMTgraph::anyoperables(const FMTvertex_descriptor& descriptor, const vector<int>& action_ids) const
 	{
+	if (!action_ids.empty())
+		{
 		map<int, int> variables = getoutvariables(descriptor);
 		for (const int& id : action_ids)
-		{
-			if (variables.find(id) != variables.end())
 			{
+			if (variables.find(id) != variables.end())
+				{
 				return true;
+				}
 			}
 		}
-		return false;
+	return false;
+	/*vector<std::pair<const int*, const int*>>actionsnvariables = getoutvariablesnactionsptr(descriptor);
+	for (std::pair<const int*, const int*>& actnvar : actionsnvariables)
+		{
+		if (std::find(action_ids.begin(), action_ids.end(), *actnvar.first)!= action_ids.end())
+			{
+			return true;
+			}
+		}*/
 	}
 
 map<int, int> FMTgraph::getoutvariables(const FMTvertex_descriptor& out_vertex) const
@@ -705,6 +726,19 @@ map<int, int> FMTgraph::getoutvariables(const FMTvertex_descriptor& out_vertex) 
 			mapping[actionid] = edgeprop.getvariable();
 		}
 		return mapping;
+	}
+
+vector<std::pair<const int*, const int*>>FMTgraph::getoutvariablesnactionsptr(const FMTvertex_descriptor& out_vertex) const
+	{
+	vector<std::pair<const int*, const int*>>pointers;
+	FMToutedge_pair edge_pair;
+	for (edge_pair = out_edges(out_vertex, data); edge_pair.first != edge_pair.second; ++edge_pair.first)
+		{
+		FMTedgeproperties edgeprop = data[*edge_pair.first];
+		int actionid = edgeprop.getactionID();
+		pointers.push_back(std::pair<const int*, const int*>(edgeprop.getactionptr(), edgeprop.getvariableptr()));
+		}
+	return pointers;
 	}
 
 vector<const FMTaction*>FMTgraph::selectedactions(const FMTmodel& model, const vector<int>& action_IDS) const
@@ -723,7 +757,7 @@ vector<const FMTaction*>FMTgraph::selectedactions(const FMTmodel& model, const v
 		return selected;
 		}
 
-void FMTgraph::constraintlenght(const FMTconstraint& constraint, int& start, int& stop) const
+bool FMTgraph::constraintlenght(const FMTconstraint& constraint, int& start, int& stop) const
 	{
 		start = constraint.getperiodlowerbound();
 		stop = (constraint.getperiodupperbound() > (developments.size() - 2)) ? (developments.size() - 2) : constraint.getperiodupperbound();
@@ -731,11 +765,17 @@ void FMTgraph::constraintlenght(const FMTconstraint& constraint, int& start, int
 		{
 			--stop;
 		}
+		return (start < developments.size());
 	}
 
 FMTgraphstats FMTgraph::getstats() const
 	{
 	return stats;
+	}
+
+FMTgraphstats* FMTgraph::getstatsptr()
+	{
+	return &stats;
 	}
 
 void FMTgraph::setstats(const FMTgraphstats& newstats)
@@ -1253,4 +1293,16 @@ FMTgraph FMTgraph::perturbgraph(const FMTmodel& model,default_random_engine& gen
 
     return newgraph;
     }
+
+void FMTgraph::updatevarsmap(map<int, double>& variables, const int& var, const double& coef) const
+	{
+	if (variables.find(var) == variables.end())
+		{
+			variables[var] = coef;
+		}
+		else {
+			variables[var] += coef;
+		}
+	}
+
 }

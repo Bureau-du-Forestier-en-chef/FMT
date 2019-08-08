@@ -62,6 +62,8 @@ class FMTdevelopment : public FMTobject
 		double getharvestcoef(const vector<FMTdevelopmentpath>& topaths,
 			const FMTaction& action,const FMTyields& ylds,const string& target_yield) const;
 		bool is(const FMTspec& specification, const FMTyields& ylds) const;
+		bool worthtestingoperability(const FMTaction& action) const;
+		vector<int> anyworthtestingoperability(const vector<const FMTaction*>& actions, const vector<int>& action_IDS) const;
 		
     };
 

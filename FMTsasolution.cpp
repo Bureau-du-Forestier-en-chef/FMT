@@ -98,6 +98,7 @@ namespace Spatial
                 ++action_id;
                 }
         return events_meansize;*/
+		return map<string, double>();
     }
 
     double FMTsasolution::getobjfvalue()const
