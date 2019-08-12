@@ -212,12 +212,15 @@ namespace Spatial
                             if (!event.empty())
                             {
                                 double event_val = event.minimaldistance(potential_neigbors,lower);
-                                output_val+=event_val;
+                                if (event_val > lower)
+                                {
+                                    output_val+=1;
+                                }
                                 //Fix FMTconstraint and change upper lower for constraint
                                 penalties_val += applypenalty(numeric_limits<double>::infinity(),lower,event_val,coef,FMTsapenaltytype::linear);
                             }
                         }
-                        output_vals.push_back(output_val);
+                        output_vals.push_back((output_val/action_events.size()));
                         penalties_vals.push_back(penalties_val);
                         spatialpenalties+=penalties_val;
                     }
@@ -232,12 +235,15 @@ namespace Spatial
                             if (!event.empty())
                             {
                                 double event_val = static_cast<double>(event.elements.size());
-                                output_val+=event_val;
+                                if (event_val > upper || event_val < lower)
+                                {
+                                    output_val+=1;
+                                }
                                 //Fix FMTconstraint and change upper lower for constraint and coef
                                 penalties_val += applypenalty(maxsize,minsize,event_val,coef,FMTsapenaltytype::linear);
                             }
                         }
-                        output_vals.push_back(output_val);
+                        output_vals.push_back((output_val/action_events.size()));
                         penalties_vals.push_back(penalties_val);
                         spatialpenalties+=penalties_val;
                     }
