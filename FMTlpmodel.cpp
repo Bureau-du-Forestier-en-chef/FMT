@@ -958,7 +958,8 @@ namespace Models
 		solvertype(lsolvertype),
 		graph(FMTgraphbuild::nobuild),
 		solverinterface(),
-		elements()
+		elements(),
+		nodevariables()
 	{
 		buildsolverinterface();
 	}
@@ -968,7 +969,8 @@ namespace Models
 		solvertype(),
 		graph(FMTgraphbuild::nobuild),
 		solverinterface(),
-		elements()
+		elements(),
+		nodevariables()
 	{
 
 	}
@@ -978,7 +980,8 @@ namespace Models
 		solvertype(rhs.solvertype),
 		graph(rhs.graph),
 		solverinterface(),
-		elements(rhs.elements)
+		elements(rhs.elements),
+		nodevariables(rhs.nodevariables)
 	{
 		copysolverinterface(rhs.solverinterface);
 	}
@@ -1027,6 +1030,26 @@ namespace Models
 		const double* solution = solverinterface->getColSolution();
 		return graph.getoutput(*this, output, period, solution,level);
 	}
+
+	FMTtheme FMTlpmodel::locatestatictheme() const
+		{
+		FMTtheme besttheme;
+		vector<FMTtheme>bestthemes = getthemes();
+		for (const FMTtransition& transition : gettransitions())
+			{
+			bestthemes = transition.getstaticthemes(bestthemes);
+			}
+		size_t themesize = 0;
+		for (const FMTtheme& theme : bestthemes)
+			{
+			if (themesize < theme.size())
+				{
+				besttheme = theme;
+				themesize = theme.size();
+				}
+			}
+		return besttheme;
+		}
 
 	FMTgraphstats FMTlpmodel::buildperiod(FMTschedule schedule, bool forcepartialbuild)
 	{
@@ -1271,6 +1294,35 @@ namespace Models
 			}
 		}*/
 
+bool FMTlpmodel::locatenodes(const vector<FMToutputnode>& nodes, int period, map<int, double>& variables, double multiplier) const
+	{
+	map<int, double>all_variables;
+	bool cashhit = false;
+	for (const FMToutputnode& node : nodes)
+		{
+			std::unordered_map<size_t, map<int, double>>::const_iterator ucacheit = nodevariables.find(node.hash(period));
+			map<int, double>node_map;
+			if (ucacheit == nodevariables.end())
+			{
+				node_map = graph.locatenode(*this, node, period);//go into the graph
+				nodevariables[node.hash(period)] = node_map;//cash all the variables
+			}
+			else {
+				node_map = ucacheit->second; //go into the cash
+				cashhit = true;
+			}
+			for (map<int, double>::const_iterator node_it = node_map.begin(); node_it != node_map.end(); node_it++)
+			{
+				if (all_variables.find(node_it->first) == all_variables.end())
+				{
+					all_variables[node_it->first] = 0;
+				}
+				all_variables[node_it->first] += node_it->second*multiplier;
+			}
+		}
+	return cashhit;
+	}
+
 	FMTgraphstats FMTlpmodel::setconstraint(const FMTconstraint& constraint)
 		{
 		if (!constraint.isobjective())
@@ -1323,8 +1375,8 @@ namespace Models
 					   // vector<double>all_coefs;
 						map<int,double>all_variables;
 						size_t left_location = 0;
-						//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << " on period :"<<period << "\n";
-						graph.locatenodes(*this,all_nodes, period, all_variables, /*all_coefs,*/coef_multiplier_lower);
+						locatenodes(all_nodes, period, all_variables, coef_multiplier_lower);
+						//graph.locatenodes(*this,all_nodes, period, all_variables, coef_multiplier_lower);
 						//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "1. got  n variables :"<< all_variables.size()<<" PEriod "<<period << "\n";
 
 						//Check for goals!!!
@@ -1340,7 +1392,8 @@ namespace Models
 							{
 							//left_location = all_coefs.size();
 							//left_location = all_variables.size();
-							graph.locatenodes(*this,all_nodes, (period + 1), all_variables,/* all_coefs,*/-1);
+							//graph.locatenodes(*this,all_nodes, (period + 1), all_variables,-1);
+							locatenodes(all_nodes, (period + 1), all_variables, -1);
 							//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "2. got  n variables :" << all_variables.size() << " PEriod " << period << "\n";
 							//ismultiple!
 							if (coef_multiplier_lower!= 1)
@@ -1400,6 +1453,7 @@ namespace Models
 				removedrow = all_elements.at(FMTmatrixelement::constraint).size();
 				solverinterface->deleteRows(removedrow, &all_elements.at(FMTmatrixelement::constraint)[0]);
 				graph.getstatsptr()->rows -= removedrow;
+				graph.getstatsptr()->output_rows -= removedrow;
 				}
 			
 
@@ -1438,6 +1492,7 @@ namespace Models
 				{
 				int colssize = static_cast<int>(colstoremove.size());
 				solverinterface->deleteCols(colssize, &colstoremove[0]);
+				graph.getstatsptr()->cols-= colssize;
 				graph.getstatsptr()->output_cols -= colssize;
 				}
 
@@ -1617,7 +1672,8 @@ namespace Models
 			{
 			for (int period = first_period; period <= last_period; ++period)
 				{
-				graph.locatenodes(*this,all_nodes, period, all_variables/*, all_coefs*/);
+				//graph.locatenodes(*this,all_nodes, period, all_variables/*, all_coefs*/);
+				locatenodes(all_nodes, period, all_variables);
 				locatelevels(all_nodes, period, all_variables/*, all_coefs*/,objective);
 				}
 		}else {
@@ -1636,7 +1692,8 @@ namespace Models
 				//vector<int>period_variables;
 				//vector<double>period_coefs;
 				map<int, double>period_variables;
-				graph.locatenodes(*this,all_nodes, period, period_variables/*, period_coefs*/);
+				//graph.locatenodes(*this,all_nodes, period, period_variables/*, period_coefs*/);
+				locatenodes(all_nodes, period, period_variables);
 				locatelevels(all_nodes, period, all_variables,/* all_coefs,*/objective);
 				//period_variables.push_back(variable_id);
 				//period_coefs.push_back(-1);
@@ -1673,7 +1730,7 @@ namespace Models
      bool FMTlpmodel::solve()
         {
         solverinterface->initialSolve();
-        solverinterface->writeLp("C:/Users/cyrgu3/source/repos/FMT/x64/Release/test");
+        //solverinterface->writeLp("C:/Users/cyrgu3/source/repos/FMT/x64/Release/test");
 		/*const double* solve = solverinterface->getColSolution();
 		for (size_t id = 0 ; id < solverinterface->getNumCols();++id)
 			{

@@ -110,6 +110,22 @@ unsigned int FMTtransition::age_after(const vector<FMTdevelopment>& devs,
     return (total_age/age_count);
     }
 
+vector<FMTtheme>FMTtransition::getstaticthemes(const vector<FMTtheme>& themes) const
+	{
+	vector<FMTfork>::const_iterator fork_it = this->databegin();
+	vector<FMTtheme>staticthemes = themes;
+	while (fork_it!= this->dataend() && !staticthemes.empty())
+		{
+		for (const FMTtransitionmask& trnmask : fork_it->getmasktrans())
+			{
+			const FMTmask msk = trnmask.getmask();
+			staticthemes = msk.getstaticthemes(staticthemes);
+			}
+		++fork_it;
+		}
+	return staticthemes;
+	}
+
 const FMTfork* FMTtransition::getfork(const FMTdevelopment& dev,
                                const FMTyields& ylds) const
     {

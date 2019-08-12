@@ -99,6 +99,7 @@ class FMTmask
         string get(vector<FMTtheme>& themes) const;
         string getstr() const;
         bool set(const vector<FMTtheme>& themes,string value);
+		vector<FMTtheme>getstaticthemes(const vector<FMTtheme>& themes) const;
         string get(const FMTtheme& theme) const;
 		bool empty() const;
         bool set(const FMTtheme& theme,string value);
