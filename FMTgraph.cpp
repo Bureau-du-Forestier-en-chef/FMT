@@ -468,8 +468,8 @@ double FMTgraph::inarea(const FMTvertex_descriptor& out_vertex, const double*&  
 
 bool FMTgraph::periodstart(const FMTvertex_descriptor& out_vertex) const
 	{
-	if (in_degree(out_vertex, data)==1)//If only one edge in we got propably a growth 
-		{
+	//if (in_degree(out_vertex, data)==1)//If only one edge in we got propably a growth 
+		//{
 		const FMTvertexproperties& properties = data[out_vertex];
 		FMTinedge_iterator inedge_iterator, inedge_end;
 		for (tie(inedge_iterator, inedge_end) = in_edges(out_vertex, data); inedge_iterator != inedge_end; ++inedge_iterator)
@@ -481,7 +481,7 @@ bool FMTgraph::periodstart(const FMTvertex_descriptor& out_vertex) const
 					return true;
 				}
 			}
-		}
+		//}
 	return false;
 	}
 
