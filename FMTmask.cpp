@@ -375,6 +375,20 @@ bool FMTmask::empty() const
 	return data.empty();
 	}
 
+vector<FMTtheme>FMTmask::getstaticthemes(const vector<FMTtheme>& themes) const
+	{
+	vector<FMTtheme>staticths;
+	for (const FMTtheme& theme : staticths)
+		{
+		string value = this->get(theme);
+		if (!theme.isaggregate(value) && !theme.isattribute(value))
+			{
+			staticths.push_back(theme);
+			}
+		}
+	return staticths;
+	}
+
 
 bool FMTmask::set(const FMTtheme& theme,string value)
     {

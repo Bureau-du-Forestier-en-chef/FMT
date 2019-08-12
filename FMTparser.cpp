@@ -423,7 +423,7 @@ bool FMTparser::checkmask(const vector<FMTtheme>& themes, const vector<string>& 
 	bool returnvalue = true;
 	if (themes.size() > values.size())
 	{
-		_exhandler->raise(FMTexc::WSinvalid_maskrange, _section, mask + " at line " + to_string(_line), __LINE__, __FILE__);
+			_exhandler->raise(FMTexc::WSinvalid_maskrange, _section, mask + " at line " + to_string(_line), __LINE__, __FILE__);
 		returnvalue = false;
 	}else {
 		int id = 0;
@@ -432,7 +432,7 @@ bool FMTparser::checkmask(const vector<FMTtheme>& themes, const vector<string>& 
 		{
 			if (!theme.isattribute(values[id]) && !theme.isaggregate(values[id]) && values[id] != "?")
 				{
-				string message = values[id] + " at theme " + to_string(theme.getid()) +" at line " + to_string(_line);
+				string message = values[id] + " at theme " + to_string(theme.getid()+1) +" at line " + to_string(_line);
 				_exhandler->raise(FMTexc::WSundefined_attribute, _section, message, __LINE__, __FILE__);
 				returnvalue = false;
 				}

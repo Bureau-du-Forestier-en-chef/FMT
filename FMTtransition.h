@@ -43,6 +43,7 @@ class FMTtransition : public FMTlist<FMTfork>
                                const vector<FMTtheme>& themes) const;
         const FMTfork* getfork(const FMTdevelopment& dev,
                                const FMTyields& ylds) const;
+		vector<FMTtheme>getstaticthemes(const vector<FMTtheme>& themes) const;
         FMTmask main_target(const vector<FMTdevelopment>& devs,
                             const FMTyields& ylds) const;
 		map<string,vector<FMTdevelopment>> attribute_targets(const vector<FMTdevelopment>& devs,
