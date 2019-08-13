@@ -11,12 +11,12 @@
 namespace Spatial
 {
 
-    FMTsasolution::FMTsasolution():FMTlayer<FMTgraph>(),solution_stats(),events(),objectivefunctionvalue(),events_meansize(),constraint_outputs_penalties()
+    FMTsasolution::FMTsasolution():FMTlayer<FMTgraph>(),solution_stats(),events(),objectivefunctionvalue(),constraint_outputs_penalties()
     {
 
     }
 
-    FMTsasolution::FMTsasolution(const FMTforest& initialmap):events(),objectivefunctionvalue(),events_meansize(),constraint_outputs_penalties()
+    FMTsasolution::FMTsasolution(const FMTforest& initialmap):events(),objectivefunctionvalue(),constraint_outputs_penalties()
     {
         FMTlayer<FMTgraph>::operator = (initialmap.copyextent<FMTgraph>());//Setting layer information
         for(map<FMTcoordinate,FMTdevelopment>::const_iterator devit = initialmap.mapping.begin(); devit != initialmap.mapping.end(); ++devit)
@@ -35,7 +35,6 @@ namespace Spatial
             solution_stats(rhs.solution_stats),
             events(rhs.events),
             objectivefunctionvalue(rhs.objectivefunctionvalue),
-            events_meansize(rhs.events_meansize),
             constraint_outputs_penalties(rhs.constraint_outputs_penalties)
     {
 
@@ -49,7 +48,6 @@ namespace Spatial
         solution_stats = rhs.solution_stats;
         events = rhs.events;
         objectivefunctionvalue = rhs.objectivefunctionvalue;
-        events_meansize = rhs.events_meansize;
         constraint_outputs_penalties = rhs.constraint_outputs_penalties;
         }
     return *this;
@@ -74,32 +72,6 @@ namespace Spatial
     }
 
 // ++++++++++++++++++++++++++++++ Function to get info on the solution +++++++++++++++++++++++++++++++++++
-
-    map<string,double> FMTsasolution::geteventmeansize(const FMTsamodel& model)
-    {
-            /*size_t action_id = 0;
-            vector<FMTspatialaction>spatialactions = model.getspatialactions();
-            for (const FMTspatialaction& spaction : spatialactions)
-                double size_sum = 0;
-                size_t num_event = 0;
-                for (const vector<vector<FMTevent<FMTgraph>>>& period_actions : events)
-                {
-                    const vector<FMTevent<FMTgraph>>& action_events = period_actions.at(action_id);
-                    for(const FMTevent<FMTgraph>& event : action_events)
-                    {
-                        if (!event.empty())
-                        {
-                            size_sum += static_cast<double>(event.elements.size());
-                            ++num_event;
-                        }
-                    }
-                double mean = size_sum/num_event;
-                events_meansize[spaction.name]=mean;
-                ++action_id;
-                }
-        return events_meansize;*/
-		return map<string, double>();
-    }
 
     double FMTsasolution::getobjfvalue()const
     {
@@ -289,7 +261,6 @@ namespace Spatial
     FMTsasolution FMTsasolution::perturb(FMTsamodel& model, default_random_engine& generator,FMTsamovetype movetype,const double min_ratio, const double max_ratio) const
     {
         FMTsasolution newsolution(*this);
-        newsolution.events_meansize.clear();
         switch(movetype)
         {
         case FMTsamovetype::shotgun ://Create function shotgun move

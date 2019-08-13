@@ -29,7 +29,6 @@ class FMTsasolution : public FMTlayer<FMTgraph>
         FMTgraphstats solution_stats;
         vector<vector<vector<FMTevent<FMTgraph>>>> events;//v1 period v2 action id v3 FMTevent<FMTgraph>
         double objectivefunctionvalue;//Sum of all penalties
-        map<string,double> events_meansize;
 
     public:
         map<string,pair<vector<double>,vector<double>>> constraint_outputs_penalties;
@@ -44,7 +43,6 @@ class FMTsasolution : public FMTlayer<FMTgraph>
 
         //Function to get info on the solution
 
-        map<string,double> geteventmeansize(const FMTsamodel& model);
         double getobjfvalue()const;
         FMTgraphstats getsolution_stats() const;
         const vector<vector<vector<FMTevent<FMTgraph>>>>& getevents() const;

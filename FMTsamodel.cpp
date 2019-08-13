@@ -96,12 +96,12 @@ namespace Models
         return *this;
     }
 
-    double FMTsamodel::warmup(const double initprob,bool keep_best,FMTsawarmuptype type)
+    double FMTsamodel::warmup(const double initprob, const size_t iterations,bool keep_best,FMTsawarmuptype type)
     {
         FMTsasolution first=current_solution;//Put it as current at the end
         double temp = 0;
         double mean_ratio = (max_ratio_moves - min_ratio_moves)/2;
-        int iter = mean_ratio*first.mapping.size()*10;
+        size_t iter = iterations;
         switch(type)
         {
         case FMTsawarmuptype::log :
@@ -422,39 +422,6 @@ namespace Models
         {
             current_solution.write_events(actions,out_path,"Current_solution");
         }
-    }
-
-    void FMTsamodel::get_events_mean_size(string path)
-    {
-        fstream outputFile;
-        string filename = path+"events_mean_size.csv";
-        outputFile.open(filename, std::fstream::in | std::fstream::out | std::fstream::app);
-        outputFile<<"solution,constraint,events_mean_size"<<endl;
-        map<string,double> c = current_solution.geteventmeansize(*this);
-        for(map<string,double>::const_iterator mapit = c.begin();mapit!=c.end();++mapit)
-        {
-            const string& cname = mapit->first;
-            const double& mean = mapit->second;
-            outputFile<<"Current"<<","<<cname<<","<<mean<<endl;
-        }
-        if (number_of_moves>0)
-        {
-            map<string,double> n = new_solution.geteventmeansize(*this);
-            for(map<string,double>::const_iterator mapit = n.begin();mapit!=n.end();++mapit)
-            {
-                const string& cname = mapit->first;
-                const double& mean = mapit->second;
-                outputFile<<"New"<<","<<cname<<","<<mean<<endl;
-            }
-            map<string,double> b = best_solution.geteventmeansize(*this);
-            for(map<string,double>::const_iterator mapit = n.begin();mapit!=n.end();++mapit)
-            {
-                const string& cname = mapit->first;
-                const double& mean = mapit->second;
-                outputFile<<"Best"<<","<<cname<<","<<mean<<endl;
-            }
-        }
-        outputFile.close();
     }
 
     vector<FMTspatialaction> FMTsamodel::getspatialactions()const
