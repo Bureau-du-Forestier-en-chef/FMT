@@ -7,7 +7,7 @@ BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(buildperiod_overloads, buildperiod, 0, 2)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(move_solution_overloads, move_solution, 0, 1)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(get_outputs_overloads, get_outputs, 0, 1)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(getLPoutputoverloads,getoutput, 2, 3)
-BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(warmup_overloads, warmup, 1, 3)
+BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(warmup_overloads, warmup, 2, 4)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(evaluate_overloads, evaluate, 1, 2)
 
 
@@ -158,7 +158,6 @@ void exportModel()
             .def("write_outputs_at",&FMTsamodel::write_outputs_at,
                  "Input : Path were you want the file with the outputs\n"
                  "Write the for each constraint and period the output and the penalty in a file name outputs.csv")
-            .def("get_events_mean_size",&FMTsamodel::get_events_mean_size)
             .def("get_outputs",&FMTsamodel::get_outputs,get_outputs_overloads())
             .def("write_solutions_events",&FMTsamodel::write_solutions_events)
             .def("get_number_moves",&FMTsamodel::get_number_moves)

@@ -50,7 +50,7 @@ class FMTsamodel : public FMTmodel
 
         //Setting parameters for the model
 
-        double warmup(const double initprob,bool keep_best=false, FMTsawarmuptype type = FMTsawarmuptype::log);
+        double warmup(const double initprob, const size_t iterations, bool keep_best=false, FMTsawarmuptype type = FMTsawarmuptype::bootstrapmagic);
         void write_outputs_at(string path);
         bool setschedule(const FMTexponentialschedule& schedule);//To set a schedule for the simulated annealing
         bool setinitial_mapping(const FMTforest& forest);
@@ -65,7 +65,6 @@ class FMTsamodel : public FMTmodel
         FMTsasolution get_new_solution()const;
         string getcoolingscheduletype()const{return cooling_schedule->get_schedule_type();};
         void write_solutions_events(string out_path)const;//Write events
-        void get_events_mean_size(string path);
         vector<FMTspatialaction> getspatialactions()const;
 
         //Functions to manipulate the model
