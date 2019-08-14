@@ -152,14 +152,14 @@ namespace Spatial
         double lower=0;
         double upper=0;
         vector<FMTspatialaction>::iterator actionit = find_if(spatialactions.begin(),spatialactions.end(),[constraint] (const FMTspatialaction& spaction) {return spaction.name == constraint.name;});
-        int action_id = std::distance(spatialactions.begin(), actionit);
+        int action_id = static_cast<int>(std::distance(spatialactions.begin(), actionit));
         FMTspatialaction spaction = spatialactions.at(action_id);
         size_t period = 1;
         for (const vector<vector<FMTevent<FMTgraph>>>& period_actions : events)
         {
             if (!period_actions.empty())
             {
-                constraint.getbounds(lower,upper,period);
+                constraint.getbounds(lower,upper,static_cast<int>(period));
                 vector<FMTevent<FMTgraph>> action_events = period_actions.at(action_id);
                 if(!action_events.empty())
                 {
@@ -184,7 +184,7 @@ namespace Spatial
                         {
                             if (!event.empty())
                             {
-                                double event_val = event.minimaldistance(potential_neigbors,lower);
+                                double event_val = static_cast<double>(event.minimaldistance(potential_neigbors, static_cast<unsigned int>(lower)));
                                 if (event_val > lower)
                                 {
                                     output_val+=1;

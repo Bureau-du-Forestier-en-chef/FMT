@@ -607,7 +607,7 @@ FMTareaparser::FMTareaparser() :
             unsigned int ystack = 0;
             for( int iYBlock = 0; iYBlock < nYBlocks; iYBlock++ )
                 {
-                int nYValid;
+                int nYValid=0;
                 unsigned int xstack = 0;
                 for( int iXBlock = 0; iXBlock < nXBlocks; iXBlock++ )
                     {
@@ -626,7 +626,7 @@ FMTareaparser::FMTareaparser() :
                                 {
                                 if (!mapping.empty())
                                     {
-                                    intblock[iX + iY * nXBlockSize] = std::distance(mapping.begin(),mapping.find(it->second));
+                                    intblock[iX + iY * nXBlockSize] = static_cast<int>(std::distance(mapping.begin(),mapping.find(it->second)));
                                     }else if(std::is_same<int,T>::value)
                                         {
                                         intblock[iX + iY * nXBlockSize] = boost::lexical_cast<int>(it->second);
@@ -639,7 +639,7 @@ FMTareaparser::FMTareaparser() :
                                     {
                                     dblblock[iX + iY * nXBlockSize] = nodata;
                                     }else{
-                                    intblock[iX + iY * nXBlockSize]  = nodata;
+                                    intblock[iX + iY * nXBlockSize]  = static_cast<int>(nodata);
                                     }
 
                                 }

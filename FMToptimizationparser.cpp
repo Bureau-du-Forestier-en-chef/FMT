@@ -249,7 +249,7 @@ namespace WSParser
 
 
 			string keyword = kmatch[1];
-			FMTconstrainttype ctype;
+			FMTconstrainttype ctype = FMTconstrainttype::FMTstandard;
 
 			if (keyword == "_EVEN")
 			{
@@ -311,8 +311,8 @@ namespace WSParser
 				string upper_period = string(kmatch[17]);
 				setperiods(constraint, lower_period, upper_period, constants);
 				string str_operator = string(kmatch[5]) + string(kmatch[6]) + string(kmatch[10]);
-				double lower_bounds = numeric_limits<double>::lowest();
-				double upper_bounds = numeric_limits<double>::infinity();
+				//double lower_bounds = numeric_limits<double>::lowest();
+				//double upper_bounds = numeric_limits<double>::infinity();
 				string LHS = string(kmatch[3]) + string(kmatch[9]);
 				string RHS = string(kmatch[7]) + string(kmatch[11]);
 				string full_equation = LHS + string(1,'+') + RHS;
@@ -420,7 +420,7 @@ namespace WSParser
 			//boost::split(body_split,body,boost::is_any_of("-*/+"));
 
 			objective.setoutput(final_output);
-			FMTconstrainttype cctype;
+			FMTconstrainttype cctype = FMTconstrainttype::FMTstandard;
 			if (objective_type == "_MAX")
 			{
 				cctype = FMTconstrainttype::FMTMAXobjective;

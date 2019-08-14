@@ -4,17 +4,17 @@
 namespace Exception
 {
 
-    FMTexception::FMTexception():_msg(), holdup(false){}
+    FMTexception::FMTexception():holdup(false), _msg(), exceptiontype(), section(){}
 
-    FMTexception::FMTexception(const FMTexc lexception,const string message):_msg(), exceptiontype(lexception), section(), holdup(false)
+    FMTexception::FMTexception(const FMTexc lexception,const string message): holdup(false),_msg(), exceptiontype(lexception), section()
         {
         _msg = "FMTexc("+to_string(lexception) +")" + message;
         }
-     FMTexception::FMTexception(const FMTexc lexception,FMTwssect lsection,const string message):_msg(), exceptiontype(lexception),section(lsection), holdup(false)
+     FMTexception::FMTexception(const FMTexc lexception,FMTwssect lsection,const string message): holdup(false),_msg(), exceptiontype(lexception),section(lsection)
         {
         _msg = "FMTexc("+to_string(lexception) +")"+message+" FMTwssect("+to_string(lsection) +")"+FMTwssect_str(lsection);
         }
-    FMTexception::FMTexception(const FMTexception& rhs):_msg(rhs._msg), exceptiontype(rhs.exceptiontype),section(rhs.section), holdup(rhs.holdup)
+    FMTexception::FMTexception(const FMTexception& rhs): holdup(rhs.holdup),_msg(rhs._msg), exceptiontype(rhs.exceptiontype),section(rhs.section)
         {
 
         }

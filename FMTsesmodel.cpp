@@ -79,7 +79,7 @@ namespace Models
                              bool schedule_only,
                              unsigned int seed)
         {
-		FMTschedule newschedule(disturbances.data.size()+1,map<FMTaction, map<FMTdevelopment, vector<double>>>());
+		FMTschedule newschedule(static_cast<int>(disturbances.data.size()+1),map<FMTaction, map<FMTdevelopment, vector<double>>>());
         default_random_engine generator(seed);
         const double total_area = schedule.area();
         map<string,double>targets;

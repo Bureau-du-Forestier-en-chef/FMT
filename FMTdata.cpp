@@ -32,7 +32,7 @@ bool FMTdata::constant() const
 		{
 		vector<double>tempvalues(data);
 		std::sort(tempvalues.begin(), tempvalues.end());
-		int uniqueCount = std::unique(tempvalues.begin(), tempvalues.end()) - tempvalues.begin();
+		int uniqueCount = static_cast<int>(std::unique(tempvalues.begin(), tempvalues.end()) - tempvalues.begin());
 		return (uniqueCount == 1);
 		}
 	return false;
@@ -220,11 +220,11 @@ bool FMTdata::operator == (const FMTdata& rhs) const
 
 FMTdata::FMTdata(const vector<double>& lvalues,
 	const FMTyieldparserop& lops,
-	const vector<string>& lsource): ops(lops), source(lsource), stacking(), _cache(),data(lvalues) {}
+	const vector<string>& lsource): ops(lops), source(lsource), stacking(), _cache(), _agebase(),data(lvalues) {}
 
 FMTdata::FMTdata(const vector<double>& lvalues,
                 const FMTyieldparserop& lops,
                 const vector<string>& lsource,
-				const vector<bool>& varstack):ops(lops),source(lsource),stacking(varstack), _cache(),data(lvalues){}
+				const vector<bool>& varstack):ops(lops),source(lsource),stacking(varstack), _cache(), _agebase(),data(lvalues){}
 
 }

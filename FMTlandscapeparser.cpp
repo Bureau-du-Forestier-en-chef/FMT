@@ -112,9 +112,10 @@ FMTlandscapeparser::FMTlandscapeparser() :
         map<string,map<string,double>>indexes_values;
         vector<FMTtheme>themes;
         string themename,aggregatename;
-        int id,start,stop;
+		int id = 0;
+		int stop = 0;
 		bool aggregate_redefiniton = false;
-        start = 0;
+        int start = 0;
 		int unknownID = 1;
         if (FMTparser::tryopening(landstream,location))
             {

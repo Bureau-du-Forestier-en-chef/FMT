@@ -201,7 +201,7 @@ pair<size_t,int> FMTgraph::randomoperate(const vector<pair<size_t,int>>& operabl
                                             FMTgraphstats& statsdiff, const FMTvertex_descriptor& front_vertex, default_random_engine& generator,
                                             const FMTdevelopment& active_development)
     {
-        int size_op =  operables.size();
+        int size_op =  static_cast<int>(operables.size());
         uniform_int_distribution<int> distribution(0,size_op);
         int distribution_select = distribution(generator);
         if(!operables.empty() && distribution_select != size_op)//If size_op grow
@@ -759,7 +759,7 @@ vector<const FMTaction*>FMTgraph::selectedactions(const FMTmodel& model, const v
 bool FMTgraph::constraintlenght(const FMTconstraint& constraint, int& start, int& stop) const
 	{
 		start = constraint.getperiodlowerbound();
-		stop = (constraint.getperiodupperbound() > (developments.size() - 2)) ? (developments.size() - 2) : constraint.getperiodupperbound();
+		stop = static_cast<int>((constraint.getperiodupperbound() > (developments.size() - 2)) ? (developments.size() - 2) : constraint.getperiodupperbound());
 		if (constraint.acrossperiod())
 		{
 			--stop;
@@ -839,7 +839,7 @@ FMTgraphstats FMTgraph::eraseperiod()
 			it != developments.at(0).end(); it++)
 			{
 			FMTvertex_descriptor vertex_location = it->second;
-			stats.edges-=in_degree(vertex_location, data);
+			stats.edges-=static_cast<int>(in_degree(vertex_location, data));
 			clear_in_edges(vertex_location, data);
 			}
 	for (std::unordered_map<size_t, FMTvertex_descriptor>::iterator it = developments.at(0).begin();
@@ -1237,7 +1237,7 @@ void FMTgraph::cleanevents(vector<FMTevent<FMTgraph>>& events_id, const FMTcoord
 FMTgraphstats FMTgraph::clearfromperiod(const int& period, vector<vector<vector<FMTevent<FMTgraph>>>>& events,
                                         const FMTcoordinate& localisation)
     {
-        for (int location = this->size()-1 ; location>=period ; --location)
+        for (int location = static_cast<int>(this->size()-1) ; location>=period ; --location)
         {
             for (std::unordered_map<size_t, FMTvertex_descriptor>::iterator it = developments.at(location).begin();
                 it != developments.at(location).end(); it++)

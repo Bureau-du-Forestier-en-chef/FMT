@@ -223,7 +223,7 @@ double FMToutputsource::getvalue(int period) const
 		{
         if (period >= int(values.size()))
             {
-            period = values.size() - 1;
+            period = static_cast<int>(values.size() - 1);
             }
 		returnvalue= values.at(period);
 		}
@@ -285,12 +285,12 @@ vector<int>FMToutputsource::targets(const vector<FMTaction>& actions,
                     vector<string>::iterator it = find(ordered_action.begin(), ordered_action.end(), actvalue);
                     if (it != ordered_action.end())
                     {
-                        action_IDS.push_back(std::distance(ordered_action.begin(), it));
+                        action_IDS.push_back(static_cast<int>(std::distance(ordered_action.begin(), it)));
                     }
 
                 }
             }else if (ait!= ordered_action.end()){
-                action_IDS.push_back(std::distance(ordered_action.begin(),ait));
+                action_IDS.push_back(static_cast<int>(std::distance(ordered_action.begin(),ait)));
             }
         }
         }

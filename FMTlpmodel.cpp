@@ -1082,7 +1082,7 @@ namespace Models
 			//FMTgraph<solvertype>::hashlast(actions, yields);
 			//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "build done" << "\n";
 			//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "build stats: " << string(buildstats) << "\n";
-			size_t location = static_cast<int>(graph.size() - 2);
+			int location = static_cast<int>(graph.size() - 2);
 			FMTgraphstats newstats = this->updatematrix(graph.getperiodverticies(location), buildstats);
 			//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "update matrix done" << "\n";
 			//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "new stats: " << string(newstats) << "\n";
@@ -1438,7 +1438,7 @@ bool FMTlpmodel::locatenodes(const vector<FMToutputnode>& nodes, int period, map
 			if (!all_elements.at(FMTmatrixelement::constraint).empty())
 				{
 				maxrowid = *max_element(all_elements.at(FMTmatrixelement::constraint).begin(), all_elements.at(FMTmatrixelement::constraint).end());
-				removedrow = all_elements.at(FMTmatrixelement::constraint).size();
+				removedrow = static_cast<int>(all_elements.at(FMTmatrixelement::constraint).size());
 				solverinterface->deleteRows(removedrow, &all_elements.at(FMTmatrixelement::constraint)[0]);
 				graph.getstatsptr()->rows -= removedrow;
 				graph.getstatsptr()->output_rows -= removedrow;

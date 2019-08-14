@@ -200,7 +200,7 @@ namespace WSParser
                                             {
                                             for (size_t period = 0 ; period < constants.length(strsrc); ++period)
                                                 {
-                                                values.push_back(getnum<double>(strsrc,constants,period));
+                                                values.push_back(getnum<double>(strsrc,constants,static_cast<int>(period)));
                                                 }
                                             }else{
                                                 //sflit and trim

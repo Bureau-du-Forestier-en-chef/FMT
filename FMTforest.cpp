@@ -243,7 +243,7 @@ vector<FMTevent<FMTdevelopment>> FMTforest::buildharvest(const double& target,
 						{
 						for (const FMTevent<FMTdevelopment>& cut : cuts)
 							{
-							if (cut.within(targetaction.adjacency, newcut))
+							if (cut.within(static_cast<unsigned int>(targetaction.adjacency), newcut))
 								{
 								tooclose = true;
 								++tooclosecall;

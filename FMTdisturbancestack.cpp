@@ -50,7 +50,7 @@ void FMTdisturbancestack::add(const string& action,const vector<FMTevent<FMTdeve
 
 bool FMTdisturbancestack::allow(const FMTspatialaction& action,const FMTcoordinate& location) const
     {
-    int MINGU = (data.size() - action.green_up);
+    int MINGU = static_cast<int>((data.size() - action.green_up));
     for(size_t green_up = max(0,MINGU); green_up < data.size(); ++green_up)
         {
         const map<string,vector<FMTevent<FMTdevelopment>>>* mapping = &data.at(green_up);
@@ -61,7 +61,7 @@ bool FMTdisturbancestack::allow(const FMTspatialaction& action,const FMTcoordina
                 {
                 for(const FMTevent<FMTdevelopment>& event : evit->second)
                     {
-                    if (event.withinc(action.adjacency,location))
+                    if (event.withinc(static_cast<unsigned int>(action.adjacency),location))
                         {
                         return false;
                         }
