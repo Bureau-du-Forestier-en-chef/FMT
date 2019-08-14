@@ -1,3 +1,27 @@
+/*
+MIT License
+
+Copyright (c) [2019] [Bureau du forestier en chef]
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+*/
+
 #include "FMTgraph.h"
 
 #include "FMTmodel.h"
@@ -558,11 +582,7 @@ map<int, double> FMTgraph::locatenode(const FMTmodel& model, FMToutputnode outpu
 vector<FMTvertex_descriptor> FMTgraph::getnode(const FMTmodel& model, FMToutputnode output_node,
 	int period, vector<int>& action_IDS, vector<const FMTaction*>& selected) const
 	{
-		vector<FMTvertex_descriptor>locations;
-		if (nodescache.find(output_node.hash(period)) != nodescache.end())
-			{
-			return nodescache.at(output_node.hash(period));
-		}else{
+			vector<FMTvertex_descriptor>locations;
 			//change the period if the node is single well a other potential cluster fuck
 			int node_period = period;
 			if (output_node.source.useinedges())//evaluate at the begining of the other period if inventory! what a major fuck
@@ -617,32 +637,35 @@ vector<FMTvertex_descriptor> FMTgraph::getnode(const FMTmodel& model, FMToutputn
 				if (validouputnode(model, output_node, action_IDS, node_period))
 				{
 					selected = selectedactions(model, action_IDS);
-					bool inedges = false;
-					vector<FMTdevelopmentpath>paths;
-					FMTaction optimization_action;
-					for (const int localnodeperiod : targetedperiods)
+					if (nodescache.find(output_node.hash(period)) != nodescache.end())
 					{
-						for (std::unordered_map<size_t, FMTvertex_descriptor>::const_iterator it = developments.at(localnodeperiod).begin();
-							it != developments.at(localnodeperiod).end(); it++)
+						return nodescache.at(output_node.hash(period));
+					}else{
+						bool inedges = false;
+						vector<FMTdevelopmentpath>paths;
+						FMTaction optimization_action;
+						for (const int localnodeperiod : targetedperiods)
 						{
-							if (validgraphnode(model, inedges, it->second, output_node, action_IDS, selected))
-								{
-								locations.push_back(it->second);
-								}
+							for (std::unordered_map<size_t, FMTvertex_descriptor>::const_iterator it = developments.at(localnodeperiod).begin();
+								it != developments.at(localnodeperiod).end(); it++)
+							{
+								if (validgraphnode(model, inedges, it->second, output_node, action_IDS, selected))
+									{
+									locations.push_back(it->second);
+									}
+							}
+							lookedat_size+=developments.at(localnodeperiod).size();
 						}
-						lookedat_size+=developments.at(localnodeperiod).size();
 					}
 				}
 			}
 			//just to make sure the cash doesnt get too big
 			double locationssize = static_cast<double>(locations.size());
 			double lookedat = static_cast<double>(lookedat_size)*0.95;
-			//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << " founda " << locationssize << "\n";
 			if (locationssize < lookedat)
 				{
 				nodescache[output_node.hash(period)] = locations;
 				}
-			}
 		return locations;
 	}
 
