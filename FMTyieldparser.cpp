@@ -138,7 +138,7 @@ FMTdata FMTyieldparser::geteq(const string& basestr,
 		vector<double>numbers;
 		smatch kmatch;
 		//string value,opstr;
-		size_t endsize;
+		//size_t endsize;
 		//string nbase = basestr;
         boost::char_separator<char>separators("","+-*/()");
         boost::tokenizer<boost::char_separator<char>>tokens(basestr,separators);

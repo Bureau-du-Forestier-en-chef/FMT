@@ -958,8 +958,7 @@ namespace Models
 		solvertype(lsolvertype),
 		graph(FMTgraphbuild::nobuild),
 		solverinterface(),
-		elements(),
-		nodevariables()
+		elements()
 	{
 		buildsolverinterface();
 	}
@@ -969,8 +968,7 @@ namespace Models
 		solvertype(),
 		graph(FMTgraphbuild::nobuild),
 		solverinterface(),
-		elements(),
-		nodevariables()
+		elements()
 	{
 
 	}
@@ -980,8 +978,7 @@ namespace Models
 		solvertype(rhs.solvertype),
 		graph(rhs.graph),
 		solverinterface(),
-		elements(rhs.elements),
-		nodevariables(rhs.nodevariables)
+		elements(rhs.elements)
 	{
 		copysolverinterface(rhs.solverinterface);
 	}
@@ -1300,24 +1297,15 @@ bool FMTlpmodel::locatenodes(const vector<FMToutputnode>& nodes, int period, map
 	bool cashhit = false;
 	for (const FMToutputnode& node : nodes)
 		{
-			std::unordered_map<size_t, map<int, double>>::const_iterator ucacheit = nodevariables.find(node.hash(period));
-			map<int, double>node_map;
-			if (ucacheit == nodevariables.end())
+		map<int, double>node_map;
+		node_map = graph.locatenode(*this, node, period);//go into the graph
+		for (map<int, double>::const_iterator node_it = node_map.begin(); node_it != node_map.end(); node_it++)
 			{
-				node_map = graph.locatenode(*this, node, period);//go into the graph
-				nodevariables[node.hash(period)] = node_map;//cash all the variables
-			}
-			else {
-				node_map = ucacheit->second; //go into the cash
-				cashhit = true;
-			}
-			for (map<int, double>::const_iterator node_it = node_map.begin(); node_it != node_map.end(); node_it++)
-			{
-				if (all_variables.find(node_it->first) == all_variables.end())
+			if (all_variables.find(node_it->first) == all_variables.end())
 				{
-					all_variables[node_it->first] = 0;
+				all_variables[node_it->first] = 0;
 				}
-				all_variables[node_it->first] += node_it->second*multiplier;
+			all_variables[node_it->first] += node_it->second*multiplier;
 			}
 		}
 	return cashhit;

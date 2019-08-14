@@ -304,16 +304,31 @@ FMTyieldhandler::operator string() const
                         size_t srcid = 0;
                         value = 1;
 						const map<string, double>source_values = this->getsources(srcsdata, datas, age, period,resume_mask, age_only);
-                        for(map<string,double>::const_iterator srcit = source_values.begin();srcit!= source_values.end();srcit++)
+						for (const string& yldrange : cdata->getsource())
+							{
+							const double lower = cdata->data.at(srcid);
+							const double upper = cdata->data.at(srcid + 1);
+							if (source_values.at(yldrange) < lower || source_values.at(yldrange) > upper)
+								{
+								value = 0;
+								break;
+								/*Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "lower " << lower << "\n";
+								Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "upper " << upper << "\n";
+								Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "val1 " << source_values.at(yldrange) << "\n";
+								Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "val2 " << yldrange << "\n";*/
+								}
+							srcid += 2;
+							}
+						/*for(map<string,double>::const_iterator srcit = source_values.begin();srcit!= source_values.end();srcit++)
                             {
                             const double lower = cdata->data.at(srcid);
                             const double upper = cdata->data.at(srcid+1);
                             if (srcit->second < lower || srcit->second > upper)
                                 {
-                                value = 0;
+								value = 0;
                                 }
                             srcid+=2;
-                            }
+                            }*/
                         break;
                         }
                     case FMTyieldparserop::FMTwsmultiply:
@@ -373,7 +388,11 @@ FMTyieldhandler::operator string() const
 								{
 								value /= yldvalue;
 								//value = std::round(value * 100000000) / 100000000;
-								}
+							}
+							else {
+								value = 0;
+							}
+							//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) <<"DIVIDE "<<yldvalue << "\n";
 							}
 						/*if (value > 0.091 && value < 0.092)
 							{

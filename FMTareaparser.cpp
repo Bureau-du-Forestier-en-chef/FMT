@@ -480,6 +480,7 @@ FMTareaparser::FMTareaparser() :
         vector<FMTactualdevelopment>areas;
         if (FMTparser::tryopening(areastream,location))
             {
+			bool inactualdevs = false;
             while(areastream.is_open())
                 {
                 //line = FMTparser::getcleanline(areastream);
@@ -496,6 +497,7 @@ FMTareaparser::FMTareaparser() :
 					size_t linesize;
                     vector<string>splitted = FMTparser::spliter(masknage,FMTparser::rxseparator);
                     linesize = splitted.size();
+					inactualdevs = true;
                     for(int themeid = 0 ; themeid < (linesize-2); ++themeid)
                         {
                         mask+=splitted[themeid]+" ";
@@ -512,10 +514,13 @@ FMTareaparser::FMTareaparser() :
                             lock = getnum<int>(strlock,constants);
                             }
                         areas.push_back(FMTactualdevelopment(FMTmask(mask,themes),age,lock,area));
-                        }/*else{
-                        _exhandler->raise(FMTexc::WSfutur_types,_section,mask+" at line" + to_string(_line), __LINE__, __FILE__);
-                        }*/
-                    }
+                        }
+                        //_exhandler->raise(FMTexc::WSfutur_types,_section,mask+" at line" + to_string(_line), __LINE__, __FILE__);
+				}else if(inactualdevs && !_comment.empty() && (_comment.find("=") != string::npos) &&
+					(_comment.find("NEW DEVELOPMENT TYPES") != string::npos || _comment.find("NOUVEAUX TYPES DE") != string::npos))
+					{
+					break;
+					}
                 }
             }
         return areas;
