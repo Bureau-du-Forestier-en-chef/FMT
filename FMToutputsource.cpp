@@ -157,6 +157,23 @@ const FMTmask& FMToutputsource::getmask() const
 	return mask;
 	}
 
+bool FMToutputsource::issubsetof(const FMToutputsource& rhs,
+	const map<string, vector<string>>& actaggregates) const
+	{
+	if ((this->isvariable() && rhs.isvariable() && 
+		target == rhs.target && FMTspec::issubsetof(rhs) && 
+		!((!action.empty() && rhs.action.empty()) || (!rhs.action.empty() && action.empty()))) && 
+		(mask.data.is_subset_of(rhs.mask.data) && 
+		((action.empty() && rhs.action.empty()) || 
+		(!action.empty() && !rhs.action.empty() && 
+		(action == rhs.action || (actaggregates.find(rhs.action) != actaggregates.end() && 
+		std::find(actaggregates.at(rhs.action).begin(), actaggregates.at(rhs.action).end(), action) != actaggregates.at(rhs.action).end()))))))
+			{
+			return true;
+			}
+	return false;
+	}
+
 bool FMToutputsource::isvariable() const
 	{
 	return bool(mask);
@@ -470,14 +487,13 @@ double FMToutputsource::getcoef(const FMTdevelopment& development,
 	return coef;
 	}
 
-size_t FMToutputsource::hash(int period,size_t typeofout) const
+size_t FMToutputsource::hash(int period) const
 	{
 	size_t seed = 0;
-	boost::hash_combine(seed, typeofout);
 	boost::hash_combine(seed,mask);
 	boost::hash_combine(seed,target);
 	boost::hash_combine(seed,action);
-	boost::hash_combine(seed,yield);
+	//boost::hash_combine(seed,yield);
 	for (const double& lvalue : values)
         {
         boost::hash_combine(seed,lvalue);

@@ -331,6 +331,7 @@ public:
 	int getagelowerbound() const;
 	int getperiodupperbound() const;
 	int getperiodlowerbound() const;
+	bool issubsetof(const FMTspec& rhs) const;
     };
 
 }

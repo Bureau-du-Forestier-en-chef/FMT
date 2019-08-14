@@ -366,4 +366,44 @@ FMTspec::FMTspec():per(),age(),lock(),ylds(){}
 		return age.lower;
 		}
 
+	bool FMTspec::issubsetof(const FMTspec& rhs) const
+		{
+		bool persubset = true;
+		if (!per.empty() && !rhs.per.empty())
+			{
+			persubset = (per.getlower() >= rhs.per.getlower()) && (per.getupper() <= rhs.per.getupper());
+		}else if (!rhs.per.empty() && per.empty())
+			{
+			persubset = false;
+			}
+		bool agesubset = true;
+		if (!age.empty() && !rhs.age.empty())
+			{
+			agesubset = (age.getlower() >= rhs.age.getlower()) && (age.getupper() <= rhs.age.getupper());
+			}
+			else if (!rhs.age.empty() && age.empty())
+			{
+			agesubset = false;
+			}
+		bool yldssubset = true;
+		if (!ylds.empty() && !rhs.ylds.empty())
+		{
+		for (map<string, FMTyldbounds>::const_iterator it = ylds.begin(); it != ylds.end(); ++it)
+			{
+			if (rhs.ylds.find(it->first)== rhs.ylds.end())
+				{
+				yldssubset = false;
+				break;
+			}else {
+				yldssubset = (it->second.getlower() >= it->second.getlower()) && (it->second.getupper() <= it->second.getupper());
+				}
+
+			}
+		}else if (!rhs.ylds.empty() && ylds.empty())
+			{
+			yldssubset = false;
+			}
+		return persubset && agesubset && yldssubset;
+		}
+
 }
