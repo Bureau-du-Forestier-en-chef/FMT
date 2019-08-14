@@ -28,7 +28,6 @@ class FMTsamodel : public FMTmodel
         double min_ratio_moves,max_ratio_moves;
         string outputs_write_location;
         int number_of_moves;
-        int last_written;
         vector<map<string,pair<vector<double>,vector<double>>>> constraints_values_penalties;//move,constraint_name : <outputs,penalties>
         default_random_engine generator;
         vector<FMTspatialaction> spactions;//should be FMTmodel action pointer...

@@ -567,7 +567,7 @@ void FMTgraph::locatenodes(const FMTmodel& model, const vector<FMToutputnode>& n
 		for (FMToutputnode output_node : nodes)
 			{
 			//change the period if the node is single well a other potential cluster fuck
-			
+
 			int node_period = period;
 			if (output_node.source.useinedges())//evaluate at the begining of the other period if inventory! what a major fuck
                 {
@@ -628,7 +628,7 @@ void FMTgraph::locatenodes(const FMTmodel& model, const vector<FMToutputnode>& n
 					vector<FMTdevelopmentpath>paths;
 					FMTaction optimization_action;
 					for (const int localnodeperiod : targetedperiods)
-						{ 
+						{
 						//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << " got  n variables :" <<string(output_node.source)<<" "<< variables.size() << " PEriod " << localnodeperiod<<" node period "<<node_period << "\n";
 						for (std::unordered_map<size_t, FMTvertex_descriptor>::const_iterator it = developments[localnodeperiod].begin();
 							it != developments[localnodeperiod].end(); it++)
@@ -972,7 +972,7 @@ map<string, double> FMTgraph::getoutput(const FMTmodel& model,const FMToutput& o
 	int period,const double* solution,FMToutputlevel level) const
 	{
 	FMTtheme targettheme;
-	vector<string>target_attributes; 
+	vector<string>target_attributes;
 		map<string, double>results;
 		if (level != FMToutputlevel::developpement)
 			{
@@ -1118,7 +1118,7 @@ map<string, double> FMTgraph::getsource(const FMTmodel& model,
 			for (auto valit : values)
 				{
 				total += valit.second;
-				}	
+				}
 			values["Total"] = total;
 			}
 	}
