@@ -16,7 +16,6 @@ namespace Models
         max_ratio_moves(1),
         outputs_write_location(),
         number_of_moves(0),
-        last_written(0),
         constraints_values_penalties(),
         generator(),
         spactions(),
@@ -37,7 +36,6 @@ namespace Models
         max_ratio_moves(rhs.max_ratio_moves),
         outputs_write_location(rhs.outputs_write_location),
         number_of_moves(0),
-        last_written(0),
         constraints_values_penalties(rhs.constraints_values_penalties),
         generator(rhs.generator),
         spactions(rhs.spactions),
@@ -58,7 +56,6 @@ namespace Models
         max_ratio_moves(1),
         outputs_write_location(),
         number_of_moves(0),
-        last_written(0),
         constraints_values_penalties(),
         generator(),
         spactions(),
@@ -232,7 +229,6 @@ namespace Models
         get_outputs("warmup_");
         //Only to reset samodel parameters to default
         number_of_moves = 0;
-        last_written = 0 ;
         new_solution = FMTsasolution();
         best_solution = FMTsasolution();
         mapidmodified = vector<size_t>();
@@ -352,7 +348,6 @@ namespace Models
                 ++move_num;
                 ++probs;
             }
-            last_written = *move_num;
             constraints_values_penalties.clear();
             accepted_solutions.clear();
             probabs.clear();
@@ -498,6 +493,14 @@ namespace Models
                 probabs.push_back(p);
                 constraints_values_penalties.push_back(new_solution.constraint_outputs_penalties);
                 return true;
+            }
+        }
+        else
+        {
+            if ( number_of_moves == 1)//Evaluate initial solution and write results
+            {
+                current_solution.evaluate(*this);
+                best_solution = current_solution;
             }
         }
         return false;

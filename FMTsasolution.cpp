@@ -115,7 +115,7 @@ namespace Spatial
         return periods_values;
     }
 
-    double FMTsasolution::getgraphspenalties(const FMTsamodel& model, const FMTconstraint& constraint,
+double FMTsasolution::getgraphspenalties(const FMTsamodel& model, const FMTconstraint& constraint,
                                          const double& coef, vector<double>& output_vals, vector<double>& penalties_vals)
 
     //Find output by period and evaluate penalties for each. Finally sum penalties
@@ -132,10 +132,6 @@ namespace Spatial
             double upper = 0;
             constraint.getbounds(lower,upper,period);
             double penalties = this->applypenalty(upper,lower,value,coef,FMTsapenaltytype::exponential);
-            //Debug
-            /*cout<<constraint.name<<" Upper : "<<upper<<" Lower : "<<lower<<endl;
-            cout<<value<<" "<<penalties<<endl;
-            cin.get();*/
             penalties_vals.push_back(penalties);
             sumpenalties+=penalties;
             period++;
@@ -471,15 +467,6 @@ namespace Spatial
                 objectivefunctionvalue = penalty_value;
                 return penalty_value;
             }
-
-                /*map<string,vector<double>> action_period_penalties;
-                objectivefunctionvalue = graphpenaltyvalue + this->getspatialpenalties(model,action_period_penalties);
-                for (map<string,vector<double>>::const_iterator action_period_penalties_it = action_period_penalties.begin();action_period_penalties_it!=action_period_penalties.end();++action_period_penalties_it)
-                {
-                    vector<double> penalties_vals = action_period_penalties_it->second;
-                    constraintvaluespenalties[pair<int,string>(move_num,action_period_penalties_it->first)].push_back(vector<double>(penalties_vals.size(),0));//To keep the same structure as graph
-                    constraintvaluespenalties[pair<int,string>(move_num,action_period_penalties_it->first)].push_back(penalties_vals);
-                }*/
         return 0;
         }
 
