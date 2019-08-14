@@ -532,6 +532,7 @@ vector<string>FMTparser::regexloop(regex& cutregex,string& str) const
         if (regex_search(line,kmatch,rxremovecomment))
             {
 			_comment = string(kmatch[2]);
+			boost::to_upper(_comment);
 			line = string(kmatch[1]);
 			}
         }

@@ -98,8 +98,8 @@ class FMTlpmodel : public FMTmodel
 	unique_ptr<OsiSolverInterface>solverinterface;//The osisolver interface Abstract class (constraints/objectives/matrix ....LP)
 	vector<std::unordered_map<size_t,
 		vector<vector<int>>>>elements;//Locations of the constraints and variables in the matrix for the constraints / objective
-	mutable std::unordered_map<size_t,
-		map<int, double>>nodevariables;//Only for cashing variables location related to nodes...
+	//mutable std::unordered_map<size_t,
+	//	map<int, double>>nodevariables;//Only for cashing variables location related to nodes...
 	void buildsolverinterface();
 	void copysolverinterface(const unique_ptr<OsiSolverInterface>& solver_ptr);
 	bool summarize(/*vector<int> variables,vector<double> coefficiants*/const map<int, double>& variables ,

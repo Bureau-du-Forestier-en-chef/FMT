@@ -10,7 +10,8 @@ namespace Graph {
 		edges(0),
 		transfer_rows(0),
 		output_rows(0),
-		output_cols(0)
+		output_cols(0),
+		erasedperiods(0)
 		{
 
 		}
@@ -23,7 +24,8 @@ namespace Graph {
 		edges(num_edges(graph)),
 		transfer_rows(ltransfer_rows),
 		output_rows(loutput_rows),
-		output_cols(loutput_cols)
+		output_cols(loutput_cols),
+		erasedperiods(0)
 		{
 
 		}
@@ -35,7 +37,8 @@ namespace Graph {
 		edges(rhs.edges),
 		transfer_rows(rhs.transfer_rows),
 		output_rows(rhs.output_rows),
-		output_cols(rhs.output_cols)
+		output_cols(rhs.output_cols),
+		erasedperiods(rhs.erasedperiods)
 		{
 
 		}
@@ -51,6 +54,7 @@ namespace Graph {
 			transfer_rows = rhs.transfer_rows;
 			output_rows = rhs.output_rows;
 			output_cols = rhs.output_cols;
+			erasedperiods = rhs.erasedperiods;
 			}
 		return *this;
 		}
@@ -64,6 +68,7 @@ namespace Graph {
 		transfer_rows += rhs.transfer_rows;
 		output_rows += rhs.output_rows;
 		output_cols += rhs.output_cols;
+		erasedperiods += rhs.erasedperiods;
 		return *this;
 		}
 	FMTgraphstats& FMTgraphstats::operator -= (const FMTgraphstats& rhs)
@@ -75,6 +80,7 @@ namespace Graph {
 		transfer_rows -= rhs.transfer_rows;
 		output_rows -= rhs.output_rows;
 		output_cols -= rhs.output_cols;
+		erasedperiods -= rhs.erasedperiods;
 		return *this;
 	}
 	FMTgraphstats FMTgraphstats::operator + (const FMTgraphstats& rhs)
@@ -99,6 +105,7 @@ namespace Graph {
 		values += " Transfer Rows: " + to_string(transfer_rows);
 		values += " Output Rows: " + to_string(output_rows);
 		values += " Output Columns: " + to_string(output_cols);
+		values += " Erased periods: " + to_string(erasedperiods);
 		return values;
 		}
 
@@ -107,7 +114,7 @@ namespace Graph {
 		return (cols == rhs.cols && rows == rhs.rows &&
 			vertices == rhs.vertices && edges == rhs.edges && 
 			transfer_rows == rhs.transfer_rows && output_rows == rhs.output_rows &&
-			output_cols == rhs.output_cols);
+			output_cols == rhs.output_cols && erasedperiods == rhs.erasedperiods);
 		}
 	bool FMTgraphstats::operator != (const FMTgraphstats& rhs) const
 		{

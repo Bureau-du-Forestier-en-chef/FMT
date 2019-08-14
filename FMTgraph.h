@@ -55,7 +55,7 @@ class FMTgraph
 	void save(Archive& ar, const unsigned int version) const
 	{
 		ar & BOOST_SERIALIZATION_NVP(data);
-		ar & BOOST_SERIALIZATION_NVP(nodescache);
+		//ar & BOOST_SERIALIZATION_NVP(nodescache);
 		ar & BOOST_SERIALIZATION_NVP(stats);
 		ar & BOOST_SERIALIZATION_NVP(buildtype);
 	}
@@ -64,7 +64,7 @@ class FMTgraph
 	{
 		ar & BOOST_SERIALIZATION_NVP(data);
 		generatedevelopments();
-		ar & BOOST_SERIALIZATION_NVP(nodescache);
+		//ar & BOOST_SERIALIZATION_NVP(nodescache);
 		ar & BOOST_SERIALIZATION_NVP(stats);
 		ar & BOOST_SERIALIZATION_NVP(buildtype);
 	}
@@ -73,9 +73,10 @@ class FMTgraph
 		FMTadjacency_list data;
         FMTgraphbuild buildtype;
         vector<std::unordered_map<size_t,FMTvertex_descriptor>> developments;
-		mutable std::unordered_map<size_t, map<string, double>>nodescache; //Quand le graph change faire nodescache.clear()
+		mutable std::unordered_map<size_t,vector<FMTvertex_descriptor>>nodescache;
         FMTgraphstats stats;
 		void updatevarsmap(map<int,double>& variables,const int& var,const double& coef) const;
+		size_t geterasedperiods() const;
     public:
         FMTgraph();
         ~FMTgraph()=default;
@@ -121,8 +122,10 @@ class FMTgraph
 		bool validgraphnode(const FMTmodel& model, bool& inedges, const FMTvertex_descriptor& vertex_descriptor,
                             const FMToutputnode& node, const vector<int>& action_IDS,const vector<const FMTaction*>& selected) const;
 		map<int,double> locatenode(const FMTmodel& model,FMToutputnode output_node, int period) const;
-		/*void locatenodes(const FMTmodel& model, const vector<FMToutputnode>& nodes,int period,
-					map<int, double>& variables,double multiplier = 1) const;//to look at*/
+		vector<FMTvertex_descriptor> getnode(const FMTmodel& model, FMToutputnode output_node,
+			int period, vector<int>& action_IDS, vector<const FMTaction*>& selected) const;
+		map<int, double> getvariables(const FMTmodel& model, const FMToutputnode& output_node,const vector<FMTvertex_descriptor>& verticies,
+			const vector<int>& action_IDS, const vector<const FMTaction*>& selected) const;
         bool anyoperables(const FMTvertex_descriptor& descriptor, const vector<int>& action_ids) const;
         map<int, int> getoutvariables(const FMTvertex_descriptor& out_vertex) const;
 		vector<std::pair<const int*,const int*>>getoutvariablesnactionsptr(const FMTvertex_descriptor& out_vertex) const;
@@ -149,7 +152,9 @@ class FMTgraph
 			const FMToutputnode& node,
 			int period, const FMTtheme& theme,
 			const double* solution, FMToutputlevel level = FMToutputlevel::standard) const;
-        bool splittedevent(const FMTevent<FMTgraph>& event, vector<FMTevent<FMTgraph>>& splittedevents) const;
+		map<string, double> getvalues(const FMTmodel& model, const vector<FMTvertex_descriptor>& verticies,
+			const FMToutputnode& node, const FMTtheme& theme, const vector<int>& action_IDS, const vector<const FMTaction*>& selected,
+			const double* solution, FMToutputlevel level) const;
         void cleanevents(vector<FMTevent<FMTgraph>>& events_id, const FMTcoordinate& localisation) const;
         FMTgraphstats clearfromperiod(const int& period, vector<vector<vector<FMTevent<FMTgraph>>>>& events,
                                         const FMTcoordinate& localisation);
