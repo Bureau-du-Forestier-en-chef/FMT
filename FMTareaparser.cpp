@@ -527,10 +527,10 @@ FMTareaparser::FMTareaparser() :
                         mask+=splitted[themeid]+" ";
                         }
                     mask.pop_back();
-                    if (!validate(themes, mask)) continue;
                     area = getnum<double>(splitted[linesize-1],constants);
                     if (area>0)
                         {
+						if (!validate(themes, mask)) continue;
                         age = getnum<int>(splitted[linesize-2],constants);
                         lock = 0;
                         if (FMTparser::isvalid(strlock))
