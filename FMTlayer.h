@@ -111,6 +111,14 @@ namespace Spatial
                     }
                 return *this;
                 }
+			void setextentfrom(const FMTlayer<T>& rhs)
+				{
+				this->geotransform = rhs.geotransform;
+				this->maxx = rhs.maxx;
+				this->maxy = rhs.maxy;
+				this->SRS_WKT = rhs.SRS_WKT;
+				this->cellsize = rhs.cellsize;
+				}
             template<typename newtype>
             FMTlayer<newtype>copyextent() const
 
@@ -177,7 +185,7 @@ namespace Spatial
                     }
                 return unique_attributes;
                 }
-            size_t size()
+            size_t size() const
                 {
                 return mapping.size();
                 }

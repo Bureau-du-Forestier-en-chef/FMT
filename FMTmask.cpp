@@ -503,6 +503,16 @@ FMTmask FMTmask::resume(const boost::dynamic_bitset<>& rhs) const
             return newmask;
             }
 
+size_t FMTmask::hash() const
+	{
+	size_t seed = 0;
+	for (size_t i = 0; i < data.size(); i++)
+		{
+		boost::hash_combine(seed, data[i]);
+		}
+	return seed;
+	}
+
 bool FMTmask::operator == (const FMTmask& rhs) const
     {
     if(data.size() == rhs.data.size())

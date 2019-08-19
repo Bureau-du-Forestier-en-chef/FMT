@@ -456,7 +456,8 @@ namespace Models
 
     void FMTsamodel::acceptnew()
     {
-        current_solution = new_solution;
+        //current_solution = new_solution;
+		current_solution.copyfromselected(new_solution, mapidmodified);
         new_solution = FMTsasolution();
     }
 
@@ -501,7 +502,8 @@ namespace Models
             const double new_obj = new_solution.evaluate(*this);
             if (best_obj>new_obj)
             {
-                best_solution=new_solution;
+               // best_solution=new_solution;
+				best_solution.copyfromselected(new_solution, mapidmodified);
             }
             if ( cur_obj>new_obj )//If new is better than the last_best
             {

@@ -35,12 +35,12 @@ SOFTWARE.
 namespace Spatial
 {
 
-    FMTsasolution::FMTsasolution():FMTlayer<FMTgraph>(),solution_stats(),events(),objectivefunctionvalue(),constraint_outputs_penalties()
+    FMTsasolution::FMTsasolution():FMTlayer<FMTgraph>(),solution_stats(),events(),objectivefunctionvalue(), outputscache(),constraint_outputs_penalties()
     {
 
     }
 
-    FMTsasolution::FMTsasolution(const FMTforest& initialmap):events(),objectivefunctionvalue(),constraint_outputs_penalties()
+    FMTsasolution::FMTsasolution(const FMTforest& initialmap):events(),objectivefunctionvalue(), outputscache(),constraint_outputs_penalties()
     {
         FMTlayer<FMTgraph>::operator = (initialmap.copyextent<FMTgraph>());//Setting layer information
         for(map<FMTcoordinate,FMTdevelopment>::const_iterator devit = initialmap.mapping.begin(); devit != initialmap.mapping.end(); ++devit)
@@ -59,8 +59,15 @@ namespace Spatial
             solution_stats(rhs.solution_stats),
             events(rhs.events),
             objectivefunctionvalue(rhs.objectivefunctionvalue),
+			outputscache(rhs.outputscache),
             constraint_outputs_penalties(rhs.constraint_outputs_penalties)
     {
+		/*if (withmapping)
+			{
+			FMTlayer<FMTgraph>::operator =(rhs);
+		}else {
+			this->setextentfrom(rhs);
+		}*/
 
     }
 
@@ -68,10 +75,35 @@ namespace Spatial
     {
     if (this!=&rhs)
         {
+		/*if (this->empty())
+			{
+			this->setextentfrom(rhs);
+			}
+		if (mapping.size() == rhs.mapping.size() && !mapping.empty())
+			{
+			//presume that everything is in the right order!
+			map<FMTcoordinate, FMTgraph>::iterator baseit=mapping.begin();
+			map<FMTcoordinate, FMTgraph>::const_iterator newvalueit= rhs.mapping.begin();
+			while (newvalueit!=rhs.mapping.end())
+				{
+				if (!baseit->second.sameedgesas(newvalueit->second))//So if different graph edge at same location copy!
+					{
+					baseit->second=newvalueit->second;
+					}
+				++baseit;
+				++newvalueit;
+				}
+		}else {
+			mapping = rhs.mapping;
+		}*/
         FMTlayer<FMTgraph>::operator = (rhs);
         solution_stats = rhs.solution_stats;
         events = rhs.events;
         objectivefunctionvalue = rhs.objectivefunctionvalue;
+		if (outputscache.size() < rhs.outputscache.size())
+			{
+			outputscache = rhs.outputscache;
+			}
         constraint_outputs_penalties = rhs.constraint_outputs_penalties;
         }
     return *this;
@@ -122,20 +154,39 @@ namespace Spatial
                                            const int& periodstart,const int& periodstop) const
     // Return sum of all graphs outputs related to constraint
     {
-        vector<double> periods_values(periodstop-periodstart+1);
+        vector<double>periods_values(periodstop-periodstart+1,0);
         const vector<double> solutions(1,this->getcellsize());
         for(map<FMTcoordinate,FMTgraph>::const_iterator graphit = this->mapping.begin(); graphit != this->mapping.end(); ++graphit)
             {
-                const FMTgraph* local_graph = &graphit->second;
-                for (int period = periodstart ; period<=periodstop ; ++period)
-                    {
-                        map<string, double> output = local_graph->getoutput(model,constraint,period,&solutions[0],FMToutputlevel::totalonly);
-                        double totalperiod = output.at("Total");
-                        periods_values[period-1]+=totalperiod;
-                        //cout<<"Period "<<period<<"\nOutput "<<totalperiod<<endl;
-                        //cout<<"Vector value "<<periods_values.at(period-1)<<endl;
-                    }
-            }
+               const FMTgraph* local_graph = &graphit->second;
+			   /*for (int period = periodstart; period < periodstop; ++period)
+				{
+					map<string, double> output = local_graph->getoutput(model, constraint, period, &solutions[0], FMToutputlevel::totalonly);
+					double totalperiod = output.at("Total");
+					periods_values[period - 1] += totalperiod;
+				}*/
+			   
+
+				size_t hashvalue = local_graph->hash(constraint.FMToutput::hash());
+				vector<double>graphvalues(periodstop - periodstart + 1, 0);
+				if (outputscache.find(hashvalue)!= outputscache.end())
+					{
+					graphvalues = outputscache.at(hashvalue);
+				}else {
+				for (int period = 1; period < local_graph->size()-1;++period)
+					{
+					map<string, double> output = local_graph->getoutput(model, constraint, period, &solutions[0], FMToutputlevel::totalonly);
+					double totalperiod = output.at("Total");
+					graphvalues[period - 1] += totalperiod;
+					}
+				outputscache[hashvalue] = graphvalues;
+				}
+				for (int period = periodstart; period < periodstop; ++period)
+					{
+					periods_values[period-1] += graphvalues[period-1];
+					}
+				
+			}
         return periods_values;
     }
 
@@ -298,6 +349,7 @@ double FMTsasolution::getgraphspenalties(const FMTsamodel& model, const FMTconst
             uniform_int_distribution<int> celldistribution(min_cells,max_cells);
             int numbercells = celldistribution(generator);//Get number of cell to perturb
             vector<size_t> ChangedId;
+			ChangedId.reserve(numbercells);
             //cout<< "Map size "<< map_lenght.size()<<endl;
             //cout<< "Number of cells to modify "<<numbercells<<endl;
             for (int id = 0; id<numbercells; ++id)
@@ -543,5 +595,31 @@ double FMTsasolution::getgraphspenalties(const FMTsamodel& model, const FMTconst
             }
         }
     }
+
+	bool FMTsasolution::copyfromselected(const FMTsasolution& rhs, const vector<size_t>& selected)
+		{
+		map<FMTcoordinate, FMTgraph>::iterator baseit;
+		map<FMTcoordinate, FMTgraph>::const_iterator newvalueit;
+		//No location check sooo make sure you copy the same kind of solution...
+		solution_stats = rhs.solution_stats;
+		events = rhs.events;
+		objectivefunctionvalue = rhs.objectivefunctionvalue;
+		if (outputscache.size()<rhs.outputscache.size())
+			{
+			outputscache = rhs.outputscache;
+			}
+		constraint_outputs_penalties = rhs.constraint_outputs_penalties;
+		if (this->size() == rhs.size())
+			{
+			for (const size_t& selection : selected)
+				{
+				baseit = std::next(this->mapping.begin(), selection);
+				newvalueit = std::next(rhs.mapping.begin(), selection);
+				baseit->second = newvalueit->second;
+				}
+			return true;
+			}
+		return false;
+		}
 
 }
