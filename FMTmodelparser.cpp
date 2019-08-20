@@ -438,27 +438,30 @@ vector<vector<FMTschedule>>FMTmodelparser::readschedules(const string& primary_l
 		schedules[location] = scheduleparser.read(themes, actions, root_solution.string());
 		}
 	boost::filesystem::path scenarios_path = (primary_path.parent_path() / boost::filesystem::path("Scenarios"));
-	boost::filesystem::directory_iterator end_itr;
-	string model_name;
-	for (boost::filesystem::directory_iterator itr(scenarios_path); itr != end_itr; ++itr)
+	if (boost::filesystem::is_directory(scenarios_path))
 		{
-			if (boost::filesystem::is_directory(itr->path()))
-				{
-				model_name = itr->path().stem().string();
-				model_it = std::find_if(models.begin(), models.end(), FMTmodelcomparator(model_name));
-				if (model_it != models.end())
+		boost::filesystem::directory_iterator end_itr;
+		string model_name;
+		for (boost::filesystem::directory_iterator itr(scenarios_path); itr != end_itr; ++itr)
+			{
+				if (boost::filesystem::is_directory(itr->path()))
 					{
-					boost::filesystem::path solutionpath = (itr->path() / boost::filesystem::path(file_name + "._seq"));
-					if (boost::filesystem::is_regular_file(solutionpath))
+					model_name = itr->path().stem().string();
+					model_it = std::find_if(models.begin(), models.end(), FMTmodelcomparator(model_name));
+					if (model_it != models.end())
 						{
-						size_t location = std::distance<vector<FMTmodel>::const_iterator>(models.begin(), model_it);
-						vector<FMTaction>actions = model_it->getactions();
-						vector<FMTtheme>themes = model_it->getthemes();
-						//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "Schedule read in " << solutionpath.string() << "\n";
-						schedules[location] = scheduleparser.read(themes, actions, solutionpath.string());
+						boost::filesystem::path solutionpath = (itr->path() / boost::filesystem::path(file_name + "._seq"));
+						if (boost::filesystem::is_regular_file(solutionpath))
+							{
+							size_t location = std::distance<vector<FMTmodel>::const_iterator>(models.begin(), model_it);
+							vector<FMTaction>actions = model_it->getactions();
+							vector<FMTtheme>themes = model_it->getthemes();
+							//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "Schedule read in " << solutionpath.string() << "\n";
+							schedules[location] = scheduleparser.read(themes, actions, solutionpath.string());
+							}
 						}
 					}
-				}
+			}
 		}
 	return schedules;
 	}
