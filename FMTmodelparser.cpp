@@ -343,11 +343,25 @@ FMTmodel FMTmodelparser::referenceread(map<string,vector<int>>& common_sections,
 
 
 vector<FMTmodel>FMTmodelparser::readproject(const string& primary_location,
-												vector<string>scenarios)
+												vector<string>scenarios, 
+											bool readarea, bool readoutputs, bool readoptimize)
 	{
 	vector<FMTmodel>models;
 	map<string, vector<int>>commons;
 	map<FMTwssect, string>bases = getprimary(primary_location);
+	if (!readarea)
+		{
+		bases.at(FMTwssect::Area) = "";
+		}
+	if (!readoutputs)
+		{
+		bases.at(FMTwssect::Outputs) = "";
+		bases.at(FMTwssect::Optimize) = "";
+		}
+	if (!readoptimize)
+		{
+		bases.at(FMTwssect::Optimize) = "";
+		}
 	bool tookroot = (std::find(scenarios.begin(), scenarios.end(), "ROOT") != scenarios.end());
 	if (tookroot ||scenarios.empty()) //load the modelroot!
 		{
@@ -395,6 +409,19 @@ vector<FMTmodel>FMTmodelparser::readproject(const string& primary_location,
 							}
 						}
 						//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << model_name << "\n";
+						if (!readarea)
+							{
+							scenario_files.at(FMTwssect::Area) = "";
+							}
+						if (!readoutputs)
+							{
+							scenario_files.at(FMTwssect::Outputs) = "";
+							scenario_files.at(FMTwssect::Optimize) = "";
+							}
+						if (!readoptimize)
+							{
+							scenario_files.at(FMTwssect::Optimize) = "";
+							}
 						FMTmodel scenario = referenceread(commons,
 							models,
 							scenario_files.at(FMTwssect::Constants),

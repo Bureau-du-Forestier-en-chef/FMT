@@ -25,7 +25,9 @@ SOFTWARE.
 #ifndef FMTMASK_H_INCLUDED
 #define FMTMASK_H_INCLUDED
 
+#ifndef BOOST_DYNAMIC_BITSET_DONT_USE_FRIENDS
 #define BOOST_DYNAMIC_BITSET_DONT_USE_FRIENDS
+#endif 
 
 #include <boost/python.hpp>
 #include <boost/dynamic_bitset.hpp>

@@ -458,7 +458,8 @@ namespace Models
     {
         //current_solution = new_solution;
 		current_solution.copyfromselected(new_solution, mapidmodified);
-        new_solution = FMTsasolution();
+		//current_solution.swapfromselected(new_solution, mapidmodified);
+		new_solution = FMTsasolution();
     }
 
     bool FMTsamodel::testprobability(const double& p) //Metropolis criterion

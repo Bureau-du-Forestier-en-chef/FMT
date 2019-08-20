@@ -63,6 +63,7 @@ class FMTsasolution : public FMTlayer<FMTgraph>
         FMTsasolution(const FMTsasolution& rhs);
         FMTsasolution& operator = (const FMTsasolution& rhs);
 		bool copyfromselected(const FMTsasolution& rhs, const vector<size_t>& selected);
+		bool swapfromselected(FMTsasolution& rhs, const vector<size_t>& selected);
         bool empty() const {return mapping.empty();};
         bool operator == (const FMTsasolution& rhs)const;
         bool operator != (const FMTsasolution& rhs)const;

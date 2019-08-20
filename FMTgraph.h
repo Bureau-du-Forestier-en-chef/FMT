@@ -106,6 +106,7 @@ class FMTgraph
         ~FMTgraph()=default;
         FMTgraph(const FMTgraphbuild lbuildtype);
         FMTgraph(const FMTgraph& rhs);
+		void swap(FMTgraph& rhs);
         FMTgraph& operator = (const FMTgraph& rhs);
         bool operator == (const FMTgraph& rhs) const;
         bool operator != (const FMTgraph& rhs) const;

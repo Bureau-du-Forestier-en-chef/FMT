@@ -68,7 +68,8 @@ class FMTmodelparser : public FMTparser
                       const string& act,const string& tr,const string& out,
 						string opt = string());
 		vector<FMTmodel>readproject(const string& primary_location,
-			vector<string>scenarios = vector<string>());
+			vector<string>scenarios = vector<string>(),
+			bool readarea = true,bool readoutputs = true, bool readoptimize = true);
 		vector<vector<FMTschedule>>readschedules(const string& primary_location,
 			const vector<FMTmodel>& models);
         //void settransitionsNactions(vector<FMTaction>& actions,vector<FMTtransition>& Transitions);

@@ -64,6 +64,15 @@ FMTgraph::FMTgraph(const FMTgraph& rhs):
         generatedevelopments();
     }
 
+void FMTgraph::swap(FMTgraph& rhs)
+	{
+	buildtype = rhs.buildtype;
+	nodescache.swap(rhs.nodescache);
+	stats = rhs.stats;
+	data.swap(rhs.data);
+	generatedevelopments();
+	}
+
 FMTgraph& FMTgraph::operator = (const FMTgraph& rhs)
     {
         if(this!=&rhs)

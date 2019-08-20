@@ -622,4 +622,30 @@ double FMTsasolution::getgraphspenalties(const FMTsamodel& model, const FMTconst
 		return false;
 		}
 
+	bool FMTsasolution::swapfromselected(FMTsasolution& rhs, const vector<size_t>& selected)
+		{
+		map<FMTcoordinate, FMTgraph>::iterator baseit;
+		map<FMTcoordinate, FMTgraph>::iterator newvalueit;
+		//No location check sooo make sure you copy the same kind of solution...
+		solution_stats = rhs.solution_stats;
+		events.swap(rhs.events);
+		objectivefunctionvalue = rhs.objectivefunctionvalue;
+		if (outputscache.size() < rhs.outputscache.size())
+		{
+			outputscache.swap(rhs.outputscache);
+		}
+		constraint_outputs_penalties.swap(rhs.constraint_outputs_penalties);
+		if (this->size() == rhs.size())
+		{
+			for (const size_t& selection : selected)
+			{
+				baseit = std::next(this->mapping.begin(), selection);
+				newvalueit = std::next(rhs.mapping.begin(), selection);
+				baseit->second.swap(newvalueit->second);
+			}
+			return true;
+		}
+		return false;
+		}
+
 }

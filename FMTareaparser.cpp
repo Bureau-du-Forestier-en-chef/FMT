@@ -499,54 +499,57 @@ FMTareaparser::FMTareaparser() :
 
     vector<FMTactualdevelopment>FMTareaparser::read(const vector<FMTtheme>& themes,const FMTconstants& constants,string location)
         {
-        ifstream areastream(location);
-        string line;
-        vector<FMTactualdevelopment>areas;
-        if (FMTparser::tryopening(areastream,location))
-            {
-			bool inactualdevs = false;
-            while(areastream.is_open())
-                {
-                //line = FMTparser::getcleanline(areastream);
-				line = FMTparser::getcleanlinewfor(areastream, themes, constants);
-                if (!line.empty())
-                    {
-                    smatch kmatch;
-                    regex_search(line,kmatch,FMTareaparser::rxcleanarea);
-                    string strlock = string(kmatch[6]) + string(kmatch[14]);
-                    string masknage = string(kmatch[3])+string(kmatch[9]) + string(kmatch[18])+ string(kmatch[23]);
-                    string mask;
-                    double area;
-                    int age,lock;
-					size_t linesize;
-                    vector<string>splitted = FMTparser::spliter(masknage,FMTparser::rxseparator);
-                    linesize = splitted.size();
-					inactualdevs = true;
-                    for(int themeid = 0 ; themeid < (linesize-2); ++themeid)
-                        {
-                        mask+=splitted[themeid]+" ";
-                        }
-                    mask.pop_back();
-                    if (!validate(themes, mask)) continue;
-                    area = getnum<double>(splitted[linesize-1],constants);
-                    if (area>0)
-                        {
-                        age = getnum<int>(splitted[linesize-2],constants);
-                        lock = 0;
-                        if (FMTparser::isvalid(strlock))
-                            {
-                            lock = getnum<int>(strlock,constants);
-                            }
-                        areas.push_back(FMTactualdevelopment(FMTmask(mask,themes),age,lock,area));
-                        }
-                        //_exhandler->raise(FMTexc::WSfutur_types,_section,mask+" at line" + to_string(_line), __LINE__, __FILE__);
-				}else if(inactualdevs && !_comment.empty() && (_comment.find("=") != string::npos) &&
-					(_comment.find("NEW DEVELOPMENT TYPES") != string::npos || _comment.find("NOUVEAUX TYPES DE") != string::npos))
+		vector<FMTactualdevelopment>areas;
+		if(!location.empty())
+			{ 
+			ifstream areastream(location);
+			string line;
+			if (FMTparser::tryopening(areastream,location))
+				{
+				bool inactualdevs = false;
+				while(areastream.is_open())
 					{
-					break;
+					//line = FMTparser::getcleanline(areastream);
+					line = FMTparser::getcleanlinewfor(areastream, themes, constants);
+					if (!line.empty())
+						{
+						smatch kmatch;
+						regex_search(line,kmatch,FMTareaparser::rxcleanarea);
+						string strlock = string(kmatch[6]) + string(kmatch[14]);
+						string masknage = string(kmatch[3])+string(kmatch[9]) + string(kmatch[18])+ string(kmatch[23]);
+						string mask;
+						double area;
+						int age,lock;
+						size_t linesize;
+						vector<string>splitted = FMTparser::spliter(masknage,FMTparser::rxseparator);
+						linesize = splitted.size();
+						inactualdevs = true;
+						for(int themeid = 0 ; themeid < (linesize-2); ++themeid)
+							{
+							mask+=splitted[themeid]+" ";
+							}
+						mask.pop_back();
+						if (!validate(themes, mask)) continue;
+						area = getnum<double>(splitted[linesize-1],constants);
+						if (area>0)
+							{
+							age = getnum<int>(splitted[linesize-2],constants);
+							lock = 0;
+							if (FMTparser::isvalid(strlock))
+								{
+								lock = getnum<int>(strlock,constants);
+								}
+							areas.push_back(FMTactualdevelopment(FMTmask(mask,themes),age,lock,area));
+							}
+							//_exhandler->raise(FMTexc::WSfutur_types,_section,mask+" at line" + to_string(_line), __LINE__, __FILE__);
+					}else if(inactualdevs && !_comment.empty() && (_comment.find("=") != string::npos) &&
+						(_comment.find("NEW DEVELOPMENT TYPES") != string::npos || _comment.find("NOUVEAUX TYPES DE") != string::npos))
+						{
+						break;
+						}
 					}
-                }
-            }
+				}
+			}
         return areas;
         }
     bool FMTareaparser::write(const vector<FMTactualdevelopment>& areas, string location)
