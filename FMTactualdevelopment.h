@@ -57,6 +57,16 @@ class FMTactualdevelopment : public FMTdevelopment
 		double getarea() const override;
 		unique_ptr<FMTdevelopment> Clone() const override;
 	};
+
+class FMTactualdevelopmentcomparator
+	{
+		const FMTdevelopment* basedev;
+	public:
+		FMTactualdevelopmentcomparator(const FMTdevelopment* base);
+		bool operator()(const FMTactualdevelopment& actualdev) const;
+
+	};
+
 }
 
 #endif

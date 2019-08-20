@@ -554,13 +554,13 @@ FMTareaparser::FMTareaparser() :
         ofstream areastream;
         areastream.open(location);
         double sumarea = 0;
-        bool gotlock = false;
+       // bool gotlock = false;
         for(const FMTactualdevelopment& dev : areas)
             {
-            if (dev.lock>0)
+           /* if (dev.lock>0)
                 {
                 gotlock = true;
-                }
+                }*/
             sumarea+=dev.area;
             }
         if (tryopening(areastream,location))
@@ -570,6 +570,7 @@ FMTareaparser::FMTareaparser() :
             vector<string>splitted_mask;
             boost::split(splitted_mask,maskstr, boost::is_any_of(" /t"), boost::token_compress_on);
             string header_line = ";";
+			header_line += "*A ";
             size_t theme_id = 1;
             for (const string& theme : splitted_mask)
                 {
@@ -578,10 +579,10 @@ FMTareaparser::FMTareaparser() :
                 }
             header_line+="AGE";
             header_line+=" AREA";
-			if (gotlock)
+			/*if (gotlock)
 			{
 				header_line += " LOCK";
-			}
+			}*/
             areastream<<header_line<<"\n";
             for(const FMTactualdevelopment& area : areas)
                 {

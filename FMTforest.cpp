@@ -66,7 +66,7 @@ vector<FMTactualdevelopment>FMTforest::getarea() const
             for(map<FMTcoordinate,FMTdevelopment>::const_iterator it = mapping.begin(); it != mapping.end(); ++it)
                 {
                 FMTactualdevelopment newadev(it->second,1*cellsize);
-                vector<FMTactualdevelopment>::iterator devit = std::find(devs.begin(),devs.end(),newadev);
+                vector<FMTactualdevelopment>::iterator devit = std::find_if(devs.begin(),devs.end(), FMTactualdevelopmentcomparator(&newadev));
                 if (devit==devs.end())
                     {
                     devs.push_back(newadev);
