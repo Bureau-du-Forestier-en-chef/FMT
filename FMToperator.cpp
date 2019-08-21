@@ -38,7 +38,7 @@ FMToperator::FMToperator(FMTokey lkey): key(lkey)
 
 FMToperator::FMToperator(string strkey): key()
     {
-    vector<string>values = {"*","/","+","-",/*"(",")",*/","};
+    vector<string>values = {"*","/","+","-",/*"(",")",*/",","^"};
 	key = FMTokey::notvalid;
 	vector<string>::iterator valit = std::find(values.begin(), values.end(), strkey);
 	if (valit!= values.end())
@@ -70,6 +70,8 @@ double FMToperator::call(const double& rhs1, const double& rhs2) const
         case FMTokey::multiply:
 			returnval = rhs1 * rhs2;
         break;
+		case FMTokey::pow:
+			returnval = pow(rhs1, rhs2);
         default:
 			returnval = 0;
         break;
@@ -114,6 +116,9 @@ FMToperator::operator string() const
 		case FMTokey::comma:
 			return ",";
 		break;
+		case FMTokey::pow:
+			return "^";
+		break;
         default:
             return "";
         break;
@@ -155,7 +160,7 @@ FMTokey FMToperator::getkey() const
 string FMToperator::associativity() const
 	{
 	string asso = "RIGHT";
-	if (key==FMTokey::comma || key == FMTokey::add || key == FMTokey::multiply)
+	if (key==FMTokey::comma || key == FMTokey::add || key == FMTokey::multiply || key == FMTokey::pow)
 		{
 		asso = "LEFT";
 		}
@@ -178,7 +183,7 @@ FMToperator FMToperator::reverse() const
 int FMToperator::precedence() const
 	{
 	int result = -1;
-	if (key == FMTokey::multiply||key == FMTokey::divide)
+	if (key == FMTokey::multiply||key == FMTokey::divide ||key == FMTokey::pow)
 		{
 		result = 20;
 		}else if (key == FMTokey::add|| key == FMTokey::sub)

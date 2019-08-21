@@ -47,7 +47,8 @@ namespace Core
 		/*leftparenthesis = 5,
 		rightparenthesis = 6,*/
 		comma = 7,
-		notvalid = 8
+		pow = 8,
+		notvalid = 9
 	};
 
 class FMToperator

@@ -112,6 +112,8 @@ class FMTmodel : public FMTobject
 	FMTaction defaultdeathaction() const;
 	FMTtransition defaultdeathtransition() const;
 	vector<FMTconstraint>getconstraints() const;
+	bool addoutput(const string& name,const string& maskstring, FMTotar outputtarget,
+		string action = string(), string yield = string(), string description = string(),int targettheme = -1);
 	void setconstraints(const vector<FMTconstraint>& lconstraint);
 	bool operator == (const FMTmodel& rhs) const;
     bool setarea(const vector<FMTactualdevelopment>& ldevs);
