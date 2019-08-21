@@ -181,7 +181,7 @@ namespace Spatial
 					}
 				outputscache[hashvalue] = graphvalues;
 				}
-				for (int period = periodstart; period < periodstop; ++period)
+				for (int period = periodstart; period <= periodstop; ++period)
 					{
 					periods_values[period-1] += graphvalues[period-1];
 					}
