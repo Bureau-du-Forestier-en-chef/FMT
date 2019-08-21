@@ -48,16 +48,24 @@ bool FMTmodelparser::write(const FMTmodel& model,const string& folder)
     {
     FMTlandscapeparser landparser;
     landparser.write(model.getthemes(),folder+model.name+".lan");
-    FMTareaparser areaparser;
-    areaparser.write(model.getarea(), folder + model.name + ".are");
+	vector<FMTactualdevelopment>devs = model.getarea();
+	if (!devs.empty())
+		{
+		FMTareaparser areaparser;
+		areaparser.write(devs, folder + model.name + ".are");
+		}
     FMTyieldparser yldparser;
     yldparser.write(model.getyields(),folder+model.name+".yld");
     FMTactionparser actparser;
     actparser.write(model.getactions(),folder+model.name+".act",model.getactionaggregates());
     FMTtransitionparser trnparser;
     trnparser.write(model.gettransitions(),folder+model.name+".trn");
-	FMToutputparser outparser;
-	outparser.write(model.getoutputs(), folder + model.name + ".out");
+	vector<FMToutput>outputs = model.getoutputs();
+	if (!outputs.empty())
+		{
+		FMToutputparser outparser;
+		outparser.write(outputs, folder + model.name + ".out");
+		}
 	vector<FMTconstraint>constraints = model.getconstraints();
 	if (!constraints.empty())
 		{
