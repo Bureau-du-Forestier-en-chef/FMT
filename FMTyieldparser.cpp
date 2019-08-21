@@ -164,7 +164,7 @@ FMTdata FMTyieldparser::geteq(const string& basestr,
 		//string value,opstr;
 		//size_t endsize;
 		//string nbase = basestr;
-        boost::char_separator<char>separators("","+-*/()");
+        boost::char_separator<char>separators("","+-*/()^");
         boost::tokenizer<boost::char_separator<char>>tokens(basestr,separators);
         for (string token : tokens)
             {

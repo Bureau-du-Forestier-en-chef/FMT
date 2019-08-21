@@ -191,6 +191,19 @@ vector<FMTconstraint>FMTmodel::getconstraints() const
 	{
 	return constraints;
 	}
+
+bool FMTmodel::addoutput(const string& name,
+	const string& maskstring, FMTotar outputtarget,
+	string action, string yield, string description, int targettheme)
+	{
+	vector<FMToutputsource>sources;
+	sources.push_back(FMToutputsource(FMTspec(), FMTmask(maskstring, themes), outputtarget, yield, action));
+	vector<FMToperator>operators;
+	outputs.push_back(FMToutput(name, description,targettheme, sources, operators));
+	return true;
+	}
+
+
 void FMTmodel::setconstraints(const vector<FMTconstraint>& lconstraint)
 	{
 	constraints = lconstraint;
