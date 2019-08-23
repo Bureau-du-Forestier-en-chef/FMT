@@ -277,6 +277,18 @@ FMTmask::FMTmask(): name(),data()//data(1,false)
 
     }
 
+FMTmask::FMTmask(FMTmask&& rhs) noexcept : name(std::move(rhs.name)),data(std::move(rhs.data))
+	{
+	//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "MOVVINGGGGGG "<< "\n";
+	}
+
+FMTmask& FMTmask::operator = (FMTmask&& rhs)
+	{
+	name = std::move(rhs.name);
+	data = std::move(rhs.data);
+	return *this;
+	}
+
 FMTmask::operator bool() const
 	{
 	return (!data.empty());

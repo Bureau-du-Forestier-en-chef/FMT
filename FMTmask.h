@@ -115,6 +115,8 @@ class FMTmask
     public:
         boost::dynamic_bitset<> data;
         FMTmask();
+		FMTmask(FMTmask&& rhs) noexcept;
+		FMTmask& operator = (FMTmask&& rhs);
         virtual ~FMTmask()=default;
         FMTmask(boost::dynamic_bitset<> bits);
 		explicit operator bool() const;

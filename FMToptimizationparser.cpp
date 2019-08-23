@@ -140,13 +140,22 @@ namespace WSParser
                                 simple_value = to_string(constant_output->getconstantvalue());
                                 }
                             }*/
-                    simplificaiton.push_back(simple_value);
-                    simple_value.clear();
+						if (!simple_value.empty())
+							{
+							simplificaiton.push_back(simple_value);
+							}
+						 simple_value.clear();
                         }else if(!simplificaiton.empty())
                             {
                             simplificaiton.pop_back();
                             }
-                    simplificaiton.push_back(string(1,strvalue));
+						string pushedval = string(1, strvalue);
+						boost::trim(pushedval);
+						if (!pushedval.empty())
+							{
+							simplificaiton.push_back(pushedval);
+							}
+                    
                     }else{
                         simple_value += strvalue;
                         }
@@ -155,6 +164,7 @@ namespace WSParser
             boost::trim(simple_value);
             if (isnum(simple_value) || constants.isconstant(simple_value))
                 {
+				
                 simple_value = to_string(getnum<double>(simple_value, constants));
                 }/*else {
                    // Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "getting " << simple_value << "\n";
@@ -165,8 +175,16 @@ namespace WSParser
                         simple_value = to_string(constant_output->getconstantvalue());
                         }
                     }*/
-        simplificaiton.push_back(simple_value);
+		if (!simple_value.empty())
+			{
+			simplificaiton.push_back(simple_value);
+			}
+        
         map<string,double>nodes;
+		/*for (const string& val : simplificaiton)
+			{
+			Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) <<"|"<< val<<"|"<< "\n";
+			}*/
         FMTexpression simplification = FMTexpression(simplificaiton).simplify(nodes);
         return nodes;
         }
@@ -340,7 +358,6 @@ namespace WSParser
 				string LHS = string(kmatch[3]) + string(kmatch[9]);
 				string RHS = string(kmatch[7]) + string(kmatch[11]);
 				string full_equation = LHS + string(1,'+') + RHS;
-
                 map<string,double> nodes = getequation(full_equation,constants,outputs,LHS.size());
                 double bound = nodes["RHS"];
                 //Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "equation of " << string(simplification)  << "\n";

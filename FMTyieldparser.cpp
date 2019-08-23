@@ -29,7 +29,7 @@ namespace WSParser{
 
 FMTyieldparser::FMTyieldparser():FMTparser(),
     rxyieldtype(regex("^(\\*)([^\\s^\\t]*)([\\s\\t]*)(.+)(_OVERRIDE)|^(\\*)([^\\s^\\t]*)([\\s\\t]*)(.+)",regex_constants::ECMAScript|regex_constants::icase)),
-    rxcomplex(regex("^([^\\s^\\t]*)([\\s\\t]*)((_RANGE)|(_MULTIPLY)|(_SUM)|(_SUBTRACT)|(_YTP)|(_MAI)|(_CAI)|(_DIVIDE)|(_EQUATION))([\\s\\t]*)(\\()(.+)(\\))",regex_constants::ECMAScript|regex_constants::icase)),
+    rxcomplex(regex("^([^\\s^\\t]*)([\\s\\t]*)((_RANGE)|(_MULTIPLY)|(_SUM)|(_SUBTRACT)|(_YTP)|(_MAI)|(_CAI)|(_DIVIDE)|(_EQUATION)|(_ENDPOINT))([\\s\\t]*)(\\()(.+)(\\))",regex_constants::ECMAScript|regex_constants::icase)),
 	rxeqs(regex("([\\(\\)\\-\\+\\*\\/]*)([^\\(\\)\\-\\+\\*\\/]*)"))
         {
 
@@ -95,8 +95,12 @@ FMTyieldparserop FMTyieldparser::getyldctype(const string& value) const
                                     return FMTyieldparserop::FMTwsdivide;
 								}else if (value == "_EQUATION")
 									{
-									return FMTyieldparserop::FMTwsequation;
-								}/*else if (value == "_DISCOUNTFACTOR")
+									return FMTyieldparserop::FMTwsequation;	
+								}else if (value == "_ENDPOINT")
+									{
+										return FMTyieldparserop::FMTwsendpoint;
+									}
+								/*else if (value == "_DISCOUNTFACTOR")
 									{
 										return FMTyieldparserop::FMTwsdiscountfactor;
 									}*/else{
@@ -496,11 +500,11 @@ FMTyields FMTyieldparser::read(const vector<FMTtheme>& themes,const FMTconstants
 												boost::trim(data);
 											}else {
 												yldname = kmatch[1];
-												for (int id = 4; id < 13; ++id) //12 - > 13
+												for (int id = 4; id < 14; ++id) //12 - > 13
 													{
 													cyld += string(kmatch[id]);
 													}
-												data = kmatch[15];
+												data = kmatch[16];
 												}
                                            // Logging::FMTlogger(Logging::FMTlogtype::FMT_Debug) <<"1|"<< data<<"|" << "\n";
                                             dump.clear();

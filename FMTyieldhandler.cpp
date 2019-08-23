@@ -508,6 +508,33 @@ FMTyieldhandler::operator string() const
 							}*/
 						break;
 						}
+					case FMTyieldparserop::FMTwsendpoint:
+						{
+						value = 0;
+						const map<string, double>source_values = this->getsources(srcsdata, datas, age, period, resume_mask, age_only);
+						const double lowerbound = cdata->data.at(0);
+						const double upperbound = cdata->data.at(1);
+						const vector<string> ylds = cdata->getsource();
+						int peak = -1;
+						int lowerpeak = -1;
+						const FMTyieldhandler* ddata;
+						if (source_values.at(ylds.at(0)) < lowerbound)
+							{
+							ddata = srcsdata.at(ylds.at(0));
+							peak = ddata->getendpoint(ylds.at(0), lowerpeak, lowerbound, source_values.at(ylds.at(0)));
+							value = (-getchangesfrom(age, peak));
+							}
+						if (source_values.at(ylds.at(1)) > upperbound)
+							{
+							ddata = srcsdata.at(ylds.at(0));
+							lowerpeak = ddata->getendpoint(ylds.at(0), lowerpeak, lowerbound,numeric_limits<double>::lowest());
+							ddata = srcsdata.at(ylds.at(1));
+							peak = ddata->getendpoint(ylds.at(1), lowerpeak, upperbound, source_values.at(ylds.at(1)));
+							value = (-getchangesfrom(age, peak));
+							}
+						break;
+						}
+
                     default:
                     break;
                     }
@@ -580,28 +607,79 @@ FMTyieldhandler::operator string() const
 		return it->second.data.back();
 		}
 
+	double FMTyieldhandler::getchangesfrom(const int& targetage, const int& peakstep) const
+		{
+		double value = 0;
+		if (peakstep > 0)
+			{
+			size_t agesize = static_cast<size_t>(targetage);
+			vector<double>peakvalues(max(agesize, bases.size()) + 1, 0.0);//need to get the max between targetage and bases.size()!!!!
+			int peakage = bases[peakstep];
+			int id = 0;
+			for (double& pvalue : peakvalues)
+			{
+				pvalue = (peakage - id);
+				++id;
+			}
+			value = peakvalues.at(targetage);
+			}
+		return value;
+		}
+
+	double FMTyieldhandler::getpeakfrom(const string& yld, double maxvalue) const
+		{
+		map<string, FMTdata>::const_iterator it = elements.find(yld);
+		int location = 0;
+		int peak = -1;
+		vector<double>::const_iterator dblit = it->second.data.begin();
+		while (dblit != it->second.data.end())
+			{
+				if (*dblit > maxvalue)
+				{
+					maxvalue = *dblit;
+					peak = location;
+				}
+				++location;
+				++dblit;
+			}
+		return peak;
+		}
+
+	int FMTyieldhandler::getendpoint(const string& yld, const int& lowerstep, const double& bound, const double& value) const
+		{
+		size_t locid = 0;
+		if (this->gettype() == FMTyldwstype::FMTageyld)
+			{
+				map<string, FMTdata>::const_iterator it = elements.find(yld);
+				vector<double>::const_iterator location;
+				if (value<bound)
+					{
+					location = std::lower_bound(it->second.data.begin(), it->second.data.end(), bound);
+					}else if (value>bound)
+						{
+						vector<double>::const_iterator startinglocation = it->second.data.begin() + lowerstep;
+						location = std::upper_bound(startinglocation, it->second.data.end(), bound);
+						}
+				locid = std::distance(it->second.data.begin(), location);
+				locid = std::min(locid, (it->second.data.size() - 1));
+				locid = std::max(size_t(0), locid);
+			}
+		return static_cast<int>(locid);
+		}
+
+
     double FMTyieldhandler::getpeak(const string& yld, const int& targetage) const
         {
         double value = 0;
         if (this->gettype() == FMTyldwstype::FMTageyld)
             {
-            map<string,FMTdata>::const_iterator it = elements.find(yld);
+            /*map<string,FMTdata>::const_iterator it = elements.find(yld);
             double maxvalue = numeric_limits<double>::lowest();
             int location = 0;
 			int peak = -1;
             vector<double>::const_iterator dblit = it->second.data.begin();
-			//int  lowindex = -1;
-			//int highindex = -1;
             while(dblit != it->second.data.end())
                 {
-					/*if (bases[location] <= targetage)
-						{
-						lowindex = location;
-						}
-					if (bases[location] >= targetage && highindex < 0)
-						{
-						highindex = location;
-						}*/
                 if (*dblit > maxvalue)
                     {
                     maxvalue = *dblit;
@@ -609,8 +687,10 @@ FMTyieldhandler::operator string() const
 					}
                 ++location;
 				++dblit;
-                }
-			if (peak > 0)
+                }*/
+			int peak = getpeakfrom(yld);
+			value = getchangesfrom(targetage, peak);
+			/*if (peak > 0)
 				{
 				size_t agesize = static_cast<size_t>(targetage);
 				vector<double>peakvalues(max(agesize, bases.size())+1,0.0);//need to get the max between targetage and bases.size()!!!!
@@ -622,21 +702,7 @@ FMTyieldhandler::operator string() const
 					++id;
 					}
 				value = peakvalues.at(targetage);
-				//value = getlinearvalue(peakvalues, targetage);
-				/*if (lowindex!= highindex)
-					{
-					double bottom = (bases[peak] - bases[lowindex]);
-					double top = (bases[peak] - bases[highindex]);
-					double factor = ((top - bottom) / (double(bases[highindex]) - double(bases[lowindex])));
-					double lastvalue = bottom;
-					value = lastvalue + ((targetage - bases[lowindex]) * factor);
-				}else {
-					value = (bases[peak] - bases[highindex]);
-					}*/
-				//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "peak at " << peak << "\n";
-				//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "value of " << value <<" for age "<< targetage << "\n";
-
-				}
+				}*/
 			}
         return value;
         }

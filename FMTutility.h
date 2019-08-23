@@ -68,6 +68,7 @@ enum class FMTyieldparserop
     FMTwscai= 7,
     FMTwsdivide= 8,
 	FMTwsequation = 9,
+	FMTwsendpoint = 10
 	//COUNT = 10
 	//FMTwsdiscountfactor = 10 //need implementation
     };

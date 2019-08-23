@@ -65,7 +65,9 @@ FMTmask FMTtransitionparser::getsource(string& line, FMTspec& spec,const vector<
     vector<string>elements = FMTparser::spliter(line,FMTparser::rxseparator);
     if (elements.size() == themes.size())
         {
+		//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "IN "<<line << "\n";
 		validate(themes,line);
+		//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "OUT " << line << "\n";
         return FMTmask(line, themes);
         }else{
             string mask;

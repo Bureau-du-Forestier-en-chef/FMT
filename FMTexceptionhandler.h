@@ -279,6 +279,11 @@ namespace Exception
 				_level = FMTlev::FMT_logic;
 				++_errorcount;
                 break;
+			case FMTexc::WSemptybound:
+				msg += "Invalid @ bounds: " + message;
+				_level = FMTlev::FMT_Warning;
+				++_warningcount;
+				break;
 
 			default:
 				_exception = FMTexc::None;

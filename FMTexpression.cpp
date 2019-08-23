@@ -179,7 +179,7 @@ FMTexpression FMTexpression::simplify(map<string,double>& values) const
     map<string,double>shuntvalues;
     for (const string& value : infix)
         {
-        if(!is_number(value) && !FMToperator(value).valid()) //assign 0 to all variables!
+        if(!is_number(value) && !FMToperator(value).valid() && !value.empty()) //assign 0 to all variables!
             {
             shuntvalues[value] = 0;
             }
@@ -266,8 +266,13 @@ double FMTexpression::evaluatepostfix(const vector<string>& postfix) const
 				{
 				double rhs = values.top();
 				values.pop();
-				double lhs = values.top();
-				values.pop();
+				double lhs = 0;
+				if (!values.empty())
+					{
+					lhs = values.top();
+					values.pop();
+					}
+				//values.top();
 				values.push(op.call(lhs,rhs));
 			}else if (fcall.valid())
 				{
