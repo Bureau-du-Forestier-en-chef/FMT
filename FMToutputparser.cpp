@@ -139,11 +139,41 @@ namespace WSParser
 										}
 
 									vector<string>strsources;// = spliter(rest,rxsources);
-									boost::split(strsources,rest,boost::is_any_of("-*/+"));
-									string opstr = rest;
+									vector<string>stroperators;
+									const string stroprators("-*/+");
+									string stacked_char;
+									string opstr;
+									size_t letterid = 0;
+									bool inparenthesis = false;
+									for (const char& letter : rest)
+										{
+										if (stroprators.find(letter) != string::npos && !inparenthesis)
+											{
+											stroperators.push_back(string(letter,1));
+											strsources.push_back(stacked_char);
+											stacked_char = "";
+											opstr += letter;
+											}else {
+											stacked_char += letter;
+											}
+										if (letter=='(')
+											{
+											inparenthesis = true;
+											}else if(letter==')')
+												{
+												inparenthesis = false;
+												}
+										}
+									if (!stacked_char.empty())
+										{
+										strsources.push_back(stacked_char);
+										}
+
+									//boost::split(strsources,rest,boost::is_any_of("-*/+"));
+									//string opstr = rest;
 									replace(opstr.begin(),opstr.end(),'.','r');
 									replace(opstr.begin(),opstr.end(),',','r');
-									vector<string>stroperators = spliter(opstr,rxoperators);
+									//vector<string>stroperators = spliter(opstr,rxoperators);
 									string lastoperator;
 									for(string& strsrc : strsources)
 										{

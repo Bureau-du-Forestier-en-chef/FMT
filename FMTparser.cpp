@@ -293,6 +293,7 @@ string FMTparser::setspec(FMTwssect section,FMTwskwor key,const FMTyields& ylds,
 	//bool goodlower = true;
 	//bool goodupper = true;
 	//bool added_something = false;
+	//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << " TESTING |" <<line<<"|"<< "\n";
     if (regex_search(line,kmatch,FMTparser::rxayld))
         {
         //string yld = string(kmatch[4]) + string(kmatch[14]);

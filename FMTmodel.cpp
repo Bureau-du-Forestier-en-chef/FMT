@@ -33,13 +33,13 @@ void FMTmodel::setdefaultobjects()
 		{
 		_exhandler->raise(FMTexc::WSundefineddeathaction, FMTwssect::Action,
 			"_DEATH", __LINE__, __FILE__);
-		actions.push_back(defaultdeathaction());
+		actions.push_back(defaultdeathaction(lifespan,themes));
 		}
 	if (find_if(transitions.begin(), transitions.end(), FMTtransitioncomparator("_DEATH")) == transitions.end())
 		{
 		_exhandler->raise(FMTexc::WSundefineddeathtransition, FMTwssect::Transition,
 			"_DEATH", __LINE__, __FILE__);
-		transitions.push_back(defaultdeathtransition());
+		transitions.push_back(defaultdeathtransition(lifespan,themes));
 		}
 	for (FMTaction& action : actions)
 		{
@@ -146,18 +146,19 @@ vector<FMToutput> FMTmodel::getoutputs() const
 	{
 	return outputs;
 	}
-FMTaction FMTmodel::defaultdeathaction() const
+FMTaction FMTmodel::defaultdeathaction(const FMTlifespans& llifespan,
+										const vector<FMTtheme>& lthemes)
 	{
 	string actionname = "_DEATH";
 	bool lock = true; 
 	bool reset = true;
 	FMTaction death_action(actionname, lock, reset);
-	vector<FMTmask>::const_iterator mask_iterator = lifespan.maskbegin();
-	vector<int>::const_iterator data_iterator = lifespan.databegin();
-	for (size_t id = 0; id < lifespan.size(); ++id)
+	vector<FMTmask>::const_iterator mask_iterator = llifespan.maskbegin();
+	vector<int>::const_iterator data_iterator = llifespan.databegin();
+	for (size_t id = 0; id < llifespan.size(); ++id)
 		{
 		string mask = mask_iterator->getstr();
-		FMTmask amask(mask,themes);
+		FMTmask amask(mask,lthemes);
 		FMTspec specifier;
 		specifier.addbounds(FMTagebounds(FMTwssect::Action, *data_iterator, *data_iterator));
 		death_action.push_back(amask, specifier);
@@ -167,19 +168,20 @@ FMTaction FMTmodel::defaultdeathaction() const
 	death_action.shrink();
 	return death_action;
 	}
-FMTtransition FMTmodel::defaultdeathtransition() const
+FMTtransition FMTmodel::defaultdeathtransition(const FMTlifespans& llifespan,
+											const vector<FMTtheme>& lthemes)
 	{
 	string transitionname = "_DEATH";
 	FMTtransition death_Transition(transitionname);
 	double target_proportion = 100;
-	vector<FMTmask>::const_iterator mask_iterator = lifespan.maskbegin();
-	vector<int>::const_iterator data_iterator = lifespan.databegin();
-	for (size_t id = 0; id < lifespan.size(); ++id)
+	vector<FMTmask>::const_iterator mask_iterator = llifespan.maskbegin();
+	vector<int>::const_iterator data_iterator = llifespan.databegin();
+	for (size_t id = 0; id < llifespan.size(); ++id)
 		{
 		string mask = mask_iterator->getstr();
-		FMTmask amask(mask, themes);
+		FMTmask amask(mask, lthemes);
 		FMTfork fork;
-		FMTtransitionmask trmask(mask, themes, target_proportion);
+		FMTtransitionmask trmask(mask, lthemes, target_proportion);
 		fork.add(trmask);
 		death_Transition.push_back(amask, fork);
 		}

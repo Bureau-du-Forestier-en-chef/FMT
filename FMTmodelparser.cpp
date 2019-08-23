@@ -303,14 +303,25 @@ FMTmodel FMTmodelparser::referenceread(map<string,vector<int>>& common_sections,
 			FMTactionparser actparser;
 			actparser.passinexceptionhandler(_exhandler);
 			actions = actparser.read(themes, yields, constants, act, action_aggregates);
+			if (find_if(actions.begin(), actions.end(), FMTactioncomparator("_DEATH")) == actions.end())
+				{
+				_exhandler->raise(FMTexc::WSundefineddeathaction, FMTwssect::Action,
+					"_DEATH", __LINE__, __FILE__);
+				actions.push_back(FMTmodel::defaultdeathaction(lifespan,themes));
+				}
 			}
 		//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "TRANSITIONS " << "\n";
 		if (transitions.empty())
 			{
-			
 			FMTtransitionparser trnparser;
 			trnparser.passinexceptionhandler(_exhandler);
 			transitions = trnparser.read(themes, actions, yields, constants, tr);
+			if (find_if(transitions.begin(), transitions.end(), FMTtransitioncomparator("_DEATH")) == transitions.end())
+				{
+				_exhandler->raise(FMTexc::WSundefineddeathtransition, FMTwssect::Transition,
+					"_DEATH", __LINE__, __FILE__);
+				transitions.push_back(FMTmodel::defaultdeathtransition(lifespan,themes));
+				}
 			}
 		//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "OUTPUTS " << "\n";
 		if (outputs.empty())

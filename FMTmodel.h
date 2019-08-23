@@ -109,8 +109,10 @@ class FMTmodel : public FMTobject
     FMTyields getyields() const;
     FMTlifespans getlifespan() const;
 	vector<FMToutput> getoutputs() const;
-	FMTaction defaultdeathaction() const;
-	FMTtransition defaultdeathtransition() const;
+	static FMTaction defaultdeathaction(const FMTlifespans& llifespan,
+										const vector<FMTtheme>& lthemes);
+	static FMTtransition defaultdeathtransition(const FMTlifespans& llifespan,
+										const vector<FMTtheme>& lthemes);
 	vector<FMTconstraint>getconstraints() const;
 	bool addoutput(const string& name,const string& maskstring, FMTotar outputtarget,
 		string action = string(), string yield = string(), string description = string(),int targettheme = -1);
