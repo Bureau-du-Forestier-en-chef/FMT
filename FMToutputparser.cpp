@@ -300,7 +300,15 @@ namespace WSParser
                                                 if (!spec.empty())
                                                     {
                                                     rest = inds;
-                                                    }
+													}
+												
+												if (inds.find('@')!=string::npos)
+													{
+													string warningstr = inds.substr(inds.find('@'), inds.find_first_of(')'));
+													_exhandler->raise(FMTexc::WSemptybound, _section, warningstr + " at line " + to_string(_line), __LINE__, __FILE__);
+													rest = inds.substr(inds.find_first_of(')')+1, inds.size() - 1);
+													}
+
                                                 if (isvalid(rest))
                                                     {
                                                     if (regex_search(rest,kmatch,rxtar))
