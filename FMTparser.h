@@ -215,6 +215,19 @@ class FMTparser: public FMTobject
 				}
 			return nvalue;
 			}
+		template<typename T>
+		bool tryfillnumber(T& number, string value, const FMTconstants& constant, int period = 0)
+			{
+			bool gotit = true;
+			try {
+				number = getnum<T>(value, constant, period);
+			}
+			catch (...) 
+				{
+				gotit = false;
+				}
+			return gotit;
+			}
         template<typename T>
         FMTbounds<T>bounds(const FMTconstants& constants,string value,string ope,FMTwssect section)
             {

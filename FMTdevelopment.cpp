@@ -32,6 +32,26 @@ namespace Core{
 
   FMTdevelopment::FMTdevelopment():FMTobject(), mask(),age(),lock(),period(0){}
 
+  FMTdevelopment::FMTdevelopment(FMTdevelopment&& rhs) noexcept : 
+	  FMTobject(std::move(rhs)),
+	  mask(std::move(rhs.mask)),
+	  age(std::move(rhs.age)),
+	  lock(std::move(rhs.lock)),
+	  period(std::move(rhs.period))
+		{
+  
+		}
+
+  FMTdevelopment& FMTdevelopment::operator = (FMTdevelopment&& rhs)
+		{
+		FMTobject::operator=  (std::move(rhs));
+		mask = std::move(rhs.mask);
+		age = std::move(rhs.age);
+		lock = std::move(rhs.lock);
+		period = std::move(rhs.period);
+		return *this;
+		}
+
   FMTdevelopment::FMTdevelopment(FMTmask mask,int age,int lock) : FMTobject(),mask(mask),age(age),lock(lock),period(0)
         {
 

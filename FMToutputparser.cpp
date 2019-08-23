@@ -299,6 +299,15 @@ namespace WSParser
                                                     {
                                                     rest = inds;
                                                     }
+												//Weird way of not throwin error!?!?!
+												if (rest.find("@") != string::npos)//probabily a fuck here throw warning a delete stuff
+													{
+													string weird_stuff = rest.substr(0, rest.find_first_of(')'));
+													_exhandler->raise(FMTexc::WSemptybound, _section, weird_stuff + " line " + to_string(_line), __LINE__, __FILE__);
+													rest = rest.substr(rest.find_first_of(')') + 1, rest.size() - 1);
+													Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "FMTPARSER line 375 " << rest << "\n";
+													}
+												//////////////////////////////////////
                                                 if (isvalid(rest))
                                                     {
                                                     if (regex_search(rest,kmatch,rxtar))

@@ -78,6 +78,9 @@ class FMTyieldhandler
         map<string,const FMTyieldhandler*> getdata(const vector<const FMTyieldhandler*>& datas,
                                     const vector<string>& names) const;
 		bool operator == (const FMTyieldhandler& rhs) const;
+		double getchangesfrom(const int& targetage,const int& peakstep) const;
+		int getendpoint(const string& yld, const int& lowerstep, const double& bound, const double& value) const;
+		double getpeakfrom(const string& yld,double maxvalue = numeric_limits<double>::lowest()) const;
         double getpeak(const string& yld, const int& targetage) const;
         int getage(const string yld, const double& value) const;
         map<string,FMTdata>getdataelements() const;

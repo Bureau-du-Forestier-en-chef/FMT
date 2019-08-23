@@ -290,7 +290,9 @@ string FMTparser::setspec(FMTwssect section,FMTwskwor key,const FMTyields& ylds,
         {
         cout<<line<<endl;
         }*/
-
+	//bool goodlower = true;
+	//bool goodupper = true;
+	//bool added_something = false;
     if (regex_search(line,kmatch,FMTparser::rxayld))
         {
         //string yld = string(kmatch[4]) + string(kmatch[14]);
@@ -311,21 +313,30 @@ string FMTparser::setspec(FMTwssect section,FMTwskwor key,const FMTyields& ylds,
 			if (string(kmatch[14]).empty())
 				{
 				string strupper = string(kmatch[12]) + string(kmatch[13]);
+				//goodupper = tryfillnumber(upperbound, strupper, constants);
 				upperbound = getnum<double>(strupper, constants);
 				}
             string strlower = string(kmatch[8]) + string(kmatch[9]);//string(kmatch[7]) + string(kmatch[8]);//string(kmatch[8]) + string(kmatch[9]);
 
             //string strlower = string(kmatch[7]);
+			//goodlower = tryfillnumber(lowerbound, strlower, constants);
             lowerbound = getnum<double>(strlower,constants);
             }else{
+			//goodlower = tryfillnumber(lowerbound,singlebound, constants);
             lowerbound = getnum<double>(singlebound,constants);
             }
-        spec.addbounds(FMTyldbounds(section,key,yld,upperbound,lowerbound));
-
+		/*if (goodlower&& goodupper)
+			{*/
+			spec.addbounds(FMTyldbounds(section, key, yld, upperbound, lowerbound));
+		/*}else {
+			_exhandler->raise(FMTexc::WSemptybound, _section, "@YLD  line " + to_string(_line), __LINE__, __FILE__);
+			}*/
 		rest = " "+ string(kmatch[1]) + string(kmatch[16]) + string(kmatch[28]);//+ string(kmatch[15]) + string(kmatch[27]);
-        }else{
+		//added_something = true;
+		}else{
         rest = line;
         }
+
     if (regex_search(rest,kmatch,FMTparser::rxaage))
         {
         //string singlebound = string(kmatch[10]);
@@ -341,18 +352,26 @@ string FMTparser::setspec(FMTwssect section,FMTwskwor key,const FMTyields& ylds,
             if(string(kmatch[13]).empty())
                 {
                 string strupper = string(kmatch[10])+string(kmatch[11]) + string(kmatch[12]);
+				//goodupper = tryfillnumber(upperbound, strupper, constants);
                 upperbound = getnum<int>(strupper,constants);
                 }
             string strlower = string(kmatch[5])+string(kmatch[6]) + string(kmatch[7]);
+			//goodlower = tryfillnumber(lowerbound, strlower, constants);
             lowerbound = getnum<int>(strlower,constants);
             }else{
+			//goodlower = tryfillnumber(lowerbound, singlebound, constants);
             lowerbound = getnum<int>(singlebound,constants);
             }
+		/*if (goodlower&& goodupper)
+			{*/
             spec.addbounds(FMTagebounds(section,key,upperbound,lowerbound));
+		/*}else {
+			_exhandler->raise(FMTexc::WSemptybound, _section, "@AGE  line " + to_string(_line), __LINE__, __FILE__);
+			}*/
         //rest = " "+ string(kmatch[1]) + string(kmatch[7]) + string(kmatch[8]) + string(kmatch[12]);
         rest = " "+ string(kmatch[1]) + string(kmatch[15]) + string(kmatch[16]) +  string(kmatch[24]);
+		//added_something = true;
         }
-
     return rest;
     }
 

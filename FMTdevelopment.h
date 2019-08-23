@@ -62,6 +62,8 @@ class FMTdevelopment : public FMTobject
         FMTmask mask;
         int age,lock,period;
         FMTdevelopment();
+		FMTdevelopment(FMTdevelopment&& rhs) noexcept;
+		FMTdevelopment& operator = (FMTdevelopment&& rhs);
         virtual ~FMTdevelopment() = default;
 		virtual unique_ptr<FMTdevelopment> Clone() const;
         FMTdevelopment(FMTmask mask,int age,int lock);

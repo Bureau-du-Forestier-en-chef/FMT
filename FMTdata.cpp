@@ -156,6 +156,9 @@ FMTdata::operator string() const
 		case FMTyieldparserop::FMTwsequation:
 		value += "_EQUATION(";
 		break;
+		case FMTyieldparserop::FMTwsendpoint:
+		value += "_ENDPOINT(";
+		break;
         default:
         break;
         }
