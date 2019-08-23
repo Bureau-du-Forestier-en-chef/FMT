@@ -519,99 +519,102 @@ namespace WSParser
 									vector<FMTaction>& excluded,
 									const string& location)
 		{
-		ifstream optimizestream(location);
-		string line;
 		vector<FMTconstraint>constraints;
-		if (FMTparser::tryopening(optimizestream, location))
+		if (!location.empty())
 			{
-			FMToptimizationsection section = FMToptimizationsection::none;
-			while (optimizestream.is_open())
+			ifstream optimizestream(location);
+			string line;
+			if (FMTparser::tryopening(optimizestream, location))
 				{
-				//line = getcleanlinewfor(optimizestream, themes, constants);
-				line = getoptline(optimizestream, themes, constants, outputs);
-				if (!line.empty())
+				FMToptimizationsection section = FMToptimizationsection::none;
+				while (optimizestream.is_open())
 					{
-				FMToptimizationsection newsection = getsection(line);
-				if (newsection != FMToptimizationsection::none)
-					{
-					section = newsection;
-				}else {
-					switch (section)
+					//line = getcleanlinewfor(optimizestream, themes, constants);
+					line = getoptline(optimizestream, themes, constants, outputs);
+					if (!line.empty())
 						{
-						case FMToptimizationsection::objective:
+					FMToptimizationsection newsection = getsection(line);
+					if (newsection != FMToptimizationsection::none)
+						{
+						section = newsection;
+					}else {
+						switch (section)
 							{
-							FMTconstraint objective = getobjective(line, constants, outputs,themes);
-
-							if (objective.emptyperiod())
+							case FMToptimizationsection::objective:
 								{
-								_exhandler->raise(FMTexc::FMTmissingobjective, _section, " at line " + to_string(_line), __LINE__, __FILE__);
+								FMTconstraint objective = getobjective(line, constants, outputs,themes);
+
+								if (objective.emptyperiod())
+									{
+									_exhandler->raise(FMTexc::FMTmissingobjective, _section, " at line " + to_string(_line), __LINE__, __FILE__);
+									}
+								constraints.push_back(objective);
+								break;
 								}
-							constraints.push_back(objective);
-							break;
-							}
-						case FMToptimizationsection::constraints:
-							{
-							FMTconstraint constraint = getconstraint(line, constants, outputs, themes);
-							/*for (const FMToutputsource& src : constraint.getsources())
-                                {
-                                Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) <<string(src)<<"\n";
-                                Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "targetss " <<src.emptyperiod()<<" "<<src.getperiodlowerbound()<<" "<<src.getperiodupperbound()<< "\n";
-                                }*/
-							//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "targetss " << constraint.issingleperiod()<<" str: "<<line<< "\n";
-							constraints.push_back(constraint);
-							//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << string(constraints.at(1)) << "\n";
-							break;
-							}
-
-						case FMToptimizationsection::exclude:
-							{
-
-							smatch kmatch;
-							if (regex_search(line, kmatch, rxexclude))
+							case FMToptimizationsection::constraints:
 								{
-								string action_name = kmatch[2];
-								vector<string>action_names;
-								if (actions_aggregate.find(action_name) != actions_aggregate.end())
+								FMTconstraint constraint = getconstraint(line, constants, outputs, themes);
+								/*for (const FMToutputsource& src : constraint.getsources())
 									{
-									for (const string& actname : actions_aggregate.at(action_name))
+									Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) <<string(src)<<"\n";
+									Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "targetss " <<src.emptyperiod()<<" "<<src.getperiodlowerbound()<<" "<<src.getperiodupperbound()<< "\n";
+									}*/
+								//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "targetss " << constraint.issingleperiod()<<" str: "<<line<< "\n";
+								constraints.push_back(constraint);
+								//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << string(constraints.at(1)) << "\n";
+								break;
+								}
+
+							case FMToptimizationsection::exclude:
+								{
+
+								smatch kmatch;
+								if (regex_search(line, kmatch, rxexclude))
+									{
+									string action_name = kmatch[2];
+									vector<string>action_names;
+									if (actions_aggregate.find(action_name) != actions_aggregate.end())
 										{
-										action_names.push_back(actname);
-										}
-								}else {
-									action_names.push_back(action_name);
-									}
-								int period_lower = getnum<int>(string(kmatch[6])+ string(kmatch[9]),constants);
-								int period_upper = numeric_limits<int>::max();
-								string str_upper = string(kmatch[8]);
-								if (!str_upper.empty() && str_upper != "_LENGTH")
-									{
-									period_upper  = getnum<int>(str_upper, constants);
-								}else if (str_upper.empty())
-									{
-									period_upper = period_lower;
-									}
-								for (const string& target_action : action_names)
-									{
-									vector<FMTaction>::iterator actit = std::find_if(excluded.begin(), excluded.end(), FMTactioncomparator(target_action));
-									if (actit != excluded.end())
-										{
-										for (vector<FMTspec>::iterator spec_it = actit->databegin(); spec_it != actit->dataend(); ++spec_it)
+										for (const string& actname : actions_aggregate.at(action_name))
 											{
-											spec_it->setbounds(FMTperbounds(FMTwssect::Action, period_upper, period_lower));
+											action_names.push_back(actname);
+											}
+									}else {
+										action_names.push_back(action_name);
+										}
+									int period_lower = getnum<int>(string(kmatch[6])+ string(kmatch[9]),constants);
+									int period_upper = numeric_limits<int>::max();
+									string str_upper = string(kmatch[8]);
+									if (!str_upper.empty() && str_upper != "_LENGTH")
+										{
+										period_upper  = getnum<int>(str_upper, constants);
+									}else if (str_upper.empty())
+										{
+										period_upper = period_lower;
+										}
+									for (const string& target_action : action_names)
+										{
+										vector<FMTaction>::iterator actit = std::find_if(excluded.begin(), excluded.end(), FMTactioncomparator(target_action));
+										if (actit != excluded.end())
+											{
+											for (vector<FMTspec>::iterator spec_it = actit->databegin(); spec_it != actit->dataend(); ++spec_it)
+												{
+												spec_it->setbounds(FMTperbounds(FMTwssect::Action, period_upper, period_lower));
+												}
 											}
 										}
 									}
+								break;
 								}
-							break;
-							}
-						default:
-							{
+							default:
+								{
 
-							break;
-							}
-						};
+								break;
+								}
+							};
+						}
 					}
-				}
+					}
 				}
 			}
 		return constraints;

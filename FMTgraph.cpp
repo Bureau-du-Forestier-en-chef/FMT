@@ -64,6 +64,15 @@ FMTgraph::FMTgraph(const FMTgraph& rhs):
         generatedevelopments();
     }
 
+void FMTgraph::swap(FMTgraph& rhs)
+	{
+	buildtype = rhs.buildtype;
+	nodescache.swap(rhs.nodescache);
+	stats = rhs.stats;
+	data.swap(rhs.data);
+	generatedevelopments();
+	}
+
 FMTgraph& FMTgraph::operator = (const FMTgraph& rhs)
     {
         if(this!=&rhs)
@@ -261,8 +270,8 @@ FMTgraphstats FMTgraph::randombuild(const FMTmodel& model,std::queue<FMTvertex_d
 		    //ok
 			const FMTvertex_descriptor front_vertex = actives.front();
 			actives.pop();
-			FMTvertexproperties front_properties = data[front_vertex];
-			const FMTdevelopment active_development = front_properties.get();
+			const FMTvertexproperties& front_properties = data[front_vertex];
+			const FMTdevelopment& active_development = front_properties.get();
 			vector<pair<size_t,int>> operables;//size_t == event_id in the vector of events // int == action_id
 			vector<pair<size_t,int>> allpotentialevents;//vector of events with action_id in a pair to only pick one random
 			vector<vector<size_t>> action_adj_events(events_id.size());//Event index in case two adjacents events for one action
@@ -1313,17 +1322,23 @@ FMTgraph FMTgraph::partialcopy(const int& period, vector<vector<vector<FMTevent<
 
 void FMTgraph::generatedevelopments()
     	{
+			
             developments.clear();
-            FMTvertex_iterator vertex, vend;
+			FMTvertex_iterator vertex, vend;
+			tie(vertex, vend) = vertices(data);
+			--vend;//get to last vertex...
+			size_t max_period = (data[*vend].get().period - stats.erasedperiods);
+			developments.resize(max_period+1);
             for (boost::tie(vertex, vend) = vertices(data); vertex != vend; ++vertex)
             {
-                FMTvertexproperties properties = data[*vertex];
-                const FMTdevelopment dev = properties.get();
-                if ((dev.period) == developments.size())
+                const FMTvertexproperties& properties = data[*vertex];
+                const FMTdevelopment& dev = properties.get();
+				size_t period_location = (dev.period-stats.erasedperiods);
+				/*if (period_location == developments.size())
                 {
                     developments.push_back(std::unordered_map<size_t, FMTvertex_descriptor>());
-                }
-                developments[(dev.period)][boost::hash<FMTdevelopment>()(FMTdevelopment(dev))] = *vertex;
+                }*/
+                developments[period_location][boost::hash<FMTdevelopment>()(dev)] = *vertex;
             }
         }
 
@@ -1337,7 +1352,7 @@ FMTgraph FMTgraph::perturbgraph(const FMTmodel& model,default_random_engine& gen
         {
             std::queue<FMTvertex_descriptor> actives = newgraph.getactiveverticies();
             FMTvertex_descriptor front_vertex = actives.front();
-			FMTvertexproperties front_properties = data[front_vertex];
+			const FMTvertexproperties& front_properties = data[front_vertex];
 			int periodbuildevents = front_properties.get().period-1;//To have the good index in events
             newgraph.randombuild(model,actives,generator,events.at(periodbuildevents),localisation);
         }
@@ -1365,5 +1380,39 @@ size_t FMTgraph::geterasedperiods() const
 		}
 	return eperiod;
 	}
+
+size_t FMTgraph::hash(size_t seed) const
+	{
+	boost::hash_combine(seed, boost::hash<Core::FMTdevelopment>()(data[developments.at(0).begin()->second].get()));
+	FMTedge_iterator edge_iterator, edge_iterator_end;
+	for (tie(edge_iterator, edge_iterator_end) = edges(data); edge_iterator != edge_iterator_end; ++edge_iterator)
+		{
+		const FMTedgeproperties& edgeprop = data[*edge_iterator];
+		boost::hash_combine(seed, edgeprop.getactionID());
+		}
+	return seed;
+	}
+
+bool FMTgraph::sameedgesas(const FMTgraph& rhs) const
+	{
+	FMTedge_iterator thisedge_iterator, thisedge_iterator_end;
+	FMTedge_iterator rhsedge_iterator,  rhsedge_iterator_end;
+	bool different = false;
+	tie(thisedge_iterator, thisedge_iterator_end) = edges(data);
+	tie(rhsedge_iterator, rhsedge_iterator_end) = edges(rhs.data);
+	while (!different && thisedge_iterator != thisedge_iterator_end && rhsedge_iterator != rhsedge_iterator_end)
+		{
+		const FMTedgeproperties& thisedgeprop = data[*thisedge_iterator];
+		const FMTedgeproperties& rhsedgeprop = rhs.data[*rhsedge_iterator];
+		if (thisedgeprop.getactionID() != rhsedgeprop.getactionID())
+			{
+			different = true;
+			}
+		++thisedge_iterator;
+		++rhsedge_iterator;
+		}
+	return different;
+	}
+
 
 }

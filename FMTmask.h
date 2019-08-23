@@ -27,7 +27,8 @@ SOFTWARE.
 
 #ifndef BOOST_DYNAMIC_BITSET_DONT_USE_FRIENDS
 #define BOOST_DYNAMIC_BITSET_DONT_USE_FRIENDS
-#endif
+#endif 
+
 #include <boost/python.hpp>
 #include <boost/dynamic_bitset.hpp>
 #include <boost/unordered_map.hpp>
@@ -115,8 +116,6 @@ class FMTmask
     public:
         boost::dynamic_bitset<> data;
         FMTmask();
-		FMTmask(FMTmask&& rhs) noexcept;
-		FMTmask& operator = (FMTmask&& rhs);
         virtual ~FMTmask()=default;
         FMTmask(boost::dynamic_bitset<> bits);
 		explicit operator bool() const;
@@ -140,6 +139,7 @@ class FMTmask
         bool operator == (const FMTmask& rhs) const;
         bool operator < (const FMTmask& rhs) const;
         FMTmask resume(const boost::dynamic_bitset<>& rhs) const;
+		size_t hash() const;
         string to_string() const;
 		operator string() const;
     };
@@ -150,17 +150,14 @@ namespace boost {
     template <typename Block, typename Alloc>
     std::size_t hash_value(const boost::dynamic_bitset<Block, Alloc>& bs)
         {
-        /*size_t seed = boost::hash_value(bs.size());
-        std::vector<Block> blocks(bs.num_blocks());
-        boost::hash_range(seed, blocks.begin(), blocks.end());
-        return seed;*/
-		size_t seed = 0;// (1 << bs.size());
+		/*size_t seed = 0;
 		for (size_t i = 0; i < bs.size(); i++)
 			{
 			boost::hash_combine(seed, bs[i]);
-			//seed = seed | (bs[i] << (bs.size() - i - 1));
 			}
-		return seed;
+		return seed;	
+		*/
+		return boost::hash_value(bs.m_bits);
         }
 }
 

@@ -106,6 +106,7 @@ class FMTgraph
         ~FMTgraph()=default;
         FMTgraph(const FMTgraphbuild lbuildtype);
         FMTgraph(const FMTgraph& rhs);
+		void swap(FMTgraph& rhs);
         FMTgraph& operator = (const FMTgraph& rhs);
         bool operator == (const FMTgraph& rhs) const;
         bool operator != (const FMTgraph& rhs) const;
@@ -129,6 +130,7 @@ class FMTgraph
 		FMTvertex_descriptor getdevelopment(const FMTdevelopment& developement) const;
 		const FMTdevelopment& getdevelopment(const FMTvertex_descriptor& descriptor) const;
 		FMTvertex_descriptor adddevelopment(const FMTfuturdevelopment& futurdevelopement);
+		size_t hash(size_t seed=0) const;
 		void addaction(const int& actionID,
                         FMTgraphstats& statsdiff,
                         std::queue<FMTvertex_descriptor>& actives,
@@ -188,7 +190,7 @@ class FMTgraph
         FMTgraph perturbgraph(const FMTmodel& model,default_random_engine& generator,
                               vector<vector<vector<FMTevent<FMTgraph>>>>& events,
                               const FMTcoordinate& localisation, const int period) const;
-
+		bool sameedgesas(const FMTgraph& rhs) const;
     };
 }
 #endif // FMTGRAPH_H

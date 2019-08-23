@@ -477,7 +477,7 @@ int FMToutput::gettargetperiod() const
 size_t FMToutput::hash() const
 	{
 	size_t seed = 0;
-	boost::hash_combine(seed, name);
+	//boost::hash_combine(seed, name);
 	for (const FMToperator& op : operators)
 		{
 		boost::hash_combine(seed,op.hash());
@@ -485,6 +485,7 @@ size_t FMToutput::hash() const
 	for (const FMToutputsource& src : sources)
 		{
 		boost::hash_combine(seed, src.hash());
+		boost::hash_combine(seed, src.getyield());//need proper value!
 		}
 	return seed;
 	}

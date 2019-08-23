@@ -48,16 +48,24 @@ bool FMTmodelparser::write(const FMTmodel& model,const string& folder)
     {
     FMTlandscapeparser landparser;
     landparser.write(model.getthemes(),folder+model.name+".lan");
-    FMTareaparser areaparser;
-    areaparser.write(model.getarea(), folder + model.name + ".are");
+	vector<FMTactualdevelopment>devs = model.getarea();
+	if (!devs.empty())
+		{
+		FMTareaparser areaparser;
+		areaparser.write(devs, folder + model.name + ".are");
+		}
     FMTyieldparser yldparser;
     yldparser.write(model.getyields(),folder+model.name+".yld");
     FMTactionparser actparser;
     actparser.write(model.getactions(),folder+model.name+".act",model.getactionaggregates());
     FMTtransitionparser trnparser;
     trnparser.write(model.gettransitions(),folder+model.name+".trn");
-	FMToutputparser outparser;
-	outparser.write(model.getoutputs(), folder + model.name + ".out");
+	vector<FMToutput>outputs = model.getoutputs();
+	if (!outputs.empty())
+		{
+		FMToutputparser outparser;
+		outparser.write(outputs, folder + model.name + ".out");
+		}
 	vector<FMTconstraint>constraints = model.getconstraints();
 	if (!constraints.empty())
 		{
@@ -343,11 +351,25 @@ FMTmodel FMTmodelparser::referenceread(map<string,vector<int>>& common_sections,
 
 
 vector<FMTmodel>FMTmodelparser::readproject(const string& primary_location,
-												vector<string>scenarios)
+												vector<string>scenarios, 
+											bool readarea, bool readoutputs, bool readoptimize)
 	{
 	vector<FMTmodel>models;
 	map<string, vector<int>>commons;
 	map<FMTwssect, string>bases = getprimary(primary_location);
+	if (!readarea)
+		{
+		bases.at(FMTwssect::Area) = "";
+		}
+	if (!readoutputs)
+		{
+		bases.at(FMTwssect::Outputs) = "";
+		bases.at(FMTwssect::Optimize) = "";
+		}
+	if (!readoptimize)
+		{
+		bases.at(FMTwssect::Optimize) = "";
+		}
 	bool tookroot = (std::find(scenarios.begin(), scenarios.end(), "ROOT") != scenarios.end());
 	if (tookroot ||scenarios.empty()) //load the modelroot!
 		{
@@ -395,6 +417,19 @@ vector<FMTmodel>FMTmodelparser::readproject(const string& primary_location,
 							}
 						}
 						//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << model_name << "\n";
+						if (!readarea)
+							{
+							scenario_files.at(FMTwssect::Area) = "";
+							}
+						if (!readoutputs)
+							{
+							scenario_files.at(FMTwssect::Outputs) = "";
+							scenario_files.at(FMTwssect::Optimize) = "";
+							}
+						if (!readoptimize)
+							{
+							scenario_files.at(FMTwssect::Optimize) = "";
+							}
 						FMTmodel scenario = referenceread(commons,
 							models,
 							scenario_files.at(FMTwssect::Constants),

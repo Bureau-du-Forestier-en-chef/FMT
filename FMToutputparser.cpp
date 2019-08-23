@@ -63,217 +63,219 @@ namespace WSParser
         vector<FMToutput> FMToutputparser::read(const vector<FMTtheme>& themes,const vector<FMTaction>& actions,
 			const FMTyields& ylds,const FMTconstants& constants, const map<string, vector<string>>& actions_aggregate,string location)
             {
-            ifstream outputstream(location);
-            vector<FMToutput>outputs;
-            vector<FMToutputsource>sources;
-            vector<FMToperator>operators;
-            string name,description;
-            bool insource = false;
-			bool processing_level = false;
-			int themetarget = -1;
-			size_t lastopt = 0;
-			size_t lastoutput = 0;
-            if (FMTparser::tryopening(outputstream,location))
-                {
-                string line;
-                while(outputstream.is_open())
-                    {
+			vector<FMToutput>outputs;
+			if(!location.empty())
+				{ 
+				ifstream outputstream(location);
+				vector<FMToutputsource>sources;
+				vector<FMToperator>operators;
+				string name,description;
+				bool insource = false;
+				bool processing_level = false;
+				int themetarget = -1;
+				size_t lastopt = 0;
+				size_t lastoutput = 0;
+				if (FMTparser::tryopening(outputstream,location))
+					{
+					string line;
+					while(outputstream.is_open())
+						{
 
-                     line = getcleanlinewfor(outputstream,themes,constants);
-                     if (!line.empty())
-                        {
-                        smatch kmatch;
-                        string outline = line+" ";
-                        if (regex_search(outline,kmatch,rxoutput))
-                            {
-                            if (!sources.empty() || (processing_level && !insource))
-                                {
-                                if (processing_level && sources.empty())
-                                    {
-                                    sources.push_back(FMToutputsource(FMTotar::level,0,"",name));
-                                    }
-                                outputs.push_back(FMToutput(name,description, themetarget,sources,operators));
-								}
-                            sources.clear();
-							lastopt = 0;
-							lastoutput = 0;
-                            operators.clear();
-							string outtype = string(kmatch[1]) + string(kmatch[12]);
-
-							if (outtype=="*LEVEL")
+						 line = getcleanlinewfor(outputstream,themes,constants);
+						 if (!line.empty())
+							{
+							smatch kmatch;
+							string outline = line+" ";
+							if (regex_search(outline,kmatch,rxoutput))
 								{
-								processing_level = true;
-								//_exhandler->raise(FMTexc::WSunsupported_output, _section, name + " at line " + to_string(_line), __LINE__, __FILE__);
-								//continue;
-								}else {
-								processing_level = false;
-								}
+								if (!sources.empty() || (processing_level && !insource))
+									{
+									if (processing_level && sources.empty())
+										{
+										sources.push_back(FMToutputsource(FMTotar::level,0,"",name));
+										}
+									outputs.push_back(FMToutput(name,description, themetarget,sources,operators));
+									}
+								sources.clear();
+								lastopt = 0;
+								lastoutput = 0;
+								operators.clear();
+								string outtype = string(kmatch[1]) + string(kmatch[12]);
+
+								if (outtype=="*LEVEL")
+									{
+									processing_level = true;
+									//_exhandler->raise(FMTexc::WSunsupported_output, _section, name + " at line " + to_string(_line), __LINE__, __FILE__);
+									//continue;
+									}else {
+									processing_level = false;
+									}
 
 
-							string thtarget = string(kmatch[7]);
-							if (isvalid(thtarget))
+								string thtarget = string(kmatch[7]);
+								if (isvalid(thtarget))
+									{
+									thtarget.erase(thtarget.begin(), thtarget.begin() + 3);
+									//PySys_WriteStdout(thtarget.c_str());
+									themetarget = stoi(thtarget)-1;
+									}
+								name = string(kmatch[4]) + string(kmatch[14]);
+								description = string(kmatch[10]) + string(kmatch[16]);
+								boost::trim_right(description);
+								insource = false;
+							}
+							if (regex_search(line,kmatch,rxgrp))
 								{
-								thtarget.erase(thtarget.begin(), thtarget.begin() + 3);
-								//PySys_WriteStdout(thtarget.c_str());
-								themetarget = stoi(thtarget)-1;
-								}
-                            name = string(kmatch[4]) + string(kmatch[14]);
-                            description = string(kmatch[10]) + string(kmatch[16]);
-							boost::trim_right(description);
-                            insource = false;
-						}
-                        if (regex_search(line,kmatch,rxgrp))
-                            {
-                            insource = false;
-                            }else if (regex_search(line,kmatch,rxsource) || insource)
-                                {
+								insource = false;
+								}else if (regex_search(line,kmatch,rxsource) || insource)
+									{
 
-                                string rest;
-                                if (insource && line.find("*SOURCE")==string::npos)
-                                    {
-                                    rest = line;
-                                    }else{
-                                    rest = kmatch[3];
-                                    }
+									string rest;
+									if (insource && line.find("*SOURCE")==string::npos)
+										{
+										rest = line;
+										}else{
+										rest = kmatch[3];
+										}
 
-                                vector<string>strsources;// = spliter(rest,rxsources);
-                                boost::split(strsources,rest,boost::is_any_of("-*/+"));
-                                string opstr = rest;
-                                replace(opstr.begin(),opstr.end(),'.','r');
-                                replace(opstr.begin(),opstr.end(),',','r');
-                                vector<string>stroperators = spliter(opstr,rxoperators);
-								string lastoperator;
-                                for(string& strsrc : strsources)
-                                    {
-                                    boost::algorithm::trim(strsrc);
-									//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) <<"Evaluating !" << strsrc << "\n";
-                                    if (!processing_level && (isnum(strsrc) || constants.isconstant(strsrc)))
-                                        {
-                                        double value = getnum<double>(strsrc,constants);
-                                        //sources.push_back(FMToutputsource(FMTotar::val,value));
-										//Make sure it is not a adition or substraction!!!!
-										if (((!stroperators.empty() &&
-											(stroperators.at(0)=="+" || stroperators.at(0)=="-")) ||
-											(!lastoperator.empty() &&
-											(lastoperator == "+" || lastoperator == "-"))) &&
-											(find_if(sources.begin(), sources.end(),FMToutputsourcecomparator(true)) == sources.end()))
+									vector<string>strsources;// = spliter(rest,rxsources);
+									boost::split(strsources,rest,boost::is_any_of("-*/+"));
+									string opstr = rest;
+									replace(opstr.begin(),opstr.end(),'.','r');
+									replace(opstr.begin(),opstr.end(),',','r');
+									vector<string>stroperators = spliter(opstr,rxoperators);
+									string lastoperator;
+									for(string& strsrc : strsources)
+										{
+										boost::algorithm::trim(strsrc);
+										//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) <<"Evaluating !" << strsrc << "\n";
+										if (!processing_level && (isnum(strsrc) || constants.isconstant(strsrc)))
 											{
-											_exhandler->raise(FMTexc::WSunsupported_output, _section, name + " at line " + to_string(_line), __LINE__, __FILE__);
-											}
-
-										if (!lastoperator.empty())
-											{
-											//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) <<"OPPPPS "<< lastoperator << "\n";
-											vector<FMToutputsource>newsources;
-											vector<FMToperator>newoperators;
-											size_t lastop = 0;
-											size_t id = 0;
-											for (; id < lastoutput; ++id)
+											double value = getnum<double>(strsrc,constants);
+											//sources.push_back(FMToutputsource(FMTotar::val,value));
+											//Make sure it is not a adition or substraction!!!!
+											if (((!stroperators.empty() &&
+												(stroperators.at(0)=="+" || stroperators.at(0)=="-")) ||
+												(!lastoperator.empty() &&
+												(lastoperator == "+" || lastoperator == "-"))) &&
+												(find_if(sources.begin(), sources.end(),FMToutputsourcecomparator(true)) == sources.end()))
 												{
-												newsources.push_back(sources.at(id));
-												if (id > 0)
-													{
-													newoperators.push_back(operators.at(lastop));
-													++lastop;
-													}
+												_exhandler->raise(FMTexc::WSunsupported_output, _section, name + " at line " + to_string(_line), __LINE__, __FILE__);
 												}
-											for (; id < sources.size(); ++ id)
+
+											if (!lastoperator.empty())
 												{
-												//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << string(sources.at(id)) << "\n";
-												if (id > 0 && sources.at(id-1).isvariable())
-													{
-													if (sources.at(id).isconstant())
-														{
-														value=FMToperator(operators.at(lastop)).call(value, sources.at(id).getvalue());
-													}else {
-														//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "pushing lastop!" << "\n";
-														newoperators.push_back(FMToperator(lastoperator));
-														}
-													//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "pushing source!" << "\n";
-													newsources.push_back(FMToutputsource(FMTotar::val, value));
-													}
-												if (sources.at(id).isvariable() || sources.at(id).islevel())
+												//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) <<"OPPPPS "<< lastoperator << "\n";
+												vector<FMToutputsource>newsources;
+												vector<FMToperator>newoperators;
+												size_t lastop = 0;
+												size_t id = 0;
+												for (; id < lastoutput; ++id)
 													{
 													newsources.push_back(sources.at(id));
+													if (id > 0)
+														{
+														newoperators.push_back(operators.at(lastop));
+														++lastop;
+														}
 													}
-												if (id > 0)
+												for (; id < sources.size(); ++ id)
 													{
-													newoperators.push_back(operators.at(lastop));
-													++lastop;
+													//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << string(sources.at(id)) << "\n";
+													if (id > 0 && sources.at(id-1).isvariable())
+														{
+														if (sources.at(id).isconstant())
+															{
+															value=FMToperator(operators.at(lastop)).call(value, sources.at(id).getvalue());
+														}else {
+															//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "pushing lastop!" << "\n";
+															newoperators.push_back(FMToperator(lastoperator));
+															}
+														//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "pushing source!" << "\n";
+														newsources.push_back(FMToutputsource(FMTotar::val, value));
+														}
+													if (sources.at(id).isvariable() || sources.at(id).islevel())
+														{
+														newsources.push_back(sources.at(id));
+														}
+													if (id > 0)
+														{
+														newoperators.push_back(operators.at(lastop));
+														++lastop;
+														}
 													}
-												}
-											if (newsources.back().isvariable() || newsources.back().islevel())
+												if (newsources.back().isvariable() || newsources.back().islevel())
+													{
+													newsources.push_back(FMToutputsource(FMTotar::val, value));
+													//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "pushing last op "<< lastoperator << "\n";
+													newoperators.push_back(FMToperator(lastoperator));
+													}
+
+												operators = newoperators;
+												sources = newsources;
+											}
+											else {
+												sources.push_back(FMToutputsource(FMTotar::val, value));
+
+											}
+
+											}else if(processing_level)
+											{
+											vector<double>values;
+											if (constants.isconstant(strsrc))
 												{
-												newsources.push_back(FMToutputsource(FMTotar::val, value));
-												//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "pushing last op "<< lastoperator << "\n";
-												newoperators.push_back(FMToperator(lastoperator));
-												}
-
-											operators = newoperators;
-											sources = newsources;
-										}
-										else {
-											sources.push_back(FMToutputsource(FMTotar::val, value));
-
-										}
-
-                                        }else if(processing_level)
-                                        {
-                                        vector<double>values;
-                                        if (constants.isconstant(strsrc))
-                                            {
-                                            for (size_t period = 0 ; period < constants.length(strsrc); ++period)
-                                                {
-                                                values.push_back(getnum<double>(strsrc,constants,static_cast<int>(period)));
-                                                }
-                                            }else{
-                                                //sflit and trim
-                                                vector<string>all_numbers;// = spliter(rest,rxsources);
-                                                boost::split(all_numbers,strsrc, boost::is_any_of(" /t"), boost::token_compress_on);
-                                                for (const string& number : all_numbers)
-                                                    {
-                                                    values.push_back(getnum<double>(number,constants));
-                                                    }
-                                                }
-                                        sources.push_back(FMToutputsource(FMTotar::level,values));//constant level!
-                                        //Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) <<"GOT LEVEL!!!" << strsrc<<" size of "<<values.size()  << "\n";
-                                        //sources.push_back(FMToutputsource(FMTotar::level,0,"",strsrc));
-                                        }else{
-                                            vector<string>values = spliter(strsrc,FMTparser::rxseparator);
-                                            if(values.size()==1)
-                                            {
-											//need to use get equation to simplify output!!!
-                                            if (find_if(outputs.begin(),outputs.end(),FMToutputcomparator(strsrc))!=outputs.end())
-                                                {
-                                                vector<FMToutput>::iterator it = find_if(outputs.begin(),outputs.end(),FMToutputcomparator(strsrc));
-												if (!it->islevel() || (it->islevel() && !it->getsources().empty()))
+												for (size_t period = 0 ; period < constants.length(strsrc); ++period)
 													{
-														lastoutput = sources.size();
-														for (const FMToutputsource& src : it->getsources())
-															{
-															sources.push_back(src);
-															}
-														lastopt = operators.size();
-														for (const FMToperator& src : it->getopes())
-															{
-															operators.push_back(src);
-															}
-												}else {
-													sources.push_back(FMToutputsource(FMTotar::level,0, strsrc));
+													values.push_back(getnum<double>(strsrc,constants,static_cast<int>(period)));
 													}
-												if (!stroperators.empty())
-													{
-													operators.push_back(FMToperator(stroperators.front()));
-													lastoperator = stroperators.front();
-													stroperators.erase(stroperators.begin());
+												}else{
+													//sflit and trim
+													vector<string>all_numbers;// = spliter(rest,rxsources);
+													boost::split(all_numbers,strsrc, boost::is_any_of(" /t"), boost::token_compress_on);
+													for (const string& number : all_numbers)
+														{
+														values.push_back(getnum<double>(number,constants));
+														}
 													}
-                                                }else if (strsrc.find("#")!=string::npos)
+											sources.push_back(FMToutputsource(FMTotar::level,values));//constant level!
+											//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) <<"GOT LEVEL!!!" << strsrc<<" size of "<<values.size()  << "\n";
+											//sources.push_back(FMToutputsource(FMTotar::level,0,"",strsrc));
+											}else{
+												vector<string>values = spliter(strsrc,FMTparser::rxseparator);
+												if(values.size()==1)
+												{
+												//need to use get equation to simplify output!!!
+												if (find_if(outputs.begin(),outputs.end(),FMToutputcomparator(strsrc))!=outputs.end())
 													{
-													_exhandler->raise(FMTexc::WSundefined_constant, _section, strsrc + " at line " + to_string(_line), __LINE__, __FILE__);
-													}
-												else if (ylds.isyld(strsrc))//isyld(ylds,strsrc,_section))
-													{
-													sources.push_back(FMToutputsource(FMTotar::timeyld,0,strsrc));
+													vector<FMToutput>::iterator it = find_if(outputs.begin(),outputs.end(),FMToutputcomparator(strsrc));
+													if (!it->islevel() || (it->islevel() && !it->getsources().empty()))
+														{
+															lastoutput = sources.size();
+															for (const FMToutputsource& src : it->getsources())
+																{
+																sources.push_back(src);
+																}
+															lastopt = operators.size();
+															for (const FMToperator& src : it->getopes())
+																{
+																operators.push_back(src);
+																}
+													}else {
+														sources.push_back(FMToutputsource(FMTotar::level,0, strsrc));
+														}
+													if (!stroperators.empty())
+														{
+														operators.push_back(FMToperator(stroperators.front()));
+														lastoperator = stroperators.front();
+														stroperators.erase(stroperators.begin());
+														}
+													}else if (strsrc.find("#")!=string::npos)
+														{
+														_exhandler->raise(FMTexc::WSundefined_constant, _section, strsrc + " at line " + to_string(_line), __LINE__, __FILE__);
+														}
+													else if (ylds.isyld(strsrc))//isyld(ylds,strsrc,_section))
+														{
+														sources.push_back(FMToutputsource(FMTotar::timeyld,0,strsrc));
 
 													}else{
 													_exhandler->raise(FMTexc::WSundefined_output, _section, strsrc + " at line " + to_string(_line), __LINE__, __FILE__);
@@ -299,15 +301,6 @@ namespace WSParser
                                                     {
                                                     rest = inds;
                                                     }
-												//Weird way of not throwin error!?!?!
-												if (rest.find("@") != string::npos)//probabily a fuck here throw warning a delete stuff
-													{
-													string weird_stuff = rest.substr(0, rest.find_first_of(')'));
-													_exhandler->raise(FMTexc::WSemptybound, _section, weird_stuff + " line " + to_string(_line), __LINE__, __FILE__);
-													rest = rest.substr(rest.find_first_of(')') + 1, rest.size() - 1);
-													Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "FMTPARSER line 375 " << rest << "\n";
-													}
-												//////////////////////////////////////
                                                 if (isvalid(rest))
                                                     {
                                                     if (regex_search(rest,kmatch,rxtar))
@@ -392,33 +385,34 @@ namespace WSParser
                                                                     sources.push_back(FMToutputsource(spec,FMTmask(mask,themes),
                                                                             FMTotar::inventory,yld,action));
 
-                                                                    }
-                                                        }
-                                                    }
+																		}
+															}
+														}
 
-                                                }
-                                            }
-                                        }
+													}
+												}
+											}
 
-                                for(const string& strope : stroperators)
-                                    {
-                                    operators.push_back(FMToperator(strope));
-                                    }
-                                insource = true;
+									for(const string& strope : stroperators)
+										{
+										operators.push_back(FMToperator(strope));
+										}
+									insource = true;
 
-                                }
+									}
 
-                        }
-                    }
-				if (!sources.empty() || (processing_level && !insource))
-					{
-                    if (processing_level && sources.empty())
-                        {
-                        sources.push_back(FMToutputsource(FMTotar::level,0,"",name));
-                        }
-					outputs.push_back(FMToutput(name, description, themetarget, sources, operators));
+							}
+						}
+					if (!sources.empty() || (processing_level && !insource))
+						{
+						if (processing_level && sources.empty())
+							{
+							sources.push_back(FMToutputsource(FMTotar::level,0,"",name));
+							}
+						outputs.push_back(FMToutput(name, description, themetarget, sources, operators));
+						}
 					}
-                }
+				}
             return outputs;
             }
         bool FMToutputparser::write(const vector<FMToutput>& outputs,string location)

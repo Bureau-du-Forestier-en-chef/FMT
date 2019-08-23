@@ -30,6 +30,7 @@ SOFTWARE.
 #include "FMTgraphdescription.h"
 #include "FMTgraph.h"
 #include "FMTgraphstats.h"
+#include <unordered_map>
 
 using namespace Spatial;
 using namespace Graph;
@@ -49,11 +50,11 @@ enum class FMTsapenaltytype
     };
 class FMTsasolution : public FMTlayer<FMTgraph>
     {
+	mutable std::unordered_map<size_t, vector<double>>outputscache;
     protected:
         FMTgraphstats solution_stats;
         vector<vector<vector<FMTevent<FMTgraph>>>> events;//v1 period v2 action id v3 FMTevent<FMTgraph>
         double objectivefunctionvalue;//Sum of all penalties
-
     public:
         map<string,pair<vector<double>,vector<double>>> constraint_outputs_penalties;
         FMTsasolution();
@@ -61,6 +62,8 @@ class FMTsasolution : public FMTlayer<FMTgraph>
         virtual ~FMTsasolution()=default;
         FMTsasolution(const FMTsasolution& rhs);
         FMTsasolution& operator = (const FMTsasolution& rhs);
+		bool copyfromselected(const FMTsasolution& rhs, const vector<size_t>& selected);
+		bool swapfromselected(FMTsasolution& rhs, const vector<size_t>& selected);
         bool empty() const {return mapping.empty();};
         bool operator == (const FMTsasolution& rhs)const;
         bool operator != (const FMTsasolution& rhs)const;
