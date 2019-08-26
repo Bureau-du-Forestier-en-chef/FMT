@@ -30,7 +30,8 @@ FMToutputsource::FMToutputsource() : FMTspec(), mask(),
 		target(FMTotar::val),
 		action(),
 		yield(),
-		values()
+		values(),
+		average()
 	{
 
 	}
@@ -40,7 +41,8 @@ FMToutputsource::FMToutputsource(const FMTotar ltarget,double lvalue, string lyi
     target(ltarget),
     action(laction),
     yield(lyield),
-    values(1,lvalue)
+    values(1,lvalue),
+	average()
     {
 
     }
@@ -50,7 +52,8 @@ FMToutputsource::FMToutputsource(const FMTotar ltarget,vector<double>lvalues): F
     target(ltarget),
     action(),
     yield(),
-    values(lvalues)
+    values(lvalues),
+	average()
     {
 
 
@@ -61,14 +64,14 @@ FMToutputsource::FMToutputsource(const FMTspec& spec,const FMTmask& lmask,
                const FMTotar ltarget,string lyield,
                string laction) :
                 FMTspec(spec),mask(lmask),
-                target(ltarget),action(laction),yield(lyield),values()
+                target(ltarget),action(laction),yield(lyield),values(),average()
     {
 
 
     }
 
 FMToutputsource::FMToutputsource(const FMToutputsource& rhs) : FMTspec(rhs),mask(rhs.mask),target(rhs.target),
-    action(rhs.action),yield(rhs.yield),values(rhs.values)
+    action(rhs.action),yield(rhs.yield),values(rhs.values), average(rhs.average)
     {
 
     }
@@ -83,6 +86,7 @@ FMToutputsource& FMToutputsource::operator = (const FMToutputsource& rhs)
         yield = rhs.yield;
         FMTspec::operator=(rhs);
         mask = rhs.mask;
+		average = rhs.average;
         }
     return *this;
     }
@@ -168,7 +172,7 @@ FMToutputsource::operator string() const
 bool FMToutputsource::operator == (const FMToutputsource& rhs) const
 	{
 	return (mask==rhs.mask && target==rhs.target &&
-		action == rhs.action && yield == rhs.yield && values == rhs.values);
+		action == rhs.action && yield == rhs.yield && values == rhs.values && average == rhs.average);
 	}
 
 bool FMToutputsource::operator != (const FMToutputsource& rhs) const
@@ -196,6 +200,16 @@ bool FMToutputsource::issubsetof(const FMToutputsource& rhs,
 			return true;
 			}
 	return false;
+	}
+
+void FMToutputsource::setaverage()
+	{
+	average = true;
+	}
+
+bool FMToutputsource::isaverage() const
+	{
+	return average;
 	}
 
 bool FMToutputsource::isvariable() const

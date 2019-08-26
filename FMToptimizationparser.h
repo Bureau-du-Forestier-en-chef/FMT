@@ -58,6 +58,7 @@ namespace WSParser
 		regex rxgoal;
 		regex rxoutput;
 		regex rxpenalty;
+		regex rxspecialoutput;
 		std::queue<string>ineach;
 		FMTconstraint getobjective(const string& line, const FMTconstants& constants,
                              const vector<FMToutput>& outputs,

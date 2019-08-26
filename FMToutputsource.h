@@ -56,12 +56,8 @@ class FMToutputsource : public FMTspec
     FMTotar target;
     string action;
     string yield;
-   //double value;
     vector<double>values;
-	/*vector<boost::dynamic_bitset<>> actionscombination(const boost::dynamic_bitset<>& actioned) const;
-	vector<boost::dynamic_bitset<>> linearcombination(const int& minclass, const int& maxclass,const int& lenght) const;
-	boost::dynamic_bitset<> actionbit(const vector<FMTaction>& actions,
-		const map<string, vector<string>>& aggregates) const;*/
+	bool average;
     public:
 		FMToutputsource();
         FMToutputsource(const FMTotar ltarget,double lvalue = 0, string lyield= "",string laction = "");
@@ -97,7 +93,8 @@ class FMToutputsource : public FMTspec
 			const FMTyields& yields, const FMTaction& action,
 			const vector<FMTdevelopmentpath>& paths) const;
 		bool use(const FMTdevelopment& development, const FMTyields& ylds) const;
-		//size_t hash() const override;
+		void setaverage();
+		bool isaverage() const;
 		size_t hash(int period = -1) const;
 		/*vector<boost::dynamic_bitset<>> getclassifiers(const vector<FMTaction>& actions,
 			const map<string, vector<string>>& aggregates,

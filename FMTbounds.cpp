@@ -28,6 +28,11 @@ namespace Core{
 
 FMTyldbounds::FMTyldbounds():FMTbounds<double>(),yield(){}
 
+/*string FMTyldbounds::getyieldname() const
+	{
+	return yield;
+	}*/
+
 
     FMTyldbounds::FMTyldbounds(FMTwssect lsection,string& lyield, double& lupper, double& llower):FMTbounds<double>(lsection,lupper,llower),yield(lyield)
         {

@@ -145,12 +145,48 @@ namespace WSParser
 									string opstr;
 									size_t letterid = 0;
 									bool inparenthesis = false;
+									bool inmask = true;
+									bool lastonespace = true;
+									bool lookslikeoutput = false;
+									//bool gotspaces = false;
+									size_t thcound = 0;
+									//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "Evaluating !" << rest << "\n";
 									for (const char& letter : rest)
 										{
-										if (stroprators.find(letter) != string::npos && !inparenthesis)
+										if (inmask)
 											{
+											if ((letter == ' ' || letter == '\t'))
+												{
+												lastonespace = true;
+												//gotspaces = true;
+											}else if(lastonespace)
+												{
+												if (thcound == 1 && stroprators.find(letter) != string::npos)
+													{
+													lookslikeoutput = true;
+													}
+												++thcound;
+												lastonespace = false;
+												}
+											if (thcound >= themes.size())
+												{
+												inmask = false;
+												}
+											/*if (thcound == 1 && stroprators.find(letter) != string::npos)
+												{
+												lookslikeoutput = true;
+												}*/
+											
+											}
+										//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << !inmask << " " << lookslikeoutput << "\n";
+										if (stroprators.find(letter) != string::npos && (!inmask || lookslikeoutput) && !inparenthesis) // && !inparenthesis 
+											{
+											//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info)<<"Splitted on " << string(letter, 1) << "\n";
 											stroperators.push_back(string(letter,1));
-											strsources.push_back(stacked_char);
+											if (!stacked_char.empty())
+												{
+												strsources.push_back(stacked_char);
+												}
 											stacked_char = "";
 											opstr += letter;
 											}else {
@@ -178,7 +214,7 @@ namespace WSParser
 									for(string& strsrc : strsources)
 										{
 										boost::algorithm::trim(strsrc);
-										//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) <<"Evaluating !" << strsrc << "\n";
+										//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) <<"Evaluating 2|" << strsrc<<"|"<< "\n";
 										if (!processing_level && (isnum(strsrc) || constants.isconstant(strsrc)))
 											{
 											double value = getnum<double>(strsrc,constants);

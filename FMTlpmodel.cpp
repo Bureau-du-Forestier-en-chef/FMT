@@ -1315,7 +1315,8 @@ namespace Models
 			}
 		}*/
 
-bool FMTlpmodel::locatenodes(const vector<FMToutputnode>& nodes, int period, map<int, double>& variables, double multiplier) const
+bool FMTlpmodel::locatenodes(const vector<FMToutputnode>& nodes, int period, 
+	map<int, double>& variables, double multiplier) const
 	{
 	map<int, double>all_variables;
 	bool cashhit = false;
@@ -1349,7 +1350,8 @@ bool FMTlpmodel::locatenodes(const vector<FMToutputnode>& nodes, int period, map
 			if (graph.constraintlenght(constraint, first_period, last_period))
 				{
 				FMTconstrainttype constraint_type = constraint.getconstrainttype();
-				vector<FMToutputnode>all_nodes = constraint.getnodes(); //
+				double averagefactor = (1 / (last_period - first_period));
+				vector<FMToutputnode>all_nodes = constraint.getnodes(averagefactor); //
 				double lowerbound = 0;
 				double upperbound = 0;
 				double coef_multiplier_lower = 1;
@@ -1676,7 +1678,8 @@ bool FMTlpmodel::locatenodes(const vector<FMToutputnode>& nodes, int period, map
 
 		/*Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "first period " <<first_period << "\n";
 		Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "last period " <<last_period << "\n";*/
-		vector<FMToutputnode>all_nodes = objective.getnodes();
+		double averagefactor = (1 / (last_period - first_period));
+		vector<FMToutputnode>all_nodes = objective.getnodes(averagefactor);
 		//vector<int>all_variables;
 		//vector<double>all_coefs;
 		map<int, double>all_variables;

@@ -82,9 +82,10 @@ class FMToutput
 	double getconstantvalue() const;
 	bool containslevel() const;
 	double shuntingyard(const vector<double>& sourcevalues, const vector<FMToperator>& simple_operators) const;
-	FMToutput boundto(const vector<FMTtheme>& themes, const FMTperbounds& bound,string attribute = "") const;
-	vector<FMToutputnode> getnodes() const;
+	FMToutput boundto(const vector<FMTtheme>& themes, const FMTperbounds& bound,const string& specialbound,string attribute = "") const;
+	vector<FMToutputnode> getnodes(double multiplier = 1) const;
 	bool issingleperiod() const;
+	bool hasaverage() const;
 	int gettargetperiod() const;
 	size_t hash() const;
     vector<FMToutputsource> getsources() const;

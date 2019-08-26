@@ -231,6 +231,7 @@ namespace Core
         return false;
         }
 
+
 	void FMTconstraint::getvariations(double& lower, double& upper) const
 		{
 		lower = 0;

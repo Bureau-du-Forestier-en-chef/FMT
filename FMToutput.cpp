@@ -333,7 +333,7 @@ double FMToutput::shuntingyard(const vector<double>& sourcevalues,const vector<F
 	return newexpression.shuntingyard(mapping);
 	}
 
-FMToutput FMToutput::boundto(const vector<FMTtheme>& themes, const FMTperbounds& bound, string attribute) const
+FMToutput FMToutput::boundto(const vector<FMTtheme>& themes, const FMTperbounds& bound,const string& specialbound, string attribute) const
 	{
 	FMToutput newoutput(*this);
 	if (!attribute.empty())
@@ -342,13 +342,22 @@ FMToutput FMToutput::boundto(const vector<FMTtheme>& themes, const FMTperbounds&
 		}
 	if (!bound.empty())
 		{
-		if (bound.getlower()==bound.getupper())//single bounded
+		if (specialbound.empty() && bound.getlower()==bound.getupper())//single bounded
 			{
 			newoutput.name = newoutput.name + "[" + to_string(bound.getlower()) + "]";
-			}else {
-			newoutput.name = "_SUM(" + newoutput.name + ")";
-			}
-		
+			}else if(!specialbound.empty())
+				{
+				string name = specialbound;
+				name += "("+newoutput.name;
+				if (!(bound.getupper() == numeric_limits<double>::max() && bound.getlower() == 1))
+					{
+					name += ",";
+					name += to_string(bound.getlower())+"..";
+					name += to_string(bound.getupper());
+					}
+				name += ")";
+				newoutput.name = name;
+				}	
 		}
 	if (!newoutput.islevel())
 		{
@@ -368,13 +377,17 @@ FMToutput FMToutput::boundto(const vector<FMTtheme>& themes, const FMTperbounds&
 							source.setmask(oldmask);
 						}
 					}
+					if (!specialbound.empty() && specialbound == "_AVG")
+						{
+						source.setaverage();
+						}
 				}
 			}
 		}
 	return newoutput;
 	}
 
-vector<FMToutputnode> FMToutput::getnodes() const
+vector<FMToutputnode> FMToutput::getnodes(double multiplier) const
 	{
 	//set a expression and get the nodes! check if the node is positive or negative accross the equation!!!
 	vector<FMToutputnode>nodes;
@@ -399,6 +412,11 @@ vector<FMToutputnode> FMToutput::getnodes() const
 					if (!newnode.isnull())
 						{
 						//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "GOT NULL!!! " << string(main_source) << " factor ";
+						if (newnode.source.isaverage())
+							{
+							newnode.constant *= multiplier;
+							}
+						
 						nodes.push_back(newnode);
 						}
                     }
@@ -441,6 +459,10 @@ vector<FMToutputnode> FMToutput::getnodes() const
 		   FMToutputnode newnode(main_source, main_factor, constant);
 		   if (!newnode.isnull())
 				{
+			   if (newnode.source.isaverage())
+					{
+				    newnode.constant *= multiplier;
+					}
 			    nodes.push_back(newnode);
 				}
            }
@@ -463,6 +485,11 @@ bool FMToutput::issingleperiod() const
 		}
 	return true;
 	}
+
+bool FMToutput::hasaverage() const
+{
+return (name.find("_AVG") != string::npos);
+}
 
 int FMToutput::gettargetperiod() const
 	{

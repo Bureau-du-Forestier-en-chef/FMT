@@ -253,6 +253,7 @@ class FMTyldbounds: public FMTbounds<double>
     FMTyldbounds& operator = (const FMTyldbounds& rhs);
 	bool operator == (const FMTyldbounds& rhs) const;
     operator string() const;
+	//string getyieldname() const;
     };
 
 class FMTagebounds: public FMTbounds<int>

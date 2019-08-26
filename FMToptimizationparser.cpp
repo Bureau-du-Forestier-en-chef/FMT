@@ -39,6 +39,7 @@ namespace WSParser
 		rxoutput("^(.+)(\\()([^)]*)(\\))(\\[)(#.+|[-\\d]*)(\\])|(.+)(\\()([^)]*)(\\))|(.+)(\\[)(#.+|[-\\d]*)(\\])|(.+)", regex_constants::ECMAScript | regex_constants::icase),
 		//rxoutput("^(\\b_SUM\\(\\b)|(.+)(\\()([^)]*)(\\))(\\[)(#.+|[-\\d]*)(\\])|(.+)(\\()([^)]*)(\\))|(.+)(\\[)(#.+|[-\\d]*)(\\])|(.+)(\\))|(.+)", regex_constants::ECMAScript | regex_constants::icase),
 		rxpenalty("^(_PENALTY)(\\()([^\\)]*)(\\))", regex_constants::ECMAScript | regex_constants::icase),
+		rxspecialoutput("^(_AVG|_SUM)(\\()(([^,]*)(,)(([^,]*)(([\\d]*|#.+)(\\.\\.)(#.+|_LENGTH|[\\d]*))|(#.+|[\\d]*))|(.+))(\\))", regex_constants::ECMAScript | regex_constants::icase),
 		ineach()
 		{
 
@@ -54,6 +55,7 @@ namespace WSParser
 		rxgoal(rhs.rxgoal),
 		rxoutput(rhs.rxoutput),
 		rxpenalty(rhs.rxpenalty),
+		rxspecialoutput(rhs.rxspecialoutput),
 		ineach(rhs.ineach)
 		{
 
@@ -71,6 +73,7 @@ namespace WSParser
 			rxgoal = rhs.rxgoal;
 			rxoutput = rhs.rxoutput;
 			rxpenalty = rhs.rxpenalty;
+			rxspecialoutput = rhs.rxspecialoutput;
 			ineach = rhs.ineach;
 			}
 		return *this;
@@ -202,13 +205,39 @@ namespace WSParser
                     {
                     string output_name = string(out_match[1])+ string(out_match[8]) + string(out_match[12])+ string(out_match[16]);
 					//string output_name = string(out_match[2]) + string(out_match[9]) + string(out_match[13]) + string(out_match[17]) + string(out_match[19]);
-					string allperiods;
+					//string allperiods;
 					boost::erase_all(output_name, " ");
-					if (output_name.find("_SUM(")!=string::npos)
+					smatch special_match;
+					string specialtype;
+					int minbound = 1;
+					int maxbound = numeric_limits<int>::max();
+					if (regex_search(output_it->first, special_match, rxspecialoutput))
+						{
+						specialtype = special_match[1];
+						string lowerperiod = string(special_match[7]) + string(special_match[12]);
+						string upperperiod = string(special_match[11]) + string(special_match[12]);
+						//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << lowerperiod << "\n";
+						//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << upperperiod << "\n";
+						if (!lowerperiod.empty() && !upperperiod.empty())
+							{
+							minbound = getnum<int>(lowerperiod, constants);
+							maxbound = getnum<int>(upperperiod, constants);
+							}
+						output_name = string(special_match[4])+ string(special_match[13]);// +string(special_match[4]);
+						if (!regex_search(output_name, out_match, rxoutput))
+							{
+							_exhandler->raise(FMTexc::FMTinvalid_constraint, _section, output_name + " at line " + to_string(_line), __LINE__, __FILE__);
+						}
+						else {
+							output_name = string(out_match[1]) + string(out_match[8]) + string(out_match[12]) + string(out_match[16]);
+						}
+						boost::erase_all(output_name, " ");
+						}
+					/*if (output_name.find("_SUM(")!=string::npos)
 						{
 						allperiods = "SUM(";
 						boost::erase_all(output_name, "_SUM(");
-						}
+						}*/
 					vector<FMToutput>::const_iterator target_out = find_if(outputs.begin(), outputs.end(), FMToutputcomparator(output_name));
                     if (target_out == outputs.end())
                         {
@@ -237,14 +266,8 @@ namespace WSParser
                                 inttarget_period = getnum<int>(target_period, constants);
                                 bounding = FMTperbounds(FMTwssect::Optimize, inttarget_period, inttarget_period);
 								}
-						if (!allperiods.empty())
-							{
-							int minbound = 1;
-							int maxbound = numeric_limits<int>::max();
-							bounding = FMTperbounds(FMTwssect::Optimize,maxbound, minbound);
-							}
                         //copy the output and the specify the attribute and the periods!!!
-                        FMToutput newoutput = target_out->boundto(themes, bounding, target_attribute);
+                        FMToutput newoutput = target_out->boundto(themes, bounding, specialtype, target_attribute);
                         newoutput *= output_it->second;
                         final_output += newoutput;
 						}else{
