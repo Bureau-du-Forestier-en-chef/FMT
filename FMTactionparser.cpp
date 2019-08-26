@@ -142,7 +142,7 @@ FMTactionparser& FMTactionparser::operator = (const FMTactionparser& rhs)
             {
             while(actionstream.is_open())
                 {
-                line = FMTparser::getcleanline(actionstream);
+				line = getcleanlinewfor(actionstream, themes, constants);//FMTparser::getcleanline(actionstream);
                 if (!line.empty())
                     {
                     smatch kmatch;
