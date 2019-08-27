@@ -52,6 +52,8 @@ class FMTyields : public FMTlist<FMTyieldhandler>
 	}
     vector<string>names;
 	vector<string>null_names;
+	vector<const FMTyieldhandler*> gethandleroftype(FMTyldwstype type) const;
+	int getmaxbase(const vector<const FMTyieldhandler*>& handlers) const;
     public:
         FMTyields();
         FMTyields(const FMTyields& rhs);
@@ -64,6 +66,7 @@ class FMTyields : public FMTlist<FMTyieldhandler>
 			const vector<string>& targets) const;
         map<string,double>getylds(const FMTdevelopment& dev,const FMTspec& spec) const;
         int getage(const FMTdevelopment& dev,const FMTspec& spec) const;
+		map<string, map<string, vector<double>>>getallyields(const FMTtheme& target,FMTyldwstype type) const;
 		bool operator == (const FMTyields& rhs) const;
         void update();
     vector<string>getstacked() const;

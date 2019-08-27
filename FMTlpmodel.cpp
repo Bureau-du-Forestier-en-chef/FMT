@@ -1318,7 +1318,6 @@ namespace Models
 bool FMTlpmodel::locatenodes(const vector<FMToutputnode>& nodes, int period, 
 	map<int, double>& variables, double multiplier) const
 	{
-	map<int, double>all_variables;
 	bool cashhit = false;
 	for (const FMToutputnode& node : nodes)
 		{
@@ -1326,11 +1325,11 @@ bool FMTlpmodel::locatenodes(const vector<FMToutputnode>& nodes, int period,
 		node_map = graph.locatenode(*this, node, period);//go into the graph
 		for (map<int, double>::const_iterator node_it = node_map.begin(); node_it != node_map.end(); node_it++)
 			{
-			if (all_variables.find(node_it->first) == all_variables.end())
+			if (variables.find(node_it->first) == variables.end())
 				{
-				all_variables[node_it->first] = 0;
+				variables[node_it->first] = 0;
 				}
-			all_variables[node_it->first] += node_it->second*multiplier;
+			variables[node_it->first] += node_it->second*multiplier;
 			}
 		}
 	return cashhit;
@@ -1349,8 +1348,13 @@ bool FMTlpmodel::locatenodes(const vector<FMToutputnode>& nodes, int period,
             int last_period = 0;
 			if (graph.constraintlenght(constraint, first_period, last_period))
 				{
+				Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << first_period << " " << last_period << "\n";
 				FMTconstrainttype constraint_type = constraint.getconstrainttype();
-				double averagefactor = (1 / (last_period - first_period));
+				double averagefactor = 1;
+				if (last_period != first_period)
+					{
+					averagefactor = (1 / (last_period - first_period));
+					}
 				vector<FMToutputnode>all_nodes = constraint.getnodes(averagefactor); //
 				double lowerbound = 0;
 				double upperbound = 0;
@@ -1678,7 +1682,11 @@ bool FMTlpmodel::locatenodes(const vector<FMToutputnode>& nodes, int period,
 
 		/*Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "first period " <<first_period << "\n";
 		Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "last period " <<last_period << "\n";*/
-		double averagefactor = (1 / (last_period - first_period));
+		double averagefactor = 1;
+		if (last_period != first_period)
+			{
+			averagefactor = (1 / (last_period - first_period));
+			}
 		vector<FMToutputnode>all_nodes = objective.getnodes(averagefactor);
 		//vector<int>all_variables;
 		//vector<double>all_coefs;
@@ -1745,7 +1753,7 @@ bool FMTlpmodel::locatenodes(const vector<FMToutputnode>& nodes, int period,
      bool FMTlpmodel::solve()
         {
         solverinterface->initialSolve();
-        //solverinterface->writeLp("C:/Users/cyrgu3/source/repos/FMT/x64/Release/test");
+        solverinterface->writeLp("C:/Users/cyrgu3/source/repos/FMT/x64/Release/test");
 		/*const double* solve = solverinterface->getColSolution();
 		for (size_t id = 0 ; id < solverinterface->getNumCols();++id)
 			{

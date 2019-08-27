@@ -513,6 +513,10 @@ FMTareaparser::FMTareaparser() :
 					line = FMTparser::getcleanlinewfor(areastream, themes, constants);
 					if (!line.empty())
 						{
+						if (inactualdevs && !_comment.empty() && (_comment.find("+") != string::npos) || (_comment.find("-") != string::npos))
+							{
+							break;
+							}
 						smatch kmatch;
 						regex_search(line,kmatch,FMTareaparser::rxcleanarea);
 						string strlock = string(kmatch[6]) + string(kmatch[14]);
@@ -542,10 +546,6 @@ FMTareaparser::FMTareaparser() :
 							areas.push_back(FMTactualdevelopment(FMTmask(mask,themes),age,lock,area));
 							}
 							//_exhandler->raise(FMTexc::WSfutur_types,_section,mask+" at line" + to_string(_line), __LINE__, __FILE__);
-					}else if(inactualdevs && !_comment.empty() && (_comment.find("=") != string::npos) &&
-						(_comment.find("NEW DEVELOPMENT TYPES") != string::npos || _comment.find("NOUVEAUX TYPES DE") != string::npos))
-						{
-						break;
 						}
 					}
 				}

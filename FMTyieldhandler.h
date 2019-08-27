@@ -85,6 +85,7 @@ class FMTyieldhandler
         int getage(const string yld, const double& value) const;
         map<string,FMTdata>getdataelements() const;
         FMTyldwstype gettype() const;
+		FMTmask getmask() const;
     };
 }
 #endif // FMTYLDDATA_H_INCLUDED

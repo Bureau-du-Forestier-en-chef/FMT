@@ -158,6 +158,74 @@ bool FMTyields::operator == (const FMTyields& rhs) const
 
 	}
 
+vector<const FMTyieldhandler*> FMTyields::gethandleroftype(FMTyldwstype type) const
+	{
+	vector<FMTyieldhandler>::const_iterator handlerit = this->databegin();
+	vector<FMTyieldhandler>::const_iterator handlerend = this->dataend();
+	vector<const FMTyieldhandler*>selectedhandlers;
+	while (handlerit!= handlerend)
+		{
+		if (handlerit->gettype()==type)
+			{
+			selectedhandlers.push_back(&(*handlerit));
+			}
+
+		++handlerit;
+		}
+	return selectedhandlers;
+	}
+
+int FMTyields::getmaxbase(const vector<const FMTyieldhandler*>& handlers) const
+	{
+	int maxbase = 0;
+	for (const FMTyieldhandler* handler : handlers)
+		{
+		const int lastbase = handler->getlastbase();
+		if (lastbase > maxbase)
+			{
+			maxbase = lastbase;
+			}
+		}
+	return maxbase;
+	}
+
+map<string, map<string, vector<double>>>FMTyields::getallyields(const FMTtheme& target,FMTyldwstype type) const
+	{
+	map<string, map<string, vector<double>>>result;
+	vector<const FMTyieldhandler*> handlers = gethandleroftype(type);
+	int maxbase = getmaxbase(handlers);
+	for (const FMTyieldhandler* handler : handlers)
+		{
+		map<string, vector<double>>localstuff;
+		if (type == FMTyldwstype::FMTageyld)
+			{
+			int lastbase = handler->getlastbase();
+			vector<int>bases = handler->getbases();
+			for (map<string, FMTdata>::const_iterator cit = handler->elements.begin(); cit != handler->elements.end(); cit++)
+				{
+				localstuff[cit->first] = vector<double>();
+				for (int base = 0; base <= maxbase; ++base)
+				{
+					vector<int>::const_iterator baseit = std::find(bases.begin(), bases.end(), base);
+					if (baseit != bases.end())
+					{
+						localstuff[cit->first].push_back(*baseit);
+					}
+					else if (base < lastbase)
+					{
+						localstuff[cit->first].push_back(0);
+					}
+					else {
+						localstuff[cit->first].push_back(bases.back());
+					}
+				}
+				}
+			}
+		result[handler->getmask().get(target)] = localstuff;
+		}
+	return result;
+	}
+
 int FMTyields::getage(const FMTdevelopment& dev,const FMTspec& spec) const
     {
     const vector<const FMTyieldhandler*>datas = this->findsets(dev.mask);

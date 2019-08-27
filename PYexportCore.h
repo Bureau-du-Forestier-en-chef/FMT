@@ -110,6 +110,7 @@ void exportCore()
             class_<Core::FMTlifespans,bases<Core::FMTlist<int>>>("FMTlifespans");
 			class_<Core::FMTyields, bases<Core::FMTlist<Core::FMTyieldhandler>>>("FMTyields")
 				.def_pickle(FMT_pickle_suite<FMTyields>())
+				.def("getallyields", &Core::FMTyields::getallyields)
 				.def("getnullyldsnames", &Core::FMTyields::getnullyldsnames);
             class_<Core::FMTtransition,bases<Core::FMTlist<Core::FMTfork>>>("FMTtransition")
 				.def_pickle(FMT_pickle_suite<FMTtransition>())

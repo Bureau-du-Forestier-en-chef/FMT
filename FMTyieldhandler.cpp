@@ -203,6 +203,11 @@ FMTyieldhandler::operator string() const
         {
         return yldtype;
         }
+
+	FMTmask FMTyieldhandler::getmask() const
+		{
+		return mask;
+		}
     vector<string> FMTyieldhandler::compare(const vector<string>& keys) const
         {
         vector<string>same;

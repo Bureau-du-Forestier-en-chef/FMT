@@ -26,7 +26,9 @@ SOFTWARE.
 #define FMTPYCORE_H_INCLUDED
 
 #if defined FMTPY
-#define BOOST_DYNAMIC_BITSET_DONT_USE_FRIENDS
+#ifndef BOOST_DYNAMIC_BITSET_DONT_USE_FRIENDS
+	#define BOOST_DYNAMIC_BITSET_DONT_USE_FRIENDS
+#endif
 
 #include <boost/python.hpp>
 #include <boost/algorithm/string.hpp>
