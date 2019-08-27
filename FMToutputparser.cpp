@@ -168,6 +168,7 @@ namespace WSParser
 												++thcound;
 												lastonespace = false;
 												}
+											//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "test " << thcound << "\n";
 											if (thcound >= themes.size())
 												{
 												inmask = false;
@@ -181,8 +182,8 @@ namespace WSParser
 										//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << !inmask << " " << lookslikeoutput << "\n";
 										if (stroprators.find(letter) != string::npos && (!inmask || lookslikeoutput) && !inparenthesis) // && !inparenthesis 
 											{
-											//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info)<<"Splitted on " << string(letter, 1) << "\n";
-											stroperators.push_back(string(letter,1));
+											//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info)<<"Splitted on " << string(1,letter) << "\n";
+											stroperators.push_back(string(1,letter));
 											if (!stacked_char.empty())
 												{
 												strsources.push_back(stacked_char);
