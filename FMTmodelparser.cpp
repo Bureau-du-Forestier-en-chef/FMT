@@ -470,14 +470,15 @@ vector<vector<FMTschedule>>FMTmodelparser::readschedules(const string& primary_l
 	{
 	vector<vector<FMTschedule>>schedules(models.size());
 	boost::filesystem::path primary_path(primary_location);
-	string file_name = primary_path.stem().string();
+	//string file_name = primary_path.stem().string();
+	map<FMTwssect, string>bases = getprimary(primary_location);
 	FMTscheduleparser scheduleparser;
 	scheduleparser.passinexceptionhandler(_exhandler);
 	vector<FMTmodel>::const_iterator model_it = std::find_if(models.begin(), models.end(), FMTmodelcomparator("ROOT"));
 	if (model_it != models.end())
 		{
 		size_t location = std::distance<vector<FMTmodel>::const_iterator>(models.begin(), model_it);
-		boost::filesystem::path root_solution = (primary_path.parent_path() / boost::filesystem::path(file_name + ".seq"));
+		boost::filesystem::path root_solution(bases.at(FMTwssect::Schedule));
 		vector<FMTaction>actions = model_it->getactions();
 		vector<FMTtheme>themes = model_it->getthemes();
 		//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "Schedule read in "<< root_solution.string() << "\n";
@@ -486,6 +487,9 @@ vector<vector<FMTschedule>>FMTmodelparser::readschedules(const string& primary_l
 	boost::filesystem::path scenarios_path = (primary_path.parent_path() / boost::filesystem::path("Scenarios"));
 	if (boost::filesystem::is_directory(scenarios_path))
 		{
+		string name = boost::filesystem::path(bases.at(FMTwssect::Schedule)).filename().string();
+		boost::replace_all(name, ".seq", "._seq");
+		boost::filesystem::path file_name(name);
 		boost::filesystem::directory_iterator end_itr;
 		string model_name;
 		for (boost::filesystem::directory_iterator itr(scenarios_path); itr != end_itr; ++itr)
@@ -496,7 +500,7 @@ vector<vector<FMTschedule>>FMTmodelparser::readschedules(const string& primary_l
 					model_it = std::find_if(models.begin(), models.end(), FMTmodelcomparator(model_name));
 					if (model_it != models.end())
 						{
-						boost::filesystem::path solutionpath = (itr->path() / boost::filesystem::path(file_name + "._seq"));
+						boost::filesystem::path solutionpath = (itr->path() / file_name);
 						if (boost::filesystem::is_regular_file(solutionpath))
 							{
 							size_t location = std::distance<vector<FMTmodel>::const_iterator>(models.begin(), model_it);

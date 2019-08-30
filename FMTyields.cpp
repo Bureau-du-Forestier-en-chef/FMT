@@ -209,14 +209,15 @@ map<string, map<string, vector<double>>>FMTyields::getallyields(const FMTtheme& 
 					vector<int>::const_iterator baseit = std::find(bases.begin(), bases.end(), base);
 					if (baseit != bases.end())
 					{
-						localstuff[cit->first].push_back(*baseit);
+						size_t index = std::distance<vector<int>::const_iterator>(bases.begin(), baseit);
+						localstuff[cit->first].push_back(cit->second.data.at(index));
 					}
 					else if (base < lastbase)
 					{
 						localstuff[cit->first].push_back(0);
 					}
 					else {
-						localstuff[cit->first].push_back(bases.back());
+						localstuff[cit->first].push_back(cit->second.data.back());
 					}
 				}
 				}

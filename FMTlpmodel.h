@@ -148,7 +148,7 @@ class FMTlpmodel : public FMTmodel
 		FMTlpmodel(const FMTmodel& base, FMTsolverinterface lsolvertype);
 		FMTlpmodel();
 		FMTlpmodel(const FMTlpmodel& rhs);
-		bool specificinitialsolve();
+		bool initialsolve();
 		bool setsolution(int period, const FMTschedule& schedule);
 		bool boundsolution(int period);
 		bool unboundsolution(int period);
@@ -165,7 +165,7 @@ class FMTlpmodel : public FMTmodel
 		FMTgraphstats removeconstraint(const FMTconstraint& constraint, int period);
 		/*bool unboundconstraint(const FMTconstraint& constraint, int period);
 		bool boundconstraint(const FMTconstraint& constraint, int period);*/
-		bool solve();
+		bool resolve();
 		FMTlpmodel& operator = (const FMTlpmodel& rhs);
 		~FMTlpmodel() = default;
 	};

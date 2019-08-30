@@ -52,6 +52,7 @@ void exportGraph()
 		.export_values();
 
 	class_<Graph::FMTgraphstats>("FMTgraphstats", py_FMTgraphstats_doc)
+		.def("__str__", &Graph::FMTgraphstats::operator string)
 		.def_readwrite("cols", &Graph::FMTgraphstats::cols)
 		.def_readwrite("rows", &Graph::FMTgraphstats::rows)
 		.def_readwrite("vertices", &Graph::FMTgraphstats::vertices)

@@ -49,7 +49,7 @@ enum class FMTwskwor
     Target =2
     };
 
-enum class FMTyldwstype
+enum /*class*/ FMTyldwstype
     {
     FMTageyld = 1,
     FMTtimeyld = 2,

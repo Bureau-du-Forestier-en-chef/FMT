@@ -108,10 +108,21 @@ void exportCore()
                 .def_readwrite("reset",&Core::FMTaction::reset)
                 .setattr("__hash__",&boost::pyhash<Core::FMTaction>);
             class_<Core::FMTlifespans,bases<Core::FMTlist<int>>>("FMTlifespans");
+
+
+			enum_<FMTyldwstype>("FMTyldwstype")
+				.value("FMTageyld", FMTyldwstype::FMTageyld)
+				.value("FMTtimeyld", FMTyldwstype::FMTtimeyld)
+				.value("FMTcomplexyld", FMTyldwstype::FMTcomplexyld)
+				.export_values();
+
 			class_<Core::FMTyields, bases<Core::FMTlist<Core::FMTyieldhandler>>>("FMTyields")
 				.def_pickle(FMT_pickle_suite<FMTyields>())
 				.def("getallyields", &Core::FMTyields::getallyields)
 				.def("getnullyldsnames", &Core::FMTyields::getnullyldsnames);
+
+
+
             class_<Core::FMTtransition,bases<Core::FMTlist<Core::FMTfork>>>("FMTtransition")
 				.def_pickle(FMT_pickle_suite<FMTtransition>())
                 .def("single",&Core::FMTtransition::single)

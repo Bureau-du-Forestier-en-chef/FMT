@@ -1348,7 +1348,7 @@ bool FMTlpmodel::locatenodes(const vector<FMToutputnode>& nodes, int period,
             int last_period = 0;
 			if (graph.constraintlenght(constraint, first_period, last_period))
 				{
-				Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << first_period << " " << last_period << "\n";
+				//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << first_period << " " << last_period << "\n";
 				FMTconstrainttype constraint_type = constraint.getconstrainttype();
 				double averagefactor = 1;
 				if (last_period != first_period)
@@ -1367,87 +1367,154 @@ bool FMTlpmodel::locatenodes(const vector<FMToutputnode>& nodes, int period,
 				coef_multiplier_upper += 1;*/
 				//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << " start period :"<<first_period << "\n";
 				//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << " stop period :"<<last_period << "\n";
+				//double uppersense = -1; // 1 is MODIFY RHS and -1 MODIFY LHS
+				
+				int upper_even_variable = -1;
+				int lower_even_variable = -1;
+
+				if (constraint_type == FMTconstrainttype::FMTevenflow && lower_variation != 0)
+					{
+					++last_period;
+					}
+
+
 				for (int period = first_period; period <= last_period; ++period)
 					{
-					//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) <<" on period "<<period<<"\n";
+					map<int, double>all_variables;
+					int goal_variable = -1;
+					if (constraint.isgoal())
+						{
+						goal_variable = addmatrixelement(constraint, FMTmatrixelement::goalvariable, all_variables,period);
+						all_variables[goal_variable] = 1;
+						}
+
 					if (constraint_type == FMTconstrainttype::FMTevenflow)
 						{
-						coef_multiplier_upper = 1+lower_variation;
-						coef_multiplier_lower = 1-lower_variation;
+						coef_multiplier_lower = 1 - lower_variation;
+						coef_multiplier_upper = 1 + lower_variation;
 						lowerbound = 0;
 						upperbound = 0;
+						if (lower_variation !=0)//create a variable for each periods!
+							{
+							if (upper_even_variable < 0 && lower_even_variable < 0)
+								{
+								map<int, double>localvariables;
+								upper_even_variable = addmatrixelement(constraint, FMTmatrixelement::objectivevariable, localvariables);
+								lower_even_variable = addmatrixelement(constraint, FMTmatrixelement::objectivevariable, localvariables);
+								localvariables[upper_even_variable] = coef_multiplier_lower;
+								localvariables[lower_even_variable] = -1;
+								//Aplly to all constraint periods association!
+								lowerbound = numeric_limits<double>::lowest();
+								upperbound = 0;
+								int lower_constraint_id = addmatrixelement(constraint, FMTmatrixelement::constraint, localvariables,-1, lowerbound, upperbound);
+								}
+							//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "on period " << period << "\n";
+							locatenodes(all_nodes, period, all_variables, 1);
+							all_variables[lower_even_variable] = -1;
+							lowerbound = 0;
+							upperbound = numeric_limits<double>::max();
+							int lowervalue = addmatrixelement(constraint, FMTmatrixelement::constraint, all_variables,
+									period, lowerbound,upperbound);
+							all_variables.erase(lower_even_variable);
+							all_variables[upper_even_variable] = -1;
+							lowerbound = numeric_limits<double>::lowest();
+							upperbound = 0;
+							int uppervalue = addmatrixelement(constraint, FMTmatrixelement::constraint, all_variables,
+								period, lowerbound, upperbound);
+							if (period == last_period)
+								{
+								return graph.getstats();
+								}
+							continue;
+							}
+
+
 						}else if(constraint_type == FMTconstrainttype::FMTnondeclining)
 							{
 							lowerbound = numeric_limits<double>::lowest();
 							upperbound = 0;
+							//RHSperiodsneeded.push_back(period + 1); //just the next period
 							}else if(constraint_type == FMTconstrainttype::FMTsequence)
 								{
-								coef_multiplier_upper = 1+lower_variation;
-								coef_multiplier_lower = 1-upper_variation;
+								//uppersense = 1;
+								coef_multiplier_upper = 1 + lower_variation;//upper_variation;//1 + lower_variation; // 1 + upper_variation; 
+								coef_multiplier_lower = 1 - upper_variation;
 								lowerbound = 0;
 								upperbound = 0;
+								//RHSperiodsneeded.push_back(period + 1); // just the next period
 								}else{
 								constraint.getbounds(lowerbound,upperbound,period);
 								}
 						//vector<int>all_variables;
 					   // vector<double>all_coefs;
-						map<int,double>all_variables;
+						
 						size_t left_location = 0;
-						locatenodes(all_nodes, period, all_variables, coef_multiplier_lower);
+						//locatenodes(all_nodes, period, all_variables, coef_multiplier_lower);
+						locatenodes(all_nodes, period, all_variables, 1);
+						
 						//graph.locatenodes(*this,all_nodes, period, all_variables, coef_multiplier_lower);
 						//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "1. got  n variables :"<< all_variables.size()<<" PEriod "<<period << "\n";
 
 						//Check for goals!!!
-						if (constraint.isgoal())
-							{
-							int goal_variable = addmatrixelement(constraint,FMTmatrixelement::goalvariable,all_variables,
-												 /*all_coefs,*/period);
-							//all_variables.push_back(goal_variable);
-						   // all_coefs.push_back(1);
-							all_variables[goal_variable] = 1;
-							}
+						
+
+
 						if (constraint.acrossperiod())
 							{
-							//left_location = all_coefs.size();
-							//left_location = all_variables.size();
-							//graph.locatenodes(*this,all_nodes, (period + 1), all_variables,-1);
-							locatenodes(all_nodes, (period + 1), all_variables, -1);
-							//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "2. got  n variables :" << all_variables.size() << " PEriod " << period << "\n";
-							//ismultiple!
-							if (coef_multiplier_lower!= 1)
+							//if (!(constraint_type == FMTconstrainttype::FMTevenflow && coef_multiplier_lower != 1))
+								//{
+								locatenodes(all_nodes, (period + 1), all_variables, -1);
+								//}
+							if (coef_multiplier_lower != 1)
 								{
 								lowerbound = numeric_limits<double>::lowest();
 								upperbound = 0;
 								}
 							}
+
 						//level part
 						locatelevels(all_nodes, period, all_variables, /*all_coefs,*/constraint);
 
-
-
-						int lower_constraint_id = addmatrixelement(constraint,FMTmatrixelement::constraint,all_variables,
-												 /*all_coefs,*/period,lowerbound, upperbound);
-
-						//ismultiple
-						if (constraint.acrossperiod() && coef_multiplier_lower != 1)
-							{
-							/*for(size_t id = 0 ; id < left_location; ++id)
+							map<int, double>lowervars = all_variables;
+							if (coef_multiplier_lower!=1)
 								{
-								all_coefs[id] /= coef_multiplier_lower;
-								all_coefs[id] *= coef_multiplier_upper;
-								}*/
-							for (map<int,double>::iterator varit = all_variables.begin();varit!= all_variables.end();varit++)
+								/*if (constraint_type == FMTconstrainttype::FMTevenflow)
+									{
+									lowervars[upper_even_variable] = -1;
+									}else{*/
+									for (map<int, double>::iterator varit = lowervars.begin(); varit != lowervars.end(); varit++)
+										{
+											if (varit->second> 0 && varit->first != goal_variable)
+											{
+												varit->second *= coef_multiplier_lower;
+											}
+										}
+									//}
+								}
+							int lower_constraint_id = addmatrixelement(constraint,FMTmatrixelement::constraint, lowervars,
+													 period,lowerbound, upperbound);
+
+							//ismultiple
+							if (constraint.acrossperiod() && coef_multiplier_lower != 1 && coef_multiplier_upper!= 0)
 								{
-								varit->second /= coef_multiplier_lower;
-								varit->second *= coef_multiplier_upper;
+								map<int, double>uppervars = all_variables;
+								if (coef_multiplier_upper != 1)
+									{
+									for (map<int, double>::iterator varit = uppervars.begin(); varit != uppervars.end(); varit++)
+										{
+										if (varit->second > 0 && varit->first != goal_variable)
+											{
+											varit->second *= coef_multiplier_upper;
+											}
+										}
+									}
+								lowerbound = 0;
+								upperbound = numeric_limits<double>::max();
+								int upper_constraint_id = addmatrixelement(constraint,FMTmatrixelement::constraint, uppervars,
+													period,lowerbound, upperbound);
+
 								}
 
-							lowerbound = 0;
-							upperbound = numeric_limits<double>::max();
-							int upper_constraint_id = addmatrixelement(constraint,FMTmatrixelement::constraint,all_variables,
-												/*all_coefs,*/period,lowerbound, upperbound);
-
-							}
 						}
 				}
 			}
@@ -1750,10 +1817,10 @@ bool FMTlpmodel::locatenodes(const vector<FMToutputnode>& nodes, int period,
 		return graph.getstats();
 		}
 
-     bool FMTlpmodel::solve()
+     bool FMTlpmodel::resolve()
         {
-        solverinterface->initialSolve();
-        solverinterface->writeLp("C:/Users/cyrgu3/source/repos/FMT/x64/Release/test");
+        //solverinterface->initialSolve();
+		 solverinterface->resolve();
 		/*const double* solve = solverinterface->getColSolution();
 		for (size_t id = 0 ; id < solverinterface->getNumCols();++id)
 			{
@@ -1881,8 +1948,11 @@ bool FMTlpmodel::locatenodes(const vector<FMToutputnode>& nodes, int period,
 
 
 
-	bool FMTlpmodel::specificinitialsolve()
+	bool FMTlpmodel::initialsolve()
 		{
+		//solverinterface->writeLp("C:/Users/cyrgu3/source/repos/FMT/x64/Release/test");
+		//solverinterface->readMps("T:/Donnees/Courant/Projets/Carbone/models/Modele_Prov/20190823/Data/v01_20190826/PC_PROV.mps");
+		//solverinterface->writeLp("C:/Users/cyrgu3/source/repos/FMT/x64/Release/test2");
 		switch (solvertype)
 		{
 		case FMTsolverinterface::CLP:
@@ -1924,14 +1994,14 @@ bool FMTlpmodel::locatenodes(const vector<FMToutputnode>& nodes, int period,
 					 */
 				OsiClpSolverInterface* clpsolver = dynamic_cast<OsiClpSolverInterface*>(solverinterface.get());
 				ClpSolve options;
-				//options.setSolveType(ClpSolve::useBarrier);
+			options.setSolveType(ClpSolve::useBarrier);
 				//options.setSolveType(ClpSolve::useBarrierNoCross);
 				//Do no cross over then when you get optimal switch to primal crossover!!!!
 				//options.setSolveType(ClpSolve::tryDantzigWolfe);
-				options.setSolveType(ClpSolve::usePrimalorSprint);
+			//options.setSolveType(ClpSolve::usePrimalorSprint);
 				//options.setSolveType(ClpSolve::tryBenders);
-				options.setPresolveType(ClpSolve::presolveOn);
-				options.setSpecialOption(1, 1);
+			options.setPresolveType(ClpSolve::presolveOn);
+			//options.setSpecialOption(1, 1);
 				//options.setSpecialOption(1, 2);
 				//options.setSpecialOption(4, 3, 4); //WSMP Florida
 				//options.setSpecialOption(4, 0); //dense cholesky

@@ -62,7 +62,7 @@ FMTareaparser::FMTareaparser() :
                 {
                 if ((data->GetRasterXSize()!=xsize) || (data->GetRasterYSize()!=ysize) || (data->GetRasterCount()!=rastercount) || (data->GetProjectionRef()!=projection) || (band->GetOverviewCount()!=overview))
                     {
-                    _exhandler->raise(FMTexc::FMTinvalidband,_section,data->GetDescription(), __LINE__, __FILE__);
+                    _exhandler->raise(FMTexc::FMTinvalidband,_section,"Rasters are not the same "+string(data->GetDescription()), __LINE__, __FILE__);
                     }
                 }else{
                 xsize=data->GetRasterXSize();

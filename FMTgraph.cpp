@@ -195,21 +195,31 @@ FMTgraphstats FMTgraph::build(const FMTmodel& model,std::queue<FMTvertex_descrip
 			const FMTdevelopment active_development = front_properties.get();
 
 			int action_id = 0;
+			bool death = false;
 			for (const FMTaction& action : model.actions)
 			{
 				if (active_development.operable(action, model.yields))
 				{
+					if (action.name == "_DEATH")
+						{
+						//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "GOT DEATH!!!!!!" << "\n";
+						death = true;
+						}
 					const vector<FMTdevelopmentpath> paths = active_development.operate(action, model.transitions[action_id], model.yields, model.themes);
 					addaction(action_id, statsdiff, actives, front_vertex, paths);
 				}
 				++action_id;
 			}
-			FMTfuturdevelopment grown_up = active_development.grow();
-			FMTvertex_descriptor next_period = this->adddevelopment(grown_up); //getset
-			const FMTedgeproperties newedge(-1, statsdiff.cols, 100);
-			++statsdiff.cols;
-			add_edge(front_vertex, next_period, newedge, data);
-			++stats.edges;
+			if (!death)
+				{
+				FMTfuturdevelopment grown_up = active_development.grow();
+				FMTvertex_descriptor next_period = this->adddevelopment(grown_up); //getset
+				const FMTedgeproperties newedge(-1, statsdiff.cols, 100);
+				++statsdiff.cols;
+				add_edge(front_vertex, next_period, newedge, data);
+				++stats.edges;
+				}
+			
 		}
 
 		return (statsdiff - stats);
@@ -237,7 +247,7 @@ pair<size_t,int> FMTgraph::randomoperate(const vector<pair<size_t,int>>& operabl
         int size_op =  static_cast<int>(operables.size());
         uniform_int_distribution<int> distribution(0,size_op);
         int distribution_select = distribution(generator);
-        if(!operables.empty() && distribution_select != size_op)//If size_op grow
+        if(!operables.empty() && distribution_select != size_op)//If size_op grow //Take care ok _DEATH hereeeeee
             {
                 statsdiff.cols = 0;
                 pair<size_t,int> selection = operables.at(distribution_select);
@@ -830,6 +840,7 @@ FMTgraphstats FMTgraph::buildschedule(const FMTmodel& model, std::queue<FMTverte
 		FMTvertexproperties front_properties = data[front_vertex];
 		const FMTdevelopment active_development = front_properties.get();
 		//boost::dynamic_bitset<> action_bits(actions.size(), false);
+		bool death = false;
 		int action_id = 0;
 		for (const FMTaction& action : model.actions)
 		{
@@ -839,6 +850,10 @@ FMTgraphstats FMTgraph::buildschedule(const FMTmodel& model, std::queue<FMTverte
 					(schedule.elements.at(action)).find(active_development.clearlock()) != (schedule.elements.at(action)).end())))
 			{
 				//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << " founda " << action.name <<" transition on "<< transitions[action_id].name<< "\n";
+				if (action.name == "_DEATH")
+					{
+					death = true;
+					}
 				const vector<FMTdevelopmentpath> paths = active_development.operate(action, model.transitions[action_id], model.yields, model.themes);
 				addaction(action_id, statsdiff, actives,
 					front_vertex, paths/*, actions, yields*/);
@@ -850,15 +865,19 @@ FMTgraphstats FMTgraph::buildschedule(const FMTmodel& model, std::queue<FMTverte
 				}*/
 			++action_id;
 		}
-		FMTfuturdevelopment grown_up = active_development.grow();
-		FMTvertex_descriptor next_period = this->adddevelopment(grown_up); //getset
-		int variable_id = statsdiff.cols;
-		++statsdiff.cols;
-		int id = -1;
-		double proportion = 100;
-		const FMTedgeproperties newedge(id, variable_id, proportion);
-		add_edge(front_vertex, next_period, newedge, data);
-		++stats.edges;
+		if (!death)
+			{
+			FMTfuturdevelopment grown_up = active_development.grow();
+			FMTvertex_descriptor next_period = this->adddevelopment(grown_up); //getset
+			int variable_id = statsdiff.cols;
+			++statsdiff.cols;
+			int id = -1;
+			double proportion = 100;
+			const FMTedgeproperties newedge(id, variable_id, proportion);
+			add_edge(front_vertex, next_period, newedge, data);
+			++stats.edges;
+			}
+		
 	}
 
 	//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << " op hit  " << op_hit << "\n";
