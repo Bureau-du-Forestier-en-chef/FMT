@@ -116,6 +116,9 @@ void exportCore()
 				.value("FMTcomplexyld", FMTyldwstype::FMTcomplexyld)
 				.export_values();
 
+			define_pydict<string,map<string,vector<double>>>();
+			define_pydict<string, vector<double>>();
+
 			class_<Core::FMTyields, bases<Core::FMTlist<Core::FMTyieldhandler>>>("FMTyields")
 				.def_pickle(FMT_pickle_suite<FMTyields>())
 				.def("getallyields", &Core::FMTyields::getallyields)
