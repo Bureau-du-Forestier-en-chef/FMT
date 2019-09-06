@@ -849,7 +849,6 @@ FMTgraphstats FMTgraph::buildschedule(const FMTmodel& model, std::queue<FMTverte
 				(!action.lock && active_development.lock != 0 && //lock exempt stuff...
 					(schedule.elements.at(action)).find(active_development.clearlock()) != (schedule.elements.at(action)).end())))
 			{
-				//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << " founda " << action.name <<" transition on "<< transitions[action_id].name<< "\n";
 				if (action.name == "_DEATH")
 					{
 					death = true;
@@ -857,6 +856,13 @@ FMTgraphstats FMTgraph::buildschedule(const FMTmodel& model, std::queue<FMTverte
 				const vector<FMTdevelopmentpath> paths = active_development.operate(action, model.transitions[action_id], model.yields, model.themes);
 				addaction(action_id, statsdiff, actives,
 					front_vertex, paths/*, actions, yields*/);
+
+				/*if (action.name == "AALT1" && active_development.period == 1 && string(active_development.mask).find("EV19") != string::npos)
+				{
+					Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << " GOT AALT1 " << string(active_development) << "\n";
+					Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << " TO " << string(*paths.at(0).development.get())<< "\n";
+
+				}*/
 				//action_bits[action_id] = true;
 			}/*else if (active_development.operable(action,yields))
 				{

@@ -281,6 +281,7 @@ FMTmodel FMTmodelparser::referenceread(map<string,vector<int>>& common_sections,
 			{
 			FMTareaparser areaparser;
 			areaparser.passinexceptionhandler(_exhandler);
+			//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << " REading AREA HERE "<< are << "\n";
 			areas = areaparser.read(themes, constants, are);
 			}
 		//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << " LIFESPAN " << "\n";
@@ -338,7 +339,7 @@ FMTmodel FMTmodelparser::referenceread(map<string,vector<int>>& common_sections,
 		if (!opt.empty() && constraints.empty())
 		{
 			
-			
+			//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << " REading OPYIMKIXE HERE " << opt << "\n";
 			FMToptimizationparser optzparser;
 			vector<FMTaction>excluded(actions); //should we realy use that crap? excluded is actualy the same actions but with more period specification...
 			optzparser.passinexceptionhandler(_exhandler);
@@ -400,6 +401,7 @@ vector<FMTmodel>FMTmodelparser::readproject(const string& primary_location,
 		}
 	boost::filesystem::path primary_path(primary_location);
 	string main_name = primary_path.stem().string();
+	boost::to_lower(main_name);
 	boost::filesystem::path scenarios_path = (primary_path.parent_path() / boost::filesystem::path("Scenarios"));
 	if (boost::filesystem::is_directory(scenarios_path))
 		{
@@ -420,10 +422,16 @@ vector<FMTmodel>FMTmodelparser::readproject(const string& primary_location,
 							{
 								string extension = boost::filesystem::extension(fileitr->path().string());
 								FMTwssect section = from_extension(extension);
+								//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) <<section <<" "<<extension << "\n";
 								string file_name = fileitr->path().stem().string();
+								boost::to_lower(file_name);
+
+								//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << file_name << " " << main_name << "\n";
+								//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << (file_name == main_name) << "\n";
 								if (section != FMTwssect::Empty && file_name == main_name)
 								{
 									scenario_files[section] = fileitr->path().string();
+									
 								}
 							}
 						}
@@ -489,6 +497,7 @@ vector<vector<FMTschedule>>FMTmodelparser::readschedules(const string& primary_l
 		{
 		string name = boost::filesystem::path(bases.at(FMTwssect::Schedule)).filename().string();
 		boost::replace_all(name, ".seq", "._seq");
+		boost::replace_all(name, ".SEQ", "._SEQ");
 		boost::filesystem::path file_name(name);
 		boost::filesystem::directory_iterator end_itr;
 		string model_name;

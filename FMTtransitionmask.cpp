@@ -123,7 +123,7 @@ FMTtransitionmask::FMTtransitionmask(const string& lmask,const vector<FMTtheme>&
 			age_change = true;
             }else if(!ylds.empty())
                 {
-                newdev.age = yields.getage(dev,*this);
+                newdev.age = yields.getage(newdev,*this); // was dev
 				age_change = true;
 				//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "NEW AGE " << newdev.age << "\n";
                 }
