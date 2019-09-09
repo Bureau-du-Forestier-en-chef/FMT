@@ -150,7 +150,7 @@ FMTaction FMTmodel::defaultdeathaction(const FMTlifespans& llifespan,
 										const vector<FMTtheme>& lthemes)
 	{
 	string actionname = "_DEATH";
-	bool lock = true; 
+	bool lock = false; 
 	bool reset = true;
 	FMTaction death_action(actionname, lock, reset);
 	vector<FMTmask>::const_iterator mask_iterator = llifespan.maskbegin();
