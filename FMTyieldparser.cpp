@@ -28,7 +28,7 @@ namespace WSParser{
 
 
 FMTyieldparser::FMTyieldparser():FMTparser(),
-    rxyieldtype(regex("^(\\*)([^\\s^\\t]*)([\\s\\t]*)(.+)(_OVERRIDE)|^(\\*)([^\\s^\\t]*)([\\s\\t]*)(.+)",regex_constants::ECMAScript|regex_constants::icase)),
+    rxyieldtype(regex("^(\\*Y)([^\\s^\\t]*)([\\s\\t]*)(.+)(_OVERRIDE)|^(\\*Y)([^\\s^\\t]*)([\\s\\t]*)(.+)",regex_constants::ECMAScript|regex_constants::icase)),
     rxcomplex(regex("^([^\\s^\\t]*)([\\s\\t]*)((_RANGE)|(_MULTIPLY)|(_SUM)|(_SUBTRACT)|(_YTP)|(_MAI)|(_CAI)|(_DIVIDE)|(_EQUATION)|(_ENDPOINT))([\\s\\t]*)(\\()(.+)(\\))",regex_constants::ECMAScript|regex_constants::icase)),
 	rxeqs(regex("([\\(\\)\\-\\+\\*\\/]*)([^\\(\\)\\-\\+\\*\\/]*)"))
         {
@@ -147,6 +147,17 @@ void FMTyieldparser::checkpreexisting(const vector<string>& preexists) const
             }
         }
     }
+
+double FMTyieldparser::getnumwithproportion(const string& value,const FMTconstants& constants,
+	const vector<double>& proportions, const int& location)
+	{
+	double factor = 1;
+	if (!proportions.empty())
+		{
+		factor = proportions.at(min(static_cast<int>(proportions.size()) - 1, location));
+		}
+	return getnum<double>(value, constants)*factor;
+	}
 
 bool FMTyieldparser::isfunction(const string& strfunction) const
 	{
@@ -291,6 +302,7 @@ FMTyields FMTyieldparser::read(const vector<FMTtheme>& themes,const FMTconstants
 	vector<FMTyieldhandler>::iterator datait = yields.dataend();
     FMTmask tmask;
     bool sided = false;
+	vector<double>proportion;
     if (FMTparser::tryopening(yieldstream,location))
         {
         while(yieldstream.is_open())
@@ -308,7 +320,7 @@ FMTyields FMTyieldparser::read(const vector<FMTtheme>& themes,const FMTconstants
                 smatch kmatch;
                 if (regex_search(line,kmatch,rxyieldtype))
                     {
-                    string yieldtype = string(kmatch[2])+string(kmatch[7]);
+                    string yieldtype = "Y"+string(kmatch[2])+string(kmatch[7]);
                     //string mask = string(kmatch[2])+string(kmatch[9]);
 					string mask = string(kmatch[4]) + string(kmatch[9]);
 					boost::trim(mask);
@@ -336,9 +348,22 @@ FMTyields FMTyieldparser::read(const vector<FMTtheme>& themes,const FMTconstants
 						}
 
 					actualyield = datait;//(datait->end() - 1);
+					proportion.clear();//clear proportion each time you see a mask
                     }else{
                             vector<string>values;
                             boost::split(values,line,boost::is_any_of("\t "),boost::token_compress_on);
+							if ((actualyield->gettype() == FMTyldwstype::FMTageyld ||
+								actualyield->gettype() == FMTyldwstype::FMTtimeyld) && values[0] == "*P") //Proportion handling
+								{
+								values.erase(values.begin());
+								proportion.clear();
+								size_t proportion_id = 0;
+								for (const string& value: values)
+									{
+									proportion.push_back(getnum<double>(value)/100.0);
+									}
+								continue; //jump to the next line
+								}
                             if(actualyield->gettype() == FMTyldwstype::FMTageyld)
                                 {
                                 if (values[0]=="_AGE")
@@ -367,7 +392,7 @@ FMTyields FMTyieldparser::read(const vector<FMTtheme>& themes,const FMTconstants
                                             {
                                             /*if (find(dump.begin(),dump.end(),yldsnames[id])==dump.end())
                                                 {*/
-                                                actualyield->push_data(yldsnames[id],getnum<double>(value,constants));
+                                                actualyield->push_data(yldsnames[id],getnumwithproportion(value, constants,proportion,id));
                                              //   }
                                             ++id;
                                             }
@@ -383,7 +408,8 @@ FMTyields FMTyieldparser::read(const vector<FMTtheme>& themes,const FMTconstants
                                                 {
                                                 actualyield->push_base(getnum<int>(values[0],constants));
                                                 }
-                                            actualyield->push_data(tyld[0],getnum<double>(values[1],constants));
+											int location = static_cast<int>(actualyield->elements.size());
+                                            actualyield->push_data(tyld[0], getnumwithproportion(values[1], constants, proportion, location));
                                         }
 
                                 }else if(actualyield->gettype() == FMTyldwstype::FMTtimeyld)
@@ -413,7 +439,7 @@ FMTyields FMTyieldparser::read(const vector<FMTtheme>& themes,const FMTconstants
 												{
 												/*if (find(dump.begin(), dump.end(), yldsnames[id]) == dump.end())
 													{*/
-													actualyield->push_data(yldsnames[id], getnum<double>(value, constants));
+													actualyield->push_data(yldsnames[id], getnumwithproportion(value, constants, proportion, id));
 												//	}
 												++id;
 												}
@@ -441,9 +467,11 @@ FMTyields FMTyieldparser::read(const vector<FMTtheme>& themes,const FMTconstants
 										}else {
 											if (isnum(values[0]))
 												{
+												int id = 0;
 												for (const string& value : values)
 													{
-													actualyield->push_data(yldsnames.back() , getnum<double>(value, constants));
+													actualyield->push_data(yldsnames.back() , getnumwithproportion(value, constants, proportion, id));
+													++id;
 													}
 											}else{
 
@@ -463,9 +491,11 @@ FMTyields FMTyieldparser::read(const vector<FMTtheme>& themes,const FMTconstants
 												values.erase(values.begin());
 												actualyield->push_base(getnum<int>(values[0], constants));
 												values.erase(values.begin());
+												int id = 0;
 												for (const string& value : values)
 												{
-													actualyield->push_data(yldname, getnum<double>(value, constants));
+													actualyield->push_data(yldname, getnumwithproportion(value, constants, proportion, id));
+													++id;
 												}
 											//}
 											}

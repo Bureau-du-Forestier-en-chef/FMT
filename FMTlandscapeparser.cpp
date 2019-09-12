@@ -158,13 +158,16 @@ FMTlandscapeparser::FMTlandscapeparser() :
 						int tempid = 1;
 						if (!string(kmatch[5]).empty() && string(kmatch[3]).empty())
 							{
+							//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "UNKNOW" << "\n";
 							tempid = unknownID;
-							++unknownID;
+							//++unknownID;
 
 						}else{
 							tempid = getnum<int>(theme, constants);
+							//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) <<"GOT "<< tempid << "\n";
 							}
-
+						++unknownID;
+						//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << tempid << "\n";
                         if (tempid>1)
                             {
                             stop = int(valuenames.size());

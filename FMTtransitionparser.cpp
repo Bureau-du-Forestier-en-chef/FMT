@@ -105,6 +105,7 @@ vector<FMTtransitionmask> FMTtransitionparser::getmasktran(const string& line,co
         mask += elements[id] +" ";
         ++id;
         }
+	//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info)<<mask << "\n";
     mask = mask.substr(0, mask.size()-1);
     validate(themes,mask);
     proportion = getnum<double>(elements[id],constants);

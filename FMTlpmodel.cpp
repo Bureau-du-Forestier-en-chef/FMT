@@ -1754,12 +1754,14 @@ bool FMTlpmodel::locatenodes(const vector<FMToutputnode>& nodes, int period,
 			{
 			averagefactor = (1 / (last_period - first_period));
 			}
+		//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "average factors! " << averagefactor << "\n";
 		vector<FMToutputnode>all_nodes = objective.getnodes(averagefactor);
 		//vector<int>all_variables;
 		//vector<double>all_coefs;
 		map<int, double>all_variables;
 		if (!objective.extravariables())//simple to
 			{
+			//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "NO EXTRAAAA "<< first_period<<" "<< last_period << "\n";
 			for (int period = first_period; period <= last_period; ++period)
 				{
 				//graph.locatenodes(*this,all_nodes, period, all_variables/*, all_coefs*/);
@@ -1769,7 +1771,7 @@ bool FMTlpmodel::locatenodes(const vector<FMToutputnode>& nodes, int period,
 		}else {
 			double lowerbound = 0;
 			double upperbound = 0;
-
+			//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "WIT EXTRA " << first_period << " " << last_period << "\n";
 			if (objective.getconstrainttype() == FMTconstrainttype::FMTMAXMINobjective)
 				{
 				upperbound = numeric_limits<double>::max();
@@ -1808,6 +1810,7 @@ bool FMTlpmodel::locatenodes(const vector<FMToutputnode>& nodes, int period,
             }
 		vector<int>objective_variables;
 		vector<double>objective_coefficiants;
+		//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "NODES SIZE "<< all_variables .size()<< "\n";
 		if (summarize(all_variables, /*all_coefs,*/ objective_variables, objective_coefficiants))
 			{
 			solverinterface->setObjCoeffSet(&objective_variables[0], &objective_variables[objective_variables.size()], &objective_coefficiants[0]);

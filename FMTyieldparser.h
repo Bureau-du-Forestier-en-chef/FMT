@@ -53,6 +53,8 @@ class FMTyieldparser : public FMTparser
                                    const vector<string>& values) const;
         void checkpreexisting(const vector<string>& preexists) const;
 		bool isfunction(const string& strfunction) const;
+		double getnumwithproportion(const string& value,const FMTconstants& constants, 
+			const vector<double>& proportions, const int& location);
 		FMTdata geteq(const string& basestr,
                 const FMTconstants& constants,
                 const FMTyields& ylds,

@@ -345,7 +345,7 @@ FMTmodel FMTmodelparser::referenceread(map<string,vector<int>>& common_sections,
 			optzparser.passinexceptionhandler(_exhandler);
 			
 			constraints = optzparser.read(themes, actions, constants, action_aggregates, outputs, excluded, opt);
-			//actions = excluded; //here we go let the user create a clusterfuck
+			actions = excluded; //here we go let the user create a clusterfuck
 			//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "OPTIMIZE " << constraints.size() << "\n";
 			returnedmodel =  FMTmodel(areas, themes, actions, action_aggregates,
 				transitions, yields, lifespan, modelname, outputs, constraints);

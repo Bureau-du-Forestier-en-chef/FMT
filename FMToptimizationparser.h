@@ -74,7 +74,7 @@ namespace WSParser
                           const FMTconstants& constants);
 		string getoptline(ifstream& stream, const vector<FMTtheme>& themes,
 			const FMTconstants& cons,const vector<FMToutput>& outputs);
-		std::queue<string> geteachlines(const string& line,const vector<FMToutput>& outputs, const vector<FMTtheme>& themes) const;
+		std::queue<string> geteachlines(const string& line,const FMTconstants& constants,const vector<FMToutput>& outputs, const vector<FMTtheme>& themes) const;
 		map<string,double>getequation(const string& line, const FMTconstants& constants,
                                 const vector<FMToutput>& outputs,size_t lhssize=numeric_limits<size_t>::max());
 	public:

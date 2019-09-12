@@ -490,6 +490,7 @@ bool FMTparser::validate(const vector<FMTtheme>& themes, string& mask) const
 	{
 	vector<string>values;
 	boost::split(values, mask, boost::is_any_of(" \t"), boost::token_compress_on);
+	//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) <<"SIZE OF "<< values.size()<< "\n";
 	return checkmask(themes, values,mask);
 	}
 
@@ -657,8 +658,13 @@ bool FMTparser::getforloops(string& line,const vector<FMTtheme>& themes, const F
 		if (!string(kmatch[24]).empty())
 		{
 			string val = string(kmatch[24]);
-			//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "splitting  " << val<<" for line "<< line<< "\n";
-			boost::split(allvalues, val, boost::is_any_of(" /t,"),boost::token_compress_on);
+			boost::trim_if(val, boost::is_any_of("\t "));
+			boost::split(allvalues, val, boost::is_any_of("\t ,"), boost::token_compress_on);
+			/*Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "splitting  " << val <<" "<<allvalues.size()<< " for line " << line << "\n";
+			for (string t : allvalues)
+				{
+				Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "valuwe  " << t << "\n";
+				}*/
 		}
 		else if (!string(kmatch[16]).empty())
 		{
@@ -894,6 +900,10 @@ string FMTparser::getcleanlinewfor(ifstream& stream,const vector<FMTtheme>& them
 				}
 			}
 		}
+		if (targets.find(FMTwssect::Constants)==targets.end())
+			{
+			targets[FMTwssect::Constants] = "";
+			}
 		return targets;
 	}
 
