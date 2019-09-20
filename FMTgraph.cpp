@@ -200,6 +200,7 @@ FMTgraphstats FMTgraph::build(const FMTmodel& model,std::queue<FMTvertex_descrip
 			{
 				if (active_development.operable(action, model.yields))
 				{
+					//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << action.name << "\n";
 					if (action.name == "_DEATH")
 						{
 						//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "GOT DEATH!!!!!!" << "\n";
@@ -563,10 +564,10 @@ bool FMTgraph::validouputnode(const FMTmodel& model,const FMToutputnode& node, v
 	return false;
 	}
 
-bool FMTgraph::validgraphnode(const FMTmodel& model, bool& inedges, const FMTvertex_descriptor& vertex_descriptor,
+bool FMTgraph::validgraphnode(const FMTmodel& model, /*bool& inedges,*/ const FMTvertex_descriptor& vertex_descriptor,
                                 const FMToutputnode& node, const vector<int>& action_IDS, const vector<const FMTaction*>& selected) const
 	{
-	inedges = false;
+	//inedges = false;
 	const FMTdevelopment& development = data[vertex_descriptor].get();
 	if (node.source.use(development, model.yields))
 		{
@@ -576,7 +577,7 @@ bool FMTgraph::validgraphnode(const FMTmodel& model, bool& inedges, const FMTver
 					(action_IDS.empty() || (!action_IDS.empty() &&
 					(((buildtype == FMTgraphbuild::schedulebuild) && development.anyoperable(selected, model.yields)) || anyoperables(vertex_descriptor, development.anyworthtestingoperability(selected,action_IDS))))))
 				{
-				inedges = true;
+				//inedges = true;
 				return true;
 				}
 			}else if ((anyoperables(vertex_descriptor, development.anyworthtestingoperability(selected, action_IDS)))) //out edges
@@ -660,15 +661,15 @@ vector<FMTvertex_descriptor> FMTgraph::getnode(const FMTmodel& model, FMToutputn
 					{
 						return nodescache.at(output_node.hash(period));
 					}else{
-						bool inedges = false;
-						vector<FMTdevelopmentpath>paths;
-						FMTaction optimization_action;
+						//bool inedges = false;
+						//vector<FMTdevelopmentpath>paths;
+						//FMTaction optimization_action;
 						for (const int localnodeperiod : targetedperiods)
 						{
 							for (std::unordered_map<size_t, FMTvertex_descriptor>::const_iterator it = developments.at(localnodeperiod).begin();
 								it != developments.at(localnodeperiod).end(); it++)
 							{
-								if (validgraphnode(model, inedges, it->second, output_node, action_IDS, selected))
+								if (validgraphnode(model, /*inedges,*/ it->second, output_node, action_IDS, selected))
 									{
 									locations.push_back(it->second);
 									}

@@ -222,16 +222,16 @@ FMTyieldhandler::operator string() const
         }
 
      map<string,const FMTyieldhandler*> FMTyieldhandler::getdata(const vector<const FMTyieldhandler*>& datas,
-                                    const vector<string>& names) const
+                                    const vector<string>& names,const string& original) const
         {
         map<string,const FMTyieldhandler*>alldata;
             for(const FMTyieldhandler* yield : datas)
                 {
 				//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "data size " << datas.size() << "\n";
 				//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "source of COMPLEX!!!! " << string(*yield)<< "\n";
-                for (const string& name : names)
+				for (const string& name : names)
                     {
-                    if (yield->elements.find(name)!=yield->elements.end() && alldata.find(name)== alldata.end())
+                    if (yield->elements.find(name)!=yield->elements.end() && alldata.find(name)== alldata.end() && !(this == yield && original == name))
                         {
                         alldata[name] = yield;
                         }
@@ -325,7 +325,7 @@ FMTyieldhandler::operator string() const
 				//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "IN COMPLEX!!!! " << yld << test<<"\n";
                //const map<string,double>sources = this->getsources(datas,yld,age,period);
 				const vector<string> sources = cdata->getsource();
-				map<string, const FMTyieldhandler*> srcsdata = this->getdata(datas, sources);
+				map<string, const FMTyieldhandler*> srcsdata = this->getdata(datas, sources, yld);
                 switch(cdata->getop())
                     {
                     case FMTyieldparserop::FMTwsrange:

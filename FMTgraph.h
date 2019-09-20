@@ -145,7 +145,7 @@ class FMTgraph
 		vector<FMTdevelopmentpath> getpaths(const FMTvertex_descriptor& out_vertex,
                                             const int& actionID) const;
 		bool validouputnode(const FMTmodel& model, const FMToutputnode& node,vector<int>& action_IDS, int period) const;
-		bool validgraphnode(const FMTmodel& model, bool& inedges, const FMTvertex_descriptor& vertex_descriptor,
+		bool validgraphnode(const FMTmodel& model, /*bool& inedges,*/ const FMTvertex_descriptor& vertex_descriptor,
                             const FMToutputnode& node, const vector<int>& action_IDS,const vector<const FMTaction*>& selected) const;
 		map<int,double> locatenode(const FMTmodel& model,FMToutputnode output_node, int period) const;
 		vector<FMTvertex_descriptor> getnode(const FMTmodel& model, FMToutputnode output_node,

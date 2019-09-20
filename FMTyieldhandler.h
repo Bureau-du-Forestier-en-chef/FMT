@@ -76,7 +76,7 @@ class FMTyieldhandler
         map<string,double> getsources(const map<string, const FMTyieldhandler*>& srcdata, const vector<const FMTyieldhandler*>& datas,
 										const int& age, const int& period ,const FMTmask& resume_mask, bool& age_only) const;
         map<string,const FMTyieldhandler*> getdata(const vector<const FMTyieldhandler*>& datas,
-                                    const vector<string>& names) const;
+                                    const vector<string>& names, const string& original) const;
 		bool operator == (const FMTyieldhandler& rhs) const;
 		double getchangesfrom(const int& targetage,const int& peakstep) const;
 		int getendpoint(const string& yld, const int& lowerstep, const double& bound, const double& value) const;

@@ -32,7 +32,8 @@ namespace WSParser
 		rxobjectives(regex("^(_MAXMIN|_MINMAX|_MAX|_MIN|_GOAL)([\\s\\t]*)(.+)([\\s\\t])((([\\d]*|#.+)(\\.\\.)(#.+|_LENGTH|[\\d]*))|(#.+|[\\d]*))", regex_constants::ECMAScript | regex_constants::icase)),
 		rxexclude(regex("^(\\*EXCLUDE)([\\s\\t]*)([^\\s^\\t]*)([\\s\\t]*)((([\\d]*|#.+)(\\.\\.)(#.+|_LENGTH|[\\d]*))|(#.+|[\\d]*))", regex_constants::ECMAScript | regex_constants::icase)),
 		//rxconstraints("^(_EVEN|_NDY|_SEQ)([\\s\\t]*)(\\()((([^\\)^,]*)(,)([\\d]*%|[\\d]*)(,)([\\d]*%|[\\d]*))|(([^\\)^,]*)(,)([\\d]*%|[\\d]*))|([^\\)^,]*))(\\)*)([\\s\\t]*)((([\\d]*|#.+)(\\.\\.)(#.+|_LENGTH|[\\d]*))|(#.+|[\\d]*))", regex_constants::ECMAScript | regex_constants::icase),
-		rxconstraints("^(_EVEN|_NDY|_SEQ)([\\s\\t]*)(\\()((([^,]*)(,)([\\d]*%|[\\d]*)(,)([\\d]*%|[\\d]*))|(([^,]*)(,)([\\d]*%|[\\d]*))|([^\\)^,]*))(\\)*)([\\s\\t]*)((([\\d]*|#.+)(\\.\\.)(#.+|_LENGTH|[\\d]*))|(#.+|[\\d]*))", regex_constants::ECMAScript | regex_constants::icase),
+		//rxconstraints("^(_EVEN|_NDY|_SEQ)([\\s\\t]*)(\\()((([^,]*)(,)([\\d]*%|[\\d]*)(,)([\\d]*%|[\\d]*))|(([^,]*)(,)([\\d]*%|[\\d]*))|([^\\)^,]*))(\\)*)([\\s\\t]*)((([\\d]*|#.+)(\\.\\.)(#.+|_LENGTH|[\\d]*))|(#.+|[\\d]*))", regex_constants::ECMAScript | regex_constants::icase),
+		rxconstraints("^(_EVEN|_NDY|_SEQ)([\\s\\t]*)(\\()((([^,]*)(,)([\\d\\.]*%|[\\d\\.]*)(,)([\\d\\.]*%|[\\d\\.]*))|(([^,]*)(,)([\\d\\.]*%|[\\d\\.]*))|([^\\)^,]*))(\\)*)([\\s\\t]*)((([\\d]*|#.+)(\\.\\.)(#.+|_LENGTH|[\\d]*))|(#.+|[\\d]*))", regex_constants::ECMAScript | regex_constants::icase),
 		//rxconstraints("^(_EVEN|_NDY|_SEQ)([\\s\\t]*)(\\()((([^\\s^\\t^,]*)(,)([\\d]*%|[\\d]*)(,)([\\d]*%|[\\d]*))|(([^\\s^\\t^,]*)(,)([\\d]*%|[\\d]*))|([^\\s^\\t^,]*))(\\))([\\s\\t]*)((([\\d]*|#.+)(\\.\\.)(#.+|_LENGTH|[\\d]*))|(#.+|[\\d]*))", regex_constants::ECMAScript | regex_constants::icase),
 		rxequations(regex("^(((.+)((<=)|(>=))(.+))|((.+)(=)(.+)))([\\s\\t])((([\\d]*|#.+)(\\.\\.)(#.+|_LENGTH|[\\d]*))|(#.+|[\\d]*))", regex_constants::ECMAScript | regex_constants::icase)),
 		rxgoal(regex("^(.+)(_GOAL)(\\()([^,]*)(,)([^\\)]*)(\\))", regex_constants::ECMAScript | regex_constants::icase)),
@@ -565,9 +566,12 @@ namespace WSParser
 					FMToptimizationsection newsection = getsection(line);
 					if (newsection == FMToptimizationsection::exclude)
 						{
+						boost::trim(line);
 						section = newsection;
 						}
-					if (newsection != FMToptimizationsection::none && newsection !=  FMToptimizationsection::exclude)
+					if (newsection != FMToptimizationsection::none && 
+						(newsection != FMToptimizationsection::exclude || 
+						(newsection == FMToptimizationsection::exclude && line == "*EXCLUDE")))
 						{
 						section = newsection;
 					}else {
@@ -600,7 +604,11 @@ namespace WSParser
 
 							case FMToptimizationsection::exclude:
 								{
-		
+								//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) <<"EXCLUDE "<<line << "\n";
+								if (line.find("*EXCLUDE")==string::npos)
+									{
+									line = "*EXCLUDE " + line;
+									}
 								smatch kmatch;
 								if (regex_search(line, kmatch, rxexclude))
 									{
