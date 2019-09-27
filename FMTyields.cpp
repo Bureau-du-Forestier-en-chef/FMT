@@ -243,7 +243,7 @@ int FMTyields::getage(const FMTdevelopment& dev,const FMTspec& spec) const
 						if (data->elements.find(it->first) != data->elements.end())
 							{
 							const FMTyldbounds* bound = &it->second;
-							int new_age = data->getage(it->first, bound->getlower());
+							int new_age = data->getage(it->first, bound->getlower(), dev.age);
 							if (new_age < age)
 								{
 								age = new_age;

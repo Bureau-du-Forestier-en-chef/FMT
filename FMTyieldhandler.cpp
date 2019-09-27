@@ -713,7 +713,7 @@ FMTyieldhandler::operator string() const
         }
 
 
-    int FMTyieldhandler::getage(const string yld, const double& value) const
+    int FMTyieldhandler::getage(const string yld, const double& value, const int& starting_age) const
         {
         int age = 0;
         map<string,FMTdata>::const_iterator it = elements.find(yld);
@@ -721,12 +721,69 @@ FMTyieldhandler::operator string() const
             {
             const FMTdata* ldata = &it->second;
             vector<double>::const_iterator dit = ldata->data.begin();
-            int high_index = 0;
+			double minimal_gap = numeric_limits<double>::infinity();
+			size_t minimal_gap_index = 0;
+			size_t index = 0;
+			for (const double& vdata : ldata->data)
+				{
+				if (abs(vdata-value) <= minimal_gap && index > 0 && bases.at(index) <= starting_age)
+					{
+					minimal_gap = abs(vdata - value);
+					minimal_gap_index = index;
+					}
+				++index;
+				}
+			age = max(bases.at(minimal_gap_index),1);
+
+			//dont start from the botoom of the curve but at the starting_age...
+			//new stuff start..
+			//int index = 0;
+			//age = starting_age;
+			//int high_index = starting_age;
+			//double bestgap = numeric_limits<double>::infinity();
+			//int index = starting_age;
+			//vector<double>evaluated;
+			//Or if the last value is lower than the next?
+			//double last_value = numeric_limits<double>::infinity();
+
+			/*while (high_index > 0  && *(dit + high_index) > value && *(dit + high_index) < last_value)
+				{
+				last_value = *(dit + high_index);
+				evaluated.push_back(*(dit + high_index));
+				--high_index;
+				}*/
+
+			//++high_index;
+
+			/*if (value == 19.5 && starting_age==19)
+				{
+				Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "DIFFF " << yld << " " << value << "\n";
+				Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "HI " << high_index << "\n";
+				for (double eva : evaluated)
+					{
+					Logging::FMTlogger(Logging::FMTlogtype::FMT_Info)<< eva << "\n";
+					}
+				}*/
+			
+			//new stuff end..
+			/*int test = 0;
+			while (*(dit + test) <= value)
+			{
+				++test;
+			}
+			if (test!= high_index)
+				{
+				Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "DIFFF starting" << starting_age << "\n";
+				Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "DIFFF " << yld<<" "<<value << "\n";
+				Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) <<"DIFFF "<<test<<" "<< high_index << "\n";
+				
+				}
+			//++high_index;
             while (*(dit+ high_index)<=value)
                 {
                 ++high_index;
-                }
-			if (*(dit + high_index) == value)
+                }*/
+			/*if (*(dit + high_index) == value)
 				{
 				age = bases[high_index];
 			}else {
@@ -736,7 +793,7 @@ FMTyieldhandler::operator string() const
 				double known_value = (value - *(dit + low_index));
 				double age_gap = (top_age * known_value) / bottom_value;
 				age = max(1,bases[low_index] + int(round(age_gap)));
-				}
+				}*/
 
             }
         return age;

@@ -82,7 +82,7 @@ class FMTyieldhandler
 		int getendpoint(const string& yld, const int& lowerstep, const double& bound, const double& value) const;
 		double getpeakfrom(const string& yld,double maxvalue = numeric_limits<double>::lowest()) const;
         double getpeak(const string& yld, const int& targetage) const;
-        int getage(const string yld, const double& value) const;
+        int getage(const string yld, const double& value,const int& starting_age) const;
         map<string,FMTdata>getdataelements() const;
         FMTyldwstype gettype() const;
 		FMTmask getmask() const;

@@ -614,7 +614,7 @@ vector<string>FMTparser::regexloop(regex& cutregex,string& str) const
         string newline;
         if (safeGetline(stream, newline))//getline(stream,newline)
             {
-
+			_comment.clear();
             clearcomments(newline);
 
             string fullline = newline;

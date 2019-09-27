@@ -504,6 +504,9 @@ FMTareaparser::FMTareaparser() :
 			{ 
 			ifstream areastream(location);
 			string line;
+			bool potential_futurs = false;
+			size_t maxfuturstobreak = 100;
+			size_t futurtype = 0;
 			if (FMTparser::tryopening(areastream,location))
 				{
 				bool inactualdevs = false;
@@ -511,11 +514,23 @@ FMTareaparser::FMTareaparser() :
 					{
 					//line = FMTparser::getcleanline(areastream);
 					line = FMTparser::getcleanlinewfor(areastream, themes, constants);
+					if (line.empty() && !areas.empty() && _comment.empty() )
+						{
+						potential_futurs = true;
+						}
 					if (!line.empty())
 						{
-						if (inactualdevs && !_comment.empty() && (_comment.find("+") != string::npos) || (_comment.find("-") != string::npos))
+						if (potential_futurs && inactualdevs && !_comment.empty() && (_comment.find("+") != string::npos) || (_comment.find("-") != string::npos))
 							{
-							break;
+							++futurtype;
+							if (futurtype >= maxfuturstobreak)
+								{
+								/*Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "BREAKIINNNNNGG THYE LAWWWWW"<< "\n";
+								Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "LINE " << _comment << "\n";
+								Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "LINE " << line << "\n";
+								Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) <<"LINE "<< _line << "\n";*/
+								break;
+								}
 							}
 						smatch kmatch;
 						regex_search(line,kmatch,FMTareaparser::rxcleanarea);
@@ -533,10 +548,11 @@ FMTareaparser::FMTareaparser() :
 							mask+=splitted[themeid]+" ";
 							}
 						mask.pop_back();
-						if (!validate(themes, mask)) continue;
 						area = getnum<double>(splitted[linesize-1],constants);
 						if (area>0)
 							{
+							if (!validate(themes, mask)) continue;
+							potential_futurs = false;
 							age = getnum<int>(splitted[linesize-2],constants);
 							lock = 0;
 							if (FMTparser::isvalid(strlock))

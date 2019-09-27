@@ -124,8 +124,17 @@ FMTtransitionmask::FMTtransitionmask(const string& lmask,const vector<FMTtheme>&
             }else if(!ylds.empty())
                 {
                 newdev.age = yields.getage(newdev,*this); // was dev
+				/*if (dev.mask.getstr().find("GS1257") != string::npos && dev.mask.getstr().find("UTR10") != string::npos)
+					{
+					Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "SOURCE " << dev.mask.getstr() << "\n";
+					newdev.mask.update(themes);
+					Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) <<"TARGET "<< newdev.mask.getstr() << "\n";
+					Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "NEW AGE " << newdev.age << "\n";
+					
+					}*/
+
 				age_change = true;
-				//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "NEW AGE " << newdev.age << "\n";
+				//
                 }
         if(!themes.empty())
             {
