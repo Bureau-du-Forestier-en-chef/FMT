@@ -92,48 +92,50 @@ vector<FMTschedule> FMTscheduleparser::read(const vector<FMTtheme>& themes,const
 						const int age = getnum<int>(values[id]);//stoi(values[id]);
                         ++id;
                         const double area = getnum<double>(values[id]);
-                        ++id;
-                        const string actionname = values[id];
+						if (area > 0) // Weird stuff non basis solution in schedule...
+							{
+							++id;
+							const string actionname = values[id];
 						
 
-                        if (!isact(FMTwssect::Schedule,actions,actionname)) continue;
-                        ++id;
-                        const int period = getnum<int>(values[id]);
-						/*if (actionname == "ACFP" && period == 2)
-						{
-							ACFPread += area;
-						}*/
-						if (period -1 == data.size())
+							if (!isact(FMTwssect::Schedule,actions,actionname)) continue;
+							++id;
+							const int period = getnum<int>(values[id]);
+							/*if (actionname == "ACFP" && period == 2)
 							{
-							data.push_back(map<FMTaction, map<FMTdevelopment, map<int,double>>>());
-						}else if (period - 1 > data.size())
-							{
-							int gap = (period - 1) - int(data.size());
-							while (gap >= 0)
+								ACFPread += area;
+							}*/
+							if (period -1 == data.size())
 								{
-								data.push_back(map<FMTaction, map<FMTdevelopment, map<int, double>>>());
-								--gap;
+								data.push_back(map<FMTaction, map<FMTdevelopment, map<int,double>>>());
+							}else if (period - 1 > data.size())
+								{
+								int gap = (period - 1) - int(data.size());
+								while (gap >= 0)
+									{
+									data.push_back(map<FMTaction, map<FMTdevelopment, map<int, double>>>());
+									--gap;
+									}
+								}
+                        
+							 FMTdevelopment dev(FMTmask(mask,themes),age,0,period);
+							 vector<FMTaction>::const_iterator act = find_if(actions.begin(),actions.end(),FMTactioncomparator(actionname));
+							 //if the action is not _lockexempt then break the variable thing!
+							 if (act->lock)
+								{
+								variable = 0;
+								}
+							 if (data[period-1].find(*act) == data[period - 1].end())
+								 {
+								 data[period - 1][*act] = map<FMTdevelopment, map<int, double>>();
+								 }
+							 if (data[period - 1][*act][dev].find(variable)!= data[period - 1][*act][dev].end())
+								{
+								data[period - 1][*act][dev][variable] += area;
+								}else {
+								data[period - 1][*act][dev][variable] = area;
 								}
 							}
-                        
-                         FMTdevelopment dev(FMTmask(mask,themes),age,0,period);
-                         vector<FMTaction>::const_iterator act = find_if(actions.begin(),actions.end(),FMTactioncomparator(actionname));
-						 //if the action is not _lockexempt then break the variable thing!
-						 if (act->lock)
-							{
-							variable = 0;
-							}
-                         if (data[period-1].find(*act) == data[period - 1].end())
-                             {
-							 data[period - 1][*act] = map<FMTdevelopment, map<int, double>>();
-                             }
-						 if (data[period - 1][*act][dev].find(variable)!= data[period - 1][*act][dev].end())
-							{
-							data[period - 1][*act][dev][variable] += area;
-							}else {
-							data[period - 1][*act][dev][variable] = area;
-							}
-						 
                         }
                 }
             }
