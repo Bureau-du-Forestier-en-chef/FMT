@@ -124,7 +124,7 @@ FMTtransitionmask::FMTtransitionmask(const string& lmask,const vector<FMTtheme>&
             }else if(!ylds.empty())
                 {
                 newdev.age = yields.getage(newdev,*this); // was dev
-				/*if (dev.mask.getstr().find("GS1257") != string::npos && dev.mask.getstr().find("UTR10") != string::npos)
+				/*if (dev.mask.getstr().find("GS01666") != string::npos && dev.mask.getstr().find("UTR3") != string::npos)
 					{
 					Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "SOURCE " << dev.mask.getstr() << "\n";
 					newdev.mask.update(themes);
@@ -144,6 +144,16 @@ FMTtransitionmask::FMTtransitionmask(const string& lmask,const vector<FMTtheme>&
 			{
 			newdev.age = 0;
 			}
+		/*if (dev.mask.getstr().find("GS0166") != string::npos && 
+			dev.mask.getstr().find("UTR3") != string::npos &&
+			dev.mask.getstr().find("TIF") != string::npos && 
+			dev.mask.getstr().find("011") != string::npos)
+			{
+			Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "SOURCE " << string(dev) << "\n";
+			newdev.mask.update(themes);
+			Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "TARGET " << string(newdev) << "\n";
+
+			}*/
         return newdev;
         }
 

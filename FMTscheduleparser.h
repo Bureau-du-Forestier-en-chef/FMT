@@ -45,7 +45,8 @@ class FMTscheduleparser: public FMTparser
         FMTscheduleparser();
         FMTscheduleparser(const FMTscheduleparser& rhs);
         FMTscheduleparser& operator = (const FMTscheduleparser& rhs);
-        vector<FMTschedule>read(const vector<FMTtheme>& themes,const vector<FMTaction>& actions,string location);
+        vector<FMTschedule>read(const vector<FMTtheme>& themes,
+			const vector<FMTaction>& actions,string location,double tolerance = 0.00000001);
         void write(const vector<FMTschedule>& schedules,string location);
     };
 

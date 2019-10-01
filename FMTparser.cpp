@@ -660,6 +660,29 @@ bool FMTparser::getforloops(string& line,const vector<FMTtheme>& themes, const F
 			string val = string(kmatch[24]);
 			boost::trim_if(val, boost::is_any_of("\t "));
 			boost::split(allvalues, val, boost::is_any_of("\t ,"), boost::token_compress_on);
+			if (val.find("..")!=string::npos)
+				{
+				vector<string>newvalues;
+				for (const string& oldvalue: allvalues)
+					{
+					if (oldvalue.find("..") != string::npos)
+						{
+						vector<string>lowerNupper;
+						boost::split(lowerNupper, oldvalue, boost::is_any_of(".."), boost::token_compress_on);
+						int lower = getnum<int>(lowerNupper.at(0), cons);
+						int upper = getnum<int>(lowerNupper.at(1), cons);
+						for (int id = lower; id <= upper; ++id)
+							{
+							newvalues.push_back(to_string(id));
+							}
+						
+					}else {
+						newvalues.push_back(oldvalue);
+						}
+					}
+				allvalues = newvalues;
+				}
+			
 			/*Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "splitting  " << val <<" "<<allvalues.size()<< " for line " << line << "\n";
 			for (string t : allvalues)
 				{

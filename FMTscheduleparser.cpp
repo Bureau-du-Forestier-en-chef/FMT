@@ -55,7 +55,7 @@ FMTscheduleparser& FMTscheduleparser::operator = (const FMTscheduleparser& rhs)
         }
     return *this;
     }
-vector<FMTschedule> FMTscheduleparser::read(const vector<FMTtheme>& themes,const vector<FMTaction>& actions,string location)
+vector<FMTschedule> FMTscheduleparser::read(const vector<FMTtheme>& themes,const vector<FMTaction>& actions,string location,double tolerance)
     {
     ifstream schedulestream(location);
     string line;
@@ -92,7 +92,7 @@ vector<FMTschedule> FMTscheduleparser::read(const vector<FMTtheme>& themes,const
 						const int age = getnum<int>(values[id]);//stoi(values[id]);
                         ++id;
                         const double area = getnum<double>(values[id]);
-						if (area > 0) // Weird stuff non basis solution in schedule...
+						if (area > tolerance) // Weird stuff non basis solution in schedule...
 							{
 							++id;
 							const string actionname = values[id];

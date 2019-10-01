@@ -68,7 +68,8 @@ FMTactionparser& FMTactionparser::operator = (const FMTactionparser& rhs)
                     //cout<<spec.empty()<<endl;
 				}else if (yield == "_CP")
 					{
-					spec.addbounds(FMTperbounds(bounds<int>(constants, elements[loc + 1], op, FMTwssect::Action)));
+					//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "PUSHING CP " << op <<" "<< elements[loc + 1] << "\n";
+					spec.setbounds(FMTperbounds(bounds<int>(constants, elements[loc + 1], op, FMTwssect::Action)));
 					}else {
                         yields.push_back(yield);
                         spec.addbounds(FMTyldbounds(yield,bounds<double>(constants,elements[loc+1],op,FMTwssect::Action)));

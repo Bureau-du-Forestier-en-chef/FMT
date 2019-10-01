@@ -116,9 +116,10 @@ namespace WSParser
         string simple_value;
         vector<FMToutput>::const_iterator constant_output;
         //Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "getting equation " << line << "\n";
+		bool lastcharspace = false;
         for(char strvalue : line)
             {
-            if ((strvalue == '+' || strvalue == '-' || strvalue == '/' || strvalue == '*') && (simple_value.empty() || (!simple_value.empty() && simple_value.back() != '[')))
+            if (lastcharspace && (strvalue == '+' || strvalue == '-' || strvalue == '/' || strvalue == '*') && (simple_value.empty() || (!simple_value.empty() && simple_value.back() != '[')))
                 {
                 if (eq_location >= lhssize)
                     {
@@ -165,6 +166,13 @@ namespace WSParser
                         simple_value += strvalue;
                         }
                     ++eq_location;
+					if (isspace(strvalue))
+					{
+						lastcharspace = true;
+					}else {
+						lastcharspace = false;
+					}
+
                 }
             boost::trim(simple_value);
             if (isnum(simple_value) || constants.isconstant(simple_value))

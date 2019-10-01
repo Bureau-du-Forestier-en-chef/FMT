@@ -514,10 +514,10 @@ FMTareaparser::FMTareaparser() :
 					{
 					//line = FMTparser::getcleanline(areastream);
 					line = FMTparser::getcleanlinewfor(areastream, themes, constants);
-					if (line.empty() && !areas.empty() && _comment.empty() )
+					/*if (line.empty() && !areas.empty() && _comment.empty() )
 						{
 						potential_futurs = true;
-						}
+						}*/
 					if (!line.empty())
 						{
 						if (potential_futurs && inactualdevs && !_comment.empty() && (_comment.find("+") != string::npos) || (_comment.find("-") != string::npos))
@@ -525,8 +525,8 @@ FMTareaparser::FMTareaparser() :
 							++futurtype;
 							if (futurtype >= maxfuturstobreak)
 								{
-								/*Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "BREAKIINNNNNGG THYE LAWWWWW"<< "\n";
-								Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "LINE " << _comment << "\n";
+								//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "BREAKIINNNNNGG THYE LAWWWWW"<< "\n";
+								/*Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "LINE " << _comment << "\n";
 								Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "LINE " << line << "\n";
 								Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) <<"LINE "<< _line << "\n";*/
 								break;
@@ -562,6 +562,10 @@ FMTareaparser::FMTareaparser() :
 							areas.push_back(FMTactualdevelopment(FMTmask(mask,themes),age,lock,area));
 							}
 							//_exhandler->raise(FMTexc::WSfutur_types,_section,mask+" at line" + to_string(_line), __LINE__, __FILE__);
+					}
+					else if (!areas.empty() && _comment.empty())
+						{
+						potential_futurs = true;
 						}
 					}
 				}
