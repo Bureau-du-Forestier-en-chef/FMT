@@ -165,6 +165,8 @@ class FMTlpmodel : public FMTmodel
 		FMTgraphstats removeconstraint(const FMTconstraint& constraint, int period);
 		/*bool unboundconstraint(const FMTconstraint& constraint, int period);
 		bool boundconstraint(const FMTconstraint& constraint, int period);*/
+		size_t buildoutputscache(const vector<FMToutput>& outputs);
+		size_t buildconstraintscache(const vector<FMTconstraint>& constraints);
 		bool resolve();
 		FMTlpmodel& operator = (const FMTlpmodel& rhs);
 		~FMTlpmodel() = default;

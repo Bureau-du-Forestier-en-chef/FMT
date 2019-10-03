@@ -85,7 +85,7 @@ class FMToutputsource : public FMTspec
 		string getlevel() const;
 		bool isnull(const FMTyields& ylds) const;
 		bool istimeyield() const;
-		vector<int>targets(const vector<FMTaction>& actions,
+		vector<const FMTaction*>targets(const vector<FMTaction>& actions,
 			const map<string, vector<string>>& aggregates) const;
 		bool useinedges() const;
 		bool useoutedges() const;
@@ -96,19 +96,20 @@ class FMToutputsource : public FMTspec
 		void setaverage();
 		bool isaverage() const;
 		size_t hash(int period = -1) const;
-		/*vector<boost::dynamic_bitset<>> getclassifiers(const vector<FMTaction>& actions,
-			const map<string, vector<string>>& aggregates,
-			const int& maxage, const int& maxperiod,const int& period) const;*/
+		/*vector<size_t>getsuperset(const vector<FMTaction>& actions,
+			const map<string, vector<string>>& aggregates, const int& period) const;*/
     };
 
 class FMToutputsourcecomparator
-{
-	bool variable;
-public:
-	FMToutputsourcecomparator(bool lvariable);
-	bool operator()(const FMToutputsource& source) const;
+	{
+		bool variable;
+	public:
+		FMToutputsourcecomparator(bool lvariable);
+		bool operator()(const FMToutputsource& source) const;
 
-};
+	};
+
+
 
 }
 

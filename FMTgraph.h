@@ -144,14 +144,12 @@ class FMTgraph
 		bool periodstop(const FMTvertex_descriptor& out_vertex) const;
 		vector<FMTdevelopmentpath> getpaths(const FMTvertex_descriptor& out_vertex,
                                             const int& actionID) const;
-		bool validouputnode(const FMTmodel& model, const FMToutputnode& node,vector<int>& action_IDS, int period) const;
-		bool validgraphnode(const FMTmodel& model, /*bool& inedges,*/ const FMTvertex_descriptor& vertex_descriptor,
-                            const FMToutputnode& node, const vector<int>& action_IDS,const vector<const FMTaction*>& selected) const;
+		bool isvalidouputnode(const FMTmodel& model, const FMToutputnode& node,vector<const FMTaction*>& action_IDS, int period) const;
+		bool isvalidgraphnode(const FMTmodel& model, const FMTvertex_descriptor& vertex_descriptor,
+                            const FMToutputnode& node,const vector<const FMTaction*>& selected) const;
 		map<int,double> locatenode(const FMTmodel& model,FMToutputnode output_node, int period) const;
-		vector<FMTvertex_descriptor> getnode(const FMTmodel& model, FMToutputnode output_node,
-			int period, vector<int>& action_IDS, vector<const FMTaction*>& selected) const;
-		map<int, double> getvariables(const FMTmodel& model, const FMToutputnode& output_node,const vector<FMTvertex_descriptor>& verticies,
-			const vector<int>& action_IDS, const vector<const FMTaction*>& selected) const;
+		vector<FMTvertex_descriptor> getnode(const FMTmodel& model, FMToutputnode output_node,int period) const;
+		map<int, double> getvariables(const FMTmodel& model, const FMToutputnode& output_node,const vector<FMTvertex_descriptor>& verticies) const;
         bool anyoperables(const FMTvertex_descriptor& descriptor, const vector<int>& action_ids) const;
         map<int, int> getoutvariables(const FMTvertex_descriptor& out_vertex) const;
 		vector<std::pair<const int*,const int*>>getoutvariablesnactionsptr(const FMTvertex_descriptor& out_vertex) const;
@@ -179,7 +177,7 @@ class FMTgraph
 			int period, const FMTtheme& theme,
 			const double* solution, FMToutputlevel level = FMToutputlevel::standard) const;
 		map<string, double> getvalues(const FMTmodel& model, const vector<FMTvertex_descriptor>& verticies,
-			const FMToutputnode& node, const FMTtheme& theme, const vector<int>& action_IDS, const vector<const FMTaction*>& selected,
+			const FMToutputnode& node, const FMTtheme& theme,
 			const double* solution, FMToutputlevel level) const;
         void cleanevents(vector<FMTevent<FMTgraph>>& events_id, const FMTcoordinate& localisation) const;
         FMTgraphstats clearfromperiod(const int& period, vector<vector<vector<FMTevent<FMTgraph>>>>& events,
@@ -191,6 +189,7 @@ class FMTgraph
                               vector<vector<vector<FMTevent<FMTgraph>>>>& events,
                               const FMTcoordinate& localisation, const int period) const;
 		bool sameedgesas(const FMTgraph& rhs) const;
+		size_t buildoutputscache(const FMTmodel& model, const vector<const FMToutput*>& outputs);
     };
 }
 #endif // FMTGRAPH_H

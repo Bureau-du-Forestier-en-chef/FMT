@@ -66,6 +66,11 @@ namespace Core
 		return false;
 		}
 
+	FMToutputnode::operator string() const
+		{
+		return (string(source) + " " + string(factor) + " *" + to_string(constant));
+		}
+
     FMToutputnode FMToutputnode::setperiod(int period) const
         {
         FMToutputnode newnode(*this);
@@ -105,5 +110,65 @@ namespace Core
 			}
 		return *this;
 		}
+
+	int FMToutputnode::settograph(vector<int>& targetedperiods, int period, int max_period)
+		{
+		int node_period = period;
+		if (this->source.useinedges())//evaluate at the begining of the other period if inventory! what a major fuck
+		{
+			++node_period;
+		}
+		if (this->singleperiod())
+		{
+			if (this->ispastperiod())
+			{
+				if ((this->source.getperiodlowerbound() + period) >= 0)
+				{
+					FMTperbounds perbound(FMTwssect::Optimize, node_period, node_period);
+					this->source.setbounds(perbound);
+					this->factor.setbounds(perbound);
+				}
+				else {
+					return -1;//dont need that node...
+				}
+			}
+			else {
+				node_period = this->source.getperiodlowerbound();
+				if (this->source.useinedges())
+				{
+					++node_period;
+				}
+			}
+		}
+		//vector<int>targetedperiods;
+		if (this->multiperiod())
+		{
+			int minperiod = max(this->source.getperiodlowerbound(), 1);
+			int maxperiod = min(this->source.getperiodupperbound(), maxperiod);
+			for (int periodid = minperiod; periodid <= maxperiod; ++periodid)
+			{
+				int local_period = periodid;
+				if (this->source.useinedges())
+				{
+					++local_period;
+				}
+				targetedperiods.push_back(local_period);
+			}
+		}
+		else {
+			targetedperiods.push_back(node_period);
+		}
+		return node_period;
+		}
+
+	FMToutputnodehashcomparator::FMToutputnodehashcomparator(size_t hash) : sourcehash(hash)
+	{
+
+	}
+
+	bool FMToutputnodehashcomparator::operator()(const FMToutputnode& node) const
+	{
+		return (node.source.hash() == sourcehash);
+	}
 
 }

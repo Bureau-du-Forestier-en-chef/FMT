@@ -139,17 +139,17 @@ namespace Core{
 		 return false;
 		}
 
-	 vector<int> FMTdevelopment::anyworthtestingoperability(const vector<const FMTaction*>& actions, const vector<int>& action_IDS) const
+	 vector<int> FMTdevelopment::anyworthtestingoperability(const vector<const FMTaction*>& actions, const FMTaction& firstaction) const
 		{
 		vector<int>potentials;
-		int id = 0;
 		for (const FMTaction* action : actions)
 			{
 			 if (this->worthtestingoperability(*action))
 				{
-				 potentials.push_back(action_IDS.at(id));
+				 int location = static_cast<int>(std::distance(&firstaction, action));
+				 //Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) <<action->name<<" location " << location << "\n";
+				 potentials.push_back(location);
 				}
-			 ++id;
 			}
 		 return potentials;
 		}

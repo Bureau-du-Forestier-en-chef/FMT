@@ -1335,6 +1335,8 @@ bool FMTlpmodel::locatenodes(const vector<FMToutputnode>& nodes, int period,
 	return cashhit;
 	}
 
+
+
 	FMTgraphstats FMTlpmodel::setconstraint(const FMTconstraint& constraint)
 		{
 		if (!constraint.isobjective())
@@ -1831,6 +1833,26 @@ bool FMTlpmodel::locatenodes(const vector<FMToutputnode>& nodes, int period,
 			}*/
 		return solverinterface->isProvenOptimal();
         }
+
+	 size_t FMTlpmodel::buildoutputscache(const vector<FMToutput>& outputs)
+		{
+		 vector<const FMToutput*>outs;
+		 for (const FMToutput& out : outputs)
+			{
+			 outs.push_back(&out);
+			}
+		return graph.buildoutputscache(*this, outs);
+		}
+
+	 size_t FMTlpmodel::buildconstraintscache(const vector<FMTconstraint>& constraints)
+		{
+		vector<const FMToutput*>outs;
+		for (const FMTconstraint& out : constraints)
+			{
+			 outs.push_back(&out);
+			}
+		return graph.buildoutputscache(*this, outs);
+		}
 
      bool FMTlpmodel::getgoals(const vector<string>& goalsnames, map<int, double>& index
                                /*vector<int>& index,vector<double>& coefs*/,const double& sense)const

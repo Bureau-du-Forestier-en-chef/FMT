@@ -45,10 +45,22 @@ class FMToutputnode
 		bool multiperiod() const;
 		bool ispastperiod() const;
 		bool isnull() const;
+		operator string() const;
 		FMToutputnode setperiod(int period) const;
 		FMToutputnode& operator = (const FMToutputnode& rhs);
+		int settograph(vector<int>& targetedperiods, int period,int max_period);
 		~FMToutputnode()=default;
 	};
+
+class FMToutputnodehashcomparator
+	{
+		size_t sourcehash;
+	public:
+		FMToutputnodehashcomparator(size_t hash);
+		bool operator()(const FMToutputnode& node) const;
+
+	};
+
 }
 
 #endif

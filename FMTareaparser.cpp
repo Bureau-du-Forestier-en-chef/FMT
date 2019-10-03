@@ -505,8 +505,11 @@ FMTareaparser::FMTareaparser() :
 			ifstream areastream(location);
 			string line;
 			bool potential_futurs = false;
-			size_t maxfuturstobreak = 100;
+			//size_t maxfuturstobreak = 100;
+			bool got0area = false;
 			size_t futurtype = 0;
+			smatch kmatch;
+			vector<string>splitted;
 			if (FMTparser::tryopening(areastream,location))
 				{
 				bool inactualdevs = false;
@@ -520,54 +523,61 @@ FMTareaparser::FMTareaparser() :
 						}*/
 					if (!line.empty())
 						{
-						if (potential_futurs && inactualdevs && !_comment.empty() && (_comment.find("+") != string::npos) || (_comment.find("-") != string::npos))
+						if (potential_futurs && inactualdevs && !_comment.empty() && got0area)
 							{
 							++futurtype;
-							if (futurtype >= maxfuturstobreak)
+							if (futurtype >= (areas.size()*0.5))
 								{
-								//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "BREAKIINNNNNGG THYE LAWWWWW"<< "\n";
-								/*Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "LINE " << _comment << "\n";
+								/*Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "BREAKIINNNNNGG THYE LAWWWWW"<< "\n";
+								Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "LINE " << _comment << "\n";
 								Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "LINE " << line << "\n";
 								Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) <<"LINE "<< _line << "\n";*/
 								break;
 								}
 							}
-						smatch kmatch;
-						regex_search(line,kmatch,FMTareaparser::rxcleanarea);
-						string strlock = string(kmatch[6]) + string(kmatch[14]);
-						string masknage = string(kmatch[3])+string(kmatch[9]) + string(kmatch[18])+ string(kmatch[23]);
-						string mask;
-						double area;
-						int age,lock;
-						size_t linesize;
-						vector<string>splitted = FMTparser::spliter(masknage,FMTparser::rxseparator);
-						linesize = splitted.size();
-						inactualdevs = true;
-						for(int themeid = 0 ; themeid < (linesize-2); ++themeid)
-							{
-							mask+=splitted[themeid]+" ";
-							}
-						mask.pop_back();
-						area = getnum<double>(splitted[linesize-1],constants);
-						if (area>0)
-							{
-							if (!validate(themes, mask)) continue;
-							potential_futurs = false;
-							age = getnum<int>(splitted[linesize-2],constants);
-							lock = 0;
-							if (FMTparser::isvalid(strlock))
+						if (regex_search(line,kmatch,FMTareaparser::rxcleanarea))
+							{ 
+							string strlock = string(kmatch[6]) + string(kmatch[14]);
+							string masknage = string(kmatch[3])+string(kmatch[9]) + string(kmatch[18])+ string(kmatch[23]);
+							string mask;
+							double area;
+							int age,lock;
+							size_t linesize;
+							splitted = FMTparser::spliter(masknage,FMTparser::rxseparator);
+							//boost::trim(masknage);
+							//boost::split(splitted, masknage, boost::is_any_of("\t "), boost::token_compress_on);
+							linesize = splitted.size();
+							inactualdevs = true;
+							for(size_t themeid = 0 ; themeid < (linesize-2); ++themeid)
 								{
-								lock = getnum<int>(strlock,constants);
+								mask+=splitted.at(themeid)+" ";
 								}
-							areas.push_back(FMTactualdevelopment(FMTmask(mask,themes),age,lock,area));
+							mask.pop_back();
+							area = getnum<double>(splitted.at(linesize-1),constants);
+							if (area>0)
+								{
+								got0area = false;
+								if (!validate(themes, mask)) continue;
+								potential_futurs = false;
+								age = getnum<int>(splitted.at(linesize-2),constants);
+								lock = 0;
+								if (FMTparser::isvalid(strlock))
+									{
+									lock = getnum<int>(strlock,constants);
+									}
+								areas.push_back(FMTactualdevelopment(FMTmask(mask,themes),age,lock,area));
+							}else {
+								got0area = true;
+								}
+								//_exhandler->raise(FMTexc::WSfutur_types,_section,mask+" at line" + to_string(_line), __LINE__, __FILE__);
 							}
-							//_exhandler->raise(FMTexc::WSfutur_types,_section,mask+" at line" + to_string(_line), __LINE__, __FILE__);
-					}
+						}
 					else if (!areas.empty() && _comment.empty())
 						{
 						potential_futurs = true;
 						}
 					}
+				//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "LAST READ LINE !!!!!!!!" << _line << "\n";
 				}
 			}
         return areas;

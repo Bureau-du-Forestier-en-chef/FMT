@@ -300,36 +300,40 @@ bool FMToutputsource::use(const FMTdevelopment& development, const FMTyields& yl
 	return false;
 	}
 
-vector<int>FMToutputsource::targets(const vector<FMTaction>& actions,
+vector<const FMTaction*>FMToutputsource::targets(const vector<FMTaction>& actions,
 			const map<string,vector<string>>& aggregates) const
 	{
-	vector<int>action_IDS;
+	vector<const FMTaction*>action_IDS;
 	if (target != FMTotar::level)
         {
-        vector<string>ordered_action(actions.size());
+        /*vector<string>ordered_action(actions.size());
         int id = 0;
         for (const FMTaction& theaction : actions)
             {
             ordered_action[id] = theaction.name;
             ++id;
-            }
+            }*/
         if (!action.empty())
         {
-            vector<string>::iterator ait = find(ordered_action.begin(), ordered_action.end(), action);
+            vector<FMTaction>::const_iterator ait = find_if(actions.begin(), actions.end(), FMTactioncomparator(action));
             if (aggregates.find(action) != aggregates.end())
             {
                 for (const string& actvalue : aggregates.at(action))
                 {
-                    vector<string>::iterator it = find(ordered_action.begin(), ordered_action.end(), actvalue);
-                    if (it != ordered_action.end())
+                   // vector<string>::iterator it = find(ordered_action.begin(), ordered_action.end(), actvalue);
+					vector<FMTaction>::const_iterator it = find_if(actions.begin(), actions.end(), FMTactioncomparator(actvalue));
+                    if (it != actions.end())
                     {
-                        action_IDS.push_back(static_cast<int>(std::distance(ordered_action.begin(), it)));
+                        //action_IDS.push_back(static_cast<int>(std::distance(ordered_action.begin(), it)));
+						action_IDS.push_back(&(*it));
                     }
 
                 }
-            }else if (ait!= ordered_action.end()){
-                action_IDS.push_back(static_cast<int>(std::distance(ordered_action.begin(),ait)));
-            }
+            }else if (ait!= actions.end())
+				{
+					action_IDS.push_back(&(*ait));
+					//action_IDS.push_back(static_cast<int>(std::distance(ordered_action.begin(),ait)));
+				}
         }
         }
 	return action_IDS;
@@ -344,6 +348,24 @@ bool FMToutputsource::useoutedges() const
 	{
 	return (target == FMTotar::actual);
 	}
+
+/*vector<size_t>FMToutputsource::getsuperset(const vector<FMTaction>& actions,
+	const map<string, vector<string>>& aggregates, const int& period) const
+	{
+	vector<size_t>supersets;
+	vector<string>actionsname;
+	if (aggregates.find(action)!=aggregates.end())
+		{
+		actionsname = aggregates.at(action);
+	}
+	else if (!action.empty())
+		{
+		actionsname.push_back(action);
+		}
+
+
+
+	}*/
 
 
 /*vector<boost::dynamic_bitset<>> FMToutputsource::getclassifiers(const vector<FMTaction>& actions,
@@ -545,7 +567,9 @@ size_t FMToutputsource::hash(int period) const
 	return seed;
 	}
 
+
 FMToutputsourcecomparator::FMToutputsourcecomparator(bool lvariable) : variable(lvariable) {}
+
 bool FMToutputsourcecomparator::operator()(const FMToutputsource& source) const
 	{
 	if (variable)
@@ -556,6 +580,8 @@ bool FMToutputsourcecomparator::operator()(const FMToutputsource& source) const
 	}
 	return false;
 	}
+
+
 
 
 
