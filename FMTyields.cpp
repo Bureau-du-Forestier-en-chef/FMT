@@ -126,7 +126,7 @@ map<string, double>FMTyields::get(const FMTdevelopment& dev,
 	{
 	map<string, double>values;
 	const vector<const FMTyieldhandler*>datas = this->findsets(dev.mask);
-	const FMTmask resumemask = this->filtermask(dev.mask);
+	//const FMTmask resumemask = this->filtermask(dev.mask);
 	if (!datas.empty() && !targets.empty())
 	{
 		for (const string& name : targets)
