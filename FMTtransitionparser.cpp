@@ -208,7 +208,8 @@ vector<FMTtransition> FMTtransitionparser::read(const vector<FMTtheme>& themes,c
 		vector<FMTtransition>::iterator last_transition = temp_transitions.end();
         while(transitionstream.is_open())
             {
-            line = getcleanline(transitionstream);
+            //line = getcleanline(transitionstream);
+			line = getcleanlinewfor(transitionstream, themes, constants);
             if (!line.empty())
                 {
 				//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << line << "\n";
