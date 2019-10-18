@@ -9,6 +9,7 @@
 #include "FMTwsParser.h"
 #include "FMTModels.h"
 #include "FMTSpatials.h"
+#include "FMTversion.h"
 
 BOOST_CLASS_EXPORT(Core::FMTmask)
 BOOST_CLASS_EXPORT(Core::FMTtheme)
@@ -42,6 +43,7 @@ BOOST_CLASS_EXPORT(Models::FMTsesmodel)
 #include "PYexportWSParser.h"
 #include "PYexportGraph.h"
 #include "PYexportModel.h"
+#include "PYexportVersion.h"
 
 extern "C"
 {
@@ -69,7 +71,8 @@ extern "C"
 		exportModel();
         //Parser
 		exportWSParser();
-
+		//Version
+		exportVersion();
         }
 
 }

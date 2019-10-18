@@ -43,6 +43,7 @@ int FMTversion::getpatch()
 	{
 	return API_PATCH;
 	}
+
 string FMTversion::getversion()
 	{
 	return to_string(getmajor()) + "." + to_string(getminor()) + "." + to_string(getpatch());
@@ -55,7 +56,7 @@ bool FMTversion::isatleast(int major, int minor, int patch)
 		}
 	return false;
 	}	
-bool FMTversion::hashfeature(const string& name)
+bool FMTversion::hasfeature(const string& name)
 	{
 	return false;
 	}

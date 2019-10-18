@@ -45,7 +45,7 @@ class FMTversion
 		static int getpatch();
 		static string getversion();
 		static bool isatleast(int major, int minor, int patch);
-		static bool hashfeature(const string& name);
+		static bool hasfeature(const string& name);
 	};
 }
 
