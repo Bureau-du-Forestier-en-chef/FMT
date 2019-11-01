@@ -100,7 +100,8 @@ class FMTgraph
 		mutable std::unordered_map<size_t,vector<FMTvertex_descriptor>>nodescache;
         FMTgraphstats stats;
 		void updatevarsmap(map<int,double>& variables,const int& var,const double& coef) const;
-		size_t geterasedperiods() const;
+		vector<std::unordered_map<size_t, FMTvertex_descriptor>>::iterator getfirstblock();
+		vector<std::unordered_map<size_t, FMTvertex_descriptor>>::const_iterator getfirstconstblock() const;
     public:
         FMTgraph();
         ~FMTgraph()=default;
@@ -160,7 +161,8 @@ class FMTgraph
 		void setstats(const FMTgraphstats& newstats);
 		FMTgraphstats buildschedule(const FMTmodel& model, std::queue<FMTvertex_descriptor> actives,
 			const FMTschedule& schedule);
-		FMTgraphstats eraseperiod();
+		FMTgraphstats eraseperiod(vector<int>& deletedconstraints,
+								vector<int>&deletedvariables);
 		bool empty() const;
 		std::queue<FMTvertex_descriptor> getactiveverticies() const;
 		const std::unordered_map<size_t, FMTvertex_descriptor>& getperiodverticies(int period) const;
@@ -190,6 +192,9 @@ class FMTgraph
                               const FMTcoordinate& localisation, const int period) const;
 		bool sameedgesas(const FMTgraph& rhs) const;
 		size_t buildoutputscache(const FMTmodel& model, const vector<const FMToutput*>& outputs);
+		void updatematrixindex(const vector<int>& removedvariables,
+			const vector<int>& removedconstraints);
+		int getfirstactiveperiod() const;
     };
 }
 #endif // FMTGRAPH_H

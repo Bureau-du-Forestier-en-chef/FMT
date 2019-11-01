@@ -284,7 +284,11 @@ namespace Exception
 				_level = FMTlev::FMT_Warning;
 				++_warningcount;
 				break;
-
+			case FMTexc::FMTunboundedperiod:
+				msg += "Unbounded replanning period: " + message;
+				_level = FMTlev::FMT_logic;
+				++_errorcount;
+				break;
 			default:
 				_exception = FMTexc::None;
 				_level = FMTlev::FMT_None;

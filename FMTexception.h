@@ -114,7 +114,8 @@ enum FMTexc
 	FMTmissingobjective = 46,
 	FMTunsupported_objective = 47,
 	FMTinvalid_constraint = 48,
-	WSemptybound = 49
+	WSemptybound = 49,
+	FMTunboundedperiod = 50
     };
 
 class FMTexception : public std::exception

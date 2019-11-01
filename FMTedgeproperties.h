@@ -53,7 +53,8 @@ namespace Graph
 			FMTedgeproperties& operator = (const FMTedgeproperties& rhs);
 			bool isaction(const vector<FMTaction>& actions,
 				const FMTaction& rhsaction) const;
-			int getvariable() const;
+			int getvariableID() const;
+			void setvariableID(const int& newvariableID);
 			int getactionID() const;
 			double getproportion() const;
 			FMTedgeproperties(int laction,

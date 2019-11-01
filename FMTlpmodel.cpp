@@ -393,7 +393,7 @@ namespace Models
         for (const auto& descriptors : graph.getperiodverticies(period))
             {
             const FMTvertex_descriptor vertex_descriptor = descriptors.second;
-			map<int,int>variables = graph.getoutvariables(vertex_descriptor);
+			const map<int,int>variables = graph.getoutvariables(vertex_descriptor);
 			for (map<int, int>::const_iterator varit = variables.begin(); varit != variables.end();varit++)
 				{
 				if (std::find(variable_index.begin(), variable_index.end(), varit->second)== variable_index.end())
@@ -409,6 +409,35 @@ namespace Models
         }
     return false;
 	}
+
+	bool FMTlpmodel::isperiodbounded(int period) const
+		{
+		if (graph.size() > period)
+			{
+			size_t totaledges = 0;
+			size_t boundededges = 0;
+			const double* columnsupperbounds = solverinterface->getColUpper();
+			const double* columnslowerbounds = solverinterface->getColLower();
+			for (const auto& descriptors : graph.getperiodverticies(period))
+				{
+				const FMTvertex_descriptor& vertex_descriptor = descriptors.second;
+				const map<int, int>variables = graph.getoutvariables(vertex_descriptor);
+				for (map<int, int>::const_iterator varit = variables.begin(); varit != variables.end(); varit++)
+					{
+					if (*(columnsupperbounds + varit->second) == *(columnslowerbounds + varit->second))
+						{
+						++boundededges;
+						++totaledges;
+						}
+					}
+				}
+			if (boundededges == totaledges)
+				{
+				return true;
+				}
+			}
+		return false;
+		}
 
 	bool FMTlpmodel::unboundsolution(int period)
 		{
@@ -982,7 +1011,9 @@ namespace Models
 		solvertype(lsolvertype),
 		graph(FMTgraphbuild::nobuild),
 		solverinterface(),
-		elements()
+		elements(),
+		deletedconstraints(),
+		deletedvariables()
 	{
 		buildsolverinterface();
 	}
@@ -992,7 +1023,9 @@ namespace Models
 		solvertype(),
 		graph(FMTgraphbuild::nobuild),
 		solverinterface(),
-		elements()
+		elements(),
+		deletedconstraints(),
+		deletedvariables()
 	{
 
 	}
@@ -1002,7 +1035,9 @@ namespace Models
 		solvertype(rhs.solvertype),
 		graph(rhs.graph),
 		solverinterface(),
-		elements(rhs.elements)
+		elements(rhs.elements),
+		deletedconstraints(rhs.deletedconstraints),
+		deletedvariables(rhs.deletedvariables)
 	{
 		copysolverinterface(rhs.solverinterface);
 	}
@@ -1028,7 +1063,9 @@ namespace Models
 			graph == rhs.graph &&
 			solvertype == rhs.solvertype &&
 			solverinterface == rhs.solverinterface &&
-			elements == rhs.elements);
+			elements == rhs.elements && 
+			deletedconstraints == rhs.deletedconstraints &&
+			deletedvariables == rhs.deletedvariables);
 	}
 
 	bool FMTlpmodel::operator != (const FMTlpmodel& rhs) const
@@ -1175,6 +1212,8 @@ namespace Models
 			FMTmodel::operator = (rhs);
 			solvertype = rhs.solvertype;
 			graph = rhs.graph;
+			deletedconstraints = rhs.deletedconstraints;
+			deletedvariables = rhs.deletedvariables;
 			copysolverinterface(rhs.solverinterface);
 		}
 		return *this;
@@ -1350,6 +1389,8 @@ bool FMTlpmodel::locatenodes(const vector<FMToutputnode>& nodes, int period,
             int last_period = 0;
 			if (graph.constraintlenght(constraint, first_period, last_period))
 				{
+
+
 				//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << first_period << " " << last_period << "\n";
 				FMTconstrainttype constraint_type = constraint.getconstrainttype();
 				double averagefactor = 1;
@@ -1378,7 +1419,6 @@ bool FMTlpmodel::locatenodes(const vector<FMToutputnode>& nodes, int period,
 					{
 					++last_period;
 					}
-
 
 				for (int period = first_period; period <= last_period; ++period)
 					{
@@ -1523,7 +1563,7 @@ bool FMTlpmodel::locatenodes(const vector<FMToutputnode>& nodes, int period,
 		return graph.getstats();
 		}
 
-	FMTgraphstats FMTlpmodel::removeconstraint(const FMTconstraint& constraint, int period)
+	FMTgraphstats FMTlpmodel::eraseconstraint(const FMTconstraint& constraint, int period)
 		{
 		//clear node variables caching 
 		if (elements.size() > period && elements.at(period).find(constraint.hash())!= elements.at(period).end())
@@ -1538,12 +1578,11 @@ bool FMTlpmodel::locatenodes(const vector<FMToutputnode>& nodes, int period,
 				{
 				maxrowid = *max_element(all_elements.at(FMTmatrixelement::constraint).begin(), all_elements.at(FMTmatrixelement::constraint).end());
 				removedrow = static_cast<int>(all_elements.at(FMTmatrixelement::constraint).size());
-				solverinterface->deleteRows(removedrow, &all_elements.at(FMTmatrixelement::constraint)[0]);
+				//solverinterface->deleteRows(removedrow, &all_elements.at(FMTmatrixelement::constraint)[0]);
+				deletedconstraints.insert(deletedconstraints.end(), all_elements.at(FMTmatrixelement::constraint).begin(), all_elements.at(FMTmatrixelement::constraint).end());
 				graph.getstatsptr()->rows -= removedrow;
 				graph.getstatsptr()->output_rows -= removedrow;
 				}
-			
-
 			if (!all_elements.at(FMTmatrixelement::goalvariable).empty())
 				{
 				maxcolid = *max_element(all_elements.at(FMTmatrixelement::goalvariable).begin(), all_elements.at(FMTmatrixelement::goalvariable).end());
@@ -1578,58 +1617,101 @@ bool FMTlpmodel::locatenodes(const vector<FMToutputnode>& nodes, int period,
 			if (!colstoremove.empty())
 				{
 				int colssize = static_cast<int>(colstoremove.size());
-				solverinterface->deleteCols(colssize, &colstoremove[0]);
+				//solverinterface->deleteCols(colssize, &colstoremove[0]); cant delete piece by piece
+				deletedvariables.insert(deletedvariables.end(), colstoremove.begin(), colstoremove.end());
 				graph.getstatsptr()->cols-= colssize;
 				graph.getstatsptr()->output_cols -= colssize;
 				}
-
-
-			for (size_t locperiod = period; locperiod < elements.size(); ++locperiod)
-					{
-					for (std::unordered_map<size_t, vector<vector<int>>>::iterator elit = elements.at(locperiod).begin(); elit != elements.at(locperiod).end(); elit++)
-						{
-						if (maxrowid!=-1)
-							{
-							for (int& rowid : elit->second.at(FMTmatrixelement::constraint))
-								{
-									if (rowid > maxrowid)
-									{
-										rowid -= removedrow;
-									}
-								}
-							}
-						if (maxcolid!=-1)
-							{
-							int rcolsize = static_cast<int>(colstoremove.size());
-							for (int& colid : elit->second.at(FMTmatrixelement::levelvariable))
-								{
-								if (colid > maxcolid)
-									{
-									colid -= rcolsize;
-									}
-								}
-							for (int& colid : elit->second.at(FMTmatrixelement::objectivevariable))
-								{
-									if (colid > maxcolid)
-									{
-										colid -= rcolsize;
-									}
-								}
-							for (int& colid : elit->second.at(FMTmatrixelement::goalvariable))
-								{
-									if (colid > maxcolid)
-									{
-										colid -= rcolsize;
-									}
-								}
-
-							}
-				
-						}
-					}
 			}
 		return graph.getstats();
 		}
+
+	void FMTlpmodel::updateconstraintsmapping(const vector<int>& Dvariables, const vector<int>& Dconstraints)
+		{
+		if (!Dvariables.empty() || !Dconstraints.empty())
+			{
+			vector<std::unordered_map<size_t, vector<vector<int>>>>::iterator periodit = elements.begin();
+			while (periodit!= elements.end())
+				{
+				for (std::unordered_map<size_t, vector<vector<int>>>::iterator constraintit = periodit->begin(); constraintit != periodit->end(); constraintit++)
+					{
+					if (!Dconstraints.empty())
+						{
+						updatematrixelements(constraintit->second.at(FMTmatrixelement::constraint), Dconstraints);
+						}
+					if (!Dvariables.empty())
+						{
+						//need a function here!
+						updatematrixelements(constraintit->second.at(FMTmatrixelement::levelvariable), Dvariables);
+						updatematrixelements(constraintit->second.at(FMTmatrixelement::objectivevariable), Dvariables);
+						updatematrixelements(constraintit->second.at(FMTmatrixelement::goalvariable), Dvariables);
+						}
+					}
+				++periodit;
+				}
+			}
+		}
+
+	void FMTlpmodel::updatematrixelements(vector<int>& matrixelements, const vector<int>& deletedelements) const
+		{
+		for (int& elementvalue : matrixelements)
+			{
+			int value = 0;
+			vector<int>::const_iterator constraintitdelete = deletedelements.begin();
+			while (constraintitdelete != deletedelements.end() && elementvalue > *constraintitdelete)
+				{
+				--value;
+				++constraintitdelete;
+				}
+			elementvalue -= value;
+			}
+		}
+
+	bool FMTlpmodel::updatematrixngraph()
+		{
+		if (!deletedconstraints.empty() || !deletedvariables.empty())
+			{
+			sort(deletedconstraints.begin(), deletedconstraints.end());
+			sort(deletedvariables.begin(), deletedvariables.end());
+			graph.updatematrixindex(deletedvariables, deletedconstraints);
+			updateconstraintsmapping(deletedvariables, deletedconstraints);
+			//Now you can safely delete stuff in the matrix!
+			//Rows first!
+			solverinterface->deleteRows(static_cast<int>(deletedconstraints.size()), &deletedconstraints[0]);
+			//Cols
+			solverinterface->deleteCols(static_cast<int>(deletedvariables.size()), &deletedvariables[0]);
+			//Now clear the deleted
+			deletedconstraints.clear();
+			deletedvariables.clear();
+			return true;
+			}
+		return false;
+		}
+
+	FMTgraphstats FMTlpmodel::eraseperiod()
+		{
+		//Check that a solution has been set to the period 1 before doing anything!!!!
+		int firstperiod = graph.getfirstactiveperiod();
+		if ((firstperiod == 0 && isperiodbounded(firstperiod+1)) || (firstperiod != 0 && isperiodbounded(firstperiod)))
+			{
+			if (firstperiod == 0)
+				{
+				graph.eraseperiod(deletedconstraints, deletedvariables);
+				++firstperiod;
+				}
+			//Delete all constraint starting to period 0!
+			for (const FMTconstraint& constraint : constraints)
+				{
+				this->eraseconstraint(constraint, firstperiod);
+				}
+			graph.eraseperiod(deletedconstraints, deletedvariables);
+			this->updatematrixngraph(); //can be before adding constraints or buildperiod or solve but only usefull if the guy is insane!
+		}else {
+			int badperiod = max(firstperiod,1);
+			_exhandler->raise(FMTexc::FMTunboundedperiod, FMTwssect::Empty, to_string(badperiod), __LINE__, __FILE__);
+			}
+		 return graph.getstats();
+		 }
 
      void FMTlpmodel::locatelevels(const vector<FMToutputnode>& nodes,int period,
             /*vector<int>& variables,vector<double>& coefs*/map<int,double>& variables,const FMTconstraint& constraint)
@@ -1897,63 +1979,80 @@ bool FMTlpmodel::locatenodes(const vector<FMToutputnode>& nodes, int period,
 		vector<int>sumvariables;
 		vector<double>sumcoefficiants;
 		summarize(indexes,/* coefs,*/ sumvariables, sumcoefficiants);
-		//FMTgraphstats oldstats = graph.getstats();
 		FMTgraphstats* stats = graph.getstatsptr();
-		if (element_type == FMTmatrixelement::constraint)
+		//Check if the constraint already exist if so then modify the row or col parameters...
+		//Check also if period == -1.....
+		/*int checkperiod = 0;
+		if (period>=0)
 			{
-				element_id = stats->rows;
-				solverinterface->addRow(int(sumvariables.size()), &sumvariables[0], &sumcoefficiants[0], lowerbound, upperbound);
-				++stats->rows;
-				++stats->output_rows;
+			checkperiod = period;
+			}
+		if (checkperiod < elements.size() && 
+			elements[checkperiod].find(constraint.hash()) != elements[checkperiod].end() &&
+			elements[checkperiod][constraint.hash()].size() >element_type &&
+			!elements[checkperiod][constraint.hash()][element_type].empty())
+			{*/
+			/*if (element_type == FMTmatrixelement::constraint)
+				{
+				element_id = *(elements[checkperiod][constraint.hash()][element_type].begin());
+				solverinterface->setRowBounds(element_id, lowerbound, upperbound);
+				//Need to change columns parameters of rows... 
 			}else {
-				element_id = stats->cols;
-				solverinterface->addCol(0, &sumvariables[0], &sumcoefficiants[0], lowerbound, upperbound, 0);
-				++stats->cols;
-				++stats->output_cols;
-			}
-			//graph.setstats(oldstats);
-			//listing
-			//if period = -1 then add it to all periods!
-		if (elements.size() != (graph.size() - 1) && period >= elements.size()) //just for resizing!
-			{
-				size_t location = 0;
-				if (period < 0)
-				{
-					location = graph.size();
-				}
-				else {
-					location = period + 1;
-				}
-				size_t to_resize = location - elements.size();
-				/*Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "period: " << period << "\n";
-				Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "location: " << location << "\n";
-				Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "elements: " << elements.size() << "\n";
-				Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "Resize size: " << to_resize << "\n";*/
-				if (to_resize > 0)
-				{
-					for (size_t id = 0; id < to_resize; ++id)
-					{
-						elements.push_back(std::unordered_map<size_t, vector<vector<int>>>());
-						//elements.push_back(vector<std::unordered_map<size_t,int>>(FMTmatrixelement::nr_items));
-					}
-				}
 
-			}
-			int starting = period;
-			int stoping = period + 1;
-			if (period < 0) //add to all reference!!
-			{
-				starting = 0;
-				stoping = static_cast<int>(elements.size());
-			}
-			for (int locid = starting; locid < stoping; ++locid)
-			{
-				if (elements[locid].find(constraint.hash()) == elements[locid].end())
+				}*/
+			//}else{
+
+			if (element_type == FMTmatrixelement::constraint)
 				{
-					elements[locid][constraint.hash()] = vector<vector<int>>(FMTmatrixelement::nr_items);
+					element_id = stats->rows;
+					solverinterface->addRow(int(sumvariables.size()), &sumvariables[0], &sumcoefficiants[0], lowerbound, upperbound);
+					++stats->rows;
+					++stats->output_rows;
+				}else {
+					element_id = stats->cols;
+					solverinterface->addCol(0, &sumvariables[0], &sumcoefficiants[0], lowerbound, upperbound, 0);
+					++stats->cols;
+					++stats->output_cols;
 				}
-				elements[locid][constraint.hash()][element_type].push_back(element_id);
-			}
+				//graph.setstats(oldstats);
+				//listing
+				//if period = -1 then add it to all periods!
+			if (elements.size() != (graph.size() - 1) && period >= elements.size()) //just for resizing!
+				{
+					size_t location = 0;
+					if (period < 0)
+					{
+						location = graph.size();
+					}
+					else {
+						location = period + 1;
+					}
+					size_t to_resize = location - elements.size();
+					if (to_resize > 0)
+					{
+						for (size_t id = 0; id < to_resize; ++id)
+						{
+							elements.push_back(std::unordered_map<size_t, vector<vector<int>>>());
+						}
+					}
+
+				}
+				int starting = period;
+				int stoping = period + 1;
+				if (period < 0) //add to all reference!!
+				{
+					starting = 0;
+					stoping = static_cast<int>(elements.size());
+				}
+				for (int locid = starting; locid < stoping; ++locid)
+				{
+					if (elements[locid].find(constraint.hash()) == elements[locid].end())
+					{
+						elements[locid][constraint.hash()] = vector<vector<int>>(FMTmatrixelement::nr_items);
+					}
+					elements[locid][constraint.hash()][element_type].push_back(element_id);
+				}
+			//}
         return element_id;
         }
 
@@ -1969,6 +2068,11 @@ bool FMTlpmodel::locatenodes(const vector<FMToutputnode>& nodes, int period,
 	FMTgraphstats FMTlpmodel::getstats() const
 		{
 		return graph.getstats();
+		}
+
+	int FMTlpmodel::getfirstactiveperiod() const
+		{
+		return graph.getfirstactiveperiod();
 		}
 
 

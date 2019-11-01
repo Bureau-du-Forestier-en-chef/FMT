@@ -46,7 +46,6 @@ class FMTgraphstats
 		ar & BOOST_SERIALIZATION_NVP(transfer_rows);
 		ar & BOOST_SERIALIZATION_NVP(output_rows);
 		ar & BOOST_SERIALIZATION_NVP(output_cols);
-		ar & BOOST_SERIALIZATION_NVP(erasedperiods);
 	}
 	public:
 		int cols;
@@ -56,7 +55,6 @@ class FMTgraphstats
 		int transfer_rows;
 		int output_rows;
 		int output_cols;
-		size_t erasedperiods;
 		FMTgraphstats();
 		FMTgraphstats(const unique_ptr<OsiSolverInterface>& solverinterface,
 			const FMTadjacency_list& graph,

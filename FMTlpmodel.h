@@ -102,6 +102,8 @@ class FMTlpmodel : public FMTmodel
 		//Save the matrix columnes / rows / column solution / row solution / objective
 		FMTserializablematrix matrix(solverinterface);
 		ar & BOOST_SERIALIZATION_NVP(matrix);
+		ar & BOOST_SERIALIZATION_NVP(deletedconstraints);
+		ar & BOOST_SERIALIZATION_NVP(deletedvariables);
 		}
 	template<class Archive>
 	void load(Archive& ar, const unsigned int version)
@@ -115,6 +117,8 @@ class FMTlpmodel : public FMTmodel
 		ar & BOOST_SERIALIZATION_NVP(matrix);
 		buildsolverinterface();
 		matrix.setmatrix(solverinterface);
+		ar & BOOST_SERIALIZATION_NVP(deletedconstraints);
+		ar & BOOST_SERIALIZATION_NVP(deletedvariables);
 		}
 	BOOST_SERIALIZATION_SPLIT_MEMBER()
 	FMTgraph graph; //The Type 3 Graph
@@ -122,8 +126,8 @@ class FMTlpmodel : public FMTmodel
 	unique_ptr<OsiSolverInterface>solverinterface;//The osisolver interface Abstract class (constraints/objectives/matrix ....LP)
 	vector<std::unordered_map<size_t,
 		vector<vector<int>>>>elements;//Locations of the constraints and variables in the matrix for the constraints / objective
-	//mutable std::unordered_map<size_t,
-	//	map<int, double>>nodevariables;//Only for cashing variables location related to nodes...
+	vector<int>deletedconstraints;
+	vector<int>deletedvariables;
 	void buildsolverinterface();
 	void copysolverinterface(const unique_ptr<OsiSolverInterface>& solver_ptr);
 	bool summarize(/*vector<int> variables,vector<double> coefficiants*/const map<int, double>& variables ,
@@ -144,6 +148,9 @@ class FMTlpmodel : public FMTmodel
         void locatelevels(const vector<FMToutputnode>& nodes,int period,map<int, double>& variables,const FMTconstraint& constraint);
 		bool locatenodes(const vector<FMToutputnode>& nodes, int period, map<int, double>& variables,double multiplier = 1) const;
 		FMTtheme locatestatictheme() const;
+		void updatematrixelements(vector<int>& matrixelements, const vector<int>& deletedelements) const;
+		void updateconstraintsmapping(const vector<int>& Dvariables,const vector<int>& Dconstraints);
+		bool updatematrixngraph();
 	public:
 		FMTlpmodel(const FMTmodel& base, FMTsolverinterface lsolvertype);
 		FMTlpmodel();
@@ -152,6 +159,7 @@ class FMTlpmodel : public FMTmodel
 		bool setsolution(int period, const FMTschedule& schedule);
 		bool boundsolution(int period);
 		bool unboundsolution(int period);
+		bool isperiodbounded(int period) const;
 		FMTschedule getsolution(int period) const;
 		FMTgraphstats getstats() const;
 		bool operator == (const FMTlpmodel& rhs) const;
@@ -162,7 +170,9 @@ class FMTlpmodel : public FMTmodel
 			bool forcepartialbuild = false);
 		FMTgraphstats setobjective(const FMTconstraint& objective);
 		FMTgraphstats setconstraint(const FMTconstraint& constraint);
-		FMTgraphstats removeconstraint(const FMTconstraint& constraint, int period);
+		FMTgraphstats eraseconstraint(const FMTconstraint& constraint, int period);
+		FMTgraphstats eraseperiod();
+		int getfirstactiveperiod() const;
 		/*bool unboundconstraint(const FMTconstraint& constraint, int period);
 		bool boundconstraint(const FMTconstraint& constraint, int period);*/
 		size_t buildoutputscache(const vector<FMToutput>& outputs);

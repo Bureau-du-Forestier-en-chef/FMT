@@ -92,7 +92,9 @@ bool FMTgraph::operator == (const FMTgraph& rhs) const
        if (buildtype == rhs.buildtype &&
              stats == rhs.stats)
              {
-             for (size_t location = 0 ; location < developments.size(); ++location)
+		   vector<std::unordered_map<size_t, FMTvertex_descriptor>>::const_iterator devsit = this->getfirstconstblock();
+		   size_t location = 0;
+            while (devsit!= developments.end())
                     {
                     for (std::unordered_map<size_t, FMTvertex_descriptor>::const_iterator it = developments.at(location).begin() ; it != developments.at(location).end(); it++)
                            {
@@ -121,6 +123,8 @@ bool FMTgraph::operator == (const FMTgraph& rhs) const
                                         }
                                   }
                            }
+					++location;
+					++devsit;
                     }
              return true;
              }
@@ -140,8 +144,8 @@ FMTgraphbuild FMTgraph::getbuildtype() const
 
 bool FMTgraph::containsdevelopment(const FMTdevelopment& developement) const
 	{
-		return ((developments.size() > (developement.period-stats.erasedperiods)) &&
-			developments.at((developement.period-stats.erasedperiods)).find(boost::hash<FMTdevelopment>()(developement)) != developments.at((developement.period-stats.erasedperiods)).end());
+		return ((developments.size() > (developement.period)) &&
+			developments.at((developement.period)).find(boost::hash<FMTdevelopment>()(developement)) != developments.at((developement.period)).end());
 	}
 
 std::queue<FMTvertex_descriptor> FMTgraph::initialize(const vector<FMTactualdevelopment>& actdevelopments)
@@ -402,7 +406,7 @@ vector<FMTactualdevelopment> FMTgraph::getperiodstopdev(const int location,const
 
 FMTvertex_descriptor FMTgraph::getdevelopment(const FMTdevelopment& developement) const
 	{
-		return developments.at(developement.period-stats.erasedperiods).at(boost::hash<FMTdevelopment>()(developement));
+		return developments.at(developement.period).at(boost::hash<FMTdevelopment>()(developement));
 	}
 
 const FMTdevelopment& FMTgraph::getdevelopment(const FMTvertex_descriptor& descriptor) const
@@ -417,7 +421,7 @@ FMTvertex_descriptor FMTgraph::adddevelopment(const FMTfuturdevelopment& futurde
 			int constraint_id = -1;//stats.rows;//getnumedges();
 			const FMTvertexproperties properties(futurdevelopement, constraint_id);
 			FMTvertex_descriptor newvertex = add_vertex(properties, data);
-			developments[futurdevelopement.period - stats.erasedperiods][boost::hash<FMTdevelopment>()(futurdevelopement)] = newvertex;
+			developments[futurdevelopement.period][boost::hash<FMTdevelopment>()(futurdevelopement)] = newvertex;
 			++stats.vertices;
 			return newvertex;
 		}
@@ -461,7 +465,7 @@ double FMTgraph::outarea(const FMTvertex_descriptor& out_vertex, const int& acti
 			const FMTedgeproperties& edgeprop = data[*outedge_iterator];
 			if (edgeprop.getactionID() == actionID)
 			{
-				value += *(solution + edgeprop.getvariable()) * (edgeprop.getproportion() / 100);
+				value += *(solution + edgeprop.getvariableID()) * (edgeprop.getproportion() / 100);
 			}
 		}
 		return value;
@@ -485,7 +489,7 @@ double FMTgraph::inarea(const FMTvertex_descriptor& out_vertex, const double*&  
 					}*/
 				if (edgeprop.getactionID() < 0 || !growth) //only from gorwth!!!!!! not from the operated!!!!
 				{
-					area += *(solution + edgeprop.getvariable()) * (edgeprop.getproportion() / 100);
+					area += *(solution + edgeprop.getvariableID()) * (edgeprop.getproportion() / 100);
 					//break;
 				}
 			}
@@ -517,7 +521,7 @@ bool FMTgraph::periodstop(const FMTvertex_descriptor& out_vertex) const
 	{
 		FMToutedge_iterator outedge_iterator, outedge_end;
 		const FMTvertexproperties& source_properties = data[out_vertex];
-		if ((source_properties.get().period-stats.erasedperiods)==0)
+		if ((source_properties.get().period)==0)
 			{
 			return true;
 			}
@@ -554,10 +558,10 @@ vector<FMTdevelopmentpath> FMTgraph::getpaths(const FMTvertex_descriptor& out_ve
 
 bool FMTgraph::isvalidouputnode(const FMTmodel& model,const FMToutputnode& node, vector<const FMTaction*>& action_IDS, int period) const
     {
-	if (developments.size() > period-stats.erasedperiods)//
+	if (developments.size() > period)//
 		{
 		action_IDS = node.source.targets(model.actions, model.action_aggregates);
-		if (!(period == stats.erasedperiods && !action_IDS.empty()) && !node.source.isnull(model.yields) && !node.factor.isnull(model.yields) && (!action_IDS.empty() && !node.source.getaction().empty() || node.source.getaction().empty()))
+		if (!(period == 0 && !action_IDS.empty()) && !node.source.isnull(model.yields) && !node.factor.isnull(model.yields) && (!action_IDS.empty() && !node.source.getaction().empty() || node.source.getaction().empty()))
 			{
 			return true;
 			}
@@ -574,7 +578,7 @@ bool FMTgraph::isvalidgraphnode(const FMTmodel& model, const FMTvertex_descripto
 		{
 		if (node.source.useinedges()) //in edges
 			{
-				if ((development.period == stats.erasedperiods || periodstart(vertex_descriptor)) &&
+				if ((development.period == 0 || periodstart(vertex_descriptor)) &&
 					(selected.empty() || (!selected.empty() &&
 					(((buildtype == FMTgraphbuild::schedulebuild) && development.anyoperable(selected, model.yields)) || anyoperables(vertex_descriptor, development.anyworthtestingoperability(selected,*model.actions.begin()))))))
 				{
@@ -710,7 +714,7 @@ map<int, double> FMTgraph::getvariables(const FMTmodel& model, const FMToutputno
 			{
 				double coef = 1;
 				coef = output_node.source.getcoef(development, model.yields, optimization_action, paths) * output_node.factor.getcoef(development, model.yields, optimization_action, paths) * output_node.constant;
-				if (development.period == stats.erasedperiods)
+				if (development.period == 0)
 				{
 
 					map<int, int>vars = getoutvariables(vertex);
@@ -721,7 +725,7 @@ map<int, double> FMTgraph::getvariables(const FMTmodel& model, const FMToutputno
 					for (tie(inedge_iterator, inedge_end) = in_edges(vertex, data); inedge_iterator != inedge_end; ++inedge_iterator)
 					{
 						const FMTedgeproperties& edgeprop = data[*inedge_iterator];
-						updatevarsmap(variables, edgeprop.getvariable(), (edgeprop.getproportion() / 100)*coef);
+						updatevarsmap(variables, edgeprop.getvariableID(), (edgeprop.getproportion() / 100)*coef);
 					}
 				}
 			}
@@ -771,7 +775,7 @@ map<int, int> FMTgraph::getoutvariables(const FMTvertex_descriptor& out_vertex) 
 		{
 			const FMTedgeproperties& edgeprop = data[*edge_pair.first];
 			int actionid = edgeprop.getactionID();
-			mapping[actionid] = edgeprop.getvariable();
+			mapping[actionid] = edgeprop.getvariableID();
 		}
 		return mapping;
 	}
@@ -807,7 +811,7 @@ vector<const FMTaction*>FMTgraph::selectedactions(const FMTmodel& model, const v
 
 bool FMTgraph::constraintlenght(const FMTconstraint& constraint, int& start, int& stop) const
 	{
-		start = constraint.getperiodlowerbound();
+		start = max(constraint.getperiodlowerbound(),getfirstactiveperiod());
 		stop = static_cast<int>((constraint.getperiodupperbound() > (developments.size() - 2)) ? (developments.size() - 2) : constraint.getperiodupperbound());
 		if (constraint.acrossperiod())
 		{
@@ -897,25 +901,38 @@ FMTgraphstats FMTgraph::buildschedule(const FMTmodel& model, std::queue<FMTverte
 	return (statsdiff - stats);
 }
 
-FMTgraphstats FMTgraph::eraseperiod()
+FMTgraphstats FMTgraph::eraseperiod(vector<int>&deletedconstraints,
+									vector<int>&deletedvariables)
 	{
-	for (std::unordered_map<size_t, FMTvertex_descriptor>::iterator it = developments.at(0).begin();
-			it != developments.at(0).end(); it++)
+	//erase the first non empty block of verticies and the inedges of those verticies
+	vector<std::unordered_map<size_t, FMTvertex_descriptor>>::iterator periodit = this->getfirstblock();
+	for (std::unordered_map<size_t, FMTvertex_descriptor>::iterator it = periodit->begin();
+			it != periodit->end(); it++)
 			{
 			FMTvertex_descriptor vertex_location = it->second;
+			FMTinedge_iterator inedge_iterator, inedge_end;
+			for (tie(inedge_iterator, inedge_end) = in_edges(it->second, data); inedge_iterator != inedge_end; ++inedge_iterator)
+				{
+					const FMTedgeproperties& edgeproperty = data[*inedge_iterator];
+					deletedvariables.push_back(edgeproperty.getvariableID());
+				}
 			stats.edges-=static_cast<int>(in_degree(vertex_location, data));
 			clear_in_edges(vertex_location, data);
 			}
-	for (std::unordered_map<size_t, FMTvertex_descriptor>::iterator it = developments.at(0).begin();
-			it != developments.at(0).end(); it++)
+	for (std::unordered_map<size_t, FMTvertex_descriptor>::iterator it = periodit->begin();
+			it != periodit->end(); it++)
 			{
 			FMTvertex_descriptor vertex_location = it->second;
-			remove_vertex(vertex_location, data);
-			--stats.vertices;
+			if (out_degree(vertex_location, data) == 0)// only clear nodes without outedges!!!!
+				{
+				const FMTvertexproperties& vertexproperty = data[vertex_location];
+				deletedconstraints.push_back(vertexproperty.getconstraintID());
+				remove_vertex(vertex_location, data);
+				--stats.vertices;
+				}
 			}
 	nodescache.clear();
-	developments.erase(developments.begin());
-	stats.erasedperiods += 1;
+	developments.begin()->clear(); //just clear it but keep the container!
 	return stats;
 	}
 
@@ -932,7 +949,7 @@ bool FMTgraph::empty() const
 std::queue<FMTvertex_descriptor> FMTgraph::getactiveverticies() const
 	{
 	std::queue<FMTvertex_descriptor>actives;
-	for (auto& lastperiod : developments[developments.size() - 1])
+	for (auto& lastperiod : developments.back())
 		{
 		actives.push(lastperiod.second);
 		}
@@ -975,7 +992,7 @@ bool FMTgraph::gettransferrow(const FMTvertex_descriptor& vertex_descriptor,
 	for (tie(inedge_iterator, inedge_end) = in_edges(vertex_descriptor, data); inedge_iterator != inedge_end; ++inedge_iterator)
 	{
 		FMTedgeproperties edgeprop = data[*inedge_iterator];
-		cols.push_back(edgeprop.getvariable());
+		cols.push_back(edgeprop.getvariableID());
 		//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << " FROM " << edgeprop.getvariable() << "\n";
 		cols_value.push_back((edgeprop.getproportion() / 100));
 	}
@@ -993,7 +1010,7 @@ bool FMTgraph::gettransferrow(const FMTvertex_descriptor& vertex_descriptor,
 	for (tie(outedge_iterator, outedge_end) = out_edges(vertex_descriptor, data); outedge_iterator != outedge_end; ++outedge_iterator)
 	{
 		FMTedgeproperties edgeprop = data[*outedge_iterator];
-		int edgevar = edgeprop.getvariable();
+		int edgevar = edgeprop.getvariableID();
 		//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << " STO " << edgevar << "\n";
 		if (find(locals.begin(), locals.end(), edgevar) == locals.end())
 		{
@@ -1359,13 +1376,13 @@ void FMTgraph::generatedevelopments()
 			FMTvertex_iterator vertex, vend;
 			tie(vertex, vend) = vertices(data);
 			--vend;//get to last vertex...
-			size_t max_period = (data[*vend].get().period - stats.erasedperiods);
+			size_t max_period = (data[*vend].get().period);
 			developments.resize(max_period+1);
             for (boost::tie(vertex, vend) = vertices(data); vertex != vend; ++vertex)
             {
                 const FMTvertexproperties& properties = data[*vertex];
                 const FMTdevelopment& dev = properties.get();
-				size_t period_location = (dev.period-stats.erasedperiods);
+				size_t period_location = (dev.period);
 				/*if (period_location == developments.size())
                 {
                     developments.push_back(std::unordered_map<size_t, FMTvertex_descriptor>());
@@ -1403,7 +1420,7 @@ void FMTgraph::updatevarsmap(map<int, double>& variables, const int& var, const 
 		}
 	}
 
-size_t FMTgraph::geterasedperiods() const
+/*size_t FMTgraph::geterasedperiods() const
 	{
 	size_t eperiod = 0;
 	if (!developments.empty() && !developments.at(0).empty())
@@ -1411,7 +1428,7 @@ size_t FMTgraph::geterasedperiods() const
 		eperiod = data[developments.at(0).begin()->second].get().period;
 		}
 	return eperiod;
-	}
+	}*/
 
 size_t FMTgraph::hash(size_t seed) const
 	{
@@ -1506,5 +1523,88 @@ size_t FMTgraph::buildoutputscache(const FMTmodel& model, const vector<const FMT
 	return nodescache.size();
 	}
 
+void FMTgraph::updatematrixindex(const vector<int>& removedvariables,const vector<int>& removedconstraints)
+	//When the solverinterface delete a constraint or a variable
+	//You need to update the whole graph...
+	//Call this function once ...alot of computing dones
+	{
+	//start by the first period and take precious care
+	vector<std::unordered_map<size_t, FMTvertex_descriptor>>::iterator perioddevsit = this->getfirstblock();
+	for (std::unordered_map<size_t, FMTvertex_descriptor>::iterator it = perioddevsit->begin();
+		it != perioddevsit->end(); it++)
+		{
+		FMTvertexproperties& vertexproperty = data[it->second];
+		vector<int>::const_iterator removeditconstraint = removedconstraints.begin();
+		int actualconstraint = vertexproperty.getconstraintID();
+		int toremove = 0;
+		while (removeditconstraint != removedconstraints.end() && actualconstraint > *removeditconstraint)
+			{
+			++toremove;
+			++removeditconstraint;
+			}
+		vertexproperty.setconstraintID(actualconstraint - toremove);
+		FMTinedge_iterator inedge_iterator, inedge_end;
+		for (tie(inedge_iterator, inedge_end) = in_edges(it->second, data); inedge_iterator != inedge_end; ++inedge_iterator)
+			{
+			FMTedgeproperties edgeproperty = data[*inedge_iterator];
+			vector<int>::const_iterator removeditvariable = removedvariables.begin();
+			int actualvariable = edgeproperty.getvariableID();
+			toremove = 0;
+			while (removeditvariable != removedconstraints.end() && actualvariable > *removeditvariable)
+				{
+				++toremove;
+				++removeditvariable;
+				}
+			edgeproperty.setvariableID(actualvariable - toremove);
+			}
+		}
+	//Past first periods variable are higher than largest deleted index
+	if (developments.size()>1) //dont need the while loop just clear everything!
+		{
+		int variablestoremove = static_cast<int>(removedvariables.size());
+		int constraintstoremove = static_cast<int>(removedconstraints.size());
+		++perioddevsit;
+		while (perioddevsit!= developments.end())
+			{
+			for (std::unordered_map<size_t, FMTvertex_descriptor>::iterator it = perioddevsit->begin();
+				it != perioddevsit->end(); it++)
+				{
+				FMTvertexproperties& vertexproperty = data[it->second];
+				vertexproperty.setconstraintID(vertexproperty.getconstraintID()- constraintstoremove);
+				FMTinedge_iterator inedge_iterator, inedge_end;
+				for (tie(inedge_iterator, inedge_end) = in_edges(it->second, data); inedge_iterator != inedge_end; ++inedge_iterator)
+					{
+					FMTedgeproperties edgeproperty = data[*inedge_iterator];
+					edgeproperty.setvariableID(edgeproperty.getvariableID() - variablestoremove);
+					}
+				}
+			++perioddevsit;
+			}
+		}
+	}
+
+vector<std::unordered_map<size_t, FMTvertex_descriptor>>::iterator FMTgraph::getfirstblock()
+	{
+	vector<std::unordered_map<size_t, FMTvertex_descriptor>>::iterator periodit = developments.begin();
+	while (periodit->empty())
+		{
+		++periodit;
+		}
+	return periodit;
+	}
+vector<std::unordered_map<size_t, FMTvertex_descriptor>>::const_iterator FMTgraph::getfirstconstblock() const
+	{
+	vector<std::unordered_map<size_t, FMTvertex_descriptor>>::const_iterator periodit = developments.begin();
+	while (periodit->empty())
+		{
+		++periodit;
+		}
+	return periodit;
+	}
+
+int FMTgraph::getfirstactiveperiod() const
+	{
+	return static_cast<int>(std::distance(developments.begin(), getfirstconstblock()));
+	}
 
 }

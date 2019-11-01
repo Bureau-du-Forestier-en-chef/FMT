@@ -57,9 +57,14 @@ namespace Graph
 			}
 		return false;
 		}
-	int FMTedgeproperties::getvariable() const
+	int FMTedgeproperties::getvariableID() const
 		{
 		return variableID;
+		}
+
+	void FMTedgeproperties::setvariableID(const int& newvariableID)
+		{
+		variableID = newvariableID;
 		}
 
 	int FMTedgeproperties::getactionID() const
