@@ -151,6 +151,8 @@ class FMTlpmodel : public FMTmodel
 		void updatematrixelements(vector<int>& matrixelements, const vector<int>& deletedelements) const;
 		void updateconstraintsmapping(const vector<int>& Dvariables,const vector<int>& Dconstraints);
 		bool updatematrixngraph();
+		bool ismatrixelement(const FMTconstraint& constraint,
+			const FMTmatrixelement& element_type, int period) const;
 	public:
 		FMTlpmodel(const FMTmodel& base, FMTsolverinterface lsolvertype);
 		FMTlpmodel();
@@ -178,6 +180,8 @@ class FMTlpmodel : public FMTmodel
 		size_t buildoutputscache(const vector<FMToutput>& outputs);
 		size_t buildconstraintscache(const vector<FMTconstraint>& constraints);
 		bool resolve();
+		void writeLP(const string& location) const;
+		void writeMPS(const string& location) const;
 		FMTlpmodel& operator = (const FMTlpmodel& rhs);
 		~FMTlpmodel() = default;
 	};

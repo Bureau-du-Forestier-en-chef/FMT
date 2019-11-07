@@ -198,7 +198,7 @@ FMTgraphstats FMTgraph::build(const FMTmodel& model,std::queue<FMTvertex_descrip
 			actives.pop();
 			FMTvertexproperties front_properties = data[front_vertex];
 			const FMTdevelopment active_development = front_properties.get();
-
+			//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "COLSS:!!" << statsdiff.cols << "\n";
 			int action_id = 0;
 			bool death = false;
 			for (const FMTaction& action : model.actions)
@@ -220,6 +220,7 @@ FMTgraphstats FMTgraph::build(const FMTmodel& model,std::queue<FMTvertex_descrip
 				{
 				FMTfuturdevelopment grown_up = active_development.grow();
 				FMTvertex_descriptor next_period = this->adddevelopment(grown_up); //getset
+				
 				const FMTedgeproperties newedge(-1, statsdiff.cols, 100);
 				++statsdiff.cols;
 				add_edge(front_vertex, next_period, newedge, data);
@@ -439,6 +440,7 @@ void FMTgraph::addaction(const int& actionID,
 		vector<FMTvertex_descriptor>active_vertex;
 		for (const FMTdevelopmentpath& devpath : paths)
 		{
+
 			const FMTedgeproperties newedge(actionID, variable_id, devpath.proportion);
 	
 			FMTvertex_descriptor tovertex;
@@ -902,37 +904,81 @@ FMTgraphstats FMTgraph::buildschedule(const FMTmodel& model, std::queue<FMTverte
 }
 
 FMTgraphstats FMTgraph::eraseperiod(vector<int>&deletedconstraints,
-									vector<int>&deletedvariables)
+									vector<int>&deletedvariables,
+									bool keepbounded)
 	{
 	//erase the first non empty block of verticies and the inedges of those verticies
 	vector<std::unordered_map<size_t, FMTvertex_descriptor>>::iterator periodit = this->getfirstblock();
 	for (std::unordered_map<size_t, FMTvertex_descriptor>::iterator it = periodit->begin();
 			it != periodit->end(); it++)
 			{
-			FMTvertex_descriptor vertex_location = it->second;
+		    FMTvertex_descriptor& vertex_location = it->second;
+			//if (!keepbounded || periodstart(vertex_location))
+				//{
 			FMTinedge_iterator inedge_iterator, inedge_end;
+			//vector<int>varcleared;
 			for (tie(inedge_iterator, inedge_end) = in_edges(it->second, data); inedge_iterator != inedge_end; ++inedge_iterator)
 				{
 					const FMTedgeproperties& edgeproperty = data[*inedge_iterator];
-					deletedvariables.push_back(edgeproperty.getvariableID());
+					int varvalue = edgeproperty.getvariableID();
+					if (std::find(deletedvariables.begin(), deletedvariables.end(), varvalue)== deletedvariables.end())
+						{
+						--stats.cols;
+						//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << " clearing  " << varvalue << "\n";
+						deletedvariables.push_back(varvalue);
+						//varcleared.push_back(varvalue);
+						}
+					--stats.edges;
 				}
-			stats.edges-=static_cast<int>(in_degree(vertex_location, data));
 			clear_in_edges(vertex_location, data);
-			}
-	for (std::unordered_map<size_t, FMTvertex_descriptor>::iterator it = periodit->begin();
-			it != periodit->end(); it++)
-			{
-			FMTvertex_descriptor vertex_location = it->second;
-			if (out_degree(vertex_location, data) == 0)// only clear nodes without outedges!!!!
+				//}
+			/*if (!keepbounded)
 				{
-				const FMTvertexproperties& vertexproperty = data[vertex_location];
-				deletedconstraints.push_back(vertexproperty.getconstraintID());
-				remove_vertex(vertex_location, data);
-				--stats.vertices;
-				}
+				FMToutedge_iterator outedge_iterator, outedge_end;
+				for (tie(outedge_iterator, outedge_end) =out_edges(it->second, data); outedge_iterator != outedge_end; ++outedge_iterator)
+					{
+					const FMTedgeproperties& edgeproperty = data[*outedge_iterator];
+					deletedvariables.push_back(edgeproperty.getvariableID());
+					--stats.cols;
+					--stats.edges;
+					}
+				clear_out_edges(vertex_location, data);
+				}*/
 			}
+		std::unordered_map<size_t, FMTvertex_descriptor>restingdevelopments;
+	 
+		for (std::unordered_map<size_t, FMTvertex_descriptor>::iterator it = periodit->begin();
+				it != periodit->end(); it++)
+				{
+				FMTvertex_descriptor& vertex_location = it->second;
+				FMTvertexproperties& vertexproperty = data[vertex_location];
+				const int constvalue = vertexproperty.getconstraintID();
+
+				if (constvalue >= 0)
+					{
+					--stats.rows;
+					--stats.transfer_rows;
+					//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << " nedd to delete  " << constvalue <<" "<< string(vertexproperty.get()) << "\n";
+					deletedconstraints.push_back(constvalue);
+					vertexproperty.setconstraintID(-1);
+				}/*else {
+					Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << " weird value " << constvalue << " " << string(vertexproperty.get()) << "\n";
+				}*/
+				if (!keepbounded || out_degree(vertex_location,data)==0)
+					{
+					//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << " deleting vertex  " << string(vertexproperty.get()) << "\n";
+					remove_vertex(vertex_location, data);
+					--stats.vertices;
+				}else {
+					restingdevelopments[boost::hash<FMTdevelopment>()(vertexproperty.get())] = it->second;
+					}
+				}
+		*periodit = restingdevelopments;
+		//periodit->clear();
+	//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << restingdevelopments.size() << " start with  " << periodit->size() << "\n";
+	//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << restingdevelopments.size() << " rests in  " << std::distance(developments.begin(), periodit) << "\n";
 	nodescache.clear();
-	developments.begin()->clear(); //just clear it but keep the container!
+	//developments.begin()->clear(); //just clear it but keep the container!
 	return stats;
 	}
 
@@ -993,6 +1039,7 @@ bool FMTgraph::gettransferrow(const FMTvertex_descriptor& vertex_descriptor,
 	{
 		FMTedgeproperties edgeprop = data[*inedge_iterator];
 		cols.push_back(edgeprop.getvariableID());
+		//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "new dev " << string(vertex_property.get()) <<" "<< edgeprop.getvariableID() << "\n";
 		//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << " FROM " << edgeprop.getvariable() << "\n";
 		cols_value.push_back((edgeprop.getproportion() / 100));
 	}
@@ -1529,7 +1576,7 @@ void FMTgraph::updatematrixindex(const vector<int>& removedvariables,const vecto
 	//Call this function once ...alot of computing dones
 	{
 	//start by the first period and take precious care
-	vector<std::unordered_map<size_t, FMTvertex_descriptor>>::iterator perioddevsit = this->getfirstblock();
+	/*vector<std::unordered_map<size_t, FMTvertex_descriptor>>::iterator perioddevsit = this->getfirstblock();
 	for (std::unordered_map<size_t, FMTvertex_descriptor>::iterator it = perioddevsit->begin();
 		it != perioddevsit->end(); it++)
 		{
@@ -1537,12 +1584,16 @@ void FMTgraph::updatematrixindex(const vector<int>& removedvariables,const vecto
 		vector<int>::const_iterator removeditconstraint = removedconstraints.begin();
 		int actualconstraint = vertexproperty.getconstraintID();
 		int toremove = 0;
-		while (removeditconstraint != removedconstraints.end() && actualconstraint > *removeditconstraint)
+		if (actualconstraint>=0)
 			{
-			++toremove;
-			++removeditconstraint;
+			while (removeditconstraint != removedconstraints.end() && actualconstraint > *removeditconstraint)
+				{
+				++toremove;
+				++removeditconstraint;
+				}
+			Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << " new value delete  " << actualconstraint - toremove << " " << string(vertexproperty.get()) << "\n";
+			vertexproperty.setconstraintID(actualconstraint - toremove);
 			}
-		vertexproperty.setconstraintID(actualconstraint - toremove);
 		FMTinedge_iterator inedge_iterator, inedge_end;
 		for (tie(inedge_iterator, inedge_end) = in_edges(it->second, data); inedge_iterator != inedge_end; ++inedge_iterator)
 			{
@@ -1557,30 +1608,64 @@ void FMTgraph::updatematrixindex(const vector<int>& removedvariables,const vecto
 				}
 			edgeproperty.setvariableID(actualvariable - toremove);
 			}
-		}
+
+		}*/
 	//Past first periods variable are higher than largest deleted index
-	if (developments.size()>1) //dont need the while loop just clear everything!
-		{
-		int variablestoremove = static_cast<int>(removedvariables.size());
-		int constraintstoremove = static_cast<int>(removedconstraints.size());
-		++perioddevsit;
-		while (perioddevsit!= developments.end())
+	//int variablestoremove = static_cast<int>(removedvariables.size());
+	//int constraintstoremove = static_cast<int>(removedconstraints.size());
+	//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "removed out!!!! " << constraintstoremove << "\n";
+	vector<std::unordered_map<size_t, FMTvertex_descriptor>>::iterator perioddevsit = this->getfirstblock();
+	while (perioddevsit!= developments.end())
 			{
 			for (std::unordered_map<size_t, FMTvertex_descriptor>::iterator it = perioddevsit->begin();
 				it != perioddevsit->end(); it++)
 				{
-				FMTvertexproperties& vertexproperty = data[it->second];
-				vertexproperty.setconstraintID(vertexproperty.getconstraintID()- constraintstoremove);
-				FMTinedge_iterator inedge_iterator, inedge_end;
-				for (tie(inedge_iterator, inedge_end) = in_edges(it->second, data); inedge_iterator != inedge_end; ++inedge_iterator)
+				if (!removedconstraints.empty())
 					{
-					FMTedgeproperties edgeproperty = data[*inedge_iterator];
-					edgeproperty.setvariableID(edgeproperty.getvariableID() - variablestoremove);
+		
+					FMTvertexproperties& vertexproperty = data[it->second];
+					int actualconstraint = vertexproperty.getconstraintID();
+					if (actualconstraint >= 0)
+						{
+						vector<int>::const_iterator removeditconstraint = removedconstraints.begin();
+						int toremove = 0;
+						//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "removed out old!!!! " << actualconstraint << "\n";
+						while (removeditconstraint != removedconstraints.end() && actualconstraint > *removeditconstraint)
+						{
+							++toremove;
+							++removeditconstraint;
+						}
+						//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "removed out new!!!! " << actualconstraint - toremove << "\n";
+						vertexproperty.setconstraintID(actualconstraint - toremove);
+						}
 					}
+				
+				if (!removedvariables.empty())
+					{
+	
+					FMTinedge_iterator inedge_iterator, inedge_end;
+					for (tie(inedge_iterator, inedge_end) = in_edges(it->second, data); inedge_iterator != inedge_end; ++inedge_iterator)
+						{
+						FMTedgeproperties& edgeproperty = data[*inedge_iterator];
+						vector<int>::const_iterator removeditvariable = removedvariables.begin();
+						int actualvariable = edgeproperty.getvariableID();
+						int toremove = 0;
+						//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "removed out old!!!! " << actualvariable << "\n";
+						while (removeditvariable != removedvariables.end() && actualvariable > *removeditvariable)
+						{
+							++toremove;
+							++removeditvariable;
+						}
+						//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "removed out new!!!! " << actualvariable - toremove << "\n";
+						edgeproperty.setvariableID(actualvariable - toremove);
+
+
+						}
+					}
+				
 				}
 			++perioddevsit;
 			}
-		}
 	}
 
 vector<std::unordered_map<size_t, FMTvertex_descriptor>>::iterator FMTgraph::getfirstblock()

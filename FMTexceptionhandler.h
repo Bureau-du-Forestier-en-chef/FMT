@@ -289,6 +289,11 @@ namespace Exception
 				_level = FMTlev::FMT_logic;
 				++_errorcount;
 				break;
+			case FMTexc::FMTnonaddedconstraint:
+				msg += "Constraint not added to matrix: " + message;
+				_level = FMTlev::FMT_Warning;
+				++_warningcount;
+				break;
 			default:
 				_exception = FMTexc::None;
 				_level = FMTlev::FMT_None;

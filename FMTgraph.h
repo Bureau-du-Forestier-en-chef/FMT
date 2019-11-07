@@ -162,7 +162,8 @@ class FMTgraph
 		FMTgraphstats buildschedule(const FMTmodel& model, std::queue<FMTvertex_descriptor> actives,
 			const FMTschedule& schedule);
 		FMTgraphstats eraseperiod(vector<int>& deletedconstraints,
-								vector<int>&deletedvariables);
+								vector<int>&deletedvariables,
+								bool keepbounded=false);
 		bool empty() const;
 		std::queue<FMTvertex_descriptor> getactiveverticies() const;
 		const std::unordered_map<size_t, FMTvertex_descriptor>& getperiodverticies(int period) const;
