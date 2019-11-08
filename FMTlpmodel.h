@@ -135,8 +135,8 @@ class FMTlpmodel : public FMTmodel
 	FMTgraphstats initializematrix();
 	FMTgraphstats updatematrix(const std::unordered_map<size_t, FMTvertex_descriptor>& targets,
 			const FMTgraphstats& newstats);
-		int addmatrixelement(const FMTconstraint& constraint,
-                     const FMTmatrixelement& element_type, const map<int, double>& indexes,/*const vector<int>& indexes,const vector<double>& coefs,*/
+		int getsetmatrixelement(const FMTconstraint& constraint,
+                     const FMTmatrixelement& element_type, const map<int, double>& indexes,
                      int period = -1,
                      double lowerbound = COIN_DBL_MIN,double upperbound = COIN_DBL_MAX);
         bool getgoals(const vector<string>& goalsnames,map<int,double>& index
