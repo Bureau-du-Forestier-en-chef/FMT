@@ -153,6 +153,8 @@ class FMTlpmodel : public FMTmodel
 		bool updatematrixngraph();
 		bool ismatrixelement(const FMTconstraint& constraint,
 			const FMTmatrixelement& element_type, int period) const;
+		bool issamematrixelement(const int& matrixindex, const FMTmatrixelement& element_type,
+			const double& lowerb, const double& upperb, const map<int, double>& variables) const;
 	public:
 		FMTlpmodel(const FMTmodel& base, FMTsolverinterface lsolvertype);
 		FMTlpmodel();

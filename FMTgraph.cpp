@@ -977,7 +977,7 @@ FMTgraphstats FMTgraph::eraseperiod(vector<int>&deletedconstraints,
 		//periodit->clear();
 	//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << restingdevelopments.size() << " start with  " << periodit->size() << "\n";
 	//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << restingdevelopments.size() << " rests in  " << std::distance(developments.begin(), periodit) << "\n";
-	nodescache.clear();
+	nodescache.clear(); // need to make a nodescache base on period!!!
 	//developments.begin()->clear(); //just clear it but keep the container!
 	return stats;
 	}

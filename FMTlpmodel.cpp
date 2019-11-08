@@ -1448,7 +1448,7 @@ bool FMTlpmodel::locatenodes(const vector<FMToutputnode>& nodes, int period,
 							if (upper_even_variable < 0 && lower_even_variable < 0)
 								{
 								map<int, double>localvariables;
-								upper_even_variable = getsetmatrixelement(constraint, FMTmatrixelement::objectivevariable, localvariables);
+								upper_even_variable = getsetmatrixelement(constraint, FMTmatrixelement::levelvariable, localvariables);
 								lower_even_variable = getsetmatrixelement(constraint, FMTmatrixelement::objectivevariable, localvariables);
 								localvariables[upper_even_variable] = coef_multiplier_lower;
 								localvariables[lower_even_variable] = -1;
@@ -1456,20 +1456,35 @@ bool FMTlpmodel::locatenodes(const vector<FMToutputnode>& nodes, int period,
 								lowerbound = numeric_limits<double>::lowest();
 								upperbound = 0;
 								int lower_constraint_id = getsetmatrixelement(constraint, FMTmatrixelement::constraint, localvariables,-1, lowerbound, upperbound);
+								//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "lower offf " << lower_constraint_id << "\n";
 								}
 							//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "on period " << period << "\n";
 							locatenodes(all_nodes, period, all_variables, 1);
 							all_variables[lower_even_variable] = -1;
 							lowerbound = 0;
 							upperbound = numeric_limits<double>::max();
-							int lowervalue = getsetmatrixelement(constraint, FMTmatrixelement::constraint, all_variables,
-									period, lowerbound,upperbound);
+							if (all_variables.size()==1)
+								{
+								all_variables.clear();
+								}	
+								int lowervalue = getsetmatrixelement(constraint, FMTmatrixelement::constraint, all_variables,
+									period, lowerbound, upperbound);
+								
+							//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "even all var size " << all_variables.size() << "\n";
+							//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "ID OF1 " << lowervalue<<" period: "<<period << "\n";
 							all_variables.erase(lower_even_variable);
 							all_variables[upper_even_variable] = -1;
 							lowerbound = numeric_limits<double>::lowest();
 							upperbound = 0;
-							int uppervalue = getsetmatrixelement(constraint, FMTmatrixelement::constraint, all_variables,
-								period, lowerbound, upperbound);
+							if (all_variables.size() == 1)
+								{
+								all_variables.clear();
+								}
+								int uppervalue = getsetmatrixelement(constraint, FMTmatrixelement::constraint, all_variables,
+									period, lowerbound, upperbound);
+								
+							//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "even all var size " << all_variables.size() << "\n";
+							//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "ID OF2 " << uppervalue << " period: " << period << "\n";
 							if (period == last_period)
 								{
 								return graph.getstats();
@@ -1591,13 +1606,39 @@ bool FMTlpmodel::locatenodes(const vector<FMToutputnode>& nodes, int period,
 			int removedrow = -1;
 			int maxcolid = -1;
 			vector<int>colstoremove;
+			vector<int>constraintstoremove;
 			if (!all_elements.at(FMTmatrixelement::constraint).empty())
 				{
 				//maxrowid = *max_element(all_elements.at(FMTmatrixelement::constraint).begin(), all_elements.at(FMTmatrixelement::constraint).end());
-				removedrow = static_cast<int>(all_elements.at(FMTmatrixelement::constraint).size());
-				//solverinterface->deleteRows(removedrow, &all_elements.at(FMTmatrixelement::constraint)[0]);
-				//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "removing size of "<< all_elements.at(FMTmatrixelement::constraint).size() << "\n";
-				deletedconstraints.insert(deletedconstraints.end(), all_elements.at(FMTmatrixelement::constraint).begin(), all_elements.at(FMTmatrixelement::constraint).end());
+				
+				
+				for (const int& levelid : all_elements.at(FMTmatrixelement::constraint))
+				{
+					bool removeconstraint = true;
+					for (int locator = (period + 1); locator < elements.size(); ++locator)
+					{
+						for (std::unordered_map<size_t, vector<vector<int>>>::iterator elit = elements.at(locator).begin(); elit != elements.at(locator).end(); elit++)
+						{
+							if (std::find(elit->second.at(FMTmatrixelement::constraint).begin(), elit->second.at(FMTmatrixelement::constraint).end(), levelid) != elit->second.at(FMTmatrixelement::constraint).end())
+							{
+								removeconstraint = false;
+								break;
+								//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "do not crap " << levelid << " FOR " << string(constraint) << "\n";
+							}
+						}
+						if (!removeconstraint)
+							{
+							break;
+							}
+					}
+					if (removeconstraint)
+						{
+						constraintstoremove.push_back(levelid);
+						}
+				}
+				removedrow = static_cast<int>(constraintstoremove.size());
+				//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "removing size of "<< constraintstoremove.size()<<" FOR "<<string(constraint) << "\n";
+				deletedconstraints.insert(deletedconstraints.end(), constraintstoremove.begin(), constraintstoremove.end());
 				graph.getstatsptr()->rows -= removedrow;
 				graph.getstatsptr()->output_rows -= removedrow;
 				}
@@ -1887,6 +1928,60 @@ bool FMTlpmodel::locatenodes(const vector<FMToutputnode>& nodes, int period,
 			!elements.at(period).at(constraint.hash()).at(element_type).empty()));
 	}
 
+	bool FMTlpmodel::issamematrixelement(const int& matrixindex, const FMTmatrixelement& element_type,
+		const double& lowerb, const double& upperb, const map<int, double>& variables) const
+		{
+		if (element_type== FMTmatrixelement::constraint)
+			{
+			const double* upperbr = solverinterface->getRowUpper();
+			const double* lowerbr = solverinterface->getRowLower();
+			if (lowerb != *(lowerbr+ matrixindex) && upperb != *(lowerbr + matrixindex))
+				{
+				return false;
+				}
+			const CoinPackedMatrix* rowpacked = solverinterface->getMatrixByRow();
+			const int vectorsize = rowpacked->getVectorSize(matrixindex);
+			if (vectorsize == static_cast<int>(variables.size()))
+				{
+				const int* indicies = rowpacked->getIndices();
+				const int* vectorstarts = rowpacked->getVectorStarts();
+				const double* elements = rowpacked->getElements();
+				for (int index = *(vectorstarts + matrixindex); index < (*(vectorstarts + matrixindex) + vectorsize);++index)
+					{
+					map<int, double>::const_iterator itindex = variables.find(*(indicies+index));
+					if (itindex==variables.end() || itindex->second != *(elements + index))
+						{
+						return false;
+						}
+					}
+				}
+		}else {
+			const double* upperbcols = solverinterface->getColUpper();
+			const double* lowerbcols = solverinterface->getColLower();
+			if (lowerb != *(lowerbcols + matrixindex) || upperb != *(upperbcols + matrixindex))
+				{
+				return false;
+				}
+			const CoinPackedMatrix* colpacked = solverinterface->getMatrixByCol();
+			const int vectorsize = colpacked->getVectorSize(matrixindex);
+			if (vectorsize == static_cast<int>(variables.size()))
+				{
+				const int* indicies = colpacked->getIndices();
+				const int* vectorstarts = colpacked->getVectorStarts();
+				const double* elements = colpacked->getElements();
+				for (int index = *(vectorstarts + matrixindex); index < (*(vectorstarts + matrixindex) + vectorsize); ++index)
+					{
+						map<int, double>::const_iterator itindex = variables.find(*(indicies + index));
+						if (itindex == variables.end() || itindex->second != *(elements + index))
+						{
+							return false;
+						}
+					}
+				}
+			}
+		return true;
+		}
+
 	FMTgraphstats FMTlpmodel::setobjective(const FMTconstraint& objective)
 		{
 		int first_period = 0;
@@ -2073,38 +2168,49 @@ bool FMTlpmodel::locatenodes(const vector<FMToutputnode>& nodes, int period,
 			//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "got element " << element_type << "\n";
 			//Returning existing stuff makes sense in case of replanning majority of constraints are set
 			const vector<int>& alllocalelements = elements.at(foundperiod).at(constraint.hash()).at(element_type);
-			if (alllocalelements.size()==1)
-				{
+			//if (alllocalelements.size()==1)
+				//{
 				//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "returning " << alllocalelements.at(0) << "\n";
-				return alllocalelements.at(0);
-				}
+				//return alllocalelements.at(0);
+				//}
 			//Find by bounds fit? if not add a new element then!
-			const double* upperbcols = solverinterface->getColUpper();
+			/*const double* upperbcols = solverinterface->getColUpper();
 			const double* lowerbcols = solverinterface->getColLower();
 			const double* upperbrows = solverinterface->getRowUpper();
 			const double* lowerbrows = solverinterface->getRowLower();
+			const CoinPackedMatrix* rowpacked = solverinterface->getMatrixByRow();*/
+			//int nrows = solverinterface->getNumRows();
+			//int ncols = solverinterface->getNumCols();
 			for (const int& elid : alllocalelements)
 				{
+				if (issamematrixelement(elid, element_type, lowerbound, upperbound, indexes))
+					{
+					return elid;
+					}
 				//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "EXISTING VARIABLE " << elid << "\n";
 				//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "Need " << elid << "\n";
-					if (element_type == FMTmatrixelement::constraint && 
+					/*if (element_type == FMTmatrixelement::constraint && 
 						*(upperbrows+ elid) == upperbound &&
 					    *(lowerbrows + elid) == lowerbound)
 						{
+
+
 						return elid;
-					}else if (*(upperbcols + elid) == upperbound &&
+					}else if (element_type != FMTmatrixelement::constraint && 
+						*(upperbcols + elid) == upperbound &&
 						*(lowerbcols + elid) == lowerbound)
 						{
 						return elid;
-						}
+						}*/
 				}
 		}else if (element_type == FMTmatrixelement::constraint && indexes.empty())
 			{
 			string cname = string(constraint);
 			cname.erase(std::remove(cname.begin(), cname.end(), '\n'), cname.end());
 			_exhandler->raise(FMTexc::FMTnonaddedconstraint, FMTwssect::Empty, string(cname), __LINE__, __FILE__);
-		}
-		else {
+			return -1;
+			}
+		//else {
 			//matrix
 			int element_id = 0;
 			vector<int>sumvariables;
@@ -2164,8 +2270,8 @@ bool FMTlpmodel::locatenodes(const vector<FMToutputnode>& nodes, int period,
 			}
 			//}
 			return element_id;
-			}
-		return -1;
+			///}
+		//return -1;
         }
 
     vector<vector<int>>FMTlpmodel::getmatrixelement(const FMTconstraint& constraint,int period) const
