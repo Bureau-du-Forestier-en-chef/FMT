@@ -301,10 +301,27 @@ FMTyieldhandler::operator string() const
 				if (elements.find(yld) != elements.end())
 					{
 					const FMTdata* lvalues = &elements.at(yld);
-					value = lvalues->data.back();
-					if (target < lvalues->data.size())
+					if (lvalues->getop() == FMTyieldparserop::FMTwsdiscountfactor)
 						{
-						value = lvalues->data.at(target);
+						double perioddbl = static_cast<double>(period);
+						double pertio = lvalues->data.at(1);
+						string discounttype = lvalues->getsource().at(0);
+						double rateofreturn = lvalues->data.at(1);
+						double exponant = perioddbl; //full
+						if (discounttype == "NONE")
+							{
+							exponant = perioddbl -1;
+							}else if (discounttype == "HALF")
+								{
+								exponant = perioddbl *0.5;
+								}
+						value = (1 / pow((1 + rateofreturn), pertio * exponant));
+					}else {
+						value = lvalues->data.back();
+						if (target < lvalues->data.size())
+							{
+							value = lvalues->data.at(target);
+							}
 						}
 					}
                 }else{

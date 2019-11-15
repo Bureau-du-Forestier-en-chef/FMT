@@ -30,12 +30,13 @@ namespace WSParser{
 FMTyieldparser::FMTyieldparser():FMTparser(),
     rxyieldtype(regex("^(\\*Y)([^\\s^\\t]*)([\\s\\t]*)(.+)(_OVERRIDE)|^(\\*Y)([^\\s^\\t]*)([\\s\\t]*)(.+)",regex_constants::ECMAScript|regex_constants::icase)),
     rxcomplex(regex("^([^\\s^\\t]*)([\\s\\t]*)((_RANGE)|(_MULTIPLY)|(_SUM)|(_SUBTRACT)|(_YTP)|(_MAI)|(_CAI)|(_DIVIDE)|(_EQUATION)|(_ENDPOINT))([\\s\\t]*)(\\()(.+)(\\))",regex_constants::ECMAScript|regex_constants::icase)),
-	rxeqs(regex("([\\(\\)\\-\\+\\*\\/]*)([^\\(\\)\\-\\+\\*\\/]*)"))
+	rxeqs(regex("([\\(\\)\\-\\+\\*\\/]*)([^\\(\\)\\-\\+\\*\\/]*)")),
+	rxdiscount("^(_DISCOUNTFACTOR)(\\()([\\s\\t]*[\\d]*)([^,]*)(,)([^,]*)(,)([\\s\\t]*(NONE|HALF|FULL)[\\s\\t]*)(\\))")
         {
 
         }
 
-FMTyieldparser::FMTyieldparser(const FMTyieldparser& rhs) : FMTparser(rhs),rxyieldtype(rhs.rxyieldtype),rxcomplex(rhs.rxcomplex), rxeqs(rhs.rxeqs)
+FMTyieldparser::FMTyieldparser(const FMTyieldparser& rhs) : FMTparser(rhs),rxyieldtype(rhs.rxyieldtype),rxcomplex(rhs.rxcomplex), rxeqs(rhs.rxeqs), rxdiscount(rhs.rxdiscount)
     {
 
     }
@@ -47,6 +48,7 @@ FMTyieldparser& FMTyieldparser::operator = (const FMTyieldparser& rhs)
         rxyieldtype = rhs.rxyieldtype;
         rxcomplex = rhs.rxcomplex;
 		rxeqs = rhs.rxeqs;
+		rxdiscount = rhs.rxdiscount;
         }
     return *this;
     }
@@ -99,11 +101,7 @@ FMTyieldparserop FMTyieldparser::getyldctype(const string& value) const
 								}else if (value == "_ENDPOINT")
 									{
 										return FMTyieldparserop::FMTwsendpoint;
-									}
-								/*else if (value == "_DISCOUNTFACTOR")
-									{
-										return FMTyieldparserop::FMTwsdiscountfactor;
-									}*/else{
+									}else{
                                         _exhandler->raise(FMTexc::WSinvalid_yield,_section," at line " + to_string(_line), __LINE__, __FILE__);
                                         }
     return FMTyieldparserop::FMTwsnone;
@@ -489,14 +487,40 @@ FMTyields FMTyieldparser::read(const vector<FMTtheme>& themes,const FMTconstants
 											/*if (dump.empty())
 											{*/
 												values.erase(values.begin());
-												actualyield->push_base(getnum<int>(values[0], constants));
-												values.erase(values.begin());
-												int id = 0;
-												for (const string& value : values)
-												{
-													actualyield->push_data(yldname, getnumwithproportion(value, constants, proportion, id));
-													++id;
-												}
+												//Need to check if rest of values is a _discountfactor!!!
+												string joinedvalues = boost::algorithm::join(values,"");
+												
+												smatch discountmatch;
+												if (regex_search(joinedvalues, discountmatch, rxdiscount))
+													{
+													vector<double>yielddata;
+													vector<string>sources;
+													vector<bool>stacking;
+													string percentage = boost::trim_copy(string(discountmatch[3]));
+													double valueper = getnum<double>(percentage, constants);
+													string dopercentage = string(discountmatch[4]);
+													if (dopercentage.find("%")!=string::npos)
+														{
+														valueper /= 100;
+														}
+													yielddata.push_back(valueper);
+													stacking.push_back(false);
+													string yperperiod = boost::trim_copy(string(discountmatch[6]));
+													yielddata.push_back(getnum<double>(yperperiod, constants));
+													stacking.push_back(false);
+													sources.push_back(boost::trim_copy(string(discountmatch[9])));
+													stacking.push_back(true);
+													actualyield->push_data(yldname, FMTdata(yielddata, FMTyieldparserop::FMTwsdiscountfactor,sources,stacking));
+												}else{
+													actualyield->push_base(getnum<int>(values[0], constants));
+													values.erase(values.begin());
+													int id = 0;
+													for (const string& value : values)
+														{
+														actualyield->push_data(yldname, getnumwithproportion(value, constants, proportion, id));
+														++id;
+														}
+													}
 											//}
 											}
 											}

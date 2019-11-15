@@ -668,9 +668,9 @@ vector<FMTvertex_descriptor> FMTgraph::getnode(const FMTmodel& model, FMToutputn
 				if (isvalidouputnode(model, output_node, selected, node_period))
 				{
 					//selected = selectedactions(model, action_IDS);
-					if (nodescache.find(output_node.hash(period)) != nodescache.end())
+					if (period < nodescache.size() && nodescache.at(period).find(output_node.hash()) != nodescache.at(period).end())
 					{
-						return nodescache.at(output_node.hash(period));
+						return nodescache.at(period).at(output_node.hash());
 					}else{
 						//bool inedges = false;
 						//vector<FMTdevelopmentpath>paths;
@@ -695,7 +695,13 @@ vector<FMTvertex_descriptor> FMTgraph::getnode(const FMTmodel& model, FMToutputn
 			double lookedat = static_cast<double>(lookedat_size)*0.95;
 			if (locationssize < lookedat)
 				{
-				nodescache[output_node.hash(period)] = locations;
+				size_t cachingsize = nodescache.size();
+				while (period >= cachingsize)
+					{
+					nodescache.push_back(std::unordered_map<size_t, vector<FMTvertex_descriptor>>());
+					++cachingsize;
+					}
+				nodescache[period][output_node.hash()] = locations;
 				}
 		return locations;
 	}
@@ -977,7 +983,11 @@ FMTgraphstats FMTgraph::eraseperiod(vector<int>&deletedconstraints,
 		//periodit->clear();
 	//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << restingdevelopments.size() << " start with  " << periodit->size() << "\n";
 	//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << restingdevelopments.size() << " rests in  " << std::distance(developments.begin(), periodit) << "\n";
-	nodescache.clear(); // need to make a nodescache base on period!!!
+	int firstperiod = this->getfirstactiveperiod();
+	if (static_cast<size_t>(firstperiod)< nodescache.size())
+		{
+		nodescache[firstperiod].clear();
+		}
 	//developments.begin()->clear(); //just clear it but keep the container!
 	return stats;
 	}
@@ -1443,7 +1453,7 @@ FMTgraph FMTgraph::perturbgraph(const FMTmodel& model,default_random_engine& gen
                                 const FMTcoordinate& localisation, const int period) const
     {
         FMTgraph newgraph = partialcopy(period,events,localisation);
-        newgraph.nodescache.clear();
+        newgraph.nodescache.clear(); // Besoin d'ajustement c'est basé période donc faut pas flusher tout le cache!!!
         while(this->size() != newgraph.size())
         {
             std::queue<FMTvertex_descriptor> actives = newgraph.getactiveverticies();
@@ -1541,7 +1551,13 @@ size_t FMTgraph::buildoutputscache(const FMTmodel& model, const vector<const FMT
 							periodic_targets[targetperiod].push_back(std::tuple<int,const size_t, vector<const FMTaction*>>(period,(uniquenodes.size()-1), selected));
 						}
 						//Set a empty cache for the node at this period!
-						nodescache[outnode.hash(period)] = vector<FMTvertex_descriptor>();
+						size_t cachingsize = nodescache.size();
+						while (period >= cachingsize)
+						{
+							nodescache.push_back(std::unordered_map<size_t, vector<FMTvertex_descriptor>>());
+							++cachingsize;
+						}
+						nodescache[period][outnode.hash()] = vector<FMTvertex_descriptor>();
 					}
 				}
 			}
@@ -1554,6 +1570,7 @@ size_t FMTgraph::buildoutputscache(const FMTmodel& model, const vector<const FMT
 			for (std::unordered_map<size_t, FMTvertex_descriptor>::const_iterator it = developments.at(targetit->first).begin();
 				it != developments.at(targetit->first).end(); it++)
 				{
+				//const FMTdevelopment& dev = data[it->second].get();
 				for (const std::tuple<int,const size_t, vector<const FMTaction*>>& nodenselection : targetit->second)
 					{
 					const FMToutputnode* localnode= &uniquenodes.at(std::get<1>(nodenselection));
@@ -1562,7 +1579,7 @@ size_t FMTgraph::buildoutputscache(const FMTmodel& model, const vector<const FMT
 
 					if (isvalidgraphnode(model, it->second,*localnode, std::get<2>(nodenselection)))
 						{
-						nodescache[localnode->hash(std::get<0>(nodenselection))].push_back(it->second);
+						nodescache[std::get<0>(nodenselection)][localnode->hash()].push_back(it->second);
 						}
 					}
 				}

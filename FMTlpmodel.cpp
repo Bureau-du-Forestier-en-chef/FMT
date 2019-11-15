@@ -23,6 +23,9 @@ SOFTWARE.
 */
 
 #include "FMTlpmodel.h"
+#include "mosek.h"
+#include "OsiMskSolverInterface.hpp"
+#include "OsiClpSolverInterface.hpp"
 
 namespace Models
 {
@@ -34,10 +37,10 @@ namespace Models
 		case FMTsolverinterface::CLP:
 			solverinterface = unique_ptr<OsiClpSolverInterface>(new OsiClpSolverInterface);
 			break;
-			/*case FMTsolverinterface::MOSEK:
+			case FMTsolverinterface::MOSEK:
 				solverinterface = unique_ptr<OsiMskSolverInterface>(new OsiMskSolverInterface);
 			break;
-			case FMTsolverinterface::CPLEX:
+			/*case FMTsolverinterface::CPLEX:
 				solverinterface = unique_ptr<OsiCpxSolverInterface>(new OsiCpxSolverInterface);
 			break;
 			case FMTsolverinterface::GUROBI:
@@ -2297,9 +2300,6 @@ bool FMTlpmodel::locatenodes(const vector<FMToutputnode>& nodes, int period,
 
 	bool FMTlpmodel::initialsolve()
 		{
-		//solverinterface->writeLp("C:/Users/cyrgu3/source/repos/FMT/x64/Release/test");
-		//solverinterface->readMps("T:/Donnees/Courant/Projets/Carbone/models/Modele_Prov/20190823/Data/v01_20190826/PC_PROV.mps");
-		//solverinterface->writeLp("C:/Users/cyrgu3/source/repos/FMT/x64/Release/test2");
 		switch (solvertype)
 		{
 		case FMTsolverinterface::CLP:
@@ -2341,14 +2341,14 @@ bool FMTlpmodel::locatenodes(const vector<FMToutputnode>& nodes, int period,
 					 */
 				OsiClpSolverInterface* clpsolver = dynamic_cast<OsiClpSolverInterface*>(solverinterface.get());
 				ClpSolve options;
-			options.setSolveType(ClpSolve::useBarrier);
+				options.setSolveType(ClpSolve::useBarrier);
 				//options.setSolveType(ClpSolve::useBarrierNoCross);
 				//Do no cross over then when you get optimal switch to primal crossover!!!!
 				//options.setSolveType(ClpSolve::tryDantzigWolfe);
-			//options.setSolveType(ClpSolve::usePrimalorSprint);
+				//options.setSolveType(ClpSolve::usePrimalorSprint);
 				//options.setSolveType(ClpSolve::tryBenders);
-			options.setPresolveType(ClpSolve::presolveOn);
-			//options.setSpecialOption(1, 1);
+				options.setPresolveType(ClpSolve::presolveOn);
+				//options.setSpecialOption(1, 1);
 				//options.setSpecialOption(1, 2);
 				//options.setSpecialOption(4, 3, 4); //WSMP Florida
 				//options.setSpecialOption(4, 0); //dense cholesky
@@ -2362,10 +2362,24 @@ bool FMTlpmodel::locatenodes(const vector<FMToutputnode>& nodes, int period,
 				//clpsolver->resolve();
 				}
 				break;
-				/*case FMTsolverinterface::MOSEK:
-					solverinterface = unique_ptr<OsiMskSolverInterface>(new OsiMskSolverInterface);
+				case FMTsolverinterface::MOSEK:
+					{
+					OsiMskSolverInterface* msksolver = dynamic_cast<OsiMskSolverInterface*>(solverinterface.get());
+					MSK_deletesolution(msksolver->getMutableLpPtr(), MSK_SOL_BAS);
+					MSK_putintparam(msksolver->getMutableLpPtr(), MSK_IPAR_INTPNT_STARTING_POINT, MSK_STARTING_POINT_CONSTANT);
+					MSK_putintparam(msksolver->getMutableLpPtr(), MSK_IPAR_BI_CLEAN_OPTIMIZER, MSK_OPTIMIZER_PRIMAL_SIMPLEX);
+					MSK_putdouparam(msksolver->getMutableLpPtr(), MSK_DPAR_INTPNT_TOL_PSAFE, 100.0);
+					MSK_putdouparam(msksolver->getMutableLpPtr(), MSK_DPAR_INTPNT_TOL_PATH, 1.0e-2);
+					msksolver->initialSolve();
+					if (msksolver->isLicenseError())
+						{
+						_exhandler->raise(FMTexc::FMTmissinglicense,
+							FMTwssect::Empty, " Missing Mosek License ",
+							__LINE__, __FILE__);
+						}
+					}
 				break;
-				case FMTsolverinterface::CPLEX:
+				/*case FMTsolverinterface::CPLEX:
 					solverinterface = unique_ptr<OsiCpxSolverInterface>(new OsiCpxSolverInterface);
 				break;
 				case FMTsolverinterface::GUROBI:

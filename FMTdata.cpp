@@ -159,6 +159,9 @@ FMTdata::operator string() const
 		case FMTyieldparserop::FMTwsendpoint:
 		value += "_ENDPOINT(";
 		break;
+		case FMTyieldparserop::FMTwsdiscountfactor:
+		value += "_DISCOUNTFACTOR(";
+		break;
         default:
         break;
         }

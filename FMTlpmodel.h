@@ -38,15 +38,15 @@ SOFTWARE.
 #include "FMToutputproperties.h"
 #include "FMTdevelopmentpath.h"
 
-#include "OsiClpSolverInterface.hpp"
+
 #include "FMTserializablematrix.h"
 
 
 /*
 #include "OsiCpxSolverInterface.hpp"
-#include "OsiGrbSolverInterface.hpp"
+#include "OsiGrbSolverInterface.hpp"*/
 #include "OsiMskSolverInterface.hpp"
-*/
+
 #include "OsiSolverInterface.hpp"
 #include <boost/serialization/split_member.hpp>
 #include <boost/serialization/unordered_map.hpp>

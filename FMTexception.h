@@ -116,7 +116,8 @@ enum FMTexc
 	FMTinvalid_constraint = 48,
 	WSemptybound = 49,
 	FMTunboundedperiod = 50,
-	FMTnonaddedconstraint = 51
+	FMTnonaddedconstraint = 51,
+	FMTmissinglicense = 52
     };
 
 class FMTexception : public std::exception

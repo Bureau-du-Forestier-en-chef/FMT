@@ -46,6 +46,7 @@ class FMTyieldparser : public FMTparser
         regex rxyieldtype;
         regex rxcomplex;
 		regex rxeqs;
+		regex rxdiscount;
         FMTyldwstype getyldtype(const string& value) const;
         FMTyieldparserop getyldctype(const string& value) const;
         vector<string> getylduse(FMTyields& yielddata,
