@@ -19,6 +19,8 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\..\..\..\MrnMicro\Applic\Cbc-2.10.2\Osi\src\OsiMsk\OsiMskSolverInterface.hpp" />
+    <ClInclude Include="..\..\..\..\..\..\MrnMicro\Applic\mosek\9.1\tools\platform\win64x86\h\mosek.h" />
     <ClInclude Include="FMTaction.h" />
     <ClInclude Include="FMTactualdevelopment.h" />
     <ClInclude Include="FMTbounds.h" />
@@ -104,8 +106,10 @@
     <ClInclude Include="PYexportModel.h" />
     <ClInclude Include="PYexportSpatial.h" />
     <ClInclude Include="PYexportWSParser.h" />
+    <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\..\..\..\MrnMicro\Applic\Cbc-2.10.2\Osi\src\OsiMsk\OsiMskSolverInterface.cpp" />
     <ClCompile Include="FMTaction.cpp" />
     <ClCompile Include="FMTactualdevelopment.cpp" />
     <ClCompile Include="FMTbounds.cpp" />
@@ -179,6 +183,9 @@
     <ClCompile Include="main.cpp" />
     <ClCompile Include="FMTvertexproperties.cpp" />
     <ClCompile Include="PYexportExceptions.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="FMT.rc" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
@@ -304,7 +311,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;FMT_EXPORTS;_WINDOWS;_USRDLL;BOOST_PYTHON_STATIC_LIB;HAVE_SNPRINTF;BOOST_DYNAMIC_BITSET_DONT_USE_FRIENDS;FMTPY;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>C:\Python27amd64\include;C:\Mrnmicro\Applic\gdal-2.3.2\include;C:\Mrnmicro\Applic\boost_1_70_0;C:\Mrnmicro\Applic\Cbc-2.10.2\Clp\src;C:\Mrnmicro\Applic\Cbc-2.10.2\Clp\src\OsiClp;C:\Mrnmicro\Applic\Cbc-2.10.2\Osi\src;C:\Mrnmicro\Applic\Cbc-2.10.2\Osi\src\Osi;C:\Mrnmicro\Applic\Cbc-2.10.2\Osi\src\OsiCommonTest;C:\Mrnmicro\Applic\Cbc-2.10.2\CoinUtils\src;C:\Mrnmicro\Applic\Cbc-2.10.2\BuildTools\headers;C:\Mrnmicro\Applic\Cbc-2.10.2\Osi\src\OsiCpx;C:\Mrnmicro\Applic\Cbc-2.10.2\Osi\src\OsiGrb;C:\Mrnmicro\Applic\Cbc-2.10.2\Osi\src\OsiMsk;C:\Users\cyrgu3\source\repos\FMT\FMT</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Python27amd64\include;C:\Mrnmicro\Applic\gdal-2.3.2\include;C:\Mrnmicro\Applic\boost_1_70_0;C:\Mrnmicro\Applic\Cbc-2.10.2\Clp\src;C:\Mrnmicro\Applic\Cbc-2.10.2\Clp\src\OsiClp;C:\Mrnmicro\Applic\Cbc-2.10.2\Osi\src;C:\Mrnmicro\Applic\Cbc-2.10.2\Osi\src\Osi;C:\Mrnmicro\Applic\Cbc-2.10.2\Osi\src\OsiCommonTest;C:\Mrnmicro\Applic\Cbc-2.10.2\CoinUtils\src;C:\Mrnmicro\Applic\Cbc-2.10.2\BuildTools\headers;C:\MrnMicro\Applic\mosek\9.1\tools\platform\win64x86\h;C:\Mrnmicro\Applic\Cbc-2.10.2\Osi\src\OsiCpx;C:\Mrnmicro\Applic\Cbc-2.10.2\Osi\src\OsiGrb;C:\Mrnmicro\Applic\Cbc-2.10.2\Osi\src\OsiMsk;C:\Users\cyrgu3\source\repos\FMT\FMT</AdditionalIncludeDirectories>
       <EnablePREfast>false</EnablePREfast>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
@@ -314,8 +321,8 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
-      <AdditionalLibraryDirectories>C:\Mrnmicro\Applic\gdal-2.3.2\lib;C:\Python27amd64\libs;C:\Mrnmicro\Applic\Cbc-2.10.2\Clp\MSVisualStudio\v10\x64-v141-Release;C:\Mrnmicro\Applic\boost_1_70_0\stage\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>gdal_i.lib;libCoinUtils.lib;libOsi.lib;libOsiCommonTest.lib;libClp.lib;libOsiClp.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>C:\Mrnmicro\Applic\gdal-2.3.2\lib;C:\Python27amd64\libs;C:\Mrnmicro\Applic\Cbc-2.10.2\Clp\MSVisualStudio\v10\x64-v141-Release;C:\MrnMicro\Applic\mosek\9.1\tools\platform\win64x86\bin;C:\Mrnmicro\Applic\boost_1_70_0\stage\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>mosek64_9_1.lib;gdal_i.lib;libCoinUtils.lib;libOsi.lib;libOsiCommonTest.lib;libClp.lib;libOsiClp.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

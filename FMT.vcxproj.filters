@@ -270,6 +270,15 @@
     <ClInclude Include="PYexportWSParser.h">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\..\MrnMicro\Applic\Cbc-2.10.2\Osi\src\OsiMsk\OsiMskSolverInterface.hpp">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\..\..\..\MrnMicro\Applic\mosek\9.1\tools\platform\win64x86\h\mosek.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="FMTCore.cpp">
@@ -491,5 +500,13 @@
     <ClCompile Include="PYexportExceptions.cpp">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\..\..\..\MrnMicro\Applic\Cbc-2.10.2\Osi\src\OsiMsk\OsiMskSolverInterface.cpp">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="FMT.rc">
+      <Filter>Fichiers de ressources</Filter>
+    </ResourceCompile>
   </ItemGroup>
 </Project>

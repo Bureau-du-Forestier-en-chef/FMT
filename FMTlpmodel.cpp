@@ -23,9 +23,9 @@ SOFTWARE.
 */
 
 #include "FMTlpmodel.h"
-#include "mosek.h"
 #include "OsiMskSolverInterface.hpp"
 #include "OsiClpSolverInterface.hpp"
+#include "mosek.h"
 
 namespace Models
 {
@@ -1506,6 +1506,8 @@ bool FMTlpmodel::locatenodes(const vector<FMToutputnode>& nodes, int period,
 								//uppersense = 1;
 								coef_multiplier_upper = 1 + lower_variation;//upper_variation;//1 + lower_variation; // 1 + upper_variation; 
 								coef_multiplier_lower = 1 - upper_variation;
+								//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "lower: " << coef_multiplier_lower << "\n";
+								//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "upper: " << coef_multiplier_upper << "\n";
 								lowerbound = 0;
 								upperbound = 0;
 								//RHSperiodsneeded.push_back(period + 1); // just the next period
@@ -1533,8 +1535,9 @@ bool FMTlpmodel::locatenodes(const vector<FMToutputnode>& nodes, int period,
 								all_variables.clear();
 								}
 							//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "crossing  " << "\n";
-							if (coef_multiplier_lower != 1)
+							if (coef_multiplier_lower != 1 || constraint_type == FMTconstrainttype::FMTsequence)
 								{
+								//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "crossing  " << "\n";
 								lowerbound = numeric_limits<double>::lowest();
 								upperbound = 0;
 								}
@@ -1566,7 +1569,7 @@ bool FMTlpmodel::locatenodes(const vector<FMToutputnode>& nodes, int period,
 									period, lowerbound, upperbound);
 	
 							//ismultiple
-							if (constraint.acrossperiod() && coef_multiplier_lower != 1 && coef_multiplier_upper!= 0)
+							if (constraint.acrossperiod() && (coef_multiplier_lower != 1 || constraint_type == FMTconstrainttype::FMTsequence) && coef_multiplier_upper!= 0)
 								{
 								//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "crossing periods " << "\n";
 								map<int, double>uppervars = all_variables;
