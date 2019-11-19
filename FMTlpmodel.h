@@ -33,7 +33,7 @@ SOFTWARE.
 #include "FMTtheme.h"
 #include "FMTschedule.h"
 
-
+#define FMT_DBL_TOLERANCE 1.e-08
 
 #include "FMToutputproperties.h"
 #include "FMTdevelopmentpath.h"
@@ -161,7 +161,7 @@ class FMTlpmodel : public FMTmodel
 		FMTlpmodel(const FMTlpmodel& rhs);
 		bool initialsolve();
 		bool setsolution(int period, const FMTschedule& schedule);
-		bool boundsolution(int period);
+		bool boundsolution(int period,double tolerance = FMT_DBL_TOLERANCE);
 		bool unboundsolution(int period);
 		bool isperiodbounded(int period) const;
 		FMTschedule getsolution(int period) const;

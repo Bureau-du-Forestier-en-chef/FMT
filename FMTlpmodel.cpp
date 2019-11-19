@@ -386,7 +386,7 @@ namespace Models
 		return all_devs;
 	}*/
 
-	bool FMTlpmodel::boundsolution(int period)
+	bool FMTlpmodel::boundsolution(int period,double tolerance)
 	{
     if (graph.size() > period)
 		{
@@ -402,15 +402,17 @@ namespace Models
 				if (std::find(variable_index.begin(), variable_index.end(), varit->second)== variable_index.end())
 					{
 					variable_index.push_back(varit->second);
-					bounds.push_back(*(actual_solution + varit->second));
-					bounds.push_back(*(actual_solution + varit->second));
+					//Had tolerance on primal infeasibilities with FMT_DBL_TOLERANCE ...
+					bounds.push_back(*(actual_solution + varit->second)*(1-tolerance));
+					bounds.push_back(*(actual_solution + varit->second)*(1+tolerance));
 					}
 				}
             }
 		//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "bounding size: "<< variable_index.size() << "\n";
 		solverinterface->setColSetBounds(&variable_index[0], &variable_index.back()+1, &bounds[0]);
-		solverinterface->resolve();
-        return solverinterface->isProvenOptimal();;
+		this->resolve();
+		this->writeLP("C:/Users/cyrgu3/source/repos/FMT/x64/Release/problem");
+        return solverinterface->isProvenOptimal();
         }
     return false;
 	}
@@ -1764,6 +1766,14 @@ bool FMTlpmodel::locatenodes(const vector<FMToutputnode>& nodes, int period,
 			solverinterface->deleteRows(static_cast<int>(deletedconstraints.size()), &deletedconstraints[0]);
 			//Cols
 			solverinterface->deleteCols(static_cast<int>(deletedvariables.size()), &deletedvariables[0]);
+			/*if (solvertype == FMTsolverinterface::MOSEK && !deletedvariables.empty())
+				{
+				OsiMskSolverInterface* msksolver = dynamic_cast<OsiMskSolverInterface*>(solverinterface.get());
+				//delete[] msksolver->obj_;
+				msksolver->freeCachedColRim();
+				}*/
+
+
 			//Now clear the deleted
 			deletedconstraints.clear();
 			deletedvariables.clear();
@@ -2070,6 +2080,11 @@ bool FMTlpmodel::locatenodes(const vector<FMToutputnode>& nodes, int period,
 		//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "NODES SIZE "<< all_variables .size()<< "\n";
 		if (summarize(all_variables, /*all_coefs,*/ objective_variables, objective_coefficiants))
 			{
+			if (solvertype == FMTsolverinterface::MOSEK)//What a bug!?!?!?!?!
+				{
+				OsiMskSolverInterface* msksolver = dynamic_cast<OsiMskSolverInterface*>(solverinterface.get());
+				msksolver->freeCachedColRim();
+				}
 			solverinterface->setObjCoeffSet(&objective_variables[0], &objective_variables.back()+1, &objective_coefficiants[0]);
 			}
 		if (all_variables.empty())
@@ -2091,6 +2106,10 @@ bool FMTlpmodel::locatenodes(const vector<FMToutputnode>& nodes, int period,
 		for (size_t id = 0 ; id < solverinterface->getNumCols();++id)
 			{
 			Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "var  " << *(solve+id) << "\n";
+			}*/
+		 /*if (solverinterface->isProvenOptimal())
+			{
+			Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << solverinterface->getObjValue() << "\n";
 			}*/
 		return solverinterface->isProvenOptimal();
         }
