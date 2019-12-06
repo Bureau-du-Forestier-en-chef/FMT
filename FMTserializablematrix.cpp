@@ -23,9 +23,11 @@ SOFTWARE.
 */
 
 #include "FMTserializablematrix.h"
+#include "OsiClpSolverInterface.hpp"
+#include "OsiMskSolverInterface.hpp"
 
 
-namespace Graph
+namespace Models
 {
 
 FMTserializablematrix::FMTserializablematrix():
@@ -35,7 +37,8 @@ FMTserializablematrix::FMTserializablematrix():
 		rowlb(),
 		rowub(),
 		colsolution(),
-		rowprice()
+		rowprice(),
+		solvertype()
 	{
 
 	}
@@ -47,7 +50,8 @@ FMTserializablematrix::FMTserializablematrix(const FMTserializablematrix& rhs): 
 	rowlb(rhs.rowlb),
 	rowub(rhs.rowub),
 	colsolution(rhs.colsolution),
-	rowprice(rhs.rowprice)
+	rowprice(rhs.rowprice),
+	solvertype(rhs.solvertype)
 	{
 
 	}
@@ -63,11 +67,12 @@ FMTserializablematrix& FMTserializablematrix::operator = (const FMTserializablem
 		rowub = rhs.rowub;
 		colsolution = rhs.colsolution;
 		rowprice = rhs.rowprice;
+		solvertype = rhs.solvertype;
 		}
 	return *this;
 	}
 
-FMTserializablematrix::FMTserializablematrix(const unique_ptr<OsiSolverInterface>& solverinterface):
+FMTserializablematrix::FMTserializablematrix(const shared_ptr<OsiSolverInterface>& solverinterface, const FMTsolverinterface& lsolvertype):
 	CoinPackedMatrix(),
 	collb(),
 	colub(),
@@ -75,7 +80,8 @@ FMTserializablematrix::FMTserializablematrix(const unique_ptr<OsiSolverInterface
 	rowlb(),
 	rowub(),
 	colsolution(),
-	rowprice()
+	rowprice(),
+	solvertype(lsolvertype)
 	{
 	if (solverinterface->getNumCols()>0)
 		{
@@ -113,7 +119,65 @@ FMTserializablematrix::FMTserializablematrix(const unique_ptr<OsiSolverInterface
 		}
 	}
 
-void FMTserializablematrix::setmatrix(unique_ptr<OsiSolverInterface>& solverinterface) const
+shared_ptr<OsiSolverInterface> FMTserializablematrix::buildsolverinterface(const FMTsolverinterface& lsolvertype,
+																			CoinMessageHandler* handler) const
+{
+	shared_ptr<OsiSolverInterface>solverinterface;
+	switch (lsolvertype)
+	{
+	case FMTsolverinterface::CLP:
+		solverinterface = shared_ptr<OsiClpSolverInterface>(new OsiClpSolverInterface);
+		break;
+	case FMTsolverinterface::MOSEK:
+		solverinterface = shared_ptr<OsiMskSolverInterface>(new OsiMskSolverInterface);
+		break;
+		/*case FMTsolverinterface::CPLEX:
+			solverinterface = shared_ptr<OsiCpxSolverInterface>(new OsiCpxSolverInterface);
+		break;
+		case FMTsolverinterface::GUROBI:
+			solverinterface = shared_ptr<OsiGrbSolverInterface>(new OsiGrbSolverInterface);
+		break;*/
+	default:
+		solverinterface = shared_ptr<OsiClpSolverInterface>(new OsiClpSolverInterface);
+		break;
+	}
+	solverinterface->passInMessageHandler(handler);
+	return solverinterface;
+}
+
+
+shared_ptr<OsiSolverInterface> FMTserializablematrix::copysolverinterface(const shared_ptr<OsiSolverInterface>& solver_ptr,
+	const FMTsolverinterface& lsolvertype, CoinMessageHandler* handler) const
+	{
+	shared_ptr<OsiSolverInterface>solverinterface;
+	switch (lsolvertype)
+		{
+		case FMTsolverinterface::CLP:
+			solverinterface = shared_ptr<OsiClpSolverInterface>(new OsiClpSolverInterface(*dynamic_cast<OsiClpSolverInterface*>(solver_ptr.get())));
+			break;
+		case FMTsolverinterface::MOSEK:
+			solverinterface = shared_ptr<OsiMskSolverInterface>(new OsiMskSolverInterface(*dynamic_cast<OsiMskSolverInterface*>(solver_ptr.get())));
+			break;
+			/*case FMTsolverinterface::CPLEX:
+				solverinterface = shared_ptr<OsiCpxSolverInterface>(new OsiCpxSolverInterface(*dynamic_cast<OsiCpxSolverInterface*>(solver_ptr.get())));
+			break;
+			case FMTsolverinterface::GUROBI:
+				solverinterface = shared_ptr<OsiGrbSolverInterface>(new OsiGrbSolverInterface(*dynamic_cast<OsiGrbSolverInterface*>(solver_ptr.get())));
+			break;*/
+		default:
+			solverinterface = shared_ptr<OsiClpSolverInterface>(new OsiClpSolverInterface(*dynamic_cast<OsiClpSolverInterface*>(solver_ptr.get())));
+			break;
+		}
+	solverinterface->passInMessageHandler(handler);
+	return solverinterface;
+	}
+
+void FMTserializablematrix::setsolvertype(FMTsolverinterface& lsolvertype) const
+	{
+	lsolvertype = solvertype;
+	}
+
+void FMTserializablematrix::setmatrix(shared_ptr<OsiSolverInterface>& solverinterface) const
 	{
 	/*CoinPackedMatrix pcmat(*this);
 	vector<double>tcollb(collb);

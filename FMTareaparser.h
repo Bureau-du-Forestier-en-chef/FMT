@@ -33,6 +33,7 @@ SOFTWARE.
 #include "FMTGCBMtransition.h"
 #include <iterator>
 #include <boost/lexical_cast.hpp>
+#include "FMToperatingarea.h"
 
 /*
 #include "xlocale.h"
@@ -58,7 +59,28 @@ class FMTareaparser : public FMTparser
 													const FMTlayer<int>& ages,
 													const FMTforest& newfor,
 													const vector<FMTtheme>& themes) const;
-
+		FMTactualdevelopment getfeaturetodevelopment(const OGRFeature* feature,
+														const vector<FMTtheme>& themes,
+														const map<int, int>& themes_fields,
+														const int& age_field, 
+														const int& lock_field,
+														const int& area_field,
+														const double& agefactor,
+														const double& areafactor,
+														const double& minimalarea) const;
+		GDALDataset* openvectorfile(map<int, int>&themes_fields, int& age_field, int& lock_field, int& area_field,
+			const string& data_vectors, const string& agefield, const string& areafield, const string& lockfield,
+			const vector<FMTtheme>& themes) const;
+		vector<OGRMultiPolygon>getmultipolygons(const vector<Heuristics::FMToperatingarea>& operatingareas,
+										  const vector<FMTtheme>& themes, const string& data_vectors,
+										  const string& agefield, const string& areafield, double agefactor = 1.0,
+										  double areafactor = 1, string lockfield = "",
+										  double minimal_area = 0.0) const;
+		vector<Heuristics::FMToperatingarea> getneighborsfrompolygons(const vector<OGRMultiPolygon>& multipolygons,
+																vector<Heuristics::FMToperatingarea> operatingareas,
+																const double& buffersize) const;
+		OGRLayer* subsetlayer(OGRLayer*layer, const vector<FMTtheme>& themes, 
+							const string& agefield, const string& areafield) const;
     public:
         FMTareaparser();
         FMTareaparser(const FMTareaparser& rhs);
@@ -74,23 +96,23 @@ class FMTareaparser : public FMTparser
                          const string& age,
                          const string& lock,
                          vector<map<string,string>> mapping = vector<map<string,string>>()) const;
-        /*bool writedisturbances(const string& location,
-                               const Spatial::FMTdisturbancestack& disturbances,
-                               const Spatial::FMTforest& for_layer,
-                               map<string,string> mapping = map<string,string>()) const;*///add default argument to aim at at multiple themes for writing disturbances
 		vector<FMTGCBMtransition> writedisturbances(const string& location,
 								const Spatial::FMTdisturbancestack& disturbances,
 								const Spatial::FMTforest& for_layer,
 								const Spatial::FMTforest& out_layer,
 								const vector<FMTtheme>& themes,
 								map<string, string> mapping = map<string, string>()) const;
-
+		vector<Heuristics::FMToperatingarea> getneighbors(vector<Heuristics::FMToperatingarea> operatingareaparameters,
+						const vector<FMTtheme>& themes,const string& data_vectors,
+						const string& agefield, const string& areafield, double agefactor = 1.0,
+						double areafactor = 1, string lockfield = "",
+						double minimal_area = 0.0,double buffersize= 100) const;
         vector<FMTactualdevelopment>readvectors(const vector<FMTtheme>& themes,const string& data_vectors,
                                    const string& agefield,const string& areafield,double agefactor = 1.0,
                                    double areafactor = 1,string lockfield = "",
 								   double minimal_area = 0.0) const;
-
         bool write(const vector<FMTactualdevelopment>& areas, string location);
+		
     };
 }
 #endif // FMTareaparser_H_INCLUDED

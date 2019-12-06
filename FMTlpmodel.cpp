@@ -30,7 +30,7 @@ SOFTWARE.
 namespace Models
 {
 
-	void FMTlpmodel::buildsolverinterface()
+	/*void FMTlpmodel::buildsolverinterface()
 	{
 		switch (solvertype)
 		{
@@ -40,40 +40,28 @@ namespace Models
 			case FMTsolverinterface::MOSEK:
 				solverinterface = unique_ptr<OsiMskSolverInterface>(new OsiMskSolverInterface);
 			break;
-			/*case FMTsolverinterface::CPLEX:
-				solverinterface = unique_ptr<OsiCpxSolverInterface>(new OsiCpxSolverInterface);
-			break;
-			case FMTsolverinterface::GUROBI:
-				solverinterface = unique_ptr<OsiGrbSolverInterface>(new OsiGrbSolverInterface);
-			break;*/
 		default:
 			solverinterface = unique_ptr<OsiClpSolverInterface>(new OsiClpSolverInterface);
 			break;
 		}
 	solverinterface->passInMessageHandler(&*this->_logger);
-	}
-	void FMTlpmodel::copysolverinterface(const unique_ptr<OsiSolverInterface>& solver_ptr)
+	}*/
+	/*void FMTlpmodel::copysolverinterface(const unique_ptr<OsiSolverInterface>& solver_ptr)
 	{
 		switch (solvertype)
 		{
 		case FMTsolverinterface::CLP:
 			solverinterface = unique_ptr<OsiClpSolverInterface>(new OsiClpSolverInterface(*dynamic_cast<OsiClpSolverInterface*>(solver_ptr.get())));
 			break;
-			/*case FMTsolverinterface::MOSEK:
+			case FMTsolverinterface::MOSEK:
 				solverinterface = unique_ptr<OsiMskSolverInterface>(new OsiMskSolverInterface(*dynamic_cast<OsiMskSolverInterface*>(solver_ptr.get())));
 			break;
-			case FMTsolverinterface::CPLEX:
-				solverinterface = unique_ptr<OsiCpxSolverInterface>(new OsiCpxSolverInterface(*dynamic_cast<OsiCpxSolverInterface*>(solver_ptr.get())));
-			break;
-			case FMTsolverinterface::GUROBI:
-				solverinterface = unique_ptr<OsiGrbSolverInterface>(new OsiGrbSolverInterface(*dynamic_cast<OsiGrbSolverInterface*>(solver_ptr.get())));
-			break;*/
 		default:
 			solverinterface = unique_ptr<OsiClpSolverInterface>(new OsiClpSolverInterface(*dynamic_cast<OsiClpSolverInterface*>(solver_ptr.get())));
 			break;
 		}
 	solverinterface->passInMessageHandler(&*this->_logger);
-	}
+	}*/
 	/*FMTlpmodel::FMTlpmodel() : FMTobject(), solvertype(), data(), solverinterface(), developments(), stats()
 	{
 		//this->buildsolverinterface();
@@ -84,7 +72,7 @@ namespace Models
 		this->buildsolverinterface();
 	}*/
 
-	unique_ptr<OsiSolverInterface>& FMTlpmodel::getsolverinterface()
+	std::shared_ptr<OsiSolverInterface>& FMTlpmodel::getsolverinterface()
 	{
 		return solverinterface;
 	}
@@ -1022,7 +1010,8 @@ namespace Models
 		deletedconstraints(),
 		deletedvariables()
 	{
-		buildsolverinterface();
+		//buildsolverinterface();
+		solverinterface = FMTserializablematrix().buildsolverinterface(solvertype,&*this->_logger);
 	}
 
 	FMTlpmodel::FMTlpmodel() :
@@ -1046,7 +1035,7 @@ namespace Models
 		deletedconstraints(rhs.deletedconstraints),
 		deletedvariables(rhs.deletedvariables)
 	{
-		copysolverinterface(rhs.solverinterface);
+		solverinterface = FMTserializablematrix().copysolverinterface(rhs.solverinterface,solvertype,&*this->_logger);
 	}
 
 	/*bool FMTlpmodel::samegraph(const FMTlpmodel& rhs) const
@@ -1096,24 +1085,14 @@ namespace Models
 		return graph.getoutput(*this, output, period, solution,level);
 	}
 
-	FMTtheme FMTlpmodel::locatestatictheme() const
+	vector<FMTtheme> FMTlpmodel::locatestaticthemes() const
 		{
-		FMTtheme besttheme;
 		vector<FMTtheme>bestthemes = getthemes();
 		for (const FMTtransition& transition : gettransitions())
 			{
 			bestthemes = transition.getstaticthemes(bestthemes);
 			}
-		size_t themesize = 0;
-		for (const FMTtheme& theme : bestthemes)
-			{
-			if (themesize < theme.size())
-				{
-				besttheme = theme;
-				themesize = theme.size();
-				}
-			}
-		return besttheme;
+		return bestthemes;
 		}
 
 	FMTgraphstats FMTlpmodel::buildperiod(FMTschedule schedule, bool forcepartialbuild)
@@ -1223,7 +1202,7 @@ namespace Models
 			graph = rhs.graph;
 			deletedconstraints = rhs.deletedconstraints;
 			deletedvariables = rhs.deletedvariables;
-			copysolverinterface(rhs.solverinterface);
+			solverinterface = FMTserializablematrix().copysolverinterface(rhs.solverinterface, solvertype, &*this->_logger);
 		}
 		return *this;
 	}
@@ -2316,6 +2295,27 @@ bool FMTlpmodel::locatenodes(const vector<FMToutputnode>& nodes, int period,
 	int FMTlpmodel::getfirstactiveperiod() const
 		{
 		return graph.getfirstactiveperiod();
+		}
+
+	vector<Heuristics::FMToperatingareaheuristic>FMTlpmodel::getoperatingareaheuristics(const vector<Heuristics::FMToperatingarea>& opareas,
+																						const FMToutputnode& node,
+																						size_t numberofheuristics,
+																						bool copysolver)
+		{
+		bool userandomness = false;
+		size_t seedof = 0;
+		double proportionofset = 0.25;
+		vector<Heuristics::FMToperatingareaheuristic>allheuristics;
+		for (size_t heuristicid = 0 ; heuristicid < numberofheuristics; ++heuristicid)
+			{
+			allheuristics.push_back(Heuristics::FMToperatingareaheuristic(opareas, graph, *this, node, solverinterface, solvertype, seedof, proportionofset, userandomness, copysolver));
+			if (heuristicid>0)
+				{
+				userandomness = true;
+				}
+			seedof += 1;
+			}
+		return allheuristics;
 		}
 
 

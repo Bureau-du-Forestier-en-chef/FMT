@@ -98,7 +98,6 @@ class FMTgraph
         FMTgraphbuild buildtype;
         vector<std::unordered_map<size_t,FMTvertex_descriptor>> developments;
 		mutable vector<std::unordered_map<size_t, vector<FMTvertex_descriptor>>>nodescache;
-		//mutable std::unordered_map<size_t,vector<FMTvertex_descriptor>>nodescache;
         FMTgraphstats stats;
 		void updatevarsmap(map<int,double>& variables,const int& var,const double& coef) const;
 		vector<std::unordered_map<size_t, FMTvertex_descriptor>>::iterator getfirstblock();

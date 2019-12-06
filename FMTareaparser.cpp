@@ -23,6 +23,7 @@ SOFTWARE.
 */
 
 #include "FMTareaparser.h"
+#include <boost/algorithm/string/join.hpp>
 
 namespace WSParser{
 
@@ -437,65 +438,166 @@ FMTareaparser::FMTareaparser() :
              const unsigned int ysize = ageband->GetYSize();
              return Spatial::FMTlayer<FMTdevelopment>(mapping,pad,xsize,ysize,projection,cellsize);
              }
-    vector<FMTactualdevelopment>FMTareaparser::readvectors(const vector<FMTtheme>& themes,const string& data_vectors,
-		const string& agefield,const string& areafield,double agefactor,double areafactor,string lockfield,double minimalarea) const
-        {
-        GDALAllRegister();
-        GDALDataset* dataset = getvectordataset(data_vectors);
-        OGRLayer * layer = getlayer(dataset,0);
-        map<int,int>themes_fields;
-        int age_field=-1;
-        int lock_field=-1;
-        int area_field=-1;
-        getWSfields(layer,themes_fields,age_field,area_field,lock_field,agefield,areafield,lockfield);
-        if (themes_fields.size()!=themes.size())
-            {
-            _exhandler->raise(FMTexc::WSinvalid_maskrange,_section,dataset->GetDescription(), __LINE__, __FILE__);
-            }
-        OGRFeature *feature;
-        vector<FMTactualdevelopment>devs;
-        layer->ResetReading();
-        while((feature = layer->GetNextFeature()) != NULL)
-            {
-            int age  = int(feature->GetFieldAsInteger(age_field)*agefactor);
-            double area = (feature->GetFieldAsDouble(area_field)*areafactor);
-			if (area > minimalarea)
-				{
+
+	FMTactualdevelopment FMTareaparser::getfeaturetodevelopment(const OGRFeature* feature,
+				const vector<FMTtheme>& themes,
+				const map<int, int>& themes_fields,
+				const int& age_field,
+				const int& lock_field,
+				const int& area_field,
+				const double& agefactor,
+				const double& areafactor,
+				const double& minimalarea) const
+		{
+		int age = int(feature->GetFieldAsInteger(age_field)*agefactor);
+		double area = (feature->GetFieldAsDouble(area_field)*areafactor);
+		if (area > minimalarea)
+			{
 				int lock = 0;
-				if (lock_field!=-1)
-					{
-					string slock =feature->GetFieldAsString(lock_field);
+				if (lock_field != -1)
+				{
+					string slock = feature->GetFieldAsString(lock_field);
 					boost::to_upper(slock);
-					slock.erase(0,5);
+					slock.erase(0, 5);
 					if (isvalid(slock))
-						{
-						lock = stoi(slock);
-						}
-					}
-				vector<string>masks(themes_fields.size());
-				for(map<int,int>::const_iterator it=themes_fields.begin(); it!=themes_fields.end(); ++it)
 					{
+						lock = stoi(slock);
+					}
+				}
+				vector<string>masks(themes_fields.size());
+				for (map<int, int>::const_iterator it = themes_fields.begin(); it != themes_fields.end(); ++it)
+				{
 					string attribute = feature->GetFieldAsString(it->second);
 					boost::to_upper(attribute);
 					masks[it->first] = attribute;
-					}
-				string tmask = boost::algorithm::join(masks," ");
-				//FMTmask mask = validate(themes, tmask);
-				if (!validate(themes, tmask)) continue;
-				FMTmask mask(tmask,themes);
-				FMTactualdevelopment dev(mask,age,lock,area);
-				vector<FMTactualdevelopment>::iterator it = find(devs.begin(),devs.end(),dev);
-				if (it!=devs.end())
+				}
+				string tmask = boost::algorithm::join(masks, " ");
+				if (validate(themes, tmask))
 					{
-					it->area+=area;
-					}else{
-					devs.push_back(dev);
+					FMTmask mask(tmask, themes);
+					return FMTactualdevelopment(mask, age, lock, area);
 					}
 			}
+		return FMTactualdevelopment();
+		}
+
+	GDALDataset* FMTareaparser::openvectorfile(map<int, int>&themes_fields,int& age_field,int& lock_field,int& area_field,
+		const string& data_vectors,const string& agefield,const string& areafield,const string& lockfield,
+		const vector<FMTtheme>& themes) const
+		{
+		GDALAllRegister();
+		GDALDataset* dataset = getvectordataset(data_vectors);
+		OGRLayer*  layer = getlayer(dataset, 0);
+		//map<int, int>themes_fields;
+		//int age_field = -1;
+		//int lock_field = -1;
+		//int area_field = -1;
+		getWSfields(layer, themes_fields, age_field, area_field, lock_field, agefield, areafield, lockfield);
+		if (themes_fields.size() != themes.size())
+			{
+			_exhandler->raise(FMTexc::WSinvalid_maskrange, _section, dataset->GetDescription(), __LINE__, __FILE__);
+			}
+		layer->ResetReading();
+		return dataset;
+		}
+
+	OGRLayer* FMTareaparser::subsetlayer(OGRLayer*layer ,const vector<FMTtheme>& themes,
+									const string& agefield, const string& areafield) const
+		{
+		size_t thid = 1;
+		vector<string>elements;
+		for (const FMTtheme& theme: themes)
+			{
+			elements.push_back("THEME"+to_string(thid));
+			++thid;
+			}
+		elements.push_back(agefield);
+		elements.push_back(areafield);
+		string sqlcall = boost::algorithm::join(elements, " IS NOT NULL AND ");
+		sqlcall += " IS NOT NULL";
+		layer->SetAttributeFilter(sqlcall.c_str());
+		return layer;
+		}
+		
+    vector<FMTactualdevelopment>FMTareaparser::readvectors(const vector<FMTtheme>& themes,const string& data_vectors,
+		const string& agefield,const string& areafield,double agefactor,double areafactor,string lockfield,double minimalarea) const
+        {
+		map<int, int>themes_fields;
+		int age_field = -1;
+		int lock_field = -1;
+		int area_field = -1;
+		GDALDataset* dataset =  openvectorfile(themes_fields,age_field,lock_field,area_field,data_vectors,agefield,areafield,lockfield,themes);
+		OGRLayer*  layer = getlayer(dataset, 0);
+		layer = this->subsetlayer(layer, themes, agefield, areafield);
+		OGRFeature *feature;
+		vector<FMTactualdevelopment>devs;
+        while((feature = layer->GetNextFeature()) != NULL)
+            {
+				const FMTactualdevelopment actualdev = this->getfeaturetodevelopment(feature, themes, themes_fields, age_field,
+					lock_field, area_field, agefactor, areafactor, minimalarea);
+				
+				if (!actualdev.mask.empty())
+					{
+					vector<FMTactualdevelopment>::iterator it = find(devs.begin(), devs.end(), actualdev);
+					if (it != devs.end())
+					{
+						it->area += actualdev.getarea();
+					}
+					else {
+						devs.push_back(actualdev);
+					}
+					}
             OGRFeature::DestroyFeature(feature);
             }
+		GDALClose(dataset);
         return devs;
         }
+
+	vector<OGRMultiPolygon>FMTareaparser::getmultipolygons(const vector<Heuristics::FMToperatingarea>& operatingareas,
+												const vector<FMTtheme>& themes, const string& data_vectors,
+												const string& agefield, const string& areafield, double agefactor,
+												double areafactor, string lockfield,
+												double minimal_area) const
+		{
+		map<int, int>themes_fields;
+		int age_field = -1;
+		int lock_field = -1;
+		int area_field = -1;
+		GDALDataset* dataset = this->openvectorfile(themes_fields, age_field, lock_field, area_field,
+			data_vectors, agefield, areafield, lockfield, themes);
+		OGRLayer * layer = getlayer(dataset, 0);
+		layer = this->subsetlayer(layer, themes, agefield, areafield);
+
+		OGRFeature *feature;
+		vector<OGRMultiPolygon>multipolygons(operatingareas.size(),OGRMultiPolygon());
+		while ((feature = layer->GetNextFeature()) != NULL)
+			{
+				FMTactualdevelopment actualdev = this->getfeaturetodevelopment(feature, themes, themes_fields, age_field,
+					lock_field, area_field, agefactor, areafactor, minimal_area);
+				if (!actualdev.mask.empty())
+					{
+					const OGRGeometry* polygon = feature->GetGeometryRef();
+					if (polygon->IsValid())
+						{
+						size_t opid = 0;
+						for (const Heuristics::FMToperatingarea& oparea : operatingareas)
+							{
+								if (actualdev.mask.data.is_subset_of(oparea.getmask().data))
+								{
+									
+									multipolygons[opid].addGeometry(polygon);
+									break;
+								}
+								++opid;
+							}
+						}
+					
+					}
+				OGRFeature::DestroyFeature(feature);
+			}
+		GDALClose(dataset);
+		return multipolygons;
+		}
 
     vector<FMTactualdevelopment>FMTareaparser::read(const vector<FMTtheme>& themes,const FMTconstants& constants,string location)
         {
@@ -727,5 +829,80 @@ FMTareaparser::FMTareaparser() :
             GDALClose(wdataset);
             return true;
             }
+
+			vector<Heuristics::FMToperatingarea> FMTareaparser::getneighborsfrompolygons(const vector<OGRMultiPolygon>& multipolygons,
+																						vector<Heuristics::FMToperatingarea> operatingareas,
+																						const double& buffersize) const
+				{
+				vector<OGRPolygon*>mergedpolygons;
+				for (const OGRMultiPolygon& polygons : multipolygons)
+					{
+					Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "GOT VALID MULTI!!!" << polygons.IsEmpty() << "\n";
+					if (polygons.IsValid())
+						{
+						mergedpolygons.push_back(dynamic_cast<OGRPolygon*>(polygons.UnionCascaded()));
+					}else {
+						mergedpolygons.push_back(nullptr);
+						}
+					}
+				//map<FMTmask, vector<FMTmask>>neighboring;
+				for (size_t opareaindex = 0; opareaindex < operatingareas.size();++opareaindex)
+					{
+					double fullbuffered = 0;
+					vector<size_t>neighborsid;
+					vector<double>areas;
+					
+					if (mergedpolygons.at(opareaindex) && !mergedpolygons.at(opareaindex)->IsEmpty() && mergedpolygons.at(opareaindex)->IsValid())
+						{
+						OGRGeometry* buffered = (mergedpolygons.at(opareaindex)->Buffer(buffersize));
+						for (size_t opareaneighborindex = 0; opareaneighborindex < operatingareas.size(); ++opareaneighborindex)
+							{
+							if (opareaindex != opareaneighborindex && mergedpolygons.at(opareaneighborindex) && 
+								buffered->Intersects(mergedpolygons.at(opareaneighborindex)))
+								{
+								OGRGeometry* intersect = buffered->Intersection(mergedpolygons.at(opareaneighborindex));
+								const OGRSurface* area = dynamic_cast<OGRSurface*>(intersect);
+								const double intersectarea = area->get_Area();
+								fullbuffered += intersectarea;
+								neighborsid.push_back(opareaneighborindex);
+								areas.push_back(intersectarea);
+								OGRGeometryFactory::destroyGeometry(intersect);
+								}
+							}
+						}
+					
+					vector<FMTmask>validneighbors;
+					//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "nsvalidneighbor size " << neighborsid.size() << "\n";
+					for (size_t neighborid = 0 ; neighborid < neighborsid.size(); ++neighborid)
+						{
+						if ((areas.at(neighborid)/fullbuffered) >= operatingareas.at(neighborsid.at(neighborid)).getneihgborsperimeter())
+							{
+							validneighbors.push_back(operatingareas.at(neighborsid.at(neighborid)).getmask());
+							}
+						}
+					//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "validneighbor size " << validneighbors.size() << "\n";
+					operatingareas.at(opareaindex).setneighbors(validneighbors);
+					}
+				for (OGRPolygon* polygon : mergedpolygons)
+					{
+					OGRGeometryFactory::destroyGeometry(polygon);
+					}
+				return operatingareas;
+				}
+
+
+			vector<Heuristics::FMToperatingarea> FMTareaparser::getneighbors(vector<Heuristics::FMToperatingarea> operatingareaparameters,
+																			const vector<FMTtheme>& themes, const string& data_vectors,
+																			const string& agefield, const string& areafield, double agefactor,
+																			double areafactor, string lockfield,
+																			double minimal_area , double buffersize) const
+				{
+				vector<OGRMultiPolygon>multipolygons = this->getmultipolygons(operatingareaparameters, themes, data_vectors,
+																agefield, areafield, agefactor,
+																areafactor, lockfield, minimal_area);
+				return getneighborsfrompolygons(multipolygons, operatingareaparameters, buffersize);
+				}
+
+
 
 }

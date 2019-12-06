@@ -160,6 +160,7 @@ class FMTparser: public FMTobject
         void build(FMTexceptionhandler* exhandler=nullptr);
         string setspec(FMTwssect section,FMTwskwor key,const FMTyields& ylds,const FMTconstants& constants,FMTspec& spec, const string& line);
         FMTwssect from_extension(const string& ext);
+		vector<vector<string>>readcsv(const string& location,const char& separator);
     public:
         regex rxseparator;
         FMTparser();

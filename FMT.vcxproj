@@ -60,6 +60,8 @@
     <ClInclude Include="FMTmaskfilter.h" />
     <ClInclude Include="FMTModels.h" />
     <ClInclude Include="FMTobject.h" />
+    <ClInclude Include="FMToperatingarea.h" />
+    <ClInclude Include="FMToperatingareaheuristic.h" />
     <ClInclude Include="FMToptimizationparser.h" />
     <ClInclude Include="FMToutputnode.h" />
     <ClInclude Include="FMToutputproperties.h" />
@@ -69,6 +71,7 @@
     <ClInclude Include="FMTsaschedule.h" />
     <ClInclude Include="FMTsasolution.h" />
     <ClInclude Include="FMTserializablematrix.h" />
+    <ClInclude Include="FMTsolverinterface.h" />
     <ClInclude Include="FMTSpatials.h" />
     <ClInclude Include="FMTtransitionmask.h" />
     <ClInclude Include="FMTmodel.h" />
@@ -103,6 +106,7 @@
     <ClInclude Include="PYexportCore.h" />
     <ClInclude Include="PYexportExceptions.h" />
     <ClInclude Include="PYexportGraph.h" />
+    <ClInclude Include="PYexportHeuristics.h" />
     <ClInclude Include="PYexportModel.h" />
     <ClInclude Include="PYexportSpatial.h" />
     <ClInclude Include="PYexportWSParser.h" />
@@ -145,6 +149,8 @@
     <ClCompile Include="FMTmask.cpp" />
     <ClCompile Include="FMTmaskfilter.cpp" />
     <ClCompile Include="FMTobject.cpp" />
+    <ClCompile Include="FMToperatingarea.cpp" />
+    <ClCompile Include="FMToperatingareaheuristic.cpp" />
     <ClCompile Include="FMToptimizationparser.cpp" />
     <ClCompile Include="FMTlpmodel.cpp" />
     <ClCompile Include="FMToutputnode.cpp" />
@@ -154,6 +160,7 @@
     <ClCompile Include="FMTsaschedule.cpp" />
     <ClCompile Include="FMTsasolution.cpp" />
     <ClCompile Include="FMTserializablematrix.cpp" />
+    <ClCompile Include="FMTsolverinterface.cpp" />
     <ClCompile Include="FMTtransitionmask.cpp" />
     <ClCompile Include="FMTmodel.cpp" />
     <ClCompile Include="FMToperator.cpp" />
@@ -321,8 +328,8 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
-      <AdditionalLibraryDirectories>C:\Mrnmicro\Applic\gdal-2.3.2\lib;C:\Python27amd64\libs;C:\Mrnmicro\Applic\Cbc-2.10.2\Clp\MSVisualStudio\v10\x64-v141-Release;C:\MrnMicro\Applic\mosek\9.1\tools\platform\win64x86\bin;C:\Mrnmicro\Applic\boost_1_70_0\stage\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>mosek64_9_1.lib;gdal_i.lib;libCoinUtils.lib;libOsi.lib;libOsiCommonTest.lib;libClp.lib;libOsiClp.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>C:\MrnMicro\Applic\geos\build\lib\Release;C:\Mrnmicro\Applic\gdal-2.3.2\lib;C:\Python27amd64\libs;C:\Mrnmicro\Applic\Cbc-2.10.2\Clp\MSVisualStudio\v10\x64-v141-Release;C:\MrnMicro\Applic\mosek\9.1\tools\platform\win64x86\bin;C:\Mrnmicro\Applic\boost_1_70_0\stage\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>mosek64_9_1.lib;geos.lib;geos_c.lib;gdal_i.lib;libCoinUtils.lib;libOsi.lib;libOsiCommonTest.lib;libClp.lib;libOsiClp.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

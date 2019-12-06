@@ -62,6 +62,8 @@ SOFTWARE.
 
 #include "FMTgraph.h"
 #include "FMTmodel.h"
+#include "FMTsolverinterface.h"
+#include "FMToperatingareaheuristic.h"
 
 
 using namespace Graph;
@@ -71,14 +73,6 @@ using namespace std;
 namespace Models
 {
 
-
-enum class FMTsolverinterface
-	{
-	CLP = 1,
-	MOSEK = 2,
-	CPLEX = 3,
-	GUROBI = 4,
-	};
 
 enum FMTmatrixelement
 	{
@@ -96,11 +90,11 @@ class FMTlpmodel : public FMTmodel
 	void save(Archive& ar, const unsigned int version) const
 		{
 		ar & boost::serialization::make_nvp("model", boost::serialization::base_object<FMTmodel>(*this));
-		ar & BOOST_SERIALIZATION_NVP(solvertype);
+		//ar & BOOST_SERIALIZATION_NVP(solvertype);
 		ar & BOOST_SERIALIZATION_NVP(graph);
 		ar & BOOST_SERIALIZATION_NVP(elements);
 		//Save the matrix columnes / rows / column solution / row solution / objective
-		FMTserializablematrix matrix(solverinterface);
+		FMTserializablematrix matrix(solverinterface, solvertype);
 		ar & BOOST_SERIALIZATION_NVP(matrix);
 		ar & BOOST_SERIALIZATION_NVP(deletedconstraints);
 		ar & BOOST_SERIALIZATION_NVP(deletedvariables);
@@ -109,13 +103,14 @@ class FMTlpmodel : public FMTmodel
 	void load(Archive& ar, const unsigned int version)
 		{
 		ar & boost::serialization::make_nvp("model", boost::serialization::base_object<FMTmodel>(*this));
-		ar & BOOST_SERIALIZATION_NVP(solvertype);
+		//ar & BOOST_SERIALIZATION_NVP(solvertype);
 		ar & BOOST_SERIALIZATION_NVP(graph);
 		ar & BOOST_SERIALIZATION_NVP(elements);
 		//load the matrix
 		FMTserializablematrix matrix;
 		ar & BOOST_SERIALIZATION_NVP(matrix);
-		buildsolverinterface();
+		matrix.setsolvertype(solvertype);
+		solverinterface = matrix.buildsolverinterface(solvertype, &*this->_logger);
 		matrix.setmatrix(solverinterface);
 		ar & BOOST_SERIALIZATION_NVP(deletedconstraints);
 		ar & BOOST_SERIALIZATION_NVP(deletedvariables);
@@ -123,13 +118,13 @@ class FMTlpmodel : public FMTmodel
 	BOOST_SERIALIZATION_SPLIT_MEMBER()
 	FMTgraph graph; //The Type 3 Graph
 	FMTsolverinterface solvertype; //Solvertype used
-	unique_ptr<OsiSolverInterface>solverinterface;//The osisolver interface Abstract class (constraints/objectives/matrix ....LP)
+	std::shared_ptr<OsiSolverInterface>solverinterface;//The osisolver interface Abstract class (constraints/objectives/matrix ....LP) can be shared with an heuristic!
 	vector<std::unordered_map<size_t,
 		vector<vector<int>>>>elements;//Locations of the constraints and variables in the matrix for the constraints / objective
 	vector<int>deletedconstraints;
 	vector<int>deletedvariables;
-	void buildsolverinterface();
-	void copysolverinterface(const unique_ptr<OsiSolverInterface>& solver_ptr);
+	//void buildsolverinterface();
+	//void copysolverinterface(const unique_ptr<OsiSolverInterface>& solver_ptr);
 	bool summarize(/*vector<int> variables,vector<double> coefficiants*/const map<int, double>& variables ,
 					vector<int>& sumvariables, vector<double>& sumcoefficiants) const;
 	FMTgraphstats initializematrix();
@@ -144,10 +139,10 @@ class FMTlpmodel : public FMTmodel
         int getsetlevel(const FMTconstraint& constraint,const string& variable_level,int period);
 
         vector<vector<int>>getmatrixelement(const FMTconstraint& constraint,int period) const;
-		unique_ptr<OsiSolverInterface>& getsolverinterface();
+		std::shared_ptr<OsiSolverInterface>& getsolverinterface();
         void locatelevels(const vector<FMToutputnode>& nodes,int period,map<int, double>& variables,const FMTconstraint& constraint);
 		bool locatenodes(const vector<FMToutputnode>& nodes, int period, map<int, double>& variables,double multiplier = 1) const;
-		FMTtheme locatestatictheme() const;
+		vector<FMTtheme> locatestaticthemes() const;
 		void updatematrixelements(vector<int>& matrixelements, const vector<int>& deletedelements) const;
 		void updateconstraintsmapping(const vector<int>& Dvariables,const vector<int>& Dconstraints);
 		bool updatematrixngraph();
@@ -177,8 +172,10 @@ class FMTlpmodel : public FMTmodel
 		FMTgraphstats eraseconstraint(const FMTconstraint& constraint, int period);
 		FMTgraphstats eraseperiod();
 		int getfirstactiveperiod() const;
-		/*bool unboundconstraint(const FMTconstraint& constraint, int period);
-		bool boundconstraint(const FMTconstraint& constraint, int period);*/
+		vector<Heuristics::FMToperatingareaheuristic>getoperatingareaheuristics(const vector<Heuristics::FMToperatingarea>& opareas,
+																				const FMToutputnode& node,
+																				size_t numberofheuristics=1,
+																				bool copysolver=true);
 		size_t buildoutputscache(const vector<FMToutput>& outputs);
 		size_t buildconstraintscache(const vector<FMTconstraint>& constraints);
 		bool resolve();

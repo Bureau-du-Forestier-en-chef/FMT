@@ -40,6 +40,7 @@ SOFTWARE.
 	#include "FMTmodel.h"
 	#include "FMTlpmodel.h"
 	#include "FMTsesmodel.h"
+	#include "FMToperatingareaheuristic.h"
 	#include <typeinfo>
 	//#include <boost/serialization/access.hpp>
 #if defined FMTPY

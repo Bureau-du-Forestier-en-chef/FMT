@@ -28,6 +28,7 @@ SOFTWARE.
 
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(readrasters_overloads,readrasters, 3, 6)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(readvectors_overloads,readvectors, 4, 8)
+BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(getneighbors_overloads, getneighbors, 5, 10)
 
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(writeforest_overloads,writeforest, 5, 6)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(writedisturbances_overloads,writedisturbances, 5, 6)
@@ -57,7 +58,8 @@ void exportWSParser()
                 .def("readrasters", &WSParser::FMTareaparser::readrasters,readrasters_overloads())
                 .def("writeforest",&WSParser::FMTareaparser::writeforest,writeforest_overloads())
                 .def("writedisturbances",&WSParser::FMTareaparser::writedisturbances,writedisturbances_overloads())
-                .def("write", &WSParser::FMTareaparser::write);
+                .def("write", &WSParser::FMTareaparser::write)
+				.def("getneighbors",&WSParser::FMTareaparser::getneighbors, getneighbors_overloads());
             class_<WSParser::FMTlandscapeparser,bases<WSParser::FMTparser>>("FMTlandscapeparser")
                 .def("read",&WSParser::FMTlandscapeparser::read)
                 .def("readvectors", &WSParser::FMTlandscapeparser::readvectors)

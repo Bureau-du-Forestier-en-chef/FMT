@@ -950,6 +950,35 @@ string FMTparser::getcleanlinewfor(ifstream& stream,const vector<FMTtheme>& them
         return all_elements;
         }
 
+vector<vector<string>>FMTparser::readcsv(const string& location,const char& separator)
+	{
+	vector<vector<string>>lines;
+	string regexstring = "(["+ string(1,separator) +"]*)([^"+ string(1,separator) +"]*)";
+	regex csvsplitregex(regexstring);
+	if (!location.empty())
+		{
+			ifstream csvstream(location);
+			string line;
+			vector<string>splitted;
+			if (FMTparser::tryopening(csvstream, location))
+				{
+				bool inactualdevs = false;
+				while (csvstream.is_open())
+					{
+					if (FMTparser::safeGetline(csvstream, line))
+						{
+						boost::trim(line);
+						if (!line.empty())
+							{
+							lines.push_back(FMTparser::spliter(line, csvsplitregex));
+							}
+						}
+					}
+				}
+		}
+	return lines;
+	}
+
 
 istream& FMTparser::safeGetline(istream& is, string& t) const
 	{

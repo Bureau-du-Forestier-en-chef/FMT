@@ -10,6 +10,7 @@
 #include "FMTModels.h"
 #include "FMTSpatials.h"
 #include "FMTversion.h"
+#include "FMToperatingareaheuristic.h"
 
 BOOST_CLASS_EXPORT(Core::FMTmask)
 BOOST_CLASS_EXPORT(Core::FMTtheme)
@@ -26,6 +27,7 @@ BOOST_CLASS_EXPORT(Models::FMTmodel)
 BOOST_CLASS_EXPORT(Graph::FMTgraph)
 BOOST_CLASS_EXPORT(Models::FMTlpmodel)
 BOOST_CLASS_EXPORT(Models::FMTsesmodel)
+BOOST_CLASS_EXPORT(Heuristics::FMToperatingareaheuristic)
 ////////////////////////to////////////////////////////
 
 #if defined FMTPY
@@ -44,6 +46,7 @@ BOOST_CLASS_EXPORT(Models::FMTsesmodel)
 #include "PYexportGraph.h"
 #include "PYexportModel.h"
 #include "PYexportVersion.h"
+#include "PYexportHeuristics.h"
 
 extern "C"
 {
@@ -73,6 +76,8 @@ extern "C"
 		exportWSParser();
 		//Version
 		exportVersion();
+		//Heuristics
+		exportHeuristics();
         }
 
 }

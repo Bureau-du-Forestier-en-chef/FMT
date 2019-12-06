@@ -28,13 +28,15 @@ SOFTWARE.
 #include <CoinPackedMatrix.hpp>
 #include <OsiSolverInterface.hpp>
 #include <memory>
+#include "FMTsolverinterface.h"
 #include <boost/serialization/serialization.hpp>
 #include <boost/serialization/nvp.hpp>
 
 using namespace std;
 
-namespace Graph
+namespace Models
 {
+
 
 class FMTserializablematrix : public CoinPackedMatrix
 	{
@@ -45,6 +47,7 @@ class FMTserializablematrix : public CoinPackedMatrix
 	vector<double>rowub;
 	vector<double>colsolution;
 	vector<double>rowprice;
+	FMTsolverinterface solvertype;
 	friend class boost::serialization::access;
 	template<class Archive>
 	void serialize(Archive& ar, const unsigned int version)
@@ -64,6 +67,7 @@ class FMTserializablematrix : public CoinPackedMatrix
 		ar & BOOST_SERIALIZATION_NVP(rowub);
 		ar & BOOST_SERIALIZATION_NVP(colsolution);
 		ar & BOOST_SERIALIZATION_NVP(rowprice);
+		ar & BOOST_SERIALIZATION_NVP(solvertype);
 		if (Archive::is_loading::value)
 			{
 			if (maxMajorDim_ > 0)
@@ -103,8 +107,11 @@ class FMTserializablematrix : public CoinPackedMatrix
 		FMTserializablematrix();
 		FMTserializablematrix(const FMTserializablematrix& rhs);
 		FMTserializablematrix& operator = (const FMTserializablematrix& rhs);
-		FMTserializablematrix(const unique_ptr<OsiSolverInterface>& solverinterface);
-		void setmatrix(unique_ptr<OsiSolverInterface>& solverinterface) const;
+		FMTserializablematrix(const std::shared_ptr<OsiSolverInterface>& solverinterface,const FMTsolverinterface& lsolvertype);
+		void setsolvertype(FMTsolverinterface& lsolvertype) const;
+		void setmatrix(std::shared_ptr<OsiSolverInterface>& solverinterface) const;
+		std::shared_ptr<OsiSolverInterface> buildsolverinterface(const FMTsolverinterface& lsolvertype, CoinMessageHandler* handler) const;
+		std::shared_ptr<OsiSolverInterface> copysolverinterface(const std::shared_ptr<OsiSolverInterface>& solver_ptr, const FMTsolverinterface& lsolvertype, CoinMessageHandler* handler) const;
 		~FMTserializablematrix()=default;
 	};
 

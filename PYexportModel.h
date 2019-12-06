@@ -33,7 +33,7 @@ BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(get_outputs_overloads, get_outputs, 0, 1)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(getLPoutputoverloads,getoutput, 2, 3)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(warmup_overloads, warmup, 2, 4)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(evaluate_overloads, evaluate, 1, 2)
-
+BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(getoperatingareaheuristics_overloads, getoperatingareaheuristics, 2, 4)
 
 void exportModel()
     {
@@ -127,20 +127,19 @@ void exportModel()
 		.def("setsolution", &Models::FMTlpmodel::setsolution)
 		.def("setobjective", &Models::FMTlpmodel::setobjective)
 		.def("setconstraint", &Models::FMTlpmodel::setconstraint)
-		.def("eraseconstraint",&Models::FMTlpmodel::eraseconstraint)
+		.def("eraseconstraint", &Models::FMTlpmodel::eraseconstraint)
 		.def("eraseperiod", &Models::FMTlpmodel::eraseperiod)
 		.def("resolve", &Models::FMTlpmodel::resolve)
 		.def("initialsolve", &Models::FMTlpmodel::initialsolve)
-		.def("getoutput", &Models::FMTlpmodel::getoutput,getLPoutputoverloads())
+		.def("getoutput", &Models::FMTlpmodel::getoutput, getLPoutputoverloads())
 		.def("writeLP", &Models::FMTlpmodel::writeLP)
 		.def("writeMPS", &Models::FMTlpmodel::writeMPS)
 		//.def("getarea", &Models::FMTlpmodel::getarea)
 		.def("__eq__", &Models::FMTlpmodel::operator ==)
 		.def("__ne__", &Models::FMTlpmodel::operator !=)
 		//.def("samegraph", &Models::FMTlpmodel::samegraph)
-		.def("getstats", &Models::FMTlpmodel::getstats);
-		//.def("setgraph", &Models::FMTlpmodel::setgraph);
-
+		.def("getstats", &Models::FMTlpmodel::getstats)
+		.def("getoperatingareaheuristics", &Models::FMTlpmodel::getoperatingareaheuristics, getoperatingareaheuristics_overloads());
 	define_pylist<Models::FMTlpmodel>();
 
 	enum_<Models::FMTsawarmuptype>("FMTsawarmuptype")

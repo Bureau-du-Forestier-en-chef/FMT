@@ -59,6 +59,7 @@ void exportCore()
 
             class_<Core::FMTmask>("FMTmask")
 				.def_pickle(FMT_pickle_suite<FMTmask>())
+				.def(init<const vector<string>&,const vector<FMTtheme>&>())
 				.def("__len__", &Core::FMTmask::operator bool)
                 .def("__str__",&Core::FMTmask::operator string)
 				.def("__eq__", &Core::FMTmask::operator ==)
