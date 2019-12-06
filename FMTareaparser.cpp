@@ -837,13 +837,13 @@ FMTareaparser::FMTareaparser() :
 				vector<OGRPolygon*>mergedpolygons;
 				for (const OGRMultiPolygon& polygons : multipolygons)
 					{
-					Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "GOT VALID MULTI!!!" << polygons.IsEmpty() << "\n";
-					if (polygons.IsValid())
-						{
-						mergedpolygons.push_back(dynamic_cast<OGRPolygon*>(polygons.UnionCascaded()));
-					}else {
+					//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "GOT VALID MULTI!!!" << polygons.IsEmpty() << "\n";
+					/**if (polygons.IsValid())
+						{*/
+					mergedpolygons.push_back(dynamic_cast<OGRPolygon*>(polygons.UnionCascaded()));
+					/*}else {
 						mergedpolygons.push_back(nullptr);
-						}
+						}*/
 					}
 				//map<FMTmask, vector<FMTmask>>neighboring;
 				for (size_t opareaindex = 0; opareaindex < operatingareas.size();++opareaindex)
@@ -852,9 +852,10 @@ FMTareaparser::FMTareaparser() :
 					vector<size_t>neighborsid;
 					vector<double>areas;
 					
-					if (mergedpolygons.at(opareaindex) && !mergedpolygons.at(opareaindex)->IsEmpty() && mergedpolygons.at(opareaindex)->IsValid())
+					if (!mergedpolygons.at(opareaindex)->IsEmpty())
 						{
-						OGRGeometry* buffered = (mergedpolygons.at(opareaindex)->Buffer(buffersize));
+						const OGRGeometry* buffered = (mergedpolygons.at(opareaindex)->Buffer(buffersize));
+						Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "nsvalidneighbor size !!!!!" << "\n";
 						for (size_t opareaneighborindex = 0; opareaneighborindex < operatingareas.size(); ++opareaneighborindex)
 							{
 							if (opareaindex != opareaneighborindex && mergedpolygons.at(opareaneighborindex) && 
