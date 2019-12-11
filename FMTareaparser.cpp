@@ -837,32 +837,26 @@ FMTareaparser::FMTareaparser() :
 				vector<OGRPolygon*>mergedpolygons;
 				for (const OGRMultiPolygon& polygons : multipolygons)
 					{
-					//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "GOT VALID MULTI!!!" << polygons.IsEmpty() << "\n";
-					/**if (polygons.IsValid())
-						{*/
-					mergedpolygons.push_back(dynamic_cast<OGRPolygon*>(polygons.UnionCascaded()));
-					/*}else {
-						mergedpolygons.push_back(nullptr);
-						}*/
+					OGRGeometry* geometry = polygons.UnionCascaded();
+					OGRPolygon* polygon = reinterpret_cast<OGRPolygon*>(geometry);
+					mergedpolygons.push_back(polygon);
 					}
-				//map<FMTmask, vector<FMTmask>>neighboring;
+				std::map<FMTmask,std::vector<FMTmask>>neighborhood;
 				for (size_t opareaindex = 0; opareaindex < operatingareas.size();++opareaindex)
 					{
 					double fullbuffered = 0;
 					vector<size_t>neighborsid;
 					vector<double>areas;
-					
-					if (!mergedpolygons.at(opareaindex)->IsEmpty())
+					if (!mergedpolygons.at(opareaindex)->IsEmpty() && mergedpolygons.at(opareaindex)->IsValid())
 						{
-						const OGRGeometry* buffered = (mergedpolygons.at(opareaindex)->Buffer(buffersize));
-						Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "nsvalidneighbor size !!!!!" << "\n";
+						OGRGeometry* buffered = (mergedpolygons.at(opareaindex)->Buffer(buffersize));
 						for (size_t opareaneighborindex = 0; opareaneighborindex < operatingareas.size(); ++opareaneighborindex)
 							{
-							if (opareaindex != opareaneighborindex && mergedpolygons.at(opareaneighborindex) && 
+							if (opareaindex != opareaneighborindex && 
 								buffered->Intersects(mergedpolygons.at(opareaneighborindex)))
 								{
 								OGRGeometry* intersect = buffered->Intersection(mergedpolygons.at(opareaneighborindex));
-								const OGRSurface* area = dynamic_cast<OGRSurface*>(intersect);
+								const OGRSurface* area = reinterpret_cast<OGRSurface*>(intersect);
 								const double intersectarea = area->get_Area();
 								fullbuffered += intersectarea;
 								neighborsid.push_back(opareaneighborindex);
@@ -870,6 +864,7 @@ FMTareaparser::FMTareaparser() :
 								OGRGeometryFactory::destroyGeometry(intersect);
 								}
 							}
+						OGRGeometryFactory::destroyGeometry(buffered);
 						}
 					
 					vector<FMTmask>validneighbors;
@@ -881,9 +876,27 @@ FMTareaparser::FMTareaparser() :
 							validneighbors.push_back(operatingareas.at(neighborsid.at(neighborid)).getmask());
 							}
 						}
-					//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "validneighbor size " << validneighbors.size() << "\n";
-					operatingareas.at(opareaindex).setneighbors(validneighbors);
+					neighborhood[operatingareas.at(opareaindex).getmask()] = validneighbors;
 					}
+				//reciprocity
+				/////////////
+				for (Heuristics::FMToperatingarea& oparea : operatingareas)
+					{
+					if (neighborhood.find(oparea.getmask())!= neighborhood.end())
+						{
+						vector<FMTmask>realneighbors;
+						for (const FMTmask& nmask : neighborhood.at(oparea.getmask()))
+						{
+							if (neighborhood.find(nmask) != neighborhood.end() &&
+								std::find(neighborhood.at(nmask).begin(), neighborhood.at(nmask).end(), oparea.getmask()) != neighborhood.at(nmask).end())
+							{
+								realneighbors.push_back(nmask);
+							}
+						}
+						oparea.setneighbors(realneighbors);
+						}
+					}
+				////////////
 				for (OGRPolygon* polygon : mergedpolygons)
 					{
 					OGRGeometryFactory::destroyGeometry(polygon);

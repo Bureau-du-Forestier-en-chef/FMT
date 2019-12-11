@@ -53,15 +53,23 @@ namespace Heuristics
 			{
 			vector<std::vector<FMToperatingarea>::const_iterator> selected;
 			do {
+				//solverinterface->writeLp("C:/Users/cyrgu3/source/repos/FMT/x64/Release/beforesetbounds");
 				selected = this->setdraw();
 				size_t setssize = this->setbounds(selected);
+				//solverinterface->writeLp("C:/Users/cyrgu3/source/repos/FMT/x64/Release/aftersetbounds");
+				//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "selected  "<< double(selected.size())/ double(operatingareas .size())<< "\n";
+				//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "bounds set on  " << setssize << "\n";
 				solverinterface->resolve();
-				if (solverinterface->isProvenPrimalInfeasible() || 
-					solverinterface->isProvenDualInfeasible())
+				//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "IS IT OPTIMAL? " << solverinterface->isProvenOptimal() << "\n";
+				//cin.get();
+				if (!solverinterface->isProvenOptimal())
 					{
+					Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "NOT OPTIMAL!!!! " << "\n";
+					//solverinterface->writeLp("C:/Users/cyrgu3/source/repos/FMT/x64/Release/infeasiblebounds");
 					userandomness = true; //Switch to random now
 					this->unboundall(); //release everything
 					solverinterface->resolve();
+					cin.get();
 					}
 			} while (!selected.empty() && solverinterface->isProvenOptimal());
 			}
@@ -83,7 +91,7 @@ namespace Heuristics
 		{
 		Core::FMToutputnode specifictarget(target);
 		const vector<FMTaction>modelactions=model.getactions();
-		vector<const Core::FMTaction*>actions = specifictarget.source.targets(model.getactions(), model.getactionaggregates());
+		vector<const Core::FMTaction*>actions = specifictarget.source.targets(modelactions, model.getactionaggregates());
 		vector<int>actionids;
 		for (const Core::FMTaction* actptr : actions)
 			{
@@ -94,9 +102,10 @@ namespace Heuristics
 			{
 			specifictarget.source.setmask(operatingareait->getmask());
 			vector<vector<Graph::FMTvertex_descriptor>>descriptors;
-			for (int period = maingraph.getfirstactiveperiod();period < maingraph.size();++period)
+			for (int period = (maingraph.getfirstactiveperiod()+ operatingareait->getstartingperiod());period < (maingraph.size()-1);++period)
 				{
-				descriptors.push_back(maingraph.getnode(model, specifictarget, period));
+				vector<Graph::FMTvertex_descriptor> perioddescriptors = maingraph.getnode(model, specifictarget, period);
+				descriptors.push_back(perioddescriptors);
 				}
 			if (!descriptors.empty())
 				{
@@ -215,7 +224,7 @@ namespace Heuristics
 		std::vector<FMToperatingarea>::const_iterator areait = operatingareas.begin();
 		while (areait != operatingareas.end())
 			{
-			if (!areait->isbounded(lowerbounds, upperbounds) && !areait->isallbounded(lowerbounds, upperbounds))
+			if (!areait->empty() && !areait->isbounded(lowerbounds, upperbounds) && !areait->isallbounded(lowerbounds, upperbounds))
 				{
 				//Make sure it's sorted!
 				double value = areait->getbinariessum(primalsolution);
@@ -225,7 +234,8 @@ namespace Heuristics
 					size_t oldsize = potentials.size();
 					while (potentials.size() == oldsize)
 						{
-							if (value > (*vit)->getbinariessum(primalsolution))
+							if (vit == potentials.end() || 
+								value > (*vit)->getbinariessum(primalsolution))
 							{
 								potentials.insert(vit, areait);
 							}
@@ -235,6 +245,7 @@ namespace Heuristics
 						potentials.push_back(areait);
 						}
 				}
+			++areait;
 			}
 		const size_t maxareatopick = static_cast<size_t>(double(operatingareas.size()) * proportionofset);
 		if (userandomness)
@@ -270,6 +281,7 @@ namespace Heuristics
 			vector<size_t>potentialschemes = opit->getpotentialschemes(primalsolution,allneighbors);
 			if (!potentialschemes.empty())
 				{
+				//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "bounding  " << string(opit->getmask()) << "\n";
 				if (userandomness)
 					{
 					std::shuffle(potentialschemes.begin(), potentialschemes.end(), this->generator);
@@ -277,6 +289,7 @@ namespace Heuristics
 				++gotschedule;
 				opit->boundscheme(solverinterface, *potentialschemes.begin());
 			}else {
+				//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "Closing  " << string(opit->getmask()) << "\n";
 				opit->boundallschemes(solverinterface);
 				}
 			}
@@ -311,15 +324,30 @@ namespace Heuristics
 		solverinterface(nullptr), generator(seed), proportionofset(proportionofset),
 		userandomness(userandomness), solvertype(lsolvertype)
 		{
+		//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "copying solver "  << "\n";
 		if (copysolver)
 			{
 			solverinterface = FMTserializablematrix().copysolverinterface(initialsolver, solvertype,&*this->_logger);
 		}else {
 			solverinterface = initialsolver;
 			}
+		Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "seting op constraints"  << "\n";
 		this->setoperatingareasconstraints(maingraph, model, target);
+		//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "seting adjacency constraints" << "\n";
 		this->setadjacencyconstraints();
+		this->solverinterface->resolve(); //Solution changes with constraints
 		//dont forget to pass in exeception and logger!
+		}
+
+	void FMToperatingareaheuristic::setasrandom()
+		{
+		userandomness = true;
+		}
+
+	void FMToperatingareaheuristic::setgeneratorseed(const size_t& lseed)
+		{
+		seed = lseed;
+		generator.seed(lseed);
 		}
 
 	bool FMToperatingareaheuristic::isfeasible() const

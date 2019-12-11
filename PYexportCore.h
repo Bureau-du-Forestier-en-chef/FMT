@@ -28,6 +28,7 @@ SOFTWARE.
 
 
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(getattributes_overloads, getattributes, 1, 2)
+BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(getnodes_overloads, getnodes, 0, 1)
 
 void exportCore()
     {
@@ -138,6 +139,13 @@ void exportCore()
                 .def("__ne__",&Core::FMTtransition::operator !=)
                 .def("__lt__",&Core::FMTtransition::operator <)
                 .def_readwrite("name",&Core::FMTtransition::name);
+
+
+			class_<Core::FMToutputnode>("FMToutputnode")
+				.def("__str__", &Core::FMToutputnode::operator string);
+
+			define_FMTlist<Core::FMToutputnode>();
+
             class_<Core::FMToutput>("FMToutput")
 				.def_pickle(FMT_pickle_suite<FMTtransition>())
                 .def_readwrite("name",&Core::FMToutput::name)
@@ -145,6 +153,7 @@ void exportCore()
 				.def("empty", &Core::FMToutput::empty)
 				.def("containslevel",&Core::FMToutput::containslevel)
 				.def("islevel", &Core::FMToutput::islevel)
+				.def("getnodes",&Core::FMToutput::getnodes, getnodes_overloads())
 				.def("__str__", &Core::FMToutput::operator string)
                 .def("__eq__",&Core::FMToutput::operator ==)
                 .def("__ne__",&Core::FMToutput::operator !=);

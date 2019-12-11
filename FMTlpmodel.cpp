@@ -2305,14 +2305,14 @@ bool FMTlpmodel::locatenodes(const vector<FMToutputnode>& nodes, int period,
 		bool userandomness = false;
 		size_t seedof = 0;
 		double proportionofset = 0.25;
+		//Heuristics::FMToperatingareaheuristic baseheuristic(opareas, graph, *this, node, solverinterface, solvertype, seedof, proportionofset, userandomness, copysolver);
 		vector<Heuristics::FMToperatingareaheuristic>allheuristics;
-		for (size_t heuristicid = 0 ; heuristicid < numberofheuristics; ++heuristicid)
+		allheuristics.emplace_back(opareas, graph, *this, node, solverinterface, solvertype, seedof, proportionofset, userandomness, copysolver);
+		for (size_t heuristicid = 1 ; heuristicid < numberofheuristics; ++heuristicid)
 			{
-			allheuristics.push_back(Heuristics::FMToperatingareaheuristic(opareas, graph, *this, node, solverinterface, solvertype, seedof, proportionofset, userandomness, copysolver));
-			if (heuristicid>0)
-				{
-				userandomness = true;
-				}
+			allheuristics.emplace_back(*allheuristics.begin());
+			allheuristics.back().setasrandom();
+			allheuristics.back().setgeneratorseed(seedof);
 			seedof += 1;
 			}
 		return allheuristics;

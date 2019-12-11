@@ -74,7 +74,7 @@ namespace Heuristics
 			solverinterface = matrix.buildsolverinterface(solvertype, &*this->_logger);
 			matrix.setmatrix(solverinterface);
 			ar & BOOST_SERIALIZATION_NVP(seed);
-			generator.seed(seed);
+			this->setgeneratorseed(seed);
 			ar & BOOST_SERIALIZATION_NVP(proportionofset);
 			ar & BOOST_SERIALIZATION_NVP(userandomness);
 		}
@@ -99,6 +99,8 @@ namespace Heuristics
 	public:
 		void initialsolve();
 		void branchnboundsolve();
+		void setasrandom();
+		void setgeneratorseed(const size_t& lseed);
 		std::vector<FMTyieldhandler> getsolution(const string& yldname) const;
 		FMToperatingareaheuristic(const std::vector<FMToperatingarea>& loperatingareas,
 			const Graph::FMTgraph& maingraph,

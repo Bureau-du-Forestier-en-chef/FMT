@@ -57,11 +57,11 @@ namespace Heuristics
 			}
 		FMTmask mask;
 		vector<FMTmask>neighbors;
-		vector<int>openingconstraints;
+		vector<vector<int>>openingconstraints;
 		vector<int>openingbinaries;
 		int maximalschemesconstraint;
 		vector<vector<int>>schemesperiods;
-		size_t openingtime,returntime,repetition,greenup;
+		size_t openingtime,returntime,repetition,greenup,startingperiod;
 		double openingratio,neihgborsperimeter;
 		double getarea(const double* primalsolution, const Graph::FMTgraph& maingraph, const vector<Graph::FMTvertex_descriptor>& verticies) const;//Get the area of the operating area base on a solution
 		size_t getbestschemeid(const double* primalsolution) const;//Get the best possible scheme looking at the primal solution
@@ -73,6 +73,7 @@ namespace Heuristics
 		vector<vector<int>> schemestoperiods(const vector<vector<vector<Graph::FMTvertex_descriptor>>>& schemes, const Graph::FMTgraph& maingraph) const;
 		public:
 			vector<FMTmask> getneighbors() const;
+			bool empty() const;
 			const vector<int>& getopeningbinaries() const;
 			double getbinariessum(const double* primalsolution) const;
 			map<int, vector<int>> getcommonbinairies(const FMToperatingarea& neighbor) const;
@@ -92,7 +93,7 @@ namespace Heuristics
 				const Graph::FMTgraph& graph,std::shared_ptr<OsiSolverInterface> solverinterface,
 				const vector<int>& actionIDS);
 			FMToperatingarea(const FMTmask& lmask,const size_t& lopeningtime, const size_t& lreturntime,
-				const size_t& lrepetition, const size_t& lgreenup,
+				const size_t& lrepetition, const size_t& lgreenup,const size_t& lstartingperiod,
 				const double& lopeningratio, const double& lneihgborsperimeter);
 			FMToperatingarea()=default;
 			FMToperatingarea(const FMToperatingarea&) = default;
@@ -102,6 +103,7 @@ namespace Heuristics
 			~FMToperatingarea()=default;
 			double getneihgborsperimeter() const;
 			FMTmask getmask() const;
+			size_t getstartingperiod() const;
 		};
 
 	class FMToperatingareacomparator
