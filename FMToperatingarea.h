@@ -52,8 +52,8 @@ namespace Heuristics
 			ar & BOOST_SERIALIZATION_NVP(returntime);
 			ar & BOOST_SERIALIZATION_NVP(repetition);
 			ar & BOOST_SERIALIZATION_NVP(greenup);
-			ar & BOOST_SERIALIZATION_NVP(openingratio);
 			ar & BOOST_SERIALIZATION_NVP(neihgborsperimeter);
+			ar & BOOST_SERIALIZATION_NVP(_area);
 			}
 		FMTmask mask;
 		vector<FMTmask>neighbors;
@@ -62,7 +62,8 @@ namespace Heuristics
 		int maximalschemesconstraint;
 		vector<vector<int>>schemesperiods;
 		size_t openingtime,returntime,repetition,greenup,startingperiod;
-		double openingratio,neihgborsperimeter;
+		double neihgborsperimeter;
+		double _area;
 		double getarea(const double* primalsolution, const Graph::FMTgraph& maingraph, const vector<Graph::FMTvertex_descriptor>& verticies) const;//Get the area of the operating area base on a solution
 		size_t getbestschemeid(const double* primalsolution) const;//Get the best possible scheme looking at the primal solution
 		vector<vector<vector<Graph::FMTvertex_descriptor>>> generateschemes(const vector<vector<Graph::FMTvertex_descriptor>>& verticies); // Generate unique schemes base on parameters
@@ -71,30 +72,42 @@ namespace Heuristics
 						std::shared_ptr<OsiSolverInterface> solverinterface,
 						const Graph::FMTgraph& maingraph,const vector<int>& actionIDS); //Fill opening constraints and opening binairies in the LP and in the OParea
 		vector<vector<int>> schemestoperiods(const vector<vector<vector<Graph::FMTvertex_descriptor>>>& schemes, const Graph::FMTgraph& maingraph) const;
+		double getrowsactivitysum(const vector<int>& rows, const double* dualsolution) const;
+		vector<double>fillpattern(const vector<double>& pattern, const int& startat) const;
 		public:
 			vector<FMTmask> getneighbors() const;
 			bool empty() const;
 			const vector<int>& getopeningbinaries() const;
 			double getbinariessum(const double* primalsolution) const;
+			double getactivitysum(const double* dualsolution) const;
 			map<int, vector<int>> getcommonbinairies(const FMToperatingarea& neighbor) const;
-			size_t getsolutionindex(const double* primalsolution) const; //return -1 if no binary use
+			size_t getprimalsolutionindex(const double* primalsolution) const; 
+			size_t getdualsolutionindex(const double* upperbound) const;
 			bool havebinarysolution(const double* primalsolution) const;
-			bool isallbounded(const double* lowerbounds, const double* upperbounds) const;
-			bool isbounded(const double* lowerbounds, const double* upperbounds) const;
-			vector<size_t>getpotentialschemes(const double* primalsolution,const vector<FMToperatingarea>& neighbors) const;
+			bool haveactivitysolution(const double* dualsolution) const;
+			bool isallprimalbounded(const double* lowerbounds, const double* upperbounds) const;
+			bool isalldualbounded(const double* upperbounds) const;
+			bool isprimalbounded(const double* lowerbounds, const double* upperbounds) const;
+			bool isdualbounded(const double* upperbounds) const;
+			vector<size_t>getpotentialprimalschemes(const double* primalsolution, const double* lowerbounds, const double* upperbounds,const vector<FMToperatingarea>& neighbors) const;
+			vector<size_t>getpotentialdualschemes(const double* dualsolution, const double* upperbound, const vector<FMToperatingarea>& neighbors) const;
 			void getressourcestodelete(vector<int>& colstodelete,vector<int>& rowstodelete) const; //Remove all variable and constraints related to the operating area from the solver
 			size_t binarize(std::shared_ptr<OsiSolverInterface> solverinterface) const; //Set all opening binairies to integer variable to get ready for branch and bound
-			size_t unboundallschemes(std::shared_ptr<OsiSolverInterface> solverinterface) const; //Unbound all binairies to 0<=B<=1
-			size_t boundallschemes(std::shared_ptr<OsiSolverInterface> solverinterface) const;
-			bool boundscheme(std::shared_ptr<OsiSolverInterface> solverinterface, const size_t& schemeid) const; //Looking at the primal solution set the best scheme to the solverinterface 1<=B<=1 and check optimality
-			vector<double> getsolution(const double* primalsolution) const; //Get the solution into yields
+			size_t unboundallprimalschemes(std::shared_ptr<OsiSolverInterface> solverinterface) const; //Unbound all binairies to 0<=B<=1
+			size_t unboundalldualschemes(std::shared_ptr<OsiSolverInterface> solverinterface) const; //Unbound all binairies to 0<=B<=1
+			size_t boundallprimalschemes(std::shared_ptr<OsiSolverInterface> solverinterface) const;
+			size_t boundalldualschemes(std::shared_ptr<OsiSolverInterface> solverinterface) const;
+			bool boundprimalscheme(std::shared_ptr<OsiSolverInterface> solverinterface, const size_t& schemeid) const; //Looking at the primal solution set the best scheme to the solverinterface 1<=B<=1 and check optimality
+			bool unbounddualscheme(std::shared_ptr<OsiSolverInterface> solverinterface, const size_t& schemeid) const; //Looking at the primal solution set the best scheme to the solverinterface 1<=B<=1 and check optimality
+			vector<double> getprimalsolution(const double* primalsolution) const; //Get the solution into yields
+			vector<double> getdualsolution(const double* upperbounds) const;
 			void setneighbors(const vector<FMTmask>& lneighbors);
 			void setconstraints(const vector<vector<Graph::FMTvertex_descriptor>>& verticies,
 				const Graph::FMTgraph& graph,std::shared_ptr<OsiSolverInterface> solverinterface,
 				const vector<int>& actionIDS);
 			FMToperatingarea(const FMTmask& lmask,const size_t& lopeningtime, const size_t& lreturntime,
 				const size_t& lrepetition, const size_t& lgreenup,const size_t& lstartingperiod,
-				const double& lopeningratio, const double& lneihgborsperimeter);
+				const double& lneihgborsperimeter);
 			FMToperatingarea()=default;
 			FMToperatingarea(const FMToperatingarea&) = default;
 			FMToperatingarea& operator = (const FMToperatingarea& )=default;

@@ -60,6 +60,8 @@ namespace Heuristics
 			ar & BOOST_SERIALIZATION_NVP(seed);
 			ar & BOOST_SERIALIZATION_NVP(proportionofset);
 			ar & BOOST_SERIALIZATION_NVP(userandomness);
+			ar & BOOST_SERIALIZATION_NVP(usingsolvercopy);
+			ar & BOOST_SERIALIZATION_NVP(useprimal);
 		}
 		template<class Archive>
 		void load(Archive& ar, const unsigned int version)
@@ -77,6 +79,8 @@ namespace Heuristics
 			this->setgeneratorseed(seed);
 			ar & BOOST_SERIALIZATION_NVP(proportionofset);
 			ar & BOOST_SERIALIZATION_NVP(userandomness);
+			ar & BOOST_SERIALIZATION_NVP(usingsolvercopy);
+			ar & BOOST_SERIALIZATION_NVP(useprimal);
 		}
 		BOOST_SERIALIZATION_SPLIT_MEMBER()
 		std::vector<FMToperatingarea>operatingareas;
@@ -87,6 +91,7 @@ namespace Heuristics
 		double proportionofset;
 		bool userandomness;
 		bool usingsolvercopy;
+		bool useprimal;
 		Models::FMTsolverinterface solvertype;
 		void setoperatingareasconstraints(const Graph::FMTgraph& maingraph,
 			const Models::FMTmodel& model,
@@ -96,6 +101,7 @@ namespace Heuristics
 		size_t setbounds(const vector<std::vector<FMToperatingarea>::const_iterator>& tobound);
 		void unboundall();
 		void setallinteger();
+		int resolvemodel();
 	public:
 		void initialsolve();
 		void branchnboundsolve();

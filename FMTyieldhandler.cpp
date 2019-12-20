@@ -354,7 +354,7 @@ FMTyieldhandler::operator string() const
 							{
 							const double lower = cdata->data.at(srcid);
 							const double upper = cdata->data.at(srcid + 1);
-							if (source_values.at(yldrange) < lower || source_values.at(yldrange) > upper)
+							if ((source_values.find(yldrange)==source_values.end()) || (source_values.at(yldrange) < lower || source_values.at(yldrange) > upper))
 								{
 								value = 0;
 								break;
