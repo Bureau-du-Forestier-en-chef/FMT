@@ -27,73 +27,130 @@ SOFTWARE.
 #include <algorithm>
 #include <random>
 #include "OsiMskSolverInterface.hpp"
+#include "OsiClpSolverInterface.hpp"
 #include "mosek.h"
 
 namespace Heuristics
 {
-	void FMToperatingareaheuristic::unboundall()
+	void FMToperatingareaheuristic::clearrowcache()
 		{
+		if (!useprimal && solvertype == FMTsolverinterface::MOSEK)
+			{
+			OsiMskSolverInterface* msksolver = dynamic_cast<OsiMskSolverInterface*>(solverinterface.get());
+			msksolver->freeCachedRowRim();
+			}
+		}
+
+
+	void FMToperatingareaheuristic::unboundall(bool atprimal)
+		{
+		this->clearrowcache();
+		vector<int>targeteditems;
+		vector<double>bounds;
 		for (std::vector<FMToperatingarea>::const_iterator operatingareait = operatingareas.begin();
 			operatingareait != operatingareas.end(); ++operatingareait)
 			{
-			if (useprimal)
+			if (useprimal || atprimal)
 				{
-				operatingareait->unboundallprimalschemes(solverinterface);
+				operatingareait->unboundallprimalschemes(targeteditems, bounds);
 			}
 			else { // dual
-				operatingareait->unboundalldualschemes(solverinterface);
+				operatingareait->unboundalldualschemes(targeteditems, bounds);
 			}
 			
 			}
+			if (useprimal || atprimal)
+			{
+				solverinterface->setColSetBounds(&targeteditems[0], &targeteditems.back() + 1, &bounds[0]);
+			}else {
+				solverinterface->setRowSetBounds(&targeteditems[0], &targeteditems.back() + 1, &bounds[0]);
+				}
+		}
+
+	void FMToperatingareaheuristic::closeprimalbounds()
+		{
+		vector<int>variables;
+		vector<double>bounds;
+		for (std::vector<FMToperatingarea>::const_iterator operatingareait = operatingareas.begin();
+			operatingareait != operatingareas.end(); ++operatingareait)
+				{
+				operatingareait->boundallprimalschemes(variables,bounds,0);
+				}
+		solverinterface->setColSetBounds(&variables[0], &variables.back() + 1, &bounds[0]);
 		}
 
 	void FMToperatingareaheuristic::setallinteger()
 		{
+		if (!useprimal)//need to turn back the formulation to primal to make it work ith MIP
+			{
+				this->clearrowcache();
+				const double* rowupper = solverinterface->getRowUpper();
+				vector<int>rowsitems;
+				vector<double>rowsbounds;
+				vector<int>colsitems;
+				vector<double>colsbounds;
+				for (std::vector<FMToperatingarea>::const_iterator operatingareait = operatingareas.begin();
+					operatingareait != operatingareas.end(); ++operatingareait)
+					{
+					size_t selected = 0;
+					if (operatingareait->getdualsolutionindex(rowupper, selected))
+						{
+						//(*_logger) << "selected for integer: " << selected << "\n";
+						operatingareait->boundprimalscheme(colsitems, colsbounds, selected);
+						}
+					operatingareait->unboundalldualschemes(rowsitems,rowsbounds);
+					}
+				//Need to bring it back to initial state!
+				for (double& bound : rowsbounds)
+					{
+					if (bound!=numeric_limits<double>::lowest())
+						{
+						bound = 0;
+						}
+					}
+				solverinterface->setRowSetBounds(&rowsitems[0], &rowsitems.back() + 1, &rowsbounds[0]);
+				solverinterface->setColSetBounds(&colsitems[0], &colsitems.back() + 1, &colsbounds[0]);
+				//this->clearrowcache();
+				this->resolvemodel();
+			}
+		vector<int>integervariables;
 		for (std::vector<FMToperatingarea>::const_iterator operatingareait = operatingareas.begin();
 			operatingareait != operatingareas.end(); ++operatingareait)
-			{
-			if (!useprimal)
 				{
-				operatingareait->boundalldualschemes(solverinterface);
-				this->resolvemodel();
+				operatingareait->binarize(integervariables);
 				}
-			operatingareait->binarize(solverinterface);
-			}
+		solverinterface->setInteger(&integervariables[0], int(integervariables.size()));
 		}
 
 	int FMToperatingareaheuristic::resolvemodel()
 		{
 		int numberofiterations = 0;
-		/*if (solvertype == Models::FMTsolverinterface::CLP && !useprimal)//clp with dual simplex
+		if (solvertype == Models::FMTsolverinterface::CLP && !useprimal)//clp with dual simplex
 			{
-			ClpSimplex* splexmodel = BFECsolver::problem->getModelPtr();
+			OsiClpSolverInterface* clpsolver = dynamic_cast<OsiClpSolverInterface*>(solverinterface.get());
+			ClpSimplex* splexmodel = clpsolver->getModelPtr();
 			splexmodel->setPerturbation(-6);
-			ClpDualRowSteepest steepestpivot;
-			splexmodel->setDualRowPivotAlgorithm(steepestpivot);
-			splexmodel->passInEventHandler(&handler); //test
 			splexmodel->setSpecialOptions(64 | 128 | 1024 | 2048 | 4096 | 32768 | 262144 | 0x01000000);
 			splexmodel->tightenPrimalBounds();
 			splexmodel->dual();
-			}*/
-		/*if (solvertype == Models::FMTsolverinterface::MOSEK) // Mosek interior point is powerfull
+			numberofiterations = splexmodel->numberIterations();
+		}else if(solvertype == Models::FMTsolverinterface::MOSEK) //Mosek with interior point
 			{
 			OsiMskSolverInterface* msksolver = dynamic_cast<OsiMskSolverInterface*>(solverinterface.get());
-			msksolver->freeCachedResults();
+			msksolver->freeCachedData();
 			MSKtask_t task = msksolver->getMutableLpPtr();
 			MSK_putintparam(task, MSK_IPAR_OPTIMIZER, MSK_OPTIMIZER_INTPNT);
+			MSK_putintparam(task, MSK_IPAR_INTPNT_BASIS, MSK_BI_IF_FEASIBLE);
 			MSK_putintparam(task, MSK_IPAR_SIM_HOTSTART, MSK_SIM_HOTSTART_NONE);
 			MSK_putintparam(task, MSK_IPAR_PRESOLVE_USE, MSK_ON);
-			MSK_optimize(task);
-			//msksolver->definedSolution()
-			//MSK_putintparam(msksolver->getMutableLpPtr(), MSK_IPAR_OPTIMIZER, MSK_OPTIMIZER_INTPNT);
-			//MSK_deletesolution(msksolver->getMutableLpPtr(), MSK_SOL_BAS);
-			//solverinterface->initialSolve();
-			//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "done of! " << "\n";
-			//cin.get();
-		}else {*/
-			solverinterface->resolve();
-			//}
-		//solverinterface->resolve();
+			MSK_putintparam(task, MSK_IPAR_LOG, 10);
+			MSK_putintparam(task, MSK_IPAR_LOG_INTPNT, 4);
+			MSKrescodee error = MSK_optimize(task);
+			MSK_getintinf(task, MSK_IINF_INTPNT_ITER, &numberofiterations);
+			}else{//default
+				solverinterface->resolve();
+				numberofiterations = solverinterface->getIterationCount();
+				}
 		return numberofiterations;
 		}
 
@@ -103,30 +160,38 @@ namespace Heuristics
 			{
 			double initialobjectivevalue = solverinterface->getObjValue();
 			size_t opareaprocessed = 0;
-			CoinWarmStart* initialstate = solverinterface->getWarmStart();
 			string problemsolved = "primal";
 			if (!useprimal)
 				{
+				this->unboundall(); //Make sure rhs are right need to be released
+				this->closeprimalbounds(); //Need that to get some activities
+				this->resolvemodel();
 				problemsolved = "dual";
 				}
 			vector<std::vector<FMToperatingarea>::const_iterator> selected;
 			do {
+				this->clearrowcache();
 				selected = this->setdraw();
-				(*_logger) << "selected s: " << selected.size() << "\n";
+				//(*_logger) << "selected s: " << selected.size() << "\n";
 				size_t setssize = this->setbounds(selected);
-				(*_logger) << "set bounds on s: " << setssize << "\n";
-				this->resolvemodel();
+				//(*_logger) << "set bounds on s: " << setssize << "\n";
+				const int iterations = this->resolvemodel();
 				opareaprocessed += selected.size();
+				///solverinterface->writeLp(string("C:/Users/cyrgu3/source/repos/FMT/x64/Release/test/stepsolve" + to_string(opareaprocessed)).c_str());
+				//cin.get();
 				if (!selected.empty())
 					{
 					int setratio = ((static_cast<double>(opareaprocessed)) / (static_cast<double>(this->operatingareas.size()))) * 100;
-					(*_logger) << "Solution generation phase (" + to_string(setratio) + "%) took " + to_string(solverinterface->getIterationCount()) +" "+ problemsolved +" simplex iterations" << "\n";
+					(*_logger) << "Solution generation phase (" + to_string(setratio) + "%) took " + to_string(iterations) +" iterations on "+ problemsolved << "\n";
 					}
 				if (!solverinterface->isProvenOptimal())
 					{
 					userandomness = true; //Switch to random now
 					this->unboundall(); //release everything
-					solverinterface->setWarmStart(initialstate);
+					if (!useprimal)
+						{
+						this->closeprimalbounds();
+						}
 					this->resolvemodel();
 					opareaprocessed = 0;
 					}
@@ -136,6 +201,8 @@ namespace Heuristics
 				double newobjective = solverinterface->getObjValue();
 				double dblgap = (100 - (round((newobjective / initialobjectivevalue) * 1000) / 10));
 				(*_logger) << "Feasible solution found objective: " + to_string(round(newobjective)) + " (" + to_string(dblgap) + "%)" << "\n";
+				this->clearrowcache();
+				//solverinterface->writeLp("C:/Users/cyrgu3/source/repos/FMT/x64/Release/test/bestfount");
 				}
 			}
 		}
@@ -145,9 +212,12 @@ namespace Heuristics
 		if (solverinterface->isProvenOptimal())
 			{
 			//In that order it seems to work...
+			//solverinterface->writeLp("C:/Users/cyrgu3/source/repos/FMT/x64/Release/test/beforeMIP");
 			this->setallinteger();
+			//solverinterface->writeLp("C:/Users/cyrgu3/source/repos/FMT/x64/Release/test/toMIP1");
 			solverinterface->branchAndBound();
-			this->unboundall();
+			this->unboundall(true);
+			//solverinterface->writeLp("C:/Users/cyrgu3/source/repos/FMT/x64/Release/test/toMIP2");
 			solverinterface->branchAndBound();
 			}
 		}
@@ -158,6 +228,14 @@ namespace Heuristics
 		{
 		Core::FMToutputnode specifictarget(target);
 		const vector<FMTaction>modelactions=model.getactions();
+		std::unordered_map<size_t, Graph::FMTvertex_descriptor> basedescriptors = maingraph.getperiodverticies(maingraph.getfirstactiveperiod());
+		Core::FMToutputnode areatarget(specifictarget);
+		FMTmask areamask = areatarget.source.getmask();
+		for (const FMTtheme& theme : model.getthemes())
+			{
+			areamask.set(theme, "?");
+			}
+		areatarget.source = FMToutputsource(FMTspec(), areamask, FMTotar::inventory);
 		vector<const Core::FMTaction*>actions = specifictarget.source.targets(modelactions, model.getactionaggregates());
 		vector<int>actionids;
 		for (const Core::FMTaction* actptr : actions)
@@ -168,16 +246,25 @@ namespace Heuristics
 			operatingareait != operatingareas.end(); ++operatingareait)
 			{
 			specifictarget.source.setmask(operatingareait->getmask());
+			areatarget.source.setmask(operatingareait->getmask());
 			vector<vector<Graph::FMTvertex_descriptor>>descriptors;
+			vector<Graph::FMTvertex_descriptor>totalareadescriptors;
 			for (int period = (maingraph.getfirstactiveperiod()+ operatingareait->getstartingperiod());period < (maingraph.size()-1);++period)
 				{
-				vector<Graph::FMTvertex_descriptor> perioddescriptors = maingraph.getnode(model, specifictarget, period);
+				if (descriptors.empty())
+					{
+					totalareadescriptors = maingraph.getnode(model, areatarget, period);
+					}
+				vector<Graph::FMTvertex_descriptor> perioddescriptors;
+				if (!totalareadescriptors.empty())
+					{
+					perioddescriptors = maingraph.getnode(model, specifictarget, period);
+					}
 				descriptors.push_back(perioddescriptors);
 				}
 			if (!descriptors.empty())
 				{
-				//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "seting op "<< string(operatingareait ->getmask())<< "\n";
-				operatingareait->setconstraints(descriptors, maingraph, solverinterface, actionids);
+				operatingareait->setconstraints(descriptors,totalareadescriptors,maingraph, solverinterface, actionids);
 				}
 			}
 		}
@@ -279,7 +366,7 @@ namespace Heuristics
 				}
 			if (!rowstodelete.empty() || !columnstodelete.empty())
 				{
-				solverinterface->resolve();
+				this->resolvemodel();
 				}
 		operatingareas.clear();
 		adjacencyconstraints.clear();
@@ -352,56 +439,72 @@ namespace Heuristics
 		}
 
 	size_t FMToperatingareaheuristic::setbounds(const vector<std::vector<FMToperatingarea>::const_iterator>& tobound)
-		{
+	{
 		size_t gotschedule = 0;
 		const double* primalsolution = solverinterface->getColSolution();
 		const double* dualsolution = solverinterface->getRowActivity();
 		const double* lowerprimalbounds = solverinterface->getColLower();
 		const double* upperprimalbounds = solverinterface->getColUpper();
 		const double* rowupperbound = solverinterface->getRowUpper();
+		vector<int>targeteditems;
+		vector<double>bounds;
 		for (std::vector<FMToperatingarea>::const_iterator opit : tobound)
-			{
+		{
 			vector<FMToperatingarea>allneighbors;
 			for (const FMTmask& neighbormask : opit->getneighbors())
-				{
+			{
 				std::vector<FMToperatingarea>::const_iterator opneighbor = std::find_if(operatingareas.begin(), operatingareas.end(), FMToperatingareacomparator(neighbormask));
 				if (opneighbor != operatingareas.end())
-					{
+				{
 					allneighbors.push_back(*opneighbor);
-					}
-				
 				}
+
+			}
 			vector<size_t>potentialschemes;
-			Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "getting potentials  "<< "\n";
+			//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "getting potentials  "<< "\n";
 			if (useprimal)
-				{
+			{
 				potentialschemes = opit->getpotentialprimalschemes(primalsolution, lowerprimalbounds, upperprimalbounds, allneighbors);
-			}else {
+			}
+			else {
 				potentialschemes = opit->getpotentialdualschemes(dualsolution, rowupperbound, allneighbors);
-				}
+				//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "getting potentials  " << potentialschemes.size() << "\n";
+				//cin.get();
+			}
 			if (!potentialschemes.empty())
-				{
+			{
 				//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "bounding  " << string(opit->getmask()) << "\n";
 				if (userandomness)
-					{
+				{
 					std::shuffle(potentialschemes.begin(), potentialschemes.end(), this->generator);
-					}
+				}
 				++gotschedule;
 				if (useprimal)
-					{
-					opit->boundprimalscheme(solverinterface, *potentialschemes.begin());
-					}else {
-					opit->boundalldualschemes(solverinterface);
-					opit->unbounddualscheme(solverinterface, *potentialschemes.begin());
-					}
-			}else {
+				{
+					opit->boundprimalscheme(targeteditems, bounds, *potentialschemes.begin());
+				}
+				else {
+					//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "using: " << opit->getmask().getstr() << "\n";
+					opit->unbounddualscheme(targeteditems, bounds, *potentialschemes.begin());
+				}
+			}
+			else {
 				if (useprimal)
 				{
-					opit->boundallprimalschemes(solverinterface);
-				}else {
-					opit->boundalldualschemes(solverinterface);
-					}
+					opit->boundallprimalschemes(targeteditems, bounds);
 				}
+				else {
+					Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "closing: " << opit->getmask().getstr() << "\n";
+					opit->boundalldualschemes(targeteditems, bounds);
+				}
+			}
+		}
+		if (useprimal)
+		{
+			solverinterface->setColSetBounds(&targeteditems[0], &targeteditems.back() + 1, &bounds[0]);
+		}else {
+			solverinterface->setRowSetBounds(&targeteditems[0], &targeteditems.back() + 1, &bounds[0]);
+			this->clearrowcache();
 			}
 		return gotschedule;
 		}
@@ -460,6 +563,11 @@ namespace Heuristics
 	void FMToperatingareaheuristic::setasrandom()
 		{
 		userandomness = true;
+		}
+
+	void FMToperatingareaheuristic::setasprimal()
+		{
+		useprimal = true;
 		}
 
 	void FMToperatingareaheuristic::setgeneratorseed(const size_t& lseed)

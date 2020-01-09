@@ -99,13 +99,16 @@ namespace Heuristics
 		void setadjacencyconstraints();//use getcommonbinairies
 		vector<std::vector<FMToperatingarea>::const_iterator> setdraw();
 		size_t setbounds(const vector<std::vector<FMToperatingarea>::const_iterator>& tobound);
-		void unboundall();
+		void unboundall(bool atprimal = false);
+		void closeprimalbounds();
 		void setallinteger();
 		int resolvemodel();
+		void clearrowcache();
 	public:
 		void initialsolve();
 		void branchnboundsolve();
 		void setasrandom();
+		void setasprimal();
 		void setgeneratorseed(const size_t& lseed);
 		std::vector<FMTyieldhandler> getsolution(const string& yldname) const;
 		FMToperatingareaheuristic(const std::vector<FMToperatingarea>& loperatingareas,

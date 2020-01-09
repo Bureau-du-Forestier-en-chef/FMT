@@ -100,17 +100,17 @@ vector<vector<vector<Graph::FMTvertex_descriptor>>> FMToperatingarea::generatesc
 
 void FMToperatingarea::schemestoLP(const vector<vector<vector<Graph::FMTvertex_descriptor>>>& schemes,
 								const vector<vector<Graph::FMTvertex_descriptor>>& periodics,
+								const vector<Graph::FMTvertex_descriptor>& totalareaverticies,
 								std::shared_ptr<OsiSolverInterface> solverinterface, const Graph::FMTgraph& maingraph, const vector<int>& actionIDS) //Fill opening constraints and opening binairies in the LP and in the OParea
 	{
 	int binaryid = solverinterface->getNumCols();
 	const double* primalsolution = solverinterface->getColSolution();
 	_area = 0;
 	vector<vector<Graph::FMTvertex_descriptor>>::const_iterator perit = periodics.begin();
-	if (!periodics.empty())
+	if (!totalareaverticies.empty())
 		{
-		_area = this->getarea(primalsolution, maingraph, *perit);
+		_area = this->getarea(primalsolution, maingraph, totalareaverticies);
 		}
-	//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "area of " << area << "\n";
 	map<int, vector<int>>periodicsblocksvariables;
 	vector<size_t>selectedschemes;
 	size_t schemeid = 0;
@@ -173,21 +173,21 @@ void FMToperatingarea::schemestoLP(const vector<vector<vector<Graph::FMTvertex_d
 				targetedvariables.insert(targetedvariables.end(), periodics->second.begin(), periodics->second.end());
 				elements.insert(elements.end(), periodics->second.size(), 1.0);
 				size_t validscheme = 0;
-				for (const size_t& shemeid : selectedschemes)
+				for (const size_t& shemeidselected : selectedschemes)
 					{
 					//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "schemeid " << shemeid << "\n";
-					if (!schemesperiods.at(shemeid).empty() && 
-						std::find(schemesperiods.at(shemeid).begin(), schemesperiods.at(shemeid).end(), periodics->first) != schemesperiods.at(shemeid).end())
+					if (!schemesperiods.at(shemeidselected).empty() &&
+						std::find(schemesperiods.at(shemeidselected).begin(), schemesperiods.at(shemeidselected).end(), periodics->first) != schemesperiods.at(shemeidselected).end())
 						{
 						//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "adding up " << shemeid << "\n";
 						targetedvariables.push_back(openingbinaries.at(validscheme));
 						elements.push_back(-_area);
 						//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "adding up 2 " << shemeid<<" "<< openingconstraints.size() << "\n";
-						if (constraintsmap.find(schemeid) == constraintsmap.end())
+						if (constraintsmap.find(shemeidselected) == constraintsmap.end())
 							{
-							constraintsmap[schemeid] = vector<int>();
+							constraintsmap[shemeidselected] = vector<int>();
 							}
-						constraintsmap[schemeid].push_back(constraintid);
+						constraintsmap[shemeidselected].push_back(constraintid);
 						//openingconstraints[schemeid].push_back(constraintid);
 						//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "adding up 3 " << shemeid << "\n";
 						}
@@ -198,12 +198,12 @@ void FMToperatingarea::schemestoLP(const vector<vector<vector<Graph::FMTvertex_d
 			}
 		openingconstraints.resize(openingbinaries.size());
 		size_t tid = 0;
-		for (const size_t& shemeid : selectedschemes)
+		for (const size_t& shemeidselected : selectedschemes)
 			{
-			if (constraintsmap.find(shemeid) != constraintsmap.end())
+			if (constraintsmap.find(shemeidselected) != constraintsmap.end())
 				{
-				//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "got const of size: " << constraintsmap.at(shemeid).size() << "\n";
-				openingconstraints[tid] = constraintsmap.at(shemeid);
+				//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "got const of size: " << constraintsmap.at(shemeidselected).size() << "\n";
+				openingconstraints[tid] = constraintsmap.at(shemeidselected);
 				}
 			++tid;
 			}
@@ -257,10 +257,22 @@ void FMToperatingarea::schemestoLP(const vector<vector<vector<Graph::FMTvertex_d
 
 void FMToperatingarea::getressourcestodelete(vector<int>& colstodelete, vector<int>& rowstodelete) const
 	{
-	colstodelete.insert(colstodelete.end(), openingbinaries.begin(), openingbinaries.end());
+	for (const int& binary : openingbinaries)
+		{
+		if (std::find(colstodelete.begin(), colstodelete.end(),binary)== colstodelete.end())
+			{
+			colstodelete.push_back(binary);
+			}
+		}
 	for (const vector<int>& blockconstraint : openingconstraints)
 		{
-		rowstodelete.insert(rowstodelete.end(), blockconstraint.begin(), blockconstraint.end());
+		for (const int& constraint : blockconstraint)
+			{
+				if (std::find(rowstodelete.begin(), rowstodelete.end(), constraint) == rowstodelete.end())
+				{
+					rowstodelete.push_back(constraint);
+				}
+			}
 		}
 	if (!openingconstraints.empty())
 		{
@@ -268,62 +280,112 @@ void FMToperatingarea::getressourcestodelete(vector<int>& colstodelete, vector<i
 		}
 	}
 
-size_t FMToperatingarea::binarize(std::shared_ptr<OsiSolverInterface> solverinterface) const //Set all opening binairies to integer variable to get ready for branch and bound
+size_t FMToperatingarea::binarize(vector<int>& targets) const //Set all opening binairies to integer variable to get ready for branch and bound
 	{
-	solverinterface->setInteger(&openingbinaries[0], int(openingbinaries.size()));
+	targets.insert(targets.end(), openingbinaries.begin(), openingbinaries.end());
 	return openingbinaries.size();
 	}
-size_t FMToperatingarea::unboundallprimalschemes(std::shared_ptr<OsiSolverInterface> solverinterface) const //Unbound all binairies to 0<=B<=1
+size_t FMToperatingarea::unboundallprimalschemes(vector<int>& targets, vector<double>& bounds) const //Unbound all binairies to 0<=B<=1
 	{
-	vector<double>allbounds;
 	for (const int& bintounbound : openingbinaries)
 		{
-		allbounds.push_back(0);
-		allbounds.push_back(1);
+		targets.push_back(bintounbound);
+		bounds.push_back(0);
+		bounds.push_back(1);
 		}
-	solverinterface->setColSetBounds(&openingbinaries[0], &openingbinaries.back() + 1, &allbounds[0]);
-	return !allbounds.empty();
+	return !openingbinaries.empty();
 	}
 
-size_t FMToperatingarea::unboundalldualschemes(std::shared_ptr<OsiSolverInterface> solverinterface) const
+size_t FMToperatingarea::unboundalldualschemes(vector<int>& targets, vector<double>& bounds) const
 	{
+	size_t processed = 0;
 	for (const vector<int>& constraints : openingconstraints)
 		{
 		if (!constraints.empty())
 			{
-			vector<double>bounds(constraints.size(), _area);
-			solverinterface->setRowSetBounds(&constraints[0], &constraints.back() + 1, &bounds[0]);
+			for (const int& newconstraint : constraints)
+				{
+				if (std::find(targets.begin(), targets.end(), newconstraint)== targets.end())
+					{
+					targets.push_back(newconstraint);
+					bounds.push_back(numeric_limits<double>::lowest());
+					bounds.push_back(_area);
+					}
+				}
+			processed += 1;
 			}
 		}
+	return processed;
 	}
 
-bool FMToperatingarea::boundprimalscheme(std::shared_ptr<OsiSolverInterface> solverinterface, const size_t& schemeid) const //Looking at the primal solution set the best scheme to the solverinterface 1<=B<=1 and check optimality
+bool FMToperatingarea::boundprimalscheme(vector<int>& targets,vector<double>& bounds, const size_t& schemeid) const //Looking at the primal solution set the best scheme to the solverinterface 1<=B<=1 and check optimality
 	{
-	solverinterface->setColBounds(openingbinaries.at(schemeid), 1.0, 1.0);
+	targets.push_back(openingbinaries.at(schemeid));
+	bounds.push_back(1.0);
+	bounds.push_back(1.0);
 	return !openingbinaries.empty();
 	}
 
-bool FMToperatingarea::unbounddualscheme(std::shared_ptr<OsiSolverInterface> solverinterface, const size_t& schemeid) const //Looking at the primal solution set the best scheme to the solverinterface 1<=B<=1 and check optimality
+bool FMToperatingarea::unbounddualscheme(vector<int>& targets, vector<double>& bounds, const size_t& schemeid) const //Looking at the primal solution set the best scheme to the solverinterface 1<=B<=1 and check optimality
 {
-	vector<double>bounds(openingconstraints.at(schemeid).size(), _area);
-	solverinterface->setRowSetBounds(&openingconstraints.at(schemeid)[0], &openingconstraints.at(schemeid).back()+1,&bounds[0]);
+	size_t cid = 0;
+	//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "using op id:  " << schemeid << "\n";
+	for (const vector<int>& constraints : openingconstraints)
+		{
+		if (!constraints.empty())
+			{
+				for (const int& cit : constraints)
+					{
+					//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "looking at: " << cit<<" schem id "<< cid << "\n";
+					vector<int>::iterator targetit = std::find(targets.begin(), targets.end(), cit);
+					if (targetit == targets.end())
+						{
+							if (cid == schemeid)
+							{
+								bounds.push_back(numeric_limits<double>::lowest());
+								bounds.push_back(_area);
+								//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "targeting constraint id: " << cit << "for scheme "<< cid << "\n";
+							}
+							else {
+								bounds.push_back(0);
+								bounds.push_back(0);
+								}
+						targets.push_back(cit);
+					}else if (cid == schemeid && targetit != targets.end())
+						{
+						//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "targeting constraint id: " << cit << "for scheme " << cid << "\n";
+						size_t location = std::distance(targets.begin(), targetit);
+						bounds[location * 2] = numeric_limits<double>::lowest();
+						bounds[location * 2 + 1] = _area;
+						}
+					}
+			}
+		++cid;
+		}
 	return !openingconstraints.empty();
 }
 
-vector<double>FMToperatingarea::fillpattern(const vector<double>& pattern, const int& startat) const
+std::vector<double>FMToperatingarea::fillpattern(const std::vector<double>& pattern, const int& startat) const
 	{
 	vector<double>values;
 	for (size_t repid = 0; repid < repetition; ++repid)
 		{
-			values.insert(values.end(), pattern.begin(), pattern.end());
+		for (const double& value : pattern)
+			{
+			values.push_back(value);
+			}
 		}
-	for (size_t period = 1; period < startat; ++period)
+	//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "????? " << startat << "\n";
+	if (startat>=0)
+		{
+		//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info)<<"Start in function "<< startat << "\n";
+		for (size_t period = 1; period < startat; ++period)
 		{
 			values.emplace(values.begin(), 0);
 		}
-	values.emplace(values.begin(), 1);
-	values.emplace(values.begin(), 0);
-	for (size_t vloc = 2; vloc < (startat + 2); ++vloc)
+		values.emplace(values.begin(), 1);
+		values.emplace(values.begin(), 0);
+		for (size_t vloc = 2; vloc < (startat + 2); ++vloc)
 		{
 			int period = vloc - 1;
 			if (period < startingperiod)
@@ -331,21 +393,35 @@ vector<double>FMToperatingarea::fillpattern(const vector<double>& pattern, const
 				values[vloc] = 1;
 			}
 		}
+		}
+	/*for (const double& dvalue : values)
+		{
+		Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << dvalue<<" ";
+		}
+	Logging::FMTlogger(Logging::FMTlogtype::FMT_Info)<< "\n";*/
 	return values;
 	}
 
 vector<double> FMToperatingarea::getdualsolution(const double* upperbounds) const
 	{
-	vector<string>sources;
-	vector<double>pattern(openingtime + returntime, 0);
-	size_t id = 0;
-	int startingat = *(schemesperiods.at(id).begin());
-	size_t solutionid = getdualsolutionindex(upperbounds);
-	for (const int& period : schemesperiods.at(solutionid))
+	//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "getting pattern " << string(mask) << "\n";
+	const size_t patternsize = (this->openingtime + this->returntime);
+	std::vector<double>pattern(patternsize,0.0);
+	size_t solutionid = 0;
+	int startingat = -1;
+	if (getdualsolutionindex(upperbounds, solutionid))
 		{
-		pattern[(period - startingat)] = 1;
+		startingat = *(schemesperiods.at(solutionid).begin());
+		//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << " starting at period " << startingat << "\n";
+		pattern[0] = 1;
+		/*for (const int& period : schemesperiods.at(solutionid))
+			{
+			Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "pattern index at "<< (period - startingat) <<" size "<< pattern.size()<< "\n";
+			pattern[(period - startingat)] = 1;
+			}*/
 		}
-	return fillpattern(pattern, startingat);
+	//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "got pattern! " << "\n";
+	return this->fillpattern(pattern, startingat);
 	}
 
 vector<double>FMToperatingarea::getprimalsolution(const double* primalsolution) const //Get the solution into yield
@@ -353,20 +429,17 @@ vector<double>FMToperatingarea::getprimalsolution(const double* primalsolution) 
 	vector<string>sources;
 	vector<double>pattern(openingtime+returntime,0);
 	size_t id = 0;
-	int startingat = 0;
+	int startingat = -1;
 	for (const int& binary : openingbinaries)
 		{
 			if (*(primalsolution + binary) > 0) // got a the scheme if non integer going to fill everything!
 				{
 				startingat = *(schemesperiods.at(id).begin());
-				for (const int& period : schemesperiods.at(id))
-					{
-					pattern[(period- startingat)] = 1;
-					}
+				pattern[0] = 1;
 				}
 			++id;
 		}
-	return fillpattern(pattern, startingat);
+	return this->fillpattern(pattern, startingat);
 	}
 
 vector<vector<int>> FMToperatingarea::schemestoperiods(const vector<vector<vector<Graph::FMTvertex_descriptor>>>& schemes,
@@ -428,6 +501,7 @@ void FMToperatingarea::setneighbors(const vector<FMTmask>& lneighbors)
 	}
 
 void FMToperatingarea::setconstraints(const vector<vector<Graph::FMTvertex_descriptor>>& verticies,
+	const vector<Graph::FMTvertex_descriptor>& totalareaverticies,
 	const Graph::FMTgraph& graph, std::shared_ptr<OsiSolverInterface> solverinterface,
 	const vector<int>& actionIDS)
 	{
@@ -435,7 +509,7 @@ void FMToperatingarea::setconstraints(const vector<vector<Graph::FMTvertex_descr
 	//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "got verticies " << schemes.size() << "\n";
 	schemesperiods = schemestoperiods(schemes, graph);
 	//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "got schemes " << schemesperiods.size() << "\n";
-	schemestoLP(schemes, verticies, solverinterface, graph, actionIDS);
+	schemestoLP(schemes, verticies, totalareaverticies, solverinterface, graph, actionIDS);
 	//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "to lp done schemes " << "\n";
 	}
 
@@ -485,26 +559,39 @@ size_t FMToperatingarea::getprimalsolutionindex(const double* primalsolution) co
 	return 0;
 	}
 
-size_t FMToperatingarea::getdualsolutionindex(const double* upperbound) const
+bool FMToperatingarea::getdualsolutionindex(const double* upperbound, size_t& locid) const
 	{
-	size_t locid = 0;
+	locid = 0;
+	//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "op area: " << mask.getstr()<< "\n";
 	for (const vector<int>& constraints : openingconstraints)
 		{
-			size_t countop = 0;
-			for (const int& constid : constraints)
+			bool goodone = false;
+			if (!constraints.empty())
 				{
-					if (*(upperbound + constid) == _area)
+				//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "schemeid  " << locid<<" has "<< constraints .size()<<"constraints "<< "\n";
+				goodone = true;
+				for (const int& constid : constraints)
 					{
-						countop += 1;
+						if (*(upperbound + constid) == 0.0)
+						{
+							//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "0 area at constraint: " << constid<<" rhs value: "<< *(upperbound + constid) << "\n";
+							goodone = false;
+							//break;
+						}
+						/*else {
+							Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "full area at constraint: " << constid << " rhs value: " << *(upperbound + constid) << "\n";
+						}*/
 					}
 				}
-			if (!constraints.empty() && constraints.size() == countop)
+			if (goodone)
 				{
-				return locid;
+				//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << mask.getstr()<<"got solution at sheme id"<< locid << "\n";
+				return true;
 				}
 		++locid;
 		}
-	return 0;
+	//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << mask.getstr() << "has no solution" << "\n";
+	return false;
 	}
 
 bool FMToperatingarea::havebinarysolution(const double* primalsolution) const
@@ -521,11 +608,13 @@ bool FMToperatingarea::havebinarysolution(const double* primalsolution) const
 
 bool FMToperatingarea::haveactivitysolution(const double* dualsolution) const
 {
+	//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "opconstraints size: " << openingconstraints.size() << "\n";
 	for (const vector<int>& constraints : openingconstraints)
 	{
+		//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "opconstraints first size: "<< constraints.size() << "\n";
 		for (const int& constid : constraints)
 			{
-			
+			//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info)<<"CONST ID " << constid << "values "<< *(dualsolution + constid) << "\n";
 			if (*(dualsolution + constid) > 0)
 				{
 				return true;
@@ -599,22 +688,25 @@ vector<size_t>FMToperatingarea::getpotentialdualschemes(const double* dualsoluti
 	vector<size_t>potentialindexes;
 	if (haveactivitysolution(dualsolution))//Got something more than zero...
 		{
-			Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "got activity "  << "\n";
+			//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "got activity "  << "\n";
 			vector<int>potentials = this->openingbinaries;
 			for (const FMToperatingarea& neighbor : neighbors)
 			{
 				if (neighbor.isdualbounded(upperbound))
 				{
-					const size_t neighborsolution = neighbor.getdualsolutionindex(upperbound);
-					const map<int, vector<int>>commons = neighbor.getcommonbinairies(*this);
-					for (const int& binary : commons.at(neighbor.openingbinaries.at(neighborsolution)))
-					{
-						vector<int>::iterator binit = std::find(potentials.begin(), potentials.end(), binary);
-						if (binit != potentials.end())
+					size_t neighborsolution = 0;
+					if (neighbor.getdualsolutionindex(upperbound, neighborsolution))
 						{
-							potentials.erase(binit);
+						const map<int, vector<int>>commons = neighbor.getcommonbinairies(*this);
+						for (const int& binary : commons.at(neighbor.openingbinaries.at(neighborsolution)))
+							{
+								vector<int>::iterator binit = std::find(potentials.begin(), potentials.end(), binary);
+								if (binit != potentials.end())
+								{
+									potentials.erase(binit);
+								}
+							}
 						}
-					}
 				}
 			}
 			for (const int& binary : potentials)
@@ -646,23 +738,37 @@ vector<size_t>FMToperatingarea::getpotentialdualschemes(const double* dualsoluti
 	}
 
 
-size_t FMToperatingarea::boundallprimalschemes(std::shared_ptr<OsiSolverInterface> solverinterface) const
+size_t FMToperatingarea::boundallprimalschemes(vector<int>& targets, vector<double>& bounds, double boundvalue) const
 	{
-	vector<double>bounds(openingbinaries.size(),1.0);
-	solverinterface->setColSetBounds(&(*openingbinaries.begin()), &(*(openingbinaries.end()-1)), &bounds[0]);
+	if (!openingbinaries.empty())
+		{
+		for (const int& opbin : openingbinaries)
+			{
+			bounds.push_back(boundvalue);
+			bounds.push_back(boundvalue);
+			targets.push_back(opbin);
+			}
+		}
 	return openingbinaries.size();
 	}
 
-size_t FMToperatingarea::boundalldualschemes(std::shared_ptr<OsiSolverInterface> solverinterface) const
+size_t FMToperatingarea::boundalldualschemes(vector<int>& targets, vector<double>& bounds) const
 	{
 	size_t unbounded = 0;
 	for (const vector<int>& constraints : openingconstraints)
 		{
 			if (!constraints.empty())
 			{
-				vector<double>bounds(constraints.size(), 0);
-				solverinterface->setRowSetBounds(&constraints[0], &constraints.back() + 1, &bounds[0]);
-				unbounded += constraints.size();
+				for (const int& cid : constraints)
+					{
+					if (std::find(targets.begin(), targets.end(), cid) == targets.end())
+						{
+						targets.push_back(cid);
+						bounds.push_back(0);
+						bounds.push_back(0);
+						}
+					}
+				++unbounded;
 			}
 		}
 	return unbounded;
@@ -709,8 +815,6 @@ double FMToperatingarea::getactivitysum(const double* dualsolution) const
 	{
 	double total = 0;
 	vector<int>counted;
-	//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << string(mask) << "\n";
-	//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << openingbinaries.empty() << "\n";
 	for (const vector<int>& constraints : openingconstraints)
 		{
 		for (const int& constraint : constraints)
@@ -744,8 +848,10 @@ bool FMToperatingarea::isdualbounded(const double* upperbounds) const
 		{
 			for (const int& constraint : constraints)
 			{
+				//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "upper value of rhs  "<< constraint<<" "<< *(constraint + upperbounds) << "\n";
 				if (*(constraint + upperbounds) == 0)
 					{
+					//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "got 0!!!!  " << "\n";
 					return true;
 					}
 			}
