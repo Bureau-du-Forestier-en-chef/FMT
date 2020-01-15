@@ -61,9 +61,15 @@ namespace Graph
             FMTvertexproperties(const FMTdevelopment& ldevelopment,
                 int& lconstraintID);//Used for simulated annealing
 			string constraintname() const;
-			int getconstraintID() const;
+			inline int getconstraintID() const
+				{
+				return constraintID;
+				}
 			void setconstraintID(const int& ID);
-			const FMTdevelopment& get() const;
+			inline const FMTdevelopment& get() const
+				{
+				return (*development);
+				}
 			double getbaseRHS() const;
 			size_t hash() const;
 			bool operator == (const FMTvertexproperties& rhs) const;

@@ -350,7 +350,7 @@ FMTyieldhandler::operator string() const
                         size_t srcid = 0;
                         value = 1;
 						const map<string, double>source_values = this->getsources(srcsdata, datas, age, period,resume_mask, age_only);
-						for (const string& yldrange : cdata->getsource())
+						for (const string& yldrange : sources)
 							{
 							const double lower = cdata->data.at(srcid);
 							const double upper = cdata->data.at(srcid + 1);
@@ -500,7 +500,7 @@ FMTyieldhandler::operator string() const
                         }
 					case FMTyieldparserop::FMTwsequation:
 						{
-						FMTexpression expression = cdata->toexpression();
+						const FMTexpression expression = cdata->toexpression();
 						//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "evaluating equation  " << string(expression) << "\n";
 						const map<string, double>source_values = this->getsources(srcsdata, datas, age, period,resume_mask, age_only);
 						/*for (const FMTyieldhandler* tyld : datas)

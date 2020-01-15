@@ -27,6 +27,7 @@ SOFTWARE.
 
 #include "FMToutputsource.h"
 #include "FMToperator.h"
+#include <map>
 
 namespace Core
 {
@@ -45,6 +46,12 @@ class FMToutputnode
 		bool multiperiod() const;
 		bool ispastperiod() const;
 		bool isnull() const;
+		bool operator < (const FMToutputnode& rhs) const;
+		bool operator == (const FMToutputnode& rhs) const;
+		bool issubsetof(const FMToutputnode& rhs) const;
+		bool issubsetof(const FMToutputnode& rhs, const std::map<string,vector<string>>& aggregates) const;
+		bool canbeusedby(const FMToutputnode& rhs, const std::map<string, vector<string>>& aggregates) const;
+		bool issamebutdifferentaction(const FMToutputnode& rhs) const;
 		operator string() const;
 		FMToutputnode setperiod(int period) const;
 		FMToutputnode& operator = (const FMToutputnode& rhs);

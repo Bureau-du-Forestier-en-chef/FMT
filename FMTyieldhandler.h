@@ -67,7 +67,7 @@ class FMTyieldhandler
         bool push_data(const string& yld,const FMTdata& data);
         //vector<FMTyieldhandler>decomposeindexes(const vector<FMTtheme>& themes) const;
         vector<string> indexes(const vector<string>& names) const;
-        double get(const vector<const FMTyieldhandler*>& datas,
+		double get(const vector<const FMTyieldhandler*>& datas,
                    const string yld,const int& age,const int& period, const FMTmask& resume_mask) const;
 		int getlastbase() const;
 		const vector<int>& getbases() const;

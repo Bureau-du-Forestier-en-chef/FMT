@@ -615,6 +615,7 @@ FMTareaparser::FMTareaparser() :
 			if (FMTparser::tryopening(areastream,location))
 				{
 				bool inactualdevs = false;
+				std::unordered_map<size_t, size_t>devsindex;
 				while(areastream.is_open())
 					{
 					//line = FMTparser::getcleanline(areastream);
@@ -667,7 +668,17 @@ FMTareaparser::FMTareaparser() :
 									{
 									lock = getnum<int>(strlock,constants);
 									}
-								areas.push_back(FMTactualdevelopment(FMTmask(mask,themes),age,lock,area));
+								const FMTactualdevelopment actualdevelopment(FMTmask(mask, themes), age, lock, area);
+								//Weird non unique area section...
+								const size_t hashform = boost::hash<FMTdevelopment>()(actualdevelopment);
+								std::unordered_map<size_t, size_t>::const_iterator hashit = devsindex.find(hashform);
+								if (devsindex.find(hashform)==devsindex.end())
+									{
+									devsindex[hashform] = areas.size();
+									areas.push_back(actualdevelopment);
+									}else {
+									areas[hashit->second].area += area;
+									}
 							}else {
 								got0area = true;
 								}
@@ -679,7 +690,6 @@ FMTareaparser::FMTareaparser() :
 						potential_futurs = true;
 						}
 					}
-				//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "LAST READ LINE !!!!!!!!" << _line << "\n";
 				}
 			}
         return areas;

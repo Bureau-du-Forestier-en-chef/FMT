@@ -185,6 +185,7 @@ std::queue<FMTvertex_descriptor> FMTgraph::initialize(const vector<FMTactualdeve
 			add_edge(newvertex,tovertex, newedge, data);
 			++stats.edges;
 		}
+
 		return actives;
 	}
 
@@ -610,57 +611,11 @@ vector<FMTvertex_descriptor> FMTgraph::getnode(const FMTmodel& model, FMToutputn
 			vector<int>targetedperiods;
 			int maxperiod = static_cast<int>(developments.size() - 2);
 			int node_period = output_node.settograph(targetedperiods, period, maxperiod);
+			//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "looking for " << string(output_node) << " at period " << node_period << "ms\n";
 			if (node_period<0)
 				{
 				return locations;
 				}
-			//change the period if the node is single well a other potential cluster fuck
-			/*int node_period = period;
-			if (output_node.source.useinedges())//evaluate at the begining of the other period if inventory! what a major fuck
-			{
-				++node_period;
-			}
-			if (output_node.singleperiod())
-			{
-				if (output_node.ispastperiod())
-				{
-					if ((output_node.source.getperiodlowerbound() + period) >= 0)
-					{
-						FMTperbounds perbound(FMTwssect::Optimize, node_period, node_period);
-						output_node.source.setbounds(perbound);
-						output_node.factor.setbounds(perbound);
-					}
-					else {
-						return locations;//dont need that node...
-					}
-				}
-				else {
-					node_period = output_node.source.getperiodlowerbound();
-					if (output_node.source.useinedges())
-					{
-						++node_period;
-					}
-				}
-			}
-			vector<int>targetedperiods;
-			if (output_node.multiperiod())
-			{
-				int minperiod = max(output_node.source.getperiodlowerbound(), 1);
-				int maxperiod = min(output_node.source.getperiodupperbound(), static_cast<int>(developments.size() - 2));
-				for (int periodid = minperiod; periodid <= maxperiod; ++periodid)
-				{
-					int local_period = periodid;
-					if (output_node.source.useinedges())
-					{
-						++local_period;
-					}
-					targetedperiods.push_back(local_period);
-				}
-			}
-			else {
-				targetedperiods.push_back(node_period);
-			}*/
-
 			size_t lookedat_size = 0;
 			if (!output_node.source.isvariablelevel())
 			{
@@ -668,7 +623,7 @@ vector<FMTvertex_descriptor> FMTgraph::getnode(const FMTmodel& model, FMToutputn
 				if (isvalidouputnode(model, output_node, selected, node_period))
 				{
 					//selected = selectedactions(model, action_IDS);
-					if (period < nodescache.size() && nodescache.at(period).find(output_node.hash()) != nodescache.at(period).end())
+					/*if (period < nodescache.size() && nodescache.at(period).find(output_node.hash()) != nodescache.at(period).end())
 					{
 						return nodescache.at(period).at(output_node.hash());
 					}else{
@@ -687,11 +642,42 @@ vector<FMTvertex_descriptor> FMTgraph::getnode(const FMTmodel& model, FMToutputn
 							}
 							lookedat_size+=developments.at(localnodeperiod).size();
 						}
-					}
+					}*/
+
+					for (const int localnodeperiod : targetedperiods)
+						{
+						size_t cachingsize = nodescache.size();
+						while (localnodeperiod >= cachingsize)
+							{
+							nodescache.push_back(FMToutputnodecache(developments.at(localnodeperiod)));
+							++cachingsize;
+							}
+						bool exactverticies = false;
+						const vector<FMTvertex_descriptor>& descriptors = nodescache.at(localnodeperiod).getverticies(output_node,model.getactionaggregates(), exactverticies);
+						if (exactverticies)
+							{
+							locations.reserve(locations.size() + descriptors.size());
+							locations.insert(locations.end(),descriptors.begin(), descriptors.end());
+						}else {
+							vector<FMTvertex_descriptor>revisited;
+							for (const FMTvertex_descriptor& potential : descriptors)
+								{
+									if (isvalidgraphnode(model, potential, output_node, selected))
+									{
+										revisited.push_back(potential);
+										locations.push_back(potential);
+									}
+								}
+							//need to be sorted!!!
+							std::sort(revisited.begin(), revisited.end());
+							nodescache.at(localnodeperiod).setvalidverticies(output_node, revisited);
+							}
+						}
 				}
+
 			}
 			//just to make sure the cash doesnt get too big
-			double locationssize = static_cast<double>(locations.size());
+			/*double locationssize = static_cast<double>(locations.size());
 			double lookedat = static_cast<double>(lookedat_size)*0.95;
 			if (locationssize < lookedat)
 				{
@@ -701,8 +687,9 @@ vector<FMTvertex_descriptor> FMTgraph::getnode(const FMTmodel& model, FMToutputn
 					nodescache.push_back(std::unordered_map<size_t, vector<FMTvertex_descriptor>>());
 					++cachingsize;
 					}
+				//std::sort(locations.begin(), locations.end());
 				nodescache[period][output_node.hash()] = locations;
-				}
+				}*/
 		return locations;
 	}
 
@@ -722,12 +709,12 @@ map<int, double> FMTgraph::getvariables(const FMTmodel& model, const FMToutputno
 			{
 				double coef = 1;
 				coef = output_node.source.getcoef(development, model.yields, optimization_action, paths) * output_node.factor.getcoef(development, model.yields, optimization_action, paths) * output_node.constant;
-				if (development.period == 0)
-				{
+			/*	if (development.period == 0)
+				{*/
 
 					map<int, int>vars = getoutvariables(vertex);
 					updatevarsmap(variables, vars.at(-1), coef);
-				}
+				/*}
 				else {
 					FMTinedge_iterator inedge_iterator, inedge_end;
 					for (tie(inedge_iterator, inedge_end) = in_edges(vertex, data); inedge_iterator != inedge_end; ++inedge_iterator)
@@ -735,7 +722,7 @@ map<int, double> FMTgraph::getvariables(const FMTmodel& model, const FMToutputno
 						const FMTedgeproperties& edgeprop = data[*inedge_iterator];
 						updatevarsmap(variables, edgeprop.getvariableID(), (edgeprop.getproportion() / 100)*coef);
 					}
-				}
+				}*/
 			}
 			else {
 				map<int, int>outvars = getoutvariables(vertex);
@@ -771,6 +758,15 @@ bool FMTgraph::anyoperables(const FMTvertex_descriptor& descriptor, const vector
 				return true;
 				}
 			}
+		/*vector<int> outactions = this->getoutactions(descriptor);
+		if (!outactions.empty())
+			{
+			vector<int>intersection;
+			std::set_intersection(outactions.begin(), outactions.end(),
+				action_ids.begin(), action_ids.end(),
+				std::back_inserter(intersection));
+			return !intersection.empty();
+			}*/
 		}
 	return false;
 	}
@@ -788,17 +784,26 @@ map<int, int> FMTgraph::getoutvariables(const FMTvertex_descriptor& out_vertex) 
 		return mapping;
 	}
 
-vector<std::pair<const int*, const int*>>FMTgraph::getoutvariablesnactionsptr(const FMTvertex_descriptor& out_vertex) const
+vector<int>FMTgraph::getoutactions(const FMTvertex_descriptor& out_vertex) const
 	{
-	vector<std::pair<const int*, const int*>>pointers;
-	FMToutedge_pair edge_pair;
-	for (edge_pair = out_edges(out_vertex, data); edge_pair.first != edge_pair.second; ++edge_pair.first)
+	vector<int>actions;
+	const size_t outsize = out_degree(out_vertex, data);
+	if (outsize > 1)
 		{
-		FMTedgeproperties edgeprop = data[*edge_pair.first];
-		int actionid = edgeprop.getactionID();
-		pointers.push_back(std::pair<const int*, const int*>(edgeprop.getactionptr(), edgeprop.getvariableptr()));
+		actions.reserve(outsize-1);
+		FMToutedge_pair edge_pair;
+		for (edge_pair = out_edges(out_vertex, data); edge_pair.first != edge_pair.second; ++edge_pair.first)
+			{
+			const FMTedgeproperties& edgeprop = data[*edge_pair.first];
+			const int* actionid = edgeprop.getactionptr();
+			if ((*actionid) >= 0)
+				{
+				actions.emplace_back(*actionid);
+				}
+			}
+		std::sort(actions.begin(), actions.end());
 		}
-	return pointers;
+	return actions;
 	}
 
 vector<const FMTaction*>FMTgraph::selectedactions(const FMTmodel& model, const vector<int>& action_IDS) const
@@ -1520,7 +1525,7 @@ bool FMTgraph::sameedgesas(const FMTgraph& rhs) const
 	return different;
 	}
 
-size_t FMTgraph::buildoutputscache(const FMTmodel& model, const vector<const FMToutput*>& outputs)
+/*size_t FMTgraph::buildoutputscache(const FMTmodel& model, const vector<const FMToutput*>& outputs)
 	{
 	//Build cashing for the whole graph for multiple outputs return the cashsize
 	//More efficiant than setting constraint or looking at output one by one
@@ -1585,7 +1590,7 @@ size_t FMTgraph::buildoutputscache(const FMTmodel& model, const vector<const FMT
 				}
 			}
 	return nodescache.size();
-	}
+	}*/
 
 void FMTgraph::updatematrixindex(const vector<int>& removedvariables,const vector<int>& removedconstraints)
 	//When the solverinterface delete a constraint or a variable

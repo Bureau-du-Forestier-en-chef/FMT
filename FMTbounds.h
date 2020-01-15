@@ -111,6 +111,36 @@ class FMTbounds
 				lower == rhs.lower);
 			}
 
+		bool operator < (const FMTbounds<T>& rhs) const
+			{
+			//strict ordering
+			if (andbound < rhs.andbound)
+				return true;
+			if (rhs.andbound < andbound)
+				return false;
+			if (use < rhs.use)
+				return true;
+			if (rhs.use < use)
+				return false;
+			if (section < rhs.section)
+				return true;
+			if (rhs.section < section)
+				return false;
+			if (keytype < rhs.keytype)
+				return true;
+			if (rhs.keytype < keytype)
+				return false;
+			if (upper < rhs.upper)
+				return true;
+			if (rhs.upper < upper)
+				return false;
+			if (lower < rhs.lower)
+				return true;
+			if (rhs.lower < lower)
+				return false;
+			return false;
+			}
+
         FMTbounds<T>& operator = (const FMTbounds<T>& rhs)
             {
             if (this!=&rhs)
@@ -341,11 +371,29 @@ public:
     bool addbounds(FMTagebounds bound);
     bool addbounds(FMTyldbounds bound);
     bool addbounds(FMTlockbounds bound);
-    bool allow(const int& tperiod,const int& tage,const int& tlock,const map<string,double>& names) const;
+	inline bool allow(const int& tperiod, const int& tage, const int& tlock, const map<string, double>& names) const
+		{
+		bool yldbounds = true;
+		if (!ylds.empty())
+		{
+			for (map<string, FMTyldbounds>::const_iterator it = ylds.begin(); it != ylds.end(); ++it)
+			{
+				const FMTyldbounds* bnds = &it->second;
+				if ((bnds->lower > names.at(it->first)) || (bnds->upper < names.at(it->first)))
+				{
+					return false;
+				}
+			}
+		}
+		return ((per.empty() || (tperiod <= per.upper && tperiod >= per.lower)) &&
+			(age.empty() || (tage <= age.upper && tage >= age.lower)) &&
+			(lock.empty() || (tlock >= lock.lower)) && (yldbounds));
+		}
     map<string,FMTyldbounds>getyldsbounds() const;
     vector<string>getylds() const;
     virtual operator string() const;
 	bool operator == (const FMTspec& rhs) const;
+	bool operator < (const FMTspec& rhs) const;
 	size_t hash() const;
     bool empty() const;
 	bool emptyage() const;

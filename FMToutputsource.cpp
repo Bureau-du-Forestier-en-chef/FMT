@@ -169,10 +169,33 @@ FMToutputsource::operator string() const
     return line;
     }
 
+bool FMToutputsource::operator < (const FMToutputsource& rhs) const
+	{
+	if (mask < rhs.mask)
+		return true;
+	if (rhs.mask < mask)
+		return false;
+	if (target < rhs.target)
+		return true;
+	if (rhs.target < target)
+		return false;
+	if (action < rhs.action)
+		return true;
+	if (rhs.action < action)
+		return false;
+	/*if (values < rhs.values)
+		return true;
+	if (rhs.values < values)
+		return false;*/
+	if (FMTspec::operator < (rhs))
+		return true;
+	return false;
+	}
+
 bool FMToutputsource::operator == (const FMToutputsource& rhs) const
 	{
-	return (mask==rhs.mask && target==rhs.target &&
-		action == rhs.action && yield == rhs.yield && values == rhs.values && average == rhs.average);
+	return (FMTspec::operator == (rhs) && mask==rhs.mask && target==rhs.target &&
+		action == rhs.action /*&& yield == rhs.yield*/ /*&& values == rhs.values*/ /*&& average == rhs.average*/);
 	}
 
 bool FMToutputsource::operator != (const FMToutputsource& rhs) const
@@ -184,6 +207,28 @@ const FMTmask& FMToutputsource::getmask() const
 	{
 	return mask;
 	}
+
+bool FMToutputsource::issubsetof(const FMToutputsource& rhs) const
+	{
+	if ((this->isvariable() && rhs.isvariable() &&
+		target == rhs.target && FMTspec::issubsetof(rhs) &&
+		!((!action.empty() && rhs.action.empty()) || (!rhs.action.empty() && action.empty()))) &&
+		(mask.data.is_subset_of(rhs.mask.data) &&
+		((action.empty() && rhs.action.empty()) ||
+			(!action.empty() && !rhs.action.empty() &&
+			(action == rhs.action)))))
+		{
+			return true;
+		}
+	return false;
+	}
+
+bool FMToutputsource::issamebutdifferentaction(const FMToutputsource& rhs) const
+	{
+	return (FMTspec::operator == (rhs) && mask == rhs.mask && target == rhs.target &&
+		action != rhs.action);
+	}
+	
 
 bool FMToutputsource::issubsetof(const FMToutputsource& rhs,
 	const map<string, vector<string>>& actaggregates) const
@@ -199,6 +244,23 @@ bool FMToutputsource::issubsetof(const FMToutputsource& rhs,
 			{
 			return true;
 			}
+	return false;
+	}
+
+bool FMToutputsource::canbeusedby(const FMToutputsource& rhs,
+	const map<string, vector<string>>& actaggregates) const
+	{
+	if ((this->isvariable() && rhs.isvariable() &&
+		target == rhs.target && FMTspec::issubsetof(rhs) &&
+		!((!action.empty() && rhs.action.empty()) || (!rhs.action.empty() && action.empty()))) &&
+		(rhs.mask.data.is_subset_of(mask.data) &&
+		((action.empty() && rhs.action.empty()) ||
+			(!action.empty() && !rhs.action.empty() &&
+			(action == rhs.action || (actaggregates.find(rhs.action) != actaggregates.end() &&
+				std::find(actaggregates.at(rhs.action).begin(), actaggregates.at(rhs.action).end(), action) != actaggregates.at(rhs.action).end()))))))
+	{
+		return true;
+	}
 	return false;
 	}
 
@@ -288,7 +350,7 @@ FMTotar FMToutputsource::gettarget() const
 	return target;
 	}
 
-bool FMToutputsource::use(const FMTdevelopment& development, const FMTyields& ylds) const
+/*bool FMToutputsource::use(const FMTdevelopment& development, const FMTyields& ylds) const
 	{
 	if (mask)
 	{
@@ -298,7 +360,7 @@ bool FMToutputsource::use(const FMTdevelopment& development, const FMTyields& yl
 		}
 	}
 	return false;
-	}
+	}*/
 
 vector<const FMTaction*>FMToutputsource::targets(const vector<FMTaction>& actions,
 			const map<string,vector<string>>& aggregates) const

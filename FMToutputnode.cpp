@@ -100,6 +100,36 @@ namespace Core
 		return seed;
 		}
 
+	bool FMToutputnode::operator < (const FMToutputnode& rhs) const
+		{
+		return (source<rhs.source);
+		}
+
+	bool FMToutputnode::operator == (const FMToutputnode& rhs) const
+		{
+		return (source == rhs.source);
+		}
+
+	bool FMToutputnode::issubsetof(const FMToutputnode& rhs) const
+		{
+		return source.issubsetof(rhs.source);
+		}
+
+	bool FMToutputnode::issubsetof(const FMToutputnode& rhs, const std::map<string, vector<string>>& aggregates) const
+		{
+		return source.issubsetof(rhs.source,aggregates);
+		}
+
+	bool FMToutputnode::issamebutdifferentaction(const FMToutputnode& rhs) const
+		{
+		return source.issamebutdifferentaction(rhs.source);
+		}
+
+	bool FMToutputnode::canbeusedby(const FMToutputnode& rhs, const std::map<string, vector<string>>& aggregates) const
+		{
+		return source.canbeusedby(rhs.source, aggregates);
+		}
+
 	FMToutputnode& FMToutputnode::operator = (const FMToutputnode& rhs)
 		{
 		if (this!=&rhs)

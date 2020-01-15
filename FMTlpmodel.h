@@ -176,8 +176,8 @@ class FMTlpmodel : public FMTmodel
 																				const FMToutputnode& node,
 																				size_t numberofheuristics=1,
 																				bool copysolver=true);
-		size_t buildoutputscache(const vector<FMToutput>& outputs);
-		size_t buildconstraintscache(const vector<FMTconstraint>& constraints);
+		//size_t buildoutputscache(const vector<FMToutput>& outputs);
+		//size_t buildconstraintscache(const vector<FMTconstraint>& constraints);
 		bool resolve();
 		void writeLP(const string& location) const;
 		void writeMPS(const string& location) const;

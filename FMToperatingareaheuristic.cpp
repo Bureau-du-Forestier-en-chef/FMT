@@ -143,6 +143,10 @@ namespace Heuristics
 			MSK_putintparam(task, MSK_IPAR_INTPNT_BASIS, MSK_BI_IF_FEASIBLE);
 			MSK_putintparam(task, MSK_IPAR_SIM_HOTSTART, MSK_SIM_HOTSTART_NONE);
 			MSK_putintparam(task, MSK_IPAR_PRESOLVE_USE, MSK_ON);
+			MSK_putintparam(task, MSK_IPAR_INTPNT_STARTING_POINT, MSK_STARTING_POINT_CONSTANT);
+			MSK_putintparam(task, MSK_IPAR_BI_CLEAN_OPTIMIZER, MSK_OPTIMIZER_PRIMAL_SIMPLEX);
+			MSK_putdouparam(task, MSK_DPAR_INTPNT_TOL_PSAFE, 100.0);
+			MSK_putdouparam(task, MSK_DPAR_INTPNT_TOL_PATH, 1.0e-2);
 			MSK_putintparam(task, MSK_IPAR_LOG, 10);
 			MSK_putintparam(task, MSK_IPAR_LOG_INTPNT, 4);
 			MSKrescodee error = MSK_optimize(task);
@@ -175,9 +179,10 @@ namespace Heuristics
 				//(*_logger) << "selected s: " << selected.size() << "\n";
 				size_t setssize = this->setbounds(selected);
 				//(*_logger) << "set bounds on s: " << setssize << "\n";
+				//(*_logger) << "total size of: " << operatingareas.size() << "\n";
 				const int iterations = this->resolvemodel();
 				opareaprocessed += selected.size();
-				///solverinterface->writeLp(string("C:/Users/cyrgu3/source/repos/FMT/x64/Release/test/stepsolve" + to_string(opareaprocessed)).c_str());
+				//solverinterface->writeLp(string("C:/Users/cyrgu3/source/repos/FMT/x64/Release/test/stepsolve" + to_string(opareaprocessed)).c_str());
 				//cin.get();
 				if (!selected.empty())
 					{
@@ -494,7 +499,7 @@ namespace Heuristics
 					opit->boundallprimalschemes(targeteditems, bounds);
 				}
 				else {
-					Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "closing: " << opit->getmask().getstr() << "\n";
+					//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "closing: " << opit->getmask().getstr() << "\n";
 					opit->boundalldualschemes(targeteditems, bounds);
 				}
 			}

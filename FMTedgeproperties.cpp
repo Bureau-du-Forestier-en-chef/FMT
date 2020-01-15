@@ -57,25 +57,25 @@ namespace Graph
 			}
 		return false;
 		}
-	int FMTedgeproperties::getvariableID() const
+	/*int FMTedgeproperties::getvariableID() const
 		{
 		return variableID;
-		}
+		}*/
 
 	void FMTedgeproperties::setvariableID(const int& newvariableID)
 		{
 		variableID = newvariableID;
 		}
 
-	int FMTedgeproperties::getactionID() const
+	/*int FMTedgeproperties::getactionID() const
 		{
 		return action;
-		}
+		}*/
 
-	double FMTedgeproperties::getproportion() const
+	/*double FMTedgeproperties::getproportion() const
 		{
 		return proportion;
-		}
+		}*/
 	bool FMTedgeproperties::operator < (const FMTedgeproperties& rhs) const
 		{
 		return (action < rhs.action);
@@ -109,13 +109,13 @@ namespace Graph
 		return stype + to_string(variableID);
 		}
 
-	const int* FMTedgeproperties::getvariableptr() const
+	/*const int* FMTedgeproperties::getvariableptr() const
 		{
 		return &variableID;
 		}
 	const int* FMTedgeproperties::getactionptr() const
 		{
 		return &action;
-		}
+		}*/
 
 }

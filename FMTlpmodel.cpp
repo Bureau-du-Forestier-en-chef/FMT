@@ -1350,6 +1350,7 @@ bool FMTlpmodel::locatenodes(const vector<FMToutputnode>& nodes, int period,
 		{
 		map<int, double>node_map;
 		node_map = graph.locatenode(*this, node, period);//go into the graph
+		//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "looking for "<<string(node)<<" at period "<<period << "ms\n";
 		for (map<int, double>::const_iterator node_it = node_map.begin(); node_it != node_map.end(); node_it++)
 			{
 			if (variables.find(node_it->first) == variables.end())
@@ -2102,7 +2103,7 @@ bool FMTlpmodel::locatenodes(const vector<FMToutputnode>& nodes, int period,
 		solverinterface->writeMps(location.c_str());
 		}
 
-	 size_t FMTlpmodel::buildoutputscache(const vector<FMToutput>& outputs)
+	 /*size_t FMTlpmodel::buildoutputscache(const vector<FMToutput>& outputs)
 		{
 		 vector<const FMToutput*>outs;
 		 for (const FMToutput& out : outputs)
@@ -2110,9 +2111,9 @@ bool FMTlpmodel::locatenodes(const vector<FMToutputnode>& nodes, int period,
 			 outs.push_back(&out);
 			}
 		return graph.buildoutputscache(*this, outs);
-		}
+		}*/
 
-	 size_t FMTlpmodel::buildconstraintscache(const vector<FMTconstraint>& constraints)
+	 /*size_t FMTlpmodel::buildconstraintscache(const vector<FMTconstraint>& constraints)
 		{
 		vector<const FMToutput*>outs;
 		for (const FMTconstraint& out : constraints)
@@ -2120,7 +2121,7 @@ bool FMTlpmodel::locatenodes(const vector<FMToutputnode>& nodes, int period,
 			 outs.push_back(&out);
 			}
 		return graph.buildoutputscache(*this, outs);
-		}
+		}*/
 
      bool FMTlpmodel::getgoals(const vector<string>& goalsnames, map<int, double>& index
                                /*vector<int>& index,vector<double>& coefs*/,const double& sense)const
@@ -2413,6 +2414,7 @@ bool FMTlpmodel::locatenodes(const vector<FMToutputnode>& nodes, int period,
 					}
 				break;
 			}
+		Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "Objective: " << solverinterface->getObjValue()<< "\n";
 		return solverinterface->isProvenOptimal();
 		}
 

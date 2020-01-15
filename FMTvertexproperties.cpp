@@ -85,18 +85,18 @@ namespace Graph
 		{
 		return (!(*this==rhs));
 		}
-	int FMTvertexproperties::getconstraintID() const
+	/*int FMTvertexproperties::getconstraintID() const
 		{
 		return constraintID;
-		}
+		}*/
 	void FMTvertexproperties::setconstraintID(const int& ID)
 		{
 		constraintID = ID;
 		}
-	const FMTdevelopment& FMTvertexproperties::get() const
+	/*const FMTdevelopment& FMTvertexproperties::get() const
 		{
 		return *development;
-		}
+		}*/
 
 	size_t FMTvertexproperties::hash() const
 		{

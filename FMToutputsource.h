@@ -70,8 +70,13 @@ class FMToutputsource : public FMTspec
         operator string() const override;
 		bool operator == (const FMToutputsource& rhs) const;
 		bool operator != (const FMToutputsource& rhs) const;
+		bool operator < (const FMToutputsource& rhs) const;
+		bool issubsetof(const FMToutputsource& rhs) const;
 		bool issubsetof(const FMToutputsource& rhs,
 			const map<string,vector<string>>& actaggregates) const;
+		bool canbeusedby(const FMToutputsource& rhs,
+			const map<string, vector<string>>& actaggregates) const;
+		bool issamebutdifferentaction(const FMToutputsource& rhs) const;
 		const FMTmask& getmask() const;
 		void setmask(const FMTmask& newmask);
 		string getaction() const;
@@ -92,7 +97,17 @@ class FMToutputsource : public FMTspec
 		double getcoef(const FMTdevelopment& development,
 			const FMTyields& yields, const FMTaction& action,
 			const vector<FMTdevelopmentpath>& paths) const;
-		bool use(const FMTdevelopment& development, const FMTyields& ylds) const;
+		inline bool use(const FMTdevelopment& development, const FMTyields& ylds) const
+			{
+			if (mask)
+				{
+					if (development.mask.data.is_subset_of(mask.data) && development.is(*this, ylds))
+					{
+						return true;
+					}
+				}
+			return false;
+			}
 		void setaverage();
 		bool isaverage() const;
 		size_t hash(int period = -1) const;

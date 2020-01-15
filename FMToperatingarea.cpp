@@ -104,11 +104,11 @@ void FMToperatingarea::schemestoLP(const vector<vector<vector<Graph::FMTvertex_d
 								std::shared_ptr<OsiSolverInterface> solverinterface, const Graph::FMTgraph& maingraph, const vector<int>& actionIDS) //Fill opening constraints and opening binairies in the LP and in the OParea
 	{
 	int binaryid = solverinterface->getNumCols();
-	const double* primalsolution = solverinterface->getColSolution();
 	_area = 0;
 	vector<vector<Graph::FMTvertex_descriptor>>::const_iterator perit = periodics.begin();
 	if (!totalareaverticies.empty())
 		{
+		const double* primalsolution = solverinterface->getColSolution();
 		_area = this->getarea(primalsolution, maingraph, totalareaverticies);
 		}
 	map<int, vector<int>>periodicsblocksvariables;
@@ -332,11 +332,12 @@ bool FMToperatingarea::unbounddualscheme(vector<int>& targets, vector<double>& b
 	//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "using op id:  " << schemeid << "\n";
 	for (const vector<int>& constraints : openingconstraints)
 		{
+		//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "constraint size?: " << openingconstraints.size() << "\n";
 		if (!constraints.empty())
 			{
 				for (const int& cit : constraints)
 					{
-					//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "looking at: " << cit<<" schem id "<< cid << "\n";
+					//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "looking at: " << cit<<" schem id "<< cid << "target scheme  "<< schemeid <<"\n";
 					vector<int>::iterator targetit = std::find(targets.begin(), targets.end(), cit);
 					if (targetit == targets.end())
 						{
@@ -344,16 +345,17 @@ bool FMToperatingarea::unbounddualscheme(vector<int>& targets, vector<double>& b
 							{
 								bounds.push_back(numeric_limits<double>::lowest());
 								bounds.push_back(_area);
-								//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "targeting constraint id: " << cit << "for scheme "<< cid << "\n";
+								//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "keeping constraint id: " << cit << "for scheme "<< cid << "\n";
 							}
 							else {
+								//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "closing!!!! constraint id: " << cit << "for scheme " << cid << "\n";
 								bounds.push_back(0);
 								bounds.push_back(0);
 								}
 						targets.push_back(cit);
 					}else if (cid == schemeid && targetit != targets.end())
 						{
-						//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "targeting constraint id: " << cit << "for scheme " << cid << "\n";
+						//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "targeting2 constraint id: " << cit << "for scheme " << cid << "\n";
 						size_t location = std::distance(targets.begin(), targetit);
 						bounds[location * 2] = numeric_limits<double>::lowest();
 						bounds[location * 2 + 1] = _area;
@@ -362,6 +364,7 @@ bool FMToperatingarea::unbounddualscheme(vector<int>& targets, vector<double>& b
 			}
 		++cid;
 		}
+	//cin.get();
 	return !openingconstraints.empty();
 }
 
@@ -506,7 +509,8 @@ void FMToperatingarea::setconstraints(const vector<vector<Graph::FMTvertex_descr
 	const vector<int>& actionIDS)
 	{
 	vector<vector<vector<Graph::FMTvertex_descriptor>>> schemes = this->generateschemes(verticies);
-	//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "got verticies " << schemes.size() << "\n";
+	//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "got schemes verticies size: " << schemes.size() << "\n";
+	//cin.get();
 	schemesperiods = schemestoperiods(schemes, graph);
 	//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "got schemes " << schemesperiods.size() << "\n";
 	schemestoLP(schemes, verticies, totalareaverticies, solverinterface, graph, actionIDS);
@@ -714,6 +718,7 @@ vector<size_t>FMToperatingarea::getpotentialdualschemes(const double* dualsoluti
 				vector<int>::const_iterator binit = std::find(this->openingbinaries.begin(), this->openingbinaries.end(), binary);
 				size_t indexlocation = std::distance(this->openingbinaries.begin(), binit);
 				double actualvalue = getrowsactivitysum(openingconstraints.at(indexlocation),dualsolution);
+				//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "actual value  " << actualvalue << "\n";
 				if (!potentialindexes.empty())
 				{
 					const size_t oldsize = potentialindexes.size();
@@ -734,6 +739,7 @@ vector<size_t>FMToperatingarea::getpotentialdualschemes(const double* dualsoluti
 				}
 			}
 		}
+	//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "potential size of  "<< potentialindexes.size() << "\n";
 	return potentialindexes;
 	}
 
@@ -844,6 +850,10 @@ bool FMToperatingarea::isprimalbounded(const double* lowerbounds, const double* 
 
 bool FMToperatingarea::isdualbounded(const double* upperbounds) const
 	{
+	if (openingconstraints.size()==1)//need to considered it selected because theirs only one choice!
+		{
+		return true;
+		}
 	for (const vector<int>& constraints : openingconstraints)
 		{
 			for (const int& constraint : constraints)

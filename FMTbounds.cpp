@@ -287,7 +287,7 @@ FMTspec::FMTspec():per(),age(),lock(),ylds(){}
             }
         return line;
         }
-    bool FMTspec::allow(const int& tperiod,const int& tage,const int& tlock,const map<string,double>& names) const
+   /* bool FMTspec::allow(const int& tperiod,const int& tage,const int& tlock,const map<string,double>& names) const
         {
         bool yldbounds = true;
         if (!ylds.empty())
@@ -304,7 +304,7 @@ FMTspec::FMTspec():per(),age(),lock(),ylds(){}
         return ((per.empty() || (tperiod <= per.upper && tperiod >= per.lower)) &&
                 (age.empty() || (tage <= age.upper && tage >= age.lower)) &&
                 (lock.empty() || (tlock >= lock.lower)) && (yldbounds));
-        }
+        }*/
 
 	bool FMTspec::operator == (const FMTspec& rhs) const
 		{
@@ -312,6 +312,28 @@ FMTspec::FMTspec():per(),age(),lock(),ylds(){}
 			age == rhs.age &&
 			lock == rhs.lock &&
 			ylds == rhs.ylds);
+		}
+
+	bool FMTspec::operator < (const FMTspec& rhs) const
+		{
+		//strict ordering
+		if (per < rhs.per)
+			return true;
+		if (rhs.per < per)
+			return false;
+		if (age < rhs.age)
+			return true;
+		if (rhs.age < age)
+			return false;
+		if (lock < rhs.lock)
+			return true;
+		if (rhs.lock < lock)
+			return false;
+		if (ylds < rhs.ylds)
+			return true;
+		if (rhs.ylds < ylds)
+			return false;
+		return false;
 		}
 
     vector<string>FMTspec::getylds() const

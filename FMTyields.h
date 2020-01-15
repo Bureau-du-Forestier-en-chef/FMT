@@ -64,7 +64,7 @@ class FMTyields : public FMTlist<FMTyieldhandler>
 		vector<string>getnullyldsnames() const;
 		map<string, double>get(const FMTdevelopment& dev,
 			const vector<string>& targets) const;
-        map<string,double>getylds(const FMTdevelopment& dev,const FMTspec& spec) const;
+		map<string,double>getylds(const FMTdevelopment& dev,const FMTspec& spec) const;
         int getage(const FMTdevelopment& dev,const FMTspec& spec) const;
 		map<string, map<string, vector<double>>>getallyields(const FMTtheme& target,FMTyldwstype type) const;
 		bool operator == (const FMTyields& rhs) const;

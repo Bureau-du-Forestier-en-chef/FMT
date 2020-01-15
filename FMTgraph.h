@@ -36,6 +36,7 @@ SOFTWARE.
 #include "FMTconstraint.h"
 #include "FMTevent.h"
 #include "FMTcoordinate.h"
+#include "FMToutputnodecache.h"
 
 #include <boost/serialization/split_member.hpp>
 #include <boost/serialization/unordered_map.hpp>
@@ -97,7 +98,8 @@ class FMTgraph
 		FMTadjacency_list data;
         FMTgraphbuild buildtype;
         vector<std::unordered_map<size_t,FMTvertex_descriptor>> developments;
-		mutable vector<std::unordered_map<size_t, vector<FMTvertex_descriptor>>>nodescache;
+		//mutable vector<std::unordered_map<size_t, vector<FMTvertex_descriptor>>>nodescache;
+		mutable vector<FMToutputnodecache>nodescache;
         FMTgraphstats stats;
 		void updatevarsmap(map<int,double>& variables,const int& var,const double& coef) const;
 		vector<std::unordered_map<size_t, FMTvertex_descriptor>>::iterator getfirstblock();
@@ -153,7 +155,7 @@ class FMTgraph
 		map<int, double> getvariables(const FMTmodel& model, const FMToutputnode& output_node,const vector<FMTvertex_descriptor>& verticies) const;
         bool anyoperables(const FMTvertex_descriptor& descriptor, const vector<int>& action_ids) const;
         map<int, int> getoutvariables(const FMTvertex_descriptor& out_vertex) const;
-		vector<std::pair<const int*,const int*>>getoutvariablesnactionsptr(const FMTvertex_descriptor& out_vertex) const;
+		vector<int>getoutactions(const FMTvertex_descriptor& out_vertex) const;
         vector<const FMTaction*> selectedactions(const FMTmodel& model, const vector<int>& action_IDS) const;
 		bool constraintlenght(const FMTconstraint& constraint, int& start, int& stop) const;
 		FMTgraphstats getstats() const;
@@ -192,7 +194,7 @@ class FMTgraph
                               vector<vector<vector<FMTevent<FMTgraph>>>>& events,
                               const FMTcoordinate& localisation, const int period) const;
 		bool sameedgesas(const FMTgraph& rhs) const;
-		size_t buildoutputscache(const FMTmodel& model, const vector<const FMToutput*>& outputs);
+		//size_t buildoutputscache(const FMTmodel& model, const vector<const FMToutput*>& outputs);
 		void updatematrixindex(const vector<int>& removedvariables,
 			const vector<int>& removedconstraints);
 		int getfirstactiveperiod() const;
