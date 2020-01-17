@@ -1348,9 +1348,8 @@ bool FMTlpmodel::locatenodes(const vector<FMToutputnode>& nodes, int period,
 	bool cashhit = false;
 	for (const FMToutputnode& node : nodes)
 		{
-		map<int, double>node_map;
-		node_map = graph.locatenode(*this, node, period);//go into the graph
-		//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "looking for "<<string(node)<<" at period "<<period << "ms\n";
+		const map<int, double>node_map = graph.locatenode(*this, node, period);//go into the graph
+		//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "looking for "<<string(node)<<" at period "<<period << "\n";
 		for (map<int, double>::const_iterator node_it = node_map.begin(); node_it != node_map.end(); node_it++)
 			{
 			if (variables.find(node_it->first) == variables.end())

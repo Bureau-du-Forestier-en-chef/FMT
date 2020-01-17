@@ -92,7 +92,9 @@ class FMToutputsource : public FMTspec
 		bool istimeyield() const;
 		vector<const FMTaction*>targets(const vector<FMTaction>& actions,
 			const map<string, vector<string>>& aggregates) const;
+		bool isinventory() const;
 		bool useinedges() const;
+		bool isnextperiod() const;
 		bool useoutedges() const;
 		double getcoef(const FMTdevelopment& development,
 			const FMTyields& yields, const FMTaction& action,

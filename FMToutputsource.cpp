@@ -401,9 +401,19 @@ vector<const FMTaction*>FMToutputsource::targets(const vector<FMTaction>& action
 	return action_IDS;
 	}
 
+bool FMToutputsource::isinventory() const
+	{
+	return (target == FMTotar::inventory);
+	}
+
 bool FMToutputsource::useinedges() const
 	{
 	return (target == FMTotar::inventory);
+	}
+
+bool FMToutputsource::isnextperiod() const
+	{
+	return (target == FMTotar::inventory && action.empty());
 	}
 
 bool FMToutputsource::useoutedges() const

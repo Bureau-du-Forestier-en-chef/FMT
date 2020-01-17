@@ -550,6 +550,22 @@ bool FMTmask::operator < (const FMTmask& rhs) const
             }
     return false;
     }
+
+bool FMTmask::isnotthemessubset(const FMTmask& rhs, const vector<FMTtheme>& themes) const
+	{
+	if (!data.is_subset_of(rhs.data) && !rhs.data.is_subset_of(data))
+		{
+		for (const FMTtheme& theme : themes)
+			{
+			if (!((rhs.subset(theme))&(this->subset(theme))).any())
+				{
+				return true;
+				}
+			}
+		}
+	return false;
+	}
+
 string FMTmask::to_string() const
             {
             string bits = "";

@@ -129,6 +129,7 @@ class FMTmask
         bool set(const vector<FMTtheme>& themes,string value);
 		vector<FMTtheme>getstaticthemes(const vector<FMTtheme>& themes) const;
         string get(const FMTtheme& theme) const;
+		bool isnotthemessubset(const FMTmask& rhs, const vector<FMTtheme>& themes) const;
 		bool empty() const;
         bool set(const FMTtheme& theme,string value);
         void update(const vector<FMTtheme>& themes);

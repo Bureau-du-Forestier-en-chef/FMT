@@ -129,6 +129,7 @@ namespace Graph
 
 	const std::vector<FMTvertex_descriptor>& FMToutputnodecache::getcleandescriptors(const FMToutputnode& targetnode,
 																					const std::map<string,vector<string>>& actionaggregates,
+																					const std::vector<FMTtheme>&themes,
 																					bool& exactnode) const
 		{
 		bool exact = false;
@@ -137,6 +138,7 @@ namespace Graph
 		if (exact)
 			{
 			//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "deduced: " << 100 << "\n";
+			//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "found exact!" << string(targetnode) << "\n";
 			return parent->second;
 			}
 		std::vector<FMTvertex_descriptor> cleaned = basenode;
@@ -146,7 +148,7 @@ namespace Graph
 			//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "for  :  " << string(targetnode) << "\n";
 			cleaned = parent->second;
 			}
-		//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "base size of:  " << cleaned.size() << "\n";
+		//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "node of:  " << string(targetnode) << "\n";
 		getactionrebuild(targetnode, actionaggregates, cleaned,exactnode); // should be able to find also exact!!!!!!!!
 		if (!exact)
 			{
@@ -157,15 +159,10 @@ namespace Graph
 				sit != searchtree.rend(); sit++) // start by the back to scrap cleaned stuff fast!
 				{
 					//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "scanning on " << string(sit->first.source.getmask()) << "\n";
-					if (!sit->first.source.getmask().data.is_subset_of(targetnode.source.getmask().data) &&
-						!targetnode.source.getmask().data.is_subset_of(sit->first.source.getmask().data))//deal only with mask
+					if (targetnode.source.getmask().isnotthemessubset(sit->first.source.getmask(),themes))//deal only with mask
 					{
 						toremove.insert(toremove.end(), sit->second.begin(), sit->second.end());
-						//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << " size of " << sit->second.size() << "\n";
-						/*vector<FMTvertex_descriptor>difference;
-						std::set_difference(cleaned.begin(), cleaned.end(),
-							sit->second.begin(), sit->second.end(), std::inserter(difference, difference.begin()));
-						cleaned = difference;*/
+						//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << " getting out " << string(sit->first)<< "\n";
 					}
 				}
 			if (!toremove.empty())
@@ -185,7 +182,8 @@ namespace Graph
 		}
 
 
-	const std::vector<FMTvertex_descriptor>& FMToutputnodecache::getverticies(const FMToutputnode& targetnode, const std::map<string, vector<string>>& actionaggregates, bool& exactvecticies) const
+	const std::vector<FMTvertex_descriptor>& FMToutputnodecache::getverticies(const FMToutputnode& targetnode, const std::map<string, vector<string>>& actionaggregates, 
+																const std::vector<FMTtheme>&themes, bool& exactvecticies) const
 		{
 		/*std::map<FMToutputnode, std::vector<FMTvertex_descriptor>>::const_iterator parent = getparentnode(targetnode, exactvecticies);
 		if (exactvecticies)
@@ -196,7 +194,8 @@ namespace Graph
 			return parent->second;
 			}
 		return getpotentialfromchildren(targetnode, parent);*/
-		return this->getcleandescriptors(targetnode,actionaggregates, exactvecticies);
+		return this->getcleandescriptors(targetnode,actionaggregates,themes, exactvecticies);
+		//return basenode;
 		}
 
 	void FMToutputnodecache::setvalidverticies(const FMToutputnode& targetnode,const std::vector<FMTvertex_descriptor>& verticies) const

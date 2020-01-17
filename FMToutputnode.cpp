@@ -144,7 +144,7 @@ namespace Core
 	int FMToutputnode::settograph(vector<int>& targetedperiods, int period, int max_period)
 		{
 		int node_period = period;
-		if (this->source.useinedges())//evaluate at the begining of the other period if inventory! what a major fuck
+		if (this->source.isnextperiod())//evaluate at the begining of the other period if inventory! what a major fuck
 		{
 			++node_period;
 		}
@@ -164,7 +164,7 @@ namespace Core
 			}
 			else {
 				node_period = this->source.getperiodlowerbound();
-				if (this->source.useinedges())
+				if (this->source.isnextperiod())
 				{
 					++node_period;
 				}
@@ -178,7 +178,7 @@ namespace Core
 			for (int periodid = minperiod; periodid <= maxperiod; ++periodid)
 			{
 				int local_period = periodid;
-				if (this->source.useinedges())
+				if (this->source.isnextperiod())
 				{
 					++local_period;
 				}

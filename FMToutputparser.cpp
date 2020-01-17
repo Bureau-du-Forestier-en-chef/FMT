@@ -323,9 +323,21 @@ namespace WSParser
 																sources.push_back(src);
 																}
 															lastopt = operators.size();
+															bool convertoperator = false;
+															if (!operators.empty() && operators.back().getkey() == FMTokey::sub)
+																{
+																convertoperator = true;
+																}
 															for (const FMToperator& src : it->getopes())
 																{
-																operators.push_back(src);
+																if (convertoperator)
+																	{
+																	operators.push_back(src.reverse());
+																}
+																else {
+																	operators.push_back(src);
+																}
+																
 																}
 													}else {
 														sources.push_back(FMToutputsource(FMTotar::level,0, strsrc));

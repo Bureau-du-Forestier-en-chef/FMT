@@ -5,6 +5,7 @@
 #include<vector>
 #include <unordered_map>
 #include <FMTgraphdescription.h>
+#include "FMTtheme.h"
 #include "FMToutputnode.h"
 #include <boost/serialization/serialization.hpp>
 #include <boost/serialization/map.hpp>
@@ -25,7 +26,8 @@ namespace Graph
 		std::vector<FMTvertex_descriptor>basenode;
 		mutable std::map<FMToutputnode, std::vector<FMTvertex_descriptor>>searchtree;
 		void setinitialcache(const std::unordered_map<size_t, FMTvertex_descriptor>& initialgraph);
-		const std::vector<FMTvertex_descriptor>& getcleandescriptors(const FMToutputnode& targetnode, const std::map<string, vector<string>>& actionaggregates, bool& exactnode) const;
+		const std::vector<FMTvertex_descriptor>& getcleandescriptors(const FMToutputnode& targetnode, const std::map<string, vector<string>>& actionaggregates,
+										const std::vector<FMTtheme>&themes, bool& exactnode) const;
 		void getactionrebuild(const FMToutputnode& targetnode,
 			const std::map<string,vector<string>>& aggregates,
 			std::vector<FMTvertex_descriptor>& cleaned,
@@ -37,7 +39,8 @@ namespace Graph
 		FMToutputnodecache& operator = (const FMToutputnodecache& rhs) = default;
 		~FMToutputnodecache() = default;
 		FMToutputnodecache(const std::unordered_map<size_t, FMTvertex_descriptor>& initialgraph);
-		const std::vector<FMTvertex_descriptor>& getverticies(const FMToutputnode& targetnode, const std::map<string, vector<string>>& actionaggregates, bool& exactvecticies) const;
+		const std::vector<FMTvertex_descriptor>& getverticies(const FMToutputnode& targetnode, const std::map<string, vector<string>>& actionaggregates,
+			const std::vector<FMTtheme>&themes, bool& exactvecticies) const;
 		void setvalidverticies(const FMToutputnode& targetnode,const std::vector<FMTvertex_descriptor>& verticies) const;
 		void clear();
 	};
