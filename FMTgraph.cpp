@@ -581,11 +581,10 @@ bool FMTgraph::isvalidgraphnode(const FMTmodel& model, const FMTvertex_descripto
 		{
 		if (node.source.useinedges()) //in edges
 		{
-			
-			if ((development.period == 0 || periodstart(vertex_descriptor)) &&((selected.empty() && node.source.isnextperiod()) || 
-				(((buildtype == FMTgraphbuild::schedulebuild) && development.anyoperable(selected, model.yields)) || anyoperables(vertex_descriptor, development.anyworthtestingoperability(selected, *model.actions.begin())))))
+			if ((development.period == 0 || periodstart(vertex_descriptor))&&(selected.empty() && (node.source.isnextperiod() || !node.source.emptylock())) ||
+				(((buildtype == FMTgraphbuild::schedulebuild) && development.anyoperable(selected, model.yields)) ||
+					anyoperables(vertex_descriptor, development.anyworthtestingoperability(selected, *model.actions.begin()))))
 			{
-				//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) <<  string(development)  << "ms\n";
 				return true;
 			}
 		}
@@ -638,6 +637,7 @@ vector<FMTvertex_descriptor> FMTgraph::getnode(const FMTmodel& model, FMToutputn
 				vector<const FMTaction*> selected;
 				if (isvalidouputnode(model, output_node, selected, node_period))
 				{
+					//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "selected size: " << selected.size() << "\n";
 					//selected = selectedactions(model, action_IDS);
 					/*if (period < nodescache.size() && nodescache.at(period).find(output_node.hash()) != nodescache.at(period).end())
 					{
@@ -730,7 +730,8 @@ map<int, double> FMTgraph::getvariables(const FMTmodel& model, const FMToutputno
 					{
 						const map<int, int>vars = getoutvariables(vertex);
 						updatevarsmap(variables, vars.at(-1), coef);
-					}else {
+					}else{
+						//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "out size: " << boost::out_degree(vertex,data) << "\n";
 						FMTinedge_iterator inedge_iterator, inedge_end;
 						for (tie(inedge_iterator, inedge_end) = in_edges(vertex, data); inedge_iterator != inedge_end; ++inedge_iterator)
 						{

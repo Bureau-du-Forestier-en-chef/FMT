@@ -95,6 +95,7 @@ class FMToutputsource : public FMTspec
 		bool isinventory() const;
 		bool useinedges() const;
 		bool isnextperiod() const;
+		//bool needpotentialoperability() const;
 		bool useoutedges() const;
 		double getcoef(const FMTdevelopment& development,
 			const FMTyields& yields, const FMTaction& action,

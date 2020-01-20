@@ -2413,7 +2413,7 @@ bool FMTlpmodel::locatenodes(const vector<FMToutputnode>& nodes, int period,
 					}
 				break;
 			}
-		Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "Objective: " << solverinterface->getObjValue()<< "\n";
+		//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "Objective: " << solverinterface->getObjValue()<< "\n";
 		return solverinterface->isProvenOptimal();
 		}
 

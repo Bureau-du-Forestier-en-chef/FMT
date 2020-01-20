@@ -396,7 +396,7 @@ vector<const FMTaction*>FMToutputsource::targets(const vector<FMTaction>& action
 					action_IDS.push_back(&(*ait));
 					//action_IDS.push_back(static_cast<int>(std::distance(ordered_action.begin(),ait)));
 				}
-        }
+			}
         }
 	return action_IDS;
 	}
@@ -413,8 +413,13 @@ bool FMToutputsource::useinedges() const
 
 bool FMToutputsource::isnextperiod() const
 	{
-	return (target == FMTotar::inventory && action.empty());
+	return (target == FMTotar::inventory && action.empty()/* && this->emptylock()*/);
 	}
+
+/*bool FMToutputsource::needpotentialoperability() const
+	{
+	return (target == FMTotar::inventory && !this->emptylock() && action.empty());
+	}*/
 
 bool FMToutputsource::useoutedges() const
 	{
