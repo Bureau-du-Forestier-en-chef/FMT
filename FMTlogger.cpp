@@ -23,30 +23,53 @@ SOFTWARE.
 */
 
 #include "FMTlogger.h"
+#include <boost/python.hpp>
+#include <iostream>
+#include "FMTversion.h"
+ 
 
 namespace Logging
 {
-	FMTlogger::FMTlogger()
-		{
 
-		}
-	FMTlogger::FMTlogger(const FMTlogger& rhs) : CoinMessageHandler(rhs), _msglevel(rhs._msglevel)
+	void FMTlogger::settostream(std::ofstream& stream)
 		{
-
-		}
-	FMTlogger& FMTlogger::operator = (const FMTlogger& rhs)
-		{
-		if (this!=&rhs)
+		filestream = &stream;
+		if (filestream && filestream->is_open())
 			{
-			CoinMessageHandler::operator=(rhs);
-			_msglevel = rhs._msglevel;
+			this->logstamp();
+			this->logtime();
 			}
-		return *this;
+		}
+
+	FMTlogger::FMTlogger() : filestream()
+		{
+
+		}
+
+	FMTlogger::~FMTlogger()
+		{
+		if (filestream && filestream->is_open())
+			{
+			this->logtime();
+			}
+		}
+	
+	void FMTlogger::logstamp()
+		{
+		const std::string message = "FMT" + Version::FMTversion().getversion() +
+			", build: "+ Version::FMTversion().getbuilddate();
+		*this<<(message)<< "\n";
+		}
+
+	void FMTlogger::logtime()
+		{
+		const std::string message = Version::FMTversion().getdatenow();
+		*this << (message) << "\n";
 		}
 
 	void FMTlogger::checkSeverity()
 		{
-
+		CoinMessageHandler::checkSeverity();
 		}
 
 	CoinMessageHandler* FMTlogger::clone() const
@@ -54,46 +77,49 @@ namespace Logging
 		return new FMTlogger(*this);
 		}
 
+	void FMTlogger::cout(const char* message) const
+		{
+		#if defined(FMTPY)
+				PySys_WriteStdout(message);
+		#else
+				std::cout << message << std::flush;
+		#endif
+		if (filestream && filestream->is_open())
+			{
+			filestream->operator<<(message);
+			}
+		}
+
 	int FMTlogger::print()
 		{
-		char buffer[COIN_MESSAGE_HANDLER_MAX_BUFFER_SIZE];
-		snprintf(buffer, sizeof(buffer), "%s\n", this->messageBuffer_);
-		#if defined(FMTPY)
-			PySys_WriteStdout(buffer);
-		#else
-			cout << buffer << flush;
-		#endif
+		if (messageOut_ > messageBuffer_) 
+			{
+			*messageOut_ = 0;
+			//take off trailing spaces and commas
+			messageOut_--;
+			while (messageOut_ >= messageBuffer_)
+				{
+				if (*messageOut_ == ' ' || *messageOut_ == ',') 
+					{
+					*messageOut_ = 0;
+					messageOut_--;
+					}else {
+						break;
+						}	
+				}
+			char buffer[COIN_MESSAGE_HANDLER_MAX_BUFFER_SIZE];
+			snprintf(buffer, sizeof(buffer), "%s\n", this->messageBuffer_);
+			this->cout(buffer);
+			if (currentMessage_.severity_ == 'S') 
+				{
+				fprintf(fp_, "Stopping due to previous errors.\n");
+				//Should do walkback
+				abort();
+				}
+			}
 		return 0;
 		}
 
-	FMTlogger::FMTlogger(FMTlogtype type)
-		{
-		_msglevel = type;
-		}
-	string FMTlogger::getlevel(FMTlogtype ltype)
-		{
-		string str_type = "(";
-		switch (ltype)
-			{
-			case FMT_Debug:
-				str_type += "Debug";
-			break;
-			case FMT_Warn:
-				str_type += "Warning";
-			break;
-			case FMT_Error:
-				str_type += "Error";
-			break;
-			case FMT_Info:
-				str_type += "Info";
-			break;
-			default:
-				str_type += "Debug";
-			break;
-			}
-		str_type += ")";
-		return str_type;
-		}
 }
 
 

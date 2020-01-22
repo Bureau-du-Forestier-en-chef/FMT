@@ -27,11 +27,11 @@ SOFTWARE.
 
 #include <string>
 
+
 #define API_MAJOR 0
 #define API_MINOR 0
 #define API_PATCH 0
 
-using namespace std;
 
 namespace Version
 {
@@ -43,9 +43,11 @@ class FMTversion
 		static int getmajor();
 		static int getminor();
 		static int getpatch();
-		static string getversion();
+		static std::string getversion();
+		static std::string getdatenow();
+		static std::string getbuilddate();
 		static bool isatleast(int major, int minor, int patch);
-		static bool hasfeature(const string& name);
+		static bool hasfeature(const std::string& name);
 	};
 }
 

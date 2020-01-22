@@ -22,42 +22,29 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include "FMTdebugexceptionhandler.h"
-#include "FMTlogger.h"
+#include "FMTdebuglogger.h"
 
-namespace Exception
+namespace Logging
 {
-
-	string FMTdebugexceptionhandler::getsrcinfo(const int& line, const string& file) const
-	{
-		return "In File(" + file + ") At Line(" + to_string(line) + ")";
-	}
-
-	FMTdebugexceptionhandler::FMTdebugexceptionhandler()
-	{
-
-	}
-
-	FMTlev FMTdebugexceptionhandler::raise(FMTexc lexception, FMTwssect lsection, string text,
-		const int& line, const string& file)
-	{
-		FMTexception excp;
-		if (lsection == FMTwssect::Empty)
+	FMTdebuglogger::FMTdebuglogger()
 		{
-			excp = FMTexception(lexception, updatestatus(lexception, text));
+		this->setLogLevel(4);
 		}
-		else {
-			excp = FMTexception(lexception, lsection, updatestatus(lexception, text));
-		}
-		*_logger << getsrcinfo(line, file) << "\n";
-		if (_level == FMTlev::FMT_Warning)
+
+	int FMTdebuglogger::print()
 		{
-			FMTwarning(excp).warn();
+		return FMTlogger::print();
 		}
-		else if (_level == FMTlev::FMT_logic || _level == FMTlev::FMT_range) {
-			throw FMTerror(excp);
+	void FMTdebuglogger::checkSeverity()
+		{
+		FMTlogger::checkSeverity();
 		}
-		return _level;
-	}
+
+	CoinMessageHandler* FMTdebuglogger::clone() const
+		{
+		return new FMTdebuglogger(*this);
+		}
 
 }
+
+

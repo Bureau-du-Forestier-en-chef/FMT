@@ -618,7 +618,7 @@ map<int, double> FMTgraph::locatenode(const FMTmodel& model, FMToutputnode outpu
 	}
 
 
-
+#include "FMTlogger.h"
 vector<FMTvertex_descriptor> FMTgraph::getnode(const FMTmodel& model, FMToutputnode output_node,
 	int period) const
 	{
@@ -626,7 +626,6 @@ vector<FMTvertex_descriptor> FMTgraph::getnode(const FMTmodel& model, FMToutputn
 			vector<int>targetedperiods;
 			const int maxperiod = static_cast<int>(developments.size() - 2);
 			const int node_period = output_node.settograph(targetedperiods, period, maxperiod);
-			//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "looking for " << string(output_node) << " at period " << node_period << "ms\n";
 			if (node_period<0)
 				{
 				return locations;
@@ -690,6 +689,8 @@ vector<FMTvertex_descriptor> FMTgraph::getnode(const FMTmodel& model, FMToutputn
 							nodescache.at(localnodeperiod).setvalidverticies(output_node, revisited);
 							}
 						}
+					
+					
 				}
 
 			}

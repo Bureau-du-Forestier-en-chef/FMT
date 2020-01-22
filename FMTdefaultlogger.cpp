@@ -22,42 +22,34 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include "FMTdebugexceptionhandler.h"
-#include "FMTlogger.h"
 
-namespace Exception
-{
+#include "FMTdefaultlogger.h"
+#include <CoinMessageHandler.hpp>
+#include <boost/python.hpp>
+#include <iostream>
 
-	string FMTdebugexceptionhandler::getsrcinfo(const int& line, const string& file) const
-	{
-		return "In File(" + file + ") At Line(" + to_string(line) + ")";
-	}
-
-	FMTdebugexceptionhandler::FMTdebugexceptionhandler()
+namespace Logging
 	{
 
-	}
-
-	FMTlev FMTdebugexceptionhandler::raise(FMTexc lexception, FMTwssect lsection, string text,
-		const int& line, const string& file)
-	{
-		FMTexception excp;
-		if (lsection == FMTwssect::Empty)
+	FMTdefaultlogger::FMTdefaultlogger()
 		{
-			excp = FMTexception(lexception, updatestatus(lexception, text));
+		this->setLogLevel(1);
 		}
-		else {
-			excp = FMTexception(lexception, lsection, updatestatus(lexception, text));
-		}
-		*_logger << getsrcinfo(line, file) << "\n";
-		if (_level == FMTlev::FMT_Warning)
-		{
-			FMTwarning(excp).warn();
-		}
-		else if (_level == FMTlev::FMT_logic || _level == FMTlev::FMT_range) {
-			throw FMTerror(excp);
-		}
-		return _level;
-	}
 
-}
+
+	int FMTdefaultlogger::print()
+		{
+		return FMTlogger::print();
+		}
+
+	void FMTdefaultlogger::checkSeverity()
+		{
+		FMTlogger::checkSeverity();
+		}
+
+	CoinMessageHandler * FMTdefaultlogger::clone() const
+		{
+		return new FMTdefaultlogger(*this);
+		}
+
+	}

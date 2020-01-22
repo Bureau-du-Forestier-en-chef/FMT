@@ -25,6 +25,10 @@ SOFTWARE.
 #ifndef PYEXPORTEXCEPTIONS_H_INCLUDED
 #define PYEXPORTEXCEPTIONS_H_INCLUDED
 
+#include "FMTdefaultexceptionhandler.h"
+#include "FMTdebugexceptionhandler.h"
+#include "FMTquietexceptionhandler.h"
+
 void exportException()
     {
     namespace bp = boost::python;

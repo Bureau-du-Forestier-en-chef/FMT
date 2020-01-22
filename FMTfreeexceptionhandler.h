@@ -31,7 +31,7 @@ SOFTWARE.
 
 namespace Exception
 {
-class FMTfreeexceptionhandler : public FMTexceptionhandler
+class FMTfreeexceptionhandler final : public FMTexceptionhandler
 {
 	friend class boost::serialization::access;
 	template<class Archive>

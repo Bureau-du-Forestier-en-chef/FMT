@@ -22,42 +22,27 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include "FMTdebugexceptionhandler.h"
+#ifndef FMTdefaultlogger_H_INCLUDED
+#define FMTdefaultlogger_H_INCLUDED
+
 #include "FMTlogger.h"
 
-namespace Exception
+namespace Logging
 {
-
-	string FMTdebugexceptionhandler::getsrcinfo(const int& line, const string& file) const
+	class FMTdefaultlogger final: public FMTlogger
 	{
-		return "In File(" + file + ") At Line(" + to_string(line) + ")";
-	}
-
-	FMTdebugexceptionhandler::FMTdebugexceptionhandler()
-	{
-
-	}
-
-	FMTlev FMTdebugexceptionhandler::raise(FMTexc lexception, FMTwssect lsection, string text,
-		const int& line, const string& file)
-	{
-		FMTexception excp;
-		if (lsection == FMTwssect::Empty)
-		{
-			excp = FMTexception(lexception, updatestatus(lexception, text));
-		}
-		else {
-			excp = FMTexception(lexception, lsection, updatestatus(lexception, text));
-		}
-		*_logger << getsrcinfo(line, file) << "\n";
-		if (_level == FMTlev::FMT_Warning)
-		{
-			FMTwarning(excp).warn();
-		}
-		else if (_level == FMTlev::FMT_logic || _level == FMTlev::FMT_range) {
-			throw FMTerror(excp);
-		}
-		return _level;
-	}
+	public:
+		FMTdefaultlogger();
+		~FMTdefaultlogger() = default;
+		FMTdefaultlogger & operator = (const FMTdefaultlogger & rhs) = default;
+		FMTdefaultlogger(const FMTdefaultlogger& rhs) = default;
+		int print() override;
+		void checkSeverity() override;
+		CoinMessageHandler * clone() const override;
+	};
 
 }
+
+
+
+#endif

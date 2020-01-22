@@ -34,9 +34,9 @@ namespace Graph
 			bool& exactnode) const;
 		std::map<FMToutputnode, std::vector<FMTvertex_descriptor>>::const_iterator getparentnode(const FMToutputnode& targetnode,const std::map<string, vector<string>>& actionaggregates, bool& exactnode) const;
 	public:
-		FMToutputnodecache() = default;
-		FMToutputnodecache(const FMToutputnodecache& rhs)= default;
-		FMToutputnodecache& operator = (const FMToutputnodecache& rhs) = default;
+		FMToutputnodecache();
+		FMToutputnodecache(const FMToutputnodecache& rhs);
+		FMToutputnodecache& operator = (const FMToutputnodecache& rhs);
 		~FMToutputnodecache() = default;
 		FMToutputnodecache(const std::unordered_map<size_t, FMTvertex_descriptor>& initialgraph);
 		const std::vector<FMTvertex_descriptor>& getverticies(const FMToutputnode& targetnode, const std::map<string, vector<string>>& actionaggregates,

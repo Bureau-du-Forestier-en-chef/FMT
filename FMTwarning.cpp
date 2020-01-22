@@ -23,6 +23,7 @@ SOFTWARE.
 */
 
 #include "FMTwarning.h"
+#include "FMTdefaultlogger.h"
 
 
 namespace Exception
@@ -33,6 +34,6 @@ FMTwarning::FMTwarning(const FMTexc lexception, const string message) : FMTexcep
 FMTwarning::FMTwarning(const FMTexc lexception, const FMTwssect lsection, const string message) : FMTexception(lexception, lsection, message) {}
 void FMTwarning::warn() const
 	{
-		Logging::FMTlogger(Logging::FMTlogtype::FMT_Warn) << _msg << "\n";
+		Logging::FMTdefaultlogger() << _msg << "\n";
 	}
 }

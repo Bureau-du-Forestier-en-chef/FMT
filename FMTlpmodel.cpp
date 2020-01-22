@@ -399,7 +399,6 @@ namespace Models
 		//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "bounding size: "<< variable_index.size() << "\n";
 		solverinterface->setColSetBounds(&variable_index[0], &variable_index.back()+1, &bounds[0]);
 		this->resolve();
-		this->writeLP("C:/Users/cyrgu3/source/repos/FMT/x64/Release/problem");
         return solverinterface->isProvenOptimal();
         }
     return false;
@@ -1349,7 +1348,7 @@ bool FMTlpmodel::locatenodes(const vector<FMToutputnode>& nodes, int period,
 	for (const FMToutputnode& node : nodes)
 		{
 		const map<int, double>node_map = graph.locatenode(*this, node, period);//go into the graph
-		//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "looking for "<<string(node)<<" at period "<<period << "\n";
+		//*_logger << "looking for "<<string(node)<<" at period "<<period << "\n";
 		for (map<int, double>::const_iterator node_it = node_map.begin(); node_it != node_map.end(); node_it++)
 			{
 			if (variables.find(node_it->first) == variables.end())

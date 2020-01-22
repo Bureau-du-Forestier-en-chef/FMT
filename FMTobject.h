@@ -26,14 +26,11 @@ SOFTWARE.
 #define FMTobject_H_INCLUDED
 
 #include "FMTexceptionhandler.h"
-#include "FMTquietexceptionhandler.h"
-#include "FMTdefaultexceptionhandler.h"
-#include "FMTdebugexceptionhandler.h"
-#include "FMTfreeexceptionhandler.h"
 #include "FMTlogger.h"
 #include <boost/serialization/shared_ptr.hpp>
 #include <boost/serialization/nvp.hpp>
-#include <boost/filesystem.hpp>
+#include <memory>
+
 
 #if defined _MSC_VER || __CYGWIN__
 
@@ -42,7 +39,7 @@ SOFTWARE.
 #endif
 
 
-#include <memory>
+
 
 namespace Exception
 {
@@ -68,6 +65,8 @@ class FMTobject
 		FMTobject& operator = (const FMTobject& rhs);
 		void passinlogger(const std::shared_ptr<Logging::FMTlogger>& logger);
 		void passinexceptionhandler(const std::shared_ptr<FMTexceptionhandler>& exhandler);
+		void setdefaultlogger();
+		void setdebuglogger();
 		void setdefaultexceptionhandler();
 		void setquietexceptionhandler();
 		void setdebugexceptionhandler();

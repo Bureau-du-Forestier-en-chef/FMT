@@ -23,6 +23,10 @@ SOFTWARE.
 */
 
 #include "FMTversion.h"
+#include <chrono>
+#include <ctime>
+
+
 namespace Version
 {
 
@@ -44,9 +48,21 @@ int FMTversion::getpatch()
 	return API_PATCH;
 	}
 
-string FMTversion::getversion()
+std::string FMTversion::getdatenow()
 	{
-	return to_string(getmajor()) + "." + to_string(getminor()) + "." + to_string(getpatch());
+	auto now = std::chrono::system_clock::now();
+	std::time_t end_time = std::chrono::system_clock::to_time_t(now);
+	return static_cast<std::string>(std::ctime(&end_time));
+	}
+
+std::string FMTversion::getbuilddate()
+	{
+	return (static_cast<std::string>((__DATE__)) + static_cast<std::string>(std::string(__TIME__)));
+	}
+
+std::string FMTversion::getversion()
+	{
+	return std::to_string(getmajor()) + "." + std::to_string(getminor()) + "." + std::to_string(getpatch());
 	}
 bool FMTversion::isatleast(int major, int minor, int patch)
 	{
@@ -56,7 +72,7 @@ bool FMTversion::isatleast(int major, int minor, int patch)
 		}
 	return false;
 	}	
-bool FMTversion::hasfeature(const string& name)
+bool FMTversion::hasfeature(const std::string& name)
 	{
 	return false;
 	}

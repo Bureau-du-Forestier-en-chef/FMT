@@ -31,7 +31,7 @@ SOFTWARE.
 namespace Exception
 {
 
-	class FMTquietexceptionhandler : public FMTexceptionhandler
+	class FMTquietexceptionhandler final : public FMTexceptionhandler
 	{
 		friend class boost::serialization::access;
 		template<class Archive>

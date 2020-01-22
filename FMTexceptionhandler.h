@@ -28,8 +28,10 @@ SOFTWARE.
 #include "FMTexception.h"
 #include "FMTerror.h"
 #include "FMTwarning.h"
+#include "FMTlogger.h"
 #include <boost/serialization/serialization.hpp>
 #include <boost/serialization/nvp.hpp>
+#include <memory>
 
 namespace Exception
 {
@@ -43,11 +45,13 @@ namespace Exception
 			ar & BOOST_SERIALIZATION_NVP(_exception);
 			ar & BOOST_SERIALIZATION_NVP(_errorcount);
 			ar & BOOST_SERIALIZATION_NVP(_warningcount);
+			ar & BOOST_SERIALIZATION_NVP(_logger);
 		}
 	protected:
 		FMTlev _level;
 		FMTexc _exception;
 		int _errorcount, _warningcount;
+		std::shared_ptr<Logging::FMTlogger>_logger;
 		string updatestatus(const FMTexc lexception, const string message)
 		{
 			_exception = lexception;
@@ -315,15 +319,21 @@ namespace Exception
 		{
 
 		}
-		virtual ~FMTexceptionhandler() {}
+		virtual ~FMTexceptionhandler() = default;
 		FMTexceptionhandler(const FMTexceptionhandler& rhs) :
 			_level(rhs._level),
 			_exception(rhs._exception),
 			_errorcount(rhs._errorcount),
-			_warningcount(rhs._warningcount)
+			_warningcount(rhs._warningcount),
+			_logger(rhs._logger)
 		{
 
 		}
+		void passinlogger(const std::shared_ptr<Logging::FMTlogger>& logger)
+			{
+			_logger = logger;
+			}
+
 		FMTexceptionhandler& operator = (const FMTexceptionhandler& rhs)
 		{
 			if (this != &rhs)
@@ -332,12 +342,13 @@ namespace Exception
 				_exception = rhs._exception;
 				_errorcount = rhs._errorcount;
 				_warningcount = rhs._warningcount;
+				_logger = rhs._logger;
 			}
 			return *this;
 		}
 		void throw_nested(const FMTexception& texception, int level = 0)
 			{
-			Logging::FMTlogger(Logging::FMTlogtype::FMT_Error) << string(level, ' ') << texception.what() << "\n";
+			*_logger << string(level, ' ') << texception.what() << "\n";
 			try {
 				std::rethrow_if_nested(texception);
 			}catch (const FMTexception& texception)

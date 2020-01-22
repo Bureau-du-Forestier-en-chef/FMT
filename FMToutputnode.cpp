@@ -167,6 +167,9 @@ namespace Core
 				if (this->source.isnextperiod())
 				{
 					++node_period;
+					FMTperbounds perbound(FMTwssect::Optimize, node_period, node_period);
+					this->source.setbounds(perbound);
+					this->factor.setbounds(perbound);
 				}
 			}
 		}

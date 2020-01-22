@@ -27,7 +27,7 @@ SOFTWARE.
 #include "FMTexceptionhandler.h"
 namespace Exception
 {
-	class FMTdebugexceptionhandler : public FMTexceptionhandler
+	class FMTdebugexceptionhandler final : public FMTexceptionhandler
 	{
 		friend class boost::serialization::access;
 		template<class Archive>

@@ -24,56 +24,54 @@ SOFTWARE.
 
 #ifndef FMTlogger_H_INCLUDED
 #define FMTlogger_H_INCLUDED
-#include <iostream>
-#include <boost/python.hpp>
+//#include <iostream>
 #include <boost/serialization/serialization.hpp>
 #include <boost/serialization/nvp.hpp>
+#include <boost/serialization/split_member.hpp>
+#include <boost/lexical_cast.hpp>
 #include <CoinMessageHandler.hpp>
+#include <fstream> 
 
-
-
-using namespace std;
 
 namespace Logging
 {
-	enum FMTlogtype 
-		{
-		FMT_Debug = 0,
-		FMT_Info = 1,
-		FMT_Warn = 2,
-		FMT_Error = 3
-		};
-
 
 	class FMTlogger : public CoinMessageHandler
 		{
 		friend class boost::serialization::access;
 		template<class Archive>
-		void serialize(Archive& ar, const unsigned int version)
-			{
-			ar & BOOST_SERIALIZATION_NVP(_msglevel);
-			}
-		FMTlogtype _msglevel = FMT_Debug;
-		string getlevel(FMTlogtype ltype);
+		void save(Archive& ar, const unsigned int version) const
+		{
+			ar & BOOST_SERIALIZATION_NVP(this->logLevel());
+		}
+		template<class Archive>
+		void load(Archive& ar, const unsigned int version)
+		{
+			int coinloglevel = 0;
+			ar & BOOST_SERIALIZATION_NVP(coinloglevel);
+			this->setLogLevel(coinloglevel);
+		}
+		BOOST_SERIALIZATION_SPLIT_MEMBER()
+		protected:
+			std::ofstream* filestream;
+			void cout(const char* message) const;
 		public:
-			FMTlogger(FMTlogtype type);
-			virtual ~FMTlogger() = default;
 			FMTlogger();
-			FMTlogger(const FMTlogger& rhs);
-			FMTlogger& operator = (const FMTlogger& rhs);
+			virtual ~FMTlogger();
+			FMTlogger(const FMTlogger& rhs) = default;
+			FMTlogger& operator = (const FMTlogger& rhs) = default;
 			int print() override;
 			void checkSeverity() override;
 			CoinMessageHandler * clone() const override;
+			void logstamp();
+			void logtime();
+			void settostream(std::ofstream& stream);
 			template<class T>
 			FMTlogger& operator<<(const T &msg)
 				{
-				#if defined (_MSC_VER) && defined(FMTPY)
-					string value = boost::lexical_cast<std::string>(msg);
-					PySys_WriteStdout(value.c_str());
-				#else
-					cout << msg;
-				#endif 
-					return *this;
+				const std::string value = boost::lexical_cast<std::string>(msg);
+				this->cout(value.c_str());
+				return *this;
 				}
 		};
 

@@ -181,6 +181,27 @@ namespace Graph
 		return (returniterator.first)->second;
 		}
 
+	FMToutputnodecache::FMToutputnodecache() : basenode(), searchtree()
+		{
+
+		}
+
+
+	FMToutputnodecache::FMToutputnodecache(const FMToutputnodecache& rhs) : basenode(rhs.basenode),searchtree(rhs.searchtree)
+		{
+
+		}
+
+	FMToutputnodecache& FMToutputnodecache::operator = (const FMToutputnodecache& rhs)
+		{
+		if (this!=&rhs)
+			{
+			basenode = rhs.basenode;
+			searchtree = rhs.searchtree;
+			}
+		return *this;
+		}
+
 
 	const std::vector<FMTvertex_descriptor>& FMToutputnodecache::getverticies(const FMToutputnode& targetnode, const std::map<string, vector<string>>& actionaggregates, 
 																const std::vector<FMTtheme>&themes, bool& exactvecticies) const
