@@ -27,6 +27,15 @@ SOFTWARE.
 namespace Exception
 {
 
+FMTexceptionhandler* FMTfreeexceptionhandler::getCPLdata()
+	{
+	return this;
+	}
+void FMTfreeexceptionhandler::handelCPLerror(CPLErr eErrClass, CPLErrorNum nError, const char * pszErrorMsg)
+	{
+
+	}
+
 FMTfreeexceptionhandler::FMTfreeexceptionhandler()
 {
 

@@ -32,7 +32,7 @@ SOFTWARE.
 #include <boost/filesystem.hpp>
 
 
-namespace Exception
+namespace Core
 {
 
 	string  FMTobject::getruntimelocation()
@@ -72,7 +72,7 @@ namespace Exception
 		}
 	}
 
-	FMTobject::FMTobject() : _exhandler(make_shared<FMTdefaultexceptionhandler>()), 
+	FMTobject::FMTobject() : _exhandler(make_shared<Exception::FMTdefaultexceptionhandler>()), 
 		_logger(make_shared<Logging::FMTdefaultlogger>())
 	{
 		this->checksignals();
@@ -85,7 +85,7 @@ namespace Exception
 
 	}
 
-	FMTobject::FMTobject(const shared_ptr<FMTexceptionhandler> exhandler) : _exhandler(move(exhandler)), _logger(make_shared<Logging::FMTdefaultlogger>())
+	FMTobject::FMTobject(const shared_ptr<Exception::FMTexceptionhandler> exhandler) : _exhandler(move(exhandler)), _logger(make_shared<Logging::FMTdefaultlogger>())
 	{
 		_exhandler->passinlogger(_logger);
 		this->checksignals();
@@ -114,7 +114,7 @@ namespace Exception
 		_exhandler->passinlogger(_logger);
 		}
 
-	void FMTobject::passinexceptionhandler(const shared_ptr<FMTexceptionhandler>& exhandler)
+	void FMTobject::passinexceptionhandler(const shared_ptr<Exception::FMTexceptionhandler>& exhandler)
 		{
 		this->checksignals();
 		_exhandler = exhandler;
@@ -138,26 +138,26 @@ namespace Exception
 	void FMTobject::setdefaultexceptionhandler()
 		{
 		this->checksignals();
-		_exhandler = make_shared<FMTdefaultexceptionhandler>();
+		_exhandler = make_shared<Exception::FMTdefaultexceptionhandler>();
 		_exhandler->passinlogger(_logger);
 		}
 	void FMTobject::setquietexceptionhandler()
 	{
 		this->checksignals();
-		_exhandler = make_shared<FMTquietexceptionhandler>();
+		_exhandler = make_shared<Exception::FMTquietexceptionhandler>();
 		_exhandler->passinlogger(_logger);
 	}
 	void FMTobject::setdebugexceptionhandler()
 	{
 		this->checksignals();
-		_exhandler = make_shared<FMTdebugexceptionhandler>();
+		_exhandler = make_shared<Exception::FMTdebugexceptionhandler>();
 		_exhandler->passinlogger(_logger);
 	}
 
 	void  FMTobject::setfreeexceptionhandler()
 	{
 		this->checksignals();
-		_exhandler = make_shared<FMTfreeexceptionhandler>();
+		_exhandler = make_shared<Exception::FMTfreeexceptionhandler>();
 		_exhandler->passinlogger(_logger);
 	}
 

@@ -553,7 +553,7 @@ bool FMTmask::operator < (const FMTmask& rhs) const
 
 bool FMTmask::isnotthemessubset(const FMTmask& rhs, const vector<FMTtheme>& themes) const
 	{
-	if (!data.is_subset_of(rhs.data) && !rhs.data.is_subset_of(data))
+	/*if (!data.is_subset_of(rhs.data) && !rhs.data.is_subset_of(data))
 		{
 		for (const FMTtheme& theme : themes)
 			{
@@ -563,7 +563,34 @@ bool FMTmask::isnotthemessubset(const FMTmask& rhs, const vector<FMTtheme>& them
 				}
 			}
 		}
-	return false;
+	return false;*/
+
+	const boost::dynamic_bitset<> intersection = (rhs.data & this->data);
+	size_t thid = 0;
+	size_t bitloc = 0;
+	size_t totalthemelength = 0;
+	bool founddifference = false;
+	size_t falsefound = 0;
+	while (!founddifference && bitloc < data.size())
+		{
+		if (!intersection[bitloc])
+			{
+			++falsefound;
+			}
+		const size_t themesize = themes.at(thid).size();
+		if (bitloc == (themesize + totalthemelength)-1)
+			{
+			if (themesize == falsefound)
+				{
+				founddifference = true;
+				}
+			++thid;
+			falsefound = 0;
+			totalthemelength += themesize;
+			}
+		++bitloc;
+		}
+	return founddifference;
 	}
 
 string FMTmask::to_string() const

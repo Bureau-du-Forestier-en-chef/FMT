@@ -48,7 +48,7 @@ void exportWSParser()
     "   :synopsis: Module used to import Woodstock models.\n"
     "\n";
 
-    class_<WSParser::FMTparser,bases<Exception::FMTobject>>("FMTparser");
+    class_<WSParser::FMTparser,bases<Core::FMTobject>>("FMTparser");
 
 	define_pydict<string,string>();
 

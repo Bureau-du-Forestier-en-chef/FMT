@@ -41,7 +41,7 @@ SOFTWARE.
 
 
 
-namespace Exception
+namespace Core
 {
 class FMTobject
 	{
@@ -53,18 +53,18 @@ class FMTobject
 		ar & BOOST_SERIALIZATION_NVP(_logger);
 	}
 	protected:
-		std::shared_ptr<FMTexceptionhandler> _exhandler;
+		std::shared_ptr<Exception::FMTexceptionhandler> _exhandler;
 		std::shared_ptr<Logging::FMTlogger> _logger;
 		void checksignals();
 		string getruntimelocation();
 	public:
 		FMTobject();
 		virtual ~FMTobject();
-		FMTobject(const std::shared_ptr<FMTexceptionhandler> exhandler);
+		FMTobject(const std::shared_ptr<Exception::FMTexceptionhandler> exhandler);
 		FMTobject(const FMTobject& rhs);
 		FMTobject& operator = (const FMTobject& rhs);
 		void passinlogger(const std::shared_ptr<Logging::FMTlogger>& logger);
-		void passinexceptionhandler(const std::shared_ptr<FMTexceptionhandler>& exhandler);
+		void passinexceptionhandler(const std::shared_ptr<Exception::FMTexceptionhandler>& exhandler);
 		void setdefaultlogger();
 		void setdebuglogger();
 		void setdefaultexceptionhandler();

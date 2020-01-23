@@ -60,4 +60,13 @@ namespace Exception
 		return _level;
 	}
 
+	FMTexceptionhandler* FMTdebugexceptionhandler::getCPLdata()
+		{
+		return this;
+		}
+	void FMTdebugexceptionhandler::handelCPLerror(CPLErr eErrClass, CPLErrorNum nError, const char * pszErrorMsg)
+		{
+		FMTexceptionhandler::handelCPLerror(eErrClass, nError, pszErrorMsg);
+		}
+
 }

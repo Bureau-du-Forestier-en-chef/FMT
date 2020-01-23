@@ -58,7 +58,7 @@ void exportHeuristics()
 		"Uses schedule to optimize operating area schedule\n"
 		"\n";
 
-	class_<Heuristics::FMToperatingareaheuristic, bases<Exception::FMTobject>>("FMToperatingareaheuristic", py_FMToperatingareaheuristic_doc)
+	class_<Heuristics::FMToperatingareaheuristic, bases<Core::FMTobject>>("FMToperatingareaheuristic", py_FMToperatingareaheuristic_doc)
 		.def_pickle(FMT_pickle_suite<Heuristics::FMToperatingareaheuristic>())
 		.def("initialsolve", &Heuristics::FMToperatingareaheuristic::initialsolve)
 		.def("branchnboundsolve", &Heuristics::FMToperatingareaheuristic::branchnboundsolve)

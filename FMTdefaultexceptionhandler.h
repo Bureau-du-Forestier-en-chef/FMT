@@ -43,6 +43,8 @@ class FMTdefaultexceptionhandler final : public FMTexceptionhandler
 		~FMTdefaultexceptionhandler() = default;
 		FMTlev raise(FMTexc lexception, FMTwssect lsection, string text,
 			const int& line, const string& file) override;
+		FMTexceptionhandler* getCPLdata() override;
+		void handelCPLerror(CPLErr eErrClass, CPLErrorNum nError, const char * pszErrorMsg) override;
 	};
 }
 

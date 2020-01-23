@@ -28,6 +28,20 @@ namespace Exception
 
 {
 
+	FMTexceptionhandler* FMTdefaultexceptionhandler::getCPLdata()
+		{
+		return this;
+		}
+	void FMTdefaultexceptionhandler::handelCPLerror(CPLErr eErrClass, CPLErrorNum nError, const char * pszErrorMsg)
+		{
+		char buffer[COIN_MESSAGE_HANDLER_MAX_BUFFER_SIZE];
+		if (eErrClass == CE_Failure || eErrClass == CE_Fatal)
+			{
+			snprintf(buffer, sizeof(pszErrorMsg), "%s\n", pszErrorMsg);
+			*_logger << buffer;
+			}
+		}
+
 	FMTdefaultexceptionhandler::FMTdefaultexceptionhandler() :FMTexceptionhandler() {}
 
 	FMTlev FMTdefaultexceptionhandler::raise(FMTexc lexception, FMTwssect lsection, string text,

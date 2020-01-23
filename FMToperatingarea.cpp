@@ -23,6 +23,7 @@ SOFTWARE.
 */
 
 #include "FMToperatingarea.h"
+#include "CoinPackedVector.hpp"
 
 namespace Heuristics
 {
@@ -124,13 +125,13 @@ void FMToperatingarea::schemestoLP(const vector<vector<vector<Graph::FMTvertex_d
 				{
 				if (!localblock.empty())
 					{
-					int period = schemesperiods.at(schemeid).at(blockid);
+					const int period = schemesperiods.at(schemeid).at(blockid);
 					if (periodicsblocksvariables.find(period) == periodicsblocksvariables.end())
 						{
 						periodicsblocksvariables[period] = vector<int>();
 						for (const Graph::FMTvertex_descriptor& descriptor : localblock)
 							{
-								map<int, int>actions = maingraph.getoutvariables(descriptor);
+								const map<int, int>actions = maingraph.getoutvariables(descriptor);
 								if (actions.size() > 1)
 								{
 									for (const int& action : actionIDS)
@@ -214,12 +215,18 @@ void FMToperatingarea::schemestoLP(const vector<vector<vector<Graph::FMTvertex_d
 		//Add all binary cols
 		vector<double>colslower(openingbinaries.size(),0);
 		vector<double>colsupper(openingbinaries.size(),1);
-		vector<double>colsobj(openingbinaries.size(),0);
+		//vector<double>colsobj(openingbinaries.size(),0);
 		vector<int>column_Starts(openingbinaries.size()+1, 0);
 		vector<int>targetrows(openingbinaries.size(), 0);
-		vector<double>nelements(openingbinaries.size(), 0.0);
+		//vector<double>nelements(openingbinaries.size(), 0.0);
+
 		//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "adding up cols "<< openingbinaries.size() << "\n";
-		solverinterface->addCols(int(openingbinaries.size()), &column_Starts[0], &targetrows[0], &nelements[0], &colslower[0], &colsupper[0], &colsobj[0]);
+		solverinterface->addCols(int(openingbinaries.size()), &column_Starts[0], &targetrows[0], &colslower[0], &colslower[0], &colsupper[0], &colslower[0]);
+		//void addCols(const int numcols,
+		
+		
+		
+		
 		//Add all Rows
 		vector<double>rowlowers(rowstarts.size(), numeric_limits<double>::lowest());
 		vector<double>rowuppers(rowstarts.size(), 0);

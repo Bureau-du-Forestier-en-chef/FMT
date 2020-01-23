@@ -68,7 +68,7 @@ void exportException()
 	class_<Exception::FMTdebugexceptionhandler, bases<Exception::FMTexceptionhandler>>("FMTdebugexceptionhandler", py_FMTdebugexceptionhandler)
 		.def("raise", &Exception::FMTdebugexceptionhandler::raise);
 
-    const char* py_FMTobject =
+   /* const char* py_FMTobject =
         " ``FMTobject`` class.\n"
         "\n"
         "Base FMTobjectect able to carry exception\n"
@@ -77,7 +77,7 @@ void exportException()
 		.def("setdefaultexceptionhandler", &Exception::FMTobject::setdefaultexceptionhandler)
 		.def("setquietexceptionhandler", &Exception::FMTobject::setquietexceptionhandler)
 		.def("setdebugexceptionhandler", &Exception::FMTobject::setdebugexceptionhandler)
-		.def("setfreeexceptionhandler", &Exception::FMTobject::setfreeexceptionhandler);
+		.def("setfreeexceptionhandler", &Exception::FMTobject::setfreeexceptionhandler);*/
 
 	enum_<Exception::FMTexc>("FMTexc")
 		.value("WSinvalid_number", Exception::FMTexc::WSinvalid_number)

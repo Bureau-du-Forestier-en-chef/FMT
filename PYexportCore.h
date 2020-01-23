@@ -42,6 +42,18 @@ void exportCore()
     "   :synopsis: Core class for generating Forest Models.\n"
     "\n";
 
+	const char* py_FMTobject =
+		" ``FMTobject`` class.\n"
+		"\n"
+		"Base FMTobjectect able to carry exception and logger\n"
+		"\n";
+	class_<Core::FMTobject>("FMTobject", py_FMTobject)
+		.def("setdefaultexceptionhandler", &Core::FMTobject::setdefaultexceptionhandler)
+		.def("setquietexceptionhandler", &Core::FMTobject::setquietexceptionhandler)
+		.def("setdebugexceptionhandler", &Core::FMTobject::setdebugexceptionhandler)
+		.def("setfreeexceptionhandler", &Core::FMTobject::setfreeexceptionhandler);
+
+
 		define_pylist<Core::FMTmask>();
         define_pylist<Core::FMTdevelopment>();
         define_pylist<Core::FMTfuturdevelopment>();

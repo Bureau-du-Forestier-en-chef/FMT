@@ -51,7 +51,7 @@ void exportModel()
         "\n"
         "Base model class for building general WS model\n"
         "\n";
-    class_<Models::FMTmodel,bases<Exception::FMTobject>>("FMTmodel",py_FMTmodel_doc)
+    class_<Models::FMTmodel,bases<Core::FMTobject>>("FMTmodel",py_FMTmodel_doc)
             .def_readwrite("name",&Models::FMTmodel::name)
 			.def_pickle(FMT_pickle_suite<FMTmodel>())
             .def("getyields",&Models::FMTmodel::getyields)

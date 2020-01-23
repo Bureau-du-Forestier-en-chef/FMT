@@ -857,12 +857,12 @@ FMTareaparser::FMTareaparser() :
 					double fullbuffered = 0;
 					vector<size_t>neighborsid;
 					vector<double>areas;
-					if (!mergedpolygons.at(opareaindex)->IsEmpty() && mergedpolygons.at(opareaindex)->IsValid())
+					if (mergedpolygons.at(opareaindex) && !mergedpolygons.at(opareaindex)->IsEmpty() && mergedpolygons.at(opareaindex)->IsValid())
 						{
 						OGRGeometry* buffered = (mergedpolygons.at(opareaindex)->Buffer(buffersize));
 						for (size_t opareaneighborindex = 0; opareaneighborindex < operatingareas.size(); ++opareaneighborindex)
 							{
-							if (opareaindex != opareaneighborindex && 
+							if (opareaindex != opareaneighborindex&&mergedpolygons.at(opareaneighborindex)&&
 								buffered->Intersects(mergedpolygons.at(opareaneighborindex)))
 								{
 								OGRGeometry* intersect = buffered->Intersection(mergedpolygons.at(opareaneighborindex));
@@ -878,7 +878,7 @@ FMTareaparser::FMTareaparser() :
 						}
 					
 					vector<FMTmask>validneighbors;
-					//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "nsvalidneighbor size " << neighborsid.size() << "\n";
+					//Logging::FMTlogger() << "nsvalidneighbor size " << neighborsid.size() << "\n";
 					for (size_t neighborid = 0 ; neighborid < neighborsid.size(); ++neighborid)
 						{
 						if ((areas.at(neighborid)/fullbuffered) >= operatingareas.at(neighborsid.at(neighborid)).getneihgborsperimeter())
@@ -887,6 +887,7 @@ FMTareaparser::FMTareaparser() :
 							}
 						}
 					neighborhood[operatingareas.at(opareaindex).getmask()] = validneighbors;
+					//Logging::FMTlogger() << "valid size " << validneighbors.size() << "\n";
 					}
 				//reciprocity
 				/////////////
@@ -903,6 +904,7 @@ FMTareaparser::FMTareaparser() :
 								realneighbors.push_back(nmask);
 							}
 						}
+						//Logging::FMTlogger()<<string(oparea.getmask()) << " real size " << realneighbors.size() << "\n";
 						oparea.setneighbors(realneighbors);
 						}
 					}

@@ -979,6 +979,11 @@ vector<vector<string>>FMTparser::readcsv(const string& location,const char& sepa
 	return lines;
 	}
 
+void FMTparser::setCPLhandler()
+	{
+	CPLPushErrorHandlerEx(Exception::FMTCPLErrorHandler, _exhandler->getCPLdata());
+	}
+
 
 istream& FMTparser::safeGetline(istream& is, string& t) const
 	{

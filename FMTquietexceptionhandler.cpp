@@ -50,4 +50,13 @@ namespace Exception
 		return _level;
 	}
 
+	FMTexceptionhandler* FMTquietexceptionhandler::getCPLdata()
+		{
+		return this;
+		}
+	void FMTquietexceptionhandler::handelCPLerror(CPLErr eErrClass, CPLErrorNum nError, const char * pszErrorMsg)
+		{
+
+		}
+
 }
