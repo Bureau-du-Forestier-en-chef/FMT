@@ -72,10 +72,17 @@ namespace Core
 		}
 	}
 
+	void FMTobject::setCPLhandler()
+		{
+		CPLPopErrorHandler();
+		CPLPushErrorHandlerEx(Exception::FMTCPLErrorHandler, _exhandler->getCPLdata());
+		}
+
 	FMTobject::FMTobject() : _exhandler(make_shared<Exception::FMTdefaultexceptionhandler>()), 
 		_logger(make_shared<Logging::FMTdefaultlogger>())
 	{
 		this->checksignals();
+		setCPLhandler();
 		//_exhandler = make_shared<FMTdefaultexceptionhandler>();
 	}
 
@@ -88,12 +95,14 @@ namespace Core
 	FMTobject::FMTobject(const shared_ptr<Exception::FMTexceptionhandler> exhandler) : _exhandler(move(exhandler)), _logger(make_shared<Logging::FMTdefaultlogger>())
 	{
 		_exhandler->passinlogger(_logger);
+		setCPLhandler();
 		this->checksignals();
 
 	}
 	FMTobject::FMTobject(const FMTobject& rhs) : _exhandler(move(rhs._exhandler)), _logger(move(rhs._logger))
 	{
 		_exhandler->passinlogger(_logger);
+		setCPLhandler();
 		this->checksignals();
 	}
 	FMTobject& FMTobject::operator = (const FMTobject& rhs)
@@ -104,6 +113,7 @@ namespace Core
 			_exhandler = rhs._exhandler;
 			_logger = rhs._logger;
 			_exhandler->passinlogger(_logger);
+			setCPLhandler();
 		}
 		return *this;
 	}
@@ -112,6 +122,7 @@ namespace Core
 		this->checksignals();
 		_logger = logger;
 		_exhandler->passinlogger(_logger);
+		setCPLhandler();
 		}
 
 	void FMTobject::passinexceptionhandler(const shared_ptr<Exception::FMTexceptionhandler>& exhandler)
@@ -119,6 +130,7 @@ namespace Core
 		this->checksignals();
 		_exhandler = exhandler;
 		_exhandler->passinlogger(_logger);
+		setCPLhandler();
 		}
 
 	void FMTobject::setdefaultlogger()
@@ -126,6 +138,7 @@ namespace Core
 		this->checksignals();
 		_logger = make_shared<Logging::FMTdefaultlogger>();
 		_exhandler->passinlogger(_logger);
+		setCPLhandler();
 		}
 
 	void FMTobject::setdebuglogger()
@@ -133,6 +146,7 @@ namespace Core
 		this->checksignals();
 		_logger = make_shared<Logging::FMTdebuglogger>();
 		_exhandler->passinlogger(_logger);
+		setCPLhandler();
 		}
 
 	void FMTobject::setdefaultexceptionhandler()
@@ -140,18 +154,21 @@ namespace Core
 		this->checksignals();
 		_exhandler = make_shared<Exception::FMTdefaultexceptionhandler>();
 		_exhandler->passinlogger(_logger);
+		setCPLhandler();
 		}
 	void FMTobject::setquietexceptionhandler()
 	{
 		this->checksignals();
 		_exhandler = make_shared<Exception::FMTquietexceptionhandler>();
 		_exhandler->passinlogger(_logger);
+		setCPLhandler();
 	}
 	void FMTobject::setdebugexceptionhandler()
 	{
 		this->checksignals();
 		_exhandler = make_shared<Exception::FMTdebugexceptionhandler>();
 		_exhandler->passinlogger(_logger);
+		setCPLhandler();
 	}
 
 	void  FMTobject::setfreeexceptionhandler()
@@ -159,6 +176,7 @@ namespace Core
 		this->checksignals();
 		_exhandler = make_shared<Exception::FMTfreeexceptionhandler>();
 		_exhandler->passinlogger(_logger);
+		setCPLhandler();
 	}
 
 }

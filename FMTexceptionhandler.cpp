@@ -82,7 +82,7 @@ FMTexceptionhandler& FMTexceptionhandler::operator = (const FMTexceptionhandler&
 	return *this;
 }
 
-void FMTexceptionhandler::throw_nested(const FMTexception& texception, int level = 0)
+void FMTexceptionhandler::throw_nested(const FMTexception& texception, int level)
 {
 	*_logger << string(level, ' ') << texception.what() << "\n";
 	try {

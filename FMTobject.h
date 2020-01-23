@@ -57,6 +57,7 @@ class FMTobject
 		std::shared_ptr<Logging::FMTlogger> _logger;
 		void checksignals();
 		string getruntimelocation();
+		void setCPLhandler();
 	public:
 		FMTobject();
 		virtual ~FMTobject();

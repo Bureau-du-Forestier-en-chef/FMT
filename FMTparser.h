@@ -80,7 +80,6 @@ class FMTparser: public FMTobject
         queue<string>_forvalues;
 		queue<string>_included;
 	istream& safeGetline(istream& is, string& t) const;
-	void setCPLhandler();
     protected:
         regex rxayld;
         regex rxaage;
