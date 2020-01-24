@@ -308,7 +308,11 @@ namespace Heuristics
 							++constraintsid;
 							}
 						}
-					adjacencyconstraints[simple] = constraintindexes;
+					if (!constraintindexes.empty())
+						{
+						adjacencyconstraints[simple] = constraintindexes;
+						}
+					
 					}
 				}
 			}
@@ -317,8 +321,9 @@ namespace Heuristics
 			{
 			vector<double>rowlbs(rowstarts.size(), 0);
 			vector<double>rowubs(rowstarts.size(), 1);
-			vector<double>elements(rowstarts.size(), 1);
-			solverinterface->addRows(int(rowstarts.size()), &rowstarts[0], &columns[0], &elements[0], &rowlbs[0], &rowubs[0]);
+			vector<double>elements(columns.size(), 1);
+			rowstarts.push_back(static_cast<int>(columns.size()));
+			solverinterface->addRows(int(rowlbs.size()), &rowstarts[0], &columns[0], &elements[0], &rowlbs[0], &rowubs[0]);
 			}
 		}
 

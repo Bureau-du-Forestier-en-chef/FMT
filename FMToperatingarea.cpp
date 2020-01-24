@@ -528,27 +528,31 @@ void FMToperatingarea::setconstraints(const vector<vector<Graph::FMTvertex_descr
 map<int, vector<int>> FMToperatingarea::getcommonbinairies(const FMToperatingarea& neighbor) const
 	{
 	map<int, vector<int>>neighboringscheme;
-	int greenupuse = static_cast<int>(max(greenup,neighbor.greenup));
+	const int greenupuse = static_cast<int>(max(greenup,neighbor.greenup));
 	for (size_t schemeid = 0; schemeid < schemesperiods.size();++schemeid)
 		{
-		int scheme_binary = openingbinaries.at(schemeid);
+		const int scheme_binary = openingbinaries.at(schemeid);
 		vector<int>neighborsbinaries;
 		for (const int& period : schemesperiods.at(schemeid))
 			{
-			int upper = (period + greenupuse);
-			int lower = (period - greenupuse);
+			const int upper = (period + greenupuse);
+			const int lower = (period - greenupuse);
 			for (size_t schemeneighborsid = 0; schemeneighborsid < neighbor.schemesperiods.size(); ++schemeneighborsid)
 				{
-				int scheme_neighbors_binary = neighbor.openingbinaries.at(schemeneighborsid);
-				for (const int& neighborperiod : neighbor.schemesperiods.at(schemeneighborsid))
+				const int scheme_neighbors_binary = neighbor.openingbinaries.at(schemeneighborsid);
+				if (std::find(neighborsbinaries.begin(), neighborsbinaries.end(), scheme_neighbors_binary)== neighborsbinaries.end())
 					{
-					if (neighborperiod >= lower && neighborperiod <= upper)
+					for (const int& neighborperiod : neighbor.schemesperiods.at(schemeneighborsid))
 						{
-						neighborsbinaries.push_back(scheme_neighbors_binary);
-						break;
+						if (neighborperiod >= lower && neighborperiod <= upper)
+						{
+							neighborsbinaries.push_back(scheme_neighbors_binary);
+							break;
 						}
 
+						}
 					}
+				
 				}
 			}
 		neighboringscheme[scheme_binary] = neighborsbinaries;
