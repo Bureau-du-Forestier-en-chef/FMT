@@ -255,7 +255,7 @@ namespace Core{
 
 	bool FMTdevelopment::is(const FMTspec& specification, const FMTyields& ylds) const
 		{
-		if (specification.empty())
+		/*if (specification.empty())
 			{
 			return true;
 		}else{
@@ -276,9 +276,22 @@ namespace Core{
 				{
 				return true;
 				}
-			
 			}
-		return false;
+		return false;*/
+		if (specification.emptyylds())
+			{
+			return specification.allowwithoutyield(period, age, lock);
+			}
+		const map<string, double> yields = ylds.getylds(*this, specification);
+		for (const string& yield : specification.getylds())
+			{
+				if (yields.find(yield) == yields.end())
+					{
+						_exhandler->raise(FMTexc::FMTmissingyield,
+							FMTwssect::Empty, yield + " for development type " + string(*this), __LINE__, __FILE__);
+					}
+			}
+		return (specification.allow(period, age, lock, yields));
 		}
 	/*bool FMTdevelopment::within(const FMToutputsource& output_source, const FMTyields& ylds) const
 		{

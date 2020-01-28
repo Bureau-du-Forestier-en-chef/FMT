@@ -102,14 +102,7 @@ class FMToutputsource : public FMTspec
 			const vector<FMTdevelopmentpath>& paths) const;
 		inline bool use(const FMTdevelopment& development, const FMTyields& ylds) const
 			{
-			if (mask)
-				{
-					if (development.mask.data.is_subset_of(mask.data) && development.is(*this, ylds))
-					{
-						return true;
-					}
-				}
-			return false;
+			return (mask && development.mask.data.is_subset_of(mask.data) && development.is(*this, ylds));
 			}
 		void setaverage();
 		bool isaverage() const;

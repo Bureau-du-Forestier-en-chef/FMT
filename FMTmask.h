@@ -148,22 +148,15 @@ class FMTmask
     };
 
 }
-
-namespace boost {
-    template <typename Block, typename Alloc>
-    std::size_t hash_value(const boost::dynamic_bitset<Block, Alloc>& bs)
-        {
-		/*size_t seed = 0;
-		for (size_t i = 0; i < bs.size(); i++)
+#if (BOOST_VERSION / 100 % 1000) < 71
+	namespace boost {
+		template <typename Block, typename Alloc>
+		std::size_t hash_value(const boost::dynamic_bitset<Block, Alloc>& bs)
 			{
-			boost::hash_combine(seed, bs[i]);
+			return boost::hash_value(bs.m_bits);
 			}
-		return seed;	
-		*/
-		return boost::hash_value(bs.m_bits);
-        }
-}
-
+	}
+#endif
 namespace boost {
 
   template <>

@@ -29,6 +29,7 @@ SOFTWARE.
 #include "OsiMskSolverInterface.hpp"
 #include "OsiClpSolverInterface.hpp"
 #include "mosek.h"
+#include "FMTmatrixbuild.h"
 
 namespace Heuristics
 {
@@ -227,6 +228,7 @@ namespace Heuristics
 			}
 		}
 
+
 	void FMToperatingareaheuristic::setoperatingareasconstraints(const Graph::FMTgraph& maingraph,
 																const Models::FMTmodel& model,
 																const Core::FMToutputnode& target)
@@ -247,6 +249,10 @@ namespace Heuristics
 			{
 			actionids.push_back(std::distance(&modelactions[0], actptr));
 			}
+		const double* primalsolution = solverinterface->getColSolution();
+		Models::FMTmatrixbuild matrixbuild;
+		matrixbuild.setlastcolindex(solverinterface->getNumCols()-1);
+		matrixbuild.setlastrowindex(solverinterface->getNumRows()-1);
 		for (std::vector<FMToperatingarea>::iterator operatingareait = operatingareas.begin();
 			operatingareait != operatingareas.end(); ++operatingareait)
 			{
@@ -269,15 +275,21 @@ namespace Heuristics
 				}
 			if (!descriptors.empty())
 				{
-				operatingareait->setconstraints(descriptors,totalareadescriptors,maingraph, solverinterface, actionids);
+				operatingareait->setconstraints(descriptors, totalareadescriptors, maingraph,matrixbuild,primalsolution,actionids);
+				//operatingareait->setconstraints(descriptors,totalareadescriptors,maingraph, solverinterface, actionids);
+
 				}
 			}
+		matrixbuild.synchronize(solverinterface);
 		}
 
 	void FMToperatingareaheuristic::setadjacencyconstraints()
 		{
-		vector<int>columns;
-		vector<int>rowstarts;
+		//vector<int>columns;
+		//vector<int>rowstarts;
+		Models::FMTmatrixbuild matrixbuild;
+		const vector<double>elements(2, 1.0);
+		vector<int>columns(2, 0);
 		int constraintsid = solverinterface->getNumRows();
 		for (std::vector<FMToperatingarea>::const_iterator operatingareait = operatingareas.begin();
 			operatingareait != operatingareas.end(); ++operatingareait)
@@ -301,11 +313,14 @@ namespace Heuristics
 						{
 						for (const int& index : binit->second)
 							{
-							rowstarts.push_back(columns.size());
+							/*rowstarts.push_back(columns.size());
 							columns.push_back(binit->first);
-							columns.push_back(index);
+							columns.push_back(index);*/
 							constraintindexes.push_back(constraintsid);
 							++constraintsid;
+							columns[0] = binit->first;
+							columns[1] = index;
+							matrixbuild.addRow(2, &columns[0], &elements[0], 0, 1);
 							}
 						}
 					if (!constraintindexes.empty())
@@ -316,15 +331,15 @@ namespace Heuristics
 					}
 				}
 			}
-
-		if (!rowstarts.empty())
+		matrixbuild.synchronize(solverinterface);
+		/*if (!rowstarts.empty())
 			{
 			vector<double>rowlbs(rowstarts.size(), 0);
 			vector<double>rowubs(rowstarts.size(), 1);
 			vector<double>elements(columns.size(), 1);
 			rowstarts.push_back(static_cast<int>(columns.size()));
 			solverinterface->addRows(int(rowlbs.size()), &rowstarts[0], &columns[0], &elements[0], &rowlbs[0], &rowubs[0]);
-			}
+			}*/
 		}
 
 	FMToperatingareaheuristic::FMToperatingareaheuristic(const FMToperatingareaheuristic& rhs) :

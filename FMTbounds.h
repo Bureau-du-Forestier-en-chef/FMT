@@ -371,11 +371,17 @@ public:
     bool addbounds(FMTagebounds bound);
     bool addbounds(FMTyldbounds bound);
     bool addbounds(FMTlockbounds bound);
+	inline bool allowwithoutyield(const int& tperiod, const int& tage, const int& tlock) const
+		{
+		return ((per.empty() || (tperiod <= per.upper && tperiod >= per.lower)) &&
+			(age.empty() || (tage <= age.upper && tage >= age.lower)) &&
+			(lock.empty() || (tlock >= lock.lower)));
+		}
 	inline bool allow(const int& tperiod, const int& tage, const int& tlock, const map<string, double>& names) const
 		{
-		bool yldbounds = true;
-		if (!ylds.empty())
-		{
+		//bool yldbounds = true;
+		//if (!ylds.empty())
+		//{
 			for (map<string, FMTyldbounds>::const_iterator it = ylds.begin(); it != ylds.end(); ++it)
 			{
 				const FMTyldbounds* bnds = &it->second;
@@ -384,10 +390,8 @@ public:
 					return false;
 				}
 			}
-		}
-		return ((per.empty() || (tperiod <= per.upper && tperiod >= per.lower)) &&
-			(age.empty() || (tage <= age.upper && tage >= age.lower)) &&
-			(lock.empty() || (tlock >= lock.lower)) && (yldbounds));
+		//}
+		return (allowwithoutyield(tperiod,tage,tlock));
 		}
     map<string,FMTyldbounds>getyldsbounds() const;
     vector<string>getylds() const;

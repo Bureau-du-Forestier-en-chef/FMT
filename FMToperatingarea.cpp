@@ -24,6 +24,7 @@ SOFTWARE.
 
 #include "FMToperatingarea.h"
 #include "CoinPackedVector.hpp"
+#include "FMTmatrixbuild.h"
 
 namespace Heuristics
 {
@@ -260,6 +261,123 @@ void FMToperatingarea::schemestoLP(const vector<vector<vector<Graph::FMTvertex_d
 		//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "IS IT OPTIMAL??? " << solverinterface->isProvenOptimal() << "\n";
 		}
 	}
+
+	void FMToperatingarea::schemestoLP(const vector<vector<vector<Graph::FMTvertex_descriptor>>>& schemes,
+		const vector<vector<Graph::FMTvertex_descriptor>>& periodics,
+		const vector<Graph::FMTvertex_descriptor>& totalareaverticies,
+		Models::FMTmatrixbuild& matrixbuild,
+		const double* primalsolution,
+		const Graph::FMTgraph& maingraph, const vector<int>& actionIDS)
+	{
+		int binaryid = matrixbuild.getlastcolindex()+1;	
+		_area = 0;
+		vector<vector<Graph::FMTvertex_descriptor>>::const_iterator perit = periodics.begin();
+		if (!totalareaverticies.empty())
+		{
+			_area = this->getarea(primalsolution, maingraph, totalareaverticies);
+		}
+		map<int, vector<int>>periodicsblocksvariables;
+		vector<size_t>selectedschemes;
+		size_t schemeid = 0;
+		for (const vector<vector<Graph::FMTvertex_descriptor>>& scheme : schemes)
+		{
+			bool shemehasactions = false;
+			size_t blockid = 0;
+			for (const vector<Graph::FMTvertex_descriptor>& localblock : scheme)
+			{
+				if (!localblock.empty())
+				{
+					const int period = schemesperiods.at(schemeid).at(blockid);
+					if (periodicsblocksvariables.find(period) == periodicsblocksvariables.end())
+					{
+						periodicsblocksvariables[period] = vector<int>();
+						for (const Graph::FMTvertex_descriptor& descriptor : localblock)
+						{
+							const map<int, int>actions = maingraph.getoutvariables(descriptor);
+							if (actions.size() > 1)
+							{
+								for (const int& action : actionIDS)
+								{
+									map<int, int>::const_iterator actit = actions.find(action);
+									if (actit != actions.end())
+									{
+										periodicsblocksvariables[period].push_back(actit->second);
+										shemehasactions = true;
+									}
+								}
+							}
+						}
+					}
+				}
+				++blockid;
+			}
+			if (shemehasactions)
+			{
+				openingbinaries.push_back(binaryid);
+				selectedschemes.push_back(schemeid);
+				++binaryid;
+			}
+			++schemeid;
+			//}
+		}
+		int constraintid = matrixbuild.getlastrowindex()+1;
+		map<int, vector<int>>constraintsmap;
+		for (map<int, vector<int>>::const_iterator periodics = periodicsblocksvariables.begin();
+			periodics != periodicsblocksvariables.end(); ++periodics)
+		{
+			if (!periodics->second.empty())
+			{
+				vector<int>targetedvariables(periodics->second.begin(), periodics->second.end());
+				vector<double>elements(periodics->second.size(), 1.0);
+				size_t validscheme = 0;
+				for (const size_t& shemeidselected : selectedschemes)
+					{
+						if (!schemesperiods.at(shemeidselected).empty() &&
+							std::find(schemesperiods.at(shemeidselected).begin(), schemesperiods.at(shemeidselected).end(), periodics->first) != schemesperiods.at(shemeidselected).end())
+						{
+							targetedvariables.push_back(openingbinaries.at(validscheme));
+							elements.push_back(-_area);
+							if (constraintsmap.find(shemeidselected) == constraintsmap.end())
+							{
+								constraintsmap[shemeidselected] = vector<int>();
+							}
+							constraintsmap[shemeidselected].push_back(constraintid);
+						}
+						++validscheme;
+					}
+				if (targetedvariables.size() > periodics->second.size())
+					{
+					matrixbuild.addRow(static_cast<int>(targetedvariables.size()), &targetedvariables[0], &elements[0], numeric_limits<double>::lowest(), 0);
+					}
+				++constraintid;
+			}
+		}
+		openingconstraints.resize(openingbinaries.size());
+		if (!constraintsmap.empty())
+			{
+			size_t tid = 0;
+			for (const size_t& shemeidselected : selectedschemes)
+				{
+				if (constraintsmap.find(shemeidselected) != constraintsmap.end())
+					{
+					openingconstraints[tid] = constraintsmap.at(shemeidselected);
+					}
+				++tid;
+				}
+			for (const int& opbin : openingbinaries)
+				{
+				matrixbuild.addCol(0, nullptr, nullptr, 0, 1);
+				}
+			matrixbuild.setlastcolindex(openingbinaries.back());
+			maximalschemesconstraint = constraintid;
+			vector<double>maxelements(openingbinaries.size(), 1.0);
+			matrixbuild.addRow(static_cast<int>(openingbinaries.size()), &openingbinaries[0], &maxelements[0], numeric_limits<double>::lowest(), 1);
+			matrixbuild.setlastrowindex(maximalschemesconstraint);
+			}
+
+	}
+
+
 
 
 void FMToperatingarea::getressourcestodelete(vector<int>& colstodelete, vector<int>& rowstodelete) const
@@ -516,12 +634,19 @@ void FMToperatingarea::setconstraints(const vector<vector<Graph::FMTvertex_descr
 	const vector<int>& actionIDS)
 	{
 	vector<vector<vector<Graph::FMTvertex_descriptor>>> schemes = this->generateschemes(verticies);
-	//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "got schemes verticies size: " << schemes.size() << "\n";
-	//cin.get();
 	schemesperiods = schemestoperiods(schemes, graph);
-	//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "got schemes " << schemesperiods.size() << "\n";
 	schemestoLP(schemes, verticies, totalareaverticies, solverinterface, graph, actionIDS);
-	//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "to lp done schemes " << "\n";
+	}
+
+void FMToperatingarea::setconstraints(const vector<vector<Graph::FMTvertex_descriptor>>& verticies,
+	const vector<Graph::FMTvertex_descriptor>& totalareaverticies,
+	const Graph::FMTgraph& graph, Models::FMTmatrixbuild& matrixbuild,
+	const double* primalsolution,
+	const vector<int>& actionIDS)
+	{
+	vector<vector<vector<Graph::FMTvertex_descriptor>>> schemes = this->generateschemes(verticies);
+	schemesperiods = schemestoperiods(schemes, graph);
+	schemestoLP(schemes, verticies, totalareaverticies, matrixbuild, primalsolution, graph, actionIDS);
 	}
 
 

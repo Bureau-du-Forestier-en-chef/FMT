@@ -33,6 +33,7 @@ SOFTWARE.
 #include <memory>
 #include <boost/serialization/serialization.hpp>
 #include <boost/serialization/nvp.hpp>
+#include "FMTmatrixbuild.h"
 
 namespace Heuristics
 	{
@@ -72,6 +73,12 @@ namespace Heuristics
 						const vector<Graph::FMTvertex_descriptor>& totalareaverticies,
 						std::shared_ptr<OsiSolverInterface> solverinterface,
 						const Graph::FMTgraph& maingraph,const vector<int>& actionIDS); //Fill opening constraints and opening binairies in the LP and in the OParea
+		void schemestoLP(const vector<vector<vector<Graph::FMTvertex_descriptor>>>& schemes,
+			const vector<vector<Graph::FMTvertex_descriptor>>& periodics,
+			const vector<Graph::FMTvertex_descriptor>& totalareaverticies,
+			Models::FMTmatrixbuild& matrixbuild,
+			const double* primalsolution,
+			const Graph::FMTgraph& maingraph, const vector<int>& actionIDS); //Fill opening constraints and opening binairies in the LP and in the OParea
 		vector<vector<int>> schemestoperiods(const vector<vector<vector<Graph::FMTvertex_descriptor>>>& schemes, const Graph::FMTgraph& maingraph) const;
 		double getrowsactivitysum(const vector<int>& rows, const double* dualsolution) const;
 		std::vector<double>fillpattern(const std::vector<double>& pattern, const int& startat) const;
@@ -106,6 +113,11 @@ namespace Heuristics
 			void setconstraints(const vector<vector<Graph::FMTvertex_descriptor>>& verticies,
 				const vector<Graph::FMTvertex_descriptor>& totalareaverticies,
 				const Graph::FMTgraph& graph,std::shared_ptr<OsiSolverInterface> solverinterface,
+				const vector<int>& actionIDS);
+			void setconstraints(const vector<vector<Graph::FMTvertex_descriptor>>& verticies,
+				const vector<Graph::FMTvertex_descriptor>& totalareaverticies,
+				const Graph::FMTgraph& graph,Models::FMTmatrixbuild& matrixbuild,
+				const double* primalsolution,
 				const vector<int>& actionIDS);
 			FMToperatingarea(const FMTmask& lmask,const size_t& lopeningtime, const size_t& lreturntime,
 				const size_t& lrepetition, const size_t& lgreenup,const size_t& lstartingperiod,
