@@ -27,14 +27,16 @@ SOFTWARE.
 namespace Exception
 {
 
-FMTexceptionhandler* FMTfreeexceptionhandler::getCPLdata()
-	{
-	return this;
-	}
-void FMTfreeexceptionhandler::handelCPLerror(CPLErr eErrClass, CPLErrorNum nError, const char * pszErrorMsg)
-	{
+#ifdef FMTWITHGDAL
+	FMTexceptionhandler* FMTfreeexceptionhandler::getCPLdata()
+		{
+		return this;
+		}
+	void FMTfreeexceptionhandler::handelCPLerror(CPLErr eErrClass, CPLErrorNum nError, const char * pszErrorMsg)
+		{
 
-	}
+		}
+#endif
 
 FMTfreeexceptionhandler::FMTfreeexceptionhandler()
 {
@@ -42,8 +44,8 @@ FMTfreeexceptionhandler::FMTfreeexceptionhandler()
 }
 
 
-FMTlev FMTfreeexceptionhandler::raise(FMTexc lexception, FMTwssect lsection, string text,
-	const int& line, const string& file)
+FMTlev FMTfreeexceptionhandler::raise(FMTexc lexception, FMTwssect lsection, std::string text,
+	const int& line, const std::string& file)
 {
 	FMTexception excp;
 	if (lsection == FMTwssect::Empty)
@@ -56,7 +58,7 @@ FMTlev FMTfreeexceptionhandler::raise(FMTexc lexception, FMTwssect lsection, str
 	excp.sethold(true);
 	if (_level == FMTlev::FMT_Warning)
 	{
-		//FMTwarning(excp).warn();
+		
 	}
 	else if (_level == FMTlev::FMT_logic || _level == FMTlev::FMT_range) {
 		throw FMTerror(excp);

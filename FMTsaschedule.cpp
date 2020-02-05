@@ -28,7 +28,6 @@ SOFTWARE.
 #include <string>
 #include <vector>
 
-using namespace std;
 
 namespace Spatial
 {
@@ -47,14 +46,14 @@ namespace Spatial
         return 0.0;
     }
 
-    string FMTsaschedule::get_schedule_type()const
+	std::string FMTsaschedule::get_schedule_type()const
     {
         return schedule_type;
     }
 
-    unique_ptr<FMTsaschedule> FMTsaschedule::Clone()const
+	std::unique_ptr<FMTsaschedule> FMTsaschedule::Clone()const
     {
-        return unique_ptr<FMTsaschedule>(new FMTsaschedule(*this));
+        return std::unique_ptr<FMTsaschedule>(new FMTsaschedule(*this));
     }
 
 
@@ -71,14 +70,14 @@ namespace Spatial
         return temp*alpha;
     }
 
-    string FMTexponentialschedule::get_schedule_type()const
+	std::string FMTexponentialschedule::get_schedule_type()const
     {
         return schedule_type;
     }
 
-    unique_ptr<FMTsaschedule> FMTexponentialschedule::Clone()const
+	std::unique_ptr<FMTsaschedule> FMTexponentialschedule::Clone()const
     {
-        return unique_ptr<FMTsaschedule>(new FMTexponentialschedule(*this));
+        return std::unique_ptr<FMTsaschedule>(new FMTexponentialschedule(*this));
     }
 
 }

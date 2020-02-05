@@ -32,13 +32,13 @@ FMTconstants::FMTconstants(const FMTconstants& rhs) : data(rhs.data)
     {
 
     }
-void FMTconstants::set(string key,vector<string>values)
+void FMTconstants::set(std::string key, std::vector<std::string>values)
     {
     data[key] = values;
     }
-bool FMTconstants::isconstant(string value) const
+bool FMTconstants::isconstant(std::string value) const
     {
-    if (value.find("#")!=string::npos)
+    if (value.find("#")!= std::string::npos)
         {
         value.erase(0,1);
         if (data.find(value)!=data.end())
@@ -56,9 +56,9 @@ FMTconstants& FMTconstants::operator = (const FMTconstants& rhs)
         }
     return *this;
     }
-FMTconstants::operator string() const
+FMTconstants::operator std::string() const
     {
-    string line;
+	std::string line;
     for (auto it : data)
         {
         line+=it.first+" ";
@@ -70,29 +70,29 @@ FMTconstants::operator string() const
         }
     return line;
     }
-string FMTconstants::getstr(string key,int period) const
+std::string FMTconstants::getstr(std::string key,int period) const
     {
 
-    if (key.find("#")!=string::npos)
+    if (key.find("#")!= std::string::npos)
             {
             key.erase(0,1);
             }
-        boost::unordered_map<string,vector<string>>::const_iterator it = data.find(key);
+        boost::unordered_map<std::string, std::vector<std::string>>::const_iterator it = data.find(key);
         if (it==data.end())
             {
 
             }
-        vector<string> const* location = &it->second;
-        if (period >= int(location->size()))
+		std::vector<std::string> const* location = &it->second;
+        if (period >= static_cast<int>(location->size()))
             {
-            period = int(location->size()) -1;
+            period = static_cast<int>(location->size()) -1;
             }
     return location->at(period);
     }
 
-size_t FMTconstants::length(string value) const
+size_t FMTconstants::length(std::string value) const
     {
-    if (value.find("#")!=string::npos)
+    if (value.find("#")!= std::string::npos)
         {
         value.erase(0,1);
         if (data.find(value)!=data.end())

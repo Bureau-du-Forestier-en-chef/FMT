@@ -28,20 +28,15 @@ namespace WSParser
 {
 
 	FMToptimizationparser::FMToptimizationparser() : FMTparser(),
-		rxsections(regex("^(\\*)([^\\s^\\t]*)", regex_constants::ECMAScript | regex_constants::icase)),
-		rxobjectives(regex("^(_MAXMIN|_MINMAX|_MAX|_MIN|_GOAL)([\\s\\t]*)(.+)([\\s\\t])((([\\d]*|#.+)(\\.\\.)(#.+|_LENGTH|[\\d]*))|(#.+|[\\d]*))", regex_constants::ECMAScript | regex_constants::icase)),
-		rxexclude(regex("^(\\*EXCLUDE)([\\s\\t]*)([^\\s^\\t]*)([\\s\\t]*)((([\\d]*|#.+)(\\.\\.)(#.+|_LENGTH|[\\d]*))|(#.+|[\\d]*))", regex_constants::ECMAScript | regex_constants::icase)),
-		//rxconstraints("^(_EVEN|_NDY|_SEQ)([\\s\\t]*)(\\()((([^\\)^,]*)(,)([\\d]*%|[\\d]*)(,)([\\d]*%|[\\d]*))|(([^\\)^,]*)(,)([\\d]*%|[\\d]*))|([^\\)^,]*))(\\)*)([\\s\\t]*)((([\\d]*|#.+)(\\.\\.)(#.+|_LENGTH|[\\d]*))|(#.+|[\\d]*))", regex_constants::ECMAScript | regex_constants::icase),
-		//rxconstraints("^(_EVEN|_NDY|_SEQ)([\\s\\t]*)(\\()((([^,]*)(,)([\\d]*%|[\\d]*)(,)([\\d]*%|[\\d]*))|(([^,]*)(,)([\\d]*%|[\\d]*))|([^\\)^,]*))(\\)*)([\\s\\t]*)((([\\d]*|#.+)(\\.\\.)(#.+|_LENGTH|[\\d]*))|(#.+|[\\d]*))", regex_constants::ECMAScript | regex_constants::icase),
-		rxconstraints("^(_EVEN|_NDY|_SEQ)([\\s\\t]*)(\\()((([^,]*)(,)([\\d\\.]*%|[\\d\\.]*)(,)([\\d\\.]*%|[\\d\\.]*))|(([^,]*)(,)([\\d\\.]*%|[\\d\\.]*))|([^\\)^,]*))(\\)*)([\\s\\t]*)((([\\d]*|#.+)(\\.\\.)(#.+|_LENGTH|[\\d]*))|(#.+|[\\d]*))", regex_constants::ECMAScript | regex_constants::icase),
-		//rxconstraints("^(_EVEN|_NDY|_SEQ)([\\s\\t]*)(\\()((([^\\s^\\t^,]*)(,)([\\d]*%|[\\d]*)(,)([\\d]*%|[\\d]*))|(([^\\s^\\t^,]*)(,)([\\d]*%|[\\d]*))|([^\\s^\\t^,]*))(\\))([\\s\\t]*)((([\\d]*|#.+)(\\.\\.)(#.+|_LENGTH|[\\d]*))|(#.+|[\\d]*))", regex_constants::ECMAScript | regex_constants::icase),
-		rxequations(regex("^(((.+)((<=)|(>=))(.+))|((.+)(=)(.+)))([\\s\\t])((([\\d]*|#.+)(\\.\\.)(#.+|_LENGTH|[\\d]*))|(#.+|[\\d]*))", regex_constants::ECMAScript | regex_constants::icase)),
-		rxgoal(regex("^(.+)(_GOAL)(\\()([^,]*)(,)([^\\)]*)(\\))", regex_constants::ECMAScript | regex_constants::icase)),
-		//rxoutput("^([^\\(\\[]*)|(\\()([^)]*)(\\))|(\\[)((#.+|[\\d]*))(\\])", regex_constants::ECMAScript | regex_constants::icase),
-		rxoutput("^(.+)(\\()([^)]*)(\\))(\\[)(#.+|[-\\d]*)(\\])|(.+)(\\()([^)]*)(\\))|(.+)(\\[)(#.+|[-\\d]*)(\\])|(.+)", regex_constants::ECMAScript | regex_constants::icase),
-		//rxoutput("^(\\b_SUM\\(\\b)|(.+)(\\()([^)]*)(\\))(\\[)(#.+|[-\\d]*)(\\])|(.+)(\\()([^)]*)(\\))|(.+)(\\[)(#.+|[-\\d]*)(\\])|(.+)(\\))|(.+)", regex_constants::ECMAScript | regex_constants::icase),
-		rxpenalty("^(_PENALTY)(\\()([^\\)]*)(\\))", regex_constants::ECMAScript | regex_constants::icase),
-		rxspecialoutput("^(_AVG|_SUM)(\\()(([^,]*)(,)(([^,]*)(([\\d]*|#.+)(\\.\\.)(#.+|_LENGTH|[\\d]*))|(#.+|[\\d]*))|(.+))(\\))", regex_constants::ECMAScript | regex_constants::icase),
+		rxsections("^(\\*)([^\\s^\\t]*)", std::regex_constants::ECMAScript | std::regex_constants::icase),
+		rxobjectives("^(_MAXMIN|_MINMAX|_MAX|_MIN|_GOAL)([\\s\\t]*)(.+)([\\s\\t])((([\\d]*|#.+)(\\.\\.)(#.+|_LENGTH|[\\d]*))|(#.+|[\\d]*))", std::regex_constants::ECMAScript | std::regex_constants::icase),
+		rxexclude("^(\\*EXCLUDE)([\\s\\t]*)([^\\s^\\t]*)([\\s\\t]*)((([\\d]*|#.+)(\\.\\.)(#.+|_LENGTH|[\\d]*))|(#.+|[\\d]*))", std::regex_constants::ECMAScript | std::regex_constants::icase),
+		rxconstraints("^(_EVEN|_NDY|_SEQ)([\\s\\t]*)(\\()((([^,]*)(,)([\\d\\.]*%|[\\d\\.]*)(,)([\\d\\.]*%|[\\d\\.]*))|(([^,]*)(,)([\\d\\.]*%|[\\d\\.]*))|([^\\)^,]*))(\\)*)([\\s\\t]*)((([\\d]*|#.+)(\\.\\.)(#.+|_LENGTH|[\\d]*))|(#.+|[\\d]*))", std::regex_constants::ECMAScript | std::regex_constants::icase),
+		rxequations("^(((.+)((<=)|(>=))(.+))|((.+)(=)(.+)))([\\s\\t])((([\\d]*|#.+)(\\.\\.)(#.+|_LENGTH|[\\d]*))|(#.+|[\\d]*))", std::regex_constants::ECMAScript | std::regex_constants::icase),
+		rxgoal("^(.+)(_GOAL)(\\()([^,]*)(,)([^\\)]*)(\\))", std::regex_constants::ECMAScript | std::regex_constants::icase),
+		rxoutput("^(.+)(\\()([^)]*)(\\))(\\[)(#.+|[-\\d]*)(\\])|(.+)(\\()([^)]*)(\\))|(.+)(\\[)(#.+|[-\\d]*)(\\])|(.+)", std::regex_constants::ECMAScript | std::regex_constants::icase),
+		rxpenalty("^(_PENALTY)(\\()([^\\)]*)(\\))", std::regex_constants::ECMAScript | std::regex_constants::icase),
+		rxspecialoutput("^(_AVG|_SUM)(\\()(([^,]*)(,)(([^,]*)(([\\d]*|#.+)(\\.\\.)(#.+|_LENGTH|[\\d]*))|(#.+|[\\d]*))|(.+))(\\))", std::regex_constants::ECMAScript | std::regex_constants::icase),
 		ineach()
 		{
 
@@ -80,42 +75,41 @@ namespace WSParser
 			}
 		return *this;
 		}
-	bool FMToptimizationparser::setgoal(FMTconstraint& constraint, const string& line, const FMTconstants& constants)
+	bool FMToptimizationparser::setgoal(Core::FMTconstraint& constraint, const std::string& line, const Core::FMTconstants& constants)
 		{
-		smatch kmatch;
-		if (regex_search(line, kmatch, rxgoal))
+		std::smatch kmatch;
+		if (std::regex_search(line, kmatch, rxgoal))
 			{
-			string target = "GOAL_"+string(kmatch[4]);
-			string value = kmatch[6];
-			double goal_var = getnum<double>(value, constants);
-			constraint.addbounds(FMTyldbounds(FMTwssect::Optimize, target, goal_var, goal_var));
+			const std::string target = "GOAL_"+ std::string(kmatch[4]);
+			const std::string value = kmatch[6];
+			const double goal_var = getnum<double>(value, constants);
+			constraint.addbounds(Core::FMTyldbounds(FMTwssect::Optimize, target, goal_var, goal_var));
 			return true;
 			}
 		return false;
 		}
 
-	void FMToptimizationparser::setperiods(FMTconstraint& constraint, const string& lower, const string& upper, const FMTconstants& constants)
+	void FMToptimizationparser::setperiods(Core::FMTconstraint& constraint, const std::string& lower, const std::string& upper, const Core::FMTconstants& constants)
 		{
-		int startperiod = getnum<int>(lower, constants);
+		const int startperiod = getnum<int>(lower, constants);
 		int stopperiod = startperiod;
 		if (!upper.empty() && upper != "_LENGTH")
 		{
 			stopperiod = getnum<int>(upper, constants);
 		}else if (upper == "_LENGTH")
 			{
-			stopperiod = numeric_limits<int>::max();
+			stopperiod = std::numeric_limits<int>::max();
 			}
-		constraint.setbounds(FMTperbounds(FMTwssect::Optimize, stopperiod, startperiod));
+		constraint.setlength(startperiod, stopperiod);
 		}
 
-    map<string,double>FMToptimizationparser::getequation(const string& line, const FMTconstants& constants,
-                                                         const vector<FMToutput>& outputs,size_t lhssize)
+	std::map<std::string,double>FMToptimizationparser::getequation(const std::string& line, const Core::FMTconstants& constants,
+                                                         const std::vector<Core::FMToutput>& outputs,size_t lhssize)
         {
-        vector<string>simplificaiton;
+		std::vector<std::string>simplificaiton;
         size_t eq_location = 0;
-        string simple_value;
-        vector<FMToutput>::const_iterator constant_output;
-        //Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "getting equation " << line << "\n";
+		std::string simple_value;
+		std::vector<Core::FMToutput>::const_iterator constant_output;
 		bool lastcharspace = false;
         for(char strvalue : line)
             {
@@ -136,16 +130,8 @@ namespace WSParser
                         boost::trim(simple_value);
                         if (isnum(simple_value) || constants.isconstant(simple_value))
                             {
-                            simple_value = to_string(getnum<double>(simple_value, constants));
-                            }/*else {
-                            //Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "getting " << simple_value << "\n";
-                            constant_output = find_if(outputs.begin(), outputs.end(), FMToutputcomparator(simple_value));
-                            if (constant_output != outputs.end() && constant_output->isconstant())
-                                {
-                                //Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "is constant " << "\n";
-                                simple_value = to_string(constant_output->getconstantvalue());
-                                }
-                            }*/
+                            simple_value = std::to_string(getnum<double>(simple_value, constants));
+                            }
 						if (!simple_value.empty())
 							{
 							simplificaiton.push_back(simple_value);
@@ -155,7 +141,7 @@ namespace WSParser
                             {
                             simplificaiton.pop_back();
                             }
-						string pushedval = string(1, strvalue);
+						std::string pushedval = std::string(1, strvalue);
 						boost::trim(pushedval);
 						if (!pushedval.empty())
 							{
@@ -178,85 +164,63 @@ namespace WSParser
             if (isnum(simple_value) || constants.isconstant(simple_value))
                 {
 				
-                simple_value = to_string(getnum<double>(simple_value, constants));
-                }/*else {
-                   // Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "getting " << simple_value << "\n";
-                    constant_output = find_if(outputs.begin(), outputs.end(), FMToutputcomparator(simple_value));
-                    if (constant_output != outputs.end() && constant_output->isconstant())
-                        {
-                        // Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "is constant " << "\n";
-                        simple_value = to_string(constant_output->getconstantvalue());
-                        }
-                    }*/
+                simple_value = std::to_string(getnum<double>(simple_value, constants));
+                }
 		if (!simple_value.empty())
 			{
 			simplificaiton.push_back(simple_value);
 			}
         
-        map<string,double>nodes;
-		/*for (const string& val : simplificaiton)
-			{
-			Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) <<"|"<< val<<"|"<< "\n";
-			}*/
-        FMTexpression simplification = FMTexpression(simplificaiton).simplify(nodes);
+		std::map<std::string,double>nodes;
+        const Core::FMTexpression simplification = Core::FMTexpression(simplificaiton).simplify(nodes);
         return nodes;
         }
 
-    FMToutput FMToptimizationparser::resume_output(const map<string,double>& nodes,
-                                                   const vector<FMToutput>& outputs,
-                                                   const vector<FMTtheme>& themes,
-                                                   const FMTconstants& constants)
+    Core::FMToutput FMToptimizationparser::resume_output(const std::map<std::string,double>& nodes,
+                                                   const std::vector<Core::FMToutput>& outputs,
+                                                   const std::vector<Core::FMTtheme>& themes,
+                                                   const Core::FMTconstants& constants)
         {
-        FMToutput final_output;
-        for (map<string,double>::const_iterator output_it = nodes.begin(); output_it!=nodes.end();output_it++)
+		Core::FMToutput final_output;
+        for (std::map<std::string,double>::const_iterator output_it = nodes.begin(); output_it!=nodes.end();output_it++)
             {
-            smatch out_match;
-            if (regex_search(output_it->first, out_match, rxoutput))
+			std::smatch out_match;
+            if (std::regex_search(output_it->first, out_match, rxoutput))
                     {
-                    string output_name = string(out_match[1])+ string(out_match[8]) + string(out_match[12])+ string(out_match[16]);
-					//string output_name = string(out_match[2]) + string(out_match[9]) + string(out_match[13]) + string(out_match[17]) + string(out_match[19]);
-					//string allperiods;
+					std::string output_name = std::string(out_match[1])+ std::string(out_match[8]) + std::string(out_match[12])+ std::string(out_match[16]);
 					boost::erase_all(output_name, " ");
-					smatch special_match;
-					string specialtype;
+					std::smatch special_match;
+					std::string specialtype;
 					int minbound = 1;
-					int maxbound = numeric_limits<int>::max();
+					int maxbound = std::numeric_limits<int>::max();
 					if (regex_search(output_it->first, special_match, rxspecialoutput))
 						{
 						specialtype = special_match[1];
-						string lowerperiod = string(special_match[7]) + string(special_match[12]);
-						string upperperiod = string(special_match[11]) + string(special_match[12]);
-						//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << lowerperiod << "\n";
-						//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << upperperiod << "\n";
+						const std::string lowerperiod = std::string(special_match[7]) + std::string(special_match[12]);
+						const std::string upperperiod = std::string(special_match[11]) + std::string(special_match[12]);
 						if (!lowerperiod.empty() && !upperperiod.empty())
 							{
 							minbound = getnum<int>(lowerperiod, constants);
 							maxbound = getnum<int>(upperperiod, constants);
 							}
-						output_name = string(special_match[4])+ string(special_match[13]);// +string(special_match[4]);
+						output_name = std::string(special_match[4])+ std::string(special_match[13]);
 						if (!regex_search(output_name, out_match, rxoutput))
 							{
-							_exhandler->raise(FMTexc::FMTinvalid_constraint, _section, output_name + " at line " + to_string(_line), __LINE__, __FILE__);
+							_exhandler->raise(Exception::FMTexc::FMTinvalid_constraint, _section, output_name + " at line " + std::to_string(_line), __LINE__, __FILE__);
 						}
 						else {
-							output_name = string(out_match[1]) + string(out_match[8]) + string(out_match[12]) + string(out_match[16]);
+							output_name = std::string(out_match[1]) + std::string(out_match[8]) + std::string(out_match[12]) + std::string(out_match[16]);
 						}
 						boost::erase_all(output_name, " ");
 						}
-					/*if (output_name.find("_SUM(")!=string::npos)
-						{
-						allperiods = "SUM(";
-						boost::erase_all(output_name, "_SUM(");
-						}*/
-					vector<FMToutput>::const_iterator target_out = find_if(outputs.begin(), outputs.end(), FMToutputcomparator(output_name));
+					std::vector<Core::FMToutput>::const_iterator target_out = find_if(outputs.begin(), outputs.end(), Core::FMToutputcomparator(output_name));
                     if (target_out == outputs.end())
                         {
-                        _exhandler->raise(FMTexc::WSundefined_output, _section, output_name + " at line " + to_string(_line), __LINE__, __FILE__);
+                        _exhandler->raise(Exception::FMTexc::WSundefined_output, _section, output_name + " at line " + std::to_string(_line), __LINE__, __FILE__);
                         }
-                        string target_attribute = string(out_match[3])+string(out_match[10]);
-						//string target_attribute = string(out_match[4]) + string(out_match[11]);
+						std::string target_attribute = std::string(out_match[3])+ std::string(out_match[10]);
 						boost::trim(target_attribute);
-                        FMTtheme targeted_theme = target_out->targettheme(themes);
+                        const Core::FMTtheme targeted_theme = target_out->targettheme(themes);
                         if (!target_attribute.empty())
                             {
                             if (targeted_theme.empty() ||
@@ -264,39 +228,35 @@ namespace WSParser
 										(!targeted_theme.isattribute(target_attribute) &&
 										!targeted_theme.isaggregate(target_attribute))))
                                         {
-                                        _exhandler->raise(FMTexc::WSundefined_attribute, _section, target_attribute + " at line " + to_string(_line), __LINE__, __FILE__);
+                                        _exhandler->raise(Exception::FMTexc::WSundefined_attribute, _section, target_attribute + " at line " + std::to_string(_line), __LINE__, __FILE__);
                                         }
                             }
-                        string target_period = string(out_match[6]) + string(out_match[14]);
-						//string target_period = string(out_match[7]) + string(out_match[15]);
+						const std::string target_period = std::string(out_match[6]) + std::string(out_match[14]);
                         int inttarget_period = -1;
-                        FMTperbounds bounding;
+                        Core::FMTperbounds bounding;
                         if (!target_period.empty())
                                 {
                                 inttarget_period = getnum<int>(target_period, constants);
-                                bounding = FMTperbounds(FMTwssect::Optimize, inttarget_period, inttarget_period);
+                                bounding = Core::FMTperbounds(FMTwssect::Optimize, inttarget_period, inttarget_period);
 								}
                         //copy the output and the specify the attribute and the periods!!!
-                        FMToutput newoutput = target_out->boundto(themes, bounding, specialtype, target_attribute);
+                        Core::FMToutput newoutput = target_out->boundto(themes, bounding, specialtype, target_attribute);
                         newoutput *= output_it->second;
                         final_output += newoutput;
 						}else{
-                            //fuck_up
-                            _exhandler->raise(FMTexc::FMTinvalid_constraint, _section, output_it->first + " at line " + to_string(_line), __LINE__, __FILE__);
+                            _exhandler->raise(Exception::FMTexc::FMTinvalid_constraint, _section, output_it->first + " at line " + std::to_string(_line), __LINE__, __FILE__);
                             }
                 }
-       // Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "final "<< string(final_output)<< "\n";
         return final_output;
         }
 
 
-	FMTconstraint FMToptimizationparser::getconstraint(const string& line, const FMTconstants& constants,
-												const vector<FMToutput>& outputs, const vector<FMTtheme>& themes)
+	Core::FMTconstraint FMToptimizationparser::getconstraint(const std::string& line, const Core::FMTconstants& constants,
+												const std::vector<Core::FMToutput>& outputs, const std::vector<Core::FMTtheme>& themes)
 		{
-		smatch kmatch;
-		FMTconstraint constraint;
-
-        string rest = line;
+		std::smatch kmatch;
+		Core::FMTconstraint constraint;
+		std::string rest = line;
         if (setgoal(constraint, line, constants))
             {
             rest = line.substr(0, rest.find("_GOAL"));
@@ -305,101 +265,70 @@ namespace WSParser
 
 		if (regex_search(rest, kmatch, rxconstraints))
 			{
-			string target = string(kmatch[6])+string(kmatch[12]) + string(kmatch[15]);
-			//string target = string(kmatch[6]) + string(kmatch[12]) + string(kmatch[15]);
+			std::string target = std::string(kmatch[6])+ std::string(kmatch[12]) + std::string(kmatch[15]);
 			boost::trim(target);
-			if (target.find("(")!=string::npos && target.find(")") == string::npos)
+			if (target.find("(")!= std::string::npos && target.find(")") == std::string::npos)
 				{
 				target += ")";
 				}
-			map<string, double> nodes = getequation(target, constants, outputs, target.size());
+			std::map<std::string, double> nodes = getequation(target, constants, outputs, target.size());
 			nodes.erase("RHS");
-			FMToutput targetout = resume_output(nodes, outputs, themes, constants);
-
-			/*vector<FMToutput>::const_iterator target_out = find_if(outputs.begin(), outputs.end(), FMToutputcomparator(target));
-			if (target_out == outputs.end())
-				{
-				_exhandler->raise(FMTexc::WSundefined_output, _section, target + " at line " + to_string(_line), __LINE__, __FILE__);
-				}*/
-
-
-
-			string keyword = kmatch[1];
-			FMTconstrainttype ctype = FMTconstrainttype::FMTstandard;
+			const Core::FMToutput targetout = resume_output(nodes, outputs, themes, constants);
+			const std::string keyword = kmatch[1];
+			Core::FMTconstrainttype ctype = Core::FMTconstrainttype::FMTstandard;
 
 			if (keyword == "_EVEN")
 			{
-				ctype = FMTconstrainttype::FMTevenflow;
+				ctype = Core::FMTconstrainttype::FMTevenflow;
 
 			}
 			else if (keyword == "_NDY")
 			{
-				ctype = FMTconstrainttype::FMTnondeclining;
+				ctype = Core::FMTconstrainttype::FMTnondeclining;
 			}
 			else if (keyword == "_SEQ")
 			{
-				ctype = FMTconstrainttype::FMTsequence;
+				ctype = Core::FMTconstrainttype::FMTsequence;
 			}
-			//constraint = FMTconstraint(ctype, *target_out);
 			constraint.setoutput(targetout);
 			constraint.setconstrainttype(ctype);
-			//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "OPTIMIZE " << int(constraint.getconstrainttype()) << "\n";
-			string lower_variation = string(kmatch[14]) + string(kmatch[8]);
-			//string lower_variation = string(kmatch[18]) + string(kmatch[21]) + string(kmatch[24]);
+			std::string lower_variation = std::string(kmatch[14]) + std::string(kmatch[8]);
 			double lower_var = 0;
 			double higher_var = 0;
 			if (!lower_variation.empty())
 				{
-				if (lower_variation.find('%') != string::npos)
+				if (lower_variation.find('%') != std::string::npos)
 					{
 					lower_variation.erase(std::remove(lower_variation.begin(), lower_variation.end(), '%'), lower_variation.end());
 					}
 				lower_var = getnum<double>(lower_variation, constants);
 				}
-			string high_variation = string(kmatch[10]);
-			//string high_variation = string(kmatch[23]);
+			std::string high_variation = std::string(kmatch[10]);
 			if (!high_variation.empty())
 				{
-				if (high_variation.find('%') != string::npos)
+				if (high_variation.find('%') != std::string::npos)
 					{
 					high_variation.erase(std::remove(high_variation.begin(), high_variation.end(), '%'), high_variation.end());
 					}
 				higher_var = getnum<double>(high_variation, constants);
 				}
-			//if (!(lower_var== 0 && higher_var == 0))
-				//{
-			/*if (high_variation.empty())
-				{
-				lower_var = higher_var;
-				}*/
-			string yld_name = "Variation";
-			constraint.addbounds(FMTyldbounds(FMTwssect::Optimize, yld_name, higher_var, lower_var));
-				//}
-			string start_str = string(kmatch[20]) + string(kmatch[23]);
-			string stop_str = string(kmatch[22]);
-			//string start_str = string(kmatch[8]) + string(kmatch[14]);
-			//string stop_str = string(kmatch[10]);
+			const std::string yld_name = "Variation";
+			constraint.addbounds(Core::FMTyldbounds(FMTwssect::Optimize, yld_name, higher_var, lower_var));
+			const std::string start_str = std::string(kmatch[20]) + std::string(kmatch[23]);
+			const std::string stop_str = std::string(kmatch[22]);
 			setperiods(constraint, start_str, stop_str, constants);
-
-
-
-
 		}else if (regex_search(rest, kmatch, rxequations))
 				{
-				FMTconstrainttype cctype = FMTconstrainttype::FMTstandard;
-				string lower_period = string(kmatch[15]) + string(kmatch[18]);
-				string upper_period = string(kmatch[17]);
+				Core::FMTconstrainttype cctype = Core::FMTconstrainttype::FMTstandard;
+				std::string lower_period = std::string(kmatch[15]) + std::string(kmatch[18]);
+				std::string upper_period = std::string(kmatch[17]);
 				setperiods(constraint, lower_period, upper_period, constants);
-				string str_operator = string(kmatch[5]) + string(kmatch[6]) + string(kmatch[10]);
-				//double lower_bounds = numeric_limits<double>::lowest();
-				//double upper_bounds = numeric_limits<double>::infinity();
-				string LHS = string(kmatch[3]) + string(kmatch[9]);
-				string RHS = string(kmatch[7]) + string(kmatch[11]);
-				string full_equation = LHS + string(1,'+') + RHS;
-                map<string,double> nodes = getequation(full_equation,constants,outputs,LHS.size());
+				const std::string str_operator = std::string(kmatch[5]) + std::string(kmatch[6]) + std::string(kmatch[10]);
+				const std::string LHS = std::string(kmatch[3]) + std::string(kmatch[9]);
+				const std::string RHS = std::string(kmatch[7]) + std::string(kmatch[11]);
+				const std::string full_equation = LHS + std::string(1,'+') + RHS;
+				std::map<std::string,double> nodes = getequation(full_equation,constants,outputs,LHS.size());
                 double bound = nodes["RHS"];
-                //Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "equation of " << string(simplification)  << "\n";
-                //Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "bound of " << bound  << "\n";
                 nodes.erase("RHS");
                 double lower = 0;
 				double upper = 0;
@@ -411,48 +340,44 @@ namespace WSParser
 				else if (str_operator == ">=")
                     {
 					lower = bound;
-					upper = numeric_limits<double>::infinity();
+					upper = std::numeric_limits<double>::infinity();
                     }
 				else if (str_operator == "<=")
                     {
-                    lower = numeric_limits<double>::lowest();
+                    lower = std::numeric_limits<double>::lowest();
 					upper = bound;
                     }
-
-
-                FMToutput final_output = resume_output(nodes,outputs,themes,constants);
+                Core::FMToutput final_output = resume_output(nodes,outputs,themes,constants);
                 constraint.setoutput(final_output);
 				constraint.setconstrainttype(cctype);
-				string target = "RHS";
-				constraint.addbounds(FMTyldbounds(FMTwssect::Optimize, target, upper, lower));
+				constraint.setrhs(lower,upper);
 				}
 		return constraint;
 		}
 
 
-	FMTconstraint FMToptimizationparser::getobjective(const string& line,
-		const FMTconstants& constants,
-		const vector<FMToutput>& outputs,
-		const vector<FMTtheme>& themes) //need to fill the objective here!!!!!?!?!?!?!?!?!?!
+	Core::FMTconstraint FMToptimizationparser::getobjective(const std::string& line,
+		const Core::FMTconstants& constants,
+		const std::vector<Core::FMToutput>& outputs,
+		const std::vector<Core::FMTtheme>& themes)
 		{
-		smatch kmatch;
-		FMTconstraint objective;
-		if (regex_search(line, kmatch, rxobjectives))
+		std::smatch kmatch;
+		Core::FMTconstraint objective;
+		if (std::regex_search(line, kmatch, rxobjectives))
 			{
-			string objective_type = kmatch[1];
-			string lower_period = string(kmatch[7])+ string(kmatch[10]);
-			string upper_period = string(kmatch[9]);
-			string body = string(kmatch[3]);
-
+			const std::string objective_type = kmatch[1];
+			const std::string lower_period = std::string(kmatch[7])+ std::string(kmatch[10]);
+			const std::string upper_period = std::string(kmatch[9]);
+			std::string body = std::string(kmatch[3]);
 			if (body.at(0)=='(')
 				{
 				body.erase(0,1);
 				body.erase(body.size()-1);
 				}
-            string main_equation = body;
-            string penalty_equation;
-            string penalty_operator;
-            if (body.find("_PENALTY")!=string::npos)
+			std::string main_equation = body;
+			std::string penalty_equation;
+			std::string penalty_operator;
+            if (body.find("_PENALTY")!= std::string::npos)
                 {
                 main_equation = body.substr(0,body.find("_PENALTY"));
                 boost::trim(main_equation);
@@ -465,56 +390,51 @@ namespace WSParser
                     }
                 }
             boost::trim(main_equation);
-            smatch kpenalty;
-            //Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) <<" PENALTY OF |"<<penalty_equation<<"|"<<"\n";
-            if (regex_search(penalty_equation, kpenalty, rxpenalty))
+			std::smatch kpenalty;
+            if (std::regex_search(penalty_equation, kpenalty, rxpenalty))
                 {
-                string penalty_values = kpenalty[3];
-                string yldbound = "Penalty";
+				const std::string penalty_values = kpenalty[3];
+				std::string yldbound = "Penalty";
                 double lower_penalty = 0;
                 double upper_penalty = 0;
                 if (penalty_values == "_ALL")
                     {
                     yldbound += (penalty_operator +penalty_values);
-                    objective.addbounds(FMTyldbounds(FMTwssect::Optimize, yldbound, upper_penalty, lower_penalty));
+                    objective.addbounds(Core::FMTyldbounds(FMTwssect::Optimize, yldbound, upper_penalty, lower_penalty));
                 }else {
-                    vector<string>penalty_split;
+					std::vector<std::string>penalty_split;
                     boost::split(penalty_split, penalty_values, boost::is_any_of(","));
-                    for (const string& penalty_var : penalty_split)
+                    for (const std::string& penalty_var : penalty_split)
                         {
-                        string yldname = yldbound + penalty_operator +"_"+penalty_var;
-                        objective.addbounds(FMTyldbounds(FMTwssect::Optimize, yldname, upper_penalty, lower_penalty));
+						const std::string yldname = yldbound + penalty_operator +"_"+penalty_var;
+                        objective.addbounds(Core::FMTyldbounds(FMTwssect::Optimize, yldname, upper_penalty, lower_penalty));
                         }
                     }
 				}
-			FMToutput final_output;
+			Core::FMToutput final_output;
 			if (!main_equation.empty())
 				{
-				map<string, double>nodes = getequation(main_equation, constants, outputs);
+				std::map<std::string, double>nodes = getequation(main_equation, constants, outputs);
 				nodes.erase("RHS");
 				final_output = resume_output(nodes, outputs, themes, constants);
 				}
-			//Need to potentialy build a new output with the body...
-			//vector<string>body_split;
-			//boost::split(body_split,body,boost::is_any_of("-*/+"));
-
 			objective.setoutput(final_output);
-			FMTconstrainttype cctype = FMTconstrainttype::FMTstandard;
+			Core::FMTconstrainttype cctype = Core::FMTconstrainttype::FMTstandard;
 			if (objective_type == "_MAX")
 			{
-				cctype = FMTconstrainttype::FMTMAXobjective;
+				cctype = Core::FMTconstrainttype::FMTMAXobjective;
 			}
 			else if (objective_type == "_MIN")
 			{
-				cctype = FMTconstrainttype::FMTMINobjective;
+				cctype = Core::FMTconstrainttype::FMTMINobjective;
 			}
 			else if (objective_type == "_MAXMIN")
 			{
-				cctype = FMTconstrainttype::FMTMAXMINobjective;
+				cctype = Core::FMTconstrainttype::FMTMAXMINobjective;
 			}
 			else if (objective_type == "_MINMAX")
 			{
-				cctype = FMTconstrainttype::FMTMINMAXobjective;
+				cctype = Core::FMTconstrainttype::FMTMINMAXobjective;
 			}
 			objective.setconstrainttype(cctype);
 			setperiods(objective, lower_period, upper_period, constants);
@@ -522,13 +442,13 @@ namespace WSParser
 		return objective;
 		}
 
-	FMToptimizationsection FMToptimizationparser::getsection(const string& line) const
+	FMToptimizationsection FMToptimizationparser::getsection(const std::string& line) const
 		{
 		FMToptimizationsection section = FMToptimizationsection::none;
-		smatch kmatch;
-		if (regex_search(line, kmatch, rxsections))
+		std::smatch kmatch;
+		if (std::regex_search(line, kmatch, rxsections))
 			{
-			string target = string(kmatch[2]);
+			const std::string target = std::string(kmatch[2]);
 			if (target=="OBJECTIVE")
 				{
 				section = FMToptimizationsection::objective;
@@ -549,26 +469,24 @@ namespace WSParser
 		return section;
 		}
 
-	vector<FMTconstraint> FMToptimizationparser::read(const vector<FMTtheme>& themes,
-									const vector<FMTaction>& actions,
-									const FMTconstants& constants,
-									const map<string, vector<string>>& actions_aggregate,
-									const vector<FMToutput>& outputs,
-									vector<FMTaction>& excluded,
-									const string& location)
+	std::vector<Core::FMTconstraint> FMToptimizationparser::read(const std::vector<Core::FMTtheme>& themes,
+									const std::vector<Core::FMTaction>& actions,
+									const Core::FMTconstants& constants,
+									const std::map<std::string, std::vector<std::string>>& actions_aggregate,
+									const std::vector<Core::FMToutput>& outputs,
+									std::vector<Core::FMTaction>& excluded,
+									const std::string& location)
 		{
-		vector<FMTconstraint>constraints;
+		std::vector<Core::FMTconstraint>constraints;
 		if (!location.empty())
 			{
-			ifstream optimizestream(location);
-			string line;
+			std::ifstream optimizestream(location);
 			if (FMTparser::tryopening(optimizestream, location))
 				{
 				FMToptimizationsection section = FMToptimizationsection::none;
 				while (optimizestream.is_open())
 					{
-					//line = getcleanlinewfor(optimizestream, themes, constants);
-					line = getoptline(optimizestream, themes, constants, outputs);
+					std::string line = getoptline(optimizestream, themes, constants, outputs);
 					if (!line.empty())
 						{
 					FMToptimizationsection newsection = getsection(line);
@@ -587,54 +505,43 @@ namespace WSParser
 							{
 							case FMToptimizationsection::objective:
 								{
-								FMTconstraint objective = getobjective(line, constants, outputs,themes);
-
+								Core::FMTconstraint objective = getobjective(line, constants, outputs,themes);
 								if (objective.emptyperiod())
 									{
-									_exhandler->raise(FMTexc::FMTmissingobjective, _section, " at line " + to_string(_line), __LINE__, __FILE__);
+									_exhandler->raise(Exception::FMTexc::FMTmissingobjective, _section, " at line " + std::to_string(_line), __LINE__, __FILE__);
 									}
 								constraints.push_back(objective);
 								break;
 								}
 							case FMToptimizationsection::constraints:
 								{
-								FMTconstraint constraint = getconstraint(line, constants, outputs, themes);
-								/*for (const FMToutputsource& src : constraint.getsources())
-									{
-									Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) <<string(src)<<"\n";
-									Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "targetss " <<src.emptyperiod()<<" "<<src.getperiodlowerbound()<<" "<<src.getperiodupperbound()<< "\n";
-									}*/
-								//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "targetss " << constraint.issingleperiod()<<" str: "<<line<< "\n";
+								Core::FMTconstraint constraint = getconstraint(line, constants, outputs, themes);
 								constraints.push_back(constraint);
-								//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << string(constraints.at(1)) << "\n";
 								break;
 								}
-
 							case FMToptimizationsection::exclude:
 								{
-								//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) <<"EXCLUDE "<<line << "\n";
-								if (line.find("*EXCLUDE")==string::npos)
+								if (line.find("*EXCLUDE")== std::string::npos)
 									{
 									line = "*EXCLUDE " + line;
 									}
-								smatch kmatch;
-								if (regex_search(line, kmatch, rxexclude))
+								std::smatch kmatch;
+								if (std::regex_search(line, kmatch, rxexclude))
 									{
-									string action_name = kmatch[3];
-									vector<string>action_names;
+									std::string action_name = kmatch[3];
+									std::vector<std::string>action_names;
 									if (actions_aggregate.find(action_name) != actions_aggregate.end())
 										{
-										for (const string& actname : actions_aggregate.at(action_name))
+										for (const std::string& actname : actions_aggregate.at(action_name))
 											{
 											action_names.push_back(actname);
 											}
 									}else {
 										action_names.push_back(action_name);
 										}
-									int period_lower = getnum<int>(string(kmatch[7])+ string(kmatch[10]),constants)-1;
-									int period_upper = numeric_limits<int>::max();
-									string str_upper = string(kmatch[9]);
-									//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << str_upper << "\n";
+									const int period_lower = getnum<int>(std::string(kmatch[7])+ std::string(kmatch[10]),constants)-1;
+									int period_upper = std::numeric_limits<int>::max();
+									const std::string str_upper = std::string(kmatch[9]);
 									if (!str_upper.empty() && str_upper != "_LENGTH")
 										{
 										period_upper  = getnum<int>(str_upper, constants);
@@ -642,30 +549,27 @@ namespace WSParser
 										{
 										period_upper = period_lower;
 										}
-
-
-									for (const string& target_action : action_names)
+									for (const std::string& target_action : action_names)
 										{
-										vector<FMTspec>newspecs;
-										vector<FMTmask>newmask;
-										vector<FMTaction>::iterator actit = std::find_if(excluded.begin(), excluded.end(), FMTactioncomparator(target_action));
+										std::vector<Core::FMTspec>newspecs;
+										std::vector<Core::FMTmask>newmask;
+										std::vector<Core::FMTaction>::iterator actit = std::find_if(excluded.begin(), excluded.end(), Core::FMTactioncomparator(target_action));
 										if (actit != excluded.end())
 											{
-												vector<FMTmask>::iterator mskit = actit->maskbegin();
-												for (vector<FMTspec>::iterator spec_it = actit->databegin(); spec_it != actit->dataend(); ++spec_it)
+											std::vector<Core::FMTmask>::const_iterator mskit = actit->maskbegin();
+											for (std::vector<Core::FMTspec>::iterator spec_it = actit->databegin(); spec_it != actit->dataend(); ++spec_it)
+												{
+												if (str_upper != "_LENGTH")
 													{
-													//For lower now for upper add a spec!!!
-													if (str_upper != "_LENGTH")
-														{
-														FMTspec upperspec = *spec_it;
-														int max_upper = numeric_limits<int>::max() - 2;
-														int upper = period_upper + 1;
-														upperspec.setbounds(FMTperbounds(FMTwssect::Action, max_upper, upper));
+													Core::FMTspec upperspec = *spec_it;
+														const int max_upper = std::numeric_limits<int>::max() - 2;
+														const int upper = period_upper + 1;
+														upperspec.setbounds(Core::FMTperbounds(FMTwssect::Action, max_upper, upper));
 														newspecs.push_back(upperspec);
 														newmask.push_back(*mskit);
 														}
-													int startperiod_upper = period_lower - 1;
-													spec_it->setbounds(FMTperbounds(FMTwssect::Action, period_lower, startperiod_upper));
+													const int startperiod_upper = period_lower - 1;
+													spec_it->setbounds(Core::FMTperbounds(FMTwssect::Action, period_lower, startperiod_upper));
 													++mskit;
 													}
 												for (size_t newspec = 0; newspec < newspecs.size();++newspec)
@@ -692,51 +596,48 @@ namespace WSParser
 		return constraints;
 		}
 
-	void FMToptimizationparser::write(const vector<FMTconstraint>& constraints, string location)
+	void FMToptimizationparser::write(const std::vector<Core::FMTconstraint>& constraints, std::string location)
 		{
-		ofstream optimizestream;
+		std::ofstream optimizestream;
 		optimizestream.open(location);
 		if (tryopening(optimizestream, location))
 			{
 			optimizestream << "*OBJECTIVE " << "\n";
-			optimizestream << string(constraints.at(0));
+			optimizestream << std::string(constraints.at(0));
 			if (constraints.size()-1 > 0)
                 {
                 optimizestream << "*CONSTRAINTS " << "\n";
                 for (size_t cid = 1; cid < constraints.size(); ++cid)
                     {
-                    optimizestream << string(constraints.at(cid));
+                    optimizestream << std::string(constraints.at(cid));
                     }
                 }
 			optimizestream.close();
 			}
 		}
 
-	std::queue<string> FMToptimizationparser::geteachlines(const string& line, const FMTconstants& constants,const vector<FMToutput>& outputs, const vector<FMTtheme>& themes) const
+	std::queue<std::string> FMToptimizationparser::geteachlines(const std::string& line, const Core::FMTconstants& constants,const std::vector<Core::FMToutput>& outputs, const std::vector<Core::FMTtheme>& themes) const
 		{
 		int themeid = -1;
-		vector<FMToutput>::const_iterator target_out;
-		string subline = line;
-		string keyword = "_EACH";
-		std::queue<string>valuestoreplace;
-		while (subline.find(keyword)!= string::npos)
+		std::vector<Core::FMToutput>::const_iterator target_out;
+		std::string subline = line;
+		const std::string keyword = "_EACH";
+		std::queue<std::string>valuestoreplace;
+		while (subline.find(keyword)!= std::string::npos)
 			{
 			boost::erase_all(subline, " ");
 			int endoutputlocation = static_cast<int>((subline.find(keyword)))-1;
 			char outchar = subline.at(endoutputlocation);
-			//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "first char " << endoutputlocation << "\n";
-			while (outchar == '(') //emptystuff
+			while (outchar == '(')
 				{
 				--endoutputlocation;
-				//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << outchar <<" " << endoutputlocation << "\n";
 				if (endoutputlocation >= 0)
 					{
 					outchar = subline.at(endoutputlocation);
 					}
 				}
-			//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info)<< endoutputlocation << "starting at " << outchar << "\n";
-			string output_name = "";
-			while (!FMToperator(string(1, outchar)).valid()
+			std::string output_name = "";
+			while (!Core::FMToperator(std::string(1, outchar)).valid()
 				&& outchar!='(' && endoutputlocation >=0)
 				{
 				output_name.insert(output_name.begin(),outchar);
@@ -746,31 +647,27 @@ namespace WSParser
 					outchar = subline.at(endoutputlocation);
 					}
 				}
-			if (output_name.find("#")!=string::npos)//constant
+			if (output_name.find("#")!= std::string::npos)//constant
 				{
 
-
-
 			}else{
-				target_out = find_if(outputs.begin(), outputs.end(), FMToutputcomparator(output_name));
+				target_out = find_if(outputs.begin(), outputs.end(), Core::FMToutputcomparator(output_name));
 				if (target_out==outputs.end())
 					{
-					_exhandler->raise(FMTexc::WSundefined_output, _section, output_name + " at line " + to_string(_line), __LINE__, __FILE__);
+					_exhandler->raise(Exception::FMTexc::WSundefined_output, _section, output_name + " at line " + std::to_string(_line), __LINE__, __FILE__);
 					}
 				if (themeid >= 0)
 					{
 					if (themeid != target_out->targetthemeid())
 						{
-						_exhandler->raise(FMTexc::FMTinvalid_constraint, _section, "Non matching _EACH outputs attributes at line " + to_string(_line), __LINE__, __FILE__);
+						_exhandler->raise(Exception::FMTexc::FMTinvalid_constraint, _section, "Non matching _EACH outputs attributes at line " + std::to_string(_line), __LINE__, __FILE__);
 						}
 					}
 				
 				themeid = target_out->targetthemeid();
 				boost::replace_all(subline, keyword, "");
-				//remove _EACH in subline
-				//subline
 				}
-			for (const string& value : target_out->getdecomposition(themes))
+			for (const std::string& value : target_out->getdecomposition(themes))
 				{
 				valuestoreplace.push(boost::replace_all_copy(line, "_EACH", value));
 				}
@@ -778,17 +675,17 @@ namespace WSParser
 		return valuestoreplace;
 		}
 
-	string FMToptimizationparser::getoptline(ifstream& stream, const vector<FMTtheme>& themes,
-		const FMTconstants& cons, const vector<FMToutput>& outputs)
+	std::string FMToptimizationparser::getoptline(std::ifstream& stream, const std::vector<Core::FMTtheme>& themes,
+		const Core::FMTconstants& cons, const std::vector<Core::FMToutput>& outputs)
 		{
-		string line = ""; 
+		std::string line = "";
 		if (!ineach.empty())
 			{
 			line = ineach.front();
 			ineach.pop();
 		}else {
 			line = getcleanlinewfor(stream, themes, cons);
-			if (line.find("_EACH") != string::npos)
+			if (line.find("_EACH") != std::string::npos)
 				{
 				ineach = geteachlines(line, cons,outputs, themes);
 				line = ineach.front();

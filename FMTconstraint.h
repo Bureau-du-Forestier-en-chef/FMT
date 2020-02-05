@@ -26,17 +26,12 @@ SOFTWARE.
 #define FMTconstraint_H_INCLUDED
 
 #include "FMToutput.h"
-
 #include <vector>
 #include <string>
 #include "FMToperator.h"
 #include "FMTbounds.h"
 #include <boost/serialization/serialization.hpp>
 #include <boost/serialization/nvp.hpp>
-//#include <CoinFinite.hpp>
-
-using namespace Core;
-using namespace std;
 
 namespace Core
 {
@@ -79,12 +74,14 @@ class FMTconstraint: public FMToutput,public FMTspec
 		bool operator != (const FMTconstraint& rhs) const;
 		bool extravariables() const;
 		bool isgoal() const;
-		vector<string>getpenalties(double & sense) const;
-		vector<string>getvariablelevels() const;
-		void getgoal(string& name,double& value) const;
+		std::vector<std::string>getpenalties(double & sense) const;
+		std::vector<std::string>getvariablelevels() const;
+		void getgoal(std::string& name,double& value) const;
 		bool isobjective() const;
 		double sense() const;
 		void getbounds(double& lower, double& upper,int period = 0) const;
+		void setrhs(const double& lower, const double& upper);
+		void setlength(int firstperiod = 1,int lastperiod = std::numeric_limits<int>::max());
 		void getvariations(double& lower, double& upper) const;
 		bool ismultiple() const;
 		bool acrossperiod() const;
@@ -92,8 +89,8 @@ class FMTconstraint: public FMToutput,public FMTspec
 		void setoutput(const FMToutput& out);
 		void setconstrainttype(FMTconstrainttype ltype);
 		FMTconstrainttype getconstrainttype() const;
-		operator string() const;
-		void standardstring(string& line, string& period_bounds, string& goal) const;
+		operator std::string() const;
+		void standardstring(std::string& line, std::string& period_bounds, std::string& goal) const;
 		~FMTconstraint()=default;
 	};
 }

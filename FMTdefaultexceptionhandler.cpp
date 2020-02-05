@@ -27,7 +27,7 @@ SOFTWARE.
 namespace Exception
 
 {
-
+#ifdef FMTWITHGDAL
 	FMTexceptionhandler* FMTdefaultexceptionhandler::getCPLdata()
 		{
 		return this;
@@ -35,17 +35,18 @@ namespace Exception
 	void FMTdefaultexceptionhandler::handelCPLerror(CPLErr eErrClass, CPLErrorNum nError, const char * pszErrorMsg)
 		{
 		char buffer[COIN_MESSAGE_HANDLER_MAX_BUFFER_SIZE];
-		if (eErrClass == CE_Failure || eErrClass == CE_Fatal)
+		if (eErrClass == CE_Failure || eErrClass == CE_Fatal || eErrClass == CE_Warning)
 			{
-			snprintf(buffer, sizeof(pszErrorMsg), "%s\n", pszErrorMsg);
+			snprintf(buffer, sizeof(buffer), "%s\n", pszErrorMsg);
 			*_logger << buffer;
 			}
 		}
+#endif
 
 	FMTdefaultexceptionhandler::FMTdefaultexceptionhandler() :FMTexceptionhandler() {}
 
-	FMTlev FMTdefaultexceptionhandler::raise(FMTexc lexception, FMTwssect lsection, string text,
-		const int& line, const string& file)
+	FMTlev FMTdefaultexceptionhandler::raise(FMTexc lexception, FMTwssect lsection, std::string text,
+		const int& line, const std::string& file)
 	{
 		FMTexception excp;
 		if (lsection == FMTwssect::Empty)
@@ -57,7 +58,7 @@ namespace Exception
 		}
 		if (_level == FMTlev::FMT_Warning)
 		{
-			FMTwarning(excp).warn();
+			FMTwarning(excp).warn(_logger);
 		}
 		else if (_level == FMTlev::FMT_logic || _level == FMTlev::FMT_range) {
 			throw FMTerror(excp);

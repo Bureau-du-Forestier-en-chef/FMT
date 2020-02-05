@@ -32,13 +32,9 @@ SOFTWARE.
 #include <vector>
 #include <map>
 #include <boost/serialization/nvp.hpp>
-
 #include "FMTexception.h"
 #include "FMTmask.h"
 
-using namespace boost::python;
-using namespace std;
-using namespace Exception;
 
 namespace Core
 {
@@ -60,36 +56,39 @@ class FMTtheme
 			ar & BOOST_SERIALIZATION_NVP(valuenames);
 			ar & BOOST_SERIALIZATION_NVP(name);
 		}
-        map<string,vector<string>>aggregates;
-		map<string, vector<string>>source_aggregates;
-        map<string,string>valuenames;
-        map<string,map<string,double>>indexes;
-		map<string,vector<string>>desagregate(map<string,vector<string>>aggregates,vector<string>&bases);
+        std::map<std::string, std::vector<std::string>>aggregates;
+		std::map<std::string, std::vector<std::string>>source_aggregates;
+		std::map<std::string, std::string>valuenames;
+		std::map<std::string, std::map<std::string,double>>indexes;
+		std::map<std::string,std::vector<std::string>>desagregate(std::map<std::string, std::vector<std::string>>aggregates,const std::vector<std::string>&bases);
     public:
-        string name;
+		std::string name;
         FMTtheme();
-        FMTtheme(map<string,vector<string>>&laggregates,map<string,string>&lvaluenames,int& lid,int& lstart,string& lname);
-        FMTtheme(map<string,vector<string>>&laggregates,map<string,string>&lvaluenames,
-                 const map<string,map<string,double>>& indexing,int& lid,int& lstart,string& lname);
+        FMTtheme(const std::map<std::string, std::vector<std::string>>&laggregates,
+			    const  std::map<std::string,std::string>&lvaluenames, const int& lid,const int& lstart, const std::string& lname);
+        FMTtheme(const std::map<std::string, std::vector<std::string>>&laggregates,
+				 const std::map<std::string, std::string>&lvaluenames,
+                 const std::map<std::string, std::map<std::string,double>>& indexing,
+				const int& lid,const int& lstart,const std::string& lname);
 		FMTtheme(const FMTtheme& rhs);
 		FMTtheme& operator = (const FMTtheme& rhs);
-        FMTtheme(const vector<string> lvaluenames,const int& lid,const int& lstart,const string& lname);
-        bool usefull();
-        bool isattribute(const string& value) const;
-        bool isindex(const string& value) const;
+        FMTtheme(const std::vector<std::string>& lvaluenames,const int& lid,const int& lstart,const std::string& lname);
+        bool usefull() const;
+        bool isattribute(const std::string& value) const;
+        bool isindex(const std::string& value) const;
         bool useindex() const;
-        double getindex(const string& attribute,const string& value) const;
-        bool isaggregate(const string& value) const;
-        bool inaggregate(const string& value,const string& aggregate);
+        double getindex(const std::string& attribute,const std::string& value) const;
+        bool isaggregate(const std::string& value) const;
+        bool inaggregate(const std::string& value,const std::string& aggregate);
 		bool operator == (const FMTtheme& rhs) const;
         size_t size() const;
 		int getid() const;
 		bool empty() const;
-        map<string,string>getvaluenames() const;
-        boost::dynamic_bitset<> strtobits(const string& value) const;
-        string bitstostr(boost::dynamic_bitset<>& bits) const;
-        vector<string>getattributes(const string& value, bool aggregate_source = false) const;
-        operator string() const;
+		std::map<std::string, std::string>getvaluenames() const;
+        boost::dynamic_bitset<> strtobits(const std::string& value) const;
+		std::string bitstostr(const boost::dynamic_bitset<>& bits) const;
+		std::vector<std::string>getattributes(const std::string& value, bool aggregate_source = false) const;
+        operator std::string() const;
     };
 }
 #endif // FMTtheme_H_INCLUDED

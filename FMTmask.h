@@ -29,37 +29,19 @@ SOFTWARE.
 #define BOOST_DYNAMIC_BITSET_DONT_USE_FRIENDS
 #endif 
 
-#include <boost/python.hpp>
 #include <boost/dynamic_bitset.hpp>
 #include <boost/unordered_map.hpp>
 #include <boost/algorithm/string.hpp>
 #include <boost/algorithm/string/join.hpp>
-#include <boost/python/stl_iterator.hpp>
 #include <boost/functional/hash.hpp>
 #include <boost/serialization/serialization.hpp>
 #include <boost/serialization/split_free.hpp>
 #include <boost/serialization/nvp.hpp>
 #include "FMTexception.h"
+#include <vector>
+#include <string>
 #include "FMTtheme.h"
 
-using namespace boost::python;
-using namespace std;
-using namespace Exception;
-/*
-namespace std {
-
-    template <typename Block, typename Alloc> struct hash<boost::dynamic_bitset<Block, Alloc> > {
-        size_t operator()(boost::dynamic_bitset<Block, Alloc> const& bs) const {
-            size_t seed = boost::hash_value(bs.size());
-
-            std::vector<Block> blocks(bs.num_blocks());
-            boost::hash_range(seed, blocks.begin(), blocks.end());
-
-            return seed;
-        }
-    };
-
-}*/
 
 namespace boost {
 	namespace serialization {
@@ -111,31 +93,29 @@ class FMTmask
 		ar & BOOST_SERIALIZATION_NVP(name);
 		}
         boost::dynamic_bitset<> subset(const FMTtheme& theme) const;
-        bool setsubset(const FMTtheme& theme,boost::dynamic_bitset<>& subset);
-        string name;
+        bool setsubset(const FMTtheme& theme,const boost::dynamic_bitset<>& subset);
+		std::string name;
     public:
         boost::dynamic_bitset<> data;
         FMTmask();
         virtual ~FMTmask()=default;
-        FMTmask(boost::dynamic_bitset<> bits);
-		FMTmask(FMTmask&& rhs) noexcept;
-		FMTmask& operator =(FMTmask&& rhs);
+        FMTmask(const boost::dynamic_bitset<>& bits);
 		explicit operator bool() const;
-        FMTmask(string mask,boost::dynamic_bitset<> bits);
-        FMTmask(string mask,const vector<FMTtheme>& themes);
-        FMTmask(const vector<string>& values,const vector<FMTtheme>& themes);
-        string get(vector<FMTtheme>& themes) const;
-        string getstr() const;
-        bool set(const vector<FMTtheme>& themes,string value);
-		vector<FMTtheme>getstaticthemes(const vector<FMTtheme>& themes) const;
-        string get(const FMTtheme& theme) const;
-		bool isnotthemessubset(const FMTmask& rhs, const vector<FMTtheme>& themes) const;
+        FMTmask(const std::string& mask,const boost::dynamic_bitset<>& bits);
+        FMTmask(const std::string& mask,const std::vector<FMTtheme>& themes);
+        FMTmask(const std::vector<std::string>& values,const std::vector<FMTtheme>& themes);
+        std::string get(const std::vector<FMTtheme>& themes) const;
+		std::string getstr() const;
+        bool set(const std::vector<FMTtheme>& themes,const std::string& value);
+		std::vector<FMTtheme>getstaticthemes(const std::vector<FMTtheme>& themes) const;
+        std::string get(const FMTtheme& theme) const;
+		bool isnotthemessubset(const FMTmask& rhs, const  std::vector<FMTtheme>& themes) const;
 		bool empty() const;
-        bool set(const FMTtheme& theme,string value);
-        void update(const vector<FMTtheme>& themes);
-        vector<FMTmask>decompose(const FMTtheme &theme) const;
-        void append(boost::dynamic_bitset<> &bits);
-        bool linkNvalidate(vector<FMTtheme>& themes);
+        bool set(const FMTtheme& theme, const std::string& value);
+        void update(const std::vector<FMTtheme>& themes);
+		std::vector<FMTmask>decompose(const FMTtheme &theme) const;
+        void append(const boost::dynamic_bitset<> &bits);
+        bool linkNvalidate(const std::vector<FMTtheme>& themes);
         FMTmask(const FMTmask& rhs);
         FMTmask& operator = (const FMTmask& rhs);
         bool operator != (const FMTmask& rhs) const;
@@ -143,8 +123,8 @@ class FMTmask
         bool operator < (const FMTmask& rhs) const;
         FMTmask resume(const boost::dynamic_bitset<>& rhs) const;
 		size_t hash() const;
-        string to_string() const;
-		operator string() const;
+        std::string to_string() const;
+		operator std::string() const;
     };
 
 }

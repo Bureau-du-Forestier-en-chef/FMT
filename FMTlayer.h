@@ -38,13 +38,10 @@ SOFTWARE.
 #include "FMTobject.h"
 #include <boost/serialization/nvp.hpp>
 
-using namespace boost;
-using namespace Core;
-
 namespace Spatial
     {
     template <typename T>
-    class FMTlayer : public FMTobject
+    class FMTlayer : public Core::FMTobject
         {
 		friend class boost::serialization::access;
 		template<class Archive>
@@ -58,39 +55,39 @@ namespace Spatial
 			ar & BOOST_SERIALIZATION_NVP(mapping);
 		}
         protected:
-        vector<double>geotransform;
+		std::vector<double>geotransform;
         unsigned int maxx,maxy;
-        string SRS_WKT;
+		std::string SRS_WKT;
         double cellsize;
         public:
-            map<FMTcoordinate,T>mapping;
-            FMTlayer():FMTobject(),geotransform(),maxx(),maxy(),SRS_WKT(),cellsize(),mapping(){}
+			std::map<FMTcoordinate,T>mapping;
+            FMTlayer():Core::FMTobject(),geotransform(),maxx(),maxy(),SRS_WKT(),cellsize(),mapping(){}
             virtual~FMTlayer()=default;
-            FMTlayer(const vector<double>& lgeotransform,
+            FMTlayer(const std::vector<double>& lgeotransform,
                      const unsigned int& lmaxx,
                      const unsigned int& lmaxy,
-                     const string& lSRS_WKT,
-                     const double& lcellsize):FMTobject(),
+                     const std::string& lSRS_WKT,
+                     const double& lcellsize):Core::FMTobject(),
                      geotransform(lgeotransform),
                      maxx(lmaxx),
                      maxy(lmaxy),
                      SRS_WKT(lSRS_WKT),
                      cellsize(lcellsize),
                      mapping(){}
-            FMTlayer(const map<FMTcoordinate,T>& lmapping,
-                     const vector<double>& lgeotransform,
+            FMTlayer(const std::map<FMTcoordinate,T>& lmapping,
+                     const std::vector<double>& lgeotransform,
                      const unsigned int& lmaxx,
                      const unsigned int& lmaxy,
-                     const string& lSRS_WKT,
+                     const std::string& lSRS_WKT,
                      const double& lcellsize):
-                         FMTobject(),
+                         Core::FMTobject(),
                 geotransform(lgeotransform),
                              maxx(lmaxx),
                              maxy(lmaxy),
                              SRS_WKT(lSRS_WKT),
                              cellsize(lcellsize),
                              mapping(lmapping){}
-            FMTlayer(const FMTlayer& rhs):FMTobject(rhs),
+            FMTlayer(const FMTlayer& rhs):Core::FMTobject(rhs),
                 geotransform(rhs.geotransform),
                 maxx(rhs.maxx),
                 maxy(rhs.maxy),
@@ -101,7 +98,7 @@ namespace Spatial
                 {
                 if(this!=&rhs)
                     {
-                    FMTobject::operator = (rhs);
+                    Core::FMTobject::operator = (rhs);
                     mapping = (rhs.mapping);
                     geotransform = rhs.geotransform;
                     maxx = rhs.maxx;
@@ -123,19 +120,19 @@ namespace Spatial
             FMTlayer<newtype>copyextent() const
 
                 {
-                return FMTlayer<newtype>(map<FMTcoordinate,newtype>(),
+                return FMTlayer<newtype>(std::map<FMTcoordinate,newtype>(),
                                          this->geotransform,
                                          this->maxx,
                                          this->maxy,
                                          this->SRS_WKT,
                                          this->cellsize);
                 }
-			FMTlayer<string>& operator += (const FMTlayer<string>& rhs)
+			FMTlayer<std::string>& operator += (const FMTlayer<std::string>& rhs)
 				{
-				map<FMTcoordinate, string>new_mapping;
-				for (map<FMTcoordinate, string>::const_iterator mit = mapping.begin();mit!= mapping.end();mit++)
+				std::map<FMTcoordinate, std::string>new_mapping;
+				for (std::map<FMTcoordinate, std::string>::const_iterator mit = mapping.begin();mit!= mapping.end();mit++)
 					{
-					map<FMTcoordinate, string>::const_iterator rhsit = rhs.mapping.find(mit->first);
+					std::map<FMTcoordinate, std::string>::const_iterator rhsit = rhs.mapping.find(mit->first);
 					if (rhsit != rhs.mapping.end())
 						{
 						new_mapping[mit->first]=(mit->second+ "-" + rhsit->second);
@@ -153,30 +150,30 @@ namespace Spatial
                 {
                 return maxy;
                 }
-            vector<double> getgeotransform() const
+			std::vector<double> getgeotransform() const
                 {
                 return geotransform;
                 }
-            string getprojection() const
+			std::string getprojection() const
                 {
                 return SRS_WKT;
                 }
-            map<FMTcoordinate,T>getmapping() const
+			std::map<FMTcoordinate,T>getmapping() const
                 {
                 return mapping;
                 }
             double area() const
                 {
-                return (cellsize * mapping.size());
+                return (cellsize * static_cast<double>(mapping.size()));
                 }
 			double getcellsize() const
 				{
 				return cellsize;
 				}
-            vector<T>getattributes() const
+            std::vector<T>getattributes() const
                 {
-                vector<T>unique_attributes;
-                for(typename map<FMTcoordinate,T>::const_iterator it = mapping.begin();it != mapping.end(); it++)
+				std::vector<T>unique_attributes;
+                for(typename std::map<FMTcoordinate,T>::const_iterator it = mapping.begin();it != mapping.end(); it++)
                     {
                     if (std::find(unique_attributes.begin(),unique_attributes.end(),it->second)==unique_attributes.end())
                         {
@@ -189,11 +186,11 @@ namespace Spatial
                 {
                 return mapping.size();
                 }
-            void replace(typename map<FMTcoordinate,T>::const_iterator first,typename map<FMTcoordinate,T>::const_iterator last)
+            void replace(typename std::map<FMTcoordinate,T>::const_iterator first,typename std::map<FMTcoordinate,T>::const_iterator last)
                 {
                 while (first!=last)
                     {
-                    typename map<FMTcoordinate,T>::iterator it = mapping.find(first->first);
+                    typename std::map<FMTcoordinate,T>::iterator it = mapping.find(first->first);
                     if (it != last)
                         {
                         it->second = first->second;

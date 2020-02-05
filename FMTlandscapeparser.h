@@ -24,18 +24,11 @@ SOFTWARE.
 
 #ifndef FMTlandscapeparser_H_INCLUDED
 #define FMTlandscapeparser_H_INCLUDED
-/*
-#include "xlocale.h"
-#include "gdal.h"
-#include "gdal_priv.h"
-#include "ogrsf_frmts.h"
-#include "gdal_rat.h"
-*/
+
 #include "FMTtheme.h"
+#include "FMTconstants.h"
 #include "FMTparser.h"
 
-using namespace std;
-using namespace Core;
 
 namespace WSParser
 {
@@ -43,18 +36,20 @@ namespace WSParser
 class FMTlandscapeparser : public FMTparser
     {
     private:
-        regex rxcleanlans;
-        regex rxindex;
-        regex rxparameter;
-        map<string,double>getindexes(string index_line,const FMTconstants& constants);
+        std::regex rxcleanlans;
+		std::regex rxindex;
+		std::regex rxparameter;
+		std::map<std::string,double>getindexes(std::string index_line,const Core::FMTconstants& constants);
     public:
         FMTlandscapeparser();
         FMTlandscapeparser(const FMTlandscapeparser& rhs);
         FMTlandscapeparser& operator = (const FMTlandscapeparser& rhs);
-        vector<FMTtheme>read(const FMTconstants& constants,string location);
-        vector<FMTtheme>readvectors(const string& location);
-        vector<FMTtheme>readrasters(const vector<string>& locations);
-        bool write(const vector<FMTtheme>& themes,string location);
+        std::vector<Core::FMTtheme>read(const Core::FMTconstants& constants,std::string location);
+		#ifdef FMTWITHGDAL
+			std::vector<Core::FMTtheme>readvectors(const  std::string& location);
+			std::vector<Core::FMTtheme>readrasters(const  std::vector< std::string>& locations);
+		#endif
+        bool write(const  std::vector<Core::FMTtheme>& themes, std::string location);
     };
 }
 

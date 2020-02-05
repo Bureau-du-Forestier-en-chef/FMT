@@ -42,8 +42,8 @@ void exportSpatial()
         "\n"
         "This class is used for coordinate hashing\n"
         "\n";
-    class_<Spatial::FMTcoordinate>("FMTcoordinate",py_FMTcoord_doc)
-        .def(init<unsigned int,unsigned int>())
+    bp::class_<Spatial::FMTcoordinate>("FMTcoordinate",py_FMTcoord_doc)
+        .def(bp::init<unsigned int,unsigned int>())
         .def("__lt__",&Spatial::FMTcoordinate::operator <)
         .def("getx",&Spatial::FMTcoordinate::getx)
         .def("gety",&Spatial::FMTcoordinate::gety)
@@ -56,8 +56,8 @@ void exportSpatial()
         "\n"
         "Spatialy explicit forest definition\n"
         "\n";
-    class_<Spatial::FMTforest,bases<FMTlayer<FMTdevelopment>>>("FMTforest",py_FMTforest_doc)
-        .def(init<Spatial::FMTforest>())
+	bp::class_<Spatial::FMTforest, bp::bases<Spatial::FMTlayer<Core::FMTdevelopment>>>("FMTforest",py_FMTforest_doc)
+        .def(bp::init<Spatial::FMTforest>())
         .def("getarea",&Spatial::FMTforest::getarea)
         .def("grow",&Spatial::FMTforest::grow);
      define_pylist<Spatial::FMTforest>();
@@ -68,7 +68,7 @@ void exportSpatial()
         "Spatialy explicit events locations\n"
         "\n";
 
-    class_<Spatial::FMTdisturbancestack>("FMTdisturbancestack",py_FMTdiststack_doc)
+	bp::class_<Spatial::FMTdisturbancestack>("FMTdisturbancestack",py_FMTdiststack_doc)
         .def("allow",&Spatial::FMTdisturbancestack::allow);
 
 
@@ -77,10 +77,10 @@ void exportSpatial()
         "\n"
         "Spatialy explicit WS action\n"
         "\n";
-    class_<Spatial::FMTspatialaction,bases<FMTaction>>("FMTspatialaction",py_FMTspact_doc)
-        .def(init<Core::FMTaction>())
-        .add_property("neighbors", make_getter(&Spatial::FMTspatialaction::neighbors, return_value_policy<return_by_value>()),
-                     make_setter(&Spatial::FMTspatialaction::neighbors, return_value_policy<return_by_value>()))
+	bp::class_<Spatial::FMTspatialaction, bp::bases<Core::FMTaction>>("FMTspatialaction",py_FMTspact_doc)
+        .def(bp::init<Core::FMTaction>())
+        .add_property("neighbors", bp::make_getter(&Spatial::FMTspatialaction::neighbors, bp::return_value_policy<bp::return_by_value>()),
+                     make_setter(&Spatial::FMTspatialaction::neighbors, bp::return_value_policy<bp::return_by_value>()))
         .def_readwrite("green_up",&Spatial::FMTspatialaction::green_up)
         .def_readwrite("adjacency",&Spatial::FMTspatialaction::adjacency)
         .def_readwrite("minimal_size",&Spatial::FMTspatialaction::minimal_size)
@@ -91,7 +91,7 @@ void exportSpatial()
         .def_readwrite("size_weight",&Spatial::FMTspatialaction::size_weight);
     define_pylist<Spatial::FMTspatialaction>();
 
-    class_<Spatial::FMTsaschedule, boost::noncopyable>("Abstract_FMTsaschedule",no_init);
+	bp::class_<Spatial::FMTsaschedule, boost::noncopyable>("Abstract_FMTsaschedule", bp::no_init);
 
     const char* py_FMTexposchedule_doc =
         " ``FMTlinearschedule`` class.\n"
@@ -100,8 +100,8 @@ void exportSpatial()
         "Simulated annealing cooling schedule\n"
         "\n";
 
-    class_<Spatial::FMTexponentialschedule,bases<FMTsaschedule>>("FMTexponentialschedule",py_FMTexposchedule_doc)
-        .def(init<double>());
+	bp::class_<Spatial::FMTexponentialschedule, bp::bases<Spatial::FMTsaschedule>>("FMTexponentialschedule",py_FMTexposchedule_doc)
+        .def(bp::init<double>());
 
     const char* py_FMTsasolution_doc =
         " ``FMTsasolution`` class.\n"
@@ -109,15 +109,15 @@ void exportSpatial()
         "FMTsasolution\n"
         "\n";
 
-    enum_<Spatial::FMTsamovetype>("FMTsamovetype")
+	bp::enum_<Spatial::FMTsamovetype>("FMTsamovetype")
 		.value("shotgun", Spatial::FMTsamovetype::shotgun)
 		.value("cluster", Spatial::FMTsamovetype::cluster);
 
     define_FMTlayer<Graph::FMTgraph>();
-    class_<Spatial::FMTsasolution,bases<FMTlayer<FMTgraph>>>("FMTsasolution",py_FMTsasolution_doc,no_init)
-        .def("get_stats",&FMTsasolution::getsolution_stats)
-        .def("getobjfvalue",&FMTsasolution::getobjfvalue)
-        .def("get_forest_at_period",&FMTsasolution::getforestperiod);
+    bp::class_<Spatial::FMTsasolution, bp::bases<Spatial::FMTlayer<Graph::FMTgraph>>>("FMTsasolution",py_FMTsasolution_doc, bp::no_init)
+        .def("get_stats",&Spatial::FMTsasolution::getsolution_stats)
+        .def("getobjfvalue",&Spatial::FMTsasolution::getobjfvalue)
+        .def("get_forest_at_period",&Spatial::FMTsasolution::getforestperiod);
 
     define_pylist<Spatial::FMTsasolution>();
 

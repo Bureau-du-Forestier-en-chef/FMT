@@ -34,8 +34,6 @@ SOFTWARE.
 #include <boost/serialization/serialization.hpp>
 #include <boost/serialization/nvp.hpp>
 
-using namespace std;
-
 namespace Core
 {
 
@@ -52,23 +50,21 @@ class FMTfork : public FMTspec
 		ar & boost::serialization::make_nvp("specifications", boost::serialization::base_object<FMTspec>(*this));
 		ar & BOOST_SERIALIZATION_NVP(transitions);
 		}
-        vector<FMTtransitionmask>transitions;
+	std::vector<FMTtransitionmask>transitions;
     public:
         FMTfork();
         FMTfork(const FMTfork& rhs);
         FMTfork& operator = (const FMTfork& rhs);
         void add(FMTtransitionmask& transition);
-        //vector<FMTdevelopment>get(const FMTdevelopment& base,const FMTyields& ylds,const vector<FMTtheme>& themes) const;
-		vector<FMTdevelopmentpath> getpaths(const FMTdevelopment& base, 
-			const FMTyields& ylds, const vector<FMTtheme>& themes,const bool& reset_age) const;
-		//FMTtransitionmask getmasktran(const FMTdevelopment& base,const FMTyields& ylds) const;
-        FMTdevelopment getmax(const FMTdevelopment& base,const FMTyields& ylds,const vector<FMTtheme>& themes, const bool& reset_age) const;
-        vector<FMTtransitionmask> getmasktrans() const;
+		std::vector<FMTdevelopmentpath> getpaths(const FMTdevelopment& base,
+			const FMTyields& ylds, const std::vector<FMTtheme>& themes,const bool& reset_age) const;
+        FMTdevelopment getmax(const FMTdevelopment& base,const FMTyields& ylds,const std::vector<FMTtheme>& themes, const bool& reset_age) const;
+		std::vector<FMTtransitionmask> getmasktrans() const;
 		bool operator == (const FMTfork& rhs) const;
         FMTfork single() const;
         double sumprop() const;
         size_t size() const;
-        operator string() const override;
+        operator std::string() const override;
     };
 
 }

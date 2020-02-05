@@ -56,7 +56,7 @@ class FMTgraphstats
 		int output_rows;
 		int output_cols;
 		FMTgraphstats();
-		FMTgraphstats(const unique_ptr<OsiSolverInterface>& solverinterface,
+		FMTgraphstats(const std::unique_ptr<OsiSolverInterface>& solverinterface,
 			const FMTadjacency_list& graph,
 			int ltransfer_rows, int loutput_rows, int loutput_cols);
 		FMTgraphstats(const FMTgraphstats& rhs);
@@ -67,7 +67,7 @@ class FMTgraphstats
 		FMTgraphstats operator - (const FMTgraphstats& rhs);
 		bool operator == (const FMTgraphstats& rhs) const;
 		bool operator != (const FMTgraphstats& rhs) const;
-		operator string() const;
+		operator std::string() const;
 		~FMTgraphstats()=default;
 	};
 }

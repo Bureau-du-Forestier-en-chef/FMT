@@ -41,9 +41,23 @@ namespace Logging
 			}
 		}
 
-	FMTlogger::FMTlogger() : filestream()
+	FMTlogger::FMTlogger() : filestream(nullptr)
 		{
 
+		}
+
+	FMTlogger::FMTlogger(const FMTlogger& rhs): filestream(rhs.filestream)
+		{	
+
+		}
+
+	FMTlogger& FMTlogger::operator = (const FMTlogger& rhs)
+		{
+		if (this!=&rhs)
+			{
+			filestream = rhs.filestream;
+			}
+		return *this;
 		}
 
 	FMTlogger::~FMTlogger()
@@ -84,10 +98,10 @@ namespace Logging
 		#else
 				std::cout << message << std::flush;
 		#endif
-		if (filestream && filestream->is_open())
+		/*if (filestream && filestream->is_open())
 			{
-			filestream->operator<<(message);
-			}
+			filestream->operator <<(message);
+			}*/
 		}
 
 	int FMTlogger::print()

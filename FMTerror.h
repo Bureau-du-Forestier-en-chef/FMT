@@ -26,6 +26,7 @@ SOFTWARE.
 #define FMTerror_H_INCLUDED
 
 #include "FMTexception.h"
+#include <string>
 
 
 namespace Exception
@@ -41,8 +42,8 @@ namespace Exception
 		public:
 			FMTerror();
 			FMTerror(const FMTexception& rhs);
-			FMTerror(const FMTexc lexception, const string message);
-			FMTerror(const FMTexc lexception, const FMTwssect lsection, const string message);
+			FMTerror(const FMTexc lexception, const std::string message);
+			FMTerror(const FMTexc lexception, const FMTwssect lsection, const std::string message);
 		};
 	}
 #endif

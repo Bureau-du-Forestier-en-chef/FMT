@@ -34,8 +34,6 @@ SOFTWARE.
 #include "FMTdisturbancestack.h"
 #include <vector>
 #include <map>
-//#include <boost/serialization/export.hpp>
-using namespace Spatial;
 
 namespace Models
 {
@@ -52,24 +50,24 @@ class FMTsesmodel : public FMTmodel
 		ar & BOOST_SERIALIZATION_NVP(spactions);
 		}
     protected:
-        FMTforest mapping;
-		vector<FMTschedule> operatedschedule;
-        FMTdisturbancestack disturbances;
-        vector<FMTspatialaction>spactions;//should be FMTmodel action pointer....
+        Spatial::FMTforest mapping;
+		std::vector<Core::FMTschedule> operatedschedule;
+        Spatial::FMTdisturbancestack disturbances;
+		std::vector<Spatial::FMTspatialaction>spactions;
     public:
         FMTsesmodel();
         FMTsesmodel(const FMTsesmodel& rhs);
         FMTsesmodel(const FMTmodel& rhs);
         FMTsesmodel& operator = (const FMTsesmodel& rhs);
-        FMTforest getmapping() const;
-        FMTdisturbancestack getdisturbances() const;
-        bool setinitialmapping(const FMTforest& forest);
-        bool setspactions(const vector<FMTspatialaction>& lspactions);
-        map<string,double> simulate(const FMTschedule& schedule,
+        Spatial::FMTforest getmapping() const;
+        Spatial::FMTdisturbancestack getdisturbances() const;
+        bool setinitialmapping(const Spatial::FMTforest& forest);
+        bool setspactions(const std::vector<Spatial::FMTspatialaction>& lspactions);
+		std::map<std::string,double> simulate(const Core::FMTschedule& schedule,
                         bool schedule_only = true,
                         unsigned int seed = 0);
-		string getdisturbancestats() const;
-        vector<FMTschedule> getschedule() const;
+		std::string getdisturbancestats() const;
+		std::vector<Core::FMTschedule> getschedule() const;
     };
 
 }

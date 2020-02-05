@@ -31,7 +31,6 @@ SOFTWARE.
 #include "FMTyields.h"
 #include "FMTaction.h"
 #include "FMTtransitionmask.h"
-//#include "FMToutputsource.h"
 #include "FMTdevelopmentpath.h"
 #include <boost/serialization/serialization.hpp>
 #include <boost/serialization/nvp.hpp>
@@ -62,10 +61,8 @@ class FMTdevelopment : public FMTobject
         FMTmask mask;
         int age,lock,period;
         FMTdevelopment();
-		FMTdevelopment(FMTdevelopment&& rhs) noexcept;
-		FMTdevelopment& operator = (FMTdevelopment&& rhs);
         virtual ~FMTdevelopment() = default;
-		virtual unique_ptr<FMTdevelopment> Clone() const;
+		virtual std::unique_ptr<FMTdevelopment> Clone() const;
         FMTdevelopment(FMTmask mask,int age,int lock);
         FMTdevelopment(FMTmask lmask,int lage,int llock, int lperiod);
         FMTdevelopment(const FMTdevelopment& rhs);
@@ -74,22 +71,21 @@ class FMTdevelopment : public FMTobject
         bool operator != (const FMTdevelopment& rhs) const;
         FMTfuturdevelopment grow() const;
         bool operable(const FMTaction& action,const FMTyields& ylds) const;
-		bool anyoperable(const vector<const FMTaction*>& actions,const FMTyields& ylds) const;
+		bool anyoperable(const std::vector<const FMTaction*>& actions,const FMTyields& ylds) const;
         bool operator < (const FMTdevelopment& rhs) const;
-        virtual operator string() const;
+        virtual operator std::string() const;
 		virtual double getarea() const;
 		FMTdevelopment clearlock() const;
-		vector<FMTdevelopmentpath> operate(const FMTaction& action,
+		std::vector<FMTdevelopmentpath> operate(const FMTaction& action,
 			const FMTtransition& Transition,
 			const FMTyields& ylds,
-			const vector<FMTtheme>& themes) const;
-		//bool within(const FMToutputsource& output_source,const FMTyields& ylds) const;
-		double getinventorycoef(const FMTyields& ylds, const string& target_yield) const;
-		double getharvestcoef(const vector<FMTdevelopmentpath>& topaths,
-			const FMTaction& action,const FMTyields& ylds,const string& target_yield) const;
+			const std::vector<FMTtheme>& themes) const;
+		double getinventorycoef(const FMTyields& ylds, const std::string& target_yield) const;
+		double getharvestcoef(const std::vector<FMTdevelopmentpath>& topaths,
+			const FMTaction& action,const FMTyields& ylds,const std::string& target_yield) const;
 		bool is(const FMTspec& specification, const FMTyields& ylds) const;
 		bool worthtestingoperability(const FMTaction& action) const;
-		vector<int> anyworthtestingoperability(const vector<const FMTaction*>& actions, const FMTaction& firstaction) const;
+		std::vector<int> anyworthtestingoperability(const std::vector<const FMTaction*>& actions, const FMTaction& firstaction) const;
 		
     };
 

@@ -44,7 +44,7 @@ class FMTlifespans : public FMTlist<int>
         FMTlifespans(const FMTlifespans& rhs);
         FMTlifespans& operator = (const FMTlifespans& rhs);
 		bool operator == (const FMTlifespans& rhs) const;
-        operator string() const;
+        operator std::string() const;
     };
 
 }

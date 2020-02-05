@@ -31,7 +31,7 @@ FMTGCBMtransition::FMTGCBMtransition():ageafter(), themes(),name()
 
 	}
 
-FMTGCBMtransition::FMTGCBMtransition(const int& lageafter, const map<string, string>& lthemes, const string& lname) : 
+FMTGCBMtransition::FMTGCBMtransition(const int& lageafter, const std::map<std::string, std::string>& lthemes, const std::string& lname) :
 	ageafter(lageafter), themes(lthemes), name(lname)
 	{
 

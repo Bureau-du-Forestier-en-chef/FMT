@@ -30,10 +30,10 @@ SOFTWARE.
 #include "FMTdevelopment.h"
 #include "FMTbounds.h"
 #include <vector>
+#include <map>
 #include <string>
 #include <boost/serialization/serialization.hpp>
 
-using namespace std;
 
 namespace Core
 {
@@ -50,26 +50,26 @@ class FMTyields : public FMTlist<FMTyieldhandler>
 		ar & BOOST_SERIALIZATION_NVP(names);
 		ar & BOOST_SERIALIZATION_NVP(null_names);
 	}
-    vector<string>names;
-	vector<string>null_names;
-	vector<const FMTyieldhandler*> gethandleroftype(FMTyldwstype type) const;
-	int getmaxbase(const vector<const FMTyieldhandler*>& handlers) const;
+	std::vector<std::string>names;
+	std::vector<std::string>null_names;
+	std::vector<const FMTyieldhandler*> gethandleroftype(FMTyldwstype type) const;
+	int getmaxbase(const std::vector<const FMTyieldhandler*>& handlers) const;
     public:
         FMTyields();
         FMTyields(const FMTyields& rhs);
         FMTyields& operator = (const FMTyields& rhs);
-        bool isyld(const string& value) const;
-		bool isnullyld(const string& value) const;
-        vector<string>getyldsnames() const;
-		vector<string>getnullyldsnames() const;
-		map<string, double>get(const FMTdevelopment& dev,
-			const vector<string>& targets) const;
-		map<string,double>getylds(const FMTdevelopment& dev,const FMTspec& spec) const;
+        bool isyld(const std::string& value) const;
+		bool isnullyld(const std::string& value) const;
+		std::vector<std::string>getyldsnames() const;
+		std::vector<std::string>getnullyldsnames() const;
+		std::map<std::string, double>get(const FMTdevelopment& dev,
+			const std::vector<std::string>& targets) const;
+		std::map<std::string,double>getylds(const FMTdevelopment& dev,const FMTspec& spec) const;
         int getage(const FMTdevelopment& dev,const FMTspec& spec) const;
-		map<string, map<string, vector<double>>>getallyields(const FMTtheme& target,FMTyldwstype type) const;
+		std::map<std::string, std::map<std::string, std::vector<double>>>getallyields(const FMTtheme& target,FMTyldwstype type) const;
 		bool operator == (const FMTyields& rhs) const;
         void update();
-    vector<string>getstacked() const;
+		std::vector<std::string>getstacked() const;
     };
 }
 

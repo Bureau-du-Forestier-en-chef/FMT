@@ -29,8 +29,8 @@ namespace Exception
 
 	FMTquietexceptionhandler::FMTquietexceptionhandler() :FMTexceptionhandler() {}
 
-	FMTlev FMTquietexceptionhandler::raise(FMTexc lexception, FMTwssect lsection, string text,
-		const int& line, const string& file)
+	FMTlev FMTquietexceptionhandler::raise(FMTexc lexception, FMTwssect lsection, std::string text,
+		const int& line, const std::string& file)
 	{
 		FMTexception excp;
 		if (lsection == FMTwssect::Empty)
@@ -42,21 +42,23 @@ namespace Exception
 		}
 		if (_level == FMTlev::FMT_Warning)
 		{
-			//FMTwarning(excp).warn();
+			
 		}
 		else if (_level == FMTlev::FMT_logic || _level == FMTlev::FMT_range) {
 			throw FMTerror(excp);
 		}
 		return _level;
 	}
+	#ifdef FMTWITHGDAL
 
-	FMTexceptionhandler* FMTquietexceptionhandler::getCPLdata()
-		{
-		return this;
-		}
-	void FMTquietexceptionhandler::handelCPLerror(CPLErr eErrClass, CPLErrorNum nError, const char * pszErrorMsg)
-		{
+		FMTexceptionhandler* FMTquietexceptionhandler::getCPLdata()
+			{
+			return this;
+			}
+		void FMTquietexceptionhandler::handelCPLerror(CPLErr eErrClass, CPLErrorNum nError, const char * pszErrorMsg)
+			{
 
-		}
+			}
+	#endif
 
 }

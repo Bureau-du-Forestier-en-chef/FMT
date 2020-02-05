@@ -23,6 +23,7 @@ SOFTWARE.
 */
 
 #include "FMTdata.h"
+#include <algorithm>
 
 
 namespace Core{
@@ -54,7 +55,7 @@ bool FMTdata::constant() const
 	{
 	if (ops == FMTyieldparserop::FMTwsnone)
 		{
-		vector<double>tempvalues(data);
+		std::vector<double>tempvalues(data);
 		std::sort(tempvalues.begin(), tempvalues.end());
 		int uniqueCount = static_cast<int>(std::unique(tempvalues.begin(), tempvalues.end()) - tempvalues.begin());
 		return (uniqueCount == 1);
@@ -107,12 +108,12 @@ void FMTdata::set(const double& value, const FMTmask& mask, const int& age, cons
 	_cache[this->hashdata(period, age, mask)] = value;
 	}
 
-vector<string> FMTdata::getsource() const
+std::vector<std::string> FMTdata::getsource() const
     {
 	if (ops == FMTyieldparserop::FMTwsequation)
 		{
-		vector<string>nsources;
-		for (const string& val : source)
+		std::vector<std::string>nsources;
+		for (const std::string& val : source)
 			{
 			if (!FMTfunctioncall(val).valid() && !FMToperator(val).valid())
 				{
@@ -124,9 +125,9 @@ vector<string> FMTdata::getsource() const
     return source;
     }
 
-FMTdata::operator string() const
+FMTdata::operator std::string() const
     {
-    string value = "";
+	std::string value = "";
     switch (ops)
         {
         case FMTyieldparserop::FMTwscai:
@@ -184,7 +185,7 @@ FMTdata::operator string() const
 
 		}else{
 		int loc = 0;
-		for (const string& srcval : source)
+		for (const std::string& srcval : source)
 			{
 			if (!srcval.empty())
 				{
@@ -199,9 +200,9 @@ FMTdata::operator string() const
     return value;
     }
 
-vector<double>FMTdata::tovalues(const map<string, double>& sources) const
+std::vector<double>FMTdata::tovalues(const std::map<std::string, double>& sources) const
 	{
-	vector<double>values(stacking.size(),0.0);
+	std::vector<double>values(stacking.size(),0.0);
 	size_t varid = 0;
 	size_t numid = 0;
 	int id = 0;
@@ -223,13 +224,12 @@ vector<double>FMTdata::tovalues(const map<string, double>& sources) const
 
 FMTexpression FMTdata::toexpression() const
 	{
-	vector<string>vals(source.size());
+	std::vector<std::string>vals(source.size());
 	int loc = 0;
-	for (const string& val : source)
+	for (const std::string& val : source)
 		{
 		if (val.empty())
 			{
-			//vals[loc]=(to_string(data[loc]));
 			vals[loc] = boost::lexical_cast<std::string>(data[loc]);
 		}else {
 			vals[loc]=val;
@@ -248,13 +248,13 @@ bool FMTdata::operator == (const FMTdata& rhs) const
 		data == rhs.data);
 	}
 
-FMTdata::FMTdata(const vector<double>& lvalues,
+FMTdata::FMTdata(const std::vector<double>& lvalues,
 	const FMTyieldparserop& lops,
-	const vector<string>& lsource): ops(lops), source(lsource), stacking(), _cache(), _agebase(),data(lvalues) {}
+	const std::vector<std::string>& lsource): ops(lops), source(lsource), stacking(), _cache(), _agebase(),data(lvalues) {}
 
-FMTdata::FMTdata(const vector<double>& lvalues,
+FMTdata::FMTdata(const std::vector<double>& lvalues,
                 const FMTyieldparserop& lops,
-                const vector<string>& lsource,
-				const vector<bool>& varstack):ops(lops),source(lsource),stacking(varstack), _cache(), _agebase(),data(lvalues){}
+                const std::vector<std::string>& lsource,
+				const std::vector<bool>& varstack):ops(lops),source(lsource),stacking(varstack), _cache(), _agebase(),data(lvalues){}
 
 }

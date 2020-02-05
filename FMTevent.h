@@ -50,17 +50,17 @@ class FMTevent
 	FMTcoordinate midposition() const
 		{
 		//get mid point of elements!
-		size_t midlocation = (elements.size() / 2);
+		const size_t midlocation = (elements.size() / 2);
 		return ((elements.begin() + midlocation)->first);
 		}
     protected:
         FMTcoordinate ignition;
-        vector<FMTcoordinate>active;
-        const map<FMTcoordinate,T>* territory;
-        vector<FMTcoordinate>enveloppe;
+		std::vector<FMTcoordinate>active;
+        const std::map<FMTcoordinate,T>* territory;
+		std::vector<FMTcoordinate>enveloppe;
 		int order;
     public:
-    map<FMTcoordinate,const T*>elements;
+		std::map<FMTcoordinate,const T*>elements;
     virtual ~FMTevent() = default;
     FMTevent():
         ignition(),
@@ -76,13 +76,13 @@ class FMTevent
 		ignition(location),
 		active(),
 		territory(),
-		enveloppe(vector<FMTcoordinate>(4, location)),
+		enveloppe(std::vector<FMTcoordinate>(4, location)),
 		order(),
 		elements()
 	{
 
 	}
-    FMTevent(const map<FMTcoordinate,T>& lterritory, const int& pass):
+    FMTevent(const std::map<FMTcoordinate,T>& lterritory, const int& pass):
         ignition(),
         active(),
         territory(&lterritory),
@@ -116,7 +116,7 @@ class FMTevent
 		{
 		if (size() == rhs.size() && enveloppe == rhs.enveloppe)
 			{
-			for (typename map<FMTcoordinate,const T*>::const_iterator it = elements.begin(); it!=elements.end();it++)
+			for (typename std::map<FMTcoordinate,const T*>::const_iterator it = elements.begin(); it!=elements.end();it++)
 				{
 				if (rhs.elements.find(it->first)==rhs.elements.end())
 					{
@@ -138,27 +138,6 @@ class FMTevent
 		return (this->midposition() < rhs.midposition);
 		}
 
-	/*set<FMTevent>geteventswithin(const set<FMTevent>& allevents, const unsigned int& distance) const;
-		{
-		//
-		set<FMTevent>nearevents;
-		set<FMTevent>::const_iterator itlower = allevents.lower_bound(*this);
-		size_t location = distance(allevents.begin(), itlower);
-		while (location >= 0 && (itlower - location)->within(distance,*this))
-			{
-			earevents.insert(*itlower);
-			--location;
-			}
-		set<FMTevent>::const_iterator itupper = allevents.upper_bound(*this);
-		location = 0;
-		while (itupper != allevents.end())
-			{
-
-			++location;
-			}
-
-
-		}*/
 
 	int getorder() const
 		{
@@ -169,7 +148,7 @@ class FMTevent
 	size_t perimeter() const //gives perimeter
 		{
 		size_t total = 0;
-		for (typename map<FMTcoordinate, const T*>::const_iterator it = elements.begin(); it != elements.end(); it++)
+		for (typename std::map<FMTcoordinate, const T*>::const_iterator it = elements.begin(); it != elements.end(); it++)
 			{
 			for (int id = 0; id < 4; ++id)
 				{
@@ -196,19 +175,19 @@ class FMTevent
 
 	FMTcoordinate averagecentroid() const
 		{
-		size_t startx = enveloppe.at(0).getx();
-		size_t starty = enveloppe.at(0).gety();
-		size_t plusx = enveloppe.at(1).getx() - startx;
-		size_t plusy = enveloppe.at(2).gety() - starty;
+		const size_t startx = enveloppe.at(0).getx();
+		const size_t starty = enveloppe.at(0).gety();
+		const size_t plusx = enveloppe.at(1).getx() - startx;
+		const size_t plusy = enveloppe.at(2).gety() - starty;
 		return FMTcoordinate(startx + plusx, starty + plusy);
 		}
 
-	string getstats() const
+	std::string getstats() const
 		{
-		return (" "+to_string(size()) +" "+
-			to_string(perimeter()) +" "+
-			to_string(height()) +" "+
-			to_string(width()));
+		return (" "+ std::to_string(size()) +" "+
+			std::to_string(perimeter()) +" "+
+			std::to_string(height()) +" "+
+			std::to_string(width()));
 		}
 
 	void erase(const FMTcoordinate& newlocation)
@@ -221,7 +200,7 @@ class FMTevent
 			{
 			enveloppe.clear();
 		}else {
-			enveloppe = vector<FMTcoordinate>(4, elements.begin()->first);
+			enveloppe = std::vector<FMTcoordinate>(4, elements.begin()->first);
 			for (auto& element : elements)
 				{
 				element.first.upenveloppe(enveloppe);
@@ -231,7 +210,7 @@ class FMTevent
 
 	void insert(const FMTcoordinate& newlocation, const void* element)
 		{
-		elements.insert(pair<Spatial::FMTcoordinate, const T*>(newlocation, static_cast<const T*>(element)));
+		elements.insert(std::pair<Spatial::FMTcoordinate, const T*>(newlocation, static_cast<const T*>(element)));
 		newlocation.upenveloppe(enveloppe);
 		}
 
@@ -254,12 +233,12 @@ class FMTevent
         }
     double distance(const FMTevent& rhs) const
         {
-        double minimaldistance = numeric_limits<double>::max();
+        double minimaldistance = std::numeric_limits<double>::max();
         for(const FMTcoordinate& coord : enveloppe)
             {
             for(const FMTcoordinate& rhscoord : rhs.enveloppe)
                 {
-                double dist = coord.distance(rhscoord);
+                const double dist = coord.distance(rhscoord);
                 if (dist < minimaldistance)
                     {
                     minimaldistance = dist;
@@ -268,14 +247,14 @@ class FMTevent
             }
         return minimaldistance;
         }
-	double minimaldistance(const vector<FMTevent>& events,const unsigned int& distancel) const
+	double minimaldistance(const std::vector<FMTevent>& events,const unsigned int& distancel) const
 		{
 		double distancevalue = static_cast<double>(distancel) + 1.0;
 		for (const FMTevent& element : events)
 			{
 			if (element.within(distancel,element))
 				{
-				double value = distance(element);
+				const double value = distance(element);
 				if (value < distancevalue)
 					{
 					distancevalue = value;
@@ -333,7 +312,7 @@ class FMTevent
             {
             ignition = ignit;
             active.push_back(ignition);
-            enveloppe = vector<FMTcoordinate>(4,ignition);
+            enveloppe = std::vector<FMTcoordinate>(4,ignition);
             return true;
             }
         return false;
@@ -342,11 +321,11 @@ class FMTevent
         {
         while((elements.size() < action.maximal_size) && (!active.empty()))
             {
-            vector<FMTcoordinate>::iterator coord;
+			std::vector<FMTcoordinate>::iterator coord;
             for(size_t id = 0; id < action.neighbors_size; ++id)
                 {
                 coord = active.begin();
-                const FMTcoordinate spread_coord = coord->at(int(id));
+                const FMTcoordinate spread_coord = coord->at(static_cast<int>(id));
                 if(territory->find(spread_coord)!= territory->end() && elements.find(spread_coord) == elements.end())
                     {
                     if(std::find(active.begin(),active.end(),spread_coord)==active.end())
@@ -358,9 +337,6 @@ class FMTevent
                 }
             coord = active.begin();
 			insert(*coord, &(territory->at(*coord)));
-			/*coord->upenveloppe(enveloppe);
-            elements.insert(pair<Spatial::FMTcoordinate,const T*>(*coord,&(territory->at(*coord))));
-            coord->upenveloppe(enveloppe);*/
             active.erase(active.begin());
             }
         if (elements.size()>=action.minimal_size)
@@ -376,7 +352,7 @@ class FMTevent
 
     bool whithinelements(unsigned int dist, const FMTcoordinate& location) const
     {
-        for (typename map<FMTcoordinate, const T*>::const_iterator elemit = elements.begin(); elemit != elements.end(); elemit++)
+        for (typename std::map<FMTcoordinate, const T*>::const_iterator elemit = elements.begin(); elemit != elements.end(); elemit++)
         {
              if (elemit->first.within(dist,location))
              {
@@ -386,15 +362,15 @@ class FMTevent
         return false;
     }
 
-    bool splittedevent(const unsigned int& distancel, vector<FMTevent>& splittedevents) const
+    bool splittedevent(const unsigned int& distancel, std::vector<FMTevent>& splittedevents) const
         //Check if events are split and fill vector of splitted events
         {
-            vector<typename map<FMTcoordinate,const T*>::const_iterator> it_vect;
+			std::vector<typename std::map<FMTcoordinate,const T*>::const_iterator> it_vect;
             while(it_vect.size()<elements.size())
             {
                 size_t iteration = 0;
                 size_t alloc_count = 0;
-                for (typename map<FMTcoordinate, const T*>::const_iterator elemit = elements.begin(); elemit != elements.end(); elemit++)
+                for (typename std::map<FMTcoordinate, const T*>::const_iterator elemit = elements.begin(); elemit != elements.end(); elemit++)
                 {
                     if (iteration == 0 && elemit==elements.begin())
                     {
@@ -404,7 +380,7 @@ class FMTevent
                         splittedevents.push_back(newevent);
                         it_vect.push_back(elemit);
                     }
-                    if (find(it_vect.begin(),it_vect.end(),elemit)==it_vect.end())//If not already allocated
+                    if (std::find(it_vect.begin(),it_vect.end(),elemit)==it_vect.end())//If not already allocated
                     {
                         FMTevent& lastevent = splittedevents.back();
                         if (lastevent.whithinelements(distancel,elemit->first))//If in distance of 1
@@ -417,9 +393,9 @@ class FMTevent
                 }
                 if(alloc_count==0)
                 {
-                    for (typename map<FMTcoordinate, const T*>::const_iterator elemit = elements.begin(); elemit != elements.end(); elemit++)
+                    for (typename std::map<FMTcoordinate, const T*>::const_iterator elemit = elements.begin(); elemit != elements.end(); elemit++)
                     {
-                        if (find(it_vect.begin(),it_vect.end(),elemit)==it_vect.end())
+                        if (std::find(it_vect.begin(),it_vect.end(),elemit)==it_vect.end())
                         {
                             FMTevent newevent(elemit->first);
                             newevent.insert(elemit->first,nullptr);

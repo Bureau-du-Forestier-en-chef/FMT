@@ -30,9 +30,6 @@ SOFTWARE.
 #include <vector>
 #include <boost/serialization/serialization.hpp>
 #include <boost/serialization/nvp.hpp>
-using namespace boost;
-using namespace std;
-//using namespace Core;
 
 namespace Spatial
     {
@@ -48,8 +45,8 @@ namespace Spatial
 			ar & BOOST_SERIALIZATION_NVP(y_n);
 			}
         unsigned int x,y;
-        static vector<int>x_n;
-        static vector<int>y_n;
+        static std::vector<int>x_n;
+        static std::vector<int>y_n;
     public:
         FMTcoordinate();
         ~FMTcoordinate()=default;
@@ -58,7 +55,7 @@ namespace Spatial
         FMTcoordinate at(unsigned int id) const;
         double distance(const FMTcoordinate& coord) const;
         bool within(unsigned int ldistance,const FMTcoordinate& coord) const;
-        void upenveloppe(vector<FMTcoordinate>& enveloppe) const;
+        void upenveloppe(std::vector<FMTcoordinate>& enveloppe) const;
         FMTcoordinate& operator = (const FMTcoordinate& rhs);
         unsigned int getx() const;
         unsigned int gety() const;
@@ -76,7 +73,7 @@ namespace boost {
     {
     unsigned int x = coord.getx();
     unsigned int y = coord.gety();
-    return (hash<unsigned int>()(x) && hash<unsigned int>()(y));
+    return (boost::hash<unsigned int>()(x) && hash<unsigned int>()(y));
     }
   };
 

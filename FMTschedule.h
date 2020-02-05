@@ -29,9 +29,6 @@ SOFTWARE.
 #include "FMTdevelopment.h"
 #include "FMTaction.h"
 
-
-using namespace std;
-
 namespace Core
 {
 
@@ -47,9 +44,9 @@ class FMTschedule
     int period;
 		bool sameelements(const FMTschedule& rhs) const;
     public:
-        map<FMTaction,map<FMTdevelopment,vector<double>>> elements;
-        FMTschedule(int lperiod,map<FMTaction,map<FMTdevelopment,vector<double>>> mapping);
-		FMTschedule(int lperiod, const map<FMTaction, map<FMTdevelopment, map<int,double>>>& mapping);
+		std::map<FMTaction, std::map<FMTdevelopment, std::vector<double>>> elements;
+        FMTschedule(int lperiod, std::map<FMTaction, std::map<FMTdevelopment, std::vector<double>>> mapping);
+		FMTschedule(int lperiod, const std::map<FMTaction, std::map<FMTdevelopment, std::map<int,double>>>& mapping);
         FMTschedule();
         FMTschedule(const FMTschedule& rhs);
         FMTschedule& operator = (const FMTschedule& rhs);
@@ -57,9 +54,9 @@ class FMTschedule
 		bool operator != (const FMTschedule& rhs) const;
 		FMTschedule& operator += (const FMTschedule& rhs);
 		FMTschedule operator + (const FMTschedule& rhs) const;
-        map<FMTdevelopment,vector<double>>getfaction(const FMTaction& action) const;
-        map<FMTaction,map<FMTdevelopment,vector<double>>>get() const;
-        operator string() const;
+		std::map<FMTdevelopment, std::vector<double>>getfaction(const FMTaction& action) const;
+		std::map<FMTaction, std::map<FMTdevelopment, std::vector<double>>>get() const;
+        operator std::string() const;
         int getperiod() const;
         double actionarea(const FMTaction& action) const;
         double area() const;

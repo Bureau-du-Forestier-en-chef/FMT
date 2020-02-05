@@ -28,7 +28,6 @@ SOFTWARE.
 #include <string>
 #include <math.h>
 
-using namespace std;
 
 namespace Core
 {
@@ -44,7 +43,7 @@ namespace Core
 		FMTfkey key;
 	public:
 		FMTfunctioncall();
-		FMTfunctioncall(const string& base);
+		FMTfunctioncall(const std::string& base);
 		double call(const double& rhs) const;
 		FMTfunctioncall(const FMTfunctioncall& rhs);
 		FMTfunctioncall& operator = (const FMTfunctioncall& rhs);

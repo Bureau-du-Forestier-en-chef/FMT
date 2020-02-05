@@ -32,10 +32,10 @@ SOFTWARE.
 #include "FMTyields.h"
 #include "FMTdevelopment.h"
 #include <boost/serialization/serialization.hpp>
-
 #include <vector>
+#include <map>
+#include <string>
 
-using namespace std;
 
 namespace Core
 {
@@ -51,27 +51,26 @@ class FMTtransition : public FMTlist<FMTfork>
 		ar & BOOST_SERIALIZATION_NVP(name);
 	}
     public:
-        string name;
+		std::string name;
         FMTtransition();
-        FMTtransition(string& lname);
-		FMTtransition(const string& lname);
-        //FMTtransition(const string& lname,map<FMTmask,vector<FMTfork>>& mapping);
+        FMTtransition(std::string& lname);
+		FMTtransition(const std::string& lname);
         FMTtransition(const FMTtransition& rhs);
         FMTtransition& operator = (const FMTtransition& rhs);
-        operator string() const;
+        operator std::string() const;
         FMTtransition single() const;
 		bool isleaking() const;
-        unsigned int age_after(const vector<FMTdevelopment>& devs,
+        unsigned int age_after(const std::vector<FMTdevelopment>& devs,
                                const FMTaction& action,
                                const FMTyields& ylds,
-                               const vector<FMTtheme>& themes) const;
+                               const std::vector<FMTtheme>& themes) const;
         const FMTfork* getfork(const FMTdevelopment& dev,
                                const FMTyields& ylds) const;
-		vector<FMTtheme>getstaticthemes(const vector<FMTtheme>& themes) const;
-        FMTmask main_target(const vector<FMTdevelopment>& devs,
+		std::vector<FMTtheme>getstaticthemes(const std::vector<FMTtheme>& themes) const;
+        FMTmask main_target(const std::vector<FMTdevelopment>& devs,
                             const FMTyields& ylds) const;
-		map<string,vector<FMTdevelopment>> attribute_targets(const vector<FMTdevelopment>& devs,
-											const FMTyields& ylds, const vector<FMTtheme>& themes) const;
+		std::map<std::string, std::vector<FMTdevelopment>> attribute_targets(const std::vector<FMTdevelopment>& devs,
+											const FMTyields& ylds, const std::vector<FMTtheme>& themes) const;
         bool operator < (const FMTtransition& rhs) const;
         bool operator == (const FMTtransition& rhs) const;
         bool operator != (const FMTtransition& rhs) const;
@@ -79,9 +78,9 @@ class FMTtransition : public FMTlist<FMTfork>
 
 class FMTtransitioncomparator
 {
-	string transition_name;
+	std::string transition_name;
 public:
-	FMTtransitioncomparator(string name);
+	FMTtransitioncomparator(std::string name);
 	bool operator()(const FMTtransition& transition) const;
 
 };

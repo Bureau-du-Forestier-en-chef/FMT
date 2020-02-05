@@ -83,17 +83,16 @@ namespace Core
 	bool FMTconstraint::extravariables() const
 		{
 		if (type == FMTconstrainttype::FMTMAXMINobjective ||
-			type == FMTconstrainttype::FMTMINMAXobjective /*||
-			isgoal()*/)
+			type == FMTconstrainttype::FMTMINMAXobjective)
 			{
 			return true;
 			}
 		return false;
 		}
 
-    vector<string>FMTconstraint::getvariablelevels() const
+	std::vector<std::string>FMTconstraint::getvariablelevels() const
         {
-        vector<string>names;
+		std::vector<std::string>names;
         for (const FMToutputsource& source : sources)
             {
             if (source.isvariablelevel())
@@ -104,26 +103,26 @@ namespace Core
         return names;
         }
 
-    vector<string>FMTconstraint::getpenalties(double& sense) const
+	std::vector<std::string>FMTconstraint::getpenalties(double& sense) const
         {
         sense = 1;
-        vector<string>penalties;
+		std::vector<std::string>penalties;
         if (!this->emptyylds())
 			{
-			map<string, FMTyldbounds> thebounds = this->getyldsbounds();
-			for (map<string,FMTyldbounds>::const_iterator yields = thebounds.begin();
+			const std::map<std::string, FMTyldbounds> thebounds = this->getyldsbounds();
+			for (std::map<std::string,FMTyldbounds>::const_iterator yields = thebounds.begin();
 				yields != thebounds.end(); yields++)
 				{
-				if (yields->first.find("Penalty") != string::npos)
+				if (yields->first.find("Penalty") != std::string::npos)
 					{
-					vector<string>names;
+					std::vector<std::string>names;
 					boost::split(names, yields->first, boost::is_any_of("_"));
 					char str_sense = names.at(0).back();
 					if (str_sense=='-')
                         {
                         sense = -1;
                         }
-					for (const string& name : names)
+					for (const std::string& name : names)
                         {
                         penalties.push_back(names.at(1));
                         }
@@ -133,17 +132,17 @@ namespace Core
         return penalties;
         }
 
-   void FMTconstraint::getgoal(string& name,double& value) const
+   void FMTconstraint::getgoal(std::string& name,double& value) const
         {
         if (!this->emptyylds())
 			{
-				map<string, FMTyldbounds> thebounds = this->getyldsbounds();
-				for (map<string, FMTyldbounds>::const_iterator yields = thebounds.begin();
+				const std::map<std::string, FMTyldbounds> thebounds = this->getyldsbounds();
+				for (std::map<std::string, FMTyldbounds>::const_iterator yields = thebounds.begin();
 					yields != thebounds.end(); yields++)
 					{
-					if (yields->first.find("GOAL_") != string::npos)
+					if (yields->first.find("GOAL_") != std::string::npos)
 						{
-                        vector<string>names;
+						std::vector<std::string>names;
                         boost::split(names, yields->first,boost::is_any_of("_"));
                         name = names[1];
                         value = yields->second.getlower();
@@ -157,12 +156,12 @@ namespace Core
 		{
 		if (!this->emptyylds())
 			{
-				map<string, FMTyldbounds> thebounds = this->getyldsbounds();
-				for (map<string, FMTyldbounds>::const_iterator yields = thebounds.begin();
+				std::map<std::string, FMTyldbounds> thebounds = this->getyldsbounds();
+				for (std::map<std::string, FMTyldbounds>::const_iterator yields = thebounds.begin();
 					yields != thebounds.end(); yields++)
 					{
-					if (yields->first.find("GOAL_") != string::npos ||
-                        yields->first.find("Penalty") != string::npos)
+					if (yields->first.find("GOAL_") != std::string::npos ||
+                        yields->first.find("Penalty") != std::string::npos)
 						{
 						return true;
 						}
@@ -182,11 +181,21 @@ namespace Core
 		return sense;
 		}
 
+	void FMTconstraint::setrhs(const double& lower,const double& upper)
+		{
+		this->addbounds(FMTyldbounds(FMTwssect::Optimize, "RHS", upper, lower));
+		}
+
+	void FMTconstraint::setlength(int firstperiod, int lastperiod)
+		{
+		this->setbounds(FMTperbounds(FMTwssect::Optimize, lastperiod, firstperiod));
+		}
+
 	void FMTconstraint::getbounds(double& lower, double& upper, int period) const
 		{
         lower = 0;
         upper = 0;
-		map<string, FMTyldbounds> thebounds = this->getyldsbounds();
+		const std::map<std::string, FMTyldbounds> thebounds = this->getyldsbounds();
         if (type == FMTconstrainttype::FMTstandard || type == FMTconstrainttype::FMTspatialadjacency ||
             type == FMTconstrainttype::FMTspatialgreenup || type == FMTconstrainttype::FMTspatialsize )
             {
@@ -236,7 +245,7 @@ namespace Core
 		{
 		lower = 0;
 		upper = 0;
-		map<string, FMTyldbounds> thebounds = this->getyldsbounds();
+		std::map<std::string, FMTyldbounds> thebounds = this->getyldsbounds();
 		if (thebounds.find("Variation") != thebounds.end())
 			{
 			lower = (thebounds.at("Variation").getlower() / 100);
@@ -246,7 +255,7 @@ namespace Core
 
 	bool FMTconstraint::ismultiple() const
 		{
-		map<string, FMTyldbounds> thebounds = this->getyldsbounds();
+		std::map<std::string, FMTyldbounds> thebounds = this->getyldsbounds();
 		return (thebounds.find("Variation") != thebounds.end());
 		}
 
@@ -274,39 +283,39 @@ namespace Core
 		return type;
 		}
 
-	FMTconstraint::operator string() const
+	FMTconstraint::operator std::string() const
 		{
-		string line = "";
-		string period_bounds = "";
-		period_bounds += to_string(this->getperiodlowerbound());
+		std::string line = "";
+		std::string period_bounds = "";
+		period_bounds += std::to_string(this->getperiodlowerbound());
 		period_bounds += "..";
 		int maxperiod = this->getperiodupperbound();
-		if (maxperiod == numeric_limits<int>::max())
+		if (maxperiod == std::numeric_limits<int>::max())
 			{
 			period_bounds += "_LENGTH";
 		}else {
-			period_bounds += to_string(maxperiod);
+			period_bounds += std::to_string(maxperiod);
 			}
 		if (this->getperiodupperbound() == this->getperiodlowerbound())
 			{
-			period_bounds = to_string(maxperiod);
+			period_bounds = std::to_string(maxperiod);
 			}
-		string variation = "";
+		std::string variation = "";
 		if (!this->emptyylds())
 			{
-			map<string, FMTyldbounds> thebounds = this->getyldsbounds();
+			std::map<std::string, FMTyldbounds> thebounds = this->getyldsbounds();
 
 			if (thebounds.find("Variation") != thebounds.end())
 				{
 				if (thebounds.at("Variation").getlower()!= thebounds.at("Variation").getupper()
 					&& thebounds.at("Variation").getupper() > 0)
 					{
-					variation += ","+to_string(int(thebounds.at("Variation").getlower()))+ "%,";
-					variation += to_string(int(thebounds.at("Variation").getupper())) + "%";
+					variation += ","+ std::to_string(static_cast<int>(thebounds.at("Variation").getlower()))+ "%,";
+					variation += std::to_string(static_cast<int>(thebounds.at("Variation").getupper())) + "%";
 				}
 				else if (thebounds.at("Variation").getlower() != 0 )
 					{
-					variation += "," + to_string(int(thebounds.at("Variation").getlower())) + "%";
+					variation += "," + std::to_string(static_cast<int>(thebounds.at("Variation").getlower())) + "%";
 					}
 
 
@@ -314,35 +323,35 @@ namespace Core
 			}
 
 
-		string goal = "";
-		string penalty = "";
+		std::string goal = "";
+		std::string penalty = "";
 		if (!this->emptyylds())
 			{
-			map<string, FMTyldbounds> thebounds = this->getyldsbounds();
-			for (map<string,FMTyldbounds>::const_iterator yields = thebounds.begin();
+			const std::map<std::string, FMTyldbounds> thebounds = this->getyldsbounds();
+			for (std::map<std::string,FMTyldbounds>::const_iterator yields = thebounds.begin();
 				yields != thebounds.end(); yields++)
 				{
-				if (yields->first.find("GOAL_") != string::npos)
+				if (yields->first.find("GOAL_") != std::string::npos)
 					{
-					vector<string>names;
+					std::vector<std::string>names;
 					boost::split(names, yields->first,boost::is_any_of("_"));
 					goal += names[1]+",";
-					goal += to_string(yields->second.getlower());
+					goal += std::to_string(yields->second.getlower());
 					}
-				if (yields->first.find("Penalty") != string::npos)
+				if (yields->first.find("Penalty") != std::string::npos)
 					{
-					vector<string>names;
+					std::vector<std::string>names;
 					boost::split(names, yields->first, boost::is_any_of("_"));
 
 					if (names.at(1)=="ALL")
 						{
-						penalty += (string(1,names.at(0).back()) + "_PENALTY(_ALL");
+						penalty += (std::string(1,names.at(0).back()) + "_PENALTY(_ALL");
 					}else {
 						if (!penalty.empty())
 							{
 							penalty += "," + names.at(1);
 						}else {
-							penalty += (string(1, names.at(0).back()) + "_PENALTY(");
+							penalty += (std::string(1, names.at(0).back()) + "_PENALTY(");
 							penalty += names.at(1);
 							}
 
@@ -360,7 +369,6 @@ namespace Core
 				goal = "_GOAL(" + goal + ")";
 				}
 			}
-		//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << int(this->type) << "\n";
 		switch (this->type)
 			{
 			case FMTconstrainttype::FMTMAXobjective:
@@ -473,25 +481,25 @@ namespace Core
 		return line;
 		}
 
-		void FMTconstraint::standardstring(string& line, string& period_bounds, string& goal) const
+		void FMTconstraint::standardstring(std::string& line, std::string& period_bounds, std::string& goal) const
 		{
-		    map<string, FMTyldbounds> thebounds = this->getyldsbounds();
+			const std::map<std::string, FMTyldbounds> thebounds = this->getyldsbounds();
             double lower_b = thebounds.at("RHS").getlower();
             double upper_b = thebounds.at("RHS").getupper();
-            string opt_str = "";
+			std::string opt_str = "";
             if (lower_b == upper_b)
             {
                 opt_str = "=";
-                opt_str += to_string(lower_b);
+                opt_str += std::to_string(lower_b);
             }
-            else if (upper_b == numeric_limits<double>::infinity())
+            else if (upper_b == std::numeric_limits<double>::infinity())
                 {
                 opt_str = ">=";
-                opt_str += to_string(lower_b);
+                opt_str += std::to_string(lower_b);
                 }
             else {
                 opt_str = "<=";
-                opt_str += to_string(upper_b);
+                opt_str += std::to_string(upper_b);
             }
             line += (this->name +" "+ opt_str+" " + goal);
             line += " " + period_bounds + "\n";

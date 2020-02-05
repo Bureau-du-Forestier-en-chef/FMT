@@ -38,26 +38,26 @@ namespace WSParser
 
 class FMTtransitionparser : public FMTparser
     {
-        regex rxsection;
-        regex rxlock;
-        regex rxage;
-        regex rxreplace;
-        regex rxtyld;
+		std::regex rxsection;
+		std::regex rxlock;
+		std::regex rxage;
+		std::regex rxreplace;
+		std::regex rxtyld;
     public:
         FMTtransitionparser();
         FMTtransitionparser(const FMTtransitionparser& rhs);
         FMTtransitionparser& operator = (const FMTtransitionparser& rhs);
-        FMTmask getsource(string& line, FMTspec& spec,const vector<FMTtheme>& themes,
-                          FMTwssect section,const FMTconstants& constant,
-                          const FMTyields& ylds);
-        vector<FMTtransitionmask> getmasktran(const string& line,const vector<FMTtheme>& themes,
-                                        const FMTconstants& constants, const FMTyields& ylds,
-                                        const FMTmask& sourcemask, int& replaced);
-        vector<FMTtransition>read(const vector<FMTtheme>& themes,
-                           const vector<FMTaction>& actions,
-                           const FMTyields& ylds,const FMTconstants& constants,
-                           string location);
-        bool write(const vector<FMTtransition>& transitions, string location);
+		Core::FMTmask getsource(std::string& line, Core::FMTspec& spec,const std::vector<Core::FMTtheme>& themes,
+                          FMTwssect section,const Core::FMTconstants& constant,
+                          const Core::FMTyields& ylds);
+        std::vector<Core::FMTtransitionmask> getmasktran(const std::string& line,const std::vector<Core::FMTtheme>& themes,
+                                        const Core::FMTconstants& constants, const Core::FMTyields& ylds,
+                                        const Core::FMTmask& sourcemask, int& replaced);
+        std::vector<Core::FMTtransition>read(const std::vector<Core::FMTtheme>& themes,
+                           const std::vector<Core::FMTaction>& actions,
+                           const Core::FMTyields& ylds,const Core::FMTconstants& constants,
+							std::string location);
+        bool write(const std::vector<Core::FMTtransition>& transitions, std::string location);
     };
 }
 #endif // FMTtransitionparser_H_INCLUDED

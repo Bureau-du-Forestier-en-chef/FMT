@@ -28,31 +28,31 @@ namespace Core{
 
 
 FMTaction::FMTaction():FMTlist<FMTspec>(),
-                partials(vector<string>()),
+                partials(std::vector<std::string>()),
 				agelowerbound(), ageupperbound(), periodlowerbound(), periodupperbound(),
                 name(""),
                 lock(false),
                 reset(false){}
 
-    FMTaction:: FMTaction(string& lname):FMTlist<FMTspec>(),
-                        partials(vector<string>()),
+    FMTaction:: FMTaction(std::string& lname):FMTlist<FMTspec>(),
+                        partials(std::vector<std::string>()),
 						agelowerbound(), ageupperbound(), periodlowerbound(), periodupperbound(),
                         name(lname),
                         lock(false),
                         reset(false){}
-    FMTaction::FMTaction(const string& lname): FMTlist<FMTspec>(),
-                        partials(vector<string>()),
+    FMTaction::FMTaction(const std::string& lname): FMTlist<FMTspec>(),
+                        partials(std::vector<std::string>()),
 						agelowerbound(), ageupperbound(), periodlowerbound(), periodupperbound(),
                         name(lname),
                         lock(false),
                         reset(false){}
-    FMTaction::FMTaction(string& lname, bool lock,bool reset): FMTlist<FMTspec>(),partials(vector<string>()),
+    FMTaction::FMTaction(const std::string& lname, bool lock,bool reset): FMTlist<FMTspec>(),partials(std::vector<std::string>()),
 		agelowerbound(), ageupperbound(), periodlowerbound(), periodupperbound(),
 		name(lname),lock(lock),reset(reset)
         {
-        partials = vector<string>();
+        partials = std::vector<std::string>();
         }
-    bool FMTaction::push_partials(string yield)
+    bool FMTaction::push_partials(std::string yield)
         {
         partials.push_back(yield);
         return true;
@@ -86,10 +86,10 @@ FMTaction::FMTaction():FMTlist<FMTspec>(),
 	void FMTaction::setbounds()
 		{
 		ageupperbound = 0;
-		agelowerbound = numeric_limits<int>::max();
+		agelowerbound = std::numeric_limits<int>::max();
 		periodupperbound = 0;
-		periodlowerbound = numeric_limits<int>::max();
-		vector<FMTspec>::const_iterator datait = this->databegin();
+		periodlowerbound = std::numeric_limits<int>::max();
+		std::vector<FMTspec>::const_iterator datait = this->databegin();
 		for (size_t id = 0; id < this->size(); ++id)
 			{
 				if (!datait->emptyage())
@@ -105,7 +105,7 @@ FMTaction::FMTaction():FMTlist<FMTspec>(),
 						agelowerbound = lowerbound;
 						}
 					}else{
-					ageupperbound = numeric_limits<int>::max();
+					ageupperbound = std::numeric_limits<int>::max();
 					agelowerbound = 0;
 					}
 				if (!datait->emptyperiod())
@@ -121,12 +121,11 @@ FMTaction::FMTaction():FMTlist<FMTspec>(),
 						periodlowerbound = lowerbound;
 						}
 				}else {
-					periodupperbound = numeric_limits<int>::max();
+					periodupperbound = std::numeric_limits<int>::max();
 					periodlowerbound = 0;
 					}
 				++datait;
 			}
-		//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << name << " " << agelowerbound << " " << ageupperbound << "\n";
 		}
 
 
@@ -148,14 +147,14 @@ FMTaction::FMTaction():FMTlist<FMTspec>(),
 		return periodupperbound;
 		}
 
-    vector<string>FMTaction::getpartials() const
+	std::vector<std::string>FMTaction::getpartials() const
         {
         return partials;
         }
 
 	bool FMTaction::inperiod() const
 		{
-		vector<FMTspec>::const_iterator datait = this->databegin();
+		std::vector<FMTspec>::const_iterator datait = this->databegin();
 		for (size_t id = 0; id < this->size(); ++id)
 			{
 			if (!datait->emptyage())
@@ -172,18 +171,18 @@ FMTaction::FMTaction():FMTlist<FMTspec>(),
 		return true;
 		}
 
-    FMTaction::operator string() const
+    FMTaction::operator std::string() const
         {
-        string resetyield = (reset) ? "Y" : "N";
-        string locked = (lock) ? "" : " _LOCKEXEMPT";
-        string line="*ACTION "+name +" "+resetyield+locked+"\n";
+		const std::string resetyield = (reset) ? "Y" : "N";
+		const std::string locked = (lock) ? "" : " _LOCKEXEMPT";
+		std::string line="*ACTION "+name +" "+resetyield+locked+"\n";
         line+="*OPERABLE "+name+"\n";
-		vector<FMTspec>::const_iterator datait = this->databegin();
-		vector<FMTmask>::const_iterator maskit = this->maskbegin();
+		std::vector<FMTspec>::const_iterator datait = this->databegin();
+		std::vector<FMTmask>::const_iterator maskit = this->maskbegin();
         for (size_t id = 0 ; id < this->size(); ++id)
             {
-            line+=string(*maskit)+" ";
-            line+=string(*datait);
+            line+= std::string(*maskit)+" ";
+            line+= std::string(*datait);
             line+="\n";
 			++datait;
 			++maskit;
@@ -192,7 +191,7 @@ FMTaction::FMTaction():FMTlist<FMTspec>(),
             {
             line+="*PARTIAL "+name+"\n";
             int lid = 0;
-            for(const string& partial : partials)
+            for(const std::string& partial : partials)
                 {
                 line+=partial+" ";
                 if (lid==20)
@@ -223,12 +222,12 @@ bool FMTaction::operator != (const FMTaction& rhs) const
     return !(*this== rhs);
     }
 
-bool FMTaction::partial(const string& yield) const
+bool FMTaction::partial(const std::string& yield) const
 	{
 	return (std::find(partials.begin(), partials.end(),yield)!=partials.end());
 	}
 
-FMTactioncomparator::FMTactioncomparator(string name) : action_name(name) {}
+FMTactioncomparator::FMTactioncomparator(std::string name) : action_name(name) {}
 
 bool FMTactioncomparator::operator()(const FMTaction& action) const
 	{

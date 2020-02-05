@@ -48,8 +48,8 @@ namespace Graph
 			}
 		return *this;
 		}
-	bool FMTedgeproperties::isaction(const vector<FMTaction>& actions,
-								const FMTaction& rhsaction) const
+	bool FMTedgeproperties::isaction(const std::vector<Core::FMTaction>& actions,
+								const Core::FMTaction& rhsaction) const
 		{
 		if (actions[action] == rhsaction)
 			{
@@ -57,25 +57,12 @@ namespace Graph
 			}
 		return false;
 		}
-	/*int FMTedgeproperties::getvariableID() const
-		{
-		return variableID;
-		}*/
 
 	void FMTedgeproperties::setvariableID(const int& newvariableID)
 		{
 		variableID = newvariableID;
 		}
 
-	/*int FMTedgeproperties::getactionID() const
-		{
-		return action;
-		}*/
-
-	/*double FMTedgeproperties::getproportion() const
-		{
-		return proportion;
-		}*/
 	bool FMTedgeproperties::operator < (const FMTedgeproperties& rhs) const
 		{
 		return (action < rhs.action);
@@ -97,25 +84,16 @@ namespace Graph
 		{
 	
 		}
-	string FMTedgeproperties::variablename() const
+	std::string FMTedgeproperties::variablename() const
 		{
-		string stype = "";
+		std::string stype = "";
 		if (action >= 0)
 			{
 			stype = "A";
 		}else {
 			stype = "G";
 			}
-		return stype + to_string(variableID);
+		return stype + std::to_string(variableID);
 		}
-
-	/*const int* FMTedgeproperties::getvariableptr() const
-		{
-		return &variableID;
-		}
-	const int* FMTedgeproperties::getactionptr() const
-		{
-		return &action;
-		}*/
 
 }

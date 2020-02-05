@@ -27,6 +27,7 @@ SOFTWARE.
 
 #include "FMTexceptionhandler.h"
 #include "FMTexception.h"
+#include <string>
 
 namespace Exception
 {
@@ -41,10 +42,12 @@ class FMTdefaultexceptionhandler final : public FMTexceptionhandler
 	public:
 		FMTdefaultexceptionhandler();
 		~FMTdefaultexceptionhandler() = default;
-		FMTlev raise(FMTexc lexception, FMTwssect lsection, string text,
-			const int& line, const string& file) override;
+		FMTlev raise(FMTexc lexception, FMTwssect lsection, std::string text,
+			const int& line, const std::string& file) override;
+#ifdef FMTWITHGDAL
 		FMTexceptionhandler* getCPLdata() override;
 		void handelCPLerror(CPLErr eErrClass, CPLErrorNum nError, const char * pszErrorMsg) override;
+#endif
 	};
 }
 

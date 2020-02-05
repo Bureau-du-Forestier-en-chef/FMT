@@ -24,13 +24,6 @@ SOFTWARE.
 
 #ifndef FMTlist_H_INCLUDED
 #define FMTlist_H_INCLUDED
-/*
-#define BOOST_DYNAMIC_BITSET_DONT_USE_FRIENDS
-#include <boost/python.hpp>
-#include <boost/algorithm/string.hpp>
-#include <boost/algorithm/string/join.hpp>
-#include <boost/python/stl_iterator.hpp>
-#include <boost/dynamic_bitset.hpp>*/
 
 #include <boost/unordered_map.hpp>
 #include <functional>
@@ -41,20 +34,12 @@ SOFTWARE.
 #include "FMTmaskfilter.h"
 #include <iterator>
 #include <boost/serialization/serialization.hpp>
-//#include <boost/serialization/hash_map.hpp>
 #include <boost/serialization/hash_collections_save_imp.hpp>
 #include <boost/serialization/hash_collections_load_imp.hpp>
 #include <boost/serialization/split_member.hpp>
 #include <boost/serialization/unordered_map.hpp>
 #include <boost/serialization/vector.hpp>
 #include <boost/serialization/nvp.hpp>
-
-
-
-using namespace boost::python;
-using namespace std;
-using namespace Exception;
-
 
 
 namespace Core
@@ -70,7 +55,7 @@ namespace Core
 			ar & BOOST_SERIALIZATION_NVP(data);
 			ar & BOOST_SERIALIZATION_NVP(masks);
 			ar & BOOST_SERIALIZATION_NVP(filter);
-			vector<pair<FMTmask, vector<int>>>vecfastpass(fastpass.begin(), fastpass.end());
+			std::vector<std::pair<FMTmask, std::vector<int>>>vecfastpass(fastpass.begin(), fastpass.end());
 			ar & BOOST_SERIALIZATION_NVP(vecfastpass);
 			}
 		template<class Archive>
@@ -79,18 +64,18 @@ namespace Core
 			ar & BOOST_SERIALIZATION_NVP(data);
 			ar & BOOST_SERIALIZATION_NVP(masks);
 			ar & BOOST_SERIALIZATION_NVP(filter);
-			vector<pair<FMTmask, vector<int>>>vecfastpass;
+			std::vector<std::pair<FMTmask, std::vector<int>>>vecfastpass;
 			ar & BOOST_SERIALIZATION_NVP(vecfastpass);
-			for (const pair<FMTmask, vector<int>>& values : vecfastpass)
+			for (const std::pair<FMTmask, std::vector<int>>& values : vecfastpass)
 				{
 				fastpass[values.first] = values.second;
 				}
 			}
 		BOOST_SERIALIZATION_SPLIT_MEMBER()
-		vector<T>data;
-		vector<FMTmask>masks;
+		std::vector<T>data;
+		std::vector<FMTmask>masks;
 		FMTmaskfilter filter;
-		mutable boost::unordered_map<FMTmask, vector<int>>fastpass;
+		mutable boost::unordered_map<FMTmask, std::vector<int>>fastpass;
 	public:
 		FMTlist() :
 			data(),
@@ -128,11 +113,11 @@ namespace Core
 		{
 			return data.empty();
 		}
-		vector<FMTmask>getmasklist() const
+		std::vector<FMTmask>getmasklist() const
 		{
 			return masks;
 		}
-		vector<T>getdatalist() const
+		std::vector<T>getdatalist() const
 		{
 			return data;
 		}
@@ -140,16 +125,15 @@ namespace Core
 		{
 			return data.size();
 		}
-		vector<const T*> findsets(const FMTmask& mask) const
+		std::vector<const T*> findsets(const FMTmask& mask) const
 		{
-			vector<const T*>allhits;
-			FMTmask newkey = filter.filter(mask);
+			std::vector<const T*>allhits;
+			const FMTmask newkey = filter.filter(mask);
 			if (!newkey.empty())
 				{
-				boost::unordered_map<FMTmask, vector<int>>::const_iterator fast_it = fastpass.find(newkey);
+				boost::unordered_map<FMTmask, std::vector<int>>::const_iterator fast_it = fastpass.find(newkey);
 				if (fast_it != fastpass.end())
 				{
-					//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << " using fast pass!! " << "\n";
 					allhits.reserve(fast_it->second.size());
 					for (const int& location : fast_it->second)
 					{
@@ -157,7 +141,7 @@ namespace Core
 					}
 				}
 				else {
-					fastpass[newkey] = vector<int>();
+					fastpass[newkey] = std::vector<int>();
 					int location = 0;
 					for (const FMTmask& mask : masks)
 					{
@@ -180,7 +164,7 @@ namespace Core
 
 		void shrink()
 		{
-			vector<FMTmask>newmasks;
+			std::vector<FMTmask>newmasks;
 			fastpass.clear();
 			for (const FMTmask& mask : masks)
 			{
@@ -215,35 +199,35 @@ namespace Core
             masks.insert(masks.begin()+location,mask);
             }
 
-		typename vector<FMTmask>::const_iterator maskbegin() const
+		typename std::vector<FMTmask>::const_iterator maskbegin() const
 		{
 			return masks.begin();
 		}
-		typename vector<FMTmask>::const_iterator maskend() const
+		typename std::vector<FMTmask>::const_iterator maskend() const
 		{
 			return masks.end();
 		}
-		typename vector<T>::const_iterator databegin() const
+		typename std::vector<T>::const_iterator databegin() const
 		{
 			return data.begin();
 		}
-		typename vector<T>::const_iterator dataend() const
+		typename std::vector<T>::const_iterator dataend() const
 		{
 			return data.end();
 		}
-		typename vector<FMTmask>::iterator maskbegin()
+		typename std::vector<FMTmask>::iterator maskbegin()
 		{
 			return masks.begin();
 		}
-		typename vector<FMTmask>::iterator maskend()
+		typename std::vector<FMTmask>::iterator maskend()
 		{
 			return masks.end();
 		}
-		typename vector<T>::iterator databegin()
+		typename std::vector<T>::iterator databegin()
 		{
 			return data.begin();
 		}
-		typename vector<T>::iterator dataend()
+		typename std::vector<T>::iterator dataend()
 		{
 			return data.end();
 		}

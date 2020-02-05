@@ -25,6 +25,9 @@ SOFTWARE.
 #ifndef FMTdebugexceptionhandler_H_INCLUDED
 #define FMTdebugexceptionhandler_H_INCLUDED
 #include "FMTexceptionhandler.h"
+#include <string>
+
+
 namespace Exception
 {
 	class FMTdebugexceptionhandler final : public FMTexceptionhandler
@@ -36,15 +39,17 @@ namespace Exception
 			ar & boost::serialization::make_nvp("parent_handler", boost::serialization::base_object<FMTexceptionhandler>(*this));
 		}
 	protected:
-		string getsrcinfo(const int& line,
-			const string& file) const;
+		std::string getsrcinfo(const int& line,
+			const std::string& file) const;
 	public:
 		FMTdebugexceptionhandler();
 		~FMTdebugexceptionhandler() = default;
-		FMTlev raise(FMTexc lexception, FMTwssect lsection, string text,
-			const int& line, const string& file) override;
+		FMTlev raise(FMTexc lexception, FMTwssect lsection, std::string text,
+			const int& line, const std::string& file) override;
+#ifdef FMTWITHGDAL
 		FMTexceptionhandler* getCPLdata() override;
 		void handelCPLerror(CPLErr eErrClass, CPLErrorNum nError, const char * pszErrorMsg) override;
+#endif
 	};
 
 }

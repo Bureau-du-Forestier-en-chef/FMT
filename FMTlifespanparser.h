@@ -40,8 +40,8 @@ class FMTlifespanparser : public FMTparser
         FMTlifespanparser();
         FMTlifespanparser(const FMTlifespanparser& rhs);
         FMTlifespanparser& operator = (const FMTlifespanparser& rhs);
-        FMTlifespans read(const vector<FMTtheme>& themes,const FMTconstants& constants,string location);
-        bool write(const FMTlifespans& lifespan,string location);
+        Core::FMTlifespans read(const std::vector<Core::FMTtheme>& themes,const Core::FMTconstants& constants, std::string location);
+        bool write(const Core::FMTlifespans& lifespan, std::string location);
     };
 
 }

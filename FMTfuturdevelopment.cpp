@@ -48,9 +48,9 @@ namespace Core
 		return FMTdevelopment::operator==(rhs);
 	}
 
-	unique_ptr<FMTdevelopment> FMTfuturdevelopment::Clone() const
+	std::unique_ptr<FMTdevelopment> FMTfuturdevelopment::Clone() const
 		{
-		return unique_ptr<FMTdevelopment>(new FMTfuturdevelopment(*this));
+		return std::unique_ptr<FMTdevelopment>(new FMTfuturdevelopment(*this));
 		}
 
 	double FMTfuturdevelopment::getarea() const

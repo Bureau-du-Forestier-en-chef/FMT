@@ -27,36 +27,29 @@ SOFTWARE.
 
 namespace Spatial
     {
-	vector<int>FMTcoordinate::x_n = { 0,1,0,-1,1,1,-1,-1 };
-	vector<int>FMTcoordinate::y_n = { 1,0,-1,0,1,-1,-1,1 };
-
-
-    FMTcoordinate::FMTcoordinate():x(),y()/*,x_n({0,1,0,-1,1,1,-1,-1}),y_n({1,0,-1,0,1,-1,-1,1})*/{}
+	std::vector<int>FMTcoordinate::x_n = { 0,1,0,-1,1,1,-1,-1 };
+	std::vector<int>FMTcoordinate::y_n = { 1,0,-1,0,1,-1,-1,1 };
+    FMTcoordinate::FMTcoordinate():x(),y(){}
     FMTcoordinate::FMTcoordinate(unsigned int lx, unsigned int ly):
-        x(lx),y(ly)/*,x_n({0,1,0,-1,1,1,-1,-1}),y_n({1,0,-1,0,1,-1,-1,1})*/{}
-    FMTcoordinate::FMTcoordinate(const FMTcoordinate& rhs):x(rhs.x),y(rhs.y)/*,x_n(rhs.x_n),y_n(rhs.y_n)*/{}
+        x(lx),y(ly){}
+    FMTcoordinate::FMTcoordinate(const FMTcoordinate& rhs):x(rhs.x),y(rhs.y){}
 
     FMTcoordinate FMTcoordinate::at(unsigned int id) const
         {
-        int factor = ((id / 8) + 1);
+        const int factor = ((id / 8) + 1);
         id = (id - (factor-1) * 8);
         return FMTcoordinate(x+(x_n[id]*factor),y+(y_n[id]*factor));
         }
     double FMTcoordinate::distance(const FMTcoordinate& coord) const
         {
-        //Should be
-        int distancex = (x - coord.x);
-        int distancey = (y - coord.y);
+        const int distancex = (x - coord.x);
+        const int distancey = (y - coord.y);
         return sqrt(distancex*distancex+distancey*distancey);
-        //Was
-        /*int distancex = (x - coord.x)^2;
-        int distancey = (y - coord.y)^2;
-        return sqrt(distancex - distancey);*/
         }
     bool FMTcoordinate::within(unsigned int ldistance,const FMTcoordinate& coord) const
         {
-        int distancex = (x - coord.x);
-        int distancey = (y - coord.y);
+        const int distancex = (x - coord.x);
+        const int distancey = (y - coord.y);
         if (static_cast<unsigned int>(abs(distancex))<=ldistance &&
 			(static_cast<unsigned int>(abs(distancey))<=ldistance))
             {
@@ -81,8 +74,6 @@ namespace Spatial
             {
             x = rhs.x;
             y = rhs.y;
-            /*x_n = rhs.x_n;
-            y_n = rhs.y_n;*/
             }
         return *this;
         }
@@ -95,15 +86,15 @@ namespace Spatial
         return ((y<rhs.y)||((y==rhs.y)&&(x<rhs.x)));
         }
 
-    void FMTcoordinate::upenveloppe(vector<FMTcoordinate>& enveloppe) const
+    void FMTcoordinate::upenveloppe(std::vector<FMTcoordinate>& enveloppe) const
         {
 		//0//-//1//
 		//-//-//-//
 		//2//-//3//
-		int minx = min(enveloppe[0].x,x);
-		int maxx = max(enveloppe[1].x,x);
-		int miny = min(enveloppe[0].y,y);
-		int maxy = max(enveloppe[2].y,y);
+		int minx = std::min(enveloppe[0].x,x);
+		int maxx = std::max(enveloppe[1].x,x);
+		int miny = std::min(enveloppe[0].y,y);
+		int maxy = std::max(enveloppe[2].y,y);
 		enveloppe[0].x = minx;
 		enveloppe[0].y = miny;
 		enveloppe[1].x = maxx;

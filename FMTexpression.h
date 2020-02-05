@@ -37,20 +37,20 @@ namespace Core
 {
 	class FMTexpression
 	{
-		vector<string>infix;
-		vector<string> getpostfix(const vector<string>& localinfix) const;
-		vector<string> replacevariables(const map<string, double>& mapping) const;
-		double evaluatepostfix(const vector<string>& postfix) const;
-		bool is_number(const string& s) const;
+		std::vector<std::string>infix;
+		std::vector<std::string> getpostfix(const std::vector<std::string>& localinfix) const;
+		std::vector<std::string> replacevariables(const std::map<std::string, double>& mapping) const;
+		double evaluatepostfix(const std::vector<std::string>& postfix) const;
+		bool is_number(const std::string& s) const;
 	public:
 		FMTexpression();
-		FMTexpression(const vector<string>& lsources);
+		FMTexpression(const std::vector<std::string>& lsources);
 		FMTexpression(const FMTexpression& rhs);
-        FMTexpression simplify(map<string,double>& values) const;
-        vector<string>getvariables() const;
-		double shuntingyard(const map<string, double>& mapping) const;
-		vector<string>getinfix() const;
-        operator string() const;
+        FMTexpression simplify(std::map<std::string,double>& values) const;
+		std::vector<std::string>getvariables() const;
+		double shuntingyard(const std::map<std::string, double>& mapping) const;
+		std::vector<std::string>getinfix() const;
+        operator std::string() const;
 		FMTexpression& operator = (const FMTexpression& rhs);
 		~FMTexpression() = default;
 

@@ -49,17 +49,17 @@ class FMTaction : public FMTlist<FMTspec>
 		ar & BOOST_SERIALIZATION_NVP(lock);
 		ar & BOOST_SERIALIZATION_NVP(reset);
 		}
-        vector<string>partials;
+        std::vector<std::string>partials;
 		int agelowerbound, ageupperbound, periodlowerbound, periodupperbound;
     public:
-        string name;
+		std::string name;
         bool lock,reset;
         FMTaction();
         virtual ~FMTaction() = default;
-        FMTaction(string& lname);
-        FMTaction(const string& lname);
-        FMTaction(string& lname, bool lock,bool reset);
-        bool push_partials(string yield);
+        FMTaction(std::string& lname);
+        FMTaction(const std::string& lname);
+        FMTaction(const std::string& lname, bool lock,bool reset);
+        bool push_partials(std::string yield);
         FMTaction(const FMTaction& rhs);
         FMTaction& operator = (const FMTaction& rhs);
 		void setbounds();
@@ -71,16 +71,16 @@ class FMTaction : public FMTlist<FMTspec>
         bool operator < (const FMTaction& rhs) const;
         bool operator == (const FMTaction& rhs) const;
         bool operator != (const FMTaction& rhs) const;
-        vector<string>getpartials() const;
-        operator string() const;
-		bool partial(const string& yield) const;
+		std::vector<std::string>getpartials() const;
+        operator std::string() const;
+		bool partial(const std::string& yield) const;
     };
 
 class FMTactioncomparator
 	{
-		string action_name;
+	std::string action_name;
 	public:
-		FMTactioncomparator(string name);
+		FMTactioncomparator(std::string name);
 		bool operator()(const FMTaction& action) const;
 
 	};
@@ -94,7 +94,7 @@ namespace boost {
   {
     std::size_t operator()(const Core::FMTaction& act) const
         {
-        return (hash<string>()(act.name));
+        return (boost::hash<std::string>()(act.name));
         }
   };
 

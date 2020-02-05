@@ -28,7 +28,6 @@ SOFTWARE.
 #include <map>
 #include <string>
 
-using namespace std;
 
 namespace Core
 {
@@ -36,10 +35,10 @@ namespace Core
 	{
 	public:
 		int ageafter;
-		map<string,string>themes;
-		string name;
+		std::map<std::string, std::string>themes;
+		std::string name;
 		FMTGCBMtransition();
-		FMTGCBMtransition(const int& lageafter, const map<string, string>& lthemes, const string& lname);
+		FMTGCBMtransition(const int& lageafter, const std::map<std::string, std::string>& lthemes, const std::string& lname);
 		FMTGCBMtransition(const FMTGCBMtransition& rhs);
 		FMTGCBMtransition& operator = (const FMTGCBMtransition& rhs);
 		~FMTGCBMtransition()=default;

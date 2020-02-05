@@ -38,21 +38,20 @@ namespace WSParser
 
 class FMToutputparser : public FMTparser
     {
-    //regex rxoperators;
-    regex rxoutput;
-    regex rxsource;
-    regex rxtar;
-    regex rxgrp;
+	std::regex rxoutput;
+	std::regex rxsource;
+	std::regex rxtar;
+	std::regex rxgrp;
     public:
         FMToutputparser();
         FMToutputparser(const FMToutputparser& rhs);
         FMToutputparser& operator = (const FMToutputparser& rhs);
-        vector<FMToutput> read(const vector<FMTtheme>& themes,
-                            const vector<FMTaction>& actions,
-                            const FMTyields& ylds,const FMTconstants& constants,
-							const map<string,vector<string>>& actions_aggregate,
-                            string location);
-        bool write(const vector<FMToutput>& outputs,string location);
+		std::vector<Core::FMToutput> read(const std::vector<Core::FMTtheme>& themes,
+                            const std::vector<Core::FMTaction>& actions,
+                            const Core::FMTyields& ylds,const Core::FMTconstants& constants,
+							const std::map<std::string, std::vector<std::string>>& actions_aggregate,
+							std::string location);
+        bool write(const std::vector<Core::FMToutput>& outputs, std::string location);
     };
 
 }

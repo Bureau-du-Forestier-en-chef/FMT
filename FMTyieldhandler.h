@@ -32,8 +32,7 @@ SOFTWARE.
 #include <boost/serialization/nvp.hpp>
 #include "FMTdata.h"
 #include "FMTmask.h"
-
-using namespace std;
+#include <vector>
 
 namespace Core
 {
@@ -52,38 +51,37 @@ class FMTyieldhandler
 	}
         FMTyldwstype yldtype;
         FMTmask mask;
-        vector<int>bases;
+		std::vector<int>bases;
 
     public:
-        map<string,FMTdata>elements;
-        operator string() const;
+		std::map<std::string,FMTdata>elements;
+        operator std::string() const;
 		FMTyieldhandler();
         FMTyieldhandler(FMTyldwstype ltype,const FMTmask& lmask);
         FMTyieldhandler(const FMTyieldhandler& rhs);
         FMTyieldhandler& operator = (const FMTyieldhandler& rhs);
-        vector<string> compare(const vector<string>& keys) const;
+		std::vector<std::string> compare(const std::vector<std::string>& keys) const;
         bool push_base(const int& base);
-        bool push_data(const string& yld,const double& value);
-        bool push_data(const string& yld,const FMTdata& data);
-        //vector<FMTyieldhandler>decomposeindexes(const vector<FMTtheme>& themes) const;
-        vector<string> indexes(const vector<string>& names) const;
-		double get(const vector<const FMTyieldhandler*>& datas,
-                   const string yld,const int& age,const int& period, const FMTmask& resume_mask) const;
+        bool push_data(const std::string& yld,const double& value);
+        bool push_data(const std::string& yld,const FMTdata& data);
+		std::vector<std::string> indexes(const std::vector<std::string>& names) const;
+		double get(const std::vector<const FMTyieldhandler*>& datas,
+                   const std::string yld,const int& age,const int& period, const FMTmask& resume_mask) const;
 		int getlastbase() const;
-		const vector<int>& getbases() const;
-		double getlinearvalue(const vector<double>& dls, const int& agetarget) const;
-		double getlastvalue(const string yld) const;
-        map<string,double> getsources(const map<string, const FMTyieldhandler*>& srcdata, const vector<const FMTyieldhandler*>& datas,
+		const std::vector<int>& getbases() const;
+		double getlinearvalue(const std::vector<double>& dls, const int& agetarget) const;
+		double getlastvalue(const std::string yld) const;
+		std::map<std::string,double> getsources(const std::map<std::string, const FMTyieldhandler*>& srcdata, const std::vector<const FMTyieldhandler*>& datas,
 										const int& age, const int& period ,const FMTmask& resume_mask, bool& age_only) const;
-        map<string,const FMTyieldhandler*> getdata(const vector<const FMTyieldhandler*>& datas,
-                                    const vector<string>& names, const string& original) const;
+		std::map<std::string,const FMTyieldhandler*> getdata(const std::vector<const FMTyieldhandler*>& datas,
+                                    const std::vector<std::string>& names, const std::string& original) const;
 		bool operator == (const FMTyieldhandler& rhs) const;
 		double getchangesfrom(const int& targetage,const int& peakstep) const;
-		int getendpoint(const string& yld, const int& lowerstep, const double& bound, const double& value) const;
-		double getpeakfrom(const string& yld,double maxvalue = numeric_limits<double>::lowest()) const;
-        double getpeak(const string& yld, const int& targetage) const;
-        int getage(const string yld, const double& value,const int& starting_age) const;
-        map<string,FMTdata>getdataelements() const;
+		int getendpoint(const std::string& yld, const int& lowerstep, const double& bound, const double& value) const;
+		double getpeakfrom(const std::string& yld,double maxvalue = std::numeric_limits<double>::lowest()) const;
+        double getpeak(const std::string& yld, const int& targetage) const;
+        int getage(const std::string yld, const double& value,const int& starting_age) const;
+		std::map<std::string,FMTdata>getdataelements() const;
         FMTyldwstype gettype() const;
 		FMTmask getmask() const;
     };

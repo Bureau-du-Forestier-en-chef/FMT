@@ -47,7 +47,7 @@ void exportCore()
 		"\n"
 		"Base FMTobjectect able to carry exception and logger\n"
 		"\n";
-	class_<Core::FMTobject>("FMTobject", py_FMTobject)
+	bp::class_<Core::FMTobject>("FMTobject", py_FMTobject)
 		.def("setdefaultexceptionhandler", &Core::FMTobject::setdefaultexceptionhandler)
 		.def("setquietexceptionhandler", &Core::FMTobject::setquietexceptionhandler)
 		.def("setdebugexceptionhandler", &Core::FMTobject::setdebugexceptionhandler)
@@ -58,29 +58,29 @@ void exportCore()
         define_pylist<Core::FMTdevelopment>();
         define_pylist<Core::FMTfuturdevelopment>();
         define_pylist<Core::FMTactualdevelopment>();
-		define_pydict<string, vector<FMTdevelopment>>();
+		define_pydict<std::string, std::vector<Core::FMTdevelopment>>();
 
         define_pylist<Core::FMTtheme>();
         define_pylist<Core::FMTaction>();
         define_pylist<Core::FMTtransition>();
         define_pylist<Core::FMToutput>();
         define_pylist<Core::FMTschedule>();
-		define_pylist<vector<Core::FMTschedule>>();
+		define_pylist<std::vector<Core::FMTschedule>>();
 
-        define_pydict<Core::FMTdevelopment,vector<double>>();
-        define_pydict<Core::FMTaction,map<Core::FMTdevelopment,vector<double>>>();
+        define_pydict<Core::FMTdevelopment, std::vector<double>>();
+        define_pydict<Core::FMTaction,std::map<Core::FMTdevelopment, std::vector<double>>>();
 
-            class_<Core::FMTmask>("FMTmask")
-				.def_pickle(FMT_pickle_suite<FMTmask>())
-				.def(init<const vector<string>&,const vector<FMTtheme>&>())
+		bp::class_<Core::FMTmask>("FMTmask")
+				.def_pickle(FMT_pickle_suite<Core::FMTmask>())
+				.def(bp::init<const std::vector<std::string>&,const std::vector<Core::FMTtheme>&>())
 				.def("__len__", &Core::FMTmask::operator bool)
-                .def("__str__",&Core::FMTmask::operator string)
+                .def("__str__",&Core::FMTmask::operator std::string)
 				.def("__eq__", &Core::FMTmask::operator ==)
 				.def("__ne__", &Core::FMTmask::operator !=)
                 .def("to_string",&Core::FMTmask::to_string)
                 .def("__hash__",&boost::pyhash<Core::FMTmask>);
-			class_<Core::FMTdevelopment>("FMTdevelopment")
-				.def_pickle(FMT_pickle_suite<FMTdevelopment>())
+		bp::class_<Core::FMTdevelopment>("FMTdevelopment")
+				.def_pickle(FMT_pickle_suite<Core::FMTdevelopment>())
                 .def_readwrite("age", &Core::FMTdevelopment::age)
 				.def_readwrite("period", &Core::FMTdevelopment::period)
                 .def_readwrite("lock", &Core::FMTdevelopment::lock)
@@ -91,15 +91,15 @@ void exportCore()
                 .def("grow",&Core::FMTdevelopment::grow)
                 .def("operable",&Core::FMTdevelopment::operable)
                 .def("operate",&Core::FMTdevelopment::operate)
-				.def("__str__", &Core::FMTdevelopment::operator string)
+				.def("__str__", &Core::FMTdevelopment::operator std::string)
                 .setattr("__hash__",&boost::pyhash<Core::FMTdevelopment>);
-            class_<Core::FMTspec>("FMTspec");
-            class_<Core::FMTactualdevelopment,bases<Core::FMTdevelopment>>("FMTactualdevelopment")
+		bp::class_<Core::FMTspec>("FMTspec");
+		bp::class_<Core::FMTactualdevelopment, bp::bases<Core::FMTdevelopment>>("FMTactualdevelopment")
                 .def_readwrite("area", &Core::FMTactualdevelopment::area)
 				.def("__eq__", &Core::FMTactualdevelopment::operator ==)
 				.def("__ne__", &Core::FMTactualdevelopment::operator !=)
 				.def("__lt__", &Core::FMTactualdevelopment::operator <);
-            class_<Core::FMTfuturdevelopment,bases<Core::FMTdevelopment>>("FMTfuturdevelopment");
+		bp::class_<Core::FMTfuturdevelopment, bp::bases<Core::FMTdevelopment>>("FMTfuturdevelopment");
 
             //Need preprocessor here
             define_FMTlist<Core::FMTspec>();
@@ -111,75 +111,75 @@ void exportCore()
 
 
 
-            class_<Core::FMTaction,bases<Core::FMTlist<Core::FMTspec>>>("FMTaction")
-				.def_pickle(FMT_pickle_suite<FMTaction>())
+			bp::class_<Core::FMTaction, bp::bases<Core::FMTlist<Core::FMTspec>>>("FMTaction")
+				.def_pickle(FMT_pickle_suite<Core::FMTaction>())
                 .def("__eq__",&Core::FMTaction::operator ==)
                 .def("__ne__",&Core::FMTaction::operator !=)
                 .def("__lt__",&Core::FMTaction::operator <)
-				.def("__str__", &Core::FMTaction::operator string)
+				.def("__str__", &Core::FMTaction::operator std::string)
                 .def_readwrite("name",&Core::FMTaction::name)
                 .def_readwrite("lock",&Core::FMTaction::lock)
                 .def_readwrite("reset",&Core::FMTaction::reset)
                 .setattr("__hash__",&boost::pyhash<Core::FMTaction>);
-            class_<Core::FMTlifespans,bases<Core::FMTlist<int>>>("FMTlifespans");
+			bp::class_<Core::FMTlifespans, bp::bases<Core::FMTlist<int>>>("FMTlifespans");
 
 
-			enum_<FMTyldwstype>("FMTyldwstype")
+			bp::enum_<FMTyldwstype>("FMTyldwstype")
 				.value("FMTageyld", FMTyldwstype::FMTageyld)
 				.value("FMTtimeyld", FMTyldwstype::FMTtimeyld)
 				.value("FMTcomplexyld", FMTyldwstype::FMTcomplexyld)
 				.export_values();
 
-			define_pydict<string,map<string,vector<double>>>();
-			define_pydict<string, vector<double>>();
+			define_pydict<std::string, std::map<std::string,std::vector<double>>>();
+			define_pydict<std::string, std::vector<double>>();
 
-			class_<Core::FMTyields, bases<Core::FMTlist<Core::FMTyieldhandler>>>("FMTyields")
-				.def_pickle(FMT_pickle_suite<FMTyields>())
+			bp::class_<Core::FMTyields, bp::bases<Core::FMTlist<Core::FMTyieldhandler>>>("FMTyields")
+				.def_pickle(FMT_pickle_suite<Core::FMTyields>())
 				.def("getallyields", &Core::FMTyields::getallyields)
 				.def("getnullyldsnames", &Core::FMTyields::getnullyldsnames);
 
 
 
-            class_<Core::FMTtransition,bases<Core::FMTlist<Core::FMTfork>>>("FMTtransition")
-				.def_pickle(FMT_pickle_suite<FMTtransition>())
+			bp::class_<Core::FMTtransition, bp::bases<Core::FMTlist<Core::FMTfork>>>("FMTtransition")
+				.def_pickle(FMT_pickle_suite<Core::FMTtransition>())
                 .def("single",&Core::FMTtransition::single)
 				.def("main_target", &Core::FMTtransition::main_target)
 				.def("age_after", &Core::FMTtransition::age_after)
 				.def("attribute_targets", &Core::FMTtransition::attribute_targets)
-				.def("__str__", &Core::FMTtransition::operator string)
+				.def("__str__", &Core::FMTtransition::operator std::string)
                 .def("__eq__",&Core::FMTtransition::operator ==)
                 .def("__ne__",&Core::FMTtransition::operator !=)
                 .def("__lt__",&Core::FMTtransition::operator <)
                 .def_readwrite("name",&Core::FMTtransition::name);
 
 
-			class_<Core::FMToutputnode>("FMToutputnode")
-				.def("__str__", &Core::FMToutputnode::operator string);
+			bp::class_<Core::FMToutputnode>("FMToutputnode")
+				.def("__str__", &Core::FMToutputnode::operator std::string);
 
 			define_FMTlist<Core::FMToutputnode>();
 
-            class_<Core::FMToutput>("FMToutput")
-				.def_pickle(FMT_pickle_suite<FMTtransition>())
+			bp::class_<Core::FMToutput>("FMToutput")
+				.def_pickle(FMT_pickle_suite<Core::FMTtransition>())
                 .def_readwrite("name",&Core::FMToutput::name)
                 .def_readwrite("description",&Core::FMToutput::description)
 				.def("empty", &Core::FMToutput::empty)
 				.def("containslevel",&Core::FMToutput::containslevel)
 				.def("islevel", &Core::FMToutput::islevel)
 				.def("getnodes",&Core::FMToutput::getnodes, getnodes_overloads())
-				.def("__str__", &Core::FMToutput::operator string)
+				.def("__str__", &Core::FMToutput::operator std::string)
                 .def("__eq__",&Core::FMToutput::operator ==)
                 .def("__ne__",&Core::FMToutput::operator !=);
-            class_<Core::FMTtheme>("FMTtheme")
-				.def_pickle(FMT_pickle_suite<FMTtheme>())
-				.def("__str__", &Core::FMTtheme::operator string)
+			bp::class_<Core::FMTtheme>("FMTtheme")
+				.def_pickle(FMT_pickle_suite<Core::FMTtheme>())
+				.def("__str__", &Core::FMTtheme::operator std::string)
 				.def("__eq__", &Core::FMTtheme::operator ==)
 				.def("getattributes", &Core::FMTtheme::getattributes, getattributes_overloads())
                 .def_readwrite("name",&Core::FMTtheme::name);
-            class_<Core::FMTconstants>("FMTconstants");
-            class_<Core::FMTschedule>("FMTschedule")
-				.def_pickle(FMT_pickle_suite<FMTschedule>())
-				.def(init<int, map<FMTaction, map<FMTdevelopment, vector<double>>>>())
-				.def("__str__", &Core::FMTschedule::operator string)
+			bp::class_<Core::FMTconstants>("FMTconstants");
+			bp::class_<Core::FMTschedule>("FMTschedule")
+				.def_pickle(FMT_pickle_suite<Core::FMTschedule>())
+				.def(bp::init<int, std::map<Core::FMTaction, std::map<Core::FMTdevelopment, std::vector<double>>>>())
+				.def("__str__", &Core::FMTschedule::operator std::string)
 				.def("__add__", &Core::FMTschedule::operator +)
                 .def("getfaction",&Core::FMTschedule::getfaction)
 				.def("actionarea", &Core::FMTschedule::actionarea)
@@ -188,13 +188,13 @@ void exportCore()
 				.def("__ne__", &Core::FMTschedule::operator !=)
 				.def("empty",&Core::FMTschedule::empty)
                 .def("get",&Core::FMTschedule::get);
-			class_<Core::FMTGCBMtransition>("FMTGCBMtransition")
+			bp::class_<Core::FMTGCBMtransition>("FMTGCBMtransition")
 				.def_readwrite("name", &Core::FMTGCBMtransition::name)
 				.def_readwrite("ageafter", &Core::FMTGCBMtransition::ageafter)
-				.add_property("themes", make_getter(&Core::FMTGCBMtransition::themes, return_value_policy<return_by_value>()),
-					make_setter(&Core::FMTGCBMtransition::themes, return_value_policy<return_by_value>()));
-			class_<Core::FMTconstraint, bases<Core::FMToutput>>("FMTconstraint")
-				.def("__str__", &Core::FMTconstraint::operator string)
+				.add_property("themes", bp::make_getter(&Core::FMTGCBMtransition::themes, bp::return_value_policy<bp::return_by_value>()),
+					bp::make_setter(&Core::FMTGCBMtransition::themes, bp::return_value_policy<bp::return_by_value>()));
+			bp::class_<Core::FMTconstraint, bp::bases<Core::FMToutput>>("FMTconstraint")
+				.def("__str__", &Core::FMTconstraint::operator std::string)
 				.def("__eq__", &Core::FMTconstraint::operator ==);
 
 			define_FMTlist<Core::FMTconstraint>();

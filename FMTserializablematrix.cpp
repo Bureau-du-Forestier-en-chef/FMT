@@ -72,7 +72,7 @@ FMTserializablematrix& FMTserializablematrix::operator = (const FMTserializablem
 	return *this;
 	}
 
-FMTserializablematrix::FMTserializablematrix(const shared_ptr<OsiSolverInterface>& solverinterface, const FMTsolverinterface& lsolvertype):
+FMTserializablematrix::FMTserializablematrix(const std::shared_ptr<OsiSolverInterface>& solverinterface, const FMTsolverinterface& lsolvertype):
 	CoinPackedMatrix(),
 	collb(),
 	colub(),
@@ -119,17 +119,17 @@ FMTserializablematrix::FMTserializablematrix(const shared_ptr<OsiSolverInterface
 		}
 	}
 
-shared_ptr<OsiSolverInterface> FMTserializablematrix::buildsolverinterface(const FMTsolverinterface& lsolvertype,
+std::shared_ptr<OsiSolverInterface> FMTserializablematrix::buildsolverinterface(const FMTsolverinterface& lsolvertype,
 																			CoinMessageHandler* handler) const
 {
-	shared_ptr<OsiSolverInterface>solverinterface;
+	std::shared_ptr<OsiSolverInterface>solverinterface;
 	switch (lsolvertype)
 	{
 	case FMTsolverinterface::CLP:
-		solverinterface = shared_ptr<OsiClpSolverInterface>(new OsiClpSolverInterface);
+		solverinterface = std::shared_ptr<OsiClpSolverInterface>(new OsiClpSolverInterface);
 		break;
 	case FMTsolverinterface::MOSEK:
-		solverinterface = shared_ptr<OsiMskSolverInterface>(new OsiMskSolverInterface);
+		solverinterface = std::shared_ptr<OsiMskSolverInterface>(new OsiMskSolverInterface);
 		break;
 		/*case FMTsolverinterface::CPLEX:
 			solverinterface = shared_ptr<OsiCpxSolverInterface>(new OsiCpxSolverInterface);
@@ -138,7 +138,7 @@ shared_ptr<OsiSolverInterface> FMTserializablematrix::buildsolverinterface(const
 			solverinterface = shared_ptr<OsiGrbSolverInterface>(new OsiGrbSolverInterface);
 		break;*/
 	default:
-		solverinterface = shared_ptr<OsiClpSolverInterface>(new OsiClpSolverInterface);
+		solverinterface = std::shared_ptr<OsiClpSolverInterface>(new OsiClpSolverInterface);
 		break;
 	}
 	solverinterface->passInMessageHandler(handler);
@@ -146,17 +146,17 @@ shared_ptr<OsiSolverInterface> FMTserializablematrix::buildsolverinterface(const
 }
 
 
-shared_ptr<OsiSolverInterface> FMTserializablematrix::copysolverinterface(const shared_ptr<OsiSolverInterface>& solver_ptr,
+std::shared_ptr<OsiSolverInterface> FMTserializablematrix::copysolverinterface(const std::shared_ptr<OsiSolverInterface>& solver_ptr,
 	const FMTsolverinterface& lsolvertype, CoinMessageHandler* handler) const
 	{
-	shared_ptr<OsiSolverInterface>solverinterface;
+	std::shared_ptr<OsiSolverInterface>solverinterface;
 	switch (lsolvertype)
 		{
 		case FMTsolverinterface::CLP:
-			solverinterface = shared_ptr<OsiClpSolverInterface>(new OsiClpSolverInterface(*dynamic_cast<OsiClpSolverInterface*>(solver_ptr.get())));
+			solverinterface = std::shared_ptr<OsiClpSolverInterface>(new OsiClpSolverInterface(*dynamic_cast<OsiClpSolverInterface*>(solver_ptr.get())));
 			break;
 		case FMTsolverinterface::MOSEK:
-			solverinterface = shared_ptr<OsiMskSolverInterface>(new OsiMskSolverInterface(*dynamic_cast<OsiMskSolverInterface*>(solver_ptr.get())));
+			solverinterface = std::shared_ptr<OsiMskSolverInterface>(new OsiMskSolverInterface(*dynamic_cast<OsiMskSolverInterface*>(solver_ptr.get())));
 			break;
 			/*case FMTsolverinterface::CPLEX:
 				solverinterface = shared_ptr<OsiCpxSolverInterface>(new OsiCpxSolverInterface(*dynamic_cast<OsiCpxSolverInterface*>(solver_ptr.get())));
@@ -165,7 +165,7 @@ shared_ptr<OsiSolverInterface> FMTserializablematrix::copysolverinterface(const 
 				solverinterface = shared_ptr<OsiGrbSolverInterface>(new OsiGrbSolverInterface(*dynamic_cast<OsiGrbSolverInterface*>(solver_ptr.get())));
 			break;*/
 		default:
-			solverinterface = shared_ptr<OsiClpSolverInterface>(new OsiClpSolverInterface(*dynamic_cast<OsiClpSolverInterface*>(solver_ptr.get())));
+			solverinterface = std::shared_ptr<OsiClpSolverInterface>(new OsiClpSolverInterface(*dynamic_cast<OsiClpSolverInterface*>(solver_ptr.get())));
 			break;
 		}
 	solverinterface->passInMessageHandler(handler);
@@ -177,15 +177,8 @@ void FMTserializablematrix::setsolvertype(FMTsolverinterface& lsolvertype) const
 	lsolvertype = solvertype;
 	}
 
-void FMTserializablematrix::setmatrix(shared_ptr<OsiSolverInterface>& solverinterface) const
+void FMTserializablematrix::setmatrix(std::shared_ptr<OsiSolverInterface>& solverinterface) const
 	{
-	/*CoinPackedMatrix pcmat(*this);
-	vector<double>tcollb(collb);
-	vector<double>tcolub(collb);
-	vector<double>tobj(collb);
-	vector<double>trowlb(collb);
-	vector<double>trowub(collb);
-	solverinterface->loadProblem(pcmat, &tcollb[0], &tcolub[0], &tobj[0], &trowlb[0], &trowub[0]);*/
 	if (!collb.empty())
 		{
 		solverinterface->loadProblem(*this, &collb[0], &colub[0], &obj[0], &rowlb[0], &rowub[0]);

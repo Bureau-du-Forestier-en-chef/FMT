@@ -43,14 +43,6 @@ SOFTWARE.
 #include <boost/serialization/map.hpp>
 #include <boost/serialization/unordered_map.hpp>
 
-/*
-#include <lemon/list_graph.h>
-#include <lemon/concepts/digraph.h>
-using namespace lemon;
-*/
-
-using namespace Core;
-//using namespace Spatial;
 
 
 
@@ -58,7 +50,7 @@ namespace Models
 {
 
 
-class FMTmodel : public FMTobject
+class FMTmodel : public Core::FMTobject
     {
     friend class Graph::FMTgraph;
 	friend class boost::serialization::access;
@@ -77,63 +69,63 @@ class FMTmodel : public FMTobject
 		ar & BOOST_SERIALIZATION_NVP(name);
 	}
     protected:
-        vector<FMTactualdevelopment>area;
-        vector<FMTtheme>themes;
-        vector<FMTaction>actions;
-		//vector<unique_ptr<FMTaction>>actions;
-		map<string, vector<string>>action_aggregates;
-        vector<FMTtransition>transitions;
-        FMTyields yields;
-        FMTlifespans lifespan;
-		vector<FMToutput> outputs;
-		vector<FMTconstraint>constraints;
+		std::vector<Core::FMTactualdevelopment>area;
+		std::vector<Core::FMTtheme>themes;
+		std::vector<Core::FMTaction>actions;
+		std::map<std::string, std::vector<std::string>>action_aggregates;
+		std::vector<Core::FMTtransition>transitions;
+		Core::FMTyields yields;
+		Core::FMTlifespans lifespan;
+		std::vector<Core::FMToutput> outputs;
+		std::vector<Core::FMTconstraint>constraints;
 		void setdefaultobjects();
     public:
-        string name;
-		FMTmodel(const vector<FMTactualdevelopment>& larea, const vector<FMTtheme>& lthemes,
-			const vector<FMTaction>& lactions, const map<string, vector<string>>& laction_aggregates,
-             const vector<FMTtransition>& ltransitions,const FMTyields& lyields,const FMTlifespans& llifespan,
-			const string& lname,const vector<FMToutput>& loutputs);
-		FMTmodel(const vector<FMTactualdevelopment>& larea, const vector<FMTtheme>& lthemes,
-			const vector<FMTaction>& lactions, const map<string, vector<string>>& laction_aggregates,
-			const vector<FMTtransition>& ltransitions, const FMTyields& lyields, const FMTlifespans& llifespan,
-			const string& lname, const vector<FMToutput>& loutputs, const vector<FMTconstraint>& lconstraints);
+        std::string name;
+		FMTmodel(const std::vector<Core::FMTactualdevelopment>& larea, const std::vector<Core::FMTtheme>& lthemes,
+			const std::vector<Core::FMTaction>& lactions, const std::map<std::string, std::vector<std::string>>& laction_aggregates,
+             const std::vector<Core::FMTtransition>& ltransitions,const Core::FMTyields& lyields,const Core::FMTlifespans& llifespan,
+			const std::string& lname,const std::vector<Core::FMToutput>& loutputs);
+		FMTmodel(const std::vector<Core::FMTactualdevelopment>& larea, const std::vector<Core::FMTtheme>& lthemes,
+			const std::vector<Core::FMTaction>& lactions, const std::map<std::string, std::vector<std::string>>& laction_aggregates,
+			const std::vector<Core::FMTtransition>& ltransitions, const Core::FMTyields& lyields, const Core::FMTlifespans& llifespan,
+			const std::string& lname, const std::vector<Core::FMToutput>& loutputs, const std::vector<Core::FMTconstraint>& lconstraints);
     FMTmodel();
     virtual ~FMTmodel()=default;
-    virtual vector<FMTactualdevelopment>getarea(int period = 0) const;
+    virtual std::vector<Core::FMTactualdevelopment>getarea(int period = 0) const;
 	void cleanactionsntransitions();
-    vector<FMTtheme>getthemes() const;
-    vector<FMTaction>getactions() const;
-	map<string,vector<string>> getactionaggregates() const;
-    vector<FMTtransition>gettransitions() const;
-    FMTyields getyields() const;
-    FMTlifespans getlifespan() const;
-	vector<FMToutput> getoutputs() const;
-	static FMTaction defaultdeathaction(const FMTlifespans& llifespan,
-										const vector<FMTtheme>& lthemes);
-	static FMTtransition defaultdeathtransition(const FMTlifespans& llifespan,
-										const vector<FMTtheme>& lthemes);
-	vector<FMTconstraint>getconstraints() const;
-	bool addoutput(const string& name,const string& maskstring, FMTotar outputtarget,
-		string action = string(), string yield = string(), string description = string(),int targettheme = -1);
-	void setconstraints(const vector<FMTconstraint>& lconstraint);
+	std::vector<Core::FMTtheme>getthemes() const;
+	std::vector<Core::FMTaction>getactions() const;
+	std::map<std::string, std::vector<std::string>> getactionaggregates() const;
+	std::vector<Core::FMTtransition>gettransitions() const;
+	Core::FMTyields getyields() const;
+	Core::FMTlifespans getlifespan() const;
+	std::vector<Core::FMToutput> getoutputs() const;
+	static Core::FMTaction defaultdeathaction(const Core::FMTlifespans& llifespan,
+										const std::vector<Core::FMTtheme>& lthemes);
+	static Core::FMTtransition defaultdeathtransition(const Core::FMTlifespans& llifespan,
+										const std::vector<Core::FMTtheme>& lthemes);
+	std::vector<Core::FMTconstraint>getconstraints() const;
+	bool addoutput(const std::string& name,const std::string& maskstring, FMTotar outputtarget,
+		std::string action = std::string(), std::string yield = std::string(), std::string description = std::string(),int targettheme = -1);
+	void setconstraints(const std::vector<Core::FMTconstraint>& lconstraint);
 	bool operator == (const FMTmodel& rhs) const;
-    bool setarea(const vector<FMTactualdevelopment>& ldevs);
-    bool setthemes(const vector<FMTtheme>& lthemes);
-    bool setactions(const vector<FMTaction>& lactions);
-    bool settransitions(const vector<FMTtransition>& ltransitions);
-    bool setyields(const FMTyields& lylds);
-    bool setlifespan(const FMTlifespans& llifespan);
+    bool setarea(const std::vector<Core::FMTactualdevelopment>& ldevs);
+    bool setthemes(const std::vector<Core::FMTtheme>& lthemes);
+    bool setactions(const std::vector<Core::FMTaction>& lactions);
+    bool settransitions(const std::vector<Core::FMTtransition>& ltransitions);
+    bool setyields(const Core::FMTyields& lylds);
+    bool setlifespan(const Core::FMTlifespans& llifespan);
     bool valid();
+	std::vector<Core::FMTtheme> locatestaticthemes() const;
     FMTmodel(const FMTmodel& rhs);
     FMTmodel& operator = (const FMTmodel& rhs);
     };
 
 class FMTmodelcomparator
 {
-	string model_name;
+	std::string model_name;
 public:
-	FMTmodelcomparator(string name);
+	FMTmodelcomparator(std::string name);
 	bool operator()(const FMTmodel& model) const;
 
 };

@@ -29,11 +29,9 @@ SOFTWARE.
 #include "FMTactualdevelopment.h"
 #include <boost/serialization/serialization.hpp>
 #include <boost/serialization/unique_ptr.hpp>
-
 #include <memory>
 
-using namespace Core;
-using namespace std;
+
 
 namespace Graph
 {
@@ -46,7 +44,7 @@ namespace Graph
 			ar & BOOST_SERIALIZATION_NVP(development);
 			ar & BOOST_SERIALIZATION_NVP(constraintID);
 			}
-			unique_ptr<FMTdevelopment>development;
+			std::unique_ptr<Core::FMTdevelopment>development;
 			int constraintID;
 		public:
 			~FMTvertexproperties() = default;
@@ -54,19 +52,19 @@ namespace Graph
 			bool operator < (const FMTvertexproperties& rhs) const;
 			FMTvertexproperties(const FMTvertexproperties& rhs);
 			FMTvertexproperties& operator = (const FMTvertexproperties& rhs);
-			FMTvertexproperties(const FMTfuturdevelopment& ldevelopment,
-				int& lconstraintID);
-			FMTvertexproperties(const FMTactualdevelopment& ldevelopment,
-				int& lconstraintID);
-            FMTvertexproperties(const FMTdevelopment& ldevelopment,
-                int& lconstraintID);//Used for simulated annealing
-			string constraintname() const;
+			FMTvertexproperties(const Core::FMTfuturdevelopment& ldevelopment,
+				const int& lconstraintID);
+			FMTvertexproperties(const Core::FMTactualdevelopment& ldevelopment,
+				const int& lconstraintID);
+            FMTvertexproperties(const Core::FMTdevelopment& ldevelopment,
+                const int& lconstraintID);
+			std::string constraintname() const;
 			inline int getconstraintID() const
 				{
 				return constraintID;
 				}
 			void setconstraintID(const int& ID);
-			inline const FMTdevelopment& get() const
+			inline const Core::FMTdevelopment& get() const
 				{
 				return (*development);
 				}
@@ -74,8 +72,6 @@ namespace Graph
 			size_t hash() const;
 			bool operator == (const FMTvertexproperties& rhs) const;
 			bool operator != (const FMTvertexproperties& rhs) const;
-			/*boost::dynamic_bitset<>hash(const int& maxperiod, const int& maxage,
-				const boost::dynamic_bitset<>& actions,bool periodstart = false) const;*/
 		};
 }
 

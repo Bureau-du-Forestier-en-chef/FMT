@@ -29,7 +29,6 @@ SOFTWARE.
 #include <boost/python/args.hpp>
 #include "FMTversion.h"
 
-using namespace boost::python;
 
 void exportVersion()
 {
@@ -48,7 +47,7 @@ void exportVersion()
 		"This class is used for versioning\n"
 		"\n";
 
-	class_<Version::FMTversion>("FMTversion", py_FMTversion_doc)
+	boost::python::class_<Version::FMTversion>("FMTversion", py_FMTversion_doc)
 		.def("getmajor", &Version::FMTversion::getmajor).staticmethod("getmajor")
 		.def("getminor",&Version::FMTversion::getminor).staticmethod("getminor")
 		.def("getpatch", &Version::FMTversion::getpatch).staticmethod("getpatch")

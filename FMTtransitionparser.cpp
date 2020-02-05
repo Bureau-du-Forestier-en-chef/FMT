@@ -28,11 +28,11 @@ SOFTWARE.
 namespace WSParser{
 
 FMTtransitionparser::FMTtransitionparser():FMTparser(),
-    rxsection(regex("^(\\*CASE)([\\s\\t]*)([^\\s^\\t]*)|(\\*SOURCE)([\\s\\t]*)(.+)|(\\*TARGET)([\\s\\t]*)(.+)",regex_constants::ECMAScript|regex_constants::icase)),
-    rxlock(regex("^(.+)(_LOCK)([\\s\\t]*)([0-9]*)(.+)",regex_constants::ECMAScript|regex_constants::icase)),
-    rxage(regex("^(.+)(_AGE)([\\s\\t]*)([0-9]*)(.+)",regex_constants::ECMAScript|regex_constants::icase)),
-    rxreplace(regex("^(.+)(_REPLACE)(....)([0-9]*)([\\s\\t]*)(\\,)([\\s\\t]*)(_TH)([0-9]*)([\\s\\t]*)(\\+)([\\s\\t]*)([0-9]*)(.+)",regex_constants::ECMAScript|regex_constants::icase)),
-    rxtyld(regex("^([\\s\\t]*)([^\\s^\\t]*)([\\s\\t]*)([^\\s^\\t]*)",regex_constants::ECMAScript|regex_constants::icase))
+    rxsection("^(\\*CASE)([\\s\\t]*)([^\\s^\\t]*)|(\\*SOURCE)([\\s\\t]*)(.+)|(\\*TARGET)([\\s\\t]*)(.+)", std::regex_constants::ECMAScript| std::regex_constants::icase),
+    rxlock("^(.+)(_LOCK)([\\s\\t]*)([0-9]*)(.+)", std::regex_constants::ECMAScript| std::regex_constants::icase),
+    rxage("^(.+)(_AGE)([\\s\\t]*)([0-9]*)(.+)", std::regex_constants::ECMAScript| std::regex_constants::icase),
+    rxreplace("^(.+)(_REPLACE)(....)([0-9]*)([\\s\\t]*)(\\,)([\\s\\t]*)(_TH)([0-9]*)([\\s\\t]*)(\\+)([\\s\\t]*)([0-9]*)(.+)", std::regex_constants::ECMAScript| std::regex_constants::icase),
+    rxtyld("^([\\s\\t]*)([^\\s^\\t]*)([\\s\\t]*)([^\\s^\\t]*)", std::regex_constants::ECMAScript| std::regex_constants::icase)
     {
 
     }
@@ -60,18 +60,16 @@ FMTtransitionparser& FMTtransitionparser::operator = (const FMTtransitionparser&
     return *this;
     }
 
-FMTmask FMTtransitionparser::getsource(string& line, FMTspec& spec,const vector<FMTtheme>& themes,FMTwssect section,const FMTconstants& constants,const FMTyields& ylds)
+Core::FMTmask FMTtransitionparser::getsource(std::string& line, Core::FMTspec& spec,const std::vector<Core::FMTtheme>& themes,FMTwssect section,const Core::FMTconstants& constants,const Core::FMTyields& ylds)
     {
-    vector<string>elements = FMTparser::spliter(line,FMTparser::rxseparator);
+	const std::vector<std::string>elements = FMTparser::spliter(line,FMTparser::rxseparator);
     if (elements.size() == themes.size())
         {
-		//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "IN "<<line << "\n";
 		validate(themes,line);
-		//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "OUT " << line << "\n";
-        return FMTmask(line, themes);
+        return Core::FMTmask(line, themes);
         }else{
-            string mask;
-            string rest=" ";
+			std::string mask;
+			std::string rest=" ";
             for(size_t theme = 0; theme < elements.size(); ++theme)
                 {
                 if (theme < themes.size())
@@ -84,20 +82,20 @@ FMTmask FMTtransitionparser::getsource(string& line, FMTspec& spec,const vector<
             mask = mask.substr(0, mask.size()-1);
             rest = rest.substr(0, rest.size()-1);
 			validate(themes,mask);
-            FMTmask newmask(mask,themes);
+            const Core::FMTmask newmask(mask,themes);
             rest += " ";
             rest = setspec(FMTwssect::Transition,FMTwskwor::Source,ylds,constants,spec,rest);
             return newmask;
             }
     }
 
-vector<FMTtransitionmask> FMTtransitionparser::getmasktran(const string& line,const vector<FMTtheme>& themes,
-                                          const FMTconstants& constants, const FMTyields& ylds,
-                                          const FMTmask& sourcemask, int& replaced)
+std::vector<Core::FMTtransitionmask> FMTtransitionparser::getmasktran(const std::string& line,const std::vector<Core::FMTtheme>& themes,
+                                          const Core::FMTconstants& constants, const Core::FMTyields& ylds,
+                                          const Core::FMTmask& sourcemask, int& replaced)
     {
-    vector<string>elements = FMTparser::spliter(line,FMTparser::rxseparator);
-    vector<FMTmask>multiples;
-    string mask = "";
+	const std::vector<std::string>elements = FMTparser::spliter(line,FMTparser::rxseparator);
+	std::vector<Core::FMTmask>multiples;
+	std::string mask = "";
     double proportion;
     size_t id = 1;
     while(id < (themes.size()+1))
@@ -105,53 +103,48 @@ vector<FMTtransitionmask> FMTtransitionparser::getmasktran(const string& line,co
         mask += elements[id] +" ";
         ++id;
         }
-	//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info)<<mask << "\n";
     mask = mask.substr(0, mask.size()-1);
     validate(themes,mask);
     proportion = getnum<double>(elements[id],constants);
     ++id;
-    string rest=" ";
+	std::string rest=" ";
     while(id < elements.size())
         {
         rest+=elements[id]+" ";
         ++id;
         }
-    smatch kmatch;
+	std::smatch kmatch;
     int age = -1;
     int lock = 0;
-    FMTtransitionmask trans(mask,themes,/*lock,*/proportion);
-    if (regex_search(rest,kmatch,FMTtransitionparser::rxlock))
+    Core::FMTtransitionmask trans(mask,themes,proportion);
+    if (std::regex_search(rest,kmatch,FMTtransitionparser::rxlock))
         {
-        string strlock = kmatch[4];
+		const std::string strlock = kmatch[4];
         lock = getnum<int>(strlock,constants);
-        rest = string(kmatch[1]) + string(kmatch[5]);
-        trans.addbounds(FMTlockbounds(FMTwssect::Transition,FMTwskwor::Target,lock,lock));
+        rest = std::string(kmatch[1]) + std::string(kmatch[5]);
+        trans.addbounds(Core::FMTlockbounds(FMTwssect::Transition,FMTwskwor::Target,lock,lock));
         }
-    if (regex_search(rest,kmatch,FMTtransitionparser::rxage))
+    if (std::regex_search(rest,kmatch,FMTtransitionparser::rxage))
         {
-        string strage = kmatch[4];
+		std::string strage = kmatch[4];
         age = getnum<int>(strage,constants);
-        rest = string(kmatch[1]) + string(kmatch[5]);
-        trans.addbounds(FMTagebounds(FMTwssect::Transition,FMTwskwor::Target,age,age));
+        rest = std::string(kmatch[1]) + std::string(kmatch[5]);
+        trans.addbounds(Core::FMTagebounds(FMTwssect::Transition,FMTwskwor::Target,age,age));
         }
      if (regex_search(rest,kmatch,FMTtransitionparser::rxreplace))
         {
-        /*_exhandler->raise(FMTexc::WSunsupported_transition,FMTwssect::Transition," for _replace keyword at line " + to_string(_line));*/
-        //no support
-        //add up a num
-        string strtargettheme = kmatch[4];
-        string stroptheme = kmatch[9];
-        string stradd = kmatch[13];
-        int targettheme  = stoi(strtargettheme)-1;
-        //int optheme  = stoi(stroptheme)-1;
-        int addupp = stoi(stradd);
-        FMTmask targetmask(mask,themes);
+		const std::string strtargettheme = kmatch[4];
+		const std::string stroptheme = kmatch[9];
+		const std::string stradd = kmatch[13];
+        const int targettheme  = stoi(strtargettheme)-1;
+        const int addupp = stoi(stradd);
+        Core::FMTmask targetmask(mask,themes);
         targetmask.set(themes[targettheme],sourcemask.get(themes[targettheme]));
-        for (FMTmask& lmask : targetmask.decompose(themes[targettheme]))
+        for (Core::FMTmask& lmask : targetmask.decompose(themes[targettheme]))
             {
-            string actual = lmask.get(themes[targettheme]);
+			const std::string actual = lmask.get(themes[targettheme]);
             int newint = stoi(actual) + addupp;
-            string newval = to_string(newint);
+			const std::string newval = std::to_string(newint);
             if (themes[targettheme].isattribute(newval))
                 {
                 lmask.set(themes[targettheme],newval);//set is probably not working?!?!?!?!
@@ -159,26 +152,26 @@ vector<FMTtransitionmask> FMTtransitionparser::getmasktran(const string& line,co
                 }
             }
         replaced = targettheme;
-        rest = string(kmatch[1])+string(kmatch[14]);
+        rest = std::string(kmatch[1])+ std::string(kmatch[14]);
         }
     if (isvalid(rest) && regex_search(rest,kmatch,FMTtransitionparser::rxtyld))
         {
-        string yld = kmatch[2];
-        string strvalue = kmatch[4];
+		const std::string yld = kmatch[2];
+		const std::string strvalue = kmatch[4];
         if (!yld.empty() && !strvalue.empty())
             {
-            double upperbound = numeric_limits<double>::max();
-            double lowerbound = getnum<double>(strvalue,constants);
+            const double upperbound = std::numeric_limits<double>::max();
+            const double lowerbound = getnum<double>(strvalue,constants);
             isyld(ylds,yld,FMTwssect::Transition);
-            trans.addbounds(FMTyldbounds(FMTwssect::Transition,FMTwskwor::Target,yld,upperbound,lowerbound));
+            trans.addbounds(Core::FMTyldbounds(FMTwssect::Transition,FMTwskwor::Target,yld,upperbound,lowerbound));
             }
         }
-    vector<FMTtransitionmask>alltrans;
+	std::vector<Core::FMTtransitionmask>alltrans;
     if (!multiples.empty())
         {
-        for(const FMTmask& msk : multiples)
+        for(const Core::FMTmask& msk : multiples)
             {
-            alltrans.push_back(FMTtransitionmask(trans,msk,themes));
+            alltrans.push_back(Core::FMTtransitionmask(trans,msk,themes));
             }
         }else{
         alltrans.push_back(trans);
@@ -187,34 +180,29 @@ vector<FMTtransitionmask> FMTtransitionparser::getmasktran(const string& line,co
     }
 
 
-vector<FMTtransition> FMTtransitionparser::read(const vector<FMTtheme>& themes,const vector<FMTaction>& actions,const FMTyields& ylds,const FMTconstants& constants,string location)
+std::vector<Core::FMTtransition> FMTtransitionparser::read(const std::vector<Core::FMTtheme>& themes,const std::vector<Core::FMTaction>& actions,const Core::FMTyields& ylds,const Core::FMTconstants& constants, std::string location)
     {
-    ifstream transitionstream(location);
-    vector<FMTtransition>transitions;
-	vector<FMTtransition>temp_transitions;
+	std::ifstream transitionstream(location);
+	std::vector<Core::FMTtransition>transitions;
+	std::vector<Core::FMTtransition>temp_transitions;
     if (FMTparser::tryopening(transitionstream,location))
         {
-        string line;
-        string CASE;
-        string SOURCE;
-        string TARGET;
-        string actionname;
-       // map<FMTmask,vector<FMTfork>>forks;
-        //FMTfork* fptr = nullptr;
-        vector<FMTfork*>fptrs;
-		vector<int>fork_ids;
-        vector<int>replacedvec;
-        FMTmask srcmsk;
-		vector<FMTtransition>::iterator last_transition = temp_transitions.end();
+		std::string CASE;
+		std::string SOURCE;
+		std::string TARGET;
+		std::string actionname;
+		std::vector<Core::FMTfork*>fptrs;
+		std::vector<int>fork_ids;
+		std::vector<int>replacedvec;
+        Core::FMTmask srcmsk;
+		std::vector<Core::FMTtransition>::iterator last_transition = temp_transitions.end();
         while(transitionstream.is_open())
             {
-            //line = getcleanline(transitionstream);
-			line = getcleanlinewfor(transitionstream, themes, constants);
+			std::string line = getcleanlinewfor(transitionstream, themes, constants);
             if (!line.empty())
                 {
-				//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << line << "\n";
-                smatch kmatch;
-                if(!regex_search(line,kmatch,FMTtransitionparser::rxsection))
+				std::smatch kmatch;
+                if(!std::regex_search(line,kmatch,FMTtransitionparser::rxsection))
                     {
                     //crash here
                     }
@@ -223,19 +211,15 @@ vector<FMTtransition> FMTtransitionparser::read(const vector<FMTtheme>& themes,c
                 TARGET = kmatch[7];
                 if (!CASE.empty())
                     {
-                    /*if (!actionname.empty() && forks.empty())
-                        {
-                        _exhandler->raise(FMTexc::WSempty_transition,_section,actionname+" at line " + to_string(_line), __LINE__, __FILE__);
-                        }*/
-                    vector<string>ptransitionname = sameas(CASE);
+					const std::vector<std::string>ptransitionname = sameas(CASE);
 					actionname = ptransitionname.at(0);
-					temp_transitions.push_back(FMTtransition(actionname));
+					temp_transitions.push_back(Core::FMTtransition(actionname));
 					last_transition = --temp_transitions.end();
                     if (ptransitionname.size()>1)
                         {
-                        vector<FMTtransition>::const_iterator same_tr = find_if(temp_transitions.begin(), temp_transitions.end(), FMTtransitioncomparator(ptransitionname.at(1)));
-                        vector<FMTmask>::const_iterator mask_it = same_tr->maskbegin();
-                        vector<FMTfork>::const_iterator data_it = same_tr->databegin();
+						std::vector<Core::FMTtransition>::const_iterator same_tr = find_if(temp_transitions.begin(), temp_transitions.end(), Core::FMTtransitioncomparator(ptransitionname.at(1)));
+						std::vector<Core::FMTmask>::const_iterator mask_it = same_tr->maskbegin();
+						std::vector<Core::FMTfork>::const_iterator data_it = same_tr->databegin();
                         for (size_t id = 0 ; id<same_tr->size(); ++id)
                             {
                             last_transition->push_back(*(mask_it+id),*(data_it+id));
@@ -244,11 +228,10 @@ vector<FMTtransition> FMTtransitionparser::read(const vector<FMTtheme>& themes,c
                     if (!isact(FMTwssect::Transition,actions,actionname)) continue;
                     }else if(!SOURCE.empty())
                         {
-                        string data;
+						std::string data;
                         data = kmatch[6];
-                        FMTfork fork;
+                        Core::FMTfork fork;
                         srcmsk = getsource(data,fork,themes,FMTwssect::Transition,constants,ylds);
-						//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) <<"SOURCE!!!! "<< srcmsk.getstr() << "\n";
 						last_transition->push_back(srcmsk, fork);
                         fptrs.clear();
 						fork_ids.clear();
@@ -258,26 +241,24 @@ vector<FMTtransition> FMTtransitionparser::read(const vector<FMTtheme>& themes,c
                         }else if(!TARGET.empty())
                             {
                             int replaced = -1;
-                            vector<FMTtransitionmask>mtrs = getmasktran(line,themes,constants,ylds,srcmsk,replaced);
+							std::vector<Core::FMTtransitionmask>mtrs = getmasktran(line,themes,constants,ylds,srcmsk,replaced);
                             if (replaced>-1)
                                 {
                                 for(const int& rep : replacedvec)
                                     {
                                     if (rep != replaced)
                                         {
-                                        _exhandler->raise(FMTexc::WSunsupported_transition,_section,actionname+" at line " + to_string(_line), __LINE__, __FILE__);
+                                        _exhandler->raise(Exception::FMTexc::WSunsupported_transition,_section,actionname+" at line " + std::to_string(_line), __LINE__, __FILE__);
                                         }
                                     }
                                 replacedvec.push_back(replaced);
                                 }
 
-                            if (replaced==-1|| fork_ids.size() > 1)//fptrs.size()>1)
+                            if (replaced==-1|| fork_ids.size() > 1)
                                 {
-								//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "rep 1 " << fptrs.size()<<" "<< replaced<<" "<< mtrs.size() <<"\n";
                                 int repid = 0;
-                                for(const int& id : fork_ids)//FMTfork* fptr : fptrs)
+                                for(const int& id : fork_ids)
                                     {
-									//FMTfork* fr = ->;
 										if (replaced == -1)
 										{
 											(last_transition->databegin() + id)->add(mtrs[0]);
@@ -288,40 +269,23 @@ vector<FMTtransition> FMTtransitionparser::read(const vector<FMTtheme>& themes,c
                                     ++repid;
                                     }
                                 }else{
-										//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "rep 2 " << "\n";
-                                        vector<FMTfork*>newstack;
-										vector<int>new_ids;
-                                        FMTfork basefork;
+									
+										std::vector<Core::FMTfork*>newstack;
+										std::vector<int>new_ids;
+                                        Core::FMTfork basefork;
                                         basefork = *fptrs[0];
-										//delete the last fork of the transition
 										if (!last_transition->empty())
 											{
 											last_transition->pop_back();
 											}
-                                        /*if(!forks[srcmsk].empty())
-                                            {
-                                            forks[srcmsk].pop_back();
-                                            }
-                                        if(forks[srcmsk].empty())
-                                            {
-                                            forks.erase(srcmsk);
-                                            }*/
-										//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "Starting decomposing " << "\n";
-                                        vector<FMTmask>multisourcesmask = srcmsk.decompose(themes[replaced]);
+										const std::vector<Core::FMTmask>multisourcesmask = srcmsk.decompose(themes[replaced]);
                                         for(size_t id=0; id<mtrs.size(); ++id)
                                             {
-                                            /*if(forks.find(multisourcesmask[id])==forks.end())
-                                                {
-                                                forks[multisourcesmask[id]] = vector<FMTfork>();
-                                                }
-                                            forks[multisourcesmask[id]].push_back(basefork);
-                                            FMTfork* newfptr = &forks[multisourcesmask[id]].back();*/
-											//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "PUSHING " << "\n";
 											last_transition->push_back(multisourcesmask[id], basefork);
-											FMTfork* newfptr = &(*--last_transition->dataend());
+											Core::FMTfork* newfptr = &(*--last_transition->dataend());
                                             newfptr->add(mtrs[id]);
                                             newstack.push_back(newfptr);
-											new_ids.push_back(int(last_transition->size()) - 1);
+											new_ids.push_back(static_cast<int>(last_transition->size()) - 1);
                                             }
                                         fptrs = newstack;
 										fork_ids = new_ids;
@@ -330,13 +294,13 @@ vector<FMTtransition> FMTtransitionparser::read(const vector<FMTtheme>& themes,c
                 }
             }
 
-			for (const FMTtransition& transition : temp_transitions)
+			for (const Core::FMTtransition& transition : temp_transitions)
 				{
 				if (!transition.empty())
 					{
 					if (transition.isleaking())
 						{
-						_exhandler->raise(FMTexc::WSleakingtransition, _section, transition.name, __LINE__, __FILE__);
+						_exhandler->raise(Exception::FMTexc::WSleakingtransition, _section, transition.name, __LINE__, __FILE__);
 					}else {
 						transitions.push_back(transition);
 						}
@@ -349,15 +313,15 @@ vector<FMTtransition> FMTtransitionparser::read(const vector<FMTtheme>& themes,c
     return transitions;
     }
 
-bool FMTtransitionparser::write(const vector<FMTtransition>& transitions, string location)
+bool FMTtransitionparser::write(const std::vector<Core::FMTtransition>& transitions, std::string location)
     {
-    ofstream transitionstream;
+	std::ofstream transitionstream;
     transitionstream.open(location);
     if (tryopening(transitionstream,location))
         {
-        for(const FMTtransition& tra : transitions)
+        for(const Core::FMTtransition& tra : transitions)
             {
-            transitionstream<<string(tra)<<"\n";
+            transitionstream<< std::string(tra)<<"\n";
             }
         transitionstream.close();
         return true;

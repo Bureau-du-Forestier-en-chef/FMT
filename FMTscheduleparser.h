@@ -30,11 +30,6 @@ SOFTWARE.
 #include "FMTaction.h"
 #include "FMTschedule.h"
 
-
-using namespace boost::python;
-using namespace std;
-using namespace Core;
-
 namespace WSParser
 {
 
@@ -45,9 +40,9 @@ class FMTscheduleparser: public FMTparser
         FMTscheduleparser();
         FMTscheduleparser(const FMTscheduleparser& rhs);
         FMTscheduleparser& operator = (const FMTscheduleparser& rhs);
-        vector<FMTschedule>read(const vector<FMTtheme>& themes,
-			const vector<FMTaction>& actions,string location,double tolerance = 0.00000001);
-        void write(const vector<FMTschedule>& schedules,string location);
+        std::vector<Core::FMTschedule>read(const std::vector<Core::FMTtheme>& themes,
+			const  std::vector<Core::FMTaction>& actions, std::string location,double tolerance = 0.00000001);
+        void write(const  std::vector<Core::FMTschedule>& schedules, std::string location);
     };
 
 }

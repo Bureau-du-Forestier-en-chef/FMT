@@ -51,9 +51,9 @@ void exportModel()
         "\n"
         "Base model class for building general WS model\n"
         "\n";
-    class_<Models::FMTmodel,bases<Core::FMTobject>>("FMTmodel",py_FMTmodel_doc)
+	bp::class_<Models::FMTmodel, bp::bases<Core::FMTobject>>("FMTmodel",py_FMTmodel_doc)
             .def_readwrite("name",&Models::FMTmodel::name)
-			.def_pickle(FMT_pickle_suite<FMTmodel>())
+			.def_pickle(FMT_pickle_suite<Models::FMTmodel>())
             .def("getyields",&Models::FMTmodel::getyields)
             .def("getarea",&Models::FMTmodel::getarea, getarea_overloads())
             .def("getthemes",&Models::FMTmodel::getthemes)
@@ -75,31 +75,31 @@ void exportModel()
         "Uses schedule to simulate harvest on rasters\n"
         "\n";
 
-	boost::python::to_python_converter<map<string, double>, MapToDict<string, double>>();
+	bp::to_python_converter<std::map<std::string, double>, MapToDict<std::string, double>>();
 
-    class_<Models::FMTsesmodel,bases<Models::FMTmodel>>("FMTsesmodel",py_FMTsesm_doc)
-            .def(init<Models::FMTmodel>())
-			.def_pickle(FMT_pickle_suite<FMTsesmodel>())
-            .def("getmapping",&FMTsesmodel::getmapping)
-			.def("getschedule", &FMTsesmodel::getschedule,
+	bp::class_<Models::FMTsesmodel, bp::bases<Models::FMTmodel>>("FMTsesmodel",py_FMTsesm_doc)
+            .def(bp::init<Models::FMTmodel>())
+			.def_pickle(FMT_pickle_suite<Models::FMTsesmodel>())
+            .def("getmapping",&Models::FMTsesmodel::getmapping)
+			.def("getschedule", &Models::FMTsesmodel::getschedule,
 				"Get the non spatial schedule for the last period\n")
-            .def("getdisturbances",&FMTsesmodel::getdisturbances,
+            .def("getdisturbances",&Models::FMTsesmodel::getdisturbances,
                  "Get all the disturbances of the simulation\n"
                  "The disturbances stack present all the past disturbances"
                  /*args("self","disturbances")*/)
-            .def("setinitialmapping",&FMTsesmodel::setinitialmapping,
+            .def("setinitialmapping",&Models::FMTsesmodel::setinitialmapping,
                  "Set the initial mapping\n"
                  "Initial forest themes described to the model"
                  /*args("self","mapping")*/)
-            .def("setspactions",&FMTsesmodel::setspactions,
+            .def("setspactions",&Models::FMTsesmodel::setspactions,
 				"Set a spatial actions list to the model\n"
 				"Model should contain the relative transitions\n"
 				"Actions will be simulated following the list ordering\n")
-			.def("getschedule",&FMTsesmodel::getschedule,
+			.def("getschedule",&Models::FMTsesmodel::getschedule,
 				"Get the last simulated non spatial schedule\n")
-			.def("getdisturbancestats", &FMTsesmodel::getdisturbancestats,
+			.def("getdisturbancestats", &Models::FMTsesmodel::getdisturbancestats,
 				"Get all disturbances stats (period,action,size,perimeter,Height,Width)\n")
-            .def("simulate",&FMTsesmodel::simulate,
+            .def("simulate",&Models::FMTsesmodel::simulate,
                  simulate_overloads(/*"Simulate a schedule based only on schedule (schedule_only = true)\n"
                                     "or using schedule and operability(schedule_only = false) and a (seed=0)",
                                     args("self","schedule","schedule_only=true","seed=0")*/));
@@ -112,15 +112,15 @@ void exportModel()
 		"This class is used for M3 optimization\n"
 		"\n";
 
-	enum_<Models::FMTsolverinterface>("FMTsolverinterface")
+	bp::enum_<Models::FMTsolverinterface>("FMTsolverinterface")
 		.value("CLP", Models::FMTsolverinterface::CLP)
 		.value("MOSEK", Models::FMTsolverinterface::MOSEK)
 		.value("CPLEX", Models::FMTsolverinterface::CPLEX)
 		.value("GUROBI", Models::FMTsolverinterface::GUROBI);
 
-	class_<Models::FMTlpmodel, bases<Models::FMTmodel>>("FMTlpmodel", py_FMTlpmodel)
-		.def(init<Models::FMTmodel, Models::FMTsolverinterface>())
-		.def_pickle(FMT_pickle_suite<FMTlpmodel>())
+	bp::class_<Models::FMTlpmodel, bp::bases<Models::FMTmodel>>("FMTlpmodel", py_FMTlpmodel)
+		.def(bp::init<Models::FMTmodel, Models::FMTsolverinterface>())
+		.def_pickle(FMT_pickle_suite<Models::FMTlpmodel>())
 		.def("buildperiod", &Models::FMTlpmodel::buildperiod, buildperiod_overloads())
 		.def("boundsolution", &Models::FMTlpmodel::boundsolution)
 		.def("getsolution", &Models::FMTlpmodel::getsolution)
@@ -134,15 +134,13 @@ void exportModel()
 		.def("getoutput", &Models::FMTlpmodel::getoutput, getLPoutputoverloads())
 		.def("writeLP", &Models::FMTlpmodel::writeLP)
 		.def("writeMPS", &Models::FMTlpmodel::writeMPS)
-		//.def("getarea", &Models::FMTlpmodel::getarea)
 		.def("__eq__", &Models::FMTlpmodel::operator ==)
 		.def("__ne__", &Models::FMTlpmodel::operator !=)
-		//.def("samegraph", &Models::FMTlpmodel::samegraph)
 		.def("getstats", &Models::FMTlpmodel::getstats)
 		.def("getoperatingareaheuristics", &Models::FMTlpmodel::getoperatingareaheuristics, getoperatingareaheuristics_overloads());
 	define_pylist<Models::FMTlpmodel>();
 
-	enum_<Models::FMTsawarmuptype>("FMTsawarmuptype")
+	bp::enum_<Models::FMTsawarmuptype>("FMTsawarmuptype")
 		.value("log", Models::FMTsawarmuptype::log)
 		.value("delta", Models::FMTsawarmuptype::bigdelta)
 		.value("logmax", Models::FMTsawarmuptype::logmax)
@@ -154,40 +152,40 @@ void exportModel()
         "Model class used to do simulated annealing\n"
         "Need to use cooling schedule\n"
         "\n";
-     class_<Models::FMTsamodel,bases<Models::FMTmodel>>("FMTsamodel",py_FMTsamodel_doc)
-            .def(init<Models::FMTmodel>())
-            .def("get_current_solution",&FMTsamodel::get_current_solution)
-            .def("get_new_solution",&FMTsamodel::get_new_solution)
-            .def("getspatialactions",&FMTsamodel::getspatialactions)
-            .def("evaluate",&FMTsamodel::evaluate,evaluate_overloads())
-            .def("setinitial_mapping",&FMTsamodel::setinitial_mapping,
+	bp::class_<Models::FMTsamodel, bp::bases<Models::FMTmodel>>("FMTsamodel",py_FMTsamodel_doc)
+            .def(bp::init<Models::FMTmodel>())
+            .def("get_current_solution",&Models::FMTsamodel::get_current_solution)
+            .def("get_new_solution",&Models::FMTsamodel::get_new_solution)
+            .def("getspatialactions",&Models::FMTsamodel::getspatialactions)
+            .def("evaluate",&Models::FMTsamodel::evaluate,evaluate_overloads())
+            .def("setinitial_mapping",&Models::FMTsamodel::setinitial_mapping,
                  "Set the initial mapping\n"
                  "Initial forest themes described to the model",
-                 args("self","mapping"))
-            .def("setspactions",&FMTsamodel::setspactions,
+				bp::args("self","mapping"))
+            .def("setspactions",&Models::FMTsamodel::setspactions,
 				"Set a spatial actions list to the model\n"
 				"Model should contain the relative transitions\n"
 				"Actions will be simulated following the list ordering\n")
-            .def("set_min_max_moves",&FMTsamodel::set_min_max_moves)
-            .def("cool_down",&FMTsamodel::cool_down,
+            .def("set_min_max_moves",&Models::FMTsamodel::set_min_max_moves)
+            .def("cool_down",&Models::FMTsamodel::cool_down,
                  "Reduce temperature according to the cooling schedule\n")
-            .def("get_cool_schedule_type",&FMTsamodel::getcoolingscheduletype,
+            .def("get_cool_schedule_type",&Models::FMTsamodel::getcoolingscheduletype,
                  "Return cooling schedule type associated with the model\n")
-            .def("setschedule",&FMTsamodel::setschedule,
+            .def("setschedule",&Models::FMTsamodel::setschedule,
                  "Set a cooling schedule by passing a FMTsaschedule\n")
-            .def("buildperiod",&FMTsamodel::buildperiod,
+            .def("buildperiod",&Models::FMTsamodel::buildperiod,
                  "Build each period one by one randomly\n")
-            .def("move",&FMTsamodel::move_solution,
+            .def("move",&Models::FMTsamodel::move_solution,
                  move_solution_overloads())
-            .def("acceptnew",&FMTsamodel::acceptnew,
+            .def("acceptnew",&Models::FMTsamodel::acceptnew,
                  "Accept new solution as current solution and empty the new solution")
-            .def("write_outputs_at",&FMTsamodel::write_outputs_at,
+            .def("write_outputs_at",&Models::FMTsamodel::write_outputs_at,
                  "Input : Path were you want the file with the outputs\n"
                  "Write the for each constraint and period the output and the penalty in a file name outputs.csv")
-            .def("get_outputs",&FMTsamodel::get_outputs,get_outputs_overloads())
-            .def("write_solutions_events",&FMTsamodel::write_solutions_events)
-            .def("get_number_moves",&FMTsamodel::get_number_moves)
-            .def("warmup",&FMTsamodel::warmup,warmup_overloads());
+            .def("get_outputs",&Models::FMTsamodel::get_outputs,get_outputs_overloads())
+            .def("write_solutions_events",&Models::FMTsamodel::write_solutions_events)
+            .def("get_number_moves",&Models::FMTsamodel::get_number_moves)
+            .def("warmup",&Models::FMTsamodel::warmup,warmup_overloads());
     define_pylist<Models::FMTsamodel>();
     }
 

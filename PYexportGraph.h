@@ -45,14 +45,14 @@ void exportGraph()
 		"Graph stats\n"
 		"\n";
 
-	enum_<Graph::FMToutputlevel>("FMToutputlevel")
+	bp::enum_<Graph::FMToutputlevel>("FMToutputlevel")
 		.value("standard", Graph::FMToutputlevel::standard)
 		.value("totalonly", Graph::FMToutputlevel::totalonly)
 		.value("developpement", Graph::FMToutputlevel::developpement)
 		.export_values();
 
-	class_<Graph::FMTgraphstats>("FMTgraphstats", py_FMTgraphstats_doc)
-		.def("__str__", &Graph::FMTgraphstats::operator string)
+	bp::class_<Graph::FMTgraphstats>("FMTgraphstats", py_FMTgraphstats_doc)
+		.def("__str__", &Graph::FMTgraphstats::operator std::string)
 		.def_readwrite("cols", &Graph::FMTgraphstats::cols)
 		.def_readwrite("rows", &Graph::FMTgraphstats::rows)
 		.def_readwrite("vertices", &Graph::FMTgraphstats::vertices)
@@ -61,16 +61,15 @@ void exportGraph()
 		.def_readwrite("output_rows", &Graph::FMTgraphstats::output_rows)
 		.def_readwrite("output_cols", &Graph::FMTgraphstats::output_cols);
 
-	enum_<Graph::FMTgraphbuild>("FMTsolverinterface")
+	bp::enum_<Graph::FMTgraphbuild>("FMTsolverinterface")
 		.value("schedulebuild", Graph::FMTgraphbuild::schedulebuild)
 		.value("fullbuild", Graph::FMTgraphbuild::fullbuild)
 		.value("nobuild", Graph::FMTgraphbuild::nobuild);
 
-	class_<Graph::FMTgraph>("FMTgraph")
-		.def_pickle(FMT_pickle_suite<FMTgraph>());
+	bp::class_<Graph::FMTgraph>("FMTgraph")
+		.def_pickle(FMT_pickle_suite<Graph::FMTgraph>());
 
 
-	//define_FMTgraph<Graph::FMTsolverinterface::CLP>();
 
 }
 

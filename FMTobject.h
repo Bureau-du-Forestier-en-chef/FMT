@@ -56,7 +56,7 @@ class FMTobject
 		std::shared_ptr<Exception::FMTexceptionhandler> _exhandler;
 		std::shared_ptr<Logging::FMTlogger> _logger;
 		void checksignals();
-		string getruntimelocation();
+		std::string getruntimelocation();
 		void setCPLhandler();
 	public:
 		FMTobject();

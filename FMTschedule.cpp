@@ -28,20 +28,20 @@ namespace Core{
 
 FMTschedule::FMTschedule():period(),elements(){}
 
-FMTschedule::FMTschedule(int lperiod,map<FMTaction,map<FMTdevelopment,vector<double>>> mapping) : period(lperiod),elements(mapping)
+FMTschedule::FMTschedule(int lperiod, std::map<FMTaction, std::map<FMTdevelopment, std::vector<double>>> mapping) : period(lperiod),elements(mapping)
     {
 
     }
 
-FMTschedule::FMTschedule(int lperiod, const map<FMTaction, map<FMTdevelopment, map<int, double>>>& mapping) : period(lperiod), elements()
+FMTschedule::FMTschedule(int lperiod, const std::map<FMTaction, std::map<FMTdevelopment, std::map<int, double>>>& mapping) : period(lperiod), elements()
 	{
-	for (map<FMTaction, map<FMTdevelopment, map<int, double>>>::const_iterator its = mapping.begin(); its != mapping.end(); its++)
+	for (std::map<FMTaction, std::map<FMTdevelopment, std::map<int, double>>>::const_iterator its = mapping.begin(); its != mapping.end(); its++)
 		{
-		elements[its->first] = map<FMTdevelopment, vector<double>>();
-		for (map<FMTdevelopment, map<int, double>>::const_iterator elits = its->second.begin(); elits != its->second.end(); elits++)
+		elements[its->first] = std::map<FMTdevelopment, std::vector<double>>();
+		for (std::map<FMTdevelopment, std::map<int, double>>::const_iterator elits = its->second.begin(); elits != its->second.end(); elits++)
 			{
-			elements[its->first][elits->first] = vector<double>();
-			for (map<int, double>::const_iterator valit = elits->second.begin(); valit!= elits->second.end(); valit++)
+			elements[its->first][elits->first] = std::vector<double>();
+			for (std::map<int, double>::const_iterator valit = elits->second.begin(); valit!= elits->second.end(); valit++)
 				{
 				elements[its->first][elits->first].push_back(valit->second);
 				}
@@ -70,9 +70,9 @@ bool FMTschedule::sameelements(const FMTschedule& rhs) const
 		{
 		return false;
 		}
-	for (map<FMTaction, map<FMTdevelopment, vector<double>>>::const_iterator actit = elements.begin(); actit != elements.end(); actit++)
+	for (std::map<FMTaction, std::map<FMTdevelopment, std::vector<double>>>::const_iterator actit = elements.begin(); actit != elements.end(); actit++)
 		{
-		map<FMTaction, map<FMTdevelopment, vector<double>>>::const_iterator rhsactit = rhs.elements.find(actit->first);
+		std::map<FMTaction, std::map<FMTdevelopment, std::vector<double>>>::const_iterator rhsactit = rhs.elements.find(actit->first);
 		if (rhsactit == rhs.elements.end())
 			{
 			return false;
@@ -81,9 +81,9 @@ bool FMTschedule::sameelements(const FMTschedule& rhs) const
 			{
 			return false;
 			}
-		for (map<FMTdevelopment, vector<double>>::const_iterator devit = actit->second.begin(); devit != actit->second.end(); devit++)
+		for (std::map<FMTdevelopment, std::vector<double>>::const_iterator devit = actit->second.begin(); devit != actit->second.end(); devit++)
 			{
-			map<FMTdevelopment, vector<double>>::const_iterator rhsdevit = rhsactit->second.find(devit->first);
+			std::map<FMTdevelopment, std::vector<double>>::const_iterator rhsdevit = rhsactit->second.find(devit->first);
 			if (rhsdevit == rhsactit->second.end())
 				{
 				return false;
@@ -119,20 +119,20 @@ bool FMTschedule::operator != (const FMTschedule& rhs) const
 
 FMTschedule& FMTschedule::operator += (const FMTschedule& rhs)
     {
-    for(map<FMTaction,map<FMTdevelopment,vector<double>>>::const_iterator actit = rhs.elements.begin(); actit != rhs.elements.end(); actit++)
+    for(std::map<FMTaction, std::map<FMTdevelopment, std::vector<double>>>::const_iterator actit = rhs.elements.begin(); actit != rhs.elements.end(); actit++)
         {
         if (elements.find(actit->first)==elements.end())
             {
             elements[actit->first] = actit->second;
             }else{
-             for(map<FMTdevelopment,vector<double>>::const_iterator devit = actit->second.begin(); devit != actit->second.end(); devit++)
+             for(std::map<FMTdevelopment, std::vector<double>>::const_iterator devit = actit->second.begin(); devit != actit->second.end(); devit++)
                 {
                 if (elements.at(actit->first).find(devit->first) == elements.at(actit->first).end())
                     {
                     elements[actit->first][devit->first] = devit->second;
                     }else{
-                    size_t max_size = max(devit->second.size(),elements[actit->first][devit->first].size());
-                    vector<double>values(max_size,0);
+                    const size_t max_size = std::max(devit->second.size(),elements[actit->first][devit->first].size());
+					std::vector<double>values(max_size,0);
                     for (size_t id = 0; id < max_size; ++id)
                         {
                         if (id < devit->second.size())
@@ -160,31 +160,31 @@ FMTschedule FMTschedule::operator + (const FMTschedule& rhs) const
     return newschedule;
     }
 
-map<FMTdevelopment,vector<double>>FMTschedule::getfaction(const FMTaction& action) const
+std::map<FMTdevelopment, std::vector<double>>FMTschedule::getfaction(const FMTaction& action) const
     {
     if (elements.find(action)!=elements.end())
         {
         return elements.at(action);
         }
-    return map<FMTdevelopment,vector<double>>();
+    return std::map<FMTdevelopment, std::vector<double>>();
     }
 
-map<FMTaction,map<FMTdevelopment,vector<double>>>FMTschedule::get() const
+std::map<FMTaction, std::map<FMTdevelopment, std::vector<double>>>FMTschedule::get() const
     {
     return elements;
     }
 
-FMTschedule::operator string() const
+FMTschedule::operator std::string() const
     {
-    string line = "";
-    for(map<FMTaction,map<FMTdevelopment,vector<double>>>::const_iterator actit = elements.begin(); actit != elements.end(); actit++)
+	std::string line = "";
+    for(std::map<FMTaction, std::map<FMTdevelopment, std::vector<double>>>::const_iterator actit = elements.begin(); actit != elements.end(); actit++)
         {
-        for(map<FMTdevelopment,vector<double>>::const_iterator devit = actit->second.begin(); devit != actit->second.end(); devit++)
+        for(std::map<FMTdevelopment, std::vector<double>>::const_iterator devit = actit->second.begin(); devit != actit->second.end(); devit++)
             {
             const FMTdevelopment* dev = &devit->first;
 			for (const double & value : devit->second)
 				{
-				line += string(dev->mask) + " " + to_string(dev->age) + " " + to_string(value) + " " + actit->first.name + " " + to_string(period) + "\n";
+				line += std::string(dev->mask) + " " + std::to_string(dev->age) + " " + std::to_string(value) + " " + actit->first.name + " " + std::to_string(period) + "\n";
 				}
             }
         }
@@ -197,7 +197,7 @@ double FMTschedule::actionarea(const FMTaction& action) const
     double value = 0;
 	if (elements.find(action)!=elements.end())
 		{
-		for (map<FMTdevelopment, vector<double>>::const_iterator devit = elements.at(action).begin(); devit != elements.at(action).end(); devit++)
+		for (std::map<FMTdevelopment, std::vector<double>>::const_iterator devit = elements.at(action).begin(); devit != elements.at(action).end(); devit++)
 			{
 			for (const double& val : devit->second)
 				{
@@ -216,9 +216,9 @@ int FMTschedule::getperiod() const
 double FMTschedule::area() const
     {
     double value = 0;
-    for(map<FMTaction,map<FMTdevelopment,vector<double>>>::const_iterator actit = elements.begin(); actit != elements.end(); actit++)
+    for(std::map<FMTaction, std::map<FMTdevelopment, std::vector<double>>>::const_iterator actit = elements.begin(); actit != elements.end(); actit++)
         {
-        for(map<FMTdevelopment, vector<double>>::const_iterator devit = actit->second.begin(); devit != actit->second.end(); devit++)
+        for(std::map<FMTdevelopment, std::vector<double>>::const_iterator devit = actit->second.begin(); devit != actit->second.end(); devit++)
             {
 			for (const double& val : devit->second)
 				{
@@ -233,10 +233,10 @@ bool FMTschedule::operated(const FMTaction& action,
 	const FMTdevelopment& developement) const
 	{
 	bool value = false;
-	map<FMTaction, map<FMTdevelopment, vector<double>>>::const_iterator actit = elements.find(action);
+	std::map<FMTaction, std::map<FMTdevelopment, std::vector<double>>>::const_iterator actit = elements.find(action);
 	if (actit != elements.end())
 		{
-		map<FMTdevelopment, vector<double>>::const_iterator devit;
+		std::map<FMTdevelopment, std::vector<double>>::const_iterator devit;
 		if (action.lock)
 			{
 			devit = actit->second.find(developement);
@@ -258,9 +258,9 @@ bool FMTschedule::empty() const
 
 void FMTschedule::sort()
 	{
-	for (map<FMTaction, map<FMTdevelopment, vector<double>>>::iterator actit = elements.begin(); actit != elements.end(); actit++)
+	for (std::map<FMTaction, std::map<FMTdevelopment, std::vector<double>>>::iterator actit = elements.begin(); actit != elements.end(); actit++)
 		{
-		for (map<FMTdevelopment, vector<double>>::iterator devit = actit->second.begin(); devit != actit->second.end(); devit++)
+		for (std::map<FMTdevelopment, std::vector<double>>::iterator devit = actit->second.begin(); devit != actit->second.end(); devit++)
 			{
 			std::sort(devit->second.begin(), devit->second.end());
 			}

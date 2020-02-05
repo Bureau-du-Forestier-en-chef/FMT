@@ -44,28 +44,27 @@ FMTyields::FMTyields():FMTlist<FMTyieldhandler>(),names(), null_names()
             }
         return *this;
         }
-    vector<string>FMTyields::getstacked() const
+	std::vector<std::string>FMTyields::getstacked() const
         {
-        vector<string>values;
-		vector<FMTyieldhandler>::const_iterator data_iterator = this->databegin();
-		//vector<FMTmask>::const_iterator mask_iterator = this->maskbegin();
+		std::vector<std::string>values;
+		std::vector<FMTyieldhandler>::const_iterator data_iterator = this->databegin();
         for(size_t id = 0 ; id < this->size(); ++id)
             {
-            string value = "";
-            value += string(*data_iterator) + "\n";
+			std::string value = "";
+            value += std::string(*data_iterator) + "\n";
             values.push_back(value);
 			++data_iterator;
             }
         return values;
         }
 
-vector<string>FMTyields::getyldsnames() const
+std::vector<std::string>FMTyields::getyldsnames() const
     {
-    vector<string>fullylds;
-	vector<FMTyieldhandler>::const_iterator data_iterator = this->databegin();
+		std::vector<std::string>fullylds;
+		std::vector<FMTyieldhandler>::const_iterator data_iterator = this->databegin();
     for(size_t id = 0 ; id < this->size(); ++id)
         {
-        for(map<string,FMTdata>::const_iterator itd = data_iterator->elements.begin(); itd != data_iterator->elements.end(); ++itd)
+        for(std::map<std::string,FMTdata>::const_iterator itd = data_iterator->elements.begin(); itd != data_iterator->elements.end(); ++itd)
              {
              if (std::find(fullylds.begin(),fullylds.end(), itd->first)==fullylds.end())
                  {
@@ -77,17 +76,17 @@ vector<string>FMTyields::getyldsnames() const
     return fullylds;
     }
 
-vector<string>FMTyields::getnullyldsnames() const
+std::vector<std::string>FMTyields::getnullyldsnames() const
 	{
-	vector<string>nullyields;
-	vector<string>nonnullyields;
-	vector<FMTyieldhandler>::const_iterator data_iterator = this->databegin();
+	std::vector<std::string>nullyields;
+	std::vector<std::string>nonnullyields;
+	std::vector<FMTyieldhandler>::const_iterator data_iterator = this->databegin();
 	for (size_t id = 0; id < this->size(); ++id)
 		{
-		for (map<string, FMTdata>::const_iterator itd = data_iterator->elements.begin(); itd != data_iterator->elements.end(); ++itd)
+		for (std::map<std::string, FMTdata>::const_iterator itd = data_iterator->elements.begin(); itd != data_iterator->elements.end(); ++itd)
 			{
-			vector<string>::iterator nullit = find(nullyields.begin(), nullyields.end(), itd->first);
-			vector<string>::iterator nonnullit = find(nonnullyields.begin(), nonnullyields.end(), itd->first);
+			std::vector<std::string>::iterator nullit = std::find(nullyields.begin(), nullyields.end(), itd->first);
+			std::vector<std::string>::iterator nonnullit = std::find(nonnullyields.begin(), nonnullyields.end(), itd->first);
 			if (itd->second.nulldata() && nonnullit == nonnullyields.end() && nullit == nullyields.end())
 				{
 				nullyields.push_back(itd->first);
@@ -104,12 +103,12 @@ vector<string>FMTyields::getnullyldsnames() const
 	return nullyields;
 	}
 
-bool FMTyields::isyld(const string& value) const
+bool FMTyields::isyld(const std::string& value) const
     {
     return (std::find(names.begin(),names.end(), value)!=names.end());
     }
 
-bool FMTyields::isnullyld(const string& value) const
+bool FMTyields::isnullyld(const std::string& value) const
 	{
 	return (std::find(null_names.begin(), null_names.end(), value) != null_names.end());
 	}
@@ -121,21 +120,20 @@ void FMTyields::update()
 	null_names = getnullyldsnames();
     }
 
-map<string, double>FMTyields::get(const FMTdevelopment& dev,
-	const vector<string>& targets) const
+std::map<std::string, double>FMTyields::get(const FMTdevelopment& dev,
+	const std::vector<std::string>& targets) const
 	{
-	map<string, double>values;
-	const vector<const FMTyieldhandler*>datas = this->findsets(dev.mask);
-	//const FMTmask resumemask = this->filtermask(dev.mask);
+	std::map<std::string, double>values;
+	const std::vector<const FMTyieldhandler*>datas = this->findsets(dev.mask);
 	if (!datas.empty() && !targets.empty())
 	{
-		for (const string& name : targets)
+		for (const std::string& name : targets)
 		{
 			for (const FMTyieldhandler* data : datas)
 			{
 					if (data->elements.find(name) != data->elements.end() && values.find(name) == values.end())
 					{
-						values[name] = data->get(datas, name, dev.age, dev.period,dev.mask); //recursive!!!
+						values[name] = data->get(datas, name, dev.age, dev.period,dev.mask);
 					}
 			}
 
@@ -144,10 +142,9 @@ map<string, double>FMTyields::get(const FMTdevelopment& dev,
 	return values;
 	}
 
-map<string,double>FMTyields::getylds(const FMTdevelopment& dev,const FMTspec& spec) const
+std::map<std::string,double>FMTyields::getylds(const FMTdevelopment& dev,const FMTspec& spec) const
     {
-    //const vector<const FMTyieldhandler*>datas = this->findsets(dev.mask);
-    const vector<string> lnames = spec.getylds();
+    const std::vector<std::string> lnames = spec.getylds();
 	return get(dev,lnames);
     }
 
@@ -158,11 +155,11 @@ bool FMTyields::operator == (const FMTyields& rhs) const
 
 	}
 
-vector<const FMTyieldhandler*> FMTyields::gethandleroftype(FMTyldwstype type) const
+std::vector<const FMTyieldhandler*> FMTyields::gethandleroftype(FMTyldwstype type) const
 	{
-	vector<FMTyieldhandler>::const_iterator handlerit = this->databegin();
-	vector<FMTyieldhandler>::const_iterator handlerend = this->dataend();
-	vector<const FMTyieldhandler*>selectedhandlers;
+	std::vector<FMTyieldhandler>::const_iterator handlerit = this->databegin();
+	std::vector<FMTyieldhandler>::const_iterator handlerend = this->dataend();
+	std::vector<const FMTyieldhandler*>selectedhandlers;
 	while (handlerit!= handlerend)
 		{
 		if (handlerit->gettype()==type)
@@ -175,7 +172,7 @@ vector<const FMTyieldhandler*> FMTyields::gethandleroftype(FMTyldwstype type) co
 	return selectedhandlers;
 	}
 
-int FMTyields::getmaxbase(const vector<const FMTyieldhandler*>& handlers) const
+int FMTyields::getmaxbase(const std::vector<const FMTyieldhandler*>& handlers) const
 	{
 	int maxbase = 0;
 	for (const FMTyieldhandler* handler : handlers)
@@ -189,27 +186,27 @@ int FMTyields::getmaxbase(const vector<const FMTyieldhandler*>& handlers) const
 	return maxbase;
 	}
 
-map<string, map<string, vector<double>>>FMTyields::getallyields(const FMTtheme& target,FMTyldwstype type) const
+std::map<std::string, std::map<std::string, std::vector<double>>>FMTyields::getallyields(const FMTtheme& target,FMTyldwstype type) const
 	{
-	map<string, map<string, vector<double>>>result;
-	vector<const FMTyieldhandler*> handlers = gethandleroftype(type);
-	int maxbase = getmaxbase(handlers);
+	std::map<std::string, std::map<std::string, std::vector<double>>>result;
+	const std::vector<const FMTyieldhandler*> handlers = gethandleroftype(type);
+	const int maxbase = getmaxbase(handlers);
 	for (const FMTyieldhandler* handler : handlers)
 		{
-		map<string, vector<double>>localstuff;
+		std::map<std::string, std::vector<double>>localstuff;
 		if (type == FMTyldwstype::FMTageyld)
 			{
-			int lastbase = handler->getlastbase();
-			vector<int>bases = handler->getbases();
-			for (map<string, FMTdata>::const_iterator cit = handler->elements.begin(); cit != handler->elements.end(); cit++)
+			const int lastbase = handler->getlastbase();
+			std::vector<int>bases = handler->getbases();
+			for (std::map<std::string, FMTdata>::const_iterator cit = handler->elements.begin(); cit != handler->elements.end(); cit++)
 				{
-				localstuff[cit->first] = vector<double>();
+				localstuff[cit->first] = std::vector<double>();
 				for (int base = 0; base <= maxbase; ++base)
 				{
-					vector<int>::const_iterator baseit = std::find(bases.begin(), bases.end(), base);
+					std::vector<int>::const_iterator baseit = std::find(bases.begin(), bases.end(), base);
 					if (baseit != bases.end())
 					{
-						size_t index = std::distance<vector<int>::const_iterator>(bases.begin(), baseit);
+						size_t index = std::distance<std::vector<int>::const_iterator>(bases.begin(), baseit);
 						localstuff[cit->first].push_back(cit->second.data.at(index));
 					}
 					else if (base < lastbase)
@@ -229,8 +226,7 @@ map<string, map<string, vector<double>>>FMTyields::getallyields(const FMTtheme& 
 
 int FMTyields::getage(const FMTdevelopment& dev,const FMTspec& spec) const
     {
-    const vector<const FMTyieldhandler*>datas = this->findsets(dev.mask);
-    //const vector<string> lnames = spec.getylds();
+    const std::vector<const FMTyieldhandler*>datas = this->findsets(dev.mask);
     int age = dev.age;
     if (!datas.empty())
         {
@@ -238,12 +234,12 @@ int FMTyields::getage(const FMTdevelopment& dev,const FMTspec& spec) const
                 {
                 if (data->gettype() == FMTyldwstype::FMTageyld)
                     {
-                    for (map<string,FMTyldbounds>::const_iterator it = spec.ylds.begin(); it != spec.ylds.end();++it)
+                    for (std::map<std::string,FMTyldbounds>::const_iterator it = spec.ylds.begin(); it != spec.ylds.end();++it)
                         {
 						if (data->elements.find(it->first) != data->elements.end())
 							{
 							const FMTyldbounds* bound = &it->second;
-							int new_age = data->getage(it->first, bound->getlower(), dev.age);
+							const int new_age = data->getage(it->first, bound->getlower(), dev.age);
 							if (new_age < age)
 								{
 								age = new_age;

@@ -27,7 +27,6 @@ SOFTWARE.
 
 #include <vector>
 #include <string>
-//#include <unordered_map>
 #include "FMToperator.h"
 #include "FMTmask.h"
 #include "FMTexpression.h"
@@ -38,12 +37,8 @@ SOFTWARE.
 #include <boost/serialization/binary_object.hpp>
 #include "FMTutility.h"
 
-using namespace std;
-using namespace boost;
-
 namespace Core
 {
-
 
 class FMTdata
     {
@@ -55,26 +50,24 @@ class FMTdata
 		ar & BOOST_SERIALIZATION_NVP(source);
 		ar & BOOST_SERIALIZATION_NVP(stacking);
 		ar & BOOST_SERIALIZATION_NVP(data);
-		/*ar & BOOST_SERIALIZATION_NVP(_cache);
-		ar & BOOST_SERIALIZATION_NVP(_agebase);*/
 	}
     FMTyieldparserop ops;
-    vector<string>source;
-	vector<bool>stacking;//Stacking a string = true stacking a number = false
-	mutable map<size_t,double> _cache; //hash base on (age and/or period and/or mask) //only for complex yield!!!!
+	std::vector<std::string>source;
+	std::vector<bool>stacking;//Stacking a string = true stacking a number = false
+	mutable std::map<size_t,double> _cache; //hash base on (age and/or period and/or mask) //only for complex yield!!!!
 	mutable bool _agebase;
 	size_t hashdata(const int& period, const int& age, const FMTmask& mask) const;
     public:
-        vector<double> data;
+		std::vector<double> data;
         FMTdata();
         FMTdata(const FMTdata& rhs);
-		FMTdata(const vector<double>& lvalues,
+		FMTdata(const std::vector<double>& lvalues,
 			const FMTyieldparserop& lops,
-			const vector<string>& lsource);
-        FMTdata(const vector<double>& lvalues,
+			const std::vector<std::string>& lsource);
+        FMTdata(const std::vector<double>& lvalues,
                 const FMTyieldparserop& lops,
-                const vector<string>& lsource,
-				const vector<bool>& varstack);
+                const std::vector<std::string>& lsource,
+				const std::vector<bool>& varstack);
         FMTdata& operator = (const FMTdata& rhs);
         FMTyieldparserop getop() const;
 		bool constant() const;
@@ -82,11 +75,11 @@ class FMTdata
 		bool cachevalue(const FMTmask& mask, const int& age, const int& period) const;
 		double get(const FMTmask& mask, const int& age, const int& period) const;
 		void set(const double& value, const FMTmask& mask, const int& age, const int& period, const bool& age_only) const;
-        vector<string> getsource() const;
-		vector<double>tovalues(const map<string, double>& sources) const;
+		std::vector<std::string> getsource() const;
+		std::vector<double>tovalues(const std::map<std::string, double>& sources) const;
 		FMTexpression toexpression() const;
 		bool operator == (const FMTdata& rhs) const;
-        operator string() const;
+        operator std::string() const;
     };
 }
 

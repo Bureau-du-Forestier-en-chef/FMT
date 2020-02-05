@@ -50,7 +50,6 @@ SOFTWARE.
 #include "FMTutility.h"
 #include "FMTlogger.h"
 
-using namespace std;
 
 namespace Exception
 {
@@ -134,14 +133,14 @@ class FMTexception : public std::exception
 	}
     protected:
 		bool holdup;
-        string _msg;
+		std::string _msg;
 		FMTexc exceptiontype;
 		FMTwssect section;
     public:
     FMTexception();
     virtual ~FMTexception() = default;
-    FMTexception(const FMTexc lexception,const string message);
-    FMTexception(const FMTexc lexception,FMTwssect lsection,const string message);
+    FMTexception(const FMTexc lexception,const std::string message);
+    FMTexception(const FMTexc lexception,FMTwssect lsection,const std::string message);
     FMTexception(const FMTexception& rhs);
     FMTexception& operator = (const FMTexception& rhs);
 	FMTexc gettype() const;

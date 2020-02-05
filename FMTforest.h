@@ -39,42 +39,39 @@ SOFTWARE.
 #include <numeric>
 
 
-using namespace boost;
-using namespace std;
-
 namespace Spatial
     {
-    class FMTforest: public FMTlayer<FMTdevelopment>
+    class FMTforest: public FMTlayer<Core::FMTdevelopment>
         {
 		friend class boost::serialization::access;
 		template<class Archive>
 		void serialize(Archive& ar, const unsigned int version)
 			{
-			ar & boost::serialization::make_nvp("layer", boost::serialization::base_object<FMTlayer<FMTdevelopment>>(*this));
+			ar & boost::serialization::make_nvp("layer", boost::serialization::base_object<FMTlayer<Core::FMTdevelopment>>(*this));
 			}
         public:
             FMTforest();
             FMTforest(const FMTforest& rhs);
-            FMTforest(const FMTlayer<FMTdevelopment>& rhs);
+            FMTforest(const FMTlayer<Core::FMTdevelopment>& rhs);
             FMTforest& operator = (const FMTforest& rhs);
-            vector<FMTactualdevelopment>getarea() const;
+			std::vector<Core::FMTactualdevelopment>getarea() const;
         FMTforest getcopy(bool copydata = true) const;
         FMTforest grow() const;
-        FMTforest operate(const vector<FMTevent<FMTdevelopment>>& cuts,const FMTspatialaction& action,const FMTtransition& Transition,
-                     const FMTyields& ylds,const vector<FMTtheme>& themes, boost::unordered_map<FMTdevelopment, FMTdevelopment>& cached_transitions, FMTschedule& schedule) const;
-        vector<FMTlayer<string>> getthemes(const vector<FMTtheme>& themes) const;
+        FMTforest operate(const std::vector<FMTevent<Core::FMTdevelopment>>& cuts,const FMTspatialaction& action,const Core::FMTtransition& Transition,
+                     const Core::FMTyields& ylds,const std::vector<Core::FMTtheme>& themes, boost::unordered_map<Core::FMTdevelopment,Core::FMTdevelopment>& cached_transitions, Core::FMTschedule& schedule) const;
+		std::vector<FMTlayer<std::string>> getthemes(const std::vector<Core::FMTtheme>& themes) const;
         FMTlayer<int>getage() const;
-        FMTlayer<string>getlock() const;
+        FMTlayer<std::string>getlock() const;
 		void setperiod(int period);
-        map<FMTaction,FMTforest> getschedule(const FMTschedule& selection,
-			boost::unordered_map<FMTdevelopment, vector<bool>>& cached_operability,
-                                          const FMTyields& yields = FMTyields(),
+		std::map<Core::FMTaction,FMTforest> getschedule(const Core::FMTschedule& selection,
+			boost::unordered_map<Core::FMTdevelopment, std::vector<bool>>& cached_operability,
+                                          const Core::FMTyields& yields = Core::FMTyields(),
                                           bool schedule_only = true) const;
         FMTforest getallowable(const FMTspatialaction& targetaction,
                                 const FMTdisturbancestack& disturbances) const;
-        vector<FMTevent<FMTdevelopment>> buildharvest(const double& target,
+		std::vector<FMTevent<Core::FMTdevelopment>> buildharvest(const double& target,
                                     const FMTspatialaction& targetaction,
-                                    default_random_engine& generator,
+									std::default_random_engine& generator,
 									const int& pass) const;
         };
     }

@@ -37,8 +37,6 @@ class FMTactualdevelopment : public FMTdevelopment
 	template<class Archive>
 	void serialize(Archive& ar, const unsigned int version)
 	{
-		//ar.template register_type<FMTdevelopment>();
-		//ar & boost::serialization::make_nvp("development", BOOST_SERIALIZATION_BASE_OBJECT_NVP(FMTdevelopment));
 		ar & boost::serialization::make_nvp("development", boost::serialization::base_object<FMTdevelopment>(*this));
 		ar & BOOST_SERIALIZATION_NVP(area);
 	}
@@ -53,9 +51,9 @@ class FMTactualdevelopment : public FMTdevelopment
 		bool operator == (const FMTactualdevelopment& rhs) const;
 		bool operator != (const FMTactualdevelopment& rhs) const;
 		bool operator < (const FMTactualdevelopment& rhs) const;
-		operator string() const override;
+		operator std::string() const override;
 		double getarea() const override;
-		unique_ptr<FMTdevelopment> Clone() const override;
+		std::unique_ptr<FMTdevelopment> Clone() const override;
 	};
 
 class FMTactualdevelopmentcomparator

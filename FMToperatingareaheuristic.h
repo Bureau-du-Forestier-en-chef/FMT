@@ -46,7 +46,7 @@ SOFTWARE.
 
 namespace Heuristics
 {
-	class FMToperatingareaheuristic : public FMTobject
+	class FMToperatingareaheuristic : public Core::FMTobject
 	{
 		friend class boost::serialization::access;
 		template<class Archive>
@@ -54,7 +54,6 @@ namespace Heuristics
 		{
 			ar & BOOST_SERIALIZATION_NVP(operatingareas);
 			ar & BOOST_SERIALIZATION_NVP(adjacencyconstraints);
-			//Save the matrix columnes / rows / column solution / row solution / objective
 			Models::FMTserializablematrix matrix(solverinterface,solvertype);
 			ar & BOOST_SERIALIZATION_NVP(matrix);
 			ar & BOOST_SERIALIZATION_NVP(seed);
@@ -68,10 +67,8 @@ namespace Heuristics
 		{
 			ar & BOOST_SERIALIZATION_NVP(operatingareas);
 			ar & BOOST_SERIALIZATION_NVP(adjacencyconstraints);
-			//load the matrix
 			Models::FMTserializablematrix matrix;
 			ar & BOOST_SERIALIZATION_NVP(matrix);
-			//Need to create solverinterface with new
 			matrix.setsolvertype(solvertype);
 			solverinterface = matrix.buildsolverinterface(solvertype, &*this->_logger);
 			matrix.setmatrix(solverinterface);
@@ -84,7 +81,7 @@ namespace Heuristics
 		}
 		BOOST_SERIALIZATION_SPLIT_MEMBER()
 		std::vector<FMToperatingarea>operatingareas;
-		std::map<std::pair<FMTmask, FMTmask>,vector<int>>adjacencyconstraints;
+		std::map<std::pair<Core::FMTmask, Core::FMTmask>, std::vector<int>>adjacencyconstraints;
 		std::shared_ptr<OsiSolverInterface> solverinterface; //Can be pointing to the FMTmodelpinterface or can own is pointer!
 		std::default_random_engine generator;
 		size_t seed;
@@ -97,8 +94,8 @@ namespace Heuristics
 			const Models::FMTmodel& model,
 			const Core::FMToutputnode& target);
 		void setadjacencyconstraints();//use getcommonbinairies
-		vector<std::vector<FMToperatingarea>::const_iterator> setdraw();
-		size_t setbounds(const vector<std::vector<FMToperatingarea>::const_iterator>& tobound);
+		std::vector<std::vector<FMToperatingarea>::const_iterator> setdraw();
+		size_t setbounds(const std::vector<std::vector<FMToperatingarea>::const_iterator>& tobound);
 		void unboundall(bool atprimal = false);
 		void closeprimalbounds();
 		void setallinteger();
@@ -110,7 +107,7 @@ namespace Heuristics
 		void setasrandom();
 		void setasprimal();
 		void setgeneratorseed(const size_t& lseed);
-		std::vector<FMTyieldhandler> getsolution(const string& yldname) const;
+		std::vector<Core::FMTyieldhandler> getsolution(const std::string& yldname) const;
 		FMToperatingareaheuristic(const std::vector<FMToperatingarea>& loperatingareas,
 			const Graph::FMTgraph& maingraph,
 			const Models::FMTmodel& model,

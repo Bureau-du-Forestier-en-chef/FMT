@@ -23,6 +23,7 @@ SOFTWARE.
 */
 
 #include "FMTconstantparser.h"
+#include "FMTtheme.h"
 
 namespace WSParser{
 
@@ -42,34 +43,31 @@ FMTconstantparser& FMTconstantparser::operator = (const FMTconstantparser& rhs)
     return *this;
     }
 
-FMTconstants FMTconstantparser::read(string location)
+Core::FMTconstants FMTconstantparser::read(std::string location)
     {
-	FMTconstants constants;
+	Core::FMTconstants constants;
 	boost::filesystem::path pathtoconstants(location);
 	if (boost::filesystem::is_regular_file(pathtoconstants))//Constants is not a needed component
 		{
-		ifstream CONstream(location);
-		string line;
-		vector<FMTtheme>themes;
+		std::ifstream CONstream(location);
+		std::vector<Core::FMTtheme>themes;
 		if (FMTparser::tryopening(CONstream, location))
 			{
 			while (CONstream.is_open())
 			{
-				//line = FMTparser::getcleanline(CONstream);
-				line = FMTparser::getcleanlinewfor(CONstream, themes, constants);
+				const std::string line = FMTparser::getcleanlinewfor(CONstream, themes, constants);
 				if (!line.empty())
 				{
-					vector<string>splited = FMTparser::spliter(line, FMTparser::rxseparator);
-					string key = splited[0];
-					vector<string>values;
+					const std::vector<std::string>splited = FMTparser::spliter(line, FMTparser::rxseparator);
+					const std::string key = splited[0];
+					std::vector<std::string>values;
 					for (size_t id = 1; id < splited.size(); ++id)
 					{
-						int period = int((id - 1));
-						if (splited[id].find("#") != string::npos)
+						int period = static_cast<int>((id - 1));
+						if (splited[id].find("#") != std::string::npos)
 						{
-							string strid = splited[id];
+							std::string strid = splited[id];
 							strid.erase(0, 1);
-							//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) <<key <<" "<< constants.getstr(strid, period) << "\n";
 							values.push_back(constants.getstr(strid, period));
 						}
 						else {
@@ -84,13 +82,13 @@ FMTconstants FMTconstantparser::read(string location)
     return constants;
     }
 
-bool FMTconstantparser::write(const FMTconstants& constants,string location)
+bool FMTconstantparser::write(const Core::FMTconstants& constants,std::string location)
     {
-    ofstream constantstream;
+    std::ofstream constantstream;
     constantstream.open(location);
     if (tryopening(constantstream,location))
         {
-        constantstream<<string(constants);
+        constantstream<< std::string(constants);
         constantstream.close();
         return true;
         }

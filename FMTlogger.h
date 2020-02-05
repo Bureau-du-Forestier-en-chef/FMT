@@ -24,13 +24,13 @@ SOFTWARE.
 
 #ifndef FMTlogger_H_INCLUDED
 #define FMTlogger_H_INCLUDED
-//#include <iostream>
 #include <boost/serialization/serialization.hpp>
 #include <boost/serialization/nvp.hpp>
 #include <boost/serialization/split_member.hpp>
 #include <boost/lexical_cast.hpp>
 #include <CoinMessageHandler.hpp>
 #include <fstream> 
+
 
 
 namespace Logging
@@ -58,8 +58,8 @@ namespace Logging
 		public:
 			FMTlogger();
 			virtual ~FMTlogger();
-			FMTlogger(const FMTlogger& rhs) = default;
-			FMTlogger& operator = (const FMTlogger& rhs) = default;
+			FMTlogger(const FMTlogger& rhs);
+			FMTlogger& operator = (const FMTlogger& rhs);
 			int print() override;
 			void checkSeverity() override;
 			CoinMessageHandler * clone() const override;

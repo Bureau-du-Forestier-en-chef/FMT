@@ -49,7 +49,7 @@ enum class FMTwskwor
     Target =2
     };
 
-enum /*class*/ FMTyldwstype
+enum FMTyldwstype
     {
     FMTageyld = 1,
     FMTtimeyld = 2,
@@ -70,7 +70,6 @@ enum class FMTyieldparserop
 	FMTwsequation = 9,
 	FMTwsendpoint = 10,
 	FMTwsdiscountfactor = 11
-	//COUNT = 10
     };
 
 enum FMTotar

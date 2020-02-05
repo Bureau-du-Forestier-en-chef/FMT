@@ -34,9 +34,6 @@ SOFTWARE.
 #include <boost/serialization/serialization.hpp>
 #include <boost/serialization/nvp.hpp>
 
-using namespace Exception;
-using namespace std;
-
 namespace Core
 {
 
@@ -54,7 +51,6 @@ class FMTbounds
 		ar &  BOOST_SERIALIZATION_NVP(keytype);
 		ar &  BOOST_SERIALIZATION_NVP(upper);
 		ar &  BOOST_SERIALIZATION_NVP(lower);
-		ar & BOOST_SERIALIZATION_NVP(priority);
 	}
         bool andbound;
         bool use;
@@ -64,16 +60,15 @@ class FMTbounds
         T upper;
         T lower;
     public:
-        int priority;
-        FMTbounds() : andbound(true),use(false),section(),keytype(),upper(),lower(),priority(0)
+        FMTbounds() : andbound(true),use(false),section(),keytype(),upper(),lower()
             {
 
             }
-        FMTbounds(FMTwssect lsection, T& lupper, T& llower):andbound(true),use(true),section(lsection),keytype(),upper(lupper),lower(llower),priority(0)
+        FMTbounds(const FMTwssect lsection, const T& lupper, const T& llower):andbound(true),use(true),section(lsection),keytype(),upper(lupper),lower(llower)
             {
 
             }
-        FMTbounds(FMTwssect lsection,FMTwskwor key, T& lupper, T& llower):andbound(true),use(true),section(lsection),keytype(key),upper(lupper),lower(llower),priority(0)
+        FMTbounds(const FMTwssect lsection,const FMTwskwor key, const T& lupper,const T& llower):andbound(true),use(true),section(lsection),keytype(key),upper(lupper),lower(llower)
             {
 
             }
@@ -96,8 +91,7 @@ class FMTbounds
             section(rhs.section),
             keytype(rhs.keytype),
             upper(rhs.upper),
-            lower(rhs.lower),
-            priority(rhs.priority)
+            lower(rhs.lower)
             {
 
             }
@@ -145,7 +139,6 @@ class FMTbounds
             {
             if (this!=&rhs)
                 {
-                priority = rhs.priority;
                 andbound = rhs.andbound;
                 section = rhs.section;
                 use = rhs.use;
@@ -159,15 +152,15 @@ class FMTbounds
             {
             return !use;
             }
-        bool add(FMTbounds<T>& rhs)
+        bool add(const FMTbounds<T>& rhs)
             {
             if (!this->empty())
                 {
-                 if (rhs.lower!=numeric_limits<T>::min())
+                 if (rhs.lower!=std::numeric_limits<T>::min())
                     {
                     lower = rhs.lower;
                     }
-                if (rhs.upper!=numeric_limits<T>::max())
+                if (rhs.upper!= std::numeric_limits<T>::max())
                     {
                     upper = rhs.upper;
                     }
@@ -177,15 +170,15 @@ class FMTbounds
             use = true;
             return true;
             }
-        string tostring(string name) const
+		std::string tostring(const std::string& name) const
             {
-            string line;
-            string slower = to_string(lower);
-            string supper = to_string(upper);
+            std::string line;
+            const std::string slower = std::to_string(lower);
+            std::string supper = std::to_string(upper);
             bool beenuse = false;
             if (section == FMTwssect::Action)
                 {
-                if (name.find("_LOCK")!=string::npos && upper > 0)
+                if (name.find("_LOCK")!=std::string::npos && upper > 0)
                     {
                     line+= "_LOCKEXEMPT";
                     }else{
@@ -193,12 +186,12 @@ class FMTbounds
                         {
                         line=name+" = "+supper;
                         }else{
-                            if(lower!=numeric_limits<T>::min())
+                            if(lower!= std::numeric_limits<T>::min())
                                 {
                                 line = name+" >= "+slower;
                                 beenuse = true;
                                 }
-                            if(upper!=numeric_limits<T>::max())
+                            if(upper!= std::numeric_limits<T>::max())
                                 {
                                 if (beenuse)
                                     {
@@ -213,8 +206,7 @@ class FMTbounds
                     {
                     if (name=="_AGE")
                        {
-                        //USEMAXAGE
-                        if(upper==numeric_limits<T>::max())
+                        if(upper== std::numeric_limits<T>::max())
                             {
                             supper = "_MAXAGE";
                             }
@@ -230,35 +222,26 @@ class FMTbounds
                         if(upper==lower)
                             {
                             line+=slower+")";
-                            }else if(upper==numeric_limits<T>::max() && name!="_AGE")
+                            }else if(upper== std::numeric_limits<T>::max() && name!="_AGE")
                                 {
                                 line+=slower+")";
                                 }else{
                                 line+=slower+".."+supper+")";
                                 }
-						if (section == FMTwssect::Outputs && name.find("LOCK") != string::npos && lower >= 1)
+						if (section == FMTwssect::Outputs && name.find("LOCK") != std::string::npos && lower >= 1)
 							{
 								line = "_INVLOCK";
 							}
                         }else if(keytype == FMTwskwor::Target)
                             {
-                            if(name.find("_LOCK")!=string::npos)
+                            if(name.find("_LOCK")!= std::string::npos)
                                 {
                                 line+= "_LOCK " + slower;
                                 }else{
                                 line=name + " " + slower;
                                 }
                             }
-                    }/*else if(section == FMTwssect::Outputs)
-                        {
-                        if (name.find("LOCK")!=string::npos)
-                            {
-                            if(lower >= 1)
-                                {
-                                line+="_INVLOCK";
-                                }
-                            }
-                        }*/
+                    }
             return line;
         }
     };
@@ -273,17 +256,16 @@ class FMTyldbounds: public FMTbounds<double>
 		ar & boost::serialization::make_nvp("bounds",boost::serialization::base_object<FMTbounds<double>>(*this));
 		ar & BOOST_SERIALIZATION_NVP(yield);
 	}
-    string yield;
+    std::string yield;
     public:
     FMTyldbounds();
-    FMTyldbounds(FMTwssect lsection,string& lyield, double& lupper, double& llower);
-    FMTyldbounds(FMTwssect lsection,FMTwskwor key,string& lyield, double& lupper, double& llower);
-    FMTyldbounds(string& lyield,const FMTbounds<double>& rhs);
+	FMTyldbounds(const FMTwssect lsection, const std::string& lyield, const double& lupper, const double& llower);
+    FMTyldbounds(const FMTwssect lsection,const FMTwskwor key,const std::string& lyield, const double& lupper,const double& llower);
+    FMTyldbounds(const std::string& lyield,const FMTbounds<double>& rhs);
     FMTyldbounds(const FMTyldbounds& rhs);
     FMTyldbounds& operator = (const FMTyldbounds& rhs);
 	bool operator == (const FMTyldbounds& rhs) const;
-    operator string() const;
-	//string getyieldname() const;
+    operator std::string() const;
     };
 
 class FMTagebounds: public FMTbounds<int>
@@ -297,13 +279,13 @@ class FMTagebounds: public FMTbounds<int>
 	}
     public:
     FMTagebounds();
-    FMTagebounds(FMTwssect lsection,int lupper, int llower);
-    FMTagebounds(FMTwssect lsection,FMTwskwor key,int lupper, int llower);
+    FMTagebounds(FMTwssect lsection,const int& lupper, const int& llower);
+    FMTagebounds(FMTwssect lsection,FMTwskwor key, const int& lupper, const int& llower);
     FMTagebounds(const FMTagebounds& rhs);
     FMTagebounds(const FMTbounds<int>& rhs);
     FMTagebounds& operator = (const FMTagebounds& rhs);
 	bool operator == (const FMTagebounds& rhs) const;
-    operator string() const;
+    operator std::string() const;
     };
 
 class FMTperbounds: public FMTbounds<int>
@@ -317,13 +299,13 @@ class FMTperbounds: public FMTbounds<int>
 	}
     public:
     FMTperbounds();
-    FMTperbounds(FMTwssect lsection,int& lupper, int& llower);
-    FMTperbounds(FMTwssect lsection, string op, string value);
+    FMTperbounds(const FMTwssect lsection,const int& lupper,const int& llower);
+    FMTperbounds(const FMTwssect lsection, const std::string& op, const std::string& value);
     FMTperbounds(const FMTperbounds& rhs);
 	FMTperbounds(const FMTbounds<int>& rhs);
     FMTperbounds& operator = (const FMTperbounds& rhs);
 	bool operator == (const FMTperbounds& rhs) const;
-    operator string() const;
+    operator std::string() const;
     };
 
 
@@ -338,11 +320,11 @@ class FMTlockbounds : public FMTbounds<int>
 		}
     public:
     FMTlockbounds();
-    FMTlockbounds(FMTwssect lsection,FMTwskwor key,int& lupper, int& llower);
+    FMTlockbounds(const FMTwssect lsection,const FMTwskwor key,const int& lupper, const int& llower);
     FMTlockbounds(const FMTlockbounds& rhs);
     FMTlockbounds& operator = (const FMTlockbounds& rhs);
 	bool operator == (const FMTlockbounds& rhs) const;
-    operator string() const;
+    operator std::string() const;
     };
 
 class FMTspec
@@ -361,28 +343,25 @@ protected:
     FMTagebounds age;
     FMTlockbounds lock;
 public:
-    map<string,FMTyldbounds>ylds;
+    std::map<std::string,FMTyldbounds>ylds;
     FMTspec();
     virtual ~FMTspec()=default;
     FMTspec(const FMTspec& rhs);
     FMTspec& operator = (const FMTspec& rhs);
-    bool add(FMTspec& rhs);
-    bool setbounds(FMTperbounds bound);
-    bool addbounds(FMTagebounds bound);
-    bool addbounds(FMTyldbounds bound);
-    bool addbounds(FMTlockbounds bound);
+    bool add(const FMTspec& rhs);
+    bool setbounds(const FMTperbounds& bound);
+    bool addbounds(const FMTagebounds& bound);
+    bool addbounds(const FMTyldbounds& bound);
+    bool addbounds(const FMTlockbounds& bound);
 	inline bool allowwithoutyield(const int& tperiod, const int& tage, const int& tlock) const
 		{
 		return ((per.empty() || (tperiod <= per.upper && tperiod >= per.lower)) &&
 			(age.empty() || (tage <= age.upper && tage >= age.lower)) &&
 			(lock.empty() || (tlock >= lock.lower)));
 		}
-	inline bool allow(const int& tperiod, const int& tage, const int& tlock, const map<string, double>& names) const
+	inline bool allow(const int& tperiod, const int& tage, const int& tlock, const std::map<std::string, double>& names) const
 		{
-		//bool yldbounds = true;
-		//if (!ylds.empty())
-		//{
-			for (map<string, FMTyldbounds>::const_iterator it = ylds.begin(); it != ylds.end(); ++it)
+		for (std::map<std::string, FMTyldbounds>::const_iterator it = ylds.begin(); it != ylds.end(); ++it)
 			{
 				const FMTyldbounds* bnds = &it->second;
 				if ((bnds->lower > names.at(it->first)) || (bnds->upper < names.at(it->first)))
@@ -390,12 +369,11 @@ public:
 					return false;
 				}
 			}
-		//}
 		return (allowwithoutyield(tperiod,tage,tlock));
 		}
-    map<string,FMTyldbounds>getyldsbounds() const;
-    vector<string>getylds() const;
-    virtual operator string() const;
+	std::map<std::string,FMTyldbounds>getyldsbounds() const;
+	std::vector<std::string>getylds() const;
+    virtual operator std::string() const;
 	bool operator == (const FMTspec& rhs) const;
 	bool operator < (const FMTspec& rhs) const;
 	size_t hash() const;

@@ -45,41 +45,31 @@ void exportException()
         "\n"
         "Base Exception class for FMT\n"
         "\n";
-    class_<Exception::FMTexceptionhandler>("FMTexceptionhandler",py_FMTexceptionhandler);
+	bp::class_<Exception::FMTexceptionhandler>("FMTexceptionhandler",py_FMTexceptionhandler);
     const char* py_FMTdefaultexceptionhandler =
         " ``FMTdefaultexceptionhandler`` class.\n"
         "\n"
         "Default exception handler for FMT\n"
         "\n";
-    class_<Exception::FMTdefaultexceptionhandler,bases<Exception::FMTexceptionhandler>>("FMTdefaultexceptionhandler",py_FMTdefaultexceptionhandler)
+	bp::class_<Exception::FMTdefaultexceptionhandler, bp::bases<Exception::FMTexceptionhandler>>("FMTdefaultexceptionhandler",py_FMTdefaultexceptionhandler)
         .def("raise",&Exception::FMTdefaultexceptionhandler::raise);
     const char* py_FMTquietexceptionhandler =
         " ``FMTquietexceptionhandler`` class.\n"
         "\n"
         "Quiet exception handler for FMT\n"
         "\n";
-    class_<Exception::FMTquietexceptionhandler,bases<Exception::FMTexceptionhandler>>("FMTquietexceptionhandler",py_FMTquietexceptionhandler)
+	bp::class_<Exception::FMTquietexceptionhandler, bp::bases<Exception::FMTexceptionhandler>>("FMTquietexceptionhandler",py_FMTquietexceptionhandler)
         .def("raise",&Exception::FMTquietexceptionhandler::raise);
 	const char* py_FMTdebugexceptionhandler =
 		" ``FMTdebugexceptionhandler`` class.\n"
 		"\n"
 		"Debug exception handler for FMT\n"
 		"\n";
-	class_<Exception::FMTdebugexceptionhandler, bases<Exception::FMTexceptionhandler>>("FMTdebugexceptionhandler", py_FMTdebugexceptionhandler)
+	bp::class_<Exception::FMTdebugexceptionhandler, bp::bases<Exception::FMTexceptionhandler>>("FMTdebugexceptionhandler", py_FMTdebugexceptionhandler)
 		.def("raise", &Exception::FMTdebugexceptionhandler::raise);
 
-   /* const char* py_FMTobject =
-        " ``FMTobject`` class.\n"
-        "\n"
-        "Base FMTobjectect able to carry exception\n"
-        "\n";
-	class_<Exception::FMTobject>("FMTobject", py_FMTobject)
-		.def("setdefaultexceptionhandler", &Exception::FMTobject::setdefaultexceptionhandler)
-		.def("setquietexceptionhandler", &Exception::FMTobject::setquietexceptionhandler)
-		.def("setdebugexceptionhandler", &Exception::FMTobject::setdebugexceptionhandler)
-		.def("setfreeexceptionhandler", &Exception::FMTobject::setfreeexceptionhandler);*/
 
-	enum_<Exception::FMTexc>("FMTexc")
+	bp::enum_<Exception::FMTexc>("FMTexc")
 		.value("WSinvalid_number", Exception::FMTexc::WSinvalid_number)
 		.value("WSundefined_attribute", Exception::FMTexc::WSundefined_attribute)
 		.value("WSundefined_output", Exception::FMTexc::WSundefined_output)
@@ -91,7 +81,7 @@ void exportException()
 		.value("WSunsupported_yield", Exception::FMTexc::WSunsupported_yield)
 		.export_values();
 
-	enum_<FMTwssect>("FMTwssect")
+	bp::enum_<FMTwssect>("FMTwssect")
 		.value("Control", FMTwssect::Control)
 		.value("Landscape", FMTwssect::Landscape)
 		.value("Area", FMTwssect::Area)
@@ -105,17 +95,17 @@ void exportException()
 		.value("Empty", FMTwssect::Empty)
 		.export_values();
 
-	class_<Exception::FMTexception>Exceptionclass("FMTexception");
+	bp::class_<Exception::FMTexception>Exceptionclass("FMTexception");
 	Exceptionclass.def("gettype", &Exception::FMTexception::gettype);
 	Exceptionclass.def("getsection", &Exception::FMTexception::getsection);
 	Exceptionclass.def("what", &Exception::FMTexception::what);
 
-	class_<Exception::FMTerror, bases<Exception::FMTexception>>Errorclass("FMTerror");
-	class_<Exception::FMTwarning, bases<Exception::FMTexception>>("FMTwarning");
+	bp::class_<Exception::FMTerror, bp::bases<Exception::FMTexception>>Errorclass("FMTerror");
+	bp::class_<Exception::FMTwarning, bp::bases<Exception::FMTexception>>("FMTwarning");
 
-    register_exception_translator<Exception::FMTwarning>(&FMTtranslate_warning);
+	bp::register_exception_translator<Exception::FMTwarning>(&FMTtranslate_warning);
 	FMTexceptiontype = Errorclass.ptr();
-    register_exception_translator<Exception::FMTerror>(&FMTtranslate_error);
+	bp::register_exception_translator<Exception::FMTerror>(&FMTtranslate_error);
 
 
 

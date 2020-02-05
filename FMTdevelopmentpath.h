@@ -35,7 +35,7 @@ class FMTdevelopment;
 class FMTdevelopmentpath
 	{
 	public:
-		unique_ptr<FMTdevelopment> development;
+		std::unique_ptr<FMTdevelopment> development;
 		double proportion;
 		FMTdevelopmentpath();
 		FMTdevelopmentpath(const FMTdevelopmentpath& rhs);

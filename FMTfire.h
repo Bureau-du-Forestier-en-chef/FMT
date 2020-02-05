@@ -32,8 +32,6 @@ SOFTWARE.
 #include "FMTevent.h"
 #include <boost/serialization/serialization.hpp>
 
-using namespace std;
-
 
 namespace Spatial
 {
@@ -44,15 +42,15 @@ class FMTfire : public FMTevent<FMTdevelopment>
 	template<class Archive>
 	void serialize(Archive& ar, const unsigned int version)
 	{
-		ar & boost::serialization::make_nvp("event", boost::serialization::base_object<FMTevent<FMTdevelopment>>(*this));
+		ar & boost::serialization::make_nvp("event", boost::serialization::base_object<FMTevent<Core::FMTdevelopment>>(*this));
 	}
     protected:
-    normal_distribution<unsigned int>spread_distribution;
-    weibull_distribution<unsigned int>size_distribuion;
+		std::normal_distribution<unsigned int>spread_distribution;
+		std::weibull_distribution<unsigned int>size_distribuion;
     public:
-    FMTfire():FMTevent<FMTdevelopment>(){};
+    FMTfire():FMTevent<Core::FMTdevelopment>(){};
     FMTfire& operator = (const FMTfire& rhs){};
-    FMTfire(const FMTfire& rhs):FMTevent<FMTdevelopment>(rhs),
+    FMTfire(const FMTfire& rhs):FMTevent<Core::FMTdevelopment>(rhs),
     spread_distribution(rhs.spread_distribution),
     size_distribuion(rhs.size_distribuion){}
     };

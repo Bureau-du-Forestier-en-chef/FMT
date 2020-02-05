@@ -28,9 +28,9 @@ SOFTWARE.
 namespace Exception
 {
 
-	string FMTdebugexceptionhandler::getsrcinfo(const int& line, const string& file) const
+	std::string FMTdebugexceptionhandler::getsrcinfo(const int& line, const std::string& file) const
 	{
-		return "In File(" + file + ") At Line(" + to_string(line) + ")";
+		return "In File(" + file + ") At Line(" + std::to_string(line) + ")";
 	}
 
 	FMTdebugexceptionhandler::FMTdebugexceptionhandler()
@@ -38,8 +38,8 @@ namespace Exception
 
 	}
 
-	FMTlev FMTdebugexceptionhandler::raise(FMTexc lexception, FMTwssect lsection, string text,
-		const int& line, const string& file)
+	FMTlev FMTdebugexceptionhandler::raise(FMTexc lexception, FMTwssect lsection, std::string text,
+		const int& line, const std::string& file)
 	{
 		FMTexception excp;
 		if (lsection == FMTwssect::Empty)
@@ -52,13 +52,14 @@ namespace Exception
 		*_logger << getsrcinfo(line, file) << "\n";
 		if (_level == FMTlev::FMT_Warning)
 		{
-			FMTwarning(excp).warn();
+			FMTwarning(excp).warn(_logger);
 		}
 		else if (_level == FMTlev::FMT_logic || _level == FMTlev::FMT_range) {
 			throw FMTerror(excp);
 		}
 		return _level;
 	}
+#ifdef FMTWITHGDAL
 
 	FMTexceptionhandler* FMTdebugexceptionhandler::getCPLdata()
 		{
@@ -68,5 +69,6 @@ namespace Exception
 		{
 		FMTexceptionhandler::handelCPLerror(eErrClass, nError, pszErrorMsg);
 		}
+#endif
 
 }

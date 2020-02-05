@@ -37,15 +37,15 @@ FMTversion::FMTversion()
 
 int FMTversion::getmajor()
 	{
-	return API_MAJOR;
+	return FMT_MAJOR;
 	}
 int FMTversion::getminor()
 	{
-	return API_MINOR;
+	return FMT_MINOR;
 	}
 int FMTversion::getpatch()
 	{
-	return API_PATCH;
+	return FMT_PATCH;
 	}
 
 std::string FMTversion::getdatenow()
@@ -74,6 +74,18 @@ bool FMTversion::isatleast(int major, int minor, int patch)
 	}	
 bool FMTversion::hasfeature(const std::string& name)
 	{
+	#ifdef FMTWITHGDAL
+		if (name=="GDAL")
+			{
+			return true;
+			}
+		#ifdef HAVE_GEOS
+		if (name == "GEOS")
+			{
+			return true;
+			}
+		#endif
+	#endif
 	return false;
 	}
 

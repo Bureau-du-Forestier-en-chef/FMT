@@ -47,15 +47,15 @@ namespace Core
 		return FMTdevelopment::operator==(rhs) && area == rhs.area;
 	}
 
-	FMTactualdevelopment::operator string() const
+	FMTactualdevelopment::operator std::string() const
 	{
-		string line;
+		std::string line;
 		if (lock > 0)
 		{
-			line = "*A " + string(mask) + " " + to_string(age) + " " + to_string(area) + " _lock " + to_string(lock);
+			line = "*A " + std::string(mask) + " " + std::to_string(age) + " " + std::to_string(area) + " _lock " + std::to_string(lock);
 		}
 		else {
-			line = "*A " + string(mask) + " " + to_string(age) + " " + to_string(area);
+			line = "*A " + std::string(mask) + " " + std::to_string(age) + " " + std::to_string(area);
 		}
 		return line;
 	}
@@ -75,9 +75,9 @@ namespace Core
 		return area;
 		}
 
-	unique_ptr<FMTdevelopment> FMTactualdevelopment::Clone() const
+	std::unique_ptr<FMTdevelopment> FMTactualdevelopment::Clone() const
 		{
-		return unique_ptr<FMTdevelopment>(new FMTactualdevelopment(*this));
+		return std::unique_ptr<FMTdevelopment>(new FMTactualdevelopment(*this));
 		}
 
 	bool FMTactualdevelopment::operator < (const FMTactualdevelopment& rhs) const

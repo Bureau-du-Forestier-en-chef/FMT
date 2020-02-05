@@ -23,6 +23,7 @@ SOFTWARE.
 */
 
 #include "FMToperator.h"
+#include <algorithm>
 
 namespace Core{
 
@@ -36,14 +37,14 @@ FMToperator::FMToperator(FMTokey lkey): key(lkey)
 
     }
 
-FMToperator::FMToperator(string strkey): key()
+FMToperator::FMToperator(std::string strkey): key()
     {
-    vector<string>values = {"*","/","+","-",/*"(",")",*/",","^"};
+	const std::vector<std::string>values = {"*","/","+","-",",","^"};
 	key = FMTokey::notvalid;
-	vector<string>::iterator valit = std::find(values.begin(), values.end(), strkey);
+	std::vector<std::string>::const_iterator valit = std::find(values.begin(), values.end(), strkey);
 	if (valit!= values.end())
 		{
-		int id = (int(std::find(values.begin(), values.end(), strkey) - values.begin()) + 1);
+		const int id = (static_cast<int>(std::find(values.begin(), values.end(), strkey) - values.begin()) + 1);
 		key = static_cast<FMTokey>(id);
 		}
     }
@@ -76,7 +77,6 @@ double FMToperator::call(const double& rhs1, const double& rhs2) const
 			returnval = 0;
         break;
         };
-	//returnval = std::round(returnval * 100000000) / 100000000;
 	return returnval;
     }
 FMToperator::FMToperator(const FMToperator& rhs) : key(rhs.key)
@@ -91,7 +91,7 @@ FMToperator& FMToperator::operator = (const FMToperator& rhs)
         }
     return *this;
     }
-FMToperator::operator string() const
+FMToperator::operator std::string() const
     {
     switch (key)
         {
@@ -107,12 +107,6 @@ FMToperator::operator string() const
         case FMTokey::multiply:
             return "*";
         break;
-		/*case FMTokey::leftparenthesis:
-			return "(";
-		break;
-		case FMTokey::rightparenthesis:
-			return ")";
-		break;*/
 		case FMTokey::comma:
 			return ",";
 		break;
@@ -147,19 +141,15 @@ bool FMToperator::isdivide() const
 	return key == FMTokey::divide;
 	}
 
-/*bool FMToperator::isparenthesis() const
-	{
-	return (FMTokey::leftparenthesis == key || FMTokey::rightparenthesis == key);
-	}*/
 
 FMTokey FMToperator::getkey() const
 	{
 	return key;
 	}
 
-string FMToperator::associativity() const
+std::string FMToperator::associativity() const
 	{
-	string asso = "RIGHT";
+	std::string asso = "RIGHT";
 	if (key==FMTokey::comma || key == FMTokey::add || key == FMTokey::multiply || key == FMTokey::pow)
 		{
 		asso = "LEFT";

@@ -25,12 +25,13 @@ SOFTWARE.
 #ifndef PYDEFINITIONS_H_INCLUDED
 #define PYDEFINITIONS_H_INCLUDED
 
+#include "boost/python.hpp"
 
 template<class T>
 void define_pylist()
 {
-	boost::python::to_python_converter<vector<T, allocator<T>>, VecToList<T>>();
-	iterable_converter().from_python<vector<T>>();
+	boost::python::to_python_converter<std::vector<T, std::allocator<T>>, VecToList<T>>();
+	iterable_converter().from_python<std::vector<T>>();
 }
 
 template <class T>
@@ -41,7 +42,7 @@ void define_FMTlist()
         "\n"
         "This class is used for mapping masks\n"
         "\n";
-	 class_<Core::FMTlist<T>>("FMTlist", py_FMTlist)
+	 boost::python::class_<Core::FMTlist<T>>("FMTlist", py_FMTlist)
         .def("getmasklist",&Core::FMTlist<T>::getmasklist)
 		.def("getdatalist", &Core::FMTlist<T>::getdatalist);
 	define_pylist<T>();
@@ -59,7 +60,7 @@ void define_FMTlayer()
         "This class is used for spatial mapping\n"
         "It uses FMTcoordinate as key to spatialise object\n"
         "\n";
-    class_<Spatial::FMTlayer<T>>("FMTlayer",py_FMTlayer)
+	boost::python::class_<Spatial::FMTlayer<T>>("FMTlayer",py_FMTlayer)
         .def("getXSize",&Spatial::FMTlayer<T>::GetXSize)
         .def("getYSize",&Spatial::FMTlayer<T>::GetYSize)
         .def("getgeotransform",&Spatial::FMTlayer<T>::getgeotransform)
@@ -68,13 +69,13 @@ void define_FMTlayer()
         .def("area",&Spatial::FMTlayer<T>::area)
         .def("getcellsize",&Spatial::FMTlayer<T>::getcellsize)
         .def("__len__",&Spatial::FMTlayer<T>::size);
-    boost::python::to_python_converter<map<Spatial::FMTcoordinate,T>,MapToDict<Spatial::FMTcoordinate,T>>();
+    boost::python::to_python_converter<std::map<Spatial::FMTcoordinate,T>,MapToDict<Spatial::FMTcoordinate,T>>();
     }
 
 template<class k,class v>
 void define_pydict()
     {
-    boost::python::to_python_converter<map<k,v>,MapToDict<k,v>>();
+    boost::python::to_python_converter<std::map<k,v>,MapToDict<k,v>>();
 	MapFrDict<k,v>();
     }
 

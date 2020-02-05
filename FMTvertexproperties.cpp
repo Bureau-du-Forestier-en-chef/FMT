@@ -44,13 +44,11 @@ namespace Graph
 	FMTvertexproperties::FMTvertexproperties(const FMTvertexproperties& rhs):
 		development(), constraintID(rhs.constraintID)
 			{
-			//development = make_unique<FMTdevelopment>(*rhs.development);
 			development = rhs.development->Clone();
 			}
-	FMTvertexproperties::FMTvertexproperties(const FMTfuturdevelopment& ldevelopment,
-		int& lconstraintID):development(new FMTfuturdevelopment(ldevelopment)),constraintID(lconstraintID)
+	FMTvertexproperties::FMTvertexproperties(const Core::FMTfuturdevelopment& ldevelopment,
+		const int& lconstraintID):development(new Core::FMTfuturdevelopment(ldevelopment)),constraintID(lconstraintID)
 		{
-		//development = make_unique<FMTdevelopment>(ldevelopment);
 		}
 	FMTvertexproperties& FMTvertexproperties::operator = (const FMTvertexproperties& rhs)
 		{
@@ -58,18 +56,16 @@ namespace Graph
 			{
 			constraintID = rhs.constraintID;
 			development = rhs.development->Clone();
-			//development.reset(new FMTdevelopment(*rhs.development)); ///naaaa
-			//development = make_unique<FMTdevelopment>(*rhs.development);
 			}
 		return *this;
 		}
-	FMTvertexproperties::FMTvertexproperties(const FMTactualdevelopment& ldevelopment,
-		int& lconstraintID): development(new FMTactualdevelopment(ldevelopment)), constraintID(lconstraintID)
+	FMTvertexproperties::FMTvertexproperties(const Core::FMTactualdevelopment& ldevelopment,
+		const int& lconstraintID): development(new Core::FMTactualdevelopment(ldevelopment)), constraintID(lconstraintID)
 		{
-		//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << development->getarea() << "actual! " << "\n";
+
 		}
-    FMTvertexproperties::FMTvertexproperties(const FMTdevelopment& ldevelopment,int& lconstraintID):
-        development(new FMTdevelopment(ldevelopment)), constraintID(lconstraintID)
+    FMTvertexproperties::FMTvertexproperties(const Core::FMTdevelopment& ldevelopment, const int& lconstraintID):
+        development(new Core::FMTdevelopment(ldevelopment)), constraintID(lconstraintID)
 		{
 
 		}
@@ -85,62 +81,19 @@ namespace Graph
 		{
 		return (!(*this==rhs));
 		}
-	/*int FMTvertexproperties::getconstraintID() const
-		{
-		return constraintID;
-		}*/
+
 	void FMTvertexproperties::setconstraintID(const int& ID)
 		{
 		constraintID = ID;
 		}
-	/*const FMTdevelopment& FMTvertexproperties::get() const
-		{
-		return *development;
-		}*/
 
 	size_t FMTvertexproperties::hash() const
 		{
 		return boost::hash<Core::FMTdevelopment>()(*development);
 		}
 
-	/*boost::dynamic_bitset<>FMTvertexproperties::hash(const int& maxperiod, const int& maxage,
-		const boost::dynamic_bitset<>& actions, bool periodstart) const
+	std::string FMTvertexproperties::constraintname() const
 		{
-		boost::dynamic_bitset<>bits(maxperiod+1 + actions.size() + 2);
-
-		int bitid = 0;
-		for (int id = 0; id < maxperiod+1; ++id)
-		{
-			bool period = false;
-			if (id == development->period)
-			{
-				period = true;
-			}
-			bits[bitid] = (period);
-			++bitid;
-		}
-
-		for (int actionid = 0; actionid < actions.size(); ++actionid)
-		{
-			bits[bitid] = actions[actionid];
-			++bitid;
-		}
-
-		bits[bitid] = (periodstart);
-		++bitid;
-		bool locked = false;
-		if (development->lock > 0)
-		{
-			locked = true;
-		}
-		bits[bitid] = (locked);
-		++bitid;
-
-		return bits;
-		}*/
-
-	string FMTvertexproperties::constraintname() const
-		{
-		return "D" + to_string(constraintID);
+		return "D" + std::to_string(constraintID);
 		}
 }

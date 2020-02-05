@@ -24,38 +24,20 @@ SOFTWARE.
 
 #include "FMTareaparser.h"
 #include <boost/algorithm/string/join.hpp>
+#include <boost/lexical_cast.hpp>
 
 namespace WSParser{
 
-FMTareaparser::FMTareaparser() :
-    FMTparser(),
-    rxcleanarea(regex("^(([*A]*)([^|]*)(_lock)([^0-9]*)([0-9]*))|(([*A]*)([^|]*)([|])([^|]*)([|])([^0-9]*)(.+))|(([*A]*)(([^|]*)([|])([^|]*)([|])))|([*A]*)(.+)",regex_constants::ECMAScript|regex_constants::icase))
-        {
-        _section=FMTwssect::Area;
-        }
+#ifdef FMTWITHGDAL
 
-    FMTareaparser::FMTareaparser(const FMTareaparser& rhs) : FMTparser(rhs),rxcleanarea(rhs.rxcleanarea)
-        {
-
-        }
-    FMTareaparser& FMTareaparser::operator = (const FMTareaparser& rhs)
-        {
-            if(this!=&rhs)
-                {
-                FMTparser::operator = (rhs);
-                rxcleanarea = rhs.rxcleanarea;
-                }
-        return *this;
-        }
-
-    void FMTareaparser::validate_raster(const vector<string>&data_rasters) const
+    void FMTareaparser::validate_raster(const std::vector<std::string>&data_rasters) const
         {
         int xsize = -1;
         int ysize = -1;
         int rastercount = -1;
         int overview = -1;
-        string projection = "";
-        for(const string& location : data_rasters)
+		std::string projection = "";
+        for(const std::string& location : data_rasters)
             {
             GDALDataset* data = getdataset(location);
             GDALRasterBand* band = getband(data);
@@ -63,7 +45,7 @@ FMTareaparser::FMTareaparser() :
                 {
                 if ((data->GetRasterXSize()!=xsize) || (data->GetRasterYSize()!=ysize) || (data->GetRasterCount()!=rastercount) || (data->GetProjectionRef()!=projection) || (band->GetOverviewCount()!=overview))
                     {
-                    _exhandler->raise(FMTexc::FMTinvalidband,_section,"Rasters are not the same "+string(data->GetDescription()), __LINE__, __FILE__);
+                    _exhandler->raise(Exception::FMTexc::FMTinvalidband,_section,"Rasters are not the same "+ std::string(data->GetDescription()), __LINE__, __FILE__);
                     }
                 }else{
                 xsize=data->GetRasterXSize();
@@ -75,34 +57,34 @@ FMTareaparser::FMTareaparser() :
             GDALClose(data);
             }
         }
-	vector<FMTGCBMtransition> FMTareaparser::getGCBMtransitions(const FMTlayer<string>& stacked_actions,
-																const FMTlayer<int>& ages,
-																const FMTforest& newfor,
-																const vector<FMTtheme>& themes) const
+	std::vector<Core::FMTGCBMtransition> FMTareaparser::getGCBMtransitions(const Spatial::FMTlayer<std::string>& stacked_actions,
+																const Spatial::FMTlayer<int>& ages,
+																const Spatial::FMTforest& newfor,
+																const std::vector<Core::FMTtheme>& themes) const
 		{
-		map<string, vector<double>>stats;
-		map<string, vector<map<string,int>>>attributes;
-		vector<FMTlayer<string>>newforests = newfor.getthemes(themes);
-		for (map<FMTcoordinate, string>::const_iterator itcoord = stacked_actions.mapping.begin();
+		std::map<std::string, std::vector<double>>stats;
+		std::map<std::string, std::vector<std::map<std::string,int>>>attributes;
+		const std::vector<Spatial::FMTlayer<std::string>>newforests = newfor.getthemes(themes);
+		for (std::map<Spatial::FMTcoordinate, std::string>::const_iterator itcoord = stacked_actions.mapping.begin();
 			itcoord != stacked_actions.mapping.end(); itcoord++)
 		{
 			if (ages.mapping.find(itcoord->first) != ages.mapping.end())
 			{
 				if (stats.find(itcoord->second) == stats.end())
 				{
-					stats[itcoord->second] = vector<double>(2, 0);
+					stats[itcoord->second] = std::vector<double>(2, 0);
 				}
 				stats[itcoord->second][0] += ages.mapping.at(itcoord->first);
 				++stats[itcoord->second][1];
 
 				if (attributes.find(itcoord->second) == attributes.end())
 					{
-					attributes[itcoord->second] = vector<map<string, int>>(newforests.size());
+					attributes[itcoord->second] = std::vector<std::map<std::string, int>>(newforests.size());
 					}
 				int tid = 0;
-				for (const FMTlayer<string>& nfor : newforests)
+				for (const Spatial::FMTlayer<std::string>& nfor : newforests)
 					{
-					string value = nfor.mapping.at(itcoord->first);
+					const std::string value = nfor.mapping.at(itcoord->first);
 					if (attributes.at(itcoord->second).at(tid).find(value) == attributes.at(itcoord->second).at(tid).end())
 						{
 						attributes[itcoord->second][tid][value] = 0;
@@ -113,27 +95,23 @@ FMTareaparser::FMTareaparser() :
 			}
 		}
 
-		vector<FMTGCBMtransition>GCBM;
-		for (map<string, vector<double>>::const_iterator it = stats.begin(); it != stats.end(); it++)
+		std::vector<Core::FMTGCBMtransition>GCBM;
+		for (std::map<std::string,std::vector<double>>::const_iterator it = stats.begin(); it != stats.end(); it++)
 			{
-			int ageafter = int(round(it->second[0] / it->second[1]));
-			string action_name = it->first;
-			/*vector<string>attributes;
-			boost::split(attributes, action_name, boost::is_any_of("-"));*/
-			map<string, string>theme_collection;
-			//attributes.erase(attributes.begin());
+			const int ageafter = int(round(it->second[0] / it->second[1]));
+			const std::string action_name = it->first;
+			std::map<std::string, std::string>theme_collection;
 			int id = 0;
-			for (const FMTtheme& theme : themes)
+			for (const Core::FMTtheme& theme : themes)
 			{
-				string theme_name = "THEME" + to_string(theme.getid()+1);
+				const std::string theme_name = "THEME" + std::to_string(theme.getid()+1);
 				int maxhit = 0;
-				string returntheme = "";
-				for (map<string,int>::const_iterator cit = attributes.at(it->first).at(id).begin(); cit!= attributes.at(it->first).at(id).end();++cit)
+				std::string returntheme = "";
+				for (std::map<std::string,int>::const_iterator cit = attributes.at(it->first).at(id).begin(); cit!= attributes.at(it->first).at(id).end();++cit)
 					{
 					if (cit->second > maxhit)
 						{
 						maxhit = cit->second;
-						//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "inprocess : " << cit->first << "\n";
 						returntheme = cit->first;
 						}
 
@@ -141,7 +119,7 @@ FMTareaparser::FMTareaparser() :
 				theme_collection[theme_name] = returntheme;
 				++id;
 			}
-			GCBM.push_back(FMTGCBMtransition(ageafter, theme_collection, action_name));
+			GCBM.push_back(Core::FMTGCBMtransition(ageafter, theme_collection, action_name));
 			}
 		return GCBM;
 		}
@@ -149,23 +127,23 @@ FMTareaparser::FMTareaparser() :
 
 
     bool FMTareaparser::writeforest(const Spatial::FMTforest& for_layer,
-                         const vector<FMTtheme>& themes,
-                         const vector<string>&data_rasters,
-                         const string& age,
-                         const string& lock,
-                         vector<map<string,string>>mapping) const
+                         const std::vector<Core::FMTtheme>& themes,
+                         const std::vector<std::string>&data_rasters,
+                         const std::string& age,
+                         const std::string& lock,
+						std::vector<std::map<std::string, std::string>>mapping) const
         {
-        const vector<Spatial::FMTlayer<string>> themes_layer = for_layer.getthemes(themes);
+        const std::vector<Spatial::FMTlayer<std::string>> themes_layer = for_layer.getthemes(themes);
 		if (!themes_layer.empty())
 			{
 			if (mapping.size() != themes.size())
 			{
 				mapping.clear();
-				for (const FMTtheme& theme : themes)
+				for (const Core::FMTtheme& theme : themes)
 				{
-					const map<string, string> themes_mapping = theme.getvaluenames();
-					map<string, string> layer_map;
-					for (map<string, string>::const_iterator dit = themes_mapping.begin(); dit != themes_mapping.end(); dit++)
+					const std::map<std::string, std::string> themes_mapping = theme.getvaluenames();
+					std::map<std::string, std::string> layer_map;
+					for (std::map<std::string, std::string>::const_iterator dit = themes_mapping.begin(); dit != themes_mapping.end(); dit++)
 					{
 						layer_map[dit->first] = dit->first;
 					}
@@ -173,70 +151,45 @@ FMTareaparser::FMTareaparser() :
 				}
 			}
 			int layer_id = 0;
-			for (const map<string, string>& layermap : mapping)
+			for (const std::map<std::string, std::string>& layermap : mapping)
 			{
-				writelayer<string>(themes_layer[layer_id], data_rasters[layer_id], layermap);
+				writelayer<std::string>(themes_layer[layer_id], data_rasters[layer_id], layermap);
 				++layer_id;
 			}
-			const map<int, string>emptymapping;
-			Spatial::FMTlayer<int>agelayer = for_layer.getage();
+			const std::map<int, std::string>emptymapping;
+			const Spatial::FMTlayer<int>agelayer = for_layer.getage();
 			writelayer<int>(agelayer, age, emptymapping);
-			Spatial::FMTlayer<string>locklayer = for_layer.getlock();
-			map<string, string>lockmap;
-			const vector<string> attributes = locklayer.getattributes();
-			for (const string& att : attributes)
+			const Spatial::FMTlayer<std::string>locklayer = for_layer.getlock();
+			std::map<std::string, std::string>lockmap;
+			const std::vector<std::string> attributes = locklayer.getattributes();
+			for (const std::string& att : attributes)
 			{
 				lockmap[att] = att;
 			}
-			writelayer<string>(locklayer, lock, lockmap);
+			writelayer<std::string>(locklayer, lock, lockmap);
 			return true;
 			}
 		return false;
         }
 
-	string FMTareaparser::getdisturbancepath(const string& location, const int& period) const
+	std::string FMTareaparser::getdisturbancepath(const std::string& location, const int& period) const
 		{
-		boost::filesystem::path dir(location);
-		const string layername = "DIST_" + to_string(period) + ".tif";
-		boost::filesystem::path file(layername);
-		boost::filesystem::path full_path = dir / file;
+		const boost::filesystem::path dir(location);
+		const std::string layername = "DIST_" + std::to_string(period) + ".tif";
+		const boost::filesystem::path file(layername);
+		const boost::filesystem::path full_path = dir / file;
 		return full_path.string();
 		}
 
-	/*bool FMTareaparser::writedisturbances(const string& location,
-                                     const Spatial::FMTdisturbancestack& disturbances,
-                                    const Spatial::FMTforest& for_layer,
-                                    map<string,string> mapping) const
-        {
-        vector<FMTlayer<string>> distvec = disturbances.getlayers<Core::FMTdevelopment>(for_layer);
-		vector<FMTGCBMtransition>transitions;
-		if (!distvec.empty())
-			{
-				if (mapping.empty())
-					{
-					mapping = disturbances.directmapping();
-					}
-
-					int period = 1;
-					for (const Spatial::FMTlayer<string>& layer : distvec)
-						{
-						writelayer<string>(layer, getdisturbancepath(location, period), mapping);
-						++period;
-						}
-			return true;
-			}
-		return false;
-        }*/
-
-	vector<FMTGCBMtransition> FMTareaparser::writedisturbances(const string& location,
+	std::vector<Core::FMTGCBMtransition> FMTareaparser::writedisturbances(const std::string& location,
 		const Spatial::FMTdisturbancestack& disturbances,
 		const Spatial::FMTforest& for_layer,
 		const Spatial::FMTforest& out_layer,
-		const vector<FMTtheme>& themes,
-		map<string, string> mapping) const
+		const std::vector<Core::FMTtheme>& themes,
+		std::map<std::string, std::string> mapping) const
 	{
-		vector<FMTlayer<string>> distvec = disturbances.getlayers<Core::FMTdevelopment>(for_layer);
-		vector<FMTGCBMtransition>transitions;
+		std::vector<Spatial::FMTlayer<std::string>> distvec = disturbances.getlayers<Core::FMTdevelopment>(for_layer);
+		std::vector<Core::FMTGCBMtransition>transitions;
 		if (!distvec.empty())
 		{
 			if (mapping.empty())
@@ -246,17 +199,17 @@ FMTareaparser::FMTareaparser() :
 
 			if (!themes.empty())
 			{
-				vector<FMTlayer<string>>forest_attributes = for_layer.getthemes(themes);
-				FMTlayer<int>ages = out_layer.getage();
-				int period = int(distvec.size());
+				const std::vector<Spatial::FMTlayer<std::string>>forest_attributes = for_layer.getthemes(themes);
+				const Spatial::FMTlayer<int>ages = out_layer.getage();
+				const int period = static_cast<int>(distvec.size());
 				int themeid = 0;
-				for (const FMTlayer<string>& attlayer : forest_attributes)
+				for (const Spatial::FMTlayer<std::string>& attlayer : forest_attributes)
 				{
-					map<string, string>newmap;
-					map<string, string>theme_names = themes[themeid].getvaluenames();
-					for (map<string, string>::const_iterator it = mapping.begin(); it != mapping.end(); it++)
+					std::map<std::string,std::string>newmap;
+					const std::map<std::string,std::string>theme_names = themes[themeid].getvaluenames();
+					for (std::map<std::string, std::string>::const_iterator it = mapping.begin(); it != mapping.end(); it++)
 					{
-						for (map<string, string>::const_iterator the_it = theme_names.begin(); the_it != theme_names.end(); the_it++)
+						for (std::map<std::string, std::string>::const_iterator the_it = theme_names.begin(); the_it != theme_names.end(); the_it++)
 						{
 							newmap[it->first + "-" + the_it->first] = it->first + "-" + the_it->first;
 						}
@@ -266,13 +219,13 @@ FMTareaparser::FMTareaparser() :
 					++themeid;
 				}
 				transitions = getGCBMtransitions(distvec.back(), ages,out_layer,themes);
-				writelayer<string>(distvec.back(), getdisturbancepath(location, period), mapping);
+				writelayer<std::string>(distvec.back(), getdisturbancepath(location, period), mapping);
 			}
 			else {
 				int period = 1;
-				for (const Spatial::FMTlayer<string>& layer : distvec)
+				for (const Spatial::FMTlayer<std::string>& layer : distvec)
 				{
-					writelayer<string>(layer, getdisturbancepath(location, period), mapping);
+					writelayer<std::string>(layer, getdisturbancepath(location, period), mapping);
 					++period;
 				}
 			}
@@ -280,13 +233,13 @@ FMTareaparser::FMTareaparser() :
 		return transitions;
 	}
 
-    Spatial::FMTforest FMTareaparser::readrasters(const vector<FMTtheme>& themes,
-                                             const vector<string>&data_rasters,
-                                             const string& age,double agefactor,
-                                             double areafactor,string lock) const
+    Spatial::FMTforest FMTareaparser::readrasters(const std::vector<Core::FMTtheme>& themes,
+                                             const std::vector<std::string>&data_rasters,
+                                             const std::string& age,double agefactor,
+                                             double areafactor,std::string lock) const
         {
         GDALAllRegister();
-        vector<string>allrasters = data_rasters;
+        std::vector<std::string>allrasters = data_rasters;
         allrasters.push_back(age);
         if (!lock.empty())
             {
@@ -300,33 +253,33 @@ FMTareaparser::FMTareaparser() :
         int nXBlocks = (ageband->GetXSize() + nXBlockSize - 1) / nXBlockSize;
         int nYBlocks = (ageband->GetYSize() + nYBlockSize - 1) / nYBlockSize;
         int nodata = int(ageband->GetNoDataValue());
-        vector<GInt32>agedata(nXBlockSize * nYBlockSize);
-        vector<GInt32>attributedata(nXBlockSize * nYBlockSize);
+		std::vector<GInt32>agedata(nXBlockSize * nYBlockSize);
+		std::vector<GInt32>attributedata(nXBlockSize * nYBlockSize);
         GDALDataset* lockdataset = NULL;
         GDALRasterBand* lockband = NULL;
-        vector<GInt32>lockdata;
-        vector<double>pad(6);
+        std::vector<GInt32>lockdata;
+		std::vector<double>pad(6);
         agedataset->GetGeoTransform(&pad[0]);
         double cellsize = (abs(pad[1]*pad[5]) * areafactor);
-        vector<int>lockatts;
+		std::vector<int>lockatts;
         if(!lock.empty())
             {
             lockdataset = getdataset(lock);
-            vector<string>lockstr = getcat(lockdataset);
+			const std::vector<std::string>lockstr = getcat(lockdataset);
             lockatts.reserve(lockstr.size());
-            for (const string& strlock : lockstr)
+            for (const std::string& strlock : lockstr)
                 {
-                vector<string>spstr;
+				std::vector<std::string>spstr;
                 boost::split(spstr,strlock,boost::is_any_of("\t "), boost::token_compress_on);
                 lockatts.push_back(stoi(spstr[1]));
                 }
             lockband = getband(lockdataset);
-            lockdata = vector<GInt32>(nXBlockSize * nYBlockSize,0);
+            lockdata = std::vector<GInt32>(nXBlockSize * nYBlockSize,0);
             }
-        vector<GDALDataset*>datasets;
-        vector<GDALRasterBand*>bands;
-        vector<vector<string>>attributes;
-        for(const string& location : data_rasters)
+        std::vector<GDALDataset*>datasets;
+		std::vector<GDALRasterBand*>bands;
+		std::vector<std::vector<std::string>>attributes;
+        for(const std::string& location : data_rasters)
             {
             GDALDataset* dataset = getdataset(location);
             GDALRasterBand* band = getband(dataset);
@@ -334,9 +287,7 @@ FMTareaparser::FMTareaparser() :
             bands.push_back(band);
             attributes.push_back(getcat(dataset));
             }
-        //vector<FMTactualdevelopment>devs;
-        map<Spatial::FMTcoordinate,FMTdevelopment>mapping;
-        //int nblock = 0;
+		std::map<Spatial::FMTcoordinate,Core::FMTdevelopment>mapping;
         int missing = 0;
         unsigned int ystack = 0;
         for( int iYBlock = 0; iYBlock < nYBlocks; iYBlock++ )
@@ -348,24 +299,24 @@ FMTareaparser::FMTareaparser() :
                 int  nXValid;
                 if (CE_None!=ageband->ReadBlock( iXBlock, iYBlock,&agedata[0]))
                     {
-                     _exhandler->raise(FMTexc::FMTinvalidrasterblock,_section,agedataset->GetDescription(), __LINE__, __FILE__);
+                     _exhandler->raise(Exception::FMTexc::FMTinvalidrasterblock,_section,agedataset->GetDescription(), __LINE__, __FILE__);
                     }
                 if (lockdataset!= NULL)
                     {
                     if (CE_None!=lockband->ReadBlock( iXBlock, iYBlock, &lockdata[0]))
                         {
-                        _exhandler->raise(FMTexc::FMTinvalidrasterblock,_section,lockdataset->GetDescription(), __LINE__, __FILE__);
+                        _exhandler->raise(Exception::FMTexc::FMTinvalidrasterblock,_section,lockdataset->GetDescription(), __LINE__, __FILE__);
                         }
                     }
                 ageband->GetActualBlockSize(iXBlock, iYBlock, &nXValid, &nYValid);
-                map<int,string>mapattributes;
+				std::map<int, std::string>mapattributes;
                 boost::unordered_map<int,Spatial::FMTcoordinate>coordinates;
-                vector<int>counts(nXBlockSize * nYBlockSize,0);
+				std::vector<int>counts(nXBlockSize * nYBlockSize,0);
                 for(size_t themeid = 0 ; themeid < data_rasters.size();++themeid)
                     {
                     if (CE_None!=bands[themeid]->ReadBlock( iXBlock, iYBlock, &attributedata[0]))
                         {
-                        _exhandler->raise(FMTexc::FMTinvalidrasterblock,_section,datasets[themeid]->GetDescription(), __LINE__, __FILE__);
+                        _exhandler->raise(Exception::FMTexc::FMTinvalidrasterblock,_section,datasets[themeid]->GetDescription(), __LINE__, __FILE__);
                         }
                     unsigned int y = ystack;
                     for( int iY = 0; iY < nYValid; iY++ )
@@ -373,11 +324,11 @@ FMTareaparser::FMTareaparser() :
                         unsigned int x = xstack;
                         for( int iX = 0; iX < nXValid; iX++ )
                             {
-                            unsigned int baselocation = (iX + iY * nXBlockSize);
+                            const unsigned int baselocation = (iX + iY * nXBlockSize);
                             int intattribute = attributedata[baselocation];
                             if (intattribute != nodata)
                                 {
-                                string attribute = attributes[themeid][intattribute];
+								const std::string attribute = attributes[themeid][intattribute];
                                 if (mapattributes.find(baselocation)==mapattributes.end())
                                     {
                                     mapattributes[baselocation]="";
@@ -394,20 +345,18 @@ FMTareaparser::FMTareaparser() :
                         ++y;
                         }
                     }
-                    //map<string,int>mapper; key = st+"AGE"+"LOCK" -> int location
-				    size_t attcounts = themes.size();
+				    const size_t attcounts = themes.size();
                     if (!mapattributes.empty())
                         {
-                        for (map<int,string>::iterator att=mapattributes.begin(); att!=mapattributes.end(); ++att)
+                        for (std::map<int, std::string>::iterator att=mapattributes.begin(); att!=mapattributes.end(); ++att)
                             {
-                            string st = att->second;
-                            int location = att->first;
+							std::string st = att->second;
+                            const int location = att->first;
                             if (counts[location]==attcounts && agedata[location] != nodata)
                                 {
-                                string maskvalue = st.substr(0, st.size()-1);
-								//FMTmask mask = validate(themes, maskvalue);
+								std::string maskvalue = st.substr(0, st.size()-1);
                                 if (!validate(themes,maskvalue)) continue;
-                                FMTmask mask(maskvalue,themes);
+                                const Core::FMTmask mask(maskvalue,themes);
                                 int lock = 0;
                                 if (!lockdata.empty())
                                     {
@@ -416,7 +365,7 @@ FMTareaparser::FMTareaparser() :
                                         lock = lockatts[lockdata[location]];
                                         }
                                     }
-                                FMTdevelopment dev(mask,int(agedata[location]*agefactor),lock);
+                                const Core::FMTdevelopment dev(mask,int(agedata[location]*agefactor),lock);
                                 mapping[coordinates[location]] = dev;
                                 }else{
                                 ++missing;
@@ -424,24 +373,23 @@ FMTareaparser::FMTareaparser() :
                             }
                         }
                     xstack+=nXValid;
-                    //++nblock;
                     }
                 ystack+=nYValid;
                  }
              if(missing>0)
                 {
-                string message = " for "+to_string(missing)+" raster cells";
-                _exhandler->raise(FMTexc::FMTmissingrasterattribute,_section,message, __LINE__, __FILE__);
+                const std::string message = " for "+std::to_string(missing)+" raster cells";
+                _exhandler->raise(Exception::FMTexc::FMTmissingrasterattribute,_section,message, __LINE__, __FILE__);
                 }
-             string projection = agedataset->GetProjectionRef();
+             const std::string projection = agedataset->GetProjectionRef();
              const unsigned int xsize = ageband->GetXSize();
              const unsigned int ysize = ageband->GetYSize();
-             return Spatial::FMTlayer<FMTdevelopment>(mapping,pad,xsize,ysize,projection,cellsize);
+             return Spatial::FMTlayer<Core::FMTdevelopment>(mapping,pad,xsize,ysize,projection,cellsize);
              }
 
-	FMTactualdevelopment FMTareaparser::getfeaturetodevelopment(const OGRFeature* feature,
-				const vector<FMTtheme>& themes,
-				const map<int, int>& themes_fields,
+	Core::FMTactualdevelopment FMTareaparser::getfeaturetodevelopment(const OGRFeature* feature,
+				const std::vector<Core::FMTtheme>& themes,
+				const std::map<int, int>& themes_fields,
 				const int& age_field,
 				const int& lock_field,
 				const int& area_field,
@@ -449,80 +397,76 @@ FMTareaparser::FMTareaparser() :
 				const double& areafactor,
 				const double& minimalarea) const
 		{
-		int age = int(feature->GetFieldAsInteger(age_field)*agefactor);
-		double area = (feature->GetFieldAsDouble(area_field)*areafactor);
+		const int age = static_cast<int>(feature->GetFieldAsInteger(age_field)*agefactor);
+		const double area = (feature->GetFieldAsDouble(area_field)*areafactor);
 		if (area > minimalarea)
 			{
 				int lock = 0;
 				if (lock_field != -1)
 				{
-					string slock = feature->GetFieldAsString(lock_field);
+					std::string slock = feature->GetFieldAsString(lock_field);
 					boost::to_upper(slock);
 					slock.erase(0, 5);
 					if (isvalid(slock))
 					{
-						lock = stoi(slock);
+						lock = std::stoi(slock);
 					}
 				}
-				vector<string>masks(themes_fields.size());
-				for (map<int, int>::const_iterator it = themes_fields.begin(); it != themes_fields.end(); ++it)
+				std::vector<std::string>masks(themes_fields.size());
+				for (std::map<int, int>::const_iterator it = themes_fields.begin(); it != themes_fields.end(); ++it)
 				{
-					string attribute = feature->GetFieldAsString(it->second);
+					std::string attribute = feature->GetFieldAsString(it->second);
 					boost::to_upper(attribute);
 					masks[it->first] = attribute;
 				}
-				string tmask = boost::algorithm::join(masks, " ");
+				std::string tmask = boost::algorithm::join(masks, " ");
 				if (validate(themes, tmask))
 					{
-					FMTmask mask(tmask, themes);
-					return FMTactualdevelopment(mask, age, lock, area);
+					const Core::FMTmask mask(tmask, themes);
+					return Core::FMTactualdevelopment(mask, age, lock, area);
 					}
 			}
-		return FMTactualdevelopment();
+		return Core::FMTactualdevelopment();
 		}
 
-	GDALDataset* FMTareaparser::openvectorfile(map<int, int>&themes_fields,int& age_field,int& lock_field,int& area_field,
-		const string& data_vectors,const string& agefield,const string& areafield,const string& lockfield,
-		const vector<FMTtheme>& themes) const
+	GDALDataset* FMTareaparser::openvectorfile(std::map<int, int>&themes_fields,int& age_field,int& lock_field,int& area_field,
+		const std::string& data_vectors,const std::string& agefield,const std::string& areafield,const std::string& lockfield,
+		const std::vector<Core::FMTtheme>& themes) const
 		{
 		GDALAllRegister();
 		GDALDataset* dataset = getvectordataset(data_vectors);
 		OGRLayer*  layer = getlayer(dataset, 0);
-		//map<int, int>themes_fields;
-		//int age_field = -1;
-		//int lock_field = -1;
-		//int area_field = -1;
 		getWSfields(layer, themes_fields, age_field, area_field, lock_field, agefield, areafield, lockfield);
 		if (themes_fields.size() != themes.size())
 			{
-			_exhandler->raise(FMTexc::WSinvalid_maskrange, _section, dataset->GetDescription(), __LINE__, __FILE__);
+			_exhandler->raise(Exception::FMTexc::WSinvalid_maskrange, _section, dataset->GetDescription(), __LINE__, __FILE__);
 			}
 		layer->ResetReading();
 		return dataset;
 		}
 
-	OGRLayer* FMTareaparser::subsetlayer(OGRLayer*layer ,const vector<FMTtheme>& themes,
-									const string& agefield, const string& areafield) const
+	OGRLayer* FMTareaparser::subsetlayer(OGRLayer*layer ,const std::vector<Core::FMTtheme>& themes,
+									const std::string& agefield, const std::string& areafield) const
 		{
 		size_t thid = 1;
-		vector<string>elements;
-		for (const FMTtheme& theme: themes)
+		std::vector<std::string>elements;
+		for (const Core::FMTtheme& theme: themes)
 			{
-			elements.push_back("THEME"+to_string(thid));
+			elements.push_back("THEME"+std::to_string(thid));
 			++thid;
 			}
 		elements.push_back(agefield);
 		elements.push_back(areafield);
-		string sqlcall = boost::algorithm::join(elements, " IS NOT NULL AND ");
+		std::string sqlcall = boost::algorithm::join(elements, " IS NOT NULL AND ");
 		sqlcall += " IS NOT NULL";
 		layer->SetAttributeFilter(sqlcall.c_str());
 		return layer;
 		}
 		
-    vector<FMTactualdevelopment>FMTareaparser::readvectors(const vector<FMTtheme>& themes,const string& data_vectors,
-		const string& agefield,const string& areafield,double agefactor,double areafactor,string lockfield,double minimalarea) const
+	std::vector<Core::FMTactualdevelopment>FMTareaparser::readvectors(const std::vector<Core::FMTtheme>& themes,const std::string& data_vectors,
+		const std::string& agefield,const std::string& areafield,double agefactor,double areafactor, std::string lockfield,double minimalarea) const
         {
-		map<int, int>themes_fields;
+		std::map<int, int>themes_fields;
 		int age_field = -1;
 		int lock_field = -1;
 		int area_field = -1;
@@ -530,15 +474,15 @@ FMTareaparser::FMTareaparser() :
 		OGRLayer*  layer = getlayer(dataset, 0);
 		layer = this->subsetlayer(layer, themes, agefield, areafield);
 		OGRFeature *feature;
-		vector<FMTactualdevelopment>devs;
+		std::vector<Core::FMTactualdevelopment>devs;
         while((feature = layer->GetNextFeature()) != NULL)
             {
-				const FMTactualdevelopment actualdev = this->getfeaturetodevelopment(feature, themes, themes_fields, age_field,
+				const Core::FMTactualdevelopment actualdev = this->getfeaturetodevelopment(feature, themes, themes_fields, age_field,
 					lock_field, area_field, agefactor, areafactor, minimalarea);
 				
 				if (!actualdev.mask.empty())
 					{
-					vector<FMTactualdevelopment>::iterator it = find(devs.begin(), devs.end(), actualdev);
+					std::vector<Core::FMTactualdevelopment>::iterator it = find(devs.begin(), devs.end(), actualdev);
 					if (it != devs.end())
 					{
 						it->area += actualdev.getarea();
@@ -553,13 +497,13 @@ FMTareaparser::FMTareaparser() :
         return devs;
         }
 
-	vector<OGRMultiPolygon>FMTareaparser::getmultipolygons(const vector<Heuristics::FMToperatingarea>& operatingareas,
-												const vector<FMTtheme>& themes, const string& data_vectors,
-												const string& agefield, const string& areafield, double agefactor,
-												double areafactor, string lockfield,
+	std::vector<OGRMultiPolygon>FMTareaparser::getmultipolygons(const std::vector<Heuristics::FMToperatingarea>& operatingareas,
+												const std::vector<Core::FMTtheme>& themes, const std::string& data_vectors,
+												const std::string& agefield, const std::string& areafield, double agefactor,
+												double areafactor, std::string lockfield,
 												double minimal_area) const
 		{
-		map<int, int>themes_fields;
+		std::map<int, int>themes_fields;
 		int age_field = -1;
 		int lock_field = -1;
 		int area_field = -1;
@@ -569,10 +513,10 @@ FMTareaparser::FMTareaparser() :
 		layer = this->subsetlayer(layer, themes, agefield, areafield);
 
 		OGRFeature *feature;
-		vector<OGRMultiPolygon>multipolygons(operatingareas.size(),OGRMultiPolygon());
+		std::vector<OGRMultiPolygon>multipolygons(operatingareas.size(),OGRMultiPolygon());
 		while ((feature = layer->GetNextFeature()) != NULL)
 			{
-				FMTactualdevelopment actualdev = this->getfeaturetodevelopment(feature, themes, themes_fields, age_field,
+				const Core::FMTactualdevelopment actualdev = this->getfeaturetodevelopment(feature, themes, themes_fields, age_field,
 					lock_field, area_field, agefactor, areafactor, minimal_area);
 				if (!actualdev.mask.empty())
 					{
@@ -599,147 +543,10 @@ FMTareaparser::FMTareaparser() :
 		return multipolygons;
 		}
 
-    vector<FMTactualdevelopment>FMTareaparser::read(const vector<FMTtheme>& themes,const FMTconstants& constants,string location)
-        {
-		vector<FMTactualdevelopment>areas;
-		if(!location.empty())
-			{ 
-			ifstream areastream(location);
-			string line;
-			bool potential_futurs = false;
-			//size_t maxfuturstobreak = 100;
-			bool got0area = false;
-			size_t futurtype = 0;
-			smatch kmatch;
-			vector<string>splitted;
-			if (FMTparser::tryopening(areastream,location))
-				{
-				bool inactualdevs = false;
-				std::unordered_map<size_t, size_t>devsindex;
-				while(areastream.is_open())
-					{
-					//line = FMTparser::getcleanline(areastream);
-					line = FMTparser::getcleanlinewfor(areastream, themes, constants);
-					/*if (line.empty() && !areas.empty() && _comment.empty() )
-						{
-						potential_futurs = true;
-						}*/
-					if (!line.empty())
-						{
-						if (potential_futurs && inactualdevs && !_comment.empty() && got0area)
-							{
-							++futurtype;
-							if (futurtype >= (areas.size()*0.5))
-								{
-								/*Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "BREAKIINNNNNGG THYE LAWWWWW"<< "\n";
-								Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "LINE " << _comment << "\n";
-								Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "LINE " << line << "\n";
-								Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) <<"LINE "<< _line << "\n";*/
-								break;
-								}
-							}
-						if (regex_search(line,kmatch,FMTareaparser::rxcleanarea))
-							{ 
-							string strlock = string(kmatch[6]) + string(kmatch[14]);
-							string masknage = string(kmatch[3])+string(kmatch[9]) + string(kmatch[18])+ string(kmatch[23]);
-							string mask;
-							double area;
-							int age,lock;
-							size_t linesize;
-							splitted = FMTparser::spliter(masknage,FMTparser::rxseparator);
-							//boost::trim(masknage);
-							//boost::split(splitted, masknage, boost::is_any_of("\t "), boost::token_compress_on);
-							linesize = splitted.size();
-							inactualdevs = true;
-							for(size_t themeid = 0 ; themeid < (linesize-2); ++themeid)
-								{
-								mask+=splitted.at(themeid)+" ";
-								}
-							mask.pop_back();
-							area = getnum<double>(splitted.at(linesize-1),constants);
-							if (area>0)
-								{
-								got0area = false;
-								if (!validate(themes, mask)) continue;
-								potential_futurs = false;
-								age = getnum<int>(splitted.at(linesize-2),constants);
-								lock = 0;
-								if (FMTparser::isvalid(strlock))
-									{
-									lock = getnum<int>(strlock,constants);
-									}
-								const FMTactualdevelopment actualdevelopment(FMTmask(mask, themes), age, lock, area);
-								//Weird non unique area section...
-								const size_t hashform = boost::hash<FMTdevelopment>()(actualdevelopment);
-								std::unordered_map<size_t, size_t>::const_iterator hashit = devsindex.find(hashform);
-								if (devsindex.find(hashform)==devsindex.end())
-									{
-									devsindex[hashform] = areas.size();
-									areas.push_back(actualdevelopment);
-									}else {
-									areas[hashit->second].area += area;
-									}
-							}else {
-								got0area = true;
-								}
-								//_exhandler->raise(FMTexc::WSfutur_types,_section,mask+" at line" + to_string(_line), __LINE__, __FILE__);
-							}
-						}
-					else if (!areas.empty() && _comment.empty())
-						{
-						potential_futurs = true;
-						}
-					}
-				}
-			}
-        return areas;
-        }
-    bool FMTareaparser::write(const vector<FMTactualdevelopment>& areas, string location)
-        {
-        ofstream areastream;
-        areastream.open(location);
-        double sumarea = 0;
-       // bool gotlock = false;
-        for(const FMTactualdevelopment& dev : areas)
-            {
-            /*if (dev.lock>0)
-                {
-                gotlock = true;
-                }*/
-            sumarea+=dev.area;
-            }
-        if (tryopening(areastream,location))
-            {
-            areastream<<";Total area: "<<to_string(sumarea)<<"\n";
-            const string maskstr = areas.at(0).mask.getstr();
-            vector<string>splitted_mask;
-            boost::split(splitted_mask,maskstr, boost::is_any_of(" /t"), boost::token_compress_on);
-            string header_line = ";*A ";
-            size_t theme_id = 1;
-            for (const string& theme : splitted_mask)
-                {
-                header_line+="TH"+to_string(theme_id) +" ";
-                ++theme_id;
-                }
-            header_line+="AGE";
-            header_line+=" AREA";
-			/*if (gotlock)
-			{
-				header_line += " LOCK";
-			}*/
-            areastream<<header_line<<"\n";
-            for(const FMTactualdevelopment& area : areas)
-                {
-                areastream<<string(area)<<"\n";
-                }
-            areastream.close();
-            return true;
-            }
-        return false;
-        }
+	
 
         template<typename T>
-        bool FMTareaparser::writelayer(const Spatial::FMTlayer<T>& layer,string location,const map<T,string>& mapping) const
+        bool FMTareaparser::writelayer(const Spatial::FMTlayer<T>& layer, std::string location,const std::map<T, std::string>& mapping) const
             {
             GDALAllRegister();
             GDALDataType datatype = GDT_Int32;
@@ -748,11 +555,11 @@ FMTareaparser::FMTareaparser() :
                 datatype = GDT_Float64;
                 }
             GDALDataset* wdataset = createdataset(location,layer,datatype);
-            vector<string>table;
+			std::vector<std::string>table;
             if (!mapping.empty())
                 {
                 table.reserve(mapping.size());
-                for(typename map<T,string>::const_iterator it = mapping.begin(); it!= mapping.end();it++)
+                for(typename std::map<T, std::string>::const_iterator it = mapping.begin(); it!= mapping.end();it++)
                     {
                     table.push_back(it->second);
                     }
@@ -764,8 +571,8 @@ FMTareaparser::FMTareaparser() :
             int nXBlocks = (wband->GetXSize() + nXBlockSize - 1) / nXBlockSize;
             int nYBlocks = (wband->GetYSize() + nYBlockSize - 1) / nYBlockSize;
             double nodata = wband->GetNoDataValue();
-            vector<int>intblock;
-            vector<double>dblblock;
+			std::vector<int>intblock;
+			std::vector<double>dblblock;
             if (std::is_same<double,T>::value)
                 {
                 dblblock.resize(nXBlockSize * nYBlockSize);
@@ -782,15 +589,14 @@ FMTareaparser::FMTareaparser() :
                     {
                     int  nXValid;
                     wband->GetActualBlockSize(iXBlock, iYBlock, &nXValid, &nYValid);
-                    //vector<GInt32>block(nXBlockSize * nYBlockSize,0);
                     unsigned int y = ystack;
                     for( int iY = 0; iY < nYValid; iY++ )
                         {
                         unsigned int x = xstack;
                         for( int iX = 0; iX < nXValid; iX++ )
                             {
-                            FMTcoordinate coordinate(x,y);
-                            typename map<Spatial::FMTcoordinate,T>::const_iterator it = layer.mapping.find(coordinate);
+                            Spatial::FMTcoordinate coordinate(x,y);
+                            typename std::map<Spatial::FMTcoordinate,T>::const_iterator it = layer.mapping.find(coordinate);
                             if (it!=layer.mapping.end())
                                 {
                                 if (!mapping.empty())
@@ -821,12 +627,12 @@ FMTareaparser::FMTareaparser() :
                     {
                         if (wband->WriteBlock(iXBlock,iYBlock,&dblblock[0])!=CPLErr::CE_None)
                             {
-                             _exhandler->raise(FMTexc::FMTinvalidrasterblock,_section,wdataset->GetDescription(), __LINE__, __FILE__);
+                             _exhandler->raise(Exception::FMTexc::FMTinvalidrasterblock,_section,wdataset->GetDescription(), __LINE__, __FILE__);
                             }
                     }else{
                         if (wband->WriteBlock(iXBlock,iYBlock,&intblock[0])!=CPLErr::CE_None)
                             {
-                             _exhandler->raise(FMTexc::FMTinvalidrasterblock,_section,wdataset->GetDescription(), __LINE__, __FILE__);
+                             _exhandler->raise(Exception::FMTexc::FMTinvalidrasterblock,_section,wdataset->GetDescription(), __LINE__, __FILE__);
                             }
                         }
                     xstack+=nXValid;
@@ -840,23 +646,23 @@ FMTareaparser::FMTareaparser() :
             return true;
             }
 
-			vector<Heuristics::FMToperatingarea> FMTareaparser::getneighborsfrompolygons(const vector<OGRMultiPolygon>& multipolygons,
-																						vector<Heuristics::FMToperatingarea> operatingareas,
+			std::vector<Heuristics::FMToperatingarea> FMTareaparser::getneighborsfrompolygons(const std::vector<OGRMultiPolygon>& multipolygons,
+																						std::vector<Heuristics::FMToperatingarea> operatingareas,
 																						const double& buffersize) const
 				{
-				vector<OGRPolygon*>mergedpolygons;
+				std::vector<OGRPolygon*>mergedpolygons;
 				for (const OGRMultiPolygon& polygons : multipolygons)
 					{
 					OGRGeometry* geometry = polygons.UnionCascaded();
 					OGRPolygon* polygon = reinterpret_cast<OGRPolygon*>(geometry);
 					mergedpolygons.push_back(polygon);
 					}
-				std::map<FMTmask,std::vector<FMTmask>>neighborhood;
+				std::map<Core::FMTmask,std::vector<Core::FMTmask>>neighborhood;
 				for (size_t opareaindex = 0; opareaindex < operatingareas.size();++opareaindex)
 					{
 					double fullbuffered = 0;
-					vector<size_t>neighborsid;
-					vector<double>areas;
+					std::vector<size_t>neighborsid;
+					std::vector<double>areas;
 					if (mergedpolygons.at(opareaindex) && !mergedpolygons.at(opareaindex)->IsEmpty() && mergedpolygons.at(opareaindex)->IsValid())
 						{
 						OGRGeometry* buffered = (mergedpolygons.at(opareaindex)->Buffer(buffersize));
@@ -877,8 +683,7 @@ FMTareaparser::FMTareaparser() :
 						OGRGeometryFactory::destroyGeometry(buffered);
 						}
 					
-					vector<FMTmask>validneighbors;
-					//Logging::FMTlogger() << "nsvalidneighbor size " << neighborsid.size() << "\n";
+					std::vector<Core::FMTmask>validneighbors;
 					for (size_t neighborid = 0 ; neighborid < neighborsid.size(); ++neighborid)
 						{
 						if ((areas.at(neighborid)/fullbuffered) >= operatingareas.at(neighborsid.at(neighborid)).getneihgborsperimeter())
@@ -887,7 +692,6 @@ FMTareaparser::FMTareaparser() :
 							}
 						}
 					neighborhood[operatingareas.at(opareaindex).getmask()] = validneighbors;
-					//Logging::FMTlogger() << "valid size " << validneighbors.size() << "\n";
 					}
 				//reciprocity
 				/////////////
@@ -895,8 +699,8 @@ FMTareaparser::FMTareaparser() :
 					{
 					if (neighborhood.find(oparea.getmask())!= neighborhood.end())
 						{
-						vector<FMTmask>realneighbors;
-						for (const FMTmask& nmask : neighborhood.at(oparea.getmask()))
+						std::vector<Core::FMTmask>realneighbors;
+						for (const Core::FMTmask& nmask : neighborhood.at(oparea.getmask()))
 						{
 							if (neighborhood.find(nmask) != neighborhood.end() &&
 								std::find(neighborhood.at(nmask).begin(), neighborhood.at(nmask).end(), oparea.getmask()) != neighborhood.at(nmask).end())
@@ -904,7 +708,6 @@ FMTareaparser::FMTareaparser() :
 								realneighbors.push_back(nmask);
 							}
 						}
-						//Logging::FMTlogger()<<string(oparea.getmask()) << " real size " << realneighbors.size() << "\n";
 						oparea.setneighbors(realneighbors);
 						}
 					}
@@ -917,18 +720,156 @@ FMTareaparser::FMTareaparser() :
 				}
 
 
-			vector<Heuristics::FMToperatingarea> FMTareaparser::getneighbors(vector<Heuristics::FMToperatingarea> operatingareaparameters,
-																			const vector<FMTtheme>& themes, const string& data_vectors,
-																			const string& agefield, const string& areafield, double agefactor,
-																			double areafactor, string lockfield,
+			std::vector<Heuristics::FMToperatingarea> FMTareaparser::getneighbors(std::vector<Heuristics::FMToperatingarea> operatingareaparameters,
+																			const std::vector<Core::FMTtheme>& themes, const std::string& data_vectors,
+																			const std::string& agefield, const std::string& areafield, double agefactor,
+																			double areafactor, std::string lockfield,
 																			double minimal_area , double buffersize) const
 				{
-				vector<OGRMultiPolygon>multipolygons = this->getmultipolygons(operatingareaparameters, themes, data_vectors,
+				std::vector<OGRMultiPolygon>multipolygons = this->getmultipolygons(operatingareaparameters, themes, data_vectors,
 																agefield, areafield, agefactor,
 																areafactor, lockfield, minimal_area);
 				return getneighborsfrompolygons(multipolygons, operatingareaparameters, buffersize);
 				}
+#endif
 
+			FMTareaparser::FMTareaparser() :
+				FMTparser(),
+				rxcleanarea("^(([*A]*)([^|]*)(_lock)([^0-9]*)([0-9]*))|(([*A]*)([^|]*)([|])([^|]*)([|])([^0-9]*)(.+))|(([*A]*)(([^|]*)([|])([^|]*)([|])))|([*A]*)(.+)", std::regex_constants::ECMAScript | std::regex_constants::icase)
+			{
+				_section = FMTwssect::Area;
+			}
 
+			FMTareaparser::FMTareaparser(const FMTareaparser& rhs) : FMTparser(rhs), rxcleanarea(rhs.rxcleanarea)
+			{
 
+			}
+			FMTareaparser& FMTareaparser::operator = (const FMTareaparser& rhs)
+			{
+				if (this != &rhs)
+				{
+					FMTparser::operator = (rhs);
+					rxcleanarea = rhs.rxcleanarea;
+				}
+				return *this;
+			}
+
+			std::vector<Core::FMTactualdevelopment>FMTareaparser::read(const std::vector<Core::FMTtheme>& themes, const Core::FMTconstants& constants, std::string location)
+			{
+				std::vector<Core::FMTactualdevelopment>areas;
+				if (!location.empty())
+				{
+					std::ifstream areastream(location);
+					bool potential_futurs = false;
+					bool got0area = false;
+					size_t futurtype = 0;
+					std::smatch kmatch;
+					std::vector<std::string>splitted;
+					if (FMTparser::tryopening(areastream, location))
+					{
+						bool inactualdevs = false;
+						std::unordered_map<size_t, size_t>devsindex;
+						while (areastream.is_open())
+						{
+							std::string line = FMTparser::getcleanlinewfor(areastream, themes, constants);
+							if (!line.empty())
+							{
+								if (potential_futurs && inactualdevs && !_comment.empty() && got0area)
+								{
+									++futurtype;
+									if (futurtype >= (areas.size()*0.5))
+									{
+										break;
+									}
+								}
+								if (std::regex_search(line, kmatch, FMTareaparser::rxcleanarea))
+								{
+									std::string strlock = std::string(kmatch[6]) + std::string(kmatch[14]);
+									const std::string masknage = std::string(kmatch[3]) + std::string(kmatch[9]) + std::string(kmatch[18]) + std::string(kmatch[23]);
+									std::string mask;
+									double area;
+									int age, lock;
+									size_t linesize;
+									splitted = FMTparser::spliter(masknage, FMTparser::rxseparator);
+									linesize = splitted.size();
+									inactualdevs = true;
+									for (size_t themeid = 0; themeid < (linesize - 2); ++themeid)
+									{
+										mask += splitted.at(themeid) + " ";
+									}
+									mask.pop_back();
+									area = getnum<double>(splitted.at(linesize - 1), constants);
+									if (area > 0)
+									{
+										got0area = false;
+										if (!validate(themes, mask)) continue;
+										potential_futurs = false;
+										age = getnum<int>(splitted.at(linesize - 2), constants);
+										lock = 0;
+										if (FMTparser::isvalid(strlock))
+										{
+											lock = getnum<int>(strlock, constants);
+										}
+										const Core::FMTactualdevelopment actualdevelopment(Core::FMTmask(mask, themes), age, lock, area);
+										//Weird non unique area section...
+										const size_t hashform = boost::hash<Core::FMTdevelopment>()(actualdevelopment);
+										std::unordered_map<size_t, size_t>::const_iterator hashit = devsindex.find(hashform);
+										if (devsindex.find(hashform) == devsindex.end())
+										{
+											devsindex[hashform] = areas.size();
+											areas.push_back(actualdevelopment);
+										}
+										else {
+											areas[hashit->second].area += area;
+										}
+									}
+									else {
+										got0area = true;
+									}
+
+								}
+							}
+							else if (!areas.empty() && _comment.empty())
+							{
+								potential_futurs = true;
+							}
+						}
+					}
+				}
+				return areas;
+			}
+			bool FMTareaparser::write(const std::vector<Core::FMTactualdevelopment>& areas, std::string location)
+			{
+				std::ofstream areastream;
+				areastream.open(location);
+				double sumarea = 0;
+				for (const Core::FMTactualdevelopment& dev : areas)
+				{
+					sumarea += dev.area;
+				}
+				if (tryopening(areastream, location))
+				{
+					areastream << ";Total area: " << std::to_string(sumarea) << "\n";
+					const std::string maskstr = areas.at(0).mask.getstr();
+					std::vector<std::string>splitted_mask;
+					boost::split(splitted_mask, maskstr, boost::is_any_of(" /t"), boost::token_compress_on);
+					std::string header_line = ";*A ";
+					size_t theme_id = 1;
+					for (const std::string& theme : splitted_mask)
+					{
+						header_line += "TH" + std::to_string(theme_id) + " ";
+						++theme_id;
+					}
+					header_line += "AGE";
+					header_line += " AREA";
+					areastream << header_line << "\n";
+					for (const Core::FMTactualdevelopment& area : areas)
+					{
+						areastream << std::string(area) << "\n";
+					}
+					areastream.close();
+					return true;
+				}
+				return false;
+			}
 }

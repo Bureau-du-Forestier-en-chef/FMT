@@ -34,7 +34,6 @@ SOFTWARE.
 #include <stack>
 #include <queue>
 #include <list>
-/*#include "FMTCore.h"*/
 #include "FMTbounds.h"
 #include "FMTutility.h"
 #include "FMTtheme.h"
@@ -47,10 +46,13 @@ SOFTWARE.
 	#include "xlocale.h"
 #endif
 
-#include "gdal.h"
-#include "gdal_priv.h"
-#include "ogrsf_frmts.h"
-#include "gdal_rat.h"
+#ifdef FMTWITHGDAL
+	#include "gdal.h"
+	#include "gdal_priv.h"
+	#include "ogrsf_frmts.h"
+	#include "gdal_rat.h"
+#endif
+
 #include <boost/filesystem.hpp>
 
 #if defined (_MSC_VER)
@@ -60,133 +62,104 @@ SOFTWARE.
 
 #include "FMTexception.h"
 
-using namespace std;
-using namespace Core;
-using namespace Spatial;
 
 namespace WSParser
 {
 
 
-class FMTparser: public FMTobject
+class FMTparser: public Core::FMTobject
     {
     private:
-        regex rxremovecomment;
-        regex rxvalid;
-		regex rxinclude;
-        regex rxfor;
-        regex rxend;
+        std::regex rxremovecomment;
+		std::regex rxvalid;
+		std::regex rxinclude;
+		std::regex rxfor;
+		std::regex rxend;
         bool _incomment;
-        queue<string>_forvalues;
-		queue<string>_included;
-	istream& safeGetline(istream& is, string& t) const;
+		std::queue<std::string>_forvalues;
+		std::queue<std::string>_included;
+		std::istream& safeGetline(std::istream& is, std::string& t) const;
     protected:
-        regex rxayld;
-        regex rxaage;
-		regex rxoperators;
-		regex rxprimary;
+		std::regex rxayld;
+		std::regex rxaage;
+		std::regex rxoperators;
+		std::regex rxprimary;
         int _constreplacement;
         int _line;
-        /*FMTexceptionhandler* _exhandler;*/
-		string _comment;
-        string _location;
+		std::string _comment;
+		std::string _location;
         FMTwssect _section;
-        template<typename T>
-        GDALDataset* createdataset(const string& location,const FMTlayer<T>& layer, const GDALDataType datatype) const
-            {
-            const char *pszFormat = "GTiff";
-            GDALDriver *poDriver;
-            //char **papszMetadata;
-            poDriver = GetGDALDriverManager()->GetDriverByName(pszFormat);
-            if( poDriver == nullptr )
-                {
-                _exhandler->raise(FMTexc::FMTinvaliddriver,_section,string(pszFormat), __LINE__, __FILE__);
-                }
-            char **papszOptions = NULL;
-            papszOptions = CSLSetNameValue( papszOptions, "TILED", "YES" );
-            papszOptions = CSLSetNameValue( papszOptions, "BLOCKXSIZE", "128" );
-            papszOptions = CSLSetNameValue( papszOptions, "BLOCKYSIZE", "128" );
-            papszOptions = CSLSetNameValue( papszOptions, "COMPRESS", "LZW" );
-            papszOptions = CSLSetNameValue( papszOptions, "ZLEVEL", "9" );
-            papszOptions = CSLSetNameValue( papszOptions, "BIGTIFF", "YES" );
-			GDALDataset *poDstDS;
-			poDstDS  = poDriver->Create(location.c_str(), layer.GetXSize(), layer.GetYSize(), 1, datatype, papszOptions);
-            if (poDstDS == nullptr)
-                {
-                _exhandler->raise(FMTexc::FMTinvaliddataset,_section,poDstDS->GetDescription(), __LINE__, __FILE__);
-                }
-            //setprojection and geotransform
-            vector<double>geotrans = layer.getgeotransform();
-            string projection = layer.getprojection();
-			//string test = "C:/Mrnmicro/Applic/gdal-2.3.2/data";
-			//CPLSetConfigOption("GDAL_DATA", test.c_str());
-			//const char* pszOldValTmp = CPLGetConfigOption("GDAL_DATA", NULL);
-			//OGRSpatialReference oSRS;
-			//oSRS.importFromEPSG(32198);
-			//char *pszSRS_WKT = NULL;
-			//oSRS->SetWellKnownGeogCS("NAD83");
-			//oSRS.exportToWkt(&pszSRS_WKT);
-			poDstDS->SetProjection(projection.c_str());
-            poDstDS->SetGeoTransform(&geotrans[0]);
-			//char *conff = NULL;
-			//CPLGetConfigOption("GDAL_DATA", conff);
-			/*if (pszOldValTmp)
-			{
-				Logging::FMTlogger(Logging::FMTlogtype::FMT_Debug) << pszOldValTmp << "\n";
-			}*/
-
-
-            poDstDS->FlushCache();
-            /*GDALClose(poDstDS);
-            GDALDataset* newds = (GDALDataset*)GDALOpen(location.c_str(), GA_Update);
-            if (newds == nullptr)
-                {
-                _exhandler->raise(FMTexc::FMTinvaliddataset,_section,newds->GetDescription());
-                }*/
-            return poDstDS;
-            }
-		map<FMTwssect, string> getprimary(const string& primarylocation);
-        GDALDataset* getdataset(const string& location) const;
-        vector<string> sameas(const string& allset) const;
-        GDALDataset* getvectordataset(const string& location) const;
-        OGRLayer* getlayer(GDALDataset* dataset,int id) const;
-        GDALRasterBand* getband(GDALDataset* dataset,int bandid=1) const;
-        GDALRasterBand* createband(GDALDataset* dataset,const vector<string>& categories,int bandid=1) const;
-        vector<string> getcat(GDALDataset* dataset,int bandid=1) const;
-        GDALRasterBand* getoverview(GDALRasterBand* band,int view=1) const;
-        void getWSfields(OGRLayer* layer,map<int,int>& themes,int& age,int& area,int& lock,string agefield="",string areafield="",string lockfield="") const;
-        bool isyld(const FMTyields& ylds,const string& value,FMTwssect section);
-        bool isact(FMTwssect section,const vector<FMTaction>& actions,string action);
-        void build(FMTexceptionhandler* exhandler=nullptr);
-        string setspec(FMTwssect section,FMTwskwor key,const FMTyields& ylds,const FMTconstants& constants,FMTspec& spec, const string& line);
-        FMTwssect from_extension(const string& ext);
-		vector<vector<string>>readcsv(const string& location,const char& separator);
+		#ifdef FMTWITHGDAL
+			template<typename T>
+			GDALDataset* createdataset(const std::string& location,const Spatial::FMTlayer<T>& layer, const GDALDataType datatype) const
+				{
+				const char *pszFormat = "GTiff";
+				GDALDriver *poDriver;
+				poDriver = GetGDALDriverManager()->GetDriverByName(pszFormat);
+				if( poDriver == nullptr )
+					{
+					_exhandler->raise(Exception::FMTexc::FMTinvaliddriver,_section,std::string(pszFormat), __LINE__, __FILE__);
+					}
+				char **papszOptions = NULL;
+				papszOptions = CSLSetNameValue( papszOptions, "TILED", "YES" );
+				papszOptions = CSLSetNameValue( papszOptions, "BLOCKXSIZE", "128" );
+				papszOptions = CSLSetNameValue( papszOptions, "BLOCKYSIZE", "128" );
+				papszOptions = CSLSetNameValue( papszOptions, "COMPRESS", "LZW" );
+				papszOptions = CSLSetNameValue( papszOptions, "ZLEVEL", "9" );
+				papszOptions = CSLSetNameValue( papszOptions, "BIGTIFF", "YES" );
+				GDALDataset *poDstDS;
+				poDstDS  = poDriver->Create(location.c_str(), layer.GetXSize(), layer.GetYSize(), 1, datatype, papszOptions);
+				if (poDstDS == nullptr)
+					{
+					_exhandler->raise(Exception::FMTexc::FMTinvaliddataset,_section,poDstDS->GetDescription(), __LINE__, __FILE__);
+					}
+				std::vector<double>geotrans = layer.getgeotransform();
+				const std::string projection = layer.getprojection();
+				poDstDS->SetProjection(projection.c_str());
+				poDstDS->SetGeoTransform(&geotrans[0]);
+				poDstDS->FlushCache();
+				return poDstDS;
+				}
+			GDALDataset* getdataset(const std::string& location) const;
+			GDALDataset* getvectordataset(const std::string& location) const;
+			OGRLayer* getlayer(GDALDataset* dataset,int id) const;
+			GDALRasterBand* getband(GDALDataset* dataset,int bandid=1) const;
+			GDALRasterBand* createband(GDALDataset* dataset,const std::vector<std::string>& categories,int bandid=1) const;
+			std::vector<std::string> getcat(GDALDataset* dataset,int bandid=1) const;
+			GDALRasterBand* getoverview(GDALRasterBand* band,int view=1) const;
+			void getWSfields(OGRLayer* layer, std::map<int,int>& themes,int& age,int& area,int& lock, std::string agefield="", std::string areafield="", std::string lockfield="") const;
+		#endif
+		std::vector<std::string> sameas(const std::string& allset) const;
+		std::map<FMTwssect, std::string> getprimary(const std::string& primarylocation);
+		bool isyld(const Core::FMTyields& ylds,const std::string& value,FMTwssect section);
+        bool isact(FMTwssect section,const std::vector<Core::FMTaction>& actions, std::string action);
+		std::string setspec(FMTwssect section,FMTwskwor key,const Core::FMTyields& ylds,const Core::FMTconstants& constants, Core::FMTspec& spec, const std::string& line);
+        FMTwssect from_extension(const std::string& ext);
+		std::vector<std::vector<std::string>>readcsv(const std::string& location,const char& separator);
     public:
-        regex rxseparator;
+		std::regex rxseparator;
         FMTparser();
         FMTparser(const FMTparser& rhs);
         FMTparser& operator = (const FMTparser& rhs);
         virtual ~FMTparser()=default;
-        bool tryopening(const ifstream& stream, const string& location);
-        bool tryopening(const ofstream& stream, const string& location);
-		bool isvalidfile(const string& location) const;
-		//bool isvalidfolder(const string& location) const;
-        bool isvalid(string& line) const;
-        vector<string>regexloop(regex& cutregex,string& str) const;
-        vector<string>spliter(string strmask,regex& xspliter) const;
-        void clearcomments(string& line);
-        string upper(const string& lowercases) const;
-        string getcleanline(ifstream& stream);
-		queue<string> tryinclude(const string& line, const vector<FMTtheme>& themes, const FMTconstants& cons);
-		string returninclude(const string& line, const vector<FMTtheme>& themes, const FMTconstants& cons);
-		bool getforloops(string& line, const vector<FMTtheme>& themes, const FMTconstants& cons, vector<string>& allvalues, string& target);
-        string getcleanlinewfor(ifstream& stream,const vector<FMTtheme>& themes,const FMTconstants& cons);
-        bool isnum(const string& value) const;
-		bool validate(const vector<FMTtheme>& themes,string& mask) const;
-		bool checkmask(const vector<FMTtheme>& themes, const vector<string>& values,string& mask) const;
-		//double getexactdouble(const string& value) const;
+        bool tryopening(const std::ifstream& stream, const std::string& location);
+        bool tryopening(const std::ofstream& stream, const std::string& location);
+		bool isvalidfile(const std::string& location) const;
+        bool isvalid(std::string& line) const;
+		std::vector<std::string>regexloop(std::regex& cutregex, std::string& str) const;
+		std::vector<std::string>spliter(std::string strmask, std::regex& xspliter) const;
+        void clearcomments(std::string& line);
+		std::string upper(const std::string& lowercases) const;
+		std::string getcleanline(std::ifstream& stream);
+		std::queue<std::string> tryinclude(const std::string& line, const std::vector<Core::FMTtheme>& themes, const Core::FMTconstants& cons);
+		std::string returninclude(const std::string& line, const std::vector<Core::FMTtheme>& themes, const Core::FMTconstants& cons);
+		bool getforloops(std::string& line, const std::vector<Core::FMTtheme>& themes, const Core::FMTconstants& cons, std::vector<std::string>& allvalues, std::string& target);
+		std::string getcleanlinewfor(std::ifstream& stream,const std::vector<Core::FMTtheme>& themes,const Core::FMTconstants& cons);
+        bool isnum(const std::string& value) const;
+		bool validate(const std::vector<Core::FMTtheme>& themes,std::string& mask) const;
+		bool checkmask(const std::vector<Core::FMTtheme>& themes, const std::vector<std::string>& values, std::string& mask) const;
         template<typename T>
-        T getnum(string value,const FMTconstants& constant, int period = 0)
+        T getnum(std::string value,const Core::FMTconstants& constant, int period = 0)
             {
             T nvalue = 0;
             boost::erase_all(value, ",");
@@ -196,15 +169,15 @@ class FMTparser: public FMTobject
                 }else if(constant.isconstant(value))
                     {
                     nvalue= constant.get<T>(value,period);
-                    _exhandler->raise(FMTexc::WSconstants_replacement,_section,value +" line "+to_string(_line), __LINE__, __FILE__);
+                    _exhandler->raise(Exception::FMTexc::WSconstants_replacement,_section,value +" line "+ std::to_string(_line), __LINE__, __FILE__);
                     ++_constreplacement;
                     }else{
-                    _exhandler->raise(FMTexc::WSinvalid_number,_section,value +" line "+to_string(_line), __LINE__, __FILE__);
+                    _exhandler->raise(Exception::FMTexc::WSinvalid_number,_section,value +" line "+ std::to_string(_line), __LINE__, __FILE__);
                     }
             return nvalue;
             }
 		template<typename T>
-		T getnum(string value)
+		T getnum(std::string value)
 			{
 			T nvalue = 0;
 			boost::erase_all(value, ",");
@@ -212,12 +185,12 @@ class FMTparser: public FMTobject
 				{
 				nvalue = T(stod(value));
 			}else {
-				_exhandler->raise(FMTexc::WSinvalid_number, _section, value + " line " + to_string(_line), __LINE__, __FILE__);
+				_exhandler->raise(Exception::FMTexc::WSinvalid_number, _section, value + " line " + std::to_string(_line), __LINE__, __FILE__);
 				}
 			return nvalue;
 			}
 		template<typename T>
-		bool tryfillnumber(T& number, string value, const FMTconstants& constant, int period = 0)
+		bool tryfillnumber(T& number, std::string value, const Core::FMTconstants& constant, int period = 0)
 			{
 			bool gotit = true;
 			try {
@@ -230,13 +203,13 @@ class FMTparser: public FMTobject
 			return gotit;
 			}
         template<typename T>
-        FMTbounds<T>bounds(const FMTconstants& constants,string value,string ope,FMTwssect section)
+		Core::FMTbounds<T>bounds(const Core::FMTconstants& constants, std::string value, std::string ope,FMTwssect section)
             {
-            T lupper = numeric_limits<T>::max();
-            T llower = numeric_limits<T>::min();
-            vector<string>operators = {"=","<=",">=","<",">"};
+            T lupper = std::numeric_limits<T>::max();
+            T llower = std::numeric_limits<T>::min();
+			std::vector<std::string>operators = {"=","<=",">=","<",">"};
             T intvalue = getnum<T>(value,constants);
-            vector<string>::iterator it = find(operators.begin(),operators.end(),ope);
+			std::vector<std::string>::iterator it = find(operators.begin(),operators.end(),ope);
             size_t optype = (it - operators.begin());
             if(optype==0)
                 {
@@ -245,13 +218,13 @@ class FMTparser: public FMTobject
                 }else if(optype==1)
                     {
                     lupper = intvalue;
-                    llower = numeric_limits<T>::min();
+                    llower = std::numeric_limits<T>::min();
                     }else if(optype==2)
                         {
-                        lupper = numeric_limits<T>::max();
+                        lupper = std::numeric_limits<T>::max();
                         llower = intvalue;
                         }
-            return FMTbounds<T>(section,lupper,llower);
+            return Core::FMTbounds<T>(section,lupper,llower);
             }
     };
 

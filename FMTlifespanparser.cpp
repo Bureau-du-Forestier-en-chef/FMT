@@ -44,25 +44,24 @@ FMTlifespanparser& FMTlifespanparser::operator = (const FMTlifespanparser& rhs)
     return *this;
     }
 
-FMTlifespans FMTlifespanparser::read(const vector<FMTtheme>& themes,const FMTconstants& constants,string location)
+Core::FMTlifespans FMTlifespanparser::read(const std::vector<Core::FMTtheme>& themes,const Core::FMTconstants& constants, std::string location)
     {
-    ifstream LIFstream(location);
-    string line;
-    FMTlifespans lifespan;
+	std::ifstream LIFstream(location);
+    Core::FMTlifespans lifespan;
     if (FMTparser::tryopening(LIFstream,location))
         {
         while(LIFstream.is_open())
             {
-            line = FMTparser::getcleanline(LIFstream);
+            const std::string line = FMTparser::getcleanline(LIFstream);
             if (!line.empty())
                 {
-                vector<string>splited = FMTparser::spliter(line,FMTparser::rxseparator);
-                string page = splited[splited.size()-1];
-                int age = getnum<int>(page,constants);
+				std::vector<std::string>splited = FMTparser::spliter(line,FMTparser::rxseparator);
+				std::string page = splited[splited.size()-1];
+                const int age = getnum<int>(page,constants);
                 splited.pop_back();
-                string mask = boost::algorithm::join(splited, " ");
+				std::string mask = boost::algorithm::join(splited, " ");
                 if (!validate(themes, mask)) continue;
-				lifespan.push_back(FMTmask(mask,themes), age);
+				lifespan.push_back(Core::FMTmask(mask,themes), age);
                 }
             }
         }
@@ -70,13 +69,13 @@ FMTlifespans FMTlifespanparser::read(const vector<FMTtheme>& themes,const FMTcon
     return lifespan;
     }
 
-bool FMTlifespanparser::write(const FMTlifespans& lifespan,string location)
+bool FMTlifespanparser::write(const Core::FMTlifespans& lifespan, std::string location)
     {
-    ofstream lifespanstream;
+	std::ofstream lifespanstream;
     lifespanstream.open(location);
     if (tryopening(lifespanstream,location))
         {
-        lifespanstream<<string(lifespan);
+        lifespanstream<< std::string(lifespan);
         lifespanstream.close();
         return true;
         }

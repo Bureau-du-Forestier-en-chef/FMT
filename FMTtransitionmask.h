@@ -52,23 +52,23 @@ class FMTtransitionmask : public FMTmaskfilter,public FMTspec
 	}
     FMTmask mask;
     double proportion;
-        void build(const string& lmask,const vector<FMTtheme>& themes);
+        void build(const std::string& lmask,const std::vector<FMTtheme>& themes);
     public:
         FMTtransitionmask();
-        FMTtransitionmask(const string& lmask,const vector<FMTtheme>& themes,
-                    /*const int& llock,*/const double& lproportion);
+        FMTtransitionmask(const std::string& lmask,const std::vector<FMTtheme>& themes,
+						const double& lproportion);
         FMTmask trans(const FMTmask& basemask) const;
         FMTtransitionmask(const FMTtransitionmask& rhs);
-        FMTtransitionmask(const FMTtransitionmask& rhs,const FMTmask& lmask,const vector<FMTtheme>& themes);
+        FMTtransitionmask(const FMTtransitionmask& rhs,const FMTmask& lmask,const std::vector<FMTtheme>& themes);
         FMTtransitionmask& operator = (const FMTtransitionmask& rhs);
         FMTdevelopment disturb(const FMTdevelopment& dev,const FMTyields& yields,
-			const vector<FMTtheme>& themes,const bool& reset_age) const;
-        map<string,string>get(const vector<FMTtheme>& themes) const;
+			const std::vector<FMTtheme>& themes,const bool& reset_age) const;
+		std::map<std::string, std::string>get(const std::vector<FMTtheme>& themes) const;
 		bool operator == (const FMTtransitionmask& rhs) const;
         double getproportion() const;
         FMTmask getmask() const;
         void setproportion(double newproportion);
-        operator string() const override;
+        operator std::string() const override;
     };
 
 }

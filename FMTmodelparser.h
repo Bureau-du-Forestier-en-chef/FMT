@@ -43,37 +43,31 @@ SOFTWARE.
 #include "boost/filesystem.hpp"
 #include <map>
 
-
-using namespace std;
-using namespace Core;
-using namespace Models;
-
 namespace WSParser
 {
 
 class FMTmodelparser : public FMTparser
     {
-	FMTmodel referenceread(map<string, vector<int>>& common_sections,
-					vector<FMTmodel>& models,
-					const string& con, const string& lan,
-					const string& lif, const string& are, const string& yld,
-					const string& act, const string& tr, const string& out,
-					string opt = string(),bool allow_mapping=false);
+	Models::FMTmodel referenceread(std::map<std::string, std::vector<int>>& common_sections,
+					std::vector<Models::FMTmodel>& models,
+					const std::string& con, const std::string& lan,
+					const std::string& lif, const std::string& are, const std::string& yld,
+					const std::string& act, const std::string& tr, const std::string& out,
+					std::string opt = std::string(),bool allow_mapping=false);
     public:
         FMTmodelparser();
         FMTmodelparser(const FMTmodelparser& rhs);
         FMTmodelparser& operator = (const FMTmodelparser& rhs);
-        FMTmodel read(const string& con,const string& lan,
-                      const string& lif,const string& are,const string& yld,
-                      const string& act,const string& tr,const string& out,
-						string opt = string());
-		vector<FMTmodel>readproject(const string& primary_location,
-			vector<string>scenarios = vector<string>(),
+        Models::FMTmodel read(const std::string& con,const std::string& lan,
+                      const std::string& lif,const std::string& are,const std::string& yld,
+                      const std::string& act,const std::string& tr,const std::string& out,
+						std::string opt = std::string());
+		std::vector<Models::FMTmodel>readproject(const std::string& primary_location,
+			std::vector<std::string>scenarios = std::vector<std::string>(),
 			bool readarea = true,bool readoutputs = true, bool readoptimize = true);
-		vector<vector<FMTschedule>>readschedules(const string& primary_location,
-			const vector<FMTmodel>& models);
-        //void settransitionsNactions(vector<FMTaction>& actions,vector<FMTtransition>& Transitions);
-        bool write(const FMTmodel& model,const string& folder);
+		std::vector<std::vector<Core::FMTschedule>>readschedules(const std::string& primary_location,
+			const std::vector<Models::FMTmodel>& models);
+        bool write(const Models::FMTmodel& model,const std::string& folder);
     };
 }
 

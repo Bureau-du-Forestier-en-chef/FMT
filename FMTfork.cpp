@@ -58,45 +58,34 @@ FMTfork::FMTfork():FMTspec(),transitions(){}
         {
         return transitions.size();
         }
-    FMTfork::operator string() const
+    FMTfork::operator std::string() const
         {
-        string line;
-        line+=" "+FMTspec::operator string();
+		std::string line;
+        line+=" "+FMTspec::operator std::string();
         line+="\n";
         for(const FMTtransitionmask& transition : transitions)
             {
-            line+=string(transition);
+            line+= std::string(transition);
             line+="\n";
             }
         return line;
         }
 
-     /*vector<FMTdevelopment>FMTfork::get(const FMTdevelopment& base,const FMTyields& ylds,const vector<FMTtheme>& themes) const
-        {
-        vector<FMTdevelopment>devs;
-        for(const FMTtransitionmask& tran : transitions)
-            {
-            devs.push_back(tran.disturb(base,ylds,themes));
-            }
-        return devs;
-        }*/
-
-	 vector<FMTdevelopmentpath> FMTfork::getpaths(const FMTdevelopment& base,
-		 const FMTyields& ylds, const vector<FMTtheme>& themes, const bool& reset_age) const
+	std::vector<FMTdevelopmentpath> FMTfork::getpaths(const FMTdevelopment& base,
+		 const FMTyields& ylds, const std::vector<FMTtheme>& themes, const bool& reset_age) const
 		{
-		vector<FMTdevelopmentpath>paths(transitions.size());
+		std::vector<FMTdevelopmentpath>paths(transitions.size());
 		int id = 0;
-		 for (const FMTtransitionmask& tran : transitions)
-		 {
-			 FMTdevelopmentpath newpath(tran.disturb(base, ylds, themes,reset_age), tran.getproportion());
+		for (const FMTtransitionmask& tran : transitions)
+			{
+			 const FMTdevelopmentpath newpath(tran.disturb(base, ylds, themes,reset_age), tran.getproportion());
 			 paths[id] = newpath;
 			 ++id;
-		 }
+			}
 		 return paths;
-
 		}
 
-    vector<FMTtransitionmask> FMTfork::getmasktrans() const
+	std::vector<FMTtransitionmask> FMTfork::getmasktrans() const
         {
         return transitions;
         }
@@ -109,7 +98,7 @@ FMTfork::FMTfork():FMTspec(),transitions(){}
         FMTtransitionmask singletrans;
         for(const FMTtransitionmask& tran : transitions)
             {
-            double proportion = tran.getproportion();
+            const double proportion = tran.getproportion();
             if (proportion > lastproportion)
                 {
                 singletrans = tran;
@@ -121,13 +110,13 @@ FMTfork::FMTfork():FMTspec(),transitions(){}
         return newfork;
         }
 
-    FMTdevelopment FMTfork::getmax(const FMTdevelopment& base,const FMTyields& ylds,const vector<FMTtheme>& themes,const bool& reset_age) const
+    FMTdevelopment FMTfork::getmax(const FMTdevelopment& base,const FMTyields& ylds,const std::vector<FMTtheme>& themes,const bool& reset_age) const
         {
         double lastproportion = 0;
         FMTdevelopment dev;
         for(const FMTtransitionmask& tran : transitions)
             {
-            double proportion = tran.getproportion();
+            const double proportion = tran.getproportion();
             if (proportion > lastproportion)
                 {
                 dev = tran.disturb(base,ylds,themes,reset_age);

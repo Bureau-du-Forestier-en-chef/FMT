@@ -36,12 +36,9 @@ SOFTWARE.
 #include "FMTtheme.h"
 #include <boost/serialization/serialization.hpp>
 
-using namespace std;
 
 namespace Core
 {
-
-
 class FMToutput
     {
 	friend class boost::serialization::access;
@@ -55,17 +52,16 @@ class FMToutput
 		ar & BOOST_SERIALIZATION_NVP(description);
 	}
 	protected:
-    vector<FMToutputsource>sources;
-    vector<FMToperator>operators;
+	std::vector<FMToutputsource>sources;
+	std::vector<FMToperator>operators;
 	int theme_target;
-	//bool level;
     public:
-        string name,description;
+		std::string name,description;
     FMToutput();
     virtual ~FMToutput()=default;
-    FMToutput(const string& lname,const string& ldescription,
-		const int& ltheme_target, vector<FMToutputsource>& lsources,vector<FMToperator>& loperators/*,bool islevel = false*/);
-    FMToutput(const string& lname);
+    FMToutput(const std::string& lname,const std::string& ldescription,
+		const int& ltheme_target, std::vector<FMToutputsource>& lsources, std::vector<FMToperator>& loperators);
+    FMToutput(const std::string& lname);
     FMToutput(const FMToutput& rhs);
     FMToutput& operator = (const FMToutput& rhs);
     bool operator == (const FMToutput& rhs) const;
@@ -74,32 +70,32 @@ class FMToutput
 	FMToutput& operator -=(const FMToutput& rhs);
 	FMToutput& operator *=(const double& rhs);
 	FMToutput& operator /=(const double& rhs);
-    operator string() const;
+    operator std::string() const;
 	bool empty() const;
 	bool linear() const;
 	bool islevel() const;
 	bool isconstant() const;
 	double getconstantvalue() const;
 	bool containslevel() const;
-	double shuntingyard(const vector<double>& sourcevalues, const vector<FMToperator>& simple_operators) const;
-	FMToutput boundto(const vector<FMTtheme>& themes, const FMTperbounds& bound,const string& specialbound,string attribute = "") const;
-	vector<FMToutputnode> getnodes(double multiplier = 1) const;
+	double shuntingyard(const std::vector<double>& sourcevalues, const std::vector<FMToperator>& simple_operators) const;
+	FMToutput boundto(const std::vector<FMTtheme>& themes, const FMTperbounds& bound,const std::string& specialbound, std::string attribute = "") const;
+	std::vector<FMToutputnode> getnodes(double multiplier = 1) const;
 	bool issingleperiod() const;
 	bool hasaverage() const;
 	int gettargetperiod() const;
 	size_t hash() const;
-    vector<FMToutputsource> getsources() const;
-    vector<FMToperator> getopes() const;
-	FMTtheme targettheme(const vector<FMTtheme>& themes) const;
+	std::vector<FMToutputsource> getsources() const;
+	std::vector<FMToperator> getopes() const;
+	FMTtheme targettheme(const std::vector<FMTtheme>& themes) const;
 	int targetthemeid() const;
-	vector<string>getdecomposition(const vector<FMTtheme>& themes) const;
+	std::vector<std::string>getdecomposition(const std::vector<FMTtheme>& themes) const;
     };
 
 class FMToutputcomparator
 {
-	string output_name;
+	std::string output_name;
 public:
-	FMToutputcomparator(string name);
+	FMToutputcomparator(std::string name);
 	bool operator()(const FMToutput& output) const;
 
 };

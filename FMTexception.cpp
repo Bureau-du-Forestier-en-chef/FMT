@@ -30,13 +30,13 @@ namespace Exception
 
     FMTexception::FMTexception():holdup(false), _msg(), exceptiontype(), section(){}
 
-    FMTexception::FMTexception(const FMTexc lexception,const string message): holdup(false),_msg(), exceptiontype(lexception), section()
+    FMTexception::FMTexception(const FMTexc lexception,const std::string message): holdup(false),_msg(), exceptiontype(lexception), section()
         {
-        _msg = "FMTexc("+to_string(lexception) +")" + message;
+        _msg = "FMTexc("+ std::to_string(lexception) +")" + message;
         }
-     FMTexception::FMTexception(const FMTexc lexception,FMTwssect lsection,const string message): holdup(false),_msg(), exceptiontype(lexception),section(lsection)
+     FMTexception::FMTexception(const FMTexc lexception,FMTwssect lsection,const std::string message): holdup(false),_msg(), exceptiontype(lexception),section(lsection)
         {
-        _msg = "FMTexc("+to_string(lexception) +")"+message+" FMTwssect("+to_string(lsection) +")"+FMTwssect_str(lsection);
+        _msg = "FMTexc("+ std::to_string(lexception) +")"+message+" FMTwssect("+ std::to_string(lsection) +")"+FMTwssect_str(lsection);
         }
     FMTexception::FMTexception(const FMTexception& rhs): holdup(rhs.holdup),_msg(rhs._msg), exceptiontype(rhs.exceptiontype),section(rhs.section)
         {
@@ -56,7 +56,6 @@ namespace Exception
     const char* FMTexception::what() const throw()
         {
         return _msg.c_str();
-		//Logging::FMTlogger(Logging::FMTlogtype::FMT_Error) << _msg << "\n";
         }
 
 	FMTexc FMTexception::gettype() const

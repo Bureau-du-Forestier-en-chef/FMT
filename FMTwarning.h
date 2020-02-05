@@ -26,6 +26,9 @@ SOFTWARE.
 #define FMTwarning_H_INCLUDED
 
 #include "FMTexception.h"
+#include <string>
+#include "FMTlogger.h"
+#include <memory>
 
 namespace Exception
 {
@@ -40,9 +43,9 @@ namespace Exception
 	public:
 		FMTwarning();
 		FMTwarning(const FMTexception& rhs);
-		FMTwarning(const FMTexc lexception, const string message);
-		FMTwarning(const FMTexc lexception, const FMTwssect lsection, const string message);
-		void warn() const;
+		FMTwarning(const FMTexc lexception, const std::string message);
+		FMTwarning(const FMTexc lexception, const FMTwssect lsection, const std::string message);
+		void warn(const std::shared_ptr<Logging::FMTlogger>logger) const;
 	};
 }
 #endif

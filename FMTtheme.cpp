@@ -26,11 +26,15 @@ SOFTWARE.
 #include "FMTmask.h"
 
 namespace Core {
-FMTtheme::FMTtheme():id(),start(),aggregates(), source_aggregates(),valuenames(),indexes(),name(){}
-map<string,vector<string>>FMTtheme::desagregate(map<string,vector<string>>laggregates,vector<string>&lbases)
+FMTtheme::FMTtheme():id(),start(),aggregates(), source_aggregates(),valuenames(),indexes(),name()
+
+	{
+
+	}
+std::map<std::string, std::vector<std::string>>FMTtheme::desagregate(std::map<std::string, std::vector<std::string>>laggregates,const std::vector<std::string>&lbases)
     {
-    vector<string>keys;
-    for (map<string,vector<string>>::iterator it=laggregates.begin(); it!=laggregates.end(); ++it)
+    std::vector<std::string>keys;
+    for (std::map<std::string, std::vector<std::string>>::const_iterator it=laggregates.begin(); it!=laggregates.end(); ++it)
         {
         keys.push_back(it->first);
         }
@@ -38,26 +42,26 @@ map<string,vector<string>>FMTtheme::desagregate(map<string,vector<string>>laggre
     while(!processdone)
         {
         processdone = true;
-        for (string& key : keys)
+        for (const std::string& key : keys)
             {
-            vector<string>values = laggregates[key];
-            vector<string>newvalues;
-            for(string& value : values)
+            const std::vector<std::string>values = laggregates.at(key);
+			std::vector<std::string>newvalues;
+            for(const std::string& value : values)
                 {
-                if (find(lbases.begin(),lbases.end(),value)==lbases.end())
+                if (std::find(lbases.begin(),lbases.end(),value)==lbases.end())
                     {
-                    for(string& newvalue : laggregates[value])
+                    for(const std::string& newvalue : laggregates.at(value))
                         {
-                        if(find(newvalues.begin(),newvalues.end(),newvalue)==newvalues.end())
+                        if(std::find(newvalues.begin(),newvalues.end(),newvalue)==newvalues.end())
                             {
-                            if(find(lbases.begin(),lbases.end(),newvalue)==lbases.end())
+                            if(std::find(lbases.begin(),lbases.end(),newvalue)==lbases.end())
                                 {
                                 processdone = false;
                                 }
                             newvalues.push_back(newvalue);
                             }
                         }
-                    }else if(find(newvalues.begin(),newvalues.end(),value)==newvalues.end())
+                    }else if(std::find(newvalues.begin(),newvalues.end(),value)==newvalues.end())
                         {
                         newvalues.push_back(value);
                         }
@@ -67,25 +71,24 @@ map<string,vector<string>>FMTtheme::desagregate(map<string,vector<string>>laggre
         }
     return laggregates;
     }
-FMTtheme::FMTtheme(map<string,vector<string>>&laggregates,map<string,string>&lvaluenames,int& lid,int& lstart,string& lname) : id(lid),start(lstart),aggregates(), source_aggregates(laggregates),valuenames(lvaluenames),indexes(),name(lname)
+FMTtheme::FMTtheme(const std::map<std::string, std::vector<std::string>>&laggregates,const std::map<std::string, std::string>&lvaluenames,const int& lid,const int& lstart,const std::string& lname) : id(lid),start(lstart),aggregates(), source_aggregates(laggregates),valuenames(lvaluenames),indexes(),name(lname)
         {
-        vector<string>basevalues;
-         for (map<string,string>::iterator it=lvaluenames.begin(); it!=lvaluenames.end(); ++it)
+        std::vector<std::string>basevalues;
+         for (std::map<std::string, std::string>::const_iterator it=lvaluenames.begin(); it!=lvaluenames.end(); ++it)
             {
             basevalues.push_back(it->first);
             }
-
 		 if (!laggregates.empty())
 			{
 			aggregates = desagregate(laggregates, basevalues);
 			}
         }
 
-FMTtheme::FMTtheme(map<string,vector<string>>&laggregates,map<string,string>&lvaluenames,
-                 const map<string,map<string,double>>& indexing,int& lid,int& lstart,string& lname) : id(lid),start(lstart),aggregates(), source_aggregates(laggregates),valuenames(lvaluenames),indexes(indexing),name(lname)
+FMTtheme::FMTtheme(const std::map<std::string, std::vector<std::string>>&laggregates,const std::map<std::string,std::string>&lvaluenames,
+                 const std::map<std::string, std::map<std::string,double>>& indexing,const int& lid,const int& lstart,const std::string& lname) : id(lid),start(lstart),aggregates(), source_aggregates(laggregates),valuenames(lvaluenames),indexes(indexing),name(lname)
         {
-        vector<string>basevalues;
-         for (map<string,string>::iterator it=lvaluenames.begin(); it!=lvaluenames.end(); ++it)
+        std::vector<std::string>basevalues;
+         for (std::map<std::string, std::string>::const_iterator it=lvaluenames.begin(); it!=lvaluenames.end(); ++it)
             {
             basevalues.push_back(it->first);
             }
@@ -116,22 +119,22 @@ FMTtheme& FMTtheme::operator = (const FMTtheme& rhs)
 	return *this;
 	}
 
-map<string,string>FMTtheme::getvaluenames() const
+std::map<std::string, std::string>FMTtheme::getvaluenames() const
     {
     return valuenames;
     }
 
-FMTtheme::FMTtheme(const vector<string> lvaluenames,const int& lid,const int& lstart,const string& lname): id(lid),start(lstart),aggregates(), source_aggregates(),valuenames(),indexes(),name(lname)
+FMTtheme::FMTtheme(const std::vector<std::string>& lvaluenames,const int& lid,const int& lstart,const std::string& lname): id(lid),start(lstart),aggregates(), source_aggregates(),valuenames(),indexes(),name(lname)
     {
-    for(const string& val : lvaluenames)
+    for(const std::string& val : lvaluenames)
         {
         valuenames[val]= "";
         }
     }
 
-bool FMTtheme::usefull()
+bool FMTtheme::usefull() const 
         {
-        if (int(valuenames.size())<=1)
+        if (static_cast<int>(valuenames.size())<=1)
             {
             return false;
             }
@@ -146,25 +149,25 @@ int FMTtheme::getid() const
 	{
 	return id;
 	}
-bool FMTtheme::isattribute(const string& value) const
+bool FMTtheme::isattribute(const std::string& value) const
         {
         return (valuenames.find(value)!=valuenames.end());
         }
-bool FMTtheme::isaggregate(const string& value) const
+bool FMTtheme::isaggregate(const std::string& value) const
         {
         return (aggregates.find(value)!=aggregates.end());
         }
-bool FMTtheme::inaggregate(const string& value,const string& aggregate)
+bool FMTtheme::inaggregate(const std::string& value,const std::string& aggregate)
         {
-        vector<string>* vecp = &aggregates[aggregate];
-        return (find(vecp->begin(),vecp->end(),value)!=vecp->end());
+		const std::vector<std::string>* vecp = &aggregates.at(aggregate);
+        return (std::find(vecp->begin(),vecp->end(),value)!=vecp->end());
         }
 
-bool FMTtheme::isindex(const string& value) const
+bool FMTtheme::isindex(const std::string& value) const
     {
     if(!indexes.empty())
         {
-        for (map<string,map<string,double>>::const_iterator index_it = indexes.begin(); index_it != indexes.end(); index_it++)
+        for (std::map<std::string, std::map<std::string,double>>::const_iterator index_it = indexes.begin(); index_it != indexes.end(); index_it++)
             {
             if (index_it->second.find(value)!=index_it->second.end())
                 {
@@ -184,7 +187,7 @@ bool FMTtheme::useindex() const
     return false;
     }
 
- double FMTtheme::getindex(const string& attribute,const string& value) const
+ double FMTtheme::getindex(const std::string& attribute,const std::string& value) const
     {
     return indexes.at(attribute).at(value);
     }
@@ -205,7 +208,7 @@ bool FMTtheme::empty() const
 	}
 
 
-boost::dynamic_bitset<> FMTtheme::strtobits(const string& value) const
+boost::dynamic_bitset<> FMTtheme::strtobits(const std::string& value) const
         {
         boost::dynamic_bitset<> bits(valuenames.size());
         if (isattribute(value))
@@ -213,7 +216,7 @@ boost::dynamic_bitset<> FMTtheme::strtobits(const string& value) const
             bits[distance(valuenames.begin(),valuenames.find(value))]=true;
             }else if(isaggregate(value))
                 {
-                for(string attvalue : aggregates.at(value))
+                for(const std::string attvalue : aggregates.at(value))
                     {
                     bits[distance(valuenames.begin(),valuenames.find(attvalue))]=true;
                     }
@@ -228,23 +231,23 @@ boost::dynamic_bitset<> FMTtheme::strtobits(const string& value) const
                     }
         return bits;
         }
-string FMTtheme::bitstostr(boost::dynamic_bitset<>& bits) const
+std::string FMTtheme::bitstostr(const boost::dynamic_bitset<>& bits) const
         {
-        string value;
+        std::string value;
         if (bits.count()==1)
             {
-            int location =  int(bits.find_first());
-            map<string,string>::const_iterator start = valuenames.begin();
-            map<string,string>::const_iterator it  = next(start, location);
+            const int location =  static_cast<int>(bits.find_first());
+			std::map<std::string, std::string>::const_iterator start = valuenames.begin();
+			std::map<std::string, std::string>::const_iterator it  = std::next(start, location);
             value = it->first;
             }else if(bits.count()==bits.size())
                 {
                 value = "?";
                 }else{
-                for (map<string,vector<string>>::const_iterator it=aggregates.begin(); it!=aggregates.end(); ++it)
+                for (std::map<std::string, std::vector<std::string>>::const_iterator it=aggregates.begin(); it!=aggregates.end(); ++it)
                     {
-                    string aggregate = it->first;
-                    boost::dynamic_bitset<>totest = strtobits(aggregate);
+					const std::string aggregate = it->first;
+                    const boost::dynamic_bitset<>totest = strtobits(aggregate);
                     if (totest == bits)
                         {
                         return aggregate;
@@ -254,9 +257,9 @@ string FMTtheme::bitstostr(boost::dynamic_bitset<>& bits) const
                 }
         return value;
         }
-vector<string>FMTtheme::getattributes(const string& value, bool aggregate_source) const
+std::vector<std::string>FMTtheme::getattributes(const std::string& value, bool aggregate_source) const
         {
-        vector<string>result;
+	std::vector<std::string>result;
         if(isaggregate(value))
             {
 			if (aggregate_source)
@@ -268,7 +271,7 @@ vector<string>FMTtheme::getattributes(const string& value, bool aggregate_source
 
             }else if(value=="?")
                 {
-                for(map<string,string>::const_iterator it=valuenames.begin(); it!=valuenames.end(); ++it)
+                for(std::map<std::string, std::string>::const_iterator it=valuenames.begin(); it!=valuenames.end(); ++it)
                     {
                     result.push_back(it->first);
                     }
@@ -278,29 +281,19 @@ vector<string>FMTtheme::getattributes(const string& value, bool aggregate_source
                     }
         return result;
         }
-FMTtheme::operator string() const
+FMTtheme::operator std::string() const
         {
-        string fulltheme = "*THEME "+to_string(id+1)+" "+name +"\n";
-        for (map<string,string>::const_iterator it=valuenames.begin(); it!=valuenames.end(); ++it)
+		std::string fulltheme = "*THEME "+ std::to_string(id+1)+" "+name +"\n";
+        for (std::map<std::string, std::string>::const_iterator it=valuenames.begin(); it!=valuenames.end(); ++it)
             {
             fulltheme+=" "+it->first;
-            /*if (indexes.find(it->first)!=indexes.end())
-                {
-                fulltheme+=" _INDEX(";
-                for(map<string,double>::const_iterator index_it = indexes.at(it->first).begin(); index_it != indexes.at(it->first).end(); index_it++)
-                    {
-                    fulltheme+= index_it->first + "=" + to_string(index_it->second)+",";
-                    }
-                fulltheme.pop_back();
-                fulltheme+=")";
-                }*/
             fulltheme+=" "+it->second+"\n";
             }
-        for (map<string,vector<string>>::const_iterator it=source_aggregates.begin(); it!= source_aggregates.end(); ++it)
+        for (std::map<std::string, std::vector<std::string>>::const_iterator it=source_aggregates.begin(); it!= source_aggregates.end(); ++it)
             {
-            vector<string>values = it->second;
+			const std::vector<std::string>values = it->second;
             fulltheme+="*AGGREGATE "+it->first+"\n";
-            for(string& value : values)
+            for(const std::string& value : values)
                 {
                 fulltheme+=" "+value+"\n";
                 }

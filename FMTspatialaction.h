@@ -27,19 +27,18 @@ SOFTWARE.
 
 #include "FMTaction.h"
 #include "FMTconstraint.h"
-using namespace Core;
 
 namespace Spatial
 
 {
 
-    class FMTspatialaction : public FMTaction
+    class FMTspatialaction : public Core::FMTaction
         {
 		friend class boost::serialization::access;
 		template<class Archive>
 		void serialize(Archive& ar, const unsigned int version)
 		{
-			ar & boost::serialization::make_nvp("action", boost::serialization::base_object<FMTaction>(*this));
+			ar & boost::serialization::make_nvp("action", boost::serialization::base_object<Core::FMTaction>(*this));
 			ar & BOOST_SERIALIZATION_NVP(neighbors);
 			ar & BOOST_SERIALIZATION_NVP(green_up);
 			ar & BOOST_SERIALIZATION_NVP(adjacency);
@@ -48,7 +47,7 @@ namespace Spatial
 			ar & BOOST_SERIALIZATION_NVP(neighbors_size);
 		}
         public:
-            vector<string>neighbors;
+			std::vector<std::string>neighbors;
             size_t green_up;
             size_t adjacency;
             size_t minimal_size;
@@ -58,15 +57,15 @@ namespace Spatial
             double adjacency_weight;
             double size_weight;
             FMTspatialaction();
-            FMTspatialaction(const FMTaction& action,
-                     const vector<string>& lneighbors,
+            FMTspatialaction(const Core::FMTaction& action,
+                     const std::vector<std::string>& lneighbors,
                      const size_t& lgreen_up,
                      const size_t& ladjacency,
                      const size_t& lminimal_size,
                      const size_t& lmaximal_size,
                      const size_t& lneighbors_size);
-            FMTspatialaction(const FMTaction& action,
-                     const vector<string>& lneighbors,
+            FMTspatialaction(const Core::FMTaction& action,
+                     const std::vector<std::string>& lneighbors,
                      const size_t& lgreen_up,
                      const size_t& ladjacency,
                      const size_t& lminimal_size,
@@ -75,11 +74,11 @@ namespace Spatial
                      const double& lgreenup_weight,
                      const double& ladjacency_weight,
                      const double& lsize_weight);
-            FMTspatialaction(const FMTaction& action);
+            FMTspatialaction(const Core::FMTaction& action);
             FMTspatialaction(const FMTspatialaction& rhs);
             FMTspatialaction& operator = (const FMTspatialaction& rhs);
             bool simulated_annealing_valid()const;
-            vector<FMTconstraint> to_constraints() const;
+			std::vector<Core::FMTconstraint> to_constraints() const;
         };
 }
 

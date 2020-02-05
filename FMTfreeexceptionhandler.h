@@ -28,6 +28,7 @@ SOFTWARE.
 #include "FMTexceptionhandler.h"
 #include <boost/serialization/serialization.hpp>
 #include <boost/serialization/nvp.hpp>
+#include <string>
 
 namespace Exception
 {
@@ -42,10 +43,12 @@ class FMTfreeexceptionhandler final : public FMTexceptionhandler
 public:
 	FMTfreeexceptionhandler();
 	~FMTfreeexceptionhandler() = default;
-	FMTlev raise(FMTexc lexception, FMTwssect lsection, string text,
-		const int& line, const string& file) override;
+	FMTlev raise(FMTexc lexception, FMTwssect lsection, std::string text,
+		const int& line, const std::string& file) override;
+#ifdef FMTWITHGDAL
 	FMTexceptionhandler* getCPLdata() override;
 	void handelCPLerror(CPLErr eErrClass, CPLErrorNum nError, const char * pszErrorMsg) override;
+#endif
 };
 }
 #endif

@@ -28,9 +28,9 @@ SOFTWARE.
 #include <string>
 
 
-#define API_MAJOR 0
-#define API_MINOR 0
-#define API_PATCH 0
+#define FMT_MAJOR 0
+#define FMT_MINOR 0
+#define FMT_PATCH 0
 
 
 namespace Version

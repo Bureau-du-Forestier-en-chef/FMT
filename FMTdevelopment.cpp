@@ -32,25 +32,7 @@ namespace Core{
 
   FMTdevelopment::FMTdevelopment():FMTobject(), mask(),age(),lock(),period(0){}
 
-  FMTdevelopment::FMTdevelopment(FMTdevelopment&& rhs) noexcept : 
-	  FMTobject(std::move(rhs)),
-	  mask(std::move(rhs.mask)),
-	  age(std::move(rhs.age)),
-	  lock(std::move(rhs.lock)),
-	  period(std::move(rhs.period))
-		{
-  
-		}
 
-  FMTdevelopment& FMTdevelopment::operator = (FMTdevelopment&& rhs)
-		{
-		FMTobject::operator=  (std::move(rhs));
-		mask = std::move(rhs.mask);
-		age = std::move(rhs.age);
-		lock = std::move(rhs.lock);
-		period = std::move(rhs.period);
-		return *this;
-		}
 
   FMTdevelopment::FMTdevelopment(FMTmask mask,int age,int lock) : FMTobject(),mask(mask),age(age),lock(lock),period(0)
         {
@@ -87,14 +69,8 @@ namespace Core{
     FMTfuturdevelopment FMTdevelopment::grow() const
         {
         FMTfuturdevelopment newdev(*this);
-        //int maxage = lifespan[mask];
-        //int maxage = lifespan.find(mask)->second;
-
-        //if (newdev.age < maxage)
-           // {
-            ++newdev.age;
-           // }
-        if(newdev.lock>0)//yeah well wtf...  && newdev.period!= 1
+        ++newdev.age;
+        if(newdev.lock>0)
             {
             --newdev.lock;
             }
@@ -113,7 +89,7 @@ namespace Core{
         {
         if (worthtestingoperability(action))
             {
-			const vector<const FMTspec*>it = action.findsets(mask);
+			const std::vector<const FMTspec*>it = action.findsets(mask);
             if (!it.empty())
                 {
 				for (const FMTspec* spec : it)
@@ -127,7 +103,7 @@ namespace Core{
             }
         return false;
         }
-	 bool FMTdevelopment::anyoperable(const vector<const FMTaction*>& actions, const FMTyields& ylds) const
+	 bool FMTdevelopment::anyoperable(const std::vector<const FMTaction*>& actions, const FMTyields& ylds) const
 		{
 		 for (const FMTaction* action : actions)
 			{
@@ -139,66 +115,34 @@ namespace Core{
 		 return false;
 		}
 
-	 vector<int> FMTdevelopment::anyworthtestingoperability(const vector<const FMTaction*>& actions, const FMTaction& firstaction) const
+	 std::vector<int> FMTdevelopment::anyworthtestingoperability(const std::vector<const FMTaction*>& actions, const FMTaction& firstaction) const
 		{
-		vector<int>potentials;
+		 std::vector<int>potentials;
 		for (const FMTaction* action : actions)
 			{
 			 if (this->worthtestingoperability(*action))
 				{
-				 int location = static_cast<int>(std::distance(&firstaction, action));
-				 //Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) <<action->name<<" location " << location << "\n";
+				 const int location = static_cast<int>(std::distance(&firstaction, action));
 				 potentials.push_back(location);
 				}
 			}
 		 return potentials;
 		}
 
-     /*vector<FMTdevelopment> FMTdevelopment::operate(const FMTaction& action,const FMTtransition& Transition,
-                                    const FMTyields& ylds,const vector<FMTtheme>& themes) const
-        {
-        vector<FMTdevelopment>newdevs;
-        FMTdevelopment newdev(*this);
-        if(action.reset)
-            {
-            newdev.age = 0;
-            }
-        const FMTfork* fork = Transition.getfork(*this,ylds);
-        if (fork)
-            {
-            vector<FMTdevelopment>devs = fork->get(newdev,ylds,themes);
-            newdevs.insert(newdevs.end(), devs.begin(), devs.end());
-            }else{
-			_exhandler->raise(FMTexc::WSinvalid_transition_case, FMTwssect::Empty, Transition.name + " for " + string(*this), __LINE__, __FILE__);
-            }
-        return newdevs;
-        }*/
-	 vector<FMTdevelopmentpath> FMTdevelopment::operate(const FMTaction& action,
+	 std::vector<FMTdevelopmentpath> FMTdevelopment::operate(const FMTaction& action,
 		 const FMTtransition& Transition,
 		 const FMTyields& ylds,
-		 const vector<FMTtheme>& themes) const
+		 const std::vector<FMTtheme>& themes) const
 		{
-		 vector<FMTdevelopmentpath>newpaths;
-		/* FMTdevelopment newdev(*this);
-		 if (action.reset)
-		 {
-			 newdev.age = 0;
-		 }*/
+		 std::vector<FMTdevelopmentpath>newpaths;
 		 const FMTfork* fork = Transition.getfork(*this, ylds);
 		 if (fork)
 		 {
 			 newpaths = fork->getpaths(*this, ylds, themes,action.reset);
-			 /*if (action.name == "ACPIL")
-				 {
-				 Logging::FMTlogger(Logging::FMTlogtype::FMT_Debug) << " AGE " << devs[0].age << "\n";
-				 }*/
-			// newpaths.insert(newpaths.end(), paths.begin(), paths.end());
 		 }
 		 else {
-			 _exhandler->raise(FMTexc::WSinvalid_transition_case, FMTwssect::Empty, Transition.name + " for " + string(*this), __LINE__, __FILE__);
+			 _exhandler->raise(Exception::FMTexc::WSinvalid_transition_case, FMTwssect::Empty, Transition.name + " for " + std::string(*this), __LINE__, __FILE__);
 		 }
-
-
 		 return newpaths;
 		}
 
@@ -232,13 +176,13 @@ namespace Core{
 			 return false;
 		 return false;
         }
-    FMTdevelopment::operator string() const
+    FMTdevelopment::operator std::string() const
         {
-        string line = "";
-        line+=string(mask)+" ";
-        line+=to_string(age)+" ";
-        line+=to_string(lock)+" ";
-        line+=to_string(period)+" ";
+		std::string line = "";
+        line+=std::string(mask)+" ";
+        line+=std::to_string(age)+" ";
+        line+=std::to_string(lock)+" ";
+        line+=std::to_string(period)+" ";
         return line;
         }
 	double FMTdevelopment::getarea() const
@@ -255,72 +199,36 @@ namespace Core{
 
 	bool FMTdevelopment::is(const FMTspec& specification, const FMTyields& ylds) const
 		{
-		/*if (specification.empty())
-			{
-			return true;
-		}else{
-			map<string, double> yields;
-			if (!specification.emptyylds())
-			{
-				yields = ylds.getylds(*this, specification);
-				for (const string& yield : specification.getylds())
-				{
-					if (yields.find(yield) == yields.end())
-					{
-						_exhandler->raise(FMTexc::FMTmissingyield,
-							FMTwssect::Empty, yield + " for development type " + string(*this), __LINE__, __FILE__);
-					}
-				}
-			}
-			if (specification.allow(period, age, lock, yields))
-				{
-				return true;
-				}
-			}
-		return false;*/
 		if (specification.emptyylds())
 			{
 			return specification.allowwithoutyield(period, age, lock);
 			}
-		const map<string, double> yields = ylds.getylds(*this, specification);
-		for (const string& yield : specification.getylds())
+		const std::map<std::string, double> yields = ylds.getylds(*this, specification);
+		for (const std::string& yield : specification.getylds())
 			{
 				if (yields.find(yield) == yields.end())
 					{
-						_exhandler->raise(FMTexc::FMTmissingyield,
-							FMTwssect::Empty, yield + " for development type " + string(*this), __LINE__, __FILE__);
+						_exhandler->raise(Exception::FMTexc::FMTmissingyield,
+							FMTwssect::Empty, yield + " for development type " + std::string(*this), __LINE__, __FILE__);
 					}
 			}
 		return (specification.allow(period, age, lock, yields));
 		}
-	/*bool FMTdevelopment::within(const FMToutputsource& output_source, const FMTyields& ylds) const
+	double FMTdevelopment::getinventorycoef(const FMTyields& ylds, const std::string& target_yield) const
 		{
-		const FMTmask& output_mask = output_source.getmask();
-		if (output_mask)
-			{
-			if (mask.data.is_subset_of(output_mask.data) && is(output_source,ylds))
-				{
-				return true;
-				}
-			}
-		return false;
-		}*/
-	double FMTdevelopment::getinventorycoef(const FMTyields& ylds, const string& target_yield) const
-		{
-		vector<string>targets(1, target_yield);
+		std::vector<std::string>targets(1, target_yield);
 		return ylds.get(*this, targets)[target_yield];
 		}
-	double FMTdevelopment::getharvestcoef(const vector<FMTdevelopmentpath>& topaths,
-			const FMTaction& action,const FMTyields& ylds,const string& target_yield) const
+	double FMTdevelopment::getharvestcoef(const std::vector<FMTdevelopmentpath>& topaths,
+			const FMTaction& action,const FMTyields& ylds,const std::string& target_yield) const
 		{
 		double value = 0;
-		//vector<string>targets(1, target_yield);
-		double actual_value = this->getinventorycoef(ylds,target_yield);//= ylds.get(*this, targets)[target_yield];
+		const double actual_value = this->getinventorycoef(ylds,target_yield);
 		if (action.partial(target_yield))
 			{
 			for (const FMTdevelopmentpath& path : topaths)
 				{
-				double dif_value = (actual_value - path.development->getinventorycoef(ylds,target_yield));
+				const double dif_value = (actual_value - path.development->getinventorycoef(ylds,target_yield));
 				value += (dif_value * (path.proportion/ 100));
 				}
 			}else {
@@ -329,9 +237,9 @@ namespace Core{
 		return value;
 		}
 
-	unique_ptr<FMTdevelopment> FMTdevelopment::Clone() const
+	std::unique_ptr<FMTdevelopment> FMTdevelopment::Clone() const
 		{
-		return unique_ptr<FMTdevelopment>(new FMTdevelopment(*this));
+		return std::unique_ptr<FMTdevelopment>(new FMTdevelopment(*this));
 		}
     
     

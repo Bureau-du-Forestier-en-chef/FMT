@@ -42,8 +42,8 @@ namespace Graph
 		FMToutputproperties(const FMToutputproperties& rhs);
 		FMToutputproperties(const int& lconstraintID, const int& lvariableID);
 		FMToutputproperties& operator = (const FMToutputproperties& rhs);
-		string variablename() const;
-		string constraintname() const;
+		std::string variablename() const;
+		std::string constraintname() const;
 		~FMToutputproperties()=default;
 	};
 }

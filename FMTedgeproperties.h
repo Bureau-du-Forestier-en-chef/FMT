@@ -29,8 +29,6 @@ SOFTWARE.
 #include <boost/serialization/serialization.hpp>
 #include <boost/serialization/nvp.hpp>
 
-using namespace Core;
-
 namespace Graph
 	{
 	class FMTedgeproperties
@@ -51,8 +49,8 @@ namespace Graph
 			FMTedgeproperties();
 			FMTedgeproperties(const FMTedgeproperties& rhs);
 			FMTedgeproperties& operator = (const FMTedgeproperties& rhs);
-			bool isaction(const vector<FMTaction>& actions,
-				const FMTaction& rhsaction) const;
+			bool isaction(const std::vector<Core::FMTaction>& actions,
+				const Core::FMTaction& rhsaction) const;
 			inline int	getvariableID() const
 				{
 				return variableID;
@@ -72,7 +70,7 @@ namespace Graph
 			bool operator == (const FMTedgeproperties& rhs) const;
 			bool operator != (const FMTedgeproperties& rhs) const;
 			bool operator < (const FMTedgeproperties& rhs) const;
-			inline string variablename() const;
+			inline std::string variablename() const;
 			inline const int* getvariableptr() const
 				{
 				return &variableID;

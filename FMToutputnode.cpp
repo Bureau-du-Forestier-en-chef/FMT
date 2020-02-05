@@ -66,9 +66,9 @@ namespace Core
 		return false;
 		}
 
-	FMToutputnode::operator string() const
+	FMToutputnode::operator std::string() const
 		{
-		return (string(source) + " " + string(factor) + " *" + to_string(constant));
+		return (std::string(source) + " " + std::string(factor) + " *" + std::to_string(constant));
 		}
 
     FMToutputnode FMToutputnode::setperiod(int period) const
@@ -95,8 +95,6 @@ namespace Core
 		{
 		size_t seed = 0;
 		boost::hash_combine(seed, source.hash());
-		//boost::hash_combine(seed, factor.hash(period));
-		//boost::hash_combine(seed, constant);
 		return seed;
 		}
 
@@ -115,7 +113,7 @@ namespace Core
 		return source.issubsetof(rhs.source);
 		}
 
-	bool FMToutputnode::issubsetof(const FMToutputnode& rhs, const std::map<string, vector<string>>& aggregates) const
+	bool FMToutputnode::issubsetof(const FMToutputnode& rhs, const std::map<std::string, std::vector<std::string>>& aggregates) const
 		{
 		return source.issubsetof(rhs.source,aggregates);
 		}
@@ -125,7 +123,7 @@ namespace Core
 		return source.issamebutdifferentaction(rhs.source);
 		}
 
-	bool FMToutputnode::canbeusedby(const FMToutputnode& rhs, const std::map<string, vector<string>>& aggregates) const
+	bool FMToutputnode::canbeusedby(const FMToutputnode& rhs, const std::map<std::string, std::vector<std::string>>& aggregates) const
 		{
 		return source.canbeusedby(rhs.source, aggregates);
 		}
@@ -141,10 +139,10 @@ namespace Core
 		return *this;
 		}
 
-	int FMToutputnode::settograph(vector<int>& targetedperiods, int period, int max_period)
+	int FMToutputnode::settograph(std::vector<int>& targetedperiods, int period, int max_period)
 		{
 		int node_period = period;
-		if (this->source.isnextperiod())//evaluate at the begining of the other period if inventory! what a major fuck
+		if (this->source.isnextperiod())
 		{
 			++node_period;
 		}
@@ -154,7 +152,7 @@ namespace Core
 			{
 				if ((this->source.getperiodlowerbound() + period) >= 0)
 				{
-					FMTperbounds perbound(FMTwssect::Optimize, node_period, node_period);
+					const FMTperbounds perbound(FMTwssect::Optimize, node_period, node_period);
 					this->source.setbounds(perbound);
 					this->factor.setbounds(perbound);
 				}
@@ -167,17 +165,16 @@ namespace Core
 				if (this->source.isnextperiod())
 				{
 					++node_period;
-					FMTperbounds perbound(FMTwssect::Optimize, node_period, node_period);
+					const FMTperbounds perbound(FMTwssect::Optimize, node_period, node_period);
 					this->source.setbounds(perbound);
 					this->factor.setbounds(perbound);
 				}
 			}
 		}
-		//vector<int>targetedperiods;
 		if (this->multiperiod())
 		{
-			int minperiod = max(this->source.getperiodlowerbound(), 1);
-			int maxperiod = min(this->source.getperiodupperbound(), maxperiod);
+			const int minperiod = std::max(this->source.getperiodlowerbound(), 1);
+			const int maxperiod = std::min(this->source.getperiodupperbound(), maxperiod);
 			for (int periodid = minperiod; periodid <= maxperiod; ++periodid)
 			{
 				int local_period = periodid;

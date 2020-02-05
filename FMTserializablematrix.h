@@ -32,7 +32,6 @@ SOFTWARE.
 #include <boost/serialization/serialization.hpp>
 #include <boost/serialization/nvp.hpp>
 
-using namespace std;
 
 namespace Models
 {
@@ -40,13 +39,13 @@ namespace Models
 
 class FMTserializablematrix : public CoinPackedMatrix
 	{
-	vector<double>collb;
-	vector<double>colub;
-	vector<double>obj;
-	vector<double>rowlb;
-	vector<double>rowub;
-	vector<double>colsolution;
-	vector<double>rowprice;
+	std::vector<double>collb;
+	std::vector<double>colub;
+	std::vector<double>obj;
+	std::vector<double>rowlb;
+	std::vector<double>rowub;
+	std::vector<double>colsolution;
+	std::vector<double>rowprice;
 	FMTsolverinterface solvertype;
 	friend class boost::serialization::access;
 	template<class Archive>
@@ -81,27 +80,22 @@ class FMTserializablematrix : public CoinPackedMatrix
 				index_ = new int[maxSize_];
 				}
 			}
-
-		//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "load mat elements" << "\n";
 		for (int indexid = 0; indexid < maxSize_; ++indexid)
 			{
-			ar & boost::serialization::make_nvp(("E" + to_string(indexid)).c_str(), element_[indexid]);
-			ar & boost::serialization::make_nvp(("I"+to_string(indexid)).c_str(), index_[indexid]);
+			ar & boost::serialization::make_nvp(("E" + std::to_string(indexid)).c_str(), element_[indexid]);
+			ar & boost::serialization::make_nvp(("I"+ std::to_string(indexid)).c_str(), index_[indexid]);
 			}
-		//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "load mat maj dim" << "\n";
 		for (int id = 0 ; id < maxMajorDim_; ++id)
 			{
-			ar & boost::serialization::make_nvp(("L" + to_string(id)).c_str(), length_[id]);
+			ar & boost::serialization::make_nvp(("L" + std::to_string(id)).c_str(), length_[id]);
 			}
 		if(maxMajorDim_ > 0)
 			{
 			for (int id = 0; id < maxMajorDim_ + 1; ++id)
 				{
-				ar & boost::serialization::make_nvp(("S" + to_string(id)).c_str(), start_[id]);
+				ar & boost::serialization::make_nvp(("S" + std::to_string(id)).c_str(), start_[id]);
 				}
 			}
-		//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "ALLDONE!" << "\n";
-		
 		}
 	public:
 		FMTserializablematrix();

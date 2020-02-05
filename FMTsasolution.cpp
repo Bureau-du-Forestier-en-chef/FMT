@@ -35,39 +35,34 @@ SOFTWARE.
 namespace Spatial
 {
 
-    FMTsasolution::FMTsasolution():FMTlayer<FMTgraph>(),solution_stats(),events(),objectivefunctionvalue(), outputscache(),constraint_outputs_penalties()
+    FMTsasolution::FMTsasolution():FMTlayer<Graph::FMTgraph>(),solution_stats(),events(),objectivefunctionvalue(), outputscache(),constraint_outputs_penalties()
     {
 
     }
 
     FMTsasolution::FMTsasolution(const FMTforest& initialmap):events(),objectivefunctionvalue(), outputscache(),constraint_outputs_penalties()
     {
-        FMTlayer<FMTgraph>::operator = (initialmap.copyextent<FMTgraph>());//Setting layer information
-        for(map<FMTcoordinate,FMTdevelopment>::const_iterator devit = initialmap.mapping.begin(); devit != initialmap.mapping.end(); ++devit)
+        FMTlayer<Graph::FMTgraph>::operator = (initialmap.copyextent<Graph::FMTgraph>());//Setting layer information
+        for(std::map<FMTcoordinate,Core::FMTdevelopment>::const_iterator devit = initialmap.mapping.begin(); devit != initialmap.mapping.end(); ++devit)
         {
-            vector<FMTactualdevelopment> actdevelopment;
-            actdevelopment.push_back(FMTactualdevelopment (devit->second,initialmap.getcellsize()));
-            FMTgraph local_graph(FMTgraphbuild::schedulebuild);
-            std::queue<FMTvertex_descriptor> actives = local_graph.initialize(actdevelopment);
+			std::vector<Core::FMTactualdevelopment> actdevelopment;
+            actdevelopment.push_back(Core::FMTactualdevelopment (devit->second,initialmap.getcellsize()));
+            Graph::FMTgraph local_graph(Graph::FMTgraphbuild::schedulebuild);
+            std::queue<Graph::FMTvertex_descriptor> actives = local_graph.initialize(actdevelopment);
             mapping[devit->first] = local_graph;
             solution_stats += local_graph.getstats();
         }
     }
 
     FMTsasolution::FMTsasolution(const FMTsasolution& rhs):
-            FMTlayer<FMTgraph>(rhs),
+            FMTlayer<Graph::FMTgraph>(rhs),
             solution_stats(rhs.solution_stats),
             events(rhs.events),
             objectivefunctionvalue(rhs.objectivefunctionvalue),
 			outputscache(rhs.outputscache),
             constraint_outputs_penalties(rhs.constraint_outputs_penalties)
     {
-		/*if (withmapping)
-			{
-			FMTlayer<FMTgraph>::operator =(rhs);
-		}else {
-			this->setextentfrom(rhs);
-		}*/
+
 
     }
 
@@ -75,28 +70,7 @@ namespace Spatial
     {
     if (this!=&rhs)
         {
-		/*if (this->empty())
-			{
-			this->setextentfrom(rhs);
-			}
-		if (mapping.size() == rhs.mapping.size() && !mapping.empty())
-			{
-			//presume that everything is in the right order!
-			map<FMTcoordinate, FMTgraph>::iterator baseit=mapping.begin();
-			map<FMTcoordinate, FMTgraph>::const_iterator newvalueit= rhs.mapping.begin();
-			while (newvalueit!=rhs.mapping.end())
-				{
-				if (!baseit->second.sameedgesas(newvalueit->second))//So if different graph edge at same location copy!
-					{
-					baseit->second=newvalueit->second;
-					}
-				++baseit;
-				++newvalueit;
-				}
-		}else {
-			mapping = rhs.mapping;
-		}*/
-        FMTlayer<FMTgraph>::operator = (rhs);
+        FMTlayer<Graph::FMTgraph>::operator = (rhs);
         solution_stats = rhs.solution_stats;
         events = rhs.events;
         objectivefunctionvalue = rhs.objectivefunctionvalue;
@@ -111,7 +85,7 @@ namespace Spatial
 
     bool FMTsasolution::operator == (const FMTsasolution& rhs) const
     {
-    for (map<FMTcoordinate,FMTgraph>::const_iterator mainsolutionit = this->mapping.begin();
+    for (std::map<FMTcoordinate,Graph::FMTgraph>::const_iterator mainsolutionit = this->mapping.begin();
                                                      mainsolutionit != this->mapping.end(); ++mainsolutionit)
         {
             if (mainsolutionit->second != rhs.mapping.at(mainsolutionit->first))
@@ -134,49 +108,41 @@ namespace Spatial
         return objectivefunctionvalue;
     }
 
-    FMTgraphstats FMTsasolution::getsolution_stats() const
+    Graph::FMTgraphstats FMTsasolution::getsolution_stats() const
     {
         return solution_stats;
     }
-    const vector<vector<vector<FMTevent<FMTgraph>>>>& FMTsasolution::getevents() const
+    const std::vector<std::vector<std::vector<FMTevent<Graph::FMTgraph>>>>& FMTsasolution::getevents() const
     {
         return events;
     }
 
-    void FMTsasolution::getstartstop(const FMTconstraint& constraint,int& periodstart,int& periodstop) const
+    void FMTsasolution::getstartstop(const Core::FMTconstraint& constraint,int& periodstart,int& periodstop) const
     {
-        map<FMTcoordinate,FMTgraph>::const_iterator graphit = this->mapping.begin();
-        const FMTgraph* local_graph = &graphit->second;
+		std::map<FMTcoordinate,Graph::FMTgraph>::const_iterator graphit = this->mapping.begin();
+        const Graph::FMTgraph* local_graph = &graphit->second;
         local_graph->constraintlenght(constraint,periodstart,periodstop);
     }
 
-    vector<double> FMTsasolution::getgraphsoutputs(const FMTmodel& model, const FMTconstraint& constraint,
+	std::vector<double> FMTsasolution::getgraphsoutputs(const Models::FMTmodel& model, const Core::FMTconstraint& constraint,
                                            const int& periodstart,const int& periodstop) const
     // Return sum of all graphs outputs related to constraint
     {
-        vector<double>periods_values(periodstop-periodstart+1,0);
-        const vector<double> solutions(1,this->getcellsize());
-        for(map<FMTcoordinate,FMTgraph>::const_iterator graphit = this->mapping.begin(); graphit != this->mapping.end(); ++graphit)
+		std::vector<double>periods_values(periodstop-periodstart+1,0);
+        const std::vector<double> solutions(1,this->getcellsize());
+        for(std::map<FMTcoordinate,Graph::FMTgraph>::const_iterator graphit = this->mapping.begin(); graphit != this->mapping.end(); ++graphit)
             {
-               const FMTgraph* local_graph = &graphit->second;
-			   /*for (int period = periodstart; period < periodstop; ++period)
-				{
-					map<string, double> output = local_graph->getoutput(model, constraint, period, &solutions[0], FMToutputlevel::totalonly);
-					double totalperiod = output.at("Total");
-					periods_values[period - 1] += totalperiod;
-				}*/
-			   
-
-				size_t hashvalue = local_graph->hash(constraint.FMToutput::hash());
-				vector<double>graphvalues(periodstop - periodstart + 1, 0);
+               const Graph::FMTgraph* local_graph = &graphit->second;
+			   const size_t hashvalue = local_graph->hash(constraint.Core::FMToutput::hash());
+			   std::vector<double>graphvalues(periodstop - periodstart + 1, 0);
 				if (outputscache.find(hashvalue)!= outputscache.end())
 					{
 					graphvalues = outputscache.at(hashvalue);
 				}else {
 				for (int period = 1; period < local_graph->size()-1;++period)
 					{
-					map<string, double> output = local_graph->getoutput(model, constraint, period, &solutions[0], FMToutputlevel::totalonly);
-					double totalperiod = output.at("Total");
+					const std::map<std::string, double> output = local_graph->getoutput(model, constraint, period, &solutions[0], Graph::FMToutputlevel::totalonly);
+					const double totalperiod = output.at("Total");
 					graphvalues[period - 1] += totalperiod;
 					}
 				outputscache[hashvalue] = graphvalues;
@@ -190,8 +156,8 @@ namespace Spatial
         return periods_values;
     }
 
-double FMTsasolution::getgraphspenalties(const FMTsamodel& model, const FMTconstraint& constraint,
-                                         const double& coef, vector<double>& output_vals, vector<double>& penalties_vals)
+double FMTsasolution::getgraphspenalties(const Models::FMTsamodel& model, const Core::FMTconstraint& constraint,
+                                         const double& coef, std::vector<double>& output_vals, std::vector<double>& penalties_vals)
 
     //Find output by period and evaluate penalties for each. Finally sum penalties
     {
@@ -214,71 +180,71 @@ double FMTsasolution::getgraphspenalties(const FMTsamodel& model, const FMTconst
         return sumpenalties;
     }
 
-    double FMTsasolution::getspatialpenalties(const FMTsamodel& model, const FMTconstraint& constraint,
-                                            const double& coef, vector<double>& output_vals, vector<double>& penalties_vals) const //Use of spatial actions as objectives
+    double FMTsasolution::getspatialpenalties(const Models::FMTsamodel& model, const Core::FMTconstraint& constraint,
+                                            const double& coef, std::vector<double>& output_vals, std::vector<double>& penalties_vals) const //Use of spatial actions as objectives
     // See to add greenup eventualy and set by bounds and period the shit
     {
-        vector<FMTspatialaction> spatialactions = model.getspatialactions();
+		std::vector<FMTspatialaction> spatialactions = model.getspatialactions();
         double spatialpenalties = 0;
         double lower=0;
         double upper=0;
-        vector<FMTspatialaction>::iterator actionit = find_if(spatialactions.begin(),spatialactions.end(),[constraint] (const FMTspatialaction& spaction) {return spaction.name == constraint.name;});
-        int action_id = static_cast<int>(std::distance(spatialactions.begin(), actionit));
-        FMTspatialaction spaction = spatialactions.at(action_id);
+		std::vector<FMTspatialaction>::iterator actionit = std::find_if(spatialactions.begin(),spatialactions.end(),[constraint] (const FMTspatialaction& spaction) {return spaction.name == constraint.name;});
+        const int action_id = static_cast<int>(std::distance(spatialactions.begin(), actionit));
+        const FMTspatialaction spaction = spatialactions.at(action_id);
         size_t period = 1;
-        for (const vector<vector<FMTevent<FMTgraph>>>& period_actions : events)
+        for (const std::vector<std::vector<FMTevent<Graph::FMTgraph>>>& period_actions : events)
         {
             if (!period_actions.empty())
             {
                 constraint.getbounds(lower,upper,static_cast<int>(period));
-                vector<FMTevent<FMTgraph>> action_events = period_actions.at(action_id);
+				std::vector<FMTevent<Graph::FMTgraph>> action_events = period_actions.at(action_id);
                 if(!action_events.empty())
                 {
-                    if (constraint.getconstrainttype()==FMTconstrainttype::FMTspatialadjacency)
+                    if (constraint.getconstrainttype()==Core::FMTconstrainttype::FMTspatialadjacency)
                     {
-                        vector<FMTevent<FMTgraph>> potential_neigbors;
+						std::vector<FMTevent<Graph::FMTgraph>> potential_neigbors;
                         //Getting events that can be considerate as neighbors
-                        for (vector<vector<FMTevent<FMTgraph>>>::const_iterator action_events_it = period_actions.begin();action_events_it != period_actions.end();++action_events_it) //To navigate through neighbors
+                        for (std::vector<std::vector<FMTevent<Graph::FMTgraph>>>::const_iterator action_events_it = period_actions.begin();action_events_it != period_actions.end();++action_events_it) //To navigate through neighbors
                         {
-                            for (vector<string>::const_iterator neighbors_it = spaction.neighbors.begin();neighbors_it!=spaction.neighbors.end();++neighbors_it)
+                            for (std::vector<std::string>::const_iterator neighbors_it = spaction.neighbors.begin();neighbors_it!=spaction.neighbors.end();++neighbors_it)
                             {
                                 if (spatialactions.at(action_events_it-period_actions.begin()).name == *neighbors_it)//Where iterator is - begin == index so we compare the name of the action and neighbors in neighbors list
                                 {
-                                    const vector<FMTevent<FMTgraph>> value = *action_events_it;
+                                    const std::vector<FMTevent<Graph::FMTgraph>> value = *action_events_it;
                                     potential_neigbors.insert(potential_neigbors.end(),value.begin(),value.end());//Insert FMTevent<FMTgraph> of each action in neighbors
                                 }
                             }
                         }
                         double output_val = 0;
                         double penalties_val = 0;
-                        for (const FMTevent<FMTgraph>& event : action_events)
+                        for (const FMTevent<Graph::FMTgraph>& event : action_events)
                         {
                             if (!event.empty())
                             {
-                                double event_val = static_cast<double>(event.minimaldistance(potential_neigbors, static_cast<unsigned int>(lower)));
+                                const double event_val = static_cast<double>(event.minimaldistance(potential_neigbors, static_cast<unsigned int>(lower)));
                                 if (event_val > lower)
                                 {
                                     output_val+=1;
                                 }
                                 //Fix FMTconstraint and change upper lower for constraint
-                                penalties_val += applypenalty(numeric_limits<double>::infinity(),lower,event_val,coef,FMTsapenaltytype::linear);
+                                penalties_val += applypenalty(std::numeric_limits<double>::infinity(),lower,event_val,coef,FMTsapenaltytype::linear);
                             }
                         }
                         output_vals.push_back((output_val/action_events.size()));
                         penalties_vals.push_back(penalties_val);
                         spatialpenalties+=penalties_val;
                     }
-                    if (constraint.getconstrainttype()==FMTconstrainttype::FMTspatialsize)
+                    if (constraint.getconstrainttype()==Core::FMTconstrainttype::FMTspatialsize)
                     {
                         const double maxsize = static_cast<double>(upper);
                         const double minsize = static_cast<double>(lower);
                         double output_val = 0;
                         double penalties_val = 0;
-                        for (const FMTevent<FMTgraph>& event : action_events)
+                        for (const FMTevent<Graph::FMTgraph>& event : action_events)
                         {
                             if (!event.empty())
                             {
-                                double event_val = static_cast<double>(event.elements.size());
+                                const double event_val = static_cast<double>(event.elements.size());
                                 if (event_val > upper || event_val < lower)
                                 {
                                     output_val+=1;
@@ -300,28 +266,28 @@ double FMTsasolution::getgraphspenalties(const FMTsamodel& model, const FMTconst
 
     FMTforest FMTsasolution::getforestperiod(const int& period) const
     {
-        FMTforest forest(this->copyextent<FMTdevelopment>());//Setting layer information
-        for(map<FMTcoordinate,FMTgraph>::const_iterator graphit = this->mapping.begin(); graphit != this->mapping.end(); ++graphit)
+        FMTforest forest(this->copyextent<Core::FMTdevelopment>());//Setting layer information
+        for(std::map<FMTcoordinate,Graph::FMTgraph>::const_iterator graphit = this->mapping.begin(); graphit != this->mapping.end(); ++graphit)
         {
-            const FMTgraph* local_graph = &graphit->second;
-            const vector<double> solutions(1,this->getcellsize());
-            vector<FMTactualdevelopment> actdev = local_graph->getperiodstopdev(period,&solutions[0]);//
-            forest.mapping[graphit->first]=FMTdevelopment(actdev.front());
+            const Graph::FMTgraph* local_graph = &graphit->second;
+            const std::vector<double> solutions(1,this->getcellsize());
+			std::vector<Core::FMTactualdevelopment> actdev = local_graph->getperiodstopdev(period,&solutions[0]);//
+            forest.mapping[graphit->first]=Core::FMTdevelopment(actdev.front());
         }
         return forest;
     }
 
 // ++++++++++++++++++++++++++++++ Function to manipulate solution +++++++++++++++++++++++++++++++++++
 
-    FMTgraphstats FMTsasolution::buildperiod(const FMTmodel& model,default_random_engine& generator)
+	Graph::FMTgraphstats FMTsasolution::buildperiod(const Models::FMTmodel& model, std::default_random_engine& generator)
         {
-            FMTgraphstats periodstats = FMTgraphstats();
-            vector<vector<FMTevent<FMTgraph>>> events_id(model.getactions().size());
-            for(map<FMTcoordinate,FMTgraph>::iterator graphit = this->mapping.begin(); graphit != this->mapping.end(); ++graphit)//change const_iterator to iterator because graph is modified
+            Graph::FMTgraphstats periodstats = Graph::FMTgraphstats();
+			std::vector<std::vector<FMTevent<Graph::FMTgraph>>> events_id(model.getactions().size());
+            for(std::map<FMTcoordinate,Graph::FMTgraph>::iterator graphit = this->mapping.begin(); graphit != this->mapping.end(); ++graphit)//change const_iterator to iterator because graph is modified
             {
-                FMTgraph* local_graph = &graphit->second;
-                std::queue<FMTvertex_descriptor> actives = local_graph->getactiveverticies();
-                FMTgraphstats stats = local_graph->randombuild(model,actives,generator,events_id,graphit->first);
+                Graph::FMTgraph* local_graph = &graphit->second;
+                std::queue<Graph::FMTvertex_descriptor> actives = local_graph->getactiveverticies();
+                Graph::FMTgraphstats stats = local_graph->randombuild(model,actives,generator,events_id,graphit->first);
                 periodstats += local_graph->getstats();
             }
             events.push_back(events_id);
@@ -329,53 +295,40 @@ double FMTsasolution::getgraphspenalties(const FMTsamodel& model, const FMTconst
             return periodstats;
         }
 
-    FMTsasolution FMTsasolution::perturb(FMTsamodel& model, default_random_engine& generator,FMTsamovetype movetype,const double min_ratio, const double max_ratio) const
+    FMTsasolution FMTsasolution::perturb(Models::FMTsamodel& model, std::default_random_engine& generator,FMTsamovetype movetype,const double min_ratio, const double max_ratio) const
     {
         FMTsasolution newsolution(*this);
         switch(movetype)
         {
         case FMTsamovetype::shotgun ://Create function shotgun move
         {
-            vector<size_t> map_lenght(this->mapping.size());
+			std::vector<size_t> map_lenght(this->mapping.size());
             size_t i = 0;
             for (size_t& lsize : map_lenght)
             {
                 lsize = i;
                 ++i;
             }
-            int min_cells = max(int((map_lenght.size()-1)*min_ratio),1);
-            int max_cells = max(int((map_lenght.size()-1)*max_ratio),1);
-            shuffle(map_lenght.begin(),map_lenght.end(),generator);//shuffle all indices in the map
-            uniform_int_distribution<int> celldistribution(min_cells,max_cells);
-            int numbercells = celldistribution(generator);//Get number of cell to perturb
-            vector<size_t> ChangedId;
+            int min_cells = std::max(int((map_lenght.size()-1)*min_ratio),1);
+            int max_cells = std::max(int((map_lenght.size()-1)*max_ratio),1);
+			std::shuffle(map_lenght.begin(),map_lenght.end(),generator);//shuffle all indices in the map
+			std::uniform_int_distribution<int> celldistribution(min_cells,max_cells);
+            const int numbercells = celldistribution(generator);//Get number of cell to perturb
+			std::vector<size_t> ChangedId;
 			ChangedId.reserve(numbercells);
-            //cout<< "Map size "<< map_lenght.size()<<endl;
-            //cout<< "Number of cells to modify "<<numbercells<<endl;
+ 
             for (int id = 0; id<numbercells; ++id)
             {
-                //cout<<"+++++++++++++ NEW CELL ++++++++++++++"<<endl;
-                map<FMTcoordinate,FMTgraph>::const_iterator luckygraph = this ->mapping.begin();
+				std::map<FMTcoordinate,Graph::FMTgraph>::const_iterator luckygraph = this ->mapping.begin();
                 std::advance(luckygraph,map_lenght.at(id));
-                uniform_int_distribution<int> perioddistribution(1,luckygraph->second.size()-2);//period to change
-                int period = perioddistribution(generator);
-
-                //cout<<"Random period : "<<period<<endl;
-
+				std::uniform_int_distribution<int> perioddistribution(1,luckygraph->second.size()-2);//period to change
+                const int period = perioddistribution(generator);
                 newsolution.solution_stats -= luckygraph->second.getstats();
-
-                //cout<<"Iteration : "<<id<<endl;
-                //cout<<"Cell : "<<map_lenght.at(id)<<endl;
-
-                FMTgraph newgraph = luckygraph -> second.perturbgraph(model,generator,newsolution.events,luckygraph->first,period);//perturb cell
-
-                //cout<<"Newgraph generated"<<endl;
-
+                Graph::FMTgraph newgraph = luckygraph -> second.perturbgraph(model,generator,newsolution.events,luckygraph->first,period);//perturb cell
                 newsolution.solution_stats += newgraph.getstats();
                 newsolution.mapping[luckygraph->first] = newgraph;
                 ChangedId.push_back(map_lenght.at(id));
             }
-            //cout<<"Setting mapid" <<endl;
             bool mapid = model.setmapidmodified(ChangedId);
             break;
         }
@@ -401,10 +354,10 @@ double FMTsasolution::getgraphspenalties(const FMTsamodel& model, const FMTconst
         {
          if (xlowerbound != -DBL_MAX)
             {
-            curvelength = abs(xlowerbound);
+            curvelength = std::abs(xlowerbound);
             }else if(xupperbound != DBL_MAX)
                 {
-                curvelength =  abs(xupperbound);
+                curvelength = std::abs(xupperbound);
                 }
         }
     if (curvelength != 0)
@@ -415,7 +368,7 @@ double FMTsasolution::getgraphspenalties(const FMTsamodel& model, const FMTconst
             basefive=(5.0/curvelength)*xvalue;
             if (xvalue < 0)
                 {
-                basefive=5-(5.0/curvelength)*(abs(xvalue)-abs(xlowerbound));
+                basefive=5-(5.0/curvelength)*(std::abs(xvalue)- std::abs(xlowerbound));
                 }
             }else if(xvalue > xupperbound)
                 {
@@ -423,8 +376,7 @@ double FMTsasolution::getgraphspenalties(const FMTsamodel& model, const FMTconst
                 }else{
                     return 0;
                 }
-        return (slope*exp(-slope*(basefive)))*maxpenalty;
-        //return min((slope*exp(-slope*(basefive)))*maxpenalty,maxpenalty);
+        return (slope*std::exp(-slope*(basefive)))*maxpenalty;
         }
     return 0;
     }
@@ -436,18 +388,14 @@ double FMTsasolution::getgraphspenalties(const FMTsamodel& model, const FMTconst
             case FMTsapenaltytype::linear :
                 {
                     double penaltyvalue = 0;
-                    //Put penalty value
-                    //Linear -x+lower bound
-                    //x - upper bound if not infinite
-                    //if between == 0
-                    if (!isinf(lower))//If lower is not infinite
+                    if (!std::isinf(lower))//If lower is not infinite
                     {
                         if(value<lower)//If value under lower bound penalize
                         {
                             penaltyvalue = -value+lower;
                         }
                     }
-                    if (!isinf(upper))//If upper is not infinite
+                    if (!std::isinf(upper))//If upper is not infinite
                     {
                         if (value>upper)//If value higher than upper bound penalize
                         {
@@ -462,20 +410,20 @@ double FMTsasolution::getgraphspenalties(const FMTsamodel& model, const FMTconst
                     double lowerl = lower;
                     double upperl = upper;
                     double maxpenalty = 0;
-                    if (isinf(lower))//If lower is infinite
+                    if (std::isinf(lower))//If lower is infinite
                     {
                         lowerl = -DBL_MAX;
                         maxpenalty = upper*coef;
 
                     }
-                        if (isinf(upper))//If upper is infinite
+                        if (std::isinf(upper))//If upper is infinite
                     {
                         upperl = DBL_MAX;
                         maxpenalty = lower*coef;
                     }
                     else
                     {
-                        maxpenalty = (max(lower,upper))*coef;
+                        maxpenalty = (std::max(lower,upper))*coef;
                     }
                     return exponentialpenalty(value,lowerl,upperl,maxpenalty);
                 }
@@ -486,38 +434,38 @@ double FMTsasolution::getgraphspenalties(const FMTsamodel& model, const FMTconst
     return 0;
     }
 
-    double FMTsasolution::evaluate(const FMTsamodel& model)
+    double FMTsasolution::evaluate(const Models::FMTsamodel& model)
     {
-        vector<FMTconstraint> constraints = model.getconstraints();
-        FMTconstraint objective = constraints.front();
-        double penalty_sense = 1;//objective.sense();
-        vector<string>penalties = objective.getpenalties(penalty_sense);//Return values in penalty
+		std::vector<Core::FMTconstraint> constraints = model.getconstraints();
+        Core::FMTconstraint objective = constraints.front();
+        double penalty_sense = 1;
+		std::vector<std::string>penalties = objective.getpenalties(penalty_sense);//Return values in penalty
         if (penalties.empty())
             {
-                _exhandler->raise(FMTexc::FMTunsupported_objective,FMTwssect::Optimize,"No penalties",__LINE__, __FILE__);
+                _exhandler->raise(Exception::FMTexc::FMTunsupported_objective,FMTwssect::Optimize,"No penalties",__LINE__, __FILE__);
             }
         else
             {
                 constraints.erase(constraints.begin());
-                vector<string>::const_iterator all_it = find(penalties.begin(), penalties.end(), "ALL");
+				std::vector<std::string>::const_iterator all_it = std::find(penalties.begin(), penalties.end(), "ALL");
                 double penalty_value = 0;
-                for (const FMTconstraint& constraint : constraints)
+                for (const Core::FMTconstraint& constraint : constraints)
                 {
-                    FMTconstrainttype type = constraint.getconstrainttype();
+                    Core::FMTconstrainttype type = constraint.getconstrainttype();
                     double value = 0;
-                    string name;
-                    string cname = boost::replace_all_copy(string(constraint),"\n","");
+					std::string name;
+					std::string cname = boost::replace_all_copy(std::string(constraint),"\n","");
                     boost::replace_all(cname,","," ");
                     double coef = 1;
                     constraint.getgoal(name,coef);
                     if (!name.empty())
                     {
-                        vector<string>::const_iterator name_it = find(penalties.begin(), penalties.end(), name);
+						std::vector<std::string>::const_iterator name_it = std::find(penalties.begin(), penalties.end(), name);
                         if (all_it != penalties.end() || name_it != penalties.end())
                         {
-                            vector<double> output_vals;
-                            vector<double> penalties_vals;
-                            if ( type == FMTconstrainttype::FMTspatialadjacency  || type == FMTspatialsize || type == FMTspatialgreenup )//Case spatial are in the section optimize
+							std::vector<double> output_vals;
+							std::vector<double> penalties_vals;
+                            if ( type == Core::FMTconstrainttype::FMTspatialadjacency  || type == Core::FMTconstrainttype::FMTspatialsize || type == Core::FMTconstrainttype::FMTspatialgreenup )//Case spatial are in the section optimize
                             {
                                 value = this->getspatialpenalties(model,constraint,coef, output_vals, penalties_vals);
                             }
@@ -525,17 +473,17 @@ double FMTsasolution::getgraphspenalties(const FMTsamodel& model, const FMTconst
                             {
                                 value = this->getgraphspenalties(model,constraint,coef, output_vals, penalties_vals);//apply weight in applypenalty
                             }
-                            constraint_outputs_penalties[cname+to_string(constraint.getconstrainttype())] = pair<vector<double>,vector<double>>(output_vals,penalties_vals);
+                            constraint_outputs_penalties[cname+ std::to_string(constraint.getconstrainttype())] = std::pair<std::vector<double>, std::vector<double>>(output_vals,penalties_vals);
                         }
                         else//Case spatialobjectives are set with spatial action
                             {
-                                vector<double> output_vals;
-                                vector<double> penalties_vals;
-                                if ( type == FMTconstrainttype::FMTspatialadjacency  || type == FMTspatialsize || type == FMTspatialgreenup )
+							std::vector<double> output_vals;
+							std::vector<double> penalties_vals;
+                                if ( type == Core::FMTconstrainttype::FMTspatialadjacency  || type == Core::FMTconstrainttype::FMTspatialsize || type == Core::FMTconstrainttype::FMTspatialgreenup )
                                 {
                                     value = this->getspatialpenalties(model,constraint,coef, output_vals, penalties_vals);
                                 }
-                                constraint_outputs_penalties[cname+to_string(constraint.getconstrainttype())] = pair<vector<double>,vector<double>>(output_vals,penalties_vals);
+                                constraint_outputs_penalties[cname+ std::to_string(constraint.getconstrainttype())] = std::pair<std::vector<double>, std::vector<double>>(output_vals,penalties_vals);
                             }
                     }
                     penalty_value += value;
@@ -546,46 +494,47 @@ double FMTsasolution::getgraphspenalties(const FMTsamodel& model, const FMTconst
         return 0;
         }
 
-    void FMTsasolution::write_events(const vector<FMTaction> model_actions,const string out_path,const string addon) const
+    void FMTsasolution::write_events(const std::vector<Core::FMTaction> model_actions,const std::string out_path,const std::string addon) const
     //Add to parser
     {
       //One layer per action per period
         if (!events.empty())
         {
             int period = 1;//No events on period 0
-            for (vector<vector<FMTevent<FMTgraph>>> period_v : events)
+            for (std::vector<std::vector<FMTevent<Graph::FMTgraph>>> period_v : events)
             {
                 if (!period_v.empty())
                 {
-                    //cout<<"Period : "<<period<<endl;
                     int action_id = 0;
-                    for (vector<FMTevent<FMTgraph>> action_id_v : period_v)//Vector of events in action_id
+                    for (std::vector<FMTevent<Graph::FMTgraph>> action_id_v : period_v)//Vector of events in action_id
                     {
                         if (!action_id_v.empty())
                         {
                             FMTlayer<int> action_layer(this->copyextent<int>());//Setting layer information
                             int event_id = 1; //To write in the map
-                            map<int,string> event_map;
-                            for (FMTevent<FMTgraph> event : action_id_v)//The event
+							std::map<int, std::string> event_map;
+                            for (FMTevent<Graph::FMTgraph> event : action_id_v)//The event
                             {
                                 if (!event.empty())
                                 {
-                                    //cout<<"Event_id : "<<event_id<<endl;
-                                    for (map<FMTcoordinate,const FMTgraph*>::const_iterator coordit = event.elements.begin(); coordit != event.elements.end(); ++coordit)
+ 
+                                    for (std::map<FMTcoordinate,const Graph::FMTgraph*>::const_iterator coordit = event.elements.begin(); coordit != event.elements.end(); ++coordit)
                                     {
 
                                         action_layer.mapping[coordit->first]=event_id;
                                     }
-                                    event_map[event_id] = "Event_"+to_string(event_id);
+                                    event_map[event_id] = "Event_"+ std::to_string(event_id);
                                     event_id++;
                                 }
                             }
                             if (action_layer.mapping.size()>0)
                             {
-                                string action_name = model_actions.at(action_id).name;
-                                string out_location = out_path+action_name+"_"+addon+"_events_period_"+std::to_string(period)+".tif";
-                                WSParser::FMTareaparser parser;
+								const std::string action_name = model_actions.at(action_id).name;
+								const std::string out_location = out_path+action_name+"_"+addon+"_events_period_"+std::to_string(period)+".tif";
+							#ifdef FMTWITHGDAL
+								WSParser::FMTareaparser parser;
                                 parser.writelayer(action_layer,out_location,event_map);
+							#endif 
                             }
                         }
                         action_id++;
@@ -596,10 +545,10 @@ double FMTsasolution::getgraphspenalties(const FMTsamodel& model, const FMTconst
         }
     }
 
-	bool FMTsasolution::copyfromselected(const FMTsasolution& rhs, const vector<size_t>& selected)
+	bool FMTsasolution::copyfromselected(const FMTsasolution& rhs, const std::vector<size_t>& selected)
 		{
-		map<FMTcoordinate, FMTgraph>::iterator baseit;
-		map<FMTcoordinate, FMTgraph>::const_iterator newvalueit;
+		std::map<FMTcoordinate, Graph::FMTgraph>::iterator baseit;
+		std::map<FMTcoordinate, Graph::FMTgraph>::const_iterator newvalueit;
 		//No location check sooo make sure you copy the same kind of solution...
 		solution_stats = rhs.solution_stats;
 		events = rhs.events;
@@ -622,10 +571,10 @@ double FMTsasolution::getgraphspenalties(const FMTsamodel& model, const FMTconst
 		return false;
 		}
 
-	bool FMTsasolution::swapfromselected(FMTsasolution& rhs, const vector<size_t>& selected)
+	bool FMTsasolution::swapfromselected(FMTsasolution& rhs, const std::vector<size_t>& selected)
 		{
-		map<FMTcoordinate, FMTgraph>::iterator baseit;
-		map<FMTcoordinate, FMTgraph>::iterator newvalueit;
+		std::map<FMTcoordinate, Graph::FMTgraph>::iterator baseit;
+		std::map<FMTcoordinate, Graph::FMTgraph>::iterator newvalueit;
 		//No location check sooo make sure you copy the same kind of solution...
 		solution_stats = rhs.solution_stats;
 		events.swap(rhs.events);

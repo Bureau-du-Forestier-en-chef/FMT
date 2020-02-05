@@ -33,10 +33,6 @@ SOFTWARE.
 #include <map>
 #include <string>
 
-using namespace std;
-//using namespace Graph;
-
-
 namespace WSParser
 {
 	enum FMToptimizationsection
@@ -50,45 +46,45 @@ namespace WSParser
 
 	class FMToptimizationparser : public FMTparser
 	{
-		regex rxsections;
-		regex rxobjectives;
-		regex rxexclude;
-		regex rxconstraints;
-		regex rxequations;
-		regex rxgoal;
-		regex rxoutput;
-		regex rxpenalty;
-		regex rxspecialoutput;
-		std::queue<string>ineach;
-		FMTconstraint getobjective(const string& line, const FMTconstants& constants,
-                             const vector<FMToutput>& outputs,
-                             const vector<FMTtheme>& themes);
-		FMToptimizationsection getsection(const string& line) const;
-		FMTconstraint getconstraint(const string& line, const FMTconstants& constants,
-			const vector<FMToutput>& outputs, const vector<FMTtheme>& themes);
-		bool setgoal(FMTconstraint& constraint, const string& line, const FMTconstants& constants);
-		void setperiods(FMTconstraint& constraint, const string& lower,const string& upper, const FMTconstants& constants);
-		FMToutput resume_output(const map<string,double>& nodes,
-                          const vector<FMToutput>& outputs,
-                          const vector<FMTtheme>& themes,
-                          const FMTconstants& constants);
-		string getoptline(ifstream& stream, const vector<FMTtheme>& themes,
-			const FMTconstants& cons,const vector<FMToutput>& outputs);
-		std::queue<string> geteachlines(const string& line,const FMTconstants& constants,const vector<FMToutput>& outputs, const vector<FMTtheme>& themes) const;
-		map<string,double>getequation(const string& line, const FMTconstants& constants,
-                                const vector<FMToutput>& outputs,size_t lhssize=numeric_limits<size_t>::max());
+		std::regex rxsections;
+		std::regex rxobjectives;
+		std::regex rxexclude;
+		std::regex rxconstraints;
+		std::regex rxequations;
+		std::regex rxgoal;
+		std::regex rxoutput;
+		std::regex rxpenalty;
+		std::regex rxspecialoutput;
+		std::queue<std::string>ineach;
+		Core::FMTconstraint getobjective(const std::string& line, const Core::FMTconstants& constants,
+                             const std::vector<Core::FMToutput>& outputs,
+                             const std::vector<Core::FMTtheme>& themes);
+		FMToptimizationsection getsection(const std::string& line) const;
+		Core::FMTconstraint getconstraint(const std::string& line, const Core::FMTconstants& constants,
+			const std::vector<Core::FMToutput>& outputs, const std::vector<Core::FMTtheme>& themes);
+		bool setgoal(Core::FMTconstraint& constraint, const std::string& line, const Core::FMTconstants& constants);
+		void setperiods(Core::FMTconstraint& constraint, const std::string& lower,const std::string& upper, const Core::FMTconstants& constants);
+		Core::FMToutput resume_output(const std::map<std::string,double>& nodes,
+                          const std::vector<Core::FMToutput>& outputs,
+                          const std::vector<Core::FMTtheme>& themes,
+                          const Core::FMTconstants& constants);
+		std::string getoptline(std::ifstream& stream, const std::vector<Core::FMTtheme>& themes,
+			const Core::FMTconstants& cons,const std::vector<Core::FMToutput>& outputs);
+		std::queue<std::string> geteachlines(const std::string& line,const Core::FMTconstants& constants,const std::vector<Core::FMToutput>& outputs, const std::vector<Core::FMTtheme>& themes) const;
+		std::map<std::string,double>getequation(const std::string& line, const Core::FMTconstants& constants,
+                                const std::vector<Core::FMToutput>& outputs,size_t lhssize= std::numeric_limits<size_t>::max());
 	public:
 		FMToptimizationparser();
 		FMToptimizationparser(const FMToptimizationparser& rhs);
 		FMToptimizationparser& operator = (const FMToptimizationparser& rhs);
-		vector<FMTconstraint> read(const vector<FMTtheme>& themes,
-				  const vector<FMTaction>& actions,
-				  const FMTconstants& constants,
-			      const map<string, vector<string>>& actions_aggregate,
-				  const vector<FMToutput>& outputs,
-				  vector<FMTaction>& excluded,
-				  const string& location);
-		void write(const vector<FMTconstraint>& constraints,string location);
+		std::vector<Core::FMTconstraint> read(const std::vector<Core::FMTtheme>& themes,
+				  const std::vector<Core::FMTaction>& actions,
+				  const Core::FMTconstants& constants,
+			      const std::map<std::string, std::vector<std::string>>& actions_aggregate,
+				  const std::vector<Core::FMToutput>& outputs,
+					std::vector<Core::FMTaction>& excluded,
+				  const std::string& location);
+		void write(const std::vector<Core::FMTconstraint>& constraints, std::string location);
 		~FMToptimizationparser()=default;
 	};
 }

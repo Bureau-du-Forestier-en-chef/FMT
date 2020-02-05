@@ -41,8 +41,8 @@ void exportHeuristics()
 		"\n"
 		"Operating area for FMTlpmodel\n"
 		"\n";
-	class_<Heuristics::FMToperatingarea>("FMToperatingarea", py_FMToperatingarea_doc)
-		.def(init<const FMTmask&, const size_t&, const size_t&, const size_t&, const size_t&, const double&, const double&>())
+	bp::class_<Heuristics::FMToperatingarea>("FMToperatingarea", py_FMToperatingarea_doc)
+		.def(bp::init<const Core::FMTmask&, const size_t&, const size_t&, const size_t&, const size_t&, const double&, const double&>())
 		.def_pickle(FMT_pickle_suite<Heuristics::FMToperatingarea>())
 		.def("getneighbors", &Heuristics::FMToperatingarea::getneighbors)
 		.def("setneighbors", &Heuristics::FMToperatingarea::setneighbors)
@@ -58,7 +58,7 @@ void exportHeuristics()
 		"Uses schedule to optimize operating area schedule\n"
 		"\n";
 
-	class_<Heuristics::FMToperatingareaheuristic, bases<Core::FMTobject>>("FMToperatingareaheuristic", py_FMToperatingareaheuristic_doc)
+	bp::class_<Heuristics::FMToperatingareaheuristic, bp::bases<Core::FMTobject>>("FMToperatingareaheuristic", py_FMToperatingareaheuristic_doc)
 		.def_pickle(FMT_pickle_suite<Heuristics::FMToperatingareaheuristic>())
 		.def("initialsolve", &Heuristics::FMToperatingareaheuristic::initialsolve)
 		.def("branchnboundsolve", &Heuristics::FMToperatingareaheuristic::branchnboundsolve)

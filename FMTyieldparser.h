@@ -34,38 +34,35 @@ SOFTWARE.
 #include <boost/tokenizer.hpp>
 #include <iterator>
 
-using namespace std;
-using namespace Core;
-
 namespace WSParser
 {
 
 class FMTyieldparser : public FMTparser
     {
      private:
-        regex rxyieldtype;
-        regex rxcomplex;
-		regex rxeqs;
-		regex rxdiscount;
-        FMTyldwstype getyldtype(const string& value) const;
-        FMTyieldparserop getyldctype(const string& value) const;
-        vector<string> getylduse(FMTyields& yielddata,
-                                   vector<FMTyieldhandler>::iterator actualyield,
-                                   const vector<string>& values) const;
-        void checkpreexisting(const vector<string>& preexists) const;
-		bool isfunction(const string& strfunction) const;
-		double getnumwithproportion(const string& value,const FMTconstants& constants, 
-			const vector<double>& proportions, const int& location);
-		FMTdata geteq(const string& basestr,
-                const FMTconstants& constants,
-                const FMTyields& ylds,
-                const vector<FMTtheme>& themes);
+		std::regex rxyieldtype;
+		std::regex rxcomplex;
+		std::regex rxeqs;
+		std::regex rxdiscount;
+        FMTyldwstype getyldtype(const std::string& value) const;
+        FMTyieldparserop getyldctype(const std::string& value) const;
+		std::vector<std::string> getylduse(Core::FMTyields& yielddata,
+			std::vector<Core::FMTyieldhandler>::iterator actualyield,
+                                   const std::vector<std::string>& values) const;
+        void checkpreexisting(const std::vector<std::string>& preexists) const;
+		bool isfunction(const std::string& strfunction) const;
+		double getnumwithproportion(const std::string& value,const Core::FMTconstants& constants,
+			const std::vector<double>& proportions, const int& location);
+		Core::FMTdata geteq(const std::string& basestr,
+                const Core::FMTconstants& constants,
+                const Core::FMTyields& ylds,
+                const std::vector<Core::FMTtheme>& themes);
     public:
         FMTyieldparser();
         FMTyieldparser(const FMTyieldparser& rhs);
         FMTyieldparser& operator = (const FMTyieldparser& rhs);
-        FMTyields read(const vector<FMTtheme>& themes,const FMTconstants& constants,string location);
-        bool write(const FMTyields& yields, string location);
+        Core::FMTyields read(const std::vector<Core::FMTtheme>& themes,const Core::FMTconstants& constants, std::string location);
+        bool write(const Core::FMTyields& yields, std::string location);
     };
 }
 #endif // FMTyieldparser_H_INCLUDED

@@ -45,34 +45,31 @@ class FMTdisturbancestack
 		ar & BOOST_SERIALIZATION_NVP(data);
 		}
     public:
-        vector<map<string,vector<FMTevent<FMTdevelopment>>>> data;
+		std::vector<std::map<std::string, std::vector<FMTevent<Core::FMTdevelopment>>>> data;
         FMTdisturbancestack();
         FMTdisturbancestack (const FMTdisturbancestack & rhs);
         FMTdisturbancestack & operator = (const FMTdisturbancestack & rhs);
         bool allow(const FMTspatialaction& action,const FMTcoordinate& location) const;
-        map<string,string>directmapping() const;
-        void push(const map<string,vector<FMTevent<FMTdevelopment>>>& element);
-        void add(const string& action,const vector<FMTevent<FMTdevelopment>>& events);
-		/*FMTschedule getlastschedule(double cellsize,
-			const vector<FMTaction>& actions,
-			const FMTlayer<FMTdevelopment>& forest) const;*/
-		string getpatchstats() const;
+		std::map<std::string, std::string>directmapping() const;
+        void push(const std::map<std::string, std::vector<FMTevent<Core::FMTdevelopment>>>& element);
+        void add(const std::string& action,const std::vector<FMTevent<Core::FMTdevelopment>>& events);
+		std::string getpatchstats() const;
         template <typename T>
-        vector<FMTlayer<string>> getlayers(const FMTlayer<T>& layer) const
+		std::vector<FMTlayer<std::string>> getlayers(const FMTlayer<T>& layer) const
             {
-            vector<FMTlayer<string>>alllayers;
-            for(const map<string,vector<FMTevent<FMTdevelopment>>>& events : data)
+			std::vector<FMTlayer<std::string>>alllayers;
+            for(const std::map<std::string,std::vector<FMTevent<Core::FMTdevelopment>>>& events : data)
                 {
-                FMTlayer<string> newlayer= layer.template copyextent<string>();
+                FMTlayer<std::string> newlayer= layer.template copyextent<std::string>();
 				FMTlayer<int> orderlayer = layer.template copyextent<int>(); // only one event per period per pixel!
-                for(map<string,vector<FMTevent<FMTdevelopment>>>::const_iterator acit = events.begin(); acit != events.end();acit++)
+                for(std::map<std::string, std::vector<FMTevent<Core::FMTdevelopment>>>::const_iterator acit = events.begin(); acit != events.end();acit++)
                     {
-                    const string actionname = acit->first;
-                    for(const FMTevent<FMTdevelopment>& event : acit->second)
+                    const std::string actionname = acit->first;
+                    for(const FMTevent<Core::FMTdevelopment>& event : acit->second)
                         {
-                        for(map<FMTcoordinate,const FMTdevelopment*>::const_iterator devit  = event.elements.begin(); devit!= event.elements.end(); devit++)
+                        for(std::map<FMTcoordinate,const Core::FMTdevelopment*>::const_iterator devit  = event.elements.begin(); devit!= event.elements.end(); devit++)
                             {
-							map<FMTcoordinate, int>::iterator orit = orderlayer.mapping.find(devit->first);
+							std::map<FMTcoordinate, int>::iterator orit = orderlayer.mapping.find(devit->first);
 							if (orit == orderlayer.mapping.end() || (orit != orderlayer.mapping.end() && orit->second < event.getorder()))//happend after so priority!
 								{
 								newlayer.mapping[devit->first] = actionname;

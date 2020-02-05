@@ -51,13 +51,13 @@ namespace Graph
 		return *this;
 		}
 
-	string FMToutputproperties::variablename() const
+	std::string FMToutputproperties::variablename() const
 		{
-		return "OS" + to_string(variableID);
+		return "OS" + std::to_string(variableID);
 		}
 
-	string FMToutputproperties::constraintname() const
+	std::string FMToutputproperties::constraintname() const
 		{
-		return "OS" + to_string(constraintID);
+		return "OS" + std::to_string(constraintID);
 		}
 }

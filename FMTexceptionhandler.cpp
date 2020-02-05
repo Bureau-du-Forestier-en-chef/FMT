@@ -27,17 +27,12 @@ SOFTWARE.
 namespace Exception
 
 {
-
-void FMTCPLErrorHandler(CPLErr eErrClass, CPLErrorNum nError, const char * pszErrorMsg)
-	{
-	FMTexceptionhandler* handler = reinterpret_cast<FMTexceptionhandler*>(CPLGetErrorHandlerUserData());
-	handler->handelCPLerror(eErrClass, nError, pszErrorMsg);
-	}
-
-void FMTexceptionhandler::passinlogger(const std::shared_ptr<Logging::FMTlogger>& logger)
-	{
-	_logger = logger;
-	}
+#ifdef FMTWITHGDAL
+	void FMTCPLErrorHandler(CPLErr eErrClass, CPLErrorNum nError, const char * pszErrorMsg)
+		{
+		FMTexceptionhandler* handler = reinterpret_cast<FMTexceptionhandler*>(CPLGetErrorHandlerUserData());
+		handler->handelCPLerror(eErrClass, nError, pszErrorMsg);
+		}
 
 FMTexceptionhandler* FMTexceptionhandler::getCPLdata()
 	{
@@ -50,17 +45,17 @@ void FMTexceptionhandler::handelCPLerror(CPLErr eErrClass, CPLErrorNum nError, c
 	bool log = false;
 	if (eErrClass == CE_Debug)
 		{
-		snprintf(buffer, sizeof(pszErrorMsg), "%s\n", pszErrorMsg);
+		snprintf(buffer, sizeof(buffer), "%s\n", pszErrorMsg);
 		log = true;
 		}
 	else if (eErrClass == CE_Warning)
 		{
-		snprintf(buffer, sizeof(pszErrorMsg), "Warning %d: %s\n", nError, pszErrorMsg);
+		snprintf(buffer, sizeof(buffer), "Warning %d: %s\n", nError, pszErrorMsg);
 		log = true;
 		}
 	else
 		{
-		snprintf(buffer, sizeof(pszErrorMsg), "ERROR %d: %s\n", nError, pszErrorMsg);
+		snprintf(buffer, sizeof(buffer), "ERROR %d: %s\n", nError, pszErrorMsg);
 		log = true;
 		}
 	if (log)
@@ -68,6 +63,12 @@ void FMTexceptionhandler::handelCPLerror(CPLErr eErrClass, CPLErrorNum nError, c
 		*_logger << buffer;
 		}
 	}
+#endif
+
+void FMTexceptionhandler::passinlogger(const std::shared_ptr<Logging::FMTlogger>& logger)
+{
+	_logger = logger;
+}
 
 FMTexceptionhandler& FMTexceptionhandler::operator = (const FMTexceptionhandler& rhs)
 {
@@ -84,7 +85,7 @@ FMTexceptionhandler& FMTexceptionhandler::operator = (const FMTexceptionhandler&
 
 void FMTexceptionhandler::throw_nested(const FMTexception& texception, int level)
 {
-	*_logger << string(level, ' ') << texception.what() << "\n";
+	*_logger << std::string(level, ' ') << texception.what() << "\n";
 	try {
 		std::rethrow_if_nested(texception);
 	}
@@ -95,8 +96,8 @@ void FMTexceptionhandler::throw_nested(const FMTexception& texception, int level
 	catch (...) {}
 }
 
-FMTlev FMTexceptionhandler::raise(FMTexc lexception, FMTwssect lsection, string text,
-	const int& line, const string& file)
+FMTlev FMTexceptionhandler::raise(FMTexc lexception, FMTwssect lsection, std::string text,
+	const int& line, const std::string& file)
 {
 	FMTexception excp;
 	if (lsection == FMTwssect::Empty)
@@ -136,10 +137,10 @@ FMTexceptionhandler::FMTexceptionhandler() : _level(FMTlev::FMT_None),
 
 		}
 
-string FMTexceptionhandler::updatestatus(const FMTexc lexception, const string message)
+std::string FMTexceptionhandler::updatestatus(const FMTexc lexception, const std::string message)
 {
 	_exception = lexception;
-	string msg;
+	std::string msg;
 	switch (_exception)
 	{
 	case FMTexc::WSconstants_replacement:

@@ -31,23 +31,22 @@ SOFTWARE.
 #include <boost/serialization/serialization.hpp>
 #include <boost/serialization/nvp.hpp>
 
-using namespace Core;
 
 namespace Spatial
 {
 
-class FMTcut : public FMTevent<FMTdevelopment>
+class FMTcut : public FMTevent<Core::FMTdevelopment>
     {
 	friend class boost::serialization::access;
 	template<class Archive>
 	void serialize(Archive& ar, const unsigned int version)
 	{
-		ar & boost::serialization::make_nvp("event", boost::serialization::base_object<FMTevent<FMTdevelopment>>(*this));
+		ar & boost::serialization::make_nvp("event", boost::serialization::base_object<FMTevent<Core::FMTdevelopment>>(*this));
 	}
     public:
         FMTcut();
         ~FMTcut()=default;
-        FMTcut(const map<FMTcoordinate,FMTdevelopment>& lterritory,const int& pass);
+        FMTcut(const std::map<FMTcoordinate,Core::FMTdevelopment>& lterritory,const int& pass);
         FMTcut(const FMTcut& rhs);
         FMTcut& operator = (const FMTcut& rhs);
     };

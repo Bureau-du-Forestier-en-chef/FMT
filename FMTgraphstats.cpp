@@ -39,7 +39,7 @@ namespace Graph {
 
 		}
 
-	FMTgraphstats::FMTgraphstats(const unique_ptr<OsiSolverInterface>& solverinterface,
+	FMTgraphstats::FMTgraphstats(const std::unique_ptr<OsiSolverInterface>& solverinterface,
 		const FMTadjacency_list& graph, int ltransfer_rows, int loutput_rows, int loutput_cols):
 		cols(solverinterface->getNumCols()),
 		rows(solverinterface->getNumRows()),
@@ -113,16 +113,16 @@ namespace Graph {
 		return *this;
 		}
 
-	FMTgraphstats::operator string() const
+	FMTgraphstats::operator std::string() const
 		{
-		string values = "";
-		values += "Columns: " + to_string(cols);
-		values += " Rows: " + to_string(rows);
-		values += " Verticies: " + to_string(vertices);
-		values += " Edges: " + to_string(edges);
-		values += " Transfer Rows: " + to_string(transfer_rows);
-		values += " Output Rows: " + to_string(output_rows);
-		values += " Output Columns: " + to_string(output_cols);
+		std::string values = "";
+		values += "Columns: " + std::to_string(cols);
+		values += " Rows: " + std::to_string(rows);
+		values += " Verticies: " + std::to_string(vertices);
+		values += " Edges: " + std::to_string(edges);
+		values += " Transfer Rows: " + std::to_string(transfer_rows);
+		values += " Output Rows: " + std::to_string(output_rows);
+		values += " Output Columns: " + std::to_string(output_cols);
 		return values;
 		}
 

@@ -35,7 +35,7 @@ namespace Heuristics
 {
 	void FMToperatingareaheuristic::clearrowcache()
 		{
-		if (!useprimal && solvertype == FMTsolverinterface::MOSEK)
+		if (!useprimal && solvertype == Models::FMTsolverinterface::MOSEK)
 			{
 			OsiMskSolverInterface* msksolver = dynamic_cast<OsiMskSolverInterface*>(solverinterface.get());
 			msksolver->freeCachedRowRim();
@@ -46,8 +46,8 @@ namespace Heuristics
 	void FMToperatingareaheuristic::unboundall(bool atprimal)
 		{
 		this->clearrowcache();
-		vector<int>targeteditems;
-		vector<double>bounds;
+		std::vector<int>targeteditems;
+		std::vector<double>bounds;
 		for (std::vector<FMToperatingarea>::const_iterator operatingareait = operatingareas.begin();
 			operatingareait != operatingareas.end(); ++operatingareait)
 			{
@@ -70,8 +70,8 @@ namespace Heuristics
 
 	void FMToperatingareaheuristic::closeprimalbounds()
 		{
-		vector<int>variables;
-		vector<double>bounds;
+		std::vector<int>variables;
+		std::vector<double>bounds;
 		for (std::vector<FMToperatingarea>::const_iterator operatingareait = operatingareas.begin();
 			operatingareait != operatingareas.end(); ++operatingareait)
 				{
@@ -86,17 +86,16 @@ namespace Heuristics
 			{
 				this->clearrowcache();
 				const double* rowupper = solverinterface->getRowUpper();
-				vector<int>rowsitems;
-				vector<double>rowsbounds;
-				vector<int>colsitems;
-				vector<double>colsbounds;
+				std::vector<int>rowsitems;
+				std::vector<double>rowsbounds;
+				std::vector<int>colsitems;
+				std::vector<double>colsbounds;
 				for (std::vector<FMToperatingarea>::const_iterator operatingareait = operatingareas.begin();
 					operatingareait != operatingareas.end(); ++operatingareait)
 					{
 					size_t selected = 0;
 					if (operatingareait->getdualsolutionindex(rowupper, selected))
 						{
-						//(*_logger) << "selected for integer: " << selected << "\n";
 						operatingareait->boundprimalscheme(colsitems, colsbounds, selected);
 						}
 					operatingareait->unboundalldualschemes(rowsitems,rowsbounds);
@@ -104,23 +103,22 @@ namespace Heuristics
 				//Need to bring it back to initial state!
 				for (double& bound : rowsbounds)
 					{
-					if (bound!=numeric_limits<double>::lowest())
+					if (bound!= std::numeric_limits<double>::lowest())
 						{
 						bound = 0;
 						}
 					}
 				solverinterface->setRowSetBounds(&rowsitems[0], &rowsitems.back() + 1, &rowsbounds[0]);
 				solverinterface->setColSetBounds(&colsitems[0], &colsitems.back() + 1, &colsbounds[0]);
-				//this->clearrowcache();
 				this->resolvemodel();
 			}
-		vector<int>integervariables;
+		std::vector<int>integervariables;
 		for (std::vector<FMToperatingarea>::const_iterator operatingareait = operatingareas.begin();
 			operatingareait != operatingareas.end(); ++operatingareait)
 				{
 				operatingareait->binarize(integervariables);
 				}
-		solverinterface->setInteger(&integervariables[0], int(integervariables.size()));
+		solverinterface->setInteger(&integervariables[0], static_cast<int>(integervariables.size()));
 		}
 
 	int FMToperatingareaheuristic::resolvemodel()
@@ -165,7 +163,7 @@ namespace Heuristics
 			{
 			double initialobjectivevalue = solverinterface->getObjValue();
 			size_t opareaprocessed = 0;
-			string problemsolved = "primal";
+			std::string problemsolved = "primal";
 			if (!useprimal)
 				{
 				this->unboundall(); //Make sure rhs are right need to be released
@@ -173,22 +171,17 @@ namespace Heuristics
 				this->resolvemodel();
 				problemsolved = "dual";
 				}
-			vector<std::vector<FMToperatingarea>::const_iterator> selected;
+			std::vector<std::vector<FMToperatingarea>::const_iterator> selected;
 			do {
 				this->clearrowcache();
 				selected = this->setdraw();
-				//(*_logger) << "selected s: " << selected.size() << "\n";
-				size_t setssize = this->setbounds(selected);
-				//(*_logger) << "set bounds on s: " << setssize << "\n";
-				//(*_logger) << "total size of: " << operatingareas.size() << "\n";
+				const size_t setssize = this->setbounds(selected);
 				const int iterations = this->resolvemodel();
 				opareaprocessed += selected.size();
-				//solverinterface->writeLp(string("C:/Users/cyrgu3/source/repos/FMT/x64/Release/test/stepsolve" + to_string(opareaprocessed)).c_str());
-				//cin.get();
 				if (!selected.empty())
 					{
 					int setratio = ((static_cast<double>(opareaprocessed)) / (static_cast<double>(this->operatingareas.size()))) * 100;
-					(*_logger) << "Solution generation phase (" + to_string(setratio) + "%) took " + to_string(iterations) +" iterations on "+ problemsolved << "\n";
+					(*_logger) << "Solution generation phase (" + std::to_string(setratio) + "%) took " + std::to_string(iterations) +" iterations on "+ problemsolved << "\n";
 					}
 				if (!solverinterface->isProvenOptimal())
 					{
@@ -204,11 +197,10 @@ namespace Heuristics
 			} while (!selected.empty() && solverinterface->isProvenOptimal());
 			if (solverinterface->isProvenOptimal())
 				{
-				double newobjective = solverinterface->getObjValue();
-				double dblgap = (100 - (round((newobjective / initialobjectivevalue) * 1000) / 10));
-				(*_logger) << "Feasible solution found objective: " + to_string(round(newobjective)) + " (" + to_string(dblgap) + "%)" << "\n";
+				const double newobjective = solverinterface->getObjValue();
+				const double dblgap = (100 - (round((newobjective / initialobjectivevalue) * 1000) / 10));
+				(*_logger) << "Feasible solution found objective: " + std::to_string(round(newobjective)) + " (" + std::to_string(dblgap) + "%)" << "\n";
 				this->clearrowcache();
-				//solverinterface->writeLp("C:/Users/cyrgu3/source/repos/FMT/x64/Release/test/bestfount");
 				}
 			}
 		}
@@ -218,12 +210,9 @@ namespace Heuristics
 		if (solverinterface->isProvenOptimal())
 			{
 			//In that order it seems to work...
-			//solverinterface->writeLp("C:/Users/cyrgu3/source/repos/FMT/x64/Release/test/beforeMIP");
 			this->setallinteger();
-			//solverinterface->writeLp("C:/Users/cyrgu3/source/repos/FMT/x64/Release/test/toMIP1");
 			solverinterface->branchAndBound();
 			this->unboundall(true);
-			//solverinterface->writeLp("C:/Users/cyrgu3/source/repos/FMT/x64/Release/test/toMIP2");
 			solverinterface->branchAndBound();
 			}
 		}
@@ -234,17 +223,17 @@ namespace Heuristics
 																const Core::FMToutputnode& target)
 		{
 		Core::FMToutputnode specifictarget(target);
-		const vector<FMTaction>modelactions=model.getactions();
-		std::unordered_map<size_t, Graph::FMTvertex_descriptor> basedescriptors = maingraph.getperiodverticies(maingraph.getfirstactiveperiod());
+		const std::vector<Core::FMTaction>modelactions=model.getactions();
+		const std::unordered_map<size_t, Graph::FMTvertex_descriptor> basedescriptors = maingraph.getperiodverticies(maingraph.getfirstactiveperiod());
 		Core::FMToutputnode areatarget(specifictarget);
-		FMTmask areamask = areatarget.source.getmask();
-		for (const FMTtheme& theme : model.getthemes())
+		Core::FMTmask areamask = areatarget.source.getmask();
+		for (const Core::FMTtheme& theme : model.getthemes())
 			{
 			areamask.set(theme, "?");
 			}
-		areatarget.source = FMToutputsource(FMTspec(), areamask, FMTotar::inventory);
-		vector<const Core::FMTaction*>actions = specifictarget.source.targets(modelactions, model.getactionaggregates());
-		vector<int>actionids;
+		areatarget.source = Core::FMToutputsource(Core::FMTspec(), areamask, FMTotar::inventory);
+		const std::vector<const Core::FMTaction*>actions = specifictarget.source.targets(modelactions, model.getactionaggregates());
+		std::vector<int>actionids;
 		for (const Core::FMTaction* actptr : actions)
 			{
 			actionids.push_back(std::distance(&modelactions[0], actptr));
@@ -258,15 +247,15 @@ namespace Heuristics
 			{
 			specifictarget.source.setmask(operatingareait->getmask());
 			areatarget.source.setmask(operatingareait->getmask());
-			vector<vector<Graph::FMTvertex_descriptor>>descriptors;
-			vector<Graph::FMTvertex_descriptor>totalareadescriptors;
+			std::vector<std::vector<Graph::FMTvertex_descriptor>>descriptors;
+			std::vector<Graph::FMTvertex_descriptor>totalareadescriptors;
 			for (int period = (maingraph.getfirstactiveperiod()+ operatingareait->getstartingperiod());period < (maingraph.size()-1);++period)
 				{
 				if (descriptors.empty())
 					{
 					totalareadescriptors = maingraph.getnode(model, areatarget, period);
 					}
-				vector<Graph::FMTvertex_descriptor> perioddescriptors;
+				std::vector<Graph::FMTvertex_descriptor> perioddescriptors;
 				if (!totalareadescriptors.empty())
 					{
 					perioddescriptors = maingraph.getnode(model, specifictarget, period);
@@ -276,8 +265,6 @@ namespace Heuristics
 			if (!descriptors.empty())
 				{
 				operatingareait->setconstraints(descriptors, totalareadescriptors, maingraph,matrixbuild,primalsolution,actionids);
-				//operatingareait->setconstraints(descriptors,totalareadescriptors,maingraph, solverinterface, actionids);
-
 				}
 			}
 		matrixbuild.synchronize(solverinterface);
@@ -285,37 +272,32 @@ namespace Heuristics
 
 	void FMToperatingareaheuristic::setadjacencyconstraints()
 		{
-		//vector<int>columns;
-		//vector<int>rowstarts;
 		Models::FMTmatrixbuild matrixbuild;
-		const vector<double>elements(2, 1.0);
-		vector<int>columns(2, 0);
+		const std::vector<double>elements(2, 1.0);
+		std::vector<int>columns(2, 0);
 		int constraintsid = solverinterface->getNumRows();
 		for (std::vector<FMToperatingarea>::const_iterator operatingareait = operatingareas.begin();
 			operatingareait != operatingareas.end(); ++operatingareait)
 			{
-			const vector<FMTmask>neighbors = operatingareait->getneighbors();
-			for (const FMTmask& neighbor : neighbors)
+			const std::vector<Core::FMTmask>neighbors = operatingareait->getneighbors();
+			for (const Core::FMTmask& neighbor : neighbors)
 				{
-				std::pair<FMTmask, FMTmask>simple(operatingareait->getmask(), neighbor);
-				std::pair<FMTmask, FMTmask>reverse(neighbor, operatingareait->getmask());
+				std::pair<Core::FMTmask, Core::FMTmask>simple(operatingareait->getmask(), neighbor);
+				std::pair<Core::FMTmask, Core::FMTmask>reverse(neighbor, operatingareait->getmask());
 				if (adjacencyconstraints.find(simple)== adjacencyconstraints.end() &&
 					adjacencyconstraints.find(reverse) == adjacencyconstraints.end())
 					{
 					std::vector<FMToperatingarea>::const_iterator opneighbor = std::find_if(operatingareas.begin(), operatingareas.end(), FMToperatingareacomparator(neighbor));
-					map<int, vector<int>> neighborsbin;
+					std::map<int, std::vector<int>> neighborsbin;
 					if (opneighbor!= operatingareas.end())
 						{
 						neighborsbin  = operatingareait->getcommonbinairies(*opneighbor);
 						}
-					vector<int>constraintindexes;
-					for (map<int,vector<int>>::const_iterator binit = neighborsbin.begin();binit!=neighborsbin.end();++binit)
+					std::vector<int>constraintindexes;
+					for (std::map<int, std::vector<int>>::const_iterator binit = neighborsbin.begin();binit!=neighborsbin.end();++binit)
 						{
 						for (const int& index : binit->second)
 							{
-							/*rowstarts.push_back(columns.size());
-							columns.push_back(binit->first);
-							columns.push_back(index);*/
 							constraintindexes.push_back(constraintsid);
 							++constraintsid;
 							columns[0] = binit->first;
@@ -332,22 +314,14 @@ namespace Heuristics
 				}
 			}
 		matrixbuild.synchronize(solverinterface);
-		/*if (!rowstarts.empty())
-			{
-			vector<double>rowlbs(rowstarts.size(), 0);
-			vector<double>rowubs(rowstarts.size(), 1);
-			vector<double>elements(columns.size(), 1);
-			rowstarts.push_back(static_cast<int>(columns.size()));
-			solverinterface->addRows(int(rowlbs.size()), &rowstarts[0], &columns[0], &elements[0], &rowlbs[0], &rowubs[0]);
-			}*/
 		}
 
 	FMToperatingareaheuristic::FMToperatingareaheuristic(const FMToperatingareaheuristic& rhs) :
-		FMTobject(rhs),operatingareas(rhs.operatingareas), adjacencyconstraints(rhs.adjacencyconstraints),
+		Core::FMTobject(rhs),operatingareas(rhs.operatingareas), adjacencyconstraints(rhs.adjacencyconstraints),
 		solverinterface(), generator(rhs.generator),seed(rhs.seed), proportionofset(rhs.proportionofset), 
 		userandomness(rhs.userandomness), usingsolvercopy(true),useprimal(false), solvertype(rhs.solvertype)
 		{
-		solverinterface = FMTserializablematrix().copysolverinterface(rhs.solverinterface, rhs.solvertype, &*(this->_logger));
+		solverinterface = Models::FMTserializablematrix().copysolverinterface(rhs.solverinterface, rhs.solvertype, &*(this->_logger));
 		}
 	FMToperatingareaheuristic& FMToperatingareaheuristic::operator = (const FMToperatingareaheuristic& rhs)
 		{
@@ -363,21 +337,21 @@ namespace Heuristics
 			usingsolvercopy = true;
 			useprimal = false;
 			solvertype=rhs.solvertype;
-			solverinterface = FMTserializablematrix().copysolverinterface(rhs.solverinterface, rhs.solvertype, &*(this->_logger));
+			solverinterface = Models::FMTserializablematrix().copysolverinterface(rhs.solverinterface, rhs.solvertype, &*(this->_logger));
 			}
 		return *this;
 		}
 	FMToperatingareaheuristic::~FMToperatingareaheuristic()
 		{
 			//Will need a clean matrix to fit with FMTlpmodel!
-			vector<int>rowstodelete;
-			vector<int>columnstodelete;
+			std::vector<int>rowstodelete;
+			std::vector<int>columnstodelete;
 			for (std::vector<FMToperatingarea>::const_iterator operatingareait = operatingareas.begin();
 					operatingareait != operatingareas.end(); ++operatingareait)
 					{
 					operatingareait->getressourcestodelete(columnstodelete, rowstodelete);
 					}
-			for (std::map<std::pair<FMTmask, FMTmask>, vector<int>>::const_iterator it = adjacencyconstraints.begin();it!= adjacencyconstraints.end(); it++)
+			for (std::map<std::pair<Core::FMTmask,Core::FMTmask>, std::vector<int>>::const_iterator it = adjacencyconstraints.begin();it!= adjacencyconstraints.end(); it++)
 					{
 					rowstodelete.insert(rowstodelete.end(), it->second.begin(), it->second.end());
 					}
@@ -397,9 +371,9 @@ namespace Heuristics
 		adjacencyconstraints.clear();
 		}
 
-	vector<std::vector<FMToperatingarea>::const_iterator> FMToperatingareaheuristic::setdraw()
+	std::vector<std::vector<FMToperatingarea>::const_iterator> FMToperatingareaheuristic::setdraw()
 		{
-		vector<std::vector<FMToperatingarea>::const_iterator>potentials;
+		std::vector<std::vector<FMToperatingarea>::const_iterator>potentials;
 		const double* upperbounds = solverinterface->getColUpper();
 		const double* lowerbounds = solverinterface->getColLower();
 		const double* primalsolution = solverinterface->getColSolution();
@@ -421,7 +395,7 @@ namespace Heuristics
 					}
 				if (!potentials.empty())
 					{
-					vector<std::vector<FMToperatingarea>::const_iterator>::iterator vit = potentials.begin();
+					std::vector<std::vector<FMToperatingarea>::const_iterator>::iterator vit = potentials.begin();
 					size_t oldsize = potentials.size();
 					while (potentials.size() == oldsize)
 						{
@@ -448,13 +422,13 @@ namespace Heuristics
 				}
 			++areait;
 			}
-		const size_t maxareatopick = static_cast<size_t>(double(operatingareas.size()) * proportionofset);
+		const size_t maxareatopick = static_cast<size_t>(static_cast<double>(operatingareas.size()) * proportionofset);
 		if (userandomness)
 			{
 			std::shuffle(potentials.begin(), potentials.end(), this->generator);
 			}
-		vector<std::vector<FMToperatingarea>::const_iterator>selected;
-		vector<std::vector<FMToperatingarea>::const_iterator>::iterator randomit = potentials.begin();
+		std::vector<std::vector<FMToperatingarea>::const_iterator>selected;
+		std::vector<std::vector<FMToperatingarea>::const_iterator>::iterator randomit = potentials.begin();
 		while ((selected.size() < maxareatopick) && randomit != potentials.end())
 			{
 			selected.push_back(*randomit);
@@ -463,7 +437,7 @@ namespace Heuristics
 		return selected;
 		}
 
-	size_t FMToperatingareaheuristic::setbounds(const vector<std::vector<FMToperatingarea>::const_iterator>& tobound)
+	size_t FMToperatingareaheuristic::setbounds(const std::vector<std::vector<FMToperatingarea>::const_iterator>& tobound)
 	{
 		size_t gotschedule = 0;
 		const double* primalsolution = solverinterface->getColSolution();
@@ -471,12 +445,12 @@ namespace Heuristics
 		const double* lowerprimalbounds = solverinterface->getColLower();
 		const double* upperprimalbounds = solverinterface->getColUpper();
 		const double* rowupperbound = solverinterface->getRowUpper();
-		vector<int>targeteditems;
-		vector<double>bounds;
+		std::vector<int>targeteditems;
+		std::vector<double>bounds;
 		for (std::vector<FMToperatingarea>::const_iterator opit : tobound)
 		{
-			vector<FMToperatingarea>allneighbors;
-			for (const FMTmask& neighbormask : opit->getneighbors())
+			std::vector<FMToperatingarea>allneighbors;
+			for (const Core::FMTmask& neighbormask : opit->getneighbors())
 			{
 				std::vector<FMToperatingarea>::const_iterator opneighbor = std::find_if(operatingareas.begin(), operatingareas.end(), FMToperatingareacomparator(neighbormask));
 				if (opneighbor != operatingareas.end())
@@ -485,20 +459,16 @@ namespace Heuristics
 				}
 
 			}
-			vector<size_t>potentialschemes;
-			//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "getting potentials  "<< "\n";
+			std::vector<size_t>potentialschemes;
 			if (useprimal)
 			{
 				potentialschemes = opit->getpotentialprimalschemes(primalsolution, lowerprimalbounds, upperprimalbounds, allneighbors);
 			}
 			else {
 				potentialschemes = opit->getpotentialdualschemes(dualsolution, rowupperbound, allneighbors);
-				//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "getting potentials  " << potentialschemes.size() << "\n";
-				//cin.get();
 			}
 			if (!potentialschemes.empty())
 			{
-				//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "bounding  " << string(opit->getmask()) << "\n";
 				if (userandomness)
 				{
 					std::shuffle(potentialschemes.begin(), potentialschemes.end(), this->generator);
@@ -509,7 +479,6 @@ namespace Heuristics
 					opit->boundprimalscheme(targeteditems, bounds, *potentialschemes.begin());
 				}
 				else {
-					//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "using: " << opit->getmask().getstr() << "\n";
 					opit->unbounddualscheme(targeteditems, bounds, *potentialschemes.begin());
 				}
 			}
@@ -519,7 +488,6 @@ namespace Heuristics
 					opit->boundallprimalschemes(targeteditems, bounds);
 				}
 				else {
-					//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "closing: " << opit->getmask().getstr() << "\n";
 					opit->boundalldualschemes(targeteditems, bounds);
 				}
 			}
@@ -534,25 +502,24 @@ namespace Heuristics
 		return gotschedule;
 		}
 
-	std::vector<FMTyieldhandler> FMToperatingareaheuristic::getsolution(const string& yldname) const
+	std::vector<Core::FMTyieldhandler> FMToperatingareaheuristic::getsolution(const std::string& yldname) const
 		{
-		std::vector<FMTyieldhandler>allhandlers;
+		std::vector<Core::FMTyieldhandler>allhandlers;
 		const double* primalsolution = solverinterface->getColSolution();
 		const double* rowupperbound = solverinterface->getRowUpper();
 		for (std::vector<FMToperatingarea>::const_iterator operatingareait = operatingareas.begin();
 			operatingareait != operatingareas.end(); ++operatingareait)
 			{
-			vector<double>data;
+			std::vector<double>data;
 			if (useprimal)
 				{
 				data=operatingareait->getprimalsolution(primalsolution);
 			}else {
 				data=operatingareait->getdualsolution(rowupperbound);
 				}
-			vector<string>source;
-			FMTyieldhandler handler(FMTyldwstype::FMTtimeyld, operatingareait->getmask());
-			//handler.push_base(1);
-			handler.push_data(yldname,FMTdata(data, FMTyieldparserop::FMTwsnone, source));
+			std::vector<std::string>source;
+			Core::FMTyieldhandler handler(FMTyldwstype::FMTtimeyld, operatingareait->getmask());
+			handler.push_data(yldname,Core::FMTdata(data, FMTyieldparserop::FMTwsnone, source));
 			allhandlers.push_back(handler);
 			}
 		return allhandlers;
@@ -565,24 +532,19 @@ namespace Heuristics
 		std::shared_ptr<OsiSolverInterface> initialsolver,
 		const Models::FMTsolverinterface& lsolvertype, size_t lseed,
 		double proportionofset, bool userandomness, bool copysolver):
-		FMTobject(),operatingareas(loperatingareas),adjacencyconstraints(),
+		Core::FMTobject(),operatingareas(loperatingareas),adjacencyconstraints(),
 		solverinterface(nullptr), generator(lseed),seed(lseed), proportionofset(proportionofset),
 		userandomness(userandomness), usingsolvercopy(copysolver), useprimal(false), solvertype(lsolvertype)
 		{
-		//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "copying solver "  << "\n";
 		if (copysolver)
 			{
-			solverinterface = FMTserializablematrix().copysolverinterface(initialsolver, solvertype,&*this->_logger);
+			solverinterface = Models::FMTserializablematrix().copysolverinterface(initialsolver, solvertype,&*this->_logger);
 		}else {
 			solverinterface = initialsolver;
 			}
-		//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "seting op constraints"  << "\n";
 		this->setoperatingareasconstraints(maingraph, model, target);
 		this->setadjacencyconstraints();
 		this->resolvemodel();
-		//this->solverinterface->resolve(); //Solution changes with constraints
-		//Logging::FMTlogger(Logging::FMTlogtype::FMT_Info) << "ALL DONE!" << "\n";
-		//dont forget to pass in exeception and logger!
 		}
 
 	void FMToperatingareaheuristic::setasrandom()

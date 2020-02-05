@@ -32,31 +32,27 @@ SOFTWARE.
 #include "FMTyields.h"
 
 
-using namespace boost::python;
-using namespace std;
-using namespace Core;
-
 namespace WSParser
 {
 
 class FMTactionparser : public FMTparser
     {
     private:
-        regex rxsection;
-        regex rxoperator;
-        vector<string>operators;
-        vector<FMTaction*> sameactionas(const string& all_set,vector<FMTaction>& actions) const;
+        std::regex rxsection;
+		std::regex rxoperator;
+		std::vector<std::string>operators;
+		std::vector<Core::FMTaction*> sameactionas(const std::string& all_set, std::vector<Core::FMTaction>& actions) const;
     public:
         FMTactionparser();
         FMTactionparser(const FMTactionparser& rhs);
         FMTactionparser& operator = (const FMTactionparser& rhs);
-        string getbounds(string& line, FMTspec& spec,const FMTconstants& constants, const FMTyields& ylds);
-        map<string,vector<string>>valagg(vector<FMTaction>& actions,map<string,vector<string>>& aggregates);
-        vector<FMTaction>read(const vector<FMTtheme>& themes,
-			const FMTyields& yields,const FMTconstants& constants,
-			string location, map<string,vector<string>>& aggregates);
-        bool write(const vector<FMTaction>& actions,
-			string location,const  map<string, vector<string>>& aggregates);
+		std::string getbounds(std::string& line, Core::FMTspec& spec,const Core::FMTconstants& constants, const Core::FMTyields& ylds);
+        std::map<std::string, std::vector<std::string>>valagg(std::vector<Core::FMTaction>& actions, std::map<std::string, std::vector<std::string>>& aggregates);
+		std::vector<Core::FMTaction>read(const std::vector<Core::FMTtheme>& themes,
+			const Core::FMTyields& yields,const Core::FMTconstants& constants,
+			std::string location, std::map<std::string, std::vector<std::string>>& aggregates);
+        bool write(const std::vector<Core::FMTaction>& actions,
+			std::string location,const  std::map<std::string, std::vector<std::string>>& aggregates);
     };
 
 }

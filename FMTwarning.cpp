@@ -30,10 +30,10 @@ namespace Exception
 {
 FMTwarning::FMTwarning() : FMTexception() {}
 FMTwarning::FMTwarning(const FMTexception& rhs) : FMTexception(rhs) {}
-FMTwarning::FMTwarning(const FMTexc lexception, const string message) : FMTexception(lexception, message) {}
-FMTwarning::FMTwarning(const FMTexc lexception, const FMTwssect lsection, const string message) : FMTexception(lexception, lsection, message) {}
-void FMTwarning::warn() const
+FMTwarning::FMTwarning(const FMTexc lexception, const std::string message) : FMTexception(lexception, message) {}
+FMTwarning::FMTwarning(const FMTexc lexception, const FMTwssect lsection, const std::string message) : FMTexception(lexception, lsection, message) {}
+void FMTwarning::warn(const std::shared_ptr<Logging::FMTlogger>logger) const
 	{
-		Logging::FMTdefaultlogger() << _msg << "\n";
+		*logger << _msg << "\n";
 	}
 }

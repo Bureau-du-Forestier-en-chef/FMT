@@ -32,7 +32,6 @@ SOFTWARE.
 #include <vector>
 #include "FMTdevelopment.h"
 #include <boost/serialization/serialization.hpp>
-
 #include <string>
 
 namespace Core
@@ -49,57 +48,54 @@ class FMToutputsource : public FMTspec
 		ar & BOOST_SERIALIZATION_NVP(target);
 		ar & BOOST_SERIALIZATION_NVP(action);
 		ar & BOOST_SERIALIZATION_NVP(yield);
-		//ar & BOOST_SERIALIZATION_NVP(value);
 		ar & BOOST_SERIALIZATION_NVP(values);
 	}
     FMTmask mask;
     FMTotar target;
-    string action;
-    string yield;
-    vector<double>values;
+	std::string action,yield;
+	std::vector<double>values;
 	bool average;
     public:
 		FMToutputsource();
-        FMToutputsource(const FMTotar ltarget,double lvalue = 0, string lyield= "",string laction = "");
-        FMToutputsource(const FMTotar ltarget,vector<double>lvalues);
+        FMToutputsource(const FMTotar ltarget,double lvalue = 0, std::string lyield= "", std::string laction = "");
+        FMToutputsource(const FMTotar ltarget, std::vector<double>lvalues);
         FMToutputsource(const FMTspec& spec,const FMTmask& lmask,
-               const FMTotar ltarget,string lyield= "",
-               string laction = "");
+               const FMTotar ltarget, std::string lyield= "",
+               std::string laction = "");
         FMToutputsource(const FMToutputsource& rhs);
         FMToutputsource& operator = (const FMToutputsource& rhs);
-        operator string() const override;
+        operator std::string() const override;
 		bool operator == (const FMToutputsource& rhs) const;
 		bool operator != (const FMToutputsource& rhs) const;
 		bool operator < (const FMToutputsource& rhs) const;
 		bool issubsetof(const FMToutputsource& rhs) const;
 		bool issubsetof(const FMToutputsource& rhs,
-			const map<string,vector<string>>& actaggregates) const;
+			const std::map<std::string, std::vector<std::string>>& actaggregates) const;
 		bool canbeusedby(const FMToutputsource& rhs,
-			const map<string, vector<string>>& actaggregates) const;
+			const std::map<std::string, std::vector<std::string>>& actaggregates) const;
 		bool issamebutdifferentaction(const FMToutputsource& rhs) const;
 		const FMTmask& getmask() const;
 		void setmask(const FMTmask& newmask);
-		string getaction() const;
-		string getyield() const;
+		std::string getaction() const;
+		std::string getyield() const;
 		FMTotar gettarget() const;
 		double getvalue(int period = 0) const;
 		bool isvariable() const;
 		bool islevel() const;
 		bool isconstant() const;
 		bool isvariablelevel() const;
-		string getlevel() const;
+		std::string getlevel() const;
 		bool isnull(const FMTyields& ylds) const;
 		bool istimeyield() const;
-		vector<const FMTaction*>targets(const vector<FMTaction>& actions,
-			const map<string, vector<string>>& aggregates) const;
+		std::vector<const FMTaction*>targets(const std::vector<FMTaction>& actions,
+			const std::map<std::string, std::vector<std::string>>& aggregates) const;
 		bool isinventory() const;
 		bool useinedges() const;
 		bool isnextperiod() const;
-		//bool needpotentialoperability() const;
 		bool useoutedges() const;
 		double getcoef(const FMTdevelopment& development,
 			const FMTyields& yields, const FMTaction& action,
-			const vector<FMTdevelopmentpath>& paths) const;
+			const std::vector<FMTdevelopmentpath>& paths) const;
 		inline bool use(const FMTdevelopment& development, const FMTyields& ylds) const
 			{
 			return (mask && development.mask.data.is_subset_of(mask.data) && development.is(*this, ylds));
@@ -107,8 +103,6 @@ class FMToutputsource : public FMTspec
 		void setaverage();
 		bool isaverage() const;
 		size_t hash(int period = -1) const;
-		/*vector<size_t>getsuperset(const vector<FMTaction>& actions,
-			const map<string, vector<string>>& aggregates, const int& period) const;*/
     };
 
 class FMToutputsourcecomparator

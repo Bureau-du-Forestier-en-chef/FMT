@@ -33,7 +33,7 @@ SOFTWARE.
 #include <boost/serialization/serialization.hpp>
 #include <boost/serialization/nvp.hpp>
 
-using namespace std;
+
 
 namespace Core
 {
@@ -44,8 +44,6 @@ namespace Core
 		divide = 2,
 		add = 3,
 		sub = 4,
-		/*leftparenthesis = 5,
-		rightparenthesis = 6,*/
 		comma = 7,
 		pow = 8,
 		notvalid = 9
@@ -63,21 +61,20 @@ class FMToperator
 public:
 	FMToperator();
     FMToperator(FMTokey lkey);
-    FMToperator(string strkey);
+    FMToperator(std::string strkey);
 	bool operator == (const FMToperator& rhs) const;
     double call(const double& rhs1, const double& rhs2) const;
     FMToperator(const FMToperator& rhs);
     FMToperator& operator = (const FMToperator& rhs);
 	int precedence() const;
-	string associativity() const;
+	std::string associativity() const;
 	FMToperator reverse() const;
 	bool valid() const;
 	size_t hash() const;
-	//bool isparenthesis() const;
 	bool isfactor() const;
 	bool isdivide() const;
 	FMTokey getkey() const;
-    operator string() const;
+    operator std::string() const;
 };
 
 }

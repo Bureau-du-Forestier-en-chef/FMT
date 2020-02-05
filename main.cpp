@@ -55,11 +55,11 @@ extern "C"
     BOOST_PYTHON_MODULE(FMT)
         {
 
-		boost::python::to_python_converter<vector<string,allocator<string>>,VecToList<string>>();
-        boost::python::to_python_converter<vector<double,allocator<double>>,VecToList<double>>();
-		boost::python::to_python_converter<map<string,vector<string>>,MapToDict<string, vector<string>>>();
+		boost::python::to_python_converter<std::vector<std::string, std::allocator<std::string>>,VecToList<std::string>>();
+        boost::python::to_python_converter<std::vector<double, std::allocator<double>>,VecToList<double>>();
+		boost::python::to_python_converter<std::map<std::string, std::vector<std::string>>,MapToDict<std::string, std::vector<std::string>>>();
 
-        VecFrList<string>();
+        VecFrList<std::string>();
         VecFrList<double>();
 
         //Exceptions

@@ -28,9 +28,6 @@ SOFTWARE.
 #include "FMTparser.h"
 #include "FMTconstants.h"
 
-using namespace std;
-using namespace Core;
-
 namespace WSParser
 {
 
@@ -40,8 +37,8 @@ class FMTconstantparser : public FMTparser
         FMTconstantparser();
         FMTconstantparser(const FMTconstantparser& rhs);
         FMTconstantparser& operator = (const FMTconstantparser& rhs);
-        FMTconstants read(string location);
-        bool write(const FMTconstants& constants,string location);
+        Core::FMTconstants read(std::string location);
+        bool write(const Core::FMTconstants& constants, std::string location);
     };
 }
 #endif // FMTconstantparser_H_INCLUDED

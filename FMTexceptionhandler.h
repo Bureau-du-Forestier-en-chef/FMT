@@ -29,16 +29,18 @@ SOFTWARE.
 #include "FMTerror.h"
 #include "FMTwarning.h"
 #include "FMTlogger.h"
-#include "cpl_error.h"
+#ifdef FMTWITHGDAL
+	#include "cpl_error.h"
+#endif
 #include <boost/serialization/serialization.hpp>
 #include <boost/serialization/nvp.hpp>
 #include <memory>
 
 namespace Exception
 {
-
+#ifdef FMTWITHGDAL
 	void FMTCPLErrorHandler(CPLErr eErrClass, CPLErrorNum nError, const char * pszErrorMsg);
-
+#endif
 
 	class FMTexceptionhandler
 	{
@@ -57,18 +59,20 @@ namespace Exception
 		FMTexc _exception;
 		int _errorcount, _warningcount;
 		std::shared_ptr<Logging::FMTlogger>_logger;
-		string updatestatus(const FMTexc lexception, const string message);
+		std::string updatestatus(const FMTexc lexception, const std::string message);
 	public:
 		FMTexceptionhandler();
 		virtual ~FMTexceptionhandler() = default;
 		FMTexceptionhandler(const FMTexceptionhandler& rhs);
 		void passinlogger(const std::shared_ptr<Logging::FMTlogger>& logger);
-		virtual FMTexceptionhandler* getCPLdata();
-		virtual void handelCPLerror(CPLErr eErrClass, CPLErrorNum nError, const char * pszErrorMsg);
+		#ifdef FMTWITHGDAL
+			virtual FMTexceptionhandler* getCPLdata();
+			virtual void handelCPLerror(CPLErr eErrClass, CPLErrorNum nError, const char * pszErrorMsg);
+		#endif
 		FMTexceptionhandler& operator = (const FMTexceptionhandler& rhs);
 		void throw_nested(const FMTexception& texception, int level = 0);
-		virtual FMTlev raise(FMTexc lexception, FMTwssect lsection, string text,
-			const int& line, const string& file);
+		virtual FMTlev raise(FMTexc lexception, FMTwssect lsection, std::string text,
+			const int& line, const std::string& file);
 	};
 
 }

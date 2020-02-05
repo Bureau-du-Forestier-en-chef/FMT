@@ -27,21 +27,21 @@ SOFTWARE.
 namespace Spatial
 {
 FMTcut::FMTcut():
-    FMTevent<FMTdevelopment>()
+    FMTevent<Core::FMTdevelopment>()
     {
 
     }
 
 
 
-FMTcut::FMTcut(const map<FMTcoordinate,FMTdevelopment>& lterritory, const int& pass):
-                 FMTevent<FMTdevelopment>(lterritory,pass)
+FMTcut::FMTcut(const std::map<FMTcoordinate,Core::FMTdevelopment>& lterritory, const int& pass):
+                 FMTevent<Core::FMTdevelopment>(lterritory,pass)
                  {
 
                  }
 
     FMTcut::FMTcut(const FMTcut& rhs):
-        FMTevent<FMTdevelopment>(rhs)
+        FMTevent<Core::FMTdevelopment>(rhs)
     {
 
     }
@@ -49,7 +49,7 @@ FMTcut& FMTcut::operator = (const FMTcut& rhs)
     {
     if(this!=&rhs)
         {
-        FMTevent<FMTdevelopment>::operator = (rhs);
+        FMTevent<Core::FMTdevelopment>::operator = (rhs);
         }
     return *this;
     }

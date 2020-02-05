@@ -119,9 +119,9 @@ namespace Models
 
     double FMTsamodel::warmup(const double initprob, const size_t iterations,bool keep_best,FMTsawarmuptype type)
     {
-        FMTsasolution first=current_solution;//Put it as current at the end
+        const Spatial::FMTsasolution first=current_solution;//Put it as current at the end
         double temp = 0;
-        double mean_ratio = (max_ratio_moves - min_ratio_moves)/2;
+        const  double mean_ratio = (max_ratio_moves - min_ratio_moves)/2;
         size_t iter = iterations;
         switch(type)
         {
@@ -134,7 +134,7 @@ namespace Models
                     move_solution();
                     if(evaluate(0))//The temp need to be 0 to do only greedy to track what is upgraded because we accept every solution
                     {
-                        double delta = current_solution.getobjfvalue()-new_solution.getobjfvalue();
+                        const double delta = current_solution.getobjfvalue()-new_solution.getobjfvalue();
                         sum_delta += delta;
                         ++num_delta;
                     }
@@ -152,7 +152,7 @@ namespace Models
                     move_solution();
                     if(evaluate(0))//The temp need to be 0 to do only greedy to track what is upgraded because we accept every solution
                     {
-                        double delta = fabs(new_solution.getobjfvalue()-current_solution.getobjfvalue());
+                        const double delta = fabs(new_solution.getobjfvalue()-current_solution.getobjfvalue());
                         if (delta>maxdelta)
                         {
                             maxdelta = delta;
@@ -160,7 +160,7 @@ namespace Models
                     }
                     acceptnew();
                     --iter;
-                    cout<<maxdelta<<" : delta at iter num "<<number_of_moves<<endl;
+                    *_logger<<maxdelta<<" : delta at iter num "<<number_of_moves<<"\n";
                 }
                 temp = -(maxdelta)/log(initprob);
                 break;
@@ -172,7 +172,7 @@ namespace Models
                 {
                     g_move_solution(mean_ratio,mean_ratio);//Systematicaly evaluate the mean_ratio
                     evaluate(0);//The temp need to be 0 to do only greedy to track what is upgraded because we accept every solution
-                    double delta = fabs(current_solution.getobjfvalue()-new_solution.getobjfvalue());
+                    const double delta = fabs(current_solution.getobjfvalue()-new_solution.getobjfvalue());
                     if (delta>maxdelta)
                     {
                             maxdelta = delta;
@@ -185,7 +185,7 @@ namespace Models
             }
         case FMTsawarmuptype::bootstrapmagic :
             {
-                vector<double> penalties;
+				std::vector<double> penalties;
                 while(iter > 0)
                 {
                     move_solution();
@@ -200,36 +200,36 @@ namespace Models
                 }
                 //Bootstrap
                 int sample_num = 0;
-                uniform_int_distribution<int> penalties_distribution(0,penalties.size()-1);
-                vector<pair<double,double>> pmin_max;
+				std::uniform_int_distribution<int> penalties_distribution(0,penalties.size()-1);
+				std::vector<std::pair<double,double>> pmin_max;
                 while(sample_num<100)
                 {
                     int sample_size = 0;
-                    vector<double> sample;
+					std::vector<double> sample;
                     while (sample_size<100)
                     {
-                        int lucky_penalty = penalties_distribution(generator);
+                        const int lucky_penalty = penalties_distribution(generator);
                         sample.push_back(penalties.at(lucky_penalty));
                         sample_size++;
                     }
-                    pmin_max.push_back(pair<double,double>(*min_element(sample.begin(),sample.end()),*max_element(sample.begin(),sample.end())));
+                    pmin_max.push_back(std::pair<double,double>(*std::min_element(sample.begin(),sample.end()),*std::max_element(sample.begin(),sample.end())));
                     sample_num++;
                 }
                 //Magie
-                double tempmin = *max_element(penalties.begin(),penalties.end());
+                const double tempmin = *std::max_element(penalties.begin(),penalties.end());
                 double templ = tempmin;
                 double pcalculate = 0;
                 while (pcalculate<=initprob)
                 {
                     double totemin=0;
                     double totemax=0;
-                    for (const pair<double,double>& min_max : pmin_max)
+                    for (const std::pair<double,double>& min_max : pmin_max)
                     {
                         totemin+=exp(-min_max.first/templ);
                         totemax+=exp(-min_max.second/templ);
                     }
                     pcalculate = totemax/totemin;
-                    cout<<pcalculate<<endl;
+                    *_logger<<pcalculate<<"\n";
                     if (pcalculate<initprob)
                     {
                         templ+=tempmin*0.05;
@@ -253,18 +253,18 @@ namespace Models
         get_outputs("warmup_");
         //Only to reset samodel parameters to default
         number_of_moves = 0;
-        new_solution = FMTsasolution();
-        best_solution = FMTsasolution();
-        mapidmodified = vector<size_t>();
+        new_solution = Spatial::FMTsasolution();
+        best_solution = Spatial::FMTsasolution();
+        mapidmodified = std::vector<size_t>();
         return temp;
     }
 
-    void FMTsamodel::write_outputs_at(string path)
+    void FMTsamodel::write_outputs_at(std::string path)
     {
         outputs_write_location = path;
         if (boost::filesystem::exists(path+"outputs.csv"))
         {
-            const string outputs= path+"outputs.csv";
+            const std::string outputs= path+"outputs.csv";
             char *cstr = new char[outputs.size() + 1];
             strcpy(cstr, outputs.c_str());
             remove(cstr);
@@ -273,24 +273,20 @@ namespace Models
 
     }
 
-    bool FMTsamodel::setschedule(const FMTexponentialschedule& schedule)
+    bool FMTsamodel::setschedule(const Spatial::FMTexponentialschedule& schedule)
     {
-        cooling_schedule = unique_ptr<FMTexponentialschedule>(new FMTexponentialschedule(schedule));
+        cooling_schedule = std::unique_ptr<Spatial::FMTexponentialschedule>(new Spatial::FMTexponentialschedule(schedule));
         return true;
     }
-    /*bool FMTsamodel::setschedule(FMTexponentialschedule schedule) const;
-        {
-        cooling_schedule = schedule
-        }*///Need to build this class
 
-    bool FMTsamodel::setspactions(const vector<FMTspatialaction>& lspactions)
+    bool FMTsamodel::setspactions(const std::vector<Spatial::FMTspatialaction>& lspactions)
     {
-		vector<FMTtransition>newtransitions;
-		vector<FMTspatialaction>newspatials;
-		vector<FMTaction>newbaseactions;
-		for (const FMTspatialaction& spaction : lspactions)
+		std::vector<Core::FMTtransition>newtransitions;
+		std::vector<Spatial::FMTspatialaction>newspatials;
+		std::vector<Core::FMTaction>newbaseactions;
+		for (const Spatial::FMTspatialaction& spaction : lspactions)
 			{
-			vector<FMTtransition>::const_iterator trn_iterator = find_if(transitions.begin(), transitions.end(), FMTtransitioncomparator(spaction.name));
+			std::vector<Core::FMTtransition>::const_iterator trn_iterator = std::find_if(transitions.begin(), transitions.end(), Core::FMTtransitioncomparator(spaction.name));
 			if (trn_iterator!= transitions.end())
 				{
 				newtransitions.push_back(*trn_iterator);
@@ -298,32 +294,20 @@ namespace Models
 				newbaseactions.push_back(spaction);
 				if (spaction.simulated_annealing_valid())
                 {
-                    vector<FMTconstraint> newconst = spaction.to_constraints();
-                    for (FMTconstraint& constraint : newconst)
+					std::vector<Core::FMTconstraint> newconst = spaction.to_constraints();
+                    for (Core::FMTconstraint& constraint : newconst)
                     {
                         constraints.push_back(constraint);
                     }
                 }
 			}else{
-				_exhandler->raise(FMTexc::WSinvalid_transition,FMTwssect::Transition, "Missing transition case for action : " + spaction.name,__LINE__, __FILE__);
+				_exhandler->raise(Exception::FMTexc::WSinvalid_transition,FMTwssect::Transition, "Missing transition case for action : " + spaction.name,__LINE__, __FILE__);
 				return false;
 				}
 			}
         spactions = lspactions;
 		actions = newbaseactions;
 		transitions = newtransitions;
-		//Test spatial actions to constraints
-		/*for(FMTconstraint& constraint : constraints){
-                                                        cout<<constraint.name<<" : "<<constraint.getconstrainttype()<<endl;
-                                                        double upper = 0;
-                                                        double lower = 0;
-                                                        double coef = 0;
-                                                        string name;
-                                                        constraint.getbounds(lower,upper,0);
-                                                        constraint.getgoal(name,coef);
-                                                        cout<<upper<<" : "<<lower<<"      "<<name<<" : "<<coef<<endl;
-                                                        cout<<string(constraint)<<endl;
-                                                    }*/
 		return true;
     }
 
@@ -339,34 +323,34 @@ namespace Models
         return number_of_moves;
     }
 
-    void FMTsamodel::get_outputs(string addon)
+    void FMTsamodel::get_outputs(std::string addon)
     {
         if (outputs_write_location.empty())
         {
-            _exhandler->raise(FMTexc::FMTinvalid_path,FMTwssect::Empty, "No path given to the function write_outputs_at ",__LINE__, __FILE__);
+            _exhandler->raise(Exception::FMTexc::FMTinvalid_path,FMTwssect::Empty, "No path given to the function write_outputs_at ",__LINE__, __FILE__);
         }
         else
         {
-            fstream outputFile;
-            string filename = outputs_write_location+addon+"outputs.csv";
-            string headers = "Move,Constraint,Period,Output,Penalty,P";
+			std::fstream outputFile;
+			const std::string filename = outputs_write_location+addon+"outputs.csv";
+			const std::string headers = "Move,Constraint,Period,Output,Penalty,P";
             outputFile.open(filename, std::fstream::in | std::fstream::out | std::fstream::app);
-            vector<int>::const_iterator move_num=accepted_solutions.begin();
-            vector<double>::const_iterator probs=probabs.begin();
+			std::vector<int>::const_iterator move_num=accepted_solutions.begin();
+			std::vector<double>::const_iterator probs=probabs.begin();
             if (*move_num==0)
             {
-                outputFile<<headers<<endl;
+                outputFile<<headers<<std::endl;
             }
-            for (const map<string,pair<vector<double>,vector<double>>>& move_info : constraints_values_penalties)
+            for (const std::map<std::string, std::pair<std::vector<double>, std::vector<double>>>& move_info : constraints_values_penalties)
             {
-                for (map<string,pair<vector<double>,vector<double>>>::const_iterator mapit = move_info.begin(); mapit != move_info.end(); ++mapit)
+                for (std::map<std::string, std::pair<std::vector<double>, std::vector<double>>>::const_iterator mapit = move_info.begin(); mapit != move_info.end(); ++mapit)
                 {
-                    const string& cname = mapit->first;
-                    const vector<double>& outputs = mapit->second.first;
-                    const vector<double>& penalties = mapit->second.second;
+                    const std::string& cname = mapit->first;
+                    const std::vector<double>& outputs = mapit->second.first;
+                    const std::vector<double>& penalties = mapit->second.second;
                     for (int i = 0 ; i < outputs.size() ; ++i )
                     {
-                            outputFile<<*move_num<<","<<cname<<","<<i+1<<","<<outputs.at(i)<<","<<penalties.at(i)<<","<<*probs<<endl;
+                            outputFile<<*move_num<<","<<cname<<","<<i+1<<","<<outputs.at(i)<<","<<penalties.at(i)<<","<<*probs<<std::endl;
                     }
                 }
                 ++move_num;
@@ -378,58 +362,18 @@ namespace Models
             outputFile.close();
         }
     }
-            /*for (map<pair<int,string>,vector<vector<double>>>::const_iterator mapit = constraints_values_penalties.begin(); mapit != constraints_values_penalties.end(); ++mapit)
-            {
-                const int& move_num = mapit->first.first;
-                const string& constraint_name = mapit->first.second;
-                const vector<vector<double>>& outputs = mapit->second;
-                for (int i = 0 ; i < outputs.at(0).size() ; ++i )
-                {
-                    const double& output = outputs.at(0).at(i);
-                    const double& penalty = outputs.at(1).at(i);
-                    if (move_num==0)
-                    {
-                        if (i==0 && mapit==constraints_values_penalties.begin())
-                        {
-                            outputFile<<headers<<endl;
-                        }
-                        outputFile<<move_num<<","<<constraint_name<<","<<i+1<<","<<output<<","<<penalty<<","<<0<<","<<0<<endl;
-                    }
-                    else
-                    {
-                        const int& best = bests_solutions.at(move_num-1);
-                        const int& last_accepted = accepted_solutions.at(move_num-1);
-                        if (only_accepted)
-                        {
-                            if ( best == move_num || last_accepted == move_num)
-                            {
-                            outputFile<<move_num<<","<<constraint_name<<","<<i+1<<","<<outputs.at(0).at(i)<<","<<outputs.at(1).at(i)<<","<<best<<","<<last_accepted<<endl;
-                            }
-                        }
-                        else
-                        {
-                            outputFile<<move_num<<","<<constraint_name<<","<<i+1<<","<<outputs.at(0).at(i)<<","<<outputs.at(1).at(i)<<","<<best<<","<<last_accepted<<endl;
-                        }
-
-                    }
-                }
-            }
-            constraints_values_penalties.clear();
-            outputFile.close();
-        }
-    }*/
-
-    FMTsasolution FMTsamodel::get_current_solution()const
+           
+    Spatial::FMTsasolution FMTsamodel::get_current_solution()const
     {
             return current_solution;
     }
 
-    FMTsasolution FMTsamodel::get_new_solution()const
+	Spatial::FMTsasolution FMTsamodel::get_new_solution()const
     {
             return new_solution;
     }
 
-    void FMTsamodel::write_solutions_events(string out_path)const
+    void FMTsamodel::write_solutions_events(std::string out_path)const
     {
         if (number_of_moves>0)
         {
@@ -443,29 +387,27 @@ namespace Models
         }
     }
 
-    vector<FMTspatialaction> FMTsamodel::getspatialactions()const
+   std::vector<Spatial::FMTspatialaction> FMTsamodel::getspatialactions()const
     {
         return spactions;
     }
 
-    bool FMTsamodel::setinitial_mapping(const FMTforest& forest)
+    bool FMTsamodel::setinitial_mapping(const Spatial::FMTforest& forest)
     {
-        current_solution = FMTsasolution(forest);
+        current_solution = Spatial::FMTsasolution(forest);
 		return true;
     }
 
     void FMTsamodel::acceptnew()
     {
-        //current_solution = new_solution;
 		current_solution.copyfromselected(new_solution, mapidmodified);
-		//current_solution.swapfromselected(new_solution, mapidmodified);
-		new_solution = FMTsasolution();
+		new_solution = Spatial::FMTsasolution();
     }
 
     bool FMTsamodel::testprobability(const double& p) //Metropolis criterion
     {
-        uniform_real_distribution<double> r_dist(0.0,1);
-        double r = r_dist(generator);
+        std::uniform_real_distribution<double> r_dist(0.0,1);
+        const double r = r_dist(generator);
         if (p > r)
         {
             return true;
@@ -476,11 +418,6 @@ namespace Models
     bool FMTsamodel::evaluate(const double temp,bool all_data)
     //Get the output, evaluate the penalties and compare solutions
     {
-        /*//Time checking
-        clock_t start, end;
-        double cpu_time_used;
-        start = clock();
-        //*/
         if (!comparesolutions())// if compare solution return false ... which means they are different
         {
             double cur_obj = 0;
@@ -503,7 +440,6 @@ namespace Models
             const double new_obj = new_solution.evaluate(*this);
             if (best_obj>new_obj)
             {
-               // best_solution=new_solution;
 				best_solution.copyfromselected(new_solution, mapidmodified);
             }
             if ( cur_obj>new_obj )//If new is better than the last_best
@@ -512,7 +448,7 @@ namespace Models
             }
             else
                 {
-                    p = exp((-1*(cur_obj)-new_obj)/temp);
+                    p = std::exp((-1*(cur_obj)-new_obj)/temp);
                 }
             if (testprobability(p))
             {
@@ -531,24 +467,19 @@ namespace Models
             }
         }
         return false;
-        /*//Time checking
-        end = clock();
-        cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
-        cout<<"Time used to evaluate: " <<cpu_time_used<<endl;
-        //*/
     }
 
-    FMTgraphstats FMTsamodel::buildperiod()
+    Graph::FMTgraphstats FMTsamodel::buildperiod()
     {
         return current_solution.buildperiod(*this,generator);
     }
 
-    FMTgraphstats FMTsamodel::move_solution(FMTsamovetype movetype)
+    Graph::FMTgraphstats FMTsamodel::move_solution(Spatial::FMTsamovetype movetype)
     {
         return g_move_solution(min_ratio_moves,max_ratio_moves,movetype);
     }
 
-    FMTgraphstats FMTsamodel::g_move_solution (const double min_ratio, const double max_ratio, FMTsamovetype movetype)
+    Graph::FMTgraphstats FMTsamodel::g_move_solution (const double min_ratio, const double max_ratio, Spatial::FMTsamovetype movetype)
     {
         number_of_moves ++;
         new_solution = current_solution.perturb(*this,generator,movetype,min_ratio,max_ratio);
@@ -559,9 +490,9 @@ namespace Models
     {
         if (current_solution.getsolution_stats() == new_solution.getsolution_stats() && current_solution.getevents() == new_solution.getevents())
         {
-            for (vector<size_t>::const_iterator it = mapidmodified.begin(); it != mapidmodified.end(); it++)
+            for (std::vector<size_t>::const_iterator it = mapidmodified.begin(); it != mapidmodified.end(); it++)
             {
-                 map<FMTcoordinate,FMTgraph>::const_iterator current_solutionit =  current_solution.mapping.begin();
+				std::map<Spatial::FMTcoordinate,Graph::FMTgraph>::const_iterator current_solutionit =  current_solution.mapping.begin();
                  std::advance(current_solutionit,*it);
                  if(current_solutionit->second != new_solution.mapping.at(current_solutionit->first))
                  {
@@ -573,7 +504,7 @@ namespace Models
         return false;
     }
 
-    bool FMTsamodel::setmapidmodified(const vector<size_t>& id)
+    bool FMTsamodel::setmapidmodified(const std::vector<size_t>& id)
     {
         mapidmodified = id;
         return true;

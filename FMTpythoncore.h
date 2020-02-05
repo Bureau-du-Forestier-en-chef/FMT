@@ -48,10 +48,6 @@ SOFTWARE.
 
 
 
-using namespace boost::python;
-using namespace Exception;
-
-
 namespace boost{
 
 template<class T>
@@ -96,7 +92,7 @@ struct UMapToDict
 template<class T>
 struct VecToList
 {
-    static PyObject* convert(const vector<T>& vec)
+    static PyObject* convert(const std::vector<T>& vec)
     {
         boost::python::list* l = new boost::python::list();
         for(size_t i = 0; i < vec.size(); i++) {
@@ -115,14 +111,14 @@ struct VecFrList
     {
     boost::python::converter::registry::push_back(&VecFrList<T>::convertible,
 			  &VecFrList<T>::construct,
-			  type_id<std::vector<T> >());
+			  boost::python::type_id<std::vector<T> >());
     }
 
     // Determine if obj_ptr can be converted in a std::vector<T>
     static void* convertible(PyObject* obj_ptr)
     {
       if (!PyList_Check(obj_ptr)){
-    PyObject* nullobj = nullptr;
+		  PyObject* nullobj = nullptr;
 	return nullobj;
       }
       return obj_ptr;
@@ -130,12 +126,12 @@ struct VecFrList
 
     // Convert obj_ptr into a std::vector<T>
     static void construct(
-    PyObject* obj_ptr,
+	PyObject* obj_ptr,
     boost::python::converter::rvalue_from_python_stage1_data* data)
     {
       // Extract the character data from the python string
       //      const char* value = PyString_AsString(obj_ptr);
-       boost::python::list l(handle<>(borrowed(obj_ptr)));
+       boost::python::list l(boost::python::handle<>(boost::python::borrowed(obj_ptr)));
 
       // // Verify that obj_ptr is a string (should be ensured by convertible())
       // assert(value);
@@ -150,10 +146,10 @@ struct VecFrList
       std::vector<T>& v = *(new (storage) std::vector<T>());
 
       // populate the vector from list contains !!!
-      int le = int(len(l));
+      int le = static_cast<int>(boost::python::len(l));
       v.resize(le);
       for(int i = 0;i!=le;++i){
-	v[i] = extract<T>(l[i]);
+	v[i] = boost::python::extract<T>(l[i]);
       }
 
       // Stash the memory chunk pointer for later use by boost.python
@@ -190,18 +186,18 @@ struct iterable_converter
     PyObject* object,
     boost::python::converter::rvalue_from_python_stage1_data* data)
   {
-    namespace python = boost::python;
+ 
     // Object is a borrowed reference, so create a handle indicting it is
     // borrowed for proper reference counting.
-    python::handle<> handle(python::borrowed(object));
+	  boost::python::handle<> handle(boost::python::borrowed(object));
 
     // Obtain a handle to the memory block that the converter has allocated
     // for the C++ type.
-    typedef python::converter::rvalue_from_python_storage<Container>
+    typedef boost::python::converter::rvalue_from_python_storage<Container>
                                                                 storage_type;
     void* storage = reinterpret_cast<storage_type*>(data)->storage.bytes;
 
-    typedef python::stl_input_iterator<typename Container::value_type>
+    typedef boost::python::stl_input_iterator<typename Container::value_type>
                                                                     iterator;
 
     // Allocate the C++ type into the converter's memory block, and assign
@@ -209,7 +205,7 @@ struct iterable_converter
     // container is populated by passing the begin and end iterators of
     // the python object to the container's constructor.
     new (storage) Container(
-      iterator(python::object(handle)), // begin
+      iterator(boost::python::object(handle)), // begin
       iterator());                      // end
     data->convertible = storage;
   }
@@ -246,7 +242,7 @@ struct MapFrDict
 		PyObject* obj_ptr,
 		boost::python::converter::rvalue_from_python_stage1_data* data)
 	{
-		boost::python::dict mapping(handle<>(borrowed(obj_ptr)));
+		boost::python::dict mapping(boost::python::handle<>(boost::python::borrowed(obj_ptr)));
 
 		// // Verify that obj_ptr is a string (should be ensured by convertible())
 		// assert(value);
@@ -262,7 +258,7 @@ struct MapFrDict
 
 		// populate the vector from list contains !!!
 		boost::python::list keys = mapping.keys();
-		for (int i = 0; i < len(keys); ++i)
+		for (int i = 0; i < boost::python::len(keys); ++i)
 			{
 			boost::python::extract<k> extracted_key(keys[i]);
 			k newkey = extracted_key;
@@ -278,17 +274,14 @@ struct MapFrDict
 
 
 
-void FMTtranslate_warning(FMTwarning const& e)
+void FMTtranslate_warning(Exception::FMTwarning const& e)
     {
-
-	//boost::python::object pythonExceptionInstance(e);
-	//PyErr_SetObject(myCPPExceptionType, pythonExceptionInstance.ptr());
     PyErr_SetString(PyExc_UserWarning, e.what());
     }
 
 PyObject* FMTexceptiontype = NULL;
 
-void FMTtranslate_error(FMTerror const& error) //should be implemented more like https://stackoverflow.com/questions/9620268/boost-python-custom-exception-class
+void FMTtranslate_error(Exception::FMTerror const& error) //should be implemented more like https://stackoverflow.com/questions/9620268/boost-python-custom-exception-class
     {
 	if (error.hold())
 		{
@@ -298,20 +291,8 @@ void FMTtranslate_error(FMTerror const& error) //should be implemented more like
 	}else {
 		PyErr_SetString(PyExc_RuntimeError, error.what());
 		}
-	//throw_error_already_set();
-    //PyErr_SetString(PyExc_RuntimeError, error.what());
     }
-/*
-struct FMTlpmodel_pickle_suite : boost::python::pickle_suite
-{
-	static
-		boost::python::tuple
-		getinitargs(const FMTlpmodel& lpmodel)
-	{
-		return boost::python::make_tuple(w.get_country());
-	}
-};
-*/
+
 #endif
 
 #endif

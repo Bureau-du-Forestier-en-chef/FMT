@@ -27,6 +27,7 @@ SOFTWARE.
 
 #include "FMTdevelopment.h"
 #include <boost/serialization/serialization.hpp>
+#include <memory>
 
 
 namespace Core
@@ -45,7 +46,7 @@ namespace Core
 			FMTfuturdevelopment(const FMTfuturdevelopment& rhs);
 			bool operator == (const FMTfuturdevelopment& rhs) const;
 			FMTfuturdevelopment& operator = (const FMTfuturdevelopment& rhs);
-			unique_ptr<FMTdevelopment> Clone() const override;
+			std::unique_ptr<FMTdevelopment> Clone() const override;
 			double getarea() const override;
 
 		};
