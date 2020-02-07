@@ -50,15 +50,19 @@ class FMTtransition : public FMTlist<FMTfork>
 		ar & boost::serialization::make_nvp("data", boost::serialization::base_object<FMTlist<FMTfork>>(*this));
 		ar & BOOST_SERIALIZATION_NVP(name);
 	}
-    public:
+	protected:
 		std::string name;
+    public:
         FMTtransition();
-        FMTtransition(std::string& lname);
 		FMTtransition(const std::string& lname);
         FMTtransition(const FMTtransition& rhs);
         FMTtransition& operator = (const FMTtransition& rhs);
         operator std::string() const;
         FMTtransition single() const;
+		inline std::string getname() const
+			{
+			return name;
+			}
 		bool isleaking() const;
         unsigned int age_after(const std::vector<FMTdevelopment>& devs,
                                const FMTaction& action,

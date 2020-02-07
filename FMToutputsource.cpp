@@ -224,41 +224,38 @@ bool FMToutputsource::issamebutdifferentaction(const FMToutputsource& rhs) const
 	return (FMTspec::operator == (rhs) && mask == rhs.mask && target == rhs.target &&
 		action != rhs.action);
 	}
+
+bool FMToutputsource::isinaggregate(const FMToutputsource& rhs, const std::vector<Core::FMTaction>& actions) const
+	{
+	const std::vector<const FMTaction*>allactions = FMTactioncomparator(rhs.action).getallaggregates(actions);
+	for (const FMTaction* actptr : allactions)
+		{
+		if (actptr->getname() == action)
+			{
+			return true;
+			}
+		}
+	return false;
+	}
 	
 
 bool FMToutputsource::issubsetof(const FMToutputsource& rhs,
-	const std::map<std::string, std::vector<std::string>>& actaggregates) const
+	const std::vector<Core::FMTaction>& actions) const
 	{
+	
 	if ((this->isvariable() && rhs.isvariable() && 
 		target == rhs.target && FMTspec::issubsetof(rhs) && 
 		!((!action.empty() && rhs.action.empty()) || (!rhs.action.empty() && action.empty()))) && 
 		(mask.data.is_subset_of(rhs.mask.data) && 
 		((action.empty() && rhs.action.empty()) || 
 		(!action.empty() && !rhs.action.empty() && 
-		(action == rhs.action || (actaggregates.find(rhs.action) != actaggregates.end() && 
-		std::find(actaggregates.at(rhs.action).begin(), actaggregates.at(rhs.action).end(), action) != actaggregates.at(rhs.action).end()))))))
+			isinaggregate(rhs,actions)))))
 			{
 			return true;
 			}
 	return false;
 	}
 
-bool FMToutputsource::canbeusedby(const FMToutputsource& rhs,
-	const std::map<std::string, std::vector<std::string>>& actaggregates) const
-	{
-	if ((this->isvariable() && rhs.isvariable() &&
-		target == rhs.target && FMTspec::issubsetof(rhs) &&
-		!((!action.empty() && rhs.action.empty()) || (!rhs.action.empty() && action.empty()))) &&
-		(rhs.mask.data.is_subset_of(mask.data) &&
-		((action.empty() && rhs.action.empty()) ||
-			(!action.empty() && !rhs.action.empty() &&
-			(action == rhs.action || (actaggregates.find(rhs.action) != actaggregates.end() &&
-				std::find(actaggregates.at(rhs.action).begin(), actaggregates.at(rhs.action).end(), action) != actaggregates.at(rhs.action).end()))))))
-	{
-		return true;
-	}
-	return false;
-	}
 
 void FMToutputsource::setaverage()
 	{
@@ -346,33 +343,13 @@ FMTotar FMToutputsource::gettarget() const
 	return target;
 	}
 
-std::vector<const FMTaction*>FMToutputsource::targets(const std::vector<FMTaction>& actions,
-			const std::map<std::string, std::vector<std::string>>& aggregates) const
+std::vector<const FMTaction*>FMToutputsource::targets(const std::vector<FMTaction>& actions) const
 	{
-	std::vector<const FMTaction*>action_IDS;
-	if (target != FMTotar::level)
+	if (target != FMTotar::level && !action.empty())
         {
-        if (!action.empty())
-        {
-			std::vector<FMTaction>::const_iterator ait = find_if(actions.begin(), actions.end(), FMTactioncomparator(action));
-            if (aggregates.find(action) != aggregates.end())
-            {
-                for (const std::string& actvalue : aggregates.at(action))
-                {
-					std::vector<FMTaction>::const_iterator it = find_if(actions.begin(), actions.end(), FMTactioncomparator(actvalue));
-                    if (it != actions.end())
-                    {
-						action_IDS.push_back(&(*it));
-                    }
-
-                }
-            }else if (ait!= actions.end())
-				{
-					action_IDS.push_back(&(*ait));
-				}
-			}
+		return FMTactioncomparator(action).getallaggregates(actions);
         }
-	return action_IDS;
+	return std::vector<const FMTaction*>();
 	}
 
 bool FMToutputsource::isinventory() const

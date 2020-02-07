@@ -40,7 +40,7 @@ SOFTWARE.
 #include <boost/serialization/unordered_map.hpp>
 #include <boost/serialization/vector.hpp>
 #include <boost/serialization/nvp.hpp>
-
+#include <iterator>
 
 namespace Core
 {
@@ -53,7 +53,6 @@ namespace Core
 		void save(Archive& ar, const unsigned int version) const
 			{
 			ar & BOOST_SERIALIZATION_NVP(data);
-			ar & BOOST_SERIALIZATION_NVP(masks);
 			ar & BOOST_SERIALIZATION_NVP(filter);
 			std::vector<std::pair<FMTmask, std::vector<int>>>vecfastpass(fastpass.begin(), fastpass.end());
 			ar & BOOST_SERIALIZATION_NVP(vecfastpass);
@@ -62,7 +61,6 @@ namespace Core
 		void load(Archive& ar, const unsigned int version)
 			{
 			ar & BOOST_SERIALIZATION_NVP(data);
-			ar & BOOST_SERIALIZATION_NVP(masks);
 			ar & BOOST_SERIALIZATION_NVP(filter);
 			std::vector<std::pair<FMTmask, std::vector<int>>>vecfastpass;
 			ar & BOOST_SERIALIZATION_NVP(vecfastpass);
@@ -72,19 +70,16 @@ namespace Core
 				}
 			}
 		BOOST_SERIALIZATION_SPLIT_MEMBER()
-		std::vector<T>data;
-		std::vector<FMTmask>masks;
+		std::vector<std::pair<FMTmask, T>>data;
 		FMTmaskfilter filter;
 		mutable boost::unordered_map<FMTmask, std::vector<int>>fastpass;
 	public:
 		FMTlist() :
 			data(),
-			masks(),
 			filter(),
 			fastpass() {};
 		FMTlist(const FMTlist<T>& rhs) :
 			data(rhs.data),
-			masks(rhs.masks),
 			filter(rhs.filter),
 			fastpass(rhs.fastpass)
 		{
@@ -95,7 +90,6 @@ namespace Core
 			if (this != &rhs)
 			{
 				data = rhs.data;
-				masks = rhs.masks;
 				filter = rhs.filter;
 				fastpass = rhs.fastpass;
 			}
@@ -104,22 +98,13 @@ namespace Core
 
 		bool operator == (const FMTlist<T>& rhs) const
 			{
-			return (data == rhs.data &&
-				masks == rhs.masks);
+			return (data == rhs.data);
 			}
 
 		virtual ~FMTlist() = default;
 		bool empty() const
 		{
 			return data.empty();
-		}
-		std::vector<FMTmask>getmasklist() const
-		{
-			return masks;
-		}
-		std::vector<T>getdatalist() const
-		{
-			return data;
 		}
 		size_t size() const
 		{
@@ -137,18 +122,18 @@ namespace Core
 					allhits.reserve(fast_it->second.size());
 					for (const int& location : fast_it->second)
 					{
-						allhits.push_back(&data.at(location));
+						allhits.push_back(&data.at(location).second);
 					}
 				}
 				else {
 					fastpass[newkey] = std::vector<int>();
 					int location = 0;
-					for (const FMTmask& mask : masks)
+					for (const std::pair<FMTmask,T>& object : data)
 					{
-						if (newkey.data.is_subset_of(mask.data))
+						if (newkey.data.is_subset_of(object.first.data))
 						{
 							fastpass[newkey].push_back(location);
-							allhits.push_back(&data.at(location));
+							allhits.push_back(&object.second);
 						}
 						++location;
 					}
@@ -164,73 +149,77 @@ namespace Core
 
 		void shrink()
 		{
-			std::vector<FMTmask>newmasks;
+			std::vector<std::pair<FMTmask,T>>newdata;
 			fastpass.clear();
-			for (const FMTmask& mask : masks)
+			for (const std::pair<FMTmask,T>& object : data)
 			{
-				newmasks.push_back(filter.filter(mask));
+				newdata.push_back(std::pair<FMTmask,T>(filter.filter(object.first),object.second));
 			}
-			masks = newmasks;
+			data = newdata;
 		}
 		void push_back(const FMTmask& mask, const T& value)
 		{
-			data.push_back(value);
-			masks.push_back(mask);
+			data.emplace_back(mask,value);
 		}
+		
+		void push_back(const std::pair<FMTmask,T>& value)
+			{
+			data.emplace_back(value);
+			}
 		void push_front(const FMTmask& mask, const T& value)
 		{
-			data.insert(data.begin(),value);
-			masks.insert(masks.begin(),mask);
+			data.emplace(data.begin(), mask, value);
 		}
+		void push_front(const std::pair<FMTmask, T>& value)
+		{
+			data.emplace(data.begin(), value);
+		}
+
 		void pop_back()
             {
 			data.pop_back();
-			masks.pop_back();
             }
 		void erase(const size_t& location)
             {
-            data.erase(data.begin()+location);
-			masks.erase(masks.begin()+location);
+			data.erase(data.begin() + location);
             }
 
         void insert(const size_t& location,const FMTmask& mask, const T& value)
             {
-            data.insert(data.begin()+location,value);
-            masks.insert(masks.begin()+location,mask);
+			data.insert(data.begin() + location,std::pair<FMTmask,T>(mask,value));
             }
 
-		typename std::vector<FMTmask>::const_iterator maskbegin() const
+		void insert(const size_t& location,const std::pair<FMTmask, T>& value)
 		{
-			return masks.begin();
+			data.insert(data.begin() + location, value);
 		}
-		typename std::vector<FMTmask>::const_iterator maskend() const
-		{
-			return masks.end();
-		}
-		typename std::vector<T>::const_iterator databegin() const
-		{
+		typedef typename std::vector<std::pair<FMTmask, T>>::value_type value_type;
+		typedef typename std::vector<std::pair<FMTmask, T>>::iterator iterator;
+		typedef typename std::vector<std::pair<FMTmask, T>>::const_iterator const_iterator;
+		void append(value_type)
+			{
+			data.push_back(value_type);
+			}
+		iterator begin()
+			{
 			return data.begin();
-		}
-		typename std::vector<T>::const_iterator dataend() const
-		{
-			return data.end();
-		}
-		typename std::vector<FMTmask>::iterator maskbegin()
-		{
-			return masks.begin();
-		}
-		typename std::vector<FMTmask>::iterator maskend()
-		{
-			return masks.end();
-		}
-		typename std::vector<T>::iterator databegin()
-		{
+			}
+
+		const_iterator begin() const
+			{
 			return data.begin();
-		}
-		typename std::vector<T>::iterator dataend()
-		{
+			}
+
+		iterator  end()
+			{
 			return data.end();
-		}
+			}
+
+		const_iterator end() const
+			{
+			return data.end();
+			}
+
 	};
 
 }

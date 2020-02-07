@@ -68,11 +68,9 @@ class FMToutputsource : public FMTspec
 		bool operator == (const FMToutputsource& rhs) const;
 		bool operator != (const FMToutputsource& rhs) const;
 		bool operator < (const FMToutputsource& rhs) const;
+		bool isinaggregate(const FMToutputsource& rhs, const std::vector<Core::FMTaction>& actions) const;
+		bool issubsetof(const FMToutputsource& rhs, const std::vector<Core::FMTaction>& actions) const;
 		bool issubsetof(const FMToutputsource& rhs) const;
-		bool issubsetof(const FMToutputsource& rhs,
-			const std::map<std::string, std::vector<std::string>>& actaggregates) const;
-		bool canbeusedby(const FMToutputsource& rhs,
-			const std::map<std::string, std::vector<std::string>>& actaggregates) const;
 		bool issamebutdifferentaction(const FMToutputsource& rhs) const;
 		const FMTmask& getmask() const;
 		void setmask(const FMTmask& newmask);
@@ -87,8 +85,7 @@ class FMToutputsource : public FMTspec
 		std::string getlevel() const;
 		bool isnull(const FMTyields& ylds) const;
 		bool istimeyield() const;
-		std::vector<const FMTaction*>targets(const std::vector<FMTaction>& actions,
-			const std::map<std::string, std::vector<std::string>>& aggregates) const;
+		std::vector<const FMTaction*>targets(const std::vector<FMTaction>& actions) const;
 		bool isinventory() const;
 		bool useinedges() const;
 		bool isnextperiod() const;

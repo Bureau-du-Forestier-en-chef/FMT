@@ -184,7 +184,7 @@ FMTschedule::operator std::string() const
             const FMTdevelopment* dev = &devit->first;
 			for (const double & value : devit->second)
 				{
-				line += std::string(dev->mask) + " " + std::to_string(dev->age) + " " + std::to_string(value) + " " + actit->first.name + " " + std::to_string(period) + "\n";
+				line += std::string(dev->mask) + " " + std::to_string(dev->age) + " " + std::to_string(value) + " " + actit->first.getname() + " " + std::to_string(period) + "\n";
 				}
             }
         }
@@ -237,7 +237,7 @@ bool FMTschedule::operated(const FMTaction& action,
 	if (actit != elements.end())
 		{
 		std::map<FMTdevelopment, std::vector<double>>::const_iterator devit;
-		if (action.lock)
+		if (action.dorespectlock())
 			{
 			devit = actit->second.find(developement);
 			}else {

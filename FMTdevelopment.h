@@ -63,8 +63,8 @@ class FMTdevelopment : public FMTobject
         FMTdevelopment();
         virtual ~FMTdevelopment() = default;
 		virtual std::unique_ptr<FMTdevelopment> Clone() const;
-        FMTdevelopment(FMTmask mask,int age,int lock);
-        FMTdevelopment(FMTmask lmask,int lage,int llock, int lperiod);
+        FMTdevelopment(const FMTmask& mask,const int& age,const int& lock);
+        FMTdevelopment(const FMTmask& lmask,const int& lage,const int& llock, const int& lperiod);
         FMTdevelopment(const FMTdevelopment& rhs);
         FMTdevelopment& operator = (const FMTdevelopment& rhs);
         bool operator == (const FMTdevelopment& rhs) const;

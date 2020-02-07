@@ -61,11 +61,10 @@ void exportModel()
 			.def("getoutputs", &Models::FMTmodel::getoutputs)
 			.def("getconstraints", &Models::FMTmodel::getconstraints)
 			.def("setconstraints", &Models::FMTmodel::setconstraints)
-			.def("getactionaggregates", &Models::FMTmodel::getactionaggregates)
             .def("gettransitions",&Models::FMTmodel::gettransitions)
             .def("settransitions",&Models::FMTmodel::settransitions)
             .def("getlifespan",&Models::FMTmodel::getlifespan)
-            .def("valid",&Models::FMTmodel::valid);
+            .def("isvalid",&Models::FMTmodel::isvalid);
     define_pylist<Models::FMTmodel>();
 
     const char* py_FMTsesm_doc =

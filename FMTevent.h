@@ -165,12 +165,12 @@ class FMTevent
 
 	size_t height() const
 		{
-		return ((enveloppe.at(2).gety() - enveloppe.at(0).gety())+1);
+		return ((static_cast<size_t>(enveloppe.at(2).gety()) - static_cast<size_t>(enveloppe.at(0).gety()))+1);
 		}
 
 	size_t width() const
 		{
-		return ((enveloppe.at(1).getx() - enveloppe.at(0).getx())+1);
+		return ((static_cast<size_t>(enveloppe.at(1).getx()) - static_cast<size_t>(enveloppe.at(0).getx()))+1);
 		}
 
 	FMTcoordinate averagecentroid() const

@@ -49,7 +49,6 @@ class FMToutputparser : public FMTparser
 		std::vector<Core::FMToutput> read(const std::vector<Core::FMTtheme>& themes,
                             const std::vector<Core::FMTaction>& actions,
                             const Core::FMTyields& ylds,const Core::FMTconstants& constants,
-							const std::map<std::string, std::vector<std::string>>& actions_aggregate,
 							std::string location);
         bool write(const std::vector<Core::FMToutput>& outputs, std::string location);
     };

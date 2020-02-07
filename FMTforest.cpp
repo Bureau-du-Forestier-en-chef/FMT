@@ -71,7 +71,7 @@ std::vector<Core::FMTactualdevelopment>FMTforest::getarea() const
                     {
                     devs.push_back(newadev);
                     }else{
-                    devit->area+=(1*cellsize);
+                    devit->setarea(devit->getarea()+(1 * cellsize));
                     }
                 }
             return devs;
@@ -240,7 +240,7 @@ std::vector<FMTevent<Core::FMTdevelopment>> FMTforest::buildharvest(const double
     int tooclosecall = 0;
     int initdone = 0;
     int spreaddone = 0;
-	bool check_adjacency = (std::find(targetaction.neighbors.begin(), targetaction.neighbors.end(), targetaction.name) != targetaction.neighbors.end());
+	bool check_adjacency = (std::find(targetaction.neighbors.begin(), targetaction.neighbors.end(), targetaction.getname()) != targetaction.neighbors.end());
     if(!mapping.empty())
         {
 		std::shuffle(locations.begin(),locations.end(),generator);

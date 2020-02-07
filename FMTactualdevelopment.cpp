@@ -31,7 +31,7 @@ namespace Core
 {
 
 	FMTactualdevelopment::FMTactualdevelopment() :FMTdevelopment(), area() {}
-	FMTactualdevelopment::FMTactualdevelopment(FMTmask mask, int age, int lock, double area) : FMTdevelopment(mask, age, lock), area(area) {}
+	FMTactualdevelopment::FMTactualdevelopment(const FMTmask& mask,const int& age, const int& lock, const double& area) : FMTdevelopment(mask, age, lock), area(area) {}
 	FMTactualdevelopment::FMTactualdevelopment(const FMTactualdevelopment& rhs) : FMTdevelopment(rhs), area(rhs.area) {}
 	FMTactualdevelopment& FMTactualdevelopment::operator = (const FMTactualdevelopment& rhs)
 	{
@@ -73,6 +73,11 @@ namespace Core
 	double FMTactualdevelopment::getarea() const
 		{
 		return area;
+		}
+
+	void FMTactualdevelopment::setarea(const double& newarea)
+		{
+		area = newarea;
 		}
 
 	std::unique_ptr<FMTdevelopment> FMTactualdevelopment::Clone() const

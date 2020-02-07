@@ -28,8 +28,6 @@ SOFTWARE.
 
 
 
-using namespace std;
-
 namespace WSParser
 {
 
@@ -152,7 +150,7 @@ FMTparser& FMTparser::operator = (const FMTparser& rhs)
     }
 #ifdef FMTWITHGDAL
 
-GDALDataset* FMTparser::getdataset(const string& location) const
+GDALDataset* FMTparser::getdataset(const std::string& location) const
     {
 	GDALDataset* data = nullptr;
 	if (isvalidfile(location))
@@ -353,9 +351,9 @@ std::string FMTparser::setspec(FMTwssect section,FMTwskwor key,const Core::FMTyi
 
 bool FMTparser::isact(FMTwssect section,const std::vector<Core::FMTaction>& actions, std::string action)
     {
-    if (std::find_if(actions.begin(),actions.end(), Core::FMTactioncomparator(action))==actions.end())
+    if (std::find_if(actions.begin(),actions.end(), Core::FMTactioncomparator(action,true))==actions.end())
         {
-        _exhandler->raise(Exception::FMTexc::WSundefined_action,section,action+" at line " + to_string(_line), __LINE__, __FILE__);
+        _exhandler->raise(Exception::FMTexc::WSundefined_action,section,action+" at line " + std::to_string(_line), __LINE__, __FILE__);
         return false;
         }else{
         return true;
@@ -370,7 +368,7 @@ bool FMTparser::isyld(const Core::FMTyields& ylds,const std::string& value,FMTws
         {
         return true;
         }
-     _exhandler->raise(Exception::FMTexc::WSinvalid_yield,section,value+" at line " + to_string(_line), __LINE__, __FILE__);
+     _exhandler->raise(Exception::FMTexc::WSinvalid_yield,section,value+" at line " + std::to_string(_line), __LINE__, __FILE__);
      return false;
     }
 
@@ -379,16 +377,16 @@ bool FMTparser::checkmask(const std::vector<Core::FMTtheme>& themes, const std::
 	bool returnvalue = true;
 	if (themes.size() > values.size())
 	{
-			_exhandler->raise(Exception::FMTexc::WSinvalid_maskrange, _section, mask + " at line " + to_string(_line), __LINE__, __FILE__);
+			_exhandler->raise(Exception::FMTexc::WSinvalid_maskrange, _section, mask + " at line " + std::to_string(_line), __LINE__, __FILE__);
 		returnvalue = false;
 	}else {
 		int id = 0;
 		mask.clear();
 		for (const Core::FMTtheme& theme : themes)
 		{
-			if (!theme.isattribute(values[id]) && !theme.isaggregate(values[id]) && values[id] != "?")
+			if (!theme.isvalid(values[id]))
 				{
-				std::string message = values[id] + " at theme " + to_string(theme.getid()+1) +" at line " + to_string(_line);
+				const std::string message = values[id] + " at theme " + std::to_string(theme.getid()+1) +" at line " + std::to_string(_line);
 				_exhandler->raise(Exception::FMTexc::WSundefined_attribute, _section, message, __LINE__, __FILE__);
 				returnvalue = false;
 				}
@@ -490,7 +488,7 @@ std::vector<std::string>FMTparser::regexloop(std::regex& cutregex, std::string& 
         {
 		std::locale loc;
 		std::string uppercases;
-        for (string::size_type i=0;i<lowercases.size(); ++i)
+        for (std::string::size_type i=0;i<lowercases.size(); ++i)
             {
             uppercases+=toupper(lowercases[i],loc);
             }
@@ -550,7 +548,7 @@ std::vector<std::string>FMTparser::regexloop(std::regex& cutregex, std::string& 
         return newline;
         }
 
-bool FMTparser::getforloops(std::string& line,const std::vector<Core::FMTtheme>& themes, const Core::FMTconstants& cons, std::vector<string>& allvalues, std::string& target)
+bool FMTparser::getforloops(std::string& line,const std::vector<Core::FMTtheme>& themes, const Core::FMTconstants& cons, std::vector<std::string>& allvalues, std::string& target)
 	{
 	std::smatch kmatch;
 	if (std::regex_search(line, kmatch, rxfor))
@@ -574,7 +572,7 @@ bool FMTparser::getforloops(std::string& line,const std::vector<Core::FMTtheme>&
 						const int upper = getnum<int>(lowerNupper.at(1), cons);
 						for (int id = lower; id <= upper; ++id)
 							{
-							newvalues.push_back(to_string(id));
+							newvalues.push_back(std::to_string(id));
 							}
 						
 					}else {
@@ -608,7 +606,7 @@ bool FMTparser::getforloops(std::string& line,const std::vector<Core::FMTtheme>&
 			const int upper = getnum<int>(supper, cons);
 			for (int id = lower; id <= upper; ++id)
 			{
-				allvalues.push_back(to_string(id));
+				allvalues.push_back(std::to_string(id));
 			}
 		}
 		return true;
@@ -637,7 +635,7 @@ std::queue<std::string> FMTparser::tryinclude(const std::string& line, const std
 			{
 			while (newstream.is_open())
 				{
-				const string newline = newparser.getcleanlinewfor(newstream,themes,cons);
+				const std::string newline = newparser.getcleanlinewfor(newstream,themes,cons);
 				if (!newline.empty())
 					{
 					included_lines.push(newline);
@@ -712,7 +710,7 @@ std::string FMTparser::getcleanlinewfor(std::ifstream& stream,const std::vector<
 					return returninclude(line,themes,cons);
 					}else if(std::regex_search(line,kmatch,FMTparser::rxend))
 							{
-							string endfor = keys.top();
+							std::string endfor = keys.top();
 							keys.pop();
 							forlocation[endfor].second = lineid;
 							ordered_keys.push_back(endfor);
@@ -803,7 +801,7 @@ std::vector<std::string> FMTparser::sameas(const std::string& allset) const
         {
 		std::vector<std::string>all_elements;
 		std::string separator = "_SAMEAS";
-        if (allset.find(separator)!=string::npos)
+        if (allset.find(separator)!= std::string::npos)
             {
 			std::string realname = allset.substr(0, allset.find(separator));
             boost::trim(realname);

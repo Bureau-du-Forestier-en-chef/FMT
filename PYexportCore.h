@@ -77,6 +77,7 @@ void exportCore()
                 .def("__str__",&Core::FMTmask::operator std::string)
 				.def("__eq__", &Core::FMTmask::operator ==)
 				.def("__ne__", &Core::FMTmask::operator !=)
+				.def("__lt__", &Core::FMTmask::operator <)
                 .def("to_string",&Core::FMTmask::to_string)
                 .def("__hash__",&boost::pyhash<Core::FMTmask>);
 		bp::class_<Core::FMTdevelopment>("FMTdevelopment")
@@ -95,7 +96,8 @@ void exportCore()
                 .setattr("__hash__",&boost::pyhash<Core::FMTdevelopment>);
 		bp::class_<Core::FMTspec>("FMTspec");
 		bp::class_<Core::FMTactualdevelopment, bp::bases<Core::FMTdevelopment>>("FMTactualdevelopment")
-                .def_readwrite("area", &Core::FMTactualdevelopment::area)
+                .def("getarea", &Core::FMTactualdevelopment::getarea)
+				.def("setarea", &Core::FMTactualdevelopment::setarea)
 				.def("__eq__", &Core::FMTactualdevelopment::operator ==)
 				.def("__ne__", &Core::FMTactualdevelopment::operator !=)
 				.def("__lt__", &Core::FMTactualdevelopment::operator <);
@@ -117,9 +119,9 @@ void exportCore()
                 .def("__ne__",&Core::FMTaction::operator !=)
                 .def("__lt__",&Core::FMTaction::operator <)
 				.def("__str__", &Core::FMTaction::operator std::string)
-                .def_readwrite("name",&Core::FMTaction::name)
-                .def_readwrite("lock",&Core::FMTaction::lock)
-                .def_readwrite("reset",&Core::FMTaction::reset)
+                .def("getname",&Core::FMTaction::getname)
+                .def("dorespectlock",&Core::FMTaction::dorespectlock)
+                .def_readwrite("isresetage",&Core::FMTaction::isresetage)
                 .setattr("__hash__",&boost::pyhash<Core::FMTaction>);
 			bp::class_<Core::FMTlifespans, bp::bases<Core::FMTlist<int>>>("FMTlifespans");
 
@@ -132,6 +134,10 @@ void exportCore()
 
 			define_pydict<std::string, std::map<std::string,std::vector<double>>>();
 			define_pydict<std::string, std::vector<double>>();
+
+			bp::class_<Core::FMTyieldhandler>("FMTyieldhandler")
+				.def_pickle(FMT_pickle_suite<Core::FMTyieldhandler>())
+				.def("__str__", &Core::FMTyieldhandler::operator std::string);
 
 			bp::class_<Core::FMTyields, bp::bases<Core::FMTlist<Core::FMTyieldhandler>>>("FMTyields")
 				.def_pickle(FMT_pickle_suite<Core::FMTyields>())
@@ -150,7 +156,7 @@ void exportCore()
                 .def("__eq__",&Core::FMTtransition::operator ==)
                 .def("__ne__",&Core::FMTtransition::operator !=)
                 .def("__lt__",&Core::FMTtransition::operator <)
-                .def_readwrite("name",&Core::FMTtransition::name);
+                .def("getname",&Core::FMTtransition::getname);
 
 
 			bp::class_<Core::FMToutputnode>("FMToutputnode")

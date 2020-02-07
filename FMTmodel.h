@@ -49,9 +49,18 @@ SOFTWARE.
 namespace Models
 {
 
+/**
+FMTmodel is the base class of multiple models in FMT
+It' is the formulation has seen in the Woodstock files of a forest planning problem.
+FMTlpmodel / FMTsamodel / FMTsesmodel use the FMTmodel protected member to
+generate the problem based on LP/SA or to simply simulate the FMTmodel.
+*/
 
 class FMTmodel : public Core::FMTobject
     {
+	/**
+	Save and load functions are for serialization, used to do multiprocessing across multiple cpus (pickle in Pyhton)
+	*/
     friend class Graph::FMTgraph;
 	friend class boost::serialization::access;
 	template<class Archive>
@@ -60,7 +69,6 @@ class FMTmodel : public Core::FMTobject
 		ar & BOOST_SERIALIZATION_NVP(area);
 		ar & BOOST_SERIALIZATION_NVP(themes);
 		ar & BOOST_SERIALIZATION_NVP(actions);
-		ar & BOOST_SERIALIZATION_NVP(action_aggregates);
 		ar & BOOST_SERIALIZATION_NVP(transitions);
 		ar & BOOST_SERIALIZATION_NVP(yields);
 		ar & BOOST_SERIALIZATION_NVP(lifespan);
@@ -69,62 +77,168 @@ class FMTmodel : public Core::FMTobject
 		ar & BOOST_SERIALIZATION_NVP(name);
 	}
     protected:
+		///Actualdevelopments for period 0, seen in the area section or the shapefile/raster
 		std::vector<Core::FMTactualdevelopment>area;
+		///Model themes of the landscape section file.
 		std::vector<Core::FMTtheme>themes;
+		///Model actions from the action file and also the _death action
 		std::vector<Core::FMTaction>actions;
-		std::map<std::string, std::vector<std::string>>action_aggregates;
+		///Model transitions from the transition file and also the _death transition
 		std::vector<Core::FMTtransition>transitions;
+		///Yields data comming from the yield file
 		Core::FMTyields yields;
+		///lifespan data comming from the lifespan file
 		Core::FMTlifespans lifespan;
+		///Outputs comming from the ouput file
 		std::vector<Core::FMToutput> outputs;
+		///Outputs comming from the optimization file
 		std::vector<Core::FMTconstraint>constraints;
+		/**
+		If the user has not defined the _DEATH action and/or the _DEATH transition default _DEATH action and transition are
+		going to be defined when the FMTmodel class is constructed.
+		*/
 		void setdefaultobjects();
     public:
+		///The name of the Model (name of the .pri file without extension)
         std::string name;
+		/**
+		Main constructor for FMTmodel used in WSparser::FMTmodelparser, the constraints are optional.
+		For the FMTsesmodel no constraints are needed.
+		*/
 		FMTmodel(const std::vector<Core::FMTactualdevelopment>& larea, const std::vector<Core::FMTtheme>& lthemes,
-			const std::vector<Core::FMTaction>& lactions, const std::map<std::string, std::vector<std::string>>& laction_aggregates,
-             const std::vector<Core::FMTtransition>& ltransitions,const Core::FMTyields& lyields,const Core::FMTlifespans& llifespan,
-			const std::string& lname,const std::vector<Core::FMToutput>& loutputs);
-		FMTmodel(const std::vector<Core::FMTactualdevelopment>& larea, const std::vector<Core::FMTtheme>& lthemes,
-			const std::vector<Core::FMTaction>& lactions, const std::map<std::string, std::vector<std::string>>& laction_aggregates,
+			const std::vector<Core::FMTaction>& lactions,
 			const std::vector<Core::FMTtransition>& ltransitions, const Core::FMTyields& lyields, const Core::FMTlifespans& llifespan,
-			const std::string& lname, const std::vector<Core::FMToutput>& loutputs, const std::vector<Core::FMTconstraint>& lconstraints);
-    FMTmodel();
-    virtual ~FMTmodel()=default;
-    virtual std::vector<Core::FMTactualdevelopment>getarea(int period = 0) const;
-	void cleanactionsntransitions();
-	std::vector<Core::FMTtheme>getthemes() const;
-	std::vector<Core::FMTaction>getactions() const;
-	std::map<std::string, std::vector<std::string>> getactionaggregates() const;
-	std::vector<Core::FMTtransition>gettransitions() const;
-	Core::FMTyields getyields() const;
-	Core::FMTlifespans getlifespan() const;
-	std::vector<Core::FMToutput> getoutputs() const;
-	static Core::FMTaction defaultdeathaction(const Core::FMTlifespans& llifespan,
+			const std::string& lname, const std::vector<Core::FMToutput>& loutputs, std::vector<Core::FMTconstraint> lconstraints = std::vector<Core::FMTconstraint>());
+		/**
+			Default constructor of FMTmodel.
+		*/
+		FMTmodel();
+		/**
+			Default virtual desctructor of FMTmodel.
+		*/
+		virtual ~FMTmodel()=default;
+		/**
+			Virtual function to get the area of a given period into actualdevelopement.
+		*/
+		virtual std::vector<Core::FMTactualdevelopment>getarea(int period = 0) const;
+		/**
+		Function do delete action that have no defined transition and to delete transition that have no defined action.
+		Actions and transitions are then sorted.
+		*/
+		void cleanactionsntransitions();
+		/**
+		Getter returning a copy of the FMTthemes vector<> of the model.
+		*/
+		std::vector<Core::FMTtheme>getthemes() const;
+		/**
+		Getter returning a copy of the FMTactions vector<> of the model.
+		*/
+		std::vector<Core::FMTaction>getactions() const;
+		/**
+		Getter returning a copy of the FMTtransitions vector<> of the model.
+		*/
+		std::vector<Core::FMTtransition>gettransitions() const;
+		/**
+		Getter returning a copy of the FMTyields data of the model.
+		*/
+		Core::FMTyields getyields() const;
+		/**
+		Getter returning a copy of the FMTlifespan data of the model.
+		*/
+		Core::FMTlifespans getlifespan() const;
+		/**
+		Getter returning a copy of the FMToutputs vector<> of the model.
+		*/
+		std::vector<Core::FMToutput> getoutputs() const;
+		/**
+		Getter returning a copy of the FMTconstraints vector<> of the model.
+		*/
+		std::vector<Core::FMTconstraint>getconstraints() const;
+		/**
+		Returns the default death action when not specified by the user, base on specific lifespan and themes.
+		*/
+		static Core::FMTaction defaultdeathaction(const Core::FMTlifespans& llifespan,
+											const std::vector<Core::FMTtheme>& lthemes);
+		/**
+		Returns the default death transition when not specified by the user, base on specific lifespan and themes.
+		*/
+		static Core::FMTtransition defaultdeathtransition(const Core::FMTlifespans& llifespan,
 										const std::vector<Core::FMTtheme>& lthemes);
-	static Core::FMTtransition defaultdeathtransition(const Core::FMTlifespans& llifespan,
-										const std::vector<Core::FMTtheme>& lthemes);
-	std::vector<Core::FMTconstraint>getconstraints() const;
-	bool addoutput(const std::string& name,const std::string& maskstring, FMTotar outputtarget,
-		std::string action = std::string(), std::string yield = std::string(), std::string description = std::string(),int targettheme = -1);
-	void setconstraints(const std::vector<Core::FMTconstraint>& lconstraint);
-	bool operator == (const FMTmodel& rhs) const;
-    bool setarea(const std::vector<Core::FMTactualdevelopment>& ldevs);
-    bool setthemes(const std::vector<Core::FMTtheme>& lthemes);
-    bool setactions(const std::vector<Core::FMTaction>& lactions);
-    bool settransitions(const std::vector<Core::FMTtransition>& ltransitions);
-    bool setyields(const Core::FMTyields& lylds);
-    bool setlifespan(const Core::FMTlifespans& llifespan);
-    bool valid();
-	std::vector<Core::FMTtheme> locatestaticthemes() const;
-    FMTmodel(const FMTmodel& rhs);
-    FMTmodel& operator = (const FMTmodel& rhs);
+		/**
+		Adds one output to the model base only on strings.
+		name = output name
+		maskstring = string of the mask "? ? ?"
+		outputtarget = type of ouput created
+		action = action string targeted
+		yield = yield string targeted
+		description = description of the output
+		*/
+		void addoutput(const std::string& name,const std::string& maskstring, FMTotar outputtarget,
+			std::string action = std::string(), std::string yield = std::string(), std::string description = std::string(),int targettheme = -1);
+		/**
+		Comparison operator of FMTlpmodel
+		*/
+		bool operator == (const FMTmodel& rhs) const;
+		/**
+		Setter for initial FMTactualdevelopment (area section) will replace the originals.
+		*/
+		void setarea(const std::vector<Core::FMTactualdevelopment>& ldevs);
+		/**
+		Setter for the FMTthemes of the model will replace the originals.
+		*/
+		void setthemes(const std::vector<Core::FMTtheme>& lthemes);
+		/**
+		Setter for the FMTactions of the model will replace the originals.
+		*/
+		void setactions(const std::vector<Core::FMTaction>& lactions);
+		/**
+		Setter for the FMTtransitions of the model will replace the originals.
+		*/
+		void settransitions(const std::vector<Core::FMTtransition>& ltransitions);
+		/**
+		Setter for the FMTconstraints of the model will replace the original.
+		*/
+		void setconstraints(const std::vector<Core::FMTconstraint>& lconstraint);
+		/**
+		Setter for the FMTyields data of the model will replace the original.
+		*/
+		void setyields(const Core::FMTyields& lylds);
+		/**
+		Setter for the FMTlifespans data of the model will replace the original.
+		*/
+		void setlifespan(const Core::FMTlifespans& llifespan);
+		/**
+		This function validate all the FMTmodel 
+		FMTtheme ->FMTactualdevelopements-> FMTyields -> FMTaction -> FMTtransition -> FMToutput -> FMTconstraint
+		return true if the model is valid.
+		*/
+		bool isvalid();
+		/**
+		Based on the FMTmodel looks at every theme to located in the FMTtransitions and return themes 
+		that are not used into the transition (staticthemes)... will return themes based on spatial units.
+		*/
+		std::vector<Core::FMTtheme> locatestaticthemes() const;
+		/**
+		Copy constructor of FMTmodel
+		*/
+		FMTmodel(const FMTmodel& rhs);
+		/**
+		Copy assignment of FMTmodel
+		*/
+		FMTmodel& operator = (const FMTmodel& rhs);
     };
 
+/**
+This class is made to compare FMTmodel using the std::find_if() function when FMTmodels are in a stl container.
+*/
 class FMTmodelcomparator
 {
+	///name of the FMTmodel (name membmer of FMTmodel)
 	std::string model_name;
 public:
+	/**
+	Copy constructor class, (name) is the name of the model that we wish to check if it's in the stl container.
+	*/
 	FMTmodelcomparator(std::string name);
 	bool operator()(const FMTmodel& model) const;
 

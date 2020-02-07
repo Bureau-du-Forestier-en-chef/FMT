@@ -40,12 +40,12 @@ class FMTactualdevelopment : public FMTdevelopment
 		ar & boost::serialization::make_nvp("development", boost::serialization::base_object<FMTdevelopment>(*this));
 		ar & BOOST_SERIALIZATION_NVP(area);
 	}
-	public:
 		double area;
+	public:
 		FMTactualdevelopment();
 		~FMTactualdevelopment()=default;
 		FMTactualdevelopment(const FMTactualdevelopment& rhs);
-		FMTactualdevelopment(FMTmask mask, int age, int lock, double area);
+		FMTactualdevelopment(const FMTmask& mask, const int& age, const int& lock, const double& area);
 		FMTactualdevelopment(const FMTdevelopment& rhs, double larea);
 		FMTactualdevelopment& operator = (const FMTactualdevelopment& rhs);
 		bool operator == (const FMTactualdevelopment& rhs) const;
@@ -53,6 +53,7 @@ class FMTactualdevelopment : public FMTdevelopment
 		bool operator < (const FMTactualdevelopment& rhs) const;
 		operator std::string() const override;
 		double getarea() const override;
+		void setarea(const double& newarea);
 		std::unique_ptr<FMTdevelopment> Clone() const override;
 	};
 

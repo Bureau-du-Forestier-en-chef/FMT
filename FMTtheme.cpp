@@ -163,6 +163,11 @@ bool FMTtheme::inaggregate(const std::string& value,const std::string& aggregate
         return (std::find(vecp->begin(),vecp->end(),value)!=vecp->end());
         }
 
+bool FMTtheme::isvalid(const std::string& value) const
+	{
+	return value == "?" || isattribute(value) || isaggregate(value);
+	}
+
 bool FMTtheme::isindex(const std::string& value) const
     {
     if(!indexes.empty())

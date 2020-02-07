@@ -51,6 +51,7 @@ std::string FMTmask::getstr() const
     {
     return name;
     }
+
 FMTmask::operator std::string() const
 	{
 	return name;

@@ -116,7 +116,7 @@ namespace Heuristics
 		for (std::vector<FMToperatingarea>::const_iterator operatingareait = operatingareas.begin();
 			operatingareait != operatingareas.end(); ++operatingareait)
 				{
-				operatingareait->binarize(integervariables);
+				operatingareait->pushbinaries(integervariables);
 				}
 		solverinterface->setInteger(&integervariables[0], static_cast<int>(integervariables.size()));
 		}
@@ -232,7 +232,7 @@ namespace Heuristics
 			areamask.set(theme, "?");
 			}
 		areatarget.source = Core::FMToutputsource(Core::FMTspec(), areamask, FMTotar::inventory);
-		const std::vector<const Core::FMTaction*>actions = specifictarget.source.targets(modelactions, model.getactionaggregates());
+		const std::vector<const Core::FMTaction*>actions = specifictarget.source.targets(modelactions);
 		std::vector<int>actionids;
 		for (const Core::FMTaction* actptr : actions)
 			{

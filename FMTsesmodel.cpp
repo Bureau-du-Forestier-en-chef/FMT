@@ -68,7 +68,7 @@ namespace Models
 		std::vector<Core::FMTaction>newbaseactions;
 		for (const Spatial::FMTspatialaction& spaction : lspactions)
 			{
-			std::vector<Core::FMTtransition>::const_iterator trn_iterator = std::find_if(transitions.begin(), transitions.end(), Core::FMTtransitioncomparator(spaction.name));
+			std::vector<Core::FMTtransition>::const_iterator trn_iterator = std::find_if(transitions.begin(), transitions.end(), Core::FMTtransitioncomparator(spaction.getname()));
 			if (trn_iterator!= transitions.end())
 				{
 				newtransitions.push_back(*trn_iterator);
@@ -76,7 +76,7 @@ namespace Models
 				newbaseactions.push_back(spaction);
 			}else{
 				_exhandler->raise(Exception::FMTexc::WSinvalid_transition,
-					FMTwssect::Transition, "Missing transition case for action : " + spaction.name,__LINE__, __FILE__);
+					FMTwssect::Transition, "Missing transition case for action : " + spaction.getname(),__LINE__, __FILE__);
 				return false;
 				}
 			}
@@ -109,7 +109,7 @@ namespace Models
 		std::map<std::string,double>targets;
         for(std::map<Core::FMTaction, std::map<Core::FMTdevelopment, std::vector<double>>>::const_iterator ait = schedule.elements.begin(); ait!=schedule.elements.end(); ait++)
             {
-            targets[ait->first.name] = schedule.actionarea(ait->first);
+            targets[ait->first.getname()] = schedule.actionarea(ait->first);
             }
         disturbances.push(std::map<std::string, std::vector<Spatial::FMTevent<Core::FMTdevelopment>>>());
 		double allocated_area = 0;
@@ -127,10 +127,10 @@ namespace Models
 				std::map<Core::FMTaction,Spatial::FMTforest> forests  = mapping.getschedule(schedule, cached_operability,yields,schedulepass);
 				for (const Spatial::FMTspatialaction& spatial_action : spactions) 
 					{
-					std::vector<Spatial::FMTspatialaction>::iterator acit = std::find_if(spactions.begin(), spactions.end(), Core::FMTactioncomparator(spatial_action.name));
+					std::vector<Spatial::FMTspatialaction>::iterator acit = std::find_if(spactions.begin(), spactions.end(), Core::FMTactioncomparator(spatial_action.getname()));
 					if (acit != spactions.end())
 						{
-						const double action_area = targets[acit->name];
+						const double action_area = targets[acit->getname()];
 						Spatial::FMTforest* allowable_forest = &forests[spatial_action];
 						if (allowable_forest->area() > 0 && action_area > 0)
 							{
@@ -144,9 +144,9 @@ namespace Models
 									Spatial::FMTforest newoperated = spatialy_allowable.operate(events, *acit, transitions[location], yields, themes,cached_operated[location], newschedule); //can also use caching here...
 									if (!newoperated.mapping.empty())
 										{
-										disturbances.add(acit->name, events);
+										disturbances.add(acit->getname(), events);
 										mapping.replace(newoperated.mapping.begin(), newoperated.mapping.end());
-										targets[acit->name] -= (newoperated.area());
+										targets[acit->getname()] -= (newoperated.area());
 										pass_allocated_area += (newoperated.area());
 										}
 									}
@@ -174,7 +174,7 @@ namespace Models
 		for (std::map<Core::FMTaction, std::map<Core::FMTdevelopment, std::vector<double>>>::const_iterator ait = schedule.elements.begin(); ait != schedule.elements.end(); ait++)
 			{
 			double total_action_area = schedule.actionarea(ait->first);
-			results[ait->first.name] = ((total_action_area - targets[ait->first.name]) / total_action_area);
+			results[ait->first.getname()] = ((total_action_area - targets[ait->first.getname()]) / total_action_area);
 			}
 		operatedschedule.push_back(newschedule);
         return results;

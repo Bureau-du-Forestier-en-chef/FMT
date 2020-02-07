@@ -28,8 +28,10 @@ SOFTWARE.
 #include <memory>
 #include <boost/unordered_map.hpp>
 #include <vector>
+#include <array>
 #include <boost/serialization/serialization.hpp>
 #include <boost/serialization/nvp.hpp>
+#include <boost/serialization/array.hpp>
 
 namespace Spatial
     {
@@ -45,8 +47,8 @@ namespace Spatial
 			ar & BOOST_SERIALIZATION_NVP(y_n);
 			}
         unsigned int x,y;
-        static std::vector<int>x_n;
-        static std::vector<int>y_n;
+		static std::array<int,8>x_n;
+		static std::array<int,8>y_n;
     public:
         FMTcoordinate();
         ~FMTcoordinate()=default;

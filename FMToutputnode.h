@@ -49,8 +49,7 @@ class FMToutputnode
 		bool operator < (const FMToutputnode& rhs) const;
 		bool operator == (const FMToutputnode& rhs) const;
 		bool issubsetof(const FMToutputnode& rhs) const;
-		bool issubsetof(const FMToutputnode& rhs, const std::map<std::string, std::vector<std::string>>& aggregates) const;
-		bool canbeusedby(const FMToutputnode& rhs, const std::map<std::string, std::vector<std::string>>& aggregates) const;
+		bool issubsetof(const FMToutputnode& rhs,const std::vector<Core::FMTaction>& actions) const;
 		bool issamebutdifferentaction(const FMToutputnode& rhs) const;
 		operator std::string() const;
 		FMToutputnode setperiod(int period) const;

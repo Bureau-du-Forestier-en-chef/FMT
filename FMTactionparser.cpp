@@ -106,8 +106,7 @@ FMTactionparser& FMTactionparser::operator = (const FMTactionparser& rhs)
     std::vector<Core::FMTaction>FMTactionparser::read(const std::vector<Core::FMTtheme>& themes,
 							const Core::FMTyields& yields,
 							const Core::FMTconstants& constants,
-							std::string location,
-							std::map<std::string, std::vector<std::string>>& aggregates)
+							std::string location)
         {
         std::ifstream actionstream(location);
 		std::string line;
@@ -116,6 +115,7 @@ FMTactionparser& FMTactionparser::operator = (const FMTactionparser& rhs)
 		std::string partialname;
 		std::vector<Core::FMTaction>actions;
 		std::vector<Core::FMTaction>cleanedactions;
+		std::map<std::string, std::vector<std::string>>aggregates;
 		Core::FMTaction* theaction = nullptr;
         if (FMTparser::tryopening(actionstream,location))
             {
@@ -149,14 +149,13 @@ FMTactionparser& FMTactionparser::operator = (const FMTactionparser& rhs)
                             operablename = kmatch[15];
 							const std::vector<Core::FMTaction*>pactions = sameactionas(operablename,actions);
                             theaction = pactions.at(0);
-                            operablename = theaction->name;
+                            operablename = theaction->getname();
                             if (pactions.size()>1)
                                 {
-								std::vector<Core::FMTmask>::const_iterator mask_it =  pactions.at(1)->maskbegin();
-								std::vector<Core::FMTspec>::const_iterator data_it =  pactions.at(1)->databegin();
+								std::vector<std::pair<Core::FMTmask,Core::FMTspec>>::const_iterator dataof=pactions.at(1)->begin();
                                 for (size_t id = 0 ; id<pactions.at(1)->size(); ++id)
                                     {
-                                    theaction->push_back(*(mask_it+id),*(data_it+id));
+									theaction->push_back(*dataof);
                                     }
                                 }
                             aggregatename.clear();
@@ -174,7 +173,7 @@ FMTactionparser& FMTactionparser::operator = (const FMTactionparser& rhs)
                                     operablename.clear();
                                     aggregatename.clear();
                                     theaction = pactions.at(0);
-                                    partialname = theaction->name;
+                                    partialname = theaction->getname();
                                     if (pactions.size()>1)
                                         {
                                         for (const std::string& samepartial : pactions.at(1)->getpartials())
@@ -204,7 +203,7 @@ FMTactionparser& FMTactionparser::operator = (const FMTactionparser& rhs)
                                                 }
                                             }else if(!partialname.empty())
                                                 {
-                                                if (theaction->reset)
+                                                if (theaction && theaction->isresetage())
                                                     {
                                                     _exhandler->raise(Exception::FMTexc::WSwrong_partial,_section,partialname+" at line" + std::to_string(_line), __LINE__, __FILE__);
                                                     }
@@ -227,29 +226,48 @@ FMTactionparser& FMTactionparser::operator = (const FMTactionparser& rhs)
 					action.shrink();
                     cleanedactions.push_back(action);
                     }else{
-                    _exhandler->raise(Exception::FMTexc::WSempty_action,_section,action.name, __LINE__, __FILE__);
+                    _exhandler->raise(Exception::FMTexc::WSempty_action,_section,action.getname(), __LINE__, __FILE__);
                     }
                 ++id;
                 }
             std::map<std::string,std::vector<std::string>>cleanedag = valagg(actions,aggregates);
 			aggregates = cleanedag;
             }
+			for (const auto& aggobj : aggregates)
+				{
+				for (Core::FMTaction& action : cleanedactions)
+					{
+					if (std::find(aggobj.second.begin(), aggobj.second.end(),action.getname())!= aggobj.second.end())
+						{
+						action.push_aggregate(aggobj.first);
+						}
+					}
+				}
         std::sort(cleanedactions.begin(),cleanedactions.end());
         return cleanedactions;
         }
     bool FMTactionparser::write(const std::vector<Core::FMTaction>& actions,
-		std::string location,const  std::map<std::string, std::vector<std::string>>& aggregates)
+		std::string location)
         {
         std::ofstream actionstream;
         actionstream.open(location);
+		std::map<std::string, std::vector<std::string>>allaggregates;
         if (tryopening(actionstream,location))
             {
             for(const Core::FMTaction& act : actions)
                 {
                 actionstream<<std::string(act)<<"\n";
+				for (const std::string& aggregate : act.getaggregates())
+					{
+					if (allaggregates.find(aggregate)== allaggregates.end())
+						{
+						allaggregates[aggregate] = std::vector<std::string>();
+						}
+					allaggregates[aggregate].push_back(act.getname());
+					}
                 }
 			actionstream << "\n";
-			for (std::map<std::string, std::vector<std::string>>::const_iterator aggit = aggregates.begin(); aggit != aggregates.end(); aggit++)
+			for (std::map<std::string, std::vector<std::string>>::const_iterator aggit = allaggregates.begin(); aggit != allaggregates.end(); aggit++)
 				{
 				actionstream << "*AGGREGATE " + aggit->first << "\n";
 				for(const std::string& act_str : aggit->second)

@@ -253,8 +253,8 @@ namespace WSParser{
         int nXBlocks = (ageband->GetXSize() + nXBlockSize - 1) / nXBlockSize;
         int nYBlocks = (ageband->GetYSize() + nYBlockSize - 1) / nYBlockSize;
         int nodata = int(ageband->GetNoDataValue());
-		std::vector<GInt32>agedata(nXBlockSize * nYBlockSize);
-		std::vector<GInt32>attributedata(nXBlockSize * nYBlockSize);
+		std::vector<GInt32>agedata(static_cast<size_t>(nXBlockSize) * static_cast<size_t>(nYBlockSize));
+		std::vector<GInt32>attributedata(static_cast<size_t>(nXBlockSize) * static_cast<size_t>(nYBlockSize));
         GDALDataset* lockdataset = NULL;
         GDALRasterBand* lockband = NULL;
         std::vector<GInt32>lockdata;
@@ -274,7 +274,7 @@ namespace WSParser{
                 lockatts.push_back(stoi(spstr[1]));
                 }
             lockband = getband(lockdataset);
-            lockdata = std::vector<GInt32>(nXBlockSize * nYBlockSize,0);
+            lockdata = std::vector<GInt32>(static_cast<size_t>(nXBlockSize) * static_cast<size_t>(nYBlockSize),0);
             }
         std::vector<GDALDataset*>datasets;
 		std::vector<GDALRasterBand*>bands;
@@ -311,7 +311,7 @@ namespace WSParser{
                 ageband->GetActualBlockSize(iXBlock, iYBlock, &nXValid, &nYValid);
 				std::map<int, std::string>mapattributes;
                 boost::unordered_map<int,Spatial::FMTcoordinate>coordinates;
-				std::vector<int>counts(nXBlockSize * nYBlockSize,0);
+				std::vector<int>counts(static_cast<size_t>(nXBlockSize) * static_cast<size_t>(nYBlockSize,0));
                 for(size_t themeid = 0 ; themeid < data_rasters.size();++themeid)
                     {
                     if (CE_None!=bands[themeid]->ReadBlock( iXBlock, iYBlock, &attributedata[0]))
@@ -485,7 +485,7 @@ namespace WSParser{
 					std::vector<Core::FMTactualdevelopment>::iterator it = find(devs.begin(), devs.end(), actualdev);
 					if (it != devs.end())
 					{
-						it->area += actualdev.getarea();
+						it->setarea(it->getarea()+ actualdev.getarea());
 					}
 					else {
 						devs.push_back(actualdev);
@@ -575,9 +575,9 @@ namespace WSParser{
 			std::vector<double>dblblock;
             if (std::is_same<double,T>::value)
                 {
-                dblblock.resize(nXBlockSize * nYBlockSize);
+                dblblock.resize(static_cast<size_t>(nXBlockSize) * static_cast<size_t>(nYBlockSize));
                 }else{
-                intblock.resize(nXBlockSize * nYBlockSize);
+                intblock.resize(static_cast<size_t>(nXBlockSize) * static_cast<size_t>(nYBlockSize));
                 }
 
             unsigned int ystack = 0;
@@ -820,7 +820,7 @@ namespace WSParser{
 											areas.push_back(actualdevelopment);
 										}
 										else {
-											areas[hashit->second].area += area;
+											areas[hashit->second].setarea(areas[hashit->second].getarea() + area);
 										}
 									}
 									else {
@@ -845,7 +845,7 @@ namespace WSParser{
 				double sumarea = 0;
 				for (const Core::FMTactualdevelopment& dev : areas)
 				{
-					sumarea += dev.area;
+					sumarea += dev.getarea();
 				}
 				if (tryopening(areastream, location))
 				{

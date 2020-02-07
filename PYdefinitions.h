@@ -42,9 +42,9 @@ void define_FMTlist()
         "\n"
         "This class is used for mapping masks\n"
         "\n";
+	 py_pair<Core::FMTmask, T>();
 	 boost::python::class_<Core::FMTlist<T>>("FMTlist", py_FMTlist)
-        .def("getmasklist",&Core::FMTlist<T>::getmasklist)
-		.def("getdatalist", &Core::FMTlist<T>::getdatalist);
+		 .def("__iter__", boost::python::iterator<Core::FMTlist<T>>());
 	define_pylist<T>();
     }
 

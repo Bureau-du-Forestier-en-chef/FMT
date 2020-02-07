@@ -65,7 +65,8 @@ class FMTtheme
 		std::string name;
         FMTtheme();
         FMTtheme(const std::map<std::string, std::vector<std::string>>&laggregates,
-			    const  std::map<std::string,std::string>&lvaluenames, const int& lid,const int& lstart, const std::string& lname);
+			    const  std::map<std::string,std::string>&lvaluenames, 
+				const int& lid,const int& lstart, const std::string& lname);
         FMTtheme(const std::map<std::string, std::vector<std::string>>&laggregates,
 				 const std::map<std::string, std::string>&lvaluenames,
                  const std::map<std::string, std::map<std::string,double>>& indexing,
@@ -80,6 +81,7 @@ class FMTtheme
         double getindex(const std::string& attribute,const std::string& value) const;
         bool isaggregate(const std::string& value) const;
         bool inaggregate(const std::string& value,const std::string& aggregate);
+		bool isvalid(const std::string& value) const;
 		bool operator == (const FMTtheme& rhs) const;
         size_t size() const;
 		int getid() const;

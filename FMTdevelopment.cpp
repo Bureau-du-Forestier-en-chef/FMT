@@ -34,11 +34,11 @@ namespace Core{
 
 
 
-  FMTdevelopment::FMTdevelopment(FMTmask mask,int age,int lock) : FMTobject(),mask(mask),age(age),lock(lock),period(0)
+  FMTdevelopment::FMTdevelopment(const FMTmask& mask,const int& age,const int& lock) : FMTobject(),mask(mask),age(age),lock(lock),period(0)
         {
 
         }
-  FMTdevelopment::FMTdevelopment(FMTmask lmask,int lage,int llock, int lperiod): FMTobject(),mask(lmask),age(lage),lock(llock),period(lperiod)
+  FMTdevelopment::FMTdevelopment(const FMTmask&  lmask,const int& lage,const int& llock,const int& lperiod): FMTobject(),mask(lmask),age(lage),lock(llock),period(lperiod)
         {
 
         }
@@ -80,7 +80,7 @@ namespace Core{
 
 	bool FMTdevelopment::worthtestingoperability(const FMTaction& action) const
 		{
-		return (((action.lock && lock == 0) || !action.lock) &&
+		return (((action.dorespectlock() && lock == 0) || !action.dorespectlock()) &&
 			action.getagelowerbound() <= age && age <= action.getageupperbound() &&
 			action.getperiodlowerbound() <= period && period <= action.getperiodupperbound());
 		}
@@ -138,10 +138,10 @@ namespace Core{
 		 const FMTfork* fork = Transition.getfork(*this, ylds);
 		 if (fork)
 		 {
-			 newpaths = fork->getpaths(*this, ylds, themes,action.reset);
+			 newpaths = fork->getpaths(*this, ylds, themes,action.isresetage());
 		 }
 		 else {
-			 _exhandler->raise(Exception::FMTexc::WSinvalid_transition_case, FMTwssect::Empty, Transition.name + " for " + std::string(*this), __LINE__, __FILE__);
+			 _exhandler->raise(Exception::FMTexc::WSinvalid_transition_case, FMTwssect::Empty, Transition.getname() + " for " + std::string(*this), __LINE__, __FILE__);
 		 }
 		 return newpaths;
 		}

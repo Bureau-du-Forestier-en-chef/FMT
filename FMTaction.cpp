@@ -28,36 +28,37 @@ namespace Core{
 
 
 FMTaction::FMTaction():FMTlist<FMTspec>(),
-                partials(std::vector<std::string>()),
+				aggregates(),
+                partials(),
 				agelowerbound(), ageupperbound(), periodlowerbound(), periodupperbound(),
                 name(""),
                 lock(false),
                 reset(false){}
 
-    FMTaction:: FMTaction(std::string& lname):FMTlist<FMTspec>(),
-                        partials(std::vector<std::string>()),
-						agelowerbound(), ageupperbound(), periodlowerbound(), periodupperbound(),
-                        name(lname),
-                        lock(false),
-                        reset(false){}
     FMTaction::FMTaction(const std::string& lname): FMTlist<FMTspec>(),
-                        partials(std::vector<std::string>()),
+						aggregates(),
+                        partials(),
 						agelowerbound(), ageupperbound(), periodlowerbound(), periodupperbound(),
                         name(lname),
                         lock(false),
                         reset(false){}
-    FMTaction::FMTaction(const std::string& lname, bool lock,bool reset): FMTlist<FMTspec>(),partials(std::vector<std::string>()),
+    FMTaction::FMTaction(const std::string& lname, const bool& lock,const bool& reset): FMTlist<FMTspec>(), aggregates(), partials(),
 		agelowerbound(), ageupperbound(), periodlowerbound(), periodupperbound(),
 		name(lname),lock(lock),reset(reset)
         {
-        partials = std::vector<std::string>();
+
         }
-    bool FMTaction::push_partials(std::string yield)
+	void FMTaction::push_aggregate(const std::string& aggregate)
+		{
+		aggregates.push_back(aggregate);
+		}
+
+    void FMTaction::push_partials(const std::string& yield)
         {
         partials.push_back(yield);
-        return true;
         }
 	FMTaction::FMTaction(const FMTaction& rhs) : FMTlist<FMTspec>(rhs),
+		aggregates(rhs.aggregates),
 		partials(rhs.partials),
 		agelowerbound(rhs.agelowerbound), ageupperbound(rhs.ageupperbound), periodlowerbound(rhs.periodlowerbound), periodupperbound(rhs.periodupperbound),
                         name(rhs.name),
@@ -75,6 +76,7 @@ FMTaction::FMTaction():FMTlist<FMTspec>(),
             lock = rhs.lock;
             reset = rhs.reset;
             partials = rhs.partials;
+			aggregates = rhs.aggregates;
 			agelowerbound = rhs.agelowerbound;
 			ageupperbound = rhs.ageupperbound;
 			periodlowerbound = rhs.periodlowerbound;
@@ -89,17 +91,17 @@ FMTaction::FMTaction():FMTlist<FMTspec>(),
 		agelowerbound = std::numeric_limits<int>::max();
 		periodupperbound = 0;
 		periodlowerbound = std::numeric_limits<int>::max();
-		std::vector<FMTspec>::const_iterator datait = this->databegin();
+		std::vector<std::pair<FMTmask,FMTspec>>::const_iterator datait = this->begin();
 		for (size_t id = 0; id < this->size(); ++id)
 			{
-				if (!datait->emptyage())
+				if (!datait->second.emptyage())
 					{
-					int upperbound = datait->getageupperbound();
+					int upperbound = datait->second.getageupperbound();
 					if (upperbound > ageupperbound)
 						{
 						ageupperbound = upperbound;
 						}
-					int lowerbound = datait->getagelowerbound();
+					int lowerbound = datait->second.getagelowerbound();
 					if (lowerbound < agelowerbound)
 						{
 						agelowerbound = lowerbound;
@@ -108,14 +110,14 @@ FMTaction::FMTaction():FMTlist<FMTspec>(),
 					ageupperbound = std::numeric_limits<int>::max();
 					agelowerbound = 0;
 					}
-				if (!datait->emptyperiod())
+				if (!datait->second.emptyperiod())
 					{
-					int upperbound = datait->getperiodupperbound();
+					int upperbound = datait->second.getperiodupperbound();
 					if (upperbound > periodupperbound)
 						{
 						periodupperbound = upperbound;
 						}
-					int lowerbound = datait->getperiodlowerbound();
+					int lowerbound = datait->second.getperiodlowerbound();
 					if (lowerbound < periodlowerbound)
 						{
 						periodlowerbound = lowerbound;
@@ -154,12 +156,12 @@ FMTaction::FMTaction():FMTlist<FMTspec>(),
 
 	bool FMTaction::inperiod() const
 		{
-		std::vector<FMTspec>::const_iterator datait = this->databegin();
+		std::vector<std::pair<FMTmask, FMTspec>>::const_iterator datait = this->begin();
 		for (size_t id = 0; id < this->size(); ++id)
 			{
-			if (!datait->emptyage())
+			if (!datait->second.emptyage())
 				{
-				if (datait->getageupperbound() != 0)
+				if (datait->second.getageupperbound() != 0)
 					{
 					return false;
 					}
@@ -177,16 +179,12 @@ FMTaction::FMTaction():FMTlist<FMTspec>(),
 		const std::string locked = (lock) ? "" : " _LOCKEXEMPT";
 		std::string line="*ACTION "+name +" "+resetyield+locked+"\n";
         line+="*OPERABLE "+name+"\n";
-		std::vector<FMTspec>::const_iterator datait = this->databegin();
-		std::vector<FMTmask>::const_iterator maskit = this->maskbegin();
-        for (size_t id = 0 ; id < this->size(); ++id)
-            {
-            line+= std::string(*maskit)+" ";
-            line+= std::string(*datait);
-            line+="\n";
-			++datait;
-			++maskit;
-            }
+		for (const auto& yieldobject : *this)
+			{
+			line += std::string(yieldobject.first) + " ";
+			line += std::string(yieldobject.second);
+			line += "\n";
+			}
         if(!partials.empty())
             {
             line+="*PARTIAL "+name+"\n";
@@ -204,6 +202,13 @@ FMTaction::FMTaction():FMTlist<FMTspec>(),
             }
         return line;
         }
+
+std::vector<std::string>FMTaction::getaggregates() const
+	{
+	return aggregates;
+	}
+
+
 bool FMTaction::operator < (const FMTaction& rhs) const
     {
     return name < rhs.name;
@@ -227,10 +232,27 @@ bool FMTaction::partial(const std::string& yield) const
 	return (std::find(partials.begin(), partials.end(),yield)!=partials.end());
 	}
 
-FMTactioncomparator::FMTactioncomparator(std::string name) : action_name(name) {}
+FMTactioncomparator::FMTactioncomparator(std::string name, bool lcheckaggregate) : action_name(name),checkaggregate(lcheckaggregate) {}
 
 bool FMTactioncomparator::operator()(const FMTaction& action) const
 	{
-	return action.name == action_name;
+	return (action.name == action_name || (checkaggregate && 
+		std::find(action.aggregates.begin(), action.aggregates.end(),action_name)!= action.aggregates.end()));
 	}
+
+std::vector<const FMTaction*>FMTactioncomparator::getallaggregates(const std::vector<FMTaction>&actions,bool aggregateonly) const
+	{
+	std::vector<const FMTaction*>actionsptr;
+	std::vector<FMTaction>::const_iterator actit = actions.begin();
+	while (actit!= actions.end())
+		{
+		if (!aggregateonly && actit->name == action_name || std::find(actit->aggregates.begin(), actit->aggregates.end(), action_name) != actit->aggregates.end())
+			{
+			actionsptr.push_back(&(*actit));
+			}
+		++actit;
+		}
+	return actionsptr;
+	}
+
 }

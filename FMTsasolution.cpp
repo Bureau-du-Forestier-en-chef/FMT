@@ -188,7 +188,7 @@ double FMTsasolution::getgraphspenalties(const Models::FMTsamodel& model, const 
         double spatialpenalties = 0;
         double lower=0;
         double upper=0;
-		std::vector<FMTspatialaction>::iterator actionit = std::find_if(spatialactions.begin(),spatialactions.end(),[constraint] (const FMTspatialaction& spaction) {return spaction.name == constraint.name;});
+		std::vector<FMTspatialaction>::iterator actionit = std::find_if(spatialactions.begin(),spatialactions.end(),[constraint] (const FMTspatialaction& spaction) {return spaction.getname() == constraint.name;});
         const int action_id = static_cast<int>(std::distance(spatialactions.begin(), actionit));
         const FMTspatialaction spaction = spatialactions.at(action_id);
         size_t period = 1;
@@ -208,7 +208,7 @@ double FMTsasolution::getgraphspenalties(const Models::FMTsamodel& model, const 
                         {
                             for (std::vector<std::string>::const_iterator neighbors_it = spaction.neighbors.begin();neighbors_it!=spaction.neighbors.end();++neighbors_it)
                             {
-                                if (spatialactions.at(action_events_it-period_actions.begin()).name == *neighbors_it)//Where iterator is - begin == index so we compare the name of the action and neighbors in neighbors list
+                                if (spatialactions.at(action_events_it-period_actions.begin()).getname() == *neighbors_it)//Where iterator is - begin == index so we compare the name of the action and neighbors in neighbors list
                                 {
                                     const std::vector<FMTevent<Graph::FMTgraph>> value = *action_events_it;
                                     potential_neigbors.insert(potential_neigbors.end(),value.begin(),value.end());//Insert FMTevent<FMTgraph> of each action in neighbors
@@ -529,7 +529,7 @@ double FMTsasolution::getgraphspenalties(const Models::FMTsamodel& model, const 
                             }
                             if (action_layer.mapping.size()>0)
                             {
-								const std::string action_name = model_actions.at(action_id).name;
+								const std::string action_name = model_actions.at(action_id).getname();
 								const std::string out_location = out_path+action_name+"_"+addon+"_events_period_"+std::to_string(period)+".tif";
 							#ifdef FMTWITHGDAL
 								WSParser::FMTareaparser parser;

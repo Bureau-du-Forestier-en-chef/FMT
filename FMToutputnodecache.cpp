@@ -24,7 +24,7 @@ namespace Graph
 		this->setinitialcache(initialgraph);
 		}
 
-	std::map<Core::FMToutputnode, std::vector<FMTvertex_descriptor>>::const_iterator FMToutputnodecache::getparentnode(const Core::FMToutputnode& targetnode, const std::map<std::string, std::vector<std::string>>& actionaggregates, bool& exactnode) const
+	std::map<Core::FMToutputnode, std::vector<FMTvertex_descriptor>>::const_iterator FMToutputnodecache::getparentnode(const Core::FMToutputnode& targetnode, const std::vector<Core::FMTaction>& actions, bool& exactnode) const
 		{
 		std::map<Core::FMToutputnode, std::vector<FMTvertex_descriptor>>::const_iterator parentit = searchtree.find(targetnode);
 		if (parentit!=searchtree.end())
@@ -36,7 +36,7 @@ namespace Graph
 		exactnode = false;
 		while (parentit != searchtree.end())
 			{
-			if (targetnode.issubsetof(parentit->first, actionaggregates))
+			if (targetnode.issubsetof(parentit->first, actions))
 				{
 				return parentit;
 				}
@@ -46,31 +46,31 @@ namespace Graph
 		}
 
 	void FMToutputnodecache::getactionrebuild(const Core::FMToutputnode& targetnode,
-											 const std::map<std::string, std::vector<std::string>>& aggregates,
+											const std::vector<Core::FMTaction>& actions,
 											std::vector<FMTvertex_descriptor>& cleaned,
 											bool& exactnode) const
 		{
 		const std::string actionname = targetnode.source.getaction();
-		std::map<std::string, std::vector<std::string>>::const_iterator aggregateit = aggregates.find(actionname);
-		if (!actionname.empty() && aggregateit != aggregates.end()) //so it's a aggregate!
+		const std::vector<const Core::FMTaction*>aggregatesptr = Core::FMTactioncomparator(actionname).getallaggregates(actions,true);
+		if (!actionname.empty() && !aggregatesptr.empty()) //so it's a aggregate!
 			{
 			std::map<std::string,std::vector< std::map<Core::FMToutputnode, std::vector<FMTvertex_descriptor>>::const_iterator>>potentials;
-			for (const std::string& attribute : aggregateit->second)
+			for (const Core::FMTaction* attributeptr : aggregatesptr)
 				{
-				potentials[attribute] = std::vector< std::map<Core::FMToutputnode, std::vector<FMTvertex_descriptor>>::const_iterator>();
+				potentials[attributeptr->getname()] = std::vector< std::map<Core::FMToutputnode, std::vector<FMTvertex_descriptor>>::const_iterator>();
 				}
 			for (std::map<Core::FMToutputnode, std::vector<FMTvertex_descriptor>>::const_iterator sit = searchtree.begin();
 					sit != searchtree.end(); sit++) 
 				{
-				if (sit->first.canbeusedby(targetnode,aggregates))
+				if (sit->first.issubsetof(targetnode,actions))
 					{
 					const std::string nodeaction= sit->first.source.getaction();
 					potentials[nodeaction].push_back(sit);
 					}
 				}
-			for (const std::string& attribute : aggregateit->second)
+			for (const Core::FMTaction* attributeptr : aggregatesptr)
 				{
-				if (potentials.at(attribute).empty())
+				if (potentials.at(attributeptr->getname()).empty())
 					{
 					return; //not a perfect rebuilt need to be complete!!
 					}
@@ -121,12 +121,12 @@ namespace Graph
 		}
 
 	const std::vector<FMTvertex_descriptor>& FMToutputnodecache::getcleandescriptors(const Core::FMToutputnode& targetnode,
-																					const std::map<std::string,std::vector<std::string>>& actionaggregates,
+																					const std::vector<Core::FMTaction>& actions,
 																					const std::vector<Core::FMTtheme>&themes,
 																					bool& exactnode) const
 		{
 		bool exact = false;
-		std::map<Core::FMToutputnode, std::vector<FMTvertex_descriptor>>::const_iterator parent = this->getparentnode(targetnode,actionaggregates, exact);
+		std::map<Core::FMToutputnode, std::vector<FMTvertex_descriptor>>::const_iterator parent = this->getparentnode(targetnode,actions, exact);
 		if (exact)
 			{
 			return parent->second;
@@ -136,7 +136,7 @@ namespace Graph
 			{
 			cleaned = parent->second;
 			}
-		getactionrebuild(targetnode, actionaggregates, cleaned,exactnode); // should be able to find also exact!!!!!!!!
+		getactionrebuild(targetnode, actions, cleaned,exactnode); // should be able to find also exact!!!!!!!!
 		if (!exact)
 			{
 			std::vector<FMTvertex_descriptor>toremove;
@@ -185,10 +185,10 @@ namespace Graph
 		}
 
 
-	const std::vector<FMTvertex_descriptor>& FMToutputnodecache::getverticies(const Core::FMToutputnode& targetnode, const std::map<std::string, std::vector<std::string>>& actionaggregates,
+	const std::vector<FMTvertex_descriptor>& FMToutputnodecache::getverticies(const Core::FMToutputnode& targetnode, const std::vector<Core::FMTaction>& actions,
 																const std::vector<Core::FMTtheme>&themes, bool& exactvecticies) const
 		{
-		return this->getcleandescriptors(targetnode,actionaggregates,themes, exactvecticies);
+		return this->getcleandescriptors(targetnode,actions,themes, exactvecticies);
 		}
 
 	void FMToutputnodecache::setvalidverticies(const Core::FMToutputnode& targetnode,const std::vector<FMTvertex_descriptor>& verticies) const

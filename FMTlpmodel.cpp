@@ -41,8 +41,8 @@ namespace Models
 	Graph::FMTgraphstats FMTlpmodel::initializematrix()
 	{
 		const int ncols = static_cast<int>(graph.nedges());
-        const std::vector<int>column_Starts(ncols + 1, 0);
-		const std::vector<int>targetrows(ncols, 0);
+        const std::vector<int>column_Starts(static_cast<size_t>(ncols) + 1, 0);
+		const std::vector<int>targetrows(static_cast<size_t>(ncols), 0);
 		const std::vector<double>nelements(ncols, 0.0);
 		std::vector<double>lower_bounds(ncols, 0.0);
 		std::vector<double>upper_bounds(ncols, 0.0);
@@ -156,18 +156,18 @@ namespace Models
 			Core::FMTschedule locked_schedule;
 			for (const auto actionit : schedule.elements)
 			{
-				int actionid = int(std::distance(actions.begin(), find_if(actions.begin(), actions.end(), Core::FMTactioncomparator(actionit.first.name))));
+				int actionid = int(std::distance(actions.begin(), find_if(actions.begin(), actions.end(), Core::FMTactioncomparator(actionit.first.getname()))));
 				size_t allocated = 0;
 				for (auto devit : actionit.second)
 				{
-					if (actionit.first.lock && graph.containsdevelopment(devit.first))
+					if (actionit.first.dorespectlock() && graph.containsdevelopment(devit.first))
 					{
 						const Graph::FMTvertex_descriptor vdescriptor = graph.getdevelopment(devit.first);
 						const int variable = graph.getoutvariables(vdescriptor)[actionid];
 						new_solution[variable] = devit.second.at(0);
 						++allocated;
 					}
-					else if (!actionit.first.lock)
+					else if (!actionit.first.dorespectlock())
 					{
 						Core::FMTdevelopment locked(devit.first);
 						int area_id = 0;
@@ -204,7 +204,7 @@ namespace Models
 					}
 					else {
 						_exhandler->raise(Exception::FMTexc::FMTmissingdevelopement,
-							FMTwssect::Empty, std::string(devit.first) + " at period " + std::to_string(period) + " operated by " + actionit.first.name,
+							FMTwssect::Empty, std::string(devit.first) + " at period " + std::to_string(period) + " operated by " + actionit.first.getname(),
 							__LINE__, __FILE__);
 						return false;
 					}
@@ -316,7 +316,7 @@ namespace Models
 	{
 
 		//columns
-		const std::vector<int>column_Starts(newstats.cols+1, 0);
+		const std::vector<int>column_Starts(static_cast<size_t>(newstats.cols)+1, 0);
 		const std::vector<int>targetrows(newstats.cols, 0);
 		const std::vector<double>nelements(newstats.cols, 0.0);
 		const std::vector<double>lower_bounds(newstats.cols, 0.0);

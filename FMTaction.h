@@ -33,8 +33,11 @@ SOFTWARE.
 namespace Core
 {
 
+class FMTactioncomparator;
+
 class FMTaction : public FMTlist<FMTspec>
     {
+	friend class FMTactioncomparator;
 	friend class boost::serialization::access;
 	template<class Archive>
 	void serialize(Archive& ar, const unsigned int version)
@@ -46,20 +49,23 @@ class FMTaction : public FMTlist<FMTspec>
 		ar & BOOST_SERIALIZATION_NVP(periodlowerbound);
 		ar & BOOST_SERIALIZATION_NVP(periodupperbound);
 		ar & BOOST_SERIALIZATION_NVP(name);
+		ar & BOOST_SERIALIZATION_NVP(aggregates);
 		ar & BOOST_SERIALIZATION_NVP(lock);
 		ar & BOOST_SERIALIZATION_NVP(reset);
 		}
+	protected:
+		std::vector<std::string>aggregates;
         std::vector<std::string>partials;
 		int agelowerbound, ageupperbound, periodlowerbound, periodupperbound;
-    public:
 		std::string name;
-        bool lock,reset;
+		bool lock, reset;
+    public:
         FMTaction();
         virtual ~FMTaction() = default;
-        FMTaction(std::string& lname);
         FMTaction(const std::string& lname);
-        FMTaction(const std::string& lname, bool lock,bool reset);
-        bool push_partials(std::string yield);
+        FMTaction(const std::string& lname, const bool& lock,const bool& reset);
+		void push_aggregate(const std::string& aggregate);
+        void push_partials(const std::string& yield);
         FMTaction(const FMTaction& rhs);
         FMTaction& operator = (const FMTaction& rhs);
 		void setbounds();
@@ -67,6 +73,23 @@ class FMTaction : public FMTlist<FMTspec>
 		int getageupperbound() const;
 		int getperiodlowerbound() const;
 		int getperiodupperbound() const;
+		inline size_t hash() const
+			{
+			return boost::hash<std::string>()(name);
+			}
+		inline std::string getname() const
+			{
+			return name;
+			}
+		inline bool dorespectlock() const
+			{
+			return lock;
+			}
+		inline bool isresetage() const
+			{
+			return reset;
+			}
+		std::vector<std::string>getaggregates() const;
 		bool inperiod() const;
         bool operator < (const FMTaction& rhs) const;
         bool operator == (const FMTaction& rhs) const;
@@ -78,9 +101,11 @@ class FMTaction : public FMTlist<FMTspec>
 
 class FMTactioncomparator
 	{
+	bool checkaggregate;
 	std::string action_name;
 	public:
-		FMTactioncomparator(std::string name);
+		FMTactioncomparator(std::string name, bool lcheckaggregate = false);
+		std::vector<const FMTaction*>getallaggregates(const std::vector<FMTaction>&actions,bool aggregateonly = false) const;
 		bool operator()(const FMTaction& action) const;
 
 	};
@@ -94,7 +119,7 @@ namespace boost {
   {
     std::size_t operator()(const Core::FMTaction& act) const
         {
-        return (boost::hash<std::string>()(act.name));
+        return (act.hash());
         }
   };
 

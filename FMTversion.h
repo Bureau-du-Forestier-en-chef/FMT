@@ -35,18 +35,55 @@ SOFTWARE.
 
 namespace Version
 {
+/**
+The only purpose of this class is to let the user see which version of FMT he's using.
+It also gives some information about the buildate and the actual date.
+It also informs the user about which features are implemented. 
+*/
+
 class FMTversion
 	{
 	public:
+		/**
+		Default constructor of FMTversion.
+		*/
 		FMTversion();
+		/**
+		Destructor of FMTversion.
+		*/
 		~FMTversion()=default;
+		/**
+		Getter of the major version of FMT.
+		*/
 		static int getmajor();
+		/**
+		Getter of the minor version of FMT.
+		*/
 		static int getminor();
+		/**
+		Getter of the patch version of FMT.
+		*/
 		static int getpatch();
+		/**
+		Getter of the string of the version : MAjor.Minor.PATCH
+		*/
 		static std::string getversion();
+		/**
+		Getter of the actual date: Day Month date
+		*/
 		static std::string getdatenow();
+		/**
+		Getter of the build date: date
+		*/
 		static std::string getbuilddate();
+		/**
+		Test if the FMT version is at least the given major/minor/patch parameters.
+		*/
 		static bool isatleast(int major, int minor, int patch);
+		/**
+		Test if the FMT version have the named feature.
+		The only feature for now is GDAL.
+		*/
 		static bool hasfeature(const std::string& name);
 	};
 }

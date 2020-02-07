@@ -58,7 +58,7 @@ bool FMTmodelparser::write(const Models::FMTmodel& model,const std::string& fold
     FMTyieldparser yldparser;
     yldparser.write(model.getyields(),folder+model.name+".yld");
     FMTactionparser actparser;
-    actparser.write(model.getactions(),folder+model.name+".act",model.getactionaggregates());
+    actparser.write(model.getactions(),folder+model.name+".act");
     FMTtransitionparser trnparser;
     trnparser.write(model.gettransitions(),folder+model.name+".trn");
 	const std::vector<Core::FMToutput>outputs = model.getoutputs();
@@ -104,7 +104,6 @@ Models::FMTmodel FMTmodelparser::referenceread(std::map<std::string, std::vector
 	std::vector<Core::FMTtransition>transitions;
 	std::vector<Core::FMToutput>outputs;
 	std::vector<Core::FMTconstraint>constraints;
-	std::map<std::string, std::vector<std::string>>action_aggregates;
 	if (allow_mapping)
 		{ 
 		std::map<std::string, std::vector<int>>::const_iterator constants_it = common_sections.find(con);
@@ -168,7 +167,6 @@ Models::FMTmodel FMTmodelparser::referenceread(std::map<std::string, std::vector
 							if (!common_actions.empty())
 								{
 								actions = models.at(*common_it).getactions();
-								action_aggregates = models.at(*common_it).getactionaggregates();
 								sort(common_actions.begin(), common_actions.end());
 								if (transitions_it != common_sections.end())
 									{
@@ -293,7 +291,7 @@ Models::FMTmodel FMTmodelparser::referenceread(std::map<std::string, std::vector
 			{
 			FMTactionparser actparser;
 			actparser.passinexceptionhandler(_exhandler);
-			actions = actparser.read(themes, yields, constants, act, action_aggregates);
+			actions = actparser.read(themes, yields, constants, act);
 			if (find_if(actions.begin(), actions.end(), Core::FMTactioncomparator("_DEATH")) == actions.end())
 				{
 				_exhandler->raise(Exception::FMTexc::WSundefineddeathaction, FMTwssect::Action,
@@ -317,7 +315,7 @@ Models::FMTmodel FMTmodelparser::referenceread(std::map<std::string, std::vector
 			{
 			FMToutputparser outparser;
 			outparser.passinexceptionhandler(_exhandler);
-			outputs = outparser.read(themes, actions, yields, constants, action_aggregates, out);
+			outputs = outparser.read(themes, actions, yields, constants, out);
 			}
 		Models::FMTmodel returnedmodel;
 		if (!opt.empty() && constraints.empty())
@@ -326,12 +324,12 @@ Models::FMTmodel FMTmodelparser::referenceread(std::map<std::string, std::vector
 			FMToptimizationparser optzparser;
 			std::vector<Core::FMTaction>excluded(actions); //should we realy use? excluded is actualy the same actions but with more period specification...
 			optzparser.passinexceptionhandler(_exhandler);
-			constraints = optzparser.read(themes, actions, constants, action_aggregates, outputs, excluded, opt);
+			constraints = optzparser.read(themes, actions, constants, outputs, excluded, opt);
 			actions = excluded; //here we go
-			returnedmodel =  Models::FMTmodel(areas, themes, actions, action_aggregates,
+			returnedmodel =  Models::FMTmodel(areas, themes, actions,
 				transitions, yields, lifespan, modelname, outputs, constraints);
 		}else {
-			returnedmodel = Models::FMTmodel(areas, themes, actions, action_aggregates,
+			returnedmodel = Models::FMTmodel(areas, themes, actions,
 				transitions, yields, lifespan, modelname, outputs);
 			}
 		if (allow_mapping)

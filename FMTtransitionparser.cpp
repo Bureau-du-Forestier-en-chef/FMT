@@ -147,7 +147,7 @@ std::vector<Core::FMTtransitionmask> FMTtransitionparser::getmasktran(const std:
 			const std::string newval = std::to_string(newint);
             if (themes[targettheme].isattribute(newval))
                 {
-                lmask.set(themes[targettheme],newval);//set is probably not working?!?!?!?!
+                lmask.set(themes[targettheme],newval);
                 multiples.push_back(lmask);
                 }
             }
@@ -160,7 +160,7 @@ std::vector<Core::FMTtransitionmask> FMTtransitionparser::getmasktran(const std:
 		const std::string strvalue = kmatch[4];
         if (!yld.empty() && !strvalue.empty())
             {
-            const double upperbound = std::numeric_limits<double>::max();
+            constexpr double upperbound = std::numeric_limits<double>::max();
             const double lowerbound = getnum<double>(strvalue,constants);
             isyld(ylds,yld,FMTwssect::Transition);
             trans.addbounds(Core::FMTyldbounds(FMTwssect::Transition,FMTwskwor::Target,yld,upperbound,lowerbound));
@@ -218,12 +218,10 @@ std::vector<Core::FMTtransition> FMTtransitionparser::read(const std::vector<Cor
                     if (ptransitionname.size()>1)
                         {
 						std::vector<Core::FMTtransition>::const_iterator same_tr = find_if(temp_transitions.begin(), temp_transitions.end(), Core::FMTtransitioncomparator(ptransitionname.at(1)));
-						std::vector<Core::FMTmask>::const_iterator mask_it = same_tr->maskbegin();
-						std::vector<Core::FMTfork>::const_iterator data_it = same_tr->databegin();
-                        for (size_t id = 0 ; id<same_tr->size(); ++id)
-                            {
-                            last_transition->push_back(*(mask_it+id),*(data_it+id));
-                            }
+						for (const auto& forkobj : *same_tr)
+							{
+							last_transition->push_back(forkobj);
+							}
                         }
                     if (!isact(FMTwssect::Transition,actions,actionname)) continue;
                     }else if(!SOURCE.empty())
@@ -236,7 +234,7 @@ std::vector<Core::FMTtransition> FMTtransitionparser::read(const std::vector<Cor
                         fptrs.clear();
 						fork_ids.clear();
                         replacedvec.clear();
-                        fptrs.push_back(&(*--last_transition->dataend()));
+						fptrs.push_back(&(--last_transition->end())->second);
 						fork_ids.push_back(int(last_transition->size()) - 1);
                         }else if(!TARGET.empty())
                             {
@@ -261,9 +259,9 @@ std::vector<Core::FMTtransition> FMTtransitionparser::read(const std::vector<Cor
                                     {
 										if (replaced == -1)
 										{
-											(last_transition->databegin() + id)->add(mtrs[0]);
+											(last_transition->begin() + id)->second.add(mtrs[0]);
 										}else {
-											(last_transition->databegin() + id)->add(mtrs[repid]);
+											(last_transition->begin() + id)->second.add(mtrs[repid]);
 										}
 
                                     ++repid;
@@ -282,7 +280,7 @@ std::vector<Core::FMTtransition> FMTtransitionparser::read(const std::vector<Cor
                                         for(size_t id=0; id<mtrs.size(); ++id)
                                             {
 											last_transition->push_back(multisourcesmask[id], basefork);
-											Core::FMTfork* newfptr = &(*--last_transition->dataend());
+											Core::FMTfork* newfptr = &((--last_transition->end())->second);
                                             newfptr->add(mtrs[id]);
                                             newstack.push_back(newfptr);
 											new_ids.push_back(static_cast<int>(last_transition->size()) - 1);
@@ -300,7 +298,7 @@ std::vector<Core::FMTtransition> FMTtransitionparser::read(const std::vector<Cor
 					{
 					if (transition.isleaking())
 						{
-						_exhandler->raise(Exception::FMTexc::WSleakingtransition, _section, transition.name, __LINE__, __FILE__);
+						_exhandler->raise(Exception::FMTexc::WSleakingtransition, _section, transition.getname(), __LINE__, __FILE__);
 					}else {
 						transitions.push_back(transition);
 						}

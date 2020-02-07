@@ -113,9 +113,9 @@ namespace Core
 		return source.issubsetof(rhs.source);
 		}
 
-	bool FMToutputnode::issubsetof(const FMToutputnode& rhs, const std::map<std::string, std::vector<std::string>>& aggregates) const
+	bool FMToutputnode::issubsetof(const FMToutputnode& rhs, const std::vector<Core::FMTaction>& actions) const
 		{
-		return source.issubsetof(rhs.source,aggregates);
+		return source.issubsetof(rhs.source,actions);
 		}
 
 	bool FMToutputnode::issamebutdifferentaction(const FMToutputnode& rhs) const
@@ -123,10 +123,6 @@ namespace Core
 		return source.issamebutdifferentaction(rhs.source);
 		}
 
-	bool FMToutputnode::canbeusedby(const FMToutputnode& rhs, const std::map<std::string, std::vector<std::string>>& aggregates) const
-		{
-		return source.canbeusedby(rhs.source, aggregates);
-		}
 
 	FMToutputnode& FMToutputnode::operator = (const FMToutputnode& rhs)
 		{

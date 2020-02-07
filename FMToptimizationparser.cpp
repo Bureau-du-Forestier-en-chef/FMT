@@ -472,7 +472,6 @@ namespace WSParser
 	std::vector<Core::FMTconstraint> FMToptimizationparser::read(const std::vector<Core::FMTtheme>& themes,
 									const std::vector<Core::FMTaction>& actions,
 									const Core::FMTconstants& constants,
-									const std::map<std::string, std::vector<std::string>>& actions_aggregate,
 									const std::vector<Core::FMToutput>& outputs,
 									std::vector<Core::FMTaction>& excluded,
 									const std::string& location)
@@ -529,16 +528,7 @@ namespace WSParser
 								if (std::regex_search(line, kmatch, rxexclude))
 									{
 									std::string action_name = kmatch[3];
-									std::vector<std::string>action_names;
-									if (actions_aggregate.find(action_name) != actions_aggregate.end())
-										{
-										for (const std::string& actname : actions_aggregate.at(action_name))
-											{
-											action_names.push_back(actname);
-											}
-									}else {
-										action_names.push_back(action_name);
-										}
+									const std::vector<const Core::FMTaction*>action_ptrs = Core::FMTactioncomparator(action_name).getallaggregates(actions);
 									const int period_lower = getnum<int>(std::string(kmatch[7])+ std::string(kmatch[10]),constants)-1;
 									int period_upper = std::numeric_limits<int>::max();
 									const std::string str_upper = std::string(kmatch[9]);
@@ -549,28 +539,28 @@ namespace WSParser
 										{
 										period_upper = period_lower;
 										}
-									for (const std::string& target_action : action_names)
+									for (const Core::FMTaction* target_actionptr : action_ptrs)
 										{
 										std::vector<Core::FMTspec>newspecs;
 										std::vector<Core::FMTmask>newmask;
-										std::vector<Core::FMTaction>::iterator actit = std::find_if(excluded.begin(), excluded.end(), Core::FMTactioncomparator(target_action));
+										std::vector<Core::FMTaction>::iterator actit = std::find_if(excluded.begin(), excluded.end(), Core::FMTactioncomparator(target_actionptr->getname()));
 										if (actit != excluded.end())
 											{
-											std::vector<Core::FMTmask>::const_iterator mskit = actit->maskbegin();
-											for (std::vector<Core::FMTspec>::iterator spec_it = actit->databegin(); spec_it != actit->dataend(); ++spec_it)
+			
+											for (auto& specobject : *actit)
 												{
 												if (str_upper != "_LENGTH")
 													{
-													Core::FMTspec upperspec = *spec_it;
-														const int max_upper = std::numeric_limits<int>::max() - 2;
+													Core::FMTspec upperspec = specobject.second;
+														constexpr int max_upper = std::numeric_limits<int>::max() - 2;
 														const int upper = period_upper + 1;
 														upperspec.setbounds(Core::FMTperbounds(FMTwssect::Action, max_upper, upper));
 														newspecs.push_back(upperspec);
-														newmask.push_back(*mskit);
+														newmask.push_back(specobject.first);
 														}
 													const int startperiod_upper = period_lower - 1;
-													spec_it->setbounds(Core::FMTperbounds(FMTwssect::Action, period_lower, startperiod_upper));
-													++mskit;
+													specobject.second.setbounds(Core::FMTperbounds(FMTwssect::Action, period_lower, startperiod_upper));
+		
 													}
 												for (size_t newspec = 0; newspec < newspecs.size();++newspec)
 													{

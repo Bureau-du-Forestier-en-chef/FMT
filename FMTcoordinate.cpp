@@ -27,8 +27,8 @@ SOFTWARE.
 
 namespace Spatial
     {
-	std::vector<int>FMTcoordinate::x_n = { 0,1,0,-1,1,1,-1,-1 };
-	std::vector<int>FMTcoordinate::y_n = { 1,0,-1,0,1,-1,-1,1 };
+	std::array<int,8>FMTcoordinate::x_n = { 0,1,0,-1,1,1,-1,-1 };
+	std::array<int,8>FMTcoordinate::y_n = { 1,0,-1,0,1,-1,-1,1 };
     FMTcoordinate::FMTcoordinate():x(),y(){}
     FMTcoordinate::FMTcoordinate(unsigned int lx, unsigned int ly):
         x(lx),y(ly){}

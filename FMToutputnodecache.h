@@ -26,20 +26,20 @@ namespace Graph
 		std::vector<FMTvertex_descriptor>basenode;
 		mutable std::map<Core::FMToutputnode, std::vector<FMTvertex_descriptor>>searchtree;
 		void setinitialcache(const std::unordered_map<size_t, FMTvertex_descriptor>& initialgraph);
-		const std::vector<FMTvertex_descriptor>& getcleandescriptors(const Core::FMToutputnode& targetnode, const std::map<std::string, std::vector<std::string>>& actionaggregates,
+		const std::vector<FMTvertex_descriptor>& getcleandescriptors(const Core::FMToutputnode& targetnode,const std::vector<Core::FMTaction>& actions,
 										const std::vector<Core::FMTtheme>&themes, bool& exactnode) const;
 		void getactionrebuild(const Core::FMToutputnode& targetnode,
-			const std::map<std::string,std::vector<std::string>>& aggregates,
+			const std::vector<Core::FMTaction>& actions,
 			std::vector<FMTvertex_descriptor>& cleaned,
 			bool& exactnode) const;
-		std::map<Core::FMToutputnode, std::vector<FMTvertex_descriptor>>::const_iterator getparentnode(const Core::FMToutputnode& targetnode,const std::map<std::string, std::vector<std::string>>& actionaggregates, bool& exactnode) const;
+		std::map<Core::FMToutputnode, std::vector<FMTvertex_descriptor>>::const_iterator getparentnode(const Core::FMToutputnode& targetnode, const std::vector<Core::FMTaction>& actions, bool& exactnode) const;
 	public:
 		FMToutputnodecache();
 		FMToutputnodecache(const FMToutputnodecache& rhs);
 		FMToutputnodecache& operator = (const FMToutputnodecache& rhs);
 		~FMToutputnodecache() = default;
 		FMToutputnodecache(const std::unordered_map<size_t, FMTvertex_descriptor>& initialgraph);
-		const std::vector<FMTvertex_descriptor>& getverticies(const Core::FMToutputnode& targetnode, const std::map<std::string,std::vector<std::string>>& actionaggregates,
+		const std::vector<FMTvertex_descriptor>& getverticies(const Core::FMToutputnode& targetnode, const std::vector<Core::FMTaction>& actions,
 			const std::vector<Core::FMTtheme>&themes, bool& exactvecticies) const;
 		void setvalidverticies(const Core::FMToutputnode& targetnode,const std::vector<FMTvertex_descriptor>& verticies) const;
 		void clear();

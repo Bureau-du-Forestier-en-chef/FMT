@@ -80,9 +80,8 @@ namespace WSParser
 		std::vector<Core::FMTconstraint> read(const std::vector<Core::FMTtheme>& themes,
 				  const std::vector<Core::FMTaction>& actions,
 				  const Core::FMTconstants& constants,
-			      const std::map<std::string, std::vector<std::string>>& actions_aggregate,
 				  const std::vector<Core::FMToutput>& outputs,
-					std::vector<Core::FMTaction>& excluded,
+				  std::vector<Core::FMTaction>& excluded,
 				  const std::string& location);
 		void write(const std::vector<Core::FMTconstraint>& constraints, std::string location);
 		~FMToptimizationparser()=default;

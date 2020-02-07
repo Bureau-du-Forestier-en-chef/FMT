@@ -141,8 +141,8 @@ namespace Spatial
 	std::vector<Core::FMTconstraint> FMTspatialaction::to_constraints() const
     {
 		std::vector<Core::FMTconstraint> constraints;
-        double max_all = std::numeric_limits<double>::infinity();
-        int stopperiod = std::numeric_limits<int>::max();
+        constexpr double max_all = std::numeric_limits<double>::infinity();
+        constexpr int stopperiod = std::numeric_limits<int>::max();
         int startperiod = 1;
         if ( minimal_size>0)
         {

@@ -26,10 +26,7 @@ SOFTWARE.
 
 namespace Core{
 FMTtransition::FMTtransition():name(){}
-FMTtransition::FMTtransition(std::string& lname):FMTlist<FMTfork>(),name(lname)
-    {
 
-    }
 FMTtransition::FMTtransition(const std::string& lname) : FMTlist<FMTfork>(), name(lname)
 	{
 
@@ -37,10 +34,9 @@ FMTtransition::FMTtransition(const std::string& lname) : FMTlist<FMTfork>(), nam
 
 bool FMTtransition::isleaking() const
 	{
-	std::vector<FMTfork>::const_iterator fork_it = this->databegin();
-	for (size_t id = 0; id < this->size(); ++id)
+	for (const auto& forkobj : *this)
 		{
-		if (fork_it->sumprop() != 100)
+		if (forkobj.second.sumprop() != 100)
 			{
 			return true;
 			}
@@ -65,11 +61,9 @@ FMTtransition& FMTtransition::operator = (const FMTtransition& rhs)
 FMTtransition FMTtransition::single() const
     {
     FMTtransition newtra(*this);
-	std::vector<FMTfork>::iterator data_it = newtra.databegin();
-	for (size_t id = 0 ; id < newtra.size(); ++id)
+	for (auto& forkobj : newtra)
 		{
-		*data_it = data_it->single();
-		++data_it;
+		forkobj.second = forkobj.second.single();
 		}
     return newtra;
     }
@@ -81,14 +75,10 @@ bool FMTtransition::operator < (const FMTtransition& rhs) const
 FMTtransition::operator std::string() const
     {
 	std::string line = "*CASE "+name+"\n";
-	std::vector<FMTfork>::const_iterator data_it = this->databegin();
-	std::vector<FMTmask>::const_iterator mask_it = this->maskbegin();
-    for (size_t id = 0; id < this->size(); ++id)
+    for (const auto& forkobj:*this)
         {
-        line+="*SOURCE "+ std::string(*mask_it);
-        line+= std::string(*data_it);
-		++data_it;
-		++mask_it;
+        line+="*SOURCE "+ std::string(forkobj.first);
+        line+= std::string(forkobj.second);
         }
     return line;
     }
@@ -130,11 +120,11 @@ unsigned int FMTtransition::age_after(const std::vector<FMTdevelopment>& devs,
 
 std::vector<FMTtheme>FMTtransition::getstaticthemes(const std::vector<FMTtheme>& themes) const
 	{
-	std::vector<FMTfork>::const_iterator fork_it = this->databegin();
 	std::vector<FMTtheme>staticthemes = themes;
-	while (fork_it!= this->dataend() && !staticthemes.empty())
+	std::vector<std::pair<FMTmask,FMTfork>>::const_iterator fork_it = this->begin();
+	while (fork_it!= this->end() && !staticthemes.empty())
 		{
-		for (const FMTtransitionmask& trnmask : fork_it->getmasktrans())
+		for (const FMTtransitionmask& trnmask : fork_it->second.getmasktrans())
 			{
 			const FMTmask msk = trnmask.getmask();
 			staticthemes = msk.getstaticthemes(staticthemes);
@@ -222,7 +212,7 @@ const FMTfork* FMTtransition::getfork(const FMTdevelopment& dev,
  FMTtransitioncomparator::FMTtransitioncomparator(std::string name) :transition_name(name) {}
  bool FMTtransitioncomparator::operator()(const FMTtransition& transition) const
 	{
-	return (transition.name  == transition_name);
+	return (transition.getname()  == transition_name);
 	}
 
 

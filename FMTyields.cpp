@@ -47,13 +47,13 @@ FMTyields::FMTyields():FMTlist<FMTyieldhandler>(),names(), null_names()
 	std::vector<std::string>FMTyields::getstacked() const
         {
 		std::vector<std::string>values;
-		std::vector<FMTyieldhandler>::const_iterator data_iterator = this->databegin();
-        for(size_t id = 0 ; id < this->size(); ++id)
+		//std::vector<FMTyieldhandler>::const_iterator data_iterator = this->databegin();
+        for(const auto& handlerobj : *this/*size_t id = 0 ; id < this->size(); ++id*/)
             {
 			std::string value = "";
-            value += std::string(*data_iterator) + "\n";
+            value += std::string(handlerobj.second) + "\n";
             values.push_back(value);
-			++data_iterator;
+			//++data_iterator;
             }
         return values;
         }
@@ -61,17 +61,17 @@ FMTyields::FMTyields():FMTlist<FMTyieldhandler>(),names(), null_names()
 std::vector<std::string>FMTyields::getyldsnames() const
     {
 		std::vector<std::string>fullylds;
-		std::vector<FMTyieldhandler>::const_iterator data_iterator = this->databegin();
-    for(size_t id = 0 ; id < this->size(); ++id)
+		//std::vector<FMTyieldhandler>::const_iterator data_iterator = this->databegin();
+    for(const auto& handlerobj : *this/*size_t id = 0 ; id < this->size(); ++id*/)
         {
-        for(std::map<std::string,FMTdata>::const_iterator itd = data_iterator->elements.begin(); itd != data_iterator->elements.end(); ++itd)
+        for(std::map<std::string,FMTdata>::const_iterator itd = handlerobj.second.elements.begin(); itd != handlerobj.second.elements.end(); ++itd)
              {
              if (std::find(fullylds.begin(),fullylds.end(), itd->first)==fullylds.end())
                  {
                  fullylds.push_back(itd->first);
                  }
              }
-		++data_iterator;
+		//++data_iterator;
         }
     return fullylds;
     }
@@ -80,10 +80,10 @@ std::vector<std::string>FMTyields::getnullyldsnames() const
 	{
 	std::vector<std::string>nullyields;
 	std::vector<std::string>nonnullyields;
-	std::vector<FMTyieldhandler>::const_iterator data_iterator = this->databegin();
-	for (size_t id = 0; id < this->size(); ++id)
+	//std::vector<FMTyieldhandler>::const_iterator data_iterator = this->databegin();
+	for (const auto& handlerobj : *this/*size_t id = 0; id < this->size(); ++id*/)
 		{
-		for (std::map<std::string, FMTdata>::const_iterator itd = data_iterator->elements.begin(); itd != data_iterator->elements.end(); ++itd)
+		for (std::map<std::string, FMTdata>::const_iterator itd = handlerobj.second.elements.begin(); itd != handlerobj.second.elements.end(); ++itd)
 			{
 			std::vector<std::string>::iterator nullit = std::find(nullyields.begin(), nullyields.end(), itd->first);
 			std::vector<std::string>::iterator nonnullit = std::find(nonnullyields.begin(), nonnullyields.end(), itd->first);
@@ -98,7 +98,7 @@ std::vector<std::string>FMTyields::getnullyldsnames() const
 				nonnullyields.push_back(itd->first);
 				}
 			}
-		++data_iterator;
+		//++data_iterator;
 		}
 	return nullyields;
 	}
@@ -157,10 +157,17 @@ bool FMTyields::operator == (const FMTyields& rhs) const
 
 std::vector<const FMTyieldhandler*> FMTyields::gethandleroftype(FMTyldwstype type) const
 	{
-	std::vector<FMTyieldhandler>::const_iterator handlerit = this->databegin();
-	std::vector<FMTyieldhandler>::const_iterator handlerend = this->dataend();
+	//std::vector<FMTyieldhandler>::const_iterator handlerit = this->databegin();
+	//std::vector<FMTyieldhandler>::const_iterator handlerend = this->dataend();
 	std::vector<const FMTyieldhandler*>selectedhandlers;
-	while (handlerit!= handlerend)
+	for (const auto& handlerobj : *this)
+		{
+		if (handlerobj.second.gettype() == type)
+			{
+			selectedhandlers.push_back(&(handlerobj.second));
+			}
+		}
+	/*while (handlerit!= handlerend)
 		{
 		if (handlerit->gettype()==type)
 			{
@@ -168,7 +175,7 @@ std::vector<const FMTyieldhandler*> FMTyields::gethandleroftype(FMTyldwstype typ
 			}
 
 		++handlerit;
-		}
+		}*/
 	return selectedhandlers;
 	}
 

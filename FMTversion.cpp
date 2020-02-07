@@ -79,12 +79,6 @@ bool FMTversion::hasfeature(const std::string& name)
 			{
 			return true;
 			}
-		#ifdef HAVE_GEOS
-		if (name == "GEOS")
-			{
-			return true;
-			}
-		#endif
 	#endif
 	return false;
 	}

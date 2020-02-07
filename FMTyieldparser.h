@@ -47,7 +47,7 @@ class FMTyieldparser : public FMTparser
         FMTyldwstype getyldtype(const std::string& value) const;
         FMTyieldparserop getyldctype(const std::string& value) const;
 		std::vector<std::string> getylduse(Core::FMTyields& yielddata,
-			std::vector<Core::FMTyieldhandler>::iterator actualyield,
+			std::vector<std::pair<Core::FMTmask, Core::FMTyieldhandler>>::iterator actualyield,
                                    const std::vector<std::string>& values) const;
         void checkpreexisting(const std::vector<std::string>& preexists) const;
 		bool isfunction(const std::string& strfunction) const;

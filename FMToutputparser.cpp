@@ -58,7 +58,7 @@ namespace WSParser
 
 
 		std::vector<Core::FMToutput> FMToutputparser::read(const std::vector<Core::FMTtheme>& themes,const std::vector<Core::FMTaction>& actions,
-			const Core::FMTyields& ylds,const Core::FMTconstants& constants, const std::map<std::string, std::vector<std::string>>& actions_aggregate, std::string location)
+			const Core::FMTyields& ylds,const Core::FMTconstants& constants, std::string location)
             {
 			std::vector<Core::FMToutput>outputs;
 			if(!location.empty())
@@ -355,10 +355,7 @@ namespace WSParser
                                                         if (!std::string(kmatch[25]).empty())
                                                             {
 															const std::string action = std::string(kmatch[25]);
-															if (actions_aggregate.find(action) == actions_aggregate.end())
-																{
-																isact(_section, actions, action);
-																}
+															isact(_section, actions, action);
 															std::string yld = std::string(kmatch[29]);
                                                             if (isvalid(yld))
                                                                         {
@@ -393,7 +390,7 @@ namespace WSParser
 																	{
 																	
 																	const int lower = 1;
-																	const int upper = std::numeric_limits<int>::max();
+																	constexpr int upper = std::numeric_limits<int>::max();
 																	spec.addbounds(Core::FMTlockbounds(FMTwssect::Outputs,
 																		FMTwskwor::Source,upper,lower));
 																	}
@@ -403,11 +400,7 @@ namespace WSParser
                                                                 }else if(!std::string(kmatch[3]).empty())
                                                                     {
 																	const std::string action = std::string(kmatch[7]);
-																	
-																	if (actions_aggregate.find(action) == actions_aggregate.end())
-																		{
-																		isact(_section, actions, action);
-																		}
+																	isact(_section, actions, action);
 																	std::string yld = std::string(kmatch[13]);
 																	
                                                                     if (isvalid(yld))

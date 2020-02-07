@@ -50,9 +50,9 @@ class FMTactionparser : public FMTparser
         std::map<std::string, std::vector<std::string>>valagg(std::vector<Core::FMTaction>& actions, std::map<std::string, std::vector<std::string>>& aggregates);
 		std::vector<Core::FMTaction>read(const std::vector<Core::FMTtheme>& themes,
 			const Core::FMTyields& yields,const Core::FMTconstants& constants,
-			std::string location, std::map<std::string, std::vector<std::string>>& aggregates);
+			std::string location);
         bool write(const std::vector<Core::FMTaction>& actions,
-			std::string location,const  std::map<std::string, std::vector<std::string>>& aggregates);
+			std::string location);
     };
 
 }

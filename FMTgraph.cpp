@@ -199,7 +199,7 @@ FMTgraphstats FMTgraph::build(const Models::FMTmodel& model,std::queue<FMTvertex
 			{
 				if (active_development.operable(action, model.yields))
 				{
-					if (action.name == "_DEATH")
+					if (action.getname() == "_DEATH")
 						{
 						death = true;
 						}
@@ -526,7 +526,7 @@ bool FMTgraph::isvalidouputnode(const Models::FMTmodel& model,const Core::FMTout
     {
 	if (developments.size() > period)
 		{
-		action_IDS = node.source.targets(model.actions, model.action_aggregates);
+		action_IDS = node.source.targets(model.actions);
 		if (!(period == 0 && !action_IDS.empty()) && !node.source.isnull(model.yields) && !node.factor.isnull(model.yields) && (!action_IDS.empty() && !node.source.getaction().empty() || node.source.getaction().empty()))
 			{
 			return true;
@@ -591,7 +591,7 @@ std::vector<FMTvertex_descriptor> FMTgraph::getnode(const Models::FMTmodel& mode
 							nodescache.push_back(FMToutputnodecache(developments.at(devindex)));
 							}
 						bool exactverticies = false;
-						const std::vector<FMTvertex_descriptor>& descriptors = nodescache.at(localnodeperiod).getverticies(output_node,model.action_aggregates,model.themes, exactverticies);
+						const std::vector<FMTvertex_descriptor>& descriptors = nodescache.at(localnodeperiod).getverticies(output_node,model.actions,model.themes, exactverticies);
 						if (exactverticies)
 							{
 							locations.reserve(locations.size() + descriptors.size());
@@ -626,7 +626,7 @@ std::map<int, double> FMTgraph::getvariables(const Models::FMTmodel& model, cons
 		{
 		std::vector<Core::FMTdevelopmentpath>paths;
 		Core::FMTaction optimization_action;
-		const std::vector<const Core::FMTaction*> selected = output_node.source.targets(model.actions, model.action_aggregates);
+		const std::vector<const Core::FMTaction*> selected = output_node.source.targets(model.actions);
 		for (const FMTvertex_descriptor& vertex : verticies)
 			{
 			const Core::FMTdevelopment& development = data[vertex].get();
@@ -788,10 +788,10 @@ FMTgraphstats FMTgraph::buildschedule(const Models::FMTmodel& model, std::queue<
 		{
 			if (schedule.elements.find(action) != schedule.elements.end() &&
 				(((schedule.elements.at(action)).find(active_development) != (schedule.elements.at(action)).end()) ||
-				(!action.lock && active_development.lock != 0 && 
+				(!action.dorespectlock() && active_development.lock != 0 &&
 					(schedule.elements.at(action)).find(active_development.clearlock()) != (schedule.elements.at(action)).end())))
 			{
-				if (action.name == "_DEATH")
+				if (action.getname() == "_DEATH")
 					{
 					death = true;
 					}
@@ -1032,7 +1032,7 @@ std::map<std::string, double> FMTgraph::getvalues(const Models::FMTmodel& model,
 		}
 	if (!verticies.empty())
 		{
-		const std::vector<const Core::FMTaction*> selected = node.source.targets(model.actions,model.action_aggregates);
+		const std::vector<const Core::FMTaction*> selected = node.source.targets(model.actions);
 		std::vector<Core::FMTdevelopmentpath>paths;
 		Core::FMTaction optimization_action;
 		for (const FMTvertex_descriptor& vertex : verticies)

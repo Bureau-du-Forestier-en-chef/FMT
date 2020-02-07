@@ -286,7 +286,7 @@ namespace Models
 		std::vector<Core::FMTaction>newbaseactions;
 		for (const Spatial::FMTspatialaction& spaction : lspactions)
 			{
-			std::vector<Core::FMTtransition>::const_iterator trn_iterator = std::find_if(transitions.begin(), transitions.end(), Core::FMTtransitioncomparator(spaction.name));
+			std::vector<Core::FMTtransition>::const_iterator trn_iterator = std::find_if(transitions.begin(), transitions.end(), Core::FMTtransitioncomparator(spaction.getname()));
 			if (trn_iterator!= transitions.end())
 				{
 				newtransitions.push_back(*trn_iterator);
@@ -301,7 +301,7 @@ namespace Models
                     }
                 }
 			}else{
-				_exhandler->raise(Exception::FMTexc::WSinvalid_transition,FMTwssect::Transition, "Missing transition case for action : " + spaction.name,__LINE__, __FILE__);
+				_exhandler->raise(Exception::FMTexc::WSinvalid_transition,FMTwssect::Transition, "Missing transition case for action : " + spaction.getname(),__LINE__, __FILE__);
 				return false;
 				}
 			}

@@ -96,7 +96,7 @@ The matrix is held within the solverinterface pointer.
 class FMTlpmodel : public FMTmodel
 	{
 	/**
-	Save and load functions are for serialization, used to do multiprocessing across multiple cpu (pickle in Pyhton)
+	Save and load functions are for serialization, used to do multiprocessing across multiple cpus (pickle in Pyhton)
 	*/
 	friend class boost::serialization::access;
 	template<class Archive>
@@ -179,7 +179,7 @@ class FMTlpmodel : public FMTmodel
 	*/
 		std::vector<std::vector<int>>getmatrixelement(const Core::FMTconstraint& constraint,int period) const;
 	/**
-	Get a shared pointer to the matrix (solverinterface).
+	Getter for a shared pointer to the matrix (solverinterface).
 	*/
 		std::shared_ptr<OsiSolverInterface>& getsolverinterface();
 	/**
@@ -360,7 +360,7 @@ class FMTlpmodel : public FMTmodel
 		*/
 		void writeMPS(const std::string& location) const;
 		/**
-		Copy assignement of FMTlpmodel
+		Copy assignment of FMTlpmodel
 		*/
 		FMTlpmodel& operator = (const FMTlpmodel& rhs);
 		/**

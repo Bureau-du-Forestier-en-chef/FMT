@@ -44,15 +44,11 @@ bool FMTlifespans::operator == (const FMTlifespans& rhs) const
 FMTlifespans::operator std::string() const
     {
 	std::string line;
-	std::vector<FMTmask>::const_iterator mask_iterator = this->maskbegin();
-	std::vector<int>::const_iterator data_iterator = this->databegin();
-    for(size_t id = 0; id < this->size();++id)
+    for(const auto& lfobject : *this)
         {
-        line+= std::string(*mask_iterator)+" ";
-        line+= std::to_string(*data_iterator);
+        line+= std::string(lfobject.first)+" ";
+        line+= std::to_string(lfobject.second);
         line+="\n";
-		++mask_iterator;
-		++data_iterator;
         }
     return line;
     }

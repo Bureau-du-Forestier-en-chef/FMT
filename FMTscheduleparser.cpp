@@ -92,12 +92,12 @@ std::vector<Core::FMTschedule> FMTscheduleparser::read(const std::vector<Core::F
 							if (!isact(FMTwssect::Schedule,actions,actionname)) continue;
 							++id;
 							const int period = getnum<int>(values[id]);
-							if (period -1 == data.size())
+							if (static_cast<size_t>(period) -1 == data.size())
 								{
 								data.push_back(std::map<Core::FMTaction, std::map<Core::FMTdevelopment, std::map<int,double>>>());
-							}else if (period - 1 > data.size())
+							}else if (static_cast<size_t>(period) - 1 > data.size())
 								{
-								int gap = (period - 1) - int(data.size());
+								int gap = (period - 1) - static_cast<int>(data.size());
 								while (gap >= 0)
 									{
 									data.push_back(std::map<Core::FMTaction, std::map<Core::FMTdevelopment, std::map<int, double>>>());
@@ -106,19 +106,20 @@ std::vector<Core::FMTschedule> FMTscheduleparser::read(const std::vector<Core::F
 								}
 							 const Core::FMTdevelopment dev(Core::FMTmask(mask,themes),age,0,period);
 							 std::vector<Core::FMTaction>::const_iterator act = find_if(actions.begin(),actions.end(),Core::FMTactioncomparator(actionname));
-							 if (act->lock)
+							 if (act->dorespectlock())
 								{
 								variable = 0;
 								}
-							 if (data[period-1].find(*act) == data[period - 1].end())
+							 const int periodloc = period - 1;
+							 if (data[periodloc].find(*act) == data[periodloc].end())
 								 {
-								 data[period - 1][*act] = std::map<Core::FMTdevelopment, std::map<int, double>>();
+								 data[periodloc][*act] = std::map<Core::FMTdevelopment, std::map<int, double>>();
 								 }
-							 if (data[period - 1][*act][dev].find(variable)!= data[period - 1][*act][dev].end())
+							 if (data[periodloc][*act][dev].find(variable)!= data[periodloc][*act][dev].end())
 								{
-								data[period - 1][*act][dev][variable] += area;
+								data[periodloc][*act][dev][variable] += area;
 								}else {
-								data[period - 1][*act][dev][variable] = area;
+								data[periodloc][*act][dev][variable] = area;
 								}
 							}
                         }

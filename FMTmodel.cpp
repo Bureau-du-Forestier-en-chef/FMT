@@ -47,31 +47,23 @@ void FMTmodel::setdefaultobjects()
 		}
 	}
 
-FMTmodel::FMTmodel() : Core::FMTobject(),area(),themes(),actions(), action_aggregates(),transitions(),yields(),lifespan(),outputs(), constraints(),name()
+FMTmodel::FMTmodel() : Core::FMTobject(),area(),themes(),actions(), transitions(),yields(),lifespan(),outputs(), constraints(),name()
 {
 
 }
 
-FMTmodel::FMTmodel(const std::vector<Core::FMTactualdevelopment>& larea,const std::vector<Core::FMTtheme>& lthemes,const std::vector<Core::FMTaction>& lactions, const std::map<std::string, std::vector<std::string>>& laction_aggregates,
-        const std::vector<Core::FMTtransition>& ltransitions,const Core::FMTyields& lyields,const Core::FMTlifespans& llifespan,const std::string& lname, const std::vector<Core::FMToutput>& loutputs) : Core::FMTobject(),area(larea),themes(lthemes),actions(lactions),
-		action_aggregates(laction_aggregates),transitions(ltransitions),yields(lyields),lifespan(llifespan),outputs(loutputs), constraints(),name(lname)
-		{
-		setdefaultobjects();
-		}
-
 FMTmodel::FMTmodel(const std::vector<Core::FMTactualdevelopment>& larea, const std::vector<Core::FMTtheme>& lthemes,
-	const std::vector<Core::FMTaction>& lactions, const std::map<std::string, std::vector<std::string>>& laction_aggregates,
+	const std::vector<Core::FMTaction>& lactions,
 	const std::vector<Core::FMTtransition>& ltransitions, const Core::FMTyields& lyields, const Core::FMTlifespans& llifespan,
-	const std::string& lname, const std::vector<Core::FMToutput>& loutputs, const std::vector<Core::FMTconstraint>& lconstraints) :
-	Core::FMTobject(), area(larea), themes(lthemes), actions(lactions),
-	action_aggregates(laction_aggregates), transitions(ltransitions),
+	const std::string& lname, const std::vector<Core::FMToutput>& loutputs,std::vector<Core::FMTconstraint> lconstraints) :
+	Core::FMTobject(), area(larea), themes(lthemes), actions(lactions), transitions(ltransitions),
 	yields(lyields), lifespan(llifespan), outputs(loutputs), constraints(lconstraints), name(lname)
 	{
 	setdefaultobjects();
 	}
 
 FMTmodel::FMTmodel(const FMTmodel& rhs):Core::FMTobject(rhs),area(rhs.area),themes(rhs.themes),actions(rhs.actions),
-		action_aggregates(rhs.action_aggregates), transitions(rhs.transitions),yields(rhs.yields),lifespan(rhs.lifespan), outputs(rhs.outputs), constraints(rhs.constraints),name(rhs.name){}
+		 transitions(rhs.transitions),yields(rhs.yields),lifespan(rhs.lifespan), outputs(rhs.outputs), constraints(rhs.constraints),name(rhs.name){}
 
 FMTmodel& FMTmodel::operator = (const FMTmodel& rhs)
     {
@@ -82,7 +74,6 @@ FMTmodel& FMTmodel::operator = (const FMTmodel& rhs)
         themes = rhs.themes;
         actions = rhs.actions;
         transitions = rhs.transitions;
-		action_aggregates = rhs.action_aggregates;
         yields = rhs.yields;
         lifespan = rhs.lifespan;
 		outputs = rhs.outputs;
@@ -104,7 +95,7 @@ void FMTmodel::cleanactionsntransitions()
 	{
 		if (!actions[id].empty())
 		{
-			const std::vector<Core::FMTtransition>::iterator trn_it = std::find_if(transitions.begin(), transitions.end(), Core::FMTtransitioncomparator(actions[id].name));
+			const std::vector<Core::FMTtransition>::iterator trn_it = std::find_if(transitions.begin(), transitions.end(), Core::FMTtransitioncomparator(actions[id].getname()));
 			if (trn_it != transitions.end() && !trn_it->empty())
 			{
 				newactions.push_back(actions[id]);
@@ -126,10 +117,7 @@ std::vector<Core::FMTaction>FMTmodel::getactions() const
     {
     return actions;
     }
-std::map<std::string, std::vector<std::string>> FMTmodel::getactionaggregates() const
-	{
-	return action_aggregates;
-	}
+
 std::vector<Core::FMTtransition>FMTmodel::gettransitions() const
     {
     return transitions;
@@ -153,17 +141,13 @@ Core::FMTaction FMTmodel::defaultdeathaction(const Core::FMTlifespans& llifespan
 	const bool lock = false; 
 	const bool reset = true;
 	Core::FMTaction death_action(actionname, lock, reset);
-	std::vector<Core::FMTmask>::const_iterator mask_iterator = llifespan.maskbegin();
-	std::vector<int>::const_iterator data_iterator = llifespan.databegin();
-	for (size_t id = 0; id < llifespan.size(); ++id)
+	for (const auto& intobject: llifespan)
 		{
-		const std::string mask = mask_iterator->getstr();
+		const std::string mask = intobject.first.getstr();
 		const Core::FMTmask amask(mask,lthemes);
 		Core::FMTspec specifier;
-		specifier.addbounds(Core::FMTagebounds(FMTwssect::Action, *data_iterator, *data_iterator));
+		specifier.addbounds(Core::FMTagebounds(FMTwssect::Action, intobject.second, intobject.second));
 		death_action.push_back(amask, specifier);
-		++mask_iterator;
-		++data_iterator;
 		}
 	death_action.shrink();
 	return death_action;
@@ -174,11 +158,9 @@ Core::FMTtransition FMTmodel::defaultdeathtransition(const Core::FMTlifespans& l
 	const std::string transitionname = "_DEATH";
 	Core::FMTtransition death_Transition(transitionname);
 	const double target_proportion = 100;
-	std::vector<Core::FMTmask>::const_iterator mask_iterator = llifespan.maskbegin();
-	std::vector<int>::const_iterator data_iterator = llifespan.databegin();
-	for (size_t id = 0; id < llifespan.size(); ++id)
+	for (const auto& lfobject : llifespan)
 		{
-		const std::string mask = mask_iterator->getstr();
+		const std::string mask = lfobject.first.getstr();
 		const Core::FMTmask amask(mask, lthemes);
 		Core::FMTfork fork;
 		Core::FMTtransitionmask trmask(mask, lthemes, target_proportion);
@@ -194,7 +176,7 @@ std::vector<Core::FMTconstraint>FMTmodel::getconstraints() const
 	return constraints;
 	}
 
-bool FMTmodel::addoutput(const std::string& name,
+void FMTmodel::addoutput(const std::string& name,
 	const std::string& maskstring, FMTotar outputtarget,
 	std::string action, std::string yield, std::string description, int targettheme)
 	{
@@ -202,7 +184,6 @@ bool FMTmodel::addoutput(const std::string& name,
 	sources.push_back(Core::FMToutputsource(Core::FMTspec(), Core::FMTmask(maskstring, themes), outputtarget, yield, action));
 	std::vector<Core::FMToperator>operators;
 	outputs.push_back(Core::FMToutput(name, description,targettheme, sources, operators));
-	return true;
 	}
 
 
@@ -217,42 +198,35 @@ bool  FMTmodel::operator == (const FMTmodel& rhs) const
 		area == rhs.area &&
 		themes == rhs.themes &&
 		actions == rhs.actions &&
-		action_aggregates == rhs.action_aggregates &&
 		transitions == rhs.transitions &&
 		yields == rhs.yields &&
 		lifespan == rhs.lifespan &&
 		outputs == rhs.outputs &&
 		constraints == rhs.constraints);
 	}
-bool FMTmodel::setarea(const std::vector<Core::FMTactualdevelopment>& ldevs)
+void FMTmodel::setarea(const std::vector<Core::FMTactualdevelopment>& ldevs)
     {
     area = ldevs;
-	return true;
     }
-bool FMTmodel::setthemes(const std::vector<Core::FMTtheme>& lthemes)
+void FMTmodel::setthemes(const std::vector<Core::FMTtheme>& lthemes)
     {
     themes = lthemes;
-	return true;
     }
-bool FMTmodel::setactions(const std::vector<Core::FMTaction>& lactions)
+void FMTmodel::setactions(const std::vector<Core::FMTaction>& lactions)
     {
     actions = lactions;
-	return true;
     }
-bool FMTmodel::settransitions(const std::vector<Core::FMTtransition>& ltransitions)
+void FMTmodel::settransitions(const std::vector<Core::FMTtransition>& ltransitions)
     {
     transitions = ltransitions;
-    return true;
     }
-bool FMTmodel::setyields(const Core::FMTyields& lylds)
+void FMTmodel::setyields(const Core::FMTyields& lylds)
     {
     yields = lylds;
-	return true;
     }
-bool FMTmodel::setlifespan(const Core::FMTlifespans& llifespan)
+void FMTmodel::setlifespan(const Core::FMTlifespans& llifespan)
     {
     lifespan = llifespan;
-	return true;
     }
 
 std::vector<Core::FMTtheme> FMTmodel::locatestaticthemes() const
@@ -265,17 +239,37 @@ std::vector<Core::FMTtheme> FMTmodel::locatestaticthemes() const
 	return bestthemes;
 }
 
-bool FMTmodel::valid()
+bool FMTmodel::isvalid()
     {
+	for (const Core::FMTtheme& theme :themes)
+		{
+		if (theme.empty())
+			{
+			_exhandler->raise(Exception::FMTexc::WSempty_theme,FMTwssect::Landscape,
+				"for theme id: " + std::to_string(theme.getid()), __LINE__, __FILE__);
+			}
+		}
+	for (const Core::FMTactualdevelopment& developement : area)
+		{
+		for (const Core::FMTtheme& theme : themes)
+			{
+			if (developement.mask.get(theme).empty())
+				{
+				_exhandler->raise(Exception::FMTexc::WSundefined_attribute,FMTwssect::Area,
+					" for developement " + std::string(developement), __LINE__, __FILE__);
+				}
+			}
+		}
+
     if (actions.size() != transitions.size())
         {
         _exhandler->raise(Exception::FMTexc::FMTinvalidAandT,FMTwssect::Empty,"Model: "+name,__LINE__,__FILE__);
         }
     for(size_t id = 0 ; id < actions.size();++id)
         {
-        if(actions[id].name != transitions[id].name)
+        if(actions[id].getname() != transitions[id].getname())
             {
-            _exhandler->raise(Exception::FMTexc::WSinvalid_action,FMTwssect::Empty,"Model: "+name+" "+actions[id].name, __LINE__, __FILE__);
+            _exhandler->raise(Exception::FMTexc::WSinvalid_action,FMTwssect::Empty,"Model: "+name+" "+actions[id].getname(), __LINE__, __FILE__);
             }
         }
     return true;
