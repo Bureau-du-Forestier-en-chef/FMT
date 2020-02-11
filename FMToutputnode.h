@@ -27,6 +27,7 @@ SOFTWARE.
 
 #include "FMToutputsource.h"
 #include "FMToperator.h"
+#include "FMTaction.h"
 #include <map>
 
 namespace Core

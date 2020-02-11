@@ -76,6 +76,16 @@ namespace boost {
 	}
 }
 
+#if (BOOST_VERSION / 100 % 1000) < 71
+namespace boost {
+	template <typename Block, typename Alloc>
+	std::size_t hash_value(const boost::dynamic_bitset<Block, Alloc>& bs)
+	{
+		return boost::hash_value(bs.m_bits);
+	}
+}
+#endif
+
 namespace Core
 {
 
@@ -95,8 +105,8 @@ class FMTmask
         boost::dynamic_bitset<> subset(const FMTtheme& theme) const;
         bool setsubset(const FMTtheme& theme,const boost::dynamic_bitset<>& subset);
 		std::string name;
+		boost::dynamic_bitset<> data;
     public:
-        boost::dynamic_bitset<> data;
         FMTmask();
         virtual ~FMTmask()=default;
         FMTmask(const boost::dynamic_bitset<>& bits);
@@ -122,21 +132,28 @@ class FMTmask
         bool operator == (const FMTmask& rhs) const;
         bool operator < (const FMTmask& rhs) const;
         FMTmask resume(const boost::dynamic_bitset<>& rhs) const;
-		size_t hash() const;
+		inline size_t hash() const
+			{
+			return boost::hash_value(data.m_bits);
+			}
         std::string to_string() const;
 		operator std::string() const;
+		inline bool issubsetof(const boost::dynamic_bitset<>& rhs) const
+			{
+			return data.is_subset_of(rhs);
+			}
+		inline bool issubsetof(const FMTmask& rhs) const
+			{
+			return data.is_subset_of(rhs.data);
+			}
+		inline const boost::dynamic_bitset<>& getbitsetreference() const
+			{
+			return data;
+			}
     };
 
 }
-#if (BOOST_VERSION / 100 % 1000) < 71
-	namespace boost {
-		template <typename Block, typename Alloc>
-		std::size_t hash_value(const boost::dynamic_bitset<Block, Alloc>& bs)
-			{
-			return boost::hash_value(bs.m_bits);
-			}
-	}
-#endif
+
 namespace boost {
 
   template <>
@@ -144,7 +161,7 @@ namespace boost {
   {
     std::size_t operator()(const Core::FMTmask& mask) const
     {
-      return (hash<boost::dynamic_bitset<>>()(mask.data));
+      return (mask.hash());
     }
   };
 

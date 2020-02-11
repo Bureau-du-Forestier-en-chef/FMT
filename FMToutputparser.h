@@ -31,6 +31,12 @@ SOFTWARE.
 #include "FMTyields.h"
 #include "FMTconstants.h"
 #include "FMToutput.h"
+#include "FMTutility.h"
+#include <regex>
+#include "FMTconstants.h"
+#include "FMTtheme.h"
+#include "FMTaction.h"
+#include <string>
 
 namespace WSParser
 

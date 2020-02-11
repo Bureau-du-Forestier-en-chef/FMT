@@ -6,6 +6,7 @@
 #include <unordered_map>
 #include <FMTgraphdescription.h>
 #include "FMTtheme.h"
+#include "FMTaction.h"
 #include "FMToutputnode.h"
 #include <boost/serialization/serialization.hpp>
 #include <boost/serialization/map.hpp>

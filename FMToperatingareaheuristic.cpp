@@ -21,25 +21,29 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
-
+#ifdef FMTWITHOSI
 
 #include "FMToperatingareaheuristic.h"
 #include <algorithm>
 #include <random>
-#include "OsiMskSolverInterface.hpp"
 #include "OsiClpSolverInterface.hpp"
-#include "mosek.h"
+#ifdef  FMTWITHMOSEK
+	#include "OsiMskSolverInterface.hpp"
+	#include "mosek.h"
+#endif
 #include "FMTmatrixbuild.h"
 
 namespace Heuristics
 {
 	void FMToperatingareaheuristic::clearrowcache()
 		{
-		if (!useprimal && solvertype == Models::FMTsolverinterface::MOSEK)
-			{
-			OsiMskSolverInterface* msksolver = dynamic_cast<OsiMskSolverInterface*>(solverinterface.get());
-			msksolver->freeCachedRowRim();
-			}
+		#ifdef  FMTWITHMOSEK
+			if (!useprimal && solvertype == Models::FMTsolverinterface::MOSEK)
+				{
+				OsiMskSolverInterface* msksolver = dynamic_cast<OsiMskSolverInterface*>(solverinterface.get());
+				msksolver->freeCachedRowRim();
+				}
+		#endif
 		}
 
 
@@ -133,7 +137,9 @@ namespace Heuristics
 			splexmodel->tightenPrimalBounds();
 			splexmodel->dual();
 			numberofiterations = splexmodel->numberIterations();
-		}else if(solvertype == Models::FMTsolverinterface::MOSEK) //Mosek with interior point
+		}
+		#ifdef  FMTWITHMOSEK
+		else if(solvertype == Models::FMTsolverinterface::MOSEK) //Mosek with interior point
 			{
 			OsiMskSolverInterface* msksolver = dynamic_cast<OsiMskSolverInterface*>(solverinterface.get());
 			msksolver->freeCachedData();
@@ -150,7 +156,9 @@ namespace Heuristics
 			MSK_putintparam(task, MSK_IPAR_LOG_INTPNT, 4);
 			MSKrescodee error = MSK_optimize(task);
 			MSK_getintinf(task, MSK_IINF_INTPNT_ITER, &numberofiterations);
-			}else{//default
+			}
+		#endif
+		else{//default
 				solverinterface->resolve();
 				numberofiterations = solverinterface->getIterationCount();
 				}
@@ -573,3 +581,4 @@ namespace Heuristics
 		}
 
 }
+#endif

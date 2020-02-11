@@ -1,3 +1,5 @@
+#ifdef FMTWITHOSI
+
 #include "FMTmatrixbuild.h"
 
 namespace Models
@@ -32,3 +34,5 @@ namespace Models
 
 
 }
+
+#endif

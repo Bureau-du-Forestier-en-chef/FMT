@@ -30,7 +30,7 @@ void FMTtransitionmask::build(const std::string& lmask, const std::vector<FMTthe
     {
     int id = 0;
 	std::vector<std::string>bases;
-    boost::split(bases,lmask,boost::is_any_of("\t "), boost::token_compress_on);
+    boost::split(bases,lmask,boost::is_any_of(FMT_STR_SEPARATOR), boost::token_compress_on);
     for(const FMTtheme& theme : themes)
         {
         if (theme.isattribute(bases[id]))
@@ -41,7 +41,7 @@ void FMTtransitionmask::build(const std::string& lmask, const std::vector<FMTthe
             }
         ++id;
         }
-    selection = (flippedselection ^ mask.data);
+    selection = (flippedselection ^ mask.getbitsetreference());
     }
 
 FMTtransitionmask::FMTtransitionmask():FMTmaskfilter(),FMTspec(),mask(),proportion()
@@ -55,7 +55,7 @@ FMTtransitionmask::FMTtransitionmask(const std::string& lmask,const std::vector<
         }
     FMTmask FMTtransitionmask::trans(const FMTmask& basemask) const
         {
-        return FMTmask(((flippedselection & basemask.data) | selection));
+        return FMTmask(((flippedselection & basemask.getbitsetreference()) | selection));
         }
     FMTtransitionmask::FMTtransitionmask(const FMTtransitionmask& rhs) :FMTmaskfilter(rhs),FMTspec(rhs) , mask(rhs.mask),proportion(rhs.proportion)
         {

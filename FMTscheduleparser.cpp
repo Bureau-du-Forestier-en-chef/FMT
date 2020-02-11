@@ -43,7 +43,7 @@ int FMTscheduleparser::getvariable() const
 		strvalue.erase(strvalue.begin() + 1);
 		std::vector<std::string>strsources;
 		boost::split(strsources, strvalue,boost::is_any_of(";\t "), boost::token_compress_on);
-		value = stoi(strsources.at(1));
+		value = getnum<int>(strsources.at(1));
 		}
 	return value;
 	}
@@ -68,7 +68,7 @@ std::vector<Core::FMTschedule> FMTscheduleparser::read(const std::vector<Core::F
             if (!line.empty())
                 {
 				std::vector<std::string>values;
-                boost::split(values,line,boost::is_any_of("\t "),boost::token_compress_on);
+                boost::split(values,line,boost::is_any_of(FMT_STR_SEPARATOR),boost::token_compress_on);
                 if(values.size() < themes.size()||line.find("*STRATA")!= std::string::npos)
                     {
                     break;
@@ -81,7 +81,7 @@ std::vector<Core::FMTschedule> FMTscheduleparser::read(const std::vector<Core::F
                             mask+=values[id]+" ";
                             }
                         mask.pop_back();
-                        if (!validate(themes, mask)) continue;
+                        if (!validate(themes, mask, " at line " + std::to_string(_line))) continue;
 						const int age = getnum<int>(values[id]);
                         ++id;
                         const double area = getnum<double>(values[id]);

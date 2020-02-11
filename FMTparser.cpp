@@ -27,19 +27,18 @@ SOFTWARE.
 
 
 
-
 namespace WSParser
 {
+std::array<std::string, 5>FMTparser::baseoperators = { "=", "<=", ">=", "<", ">" };
 
-
-FMTwssect FMTparser::from_extension(const std::string& ext)
-    {
-	const std::vector<std::string>extensions={".run",".lan",".are",".act",".trn",".yld",".out",".opt",".con",".seq",".lif",
+std::array<std::string,21>FMTparser::baseextensions = { ".run",".lan",".are",".act",".trn",".yld",".out",".opt",".con",".seq",".lif",
 							"._lan","._are","._act","._trn","._yld","._out","._opt","._con","._seq","._lif" };
-	std::string lowercase = ext;
-	boost::to_lower(lowercase);
-	std::vector<std::string>::const_iterator it = find(extensions.begin(), extensions.end(), lowercase);
-    size_t id = (it - extensions.begin());
+
+FMTwssect FMTparser::from_extension(const std::string& ext) const
+    {
+	const std::string lowercase = boost::to_lower_copy(ext);
+	const std::array<std::string, 21>::const_iterator it = std::find(baseextensions.begin(), baseextensions.end(), lowercase);
+    const size_t id = (it - baseextensions.begin());
     switch (id)
         {
             case 0 :return FMTwssect::Control;
@@ -68,6 +67,7 @@ FMTwssect FMTparser::from_extension(const std::string& ext)
     }
 
 FMTparser::FMTparser() : Core::FMTobject(),
+		rxnumber("[-+]?([0-9]*\\.[0-9]+|[0-9]+)"),
         rxremovecomment("^(.*?)([;]+.*)"),
         rxvalid("^(?!\\s*$).+"),
 		rxinclude("^(\\*INCLUDE)([\\s\\t]*)(.+)"),
@@ -84,7 +84,6 @@ FMTparser::FMTparser() : Core::FMTobject(),
         _line(0),
 		_comment(),
        _location(),
-       _section(),
         rxseparator("([\\s\\t]*)([^\\s\\t]*)")
         {
 		#ifdef FMTWITHGDAL
@@ -101,6 +100,7 @@ FMTparser::FMTparser() : Core::FMTobject(),
 
 FMTparser::FMTparser(const FMTparser& rhs):
 		Core::FMTobject(rhs),
+		rxnumber(rhs.rxnumber),
         rxremovecomment(rhs.rxremovecomment),
         rxvalid(rhs.rxvalid),
 		rxinclude(rhs.rxinclude),
@@ -117,7 +117,6 @@ FMTparser::FMTparser(const FMTparser& rhs):
         _line(rhs._line),
 		_comment(rhs._comment),
         _location(rhs._location),
-        _section(rhs._section),
         rxseparator(rhs.rxseparator)
     {
 
@@ -128,6 +127,7 @@ FMTparser& FMTparser::operator = (const FMTparser& rhs)
         if (this!=&rhs)
             {
 			Core::FMTobject::operator = (rhs);
+			rxnumber = rhs.rxnumber;
             rxremovecomment = rhs.rxremovecomment;
             rxvalid = rhs.rxvalid;
 			rxinclude = rhs.rxinclude;
@@ -144,7 +144,6 @@ FMTparser& FMTparser::operator = (const FMTparser& rhs)
 			_comment = rhs._comment;
             _line = rhs._line;
             _location = rhs._location;
-            _section = rhs._section;
             }
     return *this;
     }
@@ -263,7 +262,7 @@ void FMTparser::getWSfields(OGRLayer* layer, std::map<int, int>& themes, int& ag
 		if (fname.find("THEME") != std::string::npos)
 		{
 			fname.erase(0, 5);
-			themes[stoi(fname) - 1] = iField;
+			themes[getnum<int>(fname) - 1] = iField;
 		}
 		else if (fname == caplock)
 		{
@@ -349,7 +348,7 @@ std::string FMTparser::setspec(FMTwssect section,FMTwskwor key,const Core::FMTyi
     return rest;
     }
 
-bool FMTparser::isact(FMTwssect section,const std::vector<Core::FMTaction>& actions, std::string action)
+bool FMTparser::isact(FMTwssect section,const std::vector<Core::FMTaction>& actions, std::string action) const
     {
     if (std::find_if(actions.begin(),actions.end(), Core::FMTactioncomparator(action,true))==actions.end())
         {
@@ -362,7 +361,7 @@ bool FMTparser::isact(FMTwssect section,const std::vector<Core::FMTaction>& acti
 
 
 
-bool FMTparser::isyld(const Core::FMTyields& ylds,const std::string& value,FMTwssect section)
+bool FMTparser::isyld(const Core::FMTyields& ylds,const std::string& value,FMTwssect section) const
     {
     if (ylds.isyld(value))
         {
@@ -372,38 +371,7 @@ bool FMTparser::isyld(const Core::FMTyields& ylds,const std::string& value,FMTws
      return false;
     }
 
-bool FMTparser::checkmask(const std::vector<Core::FMTtheme>& themes, const std::vector<std::string>& values, std::string& mask) const
-	{
-	bool returnvalue = true;
-	if (themes.size() > values.size())
-	{
-			_exhandler->raise(Exception::FMTexc::WSinvalid_maskrange, _section, mask + " at line " + std::to_string(_line), __LINE__, __FILE__);
-		returnvalue = false;
-	}else {
-		int id = 0;
-		mask.clear();
-		for (const Core::FMTtheme& theme : themes)
-		{
-			if (!theme.isvalid(values[id]))
-				{
-				const std::string message = values[id] + " at theme " + std::to_string(theme.getid()+1) +" at line " + std::to_string(_line);
-				_exhandler->raise(Exception::FMTexc::WSundefined_attribute, _section, message, __LINE__, __FILE__);
-				returnvalue = false;
-				}
-			mask +=values[id] + " ";
-			++id;
-		}
-		mask.pop_back();
-	}
-	return  returnvalue;
-	}
 
-bool FMTparser::validate(const std::vector<Core::FMTtheme>& themes, std::string& mask) const
-	{
-	std::vector<std::string>values;
-	boost::split(values, mask, boost::is_any_of(" \t"), boost::token_compress_on);
-	return checkmask(themes, values,mask);
-	}
 
 
 bool FMTparser::tryopening(const std::ifstream& stream, const std::string& location)
@@ -411,7 +379,7 @@ bool FMTparser::tryopening(const std::ifstream& stream, const std::string& locat
         _location = location;
 		std::string extension = boost::filesystem::extension(location);
         transform(extension.begin(), extension.end(), extension.begin(), ::tolower);
-        _section = from_extension(extension);
+        this->setsection(from_extension(extension));
         if (!stream.is_open())
             {
             _exhandler->raise(Exception::FMTexc::FMTinvalid_path,_section,location, __LINE__, __FILE__);
@@ -446,13 +414,7 @@ bool FMTparser::isvalidfile(const std::string& location) const
 
 bool FMTparser::isnum(const std::string& value) const
     {
-    try{
-        stod(value);
-    }catch(...)
-        {
-        return false;
-        }
-    return true;
+	return std::regex_match(value,rxnumber);
     }
 
 
@@ -557,8 +519,9 @@ bool FMTparser::getforloops(std::string& line,const std::vector<Core::FMTtheme>&
 		if (!std::string(kmatch[24]).empty())
 		{
 			std::string val = std::string(kmatch[24]);
-			boost::trim_if(val, boost::is_any_of("\t "));
-			boost::split(allvalues, val, boost::is_any_of("\t ,"), boost::token_compress_on);
+			boost::trim_if(val, boost::is_any_of(FMT_STR_SEPARATOR));
+			const std::string forstrsep = FMT_STR_SEPARATOR + std::string(",");
+			boost::split(allvalues, val, boost::is_any_of(forstrsep), boost::token_compress_on);
 			if (val.find("..")!= std::string::npos)
 				{
 				std::vector<std::string>newvalues;
@@ -584,13 +547,13 @@ bool FMTparser::getforloops(std::string& line,const std::vector<Core::FMTtheme>&
 		}
 		else if (!std::string(kmatch[16]).empty())
 		{
-			const int theme = stoi(std::string(kmatch[16])) - 1;
+			const int theme = getnum<int>(std::string(kmatch[16])) - 1;
 			std::string att = "?";
 			allvalues = themes[theme].getattributes(att);
 		}
 		else if (!std::string(kmatch[10]).empty())
 		{
-			const int theme = stoi(std::string(kmatch[10])) - 1;
+			const int theme = getnum<int>(std::string(kmatch[10])) - 1;
 			std::string aggregate = kmatch[12];
 			allvalues = themes[theme].getattributes(aggregate,true);
 		}

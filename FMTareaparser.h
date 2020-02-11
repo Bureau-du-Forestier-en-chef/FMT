@@ -26,6 +26,7 @@ SOFTWARE.
 #define FMTareaparser_H_INCLUDED
 
 #include "FMTdevelopment.h"
+#include "FMTactualdevelopment.h"
 #include "FMTparser.h"
 #include "FMTlayer.h"
 #include "FMTforest.h"
@@ -36,6 +37,10 @@ SOFTWARE.
 #include <map>
 #include <string>
 #include <vector>
+#include "FMTutility.h"
+#include <regex>
+#include "FMTconstants.h"
+#include "FMTtheme.h"
 
 namespace WSParser
 {
@@ -63,6 +68,7 @@ class FMTareaparser : public FMTparser
 			GDALDataset* openvectorfile(std::map<int, int>&themes_fields, int& age_field, int& lock_field, int& area_field,
 				const std::string& data_vectors, const std::string& agefield, const std::string& areafield, const std::string& lockfield,
 				const std::vector<Core::FMTtheme>& themes) const;
+			#ifdef FMTWITHOSI
 			std::vector<OGRMultiPolygon>getmultipolygons(const std::vector<Heuristics::FMToperatingarea>& operatingareas,
 											  const std::vector<Core::FMTtheme>& themes, const std::string& data_vectors,
 											  const std::string& agefield, const std::string& areafield, double agefactor = 1.0,
@@ -71,6 +77,7 @@ class FMTareaparser : public FMTparser
 			std::vector<Heuristics::FMToperatingarea> getneighborsfrompolygons(const std::vector<OGRMultiPolygon>& multipolygons,
 																			std::vector<Heuristics::FMToperatingarea> operatingareas,
 																	const double& buffersize) const;
+			#endif
 			OGRLayer* subsetlayer(OGRLayer*layer, const std::vector<Core::FMTtheme>& themes,
 								const std::string& agefield, const std::string& areafield) const;
 		
@@ -91,11 +98,13 @@ class FMTareaparser : public FMTparser
 								const Spatial::FMTforest& out_layer,
 								const std::vector<Core::FMTtheme>& themes,
 								std::map<std::string, std::string> mapping = std::map<std::string, std::string>()) const;
+		#ifdef FMTWITHOSI
 		std::vector<Heuristics::FMToperatingarea> getneighbors(std::vector<Heuristics::FMToperatingarea> operatingareaparameters,
 						const std::vector<Core::FMTtheme>& themes,const std::string& data_vectors,
 						const std::string& agefield, const std::string& areafield, double agefactor = 1.0,
 						double areafactor = 1, std::string lockfield = "",
 						double minimal_area = 0.0,double buffersize= 100) const;
+		#endif
 		std::vector<Core::FMTactualdevelopment>readvectors(const std::vector<Core::FMTtheme>& themes,const std::string& data_vectors,
                                    const std::string& agefield,const std::string& areafield,double agefactor = 1.0,
                                    double areafactor = 1, std::string lockfield = "",

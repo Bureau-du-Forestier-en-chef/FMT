@@ -31,8 +31,13 @@ SOFTWARE.
 #include "FMTutility.h"
 #include "FMTconstants.h"
 #include "FMTtheme.h"
+#include "FMTdata.h"
 #include <boost/tokenizer.hpp>
 #include <iterator>
+#include <regex>
+#include <string>
+#include <vector>
+#include <utility>
 
 namespace WSParser
 {

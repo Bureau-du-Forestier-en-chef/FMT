@@ -48,10 +48,10 @@ FMTmaskfilter& FMTmaskfilter::operator = (const FMTmaskfilter& rhs)
     }
 FMTmaskfilter::FMTmaskfilter(std::vector<FMTmask>& masks): fullset(),selection(), flippedselection(), index()
         {
-        flippedselection.resize(masks[0].data.size(),true);
+        flippedselection.resize(masks[0].getbitsetreference().size(),true);
         for(const FMTmask& bits : masks)
             {
-            flippedselection.swap(flippedselection &= bits.data);
+            flippedselection.swap(flippedselection &= bits.getbitsetreference());
 
             }
         selection = flippedselection;
@@ -82,17 +82,17 @@ FMTmaskfilter::FMTmaskfilter(std::vector<FMTmask>& masks,const std::vector<FMTth
 	for (const FMTmask& mask : masks)
 		{
 		const FMTmask resumemask = filter(mask);
-		fullset &= resumemask.data;
+		fullset &= resumemask.getbitsetreference();
 		}
     }
 FMTmask FMTmaskfilter::filter(const FMTmask& devmask) const
         {
         if (!selection.empty())
             {
-            const boost::dynamic_bitset<> newkey = ((devmask.data & selection) | flippedselection);
+            const boost::dynamic_bitset<> newkey = ((devmask.getbitsetreference() & selection) | flippedselection);
             const FMTmask newmask(std::string(devmask),newkey);
             const FMTmask resumemask = newmask.resume(selection);
-			if (resumemask.data.is_subset_of(fullset))
+			if (resumemask.issubsetof(fullset))
 				{
 				return resumemask;
 			}else {
@@ -118,7 +118,7 @@ FMTmask FMTmaskfilter::filter(const FMTmask& devmask) const
                 good = false;
                 }
             }
-        if (intersect.data[location])
+        if (intersect.getbitsetreference()[location])
             {
             good = true;
             }
@@ -128,10 +128,6 @@ FMTmask FMTmaskfilter::filter(const FMTmask& devmask) const
     return true;
     }
 
- size_t FMTmaskfilter::hash() const
-	{
-	return (boost::hash<boost::dynamic_bitset<>>()(selection) ^ boost::hash<boost::dynamic_bitset<>>()(flippedselection));
-	}
 
 }
 

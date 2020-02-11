@@ -31,6 +31,8 @@ SOFTWARE.
 #include "FMTmaskfilter.h"
 #include <boost/serialization/serialization.hpp>
 #include "FMTyields.h"
+#include <string>
+#include "FMTtheme.h"
 
 
 namespace Core

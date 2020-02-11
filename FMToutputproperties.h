@@ -29,6 +29,7 @@ SOFTWARE.
 #include "FMToutputsource.h"
 #include "FMTyields.h"
 #include "FMTaction.h"
+#include <string>
 
 
 namespace Graph

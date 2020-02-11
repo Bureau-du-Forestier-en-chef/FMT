@@ -41,6 +41,7 @@ SOFTWARE.
 #include "FMTaction.h"
 #include "FMTconstants.h"
 #include "FMTlayer.h"
+#include <array>
 
 #if defined (__CYGWIN__)
 	#include "xlocale.h"
@@ -51,14 +52,12 @@ SOFTWARE.
 	#include "gdal_priv.h"
 	#include "ogrsf_frmts.h"
 	#include "gdal_rat.h"
+	#if defined (_MSC_VER)
+		#include "cpl_conv.h"
+	#endif
 #endif
 
 #include <boost/filesystem.hpp>
-
-#if defined (_MSC_VER)
-	#include "cpl_conv.h"
-#endif
-
 
 #include "FMTexception.h"
 
@@ -70,6 +69,7 @@ namespace WSParser
 class FMTparser: public Core::FMTobject
     {
     private:
+		std::regex rxnumber;
         std::regex rxremovecomment;
 		std::regex rxvalid;
 		std::regex rxinclude;
@@ -84,11 +84,12 @@ class FMTparser: public Core::FMTobject
 		std::regex rxaage;
 		std::regex rxoperators;
 		std::regex rxprimary;
-        int _constreplacement;
+        mutable int _constreplacement;
         int _line;
 		std::string _comment;
 		std::string _location;
-        FMTwssect _section;
+		static std::array<std::string, 5>baseoperators;
+		static std::array<std::string, 21>baseextensions;
 		#ifdef FMTWITHGDAL
 			template<typename T>
 			GDALDataset* createdataset(const std::string& location,const Spatial::FMTlayer<T>& layer, const GDALDataType datatype) const
@@ -131,10 +132,10 @@ class FMTparser: public Core::FMTobject
 		#endif
 		std::vector<std::string> sameas(const std::string& allset) const;
 		std::map<FMTwssect, std::string> getprimary(const std::string& primarylocation);
-		bool isyld(const Core::FMTyields& ylds,const std::string& value,FMTwssect section);
-        bool isact(FMTwssect section,const std::vector<Core::FMTaction>& actions, std::string action);
+		bool isyld(const Core::FMTyields& ylds,const std::string& value,FMTwssect section) const;
+        bool isact(FMTwssect section,const std::vector<Core::FMTaction>& actions, std::string action) const;
 		std::string setspec(FMTwssect section,FMTwskwor key,const Core::FMTyields& ylds,const Core::FMTconstants& constants, Core::FMTspec& spec, const std::string& line);
-        FMTwssect from_extension(const std::string& ext);
+        FMTwssect from_extension(const std::string& ext) const;
 		std::vector<std::vector<std::string>>readcsv(const std::string& location,const char& separator);
     public:
 		std::regex rxseparator;
@@ -156,19 +157,17 @@ class FMTparser: public Core::FMTobject
 		bool getforloops(std::string& line, const std::vector<Core::FMTtheme>& themes, const Core::FMTconstants& cons, std::vector<std::string>& allvalues, std::string& target);
 		std::string getcleanlinewfor(std::ifstream& stream,const std::vector<Core::FMTtheme>& themes,const Core::FMTconstants& cons);
         bool isnum(const std::string& value) const;
-		bool validate(const std::vector<Core::FMTtheme>& themes,std::string& mask) const;
-		bool checkmask(const std::vector<Core::FMTtheme>& themes, const std::vector<std::string>& values, std::string& mask) const;
         template<typename T>
-        T getnum(std::string value,const Core::FMTconstants& constant, int period = 0)
+        T getnum(const std::string& value,const Core::FMTconstants& constant, int period = 0) const
             {
             T nvalue = 0;
-            boost::erase_all(value, ",");
-            if (isnum(value))
+			const std::string newvalue = boost::erase_all_copy(value, ",");
+            if (isnum(newvalue))
                 {
-                nvalue = T(stod(value));
-                }else if(constant.isconstant(value))
+                nvalue = getnum<T>(newvalue);
+                }else if(constant.isconstant(newvalue))
                     {
-                    nvalue= constant.get<T>(value,period);
+                    nvalue= constant.get<T>(newvalue,period);
                     _exhandler->raise(Exception::FMTexc::WSconstants_replacement,_section,value +" line "+ std::to_string(_line), __LINE__, __FILE__);
                     ++_constreplacement;
                     }else{
@@ -177,20 +176,20 @@ class FMTparser: public Core::FMTobject
             return nvalue;
             }
 		template<typename T>
-		T getnum(std::string value)
+		T getnum(const std::string& value) const
 			{
 			T nvalue = 0;
-			boost::erase_all(value, ",");
-			if (isnum(value))
+			const std::string newvalue = boost::erase_all_copy(value, ",");
+			if (isnum(newvalue))
 				{
-				nvalue = T(stod(value));
+				nvalue = static_cast<T>(std::stod(newvalue));
 			}else {
 				_exhandler->raise(Exception::FMTexc::WSinvalid_number, _section, value + " line " + std::to_string(_line), __LINE__, __FILE__);
 				}
 			return nvalue;
 			}
 		template<typename T>
-		bool tryfillnumber(T& number, std::string value, const Core::FMTconstants& constant, int period = 0)
+		bool tryfillnumber(T& number,const std::string& value, const Core::FMTconstants& constant, int period = 0) const
 			{
 			bool gotit = true;
 			try {
@@ -203,14 +202,13 @@ class FMTparser: public Core::FMTobject
 			return gotit;
 			}
         template<typename T>
-		Core::FMTbounds<T>bounds(const Core::FMTconstants& constants, std::string value, std::string ope,FMTwssect section)
+		Core::FMTbounds<T>bounds(const Core::FMTconstants& constants, const std::string& value, const std::string& ope,FMTwssect section) const
             {
             T lupper = std::numeric_limits<T>::max();
             T llower = std::numeric_limits<T>::min();
-			std::vector<std::string>operators = {"=","<=",">=","<",">"};
             T intvalue = getnum<T>(value,constants);
-			std::vector<std::string>::iterator it = find(operators.begin(),operators.end(),ope);
-            size_t optype = (it - operators.begin());
+			const std::array<std::string, 5>::const_iterator it = std::find(baseoperators.begin(), baseoperators.end(),ope);
+            const size_t optype = (it - baseoperators.begin());
             if(optype==0)
                 {
                 lupper = intvalue;

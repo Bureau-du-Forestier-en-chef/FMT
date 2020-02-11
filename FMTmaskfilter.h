@@ -60,7 +60,14 @@ class FMTmaskfilter
         FMTmaskfilter(std::vector<FMTmask>& masks,const std::vector<FMTtheme>& themes);
         FMTmask filter(const FMTmask& devmask) const;
         bool within(const FMTmask& intersect) const;
-		size_t hash() const;
+		inline bool empty() const
+			{
+			return selection.empty();
+			}
+		inline size_t hash() const
+			{
+			return (boost::hash<boost::dynamic_bitset<>>()(selection) ^ boost::hash<boost::dynamic_bitset<>>()(flippedselection));
+			}
     };
 
 

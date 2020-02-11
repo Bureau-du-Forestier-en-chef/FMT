@@ -45,6 +45,7 @@ class FMTlifespans : public FMTlist<int>
         FMTlifespans& operator = (const FMTlifespans& rhs);
 		bool operator == (const FMTlifespans& rhs) const;
         operator std::string() const;
+		void update() override;
     };
 
 }

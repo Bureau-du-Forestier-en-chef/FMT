@@ -30,6 +30,7 @@ SOFTWARE.
 #include "FMTlifespans.h"
 #include "FMTtheme.h"
 #include "FMTconstants.h"
+#include <string>
 
 namespace WSParser
 

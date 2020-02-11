@@ -65,7 +65,7 @@ Core::FMTmask FMTtransitionparser::getsource(std::string& line, Core::FMTspec& s
 	const std::vector<std::string>elements = FMTparser::spliter(line,FMTparser::rxseparator);
     if (elements.size() == themes.size())
         {
-		validate(themes,line);
+		validate(themes,line, " at line " + std::to_string(_line));
         return Core::FMTmask(line, themes);
         }else{
 			std::string mask;
@@ -81,7 +81,7 @@ Core::FMTmask FMTtransitionparser::getsource(std::string& line, Core::FMTspec& s
                 }
             mask = mask.substr(0, mask.size()-1);
             rest = rest.substr(0, rest.size()-1);
-			validate(themes,mask);
+			validate(themes,mask, " at line " + std::to_string(_line));
             const Core::FMTmask newmask(mask,themes);
             rest += " ";
             rest = setspec(FMTwssect::Transition,FMTwskwor::Source,ylds,constants,spec,rest);
@@ -104,7 +104,7 @@ std::vector<Core::FMTtransitionmask> FMTtransitionparser::getmasktran(const std:
         ++id;
         }
     mask = mask.substr(0, mask.size()-1);
-    validate(themes,mask);
+    validate(themes,mask, " at line " + std::to_string(_line));
     proportion = getnum<double>(elements[id],constants);
     ++id;
 	std::string rest=" ";
@@ -136,14 +136,14 @@ std::vector<Core::FMTtransitionmask> FMTtransitionparser::getmasktran(const std:
 		const std::string strtargettheme = kmatch[4];
 		const std::string stroptheme = kmatch[9];
 		const std::string stradd = kmatch[13];
-        const int targettheme  = stoi(strtargettheme)-1;
-        const int addupp = stoi(stradd);
+        const int targettheme  = getnum<int>(strtargettheme)-1;
+        const int addupp = getnum<int>(stradd);
         Core::FMTmask targetmask(mask,themes);
         targetmask.set(themes[targettheme],sourcemask.get(themes[targettheme]));
         for (Core::FMTmask& lmask : targetmask.decompose(themes[targettheme]))
             {
 			const std::string actual = lmask.get(themes[targettheme]);
-            int newint = stoi(actual) + addupp;
+            int newint = getnum<int>(actual) + addupp;
 			const std::string newval = std::to_string(newint);
             if (themes[targettheme].isattribute(newval))
                 {

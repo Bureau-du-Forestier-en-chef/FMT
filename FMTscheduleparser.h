@@ -29,6 +29,9 @@ SOFTWARE.
 #include "FMTtheme.h"
 #include "FMTaction.h"
 #include "FMTschedule.h"
+#include "FMTutility.h"
+#include <vector>
+#include <string>
 
 namespace WSParser
 {
@@ -41,7 +44,7 @@ class FMTscheduleparser: public FMTparser
         FMTscheduleparser(const FMTscheduleparser& rhs);
         FMTscheduleparser& operator = (const FMTscheduleparser& rhs);
         std::vector<Core::FMTschedule>read(const std::vector<Core::FMTtheme>& themes,
-			const  std::vector<Core::FMTaction>& actions, std::string location,double tolerance = 0.00000001);
+			const  std::vector<Core::FMTaction>& actions, std::string location,double tolerance = FMT_DBL_TOLERANCE);
         void write(const  std::vector<Core::FMTschedule>& schedules, std::string location);
     };
 

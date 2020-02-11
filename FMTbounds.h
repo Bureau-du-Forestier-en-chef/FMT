@@ -26,7 +26,6 @@ SOFTWARE.
 #define FMTbounds_H_INCLUDED
 #include <limits>
 #include <map>
-
 #include "FMTexception.h"
 #include "FMTutility.h"
 #include <vector>
@@ -300,7 +299,6 @@ class FMTperbounds: public FMTbounds<int>
     public:
     FMTperbounds();
     FMTperbounds(const FMTwssect lsection,const int& lupper,const int& llower);
-    FMTperbounds(const FMTwssect lsection, const std::string& op, const std::string& value);
     FMTperbounds(const FMTperbounds& rhs);
 	FMTperbounds(const FMTbounds<int>& rhs);
     FMTperbounds& operator = (const FMTperbounds& rhs);
@@ -327,8 +325,11 @@ class FMTlockbounds : public FMTbounds<int>
     operator std::string() const;
     };
 
+class FMTyields;
+
 class FMTspec
     {
+	friend class Core::FMTyields;
 	friend class boost::serialization::access;
 	template<class Archive>
 	void serialize(Archive& ar, const unsigned int version)
@@ -342,8 +343,8 @@ protected:
     FMTperbounds per;
     FMTagebounds age;
     FMTlockbounds lock;
+	std::map<std::string, FMTyldbounds>ylds;
 public:
-    std::map<std::string,FMTyldbounds>ylds;
     FMTspec();
     virtual ~FMTspec()=default;
     FMTspec(const FMTspec& rhs);

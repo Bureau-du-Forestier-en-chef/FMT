@@ -42,33 +42,38 @@ class FMTconstants
 		{
 		ar & BOOST_SERIALIZATION_NVP(data);
 		}
-    boost::unordered_map<std::string,std::vector<std::string>>data;
+    boost::unordered_map<std::string,std::vector<double>>data;
     public:
         FMTconstants();
     FMTconstants(const FMTconstants& rhs);
-    void set(std::string key, std::vector<std::string>values);
-	std::string getstr(std::string key,int period = 0) const;
+    void set(const std::string& key, std::vector<double>values);
     template<typename T>
     T get(std::string key,int period = 0) const
         {
-        T value;
-        value = T(stod(getstr(key,period)));
-        return value;
+		if (key.find("#") != std::string::npos)
+			{
+			key.erase(0, 1);
+			}
+		boost::unordered_map<std::string, std::vector<double>>::const_iterator it = data.find(key);
+		std::vector<double> const* location = &it->second;
+		if (period >= static_cast<int>(location->size()))
+			{
+			period = static_cast<int>(location->size()) - 1;
+			}
+		return static_cast<T>(location->at(period));
         }
     template<typename T>
 	std::vector<T>getall(std::string key) const
         {
 		std::vector<T>values;
-        const size_t klength = length(key);
-        for (size_t period = 0 ; period < klength; ++period)
-            {
-            values.push_back(T(stod(getstr(key,period))));
-            }
-        return values;
+		for (size_t period = 0; period < length(key); ++period)
+			{
+			values.push_back(get<T>(key, period));
+			}
+		return values;
         }
     bool isconstant(std::string value) const;
     size_t length(std::string value) const;
-
     FMTconstants& operator = (const FMTconstants& rhs);
     operator std::string() const;
     };

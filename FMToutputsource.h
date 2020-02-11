@@ -33,6 +33,8 @@ SOFTWARE.
 #include "FMTdevelopment.h"
 #include <boost/serialization/serialization.hpp>
 #include <string>
+#include "FMTaction.h"
+#include "FMTutility.h"
 
 namespace Core
 {
@@ -95,7 +97,7 @@ class FMToutputsource : public FMTspec
 			const std::vector<FMTdevelopmentpath>& paths) const;
 		inline bool use(const FMTdevelopment& development, const FMTyields& ylds) const
 			{
-			return (mask && development.mask.data.is_subset_of(mask.data) && development.is(*this, ylds));
+			return (mask && development.mask.issubsetof(mask) && development.is(*this, ylds));
 			}
 		void setaverage();
 		bool isaverage() const;

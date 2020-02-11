@@ -115,9 +115,9 @@ std::vector<std::string> FMTyieldparser::getylduse(Core::FMTyields& yielddata,
 	const Core::FMTmask& actual_msk = (yielddata.begin() + std::distance(yielddata.begin(), actualyield))->first;
     while(it!=actualyield)
         {
-		if (it->first.data.is_subset_of(actual_msk.data) ||
-			actual_msk.data.is_subset_of(it->first.data) ||
-			it->first.data == actual_msk.data)
+		if (it->first.issubsetof(actual_msk) ||
+			actual_msk.issubsetof(it->first) ||
+			it->first == actual_msk)
 			{
 			const std::vector<std::string> pyld = it->second.compare(values);
 			for (const std::string& name : values)
@@ -249,7 +249,7 @@ Core::FMTyields FMTyieldparser::read(const std::vector<Core::FMTtheme>& themes,c
                         overyld = true;
                         }
 
-                    if (!validate(themes,mask)) continue;
+                    if (!validate(themes,mask, " at line " + std::to_string(_line))) continue;
                     FMTyldwstype yldtype = getyldtype(yieldtype);
                     tmask = Core::FMTmask(mask,themes);
                     Core::FMTyieldhandler newyield(yldtype,tmask);
@@ -265,7 +265,7 @@ Core::FMTyields FMTyieldparser::read(const std::vector<Core::FMTtheme>& themes,c
 					proportion.clear();
                     }else{
 							std::vector<std::string>values;
-                            boost::split(values,line,boost::is_any_of("\t "),boost::token_compress_on);
+                            boost::split(values,line,boost::is_any_of(FMT_STR_SEPARATOR),boost::token_compress_on);
 							if ((actualyield->second.gettype() == FMTyldwstype::FMTageyld ||
 								actualyield->second.gettype() == FMTyldwstype::FMTtimeyld) && values[0] == "*P")
 								{
@@ -434,7 +434,7 @@ Core::FMTyields FMTyieldparser::read(const std::vector<Core::FMTtheme>& themes,c
 											if (!simple_match && should_be_equation > 0)
 												{
 												std::vector<std::string>wrong_equation;
-												boost::split(wrong_equation, line, boost::is_any_of("\t "), boost::token_compress_on);
+												boost::split(wrong_equation, line, boost::is_any_of(FMT_STR_SEPARATOR), boost::token_compress_on);
 												yldname = wrong_equation[0];
 												cyld = "_EQUATION";
 												for (size_t cid = 1; cid < wrong_equation.size();++cid)
@@ -456,8 +456,9 @@ Core::FMTyields FMTyieldparser::read(const std::vector<Core::FMTtheme>& themes,c
                                             checkpreexisting(dump);
                                             const FMTyieldparserop complextype = getyldctype(cyld);
 											std::vector<std::string>values;
-											boost::trim_if(data, boost::is_any_of("\t "));
-                                            boost::split(values,data,boost::is_any_of("\t ,"), boost::token_compress_on);
+											boost::trim_if(data, boost::is_any_of(FMT_STR_SEPARATOR));
+											const std::string yldsplitc = FMT_STR_SEPARATOR + std::string(",");
+                                            boost::split(values,data,boost::is_any_of(yldsplitc), boost::token_compress_on);
 											std::vector<double>cvalues;
 											std::vector<std::string>csource;
 											if (complextype == FMTyieldparserop::FMTwsequation)

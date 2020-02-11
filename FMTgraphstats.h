@@ -30,6 +30,7 @@ SOFTWARE.
 #include <boost/serialization/serialization.hpp>
 #include <boost/serialization/nvp.hpp>
 #include <memory>
+#include <string>
 
 namespace Graph
 {

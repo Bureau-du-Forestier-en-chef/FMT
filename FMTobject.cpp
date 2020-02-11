@@ -83,7 +83,7 @@ namespace Core
 	
 
 	FMTobject::FMTobject() : _exhandler(std::make_shared<Exception::FMTdefaultexceptionhandler>()),
-		_logger(std::make_shared<Logging::FMTdefaultlogger>())
+		_logger(std::make_shared<Logging::FMTdefaultlogger>()), _section(FMTwssect::Empty)
 	{
 		this->checksignals();
 			setCPLhandler();
@@ -95,14 +95,16 @@ namespace Core
 
 	}
 
-	FMTobject::FMTobject(const std::shared_ptr<Exception::FMTexceptionhandler> exhandler) : _exhandler(std::move(exhandler)), _logger(std::make_shared<Logging::FMTdefaultlogger>())
+	FMTobject::FMTobject(const std::shared_ptr<Exception::FMTexceptionhandler> exhandler) : 
+		_exhandler(std::move(exhandler)), _logger(std::make_shared<Logging::FMTdefaultlogger>()), _section(FMTwssect::Empty)
 	{
 		_exhandler->passinlogger(_logger);
 		setCPLhandler();
 		this->checksignals();
 
 	}
-	FMTobject::FMTobject(const FMTobject& rhs) : _exhandler(std::move(rhs._exhandler)), _logger(std::move(rhs._logger))
+	FMTobject::FMTobject(const FMTobject& rhs) : 
+		_exhandler(std::move(rhs._exhandler)), _logger(std::move(rhs._logger)), _section(rhs._section)
 	{
 		_exhandler->passinlogger(_logger);
 		setCPLhandler();
@@ -117,6 +119,7 @@ namespace Core
 			_logger = rhs._logger;
 			_exhandler->passinlogger(_logger);
 			setCPLhandler();
+			_section = rhs._section;
 		}
 		return *this;
 	}
@@ -134,6 +137,12 @@ namespace Core
 		_exhandler = exhandler;
 		_exhandler->passinlogger(_logger);
 		setCPLhandler();
+		}
+
+	void FMTobject::setsection(const FMTwssect& section)
+		{
+		_section = section;
+		this->checksignals();
 		}
 
 	void FMTobject::setdefaultlogger()
@@ -180,6 +189,42 @@ namespace Core
 		_exhandler = std::make_shared<Exception::FMTfreeexceptionhandler>();
 		_exhandler->passinlogger(_logger);
 		setCPLhandler();
+	}
+
+	bool FMTobject::checkmask(const std::vector<Core::FMTtheme>& themes,
+		const std::vector<std::string>& values, std::string& mask, const std::string& otherinformation) const
+	{
+		//otherinformation = " at line " + std::to_string(_line);
+		bool returnvalue = true;
+		if (themes.size() > values.size())
+		{
+			_exhandler->raise(Exception::FMTexc::WSinvalid_maskrange, _section, mask + otherinformation, __LINE__, __FILE__);
+			returnvalue = false;
+		}
+		else {
+			int id = 0;
+			mask.clear();
+			for (const Core::FMTtheme& theme : themes)
+			{
+				if (!theme.isvalid(values[id]))
+				{
+					const std::string message = values[id] + " at theme " + std::to_string(theme.getid() + 1) + otherinformation;
+					_exhandler->raise(Exception::FMTexc::WSundefined_attribute, _section, message, __LINE__, __FILE__);
+					returnvalue = false;
+				}
+				mask += values[id] + " ";
+				++id;
+			}
+			mask.pop_back();
+		}
+		return  returnvalue;
+	}
+
+	bool FMTobject::validate(const std::vector<Core::FMTtheme>& themes, std::string& mask,std::string otherinformation) const
+	{
+		std::vector<std::string>values;
+		boost::split(values, mask, boost::is_any_of(" \t"), boost::token_compress_on);
+		return checkmask(themes, values, mask, otherinformation);
 	}
 
 }

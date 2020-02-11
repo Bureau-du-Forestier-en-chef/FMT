@@ -209,7 +209,7 @@ bool FMToutputsource::issubsetof(const FMToutputsource& rhs) const
 	if ((this->isvariable() && rhs.isvariable() &&
 		target == rhs.target && FMTspec::issubsetof(rhs) &&
 		!((!action.empty() && rhs.action.empty()) || (!rhs.action.empty() && action.empty()))) &&
-		(mask.data.is_subset_of(rhs.mask.data) &&
+		(mask.issubsetof(rhs.mask) &&
 		((action.empty() && rhs.action.empty()) ||
 			(!action.empty() && !rhs.action.empty() &&
 			(action == rhs.action)))))
@@ -246,7 +246,7 @@ bool FMToutputsource::issubsetof(const FMToutputsource& rhs,
 	if ((this->isvariable() && rhs.isvariable() && 
 		target == rhs.target && FMTspec::issubsetof(rhs) && 
 		!((!action.empty() && rhs.action.empty()) || (!rhs.action.empty() && action.empty()))) && 
-		(mask.data.is_subset_of(rhs.mask.data) && 
+		(mask.issubsetof(rhs.mask) &&
 		((action.empty() && rhs.action.empty()) || 
 		(!action.empty() && !rhs.action.empty() && 
 			isinaggregate(rhs,actions)))))

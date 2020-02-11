@@ -33,6 +33,8 @@ SOFTWARE.
 #include <map>
 #include <string>
 #include <boost/serialization/serialization.hpp>
+#include "FMTutility.h"
+#include "FMTtheme.h"
 
 
 namespace Core
@@ -68,7 +70,7 @@ class FMTyields : public FMTlist<FMTyieldhandler>
         int getage(const FMTdevelopment& dev,const FMTspec& spec) const;
 		std::map<std::string, std::map<std::string, std::vector<double>>>getallyields(const FMTtheme& target,FMTyldwstype type) const;
 		bool operator == (const FMTyields& rhs) const;
-        void update();
+        void update() override;
 		std::vector<std::string>getstacked() const;
     };
 }

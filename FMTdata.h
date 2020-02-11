@@ -27,9 +27,11 @@ SOFTWARE.
 
 #include <vector>
 #include <string>
+#include <map>
 #include "FMToperator.h"
 #include "FMTmask.h"
 #include "FMTexpression.h"
+#include "FMTutility.h"
 #include <boost/serialization/serialization.hpp>
 #include <boost/serialization/nvp.hpp>
 #include <boost/serialization/map.hpp>

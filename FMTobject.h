@@ -39,7 +39,8 @@ SOFTWARE.
 #endif
 
 
-
+#include "FMTtheme.h"
+#include <vector>
 
 namespace Core
 {
@@ -53,11 +54,17 @@ class FMTobject
 		ar & BOOST_SERIALIZATION_NVP(_logger);
 	}
 	protected:
-		std::shared_ptr<Exception::FMTexceptionhandler> _exhandler;
+		mutable std::shared_ptr<Exception::FMTexceptionhandler> _exhandler;
 		std::shared_ptr<Logging::FMTlogger> _logger;
+		FMTwssect _section;
 		void checksignals();
 		std::string getruntimelocation();
 		void setCPLhandler();
+		bool validate(const std::vector<Core::FMTtheme>& themes,
+			std::string& mask,std::string otherinformation = std::string()) const;
+		bool checkmask(const std::vector<Core::FMTtheme>& themes, 
+			const std::vector<std::string>& values, std::string& mask,
+			const std::string& otherinformation) const;
 	public:
 		FMTobject();
 		virtual ~FMTobject();
@@ -66,6 +73,7 @@ class FMTobject
 		FMTobject& operator = (const FMTobject& rhs);
 		void passinlogger(const std::shared_ptr<Logging::FMTlogger>& logger);
 		void passinexceptionhandler(const std::shared_ptr<Exception::FMTexceptionhandler>& exhandler);
+		void setsection(const FMTwssect& section);
 		void setdefaultlogger();
 		void setdebuglogger();
 		void setdefaultexceptionhandler();

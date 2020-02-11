@@ -32,6 +32,10 @@ SOFTWARE.
 #include "FMTtransition.h"
 #include "FMTtransitionmask.h"
 #include "FMTyields.h"
+#include <regex>
+#include "string"
+#include <vector>
+#include "FMTmask.h"
 
 namespace WSParser
 {

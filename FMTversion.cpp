@@ -80,6 +80,18 @@ bool FMTversion::hasfeature(const std::string& name)
 			return true;
 			}
 	#endif
+	#ifdef FMTWITHOSI
+		if (name == "OSI")
+			{
+			return true;
+			}
+		#ifdef  FMTWITHMOSEK
+			if (name == "MOSEK")
+			{
+				return true;
+			}
+		#endif
+	#endif
 	return false;
 	}
 

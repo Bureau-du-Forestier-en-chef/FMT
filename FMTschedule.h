@@ -26,6 +26,7 @@ SOFTWARE.
 #define FMTschedule_H_INCLUDED
 
 #include <map>
+#include <vector>
 #include "FMTdevelopment.h"
 #include "FMTaction.h"
 

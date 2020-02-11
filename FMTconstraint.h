@@ -28,6 +28,8 @@ SOFTWARE.
 #include "FMToutput.h"
 #include <vector>
 #include <string>
+#include <limits>
+#include "FMTbounds.h"
 #include "FMToperator.h"
 #include "FMTbounds.h"
 #include <boost/serialization/serialization.hpp>

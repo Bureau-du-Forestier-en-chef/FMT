@@ -21,6 +21,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
+#ifdef FMTWITHOSI
 
 #ifndef FMToperatingarea_H_INCLUDED
 #define FMToperatingarea_H_INCLUDED
@@ -30,6 +31,7 @@ SOFTWARE.
 #include "FMTmask.h"
 #include "OsiSolverInterface.hpp"
 #include <vector>
+#include <map>
 #include <memory>
 #include <boost/serialization/serialization.hpp>
 #include <boost/serialization/nvp.hpp>
@@ -337,4 +339,5 @@ namespace Heuristics
 
 	}
 
+#endif
 #endif

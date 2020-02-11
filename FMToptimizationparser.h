@@ -32,6 +32,12 @@ SOFTWARE.
 #include <vector>
 #include <map>
 #include <string>
+#include <queue>
+#include "FMTutility.h"
+#include <regex>
+#include "FMTconstants.h"
+#include "FMTtheme.h"
+#include <limits>
 
 namespace WSParser
 {

@@ -27,6 +27,7 @@ SOFTWARE.
 
 #include "FMTparser.h"
 #include "FMTconstants.h"
+#include <string>
 
 namespace WSParser
 {

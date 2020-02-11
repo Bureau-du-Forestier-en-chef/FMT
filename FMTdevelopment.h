@@ -86,7 +86,15 @@ class FMTdevelopment : public FMTobject
 		bool is(const FMTspec& specification, const FMTyields& ylds) const;
 		bool worthtestingoperability(const FMTaction& action) const;
 		std::vector<int> anyworthtestingoperability(const std::vector<const FMTaction*>& actions, const FMTaction& firstaction) const;
-		
+		inline size_t hash() const
+			{
+			std::size_t seed =0;
+			boost::hash_combine(seed, boost::hash<Core::FMTmask>()(mask));
+			boost::hash_combine(seed, boost::hash<int>()(age));
+			boost::hash_combine(seed, boost::hash<int>()(lock));
+			boost::hash_combine(seed, boost::hash<int>()(period));
+			return seed;
+			}
     };
 
 }
@@ -98,13 +106,7 @@ namespace boost {
   {
     std::size_t operator()(const Core::FMTdevelopment& dev) const
         {
-		std::size_t seed = 0;
-		boost::hash_combine(seed, hash<Core::FMTmask>()(dev.mask));
-		boost::hash_combine(seed, hash<int>()(dev.age));
-		boost::hash_combine(seed, hash<int>()(dev.lock));
-		boost::hash_combine(seed, hash<int>()(dev.period));
-		return seed;
-        //return (hash<Core::FMTmask>()(dev.mask) ^ hash<int>()(dev.age) ^ (hash<int>()(dev.lock) ^ (hash<int>()(dev.period))));
+		return dev.hash();
         }
   };
 

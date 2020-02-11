@@ -28,11 +28,10 @@ namespace WSParser{
 
 FMTactionparser::FMTactionparser() : FMTparser(),
     rxsection("^(\\*ACTION)([\\s\\t]*)([^\\s^\\t]*)([\\s\\t]*)([NY])([\\s\\t]*)(_LOCKEXEMPT)|(\\*ACTION)([\\s\\t]*)([^\\s^\\t]*)([\\s\\t]*)([NY])|(\\*OPERABLE)([\\s\\t]*)([^\\s^\\t]*)|(\\*AGGREGATE)([\\s\\t])(.+)|(\\*PARTIAL)([\\s\\t])(.+)",std::regex_constants::ECMAScript| std::regex_constants::icase),
-    rxoperator("((\\w+)[\\s\\t]*([<=>]*)[\\s\\t]*(\\d+))|(and)|(or)|([^\\s^\\t]*)", std::regex_constants::ECMAScript| std::regex_constants::icase),
-    operators({"=","<=",">=","<",">"})
+    rxoperator("((\\w+)[\\s\\t]*([<=>]*)[\\s\\t]*(\\d+))|(and)|(or)|([^\\s^\\t]*)", std::regex_constants::ECMAScript| std::regex_constants::icase)
     {}
 
-FMTactionparser::FMTactionparser(const FMTactionparser& rhs):FMTparser(rhs),rxsection(rhs.rxsection),rxoperator(rhs.rxoperator),operators(rhs.operators)
+FMTactionparser::FMTactionparser(const FMTactionparser& rhs):FMTparser(rhs),rxsection(rhs.rxsection),rxoperator(rhs.rxoperator)
     {
 
     }
@@ -43,7 +42,6 @@ FMTactionparser& FMTactionparser::operator = (const FMTactionparser& rhs)
         FMTparser::operator=(rhs);
         rxsection = rhs.rxsection;
         rxoperator = rhs.rxoperator;
-        operators= rhs.operators;
         }
     return *this;
     }
@@ -58,7 +56,7 @@ FMTactionparser& FMTactionparser::operator = (const FMTactionparser& rhs)
 		std::vector<std::string>yields;
         for(const std::string& op : elements)
             {
-            if (std::find(operators.begin(),operators.end(),op)!=operators.end())
+            if (std::find(baseoperators.begin(), baseoperators.end(),op)!= baseoperators.end())
                 {
 				const std::string  yield = elements[loc-1];
                 if(yield=="_AGE")
@@ -185,7 +183,7 @@ FMTactionparser& FMTactionparser::operator = (const FMTactionparser& rhs)
                                         {
                                         Core::FMTspec spec;
                                         std::string mask = getbounds(line,spec,constants,yields);
-                                        if (!validate(themes, mask)) continue;
+                                        if (!validate(themes, mask, " at line " + std::to_string(_line))) continue;
                                         const Core::FMTmask newmask(mask,themes);
                                         const size_t loc = std::distance(actions.begin(), std::find_if(actions.begin(), actions.end(), Core::FMTactioncomparator(operablename)));
 										actions[loc].push_back(newmask,spec);

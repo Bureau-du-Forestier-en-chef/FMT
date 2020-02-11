@@ -82,7 +82,7 @@ class FMTversion
 		static bool isatleast(int major, int minor, int patch);
 		/**
 		Test if the FMT version have the named feature.
-		The only feature for now is GDAL.
+		Features GDAL,OSI,MOSEK.
 		*/
 		static bool hasfeature(const std::string& name);
 	};

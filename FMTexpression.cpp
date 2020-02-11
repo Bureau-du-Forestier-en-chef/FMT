@@ -230,7 +230,7 @@ double FMTexpression::evaluatepostfix(const std::vector<std::string>& postfix) c
 		const FMTfunctioncall fcall(post);
 		if (!op.valid() && !fcall.valid())
 			{
-			values.push(stod(post));
+			values.push(std::stod(post));
 			}else if (op.valid())
 				{
 				double rhs = values.top();

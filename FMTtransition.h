@@ -31,6 +31,7 @@ SOFTWARE.
 #include "FMTaction.h"
 #include "FMTyields.h"
 #include "FMTdevelopment.h"
+#include "FMTtheme.h"
 #include <boost/serialization/serialization.hpp>
 #include <vector>
 #include <map>

@@ -149,15 +149,16 @@ FMTlandscapeparser::FMTlandscapeparser() :
                     {
                     std::smatch kmatch;
 					std::regex_search(line,kmatch,FMTlandscapeparser::rxcleanlans);
-					const std::string theme = std::string(kmatch[3]) + std::string(kmatch[5]);
+					const std::string potentialtheme = std::string(kmatch[3]) + std::string(kmatch[5]);
 					const std::string aggregate = std::string(kmatch[6]);
-                    if (!theme.empty())
+                    if (!potentialtheme.empty())
                         {
 						int tempid = 1;
 						if (!std::string(kmatch[5]).empty() && std::string(kmatch[3]).empty())
 							{
 							tempid = unknownID;
 						}else{
+							const std::string theme = std::string(kmatch[3]);
 							tempid = getnum<int>(theme, constants);
 							}
 						++unknownID;

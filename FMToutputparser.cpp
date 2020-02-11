@@ -106,7 +106,7 @@ namespace WSParser
 								if (isvalid(thtarget))
 									{
 									thtarget.erase(thtarget.begin(), thtarget.begin() + 3);
-									themetarget = stoi(thtarget)-1;
+									themetarget = getnum<int>(thtarget)-1;
 									}
 								name = std::string(kmatch[4]) + std::string(kmatch[14]);
 								description = std::string(kmatch[10]) + std::string(kmatch[16]);

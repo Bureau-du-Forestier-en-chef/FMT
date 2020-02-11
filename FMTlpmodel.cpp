@@ -21,11 +21,14 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
-
+#ifdef FMTWITHOSI
 #include "FMTlpmodel.h"
-#include "OsiMskSolverInterface.hpp"
+#ifdef FMTWITHMOSEK
+	#include "OsiMskSolverInterface.hpp"
+	#include "mosek.h"
+#endif
 #include "OsiClpSolverInterface.hpp"
-#include "mosek.h"
+
 
 namespace Models
 {
@@ -1324,6 +1327,7 @@ bool FMTlpmodel::locatenodes(const std::vector<Core::FMToutputnode>& nodes, int 
 				//clpsolver->resolve();
 				}
 				break;
+				#ifdef FMTWITHMOSEK
 				case FMTsolverinterface::MOSEK:
 					{
 					OsiMskSolverInterface* msksolver = dynamic_cast<OsiMskSolverInterface*>(solverinterface.get());
@@ -1346,6 +1350,7 @@ bool FMTlpmodel::locatenodes(const std::vector<Core::FMToutputnode>& nodes, int 
 							__LINE__, __FILE__);
 						}
 					}
+				#endif
 				break;
 				/*case FMTsolverinterface::CPLEX:
 					solverinterface = unique_ptr<OsiCpxSolverInterface>(new OsiCpxSolverInterface);
@@ -1363,3 +1368,4 @@ bool FMTlpmodel::locatenodes(const std::vector<Core::FMToutputnode>& nodes, int 
 		}
 
 }
+#endif

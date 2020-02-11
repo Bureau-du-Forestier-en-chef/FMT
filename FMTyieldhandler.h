@@ -33,6 +33,7 @@ SOFTWARE.
 #include "FMTdata.h"
 #include "FMTmask.h"
 #include <vector>
+#include "FMTutility.h"
 
 namespace Core
 {

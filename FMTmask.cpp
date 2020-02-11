@@ -135,7 +135,7 @@ bool FMTmask::set(const std::vector<FMTtheme>& themes,const std::string& value)
     {
     name = value;
 	std::vector<std::string>bases;
-    boost::split(bases,value,boost::is_any_of("\t "),boost::token_compress_on);
+    boost::split(bases,value,boost::is_any_of(FMT_STR_SEPARATOR),boost::token_compress_on);
     size_t fullsize = 0;
     for(const FMTtheme& theme : themes)
         {
@@ -182,7 +182,7 @@ bool FMTmask::set(const FMTtheme& theme,const std::string& value)
     {
     const boost::dynamic_bitset<>sub=theme.strtobits(value);
     std::vector<std::string>bases;
-    boost::split(bases,name,boost::is_any_of("\t "), boost::token_compress_on);
+    boost::split(bases,name,boost::is_any_of(FMT_STR_SEPARATOR), boost::token_compress_on);
     bases[theme.id] = value;
     name = boost::algorithm::join(bases," ");
     return (this->setsubset(theme,sub));
@@ -213,7 +213,7 @@ void FMTmask::update(const std::vector<FMTtheme>& themes)
 bool FMTmask::linkNvalidate(const std::vector<FMTtheme>& themes)
             {
             std::vector<std::string>bases;
-            boost::split(bases,name,boost::is_any_of("\t "), boost::token_compress_on);
+            boost::split(bases,name,boost::is_any_of(FMT_STR_SEPARATOR), boost::token_compress_on);
             int themeid = 0;
             boost::dynamic_bitset<> themebits;
             data.clear();
@@ -266,15 +266,6 @@ FMTmask FMTmask::resume(const boost::dynamic_bitset<>& rhs) const
             return newmask;
             }
 
-size_t FMTmask::hash() const
-	{
-	size_t seed = 0;
-	for (size_t i = 0; i < data.size(); i++)
-		{
-		boost::hash_combine(seed, data[i]);
-		}
-	return seed;
-	}
 
 bool FMTmask::operator == (const FMTmask& rhs) const
     {

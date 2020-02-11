@@ -25,6 +25,7 @@ SOFTWARE.
 #include "FMTlifespans.h"
 
 namespace Core{
+
 FMTlifespans::FMTlifespans() : FMTlist<int>(){}
 FMTlifespans::FMTlifespans(const FMTlifespans& rhs) : FMTlist<int>(rhs){}
 FMTlifespans& FMTlifespans::operator = (const FMTlifespans& rhs)
@@ -35,6 +36,11 @@ FMTlifespans& FMTlifespans::operator = (const FMTlifespans& rhs)
         }
     return *this;
     }
+
+void FMTlifespans::update()
+	{
+	FMTlist<int>::update();
+	}
 
 bool FMTlifespans::operator == (const FMTlifespans& rhs) const
 	{

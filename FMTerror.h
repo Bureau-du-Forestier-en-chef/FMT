@@ -27,6 +27,7 @@ SOFTWARE.
 
 #include "FMTexception.h"
 #include <string>
+#include <boost/serialization/serialization.hpp>
 
 
 namespace Exception

@@ -32,7 +32,7 @@ FMTconstants::FMTconstants(const FMTconstants& rhs) : data(rhs.data)
     {
 
     }
-void FMTconstants::set(std::string key, std::vector<std::string>values)
+void FMTconstants::set(const std::string& key, std::vector<double>values)
     {
     data[key] = values;
     }
@@ -41,10 +41,7 @@ bool FMTconstants::isconstant(std::string value) const
     if (value.find("#")!= std::string::npos)
         {
         value.erase(0,1);
-        if (data.find(value)!=data.end())
-            {
-            return true;
-            }
+		return (data.find(value) != data.end());
         }
     return false;
     }
@@ -69,25 +66,6 @@ FMTconstants::operator std::string() const
         line+="\n";
         }
     return line;
-    }
-std::string FMTconstants::getstr(std::string key,int period) const
-    {
-
-    if (key.find("#")!= std::string::npos)
-            {
-            key.erase(0,1);
-            }
-        boost::unordered_map<std::string, std::vector<std::string>>::const_iterator it = data.find(key);
-        if (it==data.end())
-            {
-
-            }
-		std::vector<std::string> const* location = &it->second;
-        if (period >= static_cast<int>(location->size()))
-            {
-            period = static_cast<int>(location->size()) -1;
-            }
-    return location->at(period);
     }
 
 size_t FMTconstants::length(std::string value) const

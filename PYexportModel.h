@@ -104,7 +104,7 @@ void exportModel()
                                     args("self","schedule","schedule_only=true","seed=0")*/));
     define_pylist<Models::FMTsesmodel>();
 
-
+	#ifdef FMTWITHOSI
 	const char* py_FMTlpmodel =
 		" ``FMTlpmodel`` class.\n"
 		"\n"
@@ -113,7 +113,9 @@ void exportModel()
 
 	bp::enum_<Models::FMTsolverinterface>("FMTsolverinterface")
 		.value("CLP", Models::FMTsolverinterface::CLP)
-		.value("MOSEK", Models::FMTsolverinterface::MOSEK)
+		#ifdef  FMTWITHMOSEK
+			.value("MOSEK", Models::FMTsolverinterface::MOSEK)
+		#endif
 		.value("CPLEX", Models::FMTsolverinterface::CPLEX)
 		.value("GUROBI", Models::FMTsolverinterface::GUROBI);
 
@@ -138,7 +140,7 @@ void exportModel()
 		.def("getstats", &Models::FMTlpmodel::getstats)
 		.def("getoperatingareaheuristics", &Models::FMTlpmodel::getoperatingareaheuristics, getoperatingareaheuristics_overloads());
 	define_pylist<Models::FMTlpmodel>();
-
+	#endif
 	bp::enum_<Models::FMTsawarmuptype>("FMTsawarmuptype")
 		.value("log", Models::FMTsawarmuptype::log)
 		.value("delta", Models::FMTsawarmuptype::bigdelta)

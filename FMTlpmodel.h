@@ -21,7 +21,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
-
+#ifdef FMTWITHOSI
 #ifndef FMTlpmodel_H_INCLUDED
 #define FMTlpmodel_H_INCLUDED
 
@@ -32,20 +32,17 @@ SOFTWARE.
 #include "FMTyields.h"
 #include "FMTtheme.h"
 #include "FMTschedule.h"
-
-#define FMT_DBL_TOLERANCE 1.e-08
-
+#include "FMTutility.h"
 #include "FMToutputproperties.h"
 #include "FMTdevelopmentpath.h"
-
-
 #include "FMTserializablematrix.h"
 
-
-/*
-#include "OsiCpxSolverInterface.hpp"
-#include "OsiGrbSolverInterface.hpp"*/
-#include "OsiMskSolverInterface.hpp"
+#ifdef FMTWITHMOSEK
+	/*
+	#include "OsiCpxSolverInterface.hpp"
+	#include "OsiGrbSolverInterface.hpp"*/
+	#include "OsiMskSolverInterface.hpp"
+#endif
 
 #include "OsiSolverInterface.hpp"
 #include <boost/serialization/split_member.hpp>
@@ -59,7 +56,6 @@ SOFTWARE.
 #include <utility>
 #include <vector>
 #include <queue>
-
 #include "FMTgraph.h"
 #include "FMTmodel.h"
 #include "FMTsolverinterface.h"
@@ -372,4 +368,5 @@ class FMTlpmodel : public FMTmodel
 }
 
 
+#endif
 #endif

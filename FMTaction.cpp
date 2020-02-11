@@ -130,6 +130,12 @@ FMTaction::FMTaction():FMTlist<FMTspec>(),
 			}
 		}
 
+	void FMTaction::update()
+		{
+		FMTlist<FMTspec>::update();
+		this->setbounds();
+		}
+
 
 	int FMTaction::getagelowerbound() const
 		{
@@ -211,6 +217,10 @@ std::vector<std::string>FMTaction::getaggregates() const
 
 bool FMTaction::operator < (const FMTaction& rhs) const
     {
+	if (this->size()<rhs.size())
+		{
+		return true;
+		}
     return name < rhs.name;
     }
 bool FMTaction::operator == (const FMTaction& rhs) const

@@ -25,7 +25,7 @@ SOFTWARE.
 #ifndef FMTmodelparser_H_INCLUDED
 #define FMTmodelparser_H_INCLUDED
 
-//#include "FMTwsParser.h"
+
 #include "FMTparser.h"
 #include "FMTconstantparser.h"
 #include "FMTlandscapeparser.h"
@@ -37,11 +37,12 @@ SOFTWARE.
 #include "FMToutputparser.h"
 #include "FMToptimizationparser.h"
 #include "FMTscheduleparser.h"
-
-
 #include "FMTmodel.h"
 #include "boost/filesystem.hpp"
 #include <map>
+#include <string>
+#include <vector>
+#include "FMTschedule.h"
 
 namespace WSParser
 {

@@ -39,6 +39,7 @@ SOFTWARE.
 #include "FMTconstraint.h"
 #include <memory>
 #include "FMTgraph.h"
+#include "FMTlist.h"
 #include <boost/serialization/vector.hpp>
 #include <boost/serialization/map.hpp>
 #include <boost/serialization/unordered_map.hpp>
@@ -76,6 +77,24 @@ class FMTmodel : public Core::FMTobject
 		ar & BOOST_SERIALIZATION_NVP(constraints);
 		ar & BOOST_SERIALIZATION_NVP(name);
 	}
+	/**
+	Function used to validate FMTmask in a FMTlist element like FMTaction, FMTtransition etc...
+	Will throw exception if the FMTmask string does not match the FMTthemes.
+	*/
+	template<class T>
+	void validatelistmasks(const Core::FMTlist<T>& container) const
+		{
+		for (const auto& listobject : container)
+			{
+			std::string name = std::string(listobject.first);
+			this->validate(themes, name);
+			}
+		}
+	/**
+	Function used to validate specifications (check for yields used)
+	Will throw excetion if the yield used in the specificaiton is not defined in FMTyields.
+	*/
+	void validatelistspec(const Core::FMTspec& specifier) const;
     protected:
 		///Actualdevelopments for period 0, seen in the area section or the shapefile/raster
 		std::vector<Core::FMTactualdevelopment>area;
@@ -98,6 +117,10 @@ class FMTmodel : public Core::FMTobject
 		going to be defined when the FMTmodel class is constructed.
 		*/
 		void setdefaultobjects();
+		/**
+		Throw error is the mask is not valid for a given section.
+		*/
+		
     public:
 		///The name of the Model (name of the .pri file without extension)
         std::string name;
@@ -121,6 +144,7 @@ class FMTmodel : public Core::FMTobject
 			Virtual function to get the area of a given period into actualdevelopement.
 		*/
 		virtual std::vector<Core::FMTactualdevelopment>getarea(int period = 0) const;
+		
 		/**
 		Function do delete action that have no defined transition and to delete transition that have no defined action.
 		Actions and transitions are then sorted.

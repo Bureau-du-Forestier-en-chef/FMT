@@ -25,9 +25,11 @@ BOOST_CLASS_EXPORT(Core::FMTconstraint)
 BOOST_CLASS_EXPORT(Core::FMTschedule)
 BOOST_CLASS_EXPORT(Models::FMTmodel)
 BOOST_CLASS_EXPORT(Graph::FMTgraph)
-BOOST_CLASS_EXPORT(Models::FMTlpmodel)
 BOOST_CLASS_EXPORT(Models::FMTsesmodel)
-BOOST_CLASS_EXPORT(Heuristics::FMToperatingareaheuristic)
+#ifdef FMTWITHOSI
+	BOOST_CLASS_EXPORT(Models::FMTlpmodel)
+	BOOST_CLASS_EXPORT(Heuristics::FMToperatingareaheuristic)
+#endif
 ////////////////////////to////////////////////////////
 
 #if defined FMTPY

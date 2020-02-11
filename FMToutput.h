@@ -34,6 +34,7 @@ SOFTWARE.
 #include "FMTmaskfilter.h"
 #include "FMToutputnode.h"
 #include "FMTtheme.h"
+#include "FMTbounds.h"
 #include <boost/serialization/serialization.hpp>
 
 

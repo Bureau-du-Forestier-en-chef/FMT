@@ -28,6 +28,11 @@ SOFTWARE.
 #include "FMTtheme.h"
 #include "FMTconstants.h"
 #include "FMTparser.h"
+#include "FMTutility.h"
+#include <regex>
+#include <string>
+#include <map>
+#include <vector>
 
 
 namespace WSParser

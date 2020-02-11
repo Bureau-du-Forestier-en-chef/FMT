@@ -30,6 +30,10 @@ SOFTWARE.
 #include "FMTtheme.h"
 #include "FMTaction.h"
 #include "FMTyields.h"
+#include "FMTutility.h"
+#include <regex>
+#include <vector>
+#include <map>
 
 
 namespace WSParser
@@ -40,7 +44,6 @@ class FMTactionparser : public FMTparser
     private:
         std::regex rxsection;
 		std::regex rxoperator;
-		std::vector<std::string>operators;
 		std::vector<Core::FMTaction*> sameactionas(const std::string& all_set, std::vector<Core::FMTaction>& actions) const;
     public:
         FMTactionparser();

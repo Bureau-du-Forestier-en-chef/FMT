@@ -21,11 +21,12 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
-
+#ifdef FMTWITHOSI
 #include "FMTserializablematrix.h"
 #include "OsiClpSolverInterface.hpp"
-#include "OsiMskSolverInterface.hpp"
-
+#ifdef  FMTWITHMOSEK
+	#include "OsiMskSolverInterface.hpp"
+#endif
 
 namespace Models
 {
@@ -128,9 +129,11 @@ std::shared_ptr<OsiSolverInterface> FMTserializablematrix::buildsolverinterface(
 	case FMTsolverinterface::CLP:
 		solverinterface = std::shared_ptr<OsiClpSolverInterface>(new OsiClpSolverInterface);
 		break;
+	#ifdef  FMTWITHMOSEK
 	case FMTsolverinterface::MOSEK:
 		solverinterface = std::shared_ptr<OsiMskSolverInterface>(new OsiMskSolverInterface);
 		break;
+	#endif
 		/*case FMTsolverinterface::CPLEX:
 			solverinterface = shared_ptr<OsiCpxSolverInterface>(new OsiCpxSolverInterface);
 		break;
@@ -155,9 +158,11 @@ std::shared_ptr<OsiSolverInterface> FMTserializablematrix::copysolverinterface(c
 		case FMTsolverinterface::CLP:
 			solverinterface = std::shared_ptr<OsiClpSolverInterface>(new OsiClpSolverInterface(*dynamic_cast<OsiClpSolverInterface*>(solver_ptr.get())));
 			break;
+		#ifdef  FMTWITHMOSEK
 		case FMTsolverinterface::MOSEK:
 			solverinterface = std::shared_ptr<OsiMskSolverInterface>(new OsiMskSolverInterface(*dynamic_cast<OsiMskSolverInterface*>(solver_ptr.get())));
 			break;
+		#endif
 			/*case FMTsolverinterface::CPLEX:
 				solverinterface = shared_ptr<OsiCpxSolverInterface>(new OsiCpxSolverInterface(*dynamic_cast<OsiCpxSolverInterface*>(solver_ptr.get())));
 			break;
@@ -190,3 +195,4 @@ void FMTserializablematrix::setmatrix(std::shared_ptr<OsiSolverInterface>& solve
 
 
 }
+#endif

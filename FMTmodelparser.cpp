@@ -125,7 +125,7 @@ Models::FMTmodel FMTmodelparser::referenceread(std::map<std::string, std::vector
 			if (!common_sets.empty())
 				{
 				themes = models.at(*common_it).getthemes();
-				sort(common_sets.begin(), common_sets.end());
+				std::sort(common_sets.begin(), common_sets.end());
 				if (area_it != common_sections.end())
 					{
 					std::vector<int>common_area(common_sets.size()+ area_it->second.size());
@@ -157,7 +157,7 @@ Models::FMTmodel FMTmodelparser::referenceread(std::map<std::string, std::vector
 					if (!common_lif.empty())
 						{
 						lifespan = models.at(*common_it).getlifespan();
-						sort(common_lif.begin(), common_lif.end());
+						std::sort(common_lif.begin(), common_lif.end());
 						if (actions_it != common_sections.end())
 							{
 							std::vector<int>common_actions(common_lif.size() + actions_it->second.size());
@@ -167,7 +167,7 @@ Models::FMTmodel FMTmodelparser::referenceread(std::map<std::string, std::vector
 							if (!common_actions.empty())
 								{
 								actions = models.at(*common_it).getactions();
-								sort(common_actions.begin(), common_actions.end());
+								std::sort(common_actions.begin(), common_actions.end());
 								if (transitions_it != common_sections.end())
 									{
 									std::vector<int>common_transitions(common_actions.size() + transitions_it->second.size());
@@ -177,7 +177,7 @@ Models::FMTmodel FMTmodelparser::referenceread(std::map<std::string, std::vector
 									if (!common_transitions.empty())
 										{
 										transitions = models.at(*common_it).gettransitions();
-										sort(common_transitions.begin(), common_transitions.end());
+										std::sort(common_transitions.begin(), common_transitions.end());
 										}
 									}
 								}
@@ -194,7 +194,7 @@ Models::FMTmodel FMTmodelparser::referenceread(std::map<std::string, std::vector
 					if (!common_output.empty())
 						{
 						outputs = models.at(*common_it).getoutputs();
-						sort(common_output.begin(), common_output.end());
+						std::sort(common_output.begin(), common_output.end());
 						if (optimize_it != common_sections.end())
 							{
 							std::vector<int>common_optimize(common_output.size() + optimize_it->second.size());

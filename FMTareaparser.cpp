@@ -270,8 +270,8 @@ namespace WSParser{
             for (const std::string& strlock : lockstr)
                 {
 				std::vector<std::string>spstr;
-                boost::split(spstr,strlock,boost::is_any_of("\t "), boost::token_compress_on);
-                lockatts.push_back(stoi(spstr[1]));
+                boost::split(spstr,strlock,boost::is_any_of(FMT_STR_SEPARATOR), boost::token_compress_on);
+                lockatts.push_back(getnum<int>(spstr[1]));
                 }
             lockband = getband(lockdataset);
             lockdata = std::vector<GInt32>(static_cast<size_t>(nXBlockSize) * static_cast<size_t>(nYBlockSize),0);
@@ -355,7 +355,7 @@ namespace WSParser{
                             if (counts[location]==attcounts && agedata[location] != nodata)
                                 {
 								std::string maskvalue = st.substr(0, st.size()-1);
-                                if (!validate(themes,maskvalue)) continue;
+                                if (!validate(themes,maskvalue," at line " + std::to_string(_line))) continue;
                                 const Core::FMTmask mask(maskvalue,themes);
                                 int lock = 0;
                                 if (!lockdata.empty())
@@ -409,7 +409,7 @@ namespace WSParser{
 					slock.erase(0, 5);
 					if (isvalid(slock))
 					{
-						lock = std::stoi(slock);
+						lock = getnum<int>(slock);
 					}
 				}
 				std::vector<std::string>masks(themes_fields.size());
@@ -420,7 +420,7 @@ namespace WSParser{
 					masks[it->first] = attribute;
 				}
 				std::string tmask = boost::algorithm::join(masks, " ");
-				if (validate(themes, tmask))
+				if (validate(themes, tmask, " at line " + std::to_string(_line)))
 					{
 					const Core::FMTmask mask(tmask, themes);
 					return Core::FMTactualdevelopment(mask, age, lock, area);
@@ -496,7 +496,7 @@ namespace WSParser{
 		GDALClose(dataset);
         return devs;
         }
-
+	#ifdef FMTWITHOSI
 	std::vector<OGRMultiPolygon>FMTareaparser::getmultipolygons(const std::vector<Heuristics::FMToperatingarea>& operatingareas,
 												const std::vector<Core::FMTtheme>& themes, const std::string& data_vectors,
 												const std::string& agefield, const std::string& areafield, double agefactor,
@@ -526,7 +526,7 @@ namespace WSParser{
 						size_t opid = 0;
 						for (const Heuristics::FMToperatingarea& oparea : operatingareas)
 							{
-								if (actualdev.mask.data.is_subset_of(oparea.getmask().data))
+								if (actualdev.mask.issubsetof(oparea.getmask()))
 								{
 									
 									multipolygons[opid].addGeometry(polygon);
@@ -542,7 +542,7 @@ namespace WSParser{
 		GDALClose(dataset);
 		return multipolygons;
 		}
-
+	#endif
 	
 
         template<typename T>
@@ -645,7 +645,7 @@ namespace WSParser{
             GDALClose(wdataset);
             return true;
             }
-
+	#ifdef FMTWITHOSI
 			std::vector<Heuristics::FMToperatingarea> FMTareaparser::getneighborsfrompolygons(const std::vector<OGRMultiPolygon>& multipolygons,
 																						std::vector<Heuristics::FMToperatingarea> operatingareas,
 																						const double& buffersize) const
@@ -731,8 +731,8 @@ namespace WSParser{
 																areafactor, lockfield, minimal_area);
 				return getneighborsfrompolygons(multipolygons, operatingareaparameters, buffersize);
 				}
+		#endif
 #endif
-
 			FMTareaparser::FMTareaparser() :
 				FMTparser(),
 				rxcleanarea("^(([*A]*)([^|]*)(_lock)([^0-9]*)([0-9]*))|(([*A]*)([^|]*)([|])([^|]*)([|])([^0-9]*)(.+))|(([*A]*)(([^|]*)([|])([^|]*)([|])))|([*A]*)(.+)", std::regex_constants::ECMAScript | std::regex_constants::icase)
@@ -802,7 +802,7 @@ namespace WSParser{
 									if (area > 0)
 									{
 										got0area = false;
-										if (!validate(themes, mask)) continue;
+										if (!validate(themes, mask, " at line " + std::to_string(_line))) continue;
 										potential_futurs = false;
 										age = getnum<int>(splitted.at(linesize - 2), constants);
 										lock = 0;

@@ -28,6 +28,8 @@ SOFTWARE.
 #include "FMTaction.h"
 #include <boost/serialization/serialization.hpp>
 #include <boost/serialization/nvp.hpp>
+#include <vector>
+#include <string>
 
 namespace Graph
 	{

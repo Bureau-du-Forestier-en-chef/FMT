@@ -25,7 +25,8 @@ SOFTWARE.
 #ifndef FMTUTILS_H_INCLUDED
 #define FMTUTILS_H_INCLUDED
 
-
+#define FMT_DBL_TOLERANCE 1.e-08
+#define FMT_STR_SEPARATOR "\t "
 
 enum FMTwssect
     {

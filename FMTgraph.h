@@ -30,6 +30,8 @@ SOFTWARE.
 
 #include "FMToutputnode.h"
 #include "FMTdevelopment.h"
+#include "FMTactualdevelopment.h"
+#include "FMTfuturdevelopment.h"
 #include "FMTdevelopmentpath.h"
 #include "FMTschedule.h"
 #include "FMToutputnode.h"

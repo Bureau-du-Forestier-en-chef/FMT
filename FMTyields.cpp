@@ -60,9 +60,8 @@ FMTyields::FMTyields():FMTlist<FMTyieldhandler>(),names(), null_names()
 
 std::vector<std::string>FMTyields::getyldsnames() const
     {
-		std::vector<std::string>fullylds;
-		//std::vector<FMTyieldhandler>::const_iterator data_iterator = this->databegin();
-    for(const auto& handlerobj : *this/*size_t id = 0 ; id < this->size(); ++id*/)
+	std::vector<std::string>fullylds;
+    for(const auto& handlerobj : *this)
         {
         for(std::map<std::string,FMTdata>::const_iterator itd = handlerobj.second.elements.begin(); itd != handlerobj.second.elements.end(); ++itd)
              {
@@ -71,7 +70,6 @@ std::vector<std::string>FMTyields::getyldsnames() const
                  fullylds.push_back(itd->first);
                  }
              }
-		//++data_iterator;
         }
     return fullylds;
     }
@@ -115,7 +113,7 @@ bool FMTyields::isnullyld(const std::string& value) const
 
 void FMTyields::update()
     {
-	this->shrink();
+	FMTlist<FMTyieldhandler>::update();
     names = getyldsnames();
 	null_names = getnullyldsnames();
     }

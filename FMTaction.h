@@ -30,6 +30,9 @@ SOFTWARE.
 #include "FMTbounds.h"
 #include <boost/serialization/serialization.hpp>
 #include <boost/serialization/nvp.hpp>
+#include <string>
+#include <vector>
+
 namespace Core
 {
 
@@ -38,6 +41,9 @@ class FMTactioncomparator;
 class FMTaction : public FMTlist<FMTspec>
     {
 	friend class FMTactioncomparator;
+	/**
+	serialize function is for serialization, used to do multiprocessing across multiple cpus (pickle in Pyhton)
+	*/
 	friend class boost::serialization::access;
 	template<class Archive>
 	void serialize(Archive& ar, const unsigned int version)
@@ -54,11 +60,19 @@ class FMTaction : public FMTlist<FMTspec>
 		ar & BOOST_SERIALIZATION_NVP(reset);
 		}
 	protected:
+		///An action can be part of a aggregate so this data member gets the name of all aggregate the action is being part of.
 		std::vector<std::string>aggregates;
+		///Keeps the yields name for determining the amount of wood harvested in case of partial cut.
         std::vector<std::string>partials;
+		///Those data members are for optimization only,
+		///the class determine within which bounds the aciton can take place for a given development.
 		int agelowerbound, ageupperbound, periodlowerbound, periodupperbound;
+		///The name of the action
 		std::string name;
+		///If lock is true the action is not _lockexempt when false the action is _LOCKEXEMPT
+		///If reset is true then the action is age reset Y else the action  doen't reset age
 		bool lock, reset;
+		void setbounds();
     public:
         FMTaction();
         virtual ~FMTaction() = default;
@@ -68,7 +82,7 @@ class FMTaction : public FMTlist<FMTspec>
         void push_partials(const std::string& yield);
         FMTaction(const FMTaction& rhs);
         FMTaction& operator = (const FMTaction& rhs);
-		void setbounds();
+		void update() override;
 		int getagelowerbound() const;
 		int getageupperbound() const;
 		int getperiodlowerbound() const;
@@ -109,6 +123,7 @@ class FMTactioncomparator
 		bool operator()(const FMTaction& action) const;
 
 	};
+
 
 }
 

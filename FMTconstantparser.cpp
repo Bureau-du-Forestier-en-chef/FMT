@@ -60,18 +60,18 @@ Core::FMTconstants FMTconstantparser::read(std::string location)
 				{
 					const std::vector<std::string>splited = FMTparser::spliter(line, FMTparser::rxseparator);
 					const std::string key = splited[0];
-					std::vector<std::string>values;
+					std::vector<double>values;
 					for (size_t id = 1; id < splited.size(); ++id)
 					{
-						int period = static_cast<int>((id - 1));
+						const int period = static_cast<int>((id - 1));
 						if (splited[id].find("#") != std::string::npos)
 						{
 							std::string strid = splited[id];
 							strid.erase(0, 1);
-							values.push_back(constants.getstr(strid, period));
+							values.push_back(constants.get<double>(strid, period));
 						}
 						else {
-							values.push_back(splited[id]);
+							values.push_back(getnum<double>(splited[id]));
 						}
 					}
 					constants.set(key, values);

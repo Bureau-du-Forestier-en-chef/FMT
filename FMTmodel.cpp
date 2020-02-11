@@ -21,6 +21,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
+#include <boost/algorithm/string.hpp>
 
 #include "FMTmodel.h"
 
@@ -43,9 +44,10 @@ void FMTmodel::setdefaultobjects()
 		}
 	for (Core::FMTaction& action : actions)
 		{
-		action.setbounds();
+		action.update();
 		}
 	}
+
 
 FMTmodel::FMTmodel() : Core::FMTobject(),area(),themes(),actions(), transitions(),yields(),lifespan(),outputs(), constraints(),name()
 {
@@ -211,22 +213,38 @@ void FMTmodel::setarea(const std::vector<Core::FMTactualdevelopment>& ldevs)
 void FMTmodel::setthemes(const std::vector<Core::FMTtheme>& lthemes)
     {
     themes = lthemes;
+	//After theme change every masks needs to be reevaluated?.
+
+
     }
 void FMTmodel::setactions(const std::vector<Core::FMTaction>& lactions)
     {
-    actions = lactions;
+	actions = lactions;
+	for (Core::FMTaction& action : actions)
+		{
+		action.update();
+		}
+	this->setdefaultobjects();
     }
 void FMTmodel::settransitions(const std::vector<Core::FMTtransition>& ltransitions)
     {
     transitions = ltransitions;
+	for (Core::FMTtransition& transition : transitions)
+		{
+		transition.update();
+		}
+	this->setdefaultobjects();
     }
 void FMTmodel::setyields(const Core::FMTyields& lylds)
     {
     yields = lylds;
+	yields.update();
     }
 void FMTmodel::setlifespan(const Core::FMTlifespans& llifespan)
     {
     lifespan = llifespan;
+	lifespan.update();
+	this->setdefaultobjects();
     }
 
 std::vector<Core::FMTtheme> FMTmodel::locatestaticthemes() const
@@ -239,8 +257,22 @@ std::vector<Core::FMTtheme> FMTmodel::locatestaticthemes() const
 	return bestthemes;
 }
 
+void FMTmodel::validatelistspec(const Core::FMTspec& specifier) const
+	{
+	for (const std::string& yldname : specifier.getylds())
+		{
+			if (!yields.isyld(yldname))
+			{
+				_exhandler->raise(Exception::FMTexc::WSinvalid_yield,
+					_section, yldname, __LINE__, __FILE__);
+			}
+		}
+	}
+
+
 bool FMTmodel::isvalid()
     {
+	this->setsection(FMTwssect::Landscape);
 	for (const Core::FMTtheme& theme :themes)
 		{
 		if (theme.empty())
@@ -249,29 +281,70 @@ bool FMTmodel::isvalid()
 				"for theme id: " + std::to_string(theme.getid()), __LINE__, __FILE__);
 			}
 		}
+	this->setsection(FMTwssect::Area);
 	for (const Core::FMTactualdevelopment& developement : area)
 		{
-		for (const Core::FMTtheme& theme : themes)
+		std::string name = std::string(developement.mask);
+		this->validate(themes, name);
+		}
+	this->setsection(FMTwssect::Yield);
+	this->validatelistmasks(yields);
+
+	this->setsection(FMTwssect::Lifespan);
+	this->validatelistmasks(lifespan);
+
+	this->setsection(FMTwssect::Action);
+	for (const Core::FMTaction& action : actions)
+		{
+		this->validatelistmasks(action);
+		for (const auto& specobject : action)
 			{
-			if (developement.mask.get(theme).empty())
+			validatelistspec(specobject.second);
+			}
+		}
+	this->setsection(FMTwssect::Transition);
+	for (const Core::FMTtransition& transition : transitions)
+		{
+		this->validatelistmasks(transition);
+		for (const auto& specobject : transition)
+			{
+			validatelistspec(specobject.second);
+			}
+		}
+	if (actions.size() != transitions.size())
+	{
+		_exhandler->raise(Exception::FMTexc::FMTinvalidAandT, FMTwssect::Empty, "Model: " + name, __LINE__, __FILE__);
+	}
+	for (size_t id = 0; id < actions.size(); ++id)
+	{
+		if (actions[id].getname() != transitions[id].getname())
+		{
+			_exhandler->raise(Exception::FMTexc::WSinvalid_action, FMTwssect::Empty, "Model: " + name + " " + actions[id].getname(), __LINE__, __FILE__);
+		}
+	}
+	this->setsection(FMTwssect::Outputs);
+	for (const Core::FMToutput& output : outputs)
+		{
+		//Need a validate output function
+		for (const Core::FMToutputsource& source : output.getsources())
+			{
+			if (source.isvariable())
 				{
-				_exhandler->raise(Exception::FMTexc::WSundefined_attribute,FMTwssect::Area,
-					" for developement " + std::string(developement), __LINE__, __FILE__);
+				std::string name = std::string(source.getmask());
+				validate(themes, name, "for output " + output.name);
+				const std::string actionname = source.getaction();
+				if (!actionname.empty())//need to check the targeted action!
+					{
+
+					}
 				}
+			validatelistspec(source);
 			}
 		}
 
-    if (actions.size() != transitions.size())
-        {
-        _exhandler->raise(Exception::FMTexc::FMTinvalidAandT,FMTwssect::Empty,"Model: "+name,__LINE__,__FILE__);
-        }
-    for(size_t id = 0 ; id < actions.size();++id)
-        {
-        if(actions[id].getname() != transitions[id].getname())
-            {
-            _exhandler->raise(Exception::FMTexc::WSinvalid_action,FMTwssect::Empty,"Model: "+name+" "+actions[id].getname(), __LINE__, __FILE__);
-            }
-        }
+
+    
+	this->setsection(FMTwssect::Empty);
     return true;
     }
 

@@ -1,4 +1,4 @@
-
+#ifdef FMTWITHOSI
 
 #ifndef FMTmatrixbuild_H_INCLUDED
 #define FMTmatrixbuild_H_INCLUDED
@@ -89,4 +89,5 @@ namespace Models
 	};
 }
 
+#endif
 #endif

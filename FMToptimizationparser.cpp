@@ -566,7 +566,7 @@ namespace WSParser
 													{
 													actit->push_back(newmask.at(newspec),newspecs.at(newspec));
 													}
-												actit->setbounds();
+												actit->update();
 												}
 										}
 									}

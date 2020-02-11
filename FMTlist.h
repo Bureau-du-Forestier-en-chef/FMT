@@ -77,7 +77,7 @@ namespace Core
 		FMTlist() :
 			data(),
 			filter(),
-			fastpass() {};
+			fastpass(){};
 		FMTlist(const FMTlist<T>& rhs) :
 			data(rhs.data),
 			filter(rhs.filter),
@@ -103,9 +103,13 @@ namespace Core
 
 		virtual ~FMTlist() = default;
 		bool empty() const
-		{
+			{
 			return data.empty();
-		}
+			}
+		bool canshrink() const
+			{
+			return filter.empty();
+			}
 		size_t size() const
 		{
 			return data.size();
@@ -130,7 +134,7 @@ namespace Core
 					int location = 0;
 					for (const std::pair<FMTmask,T>& object : data)
 					{
-						if (newkey.data.is_subset_of(object.first.data))
+						if (newkey.issubsetof(object.first))
 						{
 							fastpass[newkey].push_back(location);
 							allhits.push_back(&object.second);
@@ -142,25 +146,31 @@ namespace Core
 			return allhits;
 		}
 
-		FMTmask filtermask(const FMTmask& basemask) const
+		inline FMTmask filtermask(const FMTmask& basemask) const
 			{
 			return filter.filter(basemask);
 			}
-
 		void shrink()
 		{
-			std::vector<std::pair<FMTmask,T>>newdata;
-			fastpass.clear();
-			for (const std::pair<FMTmask,T>& object : data)
-			{
-				newdata.push_back(std::pair<FMTmask,T>(filter.filter(object.first),object.second));
-			}
-			data = newdata;
+				std::vector<std::pair<FMTmask, T>>newdata;
+				fastpass.clear();
+				for (const std::pair<FMTmask, T>& object : data)
+				{
+					newdata.push_back(std::pair<FMTmask, T>(filter.filter(object.first), object.second));
+				}
+				data = newdata;
 		}
 		void push_back(const FMTmask& mask, const T& value)
 		{
 			data.emplace_back(mask,value);
 		}
+		virtual void update()
+			{
+				if (canshrink())
+					{
+					shrink();
+					}
+			}
 		
 		void push_back(const std::pair<FMTmask,T>& value)
 			{
@@ -198,7 +208,7 @@ namespace Core
 		typedef typename std::vector<std::pair<FMTmask, T>>::const_iterator const_iterator;
 		void append(value_type)
 			{
-			data.push_back(value_type);
+			data.push_back(filtermask(value_type->first), value_type->second);
 			}
 		iterator begin()
 			{
