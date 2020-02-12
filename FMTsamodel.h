@@ -38,19 +38,37 @@ SOFTWARE.
 
 namespace Models
 {
-   enum class FMTsawarmuptype
-   {
-        log,
-        bigdelta,
-        logmax,
-        bootstrapmagic
+/**
+
+*/
+enum class FMTsawarmuptype
+    {
+    log,
+    bigdelta,
+    logmax,
+    bootstrapmagic
     };
+
+/**
+This model is a type III LP forest planning model. The graph
+is divided per period. This model is made for replanning and simple
+forest planning LP optimization. It makes heavy use of FMTgraph
+for building the matrix. FMTgraph being based on a list structure
+FMTlpmodel can easely be extended (by the back) using the function buildperiod() or
+shrinked (by the front) using the function eraseperiod.
+The matrix is held within the solverinterface pointer.
+*/
+
 class FMTsamodel : public FMTmodel
     {
     protected:
+        ///
         double min_ratio_moves,max_ratio_moves;
+        ///
 		std::string outputs_write_location;
+		///Counter for number of moves done
         int number_of_moves;
+        ///
 		std::vector<std::map<std::string, std::pair<std::vector<double>, std::vector<double>>>> constraints_values_penalties;//move,constraint_name : <outputs,penalties>
 		std::default_random_engine generator;
 		std::vector<Spatial::FMTspatialaction> spactions;//should be FMTmodel action pointer...
