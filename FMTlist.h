@@ -161,7 +161,7 @@ namespace Core
 		{
 			data.emplace_back(mask,value);
 		}
-		
+
 		void push_back(const std::pair<FMTmask,T>& value)
 			{
 			data.emplace_back(value);
@@ -196,9 +196,9 @@ namespace Core
 		typedef typename std::vector<std::pair<FMTmask, T>>::value_type value_type;
 		typedef typename std::vector<std::pair<FMTmask, T>>::iterator iterator;
 		typedef typename std::vector<std::pair<FMTmask, T>>::const_iterator const_iterator;
-		void append(value_type)
+		void append(FMTlist<T>::value_type element)
 			{
-			data.push_back(value_type);
+			data.push_back(element);
 			}
 		iterator begin()
 			{

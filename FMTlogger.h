@@ -29,7 +29,7 @@ SOFTWARE.
 #include <boost/serialization/split_member.hpp>
 #include <boost/lexical_cast.hpp>
 #include <CoinMessageHandler.hpp>
-#include <fstream> 
+#include <fstream>
 
 
 
@@ -42,7 +42,8 @@ namespace Logging
 		template<class Archive>
 		void save(Archive& ar, const unsigned int version) const
 		{
-			ar & BOOST_SERIALIZATION_NVP(this->logLevel());
+		    const int logl = this->logLevel();
+			ar & BOOST_SERIALIZATION_NVP(logl);
 		}
 		template<class Archive>
 		void load(Archive& ar, const unsigned int version)

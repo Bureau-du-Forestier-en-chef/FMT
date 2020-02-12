@@ -462,7 +462,7 @@ namespace WSParser{
 		layer->SetAttributeFilter(sqlcall.c_str());
 		return layer;
 		}
-		
+
 	std::vector<Core::FMTactualdevelopment>FMTareaparser::readvectors(const std::vector<Core::FMTtheme>& themes,const std::string& data_vectors,
 		const std::string& agefield,const std::string& areafield,double agefactor,double areafactor, std::string lockfield,double minimalarea) const
         {
@@ -479,7 +479,7 @@ namespace WSParser{
             {
 				const Core::FMTactualdevelopment actualdev = this->getfeaturetodevelopment(feature, themes, themes_fields, age_field,
 					lock_field, area_field, agefactor, areafactor, minimalarea);
-				
+
 				if (!actualdev.mask.empty())
 					{
 					std::vector<Core::FMTactualdevelopment>::iterator it = find(devs.begin(), devs.end(), actualdev);
@@ -528,14 +528,14 @@ namespace WSParser{
 							{
 								if (actualdev.mask.data.is_subset_of(oparea.getmask().data))
 								{
-									
+
 									multipolygons[opid].addGeometry(polygon);
 									break;
 								}
 								++opid;
 							}
 						}
-					
+
 					}
 				OGRFeature::DestroyFeature(feature);
 			}
@@ -543,7 +543,7 @@ namespace WSParser{
 		return multipolygons;
 		}
 
-	
+
 
         template<typename T>
         bool FMTareaparser::writelayer(const Spatial::FMTlayer<T>& layer, std::string location,const std::map<T, std::string>& mapping) const
@@ -682,7 +682,7 @@ namespace WSParser{
 							}
 						OGRGeometryFactory::destroyGeometry(buffered);
 						}
-					
+
 					std::vector<Core::FMTmask>validneighbors;
 					for (size_t neighborid = 0 ; neighborid < neighborsid.size(); ++neighborid)
 						{
