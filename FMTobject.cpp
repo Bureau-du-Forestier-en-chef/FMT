@@ -96,7 +96,7 @@ namespace Core
 	}
 
 	FMTobject::FMTobject(const std::shared_ptr<Exception::FMTexceptionhandler> exhandler) : 
-		_exhandler(std::move(exhandler)), _logger(std::make_shared<Logging::FMTdefaultlogger>()), _section(FMTwssect::Empty)
+		_exhandler(exhandler), _logger(std::make_shared<Logging::FMTdefaultlogger>()), _section(FMTwssect::Empty)
 	{
 		_exhandler->passinlogger(_logger);
 		setCPLhandler();
@@ -104,7 +104,7 @@ namespace Core
 
 	}
 	FMTobject::FMTobject(const FMTobject& rhs) : 
-		_exhandler(std::move(rhs._exhandler)), _logger(std::move(rhs._logger)), _section(rhs._section)
+		_exhandler(rhs._exhandler), _logger(rhs._logger), _section(rhs._section)
 	{
 		_exhandler->passinlogger(_logger);
 		setCPLhandler();
@@ -137,6 +137,12 @@ namespace Core
 		_exhandler = exhandler;
 		_exhandler->passinlogger(_logger);
 		setCPLhandler();
+		}
+
+	void FMTobject::passinobject(const FMTobject& rhs)
+		{
+		_exhandler = rhs._exhandler;
+		_logger = rhs._logger;
 		}
 
 	void FMTobject::setsection(const FMTwssect& section)

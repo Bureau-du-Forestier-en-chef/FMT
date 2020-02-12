@@ -73,6 +73,7 @@ class FMTobject
 		FMTobject& operator = (const FMTobject& rhs);
 		void passinlogger(const std::shared_ptr<Logging::FMTlogger>& logger);
 		void passinexceptionhandler(const std::shared_ptr<Exception::FMTexceptionhandler>& exhandler);
+		void passinobject(const FMTobject& rhs);
 		void setsection(const FMTwssect& section);
 		void setdefaultlogger();
 		void setdebuglogger();

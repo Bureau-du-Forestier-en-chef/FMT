@@ -93,6 +93,7 @@ void FMTmodel::cleanactionsntransitions()
 	{
 	std::vector<Core::FMTaction>newactions;
 	std::vector<Core::FMTtransition>newtransitions;
+	sort(actions.begin(), actions.end());
 	for (size_t id = 0; id < actions.size(); ++id)
 	{
 		if (!actions[id].empty())
@@ -107,8 +108,6 @@ void FMTmodel::cleanactionsntransitions()
 	}
 	actions = newactions;
 	transitions = newtransitions;
-	sort(actions.begin(), actions.end());
-	sort(transitions.begin(), transitions.end());
 	}
 
 std::vector<Core::FMTtheme>FMTmodel::getthemes() const
@@ -208,7 +207,11 @@ bool  FMTmodel::operator == (const FMTmodel& rhs) const
 	}
 void FMTmodel::setarea(const std::vector<Core::FMTactualdevelopment>& ldevs)
     {
-    area = ldevs;
+	area = ldevs;
+	for (Core::FMTactualdevelopment& development : area)
+		{
+		development.passinobject(*this);
+		}
     }
 void FMTmodel::setthemes(const std::vector<Core::FMTtheme>& lthemes)
     {
