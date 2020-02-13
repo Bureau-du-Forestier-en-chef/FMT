@@ -351,6 +351,59 @@ bool FMTmodel::isvalid()
     return true;
     }
 
+void FMTmodel::setusefullactions()
+	{
+	std::vector<Core::FMTmask>usefullmasks;
+	for (const Core::FMTtransition& transition : transitions)
+		{
+		for (const auto& transitionobject : transition)
+			{
+			for (const Core::FMTtransitionmask& fork : transitionobject.second.getmasktrans())
+				{
+				usefullmasks.push_back(fork.getmask());
+				}
+			}
+		}
+	const size_t devsstart = usefullmasks.size();
+	for (const Core::FMTactualdevelopment& developement : area)
+		{
+		usefullmasks.push_back(developement.mask);
+		}
+	std::vector<Core::FMTaction>newactions;
+	for (const Core::FMTaction& action : actions)
+		{
+		Core::FMTmask testedmask(std::string(action.begin()->first), themes);
+		for (const auto& actionobject : action)
+			{
+			Core::FMTmask specificiermask(std::string(actionobject.first), themes);
+			testedmask=testedmask.getunion(specificiermask);
+			}
+		bool pushed = false;
+		for (size_t maskid = 0; maskid < usefullmasks.size();++maskid)
+			{
+			bool nonexclusivity = false;
+			if (maskid < devsstart)//when we are in FMTtransitions
+				{
+				nonexclusivity = true;
+				}
+			if (!usefullmasks.at(maskid).isnotthemessubset(testedmask, themes, nonexclusivity))
+				{
+				newactions.push_back(action);
+				pushed = true;
+				break;
+				}
+			}
+		if (!pushed)
+			{
+			*_logger << "scraped action: " << action.getname() << "\n";
+			}
+
+		}
+	*_logger << "old actions size: " << actions.size() << " new actions size: " << newactions.size() << "\n";
+	actions = newactions;
+	cleanactionsntransitions();
+	}
+
 FMTmodelcomparator::FMTmodelcomparator(std::string name) :model_name(name) {}
 
 bool FMTmodelcomparator::operator()(const FMTmodel& model) const

@@ -120,7 +120,6 @@ class FMTmodel : public Core::FMTobject
 		/**
 		Throw error is the mask is not valid for a given section.
 		*/
-		
     public:
 		///The name of the Model (name of the .pri file without extension)
         std::string name;
@@ -250,6 +249,7 @@ class FMTmodel : public Core::FMTobject
 		Copy assignment of FMTmodel
 		*/
 		FMTmodel& operator = (const FMTmodel& rhs);
+		void setusefullactions();
     };
 
 /**

@@ -137,30 +137,14 @@ FMTaction::FMTaction():FMTlist<FMTspec>(),
 		}
 
 
-	int FMTaction::getagelowerbound() const
-		{
-		return agelowerbound;
-		}
-
-	int FMTaction::getageupperbound() const
-		{
-		return ageupperbound;
-		}
-	int FMTaction::getperiodlowerbound() const
-		{
-		return periodlowerbound;
-		}
-	int FMTaction::getperiodupperbound() const
-		{
-		return periodupperbound;
-		}
+	
 
 	std::vector<std::string>FMTaction::getpartials() const
         {
         return partials;
         }
 
-	bool FMTaction::inperiod() const
+	/*bool FMTaction::inperiod() const
 		{
 		std::vector<std::pair<FMTmask, FMTspec>>::const_iterator datait = this->begin();
 		for (size_t id = 0; id < this->size(); ++id)
@@ -177,7 +161,7 @@ FMTaction::FMTaction():FMTlist<FMTspec>(),
 			++datait;
 			}
 		return true;
-		}
+		}*/
 
     FMTaction::operator std::string() const
         {

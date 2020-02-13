@@ -234,6 +234,15 @@ bool FMTmask::linkNvalidate(const std::vector<FMTtheme>& themes)
                 }
             return true;
             }
+
+FMTmask FMTmask::getunion(const FMTmask& rhs) const
+	{
+	FMTmask newmask(rhs);
+	newmask.name.clear();
+	newmask.data = newmask.data | rhs.data;
+	return newmask;
+	}
+
 FMTmask::FMTmask(const FMTmask& rhs) : name(rhs.name),data(rhs.data)
             {
 
@@ -293,7 +302,7 @@ bool FMTmask::operator < (const FMTmask& rhs) const
     return false;
     }
 
-bool FMTmask::isnotthemessubset(const FMTmask& rhs, const std::vector<FMTtheme>& themes) const
+bool FMTmask::isnotthemessubset(const FMTmask& rhs, const std::vector<FMTtheme>& themes,bool nonexclusive) const
 	{
 	const boost::dynamic_bitset<> intersection = (rhs.data & this->data);
 	size_t thid = 0;
@@ -301,21 +310,27 @@ bool FMTmask::isnotthemessubset(const FMTmask& rhs, const std::vector<FMTtheme>&
 	size_t totalthemelength = 0;
 	bool founddifference = false;
 	size_t falsefound = 0;
+	size_t exclusitivycount = 0;
 	while (!founddifference && bitloc < data.size())
 		{
 		if (!intersection[bitloc])
 			{
 			++falsefound;
 			}
+		if (nonexclusive && this->data[bitloc])//check the non intersected LHS
+			{
+			++exclusitivycount;
+			}
 		const size_t themesize = themes.at(thid).size();
 		if (bitloc == (themesize + totalthemelength)-1)
 			{
-			if (themesize == falsefound)
+			if (themesize == falsefound || (nonexclusive && exclusitivycount>1))//in that case we accept aggregate and "?")
 				{
 				founddifference = true;
 				}
 			++thid;
 			falsefound = 0;
+			exclusitivycount = 0;
 			totalthemelength += themesize;
 			}
 		++bitloc;

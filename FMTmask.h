@@ -119,13 +119,14 @@ class FMTmask
         bool set(const std::vector<FMTtheme>& themes,const std::string& value);
 		std::vector<FMTtheme>getstaticthemes(const std::vector<FMTtheme>& themes) const;
         std::string get(const FMTtheme& theme) const;
-		bool isnotthemessubset(const FMTmask& rhs, const  std::vector<FMTtheme>& themes) const;
+		bool isnotthemessubset(const FMTmask& rhs, const  std::vector<FMTtheme>& themes, bool nonexclusive = false) const;
 		bool empty() const;
         bool set(const FMTtheme& theme, const std::string& value);
         void update(const std::vector<FMTtheme>& themes);
 		std::vector<FMTmask>decompose(const FMTtheme &theme) const;
         void append(const boost::dynamic_bitset<> &bits);
         bool linkNvalidate(const std::vector<FMTtheme>& themes);
+		FMTmask getunion(const FMTmask& rhs) const;
         FMTmask(const FMTmask& rhs);
         FMTmask& operator = (const FMTmask& rhs);
         bool operator != (const FMTmask& rhs) const;

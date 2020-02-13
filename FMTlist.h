@@ -150,6 +150,7 @@ namespace Core
 			{
 			return filter.filter(basemask);
 			}
+
 		void shrink()
 		{
 				std::vector<std::pair<FMTmask, T>>newdata;
@@ -160,6 +161,20 @@ namespace Core
 				}
 				data = newdata;
 		}
+
+		void unshrink(const std::vector<FMTtheme>& themes)
+		{
+			std::vector<std::pair<FMTmask, T>>newdata;
+			fastpass.clear();
+			filter = FMTmaskfilter();
+			for (const std::pair<FMTmask, T>& object : data)
+				{
+				newdata.push_back(FMTmask(std::string(object.first), themes), object.second);
+				}
+			data = newdata;
+
+		}
+
 		void push_back(const FMTmask& mask, const T& value)
 		{
 			data.emplace_back(mask,value);
@@ -206,9 +221,9 @@ namespace Core
 		typedef typename std::vector<std::pair<FMTmask, T>>::value_type value_type;
 		typedef typename std::vector<std::pair<FMTmask, T>>::iterator iterator;
 		typedef typename std::vector<std::pair<FMTmask, T>>::const_iterator const_iterator;
-		void append(value_type)
+		void append(FMTlist<T>::value_type element)
 			{
-			data.push_back(filtermask(value_type->first), value_type->second);
+			data.push_back(filtermask(element->first), element->second);
 			}
 		iterator begin()
 			{
