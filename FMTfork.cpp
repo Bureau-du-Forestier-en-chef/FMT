@@ -71,6 +71,16 @@ FMTfork::FMTfork():FMTspec(),transitions(){}
         return line;
         }
 
+	FMTfork FMTfork::presolve(const FMTmask& selectedmask, const std::vector<FMTtheme>&presolvedthemes) const
+		{
+		FMTfork newfork(*this);
+		for (FMTtransitionmask& trmask : newfork.transitions)
+			{
+			trmask = trmask.presolve(selectedmask, presolvedthemes);
+			}
+		return newfork;
+		}
+
 	std::vector<FMTdevelopmentpath> FMTfork::getpaths(const FMTdevelopment& base,
 		 const FMTyields& ylds, const std::vector<FMTtheme>& themes, const bool& reset_age) const
 		{

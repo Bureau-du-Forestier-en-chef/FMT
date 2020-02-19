@@ -249,4 +249,15 @@ std::vector<const FMTaction*>FMTactioncomparator::getallaggregates(const std::ve
 	return actionsptr;
 	}
 
+FMTaction FMTaction::presolve(const FMTmask& basemask,
+	const std::vector<FMTtheme>& originalthemes,
+	const FMTmask& presolvedmask,
+	const std::vector<FMTtheme>& newthemes) const
+	{
+	FMTaction newaction(*this);
+	newaction.presolvelist(basemask, originalthemes, presolvedmask, newthemes);
+	newaction.update();
+	return newaction;
+	}
+
 }

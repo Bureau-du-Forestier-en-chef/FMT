@@ -505,6 +505,22 @@ namespace Core
             line += " " + period_bounds + "\n";
 		}
 
+		size_t FMTconstraint::outputempty() const
+			{
+			return FMToutput::empty();
+			}
+
+		FMTconstraint FMTconstraint::presolve(const FMTmask& basemask,
+			const std::vector<FMTtheme>& originalthemes,
+			const FMTmask& presolvedmask,
+			const std::vector<FMTtheme>& newthemes,
+			const std::vector<FMTaction>& actions, const FMTyields& yields) const
+			{
+			FMTconstraint newconstraint(*this);
+			newconstraint.setoutput(FMToutput::presolve(basemask, originalthemes, presolvedmask, newthemes, actions, yields));
+			return newconstraint;
+			}
+
 }
 
 

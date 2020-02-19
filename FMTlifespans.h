@@ -46,6 +46,10 @@ class FMTlifespans : public FMTlist<int>
 		bool operator == (const FMTlifespans& rhs) const;
         operator std::string() const;
 		void update() override;
+		FMTlifespans presolve(const FMTmask& basemask,
+			const std::vector<FMTtheme>& originalthemes,
+			const FMTmask& presolvedmask,
+			const std::vector<FMTtheme>& newthemes) const;
     };
 
 }

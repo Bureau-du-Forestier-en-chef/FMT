@@ -120,6 +120,7 @@ bool FMTmask::setsubset(const FMTtheme& theme,const boost::dynamic_bitset<>& sub
         }
     return true;
     }
+
 std::string FMTmask::get(const std::vector<FMTtheme>& themes) const
     {
 	std::string value = "";
@@ -237,9 +238,9 @@ bool FMTmask::linkNvalidate(const std::vector<FMTtheme>& themes)
 
 FMTmask FMTmask::getunion(const FMTmask& rhs) const
 	{
-	FMTmask newmask(rhs);
+	FMTmask newmask(*this);
 	newmask.name.clear();
-	newmask.data = newmask.data | rhs.data;
+	newmask.data |= rhs.data;
 	return newmask;
 	}
 
@@ -302,7 +303,33 @@ bool FMTmask::operator < (const FMTmask& rhs) const
     return false;
     }
 
-bool FMTmask::isnotthemessubset(const FMTmask& rhs, const std::vector<FMTtheme>& themes,bool nonexclusive) const
+FMTmask FMTmask::removeaggregates(const std::vector<FMTtheme>& themes) const
+	{
+	FMTmask newmask(*this);
+	newmask.name.clear();
+	const boost::dynamic_bitset<> nullmask(data.size(), false);
+	for (const FMTtheme& theme : themes)
+		{
+		const boost::dynamic_bitset<> localtheme = newmask.subset(theme);
+		if (localtheme.count()>1 || (localtheme.count()==1 && localtheme.size() == 1))
+			{
+			newmask.setsubset(theme, nullmask);
+			}
+		}
+	return newmask;
+	}
+
+void FMTmask::clear()
+	{
+	data.clear();
+	name.clear();
+	}
+size_t FMTmask::size() const
+	{
+	return data.size();
+	}
+
+bool FMTmask::isnotthemessubset(const FMTmask& rhs, const std::vector<FMTtheme>& themes) const
 	{
 	const boost::dynamic_bitset<> intersection = (rhs.data & this->data);
 	size_t thid = 0;
@@ -310,27 +337,21 @@ bool FMTmask::isnotthemessubset(const FMTmask& rhs, const std::vector<FMTtheme>&
 	size_t totalthemelength = 0;
 	bool founddifference = false;
 	size_t falsefound = 0;
-	size_t exclusitivycount = 0;
 	while (!founddifference && bitloc < data.size())
 		{
 		if (!intersection[bitloc])
 			{
 			++falsefound;
 			}
-		if (nonexclusive && this->data[bitloc])//check the non intersected LHS
-			{
-			++exclusitivycount;
-			}
 		const size_t themesize = themes.at(thid).size();
 		if (bitloc == (themesize + totalthemelength)-1)
 			{
-			if (themesize == falsefound || (nonexclusive && exclusitivycount>1))//in that case we accept aggregate and "?")
+			if (themesize == falsefound)//in that case we accept aggregate and "?")
 				{
 				founddifference = true;
 				}
 			++thid;
 			falsefound = 0;
-			exclusitivycount = 0;
 			totalthemelength += themesize;
 			}
 		++bitloc;
@@ -353,6 +374,37 @@ std::string FMTmask::to_string() const
             bits.pop_back();
             return bits;
             }
+
+FMTmask FMTmask::presolve(const FMTmask& selectedmask, const std::vector<FMTtheme>&presolvedthemes) const
+	{
+	std::vector<std::string>bases;
+	size_t basesize = 0;
+	for (const FMTtheme& theme : presolvedthemes)
+		{
+		basesize += theme.size();
+		}
+	boost::dynamic_bitset<> newdata(basesize,false);
+	size_t selectedloc = 0;
+	for (size_t bitid = 0; bitid < selectedmask.data.size();++bitid)
+		{
+		if (selectedmask.data[bitid])
+			{
+			newdata[selectedloc] = data[bitid];
+			++selectedloc;
+			}
+		}
+	std::string newname;
+	if (!name.empty())
+		{
+		FMTmask newmask(newdata);
+		for (const FMTtheme& theme : presolvedthemes)
+			{
+			newname += theme.bitstostr(newmask.subset(theme)) + " ";
+			}
+		newname.pop_back();
+		}
+	return FMTmask(newname, newdata);
+	}
 
 }
 

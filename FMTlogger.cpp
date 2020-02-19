@@ -108,19 +108,6 @@ namespace Logging
 		{
 		if (messageOut_ > messageBuffer_) 
 			{
-			*messageOut_ = 0;
-			//take off trailing spaces and commas
-			messageOut_--;
-			while (messageOut_ >= messageBuffer_)
-				{
-				if (*messageOut_ == ' ' || *messageOut_ == ',') 
-					{
-					*messageOut_ = 0;
-					messageOut_--;
-					}else {
-						break;
-						}	
-				}
 			char buffer[COIN_MESSAGE_HANDLER_MAX_BUFFER_SIZE];
 			snprintf(buffer, sizeof(buffer), "%s\n", this->messageBuffer_);
 			this->cout(buffer);

@@ -73,7 +73,51 @@ namespace Core
 		std::vector<std::pair<FMTmask, T>>data;
 		FMTmaskfilter filter;
 		mutable boost::unordered_map<FMTmask, std::vector<int>>fastpass;
+	protected:
+		/**
+		Using a basemask reprensenting the whole forest landscape this function will
+		attempt to reduce the number of elements in the list knowing that if the element
+		represent something that is not in the basemask this element could be deleted.
+		Also using a presolvecmask representing
+		Use this function with care because it's going to change the stade of the list
+		if user attempt to reference to a deleted element the model will seems broken.
+		*/
+		void presolvelist(const FMTmask& basemask,
+			const std::vector<FMTtheme>& originalthemes,
+			const FMTmask& presolvedmask,
+			const std::vector<FMTtheme>& newthemes)
+			{
+				if (!canshrink())
+					{
+					unshrink(originalthemes);
+					}
+				std::vector<std::pair<FMTmask, T>>newdata;
+				for (const std::pair<FMTmask, T>& object : data)
+					{
+					if (!object.first.isnotthemessubset(basemask, originalthemes))
+						{
+						FMTmask mskkey = object.first;
+						if (!presolvedmask.empty())
+							{
+							mskkey = mskkey.presolve(presolvedmask, newthemes);
+							}
+						newdata.push_back(std::pair<FMTmask,T>(mskkey, object.second));
+						}
+					}
+				data = newdata;
+				this->update();
+			}
 	public:
+		FMTmask getunion(const std::vector<FMTtheme>& themes) const
+			{
+				Core::FMTmask testedmask(std::string(this->begin()->first), themes);
+				for (const auto& object : *this)
+				{
+					const Core::FMTmask specificiermask(std::string(object.first), themes);
+					testedmask = testedmask.getunion(specificiermask);
+				}
+				return testedmask;
+			}
 		FMTlist() :
 			data(),
 			filter(),
@@ -169,7 +213,7 @@ namespace Core
 			filter = FMTmaskfilter();
 			for (const std::pair<FMTmask, T>& object : data)
 				{
-				newdata.push_back(FMTmask(std::string(object.first), themes), object.second);
+				newdata.push_back(std::pair<FMTmask,T>(FMTmask(std::string(object.first), themes), object.second));
 				}
 			data = newdata;
 

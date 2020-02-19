@@ -85,6 +85,7 @@ class FMTyieldhandler
 		std::map<std::string,FMTdata>getdataelements() const;
         FMTyldwstype gettype() const;
 		FMTmask getmask() const;
+		FMTyieldhandler presolve(const FMTmask& presolvedmask, const std::vector<FMTtheme>& newthemes) const;
     };
 }
 #endif // FMTYLDDATA_H_INCLUDED

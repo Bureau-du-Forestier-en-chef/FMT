@@ -99,6 +99,7 @@ class FMToutputsource : public FMTspec
 			{
 			return (mask && development.mask.issubsetof(mask) && development.is(*this, ylds));
 			}
+		FMToutputsource presolve(const FMTmask& presolvedmask,const std::vector<FMTtheme>& newthemes) const;
 		void setaverage();
 		bool isaverage() const;
 		size_t hash(int period = -1) const;

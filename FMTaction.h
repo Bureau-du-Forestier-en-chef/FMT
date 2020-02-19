@@ -124,6 +124,10 @@ class FMTaction : public FMTlist<FMTspec>
 		/**
 		Get the age lower bound for all FMTspecs.
 		*/
+		FMTaction presolve(const FMTmask& basemask,
+			const std::vector<FMTtheme>& originalthemes,
+			const FMTmask& presolvedmask,
+			const std::vector<FMTtheme>& newthemes) const;
 		inline const int& getagelowerbound() const
 			{
 			return agelowerbound;

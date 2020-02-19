@@ -93,6 +93,12 @@ class FMTconstraint: public FMToutput,public FMTspec
 		FMTconstrainttype getconstrainttype() const;
 		operator std::string() const;
 		void standardstring(std::string& line, std::string& period_bounds, std::string& goal) const;
+		size_t outputempty() const;
+		FMTconstraint presolve(const FMTmask& basemask,
+			const std::vector<FMTtheme>& originalthemes,
+			const FMTmask& presolvedmask,
+			const std::vector<FMTtheme>& newthemes,
+			const std::vector<FMTaction>& actions, const FMTyields& yields) const;
 		~FMTconstraint()=default;
 	};
 }

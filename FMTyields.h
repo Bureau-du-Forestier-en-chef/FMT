@@ -71,6 +71,10 @@ class FMTyields : public FMTlist<FMTyieldhandler>
 		std::map<std::string, std::map<std::string, std::vector<double>>>getallyields(const FMTtheme& target,FMTyldwstype type) const;
 		bool operator == (const FMTyields& rhs) const;
         void update() override;
+		FMTyields presolve(const FMTmask& basemask,
+			const std::vector<FMTtheme>& originalthemes,
+			const FMTmask& presolvedmask,
+			const std::vector<FMTtheme>& newthemes) const;
 		std::vector<std::string>getstacked() const;
     };
 }

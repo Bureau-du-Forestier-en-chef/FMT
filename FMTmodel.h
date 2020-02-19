@@ -40,6 +40,7 @@ SOFTWARE.
 #include <memory>
 #include "FMTgraph.h"
 #include "FMTlist.h"
+#include "FMTmodelstats.h"
 #include <boost/serialization/vector.hpp>
 #include <boost/serialization/map.hpp>
 #include <boost/serialization/unordered_map.hpp>
@@ -117,9 +118,6 @@ class FMTmodel : public Core::FMTobject
 		going to be defined when the FMTmodel class is constructed.
 		*/
 		void setdefaultobjects();
-		/**
-		Throw error is the mask is not valid for a given section.
-		*/
     public:
 		///The name of the Model (name of the .pri file without extension)
         std::string name;
@@ -143,7 +141,20 @@ class FMTmodel : public Core::FMTobject
 			Virtual function to get the area of a given period into actualdevelopement.
 		*/
 		virtual std::vector<Core::FMTactualdevelopment>getarea(int period = 0) const;
-		
+		/**
+		This function use a vector of developments and the actual transitions of the model and return new presolved FMTmodel.
+		The function can reduce the number of global themes/actions/transitions/yields/lifespans/outputs/constraints data
+		if the model is badly formulated.
+		*/
+		virtual std::unique_ptr<FMTmodel>presolve(int presolvepass = 10,std::vector<Core::FMTactualdevelopment> optionaldevelopments = std::vector<Core::FMTactualdevelopment>()) const;
+		/*
+		This function is for postsolving the presolved model into the original model.
+		*/
+		virtual std::unique_ptr<FMTmodel>postsolve(const FMTmodel& originalbasemodel) const;
+		/**
+		Return the statistics of the model, the number of themes, yields, actions, transitions etc...
+		*/
+		FMTmodelstats getmodelstats() const;
 		/**
 		Function do delete action that have no defined transition and to delete transition that have no defined action.
 		Actions and transitions are then sorted.
@@ -249,7 +260,8 @@ class FMTmodel : public Core::FMTobject
 		Copy assignment of FMTmodel
 		*/
 		FMTmodel& operator = (const FMTmodel& rhs);
-		void setusefullactions();
+
+		
     };
 
 /**

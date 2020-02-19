@@ -598,4 +598,11 @@ FMTyieldhandler::operator std::string() const
             }
         return age;
         }
+
+	FMTyieldhandler FMTyieldhandler::presolve(const FMTmask& presolvedmask, const std::vector<FMTtheme>& newthemes) const
+		{
+		FMTyieldhandler newhandler(*this);
+		newhandler.mask = newhandler.mask.presolve(presolvedmask, newthemes);
+		return newhandler;
+		}
 }
