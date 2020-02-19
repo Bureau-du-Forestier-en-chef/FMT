@@ -26,7 +26,7 @@ SOFTWARE.
 #define FMTMODELS_H_INCLUDED
 
 #include "FMTmodel.h"
-//#include "FMTlpmodel.h"
+#include "FMTlpmodel.h"
 #include "FMTsamodel.h"
 #include "FMTsesmodel.h"
 

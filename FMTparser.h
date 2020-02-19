@@ -43,10 +43,6 @@ SOFTWARE.
 #include "FMTlayer.h"
 #include <array>
 
-#if defined (__CYGWIN__)
-	#include "xlocale.h"
-#endif
-
 #ifdef FMTWITHGDAL
 	#include "gdal.h"
 	#include "gdal_priv.h"
@@ -195,7 +191,7 @@ class FMTparser: public Core::FMTobject
 			try {
 				number = getnum<T>(value, constant, period);
 			}
-			catch (...) 
+			catch (...)
 				{
 				gotit = false;
 				}

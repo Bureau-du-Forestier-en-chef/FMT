@@ -49,10 +49,10 @@ BOOST_CLASS_EXPORT(Models::FMTsesmodel)
 #include "PYexportModel.h"
 #include "PYexportVersion.h"
 #include "PYexportHeuristics.h"
+#include "Python.h"
 
 extern "C"
 {
-
 
     BOOST_PYTHON_MODULE(FMT)
         {

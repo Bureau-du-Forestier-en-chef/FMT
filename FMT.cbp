@@ -73,12 +73,18 @@
 			<Add option="-D_hypot=hypot" />
 			<Add option="-DBOOST_PYTHON_STATIC_LIB" />
 			<Add option="-DFMTPY" />
+			<Add option="-DHAVE_SNPRINTF" />
+			<Add option="-DBOOST_DYNAMIC_BITSET_DONT_USE_FRIENDS" />
+			<Add option="-D_CRT_SECURE_NO_WARNINGS" />
+			<Add option="-DFMTWITHGDAL" />
+			<Add option="-DFMTWITHOSI" />
 			<Add directory="C:/Mrnmicro/Applic/Cygwin64/usr/include/python2.7" />
 			<Add directory="C:/Mrnmicro/Applic/Cygwin64/home/forbr3/Cbc-2.9.8/include/coin" />
+			<Add directory="../../../usr/local/include/boost" />
 		</Compiler>
 		<Linker>
 			<Add option="-m64" />
-			<Add option="-lboost_python" />
+			<Add option="-lboost_python27" />
 			<Add option="-lpython2.7" />
 			<Add option="-lboost_serialization" />
 			<Add option="-lboost_iostreams" />
@@ -93,17 +99,18 @@
 			<Add library="C:/Mrnmicro/Applic/Cygwin64/home/forbr3/Cbc-2.9.8/lib/libOsi.a" />
 			<Add library="C:/Mrnmicro/Applic/Cygwin64/home/forbr3/Cbc-2.9.8/lib/libCoinUtils.a" />
 			<Add library="C:/Mrnmicro/Applic/Cygwin64/lib/libpython2.7.dll.a" />
-			<Add library="C:/Mrnmicro/Applic/Cygwin64/lib/libboost_system.dll.a" />
-			<Add library="C:/Mrnmicro/Applic/Cygwin64/lib/libboost_python.dll.a" />
-			<Add library="C:/Mrnmicro/Applic/Cygwin64/lib/libboost_filesystem.dll.a" />
-			<Add library="C:/Mrnmicro/Applic/Cygwin64/lib/libboost_iostreams.dll.a" />
+			<Add library="../../../usr/local/lib/libboost_system.dll.a" />
+			<Add library="../../../usr/local/lib/libboost_python27.dll.a" />
+			<Add library="../../../usr/local/lib/libboost_filesystem.dll.a" />
+			<Add library="../boost_1_72_0/stage/lib/libboost_iostreams.dll.a" />
 			<Add library="C:/Mrnmicro/Applic/Cygwin64/lib/libgdal.dll.a" />
 			<Add library="C:/Mrnmicro/Applic/Cygwin64/lib/libz.dll.a" />
 			<Add library="C:/Mrnmicro/Applic/Cygwin64/lib/libbz2.dll.a" />
 			<Add library="C:/Mrnmicro/Applic/Cygwin64/lib/liblapack.dll.a" />
 			<Add library="C:/Mrnmicro/Applic/Cygwin64/lib/libblas.dll.a" />
-			<Add library="C:/Mrnmicro/Applic/Cygwin64/lib/libboost_serialization.dll.a" />
+			<Add library="../../../usr/local/lib/libboost_serialization.dll.a" />
 			<Add directory="C:/Mrnmicro/Applic/Cygwin64/home/forbr3/Cbc-2.9.8/lib" />
+			<Add directory="../../../usr/local/lib" />
 		</Linker>
 		<Unit filename="FMTCore.cpp" />
 		<Unit filename="FMTCore.h" />
@@ -135,8 +142,12 @@
 		<Unit filename="FMTdata.h" />
 		<Unit filename="FMTdebugexceptionhandler.cpp" />
 		<Unit filename="FMTdebugexceptionhandler.h" />
+		<Unit filename="FMTdebuglogger.cpp" />
+		<Unit filename="FMTdebuglogger.h" />
 		<Unit filename="FMTdefaultexceptionhandler.cpp" />
 		<Unit filename="FMTdefaultexceptionhandler.h" />
+		<Unit filename="FMTdefaultlogger.cpp" />
+		<Unit filename="FMTdefaultlogger.h" />
 		<Unit filename="FMTdevelopment.cpp" />
 		<Unit filename="FMTdevelopment.h" />
 		<Unit filename="FMTdevelopmentpath.cpp" />
@@ -189,12 +200,20 @@
 		<Unit filename="FMTmask.h" />
 		<Unit filename="FMTmaskfilter.cpp" />
 		<Unit filename="FMTmaskfilter.h" />
+		<Unit filename="FMTmatrixbuild.cpp" />
+		<Unit filename="FMTmatrixbuild.h" />
+		<Unit filename="FMTmatrixtracing.cpp" />
+		<Unit filename="FMTmatrixtracing.h" />
 		<Unit filename="FMTmodel.cpp" />
 		<Unit filename="FMTmodel.h" />
 		<Unit filename="FMTmodelparser.cpp" />
 		<Unit filename="FMTmodelparser.h" />
 		<Unit filename="FMTobject.cpp" />
 		<Unit filename="FMTobject.h" />
+		<Unit filename="FMToperatingarea.cpp" />
+		<Unit filename="FMToperatingarea.h" />
+		<Unit filename="FMToperatingareaheuristic.cpp" />
+		<Unit filename="FMToperatingareaheuristic.h" />
 		<Unit filename="FMToperator.cpp" />
 		<Unit filename="FMToperator.h" />
 		<Unit filename="FMToptimizationparser.cpp" />
@@ -203,6 +222,8 @@
 		<Unit filename="FMToutput.h" />
 		<Unit filename="FMToutputnode.cpp" />
 		<Unit filename="FMToutputnode.h" />
+		<Unit filename="FMToutputnodecache.cpp" />
+		<Unit filename="FMToutputnodecache.h" />
 		<Unit filename="FMToutputparser.cpp" />
 		<Unit filename="FMToutputparser.h" />
 		<Unit filename="FMToutputproperties.cpp" />
@@ -229,6 +250,8 @@
 		<Unit filename="FMTserializablematrix.h" />
 		<Unit filename="FMTsesmodel.cpp" />
 		<Unit filename="FMTsesmodel.h" />
+		<Unit filename="FMTsolverinterface.cpp" />
+		<Unit filename="FMTsolverinterface.h" />
 		<Unit filename="FMTspatialaction.cpp" />
 		<Unit filename="FMTspatialaction.h" />
 		<Unit filename="FMTtheme.cpp" />
@@ -256,10 +279,14 @@
 		<Unit filename="FMTyields.h" />
 		<Unit filename="PYdefinitions.h" />
 		<Unit filename="PYexportCore.h" />
+		<Unit filename="PYexportExceptions.cpp" />
 		<Unit filename="PYexportExceptions.h" />
 		<Unit filename="PYexportGraph.h" />
+		<Unit filename="PYexportHeuristics.h" />
 		<Unit filename="PYexportModel.h" />
 		<Unit filename="PYexportSpatial.h" />
+		<Unit filename="PYexportVersion.cpp" />
+		<Unit filename="PYexportVersion.h" />
 		<Unit filename="PYexportWSParser.h" />
 		<Unit filename="main.cpp" />
 		<Extensions>
