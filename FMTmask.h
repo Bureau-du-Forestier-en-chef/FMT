@@ -27,7 +27,7 @@ SOFTWARE.
 
 #ifndef BOOST_DYNAMIC_BITSET_DONT_USE_FRIENDS
 #define BOOST_DYNAMIC_BITSET_DONT_USE_FRIENDS
-#endif 
+#endif
 
 #include <boost/dynamic_bitset.hpp>
 #include <boost/unordered_map.hpp>
@@ -40,7 +40,7 @@ SOFTWARE.
 #include "FMTexception.h"
 #include <vector>
 #include <string>
-#include "FMTtheme.h"
+
 
 
 namespace boost {

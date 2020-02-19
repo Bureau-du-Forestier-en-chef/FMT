@@ -25,6 +25,7 @@ SOFTWARE.
 
 #include "FMTmodel.h"
 #include <chrono>
+#include <memory>
 
 namespace Models{
 
@@ -140,7 +141,7 @@ Core::FMTaction FMTmodel::defaultdeathaction(const Core::FMTlifespans& llifespan
 										const std::vector<Core::FMTtheme>& lthemes)
 	{
 	const std::string actionname = "_DEATH";
-	const bool lock = false; 
+	const bool lock = false;
 	const bool reset = true;
 	Core::FMTaction death_action(actionname, lock, reset);
 	for (const auto& intobject: llifespan)
@@ -347,7 +348,7 @@ bool FMTmodel::isvalid()
 		}
 
 
-    
+
 	this->setsection(FMTwssect::Empty);
     return true;
     }
@@ -484,14 +485,14 @@ std::unique_ptr<FMTmodel> FMTmodel::presolve(int presolvepass,std::vector<Core::
 		--presolvepass;
 		didonepass = true;
 		}
-	std::unique_ptr<FMTmodel>presolvedmodel= std::make_unique<FMTmodel>(oldarea, oldthemes, oldactions, oldtransitions, oldyields, oldlifespans, name, oldoutputs, oldconstraints);
+	std::unique_ptr<FMTmodel>presolvedmodel= std::unique_ptr<FMTmodel>(new FMTmodel(oldarea, oldthemes, oldactions, oldtransitions, oldyields, oldlifespans, name, oldoutputs, oldconstraints));
 	presolvedmodel->cleanactionsntransitions();
 	return presolvedmodel;
 	}
 
 std::unique_ptr<FMTmodel>FMTmodel::postsolve(const FMTmodel& originalbasemodel) const
 	{
-	return std::make_unique<FMTmodel>(*this);
+	return std::unique_ptr<FMTmodel>(new FMTmodel(*this));
 	}
 
 FMTmodelstats FMTmodel::getmodelstats() const

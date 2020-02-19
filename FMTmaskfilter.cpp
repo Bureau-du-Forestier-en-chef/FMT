@@ -24,6 +24,7 @@ SOFTWARE.
 
 
 #include "FMTmaskfilter.h"
+#include "FMTtheme.h"
 
 namespace Core{
 
