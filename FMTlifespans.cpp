@@ -42,6 +42,17 @@ void FMTlifespans::update()
 	FMTlist<int>::update();
 	}
 
+FMTlifespans FMTlifespans::presolve(const FMTmask& basemask,
+	const std::vector<FMTtheme>& originalthemes,
+	const FMTmask& presolvedmask,
+	const std::vector<FMTtheme>& newthemes) const
+	{
+	FMTlifespans newlifespans(*this);
+	newlifespans.presolvelist(basemask, originalthemes, presolvedmask, newthemes);
+	newlifespans.update();
+	return newlifespans;
+	}
+
 bool FMTlifespans::operator == (const FMTlifespans& rhs) const
 	{
 	return (FMTlist<int>::operator ==(rhs));

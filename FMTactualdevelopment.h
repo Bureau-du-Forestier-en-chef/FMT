@@ -55,6 +55,7 @@ class FMTactualdevelopment : public FMTdevelopment
 		double getarea() const override;
 		void setarea(const double& newarea);
 		std::unique_ptr<FMTdevelopment> Clone() const override;
+		FMTactualdevelopment presolve(const FMTmask& selectedmask, const std::vector<FMTtheme>&presolvedthemes) const;
 	};
 
 class FMTactualdevelopmentcomparator

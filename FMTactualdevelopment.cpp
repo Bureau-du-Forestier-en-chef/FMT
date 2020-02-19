@@ -61,11 +61,20 @@ namespace Core
 	}
 
 	FMTactualdevelopment::FMTactualdevelopment(const FMTdevelopment& rhs, double larea) : FMTdevelopment(rhs), area(larea)
-	{
+		{
 
+		}
 
+	FMTactualdevelopment FMTactualdevelopment::presolve(const FMTmask& selectedmask, const std::vector<FMTtheme>&presolvedthemes) const
+		{
+		FMTactualdevelopment newdev(*this);
+		if (!selectedmask.empty())
+			{
+			newdev.mask = mask.presolve(selectedmask, presolvedthemes);
+			}
+		return newdev;
+		}
 
-	}
 	bool FMTactualdevelopment::operator != (const FMTactualdevelopment& rhs) const
 		{
 		return !(*this == rhs);

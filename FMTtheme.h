@@ -90,6 +90,7 @@ class FMTtheme
         boost::dynamic_bitset<> strtobits(const std::string& value) const;
 		std::string bitstostr(const boost::dynamic_bitset<>& bits) const;
 		std::vector<std::string>getattributes(const std::string& value, bool aggregate_source = false) const;
+		FMTtheme presolve(const FMTmask& basemask,int& newid,int& newstart, FMTmask& selected) const;
         operator std::string() const;
     };
 }

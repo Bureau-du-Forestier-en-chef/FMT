@@ -78,8 +78,7 @@ std::vector<std::string>FMTyields::getnullyldsnames() const
 	{
 	std::vector<std::string>nullyields;
 	std::vector<std::string>nonnullyields;
-	//std::vector<FMTyieldhandler>::const_iterator data_iterator = this->databegin();
-	for (const auto& handlerobj : *this/*size_t id = 0; id < this->size(); ++id*/)
+	for (const auto& handlerobj : *this)
 		{
 		for (std::map<std::string, FMTdata>::const_iterator itd = handlerobj.second.elements.begin(); itd != handlerobj.second.elements.end(); ++itd)
 			{
@@ -96,7 +95,6 @@ std::vector<std::string>FMTyields::getnullyldsnames() const
 				nonnullyields.push_back(itd->first);
 				}
 			}
-		//++data_iterator;
 		}
 	return nullyields;
 	}
@@ -117,6 +115,24 @@ void FMTyields::update()
     names = getyldsnames();
 	null_names = getnullyldsnames();
     }
+
+FMTyields FMTyields::presolve(const FMTmask& basemask,
+	const std::vector<FMTtheme>& originalthemes,
+	const FMTmask& presolvedmask,
+	const std::vector<FMTtheme>& newthemes) const
+	{
+	FMTyields newyields(*this);
+	newyields.presolvelist(basemask, originalthemes, presolvedmask, newthemes);
+	if (!presolvedmask.empty())
+		{
+		for (auto& yieldobject : newyields)
+			{
+			yieldobject.second = yieldobject.second.presolve(presolvedmask, newthemes);
+			}
+		}
+	newyields.update();
+	return newyields;
+	}
 
 std::map<std::string, double>FMTyields::get(const FMTdevelopment& dev,
 	const std::vector<std::string>& targets) const

@@ -495,6 +495,76 @@ bool FMToutput::operator != (const FMToutput& rhs) const
     return !(*this== rhs);
     }
 
+size_t FMToutput::size() const
+	{
+	return sources.size();
+	}
+
+FMToutput FMToutput::presolve(const FMTmask& basemask,
+	const std::vector<FMTtheme>& originalthemes,
+	const FMTmask& presolvedmask,
+	const std::vector<FMTtheme>& newthemes,
+	const std::vector<FMTaction>& actions, const FMTyields& yields) const
+	{
+	FMToutput newoutput(*this);
+	std::vector<FMToutputsource>newsources;
+	std::vector<FMToperator>newoperators;
+	size_t operatorid = 0;
+	int lastnotpushed = -10;
+	if (!presolvedmask.empty())
+		{
+		newoutput.theme_target = -1;
+		}
+	for (size_t sourceid = 0; sourceid <sources.size();++sourceid)
+		{
+		bool pushedsource = true;
+		const std::string yieldname = sources.at(sourceid).getyield();
+		if (sources.at(sourceid).isvariable())
+			{
+			const std::string actionname = sources.at(sourceid).getaction();
+			if ((!sources.at(sourceid).getmask().isnotthemessubset(basemask, originalthemes)) &&
+				(actionname.empty() ||
+				std::find_if(actions.begin(),actions.end(),FMTactioncomparator(actionname,true))!= actions.end())&&
+				(yieldname.empty() || !yields.isnullyld(yieldname)))
+				{
+				FMToutputsource newsource = sources.at(sourceid);
+				if (!presolvedmask.empty())
+					{
+					newsource = newsource.presolve(presolvedmask, newthemes);
+					}
+				newsources.push_back(newsource);
+			}else {
+				pushedsource = false;
+				lastnotpushed = sourceid;
+				}
+		}else if(!sources.at(sourceid).isvariable() && (sources.at(sourceid).islevel() || (sources.at(sourceid).istimeyield() && !yields.isnullyld(yieldname)) ||
+			(operatorid<operators.size()&& sources.at(sourceid).isconstant() && lastnotpushed != sourceid -1)))
+			{
+			pushedsource = true;
+			newsources.push_back(sources.at(sourceid));
+		}
+		else {
+			pushedsource = false;
+		}
+
+		if (operatorid < operators.size() && pushedsource && sourceid>0)
+			{
+			newoperators.push_back(operators.at(operatorid));
+			}
+		if (sourceid > 0)
+			{
+			++operatorid;
+			}
+		if (pushedsource)
+			{
+			lastnotpushed = -10;
+			}	
+		}
+	newoutput.sources = newsources;
+	newoutput.operators = newoperators;
+	return newoutput;
+	}
+
 std::vector<std::string> FMToutput::getdecomposition(const std::vector<FMTtheme>& themes) const
 	{
 	std::vector<std::string>validdecomp;
@@ -552,5 +622,7 @@ bool FMToutputcomparator::operator()(const FMToutput& output) const
 	{
 	return output_name == output.name;
 	}
+
+
 
 }

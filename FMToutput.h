@@ -73,6 +73,7 @@ class FMToutput
 	FMToutput& operator /=(const double& rhs);
     operator std::string() const;
 	bool empty() const;
+	size_t size() const;
 	bool linear() const;
 	bool islevel() const;
 	bool isconstant() const;
@@ -90,6 +91,11 @@ class FMToutput
 	FMTtheme targettheme(const std::vector<FMTtheme>& themes) const;
 	int targetthemeid() const;
 	std::vector<std::string>getdecomposition(const std::vector<FMTtheme>& themes) const;
+	FMToutput presolve(const FMTmask& basemask,
+		const std::vector<FMTtheme>& originalthemes,
+		const FMTmask& presolvedmask,
+		const std::vector<FMTtheme>& newthemes,
+		const std::vector<FMTaction>& actions,const FMTyields& yields) const;
     };
 
 class FMToutputcomparator

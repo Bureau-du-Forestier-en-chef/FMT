@@ -256,6 +256,16 @@ bool FMToutputsource::issubsetof(const FMToutputsource& rhs,
 	return false;
 	}
 
+FMToutputsource FMToutputsource::presolve(const FMTmask& presolvedmask, const std::vector<FMTtheme>& newthemes) const
+	{
+	FMToutputsource newsource(*this);
+	if (newsource.isvariable())
+		{
+		newsource.mask = newsource.mask.presolve(presolvedmask, newthemes);
+		}
+	return newsource;
+	}
+
 
 void FMToutputsource::setaverage()
 	{

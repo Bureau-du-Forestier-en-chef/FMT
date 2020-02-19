@@ -305,4 +305,76 @@ FMTtheme::operator std::string() const
             }
         return fulltheme;
         }
+FMTtheme FMTtheme::presolve(const FMTmask& basemask, int& newid, int& newstart, FMTmask& selected) const
+	{
+	if (selected.empty())
+		{
+		selected.data = boost::dynamic_bitset<>(basemask.data.size(),false);
+		selected.name.clear();
+		}
+	FMTtheme newtheme(*this);
+	newtheme.valuenames.clear();
+	newtheme.aggregates.clear();
+	newtheme.source_aggregates.clear();
+	newtheme.indexes.clear();
+	std::map<std::string, std::string>newvaluenames;
+	std::map<std::string, std::string>::const_iterator valueit = valuenames.begin();
+	for (size_t binlocation = start; binlocation < (start+this->size());++binlocation)
+		{
+		if (basemask.data[binlocation])
+			{
+			selected.data[binlocation] = true;
+			newvaluenames[valueit->first] = valueit->second;
+			}
+		++valueit;
+		}
+	if (newvaluenames.size()>1)
+		{
+		newtheme.valuenames = newvaluenames;
+		newtheme.id = newid;
+		++newid;
+		newtheme.start = newstart;
+		newstart+= newtheme.size();
+		for (std::map<std::string,std::vector<std::string>>::const_iterator aggit = aggregates.begin();
+			aggit != aggregates.end(); aggit++)
+			{
+			std::vector<std::string>newattributes;
+			for (const std::string& attribute : aggit->second)
+				{
+				if (newtheme.valuenames.find(attribute)!= newtheme.valuenames.end())
+					{
+					newattributes.push_back(attribute);
+					}
+				}
+			if (!newattributes.empty())
+				{
+				newtheme.aggregates[aggit->first] = newattributes;
+				}
+
+			}
+		for (std::map<std::string, std::vector<std::string>>::const_iterator aggit = source_aggregates.begin();
+			aggit != source_aggregates.end(); aggit++)
+			{
+			std::vector<std::string>newaggregates;
+			for (const std::string& aggregate : aggit->second)
+				{
+					if (newtheme.aggregates.find(aggregate) != newtheme.aggregates.end())
+					{
+						newaggregates.push_back(aggregate);
+					}
+				}
+			if (!newaggregates.empty())
+				{
+				newtheme.source_aggregates[aggit->first] = newaggregates;
+				}
+			}
+	}else {
+		for (size_t binlocation = start; binlocation < (start + this->size()); ++binlocation)
+			{
+			selected.data[binlocation] = false;
+			}
+		}	
+	return newtheme;
+	}
+
 }

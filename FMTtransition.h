@@ -79,6 +79,10 @@ class FMTtransition : public FMTlist<FMTfork>
         bool operator < (const FMTtransition& rhs) const;
         bool operator == (const FMTtransition& rhs) const;
         bool operator != (const FMTtransition& rhs) const;
+		FMTtransition presolve(const FMTmask& basemask,
+			const std::vector<FMTtheme>& originalthemes,
+			const FMTmask& presolvedmask,
+			const std::vector<FMTtheme>& newthemes) const;
     };
 
 class FMTtransitioncomparator

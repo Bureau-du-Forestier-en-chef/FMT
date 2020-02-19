@@ -215,5 +215,22 @@ const FMTfork* FMTtransition::getfork(const FMTdevelopment& dev,
 	return (transition.getname()  == transition_name);
 	}
 
+ FMTtransition FMTtransition::presolve(const FMTmask& basemask,
+	 const std::vector<FMTtheme>& originalthemes,
+	 const FMTmask& presolvedmask,
+	 const std::vector<FMTtheme>& newthemes) const
+	{
+	FMTtransition newtransition(*this);
+	newtransition.presolvelist(basemask, originalthemes, presolvedmask, newthemes);
+	newtransition.update();
+	if (!presolvedmask.empty())
+		{
+		for (auto& transitionobject : newtransition)
+			{
+			transitionobject.second = transitionobject.second.presolve(presolvedmask, newthemes);
+			}
+		}
+	return newtransition;
+	}
 
 }

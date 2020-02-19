@@ -114,12 +114,15 @@ class FMTmask
         FMTmask(const std::string& mask,const boost::dynamic_bitset<>& bits);
         FMTmask(const std::string& mask,const std::vector<FMTtheme>& themes);
         FMTmask(const std::vector<std::string>& values,const std::vector<FMTtheme>& themes);
+		void clear();
+		size_t size() const;
         std::string get(const std::vector<FMTtheme>& themes) const;
 		std::string getstr() const;
         bool set(const std::vector<FMTtheme>& themes,const std::string& value);
 		std::vector<FMTtheme>getstaticthemes(const std::vector<FMTtheme>& themes) const;
         std::string get(const FMTtheme& theme) const;
-		bool isnotthemessubset(const FMTmask& rhs, const  std::vector<FMTtheme>& themes, bool nonexclusive = false) const;
+		bool isnotthemessubset(const FMTmask& rhs, const  std::vector<FMTtheme>& themes) const;
+		FMTmask removeaggregates(const std::vector<FMTtheme>& themes) const;
 		bool empty() const;
         bool set(const FMTtheme& theme, const std::string& value);
         void update(const std::vector<FMTtheme>& themes);
@@ -151,6 +154,7 @@ class FMTmask
 			{
 			return data;
 			}
+		FMTmask presolve(const FMTmask& selectedmask,const std::vector<FMTtheme>&presolvedthemes) const;
     };
 
 }
