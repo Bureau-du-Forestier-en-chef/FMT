@@ -47,21 +47,10 @@ FMTmask::FMTmask(const boost::dynamic_bitset<>& bits): name(),data(bits)
 
 	}
 
-std::string FMTmask::getstr() const
-    {
-    return name;
-    }
 
-FMTmask::operator std::string() const
-	{
-	return name;
-	}
 FMTmask::FMTmask(const std::string& mask,const std::vector<FMTtheme>& themes):name(),data()
     {
-    if(!this->set(themes,mask))
-            {
-            //crash here for this mask..
-            }
+	this->set(themes, mask);
     }
 FMTmask::FMTmask(const std::vector<std::string>&values,const std::vector<FMTtheme>& themes):name(),data()
     {
@@ -70,10 +59,7 @@ FMTmask::FMTmask(const std::vector<std::string>&values,const std::vector<FMTthem
         name+=el+" ";
         }
     name = name.substr(0, name.size()-1);
-    if(!this->set(themes,name))
-        {
-        //crash here for this mask..
-        }
+	this->set(themes, name);
     }
 std::vector<FMTmask> FMTmask::decompose(const FMTtheme &theme) const
     {
@@ -105,7 +91,7 @@ boost::dynamic_bitset<> FMTmask::subset(const FMTtheme& theme) const
         }
     return sub;
     }
-bool FMTmask::setsubset(const FMTtheme& theme,const boost::dynamic_bitset<>& subset)
+void FMTmask::setsubset(const FMTtheme& theme,const boost::dynamic_bitset<>& subset)
     {
     int locit = 0;
     for(int id = theme.start; id < (theme.start+static_cast<int>(theme.size())); ++id)
@@ -118,7 +104,6 @@ bool FMTmask::setsubset(const FMTtheme& theme,const boost::dynamic_bitset<>& sub
             }
         ++locit;
         }
-    return true;
     }
 
 std::string FMTmask::get(const std::vector<FMTtheme>& themes) const
@@ -132,7 +117,7 @@ std::string FMTmask::get(const std::vector<FMTtheme>& themes) const
     value = value.substr(0, value.size()-1);
     return value;
     }
-bool FMTmask::set(const std::vector<FMTtheme>& themes,const std::string& value)
+void FMTmask::set(const std::vector<FMTtheme>& themes,const std::string& value)
     {
     name = value;
 	std::vector<std::string>bases;
@@ -146,12 +131,8 @@ bool FMTmask::set(const std::vector<FMTtheme>& themes,const std::string& value)
     for(const FMTtheme& theme : themes)
         {
         const boost::dynamic_bitset<>bits = theme.strtobits(bases[theme.id]);
-        if (!this->setsubset(theme,bits))
-            {
-            return false;
-            }
+		this->setsubset(theme, bits);
         }
-    return true;
     }
 std::string FMTmask::get(const FMTtheme& theme) const
     {
@@ -179,14 +160,14 @@ std::vector<FMTtheme>FMTmask::getstaticthemes(const std::vector<FMTtheme>& theme
 	}
 
 
-bool FMTmask::set(const FMTtheme& theme,const std::string& value)
+void FMTmask::set(const FMTtheme& theme,const std::string& value)
     {
     const boost::dynamic_bitset<>sub=theme.strtobits(value);
     std::vector<std::string>bases;
     boost::split(bases,name,boost::is_any_of(FMT_STR_SEPARATOR), boost::token_compress_on);
     bases[theme.id] = value;
     name = boost::algorithm::join(bases," ");
-    return (this->setsubset(theme,sub));
+    this->setsubset(theme,sub);
     }
 
 void FMTmask::append(const boost::dynamic_bitset<> &bits)
@@ -211,7 +192,7 @@ void FMTmask::update(const std::vector<FMTtheme>& themes)
         }
     name = name.substr(0, name.size()-1);
     }
-bool FMTmask::linkNvalidate(const std::vector<FMTtheme>& themes)
+/*bool FMTmask::linkNvalidate(const std::vector<FMTtheme>& themes)
             {
             std::vector<std::string>bases;
             boost::split(bases,name,boost::is_any_of(FMT_STR_SEPARATOR), boost::token_compress_on);
@@ -234,7 +215,7 @@ bool FMTmask::linkNvalidate(const std::vector<FMTtheme>& themes)
                 ++themeid;
                 }
             return true;
-            }
+            }*/
 
 FMTmask FMTmask::getunion(const FMTmask& rhs) const
 	{
@@ -359,7 +340,7 @@ bool FMTmask::isnotthemessubset(const FMTmask& rhs, const std::vector<FMTtheme>&
 	return founddifference;
 	}
 
-std::string FMTmask::to_string() const
+std::string FMTmask::getbitsstring() const
             {
             std::string bits = "";
             for (size_t i=0; i<data.size(); ++i)

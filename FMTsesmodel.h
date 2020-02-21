@@ -33,6 +33,7 @@ SOFTWARE.
 #include "FMTforest.h"
 #include "FMTdisturbancestack.h"
 #include <vector>
+#include <memory>
 #include <map>
 
 namespace Models
@@ -55,6 +56,7 @@ class FMTsesmodel : public FMTmodel
 		{
 		ar & boost::serialization::make_nvp("model", boost::serialization::base_object<FMTmodel>(*this));
 		ar & BOOST_SERIALIZATION_NVP(mapping);
+		ar & BOOST_SERIALIZATION_NVP(operatedschedule);
 		ar & BOOST_SERIALIZATION_NVP(disturbances);
 		ar & BOOST_SERIALIZATION_NVP(spactions);
 		}
@@ -113,6 +115,12 @@ class FMTsesmodel : public FMTmodel
 		*/
         bool setspactions(const std::vector<Spatial::FMTspatialaction>& lspactions);
 		/**
+		Presolve the ses model to get a more simple model call original presolve() and presolve the 
+		FMTforest map and the spatial acitons.
+		*/
+		std::unique_ptr<FMTmodel>presolve(int presolvepass = 10,
+			std::vector<Core::FMTactualdevelopment> optionaldevelopments = std::vector<Core::FMTactualdevelopment>()) const final;
+		/**
 		This is the main function to simulate a schedule of actions (schedule) on the actual 
 		spatialy explicit forest. If the (schedule_only) switch is turned on the simulator wont try
 		to find some operable developements (not present in the potential schedule)
@@ -122,6 +130,7 @@ class FMTsesmodel : public FMTmodel
 		std::map<std::string,double> simulate(const Core::FMTschedule& schedule,
                         bool schedule_only = true,
                         unsigned int seed = 0);
+		
     };
 
 }

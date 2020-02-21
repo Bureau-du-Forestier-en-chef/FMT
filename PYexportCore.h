@@ -78,7 +78,6 @@ void exportCore()
 				.def("__eq__", &Core::FMTmask::operator ==)
 				.def("__ne__", &Core::FMTmask::operator !=)
 				.def("__lt__", &Core::FMTmask::operator <)
-                .def("to_string",&Core::FMTmask::to_string)
                 .def("__hash__",&boost::pyhash<Core::FMTmask>);
 		bp::class_<Core::FMTdevelopment>("FMTdevelopment")
 				.def_pickle(FMT_pickle_suite<Core::FMTdevelopment>())
@@ -180,7 +179,7 @@ void exportCore()
 				.def("__str__", &Core::FMTtheme::operator std::string)
 				.def("__eq__", &Core::FMTtheme::operator ==)
 				.def("getattributes", &Core::FMTtheme::getattributes, getattributes_overloads())
-                .def_readwrite("name",&Core::FMTtheme::name);
+				.def("getname", &Core::FMTtheme::getname);
 			bp::class_<Core::FMTconstants>("FMTconstants");
 			bp::class_<Core::FMTschedule>("FMTschedule")
 				.def_pickle(FMT_pickle_suite<Core::FMTschedule>())

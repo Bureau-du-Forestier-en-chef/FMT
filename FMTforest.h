@@ -35,6 +35,8 @@ SOFTWARE.
 #include "FMTspatialaction.h"
 #include "FMTdisturbancestack.h"
 #include "FMTcut.h"
+#include "FMTmask.h"
+#include "FMTtheme.h"
 #include <iterator>
 #include <numeric>
 
@@ -73,6 +75,7 @@ namespace Spatial
                                     const FMTspatialaction& targetaction,
 									std::default_random_engine& generator,
 									const int& pass) const;
+		FMTforest presolve(const Core::FMTmask& selectedmask, const std::vector<Core::FMTtheme>&presolvedthemes) const;
         };
     }
 #endif // FMTFOREST_H_INCLUDED

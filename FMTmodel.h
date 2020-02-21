@@ -91,6 +91,7 @@ class FMTmodel : public Core::FMTobject
 			this->validate(themes, name);
 			}
 		}
+	
 	/**
 	Function used to validate specifications (check for yields used)
 	Will throw excetion if the yield used in the specificaiton is not defined in FMTyields.
@@ -118,6 +119,15 @@ class FMTmodel : public Core::FMTobject
 		going to be defined when the FMTmodel class is constructed.
 		*/
 		void setdefaultobjects();
+		/**
+		If the model is presolved you can call this function to get the selection mask that you need
+		to use to presolve a FMTmask.
+		*/
+		Core::FMTmask getselectedmask(const std::vector<Core::FMTtheme>& originalthemes) const;
+		/**
+		Return a mask covering the actual bits used by the FMTmodel and the optionaldevelopements.
+		*/
+		Core::FMTmask getbasemask(std::vector<Core::FMTactualdevelopment> optionaldevelopments) const;
     public:
 		///The name of the Model (name of the .pri file without extension)
         std::string name;

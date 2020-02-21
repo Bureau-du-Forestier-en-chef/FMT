@@ -146,7 +146,7 @@ Core::FMTaction FMTmodel::defaultdeathaction(const Core::FMTlifespans& llifespan
 	Core::FMTaction death_action(actionname, lock, reset);
 	for (const auto& intobject: llifespan)
 		{
-		const std::string mask = intobject.first.getstr();
+		const std::string mask(intobject.first);
 		const Core::FMTmask amask(mask,lthemes);
 		Core::FMTspec specifier;
 		specifier.addbounds(Core::FMTagebounds(FMTwssect::Action, intobject.second, intobject.second));
@@ -163,7 +163,7 @@ Core::FMTtransition FMTmodel::defaultdeathtransition(const Core::FMTlifespans& l
 	const double target_proportion = 100;
 	for (const auto& lfobject : llifespan)
 		{
-		const std::string mask = lfobject.first.getstr();
+		const std::string mask(lfobject.first);
 		const Core::FMTmask amask(mask, lthemes);
 		Core::FMTfork fork;
 		Core::FMTtransitionmask trmask(mask, lthemes, target_proportion);
@@ -353,7 +353,7 @@ bool FMTmodel::isvalid()
     return true;
     }
 
-std::unique_ptr<FMTmodel> FMTmodel::presolve(int presolvepass,std::vector<Core::FMTactualdevelopment> optionaldevelopments) const
+Core::FMTmask FMTmodel::getbasemask(std::vector<Core::FMTactualdevelopment> optionaldevelopments) const
 	{
 	optionaldevelopments.insert(optionaldevelopments.end(), area.begin(), area.end());
 	Core::FMTmask basemask(optionaldevelopments.begin()->mask);
@@ -372,7 +372,44 @@ std::unique_ptr<FMTmodel> FMTmodel::presolve(int presolvepass,std::vector<Core::
 		{
 		basemask = basemask.getunion(developement.mask);
 		}
+	return basemask;
+	}
 
+Core::FMTmask FMTmodel::getselectedmask(const std::vector<Core::FMTtheme>& originalthemes) const
+	{
+	size_t presolvedthemeid = 0;
+	size_t newmasksize = 0;
+	for (const Core::FMTtheme& theme : originalthemes)
+		{
+		newmasksize += theme.size();
+		}
+	boost::dynamic_bitset<>selection(newmasksize, false);
+	size_t bitselection = 0;
+	for (const Core::FMTtheme& theme : originalthemes)
+		{
+		if (presolvedthemeid<themes.size())
+			{
+			const std::map<std::string, std::string> prsolvedvalues = themes.at(presolvedthemeid).getvaluenames();
+			for (const auto& themevalues : theme.getvaluenames())
+				{
+				if (prsolvedvalues.find(themevalues.first)!= prsolvedvalues.end())
+					{
+					selection[bitselection] = true;
+					}
+				++bitselection;
+				}
+			}else{
+			bitselection += theme.size();
+			}
+		++presolvedthemeid;
+		}
+	return Core::FMTmask(selection);
+	}
+
+
+std::unique_ptr<FMTmodel> FMTmodel::presolve(int presolvepass,std::vector<Core::FMTactualdevelopment> optionaldevelopments) const
+	{
+	Core::FMTmask basemask = getbasemask(optionaldevelopments);
 	//Base data
 	std::vector<Core::FMTtheme>oldthemes(themes);
 	std::vector<Core::FMTactualdevelopment>oldarea(area);

@@ -122,12 +122,16 @@ class FMTaction : public FMTlist<FMTspec>
 		*/
 		void update() override;
 		/**
-		Get the age lower bound for all FMTspecs.
+		Eliminate FMTspecification and presolve all masks base on a basemask a preolved mask
+		and presolved themes. The returned action can also be empty.
 		*/
 		FMTaction presolve(const FMTmask& basemask,
 			const std::vector<FMTtheme>& originalthemes,
 			const FMTmask& presolvedmask,
 			const std::vector<FMTtheme>& newthemes) const;
+		/**
+		Get the age lower bound for all FMTspecs.
+		*/
 		inline const int& getagelowerbound() const
 			{
 			return agelowerbound;
@@ -247,6 +251,9 @@ class FMTactioncomparator
 
 namespace boost {
 
+/**
+boost hash for FMTaction
+*/
   template <>
   struct hash<Core::FMTaction>
   {
