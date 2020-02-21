@@ -34,6 +34,31 @@ SOFTWARE.
 namespace Models
 
 {
+    Graph::FMTgraphstats FMTsamodel::g_move_solution (const double min_ratio, const double max_ratio, Spatial::FMTsamovetype movetype)
+    {
+        number_of_moves ++;
+        new_solution = current_solution.perturb(*this,generator,movetype,min_ratio,max_ratio);
+        return new_solution.getsolution_stats();
+    }
+
+    bool FMTsamodel::comparesolutions() const
+    {
+        if (current_solution.getsolution_stats() == new_solution.getsolution_stats() && current_solution.getevents() == new_solution.getevents())
+        {
+            for (std::vector<size_t>::const_iterator it = mapidmodified.begin(); it != mapidmodified.end(); it++)
+            {
+				std::map<Spatial::FMTcoordinate,Graph::FMTgraph>::const_iterator current_solutionit =  current_solution.mapping.begin();
+                 std::advance(current_solutionit,*it);
+                 if(current_solutionit->second != new_solution.mapping.at(current_solutionit->first))
+                 {
+                     return false;
+                 }
+            }
+            return true;
+        }
+        return false;
+    }
+
     FMTsamodel::FMTsamodel():
         FMTmodel(),
         min_ratio_moves(0),
@@ -350,7 +375,7 @@ namespace Models
                     const std::vector<double>& penalties = mapit->second.second;
                     for (int i = 0 ; i < outputs.size() ; ++i )
                     {
-                            outputFile<<*move_num<<","<<cname<<","<<i+1<<","<<outputs.at(i)<<","<<penalties.at(i)<<","<<*probs<<std::endl;
+                        outputFile<<*move_num<<","<<cname<<","<<i+1<<","<<outputs.at(i)<<","<<penalties.at(i)<<","<<*probs<<std::endl;
                     }
                 }
                 ++move_num;
@@ -362,7 +387,7 @@ namespace Models
             outputFile.close();
         }
     }
-           
+
     Spatial::FMTsasolution FMTsamodel::get_current_solution()const
     {
             return current_solution;
@@ -477,31 +502,6 @@ namespace Models
     Graph::FMTgraphstats FMTsamodel::move_solution(Spatial::FMTsamovetype movetype)
     {
         return g_move_solution(min_ratio_moves,max_ratio_moves,movetype);
-    }
-
-    Graph::FMTgraphstats FMTsamodel::g_move_solution (const double min_ratio, const double max_ratio, Spatial::FMTsamovetype movetype)
-    {
-        number_of_moves ++;
-        new_solution = current_solution.perturb(*this,generator,movetype,min_ratio,max_ratio);
-        return new_solution.getsolution_stats();
-    }
-
-    bool FMTsamodel::comparesolutions() const
-    {
-        if (current_solution.getsolution_stats() == new_solution.getsolution_stats() && current_solution.getevents() == new_solution.getevents())
-        {
-            for (std::vector<size_t>::const_iterator it = mapidmodified.begin(); it != mapidmodified.end(); it++)
-            {
-				std::map<Spatial::FMTcoordinate,Graph::FMTgraph>::const_iterator current_solutionit =  current_solution.mapping.begin();
-                 std::advance(current_solutionit,*it);
-                 if(current_solutionit->second != new_solution.mapping.at(current_solutionit->first))
-                 {
-                     return false;
-                 }
-            }
-            return true;
-        }
-        return false;
     }
 
     bool FMTsamodel::setmapidmodified(const std::vector<size_t>& id)

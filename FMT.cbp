@@ -208,6 +208,8 @@
 		<Unit filename="FMTmodel.h" />
 		<Unit filename="FMTmodelparser.cpp" />
 		<Unit filename="FMTmodelparser.h" />
+		<Unit filename="FMTmodelstats.cpp" />
+		<Unit filename="FMTmodelstats.h" />
 		<Unit filename="FMTobject.cpp" />
 		<Unit filename="FMTobject.h" />
 		<Unit filename="FMToperatingarea.cpp" />

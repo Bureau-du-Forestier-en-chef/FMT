@@ -46,8 +46,10 @@ enum class FMTsamovetype
 enum class FMTsapenaltytype
     {
         linear,
-        exponential,
+        exponential
     };
+
+
 class FMTsasolution : public FMTlayer<Graph::FMTgraph>
     {
 	mutable std::unordered_map<size_t, std::vector<double>>outputscache;

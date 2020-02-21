@@ -1507,7 +1507,7 @@
 	<memory>
 	<vector>
 
-1582136323 c:\mrnmicro\applic\cygwin64\home\forbr3\fmt\fmtmask.h
+1582138447 c:\mrnmicro\applic\cygwin64\home\forbr3\fmt\fmtmask.h
 	<boost/dynamic_bitset.hpp>
 	<boost/unordered_map.hpp>
 	<boost/algorithm/string.hpp>
@@ -2096,13 +2096,15 @@
 	"FMTmask.h"
 	"FMTtheme.h"
 
-1582137171 source:c:\mrnmicro\applic\cygwin64\home\forbr3\fmt\fmtmaskfilter.cpp
+1582138447 source:c:\mrnmicro\applic\cygwin64\home\forbr3\fmt\fmtmaskfilter.cpp
 	"FMTmaskfilter.h"
 	"FMTtheme.h"
 
-1581604218 source:c:\mrnmicro\applic\cygwin64\home\forbr3\fmt\fmtmodel.cpp
+1582138447 source:c:\mrnmicro\applic\cygwin64\home\forbr3\fmt\fmtmodel.cpp
 	<boost/algorithm/string.hpp>
 	"FMTmodel.h"
+	<chrono>
+	<memory>
 
 1582136086 c:\mrnmicro\applic\cygwin64\home\forbr3\fmt\fmtmodel.h
 	<vector>
@@ -2336,10 +2338,10 @@
 	<iostream>
 	<limits>
 
-1581604186 source:c:\mrnmicro\applic\cygwin64\home\forbr3\fmt\fmttransition.cpp
+1582136086 source:c:\mrnmicro\applic\cygwin64\home\forbr3\fmt\fmttransition.cpp
 	"FMTtransition.h"
 
-1581604186 source:c:\mrnmicro\applic\cygwin64\home\forbr3\fmt\fmttransitionmask.cpp
+1582136086 source:c:\mrnmicro\applic\cygwin64\home\forbr3\fmt\fmttransitionmask.cpp
 	"FMTtransitionmask.h"
 
 1581604186 source:c:\mrnmicro\applic\cygwin64\home\forbr3\fmt\fmtutility.cpp
@@ -2352,10 +2354,10 @@
 	"FMTwarning.h"
 	"FMTdefaultlogger.h"
 
-1581604186 source:c:\mrnmicro\applic\cygwin64\home\forbr3\fmt\fmtyieldhandler.cpp
+1582136086 source:c:\mrnmicro\applic\cygwin64\home\forbr3\fmt\fmtyieldhandler.cpp
 	"FMTyieldhandler.h"
 
-1581604186 source:c:\mrnmicro\applic\cygwin64\home\forbr3\fmt\fmtyields.cpp
+1582136086 source:c:\mrnmicro\applic\cygwin64\home\forbr3\fmt\fmtyields.cpp
 	"FMTyields.h"
 
 1582136086 source:c:\mrnmicro\applic\cygwin64\home\forbr3\fmt\fmtaction.cpp
@@ -2525,7 +2527,7 @@
 1581604186 source:c:\mrnmicro\applic\cygwin64\home\forbr3\fmt\fmtoptimizationparser.cpp
 	"FMToptimizationparser.h"
 
-1581604186 source:c:\mrnmicro\applic\cygwin64\home\forbr3\fmt\fmtoutput.cpp
+1582136086 source:c:\mrnmicro\applic\cygwin64\home\forbr3\fmt\fmtoutput.cpp
 	"FMToutput.h"
 
 1581604186 source:c:\mrnmicro\applic\cygwin64\home\forbr3\fmt\fmtoutputnode.cpp
@@ -2534,7 +2536,7 @@
 1581604186 source:c:\mrnmicro\applic\cygwin64\home\forbr3\fmt\fmtoutputparser.cpp
 	"FMToutputparser.h"
 
-1581604186 source:c:\mrnmicro\applic\cygwin64\home\forbr3\fmt\fmtoutputsource.cpp
+1582136086 source:c:\mrnmicro\applic\cygwin64\home\forbr3\fmt\fmtoutputsource.cpp
 	"FMToutputsource.h"
 
 1581604186 source:c:\mrnmicro\applic\cygwin64\home\forbr3\fmt\fmtparser.cpp
@@ -2544,7 +2546,7 @@
 1581604186 source:c:\mrnmicro\applic\cygwin64\home\forbr3\fmt\fmtschedule.cpp
 	"FMTschedule.h"
 
-1581604186 source:c:\mrnmicro\applic\cygwin64\home\forbr3\fmt\fmttheme.cpp
+1582136086 source:c:\mrnmicro\applic\cygwin64\home\forbr3\fmt\fmttheme.cpp
 	"FMTtheme.h"
 	"FMTmask.h"
 
@@ -2554,7 +2556,7 @@
 1581604186 source:c:\mrnmicro\applic\cygwin64\home\forbr3\fmt\fmtyieldparser.cpp
 	"FMTyieldparser.h"
 
-1581694707 source:c:\mrnmicro\applic\cygwin64\home\forbr3\fmt\main.cpp
+1582129630 source:c:\mrnmicro\applic\cygwin64\home\forbr3\fmt\main.cpp
 	<boost/archive/binary_oarchive.hpp>
 	<boost/archive/binary_iarchive.hpp>
 	<boost/serialization/export.hpp>
@@ -2628,7 +2630,7 @@
 	<string>
 	<vector>
 
-1581604186 source:c:\mrnmicro\applic\cygwin64\home\forbr3\fmt\fmtsamodel.cpp
+1582225006 source:c:\mrnmicro\applic\cygwin64\home\forbr3\fmt\fmtsamodel.cpp
 	"FMTsamodel.h"
 	<fstream>
 	<iostream>
@@ -2638,7 +2640,7 @@
 	<boost/filesystem.hpp>
 	<cstring>
 
-1581604186 c:\mrnmicro\applic\cygwin64\home\forbr3\fmt\fmtsamodel.h
+1582230764 c:\mrnmicro\applic\cygwin64\home\forbr3\fmt\fmtsamodel.h
 	"FMTmodel.h"
 	"FMTspatialaction.h"
 	"FMTlayer.h"
@@ -2649,7 +2651,7 @@
 	<vector>
 	<random>
 
-1581606669 c:\mrnmicro\applic\cygwin64\home\forbr3\fmt\fmtmodels.h
+1582129630 c:\mrnmicro\applic\cygwin64\home\forbr3\fmt\fmtmodels.h
 	"FMTmodel.h"
 	"FMTlpmodel.h"
 	"FMTsamodel.h"
@@ -2671,7 +2673,7 @@
 	<string>
 	<vector>
 
-1581604186 c:\mrnmicro\applic\cygwin64\home\forbr3\fmt\fmtsasolution.h
+1582295616 c:\mrnmicro\applic\cygwin64\home\forbr3\fmt\fmtsasolution.h
 	"FMTlayer.h"
 	"FMTforest.h"
 	"FMTgraphdescription.h"
@@ -19936,4 +19938,7 @@
 	<boost/serialization/serialization.hpp>
 	<boost/serialization/nvp.hpp>
 	<string>
+
+1582136086 source:c:\mrnmicro\applic\cygwin64\home\forbr3\fmt\fmtmodelstats.cpp
+	"FMTmodelstats.h"
 
