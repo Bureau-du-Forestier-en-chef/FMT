@@ -145,7 +145,7 @@ FMTtransitionmask::FMTtransitionmask(const std::string& lmask,const std::vector<
         for(const FMTtheme& theme : themes)
             {
             const std::string value = mask.get(theme);
-			std::string name = theme.name;
+			std::string name = theme.getname();
             if (name.empty())
                 {
                 name = "THEME_"+ std::to_string(id);

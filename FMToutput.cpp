@@ -359,10 +359,8 @@ FMToutput FMToutput::boundto(const std::vector<FMTtheme>& themes, const FMTperbo
 					if (!attribute.empty())
 					{
 						FMTmask oldmask = FMTmask(source.getmask());
-						if (oldmask.set(themes.at(theme_target), attribute))
-						{
-							source.setmask(oldmask);
-						}
+						oldmask.set(themes.at(theme_target), attribute);
+						source.setmask(oldmask);
 					}
 					if (!specialbound.empty() && specialbound == "_AVG")
 						{
@@ -538,7 +536,7 @@ FMToutput FMToutput::presolve(const FMTmask& basemask,
 				lastnotpushed = sourceid;
 				}
 		}else if(!sources.at(sourceid).isvariable() && (sources.at(sourceid).islevel() || (sources.at(sourceid).istimeyield() && !yields.isnullyld(yieldname)) ||
-			(operatorid<operators.size()&& sources.at(sourceid).isconstant() && lastnotpushed != sourceid -1)))
+			(sources.at(sourceid).isconstant() && lastnotpushed != sourceid -1)))
 			{
 			pushedsource = true;
 			newsources.push_back(sources.at(sourceid));

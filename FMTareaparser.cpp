@@ -850,7 +850,7 @@ namespace WSParser{
 				if (tryopening(areastream, location))
 				{
 					areastream << ";Total area: " << std::to_string(sumarea) << "\n";
-					const std::string maskstr = areas.at(0).mask.getstr();
+					const std::string maskstr(areas.at(0).mask);
 					std::vector<std::string>splitted_mask;
 					boost::split(splitted_mask, maskstr, boost::is_any_of(" /t"), boost::token_compress_on);
 					std::string header_line = ";*A ";

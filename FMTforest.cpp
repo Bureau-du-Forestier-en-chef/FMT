@@ -281,4 +281,16 @@ std::vector<FMTevent<Core::FMTdevelopment>> FMTforest::buildharvest(const double
         }
     return cuts;
     }
+
+FMTforest FMTforest::presolve(const Core::FMTmask& selectedmask, const std::vector<Core::FMTtheme>&presolvedthemes) const
+	{
+	FMTforest newforest(*this);
+	for (std::map<FMTcoordinate,Core::FMTdevelopment>::iterator coordit  = newforest.mapping.begin();
+		coordit != newforest.mapping.end();++coordit)
+		{
+		coordit->second = Core::FMTactualdevelopment(coordit->second, 0.0).presolve(selectedmask, presolvedthemes);
+		}
+	return newforest;
+	}	
+
 }

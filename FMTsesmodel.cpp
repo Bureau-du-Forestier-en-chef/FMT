@@ -190,4 +190,32 @@ namespace Models
 		{
 		return disturbances.getpatchstats();
 		}
+
+	std::unique_ptr<FMTmodel>FMTsesmodel::presolve(int presolvepass,
+		std::vector<Core::FMTactualdevelopment> optionaldevelopments ) const
+		{
+		if (disturbances.data.empty())//just presolve if no solution
+			{
+			const std::vector<Core::FMTactualdevelopment>areas = mapping.getarea();
+			optionaldevelopments.insert(optionaldevelopments.end(), areas.begin(), areas.end());
+			std::unique_ptr<FMTsesmodel>presolvedses(new FMTsesmodel(*(FMTmodel::presolve(presolvepass, optionaldevelopments))));
+			const Core::FMTmask presolvedmask = presolvedses->getselectedmask(themes);
+			const Core::FMTmask basemask = this->getbasemask(optionaldevelopments);
+			presolvedses->mapping = this->mapping.presolve(presolvedmask,presolvedses->themes);
+			std::vector<Spatial::FMTspatialaction>newspatialactions;
+			for (const Spatial::FMTspatialaction& spaction : spactions)
+				{
+				if (std::find_if(presolvedses->actions.begin(), presolvedses->actions.end(),Core::FMTactioncomparator(spaction.getname()))!= presolvedses->actions.end())
+					{
+					const Spatial::FMTspatialaction presolvedspaction(spaction.presolve(basemask, themes, presolvedmask, presolvedses->themes),
+						spaction.neighbors, spaction.green_up, spaction.adjacency, spaction.minimal_size, spaction.maximal_size, spaction.neighbors_size);
+					newspatialactions.push_back(presolvedspaction);
+					}
+				}
+			presolvedses->spactions = newspatialactions;
+			return presolvedses;
+			}
+		return std::unique_ptr<FMTmodel>(nullptr);
+		}
+
     }
