@@ -23,10 +23,12 @@ SOFTWARE.
 */
 
 #include "FMTlogger.h"
+#if defined FMTPY
 #include <boost/python.hpp>
+#endif // defined FMTPY
 #include <iostream>
 #include "FMTversion.h"
- 
+
 
 namespace Logging
 {
@@ -47,7 +49,7 @@ namespace Logging
 		}
 
 	FMTlogger::FMTlogger(const FMTlogger& rhs): filestream(rhs.filestream)
-		{	
+		{
 
 		}
 
@@ -67,7 +69,7 @@ namespace Logging
 			this->logtime();
 			}
 		}
-	
+
 	void FMTlogger::logstamp()
 		{
 		const std::string message = "FMT" + Version::FMTversion().getversion() +
@@ -106,12 +108,12 @@ namespace Logging
 
 	int FMTlogger::print()
 		{
-		if (messageOut_ > messageBuffer_) 
+		if (messageOut_ > messageBuffer_)
 			{
 			char buffer[COIN_MESSAGE_HANDLER_MAX_BUFFER_SIZE];
 			snprintf(buffer, sizeof(buffer), "%s\n", this->messageBuffer_);
 			this->cout(buffer);
-			if (currentMessage_.severity_ == 'S') 
+			if (currentMessage_.severity_ == 'S')
 				{
 				fprintf(fp_, "Stopping due to previous errors.\n");
 				//Should do walkback

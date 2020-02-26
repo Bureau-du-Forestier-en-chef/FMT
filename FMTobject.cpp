@@ -66,21 +66,23 @@ namespace Core
 
 	void FMTobject::checksignals()
 	{
+	    #if defined FMTPY
 		if (PyErr_CheckSignals() == -1)
 		{
 			exit(1);
 		}
+		#endif // defined FMTPY
 	}
 
-	
+
 		void FMTobject::setCPLhandler()
 			{
 			#ifdef FMTWITHGDAL
 				CPLPopErrorHandler();
 				CPLPushErrorHandlerEx(Exception::FMTCPLErrorHandler, _exhandler->getCPLdata());
-			#endif 
+			#endif
 			}
-	
+
 
 	FMTobject::FMTobject() : _exhandler(std::make_shared<Exception::FMTdefaultexceptionhandler>()),
 		_logger(std::make_shared<Logging::FMTdefaultlogger>()), _section(FMTwssect::Empty)
@@ -95,7 +97,7 @@ namespace Core
 
 	}
 
-	FMTobject::FMTobject(const std::shared_ptr<Exception::FMTexceptionhandler> exhandler) : 
+	FMTobject::FMTobject(const std::shared_ptr<Exception::FMTexceptionhandler> exhandler) :
 		_exhandler(exhandler), _logger(std::make_shared<Logging::FMTdefaultlogger>()), _section(FMTwssect::Empty)
 	{
 		_exhandler->passinlogger(_logger);
@@ -103,7 +105,7 @@ namespace Core
 		this->checksignals();
 
 	}
-	FMTobject::FMTobject(const FMTobject& rhs) : 
+	FMTobject::FMTobject(const FMTobject& rhs) :
 		_exhandler(rhs._exhandler), _logger(rhs._logger), _section(rhs._section)
 	{
 		_exhandler->passinlogger(_logger);

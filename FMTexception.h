@@ -29,7 +29,9 @@ SOFTWARE.
 #include <string>
 #include <iostream>
 #include <memory>
+#if defined FMTPY
 #include <boost/python.hpp>
+#endif // define FMTPY
 #include <boost/serialization/serialization.hpp>
 #include <boost/serialization/nvp.hpp>
 #if defined (_MSC_VER)

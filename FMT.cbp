@@ -102,7 +102,7 @@
 			<Add library="../../../usr/local/lib/libboost_system.dll.a" />
 			<Add library="../../../usr/local/lib/libboost_python27.dll.a" />
 			<Add library="../../../usr/local/lib/libboost_filesystem.dll.a" />
-			<Add library="../boost_1_72_0/stage/lib/libboost_iostreams.dll.a" />
+			<Add library="../../../usr/local/lib/libboost_iostreams.dll.a" />
 			<Add library="C:/Mrnmicro/Applic/Cygwin64/lib/libgdal.dll.a" />
 			<Add library="C:/Mrnmicro/Applic/Cygwin64/lib/libz.dll.a" />
 			<Add library="C:/Mrnmicro/Applic/Cygwin64/lib/libbz2.dll.a" />
