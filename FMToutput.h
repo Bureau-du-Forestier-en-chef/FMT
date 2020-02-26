@@ -40,8 +40,17 @@ SOFTWARE.
 
 namespace Core
 {
+/**
+FMToutput let the user formulate constraint in the optimize section or just collect data across the FMTgraph.
+FMToutput hold a vector of outputsources and operators. Outputs  that are non linear cannot be used into
+matrix constraints formulation. Outputs have multiple outputs node representing a set of FMTdevelopment in the 
+FMTgraph. Each FMTdevelopement can be part of one FMToutput.
+*/
 class FMToutput
     {
+	/**
+	serialize function is for serialization, used to do multiprocessing across multiple cpus (pickle in Pyhton)
+	*/
 	friend class boost::serialization::access;
 	template<class Archive>
 	void serialize(Archive& ar, const unsigned int version)
@@ -53,16 +62,36 @@ class FMToutput
 		ar & BOOST_SERIALIZATION_NVP(description);
 	}
 	protected:
+	///outputsources data used to generate outputnodes
 	std::vector<FMToutputsource>sources;
+	///vector of simple operators like +-*/
 	std::vector<FMToperator>operators;
+	///Sometime output can specify multiple attributes of a given themes
 	int theme_target;
+	///This is the name and the description of the FMToutput has seen in the output section.
+	std::string name, description;
     public:
-		std::string name,description;
+	/**
+	Default constructor for FMToutput
+	*/
     FMToutput();
+	/**
+	Default destructor for FMToutput
+	*/
     virtual ~FMToutput()=default;
+	/**
+	Constructor for FMToutput for a complete construction for (name) (description),
+	theme_target,sources and operators.
+	*/
     FMToutput(const std::string& lname,const std::string& ldescription,
 		const int& ltheme_target, std::vector<FMToutputsource>& lsources, std::vector<FMToperator>& loperators);
+	/**
+	Partial constructor for FMToutput with only name
+	*/
     FMToutput(const std::string& lname);
+	/**
+	Partial constructor for FMToutput with only name
+	*/
     FMToutput(const FMToutput& rhs);
     FMToutput& operator = (const FMToutput& rhs);
     bool operator == (const FMToutput& rhs) const;
@@ -72,6 +101,14 @@ class FMToutput
 	FMToutput& operator *=(const double& rhs);
 	FMToutput& operator /=(const double& rhs);
     operator std::string() const;
+	inline std::string getname() const
+		{
+		return name;
+		}
+	inline std::string getdescription() const
+		{
+		return description;
+		}
 	bool empty() const;
 	size_t size() const;
 	bool linear() const;

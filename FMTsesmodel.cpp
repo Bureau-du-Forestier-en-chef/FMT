@@ -107,13 +107,13 @@ namespace Models
 		std::default_random_engine generator(seed);
         const double total_area = schedule.area();
 		std::map<std::string,double>targets;
-        for(std::map<Core::FMTaction, std::map<Core::FMTdevelopment, std::vector<double>>>::const_iterator ait = schedule.elements.begin(); ait!=schedule.elements.end(); ait++)
+        for(std::map<Core::FMTaction, std::map<Core::FMTdevelopment, std::vector<double>>>::const_iterator ait = schedule.begin(); ait!=schedule.end(); ait++)
             {
             targets[ait->first.getname()] = schedule.actionarea(ait->first);
             }
         disturbances.push(std::map<std::string, std::vector<Spatial::FMTevent<Core::FMTdevelopment>>>());
 		double allocated_area = 0;
-		if (!schedule.elements.empty() || !schedule_only)
+		if (!schedule.empty() || !schedule_only)
 			{
 			double pass_allocated_area = 0;
 			bool schedulepass = true;
@@ -171,7 +171,7 @@ namespace Models
         mapping = mapping.grow();
 		std::map<std::string, double>results;
 		results["Total"] = allocated_area / total_area;
-		for (std::map<Core::FMTaction, std::map<Core::FMTdevelopment, std::vector<double>>>::const_iterator ait = schedule.elements.begin(); ait != schedule.elements.end(); ait++)
+		for (std::map<Core::FMTaction, std::map<Core::FMTdevelopment, std::vector<double>>>::const_iterator ait = schedule.begin(); ait != schedule.end(); ait++)
 			{
 			double total_action_area = schedule.actionarea(ait->first);
 			results[ait->first.getname()] = ((total_action_area - targets[ait->first.getname()]) / total_action_area);
@@ -214,6 +214,32 @@ namespace Models
 				}
 			presolvedses->spactions = newspatialactions;
 			return presolvedses;
+			}
+		return std::unique_ptr<FMTmodel>(nullptr);
+		}
+
+	std::unique_ptr<FMTmodel>FMTsesmodel::postsolve(const FMTmodel& originalbasemodel) const
+		{
+		if (!disturbances.data.empty())//just postsolve if you have a solution
+			{
+			std::unique_ptr<FMTsesmodel>postsolvedses(new FMTsesmodel(*(FMTmodel::postsolve(originalbasemodel))));
+			const Core::FMTmask presolvedmask = this->getselectedmask(themes);
+			postsolvedses->mapping = this->mapping.postsolve(presolvedmask, postsolvedses->themes);
+			//Disturbance stack doesn't need changes
+			//take care of the FMTspatialactions
+			std::vector<Spatial::FMTspatialaction>newspatialactions;
+			for (const Spatial::FMTspatialaction& spaction : spactions)
+			{
+				std::vector<Core::FMTaction>::const_iterator spactit = std::find_if(postsolvedses->actions.begin(), postsolvedses->actions.end(), Core::FMTactioncomparator(spaction.getname()));
+				if (spactit != postsolvedses->actions.end())
+					{
+					const Spatial::FMTspatialaction postsolvedspaction(*spactit,
+						spaction.neighbors, spaction.green_up, spaction.adjacency, spaction.minimal_size, spaction.maximal_size, spaction.neighbors_size);
+					newspatialactions.push_back(postsolvedspaction);
+					}
+			}
+			postsolvedses->spactions = newspatialactions;
+			return postsolvedses;
 			}
 		return std::unique_ptr<FMTmodel>(nullptr);
 		}

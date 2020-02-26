@@ -286,6 +286,10 @@ class FMTmask
 		it returns a presolved FMTmask with potentialy less data. 
 		*/
 		FMTmask presolve(const FMTmask& selectedmask,const std::vector<FMTtheme>&presolvedthemes) const;
+		/**
+		Using a FMTmask (selectedmask) and the original FMTthemes it returns a postsolved FMTmask.
+		*/
+		FMTmask postsolve(const FMTmask& selectedmask, const std::vector<FMTtheme>&basethemes) const;
     };
 
 }

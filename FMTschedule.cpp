@@ -160,19 +160,6 @@ FMTschedule FMTschedule::operator + (const FMTschedule& rhs) const
     return newschedule;
     }
 
-std::map<FMTdevelopment, std::vector<double>>FMTschedule::getfaction(const FMTaction& action) const
-    {
-    if (elements.find(action)!=elements.end())
-        {
-        return elements.at(action);
-        }
-    return std::map<FMTdevelopment, std::vector<double>>();
-    }
-
-std::map<FMTaction, std::map<FMTdevelopment, std::vector<double>>>FMTschedule::get() const
-    {
-    return elements;
-    }
 
 FMTschedule::operator std::string() const
     {
@@ -187,83 +174,179 @@ FMTschedule::operator std::string() const
 				line += std::string(dev->mask) + " " + std::to_string(dev->age) + " " + std::to_string(value) + " " + actit->first.getname() + " " + std::to_string(period) + "\n";
 				}
             }
-        }
-    return line;
-    }
+		}
+		return line;
+	}
 
 
-double FMTschedule::actionarea(const FMTaction& action) const
-    {
-    double value = 0;
-	if (elements.find(action)!=elements.end())
+	double FMTschedule::actionarea(const FMTaction& action) const
+	{
+		double value = 0;
+		if (elements.find(action) != elements.end())
 		{
-		for (std::map<FMTdevelopment, std::vector<double>>::const_iterator devit = elements.at(action).begin(); devit != elements.at(action).end(); devit++)
+			for (std::map<FMTdevelopment, std::vector<double>>::const_iterator devit = elements.at(action).begin(); devit != elements.at(action).end(); devit++)
 			{
-			for (const double& val : devit->second)
+				for (const double& val : devit->second)
 				{
-				value += val;
+					value += val;
 				}
 			}
 		}
-    return value;
-    }
+		return value;
+	}
 
-int FMTschedule::getperiod() const
-    {
-    return period;
-    }
 
-double FMTschedule::area() const
-    {
-    double value = 0;
-    for(std::map<FMTaction, std::map<FMTdevelopment, std::vector<double>>>::const_iterator actit = elements.begin(); actit != elements.end(); actit++)
-        {
-        for(std::map<FMTdevelopment, std::vector<double>>::const_iterator devit = actit->second.begin(); devit != actit->second.end(); devit++)
-            {
-			for (const double& val : devit->second)
+	double FMTschedule::area() const
+	{
+		double value = 0;
+		for (std::map<FMTaction, std::map<FMTdevelopment, std::vector<double>>>::const_iterator actit = elements.begin(); actit != elements.end(); actit++)
+		{
+			for (std::map<FMTdevelopment, std::vector<double>>::const_iterator devit = actit->second.begin(); devit != actit->second.end(); devit++)
+			{
+				for (const double& val : devit->second)
 				{
-				value += val;
+					value += val;
 				}
-            }
-        }
-    return value;
-    }
-
-bool FMTschedule::operated(const FMTaction& action,
-	const FMTdevelopment& developement) const
-	{
-	bool value = false;
-	std::map<FMTaction, std::map<FMTdevelopment, std::vector<double>>>::const_iterator actit = elements.find(action);
-	if (actit != elements.end())
-		{
-		std::map<FMTdevelopment, std::vector<double>>::const_iterator devit;
-		if (action.dorespectlock())
-			{
-			devit = actit->second.find(developement);
-			}else {
-			devit = actit->second.find(developement.clearlock());
-			}
-		if (devit != actit->second.end())
-			{
-			value = true;
 			}
 		}
-	return value;
+		return value;
 	}
 
-bool FMTschedule::empty() const
+	bool FMTschedule::operated(const FMTaction& action,
+		const FMTdevelopment& developement) const
 	{
-	return elements.empty();
-	}
-
-void FMTschedule::sort()
-	{
-	for (std::map<FMTaction, std::map<FMTdevelopment, std::vector<double>>>::iterator actit = elements.begin(); actit != elements.end(); actit++)
+		bool value = false;
+		std::map<FMTaction, std::map<FMTdevelopment, std::vector<double>>>::const_iterator actit = elements.find(action);
+		if (actit != elements.end())
 		{
-		for (std::map<FMTdevelopment, std::vector<double>>::iterator devit = actit->second.begin(); devit != actit->second.end(); devit++)
+			std::map<FMTdevelopment, std::vector<double>>::const_iterator devit;
+			if (action.dorespectlock())
 			{
-			std::sort(devit->second.begin(), devit->second.end());
+				devit = actit->second.find(developement);
+			}
+			else {
+				devit = actit->second.find(developement.clearlock());
+			}
+			if (devit != actit->second.end())
+			{
+				value = true;
+			}
+		}
+		return value;
+	}
+
+	bool FMTschedule::empty() const
+	{
+		return elements.empty();
+	}
+
+	void FMTschedule::sort()
+	{
+		for (std::map<FMTaction, std::map<FMTdevelopment, std::vector<double>>>::iterator actit = elements.begin(); actit != elements.end(); actit++)
+		{
+			for (std::map<FMTdevelopment, std::vector<double>>::iterator devit = actit->second.begin(); devit != actit->second.end(); devit++)
+			{
+				std::sort(devit->second.begin(), devit->second.end());
 			}
 		}
 	}
+
+	FMTschedule FMTschedule::presolve(
+		const FMTmask& presolvedmask,
+		const std::vector<FMTtheme>& newthemes,
+		const std::vector<FMTaction>&presolvedaction) const
+	{
+		FMTschedule newschedule(*this);
+		newschedule.elements.clear();
+		for (std::map<FMTaction, std::map<FMTdevelopment, std::vector<double>>>::const_iterator actit = elements.begin(); actit != elements.end(); actit++)
+		{
+			std::map<FMTdevelopment, std::vector<double>>newmapping;
+			for (std::map<FMTdevelopment, std::vector<double>>::const_iterator devit = actit->second.begin(); devit != actit->second.end(); devit++)
+			{
+				FMTdevelopment newdev(devit->first);
+
+				newdev.mask = newdev.mask.presolve(presolvedmask, newthemes);
+				newmapping[newdev] = devit->second;
+			}
+			if (!newmapping.empty())
+				{
+				std::vector<FMTaction>::const_iterator actfit = std::find_if(presolvedaction.begin(), presolvedaction.end(), FMTactioncomparator(actit->first.getname()));
+				if (actfit != presolvedaction.end())
+					{
+					newschedule.elements[*actfit] = newmapping;
+					}
+				}
+		}
+	return newschedule;
+	}
+
+	FMTschedule FMTschedule::postsolve(const FMTmask& presolvedmask,
+		const std::vector<FMTtheme>& originalbasethemes, const std::vector<FMTaction>&originalbasebaseactions) const
+	{
+		FMTschedule newschedule(*this);
+		newschedule.elements.clear();
+		for (std::map<FMTaction, std::map<FMTdevelopment, std::vector<double>>>::const_iterator actit = elements.begin(); actit != elements.end(); actit++)
+		{
+			std::map<FMTdevelopment, std::vector<double>>newmapping;
+			for (std::map<FMTdevelopment, std::vector<double>>::const_iterator devit = actit->second.begin(); devit != actit->second.end(); devit++)
+			{
+				FMTdevelopment newdev(devit->first);
+
+				newdev.mask = newdev.mask.postsolve(presolvedmask, originalbasethemes);
+				newmapping[newdev] = devit->second;
+			}
+			if (!newmapping.empty())
+			{
+				std::vector<FMTaction>::const_iterator actfit = std::find_if(originalbasebaseactions.begin(), originalbasebaseactions.end(), FMTactioncomparator(actit->first.getname()));
+				if (actfit != originalbasebaseactions.end())
+				{
+					newschedule.elements[*actfit] = newmapping;
+				}
+			}
+		}
+		return newschedule;
+	}
+
+	std::map<FMTdevelopment, std::vector<double>>& FMTschedule::operator[](const FMTaction& action)
+	{
+		return elements[action];
+	}
+	const std::map<FMTdevelopment, std::vector<double>>& FMTschedule::at(const FMTaction& action) const
+	{
+		return elements.at(action);
+	}
+	size_t FMTschedule::size() const
+	{
+		return elements.size();
+	}
+	FMTschedule::iterator FMTschedule::find(const FMTaction& actionkey)
+	{
+		return elements.find(actionkey);
+	}
+
+	FMTschedule::const_iterator FMTschedule::find(const FMTaction& actionkey) const
+	{
+		return elements.find(actionkey);
+	}
+
+	FMTschedule::iterator FMTschedule::begin()
+	{
+		return elements.begin();
+	}
+
+	FMTschedule::const_iterator FMTschedule::begin() const
+	{
+		return elements.begin();
+	}
+
+	FMTschedule::iterator  FMTschedule::end()
+	{
+		return elements.end();
+	}
+
+	FMTschedule::const_iterator FMTschedule::end() const
+	{
+		return elements.end();
+	}
+
 }

@@ -76,6 +76,7 @@ namespace Spatial
 									std::default_random_engine& generator,
 									const int& pass) const;
 		FMTforest presolve(const Core::FMTmask& selectedmask, const std::vector<Core::FMTtheme>&presolvedthemes) const;
+		FMTforest postsolve(const Core::FMTmask& selectedmask, const std::vector<Core::FMTtheme>&originalbasethemes) const;
         };
     }
 #endif // FMTFOREST_H_INCLUDED

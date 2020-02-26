@@ -618,7 +618,7 @@ FMToutputcomparator::FMToutputcomparator(std::string name) : output_name(name)
 
 bool FMToutputcomparator::operator()(const FMToutput& output) const
 	{
-	return output_name == output.name;
+	return output_name == output.getname();
 	}
 
 

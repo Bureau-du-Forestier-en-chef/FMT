@@ -786,10 +786,10 @@ FMTgraphstats FMTgraph::buildschedule(const Models::FMTmodel& model, std::queue<
 		int action_id = 0;
 		for (const Core::FMTaction& action : model.actions)
 		{
-			if (schedule.elements.find(action) != schedule.elements.end() &&
-				(((schedule.elements.at(action)).find(active_development) != (schedule.elements.at(action)).end()) ||
+			if (schedule.find(action) != schedule.end() &&
+				(((schedule.at(action)).find(active_development) != (schedule.at(action)).end()) ||
 				(!action.dorespectlock() && active_development.lock != 0 &&
-					(schedule.elements.at(action)).find(active_development.clearlock()) != (schedule.elements.at(action)).end())))
+					(schedule.at(action)).find(active_development.clearlock()) != (schedule.at(action)).end())))
 			{
 				if (action.getname() == "_DEATH")
 					{
@@ -1322,6 +1322,30 @@ std::vector<std::unordered_map<size_t, FMTvertex_descriptor>>::const_iterator FM
 int FMTgraph::getfirstactiveperiod() const
 	{
 	return static_cast<int>(std::distance(developments.begin(), getfirstconstblock()));
+	}
+
+FMTgraph FMTgraph::postsolve(const Core::FMTmask& selectedmask,
+	const std::vector<Core::FMTtheme>&originalbasethemes,
+	const std::map<int, int>& actionmapconnection) const
+	{
+	FMTgraph newgraph(*this);
+	newgraph.developments.clear();
+	newgraph.nodescache.clear();//Some postsolve can be done here to keep some usefull information but for now just clear
+	//start by remapping the actions
+	FMTedge_iterator edge_iterator, edge_iterator_end;
+	for (boost::tie(edge_iterator, edge_iterator_end) = boost::edges(data); edge_iterator != edge_iterator_end; ++edge_iterator)
+		{
+		FMTedgeproperties& edgeprop = newgraph.data[*edge_iterator];
+		edgeprop.setactionID(actionmapconnection.at(edgeprop.getactionID()));
+		}
+	FMTvertex_iterator vertex_iterator, vertex_iterator_end;
+	for (boost::tie(vertex_iterator, vertex_iterator_end) = boost::vertices(data); vertex_iterator != vertex_iterator_end; ++vertex_iterator)
+		{
+		FMTvertexproperties& vertexprop = newgraph.data[*vertex_iterator];
+		vertexprop.setdevlopementmask(vertexprop.get().mask.postsolve(selectedmask, originalbasethemes));
+		}
+	newgraph.generatedevelopments();
+	return newgraph;
 	}
 
 }

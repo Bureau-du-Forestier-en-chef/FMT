@@ -58,6 +58,7 @@ namespace Graph
 				return variableID;
 				}
 			void setvariableID(const int& newvariableID);
+			void setactionID(const int& newid);
 			inline int getactionID() const
 				{
 				return action;

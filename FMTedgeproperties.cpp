@@ -63,6 +63,11 @@ namespace Graph
 		variableID = newvariableID;
 		}
 
+	void FMTedgeproperties::setactionID(const int& newid)
+		{
+		action = newid;
+		}
+
 	bool FMTedgeproperties::operator < (const FMTedgeproperties& rhs) const
 		{
 		return (action < rhs.action);

@@ -336,7 +336,7 @@ bool FMTmodel::isvalid()
 			if (source.isvariable())
 				{
 				std::string name = std::string(source.getmask());
-				validate(themes, name, "for output " + output.name);
+				validate(themes, name, "for output " + output.getname());
 				const std::string actionname = source.getaction();
 				if (!actionname.empty())//need to check the targeted action!
 					{
@@ -529,8 +529,16 @@ std::unique_ptr<FMTmodel> FMTmodel::presolve(int presolvepass,std::vector<Core::
 
 std::unique_ptr<FMTmodel>FMTmodel::postsolve(const FMTmodel& originalbasemodel) const
 	{
-	return std::unique_ptr<FMTmodel>(new FMTmodel(*this));
+	return std::unique_ptr<FMTmodel>(new FMTmodel(originalbasemodel));
 	}
+
+Core::FMTschedule FMTmodel::presolveschedule(const Core::FMTschedule& originalbaseschedule,
+	const FMTmodel& originalbasemodel) const
+	{
+	const Core::FMTmask presolvedmask = this->getselectedmask(originalbasemodel.themes);
+	return originalbaseschedule.presolve(presolvedmask, this->themes, this->actions);
+	}
+
 
 FMTmodelstats FMTmodel::getmodelstats() const
 	{

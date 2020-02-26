@@ -69,12 +69,16 @@ Core::FMTconstants FMTconstantparser::read(std::string location)
 							std::string strid = splited[id];
 							strid.erase(0, 1);
 							values.push_back(constants.get<double>(strid, period));
-						}
-						else {
+						}else if(isnum(splited[id]))
+							{
 							values.push_back(getnum<double>(splited[id]));
-						}
+							}
 					}
-					constants.set(key, values);
+					if (!values.empty())
+						{
+						constants.set(key, values);
+						}
+					
 				}
 			}
 			}

@@ -188,7 +188,7 @@ double FMTsasolution::getgraphspenalties(const Models::FMTsamodel& model, const 
         double spatialpenalties = 0;
         double lower=0;
         double upper=0;
-		std::vector<FMTspatialaction>::iterator actionit = std::find_if(spatialactions.begin(),spatialactions.end(),[constraint] (const FMTspatialaction& spaction) {return spaction.getname() == constraint.name;});
+		std::vector<FMTspatialaction>::iterator actionit = std::find_if(spatialactions.begin(),spatialactions.end(),[constraint] (const FMTspatialaction& spaction) {return spaction.getname() == constraint.getname();});
         const int action_id = static_cast<int>(std::distance(spatialactions.begin(), actionit));
         const FMTspatialaction spaction = spatialactions.at(action_id);
         size_t period = 1;

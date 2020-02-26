@@ -193,6 +193,9 @@ class FMTgraph
 		void updatematrixindex(const std::vector<int>& removedvariables,
 			const std::vector<int>& removedconstraints);
 		int getfirstactiveperiod() const;
+		FMTgraph postsolve(const Core::FMTmask& selectedmask,
+			const std::vector<Core::FMTtheme>&originalbasethemes,
+			const std::map<int,int>& actionmapconnection) const;
     };
 }
 #endif // FMTGRAPH_H

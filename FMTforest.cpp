@@ -95,9 +95,9 @@ FMTforest FMTforest::operate(const std::vector<FMTevent<Core::FMTdevelopment>>& 
             FMTforest newforest(FMTlayer<Core::FMTdevelopment>(this->geotransform,this->maxx,this->maxy,this->SRS_WKT,this->cellsize));
 			//non spatial schedule 
 			///
-			if (schedule.elements.find(action) == schedule.elements.end())
+			if (schedule.find(action) == schedule.end())
 				{
-				schedule.elements[action] = std::map<Core::FMTdevelopment, std::vector<double>>();
+				schedule[action] = std::map<Core::FMTdevelopment, std::vector<double>>();
 				}
 			///
             for(const FMTevent<Core::FMTdevelopment>& cut : cuts)
@@ -107,11 +107,11 @@ FMTforest FMTforest::operate(const std::vector<FMTevent<Core::FMTdevelopment>>& 
 					//keeping non spatial schedule
 					///
 					const Core::FMTdevelopment lockclear = devit->second->clearlock();
-					if (schedule.elements.at(action).find(lockclear) == schedule.elements.at(action).end())
+					if (schedule.at(action).find(lockclear) == schedule.at(action).end())
 						{
-						schedule.elements[action][lockclear] = std::vector<double>(1, 0.0);
+						schedule[action][lockclear] = std::vector<double>(1, 0.0);
 						}
-					schedule.elements[action][lockclear][0] += this->getcellsize();
+					schedule[action][lockclear][0] += this->getcellsize();
 					///
                     const Core::FMTdevelopment* dev = devit->second;
 					if (cached_transitions.find(*dev) == cached_transitions.end())
@@ -163,10 +163,10 @@ std::map<Core::FMTaction,FMTforest> FMTforest::getschedule(const Core::FMTschedu
 					{
 					if (!schedule_only)
 						{
-						cached_operability[*cdev] = std::vector<bool>(selection.elements.size(), false);
+						cached_operability[*cdev] = std::vector<bool>(selection.size(), false);
 						}
 					int action_id = 0;
-					for(std::map<Core::FMTaction, std::map<Core::FMTdevelopment, std::vector<double>>>::const_iterator it = selection.elements.begin();it != selection.elements.end();it++)
+					for(std::map<Core::FMTaction, std::map<Core::FMTdevelopment, std::vector<double>>>::const_iterator it = selection.begin();it != selection.end();it++)
 						{
 						const std::map<Core::FMTdevelopment, std::vector<double>>* devsptr = &it->second;
 						if (selection.operated(it->first, itc->second)||
@@ -186,7 +186,7 @@ std::map<Core::FMTaction,FMTforest> FMTforest::getschedule(const Core::FMTschedu
 						}
 					}else{
 						int action_id = 0;
-						for (std::map<Core::FMTaction, std::map<Core::FMTdevelopment, std::vector<double>>>::const_iterator it = selection.elements.begin(); it != selection.elements.end(); it++)
+						for (std::map<Core::FMTaction, std::map<Core::FMTdevelopment, std::vector<double>>>::const_iterator it = selection.begin(); it != selection.end(); it++)
 							{
 							if (cached_operability[*cdev][action_id])
 								{
@@ -291,6 +291,17 @@ FMTforest FMTforest::presolve(const Core::FMTmask& selectedmask, const std::vect
 		coordit->second = Core::FMTactualdevelopment(coordit->second, 0.0).presolve(selectedmask, presolvedthemes);
 		}
 	return newforest;
-	}	
+	}
+
+FMTforest FMTforest::postsolve(const Core::FMTmask& selectedmask, const std::vector<Core::FMTtheme>&originalbasethemes) const
+	{
+	FMTforest newforest(*this);
+	for (std::map<FMTcoordinate, Core::FMTdevelopment>::iterator coordit = newforest.mapping.begin();
+		coordit != newforest.mapping.end(); ++coordit)
+		{
+		coordit->second.mask = coordit->second.mask.postsolve(selectedmask, originalbasethemes);
+		}
+	return newforest;
+	}
 
 }

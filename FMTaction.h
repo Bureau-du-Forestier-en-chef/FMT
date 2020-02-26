@@ -195,7 +195,6 @@ class FMTaction : public FMTlist<FMTspec>
 		Gets all the partial yields name of the FMTaction.
 		*/
 		std::vector<std::string>getpartials() const;
-		//bool inperiod() const;
 		/**
 		FMTaction less than operator (first test the action length and then the string name to place the action).
 		*/

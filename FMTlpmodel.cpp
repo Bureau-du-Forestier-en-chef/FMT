@@ -157,7 +157,7 @@ namespace Models
 				++colid;
 			}
 			Core::FMTschedule locked_schedule;
-			for (const auto actionit : schedule.elements)
+			for (const auto actionit : schedule)
 			{
 				int actionid = int(std::distance(actions.begin(), find_if(actions.begin(), actions.end(), Core::FMTactioncomparator(actionit.first.getname()))));
 				size_t allocated = 0;
@@ -680,7 +680,7 @@ bool FMTlpmodel::locatenodes(const std::vector<Core::FMToutputnode>& nodes, int 
 				{
 				uppervalues.push_back(this->getoutput(output, period).begin()->second);
 				}
-			uppernlower["U" + output.name] = uppervalues;
+			uppernlower["U" + output.getname()] = uppervalues;
 			this->eraseallconstraint(maxconstraint);
 			Core::FMTconstraint minconstraint(Core::FMTconstrainttype::FMTMINobjective, output);
 			minconstraint.setlength();
@@ -691,7 +691,7 @@ bool FMTlpmodel::locatenodes(const std::vector<Core::FMToutputnode>& nodes, int 
 				{
 				lowervalues.push_back(this->getoutput(output, period).begin()->second);
 				}
-			uppernlower["L" + output.name] = lowervalues;
+			uppernlower["L" + output.getname()] = lowervalues;
 			this->eraseallconstraint(minconstraint);
 			}
 		solverinterface->setObjective(&originalcoefficients[0]);

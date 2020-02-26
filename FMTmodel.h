@@ -162,6 +162,12 @@ class FMTmodel : public Core::FMTobject
 		*/
 		virtual std::unique_ptr<FMTmodel>postsolve(const FMTmodel& originalbasemodel) const;
 		/**
+		Using the original schedule (not presolved) and the original model (not presolved) it returns a new schedule with
+		presolved FMTdevelopements masks and actions.
+		*/
+		Core::FMTschedule presolveschedule(const Core::FMTschedule& originalbaseschedule,
+											const FMTmodel& originalbasemodel) const;
+		/**
 		Return the statistics of the model, the number of themes, yields, actions, transitions etc...
 		*/
 		FMTmodelstats getmodelstats() const;

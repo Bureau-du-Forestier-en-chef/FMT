@@ -121,6 +121,11 @@ class FMTsesmodel : public FMTmodel
 		std::unique_ptr<FMTmodel>presolve(int presolvepass = 10,
 			std::vector<Core::FMTactualdevelopment> optionaldevelopments = std::vector<Core::FMTactualdevelopment>()) const final;
 		/**
+		Using the original FMTmodel it postsolve the actual ses model to turn it back into a complete model with all themes,
+		actions and outputs of the original not presolved model.
+		*/
+		std::unique_ptr<FMTmodel>postsolve(const FMTmodel& originalbasemodel) const final;
+		/**
 		This is the main function to simulate a schedule of actions (schedule) on the actual 
 		spatialy explicit forest. If the (schedule_only) switch is turned on the simulator wont try
 		to find some operable developements (not present in the potential schedule)

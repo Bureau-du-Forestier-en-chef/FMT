@@ -192,30 +192,6 @@ void FMTmask::update(const std::vector<FMTtheme>& themes)
         }
     name = name.substr(0, name.size()-1);
     }
-/*bool FMTmask::linkNvalidate(const std::vector<FMTtheme>& themes)
-            {
-            std::vector<std::string>bases;
-            boost::split(bases,name,boost::is_any_of(FMT_STR_SEPARATOR), boost::token_compress_on);
-            int themeid = 0;
-            boost::dynamic_bitset<> themebits;
-            data.clear();
-            if(themes.size()!=bases.size())
-                {
-                return false;
-                }
-            for(const std::string& value : bases)
-                {
-                const FMTtheme* theme = &themes[themeid];
-                if((!theme->isaggregate(value))&&(!theme->isattribute(value))&&(!(value=="?")))
-                    {
-                    return false;
-                    }
-                themebits = theme->strtobits(value);
-                this->append(themebits);
-                ++themeid;
-                }
-            return true;
-            }*/
 
 FMTmask FMTmask::getunion(const FMTmask& rhs) const
 	{
@@ -385,6 +361,37 @@ FMTmask FMTmask::presolve(const FMTmask& selectedmask, const std::vector<FMTthem
 		newname.pop_back();
 		}
 	return FMTmask(newname, newdata);
+	}
+
+FMTmask FMTmask::postsolve(const FMTmask& selectedmask, const std::vector<FMTtheme>&basethemes) const
+	{
+	boost::dynamic_bitset<>newdata(selectedmask.size(),false);
+	size_t presolvedid = 0;
+	for (size_t mid = 0; mid < selectedmask.size();++mid)
+		{
+		if (selectedmask.data[mid])
+			{
+			newdata[mid] = data[presolvedid];
+			++presolvedid;
+			}
+		}
+	FMTmask newmask(newdata);
+	std::string newmaskname;
+	for (const FMTtheme& theme: basethemes)
+		{
+		std::string nameofattribute = "?";
+		boost::dynamic_bitset<> msubset = newmask.subset(theme);
+		if (msubset.size() == 1)
+			{
+			nameofattribute = (theme.getvaluenames().begin()->first);
+		}else if (msubset.count()>0)
+			{
+			nameofattribute = theme.bitstostr(msubset);
+			}
+		newmaskname += nameofattribute + " ";
+		}
+	newmaskname.pop_back();
+	return FMTmask(newmaskname, basethemes);
 	}
 
 }

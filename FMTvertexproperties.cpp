@@ -69,6 +69,12 @@ namespace Graph
 		{
 
 		}
+
+	void FMTvertexproperties::setdevlopementmask(const Core::FMTmask& newmask)
+		{
+		development->mask = newmask;
+		}
+
 	double FMTvertexproperties::getbaseRHS() const
 		{
 		return development->getarea();
