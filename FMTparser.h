@@ -58,7 +58,7 @@ SOFTWARE.
 #include "FMTexception.h"
 
 
-namespace WSParser
+namespace Parser
 {
 
 
@@ -127,11 +127,11 @@ class FMTparser: public Core::FMTobject
 			void getWSfields(OGRLayer* layer, std::map<int,int>& themes,int& age,int& area,int& lock, std::string agefield="", std::string areafield="", std::string lockfield="") const;
 		#endif
 		std::vector<std::string> sameas(const std::string& allset) const;
-		std::map<FMTwssect, std::string> getprimary(const std::string& primarylocation);
-		bool isyld(const Core::FMTyields& ylds,const std::string& value,FMTwssect section) const;
-        bool isact(FMTwssect section,const std::vector<Core::FMTaction>& actions, std::string action) const;
-		std::string setspec(FMTwssect section,FMTwskwor key,const Core::FMTyields& ylds,const Core::FMTconstants& constants, Core::FMTspec& spec, const std::string& line);
-        FMTwssect from_extension(const std::string& ext) const;
+		std::map<Core::FMTwssect, std::string> getprimary(const std::string& primarylocation);
+		bool isyld(const Core::FMTyields& ylds,const std::string& value, Core::FMTwssect section) const;
+        bool isact(Core::FMTwssect section,const std::vector<Core::FMTaction>& actions, std::string action) const;
+		std::string setspec(Core::FMTwssect section, Core::FMTwskwor key,const Core::FMTyields& ylds,const Core::FMTconstants& constants, Core::FMTspec& spec, const std::string& line);
+		Core::FMTwssect from_extension(const std::string& ext) const;
 		std::vector<std::vector<std::string>>readcsv(const std::string& location,const char& separator);
     public:
 		std::regex rxseparator;
@@ -198,7 +198,7 @@ class FMTparser: public Core::FMTobject
 			return gotit;
 			}
         template<typename T>
-		Core::FMTbounds<T>bounds(const Core::FMTconstants& constants, const std::string& value, const std::string& ope,FMTwssect section) const
+		Core::FMTbounds<T>bounds(const Core::FMTconstants& constants, const std::string& value, const std::string& ope, Core::FMTwssect section) const
             {
             T lupper = std::numeric_limits<T>::max();
             T llower = std::numeric_limits<T>::min();

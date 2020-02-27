@@ -23,9 +23,9 @@ SOFTWARE.
 */
 
 #include "FMTlogger.h"
-#if defined FMTPY
+#if defined FMTWITHPYTHON
 #include <boost/python.hpp>
-#endif // defined FMTPY
+#endif // defined FMTWITHPYTHON
 #include <iostream>
 #include "FMTversion.h"
 
@@ -95,7 +95,7 @@ namespace Logging
 
 	void FMTlogger::cout(const char* message) const
 		{
-		#if defined(FMTPY)
+		#if defined(FMTWITHPYTHON)
 				PySys_WriteStdout(message);
 		#else
 				std::cout << message << std::flush;

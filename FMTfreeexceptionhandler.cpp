@@ -44,11 +44,11 @@ FMTfreeexceptionhandler::FMTfreeexceptionhandler()
 }
 
 
-FMTlev FMTfreeexceptionhandler::raise(FMTexc lexception, FMTwssect lsection, std::string text,
+FMTlev FMTfreeexceptionhandler::raise(FMTexc lexception, Core::FMTwssect lsection, std::string text,
 	const int& line, const std::string& file)
 {
 	FMTexception excp;
-	if (lsection == FMTwssect::Empty)
+	if (lsection == Core::FMTwssect::Empty)
 	{
 		excp = FMTexception(lexception, updatestatus(lexception, text));
 	}

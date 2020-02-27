@@ -24,7 +24,7 @@ SOFTWARE.
 
 #include "FMTactionparser.h"
 
-namespace WSParser{
+namespace Parser{
 
 FMTactionparser::FMTactionparser() : FMTparser(),
     rxsection("^(\\*ACTION)([\\s\\t]*)([^\\s^\\t]*)([\\s\\t]*)([NY])([\\s\\t]*)(_LOCKEXEMPT)|(\\*ACTION)([\\s\\t]*)([^\\s^\\t]*)([\\s\\t]*)([NY])|(\\*OPERABLE)([\\s\\t]*)([^\\s^\\t]*)|(\\*AGGREGATE)([\\s\\t])(.+)|(\\*PARTIAL)([\\s\\t])(.+)",std::regex_constants::ECMAScript| std::regex_constants::icase),
@@ -61,13 +61,13 @@ FMTactionparser& FMTactionparser::operator = (const FMTactionparser& rhs)
 				const std::string  yield = elements[loc-1];
                 if(yield=="_AGE")
                     {
-                    spec.addbounds(Core::FMTagebounds(bounds<int>(constants,elements[loc+1],op,FMTwssect::Action)));
+                    spec.addbounds(Core::FMTagebounds(bounds<int>(constants,elements[loc+1],op, Core::FMTwssect::Action)));
 				}else if (yield == "_CP")
 					{
-					spec.setbounds(Core::FMTperbounds(bounds<int>(constants, elements[loc + 1], op, FMTwssect::Action)));
+					spec.setbounds(Core::FMTperbounds(bounds<int>(constants, elements[loc + 1], op, Core::FMTwssect::Action)));
 					}else {
                         yields.push_back(yield);
-                        spec.addbounds(Core::FMTyldbounds(yield,bounds<double>(constants,elements[loc+1],op,FMTwssect::Action)));
+                        spec.addbounds(Core::FMTyldbounds(yield,bounds<double>(constants,elements[loc+1],op, Core::FMTwssect::Action)));
                         }
                     if (maskloc==0)
                         {
@@ -84,7 +84,7 @@ FMTactionparser& FMTactionparser::operator = (const FMTactionparser& rhs)
         mask = mask.substr(0, mask.size()-1);
         for (const std::string yldname : yields)
             {
-            if (!isyld(ylds,yldname,FMTwssect::Action)) continue;
+            if (!isyld(ylds,yldname, Core::FMTwssect::Action)) continue;
             }
         return mask;
         }

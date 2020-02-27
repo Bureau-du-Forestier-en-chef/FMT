@@ -27,42 +27,42 @@ SOFTWARE.
 
 
 
-namespace WSParser
+namespace Parser
 {
 std::array<std::string, 5>FMTparser::baseoperators = { "=", "<=", ">=", "<", ">" };
 
 std::array<std::string,21>FMTparser::baseextensions = { ".run",".lan",".are",".act",".trn",".yld",".out",".opt",".con",".seq",".lif",
 							"._lan","._are","._act","._trn","._yld","._out","._opt","._con","._seq","._lif" };
 
-FMTwssect FMTparser::from_extension(const std::string& ext) const
+Core::FMTwssect FMTparser::from_extension(const std::string& ext) const
     {
 	const std::string lowercase = boost::to_lower_copy(ext);
 	const std::array<std::string, 21>::const_iterator it = std::find(baseextensions.begin(), baseextensions.end(), lowercase);
     const size_t id = (it - baseextensions.begin());
     switch (id)
         {
-            case 0 :return FMTwssect::Control;
-            case 1 :return FMTwssect::Landscape;
-            case 2 :return FMTwssect::Area;
-            case 3 :return FMTwssect::Action;
-            case 4 :return FMTwssect::Transition;
-            case 5 :return FMTwssect::Yield;
-            case 6 :return FMTwssect::Outputs;
-            case 7 :return FMTwssect::Optimize;
-            case 8 :return FMTwssect::Constants;
-            case 9 :return FMTwssect::Schedule;
-			case 10:return FMTwssect::Lifespan;
-			case 11:return FMTwssect::Landscape;
-			case 12:return FMTwssect::Area;
-			case 13:return FMTwssect::Action;
-			case 14:return FMTwssect::Transition;
-			case 15:return FMTwssect::Yield;
-			case 16:return FMTwssect::Outputs;
-			case 17:return FMTwssect::Optimize;
-			case 18:return FMTwssect::Constants;
-			case 19:return FMTwssect::Schedule;
-			case 20:return FMTwssect::Lifespan;
-            default:      return FMTwssect::Empty;
+            case 0 :return Core::FMTwssect::Control;
+            case 1 :return Core::FMTwssect::Landscape;
+            case 2 :return Core::FMTwssect::Area;
+            case 3 :return Core::FMTwssect::Action;
+            case 4 :return Core::FMTwssect::Transition;
+            case 5 :return Core::FMTwssect::Yield;
+            case 6 :return Core::FMTwssect::Outputs;
+            case 7 :return Core::FMTwssect::Optimize;
+            case 8 :return Core::FMTwssect::Constants;
+            case 9 :return Core::FMTwssect::Schedule;
+			case 10:return Core::FMTwssect::Lifespan;
+			case 11:return Core::FMTwssect::Landscape;
+			case 12:return Core::FMTwssect::Area;
+			case 13:return Core::FMTwssect::Action;
+			case 14:return Core::FMTwssect::Transition;
+			case 15:return Core::FMTwssect::Yield;
+			case 16:return Core::FMTwssect::Outputs;
+			case 17:return Core::FMTwssect::Optimize;
+			case 18:return Core::FMTwssect::Constants;
+			case 19:return Core::FMTwssect::Schedule;
+			case 20:return Core::FMTwssect::Lifespan;
+            default:      return Core::FMTwssect::Empty;
         }
     }
 
@@ -296,7 +296,7 @@ void FMTparser::getWSfields(OGRLayer* layer, std::map<int, int>& themes, int& ag
 }
 
 #endif
-std::string FMTparser::setspec(FMTwssect section,FMTwskwor key,const Core::FMTyields& ylds,const Core::FMTconstants& constants,Core::FMTspec& spec, const std::string& line)
+std::string FMTparser::setspec(Core::FMTwssect section, Core::FMTwskwor key,const Core::FMTyields& ylds,const Core::FMTconstants& constants,Core::FMTspec& spec, const std::string& line)
     {
 	std::smatch kmatch;
 	std::string rest = "";
@@ -348,7 +348,7 @@ std::string FMTparser::setspec(FMTwssect section,FMTwskwor key,const Core::FMTyi
     return rest;
     }
 
-bool FMTparser::isact(FMTwssect section,const std::vector<Core::FMTaction>& actions, std::string action) const
+bool FMTparser::isact(Core::FMTwssect section,const std::vector<Core::FMTaction>& actions, std::string action) const
     {
     if (std::find_if(actions.begin(),actions.end(), Core::FMTactioncomparator(action,true))==actions.end())
         {
@@ -361,7 +361,7 @@ bool FMTparser::isact(FMTwssect section,const std::vector<Core::FMTaction>& acti
 
 
 
-bool FMTparser::isyld(const Core::FMTyields& ylds,const std::string& value,FMTwssect section) const
+bool FMTparser::isyld(const Core::FMTyields& ylds,const std::string& value, Core::FMTwssect section) const
     {
     if (ylds.isyld(value))
         {
@@ -728,10 +728,10 @@ std::string FMTparser::getcleanlinewfor(std::ifstream& stream,const std::vector<
 	return returninclude(line, themes, cons);
     }
 
-std::map<FMTwssect, std::string> FMTparser::getprimary(const std::string& primarylocation)
+std::map<Core::FMTwssect, std::string> FMTparser::getprimary(const std::string& primarylocation)
 	{
 		std::ifstream primarystream(primarylocation);
-		std::map<FMTwssect, std::string>targets;
+		std::map<Core::FMTwssect, std::string>targets;
 		const boost::filesystem::path primary_path(primarylocation);
 		if (FMTparser::tryopening(primarystream, primarylocation))
 		{
@@ -747,15 +747,15 @@ std::map<FMTwssect, std::string> FMTparser::getprimary(const std::string& primar
 						const boost::filesystem::path file_path(file_name);
 						std::string extension = boost::filesystem::extension(file_path.string());
 						boost::to_lower(extension);
-						const FMTwssect section = from_extension(extension);
+						const Core::FMTwssect section = from_extension(extension);
 						targets[section] = (primary_path.parent_path() / file_path).string();
 					}
 				}
 			}
 		}
-		if (targets.find(FMTwssect::Constants)==targets.end())
+		if (targets.find(Core::FMTwssect::Constants)==targets.end())
 			{
-			targets[FMTwssect::Constants] = "";
+			targets[Core::FMTwssect::Constants] = "";
 			}
 		return targets;
 	}

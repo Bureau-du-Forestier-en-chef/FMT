@@ -278,10 +278,6 @@ namespace Core
 		this->type = ltype;
 		}
 
-	FMTconstrainttype FMTconstraint::getconstrainttype() const
-		{
-		return type;
-		}
 
 	FMTconstraint::operator std::string() const
 		{

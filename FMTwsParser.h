@@ -22,8 +22,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef FMTWSPARSER_H_INCLUDED
-#define FMTWSPARSER_H_INCLUDED
+#ifndef FMTParser_H_INCLUDED
+#define FMTParser_H_INCLUDED
 
 #include "FMTparser.h"
 #include "FMTconstantparser.h"
@@ -38,4 +38,4 @@ SOFTWARE.
 #include "FMTscheduleparser.h"
 //#include "FMTlpmodelparser.h"
 
-#endif // FMTWSPARSER_H_INCLUDED
+#endif // FMTParser_H_INCLUDED

@@ -25,7 +25,7 @@ SOFTWARE.
 
 #include "FMTlandscapeparser.h"
 
-namespace WSParser
+namespace Parser
 {
 
 FMTlandscapeparser::FMTlandscapeparser() :

@@ -34,13 +34,13 @@ void FMTmodel::setdefaultobjects()
 	{
 	if (std::find_if(actions.begin(), actions.end(), Core::FMTactioncomparator("_DEATH")) == actions.end())
 		{
-		_exhandler->raise(Exception::FMTexc::WSundefineddeathaction, FMTwssect::Action,
+		_exhandler->raise(Exception::FMTexc::WSundefineddeathaction, Core::FMTwssect::Action,
 			"_DEATH", __LINE__, __FILE__);
 		actions.push_back(defaultdeathaction(lifespan,themes));
 		}
 	if (std::find_if(transitions.begin(), transitions.end(), Core::FMTtransitioncomparator("_DEATH")) == transitions.end())
 		{
-		_exhandler->raise(Exception::FMTexc::WSundefineddeathtransition, FMTwssect::Transition,
+		_exhandler->raise(Exception::FMTexc::WSundefineddeathtransition, Core::FMTwssect::Transition,
 			"_DEATH", __LINE__, __FILE__);
 		transitions.push_back(defaultdeathtransition(lifespan,themes));
 		}
@@ -149,7 +149,7 @@ Core::FMTaction FMTmodel::defaultdeathaction(const Core::FMTlifespans& llifespan
 		const std::string mask(intobject.first);
 		const Core::FMTmask amask(mask,lthemes);
 		Core::FMTspec specifier;
-		specifier.addbounds(Core::FMTagebounds(FMTwssect::Action, intobject.second, intobject.second));
+		specifier.addbounds(Core::FMTagebounds(Core::FMTwssect::Action, intobject.second, intobject.second));
 		death_action.push_back(amask, specifier);
 		}
 	death_action.shrink();
@@ -180,7 +180,7 @@ std::vector<Core::FMTconstraint>FMTmodel::getconstraints() const
 	}
 
 void FMTmodel::addoutput(const std::string& name,
-	const std::string& maskstring, FMTotar outputtarget,
+	const std::string& maskstring, Core::FMTotar outputtarget,
 	std::string action, std::string yield, std::string description, int targettheme)
 	{
 	std::vector<Core::FMToutputsource>sources;
@@ -277,28 +277,28 @@ void FMTmodel::validatelistspec(const Core::FMTspec& specifier) const
 
 bool FMTmodel::isvalid()
     {
-	this->setsection(FMTwssect::Landscape);
+	this->setsection(Core::FMTwssect::Landscape);
 	for (const Core::FMTtheme& theme :themes)
 		{
 		if (theme.empty())
 			{
-			_exhandler->raise(Exception::FMTexc::WSempty_theme,FMTwssect::Landscape,
+			_exhandler->raise(Exception::FMTexc::WSempty_theme, Core::FMTwssect::Landscape,
 				"for theme id: " + std::to_string(theme.getid()), __LINE__, __FILE__);
 			}
 		}
-	this->setsection(FMTwssect::Area);
+	this->setsection(Core::FMTwssect::Area);
 	for (const Core::FMTactualdevelopment& developement : area)
 		{
 		std::string name = std::string(developement.mask);
 		this->validate(themes, name);
 		}
-	this->setsection(FMTwssect::Yield);
+	this->setsection(Core::FMTwssect::Yield);
 	this->validatelistmasks(yields);
 
-	this->setsection(FMTwssect::Lifespan);
+	this->setsection(Core::FMTwssect::Lifespan);
 	this->validatelistmasks(lifespan);
 
-	this->setsection(FMTwssect::Action);
+	this->setsection(Core::FMTwssect::Action);
 	for (const Core::FMTaction& action : actions)
 		{
 		this->validatelistmasks(action);
@@ -307,7 +307,7 @@ bool FMTmodel::isvalid()
 			validatelistspec(specobject.second);
 			}
 		}
-	this->setsection(FMTwssect::Transition);
+	this->setsection(Core::FMTwssect::Transition);
 	for (const Core::FMTtransition& transition : transitions)
 		{
 		this->validatelistmasks(transition);
@@ -318,16 +318,16 @@ bool FMTmodel::isvalid()
 		}
 	if (actions.size() != transitions.size())
 	{
-		_exhandler->raise(Exception::FMTexc::FMTinvalidAandT, FMTwssect::Empty, "Model: " + name, __LINE__, __FILE__);
+		_exhandler->raise(Exception::FMTexc::FMTinvalidAandT, Core::FMTwssect::Empty, "Model: " + name, __LINE__, __FILE__);
 	}
 	for (size_t id = 0; id < actions.size(); ++id)
 	{
 		if (actions[id].getname() != transitions[id].getname())
 		{
-			_exhandler->raise(Exception::FMTexc::WSinvalid_action, FMTwssect::Empty, "Model: " + name + " " + actions[id].getname(), __LINE__, __FILE__);
+			_exhandler->raise(Exception::FMTexc::WSinvalid_action, Core::FMTwssect::Empty, "Model: " + name + " " + actions[id].getname(), __LINE__, __FILE__);
 		}
 	}
-	this->setsection(FMTwssect::Outputs);
+	this->setsection(Core::FMTwssect::Outputs);
 	for (const Core::FMToutput& output : outputs)
 		{
 		//Need a validate output function
@@ -349,7 +349,7 @@ bool FMTmodel::isvalid()
 
 
 
-	this->setsection(FMTwssect::Empty);
+	this->setsection(Core::FMTwssect::Empty);
     return true;
     }
 

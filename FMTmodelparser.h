@@ -44,7 +44,7 @@ SOFTWARE.
 #include <vector>
 #include "FMTschedule.h"
 
-namespace WSParser
+namespace Parser
 {
 
 class FMTmodelparser : public FMTparser

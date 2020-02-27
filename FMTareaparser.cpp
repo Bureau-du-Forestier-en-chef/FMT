@@ -26,7 +26,7 @@ SOFTWARE.
 #include <boost/algorithm/string/join.hpp>
 #include <boost/lexical_cast.hpp>
 
-namespace WSParser{
+namespace Parser{
 
 #ifdef FMTWITHGDAL
 
@@ -737,7 +737,7 @@ namespace WSParser{
 				FMTparser(),
 				rxcleanarea("^(([*A]*)([^|]*)(_lock)([^0-9]*)([0-9]*))|(([*A]*)([^|]*)([|])([^|]*)([|])([^0-9]*)(.+))|(([*A]*)(([^|]*)([|])([^|]*)([|])))|([*A]*)(.+)", std::regex_constants::ECMAScript | std::regex_constants::icase)
 			{
-				_section = FMTwssect::Area;
+				_section = Core::FMTwssect::Area;
 			}
 
 			FMTareaparser::FMTareaparser(const FMTareaparser& rhs) : FMTparser(rhs), rxcleanarea(rhs.rxcleanarea)

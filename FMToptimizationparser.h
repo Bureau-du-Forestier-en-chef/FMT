@@ -39,7 +39,7 @@ SOFTWARE.
 #include "FMTtheme.h"
 #include <limits>
 
-namespace WSParser
+namespace Parser
 {
 	enum FMToptimizationsection
 		{

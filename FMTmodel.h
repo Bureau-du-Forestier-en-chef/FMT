@@ -132,7 +132,7 @@ class FMTmodel : public Core::FMTobject
 		///The name of the Model (name of the .pri file without extension)
         std::string name;
 		/**
-		Main constructor for FMTmodel used in WSparser::FMTmodelparser, the constraints are optional.
+		Main constructor for FMTmodel used in Parser::FMTmodelparser, the constraints are optional.
 		For the FMTsesmodel no constraints are needed.
 		*/
 		FMTmodel(const std::vector<Core::FMTactualdevelopment>& larea, const std::vector<Core::FMTtheme>& lthemes,
@@ -223,7 +223,7 @@ class FMTmodel : public Core::FMTobject
 		yield = yield string targeted
 		description = description of the output
 		*/
-		void addoutput(const std::string& name,const std::string& maskstring, FMTotar outputtarget,
+		void addoutput(const std::string& name,const std::string& maskstring, Core::FMTotar outputtarget,
 			std::string action = std::string(), std::string yield = std::string(), std::string description = std::string(),int targettheme = -1);
 		/**
 		Comparison operator of FMTlpmodel

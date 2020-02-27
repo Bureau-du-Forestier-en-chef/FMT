@@ -66,12 +66,12 @@ namespace Core
 
 	void FMTobject::checksignals()
 	{
-	    #if defined FMTPY
+	    #if defined FMTWITHPYTHON
 		if (PyErr_CheckSignals() == -1)
 		{
 			exit(1);
 		}
-		#endif // defined FMTPY
+		#endif // defined FMTWITHPYTHON
 	}
 
 

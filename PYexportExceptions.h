@@ -25,9 +25,14 @@ SOFTWARE.
 #ifndef PYEXPORTEXCEPTIONS_H_INCLUDED
 #define PYEXPORTEXCEPTIONS_H_INCLUDED
 
+#include "PYexportExceptions.h"
+
 #include "FMTdefaultexceptionhandler.h"
 #include "FMTdebugexceptionhandler.h"
 #include "FMTquietexceptionhandler.h"
+
+namespace Python
+{
 
 void exportException()
     {
@@ -81,18 +86,18 @@ void exportException()
 		.value("WSunsupported_yield", Exception::FMTexc::WSunsupported_yield)
 		.export_values();
 
-	bp::enum_<FMTwssect>("FMTwssect")
-		.value("Control", FMTwssect::Control)
-		.value("Landscape", FMTwssect::Landscape)
-		.value("Area", FMTwssect::Area)
-		.value("Action", FMTwssect::Action)
-		.value("Transition", FMTwssect::Transition)
-		.value("Yield", FMTwssect::Yield)
-		.value("Outputs", FMTwssect::Outputs)
-		.value("Optimize", FMTwssect::Optimize)
-		.value("Constants", FMTwssect::Constants)
-		.value("Schedule", FMTwssect::Schedule)
-		.value("Empty", FMTwssect::Empty)
+	bp::enum_<Core::FMTwssect>("FMTwssect")
+		.value("Control", Core::FMTwssect::Control)
+		.value("Landscape", Core::FMTwssect::Landscape)
+		.value("Area", Core::FMTwssect::Area)
+		.value("Action", Core::FMTwssect::Action)
+		.value("Transition", Core::FMTwssect::Transition)
+		.value("Yield", Core::FMTwssect::Yield)
+		.value("Outputs", Core::FMTwssect::Outputs)
+		.value("Optimize", Core::FMTwssect::Optimize)
+		.value("Constants", Core::FMTwssect::Constants)
+		.value("Schedule", Core::FMTwssect::Schedule)
+		.value("Empty", Core::FMTwssect::Empty)
 		.export_values();
 
 	bp::class_<Exception::FMTexception>Exceptionclass("FMTexception");
@@ -107,8 +112,8 @@ void exportException()
 	FMTexceptiontype = Errorclass.ptr();
 	bp::register_exception_translator<Exception::FMTerror>(&FMTtranslate_error);
 
+	}
 
-
-    }
+	}
 
 #endif // PYEXPORTEXCEPTIONS_H_INCLUDED

@@ -326,7 +326,7 @@ namespace Models
                     }
                 }
 			}else{
-				_exhandler->raise(Exception::FMTexc::WSinvalid_transition,FMTwssect::Transition, "Missing transition case for action : " + spaction.getname(),__LINE__, __FILE__);
+				_exhandler->raise(Exception::FMTexc::WSinvalid_transition, Core::FMTwssect::Transition, "Missing transition case for action : " + spaction.getname(),__LINE__, __FILE__);
 				return false;
 				}
 			}
@@ -352,7 +352,7 @@ namespace Models
     {
         if (outputs_write_location.empty())
         {
-            _exhandler->raise(Exception::FMTexc::FMTinvalid_path,FMTwssect::Empty, "No path given to the function write_outputs_at ",__LINE__, __FILE__);
+            _exhandler->raise(Exception::FMTexc::FMTinvalid_path, Core::FMTwssect::Empty, "No path given to the function write_outputs_at ",__LINE__, __FILE__);
         }
         else
         {

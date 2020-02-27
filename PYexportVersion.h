@@ -29,7 +29,8 @@ SOFTWARE.
 #include <boost/python/args.hpp>
 #include "FMTversion.h"
 
-
+namespace Python
+{
 void exportVersion()
 {
 	namespace bp = boost::python;
@@ -54,7 +55,7 @@ void exportVersion()
 		.def("getversion", &Version::FMTversion::getversion).staticmethod("getversion")
 		.def("isatleast", &Version::FMTversion::isatleast).staticmethod("isatleast")
 		.def("hasfeature", &Version::FMTversion::hasfeature).staticmethod("hasfeature");
-
+	}
 }
 
 

@@ -77,6 +77,10 @@ class FMTconstraint: public FMToutput,public FMTspec
 	}
 	///This enumerator sets the type of constraint of the FMTconstraint (objective/constraint/evenflow...)
 	FMTconstrainttype type;
+	/**
+	Function used for string formating for FMTconstraint in to string conversion.
+	*/
+	void standardstring(std::string& line, std::string& period_bounds, std::string& goal) const;
 	public:
 		/**
 		Default constructor for FMTconstraint.
@@ -107,27 +111,87 @@ class FMTconstraint: public FMToutput,public FMTspec
 		*/
 		bool extravariables() const;
 		/**
-		Returns true if 
+		Returns true if the constraint have goal weight
 		*/
 		bool isgoal() const;
+		/**
+		If the constraint is goal then you can get the name of the penalties of the constraint. like _GOAL(penaltyname,weight)
+		*/
 		std::vector<std::string>getpenalties(double & sense) const;
+		/**
+		If the constraint is a level this function will return the level name of the constraint.
+		*/
 		std::vector<std::string>getvariablelevels() const;
+		/**
+		If the constraint has a goal this function fill up the name of the goal and it's weight.
+		*/
 		void getgoal(std::string& name,double& value) const;
+		/**
+		Returns true if the constraint is an objective.
+		*/
 		bool isobjective() const;
+		/**
+		If the constraint is an objective the function returns the sense of the objective,
+		1 = minimisation, -1 = maximisation.
+		*/
 		double sense() const;
+		/**
+		This function fills up the (lower) and (upper) bound for a given period, if
+		the constraint can be applied to this (period). Use with osisolverinterfacer with rowsetbounds().
+		*/
 		void getbounds(double& lower, double& upper,int period = 0) const;
+		/**
+		This functions sets the RHS of this FMTconstraint with a row (lower) and (upper) bound.
+		*/
 		void setrhs(const double& lower, const double& upper);
+		/**
+		This functions sets the length of the FMTconstraint
+		*/
 		void setlength(int firstperiod = 1,int lastperiod = std::numeric_limits<int>::max());
+		/**
+		Get the variation for constraint like _EVEN _SEQ,_NDY etc... _EVEN(lowervariation,uppervariation).
+		*/
 		void getvariations(double& lower, double& upper) const;
+		/**
+		Returns true if the FMTconstraint allow some sort of variability like _EVEN(lowervariation,uppervariation).
+		*/
 		bool ismultiple() const;
+		/**
+		Returns true if the FMTconstraint needs so be set across multiple periods like _EVEN,_SEQ,_NDY
+		*/
 		bool acrossperiod() const;
+		/**
+		Hasghing for FMTconstraint.
+		*/
 		size_t hash() const;
+		/**
+		Setter for the FMToutput of the FMTconstraint.
+		*/
 		void setoutput(const FMToutput& out);
+		/**
+		Setter for the FMTconstrainttype of FMTconstraint.
+		*/
 		void setconstrainttype(FMTconstrainttype ltype);
-		FMTconstrainttype getconstrainttype() const;
+		/**
+		Getter for the constrainttype.
+		*/
+		inline FMTconstrainttype getconstrainttype() const
+			{
+			return type;
+			}
+		/**
+		Get the string reprensentation like in the optimization section  of a FMTconstraint.
+		*/
 		operator std::string() const;
-		void standardstring(std::string& line, std::string& period_bounds, std::string& goal) const;
+		/**
+		Returns true if the FMTconstraint output is empty.
+		*/
 		size_t outputempty() const;
+		/**
+		Like FMToutput class this function presolve the FMTconstraint and can returns an empty FMTconstraint if 
+		based on a (basemask), the (originalthemes), the presolved themes, the presolved actions and presolved yields.
+		See FMToutput presolve for more information.
+		*/
 		FMTconstraint presolve(const FMTmask& basemask,
 			const std::vector<FMTtheme>& originalthemes,
 			const FMTmask& presolvedmask,

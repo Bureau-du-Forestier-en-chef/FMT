@@ -29,9 +29,9 @@ SOFTWARE.
 #include <string>
 #include <iostream>
 #include <memory>
-#if defined FMTPY
+#if defined FMTWITHPYTHON
 #include <boost/python.hpp>
-#endif // define FMTPY
+#endif // define FMTWITHPYTHON
 #include <boost/serialization/serialization.hpp>
 #include <boost/serialization/nvp.hpp>
 #if defined (_MSC_VER)
@@ -137,16 +137,16 @@ class FMTexception : public std::exception
 		bool holdup;
 		std::string _msg;
 		FMTexc exceptiontype;
-		FMTwssect section;
+		Core::FMTwssect section;
     public:
     FMTexception();
     virtual ~FMTexception() = default;
     FMTexception(const FMTexc lexception,const std::string message);
-    FMTexception(const FMTexc lexception,FMTwssect lsection,const std::string message);
+    FMTexception(const FMTexc lexception,Core::FMTwssect lsection,const std::string message);
     FMTexception(const FMTexception& rhs);
     FMTexception& operator = (const FMTexception& rhs);
 	FMTexc gettype() const;
-	FMTwssect getsection() const;
+	Core::FMTwssect getsection() const;
     const char* what() const throw() override;
 	bool hold() const;
 	void sethold(bool side);

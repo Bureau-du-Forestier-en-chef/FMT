@@ -36,7 +36,7 @@ SOFTWARE.
 #include <map>
 
 
-namespace WSParser
+namespace Parser
 {
 
 class FMTactionparser : public FMTparser

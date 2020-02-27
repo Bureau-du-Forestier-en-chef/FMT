@@ -239,7 +239,7 @@ namespace Heuristics
 			{
 			areamask.set(theme, "?");
 			}
-		areatarget.source = Core::FMToutputsource(Core::FMTspec(), areamask, FMTotar::inventory);
+		areatarget.source = Core::FMToutputsource(Core::FMTspec(), areamask, Core::FMTotar::inventory);
 		const std::vector<const Core::FMTaction*>actions = specifictarget.source.targets(modelactions);
 		std::vector<int>actionids;
 		for (const Core::FMTaction* actptr : actions)
@@ -526,8 +526,8 @@ namespace Heuristics
 				data=operatingareait->getdualsolution(rowupperbound);
 				}
 			std::vector<std::string>source;
-			Core::FMTyieldhandler handler(FMTyldwstype::FMTtimeyld, operatingareait->getmask());
-			handler.push_data(yldname,Core::FMTdata(data, FMTyieldparserop::FMTwsnone, source));
+			Core::FMTyieldhandler handler(Core::FMTyldwstype::FMTtimeyld, operatingareait->getmask());
+			handler.push_data(yldname,Core::FMTdata(data, Core::FMTyieldparserop::FMTwsnone, source));
 			allhandlers.push_back(handler);
 			}
 		return allhandlers;

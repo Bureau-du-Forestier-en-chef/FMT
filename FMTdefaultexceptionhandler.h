@@ -42,7 +42,7 @@ class FMTdefaultexceptionhandler final : public FMTexceptionhandler
 	public:
 		FMTdefaultexceptionhandler();
 		~FMTdefaultexceptionhandler() = default;
-		FMTlev raise(FMTexc lexception, FMTwssect lsection, std::string text,
+		FMTlev raise(FMTexc lexception, Core::FMTwssect lsection, std::string text,
 			const int& line, const std::string& file) override;
 #ifdef FMTWITHGDAL
 		FMTexceptionhandler* getCPLdata() override;

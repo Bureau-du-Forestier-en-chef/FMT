@@ -25,7 +25,7 @@ SOFTWARE.
 #include "FMTmodelparser.h"
 #include <map>
 
-namespace WSParser{
+namespace Parser{
 
 FMTmodelparser::FMTmodelparser():FMTparser()
     {
@@ -294,7 +294,7 @@ Models::FMTmodel FMTmodelparser::referenceread(std::map<std::string, std::vector
 			actions = actparser.read(themes, yields, constants, act);
 			if (find_if(actions.begin(), actions.end(), Core::FMTactioncomparator("_DEATH")) == actions.end())
 				{
-				_exhandler->raise(Exception::FMTexc::WSundefineddeathaction, FMTwssect::Action,
+				_exhandler->raise(Exception::FMTexc::WSundefineddeathaction, Core::FMTwssect::Action,
 					"_DEATH", __LINE__, __FILE__);
 				actions.push_back(Models::FMTmodel::defaultdeathaction(lifespan,themes));
 				}
@@ -306,7 +306,7 @@ Models::FMTmodel FMTmodelparser::referenceread(std::map<std::string, std::vector
 			transitions = trnparser.read(themes, actions, yields, constants, tr);
 			if (find_if(transitions.begin(), transitions.end(), Core::FMTtransitioncomparator("_DEATH")) == transitions.end())
 				{
-				_exhandler->raise(Exception::FMTexc::WSundefineddeathtransition, FMTwssect::Transition,
+				_exhandler->raise(Exception::FMTexc::WSundefineddeathtransition, Core::FMTwssect::Transition,
 					"_DEATH", __LINE__, __FILE__);
 				transitions.push_back(Models::FMTmodel::defaultdeathtransition(lifespan,themes));
 				}
@@ -347,34 +347,34 @@ std::vector<Models::FMTmodel>FMTmodelparser::readproject(const std::string& prim
 	{
 	std::vector<Models::FMTmodel>models;
 	std::map<std::string, std::vector<int>>commons;
-	std::map<FMTwssect, std::string>bases = getprimary(primary_location);
+	std::map<Core::FMTwssect, std::string>bases = getprimary(primary_location);
 	if (!readarea)
 		{
-		bases.at(FMTwssect::Area) = "";
+		bases.at(Core::FMTwssect::Area) = "";
 		}
 	if (!readoutputs)
 		{
-		bases.at(FMTwssect::Outputs) = "";
-		bases.at(FMTwssect::Optimize) = "";
+		bases.at(Core::FMTwssect::Outputs) = "";
+		bases.at(Core::FMTwssect::Optimize) = "";
 		}
 	if (!readoptimize)
 		{
-		bases.at(FMTwssect::Optimize) = "";
+		bases.at(Core::FMTwssect::Optimize) = "";
 		}
 	bool tookroot = (std::find(scenarios.begin(), scenarios.end(), "ROOT") != scenarios.end());
 	if (tookroot ||scenarios.empty()) //load the modelroot!
 		{
 		Models::FMTmodel scenario = referenceread(commons,
 			models,
-			bases.at(FMTwssect::Constants),
-			bases.at(FMTwssect::Landscape),
-			bases.at(FMTwssect::Lifespan),
-			bases.at(FMTwssect::Area),
-			bases.at(FMTwssect::Yield),
-			bases.at(FMTwssect::Action),
-			bases.at(FMTwssect::Transition),
-			bases.at(FMTwssect::Outputs),
-			bases.at(FMTwssect::Optimize),true);
+			bases.at(Core::FMTwssect::Constants),
+			bases.at(Core::FMTwssect::Landscape),
+			bases.at(Core::FMTwssect::Lifespan),
+			bases.at(Core::FMTwssect::Area),
+			bases.at(Core::FMTwssect::Yield),
+			bases.at(Core::FMTwssect::Action),
+			bases.at(Core::FMTwssect::Transition),
+			bases.at(Core::FMTwssect::Outputs),
+			bases.at(Core::FMTwssect::Optimize),true);
 		models.back().name = "ROOT";
 		}
 	const boost::filesystem::path primary_path(primary_location);
@@ -392,17 +392,17 @@ std::vector<Models::FMTmodel>FMTmodelparser::readproject(const std::string& prim
 				model_name = itr->path().stem().string();
 				if (scenarios.empty()||std::find(scenarios.begin(), scenarios.end(), model_name) != scenarios.end())
 					{
-						std::map<FMTwssect, std::string>scenario_files = bases;
+						std::map<Core::FMTwssect, std::string>scenario_files = bases;
 						boost::filesystem::directory_iterator end_fileitr;
 						for (boost::filesystem::directory_iterator fileitr(itr->path()); fileitr != end_fileitr; ++fileitr)
 						{
 							if (boost::filesystem::is_regular_file(fileitr->path()))
 							{
 								const std::string extension = boost::filesystem::extension(fileitr->path().string());
-								FMTwssect section = from_extension(extension);
+								Core::FMTwssect section = from_extension(extension);
 								std::string file_name = fileitr->path().stem().string();
 								boost::to_lower(file_name);
-								if (section != FMTwssect::Empty && file_name == main_name)
+								if (section != Core::FMTwssect::Empty && file_name == main_name)
 								{
 									scenario_files[section] = fileitr->path().string();
 									
@@ -412,28 +412,28 @@ std::vector<Models::FMTmodel>FMTmodelparser::readproject(const std::string& prim
 
 						if (!readarea)
 							{
-							scenario_files.at(FMTwssect::Area) = "";
+							scenario_files.at(Core::FMTwssect::Area) = "";
 							}
 						if (!readoutputs)
 							{
-							scenario_files.at(FMTwssect::Outputs) = "";
-							scenario_files.at(FMTwssect::Optimize) = "";
+							scenario_files.at(Core::FMTwssect::Outputs) = "";
+							scenario_files.at(Core::FMTwssect::Optimize) = "";
 							}
 						if (!readoptimize)
 							{
-							scenario_files.at(FMTwssect::Optimize) = "";
+							scenario_files.at(Core::FMTwssect::Optimize) = "";
 							}
 						Models::FMTmodel scenario = referenceread(commons,
 							models,
-							scenario_files.at(FMTwssect::Constants),
-							scenario_files.at(FMTwssect::Landscape),
-							scenario_files.at(FMTwssect::Lifespan),
-							scenario_files.at(FMTwssect::Area),
-							scenario_files.at(FMTwssect::Yield),
-							scenario_files.at(FMTwssect::Action),
-							scenario_files.at(FMTwssect::Transition),
-							scenario_files.at(FMTwssect::Outputs),
-							scenario_files.at(FMTwssect::Optimize),true);
+							scenario_files.at(Core::FMTwssect::Constants),
+							scenario_files.at(Core::FMTwssect::Landscape),
+							scenario_files.at(Core::FMTwssect::Lifespan),
+							scenario_files.at(Core::FMTwssect::Area),
+							scenario_files.at(Core::FMTwssect::Yield),
+							scenario_files.at(Core::FMTwssect::Action),
+							scenario_files.at(Core::FMTwssect::Transition),
+							scenario_files.at(Core::FMTwssect::Outputs),
+							scenario_files.at(Core::FMTwssect::Optimize),true);
 						models.back().name = model_name;
 					}
 				}
@@ -451,14 +451,14 @@ std::vector<std::vector<Core::FMTschedule>>FMTmodelparser::readschedules(const s
 	{
 	std::vector<std::vector<Core::FMTschedule>>schedules(models.size());
 	const boost::filesystem::path primary_path(primary_location);
-	const std::map<FMTwssect, std::string>bases = getprimary(primary_location);
+	const std::map<Core::FMTwssect, std::string>bases = getprimary(primary_location);
 	FMTscheduleparser scheduleparser;
 	scheduleparser.passinexceptionhandler(_exhandler);
 	std::vector<Models::FMTmodel>::const_iterator model_it = std::find_if(models.begin(), models.end(), Models::FMTmodelcomparator("ROOT"));
 	if (model_it != models.end())
 		{
 		const size_t location = std::distance<std::vector<Models::FMTmodel>::const_iterator>(models.begin(), model_it);
-		const boost::filesystem::path root_solution(bases.at(FMTwssect::Schedule));
+		const boost::filesystem::path root_solution(bases.at(Core::FMTwssect::Schedule));
 		const std::vector<Core::FMTaction>actions = model_it->getactions();
 		const std::vector<Core::FMTtheme>themes = model_it->getthemes();
 		schedules[location] = scheduleparser.read(themes, actions, root_solution.string());
@@ -466,7 +466,7 @@ std::vector<std::vector<Core::FMTschedule>>FMTmodelparser::readschedules(const s
 	const boost::filesystem::path scenarios_path = (primary_path.parent_path() / boost::filesystem::path("Scenarios"));
 	if (boost::filesystem::is_directory(scenarios_path))
 		{
-		std::string name = boost::filesystem::path(bases.at(FMTwssect::Schedule)).filename().string();
+		std::string name = boost::filesystem::path(bases.at(Core::FMTwssect::Schedule)).filename().string();
 		boost::replace_all(name, ".seq", "._seq");
 		boost::replace_all(name, ".SEQ", "._SEQ");
 		const boost::filesystem::path file_name(name);

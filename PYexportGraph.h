@@ -25,9 +25,10 @@ SOFTWARE.
 #ifndef PYEXPORTGRAPH_H_INCLUDED
 #define PYEXPORTGRAPH_H_INCLUDED
 
+#include "PYexportGraph.h"
 
-//#include "FMTgraph.h"
-
+namespace Python 
+{
 void exportGraph()
 {
 	namespace bp = boost::python;
@@ -69,7 +70,7 @@ void exportGraph()
 	bp::class_<Graph::FMTgraph>("FMTgraph")
 		.def_pickle(FMT_pickle_suite<Graph::FMTgraph>());
 
-
+}
 
 }
 

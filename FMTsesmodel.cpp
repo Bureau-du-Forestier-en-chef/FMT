@@ -76,7 +76,7 @@ namespace Models
 				newbaseactions.push_back(spaction);
 			}else{
 				_exhandler->raise(Exception::FMTexc::WSinvalid_transition,
-					FMTwssect::Transition, "Missing transition case for action : " + spaction.getname(),__LINE__, __FILE__);
+					Core::FMTwssect::Transition, "Missing transition case for action : " + spaction.getname(),__LINE__, __FILE__);
 				return false;
 				}
 			}

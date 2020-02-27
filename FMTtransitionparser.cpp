@@ -25,7 +25,7 @@ SOFTWARE.
 #include "FMTtransitionparser.h"
 
 
-namespace WSParser{
+namespace Parser{
 
 FMTtransitionparser::FMTtransitionparser():FMTparser(),
     rxsection("^(\\*CASE)([\\s\\t]*)([^\\s^\\t]*)|(\\*SOURCE)([\\s\\t]*)(.+)|(\\*TARGET)([\\s\\t]*)(.+)", std::regex_constants::ECMAScript| std::regex_constants::icase),
@@ -60,7 +60,7 @@ FMTtransitionparser& FMTtransitionparser::operator = (const FMTtransitionparser&
     return *this;
     }
 
-Core::FMTmask FMTtransitionparser::getsource(std::string& line, Core::FMTspec& spec,const std::vector<Core::FMTtheme>& themes,FMTwssect section,const Core::FMTconstants& constants,const Core::FMTyields& ylds)
+Core::FMTmask FMTtransitionparser::getsource(std::string& line, Core::FMTspec& spec,const std::vector<Core::FMTtheme>& themes, Core::FMTwssect section,const Core::FMTconstants& constants,const Core::FMTyields& ylds)
     {
 	const std::vector<std::string>elements = FMTparser::spliter(line,FMTparser::rxseparator);
     if (elements.size() == themes.size())
@@ -84,7 +84,7 @@ Core::FMTmask FMTtransitionparser::getsource(std::string& line, Core::FMTspec& s
 			validate(themes,mask, " at line " + std::to_string(_line));
             const Core::FMTmask newmask(mask,themes);
             rest += " ";
-            rest = setspec(FMTwssect::Transition,FMTwskwor::Source,ylds,constants,spec,rest);
+            rest = setspec(Core::FMTwssect::Transition, Core::FMTwskwor::Source,ylds,constants,spec,rest);
             return newmask;
             }
     }
@@ -122,14 +122,14 @@ std::vector<Core::FMTtransitionmask> FMTtransitionparser::getmasktran(const std:
 		const std::string strlock = kmatch[4];
         lock = getnum<int>(strlock,constants);
         rest = std::string(kmatch[1]) + std::string(kmatch[5]);
-        trans.addbounds(Core::FMTlockbounds(FMTwssect::Transition,FMTwskwor::Target,lock,lock));
+        trans.addbounds(Core::FMTlockbounds(Core::FMTwssect::Transition, Core::FMTwskwor::Target,lock,lock));
         }
     if (std::regex_search(rest,kmatch,FMTtransitionparser::rxage))
         {
 		std::string strage = kmatch[4];
         age = getnum<int>(strage,constants);
         rest = std::string(kmatch[1]) + std::string(kmatch[5]);
-        trans.addbounds(Core::FMTagebounds(FMTwssect::Transition,FMTwskwor::Target,age,age));
+        trans.addbounds(Core::FMTagebounds(Core::FMTwssect::Transition, Core::FMTwskwor::Target,age,age));
         }
      if (regex_search(rest,kmatch,FMTtransitionparser::rxreplace))
         {
@@ -162,8 +162,8 @@ std::vector<Core::FMTtransitionmask> FMTtransitionparser::getmasktran(const std:
             {
             constexpr double upperbound = std::numeric_limits<double>::max();
             const double lowerbound = getnum<double>(strvalue,constants);
-            isyld(ylds,yld,FMTwssect::Transition);
-            trans.addbounds(Core::FMTyldbounds(FMTwssect::Transition,FMTwskwor::Target,yld,upperbound,lowerbound));
+            isyld(ylds,yld, Core::FMTwssect::Transition);
+            trans.addbounds(Core::FMTyldbounds(Core::FMTwssect::Transition, Core::FMTwskwor::Target,yld,upperbound,lowerbound));
             }
         }
 	std::vector<Core::FMTtransitionmask>alltrans;
@@ -223,13 +223,13 @@ std::vector<Core::FMTtransition> FMTtransitionparser::read(const std::vector<Cor
 							last_transition->push_back(forkobj);
 							}
                         }
-                    if (!isact(FMTwssect::Transition,actions,actionname)) continue;
+                    if (!isact(Core::FMTwssect::Transition,actions,actionname)) continue;
                     }else if(!SOURCE.empty())
                         {
 						std::string data;
                         data = kmatch[6];
                         Core::FMTfork fork;
-                        srcmsk = getsource(data,fork,themes,FMTwssect::Transition,constants,ylds);
+                        srcmsk = getsource(data,fork,themes, Core::FMTwssect::Transition,constants,ylds);
 						last_transition->push_back(srcmsk, fork);
                         fptrs.clear();
 						fork_ids.clear();

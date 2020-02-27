@@ -1,0 +1,115 @@
+/*
+MIT License
+
+Copyright (c) [2019] [Bureau du forestier en chef]
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+*/
+
+#ifndef PYEXPORTParser_H_INCLUDED
+#define PYEXPORTParser_H_INCLUDED
+
+#include "FMTlandscapeparser.h"
+#include "FMTconstantparser.h"
+#include "FMTyieldparser.h"
+#include "FMTareaparser.h"
+#include "FMTactionparser.h"
+#include "FMTtransitionparser.h"
+#include "FMToutputparser.h"
+#include "FMToptimizationparser.h"
+#include "FMTmodelparser.h"
+
+namespace Python
+{
+BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(readrasters_overloads,readrasters, 3, 6)
+BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(readvectors_overloads,readvectors, 4, 8)
+BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(getneighbors_overloads, getneighbors, 5, 10)
+
+BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(writeforest_overloads,writeforest, 5, 6)
+BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(writedisturbances_overloads,writedisturbances, 5, 6)
+
+BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(readmodel_overloads, read, 8, 9)
+BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(readproject_overloads, readproject,1,5)
+
+
+
+void exportParser()
+    {
+    namespace bp = boost::python;
+    bp::object ParserModule(bp::handle<>(bp::borrowed(PyImport_AddModule("FMT.Parser"))));
+    bp::scope().attr("Parser") = ParserModule;
+    bp::scope Parser_scope = ParserModule;
+    bp::scope().attr("__doc__") = ".. module:: Parser\n"
+    "\n"
+    "   :platform: Unix, Windows\n"
+    "   :synopsis: Module used to import Woodstock models.\n"
+    "\n";
+
+	bp::class_<Parser::FMTparser, bp::bases<Core::FMTobject>>("FMTparser");
+
+	define_pydict<std::string,std::string>();
+
+	bp::class_<Parser::FMTareaparser, bp::bases<Parser::FMTparser>>("FMTareaparser")
+                .def("read", &Parser::FMTareaparser::read)
+				#ifdef FMTWITHGDAL
+					.def("readvectors", &Parser::FMTareaparser::readvectors,readvectors_overloads())
+					.def("readrasters", &Parser::FMTareaparser::readrasters,readrasters_overloads())
+					.def("writeforest",&Parser::FMTareaparser::writeforest,writeforest_overloads())
+					.def("writedisturbances",&Parser::FMTareaparser::writedisturbances,writedisturbances_overloads())
+					.def("getneighbors",&Parser::FMTareaparser::getneighbors, getneighbors_overloads())
+				#endif
+				.def("write", &Parser::FMTareaparser::write);
+	bp::class_<Parser::FMTlandscapeparser, bp::bases<Parser::FMTparser>>("FMTlandscapeparser")
+                .def("read",&Parser::FMTlandscapeparser::read)
+				#ifdef FMTWITHGDAL
+					.def("readvectors", &Parser::FMTlandscapeparser::readvectors)
+					.def("readrasters",&Parser::FMTlandscapeparser::readrasters)
+				#endif
+                .def("write",&Parser::FMTlandscapeparser::write);
+	bp::class_<Parser::FMTactionparser, bp::bases<Parser::FMTparser>>("FMTactionparser")
+                .def("read",&Parser::FMTactionparser::read)
+                .def("write",&Parser::FMTactionparser::write);
+	bp::class_<Parser::FMTtransitionparser, bp::bases<Parser::FMTparser>>("FMTtransitionparser")
+                .def("read",&Parser::FMTtransitionparser::read)
+                .def("write",&Parser::FMTtransitionparser::write);
+	bp::class_<Parser::FMTconstantparser, bp::bases<Parser::FMTparser>>("FMTconstantparser")
+                .def("read",&Parser::FMTconstantparser::read)
+                .def("write",&Parser::FMTconstantparser::write);
+	bp::class_<Parser::FMTlifespanparser, bp::bases<Parser::FMTparser>>("FMTlifespanparser")
+                .def("read",&Parser::FMTlifespanparser::read)
+                .def("write",&Parser::FMTlifespanparser::write);
+	bp::class_<Parser::FMTyieldparser, bp::bases<Parser::FMTparser>>("FMTyieldparser")
+                .def("read",&Parser::FMTyieldparser::read)
+                .def("write",&Parser::FMTyieldparser::write);
+	bp::class_<Parser::FMToutputparser, bp::bases<Parser::FMTparser>>("FMToutputparser")
+                .def("read",&Parser::FMToutputparser::read)
+                .def("write",&Parser::FMToutputparser::write);
+	bp::class_<Parser::FMTmodelparser, bp::bases<Parser::FMTparser>>("FMTmodelparser")
+                .def("read",&Parser::FMTmodelparser::read, readmodel_overloads())
+				.def("readproject", &Parser::FMTmodelparser::readproject, readproject_overloads())
+				.def("readschedules", &Parser::FMTmodelparser::readschedules)
+                .def("write",&Parser::FMTmodelparser::write);
+	bp::class_<Parser::FMTscheduleparser, bp::bases<Parser::FMTparser>>("FMTscheduleparser")
+                .def("read",&Parser::FMTscheduleparser::read)
+                .def("write",&Parser::FMTscheduleparser::write);
+    }
+
+}
+
+#endif // PYEXPORTParser_H_INCLUDED

@@ -33,7 +33,7 @@ SOFTWARE.
 #include <vector>
 #include <string>
 
-namespace WSParser
+namespace Parser
 {
 
 class FMTscheduleparser: public FMTparser

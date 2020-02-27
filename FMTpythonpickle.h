@@ -22,8 +22,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef FMTPYPICKLE_H_INCLUDED
-#define FMTPYPICKLE_H_INCLUDED
+#ifndef FMTPYTHONPICKLE_H_INCLUDED
+#define FMTPYTHONPICKLE_H_INCLUDED
 	#include <boost/serialization/serialization.hpp>
 	#include <boost/serialization/export.hpp>
 	#include <boost/iostreams/stream.hpp>
@@ -36,7 +36,10 @@ SOFTWARE.
 	#include "FMToperatingareaheuristic.h"
 	#include <typeinfo>
 
-#if defined FMTPY
+#if defined FMTWITHPYTHON
+
+namespace Python {
+
 
 	template<typename T>
 	class FMT_pickle_suite : public boost::python::pickle_suite
@@ -98,6 +101,6 @@ SOFTWARE.
 	BOOST_CLASS_EXPORT(FMTlpmodel)
 	BOOST_CLASS_EXPORT(FMTsesmodel)*/
 
-
+}
 
 #endif

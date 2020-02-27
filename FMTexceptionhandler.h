@@ -71,7 +71,7 @@ namespace Exception
 		#endif
 		FMTexceptionhandler& operator = (const FMTexceptionhandler& rhs);
 		void throw_nested(const FMTexception& texception, int level = 0);
-		virtual FMTlev raise(FMTexc lexception, FMTwssect lsection, std::string text,
+		virtual FMTlev raise(FMTexc lexception, Core::FMTwssect lsection, std::string text,
 			const int& line, const std::string& file);
 	};
 

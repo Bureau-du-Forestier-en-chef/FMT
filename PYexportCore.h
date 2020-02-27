@@ -25,7 +25,11 @@ SOFTWARE.
 #ifndef PYEXPORTCORE_H_INCLUDED
 #define PYEXPORTCORE_H_INCLUDED
 
+#include "PYexportCore.h"
+#include "FMTGCBMtransition.h"
 
+namespace Python
+{
 
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(getattributes_overloads, getattributes, 1, 2)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(getnodes_overloads, getnodes, 0, 1)
@@ -125,10 +129,10 @@ void exportCore()
 			bp::class_<Core::FMTlifespans, bp::bases<Core::FMTlist<int>>>("FMTlifespans");
 
 
-			bp::enum_<FMTyldwstype>("FMTyldwstype")
-				.value("FMTageyld", FMTyldwstype::FMTageyld)
-				.value("FMTtimeyld", FMTyldwstype::FMTtimeyld)
-				.value("FMTcomplexyld", FMTyldwstype::FMTcomplexyld)
+			bp::enum_<Core::FMTyldwstype>("FMTyldwstype")
+				.value("FMTageyld", Core::FMTyldwstype::FMTageyld)
+				.value("FMTtimeyld", Core::FMTyldwstype::FMTtimeyld)
+				.value("FMTcomplexyld", Core::FMTyldwstype::FMTcomplexyld)
 				.export_values();
 
 			define_pydict<std::string, std::map<std::string,std::vector<double>>>();
@@ -204,6 +208,6 @@ void exportCore()
 			define_FMTlist<Core::FMTconstraint>();
 			define_FMTlist<Core::FMTGCBMtransition>();
     }
-
+}
 
 #endif // PYEXPORTCORE_H_INCLUDED

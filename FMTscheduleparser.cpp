@@ -24,7 +24,7 @@ SOFTWARE.
 
 #include "FMTscheduleparser.h"
 
-namespace WSParser{
+namespace Parser{
 
 FMTscheduleparser::FMTscheduleparser():FMTparser()
     {
@@ -89,7 +89,7 @@ std::vector<Core::FMTschedule> FMTscheduleparser::read(const std::vector<Core::F
 							{
 							++id;
 							const std::string actionname = values[id];
-							if (!isact(FMTwssect::Schedule,actions,actionname)) continue;
+							if (!isact(Core::FMTwssect::Schedule,actions,actionname)) continue;
 							++id;
 							const int period = getnum<int>(values[id]);
 							if (static_cast<size_t>(period) -1 == data.size())

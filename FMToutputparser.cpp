@@ -24,7 +24,7 @@ SOFTWARE.
 
 #include "FMToutputparser.h"
 
-namespace WSParser
+namespace Parser
 {
 
        FMToutputparser::FMToutputparser():FMTparser(),
@@ -87,7 +87,7 @@ namespace WSParser
 									{
 									if (processing_level && sources.empty())
 										{
-										sources.push_back(Core::FMToutputsource(FMTotar::level,0,"",name));
+										sources.push_back(Core::FMToutputsource(Core::FMTotar::level,0,"",name));
 										}
 									outputs.push_back(Core::FMToutput(name,description, themetarget,sources,operators));
 									}
@@ -223,7 +223,7 @@ namespace WSParser
 														}else {
 															newoperators.push_back(Core::FMToperator(lastoperator));
 															}
-														newsources.push_back(Core::FMToutputsource(FMTotar::val, value));
+														newsources.push_back(Core::FMToutputsource(Core::FMTotar::val, value));
 														}
 													if (sources.at(id).isvariable() || sources.at(id).islevel())
 														{
@@ -237,7 +237,7 @@ namespace WSParser
 													}
 												if (newsources.back().isvariable() || newsources.back().islevel())
 													{
-													newsources.push_back(Core::FMToutputsource(FMTotar::val, value));
+													newsources.push_back(Core::FMToutputsource(Core::FMTotar::val, value));
 													newoperators.push_back(Core::FMToperator(lastoperator));
 													}
 
@@ -245,7 +245,7 @@ namespace WSParser
 												sources = newsources;
 											}
 											else {
-												sources.push_back(Core::FMToutputsource(FMTotar::val, value));
+												sources.push_back(Core::FMToutputsource(Core::FMTotar::val, value));
 
 											}
 
@@ -266,7 +266,7 @@ namespace WSParser
 														values.push_back(getnum<double>(number,constants));
 														}
 													}
-											sources.push_back(Core::FMToutputsource(FMTotar::level,values));//constant level!
+											sources.push_back(Core::FMToutputsource(Core::FMTotar::level,values));//constant level!
 											}else{
 												std::vector<std::string>values = spliter(strsrc,FMTparser::rxseparator);
 												if(values.size()==1)
@@ -300,7 +300,7 @@ namespace WSParser
 																
 																}
 													}else {
-														sources.push_back(Core::FMToutputsource(FMTotar::level,0, strsrc));
+														sources.push_back(Core::FMToutputsource(Core::FMTotar::level,0, strsrc));
 														}
 													if (!stroperators.empty())
 														{
@@ -314,7 +314,7 @@ namespace WSParser
 														}
 													else if (ylds.isyld(strsrc))//isyld(ylds,strsrc,_section))
 														{
-														sources.push_back(Core::FMToutputsource(FMTotar::timeyld,0,strsrc));
+														sources.push_back(Core::FMToutputsource(Core::FMTotar::timeyld,0,strsrc));
 
 													}else{
 													_exhandler->raise(Exception::FMTexc::WSundefined_output, _section, strsrc + " at line " + std::to_string(_line), __LINE__, __FILE__);
@@ -335,7 +335,7 @@ namespace WSParser
                                                     }
                                                 mask = mask.substr(0, mask.size()-1);
                                                 Core::FMTspec spec;
-												const std::string inds = setspec(FMTwssect::Outputs,FMTwskwor::Source,ylds,constants,spec,rest);
+												const std::string inds = setspec(Core::FMTwssect::Outputs, Core::FMTwskwor::Source,ylds,constants,spec,rest);
                                                 if (!spec.empty())
                                                     {
                                                     rest = inds;
@@ -368,7 +368,7 @@ namespace WSParser
                                                                         yld = "";
                                                                         }
                                                             sources.push_back(Core::FMToutputsource(spec,Core::FMTmask(mask,themes),
-                                                                            FMTotar::actual,yld,action));
+																Core::FMTotar::actual,yld,action));
                                                             }else if(!std::string(kmatch[17]).empty() || !std::string(kmatch[18]).empty())
                                                                 {
 																const std::string invtype = std::string(kmatch[17]) + std::string(kmatch[18]);
@@ -391,12 +391,12 @@ namespace WSParser
 																	
 																	const int lower = 1;
 																	constexpr int upper = std::numeric_limits<int>::max();
-																	spec.addbounds(Core::FMTlockbounds(FMTwssect::Outputs,
-																		FMTwskwor::Source,upper,lower));
+																	spec.addbounds(Core::FMTlockbounds(Core::FMTwssect::Outputs,
+																		Core::FMTwskwor::Source,upper,lower));
 																	}
 																
                                                                 sources.push_back(Core::FMToutputsource(spec,Core::FMTmask(mask,themes),
-                                                                            FMTotar::inventory,yld));
+																	Core::FMTotar::inventory,yld));
                                                                 }else if(!std::string(kmatch[3]).empty())
                                                                     {
 																	const std::string action = std::string(kmatch[7]);
@@ -417,7 +417,7 @@ namespace WSParser
                                                                         }
 																	
                                                                     sources.push_back(Core::FMToutputsource(spec,Core::FMTmask(mask,themes),
-                                                                            FMTotar::inventory,yld,action));
+																		Core::FMTotar::inventory,yld,action));
 
 																		}
 															}
@@ -441,7 +441,7 @@ namespace WSParser
 						{
 						if (processing_level && sources.empty())
 							{
-							sources.push_back(Core::FMToutputsource(FMTotar::level,0,"",name));
+							sources.push_back(Core::FMToutputsource(Core::FMTotar::level,0,"",name));
 							}
 						outputs.push_back(Core::FMToutput(name, description, themetarget, sources, operators));
 						}

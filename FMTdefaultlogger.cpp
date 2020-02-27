@@ -25,9 +25,9 @@ SOFTWARE.
 
 #include "FMTdefaultlogger.h"
 #include <CoinMessageHandler.hpp>
-#if defined FMTPY
+#if defined FMTWITHPYTHON
 #include <boost/python.hpp>
-#endif // defined FMTPY
+#endif // defined FMTWITHPYTHON
 #include <iostream>
 
 namespace Logging

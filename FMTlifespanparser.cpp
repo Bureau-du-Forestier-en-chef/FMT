@@ -24,7 +24,7 @@ SOFTWARE.
 
 #include "FMTlifespanparser.h"
 
-namespace WSParser{
+namespace Parser{
 
 FMTlifespanparser::FMTlifespanparser():FMTparser()
     {

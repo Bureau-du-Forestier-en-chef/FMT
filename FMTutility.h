@@ -28,6 +28,8 @@ SOFTWARE.
 #define FMT_DBL_TOLERANCE 1.e-08
 #define FMT_STR_SEPARATOR "\t "
 
+namespace Core
+{
 enum FMTwssect
     {
     Control= 1,
@@ -83,5 +85,7 @@ enum FMTotar
     };
 
 const char* FMTwssect_str(FMTwssect section);
+
+}
 
 #endif // FMTUTILS_H_INCLUDED

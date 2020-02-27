@@ -25,6 +25,13 @@ SOFTWARE.
 #ifndef PYEXPORTHEURISTICS_H_INCLUDED
 #define PYEXPORTHEURISTICS_H_INCLUDED
 
+
+#include "FMToperatingarea.h"
+#include "FMToperatingareaheuristic.h"
+#include "PYdefinitions.h"
+
+namespace Python
+{
 void exportHeuristics()
 {
 	namespace bp = boost::python;
@@ -36,6 +43,7 @@ void exportHeuristics()
 		"   :platform: Unix, Windows\n"
 		"   :synopsis: Module used for Heuristics.\n"
 		"\n";
+	#ifdef FMTWITHOSI
 	const char* py_FMToperatingarea_doc =
 		" ``FMToperatingarea`` class.\n"
 		"\n"
@@ -67,8 +75,7 @@ void exportHeuristics()
 		.def("getsolution", &Heuristics::FMToperatingareaheuristic::getsolution);
 
 	define_pylist<Heuristics::FMToperatingareaheuristic>();
-
-
+	#endif 
+	}
 }
-
 #endif 

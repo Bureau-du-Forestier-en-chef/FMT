@@ -442,7 +442,7 @@ double FMTsasolution::getgraphspenalties(const Models::FMTsamodel& model, const 
 		std::vector<std::string>penalties = objective.getpenalties(penalty_sense);//Return values in penalty
         if (penalties.empty())
             {
-                _exhandler->raise(Exception::FMTexc::FMTunsupported_objective,FMTwssect::Optimize,"No penalties",__LINE__, __FILE__);
+                _exhandler->raise(Exception::FMTexc::FMTunsupported_objective, Core::FMTwssect::Optimize,"No penalties",__LINE__, __FILE__);
             }
         else
             {
@@ -532,7 +532,7 @@ double FMTsasolution::getgraphspenalties(const Models::FMTsamodel& model, const 
 								const std::string action_name = model_actions.at(action_id).getname();
 								const std::string out_location = out_path+action_name+"_"+addon+"_events_period_"+std::to_string(period)+".tif";
 							#ifdef FMTWITHGDAL
-								WSParser::FMTareaparser parser;
+								Parser::FMTareaparser parser;
                                 parser.writelayer(action_layer,out_location,event_map);
 							#endif 
                             }

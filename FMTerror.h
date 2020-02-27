@@ -44,7 +44,7 @@ namespace Exception
 			FMTerror();
 			FMTerror(const FMTexception& rhs);
 			FMTerror(const FMTexc lexception, const std::string message);
-			FMTerror(const FMTexc lexception, const FMTwssect lsection, const std::string message);
+			FMTerror(const FMTexc lexception, const Core::FMTwssect lsection, const std::string message);
 		};
 	}
 #endif

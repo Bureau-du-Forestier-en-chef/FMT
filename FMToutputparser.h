@@ -38,7 +38,7 @@ SOFTWARE.
 #include "FMTaction.h"
 #include <string>
 
-namespace WSParser
+namespace Parser
 
 {
 

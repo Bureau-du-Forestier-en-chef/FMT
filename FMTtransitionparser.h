@@ -37,7 +37,7 @@ SOFTWARE.
 #include <vector>
 #include "FMTmask.h"
 
-namespace WSParser
+namespace Parser
 {
 
 class FMTtransitionparser : public FMTparser
@@ -52,7 +52,7 @@ class FMTtransitionparser : public FMTparser
         FMTtransitionparser(const FMTtransitionparser& rhs);
         FMTtransitionparser& operator = (const FMTtransitionparser& rhs);
 		Core::FMTmask getsource(std::string& line, Core::FMTspec& spec,const std::vector<Core::FMTtheme>& themes,
-                          FMTwssect section,const Core::FMTconstants& constant,
+							Core::FMTwssect section,const Core::FMTconstants& constant,
                           const Core::FMTyields& ylds);
         std::vector<Core::FMTtransitionmask> getmasktran(const std::string& line,const std::vector<Core::FMTtheme>& themes,
                                         const Core::FMTconstants& constants, const Core::FMTyields& ylds,

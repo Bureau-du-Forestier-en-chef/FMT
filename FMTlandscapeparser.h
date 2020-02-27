@@ -35,7 +35,7 @@ SOFTWARE.
 #include <vector>
 
 
-namespace WSParser
+namespace Parser
 {
 
 class FMTlandscapeparser : public FMTparser

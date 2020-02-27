@@ -6,7 +6,7 @@
 #include <boost/archive/binary_iarchive.hpp>
 #include <boost/serialization/export.hpp>
 
-#include "FMTwsParser.h"
+#include "FMTParser.h"
 #include "FMTModels.h"
 #include "FMTSpatials.h"
 #include "FMTversion.h"
@@ -32,7 +32,7 @@ BOOST_CLASS_EXPORT(Models::FMTsesmodel)
 #endif
 ////////////////////////to////////////////////////////
 
-#if defined FMTPY
+#if defined FMTWITHPYTHON
 #include "FMTpythonpickle.h"
 #include "FMTpythoncore.h"
 #include <boost/python/docstring_options.hpp>
@@ -44,42 +44,41 @@ BOOST_CLASS_EXPORT(Models::FMTsesmodel)
 #include "PYexportExceptions.h"
 #include "PYexportCore.h"
 #include "PYexportSpatial.h"
-#include "PYexportWSParser.h"
+#include "PYexportParser.h"
 #include "PYexportGraph.h"
 #include "PYexportModel.h"
 #include "PYexportVersion.h"
 #include "PYexportHeuristics.h"
 #include "Python.h"
 
+
 extern "C"
 {
 
     BOOST_PYTHON_MODULE(FMT)
         {
-
-		boost::python::to_python_converter<std::vector<std::string, std::allocator<std::string>>,VecToList<std::string>>();
-        boost::python::to_python_converter<std::vector<double, std::allocator<double>>,VecToList<double>>();
-		boost::python::to_python_converter<std::map<std::string, std::vector<std::string>>,MapToDict<std::string, std::vector<std::string>>>();
-
-        VecFrList<std::string>();
-        VecFrList<double>();
+		boost::python::to_python_converter<std::vector<std::string, std::allocator<std::string>>, Python::VecToList<std::string>>();
+		boost::python::to_python_converter<std::vector<double, std::allocator<double>>, Python::VecToList<double>>();
+		boost::python::to_python_converter<std::map<std::string, std::vector<std::string>>, Python::MapToDict<std::string, std::vector<std::string>>>();
+		Python::VecFrList<std::string>();
+		Python::VecFrList<double>();
 
         //Exceptions
-        exportException();
+        Python::exportException();
         //Core
-        exportCore();
+		Python::exportCore();
         //Spatial
-		exportSpatial();
+		Python::exportSpatial();
 		//Graph
-		exportGraph();
+		Python::exportGraph();
 		//Model
-		exportModel();
+		Python::exportModel();
         //Parser
-		exportWSParser();
+		Python::exportParser();
 		//Version
-		exportVersion();
+		Python::exportVersion();
 		//Heuristics
-		exportHeuristics();
+		Python::exportHeuristics();
         }
 
 }

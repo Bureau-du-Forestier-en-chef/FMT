@@ -25,7 +25,7 @@ SOFTWARE.
 #include "FMTconstantparser.h"
 #include "FMTtheme.h"
 
-namespace WSParser{
+namespace Parser{
 
 FMTconstantparser::FMTconstantparser(): FMTparser()
     {

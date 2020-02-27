@@ -24,7 +24,7 @@ SOFTWARE.
 
 #include "FMToptimizationparser.h"
 
-namespace WSParser
+namespace Parser
 {
 
 	FMToptimizationparser::FMToptimizationparser() : FMTparser(),
@@ -83,7 +83,7 @@ namespace WSParser
 			const std::string target = "GOAL_"+ std::string(kmatch[4]);
 			const std::string value = kmatch[6];
 			const double goal_var = getnum<double>(value, constants);
-			constraint.addbounds(Core::FMTyldbounds(FMTwssect::Optimize, target, goal_var, goal_var));
+			constraint.addbounds(Core::FMTyldbounds(Core::FMTwssect::Optimize, target, goal_var, goal_var));
 			return true;
 			}
 		return false;
@@ -237,7 +237,7 @@ namespace WSParser
                         if (!target_period.empty())
                                 {
                                 inttarget_period = getnum<int>(target_period, constants);
-                                bounding = Core::FMTperbounds(FMTwssect::Optimize, inttarget_period, inttarget_period);
+                                bounding = Core::FMTperbounds(Core::FMTwssect::Optimize, inttarget_period, inttarget_period);
 								}
                         //copy the output and the specify the attribute and the periods!!!
                         Core::FMToutput newoutput = target_out->boundto(themes, bounding, specialtype, target_attribute);
@@ -313,7 +313,7 @@ namespace WSParser
 				higher_var = getnum<double>(high_variation, constants);
 				}
 			const std::string yld_name = "Variation";
-			constraint.addbounds(Core::FMTyldbounds(FMTwssect::Optimize, yld_name, higher_var, lower_var));
+			constraint.addbounds(Core::FMTyldbounds(Core::FMTwssect::Optimize, yld_name, higher_var, lower_var));
 			const std::string start_str = std::string(kmatch[20]) + std::string(kmatch[23]);
 			const std::string stop_str = std::string(kmatch[22]);
 			setperiods(constraint, start_str, stop_str, constants);
@@ -400,14 +400,14 @@ namespace WSParser
                 if (penalty_values == "_ALL")
                     {
                     yldbound += (penalty_operator +penalty_values);
-                    objective.addbounds(Core::FMTyldbounds(FMTwssect::Optimize, yldbound, upper_penalty, lower_penalty));
+                    objective.addbounds(Core::FMTyldbounds(Core::FMTwssect::Optimize, yldbound, upper_penalty, lower_penalty));
                 }else {
 					std::vector<std::string>penalty_split;
                     boost::split(penalty_split, penalty_values, boost::is_any_of(","));
                     for (const std::string& penalty_var : penalty_split)
                         {
 						const std::string yldname = yldbound + penalty_operator +"_"+penalty_var;
-                        objective.addbounds(Core::FMTyldbounds(FMTwssect::Optimize, yldname, upper_penalty, lower_penalty));
+                        objective.addbounds(Core::FMTyldbounds(Core::FMTwssect::Optimize, yldname, upper_penalty, lower_penalty));
                         }
                     }
 				}
@@ -554,12 +554,12 @@ namespace WSParser
 													Core::FMTspec upperspec = specobject.second;
 														constexpr int max_upper = std::numeric_limits<int>::max() - 2;
 														const int upper = period_upper + 1;
-														upperspec.setbounds(Core::FMTperbounds(FMTwssect::Action, max_upper, upper));
+														upperspec.setbounds(Core::FMTperbounds(Core::FMTwssect::Action, max_upper, upper));
 														newspecs.push_back(upperspec);
 														newmask.push_back(specobject.first);
 														}
 													const int startperiod_upper = period_lower - 1;
-													specobject.second.setbounds(Core::FMTperbounds(FMTwssect::Action, period_lower, startperiod_upper));
+													specobject.second.setbounds(Core::FMTperbounds(Core::FMTwssect::Action, period_lower, startperiod_upper));
 		
 													}
 												for (size_t newspec = 0; newspec < newspecs.size();++newspec)

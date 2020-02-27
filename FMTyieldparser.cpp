@@ -24,7 +24,7 @@ SOFTWARE.
 
 #include "FMTyieldparser.h"
 
-namespace WSParser{
+namespace Parser{
 
 
 FMTyieldparser::FMTyieldparser():FMTparser(),
@@ -52,59 +52,59 @@ FMTyieldparser& FMTyieldparser::operator = (const FMTyieldparser& rhs)
         }
     return *this;
     }
-FMTyldwstype FMTyieldparser::getyldtype(const std::string& value) const
+Core::FMTyldwstype FMTyieldparser::getyldtype(const std::string& value) const
     {
     if (value == "Y")
         {
-        return FMTyldwstype::FMTageyld;
+        return Core::FMTyldwstype::FMTageyld;
         }else if(value == "YT")
             {
-            return FMTyldwstype::FMTtimeyld;
+            return Core::FMTyldwstype::FMTtimeyld;
             }else if(value == "YC")
                 {
-                return FMTyldwstype::FMTcomplexyld;
+                return Core::FMTyldwstype::FMTcomplexyld;
                 }else{
                 _exhandler->raise(Exception::FMTexc::WSinvalid_yield,_section," at line " + std::to_string(_line), __LINE__, __FILE__);
                 }
-    return FMTyldwstype::FMTageyld;
+    return Core::FMTyldwstype::FMTageyld;
     }
 
-FMTyieldparserop FMTyieldparser::getyldctype(const std::string& value) const
+Core::FMTyieldparserop FMTyieldparser::getyldctype(const std::string& value) const
     {
     if (value == "_RANGE")
         {
-        return FMTyieldparserop::FMTwsrange;
+        return Core::FMTyieldparserop::FMTwsrange;
         }else if(value == "_MULTIPLY")
             {
-            return FMTyieldparserop::FMTwsmultiply;
+            return Core::FMTyieldparserop::FMTwsmultiply;
             }else if(value == "_SUM")
                 {
-                return FMTyieldparserop::FMTwssum;
+                return Core::FMTyieldparserop::FMTwssum;
                 }else if(value == "_SUBTRACT")
                     {
-                    return FMTyieldparserop::FMTwssubstract;
+                    return Core::FMTyieldparserop::FMTwssubstract;
                     }else if(value == "_YTP")
                         {
-                        return FMTyieldparserop::FMTwsytp;
+                        return Core::FMTyieldparserop::FMTwsytp;
                         }else if(value == "_MAI")
                             {
-                            return FMTyieldparserop::FMTwsmai;
+                            return Core::FMTyieldparserop::FMTwsmai;
                             }else if(value == "_CAI")
                                 {
-                                return FMTyieldparserop::FMTwscai;
+                                return Core::FMTyieldparserop::FMTwscai;
                                 }else if(value == "_DIVIDE")
                                     {
-                                    return FMTyieldparserop::FMTwsdivide;
+                                    return Core::FMTyieldparserop::FMTwsdivide;
 								}else if (value == "_EQUATION")
 									{
-									return FMTyieldparserop::FMTwsequation;	
+									return Core::FMTyieldparserop::FMTwsequation;
 								}else if (value == "_ENDPOINT")
 									{
-										return FMTyieldparserop::FMTwsendpoint;
+										return Core::FMTyieldparserop::FMTwsendpoint;
 									}else{
                                         _exhandler->raise(Exception::FMTexc::WSinvalid_yield,_section," at line " + std::to_string(_line), __LINE__, __FILE__);
                                         }
-    return FMTyieldparserop::FMTwsnone;
+    return Core::FMTyieldparserop::FMTwsnone;
     }
 std::vector<std::string> FMTyieldparser::getylduse(Core::FMTyields& yielddata,
 	std::vector<std::pair<Core::FMTmask, Core::FMTyieldhandler>>::iterator actualyield,
@@ -213,7 +213,7 @@ Core::FMTdata FMTyieldparser::geteq(const std::string& basestr,
 
 
             }
-		return Core::FMTdata(numbers,FMTyieldparserop::FMTwsequation,valuesnoperators);
+		return Core::FMTdata(numbers, Core::FMTyieldparserop::FMTwsequation,valuesnoperators);
 	}
 
 
@@ -250,7 +250,7 @@ Core::FMTyields FMTyieldparser::read(const std::vector<Core::FMTtheme>& themes,c
                         }
 
                     if (!validate(themes,mask, " at line " + std::to_string(_line))) continue;
-                    FMTyldwstype yldtype = getyldtype(yieldtype);
+					Core::FMTyldwstype yldtype = getyldtype(yieldtype);
                     tmask = Core::FMTmask(mask,themes);
                     Core::FMTyieldhandler newyield(yldtype,tmask);
 					if (!overyld)
@@ -266,8 +266,8 @@ Core::FMTyields FMTyieldparser::read(const std::vector<Core::FMTtheme>& themes,c
                     }else{
 							std::vector<std::string>values;
                             boost::split(values,line,boost::is_any_of(FMT_STR_SEPARATOR),boost::token_compress_on);
-							if ((actualyield->second.gettype() == FMTyldwstype::FMTageyld ||
-								actualyield->second.gettype() == FMTyldwstype::FMTtimeyld) && values[0] == "*P")
+							if ((actualyield->second.gettype() == Core::FMTyldwstype::FMTageyld ||
+								actualyield->second.gettype() == Core::FMTyldwstype::FMTtimeyld) && values[0] == "*P")
 								{
 								values.erase(values.begin());
 								proportion.clear();
@@ -278,7 +278,7 @@ Core::FMTyields FMTyieldparser::read(const std::vector<Core::FMTtheme>& themes,c
 									}
 								continue; 
 								}
-                            if(actualyield->second.gettype() == FMTyldwstype::FMTageyld)
+                            if(actualyield->second.gettype() == Core::FMTyldwstype::FMTageyld)
                                 {
                                 if (values[0]=="_AGE")
                                     {
@@ -317,7 +317,7 @@ Core::FMTyields FMTyieldparser::read(const std::vector<Core::FMTtheme>& themes,c
                                             actualyield->second.push_data(tyld[0], getnumwithproportion(values[1], constants, proportion, location));
                                         }
 
-                                }else if(actualyield->second.gettype() == FMTyldwstype::FMTtimeyld)
+                                }else if(actualyield->second.gettype() == Core::FMTyldwstype::FMTtimeyld)
                                     {
 
 									if (values[0] == "_CP")
@@ -403,7 +403,7 @@ Core::FMTyields FMTyieldparser::read(const std::vector<Core::FMTtheme>& themes,c
 													stacking.push_back(false);
 													sources.push_back(boost::trim_copy(std::string(discountmatch[9])));
 													stacking.push_back(true);
-													actualyield->second.push_data(yldname, Core::FMTdata(yielddata, FMTyieldparserop::FMTwsdiscountfactor,sources,stacking));
+													actualyield->second.push_data(yldname, Core::FMTdata(yielddata, Core::FMTyieldparserop::FMTwsdiscountfactor,sources,stacking));
 												}else{
 													actualyield->second.push_base(getnum<int>(values[0], constants));
 													values.erase(values.begin());
@@ -421,7 +421,7 @@ Core::FMTyields FMTyieldparser::read(const std::vector<Core::FMTtheme>& themes,c
 									}
 
 
-                                    else if(actualyield->second.gettype() == FMTyldwstype::FMTcomplexyld)
+                                    else if(actualyield->second.gettype() == Core::FMTyldwstype::FMTcomplexyld)
                                         {
 										std::smatch kmatch;
 										const size_t should_be_equation = line.find_first_of("+-*/");
@@ -454,14 +454,14 @@ Core::FMTyields FMTyieldparser::read(const std::vector<Core::FMTtheme>& themes,c
 											const std::vector<std::string>theylds = {yldname};
                                             dump = getylduse(yields,actualyield,theylds);
                                             checkpreexisting(dump);
-                                            const FMTyieldparserop complextype = getyldctype(cyld);
+                                            const Core::FMTyieldparserop complextype = getyldctype(cyld);
 											std::vector<std::string>values;
 											boost::trim_if(data, boost::is_any_of(FMT_STR_SEPARATOR));
 											const std::string yldsplitc = FMT_STR_SEPARATOR + std::string(",");
                                             boost::split(values,data,boost::is_any_of(yldsplitc), boost::token_compress_on);
 											std::vector<double>cvalues;
 											std::vector<std::string>csource;
-											if (complextype == FMTyieldparserop::FMTwsequation)
+											if (complextype == Core::FMTyieldparserop::FMTwsequation)
 											{
 												actualyield->second.push_data(yldname, geteq(data,constants,yields,themes));
 											}else{
@@ -539,7 +539,7 @@ Core::FMTyields FMTyieldparser::read(const std::vector<Core::FMTtheme>& themes,c
                     }
                 for (const Core::FMTmask& newmask : todecompose)
                     {
-                    Core::FMTyieldhandler newhandler(FMTyldwstype::FMTcomplexyld,newmask);
+                    Core::FMTyieldhandler newhandler(Core::FMTyldwstype::FMTcomplexyld,newmask);
 					std::map<std::string,double>handler_values;
                     for (const Core::FMTtheme& theme: themes_windex)
                         {
@@ -573,7 +573,7 @@ Core::FMTyields FMTyieldparser::read(const std::vector<Core::FMTtheme>& themes,c
                                     }
                             ++data_loc;
                             }
-                        newhandler.push_data(datait->first,Core::FMTdata(numbers,FMTyieldparserop::FMTwsequation,valuesnoperators));
+                        newhandler.push_data(datait->first,Core::FMTdata(numbers, Core::FMTyieldparserop::FMTwsequation,valuesnoperators));
                         }
                     yields.insert(location,newmask,newhandler);
                     ++location;

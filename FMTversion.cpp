@@ -74,6 +74,18 @@ bool FMTversion::isatleast(int major, int minor, int patch)
 	}	
 bool FMTversion::hasfeature(const std::string& name)
 	{
+	#ifdef FMTWITHR
+		if (name == "R")
+		{
+			return true;
+		}
+	#endif
+	#ifdef FMTWITHPYTHON
+	if (name == "PYTHON")
+		{
+		return true;
+		}
+	#endif
 	#ifdef FMTWITHGDAL
 		if (name=="GDAL")
 			{

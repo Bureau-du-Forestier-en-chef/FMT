@@ -207,7 +207,7 @@ namespace Models
 					}
 					else {
 						_exhandler->raise(Exception::FMTexc::FMTmissingdevelopement,
-							FMTwssect::Empty, std::string(devit.first) + " at period " + std::to_string(period) + " operated by " + actionit.first.getname(),
+							Core::FMTwssect::Empty, std::string(devit.first) + " at period " + std::to_string(period) + " operated by " + actionit.first.getname(),
 							__LINE__, __FILE__);
 						return false;
 					}
@@ -878,7 +878,7 @@ bool FMTlpmodel::locatenodes(const std::vector<Core::FMToutputnode>& nodes, int 
 			this->updatematrixngraph(); 
 		}else {
 			const int badperiod = std::max(firstperiod,1);
-			_exhandler->raise(Exception::FMTexc::FMTunboundedperiod, FMTwssect::Empty, std::to_string(badperiod), __LINE__, __FILE__);
+			_exhandler->raise(Exception::FMTexc::FMTunboundedperiod, Core::FMTwssect::Empty, std::to_string(badperiod), __LINE__, __FILE__);
 			}
 		 return graph.getstats();
 		 }
@@ -1083,7 +1083,7 @@ bool FMTlpmodel::locatenodes(const std::vector<Core::FMToutputnode>& nodes, int 
 			{
 			std::string cname = std::string(objective);
 			cname.erase(std::remove(cname.begin(), cname.end(), '\n'), cname.end());
-			_exhandler->raise(Exception::FMTexc::FMTnonaddedconstraint, FMTwssect::Empty, std::string(cname), __LINE__, __FILE__);
+			_exhandler->raise(Exception::FMTexc::FMTnonaddedconstraint, Core::FMTwssect::Empty, std::string(cname), __LINE__, __FILE__);
 			}
 		solverinterface->setObjSense(objective.sense());
 		return graph.getstats();
@@ -1163,7 +1163,7 @@ bool FMTlpmodel::locatenodes(const std::vector<Core::FMToutputnode>& nodes, int 
 			{
 			std::string cname = std::string(constraint);
 			cname.erase(std::remove(cname.begin(), cname.end(), '\n'), cname.end());
-			_exhandler->raise(Exception::FMTexc::FMTnonaddedconstraint, FMTwssect::Empty, std::string(cname), __LINE__, __FILE__);
+			_exhandler->raise(Exception::FMTexc::FMTnonaddedconstraint, Core::FMTwssect::Empty, std::string(cname), __LINE__, __FILE__);
 			return -1;
 			}
 			int element_id = 0;
@@ -1346,7 +1346,7 @@ bool FMTlpmodel::locatenodes(const std::vector<Core::FMToutputnode>& nodes, int 
 					if (msksolver->isLicenseError())
 						{
 						_exhandler->raise(Exception::FMTexc::FMTmissinglicense,
-							FMTwssect::Empty, " Missing Mosek License ",
+							Core::FMTwssect::Empty, " Missing Mosek License ",
 							__LINE__, __FILE__);
 						}
 					}

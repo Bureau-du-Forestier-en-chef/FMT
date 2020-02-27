@@ -42,7 +42,7 @@ SOFTWARE.
 #include "FMTconstants.h"
 #include "FMTtheme.h"
 
-namespace WSParser
+namespace Parser
 {
 
 class FMTareaparser : public FMTparser

@@ -39,7 +39,7 @@ SOFTWARE.
 #include <vector>
 #include <utility>
 
-namespace WSParser
+namespace Parser
 {
 
 class FMTyieldparser : public FMTparser
@@ -49,8 +49,8 @@ class FMTyieldparser : public FMTparser
 		std::regex rxcomplex;
 		std::regex rxeqs;
 		std::regex rxdiscount;
-        FMTyldwstype getyldtype(const std::string& value) const;
-        FMTyieldparserop getyldctype(const std::string& value) const;
+		Core::FMTyldwstype getyldtype(const std::string& value) const;
+		Core::FMTyieldparserop getyldctype(const std::string& value) const;
 		std::vector<std::string> getylduse(Core::FMTyields& yielddata,
 			std::vector<std::pair<Core::FMTmask, Core::FMTyieldhandler>>::iterator actualyield,
                                    const std::vector<std::string>& values) const;

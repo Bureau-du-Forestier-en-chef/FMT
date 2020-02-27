@@ -25,6 +25,10 @@ SOFTWARE.
 #ifndef PYEXPORTSPATIAL_H_INCLUDED
 #define PYEXPORTSPATIAL_H_INCLUDED
 
+#include "PYexportSpatial.h"
+
+namespace Python 
+{
 
 void exportSpatial()
     {
@@ -122,6 +126,6 @@ void exportSpatial()
     define_pylist<Spatial::FMTsasolution>();
 
     }
-
+}
 
 #endif // PYEXPORTSPATIAL_H_INCLUDED

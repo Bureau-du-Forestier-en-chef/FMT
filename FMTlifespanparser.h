@@ -32,7 +32,7 @@ SOFTWARE.
 #include "FMTconstants.h"
 #include <string>
 
-namespace WSParser
+namespace Parser
 
 {
 class FMTlifespanparser : public FMTparser

@@ -27,6 +27,9 @@ SOFTWARE.
 
 #include "boost/python.hpp"
 
+namespace Python
+{ 
+
 template<class T>
 void define_pylist()
 {
@@ -78,5 +81,5 @@ void define_pydict()
     boost::python::to_python_converter<std::map<k,v>,MapToDict<k,v>>();
 	MapFrDict<k,v>();
     }
-
+}
 #endif // PYDEFINITIONS_H_INCLUDED

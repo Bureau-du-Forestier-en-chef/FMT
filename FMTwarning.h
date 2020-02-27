@@ -44,7 +44,7 @@ namespace Exception
 		FMTwarning();
 		FMTwarning(const FMTexception& rhs);
 		FMTwarning(const FMTexc lexception, const std::string message);
-		FMTwarning(const FMTexc lexception, const FMTwssect lsection, const std::string message);
+		FMTwarning(const FMTexc lexception, const Core::FMTwssect lsection, const std::string message);
 		void warn(const std::shared_ptr<Logging::FMTlogger>logger) const;
 	};
 }

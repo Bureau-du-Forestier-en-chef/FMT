@@ -25,7 +25,10 @@ SOFTWARE.
 #ifndef PYEXPORTMODEL_H_INCLUDED
 #define PYEXPORTMODEL_H_INCLUDED
 
+#include "PYexportModel.h"
 
+namespace Python
+{ 
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(simulate_overloads,simulate, 1, 3)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(buildperiod_overloads, buildperiod, 0, 2)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(move_solution_overloads, move_solution, 0, 1)
@@ -189,5 +192,5 @@ void exportModel()
             .def("warmup",&Models::FMTsamodel::warmup,warmup_overloads());
     define_pylist<Models::FMTsamodel>();
     }
-
+}
 #endif // PYEXPORTMODEL_H_INCLUDED
