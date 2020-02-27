@@ -37,7 +37,10 @@ SOFTWARE.
 
 namespace Core
 {
-
+/**
+Constraints and objectives types found in a regular optimization section
+also some spatial size/adjacency and greenup constraints for the SAmodel. 
+*/
 enum  FMTconstrainttype
 {
 	FMTMAXobjective = 1,
@@ -47,17 +50,23 @@ enum  FMTconstrainttype
 	FMTevenflow = 5,
 	FMTnondeclining = 6,
 	FMTsequence = 7,
-	FMTstandard = 8,
+	FMTstandard = 8,///Regular constraint type like output = 1...
 	FMTspatialsize = 9,
 	FMTspatialadjacency = 10,
 	FMTspatialgreenup = 11
 };
 
-
-
-
+/**
+FMTconstraint is a representation of a line in the optimize section. an objective is considered a constraint in FMT.
+So even for the object a FMTconstraint will be generated using a optimization section.
+A FMTconstraint is also a FMToutput with some specification (FMTspec).
+The main specification used is the period bounds (1.._LENGTH), RHS and variation (_GOAL).
+*/
 class FMTconstraint: public FMToutput,public FMTspec
 	{
+	/**
+	serialize function is for serialization, used to do multiprocessing across multiple cpus (pickle in Pyhton)
+	*/
 	friend class boost::serialization::access;
 	template<class Archive>
 	void serialize(Archive& ar, const unsigned int version)
@@ -66,15 +75,40 @@ class FMTconstraint: public FMToutput,public FMTspec
 		ar & boost::serialization::make_nvp("specification", boost::serialization::base_object<FMTspec>(*this));
 		ar & BOOST_SERIALIZATION_NVP(type);
 	}
+	///This enumerator sets the type of constraint of the FMTconstraint (objective/constraint/evenflow...)
 	FMTconstrainttype type;
 	public:
+		/**
+		Default constructor for FMTconstraint.
+		*/
 		FMTconstraint();
+		/**
+		Partial constructor for FMTconstraint specifying the output and the constraint type.
+		*/
 		FMTconstraint(FMTconstrainttype ltype, const FMToutput& loutput);
+		/**
+		Copy constructor for FMTconstraint.
+		*/
 		FMTconstraint(const FMTconstraint& rhs);
+		/**
+		Copy assignment for FMTconstraint.
+		*/
 		FMTconstraint& operator = (const FMTconstraint& rhs);
+		/**
+		FMTconstraint equality operator check if FMTconstraint are the same.
+		*/
 		bool operator == (const FMTconstraint& rhs) const;
+		/**
+		FMTconstraint not equality operator check if FMTconstraint are not the same.
+		*/
 		bool operator != (const FMTconstraint& rhs) const;
+		/**
+		Returns true if the FMTconstraint need extravariables in the matrix formulation.
+		*/
 		bool extravariables() const;
+		/**
+		Returns true if 
+		*/
 		bool isgoal() const;
 		std::vector<std::string>getpenalties(double & sense) const;
 		std::vector<std::string>getvariablelevels() const;

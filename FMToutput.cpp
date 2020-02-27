@@ -46,14 +46,7 @@ FMToutput::FMToutput() : sources(),operators(), theme_target(-1),name(),descript
     {
 
     }
-std::vector<FMToutputsource> FMToutput::getsources() const
-    {
-    return sources;
-    }
-std::vector<FMToperator> FMToutput::getopes() const
-    {
-    return operators;
-    }
+
 FMToutput::FMToutput(const FMToutput& rhs) :
     sources(rhs.sources),
     operators(rhs.operators),
@@ -584,7 +577,7 @@ std::vector<std::string> FMToutput::getdecomposition(const std::vector<FMTtheme>
 					validdecomp = unique_selection;
 				}else {
 					std::vector<std::string>newvalid;
-					set_intersection(validdecomp.begin(), validdecomp.end(),
+					std::set_intersection(validdecomp.begin(), validdecomp.end(),
 						unique_selection.begin(), unique_selection.end(), back_inserter(newvalid));
 					validdecomp = newvalid;
 				}
@@ -596,10 +589,6 @@ std::vector<std::string> FMToutput::getdecomposition(const std::vector<FMTtheme>
 	return validdecomp;
 	}
 
-int FMToutput::targetthemeid() const
-	{
-	return theme_target;
-	}
 
 FMTtheme FMToutput::targettheme(const std::vector<FMTtheme>& themes) const
 	{
