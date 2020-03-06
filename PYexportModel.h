@@ -25,7 +25,11 @@ SOFTWARE.
 #ifndef PYEXPORTMODEL_H_INCLUDED
 #define PYEXPORTMODEL_H_INCLUDED
 
-#include "PYexportModel.h"
+#include "FMTmodel.h"
+#include "FMTlpmodel.h"
+#include "FMTsesmodel.h"
+#include "FMTsamodel.h"
+#include "boost/python.hpp"
 
 namespace Python
 { 
@@ -49,70 +53,62 @@ void exportModel()
     "   :platform: Unix, Windows\n"
     "   :synopsis: Module used to generate all kind of Models (M2/M3).\n"
     "\n";
-    const char* py_FMTmodel_doc =
-        " ``FMTmodel`` class.\n"
-        "\n"
-        "Base model class for building general WS model\n"
-        "\n";
-	bp::class_<Models::FMTmodel, bp::bases<Core::FMTobject>>("FMTmodel",py_FMTmodel_doc)
-            .def_readwrite("name",&Models::FMTmodel::name)
+
+	bp::class_<Models::FMTmodel, bp::bases<Core::FMTobject>>("FMTmodel", "@DocString(FMTmodel)")
+            .def_readwrite("name",&Models::FMTmodel::name,
+				"@DocString(FMTmodel::name)")
 			.def_pickle(FMT_pickle_suite<Models::FMTmodel>())
-            .def("getyields",&Models::FMTmodel::getyields)
+            .def("getyields",&Models::FMTmodel::getyields,
+				"@DocString(FMTmodel::getyields)")
             .def("getarea",&Models::FMTmodel::getarea, getarea_overloads())
-            .def("getthemes",&Models::FMTmodel::getthemes)
-            .def("getactions",&Models::FMTmodel::getactions)
-			.def("getoutputs", &Models::FMTmodel::getoutputs)
-			.def("getconstraints", &Models::FMTmodel::getconstraints)
-			.def("setconstraints", &Models::FMTmodel::setconstraints)
-            .def("gettransitions",&Models::FMTmodel::gettransitions)
-            .def("settransitions",&Models::FMTmodel::settransitions)
-            .def("getlifespan",&Models::FMTmodel::getlifespan)
-            .def("isvalid",&Models::FMTmodel::isvalid);
+            .def("getthemes",&Models::FMTmodel::getthemes,
+				"@DocString(FMTmodel::getthemes)")
+            .def("getactions",&Models::FMTmodel::getactions,
+				"@DocString(FMTmodel::getactions)")
+			.def("getoutputs", &Models::FMTmodel::getoutputs,
+				"@DocString(FMTmodel::getoutputs)")
+			.def("getconstraints", &Models::FMTmodel::getconstraints,
+				"@DocString(FMTmodel::getconstraints)")
+			.def("setconstraints", &Models::FMTmodel::setconstraints,
+				"@DocString(FMTmodel::setconstraints)")
+            .def("gettransitions",&Models::FMTmodel::gettransitions,
+				"@DocString(FMTmodel::gettransitions)")
+            .def("settransitions",&Models::FMTmodel::settransitions,
+				"@DocString(FMTmodel::settransitions)")
+            .def("getlifespan",&Models::FMTmodel::getlifespan,
+				"@DocString(FMTmodel::getlifespan)")
+            .def("isvalid",&Models::FMTmodel::isvalid,
+				"@DocString(FMTmodel::isvalid)");
+
     define_pylist<Models::FMTmodel>();
 
-    const char* py_FMTsesm_doc =
-        " ``FMTsesmodel`` class.\n"
-        "\n"
-        "Model class used to do spatial explicit simulation\n"
-        "Uses schedule to simulate harvest on rasters\n"
-        "\n";
+ =
 
 	bp::to_python_converter<std::map<std::string, double>, MapToDict<std::string, double>>();
 
-	bp::class_<Models::FMTsesmodel, bp::bases<Models::FMTmodel>>("FMTsesmodel",py_FMTsesm_doc)
-            .def(bp::init<Models::FMTmodel>())
+	bp::class_<Models::FMTsesmodel, bp::bases<Models::FMTmodel>>("FMTsesmodel", "@DocString(FMTsesmodel)")
+            .def(bp::init<Models::FMTmodel>(), "@DocString(FMTsesmodel(Models::FMTmodel))")
 			.def_pickle(FMT_pickle_suite<Models::FMTsesmodel>())
-            .def("getmapping",&Models::FMTsesmodel::getmapping)
+            .def("getmapping",&Models::FMTsesmodel::getmapping,
+				"@DocString(FMTsesmodel::getmapping)")
 			.def("getschedule", &Models::FMTsesmodel::getschedule,
-				"Get the non spatial schedule for the last period\n")
+				"@DocString(FMTsesmodel::getschedule)")
             .def("getdisturbances",&Models::FMTsesmodel::getdisturbances,
-                 "Get all the disturbances of the simulation\n"
-                 "The disturbances stack present all the past disturbances"
-                 /*args("self","disturbances")*/)
+				"@DocString(FMTsesmodel::getdisturbances)")
             .def("setinitialmapping",&Models::FMTsesmodel::setinitialmapping,
-                 "Set the initial mapping\n"
-                 "Initial forest themes described to the model"
-                 /*args("self","mapping")*/)
+				"@DocString(FMTsesmodel::setinitialmapping)")
             .def("setspactions",&Models::FMTsesmodel::setspactions,
-				"Set a spatial actions list to the model\n"
-				"Model should contain the relative transitions\n"
-				"Actions will be simulated following the list ordering\n")
+				"@DocString(FMTsesmodel::setspactions)")
 			.def("getschedule",&Models::FMTsesmodel::getschedule,
-				"Get the last simulated non spatial schedule\n")
+				"@DocString(FMTsesmodel::getschedule)")
 			.def("getdisturbancestats", &Models::FMTsesmodel::getdisturbancestats,
-				"Get all disturbances stats (period,action,size,perimeter,Height,Width)\n")
+				"@DocString(FMTsesmodel::getdisturbancestats)")
             .def("simulate",&Models::FMTsesmodel::simulate,
-                 simulate_overloads(/*"Simulate a schedule based only on schedule (schedule_only = true)\n"
-                                    "or using schedule and operability(schedule_only = false) and a (seed=0)",
-                                    args("self","schedule","schedule_only=true","seed=0")*/));
+                 simulate_overloads());
+
     define_pylist<Models::FMTsesmodel>();
 
 	#ifdef FMTWITHOSI
-	const char* py_FMTlpmodel =
-		" ``FMTlpmodel`` class.\n"
-		"\n"
-		"This class is used for M3 optimization\n"
-		"\n";
 
 	bp::enum_<Models::FMTsolverinterface>("FMTsolverinterface")
 		.value("CLP", Models::FMTsolverinterface::CLP)
@@ -122,75 +118,89 @@ void exportModel()
 		.value("CPLEX", Models::FMTsolverinterface::CPLEX)
 		.value("GUROBI", Models::FMTsolverinterface::GUROBI);
 
-	bp::class_<Models::FMTlpmodel, bp::bases<Models::FMTmodel>>("FMTlpmodel", py_FMTlpmodel)
-		.def(bp::init<Models::FMTmodel, Models::FMTsolverinterface>())
+	bp::class_<Models::FMTlpmodel, bp::bases<Models::FMTmodel>>("FMTlpmodel", "@DocString(FMTlpmodel)")
+		.def(bp::init<Models::FMTmodel, Models::FMTsolverinterface>(), "@DocString(FMTlpmodel(FMTmodel,FMTsolverinterface))")
 		.def_pickle(FMT_pickle_suite<Models::FMTlpmodel>())
 		.def("buildperiod", &Models::FMTlpmodel::buildperiod, buildperiod_overloads())
-		.def("boundsolution", &Models::FMTlpmodel::boundsolution)
-		.def("getsolution", &Models::FMTlpmodel::getsolution)
-		.def("setsolution", &Models::FMTlpmodel::setsolution)
-		.def("setobjective", &Models::FMTlpmodel::setobjective)
-		.def("setconstraint", &Models::FMTlpmodel::setconstraint)
-		.def("eraseconstraint", &Models::FMTlpmodel::eraseconstraint)
-		.def("eraseperiod", &Models::FMTlpmodel::eraseperiod)
-		.def("resolve", &Models::FMTlpmodel::resolve)
-		.def("initialsolve", &Models::FMTlpmodel::initialsolve)
+		.def("boundsolution", &Models::FMTlpmodel::boundsolution,
+			"@DocString(FMTlpmodel::boundsolution)")
+		.def("getsolution", &Models::FMTlpmodel::getsolution,
+			"@DocString(FMTlpmodel::getsolution)")
+		.def("setsolution", &Models::FMTlpmodel::setsolution,
+			"@DocString(FMTlpmodel::setsolution)")
+		.def("setobjective", &Models::FMTlpmodel::setobjective,
+			"@DocString(FMTlpmodel::setobjective)")
+		.def("setconstraint", &Models::FMTlpmodel::setconstraint,
+			"@DocString(FMTlpmodel::setconstraint)")
+		.def("eraseconstraint", &Models::FMTlpmodel::eraseconstraint,
+			"@DocString(FMTlpmodel::eraseconstraint)")
+		.def("eraseperiod", &Models::FMTlpmodel::eraseperiod,
+			"@DocString(FMTlpmodel::eraseperiod)")
+		.def("resolve", &Models::FMTlpmodel::resolve,
+			"@DocString(FMTlpmodel::resolve)")
+		.def("initialsolve", &Models::FMTlpmodel::initialsolve,
+			"@DocString(FMTlpmodel::initialsolve)")
 		.def("getoutput", &Models::FMTlpmodel::getoutput, getLPoutputoverloads())
-		.def("writeLP", &Models::FMTlpmodel::writeLP)
-		.def("writeMPS", &Models::FMTlpmodel::writeMPS)
-		.def("__eq__", &Models::FMTlpmodel::operator ==)
-		.def("__ne__", &Models::FMTlpmodel::operator !=)
-		.def("getstats", &Models::FMTlpmodel::getstats)
+		.def("writeLP", &Models::FMTlpmodel::writeLP,
+			"@DocString(FMTlpmodel::writeLP)")
+		.def("writeMPS", &Models::FMTlpmodel::writeMPS,
+			"@DocString(FMTlpmodel::writeMPS)")
+		.def("__eq__", &Models::FMTlpmodel::operator ==,
+			"@DocString(FMTlpmodel::operator==)")
+		.def("__ne__", &Models::FMTlpmodel::operator !=,
+			"@DocString(FMTlpmodel::operator!=)")
+		.def("getstats", &Models::FMTlpmodel::getstats,
+			"@DocString(FMTlpmodel::getstats)")
 		.def("getoperatingareaheuristics", &Models::FMTlpmodel::getoperatingareaheuristics, getoperatingareaheuristics_overloads());
 	define_pylist<Models::FMTlpmodel>();
 	#endif
+
 	bp::enum_<Models::FMTsawarmuptype>("FMTsawarmuptype")
 		.value("log", Models::FMTsawarmuptype::log)
 		.value("delta", Models::FMTsawarmuptype::bigdelta)
 		.value("logmax", Models::FMTsawarmuptype::logmax)
 		.value("bootstrapmagic", Models::FMTsawarmuptype::bootstrapmagic);
 
-	const char* py_FMTsamodel_doc =
-        " ``FMTsamodel`` class.\n"
-        "\n"
-        "Model class used to do simulated annealing\n"
-        "Need to use cooling schedule\n"
-        "\n";
-	bp::class_<Models::FMTsamodel, bp::bases<Models::FMTmodel>>("FMTsamodel",py_FMTsamodel_doc)
-            .def(bp::init<Models::FMTmodel>())
-            .def("get_current_solution",&Models::FMTsamodel::get_current_solution)
-            .def("get_new_solution",&Models::FMTsamodel::get_new_solution)
-            .def("getspatialactions",&Models::FMTsamodel::getspatialactions)
+
+
+	bp::class_<Models::FMTsamodel, bp::bases<Models::FMTmodel>>("FMTsamodel", "@DocString(FMTsamodel)")
+            .def(bp::init<Models::FMTmodel>(), "@DocString(FMTsamodel(FMTmodel))")
+            .def("get_current_solution",&Models::FMTsamodel::get_current_solution,
+				"@DocString(FMTsamodel::get_current_solution)")
+            .def("get_new_solution",&Models::FMTsamodel::get_new_solution,
+				"@DocString(FMTsamodel::get_new_solution)")
+            .def("getspatialactions",&Models::FMTsamodel::getspatialactions,
+				"@DocString(FMTsamodel::getspatialactions)")
             .def("evaluate",&Models::FMTsamodel::evaluate,evaluate_overloads())
             .def("setinitial_mapping",&Models::FMTsamodel::setinitial_mapping,
-                 "Set the initial mapping\n"
-                 "Initial forest themes described to the model",
-				bp::args("self","mapping"))
+				"@DocString(FMTsamodel::setinitial_mapping)")
             .def("setspactions",&Models::FMTsamodel::setspactions,
-				"Set a spatial actions list to the model\n"
-				"Model should contain the relative transitions\n"
-				"Actions will be simulated following the list ordering\n")
-            .def("set_min_max_moves",&Models::FMTsamodel::set_min_max_moves)
+				"@DocString(FMTsamodel::setspactions)")
+            .def("set_min_max_moves",&Models::FMTsamodel::set_min_max_moves,
+				"@DocString(FMTsamodel::set_min_max_moves)")
             .def("cool_down",&Models::FMTsamodel::cool_down,
-                 "Reduce temperature according to the cooling schedule\n")
+				"@DocString(FMTsamodel::cool_down)")
             .def("get_cool_schedule_type",&Models::FMTsamodel::getcoolingscheduletype,
-                 "Return cooling schedule type associated with the model\n")
+				"@DocString(FMTsamodel::getcoolingscheduletype)")
             .def("setschedule",&Models::FMTsamodel::setschedule,
-                 "Set a cooling schedule by passing a FMTsaschedule\n")
+				"@DocString(FMTsamodel::setschedule)")
             .def("buildperiod",&Models::FMTsamodel::buildperiod,
-                 "Build each period one by one randomly\n")
+				"@DocString(FMTsamodel::buildperiod)")
             .def("move",&Models::FMTsamodel::move_solution,
                  move_solution_overloads())
             .def("acceptnew",&Models::FMTsamodel::acceptnew,
-                 "Accept new solution as current solution and empty the new solution")
+				"@DocString(FMTsamodel::acceptnew)")
             .def("write_outputs_at",&Models::FMTsamodel::write_outputs_at,
-                 "Input : Path were you want the file with the outputs\n"
-                 "Write the for each constraint and period the output and the penalty in a file name outputs.csv")
+				"@DocString(FMTsamodel::write_outputs_at)")
             .def("get_outputs",&Models::FMTsamodel::get_outputs,get_outputs_overloads())
-            .def("write_solutions_events",&Models::FMTsamodel::write_solutions_events)
-            .def("get_number_moves",&Models::FMTsamodel::get_number_moves)
+            .def("write_solutions_events",&Models::FMTsamodel::write_solutions_events,
+				"@DocString(FMTsamodel::write_solutions_events)")
+            .def("get_number_moves",&Models::FMTsamodel::get_number_moves,
+				"@DocString(FMTsamodel::get_number_moves)")
             .def("warmup",&Models::FMTsamodel::warmup,warmup_overloads());
+
     define_pylist<Models::FMTsamodel>();
+
     }
 }
 #endif // PYEXPORTMODEL_H_INCLUDED

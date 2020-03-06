@@ -25,7 +25,10 @@ SOFTWARE.
 #ifndef PYEXPORTGRAPH_H_INCLUDED
 #define PYEXPORTGRAPH_H_INCLUDED
 
-#include "PYexportGraph.h"
+#include "Rdefinitions.h"
+#include "FMTgraphstats.h"
+#include "FMTgraph.h"
+#include "boost/python.hpp"
 
 namespace Python 
 {
@@ -40,11 +43,6 @@ void exportGraph()
 		"   :platform: Unix, Windows\n"
 		"   :synopsis: Module used to generate graph.\n"
 		"\n";
-	const char* py_FMTgraphstats_doc =
-		" ``FMTgraphstats`` class.\n"
-		"\n"
-		"Graph stats\n"
-		"\n";
 
 	bp::enum_<Graph::FMToutputlevel>("FMToutputlevel")
 		.value("standard", Graph::FMToutputlevel::standard)
@@ -52,22 +50,30 @@ void exportGraph()
 		.value("developpement", Graph::FMToutputlevel::developpement)
 		.export_values();
 
-	bp::class_<Graph::FMTgraphstats>("FMTgraphstats", py_FMTgraphstats_doc)
-		.def("__str__", &Graph::FMTgraphstats::operator std::string)
-		.def_readwrite("cols", &Graph::FMTgraphstats::cols)
-		.def_readwrite("rows", &Graph::FMTgraphstats::rows)
-		.def_readwrite("vertices", &Graph::FMTgraphstats::vertices)
-		.def_readwrite("edges", &Graph::FMTgraphstats::edges)
-		.def_readwrite("transfer_rows", &Graph::FMTgraphstats::transfer_rows)
-		.def_readwrite("output_rows", &Graph::FMTgraphstats::output_rows)
-		.def_readwrite("output_cols", &Graph::FMTgraphstats::output_cols);
+	bp::class_<Graph::FMTgraphstats>("FMTgraphstats", "@DocString(FMTgraphstats)")
+		.def("__str__", &Graph::FMTgraphstats::operator std::string,
+			"@DocString(FMTgraphstats::operator std::string)")
+		.def_readwrite("cols", &Graph::FMTgraphstats::cols,
+			"@DocString(FMTgraphstats::cols)")
+		.def_readwrite("rows", &Graph::FMTgraphstats::rows,
+			"@DocString(FMTgraphstats::rows)")
+		.def_readwrite("vertices", &Graph::FMTgraphstats::vertices,
+			"@DocString(FMTgraphstats::vertices)")
+		.def_readwrite("edges", &Graph::FMTgraphstats::edges,
+			"@DocString(FMTgraphstats::edges)")
+		.def_readwrite("transfer_rows", &Graph::FMTgraphstats::transfer_rows,
+			"@DocString(FMTgraphstats::transfer_rows)")
+		.def_readwrite("output_rows", &Graph::FMTgraphstats::output_rows,
+			"@DocString(FMTgraphstats::output_rows)")
+		.def_readwrite("output_cols", &Graph::FMTgraphstats::output_cols,
+			"@DocString(FMTgraphstats::output_cols)");
 
 	bp::enum_<Graph::FMTgraphbuild>("FMTsolverinterface")
 		.value("schedulebuild", Graph::FMTgraphbuild::schedulebuild)
 		.value("fullbuild", Graph::FMTgraphbuild::fullbuild)
 		.value("nobuild", Graph::FMTgraphbuild::nobuild);
 
-	bp::class_<Graph::FMTgraph>("FMTgraph")
+	bp::class_<Graph::FMTgraph>("FMTgraph", "@DocString(FMTgraph)")
 		.def_pickle(FMT_pickle_suite<Graph::FMTgraph>());
 
 }

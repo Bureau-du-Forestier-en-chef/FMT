@@ -28,6 +28,8 @@ SOFTWARE.
 #include <boost/python/docstring_options.hpp>
 #include <boost/python/args.hpp>
 #include "FMTversion.h"
+#include "boost/python.hpp"
+
 
 namespace Python
 {
@@ -42,19 +44,20 @@ void exportVersion()
 		"   :platform: Unix, Windows\n"
 		"   :synopsis: Version module.\n"
 		"\n";
-	const char* py_FMTversion_doc =
-		" ``FMTversion`` class.\n"
-		"\n"
-		"This class is used for versioning\n"
-		"\n";
 
-	boost::python::class_<Version::FMTversion>("FMTversion", py_FMTversion_doc)
-		.def("getmajor", &Version::FMTversion::getmajor).staticmethod("getmajor")
-		.def("getminor",&Version::FMTversion::getminor).staticmethod("getminor")
-		.def("getpatch", &Version::FMTversion::getpatch).staticmethod("getpatch")
-		.def("getversion", &Version::FMTversion::getversion).staticmethod("getversion")
-		.def("isatleast", &Version::FMTversion::isatleast).staticmethod("isatleast")
-		.def("hasfeature", &Version::FMTversion::hasfeature).staticmethod("hasfeature");
+	boost::python::class_<Version::FMTversion>("FMTversion", "@DocString(FMTversion)")
+		.def("getmajor", &Version::FMTversion::getmajor,
+			"@DocString(FMTversion::getmajor)").staticmethod("getmajor")
+		.def("getminor",&Version::FMTversion::getminor,
+			"@DocString(FMTversion::getminor)").staticmethod("getminor")
+		.def("getpatch", &Version::FMTversion::getpatch,
+			"@DocString(FMTversion::getpatch)").staticmethod("getpatch")
+		.def("getversion", &Version::FMTversion::getversion,
+			"@DocString(FMTversion::getversion)").staticmethod("getversion")
+		.def("isatleast", &Version::FMTversion::isatleast,
+			"@DocString(FMTversion::isatleast)").staticmethod("isatleast")
+		.def("hasfeature", &Version::FMTversion::hasfeature,
+			"@DocString(FMTversion::hasfeature)").staticmethod("hasfeature");
 	}
 }
 

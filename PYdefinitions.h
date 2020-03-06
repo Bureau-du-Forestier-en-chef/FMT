@@ -40,13 +40,8 @@ void define_pylist()
 template <class T>
 void define_FMTlist()
     {
-     const char* py_FMTlist =
-        " ``FMTlist`` class.\n"
-        "\n"
-        "This class is used for mapping masks\n"
-        "\n";
 	 py_pair<Core::FMTmask, T>();
-	 boost::python::class_<Core::FMTlist<T>>("FMTlist", py_FMTlist)
+	 boost::python::class_<Core::FMTlist<T>>("FMTlist", "@DocString(FMTlist)")
 		 .def("__iter__", boost::python::iterator<Core::FMTlist<T>>());
 	define_pylist<T>();
     }
@@ -57,21 +52,24 @@ BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(getarea_overloads,getarea, 0, 1)
 template <class T>
 void define_FMTlayer()
     {
-    const char* py_FMTlayer =
-        " ``FMTlayer`` class.\n"
-        "\n"
-        "This class is used for spatial mapping\n"
-        "It uses FMTcoordinate as key to spatialise object\n"
-        "\n";
-	boost::python::class_<Spatial::FMTlayer<T>>("FMTlayer",py_FMTlayer)
-        .def("getXSize",&Spatial::FMTlayer<T>::GetXSize)
-        .def("getYSize",&Spatial::FMTlayer<T>::GetYSize)
-        .def("getgeotransform",&Spatial::FMTlayer<T>::getgeotransform)
-        .def("getprojection",&Spatial::FMTlayer<T>::getprojection)
-        .def("getmapping",&Spatial::FMTlayer<T>::getmapping)
-        .def("area",&Spatial::FMTlayer<T>::area)
-        .def("getcellsize",&Spatial::FMTlayer<T>::getcellsize)
-        .def("__len__",&Spatial::FMTlayer<T>::size);
+
+	boost::python::class_<Spatial::FMTlayer<T>>("FMTlayer", "@DocString(FMTlayer)")
+        .def("getXSize",&Spatial::FMTlayer<T>::GetXSize,
+			"@DocString(FMTlayer::GetXSize)")
+        .def("getYSize",&Spatial::FMTlayer<T>::GetYSize,
+			"@DocString(FMTlayer::GetYSize)")
+        .def("getgeotransform",&Spatial::FMTlayer<T>::getgeotransform,
+			"@DocString(FMTlayer::getgeotransform)")
+        .def("getprojection",&Spatial::FMTlayer<T>::getprojection,
+			"@DocString(FMTlayer::getprojection)")
+        .def("getmapping",&Spatial::FMTlayer<T>::getmapping,
+			"@DocString(FMTlayer::getmapping)")
+        .def("area",&Spatial::FMTlayer<T>::area,
+			"@DocString(FMTlayer::area)")
+        .def("getcellsize",&Spatial::FMTlayer<T>::getcellsize,
+			"@DocString(FMTlayer::getcellsize)")
+        .def("__len__",&Spatial::FMTlayer<T>::size,
+			"@DocString(FMTlayer::size)");
     boost::python::to_python_converter<std::map<Spatial::FMTcoordinate,T>,MapToDict<Spatial::FMTcoordinate,T>>();
     }
 

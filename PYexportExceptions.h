@@ -25,11 +25,10 @@ SOFTWARE.
 #ifndef PYEXPORTEXCEPTIONS_H_INCLUDED
 #define PYEXPORTEXCEPTIONS_H_INCLUDED
 
-#include "PYexportExceptions.h"
-
 #include "FMTdefaultexceptionhandler.h"
 #include "FMTdebugexceptionhandler.h"
 #include "FMTquietexceptionhandler.h"
+#include "boost/python.hpp"
 
 namespace Python
 {
@@ -45,33 +44,20 @@ void exportException()
     "   :platform: Unix, Windows\n"
     "   :synopsis: Module used to handel exceptions.\n"
     "\n";
-    const char* py_FMTexceptionhandler =
-        " ``FMTexceptionhandler`` class.\n"
-        "\n"
-        "Base Exception class for FMT\n"
-        "\n";
-	bp::class_<Exception::FMTexceptionhandler>("FMTexceptionhandler",py_FMTexceptionhandler);
-    const char* py_FMTdefaultexceptionhandler =
-        " ``FMTdefaultexceptionhandler`` class.\n"
-        "\n"
-        "Default exception handler for FMT\n"
-        "\n";
-	bp::class_<Exception::FMTdefaultexceptionhandler, bp::bases<Exception::FMTexceptionhandler>>("FMTdefaultexceptionhandler",py_FMTdefaultexceptionhandler)
-        .def("raise",&Exception::FMTdefaultexceptionhandler::raise);
-    const char* py_FMTquietexceptionhandler =
-        " ``FMTquietexceptionhandler`` class.\n"
-        "\n"
-        "Quiet exception handler for FMT\n"
-        "\n";
-	bp::class_<Exception::FMTquietexceptionhandler, bp::bases<Exception::FMTexceptionhandler>>("FMTquietexceptionhandler",py_FMTquietexceptionhandler)
-        .def("raise",&Exception::FMTquietexceptionhandler::raise);
-	const char* py_FMTdebugexceptionhandler =
-		" ``FMTdebugexceptionhandler`` class.\n"
-		"\n"
-		"Debug exception handler for FMT\n"
-		"\n";
-	bp::class_<Exception::FMTdebugexceptionhandler, bp::bases<Exception::FMTexceptionhandler>>("FMTdebugexceptionhandler", py_FMTdebugexceptionhandler)
-		.def("raise", &Exception::FMTdebugexceptionhandler::raise);
+
+	bp::class_<Exception::FMTexceptionhandler>("FMTexceptionhandler", "@DocString(FMTexceptionhandler)");
+
+	bp::class_<Exception::FMTdefaultexceptionhandler, bp::bases<Exception::FMTexceptionhandler>>("FMTdefaultexceptionhandler", "@DocString(FMTdefaultexceptionhandler)")
+        .def("raise",&Exception::FMTdefaultexceptionhandler::raise,
+			"@DocString(FMTdefaultexceptionhandler::raise)");
+
+	bp::class_<Exception::FMTquietexceptionhandler, bp::bases<Exception::FMTexceptionhandler>>("FMTquietexceptionhandler", "@DocString(FMTquietexceptionhandler)")
+        .def("raise",&Exception::FMTquietexceptionhandler::raise,
+			"@DocString(FMTquietexceptionhandler::raise)");
+
+	bp::class_<Exception::FMTdebugexceptionhandler, bp::bases<Exception::FMTexceptionhandler>>("FMTdebugexceptionhandler", "@DocString(FMTdebugexceptionhandler)")
+		.def("raise", &Exception::FMTdebugexceptionhandler::raise,
+			"@DocString(FMTdebugexceptionhandler::raise)");
 
 
 	bp::enum_<Exception::FMTexc>("FMTexc")
@@ -100,13 +86,16 @@ void exportException()
 		.value("Empty", Core::FMTwssect::Empty)
 		.export_values();
 
-	bp::class_<Exception::FMTexception>Exceptionclass("FMTexception");
-	Exceptionclass.def("gettype", &Exception::FMTexception::gettype);
-	Exceptionclass.def("getsection", &Exception::FMTexception::getsection);
-	Exceptionclass.def("what", &Exception::FMTexception::what);
+	bp::class_<Exception::FMTexception>Exceptionclass("FMTexception", "@DocString(FMTexception)");
+	Exceptionclass.def("gettype", &Exception::FMTexception::gettype,
+		"@DocString(FMTexception::gettype)");
+	Exceptionclass.def("getsection", &Exception::FMTexception::getsection,
+		"@DocString(FMTexception::getsection)");
+	Exceptionclass.def("what", &Exception::FMTexception::what,
+		"@DocString(FMTexception::what)");
 
-	bp::class_<Exception::FMTerror, bp::bases<Exception::FMTexception>>Errorclass("FMTerror");
-	bp::class_<Exception::FMTwarning, bp::bases<Exception::FMTexception>>("FMTwarning");
+	bp::class_<Exception::FMTerror, bp::bases<Exception::FMTexception>>Errorclass("FMTerror", "@DocString(FMTerror)");
+	bp::class_<Exception::FMTwarning, bp::bases<Exception::FMTexception>>("FMTwarning", "@DocString(FMTwarning)");
 
 	bp::register_exception_translator<Exception::FMTwarning>(&FMTtranslate_warning);
 	FMTexceptiontype = Errorclass.ptr();

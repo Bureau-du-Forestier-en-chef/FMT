@@ -22,59 +22,60 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef PYEXPORTHEURISTICS_H_INCLUDED
-#define PYEXPORTHEURISTICS_H_INCLUDED
+#ifndef REXPORTHEURISTICS_H_INCLUDED
+#define REXPORTHEURISTICS_H_INCLUDED
 
 
 #include "FMToperatingarea.h"
 #include "FMToperatingareaheuristic.h"
-#include "PYdefinitions.h"
-#include "boost/python.hpp"
+#include "Rdefinitions.h"
+#include <Rcpp.h>
 
-namespace Python
+#ifdef FMTWITHOSI
+	RCPP_EXPOSED_WRAP(Heuristics::FMToperatingarea);
+	RCPP_EXPOSED_AS(Heuristics::FMToperatingarea);
+	RCPP_DEFINEVECTOR(Heuristics::FMToperatingarea);//For vector
+	RCPP_EXPOSED_WRAP(Heuristics::FMToperatingareaheuristic);
+	RCPP_EXPOSED_AS(Heuristics::FMToperatingareaheuristic);
+	RCPP_DEFINEVECTOR(Heuristics::FMToperatingareaheuristic);//For vector
+#endif
+
+namespace R
 {
 void exportHeuristics()
 {
-	namespace bp = boost::python;
-	bp::object HeuristicsModule(bp::handle<>(bp::borrowed(PyImport_AddModule("FMT.Heuristics"))));
-	bp::scope().attr("Heuristics") = HeuristicsModule;
-	bp::scope HeuristicsModule_scope = HeuristicsModule;
-	bp::scope().attr("__doc__") = ".. module:: Heuristics\n"
-		"\n"
-		"   :platform: Unix, Windows\n"
-		"   :synopsis: Module used for Heuristics.\n"
-		"\n";
+	
 	#ifdef FMTWITHOSI
 
-	bp::class_<Heuristics::FMToperatingarea>("FMToperatingarea", "@DocString(FMToperatingarea)")
-		.def(bp::init<const Core::FMTmask&, const size_t&, const size_t&, const size_t&, const size_t&, const double&, const double&>(),
+	Rcpp::class_<Heuristics::FMToperatingarea>("FMToperatingarea", "@DocString(FMToperatingarea)")
+		.constructor("@DocString(FMToperatingarea())")
+		.constructor<const Core::FMTmask&, const size_t&, const size_t&, const size_t&, const size_t&, const double&, const double&>(
 			"@DocString(FMToperatingarea(const Core::FMTmask&,const size_t&,const size_t&,const size_t&,const size_t&,const double&,const double&))")
-		.def_pickle(FMT_pickle_suite<Heuristics::FMToperatingarea>())
-		.def("getneighbors", &Heuristics::FMToperatingarea::getneighbors,
+		.method("getneighbors", &Heuristics::FMToperatingarea::getneighbors,
 			"@DocString(FMToperatingarea::getneighbors)")
-		.def("setneighbors", &Heuristics::FMToperatingarea::setneighbors,
+		.method("setneighbors", &Heuristics::FMToperatingarea::setneighbors,
 			"@DocString(FMToperatingarea::setneighbors)")
-		.def("getmask", &Heuristics::FMToperatingarea::getmask,
+		.method("getmask", &Heuristics::FMToperatingarea::getmask,
 			"@DocString(FMToperatingarea::getmask)")
-		.def("getneihgborsperimeter", &Heuristics::FMToperatingarea::getneihgborsperimeter,
+		.method("getneihgborsperimeter", &Heuristics::FMToperatingarea::getneihgborsperimeter,
 			"@DocString(FMToperatingarea::getneihgborsperimeter)");
 		
-	define_pylist<Heuristics::FMToperatingarea>();
 
-	bp::class_<Heuristics::FMToperatingareaheuristic, bp::bases<Core::FMTobject>>("FMToperatingareaheuristic", "@DocString(FMToperatingareaheuristic)")
-		.def_pickle(FMT_pickle_suite<Heuristics::FMToperatingareaheuristic>())
-		.def("initialsolve", &Heuristics::FMToperatingareaheuristic::initialsolve,
+
+	Rcpp::class_<Heuristics::FMToperatingareaheuristic>("FMToperatingareaheuristic","@DocString(FMToperatingareaheuristic)")
+		.derives<Core::FMTobject>("FMTobject")
+		.constructor("@DocString(FMToperatingareaheuristic())")
+		.method("initialsolve", &Heuristics::FMToperatingareaheuristic::initialsolve,
 			"@DocString(FMToperatingareaheuristic::initialsolve)")
-		.def("branchnboundsolve", &Heuristics::FMToperatingareaheuristic::branchnboundsolve,
+		.method("branchnboundsolve", &Heuristics::FMToperatingareaheuristic::branchnboundsolve,
 			"@DocString(FMToperatingareaheuristic::branchnboundsolve)")
-		.def("isfeasible", &Heuristics::FMToperatingareaheuristic::isfeasible,
+		.method("isfeasible", &Heuristics::FMToperatingareaheuristic::isfeasible,
 			"@DocString(FMToperatingareaheuristic::isfeasible)")
-		.def("getobjective", &Heuristics::FMToperatingareaheuristic::getobjective,
+		.method("getobjective", &Heuristics::FMToperatingareaheuristic::getobjective,
 			"@DocString(FMToperatingareaheuristic::getobjective)")
-		.def("getsolution", &Heuristics::FMToperatingareaheuristic::getsolution,
+		.method("getsolution", &Heuristics::FMToperatingareaheuristic::getsolution,
 			"@DocString(FMToperatingareaheuristic::getsolution)");
 
-	define_pylist<Heuristics::FMToperatingareaheuristic>();
 	#endif 
 	}
 }

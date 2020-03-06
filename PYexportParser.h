@@ -34,6 +34,7 @@ SOFTWARE.
 #include "FMToutputparser.h"
 #include "FMToptimizationparser.h"
 #include "FMTmodelparser.h"
+#include "boost/python.hpp"
 
 namespace Python
 {
@@ -61,12 +62,12 @@ void exportParser()
     "   :synopsis: Module used to import Woodstock models.\n"
     "\n";
 
-	bp::class_<Parser::FMTparser, bp::bases<Core::FMTobject>>("FMTparser");
+	bp::class_<Parser::FMTparser, bp::bases<Core::FMTobject>>("FMTparser", "@DocString(FMTparser)");
 
 	define_pydict<std::string,std::string>();
 
-	bp::class_<Parser::FMTareaparser, bp::bases<Parser::FMTparser>>("FMTareaparser")
-                .def("read", &Parser::FMTareaparser::read)
+	bp::class_<Parser::FMTareaparser, bp::bases<Parser::FMTparser>>("FMTareaparser", "@DocString(FMTareaparser)")
+                .def("read", &Parser::FMTareaparser::read, "@DocString(FMTareaparser::read)")
 				#ifdef FMTWITHGDAL
 					.def("readvectors", &Parser::FMTareaparser::readvectors,readvectors_overloads())
 					.def("readrasters", &Parser::FMTareaparser::readrasters,readrasters_overloads())
@@ -74,40 +75,66 @@ void exportParser()
 					.def("writedisturbances",&Parser::FMTareaparser::writedisturbances,writedisturbances_overloads())
 					.def("getneighbors",&Parser::FMTareaparser::getneighbors, getneighbors_overloads())
 				#endif
-				.def("write", &Parser::FMTareaparser::write);
-	bp::class_<Parser::FMTlandscapeparser, bp::bases<Parser::FMTparser>>("FMTlandscapeparser")
-                .def("read",&Parser::FMTlandscapeparser::read)
+				.def("write", &Parser::FMTareaparser::write,
+					"@DocString(FMTareaparser::write)");
+	bp::class_<Parser::FMTlandscapeparser, bp::bases<Parser::FMTparser>>("FMTlandscapeparser", "@DocString(FMTlandscapeparser)")
+                .def("read",&Parser::FMTlandscapeparser::read,
+					"@DocString(FMTlandscapeparser::read)")
 				#ifdef FMTWITHGDAL
-					.def("readvectors", &Parser::FMTlandscapeparser::readvectors)
-					.def("readrasters",&Parser::FMTlandscapeparser::readrasters)
+					.def("readvectors", &Parser::FMTlandscapeparser::readvectors,
+						"@DocString(FMTlandscapeparser::readvectors)")
+					.def("readrasters",&Parser::FMTlandscapeparser::readrasters,
+						"@DocString(FMTlandscapeparser::readrasters)")
 				#endif
-                .def("write",&Parser::FMTlandscapeparser::write);
-	bp::class_<Parser::FMTactionparser, bp::bases<Parser::FMTparser>>("FMTactionparser")
-                .def("read",&Parser::FMTactionparser::read)
-                .def("write",&Parser::FMTactionparser::write);
-	bp::class_<Parser::FMTtransitionparser, bp::bases<Parser::FMTparser>>("FMTtransitionparser")
-                .def("read",&Parser::FMTtransitionparser::read)
-                .def("write",&Parser::FMTtransitionparser::write);
-	bp::class_<Parser::FMTconstantparser, bp::bases<Parser::FMTparser>>("FMTconstantparser")
-                .def("read",&Parser::FMTconstantparser::read)
-                .def("write",&Parser::FMTconstantparser::write);
-	bp::class_<Parser::FMTlifespanparser, bp::bases<Parser::FMTparser>>("FMTlifespanparser")
-                .def("read",&Parser::FMTlifespanparser::read)
-                .def("write",&Parser::FMTlifespanparser::write);
-	bp::class_<Parser::FMTyieldparser, bp::bases<Parser::FMTparser>>("FMTyieldparser")
-                .def("read",&Parser::FMTyieldparser::read)
-                .def("write",&Parser::FMTyieldparser::write);
-	bp::class_<Parser::FMToutputparser, bp::bases<Parser::FMTparser>>("FMToutputparser")
-                .def("read",&Parser::FMToutputparser::read)
-                .def("write",&Parser::FMToutputparser::write);
-	bp::class_<Parser::FMTmodelparser, bp::bases<Parser::FMTparser>>("FMTmodelparser")
+                .def("write",&Parser::FMTlandscapeparser::write,
+					"@DocString(FMTlandscapeparser::write)");
+	bp::class_<Parser::FMTactionparser, bp::bases<Parser::FMTparser>>("FMTactionparser", "@DocString(FMTactionparser)")
+                .def("read",&Parser::FMTactionparser::read,
+					"@DocString(FMTactionparser::read)")
+                .def("write",&Parser::FMTactionparser::write,
+					"@DocString(FMTactionparser::write)");
+	bp::class_<Parser::FMTtransitionparser, bp::bases<Parser::FMTparser>>("FMTtransitionparser", "@DocString(FMTtransitionparser)")
+                .def("read",&Parser::FMTtransitionparser::read,
+					"@DocString(FMTtransitionparser::read)")
+                .def("write",&Parser::FMTtransitionparser::write,
+					"@DocString(FMTtransitionparser::write)");
+	bp::class_<Parser::FMTconstantparser, bp::bases<Parser::FMTparser>>("FMTconstantparser", "@DocString(FMTconstantparser)")
+                .def("read",&Parser::FMTconstantparser::read,
+					"@DocString(FMTconstantparser::read)")
+                .def("write",&Parser::FMTconstantparser::write,
+					"@DocString(FMTconstantparser::write)");
+	bp::class_<Parser::FMTlifespanparser, bp::bases<Parser::FMTparser>>("FMTlifespanparser", "@DocString(FMTlifespanparser)")
+                .def("read",&Parser::FMTlifespanparser::read,
+					"@DocString(FMTlifespanparser::read)")
+                .def("write",&Parser::FMTlifespanparser::write,
+					"@DocString(FMTlifespanparser::write)");
+	bp::class_<Parser::FMTyieldparser, bp::bases<Parser::FMTparser>>("FMTyieldparser", "@DocString(FMTyieldparser)")
+                .def("read",&Parser::FMTyieldparser::read,
+					"@DocString(FMTyieldparser::read)")
+                .def("write",&Parser::FMTyieldparser::write,
+					"@DocString(FMTyieldparser::write)");
+	bp::class_<Parser::FMToutputparser, bp::bases<Parser::FMTparser>>("FMToutputparser", "@DocString(FMToutputparser)")
+                .def("read",&Parser::FMToutputparser::read,
+					"@DocString(FMToutputparser::read)")
+                .def("write",&Parser::FMToutputparser::write,
+					"@DocString(FMToutputparser::write)");
+	bp::class_<Parser::FMToptimizationparser, bp::bases<Parser::FMTparser>>("FMToptimizationparser", "@DocString(FMToptimizationparser)")
+				.def("read", &Parser::FMToptimizationparser::read,
+					"@DocString(FMToptimizationparser::read)")
+				.def("write", &Parser::FMToptimizationparser::write,
+					"@DocString(FMToptimizationparser::write)");
+	bp::class_<Parser::FMTmodelparser, bp::bases<Parser::FMTparser>>("FMTmodelparser", "@DocString(FMTmodelparser)")
                 .def("read",&Parser::FMTmodelparser::read, readmodel_overloads())
 				.def("readproject", &Parser::FMTmodelparser::readproject, readproject_overloads())
-				.def("readschedules", &Parser::FMTmodelparser::readschedules)
-                .def("write",&Parser::FMTmodelparser::write);
-	bp::class_<Parser::FMTscheduleparser, bp::bases<Parser::FMTparser>>("FMTscheduleparser")
-                .def("read",&Parser::FMTscheduleparser::read)
-                .def("write",&Parser::FMTscheduleparser::write);
+				.def("readschedules", &Parser::FMTmodelparser::readschedules, 
+					"@DocString(FMTmodelparser::readschedules)")
+                .def("write",&Parser::FMTmodelparser::write,
+					"@DocString(FMTmodelparser::write)");
+	bp::class_<Parser::FMTscheduleparser, bp::bases<Parser::FMTparser>>("FMTscheduleparser", "@DocString(FMTscheduleparser)")
+                .def("read",&Parser::FMTscheduleparser::read,
+					"@DocString(FMTscheduleparser::read)")
+                .def("write",&Parser::FMTscheduleparser::write,
+					"@DocString(FMTscheduleparser::write)");
     }
 
 }

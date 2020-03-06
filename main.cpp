@@ -82,5 +82,51 @@ extern "C"
         }
 
 }
+#elif defined FMTWITHR
+
+	#include "Rdeclarations.h"
+	#include "Rdefinitions.h"
+	#include "RexportExceptions.h"
+	#include "RexportCore.h"
+	#include "RexportSpatial.h"
+	#include "RexportParser.h"
+	#include "RexportGraph.h"
+	#include "RexportModel.h"
+	#include "RexportVersion.h"
+	#include "RexportHeuristics.h"
+	#include <Rcpp>
+	RCPP_MODULE(FMT)
+		{
+		//Exceptions
+		R::exportException();
+		//Core
+		R::exportCore();
+		//Spatial
+		R::exportSpatial();
+		//Graph
+		R::exportGraph();
+		//Model
+		R::exportModel();
+		//Parser
+		R::exportParser();
+		//Version
+		R::exportVersion();
+		//Heuristics
+		R::exportHeuristics();
+		}
+
+// declarations
+extern "C" 
+	{
+	SEXP testnorm();
+	}
+
+// definition
+SEXP testnorm()// use that part for exception handling to return custom exception to R
+	{
+		BEGIN_RCPP
+
+		END_RCPP
+	}
 
 #endif
