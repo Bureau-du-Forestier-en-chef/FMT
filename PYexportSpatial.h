@@ -30,8 +30,6 @@ SOFTWARE.
 #include "FMTdisturbancestack.h"
 #include "FMTspatialaction.h"
 #include "FMTsaschedule.h"
-#include "FMTexponentialschedule.h"
-#include "FMTsamovetype.h"
 #include "FMTgraph.h"
 #include "FMTsasolution.h"
 #include "boost/python.hpp"
@@ -52,8 +50,7 @@ void exportSpatial()
     "\n";
 
     bp::class_<Spatial::FMTcoordinate>("FMTcoordinate", "@DocString(FMTcoordinate)")
-        .def(bp::init<unsigned int,unsigned int>(),
-			"@DocString(FMTcoordinate(unsigned int,unsigned int))")
+        .def(bp::init<unsigned int,unsigned int>())
         .def("__lt__",&Spatial::FMTcoordinate::operator <,
 			"@DocString(FMTcoordinate::operator<)")
         .def("getx",&Spatial::FMTcoordinate::getx,
@@ -66,8 +63,7 @@ void exportSpatial()
 
 
 	bp::class_<Spatial::FMTforest, bp::bases<Spatial::FMTlayer<Core::FMTdevelopment>>>("FMTforest", "@DocString(FMTforest)")
-        .def(bp::init<Spatial::FMTforest>(),
-			"@DocString(FMTforest(Spatial::FMTforest))")
+        .def(bp::init<Spatial::FMTforest>())
         .def("getarea",&Spatial::FMTforest::getarea,
 			"@DocString(FMTforest::getarea)")
         .def("grow",&Spatial::FMTforest::grow,
@@ -83,8 +79,7 @@ void exportSpatial()
 
 
 	bp::class_<Spatial::FMTspatialaction, bp::bases<Core::FMTaction>>("FMTspatialaction", "@DocString(FMTspatialaction)")
-        .def(bp::init<Core::FMTaction>(),
-			"@DocString(FMTspatialaction(FMTaction))")
+        .def(bp::init<Core::FMTaction>())
         .add_property("neighbors", bp::make_getter(&Spatial::FMTspatialaction::neighbors, bp::return_value_policy<bp::return_by_value>()),
                      make_setter(&Spatial::FMTspatialaction::neighbors, bp::return_value_policy<bp::return_by_value>()))
         .def_readwrite("green_up",&Spatial::FMTspatialaction::green_up,
@@ -109,8 +104,7 @@ void exportSpatial()
 
 
 	bp::class_<Spatial::FMTexponentialschedule, bp::bases<Spatial::FMTsaschedule>>("FMTexponentialschedule", "@DocString(FMTexponentialschedule)")
-        .def(bp::init<double>(),
-			"@DocString(FMTexponentialschedule(double))");
+        .def(bp::init<double>());
 
 	bp::enum_<Spatial::FMTsamovetype>("FMTsamovetype")
 		.value("shotgun", Spatial::FMTsamovetype::shotgun)

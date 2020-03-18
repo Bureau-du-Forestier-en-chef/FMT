@@ -112,6 +112,7 @@ class FMTareaparser : public FMTparser
 		#endif
 	public:
 		FMTareaparser();
+		~FMTareaparser() = default;
 		FMTareaparser(const FMTareaparser& rhs);
 		FMTareaparser& operator = (const FMTareaparser& rhs);
 		std::vector<Core::FMTactualdevelopment>read(const std::vector<Core::FMTtheme>& themes, const Core::FMTconstants& constants, std::string location);

@@ -32,8 +32,12 @@ SOFTWARE.
 #include <vector>
 #include <map>
 #include <boost/serialization/nvp.hpp>
+#include <boost/serialization/map.hpp>
+#include <boost/serialization/export.hpp>
+#include <boost/serialization/string.hpp>
 #include "FMTexception.h"
 #include "FMTmask.h"
+
 
 
 namespace Core
@@ -63,6 +67,7 @@ class FMTtheme
 			ar & BOOST_SERIALIZATION_NVP(aggregates);
 			ar & BOOST_SERIALIZATION_NVP(source_aggregates);
 			ar & BOOST_SERIALIZATION_NVP(valuenames);
+			ar & BOOST_SERIALIZATION_NVP(indexes);
 			ar & BOOST_SERIALIZATION_NVP(name);
 		}
 		///This map hold the aggregates (key) of the theme and all attributes of the theme (vector item)
@@ -93,6 +98,10 @@ class FMTtheme
 		Default constructor for FMTtheme.
 		*/
         FMTtheme();
+		/**
+		Default destructor for FMTtheme.
+		*/
+		~FMTtheme() = default;
 		/**
 		FMTtheme main constructor.
 		*/
@@ -207,4 +216,5 @@ class FMTtheme
         operator std::string() const;
     };
 }
+
 #endif // FMTtheme_H_INCLUDED

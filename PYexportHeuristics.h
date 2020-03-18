@@ -47,8 +47,7 @@ void exportHeuristics()
 	#ifdef FMTWITHOSI
 
 	bp::class_<Heuristics::FMToperatingarea>("FMToperatingarea", "@DocString(FMToperatingarea)")
-		.def(bp::init<const Core::FMTmask&, const size_t&, const size_t&, const size_t&, const size_t&, const double&, const double&>(),
-			"@DocString(FMToperatingarea(const Core::FMTmask&,const size_t&,const size_t&,const size_t&,const size_t&,const double&,const double&))")
+		.def(bp::init<const Core::FMTmask&, const size_t&, const size_t&, const size_t&, const size_t&, const double&, const double&>())
 		.def_pickle(FMT_pickle_suite<Heuristics::FMToperatingarea>())
 		.def("getneighbors", &Heuristics::FMToperatingarea::getneighbors,
 			"@DocString(FMToperatingarea::getneighbors)")

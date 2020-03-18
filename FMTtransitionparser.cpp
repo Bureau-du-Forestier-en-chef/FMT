@@ -131,7 +131,7 @@ std::vector<Core::FMTtransitionmask> FMTtransitionparser::getmasktran(const std:
         rest = std::string(kmatch[1]) + std::string(kmatch[5]);
         trans.addbounds(Core::FMTagebounds(Core::FMTwssect::Transition, Core::FMTwskwor::Target,age,age));
         }
-     if (regex_search(rest,kmatch,FMTtransitionparser::rxreplace))
+     if (std::regex_search(rest,kmatch,FMTtransitionparser::rxreplace))
         {
 		const std::string strtargettheme = kmatch[4];
 		const std::string stroptheme = kmatch[9];
@@ -154,7 +154,7 @@ std::vector<Core::FMTtransitionmask> FMTtransitionparser::getmasktran(const std:
         replaced = targettheme;
         rest = std::string(kmatch[1])+ std::string(kmatch[14]);
         }
-    if (isvalid(rest) && regex_search(rest,kmatch,FMTtransitionparser::rxtyld))
+    if (isvalid(rest) && std::regex_search(rest,kmatch,FMTtransitionparser::rxtyld))
         {
 		const std::string yld = kmatch[2];
 		const std::string strvalue = kmatch[4];

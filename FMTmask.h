@@ -37,6 +37,8 @@ SOFTWARE.
 #include <boost/serialization/serialization.hpp>
 #include <boost/serialization/split_free.hpp>
 #include <boost/serialization/nvp.hpp>
+#include <boost/serialization/export.hpp>
+#include <boost/serialization/string.hpp>
 #include "FMTexception.h"
 #include <vector>
 #include <string>
@@ -307,9 +309,7 @@ boost hash for FMTmask
     }
   };
 
-
-
-
 }
+
 
 #endif // FMTMASK_H_INCLUDED

@@ -28,7 +28,7 @@ SOFTWARE.
 #include "FMTdefaultexceptionhandler.h"
 #include "FMTdebugexceptionhandler.h"
 #include "FMTquietexceptionhandler.h"
-#include <Rcpp>
+#include <Rcpp.h>
 #include "Rdefinitions.h"
 
 
@@ -41,6 +41,7 @@ RCPP_EXPOSED_AS(Exception::FMTquietexceptionhandler);
 RCPP_EXPOSED_WRAP(Exception::FMTdebugexceptionhandler);
 RCPP_EXPOSED_AS(Exception::FMTdebugexceptionhandler);
 RCPP_EXPOSED_ENUM_NODECL(Exception::FMTexc);
+RCPP_EXPOSED_ENUM_NODECL(Exception::FMTlev);
 RCPP_EXPOSED_ENUM_NODECL(Core::FMTwssect);
 RCPP_EXPOSED_WRAP(Exception::FMTexception);
 RCPP_EXPOSED_AS(Exception::FMTexception);
@@ -89,7 +90,7 @@ void exportException()
 		.method("what", &Exception::FMTexception::what,
 			"@DocString(FMTdebugexceptionhandler::what)");
 
-	Rcpp::class_<Exception::FMTerror>Errorclass("FMTerror", "@DocString(FMTerror)")
+	Rcpp::class_<Exception::FMTerror>("FMTerror", "@DocString(FMTerror)")
 		.derives<Exception::FMTexception>("FMTexception")
 		.constructor("@DocString(FMTerror())");
 

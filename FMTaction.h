@@ -28,6 +28,7 @@ SOFTWARE.
 
 #include "FMTlist.h"
 #include "FMTbounds.h"
+#include <boost/serialization/string.hpp>
 #include <boost/serialization/serialization.hpp>
 #include <boost/serialization/nvp.hpp>
 #include <string>
@@ -264,5 +265,6 @@ boost hash for FMTaction
 
 
 }
+
 
 #endif // FMTACT_H_INCLUDED

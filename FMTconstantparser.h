@@ -36,6 +36,7 @@ class FMTconstantparser : public FMTparser
     {
     public:
         FMTconstantparser();
+		~FMTconstantparser() = default;
         FMTconstantparser(const FMTconstantparser& rhs);
         FMTconstantparser& operator = (const FMTconstantparser& rhs);
         Core::FMTconstants read(std::string location);

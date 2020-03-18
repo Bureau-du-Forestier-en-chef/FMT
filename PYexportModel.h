@@ -82,12 +82,12 @@ void exportModel()
 
     define_pylist<Models::FMTmodel>();
 
- =
+
 
 	bp::to_python_converter<std::map<std::string, double>, MapToDict<std::string, double>>();
 
 	bp::class_<Models::FMTsesmodel, bp::bases<Models::FMTmodel>>("FMTsesmodel", "@DocString(FMTsesmodel)")
-            .def(bp::init<Models::FMTmodel>(), "@DocString(FMTsesmodel(Models::FMTmodel))")
+            .def(bp::init<Models::FMTmodel>())
 			.def_pickle(FMT_pickle_suite<Models::FMTsesmodel>())
             .def("getmapping",&Models::FMTsesmodel::getmapping,
 				"@DocString(FMTsesmodel::getmapping)")
@@ -119,7 +119,7 @@ void exportModel()
 		.value("GUROBI", Models::FMTsolverinterface::GUROBI);
 
 	bp::class_<Models::FMTlpmodel, bp::bases<Models::FMTmodel>>("FMTlpmodel", "@DocString(FMTlpmodel)")
-		.def(bp::init<Models::FMTmodel, Models::FMTsolverinterface>(), "@DocString(FMTlpmodel(FMTmodel,FMTsolverinterface))")
+		.def(bp::init<Models::FMTmodel, Models::FMTsolverinterface>())
 		.def_pickle(FMT_pickle_suite<Models::FMTlpmodel>())
 		.def("buildperiod", &Models::FMTlpmodel::buildperiod, buildperiod_overloads())
 		.def("boundsolution", &Models::FMTlpmodel::boundsolution,
@@ -164,7 +164,7 @@ void exportModel()
 
 
 	bp::class_<Models::FMTsamodel, bp::bases<Models::FMTmodel>>("FMTsamodel", "@DocString(FMTsamodel)")
-            .def(bp::init<Models::FMTmodel>(), "@DocString(FMTsamodel(FMTmodel))")
+            .def(bp::init<Models::FMTmodel>())
             .def("get_current_solution",&Models::FMTsamodel::get_current_solution,
 				"@DocString(FMTsamodel::get_current_solution)")
             .def("get_new_solution",&Models::FMTsamodel::get_new_solution,

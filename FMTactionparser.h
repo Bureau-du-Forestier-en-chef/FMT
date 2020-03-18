@@ -47,6 +47,7 @@ class FMTactionparser : public FMTparser
 		std::vector<Core::FMTaction*> sameactionas(const std::string& all_set, std::vector<Core::FMTaction>& actions) const;
     public:
         FMTactionparser();
+		~FMTactionparser() = default;
         FMTactionparser(const FMTactionparser& rhs);
         FMTactionparser& operator = (const FMTactionparser& rhs);
 		std::string getbounds(std::string& line, Core::FMTspec& spec,const Core::FMTconstants& constants, const Core::FMTyields& ylds);

@@ -35,6 +35,7 @@ SOFTWARE.
 #include "FMToutputnode.h"
 #include "FMTtheme.h"
 #include "FMTbounds.h"
+#include <boost/serialization/string.hpp>
 #include <boost/serialization/serialization.hpp>
 
 

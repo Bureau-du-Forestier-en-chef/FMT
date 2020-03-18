@@ -39,6 +39,7 @@ class FMTlifespanparser : public FMTparser
     {
     public:
         FMTlifespanparser();
+		~FMTlifespanparser() = default;
         FMTlifespanparser(const FMTlifespanparser& rhs);
         FMTlifespanparser& operator = (const FMTlifespanparser& rhs);
         Core::FMTlifespans read(const std::vector<Core::FMTtheme>& themes,const Core::FMTconstants& constants, std::string location);

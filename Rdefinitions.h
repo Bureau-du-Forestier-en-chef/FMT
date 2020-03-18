@@ -25,10 +25,11 @@ SOFTWARE.
 #ifndef RDEFINITIONS_H_INCLUDED
 #define RDEFINITIONS_H_INCLUDED
 
+#if defined FMTWITHR
+
 #include <Rcpp.h>
 #include <vector>
 #include <map>
-#include <pair>
 #include "FMTlist.h"
 #include "FMTlayer.h"
 
@@ -97,9 +98,9 @@ return rcpplist;}}
 namespace R
 {
 	template <class T>
-	void define_FMTlist
+	void define_FMTlist()
 		{
-		Rcpp::class_<Core::FMTlist<T>>("FMTlist","@DocString(FMTlist)")
+		Rcpp::class_< Core::FMTlist<T> >("FMTlist","@DocString(FMTlist)")
 		.constructor("@DocString(FMTlist())");
 		}
 
@@ -129,7 +130,7 @@ namespace R
 
 
 
-
+#endif
 
 
 

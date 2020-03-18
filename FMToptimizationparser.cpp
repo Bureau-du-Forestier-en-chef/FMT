@@ -193,7 +193,7 @@ namespace Parser
 					std::string specialtype;
 					int minbound = 1;
 					int maxbound = std::numeric_limits<int>::max();
-					if (regex_search(output_it->first, special_match, rxspecialoutput))
+					if (std::regex_search(output_it->first, special_match, rxspecialoutput))
 						{
 						specialtype = special_match[1];
 						const std::string lowerperiod = std::string(special_match[7]) + std::string(special_match[12]);
@@ -204,7 +204,7 @@ namespace Parser
 							maxbound = getnum<int>(upperperiod, constants);
 							}
 						output_name = std::string(special_match[4])+ std::string(special_match[13]);
-						if (!regex_search(output_name, out_match, rxoutput))
+						if (!std::regex_search(output_name, out_match, rxoutput))
 							{
 							_exhandler->raise(Exception::FMTexc::FMTinvalid_constraint, _section, output_name + " at line " + std::to_string(_line), __LINE__, __FILE__);
 						}
@@ -263,7 +263,7 @@ namespace Parser
             boost::trim(rest);
             }
 
-		if (regex_search(rest, kmatch, rxconstraints))
+		if (std::regex_search(rest, kmatch, rxconstraints))
 			{
 			std::string target = std::string(kmatch[6])+ std::string(kmatch[12]) + std::string(kmatch[15]);
 			boost::trim(target);
@@ -317,7 +317,7 @@ namespace Parser
 			const std::string start_str = std::string(kmatch[20]) + std::string(kmatch[23]);
 			const std::string stop_str = std::string(kmatch[22]);
 			setperiods(constraint, start_str, stop_str, constants);
-		}else if (regex_search(rest, kmatch, rxequations))
+		}else if (std::regex_search(rest, kmatch, rxequations))
 				{
 				Core::FMTconstrainttype cctype = Core::FMTconstrainttype::FMTstandard;
 				std::string lower_period = std::string(kmatch[15]) + std::string(kmatch[18]);

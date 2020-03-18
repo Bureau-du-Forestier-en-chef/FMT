@@ -1,4 +1,3 @@
-
 //The serialization part should be placed in this order !!!
 ////////////////////////from ////////////////////////////
 //If you mess with that order linking in g++ is not going to work
@@ -6,7 +5,6 @@
 #include <boost/archive/binary_iarchive.hpp>
 #include <boost/serialization/export.hpp>
 
-#include "FMTParser.h"
 #include "FMTModels.h"
 #include "FMTSpatials.h"
 #include "FMTversion.h"
@@ -88,13 +86,14 @@ extern "C"
 	#include "Rdefinitions.h"
 	#include "RexportExceptions.h"
 	#include "RexportCore.h"
-	#include "RexportSpatial.h"
-	#include "RexportParser.h"
 	#include "RexportGraph.h"
+	#include "RexportSpatial.h"
 	#include "RexportModel.h"
+	//#include "RexportParser.h"
 	#include "RexportVersion.h"
 	#include "RexportHeuristics.h"
-	#include <Rcpp>
+	#include <Rcpp.h>
+
 	RCPP_MODULE(FMT)
 		{
 		//Exceptions
@@ -108,7 +107,7 @@ extern "C"
 		//Model
 		R::exportModel();
 		//Parser
-		R::exportParser();
+		//R::exportParser();
 		//Version
 		R::exportVersion();
 		//Heuristics

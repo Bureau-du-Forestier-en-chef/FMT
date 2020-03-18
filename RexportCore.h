@@ -41,6 +41,8 @@ SOFTWARE.
 #include "FMTyields.h"
 #include "FMTconstants.h"
 #include "Rdefinitions.h"
+#include "FMTdevelopmentpath.h"
+
 #include <vector>
 #include <Rcpp.h>
 
@@ -51,6 +53,9 @@ RCPP_EXPOSED_AS(Core::FMTmask);
 RCPP_DEFINEVECTOR(Core::FMTmask);//For vector
 RCPP_EXPOSED_WRAP(Core::FMTdevelopment);
 RCPP_EXPOSED_AS(Core::FMTdevelopment);
+RCPP_EXPOSED_WRAP(Core::FMTdevelopmentpath);
+RCPP_EXPOSED_AS(Core::FMTdevelopmentpath);
+RCPP_DEFINEVECTOR(Core::FMTdevelopmentpath);//For vector
 RCPP_DEFINEVECTOR(Core::FMTdevelopment);//For vector
 RCPP_EXPOSED_WRAP(Core::FMTspec);
 RCPP_EXPOSED_AS(Core::FMTspec);
@@ -106,9 +111,9 @@ RCPP_DEFINEVECTOR(Core::FMTconstraint);//For vector
 RCPP_DEFINEMAP(Core::FMTdevelopment, std::vector<double>);//For dev of doubles
 RCPP_DEFINEMAP(std::string, std::vector<double>);//For string of double map
 RCPP_DEFINEMAP(std::string, std::vector<Core::FMTdevelopment>);//For string of vector of developements
-#define RCPP_COMMA
-RCPP_DEFINEMAP(Core::FMTaction, std::map<Core::FMTdevelopment RCPP_COMMA std::vector<double>>);//For action of ...
-RCPP_DEFINEMAP(std::string, std::map<std::string RCPP_COMMA std::vector<double>>);//For string of ...
+RCPP_DEFINEMAP(Core::FMTaction , std::map<Core::FMTdevelopment RCPP_COMMA std::vector<double>>);//For action of ...
+RCPP_DEFINEMAP(std::string , std::map<std::string RCPP_COMMA std::vector<double>>);//For string of ...
+RCPP_DEFINEMAP(std::string, std::string);//map of string definition
 
 namespace R
 {
@@ -129,7 +134,7 @@ void exportCore()
 
 		Rcpp::class_<Core::FMTmask>("FMTmask", "@DocString(FMTmask)")
 				.constructor("@DocString(FMTmask())")
-				.constructor(const std::vector<std::string>&, const std::vector<Core::FMTtheme>&,
+				.constructor<std::vector<std::string>,std::vector<Core::FMTtheme>>(
 					"@DocString(FMTmask(const std::vector<std::string>&,const std::vector<Core::FMTtheme>&))")
 				.method("len", &Core::FMTmask::operator bool,
 					"@DocString(FMTmask::operator bool)")
@@ -211,12 +216,12 @@ void exportCore()
 					"@DocString(FMTaction::isresetage)");
 
 
-			Rcpp::class_<Core::FMTlifespans>("FMTlifespans", "@DocString(FMTlifespans)");
+			Rcpp::class_<Core::FMTlifespans>("FMTlifespans", "@DocString(FMTlifespans)")
 				.derives<Core::FMTlist<int>>("FMTlist")
 				.constructor("@DocString(FMTlifespans())");
 
-			Rcpp::class_<Core::FMTfork>("FMTfork", "@DocString(FMTfork)");
-				.derives<Core::FMTlist<FMTfork>>("FMTlist")
+			Rcpp::class_<Core::FMTfork>("FMTfork", "@DocString(FMTfork)")
+				.derives<Core::FMTlist<Core::FMTspec>>("FMTlist")
 				.constructor("@DocString(FMTfork())");
 	
 
@@ -236,7 +241,7 @@ void exportCore()
 
 
 			Rcpp::class_<Core::FMTtransition>("FMTtransition", "@DocString(FMTtransition)")
-				.derives<Core::FMTlist<FMTfork>>("FMTlist")
+				.derives<Core::FMTlist<Core::FMTfork>>("FMTlist")
 				.constructor("@DocString(FMTtransition())")
                 .method("single",&Core::FMTtransition::single,
 					"@DocString(FMTtransition::single)")
@@ -281,7 +286,7 @@ void exportCore()
 				.method("str", &Core::FMToutput::operator std::string,
 					"@DocString(FMToutput::operator std::string)")
 				.method("eq",&Core::FMToutput::operator ==,
-					"@DocString(FMToutput::operator==)"))
+					"@DocString(FMToutput::operator==)")
 				.method("ne",&Core::FMToutput::operator !=,
 					"@DocString(FMToutput::operator!=)");
 

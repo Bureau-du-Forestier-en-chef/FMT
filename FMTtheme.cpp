@@ -351,3 +351,4 @@ FMTtheme FMTtheme::presolve(const FMTmask& basemask, int& newid, int& newstart, 
 	}
 
 }
+

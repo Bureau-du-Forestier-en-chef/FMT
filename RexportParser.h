@@ -25,6 +25,8 @@ SOFTWARE.
 #ifndef REXPORTParser_H_INCLUDED
 #define REXPORTParser_H_INCLUDED
 
+#include "FMTobject.h"
+#include "FMTparser.h"
 #include "FMTlandscapeparser.h"
 #include "FMTconstantparser.h"
 #include "FMTyieldparser.h"
@@ -32,9 +34,10 @@ SOFTWARE.
 #include "FMTactionparser.h"
 #include "FMTtransitionparser.h"
 #include "FMToutputparser.h"
+#include "FMTscheduleparser.h"
 #include "FMToptimizationparser.h"
 #include "FMTmodelparser.h"
-#include <Rcpp>
+#include <Rcpp.h>
 #include <string>
 #include "Rdefinitions.h"
 
@@ -87,8 +90,10 @@ void exportParser()
 						"@DocString(FMTareaparser::writeforest)")
 					.method("writedisturbances",&Parser::FMTareaparser::writedisturbances,
 						"@DocString(FMTareaparser::writedisturbances)")
-					.method("getneighbors",&Parser::FMTareaparser::getneighbors,
-						"@DocString(FMTareaparser::getneighbors)")
+					#ifdef FMTWITHOSI
+						.method("getneighbors",&Parser::FMTareaparser::getneighbors,
+							"@DocString(FMTareaparser::getneighbors)")
+					#endif
 				#endif
 				.method("write", &Parser::FMTareaparser::write,
 					"@DocString(FMTareaparser::write)");
@@ -124,11 +129,11 @@ void exportParser()
 				.constructor("@DocString(FMTconstantparser())")
                 .method("read",&Parser::FMTconstantparser::read,
 					"@DocString(FMTconstantparser::read)")
-                .method("write",&Parser::FMTconstantparser::write.
+                .method("write",&Parser::FMTconstantparser::write,
 					"@DocString(FMTconstantparser::write)");
 	Rcpp::class_<Parser::FMTlifespanparser>("FMTlifespanparser", "@DocString(FMTlifespanparser)")
 				.derives<Parser::FMTparser>("FMTparser")
-				.constructor("@DocString(FMTlifespanparser())"))
+				.constructor("@DocString(FMTlifespanparser())")
                 .method("read",&Parser::FMTlifespanparser::read,
 					"@DocString(FMTlifespanparser::read)")
                 .method("write",&Parser::FMTlifespanparser::write,

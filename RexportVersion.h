@@ -25,7 +25,7 @@ SOFTWARE.
 #ifndef REXPORTVERSION_H_INCLUDED
 #define REXPORTVERSION_H_INCLUDED
 
-#include <Rcpp>
+#include <Rcpp.h>
 #include "FMTversion.h"
 #include "Rdefinitions.h"
 #include <string>
@@ -45,7 +45,7 @@ int getminorstaticpass(Version::FMTversion* versionobject)
 	return Version::FMTversion::getminor();
 	}
 
-int getgetpatchstaticpass(Version::FMTversion* versionobject)
+int getpatchstaticpass(Version::FMTversion* versionobject)
 	{
 	return Version::FMTversion::getpatch();
 	}

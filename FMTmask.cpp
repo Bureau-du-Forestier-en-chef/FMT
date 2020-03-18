@@ -395,4 +395,3 @@ FMTmask FMTmask::postsolve(const FMTmask& selectedmask, const std::vector<FMTthe
 	}
 
 }
-

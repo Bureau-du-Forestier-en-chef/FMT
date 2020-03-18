@@ -53,6 +53,7 @@ namespace Spatial
 			}
         public:
             FMTforest();
+			~FMTforest() = default;
             FMTforest(const FMTforest& rhs);
             FMTforest(const FMTlayer<Core::FMTdevelopment>& rhs);
             FMTforest& operator = (const FMTforest& rhs);

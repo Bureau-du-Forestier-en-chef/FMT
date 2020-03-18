@@ -49,7 +49,7 @@ void exportHeuristics()
 
 	Rcpp::class_<Heuristics::FMToperatingarea>("FMToperatingarea", "@DocString(FMToperatingarea)")
 		.constructor("@DocString(FMToperatingarea())")
-		.constructor<const Core::FMTmask&, const size_t&, const size_t&, const size_t&, const size_t&, const double&, const double&>(
+		.constructor<Core::FMTmask, size_t, size_t, size_t,size_t,double,double>(
 			"@DocString(FMToperatingarea(const Core::FMTmask&,const size_t&,const size_t&,const size_t&,const size_t&,const double&,const double&))")
 		.method("getneighbors", &Heuristics::FMToperatingarea::getneighbors,
 			"@DocString(FMToperatingarea::getneighbors)")

@@ -41,6 +41,7 @@ class FMTscheduleparser: public FMTparser
 		int getvariable() const;
     public:
         FMTscheduleparser();
+		~FMTscheduleparser() = default;
         FMTscheduleparser(const FMTscheduleparser& rhs);
         FMTscheduleparser& operator = (const FMTscheduleparser& rhs);
         std::vector<Core::FMTschedule>read(const std::vector<Core::FMTtheme>& themes,

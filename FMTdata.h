@@ -62,6 +62,7 @@ class FMTdata
     public:
 		std::vector<double> data;
         FMTdata();
+		~FMTdata() = default;
         FMTdata(const FMTdata& rhs);
 		FMTdata(const std::vector<double>& lvalues,
 			const FMTyieldparserop& lops,

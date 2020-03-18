@@ -261,3 +261,4 @@ FMTaction FMTaction::presolve(const FMTmask& basemask,
 	}
 
 }
+

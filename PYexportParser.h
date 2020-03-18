@@ -33,6 +33,7 @@ SOFTWARE.
 #include "FMTtransitionparser.h"
 #include "FMToutputparser.h"
 #include "FMToptimizationparser.h"
+#include "FMTscheduleparser.h"
 #include "FMTmodelparser.h"
 #include "boost/python.hpp"
 
@@ -73,7 +74,9 @@ void exportParser()
 					.def("readrasters", &Parser::FMTareaparser::readrasters,readrasters_overloads())
 					.def("writeforest",&Parser::FMTareaparser::writeforest,writeforest_overloads())
 					.def("writedisturbances",&Parser::FMTareaparser::writedisturbances,writedisturbances_overloads())
-					.def("getneighbors",&Parser::FMTareaparser::getneighbors, getneighbors_overloads())
+					#ifdef FMTWITHOSI
+						.def("getneighbors",&Parser::FMTareaparser::getneighbors, getneighbors_overloads())
+					#endif
 				#endif
 				.def("write", &Parser::FMTareaparser::write,
 					"@DocString(FMTareaparser::write)");

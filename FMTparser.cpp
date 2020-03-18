@@ -29,13 +29,12 @@ SOFTWARE.
 
 namespace Parser
 {
-std::array<std::string, 5>FMTparser::baseoperators = { "=", "<=", ">=", "<", ">" };
 
-std::array<std::string,21>FMTparser::baseextensions = { ".run",".lan",".are",".act",".trn",".yld",".out",".opt",".con",".seq",".lif",
-							"._lan","._are","._act","._trn","._yld","._out","._opt","._con","._seq","._lif" };
 
 Core::FMTwssect FMTparser::from_extension(const std::string& ext) const
     {
+	const std::array<std::string, 21>baseextensions = { ".run",".lan",".are",".act",".trn",".yld",".out",".opt",".con",".seq",".lif",
+							"._lan","._are","._act","._trn","._yld","._out","._opt","._con","._seq","._lif" };
 	const std::string lowercase = boost::to_lower_copy(ext);
 	const std::array<std::string, 21>::const_iterator it = std::find(baseextensions.begin(), baseextensions.end(), lowercase);
     const size_t id = (it - baseextensions.begin());
@@ -325,7 +324,7 @@ std::string FMTparser::setspec(Core::FMTwssect section, Core::FMTwskwor key,cons
         rest = line;
         }
 
-    if (regex_search(rest,kmatch,FMTparser::rxaage))
+    if (std::regex_search(rest,kmatch,FMTparser::rxaage))
         {
 		std::string singlebound = std::string(kmatch[20]) + std::string(kmatch[21])+ std::string(kmatch[22]);
         int upperbound = std::numeric_limits<int>::max();
@@ -758,6 +757,11 @@ std::map<Core::FMTwssect, std::string> FMTparser::getprimary(const std::string& 
 			targets[Core::FMTwssect::Constants] = "";
 			}
 		return targets;
+	}
+
+std::array<std::string, 5>FMTparser::getbaseoperators() const
+	{
+	return std::array<std::string, 5>({ "=", "<=", ">=", "<", ">" });
 	}
 
 std::vector<std::string> FMTparser::sameas(const std::string& allset) const

@@ -33,6 +33,7 @@ SOFTWARE.
 #include "FMTdevelopment.h"
 #include "FMTtheme.h"
 #include <boost/serialization/serialization.hpp>
+#include <boost/serialization/string.hpp>
 #include <vector>
 #include <map>
 #include <string>
@@ -169,5 +170,6 @@ public:
 };
 
 }
+
 
 #endif // FMTTRA_H_INCLUDED

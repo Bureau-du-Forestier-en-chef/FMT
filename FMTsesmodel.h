@@ -75,6 +75,10 @@ class FMTsesmodel : public FMTmodel
 		*/
         FMTsesmodel();
 		/**
+		Default destructor of FMTsesmodel
+		*/
+		~FMTsesmodel() = default;
+		/**
 		Copy constructor of FMTsesmodel
 		*/
         FMTsesmodel(const FMTsesmodel& rhs);

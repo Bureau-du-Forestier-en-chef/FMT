@@ -57,6 +57,7 @@ class FMTmodelparser : public FMTparser
 					std::string opt = std::string(),bool allow_mapping=false);
     public:
         FMTmodelparser();
+		~FMTmodelparser() = default;
         FMTmodelparser(const FMTmodelparser& rhs);
         FMTmodelparser& operator = (const FMTmodelparser& rhs);
         Models::FMTmodel read(const std::string& con,const std::string& lan,

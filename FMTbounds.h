@@ -32,6 +32,7 @@ SOFTWARE.
 #include <boost/functional/hash.hpp>
 #include <boost/serialization/serialization.hpp>
 #include <boost/serialization/nvp.hpp>
+#include <boost/serialization/string.hpp>
 
 namespace Core
 {

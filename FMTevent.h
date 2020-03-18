@@ -34,7 +34,7 @@ SOFTWARE.
 #include <boost/serialization/nvp.hpp>
 namespace Spatial
 {
-template<typename T>
+template<class T>
 class FMTevent
     {
 	friend class boost::serialization::access;
@@ -65,7 +65,7 @@ class FMTevent
     FMTevent():
         ignition(),
         active(),
-        territory(),
+		territory(),
         enveloppe(),
 		order(),
         elements()
@@ -170,7 +170,7 @@ class FMTevent
 
 	size_t width() const
 		{
-		return ((static_cast<size_t>(enveloppe.at(1).getx()) - static_cast<size_t>(enveloppe.at(0).getx()))+1);
+		return((static_cast<size_t>(enveloppe.at(1).getx()) - static_cast<size_t>(enveloppe.at(0).getx()))+1);
 		}
 
 	FMTcoordinate averagecentroid() const
@@ -180,6 +180,7 @@ class FMTevent
 		const size_t plusx = enveloppe.at(1).getx() - startx;
 		const size_t plusy = enveloppe.at(2).gety() - starty;
 		return FMTcoordinate(startx + plusx, starty + plusy);
+		return FMTcoordinate();
 		}
 
 	std::string getstats() const
@@ -188,6 +189,7 @@ class FMTevent
 			std::to_string(perimeter()) +" "+
 			std::to_string(height()) +" "+
 			std::to_string(width()));
+		return "";
 		}
 
 	void erase(const FMTcoordinate& newlocation)
@@ -218,9 +220,9 @@ class FMTevent
         {
         if(this!=&rhs)
             {
-            elements = (rhs.elements);
+			elements = (rhs.elements);
             ignition= rhs.ignition;
-            active=rhs.active;
+			active=rhs.active;
             territory=rhs.territory;
 			order = rhs.order;
             enveloppe=rhs.enveloppe;
@@ -233,8 +235,8 @@ class FMTevent
         }
     double distance(const FMTevent& rhs) const
         {
-        double minimaldistance = std::numeric_limits<double>::max();
-        for(const FMTcoordinate& coord : enveloppe)
+		double minimaldistance =  std::numeric_limits<double>::max();
+		for(const FMTcoordinate& coord : enveloppe)
             {
             for(const FMTcoordinate& rhscoord : rhs.enveloppe)
                 {

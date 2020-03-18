@@ -198,7 +198,8 @@ namespace Models
 			{
 			const std::vector<Core::FMTactualdevelopment>areas = mapping.getarea();
 			optionaldevelopments.insert(optionaldevelopments.end(), areas.begin(), areas.end());
-			std::unique_ptr<FMTsesmodel>presolvedses(new FMTsesmodel(*(FMTmodel::presolve(presolvepass, optionaldevelopments))));
+			std::unique_ptr<FMTmodel>presolvedmod(new FMTsesmodel(*(FMTmodel::presolve(presolvepass, optionaldevelopments))));
+			FMTsesmodel*presolvedses = dynamic_cast<FMTsesmodel*>(presolvedmod.get());
 			const Core::FMTmask presolvedmask = presolvedses->getselectedmask(themes);
 			const Core::FMTmask basemask = this->getbasemask(optionaldevelopments);
 			presolvedses->mapping = this->mapping.presolve(presolvedmask,presolvedses->themes);
@@ -213,7 +214,7 @@ namespace Models
 					}
 				}
 			presolvedses->spactions = newspatialactions;
-			return presolvedses;
+			return presolvedmod;
 			}
 		return std::unique_ptr<FMTmodel>(nullptr);
 		}
@@ -222,8 +223,9 @@ namespace Models
 		{
 		if (!disturbances.data.empty())//just postsolve if you have a solution
 			{
-			std::unique_ptr<FMTsesmodel>postsolvedses(new FMTsesmodel(*(FMTmodel::postsolve(originalbasemodel))));
+			std::unique_ptr<FMTmodel>presolvedmod(new FMTsesmodel(*(FMTmodel::postsolve(originalbasemodel))));
 			const Core::FMTmask presolvedmask = this->getselectedmask(themes);
+			FMTsesmodel*postsolvedses = dynamic_cast<FMTsesmodel*>(presolvedmod.get());
 			postsolvedses->mapping = this->mapping.postsolve(presolvedmask, postsolvedses->themes);
 			//Disturbance stack doesn't need changes
 			//take care of the FMTspatialactions
@@ -239,7 +241,7 @@ namespace Models
 					}
 			}
 			postsolvedses->spactions = newspatialactions;
-			return postsolvedses;
+			return presolvedmod;
 			}
 		return std::unique_ptr<FMTmodel>(nullptr);
 		}

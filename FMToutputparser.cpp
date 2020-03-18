@@ -350,7 +350,7 @@ namespace Parser
 
                                                 if (isvalid(rest))
                                                     {
-                                                    if (regex_search(rest,kmatch,rxtar))
+                                                    if (std::regex_search(rest,kmatch,rxtar))
                                                         {
                                                         if (!std::string(kmatch[25]).empty())
                                                             {

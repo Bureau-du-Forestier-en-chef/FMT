@@ -50,6 +50,7 @@ FMTactionparser& FMTactionparser::operator = (const FMTactionparser& rhs)
 	std::string FMTactionparser::getbounds(std::string& line, Core::FMTspec& spec,const Core::FMTconstants& constants, const Core::FMTyields& ylds)
         {
         const std::vector<std::string>elements=spliter(line,FMTparser::rxseparator);
+		const std::array<std::string, 5> baseoperators = this->getbaseoperators();
 		std::string mask = "";
         size_t loc=0;
         int maskloc=0;
@@ -123,7 +124,7 @@ FMTactionparser& FMTactionparser::operator = (const FMTactionparser& rhs)
                 if (!line.empty())
                     {
                     std::smatch kmatch;
-                    if(!regex_search(line,kmatch,FMTactionparser::rxsection))
+                    if(!std::regex_search(line,kmatch,FMTactionparser::rxsection))
                         {
                         //crash here
                         }

@@ -25,24 +25,24 @@ SOFTWARE.
 #ifndef REXPORTSPATIAL_H_INCLUDED
 #define REXPORTSPATIAL_H_INCLUDED
 
-#include <Rcpp>
+#include <Rcpp.h>
 #include "FMTcoordinate.h"
 #include "FMTforest.h"
 #include "FMTdisturbancestack.h"
 #include "FMTspatialaction.h"
 #include "FMTsaschedule.h"
-#include "FMTexponentialschedule.h"
-#include "FMTsamovetype.h"
 #include "FMTgraph.h"
 #include "FMTsasolution.h"
 #include "Rdefinitions.h"
+#include "FMTevent.h"
+#include "FMTdevelopment.h"
 
 RCPP_EXPOSED_ENUM_NODECL(Spatial::FMTsamovetype);
 
 RCPP_EXPOSED_WRAP(Spatial::FMTcoordinate);
 RCPP_EXPOSED_AS(Spatial::FMTcoordinate);
 
-RCPP_DEFINEMAP(Core::FMTdevelopment);//for FMTlayer
+RCPP_DEFINEMAP(Spatial::FMTcoordinate,Core::FMTdevelopment);//for FMTlayer
 RCPP_EXPOSED_WRAP(Spatial::FMTlayer<Core::FMTdevelopment>);
 RCPP_EXPOSED_AS(Spatial::FMTlayer<Core::FMTdevelopment>);
 
@@ -57,7 +57,7 @@ RCPP_EXPOSED_WRAP(Spatial::FMTspatialaction);
 RCPP_EXPOSED_AS(Spatial::FMTspatialaction);
 RCPP_DEFINEVECTOR(Spatial::FMTspatialaction);//For vector
 
-RCPP_DEFINEMAP(Graph::FMTgraph);//For FMTlayer
+RCPP_DEFINEMAP(Spatial::FMTcoordinate,Graph::FMTgraph);//For FMTlayer
 
 RCPP_EXPOSED_WRAP(Spatial::FMTexponentialschedule);
 RCPP_EXPOSED_AS(Spatial::FMTexponentialschedule);
@@ -65,6 +65,9 @@ RCPP_EXPOSED_AS(Spatial::FMTexponentialschedule);
 RCPP_EXPOSED_WRAP(Spatial::FMTsasolution);
 RCPP_EXPOSED_AS(Spatial::FMTsasolution);
 RCPP_DEFINEVECTOR(Spatial::FMTsasolution);//For vector
+
+RCPP_EXPOSED_WRAP(Spatial::FMTevent<Core::FMTdevelopment>);
+RCPP_EXPOSED_AS(Spatial::FMTevent<Core::FMTdevelopment>);
 
 
 namespace R 
@@ -88,8 +91,8 @@ void exportSpatial()
     define_FMTlayer<Core::FMTdevelopment>();
 
 
-	Rcpp::class_<Spatial::FMTforest, bp::bases<Spatial::FMTlayer<Core::FMTdevelopment>>>("FMTforest", "@DocString(FMTforest)")
-		.derives<Spatial::FMTlayer<Core::FMTdevelopment>>>("FMTlayer")
+	Rcpp::class_<Spatial::FMTforest>("FMTforest", "@DocString(FMTforest)")
+		.derives<Spatial::FMTlayer<Core::FMTdevelopment>>("FMTlayer")
 		.constructor("@DocString(FMTforest())")
 		.constructor<Spatial::FMTforest>("@DocString(FMTforest(Spatial::FMTforest))")
 		.method("getarea",&Spatial::FMTforest::getarea,

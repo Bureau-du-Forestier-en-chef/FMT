@@ -116,5 +116,4 @@ std::string FMTdisturbancestack::getpatchstats() const
 		}
 	return result;
 	}
-
 }

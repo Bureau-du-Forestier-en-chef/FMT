@@ -237,7 +237,7 @@ Core::FMTyields FMTyieldparser::read(const std::vector<Core::FMTtheme>& themes,c
             if (!line.empty())
                 {
 				std::smatch kmatch;
-                if (regex_search(line,kmatch,rxyieldtype))
+                if (std::regex_search(line,kmatch,rxyieldtype))
                     {
 					const std::string yieldtype = "Y"+ std::string(kmatch[2])+ std::string(kmatch[7]);
 					std::string mask = std::string(kmatch[4]) + std::string(kmatch[9]);
@@ -425,7 +425,7 @@ Core::FMTyields FMTyieldparser::read(const std::vector<Core::FMTtheme>& themes,c
                                         {
 										std::smatch kmatch;
 										const size_t should_be_equation = line.find_first_of("+-*/");
-										bool simple_match = regex_search(line, kmatch, rxcomplex);
+										bool simple_match = std::regex_search(line, kmatch, rxcomplex);
 										if (simple_match || should_be_equation > 0)
                                             {
 											std::string yldname;

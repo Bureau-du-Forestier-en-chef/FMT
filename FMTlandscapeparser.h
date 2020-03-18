@@ -47,6 +47,7 @@ class FMTlandscapeparser : public FMTparser
 		std::map<std::string,double>getindexes(std::string index_line,const Core::FMTconstants& constants);
     public:
         FMTlandscapeparser();
+		~FMTlandscapeparser() = default;
         FMTlandscapeparser(const FMTlandscapeparser& rhs);
         FMTlandscapeparser& operator = (const FMTlandscapeparser& rhs);
         std::vector<Core::FMTtheme>read(const Core::FMTconstants& constants,std::string location);

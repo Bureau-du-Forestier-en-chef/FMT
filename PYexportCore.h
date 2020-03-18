@@ -90,8 +90,7 @@ void exportCore()
 
 		bp::class_<Core::FMTmask>("FMTmask", "@DocString(FMTmask)")
 				.def_pickle(FMT_pickle_suite<Core::FMTmask>())
-				.def(bp::init<const std::vector<std::string>&,const std::vector<Core::FMTtheme>&>(),
-					"@DocString(FMTmask(const std::vector<std::string>&,const std::vector<Core::FMTtheme>&))")
+				.def(bp::init<const std::vector<std::string>&,const std::vector<Core::FMTtheme>&>())
 				.def("__len__", &Core::FMTmask::operator bool,
 					"@DocString(FMTmask::operator bool)")
                 .def("__str__",&Core::FMTmask::operator std::string,
@@ -263,8 +262,7 @@ void exportCore()
 
 			bp::class_<Core::FMTschedule>("FMTschedule", "@DocString(FMTschedule)")
 				.def_pickle(FMT_pickle_suite<Core::FMTschedule>())
-				.def(bp::init<int, std::map<Core::FMTaction, std::map<Core::FMTdevelopment, std::vector<double>>>>(),
-					"@DocString(FMTschedule(int,std::map<Core::FMTaction,std::map<Core::FMTdevelopment,std::vector<double>>>))")
+				.def(bp::init<int, std::map<Core::FMTaction, std::map<Core::FMTdevelopment, std::vector<double>>>>())
 				.def("__str__", &Core::FMTschedule::operator std::string,
 					"@DocString(FMTschedule::operator std::string)")
 				.def("__add__", &Core::FMTschedule::operator +,

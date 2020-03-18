@@ -30,7 +30,8 @@ SOFTWARE.
 #include "FMTsesmodel.h"
 #include "FMTsamodel.h"
 #include "Rdefinitions.h"
-#include <Rcpp>
+#include "FMTsolverinterface.h"
+#include <Rcpp.h>
 #include <string>
 
 RCPP_EXPOSED_WRAP(Models::FMTmodel);
@@ -40,9 +41,8 @@ RCPP_DEFINEMAP(std::string,double);//For map<string,double>
 RCPP_EXPOSED_WRAP(Models::FMTsesmodel);
 RCPP_EXPOSED_AS(Models::FMTsesmodel);
 RCPP_DEFINEVECTOR(Models::FMTsesmodel);//For vector
-RCPP_EXPOSED_ENUM_NODECL(Models::FMTsolverinterface);
-
 #ifdef FMTWITHOSI
+	RCPP_EXPOSED_ENUM_NODECL(Models::FMTsolverinterface);
 	RCPP_EXPOSED_WRAP(Models::FMTlpmodel);
 	RCPP_EXPOSED_AS(Models::FMTlpmodel);
 	RCPP_DEFINEVECTOR(Models::FMTlpmodel);//For vector
@@ -60,9 +60,9 @@ void exportModel()
 {
 
 	Rcpp::class_<Models::FMTmodel>("FMTmodel", "@DocString(FMTmodel)")
-			.derives<Core::FMTobject>("FMTobject")
-			.constructor("@DocString(FMTmodel())")
-            .field("name",&Models::FMTmodel::name,
+		.derives<Core::FMTobject>("FMTobject")
+		.constructor("@DocString(FMTmodel())")
+           .field("name",&Models::FMTmodel::name,
 				"@DocString(FMTmodel::name)")
             .method("getyields",&Models::FMTmodel::getyields,
 				"@DocString(FMTmodel::getyields)")
@@ -88,12 +88,11 @@ void exportModel()
 				"@DocString(FMTmodel::isvalid)");
 
 
-
 	Rcpp::class_<Models::FMTsesmodel>("FMTsesmodel", "@DocString(FMTsesmodel)")
-			.derives<Models::FMTmodel>("FMTmodel")
-			.constructor("@DocString(FMTsesmodel())")
-			.constructor<Models::FMTmodel>("@DocString(FMTsesmodel(Models::FMTmodel))")
-            .method("getmapping",&Models::FMTsesmodel::getmapping,
+		.derives<Models::FMTmodel>("FMTmodel")
+		.constructor("@DocString(FMTsesmodel())")
+		.constructor<Models::FMTmodel>("@DocString(FMTsesmodel(Models::FMTmodel))")
+			.method("getmapping",&Models::FMTsesmodel::getmapping,
 				"@DocString(FMTsesmodel::getmapping)")
 			.method("getschedule", &Models::FMTsesmodel::getschedule,
 				"@DocString(FMTsesmodel::getschedule)")
@@ -109,8 +108,8 @@ void exportModel()
 				"@DocString(FMTsesmodel::getdisturbancestats)")
             .method("simulate",&Models::FMTsesmodel::simulate,
 				"@DocString(FMTsesmodel::simulate)");
-
-
+	
+	
 	#ifdef FMTWITHOSI
 
 	Rcpp::class_<Models::FMTlpmodel>("FMTlpmodel", "@DocString(FMTlpmodel)")
@@ -154,7 +153,7 @@ void exportModel()
 
 	#endif
 
-
+	
 	Rcpp::class_<Models::FMTsamodel>("FMTsamodel", "@DocString(FMTsamodel)")
 			.derives<Models::FMTmodel>("FMTmodel")
 			.constructor<Models::FMTmodel>("@DocString(FMTsamodel(FMTmodel))")
@@ -193,8 +192,9 @@ void exportModel()
 				"@DocString(FMTsamodel::write_solutions_events)")
             .method("get_number_moves",&Models::FMTsamodel::get_number_moves,
 				"@DocString(FMTsamodel::get_number_moves)")
-            .method("warmup",
+            .method("warmup", &Models::FMTsamodel::warmup,
 				"@DocString(FMTsamodel::warmup)");
+	
     }
 }
 #endif // PYEXPORTMODEL_H_INCLUDED

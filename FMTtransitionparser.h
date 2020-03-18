@@ -49,6 +49,7 @@ class FMTtransitionparser : public FMTparser
 		std::regex rxtyld;
     public:
         FMTtransitionparser();
+		~FMTtransitionparser() = default;
         FMTtransitionparser(const FMTtransitionparser& rhs);
         FMTtransitionparser& operator = (const FMTtransitionparser& rhs);
 		Core::FMTmask getsource(std::string& line, Core::FMTspec& spec,const std::vector<Core::FMTtheme>& themes,

@@ -25,10 +25,16 @@ SOFTWARE.
 #include "FMTcoordinate.h"
 #include <iostream>
 
+
+
 namespace Spatial
     {
-	std::array<int,8>FMTcoordinate::x_n = { 0,1,0,-1,1,1,-1,-1 };
-	std::array<int,8>FMTcoordinate::y_n = { 1,0,-1,0,1,-1,-1,1 };
+	
+	//std::array<int,8>FMTcoordinate::x_n = { 0,1,0,-1,1,1,-1,-1 };
+	//std::array<int,8>FMTcoordinate::y_n = { 1,0,-1,0,1,-1,-1,1 };
+	//const int FMTcoordinate::x_n[8] = { 0,1,0,-1,1,1,-1,-1 };
+	//const int FMTcoordinate::y_n[8] = { 1,0,-1,0,1,-1,-1,1 };
+
     FMTcoordinate::FMTcoordinate():x(),y(){}
     FMTcoordinate::FMTcoordinate(unsigned int lx, unsigned int ly):
         x(lx),y(ly){}
@@ -36,6 +42,8 @@ namespace Spatial
 
     FMTcoordinate FMTcoordinate::at(unsigned int id) const
         {
+		constexpr std::array<int, 8>x_n = { 0,1,0,-1,1,1,-1,-1 };
+		constexpr std::array<int, 8>y_n = { 1,0,-1,0,1,-1,-1,1 };
         const int factor = ((id / 8) + 1);
         id = (id - (factor-1) * 8);
         return FMTcoordinate(x+(x_n[id]*factor),y+(y_n[id]*factor));

@@ -50,6 +50,7 @@ class FMToutputparser : public FMTparser
 	std::regex rxgrp;
     public:
         FMToutputparser();
+		~FMToutputparser() = default;
         FMToutputparser(const FMToutputparser& rhs);
         FMToutputparser& operator = (const FMToutputparser& rhs);
 		std::vector<Core::FMToutput> read(const std::vector<Core::FMTtheme>& themes,

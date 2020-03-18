@@ -55,7 +55,7 @@ SOFTWARE.
 
 #include <boost/filesystem.hpp>
 
-#include "FMTexception.h"
+#include "FMTobject.h"
 
 
 namespace Parser
@@ -84,8 +84,6 @@ class FMTparser: public Core::FMTobject
         int _line;
 		std::string _comment;
 		std::string _location;
-		static std::array<std::string, 5>baseoperators;
-		static std::array<std::string, 21>baseextensions;
 		#ifdef FMTWITHGDAL
 			template<typename T>
 			GDALDataset* createdataset(const std::string& location,const Spatial::FMTlayer<T>& layer, const GDALDataType datatype) const
@@ -126,6 +124,7 @@ class FMTparser: public Core::FMTobject
 			GDALRasterBand* getoverview(GDALRasterBand* band,int view=1) const;
 			void getWSfields(OGRLayer* layer, std::map<int,int>& themes,int& age,int& area,int& lock, std::string agefield="", std::string areafield="", std::string lockfield="") const;
 		#endif
+		std::array<std::string, 5>getbaseoperators() const;
 		std::vector<std::string> sameas(const std::string& allset) const;
 		std::map<Core::FMTwssect, std::string> getprimary(const std::string& primarylocation);
 		bool isyld(const Core::FMTyields& ylds,const std::string& value, Core::FMTwssect section) const;
@@ -203,6 +202,7 @@ class FMTparser: public Core::FMTobject
             T lupper = std::numeric_limits<T>::max();
             T llower = std::numeric_limits<T>::min();
             T intvalue = getnum<T>(value,constants);
+			const std::array<std::string, 5> baseoperators = this->getbaseoperators();
 			const std::array<std::string, 5>::const_iterator it = std::find(baseoperators.begin(), baseoperators.end(),ope);
             const size_t optype = (it - baseoperators.begin());
             if(optype==0)

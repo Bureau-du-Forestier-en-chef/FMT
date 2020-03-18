@@ -52,4 +52,5 @@ namespace Core
 		};
 }
 
+
 #endif // FMTDEV_H_INCLUDED
