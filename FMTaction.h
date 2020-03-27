@@ -33,11 +33,13 @@ SOFTWARE.
 #include <boost/serialization/nvp.hpp>
 #include <string>
 #include <vector>
+#include <boost/serialization/export.hpp>
 
 namespace Core
 {
 
 class FMTactioncomparator;
+// DocString: FMTaction
 /**
 FMTaction hold informations to check if a FMTdevelopement is operable or not to this.
 The operability testing for a given action is in the FMTdevelopement class.
@@ -47,6 +49,7 @@ a subsets of FMTdevelopments.
 class FMTaction : public FMTlist<FMTspec>
     {
 	friend class FMTactioncomparator;
+	// DocString: FMTaction::serialize
 	/**
 	serialize function is for serialization, used to do multiprocessing across multiple cpus (pickle in Pyhton)
 	*/
@@ -66,48 +69,63 @@ class FMTaction : public FMTlist<FMTspec>
 		ar & BOOST_SERIALIZATION_NVP(reset);
 		}
 	protected:
+		// DocString: FMTaction::aggregates
 		///An action can be part of a aggregate so this data member gets the name of all aggregate the action is being part of.
 		std::vector<std::string>aggregates;
+		// DocString: FMTaction::partials
 		///Keeps the yields name for determining the amount of wood harvested in case of partial cut.
         std::vector<std::string>partials;
+		// DocString: FMTaction::agelowerbound
 		///Those data members are for optimization only,
 		///the class determine within which bounds the aciton can take place for a given development.
 		int agelowerbound, ageupperbound, periodlowerbound, periodupperbound;
+		// DocString: FMTaction::name
 		///The name of the action
 		std::string name;
+		// DocString: FMTaction::lock
 		///If lock is true the action is not _lockexempt when false the action is _LOCKEXEMPT
+		bool lock;
+		// DocString: FMTaction::reset
 		///If reset is true then the action is age reset Y else the action  doen't reset age
-		bool lock, reset;
+		bool reset;
+		// DocString: FMTaction::setbounds
 		/**
 		This function is for optimization it iterates on the specifications to get the 
 		agelowerbound, ageupperbound,periodlowerbound,periodupperbound and sets all member data.
 		*/
 		void setbounds();
     public:
+		// DocString: FMTaction()
 		/**
 		Default constructor for FMTaction
 		*/
         FMTaction();
+		// DocString: ~FMTaction()
 		/**
 		Destructor for FMTaction
 		*/
         virtual ~FMTaction() = default;
+		// DocString: FMTaction(const std::string&)
 		/**
 		Construct a empty FMTaction with a given name
 		*/
         FMTaction(const std::string& lname);
+		// DocString: FMTaction(const std::string&,const bool&,const bool&)
 		/**
 		Construct a empty FMTaction with a given name, respectlock? and resetage?
 		*/
         FMTaction(const std::string& lname, const bool& lock,const bool& reset);
+		// DocString: FMTaction::push_aggregate
 		/**
 		Push back aggregate to the aggregates data member vector
 		*/
 		void push_aggregate(const std::string& aggregate);
+		// DocString: FMTaction::push_partials
 		/**
 		Push back a partiel yield name to the partials data member vector
 		*/
         void push_partials(const std::string& yield);
+		// DocString: FMTaction(const FMTaction&)
 		/**
 		Copy constructor of FMTaction
 		*/
@@ -224,10 +242,10 @@ It can also check for aggregates.
 */
 class FMTactioncomparator
 	{
-	///If true the comparator will also check for aggregates.
-	bool checkaggregate;
 	///The action named that we are looking for.
 	std::string action_name;
+	///If true the comparator will also check for aggregates.
+	bool checkaggregate;
 	public:
 		/**
 		FMTactioncomparator constructor name is the name of the action we want to match
@@ -265,6 +283,5 @@ boost hash for FMTaction
 
 
 }
-
-
+BOOST_CLASS_EXPORT_KEY(Core::FMTaction);
 #endif // FMTACT_H_INCLUDED

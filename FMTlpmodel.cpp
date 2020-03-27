@@ -61,7 +61,7 @@ namespace Models
 
 	bool FMTlpmodel::boundsolution(int period,double tolerance)
 	{
-    if (graph.size() > period)
+    if (static_cast<int>(graph.size()) > period)
 		{
         const double* actual_solution = solverinterface->getColSolution();
 		std::vector<int>variable_index;
@@ -90,7 +90,7 @@ namespace Models
 
 	bool FMTlpmodel::isperiodbounded(int period) const
 		{
-		if (graph.size() > period)
+		if (static_cast<int>(graph.size()) > period)
 			{
 			size_t totaledges = 0;
 			size_t boundededges = 0;
@@ -119,7 +119,7 @@ namespace Models
 
 	bool FMTlpmodel::unboundsolution(int period)
 		{
-		if (graph.size() > period && period > 0)//period >0 to not select actual developments!
+		if (static_cast<int>(graph.size()) > period && period > 0)//period >0 to not select actual developments!
 			{
 			std::vector<int>variable_index;
 			std::vector<double>bounds;
@@ -145,16 +145,14 @@ namespace Models
 
 	bool FMTlpmodel::setsolution(int period, const Core::FMTschedule& schedule)
 	{
-		if (graph.size() > period && period > 0)
+		if (static_cast<int>(graph.size()) > period && period > 0)
 		{
 			std::vector<double>new_solution(solverinterface->getNumCols(), 0);
 			const double* actual_solution = solverinterface->getColSolution();
-			const double* upper_bounds = solverinterface->getRowUpper();
-			int colid = 0;
-			for (double& nsol : new_solution)
+			//const double* upper_bounds = solverinterface->getRowUpper();
+			for (int colid = 0; colid < static_cast<int>(new_solution.size());++colid)
 			{
 				new_solution[colid] = *(actual_solution + colid);
-				++colid;
 			}
 			Core::FMTschedule locked_schedule;
 			for (const auto actionit : schedule)
@@ -175,7 +173,7 @@ namespace Models
 						Core::FMTdevelopment locked(devit.first);
 						int area_id = 0;
 						int last_lock = 0;
-						while (area_id < devit.second.size())
+						while (area_id < static_cast<int>(devit.second.size()))
 						{
 							if (graph.containsdevelopment(locked))
 							{
@@ -187,7 +185,7 @@ namespace Models
 								++area_id;
 								++locked.lock;
 							}
-							if (area_id < devit.second.size())//continue looking for a developpement!
+							if (area_id < static_cast<int>(devit.second.size()))//continue looking for a developpement!
 							{
 								size_t checked = 0;
 								const size_t allocated_bound = (graph.getperiodverticies(period).size() - allocated);
@@ -277,7 +275,7 @@ namespace Models
 
 	Core::FMTschedule FMTlpmodel::getsolution(int period) const
 	{
-		if (graph.size() > period && period > 0)
+		if (static_cast<int>(graph.size()) > period && period > 0)
 		{
 
 			std::map<Core::FMTaction, std::map<Core::FMTdevelopment, std::map<int, double>>>schedule_solution;
@@ -359,8 +357,8 @@ namespace Models
 
 	FMTlpmodel::FMTlpmodel(const FMTmodel& base, FMTsolverinterface lsolvertype) :
 		FMTmodel(base),
-		solvertype(lsolvertype),
 		graph(Graph::FMTgraphbuild::nobuild),
+		solvertype(lsolvertype),
 		solverinterface(),
 		elements(),
 		deletedconstraints(),
@@ -372,8 +370,8 @@ namespace Models
 
 	FMTlpmodel::FMTlpmodel() :
 		FMTmodel(),
-		solvertype(),
 		graph(Graph::FMTgraphbuild::nobuild),
+		solvertype(),
 		solverinterface(),
 		elements(),
 		deletedconstraints(),
@@ -384,8 +382,8 @@ namespace Models
 
 	FMTlpmodel::FMTlpmodel(const FMTlpmodel& rhs) :
 		FMTmodel(rhs),
-		solvertype(rhs.solvertype),
 		graph(rhs.graph),
+		solvertype(rhs.solvertype),
 		solverinterface(),
 		elements(rhs.elements),
 		deletedconstraints(rhs.deletedconstraints),
@@ -585,7 +583,7 @@ bool FMTlpmodel::locatenodes(const std::vector<Core::FMToutputnode>& nodes, int 
 								}else{
 								constraint.getbounds(lowerbound,upperbound,period);
 								}
-						size_t left_location = 0;
+						//size_t left_location = 0;
 						locatenodes(all_nodes, period, all_variables, 1);
 						if (constraint.acrossperiod() && !all_variables.empty())
 							{
@@ -716,13 +714,13 @@ bool FMTlpmodel::locatenodes(const std::vector<Core::FMToutputnode>& nodes, int 
 
 	Graph::FMTgraphstats FMTlpmodel::eraseconstraint(const Core::FMTconstraint& constraint, int period)
 		{
-		if (elements.size() > period && elements.at(period).find(constraint.hash())!= elements.at(period).end())
+		if (static_cast<int>(elements.size()) > period && elements.at(period).find(constraint.hash())!= elements.at(period).end())
 			{
 			std::vector<std::vector<int>>all_elements = elements.at(period).at(constraint.hash());
 			elements.at(period).erase(elements.at(period).find(constraint.hash()));
-			int maxrowid = -1;
+			//int maxrowid = -1;
 			int removedrow = -1;
-			int maxcolid = -1;
+			//int maxcolid = -1;
 			std::vector<int>colstoremove;
 			std::vector<int>constraintstoremove;
 			if (!all_elements.at(FMTmatrixelement::constraint).empty())
@@ -730,7 +728,7 @@ bool FMTlpmodel::locatenodes(const std::vector<Core::FMToutputnode>& nodes, int 
 				for (const int& levelid : all_elements.at(FMTmatrixelement::constraint))
 				{
 					bool removeconstraint = true;
-					for (int locator = (period + 1); locator < elements.size(); ++locator)
+					for (int locator = (period + 1); locator < static_cast<int>(elements.size()); ++locator)
 					{
 						for (std::unordered_map<size_t, std::vector<std::vector<int>>>::iterator elit = elements.at(locator).begin(); elit != elements.at(locator).end(); elit++)
 						{
@@ -768,7 +766,7 @@ bool FMTlpmodel::locatenodes(const std::vector<Core::FMToutputnode>& nodes, int 
 				bool candelete = true;
 				for (const int& levelid : potentialcols)
 					{
-					for (int locator = (period+1); locator < elements.size();++locator)
+					for (int locator = (period+1); locator < static_cast<int>(elements.size());++locator)
 						{
 						for (std::unordered_map<size_t, std::vector<std::vector<int>>>::iterator elit = elements.at(locator).begin(); elit != elements.at(locator).end(); elit++)
 							{
@@ -953,7 +951,7 @@ bool FMTlpmodel::locatenodes(const std::vector<Core::FMToutputnode>& nodes, int 
 			{
 			period = graph.getfirstactiveperiod()+1;
 			}
-		return((period < elements.size() &&
+		return((period < static_cast<int>(elements.size()) &&
 			(elements.at(period).find(constraint.hash()) != elements.at(period).end()) &&
 			!elements.at(period).at(constraint.hash()).at(element_type).empty()));
 	}
@@ -963,7 +961,7 @@ bool FMTlpmodel::locatenodes(const std::vector<Core::FMToutputnode>& nodes, int 
 		{
 		if (element_type== FMTmatrixelement::constraint)
 			{
-			const double* upperbr = solverinterface->getRowUpper();
+			//const double* upperbr = solverinterface->getRowUpper();
 			const double* lowerbr = solverinterface->getRowLower();
 			if (lowerb != *(lowerbr+ matrixindex) && upperb != *(lowerbr + matrixindex))
 				{
@@ -1184,7 +1182,7 @@ bool FMTlpmodel::locatenodes(const std::vector<Core::FMToutputnode>& nodes, int 
 				++stats->cols;
 				++stats->output_cols;
 			}
-			if (elements.size() != (graph.size() - 1) && period >= elements.size()) //just for resizing!
+			if (elements.size() != (graph.size() - 1) && period >= static_cast<int>(elements.size())) //just for resizing!
 			{
 				size_t location = 0;
 				if (period < 0)
@@ -1224,7 +1222,7 @@ bool FMTlpmodel::locatenodes(const std::vector<Core::FMToutputnode>& nodes, int 
 
 	std::vector<std::vector<int>>FMTlpmodel::getmatrixelement(const Core::FMTconstraint& constraint,int period) const
         {
-        if ((period < elements.size()) && (elements.at(period).find(constraint.hash()) != elements.at(period).end()))
+        if ((period < static_cast<int>(elements.size())) && (elements.at(period).find(constraint.hash()) != elements.at(period).end()))
             {
             return elements.at(period).at(constraint.hash());
             }
@@ -1368,4 +1366,6 @@ bool FMTlpmodel::locatenodes(const std::vector<Core::FMToutputnode>& nodes, int 
 		}
 
 }
+
+BOOST_CLASS_EXPORT_IMPLEMENT(Models::FMTlpmodel);
 #endif

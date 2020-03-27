@@ -352,3 +352,4 @@ FMTtheme FMTtheme::presolve(const FMTmask& basemask, int& newid, int& newstart, 
 
 }
 
+BOOST_CLASS_EXPORT_IMPLEMENT(Core::FMTtheme);

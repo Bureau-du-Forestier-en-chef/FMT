@@ -350,3 +350,5 @@ FMTschedule::operator std::string() const
 	}
 
 }
+
+BOOST_CLASS_EXPORT_IMPLEMENT(Core::FMTschedule);

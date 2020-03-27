@@ -39,6 +39,7 @@ SOFTWARE.
 #include "FMTobject.h"
 #include <memory>
 #include <vector>
+#include <boost/serialization/export.hpp>
 
 
 namespace Core
@@ -202,5 +203,7 @@ namespace boost {
 
 
 }
+
+BOOST_CLASS_EXPORT_KEY(Core::FMTdevelopment);
 
 #endif // FMTDEV_H_INCLUDED

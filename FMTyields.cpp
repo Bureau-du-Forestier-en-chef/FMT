@@ -276,3 +276,5 @@ int FMTyields::getage(const FMTdevelopment& dev,const FMTspec& spec) const
 	}
 
 }
+
+BOOST_CLASS_EXPORT_IMPLEMENT(Core::FMTyields);

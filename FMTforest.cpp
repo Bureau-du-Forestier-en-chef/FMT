@@ -168,7 +168,7 @@ std::map<Core::FMTaction,FMTforest> FMTforest::getschedule(const Core::FMTschedu
 					int action_id = 0;
 					for(std::map<Core::FMTaction, std::map<Core::FMTdevelopment, std::vector<double>>>::const_iterator it = selection.begin();it != selection.end();it++)
 						{
-						const std::map<Core::FMTdevelopment, std::vector<double>>* devsptr = &it->second;
+						//const std::map<Core::FMTdevelopment, std::vector<double>>* devsptr = &it->second;
 						if (selection.operated(it->first, itc->second)||
 							(!schedule_only && cdev->operable(it->first,yields)))
 							{

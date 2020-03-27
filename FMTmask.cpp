@@ -395,3 +395,5 @@ FMTmask FMTmask::postsolve(const FMTmask& selectedmask, const std::vector<FMTthe
 	}
 
 }
+
+BOOST_CLASS_EXPORT_IMPLEMENT(Core::FMTmask);

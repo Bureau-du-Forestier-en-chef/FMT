@@ -35,6 +35,7 @@ SOFTWARE.
 #include <boost/serialization/serialization.hpp>
 #include "FMTutility.h"
 #include "FMTtheme.h"
+#include <boost/serialization/export.hpp>
 
 
 namespace Core
@@ -147,5 +148,5 @@ class FMTyields : public FMTlist<FMTyieldhandler>
 		std::vector<std::string>getstacked() const;
     };
 }
-
+BOOST_CLASS_EXPORT_KEY(Core::FMTyields);
 #endif // FMTYLD_H_INCLUDED

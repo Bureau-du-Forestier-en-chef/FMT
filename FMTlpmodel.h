@@ -60,10 +60,12 @@ SOFTWARE.
 #include "FMTmodel.h"
 #include "FMTsolverinterface.h"
 #include "FMToperatingareaheuristic.h"
+#include <boost/serialization/export.hpp>
 
 
 namespace Models
 {
+// DocString: FMTmatrixelement
 /**
 enum for matrix element type  present within the matrix
 elements private member of the FMTlpmodel uses those enumerators to
@@ -78,7 +80,7 @@ enum FMTmatrixelement
 	nr_items=4
 	};
 
-
+// DocString: FMTlpmodel
 /**
 This model is a type III LP forest planning model. The graph
 is divided per period. This model is made for replanning and simple
@@ -91,8 +93,9 @@ The matrix is held within the solverinterface pointer.
 
 class FMTlpmodel : public FMTmodel
 	{
+	// DocString: FMTlpmodel::save
 	/**
-	Save and load functions are for serialization, used to do multiprocessing across multiple cpus (pickle in Pyhton)
+	Save function is for serialization, used to do multiprocessing across multiple cpus (pickle in Pyhton)
 	*/
 	friend class boost::serialization::access;
 	template<class Archive>
@@ -106,6 +109,10 @@ class FMTlpmodel : public FMTmodel
 		ar & BOOST_SERIALIZATION_NVP(deletedconstraints);
 		ar & BOOST_SERIALIZATION_NVP(deletedvariables);
 		}
+	// DocString: FMTlpmodel::load
+	/**
+	Load function is for serialization, used to do multiprocessing across multiple cpus (pickle in Pyhton)
+	*/
 	template<class Archive>
 	void load(Archive& ar, const unsigned int version)
 		{
@@ -121,29 +128,38 @@ class FMTlpmodel : public FMTmodel
 		ar & BOOST_SERIALIZATION_NVP(deletedvariables);
 		}
 	BOOST_SERIALIZATION_SPLIT_MEMBER()
+	// DocString: FMTlpmodel::graph
 	///graph holding the FMTdevelopments for all the periods.
 	Graph::FMTgraph graph;
+	// DocString: FMTlpmodel::solvertype
 	///Solver type used maybe usefull for initialsolve or resolve to know what solver we are using to speed-up the process.
 	FMTsolverinterface solvertype;
+	// DocString: FMTlpmodel::solverinterface
 	///The osisolverinterface Abstract class (constraints/objectives/matrix ....LP) can be shared with an heuristic!
 	std::shared_ptr<OsiSolverInterface>solverinterface;
+	// DocString: FMTlpmodel::elements
 	///Locations of the constraints and variables in the matrix for the constraints / objective.
 	std::vector<std::unordered_map<size_t,
 		std::vector<std::vector<int>>>>elements;
+	// DocString: FMTlpmodel::deletedconstraints
 	///Deleted constraints used in replanning context when the constraints indexes need to be updated.
 	std::vector<int>deletedconstraints;
+	// DocString: FMTlpmodel::deletedvariables
 	///Deleted variables used in replanning context when the variables indexes need to be updated.
 	std::vector<int>deletedvariables;
+	// DocString: FMTlpmodel::summarize
 	/**
 	Simple function to summarize constraints that are un a map structure key = variables, element = coefficiant 
 	to a array structure (vector) for osisolverinterface. map structure is easier to deal with thant two vectors.
 	*/
 	bool summarize(const std::map<int, double>& variables ,
 		std::vector<int>& sumvariables, std::vector<double>& sumcoefficiants) const;
+	// DocString: FMTlpmodel::initializematrix
 	/**
 	Initialize the solverinterface called once when the FMTgraph was empty after the first call of buildperiod.
 	*/
 	Graph::FMTgraphstats initializematrix();
+	// DocString: FMTlpmodel::updatematrix
 	/**
 	During a call to build period after the graph has been updated with nes developments type the solverinterface matrix
 	need to be updated. Variables and constraints related to each of those new developements will be added to the matrix.
@@ -151,88 +167,105 @@ class FMTlpmodel : public FMTmodel
 	*/
 	Graph::FMTgraphstats updatematrix(const std::unordered_map<size_t, Graph::FMTvertex_descriptor>& targets,
 			const Graph::FMTgraphstats& newstats);
+	// DocString: FMTlpmodel::getsetmatrixelement
 	/**
 	When the user add constraints using the setconstraint function or the setobjective function the model needs to had 
 	variables and/or constraints to the matrix to satisfy the FMTconstraint. Each type a variable or constraint need to be added
 	to the matrix the function is called and return the index of the element if it exists (already in matrix) or not (new element).
 	*/
-		int getsetmatrixelement(const Core::FMTconstraint& constraint,
+	int getsetmatrixelement(const Core::FMTconstraint& constraint,
                      const FMTmatrixelement& element_type, const std::map<int, double>& indexes,
                      int period = -1,
                      double lowerbound = COIN_DBL_MIN,double upperbound = COIN_DBL_MAX);
+	// DocString: FMTlpmodel::getgoals
 	/**
 	Return goals (index) if it already exist within the other constraints (goals (goalsnames) can be used across multiple FMTconstraints.
 	*/
-        bool getgoals(const std::vector<std::string>& goalsnames, std::map<int,double>& index,const double& sense) const;
+    bool getgoals(const std::vector<std::string>& goalsnames, std::map<int,double>& index,const double& sense) const;
+	// DocString: FMTlpmodel::getsetlevel
 	/**
 	Will check if the level (variable_level) already exist within the matrix for other constraints than the (constraint) 
 	for a given period.
 	*/
-        int getsetlevel(const Core::FMTconstraint& constraint,const std::string& variable_level,int period);
+    int getsetlevel(const Core::FMTconstraint& constraint,const std::string& variable_level,int period);
+	// DocString: FMTlpmodel::getmatrixelement
 	/**
 	Return all the elements (level / constraint / variable) related to a given (constraint) for a period
 	for a given period.
 	*/
-		std::vector<std::vector<int>>getmatrixelement(const Core::FMTconstraint& constraint,int period) const;
+	std::vector<std::vector<int>>getmatrixelement(const Core::FMTconstraint& constraint,int period) const;
+	// DocString: FMTlpmodel::getsolverinterface
 	/**
 	Getter for a shared pointer to the matrix (solverinterface).
 	*/
-		std::shared_ptr<OsiSolverInterface>& getsolverinterface();
+	std::shared_ptr<OsiSolverInterface>& getsolverinterface();
+	// DocString: FMTlpmodel::locatelevels
 	/**
 	For a given period lookup in the graph to fill the variables map (variables) for a given level (nodes).
 	*/
-        void locatelevels(const std::vector<Core::FMToutputnode>& nodes,int period, std::map<int, double>& variables,const Core::FMTconstraint& constraint);
+    void locatelevels(const std::vector<Core::FMToutputnode>& nodes,int period, std::map<int, double>& variables,const Core::FMTconstraint& constraint);
+	// DocString: FMTlpmodel::locatenodes
 	/**
 	For a given period lookup in the graph to fill the variables map (variables) for a given FMTconstraints (nodes). 
 	Also apply the multiplier to coefficiants of the map the map<variableindex,coefficiants>.
 	*/
-		bool locatenodes(const std::vector<Core::FMToutputnode>& nodes, int period, std::map<int, double>& variables,double multiplier = 1) const;
+	bool locatenodes(const std::vector<Core::FMToutputnode>& nodes, int period, std::map<int, double>& variables,double multiplier = 1) const;
+	// DocString: FMTlpmodel::updatematrixelements
 	/**
 	When the eraseperiod function is called the matrix size is shrinked and the variables/constraints indexes have
 	to be updated. This function use the deletedconstraints and deletedvariables private member to update the indexes of
 	a given matrix elements.
 	*/
-		void updatematrixelements(std::vector<int>& matrixelements, const std::vector<int>& deletedelements) const;
+	void updatematrixelements(std::vector<int>& matrixelements, const std::vector<int>& deletedelements) const;
+	// DocString: FMTlpmodel::updateconstraintsmapping
 	/**
 	When the eraseperiod function is called the matrix size is shrinked and the variables/constraints indexes have
 	to be updated. This function update the indexes of all the FMTconstraints of the elements calling updatematrixelements().
 	*/
-		void updateconstraintsmapping(const std::vector<int>& Dvariables,const std::vector<int>& Dconstraints);
+	void updateconstraintsmapping(const std::vector<int>& Dvariables,const std::vector<int>& Dconstraints);
+	// DocString: FMTlpmodel::updateconstraintsmapping
 	/**
 	When the eraseperiod function is called the matrix size is shrinked and the variables/constraints indexes have
 	to be updated. This function update the indexes of all the FMTconstraints of the elements 
 	and also the FMTdevelopement constraints and variables of in the graph and delete those variables and constraints
 	from the solverinterface matrix.
 	*/
-		bool updatematrixngraph();
+	bool updatematrixngraph();
+	// DocString: FMTlpmodel::ismatrixelement
 	/**
 	Check if the FMTconstraint had a element of (element_type) located in the matrix for a given period.
 	*/
-		bool ismatrixelement(const Core::FMTconstraint& constraint,
+	bool ismatrixelement(const Core::FMTconstraint& constraint,
 			const FMTmatrixelement& element_type, int period) const;
+	// DocString: FMTlpmodel::issamematrixelement
 	/**
 	Check if the requested matrix element (matrixindex) is the same as the found one (LB/UB + variables).
 	*/
-		bool issamematrixelement(const int& matrixindex, const FMTmatrixelement& element_type,
+	bool issamematrixelement(const int& matrixindex, const FMTmatrixelement& element_type,
 			const double& lowerb, const double& upperb, const std::map<int, double>& variables) const;
+	// DocString: FMTlpmodel::eraseallconstraint
 	/**
 	Erase all constraints / variables related to a FMTconstraint for all the planning horizon (graph length).
 	*/
-		Graph::FMTgraphstats eraseallconstraint(const Core::FMTconstraint& constraint);
+	Graph::FMTgraphstats eraseallconstraint(const Core::FMTconstraint& constraint);
 	public:
+	// DocString: FMTlpmodel(const FMTmodel,FMTsolverinterface)
 	/**
 	Main constructor used to build FMTlpmodel using it's base class and to let the user choose the solvertype
 	(CLP,MOSEK,GUROBI,CPLEX) see FMTsolverinterface.h for more information about the supported solvertype.
 	*/
 		FMTlpmodel(const FMTmodel& base, FMTsolverinterface lsolvertype);
+		// DocString: FMTlpmodel()
 		/**
 		Default constructor of FMTlpmodel
 		*/
 		FMTlpmodel();
+		// DocString: FMTlpmodel(const FMTlpmodel)
 		/**
 		Copy constructor of FMTlpmodel
 		*/
 		FMTlpmodel(const FMTlpmodel& rhs);
+		// DocString: FMTlpmodel::initialsolve
 		/**
 		Cold start of the LPsolve of a simple LP model.
 		By default initialsolve will call solverinterface->initialsolve() but using the FMTsolverinterface enum
@@ -240,40 +273,49 @@ class FMTlpmodel : public FMTmodel
 		For all solvers interior point is considered the best algorith.
 		*/
 		bool initialsolve();
+		// DocString: FMTlpmodel::setsolution
 		/**
 		If the user wants to set a solution for a given period for warmstarting the model or prepare to 
 		bound the model to that solution.
 		*/
 		bool setsolution(int period, const Core::FMTschedule& schedule);
+		// DocString: FMTlpmodel::boundsolution
 		/**
 		This function bounds the primal variables to the primal solution present within the matrix for
 		a given period and tolerance. Perfect function to update a FMTlpmodel or get ready for replanning.
 		*/
 		bool boundsolution(int period,double tolerance = FMT_DBL_TOLERANCE);
+		// DocString: FMTlpmodel::unboundsolution
 		/**
 		Unbound the primal bounds of a given period.
 		*/
 		bool unboundsolution(int period);
+		// DocString: FMTlpmodel::isperiodbounded
 		/**
 		Check if FMTdevelopment area are bounded on there primal variables for a given period.
 		*/
 		bool isperiodbounded(int period) const;
+		// DocString: FMTlpmodel::getsolution
 		/**
 		Get the standard solution for a given period (FMTschedule dont have natural growth solution included).
 		*/
 		Core::FMTschedule getsolution(int period) const;
+		// DocString: FMTlpmodel::getstats
 		/**
 		Get the graph stats of the graph and matrix (number of columns/rows/edges/verticies...)
 		*/
 		Graph::FMTgraphstats getstats() const;
+		// DocString: FMTlpmodel::operator==
 		/**
 		Comparison operator of FMTlpmodel
 		*/
 		bool operator == (const FMTlpmodel& rhs) const;
+		// DocString: FMTlpmodel::operator!=
 		/**
 		Comparison operator of FMTlpmodel
 		*/
 		bool operator != (const FMTlpmodel& rhs) const;
+		// DocString: FMTlpmodel::getoutput
 		/**
 		Get the output value of a output for a given period using the solution of the matrix.
 		the map key returned consist of output name 
@@ -282,6 +324,7 @@ class FMTlpmodel : public FMTmodel
 		*/
 		std::map<std::string, double> getoutput(const Core::FMToutput& output,
 			int period, Graph::FMToutputlevel level = Graph::FMToutputlevel::standard);
+		// DocString: FMTlpmodel::buildperiod
 		/**
 		This function is the main function used to build the graph and the matrix.
 		A call to that function add a period within the graph and the matrix of the FMTlpmodel.
@@ -291,22 +334,26 @@ class FMTlpmodel : public FMTmodel
 		*/
 		Graph::FMTgraphstats buildperiod(Core::FMTschedule schedule = Core::FMTschedule(),
 			bool forcepartialbuild = false);
+		// DocString: FMTlpmodel::setobjective
 		/**
 		This function set the objective of the matrix for the whole planning horizon (graph length).
 		Note that the objective function is always the firts constraint in the constraints vector of a 
 		FMTmodel. If a objective was already set before it will replace it when calling this function.
 		*/
 		Graph::FMTgraphstats setobjective(const Core::FMTconstraint& objective);
+		// DocString: FMTlpmodel::setconstraint
 		/**
 		This function set a constraint in the matrix for the whole planning horizon (graph length).
 		If the function is recalled if the constraint already exist in the matrix in wont be replaced.
 		Can be called after calling builperiod in replanning.
 		*/
 		Graph::FMTgraphstats setconstraint(const Core::FMTconstraint& constraint);
+		// DocString: FMTlpmodel::eraseconstraint
 		/**
 		Erase a constraint for a given period in the matrix and in the model elements.
 		*/
 		Graph::FMTgraphstats eraseconstraint(const Core::FMTconstraint& constraint, int period);
+		// DocString: FMTlpmodel::getvariabilities
 		/**
 		Get the variability of multiple outputs for a given tolerance across the planning horizon.
 		Need to call this function after initialsolve.
@@ -317,17 +364,20 @@ class FMTlpmodel : public FMTmodel
 		*/
 		std::map<std::string, std::vector<double>>getvariabilities(const std::vector<Core::FMToutput>& outputs,
 																double tolerance = FMT_DBL_TOLERANCE);
+		// DocString: FMTlpmodel::eraseperiod
 		/**
 		When doing replanning or simply model update the user may want to delete the first period (front) 
 		of the graph and the matrix to get a FMTmodel - first period. The planning length will be shrinked to 
 		originalsize - 1.
 		*/
 		Graph::FMTgraphstats eraseperiod();
+		// DocString: FMTlpmodel::getfirstactiveperiod
 		/**
 		Return the first active period should be always 0 in case or planning. 
 		But when eraseperiod is called the first active period is going to move to 1 and so on.
 		*/
 		int getfirstactiveperiod() const;
+		// DocString: FMTlpmodel::getoperatingareaheuristics
 		/**
 		Using multiple operating areas and a simple output node a MIP formulation (using the BFECopt heuristic) is done using the matrix of 
 		the FMTlpmodel. The matrix can be copied within the operatingareaheuristic or directly uses the matrix
@@ -338,27 +388,33 @@ class FMTlpmodel : public FMTmodel
 																				const Core::FMToutputnode& node,
 																				size_t numberofheuristics=1,
 																				bool copysolver=true);
+		// DocString: FMTlpmodel::getObjValue
 		/**
 		Get the objective value of the solved matrix.
 		*/
 		double getObjValue() const;
+		// DocString: FMTlpmodel::resolve
 		/**
 		By default call solverinterface->resolve() when some changes are done to the model.
 		The user dont necessery need the call initialsolve every time the matrix has changed a call to resolve maybe enought.
 		*/
 		bool resolve();
+		// DocString: FMTlpmodel::writeLP
 		/**
 		Write the solverinterface matrix to a file (location) using the lp formulation.
 		*/
 		void writeLP(const std::string& location) const;
+		// DocString: FMTlpmodel::writeMPS
 		/**
 		Write the solverinterface matrix to a file (location) using the MPS formulation.
 		*/
 		void writeMPS(const std::string& location) const;
+		// DocString: FMTlpmodel::operator=
 		/**
 		Copy assignment of FMTlpmodel
 		*/
 		FMTlpmodel& operator = (const FMTlpmodel& rhs);
+		// DocString: ~FMTlpmodel()
 		/**
 		Default destructor of FMTlpmodel
 		*/
@@ -367,6 +423,7 @@ class FMTlpmodel : public FMTmodel
 
 }
 
+BOOST_CLASS_EXPORT_KEY(Models::FMTlpmodel);
 
 #endif
 #endif

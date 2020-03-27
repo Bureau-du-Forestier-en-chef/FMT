@@ -94,20 +94,19 @@ rcpplist[index]=List::create(Named("first")=wrap<KEY>(mapobject.first),Named("se
 }\
 return rcpplist;}}
 
-
 namespace R
 {
 	template <class T>
-	void define_FMTlist()
+	void define_FMTlist(const char* name)
 		{
-		Rcpp::class_< Core::FMTlist<T> >("FMTlist","@DocString(FMTlist)")
+		Rcpp::class_< Core::FMTlist<T> >(name,"@DocString(FMTlist)")
 		.constructor("@DocString(FMTlist())");
 		}
 
 	template <class T>
-	void define_FMTlayer()
+	void define_FMTlayer(const char* name)
 		{
-		Rcpp::class_<Spatial::FMTlayer<T>>("FMTlayer", "@DocString(FMTlayer)")
+		Rcpp::class_<Spatial::FMTlayer<T>>(name, "@DocString(FMTlayer)")
 				.constructor("@DocString(FMTlayer())")
 				.method("getXSize", &Spatial::FMTlayer<T>::GetXSize,
 					"@DocString(FMTlayer::GetXSize)")

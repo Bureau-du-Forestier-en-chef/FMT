@@ -235,3 +235,5 @@ const FMTfork* FMTtransition::getfork(const FMTdevelopment& dev,
 
 }
 
+BOOST_CLASS_EXPORT_IMPLEMENT(Core::FMTtransition);
+

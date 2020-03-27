@@ -854,8 +854,7 @@ namespace Parser{
 					std::vector<std::string>splitted_mask;
 					boost::split(splitted_mask, maskstr, boost::is_any_of(" /t"), boost::token_compress_on);
 					std::string header_line = ";*A ";
-					size_t theme_id = 1;
-					for (const std::string& theme : splitted_mask)
+					for (size_t theme_id = 1; theme_id <= splitted_mask.size();++theme_id)
 					{
 						header_line += "TH" + std::to_string(theme_id) + " ";
 						++theme_id;

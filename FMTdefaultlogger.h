@@ -36,9 +36,11 @@ namespace Logging
 		~FMTdefaultlogger() = default;
 		FMTdefaultlogger & operator = (const FMTdefaultlogger & rhs) = default;
 		FMTdefaultlogger(const FMTdefaultlogger& rhs) = default;
-		int print() override;
-		void checkSeverity() override;
-		CoinMessageHandler * clone() const override;
+		#ifdef FMTWITHOSI
+			int print() override;
+			void checkSeverity() override;
+			CoinMessageHandler * clone() const override;
+		#endif
 	};
 
 }

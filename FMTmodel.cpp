@@ -27,6 +27,7 @@ SOFTWARE.
 #include <chrono>
 #include <memory>
 
+
 namespace Models{
 
 
@@ -580,3 +581,5 @@ bool FMTmodelcomparator::operator()(const FMTmodel& model) const
 	}
 
 }
+
+BOOST_CLASS_EXPORT_IMPLEMENT(Models::FMTmodel);

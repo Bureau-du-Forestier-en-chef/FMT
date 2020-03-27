@@ -28,7 +28,9 @@ SOFTWARE.
 #include <boost/serialization/nvp.hpp>
 #include <boost/serialization/split_member.hpp>
 #include <boost/lexical_cast.hpp>
-#include <CoinMessageHandler.hpp>
+#ifdef FMTWITHOSI
+	#include <CoinMessageHandler.hpp>
+#endif
 #include <fstream>
 
 
@@ -36,21 +38,28 @@ SOFTWARE.
 namespace Logging
 {
 
-	class FMTlogger : public CoinMessageHandler
+	class FMTlogger 
+		#ifdef FMTWITHOSI
+			: public CoinMessageHandler
+		#endif
 		{
 		friend class boost::serialization::access;
 		template<class Archive>
 		void save(Archive& ar, const unsigned int version) const
 		{
-		    const int logl = this->logLevel();
-			ar & BOOST_SERIALIZATION_NVP(logl);
+			#ifdef FMTWITHOSI
+				const int logl = this->logLevel();
+				ar & BOOST_SERIALIZATION_NVP(logl);
+			#endif
 		}
 		template<class Archive>
 		void load(Archive& ar, const unsigned int version)
 		{
-			int coinloglevel = 0;
-			ar & BOOST_SERIALIZATION_NVP(coinloglevel);
-			this->setLogLevel(coinloglevel);
+			#ifdef FMTWITHOSI
+				int coinloglevel = 0;
+				ar & BOOST_SERIALIZATION_NVP(coinloglevel);
+				this->setLogLevel(coinloglevel);
+			#endif
 		}
 		BOOST_SERIALIZATION_SPLIT_MEMBER()
 		protected:
@@ -61,9 +70,11 @@ namespace Logging
 			virtual ~FMTlogger();
 			FMTlogger(const FMTlogger& rhs);
 			FMTlogger& operator = (const FMTlogger& rhs);
-			int print() override;
-			void checkSeverity() override;
-			CoinMessageHandler * clone() const override;
+			#ifdef FMTWITHOSI
+				int print() override;
+				void checkSeverity() override;
+				CoinMessageHandler * clone() const override;
+			#endif
 			void logstamp();
 			void logtime();
 			void settostream(std::ofstream& stream);

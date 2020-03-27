@@ -35,51 +35,62 @@ SOFTWARE.
 
 namespace Version
 {
+// DocString: FMTversion
 /**
 The only purpose of this class is to let the user see which version of FMT he's using.
-It also gives some information about the buildate and the actual date.
-It also informs the user about which features are implemented. 
+It also gives some information about the build date and the actual date.
+It also informs the user about which features are avalaible in FMT. 
 */
 
 class FMTversion
 	{
 	public:
+		// DocString: FMTversion()
 		/**
 		Default constructor of FMTversion.
 		*/
 		FMTversion();
+		// DocString: ~FMTversion()
 		/**
 		Destructor of FMTversion.
 		*/
 		~FMTversion()=default;
+		// DocString: FMTversion::getmajor
 		/**
 		Getter of the major version of FMT.
 		*/
 		static int getmajor();
+		// DocString: FMTversion::getminor
 		/**
 		Getter of the minor version of FMT.
 		*/
 		static int getminor();
+		// DocString: FMTversion::getpatch
 		/**
 		Getter of the patch version of FMT.
 		*/
 		static int getpatch();
+		// DocString: FMTversion::getversion
 		/**
 		Getter of the string of the version : MAjor.Minor.PATCH
 		*/
 		static std::string getversion();
+		// DocString: FMTversion::getdatenow
 		/**
 		Getter of the actual date: Day Month date
 		*/
 		static std::string getdatenow();
+		// DocString: FMTversion::getbuilddate
 		/**
 		Getter of the build date: date
 		*/
 		static std::string getbuilddate();
+		// DocString: FMTversion::isatleast
 		/**
 		Test if the FMT version is at least the given major/minor/patch parameters.
 		*/
 		static bool isatleast(int major, int minor, int patch);
+		// DocString: FMTversion::hasfeature
 		/**
 		Test if the FMT version have the named feature.
 		Features GDAL,OSI,MOSEK,PYTHON,R.

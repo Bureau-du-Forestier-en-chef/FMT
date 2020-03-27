@@ -170,7 +170,7 @@ namespace Core
 		if (this->multiperiod())
 		{
 			const int minperiod = std::max(this->source.getperiodlowerbound(), 1);
-			const int maxperiod = std::min(this->source.getperiodupperbound(), maxperiod);
+			const int maxperiod = std::min(this->source.getperiodupperbound(), max_period);
 			for (int periodid = minperiod; periodid <= maxperiod; ++periodid)
 			{
 				int local_period = periodid;

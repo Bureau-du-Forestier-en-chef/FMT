@@ -217,4 +217,6 @@ class FMTtheme
     };
 }
 
+BOOST_CLASS_EXPORT_KEY(Core::FMTtheme);
+
 #endif // FMTtheme_H_INCLUDED

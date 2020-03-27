@@ -44,17 +44,15 @@ double FMToperatingarea::getarea(const double* primalsolution, const Graph::FMTg
 
 size_t FMToperatingarea::getbestschemeid(const double* primalsolution) const//Get the best possible scheme looking at the primal solution
 	{
-	size_t id = 0;
 	size_t bestid = 0;
 	double bestvalue = 0;
-	for (const int& binary : openingbinaries)
+	for (size_t id = 0; id < openingbinaries.size();++id)
 		{
 		if (*(primalsolution + openingbinaries.at(id)) > bestvalue)
 			{
 			bestvalue = *(primalsolution + openingbinaries.at(id));
 			bestid = id;
 			}
-		++id;
 		}
 	return bestid;
 	}
@@ -105,7 +103,7 @@ std::vector<std::vector<std::vector<Graph::FMTvertex_descriptor>>> FMToperatinga
 	{
 		int binaryid = matrixbuild.getlastcolindex()+1;	
 		_area = 0;
-		std::vector<std::vector<Graph::FMTvertex_descriptor>>::const_iterator perit = periodics.begin();
+		//std::vector<std::vector<Graph::FMTvertex_descriptor>>::const_iterator perit = periodics.begin();
 		if (!totalareaverticies.empty())
 		{
 			_area = this->getarea(primalsolution, maingraph, totalareaverticies);
@@ -197,7 +195,7 @@ std::vector<std::vector<std::vector<Graph::FMTvertex_descriptor>>> FMToperatinga
 					}
 				++tid;
 				}
-			for (const int& opbin : openingbinaries)
+			for (size_t opid = 0; opid < openingbinaries.size();++opid)
 				{
 				matrixbuild.addCol(0, nullptr, nullptr, 0, 1);
 				}
@@ -330,7 +328,7 @@ std::vector<double>FMToperatingarea::fillpattern(const std::vector<double>& patt
 		}
 	if (startat>=0)
 		{
-		for (size_t period = 1; period < startat; ++period)
+		for (size_t period = 1; period < static_cast<size_t>(startat); ++period)
 		{
 			values.emplace(values.begin(), 0);
 		}
@@ -339,7 +337,7 @@ std::vector<double>FMToperatingarea::fillpattern(const std::vector<double>& patt
 		for (size_t vloc = 2; vloc < (static_cast<size_t>(startat) + 2); ++vloc)
 		{
 			int period = static_cast<int>(vloc - 1);
-			if (period < startingperiod)
+			if (period < static_cast<int>(startingperiod))
 			{
 				values[vloc] = 1;
 			}
@@ -427,8 +425,8 @@ FMToperatingarea::FMToperatingarea(const Core::FMTmask& lmask, const size_t& lop
 	openingbinaries(),
 	maximalschemesconstraint(),
 	schemesperiods(),
-	openingtime(lopeningtime),returntime(lreturntime),repetition(lrepetition),startingperiod(lstartingperiod),
-	greenup(lgreenup), neihgborsperimeter(lneihgborsperimeter),_area()
+	openingtime(lopeningtime),returntime(lreturntime),repetition(lrepetition), greenup(lgreenup),startingperiod(lstartingperiod),
+	neihgborsperimeter(lneihgborsperimeter),_area()
 	{
 
 	}
@@ -824,5 +822,5 @@ bool FMToperatingareacomparator::operator()(const FMToperatingarea& oparea) cons
 
 
 }
-
+BOOST_CLASS_EXPORT_IMPLEMENT(Heuristics::FMToperatingarea);
 #endif

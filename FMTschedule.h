@@ -30,6 +30,7 @@ SOFTWARE.
 #include "FMTdevelopment.h"
 #include "FMTaction.h"
 #include <iterator>
+#include <boost/serialization/export.hpp>
 
 namespace Core
 {
@@ -162,5 +163,5 @@ class FMTschedule
 
 
 }
-
+BOOST_CLASS_EXPORT_KEY(Core::FMTschedule);
 #endif // FMTschedule_H_INCLUDED

@@ -28,6 +28,8 @@ SOFTWARE.
 #include "FMTdevelopment.h"
 #include <boost/serialization/serialization.hpp>
 #include <boost/serialization/nvp.hpp>
+#include <boost/serialization/export.hpp>
+
 namespace Core
 
 {
@@ -69,5 +71,5 @@ class FMTactualdevelopmentcomparator
 
 }
 
-
+BOOST_CLASS_EXPORT_KEY(Core::FMTactualdevelopment);
 #endif

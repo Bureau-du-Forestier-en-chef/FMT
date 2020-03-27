@@ -796,7 +796,7 @@ std::vector<std::vector<std::string>>FMTparser::readcsv(const std::string& locat
 			std::vector<std::string>splitted;
 			if (FMTparser::tryopening(csvstream, location))
 				{
-				bool inactualdevs = false;
+				//bool inactualdevs = false;
 				while (csvstream.is_open())
 					{
 					if (FMTparser::safeGetline(csvstream, line))

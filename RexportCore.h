@@ -115,11 +115,17 @@ RCPP_DEFINEMAP(Core::FMTaction , std::map<Core::FMTdevelopment RCPP_COMMA std::v
 RCPP_DEFINEMAP(std::string , std::map<std::string RCPP_COMMA std::vector<double>>);//For string of ...
 RCPP_DEFINEMAP(std::string, std::string);//map of string definition
 
+
+
 namespace R
 {
 
 void exportCore()
     {
+	define_FMTlist<Core::FMTspec>("FMTspeclist");
+	define_FMTlist<int>("FMTintlist");
+	define_FMTlist<Core::FMTyieldhandler>("FMTyieldhandlerlist");
+	define_FMTlist<Core::FMTfork>("FMTforklist");
 
 	Rcpp::class_<Core::FMTobject>("FMTobject", "@DocString(FMTobject)")
 		.constructor("@DocString(FMTobject())")
@@ -176,6 +182,7 @@ void exportCore()
 
 		Rcpp::class_<Core::FMTspec>("FMTspec","@DocString(FMTspec)")
 				.constructor("@DocString(FMTspec())");
+		
 
 		Rcpp::class_<Core::FMTactualdevelopment>("FMTactualdevelopment", "@DocString(FMTactualdevelopment)")
 				.derives<Core::FMTdevelopment>("FMTdevelopment")
@@ -196,10 +203,9 @@ void exportCore()
 			.constructor("@DocString(FMTfuturdevelopment())");
 
 
-
-			Rcpp::class_<Core::FMTaction>("FMTaction","@DocString(FMTaction)")
+		Rcpp::class_<Core::FMTaction>("FMTaction","@DocString(FMTaction)")
 				.constructor("@DocString(FMTaction())")
-				.derives<Core::FMTlist<Core::FMTspec>>("FMTlist")
+				.derives<Core::FMTlist<Core::FMTspec>>("FMTspeclist")
                 .method("__eq__",&Core::FMTaction::operator ==,
 					"@DocString(FMTaction::operator==)")
                 .method("__ne__",&Core::FMTaction::operator !=,
@@ -215,33 +221,37 @@ void exportCore()
                 .method("isresetage",&Core::FMTaction::isresetage,
 					"@DocString(FMTaction::isresetage)");
 
+		
 
 			Rcpp::class_<Core::FMTlifespans>("FMTlifespans", "@DocString(FMTlifespans)")
-				.derives<Core::FMTlist<int>>("FMTlist")
+				.derives<Core::FMTlist<int>>("FMTintlist")
 				.constructor("@DocString(FMTlifespans())");
-
+			
 			Rcpp::class_<Core::FMTfork>("FMTfork", "@DocString(FMTfork)")
-				.derives<Core::FMTlist<Core::FMTspec>>("FMTlist")
+				.derives<Core::FMTlist<Core::FMTspec>>("FMTspeclist")
 				.constructor("@DocString(FMTfork())");
 	
-
+			
 			Rcpp::class_<Core::FMTyieldhandler>("FMTyieldhandler", "@DocString(FMTyieldhandler)")
 				.constructor("@DocString(FMTyieldhandler())")
 				.method("str", &Core::FMTyieldhandler::operator std::string,
 					"@DocString(FMTyieldhandler::operator std::string)");
 
+
+			
+
 			Rcpp::class_<Core::FMTyields>("FMTyields", "@DocString(FMTyields)")
-				.derives<Core::FMTlist<Core::FMTyieldhandler>>("FMTlist")
+				.derives<Core::FMTlist<Core::FMTyieldhandler>>("FMTyieldhandlerlist")
 				.constructor("@DocString(FMTyields())")
 				.method("getallyields", &Core::FMTyields::getallyields,
 					"@DocString(FMTyields::getallyields)")
 				.method("getnullyldsnames", &Core::FMTyields::getnullyldsnames,
 					"@DocString(FMTyields::getnullyldsnames)");
 
-
+			
 
 			Rcpp::class_<Core::FMTtransition>("FMTtransition", "@DocString(FMTtransition)")
-				.derives<Core::FMTlist<Core::FMTfork>>("FMTlist")
+				.derives<Core::FMTlist<Core::FMTfork>>("FMTforklist")
 				.constructor("@DocString(FMTtransition())")
                 .method("single",&Core::FMTtransition::single,
 					"@DocString(FMTtransition::single)")

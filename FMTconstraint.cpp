@@ -122,7 +122,7 @@ namespace Core
                         {
                         sense = -1;
                         }
-					for (const std::string& name : names)
+					for (size_t nameid = 0; nameid<names.size();++nameid)
                         {
                         penalties.push_back(names.at(1));
                         }
@@ -519,4 +519,4 @@ namespace Core
 
 }
 
-
+BOOST_CLASS_EXPORT_IMPLEMENT(Core::FMTconstraint);

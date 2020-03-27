@@ -37,6 +37,7 @@ SOFTWARE.
 #include "FMTbounds.h"
 #include <boost/serialization/string.hpp>
 #include <boost/serialization/serialization.hpp>
+#include <boost/serialization/export.hpp>
 
 
 namespace Core
@@ -265,6 +266,5 @@ public:
 };
 
 }
-
-
+BOOST_CLASS_EXPORT_KEY(Core::FMToutput);
 #endif // FMToutput_H_INCLUDED

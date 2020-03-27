@@ -271,7 +271,7 @@ Core::FMTyields FMTyieldparser::read(const std::vector<Core::FMTtheme>& themes,c
 								{
 								values.erase(values.begin());
 								proportion.clear();
-								size_t proportion_id = 0;
+								//size_t proportion_id = 0;
 								for (const std::string& value: values)
 									{
 									proportion.push_back(getnum<double>(value)/100.0);
