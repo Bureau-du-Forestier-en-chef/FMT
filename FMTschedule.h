@@ -63,6 +63,10 @@ class FMTschedule
 	bool sameelements(const FMTschedule& rhs) const;
     public:
 		/**
+		FMTschedule constructor for a complete construction of FMTschedule with multiple FMTschedule
+		*/
+		FMTschedule(const int& lperiod, std::vector<FMTschedule>& schedules);
+		/**
 		FMTschedule constructor for a complete construction of FMTschedule
 		*/
         FMTschedule(int lperiod, std::map<FMTaction, std::map<FMTdevelopment, std::vector<double>>> mapping);

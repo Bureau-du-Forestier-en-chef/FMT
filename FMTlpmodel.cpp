@@ -1365,6 +1365,46 @@ bool FMTlpmodel::locatenodes(const std::vector<Core::FMToutputnode>& nodes, int 
 		return solverinterface->isProvenOptimal();
 		}
 
+	std::vector<Core::FMTactualdevelopment>FMTlpmodel::getarea(int period) const
+		{
+		if (period==0)
+			{
+			return FMTmodel::getarea();
+			}
+		std::vector<Core::FMTactualdevelopment>returnedarea;
+		std::unordered_map<size_t, Graph::FMTvertex_descriptor> perioddescriptors = graph.getperiodverticies(period);
+		const double* modelsolution = solverinterface->getColSolution();
+		for (std::unordered_map<size_t, Graph::FMTvertex_descriptor>::const_iterator vertexit = perioddescriptors.begin();
+			vertexit!= perioddescriptors.end(); vertexit++)
+			{
+			if (graph.periodstart(vertexit->second))
+				{
+				const Core::FMTdevelopment& graphdevelopement = graph.getdevelopment(vertexit->second);
+				const double areaofdevelopement = graph.inarea(vertexit->second, modelsolution);
+				returnedarea.push_back(Core::FMTactualdevelopment(graphdevelopement, areaofdevelopement));
+				}
+			}
+		return returnedarea;
+		}
+
+	FMTmodel FMTlpmodel::getcopy(int period) const
+		{
+		FMTmodel newmodel = FMTmodel::getcopy(period);
+		newmodel.setarea(FMTlpmodel::getarea(period));
+		return newmodel;
+		}
+
+	FMTlpmodel FMTlpmodel::getlpmodel(FMTmodel localmodel, int period) const
+		{
+		FMTlpmodel newlpmodel(FMTlpmodel::getcopy(period), solvertype);
+		if (!localmodel.empty())
+			{
+			localmodel.setarea(std::vector<Core::FMTactualdevelopment>());
+			newlpmodel.push_back(localmodel);
+			}
+		return newlpmodel;
+		}
+
 }
 
 BOOST_CLASS_EXPORT_IMPLEMENT(Models::FMTlpmodel);

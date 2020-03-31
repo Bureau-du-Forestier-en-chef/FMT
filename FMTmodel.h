@@ -170,6 +170,12 @@ class FMTmodel : public Core::FMTobject
 			Virtual function to get the area of a given period into actualdevelopement.
 		*/
 		virtual std::vector<Core::FMTactualdevelopment>getarea(int period = 0) const;
+		// DocString: FMTmodel::getcopy
+		/**
+		This function returns a copy of the FMTmodel of the selected period.
+		The function is going to clean the FMTconstraints and keep the objective.
+		*/
+		virtual FMTmodel getcopy(int period = 0) const;
 		// DocString: FMTmodel::presolve
 		/**
 		This function use a vector of developments and the actual transitions of the model and return new presolved FMTmodel.
@@ -322,8 +328,18 @@ class FMTmodel : public Core::FMTobject
 		Copy assignment of FMTmodel
 		*/
 		FMTmodel& operator = (const FMTmodel& rhs);
+		// DocString: FMTmodel::empty
+		/**
+		Returns true if the FMTmodel is empty.
+		*/
+		bool empty() const;
+		// DocString: FMTmodel::append
+		/**
+		This function append a FMTmodel to an FMTmodel.
+		it does not override the objective of the base FMTmodel.
+		*/
+		FMTmodel push_back(const FMTmodel& rhs) const;
 
-		
     };
 // DocString: FMTmodelcomparator
 /**
