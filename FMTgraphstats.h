@@ -26,7 +26,9 @@ SOFTWARE.
 #define FMTgraphstats_H_INCLUDED
 
 #include "FMTgraphdescription.h"
-#include "OsiSolverInterface.hpp"
+#ifdef FMTWITHOSI
+	#include "OsiSolverInterface.hpp"
+#endif
 #include <boost/serialization/serialization.hpp>
 #include <boost/serialization/nvp.hpp>
 #include <memory>
@@ -57,9 +59,11 @@ class FMTgraphstats
 		int output_rows;
 		int output_cols;
 		FMTgraphstats();
-		FMTgraphstats(const std::unique_ptr<OsiSolverInterface>& solverinterface,
-			const FMTadjacency_list& graph,
-			int ltransfer_rows, int loutput_rows, int loutput_cols);
+		#ifdef FMTWITHOSI
+			FMTgraphstats(const std::unique_ptr<OsiSolverInterface>& solverinterface,
+				const FMTadjacency_list& graph,
+				int ltransfer_rows, int loutput_rows, int loutput_cols);
+		#endif
 		FMTgraphstats(const FMTgraphstats& rhs);
 		FMTgraphstats& operator = (const FMTgraphstats& rhs);
 		FMTgraphstats& operator += (const FMTgraphstats& rhs);

@@ -123,7 +123,7 @@ namespace Models
 			std::vector<boost::unordered_map<Core::FMTdevelopment,Core::FMTdevelopment>>cached_operated(spactions.size(), boost::unordered_map<Core::FMTdevelopment,Core::FMTdevelopment>());
 			do {
 				pass_allocated_area = 0;
-				const clock_t begin_time = clock();
+				//const clock_t begin_time = clock();
 				std::map<Core::FMTaction,Spatial::FMTforest> forests  = mapping.getschedule(schedule, cached_operability,yields,schedulepass);
 				for (const Spatial::FMTspatialaction& spatial_action : spactions) 
 					{
@@ -247,3 +247,5 @@ namespace Models
 		}
 
     }
+
+BOOST_CLASS_EXPORT_IMPLEMENT(Models::FMTsesmodel);

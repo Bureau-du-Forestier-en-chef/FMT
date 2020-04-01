@@ -24,7 +24,7 @@ SOFTWARE.
 
 #include "FMTlogger.h"
 #if defined FMTWITHPYTHON
-#include <boost/python.hpp>
+	#include <boost/python.hpp>
 #endif // defined FMTWITHPYTHON
 #include <iostream>
 #include "FMTversion.h"
@@ -82,16 +82,17 @@ namespace Logging
 		const std::string message = Version::FMTversion().getdatenow();
 		*this << (message) << "\n";
 		}
-
-	void FMTlogger::checkSeverity()
-		{
-		CoinMessageHandler::checkSeverity();
-		}
-
-	CoinMessageHandler* FMTlogger::clone() const
-		{
-		return new FMTlogger(*this);
-		}
+	#ifdef FMTWITHOSI
+		void FMTlogger::checkSeverity()
+			{
+			CoinMessageHandler::checkSeverity();
+			}
+	
+		CoinMessageHandler* FMTlogger::clone() const
+			{
+			return new FMTlogger(*this);
+			}
+	#endif
 
 	void FMTlogger::cout(const char* message) const
 		{
@@ -105,23 +106,24 @@ namespace Logging
 			filestream->operator <<(message);
 			}*/
 		}
-
-	int FMTlogger::print()
-		{
-		if (messageOut_ > messageBuffer_)
+	#ifdef FMTWITHOSI
+		int FMTlogger::print()
 			{
-			char buffer[COIN_MESSAGE_HANDLER_MAX_BUFFER_SIZE];
-			snprintf(buffer, sizeof(buffer), "%s\n", this->messageBuffer_);
-			this->cout(buffer);
-			if (currentMessage_.severity_ == 'S')
+			if (messageOut_ > messageBuffer_)
 				{
-				fprintf(fp_, "Stopping due to previous errors.\n");
-				//Should do walkback
-				abort();
+				char buffer[COIN_MESSAGE_HANDLER_MAX_BUFFER_SIZE];
+				snprintf(buffer, sizeof(buffer), "%s\n", this->messageBuffer_);
+				this->cout(buffer);
+				if (currentMessage_.severity_ == 'S')
+					{
+					fprintf(fp_, "Stopping due to previous errors.\n");
+					//Should do walkback
+					abort();
+					}
 				}
+			return 0;
 			}
-		return 0;
-		}
+	#endif
 
 }
 

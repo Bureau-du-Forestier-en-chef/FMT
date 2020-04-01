@@ -262,7 +262,7 @@ FMTyieldhandler::operator std::string() const
 						value = (1 / pow((1 + rateofreturn), pertio * exponant));
 					}else {
 						value = lvalues->data.back();
-						if (target < lvalues->data.size())
+						if (target < static_cast<int>(lvalues->data.size()))
 							{
 							value = lvalues->data.at(target);
 							}
@@ -581,7 +581,7 @@ FMTyieldhandler::operator std::string() const
         if (it!=elements.end())
             {
             const FMTdata* ldata = &it->second;
-			std::vector<double>::const_iterator dit = ldata->data.begin();
+			//std::vector<double>::const_iterator dit = ldata->data.begin();
 			double minimal_gap = std::numeric_limits<double>::infinity();
 			size_t minimal_gap_index = 0;
 			size_t index = 0;

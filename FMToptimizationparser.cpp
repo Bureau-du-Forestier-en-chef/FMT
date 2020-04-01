@@ -191,8 +191,8 @@ namespace Parser
 					boost::erase_all(output_name, " ");
 					std::smatch special_match;
 					std::string specialtype;
-					int minbound = 1;
-					int maxbound = std::numeric_limits<int>::max();
+					//int minbound = 1;
+					//int maxbound = std::numeric_limits<int>::max();
 					if (std::regex_search(output_it->first, special_match, rxspecialoutput))
 						{
 						specialtype = special_match[1];
@@ -200,8 +200,8 @@ namespace Parser
 						const std::string upperperiod = std::string(special_match[11]) + std::string(special_match[12]);
 						if (!lowerperiod.empty() && !upperperiod.empty())
 							{
-							minbound = getnum<int>(lowerperiod, constants);
-							maxbound = getnum<int>(upperperiod, constants);
+							//minbound = getnum<int>(lowerperiod, constants);
+							//maxbound = getnum<int>(upperperiod, constants);
 							}
 						output_name = std::string(special_match[4])+ std::string(special_match[13]);
 						if (!std::regex_search(output_name, out_match, rxoutput))

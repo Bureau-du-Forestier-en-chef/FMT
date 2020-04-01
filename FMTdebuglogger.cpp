@@ -28,9 +28,11 @@ namespace Logging
 {
 	FMTdebuglogger::FMTdebuglogger()
 		{
-		this->setLogLevel(4);
+		#ifdef FMTWITHOSI
+			this->setLogLevel(4);
+		#endif
 		}
-
+	#ifdef FMTWITHOSI
 	int FMTdebuglogger::print()
 		{
 		return FMTlogger::print();
@@ -39,11 +41,11 @@ namespace Logging
 		{
 		FMTlogger::checkSeverity();
 		}
-
 	CoinMessageHandler* FMTdebuglogger::clone() const
 		{
 		return new FMTdebuglogger(*this);
 		}
+	#endif
 
 }
 

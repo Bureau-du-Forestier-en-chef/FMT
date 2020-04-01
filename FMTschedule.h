@@ -30,6 +30,7 @@ SOFTWARE.
 #include "FMTdevelopment.h"
 #include "FMTaction.h"
 #include <iterator>
+#include <boost/serialization/export.hpp>
 
 namespace Core
 {
@@ -61,6 +62,10 @@ class FMTschedule
 	*/
 	bool sameelements(const FMTschedule& rhs) const;
     public:
+		/**
+		FMTschedule constructor for a complete construction of FMTschedule with multiple FMTschedule
+		*/
+		FMTschedule(const int& lperiod, std::vector<FMTschedule>& schedules);
 		/**
 		FMTschedule constructor for a complete construction of FMTschedule
 		*/
@@ -162,5 +167,5 @@ class FMTschedule
 
 
 }
-
+BOOST_CLASS_EXPORT_KEY(Core::FMTschedule);
 #endif // FMTschedule_H_INCLUDED

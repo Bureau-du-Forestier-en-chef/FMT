@@ -311,5 +311,6 @@ boost hash for FMTmask
 
 }
 
+BOOST_CLASS_EXPORT_KEY(Core::FMTmask);
 
 #endif // FMTMASK_H_INCLUDED

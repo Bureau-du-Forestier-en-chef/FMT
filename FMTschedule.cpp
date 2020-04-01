@@ -28,6 +28,18 @@ namespace Core{
 
 FMTschedule::FMTschedule():period(),elements(){}
 
+FMTschedule::FMTschedule(const int& lperiod, std::vector<FMTschedule>& schedules) : period(lperiod),elements()
+	{
+	if (!schedules.empty())
+		{
+		elements = schedules.at(0).elements;
+		for (size_t scheduleid = 1; scheduleid < schedules.size();++scheduleid)
+			{
+			*this += schedules.at(scheduleid);
+			}
+		}
+	}
+
 FMTschedule::FMTschedule(int lperiod, std::map<FMTaction, std::map<FMTdevelopment, std::vector<double>>> mapping) : period(lperiod),elements(mapping)
     {
 
@@ -350,3 +362,5 @@ FMTschedule::operator std::string() const
 	}
 
 }
+
+BOOST_CLASS_EXPORT_IMPLEMENT(Core::FMTschedule);

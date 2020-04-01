@@ -24,7 +24,9 @@ SOFTWARE.
 
 
 #include "FMTdefaultlogger.h"
+#ifdef FMTWITHOSI
 #include <CoinMessageHandler.hpp>
+#endif
 #if defined FMTWITHPYTHON
 #include <boost/python.hpp>
 #endif // defined FMTWITHPYTHON
@@ -35,10 +37,12 @@ namespace Logging
 
 	FMTdefaultlogger::FMTdefaultlogger()
 		{
-		this->setLogLevel(1);
+		#ifdef FMTWITHOSI
+			this->setLogLevel(1);
+		#endif
 		}
 
-
+#ifdef FMTWITHOSI
 	int FMTdefaultlogger::print()
 		{
 		return FMTlogger::print();
@@ -53,5 +57,6 @@ namespace Logging
 		{
 		return new FMTdefaultlogger(*this);
 		}
+#endif
 
 	}

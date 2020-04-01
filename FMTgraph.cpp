@@ -36,31 +36,31 @@ namespace Graph
 {
 
 FMTgraph::FMTgraph():
+	data(),
     buildtype(FMTgraphbuild::nobuild),
     developments(),
 	nodescache(),
-    stats(),
-    data()
+    stats()
     {
 
     }
 
 FMTgraph::FMTgraph(const FMTgraphbuild lbuildtype):
+	data(),
     buildtype(lbuildtype),
     developments(),
 	nodescache(),
-    stats(),
-    data()
+    stats()
     {
 
     }
 
 FMTgraph::FMTgraph(const FMTgraph& rhs):
+	data(rhs.data),
     buildtype(rhs.buildtype),
     developments(),
 	nodescache(),
-    stats(rhs.stats),
-    data(rhs.data)
+    stats(rhs.stats)
     {
         generatedevelopments();
     }
@@ -1349,3 +1349,5 @@ FMTgraph FMTgraph::postsolve(const Core::FMTmask& selectedmask,
 	}
 
 }
+
+BOOST_CLASS_EXPORT_IMPLEMENT(Graph::FMTgraph);

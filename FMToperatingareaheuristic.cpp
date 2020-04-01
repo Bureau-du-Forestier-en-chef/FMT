@@ -257,7 +257,7 @@ namespace Heuristics
 			areatarget.source.setmask(operatingareait->getmask());
 			std::vector<std::vector<Graph::FMTvertex_descriptor>>descriptors;
 			std::vector<Graph::FMTvertex_descriptor>totalareadescriptors;
-			for (int period = (maingraph.getfirstactiveperiod()+ operatingareait->getstartingperiod());period < (maingraph.size()-1);++period)
+			for (int period = (maingraph.getfirstactiveperiod()+ operatingareait->getstartingperiod());period < static_cast<int>((maingraph.size()-1));++period)
 				{
 				if (descriptors.empty())
 					{
@@ -581,4 +581,5 @@ namespace Heuristics
 		}
 
 }
+BOOST_CLASS_EXPORT_IMPLEMENT(Heuristics::FMToperatingareaheuristic);
 #endif

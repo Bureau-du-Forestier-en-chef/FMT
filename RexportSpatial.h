@@ -88,11 +88,11 @@ void exportSpatial()
 			"@DocString(FMTcoordinate::gety)");
 
 
-    define_FMTlayer<Core::FMTdevelopment>();
+	define_FMTlayer<Core::FMTdevelopment>("FMTdevelopmentlayer");
 
 
 	Rcpp::class_<Spatial::FMTforest>("FMTforest", "@DocString(FMTforest)")
-		.derives<Spatial::FMTlayer<Core::FMTdevelopment>>("FMTlayer")
+		.derives<Spatial::FMTlayer<Core::FMTdevelopment>>("FMTdevelopmentlayer")
 		.constructor("@DocString(FMTforest())")
 		.constructor<Spatial::FMTforest>("@DocString(FMTforest(Spatial::FMTforest))")
 		.method("getarea",&Spatial::FMTforest::getarea,
@@ -136,7 +136,8 @@ void exportSpatial()
         .constructor<double>("@DocString(FMTexponentialschedule(double))");
 
 
-    define_FMTlayer<Graph::FMTgraph>();
+	define_FMTlayer<Graph::FMTgraph>("FMTgraphlayer");
+
 
     Rcpp::class_<Spatial::FMTsasolution>("FMTsasolution", "@DocString(FMTsasolution)")
 		.constructor("@DocString(FMTsasolution())")

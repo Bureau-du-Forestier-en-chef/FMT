@@ -70,7 +70,7 @@ namespace Parser
 				bool insource = false;
 				bool processing_level = false;
 				int themetarget = -1;
-				size_t lastopt = 0;
+				//size_t lastopt = 0;
 				size_t lastoutput = 0;
 				if (FMTparser::tryopening(outputstream,location))
 					{
@@ -92,7 +92,7 @@ namespace Parser
 									outputs.push_back(Core::FMToutput(name,description, themetarget,sources,operators));
 									}
 								sources.clear();
-								lastopt = 0;
+								//lastopt = 0;
 								lastoutput = 0;
 								operators.clear();
 								const std::string outtype = std::string(kmatch[1]) + std::string(kmatch[12]);
@@ -130,7 +130,7 @@ namespace Parser
 									const std::string stroprators("-*/+");
 									std::string stacked_char;
 									std::string opstr;
-									size_t letterid = 0;
+									//size_t letterid = 0;
 									bool inparenthesis = false;
 									bool inmask = true;
 									bool lastonespace = true;
@@ -282,7 +282,7 @@ namespace Parser
 																{
 																sources.push_back(src);
 																}
-															lastopt = operators.size();
+															//lastopt = operators.size();
 															bool convertoperator = false;
 															if (!operators.empty() && operators.back().getkey() == Core::FMTokey::sub)
 																{

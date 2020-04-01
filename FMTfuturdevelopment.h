@@ -28,7 +28,7 @@ SOFTWARE.
 #include "FMTdevelopment.h"
 #include <boost/serialization/serialization.hpp>
 #include <memory>
-
+#include <boost/serialization/export.hpp>
 
 namespace Core
 {
@@ -52,5 +52,5 @@ namespace Core
 		};
 }
 
-
+BOOST_CLASS_EXPORT_KEY(Core::FMTfuturdevelopment);
 #endif // FMTDEV_H_INCLUDED

@@ -34,6 +34,7 @@ SOFTWARE.
 #include "FMTtheme.h"
 #include <boost/serialization/serialization.hpp>
 #include <boost/serialization/string.hpp>
+#include <boost/serialization/export.hpp>
 #include <vector>
 #include <map>
 #include <string>
@@ -171,5 +172,5 @@ public:
 
 }
 
-
+BOOST_CLASS_EXPORT_KEY(Core::FMTtransition);
 #endif // FMTTRA_H_INCLUDED

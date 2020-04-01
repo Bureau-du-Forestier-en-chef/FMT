@@ -43,6 +43,7 @@ SOFTWARE.
 #include <boost/serialization/split_member.hpp>
 #include <boost/serialization/unordered_map.hpp>
 #include <boost/serialization/vector.hpp>
+#include <boost/serialization/export.hpp>
 
 #include <memory>
 #include <unordered_map>
@@ -198,4 +199,5 @@ class FMTgraph
 			const std::map<int,int>& actionmapconnection) const;
     };
 }
+BOOST_CLASS_EXPORT_KEY(Graph::FMTgraph);
 #endif // FMTGRAPH_H

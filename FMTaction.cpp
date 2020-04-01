@@ -201,10 +201,6 @@ std::vector<std::string>FMTaction::getaggregates() const
 
 bool FMTaction::operator < (const FMTaction& rhs) const
     {
-	if (this->size()<rhs.size())
-		{
-		return true;
-		}
     return name < rhs.name;
     }
 bool FMTaction::operator == (const FMTaction& rhs) const
@@ -240,7 +236,7 @@ std::vector<const FMTaction*>FMTactioncomparator::getallaggregates(const std::ve
 	std::vector<FMTaction>::const_iterator actit = actions.begin();
 	while (actit!= actions.end())
 		{
-		if (!aggregateonly && actit->name == action_name || std::find(actit->aggregates.begin(), actit->aggregates.end(), action_name) != actit->aggregates.end())
+		if ((!aggregateonly && actit->name == action_name) || (std::find(actit->aggregates.begin(), actit->aggregates.end(), action_name) != actit->aggregates.end()))
 			{
 			actionsptr.push_back(&(*actit));
 			}
@@ -262,3 +258,4 @@ FMTaction FMTaction::presolve(const FMTmask& basemask,
 
 }
 
+BOOST_CLASS_EXPORT_IMPLEMENT(Core::FMTaction);

@@ -33,9 +33,11 @@ namespace Logging
 		FMTdebuglogger();
 		FMTdebuglogger & operator = (const FMTdebuglogger & rhs) = default;
 		FMTdebuglogger(const FMTdebuglogger& rhs) = default;
-		int print() override;
-		void checkSeverity() override;
-		CoinMessageHandler* clone() const override;
+		#ifdef FMTWITHOSI
+			int print() override;
+			void checkSeverity() override;
+			CoinMessageHandler* clone() const override;
+		#endif
 		~FMTdebuglogger() = default;
 	};
 }

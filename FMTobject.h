@@ -32,7 +32,7 @@ SOFTWARE.
 #include <memory>
 
 
-#if defined _MSC_VER || __CYGWIN__
+#if defined _MSC_VER || __MINGW64__//_MSC_VER || __CYGWIN__
 
 #else
     #include <boost/dll/runtime_symbol_info.hpp>

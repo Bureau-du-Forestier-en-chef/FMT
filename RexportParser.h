@@ -45,7 +45,7 @@ RCPP_EXPOSED_WRAP(Parser::FMTparser);
 RCPP_EXPOSED_AS(Parser::FMTparser);
 RCPP_EXPOSED_WRAP(Parser::FMTareaparser);
 RCPP_EXPOSED_AS(Parser::FMTareaparser);
-RCPP_DEFINEMAP(std::string, std::string); //map of string definition
+//RCPP_DEFINEMAP(std::string, std::string); //map of string definition
 RCPP_EXPOSED_WRAP(Parser::FMTlandscapeparser);
 RCPP_EXPOSED_AS(Parser::FMTlandscapeparser);
 RCPP_EXPOSED_WRAP(Parser::FMTactionparser);

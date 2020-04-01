@@ -295,7 +295,7 @@ bool FMToutput::linear() const
 double FMToutput::shuntingyard(const std::vector<double>& sourcevalues,const std::vector<FMToperator>& simple_operators) const
 	{
 	std::map<std::string, double>mapping;
-	int id = 0;
+	size_t id = 0;
 	std::vector<std::string>expression_inputs;
 	std::string test = "";
 	for (const double& value : sourcevalues)
@@ -529,7 +529,7 @@ FMToutput FMToutput::presolve(const FMTmask& basemask,
 				lastnotpushed = sourceid;
 				}
 		}else if(!sources.at(sourceid).isvariable() && (sources.at(sourceid).islevel() || (sources.at(sourceid).istimeyield() && !yields.isnullyld(yieldname)) ||
-			(sources.at(sourceid).isconstant() && lastnotpushed != sourceid -1)))
+			(sources.at(sourceid).isconstant() && lastnotpushed != static_cast<int>(sourceid -1))))
 			{
 			pushedsource = true;
 			newsources.push_back(sources.at(sourceid));
@@ -613,3 +613,5 @@ bool FMToutputcomparator::operator()(const FMToutput& output) const
 
 
 }
+
+BOOST_CLASS_EXPORT_IMPLEMENT(Core::FMToutput);
