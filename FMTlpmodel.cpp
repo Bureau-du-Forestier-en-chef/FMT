@@ -664,16 +664,23 @@ bool FMTlpmodel::locatenodes(const std::vector<Core::FMToutputnode>& nodes, int 
 		solverinterface->addRow(static_cast<int>(indexes.size()), &indexes[0], &coefficients[0], lowerbound, std::numeric_limits<double>::infinity());
 		solverinterface->addRow(static_cast<int>(indexes.size()), &indexes[0], &coefficients[0], std::numeric_limits<double>::lowest(), upperbound);
 		std::map<std::string, std::vector<double>>uppernlower;
+		Core::FMToutput outtest;
 		for (const Core::FMToutput& output : outputs)
 			{
-			Core::FMTconstraint maxconstraint(Core::FMTconstrainttype::FMTMAXobjective, output);
-			maxconstraint.setlength();
-			this->setobjective(maxconstraint);
-			this->initialsolve();
 			int first_period = 0;
 			int last_period = 0;
-			std::vector<double>uppervalues;
+			Core::FMTconstraint maxconstraint(Core::FMTconstrainttype::FMTMAXobjective, output);
+			maxconstraint.setlength();
 			graph.constraintlenght(maxconstraint, first_period, last_period);
+			std::vector<double>medianvalues;
+			for (int period = first_period; period <= last_period; ++period)
+				{
+				medianvalues.push_back(this->getoutput(output, period).begin()->second);
+				}
+			uppernlower["M" + output.getname()] = medianvalues;
+			this->setobjective(maxconstraint);
+			this->initialsolve();
+			std::vector<double>uppervalues;
 			for (int period = first_period; period <= last_period; ++period)
 				{
 				uppervalues.push_back(this->getoutput(output, period).begin()->second);

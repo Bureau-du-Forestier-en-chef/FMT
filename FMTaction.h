@@ -130,16 +130,19 @@ class FMTaction : public FMTlist<FMTspec>
 		Copy constructor of FMTaction
 		*/
         FMTaction(const FMTaction& rhs);
+		// DocString: FMTaction::operator=
 		/**
 		Copy assignement of FMTaction
 		*/
         FMTaction& operator = (const FMTaction& rhs);
+		// DocString: FMTaction::update
 		/**
 		Every FMTlist container need to have a update() function
 		this function calls setbounds() to update all bounds and also shrink
 		the FMTlist (all for optimization of the process)
 		*/
 		void update() override;
+		// DocString: FMTaction::presolve
 		/**
 		Eliminate FMTspecification and presolve all masks base on a basemask a preolved mask
 		and presolved themes. The returned action can also be empty.
@@ -148,6 +151,7 @@ class FMTaction : public FMTlist<FMTspec>
 			const std::vector<FMTtheme>& originalthemes,
 			const FMTmask& presolvedmask,
 			const std::vector<FMTtheme>& newthemes) const;
+		// DocString: FMTaction::getagelowerbound
 		/**
 		Get the age lower bound for all FMTspecs.
 		*/
@@ -155,6 +159,7 @@ class FMTaction : public FMTlist<FMTspec>
 			{
 			return agelowerbound;
 			}
+		// DocString: FMTaction::getageupperbound
 		/**
 		Get the age upper bound for all FMTspecs.
 		*/
@@ -162,6 +167,7 @@ class FMTaction : public FMTlist<FMTspec>
 			{
 			return ageupperbound;
 			}
+		// DocString: FMTaction::getperiodlowerbound
 		/**
 		Get the period lower bound for all FMTspecs.
 		*/
@@ -169,6 +175,7 @@ class FMTaction : public FMTlist<FMTspec>
 			{
 			return periodlowerbound;
 			}
+		// DocString: FMTaction::getperiodupperbound
 		/**
 		Get the period upper bound for all FMTspecs.
 		*/
@@ -176,6 +183,7 @@ class FMTaction : public FMTlist<FMTspec>
 			{
 			return periodupperbound;
 			}
+		// DocString: FMTaction::hash()
 		/**
 		Return the hash value base on the action name.
 		*/
@@ -183,6 +191,7 @@ class FMTaction : public FMTlist<FMTspec>
 			{
 			return boost::hash<std::string>()(name);
 			}
+		// DocString: FMTaction::getname()
 		/**
 		Get action name of the FMTaction.
 		*/
@@ -190,6 +199,7 @@ class FMTaction : public FMTlist<FMTspec>
 			{
 			return name;
 			}
+		// DocString: FMTaction::dorespectlock()
 		/**
 		If True the action needs to respect the _lock stade of the developement.
 		Else the action doesn't car about the _lock of the developement.
@@ -198,6 +208,7 @@ class FMTaction : public FMTlist<FMTspec>
 			{
 			return lock;
 			}
+		// DocString: FMTaction::isresetage()
 		/**
 		If True When operated by this the FMTdevelopement is set to 0.
 		Else it stays the same
@@ -206,57 +217,70 @@ class FMTaction : public FMTlist<FMTspec>
 			{
 			return reset;
 			}
+		// DocString: FMTaction::getaggregates()
 		/**
 		Gets all the aggregates name of which the action is part of.
 		*/
 		std::vector<std::string>getaggregates() const;
+		// DocString: FMTaction::getpartials()
 		/**
 		Gets all the partial yields name of the FMTaction.
 		*/
 		std::vector<std::string>getpartials() const;
+		// DocString: FMTaction::operator<
 		/**
 		FMTaction less than operator (first test the action length and then the string name to place the action).
 		*/
         bool operator < (const FMTaction& rhs) const;
+		// DocString: FMTaction::operator==
 		/**
 		FMTaction equality operator check if FMTactions have the same name.
 		*/
         bool operator == (const FMTaction& rhs) const;
+		// DocString: FMTaction::operator!=
 		/**
 		FMTaction nonequality operator check if FMTactions have the not same name.
 		*/
         bool operator != (const FMTaction& rhs) const;
+		// DocString: FMTaction::operator std::string
 		/**
 		Convert the FMTaction to a string (like in a regular .act file)
 		*/
         operator std::string() const;
+		// DocString: FMTaction::partial
 		/**
 		Check if the yield needs to be considered has partial for this action.
 		*/
 		bool partial(const std::string& yield) const;
     };
 
+// DocString: FMTactioncomparator
 /**
 FMTactioncomparator to check if the action_name already exist in a std container.
 It can also check for aggregates.
 */
 class FMTactioncomparator
 	{
+	// DocString: FMTactioncomparator::action_name
 	///The action named that we are looking for.
 	std::string action_name;
+	// DocString: FMTactioncomparator::checkaggregate
 	///If true the comparator will also check for aggregates.
 	bool checkaggregate;
 	public:
+		// DocString: FMTactioncomparator(std::string,bool)
 		/**
 		FMTactioncomparator constructor name is the name of the action we want to match
 		if checkaggregate = true it will also return actions within the named aggregate.
 		*/
 		FMTactioncomparator(std::string name, bool lcheckaggregate = false);
+		// DocString: FMTactioncomparator::getallaggregates
 		/**
 		Looking at the actions vector if aggregateonly = false it will returns actions mathching
 		the action_name if aggregateonly = true it will return only matching aggregates.
 		*/
 		std::vector<const FMTaction*>getallaggregates(const std::vector<FMTaction>&actions,bool aggregateonly = false) const;
+		// DocString: FMTactioncomparator::operator()(const FMTaction&)
 		/**
 		Matching test operator for FMTactioncomparator.
 		*/
