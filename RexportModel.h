@@ -149,7 +149,12 @@ void exportModel()
 		.method("getstats", &Models::FMTlpmodel::getstats,
 			"@DocString(FMTlpmodel::getstats)")
 		.method("getoperatingareaheuristics", &Models::FMTlpmodel::getoperatingareaheuristics,
-			"@DocString(FMTlpmodel::getoperatingareaheuristics)");
+			"@DocString(FMTlpmodel::getoperatingareaheuristics)")
+		.method("getvariabilities", &Models::FMTlpmodel::getvariabilities,
+			"@DocString(FMTlpmodel::getvariabilities)")
+		.method("getareavariabilities", &Models::FMTlpmodel::getareavariabilities,
+			"@DocString(FMTlpmodel::getareavariabilities)");
+	
 
 	#endif
 

@@ -270,6 +270,11 @@ class FMTmodel : public Core::FMTobject
 		Comparison operator of FMTlpmodel
 		*/
 		bool operator == (const FMTmodel& rhs) const;
+		// DocString: FMTmodel::operator<
+		/**
+		less than operator of FMTlpmodel
+		*/
+		bool operator < (const FMTmodel& rhs) const;
 		// DocString: FMTmodel::setarea
 		/**
 		Setter for initial FMTactualdevelopment (area section) will replace the originals.
@@ -338,7 +343,12 @@ class FMTmodel : public Core::FMTobject
 		This function append a FMTmodel to an FMTmodel.
 		it does not override the objective of the base FMTmodel.
 		*/
-		FMTmodel push_back(const FMTmodel& rhs) const;
+		void push_back(const FMTmodel& rhs);
+		// DocString: FMTmodel::getinitialarea
+		/**
+		Returns the sum of the area of the area vector.
+		*/
+		double getinitialarea() const;
 
     };
 // DocString: FMTmodelcomparator

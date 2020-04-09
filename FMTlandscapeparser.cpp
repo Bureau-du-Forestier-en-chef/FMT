@@ -30,8 +30,8 @@ namespace Parser
 
 FMTlandscapeparser::FMTlandscapeparser() :
     FMTparser(),
-    rxcleanlans("^(\\*THEME)([\\s\\t]*)([0-9]*)([\\s\\t]*)(.+)|(\\*AGGREGATE)([\\s\\t]*)([^\\s^\\t]*)|([^\\s^\\t]*)([\\s\\t]*)(.+)", std::regex_constants::ECMAScript| std::regex_constants::icase),
-    rxindex("^(_INDEX)(\\()([^\\)]*)(\\))", std::regex_constants::ECMAScript| std::regex_constants::icase),
+	rxcleanlans("^(\\*THEME)([\\s\\t]*)(([0-9]*$)|([0-9]*)([\\s\\t]*)(.+))|(\\*AGGREGATE)([\\s\\t]*)([^\\s^\\t]*)|([^\\s^\\t]*)([\\s\\t]*)(.+)", std::regex_constants::ECMAScript | std::regex_constants::icase),
+	rxindex("^(_INDEX)(\\()([^\\)]*)(\\))", std::regex_constants::ECMAScript| std::regex_constants::icase),
     rxparameter("^([^=]*)(=)(#.+|[\\d.]*)", std::regex_constants::ECMAScript| std::regex_constants::icase)
         {
 
@@ -144,21 +144,21 @@ FMTlandscapeparser::FMTlandscapeparser() :
             {
             while(landstream.is_open())
                 {
-				const std::string line = FMTparser::getcleanlinewfor(landstream, themes, constants);
+				std::string line = FMTparser::getcleanlinewfor(landstream, themes, constants);
                 if (!line.empty())
                     {
                     std::smatch kmatch;
 					std::regex_search(line,kmatch,FMTlandscapeparser::rxcleanlans);
-					const std::string potentialtheme = std::string(kmatch[3]) + std::string(kmatch[5]);
-					const std::string aggregate = std::string(kmatch[6]);
+					const std::string theme = std::string(kmatch[4]) + std::string(kmatch[5]);
+					const std::string potentialtheme = std::string(kmatch[4]) + std::string(kmatch[5]) + std::string(kmatch[7]);
+					const std::string aggregate = std::string(kmatch[8]);
                     if (!potentialtheme.empty())
                         {
 						int tempid = 1;
-						if (!std::string(kmatch[5]).empty() && std::string(kmatch[3]).empty())
+						if (!std::string(kmatch[7]).empty() && theme.empty())
 							{
 							tempid = unknownID;
 						}else{
-							const std::string theme = std::string(kmatch[3]);
 							tempid = getnum<int>(theme, constants);
 							}
 						++unknownID;
@@ -179,10 +179,10 @@ FMTlandscapeparser::FMTlandscapeparser() :
                             indexes_values.clear();
                             }
                         id=tempid-1;
-                        themename = std::string(kmatch[5]);
+						themename = std::string(kmatch[7]);
                         }else if(!aggregate.empty())
                             {
-                            aggregatename = kmatch[8];
+							aggregatename = kmatch[10];
 							aggregate_redefiniton = false;
                             if(aggregates.find(aggregatename)!=aggregates.end())
                                 {

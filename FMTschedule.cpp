@@ -319,6 +319,24 @@ FMTschedule::operator std::string() const
 		return newschedule;
 	}
 
+	void FMTschedule::setperiod(const int& newperiod)
+		{
+			period = newperiod;
+			for (std::map<FMTaction, std::map<FMTdevelopment, std::vector<double>>>::iterator actit = elements.begin();
+				actit != elements.end(); actit++)
+			{
+				std::map<FMTdevelopment, std::vector<double>>newmapping;
+				for (std::map<FMTdevelopment, std::vector<double>>::iterator devit = actit->second.begin();
+					devit != actit->second.end(); devit++)
+					{
+					FMTdevelopment newdev(devit->first);
+					newdev.period = newperiod;
+					newmapping[newdev] = devit->second;
+					}
+				actit->second = newmapping;
+			}
+		}
+
 	std::map<FMTdevelopment, std::vector<double>>& FMTschedule::operator[](const FMTaction& action)
 	{
 		return elements[action];

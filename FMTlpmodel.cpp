@@ -642,27 +642,117 @@ bool FMTlpmodel::locatenodes(const std::vector<Core::FMToutputnode>& nodes, int 
 		return graph.getstats();
 		}
 
-	std::map<std::string, std::vector<double>>FMTlpmodel::getvariabilities(const std::vector<Core::FMToutput>& outputs,double tolerance)
+	std::vector<int>FMTlpmodel::setobjectivebounds(bool dolower, bool doupper, double tolerance)
 		{
-		std::vector<double>originalcoefficients(solverinterface->getNumCols(),0.0);
+		std::vector<int>bounding;
+		const double originalvalue = solverinterface->getObjValue();
 		const double* originalcoef = solverinterface->getObjCoefficients();
-		const double originalsense = solverinterface->getObjSense();
+		const int numberofcols = solverinterface->getNumCols();
 		std::vector<int>indexes;
+		indexes.reserve(numberofcols);
 		std::vector<double>coefficients;
-		for (int colid = 0; colid < solverinterface->getNumCols();++colid)
+		coefficients.reserve(numberofcols);
+		for (int colid = 0; colid < numberofcols; ++colid)
 			{
-			originalcoefficients[colid] = *(originalcoef + colid);
-			if (*(originalcoef + colid)!=0)
+			if (*(originalcoef + colid) != 0)
 				{
 				indexes.push_back(colid);
 				coefficients.push_back(*(originalcoef + colid));
 				}
 			}
-		const double originalvalue = solverinterface->getObjValue();
-		const double lowerbound = originalvalue - tolerance;
-		const double upperbound = originalvalue + tolerance;
-		solverinterface->addRow(static_cast<int>(indexes.size()), &indexes[0], &coefficients[0], lowerbound, std::numeric_limits<double>::infinity());
-		solverinterface->addRow(static_cast<int>(indexes.size()), &indexes[0], &coefficients[0], std::numeric_limits<double>::lowest(), upperbound);
+		if (dolower)
+			{
+			const double lowerbound = originalvalue - tolerance;
+			solverinterface->addRow(static_cast<int>(indexes.size()), &indexes[0], &coefficients[0], lowerbound, std::numeric_limits<double>::infinity());
+			bounding.push_back(solverinterface->getNumRows()-1);
+			}
+		if (doupper)
+			{
+			const double upperbound = originalvalue + tolerance;
+			solverinterface->addRow(static_cast<int>(indexes.size()), &indexes[0], &coefficients[0], std::numeric_limits<double>::lowest(), upperbound);
+			bounding.push_back(solverinterface->getNumRows()-1);
+			}
+		return bounding;
+		}
+
+	std::map<std::string, std::vector<double>>FMTlpmodel::getareavariabilities(const std::vector<Core::FMToutput>& localoutputs,
+																					const Core::FMTmask& globalmask,
+																					double tolerance)
+		{
+		const std::unordered_map<size_t, Graph::FMTvertex_descriptor>& initialperiod = graph.getperiodverticies(0);
+		std::vector<int>colstarget;
+		std::vector<double>originalbounds;
+		std::vector<double>lowerbounds;
+		std::vector<double>upperbounds;
+		const double* collowerbounds = solverinterface->getColLower();
+		for (std::unordered_map<size_t,Graph::FMTvertex_descriptor>::const_iterator vertexit = initialperiod.begin();
+			vertexit!=initialperiod.end();vertexit++)
+			{
+			if (graph.getdevelopment(vertexit->second).mask.issubsetof(globalmask))
+				{
+				const int varindex = graph.getoutvariables(vertexit->second).at(-1);
+				colstarget.push_back(varindex);
+				const double originalboundvalue = *(collowerbounds + varindex);
+				originalbounds.push_back(originalboundvalue);
+				originalbounds.push_back(originalboundvalue);
+				const double lowerboundvalue = originalboundvalue - (originalboundvalue * tolerance);
+				lowerbounds.push_back(lowerboundvalue);
+				lowerbounds.push_back(lowerboundvalue);
+				const double upperboundvalue = originalboundvalue + (originalboundvalue * tolerance);
+				upperbounds.push_back(upperboundvalue);
+				upperbounds.push_back(upperboundvalue);
+				}
+			}
+		std::map<std::string, std::vector<double>>uppernlower;
+		for (const Core::FMToutput& output : localoutputs)
+			{
+			std::vector<double>outputvalues;
+			for (int period = 0; period <= static_cast<int>(graph.size()-2); ++period)
+				{
+				outputvalues.push_back(this->getoutput(output, period).begin()->second);
+				}
+			uppernlower["M" + output.getname()]=outputvalues;
+			}
+		solverinterface->setColSetBounds(&colstarget[0], &colstarget.back()+1, &lowerbounds[0]);
+		solverinterface->resolve();
+		if (solverinterface->isProvenOptimal())
+			{
+			for (const Core::FMToutput& output : localoutputs)
+				{
+				std::vector<double>outputvalues;
+				for (int period = 0; period <= static_cast<int>(graph.size() - 2); ++period)
+					{
+					outputvalues.push_back(this->getoutput(output, period).begin()->second);
+					}
+				uppernlower["L" + output.getname()] = outputvalues;
+				}
+			}
+		solverinterface->setColSetBounds(&colstarget[0], &colstarget.back() + 1, &upperbounds[0]);
+		solverinterface->resolve();
+		if (solverinterface->isProvenOptimal())
+			{
+			for (const Core::FMToutput& output : localoutputs)
+				{
+					std::vector<double>outputvalues;
+					for (int period = 0; period <= static_cast<int>(graph.size() - 2); ++period)
+					{
+						outputvalues.push_back(this->getoutput(output, period).begin()->second);
+					}
+					uppernlower["U" + output.getname()] = outputvalues;
+				}
+			}
+		solverinterface->setColSetBounds(&colstarget[0], &colstarget.back() + 1, &originalbounds[0]);
+		solverinterface->resolve();
+		return uppernlower;
+		}
+
+
+	std::map<std::string, std::vector<double>>FMTlpmodel::getvariabilities(const std::vector<Core::FMToutput>& outputs,double tolerance)
+		{
+		const double* originalcoef = solverinterface->getObjCoefficients();
+		const std::vector<double>originalcoefficients(originalcoef,(originalcoef+solverinterface->getNumCols()));
+		const double originalsense = solverinterface->getObjSense();
+		const std::vector<int>objectivebounds = setobjectivebounds(true, true, tolerance);
 		std::map<std::string, std::vector<double>>uppernlower;
 		Core::FMToutput outtest;
 		for (const Core::FMToutput& output : outputs)
@@ -701,6 +791,7 @@ bool FMTlpmodel::locatenodes(const std::vector<Core::FMToutputnode>& nodes, int 
 			}
 		solverinterface->setObjective(&originalcoefficients[0]);
 		solverinterface->setObjSense(originalsense);
+		solverinterface->deleteRows(static_cast<int>(objectivebounds.size()), &objectivebounds[0]);
 		this->initialsolve();
 		return uppernlower;
 		}
@@ -868,18 +959,24 @@ bool FMTlpmodel::locatenodes(const std::vector<Core::FMToutputnode>& nodes, int 
 		return false;
 		}
 
-	Graph::FMTgraphstats FMTlpmodel::eraseperiod()
+	Graph::FMTgraphstats FMTlpmodel::eraseperiod(bool constraintsonly)
 		{
 		int firstperiod = graph.getfirstactiveperiod();
 		if (isperiodbounded(firstperiod))
 			{
+			if (!constraintsonly)
+				{
 				graph.eraseperiod(deletedconstraints, deletedvariables);
+				}
 				++firstperiod;
 			for (const Core::FMTconstraint& constraint : constraints)
 				{
 				this->eraseconstraint(constraint, firstperiod);
 				}
-			graph.eraseperiod(deletedconstraints, deletedvariables,true);
+			if (!constraintsonly)
+				{
+				graph.eraseperiod(deletedconstraints, deletedvariables,true);
+				}
 			this->updatematrixngraph(); 
 		}else {
 			const int badperiod = std::max(firstperiod,1);
@@ -1387,8 +1484,11 @@ bool FMTlpmodel::locatenodes(const std::vector<Core::FMToutputnode>& nodes, int 
 			if (graph.periodstart(vertexit->second))
 				{
 				const Core::FMTdevelopment& graphdevelopement = graph.getdevelopment(vertexit->second);
-				const double areaofdevelopement = graph.inarea(vertexit->second, modelsolution);
-				returnedarea.push_back(Core::FMTactualdevelopment(graphdevelopement, areaofdevelopement));
+				const double areaofdevelopement = graph.inarea(vertexit->second, modelsolution,true);
+				if (areaofdevelopement>0)
+					{
+					returnedarea.push_back(Core::FMTactualdevelopment(graphdevelopement, areaofdevelopement));
+					}
 				}
 			}
 		return returnedarea;
@@ -1401,15 +1501,16 @@ bool FMTlpmodel::locatenodes(const std::vector<Core::FMToutputnode>& nodes, int 
 		return newmodel;
 		}
 
-	FMTlpmodel FMTlpmodel::getlpmodel(FMTmodel localmodel, int period) const
+	FMTlpmodel FMTlpmodel::getlocalmodel(FMTmodel localmodel, int period) const
 		{
-		FMTlpmodel newlpmodel(FMTlpmodel::getcopy(period), solvertype);
 		if (!localmodel.empty())
 			{
-			localmodel.setarea(std::vector<Core::FMTactualdevelopment>());
-			newlpmodel.push_back(localmodel);
+			//localmodel.setarea(std::vector<Core::FMTactualdevelopment>());
+			//localmodel.push_back(FMTlpmodel::getcopy(period));
+			localmodel.setarea(FMTlpmodel::getarea(period));
 			}
-		return newlpmodel;
+		//Need to add a constraint over the global objective
+		return FMTlpmodel (localmodel, solvertype);
 		}
 
 }

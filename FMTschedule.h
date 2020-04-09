@@ -175,6 +175,10 @@ class FMTschedule
 		FMTschedule postsolve(const FMTmask& presolvedmask,
 			const std::vector<FMTtheme>& originalbasethemes, const std::vector<FMTaction>&originalbasebaseactions) const;
 		/**
+		Setter for the period of the Schedule and the period developements of the schedule.
+		*/
+		void setperiod(const int& newperiod);
+		/**
 		Functions that make sure the FMTschedule acts like a std c++ container
 		*/
 		typedef typename std::map<FMTaction, std::map<FMTdevelopment, std::vector<double>>>::value_type value_type;

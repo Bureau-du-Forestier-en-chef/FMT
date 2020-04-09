@@ -908,6 +908,7 @@ void FMTgraph::setconstraintID(const FMTvertex_descriptor& vertex, const int& id
 	data[vertex].setconstraintID(id);
 	}
 
+
 bool FMTgraph::gettransferrow(const FMTvertex_descriptor& vertex_descriptor,
 	std::vector<int>&row_starts,
 	std::vector<int>& cols,

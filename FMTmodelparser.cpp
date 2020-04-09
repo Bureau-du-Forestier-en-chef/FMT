@@ -439,11 +439,20 @@ std::vector<Models::FMTmodel>FMTmodelparser::readproject(const std::string& prim
 				}
 			}
 		}
-	for (Models::FMTmodel& model : models)//clean referenced models!!!
+	std::vector<Models::FMTmodel>sortedmodels;
+	if (scenarios.empty())
 		{
-		model.cleanactionsntransitions();
+		models.begin()->cleanactionsntransitions();
+		sortedmodels.push_back(*models.begin());
+	}else {
+		for (const std::string& scenario : scenarios)
+			{
+			std::vector<Models::FMTmodel>::iterator modelit = std::find_if(models.begin(), models.end(), Models::FMTmodelcomparator(scenario));
+			modelit->cleanactionsntransitions();
+			sortedmodels.push_back(*modelit);
+			}
 		}
-	return models;
+	return sortedmodels;
 	}
 
 std::vector<std::vector<Core::FMTschedule>>FMTmodelparser::readschedules(const std::string& primary_location,

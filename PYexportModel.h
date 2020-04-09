@@ -33,14 +33,17 @@ SOFTWARE.
 
 namespace Python
 { 
-BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(simulate_overloads,simulate, 1, 3)
+BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(simulate_overloads, simulate, 1, 3)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(buildperiod_overloads, buildperiod, 0, 2)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(move_solution_overloads, move_solution, 0, 1)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(get_outputs_overloads, get_outputs, 0, 1)
-BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(getLPoutputoverloads,getoutput, 2, 3)
+BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(getLPoutputoverloads, getoutput, 2, 3)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(warmup_overloads, warmup, 2, 4)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(evaluate_overloads, evaluate, 1, 2)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(getoperatingareaheuristics_overloads, getoperatingareaheuristics, 2, 4)
+BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(getvariabilities_overloads, getvariabilities, 1, 2)
+BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(getareavariabilities_overloads, getareavariabilities,2,3)
+
 
 void exportModel()
     {
@@ -60,7 +63,7 @@ void exportModel()
 			.def_pickle(FMT_pickle_suite<Models::FMTmodel>())
             .def("getyields",&Models::FMTmodel::getyields,
 				"@DocString(FMTmodel::getyields)")
-            .def("getarea",&Models::FMTmodel::getarea, getarea_overloads())
+            .def("getarea",&Models::FMTmodel::getarea, getarea_overloads(bp::args("period"), "@DocString(FMTlpmodel::getarea)"))
             .def("getthemes",&Models::FMTmodel::getthemes,
 				"@DocString(FMTmodel::getthemes)")
             .def("getactions",&Models::FMTmodel::getactions,
@@ -104,7 +107,7 @@ void exportModel()
 			.def("getdisturbancestats", &Models::FMTsesmodel::getdisturbancestats,
 				"@DocString(FMTsesmodel::getdisturbancestats)")
             .def("simulate",&Models::FMTsesmodel::simulate,
-                 simulate_overloads());
+                 simulate_overloads(bp::args("schedule", "schedule_only","seed"), "@DocString(FMTsesmodel::simulate)"));
 
     define_pylist<Models::FMTsesmodel>();
 
@@ -121,7 +124,7 @@ void exportModel()
 	bp::class_<Models::FMTlpmodel, bp::bases<Models::FMTmodel>>("FMTlpmodel", "@DocString(FMTlpmodel)")
 		.def(bp::init<Models::FMTmodel, Models::FMTsolverinterface>())
 		.def_pickle(FMT_pickle_suite<Models::FMTlpmodel>())
-		.def("buildperiod", &Models::FMTlpmodel::buildperiod, buildperiod_overloads())
+		.def("buildperiod", &Models::FMTlpmodel::buildperiod, buildperiod_overloads(bp::args("schedule", "forcepartialbuild"), "@DocString(FMTlpmodel::buildperiod)"))
 		.def("boundsolution", &Models::FMTlpmodel::boundsolution,
 			"@DocString(FMTlpmodel::boundsolution)")
 		.def("getsolution", &Models::FMTlpmodel::getsolution,
@@ -140,7 +143,7 @@ void exportModel()
 			"@DocString(FMTlpmodel::resolve)")
 		.def("initialsolve", &Models::FMTlpmodel::initialsolve,
 			"@DocString(FMTlpmodel::initialsolve)")
-		.def("getoutput", &Models::FMTlpmodel::getoutput, getLPoutputoverloads())
+		.def("getoutput", &Models::FMTlpmodel::getoutput, getLPoutputoverloads(bp::args("output", "period", "level"), "@DocString(FMTlpmodel::getoutput)"))
 		.def("writeLP", &Models::FMTlpmodel::writeLP,
 			"@DocString(FMTlpmodel::writeLP)")
 		.def("writeMPS", &Models::FMTlpmodel::writeMPS,
@@ -151,7 +154,10 @@ void exportModel()
 			"@DocString(FMTlpmodel::operator!=)")
 		.def("getstats", &Models::FMTlpmodel::getstats,
 			"@DocString(FMTlpmodel::getstats)")
-		.def("getoperatingareaheuristics", &Models::FMTlpmodel::getoperatingareaheuristics, getoperatingareaheuristics_overloads());
+		.def("getoperatingareaheuristics", &Models::FMTlpmodel::getoperatingareaheuristics, getoperatingareaheuristics_overloads(bp::args("opareas", "node", "numberofheuristics", "copysolver"), "@DocString(FMTlpmodel::getoperatingareaheuristics)"))
+		.def("getvariabilities", &Models::FMTlpmodel::getvariabilities, getvariabilities_overloads(bp::args("outputs", "tolerance"), "@DocString(FMTlpmodel::getvariabilities)"))
+		.def("getareavariabilities", &Models::FMTlpmodel::getareavariabilities,getareavariabilities_overloads(bp::args("outputs","globalmask","tolerance"), "@DocString(FMTlpmodel::getareavariabilities)"));
+
 	define_pylist<Models::FMTlpmodel>();
 	#endif
 
@@ -171,7 +177,7 @@ void exportModel()
 				"@DocString(FMTsamodel::get_new_solution)")
             .def("getspatialactions",&Models::FMTsamodel::getspatialactions,
 				"@DocString(FMTsamodel::getspatialactions)")
-            .def("evaluate",&Models::FMTsamodel::evaluate,evaluate_overloads())
+            .def("evaluate",&Models::FMTsamodel::evaluate,evaluate_overloads(bp::args("temp", "all_data"), "@DocString(FMTsamodel::evaluate)"))
             .def("setinitial_mapping",&Models::FMTsamodel::setinitial_mapping,
 				"@DocString(FMTsamodel::setinitial_mapping)")
             .def("setspactions",&Models::FMTsamodel::setspactions,
@@ -187,17 +193,17 @@ void exportModel()
             .def("buildperiod",&Models::FMTsamodel::buildperiod,
 				"@DocString(FMTsamodel::buildperiod)")
             .def("move",&Models::FMTsamodel::move_solution,
-                 move_solution_overloads())
+                 move_solution_overloads(bp::args("move_type"),"@DocString(FMTsamodel::move_type)"))
             .def("acceptnew",&Models::FMTsamodel::acceptnew,
 				"@DocString(FMTsamodel::acceptnew)")
             .def("write_outputs_at",&Models::FMTsamodel::write_outputs_at,
 				"@DocString(FMTsamodel::write_outputs_at)")
-            .def("get_outputs",&Models::FMTsamodel::get_outputs,get_outputs_overloads())
+            .def("get_outputs",&Models::FMTsamodel::get_outputs,get_outputs_overloads(bp::args("addon"), "@DocString(FMTsamodel::get_outputs)"))
             .def("write_solutions_events",&Models::FMTsamodel::write_solutions_events,
 				"@DocString(FMTsamodel::write_solutions_events)")
             .def("get_number_moves",&Models::FMTsamodel::get_number_moves,
 				"@DocString(FMTsamodel::get_number_moves)")
-            .def("warmup",&Models::FMTsamodel::warmup,warmup_overloads());
+            .def("warmup",&Models::FMTsamodel::warmup,warmup_overloads(bp::args("initprob","iterations","type"), "@DocString(FMTsamodel::warmup)"));
 
     define_pylist<Models::FMTsamodel>();
 

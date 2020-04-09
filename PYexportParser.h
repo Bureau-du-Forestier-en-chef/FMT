@@ -70,12 +70,12 @@ void exportParser()
 	bp::class_<Parser::FMTareaparser, bp::bases<Parser::FMTparser>>("FMTareaparser", "@DocString(FMTareaparser)")
                 .def("read", &Parser::FMTareaparser::read, "@DocString(FMTareaparser::read)")
 				#ifdef FMTWITHGDAL
-					.def("readvectors", &Parser::FMTareaparser::readvectors,readvectors_overloads())
-					.def("readrasters", &Parser::FMTareaparser::readrasters,readrasters_overloads())
-					.def("writeforest",&Parser::FMTareaparser::writeforest,writeforest_overloads())
-					.def("writedisturbances",&Parser::FMTareaparser::writedisturbances,writedisturbances_overloads())
+					.def("readvectors", &Parser::FMTareaparser::readvectors,readvectors_overloads(bp::args("themes", "data_vectors", "agefield", "areafield", "areafactor", "lockfield","minimalarea"), "@DocString(FMTareaparser::readvectors)"))
+					.def("readrasters", &Parser::FMTareaparser::readrasters,readrasters_overloads(bp::args("themes","data_rasters","age","agefactor","areafactor","lock"), "@DocString(FMTareaparser::readrasters)"))
+					.def("writeforest",&Parser::FMTareaparser::writeforest,writeforest_overloads(bp::args("for_layer", "themes", "data_rasters", "age", "lock", "mapping"), "@DocString(FMTareaparser::writeforest)"))
+					.def("writedisturbances",&Parser::FMTareaparser::writedisturbances,writedisturbances_overloads(bp::args("location", "disturbances", "for_layer", "out_layer", "themes", "mapping"), "@DocString(FMTareaparser::writedisturbances)"))
 					#ifdef FMTWITHOSI
-						.def("getneighbors",&Parser::FMTareaparser::getneighbors, getneighbors_overloads())
+						.def("getneighbors",&Parser::FMTareaparser::getneighbors, getneighbors_overloads(bp::args("operatingareaparameters", "themes", "data_vectors", "agefield", "areafield", "agefactor","areafractor","lockfield","minimal_area","buffersize"), "@DocString(FMTareaparser::getneighbors)"))
 					#endif
 				#endif
 				.def("write", &Parser::FMTareaparser::write,
@@ -127,8 +127,8 @@ void exportParser()
 				.def("write", &Parser::FMToptimizationparser::write,
 					"@DocString(FMToptimizationparser::write)");
 	bp::class_<Parser::FMTmodelparser, bp::bases<Parser::FMTparser>>("FMTmodelparser", "@DocString(FMTmodelparser)")
-                .def("read",&Parser::FMTmodelparser::read, readmodel_overloads())
-				.def("readproject", &Parser::FMTmodelparser::readproject, readproject_overloads())
+                .def("read",&Parser::FMTmodelparser::read, readmodel_overloads(bp::args("con","lan","lif","are","yld","act","tr","out","opt"), "@DocString(FMTmodel::read)"))
+				.def("readproject", &Parser::FMTmodelparser::readproject, readproject_overloads(bp::args("primary_location","scenarios","readarea","readoutputs","readoptimize"), "@DocString(FMTmodel::readproject)"))
 				.def("readschedules", &Parser::FMTmodelparser::readschedules, 
 					"@DocString(FMTmodelparser::readschedules)")
                 .def("write",&Parser::FMTmodelparser::write,

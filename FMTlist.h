@@ -218,6 +218,8 @@ namespace Core
 
 		}
 
+		
+
 		void push_back(const FMTmask& mask, const T& value)
 		{
 			data.emplace_back(mask,value);
@@ -234,6 +236,19 @@ namespace Core
 			{
 			data.emplace_back(value);
 			}
+
+		void push_back(const FMTlist<T>& rhs)
+		{
+			if (this->canshrink() && rhs.canshrink())
+			{
+				for (const std::pair<FMTmask, T>& object : rhs.data)
+				{
+					this->push_back(object);
+				}
+				this->shrink();
+			}
+		}
+
 		void push_front(const FMTmask& mask, const T& value)
 		{
 			data.emplace(data.begin(), mask, value);

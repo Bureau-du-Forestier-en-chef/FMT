@@ -95,7 +95,7 @@ std::vector<Core::FMTactualdevelopment>FMTmodel::getarea(int period) const
 FMTmodel FMTmodel::getcopy(int period) const
 	{
 	FMTmodel newmodel(*this);
-	if (period > 0)
+	/*if (period > 0)
 		{
 		std::vector<Core::FMTaction>actionssubset;
 		for (const Core::FMTaction& action : actions)
@@ -118,7 +118,7 @@ FMTmodel FMTmodel::getcopy(int period) const
 				}
 			}
 		newmodel.setconstraints(cleanedconstraint);
-		}
+		}*/
 	return newmodel;
 	}
 
@@ -238,6 +238,52 @@ bool  FMTmodel::operator == (const FMTmodel& rhs) const
 		outputs == rhs.outputs &&
 		constraints == rhs.constraints);
 	}
+
+bool FMTmodel::operator < (const FMTmodel& rhs) const
+	{
+	//strict ordering
+	if (name < rhs.name)
+		return true;
+	if (rhs.name < name)
+		return false;
+	//To do
+	/*if (area < rhs.area)
+		return true;
+	if (rhs.area < area)
+		return false;
+	if (themes < rhs.themes)
+		return true;
+	if (rhs.themes < themes)
+		return false;
+	if (actions < rhs.actions)
+		return true;
+	if (rhs.actions < actions)
+		return false;
+	if (transitions < rhs.transitions)
+		return true;
+	if (rhs.transitions < transitions)
+		return false;
+	if (yields < rhs.yields)
+		return true;
+	if (rhs.yields < yields)
+		return false;
+	if (lifespan < rhs.lifespan)
+		return true;
+	if (rhs.lifespan < lifespan)
+		return false;
+	if (outputs < rhs.outputs)
+		return true;
+	if (rhs.outputs < outputs)
+		return false;
+	if (constraints < rhs.constraints)
+		return true;
+	if (rhs.constraints < constraints)
+		return false;*/
+	return false;
+	}
+
+
+
 void FMTmodel::setarea(const std::vector<Core::FMTactualdevelopment>& ldevs)
     {
 	area = ldevs;
@@ -608,29 +654,49 @@ bool FMTmodel::empty() const
 		yields.empty() && outputs.empty() && constraints.empty() && lifespan.empty());
 	}
 
-FMTmodel FMTmodel::push_back(const FMTmodel& rhs) const
+void FMTmodel::push_back(const FMTmodel& rhs)
 	{
 	//Need to check if the model have the same stats!
 	const FMTmodelstats basestats = this->getmodelstats();
 	const FMTmodelstats rhsstats = rhs.getmodelstats();
-	if (basestats.themes == rhsstats.themes)
+	if (basestats.themes == rhsstats.themes && basestats.themesdata==rhsstats.themesdata)
 		{
 		std::vector<Core::FMTtheme>newthemes = themes;//Need to concat themes!
 		//Need to had some double check to make sure every elements are unique
 		std::vector<Core::FMTactualdevelopment>newarea=area;
 		for (const Core::FMTactualdevelopment& dev : rhs.area)//Need to check presence of!
 			{
-			newarea.push_back(dev);
+			std::vector<Core::FMTactualdevelopment>::iterator actualdev = std::find_if(newarea.begin(), newarea.end(), Core::FMTactualdevelopmentcomparator(&dev));
+			if (actualdev== newarea.end())
+				{
+				newarea.push_back(dev);
+			}else {
+				actualdev->setarea(actualdev->getarea() + dev.getarea());
+				}
 			}
 		std::vector<Core::FMTaction>finalactions=actions;
 		std::vector<Core::FMTtransition>finaltransitions=transitions;
 		size_t id = 0;
 		for (const Core::FMTaction& action : rhs.actions)
 			{
-			if (std::find_if(finalactions.begin(), finalactions.end(),Core::FMTactioncomparator(action.getname()))== finalactions.end())
+			std::vector<Core::FMTaction>::iterator actionitr = std::find_if(finalactions.begin(), finalactions.end(), Core::FMTactioncomparator(action.getname()));
+			if (actionitr == finalactions.end())
 				{
 				finalactions.push_back(action);
 				finaltransitions.push_back(rhs.transitions.at(id));
+			}else{
+				Core::FMTaction rhsaction(action);
+				actionitr->unshrink(themes);
+				rhsaction.unshrink(newthemes);
+				actionitr->push_back(rhsaction);
+				std::vector<Core::FMTtransition>::iterator transitionitr = std::find_if(finaltransitions.begin(), finaltransitions.end(), Core::FMTtransitioncomparator(action.getname()));
+				if (transitionitr!= transitions.end())
+					{
+					Core::FMTtransition rhstransition(rhs.transitions.at(id));
+					rhstransition.unshrink(rhs.themes);
+					transitionitr->unshrink(themes);
+					transitionitr->push_back(rhstransition);
+					}
 				}
 			++id;
 			}
@@ -655,11 +721,37 @@ FMTmodel FMTmodel::push_back(const FMTmodel& rhs) const
 					}
 				}
 			}
-		Core::FMTyields newyields = yields;//Need append to yields function.
-		Core::FMTlifespans newlifespan = lifespan; //Need append to lifespans function.
-		return FMTmodel(newarea, newthemes, finalactions, finaltransitions, newyields, newlifespan, name, finaloutputs, finalconstraints);
+		Core::FMTyields newyields(yields);
+		Core::FMTyields rhsyields(rhs.yields);
+		newyields.unshrink(themes);
+		rhsyields.unshrink(rhs.themes);
+		newyields.push_back(rhs.yields);
+		newyields.update();
+		Core::FMTlifespans newlifespan(lifespan);
+		Core::FMTlifespans rhslifespan(rhs.lifespan);
+		newlifespan.unshrink(themes);
+		rhslifespan.unshrink(rhs.themes);
+		newlifespan.push_back(rhslifespan);
+		/*area = newarea;
+		themes = newthemes;
+		actions = finalactions;
+		transitions = finaltransitions;
+		yields = newyields;
+		lifespan = newlifespan;
+		outputs = finaloutputs;
+		constraints = finalconstraints;*/
+		*this = rhs;
 		}
-	return *this;
+	}
+
+double FMTmodel::getinitialarea() const
+	{
+	double totalarea = 0;
+	for (const Core::FMTactualdevelopment& basedev : area)
+		{
+		totalarea += basedev.getarea();
+		}
+	return totalarea;
 	}
 
 

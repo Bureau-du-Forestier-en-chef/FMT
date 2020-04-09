@@ -248,6 +248,11 @@ class FMTlpmodel : public FMTmodel
 	Erase all constraints / variables related to a FMTconstraint for all the planning horizon (graph length).
 	*/
 	Graph::FMTgraphstats eraseallconstraint(const Core::FMTconstraint& constraint);
+	// DocString: FMTlpmodel::getobjectivebounds
+	/**
+	Returns constraints indexes of the lower and upper bounds of the constraints set for the objective.
+	*/
+	std::vector<int>setobjectivebounds(bool dolower = true, bool doupper = true, double tolerance = FMT_DBL_TOLERANCE);
 	public:
 	// DocString: FMTlpmodel(const FMTmodel,FMTsolverinterface)
 	/**
@@ -364,13 +369,22 @@ class FMTlpmodel : public FMTmodel
 		*/
 		std::map<std::string, std::vector<double>>getvariabilities(const std::vector<Core::FMToutput>& outputs,
 																double tolerance = FMT_DBL_TOLERANCE);
+		// DocString: FMTlpmodel::getareavariabilities
+		/**
+		Sometime it is usefull to know what is the impact on some outputs of changing a set of developements
+		of the area of the model for a given global mask. This function uses the globalmask has target and returns
+		the variabilities between the given tolerance of changing the area.
+		*/
+		std::map<std::string, std::vector<double>>getareavariabilities(const std::vector<Core::FMToutput>& localoutputs,
+																			const Core::FMTmask& globalmask,
+																			double tolerance = FMT_DBL_TOLERANCE);
 		// DocString: FMTlpmodel::eraseperiod
 		/**
 		When doing replanning or simply model update the user may want to delete the first period (front) 
 		of the graph and the matrix to get a FMTmodel - first period. The planning length will be shrinked to 
 		originalsize - 1.
 		*/
-		Graph::FMTgraphstats eraseperiod();
+		Graph::FMTgraphstats eraseperiod(bool constraintsonly = false);
 		// DocString: FMTlpmodel::getfirstactiveperiod
 		/**
 		Return the first active period should be always 0 in case or planning. 
@@ -445,7 +459,8 @@ class FMTlpmodel : public FMTmodel
 		Need to have a builded graph with a solution to use this function.
 		The returned model wont be solved nor builded.
 		*/
-		FMTlpmodel getlpmodel(FMTmodel localmodel = FMTmodel(),int period = 0) const;
+		FMTlpmodel getlocalmodel(FMTmodel localmodel = FMTmodel(),int period = 0) const;
+
 	};
 
 }

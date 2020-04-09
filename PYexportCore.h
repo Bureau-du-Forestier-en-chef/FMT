@@ -240,7 +240,7 @@ void exportCore()
 					"@DocString(FMToutput::containslevel)")
 				.def("islevel", &Core::FMToutput::islevel,
 					"@DocString(FMToutput::islevel)")
-				.def("getnodes",&Core::FMToutput::getnodes, getnodes_overloads())
+				.def("getnodes",&Core::FMToutput::getnodes, getnodes_overloads(bp::args("multiplier"), "@DocString(FMToutput::getnodes)"))
 				.def("__str__", &Core::FMToutput::operator std::string,
 					"@DocString(FMToutput::operator std::string)")
                 .def("__eq__",&Core::FMToutput::operator ==,
@@ -254,7 +254,7 @@ void exportCore()
 					"@DocString(FMTtheme::operator std::string)")
 				.def("__eq__", &Core::FMTtheme::operator ==,
 					"@DocString(FMTtheme::operator==)")
-				.def("getattributes", &Core::FMTtheme::getattributes, getattributes_overloads())
+				.def("getattributes", &Core::FMTtheme::getattributes, getattributes_overloads(bp::args("value","aggregate_source"), "@DocString(FMTtheme::getattributes)"))
 				.def("getname", &Core::FMTtheme::getname,
 					"@DocString(FMTtheme::getname)");
 
