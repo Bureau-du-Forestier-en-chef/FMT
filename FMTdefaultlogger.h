@@ -29,16 +29,51 @@ SOFTWARE.
 
 namespace Logging
 {
+	// DocString: FMTdefaultlogger 
+	/**
+	FMTdefaultlogger is derived class from FMTlogger standing has the default
+	level of log used by FMT.
+	*/
 	class FMTdefaultlogger final: public FMTlogger
 	{
 	public:
+		// DocString: FMTdefaultlogger()
+		/**
+		FMTdefaultlogger default constructor.
+		*/
 		FMTdefaultlogger();
+		// DocString: ~FMTdefaultlogger()
+		/**
+		FMTdefaultlogger default destructor.
+		*/
 		~FMTdefaultlogger() = default;
+		// DocString: FMTdefaultlogger::operator=
+		/**
+		FMTdefaultlogger default copy assignment operator.
+		*/
 		FMTdefaultlogger & operator = (const FMTdefaultlogger & rhs) = default;
+		// DocString: FMTdefaultlogger(const FMTdefaultlogger&)
+		/**
+		FMTdefaultlogger default copy constructor.
+		*/
 		FMTdefaultlogger(const FMTdefaultlogger& rhs) = default;
 		#ifdef FMTWITHOSI
+			// DocString: FMTdefaultlogger::print
+			/**
+			FMTdefaultlogger print for osisolverinterface is the default print level used by FMT.
+			See FMTlogger print function.
+			*/
 			int print() override;
+			// DocString: FMTdefaultlogger::checkSeverity
+			/**
+			FMTdefaultlogger checkseverity for osisolverinterface is the default severity check used by FMT.
+			See FMTlogger checkSeverity function.
+			*/
 			void checkSeverity() override;
+			// DocString: FMTdefaultlogger::clone
+			/**
+			See FMTlogger clone function.
+			*/
 			CoinMessageHandler * clone() const override;
 		#endif
 	};

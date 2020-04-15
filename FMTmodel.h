@@ -146,11 +146,11 @@ class FMTmodel : public Core::FMTobject
 		// DocString: FMTmodel::name
 		///The name of the Model (name of the .pri file without extension)
         std::string name;
+		// DocString: FMTmodel()
 		/**
 		Main constructor for FMTmodel used in Parser::FMTmodelparser, the constraints are optional.
 		For the FMTsesmodel no constraints are needed.
 		*/
-		// DocString: FMTmodel()
 		FMTmodel(const std::vector<Core::FMTactualdevelopment>& larea, const std::vector<Core::FMTtheme>& lthemes,
 			const std::vector<Core::FMTaction>& lactions,
 			const std::vector<Core::FMTtransition>& ltransitions, const Core::FMTyields& lyields, const Core::FMTlifespans& llifespan,
@@ -349,6 +349,11 @@ class FMTmodel : public Core::FMTobject
 		Returns the sum of the area of the area vector.
 		*/
 		double getinitialarea() const;
+		// DocString: FMTmodel::setareaperiod
+		/**
+		Change to initial area period to the new targeted period.
+		*/
+		void setareaperiod(const int& period);
 
     };
 // DocString: FMTmodelcomparator

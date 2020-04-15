@@ -55,7 +55,10 @@ SOFTWARE.
 
 namespace Exception
 {
-
+// DocString: FMTlev
+/**
+This enumerator describes the kind of the Exception trown by FMT.
+*/
 enum FMTlev
     {
     FMT_None=0,
@@ -65,6 +68,10 @@ enum FMTlev
     FMT_range=4
     };
 
+// DocString: FMTexc
+/**
+This enumerator describes the exceptions thrown by FMT.
+*/
 enum FMTexc
     {
     None = 0,
@@ -121,8 +128,17 @@ enum FMTexc
 	FMTmissinglicense = 52
     };
 
+// DocString: FMTexception
+/**
+FMTexception is the exception base class for FMT. All the informations regarding a given exception
+is kept by this class (type,section and message).
+*/
 class FMTexception : public std::exception
     {
+	// DocString: FMTexception::serialize
+	/**
+	Serialize function is for serialization, used to do multiprocessing across multiple cpus (pickle in Pyhton)
+	*/
 	friend class boost::serialization::access;
 	template<class Archive>
 	void serialize(Archive& ar, const unsigned int version)
@@ -134,21 +150,74 @@ class FMTexception : public std::exception
 		ar & BOOST_SERIALIZATION_NVP(section);
 	}
     protected:
+		// DocString: FMTexception::holdup
+		///This member is normaly set to false but for the free exception handler
+		///we want to let the exception percolate to boost::python and let the user handel the exception when holdup=true.
 		bool holdup;
+		// DocString: FMTexception::_msg
+		///Keeps the message string of the exception.
 		std::string _msg;
+		// DocString: FMTexception::exceptiontype
+		///Type of the exception thrown.
 		FMTexc exceptiontype;
+		// DocString: FMTexception::section
+		///Section in which the exception just happenned.
 		Core::FMTwssect section;
     public:
+	// DocString: FMTexception()
+	/**
+	FMTexception default constructor.
+	*/
     FMTexception();
+	// DocString: ~FMTexception()
+	/**
+	FMTexception default virtual destructor.
+	*/
     virtual ~FMTexception() = default;
+	// DocString: FMTexception(const FMTexc,const std::string)
+	/**
+	FMTexception constructor taking a exception type and a message.
+	*/
     FMTexception(const FMTexc lexception,const std::string message);
+	// DocString: FMTexception(const FMTexc,Core::FMTwssect,const std::string)
+	/**
+	FMTexception constructor taking a exception type a section and a message.
+	*/
     FMTexception(const FMTexc lexception,Core::FMTwssect lsection,const std::string message);
+	// DocString: FMTexception(const FMTexception&)
+	/**
+	FMTexception default copy constructor.
+	*/
     FMTexception(const FMTexception& rhs);
+	// DocString: FMTexception::operator=
+	/**
+	FMTexception default copy assignment operator.
+	*/
     FMTexception& operator = (const FMTexception& rhs);
+	// DocString: FMTexception::gettype
+	/**
+	The function returns the type of exception kept by this FMTexception.
+	*/
 	FMTexc gettype() const;
+	// DocString: FMTexception::getsection
+	/**
+	The function returns the section in which the exception occured.
+	*/
 	Core::FMTwssect getsection() const;
+	// DocString: FMTexception::what
+	/**
+	This function override the what function of the exception base class returning the message string.
+	*/
     const char* what() const throw() override;
+	// DocString: FMTexception::hold
+	/**
+	Returns the value of the holdup member.
+	*/
 	bool hold() const;
+	// DocString: FMTexception::sethold
+	/**
+	The function sets the value of holdup member.
+	*/
 	void sethold(bool side);
     };
 

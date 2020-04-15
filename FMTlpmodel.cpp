@@ -82,8 +82,7 @@ namespace Models
 				}
             }
 		solverinterface->setColSetBounds(&variable_index[0], &variable_index.back()+1, &bounds[0]);
-		this->resolve();
-        return solverinterface->isProvenOptimal();
+		return this->resolve();
         }
     return false;
 	}
@@ -147,13 +146,25 @@ namespace Models
 	{
 		if (static_cast<int>(graph.size()) > period && period > 0)
 		{
-			std::vector<double>new_solution(solverinterface->getNumCols(), 0);
+			//std::vector<double>new_solution(solverinterface->getNumCols(), 0);
 			const double* actual_solution = solverinterface->getColSolution();
-			//const double* upper_bounds = solverinterface->getRowUpper();
+			std::vector<double>new_solution(actual_solution, actual_solution + solverinterface->getNumCols());
+			/*const double* upper_bounds = solverinterface->getRowUpper();
 			for (int colid = 0; colid < static_cast<int>(new_solution.size());++colid)
-			{
+				{
 				new_solution[colid] = *(actual_solution + colid);
-			}
+				}*/
+			for (std::unordered_map<size_t, Graph::FMTvertex_descriptor>::const_iterator devit = graph.getperiodverticies(period).begin();
+				devit != graph.getperiodverticies(period).end(); devit++)
+				{
+				const std::map<int, int>variables = graph.getoutvariables(devit->second);
+				for (std::map<int, int>::const_iterator varit = variables.begin(); varit != variables.end(); varit++)
+					{
+					new_solution[varit->second] = 0;
+					}
+				}
+
+
 			Core::FMTschedule locked_schedule;
 			for (const auto actionit : schedule)
 			{
@@ -179,6 +190,10 @@ namespace Models
 							{
 								const Graph::FMTvertex_descriptor vdescriptor = graph.getdevelopment(locked);
 								const int variable = graph.getoutvariables(vdescriptor)[actionid];
+								/*if (area_id==0)
+									{
+									new_solution[variable] = 0;
+									}*/
 								new_solution[variable] += devit.second.at(area_id);
 								last_lock = locked.lock;
 								++allocated;
@@ -221,6 +236,7 @@ namespace Models
 				{
 					const double* solution = &new_solution[0];
 					double rest = graph.inarea(devit->second, solution);
+					//double rest = graph.inarea(devit->second, actual_solution);
 					std::map<int, int>variables = graph.getoutvariables(devit->second);
 					int growth = variables[-1];
 					variables.erase(-1);
@@ -236,6 +252,7 @@ namespace Models
 								descriptors.push(graph.getdevelopment(*path.development));
 							}
 						}
+						//rest -= *(actual_solution + varit->second);
 						rest -= new_solution[varit->second];
 					}
 					new_solution[growth] = rest;

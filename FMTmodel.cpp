@@ -754,6 +754,13 @@ double FMTmodel::getinitialarea() const
 	return totalarea;
 	}
 
+void FMTmodel::setareaperiod(const int& period)
+	{
+	for (Core::FMTactualdevelopment& basedev : area)
+		{
+		basedev.period = period;
+		}
+	}
 
 FMTmodelcomparator::FMTmodelcomparator(std::string name) :model_name(name) {}
 
