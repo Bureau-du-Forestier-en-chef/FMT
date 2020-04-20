@@ -66,8 +66,8 @@ RCPP_EXPOSED_WRAP(Spatial::FMTsasolution);
 RCPP_EXPOSED_AS(Spatial::FMTsasolution);
 RCPP_DEFINEVECTOR(Spatial::FMTsasolution);//For vector
 
-RCPP_EXPOSED_WRAP(Spatial::FMTevent<Core::FMTdevelopment>);
-RCPP_EXPOSED_AS(Spatial::FMTevent<Core::FMTdevelopment>);
+RCPP_EXPOSED_WRAP(Spatial::FMTevent);
+RCPP_EXPOSED_AS(Spatial::FMTevent);
 
 
 namespace R 
