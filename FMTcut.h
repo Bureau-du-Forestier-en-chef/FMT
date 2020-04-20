@@ -26,7 +26,7 @@ SOFTWARE.
 #define FMTCUT_H_INCLUDED
 
 #include "FMTcoordinate.h"
-#include "FMTevent.h"
+#include "FMTsesevent.h"
 #include "FMTdevelopment.h"
 #include <boost/serialization/serialization.hpp>
 #include <boost/serialization/nvp.hpp>
@@ -35,13 +35,13 @@ SOFTWARE.
 namespace Spatial
 {
 
-class FMTcut : public FMTevent<Core::FMTdevelopment>
+class FMTcut : public FMTsesevent<Core::FMTdevelopment>
     {
 	friend class boost::serialization::access;
 	template<class Archive>
 	void serialize(Archive& ar, const unsigned int version)
 	{
-		ar & boost::serialization::make_nvp("event", boost::serialization::base_object<FMTevent<Core::FMTdevelopment>>(*this));
+		ar & boost::serialization::make_nvp("event", boost::serialization::base_object<FMTsesevent<Core::FMTdevelopment>>(*this));
 	}
     public:
         FMTcut();

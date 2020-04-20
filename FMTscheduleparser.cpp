@@ -55,89 +55,97 @@ FMTscheduleparser& FMTscheduleparser::operator = (const FMTscheduleparser& rhs)
         }
     return *this;
     }
-std::vector<Core::FMTschedule> FMTscheduleparser::read(const std::vector<Core::FMTtheme>& themes,const std::vector<Core::FMTaction>& actions, std::string location,double tolerance)
+std::vector<Core::FMTschedule> FMTscheduleparser::read(const std::vector<Core::FMTtheme>& themes,const std::vector<Core::FMTaction>& actions,const std::string& location,double tolerance)
     {
-    std::ifstream schedulestream(location);
 	std::vector<Core::FMTschedule>schedules;
-    if (FMTparser::tryopening(schedulestream,location))
-        {
-		std::vector<std::map<Core::FMTaction,std::map<Core::FMTdevelopment, std::map<int, double>>>>data;
-        while(schedulestream.is_open())
-            {
-			std::string line = FMTparser::getcleanline(schedulestream);
-            if (!line.empty())
-                {
-				std::vector<std::string>values;
-                boost::split(values,line,boost::is_any_of(FMT_STR_SEPARATOR),boost::token_compress_on);
-                if(values.size() < themes.size()||line.find("*STRATA")!= std::string::npos)
-                    {
-                    break;
-                    }else{
-						int variable = getvariable(); 
+	try {
+		std::ifstream schedulestream(location);
+		if (FMTparser::tryopening(schedulestream, location))
+		{
+			std::vector<std::map<Core::FMTaction, std::map<Core::FMTdevelopment, std::map<int, double>>>>data;
+			while (schedulestream.is_open())
+			{
+				std::string line = FMTparser::getcleanline(schedulestream);
+				if (!line.empty())
+				{
+					std::vector<std::string>values;
+					boost::split(values, line, boost::is_any_of(FMT_STR_SEPARATOR), boost::token_compress_on);
+					if (values.size() < themes.size() || line.find("*STRATA") != std::string::npos)
+					{
+						break;
+					}
+					else {
+						int variable = getvariable();
 						std::string mask = "";
-                        int id = 0;
-                        for(;id < static_cast<int>(themes.size());++id)
-                            {
-                            mask+=values[id]+" ";
-                            }
-                        mask.pop_back();
-                        if (!validate(themes, mask, " at line " + std::to_string(_line))) continue;
+						int id = 0;
+						for (; id < static_cast<int>(themes.size()); ++id)
+						{
+							mask += values[id] + " ";
+						}
+						mask.pop_back();
+						if (!validate(themes, mask, " at line " + std::to_string(_line))) continue;
 						const int age = getnum<int>(values[id]);
-                        ++id;
-                        const double area = getnum<double>(values[id]);
-						if (area > tolerance) 
-							{
+						++id;
+						const double area = getnum<double>(values[id]);
+						if (area > tolerance)
+						{
 							++id;
 							const std::string actionname = values[id];
-							if (!isact(Core::FMTwssect::Schedule,actions,actionname)) continue;
+							if (!isact(Core::FMTwssect::Schedule, actions, actionname)) continue;
 							++id;
 							const int period = getnum<int>(values[id]);
-							if (static_cast<size_t>(period) -1 == data.size())
-								{
-								data.push_back(std::map<Core::FMTaction, std::map<Core::FMTdevelopment, std::map<int,double>>>());
-							}else if (static_cast<size_t>(period) - 1 > data.size())
-								{
+							if (static_cast<size_t>(period) - 1 == data.size())
+							{
+								data.push_back(std::map<Core::FMTaction, std::map<Core::FMTdevelopment, std::map<int, double>>>());
+							}
+							else if (static_cast<size_t>(period) - 1 > data.size())
+							{
 								int gap = (period - 1) - static_cast<int>(data.size());
 								while (gap >= 0)
-									{
+								{
 									data.push_back(std::map<Core::FMTaction, std::map<Core::FMTdevelopment, std::map<int, double>>>());
 									--gap;
-									}
-								}
-							 const Core::FMTdevelopment dev(Core::FMTmask(mask,themes),age,0,period);
-							 std::vector<Core::FMTaction>::const_iterator act = find_if(actions.begin(),actions.end(),Core::FMTactioncomparator(actionname));
-							 if (act->dorespectlock())
-								{
-								variable = 0;
-								}
-							 const int periodloc = period - 1;
-							 if (data[periodloc].find(*act) == data[periodloc].end())
-								 {
-								 data[periodloc][*act] = std::map<Core::FMTdevelopment, std::map<int, double>>();
-								 }
-							 if (data[periodloc][*act][dev].find(variable)!= data[periodloc][*act][dev].end())
-								{
-								data[periodloc][*act][dev][variable] += area;
-								}else {
-								data[periodloc][*act][dev][variable] = area;
 								}
 							}
-                        }
-                }
-            }
+							const Core::FMTdevelopment dev(Core::FMTmask(mask, themes), age, 0, period);
+							std::vector<Core::FMTaction>::const_iterator act = find_if(actions.begin(), actions.end(), Core::FMTactioncomparator(actionname));
+							if (act->dorespectlock())
+							{
+								variable = 0;
+							}
+							const int periodloc = period - 1;
+							if (data[periodloc].find(*act) == data[periodloc].end())
+							{
+								data[periodloc][*act] = std::map<Core::FMTdevelopment, std::map<int, double>>();
+							}
+							if (data[periodloc][*act][dev].find(variable) != data[periodloc][*act][dev].end())
+							{
+								data[periodloc][*act][dev][variable] += area;
+							}
+							else {
+								data[periodloc][*act][dev][variable] = area;
+							}
+						}
+					}
+				}
+			}
 
-	int period = 1;
-	for (const std::map<Core::FMTaction, std::map<Core::FMTdevelopment, std::map<int, double>>>& inschedule : data)
-		{
-		schedules.push_back(Core::FMTschedule(period, inschedule));
-		++period;
+			int period = 1;
+			for (const std::map<Core::FMTaction, std::map<Core::FMTdevelopment, std::map<int, double>>>& inschedule : data)
+			{
+				schedules.push_back(Core::FMTschedule(period, inschedule));
+				++period;
+			}
 		}
+	}catch (...)
+		{
+		_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, _section, "while reading", __LINE__, __FILE__);
 		}
     return schedules;
     }
 
 
-void FMTscheduleparser::write(const std::vector<Core::FMTschedule>& schedules, std::string location)
+void FMTscheduleparser::write(const std::vector<Core::FMTschedule>& schedules,const std::string& location) const
     {
 	std::ofstream schedulestream;
     schedulestream.open(location);

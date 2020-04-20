@@ -83,13 +83,13 @@ FMTexceptionhandler& FMTexceptionhandler::operator = (const FMTexceptionhandler&
 	return *this;
 }
 
-void FMTexceptionhandler::throw_nested(const FMTexception& texception, int level)
+void FMTexceptionhandler::throw_nested(const  std::exception& texception, int level)
 {
 	*_logger << std::string(level, ' ') << texception.what() << "\n";
 	try {
 		std::rethrow_if_nested(texception);
 	}
-	catch (const FMTexception& texception)
+	catch (const  std::exception& texception)
 	{
 		throw_nested(texception, level + 1);
 	}
@@ -109,10 +109,12 @@ FMTlev FMTexceptionhandler::raise(FMTexc lexception, Core::FMTwssect lsection, s
 	}
 	if (_level == FMTlev::FMT_Warning)
 	{
-		throw FMTwarning(excp);
+		//throw FMTwarning(excp);
+		std::throw_with_nested(FMTwarning(excp));
 	}
 	else if (_level == FMTlev::FMT_logic || _level == FMTlev::FMT_range) {
-		throw FMTerror(excp);
+		//throw FMTerror(excp);
+		std::throw_with_nested(FMTerror(excp));
 	}
 	return _level;
 }
@@ -385,6 +387,11 @@ std::string FMTexceptionhandler::updatestatus(const FMTexc lexception, const std
 		break;
 	case FMTexc::FMTmissinglicense:
 		msg += "License error: " + message;
+		_level = FMTlev::FMT_logic;
+		++_errorcount;
+		break;
+	case FMTexc::FMTfunctionfailed:
+		msg += "Function failed: " + message;
 		_level = FMTlev::FMT_logic;
 		++_errorcount;
 		break;

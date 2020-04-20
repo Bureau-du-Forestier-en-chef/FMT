@@ -28,7 +28,7 @@ SOFTWARE.
 #include "FMTlayer.h"
 #include "FMTforest.h"
 #include "FMTgraphdescription.h"
-#include "FMTgraph.h"
+#include "FMTlinegraph.h"
 #include "FMTgraphstats.h"
 #include <unordered_map>
 #include <vector>
@@ -41,7 +41,8 @@ namespace Spatial
 enum class FMTsamovetype
     {
         shotgun,
-        cluster
+        cluster,
+        opt1
     };
 enum class FMTsapenaltytype
     {
@@ -49,19 +50,26 @@ enum class FMTsapenaltytype
         exponential
     };
 
-
-class FMTsasolution : public FMTlayer<Graph::FMTgraph>
+// DocString: FMTsasolution
+/**
+This class is a map containing a linear graph for each pixel. The graph represent
+the action and transition at each each period for the pixel. It's the solution of
+the FMTsamodel. It's in this class that the "move" is implemented in the function
+perturb graph. It's also in this class that the value of the objective function for
+the solution is store.
+*/
+class FMTsasolution : public FMTlayer<Graph::FMTlinegraph>
     {
 	mutable std::unordered_map<size_t, std::vector<double>>outputscache;
     protected:
         Graph::FMTgraphstats solution_stats;
-		std::vector<std::vector<std::vector<FMTevent<Graph::FMTgraph>>>> events;//v1 period v2 action id v3 FMTevent<FMTgraph>
         double objectivefunctionvalue;//Sum of all penalties
+        FMTsaeventcontainer events;//Modifying in FMTlinegraph
     public:
 		std::map<std::string, std::pair<std::vector<double>, std::vector<double>>> constraint_outputs_penalties;
         FMTsasolution();
         FMTsasolution(const FMTforest& initialmap);
-        virtual ~FMTsasolution()=default;
+        ~FMTsasolution()=default;
         FMTsasolution(const FMTsasolution& rhs);
         FMTsasolution& operator = (const FMTsasolution& rhs);
 		bool copyfromselected(const FMTsasolution& rhs, const std::vector<size_t>& selected);
@@ -72,7 +80,7 @@ class FMTsasolution : public FMTlayer<Graph::FMTgraph>
         //Function to get info on the solution
         double getobjfvalue()const;
         Graph::FMTgraphstats getsolution_stats() const;
-        const std::vector<std::vector<std::vector<FMTevent<Graph::FMTgraph>>>>& getevents() const;
+        const FMTsaeventcontainer& getevents() const;
         void getstartstop(const Core::FMTconstraint& constraint, int& periodstart,int& periodstop) const;
 		std::vector<double> getgraphsoutputs(const Models::FMTmodel& model, const Core::FMTconstraint& constraint,
                                     const int& periodstart,const int& periodstop) const;

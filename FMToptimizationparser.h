@@ -89,7 +89,7 @@ namespace Parser
 				  const std::vector<Core::FMToutput>& outputs,
 				  std::vector<Core::FMTaction>& excluded,
 				  const std::string& location);
-		void write(const std::vector<Core::FMTconstraint>& constraints, std::string location);
+		void write(const std::vector<Core::FMTconstraint>& constraints,const std::string& location) const;
 		~FMToptimizationparser()=default;
 	};
 }

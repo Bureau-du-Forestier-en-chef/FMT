@@ -43,7 +43,6 @@ SOFTWARE.
 #include <boost/serialization/split_member.hpp>
 #include <boost/serialization/unordered_map.hpp>
 #include <boost/serialization/vector.hpp>
-#include <boost/serialization/export.hpp>
 
 #include <memory>
 #include <unordered_map>
@@ -103,7 +102,7 @@ class FMTgraph
 		std::vector<std::unordered_map<size_t, FMTvertex_descriptor>>::const_iterator getfirstconstblock() const;
     public:
         FMTgraph();
-        ~FMTgraph()=default;
+        virtual ~FMTgraph()=default;
         FMTgraph(const FMTgraphbuild lbuildtype);
         FMTgraph(const FMTgraph& rhs);
 		void swap(FMTgraph& rhs);
@@ -116,13 +115,6 @@ class FMTgraph
 		std::queue<FMTvertex_descriptor> initialize(const std::vector<Core::FMTactualdevelopment>& actdevelopments);
 		FMTgraphstats build(const Models::FMTmodel& model,
                             std::queue<FMTvertex_descriptor> actives);
-		std::vector<std::pair<size_t,int>> adjacentevents(const std::vector<Spatial::FMTevent<FMTgraph>>& events, const Spatial::FMTcoordinate& localisation,const int action_id) const;
-		std::pair<size_t,int> randomoperate(const std::vector<std::pair<size_t,int>>& operables, const Models::FMTmodel& model, std::queue<FMTvertex_descriptor>& actives,
-                                            FMTgraphstats& statsdiff, const FMTvertex_descriptor& front_vertex, std::default_random_engine& generator,
-                                            const Core::FMTdevelopment& active_development);
-        FMTgraphstats randombuild(const Models::FMTmodel& model,
-                                    std::queue<FMTvertex_descriptor> actives, std::default_random_engine& generator,
-			std::vector<std::vector<Spatial::FMTevent<FMTgraph>>>& events_id, const Spatial::FMTcoordinate& localisation);
         FMTgraphstats naturalgrowth(std::queue<FMTvertex_descriptor> actives);
 		std::vector<Core::FMTactualdevelopment> getperiodstopdev(const int location,const double* solution) const;
 		std::map<std::string, double> getoutput(const Models::FMTmodel& model, const Core::FMToutput& output,
@@ -181,15 +173,7 @@ class FMTgraph
 		std::map<std::string, double> getvalues(const Models::FMTmodel& model, const std::vector<FMTvertex_descriptor>& verticies,
 			const Core::FMToutputnode& node, const Core::FMTtheme& theme,
 			const double* solution, FMToutputlevel level) const;
-        void cleanevents(std::vector<Spatial::FMTevent<FMTgraph>>& events_id, const Spatial::FMTcoordinate& localisation) const;
-        FMTgraphstats clearfromperiod(const int& period, std::vector<std::vector<std::vector<Spatial::FMTevent<FMTgraph>>>>& events,
-                                        const Spatial::FMTcoordinate& localisation);
-        FMTgraph partialcopy(const int& period, std::vector<std::vector<std::vector<Spatial::FMTevent<FMTgraph>>>>& events,
-                                const Spatial::FMTcoordinate& localisation) const;
         void generatedevelopments();
-        FMTgraph perturbgraph(const Models::FMTmodel& model, std::default_random_engine& generator,
-			std::vector<std::vector<std::vector<Spatial::FMTevent<FMTgraph>>>>& events,
-                              const Spatial::FMTcoordinate& localisation, const int period) const;
 		bool sameedgesas(const FMTgraph& rhs) const;
 		void updatematrixindex(const std::vector<int>& removedvariables,
 			const std::vector<int>& removedconstraints);
@@ -199,5 +183,4 @@ class FMTgraph
 			const std::map<int,int>& actionmapconnection) const;
     };
 }
-BOOST_CLASS_EXPORT_KEY(Graph::FMTgraph);
 #endif // FMTGRAPH_H

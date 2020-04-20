@@ -32,12 +32,11 @@ SOFTWARE.
 #include <boost/serialization/serialization.hpp>
 #include <boost/serialization/nvp.hpp>
 #include <boost/serialization/array.hpp>
-
+#include <string>
+#include <set>
 
 namespace Spatial
     {
-	
-
     class FMTcoordinate
         {
 		friend class boost::serialization::access;
@@ -46,14 +45,8 @@ namespace Spatial
 			{
 			ar & BOOST_SERIALIZATION_NVP(x);
 			ar & BOOST_SERIALIZATION_NVP(y);
-			//ar & BOOST_SERIALIZATION_NVP(x_n);
-			//ar & BOOST_SERIALIZATION_NVP(y_n);
 			}
         unsigned int x,y;
-		//static constexpr std::array<int,8>x_n = { 0,1,0,-1,1,1,-1,-1 };
-		//static constexpr std::array<int,8>y_n = { 1,0,-1,0,1,-1,-1,1 };
-		//int x_n[8] = { 0,1,0,-1,1,1,-1,-1 };
-		//int y_n[8] = { 1,0,-1,0,1,-1,-1,1 };
     public:
         FMTcoordinate();
         ~FMTcoordinate()=default;
@@ -68,6 +61,8 @@ namespace Spatial
         unsigned int gety() const;
         bool operator == (const FMTcoordinate& rhs) const;
         bool operator < (const FMTcoordinate& rhs) const;
+        operator std::string() const;
+        std::set<FMTcoordinate> getneighbors(const unsigned int& nsize,const bool& circle=false) const;
         };
     }
 

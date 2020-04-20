@@ -125,7 +125,8 @@ enum FMTexc
 	WSemptybound = 49,
 	FMTunboundedperiod = 50,
 	FMTnonaddedconstraint = 51,
-	FMTmissinglicense = 52
+	FMTmissinglicense = 52,
+	FMTfunctionfailed = 53
     };
 
 // DocString: FMTexception

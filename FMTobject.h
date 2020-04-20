@@ -74,12 +74,12 @@ class FMTobject
 		std::shared_ptr<Logging::FMTlogger> _logger;
 		// DocString: FMTobject::FMTwssect
 		///The section in which the child class is in
-		FMTwssect _section;
+		mutable FMTwssect _section;
 		// DocString: FMTobject::checksignals
 		/**
 		This function only check if the user has sent a ctrl-c signal using boost::python to FMT.
 		*/
-		void checksignals();
+		void checksignals() const;
 		// DocString: FMTobject::getruntimelocation
 		/**
 		This function return the location of the FMT shared library location.
@@ -153,7 +153,7 @@ class FMTobject
 		/**
 		It sets the section member of the FMTobject.
 		*/
-		void setsection(const FMTwssect& section);
+		void setsection(const FMTwssect& section) const;
 		// DocString: FMTobject::setdefaultlogger
 		/**
 		Create and set a default logger to the FMTobject.

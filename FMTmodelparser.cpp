@@ -45,7 +45,7 @@ FMTmodelparser& FMTmodelparser::operator = (const FMTmodelparser& rhs)
     return *this;
     }
 
-bool FMTmodelparser::write(const Models::FMTmodel& model,const std::string& folder)
+void FMTmodelparser::write(const Models::FMTmodel& model,const std::string& folder) const
     {
     FMTlandscapeparser landparser;
     landparser.write(model.getthemes(),folder+model.name+".lan");
@@ -73,8 +73,6 @@ bool FMTmodelparser::write(const Models::FMTmodel& model,const std::string& fold
 		FMToptimizationparser optparser;
 		optparser.write(constraints, folder + model.name + ".opt");
 		}
-
-    return true;
     }
 
 Models::FMTmodel FMTmodelparser::read(const std::string& con,const std::string& lan,
@@ -260,78 +258,84 @@ Models::FMTmodel FMTmodelparser::referenceread(std::map<std::string, std::vector
 		}
 		const boost::filesystem::path landfile(lan);
 		const std::string modelname = landfile.stem().string();
-		FMTconstantparser cparser;
-		cparser.passinexceptionhandler(_exhandler);
-		constants = cparser.read(con);
-		if (themes.empty())
-			{
-			FMTlandscapeparser landparser;
-			landparser.passinexceptionhandler(_exhandler);
-			themes = landparser.read(constants, lan);
-			}
-		if (areas.empty())
-			{
-			FMTareaparser areaparser;
-			areaparser.passinexceptionhandler(_exhandler);
-			areas = areaparser.read(themes, constants, are);
-			}
-		if (lifespan.empty())
-			{
-			FMTlifespanparser lifespanparser;
-			lifespanparser.passinexceptionhandler(_exhandler);
-			lifespan = lifespanparser.read(themes, constants, lif);
-			}
-		if (yields.empty())
-			{
-			FMTyieldparser yldparser;
-			yldparser.passinexceptionhandler(_exhandler);
-			yields = yldparser.read(themes, constants, yld);
-			}
-		if (actions.empty())
-			{
-			FMTactionparser actparser;
-			actparser.passinexceptionhandler(_exhandler);
-			actions = actparser.read(themes, yields, constants, act);
-			if (find_if(actions.begin(), actions.end(), Core::FMTactioncomparator("_DEATH")) == actions.end())
-				{
-				_exhandler->raise(Exception::FMTexc::WSundefineddeathaction, Core::FMTwssect::Action,
-					"_DEATH", __LINE__, __FILE__);
-				actions.push_back(Models::FMTmodel::defaultdeathaction(lifespan,themes));
-				}
-			}
-		if (transitions.empty())
-			{
-			FMTtransitionparser trnparser;
-			trnparser.passinexceptionhandler(_exhandler);
-			transitions = trnparser.read(themes, actions, yields, constants, tr);
-			if (find_if(transitions.begin(), transitions.end(), Core::FMTtransitioncomparator("_DEATH")) == transitions.end())
-				{
-				_exhandler->raise(Exception::FMTexc::WSundefineddeathtransition, Core::FMTwssect::Transition,
-					"_DEATH", __LINE__, __FILE__);
-				transitions.push_back(Models::FMTmodel::defaultdeathtransition(lifespan,themes));
-				}
-			}
-		if (outputs.empty())
-			{
-			FMToutputparser outparser;
-			outparser.passinexceptionhandler(_exhandler);
-			outputs = outparser.read(themes, actions, yields, constants, out);
-			}
 		Models::FMTmodel returnedmodel;
-		if (!opt.empty() && constraints.empty())
-		{
-			
-			FMToptimizationparser optzparser;
-			std::vector<Core::FMTaction>excluded(actions); //should we realy use? excluded is actualy the same actions but with more period specification...
-			optzparser.passinexceptionhandler(_exhandler);
-			constraints = optzparser.read(themes, actions, constants, outputs, excluded, opt);
-			actions = excluded; //here we go
-			returnedmodel =  Models::FMTmodel(areas, themes, actions,
-				transitions, yields, lifespan, modelname, outputs, constraints);
-		}else {
-			returnedmodel = Models::FMTmodel(areas, themes, actions,
-				transitions, yields, lifespan, modelname, outputs);
+		try {
+			FMTconstantparser cparser;
+			cparser.passinexceptionhandler(_exhandler);
+			constants = cparser.read(con);
+			if (themes.empty())
+			{
+				FMTlandscapeparser landparser;
+				landparser.passinexceptionhandler(_exhandler);
+				themes = landparser.read(constants, lan);
 			}
+			if (areas.empty())
+			{
+				FMTareaparser areaparser;
+				areaparser.passinexceptionhandler(_exhandler);
+				areas = areaparser.read(themes, constants, are);
+			}
+			if (lifespan.empty())
+			{
+				FMTlifespanparser lifespanparser;
+				lifespanparser.passinexceptionhandler(_exhandler);
+				lifespan = lifespanparser.read(themes, constants, lif);
+			}
+			if (yields.empty())
+			{
+				FMTyieldparser yldparser;
+				yldparser.passinexceptionhandler(_exhandler);
+				yields = yldparser.read(themes, constants, yld);
+			}
+			if (actions.empty())
+			{
+				FMTactionparser actparser;
+				actparser.passinexceptionhandler(_exhandler);
+				actions = actparser.read(themes, yields, constants, act);
+				if (find_if(actions.begin(), actions.end(), Core::FMTactioncomparator("_DEATH")) == actions.end())
+				{
+					_exhandler->raise(Exception::FMTexc::WSundefineddeathaction, Core::FMTwssect::Action,
+						"_DEATH", __LINE__, __FILE__);
+					actions.push_back(Models::FMTmodel::defaultdeathaction(lifespan, themes));
+				}
+			}
+			if (transitions.empty())
+			{
+				FMTtransitionparser trnparser;
+				trnparser.passinexceptionhandler(_exhandler);
+				transitions = trnparser.read(themes, actions, yields, constants, tr);
+				if (find_if(transitions.begin(), transitions.end(), Core::FMTtransitioncomparator("_DEATH")) == transitions.end())
+				{
+					_exhandler->raise(Exception::FMTexc::WSundefineddeathtransition, Core::FMTwssect::Transition,
+						"_DEATH", __LINE__, __FILE__);
+					transitions.push_back(Models::FMTmodel::defaultdeathtransition(lifespan, themes));
+				}
+			}
+			if (outputs.empty())
+			{
+				FMToutputparser outparser;
+				outparser.passinexceptionhandler(_exhandler);
+				outputs = outparser.read(themes, actions, yields, constants, out);
+			}
+			if (!opt.empty() && constraints.empty())
+			{
+
+				FMToptimizationparser optzparser;
+				std::vector<Core::FMTaction>excluded(actions); //should we realy use? excluded is actualy the same actions but with more period specification...
+				optzparser.passinexceptionhandler(_exhandler);
+				constraints = optzparser.read(themes, actions, constants, outputs, excluded, opt);
+				actions = excluded; //here we go
+				returnedmodel = Models::FMTmodel(areas, themes, actions,
+					transitions, yields, lifespan, modelname, outputs, constraints);
+			}
+			else {
+				returnedmodel = Models::FMTmodel(areas, themes, actions,
+					transitions, yields, lifespan, modelname, outputs);
+			}
+			}catch (const std::exception& exception)
+				{
+				_exhandler->throw_nested(exception);
+				}
 		if (allow_mapping)
 			{
 			models.push_back(returnedmodel);

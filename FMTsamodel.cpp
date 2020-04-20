@@ -34,7 +34,7 @@ SOFTWARE.
 namespace Models
 
 {
-    Graph::FMTgraphstats FMTsamodel::g_move_solution (const double min_ratio, const double max_ratio, Spatial::FMTsamovetype movetype)
+    Graph::FMTgraphstats FMTsamodel::g_move_solution(const double min_ratio,const double max_ratio)
     {
         number_of_moves ++;
         new_solution = current_solution.perturb(*this,generator,movetype,min_ratio,max_ratio);
@@ -47,7 +47,7 @@ namespace Models
         {
             for (std::vector<size_t>::const_iterator it = mapidmodified.begin(); it != mapidmodified.end(); it++)
             {
-				std::map<Spatial::FMTcoordinate,Graph::FMTgraph>::const_iterator current_solutionit =  current_solution.mapping.begin();
+				std::map<Spatial::FMTcoordinate,Graph::FMTlinegraph>::const_iterator current_solutionit =  current_solution.mapping.begin();
                  std::advance(current_solutionit,*it);
                  if(current_solutionit->second != new_solution.mapping.at(current_solutionit->first))
                  {
@@ -61,6 +61,7 @@ namespace Models
 
     FMTsamodel::FMTsamodel():
         FMTmodel(),
+        movetype(Spatial::FMTsamovetype::opt1),
         min_ratio_moves(0),
         max_ratio_moves(1),
         outputs_write_location(),
@@ -81,6 +82,7 @@ namespace Models
 
     FMTsamodel::FMTsamodel(const FMTsamodel& rhs):
         FMTmodel(rhs),
+        movetype(rhs.movetype),
         min_ratio_moves(rhs.min_ratio_moves),
         max_ratio_moves(rhs.max_ratio_moves),
         outputs_write_location(rhs.outputs_write_location),
@@ -101,6 +103,7 @@ namespace Models
 
     FMTsamodel::FMTsamodel(const FMTmodel& rhs):
         FMTmodel(rhs),
+        movetype(Spatial::FMTsamovetype::opt1),
         min_ratio_moves(0),
         max_ratio_moves(1),
         outputs_write_location(),
@@ -124,6 +127,7 @@ namespace Models
         if (this!=&rhs)
             {
             FMTmodel::operator = (rhs);
+            movetype = rhs.movetype;
             min_ratio_moves = rhs.min_ratio_moves;
             max_ratio_moves = rhs.max_ratio_moves;
             outputs_write_location = rhs.outputs_write_location;
@@ -343,6 +347,16 @@ namespace Models
         return true;
     }
 
+    bool FMTsamodel::set_movetype(const Spatial::FMTsamovetype movet)
+    {
+        movetype = movet;
+        if (movetype == movet)
+        {
+             return true;
+        }
+        return false;
+    }
+
     int FMTsamodel::get_number_moves()const
     {
         return number_of_moves;
@@ -373,7 +387,7 @@ namespace Models
                     const std::string& cname = mapit->first;
                     const std::vector<double>& outputs = mapit->second.first;
                     const std::vector<double>& penalties = mapit->second.second;
-                    for (int i = 0 ; i < outputs.size() ; ++i )
+                    for (size_t i = 0 ; i < outputs.size() ; ++i )
                     {
                         outputFile<<*move_num<<","<<cname<<","<<i+1<<","<<outputs.at(i)<<","<<penalties.at(i)<<","<<*probs<<std::endl;
                     }
@@ -499,9 +513,9 @@ namespace Models
         return current_solution.buildperiod(*this,generator);
     }
 
-    Graph::FMTgraphstats FMTsamodel::move_solution(Spatial::FMTsamovetype movetype)
+    Graph::FMTgraphstats FMTsamodel::move_solution()
     {
-        return g_move_solution(min_ratio_moves,max_ratio_moves,movetype);
+        return g_move_solution(min_ratio_moves,max_ratio_moves);
     }
 
     bool FMTsamodel::setmapidmodified(const std::vector<size_t>& id)

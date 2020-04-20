@@ -423,9 +423,6 @@ bool FMTmodel::isvalid()
 			validatelistspec(source);
 			}
 		}
-
-
-
 	this->setsection(Core::FMTwssect::Empty);
     return true;
     }
@@ -486,121 +483,128 @@ Core::FMTmask FMTmodel::getselectedmask(const std::vector<Core::FMTtheme>& origi
 
 std::unique_ptr<FMTmodel> FMTmodel::presolve(int presolvepass,std::vector<Core::FMTactualdevelopment> optionaldevelopments) const
 	{
-	Core::FMTmask basemask = getbasemask(optionaldevelopments);
-	//Base data
-	std::vector<Core::FMTtheme>oldthemes(themes);
-	std::vector<Core::FMTactualdevelopment>oldarea(area);
-	std::vector<Core::FMTaction>oldactions(actions);
-	std::vector<Core::FMTtransition>oldtransitions(transitions);
-	Core::FMTyields oldyields(yields);
-	Core::FMTlifespans oldlifespans(lifespan);
-	std::vector<Core::FMToutput>oldoutputs(outputs);
-	std::vector<Core::FMTconstraint>oldconstraints(constraints);
-	Core::FMTmask oldselectedattributes;
-	//Passiterator
-	bool didonepass = false;
-	while (presolvepass > 0)
+	std::unique_ptr<FMTmodel>presolvedmodel;
+	try {
+		Core::FMTmask basemask = getbasemask(optionaldevelopments);
+		//Base data
+		std::vector<Core::FMTtheme>oldthemes(themes);
+		std::vector<Core::FMTactualdevelopment>oldarea(area);
+		std::vector<Core::FMTaction>oldactions(actions);
+		std::vector<Core::FMTtransition>oldtransitions(transitions);
+		Core::FMTyields oldyields(yields);
+		Core::FMTlifespans oldlifespans(lifespan);
+		std::vector<Core::FMToutput>oldoutputs(outputs);
+		std::vector<Core::FMTconstraint>oldconstraints(constraints);
+		Core::FMTmask oldselectedattributes;
+		//Passiterator
+		bool didonepass = false;
+		while (presolvepass > 0)
 		{
-		//Presolved data
-		std::vector<Core::FMTtheme>newthemes;
-		std::vector<Core::FMTactualdevelopment>newarea;
-		std::vector<Core::FMTaction>newactions;
-		std::vector<Core::FMTtransition>newtransitions;
-		Core::FMTyields newyields;
-		Core::FMTlifespans newlifespans;
-		std::vector<Core::FMToutput>newoutputs;
-		std::vector<Core::FMTconstraint>newconstraints;
-		if (didonepass)
+			//Presolved data
+			std::vector<Core::FMTtheme>newthemes;
+			std::vector<Core::FMTactualdevelopment>newarea;
+			std::vector<Core::FMTaction>newactions;
+			std::vector<Core::FMTtransition>newtransitions;
+			Core::FMTyields newyields;
+			Core::FMTlifespans newlifespans;
+			std::vector<Core::FMToutput>newoutputs;
+			std::vector<Core::FMTconstraint>newconstraints;
+			if (didonepass)
 			{
-			basemask = basemask.presolve(oldselectedattributes, oldthemes);
+				basemask = basemask.presolve(oldselectedattributes, oldthemes);
 			}
-		Core::FMTmask selectedattributes; //selected attribute keeps the binaries used by the new attribute selection.
-		//Checkout to reduce the themes complexity
-		int themeid = 0;
-		int themestart = 0;
-		size_t themedataremoved = 0;
-		for (const Core::FMTtheme& theme : oldthemes)
+			Core::FMTmask selectedattributes; //selected attribute keeps the binaries used by the new attribute selection.
+			//Checkout to reduce the themes complexity
+			int themeid = 0;
+			int themestart = 0;
+			size_t themedataremoved = 0;
+			for (const Core::FMTtheme& theme : oldthemes)
 			{
-			const Core::FMTtheme presolvedtheme = theme.presolve(basemask, themeid, themestart, selectedattributes);
-			if (!presolvedtheme.empty())
+				const Core::FMTtheme presolvedtheme = theme.presolve(basemask, themeid, themestart, selectedattributes);
+				if (!presolvedtheme.empty())
 				{
-				themedataremoved += (theme.size() - presolvedtheme.size());
-				newthemes.push_back(presolvedtheme);
+					themedataremoved += (theme.size() - presolvedtheme.size());
+					newthemes.push_back(presolvedtheme);
 				}
 			}
-		if (!selectedattributes.empty())
+			if (!selectedattributes.empty())
 			{
-			for (const Core::FMTactualdevelopment& development : oldarea)
+				for (const Core::FMTactualdevelopment& development : oldarea)
 				{
-				newarea.push_back(development.presolve(selectedattributes, newthemes));
-				}
-		}else {
-			newarea = oldarea;
-			}
-		//reduce the number of actions and presolve the actions
-		size_t actiondataremoved = 0;
-		for (const Core::FMTaction& action : oldactions)
-			{
-			const Core::FMTmask testedmask = action.getunion(oldthemes);
-			if (!basemask.isnotthemessubset(testedmask, oldthemes))
-				{
-				const Core::FMTaction presolvedaction = action.presolve(basemask, oldthemes, selectedattributes,newthemes);
-				actiondataremoved += (action.size() - presolvedaction.size());
-				newactions.push_back(presolvedaction);
+					newarea.push_back(development.presolve(selectedattributes, newthemes));
 				}
 			}
-		//reduce the number of transitions and presolve the transitions
-		size_t transitiondataremoved = 0;
-		for (const Core::FMTtransition& transition : oldtransitions)
+			else {
+				newarea = oldarea;
+			}
+			//reduce the number of actions and presolve the actions
+			size_t actiondataremoved = 0;
+			for (const Core::FMTaction& action : oldactions)
 			{
-			if (std::find_if(newactions.begin(), newactions.end(), Core::FMTactioncomparator(transition.getname())) != newactions.end())
+				const Core::FMTmask testedmask = action.getunion(oldthemes);
+				if (!basemask.isnotthemessubset(testedmask, oldthemes))
 				{
-				const Core::FMTtransition presolvedtransition = transition.presolve(basemask, oldthemes,selectedattributes, newthemes);
-				transitiondataremoved += (transition.size() - presolvedtransition.size());
-				newtransitions.push_back(presolvedtransition);
+					const Core::FMTaction presolvedaction = action.presolve(basemask, oldthemes, selectedattributes, newthemes);
+					actiondataremoved += (action.size() - presolvedaction.size());
+					newactions.push_back(presolvedaction);
 				}
 			}
-		//Presolve yields
-		newyields = oldyields.presolve(basemask, oldthemes, selectedattributes, newthemes);
-		//Presolve lifespan data
-		newlifespans = oldlifespans.presolve(basemask, oldthemes, selectedattributes, newthemes);
-		//Outputs and data
-		size_t outputdataremoved = 0;
-		for (const Core::FMToutput& output : oldoutputs)
+			//reduce the number of transitions and presolve the transitions
+			size_t transitiondataremoved = 0;
+			for (const Core::FMTtransition& transition : oldtransitions)
 			{
-			const Core::FMToutput presolvedoutput = output.presolve(basemask, oldthemes,selectedattributes, newthemes, newactions,oldyields);
-			outputdataremoved += (output.size() - presolvedoutput.size());
-			if (!presolvedoutput.empty())
+				if (std::find_if(newactions.begin(), newactions.end(), Core::FMTactioncomparator(transition.getname())) != newactions.end())
 				{
-				newoutputs.push_back(presolvedoutput);
+					const Core::FMTtransition presolvedtransition = transition.presolve(basemask, oldthemes, selectedattributes, newthemes);
+					transitiondataremoved += (transition.size() - presolvedtransition.size());
+					newtransitions.push_back(presolvedtransition);
 				}
 			}
-		//Constraints and data
-		size_t constraintdataremoved = 0;
-		for (const Core::FMTconstraint& constraint : oldconstraints)
+			//Presolve yields
+			newyields = oldyields.presolve(basemask, oldthemes, selectedattributes, newthemes);
+			//Presolve lifespan data
+			newlifespans = oldlifespans.presolve(basemask, oldthemes, selectedattributes, newthemes);
+			//Outputs and data
+			size_t outputdataremoved = 0;
+			for (const Core::FMToutput& output : oldoutputs)
+			{
+				const Core::FMToutput presolvedoutput = output.presolve(basemask, oldthemes, selectedattributes, newthemes, newactions, oldyields);
+				outputdataremoved += (output.size() - presolvedoutput.size());
+				if (!presolvedoutput.empty())
+				{
+					newoutputs.push_back(presolvedoutput);
+				}
+			}
+			//Constraints and data
+			size_t constraintdataremoved = 0;
+			for (const Core::FMTconstraint& constraint : oldconstraints)
 			{
 				const Core::FMTconstraint presolvedconstraint = constraint.presolve(basemask, oldthemes, selectedattributes, newthemes, newactions, oldyields);
 				constraintdataremoved += (constraint.size() - presolvedconstraint.size());
 				if (!presolvedconstraint.outputempty())
-					{
+				{
 					newconstraints.push_back(presolvedconstraint);
-					}
+				}
 
 			}
-		oldthemes= newthemes;
-		oldarea = newarea;
-		oldactions = newactions;
-		oldtransitions = newtransitions;
-		oldyields = newyields;
-		oldlifespans = newlifespans;
-		oldoutputs = newoutputs;
-		oldconstraints = newconstraints;
-		oldselectedattributes = selectedattributes;
-		--presolvepass;
-		didonepass = true;
+			oldthemes = newthemes;
+			oldarea = newarea;
+			oldactions = newactions;
+			oldtransitions = newtransitions;
+			oldyields = newyields;
+			oldlifespans = newlifespans;
+			oldoutputs = newoutputs;
+			oldconstraints = newconstraints;
+			oldselectedattributes = selectedattributes;
+			--presolvepass;
+			didonepass = true;
 		}
-	std::unique_ptr<FMTmodel>presolvedmodel= std::unique_ptr<FMTmodel>(new FMTmodel(oldarea, oldthemes, oldactions, oldtransitions, oldyields, oldlifespans, name, oldoutputs, oldconstraints));
+	presolvedmodel = std::unique_ptr<FMTmodel>(new FMTmodel(oldarea, oldthemes, oldactions, oldtransitions, oldyields, oldlifespans, name, oldoutputs, oldconstraints));
 	presolvedmodel->cleanactionsntransitions();
+	}catch (...)
+		{
+		_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, _section, "while presolving model "+name, __LINE__, __FILE__);
+		}
 	return presolvedmodel;
 	}
 
@@ -612,8 +616,15 @@ std::unique_ptr<FMTmodel>FMTmodel::postsolve(const FMTmodel& originalbasemodel) 
 Core::FMTschedule FMTmodel::presolveschedule(const Core::FMTschedule& originalbaseschedule,
 	const FMTmodel& originalbasemodel) const
 	{
-	const Core::FMTmask presolvedmask = this->getselectedmask(originalbasemodel.themes);
-	return originalbaseschedule.presolve(presolvedmask, this->themes, this->actions);
+	Core::FMTschedule newschedule;
+	try {
+		const Core::FMTmask presolvedmask = this->getselectedmask(originalbasemodel.themes);
+		newschedule = originalbaseschedule.presolve(presolvedmask, this->themes, this->actions);
+	}catch (...)
+		{
+		_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, _section, "while presolving schedule", __LINE__, __FILE__);
+		}
+	return newschedule;
 	}
 
 

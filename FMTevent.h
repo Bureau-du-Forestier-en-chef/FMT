@@ -32,9 +32,14 @@ SOFTWARE.
 #include "FMTspatialaction.h"
 #include <boost/serialization/serialization.hpp>
 #include <boost/serialization/nvp.hpp>
+#include <boost/serialization/set.hpp>
 namespace Spatial
 {
-template<class T>
+// DocString: FMTevent
+/**
+This is the base class use to create FMTsaevent or FMTsesevent. It is a set of FMTcoordinate (elements)
+corresponding to the FMTcoordinates presents in the event.
+*/
 class FMTevent
     {
 	friend class boost::serialization::access;
@@ -42,394 +47,175 @@ class FMTevent
 	void serialize(Archive& ar, const unsigned int version)
 	{
 		ar & BOOST_SERIALIZATION_NVP(ignition);
-		ar & BOOST_SERIALIZATION_NVP(active);
-		ar & BOOST_SERIALIZATION_NVP(territory);
 		ar & BOOST_SERIALIZATION_NVP(enveloppe);
-		ar & BOOST_SERIALIZATION_NVP(order);
+		ar & BOOST_SERIALIZATION_NVP(elements);
 	}
+	// DocString: FMTevent::midposition()
+    /**
+	Get mid point of elements.
+	*/
 	FMTcoordinate midposition() const
 		{
-		//get mid point of elements!
 		const size_t midlocation = (elements.size() / 2);
-		return ((elements.begin() + midlocation)->first);
+		std::set<FMTcoordinate>::const_iterator it = elements.begin();
+		std::advance(it,midlocation);
+		return (*it);
 		}
     protected:
+        // DocString: FMTevent::ignition
+        /**
+        Coordinate where the event started
+        */
         FMTcoordinate ignition;
-		std::vector<FMTcoordinate>active;
-        const std::map<FMTcoordinate,T>* territory;
+        // DocString: FMTevent::enveloppe
+        /**
+        Coordinates that create the envelope of the event
+        //0//-//1//
+		//-//-//-//
+		//2//-//3//
+        */
 		std::vector<FMTcoordinate>enveloppe;
-		int order;
     public:
-		std::map<FMTcoordinate,const T*>elements;
-    virtual ~FMTevent() = default;
-    FMTevent():
-        ignition(),
-        active(),
-		territory(),
-        enveloppe(),
-		order(),
-        elements()
-        {
+        // DocString: FMTevent::elements
+        /**
+        Coordinates presents in the event
+        */
+        std::set<FMTcoordinate>elements;
+        // DocString: ~FMTevent()
+        /**
+        Destructor
+        */
+        virtual ~FMTevent() = default;
+        // DocString: FMTevent()
+        /**
+        Constructor
+        */
+        FMTevent();
+        // DocString: FMTevent(const FMTcoordinate&)
+        /**
+        Constructor with coordinate for ignition
+        */
+		FMTevent(const FMTcoordinate& location);
+        // DocString: FMTevent(const FMTevent&)
+        /**
+        Copy constructor
+        */
+		FMTevent(const FMTevent& rhs);
+        // DocString: FMTevent::operator=
+        /**
+        Copy assignment operator
+        */
+        FMTevent& operator=(const FMTevent& rhs);
+        // DocString: FMTevent::empty
+        /**
+        Test whether event is empty
+        */
+        bool empty() const {return elements.empty();}
+        // DocString: FMTevent::size
+        /**
+        Return event size
+        */
+        size_t size() const {return elements.size();}
+        // DocString: FMTevent::hash
+        /**
 
-        }
-	FMTevent(const FMTcoordinate& location) :
-		ignition(location),
-		active(),
-		territory(),
-		enveloppe(std::vector<FMTcoordinate>(4, location)),
-		order(),
-		elements()
-	{
-
-	}
-    FMTevent(const std::map<FMTcoordinate,T>& lterritory, const int& pass):
-        ignition(),
-        active(),
-        territory(&lterritory),
-        enveloppe(),
-		order(pass),
-        elements()
-        {
-
-        }
-    FMTevent(const FMTevent& rhs):
-        ignition(rhs.ignition),
-        active(rhs.active),
-        territory(rhs.territory),
-        enveloppe(rhs.enveloppe),
-		order(rhs.order),
-        elements(rhs.elements)
-        {
-
-        }
-
-	bool empty() const
-		{
-		return elements.empty();
-		}
-
-	size_t size() const
-		{
-		return elements.size();
-		}
-	bool operator == (const FMTevent<T>& rhs) const
-		{
-		if (size() == rhs.size() && enveloppe == rhs.enveloppe)
-			{
-			for (typename std::map<FMTcoordinate,const T*>::const_iterator it = elements.begin(); it!=elements.end();it++)
-				{
-				if (rhs.elements.find(it->first)==rhs.elements.end())
-					{
-					return false;
-					}
-				}
-			return true;
-			}
-		return false;
-		}
-
-	bool operator != (const FMTevent& rhs) const
-		{
-		return (!(*this==rhs));
-		}
-
-	bool operator < (const FMTevent& rhs) const
-		{
-		return (this->midposition() < rhs.midposition);
-		}
-
-
-	int getorder() const
-		{
-		return order;
-		}
-	//https://www.umass.edu/landeco/research/fragstats/documents/fragstats.help.4.2.pdf
-	//metrics
-	size_t perimeter() const //gives perimeter
-		{
-		size_t total = 0;
-		for (typename std::map<FMTcoordinate, const T*>::const_iterator it = elements.begin(); it != elements.end(); it++)
-			{
-			for (int id = 0; id < 4; ++id)
-				{
-				const FMTcoordinate neighbor= it->first.at(id);
-				if (elements.find(neighbor)==elements.end())
-					{
-					++total;
-					}
-				}
-
-			}
-		return total;
-		}
-
-	size_t height() const
-		{
-		return ((static_cast<size_t>(enveloppe.at(2).gety()) - static_cast<size_t>(enveloppe.at(0).gety()))+1);
-		}
-
-	size_t width() const
-		{
-		return((static_cast<size_t>(enveloppe.at(1).getx()) - static_cast<size_t>(enveloppe.at(0).getx()))+1);
-		}
-
-	FMTcoordinate averagecentroid() const
-		{
-		const size_t startx = enveloppe.at(0).getx();
-		const size_t starty = enveloppe.at(0).gety();
-		const size_t plusx = enveloppe.at(1).getx() - startx;
-		const size_t plusy = enveloppe.at(2).gety() - starty;
-		return FMTcoordinate(startx + plusx, starty + plusy);
-		return FMTcoordinate();
-		}
-
-	std::string getstats() const
-		{
-		return (" "+ std::to_string(size()) +" "+
-			std::to_string(perimeter()) +" "+
-			std::to_string(height()) +" "+
-			std::to_string(width()));
-		return "";
-		}
-
-	void erase(const FMTcoordinate& newlocation)
-		{
-		if (elements.find(newlocation)!= elements.end())
-			{
-			elements.erase(newlocation);
-			}
-		if (empty())
-			{
-			enveloppe.clear();
-		}else {
-			enveloppe = std::vector<FMTcoordinate>(4, elements.begin()->first);
-			for (auto& element : elements)
-				{
-				element.first.upenveloppe(enveloppe);
-				}
-			}
-		}
-
-	void insert(const FMTcoordinate& newlocation, const void* element)
-		{
-		elements.insert(std::pair<Spatial::FMTcoordinate, const T*>(newlocation, static_cast<const T*>(element)));
-		newlocation.upenveloppe(enveloppe);
-		}
-
-    FMTevent& operator = (const FMTevent& rhs)
-        {
-        if(this!=&rhs)
-            {
-			elements = (rhs.elements);
-            ignition= rhs.ignition;
-			active=rhs.active;
-            territory=rhs.territory;
-			order = rhs.order;
-            enveloppe=rhs.enveloppe;
-            }
-        return *this;
-        }
-    FMTcoordinate getignition()
-        {
-        return ignition;
-        }
-    double distance(const FMTevent& rhs) const
-        {
-		double minimaldistance =  std::numeric_limits<double>::max();
-		for(const FMTcoordinate& coord : enveloppe)
-            {
-            for(const FMTcoordinate& rhscoord : rhs.enveloppe)
-                {
-                const double dist = coord.distance(rhscoord);
-                if (dist < minimaldistance)
-                    {
-                    minimaldistance = dist;
-                    }
-                }
-            }
-        return minimaldistance;
-        }
-	double minimaldistance(const std::vector<FMTevent>& events,const unsigned int& distancel) const
-		{
-		double distancevalue = static_cast<double>(distancel) + 1.0;
-		for (const FMTevent& element : events)
-			{
-			if (element.within(distancel,element))
-				{
-				const double value = distance(element);
-				if (value < distancevalue)
-					{
-					distancevalue = value;
-					}
-				}
-			}
-		return distancevalue;
-		}
-    bool within(unsigned int dist, const FMTevent& rhs) const
-        {
-        if(ignition.within(dist,rhs.ignition))
-            {
-            return true;
-            }else{
-                for(const FMTcoordinate& coord : enveloppe)
-                    {
-                    for(const FMTcoordinate& rhscoord : rhs.enveloppe)
-                        {
-                        if (coord.within(dist,rhscoord))
-                            {
-                            return true;
-                            }
-                        }
-                    }
-                }
-        return false;
-        }
-    bool withinc(unsigned int dist, const FMTcoordinate& location) const
-        {
-        if(ignition.within(dist,location))
-            {
-            return true;
-            }else{
-                for(const FMTcoordinate& coord : enveloppe)
-                    {
-                    if (coord.within(dist,location))
-                        {
-                        return true;
-                        }
-                    }
-                }
-        return false;
-        }
-    bool contain(const FMTcoordinate& coord)const
-        {
-            if (elements.find(coord)!=elements.end())
-            {
-                return true;
-            }
-            return false;
-        }
-    virtual bool ignit(const FMTspatialaction& action,const FMTcoordinate& ignit)
-        {
-        if ((1 <= action.maximal_size))
-            {
-            ignition = ignit;
-            active.push_back(ignition);
-            enveloppe = std::vector<FMTcoordinate>(4,ignition);
-            return true;
-            }
-        return false;
-        }
-    virtual bool spread(const FMTspatialaction& action)
-        {
-        while((elements.size() < action.maximal_size) && (!active.empty()))
-            {
-			std::vector<FMTcoordinate>::iterator coord;
-            for(size_t id = 0; id < action.neighbors_size; ++id)
-                {
-                coord = active.begin();
-                const FMTcoordinate spread_coord = coord->at(static_cast<int>(id));
-                if(territory->find(spread_coord)!= territory->end() && elements.find(spread_coord) == elements.end())
-                    {
-                    if(std::find(active.begin(),active.end(),spread_coord)==active.end())
-                        {
-                        active.push_back(spread_coord);
-                        }
-
-                    }
-                }
-            coord = active.begin();
-			insert(*coord, &(territory->at(*coord)));
-            active.erase(active.begin());
-            }
-        if (elements.size()>=action.minimal_size)
-            {
-            return true;
-            }
-        active.clear();
-        enveloppe.clear();
-        active.push_back(ignition);
-        elements.clear();
-        return false;
-        }
-
-    bool whithinelements(unsigned int dist, const FMTcoordinate& location) const
-    {
-        for (typename std::map<FMTcoordinate, const T*>::const_iterator elemit = elements.begin(); elemit != elements.end(); elemit++)
-        {
-             if (elemit->first.within(dist,location))
-             {
-                return true;
-             }
-        }
-        return false;
-    }
-
-    bool splittedevent(const unsigned int& distancel, std::vector<FMTevent>& splittedevents) const
-        //Check if events are split and fill vector of splitted events
-        {
-			std::vector<typename std::map<FMTcoordinate,const T*>::const_iterator> it_vect;
-            while(it_vect.size()<elements.size())
-            {
-                size_t iteration = 0;
-                size_t alloc_count = 0;
-                for (typename std::map<FMTcoordinate, const T*>::const_iterator elemit = elements.begin(); elemit != elements.end(); elemit++)
-                {
-                    if (iteration == 0 && elemit==elements.begin())
-                    {
-                        splittedevents.clear();
-                        FMTevent newevent(elemit->first);
-                        newevent.insert(elemit->first,nullptr);
-                        splittedevents.push_back(newevent);
-                        it_vect.push_back(elemit);
-                    }
-                    if (std::find(it_vect.begin(),it_vect.end(),elemit)==it_vect.end())//If not already allocated
-                    {
-                        FMTevent& lastevent = splittedevents.back();
-                        if (lastevent.whithinelements(distancel,elemit->first))//If in distance of 1
-                        {
-                            lastevent.insert(elemit->first,nullptr);
-                            it_vect.push_back(elemit);
-                            ++alloc_count;
-                        }
-                    }
-                }
-                if(alloc_count==0)
-                {
-                    for (typename std::map<FMTcoordinate, const T*>::const_iterator elemit = elements.begin(); elemit != elements.end(); elemit++)
-                    {
-                        if (std::find(it_vect.begin(),it_vect.end(),elemit)==it_vect.end())
-                        {
-                            FMTevent newevent(elemit->first);
-                            newevent.insert(elemit->first,nullptr);
-                            splittedevents.push_back(newevent);
-                            it_vect.push_back(elemit);
-                            break;
-                        }
-                    }
-
-                }
-                ++iteration;
-            }
-            if (splittedevents.size()>1)
-            {
-                return true;
-            }
-            return false;
-        }
+        */
+        size_t hash() const{return boost::hash<Spatial::FMTcoordinate>()(ignition);}
+        // DocString: FMTevent::operator==
+        /**
+        Comparison operator equal to
+        */
+        virtual bool operator==(const FMTevent& rhs) const;
+        // DocString: FMTevent::operator!=
+        /**
+        Comparison operator different than
+        */
+        bool operator!=(const FMTevent& rhs) const;
+        // DocString: FMTevent::operator<
+        /**
+        Comparison operator less than
+        */
+        virtual bool operator<(const FMTevent& rhs) const {return (this->midposition() < rhs.midposition());}
+        // DocString: FMTevent::perimeter
+        /**
+        The perimeter of the event, including any internal holes in the
+        event.
+        */
+        size_t perimeter() const;
+        // DocString: FMTevent::height
+        /**
+        Return height of the event
+        */
+        size_t height() const;
+        // DocString: FMTevent::width
+        /**
+        Return width of the event
+        */
+        size_t width() const;
+        // DocString: FMTevent::averagecentroid
+        /**
+        Return centroid based on the envelope of the event
+        */
+        FMTcoordinate averagecentroid() const;
+        // DocString: FMTevent::getstats
+        /**
+        Return string containing size, perimeter, height and width
+        */
+        std::string getstats() const;
+        // DocString: FMTevent::erase
+        /**
+        Erase coordinate from event
+        */
+        virtual void erase(const FMTcoordinate& newlocation);
+        // DocString: FMTevent::merge
+        /**
+        Merge two events
+        */
+        virtual void merge(const FMTevent& event);
+        // DocString: FMTevent::insert
+        /**
+        Insert coordinate in the event
+        */
+        virtual void insert(const FMTcoordinate& newlocation);
+        // DocString: FMTevent::distance
+        /**
+        Return the distance between this event and the event pass as argument
+        */
+        double distance(const FMTevent& rhs) const;
+        // DocString: FMTevent::within
+        /**
+        Return true if the event is within specified distance of the envelope
+        */
+        bool within(unsigned int dist, const FMTevent& rhs) const;
+        // DocString: FMTevent::withinc
+        /**
+        Return true if coordinate is within specified distance of the envelope
+        */
+        bool withinc(unsigned int dist, const FMTcoordinate& location) const;
+        // DocString: FMTevent::contain
+        /**
+        Return true if coordinate is in elements
+        */
+        bool contain(const FMTcoordinate& coord)const;
+        // DocString: FMTevent::withinelements
+        /**
+        Return true if coordinate is within specified distance of at least one coordinate in elements
+        */
+        bool whithinelements(unsigned int dist, const FMTcoordinate& location) const;
     };
 }
 
 namespace boost {
 
-  template <typename T>
-  struct hash<Spatial::FMTevent<T>>
-  {
-    std::size_t operator()(const Spatial::FMTevent<T>& event) const
+    template <>
+    struct hash<Spatial::FMTevent>
+    {
+    std::size_t operator()(const Spatial::FMTevent& event) const
     {
 
-      return (hash<Spatial::FMTcoordinate>()(event.getignition()));
+      return (event.hash());
     }
-  };
+    };
 
 }
 #endif // FMTEVENT_H_INCLUDED

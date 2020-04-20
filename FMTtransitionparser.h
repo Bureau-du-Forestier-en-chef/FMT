@@ -61,8 +61,8 @@ class FMTtransitionparser : public FMTparser
         std::vector<Core::FMTtransition>read(const std::vector<Core::FMTtheme>& themes,
                            const std::vector<Core::FMTaction>& actions,
                            const Core::FMTyields& ylds,const Core::FMTconstants& constants,
-							std::string location);
-        bool write(const std::vector<Core::FMTtransition>& transitions, std::string location);
+						   const std::string& location);
+        void write(const std::vector<Core::FMTtransition>& transitions,const std::string& location) const;
     };
 }
 #endif // FMTtransitionparser_H_INCLUDED

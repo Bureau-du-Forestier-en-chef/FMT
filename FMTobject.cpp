@@ -68,7 +68,7 @@ namespace Core
 		return strDLLpath;
 	}
 
-	void FMTobject::checksignals()
+	void FMTobject::checksignals() const
 	{
 	    #if defined FMTWITHPYTHON
 		if (PyErr_CheckSignals() == -1)
@@ -151,7 +151,7 @@ namespace Core
 		_logger = rhs._logger;
 		}
 
-	void FMTobject::setsection(const FMTwssect& section)
+	void FMTobject::setsection(const FMTwssect& section) const
 		{
 		_section = section;
 		this->checksignals();

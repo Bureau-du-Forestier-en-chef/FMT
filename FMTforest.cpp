@@ -88,21 +88,21 @@ FMTforest FMTforest::grow() const
             return newforest;
             }
 
-FMTforest FMTforest::operate(const std::vector<FMTevent<Core::FMTdevelopment>>& cuts,const FMTspatialaction& action,const Core::FMTtransition& Transition,
+FMTforest FMTforest::operate(const std::vector<FMTsesevent<Core::FMTdevelopment>>& cuts,const FMTspatialaction& action,const Core::FMTtransition& Transition,
                      const Core::FMTyields& ylds,const std::vector<Core::FMTtheme>& themes, boost::unordered_map<Core::FMTdevelopment,Core::FMTdevelopment>& cached_transitions,
 					Core::FMTschedule& schedule) const
             {
             FMTforest newforest(FMTlayer<Core::FMTdevelopment>(this->geotransform,this->maxx,this->maxy,this->SRS_WKT,this->cellsize));
-			//non spatial schedule 
+			//non spatial schedule
 			///
 			if (schedule.find(action) == schedule.end())
 				{
 				schedule[action] = std::map<Core::FMTdevelopment, std::vector<double>>();
 				}
 			///
-            for(const FMTevent<Core::FMTdevelopment>& cut : cuts)
+            for(const FMTsesevent<Core::FMTdevelopment>& cut : cuts)
                 {
-                for(std::map<FMTcoordinate,const Core::FMTdevelopment*>::const_iterator devit  = cut.elements.begin(); devit!= cut.elements.end(); devit++)
+                for(std::map<FMTcoordinate,const Core::FMTdevelopment*>::const_iterator devit  = cut.mapped_elements.begin(); devit!= cut.mapped_elements.end(); devit++)
                     {
 					//keeping non spatial schedule
 					///
@@ -168,7 +168,7 @@ std::map<Core::FMTaction,FMTforest> FMTforest::getschedule(const Core::FMTschedu
 					int action_id = 0;
 					for(std::map<Core::FMTaction, std::map<Core::FMTdevelopment, std::vector<double>>>::const_iterator it = selection.begin();it != selection.end();it++)
 						{
-						//const std::map<Core::FMTdevelopment, std::vector<double>>* devsptr = &it->second;
+						const std::map<Core::FMTdevelopment, std::vector<double>>* devsptr = &it->second;
 						if (selection.operated(it->first, itc->second)||
 							(!schedule_only && cdev->operable(it->first,yields)))
 							{
@@ -227,13 +227,13 @@ FMTforest FMTforest::getallowable(const FMTspatialaction& targetaction,
     return cleanedforest;
     }
 
-std::vector<FMTevent<Core::FMTdevelopment>> FMTforest::buildharvest(const double& target,
+std::vector<FMTsesevent<Core::FMTdevelopment>> FMTforest::buildharvest(const double& target,
                                        const FMTspatialaction& targetaction,
 										std::default_random_engine& generator,
 										const int& pass) const
     {
     double harvested_area = 0;
-	std::vector<FMTevent<Core::FMTdevelopment>>cuts;
+	std::vector<FMTsesevent<Core::FMTdevelopment>>cuts;
 	std::vector<int>locations(mapping.size());
     unsigned int locid = 0;
     std::iota(locations.begin(),locations.end(),0);
@@ -259,7 +259,7 @@ std::vector<FMTevent<Core::FMTdevelopment>> FMTforest::buildharvest(const double
 					bool tooclose = false;
 					if (check_adjacency)
 						{
-						for (const FMTevent<Core::FMTdevelopment>& cut : cuts)
+						for (const FMTsesevent<Core::FMTdevelopment>& cut : cuts)
 							{
 							if (cut.within(static_cast<unsigned int>(targetaction.adjacency), newcut))
 								{
@@ -267,7 +267,7 @@ std::vector<FMTevent<Core::FMTdevelopment>> FMTforest::buildharvest(const double
 								++tooclosecall;
 								break;
 								}
-							}	
+							}
 						}
                     if(!tooclose)
                         {

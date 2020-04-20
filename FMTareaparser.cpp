@@ -754,91 +754,96 @@ namespace Parser{
 				return *this;
 			}
 
-			std::vector<Core::FMTactualdevelopment>FMTareaparser::read(const std::vector<Core::FMTtheme>& themes, const Core::FMTconstants& constants, std::string location)
+			std::vector<Core::FMTactualdevelopment>FMTareaparser::read(const std::vector<Core::FMTtheme>& themes, const Core::FMTconstants& constants,const std::string& location)
 			{
 				std::vector<Core::FMTactualdevelopment>areas;
-				if (!location.empty())
-				{
-					std::ifstream areastream(location);
-					bool potential_futurs = false;
-					bool got0area = false;
-					size_t futurtype = 0;
-					std::smatch kmatch;
-					std::vector<std::string>splitted;
-					if (FMTparser::tryopening(areastream, location))
+				try {
+					if (!location.empty())
 					{
-						bool inactualdevs = false;
-						std::unordered_map<size_t, size_t>devsindex;
-						while (areastream.is_open())
+						std::ifstream areastream(location);
+						bool potential_futurs = false;
+						bool got0area = false;
+						size_t futurtype = 0;
+						std::smatch kmatch;
+						std::vector<std::string>splitted;
+						if (FMTparser::tryopening(areastream, location))
 						{
-							std::string line = FMTparser::getcleanlinewfor(areastream, themes, constants);
-							if (!line.empty())
+							bool inactualdevs = false;
+							std::unordered_map<size_t, size_t>devsindex;
+							while (areastream.is_open())
 							{
-								if (potential_futurs && inactualdevs && !_comment.empty() && got0area)
+								std::string line = FMTparser::getcleanlinewfor(areastream, themes, constants);
+								if (!line.empty())
 								{
-									++futurtype;
-									if (futurtype >= (areas.size()*0.5))
+									if (potential_futurs && inactualdevs && !_comment.empty() && got0area)
 									{
-										break;
-									}
-								}
-								if (std::regex_search(line, kmatch, FMTareaparser::rxcleanarea))
-								{
-									std::string strlock = std::string(kmatch[6]) + std::string(kmatch[14]);
-									const std::string masknage = std::string(kmatch[3]) + std::string(kmatch[9]) + std::string(kmatch[18]) + std::string(kmatch[23]);
-									std::string mask;
-									double area;
-									int age, lock;
-									size_t linesize;
-									splitted = FMTparser::spliter(masknage, FMTparser::rxseparator);
-									linesize = splitted.size();
-									inactualdevs = true;
-									for (size_t themeid = 0; themeid < (linesize - 2); ++themeid)
-									{
-										mask += splitted.at(themeid) + " ";
-									}
-									mask.pop_back();
-									area = getnum<double>(splitted.at(linesize - 1), constants);
-									if (area > 0)
-									{
-										got0area = false;
-										if (!validate(themes, mask, " at line " + std::to_string(_line))) continue;
-										potential_futurs = false;
-										age = getnum<int>(splitted.at(linesize - 2), constants);
-										lock = 0;
-										if (FMTparser::isvalid(strlock))
+										++futurtype;
+										if (futurtype >= (areas.size()*0.5))
 										{
-											lock = getnum<int>(strlock, constants);
+											break;
 										}
-										const Core::FMTactualdevelopment actualdevelopment(Core::FMTmask(mask, themes), age, lock, area);
-										//Weird non unique area section...
-										const size_t hashform = boost::hash<Core::FMTdevelopment>()(actualdevelopment);
-										std::unordered_map<size_t, size_t>::const_iterator hashit = devsindex.find(hashform);
-										if (devsindex.find(hashform) == devsindex.end())
+									}
+									if (std::regex_search(line, kmatch, FMTareaparser::rxcleanarea))
+									{
+										std::string strlock = std::string(kmatch[6]) + std::string(kmatch[14]);
+										const std::string masknage = std::string(kmatch[3]) + std::string(kmatch[9]) + std::string(kmatch[18]) + std::string(kmatch[23]);
+										std::string mask;
+										double area;
+										int age, lock;
+										size_t linesize;
+										splitted = FMTparser::spliter(masknage, FMTparser::rxseparator);
+										linesize = splitted.size();
+										inactualdevs = true;
+										for (size_t themeid = 0; themeid < (linesize - 2); ++themeid)
 										{
-											devsindex[hashform] = areas.size();
-											areas.push_back(actualdevelopment);
+											mask += splitted.at(themeid) + " ";
+										}
+										mask.pop_back();
+										area = getnum<double>(splitted.at(linesize - 1), constants);
+										if (area > 0)
+										{
+											got0area = false;
+											if (!validate(themes, mask, " at line " + std::to_string(_line))) continue;
+											potential_futurs = false;
+											age = getnum<int>(splitted.at(linesize - 2), constants);
+											lock = 0;
+											if (FMTparser::isvalid(strlock))
+											{
+												lock = getnum<int>(strlock, constants);
+											}
+											const Core::FMTactualdevelopment actualdevelopment(Core::FMTmask(mask, themes), age, lock, area);
+											//Weird non unique area section...
+											const size_t hashform = boost::hash<Core::FMTdevelopment>()(actualdevelopment);
+											std::unordered_map<size_t, size_t>::const_iterator hashit = devsindex.find(hashform);
+											if (devsindex.find(hashform) == devsindex.end())
+											{
+												devsindex[hashform] = areas.size();
+												areas.push_back(actualdevelopment);
+											}
+											else {
+												areas[hashit->second].setarea(areas[hashit->second].getarea() + area);
+											}
 										}
 										else {
-											areas[hashit->second].setarea(areas[hashit->second].getarea() + area);
+											got0area = true;
 										}
-									}
-									else {
-										got0area = true;
-									}
 
+									}
 								}
-							}
-							else if (!areas.empty() && _comment.empty())
-							{
-								potential_futurs = true;
+								else if (!areas.empty() && _comment.empty())
+								{
+									potential_futurs = true;
+								}
 							}
 						}
 					}
-				}
+				}catch (...)
+					{
+					_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, _section, "while reading", __LINE__, __FILE__);
+					}
 				return areas;
 			}
-			bool FMTareaparser::write(const std::vector<Core::FMTactualdevelopment>& areas, std::string location)
+			void FMTareaparser::write(const std::vector<Core::FMTactualdevelopment>& areas,const std::string& location) const
 			{
 				std::ofstream areastream;
 				areastream.open(location);
@@ -867,8 +872,6 @@ namespace Parser{
 						areastream << std::string(area) << "\n";
 					}
 					areastream.close();
-					return true;
 				}
-				return false;
 			}
 }

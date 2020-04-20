@@ -53,14 +53,13 @@ namespace Spatial
 			}
         public:
             FMTforest();
-			~FMTforest() = default;
             FMTforest(const FMTforest& rhs);
             FMTforest(const FMTlayer<Core::FMTdevelopment>& rhs);
             FMTforest& operator = (const FMTforest& rhs);
 			std::vector<Core::FMTactualdevelopment>getarea() const;
         FMTforest getcopy(bool copydata = true) const;
         FMTforest grow() const;
-        FMTforest operate(const std::vector<FMTevent<Core::FMTdevelopment>>& cuts,const FMTspatialaction& action,const Core::FMTtransition& Transition,
+        FMTforest operate(const std::vector<FMTsesevent<Core::FMTdevelopment>>& cuts,const FMTspatialaction& action,const Core::FMTtransition& Transition,
                      const Core::FMTyields& ylds,const std::vector<Core::FMTtheme>& themes, boost::unordered_map<Core::FMTdevelopment,Core::FMTdevelopment>& cached_transitions, Core::FMTschedule& schedule) const;
 		std::vector<FMTlayer<std::string>> getthemes(const std::vector<Core::FMTtheme>& themes) const;
         FMTlayer<int>getage() const;
@@ -72,7 +71,7 @@ namespace Spatial
                                           bool schedule_only = true) const;
         FMTforest getallowable(const FMTspatialaction& targetaction,
                                 const FMTdisturbancestack& disturbances) const;
-		std::vector<FMTevent<Core::FMTdevelopment>> buildharvest(const double& target,
+		std::vector<FMTsesevent<Core::FMTdevelopment>> buildharvest(const double& target,
                                     const FMTspatialaction& targetaction,
 									std::default_random_engine& generator,
 									const int& pass) const;

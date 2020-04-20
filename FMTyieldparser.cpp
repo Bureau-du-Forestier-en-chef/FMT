@@ -217,378 +217,399 @@ Core::FMTdata FMTyieldparser::geteq(const std::string& basestr,
 	}
 
 
-Core::FMTyields FMTyieldparser::read(const std::vector<Core::FMTtheme>& themes,const Core::FMTconstants& constants, std::string location)
+Core::FMTyields FMTyieldparser::read(const std::vector<Core::FMTtheme>& themes,const Core::FMTconstants& constants,const std::string& location)
     {
-	std::ifstream yieldstream(location);
-	std::vector<std::string>yldsnames;
-	std::vector<std::string>dump;
-	std::vector<std::pair<Core::FMTmask, Core::FMTyieldhandler>>::iterator actualyield;
-    Core::FMTyields yields;
-	std::vector<size_t>indexed_yields;
-	std::vector<std::pair<Core::FMTmask,Core::FMTyieldhandler>>::iterator datait = yields.end();
-    Core::FMTmask tmask;
-    bool sided = false;
-	std::vector<double>proportion;
-    if (FMTparser::tryopening(yieldstream,location))
-        {
-        while(yieldstream.is_open())
-            {
-			std::string line = FMTparser::getcleanlinewfor(yieldstream, themes, constants);
-            if (!line.empty())
-                {
-				std::smatch kmatch;
-                if (std::regex_search(line,kmatch,rxyieldtype))
-                    {
-					const std::string yieldtype = "Y"+ std::string(kmatch[2])+ std::string(kmatch[7]);
-					std::string mask = std::string(kmatch[4]) + std::string(kmatch[9]);
-					boost::trim(mask);
-                    bool overyld = false;
-                    sided = true;
-                    if(!std::string(kmatch[5]).empty())
-                        {
-                        overyld = true;
-                        }
-
-                    if (!validate(themes,mask, " at line " + std::to_string(_line))) continue;
-					Core::FMTyldwstype yldtype = getyldtype(yieldtype);
-                    tmask = Core::FMTmask(mask,themes);
-                    Core::FMTyieldhandler newyield(yldtype,tmask);
-					if (!overyld)
+	Core::FMTyields yields;
+	try {
+		std::ifstream yieldstream(location);
+		std::vector<std::string>yldsnames;
+		std::vector<std::string>dump;
+		std::vector<std::pair<Core::FMTmask, Core::FMTyieldhandler>>::iterator actualyield;
+		std::vector<size_t>indexed_yields;
+		std::vector<std::pair<Core::FMTmask, Core::FMTyieldhandler>>::iterator datait = yields.end();
+		Core::FMTmask tmask;
+		bool sided = false;
+		std::vector<double>proportion;
+		if (FMTparser::tryopening(yieldstream, location))
+		{
+			while (yieldstream.is_open())
+			{
+				std::string line = FMTparser::getcleanlinewfor(yieldstream, themes, constants);
+				if (!line.empty())
+				{
+					std::smatch kmatch;
+					if (std::regex_search(line, kmatch, rxyieldtype))
+					{
+						const std::string yieldtype = "Y" + std::string(kmatch[2]) + std::string(kmatch[7]);
+						std::string mask = std::string(kmatch[4]) + std::string(kmatch[9]);
+						boost::trim(mask);
+						bool overyld = false;
+						sided = true;
+						if (!std::string(kmatch[5]).empty())
 						{
-						yields.push_back(tmask, newyield);
-						datait = --yields.end();
-						}else {
-						yields.push_front(tmask, newyield);
-						datait = yields.begin();
+							overyld = true;
 						}
-					actualyield = datait;
-					proportion.clear();
-                    }else{
-							std::vector<std::string>values;
-                            boost::split(values,line,boost::is_any_of(FMT_STR_SEPARATOR),boost::token_compress_on);
-							if ((actualyield->second.gettype() == Core::FMTyldwstype::FMTageyld ||
-								actualyield->second.gettype() == Core::FMTyldwstype::FMTtimeyld) && values[0] == "*P")
-								{
+
+						if (!validate(themes, mask, " at line " + std::to_string(_line))) continue;
+						Core::FMTyldwstype yldtype = getyldtype(yieldtype);
+						tmask = Core::FMTmask(mask, themes);
+						Core::FMTyieldhandler newyield(yldtype, tmask);
+						if (!overyld)
+						{
+							yields.push_back(tmask, newyield);
+							datait = --yields.end();
+						}
+						else {
+							yields.push_front(tmask, newyield);
+							datait = yields.begin();
+						}
+						actualyield = datait;
+						proportion.clear();
+					}
+					else {
+						std::vector<std::string>values;
+						boost::split(values, line, boost::is_any_of(FMT_STR_SEPARATOR), boost::token_compress_on);
+						if ((actualyield->second.gettype() == Core::FMTyldwstype::FMTageyld ||
+							actualyield->second.gettype() == Core::FMTyldwstype::FMTtimeyld) && values[0] == "*P")
+						{
+							values.erase(values.begin());
+							proportion.clear();
+							//size_t proportion_id = 0;
+							for (const std::string& value : values)
+							{
+								proportion.push_back(getnum<double>(value) / 100.0);
+							}
+							continue;
+						}
+						if (actualyield->second.gettype() == Core::FMTyldwstype::FMTageyld)
+						{
+							if (values[0] == "_AGE")
+							{
+								sided = false;
+								yldsnames.clear();
+								dump.clear();
 								values.erase(values.begin());
-								proportion.clear();
-								//size_t proportion_id = 0;
-								for (const std::string& value: values)
-									{
-									proportion.push_back(getnum<double>(value)/100.0);
-									}
-								continue; 
+								yldsnames = values;
+								dump = getylduse(yields, actualyield, values);
+								checkpreexisting(dump);
+							}
+							else if (!sided)
+							{
+								const int newbase = getnum<int>(values[0], constants);
+								const std::vector<int>& bases = actualyield->second.getbases();
+								if (std::find(bases.begin(), bases.end(), newbase) == bases.end())
+								{
+									actualyield->second.push_base(newbase);
 								}
-                            if(actualyield->second.gettype() == Core::FMTyldwstype::FMTageyld)
-                                {
-                                if (values[0]=="_AGE")
-                                    {
-                                    sided = false;
-                                    yldsnames.clear();
-                                    dump.clear();
-                                    values.erase(values.begin());
-                                    yldsnames = values;
-                                    dump = getylduse(yields,actualyield,values);
-                                    checkpreexisting(dump);
-                                    }else if(!sided)
-                                        {
-										const int newbase = getnum<int>(values[0], constants);
-										const std::vector<int>& bases = actualyield->second.getbases();
-										if (std::find(bases.begin(), bases.end(), newbase)==bases.end())
-											{
-											actualyield->second.push_base(newbase);
-											}
-                                        values.erase(values.begin());
-                                        int id = 0;
-                                        for(const std::string& value : values)
-                                            {
-                                            actualyield->second.push_data(yldsnames[id],getnumwithproportion(value, constants,proportion,id));
-                                            ++id;
-                                            }
-                                        }else{
-											std::vector<std::string>tyld = {values[0]};
-                                            values.erase(values.begin());
-                                            dump = getylduse(yields,actualyield,tyld);
-                                            checkpreexisting(dump);
-                                            if (actualyield->second.elements.empty())
-                                                {
-                                                actualyield->second.push_base(getnum<int>(values[0],constants));
-                                                }
-											const int location = static_cast<int>(actualyield->second.elements.size());
-                                            actualyield->second.push_data(tyld[0], getnumwithproportion(values[1], constants, proportion, location));
-                                        }
+								values.erase(values.begin());
+								int id = 0;
+								for (const std::string& value : values)
+								{
+									actualyield->second.push_data(yldsnames[id], getnumwithproportion(value, constants, proportion, id));
+									++id;
+								}
+							}
+							else {
+								std::vector<std::string>tyld = { values[0] };
+								values.erase(values.begin());
+								dump = getylduse(yields, actualyield, tyld);
+								checkpreexisting(dump);
+								if (actualyield->second.elements.empty())
+								{
+									actualyield->second.push_base(getnum<int>(values[0], constants));
+								}
+								const int location = static_cast<int>(actualyield->second.elements.size());
+								actualyield->second.push_data(tyld[0], getnumwithproportion(values[1], constants, proportion, location));
+							}
 
-                                }else if(actualyield->second.gettype() == Core::FMTyldwstype::FMTtimeyld)
-                                    {
+						}
+						else if (actualyield->second.gettype() == Core::FMTyldwstype::FMTtimeyld)
+						{
 
-									if (values[0] == "_CP")
-										{
-										sided = false;
-										yldsnames.clear();
-										dump.clear();
-										values.erase(values.begin());
-										yldsnames = values;
-										dump = getylduse(yields, actualyield, values);
-										checkpreexisting(dump);
-										}
-									else if (!sided)
-										{
-										if (actualyield->second.elements.empty())
-											{
-											actualyield->second.push_base(getnum<int>(values[0], constants));
-											values.erase(values.begin());
-											int id = 0;
-											for (const std::string& value : values)
-												{
-												actualyield->second.push_data(yldsnames[id], getnumwithproportion(value, constants, proportion, id));
-												++id;
-												}
-											}else{
-												const int newbase = getnum<int>(values[0], constants);
-												values.erase(values.begin());
-												for (int base = actualyield->second.getlastbase(); base <= newbase;++base)
-													{
-													actualyield->second.push_base(base);
-													int id = 0;
-													for (const std::string& value : values)
-														{
-														double thevalue = actualyield->second.getlastvalue(yldsnames[id]);
-														if (base == newbase)
-															{
-															thevalue = getnum<double>(value, constants);
-															}
-														actualyield->second.push_data(yldsnames[id], thevalue);
-														++id;
-														}
-													}
-												}
-
-
-										}else {
-											if (isnum(values[0]))
-												{
-												int id = 0;
-												for (const std::string& value : values)
-													{
-													actualyield->second.push_data(yldsnames.back() , getnumwithproportion(value, constants, proportion, id));
-													++id;
-													}
-											}else{
-
-
-											const std::string yldname = values[0];
-											yldsnames.push_back(values[0]);
-											dump.clear();
-											dump = getylduse(yields, actualyield, values);
-											checkpreexisting(dump);
-											values.erase(values.begin());
-											//Need to check if rest of values is a _discountfactor!!!
-											const std::string joinedvalues = boost::algorithm::join(values,"");
-											std::smatch discountmatch;
-												if (std::regex_search(joinedvalues, discountmatch, rxdiscount))
-													{
-													std::vector<double>yielddata;
-													std::vector<std::string>sources;
-													std::vector<bool>stacking;
-													const std::string percentage = boost::trim_copy(std::string(discountmatch[3]));
-													double valueper = getnum<double>(percentage, constants);
-													const std::string dopercentage = std::string(discountmatch[4]);
-													if (dopercentage.find("%")!= std::string::npos)
-														{
-														valueper /= 100;
-														}
-													yielddata.push_back(valueper);
-													stacking.push_back(false);
-													std::string yperperiod = boost::trim_copy(std::string(discountmatch[6]));
-													yielddata.push_back(getnum<double>(yperperiod, constants));
-													stacking.push_back(false);
-													sources.push_back(boost::trim_copy(std::string(discountmatch[9])));
-													stacking.push_back(true);
-													actualyield->second.push_data(yldname, Core::FMTdata(yielddata, Core::FMTyieldparserop::FMTwsdiscountfactor,sources,stacking));
-												}else{
-													actualyield->second.push_base(getnum<int>(values[0], constants));
-													values.erase(values.begin());
-													int id = 0;
-													for (const std::string& value : values)
-														{
-														actualyield->second.push_data(yldname, getnumwithproportion(value, constants, proportion, id));
-														++id;
-														}
-													}
-											}
-											}
-
-
+							if (values[0] == "_CP")
+							{
+								sided = false;
+								yldsnames.clear();
+								dump.clear();
+								values.erase(values.begin());
+								yldsnames = values;
+								dump = getylduse(yields, actualyield, values);
+								checkpreexisting(dump);
+							}
+							else if (!sided)
+							{
+								if (actualyield->second.elements.empty())
+								{
+									actualyield->second.push_base(getnum<int>(values[0], constants));
+									values.erase(values.begin());
+									int id = 0;
+									for (const std::string& value : values)
+									{
+										actualyield->second.push_data(yldsnames[id], getnumwithproportion(value, constants, proportion, id));
+										++id;
 									}
-
-
-                                    else if(actualyield->second.gettype() == Core::FMTyldwstype::FMTcomplexyld)
-                                        {
-										std::smatch kmatch;
-										const size_t should_be_equation = line.find_first_of("+-*/");
-										bool simple_match = std::regex_search(line, kmatch, rxcomplex);
-										if (simple_match || should_be_equation > 0)
-                                            {
-											std::string yldname;
-											std::string cyld;
-											std::string data;
-											if (!simple_match && should_be_equation > 0)
-												{
-												std::vector<std::string>wrong_equation;
-												boost::split(wrong_equation, line, boost::is_any_of(FMT_STR_SEPARATOR), boost::token_compress_on);
-												yldname = wrong_equation[0];
-												cyld = "_EQUATION";
-												for (size_t cid = 1; cid < wrong_equation.size();++cid)
-													{
-													data += wrong_equation.at(cid);
-													}
-												boost::trim(data);
-											}else {
-												yldname = kmatch[1];
-												for (int id = 4; id < 14; ++id) //12 - > 13
-													{
-													cyld += std::string(kmatch[id]);
-													}
-												data = kmatch[16];
-												}
-                                            dump.clear();
-											const std::vector<std::string>theylds = {yldname};
-                                            dump = getylduse(yields,actualyield,theylds);
-                                            checkpreexisting(dump);
-                                            const Core::FMTyieldparserop complextype = getyldctype(cyld);
-											std::vector<std::string>values;
-											boost::trim_if(data, boost::is_any_of(FMT_STR_SEPARATOR));
-											const std::string yldsplitc = FMT_STR_SEPARATOR + std::string(",");
-                                            boost::split(values,data,boost::is_any_of(yldsplitc), boost::token_compress_on);
-											std::vector<double>cvalues;
-											std::vector<std::string>csource;
-											if (complextype == Core::FMTyieldparserop::FMTwsequation)
+								}
+								else {
+									const int newbase = getnum<int>(values[0], constants);
+									values.erase(values.begin());
+									for (int base = actualyield->second.getlastbase(); base <= newbase; ++base)
+									{
+										actualyield->second.push_base(base);
+										int id = 0;
+										for (const std::string& value : values)
+										{
+											double thevalue = actualyield->second.getlastvalue(yldsnames[id]);
+											if (base == newbase)
 											{
-												actualyield->second.push_data(yldname, geteq(data,constants,yields,themes));
-											}else{
-												std::vector<bool>stacking;
-												for(size_t id = 0 ; id < values.size(); ++id)
-													{
-													if (isnum(values[id]) || constants.isconstant(values[id]))
-														{
-														const double value = getnum<double>(values[id],constants);
-														cvalues.push_back(value);
-														stacking.push_back(false);
-													}
-													else if (values[id].find("#") != std::string::npos)
-													{
-														_exhandler->raise(Exception::FMTexc::WSundefined_constant, _section, values[id] + " at line " + std::to_string(_line), __LINE__, __FILE__);
-													}else {
-														const std::vector<std::string>ylds = yields.getyldsnames(); //not so optimzed
-														if (find(ylds.begin(),ylds.end(),values[id])==ylds.end())
-															{
-															_exhandler->raise(Exception::FMTexc::WSignore, _section,
-																values[id] + " at line " + std::to_string(_line), __LINE__, __FILE__);
-															}
-														stacking.push_back(true);
-														csource.push_back(values[id]);
-														}
-													}
-											actualyield->second.push_data(yldname, Core::FMTdata(cvalues, complextype, csource,stacking));
+												thevalue = getnum<double>(value, constants);
 											}
-                                            }else{
-                                            _exhandler->raise(Exception::FMTexc::WSunsupported_yield,_section,line+" at line "+ std::to_string(_line), __LINE__, __FILE__);
-                                            }
-                                        }
-                        }
-                }
-            }
-        //iterate on all yieldhandler if equation with index then take the handler
-        //delete the handler at it's yields location
-        //decompose and insert all new handlers
-		//std::vector<Core::FMTyieldhandler>::iterator handler_it = yields.databegin();
-		std::vector<std::pair<Core::FMTmask,Core::FMTyieldhandler>>::iterator handler_it = yields.begin();
-		const std::vector<std::string>yldnames = yields.getyldsnames();
-        while (handler_it!=yields.end())
-            {
-			const std::vector<std::string>indexvalues = handler_it->second.indexes(yldnames);
-            if (!indexvalues.empty())
-                {
-                size_t location = std::distance(yields.begin(),handler_it);
-                const Core::FMTmask oldmask = (yields.begin() + location)->first;
-                const Core::FMTyieldhandler oldhandler = handler_it->second;
-                yields.erase(location);
-				std::vector<Core::FMTmask>todecompose;
-                todecompose.push_back(oldmask);
-				std::vector<Core::FMTtheme>themes_windex;
-                for (const Core::FMTtheme& theme: themes)
-                    {
-                    if (theme.useindex())
-                        {
-                        for (const std::string& index : indexvalues)
-                            {
-                            if (theme.isindex(index))
-                                {
-								std::vector<Core::FMTmask>newdecomposer;
-                                while(!todecompose.empty())
-                                    {
-									const std::vector<Core::FMTmask>allmasks = (todecompose.front()).decompose(theme);
-                                    todecompose.erase(todecompose.begin());
-                                    newdecomposer.insert(newdecomposer.end(),allmasks.begin(),allmasks.end());
-                                    }
-                                todecompose=newdecomposer;
-                                themes_windex.push_back(theme);
-                                break;
-                                }
-                            }
-                        }
-                    }
-                for (const Core::FMTmask& newmask : todecompose)
-                    {
-                    Core::FMTyieldhandler newhandler(Core::FMTyldwstype::FMTcomplexyld,newmask);
-					std::map<std::string,double>handler_values;
-                    for (const Core::FMTtheme& theme: themes_windex)
-                        {
-						const std::string attribute = newmask.get(theme);
-                        for (const std::string& index : indexvalues)
-                            {
-                            if (theme.isindex(index))
-                                {
-                                handler_values[index] = theme.getindex(attribute,index);
-                                }
-                            }
-                        }
-					std::map<std::string,Core::FMTdata>alladata = oldhandler.getdataelements();
-                    for (std::map<std::string,Core::FMTdata>::const_iterator datait = alladata.begin(); datait != alladata.end(); datait++)
-                        {
-                        const Core::FMTexpression expression = datait->second.toexpression();
-						const std::vector<std::string>allvalues = expression.getinfix();
-						std::vector<double>numbers(allvalues.size(),0);
-						std::vector<std::string>valuesnoperators(allvalues.size());
-                        size_t data_loc = 0;
-                        for (const std::string& source : allvalues)
-                            {
-                            if (handler_values.find(source)!= handler_values.end())
-                                {
-                                numbers[data_loc]= handler_values.at(source);
-                                }else if (isnum(source))
-                                    {
-                                    numbers[data_loc]= stod(source);
-                                    }else{
-                                    valuesnoperators[data_loc] = source;
-                                    }
-                            ++data_loc;
-                            }
-                        newhandler.push_data(datait->first,Core::FMTdata(numbers, Core::FMTyieldparserop::FMTwsequation,valuesnoperators));
-                        }
-                    yields.insert(location,newmask,newhandler);
-                    ++location;
-                    }
-                handler_it = (yields.begin() + location);
-                }else{
-                ++handler_it;
-                }
-            }
-        }
-    yields.update();
+											actualyield->second.push_data(yldsnames[id], thevalue);
+											++id;
+										}
+									}
+								}
+
+
+							}
+							else {
+								if (isnum(values[0]))
+								{
+									int id = 0;
+									for (const std::string& value : values)
+									{
+										actualyield->second.push_data(yldsnames.back(), getnumwithproportion(value, constants, proportion, id));
+										++id;
+									}
+								}
+								else {
+
+
+									const std::string yldname = values[0];
+									yldsnames.push_back(values[0]);
+									dump.clear();
+									dump = getylduse(yields, actualyield, values);
+									checkpreexisting(dump);
+									values.erase(values.begin());
+									//Need to check if rest of values is a _discountfactor!!!
+									const std::string joinedvalues = boost::algorithm::join(values, "");
+									std::smatch discountmatch;
+									if (std::regex_search(joinedvalues, discountmatch, rxdiscount))
+									{
+										std::vector<double>yielddata;
+										std::vector<std::string>sources;
+										std::vector<bool>stacking;
+										const std::string percentage = boost::trim_copy(std::string(discountmatch[3]));
+										double valueper = getnum<double>(percentage, constants);
+										const std::string dopercentage = std::string(discountmatch[4]);
+										if (dopercentage.find("%") != std::string::npos)
+										{
+											valueper /= 100;
+										}
+										yielddata.push_back(valueper);
+										stacking.push_back(false);
+										std::string yperperiod = boost::trim_copy(std::string(discountmatch[6]));
+										yielddata.push_back(getnum<double>(yperperiod, constants));
+										stacking.push_back(false);
+										sources.push_back(boost::trim_copy(std::string(discountmatch[9])));
+										stacking.push_back(true);
+										actualyield->second.push_data(yldname, Core::FMTdata(yielddata, Core::FMTyieldparserop::FMTwsdiscountfactor, sources, stacking));
+									}
+									else {
+										actualyield->second.push_base(getnum<int>(values[0], constants));
+										values.erase(values.begin());
+										int id = 0;
+										for (const std::string& value : values)
+										{
+											actualyield->second.push_data(yldname, getnumwithproportion(value, constants, proportion, id));
+											++id;
+										}
+									}
+								}
+							}
+
+
+						}
+
+
+						else if (actualyield->second.gettype() == Core::FMTyldwstype::FMTcomplexyld)
+						{
+							std::smatch kmatch;
+							const size_t should_be_equation = line.find_first_of("+-*/");
+							bool simple_match = std::regex_search(line, kmatch, rxcomplex);
+							if (simple_match || should_be_equation > 0)
+							{
+								std::string yldname;
+								std::string cyld;
+								std::string data;
+								if (!simple_match && should_be_equation > 0)
+								{
+									std::vector<std::string>wrong_equation;
+									boost::split(wrong_equation, line, boost::is_any_of(FMT_STR_SEPARATOR), boost::token_compress_on);
+									yldname = wrong_equation[0];
+									cyld = "_EQUATION";
+									for (size_t cid = 1; cid < wrong_equation.size(); ++cid)
+									{
+										data += wrong_equation.at(cid);
+									}
+									boost::trim(data);
+								}
+								else {
+									yldname = kmatch[1];
+									for (int id = 4; id < 14; ++id) //12 - > 13
+									{
+										cyld += std::string(kmatch[id]);
+									}
+									data = kmatch[16];
+								}
+								dump.clear();
+								const std::vector<std::string>theylds = { yldname };
+								dump = getylduse(yields, actualyield, theylds);
+								checkpreexisting(dump);
+								const Core::FMTyieldparserop complextype = getyldctype(cyld);
+								std::vector<std::string>values;
+								boost::trim_if(data, boost::is_any_of(FMT_STR_SEPARATOR));
+								const std::string yldsplitc = FMT_STR_SEPARATOR + std::string(",");
+								boost::split(values, data, boost::is_any_of(yldsplitc), boost::token_compress_on);
+								std::vector<double>cvalues;
+								std::vector<std::string>csource;
+								if (complextype == Core::FMTyieldparserop::FMTwsequation)
+								{
+									actualyield->second.push_data(yldname, geteq(data, constants, yields, themes));
+								}
+								else {
+									std::vector<bool>stacking;
+									for (size_t id = 0; id < values.size(); ++id)
+									{
+										if (isnum(values[id]) || constants.isconstant(values[id]))
+										{
+											const double value = getnum<double>(values[id], constants);
+											cvalues.push_back(value);
+											stacking.push_back(false);
+										}
+										else if (values[id].find("#") != std::string::npos)
+										{
+											_exhandler->raise(Exception::FMTexc::WSundefined_constant, _section, values[id] + " at line " + std::to_string(_line), __LINE__, __FILE__);
+										}
+										else {
+											const std::vector<std::string>ylds = yields.getyldsnames(); //not so optimzed
+											if (find(ylds.begin(), ylds.end(), values[id]) == ylds.end())
+											{
+												_exhandler->raise(Exception::FMTexc::WSignore, _section,
+													values[id] + " at line " + std::to_string(_line), __LINE__, __FILE__);
+											}
+											stacking.push_back(true);
+											csource.push_back(values[id]);
+										}
+									}
+									actualyield->second.push_data(yldname, Core::FMTdata(cvalues, complextype, csource, stacking));
+								}
+							}
+							else {
+								_exhandler->raise(Exception::FMTexc::WSunsupported_yield, _section, line + " at line " + std::to_string(_line), __LINE__, __FILE__);
+							}
+						}
+					}
+				}
+			}
+			//iterate on all yieldhandler if equation with index then take the handler
+			//delete the handler at it's yields location
+			//decompose and insert all new handlers
+			//std::vector<Core::FMTyieldhandler>::iterator handler_it = yields.databegin();
+			std::vector<std::pair<Core::FMTmask, Core::FMTyieldhandler>>::iterator handler_it = yields.begin();
+			const std::vector<std::string>yldnames = yields.getyldsnames();
+			while (handler_it != yields.end())
+			{
+				const std::vector<std::string>indexvalues = handler_it->second.indexes(yldnames);
+				if (!indexvalues.empty())
+				{
+					size_t location = std::distance(yields.begin(), handler_it);
+					const Core::FMTmask oldmask = (yields.begin() + location)->first;
+					const Core::FMTyieldhandler oldhandler = handler_it->second;
+					yields.erase(location);
+					std::vector<Core::FMTmask>todecompose;
+					todecompose.push_back(oldmask);
+					std::vector<Core::FMTtheme>themes_windex;
+					for (const Core::FMTtheme& theme : themes)
+					{
+						if (theme.useindex())
+						{
+							for (const std::string& index : indexvalues)
+							{
+								if (theme.isindex(index))
+								{
+									std::vector<Core::FMTmask>newdecomposer;
+									while (!todecompose.empty())
+									{
+										const std::vector<Core::FMTmask>allmasks = (todecompose.front()).decompose(theme);
+										todecompose.erase(todecompose.begin());
+										newdecomposer.insert(newdecomposer.end(), allmasks.begin(), allmasks.end());
+									}
+									todecompose = newdecomposer;
+									themes_windex.push_back(theme);
+									break;
+								}
+							}
+						}
+					}
+					for (const Core::FMTmask& newmask : todecompose)
+					{
+						Core::FMTyieldhandler newhandler(Core::FMTyldwstype::FMTcomplexyld, newmask);
+						std::map<std::string, double>handler_values;
+						for (const Core::FMTtheme& theme : themes_windex)
+						{
+							const std::string attribute = newmask.get(theme);
+							for (const std::string& index : indexvalues)
+							{
+								if (theme.isindex(index))
+								{
+									handler_values[index] = theme.getindex(attribute, index);
+								}
+							}
+						}
+						std::map<std::string, Core::FMTdata>alladata = oldhandler.getdataelements();
+						for (std::map<std::string, Core::FMTdata>::const_iterator datait = alladata.begin(); datait != alladata.end(); datait++)
+						{
+							const Core::FMTexpression expression = datait->second.toexpression();
+							const std::vector<std::string>allvalues = expression.getinfix();
+							std::vector<double>numbers(allvalues.size(), 0);
+							std::vector<std::string>valuesnoperators(allvalues.size());
+							size_t data_loc = 0;
+							for (const std::string& source : allvalues)
+							{
+								if (handler_values.find(source) != handler_values.end())
+								{
+									numbers[data_loc] = handler_values.at(source);
+								}
+								else if (isnum(source))
+								{
+									numbers[data_loc] = stod(source);
+								}
+								else {
+									valuesnoperators[data_loc] = source;
+								}
+								++data_loc;
+							}
+							newhandler.push_data(datait->first, Core::FMTdata(numbers, Core::FMTyieldparserop::FMTwsequation, valuesnoperators));
+						}
+						yields.insert(location, newmask, newhandler);
+						++location;
+					}
+					handler_it = (yields.begin() + location);
+				}
+				else {
+					++handler_it;
+				}
+			}
+		}
+		yields.update();
+	}catch(...)
+		{
+		_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, _section, "while reading", __LINE__, __FILE__);
+		}
     return yields;
     }
 
-bool FMTyieldparser::write(const Core::FMTyields& yields, std::string location)
+void FMTyieldparser::write(const Core::FMTyields& yields,const std::string& location) const
     {
 	std::ofstream yieldstream;
     yieldstream.open(location);
@@ -600,8 +621,6 @@ bool FMTyieldparser::write(const Core::FMTyields& yields, std::string location)
             yieldstream<< std::string(val);
             }
         yieldstream.close();
-        return true;
         }
-    return false;
     }
 }

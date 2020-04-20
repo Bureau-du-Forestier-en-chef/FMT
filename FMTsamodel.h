@@ -65,6 +65,8 @@ cooling schedule and FMTspatialaction must be set for the model.
 class FMTsamodel : public FMTmodel
     {
     protected:
+        ///
+        Spatial::FMTsamovetype movetype;
         /// Range of ratio of the map to perturb at each iteration.
         double min_ratio_moves,max_ratio_moves;
         ///Path to were the outputs will be written.
@@ -73,6 +75,7 @@ class FMTsamodel : public FMTmodel
         int number_of_moves;
         ///Container with the penalties value for each constraints.
         ///Must think about to change it maybe implement a new class.
+        ///FMTsaeventcontainer == std::set<FMTsaevent>
 		std::vector<std::map<std::string, std::pair<std::vector<double>, std::vector<double>>>> constraints_values_penalties;
 		///Random number generator.
 		std::default_random_engine generator;
@@ -93,7 +96,7 @@ class FMTsamodel : public FMTmodel
 		///New solution generated from current. Empty when no moves has been done.
 		Spatial::FMTsasolution new_solution;
         ///Overloading move operator
-		Graph::FMTgraphstats g_move_solution(const double min_ratio,const double max_ratio, Spatial::FMTsamovetype movetype = Spatial::FMTsamovetype::shotgun);
+		Graph::FMTgraphstats g_move_solution(const double min_ratio,const double max_ratio);
         ///It's use to verify if solutions are not identical
         bool comparesolutions() const;
     public:
@@ -126,6 +129,8 @@ class FMTsamodel : public FMTmodel
         bool setspactions(const std::vector<Spatial::FMTspatialaction>& lspactions);
         ///Setter of min_ratio_moves and max_ratio_moves.
         bool set_min_max_moves(const double min_r,const double max_r);
+        ///
+        bool set_movetype(const Spatial::FMTsamovetype movet);
 
         /*****************************************
         Functions to get informations on the model.
@@ -161,7 +166,7 @@ class FMTsamodel : public FMTmodel
         ///To build initial solution. Return stats for all graphs created in the map.
         Graph::FMTgraphstats buildperiod();
 		///Move operator for simulated annealing
-		Graph::FMTgraphstats move_solution(Spatial::FMTsamovetype movetype = Spatial::FMTsamovetype::shotgun);
+		Graph::FMTgraphstats move_solution();
         ///Setter of the map id modified
         bool setmapidmodified(const std::vector<size_t>& id);
     };

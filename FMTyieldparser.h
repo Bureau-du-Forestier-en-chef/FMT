@@ -67,8 +67,8 @@ class FMTyieldparser : public FMTparser
 		~FMTyieldparser() = default;
         FMTyieldparser(const FMTyieldparser& rhs);
         FMTyieldparser& operator = (const FMTyieldparser& rhs);
-        Core::FMTyields read(const std::vector<Core::FMTtheme>& themes,const Core::FMTconstants& constants, std::string location);
-        bool write(const Core::FMTyields& yields, std::string location);
+        Core::FMTyields read(const std::vector<Core::FMTtheme>& themes,const Core::FMTconstants& constants,const std::string& location);
+        void write(const Core::FMTyields& yields,const std::string& location) const;
     };
 }
 #endif // FMTyieldparser_H_INCLUDED

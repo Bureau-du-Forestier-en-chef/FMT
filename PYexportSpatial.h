@@ -108,14 +108,16 @@ void exportSpatial()
 
 	bp::enum_<Spatial::FMTsamovetype>("FMTsamovetype")
 		.value("shotgun", Spatial::FMTsamovetype::shotgun)
-		.value("cluster", Spatial::FMTsamovetype::cluster);
+		.value("cluster", Spatial::FMTsamovetype::cluster)
+		.value("opt1", Spatial::FMTsamovetype::opt1);
 
-    define_FMTlayer<Graph::FMTgraph>();
+	define_FMTlayer<Graph::FMTlinegraph>();
 
-    bp::class_<Spatial::FMTsasolution, bp::bases<Spatial::FMTlayer<Graph::FMTgraph>>>("FMTsasolution", "@DocString(FMTsasolution)", bp::no_init)
+    bp::class_<Spatial::FMTsasolution, bp::bases<Spatial::FMTlayer<Graph::FMTlinegraph>>>("FMTsasolution", "@DocString(FMTsasolution)")
         .def("get_stats",&Spatial::FMTsasolution::getsolution_stats, "@DocString(FMTsasolution::getsolution_stats)")
         .def("getobjfvalue",&Spatial::FMTsasolution::getobjfvalue, "@DocString(FMTsasolution::getobjfvalue)")
-        .def("get_forest_at_period",&Spatial::FMTsasolution::getforestperiod, "@DocString(FMTsasolution::getforestperiod)");
+        .def("get_forest_at_period",&Spatial::FMTsasolution::getforestperiod, "@DocString(FMTsasolution::getforestperiod)")
+		.def("get_graphs_outputs", &Spatial::FMTsasolution::getgraphsoutputs);
 
     define_pylist<Spatial::FMTsasolution>();
 

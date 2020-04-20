@@ -42,6 +42,7 @@ namespace Exception
 		const int& line, const std::string& file)
 	{
 		FMTexception excp;
+		text += " " + getsrcinfo(line, file);
 		if (lsection == Core::FMTwssect::Empty)
 		{
 			excp = FMTexception(lexception, updatestatus(lexception, text));
@@ -49,13 +50,14 @@ namespace Exception
 		else {
 			excp = FMTexception(lexception, lsection, updatestatus(lexception, text));
 		}
-		*_logger << getsrcinfo(line, file) << "\n";
+		//*_logger << getsrcinfo(line, file) << "\n";
 		if (_level == FMTlev::FMT_Warning)
 		{
 			FMTwarning(excp).warn(_logger);
 		}
 		else if (_level == FMTlev::FMT_logic || _level == FMTlev::FMT_range) {
-			throw FMTerror(excp);
+			//throw FMTerror(excp);
+			std::throw_with_nested(FMTerror(excp));
 		}
 		return _level;
 	}

@@ -23,18 +23,14 @@ SOFTWARE.
 */
 
 #include "FMTcoordinate.h"
+#include <cstdlib>
 #include <iostream>
-
-
 
 namespace Spatial
     {
-	
-	//std::array<int,8>FMTcoordinate::x_n = { 0,1,0,-1,1,1,-1,-1 };
-	//std::array<int,8>FMTcoordinate::y_n = { 1,0,-1,0,1,-1,-1,1 };
-	//const int FMTcoordinate::x_n[8] = { 0,1,0,-1,1,1,-1,-1 };
-	//const int FMTcoordinate::y_n[8] = { 1,0,-1,0,1,-1,-1,1 };
-
+    //Implementation for Rcpp .. Normally should be static member
+	constexpr std::array<int,8> x_n = { 0,1,0,-1,1,1,-1,-1 };
+	constexpr std::array<int,8> y_n = { -1,0,1,0,-1,1,1,-1 };
     FMTcoordinate::FMTcoordinate():x(),y(){}
     FMTcoordinate::FMTcoordinate(unsigned int lx, unsigned int ly):
         x(lx),y(ly){}
@@ -42,8 +38,11 @@ namespace Spatial
 
     FMTcoordinate FMTcoordinate::at(unsigned int id) const
         {
-		constexpr std::array<int, 8>x_n = { 0,1,0,-1,1,1,-1,-1 };
-		constexpr std::array<int, 8>y_n = { 1,0,-1,0,1,-1,-1,1 };
+        ///Max 12
+        //7//0//4//
+        //3// //1//
+        //6//2//5//
+        /// Factor is a floor
         const int factor = ((id / 8) + 1);
         id = (id - (factor-1) * 8);
         return FMTcoordinate(x+(x_n[id]*factor),y+(y_n[id]*factor));
@@ -111,5 +110,61 @@ namespace Spatial
 		enveloppe[2].y = maxy;
 		enveloppe[3].x = maxx;
 		enveloppe[3].y = maxy;
+        }
+    FMTcoordinate::operator std::string() const
+        {
+		return "X"+std::to_string(x)+" Y"+std::to_string(y);
+        }
+    std::set<FMTcoordinate> FMTcoordinate::getneighbors(const unsigned int& nsize,const bool& circle) const
+        {   ///nsize must be odd number
+            ///https://grass.osgeo.org/grass78/manuals/r.neighbors.html
+            std::set<FMTcoordinate> n;
+            if (circle)
+            {
+                const unsigned int radius = (nsize-1)/2;
+                const int ymax = y+radius;
+                int ly = y-radius;
+                while (ly<=ymax)
+                {
+					const int diffint = (ly - y);
+                    const int lydistance = std::abs(diffint);
+                    const int lxdistance = sqrt((radius*radius)-(lydistance*lydistance));
+                    int lx = x-lxdistance;
+                    const int xmax = x+lxdistance;
+                    while(lx<=xmax)
+                    {
+                        if ((lx>=0 && ly>=0) && !(static_cast<unsigned int>(lx)==x && static_cast<unsigned int>(lx)==y))
+                        {
+                            n.emplace(static_cast<unsigned int>(lx),static_cast<unsigned int>(ly));
+                        }
+                        lx+=1;
+                    }
+                    ly+=1;
+                }
+            }
+            else
+            {
+                const unsigned int d = (nsize-1)/2;
+                const int xmin = x-d;
+                const int ymin = y-d;
+                const int xmax = x+d;
+                const int ymax = y+d;
+                int lx = xmin;
+                int ly = ymin;
+                while(ly<=ymax)
+                {
+                    while(lx<=xmax)
+                    {
+                        if ((lx>=0 && ly>=0) && !(static_cast<unsigned int>(lx)==x && static_cast<unsigned int>(lx)==y))
+                        {
+                            n.emplace(static_cast<unsigned int>(lx),static_cast<unsigned int>(ly));
+                        }
+                        lx+=1;
+                    }
+                    lx=xmin;
+                    ly+=1;
+                }
+            }
+            return n;
         }
     }

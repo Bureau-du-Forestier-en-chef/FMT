@@ -477,116 +477,123 @@ namespace Parser
 									const std::string& location)
 		{
 		std::vector<Core::FMTconstraint>constraints;
-		if (!location.empty())
+		try {
+			if (!location.empty())
 			{
-			std::ifstream optimizestream(location);
-			if (FMTparser::tryopening(optimizestream, location))
+				std::ifstream optimizestream(location);
+				if (FMTparser::tryopening(optimizestream, location))
 				{
-				FMToptimizationsection section = FMToptimizationsection::none;
-				while (optimizestream.is_open())
+					FMToptimizationsection section = FMToptimizationsection::none;
+					while (optimizestream.is_open())
 					{
-					std::string line = getoptline(optimizestream, themes, constants, outputs);
-					if (!line.empty())
+						std::string line = getoptline(optimizestream, themes, constants, outputs);
+						if (!line.empty())
 						{
-					FMToptimizationsection newsection = getsection(line);
-					if (newsection == FMToptimizationsection::exclude)
-						{
-						boost::trim(line);
-						section = newsection;
-						}
-					if (newsection != FMToptimizationsection::none && 
-						(newsection != FMToptimizationsection::exclude || 
-						(newsection == FMToptimizationsection::exclude && line == "*EXCLUDE")))
-						{
-						section = newsection;
-					}else {
-						switch (section)
+							FMToptimizationsection newsection = getsection(line);
+							if (newsection == FMToptimizationsection::exclude)
 							{
-							case FMToptimizationsection::objective:
+								boost::trim(line);
+								section = newsection;
+							}
+							if (newsection != FMToptimizationsection::none &&
+								(newsection != FMToptimizationsection::exclude ||
+								(newsection == FMToptimizationsection::exclude && line == "*EXCLUDE")))
+							{
+								section = newsection;
+							}
+							else {
+								switch (section)
 								{
-								Core::FMTconstraint objective = getobjective(line, constants, outputs,themes);
-								if (objective.emptyperiod())
+								case FMToptimizationsection::objective:
+								{
+									Core::FMTconstraint objective = getobjective(line, constants, outputs, themes);
+									if (objective.emptyperiod())
 									{
-									_exhandler->raise(Exception::FMTexc::FMTmissingobjective, _section, " at line " + std::to_string(_line), __LINE__, __FILE__);
+										_exhandler->raise(Exception::FMTexc::FMTmissingobjective, _section, " at line " + std::to_string(_line), __LINE__, __FILE__);
 									}
-								constraints.push_back(objective);
-								break;
+									constraints.push_back(objective);
+									break;
 								}
-							case FMToptimizationsection::constraints:
+								case FMToptimizationsection::constraints:
 								{
-								Core::FMTconstraint constraint = getconstraint(line, constants, outputs, themes);
-								constraints.push_back(constraint);
-								break;
+									Core::FMTconstraint constraint = getconstraint(line, constants, outputs, themes);
+									constraints.push_back(constraint);
+									break;
 								}
-							case FMToptimizationsection::exclude:
+								case FMToptimizationsection::exclude:
 								{
-								if (line.find("*EXCLUDE")== std::string::npos)
+									if (line.find("*EXCLUDE") == std::string::npos)
 									{
-									line = "*EXCLUDE " + line;
+										line = "*EXCLUDE " + line;
 									}
-								std::smatch kmatch;
-								if (std::regex_search(line, kmatch, rxexclude))
+									std::smatch kmatch;
+									if (std::regex_search(line, kmatch, rxexclude))
 									{
-									std::string action_name = kmatch[3];
-									const std::vector<const Core::FMTaction*>action_ptrs = Core::FMTactioncomparator(action_name).getallaggregates(actions);
-									const int period_lower = getnum<int>(std::string(kmatch[7])+ std::string(kmatch[10]),constants)-1;
-									int period_upper = std::numeric_limits<int>::max();
-									const std::string str_upper = std::string(kmatch[9]);
-									if (!str_upper.empty() && str_upper != "_LENGTH")
+										std::string action_name = kmatch[3];
+										const std::vector<const Core::FMTaction*>action_ptrs = Core::FMTactioncomparator(action_name).getallaggregates(actions);
+										const int period_lower = getnum<int>(std::string(kmatch[7]) + std::string(kmatch[10]), constants) - 1;
+										int period_upper = std::numeric_limits<int>::max();
+										const std::string str_upper = std::string(kmatch[9]);
+										if (!str_upper.empty() && str_upper != "_LENGTH")
 										{
-										period_upper  = getnum<int>(str_upper, constants);
-									}else if (str_upper.empty())
-										{
-										period_upper = period_lower;
+											period_upper = getnum<int>(str_upper, constants);
 										}
-									for (const Core::FMTaction* target_actionptr : action_ptrs)
+										else if (str_upper.empty())
 										{
-										std::vector<Core::FMTspec>newspecs;
-										std::vector<Core::FMTmask>newmask;
-										std::vector<Core::FMTaction>::iterator actit = std::find_if(excluded.begin(), excluded.end(), Core::FMTactioncomparator(target_actionptr->getname()));
-										if (actit != excluded.end())
+											period_upper = period_lower;
+										}
+										for (const Core::FMTaction* target_actionptr : action_ptrs)
+										{
+											std::vector<Core::FMTspec>newspecs;
+											std::vector<Core::FMTmask>newmask;
+											std::vector<Core::FMTaction>::iterator actit = std::find_if(excluded.begin(), excluded.end(), Core::FMTactioncomparator(target_actionptr->getname()));
+											if (actit != excluded.end())
 											{
-			
-											for (auto& specobject : *actit)
+
+												for (auto& specobject : *actit)
 												{
-												if (str_upper != "_LENGTH")
+													if (str_upper != "_LENGTH")
 													{
-													Core::FMTspec upperspec = specobject.second;
+														Core::FMTspec upperspec = specobject.second;
 														constexpr int max_upper = std::numeric_limits<int>::max() - 2;
 														const int upper = period_upper + 1;
 														upperspec.setbounds(Core::FMTperbounds(Core::FMTwssect::Action, max_upper, upper));
 														newspecs.push_back(upperspec);
 														newmask.push_back(specobject.first);
-														}
+													}
 													const int startperiod_upper = period_lower - 1;
 													specobject.second.setbounds(Core::FMTperbounds(Core::FMTwssect::Action, period_lower, startperiod_upper));
-		
-													}
-												for (size_t newspec = 0; newspec < newspecs.size();++newspec)
-													{
-													actit->push_back(newmask.at(newspec),newspecs.at(newspec));
-													}
-												actit->update();
+
 												}
+												for (size_t newspec = 0; newspec < newspecs.size(); ++newspec)
+												{
+													actit->push_back(newmask.at(newspec), newspecs.at(newspec));
+												}
+												actit->update();
+											}
 										}
 									}
-								break;
+									break;
 								}
-							default:
+								default:
 								{
 
-								break;
+									break;
 								}
-							};
+								};
+							}
 						}
 					}
-					}
 				}
+			}
+		}catch (...)
+			{
+			_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, _section, "while reading", __LINE__, __FILE__);
 			}
 		return constraints;
 		}
 
-	void FMToptimizationparser::write(const std::vector<Core::FMTconstraint>& constraints, std::string location)
+	void FMToptimizationparser::write(const std::vector<Core::FMTconstraint>& constraints,const std::string& location) const
 		{
 		std::ofstream optimizestream;
 		optimizestream.open(location);

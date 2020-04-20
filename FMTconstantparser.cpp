@@ -43,50 +43,56 @@ FMTconstantparser& FMTconstantparser::operator = (const FMTconstantparser& rhs)
     return *this;
     }
 
-Core::FMTconstants FMTconstantparser::read(std::string location)
+Core::FMTconstants FMTconstantparser::read(const std::string& location)
     {
 	Core::FMTconstants constants;
-	boost::filesystem::path pathtoconstants(location);
-	if (boost::filesystem::is_regular_file(pathtoconstants))//Constants is not a needed component
+	try {
+		boost::filesystem::path pathtoconstants(location);
+		if (boost::filesystem::is_regular_file(pathtoconstants))//Constants is not a needed component
 		{
-		std::ifstream CONstream(location);
-		std::vector<Core::FMTtheme>themes;
-		if (FMTparser::tryopening(CONstream, location))
+			std::ifstream CONstream(location);
+			std::vector<Core::FMTtheme>themes;
+			if (FMTparser::tryopening(CONstream, location))
 			{
-			while (CONstream.is_open())
-			{
-				const std::string line = FMTparser::getcleanlinewfor(CONstream, themes, constants);
-				if (!line.empty())
+				while (CONstream.is_open())
 				{
-					const std::vector<std::string>splited = FMTparser::spliter(line, FMTparser::rxseparator);
-					const std::string key = splited[0];
-					std::vector<double>values;
-					for (size_t id = 1; id < splited.size(); ++id)
+					const std::string line = FMTparser::getcleanlinewfor(CONstream, themes, constants);
+					if (!line.empty())
 					{
-						const int period = static_cast<int>((id - 1));
-						if (splited[id].find("#") != std::string::npos)
+						const std::vector<std::string>splited = FMTparser::spliter(line, FMTparser::rxseparator);
+						const std::string key = splited[0];
+						std::vector<double>values;
+						for (size_t id = 1; id < splited.size(); ++id)
 						{
-							std::string strid = splited[id];
-							strid.erase(0, 1);
-							values.push_back(constants.get<double>(strid, period));
-						}else if(isnum(splited[id]))
+							const int period = static_cast<int>((id - 1));
+							if (splited[id].find("#") != std::string::npos)
 							{
-							values.push_back(getnum<double>(splited[id]));
+								std::string strid = splited[id];
+								strid.erase(0, 1);
+								values.push_back(constants.get<double>(strid, period));
 							}
-					}
-					if (!values.empty())
-						{
-						constants.set(key, values);
+							else if (isnum(splited[id]))
+							{
+								values.push_back(getnum<double>(splited[id]));
+							}
 						}
-					
+						if (!values.empty())
+						{
+							constants.set(key, values);
+						}
+
+					}
 				}
 			}
-			}
 		}
+		}catch (...)
+			{
+			_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, _section, "while reading", __LINE__, __FILE__);
+			}
     return constants;
     }
 
-bool FMTconstantparser::write(const Core::FMTconstants& constants,std::string location)
+void FMTconstantparser::write(const Core::FMTconstants& constants,const std::string& location) const
     {
     std::ofstream constantstream;
     constantstream.open(location);
@@ -94,8 +100,6 @@ bool FMTconstantparser::write(const Core::FMTconstants& constants,std::string lo
         {
         constantstream<< std::string(constants);
         constantstream.close();
-        return true;
         }
-    return false;
     }
 }

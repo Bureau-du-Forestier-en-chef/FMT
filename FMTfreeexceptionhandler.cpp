@@ -61,7 +61,8 @@ FMTlev FMTfreeexceptionhandler::raise(FMTexc lexception, Core::FMTwssect lsectio
 		
 	}
 	else if (_level == FMTlev::FMT_logic || _level == FMTlev::FMT_range) {
-		throw FMTerror(excp);
+		//throw FMTerror(excp);
+		std::throw_with_nested(FMTerror(excp));
 	}
 	return _level;
 }

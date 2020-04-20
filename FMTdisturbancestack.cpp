@@ -47,9 +47,9 @@ FMTdisturbancestack& FMTdisturbancestack::operator = (const FMTdisturbancestack 
 std::map<std::string, std::string>FMTdisturbancestack::directmapping() const
     {
 	std::map<std::string, std::string>mapping;
-    for(const std::map<std::string, std::vector<FMTevent<Core::FMTdevelopment>>>& dmap : data)
+    for(const std::map<std::string, std::vector<FMTsesevent<Core::FMTdevelopment>>>& dmap : data)
         {
-        for(std::map<std::string,std::vector<FMTevent<Core::FMTdevelopment>>>::const_iterator eit = dmap.begin(); eit != dmap.end(); eit++)
+        for(std::map<std::string,std::vector<FMTsesevent<Core::FMTdevelopment>>>::const_iterator eit = dmap.begin(); eit != dmap.end(); eit++)
             {
             mapping[eit->first] = eit->first;
             }
@@ -57,12 +57,12 @@ std::map<std::string, std::string>FMTdisturbancestack::directmapping() const
     return mapping;
     }
 
-void FMTdisturbancestack::push(const std::map<std::string, std::vector<FMTevent<Core::FMTdevelopment>>>& element)
+void FMTdisturbancestack::push(const std::map<std::string, std::vector<FMTsesevent<Core::FMTdevelopment>>>& element)
     {
     data.push_back(element);
     }
 
-void FMTdisturbancestack::add(const std::string& action,const std::vector<FMTevent<Core::FMTdevelopment>>& events)
+void FMTdisturbancestack::add(const std::string& action,const std::vector<FMTsesevent<Core::FMTdevelopment>>& events)
     {
     if (data.back().find(action)==data.back().end())
         {
@@ -77,13 +77,13 @@ bool FMTdisturbancestack::allow(const FMTspatialaction& action,const FMTcoordina
     int MINGU = static_cast<int>((data.size() - action.green_up));
     for(size_t green_up = std::max(0,MINGU); green_up < data.size(); ++green_up)
         {
-        const std::map<std::string, std::vector<FMTevent<Core::FMTdevelopment>>>* mapping = &data.at(green_up);
+        const std::map<std::string, std::vector<FMTsesevent<Core::FMTdevelopment>>>* mapping = &data.at(green_up);
         for(const std::string& actname : action.neighbors)
             {
-			std::map<std::string, std::vector<FMTevent<Core::FMTdevelopment>>>::const_iterator evit = mapping->find(actname);
+			std::map<std::string, std::vector<FMTsesevent<Core::FMTdevelopment>>>::const_iterator evit = mapping->find(actname);
             if (evit!=mapping->end())
                 {
-                for(const FMTevent<Core::FMTdevelopment>& event : evit->second)
+                for(const FMTsesevent<Core::FMTdevelopment>& event : evit->second)
                     {
                     if (event.withinc(static_cast<unsigned int>(action.adjacency),location))
                         {
@@ -102,13 +102,13 @@ std::string FMTdisturbancestack::getpatchstats() const
 	{
 	std::string result = "";
 	size_t period = 1;
-	for (const std::map<std::string, std::vector<FMTevent<Core::FMTdevelopment>>>& dmap : data)
+	for (const std::map<std::string, std::vector<FMTsesevent<Core::FMTdevelopment>>>& dmap : data)
 		{
-		for (std::map<std::string, std::vector<FMTevent<Core::FMTdevelopment>>>::const_iterator eit = dmap.begin(); eit != dmap.end(); eit++)
+		for (std::map<std::string, std::vector<FMTsesevent<Core::FMTdevelopment>>>::const_iterator eit = dmap.begin(); eit != dmap.end(); eit++)
 			{
 			const std::string action = eit->first;
-			for(const FMTevent<Core::FMTdevelopment>& ev : eit->second)
-				{ 
+			for(const FMTsesevent<Core::FMTdevelopment>& ev : eit->second)
+				{
 				result += std::to_string(period) + " " + action +" "+ ev.getstats() + "\n";
 				}
 			}
@@ -116,4 +116,5 @@ std::string FMTdisturbancestack::getpatchstats() const
 		}
 	return result;
 	}
+
 }

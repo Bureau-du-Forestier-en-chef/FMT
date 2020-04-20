@@ -61,7 +61,8 @@ namespace Exception
 			FMTwarning(excp).warn(_logger);
 		}
 		else if (_level == FMTlev::FMT_logic || _level == FMTlev::FMT_range) {
-			throw FMTerror(excp);
+			std::throw_with_nested(FMTerror(excp));
+			//throw FMTerror(excp);
 		}
 		return _level;
 	}

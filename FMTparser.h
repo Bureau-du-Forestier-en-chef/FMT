@@ -83,7 +83,7 @@ class FMTparser: public Core::FMTobject
         mutable int _constreplacement;
         int _line;
 		std::string _comment;
-		std::string _location;
+		mutable std::string _location;
 		#ifdef FMTWITHGDAL
 			template<typename T>
 			GDALDataset* createdataset(const std::string& location,const Spatial::FMTlayer<T>& layer, const GDALDataType datatype) const
@@ -138,8 +138,8 @@ class FMTparser: public Core::FMTobject
         FMTparser(const FMTparser& rhs);
         FMTparser& operator = (const FMTparser& rhs);
         virtual ~FMTparser()=default;
-        bool tryopening(const std::ifstream& stream, const std::string& location);
-        bool tryopening(const std::ofstream& stream, const std::string& location);
+        bool tryopening(const std::ifstream& stream, const std::string& location) const;
+        bool tryopening(const std::ofstream& stream, const std::string& location) const;
 		bool isvalidfile(const std::string& location) const;
         bool isvalid(std::string& line) const;
 		std::vector<std::string>regexloop(std::regex& cutregex, std::string& str) const;

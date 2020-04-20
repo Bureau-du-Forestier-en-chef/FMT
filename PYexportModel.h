@@ -35,7 +35,7 @@ namespace Python
 { 
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(simulate_overloads, simulate, 1, 3)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(buildperiod_overloads, buildperiod, 0, 2)
-BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(move_solution_overloads, move_solution, 0, 1)
+//BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(move_solution_overloads, move_solution, 0, 1)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(get_outputs_overloads, get_outputs, 0, 1)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(getLPoutputoverloads, getoutput, 2, 3)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(warmup_overloads, warmup, 2, 4)
@@ -192,8 +192,7 @@ void exportModel()
 				"@DocString(FMTsamodel::setschedule)")
             .def("buildperiod",&Models::FMTsamodel::buildperiod,
 				"@DocString(FMTsamodel::buildperiod)")
-            .def("move",&Models::FMTsamodel::move_solution,
-                 move_solution_overloads(bp::args("move_type"),"@DocString(FMTsamodel::move_type)"))
+            .def("move",&Models::FMTsamodel::move_solution,"@DocString(FMTsamodel::move_type)")
             .def("acceptnew",&Models::FMTsamodel::acceptnew,
 				"@DocString(FMTsamodel::acceptnew)")
             .def("write_outputs_at",&Models::FMTsamodel::write_outputs_at,
@@ -203,7 +202,8 @@ void exportModel()
 				"@DocString(FMTsamodel::write_solutions_events)")
             .def("get_number_moves",&Models::FMTsamodel::get_number_moves,
 				"@DocString(FMTsamodel::get_number_moves)")
-            .def("warmup",&Models::FMTsamodel::warmup,warmup_overloads(bp::args("initprob","iterations","type"), "@DocString(FMTsamodel::warmup)"));
+            .def("warmup",&Models::FMTsamodel::warmup,warmup_overloads(bp::args("initprob","iterations","keep_best","type"), "@DocString(FMTsamodel::warmup)"))
+			.def("set_movetype", &Models::FMTsamodel::set_movetype, "@DocString(FMTsamodel::set_movetype)");
 
     define_pylist<Models::FMTsamodel>();
 

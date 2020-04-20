@@ -111,7 +111,7 @@ namespace Models
             {
             targets[ait->first.getname()] = schedule.actionarea(ait->first);
             }
-        disturbances.push(std::map<std::string, std::vector<Spatial::FMTevent<Core::FMTdevelopment>>>());
+        disturbances.push(std::map<std::string, std::vector<Spatial::FMTsesevent<Core::FMTdevelopment>>>());
 		double allocated_area = 0;
 		if (!schedule.empty() || !schedule_only)
 			{
@@ -138,7 +138,7 @@ namespace Models
 							const Spatial::FMTforest spatialy_allowable = allowable_forest->getallowable(*acit, disturbances);
 							if (spatialy_allowable.area()>0)
 								{
-								std::vector<Spatial::FMTevent<Core::FMTdevelopment>>events = spatialy_allowable.buildharvest(action_area, *acit, generator,action_pass);
+								std::vector<Spatial::FMTsesevent<Core::FMTdevelopment>>events = spatialy_allowable.buildharvest(action_area, *acit, generator,action_pass);
 								if (events.size() > 0)
 									{ 
 									Spatial::FMTforest newoperated = spatialy_allowable.operate(events, *acit, transitions[location], yields, themes,cached_operated[location], newschedule); //can also use caching here...

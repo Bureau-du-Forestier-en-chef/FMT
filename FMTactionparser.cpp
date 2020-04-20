@@ -105,148 +105,161 @@ FMTactionparser& FMTactionparser::operator = (const FMTactionparser& rhs)
     std::vector<Core::FMTaction>FMTactionparser::read(const std::vector<Core::FMTtheme>& themes,
 							const Core::FMTyields& yields,
 							const Core::FMTconstants& constants,
-							std::string location)
+							const std::string& location)
         {
-        std::ifstream actionstream(location);
-		std::string line;
-		std::string operablename;
-		std::string aggregatename;
-		std::string partialname;
-		std::vector<Core::FMTaction>actions;
 		std::vector<Core::FMTaction>cleanedactions;
-		std::map<std::string, std::vector<std::string>>aggregates;
-		Core::FMTaction* theaction = nullptr;
-        if (FMTparser::tryopening(actionstream,location))
-            {
-            while(actionstream.is_open())
-                {
-				line = getcleanlinewfor(actionstream, themes, constants);
-                if (!line.empty())
-                    {
-                    std::smatch kmatch;
-                    if(!std::regex_search(line,kmatch,FMTactionparser::rxsection))
-                        {
-                        //crash here
-                        }
-					const std::string action = std::string(kmatch[1])+ std::string(kmatch[8]);
-					const std::string operable = kmatch[13];
-					const std::string aggregate = kmatch[16];
-					const std::string partial = kmatch[19];
-                    if(!action.empty())
-                        {
-                        operablename.clear();
-                        aggregatename.clear();
-                        partialname.clear();
-						const std::string actionname = std::string(kmatch[3])+ std::string(kmatch[10]);
-						const std::string locking = kmatch[7];
-						const std::string capage = std::string(kmatch[5]) + std::string(kmatch[12]);
-                        const bool resetage = (capage=="Y") ? true : false;
-                        const bool respectlock = (locking.empty()) ? true : false;
-                        actions.push_back(Core::FMTaction(actionname,respectlock,resetage));
-                        }else if(!operable.empty())
-                            {
-                            operablename = kmatch[15];
-							const std::vector<Core::FMTaction*>pactions = sameactionas(operablename,actions);
-                            theaction = pactions.at(0);
-                            operablename = theaction->getname();
-                            if (pactions.size()>1)
-                                {
-								std::vector<std::pair<Core::FMTmask,Core::FMTspec>>::const_iterator dataof=pactions.at(1)->begin();
-                                for (size_t id = 0 ; id<pactions.at(1)->size(); ++id)
-                                    {
-									theaction->push_back(*dataof);
-                                    }
-                                }
-                            aggregatename.clear();
-                            partialname.clear();
-                            }else if(!aggregate.empty())
-                                {
-                                aggregatename = kmatch[18];
-                                operablename.clear();
-                                partialname.clear();
-                                aggregates[aggregatename]=std::vector<std::string>();
-                                }else if(!partial.empty())
-                                    {
-                                    partialname = kmatch[21];
-                                    const std::vector<Core::FMTaction*>pactions = sameactionas(partialname,actions);
-                                    operablename.clear();
-                                    aggregatename.clear();
-                                    theaction = pactions.at(0);
-                                    partialname = theaction->getname();
-                                    if (pactions.size()>1)
-                                        {
-                                        for (const std::string& samepartial : pactions.at(1)->getpartials())
-                                            {
-                                            theaction->push_partials(samepartial);
-                                            }
-                                        }
-                                    }else if(!operablename.empty())
-                                        {
-                                        Core::FMTspec spec;
-                                        std::string mask = getbounds(line,spec,constants,yields);
-                                        if (!validate(themes, mask, " at line " + std::to_string(_line))) continue;
-                                        const Core::FMTmask newmask(mask,themes);
-                                        const size_t loc = std::distance(actions.begin(), std::find_if(actions.begin(), actions.end(), Core::FMTactioncomparator(operablename)));
-										actions[loc].push_back(newmask,spec);
-                                        }else if(!aggregatename.empty())
-                                            {
-                                            const std::vector<std::string>splited = FMTparser::spliter(line,FMTparser::rxseparator);
-                                            for(const std::string& val : splited)
-                                                {
-                                                if (std::find_if(actions.begin(), actions.end(), Core::FMTactioncomparator(val)) !=actions.end())
-                                                    {
-                                                    aggregates[aggregatename].push_back(val);
-                                                    }else{
-                                                    _exhandler->raise(Exception::FMTexc::WSundefined_aggregate_value,_section,val+" at line" + std::to_string(_line), __LINE__, __FILE__);
-                                                    }
-                                                }
-                                            }else if(!partialname.empty())
-                                                {
-                                                if (theaction && theaction->isresetage())
-                                                    {
-                                                    _exhandler->raise(Exception::FMTexc::WSwrong_partial,_section,partialname+" at line" + std::to_string(_line), __LINE__, __FILE__);
-                                                    }
-                                                const std::vector<std::string>splited = FMTparser::spliter(line,FMTparser::rxseparator);
-                                                for(const std::string& val : splited)
-                                                    {
-                                                    theaction->push_partials(val);
-                                                    }
-                                                }
-
-                    }
-
-                }
-            std::vector<size_t>todelete;
-            size_t id = 0;
-            for(Core::FMTaction& action : actions)
-                {
-                if(find(todelete.begin(),todelete.end(),id)==todelete.end())
-                    {
-					action.shrink();
-                    cleanedactions.push_back(action);
-                    }else{
-                    _exhandler->raise(Exception::FMTexc::WSempty_action,_section,action.getname(), __LINE__, __FILE__);
-                    }
-                ++id;
-                }
-            std::map<std::string,std::vector<std::string>>cleanedag = valagg(actions,aggregates);
-			aggregates = cleanedag;
-            }
-			for (const auto& aggobj : aggregates)
+		try {
+			std::ifstream actionstream(location);
+			std::string line;
+			std::string operablename;
+			std::string aggregatename;
+			std::string partialname;
+			std::vector<Core::FMTaction>actions;
+			std::map<std::string, std::vector<std::string>>aggregates;
+			Core::FMTaction* theaction = nullptr;
+			if (FMTparser::tryopening(actionstream, location))
+			{
+				while (actionstream.is_open())
 				{
-				for (Core::FMTaction& action : cleanedactions)
+					line = getcleanlinewfor(actionstream, themes, constants);
+					if (!line.empty())
 					{
-					if (std::find(aggobj.second.begin(), aggobj.second.end(),action.getname())!= aggobj.second.end())
+						std::smatch kmatch;
+						if (!std::regex_search(line, kmatch, FMTactionparser::rxsection))
 						{
-						action.push_aggregate(aggobj.first);
+							//crash here
 						}
+						const std::string action = std::string(kmatch[1]) + std::string(kmatch[8]);
+						const std::string operable = kmatch[13];
+						const std::string aggregate = kmatch[16];
+						const std::string partial = kmatch[19];
+						if (!action.empty())
+						{
+							operablename.clear();
+							aggregatename.clear();
+							partialname.clear();
+							const std::string actionname = std::string(kmatch[3]) + std::string(kmatch[10]);
+							const std::string locking = kmatch[7];
+							const std::string capage = std::string(kmatch[5]) + std::string(kmatch[12]);
+							const bool resetage = (capage == "Y") ? true : false;
+							const bool respectlock = (locking.empty()) ? true : false;
+							actions.push_back(Core::FMTaction(actionname, respectlock, resetage));
+						}
+						else if (!operable.empty())
+						{
+							operablename = kmatch[15];
+							const std::vector<Core::FMTaction*>pactions = sameactionas(operablename, actions);
+							theaction = pactions.at(0);
+							operablename = theaction->getname();
+							if (pactions.size() > 1)
+							{
+								std::vector<std::pair<Core::FMTmask, Core::FMTspec>>::const_iterator dataof = pactions.at(1)->begin();
+								for (size_t id = 0; id < pactions.at(1)->size(); ++id)
+								{
+									theaction->push_back(*dataof);
+								}
+							}
+							aggregatename.clear();
+							partialname.clear();
+						}
+						else if (!aggregate.empty())
+						{
+							aggregatename = kmatch[18];
+							operablename.clear();
+							partialname.clear();
+							aggregates[aggregatename] = std::vector<std::string>();
+						}
+						else if (!partial.empty())
+						{
+							partialname = kmatch[21];
+							const std::vector<Core::FMTaction*>pactions = sameactionas(partialname, actions);
+							operablename.clear();
+							aggregatename.clear();
+							theaction = pactions.at(0);
+							partialname = theaction->getname();
+							if (pactions.size() > 1)
+							{
+								for (const std::string& samepartial : pactions.at(1)->getpartials())
+								{
+									theaction->push_partials(samepartial);
+								}
+							}
+						}
+						else if (!operablename.empty())
+						{
+							Core::FMTspec spec;
+							std::string mask = getbounds(line, spec, constants, yields);
+							if (!validate(themes, mask, " at line " + std::to_string(_line))) continue;
+							const Core::FMTmask newmask(mask, themes);
+							const size_t loc = std::distance(actions.begin(), std::find_if(actions.begin(), actions.end(), Core::FMTactioncomparator(operablename)));
+							actions[loc].push_back(newmask, spec);
+						}
+						else if (!aggregatename.empty())
+						{
+							const std::vector<std::string>splited = FMTparser::spliter(line, FMTparser::rxseparator);
+							for (const std::string& val : splited)
+							{
+								if (std::find_if(actions.begin(), actions.end(), Core::FMTactioncomparator(val)) != actions.end())
+								{
+									aggregates[aggregatename].push_back(val);
+								}
+								else {
+									_exhandler->raise(Exception::FMTexc::WSundefined_aggregate_value, _section, val + " at line" + std::to_string(_line), __LINE__, __FILE__);
+								}
+							}
+						}
+						else if (!partialname.empty())
+						{
+							if (theaction && theaction->isresetage())
+							{
+								_exhandler->raise(Exception::FMTexc::WSwrong_partial, _section, partialname + " at line" + std::to_string(_line), __LINE__, __FILE__);
+							}
+							const std::vector<std::string>splited = FMTparser::spliter(line, FMTparser::rxseparator);
+							for (const std::string& val : splited)
+							{
+								theaction->push_partials(val);
+							}
+						}
+
+					}
+
+				}
+				std::vector<size_t>todelete;
+				size_t id = 0;
+				for (Core::FMTaction& action : actions)
+				{
+					if (find(todelete.begin(), todelete.end(), id) == todelete.end())
+					{
+						action.shrink();
+						cleanedactions.push_back(action);
+					}
+					else {
+						_exhandler->raise(Exception::FMTexc::WSempty_action, _section, action.getname(), __LINE__, __FILE__);
+					}
+					++id;
+				}
+				std::map<std::string, std::vector<std::string>>cleanedag = valagg(actions, aggregates);
+				aggregates = cleanedag;
+			}
+			for (const auto& aggobj : aggregates)
+			{
+				for (Core::FMTaction& action : cleanedactions)
+				{
+					if (std::find(aggobj.second.begin(), aggobj.second.end(), action.getname()) != aggobj.second.end())
+					{
+						action.push_aggregate(aggobj.first);
 					}
 				}
-        std::sort(cleanedactions.begin(),cleanedactions.end());
+			}
+			std::sort(cleanedactions.begin(), cleanedactions.end());
+		}catch (...)
+			{
+			_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, _section, "while reading", __LINE__, __FILE__);
+			}
         return cleanedactions;
         }
-    bool FMTactionparser::write(const std::vector<Core::FMTaction>& actions,
-		std::string location)
+    void FMTactionparser::write(const std::vector<Core::FMTaction>& actions,
+		const std::string& location) const
         {
         std::ofstream actionstream;
         actionstream.open(location);
@@ -276,9 +289,7 @@ FMTactionparser& FMTactionparser::operator = (const FMTactionparser& rhs)
 				}
 			actionstream << "\n";
             actionstream.close();
-            return true;
             }
-        return false;
         }
 
     std::vector<Core::FMTaction*> FMTactionparser::sameactionas(const std::string& all_set, std::vector<Core::FMTaction>& actions) const

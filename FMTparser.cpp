@@ -373,7 +373,7 @@ bool FMTparser::isyld(const Core::FMTyields& ylds,const std::string& value, Core
 
 
 
-bool FMTparser::tryopening(const std::ifstream& stream, const std::string& location)
+bool FMTparser::tryopening(const std::ifstream& stream, const std::string& location) const
         {
         _location = location;
 		std::string extension = boost::filesystem::extension(location);
@@ -387,7 +387,7 @@ bool FMTparser::tryopening(const std::ifstream& stream, const std::string& locat
         return true;
         }
 
-bool FMTparser::tryopening(const std::ofstream& stream, const std::string& location)
+bool FMTparser::tryopening(const std::ofstream& stream, const std::string& location) const
         {
         _location = location;
         if (!stream.is_open())

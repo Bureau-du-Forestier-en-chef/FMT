@@ -58,73 +58,77 @@ namespace Parser
 
 
 		std::vector<Core::FMToutput> FMToutputparser::read(const std::vector<Core::FMTtheme>& themes,const std::vector<Core::FMTaction>& actions,
-			const Core::FMTyields& ylds,const Core::FMTconstants& constants, std::string location)
+			const Core::FMTyields& ylds,const Core::FMTconstants& constants, const std::string& location)
             {
 			std::vector<Core::FMToutput>outputs;
-			if(!location.empty())
-				{ 
-				std::ifstream outputstream(location);
-				std::vector<Core::FMToutputsource>sources;
-				std::vector<Core::FMToperator>operators;
-				std::string name,description;
-				bool insource = false;
-				bool processing_level = false;
-				int themetarget = -1;
-				//size_t lastopt = 0;
-				size_t lastoutput = 0;
-				if (FMTparser::tryopening(outputstream,location))
+			try {
+				if (!location.empty())
+				{
+					std::ifstream outputstream(location);
+					std::vector<Core::FMToutputsource>sources;
+					std::vector<Core::FMToperator>operators;
+					std::string name, description;
+					bool insource = false;
+					bool processing_level = false;
+					int themetarget = -1;
+					//size_t lastopt = 0;
+					size_t lastoutput = 0;
+					if (FMTparser::tryopening(outputstream, location))
 					{
-					while(outputstream.is_open())
+						while (outputstream.is_open())
 						{
-						std::string line = getcleanlinewfor(outputstream,themes,constants);
-						 if (!line.empty())
+							std::string line = getcleanlinewfor(outputstream, themes, constants);
+							if (!line.empty())
 							{
-							std::smatch kmatch;
-							const std::string outline = line+" ";
-							if (std::regex_search(outline,kmatch,rxoutput))
+								std::smatch kmatch;
+								const std::string outline = line + " ";
+								if (std::regex_search(outline, kmatch, rxoutput))
 								{
-								if (!sources.empty() || (processing_level && !insource))
+									if (!sources.empty() || (processing_level && !insource))
 									{
-									if (processing_level && sources.empty())
+										if (processing_level && sources.empty())
 										{
-										sources.push_back(Core::FMToutputsource(Core::FMTotar::level,0,"",name));
+											sources.push_back(Core::FMToutputsource(Core::FMTotar::level, 0, "", name));
 										}
-									outputs.push_back(Core::FMToutput(name,description, themetarget,sources,operators));
+										outputs.push_back(Core::FMToutput(name, description, themetarget, sources, operators));
 									}
-								sources.clear();
-								//lastopt = 0;
-								lastoutput = 0;
-								operators.clear();
-								const std::string outtype = std::string(kmatch[1]) + std::string(kmatch[12]);
-								if (outtype=="*LEVEL")
+									sources.clear();
+									//lastopt = 0;
+									lastoutput = 0;
+									operators.clear();
+									const std::string outtype = std::string(kmatch[1]) + std::string(kmatch[12]);
+									if (outtype == "*LEVEL")
 									{
-									processing_level = true;
-									}else {
-									processing_level = false;
+										processing_level = true;
 									}
-								std::string thtarget = std::string(kmatch[7]);
-								if (isvalid(thtarget))
+									else {
+										processing_level = false;
+									}
+									std::string thtarget = std::string(kmatch[7]);
+									if (isvalid(thtarget))
 									{
-									thtarget.erase(thtarget.begin(), thtarget.begin() + 3);
-									themetarget = getnum<int>(thtarget)-1;
+										thtarget.erase(thtarget.begin(), thtarget.begin() + 3);
+										themetarget = getnum<int>(thtarget) - 1;
 									}
-								name = std::string(kmatch[4]) + std::string(kmatch[14]);
-								description = std::string(kmatch[10]) + std::string(kmatch[16]);
-								boost::trim_right(description);
-								insource = false;
-							}
-							if (std::regex_search(line,kmatch,rxgrp))
+									name = std::string(kmatch[4]) + std::string(kmatch[14]);
+									description = std::string(kmatch[10]) + std::string(kmatch[16]);
+									boost::trim_right(description);
+									insource = false;
+								}
+								if (std::regex_search(line, kmatch, rxgrp))
 								{
-								insource = false;
-								}else if (std::regex_search(line,kmatch,rxsource) || insource)
-									{
+									insource = false;
+								}
+								else if (std::regex_search(line, kmatch, rxsource) || insource)
+								{
 									std::string rest;
-									if (insource && line.find("*SOURCE")== std::string::npos)
-										{
+									if (insource && line.find("*SOURCE") == std::string::npos)
+									{
 										rest = line;
-										}else{
+									}
+									else {
 										rest = kmatch[3];
-										}
+									}
 									std::vector<std::string>strsources;
 									std::vector<std::string>stroperators;
 									const std::string stroprators("-*/+");
@@ -137,109 +141,113 @@ namespace Parser
 									bool lookslikeoutput = false;
 									size_t thcound = 0;
 									for (const char& letter : rest)
-										{
+									{
 										if (inmask)
-											{
+										{
 											if ((letter == ' ' || letter == '\t'))
-												{
+											{
 												lastonespace = true;
-											}else if(lastonespace)
-												{
+											}
+											else if (lastonespace)
+											{
 												if (thcound == 1 && stroprators.find(letter) != std::string::npos)
-													{
+												{
 													lookslikeoutput = true;
-													}
+												}
 												++thcound;
 												lastonespace = false;
-												}
-											if (thcound >= themes.size())
-												{
-												inmask = false;
-												}
 											}
-										if (stroprators.find(letter) != std::string::npos && (!inmask || lookslikeoutput) && !inparenthesis) // && !inparenthesis 
+											if (thcound >= themes.size())
 											{
-											stroperators.push_back(std::string(1,letter));
+												inmask = false;
+											}
+										}
+										if (stroprators.find(letter) != std::string::npos && (!inmask || lookslikeoutput) && !inparenthesis) // && !inparenthesis 
+										{
+											stroperators.push_back(std::string(1, letter));
 											if (!stacked_char.empty())
-												{
+											{
 												strsources.push_back(stacked_char);
-												}
+											}
 											stacked_char = "";
 											opstr += letter;
-											}else {
+										}
+										else {
 											stacked_char += letter;
-											}
-										if (letter=='(')
-											{
+										}
+										if (letter == '(')
+										{
 											inparenthesis = true;
-											}else if(letter==')')
-												{
-												inparenthesis = false;
-												}
 										}
+										else if (letter == ')')
+										{
+											inparenthesis = false;
+										}
+									}
 									if (!stacked_char.empty())
-										{
+									{
 										strsources.push_back(stacked_char);
-										}
-									replace(opstr.begin(),opstr.end(),'.','r');
-									replace(opstr.begin(),opstr.end(),',','r');
+									}
+									replace(opstr.begin(), opstr.end(), '.', 'r');
+									replace(opstr.begin(), opstr.end(), ',', 'r');
 									std::string lastoperator;
-									for(std::string& strsrc : strsources)
-										{
+									for (std::string& strsrc : strsources)
+									{
 										boost::algorithm::trim(strsrc);
 										if (!processing_level && (isnum(strsrc) || constants.isconstant(strsrc)))
-											{
-											double value = getnum<double>(strsrc,constants);
+										{
+											double value = getnum<double>(strsrc, constants);
 											if (((!stroperators.empty() &&
-												(stroperators.at(0)=="+" || stroperators.at(0)=="-")) ||
+												(stroperators.at(0) == "+" || stroperators.at(0) == "-")) ||
 												(!lastoperator.empty() &&
 												(lastoperator == "+" || lastoperator == "-"))) &&
-												(find_if(sources.begin(), sources.end(),Core::FMToutputsourcecomparator(true)) == sources.end()))
-												{
+													(find_if(sources.begin(), sources.end(), Core::FMToutputsourcecomparator(true)) == sources.end()))
+											{
 												_exhandler->raise(Exception::FMTexc::WSunsupported_output, _section, name + " at line " + std::to_string(_line), __LINE__, __FILE__);
-												}
+											}
 											if (!lastoperator.empty())
-												{
+											{
 												std::vector<Core::FMToutputsource>newsources;
 												std::vector<Core::FMToperator>newoperators;
 												size_t lastop = 0;
 												size_t id = 0;
 												for (; id < lastoutput; ++id)
-													{
+												{
 													newsources.push_back(sources.at(id));
 													if (id > 0)
-														{
+													{
 														newoperators.push_back(operators.at(lastop));
 														++lastop;
-														}
 													}
-												for (; id < sources.size(); ++ id)
+												}
+												for (; id < sources.size(); ++id)
+												{
+													if (id > 0 && sources.at(id - 1).isvariable())
 													{
-													if (id > 0 && sources.at(id-1).isvariable())
-														{
 														if (sources.at(id).isconstant())
-															{
-															value=Core::FMToperator(operators.at(lastop)).call(value, sources.at(id).getvalue());
-														}else {
+														{
+															value = Core::FMToperator(operators.at(lastop)).call(value, sources.at(id).getvalue());
+														}
+														else {
 															newoperators.push_back(Core::FMToperator(lastoperator));
-															}
+														}
 														newsources.push_back(Core::FMToutputsource(Core::FMTotar::val, value));
-														}
+													}
 													if (sources.at(id).isvariable() || sources.at(id).islevel())
-														{
+													{
 														newsources.push_back(sources.at(id));
-														}
+													}
 													if (id > 0)
-														{
+													{
 														newoperators.push_back(operators.at(lastop));
 														++lastop;
-														}
 													}
+												}
 												if (newsources.back().isvariable() || newsources.back().islevel())
-													{
+												{
 													newsources.push_back(Core::FMToutputsource(Core::FMTotar::val, value));
 													newoperators.push_back(Core::FMToperator(lastoperator));
-													}
+												}
 
 												operators = newoperators;
 												sources = newsources;
@@ -249,207 +257,224 @@ namespace Parser
 
 											}
 
-											}else if(processing_level)
-											{
+										}
+										else if (processing_level)
+										{
 											std::vector<double>values;
 											if (constants.isconstant(strsrc))
+											{
+												for (size_t period = 0; period < constants.length(strsrc); ++period)
 												{
-												for (size_t period = 0 ; period < constants.length(strsrc); ++period)
-													{
-													values.push_back(getnum<double>(strsrc,constants,static_cast<int>(period)));
-													}
-												}else{
-													std::vector<std::string>all_numbers;
-													boost::split(all_numbers,strsrc, boost::is_any_of(" /t"), boost::token_compress_on);
-													for (const std::string& number : all_numbers)
-														{
-														values.push_back(getnum<double>(number,constants));
-														}
-													}
-											sources.push_back(Core::FMToutputsource(Core::FMTotar::level,values));//constant level!
-											}else{
-												std::vector<std::string>values = spliter(strsrc,FMTparser::rxseparator);
-												if(values.size()==1)
+													values.push_back(getnum<double>(strsrc, constants, static_cast<int>(period)));
+												}
+											}
+											else {
+												std::vector<std::string>all_numbers;
+												boost::split(all_numbers, strsrc, boost::is_any_of(" /t"), boost::token_compress_on);
+												for (const std::string& number : all_numbers)
 												{
+													values.push_back(getnum<double>(number, constants));
+												}
+											}
+											sources.push_back(Core::FMToutputsource(Core::FMTotar::level, values));//constant level!
+										}
+										else {
+											std::vector<std::string>values = spliter(strsrc, FMTparser::rxseparator);
+											if (values.size() == 1)
+											{
 												//need to use get equation to simplify output!!!
-												if (find_if(outputs.begin(),outputs.end(),Core::FMToutputcomparator(strsrc))!=outputs.end())
-													{
-													std::vector<Core::FMToutput>::iterator it = find_if(outputs.begin(),outputs.end(),Core::FMToutputcomparator(strsrc));
+												if (find_if(outputs.begin(), outputs.end(), Core::FMToutputcomparator(strsrc)) != outputs.end())
+												{
+													std::vector<Core::FMToutput>::iterator it = find_if(outputs.begin(), outputs.end(), Core::FMToutputcomparator(strsrc));
 													if (!it->islevel() || (it->islevel() && !it->getsources().empty()))
+													{
+														lastoutput = sources.size();
+														for (const Core::FMToutputsource& src : it->getsources())
 														{
-															lastoutput = sources.size();
-															for (const Core::FMToutputsource& src : it->getsources())
-																{
-																sources.push_back(src);
-																}
-															//lastopt = operators.size();
-															bool convertoperator = false;
-															if (!operators.empty() && operators.back().getkey() == Core::FMTokey::sub)
-																{
-																convertoperator = true;
-																}
-															for (const Core::FMToperator& src : it->getopes())
-																{
-																if (convertoperator)
-																	{
-																	operators.push_back(src.reverse());
-																}
-																else {
-																	operators.push_back(src);
-																}
-																
-																}
-													}else {
-														sources.push_back(Core::FMToutputsource(Core::FMTotar::level,0, strsrc));
+															sources.push_back(src);
 														}
-													if (!stroperators.empty())
+														//lastopt = operators.size();
+														bool convertoperator = false;
+														if (!operators.empty() && operators.back().getkey() == Core::FMTokey::sub)
 														{
+															convertoperator = true;
+														}
+														for (const Core::FMToperator& src : it->getopes())
+														{
+															if (convertoperator)
+															{
+																operators.push_back(src.reverse());
+															}
+															else {
+																operators.push_back(src);
+															}
+
+														}
+													}
+													else {
+														sources.push_back(Core::FMToutputsource(Core::FMTotar::level, 0, strsrc));
+													}
+													if (!stroperators.empty())
+													{
 														operators.push_back(Core::FMToperator(stroperators.front()));
 														lastoperator = stroperators.front();
 														stroperators.erase(stroperators.begin());
-														}
-													}else if (strsrc.find("#")!= std::string::npos)
-														{
-														_exhandler->raise(Exception::FMTexc::WSundefined_constant, _section, strsrc + " at line " + std::to_string(_line), __LINE__, __FILE__);
-														}
-													else if (ylds.isyld(strsrc))//isyld(ylds,strsrc,_section))
-														{
-														sources.push_back(Core::FMToutputsource(Core::FMTotar::timeyld,0,strsrc));
+													}
+												}
+												else if (strsrc.find("#") != std::string::npos)
+												{
+													_exhandler->raise(Exception::FMTexc::WSundefined_constant, _section, strsrc + " at line " + std::to_string(_line), __LINE__, __FILE__);
+												}
+												else if (ylds.isyld(strsrc))//isyld(ylds,strsrc,_section))
+												{
+													sources.push_back(Core::FMToutputsource(Core::FMTotar::timeyld, 0, strsrc));
 
-													}else{
+												}
+												else {
 													_exhandler->raise(Exception::FMTexc::WSundefined_output, _section, strsrc + " at line " + std::to_string(_line), __LINE__, __FILE__);
-													}
-                                            }else{
-                                                std::string mask = "";
+												}
+											}
+											else {
+												std::string mask = "";
 												std::string rest = " ";
-                                                size_t id = 0;
-                                                for(const std::string& value : values)
-                                                    {
-                                                    if (id < themes.size())
-                                                        {
-                                                        mask+= value+ " ";
-                                                        }else{
-                                                        rest+= value + " ";
-                                                        }
-                                                    ++id;
-                                                    }
-                                                mask = mask.substr(0, mask.size()-1);
-                                                Core::FMTspec spec;
-												const std::string inds = setspec(Core::FMTwssect::Outputs, Core::FMTwskwor::Source,ylds,constants,spec,rest);
-                                                if (!spec.empty())
-                                                    {
-                                                    rest = inds;
-													}
-												
-												if (inds.find('@')!= std::string::npos)
+												size_t id = 0;
+												for (const std::string& value : values)
+												{
+													if (id < themes.size())
 													{
+														mask += value + " ";
+													}
+													else {
+														rest += value + " ";
+													}
+													++id;
+												}
+												mask = mask.substr(0, mask.size() - 1);
+												Core::FMTspec spec;
+												const std::string inds = setspec(Core::FMTwssect::Outputs, Core::FMTwskwor::Source, ylds, constants, spec, rest);
+												if (!spec.empty())
+												{
+													rest = inds;
+												}
+
+												if (inds.find('@') != std::string::npos)
+												{
 													const std::string warningstr = inds.substr(inds.find('@'), inds.find_first_of(')'));
 													_exhandler->raise(Exception::FMTexc::WSemptybound, _section, warningstr + " at line " + std::to_string(_line), __LINE__, __FILE__);
-													rest = inds.substr(inds.find_first_of(')')+1, inds.size() - 1);
-													}
+													rest = inds.substr(inds.find_first_of(')') + 1, inds.size() - 1);
+												}
 
-                                                if (isvalid(rest))
-                                                    {
-                                                    if (std::regex_search(rest,kmatch,rxtar))
-                                                        {
-                                                        if (!std::string(kmatch[25]).empty())
-                                                            {
+												if (isvalid(rest))
+												{
+													if (std::regex_search(rest, kmatch, rxtar))
+													{
+														if (!std::string(kmatch[25]).empty())
+														{
 															const std::string action = std::string(kmatch[25]);
 															isact(_section, actions, action);
 															std::string yld = std::string(kmatch[29]);
-                                                            if (isvalid(yld))
-                                                                        {
-																		if (!ylds.isyld(yld))
-																			{
-																			_exhandler->raise(Exception::FMTexc::WSignore, _section,
-																				yld + " at line " + std::to_string(_line), __LINE__, __FILE__);
-																			}
-                                                                        }else{
-                                                                        yld = "";
-                                                                        }
-                                                            sources.push_back(Core::FMToutputsource(spec,Core::FMTmask(mask,themes),
-																Core::FMTotar::actual,yld,action));
-                                                            }else if(!std::string(kmatch[17]).empty() || !std::string(kmatch[18]).empty())
-                                                                {
-																const std::string invtype = std::string(kmatch[17]) + std::string(kmatch[18]);
-																std::string yld = std::string(kmatch[22]);
-                                                                if (isvalid(yld))
-                                                                        {
-																		if (!ylds.isyld(yld))
-																			{
-																				_exhandler->raise(Exception::FMTexc::WSignore, _section,
-																					yld + " at line " + std::to_string(_line), __LINE__, __FILE__);
-																			}
-     
-                                                                        }else{
-                                                                        yld = "";
-                                                                        }
-
-																const std::string lockinv = kmatch[18];
-																if (!lockinv.empty())
-																	{
-																	
-																	const int lower = 1;
-																	constexpr int upper = std::numeric_limits<int>::max();
-																	spec.addbounds(Core::FMTlockbounds(Core::FMTwssect::Outputs,
-																		Core::FMTwskwor::Source,upper,lower));
-																	}
-																
-                                                                sources.push_back(Core::FMToutputsource(spec,Core::FMTmask(mask,themes),
-																	Core::FMTotar::inventory,yld));
-                                                                }else if(!std::string(kmatch[3]).empty())
-                                                                    {
-																	const std::string action = std::string(kmatch[7]);
-																	isact(_section, actions, action);
-																	std::string yld = std::string(kmatch[13]);
-																	
-                                                                    if (isvalid(yld))
-                                                                        {
-																		if (!ylds.isyld(yld))
-																			{
-																			
-																			_exhandler->raise(Exception::FMTexc::WSignore, _section,
-																				yld + " at line " + std::to_string(_line), __LINE__, __FILE__);
-																			}
-                                                                        
-                                                                        }else{
-																		yld.clear();
-                                                                        }
-																	
-                                                                    sources.push_back(Core::FMToutputsource(spec,Core::FMTmask(mask,themes),
-																		Core::FMTotar::inventory,yld,action));
-
-																		}
+															if (isvalid(yld))
+															{
+																if (!ylds.isyld(yld))
+																{
+																	_exhandler->raise(Exception::FMTexc::WSignore, _section,
+																		yld + " at line " + std::to_string(_line), __LINE__, __FILE__);
+																}
 															}
+															else {
+																yld = "";
+															}
+															sources.push_back(Core::FMToutputsource(spec, Core::FMTmask(mask, themes),
+																Core::FMTotar::actual, yld, action));
 														}
+														else if (!std::string(kmatch[17]).empty() || !std::string(kmatch[18]).empty())
+														{
+															const std::string invtype = std::string(kmatch[17]) + std::string(kmatch[18]);
+															std::string yld = std::string(kmatch[22]);
+															if (isvalid(yld))
+															{
+																if (!ylds.isyld(yld))
+																{
+																	_exhandler->raise(Exception::FMTexc::WSignore, _section,
+																		yld + " at line " + std::to_string(_line), __LINE__, __FILE__);
+																}
 
+															}
+															else {
+																yld = "";
+															}
+
+															const std::string lockinv = kmatch[18];
+															if (!lockinv.empty())
+															{
+
+																const int lower = 1;
+																constexpr int upper = std::numeric_limits<int>::max();
+																spec.addbounds(Core::FMTlockbounds(Core::FMTwssect::Outputs,
+																	Core::FMTwskwor::Source, upper, lower));
+															}
+
+															sources.push_back(Core::FMToutputsource(spec, Core::FMTmask(mask, themes),
+																Core::FMTotar::inventory, yld));
+														}
+														else if (!std::string(kmatch[3]).empty())
+														{
+															const std::string action = std::string(kmatch[7]);
+															isact(_section, actions, action);
+															std::string yld = std::string(kmatch[13]);
+
+															if (isvalid(yld))
+															{
+																if (!ylds.isyld(yld))
+																{
+
+																	_exhandler->raise(Exception::FMTexc::WSignore, _section,
+																		yld + " at line " + std::to_string(_line), __LINE__, __FILE__);
+																}
+
+															}
+															else {
+																yld.clear();
+															}
+
+															sources.push_back(Core::FMToutputsource(spec, Core::FMTmask(mask, themes),
+																Core::FMTotar::inventory, yld, action));
+
+														}
 													}
 												}
-											}
 
-									for(const std::string& strope : stroperators)
-										{
-										operators.push_back(Core::FMToperator(strope));
+											}
 										}
+									}
+
+									for (const std::string& strope : stroperators)
+									{
+										operators.push_back(Core::FMToperator(strope));
+									}
 									insource = true;
 
-									}
+								}
 
 							}
 						}
-					if (!sources.empty() || (processing_level && !insource))
+						if (!sources.empty() || (processing_level && !insource))
 						{
-						if (processing_level && sources.empty())
+							if (processing_level && sources.empty())
 							{
-							sources.push_back(Core::FMToutputsource(Core::FMTotar::level,0,"",name));
+								sources.push_back(Core::FMToutputsource(Core::FMTotar::level, 0, "", name));
 							}
-						outputs.push_back(Core::FMToutput(name, description, themetarget, sources, operators));
+							outputs.push_back(Core::FMToutput(name, description, themetarget, sources, operators));
 						}
 					}
 				}
+			}catch (...)
+				{
+				_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, _section, "while reading", __LINE__, __FILE__);
+				}
             return outputs;
             }
-        bool FMToutputparser::write(const std::vector<Core::FMToutput>& outputs, std::string location)
+        void FMToutputparser::write(const std::vector<Core::FMToutput>& outputs, const std::string& location) const
             {
 			std::ofstream outputstream;
             outputstream.open(location);
@@ -460,9 +485,7 @@ namespace Parser
                     outputstream<< std::string(out)<<"\n";
                     }
                 outputstream.close();
-                return true;
                 }
-            return false;
             }
 
 }
