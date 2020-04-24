@@ -74,8 +74,8 @@ namespace Core
     FMToutputnode FMToutputnode::setperiod(int period) const
         {
         FMToutputnode newnode(*this);
-        newnode.source.setbounds(FMTperbounds(FMTwssect::Optimize,period,period));
-        newnode.factor.setbounds(FMTperbounds(FMTwssect::Optimize,period,period));
+        newnode.source.setbounds(FMTperbounds(FMTsection::Optimize,period,period));
+        newnode.factor.setbounds(FMTperbounds(FMTsection::Optimize,period,period));
         return newnode;
         }
 
@@ -148,7 +148,7 @@ namespace Core
 			{
 				if ((this->source.getperiodlowerbound() + period) >= 0)
 				{
-					const FMTperbounds perbound(FMTwssect::Optimize, node_period, node_period);
+					const FMTperbounds perbound(FMTsection::Optimize, node_period, node_period);
 					this->source.setbounds(perbound);
 					this->factor.setbounds(perbound);
 				}
@@ -161,7 +161,7 @@ namespace Core
 				if (this->source.isnextperiod())
 				{
 					++node_period;
-					const FMTperbounds perbound(FMTwssect::Optimize, node_period, node_period);
+					const FMTperbounds perbound(FMTsection::Optimize, node_period, node_period);
 					this->source.setbounds(perbound);
 					this->factor.setbounds(perbound);
 				}

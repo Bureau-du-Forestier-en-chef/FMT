@@ -41,6 +41,7 @@ template <class T>
 void define_FMTlist()
     {
 	 py_pair<Core::FMTmask, T>();
+	 py_pair<Core::FMTmask const, T>();
 	 boost::python::class_<Core::FMTlist<T>>("FMTlist", "@DocString(FMTlist)")
 		 .def("__iter__", boost::python::iterator<Core::FMTlist<T>>());
 	define_pylist<T>();
@@ -79,5 +80,7 @@ void define_pydict()
     boost::python::to_python_converter<std::map<k,v>,MapToDict<k,v>>();
 	MapFrDict<k,v>();
     }
+
+
 }
 #endif // PYDEFINITIONS_H_INCLUDED

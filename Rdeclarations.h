@@ -39,6 +39,7 @@ SOFTWARE.
 #include "FMTsasolution.h"
 #include "FMTmodel.h"
 #include "FMTsesmodel.h"
+#include "FMTnssmodel.h"
 #include "FMTlpmodel.h"
 #include "FMTsamodel.h"
 #include "FMToperatingarea.h"
@@ -100,6 +101,8 @@ RCPP_DECLAREVECTOR(Spatial::FMTsasolution);//For vector
 RCPP_DECLAREVECTOR(Models::FMTmodel);//For vector
 RCPP_DECLAREMAP(std::string, double);//For map<string,double>
 RCPP_DECLAREVECTOR(Models::FMTsesmodel);//For vector
+RCPP_DECLAREVECTOR(Models::FMTnssmodel);//For vector
+
 #ifdef FMTWITHOSI
 	RCPP_DECLAREVECTOR(Models::FMTlpmodel);//For vector
 #endif

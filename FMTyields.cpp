@@ -170,7 +170,7 @@ bool FMTyields::operator == (const FMTyields& rhs) const
 
 	}
 
-std::vector<const FMTyieldhandler*> FMTyields::gethandleroftype(FMTyldwstype type) const
+std::vector<const FMTyieldhandler*> FMTyields::gethandleroftype(FMTyldtype type) const
 	{
 	//std::vector<FMTyieldhandler>::const_iterator handlerit = this->databegin();
 	//std::vector<FMTyieldhandler>::const_iterator handlerend = this->dataend();
@@ -208,7 +208,9 @@ int FMTyields::getmaxbase(const std::vector<const FMTyieldhandler*>& handlers) c
 	return maxbase;
 	}
 
-std::map<std::string, std::map<std::string, std::vector<double>>>FMTyields::getallyields(const FMTtheme& target,FMTyldwstype type) const
+#include "FMTlogger.h"
+
+std::map<std::string, std::map<std::string, std::vector<double>>>FMTyields::getallyields(const FMTtheme& target,FMTyldtype type) const
 	{
 	std::map<std::string, std::map<std::string, std::vector<double>>>result;
 	const std::vector<const FMTyieldhandler*> handlers = gethandleroftype(type);
@@ -216,7 +218,7 @@ std::map<std::string, std::map<std::string, std::vector<double>>>FMTyields::geta
 	for (const FMTyieldhandler* handler : handlers)
 		{
 		std::map<std::string, std::vector<double>>localstuff;
-		if (type == FMTyldwstype::FMTageyld)
+		if (type == FMTyldtype::FMTageyld)
 			{
 			const int lastbase = handler->getlastbase();
 			std::vector<int>bases = handler->getbases();
@@ -240,7 +242,14 @@ std::map<std::string, std::map<std::string, std::vector<double>>>FMTyields::geta
 					}
 				}
 				}
+		}else if (type == FMTyldtype::FMTtimeyld)
+			{
+			for (std::map<std::string, FMTdata>::const_iterator cit = handler->elements.begin(); cit != handler->elements.end(); cit++)
+				{
+				localstuff[cit->first] = cit->second.data;
+				}
 			}
+		
 		result[handler->getmask().get(target)] = localstuff;
 		}
 	return result;
@@ -254,7 +263,7 @@ int FMTyields::getage(const FMTdevelopment& dev,const FMTspec& spec) const
         {
             for(const FMTyieldhandler* data : datas)
                 {
-                if (data->gettype() == FMTyldwstype::FMTageyld)
+                if (data->gettype() == FMTyldtype::FMTageyld)
                     {
                     for (std::map<std::string,FMTyldbounds>::const_iterator it = spec.ylds.begin(); it != spec.ylds.end();++it)
                         {

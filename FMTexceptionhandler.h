@@ -83,12 +83,20 @@ namespace Exception
 		// DocString: FMTexceptionhandler::_logger
 		///pointer to the logger used to print the warning / error.
 		std::shared_ptr<Logging::FMTlogger>_logger;
+		// DocString: FMTexceptionhandler::usenestedexceptions
+		///If usenested = true then the handler will throw nested exceptions
+		bool usenestedexceptions;
 		// DocString: FMTexceptionhandler::updatestatus
 		/**
 		This functions updates the status of the handler adding up to the warning or the error counts.
 		base on the exception type (lexception).
 		*/
 		std::string updatestatus(const FMTexc lexception, const std::string message);
+		// DocString: FMTexceptionhandler::needtorethrow
+		/**
+		If usenested exceptions and exception == function error then it will be true and the exception will be rethrown.
+		*/
+		bool needtorethrow() const;
 	public:
 		// DocString: FMTexceptionhandler()
 		/**
@@ -138,8 +146,18 @@ namespace Exception
 		This function throw an FMTexception based on the exception type,section,text to write, line in the source code
 		and file in the source code.
 		*/
-		virtual FMTlev raise(FMTexc lexception, Core::FMTwssect lsection, std::string text,
+		virtual FMTlev raise(FMTexc lexception, Core::FMTsection lsection, std::string text,
 			const int& line, const std::string& file);
+		// DocString: FMTexceptionhandler::enablenestedexceptions
+		/**
+		Enable the nested exception throw.
+		*/
+		void enablenestedexceptions();
+		// DocString: FMTexceptionhandler::disablenestedexceptions
+		/**
+		Disable the nested exception throw.
+		*/
+		void disablenestedexceptions();
 	};
 
 }

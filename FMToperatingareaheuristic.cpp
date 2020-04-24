@@ -526,8 +526,8 @@ namespace Heuristics
 				data=operatingareait->getdualsolution(rowupperbound);
 				}
 			std::vector<std::string>source;
-			Core::FMTyieldhandler handler(Core::FMTyldwstype::FMTtimeyld, operatingareait->getmask());
-			handler.push_data(yldname,Core::FMTdata(data, Core::FMTyieldparserop::FMTwsnone, source));
+			Core::FMTyieldhandler handler(Core::FMTyldtype::FMTtimeyld, operatingareait->getmask());
+			handler.push_data(yldname,Core::FMTdata(data, Core::FMTyieldparserop::FMTnone, source));
 			allhandlers.push_back(handler);
 			}
 		return allhandlers;

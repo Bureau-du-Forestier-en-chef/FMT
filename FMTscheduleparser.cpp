@@ -91,7 +91,7 @@ std::vector<Core::FMTschedule> FMTscheduleparser::read(const std::vector<Core::F
 						{
 							++id;
 							const std::string actionname = values[id];
-							if (!isact(Core::FMTwssect::Schedule, actions, actionname)) continue;
+							if (!isact(Core::FMTsection::Schedule, actions, actionname)) continue;
 							++id;
 							const int period = getnum<int>(values[id]);
 							if (static_cast<size_t>(period) - 1 == data.size())
@@ -107,7 +107,8 @@ std::vector<Core::FMTschedule> FMTscheduleparser::read(const std::vector<Core::F
 									--gap;
 								}
 							}
-							const Core::FMTdevelopment dev(Core::FMTmask(mask, themes), age, 0, period);
+							Core::FMTdevelopment dev(Core::FMTmask(mask, themes), age, 0, period);
+							dev.passinobject(*this);
 							std::vector<Core::FMTaction>::const_iterator act = find_if(actions.begin(), actions.end(), Core::FMTactioncomparator(actionname));
 							if (act->dorespectlock())
 							{

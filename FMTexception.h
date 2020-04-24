@@ -75,28 +75,28 @@ This enumerator describes the exceptions thrown by FMT.
 enum FMTexc
     {
     None = 0,
-    WSconstants_replacement = 1,
-    WScomma_replacement =2,
-    WSfutur_types = 3,
-    WSinvalid_theme = 5,
-    WSinvalid_aggregate = 6,
-    WSinvalid_maskrange = 7,
-    WSinvalid_yield = 8,
-    WSinvalid_action = 9,
-    WSinvalid_transition = 10,
-    WSinvalid_transition_case = 11,
-    WSinvalid_number = 12,
+    FMTconstants_replacement = 1,
+    FMTcomma_replacement =2,
+    FMTfutur_types = 3,
+    FMTinvalid_theme = 5,
+    FMTinvalid_aggregate = 6,
+    FMTinvalid_maskrange = 7,
+    FMTinvalid_yield = 8,
+    FMTinvalid_action = 9,
+    FMTinvalid_transition = 10,
+    FMTinvalid_transition_case = 11,
+    FMTinvalid_number = 12,
     FMTinvalid_path = 13,
-    WStheme_redefinition = 14,
-    WSaggregate_redefinition = 15,
-    WSempty_theme = 16,
-    WSempty_aggregate = 17,
-    WSundefined_aggregate_value = 18,
-    WSundefined_attribute = 19,
-    WSempty_action = 20,
-    WSwrong_partial = 21,
-    WSpreexisting_yield = 22,
-    WSunsupported_yield = 23,
+    FMTtheme_redefinition = 14,
+    FMTaggregate_redefinition = 15,
+    FMTempty_theme = 16,
+    FMTempty_aggregate = 17,
+    FMTundefined_aggregate_value = 18,
+    FMTundefined_attribute = 19,
+    FMTempty_action = 20,
+    FMTwrong_partial = 21,
+    FMTpreexisting_yield = 22,
+    FMTunsupported_yield = 23,
     FMTinvaliddataset = 24,
     FMTinvalidband = 25,
     FMTinvalidrasterblock = 26,
@@ -104,25 +104,25 @@ enum FMTexc
     FMTmissingfield = 28,
     FMTinvalidoverview = 29,
     FMTmissingrasterattribute = 30,
-    WSunsupported_transition = 31,
-    WSundefined_action = 32,
-    WSempty_transition = 33,
-    WSundefined_output = 34,
-    WSunsupported_output = 35,
+    FMTunsupported_transition = 31,
+    FMTundefined_action = 32,
+    FMTempty_transition = 33,
+    FMTundefined_output = 34,
+    FMTunsupported_output = 35,
     FMTinvaliddriver = 36,
     FMTinvalidAandT = 37,
-    WSleakingtransition = 38,
-	WSundefineddeathaction = 39,
-	WSundefineddeathtransition = 40,
-	WSignore = 41,
+    FMTleakingtransition = 38,
+	FMTundefineddeathaction = 39,
+	FMTundefineddeathtransition = 40,
+	FMTignore = 41,
 	FMTmissingyield = 42,
-	WSattribute_redefinition = 43,
-	WSundefined_constant = 44,
+	FMTattribute_redefinition = 43,
+	FMTundefined_constant = 44,
 	FMTmissingdevelopement = 45,
 	FMTmissingobjective = 46,
 	FMTunsupported_objective = 47,
 	FMTinvalid_constraint = 48,
-	WSemptybound = 49,
+	FMTemptybound = 49,
 	FMTunboundedperiod = 50,
 	FMTnonaddedconstraint = 51,
 	FMTmissinglicense = 52,
@@ -163,7 +163,7 @@ class FMTexception : public std::exception
 		FMTexc exceptiontype;
 		// DocString: FMTexception::section
 		///Section in which the exception just happenned.
-		Core::FMTwssect section;
+		Core::FMTsection section;
     public:
 	// DocString: FMTexception()
 	/**
@@ -180,11 +180,11 @@ class FMTexception : public std::exception
 	FMTexception constructor taking a exception type and a message.
 	*/
     FMTexception(const FMTexc lexception,const std::string message);
-	// DocString: FMTexception(const FMTexc,Core::FMTwssect,const std::string)
+	// DocString: FMTexception(const FMTexc,Core::FMTsection,const std::string)
 	/**
 	FMTexception constructor taking a exception type a section and a message.
 	*/
-    FMTexception(const FMTexc lexception,Core::FMTwssect lsection,const std::string message);
+    FMTexception(const FMTexc lexception,Core::FMTsection lsection,const std::string message);
 	// DocString: FMTexception(const FMTexception&)
 	/**
 	FMTexception default copy constructor.
@@ -204,7 +204,7 @@ class FMTexception : public std::exception
 	/**
 	The function returns the section in which the exception occured.
 	*/
-	Core::FMTwssect getsection() const;
+	Core::FMTsection getsection() const;
 	// DocString: FMTexception::what
 	/**
 	This function override the what function of the exception base class returning the message string.

@@ -29,7 +29,7 @@ namespace Core{
 FMTyieldhandler::operator std::string() const
         {
 		std::string value = "";
-        if (yldtype==FMTyldwstype::FMTageyld)
+        if (yldtype==FMTyldtype::FMTageyld)
             {
             value += "*Y " + std::string(mask) + "\n";
             value += "_AGE \t";
@@ -50,7 +50,7 @@ FMTyieldhandler::operator std::string() const
                 value += "\n";
                 ++baseid;
                 }
-            }else if(yldtype==FMTyldwstype::FMTtimeyld)
+            }else if(yldtype==FMTyldtype::FMTtimeyld)
                 {
                 value += "*YT " + std::string(mask) + "\n";
                 for(std::map<std::string,FMTdata>::const_iterator it=elements.begin(); it!=elements.end(); ++it)
@@ -67,7 +67,7 @@ FMTyieldhandler::operator std::string() const
                         }
                     value += "\n";
                     }
-                }else if(yldtype==FMTyldwstype::FMTcomplexyld)
+                }else if(yldtype==FMTyldtype::FMTcomplexyld)
                     {
                     value += "*YC " + std::string(mask) + "\n";
                     for(std::map<std::string,FMTdata>::const_iterator it=elements.begin(); it!=elements.end(); ++it)
@@ -83,7 +83,7 @@ FMTyieldhandler::operator std::string() const
 	FMTyieldhandler::FMTyieldhandler():yldtype(),mask(),bases(),elements() {}
 
 
-    FMTyieldhandler::FMTyieldhandler(FMTyldwstype ltype,const FMTmask& lmask) : yldtype(ltype),mask(lmask),bases(),elements(){}
+    FMTyieldhandler::FMTyieldhandler(FMTyldtype ltype,const FMTmask& lmask) : yldtype(ltype),mask(lmask),bases(),elements(){}
 
 
     FMTyieldhandler::FMTyieldhandler(const FMTyieldhandler& rhs) :
@@ -129,11 +129,11 @@ FMTyieldhandler::operator std::string() const
 	std::vector<std::string> FMTyieldhandler::indexes(const std::vector<std::string>& names) const
         {
 		std::vector<std::string>indexs;
-        if (yldtype == FMTyldwstype::FMTcomplexyld)
+        if (yldtype == FMTyldtype::FMTcomplexyld)
             {
             for (std::map<std::string,FMTdata>::const_iterator data_it = elements.begin(); data_it != elements.end(); data_it++)
                 {
-                if (data_it->second.getop() == FMTyieldparserop::FMTwsequation)
+                if (data_it->second.getop() == FMTyieldparserop::FMTequation)
                     {
 					const std::vector<std::string>variables = data_it->second.getsource();
                     for(const std::string& variable : variables)
@@ -157,7 +157,7 @@ FMTyieldhandler::operator std::string() const
         elements[yld]= FMTdata(data);
         return true;
         }
-    FMTyldwstype FMTyieldhandler::gettype() const
+    FMTyldtype FMTyieldhandler::gettype() const
         {
         return yldtype;
         }
@@ -216,7 +216,7 @@ FMTyieldhandler::operator std::string() const
 		 for (std::map<std::string, const FMTyieldhandler*>::const_iterator datait = srcdata.begin(); datait != srcdata.end(); datait++)
 			{
 			 const FMTyieldhandler* yldata = datait->second;
-			 if (yldata->gettype()!= FMTyldwstype::FMTageyld)
+			 if (yldata->gettype()!= FMTyldtype::FMTageyld)
 				{
 				age_only = false;
 				}
@@ -231,7 +231,7 @@ FMTyieldhandler::operator std::string() const
         {
         double value = 0;
         int target = 0;
-         if (yldtype == FMTyldwstype::FMTageyld)
+         if (yldtype == FMTyldtype::FMTageyld)
             {
 			 target = age;
 			 if (elements.find(yld) != elements.end())
@@ -239,13 +239,13 @@ FMTyieldhandler::operator std::string() const
 				 const FMTdata* lvalues = &elements.at(yld);
 				 value = getlinearvalue(lvalues->data, target);
 				}
-            }else if(yldtype==FMTyldwstype::FMTtimeyld)
+            }else if(yldtype==FMTyldtype::FMTtimeyld)
                 {
                 target = period;
 				if (elements.find(yld) != elements.end())
 					{
 					const FMTdata* lvalues = &elements.at(yld);
-					if (lvalues->getop() == FMTyieldparserop::FMTwsdiscountfactor)
+					if (lvalues->getop() == FMTyieldparserop::FMTdiscountfactor)
 						{
 						const double perioddbl = static_cast<double>(period);
 						const double pertio = lvalues->data.at(1);
@@ -279,7 +279,7 @@ FMTyieldhandler::operator std::string() const
 				std::map<std::string, const FMTyieldhandler*> srcsdata = this->getdata(datas, sources, yld);
                 switch(cdata->getop())
                     {
-                    case FMTyieldparserop::FMTwsrange:
+                    case FMTyieldparserop::FMTrange:
                         {
                         size_t srcid = 0;
                         value = 1;
@@ -297,7 +297,7 @@ FMTyieldhandler::operator std::string() const
 							}
                         break;
                         }
-                    case FMTyieldparserop::FMTwsmultiply:
+                    case FMTyieldparserop::FMTmultiply:
                         {
                         value = 1;
 						const std::map<std::string, double>source_values = this->getsources(srcsdata, datas, age, period,resume_mask, age_only);
@@ -311,7 +311,7 @@ FMTyieldhandler::operator std::string() const
                             }
                         break;
                         }
-                    case FMTyieldparserop::FMTwssum:
+                    case FMTyieldparserop::FMTsum:
                         {
 						const std::map<std::string, double>source_values = this->getsources(srcsdata, datas, age, period,resume_mask, age_only);
                         for(std::map<std::string,double>::const_iterator srcit = source_values.begin();srcit!= source_values.end();srcit++)
@@ -324,7 +324,7 @@ FMTyieldhandler::operator std::string() const
                             }
                         break;
                         }
-                    case FMTyieldparserop::FMTwssubstract:
+                    case FMTyieldparserop::FMTsubstract:
                         {
 						//ordering means something here!!!!
 						const std::map<std::string, double>source_values = this->getsources(srcsdata, datas, age, period,resume_mask, age_only);
@@ -338,7 +338,7 @@ FMTyieldhandler::operator std::string() const
 
                         break;
                         }
-                    case FMTyieldparserop::FMTwsdivide:
+                    case FMTyieldparserop::FMTdivide:
                         {
 						const std::map<std::string, double>source_values = this->getsources(srcsdata, datas, age, period,resume_mask, age_only);
 						std::vector<double>values = cdata->tovalues(source_values);
@@ -356,16 +356,16 @@ FMTyieldhandler::operator std::string() const
 							}
                         break;
                         }
-                    case FMTyieldparserop::FMTwsytp:
+                    case FMTyieldparserop::FMTytp:
                         {
                         const FMTyieldhandler* ddata = srcsdata.begin()->second;
-                        if (ddata->gettype() == FMTyldwstype::FMTageyld)
+                        if (ddata->gettype() == FMTyldtype::FMTageyld)
                             {
                             value = ddata->getpeak(srcsdata.begin()->first,age);
                             }
                         break;
                         }
-                    case FMTyieldparserop::FMTwsmai:
+                    case FMTyieldparserop::FMTmai:
                         {
                         double year = 1;
                         if (cdata->data.begin()!=cdata->data.end())
@@ -373,7 +373,7 @@ FMTyieldhandler::operator std::string() const
                             year = *cdata->data.begin();
                             }
                         const FMTyieldhandler* ddata = srcsdata.begin()->second;
-                        if (ddata->gettype() == FMTyldwstype::FMTageyld)
+                        if (ddata->gettype() == FMTyldtype::FMTageyld)
                             {
 							const FMTyieldhandler* handler = srcsdata.at(sources[0]);
 							const FMTdata* lvalues = &handler->elements.at(sources[0]);
@@ -381,7 +381,7 @@ FMTyieldhandler::operator std::string() const
                             }
                         break;
                         }
-                    case FMTyieldparserop::FMTwscai:
+                    case FMTyieldparserop::FMTcai:
                         {
                         double year = 1;
                         if (cdata->data.begin()!=cdata->data.end())
@@ -389,7 +389,7 @@ FMTyieldhandler::operator std::string() const
                             year = *cdata->data.begin();
                             }
                         const FMTyieldhandler* ddata = srcsdata.begin()->second;
-                        if (ddata->gettype() == FMTyldwstype::FMTageyld)
+                        if (ddata->gettype() == FMTyldtype::FMTageyld)
                             {
 							const FMTyieldhandler* handler = srcsdata.at(sources[0]);
 							const FMTdata* lvalues = &handler->elements.at(sources[0]);
@@ -400,14 +400,14 @@ FMTyieldhandler::operator std::string() const
                             }
                         break;
                         }
-					case FMTyieldparserop::FMTwsequation:
+					case FMTyieldparserop::FMTequation:
 						{
 						const FMTexpression expression = cdata->toexpression();
 						const std::map<std::string, double>source_values = this->getsources(srcsdata, datas, age, period,resume_mask, age_only);
 						value = expression.shuntingyard(source_values);
 						break;
 						}
-					case FMTyieldparserop::FMTwsendpoint:
+					case FMTyieldparserop::FMTendpoint:
 						{
 						value = 0;
 						const std::map<std::string, double>source_values = this->getsources(srcsdata, datas, age, period, resume_mask, age_only);
@@ -542,7 +542,7 @@ FMTyieldhandler::operator std::string() const
 	int FMTyieldhandler::getendpoint(const std::string& yld, const int& lowerstep, const double& bound, const double& value) const
 		{
 		size_t locid = 0;
-		if (this->gettype() == FMTyldwstype::FMTageyld)
+		if (this->gettype() == FMTyldtype::FMTageyld)
 			{
 				std::map<std::string, FMTdata>::const_iterator it = elements.find(yld);
 				std::vector<double>::const_iterator location;
@@ -565,7 +565,7 @@ FMTyieldhandler::operator std::string() const
     double FMTyieldhandler::getpeak(const std::string& yld, const int& targetage) const
         {
         double value = 0;
-        if (this->gettype() == FMTyldwstype::FMTageyld)
+        if (this->gettype() == FMTyldtype::FMTageyld)
             {
 			const int peak = static_cast<int>(getpeakfrom(yld));
 			value = getchangesfrom(targetage, peak);

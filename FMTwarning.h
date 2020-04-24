@@ -70,7 +70,7 @@ namespace Exception
 		/**
 		Constructor for FMTwarning taking a exception type, section in which the warning occur and message string as arguments.
 		*/
-		FMTwarning(const FMTexc lexception, const Core::FMTwssect lsection, const std::string message);
+		FMTwarning(const FMTexc lexception, const Core::FMTsection lsection, const std::string message);
 		// DocString: FMTwarning::warn
 		/**
 		Using a given logger the function log the warning with the logger. 

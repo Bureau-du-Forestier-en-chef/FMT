@@ -203,7 +203,7 @@ namespace Parser
 												(lastoperator == "+" || lastoperator == "-"))) &&
 													(find_if(sources.begin(), sources.end(), Core::FMToutputsourcecomparator(true)) == sources.end()))
 											{
-												_exhandler->raise(Exception::FMTexc::WSunsupported_output, _section, name + " at line " + std::to_string(_line), __LINE__, __FILE__);
+												_exhandler->raise(Exception::FMTexc::FMTunsupported_output, _section, name + " at line " + std::to_string(_line), __LINE__, __FILE__);
 											}
 											if (!lastoperator.empty())
 											{
@@ -323,7 +323,7 @@ namespace Parser
 												}
 												else if (strsrc.find("#") != std::string::npos)
 												{
-													_exhandler->raise(Exception::FMTexc::WSundefined_constant, _section, strsrc + " at line " + std::to_string(_line), __LINE__, __FILE__);
+													_exhandler->raise(Exception::FMTexc::FMTundefined_constant, _section, strsrc + " at line " + std::to_string(_line), __LINE__, __FILE__);
 												}
 												else if (ylds.isyld(strsrc))//isyld(ylds,strsrc,_section))
 												{
@@ -331,7 +331,7 @@ namespace Parser
 
 												}
 												else {
-													_exhandler->raise(Exception::FMTexc::WSundefined_output, _section, strsrc + " at line " + std::to_string(_line), __LINE__, __FILE__);
+													_exhandler->raise(Exception::FMTexc::FMTundefined_output, _section, strsrc + " at line " + std::to_string(_line), __LINE__, __FILE__);
 												}
 											}
 											else {
@@ -351,7 +351,7 @@ namespace Parser
 												}
 												mask = mask.substr(0, mask.size() - 1);
 												Core::FMTspec spec;
-												const std::string inds = setspec(Core::FMTwssect::Outputs, Core::FMTwskwor::Source, ylds, constants, spec, rest);
+												const std::string inds = setspec(Core::FMTsection::Outputs, Core::FMTkwor::Source, ylds, constants, spec, rest);
 												if (!spec.empty())
 												{
 													rest = inds;
@@ -360,7 +360,7 @@ namespace Parser
 												if (inds.find('@') != std::string::npos)
 												{
 													const std::string warningstr = inds.substr(inds.find('@'), inds.find_first_of(')'));
-													_exhandler->raise(Exception::FMTexc::WSemptybound, _section, warningstr + " at line " + std::to_string(_line), __LINE__, __FILE__);
+													_exhandler->raise(Exception::FMTexc::FMTemptybound, _section, warningstr + " at line " + std::to_string(_line), __LINE__, __FILE__);
 													rest = inds.substr(inds.find_first_of(')') + 1, inds.size() - 1);
 												}
 
@@ -377,7 +377,7 @@ namespace Parser
 															{
 																if (!ylds.isyld(yld))
 																{
-																	_exhandler->raise(Exception::FMTexc::WSignore, _section,
+																	_exhandler->raise(Exception::FMTexc::FMTignore, _section,
 																		yld + " at line " + std::to_string(_line), __LINE__, __FILE__);
 																}
 															}
@@ -395,7 +395,7 @@ namespace Parser
 															{
 																if (!ylds.isyld(yld))
 																{
-																	_exhandler->raise(Exception::FMTexc::WSignore, _section,
+																	_exhandler->raise(Exception::FMTexc::FMTignore, _section,
 																		yld + " at line " + std::to_string(_line), __LINE__, __FILE__);
 																}
 
@@ -410,8 +410,8 @@ namespace Parser
 
 																const int lower = 1;
 																constexpr int upper = std::numeric_limits<int>::max();
-																spec.addbounds(Core::FMTlockbounds(Core::FMTwssect::Outputs,
-																	Core::FMTwskwor::Source, upper, lower));
+																spec.addbounds(Core::FMTlockbounds(Core::FMTsection::Outputs,
+																	Core::FMTkwor::Source, upper, lower));
 															}
 
 															sources.push_back(Core::FMToutputsource(spec, Core::FMTmask(mask, themes),
@@ -428,7 +428,7 @@ namespace Parser
 																if (!ylds.isyld(yld))
 																{
 
-																	_exhandler->raise(Exception::FMTexc::WSignore, _section,
+																	_exhandler->raise(Exception::FMTexc::FMTignore, _section,
 																		yld + " at line " + std::to_string(_line), __LINE__, __FILE__);
 																}
 

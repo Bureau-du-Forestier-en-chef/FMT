@@ -28,6 +28,7 @@ SOFTWARE.
 #include "FMTmodel.h"
 #include "FMTlpmodel.h"
 #include "FMTsesmodel.h"
+#include "FMTnssmodel.h"
 #include "FMTsamodel.h"
 #include "Rdefinitions.h"
 #include "FMTsolverinterface.h"
@@ -41,6 +42,9 @@ RCPP_DEFINEMAP(std::string,double);//For map<string,double>
 RCPP_EXPOSED_WRAP(Models::FMTsesmodel);
 RCPP_EXPOSED_AS(Models::FMTsesmodel);
 RCPP_DEFINEVECTOR(Models::FMTsesmodel);//For vector
+RCPP_EXPOSED_WRAP(Models::FMTnssmodel);
+RCPP_EXPOSED_AS(Models::FMTnssmodel);
+RCPP_DEFINEVECTOR(Models::FMTnssmodel);//For vector
 #ifdef FMTWITHOSI
 	RCPP_EXPOSED_ENUM_NODECL(Models::FMTsolverinterface);
 	RCPP_EXPOSED_WRAP(Models::FMTlpmodel);
@@ -61,19 +65,30 @@ void exportModel()
 
 	Rcpp::class_<Models::FMTmodel>("FMTmodel", "@DocString(FMTmodel)")
 		.derives<Core::FMTobject>("FMTobject")
+		.constructor<Models::FMTmodel>("@DocString(FMTmodel(Models::FMTmodel))")
 		.constructor("@DocString(FMTmodel())")
-           .field("name",&Models::FMTmodel::name,
-				"@DocString(FMTmodel::name)")
+           .method("getname",&Models::FMTmodel::getname,
+				"@DocString(FMTmodel::getname)")
             .method("getyields",&Models::FMTmodel::getyields,
 				"@DocString(FMTmodel::getyields)")
+			.method("setarea", &Models::FMTmodel::setyields,
+				"@DocString(FMTmodel::setyields)")
             .method("getarea",&Models::FMTmodel::getarea,
 				"@DocString(FMTmodel::getarea)")
+			.method("setarea", &Models::FMTmodel::setarea,
+				"@DocString(FMTmodel::setarea)")
             .method("getthemes",&Models::FMTmodel::getthemes,
 				"@DocString(FMTmodel::getthemes)")
+			.method("setthemes", &Models::FMTmodel::setthemes,
+				"@DocString(FMTmodel::setthemes)")
             .method("getactions",&Models::FMTmodel::getactions,
 				"@DocString(FMTmodel::getactions)")
+			.method("setactions", &Models::FMTmodel::setactions,
+				"@DocString(FMTmodel::setactions)")
 			.method("getoutputs", &Models::FMTmodel::getoutputs, 
 				"@DocString(FMTmodel::getoutputs)")
+			.method("setoutputs", &Models::FMTmodel::setoutputs,
+				"@DocString(FMTmodel::setoutputs)")
 			.method("getconstraints", &Models::FMTmodel::getconstraints,
 				"@DocString(FMTmodel::getconstraints)")
 			.method("setconstraints", &Models::FMTmodel::setconstraints,
@@ -82,6 +97,10 @@ void exportModel()
 				"@DocString(FMTmodel::gettransitions)")
             .method("settransitions",&Models::FMTmodel::settransitions,
 				"@DocString(FMTmodel::settransitions)")
+			.method("setname", &Models::FMTmodel::setname,
+				"@DocString(FMTmodel::setname)")
+			.method("setareaperiod", &Models::FMTmodel::setareaperiod,
+				"@DocString(FMTmodel::setareaperiod)")
             .method("getlifespan",&Models::FMTmodel::getlifespan,
 				"@DocString(FMTmodel::getlifespan)")
             .method("isvalid",&Models::FMTmodel::isvalid,
@@ -108,6 +127,13 @@ void exportModel()
 				"@DocString(FMTsesmodel::getdisturbancestats)")
             .method("simulate",&Models::FMTsesmodel::simulate,
 				"@DocString(FMTsesmodel::simulate)");
+
+	Rcpp::class_<Models::FMTnssmodel>("FMTnssmodel", "@DocString(FMTnssmodel)")
+		.derives<Models::FMTmodel>("FMTmodel")
+		.constructor("@DocString(FMTnssmodel())")
+		.constructor<Models::FMTmodel,unsigned int>("@DocString(FMTnssmodel(Models::FMTmodel,unsigned int))")
+		.method("simulate", &Models::FMTnssmodel::simulate,
+			"@DocString(FMTnssmodel::simulate)");
 	
 	
 	#ifdef FMTWITHOSI
@@ -116,6 +142,7 @@ void exportModel()
 		.derives<Models::FMTmodel>("FMTmodel")
 		.constructor<Models::FMTmodel, Models::FMTsolverinterface>("@DocString(FMTlpmodel(Models::FMTmodel,Models::FMTsolverinterface))")
 		.constructor("@DocString(FMTlpmodel())")
+		.constructor<Models::FMTlpmodel>("@DocString(FMTlpmodel(const FMTlpmodel&))")
 		.method("buildperiod", &Models::FMTlpmodel::buildperiod,
 			"@DocString(FMTlpmodel::buildperiod)")
 		.method("boundsolution", &Models::FMTlpmodel::boundsolution,
@@ -148,6 +175,8 @@ void exportModel()
 			"@DocString(FMTlpmodel::operator!=)")
 		.method("getstats", &Models::FMTlpmodel::getstats,
 			"@DocString(FMTlpmodel::getstats)")
+		.method("getobjectivevalue", &Models::FMTlpmodel::getobjectivevalue,
+			"@DocString(FMTlpmodel::getobjectivevalue)")
 		.method("getoperatingareaheuristics", &Models::FMTlpmodel::getoperatingareaheuristics,
 			"@DocString(FMTlpmodel::getoperatingareaheuristics)")
 		.method("getvariabilities", &Models::FMTlpmodel::getvariabilities,

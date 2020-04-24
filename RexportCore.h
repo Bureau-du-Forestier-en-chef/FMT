@@ -73,7 +73,7 @@ RCPP_DEFINEVECTOR(Core::FMTaction);//For vector
 RCPP_EXPOSED_WRAP(Core::FMTlifespans);
 RCPP_EXPOSED_AS(Core::FMTlifespans);
 RCPP_DEFINEPAIR(Core::FMTmask, int);//pair for FMTlist
-RCPP_EXPOSED_ENUM_NODECL(Core::FMTyldwstype);
+RCPP_EXPOSED_ENUM_NODECL(Core::FMTyldtype);
 RCPP_EXPOSED_WRAP(Core::FMTyieldhandler);
 RCPP_EXPOSED_AS(Core::FMTyieldhandler);
 RCPP_DEFINEPAIR(Core::FMTmask, Core::FMTyieldhandler);//pair for FMTlist
@@ -136,12 +136,26 @@ void exportCore()
 		.method("setdebugexceptionhandler", &Core::FMTobject::setdebugexceptionhandler,
 			"@DocString(FMTobject::setdebugexceptionhandler)")
 		.method("setfreeexceptionhandler", &Core::FMTobject::setfreeexceptionhandler,
-			"@DocString(FMTobject::setfreeexceptionhandler)");
+			"@DocString(FMTobject::setfreeexceptionhandler)")
+		.method("disablenestedexceptions", &Core::FMTobject::disablenestedexceptions,
+			"@DocString(FMTobject::disablenestedexceptions)")
+		.method("enablenestedexceptions", &Core::FMTobject::enablenestedexceptions,
+			"@DocString(FMTobject::enablenestedexceptions)")
+		.method("passinobject", &Core::FMTobject::passinobject,
+			"@DocString(FMTobject::passinobject)")
+		.method("setquietlogger", &Core::FMTobject::setquietlogger,
+			"@DocString(FMTobject::setquietlogger")
+		.method("setdefaultlogger", &Core::FMTobject::setdefaultlogger,
+			"@DocString(FMTobject::setdefaultlogger")
+		.method("setdebuglogger", &Core::FMTobject::setdebuglogger,
+			"@DocString(FMTobject::setdebuglogger");
 
 		Rcpp::class_<Core::FMTmask>("FMTmask", "@DocString(FMTmask)")
 				.constructor("@DocString(FMTmask())")
 				.constructor<std::vector<std::string>,std::vector<Core::FMTtheme>>(
 					"@DocString(FMTmask(const std::vector<std::string>&,const std::vector<Core::FMTtheme>&))")
+			.constructor<std::string, std::vector<Core::FMTtheme>>(
+				"@DocString(FMTmask(const std::string&,const std::vector<Core::FMTtheme>&))")
 				.method("len", &Core::FMTmask::operator bool,
 					"@DocString(FMTmask::operator bool)")
                 .method("str",&Core::FMTmask::operator std::string,
@@ -328,6 +342,8 @@ void exportCore()
 					"@DocString(FMTschedule::actionarea)")
 				.method("getperiod", &Core::FMTschedule::getperiod,
 					"@DocString(FMTschedule::getperiod)")
+				.method("setperiod", &Core::FMTschedule::setperiod,
+					"@DocString(FMTschedule::setperiod)")
 				.method("eq", &Core::FMTschedule::operator ==,
 					"@DocString(FMTschedule::operator==)")
 				.method("ne", &Core::FMTschedule::operator !=,

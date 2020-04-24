@@ -125,6 +125,9 @@ class FMTmodel : public Core::FMTobject
 		// DocString: FMTmodel::constraints
 		///Outputs comming from the optimization file
 		std::vector<Core::FMTconstraint>constraints;
+		// DocString: FMTmodel::name
+		///The name of the Model (name of the .pri file without extension)
+		std::string name;
 		// DocString: FMTmodel::setdefaultobjects
 		/**
 		If the user has not defined the _DEATH action and/or the _DEATH transition default _DEATH action and transition are
@@ -143,9 +146,6 @@ class FMTmodel : public Core::FMTobject
 		*/
 		Core::FMTmask getbasemask(std::vector<Core::FMTactualdevelopment> optionaldevelopments) const;
     public:
-		// DocString: FMTmodel::name
-		///The name of the Model (name of the .pri file without extension)
-        std::string name;
 		// DocString: FMTmodel()
 		/**
 		Main constructor for FMTmodel used in Parser::FMTmodelparser, the constraints are optional.
@@ -206,6 +206,14 @@ class FMTmodel : public Core::FMTobject
 		Actions and transitions are then sorted.
 		*/
 		void cleanactionsntransitions();
+		// DocString: FMTmodel::getname
+		/**
+		Returns the name of the FMTmodel
+		*/
+		inline std::string getname() const
+			{
+			return name;
+			}
 		// DocString: FMTmodel::getthemes
 		/**
 		Getter returning a copy of the FMTthemes vector<> of the model.
@@ -310,6 +318,16 @@ class FMTmodel : public Core::FMTobject
 		Setter for the FMTlifespans data of the model will replace the original.
 		*/
 		void setlifespan(const Core::FMTlifespans& llifespan);
+		// DocString: FMTmodel::setname
+		/**
+		Set the names of the FMTmodel
+		*/
+		void setname(const std::string& newname);
+		// DocString: FMTmodel::setoutputs
+		/**
+		Setter for the model's outputs.
+		*/
+		void setoutputs(const std::vector<Core::FMToutput>& newoutputs);
 		// DocString: FMTmodel::isvalid
 		/**
 		This function validate all the FMTmodel 

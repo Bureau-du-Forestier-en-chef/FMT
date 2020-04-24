@@ -81,7 +81,7 @@ class FMTparser: public Core::FMTobject
 		std::regex rxoperators;
 		std::regex rxprimary;
         mutable int _constreplacement;
-        int _line;
+        mutable int _line;
 		std::string _comment;
 		mutable std::string _location;
 		#ifdef FMTWITHGDAL
@@ -126,11 +126,11 @@ class FMTparser: public Core::FMTobject
 		#endif
 		std::array<std::string, 5>getbaseoperators() const;
 		std::vector<std::string> sameas(const std::string& allset) const;
-		std::map<Core::FMTwssect, std::string> getprimary(const std::string& primarylocation);
-		bool isyld(const Core::FMTyields& ylds,const std::string& value, Core::FMTwssect section) const;
-        bool isact(Core::FMTwssect section,const std::vector<Core::FMTaction>& actions, std::string action) const;
-		std::string setspec(Core::FMTwssect section, Core::FMTwskwor key,const Core::FMTyields& ylds,const Core::FMTconstants& constants, Core::FMTspec& spec, const std::string& line);
-		Core::FMTwssect from_extension(const std::string& ext) const;
+		std::map<Core::FMTsection, std::string> getprimary(const std::string& primarylocation);
+		bool isyld(const Core::FMTyields& ylds,const std::string& value, Core::FMTsection section) const;
+        bool isact(Core::FMTsection section,const std::vector<Core::FMTaction>& actions, std::string action) const;
+		std::string setspec(Core::FMTsection section, Core::FMTkwor key,const Core::FMTyields& ylds,const Core::FMTconstants& constants, Core::FMTspec& spec, const std::string& line);
+		Core::FMTsection from_extension(const std::string& ext) const;
 		std::vector<std::vector<std::string>>readcsv(const std::string& location,const char& separator);
     public:
 		std::regex rxseparator;
@@ -163,10 +163,10 @@ class FMTparser: public Core::FMTobject
                 }else if(constant.isconstant(newvalue))
                     {
                     nvalue= constant.get<T>(newvalue,period);
-                    _exhandler->raise(Exception::FMTexc::WSconstants_replacement,_section,value +" line "+ std::to_string(_line), __LINE__, __FILE__);
+                    _exhandler->raise(Exception::FMTexc::FMTconstants_replacement,_section,value +" line "+ std::to_string(_line), __LINE__, __FILE__);
                     ++_constreplacement;
                     }else{
-                    _exhandler->raise(Exception::FMTexc::WSinvalid_number,_section,value +" line "+ std::to_string(_line), __LINE__, __FILE__);
+                    _exhandler->raise(Exception::FMTexc::FMTinvalid_number,_section,value +" line "+ std::to_string(_line), __LINE__, __FILE__);
                     }
             return nvalue;
             }
@@ -179,7 +179,7 @@ class FMTparser: public Core::FMTobject
 				{
 				nvalue = static_cast<T>(std::stod(newvalue));
 			}else {
-				_exhandler->raise(Exception::FMTexc::WSinvalid_number, _section, value + " line " + std::to_string(_line), __LINE__, __FILE__);
+				_exhandler->raise(Exception::FMTexc::FMTinvalid_number, _section, value + " line " + std::to_string(_line), __LINE__, __FILE__);
 				}
 			return nvalue;
 			}
@@ -197,7 +197,7 @@ class FMTparser: public Core::FMTobject
 			return gotit;
 			}
         template<typename T>
-		Core::FMTbounds<T>bounds(const Core::FMTconstants& constants, const std::string& value, const std::string& ope, Core::FMTwssect section) const
+		Core::FMTbounds<T>bounds(const Core::FMTconstants& constants, const std::string& value, const std::string& ope, Core::FMTsection section) const
             {
             T lupper = std::numeric_limits<T>::max();
             T llower = std::numeric_limits<T>::min();

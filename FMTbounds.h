@@ -55,8 +55,8 @@ class FMTbounds
         bool andbound;
         bool use;
     protected:
-        FMTwssect section;
-        FMTwskwor keytype;
+        FMTsection section;
+        FMTkwor keytype;
         T upper;
         T lower;
     public:
@@ -64,11 +64,11 @@ class FMTbounds
             {
 
             }
-        FMTbounds(const FMTwssect lsection, const T& lupper, const T& llower):andbound(true),use(true),section(lsection),keytype(),upper(lupper),lower(llower)
+        FMTbounds(const FMTsection lsection, const T& lupper, const T& llower):andbound(true),use(true),section(lsection),keytype(),upper(lupper),lower(llower)
             {
 
             }
-        FMTbounds(const FMTwssect lsection,const FMTwskwor key, const T& lupper,const T& llower):andbound(true),use(true),section(lsection),keytype(key),upper(lupper),lower(llower)
+        FMTbounds(const FMTsection lsection,const FMTkwor key, const T& lupper,const T& llower):andbound(true),use(true),section(lsection),keytype(key),upper(lupper),lower(llower)
             {
 
             }
@@ -176,7 +176,7 @@ class FMTbounds
             const std::string slower = std::to_string(lower);
             std::string supper = std::to_string(upper);
             bool beenuse = false;
-            if (section == FMTwssect::Action)
+            if (section == FMTsection::Action)
                 {
                 if (name.find("_LOCK")!=std::string::npos && upper > 0)
                     {
@@ -202,7 +202,7 @@ class FMTbounds
                                 }
                             }
                         }
-                }else if(section == FMTwssect::Transition || section == FMTwssect::Outputs)
+                }else if(section == FMTsection::Transition || section == FMTsection::Outputs)
                     {
                     if (name=="_AGE")
                        {
@@ -211,7 +211,7 @@ class FMTbounds
                             supper = "_MAXAGE";
                             }
                        }
-                    if (keytype == FMTwskwor::Source)
+                    if (keytype == FMTkwor::Source)
                         {
                         if (name=="_AGE")
                             {
@@ -228,11 +228,11 @@ class FMTbounds
                                 }else{
                                 line+=slower+".."+supper+")";
                                 }
-						if (section == FMTwssect::Outputs && name.find("LOCK") != std::string::npos && lower >= 1)
+						if (section == FMTsection::Outputs && name.find("LOCK") != std::string::npos && lower >= 1)
 							{
 								line = "_INVLOCK";
 							}
-                        }else if(keytype == FMTwskwor::Target)
+                        }else if(keytype == FMTkwor::Target)
                             {
                             if(name.find("_LOCK")!= std::string::npos)
                                 {
@@ -259,8 +259,8 @@ class FMTyldbounds: public FMTbounds<double>
     std::string yield;
     public:
     FMTyldbounds();
-	FMTyldbounds(const FMTwssect lsection, const std::string& lyield, const double& lupper, const double& llower);
-    FMTyldbounds(const FMTwssect lsection,const FMTwskwor key,const std::string& lyield, const double& lupper,const double& llower);
+	FMTyldbounds(const FMTsection lsection, const std::string& lyield, const double& lupper, const double& llower);
+    FMTyldbounds(const FMTsection lsection,const FMTkwor key,const std::string& lyield, const double& lupper,const double& llower);
     FMTyldbounds(const std::string& lyield,const FMTbounds<double>& rhs);
     FMTyldbounds(const FMTyldbounds& rhs);
     FMTyldbounds& operator = (const FMTyldbounds& rhs);
@@ -279,8 +279,8 @@ class FMTagebounds: public FMTbounds<int>
 	}
     public:
     FMTagebounds();
-    FMTagebounds(FMTwssect lsection,const int& lupper, const int& llower);
-    FMTagebounds(FMTwssect lsection,FMTwskwor key, const int& lupper, const int& llower);
+    FMTagebounds(FMTsection lsection,const int& lupper, const int& llower);
+    FMTagebounds(FMTsection lsection,FMTkwor key, const int& lupper, const int& llower);
     FMTagebounds(const FMTagebounds& rhs);
     FMTagebounds(const FMTbounds<int>& rhs);
     FMTagebounds& operator = (const FMTagebounds& rhs);
@@ -299,7 +299,7 @@ class FMTperbounds: public FMTbounds<int>
 	}
     public:
     FMTperbounds();
-    FMTperbounds(const FMTwssect lsection,const int& lupper,const int& llower);
+    FMTperbounds(const FMTsection lsection,const int& lupper,const int& llower);
     FMTperbounds(const FMTperbounds& rhs);
 	FMTperbounds(const FMTbounds<int>& rhs);
     FMTperbounds& operator = (const FMTperbounds& rhs);
@@ -319,7 +319,7 @@ class FMTlockbounds : public FMTbounds<int>
 		}
     public:
     FMTlockbounds();
-    FMTlockbounds(const FMTwssect lsection,const FMTwskwor key,const int& lupper, const int& llower);
+    FMTlockbounds(const FMTsection lsection,const FMTkwor key,const int& lupper, const int& llower);
     FMTlockbounds(const FMTlockbounds& rhs);
     FMTlockbounds& operator = (const FMTlockbounds& rhs);
 	bool operator == (const FMTlockbounds& rhs) const;

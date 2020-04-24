@@ -34,9 +34,9 @@ namespace Exception
         {
         _msg = "FMTexc("+ std::to_string(lexception) +")" + message;
         }
-     FMTexception::FMTexception(const FMTexc lexception, Core::FMTwssect lsection,const std::string message): holdup(false),_msg(), exceptiontype(lexception),section(lsection)
+     FMTexception::FMTexception(const FMTexc lexception, Core::FMTsection lsection,const std::string message): holdup(false),_msg(), exceptiontype(lexception),section(lsection)
         {
-        _msg = "FMTexc("+ std::to_string(lexception) +")"+message+" FMTwssect("+ std::to_string(lsection) +")"+ Core::FMTwssect_str(lsection);
+        _msg = "FMTexc("+ std::to_string(lexception) +")"+message+" FMTsection("+ std::to_string(lsection) +")"+ Core::FMTsection_str(lsection);
         }
     FMTexception::FMTexception(const FMTexception& rhs): holdup(rhs.holdup),_msg(rhs._msg), exceptiontype(rhs.exceptiontype),section(rhs.section)
         {
@@ -63,7 +63,7 @@ namespace Exception
 		return exceptiontype;
 		}
 
-	Core::FMTwssect FMTexception::getsection() const
+	Core::FMTsection FMTexception::getsection() const
 		{
 		return section;
 		}

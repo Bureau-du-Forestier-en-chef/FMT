@@ -49,7 +49,7 @@ class FMTyieldparser : public FMTparser
 		std::regex rxcomplex;
 		std::regex rxeqs;
 		std::regex rxdiscount;
-		Core::FMTyldwstype getyldtype(const std::string& value) const;
+		Core::FMTyldtype getyldtype(const std::string& value) const;
 		Core::FMTyieldparserop getyldctype(const std::string& value) const;
 		std::vector<std::string> getylduse(Core::FMTyields& yielddata,
 			std::vector<std::pair<Core::FMTmask, Core::FMTyieldhandler>>::iterator actualyield,

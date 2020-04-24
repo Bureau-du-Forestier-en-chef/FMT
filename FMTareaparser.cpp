@@ -32,30 +32,36 @@ namespace Parser{
 
     void FMTareaparser::validate_raster(const std::vector<std::string>&data_rasters) const
         {
-        int xsize = -1;
-        int ysize = -1;
-        int rastercount = -1;
-        int overview = -1;
-		std::string projection = "";
-        for(const std::string& location : data_rasters)
-            {
-            GDALDataset* data = getdataset(location);
-            GDALRasterBand* band = getband(data);
-            if (xsize>0)
-                {
-                if ((data->GetRasterXSize()!=xsize) || (data->GetRasterYSize()!=ysize) || (data->GetRasterCount()!=rastercount) || (data->GetProjectionRef()!=projection) || (band->GetOverviewCount()!=overview))
-                    {
-                    _exhandler->raise(Exception::FMTexc::FMTinvalidband,_section,"Rasters are not the same "+ std::string(data->GetDescription()), __LINE__, __FILE__);
-                    }
-                }else{
-                xsize=data->GetRasterXSize();
-                ysize=data->GetRasterYSize();
-                rastercount=data->GetRasterCount();
-                projection=data->GetProjectionRef();
-                overview = band->GetOverviewCount();
-                }
-            GDALClose(data);
-            }
+		try {
+			int xsize = -1;
+			int ysize = -1;
+			int rastercount = -1;
+			int overview = -1;
+			std::string projection = "";
+			for (const std::string& location : data_rasters)
+			{
+				GDALDataset* data = getdataset(location);
+				GDALRasterBand* band = getband(data);
+				if (xsize > 0)
+				{
+					if ((data->GetRasterXSize() != xsize) || (data->GetRasterYSize() != ysize) || (data->GetRasterCount() != rastercount) || (data->GetProjectionRef() != projection) || (band->GetOverviewCount() != overview))
+					{
+						_exhandler->raise(Exception::FMTexc::FMTinvalidband, _section, "Rasters are not the same " + std::string(data->GetDescription()), __LINE__, __FILE__);
+					}
+				}
+				else {
+					xsize = data->GetRasterXSize();
+					ysize = data->GetRasterYSize();
+					rastercount = data->GetRasterCount();
+					projection = data->GetProjectionRef();
+					overview = band->GetOverviewCount();
+				}
+				GDALClose(data);
+			}
+		}catch (...)
+			{
+			_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, _section, "validating rasters", __LINE__, __FILE__);
+			}
         }
 	std::vector<Core::FMTGCBMtransition> FMTareaparser::getGCBMtransitions(const Spatial::FMTlayer<std::string>& stacked_actions,
 																const Spatial::FMTlayer<int>& ages,
@@ -238,154 +244,162 @@ namespace Parser{
                                              const std::string& age,double agefactor,
                                              double areafactor,std::string lock) const
         {
-        GDALAllRegister();
-        std::vector<std::string>allrasters = data_rasters;
-        allrasters.push_back(age);
-        if (!lock.empty())
-            {
-            allrasters.push_back(lock);
-            }
-        validate_raster(allrasters);
-        GDALDataset* agedataset = getdataset(age);
-        GDALRasterBand* ageband = getband(agedataset);
-        int nXBlockSize, nYBlockSize;
-        ageband->GetBlockSize(&nXBlockSize,&nYBlockSize);
-        int nXBlocks = (ageband->GetXSize() + nXBlockSize - 1) / nXBlockSize;
-        int nYBlocks = (ageband->GetYSize() + nYBlockSize - 1) / nYBlockSize;
-        int nodata = int(ageband->GetNoDataValue());
-		std::vector<GInt32>agedata(static_cast<size_t>(nXBlockSize) * static_cast<size_t>(nYBlockSize));
-		std::vector<GInt32>attributedata(static_cast<size_t>(nXBlockSize) * static_cast<size_t>(nYBlockSize));
-        GDALDataset* lockdataset = NULL;
-        GDALRasterBand* lockband = NULL;
-        std::vector<GInt32>lockdata;
-		std::vector<double>pad(6);
-        agedataset->GetGeoTransform(&pad[0]);
-        double cellsize = (abs(pad[1]*pad[5]) * areafactor);
-		std::vector<int>lockatts;
-        if(!lock.empty())
-            {
-            lockdataset = getdataset(lock);
-			const std::vector<std::string>lockstr = getcat(lockdataset);
-            lockatts.reserve(lockstr.size());
-            for (const std::string& strlock : lockstr)
-                {
-				std::vector<std::string>spstr;
-                boost::split(spstr,strlock,boost::is_any_of(FMT_STR_SEPARATOR), boost::token_compress_on);
-                lockatts.push_back(getnum<int>(spstr[1]));
-                }
-            lockband = getband(lockdataset);
-            lockdata = std::vector<GInt32>(static_cast<size_t>(nXBlockSize) * static_cast<size_t>(nYBlockSize),0);
-            }
-        std::vector<GDALDataset*>datasets;
-		std::vector<GDALRasterBand*>bands;
-		std::vector<std::vector<std::string>>attributes;
-        for(const std::string& location : data_rasters)
-            {
-            GDALDataset* dataset = getdataset(location);
-            GDALRasterBand* band = getband(dataset);
-            datasets.push_back(dataset);
-            bands.push_back(band);
-            attributes.push_back(getcat(dataset));
-            }
-		std::map<Spatial::FMTcoordinate,Core::FMTdevelopment>mapping;
-        int missing = 0;
-        unsigned int ystack = 0;
-        for( int iYBlock = 0; iYBlock < nYBlocks; iYBlock++ )
-            {
-            unsigned int xstack = 0;
-            int nYValid = 0;
-            for( int iXBlock = 0; iXBlock < nXBlocks; iXBlock++ )
-                {
-                int  nXValid;
-                if (CE_None!=ageband->ReadBlock( iXBlock, iYBlock,&agedata[0]))
-                    {
-                     _exhandler->raise(Exception::FMTexc::FMTinvalidrasterblock,_section,agedataset->GetDescription(), __LINE__, __FILE__);
-                    }
-                if (lockdataset!= NULL)
-                    {
-                    if (CE_None!=lockband->ReadBlock( iXBlock, iYBlock, &lockdata[0]))
-                        {
-                        _exhandler->raise(Exception::FMTexc::FMTinvalidrasterblock,_section,lockdataset->GetDescription(), __LINE__, __FILE__);
-                        }
-                    }
-                ageband->GetActualBlockSize(iXBlock, iYBlock, &nXValid, &nYValid);
-				std::map<int, std::string>mapattributes;
-                boost::unordered_map<int,Spatial::FMTcoordinate>coordinates;
-				std::vector<int>counts(static_cast<size_t>(nXBlockSize) * static_cast<size_t>(nYBlockSize),0);
-                for(size_t themeid = 0 ; themeid < data_rasters.size();++themeid)
-                    {
-                    if (CE_None!=bands[themeid]->ReadBlock( iXBlock, iYBlock, &attributedata[0]))
-                        {
-                        _exhandler->raise(Exception::FMTexc::FMTinvalidrasterblock,_section,datasets[themeid]->GetDescription(), __LINE__, __FILE__);
-                        }
-                    unsigned int y = ystack;
-                    for( int iY = 0; iY < nYValid; iY++ )
-                        {
-                        unsigned int x = xstack;
-                        for( int iX = 0; iX < nXValid; iX++ )
-                            {
-                            const unsigned int baselocation = (iX + iY * nXBlockSize);
-                            int intattribute = attributedata[baselocation];
-                            if (intattribute != nodata)
-                                {
-								const std::string attribute = attributes[themeid][intattribute];
-                                if (mapattributes.find(baselocation)==mapattributes.end())
-                                    {
-                                    mapattributes[baselocation]="";
-                                    }
-                                mapattributes[baselocation]+=(attribute+" ");
-                                if(themeid==0)
-                                    {
-                                    coordinates[baselocation]=Spatial::FMTcoordinate(x,y);
-                                    }
-                                counts[baselocation]+=1;
-                                }
-                            ++x;
-                            }
-                        ++y;
-                        }
-                    }
-				    const size_t attcounts = themes.size();
-                    if (!mapattributes.empty())
-                        {
-                        for (std::map<int, std::string>::iterator att=mapattributes.begin(); att!=mapattributes.end(); ++att)
-                            {
+		try {
+			GDALAllRegister();
+			std::vector<std::string>allrasters = data_rasters;
+			allrasters.push_back(age);
+			if (!lock.empty())
+			{
+				allrasters.push_back(lock);
+			}
+			validate_raster(allrasters);
+			GDALDataset* agedataset = getdataset(age);
+			GDALRasterBand* ageband = getband(agedataset);
+			int nXBlockSize, nYBlockSize;
+			ageband->GetBlockSize(&nXBlockSize, &nYBlockSize);
+			int nXBlocks = (ageband->GetXSize() + nXBlockSize - 1) / nXBlockSize;
+			int nYBlocks = (ageband->GetYSize() + nYBlockSize - 1) / nYBlockSize;
+			int nodata = int(ageband->GetNoDataValue());
+			std::vector<GInt32>agedata(static_cast<size_t>(nXBlockSize) * static_cast<size_t>(nYBlockSize));
+			std::vector<GInt32>attributedata(static_cast<size_t>(nXBlockSize) * static_cast<size_t>(nYBlockSize));
+			GDALDataset* lockdataset = NULL;
+			GDALRasterBand* lockband = NULL;
+			std::vector<GInt32>lockdata;
+			std::vector<double>pad(6);
+			agedataset->GetGeoTransform(&pad[0]);
+			double cellsize = (abs(pad[1] * pad[5]) * areafactor);
+			std::vector<int>lockatts;
+			if (!lock.empty())
+			{
+				lockdataset = getdataset(lock);
+				const std::vector<std::string>lockstr = getcat(lockdataset);
+				lockatts.reserve(lockstr.size());
+				for (const std::string& strlock : lockstr)
+				{
+					std::vector<std::string>spstr;
+					boost::split(spstr, strlock, boost::is_any_of(FMT_STR_SEPARATOR), boost::token_compress_on);
+					lockatts.push_back(getnum<int>(spstr[1]));
+				}
+				lockband = getband(lockdataset);
+				lockdata = std::vector<GInt32>(static_cast<size_t>(nXBlockSize) * static_cast<size_t>(nYBlockSize), 0);
+			}
+			std::vector<GDALDataset*>datasets;
+			std::vector<GDALRasterBand*>bands;
+			std::vector<std::vector<std::string>>attributes;
+			for (const std::string& location : data_rasters)
+			{
+				GDALDataset* dataset = getdataset(location);
+				GDALRasterBand* band = getband(dataset);
+				datasets.push_back(dataset);
+				bands.push_back(band);
+				attributes.push_back(getcat(dataset));
+			}
+			std::map<Spatial::FMTcoordinate, Core::FMTdevelopment>mapping;
+			int missing = 0;
+			unsigned int ystack = 0;
+			for (int iYBlock = 0; iYBlock < nYBlocks; iYBlock++)
+			{
+				unsigned int xstack = 0;
+				int nYValid = 0;
+				for (int iXBlock = 0; iXBlock < nXBlocks; iXBlock++)
+				{
+					int  nXValid;
+					if (CE_None != ageband->ReadBlock(iXBlock, iYBlock, &agedata[0]))
+					{
+						_exhandler->raise(Exception::FMTexc::FMTinvalidrasterblock, _section, agedataset->GetDescription(), __LINE__, __FILE__);
+					}
+					if (lockdataset != NULL)
+					{
+						if (CE_None != lockband->ReadBlock(iXBlock, iYBlock, &lockdata[0]))
+						{
+							_exhandler->raise(Exception::FMTexc::FMTinvalidrasterblock, _section, lockdataset->GetDescription(), __LINE__, __FILE__);
+						}
+					}
+					ageband->GetActualBlockSize(iXBlock, iYBlock, &nXValid, &nYValid);
+					std::map<int, std::string>mapattributes;
+					boost::unordered_map<int, Spatial::FMTcoordinate>coordinates;
+					std::vector<int>counts(static_cast<size_t>(nXBlockSize) * static_cast<size_t>(nYBlockSize), 0);
+					for (size_t themeid = 0; themeid < data_rasters.size(); ++themeid)
+					{
+						if (CE_None != bands[themeid]->ReadBlock(iXBlock, iYBlock, &attributedata[0]))
+						{
+							_exhandler->raise(Exception::FMTexc::FMTinvalidrasterblock, _section, datasets[themeid]->GetDescription(), __LINE__, __FILE__);
+						}
+						unsigned int y = ystack;
+						for (int iY = 0; iY < nYValid; iY++)
+						{
+							unsigned int x = xstack;
+							for (int iX = 0; iX < nXValid; iX++)
+							{
+								const unsigned int baselocation = (iX + iY * nXBlockSize);
+								int intattribute = attributedata[baselocation];
+								if (intattribute != nodata)
+								{
+									const std::string attribute = attributes[themeid][intattribute];
+									if (mapattributes.find(baselocation) == mapattributes.end())
+									{
+										mapattributes[baselocation] = "";
+									}
+									mapattributes[baselocation] += (attribute + " ");
+									if (themeid == 0)
+									{
+										coordinates[baselocation] = Spatial::FMTcoordinate(x, y);
+									}
+									counts[baselocation] += 1;
+								}
+								++x;
+							}
+							++y;
+						}
+					}
+					const size_t attcounts = themes.size();
+					if (!mapattributes.empty())
+					{
+						for (std::map<int, std::string>::iterator att = mapattributes.begin(); att != mapattributes.end(); ++att)
+						{
 							std::string st = att->second;
-                            const int location = att->first;
-                            if (counts[location]==attcounts && agedata[location] != nodata)
-                                {
-								std::string maskvalue = st.substr(0, st.size()-1);
-                                if (!validate(themes,maskvalue," at line " + std::to_string(_line))) continue;
-                                const Core::FMTmask mask(maskvalue,themes);
-                                int lock = 0;
-                                if (!lockdata.empty())
-                                    {
-                                    if(lockdata[location] != nodata)
-                                        {
-                                        lock = lockatts[lockdata[location]];
-                                        }
-                                    }
-                                const Core::FMTdevelopment dev(mask,int(agedata[location]*agefactor),lock);
-                                mapping[coordinates[location]] = dev;
-                                }else{
-                                ++missing;
-                                }
-                            }
-                        }
-                    xstack+=nXValid;
-                    }
-                ystack+=nYValid;
-                 }
-             if(missing>0)
-                {
-                const std::string message = " for "+std::to_string(missing)+" raster cells";
-                _exhandler->raise(Exception::FMTexc::FMTmissingrasterattribute,_section,message, __LINE__, __FILE__);
-                }
-             const std::string projection = agedataset->GetProjectionRef();
-             const unsigned int xsize = ageband->GetXSize();
-             const unsigned int ysize = ageband->GetYSize();
-             return Spatial::FMTlayer<Core::FMTdevelopment>(mapping,pad,xsize,ysize,projection,cellsize);
-             }
+							const int location = att->first;
+							if (counts[location] == attcounts && agedata[location] != nodata)
+							{
+								std::string maskvalue = st.substr(0, st.size() - 1);
+								if (!validate(themes, maskvalue, " at line " + std::to_string(_line))) continue;
+								const Core::FMTmask mask(maskvalue, themes);
+								int lock = 0;
+								if (!lockdata.empty())
+								{
+									if (lockdata[location] != nodata)
+									{
+										lock = lockatts[lockdata[location]];
+									}
+								}
+								Core::FMTdevelopment dev(mask, int(agedata[location] * agefactor), lock);
+								dev.passinobject(*this);
+								mapping[coordinates[location]] = dev;
+							}
+							else {
+								++missing;
+							}
+						}
+					}
+					xstack += nXValid;
+				}
+				ystack += nYValid;
+			}
+			if (missing > 0)
+			{
+				const std::string message = " for " + std::to_string(missing) + " raster cells";
+				_exhandler->raise(Exception::FMTexc::FMTmissingrasterattribute, _section, message, __LINE__, __FILE__);
+			}
+			const std::string projection = agedataset->GetProjectionRef();
+			const unsigned int xsize = ageband->GetXSize();
+			const unsigned int ysize = ageband->GetYSize();
+			return Spatial::FMTlayer<Core::FMTdevelopment>(mapping, pad, xsize, ysize, projection, cellsize);
+		}catch (const std::exception& exception)
+			{
+			_exhandler->throw_nested(exception);
+			}
+	return Spatial::FMTforest();
+	}
 
 	Core::FMTactualdevelopment FMTareaparser::getfeaturetodevelopment(const OGRFeature* feature,
 				const std::vector<Core::FMTtheme>& themes,
@@ -397,9 +411,10 @@ namespace Parser{
 				const double& areafactor,
 				const double& minimalarea) const
 		{
-		const int age = static_cast<int>(feature->GetFieldAsInteger(age_field)*agefactor);
-		const double area = (feature->GetFieldAsDouble(area_field)*areafactor);
-		if (area > minimalarea)
+		try {
+			const int age = static_cast<int>(feature->GetFieldAsInteger(age_field)*agefactor);
+			const double area = (feature->GetFieldAsDouble(area_field)*areafactor);
+			if (area > minimalarea)
 			{
 				int lock = 0;
 				if (lock_field != -1)
@@ -407,6 +422,7 @@ namespace Parser{
 					std::string slock = feature->GetFieldAsString(lock_field);
 					boost::to_upper(slock);
 					slock.erase(0, 5);
+					boost::trim(slock);
 					if (isvalid(slock))
 					{
 						lock = getnum<int>(slock);
@@ -421,10 +437,17 @@ namespace Parser{
 				}
 				std::string tmask = boost::algorithm::join(masks, " ");
 				if (validate(themes, tmask, " at line " + std::to_string(_line)))
-					{
+				{
 					const Core::FMTmask mask(tmask, themes);
-					return Core::FMTactualdevelopment(mask, age, lock, area);
-					}
+					Core::FMTactualdevelopment newdev(mask, age, lock, area);
+					newdev.passinobject(*this);
+					return newdev;
+				}
+			}
+		}catch (...)
+			{
+			_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, _section,
+				"while getting feature ID "+feature->GetFID(), __LINE__, __FILE__);
 			}
 		return Core::FMTactualdevelopment();
 		}
@@ -439,7 +462,7 @@ namespace Parser{
 		getWSfields(layer, themes_fields, age_field, area_field, lock_field, agefield, areafield, lockfield);
 		if (themes_fields.size() != themes.size())
 			{
-			_exhandler->raise(Exception::FMTexc::WSinvalid_maskrange, _section, dataset->GetDescription(), __LINE__, __FILE__);
+			_exhandler->raise(Exception::FMTexc::FMTinvalid_maskrange, _section, dataset->GetDescription(), __LINE__, __FILE__);
 			}
 		layer->ResetReading();
 		return dataset;
@@ -466,34 +489,40 @@ namespace Parser{
 	std::vector<Core::FMTactualdevelopment>FMTareaparser::readvectors(const std::vector<Core::FMTtheme>& themes,const std::string& data_vectors,
 		const std::string& agefield,const std::string& areafield,double agefactor,double areafactor, std::string lockfield,double minimalarea) const
         {
-		std::map<int, int>themes_fields;
-		int age_field = -1;
-		int lock_field = -1;
-		int area_field = -1;
-		GDALDataset* dataset =  openvectorfile(themes_fields,age_field,lock_field,area_field,data_vectors,agefield,areafield,lockfield,themes);
-		OGRLayer*  layer = getlayer(dataset, 0);
-		layer = this->subsetlayer(layer, themes, agefield, areafield);
-		OGRFeature *feature;
 		std::vector<Core::FMTactualdevelopment>devs;
-        while((feature = layer->GetNextFeature()) != NULL)
-            {
+		try {
+			std::map<int, int>themes_fields;
+			int age_field = -1;
+			int lock_field = -1;
+			int area_field = -1;
+			GDALDataset* dataset = openvectorfile(themes_fields, age_field, lock_field, area_field, data_vectors, agefield, areafield, lockfield, themes);
+			OGRLayer*  layer = getlayer(dataset, 0);
+			layer = this->subsetlayer(layer, themes, agefield, areafield);
+			OGRFeature *feature;
+			while ((feature = layer->GetNextFeature()) != NULL)
+			{
 				const Core::FMTactualdevelopment actualdev = this->getfeaturetodevelopment(feature, themes, themes_fields, age_field,
 					lock_field, area_field, agefactor, areafactor, minimalarea);
 
 				if (!actualdev.mask.empty())
-					{
+				{
 					std::vector<Core::FMTactualdevelopment>::iterator it = find(devs.begin(), devs.end(), actualdev);
 					if (it != devs.end())
 					{
-						it->setarea(it->getarea()+ actualdev.getarea());
+						it->setarea(it->getarea() + actualdev.getarea());
 					}
 					else {
 						devs.push_back(actualdev);
 					}
-					}
-            OGRFeature::DestroyFeature(feature);
-            }
-		GDALClose(dataset);
+				}
+				OGRFeature::DestroyFeature(feature);
+				++_line;
+			}
+			GDALClose(dataset);
+		}catch (const std::exception& exception)
+			{
+			_exhandler->throw_nested(exception);
+			}
         return devs;
         }
 	#ifdef FMTWITHOSI
@@ -737,7 +766,7 @@ namespace Parser{
 				FMTparser(),
 				rxcleanarea("^(([*A]*)([^|]*)(_lock)([^0-9]*)([0-9]*))|(([*A]*)([^|]*)([|])([^|]*)([|])([^0-9]*)(.+))|(([*A]*)(([^|]*)([|])([^|]*)([|])))|([*A]*)(.+)", std::regex_constants::ECMAScript | std::regex_constants::icase)
 			{
-				_section = Core::FMTwssect::Area;
+				_section = Core::FMTsection::Area;
 			}
 
 			FMTareaparser::FMTareaparser(const FMTareaparser& rhs) : FMTparser(rhs), rxcleanarea(rhs.rxcleanarea)

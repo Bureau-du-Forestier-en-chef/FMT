@@ -183,12 +183,12 @@ namespace Core
 
 	void FMTconstraint::setrhs(const double& lower,const double& upper)
 		{
-		this->addbounds(FMTyldbounds(FMTwssect::Optimize, "RHS", upper, lower));
+		this->addbounds(FMTyldbounds(FMTsection::Optimize, "RHS", upper, lower));
 		}
 
 	void FMTconstraint::setlength(int firstperiod, int lastperiod)
 		{
-		this->setbounds(FMTperbounds(FMTwssect::Optimize, lastperiod, firstperiod));
+		this->setbounds(FMTperbounds(FMTsection::Optimize, lastperiod, firstperiod));
 		}
 
 	void FMTconstraint::getbounds(double& lower, double& upper, int period) const

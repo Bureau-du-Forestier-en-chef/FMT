@@ -30,7 +30,7 @@ SOFTWARE.
 
 namespace Core
 {
-enum FMTwssect
+enum FMTsection
     {
     Control= 1,
     Landscape=2,
@@ -46,13 +46,13 @@ enum FMTwssect
     Empty=12
     };
 
-enum class FMTwskwor
+enum class FMTkwor
     {
     Source =1,
     Target =2
     };
 
-enum FMTyldwstype
+enum FMTyldtype
     {
     FMTageyld = 1,
     FMTtimeyld = 2,
@@ -61,18 +61,18 @@ enum FMTyldwstype
 
 enum class FMTyieldparserop
     {
-    FMTwsnone = 0,
-    FMTwsrange = 1,
-    FMTwsmultiply = 2,
-    FMTwssum = 3,
-    FMTwssubstract = 4,
-    FMTwsytp = 5,
-    FMTwsmai = 6,
-    FMTwscai= 7,
-    FMTwsdivide= 8,
-	FMTwsequation = 9,
-	FMTwsendpoint = 10,
-	FMTwsdiscountfactor = 11
+    FMTnone = 0,
+    FMTrange = 1,
+    FMTmultiply = 2,
+    FMTsum = 3,
+    FMTsubstract = 4,
+    FMTytp = 5,
+    FMTmai = 6,
+    FMTcai= 7,
+    FMTdivide= 8,
+	FMTequation = 9,
+	FMTendpoint = 10,
+	FMTdiscountfactor = 11
     };
 
 enum FMTotar
@@ -84,7 +84,7 @@ enum FMTotar
 	level = 5
     };
 
-const char* FMTwssect_str(FMTwssect section);
+const char* FMTsection_str(FMTsection section);
 
 }
 

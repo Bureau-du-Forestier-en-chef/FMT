@@ -28,12 +28,14 @@ SOFTWARE.
 #include "FMTmodel.h"
 #include "FMTlpmodel.h"
 #include "FMTsesmodel.h"
+#include "FMTnssmodel.h"
 #include "FMTsamodel.h"
 #include "boost/python.hpp"
 
 namespace Python
 { 
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(simulate_overloads, simulate, 1, 3)
+BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(simulatenssm_overloads, simulate, 1, 2)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(buildperiod_overloads, buildperiod, 0, 2)
 //BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(move_solution_overloads, move_solution, 0, 1)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(get_outputs_overloads, get_outputs, 0, 1)
@@ -43,7 +45,8 @@ BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(evaluate_overloads, evaluate, 1, 2)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(getoperatingareaheuristics_overloads, getoperatingareaheuristics, 2, 4)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(getvariabilities_overloads, getvariabilities, 1, 2)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(getareavariabilities_overloads, getareavariabilities,2,3)
-
+BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(boundsolution_overloads, boundsolution, 1, 2)
+BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(eraseperiod_overloads, eraseperiod,0,1)
 
 void exportModel()
     {
@@ -58,18 +61,29 @@ void exportModel()
     "\n";
 
 	bp::class_<Models::FMTmodel, bp::bases<Core::FMTobject>>("FMTmodel", "@DocString(FMTmodel)")
-            .def_readwrite("name",&Models::FMTmodel::name,
-				"@DocString(FMTmodel::name)")
 			.def_pickle(FMT_pickle_suite<Models::FMTmodel>())
+			.def(bp::init<Models::FMTmodel>())
             .def("getyields",&Models::FMTmodel::getyields,
 				"@DocString(FMTmodel::getyields)")
+			.def("setyields", &Models::FMTmodel::setyields,
+				"@DocString(FMTmodel::setyields)")
+			.def("getname", &Models::FMTmodel::getname,
+				"@DocString(FMTmodel::getname)")
             .def("getarea",&Models::FMTmodel::getarea, getarea_overloads(bp::args("period"), "@DocString(FMTlpmodel::getarea)"))
-            .def("getthemes",&Models::FMTmodel::getthemes,
+			.def("setarea", &Models::FMTmodel::setarea,
+				"@DocString(FMTmodel::setarea)")
+			.def("getthemes",&Models::FMTmodel::getthemes,
 				"@DocString(FMTmodel::getthemes)")
+			.def("setthemes", &Models::FMTmodel::setthemes,
+				"@DocString(FMTmodel::setthemes)")
             .def("getactions",&Models::FMTmodel::getactions,
 				"@DocString(FMTmodel::getactions)")
+			.def("setactions", &Models::FMTmodel::setactions,
+				"@DocString(FMTmodel::setactions)")
 			.def("getoutputs", &Models::FMTmodel::getoutputs,
 				"@DocString(FMTmodel::getoutputs)")
+			.def("setoutputs", &Models::FMTmodel::setoutputs,
+				"@DocString(FMTmodel::setoutputs)")
 			.def("getconstraints", &Models::FMTmodel::getconstraints,
 				"@DocString(FMTmodel::getconstraints)")
 			.def("setconstraints", &Models::FMTmodel::setconstraints,
@@ -78,6 +92,10 @@ void exportModel()
 				"@DocString(FMTmodel::gettransitions)")
             .def("settransitions",&Models::FMTmodel::settransitions,
 				"@DocString(FMTmodel::settransitions)")
+			.def("setname", &Models::FMTmodel::setname,
+				"@DocString(FMTmodel::setname)")
+			.def("setareaperiod", &Models::FMTmodel::setareaperiod,
+				"@DocString(FMTmodel::setareaperiod)")
             .def("getlifespan",&Models::FMTmodel::getlifespan,
 				"@DocString(FMTmodel::getlifespan)")
             .def("isvalid",&Models::FMTmodel::isvalid,
@@ -111,6 +129,17 @@ void exportModel()
 
     define_pylist<Models::FMTsesmodel>();
 
+	bp::class_<Models::FMTnssmodel, bp::bases<Models::FMTmodel>>("FMTnssmodel", "@DocString(FMTnssmodel)")
+		.def(bp::init<Models::FMTmodel,unsigned int>())
+		.def_pickle(FMT_pickle_suite<Models::FMTnssmodel>())
+		.def("simulate", &Models::FMTnssmodel::simulate,
+			simulatenssm_overloads(bp::args("actionsproportions", "grow"),"@DocString(FMTnssmodel::simulate)"));
+
+	define_pylist<Models::FMTnssmodel>();
+
+
+
+
 	#ifdef FMTWITHOSI
 
 	bp::enum_<Models::FMTsolverinterface>("FMTsolverinterface")
@@ -123,10 +152,12 @@ void exportModel()
 
 	bp::class_<Models::FMTlpmodel, bp::bases<Models::FMTmodel>>("FMTlpmodel", "@DocString(FMTlpmodel)")
 		.def(bp::init<Models::FMTmodel, Models::FMTsolverinterface>())
+		.def(bp::init<Models::FMTlpmodel>())
 		.def_pickle(FMT_pickle_suite<Models::FMTlpmodel>())
 		.def("buildperiod", &Models::FMTlpmodel::buildperiod, buildperiod_overloads(bp::args("schedule", "forcepartialbuild"), "@DocString(FMTlpmodel::buildperiod)"))
 		.def("boundsolution", &Models::FMTlpmodel::boundsolution,
-			"@DocString(FMTlpmodel::boundsolution)")
+			boundsolution_overloads(bp::args("period", "tolerance"),
+				"@DocString(FMTlpmodel::boundsolution)"))
 		.def("getsolution", &Models::FMTlpmodel::getsolution,
 			"@DocString(FMTlpmodel::getsolution)")
 		.def("setsolution", &Models::FMTlpmodel::setsolution,
@@ -138,7 +169,7 @@ void exportModel()
 		.def("eraseconstraint", &Models::FMTlpmodel::eraseconstraint,
 			"@DocString(FMTlpmodel::eraseconstraint)")
 		.def("eraseperiod", &Models::FMTlpmodel::eraseperiod,
-			"@DocString(FMTlpmodel::eraseperiod)")
+			eraseperiod_overloads(bp::args("constraintsonly"),"@DocString(FMTlpmodel::eraseperiod)"))
 		.def("resolve", &Models::FMTlpmodel::resolve,
 			"@DocString(FMTlpmodel::resolve)")
 		.def("initialsolve", &Models::FMTlpmodel::initialsolve,
@@ -154,6 +185,8 @@ void exportModel()
 			"@DocString(FMTlpmodel::operator!=)")
 		.def("getstats", &Models::FMTlpmodel::getstats,
 			"@DocString(FMTlpmodel::getstats)")
+		.def("getobjectivevalue", &Models::FMTlpmodel::getobjectivevalue,
+			"@DocString(FMTlpmodel::getobjectivevalue)")
 		.def("getoperatingareaheuristics", &Models::FMTlpmodel::getoperatingareaheuristics, getoperatingareaheuristics_overloads(bp::args("opareas", "node", "numberofheuristics", "copysolver"), "@DocString(FMTlpmodel::getoperatingareaheuristics)"))
 		.def("getvariabilities", &Models::FMTlpmodel::getvariabilities, getvariabilities_overloads(bp::args("outputs", "tolerance"), "@DocString(FMTlpmodel::getvariabilities)"))
 		.def("getareavariabilities", &Models::FMTlpmodel::getareavariabilities,getareavariabilities_overloads(bp::args("outputs","globalmask","tolerance"), "@DocString(FMTlpmodel::getareavariabilities)"));

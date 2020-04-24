@@ -74,7 +74,7 @@ class FMTyields : public FMTlist<FMTyieldhandler>
 	The function returns a vector of pointer to all yieldhandler of a given (type).
 	(Can returns all handler related to time/age/complex ...)
 	*/
-	std::vector<const FMTyieldhandler*> gethandleroftype(FMTyldwstype type) const;
+	std::vector<const FMTyieldhandler*> gethandleroftype(FMTyldtype type) const;
 	// DocString: FMTyields::getmaxbase
 	/**
 	Each yields can have different size in a yield section. Looking at all yieldhandler (handlers) this function
@@ -141,7 +141,7 @@ class FMTyields : public FMTlist<FMTyieldhandler>
 		The map contains all the yield values for each yield name (map key). This function is used for generating a text file 
 		containing all the yields values for GCBM (might be only usefull for Forestier en chef) .
 		*/
-		std::map<std::string, std::map<std::string, std::vector<double>>>getallyields(const FMTtheme& target,FMTyldwstype type) const;
+		std::map<std::string, std::map<std::string, std::vector<double>>>getallyields(const FMTtheme& target,FMTyldtype type) const;
 		// DocString: FMTyields::operator==
 		/**
 		FMTyields equality operator check if FMTyields are the same.

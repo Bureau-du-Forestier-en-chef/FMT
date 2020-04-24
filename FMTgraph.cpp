@@ -36,31 +36,31 @@ namespace Graph
 {
 
 FMTgraph::FMTgraph():
+	data(),
     buildtype(FMTgraphbuild::nobuild),
     developments(),
 	nodescache(),
-    stats(),
-    data()
+    stats()
     {
 
     }
 
 FMTgraph::FMTgraph(const FMTgraphbuild lbuildtype):
+	data(),
     buildtype(lbuildtype),
     developments(),
 	nodescache(),
-    stats(),
-    data()
+    stats()
     {
 
     }
 
 FMTgraph::FMTgraph(const FMTgraph& rhs):
+	data(rhs.data),
     buildtype(rhs.buildtype),
     developments(),
 	nodescache(),
-    stats(rhs.stats),
-    data(rhs.data)
+    stats(rhs.stats)
     {
         generatedevelopments();
     }
@@ -397,7 +397,7 @@ bool FMTgraph::isvalidouputnode(const Models::FMTmodel& model,const Core::FMTout
 	if (static_cast<int>(developments.size()) > period)
 		{
 		action_IDS = node.source.targets(model.actions);
-		if (!(period == 0 && !action_IDS.empty()) && !node.source.isnull(model.yields) && !node.factor.isnull(model.yields) && (!action_IDS.empty() && !node.source.getaction().empty() || node.source.getaction().empty()))
+		if (!(period == 0 && !action_IDS.empty()) && !node.source.isnull(model.yields) && !node.factor.isnull(model.yields) && ((!action_IDS.empty() && !node.source.getaction().empty()) || node.source.getaction().empty()))
 			{
 			return true;
 			}
@@ -413,9 +413,9 @@ bool FMTgraph::isvalidgraphnode(const Models::FMTmodel& model, const FMTvertex_d
 		{
 		if (node.source.useinedges())
 		{
-			if ((development.period == 0 || periodstart(vertex_descriptor))&&(selected.empty() && (node.source.isnextperiod() || !node.source.emptylock())) ||
+			if ((development.period == 0 || periodstart(vertex_descriptor))&&((selected.empty() && (node.source.isnextperiod() || !node.source.emptylock())) ||
 				(((buildtype == FMTgraphbuild::schedulebuild) && development.anyoperable(selected, model.yields)) ||
-					anyoperables(vertex_descriptor, development.anyworthtestingoperability(selected, *model.actions.begin()))))
+					anyoperables(vertex_descriptor, development.anyworthtestingoperability(selected, *model.actions.begin())))))
 			{
 				return true;
 			}
@@ -617,7 +617,7 @@ std::vector<const Core::FMTaction*>FMTgraph::selectedactions(const Models::FMTmo
 bool FMTgraph::constraintlenght(const Core::FMTconstraint& constraint, int& start, int& stop) const
 	{
 		start = std::max(constraint.getperiodlowerbound(),getfirstactiveperiod());
-		stop = static_cast<int>((constraint.getperiodupperbound() > (developments.size() - 2)) ? (developments.size() - 2) : constraint.getperiodupperbound());
+		stop = static_cast<int>((constraint.getperiodupperbound()> static_cast<int>((developments.size() - 2))) ? (developments.size() - 2) : constraint.getperiodupperbound());
 		if (constraint.acrossperiod())
 		{
 			--stop;
@@ -1078,18 +1078,25 @@ void FMTgraph::updatematrixindex(const std::vector<int>& removedvariables,const 
 std::vector<std::unordered_map<size_t, FMTvertex_descriptor>>::iterator FMTgraph::getfirstblock()
 	{
 	std::vector<std::unordered_map<size_t, FMTvertex_descriptor>>::iterator periodit = developments.begin();
-	while (periodit->empty())
+	if (!developments.empty())
 		{
-		++periodit;
+		while (periodit->empty())
+			{
+			++periodit;
+			}
 		}
 	return periodit;
 	}
+
 std::vector<std::unordered_map<size_t, FMTvertex_descriptor>>::const_iterator FMTgraph::getfirstconstblock() const
 	{
 	std::vector<std::unordered_map<size_t, FMTvertex_descriptor>>::const_iterator periodit = developments.begin();
-	while (periodit->empty())
+	if (!developments.empty())
 		{
-		++periodit;
+		while (periodit->empty())
+			{
+			++periodit;
+			}
 		}
 	return periodit;
 	}

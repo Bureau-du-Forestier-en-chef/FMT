@@ -31,7 +31,7 @@ namespace Parser
 {
 
 
-Core::FMTwssect FMTparser::from_extension(const std::string& ext) const
+Core::FMTsection FMTparser::from_extension(const std::string& ext) const
     {
 	const std::array<std::string, 21>baseextensions = { ".run",".lan",".are",".act",".trn",".yld",".out",".opt",".con",".seq",".lif",
 							"._lan","._are","._act","._trn","._yld","._out","._opt","._con","._seq","._lif" };
@@ -40,28 +40,28 @@ Core::FMTwssect FMTparser::from_extension(const std::string& ext) const
     const size_t id = (it - baseextensions.begin());
     switch (id)
         {
-            case 0 :return Core::FMTwssect::Control;
-            case 1 :return Core::FMTwssect::Landscape;
-            case 2 :return Core::FMTwssect::Area;
-            case 3 :return Core::FMTwssect::Action;
-            case 4 :return Core::FMTwssect::Transition;
-            case 5 :return Core::FMTwssect::Yield;
-            case 6 :return Core::FMTwssect::Outputs;
-            case 7 :return Core::FMTwssect::Optimize;
-            case 8 :return Core::FMTwssect::Constants;
-            case 9 :return Core::FMTwssect::Schedule;
-			case 10:return Core::FMTwssect::Lifespan;
-			case 11:return Core::FMTwssect::Landscape;
-			case 12:return Core::FMTwssect::Area;
-			case 13:return Core::FMTwssect::Action;
-			case 14:return Core::FMTwssect::Transition;
-			case 15:return Core::FMTwssect::Yield;
-			case 16:return Core::FMTwssect::Outputs;
-			case 17:return Core::FMTwssect::Optimize;
-			case 18:return Core::FMTwssect::Constants;
-			case 19:return Core::FMTwssect::Schedule;
-			case 20:return Core::FMTwssect::Lifespan;
-            default:      return Core::FMTwssect::Empty;
+            case 0 :return Core::FMTsection::Control;
+            case 1 :return Core::FMTsection::Landscape;
+            case 2 :return Core::FMTsection::Area;
+            case 3 :return Core::FMTsection::Action;
+            case 4 :return Core::FMTsection::Transition;
+            case 5 :return Core::FMTsection::Yield;
+            case 6 :return Core::FMTsection::Outputs;
+            case 7 :return Core::FMTsection::Optimize;
+            case 8 :return Core::FMTsection::Constants;
+            case 9 :return Core::FMTsection::Schedule;
+			case 10:return Core::FMTsection::Lifespan;
+			case 11:return Core::FMTsection::Landscape;
+			case 12:return Core::FMTsection::Area;
+			case 13:return Core::FMTsection::Action;
+			case 14:return Core::FMTsection::Transition;
+			case 15:return Core::FMTsection::Yield;
+			case 16:return Core::FMTsection::Outputs;
+			case 17:return Core::FMTsection::Optimize;
+			case 18:return Core::FMTsection::Constants;
+			case 19:return Core::FMTsection::Schedule;
+			case 20:return Core::FMTsection::Lifespan;
+            default:      return Core::FMTsection::Empty;
         }
     }
 
@@ -278,7 +278,7 @@ void FMTparser::getWSfields(OGRLayer* layer, std::map<int, int>& themes, int& ag
 	}
 	if (themes.size() == 0)
 	{
-		_exhandler->raise(Exception::FMTexc::WSinvalid_maskrange, _section, layer->GetDescription(), __LINE__, __FILE__);
+		_exhandler->raise(Exception::FMTexc::FMTinvalid_maskrange, _section, layer->GetDescription(), __LINE__, __FILE__);
 	}
 	if (age == -1 && !agefield.empty())
 	{
@@ -295,7 +295,7 @@ void FMTparser::getWSfields(OGRLayer* layer, std::map<int, int>& themes, int& ag
 }
 
 #endif
-std::string FMTparser::setspec(Core::FMTwssect section, Core::FMTwskwor key,const Core::FMTyields& ylds,const Core::FMTconstants& constants,Core::FMTspec& spec, const std::string& line)
+std::string FMTparser::setspec(Core::FMTsection section, Core::FMTkwor key,const Core::FMTyields& ylds,const Core::FMTconstants& constants,Core::FMTspec& spec, const std::string& line)
     {
 	std::smatch kmatch;
 	std::string rest = "";
@@ -347,11 +347,11 @@ std::string FMTparser::setspec(Core::FMTwssect section, Core::FMTwskwor key,cons
     return rest;
     }
 
-bool FMTparser::isact(Core::FMTwssect section,const std::vector<Core::FMTaction>& actions, std::string action) const
+bool FMTparser::isact(Core::FMTsection section,const std::vector<Core::FMTaction>& actions, std::string action) const
     {
     if (std::find_if(actions.begin(),actions.end(), Core::FMTactioncomparator(action,true))==actions.end())
         {
-        _exhandler->raise(Exception::FMTexc::WSundefined_action,section,action+" at line " + std::to_string(_line), __LINE__, __FILE__);
+        _exhandler->raise(Exception::FMTexc::FMTundefined_action,section,action+" at line " + std::to_string(_line), __LINE__, __FILE__);
         return false;
         }else{
         return true;
@@ -360,13 +360,13 @@ bool FMTparser::isact(Core::FMTwssect section,const std::vector<Core::FMTaction>
 
 
 
-bool FMTparser::isyld(const Core::FMTyields& ylds,const std::string& value, Core::FMTwssect section) const
+bool FMTparser::isyld(const Core::FMTyields& ylds,const std::string& value, Core::FMTsection section) const
     {
     if (ylds.isyld(value))
         {
         return true;
         }
-     _exhandler->raise(Exception::FMTexc::WSinvalid_yield,section,value+" at line " + std::to_string(_line), __LINE__, __FILE__);
+     _exhandler->raise(Exception::FMTexc::FMTinvalid_yield,section,value+" at line " + std::to_string(_line), __LINE__, __FILE__);
      return false;
     }
 
@@ -727,10 +727,10 @@ std::string FMTparser::getcleanlinewfor(std::ifstream& stream,const std::vector<
 	return returninclude(line, themes, cons);
     }
 
-std::map<Core::FMTwssect, std::string> FMTparser::getprimary(const std::string& primarylocation)
+std::map<Core::FMTsection, std::string> FMTparser::getprimary(const std::string& primarylocation)
 	{
 		std::ifstream primarystream(primarylocation);
-		std::map<Core::FMTwssect, std::string>targets;
+		std::map<Core::FMTsection, std::string>targets;
 		const boost::filesystem::path primary_path(primarylocation);
 		if (FMTparser::tryopening(primarystream, primarylocation))
 		{
@@ -746,15 +746,15 @@ std::map<Core::FMTwssect, std::string> FMTparser::getprimary(const std::string& 
 						const boost::filesystem::path file_path(file_name);
 						std::string extension = boost::filesystem::extension(file_path.string());
 						boost::to_lower(extension);
-						const Core::FMTwssect section = from_extension(extension);
+						const Core::FMTsection section = from_extension(extension);
 						targets[section] = (primary_path.parent_path() / file_path).string();
 					}
 				}
 			}
 		}
-		if (targets.find(Core::FMTwssect::Constants)==targets.end())
+		if (targets.find(Core::FMTsection::Constants)==targets.end())
 			{
-			targets[Core::FMTwssect::Constants] = "";
+			targets[Core::FMTsection::Constants] = "";
 			}
 		return targets;
 	}

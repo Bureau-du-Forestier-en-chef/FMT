@@ -35,13 +35,13 @@ void FMTmodel::setdefaultobjects()
 	{
 	if (std::find_if(actions.begin(), actions.end(), Core::FMTactioncomparator("_DEATH")) == actions.end())
 		{
-		_exhandler->raise(Exception::FMTexc::WSundefineddeathaction, Core::FMTwssect::Action,
+		_exhandler->raise(Exception::FMTexc::FMTundefineddeathaction, Core::FMTsection::Action,
 			"_DEATH", __LINE__, __FILE__);
 		actions.push_back(defaultdeathaction(lifespan,themes));
 		}
 	if (std::find_if(transitions.begin(), transitions.end(), Core::FMTtransitioncomparator("_DEATH")) == transitions.end())
 		{
-		_exhandler->raise(Exception::FMTexc::WSundefineddeathtransition, Core::FMTwssect::Transition,
+		_exhandler->raise(Exception::FMTexc::FMTundefineddeathtransition, Core::FMTsection::Transition,
 			"_DEATH", __LINE__, __FILE__);
 		transitions.push_back(defaultdeathtransition(lifespan,themes));
 		}
@@ -180,7 +180,7 @@ Core::FMTaction FMTmodel::defaultdeathaction(const Core::FMTlifespans& llifespan
 		const std::string mask(intobject.first);
 		const Core::FMTmask amask(mask,lthemes);
 		Core::FMTspec specifier;
-		specifier.addbounds(Core::FMTagebounds(Core::FMTwssect::Action, intobject.second, intobject.second));
+		specifier.addbounds(Core::FMTagebounds(Core::FMTsection::Action, intobject.second, intobject.second));
 		death_action.push_back(amask, specifier);
 		}
 	death_action.shrink();
@@ -329,6 +329,17 @@ void FMTmodel::setlifespan(const Core::FMTlifespans& llifespan)
 	this->setdefaultobjects();
     }
 
+void FMTmodel::setname(const std::string& newname)
+	{
+	name = newname;
+	}
+
+void FMTmodel::setoutputs(const std::vector<Core::FMToutput>& newoutputs)
+	{
+	outputs = newoutputs;
+	}
+
+
 std::vector<Core::FMTtheme> FMTmodel::locatestaticthemes() const
 {
 	std::vector<Core::FMTtheme>bestthemes = getthemes();
@@ -345,7 +356,7 @@ void FMTmodel::validatelistspec(const Core::FMTspec& specifier) const
 		{
 			if (!yields.isyld(yldname))
 			{
-				_exhandler->raise(Exception::FMTexc::WSinvalid_yield,
+				_exhandler->raise(Exception::FMTexc::FMTinvalid_yield,
 					_section, yldname, __LINE__, __FILE__);
 			}
 		}
@@ -354,28 +365,28 @@ void FMTmodel::validatelistspec(const Core::FMTspec& specifier) const
 
 bool FMTmodel::isvalid()
     {
-	this->setsection(Core::FMTwssect::Landscape);
+	this->setsection(Core::FMTsection::Landscape);
 	for (const Core::FMTtheme& theme :themes)
 		{
 		if (theme.empty())
 			{
-			_exhandler->raise(Exception::FMTexc::WSempty_theme, Core::FMTwssect::Landscape,
+			_exhandler->raise(Exception::FMTexc::FMTempty_theme, Core::FMTsection::Landscape,
 				"for theme id: " + std::to_string(theme.getid()), __LINE__, __FILE__);
 			}
 		}
-	this->setsection(Core::FMTwssect::Area);
+	this->setsection(Core::FMTsection::Area);
 	for (const Core::FMTactualdevelopment& developement : area)
 		{
 		std::string name = std::string(developement.mask);
 		this->validate(themes, name);
 		}
-	this->setsection(Core::FMTwssect::Yield);
+	this->setsection(Core::FMTsection::Yield);
 	this->validatelistmasks(yields);
 
-	this->setsection(Core::FMTwssect::Lifespan);
+	this->setsection(Core::FMTsection::Lifespan);
 	this->validatelistmasks(lifespan);
 
-	this->setsection(Core::FMTwssect::Action);
+	this->setsection(Core::FMTsection::Action);
 	for (const Core::FMTaction& action : actions)
 		{
 		this->validatelistmasks(action);
@@ -384,7 +395,7 @@ bool FMTmodel::isvalid()
 			validatelistspec(specobject.second);
 			}
 		}
-	this->setsection(Core::FMTwssect::Transition);
+	this->setsection(Core::FMTsection::Transition);
 	for (const Core::FMTtransition& transition : transitions)
 		{
 		this->validatelistmasks(transition);
@@ -395,16 +406,16 @@ bool FMTmodel::isvalid()
 		}
 	if (actions.size() != transitions.size())
 	{
-		_exhandler->raise(Exception::FMTexc::FMTinvalidAandT, Core::FMTwssect::Empty, "Model: " + name, __LINE__, __FILE__);
+		_exhandler->raise(Exception::FMTexc::FMTinvalidAandT, Core::FMTsection::Empty, "Model: " + name, __LINE__, __FILE__);
 	}
 	for (size_t id = 0; id < actions.size(); ++id)
 	{
 		if (actions[id].getname() != transitions[id].getname())
 		{
-			_exhandler->raise(Exception::FMTexc::WSinvalid_action, Core::FMTwssect::Empty, "Model: " + name + " " + actions[id].getname(), __LINE__, __FILE__);
+			_exhandler->raise(Exception::FMTexc::FMTinvalid_action, Core::FMTsection::Empty, "Model: " + name + " " + actions[id].getname(), __LINE__, __FILE__);
 		}
 	}
-	this->setsection(Core::FMTwssect::Outputs);
+	this->setsection(Core::FMTsection::Outputs);
 	for (const Core::FMToutput& output : outputs)
 		{
 		//Need a validate output function
@@ -423,7 +434,7 @@ bool FMTmodel::isvalid()
 			validatelistspec(source);
 			}
 		}
-	this->setsection(Core::FMTwssect::Empty);
+	this->setsection(Core::FMTsection::Empty);
     return true;
     }
 
@@ -777,7 +788,7 @@ FMTmodelcomparator::FMTmodelcomparator(std::string name) :model_name(name) {}
 
 bool FMTmodelcomparator::operator()(const FMTmodel& model) const
 	{
-	return(model_name == model.name);
+	return(model_name == model.getname());
 	}
 
 }

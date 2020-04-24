@@ -70,7 +70,7 @@ namespace Exception
 			/**
 			Constructor for FMTerror taking a exception type, section in which the error occur and message string as arguments.
 			*/
-			FMTerror(const FMTexc lexception, const Core::FMTwssect lsection, const std::string message);
+			FMTerror(const FMTexc lexception, const Core::FMTsection lsection, const std::string message);
 		};
 	}
 #endif

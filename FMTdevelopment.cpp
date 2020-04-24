@@ -141,7 +141,7 @@ namespace Core{
 			 newpaths = fork->getpaths(*this, ylds, themes,action.isresetage());
 		 }
 		 else {
-			 _exhandler->raise(Exception::FMTexc::WSinvalid_transition_case, FMTwssect::Empty, Transition.getname() + " for " + std::string(*this), __LINE__, __FILE__);
+			 _exhandler->raise(Exception::FMTexc::FMTinvalid_transition_case, FMTsection::Empty, Transition.getname() + " for " + std::string(*this), __LINE__, __FILE__);
 		 }
 		 return newpaths;
 		}
@@ -209,7 +209,7 @@ namespace Core{
 				if (yields.find(yield) == yields.end())
 					{
 						_exhandler->raise(Exception::FMTexc::FMTmissingyield,
-							FMTwssect::Empty, yield + " for development type " + std::string(*this), __LINE__, __FILE__);
+							FMTsection::Empty, yield + " for development type " + std::string(*this), __LINE__, __FILE__);
 					}
 			}
 		return (specification.allow(period, age, lock, yields));

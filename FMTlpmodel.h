@@ -402,11 +402,11 @@ class FMTlpmodel : public FMTmodel
 																				const Core::FMToutputnode& node,
 																				size_t numberofheuristics=1,
 																				bool copysolver=true);
-		// DocString: FMTlpmodel::getObjValue
+		// DocString: FMTlpmodel::getobjectivevalue
 		/**
 		Get the objective value of the solved matrix.
 		*/
-		double getObjValue() const;
+		double getobjectivevalue() const;
 		// DocString: FMTlpmodel::resolve
 		/**
 		By default call solverinterface->resolve() when some changes are done to the model.

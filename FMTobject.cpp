@@ -25,6 +25,7 @@ SOFTWARE.
 #include "FMTobject.h"
 #include "FMTdefaultlogger.h"
 #include "FMTdebuglogger.h"
+#include "FMTquietlogger.h"
 #include "FMTquietexceptionhandler.h"
 #include "FMTdefaultexceptionhandler.h"
 #include "FMTdebugexceptionhandler.h"
@@ -89,7 +90,7 @@ namespace Core
 
 
 	FMTobject::FMTobject() : _exhandler(std::make_shared<Exception::FMTdefaultexceptionhandler>()),
-		_logger(std::make_shared<Logging::FMTdefaultlogger>()), _section(FMTwssect::Empty)
+		_logger(std::make_shared<Logging::FMTdefaultlogger>()), _section(FMTsection::Empty)
 	{
 		this->checksignals();
 			setCPLhandler();
@@ -102,7 +103,7 @@ namespace Core
 	}
 
 	FMTobject::FMTobject(const std::shared_ptr<Exception::FMTexceptionhandler> exhandler) :
-		_exhandler(exhandler), _logger(std::make_shared<Logging::FMTdefaultlogger>()), _section(FMTwssect::Empty)
+		_exhandler(exhandler), _logger(std::make_shared<Logging::FMTdefaultlogger>()), _section(FMTsection::Empty)
 	{
 		_exhandler->passinlogger(_logger);
 		setCPLhandler();
@@ -151,7 +152,7 @@ namespace Core
 		_logger = rhs._logger;
 		}
 
-	void FMTobject::setsection(const FMTwssect& section) const
+	void FMTobject::setsection(const FMTsection& section) const
 		{
 		_section = section;
 		this->checksignals();
@@ -161,6 +162,14 @@ namespace Core
 		{
 		this->checksignals();
 		_logger = std::make_shared<Logging::FMTdefaultlogger>();
+		_exhandler->passinlogger(_logger);
+		setCPLhandler();
+		}
+
+	void FMTobject::setquietlogger()
+		{
+		this->checksignals();
+		_logger = std::make_shared<Logging::FMTquietlogger>();
 		_exhandler->passinlogger(_logger);
 		setCPLhandler();
 		}
@@ -210,7 +219,7 @@ namespace Core
 		bool returnvalue = true;
 		if (themes.size() > values.size())
 		{
-			_exhandler->raise(Exception::FMTexc::WSinvalid_maskrange, _section, mask + otherinformation, __LINE__, __FILE__);
+			_exhandler->raise(Exception::FMTexc::FMTinvalid_maskrange, _section, mask + otherinformation, __LINE__, __FILE__);
 			returnvalue = false;
 		}
 		else {
@@ -221,7 +230,7 @@ namespace Core
 				if (!theme.isvalid(values[id]))
 				{
 					const std::string message = values[id] + " at theme " + std::to_string(theme.getid() + 1) + otherinformation;
-					_exhandler->raise(Exception::FMTexc::WSundefined_attribute, _section, message, __LINE__, __FILE__);
+					_exhandler->raise(Exception::FMTexc::FMTundefined_attribute, _section, message, __LINE__, __FILE__);
 					returnvalue = false;
 				}
 				mask += values[id] + " ";
@@ -233,10 +242,26 @@ namespace Core
 	}
 
 	bool FMTobject::validate(const std::vector<Core::FMTtheme>& themes, std::string& mask,std::string otherinformation) const
-	{
+		{
 		std::vector<std::string>values;
 		boost::split(values, mask, boost::is_any_of(" \t"), boost::token_compress_on);
 		return checkmask(themes, values, mask, otherinformation);
-	}
+		}
+
+
+	void FMTobject::disablenestedexceptions()
+		{
+		this->checksignals();
+		this->_exhandler->disablenestedexceptions();
+		setCPLhandler();
+		}
+
+	void FMTobject::enablenestedexceptions()
+		{
+		this->checksignals();
+		this->_exhandler->enablenestedexceptions();
+		setCPLhandler();
+		}
+
 
 }

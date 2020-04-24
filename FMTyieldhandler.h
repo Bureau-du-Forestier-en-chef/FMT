@@ -50,7 +50,7 @@ class FMTyieldhandler
 		ar & BOOST_SERIALIZATION_NVP(bases);
 		ar & BOOST_SERIALIZATION_NVP(elements);
 	}
-        FMTyldwstype yldtype;
+        FMTyldtype yldtype;
         FMTmask mask;
 		std::vector<int>bases;
 
@@ -58,7 +58,7 @@ class FMTyieldhandler
 		std::map<std::string,FMTdata>elements;
         operator std::string() const;
 		FMTyieldhandler();
-        FMTyieldhandler(FMTyldwstype ltype,const FMTmask& lmask);
+        FMTyieldhandler(FMTyldtype ltype,const FMTmask& lmask);
         FMTyieldhandler(const FMTyieldhandler& rhs);
         FMTyieldhandler& operator = (const FMTyieldhandler& rhs);
 		std::vector<std::string> compare(const std::vector<std::string>& keys) const;
@@ -83,7 +83,7 @@ class FMTyieldhandler
         double getpeak(const std::string& yld, const int& targetage) const;
         int getage(const std::string yld, const double& value,const int& starting_age) const;
 		std::map<std::string,FMTdata>getdataelements() const;
-        FMTyldwstype gettype() const;
+        FMTyldtype gettype() const;
 		FMTmask getmask() const;
 		FMTyieldhandler presolve(const FMTmask& presolvedmask, const std::vector<FMTtheme>& newthemes) const;
     };

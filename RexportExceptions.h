@@ -42,7 +42,7 @@ RCPP_EXPOSED_WRAP(Exception::FMTdebugexceptionhandler);
 RCPP_EXPOSED_AS(Exception::FMTdebugexceptionhandler);
 RCPP_EXPOSED_ENUM_NODECL(Exception::FMTexc);
 RCPP_EXPOSED_ENUM_NODECL(Exception::FMTlev);
-RCPP_EXPOSED_ENUM_NODECL(Core::FMTwssect);
+RCPP_EXPOSED_ENUM_NODECL(Core::FMTsection);
 RCPP_EXPOSED_WRAP(Exception::FMTexception);
 RCPP_EXPOSED_AS(Exception::FMTexception);
 RCPP_EXPOSED_WRAP(Exception::FMTerror);

@@ -29,25 +29,29 @@ namespace Exception
 
 	FMTquietexceptionhandler::FMTquietexceptionhandler() :FMTexceptionhandler() {}
 
-	FMTlev FMTquietexceptionhandler::raise(FMTexc lexception, Core::FMTwssect lsection, std::string text,
+	FMTlev FMTquietexceptionhandler::raise(FMTexc lexception, Core::FMTsection lsection, std::string text,
 		const int& line, const std::string& file)
 	{
 		FMTexception excp;
-		if (lsection == Core::FMTwssect::Empty)
+		if (lsection == Core::FMTsection::Empty)
 		{
 			excp = FMTexception(lexception, updatestatus(lexception, text));
 		}
 		else {
 			excp = FMTexception(lexception, lsection, updatestatus(lexception, text));
 		}
-		if (_level == FMTlev::FMT_Warning)
-		{
-			
-		}
-		else if (_level == FMTlev::FMT_logic || _level == FMTlev::FMT_range) {
-			//throw FMTerror(excp);
-			std::throw_with_nested(FMTerror(excp));
-		}
+		if (!needtorethrow())
+			{
+			if (_level == FMTlev::FMT_Warning)
+			{
+
+			}
+			else if (_level == FMTlev::FMT_logic || _level == FMTlev::FMT_range) 
+				{
+				std::throw_with_nested(FMTerror(excp));
+				}
+			}
+		
 		return _level;
 	}
 	#ifdef FMTWITHGDAL

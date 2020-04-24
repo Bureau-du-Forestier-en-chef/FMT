@@ -75,8 +75,8 @@ namespace Models
 				newspatials.push_back(spaction);
 				newbaseactions.push_back(spaction);
 			}else{
-				_exhandler->raise(Exception::FMTexc::WSinvalid_transition,
-					Core::FMTwssect::Transition, "Missing transition case for action : " + spaction.getname(),__LINE__, __FILE__);
+				_exhandler->raise(Exception::FMTexc::FMTinvalid_transition,
+					Core::FMTsection::Transition, "Missing transition case for action : " + spaction.getname(),__LINE__, __FILE__);
 				return false;
 				}
 			}

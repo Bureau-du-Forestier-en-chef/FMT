@@ -53,7 +53,7 @@ class FMTtransitionparser : public FMTparser
         FMTtransitionparser(const FMTtransitionparser& rhs);
         FMTtransitionparser& operator = (const FMTtransitionparser& rhs);
 		Core::FMTmask getsource(std::string& line, Core::FMTspec& spec,const std::vector<Core::FMTtheme>& themes,
-							Core::FMTwssect section,const Core::FMTconstants& constant,
+							Core::FMTsection section,const Core::FMTconstants& constant,
                           const Core::FMTyields& ylds);
         std::vector<Core::FMTtransitionmask> getmasktran(const std::string& line,const std::vector<Core::FMTtheme>& themes,
                                         const Core::FMTconstants& constants, const Core::FMTyields& ylds,

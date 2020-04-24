@@ -220,7 +220,7 @@ namespace Models
 					}
 					else {
 						_exhandler->raise(Exception::FMTexc::FMTmissingdevelopement,
-							Core::FMTwssect::Empty, std::string(devit.first) + " at period " + std::to_string(period) + " operated by " + actionit.first.getname(),
+							Core::FMTsection::Empty, std::string(devit.first) + " at period " + std::to_string(period) + " operated by " + actionit.first.getname(),
 							__LINE__, __FILE__);
 						return false;
 					}
@@ -255,6 +255,13 @@ namespace Models
 						//rest -= *(actual_solution + varit->second);
 						rest -= new_solution[varit->second];
 					}
+					if (rest < 0)
+						{
+						_exhandler->raise(Exception::FMTexc::FMTinvalid_number,
+							Core::FMTsection::Empty,"negative growth solution for "+
+							std::string(graph.getdevelopment(devit->second)),
+							__LINE__, __FILE__);
+						}
 					new_solution[growth] = rest;
 
 				}
@@ -281,6 +288,13 @@ namespace Models
 					}
 					rest -= new_solution[varit->second];
 				}
+				if (rest < 0)
+					{
+					_exhandler->raise(Exception::FMTexc::FMTinvalid_number,
+						Core::FMTsection::Empty, "negative growth solution for " +
+						std::string(graph.getdevelopment(first)),
+						__LINE__, __FILE__);
+					}
 				new_solution[growth] = rest;
 				descriptors.pop();
 			}
@@ -430,14 +444,23 @@ namespace Models
 
 	std::map<std::string, double> FMTlpmodel::getoutput(const Core::FMToutput& output,int period, Graph::FMToutputlevel level)
 	{
-		const double* solution = solverinterface->getColSolution();
-		return graph.getoutput(*this, output, period, solution,level);
+		try {
+			const double* solution = solverinterface->getColSolution();
+			return graph.getoutput(*this, output, period, solution, level);
+		}catch (const std::exception& exception)
+			{
+			_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
+			Core::FMTsection::Empty, "getting outputs", __LINE__, __FILE__);
+			_exhandler->throw_nested(exception);
+			}
+		return std::map<std::string, double>();
 	}
 
 	
 
 	Graph::FMTgraphstats FMTlpmodel::buildperiod(Core::FMTschedule schedule, bool forcepartialbuild)
 	{
+		try {
 			std::queue<Graph::FMTvertex_descriptor> actives;
 			Graph::FMTgraphstats buildstats;
 			if (graph.empty())
@@ -462,6 +485,12 @@ namespace Models
 			const int location = static_cast<int>(graph.size() - 2);
 			const Graph::FMTgraphstats newstats = this->updatematrix(graph.getperiodverticies(location), buildstats);
 			graph.setstats(newstats);
+		}catch (const std::exception& exception)
+			{
+			_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
+				Core::FMTsection::Empty, "Building period", __LINE__, __FILE__);
+			_exhandler->throw_nested(exception);
+			}
 		return graph.getstats();
 	}
 
@@ -485,18 +514,24 @@ bool FMTlpmodel::locatenodes(const std::vector<Core::FMToutputnode>& nodes, int 
 	std::map<int, double>& variables, double multiplier) const
 	{
 	bool cashhit = false;
-	for (const Core::FMToutputnode& node : nodes)
-		{
-		const std::map<int, double>node_map = graph.locatenode(*this, node, period);
-		for (std::map<int, double>::const_iterator node_it = node_map.begin(); node_it != node_map.end(); node_it++)
+	try {
+		for (const Core::FMToutputnode& node : nodes)
 			{
-			if (variables.find(node_it->first) == variables.end())
+			const std::map<int, double>node_map = graph.locatenode(*this, node, period);
+			for (std::map<int, double>::const_iterator node_it = node_map.begin(); node_it != node_map.end(); node_it++)
 				{
-				variables[node_it->first] = 0;
+				if (variables.find(node_it->first) == variables.end())
+					{
+					variables[node_it->first] = 0;
+					}
+				variables[node_it->first] += node_it->second*multiplier;
 				}
-			variables[node_it->first] += node_it->second*multiplier;
 			}
-		}
+		}catch (...)
+			{
+			_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
+				Core::FMTsection::Empty, "locating output nodes", __LINE__, __FILE__);
+			}
 	return cashhit;
 	}
 
@@ -1007,7 +1042,7 @@ bool FMTlpmodel::locatenodes(const std::vector<Core::FMToutputnode>& nodes, int 
 			this->updatematrixngraph(); 
 		}else {
 			const int badperiod = std::max(firstperiod,1);
-			_exhandler->raise(Exception::FMTexc::FMTunboundedperiod, Core::FMTwssect::Empty, std::to_string(badperiod), __LINE__, __FILE__);
+			_exhandler->raise(Exception::FMTexc::FMTunboundedperiod, Core::FMTsection::Empty, std::to_string(badperiod), __LINE__, __FILE__);
 			}
 		 return graph.getstats();
 		 }
@@ -1015,20 +1050,26 @@ bool FMTlpmodel::locatenodes(const std::vector<Core::FMToutputnode>& nodes, int 
      void FMTlpmodel::locatelevels(const std::vector<Core::FMToutputnode>& nodes,int period,
 		 std::map<int,double>& variables,const Core::FMTconstraint& constraint)
             {
-			std::vector<std::string>level_names = constraint.getvariablelevels();
-            if (!level_names.empty())
-                {
-                for (const Core::FMToutputnode& node : nodes)
-                    {
-                    if (node.source.isvariablelevel())
-                        {
-						std::string level_name = level_names.front();
-                        level_names.erase(level_names.begin());
-                        const int level_index = getsetlevel(constraint,level_name,period);
-						variables[level_index] = node.constant;
-                        }
-                    }
-                }
+			try {
+				std::vector<std::string>level_names = constraint.getvariablelevels();
+				if (!level_names.empty())
+					{
+					for (const Core::FMToutputnode& node : nodes)
+						{
+						if (node.source.isvariablelevel())
+							{
+							std::string level_name = level_names.front();
+							level_names.erase(level_names.begin());
+							const int level_index = getsetlevel(constraint,level_name,period);
+							variables[level_index] = node.constant;
+							}
+						}
+					}
+			}catch (...)
+				{
+				_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
+					Core::FMTsection::Empty, "locating levels from "+std::string(constraint), __LINE__, __FILE__);
+				}
             }
 
 
@@ -1143,82 +1184,97 @@ bool FMTlpmodel::locatenodes(const std::vector<Core::FMToutputnode>& nodes, int 
 
 	Graph::FMTgraphstats FMTlpmodel::setobjective(const Core::FMTconstraint& objective)
 		{
-		int first_period = 0;
-		int last_period = 0;
-		graph.constraintlenght(objective,first_period, last_period);
-		double averagefactor = 1;
-		if (last_period != first_period)
+		try {
+			int first_period = 0;
+			int last_period = 0;
+			graph.constraintlenght(objective, first_period, last_period);
+			double averagefactor = 1;
+			if (last_period != first_period)
 			{
-			averagefactor = (1 / (last_period - first_period));
+				averagefactor = (1 / (last_period - first_period));
 			}
-		const std::vector<Core::FMToutputnode>all_nodes = objective.getnodes(averagefactor);
-		std::map<int, double>all_variables;
-		if (!objective.extravariables())
+			const std::vector<Core::FMToutputnode>all_nodes = objective.getnodes(averagefactor);
+			std::map<int, double>all_variables;
+			if (!objective.extravariables())
 			{
-			for (int period = first_period; period <= last_period; ++period)
+				for (int period = first_period; period <= last_period; ++period)
 				{
-				locatenodes(all_nodes, period, all_variables);
-				locatelevels(all_nodes, period, all_variables,objective);
+					locatenodes(all_nodes, period, all_variables);
+					locatelevels(all_nodes, period, all_variables, objective);
 				}
-		}else {
-			double lowerbound = 0;
-			double upperbound = 0;
-			if (objective.getconstrainttype() == Core::FMTconstrainttype::FMTMAXMINobjective)
+			}
+			else {
+				double lowerbound = 0;
+				double upperbound = 0;
+				if (objective.getconstrainttype() == Core::FMTconstrainttype::FMTMAXMINobjective)
 				{
-				upperbound = std::numeric_limits<double>::max();
-			}else {
-				lowerbound = std::numeric_limits<double>::lowest();
+					upperbound = std::numeric_limits<double>::max();
 				}
-			const int variable_id = getsetmatrixelement(objective,FMTmatrixelement::objectivevariable,all_variables);
-			bool gotvariables = false;
-			for (int period = first_period; period <= last_period; ++period)
+				else {
+					lowerbound = std::numeric_limits<double>::lowest();
+				}
+				const int variable_id = getsetmatrixelement(objective, FMTmatrixelement::objectivevariable, all_variables);
+				bool gotvariables = false;
+				for (int period = first_period; period <= last_period; ++period)
 				{
-				std::map<int, double>period_variables;
-				locatenodes(all_nodes, period, period_variables);
-				locatelevels(all_nodes, period, all_variables,objective);
-				if (!period_variables.empty())
+					std::map<int, double>period_variables;
+					locatenodes(all_nodes, period, period_variables);
+					locatelevels(all_nodes, period, all_variables, objective);
+					if (!period_variables.empty())
 					{
-					period_variables[variable_id] = -1;
-					const int constraint_id = getsetmatrixelement(objective, FMTmatrixelement::constraint, period_variables,
-										 period, lowerbound, upperbound);
-					gotvariables = true;
+						period_variables[variable_id] = -1;
+						const int constraint_id = getsetmatrixelement(objective, FMTmatrixelement::constraint, period_variables,
+							period, lowerbound, upperbound);
+						gotvariables = true;
 					}
 				}
-			if (gotvariables)
+				if (gotvariables)
 				{
-				all_variables[variable_id] = 1.0;
+					all_variables[variable_id] = 1.0;
 				}
 			}
-        if (objective.isgoal()) //process goal system...other constraints add to be added first!!
-            {
-            double penalty_sense = 1;
-			const std::vector<std::string>targets = objective.getpenalties(penalty_sense);
-            if (!getgoals(targets,all_variables,penalty_sense))
-                {
-                //No goals set...
-                }
-            }
-			std::vector<double>finalobj(static_cast<size_t>(solverinterface->getNumCols()),0.0);
-			for (int colid = 0; colid < solverinterface->getNumCols();++colid)
+			if (objective.isgoal()) //process goal system...other constraints add to be added first!!
+			{
+				double penalty_sense = 1;
+				const std::vector<std::string>targets = objective.getpenalties(penalty_sense);
+				if (!getgoals(targets, all_variables, penalty_sense))
 				{
+					//No goals set...
+				}
+			}
+			std::vector<double>finalobj(static_cast<size_t>(solverinterface->getNumCols()), 0.0);
+			for (int colid = 0; colid < solverinterface->getNumCols(); ++colid)
+			{
 				std::map<int, double>::const_iterator cit = all_variables.find(colid);
 				if (cit != all_variables.end())
-					{
+				{
 					finalobj[cit->first] = cit->second;
-					}
 				}
-			solverinterface->setObjective(&finalobj[0]);
-		if (all_variables.empty())
-			{
-			std::string cname = std::string(objective);
-			cname.erase(std::remove(cname.begin(), cname.end(), '\n'), cname.end());
-			_exhandler->raise(Exception::FMTexc::FMTnonaddedconstraint, Core::FMTwssect::Empty, std::string(cname), __LINE__, __FILE__);
 			}
-		solverinterface->setObjSense(objective.sense());
+			try {
+				solverinterface->setObjective(&finalobj[0]);
+			}catch (...)
+				{
+				_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, Core::FMTsection::Empty,
+					"solverinterface setobjective failed", __LINE__, __FILE__);
+				}
+			if (all_variables.empty())
+				{
+				std::string cname = std::string(objective);
+				cname.erase(std::remove(cname.begin(), cname.end(), '\n'), cname.end());
+				_exhandler->raise(Exception::FMTexc::FMTnonaddedconstraint, Core::FMTsection::Empty, std::string(cname), __LINE__, __FILE__);
+				}
+			solverinterface->setObjSense(objective.sense());
+			}catch (const std::exception& exception)
+				{
+				_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
+					Core::FMTsection::Empty, "locating output nodes", __LINE__, __FILE__);
+				_exhandler->throw_nested(exception);
+				}
 		return graph.getstats();
 		}
 
-	double FMTlpmodel::getObjValue() const
+	double FMTlpmodel::getobjectivevalue() const
 		{
 		return solverinterface->getObjValue();
 		}
@@ -1241,31 +1297,37 @@ bool FMTlpmodel::locatenodes(const std::vector<Core::FMToutputnode>& nodes, int 
      bool FMTlpmodel::getgoals(const std::vector<std::string>& goalsnames, std::map<int, double>& index,const double& sense)const
         {
         bool found_something = false;
-        for (const Core::FMTconstraint& constraint : constraints)
-            {
-            if (!constraint.isobjective() && constraint.isgoal())
-                {
-				std::string name;
-                double value = 1;
-                constraint.getgoal(name,value);
-                value *= sense;
-                if (goalsnames.at(0)== "ALL" || (std::find(goalsnames.begin(),goalsnames.end(),name)!=goalsnames.end()))
-                    {
-                    int first_period = 0;
-                    int last_period = 0;
-                    graph.constraintlenght(constraint,first_period, last_period);
-                     for (int period = first_period; period <= last_period;++period)
-                        {
-						const std::vector<std::vector<int>>constraint_elements = getmatrixelement(constraint,period);
-                        if (!constraint_elements.at(FMTmatrixelement::goalvariable).empty())
-                            {
-                            found_something = true;
-							index[constraint_elements.at(FMTmatrixelement::goalvariable).at(0)] = value;
-                            }
-                        }
-                    }
-                }
-            }
+		try {
+			for (const Core::FMTconstraint& constraint : constraints)
+			{
+				if (!constraint.isobjective() && constraint.isgoal())
+				{
+					std::string name;
+					double value = 1;
+					constraint.getgoal(name, value);
+					value *= sense;
+					if (goalsnames.at(0) == "ALL" || (std::find(goalsnames.begin(), goalsnames.end(), name) != goalsnames.end()))
+					{
+						int first_period = 0;
+						int last_period = 0;
+						graph.constraintlenght(constraint, first_period, last_period);
+						for (int period = first_period; period <= last_period; ++period)
+						{
+							const std::vector<std::vector<int>>constraint_elements = getmatrixelement(constraint, period);
+							if (!constraint_elements.at(FMTmatrixelement::goalvariable).empty())
+							{
+								found_something = true;
+								index[constraint_elements.at(FMTmatrixelement::goalvariable).at(0)] = value;
+							}
+						}
+					}
+				}
+			}
+		}catch (...)
+			{
+			_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, Core::FMTsection::Empty,
+				"Failed getting goals", __LINE__, __FILE__);
+			}
         return found_something;
         }
 
@@ -1292,7 +1354,7 @@ bool FMTlpmodel::locatenodes(const std::vector<Core::FMToutputnode>& nodes, int 
 			{
 			std::string cname = std::string(constraint);
 			cname.erase(std::remove(cname.begin(), cname.end(), '\n'), cname.end());
-			_exhandler->raise(Exception::FMTexc::FMTnonaddedconstraint, Core::FMTwssect::Empty, std::string(cname), __LINE__, __FILE__);
+			_exhandler->raise(Exception::FMTexc::FMTnonaddedconstraint, Core::FMTsection::Empty, std::string(cname), __LINE__, __FILE__);
 			return -1;
 			}
 			int element_id = 0;
@@ -1475,7 +1537,7 @@ bool FMTlpmodel::locatenodes(const std::vector<Core::FMToutputnode>& nodes, int 
 					if (msksolver->isLicenseError())
 						{
 						_exhandler->raise(Exception::FMTexc::FMTmissinglicense,
-							Core::FMTwssect::Empty, " Missing Mosek License ",
+							Core::FMTsection::Empty, " Missing Mosek License ",
 							__LINE__, __FILE__);
 						}
 					}

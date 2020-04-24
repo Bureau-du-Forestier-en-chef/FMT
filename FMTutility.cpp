@@ -27,20 +27,21 @@ SOFTWARE.
 namespace Core
 {
 
-	const char* FMTwssect_str(FMTwssect section)
+	const char* FMTsection_str(FMTsection section)
 	{
 		switch (section)
 		{
-		case FMTwssect::Control:   return "Control";
-		case FMTwssect::Landscape: return "Landscape";
-		case FMTwssect::Area: return "Area";
-		case FMTwssect::Action: return "Action";
-		case FMTwssect::Transition: return "Transition";
-		case FMTwssect::Yield: return "Yield";
-		case FMTwssect::Outputs: return "Outputs";
-		case FMTwssect::Optimize: return "Optimize";
-		case FMTwssect::Constants: return "Constants";
-		default:      return "[Unknown FMTwssect]";
+		case FMTsection::Control:   return "Control";
+		case FMTsection::Landscape: return "Landscape";
+		case FMTsection::Area: return "Area";
+		case FMTsection::Action: return "Action";
+		case FMTsection::Transition: return "Transition";
+		case FMTsection::Yield: return "Yield";
+		case FMTsection::Schedule: return "Schedule";
+		case FMTsection::Outputs: return "Outputs";
+		case FMTsection::Optimize: return "Optimize";
+		case FMTsection::Constants: return "Constants";
+		default:      return "[Unknown FMTsection]";
 		}
 	}
 }

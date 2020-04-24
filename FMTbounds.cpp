@@ -29,12 +29,12 @@ namespace Core{
 FMTyldbounds::FMTyldbounds():FMTbounds<double>(),yield(){}
 
 
-	FMTyldbounds::FMTyldbounds(const FMTwssect lsection, const std::string& lyield, const double& lupper, const double& llower) : FMTbounds<double>(lsection, lupper, llower), yield(lyield)
+	FMTyldbounds::FMTyldbounds(const FMTsection lsection, const std::string& lyield, const double& lupper, const double& llower) : FMTbounds<double>(lsection, lupper, llower), yield(lyield)
 		{
 
 		}
 
-    FMTyldbounds::FMTyldbounds(const FMTwssect lsection,const FMTwskwor key,const std::string& lyield, const double& lupper, const double& llower):FMTbounds<double>(lsection,key,lupper,llower),yield(lyield)
+    FMTyldbounds::FMTyldbounds(const FMTsection lsection,const FMTkwor key,const std::string& lyield, const double& lupper, const double& llower):FMTbounds<double>(lsection,key,lupper,llower),yield(lyield)
         {
 
         }
@@ -71,11 +71,11 @@ FMTyldbounds::FMTyldbounds():FMTbounds<double>(),yield(){}
 
 
     FMTagebounds::FMTagebounds():FMTbounds<int>(){}
-    FMTagebounds::FMTagebounds(const FMTwssect lsection,const int& lupper, const int& llower):FMTbounds<int>(lsection,lupper,llower)
+    FMTagebounds::FMTagebounds(const FMTsection lsection,const int& lupper, const int& llower):FMTbounds<int>(lsection,lupper,llower)
         {
 
         }
-   FMTagebounds::FMTagebounds(const FMTwssect lsection, const FMTwskwor key, const int& lupper, const int& llower):FMTbounds<int>(lsection,key,lupper,llower)
+   FMTagebounds::FMTagebounds(const FMTsection lsection, const FMTkwor key, const int& lupper, const int& llower):FMTbounds<int>(lsection,key,lupper,llower)
         {
 
         }
@@ -105,7 +105,7 @@ FMTyldbounds::FMTyldbounds():FMTbounds<double>(),yield(){}
 		}
 
     FMTperbounds::FMTperbounds():FMTbounds<int>(){}
-    FMTperbounds::FMTperbounds(const FMTwssect lsection, const int& lupper, const int& llower):FMTbounds<int>(lsection,lupper,llower)
+    FMTperbounds::FMTperbounds(const FMTsection lsection, const int& lupper, const int& llower):FMTbounds<int>(lsection,lupper,llower)
         {
 
         }
@@ -136,7 +136,7 @@ FMTyldbounds::FMTyldbounds():FMTbounds<double>(),yield(){}
 		}
 
 FMTlockbounds::FMTlockbounds():FMTbounds<int>(){}
-FMTlockbounds::FMTlockbounds(const FMTwssect lsection,const FMTwskwor key,const int& lupper, const int& llower):FMTbounds<int>(lsection,key,lupper,llower)
+FMTlockbounds::FMTlockbounds(const FMTsection lsection,const FMTkwor key,const int& lupper, const int& llower):FMTbounds<int>(lsection,key,lupper,llower)
     {
 
     }

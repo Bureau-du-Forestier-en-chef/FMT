@@ -85,37 +85,72 @@ FMTexceptionhandler& FMTexceptionhandler::operator = (const FMTexceptionhandler&
 
 void FMTexceptionhandler::throw_nested(const  std::exception& texception, int level)
 {
-	*_logger << std::string(level, ' ') << texception.what() << "\n";
-	try {
-		std::rethrow_if_nested(texception);
+	if (usenestedexceptions)
+		{
+		*_logger << std::string(level, ' ') << texception.what() << "\n";
+		try {
+			std::rethrow_if_nested(texception);
+		}
+		catch (const  std::exception& texception)
+		{
+			throw_nested(texception, level + 1);
+		}
+		catch (...) {}
+	}else {
+		throw;
 	}
-	catch (const  std::exception& texception)
-	{
-		throw_nested(texception, level + 1);
-	}
-	catch (...) {}
+	
 }
 
-FMTlev FMTexceptionhandler::raise(FMTexc lexception, Core::FMTwssect lsection, std::string text,
+void FMTexceptionhandler::enablenestedexceptions()
+	{
+	usenestedexceptions = true;
+	}
+
+void FMTexceptionhandler::disablenestedexceptions()
+	{
+	usenestedexceptions = false;
+	}
+
+bool FMTexceptionhandler::needtorethrow() const
+	{
+	if (!usenestedexceptions && _exception == FMTexc::FMTfunctionfailed)
+		{
+		const std::exception_ptr expointer = std::current_exception();
+		if (expointer)
+			{
+			std::rethrow_exception(expointer);
+			return true;
+			}
+		}
+	return false;
+	}
+
+
+FMTlev FMTexceptionhandler::raise(FMTexc lexception, Core::FMTsection lsection, std::string text,
 	const int& line, const std::string& file)
 {
+	
+
 	FMTexception excp;
-	if (lsection == Core::FMTwssect::Empty)
+	if (lsection == Core::FMTsection::Empty)
 	{
 		excp = FMTexception(lexception, updatestatus(lexception, text));
 	}
 	else {
 		excp = FMTexception(lexception, lsection, updatestatus(lexception, text));
 	}
-	if (_level == FMTlev::FMT_Warning)
-	{
-		//throw FMTwarning(excp);
-		std::throw_with_nested(FMTwarning(excp));
-	}
-	else if (_level == FMTlev::FMT_logic || _level == FMTlev::FMT_range) {
-		//throw FMTerror(excp);
-		std::throw_with_nested(FMTerror(excp));
-	}
+	if (!needtorethrow())
+		{
+		if (_level == FMTlev::FMT_Warning)
+			{
+			std::throw_with_nested(FMTwarning(excp));
+			}
+		else if (_level == FMTlev::FMT_logic || _level == FMTlev::FMT_range)
+			{
+			std::throw_with_nested(FMTerror(excp));
+			}
+		}
 	return _level;
 }
 
@@ -124,7 +159,8 @@ FMTexceptionhandler::FMTexceptionhandler(const FMTexceptionhandler& rhs) :
 	_exception(rhs._exception),
 	_errorcount(rhs._errorcount),
 	_warningcount(rhs._warningcount),
-	_logger(rhs._logger)
+	_logger(rhs._logger),
+	usenestedexceptions(rhs.usenestedexceptions)
 	{
 
 	}
@@ -133,8 +169,8 @@ FMTexceptionhandler::FMTexceptionhandler() : _level(FMTlev::FMT_None),
 		_exception(FMTexc::None),
 		_errorcount(0),
 		_warningcount(0),
-		_logger()
-
+		_logger(),
+		usenestedexceptions(true)
 		{
 
 		}
@@ -145,37 +181,37 @@ std::string FMTexceptionhandler::updatestatus(const FMTexc lexception, const std
 	std::string msg;
 	switch (_exception)
 	{
-	case FMTexc::WSconstants_replacement:
+	case FMTexc::FMTconstants_replacement:
 		msg += "Replaced Constants: " + message;
 		_level = FMTlev::FMT_Warning;
 		++_warningcount;
 		break;
-	case FMTexc::WSfutur_types:
+	case FMTexc::FMTfutur_types:
 		msg += "Detected futur types: " + message;
 		_level = FMTlev::FMT_Warning;
 		++_warningcount;
 		break;
-	case FMTexc::WScomma_replacement:
+	case FMTexc::FMTcomma_replacement:
 		msg += "Replaced comma: " + message;
 		_level = FMTlev::FMT_Warning;
 		++_warningcount;
 		break;
-	case FMTexc::WSinvalid_theme:
+	case FMTexc::FMTinvalid_theme:
 		msg += "Invalid Themes: " + message;
 		_level = FMTlev::FMT_logic;
 		++_errorcount;
 		break;
-	case FMTexc::WSinvalid_aggregate:
+	case FMTexc::FMTinvalid_aggregate:
 		msg += "Invalid Aggregates: " + message;
 		_level = FMTlev::FMT_logic;
 		++_errorcount;
 		break;
-	case FMTexc::WSinvalid_maskrange:
+	case FMTexc::FMTinvalid_maskrange:
 		msg += "Invalid Mask: " + message;
 		_level = FMTlev::FMT_range;
 		++_errorcount;
 		break;
-	case FMTexc::WSinvalid_number:
+	case FMTexc::FMTinvalid_number:
 		msg += "Invalid number: " + message;
 		_level = FMTlev::FMT_logic;
 		++_errorcount;
@@ -185,57 +221,57 @@ std::string FMTexceptionhandler::updatestatus(const FMTexc lexception, const std
 		_level = FMTlev::FMT_logic;
 		++_errorcount;
 		break;
-	case FMTexc::WStheme_redefinition:
+	case FMTexc::FMTtheme_redefinition:
 		msg += "Theme redefinition: " + message;
 		_level = FMTlev::FMT_Warning;
 		++_warningcount;
 		break;
-	case FMTexc::WSaggregate_redefinition:
+	case FMTexc::FMTaggregate_redefinition:
 		msg += "Aggregate redefinition: " + message;
 		_level = FMTlev::FMT_Warning;
 		++_warningcount;
 		break;
-	case FMTexc::WSempty_theme:
+	case FMTexc::FMTempty_theme:
 		msg += "Empty Theme: " + message;
 		_level = FMTlev::FMT_range;
 		++_errorcount;
 		break;
-	case FMTexc::WSempty_aggregate:
+	case FMTexc::FMTempty_aggregate:
 		msg += "Empty Aggregate: " + message;
 		_level = FMTlev::FMT_Warning;
 		++_warningcount;
 		break;
-	case FMTexc::WSundefined_aggregate_value:
+	case FMTexc::FMTundefined_aggregate_value:
 		msg += "Undefined aggregate value: " + message;
 		_level = FMTlev::FMT_Warning;
 		++_warningcount;
 		break;
-	case FMTexc::WSundefined_attribute:
+	case FMTexc::FMTundefined_attribute:
 		msg += "Undefined attribute value: " + message;
 		_level = FMTlev::FMT_logic;
 		++_errorcount;
 		break;
-	case FMTexc::WSempty_action:
+	case FMTexc::FMTempty_action:
 		msg += "Empty Action: " + message;
 		_level = FMTlev::FMT_Warning;
 		++_warningcount;
 		break;
-	case FMTexc::WSwrong_partial:
+	case FMTexc::FMTwrong_partial:
 		msg += "Wrong *Partial usage: " + message;
 		_level = FMTlev::FMT_logic;
 		++_errorcount;
 		break;
-	case FMTexc::WSinvalid_yield:
+	case FMTexc::FMTinvalid_yield:
 		msg += "Invalid Yield: " + message;
 		_level = FMTlev::FMT_logic;
 		++_errorcount;
 		break;
-	case FMTexc::WSpreexisting_yield:
+	case FMTexc::FMTpreexisting_yield:
 		msg += "Pre-existing Yield: " + message;
 		_level = FMTlev::FMT_Warning;
 		++_warningcount;
 		break;
-	case FMTexc::WSunsupported_yield:
+	case FMTexc::FMTunsupported_yield:
 		msg += "Unsupported Yield: " + message;
 		_level = FMTlev::FMT_logic;
 		++_errorcount;
@@ -275,32 +311,32 @@ std::string FMTexceptionhandler::updatestatus(const FMTexc lexception, const std
 		_level = FMTlev::FMT_Warning;
 		++_warningcount;
 		break;
-	case FMTexc::WSunsupported_transition:
+	case FMTexc::FMTunsupported_transition:
 		msg += "Unsupported Transition: " + message;
 		_level = FMTlev::FMT_Warning;
 		++_warningcount;
 		break;
-	case FMTexc::WSundefined_action:
+	case FMTexc::FMTundefined_action:
 		msg += "Undefined Action: " + message;
 		_level = FMTlev::FMT_logic;
 		++_errorcount;
 		break;
-	case FMTexc::WSempty_transition:
+	case FMTexc::FMTempty_transition:
 		msg += "Empty Transition: " + message;
 		_level = FMTlev::FMT_Warning;
 		++_warningcount;
 		break;
-	case FMTexc::WSundefined_output:
+	case FMTexc::FMTundefined_output:
 		msg += "Undefined Output: " + message;
 		_level = FMTlev::FMT_logic;
 		++_errorcount;
 		break;
-	case FMTexc::WSunsupported_output:
+	case FMTexc::FMTunsupported_output:
 		msg += "Unsupported Output: " + message;
 		_level = FMTlev::FMT_logic;
 		++_errorcount;
 		break;
-	case FMTexc::WSinvalid_transition_case:
+	case FMTexc::FMTinvalid_transition_case:
 		msg += "Invalid transition case: " + message;
 		_level = FMTlev::FMT_logic;
 		++_errorcount;
@@ -315,22 +351,22 @@ std::string FMTexceptionhandler::updatestatus(const FMTexc lexception, const std
 		_level = FMTlev::FMT_logic;
 		++_errorcount;
 		break;
-	case FMTexc::WSleakingtransition:
+	case FMTexc::FMTleakingtransition:
 		msg += "Transition leaking area: " + message;
 		_level = FMTlev::FMT_logic;
 		++_errorcount;
 		break;
-	case FMTexc::WSundefineddeathaction:
+	case FMTexc::FMTundefineddeathaction:
 		msg += "Undefined _death action: " + message;
 		_level = FMTlev::FMT_Warning;
 		++_warningcount;
 		break;
-	case FMTexc::WSundefineddeathtransition:
+	case FMTexc::FMTundefineddeathtransition:
 		msg += "Undefined _death transition: " + message;
 		_level = FMTlev::FMT_Warning;
 		++_warningcount;
 		break;
-	case FMTexc::WSignore:
+	case FMTexc::FMTignore:
 		msg += "Ignoring: " + message;
 		_level = FMTlev::FMT_Warning;
 		++_warningcount;
@@ -340,12 +376,12 @@ std::string FMTexceptionhandler::updatestatus(const FMTexc lexception, const std
 		_level = FMTlev::FMT_logic;
 		++_errorcount;
 		break;
-	case FMTexc::WSattribute_redefinition:
+	case FMTexc::FMTattribute_redefinition:
 		msg += "Attribute redefinition: " + message;
 		_level = FMTlev::FMT_Warning;
 		++_warningcount;
 		break;
-	case FMTexc::WSundefined_constant:
+	case FMTexc::FMTundefined_constant:
 		msg += "Undefined constant: " + message;
 		_level = FMTlev::FMT_logic;
 		++_errorcount;
@@ -370,7 +406,7 @@ std::string FMTexceptionhandler::updatestatus(const FMTexc lexception, const std
 		_level = FMTlev::FMT_logic;
 		++_errorcount;
 		break;
-	case FMTexc::WSemptybound:
+	case FMTexc::FMTemptybound:
 		msg += "Invalid @ bounds: " + message;
 		_level = FMTlev::FMT_Warning;
 		++_warningcount;

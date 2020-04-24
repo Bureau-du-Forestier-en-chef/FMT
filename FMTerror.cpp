@@ -31,6 +31,6 @@ namespace Exception
 	FMTerror::FMTerror() : FMTexception() {}
 	FMTerror::FMTerror(const FMTexception& rhs) : FMTexception(rhs) {}
 	FMTerror::FMTerror(const FMTexc lexception, const std::string message) : FMTexception(lexception, message) {}
-	FMTerror::FMTerror(const FMTexc lexception, const Core::FMTwssect lsection, const std::string message) : FMTexception(lexception, lsection, message) {}
+	FMTerror::FMTerror(const FMTexc lexception, const Core::FMTsection lsection, const std::string message) : FMTexception(lexception, lsection, message) {}
 
 }

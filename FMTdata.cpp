@@ -28,7 +28,7 @@ SOFTWARE.
 
 namespace Core{
 
-FMTdata::FMTdata():ops(FMTyieldparserop::FMTwsnone),source(),stacking(), _cache(),_agebase(false),data(){}
+FMTdata::FMTdata():ops(FMTyieldparserop::FMTnone),source(),stacking(), _cache(),_agebase(false),data(){}
 
 FMTdata::FMTdata(const FMTdata& rhs) : ops(rhs.ops),source(rhs.source), stacking(rhs.stacking), _cache(rhs._cache), _agebase(rhs._agebase),data(rhs.data){}
 
@@ -53,7 +53,7 @@ FMTyieldparserop FMTdata::getop() const
 
 bool FMTdata::constant() const
 	{
-	if (ops == FMTyieldparserop::FMTwsnone)
+	if (ops == FMTyieldparserop::FMTnone)
 		{
 		std::vector<double>tempvalues(data);
 		std::sort(tempvalues.begin(), tempvalues.end());
@@ -65,7 +65,7 @@ bool FMTdata::constant() const
 
 bool FMTdata::nulldata() const
 	{
-	if (ops == FMTyieldparserop::FMTwsnone)
+	if (ops == FMTyieldparserop::FMTnone)
 		{
 		for (const double& value : data)
 			{
@@ -84,7 +84,7 @@ size_t FMTdata::hashdata(const int& period, const int& age, const FMTmask& mask)
 	std::size_t seed = 0;
 	boost::hash_combine(seed, boost::hash<Core::FMTmask>()(mask));
 	boost::hash_combine(seed, boost::hash<int>()(age));
-	if (ops != FMTyieldparserop::FMTwscai && ops != FMTyieldparserop::FMTwsmai && ops!= FMTyieldparserop::FMTwsytp && ops != FMTyieldparserop::FMTwsrange)
+	if (ops != FMTyieldparserop::FMTcai && ops != FMTyieldparserop::FMTmai && ops!= FMTyieldparserop::FMTytp && ops != FMTyieldparserop::FMTrange)
 		{
 		if (!_agebase)
 			{
@@ -110,7 +110,7 @@ void FMTdata::set(const double& value, const FMTmask& mask, const int& age, cons
 
 std::vector<std::string> FMTdata::getsource() const
     {
-	if (ops == FMTyieldparserop::FMTwsequation)
+	if (ops == FMTyieldparserop::FMTequation)
 		{
 		std::vector<std::string>nsources;
 		for (const std::string& val : source)
@@ -130,43 +130,43 @@ FMTdata::operator std::string() const
 	std::string value = "";
     switch (ops)
         {
-        case FMTyieldparserop::FMTwscai:
+        case FMTyieldparserop::FMTcai:
         value+="_CAI(";
         break;
-        case FMTyieldparserop::FMTwsdivide:
+        case FMTyieldparserop::FMTdivide:
         value+="_DIVIDE(";
         break;
-        case FMTyieldparserop::FMTwsmai:
+        case FMTyieldparserop::FMTmai:
         value+="_MAI(";
         break;
-        case FMTyieldparserop::FMTwsmultiply:
+        case FMTyieldparserop::FMTmultiply:
         value+="_MULTIPLY(";
         break;
-        case FMTyieldparserop::FMTwsrange:
+        case FMTyieldparserop::FMTrange:
         value+="_RANGE(";
         break;
-        case FMTyieldparserop::FMTwssubstract:
+        case FMTyieldparserop::FMTsubstract:
         value+="_SUBTRACT(";
         break;
-        case FMTyieldparserop::FMTwssum:
+        case FMTyieldparserop::FMTsum:
         value+="_SUM(";
         break;
-        case FMTyieldparserop::FMTwsytp:
+        case FMTyieldparserop::FMTytp:
         value+="_YTP(";
         break;
-		case FMTyieldparserop::FMTwsequation:
+		case FMTyieldparserop::FMTequation:
 		value += "_EQUATION(";
 		break;
-		case FMTyieldparserop::FMTwsendpoint:
+		case FMTyieldparserop::FMTendpoint:
 		value += "_ENDPOINT(";
 		break;
-		case FMTyieldparserop::FMTwsdiscountfactor:
+		case FMTyieldparserop::FMTdiscountfactor:
 		value += "_DISCOUNTFACTOR(";
 		break;
         default:
         break;
         }
-	if (ops!=FMTyieldparserop::FMTwsequation)
+	if (ops!=FMTyieldparserop::FMTequation)
 		{
 		size_t varid = 0;
 		size_t numid = 0;

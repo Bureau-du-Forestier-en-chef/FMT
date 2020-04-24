@@ -72,9 +72,9 @@ class FMTobject
 		// DocString: FMTobject::_logger
 		///A shared pointer to the logger.
 		std::shared_ptr<Logging::FMTlogger> _logger;
-		// DocString: FMTobject::FMTwssect
+		// DocString: FMTobject::FMTsection
 		///The section in which the child class is in
-		mutable FMTwssect _section;
+		mutable FMTsection _section;
 		// DocString: FMTobject::checksignals
 		/**
 		This function only check if the user has sent a ctrl-c signal using boost::python to FMT.
@@ -153,12 +153,17 @@ class FMTobject
 		/**
 		It sets the section member of the FMTobject.
 		*/
-		void setsection(const FMTwssect& section) const;
+		void setsection(const FMTsection& section) const;
 		// DocString: FMTobject::setdefaultlogger
 		/**
 		Create and set a default logger to the FMTobject.
 		*/
 		void setdefaultlogger();
+		// DocString: FMTobject::setquietlogger
+		/**
+		Create and set a quiet logger to the FMTobject.
+		*/
+		void setquietlogger();
 		// DocString: FMTobject::setdebuglogger
 		/**
 		Create and set a debug logger to the FMTobject.
@@ -184,6 +189,19 @@ class FMTobject
 		Create and set a free exception handler to the FMTobject.
 		*/
 		void setfreeexceptionhandler();
+		// DocString: FMTobject::disablenestedexceptions
+		/**
+		Disable nested exception throw of the Exceptionhandler by default all handlers
+		do nested exception throw.
+		*/
+		void disablenestedexceptions();
+		// DocString: FMTobject::enablenestedexceptions
+		/**
+		Enable nested exception throw of the Exceptionhandler by default all handlers
+		do nested exception throw.
+		*/
+		void enablenestedexceptions();
+
 	};
 }
 

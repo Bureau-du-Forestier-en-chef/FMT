@@ -62,13 +62,13 @@ FMTactionparser& FMTactionparser::operator = (const FMTactionparser& rhs)
 				const std::string  yield = elements[loc-1];
                 if(yield=="_AGE")
                     {
-                    spec.addbounds(Core::FMTagebounds(bounds<int>(constants,elements[loc+1],op, Core::FMTwssect::Action)));
+                    spec.addbounds(Core::FMTagebounds(bounds<int>(constants,elements[loc+1],op, Core::FMTsection::Action)));
 				}else if (yield == "_CP")
 					{
-					spec.setbounds(Core::FMTperbounds(bounds<int>(constants, elements[loc + 1], op, Core::FMTwssect::Action)));
+					spec.setbounds(Core::FMTperbounds(bounds<int>(constants, elements[loc + 1], op, Core::FMTsection::Action)));
 					}else {
                         yields.push_back(yield);
-                        spec.addbounds(Core::FMTyldbounds(yield,bounds<double>(constants,elements[loc+1],op, Core::FMTwssect::Action)));
+                        spec.addbounds(Core::FMTyldbounds(yield,bounds<double>(constants,elements[loc+1],op, Core::FMTsection::Action)));
                         }
                     if (maskloc==0)
                         {
@@ -85,7 +85,7 @@ FMTactionparser& FMTactionparser::operator = (const FMTactionparser& rhs)
         mask = mask.substr(0, mask.size()-1);
         for (const std::string yldname : yields)
             {
-            if (!isyld(ylds,yldname, Core::FMTwssect::Action)) continue;
+            if (!isyld(ylds,yldname, Core::FMTsection::Action)) continue;
             }
         return mask;
         }
@@ -204,7 +204,7 @@ FMTactionparser& FMTactionparser::operator = (const FMTactionparser& rhs)
 									aggregates[aggregatename].push_back(val);
 								}
 								else {
-									_exhandler->raise(Exception::FMTexc::WSundefined_aggregate_value, _section, val + " at line" + std::to_string(_line), __LINE__, __FILE__);
+									_exhandler->raise(Exception::FMTexc::FMTundefined_aggregate_value, _section, val + " at line" + std::to_string(_line), __LINE__, __FILE__);
 								}
 							}
 						}
@@ -212,7 +212,7 @@ FMTactionparser& FMTactionparser::operator = (const FMTactionparser& rhs)
 						{
 							if (theaction && theaction->isresetage())
 							{
-								_exhandler->raise(Exception::FMTexc::WSwrong_partial, _section, partialname + " at line" + std::to_string(_line), __LINE__, __FILE__);
+								_exhandler->raise(Exception::FMTexc::FMTwrong_partial, _section, partialname + " at line" + std::to_string(_line), __LINE__, __FILE__);
 							}
 							const std::vector<std::string>splited = FMTparser::spliter(line, FMTparser::rxseparator);
 							for (const std::string& val : splited)
@@ -234,7 +234,7 @@ FMTactionparser& FMTactionparser::operator = (const FMTactionparser& rhs)
 						cleanedactions.push_back(action);
 					}
 					else {
-						_exhandler->raise(Exception::FMTexc::WSempty_action, _section, action.getname(), __LINE__, __FILE__);
+						_exhandler->raise(Exception::FMTexc::FMTempty_action, _section, action.getname(), __LINE__, __FILE__);
 					}
 					++id;
 				}

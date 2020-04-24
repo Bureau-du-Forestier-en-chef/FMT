@@ -40,15 +40,15 @@ namespace Exception
 
 FMTfreeexceptionhandler::FMTfreeexceptionhandler()
 {
-
+	this->disablenestedexceptions();
 }
 
 
-FMTlev FMTfreeexceptionhandler::raise(FMTexc lexception, Core::FMTwssect lsection, std::string text,
+FMTlev FMTfreeexceptionhandler::raise(FMTexc lexception, Core::FMTsection lsection, std::string text,
 	const int& line, const std::string& file)
 {
 	FMTexception excp;
-	if (lsection == Core::FMTwssect::Empty)
+	if (lsection == Core::FMTsection::Empty)
 	{
 		excp = FMTexception(lexception, updatestatus(lexception, text));
 	}
@@ -56,14 +56,18 @@ FMTlev FMTfreeexceptionhandler::raise(FMTexc lexception, Core::FMTwssect lsectio
 		excp = FMTexception(lexception, lsection, updatestatus(lexception, text));
 	}
 	excp.sethold(true);
-	if (_level == FMTlev::FMT_Warning)
-	{
-		
-	}
-	else if (_level == FMTlev::FMT_logic || _level == FMTlev::FMT_range) {
-		//throw FMTerror(excp);
-		std::throw_with_nested(FMTerror(excp));
-	}
+	if (!needtorethrow())
+		{
+		if (_level == FMTlev::FMT_Warning)
+		{
+
+		}else if (_level == FMTlev::FMT_logic || _level == FMTlev::FMT_range) 
+			{
+			//std::throw_with_nested(FMTerror(excp));
+			throw FMTerror(excp);
+			}
+		}
+	
 	return _level;
 }
 
