@@ -151,7 +151,7 @@ class FMTparser: public Core::FMTobject
 		std::string returninclude(const std::string& line, const std::vector<Core::FMTtheme>& themes, const Core::FMTconstants& cons);
 		bool getforloops(std::string& line, const std::vector<Core::FMTtheme>& themes, const Core::FMTconstants& cons, std::vector<std::string>& allvalues, std::string& target);
 		std::string getcleanlinewfor(std::ifstream& stream,const std::vector<Core::FMTtheme>& themes,const Core::FMTconstants& cons);
-        bool isnum(const std::string& value) const;
+        bool isnum(std::string value) const;
         template<typename T>
         T getnum(const std::string& value,const Core::FMTconstants& constant, int period = 0) const
             {

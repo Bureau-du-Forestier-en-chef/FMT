@@ -228,10 +228,17 @@ class FMTbounds
                                 }else{
                                 line+=slower+".."+supper+")";
                                 }
-						if (section == FMTsection::Outputs && name.find("LOCK") != std::string::npos && lower >= 1)
+						if (section == FMTsection::Outputs)
 							{
+							if (name.find("LOCK") != std::string::npos && lower >= 1)
+								{
 								line = "_INVLOCK";
+							}else if(name.find("_CP") != std::string::npos && lower == 0 && upper == 0)
+								{
+								line = "[0]";
+								}	
 							}
+
                         }else if(keytype == FMTkwor::Target)
                             {
                             if(name.find("_LOCK")!= std::string::npos)

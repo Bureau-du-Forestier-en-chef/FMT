@@ -31,7 +31,8 @@ namespace Parser
             rxoutput("(\\*OUTPUT|\\*LEVEL)(([\\s\\t]*)([^\\s\\t\\(]*)([\\s\\t]*)(\\()([^\\s\\t\\)]*)(\\))([\\s\\t]*)(.+))|((\\*OUTPUT|\\*LEVEL)([\\s\\t]*)([^\\s\\t]*)([\\s\\t]*)(.+))", std::regex_constants::ECMAScript| std::regex_constants::icase),
             rxsource("(\\*SOURCE)([\\s\\t]*)(.+)", std::regex_constants::ECMAScript| std::regex_constants::icase),
             rxtar("(([\\s\\t]*)(_INVENT)([\\s\\t]*)(\\()([\\s\\t]*)([^\\s\\t]*)([\\s\\t]*)(\\))([\\s\\t]*)((_AREA)|([^\\s\\t]*)))|(([\\s\\t]*)((_INVENT)|(_INVLOCK))([\\s\\t]*)((_AREA)|([^\\s\\t]*)))|(([\\s\\t]*)([^\\s\\t]*)([\\s\\t]*)((_AREA)|([^\\s\\t]*)))", std::regex_constants::ECMAScript| std::regex_constants::icase),
-            rxgrp("(\\*GROUP)([\\s\\t]*)([^\\s\\t\\(]*)(.+)", std::regex_constants::ECMAScript| std::regex_constants::icase)
+            rxgrp("(\\*GROUP)([\\s\\t]*)([^\\s\\t\\(]*)(.+)", std::regex_constants::ECMAScript| std::regex_constants::icase),
+			rxoutputconstant("([^\\[]*)(\\[[\\s\\t]*)(0)([\\s\\t]*\\])", std::regex_constants::ECMAScript | std::regex_constants::icase)
             {
 
             }
@@ -39,7 +40,8 @@ namespace Parser
             rxoutput(rhs.rxoutput),
             rxsource(rhs.rxsource),
             rxtar(rhs.rxtar),
-            rxgrp(rhs.rxgrp)
+            rxgrp(rhs.rxgrp),
+			rxoutputconstant(rhs.rxoutputconstant)
             {
 
             }
@@ -52,6 +54,7 @@ namespace Parser
                 rxsource = rhs.rxsource;
                 rxtar = rhs.rxtar;
                 rxgrp = rhs.rxgrp;
+				rxoutputconstant = rhs.rxoutputconstant;
                 }
             return *this;
             }
@@ -280,16 +283,27 @@ namespace Parser
 										}
 										else {
 											std::vector<std::string>values = spliter(strsrc, FMTparser::rxseparator);
+											std::smatch constantmatch;
 											if (values.size() == 1)
 											{
 												//need to use get equation to simplify output!!!
-												if (find_if(outputs.begin(), outputs.end(), Core::FMToutputcomparator(strsrc)) != outputs.end())
+												std::vector<Core::FMToutput>::const_iterator it = find_if(outputs.begin(), outputs.end(), Core::FMToutputcomparator(strsrc));
+												if (it != outputs.end()||std::regex_search(strsrc, constantmatch, rxoutputconstant))
 												{
-													std::vector<Core::FMToutput>::iterator it = find_if(outputs.begin(), outputs.end(), Core::FMToutputcomparator(strsrc));
-													if (!it->islevel() || (it->islevel() && !it->getsources().empty()))
+													Core::FMToutput targetoutput;
+													if (it==outputs.end())
+														{
+														const std::string outputname = constantmatch[1];
+														targetoutput = *find_if(outputs.begin(), outputs.end(), Core::FMToutputcomparator(outputname));
+														targetoutput.setperiod(0);
+													}else {
+														targetoutput = *it;
+														}
+
+													if (!targetoutput.islevel() || (targetoutput.islevel() && !targetoutput.getsources().empty()))
 													{
 														lastoutput = sources.size();
-														for (const Core::FMToutputsource& src : it->getsources())
+														for (const Core::FMToutputsource& src : targetoutput.getsources())
 														{
 															sources.push_back(src);
 														}
@@ -299,7 +313,7 @@ namespace Parser
 														{
 															convertoperator = true;
 														}
-														for (const Core::FMToperator& src : it->getopes())
+														for (const Core::FMToperator& src : targetoutput.getopes())
 														{
 															if (convertoperator)
 															{
@@ -329,8 +343,7 @@ namespace Parser
 												{
 													sources.push_back(Core::FMToutputsource(Core::FMTotar::timeyld, 0, strsrc));
 
-												}
-												else {
+												}else{
 													_exhandler->raise(Exception::FMTexc::FMTundefined_output, _section, strsrc + " at line " + std::to_string(_line), __LINE__, __FILE__);
 												}
 											}

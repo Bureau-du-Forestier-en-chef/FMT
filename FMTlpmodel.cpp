@@ -258,7 +258,7 @@ namespace Models
 					if (rest < 0)
 						{
 						_exhandler->raise(Exception::FMTexc::FMTinvalid_number,
-							Core::FMTsection::Empty,"negative growth solution for "+
+							Core::FMTsection::Empty, std::to_string(rest)+" negative growth solution for "+
 							std::string(graph.getdevelopment(devit->second)),
 							__LINE__, __FILE__);
 						}
@@ -291,7 +291,7 @@ namespace Models
 				if (rest < 0)
 					{
 					_exhandler->raise(Exception::FMTexc::FMTinvalid_number,
-						Core::FMTsection::Empty, "negative growth solution for " +
+						Core::FMTsection::Empty, std::to_string(rest) + " negative growth solution for " +
 						std::string(graph.getdevelopment(first)),
 						__LINE__, __FILE__);
 					}

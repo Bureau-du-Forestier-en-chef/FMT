@@ -589,6 +589,14 @@ std::vector<std::string> FMToutput::getdecomposition(const std::vector<FMTtheme>
 	return validdecomp;
 	}
 
+void FMToutput::setperiod(const int& newperiod)
+	{
+	for (FMToutputsource& source : sources)
+		{
+		source.setbounds(FMTperbounds(FMTsection::Outputs, newperiod, newperiod));
+		}
+	}
+
 
 FMTtheme FMToutput::targettheme(const std::vector<FMTtheme>& themes) const
 	{
@@ -609,6 +617,8 @@ bool FMToutputcomparator::operator()(const FMToutput& output) const
 	{
 	return output_name == output.getname();
 	}
+
+
 
 
 

@@ -48,6 +48,7 @@ class FMToutputparser : public FMTparser
 	std::regex rxsource;
 	std::regex rxtar;
 	std::regex rxgrp;
+	std::regex rxoutputconstant;
     public:
         FMToutputparser();
 		~FMToutputparser() = default;

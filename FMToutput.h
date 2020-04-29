@@ -288,6 +288,11 @@ class FMToutput
 		const FMTmask& presolvedmask,
 		const std::vector<FMTtheme>& newthemes,
 		const std::vector<FMTaction>& actions,const FMTyields& yields) const;
+	// DocString: FMToutput::setperiod
+	/**
+	Set the outputsource to one period.
+	*/
+	void setperiod(const int& newperiod);
     };
 // DocString: FMToutputcomparator
 /**

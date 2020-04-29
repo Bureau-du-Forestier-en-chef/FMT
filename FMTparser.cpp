@@ -411,8 +411,9 @@ bool FMTparser::isvalidfile(const std::string& location) const
 	return true;
 	}
 
-bool FMTparser::isnum(const std::string& value) const
+bool FMTparser::isnum(std::string value) const
     {
+	boost::erase_all(value, ",");
 	return std::regex_match(value,rxnumber);
     }
 

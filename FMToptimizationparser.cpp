@@ -195,6 +195,7 @@ namespace Parser
 					//int maxbound = std::numeric_limits<int>::max();
 					if (std::regex_search(output_it->first, special_match, rxspecialoutput))
 						{
+						
 						specialtype = special_match[1];
 						const std::string lowerperiod = std::string(special_match[7]) + std::string(special_match[12]);
 						const std::string upperperiod = std::string(special_match[11]) + std::string(special_match[12]);
@@ -204,12 +205,14 @@ namespace Parser
 							//maxbound = getnum<int>(upperperiod, constants);
 							}
 						output_name = std::string(special_match[4])+ std::string(special_match[13]);
-						if (!std::regex_search(output_name, out_match, rxoutput))
+						
+						std::smatch outname_match;
+						if (!std::regex_search(output_name, outname_match, rxoutput))
 							{
 							_exhandler->raise(Exception::FMTexc::FMTinvalid_constraint, _section, output_name + " at line " + std::to_string(_line), __LINE__, __FILE__);
 						}
 						else {
-							output_name = std::string(out_match[1]) + std::string(out_match[8]) + std::string(out_match[12]) + std::string(out_match[16]);
+							output_name = std::string(outname_match[1]) + std::string(outname_match[8]) + std::string(outname_match[12]) + std::string(outname_match[16]);
 						}
 						boost::erase_all(output_name, " ");
 						}
