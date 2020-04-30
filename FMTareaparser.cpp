@@ -397,7 +397,11 @@ namespace Parser{
 		}catch (const std::exception& exception)
 			{
 			_exhandler->throw_nested(exception);
-			}
+			throw;
+			}catch (...)
+				{
+				_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, _section, "while reading rasters", __LINE__, __FILE__);
+				}
 	return Spatial::FMTforest();
 	}
 
@@ -522,7 +526,12 @@ namespace Parser{
 		}catch (const std::exception& exception)
 			{
 			_exhandler->throw_nested(exception);
+			throw;
 			}
+		catch (...)
+		{
+			_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, _section, "while reading vectors", __LINE__, __FILE__);
+		}
         return devs;
         }
 	#ifdef FMTWITHOSI

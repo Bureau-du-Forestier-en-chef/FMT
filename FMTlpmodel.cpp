@@ -452,7 +452,12 @@ namespace Models
 			_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
 			Core::FMTsection::Empty, "getting outputs", __LINE__, __FILE__);
 			_exhandler->throw_nested(exception);
-			}
+			throw;
+			}catch (...)
+				{
+				_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
+					Core::FMTsection::Empty, "getting outputs", __LINE__, __FILE__);
+				}
 		return std::map<std::string, double>();
 	}
 
@@ -490,6 +495,12 @@ namespace Models
 			_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
 				Core::FMTsection::Empty, "Building period", __LINE__, __FILE__);
 			_exhandler->throw_nested(exception);
+			throw;
+			}
+		catch (...)
+			{
+			_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
+				Core::FMTsection::Empty, "Building period", __LINE__, __FILE__);
 			}
 		return graph.getstats();
 	}
@@ -1270,6 +1281,11 @@ bool FMTlpmodel::locatenodes(const std::vector<Core::FMToutputnode>& nodes, int 
 				_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
 					Core::FMTsection::Empty, "locating output nodes", __LINE__, __FILE__);
 				_exhandler->throw_nested(exception);
+				throw;
+			}catch (...)
+				{
+				_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
+					Core::FMTsection::Empty, "Building period", __LINE__, __FILE__);
 				}
 		return graph.getstats();
 		}

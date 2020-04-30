@@ -91,6 +91,7 @@ FMTlandscapeparser::FMTlandscapeparser() :
 		}catch (const std::exception& exception)
 			{
 			_exhandler->throw_nested(exception);
+			throw;
 			}
         return themes;
         }
@@ -133,6 +134,7 @@ FMTlandscapeparser::FMTlandscapeparser() :
 		}catch (const std::exception& exception)
 			{
 			_exhandler->throw_nested(exception);
+			throw;
 			}
         return themes;
         }

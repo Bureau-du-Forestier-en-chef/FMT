@@ -518,7 +518,11 @@ std::vector<std::vector<Core::FMTschedule>>FMTmodelparser::readschedules(const s
 		}catch (const std::exception& exception)
 			{
 			_exhandler->throw_nested(exception);
-			}
+			throw;
+			}catch (...)
+				{
+				_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, _section, "while reading schedule", __LINE__, __FILE__);
+				}
 	return schedules;
 	}
 }
