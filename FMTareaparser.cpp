@@ -764,7 +764,7 @@ namespace Parser{
 #endif
 			FMTareaparser::FMTareaparser() :
 				FMTparser(),
-				rxcleanarea("^(([*A]*)([^|]*)(_lock)([^0-9]*)([0-9]*))|(([*A]*)([^|]*)([|])([^|]*)([|])([^0-9]*)(.+))|(([*A]*)(([^|]*)([|])([^|]*)([|])))|([*A]*)(.+)", std::regex_constants::ECMAScript | std::regex_constants::icase)
+				rxcleanarea("^((\\*A[A]*)([^|]*)(_lock)([^0-9]*)([0-9]*))|((\\*A[A]*)([^|]*)([|])([^|]*)([|])([^0-9]*)(.+))|((\\*A[A]*)(([^|]*)([|])([^|]*)([|])))|(\\*A[A]*)(.+)", std::regex_constants::ECMAScript | std::regex_constants::icase)
 			{
 				_section = Core::FMTsection::Area;
 			}
@@ -793,7 +793,7 @@ namespace Parser{
 						bool potential_futurs = false;
 						bool got0area = false;
 						size_t futurtype = 0;
-						std::smatch kmatch;
+						
 						std::vector<std::string>splitted;
 						if (FMTparser::tryopening(areastream, location))
 						{
@@ -812,6 +812,7 @@ namespace Parser{
 											break;
 										}
 									}
+									std::smatch kmatch;
 									if (std::regex_search(line, kmatch, FMTareaparser::rxcleanarea))
 									{
 										std::string strlock = std::string(kmatch[6]) + std::string(kmatch[14]);
@@ -823,6 +824,7 @@ namespace Parser{
 										splitted = FMTparser::spliter(masknage, FMTparser::rxseparator);
 										linesize = splitted.size();
 										inactualdevs = true;
+										
 										for (size_t themeid = 0; themeid < (linesize - 2); ++themeid)
 										{
 											mask += splitted.at(themeid) + " ";
@@ -857,7 +859,10 @@ namespace Parser{
 											got0area = true;
 										}
 
-									}
+									}else {
+										_exhandler->raise(Exception::FMTexc::FMTinvalid_maskrange
+											, _section, " at line " + std::to_string(_line), __LINE__, __FILE__);
+										}
 								}
 								else if (!areas.empty() && _comment.empty())
 								{

@@ -335,6 +335,10 @@ Models::FMTmodel FMTmodelparser::referenceread(std::map<std::string, std::vector
 			}catch (const std::exception& exception)
 				{
 				_exhandler->throw_nested(exception);
+				throw;
+			}catch (...)
+				{
+				_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, _section, "while reading "+modelname, __LINE__, __FILE__);
 				}
 		returnedmodel.passinobject(*this);
 		returnedmodel.cleanactionsntransitions();
@@ -447,6 +451,7 @@ std::vector<Models::FMTmodel>FMTmodelparser::readproject(const std::string& prim
 	std::vector<Models::FMTmodel>sortedmodels;
 	if (scenarios.empty())
 		{
+		
 		models.begin()->cleanactionsntransitions();
 		sortedmodels.push_back(*models.begin());
 	}else {
