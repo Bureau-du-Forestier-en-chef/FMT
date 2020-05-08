@@ -614,7 +614,7 @@ std::unique_ptr<FMTmodel> FMTmodel::presolve(int presolvepass,std::vector<Core::
 	presolvedmodel->cleanactionsntransitions();
 	}catch (...)
 		{
-		_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, _section, "while presolving model "+name, __LINE__, __FILE__);
+		_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, _section, "in FMTmodel::presolve "+name, __LINE__, __FILE__);
 		}
 	return presolvedmodel;
 	}
@@ -633,7 +633,7 @@ Core::FMTschedule FMTmodel::presolveschedule(const Core::FMTschedule& originalba
 		newschedule = originalbaseschedule.presolve(presolvedmask, this->themes, this->actions);
 	}catch (...)
 		{
-		_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, _section, "while presolving schedule", __LINE__, __FILE__);
+		_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, _section, "in FMTmodel::presolveschedule", __LINE__, __FILE__);
 		}
 	return newschedule;
 	}

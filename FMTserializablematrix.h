@@ -66,9 +66,6 @@ class FMTserializablematrix : public CoinPackedMatrix
 	// DocString: FMTserializablematrix::rowprice
 	///dual solution of the matrix
 	std::vector<double>rowprice;
-	// DocString: FMTserializablematrix::solvertype
-	///solver type used for abstraction.
-	FMTsolverinterface solvertype;
 	// DocString: FMTserializablematrix::serialize
 	/**
 	Save and load functions are for serialization, used to do multiprocessing across multiple cpus (pickle in Pyhton)
@@ -92,7 +89,6 @@ class FMTserializablematrix : public CoinPackedMatrix
 		ar & BOOST_SERIALIZATION_NVP(rowub);
 		ar & BOOST_SERIALIZATION_NVP(colsolution);
 		ar & BOOST_SERIALIZATION_NVP(rowprice);
-		ar & BOOST_SERIALIZATION_NVP(solvertype);
 		if (Archive::is_loading::value)
 			{
 			if (maxMajorDim_ > 0)
@@ -144,12 +140,12 @@ class FMTserializablematrix : public CoinPackedMatrix
 		Constructor of FMTserializablematrix with the solverinterface and the solvertype used.
 		Normaly used during the saving part of serialization.
 		*/
-		FMTserializablematrix(const std::shared_ptr<OsiSolverInterface>& solverinterface,const FMTsolverinterface& lsolvertype);
+		FMTserializablematrix(const std::shared_ptr<OsiSolverInterface>& solverinterface);
 		// DocString: FMTserializablematrix::setsolvertype
 		/**
 		Setter of the solvertype of the serializable matrix.
 		*/
-		void setsolvertype(FMTsolverinterface& lsolvertype) const;
+		//void setsolvertype(FMTsolverinterface& lsolvertype) const;
 		// DocString: FMTserializablematrix::setmatrix
 		/**
 		This function will set it's contain to a solverinterface matrix, used during the loading part of serialization.
@@ -159,12 +155,12 @@ class FMTserializablematrix : public CoinPackedMatrix
 		/**
 		Function used to build a shared pointer of a solverinterface passing the message handler to the pointer.
 		*/
-		std::shared_ptr<OsiSolverInterface> buildsolverinterface(const FMTsolverinterface& lsolvertype, CoinMessageHandler* handler) const;
+		//std::shared_ptr<OsiSolverInterface> buildsolverinterface(const FMTsolverinterface& lsolvertype, CoinMessageHandler* handler) const;
 		// DocString: FMTserializablematrix::copysolverinterface
 		/**
 		Function used to copy a shared pointer of a solverinterface passing the message handler to the pointer to a other shared pointer.
 		*/
-		std::shared_ptr<OsiSolverInterface> copysolverinterface(const std::shared_ptr<OsiSolverInterface>& solver_ptr, const FMTsolverinterface& lsolvertype, CoinMessageHandler* handler) const;
+		//std::shared_ptr<OsiSolverInterface> copysolverinterface(const std::shared_ptr<OsiSolverInterface>& solver_ptr, const FMTsolverinterface& lsolvertype, CoinMessageHandler* handler) const;
 		// DocString: ~FMTserializablematrix()
 		/**
 		Default destructor of FMTserializablematrix

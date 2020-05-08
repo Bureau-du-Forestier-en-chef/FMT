@@ -28,6 +28,7 @@ SOFTWARE.
 
 #include "FMToperatingarea.h"
 #include "FMToperatingareaheuristic.h"
+#include "FMTlpsolver.h"
 #include "PYdefinitions.h"
 #include "boost/python.hpp"
 
@@ -60,16 +61,12 @@ void exportHeuristics()
 		
 	define_pylist<Heuristics::FMToperatingarea>();
 
-	bp::class_<Heuristics::FMToperatingareaheuristic, bp::bases<Core::FMTobject>>("FMToperatingareaheuristic", "@DocString(FMToperatingareaheuristic)")
+	bp::class_<Heuristics::FMToperatingareaheuristic, bp::bases<Core::FMTobject,Models::FMTlpsolver>>("FMToperatingareaheuristic", "@DocString(FMToperatingareaheuristic)")
 		.def_pickle(FMT_pickle_suite<Heuristics::FMToperatingareaheuristic>())
 		.def("initialsolve", &Heuristics::FMToperatingareaheuristic::initialsolve,
 			"@DocString(FMToperatingareaheuristic::initialsolve)")
 		.def("branchnboundsolve", &Heuristics::FMToperatingareaheuristic::branchnboundsolve,
 			"@DocString(FMToperatingareaheuristic::branchnboundsolve)")
-		.def("isfeasible", &Heuristics::FMToperatingareaheuristic::isfeasible,
-			"@DocString(FMToperatingareaheuristic::isfeasible)")
-		.def("getobjective", &Heuristics::FMToperatingareaheuristic::getobjective,
-			"@DocString(FMToperatingareaheuristic::getobjective)")
 		.def("getsolution", &Heuristics::FMToperatingareaheuristic::getsolution,
 			"@DocString(FMToperatingareaheuristic::getsolution)");
 

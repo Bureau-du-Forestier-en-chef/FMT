@@ -36,7 +36,7 @@ SOFTWARE.
 #include <boost/serialization/serialization.hpp>
 #include <boost/serialization/nvp.hpp>
 #include <boost/serialization/export.hpp>
-#include "FMTmatrixbuild.h"
+#include "FMTlpsolver.h"
 
 namespace Heuristics
 	{
@@ -140,7 +140,7 @@ namespace Heuristics
 		void schemestoLP(const std::vector<std::vector<std::vector<Graph::FMTvertex_descriptor>>>& schemes,
 			const std::vector<std::vector<Graph::FMTvertex_descriptor>>& periodics,
 			const std::vector<Graph::FMTvertex_descriptor>& totalareaverticies,
-			Models::FMTmatrixbuild& matrixbuild,
+			Models::FMTlpsolver& solver,
 			const double* primalsolution,
 			const Graph::FMTgraph& maingraph, const std::vector<int>& actionIDS);
 		// DocString: FMToperatingarea::schemestoperiods
@@ -173,6 +173,11 @@ namespace Heuristics
 			Check if the operating area is empty can be possible if there's no potential developpement to operate.
 			*/
 			bool empty() const;
+			// DocString: FMToperatingarea::getarea
+			/**
+				Get the area of the operating area.
+			*/
+			double getarea() const;
 			// DocString: FMToperatingarea::getopeningbinaries
 			/**
 			Getter returning variables index of the binaries of all potential schemes of the operatingarea.
@@ -337,7 +342,7 @@ namespace Heuristics
 			*/
 			void setconstraints(const std::vector<std::vector<Graph::FMTvertex_descriptor>>& verticies,
 				const std::vector<Graph::FMTvertex_descriptor>& totalareaverticies,
-				const Graph::FMTgraph& graph,Models::FMTmatrixbuild& matrixbuild,
+				const Graph::FMTgraph& graph,Models::FMTlpsolver& solver,
 				const double* primalsolution,
 				const std::vector<int>& actionIDS);
 			// DocString: FMToperatingarea(const Core::FMTmask,const size_t, const size_t,const size_t,const size_t,const size_t,const double)

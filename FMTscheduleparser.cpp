@@ -140,7 +140,7 @@ std::vector<Core::FMTschedule> FMTscheduleparser::read(const std::vector<Core::F
 		}
 	}catch (...)
 		{
-		_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, _section, "while reading", __LINE__, __FILE__);
+		_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, _section, "in FMTscheduleparser::read", __LINE__, __FILE__);
 		}
     return schedules;
     }

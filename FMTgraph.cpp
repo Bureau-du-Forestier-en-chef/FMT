@@ -616,7 +616,7 @@ std::vector<const Core::FMTaction*>FMTgraph::selectedactions(const Models::FMTmo
 
 bool FMTgraph::constraintlenght(const Core::FMTconstraint& constraint, int& start, int& stop) const
 	{
-		start = std::max(constraint.getperiodlowerbound(),getfirstactiveperiod());
+		start = std::max(constraint.getperiodlowerbound(),getfirstactiveperiod()+1);
 		stop = static_cast<int>((constraint.getperiodupperbound()> static_cast<int>((developments.size() - 2))) ? (developments.size() - 2) : constraint.getperiodupperbound());
 		if (constraint.acrossperiod())
 		{
@@ -698,8 +698,10 @@ FMTgraphstats FMTgraph::eraseperiod(std::vector<int>&deletedconstraints,
 			{
 		    FMTvertex_descriptor& vertex_location = it->second;
 			FMTinedge_iterator inedge_iterator, inedge_end;
+			bool gotinedges = false;
 			for (boost::tie(inedge_iterator, inedge_end) = boost::in_edges(it->second, data); inedge_iterator != inedge_end; ++inedge_iterator)
 				{
+					gotinedges = true;
 					const FMTedgeproperties& edgeproperty = data[*inedge_iterator];
 					int varvalue = edgeproperty.getvariableID();
 					if (std::find(deletedvariables.begin(), deletedvariables.end(), varvalue)== deletedvariables.end())
@@ -708,6 +710,20 @@ FMTgraphstats FMTgraph::eraseperiod(std::vector<int>&deletedconstraints,
 						deletedvariables.push_back(varvalue);
 						}
 					--stats.edges;
+				}
+			if (!keepbounded)
+				{
+				const std::map<int, int>outvars = this->getoutvariables(vertex_location);
+				for (std::map<int,int>::const_iterator varit = outvars.begin();varit!=outvars.end();varit++)
+					{
+					if (std::find(deletedvariables.begin(), deletedvariables.end(), varit->second) == deletedvariables.end())
+						{
+						--stats.cols;
+						deletedvariables.push_back(varit->second);
+						}
+					--stats.edges;
+					}
+				boost::clear_out_edges(vertex_location, data);
 				}
 			boost::clear_in_edges(vertex_location, data);
 			}

@@ -28,6 +28,7 @@ SOFTWARE.
 
 #include "FMToperatingarea.h"
 #include "FMToperatingareaheuristic.h"
+#include "FMTlpsolver.h"
 #include "Rdefinitions.h"
 #include <Rcpp.h>
 
@@ -64,15 +65,12 @@ void exportHeuristics()
 
 	Rcpp::class_<Heuristics::FMToperatingareaheuristic>("FMToperatingareaheuristic","@DocString(FMToperatingareaheuristic)")
 		.derives<Core::FMTobject>("FMTobject")
+		//.derives<Models::FMTlpsolver>("FMTlpsolver")
 		.constructor("@DocString(FMToperatingareaheuristic())")
 		.method("initialsolve", &Heuristics::FMToperatingareaheuristic::initialsolve,
 			"@DocString(FMToperatingareaheuristic::initialsolve)")
 		.method("branchnboundsolve", &Heuristics::FMToperatingareaheuristic::branchnboundsolve,
 			"@DocString(FMToperatingareaheuristic::branchnboundsolve)")
-		.method("isfeasible", &Heuristics::FMToperatingareaheuristic::isfeasible,
-			"@DocString(FMToperatingareaheuristic::isfeasible)")
-		.method("getobjective", &Heuristics::FMToperatingareaheuristic::getobjective,
-			"@DocString(FMToperatingareaheuristic::getobjective)")
 		.method("getsolution", &Heuristics::FMToperatingareaheuristic::getsolution,
 			"@DocString(FMToperatingareaheuristic::getsolution)");
 

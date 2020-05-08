@@ -69,7 +69,7 @@ Core::FMTlifespans FMTlifespanparser::read(const std::vector<Core::FMTtheme>& th
 		lifespan.shrink();
 	}catch (...)
 		{
-		_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, _section, "while reading", __LINE__, __FILE__);
+		_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, _section, "in FMTlifespanparser::read", __LINE__, __FILE__);
 		}
     return lifespan;
     }

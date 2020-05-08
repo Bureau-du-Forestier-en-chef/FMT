@@ -151,6 +151,21 @@ namespace Logging
 				this->cout(value.c_str());
 				return *this;
 				}
+			// DocString: FMTlogger::logwithlevel
+			/**
+			Log a message with a given message level if message level is greater of equal to the logger level
+			then it will be printed
+			*/
+			template<class T>
+			void logwithlevel(const T &msg,const int& messagelevel)
+				{
+				if (this->logLevel()>= messagelevel)
+					{
+					const std::string value = boost::lexical_cast<std::string>(msg);
+					this->cout(value.c_str());
+					}
+				}
+
 		};
 
 }

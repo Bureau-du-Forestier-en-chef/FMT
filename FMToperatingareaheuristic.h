@@ -38,6 +38,7 @@ SOFTWARE.
 #include "FMToutputnode.h"
 #include "FMTtheme.h"
 #include "FMTyieldhandler.h"
+#include "FMTlpsolver.h"
 #include <random>
 #include <memory>
 #include <map>
@@ -60,7 +61,7 @@ namespace Heuristics
 	the matrix. It's up to the user to decide to just generate a good initialsolution or 
 	generate a good initialsolution and then try to find the optimaly using a BnB solver.
 	*/
-	class FMToperatingareaheuristic : public Core::FMTobject
+	class FMToperatingareaheuristic : public Core::FMTobject, public Models::FMTlpsolver
 	{
 		// DocString: FMToperatingareaheuristic::save
 		/**
@@ -70,10 +71,9 @@ namespace Heuristics
 		template<class Archive>
 		void save(Archive& ar, const unsigned int version) const
 		{
+			ar & boost::serialization::make_nvp("lpsolve", boost::serialization::base_object<FMTlpsolver>(*this));
 			ar & BOOST_SERIALIZATION_NVP(operatingareas);
 			ar & BOOST_SERIALIZATION_NVP(adjacencyconstraints);
-			Models::FMTserializablematrix matrix(solverinterface,solvertype);
-			ar & BOOST_SERIALIZATION_NVP(matrix);
 			ar & BOOST_SERIALIZATION_NVP(seed);
 			ar & BOOST_SERIALIZATION_NVP(proportionofset);
 			ar & BOOST_SERIALIZATION_NVP(userandomness);
@@ -87,13 +87,10 @@ namespace Heuristics
 		template<class Archive>
 		void load(Archive& ar, const unsigned int version)
 		{
+			ar & boost::serialization::make_nvp("lpsolve", boost::serialization::base_object<FMTlpsolver>(*this));
+			this->passinmessagehandler(*this->_logger);
 			ar & BOOST_SERIALIZATION_NVP(operatingareas);
 			ar & BOOST_SERIALIZATION_NVP(adjacencyconstraints);
-			Models::FMTserializablematrix matrix;
-			ar & BOOST_SERIALIZATION_NVP(matrix);
-			matrix.setsolvertype(solvertype);
-			solverinterface = matrix.buildsolverinterface(solvertype, &*this->_logger);
-			matrix.setmatrix(solverinterface);
 			ar & BOOST_SERIALIZATION_NVP(seed);
 			this->setgeneratorseed(seed);
 			ar & BOOST_SERIALIZATION_NVP(proportionofset);
@@ -108,9 +105,6 @@ namespace Heuristics
 		// DocString: FMToperatingareaheuristic::adjacencyconstraints
 		///Adjacency constraints indexes of all operating area the pair is used to not duplicate neighboring constraints
 		std::map<std::pair<Core::FMTmask, Core::FMTmask>, std::vector<int>>adjacencyconstraints;
-		// DocString: FMToperatingareaheuristic::solverinterface
-		///This shared pointer can be pointing to the FMTmodelpinterface or can own his own pointer if using solvercopy = true
-		std::shared_ptr<OsiSolverInterface> solverinterface; 
 		// DocString: FMToperatingareaheuristic::generator
 		///std random number generator of the heuristic each heuristic has it's own generator to generate different solution
 		std::default_random_engine generator;
@@ -129,9 +123,6 @@ namespace Heuristics
 		// DocString: FMToperatingareaheuristic::useprimal
 		///If true the heuristic will solve try to solve the problem by the primal variables else by the dual constraints.
 		bool useprimal;
-		// DocString: FMToperatingareaheuristic::solvertype
-		///The solver type linked to the solverinterface gives int about which aloright to use simplex / IP
-		Models::FMTsolverinterface solvertype;
 		// DocString: FMToperatingareaheuristic::setoperatingareasconstraints
 		/**
 		The function sets all the operating area constraints (changes the stade of the operating area) and adding all constraints
@@ -197,7 +188,7 @@ namespace Heuristics
 		Solve the heuristic problem using the original heuristic resolving the problem till finding a initial solution
 		for each operating area. The user can use the function getsolution to first yield solution. 
 		*/
-		void initialsolve();
+		bool initialsolve() final;
 		// DocString: FMToperatingareaheuristic::branchnboundsolve
 		/**
 		Solve problem using Branch and bound on the primal formulation. If the function is called after a call to initialsolve()
@@ -238,8 +229,7 @@ namespace Heuristics
 			const Graph::FMTgraph& maingraph,
 			const Models::FMTmodel& model,
 			const Core::FMToutputnode& target,
-			std::shared_ptr<OsiSolverInterface> initialsolver,
-			const Models::FMTsolverinterface& lsolvertype, size_t lseed = 0,
+			Models::FMTlpsolver& basesolve, size_t lseed = 0,
 			double proportionofset = 0.25, bool userandomness = false, bool copysolver = true);
 		// DocString: FMToperatingareaheuristic()
 		/**
@@ -259,16 +249,6 @@ namespace Heuristics
 		// DocString: FMToperatingareaheuristic::isfeasible
 		/**
 		Return true if the actual solution of the heuristic is feasible.
-		*/
-		bool isfeasible() const;
-		// DocString: FMToperatingareaheuristic::getobjective
-		/**
-		Gets the objective value of the solverinterface LP model.
-		*/
-		double getobjective() const;
-		// DocString: ~FMToperatingareaheuristic()
-		/**
-		FMToperatingareaheuristic destructor
 		*/
 		~FMToperatingareaheuristic();
 	};

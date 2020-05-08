@@ -42,6 +42,11 @@ double FMToperatingarea::getarea(const double* primalsolution, const Graph::FMTg
 	return area;
 	}
 
+double FMToperatingarea::getarea() const
+	{
+	return _area;
+	}
+
 size_t FMToperatingarea::getbestschemeid(const double* primalsolution) const//Get the best possible scheme looking at the primal solution
 	{
 	size_t bestid = 0;
@@ -97,17 +102,18 @@ std::vector<std::vector<std::vector<Graph::FMTvertex_descriptor>>> FMToperatinga
 	void FMToperatingarea::schemestoLP(const std::vector<std::vector<std::vector<Graph::FMTvertex_descriptor>>>& schemes,
 		const std::vector<std::vector<Graph::FMTvertex_descriptor>>& periodics,
 		const std::vector<Graph::FMTvertex_descriptor>& totalareaverticies,
-		Models::FMTmatrixbuild& matrixbuild,
+		Models::FMTlpsolver& solver,
 		const double* primalsolution,
 		const Graph::FMTgraph& maingraph, const std::vector<int>& actionIDS)
 	{
-		int binaryid = matrixbuild.getlastcolindex()+1;	
+		//int binaryid = matrixbuild.getlastcolindex()+1;
+		int binaryid = solver.getNumCols();
 		_area = 0;
 		//std::vector<std::vector<Graph::FMTvertex_descriptor>>::const_iterator perit = periodics.begin();
 		if (!totalareaverticies.empty())
-		{
+			{
 			_area = this->getarea(primalsolution, maingraph, totalareaverticies);
-		}
+			}
 		std::map<int, std::vector<int>>periodicsblocksvariables;
 		std::vector<size_t>selectedschemes;
 		size_t schemeid = 0;
@@ -151,7 +157,8 @@ std::vector<std::vector<std::vector<Graph::FMTvertex_descriptor>>> FMToperatinga
 			}
 			++schemeid;
 		}
-		int constraintid = matrixbuild.getlastrowindex()+1;
+		//int constraintid = matrixbuild.getlastrowindex()+1;
+		int constraintid = solver.getNumRows();
 		std::map<int, std::vector<int>>constraintsmap;
 		for (std::map<int, std::vector<int>>::const_iterator periodics = periodicsblocksvariables.begin();
 			periodics != periodicsblocksvariables.end(); ++periodics)
@@ -178,7 +185,8 @@ std::vector<std::vector<std::vector<Graph::FMTvertex_descriptor>>> FMToperatinga
 					}
 				if (targetedvariables.size() > periodics->second.size())
 					{
-					matrixbuild.addRow(static_cast<int>(targetedvariables.size()), &targetedvariables[0], &elements[0], std::numeric_limits<double>::lowest(), 0);
+					solver.addRow(static_cast<int>(targetedvariables.size()), &targetedvariables[0], &elements[0], std::numeric_limits<double>::lowest(), 0);
+					//matrixbuild.addRow(static_cast<int>(targetedvariables.size()), &targetedvariables[0], &elements[0], std::numeric_limits<double>::lowest(), 0);
 					}
 				++constraintid;
 			}
@@ -197,13 +205,15 @@ std::vector<std::vector<std::vector<Graph::FMTvertex_descriptor>>> FMToperatinga
 				}
 			for (size_t opid = 0; opid < openingbinaries.size();++opid)
 				{
-				matrixbuild.addCol(0, nullptr, nullptr, 0, 1);
+				//matrixbuild.addCol(0, nullptr, nullptr, 0, 1);
+				solver.addCol(0, nullptr, nullptr, 0, 1);
 				}
-			matrixbuild.setlastcolindex(openingbinaries.back());
+			//matrixbuild.setlastcolindex(openingbinaries.back());
 			maximalschemesconstraint = constraintid;
 			std::vector<double>maxelements(openingbinaries.size(), 1.0);
-			matrixbuild.addRow(static_cast<int>(openingbinaries.size()), &openingbinaries[0], &maxelements[0], std::numeric_limits<double>::lowest(), 1);
-			matrixbuild.setlastrowindex(maximalschemesconstraint);
+			//matrixbuild.addRow(static_cast<int>(openingbinaries.size()), &openingbinaries[0], &maxelements[0], std::numeric_limits<double>::lowest(), 1);
+			//matrixbuild.setlastrowindex(maximalschemesconstraint);
+			solver.addRow(static_cast<int>(openingbinaries.size()), &openingbinaries[0], &maxelements[0], std::numeric_limits<double>::lowest(), 1);
 			}
 
 	}
@@ -439,13 +449,13 @@ void FMToperatingarea::setneighbors(const std::vector<Core::FMTmask>& lneighbors
 
 void FMToperatingarea::setconstraints(const std::vector<std::vector<Graph::FMTvertex_descriptor>>& verticies,
 	const std::vector<Graph::FMTvertex_descriptor>& totalareaverticies,
-	const Graph::FMTgraph& graph, Models::FMTmatrixbuild& matrixbuild,
+	const Graph::FMTgraph& graph, Models::FMTlpsolver& solver,
 	const double* primalsolution,
 	const std::vector<int>& actionIDS)
 	{
 	const std::vector<std::vector<std::vector<Graph::FMTvertex_descriptor>>> schemes = this->generateschemes(verticies);
 	schemesperiods = schemestoperiods(schemes, graph);
-	schemestoLP(schemes, verticies, totalareaverticies, matrixbuild, primalsolution, graph, actionIDS);
+	schemestoLP(schemes, verticies, totalareaverticies, solver, primalsolution, graph, actionIDS);
 	}
 
 

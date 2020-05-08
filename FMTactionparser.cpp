@@ -254,7 +254,7 @@ FMTactionparser& FMTactionparser::operator = (const FMTactionparser& rhs)
 			std::sort(cleanedactions.begin(), cleanedactions.end());
 		}catch (...)
 			{
-			_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, _section, "while reading", __LINE__, __FILE__);
+			_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, _section, "in FMTactionparser::read", __LINE__, __FILE__);
 			}
         return cleanedactions;
         }

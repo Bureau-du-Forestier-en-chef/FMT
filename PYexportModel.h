@@ -30,6 +30,8 @@ SOFTWARE.
 #include "FMTsesmodel.h"
 #include "FMTnssmodel.h"
 #include "FMTsamodel.h"
+#include "FMTlpsolver.h"
+
 #include "boost/python.hpp"
 
 namespace Python
@@ -150,7 +152,19 @@ void exportModel()
 		.value("CPLEX", Models::FMTsolverinterface::CPLEX)
 		.value("GUROBI", Models::FMTsolverinterface::GUROBI);
 
-	bp::class_<Models::FMTlpmodel, bp::bases<Models::FMTmodel>>("FMTlpmodel", "@DocString(FMTlpmodel)")
+	bp::class_<Models::FMTlpsolver>("FMTlpolver", "@DocString(FMTlpolver)")
+		.def(bp::init<Models::FMTsolverinterface, Logging::FMTlogger&>())
+		.def("isProvenOptimal", &Models::FMTlpsolver::isProvenOptimal,
+			"@DocString(FMTlpsolver::isProvenOptimal)")
+		.def("getObjValue", &Models::FMTlpsolver::getObjValue,
+			"@DocString(FMTlpsolver::getObjValue)")
+		.def("writeLP", &Models::FMTlpsolver::writeLP,
+			"@DocString(FMTlpsolver::writeLP)")
+		.def("writeMPS", &Models::FMTlpsolver::writeMPS,
+			"@DocString(FMTlpsolver::writeMPS)");
+
+
+	bp::class_<Models::FMTlpmodel, bp::bases<Models::FMTmodel, Models::FMTlpsolver>>("FMTlpmodel", "@DocString(FMTlpmodel)")
 		.def(bp::init<Models::FMTmodel, Models::FMTsolverinterface>())
 		.def(bp::init<Models::FMTlpmodel>())
 		.def_pickle(FMT_pickle_suite<Models::FMTlpmodel>())
@@ -175,18 +189,12 @@ void exportModel()
 		.def("initialsolve", &Models::FMTlpmodel::initialsolve,
 			"@DocString(FMTlpmodel::initialsolve)")
 		.def("getoutput", &Models::FMTlpmodel::getoutput, getLPoutputoverloads(bp::args("output", "period", "level"), "@DocString(FMTlpmodel::getoutput)"))
-		.def("writeLP", &Models::FMTlpmodel::writeLP,
-			"@DocString(FMTlpmodel::writeLP)")
-		.def("writeMPS", &Models::FMTlpmodel::writeMPS,
-			"@DocString(FMTlpmodel::writeMPS)")
 		.def("__eq__", &Models::FMTlpmodel::operator ==,
 			"@DocString(FMTlpmodel::operator==)")
 		.def("__ne__", &Models::FMTlpmodel::operator !=,
 			"@DocString(FMTlpmodel::operator!=)")
 		.def("getstats", &Models::FMTlpmodel::getstats,
 			"@DocString(FMTlpmodel::getstats)")
-		.def("getobjectivevalue", &Models::FMTlpmodel::getobjectivevalue,
-			"@DocString(FMTlpmodel::getobjectivevalue)")
 		.def("getoperatingareaheuristics", &Models::FMTlpmodel::getoperatingareaheuristics, getoperatingareaheuristics_overloads(bp::args("opareas", "node", "numberofheuristics", "copysolver"), "@DocString(FMTlpmodel::getoperatingareaheuristics)"))
 		.def("getvariabilities", &Models::FMTlpmodel::getvariabilities, getvariabilities_overloads(bp::args("outputs", "tolerance"), "@DocString(FMTlpmodel::getvariabilities)"))
 		.def("getareavariabilities", &Models::FMTlpmodel::getareavariabilities,getareavariabilities_overloads(bp::args("outputs","globalmask","tolerance"), "@DocString(FMTlpmodel::getareavariabilities)"));

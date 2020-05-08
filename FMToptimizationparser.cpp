@@ -591,7 +591,7 @@ namespace Parser
 			}
 		}catch (...)
 			{
-			_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, _section, "while reading", __LINE__, __FILE__);
+			_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, _section, "in FMToptimizationparser::read", __LINE__, __FILE__);
 			}
 		return constraints;
 		}

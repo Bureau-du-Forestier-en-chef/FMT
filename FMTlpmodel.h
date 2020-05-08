@@ -58,6 +58,7 @@ SOFTWARE.
 #include <queue>
 #include "FMTgraph.h"
 #include "FMTmodel.h"
+#include "FMTlpsolver.h"
 #include "FMTsolverinterface.h"
 #include "FMToperatingareaheuristic.h"
 #include <boost/serialization/export.hpp>
@@ -91,7 +92,7 @@ shrinked (by the front) using the function eraseperiod.
 The matrix is held within the solverinterface pointer.
 */
 
-class FMTlpmodel : public FMTmodel
+class FMTlpmodel : public FMTmodel, public FMTlpsolver
 	{
 	// DocString: FMTlpmodel::save
 	/**
@@ -102,12 +103,11 @@ class FMTlpmodel : public FMTmodel
 	void save(Archive& ar, const unsigned int version) const
 		{
 		ar & boost::serialization::make_nvp("model", boost::serialization::base_object<FMTmodel>(*this));
+		ar & boost::serialization::make_nvp("lpsolve", boost::serialization::base_object<FMTlpsolver>(*this));
 		ar & BOOST_SERIALIZATION_NVP(graph);
 		ar & BOOST_SERIALIZATION_NVP(elements);
-		FMTserializablematrix matrix(solverinterface, solvertype);
-		ar & BOOST_SERIALIZATION_NVP(matrix);
-		ar & BOOST_SERIALIZATION_NVP(deletedconstraints);
-		ar & BOOST_SERIALIZATION_NVP(deletedvariables);
+		//ar & BOOST_SERIALIZATION_NVP(deletedconstraints);
+		//ar & BOOST_SERIALIZATION_NVP(deletedvariables);
 		}
 	// DocString: FMTlpmodel::load
 	/**
@@ -117,36 +117,27 @@ class FMTlpmodel : public FMTmodel
 	void load(Archive& ar, const unsigned int version)
 		{
 		ar & boost::serialization::make_nvp("model", boost::serialization::base_object<FMTmodel>(*this));
+		ar & boost::serialization::make_nvp("lpsolve", boost::serialization::base_object<FMTlpsolver>(*this));
 		ar & BOOST_SERIALIZATION_NVP(graph);
 		ar & BOOST_SERIALIZATION_NVP(elements);
-		FMTserializablematrix matrix;
-		ar & BOOST_SERIALIZATION_NVP(matrix);
-		matrix.setsolvertype(solvertype);
-		solverinterface = matrix.buildsolverinterface(solvertype, &*this->_logger);
-		matrix.setmatrix(solverinterface);
-		ar & BOOST_SERIALIZATION_NVP(deletedconstraints);
-		ar & BOOST_SERIALIZATION_NVP(deletedvariables);
+		this->passinmessagehandler(*this->_logger);
+		//ar & BOOST_SERIALIZATION_NVP(deletedconstraints);
+		//ar & BOOST_SERIALIZATION_NVP(deletedvariables);
 		}
 	BOOST_SERIALIZATION_SPLIT_MEMBER()
 	// DocString: FMTlpmodel::graph
 	///graph holding the FMTdevelopments for all the periods.
 	Graph::FMTgraph graph;
-	// DocString: FMTlpmodel::solvertype
-	///Solver type used maybe usefull for initialsolve or resolve to know what solver we are using to speed-up the process.
-	FMTsolverinterface solvertype;
-	// DocString: FMTlpmodel::solverinterface
-	///The osisolverinterface Abstract class (constraints/objectives/matrix ....LP) can be shared with an heuristic!
-	std::shared_ptr<OsiSolverInterface>solverinterface;
 	// DocString: FMTlpmodel::elements
 	///Locations of the constraints and variables in the matrix for the constraints / objective.
 	std::vector<std::unordered_map<size_t,
 		std::vector<std::vector<int>>>>elements;
 	// DocString: FMTlpmodel::deletedconstraints
 	///Deleted constraints used in replanning context when the constraints indexes need to be updated.
-	std::vector<int>deletedconstraints;
+	//std::vector<int>deletedconstraints;
 	// DocString: FMTlpmodel::deletedvariables
 	///Deleted variables used in replanning context when the variables indexes need to be updated.
-	std::vector<int>deletedvariables;
+	//std::vector<int>deletedvariables;
 	// DocString: FMTlpmodel::summarize
 	/**
 	Simple function to summarize constraints that are un a map structure key = variables, element = coefficiant 
@@ -194,11 +185,6 @@ class FMTlpmodel : public FMTmodel
 	for a given period.
 	*/
 	std::vector<std::vector<int>>getmatrixelement(const Core::FMTconstraint& constraint,int period) const;
-	// DocString: FMTlpmodel::getsolverinterface
-	/**
-	Getter for a shared pointer to the matrix (solverinterface).
-	*/
-	std::shared_ptr<OsiSolverInterface>& getsolverinterface();
 	// DocString: FMTlpmodel::locatelevels
 	/**
 	For a given period lookup in the graph to fill the variables map (variables) for a given level (nodes).
@@ -277,7 +263,7 @@ class FMTlpmodel : public FMTmodel
 		this function will try to use the best solver parameters for a Type III Forest planning model.
 		For all solvers interior point is considered the best algorith.
 		*/
-		bool initialsolve();
+		bool initialsolve() final;
 		// DocString: FMTlpmodel::setsolution
 		/**
 		If the user wants to set a solution for a given period for warmstarting the model or prepare to 
@@ -402,27 +388,12 @@ class FMTlpmodel : public FMTmodel
 																				const Core::FMToutputnode& node,
 																				size_t numberofheuristics=1,
 																				bool copysolver=true);
-		// DocString: FMTlpmodel::getobjectivevalue
-		/**
-		Get the objective value of the solved matrix.
-		*/
-		double getobjectivevalue() const;
 		// DocString: FMTlpmodel::resolve
 		/**
 		By default call solverinterface->resolve() when some changes are done to the model.
 		The user dont necessery need the call initialsolve every time the matrix has changed a call to resolve maybe enought.
 		*/
-		bool resolve();
-		// DocString: FMTlpmodel::writeLP
-		/**
-		Write the solverinterface matrix to a file (location) using the lp formulation.
-		*/
-		void writeLP(const std::string& location) const;
-		// DocString: FMTlpmodel::writeMPS
-		/**
-		Write the solverinterface matrix to a file (location) using the MPS formulation.
-		*/
-		void writeMPS(const std::string& location) const;
+		bool resolve() final;
 		// DocString: FMTlpmodel::operator=
 		/**
 		Copy assignment of FMTlpmodel

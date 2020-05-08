@@ -23,10 +23,6 @@ SOFTWARE.
 */
 #ifdef FMTWITHOSI
 #include "FMTserializablematrix.h"
-#include "OsiClpSolverInterface.hpp"
-#ifdef  FMTWITHMOSEK
-	#include "OsiMskSolverInterface.hpp"
-#endif
 
 namespace Models
 {
@@ -38,8 +34,7 @@ FMTserializablematrix::FMTserializablematrix():
 		rowlb(),
 		rowub(),
 		colsolution(),
-		rowprice(),
-		solvertype()
+		rowprice()
 	{
 
 	}
@@ -51,8 +46,7 @@ FMTserializablematrix::FMTserializablematrix(const FMTserializablematrix& rhs): 
 	rowlb(rhs.rowlb),
 	rowub(rhs.rowub),
 	colsolution(rhs.colsolution),
-	rowprice(rhs.rowprice),
-	solvertype(rhs.solvertype)
+	rowprice(rhs.rowprice)
 	{
 
 	}
@@ -68,12 +62,11 @@ FMTserializablematrix& FMTserializablematrix::operator = (const FMTserializablem
 		rowub = rhs.rowub;
 		colsolution = rhs.colsolution;
 		rowprice = rhs.rowprice;
-		solvertype = rhs.solvertype;
 		}
 	return *this;
 	}
 
-FMTserializablematrix::FMTserializablematrix(const std::shared_ptr<OsiSolverInterface>& solverinterface, const FMTsolverinterface& lsolvertype):
+FMTserializablematrix::FMTserializablematrix(const std::shared_ptr<OsiSolverInterface>& solverinterface):
 	CoinPackedMatrix(),
 	collb(),
 	colub(),
@@ -81,8 +74,7 @@ FMTserializablematrix::FMTserializablematrix(const std::shared_ptr<OsiSolverInte
 	rowlb(),
 	rowub(),
 	colsolution(),
-	rowprice(),
-	solvertype(lsolvertype)
+	rowprice()
 	{
 	if (solverinterface->getNumCols()>0)
 		{
@@ -120,67 +112,6 @@ FMTserializablematrix::FMTserializablematrix(const std::shared_ptr<OsiSolverInte
 		}
 	}
 
-std::shared_ptr<OsiSolverInterface> FMTserializablematrix::buildsolverinterface(const FMTsolverinterface& lsolvertype,
-																			CoinMessageHandler* handler) const
-{
-	std::shared_ptr<OsiSolverInterface>solverinterface;
-	switch (lsolvertype)
-	{
-	case FMTsolverinterface::CLP:
-		solverinterface = std::shared_ptr<OsiClpSolverInterface>(new OsiClpSolverInterface);
-		break;
-	#ifdef  FMTWITHMOSEK
-	case FMTsolverinterface::MOSEK:
-		solverinterface = std::shared_ptr<OsiMskSolverInterface>(new OsiMskSolverInterface);
-		break;
-	#endif
-		/*case FMTsolverinterface::CPLEX:
-			solverinterface = shared_ptr<OsiCpxSolverInterface>(new OsiCpxSolverInterface);
-		break;
-		case FMTsolverinterface::GUROBI:
-			solverinterface = shared_ptr<OsiGrbSolverInterface>(new OsiGrbSolverInterface);
-		break;*/
-	default:
-		solverinterface = std::shared_ptr<OsiClpSolverInterface>(new OsiClpSolverInterface);
-		break;
-	}
-	solverinterface->passInMessageHandler(handler);
-	return solverinterface;
-}
-
-
-std::shared_ptr<OsiSolverInterface> FMTserializablematrix::copysolverinterface(const std::shared_ptr<OsiSolverInterface>& solver_ptr,
-	const FMTsolverinterface& lsolvertype, CoinMessageHandler* handler) const
-	{
-	std::shared_ptr<OsiSolverInterface>solverinterface;
-	switch (lsolvertype)
-		{
-		case FMTsolverinterface::CLP:
-			solverinterface = std::shared_ptr<OsiClpSolverInterface>(new OsiClpSolverInterface(*dynamic_cast<OsiClpSolverInterface*>(solver_ptr.get())));
-			break;
-		#ifdef  FMTWITHMOSEK
-		case FMTsolverinterface::MOSEK:
-			solverinterface = std::shared_ptr<OsiMskSolverInterface>(new OsiMskSolverInterface(*dynamic_cast<OsiMskSolverInterface*>(solver_ptr.get())));
-			break;
-		#endif
-			/*case FMTsolverinterface::CPLEX:
-				solverinterface = shared_ptr<OsiCpxSolverInterface>(new OsiCpxSolverInterface(*dynamic_cast<OsiCpxSolverInterface*>(solver_ptr.get())));
-			break;
-			case FMTsolverinterface::GUROBI:
-				solverinterface = shared_ptr<OsiGrbSolverInterface>(new OsiGrbSolverInterface(*dynamic_cast<OsiGrbSolverInterface*>(solver_ptr.get())));
-			break;*/
-		default:
-			solverinterface = std::shared_ptr<OsiClpSolverInterface>(new OsiClpSolverInterface(*dynamic_cast<OsiClpSolverInterface*>(solver_ptr.get())));
-			break;
-		}
-	solverinterface->passInMessageHandler(handler);
-	return solverinterface;
-	}
-
-void FMTserializablematrix::setsolvertype(FMTsolverinterface& lsolvertype) const
-	{
-	lsolvertype = solvertype;
-	}
 
 void FMTserializablematrix::setmatrix(std::shared_ptr<OsiSolverInterface>& solverinterface) const
 	{

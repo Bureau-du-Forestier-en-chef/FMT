@@ -30,6 +30,7 @@ SOFTWARE.
 #include "FMTsesmodel.h"
 #include "FMTnssmodel.h"
 #include "FMTsamodel.h"
+#include "FMTlpsolver.h"
 #include "Rdefinitions.h"
 #include "FMTsolverinterface.h"
 #include <Rcpp.h>
@@ -47,6 +48,9 @@ RCPP_EXPOSED_AS(Models::FMTnssmodel);
 RCPP_DEFINEVECTOR(Models::FMTnssmodel);//For vector
 #ifdef FMTWITHOSI
 	RCPP_EXPOSED_ENUM_NODECL(Models::FMTsolverinterface);
+	RCPP_EXPOSED_WRAP(Models::FMTlpsolver);
+	RCPP_EXPOSED_AS(Models::FMTlpsolver);
+	RCPP_DEFINEVECTOR(Models::FMTlpsolver);//For vector
 	RCPP_EXPOSED_WRAP(Models::FMTlpmodel);
 	RCPP_EXPOSED_AS(Models::FMTlpmodel);
 	RCPP_DEFINEVECTOR(Models::FMTlpmodel);//For vector
@@ -137,9 +141,21 @@ void exportModel()
 	
 	
 	#ifdef FMTWITHOSI
+	Rcpp::class_<Models::FMTlpsolver>("FMTlpsolver", "@DocString(FMTlpsolver)")
+		.constructor("@DocString(FMTlpsolver())")
+		.method("isProvenOptimal", &Models::FMTlpsolver::isProvenOptimal,
+			"@DocString(FMTlpsolver::isProvenOptimal)")
+		.method("getObjValue", &Models::FMTlpsolver::getObjValue,
+			"@DocString(FMTlpsolver::getObjValue)")
+		.method("writeLP", &Models::FMTlpsolver::writeLP,
+			"@DocString(FMTlpsolver::writeLP)")
+		.method("writeMPS", &Models::FMTlpsolver::writeMPS,
+			"@DocString(FMTlpsolver::writeMPS)");
+
 
 	Rcpp::class_<Models::FMTlpmodel>("FMTlpmodel", "@DocString(FMTlpmodel)")
 		.derives<Models::FMTmodel>("FMTmodel")
+		//.derives<Models::FMTlpsolver>("FMTlpsolver")
 		.constructor<Models::FMTmodel, Models::FMTsolverinterface>("@DocString(FMTlpmodel(Models::FMTmodel,Models::FMTsolverinterface))")
 		.constructor("@DocString(FMTlpmodel())")
 		.constructor<Models::FMTlpmodel>("@DocString(FMTlpmodel(const FMTlpmodel&))")
@@ -165,18 +181,12 @@ void exportModel()
 			"@DocString(FMTlpmodel::initialsolve)")
 		.method("getoutput", &Models::FMTlpmodel::getoutput,
 			"@DocString(FMTlpmodel::getoutput)")
-		.method("writeLP", &Models::FMTlpmodel::writeLP,
-			"@DocString(FMTlpmodel::writeLP)")
-		.method("writeMPS", &Models::FMTlpmodel::writeMPS,
-			"@DocString(FMTlpmodel::writeMPS)")
 		.method("eq", &Models::FMTlpmodel::operator ==,
 			"@DocString(FMTlpmodel::operator==)")
 		.method("ne", &Models::FMTlpmodel::operator !=,
 			"@DocString(FMTlpmodel::operator!=)")
 		.method("getstats", &Models::FMTlpmodel::getstats,
 			"@DocString(FMTlpmodel::getstats)")
-		.method("getobjectivevalue", &Models::FMTlpmodel::getobjectivevalue,
-			"@DocString(FMTlpmodel::getobjectivevalue)")
 		.method("getoperatingareaheuristics", &Models::FMTlpmodel::getoperatingareaheuristics,
 			"@DocString(FMTlpmodel::getoperatingareaheuristics)")
 		.method("getvariabilities", &Models::FMTlpmodel::getvariabilities,

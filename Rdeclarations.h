@@ -40,6 +40,7 @@ SOFTWARE.
 #include "FMTmodel.h"
 #include "FMTsesmodel.h"
 #include "FMTnssmodel.h"
+#include "FMTlpsolver.h"
 #include "FMTlpmodel.h"
 #include "FMTsamodel.h"
 #include "FMToperatingarea.h"
@@ -104,6 +105,7 @@ RCPP_DECLAREVECTOR(Models::FMTsesmodel);//For vector
 RCPP_DECLAREVECTOR(Models::FMTnssmodel);//For vector
 
 #ifdef FMTWITHOSI
+	RCPP_DECLAREVECTOR(Models::FMTlpsolver);//For vector
 	RCPP_DECLAREVECTOR(Models::FMTlpmodel);//For vector
 #endif
 RCPP_DECLAREVECTOR(Models::FMTsamodel);//For vector

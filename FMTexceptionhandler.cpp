@@ -83,24 +83,24 @@ FMTexceptionhandler& FMTexceptionhandler::operator = (const FMTexceptionhandler&
 	return *this;
 }
 
-void FMTexceptionhandler::throw_nested(const  std::exception& texception, int level)
+void FMTexceptionhandler::throw_nested(const  std::exception& texception, int level,bool rethrow)
 {
-	//if (usenestedexceptions)
-	//{
 		*_logger << std::string(level, ' ') << texception.what() << "\n";
 		try {
 			std::rethrow_if_nested(texception);
 		}
 		catch (const  std::exception& texception)
 		{
-			throw_nested(texception, level + 1);
+			throw_nested(texception, level + 1,false);
 		}
 		catch (...)
 		{
 			throw;
 		}
-	//}
-//throw;
+	if (rethrow)
+		{
+		throw;
+		}
 }
 
 void FMTexceptionhandler::enablenestedexceptions()

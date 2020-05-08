@@ -91,8 +91,11 @@ FMTlandscapeparser::FMTlandscapeparser() :
 		}catch (const std::exception& exception)
 			{
 			_exhandler->throw_nested(exception);
-			throw;
-			}
+			}catch (...)
+				{
+				_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
+					_section, "in FMTlandscapeparser::readrasters", __LINE__, __FILE__);
+				}
         return themes;
         }
     std::vector<Core::FMTtheme>FMTlandscapeparser::readvectors(const std::string& location)
@@ -134,8 +137,11 @@ FMTlandscapeparser::FMTlandscapeparser() :
 		}catch (const std::exception& exception)
 			{
 			_exhandler->throw_nested(exception);
-			throw;
-			}
+			}catch (...)
+				{
+				_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
+					_section, "in FMTlandscapeparser::readvectors", __LINE__, __FILE__);
+				}
         return themes;
         }
 #endif
@@ -264,7 +270,7 @@ FMTlandscapeparser::FMTlandscapeparser() :
 			}
 			}catch(...)
 				{
-				_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, _section, "while reading", __LINE__, __FILE__);
+				_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, _section, "in FMTlandscapeparser::read", __LINE__, __FILE__);
 				}
         return themes;
         }

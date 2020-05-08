@@ -60,7 +60,7 @@ namespace Parser{
 			}
 		}catch (...)
 			{
-			_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, _section, "validating rasters", __LINE__, __FILE__);
+			_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, _section, "in FMTareaparser::validate_raster", __LINE__, __FILE__);
 			}
         }
 	std::vector<Core::FMTGCBMtransition> FMTareaparser::getGCBMtransitions(const Spatial::FMTlayer<std::string>& stacked_actions,
@@ -397,10 +397,9 @@ namespace Parser{
 		}catch (const std::exception& exception)
 			{
 			_exhandler->throw_nested(exception);
-			throw;
 			}catch (...)
 				{
-				_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, _section, "while reading rasters", __LINE__, __FILE__);
+				_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, _section, "in FMTareaparser::readrasters", __LINE__, __FILE__);
 				}
 	return Spatial::FMTforest();
 	}
@@ -451,7 +450,7 @@ namespace Parser{
 		}catch (...)
 			{
 			_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, _section,
-				"while getting feature ID "+feature->GetFID(), __LINE__, __FILE__);
+				"in FMTareaparser::getfeaturetodevelopment "+std::to_string(feature->GetFID()), __LINE__, __FILE__);
 			}
 		return Core::FMTactualdevelopment();
 		}
@@ -526,11 +525,10 @@ namespace Parser{
 		}catch (const std::exception& exception)
 			{
 			_exhandler->throw_nested(exception);
-			throw;
 			}
 		catch (...)
 		{
-			_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, _section, "while reading vectors", __LINE__, __FILE__);
+			_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, _section, "in FMTareaparser::readvectors", __LINE__, __FILE__);
 		}
         return devs;
         }
@@ -541,6 +539,8 @@ namespace Parser{
 												double areafactor, std::string lockfield,
 												double minimal_area) const
 		{
+		std::vector<OGRMultiPolygon>multipolygons(operatingareas.size(), OGRMultiPolygon());
+		try {
 		std::map<int, int>themes_fields;
 		int age_field = -1;
 		int lock_field = -1;
@@ -549,9 +549,7 @@ namespace Parser{
 			data_vectors, agefield, areafield, lockfield, themes);
 		OGRLayer * layer = getlayer(dataset, 0);
 		layer = this->subsetlayer(layer, themes, agefield, areafield);
-
 		OGRFeature *feature;
-		std::vector<OGRMultiPolygon>multipolygons(operatingareas.size(),OGRMultiPolygon());
 		while ((feature = layer->GetNextFeature()) != NULL)
 			{
 				const Core::FMTactualdevelopment actualdev = this->getfeaturetodevelopment(feature, themes, themes_fields, age_field,
@@ -578,6 +576,10 @@ namespace Parser{
 				OGRFeature::DestroyFeature(feature);
 			}
 		GDALClose(dataset);
+		}catch (...)
+			{
+			_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, _section, "in FMTareaparser::getmultipolygons", __LINE__, __FILE__);
+			}
 		return multipolygons;
 		}
 	#endif
@@ -764,10 +766,20 @@ namespace Parser{
 																			double areafactor, std::string lockfield,
 																			double minimal_area , double buffersize) const
 				{
-				std::vector<OGRMultiPolygon>multipolygons = this->getmultipolygons(operatingareaparameters, themes, data_vectors,
-																agefield, areafield, agefactor,
-																areafactor, lockfield, minimal_area);
-				return getneighborsfrompolygons(multipolygons, operatingareaparameters, buffersize);
+				try {
+					std::vector<OGRMultiPolygon>multipolygons = this->getmultipolygons(operatingareaparameters, themes, data_vectors,
+						agefield, areafield, agefactor,
+						areafactor, lockfield, minimal_area);
+					return getneighborsfrompolygons(multipolygons, operatingareaparameters, buffersize);
+				}catch (const std::exception& exception)
+					{
+					_exhandler->throw_nested(exception);
+					}
+				catch (...)
+					{
+					_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, _section, "in FMTareaparser::getneighbors", __LINE__, __FILE__);
+					}
+				return std::vector<Heuristics::FMToperatingarea>();
 				}
 		#endif
 #endif
@@ -882,7 +894,7 @@ namespace Parser{
 					}
 				}catch (...)
 					{
-					_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, _section, "while reading", __LINE__, __FILE__);
+					_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, _section, "in FMTareaparser::read", __LINE__, __FILE__);
 					}
 				return areas;
 			}

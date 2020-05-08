@@ -140,7 +140,7 @@ namespace Exception
 		/**
 		This function is not used by FMT seems to be usefull for nested exception thrown.
 		*/
-		void throw_nested(const std::exception& texception, int level = 0);
+		void throw_nested(const std::exception& texception, int level = 0,bool rethrow=true);
 		// DocString: FMTexceptionhandler::raise
 		/**
 		This function throw an FMTexception based on the exception type,section,text to write, line in the source code

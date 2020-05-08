@@ -87,7 +87,7 @@ Core::FMTconstants FMTconstantparser::read(const std::string& location)
 		}
 		}catch (...)
 			{
-			_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, _section, "while reading", __LINE__, __FILE__);
+			_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, _section, "in FMTconstantparser::read", __LINE__, __FILE__);
 			}
     return constants;
     }
