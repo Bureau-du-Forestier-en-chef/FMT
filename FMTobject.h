@@ -32,7 +32,7 @@ SOFTWARE.
 #include <memory>
 
 
-#if defined _MSC_VER || __MINGW64__//_MSC_VER || __CYGWIN__
+#if defined _MSC_VER || __MINGW64__ || __CYGWIN__
 
 #else
     #include <boost/dll/runtime_symbol_info.hpp>
@@ -93,17 +93,17 @@ class FMTobject
 		// DocString: FMTobject::validate
 		/**
 		The funciton validate a the construction of a valid FMTmask using the mask string based on the
-		themes. If their's less themes that the number present in the string mask then the string mask is 
+		themes. If their's less themes that the number present in the string mask then the string mask is
 		going to be trim for the good number of FMTthemes.
 		*/
 		bool validate(const std::vector<Core::FMTtheme>& themes,
 			std::string& mask,std::string otherinformation = std::string()) const;
 		// DocString: FMTobject::checkmask
 		/**
-		This function validate the mask string for a given vector of themes and throw exception if 
+		This function validate the mask string for a given vector of themes and throw exception if
 		something is not right. It'S called by the validate function.
 		*/
-		bool checkmask(const std::vector<Core::FMTtheme>& themes, 
+		bool checkmask(const std::vector<Core::FMTtheme>& themes,
 			const std::vector<std::string>& values, std::string& mask,
 			const std::string& otherinformation) const;
 	public:

@@ -72,7 +72,7 @@
 			<Add option="-ftemplate-backtrace-limit=0" />
 			<Add option="-D_hypot=hypot" />
 			<Add option="-DBOOST_PYTHON_STATIC_LIB" />
-			<Add option="-DFMTPY" />
+			<Add option="-DFMTWITHPYTHON" />
 			<Add option="-DHAVE_SNPRINTF" />
 			<Add option="-DBOOST_DYNAMIC_BITSET_DONT_USE_FRIENDS" />
 			<Add option="-D_CRT_SECURE_NO_WARNINGS" />
@@ -158,6 +158,7 @@
 		<Unit filename="FMTedgeproperties.h" />
 		<Unit filename="FMTerror.cpp" />
 		<Unit filename="FMTerror.h" />
+		<Unit filename="FMTevent.cpp" />
 		<Unit filename="FMTevent.h" />
 		<Unit filename="FMTexception.cpp" />
 		<Unit filename="FMTexception.h" />
@@ -190,12 +191,16 @@
 		<Unit filename="FMTlifespanparser.h" />
 		<Unit filename="FMTlifespans.cpp" />
 		<Unit filename="FMTlifespans.h" />
+		<Unit filename="FMTlinegraph.cpp" />
+		<Unit filename="FMTlinegraph.h" />
 		<Unit filename="FMTlist.cpp" />
 		<Unit filename="FMTlist.h" />
 		<Unit filename="FMTlogger.cpp" />
 		<Unit filename="FMTlogger.h" />
 		<Unit filename="FMTlpmodel.cpp" />
 		<Unit filename="FMTlpmodel.h" />
+		<Unit filename="FMTlpsolver.cpp" />
+		<Unit filename="FMTlpsolver.h" />
 		<Unit filename="FMTmask.cpp" />
 		<Unit filename="FMTmask.h" />
 		<Unit filename="FMTmaskfilter.cpp" />
@@ -210,6 +215,8 @@
 		<Unit filename="FMTmodelparser.h" />
 		<Unit filename="FMTmodelstats.cpp" />
 		<Unit filename="FMTmodelstats.h" />
+		<Unit filename="FMTnssmodel.cpp" />
+		<Unit filename="FMTnssmodel.h" />
 		<Unit filename="FMTobject.cpp" />
 		<Unit filename="FMTobject.h" />
 		<Unit filename="FMToperatingarea.cpp" />
@@ -238,6 +245,12 @@
 		<Unit filename="FMTpythonpickle.h" />
 		<Unit filename="FMTquietexceptionhandler.cpp" />
 		<Unit filename="FMTquietexceptionhandler.h" />
+		<Unit filename="FMTquietlogger.cpp" />
+		<Unit filename="FMTquietlogger.h" />
+		<Unit filename="FMTsaevent.cpp" />
+		<Unit filename="FMTsaevent.h" />
+		<Unit filename="FMTsaeventcontainer.cpp" />
+		<Unit filename="FMTsaeventcontainer.h" />
 		<Unit filename="FMTsamodel.cpp" />
 		<Unit filename="FMTsamodel.h" />
 		<Unit filename="FMTsaschedule.cpp" />
@@ -250,6 +263,7 @@
 		<Unit filename="FMTscheduleparser.h" />
 		<Unit filename="FMTserializablematrix.cpp" />
 		<Unit filename="FMTserializablematrix.h" />
+		<Unit filename="FMTsesevent.h" />
 		<Unit filename="FMTsesmodel.cpp" />
 		<Unit filename="FMTsesmodel.h" />
 		<Unit filename="FMTsolverinterface.cpp" />
@@ -286,11 +300,24 @@
 		<Unit filename="PYexportGraph.h" />
 		<Unit filename="PYexportHeuristics.h" />
 		<Unit filename="PYexportModel.h" />
+		<Unit filename="PYexportParser.h" />
 		<Unit filename="PYexportSpatial.h" />
 		<Unit filename="PYexportVersion.cpp" />
 		<Unit filename="PYexportVersion.h" />
 		<Unit filename="PYexportWSParser.h" />
+		<Unit filename="Rdeclarations.h" />
+		<Unit filename="Rdefinitions.h" />
+		<Unit filename="Readme.txt" />
+		<Unit filename="RexportCore.h" />
+		<Unit filename="RexportExceptions.h" />
+		<Unit filename="RexportGraph.h" />
+		<Unit filename="RexportHeuristics.h" />
+		<Unit filename="RexportModel.h" />
+		<Unit filename="RexportParser.h" />
+		<Unit filename="RexportSpatial.h" />
+		<Unit filename="RexportVersion.h" />
 		<Unit filename="main.cpp" />
+		<Unit filename="resource.h" />
 		<Extensions>
 			<code_completion />
 			<envvars />

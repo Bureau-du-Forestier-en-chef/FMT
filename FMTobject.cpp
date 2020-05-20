@@ -31,11 +31,13 @@ SOFTWARE.
 #include "FMTdebugexceptionhandler.h"
 #include "FMTfreeexceptionhandler.h"
 #include <boost/filesystem.hpp>
-#if defined __MINGW64__
+#if defined __MINGW64__ || __CYGWIN__
 	#include "windows.h"
 	EXTERN_C IMAGE_DOS_HEADER __ImageBase;
+#else
+    #include <boost/dll/runtime_symbol_info.hpp>
 #endif
-#include <boost/dll/runtime_symbol_info.hpp>
+
 
 namespace Core
 {
@@ -49,7 +51,7 @@ namespace Core
 		const std::string strpath(wstrpath.begin(), wstrpath.end());
 #if defined (_MSC_VER)
 		const boost::filesystem::path boost_path(strpath);
-#elif defined __MINGW64__//__CYGWIN__
+#elif defined __MINGW64__||__CYGWIN__
 		std::string clean_path;
         if (strpath.find(":")!= std::string::npos)
             {
