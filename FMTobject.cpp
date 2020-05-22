@@ -35,11 +35,8 @@ namespace Core
 		const std::string strpath(wstrpath.begin(), wstrpath.end());
 #if defined (_MSC_VER)
 		const boost::filesystem::path boost_path(strpath);
-<<<<<<< HEAD
-#elif defined __MINGW64__||__CYGWIN__
-=======
+
 #elif defined __MINGW64__ || __CYGWIN__
->>>>>>> 7d580b187cc3c786f9ed11507a9ac08c3e0c0565
 		std::string clean_path;
         if (strpath.find(":")!= std::string::npos)
             {
