@@ -1,26 +1,10 @@
 /*
-MIT License
+Copyright (c) 2019 Gouvernement du Québec
 
-Copyright (c) [2019] [Bureau du forestier en chef]
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+SPDX-License-Identifier: LiLiQ-R-1.1
+License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
+
 #ifdef FMTWITHOSI
 #include "FMTlpmodel.h"
 #ifdef FMTWITHMOSEK
@@ -332,7 +316,9 @@ namespace Models
 
 				}
 			}
-			return Core::FMTschedule(period, schedule_solution);
+			Core::FMTschedule newschedule(period, schedule_solution);
+			newschedule.passinobject(*this);
+			return newschedule;
 		}
 		return Core::FMTschedule();
 	}
@@ -545,7 +531,7 @@ bool FMTlpmodel::locatenodes(const std::vector<Core::FMToutputnode>& nodes, int 
 					{
 						averagefactor = (1 / (last_period - first_period));
 					}
-					std::vector<Core::FMToutputnode>all_nodes = constraint.getnodes(averagefactor);
+					std::vector<Core::FMToutputnode>all_nodes = constraint.getnodes(area,actions,yields,averagefactor);
 					double lowerbound = 0;
 					double upperbound = 0;
 					double coef_multiplier_lower = 1;
@@ -1186,11 +1172,38 @@ bool FMTlpmodel::locatenodes(const std::vector<Core::FMToutputnode>& nodes, int 
 		const double& lowerb, const double& upperb, const std::map<int, double>& variables) const
 		{
 		try {
-		if (element_type== FMTmatrixelement::constraint)
+			double lower;
+			double upper;
+			double objective;
+			std::vector<int>indicies;
+			std::vector<double>elements;
+		if (element_type == FMTmatrixelement::constraint)
 			{
-			//const double* upperbr = solverinterface->getRowUpper();
+			const int rownelement = this->getrow(matrixindex, lower, upper, indicies, elements);
+		}else {
+			const int colnelement = this->getcol(matrixindex, lower, upper, objective, indicies, elements);
+			}
+		if (lowerb != lower && upperb != upper)
+			{
+			return false;
+			}
+		if (elements.size() == variables.size())
+		{
+			for (size_t elid = 0; elid < elements.size(); ++elid)
+			{
+				const std::map<int, double>::const_iterator itindex = variables.find(indicies.at(elid));
+				if (itindex == variables.end() || itindex->second != elements.at(elid))
+					{
+					return false;
+					}
+			}
+		}
+
+		/*if (element_type== FMTmatrixelement::constraint)
+			{
+			const double* upperbr = this->getRowUpper();
 			const double* lowerbr = this->getRowLower();
-			if (lowerb != *(lowerbr+ matrixindex) && upperb != *(lowerbr + matrixindex))
+			if (lowerb != *(lowerbr+ matrixindex) && upperb != *(upperbr + matrixindex))
 				{
 				return false;
 				}
@@ -1210,6 +1223,7 @@ bool FMTlpmodel::locatenodes(const std::vector<Core::FMToutputnode>& nodes, int 
 						}
 					}
 				}
+
 		}else {
 			const double* upperbcols = this->getColUpper();
 			const double* lowerbcols = this->getColLower();
@@ -1233,7 +1247,7 @@ bool FMTlpmodel::locatenodes(const std::vector<Core::FMToutputnode>& nodes, int 
 						}
 					}
 				}
-			}
+			}*/
 		}catch (...)
 			{
 			_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
@@ -1255,7 +1269,7 @@ bool FMTlpmodel::locatenodes(const std::vector<Core::FMToutputnode>& nodes, int 
 			{
 				averagefactor = (1 / (last_period - first_period));
 			}
-			const std::vector<Core::FMToutputnode>all_nodes = objective.getnodes(averagefactor);
+			const std::vector<Core::FMToutputnode>all_nodes = objective.getnodes(area,actions,yields,averagefactor);
 			std::map<int, double>all_variables;
 			if (!objective.extravariables())
 			{
@@ -1514,6 +1528,7 @@ bool FMTlpmodel::locatenodes(const std::vector<Core::FMToutputnode>& nodes, int 
 				allheuristics.emplace_back(*allheuristics.begin());
 				allheuristics.back().setasrandom();
 				allheuristics.back().setgeneratorseed(seedof);
+				allheuristics.back().passinobject(*this);
 				seedof += 1;
 				}
 		}catch (const std::exception& exception)
@@ -1585,5 +1600,5 @@ bool FMTlpmodel::locatenodes(const std::vector<Core::FMToutputnode>& nodes, int 
 
 }
 
-BOOST_CLASS_EXPORT_IMPLEMENT(Models::FMTlpmodel);
+BOOST_CLASS_EXPORT_IMPLEMENT(Models::FMTlpmodel)
 #endif

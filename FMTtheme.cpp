@@ -1,32 +1,15 @@
 /*
-MIT License
+Copyright (c) 2019 Gouvernement du Québec
 
-Copyright (c) [2019] [Bureau du forestier en chef]
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+SPDX-License-Identifier: LiLiQ-R-1.1
+License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
 #include "FMTtheme.h"
 #include "FMTmask.h"
 
 namespace Core {
-FMTtheme::FMTtheme():id(),start(),aggregates(), source_aggregates(),valuenames(),indexes(),name()
+FMTtheme::FMTtheme():FMTobject(),id(),start(),aggregates(), source_aggregates(),valuenames(),indexes(),name()
 
 	{
 
@@ -71,7 +54,7 @@ std::map<std::string, std::vector<std::string>>FMTtheme::desagregate(std::map<st
         }
     return laggregates;
     }
-FMTtheme::FMTtheme(const std::map<std::string, std::vector<std::string>>&laggregates,const std::map<std::string, std::string>&lvaluenames,const int& lid,const int& lstart,const std::string& lname) : id(lid),start(lstart),aggregates(), source_aggregates(laggregates),valuenames(lvaluenames),indexes(),name(lname)
+FMTtheme::FMTtheme(const std::map<std::string, std::vector<std::string>>&laggregates,const std::map<std::string, std::string>&lvaluenames,const int& lid,const int& lstart,const std::string& lname) : FMTobject(),id(lid),start(lstart),aggregates(), source_aggregates(laggregates),valuenames(lvaluenames),indexes(),name(lname)
         {
         std::vector<std::string>basevalues;
          for (std::map<std::string, std::string>::const_iterator it=lvaluenames.begin(); it!=lvaluenames.end(); ++it)
@@ -85,7 +68,7 @@ FMTtheme::FMTtheme(const std::map<std::string, std::vector<std::string>>&laggreg
         }
 
 FMTtheme::FMTtheme(const std::map<std::string, std::vector<std::string>>&laggregates,const std::map<std::string,std::string>&lvaluenames,
-                 const std::map<std::string, std::map<std::string,double>>& indexing,const int& lid,const int& lstart,const std::string& lname) : id(lid),start(lstart),aggregates(), source_aggregates(laggregates),valuenames(lvaluenames),indexes(indexing),name(lname)
+                 const std::map<std::string, std::map<std::string,double>>& indexing,const int& lid,const int& lstart,const std::string& lname) : FMTobject(),id(lid),start(lstart),aggregates(), source_aggregates(laggregates),valuenames(lvaluenames),indexes(indexing),name(lname)
         {
         std::vector<std::string>basevalues;
          for (std::map<std::string, std::string>::const_iterator it=lvaluenames.begin(); it!=lvaluenames.end(); ++it)
@@ -98,7 +81,7 @@ FMTtheme::FMTtheme(const std::map<std::string, std::vector<std::string>>&laggreg
 			}
         }
 
-FMTtheme::FMTtheme(const FMTtheme& rhs) : id(rhs.id), start(rhs.start), aggregates(rhs.aggregates),
+FMTtheme::FMTtheme(const FMTtheme& rhs) : FMTobject(rhs),id(rhs.id), start(rhs.start), aggregates(rhs.aggregates),
 									source_aggregates(rhs.source_aggregates), valuenames(rhs.valuenames),indexes(rhs.indexes), name(rhs.name)
 	{
 
@@ -108,6 +91,7 @@ FMTtheme& FMTtheme::operator = (const FMTtheme& rhs)
 	{
 	if (this!=&rhs)
 		{
+		FMTobject::operator=(rhs);
 		id = rhs.id;
 		start = rhs.start;
 		aggregates = rhs.aggregates;
@@ -352,4 +336,4 @@ FMTtheme FMTtheme::presolve(const FMTmask& basemask, int& newid, int& newstart, 
 
 }
 
-BOOST_CLASS_EXPORT_IMPLEMENT(Core::FMTtheme);
+BOOST_CLASS_EXPORT_IMPLEMENT(Core::FMTtheme)

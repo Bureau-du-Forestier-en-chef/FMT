@@ -1,3 +1,10 @@
+/*
+Copyright (c) 2019 Gouvernement du Québec
+
+SPDX-License-Identifier: LiLiQ-R-1.1
+License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
+*/
+
 #ifdef FMTWITHOSI
 
 #include "FMTmatrixbuild.h"
@@ -17,6 +24,34 @@ namespace Models
 		{
 		sortelementsandclean(deletedconstraints);
 		sortelementsandclean(deletedvariables);
+		}
+
+	int FMTmatrixbuild::getrow(int whichRow, double &rowLower, double &rowUpper,
+		std::vector<int>& indices, std::vector<double>&elements) const 
+		{
+		const int * indicesarray;
+		const double * elementsarray;
+		int sizeofrow = rowsbuild.row(whichRow, rowLower, rowUpper, indicesarray, elementsarray);
+		indices.reserve(sizeofrow);
+		elements.reserve(sizeofrow);
+		indices.insert(indices.end(), indicesarray, indicesarray + sizeofrow);
+		elements.insert(elements.end(), elementsarray, elementsarray + sizeofrow);
+		//need to delete arrays?
+		return sizeofrow;
+		}
+
+	int FMTmatrixbuild::getcol(int whichCol, double &colLower, double &colUpper, double &objectiveValue,
+		std::vector<int>& indices, std::vector<double>&elements) const
+		{
+		const int * indicesarray;
+		const double * elementsarray;
+		int sizeofcol = rowsbuild.column(whichCol, colLower, colUpper, objectiveValue, indicesarray, elementsarray);
+		indices.reserve(sizeofcol);
+		elements.reserve(sizeofcol);
+		indices.insert(indices.end(), indicesarray, indicesarray + sizeofcol);
+		elements.insert(elements.end(), elementsarray, elementsarray + sizeofcol);
+		//need to delete arrays?
+		return sizeofcol;
 		}
 
 	void FMTmatrixbuild::synchronize(std::shared_ptr<OsiSolverInterface> solver)

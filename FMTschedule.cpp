@@ -1,34 +1,17 @@
 /*
-MIT License
+Copyright (c) 2019 Gouvernement du Québec
 
-Copyright (c) [2019] [Bureau du forestier en chef]
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+SPDX-License-Identifier: LiLiQ-R-1.1
+License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
 #include "FMTschedule.h"
 
 namespace Core{
 
-FMTschedule::FMTschedule():period(),elements(){}
+FMTschedule::FMTschedule():FMTobject(),period(),elements(){}
 
-FMTschedule::FMTschedule(const int& lperiod, std::vector<FMTschedule>& schedules) : period(lperiod),elements()
+FMTschedule::FMTschedule(const int& lperiod, std::vector<FMTschedule>& schedules) : FMTobject(),period(lperiod),elements()
 	{
 	if (!schedules.empty())
 		{
@@ -40,12 +23,12 @@ FMTschedule::FMTschedule(const int& lperiod, std::vector<FMTschedule>& schedules
 		}
 	}
 
-FMTschedule::FMTschedule(int lperiod, std::map<FMTaction, std::map<FMTdevelopment, std::vector<double>>> mapping) : period(lperiod),elements(mapping)
+FMTschedule::FMTschedule(int lperiod, std::map<FMTaction, std::map<FMTdevelopment, std::vector<double>>> mapping) : FMTobject(),period(lperiod),elements(mapping)
     {
 
     }
 
-FMTschedule::FMTschedule(int lperiod, const std::map<FMTaction, std::map<FMTdevelopment, std::map<int, double>>>& mapping) : period(lperiod), elements()
+FMTschedule::FMTschedule(int lperiod, const std::map<FMTaction, std::map<FMTdevelopment, std::map<int, double>>>& mapping) : FMTobject(),period(lperiod), elements()
 	{
 	for (std::map<FMTaction, std::map<FMTdevelopment, std::map<int, double>>>::const_iterator its = mapping.begin(); its != mapping.end(); its++)
 		{
@@ -61,7 +44,7 @@ FMTschedule::FMTschedule(int lperiod, const std::map<FMTaction, std::map<FMTdeve
 		}
 	}
 
-FMTschedule::FMTschedule(const FMTschedule& rhs) : period(rhs.period),elements(rhs.elements)
+FMTschedule::FMTschedule(const FMTschedule& rhs) : FMTobject(rhs),period(rhs.period),elements(rhs.elements)
     {
 
     }
@@ -70,6 +53,7 @@ FMTschedule& FMTschedule::operator = (const FMTschedule& rhs)
     {
     if (this!=&rhs)
         {
+		FMTobject::operator=(rhs);
         elements = rhs.elements;
         period = rhs.period;
         }
@@ -381,4 +365,4 @@ FMTschedule::operator std::string() const
 
 }
 
-BOOST_CLASS_EXPORT_IMPLEMENT(Core::FMTschedule);
+BOOST_CLASS_EXPORT_IMPLEMENT(Core::FMTschedule)

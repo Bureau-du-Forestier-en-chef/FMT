@@ -1,26 +1,10 @@
 /*
-MIT License
+Copyright (c) 2019 Gouvernement du Québec
 
-Copyright (c) [2019] [Bureau du forestier en chef]
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+SPDX-License-Identifier: LiLiQ-R-1.1
+License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
+
 #include <boost/algorithm/string.hpp>
 
 #include "FMTmodel.h"
@@ -38,12 +22,14 @@ void FMTmodel::setdefaultobjects()
 		_exhandler->raise(Exception::FMTexc::FMTundefineddeathaction, Core::FMTsection::Action,
 			"_DEATH", __LINE__, __FILE__);
 		actions.push_back(defaultdeathaction(lifespan,themes));
+		actions.back().passinobject(*this);
 		}
 	if (std::find_if(transitions.begin(), transitions.end(), Core::FMTtransitioncomparator("_DEATH")) == transitions.end())
 		{
 		_exhandler->raise(Exception::FMTexc::FMTundefineddeathtransition, Core::FMTsection::Transition,
 			"_DEATH", __LINE__, __FILE__);
 		transitions.push_back(defaultdeathtransition(lifespan,themes));
+		transitions.back().passinobject(*this);
 		}
 	for (Core::FMTaction& action : actions)
 		{
@@ -224,6 +210,10 @@ void FMTmodel::addoutput(const std::string& name,
 void FMTmodel::setconstraints(const std::vector<Core::FMTconstraint>& lconstraint)
 	{
 	constraints = lconstraint;
+	for (Core::FMTconstraint& constraint : constraints)
+		{
+		constraint.passinobject(*this);
+		}
 	}
 
 bool  FMTmodel::operator == (const FMTmodel& rhs) const
@@ -295,6 +285,10 @@ void FMTmodel::setarea(const std::vector<Core::FMTactualdevelopment>& ldevs)
 void FMTmodel::setthemes(const std::vector<Core::FMTtheme>& lthemes)
     {
     themes = lthemes;
+	for (Core::FMTtheme& theme : themes)
+		{
+		theme.passinobject(*this);
+		}
 	//After theme change every masks needs to be reevaluated?.
 
 
@@ -304,6 +298,7 @@ void FMTmodel::setactions(const std::vector<Core::FMTaction>& lactions)
 	actions = lactions;
 	for (Core::FMTaction& action : actions)
 		{
+		action.passinobject(*this);
 		action.update();
 		}
 	this->setdefaultobjects();
@@ -313,6 +308,7 @@ void FMTmodel::settransitions(const std::vector<Core::FMTtransition>& ltransitio
     transitions = ltransitions;
 	for (Core::FMTtransition& transition : transitions)
 		{
+		transition.passinobject(*this);
 		transition.update();
 		}
 	this->setdefaultobjects();
@@ -320,12 +316,14 @@ void FMTmodel::settransitions(const std::vector<Core::FMTtransition>& ltransitio
 void FMTmodel::setyields(const Core::FMTyields& lylds)
     {
     yields = lylds;
+	yields.passinobject(*this);
 	yields.update();
     }
 void FMTmodel::setlifespan(const Core::FMTlifespans& llifespan)
     {
     lifespan = llifespan;
 	lifespan.update();
+	lifespan.passinobject(*this);
 	this->setdefaultobjects();
     }
 
@@ -337,6 +335,10 @@ void FMTmodel::setname(const std::string& newname)
 void FMTmodel::setoutputs(const std::vector<Core::FMToutput>& newoutputs)
 	{
 	outputs = newoutputs;
+	for (Core::FMToutput& output : outputs)
+		{
+		output.passinobject(*this);
+		}
 	}
 
 
@@ -611,6 +613,7 @@ std::unique_ptr<FMTmodel> FMTmodel::presolve(int presolvepass,std::vector<Core::
 			didonepass = true;
 		}
 	presolvedmodel = std::unique_ptr<FMTmodel>(new FMTmodel(oldarea, oldthemes, oldactions, oldtransitions, oldyields, oldlifespans, name, oldoutputs, oldconstraints));
+	presolvedmodel->passinobject(*this);
 	presolvedmodel->cleanactionsntransitions();
 	}catch (...)
 		{
@@ -784,6 +787,106 @@ void FMTmodel::setareaperiod(const int& period)
 		}
 	}
 
+
+void FMTmodel::passinlogger(const std::shared_ptr<Logging::FMTlogger>& logger)
+	{
+	FMTobject::passinlogger(logger);
+	this->passinobject(*this);
+	}	
+
+void FMTmodel::passinexceptionhandler(const std::shared_ptr<Exception::FMTexceptionhandler>& exhandler)
+	{
+	FMTobject::passinexceptionhandler(exhandler);
+	this->passinobject(*this);
+	}
+
+void FMTmodel::passinobject(const Core::FMTobject& rhs)
+	{
+	for (Core::FMTactualdevelopment& dev : area)
+		{
+		dev.passinobject(rhs);
+		}
+	for (Core::FMTtheme& theme : themes)
+		{
+		theme.passinobject(rhs);
+		}
+	for (Core::FMTaction& action : actions)
+		{
+		action.passinobject(rhs);
+		}
+	for (Core::FMTtransition& transition : transitions)
+		{
+		transition.passinobject(rhs);
+		}
+	yields.passinobject(rhs);
+	lifespan.passinobject(rhs);
+	for (Core::FMToutput& output : outputs)
+		{
+		output.passinobject(rhs);
+		}
+	for (Core::FMTconstraint& constraint : constraints)
+		{
+		constraint.passinobject(rhs);
+		}
+	}
+
+void FMTmodel::setdefaultlogger()
+{
+	FMTobject::setdefaultlogger();
+	this->passinobject(*this);
+}
+
+void FMTmodel::setquietlogger()
+{
+	FMTobject::setquietlogger();
+	this->passinobject(*this);
+}
+
+void FMTmodel::setdebuglogger()
+{
+	FMTobject::setdebuglogger();
+	this->passinobject(*this);
+}
+
+void FMTmodel::setdefaultexceptionhandler()
+{
+	FMTobject::setdefaultexceptionhandler();
+	this->passinobject(*this);
+}
+
+void FMTmodel::setquietexceptionhandler()
+{
+	FMTobject::setquietexceptionhandler();
+	this->passinobject(*this);
+}
+
+void FMTmodel::setdebugexceptionhandler()
+{
+	FMTobject::setdebugexceptionhandler();
+	this->passinobject(*this);
+}
+
+void FMTmodel::setfreeexceptionhandler()
+{
+	FMTobject::setfreeexceptionhandler();
+	this->passinobject(*this);
+}
+
+void FMTmodel::disablenestedexceptions()
+{
+	FMTobject::disablenestedexceptions();
+	this->passinobject(*this);
+}
+
+void FMTmodel::enablenestedexceptions()
+{
+	FMTobject::enablenestedexceptions();
+	this->passinobject(*this);
+}
+
+
+
+
 FMTmodelcomparator::FMTmodelcomparator(std::string name) :model_name(name) {}
 
 bool FMTmodelcomparator::operator()(const FMTmodel& model) const
@@ -791,6 +894,13 @@ bool FMTmodelcomparator::operator()(const FMTmodel& model) const
 	return(model_name == model.getname());
 	}
 
+
+
+
+
+
 }
 
-BOOST_CLASS_EXPORT_IMPLEMENT(Models::FMTmodel);
+
+
+BOOST_CLASS_EXPORT_IMPLEMENT(Models::FMTmodel)

@@ -1,25 +1,8 @@
 /*
-MIT License
+Copyright (c) 2019 Gouvernement du Québec
 
-Copyright (c) [2019] [Bureau du forestier en chef]
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+SPDX-License-Identifier: LiLiQ-R-1.1
+License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
 #ifdef FMTWITHOSI
@@ -512,6 +495,11 @@ namespace Models
 		matrixcache.sortandcleandeleted();
 		}
 
+	FMTlpsolver::FMTlpsolver(): solverinterface(), usecache(), solvertype()
+		{
+
+		}
+
 	std::string FMTlpsolver::getcacheelements() const
 		{
 		return matrixcache.getrowstosynchronize() + "\n" +
@@ -539,6 +527,82 @@ namespace Models
 		return value;
 		}
 
+	int FMTlpsolver::getrow(int whichRow, double &rowLower, double &rowUpper,
+		std::vector<int>&indices, std::vector<double>&elements) const
+		{
+		const int numberofnoncacherows = solverinterface->getNumRows();
+		if (matrixcache.numberofdeletedRows() >0 || matrixcache.numberofdeletedCols() > 0)
+			{
+			matrixcache.synchronize(solverinterface);
+		}else if (whichRow >= numberofnoncacherows &&
+			whichRow <(numberofnoncacherows + matrixcache.numbernewRows()))
+			{
+			return matrixcache.getrow(whichRow, rowLower, rowUpper, indices, elements);
+			}
+		if (whichRow<solverinterface->getNumRows())
+			{
+			rowLower = *(solverinterface->getRowLower()+ whichRow);
+			rowUpper = *(solverinterface->getRowUpper() + whichRow);
+			const CoinPackedMatrix* rowpacked = solverinterface->getMatrixByRow();
+			const int vectorsize = rowpacked->getVectorSize(whichRow);
+			const int* matrixindicies = rowpacked->getIndices();
+			const int* vectorstarts = rowpacked->getVectorStarts();
+			const double* matrixelements = rowpacked->getElements();
+			indices.reserve(vectorsize);
+			elements.reserve(vectorsize);
+			for (int index = *(vectorstarts + whichRow); index < (*(vectorstarts + whichRow) + vectorsize); ++index)
+				{
+				indices.push_back(*(matrixindicies + index));
+				elements.push_back(*(matrixelements + index));
+				}
+			return static_cast<int>(indices.size());
+			}else {
+				throw Exception::FMTerror(Exception::FMTexc::FMTfunctionfailed,
+					" in FMTlpsolver::getrow for row id " + whichRow);
+				}
+		return -1;
+		}
+
+	int FMTlpsolver::getcol(int whichCol, double &colLower, double &colUpper, double &objectiveValue,
+		std::vector<int>& indices, std::vector<double>&elements) const
+		{
+		const int numberofnoncachecols = solverinterface-> getNumCols();
+		const int numberofdeletedcols = matrixcache.numberofdeletedCols();
+		if (matrixcache.numberofdeletedRows() > 0 || matrixcache.numberofdeletedCols() > 0)
+		{
+			matrixcache.synchronize(solverinterface);
+		}
+		else if (whichCol >= numberofnoncachecols &&
+			whichCol < (numberofnoncachecols + matrixcache.numbernewCols()))
+		{
+			return matrixcache.getcol(whichCol, colLower, colUpper, objectiveValue, indices, elements);
+		}
+		if (whichCol < solverinterface->getNumCols())
+		{
+			colLower = *(solverinterface->getColLower()+ whichCol);
+			colUpper = *(solverinterface->getColUpper() + whichCol);
+			objectiveValue = *(solverinterface->getObjCoefficients() + whichCol);
+			const CoinPackedMatrix* colpacked = solverinterface->getMatrixByCol();
+			const int vectorsize = colpacked->getVectorSize(whichCol);
+			const int* matrixindicies = colpacked->getIndices();
+			const int* vectorstarts = colpacked->getVectorStarts();
+			const double* matrixelements = colpacked->getElements();
+			indices.reserve(vectorsize);
+			elements.reserve(vectorsize);
+			for (int index = *(vectorstarts + whichCol); index < (*(vectorstarts + whichCol) + vectorsize); ++index)
+			{
+				indices.push_back(*(matrixindicies + index));
+				elements.push_back(*(matrixelements + index));
+			}
+			return static_cast<int>(indices.size());
+		}
+		else {
+			throw Exception::FMTerror(Exception::FMTexc::FMTfunctionfailed,
+				" in FMTlpsolver::getcol for column id " + whichCol);
+		}
+		return -1;
+		}
+
 }
-BOOST_CLASS_EXPORT_IMPLEMENT(Models::FMTlpsolver);
+BOOST_CLASS_EXPORT_IMPLEMENT(Models::FMTlpsolver)
 #endif

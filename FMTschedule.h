@@ -1,25 +1,8 @@
 /*
-MIT License
+Copyright (c) 2019 Gouvernement du Québec
 
-Copyright (c) [2019] [Bureau du forestier en chef]
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+SPDX-License-Identifier: LiLiQ-R-1.1
+License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
 #ifndef FMTschedule_H_INCLUDED
@@ -29,6 +12,7 @@ SOFTWARE.
 #include <vector>
 #include "FMTdevelopment.h"
 #include "FMTaction.h"
+#include "FMTobject.h"
 #include <iterator>
 #include <boost/serialization/export.hpp>
 
@@ -41,7 +25,7 @@ It describes the area of a given developements for which an FMTaction can be ope
 The vector is a reprensentation of lock level at position 0 in the vector the lock level = 0 (if lock level 0 exist in the graph
 , at position 1 lock level = 1.
 */
-class FMTschedule
+class FMTschedule : public FMTobject
     {
 	// DocString: FMTschedule::serialize
 	/**
@@ -87,6 +71,11 @@ class FMTschedule
 		Default FMTschedule constructor.
 		*/
         FMTschedule();
+		// DocString: ~FMTschedule()
+		/**
+		Default ~FMTschedule constructor.
+		*/
+		~FMTschedule() = default;
 		// DocString: FMTschedule(const FMTschedule&)
 		/**
 		Default FMTschedule copy constructor.
@@ -196,5 +185,5 @@ class FMTschedule
 
 
 }
-BOOST_CLASS_EXPORT_KEY(Core::FMTschedule);
+BOOST_CLASS_EXPORT_KEY(Core::FMTschedule)
 #endif // FMTschedule_H_INCLUDED

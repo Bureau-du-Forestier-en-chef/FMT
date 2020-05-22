@@ -1,25 +1,8 @@
 /*
-MIT License
+Copyright (c) 2019 Gouvernement du Québec
 
-Copyright (c) [2019] [Bureau du forestier en chef]
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+SPDX-License-Identifier: LiLiQ-R-1.1
+License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
 #include "FMTgraph.h"
@@ -866,7 +849,7 @@ std::map<std::string, double> FMTgraph::getoutput(const Models::FMTmodel& model,
 			}
 		if (!output.islevel())
 		{
-			for (const Core::FMToutputnode& output_node : output.getnodes())
+			for (const Core::FMToutputnode& output_node : output.getnodes(model.area,model.actions,model.yields))
 			{
 				std::map<std::string, double> srcvalues = getsource(model, output_node, period, targettheme, solution, level);
 				if (level == FMToutputlevel::developpement)
@@ -1045,7 +1028,69 @@ void FMTgraph::updatematrixindex(const std::vector<int>& removedvariables,const 
 	//You need to update the whole graph...
 	//Call this function once ...alot of computing dones
 	{
-	std::vector<std::unordered_map<size_t, FMTvertex_descriptor>>::iterator perioddevsit = this->getfirstblock();
+	//Everything is sorted
+	if (!removedconstraints.empty())
+		{
+		const int& maxconstraint = removedconstraints.back();
+		const int& minconstraint = removedconstraints.front();
+		FMTvertex_iterator vertex_iterator, vertex_iterator_end;
+		for (boost::tie(vertex_iterator, vertex_iterator_end) = boost::vertices(data); vertex_iterator != vertex_iterator_end; ++vertex_iterator)
+			{
+			FMTvertexproperties& vertexproperty = data[*vertex_iterator];
+			const int actualconstraint = vertexproperty.getconstraintID();
+			if (actualconstraint >= 0)
+				{
+				int toremove = 0;
+				if (actualconstraint>minconstraint && actualconstraint<maxconstraint)
+					{
+					std::vector<int>::const_iterator removeditconstraint = removedconstraints.begin();
+					while (removeditconstraint != removedconstraints.end() && actualconstraint > *removeditconstraint)
+						{
+						++toremove;
+						++removeditconstraint;
+						}
+				}else if (actualconstraint> maxconstraint)
+					{
+					toremove = static_cast<int>(removedconstraints.size());
+					}
+				vertexproperty.setconstraintID(actualconstraint - toremove);
+				}
+			}
+		}
+
+	if (!removedvariables.empty())
+		{
+		const int& maxvariable = removedvariables.back();
+		const int& minvariable = removedvariables.front();
+		FMTedge_iterator edge_iterator, edge_iterator_end;
+		for (boost::tie(edge_iterator, edge_iterator_end) = boost::edges(data); edge_iterator != edge_iterator_end; ++edge_iterator)
+			{
+			FMTedgeproperties& edgeproperty = data[*edge_iterator];
+			const int actualvariable = edgeproperty.getvariableID();
+			if (actualvariable >= 0)
+				{
+				int toremove = 0;
+				if (actualvariable > minvariable && actualvariable < maxvariable)
+					{
+					std::vector<int>::const_iterator removeditvariable = removedvariables.begin();
+					while (removeditvariable != removedvariables.end() && actualvariable > *removeditvariable)
+						{
+						++toremove;
+						++removeditvariable;
+						}
+				}else if (actualvariable > maxvariable)
+					{
+					toremove = static_cast<int>(removedvariables.size());
+					}
+				edgeproperty.setvariableID(actualvariable - toremove);
+				}
+	
+			}
+		}
+	
+
+
+	/*std::vector<std::unordered_map<size_t, FMTvertex_descriptor>>::iterator perioddevsit = this->getfirstblock();
 	while (perioddevsit!= developments.end())
 			{
 			for (std::unordered_map<size_t, FMTvertex_descriptor>::iterator it = perioddevsit->begin();
@@ -1088,7 +1133,7 @@ void FMTgraph::updatematrixindex(const std::vector<int>& removedvariables,const 
 
 				}
 			++perioddevsit;
-			}
+			}*/
 	}
 
 std::vector<std::unordered_map<size_t, FMTvertex_descriptor>>::iterator FMTgraph::getfirstblock()

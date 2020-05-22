@@ -1,25 +1,8 @@
 /*
-MIT License
+Copyright (c) 2019 Gouvernement du Québec
 
-Copyright (c) [2019] [Bureau du forestier en chef]
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+SPDX-License-Identifier: LiLiQ-R-1.1
+License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
 #ifndef FMTOSR_H_INCLUDED
@@ -31,6 +14,7 @@ SOFTWARE.
 #include "FMTyields.h"
 #include <vector>
 #include "FMTdevelopment.h"
+#include "FMTactualdevelopment.h"
 #include <boost/serialization/serialization.hpp>
 #include <string>
 #include "FMTaction.h"
@@ -59,6 +43,7 @@ class FMToutputsource : public FMTspec
 	bool average;
     public:
 		FMToutputsource();
+		~FMToutputsource() = default;
         FMToutputsource(const FMTotar ltarget,double lvalue = 0, std::string lyield= "", std::string laction = "");
         FMToutputsource(const FMTotar ltarget, std::vector<double>lvalues);
         FMToutputsource(const FMTspec& spec,const FMTmask& lmask,
@@ -102,6 +87,9 @@ class FMToutputsource : public FMTspec
 		FMToutputsource presolve(const FMTmask& presolvedmask,const std::vector<FMTtheme>& newthemes) const;
 		void setaverage();
 		bool isaverage() const;
+		bool canbededucedtoconstant() const;
+		double getconstantvalue(const std::vector<Core::FMTactualdevelopment>& area,
+								const std::vector<Core::FMTaction>&actions, const FMTyields& yields) const;
 		size_t hash(int period = -1) const;
     };
 

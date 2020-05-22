@@ -1,25 +1,8 @@
 /*
-MIT License
+Copyright (c) 2019 Gouvernement du Québec
 
-Copyright (c) [2019] [Bureau du forestier en chef]
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+SPDX-License-Identifier: LiLiQ-R-1.1
+License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
 #ifndef FMTtheme_H_INCLUDED
@@ -37,6 +20,7 @@ SOFTWARE.
 #include <boost/serialization/string.hpp>
 #include "FMTexception.h"
 #include "FMTmask.h"
+#include "FMTobject.h"
 
 
 
@@ -48,7 +32,7 @@ FMTtheme hold multiple attributes for only one theme. FMTtheme gives the descrip
 from the start bit to the start + theme.size() bit. It also hold the information about attribute aggregates.
 FMTtheme is realy close to FMTmask class.
 */
-class FMTtheme
+class FMTtheme : public FMTobject
     {
     friend class FMTmask;
     protected:
@@ -251,6 +235,6 @@ class FMTtheme
     };
 }
 
-BOOST_CLASS_EXPORT_KEY(Core::FMTtheme);
+BOOST_CLASS_EXPORT_KEY(Core::FMTtheme)
 
 #endif // FMTtheme_H_INCLUDED

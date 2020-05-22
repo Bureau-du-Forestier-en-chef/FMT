@@ -1,25 +1,8 @@
 /*
-MIT License
+Copyright (c) 2019 Gouvernement du Québec
 
-Copyright (c) [2019] [Bureau du forestier en chef]
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+SPDX-License-Identifier: LiLiQ-R-1.1
+License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
 
@@ -85,6 +68,7 @@ FMTlandscapeparser::FMTlandscapeparser() :
             GDALDataset* dataset = getdataset(location);
 			const std::vector<std::string>categories = getcat(dataset);
             themes.push_back(Core::FMTtheme(categories,id,start,""));
+			themes.back().passinobject(*this);
             start+=static_cast<int>(categories.size());
             ++id;
             }
@@ -131,6 +115,7 @@ FMTlandscapeparser::FMTlandscapeparser() :
 			for (const std::vector<std::string>& themeattribute : themesattributes)
 			{
 				themes.push_back(Core::FMTtheme(themeattribute, id, start, ""));
+				themes.back().passinobject(*this);
 				++id;
 				start += static_cast<int>(themeattribute.size());
 			}
@@ -192,6 +177,7 @@ FMTlandscapeparser::FMTlandscapeparser() :
 								}
 
 								themes.push_back(Core::FMTtheme(aggregates, valuenames, indexes_values, id, start, themename));
+								themes.back().passinobject(*this);
 								start += stop;
 								aggregatename.clear();
 								aggregates.clear();
@@ -267,6 +253,7 @@ FMTlandscapeparser::FMTlandscapeparser() :
 					_exhandler->raise(Exception::FMTexc::FMTempty_theme, _section, "Theme " + std::to_string(id + 1), __LINE__, __FILE__);
 				}
 				themes.push_back(Core::FMTtheme(aggregates, valuenames, indexes_values, id, start, themename));
+				themes.back().passinobject(*this);
 			}
 			}catch(...)
 				{

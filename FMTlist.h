@@ -1,25 +1,8 @@
 /*
-MIT License
+Copyright (c) 2019 Gouvernement du Québec
 
-Copyright (c) [2019] [Bureau du forestier en chef]
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+SPDX-License-Identifier: LiLiQ-R-1.1
+License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
 #ifndef FMTlist_H_INCLUDED
@@ -39,14 +22,26 @@ SOFTWARE.
 #include <boost/serialization/unordered_map.hpp>
 #include <boost/serialization/vector.hpp>
 #include <boost/serialization/nvp.hpp>
+#include <boost/serialization/export.hpp>
+#include "FMTobject.h"
 #include <iterator>
 
 namespace Core
 {
-
+	// DocString: FMTlist
+	/**
+	The FMTlist class is made to keep track of objects with a FMTmask tag like dictionary. The yield, action and transition class
+	uses this class to list objects based on the tagged FMTmask and the position of the object in the list.
+	FMTlist uses caching and a mask filter to reduce the size of the list and gives a fast access to objects present in
+	the list.
+	*/
 	template<typename T>
-	class FMTlist
+	class FMTlist: public FMTobject
 	{
+		// DocString: FMTlist::save
+		/**
+		Save function is for serialization, used to do multiprocessing across multiple cpus (pickle in Pyhton)
+		*/
 		friend class boost::serialization::access;
 		template<class Archive>
 		void save(Archive& ar, const unsigned int version) const
@@ -56,6 +51,10 @@ namespace Core
 			std::vector<std::pair<FMTmask, std::vector<int>>>vecfastpass(fastpass.begin(), fastpass.end());
 			ar & BOOST_SERIALIZATION_NVP(vecfastpass);
 			}
+		// DocString: FMTlist::load
+		/**
+		Save function is for serialization, used to do multiprocessing across multiple cpus (pickle in Pyhton)
+		*/
 		template<class Archive>
 		void load(Archive& ar, const unsigned int version)
 			{
@@ -73,6 +72,7 @@ namespace Core
 		FMTmaskfilter filter;
 		mutable boost::unordered_map<FMTmask, std::vector<int>>fastpass;
 	protected:
+		// DocString: FMTlist::presolvelist
 		/**
 		Using a basemask reprensenting the whole forest landscape this function will
 		attempt to reduce the number of elements in the list knowing that if the element
@@ -118,10 +118,12 @@ namespace Core
 				return testedmask;
 			}
 		FMTlist() :
+			FMTobject(),
 			data(),
 			filter(),
 			fastpass(){};
 		FMTlist(const FMTlist<T>& rhs) :
+			FMTobject(rhs),
 			data(rhs.data),
 			filter(rhs.filter),
 			fastpass(rhs.fastpass)
@@ -132,6 +134,7 @@ namespace Core
 		{
 			if (this != &rhs)
 			{
+				FMTobject::operator=(rhs);
 				data = rhs.data;
 				filter = rhs.filter;
 				fastpass = rhs.fastpass;
@@ -144,7 +147,7 @@ namespace Core
 			return (data == rhs.data);
 			}
 
-		virtual ~FMTlist() = default;
+		~FMTlist() = default;
 		bool empty() const
 			{
 			return data.empty();
@@ -306,5 +309,6 @@ namespace Core
 	};
 
 }
+
 
 #endif
