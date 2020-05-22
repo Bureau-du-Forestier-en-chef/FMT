@@ -113,7 +113,9 @@ void exportModel()
 			.method("getdisturbancestats", &Models::FMTsesmodel::getdisturbancestats,
 				"@DocString(FMTsesmodel::getdisturbancestats)")
             .method("simulate",&Models::FMTsesmodel::simulate,
-				"@DocString(FMTsesmodel::simulate)");
+				"@DocString(FMTsesmodel::simulate)")
+			.method("montecarlosimulate", &Models::FMTsesmodel::montecarlosimulate,
+				"@DocString(FMTsesmodel::montecarlosimulate)");
 
 	Rcpp::class_<Models::FMTnssmodel>("FMTnssmodel", "@DocString(FMTnssmodel)")
 		.derives<Models::FMTmodel>("FMTmodel")
