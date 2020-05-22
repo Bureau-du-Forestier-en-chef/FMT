@@ -1,25 +1,8 @@
 /*
-MIT License
+Copyright (c) 2019 Gouvernement du Québec
 
-Copyright (c) [2019] [Bureau du forestier en chef]
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+SPDX-License-Identifier: LiLiQ-R-1.1
+License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
 #include "FMToutput.h"
@@ -29,6 +12,7 @@ namespace Core{
 
 FMToutput::FMToutput(const std::string& lname,const std::string& ldescription,const int& ltheme_target,
 	std::vector<FMToutputsource>& lsources, std::vector<FMToperator>& loperators):
+	FMTobject(),
     sources(lsources),
     operators(loperators),
 	theme_target(ltheme_target),
@@ -38,16 +22,17 @@ FMToutput::FMToutput(const std::string& lname,const std::string& ldescription,co
     {
 
     }
-FMToutput::FMToutput(const std::string& lname) : sources(),operators(), theme_target(-1),name(lname),description()
+FMToutput::FMToutput(const std::string& lname) :FMTobject(), sources(),operators(), theme_target(-1),name(lname),description()
     {
 
     }
-FMToutput::FMToutput() : sources(),operators(), theme_target(-1),name(),description()
+FMToutput::FMToutput() : FMTobject(),sources(),operators(), theme_target(-1),name(),description()
     {
 
     }
 
 FMToutput::FMToutput(const FMToutput& rhs) :
+	FMTobject(rhs),
     sources(rhs.sources),
     operators(rhs.operators),
 	theme_target(rhs.theme_target),
@@ -60,6 +45,7 @@ FMToutput& FMToutput::operator = (const FMToutput& rhs)
     {
     if (this!=&rhs)
         {
+		FMTobject::operator=(rhs);
         name = rhs.name;
         sources = rhs.sources;
 		theme_target =rhs.theme_target;
@@ -365,7 +351,10 @@ FMToutput FMToutput::boundto(const std::vector<FMTtheme>& themes, const FMTperbo
 	return newoutput;
 	}
 
-std::vector<FMToutputnode> FMToutput::getnodes(double multiplier) const
+std::vector<FMToutputnode> FMToutput::getnodes(const std::vector<FMTactualdevelopment>&area,
+											   const std::vector<Core::FMTaction>&actions,
+											   const FMTyields& yields,
+											   double multiplier) const
 	{
 	//set a expression and get the nodes! check if the node is positive or negative accross the equation!!!
 	std::vector<FMToutputnode>nodes;
@@ -374,27 +363,27 @@ std::vector<FMToutputnode> FMToutput::getnodes(double multiplier) const
 	FMToutputsource main_source;
 	FMToutputsource main_factor = FMToutputsource(FMTotar::val,1);
 	double constant = 1;
-		for (const FMToutputsource& source : sources)
+	for (const FMToutputsource& source : sources)
+	{
+		if (((source.isvariable()&&!source.canbededucedtoconstant())|| source.islevel()))
 			{
-            if ((source.isvariable() || source.islevel()))
-                {
-                if (!main_source.getmask().empty()||main_source.isvariablelevel())
-                    {
-					FMToutputnode newnode(main_source, main_factor, constant);
-					if (!newnode.isnull())
-						{
-						if (newnode.source.isaverage())
-							{
-							newnode.constant *= multiplier;
-							}
-						
-						nodes.push_back(newnode);
-						}
-                    }
-				main_factor = FMToutputsource(FMTotar::val, 1);
-                main_source = source;
-                constant = 1;
-                }
+			if (!main_source.getmask().empty() || main_source.isvariablelevel())
+			{
+				FMToutputnode newnode(main_source, main_factor, constant);
+				if (!newnode.isnull())
+				{
+					if (newnode.source.isaverage())
+					{
+						newnode.constant *= multiplier;
+					}
+
+					nodes.push_back(newnode);
+				}
+			}
+			main_factor = FMToutputsource(FMTotar::val, 1);
+			main_source = source;
+			constant = 1;
+			}
             if (src_id!=0 && (op_id < operators.size()) && !operators.at(op_id).isfactor())
                 {
                 constant *= operators.at(op_id).call(0,1);
@@ -402,10 +391,17 @@ std::vector<FMToutputnode> FMToutput::getnodes(double multiplier) const
             if (source.istimeyield())
 				{
 				main_factor = source;
-			}else if (source.isconstant() && (op_id < operators.size()) && operators.at(op_id).isfactor())
+			}else if ((op_id < operators.size()) && operators.at(op_id).isfactor())
 				{
-				const double value = source.getvalue();
-                constant = operators.at(op_id).call(constant, value);
+				if (source.isconstant())
+					{
+					const double value = source.getvalue();
+					constant = operators.at(op_id).call(constant, value);
+				}else if (source.canbededucedtoconstant())
+					{
+					const double value = source.getconstantvalue(area, actions, yields);
+					constant = operators.at(op_id).call(constant, value);
+					}
 				}
 			if (src_id > 0)
 				{
@@ -526,7 +522,7 @@ FMToutput FMToutput::presolve(const FMTmask& basemask,
 				newsources.push_back(newsource);
 			}else {
 				pushedsource = false;
-				lastnotpushed = sourceid;
+				lastnotpushed = static_cast<int>(sourceid);
 				}
 		}else if(!sources.at(sourceid).isvariable() && (sources.at(sourceid).islevel() || (sources.at(sourceid).istimeyield() && !yields.isnullyld(yieldname)) ||
 			(sources.at(sourceid).isconstant() && lastnotpushed != static_cast<int>(sourceid -1))))
@@ -597,7 +593,6 @@ void FMToutput::setperiod(const int& newperiod)
 		}
 	}
 
-
 FMTtheme FMToutput::targettheme(const std::vector<FMTtheme>& themes) const
 	{
 	if (theme_target>=0)
@@ -619,9 +614,6 @@ bool FMToutputcomparator::operator()(const FMToutput& output) const
 	}
 
 
-
-
-
 }
 
-BOOST_CLASS_EXPORT_IMPLEMENT(Core::FMToutput);
+BOOST_CLASS_EXPORT_IMPLEMENT(Core::FMToutput)

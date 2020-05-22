@@ -1,25 +1,8 @@
 /*
-MIT License
+Copyright (c) 2019 Gouvernement du Québec
 
-Copyright (c) [2019] [Bureau du forestier en chef]
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+SPDX-License-Identifier: LiLiQ-R-1.1
+License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
 #ifndef FMTSESM_H_INCLUDED
@@ -154,6 +137,7 @@ class FMTsesmodel : public FMTmodel
 		actions and outputs of the original not presolved model.
 		*/
 		std::unique_ptr<FMTmodel>postsolve(const FMTmodel& originalbasemodel) const final;
+		// DocString: FMTsesmodel::simulate
 		/**
 		This is the main function to simulate a schedule of actions (schedule) on the actual 
 		spatialy explicit forest. If the (schedule_only) switch is turned on the simulator wont try
@@ -161,15 +145,27 @@ class FMTsesmodel : public FMTmodel
 		even if the area harvested target for that action is not reach. The user can also set the seed
 		to get different solutions from the simulator.
 		*/
-		// DocString: FMTsesmodel::simulate
 		std::map<std::string,double> simulate(const Core::FMTschedule& schedule,
                         bool schedule_only = true,
                         unsigned int seed = 0);
+		// DocString: FMTsesmodel::montecarlosimulate
+		/**
+		This function call multiple time the simulate function to find the best possible spatialisation for
+		a given schedule using random draw. It uses a schedule of actions (schedule) on the actual
+		spatialy explicit forest. If the (schedule_only) switch is turned on the simulator wont try
+		to find some operable developements (not present in the potential schedule)
+		even if the area harvested target for that action is not reach. The user can also set the seed
+		to get different solutions from the simulator.
+		*/
+		std::map<std::string, double> montecarlosimulate(const Core::FMTschedule& schedule,
+										const size_t& randomiterations,
+										bool schedule_only = true,
+										unsigned int seed = 0);
 		
     };
 
 }
 
-BOOST_CLASS_EXPORT_KEY(Models::FMTsesmodel);
+BOOST_CLASS_EXPORT_KEY(Models::FMTsesmodel)
 
 #endif // FMTSESM_H_INCLUDED

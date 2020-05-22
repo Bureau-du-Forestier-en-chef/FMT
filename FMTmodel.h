@@ -1,25 +1,8 @@
 /*
-MIT License
+Copyright (c) 2019 Gouvernement du Québec
 
-Copyright (c) [2019] [Bureau du forestier en chef]
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+SPDX-License-Identifier: LiLiQ-R-1.1
+License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
 #ifndef FMTMODEL_H_INCLUDED
@@ -372,6 +355,69 @@ class FMTmodel : public Core::FMTobject
 		Change to initial area period to the new targeted period.
 		*/
 		void setareaperiod(const int& period);
+		// DocString: FMTmodel::passinlogger
+		/**
+		It's sometime usefull to pass in the logger of an other FMTobject.
+		*/
+		void passinlogger(const std::shared_ptr<Logging::FMTlogger>& logger) override;
+		// DocString: FMTmodel::passinexceptionhandler
+		/**
+		It's sometime usefull to pass in the exception handler of an other FMTobject.
+		*/
+		void passinexceptionhandler(const std::shared_ptr<Exception::FMTexceptionhandler>& exhandler) override;
+		// DocString: FMTmodel::passinobject
+		/**
+		It's sometime usefull to pass in the exception handler and the logger  of an other FMTobject to
+		a FMTobject.
+		*/
+		void passinobject(const Core::FMTobject& rhs) override;
+		// DocString: FMTmodel::setdefaultlogger
+		/**
+		Create and set a default logger to the FMTobject.
+		*/
+		void setdefaultlogger() override;
+		// DocString: FMTmodel::setquietlogger
+		/**
+		Create and set a quiet logger to the FMTobject.
+		*/
+		void setquietlogger() override;
+		// DocString: FMTmodel::setdebuglogger
+		/**
+		Create and set a debug logger to the FMTobject.
+		*/
+		void setdebuglogger() override;
+		// DocString: FMTmodel::setdefaultexceptionhandler
+		/**
+		Create and set a default exception handler to the FMTobject.
+		*/
+		void setdefaultexceptionhandler() override;
+		// DocString: FMTmodel::setquietexceptionhandler
+		/**
+		Create and set a quiet exception handler to the FMTobject.
+		*/
+		void setquietexceptionhandler() override;
+		// DocString: FMTmodel::setdebugexceptionhandler
+		/**
+		Create and set a debug exception handler to the FMTobject.
+		*/
+		void setdebugexceptionhandler() override;
+		// DocString: FMTmodel::setfreeexceptionhandle
+		/**
+		Create and set a free exception handler to the FMTobject.
+		*/
+		void setfreeexceptionhandler() override;
+		// DocString: FMTmodel::disablenestedexceptions
+		/**
+		Disable nested exception throw of the Exceptionhandler by default all handlers
+		do nested exception throw.
+		*/
+		void disablenestedexceptions() override;
+		// DocString: FMTmodel::enablenestedexceptions
+		/**
+		Enable nested exception throw of the Exceptionhandler by default all handlers
+		do nested exception throw.
+		*/
+		void enablenestedexceptions() override;
 
     };
 // DocString: FMTmodelcomparator
@@ -396,6 +442,6 @@ public:
 
 }
 
-BOOST_CLASS_EXPORT_KEY(Models::FMTmodel);
+BOOST_CLASS_EXPORT_KEY(Models::FMTmodel)
 
 #endif // FMTMODEL_H_INCLUDED

@@ -1,25 +1,8 @@
 /*
-MIT License
+Copyright (c) 2019 Gouvernement du Québec
 
-Copyright (c) [2019] [Bureau du forestier en chef]
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+SPDX-License-Identifier: LiLiQ-R-1.1
+License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
 #ifndef FMToutput_H_INCLUDED
@@ -35,6 +18,7 @@ SOFTWARE.
 #include "FMToutputnode.h"
 #include "FMTtheme.h"
 #include "FMTbounds.h"
+#include "FMTobject.h"
 #include <boost/serialization/string.hpp>
 #include <boost/serialization/serialization.hpp>
 #include <boost/serialization/export.hpp>
@@ -49,7 +33,7 @@ FMToutput hold a vector of outputsources and operators. Outputs  that are non li
 matrix constraints formulation. Outputs have multiple outputs node representing a set of FMTdevelopment in the 
 FMTgraph. Each FMTdevelopement can be part of one FMToutput.
 */
-class FMToutput
+class FMToutput: public FMTobject
     {
 	// DocString: FMToutput::serialize
 	/**
@@ -219,7 +203,10 @@ class FMToutput
 	This function returns a vector of FMToutputnode generated from the outputnodesource and FMToperators for the FMTouput,
 	a multiplier can be added to multiply all the nodesource with a factor.
 	*/
-	std::vector<FMToutputnode> getnodes(double multiplier = 1) const;
+	std::vector<FMToutputnode> getnodes(const std::vector<FMTactualdevelopment>&area,
+										const std::vector<Core::FMTaction>&actions,
+										const FMTyields& yields,
+										double multiplier = 1) const;
 	// DocString: FMToutput::issingleperiod
 	/**
 	Returns true if the FMToutput cover only one single period of the FMTgraph, false if 
@@ -318,5 +305,5 @@ public:
 };
 
 }
-BOOST_CLASS_EXPORT_KEY(Core::FMToutput);
+BOOST_CLASS_EXPORT_KEY(Core::FMToutput)
 #endif // FMToutput_H_INCLUDED

@@ -1,25 +1,8 @@
 /*
-MIT License
+Copyright (c) 2019 Gouvernement du Québec
 
-Copyright (c) [2019] [Bureau du forestier en chef]
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+SPDX-License-Identifier: LiLiQ-R-1.1
+License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
 #ifndef PYEXPORTMODEL_H_INCLUDED
@@ -37,6 +20,7 @@ SOFTWARE.
 namespace Python
 { 
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(simulate_overloads, simulate, 1, 3)
+BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(montecarlosimulate_overloads, montecarlosimulate, 2, 4)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(simulatenssm_overloads, simulate, 1, 2)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(buildperiod_overloads, buildperiod, 0, 2)
 //BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(move_solution_overloads, move_solution, 0, 1)
@@ -127,7 +111,9 @@ void exportModel()
 			.def("getdisturbancestats", &Models::FMTsesmodel::getdisturbancestats,
 				"@DocString(FMTsesmodel::getdisturbancestats)")
             .def("simulate",&Models::FMTsesmodel::simulate,
-                 simulate_overloads(bp::args("schedule", "schedule_only","seed"), "@DocString(FMTsesmodel::simulate)"));
+                 simulate_overloads(bp::args("schedule", "schedule_only","seed"), "@DocString(FMTsesmodel::simulate)"))
+			.def("montecarlosimulate", &Models::FMTsesmodel::montecarlosimulate,
+				simulate_overloads(bp::args("schedule","numberofiterations", "schedule_only", "seed"), "@DocString(FMTsesmodel::montecarlosimulate)"));
 
     define_pylist<Models::FMTsesmodel>();
 

@@ -1,25 +1,8 @@
 /*
-MIT License
+Copyright (c) 2019 Gouvernement du Québec
 
-Copyright (c) [2019] [Bureau du forestier en chef]
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+SPDX-License-Identifier: LiLiQ-R-1.1
+License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
 #include "FMTsesmodel.h"
@@ -99,84 +82,133 @@ namespace Models
         }
 
 
+	std::map<std::string, double> FMTsesmodel::montecarlosimulate(const Core::FMTschedule& schedule,
+																	const size_t& randomiterations,
+																	bool schedule_only,
+																	unsigned int seed)
+		{
+		std::map<std::string, double>bestresults;
+		FMTsesmodel bestmodel;
+		try {
+			bestresults["Total"] = 0;
+			for (size_t iteration = 0; iteration < randomiterations;++iteration)
+				{
+				FMTsesmodel modelcopy(*this);
+				const std::map<std::string, double>results = modelcopy.simulate(schedule, schedule_only, seed);
+				if (!results.empty() && results.at("Total")>bestresults.at("Total"))
+					{
+					_logger->logwithlevel("Better solution found at iteration " +
+						std::to_string(iteration) + " value of " + std::to_string(bestresults.at("Total"))+"\n", 1);
+					bestresults = results;
+					bestmodel = modelcopy;
+					if (bestresults.at("Total") == 1.0)
+						{
+						break;
+						}
+					}
+				++seed;
+				}
+			if (bestresults.at("Total")>0)
+				{
+				*this = bestmodel;
+				}
+		}catch (const std::exception& exception)
+		{
+			_exhandler->throw_nested(exception);
+		}catch (...)
+			{
+			_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
+				Core::FMTsection::Empty, "in FMTsesmodel::montecarlosimulate", __LINE__, __FILE__);
+			}
+		return bestresults;
+		}
+
+
     std::map<std::string,double> FMTsesmodel::simulate(const Core::FMTschedule& schedule,
                              bool schedule_only,
                              unsigned int seed)
         {
-		Core::FMTschedule newschedule(static_cast<int>(disturbances.data.size()+1), std::map<Core::FMTaction, std::map<Core::FMTdevelopment, std::vector<double>>>());
-		std::default_random_engine generator(seed);
-        const double total_area = schedule.area();
-		std::map<std::string,double>targets;
-        for(std::map<Core::FMTaction, std::map<Core::FMTdevelopment, std::vector<double>>>::const_iterator ait = schedule.begin(); ait!=schedule.end(); ait++)
-            {
-            targets[ait->first.getname()] = schedule.actionarea(ait->first);
-            }
-        disturbances.push(std::map<std::string, std::vector<Spatial::FMTsesevent<Core::FMTdevelopment>>>());
-		double allocated_area = 0;
-		if (!schedule.empty() || !schedule_only)
+		std::map<std::string, double>results;
+		try {
+			Core::FMTschedule newschedule(static_cast<int>(disturbances.data.size() + 1), std::map<Core::FMTaction, std::map<Core::FMTdevelopment, std::vector<double>>>());
+			std::default_random_engine generator(seed);
+			const double total_area = schedule.area();
+			std::map<std::string, double>targets;
+			for (std::map<Core::FMTaction, std::map<Core::FMTdevelopment, std::vector<double>>>::const_iterator ait = schedule.begin(); ait != schedule.end(); ait++)
 			{
-			double pass_allocated_area = 0;
-			bool schedulepass = true;
-			int pass = 0;
-			int action_pass = 0;
-			boost::unordered_map<Core::FMTdevelopment, std::vector<bool>>cached_operability;
-			std::vector<boost::unordered_map<Core::FMTdevelopment,Core::FMTdevelopment>>cached_operated(spactions.size(), boost::unordered_map<Core::FMTdevelopment,Core::FMTdevelopment>());
-			do {
-				pass_allocated_area = 0;
-				//const clock_t begin_time = clock();
-				std::map<Core::FMTaction,Spatial::FMTforest> forests  = mapping.getschedule(schedule, cached_operability,yields,schedulepass);
-				for (const Spatial::FMTspatialaction& spatial_action : spactions) 
+				targets[ait->first.getname()] = schedule.actionarea(ait->first);
+			}
+			disturbances.push(std::map<std::string, std::vector<Spatial::FMTsesevent<Core::FMTdevelopment>>>());
+			double allocated_area = 0;
+			if (!schedule.empty() || !schedule_only)
+			{
+				double pass_allocated_area = 0;
+				bool schedulepass = true;
+				int pass = 0;
+				int action_pass = 0;
+				boost::unordered_map<Core::FMTdevelopment, std::vector<bool>>cached_operability;
+				std::vector<boost::unordered_map<Core::FMTdevelopment, Core::FMTdevelopment>>cached_operated(spactions.size(), boost::unordered_map<Core::FMTdevelopment, Core::FMTdevelopment>());
+				do {
+					pass_allocated_area = 0;
+					//const clock_t begin_time = clock();
+					std::map<Core::FMTaction, Spatial::FMTforest> forests = mapping.getschedule(schedule, cached_operability, yields, schedulepass);
+					for (const Spatial::FMTspatialaction& spatial_action : spactions)
 					{
-					std::vector<Spatial::FMTspatialaction>::iterator acit = std::find_if(spactions.begin(), spactions.end(), Core::FMTactioncomparator(spatial_action.getname()));
-					if (acit != spactions.end())
+						std::vector<Spatial::FMTspatialaction>::iterator acit = std::find_if(spactions.begin(), spactions.end(), Core::FMTactioncomparator(spatial_action.getname()));
+						if (acit != spactions.end())
 						{
-						const double action_area = targets[acit->getname()];
-						Spatial::FMTforest* allowable_forest = &forests[spatial_action];
-						if (allowable_forest->area() > 0 && action_area > 0)
+							const double action_area = targets[acit->getname()];
+							Spatial::FMTforest* allowable_forest = &forests[spatial_action];
+							if (allowable_forest->area() > 0 && action_area > 0)
 							{
-							const size_t location = std::distance(spactions.begin(), acit);
-							const Spatial::FMTforest spatialy_allowable = allowable_forest->getallowable(*acit, disturbances);
-							if (spatialy_allowable.area()>0)
+								const size_t location = std::distance(spactions.begin(), acit);
+								const Spatial::FMTforest spatialy_allowable = allowable_forest->getallowable(*acit, disturbances);
+								if (spatialy_allowable.area() > 0)
 								{
-								std::vector<Spatial::FMTsesevent<Core::FMTdevelopment>>events = spatialy_allowable.buildharvest(action_area, *acit, generator,action_pass);
-								if (events.size() > 0)
-									{ 
-									Spatial::FMTforest newoperated = spatialy_allowable.operate(events, *acit, transitions[location], yields, themes,cached_operated[location], newschedule); //can also use caching here...
-									if (!newoperated.mapping.empty())
+									std::vector<Spatial::FMTsesevent<Core::FMTdevelopment>>events = spatialy_allowable.buildharvest(action_area, *acit, generator, action_pass);
+									if (events.size() > 0)
+									{
+										Spatial::FMTforest newoperated = spatialy_allowable.operate(events, *acit, transitions[location], yields, themes, cached_operated[location], newschedule); //can also use caching here...
+										if (!newoperated.mapping.empty())
 										{
-										disturbances.add(acit->getname(), events);
-										mapping.replace(newoperated.mapping.begin(), newoperated.mapping.end());
-										targets[acit->getname()] -= (newoperated.area());
-										pass_allocated_area += (newoperated.area());
+											disturbances.add(acit->getname(), events);
+											mapping.replace(newoperated.mapping.begin(), newoperated.mapping.end());
+											targets[acit->getname()] -= (newoperated.area());
+											pass_allocated_area += (newoperated.area());
 										}
 									}
 								}
 							}
 						}
-					++action_pass;
+						++action_pass;
 					}
-				allocated_area += pass_allocated_area;
-				++pass;
-				if(!schedule_only && pass_allocated_area == 0)
+					allocated_area += pass_allocated_area;
+					++pass;
+					if (!schedule_only && pass_allocated_area == 0)
 					{
-					if(schedulepass)
+						if (schedulepass)
 						{
-						schedulepass = false;
-						}else{
-						schedule_only = true;
+							schedulepass = false;
+						}
+						else {
+							schedule_only = true;
 						}
 					}
-				}while(allocated_area<total_area&&(pass_allocated_area!=0||(!schedule_only)));
+				} while (allocated_area < total_area && (pass_allocated_area != 0 || (!schedule_only)));
 			}
-        mapping = mapping.grow();
-		std::map<std::string, double>results;
-		results["Total"] = allocated_area / total_area;
-		for (std::map<Core::FMTaction, std::map<Core::FMTdevelopment, std::vector<double>>>::const_iterator ait = schedule.begin(); ait != schedule.end(); ait++)
+			mapping = mapping.grow();
+			results["Total"] = allocated_area / total_area;
+			for (std::map<Core::FMTaction, std::map<Core::FMTdevelopment, std::vector<double>>>::const_iterator ait = schedule.begin(); ait != schedule.end(); ait++)
 			{
-			double total_action_area = schedule.actionarea(ait->first);
-			results[ait->first.getname()] = ((total_action_area - targets[ait->first.getname()]) / total_action_area);
+				double total_action_area = schedule.actionarea(ait->first);
+				results[ait->first.getname()] = ((total_action_area - targets[ait->first.getname()]) / total_action_area);
 			}
-		operatedschedule.push_back(newschedule);
+			operatedschedule.push_back(newschedule);
+		}catch (...)
+			{
+				_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
+					Core::FMTsection::Empty, "in FMTsesmodel::simulate", __LINE__, __FILE__);
+			}
         return results;
         }
 
@@ -248,4 +280,4 @@ namespace Models
 
     }
 
-BOOST_CLASS_EXPORT_IMPLEMENT(Models::FMTsesmodel);
+BOOST_CLASS_EXPORT_IMPLEMENT(Models::FMTsesmodel)

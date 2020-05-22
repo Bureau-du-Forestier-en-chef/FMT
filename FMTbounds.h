@@ -1,25 +1,8 @@
 /*
-MIT License
+Copyright (c) 2019 Gouvernement du Québec
 
-Copyright (c) [2019] [Bureau du forestier en chef]
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+SPDX-License-Identifier: LiLiQ-R-1.1
+License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
 #ifndef FMTbounds_H_INCLUDED
@@ -72,7 +55,7 @@ class FMTbounds
             {
 
             }
-        virtual ~FMTbounds(){}
+		virtual ~FMTbounds() = default;
         void setorbound()
             {
             andbound = false;
@@ -266,6 +249,7 @@ class FMTyldbounds: public FMTbounds<double>
     std::string yield;
     public:
     FMTyldbounds();
+	~FMTyldbounds() = default;
 	FMTyldbounds(const FMTsection lsection, const std::string& lyield, const double& lupper, const double& llower);
     FMTyldbounds(const FMTsection lsection,const FMTkwor key,const std::string& lyield, const double& lupper,const double& llower);
     FMTyldbounds(const std::string& lyield,const FMTbounds<double>& rhs);
@@ -286,6 +270,7 @@ class FMTagebounds: public FMTbounds<int>
 	}
     public:
     FMTagebounds();
+	~FMTagebounds() = default;
     FMTagebounds(FMTsection lsection,const int& lupper, const int& llower);
     FMTagebounds(FMTsection lsection,FMTkwor key, const int& lupper, const int& llower);
     FMTagebounds(const FMTagebounds& rhs);
@@ -306,6 +291,7 @@ class FMTperbounds: public FMTbounds<int>
 	}
     public:
     FMTperbounds();
+	~FMTperbounds() = default;
     FMTperbounds(const FMTsection lsection,const int& lupper,const int& llower);
     FMTperbounds(const FMTperbounds& rhs);
 	FMTperbounds(const FMTbounds<int>& rhs);
@@ -326,6 +312,7 @@ class FMTlockbounds : public FMTbounds<int>
 		}
     public:
     FMTlockbounds();
+	~FMTlockbounds() = default;
     FMTlockbounds(const FMTsection lsection,const FMTkwor key,const int& lupper, const int& llower);
     FMTlockbounds(const FMTlockbounds& rhs);
     FMTlockbounds& operator = (const FMTlockbounds& rhs);

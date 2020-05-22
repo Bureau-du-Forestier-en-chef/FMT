@@ -1,25 +1,8 @@
 /*
-MIT License
+Copyright (c) 2019 Gouvernement du Québec
 
-Copyright (c) [2019] [Bureau du forestier en chef]
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+SPDX-License-Identifier: LiLiQ-R-1.1
+License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
 #ifndef FMTobject_H_INCLUDED
@@ -40,11 +23,11 @@ SOFTWARE.
 
 
 
-#include "FMTtheme.h"
 #include <vector>
 
 namespace Core
 {
+class FMTtheme;
 // DocString: FMTobject
 /**
 FMTobject is the base class of multiple class it hold a shared exception handler pointer and logger.
@@ -137,18 +120,18 @@ class FMTobject
 		/**
 		It's sometime usefull to pass in the logger of an other FMTobject.
 		*/
-		void passinlogger(const std::shared_ptr<Logging::FMTlogger>& logger);
+		virtual void passinlogger(const std::shared_ptr<Logging::FMTlogger>& logger);
 		// DocString: FMTobject::passinexceptionhandler
 		/**
 		It's sometime usefull to pass in the exception handler of an other FMTobject.
 		*/
-		void passinexceptionhandler(const std::shared_ptr<Exception::FMTexceptionhandler>& exhandler);
+		virtual void passinexceptionhandler(const std::shared_ptr<Exception::FMTexceptionhandler>& exhandler);
 		// DocString: FMTobject::passinobject
 		/**
 		It's sometime usefull to pass in the exception handler and the logger  of an other FMTobject to
 		a FMTobject.
 		*/
-		void passinobject(const FMTobject& rhs);
+		virtual void passinobject(const FMTobject& rhs);
 		// DocString: FMTobject::setsection
 		/**
 		It sets the section member of the FMTobject.
@@ -158,49 +141,49 @@ class FMTobject
 		/**
 		Create and set a default logger to the FMTobject.
 		*/
-		void setdefaultlogger();
+		virtual void setdefaultlogger();
 		// DocString: FMTobject::setquietlogger
 		/**
 		Create and set a quiet logger to the FMTobject.
 		*/
-		void setquietlogger();
+		virtual void setquietlogger();
 		// DocString: FMTobject::setdebuglogger
 		/**
 		Create and set a debug logger to the FMTobject.
 		*/
-		void setdebuglogger();
+		virtual void setdebuglogger();
 		// DocString: FMTobject::setdefaultexceptionhandler
 		/**
 		Create and set a default exception handler to the FMTobject.
 		*/
-		void setdefaultexceptionhandler();
+		virtual void setdefaultexceptionhandler();
 		// DocString: FMTobject::setquietexceptionhandler
 		/**
 		Create and set a quiet exception handler to the FMTobject.
 		*/
-		void setquietexceptionhandler();
+		virtual void setquietexceptionhandler();
 		// DocString: FMTobject::setdebugexceptionhandler
 		/**
 		Create and set a debug exception handler to the FMTobject.
 		*/
-		void setdebugexceptionhandler();
+		virtual void setdebugexceptionhandler();
 		// DocString: FMTobject::setfreeexceptionhandle
 		/**
 		Create and set a free exception handler to the FMTobject.
 		*/
-		void setfreeexceptionhandler();
+		virtual void setfreeexceptionhandler();
 		// DocString: FMTobject::disablenestedexceptions
 		/**
 		Disable nested exception throw of the Exceptionhandler by default all handlers
 		do nested exception throw.
 		*/
-		void disablenestedexceptions();
+		virtual void disablenestedexceptions();
 		// DocString: FMTobject::enablenestedexceptions
 		/**
 		Enable nested exception throw of the Exceptionhandler by default all handlers
 		do nested exception throw.
 		*/
-		void enablenestedexceptions();
+		virtual void enablenestedexceptions();
 
 	};
 }
