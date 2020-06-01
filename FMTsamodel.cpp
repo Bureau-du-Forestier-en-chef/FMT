@@ -313,7 +313,9 @@ namespace Models
                     }
                 }
 			}else{
-				_exhandler->raise(Exception::FMTexc::FMTinvalid_transition, Core::FMTsection::Transition, "Missing transition case for action : " + spaction.getname(),__LINE__, __FILE__);
+				_exhandler->raise(Exception::FMTexc::FMTinvalid_transition,
+					"Missing transition case for action : " + spaction.getname(),
+					"FMTsamodel::setspactions",__LINE__, __FILE__, Core::FMTsection::Transition);
 				return false;
 				}
 			}
@@ -349,7 +351,8 @@ namespace Models
     {
         if (outputs_write_location.empty())
         {
-            _exhandler->raise(Exception::FMTexc::FMTinvalid_path, Core::FMTsection::Empty, "No path given to the function write_outputs_at ",__LINE__, __FILE__);
+            _exhandler->raise(Exception::FMTexc::FMTinvalid_path,
+				"No path given to the function write_outputs_at ","FMTsamodel::get_outputs",__LINE__, __FILE__);
         }
         else
         {

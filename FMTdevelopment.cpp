@@ -117,14 +117,20 @@ namespace Core{
 		 const std::vector<FMTtheme>& themes) const
 		{
 		 std::vector<FMTdevelopmentpath>newpaths;
-		 const FMTfork* fork = Transition.getfork(*this, ylds);
-		 if (fork)
-		 {
-			 newpaths = fork->getpaths(*this, ylds, themes,action.isresetage());
-		 }
-		 else {
-			 _exhandler->raise(Exception::FMTexc::FMTinvalid_transition_case, FMTsection::Empty, Transition.getname() + " for " + std::string(*this), __LINE__, __FILE__);
-		 }
+		 try {
+			 const FMTfork* fork = Transition.getfork(*this, ylds);
+			 if (fork)
+			 {
+				 newpaths = fork->getpaths(*this, ylds, themes, action.isresetage());
+			 }
+			 else {
+				 _exhandler->raise(Exception::FMTexc::FMTinvalid_transition_case,Transition.getname() + " for " + std::string(*this),
+					 "FMTdevelopment::operate",__LINE__, __FILE__);
+			 }
+		 }catch (...)
+			{
+			 _exhandler->raisefromcatch("for " + std::string(*this),"FMTdevelopment::operate", __LINE__, __FILE__, _section);
+			}
 		 return newpaths;
 		}
 
@@ -181,18 +187,27 @@ namespace Core{
 
 	bool FMTdevelopment::is(const FMTspec& specification, const FMTyields& ylds) const
 		{
+		std::map<std::string, double> yields;
+		try {
 		if (specification.emptyylds())
 			{
 			return specification.allowwithoutyield(period, age, lock);
 			}
-		const std::map<std::string, double> yields = ylds.getylds(*this, specification);
+		yields = ylds.getylds(*this, specification);
 		for (const std::string& yield : specification.getylds())
 			{
 				if (yields.find(yield) == yields.end())
 					{
 						_exhandler->raise(Exception::FMTexc::FMTmissingyield,
-							FMTsection::Empty, yield + " for development type " + std::string(*this), __LINE__, __FILE__);
+							yield + " for development type " + std::string(*this),
+							"FMTdevelopment::is",__LINE__, __FILE__);
 					}
+			}
+		}catch (...)
+			{
+			_exhandler->raisefromcatch(
+				"for " + std::string(*this),
+				"FMTdevelopment::is",__LINE__, __FILE__, _section);
 			}
 		return (specification.allow(period, age, lock, yields));
 		}

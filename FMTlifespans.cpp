@@ -22,7 +22,13 @@ FMTlifespans& FMTlifespans::operator = (const FMTlifespans& rhs)
 
 void FMTlifespans::update()
 	{
-	FMTlist<int>::update();
+	try {
+		FMTlist<int>::update();
+	}catch (...)
+		{
+		_exhandler->raisefromcatch(
+			"","FMTlifespans::update", __LINE__, __FILE__, _section);
+		}
 	}
 
 FMTlifespans FMTlifespans::presolve(const FMTmask& basemask,
@@ -31,8 +37,13 @@ FMTlifespans FMTlifespans::presolve(const FMTmask& basemask,
 	const std::vector<FMTtheme>& newthemes) const
 	{
 	FMTlifespans newlifespans(*this);
-	newlifespans.presolvelist(basemask, originalthemes, presolvedmask, newthemes);
-	newlifespans.update();
+	try {
+		newlifespans.presolvelist(basemask, originalthemes, presolvedmask, newthemes);
+		newlifespans.update();
+	}catch (...)
+		{
+		_exhandler->raisefromcatch("","FMTlifespans::presolve", __LINE__, __FILE__, _section);
+		}
 	return newlifespans;
 	}
 

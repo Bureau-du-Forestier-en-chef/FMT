@@ -280,58 +280,66 @@ bool FMToutput::linear() const
 	}
 double FMToutput::shuntingyard(const std::vector<double>& sourcevalues,const std::vector<FMToperator>& simple_operators) const
 	{
-	std::map<std::string, double>mapping;
-	size_t id = 0;
-	std::vector<std::string>expression_inputs;
-	std::string test = "";
-	for (const double& value : sourcevalues)
+	try {
+		std::map<std::string, double>mapping;
+		size_t id = 0;
+		std::vector<std::string>expression_inputs;
+		std::string test = "";
+		for (const double& value : sourcevalues)
 		{
-		expression_inputs.push_back(std::to_string(value));
-		test += std::to_string(value);
-		if (id < simple_operators.size())
+			expression_inputs.push_back(std::to_string(value));
+			test += std::to_string(value);
+			if (id < simple_operators.size())
 			{
-			expression_inputs.push_back(simple_operators[id]);
-			test += simple_operators[id];
+				expression_inputs.push_back(simple_operators[id]);
+				test += simple_operators[id];
 			}
-		++id;
+			++id;
 		}
-	const FMTexpression newexpression(expression_inputs);
-	return newexpression.shuntingyard(mapping);
+		const FMTexpression newexpression(expression_inputs);
+		return newexpression.shuntingyard(mapping);
+	}catch (...)
+		{
+		_exhandler->raisefromcatch("for " + std::string(*this),"FMToutput::shuntingyard", __LINE__, __FILE__, _section);
+		}
+	return 0;
 	}
 
 FMToutput FMToutput::boundto(const std::vector<FMTtheme>& themes, const FMTperbounds& bound,const std::string& specialbound, std::string attribute) const
 	{
 	FMToutput newoutput(*this);
-	if (!attribute.empty())
+	try {
+		if (!attribute.empty())
 		{
-		newoutput.name = newoutput.name + "("+ attribute +")";
+			newoutput.name = newoutput.name + "(" + attribute + ")";
 		}
-	if (!bound.empty())
+		if (!bound.empty())
 		{
-		if (specialbound.empty() && bound.getlower()==bound.getupper())//single bounded
+			if (specialbound.empty() && bound.getlower() == bound.getupper())//single bounded
 			{
-			newoutput.name = newoutput.name + "[" + std::to_string(bound.getlower()) + "]";
-			}else if(!specialbound.empty())
-				{
+				newoutput.name = newoutput.name + "[" + std::to_string(bound.getlower()) + "]";
+			}
+			else if (!specialbound.empty())
+			{
 				std::string name = specialbound;
-				name += "("+newoutput.name;
+				name += "(" + newoutput.name;
 				if (!(bound.getupper() == std::numeric_limits<double>::max() && bound.getlower() == 1))
-					{
+				{
 					name += ",";
-					name += std::to_string(bound.getlower())+"..";
+					name += std::to_string(bound.getlower()) + "..";
 					name += std::to_string(bound.getupper());
-					}
+				}
 				name += ")";
 				newoutput.name = name;
-				}	
+			}
 		}
-	if (!newoutput.islevel())
+		if (!newoutput.islevel())
 		{
-		for (FMToutputsource& source : newoutput.sources)
+			for (FMToutputsource& source : newoutput.sources)
 			{
-			if (source.isvariable())
+				if (source.isvariable())
 				{
-				if (!bound.empty())
+					if (!bound.empty())
 					{
 						source.setbounds(bound);
 					}
@@ -342,11 +350,15 @@ FMToutput FMToutput::boundto(const std::vector<FMTtheme>& themes, const FMTperbo
 						source.setmask(oldmask);
 					}
 					if (!specialbound.empty() && specialbound == "_AVG")
-						{
+					{
 						source.setaverage();
-						}
+					}
 				}
 			}
+		}
+	}catch (...)
+		{
+		_exhandler->raisefromcatch("for "+std::string(*this),"FMToutput::boundto", __LINE__, __FILE__,_section);
 		}
 	return newoutput;
 	}
@@ -358,69 +370,77 @@ std::vector<FMToutputnode> FMToutput::getnodes(const std::vector<FMTactualdevelo
 	{
 	//set a expression and get the nodes! check if the node is positive or negative accross the equation!!!
 	std::vector<FMToutputnode>nodes;
-	size_t src_id = 0;
-	size_t op_id = 0;
-	FMToutputsource main_source;
-	FMToutputsource main_factor = FMToutputsource(FMTotar::val,1);
-	double constant = 1;
-	for (const FMToutputsource& source : sources)
-	{
-		if (((source.isvariable()&&!source.canbededucedtoconstant())|| source.islevel()))
+	try {
+		size_t src_id = 0;
+		size_t op_id = 0;
+		FMToutputsource main_source;
+		FMToutputsource main_factor = FMToutputsource(FMTotar::val, 1);
+		double constant = 1;
+		for (const FMToutputsource& source : sources)
+		{
+			if (((source.isvariable() && !source.canbededucedtoconstant()) || source.islevel()))
 			{
-			if (!main_source.getmask().empty() || main_source.isvariablelevel())
-			{
-				FMToutputnode newnode(main_source, main_factor, constant);
-				if (!newnode.isnull())
+				if (!main_source.getmask().empty() || main_source.isvariablelevel())
 				{
-					if (newnode.source.isaverage())
+					FMToutputnode newnode(main_source, main_factor, constant);
+					if (!newnode.isnull())
 					{
-						newnode.constant *= multiplier;
-					}
+						if (newnode.source.isaverage())
+						{
+							newnode.constant *= multiplier;
+						}
 
-					nodes.push_back(newnode);
+						nodes.push_back(newnode);
+					}
 				}
+				main_factor = FMToutputsource(FMTotar::val, 1);
+				main_source = source;
+				constant = 1;
 			}
-			main_factor = FMToutputsource(FMTotar::val, 1);
-			main_source = source;
-			constant = 1;
+			if (src_id != 0 && (op_id < operators.size()) && !operators.at(op_id).isfactor())
+			{
+				constant *= operators.at(op_id).call(0, 1);
 			}
-            if (src_id!=0 && (op_id < operators.size()) && !operators.at(op_id).isfactor())
-                {
-                constant *= operators.at(op_id).call(0,1);
-                }
-            if (source.istimeyield())
-				{
+			if (source.istimeyield())
+			{
 				main_factor = source;
-			}else if ((op_id < operators.size()) && operators.at(op_id).isfactor())
-				{
+			}
+			else if ((op_id < operators.size()) && operators.at(op_id).isfactor())
+			{
 				if (source.isconstant())
-					{
+				{
 					const double value = source.getvalue();
 					constant = operators.at(op_id).call(constant, value);
-				}else if (source.canbededucedtoconstant())
-					{
+				}
+				else if (source.canbededucedtoconstant())
+				{
 					const double value = source.getconstantvalue(area, actions, yields);
 					constant = operators.at(op_id).call(constant, value);
-					}
 				}
-			if (src_id > 0)
-				{
-				++op_id;
-				}
-			++src_id;
 			}
-       if (main_source.isvariablelevel() || main_source.isvariable())
-            {
-		   FMToutputnode newnode(main_source, main_factor, constant);
-		   if (!newnode.isnull())
+			if (src_id > 0)
+			{
+				++op_id;
+			}
+			++src_id;
+		}
+		if (main_source.isvariablelevel() || main_source.isvariable())
+		{
+			FMToutputnode newnode(main_source, main_factor, constant);
+			if (!newnode.isnull())
+			{
+				if (newnode.source.isaverage())
 				{
-			   if (newnode.source.isaverage())
-					{
-				    newnode.constant *= multiplier;
-					}
-			    nodes.push_back(newnode);
+					newnode.constant *= multiplier;
 				}
-           }
+				nodes.push_back(newnode);
+			}
+		}
+	}catch (...)
+		{
+		_exhandler->raisefromcatch(
+			"","FMToutput::getnodes", __LINE__, __FILE__,_section);
+		}
 	return nodes;
 	}
 
@@ -494,61 +514,68 @@ FMToutput FMToutput::presolve(const FMTmask& basemask,
 	const std::vector<FMTaction>& actions, const FMTyields& yields) const
 	{
 	FMToutput newoutput(*this);
-	std::vector<FMToutputsource>newsources;
-	std::vector<FMToperator>newoperators;
-	size_t operatorid = 0;
-	int lastnotpushed = -10;
-	if (!presolvedmask.empty())
+	try {
+		std::vector<FMToutputsource>newsources;
+		std::vector<FMToperator>newoperators;
+		size_t operatorid = 0;
+		int lastnotpushed = -10;
+		if (!presolvedmask.empty())
 		{
-		newoutput.theme_target = -1;
+			newoutput.theme_target = -1;
 		}
-	for (size_t sourceid = 0; sourceid <sources.size();++sourceid)
+		for (size_t sourceid = 0; sourceid < sources.size(); ++sourceid)
 		{
-		bool pushedsource = true;
-		const std::string yieldname = sources.at(sourceid).getyield();
-		if (sources.at(sourceid).isvariable())
+			bool pushedsource = true;
+			const std::string yieldname = sources.at(sourceid).getyield();
+			if (sources.at(sourceid).isvariable())
 			{
-			const std::string actionname = sources.at(sourceid).getaction();
-			if ((!sources.at(sourceid).getmask().isnotthemessubset(basemask, originalthemes)) &&
-				(actionname.empty() ||
-				std::find_if(actions.begin(),actions.end(),FMTactioncomparator(actionname,true))!= actions.end())&&
-				(yieldname.empty() || !yields.isnullyld(yieldname)))
+				const std::string actionname = sources.at(sourceid).getaction();
+				if ((!sources.at(sourceid).getmask().isnotthemessubset(basemask, originalthemes)) &&
+					(actionname.empty() ||
+						std::find_if(actions.begin(), actions.end(), FMTactioncomparator(actionname, true)) != actions.end()) &&
+						(yieldname.empty() || !yields.isnullyld(yieldname)))
 				{
-				FMToutputsource newsource = sources.at(sourceid);
-				if (!presolvedmask.empty())
+					FMToutputsource newsource = sources.at(sourceid);
+					if (!presolvedmask.empty())
 					{
-					newsource = newsource.presolve(presolvedmask, newthemes);
+						newsource = newsource.presolve(presolvedmask, newthemes);
 					}
-				newsources.push_back(newsource);
-			}else {
-				pushedsource = false;
-				lastnotpushed = static_cast<int>(sourceid);
+					newsources.push_back(newsource);
 				}
-		}else if(!sources.at(sourceid).isvariable() && (sources.at(sourceid).islevel() || (sources.at(sourceid).istimeyield() && !yields.isnullyld(yieldname)) ||
-			(sources.at(sourceid).isconstant() && lastnotpushed != static_cast<int>(sourceid -1))))
+				else {
+					pushedsource = false;
+					lastnotpushed = static_cast<int>(sourceid);
+				}
+			}
+			else if (!sources.at(sourceid).isvariable() && (sources.at(sourceid).islevel() || (sources.at(sourceid).istimeyield() && !yields.isnullyld(yieldname)) ||
+				(sources.at(sourceid).isconstant() && lastnotpushed != static_cast<int>(sourceid - 1))))
 			{
-			pushedsource = true;
-			newsources.push_back(sources.at(sourceid));
-		}
-		else {
-			pushedsource = false;
-		}
+				pushedsource = true;
+				newsources.push_back(sources.at(sourceid));
+			}
+			else {
+				pushedsource = false;
+			}
 
-		if (operatorid < operators.size() && pushedsource && sourceid>0)
+			if (operatorid < operators.size() && pushedsource && sourceid>0)
 			{
-			newoperators.push_back(operators.at(operatorid));
+				newoperators.push_back(operators.at(operatorid));
 			}
-		if (sourceid > 0)
+			if (sourceid > 0)
 			{
-			++operatorid;
+				++operatorid;
 			}
-		if (pushedsource)
+			if (pushedsource)
 			{
-			lastnotpushed = -10;
-			}	
+				lastnotpushed = -10;
+			}
 		}
-	newoutput.sources = newsources;
-	newoutput.operators = newoperators;
+		newoutput.sources = newsources;
+		newoutput.operators = newoperators;
+	}catch (...)
+		{
+		_exhandler->raisefromcatch("for "+std::string(*this),"FMToutput::presolve", __LINE__, __FILE__, _section);
+		}
 	return newoutput;
 	}
 

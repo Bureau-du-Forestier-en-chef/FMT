@@ -299,20 +299,35 @@ namespace Models
 
 	void FMTlpsolver::setColSolution(const double* newsolution)
 		{
-		matrixcache.synchronize(solverinterface);
-		solverinterface->setColSolution(newsolution);
+		try {
+			matrixcache.synchronize(solverinterface);
+			solverinterface->setColSolution(newsolution);
+		}catch (...)
+		{
+			Exception::FMTexceptionhandler().raisefromcatch("", "FMTlpsolver::setColSolution", __LINE__, __FILE__);
+		}
 		}
 
 	void FMTlpsolver::setColSetBounds(const int* indexFirst, const int* indexLast, const double* boundlist)
 		{
-		matrixcache.synchronize(solverinterface);
-		solverinterface->setColSetBounds(indexFirst, indexLast, boundlist);
+		try {
+			matrixcache.synchronize(solverinterface);
+			solverinterface->setColSetBounds(indexFirst, indexLast, boundlist);
+		}catch (...)
+			{
+			Exception::FMTexceptionhandler().raisefromcatch("", "FMTlpsolver::setColSetBounds", __LINE__, __FILE__);
+			}
 		}
 
 	void FMTlpsolver::setRowSetBounds(const int* indexFirst, const int* indexLast, const double* boundlist)
 		{
-		matrixcache.synchronize(solverinterface);
-		solverinterface->setRowSetBounds(indexFirst, indexLast, boundlist);
+		try {
+			matrixcache.synchronize(solverinterface);
+			solverinterface->setRowSetBounds(indexFirst, indexLast, boundlist);
+		}catch (...)
+			{
+			Exception::FMTexceptionhandler().raisefromcatch("", "FMTlpsolver::setRowSetBounds", __LINE__, __FILE__);
+			}
 		}
 
 	void FMTlpsolver::deleteRow(const int& rowindex)
@@ -398,8 +413,13 @@ namespace Models
 
 	void FMTlpsolver::setInteger(const int& colindex)
 		{
-		matrixcache.synchronize(solverinterface);
-		solverinterface->setInteger(colindex);
+		try {
+			matrixcache.synchronize(solverinterface);
+			solverinterface->setInteger(colindex);
+		}catch (...)
+			{
+			Exception::FMTexceptionhandler().raisefromcatch("at column index " + colindex, "FMTlpsolver::setInteger", __LINE__, __FILE__);
+			}
 		}
 
 	bool FMTlpsolver::stockresolve()
@@ -411,30 +431,57 @@ namespace Models
 
 	void FMTlpsolver::setInteger(const int* indices, int len)
 		{
-		matrixcache.synchronize(solverinterface);
-		solverinterface->setInteger(indices,len);
+		try {
+			matrixcache.synchronize(solverinterface);
+			solverinterface->setInteger(indices, len);
+		}catch (...)
+			{
+			Exception::FMTexceptionhandler().raisefromcatch("", "FMTlpsolver::setInteger", __LINE__, __FILE__);
+			}
+
 		}
 
 	void FMTlpsolver::setObjective(const double* objectivevalues)
 		{
-		matrixcache.synchronize(solverinterface);
-		solverinterface->setObjective(objectivevalues);
+		try {
+			matrixcache.synchronize(solverinterface);
+			solverinterface->setObjective(objectivevalues);
+		}catch (...)
+			{
+			Exception::FMTexceptionhandler().raisefromcatch("", "FMTlpsolver::setObjective", __LINE__, __FILE__);
+			}
 		}
 	void FMTlpsolver::setObjSense(const double& newsense)
 		{
-		solverinterface->setObjSense(newsense);
+		try {
+			solverinterface->setObjSense(newsense);
+		}catch (...)
+			{
+			Exception::FMTexceptionhandler().raisefromcatch("", "FMTlpsolver::setObjSense", __LINE__, __FILE__);
+			}
 		}
 
 	void FMTlpsolver::deleteRows(int numberofrows, const int* rowindexes)
 		{
-		matrixcache.synchronize(solverinterface);
-		solverinterface->deleteRows(numberofrows, rowindexes);
+		try {
+			matrixcache.synchronize(solverinterface);
+			solverinterface->deleteRows(numberofrows, rowindexes);
+		}catch (...)
+			{
+			Exception::FMTexceptionhandler().raisefromcatch("", "FMTlpsolver::deleteRows", __LINE__, __FILE__);
+			}
+
 		}
 
 	void FMTlpsolver::deleteCols(int numberofcols, const int* colindexes)
 		{
-		matrixcache.synchronize(solverinterface);
-		solverinterface->deleteCols(numberofcols, colindexes);
+		try {
+			matrixcache.synchronize(solverinterface);
+			solverinterface->deleteCols(numberofcols, colindexes);
+		}catch (...)
+			{
+			Exception::FMTexceptionhandler().raisefromcatch("", "FMTlpsolver::deleteCols", __LINE__, __FILE__);
+			}
 		}
 
 	const CoinPackedMatrix* FMTlpsolver::getMatrixByRow() const
@@ -467,7 +514,12 @@ namespace Models
 
 	void FMTlpsolver::synchronize()
 		{
-		matrixcache.synchronize(solverinterface);
+		try {
+			matrixcache.synchronize(solverinterface);
+		}catch (...)
+			{
+			Exception::FMTexceptionhandler().raisefromcatch("", "FMTlpsolver::synchronize", __LINE__, __FILE__);
+			}
 		}
 
 	bool FMTlpsolver::operator == (const FMTlpsolver& rhs) const
@@ -557,8 +609,8 @@ namespace Models
 				}
 			return static_cast<int>(indices.size());
 			}else {
-				throw Exception::FMTerror(Exception::FMTexc::FMTfunctionfailed,
-					" in FMTlpsolver::getrow for row id " + whichRow);
+				Exception::FMTexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed,
+					"for row id " + whichRow, "FMTlpsolver::getrow", __LINE__, __FILE__);
 				}
 		return -1;
 		}
@@ -597,8 +649,8 @@ namespace Models
 			return static_cast<int>(indices.size());
 		}
 		else {
-			throw Exception::FMTerror(Exception::FMTexc::FMTfunctionfailed,
-				" in FMTlpsolver::getcol for column id " + whichCol);
+			Exception::FMTexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed,
+				"for column id " + std::to_string(whichCol), "FMTlpsolver::getcol", __LINE__, __FILE__);
 		}
 		return -1;
 		}

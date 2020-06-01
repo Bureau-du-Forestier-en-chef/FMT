@@ -124,13 +124,30 @@ namespace Exception
 		This function is not used by FMT seems to be usefull for nested exception thrown.
 		*/
 		void throw_nested(const std::exception& texception, int level = 0,bool rethrow=true);
+
+		// DocString: FMTexceptionhandler::printexceptions
+		/**
+		Print all nested exception starting with the first provided by the parameters.
+		*/
+		void printexceptions(std::string text,
+			const std::string& method, const int& line, const std::string& fil,
+			Core::FMTsection lsection = Core::FMTsection::Empty);
 		// DocString: FMTexceptionhandler::raise
 		/**
 		This function throw an FMTexception based on the exception type,section,text to write, line in the source code
-		and file in the source code.
+		and file in the source code. Use also this function for warnings.
 		*/
-		virtual FMTlev raise(FMTexc lexception, Core::FMTsection lsection, std::string text,
-			const int& line, const std::string& file);
+		virtual FMTexception raise(FMTexc lexception,std::string text,
+			const std::string& method, const int& line, const std::string& file,
+			Core::FMTsection lsection = Core::FMTsection::Empty ,bool throwit = true);
+		// DocString: FMTexceptionhandler::raisefromcatch
+		/**
+		Raise an exception from the catch body it will determine if the exception is unenhdled.
+		*/
+		FMTexception raisefromcatch(std::string text,
+			const std::string& method, const int& line, const std::string& file,
+			Core::FMTsection lsection = Core::FMTsection::Empty);
+
 		// DocString: FMTexceptionhandler::enablenestedexceptions
 		/**
 		Enable the nested exception throw.

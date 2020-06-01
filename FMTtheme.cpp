@@ -188,7 +188,8 @@ boost::dynamic_bitset<> FMTtheme::strtobits(const std::string& value) const
                         bits[i]=true;
                         }
                     }else{
-                    //crash
+					_exhandler->raise(Exception::FMTexc::FMTundefined_attribute,
+						std::string(value)+" for theme "+std::to_string(id),"FMTtheme::strtobits", __LINE__, __FILE__, _section);
                     }
         return bits;
         }
@@ -214,13 +215,14 @@ std::string FMTtheme::bitstostr(const boost::dynamic_bitset<>& bits) const
                         return aggregate;
                         }
                     }
-                //crash here
+				_exhandler->raise(Exception::FMTexc::FMTundefined_attribute,
+					"for bitset in theme " + std::to_string(id),"FMTtheme::bitstostr", __LINE__, __FILE__, _section);
                 }
         return value;
         }
 std::vector<std::string>FMTtheme::getattributes(const std::string& value, bool aggregate_source) const
         {
-	std::vector<std::string>result;
+		std::vector<std::string>result;
         if(isaggregate(value))
             {
 			if (aggregate_source)
@@ -263,56 +265,57 @@ FMTtheme::operator std::string() const
         }
 FMTtheme FMTtheme::presolve(const FMTmask& basemask, int& newid, int& newstart, FMTmask& selected) const
 	{
-	if (selected.empty())
+	try {
+		if (selected.empty())
 		{
-		selected.data = boost::dynamic_bitset<>(basemask.data.size(),false);
-		selected.name.clear();
+			selected.data = boost::dynamic_bitset<>(basemask.data.size(), false);
+			selected.name.clear();
 		}
-	FMTtheme newtheme(*this);
-	newtheme.valuenames.clear();
-	newtheme.aggregates.clear();
-	newtheme.source_aggregates.clear();
-	newtheme.indexes.clear();
-	std::map<std::string, std::string>newvaluenames;
-	std::map<std::string, std::string>::const_iterator valueit = valuenames.begin();
-	for (size_t binlocation = start; binlocation < (start+this->size());++binlocation)
+		FMTtheme newtheme(*this);
+		newtheme.valuenames.clear();
+		newtheme.aggregates.clear();
+		newtheme.source_aggregates.clear();
+		newtheme.indexes.clear();
+		std::map<std::string, std::string>newvaluenames;
+		std::map<std::string, std::string>::const_iterator valueit = valuenames.begin();
+		for (size_t binlocation = start; binlocation < (start + this->size()); ++binlocation)
 		{
-		if (basemask.data[binlocation])
+			if (basemask.data[binlocation])
 			{
-			selected.data[binlocation] = true;
-			newvaluenames[valueit->first] = valueit->second;
+				selected.data[binlocation] = true;
+				newvaluenames[valueit->first] = valueit->second;
 			}
-		++valueit;
+			++valueit;
 		}
-	if (newvaluenames.size()>1)
+		if (newvaluenames.size() > 1)
 		{
-		newtheme.valuenames = newvaluenames;
-		newtheme.id = newid;
-		++newid;
-		newtheme.start = newstart;
-		newstart+= newtheme.size();
-		for (std::map<std::string,std::vector<std::string>>::const_iterator aggit = aggregates.begin();
-			aggit != aggregates.end(); aggit++)
+			newtheme.valuenames = newvaluenames;
+			newtheme.id = newid;
+			++newid;
+			newtheme.start = newstart;
+			newstart += newtheme.size();
+			for (std::map<std::string, std::vector<std::string>>::const_iterator aggit = aggregates.begin();
+				aggit != aggregates.end(); aggit++)
 			{
-			std::vector<std::string>newattributes;
-			for (const std::string& attribute : aggit->second)
+				std::vector<std::string>newattributes;
+				for (const std::string& attribute : aggit->second)
 				{
-				if (newtheme.valuenames.find(attribute)!= newtheme.valuenames.end())
+					if (newtheme.valuenames.find(attribute) != newtheme.valuenames.end())
 					{
-					newattributes.push_back(attribute);
+						newattributes.push_back(attribute);
 					}
 				}
-			if (!newattributes.empty())
+				if (!newattributes.empty())
 				{
-				newtheme.aggregates[aggit->first] = newattributes;
-			}
+					newtheme.aggregates[aggit->first] = newattributes;
+				}
 
 			}
-		for (std::map<std::string, std::vector<std::string>>::const_iterator aggit = source_aggregates.begin();
-			aggit != source_aggregates.end(); aggit++)
+			for (std::map<std::string, std::vector<std::string>>::const_iterator aggit = source_aggregates.begin();
+				aggit != source_aggregates.end(); aggit++)
 			{
-			std::vector<std::string>newaggregates;
-			for (const std::string& aggregate : aggit->second)
+				std::vector<std::string>newaggregates;
+				for (const std::string& aggregate : aggit->second)
 				{
 					if (newtheme.aggregates.find(aggregate) != newtheme.aggregates.end() ||
 						newtheme.valuenames.find(aggregate) != newtheme.valuenames.end())
@@ -320,18 +323,24 @@ FMTtheme FMTtheme::presolve(const FMTmask& basemask, int& newid, int& newstart, 
 						newaggregates.push_back(aggregate);
 					}
 				}
-			if (!newaggregates.empty())
+				if (!newaggregates.empty())
 				{
-				newtheme.source_aggregates[aggit->first] = newaggregates;
+					newtheme.source_aggregates[aggit->first] = newaggregates;
 				}
 			}
-	}else {
-		for (size_t binlocation = start; binlocation < (start + this->size()); ++binlocation)
+		}
+		else {
+			for (size_t binlocation = start; binlocation < (start + this->size()); ++binlocation)
 			{
-			selected.data[binlocation] = false;
+				selected.data[binlocation] = false;
 			}
-		}	
-	return newtheme;
+		}
+		return newtheme;
+	}catch (...)
+		{
+		_exhandler->raisefromcatch("for theme "+std::to_string(id),"FMTtheme::presolve", __LINE__, __FILE__, _section);
+		}
+	return FMTtheme();
 	}
 
 }

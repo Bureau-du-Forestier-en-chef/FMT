@@ -76,7 +76,8 @@ class FMTparser: public Core::FMTobject
 				poDriver = GetGDALDriverManager()->GetDriverByName(pszFormat);
 				if( poDriver == nullptr )
 					{
-					_exhandler->raise(Exception::FMTexc::FMTinvaliddriver,_section,std::string(pszFormat), __LINE__, __FILE__);
+					_exhandler->raise(Exception::FMTexc::FMTinvaliddriver,
+						std::string(pszFormat),"FMTparser::createdataset", __LINE__, __FILE__, _section);
 					}
 				char **papszOptions = NULL;
 				papszOptions = CSLSetNameValue( papszOptions, "TILED", "YES" );
@@ -89,7 +90,8 @@ class FMTparser: public Core::FMTobject
 				poDstDS  = poDriver->Create(location.c_str(), layer.GetXSize(), layer.GetYSize(), 1, datatype, papszOptions);
 				if (poDstDS == nullptr)
 					{
-					_exhandler->raise(Exception::FMTexc::FMTinvaliddataset,_section,poDstDS->GetDescription(), __LINE__, __FILE__);
+					_exhandler->raise(Exception::FMTexc::FMTinvaliddataset
+						,poDstDS->GetDescription(),"FMTparser::createdataset", __LINE__, __FILE__, _section);
 					}
 				std::vector<double>geotrans = layer.getgeotransform();
 				const std::string projection = layer.getprojection();
@@ -146,10 +148,12 @@ class FMTparser: public Core::FMTobject
                 }else if(constant.isconstant(newvalue))
                     {
                     nvalue= constant.get<T>(newvalue,period);
-                    _exhandler->raise(Exception::FMTexc::FMTconstants_replacement,_section,value +" line "+ std::to_string(_line), __LINE__, __FILE__);
+                    _exhandler->raise(Exception::FMTexc::FMTconstants_replacement,
+						value +"at line "+ std::to_string(_line),"FMTparser::getnum", __LINE__, __FILE__, _section);
                     ++_constreplacement;
                     }else{
-                    _exhandler->raise(Exception::FMTexc::FMTinvalid_number,_section,value +" line "+ std::to_string(_line), __LINE__, __FILE__);
+                    _exhandler->raise(Exception::FMTexc::FMTinvalid_number,
+						value +"at line "+ std::to_string(_line), "FMTparser::getnum", __LINE__, __FILE__, _section);
                     }
             return nvalue;
             }
@@ -162,7 +166,8 @@ class FMTparser: public Core::FMTobject
 				{
 				nvalue = static_cast<T>(std::stod(newvalue));
 			}else {
-				_exhandler->raise(Exception::FMTexc::FMTinvalid_number, _section, value + " line " + std::to_string(_line), __LINE__, __FILE__);
+				_exhandler->raise(Exception::FMTexc::FMTinvalid_number,
+					value + "at line " + std::to_string(_line),"FMTparser::getnum", __LINE__, __FILE__, _section);
 				}
 			return nvalue;
 			}
@@ -182,25 +187,33 @@ class FMTparser: public Core::FMTobject
         template<typename T>
 		Core::FMTbounds<T>bounds(const Core::FMTconstants& constants, const std::string& value, const std::string& ope, Core::FMTsection section) const
             {
-            T lupper = std::numeric_limits<T>::max();
-            T llower = std::numeric_limits<T>::min();
-            T intvalue = getnum<T>(value,constants);
-			const std::array<std::string, 5> baseoperators = this->getbaseoperators();
-			const std::array<std::string, 5>::const_iterator it = std::find(baseoperators.begin(), baseoperators.end(),ope);
-            const size_t optype = (it - baseoperators.begin());
-            if(optype==0)
-                {
-                lupper = intvalue;
-                llower = lupper;
-                }else if(optype==1)
-                    {
-                    lupper = intvalue;
-                    llower = std::numeric_limits<T>::min();
-                    }else if(optype==2)
-                        {
-                        lupper = std::numeric_limits<T>::max();
-                        llower = intvalue;
-                        }
+				T lupper = std::numeric_limits<T>::max();
+				T llower = std::numeric_limits<T>::min();
+				try {
+				T intvalue = getnum<T>(value, constants);
+				const std::array<std::string, 5> baseoperators = this->getbaseoperators();
+				const std::array<std::string, 5>::const_iterator it = std::find(baseoperators.begin(), baseoperators.end(), ope);
+				const size_t optype = (it - baseoperators.begin());
+				if (optype == 0)
+				{
+					lupper = intvalue;
+					llower = lupper;
+				}
+				else if (optype == 1)
+				{
+					lupper = intvalue;
+					llower = std::numeric_limits<T>::min();
+				}
+				else if (optype == 2)
+				{
+					lupper = std::numeric_limits<T>::max();
+					llower = intvalue;
+				}
+			}catch (...)
+				{
+				_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
+					"for value "+value,"FMTparser::bounds", __LINE__, __FILE__, _section);
+				}
             return Core::FMTbounds<T>(section,lupper,llower);
             }
     };

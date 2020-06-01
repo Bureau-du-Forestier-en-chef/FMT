@@ -70,53 +70,67 @@ FMTaction::FMTaction():FMTlist<FMTspec>(),
 
 	void FMTaction::setbounds()
 		{
-		ageupperbound = 0;
-		agelowerbound = std::numeric_limits<int>::max();
-		periodupperbound = 0;
-		periodlowerbound = std::numeric_limits<int>::max();
-		std::vector<std::pair<FMTmask,FMTspec>>::const_iterator datait = this->begin();
-		for (size_t id = 0; id < this->size(); ++id)
+		try {
+			ageupperbound = 0;
+			agelowerbound = std::numeric_limits<int>::max();
+			periodupperbound = 0;
+			periodlowerbound = std::numeric_limits<int>::max();
+			std::vector<std::pair<FMTmask, FMTspec>>::const_iterator datait = this->begin();
+			for (size_t id = 0; id < this->size(); ++id)
 			{
 				if (!datait->second.emptyage())
-					{
+				{
 					int upperbound = datait->second.getageupperbound();
 					if (upperbound > ageupperbound)
-						{
+					{
 						ageupperbound = upperbound;
-						}
+					}
 					int lowerbound = datait->second.getagelowerbound();
 					if (lowerbound < agelowerbound)
-						{
+					{
 						agelowerbound = lowerbound;
-						}
-					}else{
+					}
+				}
+				else {
 					ageupperbound = std::numeric_limits<int>::max();
 					agelowerbound = 0;
-					}
+				}
 				if (!datait->second.emptyperiod())
-					{
+				{
 					int upperbound = datait->second.getperiodupperbound();
 					if (upperbound > periodupperbound)
-						{
+					{
 						periodupperbound = upperbound;
-						}
+					}
 					int lowerbound = datait->second.getperiodlowerbound();
 					if (lowerbound < periodlowerbound)
-						{
+					{
 						periodlowerbound = lowerbound;
-						}
-				}else {
+					}
+				}
+				else {
 					periodupperbound = std::numeric_limits<int>::max();
 					periodlowerbound = 0;
-					}
+				}
 				++datait;
+			}
+		}catch (...)
+			{
+			_exhandler->raisefromcatch("for action "+this->getname(),
+				"FMTaction::setbounds", __LINE__, __FILE__, _section);
 			}
 		}
 
 	void FMTaction::update()
 		{
-		FMTlist<FMTspec>::update();
-		this->setbounds();
+		try {
+			FMTlist<FMTspec>::update();
+			this->setbounds();
+		}catch (...)
+			{
+			_exhandler->raisefromcatch("for action " + this->getname(),
+				"FMTaction::update", __LINE__, __FILE__, _section);
+			}
 		}
 
 
@@ -127,24 +141,6 @@ FMTaction::FMTaction():FMTlist<FMTspec>(),
         return partials;
         }
 
-	/*bool FMTaction::inperiod() const
-		{
-		std::vector<std::pair<FMTmask, FMTspec>>::const_iterator datait = this->begin();
-		for (size_t id = 0; id < this->size(); ++id)
-			{
-			if (!datait->second.emptyage())
-				{
-				if (datait->second.getageupperbound() != 0)
-					{
-					return false;
-					}
-			}else {
-				return false;
-				}
-			++datait;
-			}
-		return true;
-		}*/
 
     FMTaction::operator std::string() const
         {
@@ -234,8 +230,14 @@ FMTaction FMTaction::presolve(const FMTmask& basemask,
 	const std::vector<FMTtheme>& newthemes) const
 	{
 	FMTaction newaction(*this);
-	newaction.presolvelist(basemask, originalthemes, presolvedmask, newthemes);
-	newaction.update();
+	try {
+		newaction.presolvelist(basemask, originalthemes, presolvedmask, newthemes);
+		newaction.update();
+	}catch (...)
+		{
+		_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,"for action "+this->getname(),
+			"FMTaction::presolve", __LINE__, __FILE__, _section);
+		}
 	return newaction;
 	}
 

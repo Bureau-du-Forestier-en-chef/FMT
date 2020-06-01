@@ -47,8 +47,9 @@ namespace Exception
 		The function overide the base class raise function.
 		See raise function of FMTexceptionhandler class.
 		*/
-		FMTlev raise(FMTexc lexception, Core::FMTsection lsection, std::string text,
-			const int& line, const std::string& file) override;
+		FMTexception raise(FMTexc lexception, std::string text,
+			const std::string& method, const int& line, const std::string& file,
+			Core::FMTsection lsection = Core::FMTsection::Empty, bool throwit = true) override;
 #ifdef FMTWITHGDAL
 		// DocString: FMTquietexceptionhandler::getCPLdata
 		/**

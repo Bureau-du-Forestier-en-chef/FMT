@@ -27,19 +27,22 @@ FMTfreeexceptionhandler::FMTfreeexceptionhandler()
 }
 
 
-FMTlev FMTfreeexceptionhandler::raise(FMTexc lexception, Core::FMTsection lsection, std::string text,
-	const int& line, const std::string& file)
+FMTexception FMTfreeexceptionhandler::raise(FMTexc lexception, std::string text,
+	const std::string& method,const int& line, const std::string& file, Core::FMTsection lsection,bool throwit)
 {
-	FMTexception excp;
-	if (lsection == Core::FMTsection::Empty)
+	FMTexception excp = FMTexception(lexception, updatestatus(lexception, text));
+	if (_level != FMTlev::FMT_Warning)
 	{
-		excp = FMTexception(lexception, updatestatus(lexception, text));
-	}
-	else {
-		excp = FMTexception(lexception, lsection, updatestatus(lexception, text));
+		if (lsection == Core::FMTsection::Empty)
+		{
+			excp = FMTexception(lexception, updatestatus(lexception, text), method, file, line);
+		}
+		else {
+			excp = FMTexception(lexception, lsection, updatestatus(lexception, text), method, file, line);
+		}
 	}
 	excp.sethold(true);
-	if (!needtorethrow())
+	if (throwit&&!needtorethrow())
 		{
 		if (_level == FMTlev::FMT_Warning)
 		{
@@ -51,7 +54,7 @@ FMTlev FMTfreeexceptionhandler::raise(FMTexc lexception, Core::FMTsection lsecti
 			}
 		}
 	
-	return _level;
+	return excp;
 }
 
 }

@@ -70,7 +70,7 @@ Core::FMTconstants FMTconstantparser::read(const std::string& location)
 		}
 		}catch (...)
 			{
-			_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, _section, "in FMTconstantparser::read", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("at "+location,"FMTconstantparser::read", __LINE__, __FILE__, _section);
 			}
 	constants.passinobject(*this);
     return constants;
@@ -78,12 +78,17 @@ Core::FMTconstants FMTconstantparser::read(const std::string& location)
 
 void FMTconstantparser::write(const Core::FMTconstants& constants,const std::string& location) const
     {
-    std::ofstream constantstream;
-    constantstream.open(location);
-    if (tryopening(constantstream,location))
-        {
-        constantstream<< std::string(constants);
-        constantstream.close();
-        }
+	try {
+		std::ofstream constantstream;
+		constantstream.open(location);
+		if (tryopening(constantstream, location))
+		{
+			constantstream << std::string(constants);
+			constantstream.close();
+		}
+	}catch (...)
+		{
+		_exhandler->raisefromcatch("at "+location,"FMTconstantparser::write", __LINE__, __FILE__, _section);
+		}
     }
 }

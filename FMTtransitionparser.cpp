@@ -45,120 +45,135 @@ FMTtransitionparser& FMTtransitionparser::operator = (const FMTtransitionparser&
 
 Core::FMTmask FMTtransitionparser::getsource(std::string& line, Core::FMTspec& spec,const std::vector<Core::FMTtheme>& themes, Core::FMTsection section,const Core::FMTconstants& constants,const Core::FMTyields& ylds)
     {
-	const std::vector<std::string>elements = FMTparser::spliter(line,FMTparser::rxseparator);
-    if (elements.size() == themes.size())
-        {
-		validate(themes,line, " at line " + std::to_string(_line));
-        return Core::FMTmask(line, themes);
-        }else{
+	try {
+		const std::vector<std::string>elements = FMTparser::spliter(line, FMTparser::rxseparator);
+		if (elements.size() == themes.size())
+		{
+			validate(themes, line, " at line " + std::to_string(_line));
+			return Core::FMTmask(line, themes);
+		}
+		else {
 			std::string mask;
-			std::string rest=" ";
-            for(size_t theme = 0; theme < elements.size(); ++theme)
-                {
-                if (theme < themes.size())
-                    {
-                    mask+=elements[theme]+" ";
-                    }else{
-                    rest+=elements[theme]+" ";
-                    }
-                }
-            mask = mask.substr(0, mask.size()-1);
-            rest = rest.substr(0, rest.size()-1);
-			validate(themes,mask, " at line " + std::to_string(_line));
-            const Core::FMTmask newmask(mask,themes);
-            rest += " ";
-            rest = setspec(Core::FMTsection::Transition, Core::FMTkwor::Source,ylds,constants,spec,rest);
-            return newmask;
-            }
+			std::string rest = " ";
+			for (size_t theme = 0; theme < elements.size(); ++theme)
+			{
+				if (theme < themes.size())
+				{
+					mask += elements[theme] + " ";
+				}
+				else {
+					rest += elements[theme] + " ";
+				}
+			}
+			mask = mask.substr(0, mask.size() - 1);
+			rest = rest.substr(0, rest.size() - 1);
+			validate(themes, mask, " at line " + std::to_string(_line));
+			const Core::FMTmask newmask(mask, themes);
+			rest += " ";
+			rest = setspec(Core::FMTsection::Transition, Core::FMTkwor::Source, ylds, constants, spec, rest);
+			return newmask;
+		}
+	}catch (...)
+		{
+		_exhandler->raisefromcatch("at line " + line,"FMTtransitionparser::getsource", __LINE__, __FILE__, _section);
+		}
+	return Core::FMTmask();
     }
 
 std::vector<Core::FMTtransitionmask> FMTtransitionparser::getmasktran(const std::string& line,const std::vector<Core::FMTtheme>& themes,
                                           const Core::FMTconstants& constants, const Core::FMTyields& ylds,
                                           const Core::FMTmask& sourcemask, int& replaced)
     {
-	const std::vector<std::string>elements = FMTparser::spliter(line,FMTparser::rxseparator);
-	std::vector<Core::FMTmask>multiples;
-	std::string mask = "";
-    double proportion;
-    size_t id = 1;
-    while(id < (themes.size()+1))
-        {
-        mask += elements[id] +" ";
-        ++id;
-        }
-    mask = mask.substr(0, mask.size()-1);
-    validate(themes,mask, " at line " + std::to_string(_line));
-    proportion = getnum<double>(elements[id],constants);
-    ++id;
-	std::string rest=" ";
-    while(id < elements.size())
-        {
-        rest+=elements[id]+" ";
-        ++id;
-        }
-	std::smatch kmatch;
-    int age = -1;
-    int lock = 0;
-    Core::FMTtransitionmask trans(mask,themes,proportion);
-    if (std::regex_search(rest,kmatch,FMTtransitionparser::rxlock))
-        {
-		const std::string strlock = kmatch[4];
-        lock = getnum<int>(strlock,constants);
-        rest = std::string(kmatch[1]) + std::string(kmatch[5]);
-        trans.addbounds(Core::FMTlockbounds(Core::FMTsection::Transition, Core::FMTkwor::Target,lock,lock));
-        }
-    if (std::regex_search(rest,kmatch,FMTtransitionparser::rxage))
-        {
-		std::string strage = kmatch[4];
-        age = getnum<int>(strage,constants);
-        rest = std::string(kmatch[1]) + std::string(kmatch[5]);
-        trans.addbounds(Core::FMTagebounds(Core::FMTsection::Transition, Core::FMTkwor::Target,age,age));
-        }
-     if (std::regex_search(rest,kmatch,FMTtransitionparser::rxreplace))
-        {
-		const std::string strtargettheme = kmatch[4];
-		const std::string stroptheme = kmatch[9];
-		const std::string stradd = kmatch[13];
-        const int targettheme  = getnum<int>(strtargettheme)-1;
-        const int addupp = getnum<int>(stradd);
-        Core::FMTmask targetmask(mask,themes);
-        targetmask.set(themes[targettheme],sourcemask.get(themes[targettheme]));
-        for (Core::FMTmask& lmask : targetmask.decompose(themes[targettheme]))
-            {
-			const std::string actual = lmask.get(themes[targettheme]);
-            int newint = getnum<int>(actual) + addupp;
-			const std::string newval = std::to_string(newint);
-            if (themes[targettheme].isattribute(newval))
-                {
-                lmask.set(themes[targettheme],newval);
-                multiples.push_back(lmask);
-                }
-            }
-        replaced = targettheme;
-        rest = std::string(kmatch[1])+ std::string(kmatch[14]);
-        }
-    if (isvalid(rest) && std::regex_search(rest,kmatch,FMTtransitionparser::rxtyld))
-        {
-		const std::string yld = kmatch[2];
-		const std::string strvalue = kmatch[4];
-        if (!yld.empty() && !strvalue.empty())
-            {
-            constexpr double upperbound = std::numeric_limits<double>::max();
-            const double lowerbound = getnum<double>(strvalue,constants);
-            isyld(ylds,yld, Core::FMTsection::Transition);
-            trans.addbounds(Core::FMTyldbounds(Core::FMTsection::Transition, Core::FMTkwor::Target,yld,upperbound,lowerbound));
-            }
-        }
 	std::vector<Core::FMTtransitionmask>alltrans;
-    if (!multiples.empty())
-        {
-        for(const Core::FMTmask& msk : multiples)
-            {
-            alltrans.push_back(Core::FMTtransitionmask(trans,msk,themes));
-            }
-        }else{
-        alltrans.push_back(trans);
-        }
+	try {
+		const std::vector<std::string>elements = FMTparser::spliter(line, FMTparser::rxseparator);
+		std::vector<Core::FMTmask>multiples;
+		std::string mask = "";
+		double proportion;
+		size_t id = 1;
+		while (id < (themes.size() + 1))
+		{
+			mask += elements[id] + " ";
+			++id;
+		}
+		mask = mask.substr(0, mask.size() - 1);
+		validate(themes, mask, " at line " + std::to_string(_line));
+		proportion = getnum<double>(elements[id], constants);
+		++id;
+		std::string rest = " ";
+		while (id < elements.size())
+		{
+			rest += elements[id] + " ";
+			++id;
+		}
+		std::smatch kmatch;
+		int age = -1;
+		int lock = 0;
+		Core::FMTtransitionmask trans(mask, themes, proportion);
+		if (std::regex_search(rest, kmatch, FMTtransitionparser::rxlock))
+		{
+			const std::string strlock = kmatch[4];
+			lock = getnum<int>(strlock, constants);
+			rest = std::string(kmatch[1]) + std::string(kmatch[5]);
+			trans.addbounds(Core::FMTlockbounds(Core::FMTsection::Transition, Core::FMTkwor::Target, lock, lock));
+		}
+		if (std::regex_search(rest, kmatch, FMTtransitionparser::rxage))
+		{
+			std::string strage = kmatch[4];
+			age = getnum<int>(strage, constants);
+			rest = std::string(kmatch[1]) + std::string(kmatch[5]);
+			trans.addbounds(Core::FMTagebounds(Core::FMTsection::Transition, Core::FMTkwor::Target, age, age));
+		}
+		if (std::regex_search(rest, kmatch, FMTtransitionparser::rxreplace))
+		{
+			const std::string strtargettheme = kmatch[4];
+			const std::string stroptheme = kmatch[9];
+			const std::string stradd = kmatch[13];
+			const int targettheme = getnum<int>(strtargettheme) - 1;
+			const int addupp = getnum<int>(stradd);
+			Core::FMTmask targetmask(mask, themes);
+			targetmask.set(themes[targettheme], sourcemask.get(themes[targettheme]));
+			for (Core::FMTmask& lmask : targetmask.decompose(themes[targettheme]))
+			{
+				const std::string actual = lmask.get(themes[targettheme]);
+				int newint = getnum<int>(actual) + addupp;
+				const std::string newval = std::to_string(newint);
+				if (themes[targettheme].isattribute(newval))
+				{
+					lmask.set(themes[targettheme], newval);
+					multiples.push_back(lmask);
+				}
+			}
+			replaced = targettheme;
+			rest = std::string(kmatch[1]) + std::string(kmatch[14]);
+		}
+		if (isvalid(rest) && std::regex_search(rest, kmatch, FMTtransitionparser::rxtyld))
+		{
+			const std::string yld = kmatch[2];
+			const std::string strvalue = kmatch[4];
+			if (!yld.empty() && !strvalue.empty())
+			{
+				constexpr double upperbound = std::numeric_limits<double>::max();
+				const double lowerbound = getnum<double>(strvalue, constants);
+				isyld(ylds, yld, Core::FMTsection::Transition);
+				trans.addbounds(Core::FMTyldbounds(Core::FMTsection::Transition, Core::FMTkwor::Target, yld, upperbound, lowerbound));
+			}
+		}
+
+		if (!multiples.empty())
+		{
+			for (const Core::FMTmask& msk : multiples)
+			{
+				alltrans.push_back(Core::FMTtransitionmask(trans, msk, themes));
+			}
+		}
+		else {
+			alltrans.push_back(trans);
+		}
+	}catch (...)
+		{
+		_exhandler->raisefromcatch("at line " + line,"FMTtransitionparser::getmasktran", __LINE__, __FILE__, _section);
+		}
     return alltrans;
     }
 
@@ -232,7 +247,9 @@ std::vector<Core::FMTtransition> FMTtransitionparser::read(const std::vector<Cor
 							{
 								if (rep != replaced)
 								{
-									_exhandler->raise(Exception::FMTexc::FMTunsupported_transition, _section, actionname + " at line " + std::to_string(_line), __LINE__, __FILE__);
+									_exhandler->raise(Exception::FMTexc::FMTunsupported_transition,
+										actionname + " at line " + std::to_string(_line),
+										"FMTtransitionparser::read", __LINE__, __FILE__, _section);
 								}
 							}
 							replacedvec.push_back(replaced);
@@ -286,7 +303,8 @@ std::vector<Core::FMTtransition> FMTtransitionparser::read(const std::vector<Cor
 				{
 					if (transition.isleaking())
 					{
-						_exhandler->raise(Exception::FMTexc::FMTleakingtransition, _section, transition.getname(), __LINE__, __FILE__);
+						_exhandler->raise(Exception::FMTexc::FMTleakingtransition,
+							transition.getname(),"FMTtransitionparser::read", __LINE__, __FILE__, _section);
 					}
 					else {
 						transitions.push_back(transition);
@@ -299,23 +317,28 @@ std::vector<Core::FMTtransition> FMTtransitionparser::read(const std::vector<Cor
 		}
 	}catch (...)
 		{
-		_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, _section, "in FMTtransitionparser::read", __LINE__, __FILE__);
+		_exhandler->raisefromcatch("","FMTtransitionparser::read", __LINE__, __FILE__, _section);
 		}
     return transitions;
     }
 
 void FMTtransitionparser::write(const std::vector<Core::FMTtransition>& transitions,const std::string& location) const
     {
-	std::ofstream transitionstream;
-    transitionstream.open(location);
-    if (tryopening(transitionstream,location))
-        {
-        for(const Core::FMTtransition& tra : transitions)
-            {
-            transitionstream<< std::string(tra)<<"\n";
-            }
-        transitionstream.close();
-        }
+	try {
+		std::ofstream transitionstream;
+		transitionstream.open(location);
+		if (tryopening(transitionstream, location))
+		{
+			for (const Core::FMTtransition& tra : transitions)
+			{
+				transitionstream << std::string(tra) << "\n";
+			}
+			transitionstream.close();
+		}
+	}catch (...)
+		{
+		_exhandler->raisefromcatch("at "+location,"FMTtransitionparser::write", __LINE__, __FILE__, _section);
+		}
     }
 
 }

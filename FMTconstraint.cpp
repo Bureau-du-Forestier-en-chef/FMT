@@ -463,8 +463,8 @@ namespace Core
 		void FMTconstraint::standardstring(std::string& line, std::string& period_bounds, std::string& goal) const
 		{
 			const std::map<std::string, FMTyldbounds> thebounds = this->getyldsbounds();
-            double lower_b = thebounds.at("RHS").getlower();
-            double upper_b = thebounds.at("RHS").getupper();
+            const double lower_b = thebounds.at("RHS").getlower();
+            const double upper_b = thebounds.at("RHS").getupper();
 			std::string opt_str = "";
             if (lower_b == upper_b)
             {
@@ -496,7 +496,12 @@ namespace Core
 			const std::vector<FMTaction>& actions, const FMTyields& yields) const
 			{
 			FMTconstraint newconstraint(*this);
-			newconstraint.setoutput(FMToutput::presolve(basemask, originalthemes, presolvedmask, newthemes, actions, yields));
+			try {
+				newconstraint.setoutput(FMToutput::presolve(basemask, originalthemes, presolvedmask, newthemes, actions, yields));
+			}catch (...)
+				{
+				_exhandler->raisefromcatch("for " + std::string(*this),"FMTconstraint::presolve", __LINE__, __FILE__, _section);
+				}
 			return newconstraint;
 			}
 

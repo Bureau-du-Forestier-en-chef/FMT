@@ -71,7 +71,15 @@ class FMTtransition : public FMTlist<FMTfork>
 		FMTtransition copy constructor.
 		*/
         FMTtransition(const FMTtransition& rhs);
+		// DocString: FMTtransition::operator=
+		/**
+		FMTtransition assignment operator.
+		*/
         FMTtransition& operator = (const FMTtransition& rhs);
+		// DocString: FMTtransition::opeator std::string
+		/**
+		FMTtransition conversion to string value like into a transition file.
+		*/
         operator std::string() const;
 		// DocString: FMTtransition::single
 		/**

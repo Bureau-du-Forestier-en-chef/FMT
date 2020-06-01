@@ -40,52 +40,60 @@ namespace Models
             }
         return *this;
         }
-    Spatial::FMTforest FMTsesmodel::getmapping() const
-        {
-        return mapping;
-        }
+   
     bool FMTsesmodel::setspactions(const std::vector<Spatial::FMTspatialaction>& lspactions)
         {
-		std::vector<Core::FMTtransition>newtransitions;
-		std::vector<Spatial::FMTspatialaction>newspatials;
-		std::vector<Core::FMTaction>newbaseactions;
-		for (const Spatial::FMTspatialaction& spaction : lspactions)
+		try {
+			std::vector<Core::FMTtransition>newtransitions;
+			std::vector<Spatial::FMTspatialaction>newspatials;
+			std::vector<Core::FMTaction>newbaseactions;
+			for (const Spatial::FMTspatialaction& spaction : lspactions)
 			{
-			std::vector<Core::FMTtransition>::const_iterator trn_iterator = std::find_if(transitions.begin(), transitions.end(), Core::FMTtransitioncomparator(spaction.getname()));
-			if (trn_iterator!= transitions.end())
+				std::vector<Core::FMTtransition>::const_iterator trn_iterator = std::find_if(transitions.begin(), transitions.end(), Core::FMTtransitioncomparator(spaction.getname()));
+				if (trn_iterator != transitions.end())
 				{
-				newtransitions.push_back(*trn_iterator);
-				newspatials.push_back(spaction);
-				newbaseactions.push_back(spaction);
-			}else{
-				_exhandler->raise(Exception::FMTexc::FMTinvalid_transition,
-					Core::FMTsection::Transition, "Missing transition case for action : " + spaction.getname(),__LINE__, __FILE__);
-				return false;
+					newtransitions.push_back(*trn_iterator);
+					newspatials.push_back(spaction);
+					newbaseactions.push_back(spaction);
+				}
+				else {
+					_exhandler->raise(Exception::FMTexc::FMTinvalid_transition,
+						"Missing transition case for action : " + spaction.getname(),
+						"FMTsesmodel::setspactions", __LINE__, __FILE__, Core::FMTsection::Transition);
+					return false;
 				}
 			}
-        spactions = lspactions;
-		actions = newbaseactions;
-		transitions = newtransitions;
+			spactions = lspactions;
+			actions = newbaseactions;
+			transitions = newtransitions;
+		}catch (...)
+			{
+				_exhandler->printexceptions("", "FMTsesmodel::setspactions", __LINE__, __FILE__);
+			}
 		return true;
         }
     bool FMTsesmodel::setinitialmapping(const Spatial::FMTforest& forest)
         {
-        disturbances = Spatial::FMTdisturbancestack();
-        mapping = forest;
-		mapping.setperiod(1);
+		try {
+			disturbances = Spatial::FMTdisturbancestack();
+			mapping = forest;
+			mapping.setperiod(1);
+		}catch (...)
+		{
+			_exhandler->printexceptions("", "FMTsesmodel::setinitialmapping", __LINE__, __FILE__);
+		}
+
 		return true;
         }
 
-	Spatial::FMTdisturbancestack FMTsesmodel::getdisturbances() const
-        {
-        return disturbances;
-        }
+	
 
 
 	std::map<std::string, double> FMTsesmodel::montecarlosimulate(const Core::FMTschedule& schedule,
 																	const size_t& randomiterations,
 																	bool schedule_only,
-																	unsigned int seed)
+																	unsigned int seed,
+																	double tolerance)
 		{
 		std::map<std::string, double>bestresults;
 		FMTsesmodel bestmodel;
@@ -97,11 +105,14 @@ namespace Models
 				const std::map<std::string, double>results = modelcopy.simulate(schedule, schedule_only, seed);
 				if (!results.empty() && results.at("Total")>bestresults.at("Total"))
 					{
-					_logger->logwithlevel("Better solution found at iteration " +
-						std::to_string(iteration) + " value of " + std::to_string(bestresults.at("Total"))+"\n", 1);
+					if (iteration>0)
+						{
+						_logger->logwithlevel("Better solution found at Monte-Carlo iteration " +
+							std::to_string(iteration) + " value of " + std::to_string(results.at("Total")) + "\n", 1);
+						}
 					bestresults = results;
 					bestmodel = modelcopy;
-					if (bestresults.at("Total") == 1.0)
+					if (bestresults.at("Total")>=(1.0-tolerance*1.0))
 						{
 						break;
 						}
@@ -112,14 +123,11 @@ namespace Models
 				{
 				*this = bestmodel;
 				}
-		}catch (const std::exception& exception)
-		{
-			_exhandler->throw_nested(exception);
 		}catch (...)
-			{
-			_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
-				Core::FMTsection::Empty, "in FMTsesmodel::montecarlosimulate", __LINE__, __FILE__);
-			}
+		{
+			_exhandler->printexceptions("", "FMTsesmodel::montecarlosimulate", __LINE__, __FILE__);
+		}
+
 		return bestresults;
 		}
 
@@ -206,17 +214,13 @@ namespace Models
 			operatedschedule.push_back(newschedule);
 		}catch (...)
 			{
-				_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
-					Core::FMTsection::Empty, "in FMTsesmodel::simulate", __LINE__, __FILE__);
+				_exhandler->raisefromcatch("", "FMTsesmodel::simulate", __LINE__, __FILE__);
 			}
         return results;
         }
 
 
-	std::vector<Core::FMTschedule> FMTsesmodel::getschedule() const
-		{
-		return operatedschedule;
-		}
+	
 
 	std::string FMTsesmodel::getdisturbancestats() const
 		{
@@ -226,54 +230,64 @@ namespace Models
 	std::unique_ptr<FMTmodel>FMTsesmodel::presolve(int presolvepass,
 		std::vector<Core::FMTactualdevelopment> optionaldevelopments ) const
 		{
-		if (disturbances.data.empty())//just presolve if no solution
+		try {
+			if (disturbances.data.empty())//just presolve if no solution
 			{
-			const std::vector<Core::FMTactualdevelopment>areas = mapping.getarea();
-			optionaldevelopments.insert(optionaldevelopments.end(), areas.begin(), areas.end());
-			std::unique_ptr<FMTmodel>presolvedmod(new FMTsesmodel(*(FMTmodel::presolve(presolvepass, optionaldevelopments))));
-			FMTsesmodel*presolvedses = dynamic_cast<FMTsesmodel*>(presolvedmod.get());
-			const Core::FMTmask presolvedmask = presolvedses->getselectedmask(themes);
-			const Core::FMTmask basemask = this->getbasemask(optionaldevelopments);
-			presolvedses->mapping = this->mapping.presolve(presolvedmask,presolvedses->themes);
-			std::vector<Spatial::FMTspatialaction>newspatialactions;
-			for (const Spatial::FMTspatialaction& spaction : spactions)
+				const std::vector<Core::FMTactualdevelopment>areas = mapping.getarea();
+				optionaldevelopments.insert(optionaldevelopments.end(), areas.begin(), areas.end());
+				std::unique_ptr<FMTmodel>presolvedmod(new FMTsesmodel(*(FMTmodel::presolve(presolvepass, optionaldevelopments))));
+				FMTsesmodel*presolvedses = dynamic_cast<FMTsesmodel*>(presolvedmod.get());
+				const Core::FMTmask presolvedmask = presolvedses->getselectedmask(themes);
+				const Core::FMTmask basemask = this->getbasemask(optionaldevelopments);
+				presolvedses->mapping = this->mapping.presolve(presolvedmask, presolvedses->themes);
+				std::vector<Spatial::FMTspatialaction>newspatialactions;
+				for (const Spatial::FMTspatialaction& spaction : spactions)
 				{
-				if (std::find_if(presolvedses->actions.begin(), presolvedses->actions.end(),Core::FMTactioncomparator(spaction.getname()))!= presolvedses->actions.end())
+					if (std::find_if(presolvedses->actions.begin(), presolvedses->actions.end(), Core::FMTactioncomparator(spaction.getname())) != presolvedses->actions.end())
 					{
-					const Spatial::FMTspatialaction presolvedspaction(spaction.presolve(basemask, themes, presolvedmask, presolvedses->themes),
-						spaction.neighbors, spaction.green_up, spaction.adjacency, spaction.minimal_size, spaction.maximal_size, spaction.neighbors_size);
-					newspatialactions.push_back(presolvedspaction);
+						const Spatial::FMTspatialaction presolvedspaction(spaction.presolve(basemask, themes, presolvedmask, presolvedses->themes),
+							spaction.neighbors, spaction.green_up, spaction.adjacency, spaction.minimal_size, spaction.maximal_size, spaction.neighbors_size);
+						newspatialactions.push_back(presolvedspaction);
 					}
 				}
-			presolvedses->spactions = newspatialactions;
-			return presolvedmod;
+				presolvedses->spactions = newspatialactions;
+				return presolvedmod;
+			}
+		}catch (...)
+			{
+			_exhandler->raisefromcatch("","FMTsesmodel::presolve", __LINE__, __FILE__);
 			}
 		return std::unique_ptr<FMTmodel>(nullptr);
 		}
 
 	std::unique_ptr<FMTmodel>FMTsesmodel::postsolve(const FMTmodel& originalbasemodel) const
 		{
-		if (!disturbances.data.empty())//just postsolve if you have a solution
+		try {
+			if (!disturbances.data.empty())//just postsolve if you have a solution
 			{
-			std::unique_ptr<FMTmodel>presolvedmod(new FMTsesmodel(*(FMTmodel::postsolve(originalbasemodel))));
-			const Core::FMTmask presolvedmask = this->getselectedmask(themes);
-			FMTsesmodel*postsolvedses = dynamic_cast<FMTsesmodel*>(presolvedmod.get());
-			postsolvedses->mapping = this->mapping.postsolve(presolvedmask, postsolvedses->themes);
-			//Disturbance stack doesn't need changes
-			//take care of the FMTspatialactions
-			std::vector<Spatial::FMTspatialaction>newspatialactions;
-			for (const Spatial::FMTspatialaction& spaction : spactions)
-			{
-				std::vector<Core::FMTaction>::const_iterator spactit = std::find_if(postsolvedses->actions.begin(), postsolvedses->actions.end(), Core::FMTactioncomparator(spaction.getname()));
-				if (spactit != postsolvedses->actions.end())
+				std::unique_ptr<FMTmodel>presolvedmod(new FMTsesmodel(*(FMTmodel::postsolve(originalbasemodel))));
+				const Core::FMTmask presolvedmask = this->getselectedmask(themes);
+				FMTsesmodel*postsolvedses = dynamic_cast<FMTsesmodel*>(presolvedmod.get());
+				postsolvedses->mapping = this->mapping.postsolve(presolvedmask, postsolvedses->themes);
+				//Disturbance stack doesn't need changes
+				//take care of the FMTspatialactions
+				std::vector<Spatial::FMTspatialaction>newspatialactions;
+				for (const Spatial::FMTspatialaction& spaction : spactions)
+				{
+					std::vector<Core::FMTaction>::const_iterator spactit = std::find_if(postsolvedses->actions.begin(), postsolvedses->actions.end(), Core::FMTactioncomparator(spaction.getname()));
+					if (spactit != postsolvedses->actions.end())
 					{
-					const Spatial::FMTspatialaction postsolvedspaction(*spactit,
-						spaction.neighbors, spaction.green_up, spaction.adjacency, spaction.minimal_size, spaction.maximal_size, spaction.neighbors_size);
-					newspatialactions.push_back(postsolvedspaction);
+						const Spatial::FMTspatialaction postsolvedspaction(*spactit,
+							spaction.neighbors, spaction.green_up, spaction.adjacency, spaction.minimal_size, spaction.maximal_size, spaction.neighbors_size);
+						newspatialactions.push_back(postsolvedspaction);
 					}
+				}
+				postsolvedses->spactions = newspatialactions;
+				return presolvedmod;
 			}
-			postsolvedses->spactions = newspatialactions;
-			return presolvedmod;
+		}catch (...)
+			{
+			_exhandler->raisefromcatch("", "FMTsesmodel::presolve", __LINE__, __FILE__);
 			}
 		return std::unique_ptr<FMTmodel>(nullptr);
 		}

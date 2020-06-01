@@ -34,6 +34,16 @@ namespace Exception
 			ar &  boost::serialization::make_nvp("parent_exception", boost::serialization::base_object<FMTexception>(*this));
 		}
 	public:
+		// DocString: ~FMTwarning()
+		/**
+		Default destructor for FMTwarning.
+		*/
+		~FMTwarning()=default;
+		// DocString: FMTwarning::operator=
+		/**
+		Default copy assignment for FMTwarning.
+		*/
+		FMTwarning& operator = (const FMTwarning&) = default;
 		// DocString: FMTwarning()
 		/**
 		Default constructor for FMTwarning.
@@ -49,11 +59,18 @@ namespace Exception
 		Constructor for FMTwarning taking a exception type and message string as arguments.
 		*/
 		FMTwarning(const FMTexc lexception, const std::string message);
-		// DocString: FMTwarning(const FMTexc,const std::string)
+		// DocString: FMTwarning(const FMTexc,const Core::FMTsection,const std::string)
 		/**
 		Constructor for FMTwarning taking a exception type, section in which the warning occur and message string as arguments.
 		*/
 		FMTwarning(const FMTexc lexception, const Core::FMTsection lsection, const std::string message);
+		// DocString: FMTwarning(const FMTexc,const Core::FMTsection, const std::string,const std::string&,const std::string&,const std::string&)
+		/**
+		Constructor for FMTwarning taking a exception type, section in which the warning occur and message string as arguments and the location
+		where the exception occured (method/file/line).
+		*/
+		FMTwarning(const FMTexc lexception, const Core::FMTsection lsection, const std::string message,
+			const std::string& lmethod, const std::string& lfile, const int& lline);
 		// DocString: FMTwarning::warn
 		/**
 		Using a given logger the function log the warning with the logger. 

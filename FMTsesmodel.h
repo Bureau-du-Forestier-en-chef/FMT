@@ -94,12 +94,18 @@ class FMTsesmodel : public FMTmodel
 		/**
 		Getter returning a copy the actual spatial forest stades of each FMTdevelopement (map).
 		*/
-        Spatial::FMTforest getmapping() const;
+		inline Spatial::FMTforest getmapping() const
+			{
+			return mapping;
+			}
 		// DocString: FMTsesmodel::getdisturbances
 		/**
 		Getter returning a copy of the spatially explicit disturbances stack (realy usefull with GCBM).
 		*/
-        Spatial::FMTdisturbancestack getdisturbances() const;
+        inline Spatial::FMTdisturbancestack getdisturbances() const
+			{
+			return disturbances;
+			}
 		// DocString: FMTsesmodel::getdisturbancestats
 		/**
 		Getter returning a string of patch stats (area,perimeter ....) that are ine the disturbances stack.
@@ -111,7 +117,10 @@ class FMTsesmodel : public FMTmodel
 		The operated schedule can differ from the potential schedule provided by the user in the function
 		simulate(). Which we call spatialisation impact.
 		*/
-		std::vector<Core::FMTschedule> getschedule() const;
+		inline std::vector<Core::FMTschedule> getschedule() const
+			{
+			return operatedschedule;
+			}
 		// DocString: FMTsesmodel::setinitialmapping
 		/**
 		Setter of the initial forest stades (spatial map of FMTdevelopment)
@@ -160,7 +169,8 @@ class FMTsesmodel : public FMTmodel
 		std::map<std::string, double> montecarlosimulate(const Core::FMTschedule& schedule,
 										const size_t& randomiterations,
 										bool schedule_only = true,
-										unsigned int seed = 0);
+										unsigned int seed = 0,
+										double tolerance = FMT_DBL_TOLERANCE);
 		
     };
 

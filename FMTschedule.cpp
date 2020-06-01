@@ -253,26 +253,31 @@ FMTschedule::operator std::string() const
 		const std::vector<FMTaction>&presolvedaction) const
 	{
 		FMTschedule newschedule(*this);
-		newschedule.elements.clear();
-		for (std::map<FMTaction, std::map<FMTdevelopment, std::vector<double>>>::const_iterator actit = elements.begin(); actit != elements.end(); actit++)
-		{
-			std::map<FMTdevelopment, std::vector<double>>newmapping;
-			for (std::map<FMTdevelopment, std::vector<double>>::const_iterator devit = actit->second.begin(); devit != actit->second.end(); devit++)
+		try {
+			newschedule.elements.clear();
+			for (std::map<FMTaction, std::map<FMTdevelopment, std::vector<double>>>::const_iterator actit = elements.begin(); actit != elements.end(); actit++)
 			{
-				FMTdevelopment newdev(devit->first);
-
-				newdev.mask = newdev.mask.presolve(presolvedmask, newthemes);
-				newmapping[newdev] = devit->second;
-			}
-			if (!newmapping.empty())
+				std::map<FMTdevelopment, std::vector<double>>newmapping;
+				for (std::map<FMTdevelopment, std::vector<double>>::const_iterator devit = actit->second.begin(); devit != actit->second.end(); devit++)
 				{
-				std::vector<FMTaction>::const_iterator actfit = std::find_if(presolvedaction.begin(), presolvedaction.end(), FMTactioncomparator(actit->first.getname()));
-				if (actfit != presolvedaction.end())
+					FMTdevelopment newdev(devit->first);
+
+					newdev.mask = newdev.mask.presolve(presolvedmask, newthemes);
+					newmapping[newdev] = devit->second;
+				}
+				if (!newmapping.empty())
+				{
+					std::vector<FMTaction>::const_iterator actfit = std::find_if(presolvedaction.begin(), presolvedaction.end(), FMTactioncomparator(actit->first.getname()));
+					if (actfit != presolvedaction.end())
 					{
-					newschedule.elements[*actfit] = newmapping;
+						newschedule.elements[*actfit] = newmapping;
 					}
 				}
-		}
+			}
+		}catch (...)
+			{
+			_exhandler->raisefromcatch("","FMTschedule::presolve", __LINE__, __FILE__, _section);
+			}
 	return newschedule;
 	}
 
@@ -280,26 +285,31 @@ FMTschedule::operator std::string() const
 		const std::vector<FMTtheme>& originalbasethemes, const std::vector<FMTaction>&originalbasebaseactions) const
 	{
 		FMTschedule newschedule(*this);
-		newschedule.elements.clear();
-		for (std::map<FMTaction, std::map<FMTdevelopment, std::vector<double>>>::const_iterator actit = elements.begin(); actit != elements.end(); actit++)
-		{
-			std::map<FMTdevelopment, std::vector<double>>newmapping;
-			for (std::map<FMTdevelopment, std::vector<double>>::const_iterator devit = actit->second.begin(); devit != actit->second.end(); devit++)
+		try {
+			newschedule.elements.clear();
+			for (std::map<FMTaction, std::map<FMTdevelopment, std::vector<double>>>::const_iterator actit = elements.begin(); actit != elements.end(); actit++)
 			{
-				FMTdevelopment newdev(devit->first);
-
-				newdev.mask = newdev.mask.postsolve(presolvedmask, originalbasethemes);
-				newmapping[newdev] = devit->second;
-			}
-			if (!newmapping.empty())
-			{
-				std::vector<FMTaction>::const_iterator actfit = std::find_if(originalbasebaseactions.begin(), originalbasebaseactions.end(), FMTactioncomparator(actit->first.getname()));
-				if (actfit != originalbasebaseactions.end())
+				std::map<FMTdevelopment, std::vector<double>>newmapping;
+				for (std::map<FMTdevelopment, std::vector<double>>::const_iterator devit = actit->second.begin(); devit != actit->second.end(); devit++)
 				{
-					newschedule.elements[*actfit] = newmapping;
+					FMTdevelopment newdev(devit->first);
+
+					newdev.mask = newdev.mask.postsolve(presolvedmask, originalbasethemes);
+					newmapping[newdev] = devit->second;
+				}
+				if (!newmapping.empty())
+				{
+					std::vector<FMTaction>::const_iterator actfit = std::find_if(originalbasebaseactions.begin(), originalbasebaseactions.end(), FMTactioncomparator(actit->first.getname()));
+					if (actfit != originalbasebaseactions.end())
+					{
+						newschedule.elements[*actfit] = newmapping;
+					}
 				}
 			}
-		}
+		}catch (...)
+			{
+			_exhandler->raisefromcatch("","FMTschedule::postsolve", __LINE__, __FILE__, _section);
+			}
 		return newschedule;
 	}
 

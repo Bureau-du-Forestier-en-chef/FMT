@@ -29,30 +29,35 @@ namespace Core
 	std::string  FMTobject::getruntimelocation()
 	{
 		std::string strDLLpath;
-		WCHAR   DllPath[MAX_PATH] = { 0 };
-		GetModuleFileNameW((HINSTANCE)&__ImageBase, DllPath, boost::size(DllPath));
-		std::wstring wstrpath(DllPath);
-		const std::string strpath(wstrpath.begin(), wstrpath.end());
-#if defined (_MSC_VER)
-		const boost::filesystem::path boost_path(strpath);
+		try {
+			WCHAR   DllPath[MAX_PATH] = { 0 };
+			GetModuleFileNameW((HINSTANCE)&__ImageBase, DllPath, boost::size(DllPath));
+			std::wstring wstrpath(DllPath);
+			const std::string strpath(wstrpath.begin(), wstrpath.end());
+	#if defined (_MSC_VER)
+			const boost::filesystem::path boost_path(strpath);
 
-#elif defined __MINGW64__ || __CYGWIN__
-		std::string clean_path;
-        if (strpath.find(":")!= std::string::npos)
-            {
-             clean_path = strpath.substr(strpath.find(":")-1);
-             if (strpath.find("\\")!= std::string::npos)
-                {
-                std::replace( clean_path.begin(), clean_path.end(), '\\', '/');
-                }
-            }
-        boost::filesystem::path boost_path(clean_path);
+	#elif defined __MINGW64__ || __CYGWIN__
+			std::string clean_path;
+			if (strpath.find(":")!= std::string::npos)
+				{
+				 clean_path = strpath.substr(strpath.find(":")-1);
+				 if (strpath.find("\\")!= std::string::npos)
+					{
+					std::replace( clean_path.begin(), clean_path.end(), '\\', '/');
+					}
+				}
+			boost::filesystem::path boost_path(clean_path);
 
-#else
-        int var;
-        boost::filesystem::path boost_path = boost::dll::symbol_location(var);
-#endif
-		strDLLpath = boost_path.parent_path().string();
+	#else
+			int var;
+			boost::filesystem::path boost_path = boost::dll::symbol_location(var);
+	#endif
+			strDLLpath = boost_path.parent_path().string();
+		}catch (...)
+			{
+			_exhandler->raisefromcatch("", "FMTobject::getruntimelocation", __LINE__, __FILE__,_section);
+			}
 		return strDLLpath;
 	}
 
@@ -206,7 +211,7 @@ namespace Core
 		bool returnvalue = true;
 		if (themes.size() > values.size())
 		{
-			_exhandler->raise(Exception::FMTexc::FMTinvalid_maskrange, _section, mask + otherinformation, __LINE__, __FILE__);
+			_exhandler->raise(Exception::FMTexc::FMTinvalid_maskrange, mask + otherinformation,"FMTobject::checkmask", __LINE__, __FILE__, _section);
 			returnvalue = false;
 		}
 		else {
@@ -217,7 +222,8 @@ namespace Core
 				if (!theme.isvalid(values[id]))
 				{
 					const std::string message = values[id] + " at theme " + std::to_string(theme.getid() + 1) + otherinformation;
-					_exhandler->raise(Exception::FMTexc::FMTundefined_attribute, _section, message, __LINE__, __FILE__);
+					_exhandler->raise(Exception::FMTexc::FMTundefined_attribute,message,
+						"FMTobject::checkmask",__LINE__, __FILE__, _section);
 					returnvalue = false;
 				}
 				mask += values[id] + " ";

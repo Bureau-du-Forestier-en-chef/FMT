@@ -190,7 +190,8 @@ namespace Parser
 												(lastoperator == "+" || lastoperator == "-"))) &&
 													(find_if(sources.begin(), sources.end(), Core::FMToutputsourcecomparator(true)) == sources.end()))
 											{
-												_exhandler->raise(Exception::FMTexc::FMTunsupported_output, _section, name + " at line " + std::to_string(_line), __LINE__, __FILE__);
+												_exhandler->raise(Exception::FMTexc::FMTunsupported_output,
+													name + " at line " + std::to_string(_line),"FMToutputparser::read", __LINE__, __FILE__, _section);
 											}
 											if (!lastoperator.empty())
 											{
@@ -321,14 +322,15 @@ namespace Parser
 												}
 												else if (strsrc.find("#") != std::string::npos)
 												{
-													_exhandler->raise(Exception::FMTexc::FMTundefined_constant, _section, strsrc + " at line " + std::to_string(_line), __LINE__, __FILE__);
+													_exhandler->raise(Exception::FMTexc::FMTundefined_constant, strsrc + " at line " + std::to_string(_line),"FMToutputparser::read", __LINE__, __FILE__, _section);
 												}
 												else if (ylds.isyld(strsrc))//isyld(ylds,strsrc,_section))
 												{
 													sources.push_back(Core::FMToutputsource(Core::FMTotar::timeyld, 0, strsrc));
 
 												}else{
-													_exhandler->raise(Exception::FMTexc::FMTundefined_output, _section, strsrc + " at line " + std::to_string(_line), __LINE__, __FILE__);
+													_exhandler->raise(Exception::FMTexc::FMTundefined_output,
+														 strsrc + " at line " + std::to_string(_line),"FMToutputparser::read", __LINE__, __FILE__, _section);
 												}
 											}
 											else {
@@ -357,7 +359,8 @@ namespace Parser
 												if (inds.find('@') != std::string::npos)
 												{
 													const std::string warningstr = inds.substr(inds.find('@'), inds.find_first_of(')'));
-													_exhandler->raise(Exception::FMTexc::FMTemptybound, _section, warningstr + " at line " + std::to_string(_line), __LINE__, __FILE__);
+													_exhandler->raise(Exception::FMTexc::FMTemptybound,
+														warningstr + " at line " + std::to_string(_line),"FMToutputparser::read", __LINE__, __FILE__, _section);
 													rest = inds.substr(inds.find_first_of(')') + 1, inds.size() - 1);
 												}
 
@@ -374,8 +377,8 @@ namespace Parser
 															{
 																if (!ylds.isyld(yld))
 																{
-																	_exhandler->raise(Exception::FMTexc::FMTignore, _section,
-																		yld + " at line " + std::to_string(_line), __LINE__, __FILE__);
+																	_exhandler->raise(Exception::FMTexc::FMTignore,
+																		yld + " at line " + std::to_string(_line),"FMToutputparser::read", __LINE__, __FILE__, _section);
 																}
 															}
 															else {
@@ -392,8 +395,8 @@ namespace Parser
 															{
 																if (!ylds.isyld(yld))
 																{
-																	_exhandler->raise(Exception::FMTexc::FMTignore, _section,
-																		yld + " at line " + std::to_string(_line), __LINE__, __FILE__);
+																	_exhandler->raise(Exception::FMTexc::FMTignore,
+																		yld + " at line " + std::to_string(_line),"FMToutputparser::read", __LINE__, __FILE__, _section);
 																}
 
 															}
@@ -425,8 +428,8 @@ namespace Parser
 																if (!ylds.isyld(yld))
 																{
 
-																	_exhandler->raise(Exception::FMTexc::FMTignore, _section,
-																		yld + " at line " + std::to_string(_line), __LINE__, __FILE__);
+																	_exhandler->raise(Exception::FMTexc::FMTignore,
+																		yld + " at line " + std::to_string(_line),"FMToutputparser::read", __LINE__, __FILE__, _section);
 																}
 
 															}
@@ -468,22 +471,27 @@ namespace Parser
 				}
 			}catch (...)
 				{
-				_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, _section, "in FMToutputparser::read", __LINE__, __FILE__);
+				_exhandler->raisefromcatch("at "+location,"FMToutputparser::read", __LINE__, __FILE__,_section);
 				}
             return outputs;
             }
         void FMToutputparser::write(const std::vector<Core::FMToutput>& outputs, const std::string& location) const
             {
-			std::ofstream outputstream;
-            outputstream.open(location);
-            if (tryopening(outputstream,location))
-                {
-                for(const Core::FMToutput& out : outputs)
-                    {
-                    outputstream<< std::string(out)<<"\n";
-                    }
-                outputstream.close();
-                }
+			try {
+				std::ofstream outputstream;
+				outputstream.open(location);
+				if (tryopening(outputstream, location))
+				{
+					for (const Core::FMToutput& out : outputs)
+					{
+						outputstream << std::string(out) << "\n";
+					}
+					outputstream.close();
+				}
+			}catch (...)
+				{
+				_exhandler->raisefromcatch("at " + location,"FMToutputparser::write", __LINE__, __FILE__,_section);
+				}
             }
 
 }

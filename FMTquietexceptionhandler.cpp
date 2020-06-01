@@ -12,18 +12,21 @@ namespace Exception
 
 	FMTquietexceptionhandler::FMTquietexceptionhandler() :FMTexceptionhandler() {}
 
-	FMTlev FMTquietexceptionhandler::raise(FMTexc lexception, Core::FMTsection lsection, std::string text,
-		const int& line, const std::string& file)
+	FMTexception FMTquietexceptionhandler::raise(FMTexc lexception, std::string text,
+		const std::string& method, const int& line, const std::string& file, Core::FMTsection lsection, bool throwit)
 	{
-		FMTexception excp;
-		if (lsection == Core::FMTsection::Empty)
+		FMTexception excp = FMTexception(lexception, updatestatus(lexception, text));
+		if (_level != FMTlev::FMT_Warning)
 		{
-			excp = FMTexception(lexception, updatestatus(lexception, text));
+			if (lsection == Core::FMTsection::Empty)
+			{
+				excp = FMTexception(lexception, updatestatus(lexception, text), method, file, line);
+			}
+			else {
+				excp = FMTexception(lexception, lsection, updatestatus(lexception, text), method, file, line);
+			}
 		}
-		else {
-			excp = FMTexception(lexception, lsection, updatestatus(lexception, text));
-		}
-		if (!needtorethrow())
+		if (throwit&&!needtorethrow())
 			{
 			if (_level == FMTlev::FMT_Warning)
 			{
@@ -35,7 +38,7 @@ namespace Exception
 				}
 			}
 		
-		return _level;
+		return excp;
 	}
 	#ifdef FMTWITHGDAL
 

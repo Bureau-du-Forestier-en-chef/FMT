@@ -810,13 +810,18 @@ bool FMTgraph::gettransferrow(const FMTvertex_descriptor& vertex_descriptor,
 
 void FMTgraph::getinitialbounds(std::vector<double>& lower_bounds, std::vector<double>& upper_bounds) const
 	{
-	for (const auto& descriptors : developments.at(0))
+	try {
+		for (const auto& descriptors : developments.at(0))
 		{
-		const FMTvertex_descriptor descriptor = descriptors.second;
-		const FMTvertexproperties& property = data[descriptor];
-		const std::map<int, int>outs = getoutvariables(descriptor);
-		lower_bounds[outs.at(-1)] = property.getbaseRHS();
-		upper_bounds[outs.at(-1)] = property.getbaseRHS();
+			const FMTvertex_descriptor descriptor = descriptors.second;
+			const FMTvertexproperties& property = data[descriptor];
+			const std::map<int, int>outs = getoutvariables(descriptor);
+			lower_bounds[outs.at(-1)] = property.getbaseRHS();
+			upper_bounds[outs.at(-1)] = property.getbaseRHS();
+		}
+	}catch (...)
+		{
+		Exception::FMTexceptionhandler().raisefromcatch("", "FMTgraph::getinitialbounds", __LINE__, __FILE__);
 		}
 	}
 
@@ -888,36 +893,38 @@ std::map<std::string, double> FMTgraph::getvalues(const Models::FMTmodel& model,
 	const double* solution, FMToutputlevel level) const
 {
 	std::map<std::string, double>values;
-	if (level == FMToutputlevel::standard)
+	try {
+		if (level == FMToutputlevel::standard)
 		{
 			for (auto attribute_id : theme.getvaluenames())
-				{
-				values[attribute_id.first] = 0;
-				}
-		}
-	else if (level == FMToutputlevel::totalonly)
-		{
-		values["Total"] = 0;
-		}
-	if (!verticies.empty())
-		{
-		const std::vector<const Core::FMTaction*> selected = node.source.targets(model.actions);
-		std::vector<Core::FMTdevelopmentpath>paths;
-		Core::FMTaction optimization_action;
-		for (const FMTvertex_descriptor& vertex : verticies)
 			{
-			const Core::FMTdevelopment& development = data[vertex].get();
-			std::string value;
-			if (level == FMToutputlevel::standard)
+				values[attribute_id.first] = 0;
+			}
+		}
+		else if (level == FMToutputlevel::totalonly)
+		{
+			values["Total"] = 0;
+		}
+		if (!verticies.empty())
+		{
+			const std::vector<const Core::FMTaction*> selected = node.source.targets(model.actions);
+			std::vector<Core::FMTdevelopmentpath>paths;
+			Core::FMTaction optimization_action;
+			for (const FMTvertex_descriptor& vertex : verticies)
+			{
+				const Core::FMTdevelopment& development = data[vertex].get();
+				std::string value;
+				if (level == FMToutputlevel::standard)
 				{
-				value = development.mask.get(theme);
+					value = development.mask.get(theme);
 				}
 				else if (level == FMToutputlevel::developpement)
 				{
-				value = std::string(development);
-				values[value] = 0;
-				}else {
-				value = "Total";
+					value = std::string(development);
+					values[value] = 0;
+				}
+				else {
+					value = "Total";
 				}
 
 				if (node.source.useinedges())
@@ -937,7 +944,7 @@ std::map<std::string, double> FMTgraph::getvalues(const Models::FMTmodel& model,
 					for (const Core::FMTaction* act : selected)
 					{
 						double action_value = 0;
-						const int actionID = static_cast<int>(std::distance(&(*model.actions.begin()),act));
+						const int actionID = static_cast<int>(std::distance(&(*model.actions.begin()), act));
 						paths = getpaths(vertex, actionID);
 						const double action_coef = node.source.getcoef(development, model.yields, *act, paths) * node.factor.getcoef(development, model.yields, *act, paths) * node.constant;
 						action_value = action_coef * (outarea(vertex, actionID, solution));
@@ -948,33 +955,41 @@ std::map<std::string, double> FMTgraph::getvalues(const Models::FMTmodel& model,
 			}
 		}
 		if (level == FMToutputlevel::standard)
+		{
+			double total = 0;
+			for (auto valit : values)
 			{
-				double total = 0;
-				for (auto valit : values)
-				{
-					total += valit.second;
-				}
-				values["Total"] = total;
+				total += valit.second;
 			}
-		return values;
+			values["Total"] = total;
+		}
+	}catch (...)
+		{
+			Exception::FMTexceptionhandler().raisefromcatch("", "FMTgraph::getvalues", __LINE__, __FILE__);
+		}
+	return values;
 	}
 
 void FMTgraph::generatedevelopments()
     	{
-
-            developments.clear();
+		try {
+			developments.clear();
 			FMTvertex_iterator vertex, vend;
 			boost::tie(vertex, vend) = vertices(data);
 			--vend;
 			const size_t max_period = (data[*vend].get().period);
-			developments.resize(max_period+1);
-            for (boost::tie(vertex, vend) = vertices(data); vertex != vend; ++vertex)
-            {
-                const FMTvertexproperties& properties = data[*vertex];
-                const Core::FMTdevelopment& dev = properties.get();
+			developments.resize(max_period + 1);
+			for (boost::tie(vertex, vend) = vertices(data); vertex != vend; ++vertex)
+			{
+				const FMTvertexproperties& properties = data[*vertex];
+				const Core::FMTdevelopment& dev = properties.get();
 				const size_t period_location = (dev.period);
-                developments[period_location][boost::hash<Core::FMTdevelopment>()(dev)] = *vertex;
-            }
+				developments[period_location][boost::hash<Core::FMTdevelopment>()(dev)] = *vertex;
+			}
+		}catch (...)
+			{
+			Exception::FMTexceptionhandler().raisefromcatch("", "FMTgraph::generatedevelopments", __LINE__, __FILE__);
+			}
         }
 
 void FMTgraph::updatevarsmap(std::map<int, double>& variables, const int& var, const double& coef) const
@@ -1088,52 +1103,6 @@ void FMTgraph::updatematrixindex(const std::vector<int>& removedvariables,const 
 			}
 		}
 	
-
-
-	/*std::vector<std::unordered_map<size_t, FMTvertex_descriptor>>::iterator perioddevsit = this->getfirstblock();
-	while (perioddevsit!= developments.end())
-			{
-			for (std::unordered_map<size_t, FMTvertex_descriptor>::iterator it = perioddevsit->begin();
-				it != perioddevsit->end(); it++)
-				{
-				if (!removedconstraints.empty())
-					{
-					FMTvertexproperties& vertexproperty = data[it->second];
-					int actualconstraint = vertexproperty.getconstraintID();
-					if (actualconstraint >= 0)
-						{
-						std::vector<int>::const_iterator removeditconstraint = removedconstraints.begin();
-						int toremove = 0;
-						while (removeditconstraint != removedconstraints.end() && actualconstraint > *removeditconstraint)
-							{
-							++toremove;
-							++removeditconstraint;
-							}
-						vertexproperty.setconstraintID(actualconstraint - toremove);
-						}
-					}
-
-				if (!removedvariables.empty())
-					{
-					FMTinedge_iterator inedge_iterator, inedge_end;
-					for (boost::tie(inedge_iterator, inedge_end) = boost::in_edges(it->second, data); inedge_iterator != inedge_end; ++inedge_iterator)
-						{
-						FMTedgeproperties& edgeproperty = data[*inedge_iterator];
-						std::vector<int>::const_iterator removeditvariable = removedvariables.begin();
-						const int actualvariable = edgeproperty.getvariableID();
-						int toremove = 0;
-						while (removeditvariable != removedvariables.end() && actualvariable > *removeditvariable)
-						{
-							++toremove;
-							++removeditvariable;
-						}
-						edgeproperty.setvariableID(actualvariable - toremove);
-						}
-					}
-
-				}
-			++perioddevsit;
-			}*/
 	}
 
 std::vector<std::unordered_map<size_t, FMTvertex_descriptor>>::iterator FMTgraph::getfirstblock()
@@ -1141,10 +1110,13 @@ std::vector<std::unordered_map<size_t, FMTvertex_descriptor>>::iterator FMTgraph
 	std::vector<std::unordered_map<size_t, FMTvertex_descriptor>>::iterator periodit = developments.begin();
 	if (!developments.empty())
 		{
-		while (periodit->empty())
+			while (periodit->empty())
 			{
-			++periodit;
+				++periodit;
 			}
+		}else {
+			Exception::FMTexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed, 
+				"", "FMTgraph::generatedevelopments", __LINE__, __FILE__);
 		}
 	return periodit;
 	}
@@ -1158,6 +1130,9 @@ std::vector<std::unordered_map<size_t, FMTvertex_descriptor>>::const_iterator FM
 			{
 			++periodit;
 			}
+	}else {
+		Exception::FMTexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed,
+			"Empty graph", "FMTgraph::getfirstconstblock", __LINE__, __FILE__);
 		}
 	return periodit;
 	}

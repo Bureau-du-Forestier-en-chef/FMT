@@ -21,305 +21,345 @@ namespace Models
 
 	Graph::FMTgraphstats FMTlpmodel::initializematrix()
 	{
-		const int ncols = static_cast<int>(graph.nedges());
-        const std::vector<int>column_Starts(static_cast<size_t>(ncols) + 1, 0);
-		const std::vector<int>targetrows(static_cast<size_t>(ncols), 0);
-		const std::vector<double>nelements(ncols, 0.0);
-		std::vector<double>lower_bounds(ncols, 0.0);
-		std::vector<double>upper_bounds(ncols, 0.0);
-		graph.getinitialbounds(lower_bounds, upper_bounds);
-        this->addCols(ncols, &column_Starts[0], &targetrows[0],
-			&nelements[0], &lower_bounds[0],
-			&upper_bounds[0], &nelements[0]);
-		this->setColSolution(&lower_bounds[0]);
-		Graph::FMTgraphstats stats = graph.getstats();
-		stats.cols = ncols;
+		Graph::FMTgraphstats stats;
+		try {
+			const int ncols = static_cast<int>(graph.nedges());
+			const std::vector<int>column_Starts(static_cast<size_t>(ncols) + 1, 0);
+			const std::vector<int>targetrows(static_cast<size_t>(ncols), 0);
+			const std::vector<double>nelements(ncols, 0.0);
+			std::vector<double>lower_bounds(ncols, 0.0);
+			std::vector<double>upper_bounds(ncols, 0.0);
+			graph.getinitialbounds(lower_bounds, upper_bounds);
+			this->addCols(ncols, &column_Starts[0], &targetrows[0],
+				&nelements[0], &lower_bounds[0],
+				&upper_bounds[0], &nelements[0]);
+			this->setColSolution(&lower_bounds[0]);
+			stats = graph.getstats();
+			stats.cols = ncols;
+		}catch (...)
+			{
+			_exhandler->raisefromcatch("","FMTlpmodel::initializematrix", __LINE__, __FILE__);
+			}
         return stats;
 	}
 
 	bool FMTlpmodel::boundsolution(int period,double tolerance)
 	{
-    if (static_cast<int>(graph.size()) > period)
-		{
-        const double* actual_solution = this->getColSolution();
-		std::vector<int>variable_index;
-		std::vector<double>bounds;
-        for (const auto& descriptors : graph.getperiodverticies(period))
-            {
-            const Graph::FMTvertex_descriptor vertex_descriptor = descriptors.second;
-			const std::map<int,int>variables = graph.getoutvariables(vertex_descriptor);
-			for (std::map<int, int>::const_iterator varit = variables.begin(); varit != variables.end();varit++)
+		try {
+			if (static_cast<int>(graph.size()) > period)
+			{
+				const double* actual_solution = this->getColSolution();
+				std::vector<int>variable_index;
+				std::vector<double>bounds;
+				for (const auto& descriptors : graph.getperiodverticies(period))
 				{
-				if (std::find(variable_index.begin(), variable_index.end(), varit->second)== variable_index.end())
+					const Graph::FMTvertex_descriptor vertex_descriptor = descriptors.second;
+					const std::map<int, int>variables = graph.getoutvariables(vertex_descriptor);
+					for (std::map<int, int>::const_iterator varit = variables.begin(); varit != variables.end(); varit++)
 					{
-					variable_index.push_back(varit->second);
-					//Had tolerance on primal infeasibilities with FMT_DBL_TOLERANCE ...
-					bounds.push_back(*(actual_solution + varit->second)*(1-tolerance));
-					bounds.push_back(*(actual_solution + varit->second)*(1+tolerance));
+						if (std::find(variable_index.begin(), variable_index.end(), varit->second) == variable_index.end())
+						{
+							variable_index.push_back(varit->second);
+							//Had tolerance on primal infeasibilities with FMT_DBL_TOLERANCE ...
+							bounds.push_back(*(actual_solution + varit->second)*(1 - tolerance));
+							bounds.push_back(*(actual_solution + varit->second)*(1 + tolerance));
+						}
 					}
 				}
-            }
-		this->setColSetBounds(&variable_index[0], &variable_index.back()+1, &bounds[0]);
-		return this->resolve();
-        }
+				this->setColSetBounds(&variable_index[0], &variable_index.back() + 1, &bounds[0]);
+				return this->resolve();
+			}
+		}catch (...)
+		{
+			_exhandler->printexceptions("at period " + std::to_string(period), "FMTlpmodel::boundsolution", __LINE__, __FILE__);
+		}
+
+
+
     return false;
 	}
 
 	bool FMTlpmodel::isperiodbounded(int period) const
 		{
-		if (static_cast<int>(graph.size()) > period)
+		try {
+			if (static_cast<int>(graph.size()) > period)
 			{
-			size_t totaledges = 0;
-			size_t boundededges = 0;
-			const double* columnsupperbounds = this->getColUpper();
-			const double* columnslowerbounds = this->getColLower();
-			for (const auto& descriptors : graph.getperiodverticies(period))
+				size_t totaledges = 0;
+				size_t boundededges = 0;
+				const double* columnsupperbounds = this->getColUpper();
+				const double* columnslowerbounds = this->getColLower();
+				for (const auto& descriptors : graph.getperiodverticies(period))
 				{
-				const Graph::FMTvertex_descriptor& vertex_descriptor = descriptors.second;
-				const std::map<int, int>variables = graph.getoutvariables(vertex_descriptor);
-				for (std::map<int, int>::const_iterator varit = variables.begin(); varit != variables.end(); varit++)
+					const Graph::FMTvertex_descriptor& vertex_descriptor = descriptors.second;
+					const std::map<int, int>variables = graph.getoutvariables(vertex_descriptor);
+					for (std::map<int, int>::const_iterator varit = variables.begin(); varit != variables.end(); varit++)
 					{
-					if (*(columnsupperbounds + varit->second) == *(columnslowerbounds + varit->second))
+						if (*(columnsupperbounds + varit->second) == *(columnslowerbounds + varit->second))
 						{
-						++boundededges;
-						++totaledges;
+							++boundededges;
+							++totaledges;
 						}
 					}
 				}
-			if (boundededges == totaledges)
+				if (boundededges == totaledges)
 				{
-				return true;
+					return true;
 				}
+			}
+		}catch (...)
+			{
+			_exhandler->raisefromcatch("at period " + std::to_string(period),
+				"FMTlpmodel::isperiodbounded", __LINE__, __FILE__);
 			}
 		return false;
 		}
 
 	bool FMTlpmodel::unboundsolution(int period)
 		{
-		if (static_cast<int>(graph.size()) > period && period > 0)//period >0 to not select actual developments!
+		try {
+			if (static_cast<int>(graph.size()) > period && period > 0)//period >0 to not select actual developments!
 			{
-			std::vector<int>variable_index;
-			std::vector<double>bounds;
-			for (const auto& descriptors : graph.getperiodverticies(period))
+				std::vector<int>variable_index;
+				std::vector<double>bounds;
+				for (const auto& descriptors : graph.getperiodverticies(period))
 				{
-				const Graph::FMTvertex_descriptor vertex_descriptor = descriptors.second;
-				std::map<int, int>variables = graph.getoutvariables(vertex_descriptor);
-				for (std::map<int, int>::const_iterator varit = variables.begin(); varit != variables.end(); varit++)
+					const Graph::FMTvertex_descriptor vertex_descriptor = descriptors.second;
+					std::map<int, int>variables = graph.getoutvariables(vertex_descriptor);
+					for (std::map<int, int>::const_iterator varit = variables.begin(); varit != variables.end(); varit++)
 					{
-					if (std::find(variable_index.begin(), variable_index.end(), varit->second) == variable_index.end())
+						if (std::find(variable_index.begin(), variable_index.end(), varit->second) == variable_index.end())
 						{
-						variable_index.push_back(varit->second);
-						bounds.push_back(-COIN_DBL_MAX);
-						bounds.push_back(COIN_DBL_MAX);
+							variable_index.push_back(varit->second);
+							bounds.push_back(-COIN_DBL_MAX);
+							bounds.push_back(COIN_DBL_MAX);
 						}
 					}
 				}
-			this->setColSetBounds(&variable_index[0], &variable_index.back() + 1, &bounds[0]);
-			return true;
+				this->setColSetBounds(&variable_index[0], &variable_index.back() + 1, &bounds[0]);
+				return true;
 			}
+		}catch (...)
+		{
+			_exhandler->printexceptions("at period " + std::to_string(period), "FMTlpmodel::unboundsolution", __LINE__, __FILE__);
+		}
+
+
 		return false;
 		}
 
 	bool FMTlpmodel::setsolution(int period, const Core::FMTschedule& schedule)
 	{
-		if (static_cast<int>(graph.size()) > period && period > 0)
-		{
-			//std::vector<double>new_solution(solverinterface->getNumCols(), 0);
-			const double* actual_solution = this->getColSolution();
-			std::vector<double>new_solution(actual_solution, actual_solution + this->getNumCols());
-			/*const double* upper_bounds = solverinterface->getRowUpper();
-			for (int colid = 0; colid < static_cast<int>(new_solution.size());++colid)
-				{
-				new_solution[colid] = *(actual_solution + colid);
-				}*/
-			for (std::unordered_map<size_t, Graph::FMTvertex_descriptor>::const_iterator devit = graph.getperiodverticies(period).begin();
-				devit != graph.getperiodverticies(period).end(); devit++)
-				{
-				const std::map<int, int>variables = graph.getoutvariables(devit->second);
-				for (std::map<int, int>::const_iterator varit = variables.begin(); varit != variables.end(); varit++)
+		try {
+			if (static_cast<int>(graph.size()) > period && period > 0)
+			{
+				//std::vector<double>new_solution(solverinterface->getNumCols(), 0);
+				const double* actual_solution = this->getColSolution();
+				std::vector<double>new_solution(actual_solution, actual_solution + this->getNumCols());
+				/*const double* upper_bounds = solverinterface->getRowUpper();
+				for (int colid = 0; colid < static_cast<int>(new_solution.size());++colid)
 					{
-					new_solution[varit->second] = 0;
+					new_solution[colid] = *(actual_solution + colid);
+					}*/
+				for (std::unordered_map<size_t, Graph::FMTvertex_descriptor>::const_iterator devit = graph.getperiodverticies(period).begin();
+					devit != graph.getperiodverticies(period).end(); devit++)
+				{
+					const std::map<int, int>variables = graph.getoutvariables(devit->second);
+					for (std::map<int, int>::const_iterator varit = variables.begin(); varit != variables.end(); varit++)
+					{
+						new_solution[varit->second] = 0;
 					}
 				}
 
 
-			Core::FMTschedule locked_schedule;
-			for (const auto actionit : schedule)
-			{
-				int actionid = int(std::distance(actions.begin(), find_if(actions.begin(), actions.end(), Core::FMTactioncomparator(actionit.first.getname()))));
-				size_t allocated = 0;
-				for (auto devit : actionit.second)
+				Core::FMTschedule locked_schedule;
+				for (const auto actionit : schedule)
 				{
-					if (actionit.first.dorespectlock() && graph.containsdevelopment(devit.first))
+					int actionid = int(std::distance(actions.begin(), find_if(actions.begin(), actions.end(), Core::FMTactioncomparator(actionit.first.getname()))));
+					size_t allocated = 0;
+					for (auto devit : actionit.second)
 					{
-						const Graph::FMTvertex_descriptor vdescriptor = graph.getdevelopment(devit.first);
-						const int variable = graph.getoutvariables(vdescriptor)[actionid];
-						new_solution[variable] = devit.second.at(0);
-						++allocated;
-					}
-					else if (!actionit.first.dorespectlock())
-					{
-						Core::FMTdevelopment locked(devit.first);
-						int area_id = 0;
-						int last_lock = 0;
-						while (area_id < static_cast<int>(devit.second.size()))
+						if (actionit.first.dorespectlock() && graph.containsdevelopment(devit.first))
 						{
-							if (graph.containsdevelopment(locked))
+							const Graph::FMTvertex_descriptor vdescriptor = graph.getdevelopment(devit.first);
+							const int variable = graph.getoutvariables(vdescriptor)[actionid];
+							new_solution[variable] = devit.second.at(0);
+							++allocated;
+						}
+						else if (!actionit.first.dorespectlock())
+						{
+							Core::FMTdevelopment locked(devit.first);
+							int area_id = 0;
+							int last_lock = 0;
+							while (area_id < static_cast<int>(devit.second.size()))
 							{
-								const Graph::FMTvertex_descriptor vdescriptor = graph.getdevelopment(locked);
-								const int variable = graph.getoutvariables(vdescriptor)[actionid];
-								/*if (area_id==0)
-									{
-									new_solution[variable] = 0;
-									}*/
-								new_solution[variable] += devit.second.at(area_id);
-								last_lock = locked.lock;
-								++allocated;
-								++area_id;
-								++locked.lock;
-							}
-							if (area_id < static_cast<int>(devit.second.size()))//continue looking for a developpement!
-							{
-								size_t checked = 0;
-								const size_t allocated_bound = (graph.getperiodverticies(period).size() - allocated);
-								while (!graph.containsdevelopment(locked) &&
-									checked < allocated_bound)
+								if (graph.containsdevelopment(locked))
 								{
+									const Graph::FMTvertex_descriptor vdescriptor = graph.getdevelopment(locked);
+									const int variable = graph.getoutvariables(vdescriptor)[actionid];
+									/*if (area_id==0)
+										{
+										new_solution[variable] = 0;
+										}*/
+									new_solution[variable] += devit.second.at(area_id);
+									last_lock = locked.lock;
+									++allocated;
+									++area_id;
 									++locked.lock;
-									++checked;
 								}
-								if (checked == allocated_bound)//no lock available so get back to regular
+								if (area_id < static_cast<int>(devit.second.size()))//continue looking for a developpement!
 								{
-									locked.lock = last_lock; //go back to last good hit!
+									size_t checked = 0;
+									const size_t allocated_bound = (graph.getperiodverticies(period).size() - allocated);
+									while (!graph.containsdevelopment(locked) &&
+										checked < allocated_bound)
+									{
+										++locked.lock;
+										++checked;
+									}
+									if (checked == allocated_bound)//no lock available so get back to regular
+									{
+										locked.lock = last_lock; //go back to last good hit!
+									}
 								}
-							}
 
+							}
+						}
+						else {
+							_exhandler->raise(Exception::FMTexc::FMTmissingdevelopement,std::string(devit.first) + " at period " + std::to_string(period) + " operated by " + actionit.first.getname(),
+								"FMTlpmodel::setsolution",__LINE__, __FILE__);
+							return false;
 						}
 					}
-					else {
-						_exhandler->raise(Exception::FMTexc::FMTmissingdevelopement,
-							Core::FMTsection::Empty, std::string(devit.first) + " at period " + std::to_string(period) + " operated by " + actionit.first.getname(),
-							__LINE__, __FILE__);
-						return false;
+				}
+				//Fill up natural evolution
+				std::unordered_map<size_t, Graph::FMTvertex_descriptor>processed;
+				std::queue<Graph::FMTvertex_descriptor>descriptors;
+				for (std::unordered_map<size_t, Graph::FMTvertex_descriptor>::const_iterator devit = graph.getperiodverticies(period).begin();
+					devit != graph.getperiodverticies(period).end(); devit++)
+				{
+					if (graph.periodstart(devit->second))//get inperiod
+					{
+						const double* solution = &new_solution[0];
+						double rest = graph.inarea(devit->second, solution);
+						//double rest = graph.inarea(devit->second, actual_solution);
+						std::map<int, int>variables = graph.getoutvariables(devit->second);
+						int growth = variables[-1];
+						variables.erase(-1);
+						for (std::map<int, int>::const_iterator varit = variables.begin(); varit != variables.end(); varit++)
+						{
+							std::vector<Core::FMTdevelopmentpath> paths = graph.getpaths(devit->second, varit->first);
+							for (const Core::FMTdevelopmentpath path : paths)
+							{
+								if (path.development->period == period && processed.find(boost::hash<Core::FMTdevelopment>()(*path.development)) == processed.end())
+								{
+									processed[boost::hash<Core::FMTdevelopment>()(*path.development)] = graph.getdevelopment(*path.development);
+
+									descriptors.push(graph.getdevelopment(*path.development));
+								}
+							}
+							//rest -= *(actual_solution + varit->second);
+							rest -= new_solution[varit->second];
+						}
+						if ((rest + FMT_DBL_TOLERANCE) < 0)
+						{
+							_exhandler->raise(Exception::FMTexc::FMTinvalid_number,
+								 std::to_string(rest) + " negative growth solution for " +
+								std::string(graph.getdevelopment(devit->second)),
+								"FMTlpmodel::setsolution",__LINE__, __FILE__);
+						}
+						new_solution[growth] = rest;
+
 					}
 				}
-			}
-			//Fill up natural evolution
-			std::unordered_map<size_t, Graph::FMTvertex_descriptor>processed;
-			std::queue<Graph::FMTvertex_descriptor>descriptors;
-			for (std::unordered_map<size_t, Graph::FMTvertex_descriptor>::const_iterator devit = graph.getperiodverticies(period).begin();
-				devit != graph.getperiodverticies(period).end(); devit++)
-			{
-				if (graph.periodstart(devit->second))//get inperiod
+
+				while (!descriptors.empty())
 				{
+					Graph::FMTvertex_descriptor first = descriptors.front();
+					std::map<int, int>variables = graph.getoutvariables(first);
 					const double* solution = &new_solution[0];
-					double rest = graph.inarea(devit->second, solution);
-					//double rest = graph.inarea(devit->second, actual_solution);
-					std::map<int, int>variables = graph.getoutvariables(devit->second);
+					double rest = graph.inarea(first, solution);
 					int growth = variables[-1];
 					variables.erase(-1);
 					for (std::map<int, int>::const_iterator varit = variables.begin(); varit != variables.end(); varit++)
 					{
-						std::vector<Core::FMTdevelopmentpath> paths = graph.getpaths(devit->second, varit->first);
+						std::vector<Core::FMTdevelopmentpath> paths = graph.getpaths(first, varit->first);
 						for (const Core::FMTdevelopmentpath path : paths)
 						{
 							if (path.development->period == period && processed.find(boost::hash<Core::FMTdevelopment>()(*path.development)) == processed.end())
 							{
 								processed[boost::hash<Core::FMTdevelopment>()(*path.development)] = graph.getdevelopment(*path.development);
-
 								descriptors.push(graph.getdevelopment(*path.development));
 							}
 						}
-						//rest -= *(actual_solution + varit->second);
 						rest -= new_solution[varit->second];
 					}
-					if ((rest+FMT_DBL_TOLERANCE) < 0)
-						{
+					if ((rest + FMT_DBL_TOLERANCE) < 0)
+					{
 						_exhandler->raise(Exception::FMTexc::FMTinvalid_number,
-							Core::FMTsection::Empty, std::to_string(rest)+" negative growth solution for "+
-							std::string(graph.getdevelopment(devit->second)),
-							__LINE__, __FILE__);
-						}
+							 std::to_string(rest) + " negative growth solution for " +
+							std::string(graph.getdevelopment(first)),
+							"FMTlpmodel::setsolution",__LINE__, __FILE__);
+					}
 					new_solution[growth] = rest;
-
+					descriptors.pop();
 				}
-			}
+				this->setColSolution(&new_solution[0]);
 
-			while (!descriptors.empty())
-			{
-				Graph::FMTvertex_descriptor first = descriptors.front();
-				std::map<int, int>variables = graph.getoutvariables(first);
-				const double* solution = &new_solution[0];
-				double rest = graph.inarea(first, solution);
-				int growth = variables[-1];
-				variables.erase(-1);
-				for (std::map<int, int>::const_iterator varit = variables.begin(); varit != variables.end(); varit++)
-				{
-					std::vector<Core::FMTdevelopmentpath> paths = graph.getpaths(first, varit->first);
-					for (const Core::FMTdevelopmentpath path : paths)
-					{
-						if (path.development->period == period && processed.find(boost::hash<Core::FMTdevelopment>()(*path.development)) == processed.end())
-						{
-							processed[boost::hash<Core::FMTdevelopment>()(*path.development)] = graph.getdevelopment(*path.development);
-							descriptors.push(graph.getdevelopment(*path.development));
-						}
-					}
-					rest -= new_solution[varit->second];
-				}
-				if ((rest + FMT_DBL_TOLERANCE) < 0)
-					{
-					_exhandler->raise(Exception::FMTexc::FMTinvalid_number,
-						Core::FMTsection::Empty, std::to_string(rest) + " negative growth solution for " +
-						std::string(graph.getdevelopment(first)),
-						__LINE__, __FILE__);
-					}
-				new_solution[growth] = rest;
-				descriptors.pop();
 			}
-			this->setColSolution(&new_solution[0]);
-
+		}catch (...)
+		{
+			_exhandler->printexceptions("at period " + std::to_string(period), "FMTlpmodel::setsolution", __LINE__, __FILE__);
 		}
+
+
 		return true;
 	}
 
 	Core::FMTschedule FMTlpmodel::getsolution(int period) const
 	{
-		if (static_cast<int>(graph.size()) > period && period > 0)
-		{
-
-			std::map<Core::FMTaction, std::map<Core::FMTdevelopment, std::map<int, double>>>schedule_solution;
-			const double* actual_solution = this->getColSolution();
-			for (const auto deviterator : graph.getperiodverticies(period))
+		try {
+			if (static_cast<int>(graph.size()) > period && period > 0)
 			{
-				const Graph::FMTvertex_descriptor vertex = deviterator.second;
-				std::map<int, int>variables = graph.getoutvariables(vertex);
-				variables.erase(-1);
-				if (!variables.empty())
-				{
-					for (const auto variable_iterator : variables)
-					{
-						if (*(actual_solution + variable_iterator.second) > 0) //basis solution only!!!
-						{
-							if (schedule_solution.find(actions[variable_iterator.first]) == schedule_solution.end())
-							{
-								schedule_solution[actions[variable_iterator.first]] = std::map<Core::FMTdevelopment, std::map<int, double>>();
-							}
-							const Core::FMTdevelopment& basedev = graph.getdevelopment(deviterator.second);
-							Core::FMTdevelopment lockout = basedev.clearlock();
-							if (schedule_solution[actions[variable_iterator.first]].find(lockout) == schedule_solution[actions[variable_iterator.first]].end())
-							{
-								schedule_solution[actions[variable_iterator.first]][lockout] = std::map<int, double>();
-							}
-							schedule_solution[actions[variable_iterator.first]][lockout][basedev.lock] = (*(actual_solution + variable_iterator.second));
-						}
-					}
 
+				std::map<Core::FMTaction, std::map<Core::FMTdevelopment, std::map<int, double>>>schedule_solution;
+				const double* actual_solution = this->getColSolution();
+				for (const auto deviterator : graph.getperiodverticies(period))
+				{
+					const Graph::FMTvertex_descriptor vertex = deviterator.second;
+					std::map<int, int>variables = graph.getoutvariables(vertex);
+					variables.erase(-1);
+					if (!variables.empty())
+					{
+						for (const auto variable_iterator : variables)
+						{
+							if (*(actual_solution + variable_iterator.second) > 0) //basis solution only!!!
+							{
+								if (schedule_solution.find(actions[variable_iterator.first]) == schedule_solution.end())
+								{
+									schedule_solution[actions[variable_iterator.first]] = std::map<Core::FMTdevelopment, std::map<int, double>>();
+								}
+								const Core::FMTdevelopment& basedev = graph.getdevelopment(deviterator.second);
+								Core::FMTdevelopment lockout = basedev.clearlock();
+								if (schedule_solution[actions[variable_iterator.first]].find(lockout) == schedule_solution[actions[variable_iterator.first]].end())
+								{
+									schedule_solution[actions[variable_iterator.first]][lockout] = std::map<int, double>();
+								}
+								schedule_solution[actions[variable_iterator.first]][lockout][basedev.lock] = (*(actual_solution + variable_iterator.second));
+							}
+						}
+
+					}
 				}
+				Core::FMTschedule newschedule(period, schedule_solution);
+				newschedule.passinobject(*this);
+				return newschedule;
 			}
-			Core::FMTschedule newschedule(period, schedule_solution);
-			newschedule.passinobject(*this);
-			return newschedule;
-		}
+		}catch (...)
+			{
+				_exhandler->printexceptions("at period " + std::to_string(period), "FMTlpmodel::getsolution", __LINE__, __FILE__);
+			}
+
+
 		return Core::FMTschedule();
 	}
 
@@ -327,42 +367,48 @@ namespace Models
 		const Graph::FMTgraphstats& newstats)
 	{
 
-		//columns
-		const std::vector<int>column_Starts(static_cast<size_t>(newstats.cols)+1, 0);
-		const std::vector<int>targetrows(newstats.cols, 0);
-		const std::vector<double>nelements(newstats.cols, 0.0);
-		const std::vector<double>lower_bounds(newstats.cols, 0.0);
-		const std::vector<double>upper_bounds(newstats.cols, COIN_DBL_MAX);
-		this->addCols(newstats.cols, &column_Starts[0], &targetrows[0],
-			&nelements[0], &lower_bounds[0],
-			&upper_bounds[0], &nelements[0]);
+		try {
+			//columns
+			const std::vector<int>column_Starts(static_cast<size_t>(newstats.cols) + 1, 0);
+			const std::vector<int>targetrows(newstats.cols, 0);
+			const std::vector<double>nelements(newstats.cols, 0.0);
+			const std::vector<double>lower_bounds(newstats.cols, 0.0);
+			const std::vector<double>upper_bounds(newstats.cols, COIN_DBL_MAX);
+			this->addCols(newstats.cols, &column_Starts[0], &targetrows[0],
+				&nelements[0], &lower_bounds[0],
+				&upper_bounds[0], &nelements[0]);
 
-		//rows
-		std::vector<int>row_Starts;
-		row_Starts.reserve(targets.size());
-		std::vector<int>targetcols;
-		std::vector<double>elements;
-		const std::vector<double>row_bounds(targets.size(), 0.0);
-		//Need to reset a new constraint ID!
-		Graph::FMTgraphstats oldstats = graph.getstats();
-		int newconstraintID = this->getNumRows();
-		for (auto& vertex_it : targets)
-		{
-			graph.setconstraintID(vertex_it.second, newconstraintID);
-			if (graph.gettransferrow(vertex_it.second, row_Starts, targetcols,elements))
+			//rows
+			std::vector<int>row_Starts;
+			row_Starts.reserve(targets.size());
+			std::vector<int>targetcols;
+			std::vector<double>elements;
+			const std::vector<double>row_bounds(targets.size(), 0.0);
+			//Need to reset a new constraint ID!
+			Graph::FMTgraphstats oldstats = graph.getstats();
+			int newconstraintID = this->getNumRows();
+			for (auto& vertex_it : targets)
 			{
+				graph.setconstraintID(vertex_it.second, newconstraintID);
+				if (graph.gettransferrow(vertex_it.second, row_Starts, targetcols, elements))
+				{
 
+				}
+				++oldstats.transfer_rows;
+				++newconstraintID;
 			}
-			++oldstats.transfer_rows;
-			++newconstraintID;
-		}
-		const int nrows = (newconstraintID - this->getNumRows());
-		row_Starts.push_back(static_cast<int>(targetcols.size()));
-		this->addRows(nrows, &row_Starts[0], &targetcols[0],
-			&elements[0], &row_bounds[0], &row_bounds[0]);
-		oldstats.cols = this->getNumCols();
-		oldstats.rows = this->getNumRows();
-		return oldstats;
+			const int nrows = (newconstraintID - this->getNumRows());
+			row_Starts.push_back(static_cast<int>(targetcols.size()));
+			this->addRows(nrows, &row_Starts[0], &targetcols[0],
+				&elements[0], &row_bounds[0], &row_bounds[0]);
+			oldstats.cols = this->getNumCols();
+			oldstats.rows = this->getNumRows();
+			return oldstats;
+		}catch (...)
+			{
+			_exhandler->raisefromcatch("","FMTlpmodel::updatematrix", __LINE__, __FILE__);
+			}
+		return this->getstats();
 	}
 
 
@@ -370,9 +416,7 @@ namespace Models
 		FMTmodel(base),
 		FMTlpsolver(lsolvertype, *this->_logger),
 		graph(Graph::FMTgraphbuild::nobuild),
-		elements()/*,
-		deletedconstraints(),
-		deletedvariables()*/
+		elements()
 	{
 	}
 
@@ -380,9 +424,7 @@ namespace Models
 		FMTmodel(),
 		FMTlpsolver(),
 		graph(Graph::FMTgraphbuild::nobuild),
-		elements()/*,
-		deletedconstraints(),
-		deletedvariables()*/
+		elements()
 	{
 
 	}
@@ -391,9 +433,7 @@ namespace Models
 		FMTmodel(rhs),
 		FMTlpsolver(rhs),
 		graph(rhs.graph),
-		elements(rhs.elements)/*,
-		deletedconstraints(rhs.deletedconstraints),
-		deletedvariables(rhs.deletedvariables)*/
+		elements(rhs.elements)
 	{
 	
 	}
@@ -404,9 +444,7 @@ namespace Models
 		return (FMTmodel::operator == (rhs) &&
 			FMTlpsolver::operator == (rhs) &&
 			graph == rhs.graph &&
-			elements == rhs.elements /*&& 
-			deletedconstraints == rhs.deletedconstraints &&
-			deletedvariables == rhs.deletedvariables*/);
+			elements == rhs.elements);
 	}
 
 	bool FMTlpmodel::operator != (const FMTlpmodel& rhs) const
@@ -421,14 +459,11 @@ namespace Models
 		try {
 			const double* solution = this->getColSolution();
 			return graph.getoutput(*this, output, period, solution, level);
-		}catch (const std::exception& exception)
+		}catch (...)
 			{
-			_exhandler->throw_nested(exception);
-			}catch (...)
-				{
-				_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
-					Core::FMTsection::Empty, "in FMTlpmodel::getoutput", __LINE__, __FILE__);
-				}
+				_exhandler->printexceptions("", "FMTlpmodel::getoutput", __LINE__, __FILE__);
+			}
+
 		return std::map<std::string, double>();
 	}
 
@@ -461,15 +496,11 @@ namespace Models
 			const int location = static_cast<int>(graph.size() - 2);
 			const Graph::FMTgraphstats newstats = this->updatematrix(graph.getperiodverticies(location), buildstats);
 			graph.setstats(newstats);
-		}catch (const std::exception& exception)
-			{
-			_exhandler->throw_nested(exception);
-			}
-		catch (...)
-			{
-			_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
-				Core::FMTsection::Empty, "in FMTlpmodel::buildperiod", __LINE__, __FILE__);
-			}
+		}catch (...)
+		{
+			_exhandler->printexceptions("", "FMTlpmodel::buildperiod", __LINE__, __FILE__);
+		}
+
 		return graph.getstats();
 	}
 
@@ -482,8 +513,6 @@ namespace Models
 			FMTlpsolver::operator = (rhs);
 			solvertype = rhs.solvertype;
 			graph = rhs.graph;
-			/*deletedconstraints = rhs.deletedconstraints;
-			deletedvariables = rhs.deletedvariables;*/
 		}
 		return *this;
 	}
@@ -508,8 +537,7 @@ bool FMTlpmodel::locatenodes(const std::vector<Core::FMToutputnode>& nodes, int 
 			}
 		}catch (...)
 			{
-			_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
-				Core::FMTsection::Empty, "in FMTlpmodel::locatenodes", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("", "FMTlpmodel::locatenodes", __LINE__, __FILE__);
 			}
 	return cashhit;
 	}
@@ -674,46 +702,47 @@ bool FMTlpmodel::locatenodes(const std::vector<Core::FMToutputnode>& nodes, int 
 					}
 				}
 			}
-		}catch (const std::exception& exception)
+		}catch (...)
 			{
-			_exhandler->throw_nested(exception);
-			}catch (...)
-				{
-				_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
-					Core::FMTsection::Empty, "in FMTlpmodel::setconstraint " + std::string(constraint), __LINE__, __FILE__);
-				}
+				_exhandler->printexceptions("for " + std::string(constraint), "FMTlpmodel::setconstraint", __LINE__, __FILE__);
+			}
 		return graph.getstats();
 		}
 
 	std::vector<int>FMTlpmodel::setobjectivebounds(bool dolower, bool doupper, double tolerance)
 		{
 		std::vector<int>bounding;
-		const double originalvalue = this->getObjValue();
-		const double* originalcoef = this->getObjCoefficients();
-		const int numberofcols = this->getNumCols();
-		std::vector<int>indexes;
-		indexes.reserve(numberofcols);
-		std::vector<double>coefficients;
-		coefficients.reserve(numberofcols);
-		for (int colid = 0; colid < numberofcols; ++colid)
+		try {
+			const double originalvalue = this->getObjValue();
+			const double* originalcoef = this->getObjCoefficients();
+			const int numberofcols = this->getNumCols();
+			std::vector<int>indexes;
+			indexes.reserve(numberofcols);
+			std::vector<double>coefficients;
+			coefficients.reserve(numberofcols);
+			for (int colid = 0; colid < numberofcols; ++colid)
 			{
-			if (*(originalcoef + colid) != 0)
+				if (*(originalcoef + colid) != 0)
 				{
-				indexes.push_back(colid);
-				coefficients.push_back(*(originalcoef + colid));
+					indexes.push_back(colid);
+					coefficients.push_back(*(originalcoef + colid));
 				}
 			}
-		if (dolower)
+			if (dolower)
 			{
-			const double lowerbound = originalvalue - tolerance;
-			this->addRow(static_cast<int>(indexes.size()), &indexes[0], &coefficients[0], lowerbound, std::numeric_limits<double>::infinity());
-			bounding.push_back(this->getNumRows()-1);
+				const double lowerbound = originalvalue - tolerance;
+				this->addRow(static_cast<int>(indexes.size()), &indexes[0], &coefficients[0], lowerbound, std::numeric_limits<double>::infinity());
+				bounding.push_back(this->getNumRows() - 1);
 			}
-		if (doupper)
+			if (doupper)
 			{
-			const double upperbound = originalvalue + tolerance;
-			this->addRow(static_cast<int>(indexes.size()), &indexes[0], &coefficients[0], std::numeric_limits<double>::lowest(), upperbound);
-			bounding.push_back(this->getNumRows()-1);
+				const double upperbound = originalvalue + tolerance;
+				this->addRow(static_cast<int>(indexes.size()), &indexes[0], &coefficients[0], std::numeric_limits<double>::lowest(), upperbound);
+				bounding.push_back(this->getNumRows() - 1);
+			}
+		}catch (...)
+			{
+			_exhandler->raisefromcatch("", "FMTlpmodel::setobjectivebounds", __LINE__, __FILE__);
 			}
 		return bounding;
 		}
@@ -789,7 +818,7 @@ bool FMTlpmodel::locatenodes(const std::vector<Core::FMToutputnode>& nodes, int 
 			this->resolve();
 		}catch (...)
 			{
-			_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, _section, "in FMTlpmodel::getareavariabilities " + name, __LINE__, __FILE__);
+			_exhandler->raisefromcatch("for "+name,"FMTlpmodel::getareavariabilities", __LINE__, __FILE__);
 			}
 		return uppernlower;
 		}
@@ -844,22 +873,30 @@ bool FMTlpmodel::locatenodes(const std::vector<Core::FMToutputnode>& nodes, int 
 			this->initialsolve();
 		}catch (...)
 			{
-			_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, _section, "in FMTlpmodel::getvariabilities " + name, __LINE__, __FILE__);
+			_exhandler->raisefromcatch("for "+name,
+				"FMTlpmodel::getvariabilities", __LINE__, __FILE__);
 			}
 		return uppernlower;
 		}
 
 	Graph::FMTgraphstats FMTlpmodel::eraseallconstraint(const Core::FMTconstraint& constraint)
 		{
-		int first_period = 0;
-		int last_period = 0;
-		if (graph.constraintlenght(constraint, first_period, last_period))
+		try {
+			int first_period = 0;
+			int last_period = 0;
+			if (graph.constraintlenght(constraint, first_period, last_period))
 			{
-			for (int period = first_period; period<=last_period;++period)
+				for (int period = first_period; period <= last_period; ++period)
 				{
-				this->eraseconstraint(constraint,period);
+					this->eraseconstraint(constraint, period);
 				}
 			}
+		}catch (...)
+		{
+			_exhandler->printexceptions("", "FMTlpmodel::eraseallconstraint", __LINE__, __FILE__);
+		}
+
+
 		return this->getstats();
 		}
 
@@ -870,11 +907,7 @@ bool FMTlpmodel::locatenodes(const std::vector<Core::FMToutputnode>& nodes, int 
 			{
 			std::vector<std::vector<int>>all_elements = elements.at(period).at(constraint.hash());
 			elements.at(period).erase(elements.at(period).find(constraint.hash()));
-			//int maxrowid = -1;
 			int removedrow = -1;
-			//int maxcolid = -1;
-			//std::vector<int>colstoremove;
-			//std::vector<int>constraintstoremove;
 			if (!all_elements.at(FMTmatrixelement::constraint).empty())
 				{
 				for (const int& levelid : all_elements.at(FMTmatrixelement::constraint))
@@ -900,13 +933,8 @@ bool FMTlpmodel::locatenodes(const std::vector<Core::FMToutputnode>& nodes, int 
 						this->deleteRow(levelid);
 						--graph.getstatsptr()->rows;
 						--graph.getstatsptr()->output_rows;
-						//constraintstoremove.push_back(levelid);
 						}
 				}
-				//removedrow = static_cast<int>(constraintstoremove.size());
-				//deletedconstraints.insert(deletedconstraints.end(), constraintstoremove.begin(), constraintstoremove.end());
-				//graph.getstatsptr()->rows -= removedrow;
-				//graph.getstatsptr()->output_rows -= removedrow;
 				}
 			if (!all_elements.at(FMTmatrixelement::goalvariable).empty())
 				{
@@ -916,8 +944,6 @@ bool FMTlpmodel::locatenodes(const std::vector<Core::FMToutputnode>& nodes, int 
 					--graph.getstatsptr()->cols;
 					--graph.getstatsptr()->output_cols;
 					}
-
-				//colstoremove.insert(colstoremove.end(),all_elements.at(FMTmatrixelement::goalvariable).begin(), all_elements.at(FMTmatrixelement::goalvariable).end());
 				}
 
 			if (!all_elements.at(FMTmatrixelement::levelvariable).empty() || !all_elements.at(FMTmatrixelement::objectivevariable).empty())
@@ -953,60 +979,61 @@ bool FMTlpmodel::locatenodes(const std::vector<Core::FMToutputnode>& nodes, int 
 						}
 					}
 				}
-
-			//if (!colstoremove.empty())
-				//{
-				//const int colssize = static_cast<int>(colstoremove.size());
-				//deletedvariables.insert(deletedvariables.end(), colstoremove.begin(), colstoremove.end());
-				//graph.getstatsptr()->cols-= colssize;
-				//graph.getstatsptr()->output_cols -= colssize;
-				//}
 			}
 			}catch (...)
 				{
-				_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
-					Core::FMTsection::Empty, "in FMTlpmodel::eraseconstraint "+std::string(constraint), __LINE__, __FILE__);
+				_exhandler->raisefromcatch("for "+std::string(constraint),"FMTlpmodel::eraseconstraint", __LINE__, __FILE__);
 				}
 		return graph.getstats();
 		}
 
 	void FMTlpmodel::updateconstraintsmapping(const std::vector<int>& Dvariables, const std::vector<int>& Dconstraints)
 		{
-		if (!Dvariables.empty() || !Dconstraints.empty())
+		try {
+			if (!Dvariables.empty() || !Dconstraints.empty())
 			{
-			std::vector<std::unordered_map<size_t, std::vector<std::vector<int>>>>::iterator periodit = elements.begin();
-			while (periodit!= elements.end())
+				std::vector<std::unordered_map<size_t, std::vector<std::vector<int>>>>::iterator periodit = elements.begin();
+				while (periodit != elements.end())
 				{
-				for (std::unordered_map<size_t, std::vector<std::vector<int>>>::iterator constraintit = periodit->begin(); constraintit != periodit->end(); constraintit++)
+					for (std::unordered_map<size_t, std::vector<std::vector<int>>>::iterator constraintit = periodit->begin(); constraintit != periodit->end(); constraintit++)
 					{
-					if (!Dconstraints.empty())
+						if (!Dconstraints.empty())
 						{
-						updatematrixelements(constraintit->second.at(FMTmatrixelement::constraint), Dconstraints);
+							updatematrixelements(constraintit->second.at(FMTmatrixelement::constraint), Dconstraints);
 						}
-					if (!Dvariables.empty())
+						if (!Dvariables.empty())
 						{
-						updatematrixelements(constraintit->second.at(FMTmatrixelement::levelvariable), Dvariables);
-						updatematrixelements(constraintit->second.at(FMTmatrixelement::objectivevariable), Dvariables);
-						updatematrixelements(constraintit->second.at(FMTmatrixelement::goalvariable), Dvariables);
+							updatematrixelements(constraintit->second.at(FMTmatrixelement::levelvariable), Dvariables);
+							updatematrixelements(constraintit->second.at(FMTmatrixelement::objectivevariable), Dvariables);
+							updatematrixelements(constraintit->second.at(FMTmatrixelement::goalvariable), Dvariables);
 						}
 					}
-				++periodit;
+					++periodit;
 				}
+			}
+		}catch (...)
+			{
+			_exhandler->raisefromcatch("", "FMTlpmodel::updateconstraintsmapping", __LINE__, __FILE__);
 			}
 		}
 
 	void FMTlpmodel::updatematrixelements(std::vector<int>& matrixelements, const std::vector<int>& deletedelements) const
 		{
-		for (int& elementvalue : matrixelements)
+		try {
+			for (int& elementvalue : matrixelements)
 			{
-			int value = 0;
-			std::vector<int>::const_iterator constraintitdelete = deletedelements.begin();
-			while (constraintitdelete != deletedelements.end() && elementvalue > *constraintitdelete)
+				int value = 0;
+				std::vector<int>::const_iterator constraintitdelete = deletedelements.begin();
+				while (constraintitdelete != deletedelements.end() && elementvalue > *constraintitdelete)
 				{
-				++value;
-				++constraintitdelete;
+					++value;
+					++constraintitdelete;
 				}
-			elementvalue -= value;
+				elementvalue -= value;
+			}
+		}catch (...)
+			{
+			_exhandler->raisefromcatch("", "FMTlpmodel::updatematrixelements", __LINE__, __FILE__);
 			}
 		}
 
@@ -1018,23 +1045,12 @@ bool FMTlpmodel::locatenodes(const std::vector<Core::FMToutputnode>& nodes, int 
 		if (!deletedconstraints.empty() || !deletedvariables.empty())
 			{
 			try {
-				//sort(deletedconstraints.begin(), deletedconstraints.end());
-				//sort(deletedvariables.begin(), deletedvariables.end());
-				//deletedconstraints.erase(unique(deletedconstraints.begin(), deletedconstraints.end()), deletedconstraints.end());
-				//deletedvariables.erase(unique(deletedvariables.begin(), deletedvariables.end()), deletedvariables.end());
 				graph.updatematrixindex(deletedvariables, deletedconstraints);
 				updateconstraintsmapping(deletedvariables, deletedconstraints);
-				//this->deleteRows(static_cast<int>(deletedconstraints.size()), &deletedconstraints[0]);
-				//Cols
-				//this->deleteCols(static_cast<int>(deletedvariables.size()), &deletedvariables[0]);
-				//Now clear the deleted
-				//deletedconstraints.clear();
-				//deletedvariables.clear();
 				this->synchronize();
 			}catch (...)
 				{
-				_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
-					Core::FMTsection::Empty, "in FMTlpmodel::updatematrixngraph", __LINE__, __FILE__);
+				_exhandler->raisefromcatch("", "FMTlpmodel::updatematrixngraph", __LINE__, __FILE__);
 				}
 			return true;
 			}
@@ -1073,17 +1089,15 @@ bool FMTlpmodel::locatenodes(const std::vector<Core::FMToutputnode>& nodes, int 
 					this->updatematrixngraph();
 				}else {
 					const int badperiod = std::max(firstperiod, 1);
-					_exhandler->raise(Exception::FMTexc::FMTunboundedperiod, Core::FMTsection::Empty, std::to_string(badperiod), __LINE__, __FILE__);
+					_exhandler->raise(Exception::FMTexc::FMTunboundedperiod,
+						std::to_string(badperiod),"FMTlpmodel::eraseperiod", __LINE__, __FILE__);
 					}
 			
-		}catch (const std::exception& exception)
+		}catch (...)
 			{
-			_exhandler->throw_nested(exception);
-			}catch (...)
-				{
-				_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
-				Core::FMTsection::Empty, "in FMTlpmodel::eraseperiod", __LINE__, __FILE__);
-				}
+				_exhandler->printexceptions("", "FMTlpmodel::eraseperiod", __LINE__, __FILE__);
+			}
+
 		 return graph.getstats();
 		 }
 
@@ -1107,34 +1121,40 @@ bool FMTlpmodel::locatenodes(const std::vector<Core::FMToutputnode>& nodes, int 
 					}
 			}catch (...)
 				{
-				_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
-					Core::FMTsection::Empty, "in FMTlpmodel::locatelevels "+std::string(constraint), __LINE__, __FILE__);
+				_exhandler->raisefromcatch(std::string(constraint),"FMTlpmodel::locatelevels", __LINE__, __FILE__);
 				}
             }
 
 
     int FMTlpmodel::getsetlevel(const Core::FMTconstraint& constraint,const std::string& variable_level,int period)
         {
-        for (const Core::FMTconstraint& model_constraint : constraints)
-            {
-            if (model_constraint != constraint)
-                {
-				const std::vector<std::string>level_names = model_constraint.getvariablelevels();
-                if (!level_names.empty())
-                    {
-                    const std::vector<std::vector<int>>constraint_elements = getmatrixelement(model_constraint,period);
-					std::vector<std::string>::const_iterator name_it = find(level_names.begin(),level_names.end(),variable_level);
-                    if (!constraint_elements.at(FMTmatrixelement::levelvariable).empty() &&
-                        (name_it!= level_names.end())) // caught a constriant with level!
-                        {
-                        const size_t variable_location = std::distance(level_names.cbegin(),name_it);
-                        return constraint_elements.at(FMTmatrixelement::levelvariable).at(variable_location);
-                        }
-                    }
-                }
-            }
-		std::map<int, double>no_index;
-        return getsetmatrixelement(constraint,FMTmatrixelement::levelvariable,no_index,period);
+		try {
+			for (const Core::FMTconstraint& model_constraint : constraints)
+			{
+				if (model_constraint != constraint)
+				{
+					const std::vector<std::string>level_names = model_constraint.getvariablelevels();
+					if (!level_names.empty())
+					{
+						const std::vector<std::vector<int>>constraint_elements = getmatrixelement(model_constraint, period);
+						std::vector<std::string>::const_iterator name_it = find(level_names.begin(), level_names.end(), variable_level);
+						if (!constraint_elements.at(FMTmatrixelement::levelvariable).empty() &&
+							(name_it != level_names.end())) // caught a constriant with level!
+						{
+							const size_t variable_location = std::distance(level_names.cbegin(), name_it);
+							return constraint_elements.at(FMTmatrixelement::levelvariable).at(variable_location);
+						}
+					}
+				}
+			}
+			std::map<int, double>no_index;
+			return getsetmatrixelement(constraint, FMTmatrixelement::levelvariable, no_index, period);
+		}catch (...)
+			{
+			_exhandler->raisefromcatch("for " + std::string(constraint),
+				"FMTlpmodel::getsetlevel", __LINE__, __FILE__);
+			}
+		return -1;
         }
 
 	bool FMTlpmodel::summarize(const std::map<int, double>& variables,
@@ -1198,62 +1218,11 @@ bool FMTlpmodel::locatenodes(const std::vector<Core::FMToutputnode>& nodes, int 
 					}
 			}
 		}
-
-		/*if (element_type== FMTmatrixelement::constraint)
-			{
-			const double* upperbr = this->getRowUpper();
-			const double* lowerbr = this->getRowLower();
-			if (lowerb != *(lowerbr+ matrixindex) && upperb != *(upperbr + matrixindex))
-				{
-				return false;
-				}
-			const CoinPackedMatrix* rowpacked = this->getMatrixByRow();
-			const int vectorsize = rowpacked->getVectorSize(matrixindex);
-			if (vectorsize == static_cast<int>(variables.size()))
-				{
-				const int* indicies = rowpacked->getIndices();
-				const int* vectorstarts = rowpacked->getVectorStarts();
-				const double* elements = rowpacked->getElements();
-				for (int index = *(vectorstarts + matrixindex); index < (*(vectorstarts + matrixindex) + vectorsize);++index)
-					{
-					const std::map<int, double>::const_iterator itindex = variables.find(*(indicies+index));
-					if (itindex==variables.end() || itindex->second != *(elements + index))
-						{
-						return false;
-						}
-					}
-				}
-
-		}else {
-			const double* upperbcols = this->getColUpper();
-			const double* lowerbcols = this->getColLower();
-			if (lowerb != *(lowerbcols + matrixindex) || upperb != *(upperbcols + matrixindex))
-				{
-				return false;
-				}
-			const CoinPackedMatrix* colpacked = this->getMatrixByCol();
-			const int vectorsize = colpacked->getVectorSize(matrixindex);
-			if (vectorsize == static_cast<int>(variables.size()))
-				{
-				const int* indicies = colpacked->getIndices();
-				const int* vectorstarts = colpacked->getVectorStarts();
-				const double* elements = colpacked->getElements();
-				for (int index = *(vectorstarts + matrixindex); index < (*(vectorstarts + matrixindex) + vectorsize); ++index)
-					{
-						const std::map<int, double>::const_iterator itindex = variables.find(*(indicies + index));
-						if (itindex == variables.end() || itindex->second != *(elements + index))
-						{
-							return false;
-						}
-					}
-				}
-			}*/
 		}catch (...)
 			{
-			_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
-				Core::FMTsection::Empty, "in FMTlpmodel::issamematrixelement " + std::to_string(matrixindex)+
+			_exhandler->raisefromcatch("for " + std::to_string(matrixindex)+
 				this->lowernuppertostr(lowerb,upperb)+
-				std::to_string(element_type), __LINE__, __FILE__);
+				std::to_string(element_type),"FMTlpmodel::issamematrixelement", __LINE__, __FILE__);
 			}
 		return true;
 		}
@@ -1331,37 +1300,41 @@ bool FMTlpmodel::locatenodes(const std::vector<Core::FMToutputnode>& nodes, int 
 				this->setObjective(&finalobj[0]);
 			}catch (...)
 				{
-				_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, Core::FMTsection::Empty,
-					"in FMTlpmodel::setobjective", __LINE__, __FILE__);
+				_exhandler->raisefromcatch("","FMTlpmodel::setobjective", __LINE__, __FILE__);
 				}
 			if (all_variables.empty())
 				{
 				std::string cname = std::string(objective);
 				cname.erase(std::remove(cname.begin(), cname.end(), '\n'), cname.end());
-				_exhandler->raise(Exception::FMTexc::FMTnonaddedconstraint, Core::FMTsection::Empty,
-					std::string(cname), __LINE__, __FILE__);
+				_exhandler->raise(Exception::FMTexc::FMTnonaddedconstraint,
+					std::string(cname),"FMTlpmodel::setobjective", __LINE__, __FILE__);
 				}
 			this->setObjSense(objective.sense());
-			}catch (const std::exception& exception)
-				{
-				_exhandler->throw_nested(exception);
 			}catch (...)
-				{
-				_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
-					Core::FMTsection::Empty, "in FMTlpmodel::setobjective " + std::string(objective), __LINE__, __FILE__);
-				}
+			{
+				_exhandler->printexceptions(std::string(objective), "FMTlpmodel::setobjective", __LINE__, __FILE__);
+			}
+
 		return graph.getstats();
 		}
 
      bool FMTlpmodel::resolve()
         {
-		if (!this->gotlicense())
-			{
-			 _exhandler->raise(Exception::FMTexc::FMTmissinglicense,
-				 Core::FMTsection::Empty, "in FMTlpmodel::resolve missing "+this->getsolvername()+" License ",
-				 __LINE__, __FILE__);
-			}
+		 try {
+			 if (!this->gotlicense())
+				{
+				 _exhandler->raise(Exception::FMTexc::FMTmissinglicense,
+					 "missing " + this->getsolvername() + " License ",
+					 "FMTlpmodel::resolve ",__LINE__, __FILE__);
+				}
 		return FMTlpsolver::resolve();
+		 }catch (...)
+		 {
+			 _exhandler->printexceptions("", "FMTlpmodel::resolve", __LINE__, __FILE__);
+		 }
+
+
+		 return false;
         }
 
 
@@ -1396,8 +1369,7 @@ bool FMTlpmodel::locatenodes(const std::vector<Core::FMToutputnode>& nodes, int 
 			}
 		}catch (...)
 			{
-			_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, Core::FMTsection::Empty,
-				"in FMTlpmodel::getgoals", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("","FMTlpmodel::getgoals", __LINE__, __FILE__);
 			}
         return found_something;
         }
@@ -1428,7 +1400,9 @@ bool FMTlpmodel::locatenodes(const std::vector<Core::FMToutputnode>& nodes, int 
 			{
 				std::string cname = std::string(constraint);
 				cname.erase(std::remove(cname.begin(), cname.end(), '\n'), cname.end());
-				_exhandler->raise(Exception::FMTexc::FMTnonaddedconstraint, Core::FMTsection::Empty, std::string(cname) + " at period " + std::to_string(period), __LINE__, __FILE__);
+				_exhandler->raise(Exception::FMTexc::FMTnonaddedconstraint,
+					std::string(cname) + " at period " + std::to_string(period),
+					"FMTlpmodel::getsetmatrixelement",__LINE__, __FILE__);
 				return -1;
 			}
 			std::vector<int>sumvariables;
@@ -1486,9 +1460,8 @@ bool FMTlpmodel::locatenodes(const std::vector<Core::FMToutputnode>& nodes, int 
 		}catch (...)
 			{
 			_logger->logwithlevel(this->getcacheelements(), 4);
-			_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, _section,
-				"in FMTlpmodel::getsetmatrixelement "+std::string(constraint)+" at period "+std::to_string(period)+
-				lowernuppertostr(lowerbound,upperbound), __LINE__, __FILE__);
+			_exhandler->raisefromcatch(std::string(constraint)+" at period "+std::to_string(period)+
+				lowernuppertostr(lowerbound,upperbound),"FMTlpmodel::getsetmatrixelement", __LINE__, __FILE__);
 			}
 		return element_id;
         }
@@ -1531,13 +1504,10 @@ bool FMTlpmodel::locatenodes(const std::vector<Core::FMToutputnode>& nodes, int 
 				allheuristics.back().passinobject(*this);
 				seedof += 1;
 				}
-		}catch (const std::exception& exception)
+		}catch (...)
 			{
-			_exhandler->throw_nested(exception);
-			}catch (...)
-				{
-				_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, _section, "in FMTlpmodel::getoperatingareaheuristics", __LINE__, __FILE__);
-				}
+				_exhandler->printexceptions("", "FMTlpmodel::getoperatingareaheuristics", __LINE__, __FILE__);
+			}
 		return allheuristics;
 		}
 
@@ -1545,37 +1515,50 @@ bool FMTlpmodel::locatenodes(const std::vector<Core::FMToutputnode>& nodes, int 
 
 	bool FMTlpmodel::initialsolve()
 		{
-		if (!this->gotlicense())
+		try {
+			if (!this->gotlicense())
 			{
-			_exhandler->raise(Exception::FMTexc::FMTmissinglicense,
-				Core::FMTsection::Empty, " Missing solver " + this->getsolvername() + " License ",
-				__LINE__, __FILE__);
+				_exhandler->raise(Exception::FMTexc::FMTmissinglicense,
+					" Missing solver " + this->getsolvername() + " License ",
+					"FMTlpmodel::initialsolve",__LINE__, __FILE__);
 			}
-		return FMTlpsolver::initialsolve();
+			return FMTlpsolver::initialsolve();
+		}catch (...)
+		{
+			_exhandler->printexceptions("", "FMTlpmodel::initialsolve", __LINE__, __FILE__);
+		}
+
+		return false;
 		}
 
 	std::vector<Core::FMTactualdevelopment>FMTlpmodel::getarea(int period) const
 		{
-		if (period==0)
-			{
-			return FMTmodel::getarea();
-			}
 		std::vector<Core::FMTactualdevelopment>returnedarea;
-		std::unordered_map<size_t, Graph::FMTvertex_descriptor> perioddescriptors = graph.getperiodverticies(period);
-		const double* modelsolution = this->getColSolution();
-		for (std::unordered_map<size_t, Graph::FMTvertex_descriptor>::const_iterator vertexit = perioddescriptors.begin();
-			vertexit!= perioddescriptors.end(); vertexit++)
+		try {
+			if (period == 0)
 			{
-			if (graph.periodstart(vertexit->second))
+				return FMTmodel::getarea();
+			}
+			std::unordered_map<size_t, Graph::FMTvertex_descriptor> perioddescriptors = graph.getperiodverticies(period);
+			const double* modelsolution = this->getColSolution();
+			for (std::unordered_map<size_t, Graph::FMTvertex_descriptor>::const_iterator vertexit = perioddescriptors.begin();
+				vertexit != perioddescriptors.end(); vertexit++)
+			{
+				if (graph.periodstart(vertexit->second))
 				{
-				const Core::FMTdevelopment& graphdevelopement = graph.getdevelopment(vertexit->second);
-				const double areaofdevelopement = graph.inarea(vertexit->second, modelsolution,true);
-				if (areaofdevelopement>0)
+					const Core::FMTdevelopment& graphdevelopement = graph.getdevelopment(vertexit->second);
+					const double areaofdevelopement = graph.inarea(vertexit->second, modelsolution, true);
+					if (areaofdevelopement > 0)
 					{
-					returnedarea.push_back(Core::FMTactualdevelopment(graphdevelopement, areaofdevelopement));
+						returnedarea.push_back(Core::FMTactualdevelopment(graphdevelopement, areaofdevelopement));
 					}
 				}
 			}
+		}catch (...)
+			{
+				_exhandler->printexceptions("", "FMTlpmodel::getarea", __LINE__, __FILE__);
+			}
+
 		return returnedarea;
 		}
 

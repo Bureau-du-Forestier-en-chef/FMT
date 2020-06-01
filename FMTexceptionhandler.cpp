@@ -6,6 +6,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
 #include "FMTexceptionhandler.h"
+#include <boost/algorithm/string/replace.hpp>
 
 namespace Exception
 
@@ -66,9 +67,14 @@ FMTexceptionhandler& FMTexceptionhandler::operator = (const FMTexceptionhandler&
 	return *this;
 }
 
+
+
 void FMTexceptionhandler::throw_nested(const  std::exception& texception, int level,bool rethrow)
 {
-		*_logger << std::string(level, ' ') << texception.what() << "\n";
+		const std::string linereplacement = "\n" + std::string(level, ' ');
+		std::string message = texception.what();
+		boost::replace_all(message, "\n", linereplacement);
+		*_logger << std::string(level, ' ') << message << "\n";
 		try {
 			std::rethrow_if_nested(texception);
 		}
@@ -98,7 +104,8 @@ void FMTexceptionhandler::disablenestedexceptions()
 
 bool FMTexceptionhandler::needtorethrow() const
 	{
-	if (!usenestedexceptions && _exception == FMTexc::FMTfunctionfailed)
+	if (!usenestedexceptions &&
+		(_exception == FMTexc::FMTfunctionfailed || _exception == FMTexc::FMTunhandlederror))
 		{
 		const std::exception_ptr expointer = std::current_exception();
 		if (expointer)
@@ -111,20 +118,20 @@ bool FMTexceptionhandler::needtorethrow() const
 	}
 
 
-FMTlev FMTexceptionhandler::raise(FMTexc lexception, Core::FMTsection lsection, std::string text,
-	const int& line, const std::string& file)
+FMTexception FMTexceptionhandler::raise(FMTexc lexception, std::string text,
+	const std::string& method, const int& line, const std::string& file, Core::FMTsection lsection,bool throwit)
 {
 	
 
 	FMTexception excp;
 	if (lsection == Core::FMTsection::Empty)
 	{
-		excp = FMTexception(lexception, updatestatus(lexception, text));
+		excp = FMTexception(lexception, updatestatus(lexception, text), method, file, line);
 	}
 	else {
-		excp = FMTexception(lexception, lsection, updatestatus(lexception, text));
+		excp = FMTexception(lexception, lsection, updatestatus(lexception, text),method,file,line);
 	}
-	if (!needtorethrow())
+	if (throwit && !needtorethrow())
 		{
 		if (_level == FMTlev::FMT_Warning)
 			{
@@ -135,7 +142,7 @@ FMTlev FMTexceptionhandler::raise(FMTexc lexception, Core::FMTsection lsection, 
 			std::throw_with_nested(FMTerror(excp));
 			}
 		}
-	return _level;
+	return excp;
 }
 
 FMTexceptionhandler::FMTexceptionhandler(const FMTexceptionhandler& rhs) :
@@ -415,6 +422,21 @@ std::string FMTexceptionhandler::updatestatus(const FMTexc lexception, const std
 		_level = FMTlev::FMT_logic;
 		++_errorcount;
 		break;
+	case FMTexc::FMTcoinerror:
+		msg +=  message;
+		_level = FMTlev::FMT_logic;
+		++_errorcount;
+		break;
+	case FMTexc::FMTboostgrapherror:
+		msg +=  message;
+		_level = FMTlev::FMT_logic;
+		++_errorcount;
+		break;
+	case FMTexc::FMTunhandlederror:
+		msg += "Unhandled error: " + message;
+		_level = FMTlev::FMT_logic;
+		++_errorcount;
+		break;
 	default:
 		_exception = FMTexc::None;
 		_level = FMTlev::FMT_None;
@@ -422,6 +444,102 @@ std::string FMTexceptionhandler::updatestatus(const FMTexc lexception, const std
 	};
 	return msg;
 }
+
+FMTexception FMTexceptionhandler::raisefromcatch(std::string text,
+	const std::string& method, const int& line, const std::string& file,
+	Core::FMTsection lsection)
+{
+	FMTexc lexception = FMTexc::FMTfunctionfailed;
+	const std::exception_ptr expointer = std::current_exception();
+	if (expointer)
+	{
+		try {
+			std::rethrow_exception(expointer);
+		}
+		catch (const FMTexception& tcexception)
+		{
+			return this->raise(lexception,text, method, line, file,lsection);
+		}
+		catch (const CoinError& coinexception)
+		{
+
+			updatestatus(FMTexc::FMTcoinerror,coinexception.message());
+			try {
+				std::throw_with_nested(FMTerror(coinexception));
+			}catch (...)
+				{
+				return this->raise(lexception, text, method, line, file, lsection);
+				}
+		}
+		catch (const boost::bad_graph& grapherror)
+		{
+			updatestatus(FMTexc::FMTboostgrapherror,grapherror.what());
+			try {
+				std::throw_with_nested(FMTerror(grapherror));
+			}
+			catch (...)
+			{
+				return this->raise(lexception,text, method, line, file, lsection);
+			}
+		}
+		catch (...)
+		{
+			lexception = FMTexc::FMTunhandlederror;
+			return this->raise(lexception,text, method, line, file, lsection);
+		}
+	}
+	return this->raise(lexception,text, method, line, file, lsection);
+}
+
+
+void FMTexceptionhandler::printexceptions(std::string text,
+	const std::string& method, const int& line, const std::string& fil,
+	Core::FMTsection lsection)
+	{
+	FMTexc lexception = FMTexc::FMTfunctionfailed;
+	const std::exception_ptr expointer = std::current_exception();
+	const FMTexception newexception = this->raise(lexception, text, method, line, fil, lsection, false);
+	if (expointer)
+		{
+		int nestedlevel = 0;
+		try {
+			std::rethrow_exception(expointer);
+		}
+		catch (const FMTexception& tcexception)
+		{
+			if (usenestedexceptions)
+			{
+				*_logger << newexception.what() << "\n";
+				nestedlevel = 1;
+			}
+			this->throw_nested(tcexception, nestedlevel);
+		}catch (const CoinError& coinexception)
+		{
+			if (usenestedexceptions)
+			{
+				*_logger << newexception.what() << "\n";
+				nestedlevel = 1;
+			}
+			this->throw_nested(Exception::FMTerror(coinexception), nestedlevel);
+		}catch (const boost::bad_graph& grapherror)
+			{
+			if (usenestedexceptions)
+				{
+				*_logger << newexception.what() << "\n";
+				nestedlevel = 1;
+				}
+			this->throw_nested(Exception::FMTerror(grapherror), nestedlevel);
+			}
+		catch (...)
+		{
+			lexception = FMTexc::FMTunhandlederror;
+			const FMTexception newexception = this->raise(lexception, text, method, line, fil, lsection, false);
+			this->throw_nested(newexception, 0);
+		}
+	}else {
+		this->throw_nested(newexception, 1);
+		}
+	}
 
 
 }

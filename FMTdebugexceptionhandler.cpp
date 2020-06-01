@@ -11,29 +11,24 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 namespace Exception
 {
 
-	std::string FMTdebugexceptionhandler::getsrcinfo(const int& line, const std::string& file) const
-	{
-		return "In File(" + file + ") At Line(" + std::to_string(line) + ")";
-	}
 
 	FMTdebugexceptionhandler::FMTdebugexceptionhandler()
 	{
 
 	}
 
-	FMTlev FMTdebugexceptionhandler::raise(FMTexc lexception, Core::FMTsection lsection, std::string text,
-		const int& line, const std::string& file)
+
+	FMTexception FMTdebugexceptionhandler::raise(FMTexc lexception, std::string text,
+		const std::string& method,const int& line, const std::string& file, Core::FMTsection lsection, bool throwit)
 	{
 		FMTexception excp;
-		text += " " + getsrcinfo(line, file);
 		if (lsection == Core::FMTsection::Empty)
-		{
-			excp = FMTexception(lexception, updatestatus(lexception, text));
-		}
-		else {
-			excp = FMTexception(lexception, lsection, updatestatus(lexception, text));
-		}
-		if (!needtorethrow())
+			{
+			excp = FMTexception(lexception, updatestatus(lexception, text), method, file, line);
+			}else {
+			excp = FMTexception(lexception, lsection, updatestatus(lexception, text),method, file,line);
+			}
+		if (throwit && !needtorethrow())
 			{
 			if (_level == FMTlev::FMT_Warning)
 				{
@@ -45,7 +40,7 @@ namespace Exception
 				}
 			}
 		
-		return _level;
+		return excp;
 	}
 #ifdef FMTWITHGDAL
 

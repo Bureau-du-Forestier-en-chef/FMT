@@ -8,6 +8,8 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #ifdef FMTWITHOSI
 
 #include "FMTmatrixbuild.h"
+#include "FMTexceptionhandler.h"
+#include "FMTerror.h"
 #include <algorithm>
 
 namespace Models
@@ -56,30 +58,37 @@ namespace Models
 
 	void FMTmatrixbuild::synchronize(std::shared_ptr<OsiSolverInterface> solver)
 		{
-		if (!deletedconstraints.empty())
+		try {
+			if (!deletedconstraints.empty())
 			{
-			sortelementsandclean(deletedconstraints);
-			solver->deleteRows(static_cast<int>(deletedconstraints.size()), &deletedconstraints[0]);
-			deletedconstraints.clear();
+				sortelementsandclean(deletedconstraints);
+				solver->deleteRows(static_cast<int>(deletedconstraints.size()), &deletedconstraints[0]);
+				deletedconstraints.clear();
 			}
-		if (!deletedvariables.empty())
+			if (!deletedvariables.empty())
 			{
-			sortelementsandclean(deletedvariables);
-			solver->deleteCols(static_cast<int>(deletedvariables.size()), &deletedvariables[0]);
-			deletedvariables.clear();
+				sortelementsandclean(deletedvariables);
+				solver->deleteCols(static_cast<int>(deletedvariables.size()), &deletedvariables[0]);
+				deletedvariables.clear();
 			}
-		if (colsbuild.numberColumns()>0)
+			if (colsbuild.numberColumns() > 0)
 			{
-			solver->addCols(colsbuild);
-			colsbuild = CoinBuild(1);
-			colscount = 0;
+				solver->addCols(colsbuild);
+				colsbuild = CoinBuild(1);
+				colscount = 0;
 			}
-		if (rowsbuild.numberRows()>0)
+			if (rowsbuild.numberRows() > 0)
 			{
-			solver->addRows(rowsbuild);
-			rowsbuild = CoinBuild(0);
-			rowscount = 0;
+				solver->addRows(rowsbuild);
+				rowsbuild = CoinBuild(0);
+				rowscount = 0;
 			}
+			}catch (...)
+			{
+				Exception::FMTexceptionhandler().raisefromcatch("", "FMTmatrixbuild::synchronize", __LINE__, __FILE__);
+			}
+
+
 		}
 
 	void FMTmatrixbuild::deleteRow(const int& rowindex)

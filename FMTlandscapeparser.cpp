@@ -38,21 +38,27 @@ FMTlandscapeparser::FMTlandscapeparser() :
     std::map<std::string,double>FMTlandscapeparser::getindexes(std::string index_line,const Core::FMTconstants& constants)
         {
 		std::map<std::string,double>indexes;
-        boost::trim(index_line);
-		std::smatch kmatch;
-        if (std::regex_search(index_line,kmatch,FMTlandscapeparser::rxindex))
-            {
-			std::vector<std::string>parameters;
-			const std::string values = kmatch[3];
-            boost::split(parameters,values, boost::is_any_of(","), boost::token_compress_on);
-            for(const std::string& parameter : parameters)
-                {
-                if (std::regex_search(parameter,kmatch,FMTlandscapeparser::rxparameter))
-                    {
-                    indexes[std::string(kmatch[1])] = getnum<double>(std::string(kmatch[3]),constants);
-                    }
-                }
-            }
+		try {
+			boost::trim(index_line);
+			std::smatch kmatch;
+			if (std::regex_search(index_line, kmatch, FMTlandscapeparser::rxindex))
+			{
+				std::vector<std::string>parameters;
+				const std::string values = kmatch[3];
+				boost::split(parameters, values, boost::is_any_of(","), boost::token_compress_on);
+				for (const std::string& parameter : parameters)
+				{
+					if (std::regex_search(parameter, kmatch, FMTlandscapeparser::rxparameter))
+					{
+						indexes[std::string(kmatch[1])] = getnum<double>(std::string(kmatch[3]), constants);
+					}
+				}
+			}
+		}catch (...)
+			{
+			_exhandler->raisefromcatch(
+				 "for line " + index_line,"FMTlandscapeparser::getindexes", __LINE__, __FILE__,_section);
+			}
         return indexes;
         }
 #ifdef FMTWITHGDAL
@@ -72,14 +78,13 @@ FMTlandscapeparser::FMTlandscapeparser() :
             start+=static_cast<int>(categories.size());
             ++id;
             }
-		}catch (const std::exception& exception)
-			{
-			_exhandler->throw_nested(exception);
-			}catch (...)
-				{
-				_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
-					_section, "in FMTlandscapeparser::readrasters", __LINE__, __FILE__);
-				}
+		}
+		catch (...)
+		{
+			_exhandler->printexceptions("", "FMTlandscapeparser::readrasters", __LINE__, __FILE__,_section);
+		}
+			
+
         return themes;
         }
     std::vector<Core::FMTtheme>FMTlandscapeparser::readvectors(const std::string& location)
@@ -119,14 +124,12 @@ FMTlandscapeparser::FMTlandscapeparser() :
 				++id;
 				start += static_cast<int>(themeattribute.size());
 			}
-		}catch (const std::exception& exception)
+		}catch (...)
 			{
-			_exhandler->throw_nested(exception);
-			}catch (...)
-				{
-				_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
-					_section, "in FMTlandscapeparser::readvectors", __LINE__, __FILE__);
-				}
+				_exhandler->printexceptions("at " + location, "FMTlandscapeparser::readvectors",
+					__LINE__, __FILE__, _section);
+			}
+
         return themes;
         }
 #endif
@@ -173,7 +176,8 @@ FMTlandscapeparser::FMTlandscapeparser() :
 								stop = static_cast<int>(valuenames.size());
 								if (valuenames.size() == 0)
 								{
-									_exhandler->raise(Exception::FMTexc::FMTempty_theme, _section, "Theme " + std::to_string(id + 1), __LINE__, __FILE__);
+									_exhandler->raise(Exception::FMTexc::FMTempty_theme,
+										"Theme " + std::to_string(id + 1),"FMTlandscapeparser::read", __LINE__, __FILE__, _section);
 								}
 
 								themes.push_back(Core::FMTtheme(aggregates, valuenames, indexes_values, id, start, themename));
@@ -195,7 +199,8 @@ FMTlandscapeparser::FMTlandscapeparser() :
 							if (aggregates.find(aggregatename) != aggregates.end())
 							{
 								aggregate_redefiniton = true;
-								_exhandler->raise(Exception::FMTexc::FMTaggregate_redefinition, _section, aggregatename + " at line " + std::to_string(_line), __LINE__, __FILE__);
+								_exhandler->raise(Exception::FMTexc::FMTaggregate_redefinition,
+									aggregatename + " at line " + std::to_string(_line),"FMTlandscapeparser::read", __LINE__, __FILE__, _section);
 							}
 							aggregates[aggregatename] = std::vector<std::string>();
 						}
@@ -207,8 +212,8 @@ FMTlandscapeparser::FMTlandscapeparser() :
 							{
 								if (valuenames.find(val) == valuenames.end() && (aggregates.find(val) == aggregates.end() || aggregatename == val))
 								{
-									_exhandler->raise(Exception::FMTexc::FMTignore, _section,
-										val + " at line " + std::to_string(_line), __LINE__, __FILE__);
+									_exhandler->raise(Exception::FMTexc::FMTignore,
+										val + " at line " + std::to_string(_line),"FMTlandscapeparser::read", __LINE__, __FILE__, _section);
 
 								}
 								else {
@@ -217,8 +222,9 @@ FMTlandscapeparser::FMTlandscapeparser() :
 							}
 							if (aggregates[aggregatename].size() == 0)
 							{
-								_exhandler->raise(Exception::FMTexc::FMTignore, _section,
-									aggregatename + " empty at line " + std::to_string(_line), __LINE__, __FILE__);
+								_exhandler->raise(Exception::FMTexc::FMTignore,
+									aggregatename + " empty at line " + std::to_string(_line),
+									"FMTlandscapeparser::read",__LINE__, __FILE__, _section);
 							}
 						}
 						else {
@@ -238,7 +244,9 @@ FMTlandscapeparser::FMTlandscapeparser() :
 							}
 							if (valuenames.find(ltheme) != valuenames.end())
 							{
-								_exhandler->raise(Exception::FMTexc::FMTattribute_redefinition, _section, ltheme + " at line " + std::to_string(_line), __LINE__, __FILE__);
+								_exhandler->raise(Exception::FMTexc::FMTattribute_redefinition,
+									ltheme + " at line " + std::to_string(_line),
+									"FMTlandscapeparser::read", __LINE__, __FILE__, _section);
 							}
 							else {
 								valuenames[ltheme] = std::string(name);
@@ -250,29 +258,36 @@ FMTlandscapeparser::FMTlandscapeparser() :
 				}
 				if (valuenames.size() == 0)
 				{
-					_exhandler->raise(Exception::FMTexc::FMTempty_theme, _section, "Theme " + std::to_string(id + 1), __LINE__, __FILE__);
+					_exhandler->raise(Exception::FMTexc::FMTempty_theme, "Theme " + std::to_string(id + 1),
+						"FMTlandscapeparser::read",__LINE__, __FILE__,_section);
 				}
 				themes.push_back(Core::FMTtheme(aggregates, valuenames, indexes_values, id, start, themename));
 				themes.back().passinobject(*this);
 			}
 			}catch(...)
 				{
-				_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, _section, "in FMTlandscapeparser::read", __LINE__, __FILE__);
+				_exhandler->raisefromcatch(
+					"at "+location,"FMTlandscapeparser::read ", __LINE__, __FILE__,_section);
 				}
         return themes;
         }
     void FMTlandscapeparser::write(const std::vector<Core::FMTtheme>& themes,const std::string& location) const
         {
-        std::ofstream landscapestream;
-        landscapestream.open(location);
-        if (landscapestream.is_open())
-            {
-            for(const Core::FMTtheme& theme : themes)
-                {
-                landscapestream<<std::string(theme);
-                }
-            landscapestream.close();
-            }
+		try {
+			std::ofstream landscapestream;
+			landscapestream.open(location);
+			if (landscapestream.is_open())
+			{
+				for (const Core::FMTtheme& theme : themes)
+				{
+					landscapestream << std::string(theme);
+				}
+				landscapestream.close();
+			}
+		}catch (...)
+			{
+			_exhandler->raisefromcatch("at " + location,"FMTlandscapeparser::write", __LINE__, __FILE__, _section);
+			}
         }
 
 }

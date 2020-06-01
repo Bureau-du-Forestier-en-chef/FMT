@@ -86,25 +86,30 @@ namespace Core
 			const FMTmask& presolvedmask,
 			const std::vector<FMTtheme>& newthemes)
 			{
+			try {
 				if (!canshrink())
-					{
+				{
 					unshrink(originalthemes);
-					}
+				}
 				std::vector<std::pair<FMTmask, T>>newdata;
 				for (const std::pair<FMTmask, T>& object : data)
-					{
+				{
 					if (!object.first.isnotthemessubset(basemask, originalthemes))
-						{
+					{
 						FMTmask mskkey = object.first;
 						if (!presolvedmask.empty())
-							{
+						{
 							mskkey = mskkey.presolve(presolvedmask, newthemes);
-							}
-						newdata.push_back(std::pair<FMTmask,T>(mskkey, object.second));
 						}
+						newdata.push_back(std::pair<FMTmask, T>(mskkey, object.second));
 					}
+				}
 				data = newdata;
 				this->update();
+			}catch (...)
+				{
+				_exhandler->raisefromcatch("","FMTlist::presolvelist", __LINE__, __FILE__);
+				}
 			}
 	public:
 		FMTmask getunion(const std::vector<FMTtheme>& themes) const

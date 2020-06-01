@@ -30,13 +30,6 @@ namespace Exception
 		{
 			ar & boost::serialization::make_nvp("parent_handler", boost::serialization::base_object<FMTexceptionhandler>(*this));
 		}
-	protected:
-		// DocString: FMTdebugexceptionhandler::getsrcinfo
-		/**
-		Base on the line and the file of the source code it returns a formated way for throwing some debug information. 
-		*/
-		std::string getsrcinfo(const int& line,
-			const std::string& file) const;
 	public:
 		// DocString: FMTdebugexceptionhandler()
 		/**
@@ -53,8 +46,9 @@ namespace Exception
 		The function overide the base class raise function to give it a more "debug" style.
 		See raise function of FMTexceptionhandler class.
 		*/
-		FMTlev raise(FMTexc lexception, Core::FMTsection lsection, std::string text,
-			const int& line, const std::string& file) override;
+		FMTexception raise(FMTexc lexception, std::string text,
+			const std::string& method, const int& line, const std::string& file,
+			Core::FMTsection lsection = Core::FMTsection::Empty, bool throwit = true) override;
 #ifdef FMTWITHGDAL
 		// DocString: FMTdebugexceptionhandler::getCPLdata
 		/**

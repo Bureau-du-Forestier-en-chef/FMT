@@ -54,8 +54,7 @@ namespace Heuristics
 					}
 		}catch (...)
 			{
-			_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
-				_section, "in FMToperatingareaheuristic::unboundall", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("", "FMToperatingareaheuristic::unboundall", __LINE__, __FILE__, _section);
 			}
 		}
 
@@ -114,11 +113,17 @@ namespace Heuristics
 
 	int FMToperatingareaheuristic::resolvemodel()
 		{
-		if (!useprimal||solvertype != Models::FMTsolverinterface::CLP)
+		try {
+			if (!useprimal || solvertype != Models::FMTsolverinterface::CLP)
 			{
-			FMTlpsolver::resolve();
-		}else {
-			this->stockresolve();
+				FMTlpsolver::resolve();
+			}
+			else {
+				this->stockresolve();
+			}
+		}catch (...)
+			{
+			_exhandler->raisefromcatch("","FMToperatingareaheuristic::resolvemodel", __LINE__, __FILE__, _section);
 			}
 		return FMTlpsolver::getiterationcount();
 		}
@@ -153,6 +158,9 @@ namespace Heuristics
 					}
 					if (!this->isProvenOptimal())
 					{
+						_exhandler->raise(Exception::FMTexc::FMTignore,
+							"FMToperatingareaheuristic failed switching to random",
+							"FMToperatingareaheuristic::initialsolve", __LINE__, __FILE__, _section);
 						userandomness = true; //Switch to random now
 						this->unboundall(); //release everything
 						if (!useprimal)
@@ -165,7 +173,8 @@ namespace Heuristics
 					if (opareaprocessed > this->operatingareas.size())
 						{
 						_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
-							_section,"in FMToperatingareaheuristic::initialsolve unable to bound operating areas", __LINE__, __FILE__);
+							"unable to bound operating areas ",
+							"FMToperatingareaheuristic::initialsolve", __LINE__, __FILE__, _section);
 						}
 				} while (!selected.empty() && this->isProvenOptimal());
 				if (this->isProvenOptimal())
@@ -176,14 +185,12 @@ namespace Heuristics
 					this->clearrowcache();
 				}
 			}
-		}catch(const std::exception& exception)
+		}catch (...)
 		{
-			_exhandler->throw_nested(exception);
+			_exhandler->printexceptions("", "FMToperatingareaheuristic::initialsolve", __LINE__, __FILE__);
 		}
-		catch (...)
-		{
-			_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, _section, "in FMToperatingareaheuristic::initialsolve", __LINE__, __FILE__);
-		}
+
+
 		return this->isProvenOptimal();
 		}
 
@@ -222,9 +229,6 @@ namespace Heuristics
 				actionids.push_back(std::distance(&modelactions[0], actptr));
 			}
 			const double* primalsolution = this->getColSolution();
-			//Models::FMTmatrixbuild matrixbuild;
-			//matrixbuild.setlastcolindex(this->getNumCols()-1);
-			//matrixbuild.setlastrowindex(this->getNumRows()-1);
 			for (std::vector<FMToperatingarea>::iterator operatingareait = operatingareas.begin();
 				operatingareait != operatingareas.end(); ++operatingareait)
 			{
@@ -251,19 +255,21 @@ namespace Heuristics
 				}
 				if (operatingareait->getarea()==0)
 					{
-					_exhandler->raise(Exception::FMTexc::FMTignore, _section,
-						"in FMToperatingareaheuristic::setoperatingareasconstraints area of operating area "+
-						std::string(operatingareait->getmask())+" is null", __LINE__, __FILE__);
+					_exhandler->raise(Exception::FMTexc::FMTignore,
+						"area of operating area "+
+						std::string(operatingareait->getmask())+" is null",
+						"FMToperatingareaheuristic::setoperatingareasconstraints", __LINE__, __FILE__);
 					}else if (operatingareait->getopeningbinaries().empty())
 						{
-						_exhandler->raise(Exception::FMTexc::FMTignore, _section,"in FMToperatingareaheuristic::setoperatingareasconstraints "+
-							std::string(operatingareait->getmask()) + " not operable", __LINE__, __FILE__);
+						_exhandler->raise(Exception::FMTexc::FMTignore,
+							std::string(operatingareait->getmask()) + " not operable",
+							"FMToperatingareaheuristic::setoperatingareasconstraints", __LINE__, __FILE__);
 						}
 			}
 			this->synchronize();
 		}catch (...)
 			{
-			_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, _section, "in FMToperatingareaheuristic::setoperatingareasconstraints", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("","FMToperatingareaheuristic::setoperatingareasconstraints", __LINE__, __FILE__);
 			}
 		}
 
@@ -315,8 +321,7 @@ namespace Heuristics
 		this->synchronize();
 		}catch (...)
 			{
-			_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, _section,
-				"in FMToperatingareaheuristic::setadjacencyconstraints", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("","FMToperatingareaheuristic::setadjacencyconstraints", __LINE__, __FILE__);
 			}
 		}
 
@@ -346,32 +351,37 @@ namespace Heuristics
 		}
 	FMToperatingareaheuristic::~FMToperatingareaheuristic()
 		{
+		try {
 			//Will need a clean matrix to fit with FMTlpmodel!
 			std::vector<int>rowstodelete;
 			std::vector<int>columnstodelete;
 			for (std::vector<FMToperatingarea>::const_iterator operatingareait = operatingareas.begin();
-					operatingareait != operatingareas.end(); ++operatingareait)
-					{
-					operatingareait->getressourcestodelete(columnstodelete, rowstodelete);
-					}
-			for (std::map<std::pair<Core::FMTmask,Core::FMTmask>, std::vector<int>>::const_iterator it = adjacencyconstraints.begin();it!= adjacencyconstraints.end(); it++)
-					{
-					rowstodelete.insert(rowstodelete.end(), it->second.begin(), it->second.end());
-					}
+				operatingareait != operatingareas.end(); ++operatingareait)
+			{
+				operatingareait->getressourcestodelete(columnstodelete, rowstodelete);
+			}
+			for (std::map<std::pair<Core::FMTmask, Core::FMTmask>, std::vector<int>>::const_iterator it = adjacencyconstraints.begin(); it != adjacencyconstraints.end(); it++)
+			{
+				rowstodelete.insert(rowstodelete.end(), it->second.begin(), it->second.end());
+			}
 			if (!rowstodelete.empty())
-				{
+			{
 				this->deleteRows(rowstodelete.size(), &rowstodelete[0]);
-				}
+			}
 			if (!columnstodelete.empty())
-				{ 
+			{
 				this->deleteCols(columnstodelete.size(), &columnstodelete[0]);
-				}
+			}
 			if (!rowstodelete.empty() || !columnstodelete.empty())
-				{
+			{
 				this->resolvemodel();
-				}
-		operatingareas.clear();
-		adjacencyconstraints.clear();
+			}
+			operatingareas.clear();
+			adjacencyconstraints.clear();
+		}catch (...)
+			{
+			_exhandler->raisefromcatch("","FMToperatingareaheuristic::~", __LINE__, __FILE__);
+			}
 		}
 
 	std::vector<std::vector<FMToperatingarea>::const_iterator> FMToperatingareaheuristic::setdraw()
@@ -486,8 +496,9 @@ namespace Heuristics
 				}
 			}
 			else {
-				_exhandler->raise(Exception::FMTexc::FMTignore, _section,
-					"no schedule found for Operating area "+std::string(opit->getmask()), __LINE__, __FILE__);
+				_exhandler->raise(Exception::FMTexc::FMTignore,
+					"no schedule found for Operating area "+std::string(opit->getmask()),
+					"FMToperatingareaheuristic::setbounds",__LINE__, __FILE__);
 				if (useprimal)
 				{
 					opit->boundallprimalschemes(targeteditems, bounds);
@@ -530,8 +541,7 @@ namespace Heuristics
 			}
 		}catch (...)
 			{
-			_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, _section,
-				"in FMToperatingareaheuristic::getsolution ", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("","FMToperatingareaheuristic::getsolution", __LINE__, __FILE__);
 			}
 		return allhandlers;
 		}
@@ -558,8 +568,7 @@ namespace Heuristics
 			this->resolvemodel();
 		}catch (...)
 			{
-			_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, _section,
-				"in FMToperatingareaheuristic::FMToperatingareaheuristic", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("","FMToperatingareaheuristic::FMToperatingareaheuristic", __LINE__, __FILE__);
 			}
 		}
 

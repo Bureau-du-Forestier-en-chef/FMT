@@ -32,57 +32,71 @@ FMTactionparser& FMTactionparser::operator = (const FMTactionparser& rhs)
 
 	std::string FMTactionparser::getbounds(std::string& line, Core::FMTspec& spec,const Core::FMTconstants& constants, const Core::FMTyields& ylds)
         {
-        const std::vector<std::string>elements=spliter(line,FMTparser::rxseparator);
-		const std::array<std::string, 5> baseoperators = this->getbaseoperators();
 		std::string mask = "";
-        size_t loc=0;
-        int maskloc=0;
-		std::vector<std::string>yields;
-        for(const std::string& op : elements)
-            {
-            if (std::find(baseoperators.begin(), baseoperators.end(),op)!= baseoperators.end())
-                {
-				const std::string  yield = elements[loc-1];
-                if(yield=="_AGE")
-                    {
-                    spec.addbounds(Core::FMTagebounds(bounds<int>(constants,elements[loc+1],op, Core::FMTsection::Action)));
-				}else if (yield == "_CP")
+		try {
+			const std::vector<std::string>elements = spliter(line, FMTparser::rxseparator);
+			const std::array<std::string, 5> baseoperators = this->getbaseoperators();
+			size_t loc = 0;
+			int maskloc = 0;
+			std::vector<std::string>yields;
+			for (const std::string& op : elements)
+			{
+				if (std::find(baseoperators.begin(), baseoperators.end(), op) != baseoperators.end())
+				{
+					const std::string  yield = elements[loc - 1];
+					if (yield == "_AGE")
 					{
-					spec.setbounds(Core::FMTperbounds(bounds<int>(constants, elements[loc + 1], op, Core::FMTsection::Action)));
-					}else {
-                        yields.push_back(yield);
-                        spec.addbounds(Core::FMTyldbounds(yield,bounds<double>(constants,elements[loc+1],op, Core::FMTsection::Action)));
-                        }
-                    if (maskloc==0)
-                        {
-                        maskloc = static_cast<int>(loc) - 1;
-                        }
-                }
-            ++loc;
-            }
-        mask = "";
-        for(int id =0;id<maskloc;++id)
-            {
-            mask+=elements[id]+" ";
-            }
-        mask = mask.substr(0, mask.size()-1);
-        for (const std::string yldname : yields)
-            {
-            if (!isyld(ylds,yldname, Core::FMTsection::Action)) continue;
-            }
+						spec.addbounds(Core::FMTagebounds(bounds<int>(constants, elements[loc + 1], op, Core::FMTsection::Action)));
+					}
+					else if (yield == "_CP")
+					{
+						spec.setbounds(Core::FMTperbounds(bounds<int>(constants, elements[loc + 1], op, Core::FMTsection::Action)));
+					}
+					else {
+						yields.push_back(yield);
+						spec.addbounds(Core::FMTyldbounds(yield, bounds<double>(constants, elements[loc + 1], op, Core::FMTsection::Action)));
+					}
+					if (maskloc == 0)
+					{
+						maskloc = static_cast<int>(loc) - 1;
+					}
+				}
+				++loc;
+			}
+			mask = "";
+			for (int id = 0; id < maskloc; ++id)
+			{
+				mask += elements[id] + " ";
+			}
+			mask = mask.substr(0, mask.size() - 1);
+			for (const std::string yldname : yields)
+			{
+				if (!isyld(ylds, yldname, Core::FMTsection::Action)) continue;
+			}
+		}catch (...)
+			{
+			_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
+				"for "+line,"FMTactionparser::getbounds", __LINE__, __FILE__, _section);
+			}
         return mask;
         }
 	std::map<std::string, std::vector<std::string>>FMTactionparser::valagg(std::vector<Core::FMTaction>& actions, std::map<std::string, std::vector<std::string>>& aggregates)
         {
 		std::map<std::string, std::vector<std::string>>aggs;
-        for(std::map<std::string, std::vector<std::string>>::iterator it = aggregates.begin(); it!=aggregates.end();it++)
-            {
-			const std::vector<std::string>* oldagg = &it->second;
-            if(!oldagg->empty())
-                {
-                aggs[it->first] = *oldagg;
-                }
-            }
+		try {
+			for(std::map<std::string, std::vector<std::string>>::iterator it = aggregates.begin(); it!=aggregates.end();it++)
+				{
+				const std::vector<std::string>* oldagg = &it->second;
+				if(!oldagg->empty())
+					{
+					aggs[it->first] = *oldagg;
+					}
+				}
+		}catch (...)
+			{
+			_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
+				"","FMTactionparser::valagg", __LINE__, __FILE__, _section);
+			}
         return aggs;
         }
     std::vector<Core::FMTaction>FMTactionparser::read(const std::vector<Core::FMTtheme>& themes,
@@ -187,7 +201,8 @@ FMTactionparser& FMTactionparser::operator = (const FMTactionparser& rhs)
 									aggregates[aggregatename].push_back(val);
 								}
 								else {
-									_exhandler->raise(Exception::FMTexc::FMTundefined_aggregate_value, _section, val + " at line" + std::to_string(_line), __LINE__, __FILE__);
+									_exhandler->raise(Exception::FMTexc::FMTundefined_aggregate_value,
+										val + " at line" + std::to_string(_line),"FMTactionparser::read", __LINE__, __FILE__, _section);
 								}
 							}
 						}
@@ -195,7 +210,8 @@ FMTactionparser& FMTactionparser::operator = (const FMTactionparser& rhs)
 						{
 							if (theaction && theaction->isresetage())
 							{
-								_exhandler->raise(Exception::FMTexc::FMTwrong_partial, _section, partialname + " at line" + std::to_string(_line), __LINE__, __FILE__);
+								_exhandler->raise(Exception::FMTexc::FMTwrong_partial, partialname + " at line" + std::to_string(_line),
+									"FMTactionparser::read", __LINE__, __FILE__, _section);
 							}
 							const std::vector<std::string>splited = FMTparser::spliter(line, FMTparser::rxseparator);
 							for (const std::string& val : splited)
@@ -217,7 +233,8 @@ FMTactionparser& FMTactionparser::operator = (const FMTactionparser& rhs)
 						cleanedactions.push_back(action);
 					}
 					else {
-						_exhandler->raise(Exception::FMTexc::FMTempty_action, _section, action.getname(), __LINE__, __FILE__);
+						_exhandler->raise(Exception::FMTexc::FMTempty_action, 
+							action.getname(),"FMTactionparser::read", __LINE__, __FILE__, _section);
 					}
 					++id;
 				}
@@ -238,52 +255,65 @@ FMTactionparser& FMTactionparser::operator = (const FMTactionparser& rhs)
 			std::sort(cleanedactions.begin(), cleanedactions.end());
 		}catch (...)
 			{
-			_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, _section, "in FMTactionparser::read", __LINE__, __FILE__);
+			_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
+				"","FMTactionparser::read", __LINE__, __FILE__, _section);
 			}
         return cleanedactions;
         }
     void FMTactionparser::write(const std::vector<Core::FMTaction>& actions,
 		const std::string& location) const
         {
-        std::ofstream actionstream;
-        actionstream.open(location);
-		std::map<std::string, std::vector<std::string>>allaggregates;
-        if (tryopening(actionstream,location))
-            {
-            for(const Core::FMTaction& act : actions)
-                {
-                actionstream<<std::string(act)<<"\n";
-				for (const std::string& aggregate : act.getaggregates())
-					{
-					if (allaggregates.find(aggregate)== allaggregates.end())
-						{
-						allaggregates[aggregate] = std::vector<std::string>();
-						}
-					allaggregates[aggregate].push_back(act.getname());
-					}
-                }
-			actionstream << "\n";
-			for (std::map<std::string, std::vector<std::string>>::const_iterator aggit = allaggregates.begin(); aggit != allaggregates.end(); aggit++)
+		try {
+			std::ofstream actionstream;
+			actionstream.open(location);
+			std::map<std::string, std::vector<std::string>>allaggregates;
+			if (tryopening(actionstream, location))
+			{
+				for (const Core::FMTaction& act : actions)
 				{
-				actionstream << "*AGGREGATE " + aggit->first << "\n";
-				for(const std::string& act_str : aggit->second)
+					actionstream << std::string(act) << "\n";
+					for (const std::string& aggregate : act.getaggregates())
 					{
-					actionstream << act_str << "\n";
+						if (allaggregates.find(aggregate) == allaggregates.end())
+						{
+							allaggregates[aggregate] = std::vector<std::string>();
+						}
+						allaggregates[aggregate].push_back(act.getname());
 					}
 				}
-			actionstream << "\n";
-            actionstream.close();
-            }
+				actionstream << "\n";
+				for (std::map<std::string, std::vector<std::string>>::const_iterator aggit = allaggregates.begin(); aggit != allaggregates.end(); aggit++)
+				{
+					actionstream << "*AGGREGATE " + aggit->first << "\n";
+					for (const std::string& act_str : aggit->second)
+					{
+						actionstream << act_str << "\n";
+					}
+				}
+				actionstream << "\n";
+				actionstream.close();
+			}
+		}catch (...)
+			{
+			_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
+				"","FMTactionparser::write", __LINE__, __FILE__, _section);
+			}
         }
 
     std::vector<Core::FMTaction*> FMTactionparser::sameactionas(const std::string& all_set, std::vector<Core::FMTaction>& actions) const
         {
 		std::vector<Core::FMTaction*>all_pointers;
-        const std::vector<std::string>response = sameas(all_set);
-        for(const std::string& actname : response)
-            {
-            all_pointers.push_back(&(*(std::find_if(actions.begin(), actions.end(), Core::FMTactioncomparator(actname)))));
-            }
+		try {
+			const std::vector<std::string>response = sameas(all_set);
+			for(const std::string& actname : response)
+				{
+				all_pointers.push_back(&(*(std::find_if(actions.begin(), actions.end(), Core::FMTactioncomparator(actname)))));
+				}
+		}catch (...)
+			{
+			_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
+				"","FMTactionparser::sameactionas", __LINE__, __FILE__, _section);
+			}
         return all_pointers;
         }
 

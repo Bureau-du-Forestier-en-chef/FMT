@@ -71,10 +71,15 @@ class FMTmodel : public Core::FMTobject
 	template<class T>
 	void validatelistmasks(const Core::FMTlist<T>& container) const
 		{
-		for (const auto& listobject : container)
+		try{
+			for (const auto& listobject : container)
+				{
+				std::string name = std::string(listobject.first);
+				this->validate(themes, name);
+				}
+		}catch (...)
 			{
-			std::string name = std::string(listobject.first);
-			this->validate(themes, name);
+			_exhandler->raisefromcatch("", "FMTsesmodel::validatelistmasks", __LINE__, __FILE__);
 			}
 		}
 	// DocString: FMTmodel::validatelistspec
@@ -201,37 +206,58 @@ class FMTmodel : public Core::FMTobject
 		/**
 		Getter returning a copy of the FMTthemes vector<> of the model.
 		*/
-		std::vector<Core::FMTtheme>getthemes() const;
+		inline std::vector<Core::FMTtheme>getthemes() const
+			{
+			return themes;
+			}
 		// DocString: FMTmodel::getactions
 		/**
 		Getter returning a copy of the FMTactions vector<> of the model.
 		*/
-		std::vector<Core::FMTaction>getactions() const;
+		inline std::vector<Core::FMTaction>getactions() const
+			{
+			return actions;
+			}
 		// DocString: FMTmodel::gettransitions
 		/**
 		Getter returning a copy of the FMTtransitions vector<> of the model.
 		*/
-		std::vector<Core::FMTtransition>gettransitions() const;
+		inline std::vector<Core::FMTtransition>gettransitions() const
+			{
+			return transitions;
+			}
 		// DocString: FMTmodel::getyields
 		/**
 		Getter returning a copy of the FMTyields data of the model.
 		*/
-		Core::FMTyields getyields() const;
+		inline Core::FMTyields getyields() const
+			{
+			return yields;
+			}
 		// DocString: FMTmodel::getlifespan
 		/**
 		Getter returning a copy of the FMTlifespan data of the model.
 		*/
-		Core::FMTlifespans getlifespan() const;
+		inline Core::FMTlifespans getlifespan() const
+			{
+			return lifespan;
+			}
 		// DocString: FMTmodel::getoutputs
 		/**
 		Getter returning a copy of the FMToutputs vector<> of the model.
 		*/
-		std::vector<Core::FMToutput> getoutputs() const;
+		inline std::vector<Core::FMToutput> getoutputs() const
+		{
+			return outputs;
+		}
 		// DocString: FMTmodel::getconstraints
 		/**
 		Getter returning a copy of the FMTconstraints vector<> of the model.
 		*/
-		std::vector<Core::FMTconstraint>getconstraints() const;
+		inline std::vector<Core::FMTconstraint>getconstraints() const
+			{
+			return constraints;
+			}
 		// DocString: FMTmodel::defaultdeathaction
 		/**
 		Returns the default death action when not specified by the user, base on specific lifespan and themes.

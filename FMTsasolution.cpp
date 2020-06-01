@@ -525,7 +525,8 @@ double FMTsasolution::getgraphspenalties(const Models::FMTsamodel& model, const 
 		std::vector<std::string>penalties = objective.getpenalties(penalty_sense);//Return values in penalty
         if (penalties.empty())
             {
-                _exhandler->raise(Exception::FMTexc::FMTunsupported_objective, Core::FMTsection::Optimize,"No penalties",__LINE__, __FILE__);
+                _exhandler->raise(Exception::FMTexc::FMTunsupported_objective,
+					"No penalties","FMTsasolution::evaluate",__LINE__, __FILE__, Core::FMTsection::Optimize);
             }
         else
             {

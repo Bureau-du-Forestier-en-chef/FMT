@@ -82,21 +82,26 @@ unsigned int FMTtransition::age_after(const std::vector<FMTdevelopment>& devs,
     {
     unsigned int total_age = 0;
     unsigned int age_count = 0;
-    for(const FMTdevelopment& dev : devs)
-        {
-		if (dev.operable(action,ylds))
+	try {
+		for (const FMTdevelopment& dev : devs)
+		{
+			if (dev.operable(action, ylds))
 			{
-			const std::vector<FMTdevelopmentpath>newpaths = dev.operate(action, *this, ylds, themes);
-			for (const FMTdevelopmentpath& path : newpaths)
+				const std::vector<FMTdevelopmentpath>newpaths = dev.operate(action, *this, ylds, themes);
+				for (const FMTdevelopmentpath& path : newpaths)
 				{
-				total_age += path.development->age;
-				++age_count;
+					total_age += path.development->age;
+					++age_count;
 				}
 			}
-        }
-	if (age_count==0)
+		}
+		if (age_count == 0)
 		{
-		return 0;
+			return 0;
+		}
+	}catch (...)
+		{
+		_exhandler->raisefromcatch("for transition "+this->getname(),"FMTtransition::age_after", __LINE__, __FILE__, _section);
 		}
     return (total_age/age_count);
     }
@@ -204,6 +209,7 @@ const FMTfork* FMTtransition::getfork(const FMTdevelopment& dev,
 	 const std::vector<FMTtheme>& newthemes) const
 	{
 	FMTtransition newtransition(*this);
+	try {
 	newtransition.presolvelist(basemask, originalthemes, presolvedmask, newthemes);
 	newtransition.update();
 	if (!presolvedmask.empty())
@@ -213,6 +219,10 @@ const FMTfork* FMTtransition::getfork(const FMTdevelopment& dev,
 			transitionobject.second = transitionobject.second.presolve(presolvedmask, newthemes);
 			}
 		}
+	}catch (...)
+		{
+		_exhandler->raisefromcatch("for transition "+this->getname(),"FMTtransition::presolve", __LINE__, __FILE__, _section);
+		}	
 	return newtransition;
 	}
 

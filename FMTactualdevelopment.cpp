@@ -51,9 +51,14 @@ namespace Core
 	FMTactualdevelopment FMTactualdevelopment::presolve(const FMTmask& selectedmask, const std::vector<FMTtheme>&presolvedthemes) const
 		{
 		FMTactualdevelopment newdev(*this);
-		if (!selectedmask.empty())
+		try {
+			if (!selectedmask.empty())
 			{
-			newdev.mask = mask.presolve(selectedmask, presolvedthemes);
+				newdev.mask = mask.presolve(selectedmask, presolvedthemes);
+			}
+		}catch (...)
+			{
+			_exhandler->raisefromcatch("for "+std::string(*this),"FMTactualdevelopment::presolve", __LINE__, __FILE__, _section);
 			}
 		return newdev;
 		}

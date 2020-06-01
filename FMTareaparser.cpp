@@ -29,7 +29,9 @@ namespace Parser{
 				{
 					if ((data->GetRasterXSize() != xsize) || (data->GetRasterYSize() != ysize) || (data->GetRasterCount() != rastercount) || (data->GetProjectionRef() != projection) || (band->GetOverviewCount() != overview))
 					{
-						_exhandler->raise(Exception::FMTexc::FMTinvalidband, _section, "Rasters are not the same " + std::string(data->GetDescription()), __LINE__, __FILE__);
+						_exhandler->raise(Exception::FMTexc::FMTinvalidband,
+							"Rasters are not the same " + std::string(data->GetDescription()),
+							"FMTareaparser::validate_raster", __LINE__, __FILE__, _section);
 					}
 				}
 				else {
@@ -43,7 +45,7 @@ namespace Parser{
 			}
 		}catch (...)
 			{
-			_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, _section, "in FMTareaparser::validate_raster", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("","in FMTareaparser::validate_raster", __LINE__, __FILE__,_section);
 			}
         }
 	std::vector<Core::FMTGCBMtransition> FMTareaparser::getGCBMtransitions(const Spatial::FMTlayer<std::string>& stacked_actions,
@@ -51,64 +53,70 @@ namespace Parser{
 																const Spatial::FMTforest& newfor,
 																const std::vector<Core::FMTtheme>& themes) const
 		{
-		std::map<std::string, std::vector<double>>stats;
-		std::map<std::string, std::vector<std::map<std::string,int>>>attributes;
-		const std::vector<Spatial::FMTlayer<std::string>>newforests = newfor.getthemes(themes);
-		for (std::map<Spatial::FMTcoordinate, std::string>::const_iterator itcoord = stacked_actions.mapping.begin();
-			itcoord != stacked_actions.mapping.end(); itcoord++)
-		{
-			if (ages.mapping.find(itcoord->first) != ages.mapping.end())
-			{
-				if (stats.find(itcoord->second) == stats.end())
-				{
-					stats[itcoord->second] = std::vector<double>(2, 0);
-				}
-				stats[itcoord->second][0] += ages.mapping.at(itcoord->first);
-				++stats[itcoord->second][1];
-
-				if (attributes.find(itcoord->second) == attributes.end())
-					{
-					attributes[itcoord->second] = std::vector<std::map<std::string, int>>(newforests.size());
-					}
-				int tid = 0;
-				for (const Spatial::FMTlayer<std::string>& nfor : newforests)
-					{
-					const std::string value = nfor.mapping.at(itcoord->first);
-					if (attributes.at(itcoord->second).at(tid).find(value) == attributes.at(itcoord->second).at(tid).end())
-						{
-						attributes[itcoord->second][tid][value] = 0;
-						}
-					attributes[itcoord->second][tid][value] += 1;
-					++tid;
-					}
-			}
-		}
-
 		std::vector<Core::FMTGCBMtransition>GCBM;
-		for (std::map<std::string,std::vector<double>>::const_iterator it = stats.begin(); it != stats.end(); it++)
+		try{
+			std::map<std::string, std::vector<double>>stats;
+			std::map<std::string, std::vector<std::map<std::string,int>>>attributes;
+			const std::vector<Spatial::FMTlayer<std::string>>newforests = newfor.getthemes(themes);
+			for (std::map<Spatial::FMTcoordinate, std::string>::const_iterator itcoord = stacked_actions.mapping.begin();
+				itcoord != stacked_actions.mapping.end(); itcoord++)
 			{
-			const int ageafter = int(round(it->second[0] / it->second[1]));
-			const std::string action_name = it->first;
-			std::map<std::string, std::string>theme_collection;
-			int id = 0;
-			for (const Core::FMTtheme& theme : themes)
-			{
-				const std::string theme_name = "THEME" + std::to_string(theme.getid()+1);
-				int maxhit = 0;
-				std::string returntheme = "";
-				for (std::map<std::string,int>::const_iterator cit = attributes.at(it->first).at(id).begin(); cit!= attributes.at(it->first).at(id).end();++cit)
+				if (ages.mapping.find(itcoord->first) != ages.mapping.end())
+				{
+					if (stats.find(itcoord->second) == stats.end())
 					{
-					if (cit->second > maxhit)
-						{
-						maxhit = cit->second;
-						returntheme = cit->first;
-						}
-
+						stats[itcoord->second] = std::vector<double>(2, 0);
 					}
-				theme_collection[theme_name] = returntheme;
-				++id;
+					stats[itcoord->second][0] += ages.mapping.at(itcoord->first);
+					++stats[itcoord->second][1];
+
+					if (attributes.find(itcoord->second) == attributes.end())
+						{
+						attributes[itcoord->second] = std::vector<std::map<std::string, int>>(newforests.size());
+						}
+					int tid = 0;
+					for (const Spatial::FMTlayer<std::string>& nfor : newforests)
+						{
+						const std::string value = nfor.mapping.at(itcoord->first);
+						if (attributes.at(itcoord->second).at(tid).find(value) == attributes.at(itcoord->second).at(tid).end())
+							{
+							attributes[itcoord->second][tid][value] = 0;
+							}
+						attributes[itcoord->second][tid][value] += 1;
+						++tid;
+						}
+				}
 			}
-			GCBM.push_back(Core::FMTGCBMtransition(ageafter, theme_collection, action_name));
+
+		
+			for (std::map<std::string,std::vector<double>>::const_iterator it = stats.begin(); it != stats.end(); it++)
+				{
+				const int ageafter = int(round(it->second[0] / it->second[1]));
+				const std::string action_name = it->first;
+				std::map<std::string, std::string>theme_collection;
+				int id = 0;
+				for (const Core::FMTtheme& theme : themes)
+				{
+					const std::string theme_name = "THEME" + std::to_string(theme.getid()+1);
+					int maxhit = 0;
+					std::string returntheme = "";
+					for (std::map<std::string,int>::const_iterator cit = attributes.at(it->first).at(id).begin(); cit!= attributes.at(it->first).at(id).end();++cit)
+						{
+						if (cit->second > maxhit)
+							{
+							maxhit = cit->second;
+							returntheme = cit->first;
+							}
+
+						}
+					theme_collection[theme_name] = returntheme;
+					++id;
+				}
+				GCBM.push_back(Core::FMTGCBMtransition(ageafter, theme_collection, action_name));
+				}
+		}catch (...)
+			{
+			_exhandler->raisefromcatch("","FMTareaparser::getGCBMtransitions", __LINE__, __FILE__, _section);
 			}
 		return GCBM;
 		}
@@ -123,50 +131,61 @@ namespace Parser{
 						std::vector<std::map<std::string, std::string>>mapping) const
         {
         const std::vector<Spatial::FMTlayer<std::string>> themes_layer = for_layer.getthemes(themes);
-		if (!themes_layer.empty())
+		try {
+			if (!themes_layer.empty())
 			{
-			if (mapping.size() != themes.size())
-			{
-				mapping.clear();
-				for (const Core::FMTtheme& theme : themes)
+				if (mapping.size() != themes.size())
 				{
-					const std::map<std::string, std::string> themes_mapping = theme.getvaluenames();
-					std::map<std::string, std::string> layer_map;
-					for (std::map<std::string, std::string>::const_iterator dit = themes_mapping.begin(); dit != themes_mapping.end(); dit++)
+					mapping.clear();
+					for (const Core::FMTtheme& theme : themes)
 					{
-						layer_map[dit->first] = dit->first;
+						const std::map<std::string, std::string> themes_mapping = theme.getvaluenames();
+						std::map<std::string, std::string> layer_map;
+						for (std::map<std::string, std::string>::const_iterator dit = themes_mapping.begin(); dit != themes_mapping.end(); dit++)
+						{
+							layer_map[dit->first] = dit->first;
+						}
+						mapping.push_back(layer_map);
 					}
-					mapping.push_back(layer_map);
 				}
+				int layer_id = 0;
+				for (const std::map<std::string, std::string>& layermap : mapping)
+				{
+					writelayer<std::string>(themes_layer[layer_id], data_rasters[layer_id], layermap);
+					++layer_id;
+				}
+				const std::map<int, std::string>emptymapping;
+				const Spatial::FMTlayer<int>agelayer = for_layer.getage();
+				writelayer<int>(agelayer, age, emptymapping);
+				const Spatial::FMTlayer<std::string>locklayer = for_layer.getlock();
+				std::map<std::string, std::string>lockmap;
+				const std::vector<std::string> attributes = locklayer.getattributes();
+				for (const std::string& att : attributes)
+				{
+					lockmap[att] = att;
+				}
+				writelayer<std::string>(locklayer, lock, lockmap);
+				return true;
 			}
-			int layer_id = 0;
-			for (const std::map<std::string, std::string>& layermap : mapping)
+		}catch (...)
 			{
-				writelayer<std::string>(themes_layer[layer_id], data_rasters[layer_id], layermap);
-				++layer_id;
-			}
-			const std::map<int, std::string>emptymapping;
-			const Spatial::FMTlayer<int>agelayer = for_layer.getage();
-			writelayer<int>(agelayer, age, emptymapping);
-			const Spatial::FMTlayer<std::string>locklayer = for_layer.getlock();
-			std::map<std::string, std::string>lockmap;
-			const std::vector<std::string> attributes = locklayer.getattributes();
-			for (const std::string& att : attributes)
-			{
-				lockmap[att] = att;
-			}
-			writelayer<std::string>(locklayer, lock, lockmap);
-			return true;
+			_exhandler->raisefromcatch("","FMTareaparser::writeforest", __LINE__, __FILE__, _section);
 			}
 		return false;
         }
 
 	std::string FMTareaparser::getdisturbancepath(const std::string& location, const int& period) const
 		{
-		const boost::filesystem::path dir(location);
-		const std::string layername = "DIST_" + std::to_string(period) + ".tif";
-		const boost::filesystem::path file(layername);
-		const boost::filesystem::path full_path = dir / file;
+		boost::filesystem::path full_path;
+		try {
+			const boost::filesystem::path dir(location);
+			const std::string layername = "DIST_" + std::to_string(period) + ".tif";
+			const boost::filesystem::path file(layername);
+			full_path = dir / file;
+		}catch (...)
+			{
+			_exhandler->raisefromcatch("at "+ location,"FMTareaparser::getdisturbancepath", __LINE__, __FILE__, _section);
+			}
 		return full_path.string();
 		}
 
@@ -177,48 +196,53 @@ namespace Parser{
 		const std::vector<Core::FMTtheme>& themes,
 		std::map<std::string, std::string> mapping) const
 	{
-		std::vector<Spatial::FMTlayer<std::string>> distvec = disturbances.getlayers<Core::FMTdevelopment>(for_layer);
 		std::vector<Core::FMTGCBMtransition>transitions;
-		if (!distvec.empty())
-		{
-			if (mapping.empty())
+		try {
+			std::vector<Spatial::FMTlayer<std::string>> distvec = disturbances.getlayers<Core::FMTdevelopment>(for_layer);
+			if (!distvec.empty())
 			{
-				mapping = disturbances.directmapping();
-			}
+				if (mapping.empty())
+				{
+					mapping = disturbances.directmapping();
+				}
 
-			if (!themes.empty())
-			{
-				const std::vector<Spatial::FMTlayer<std::string>>forest_attributes = for_layer.getthemes(themes);
-				const Spatial::FMTlayer<int>ages = out_layer.getage();
-				const int period = static_cast<int>(distvec.size());
-				int themeid = 0;
-				for (const Spatial::FMTlayer<std::string>& attlayer : forest_attributes)
+				if (!themes.empty())
 				{
-					std::map<std::string,std::string>newmap;
-					const std::map<std::string,std::string>theme_names = themes[themeid].getvaluenames();
-					for (std::map<std::string, std::string>::const_iterator it = mapping.begin(); it != mapping.end(); it++)
+					const std::vector<Spatial::FMTlayer<std::string>>forest_attributes = for_layer.getthemes(themes);
+					const Spatial::FMTlayer<int>ages = out_layer.getage();
+					const int period = static_cast<int>(distvec.size());
+					int themeid = 0;
+					for (const Spatial::FMTlayer<std::string>& attlayer : forest_attributes)
 					{
-						for (std::map<std::string, std::string>::const_iterator the_it = theme_names.begin(); the_it != theme_names.end(); the_it++)
+						std::map<std::string, std::string>newmap;
+						const std::map<std::string, std::string>theme_names = themes[themeid].getvaluenames();
+						for (std::map<std::string, std::string>::const_iterator it = mapping.begin(); it != mapping.end(); it++)
 						{
-							newmap[it->first + "-" + the_it->first] = it->first + "-" + the_it->first;
+							for (std::map<std::string, std::string>::const_iterator the_it = theme_names.begin(); the_it != theme_names.end(); the_it++)
+							{
+								newmap[it->first + "-" + the_it->first] = it->first + "-" + the_it->first;
+							}
 						}
+						mapping = newmap;
+						distvec.back() += attlayer;
+						++themeid;
 					}
-					mapping = newmap;
-					distvec.back() += attlayer;
-					++themeid;
+					transitions = getGCBMtransitions(distvec.back(), ages, out_layer, themes);
+					writelayer<std::string>(distvec.back(), getdisturbancepath(location, period), mapping);
 				}
-				transitions = getGCBMtransitions(distvec.back(), ages,out_layer,themes);
-				writelayer<std::string>(distvec.back(), getdisturbancepath(location, period), mapping);
-			}
-			else {
-				int period = 1;
-				for (const Spatial::FMTlayer<std::string>& layer : distvec)
-				{
-					writelayer<std::string>(layer, getdisturbancepath(location, period), mapping);
-					++period;
+				else {
+					int period = 1;
+					for (const Spatial::FMTlayer<std::string>& layer : distvec)
+					{
+						writelayer<std::string>(layer, getdisturbancepath(location, period), mapping);
+						++period;
+					}
 				}
 			}
-		}
+		}catch (...)
+			{
+			_exhandler->raisefromcatch("at "+ location,"FMTareaparser::writedisturbances", __LINE__, __FILE__, _section);
+			}
 		return transitions;
 	}
 
@@ -289,13 +313,17 @@ namespace Parser{
 					int  nXValid;
 					if (CE_None != ageband->ReadBlock(iXBlock, iYBlock, &agedata[0]))
 					{
-						_exhandler->raise(Exception::FMTexc::FMTinvalidrasterblock, _section, agedataset->GetDescription(), __LINE__, __FILE__);
+						_exhandler->raise(Exception::FMTexc::FMTinvalidrasterblock,
+							agedataset->GetDescription(),
+							"FMTareaparser::readrasters", __LINE__, __FILE__, _section);
 					}
 					if (lockdataset != NULL)
 					{
 						if (CE_None != lockband->ReadBlock(iXBlock, iYBlock, &lockdata[0]))
 						{
-							_exhandler->raise(Exception::FMTexc::FMTinvalidrasterblock, _section, lockdataset->GetDescription(), __LINE__, __FILE__);
+							_exhandler->raise(Exception::FMTexc::FMTinvalidrasterblock,
+								lockdataset->GetDescription(),
+								"FMTareaparser::readrasters", __LINE__, __FILE__, _section);
 						}
 					}
 					ageband->GetActualBlockSize(iXBlock, iYBlock, &nXValid, &nYValid);
@@ -306,7 +334,8 @@ namespace Parser{
 					{
 						if (CE_None != bands[themeid]->ReadBlock(iXBlock, iYBlock, &attributedata[0]))
 						{
-							_exhandler->raise(Exception::FMTexc::FMTinvalidrasterblock, _section, datasets[themeid]->GetDescription(), __LINE__, __FILE__);
+							_exhandler->raise(Exception::FMTexc::FMTinvalidrasterblock,
+								datasets[themeid]->GetDescription(),"FMTareaparser::readrasters", __LINE__, __FILE__, _section);
 						}
 						unsigned int y = ystack;
 						for (int iY = 0; iY < nYValid; iY++)
@@ -371,19 +400,20 @@ namespace Parser{
 			if (missing > 0)
 			{
 				const std::string message = " for " + std::to_string(missing) + " raster cells";
-				_exhandler->raise(Exception::FMTexc::FMTmissingrasterattribute, _section, message, __LINE__, __FILE__);
+				_exhandler->raise(Exception::FMTexc::FMTmissingrasterattribute, message,
+					"FMTareaparser::readrasters", __LINE__, __FILE__, _section);
 			}
 			const std::string projection = agedataset->GetProjectionRef();
 			const unsigned int xsize = ageband->GetXSize();
 			const unsigned int ysize = ageband->GetYSize();
 			return Spatial::FMTlayer<Core::FMTdevelopment>(mapping, pad, xsize, ysize, projection, cellsize);
-		}catch (const std::exception& exception)
+		}catch (...)
 			{
-			_exhandler->throw_nested(exception);
-			}catch (...)
-				{
-				_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, _section, "in FMTareaparser::readrasters", __LINE__, __FILE__);
-				}
+				_exhandler->printexceptions("", "FMTareaparser::readrasters", __LINE__, __FILE__, _section);
+			}
+
+
+
 	return Spatial::FMTforest();
 	}
 
@@ -432,8 +462,8 @@ namespace Parser{
 			}
 		}catch (...)
 			{
-			_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, _section,
-				"in FMTareaparser::getfeaturetodevelopment "+std::to_string(feature->GetFID()), __LINE__, __FILE__);
+			_exhandler->raisefromcatch(std::to_string(feature->GetFID()),
+				"FMTareaparser::getfeaturetodevelopment", __LINE__, __FILE__, _section);
 			}
 		return Core::FMTactualdevelopment();
 		}
@@ -442,33 +472,46 @@ namespace Parser{
 		const std::string& data_vectors,const std::string& agefield,const std::string& areafield,const std::string& lockfield,
 		const std::vector<Core::FMTtheme>& themes) const
 		{
+		GDALDataset* dataset=nullptr;
+		try {
 		GDALAllRegister();
-		GDALDataset* dataset = getvectordataset(data_vectors);
+		dataset = getvectordataset(data_vectors);
 		OGRLayer*  layer = getlayer(dataset, 0);
 		getWSfields(layer, themes_fields, age_field, area_field, lock_field, agefield, areafield, lockfield);
 		if (themes_fields.size() != themes.size())
 			{
-			_exhandler->raise(Exception::FMTexc::FMTinvalid_maskrange, _section, dataset->GetDescription(), __LINE__, __FILE__);
+			_exhandler->raise(Exception::FMTexc::FMTinvalid_maskrange,
+				dataset->GetDescription(),"FMTareaparser::openvectorfile", __LINE__, __FILE__, _section);
 			}
 		layer->ResetReading();
+		}catch (...)
+			{
+			_exhandler->raisefromcatch(data_vectors,"FMTareaparser::openvectorfile", __LINE__, __FILE__, _section);
+			}
 		return dataset;
 		}
 
 	OGRLayer* FMTareaparser::subsetlayer(OGRLayer*layer ,const std::vector<Core::FMTtheme>& themes,
 									const std::string& agefield, const std::string& areafield) const
 		{
-		size_t thid = 1;
-		std::vector<std::string>elements;
-		for (const Core::FMTtheme& theme: themes)
+		std::string sqlcall;
+		try {
+			size_t thid = 1;
+			std::vector<std::string>elements;
+			for (const Core::FMTtheme& theme : themes)
 			{
-			elements.push_back("THEME"+std::to_string(thid));
-			++thid;
+				elements.push_back("THEME" + std::to_string(thid));
+				++thid;
 			}
-		elements.push_back(agefield);
-		elements.push_back(areafield);
-		std::string sqlcall = boost::algorithm::join(elements, " IS NOT NULL AND ");
-		sqlcall += " IS NOT NULL";
-		layer->SetAttributeFilter(sqlcall.c_str());
+			elements.push_back(agefield);
+			elements.push_back(areafield);
+			sqlcall = boost::algorithm::join(elements, " IS NOT NULL AND ");
+			sqlcall += " IS NOT NULL";
+			layer->SetAttributeFilter(sqlcall.c_str());
+		}catch (...)
+			{
+			_exhandler->raisefromcatch("for SQL " + sqlcall,"FMTareaparser::subsetlayer", __LINE__, __FILE__, _section);
+			}
 		return layer;
 		}
 
@@ -505,14 +548,12 @@ namespace Parser{
 				++_line;
 			}
 			GDALClose(dataset);
-		}catch (const std::exception& exception)
-			{
-			_exhandler->throw_nested(exception);
-			}
-		catch (...)
+		}catch (...)
 		{
-			_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, _section, "in FMTareaparser::readvectors", __LINE__, __FILE__);
+			_exhandler->printexceptions("at " + data_vectors, "FMTareaparser::readvectors", __LINE__, __FILE__, _section);
 		}
+
+
         return devs;
         }
 	#ifdef FMTWITHOSI
@@ -561,7 +602,7 @@ namespace Parser{
 		GDALClose(dataset);
 		}catch (...)
 			{
-			_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, _section, "in FMTareaparser::getmultipolygons", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("","FMTareaparser::getmultipolygons", __LINE__, __FILE__, _section);
 			}
 		return multipolygons;
 		}
@@ -571,101 +612,115 @@ namespace Parser{
         template<typename T>
         bool FMTareaparser::writelayer(const Spatial::FMTlayer<T>& layer, std::string location,const std::map<T, std::string>& mapping) const
             {
-            GDALAllRegister();
-            GDALDataType datatype = GDT_Int32;
-            if(std::is_same<double,T>::value)
-                {
-                datatype = GDT_Float64;
-                }
-            GDALDataset* wdataset = createdataset(location,layer,datatype);
-			std::vector<std::string>table;
-            if (!mapping.empty())
-                {
-                table.reserve(mapping.size());
-                for(typename std::map<T, std::string>::const_iterator it = mapping.begin(); it!= mapping.end();it++)
-                    {
-                    table.push_back(it->second);
-                    }
-                }
-            GDALRasterBand* wband = createband(wdataset,table);
-            //iterate on blocks fill them and write them!
-            int nXBlockSize, nYBlockSize;
-            wband->GetBlockSize(&nXBlockSize,&nYBlockSize);
-            int nXBlocks = (wband->GetXSize() + nXBlockSize - 1) / nXBlockSize;
-            int nYBlocks = (wband->GetYSize() + nYBlockSize - 1) / nYBlockSize;
-            double nodata = wband->GetNoDataValue();
-			std::vector<int>intblock;
-			std::vector<double>dblblock;
-            if (std::is_same<double,T>::value)
-                {
-                dblblock.resize(static_cast<size_t>(nXBlockSize) * static_cast<size_t>(nYBlockSize));
-                }else{
-                intblock.resize(static_cast<size_t>(nXBlockSize) * static_cast<size_t>(nYBlockSize));
-                }
+			try {
+				GDALAllRegister();
+				GDALDataType datatype = GDT_Int32;
+				if (std::is_same<double, T>::value)
+				{
+					datatype = GDT_Float64;
+				}
+				GDALDataset* wdataset = createdataset(location, layer, datatype);
+				std::vector<std::string>table;
+				if (!mapping.empty())
+				{
+					table.reserve(mapping.size());
+					for (typename std::map<T, std::string>::const_iterator it = mapping.begin(); it != mapping.end(); it++)
+					{
+						table.push_back(it->second);
+					}
+				}
+				GDALRasterBand* wband = createband(wdataset, table);
+				//iterate on blocks fill them and write them!
+				int nXBlockSize, nYBlockSize;
+				wband->GetBlockSize(&nXBlockSize, &nYBlockSize);
+				int nXBlocks = (wband->GetXSize() + nXBlockSize - 1) / nXBlockSize;
+				int nYBlocks = (wband->GetYSize() + nYBlockSize - 1) / nYBlockSize;
+				double nodata = wband->GetNoDataValue();
+				std::vector<int>intblock;
+				std::vector<double>dblblock;
+				if (std::is_same<double, T>::value)
+				{
+					dblblock.resize(static_cast<size_t>(nXBlockSize) * static_cast<size_t>(nYBlockSize));
+				}
+				else {
+					intblock.resize(static_cast<size_t>(nXBlockSize) * static_cast<size_t>(nYBlockSize));
+				}
 
-            unsigned int ystack = 0;
-            for( int iYBlock = 0; iYBlock < nYBlocks; iYBlock++ )
-                {
-                int nYValid=0;
-                unsigned int xstack = 0;
-                for( int iXBlock = 0; iXBlock < nXBlocks; iXBlock++ )
-                    {
-                    int  nXValid;
-                    wband->GetActualBlockSize(iXBlock, iYBlock, &nXValid, &nYValid);
-                    unsigned int y = ystack;
-                    for( int iY = 0; iY < nYValid; iY++ )
-                        {
-                        unsigned int x = xstack;
-                        for( int iX = 0; iX < nXValid; iX++ )
-                            {
-                            Spatial::FMTcoordinate coordinate(x,y);
-                            typename std::map<Spatial::FMTcoordinate,T>::const_iterator it = layer.mapping.find(coordinate);
-                            if (it!=layer.mapping.end())
-                                {
-                                if (!mapping.empty())
-                                    {
-                                    intblock[iX + iY * nXBlockSize] = static_cast<int>(std::distance(mapping.begin(),mapping.find(it->second)));
-                                    }else if(std::is_same<int,T>::value)
-                                        {
-                                        intblock[iX + iY * nXBlockSize] = boost::lexical_cast<int>(it->second);
-                                        }else if(std::is_same<double,T>::value)
-                                            {
-                                            dblblock[iX + iY * nXBlockSize] = boost::lexical_cast<int>(it->second);
-                                            }
-                                }else{
-                                if(intblock.empty())
-                                    {
-                                    dblblock[iX + iY * nXBlockSize] = nodata;
-                                    }else{
-                                    intblock[iX + iY * nXBlockSize]  = static_cast<int>(nodata);
-                                    }
+				unsigned int ystack = 0;
+				for (int iYBlock = 0; iYBlock < nYBlocks; iYBlock++)
+				{
+					int nYValid = 0;
+					unsigned int xstack = 0;
+					for (int iXBlock = 0; iXBlock < nXBlocks; iXBlock++)
+					{
+						int  nXValid;
+						wband->GetActualBlockSize(iXBlock, iYBlock, &nXValid, &nYValid);
+						unsigned int y = ystack;
+						for (int iY = 0; iY < nYValid; iY++)
+						{
+							unsigned int x = xstack;
+							for (int iX = 0; iX < nXValid; iX++)
+							{
+								Spatial::FMTcoordinate coordinate(x, y);
+								typename std::map<Spatial::FMTcoordinate, T>::const_iterator it = layer.mapping.find(coordinate);
+								if (it != layer.mapping.end())
+								{
+									if (!mapping.empty())
+									{
+										intblock[iX + iY * nXBlockSize] = static_cast<int>(std::distance(mapping.begin(), mapping.find(it->second)));
+									}
+									else if (std::is_same<int, T>::value)
+									{
+										intblock[iX + iY * nXBlockSize] = boost::lexical_cast<int>(it->second);
+									}
+									else if (std::is_same<double, T>::value)
+									{
+										dblblock[iX + iY * nXBlockSize] = boost::lexical_cast<int>(it->second);
+									}
+								}
+								else {
+									if (intblock.empty())
+									{
+										dblblock[iX + iY * nXBlockSize] = nodata;
+									}
+									else {
+										intblock[iX + iY * nXBlockSize] = static_cast<int>(nodata);
+									}
 
-                                }
+								}
 
-                            ++x;
-                            }
-                        ++y;
-                        }
-                    if(intblock.empty())
-                    {
-                        if (wband->WriteBlock(iXBlock,iYBlock,&dblblock[0])!=CPLErr::CE_None)
-                            {
-                             _exhandler->raise(Exception::FMTexc::FMTinvalidrasterblock,_section,wdataset->GetDescription(), __LINE__, __FILE__);
-                            }
-                    }else{
-                        if (wband->WriteBlock(iXBlock,iYBlock,&intblock[0])!=CPLErr::CE_None)
-                            {
-                             _exhandler->raise(Exception::FMTexc::FMTinvalidrasterblock,_section,wdataset->GetDescription(), __LINE__, __FILE__);
-                            }
-                        }
-                    xstack+=nXValid;
-                    }
-                ystack+=nYValid;
-                }
-            wband->ComputeStatistics(FALSE,nullptr,nullptr,nullptr,nullptr,nullptr,nullptr);
-            wband->FlushCache();
-            wdataset->FlushCache();
-            GDALClose(wdataset);
+								++x;
+							}
+							++y;
+						}
+						if (intblock.empty())
+						{
+							if (wband->WriteBlock(iXBlock, iYBlock, &dblblock[0]) != CPLErr::CE_None)
+							{
+								_exhandler->raise(Exception::FMTexc::FMTinvalidrasterblock, 
+									wdataset->GetDescription(),"FMTareaparser::writelayer", __LINE__, __FILE__, _section);
+							}
+						}
+						else {
+							if (wband->WriteBlock(iXBlock, iYBlock, &intblock[0]) != CPLErr::CE_None)
+							{
+								_exhandler->raise(Exception::FMTexc::FMTinvalidrasterblock, 
+									 wdataset->GetDescription(),"FMTareaparser::writelayer", __LINE__, __FILE__, _section);
+							}
+						}
+						xstack += nXValid;
+					}
+					ystack += nYValid;
+				}
+				wband->ComputeStatistics(FALSE, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr);
+				wband->FlushCache();
+				wdataset->FlushCache();
+				GDALClose(wdataset);
+			}catch (...)
+				{
+				_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
+					"at "+location,"FMTareaparser::writelayer", __LINE__, __FILE__, _section);
+				}
             return true;
             }
 	#ifdef FMTWITHOSI
@@ -673,71 +728,76 @@ namespace Parser{
 																						std::vector<Heuristics::FMToperatingarea> operatingareas,
 																						const double& buffersize) const
 				{
-				std::vector<OGRPolygon*>mergedpolygons;
-				for (const OGRMultiPolygon& polygons : multipolygons)
+				try {
+					std::vector<OGRPolygon*>mergedpolygons;
+					for (const OGRMultiPolygon& polygons : multipolygons)
 					{
-					OGRGeometry* geometry = polygons.UnionCascaded();
-					OGRPolygon* polygon = reinterpret_cast<OGRPolygon*>(geometry);
-					mergedpolygons.push_back(polygon);
+						OGRGeometry* geometry = polygons.UnionCascaded();
+						OGRPolygon* polygon = reinterpret_cast<OGRPolygon*>(geometry);
+						mergedpolygons.push_back(polygon);
 					}
-				std::map<Core::FMTmask,std::vector<Core::FMTmask>>neighborhood;
-				for (size_t opareaindex = 0; opareaindex < operatingareas.size();++opareaindex)
+					std::map<Core::FMTmask, std::vector<Core::FMTmask>>neighborhood;
+					for (size_t opareaindex = 0; opareaindex < operatingareas.size(); ++opareaindex)
 					{
-					double fullbuffered = 0;
-					std::vector<size_t>neighborsid;
-					std::vector<double>areas;
-					if (mergedpolygons.at(opareaindex) && !mergedpolygons.at(opareaindex)->IsEmpty() && mergedpolygons.at(opareaindex)->IsValid())
+						double fullbuffered = 0;
+						std::vector<size_t>neighborsid;
+						std::vector<double>areas;
+						if (mergedpolygons.at(opareaindex) && !mergedpolygons.at(opareaindex)->IsEmpty() && mergedpolygons.at(opareaindex)->IsValid())
 						{
-						OGRGeometry* buffered = (mergedpolygons.at(opareaindex)->Buffer(buffersize));
-						for (size_t opareaneighborindex = 0; opareaneighborindex < operatingareas.size(); ++opareaneighborindex)
+							OGRGeometry* buffered = (mergedpolygons.at(opareaindex)->Buffer(buffersize));
+							for (size_t opareaneighborindex = 0; opareaneighborindex < operatingareas.size(); ++opareaneighborindex)
 							{
-							if (opareaindex != opareaneighborindex&&mergedpolygons.at(opareaneighborindex)&&
-								buffered->Intersects(mergedpolygons.at(opareaneighborindex)))
+								if (opareaindex != opareaneighborindex && mergedpolygons.at(opareaneighborindex) &&
+									buffered->Intersects(mergedpolygons.at(opareaneighborindex)))
 								{
-								OGRGeometry* intersect = buffered->Intersection(mergedpolygons.at(opareaneighborindex));
-								const OGRSurface* area = reinterpret_cast<OGRSurface*>(intersect);
-								const double intersectarea = area->get_Area();
-								fullbuffered += intersectarea;
-								neighborsid.push_back(opareaneighborindex);
-								areas.push_back(intersectarea);
-								OGRGeometryFactory::destroyGeometry(intersect);
+									OGRGeometry* intersect = buffered->Intersection(mergedpolygons.at(opareaneighborindex));
+									const OGRSurface* area = reinterpret_cast<OGRSurface*>(intersect);
+									const double intersectarea = area->get_Area();
+									fullbuffered += intersectarea;
+									neighborsid.push_back(opareaneighborindex);
+									areas.push_back(intersectarea);
+									OGRGeometryFactory::destroyGeometry(intersect);
 								}
 							}
-						OGRGeometryFactory::destroyGeometry(buffered);
+							OGRGeometryFactory::destroyGeometry(buffered);
 						}
 
-					std::vector<Core::FMTmask>validneighbors;
-					for (size_t neighborid = 0 ; neighborid < neighborsid.size(); ++neighborid)
+						std::vector<Core::FMTmask>validneighbors;
+						for (size_t neighborid = 0; neighborid < neighborsid.size(); ++neighborid)
 						{
-						if ((areas.at(neighborid)/fullbuffered) >= operatingareas.at(neighborsid.at(neighborid)).getneihgborsperimeter())
+							if ((areas.at(neighborid) / fullbuffered) >= operatingareas.at(neighborsid.at(neighborid)).getneihgborsperimeter())
 							{
-							validneighbors.push_back(operatingareas.at(neighborsid.at(neighborid)).getmask());
+								validneighbors.push_back(operatingareas.at(neighborsid.at(neighborid)).getmask());
 							}
 						}
-					neighborhood[operatingareas.at(opareaindex).getmask()] = validneighbors;
+						neighborhood[operatingareas.at(opareaindex).getmask()] = validneighbors;
 					}
-				//reciprocity
-				/////////////
-				for (Heuristics::FMToperatingarea& oparea : operatingareas)
+					//reciprocity
+					/////////////
+					for (Heuristics::FMToperatingarea& oparea : operatingareas)
 					{
-					if (neighborhood.find(oparea.getmask())!= neighborhood.end())
+						if (neighborhood.find(oparea.getmask()) != neighborhood.end())
 						{
-						std::vector<Core::FMTmask>realneighbors;
-						for (const Core::FMTmask& nmask : neighborhood.at(oparea.getmask()))
-						{
-							if (neighborhood.find(nmask) != neighborhood.end() &&
-								std::find(neighborhood.at(nmask).begin(), neighborhood.at(nmask).end(), oparea.getmask()) != neighborhood.at(nmask).end())
+							std::vector<Core::FMTmask>realneighbors;
+							for (const Core::FMTmask& nmask : neighborhood.at(oparea.getmask()))
 							{
-								realneighbors.push_back(nmask);
+								if (neighborhood.find(nmask) != neighborhood.end() &&
+									std::find(neighborhood.at(nmask).begin(), neighborhood.at(nmask).end(), oparea.getmask()) != neighborhood.at(nmask).end())
+								{
+									realneighbors.push_back(nmask);
+								}
 							}
-						}
-						oparea.setneighbors(realneighbors);
+							oparea.setneighbors(realneighbors);
 						}
 					}
-				////////////
-				for (OGRPolygon* polygon : mergedpolygons)
+					////////////
+					for (OGRPolygon* polygon : mergedpolygons)
 					{
-					OGRGeometryFactory::destroyGeometry(polygon);
+						OGRGeometryFactory::destroyGeometry(polygon);
+					}
+				}catch (...)
+					{
+					_exhandler->raisefromcatch("","FMTareaparser::getneighborsfrompolygons", __LINE__, __FILE__, _section);
 					}
 				return operatingareas;
 				}
@@ -754,14 +814,11 @@ namespace Parser{
 						agefield, areafield, agefactor,
 						areafactor, lockfield, minimal_area);
 					return getneighborsfrompolygons(multipolygons, operatingareaparameters, buffersize);
-				}catch (const std::exception& exception)
-					{
-					_exhandler->throw_nested(exception);
-					}
-				catch (...)
-					{
-					_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, _section, "in FMTareaparser::getneighbors", __LINE__, __FILE__);
-					}
+				}catch (...)
+				{
+					_exhandler->printexceptions("", "FMTareaparser::getneighbors", __LINE__, __FILE__, _section);
+				}
+
 				return std::vector<Heuristics::FMToperatingarea>();
 				}
 		#endif
@@ -866,7 +923,7 @@ namespace Parser{
 
 									}else {
 										_exhandler->raise(Exception::FMTexc::FMTinvalid_maskrange
-											, _section, " at line " + std::to_string(_line), __LINE__, __FILE__);
+											, " at line " + std::to_string(_line),"FMTareaparser::read", __LINE__, __FILE__, _section);
 										}
 								}
 								else if (!areas.empty() && _comment.empty())
@@ -878,39 +935,44 @@ namespace Parser{
 					}
 				}catch (...)
 					{
-					_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, _section, "in FMTareaparser::read", __LINE__, __FILE__);
+					_exhandler->raisefromcatch("at "+location,"FMTareaparser::read", __LINE__, __FILE__, _section);
 					}
 				return areas;
 			}
 			void FMTareaparser::write(const std::vector<Core::FMTactualdevelopment>& areas,const std::string& location) const
 			{
-				std::ofstream areastream;
-				areastream.open(location);
-				double sumarea = 0;
-				for (const Core::FMTactualdevelopment& dev : areas)
-				{
-					sumarea += dev.getarea();
-				}
-				if (tryopening(areastream, location))
-				{
-					areastream << ";Total area: " << std::to_string(sumarea) << "\n";
-					const std::string maskstr(areas.at(0).mask);
-					std::vector<std::string>splitted_mask;
-					boost::split(splitted_mask, maskstr, boost::is_any_of(" /t"), boost::token_compress_on);
-					std::string header_line = ";*A ";
-					for (size_t theme_id = 1; theme_id <= splitted_mask.size();++theme_id)
+				try {
+					std::ofstream areastream;
+					areastream.open(location);
+					double sumarea = 0;
+					for (const Core::FMTactualdevelopment& dev : areas)
 					{
-						header_line += "TH" + std::to_string(theme_id) + " ";
-						++theme_id;
+						sumarea += dev.getarea();
 					}
-					header_line += "AGE";
-					header_line += " AREA";
-					areastream << header_line << "\n";
-					for (const Core::FMTactualdevelopment& area : areas)
+					if (tryopening(areastream, location))
 					{
-						areastream << std::string(area) << "\n";
+						areastream << ";Total area: " << std::to_string(sumarea) << "\n";
+						const std::string maskstr(areas.at(0).mask);
+						std::vector<std::string>splitted_mask;
+						boost::split(splitted_mask, maskstr, boost::is_any_of(" /t"), boost::token_compress_on);
+						std::string header_line = ";*A ";
+						for (size_t theme_id = 1; theme_id <= splitted_mask.size(); ++theme_id)
+						{
+							header_line += "TH" + std::to_string(theme_id) + " ";
+							++theme_id;
+						}
+						header_line += "AGE";
+						header_line += " AREA";
+						areastream << header_line << "\n";
+						for (const Core::FMTactualdevelopment& area : areas)
+						{
+							areastream << std::string(area) << "\n";
+						}
+						areastream.close();
 					}
-					areastream.close();
-				}
+				}catch (...)
+					{
+					_exhandler->raisefromcatch("at "+location,"FMTareaparser::write", __LINE__, __FILE__, _section);
+					}
 			}
 }

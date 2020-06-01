@@ -11,6 +11,8 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTexception.h"
 #include <string>
 #include <boost/serialization/serialization.hpp>
+#include <CoinError.hpp>
+#include <boost\graph\exception.hpp>
 
 
 namespace Exception
@@ -34,6 +36,16 @@ namespace Exception
 			ar &  boost::serialization::make_nvp("exception", boost::serialization::base_object<FMTexception>(*this));
 		}
 		public:
+			// DocString: ~FMTerror()
+			/**
+			Default destructor for FMTerror.
+			*/
+			~FMTerror() = default;
+			// DocString: FMTerror::operator=
+			/**
+			Default assignment operator for FMTerror.
+			*/
+			FMTerror& operator=(const FMTerror&) = default;
 			// DocString: FMTerror()
 			/**
 			Default constructor for FMTerror.
@@ -49,11 +61,36 @@ namespace Exception
 			Constructor for FMTerror taking a exception type and message string as arguments.
 			*/
 			FMTerror(const FMTexc lexception, const std::string message);
-			// DocString: FMTerror(const FMTexc,const std::string)
+			// DocString: FMTerror(const FMTexc,const Core::FMTsection,const std::string)
 			/**
 			Constructor for FMTerror taking a exception type, section in which the error occur and message string as arguments.
 			*/
 			FMTerror(const FMTexc lexception, const Core::FMTsection lsection, const std::string message);
+			// DocString: FMTerror(const FMTexc,const Core::FMTsection,const std::string,const std::string&,const std::string&,const int&)
+			/**
+			Constructor for FMTerror taking a exception type, section in which the error occur and message string as arguments and the location
+			where the exception occured (method/file/line).
+			*/
+			FMTerror(const FMTexc lexception,const Core::FMTsection lsection, const std::string message,
+					const std::string& lmethod, const std::string& lfile, const int& lline);
+			// DocString: FMTerror(const FMTexc,const std::string,const std::string&,const std::string&,const int&)
+			/**
+			Constructor for FMTerror taking a exception type, section in which the error occur and message string as arguments and the location
+			where the exception occured (method/file/line).
+			*/
+			FMTerror(const FMTexc lexception, const std::string message,
+				const std::string& lmethod, const std::string& lfile, const int& lline);
+			// DocString: FMTerror(const CoinError&)
+			/**
+			Constructor for FMTerror from a CoinError.
+			*/
+			FMTerror(const CoinError& coinexception);
+			// DocString: FMTerror(const boost::bad_graph&)
+			/**
+			Constructor for FMTerror from a boost::bad_graph.
+			*/
+			FMTerror(const boost::bad_graph& boostexception);
+
 		};
 	}
 #endif
