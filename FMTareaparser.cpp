@@ -8,6 +8,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTareaparser.h"
 #include <boost/algorithm/string/join.hpp>
 #include <boost/lexical_cast.hpp>
+#include <boost/filesystem.hpp>
 
 namespace Parser{
 
@@ -88,7 +89,7 @@ namespace Parser{
 				}
 			}
 
-		
+
 			for (std::map<std::string,std::vector<double>>::const_iterator it = stats.begin(); it != stats.end(); it++)
 				{
 				const int ageafter = int(round(it->second[0] / it->second[1]));
@@ -245,6 +246,77 @@ namespace Parser{
 			}
 		return transitions;
 	}
+
+	bool FMTareaparser::writesasolution(const std::string location, const Spatial::FMTsasolution& solution,
+                                        const std::vector<Core::FMTtheme>& themes, const std::vector<Core::FMTaction>& actions,
+                                        const bool& writeevents, int periodstart, int periodstop) const
+    {
+        const Spatial::FMTsaeventcontainer& events = solution.getevents();
+        if (periodstart==-1)
+        {
+            periodstart = events.firstperiod();
+        }
+        if (periodstop==-1)
+        {
+            periodstop = events.lastperiod();
+        }
+        boost::filesystem::path basepath(location);
+        boost::filesystem::path agefile("AGE.tif");
+        boost::filesystem::path lockfile("LOCK.tif");
+        for (int period = periodstart;period<=periodstop;++period)
+        {
+            boost::filesystem::path new_dir("/Period"+std::to_string(period));
+            boost::filesystem::path dirpath = basepath / new_dir;
+            if (!boost::filesystem::exists(dirpath))
+            {
+                boost::filesystem::create_directory(dirpath);
+            }
+            Spatial::FMTforest forest = solution.getforestperiod(period);
+            std::vector<std::string> themespaths;
+            themespaths.reserve(themes.size());
+            for (size_t i = 1; i <= themes.size();i++)
+            {
+                boost::filesystem::path fpath("THEME"+std::to_string(i)+".tif");
+                boost::filesystem::path filepath = dirpath / fpath;
+                themespaths.push_back(fpath.string());
+            }
+            boost::filesystem::path agepath = dirpath / agefile;
+            boost::filesystem::path lockpath = dirpath / lockfile;
+            writeforest(forest,themes,themespaths,agepath.string(),lockpath.string());
+            if (writeevents)
+            {
+                for (int aid=0; aid<static_cast<int>(actions.size()); ++aid)
+                {
+                    Spatial::FMTlayer<int> action_layer(solution.copyextent<int>());//Setting layer information
+                    int event_id = 1; //To write in the map
+                    std::map<int, std::string> event_map;
+                    std::vector<Spatial::FMTsaeventcontainer::const_iterator> eventsit = events.getevents(period,aid);
+                    if (!eventsit.empty())
+                    {
+                        for(const auto eventit :eventsit)
+                        {
+                            Spatial::FMTsaevent event = *eventit;
+                            for (std::set<Spatial::FMTcoordinate>::const_iterator coordit = event.elements.begin(); coordit != event.elements.end(); ++coordit)
+                            {
+
+                                action_layer.mapping[*coordit]=event_id;
+                            }
+                            event_map[event_id] = "Event_"+ std::to_string(event_id);
+                            event_id++;
+                        }
+                        if (!action_layer.mapping.empty())
+                        {
+                            const std::string action_name = actions.at(aid).getname();
+                            boost::filesystem::path filepath(action_name+"_events_period_"+std::to_string(period)+".tif");
+                            boost::filesystem::path out_path = dirpath / filepath ;
+                            writelayer(action_layer,out_path.string(),event_map);
+                        }
+                    }
+                }
+            }
+        }
+        return true;
+    }
 
     Spatial::FMTforest FMTareaparser::readrasters(const std::vector<Core::FMTtheme>& themes,
                                              const std::vector<std::string>&data_rasters,
@@ -697,14 +769,14 @@ namespace Parser{
 						{
 							if (wband->WriteBlock(iXBlock, iYBlock, &dblblock[0]) != CPLErr::CE_None)
 							{
-								_exhandler->raise(Exception::FMTexc::FMTinvalidrasterblock, 
+								_exhandler->raise(Exception::FMTexc::FMTinvalidrasterblock,
 									wdataset->GetDescription(),"FMTareaparser::writelayer", __LINE__, __FILE__, _section);
 							}
 						}
 						else {
 							if (wband->WriteBlock(iXBlock, iYBlock, &intblock[0]) != CPLErr::CE_None)
 							{
-								_exhandler->raise(Exception::FMTexc::FMTinvalidrasterblock, 
+								_exhandler->raise(Exception::FMTexc::FMTinvalidrasterblock,
 									 wdataset->GetDescription(),"FMTareaparser::writelayer", __LINE__, __FILE__, _section);
 							}
 						}
@@ -854,7 +926,7 @@ namespace Parser{
 						bool potential_futurs = false;
 						bool got0area = false;
 						size_t futurtype = 0;
-						
+
 						std::vector<std::string>splitted;
 						if (FMTparser::tryopening(areastream, location))
 						{
@@ -885,7 +957,7 @@ namespace Parser{
 										splitted = FMTparser::spliter(masknage, FMTparser::rxseparator);
 										linesize = splitted.size();
 										inactualdevs = true;
-										
+
 										for (size_t themeid = 0; themeid < (linesize - 2); ++themeid)
 										{
 											mask += splitted.at(themeid) + " ";

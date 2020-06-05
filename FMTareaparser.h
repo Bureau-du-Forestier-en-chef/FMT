@@ -13,6 +13,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTparser.h"
 #include "FMTlayer.h"
 #include "FMTforest.h"
+#include "FMTsasolution.h"
 #include "FMTdisturbancestack.h"
 #include "FMTGCBMtransition.h"
 #include <iterator>
@@ -66,7 +67,7 @@ class FMTareaparser : public FMTparser
 			Core::FMTactualdevelopment getfeaturetodevelopment(const OGRFeature* feature,
 															const std::vector<Core::FMTtheme>& themes,
 															const std::map<int, int>& themes_fields,
-															const int& age_field, 
+															const int& age_field,
 															const int& lock_field,
 															const int& area_field,
 															const double& agefactor,
@@ -119,7 +120,7 @@ class FMTareaparser : public FMTparser
 			*/
 			OGRLayer* subsetlayer(OGRLayer*layer, const std::vector<Core::FMTtheme>& themes,
 								const std::string& agefield, const std::string& areafield) const;
-		
+
     public:
 		// DocString: FMTareaparser::readrasters
 		/**
@@ -132,14 +133,14 @@ class FMTareaparser : public FMTparser
 		// DocString: FMTareaparser::writelayer
 		/**
 		Using a layer of a given type T the function will write this (layer) into a raster file (location). the mapping add
-		a table to the raster file when dealing with categorical variables 
+		a table to the raster file when dealing with categorical variables
 		*/
 		template<typename T>
         bool writelayer(const Spatial::FMTlayer<T>& layer,std::string location,const std::map<T,std::string>& mapping) const;
 		// DocString: FMTareaparser::writeforest
 		/**
-		The function will write a complete FMTforest (for_layer) using a complete vector of (themes), in multiple (data_rasters) file paths 
-		number of paths should be equal to number of themes an (age) file path and (lock) file path. 
+		The function will write a complete FMTforest (for_layer) using a complete vector of (themes), in multiple (data_rasters) file paths
+		number of paths should be equal to number of themes an (age) file path and (lock) file path.
 		The generated .tiff files can have categorical values but it needs to be specified in the
 		mapping vector each element of the vector represent a corresponging key to write in the categorical dataset of the raster.
 		*/
@@ -162,6 +163,17 @@ class FMTareaparser : public FMTparser
 								const Spatial::FMTforest& out_layer,
 								const std::vector<Core::FMTtheme>& themes,
 								std::map<std::string, std::string> mapping = std::map<std::string, std::string>()) const;
+        // DocString: FMTareaparser::writesasolution
+		/**
+
+		*/
+		bool writesasolution( const std::string location,
+                            const Spatial::FMTsasolution& solution,
+                            const std::vector<Core::FMTtheme>& themes,
+                            const std::vector<Core::FMTaction>& actions,
+                            const bool& writeevents = true,
+                            int periodstart=-1,
+                            int periodstop=-1) const;
 		#ifdef FMTWITHOSI
 			// DocString: FMTareaparser::getneighbors
 			/**
