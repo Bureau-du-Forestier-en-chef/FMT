@@ -1,0 +1,162 @@
+﻿  OsiMskSolverInterface.cpp
+c:\mrnmicro\applic\cbc-2.10.2\osi\src\osimsk\osimsksolverinterface.cpp(16): fatal error C1083: Impossible d'ouvrir le fichier include : 'OsiConfig.h' : No such file or directory
+  FMTaction.cpp
+c:\users\cyrgu3\source\repos\fmt\fmt\fmtlist.h(28): fatal error C1083: Impossible d'ouvrir le fichier include : 'boost/unordered_map.hpp' : No such file or directory
+  FMTactionparser.cpp
+c:\users\cyrgu3\source\repos\fmt\fmt\fmtlist.h(28): fatal error C1083: Impossible d'ouvrir le fichier include : 'boost/unordered_map.hpp' : No such file or directory
+  FMTactualdevelopment.cpp
+c:\users\cyrgu3\source\repos\fmt\fmt\fmtmask.h(32): fatal error C1083: Impossible d'ouvrir le fichier include : 'boost/dynamic_bitset.hpp' : No such file or directory
+  FMTareaparser.cpp
+c:\users\cyrgu3\source\repos\fmt\fmt\fmtmask.h(32): fatal error C1083: Impossible d'ouvrir le fichier include : 'boost/dynamic_bitset.hpp' : No such file or directory
+  FMTbounds.cpp
+c:\users\cyrgu3\source\repos\fmt\fmt\fmtexception.h(32): fatal error C1083: Impossible d'ouvrir le fichier include : 'boost/python.hpp' : No such file or directory
+  FMTconstantparser.cpp
+c:\users\cyrgu3\source\repos\fmt\fmt\fmtexception.h(32): fatal error C1083: Impossible d'ouvrir le fichier include : 'boost/python.hpp' : No such file or directory
+  FMTconstants.cpp
+c:\users\cyrgu3\source\repos\fmt\fmt\fmtconstants.h(28): fatal error C1083: Impossible d'ouvrir le fichier include : 'boost/unordered_map.hpp' : No such file or directory
+  FMTconstraint.cpp
+c:\users\cyrgu3\source\repos\fmt\fmt\fmtexception.h(32): fatal error C1083: Impossible d'ouvrir le fichier include : 'boost/python.hpp' : No such file or directory
+  FMTcoordinate.cpp
+c:\users\cyrgu3\source\repos\fmt\fmt\fmtcoordinate.h(29): fatal error C1083: Impossible d'ouvrir le fichier include : 'boost/unordered_map.hpp' : No such file or directory
+  FMTcut.cpp
+c:\users\cyrgu3\source\repos\fmt\fmt\fmtcoordinate.h(29): fatal error C1083: Impossible d'ouvrir le fichier include : 'boost/unordered_map.hpp' : No such file or directory
+  FMTdata.cpp
+c:\users\cyrgu3\source\repos\fmt\fmt\fmtoperator.h(32): fatal error C1083: Impossible d'ouvrir le fichier include : 'boost/functional/hash.hpp' : No such file or directory
+  FMTdebugexceptionhandler.cpp
+c:\users\cyrgu3\source\repos\fmt\fmt\fmtexception.h(32): fatal error C1083: Impossible d'ouvrir le fichier include : 'boost/python.hpp' : No such file or directory
+  FMTdebuglogger.cpp
+c:\users\cyrgu3\source\repos\fmt\fmt\fmtlogger.h(27): fatal error C1083: Impossible d'ouvrir le fichier include : 'boost/serialization/serialization.hpp' : No such file or directory
+  FMTdefaultexceptionhandler.cpp
+c:\users\cyrgu3\source\repos\fmt\fmt\fmtexception.h(32): fatal error C1083: Impossible d'ouvrir le fichier include : 'boost/python.hpp' : No such file or directory
+  FMTdefaultlogger.cpp
+c:\users\cyrgu3\source\repos\fmt\fmt\fmtlogger.h(27): fatal error C1083: Impossible d'ouvrir le fichier include : 'boost/serialization/serialization.hpp' : No such file or directory
+  FMTdevelopment.cpp
+c:\users\cyrgu3\source\repos\fmt\fmt\fmtmask.h(32): fatal error C1083: Impossible d'ouvrir le fichier include : 'boost/dynamic_bitset.hpp' : No such file or directory
+  FMTdevelopmentpath.cpp
+c:\users\cyrgu3\source\repos\fmt\fmt\fmtmask.h(32): fatal error C1083: Impossible d'ouvrir le fichier include : 'boost/dynamic_bitset.hpp' : No such file or directory
+  FMTdisturbancestack.cpp
+c:\users\cyrgu3\source\repos\fmt\fmt\fmtmask.h(32): fatal error C1083: Impossible d'ouvrir le fichier include : 'boost/dynamic_bitset.hpp' : No such file or directory
+  FMTedgeproperties.cpp
+c:\users\cyrgu3\source\repos\fmt\fmt\fmtlist.h(28): fatal error C1083: Impossible d'ouvrir le fichier include : 'boost/unordered_map.hpp' : No such file or directory
+  Génération de code en cours...
+  Compilation en cours...
+  FMTerror.cpp
+c:\users\cyrgu3\source\repos\fmt\fmt\fmtexception.h(32): fatal error C1083: Impossible d'ouvrir le fichier include : 'boost/python.hpp' : No such file or directory
+  FMTexception.cpp
+c:\users\cyrgu3\source\repos\fmt\fmt\fmtexception.h(32): fatal error C1083: Impossible d'ouvrir le fichier include : 'boost/python.hpp' : No such file or directory
+  FMTexceptionhandler.cpp
+c:\users\cyrgu3\source\repos\fmt\fmt\fmtexception.h(32): fatal error C1083: Impossible d'ouvrir le fichier include : 'boost/python.hpp' : No such file or directory
+  FMTexpression.cpp
+c:\users\cyrgu3\source\repos\fmt\fmt\fmtoperator.h(32): fatal error C1083: Impossible d'ouvrir le fichier include : 'boost/functional/hash.hpp' : No such file or directory
+  FMTforest.cpp
+c:\users\cyrgu3\source\repos\fmt\fmt\fmtcoordinate.h(29): fatal error C1083: Impossible d'ouvrir le fichier include : 'boost/unordered_map.hpp' : No such file or directory
+  FMTfork.cpp
+c:\users\cyrgu3\source\repos\fmt\fmt\fmtexception.h(32): fatal error C1083: Impossible d'ouvrir le fichier include : 'boost/python.hpp' : No such file or directory
+  FMTfreeexceptionhandler.cpp
+c:\users\cyrgu3\source\repos\fmt\fmt\fmtexception.h(32): fatal error C1083: Impossible d'ouvrir le fichier include : 'boost/python.hpp' : No such file or directory
+  FMTfunctioncall.cpp
+c:\users\cyrgu3\source\repos\fmt\fmt\fmtlogger.h(27): fatal error C1083: Impossible d'ouvrir le fichier include : 'boost/serialization/serialization.hpp' : No such file or directory
+  FMTfuturdevelopment.cpp
+c:\users\cyrgu3\source\repos\fmt\fmt\fmtmask.h(32): fatal error C1083: Impossible d'ouvrir le fichier include : 'boost/dynamic_bitset.hpp' : No such file or directory
+  FMTgraph.cpp
+c:\users\cyrgu3\source\repos\fmt\fmt\fmtmask.h(32): fatal error C1083: Impossible d'ouvrir le fichier include : 'boost/dynamic_bitset.hpp' : No such file or directory
+  FMTgraphdescription.cpp
+c:\users\cyrgu3\source\repos\fmt\fmt\fmtmask.h(32): fatal error C1083: Impossible d'ouvrir le fichier include : 'boost/dynamic_bitset.hpp' : No such file or directory
+  FMTgraphstats.cpp
+c:\users\cyrgu3\source\repos\fmt\fmt\fmtmask.h(32): fatal error C1083: Impossible d'ouvrir le fichier include : 'boost/dynamic_bitset.hpp' : No such file or directory
+  FMTlandscapeparser.cpp
+c:\users\cyrgu3\source\repos\fmt\fmt\fmttheme.h(28): fatal error C1083: Impossible d'ouvrir le fichier include : 'boost/serialization/serialization.hpp' : No such file or directory
+  FMTlayer.cpp
+c:\users\cyrgu3\source\repos\fmt\fmt\fmtmask.h(32): fatal error C1083: Impossible d'ouvrir le fichier include : 'boost/dynamic_bitset.hpp' : No such file or directory
+  FMTlifespanparser.cpp
+c:\users\cyrgu3\source\repos\fmt\fmt\fmtlist.h(28): fatal error C1083: Impossible d'ouvrir le fichier include : 'boost/unordered_map.hpp' : No such file or directory
+  FMTlifespans.cpp
+c:\users\cyrgu3\source\repos\fmt\fmt\fmtlist.h(28): fatal error C1083: Impossible d'ouvrir le fichier include : 'boost/unordered_map.hpp' : No such file or directory
+  FMTlist.cpp
+c:\users\cyrgu3\source\repos\fmt\fmt\fmtlist.h(28): fatal error C1083: Impossible d'ouvrir le fichier include : 'boost/unordered_map.hpp' : No such file or directory
+  FMTlogger.cpp
+c:\users\cyrgu3\source\repos\fmt\fmt\fmtlogger.h(27): fatal error C1083: Impossible d'ouvrir le fichier include : 'boost/serialization/serialization.hpp' : No such file or directory
+  FMTlpmodel.cpp
+c:\users\cyrgu3\source\repos\fmt\fmt\fmtmask.h(32): fatal error C1083: Impossible d'ouvrir le fichier include : 'boost/dynamic_bitset.hpp' : No such file or directory
+  FMTmask.cpp
+c:\users\cyrgu3\source\repos\fmt\fmt\fmtmask.h(32): fatal error C1083: Impossible d'ouvrir le fichier include : 'boost/dynamic_bitset.hpp' : No such file or directory
+  Génération de code en cours...
+  Compilation en cours...
+  FMTmaskfilter.cpp
+c:\users\cyrgu3\source\repos\fmt\fmt\fmtmask.h(32): fatal error C1083: Impossible d'ouvrir le fichier include : 'boost/dynamic_bitset.hpp' : No such file or directory
+  FMTmatrixbuild.cpp
+c:\users\cyrgu3\source\repos\fmt\fmt\fmtmatrixbuild.h(6): fatal error C1083: Impossible d'ouvrir le fichier include : 'CoinBuild.hpp' : No such file or directory
+  FMTmodel.cpp
+c:\users\cyrgu3\source\repos\fmt\fmt\fmtmodel.cpp(24): fatal error C1083: Impossible d'ouvrir le fichier include : 'boost/algorithm/string.hpp' : No such file or directory
+  FMTmodelparser.cpp
+c:\users\cyrgu3\source\repos\fmt\fmt\fmtexception.h(32): fatal error C1083: Impossible d'ouvrir le fichier include : 'boost/python.hpp' : No such file or directory
+  FMTobject.cpp
+c:\users\cyrgu3\source\repos\fmt\fmt\fmtexception.h(32): fatal error C1083: Impossible d'ouvrir le fichier include : 'boost/python.hpp' : No such file or directory
+  FMToperatingarea.cpp
+c:\users\cyrgu3\source\repos\fmt\fmt\fmtmask.h(32): fatal error C1083: Impossible d'ouvrir le fichier include : 'boost/dynamic_bitset.hpp' : No such file or directory
+  FMToperatingareaheuristic.cpp
+c:\users\cyrgu3\source\repos\fmt\fmt\fmtmask.h(32): fatal error C1083: Impossible d'ouvrir le fichier include : 'boost/dynamic_bitset.hpp' : No such file or directory
+  FMToperator.cpp
+c:\users\cyrgu3\source\repos\fmt\fmt\fmtoperator.h(32): fatal error C1083: Impossible d'ouvrir le fichier include : 'boost/functional/hash.hpp' : No such file or directory
+  FMToptimizationparser.cpp
+c:\users\cyrgu3\source\repos\fmt\fmt\fmtexception.h(32): fatal error C1083: Impossible d'ouvrir le fichier include : 'boost/python.hpp' : No such file or directory
+  FMToutput.cpp
+c:\users\cyrgu3\source\repos\fmt\fmt\fmtexception.h(32): fatal error C1083: Impossible d'ouvrir le fichier include : 'boost/python.hpp' : No such file or directory
+  FMToutputnode.cpp
+c:\users\cyrgu3\source\repos\fmt\fmt\fmtexception.h(32): fatal error C1083: Impossible d'ouvrir le fichier include : 'boost/python.hpp' : No such file or directory
+  FMToutputnodecache.cpp
+c:\users\cyrgu3\source\repos\fmt\fmt\fmtoutputnodecache.h(7): fatal error C1083: Impossible d'ouvrir le fichier include : 'FMTgraphdescription.h' : No such file or directory
+  FMToutputparser.cpp
+c:\users\cyrgu3\source\repos\fmt\fmt\fmtexception.h(32): fatal error C1083: Impossible d'ouvrir le fichier include : 'boost/python.hpp' : No such file or directory
+  FMToutputproperties.cpp
+c:\users\cyrgu3\source\repos\fmt\fmt\fmtmask.h(32): fatal error C1083: Impossible d'ouvrir le fichier include : 'boost/dynamic_bitset.hpp' : No such file or directory
+  FMToutputsource.cpp
+c:\users\cyrgu3\source\repos\fmt\fmt\fmtexception.h(32): fatal error C1083: Impossible d'ouvrir le fichier include : 'boost/python.hpp' : No such file or directory
+  FMTparser.cpp
+c:\users\cyrgu3\source\repos\fmt\fmt\fmtexception.h(32): fatal error C1083: Impossible d'ouvrir le fichier include : 'boost/python.hpp' : No such file or directory
+  FMTquietexceptionhandler.cpp
+c:\users\cyrgu3\source\repos\fmt\fmt\fmtexception.h(32): fatal error C1083: Impossible d'ouvrir le fichier include : 'boost/python.hpp' : No such file or directory
+  FMTsamodel.cpp
+c:\users\cyrgu3\source\repos\fmt\fmt\fmttheme.h(28): fatal error C1083: Impossible d'ouvrir le fichier include : 'boost/serialization/serialization.hpp' : No such file or directory
+  FMTsaschedule.cpp
+  FMTsasolution.cpp
+c:\users\cyrgu3\source\repos\fmt\fmt\fmtmask.h(32): fatal error C1083: Impossible d'ouvrir le fichier include : 'boost/dynamic_bitset.hpp' : No such file or directory
+  Génération de code en cours...
+  Compilation en cours...
+  FMTschedule.cpp
+c:\users\cyrgu3\source\repos\fmt\fmt\fmtmask.h(32): fatal error C1083: Impossible d'ouvrir le fichier include : 'boost/dynamic_bitset.hpp' : No such file or directory
+  FMTscheduleparser.cpp
+c:\users\cyrgu3\source\repos\fmt\fmt\fmtexception.h(32): fatal error C1083: Impossible d'ouvrir le fichier include : 'boost/python.hpp' : No such file or directory
+  FMTserializablematrix.cpp
+c:\users\cyrgu3\source\repos\fmt\fmt\fmtserializablematrix.h(28): fatal error C1083: Impossible d'ouvrir le fichier include : 'CoinPackedMatrix.hpp' : No such file or directory
+  FMTsesmodel.cpp
+c:\users\cyrgu3\source\repos\fmt\fmt\fmttheme.h(28): fatal error C1083: Impossible d'ouvrir le fichier include : 'boost/serialization/serialization.hpp' : No such file or directory
+  FMTsolverinterface.cpp
+  FMTspatialaction.cpp
+c:\users\cyrgu3\source\repos\fmt\fmt\fmtlist.h(28): fatal error C1083: Impossible d'ouvrir le fichier include : 'boost/unordered_map.hpp' : No such file or directory
+  FMTtheme.cpp
+c:\users\cyrgu3\source\repos\fmt\fmt\fmttheme.h(28): fatal error C1083: Impossible d'ouvrir le fichier include : 'boost/serialization/serialization.hpp' : No such file or directory
+  FMTtransition.cpp
+c:\users\cyrgu3\source\repos\fmt\fmt\fmtexception.h(32): fatal error C1083: Impossible d'ouvrir le fichier include : 'boost/python.hpp' : No such file or directory
+  FMTtransitionmask.cpp
+c:\users\cyrgu3\source\repos\fmt\fmt\fmtexception.h(32): fatal error C1083: Impossible d'ouvrir le fichier include : 'boost/python.hpp' : No such file or directory
+  FMTtransitionparser.cpp
+c:\users\cyrgu3\source\repos\fmt\fmt\fmtexception.h(32): fatal error C1083: Impossible d'ouvrir le fichier include : 'boost/python.hpp' : No such file or directory
+  FMTutility.cpp
+  FMTversion.cpp
+c:\users\cyrgu3\source\repos\fmt\fmt\fmtversion.cpp(55): error C4996: 'ctime': This function or variable may be unsafe. Consider using ctime_s instead. To disable deprecation, use _CRT_SECURE_NO_WARNINGS. See online help for details.
+  c:\program files (x86)\windows kits\10\include\10.0.17763.0\ucrt\time.h(476): note: voir la déclaration de 'ctime'
+  FMTvertexproperties.cpp
+c:\users\cyrgu3\source\repos\fmt\fmt\fmtmask.h(32): fatal error C1083: Impossible d'ouvrir le fichier include : 'boost/dynamic_bitset.hpp' : No such file or directory
+  FMTwarning.cpp
+c:\users\cyrgu3\source\repos\fmt\fmt\fmtexception.h(32): fatal error C1083: Impossible d'ouvrir le fichier include : 'boost/python.hpp' : No such file or directory
+  FMTyieldhandler.cpp
+c:\users\cyrgu3\source\repos\fmt\fmt\fmtyieldhandler.h(31): fatal error C1083: Impossible d'ouvrir le fichier include : 'boost/serialization/serialization.hpp' : No such file or directory
+  FMTyieldparser.cpp
+c:\users\cyrgu3\source\repos\fmt\fmt\fmtlist.h(28): fatal error C1083: Impossible d'ouvrir le fichier include : 'boost/unordered_map.hpp' : No such file or directory
+  FMTyields.cpp
+c:\users\cyrgu3\source\repos\fmt\fmt\fmtlist.h(28): fatal error C1083: Impossible d'ouvrir le fichier include : 'boost/unordered_map.hpp' : No such file or directory
+  PYexportExceptions.cpp
+  main.cpp
+c:\users\cyrgu3\source\repos\fmt\fmt\main.cpp(5): fatal error C1083: Impossible d'ouvrir le fichier include : 'boost/archive/binary_oarchive.hpp' : No such file or directory
+  Génération de code en cours...

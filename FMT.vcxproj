@@ -31,7 +31,9 @@
     <ClInclude Include="FMTcut.h" />
     <ClInclude Include="FMTdata.h" />
     <ClInclude Include="FMTdebugexceptionhandler.h" />
+    <ClInclude Include="FMTdebuglogger.h" />
     <ClInclude Include="FMTdefaultexceptionhandler.h" />
+    <ClInclude Include="FMTdefaultlogger.h" />
     <ClInclude Include="FMTdevelopment.h" />
     <ClInclude Include="FMTdevelopmentpath.h" />
     <ClInclude Include="FMTdisturbancestack.h" />
@@ -53,24 +55,33 @@
     <ClInclude Include="FMTgraphstats.h" />
     <ClInclude Include="FMTlayer.h" />
     <ClInclude Include="FMTlifespans.h" />
+    <ClInclude Include="FMTlinegraph.h" />
     <ClInclude Include="FMTlist.h" />
     <ClInclude Include="FMTlogger.h" />
     <ClInclude Include="FMTlpmodel.h" />
     <ClInclude Include="FMTmask.h" />
     <ClInclude Include="FMTmaskfilter.h" />
+    <ClInclude Include="FMTmatrixbuild.h" />
     <ClInclude Include="FMTModels.h" />
+    <ClInclude Include="FMTmodelstats.h" />
+    <ClInclude Include="FMTnssmodel.h" />
     <ClInclude Include="FMTobject.h" />
     <ClInclude Include="FMToperatingarea.h" />
     <ClInclude Include="FMToperatingareaheuristic.h" />
     <ClInclude Include="FMToptimizationparser.h" />
     <ClInclude Include="FMToutputnode.h" />
-    <ClInclude Include="FMToutputproperties.h" />
+    <ClInclude Include="FMToutputnodecache.h" />
     <ClInclude Include="FMTpythonpickle.h" />
     <ClInclude Include="FMTquietexceptionhandler.h" />
+    <ClInclude Include="FMTquietlogger.h" />
+    <ClInclude Include="FMTsaevent.h" />
+    <ClInclude Include="FMTsaeventcontainer.h" />
     <ClInclude Include="FMTsamodel.h" />
     <ClInclude Include="FMTsaschedule.h" />
     <ClInclude Include="FMTsasolution.h" />
     <ClInclude Include="FMTserializablematrix.h" />
+    <ClInclude Include="FMTsesevent.h" />
+    <ClInclude Include="FMTlpsolver.h" />
     <ClInclude Include="FMTsolverinterface.h" />
     <ClInclude Include="FMTSpatials.h" />
     <ClInclude Include="FMTtransitionmask.h" />
@@ -108,9 +119,19 @@
     <ClInclude Include="PYexportGraph.h" />
     <ClInclude Include="PYexportHeuristics.h" />
     <ClInclude Include="PYexportModel.h" />
+    <ClInclude Include="PYexportParser.h" />
     <ClInclude Include="PYexportSpatial.h" />
-    <ClInclude Include="PYexportWSParser.h" />
+    <ClInclude Include="Rdeclarations.h" />
+    <ClInclude Include="Rdefinitions.h" />
     <ClInclude Include="resource.h" />
+    <ClInclude Include="RexportCore.h" />
+    <ClInclude Include="RexportExceptions.h" />
+    <ClInclude Include="RexportGraph.h" />
+    <ClInclude Include="RexportHeuristics.h" />
+    <ClInclude Include="RexportModel.h" />
+    <ClInclude Include="RexportParser.h" />
+    <ClInclude Include="RexportSpatial.h" />
+    <ClInclude Include="RexportVersion.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\..\..\..\MrnMicro\Applic\Cbc-2.10.2\Osi\src\OsiMsk\OsiMskSolverInterface.cpp" />
@@ -124,12 +145,15 @@
     <ClCompile Include="FMTcut.cpp" />
     <ClCompile Include="FMTdata.cpp" />
     <ClCompile Include="FMTdebugexceptionhandler.cpp" />
+    <ClCompile Include="FMTdebuglogger.cpp" />
     <ClCompile Include="FMTdefaultexceptionhandler.cpp" />
+    <ClCompile Include="FMTdefaultlogger.cpp" />
     <ClCompile Include="FMTdevelopment.cpp" />
     <ClCompile Include="FMTdevelopmentpath.cpp" />
     <ClCompile Include="FMTdisturbancestack.cpp" />
     <ClCompile Include="FMTedgeproperties.cpp" />
     <ClCompile Include="FMTerror.cpp" />
+    <ClCompile Include="FMTevent.cpp" />
     <ClCompile Include="FMTexception.cpp" />
     <ClCompile Include="FMTexceptionhandler.cpp" />
     <ClCompile Include="FMTexpression.cpp" />
@@ -144,22 +168,30 @@
     <ClCompile Include="FMTgraphstats.cpp" />
     <ClCompile Include="FMTlayer.cpp" />
     <ClCompile Include="FMTlifespans.cpp" />
+    <ClCompile Include="FMTlinegraph.cpp" />
     <ClCompile Include="FMTlist.cpp" />
     <ClCompile Include="FMTlogger.cpp" />
     <ClCompile Include="FMTmask.cpp" />
     <ClCompile Include="FMTmaskfilter.cpp" />
+    <ClCompile Include="FMTmatrixbuild.cpp" />
+    <ClCompile Include="FMTmodelstats.cpp" />
+    <ClCompile Include="FMTnssmodel.cpp" />
     <ClCompile Include="FMTobject.cpp" />
     <ClCompile Include="FMToperatingarea.cpp" />
     <ClCompile Include="FMToperatingareaheuristic.cpp" />
     <ClCompile Include="FMToptimizationparser.cpp" />
     <ClCompile Include="FMTlpmodel.cpp" />
     <ClCompile Include="FMToutputnode.cpp" />
-    <ClCompile Include="FMToutputproperties.cpp" />
+    <ClCompile Include="FMToutputnodecache.cpp" />
     <ClCompile Include="FMTquietexceptionhandler.cpp" />
+    <ClCompile Include="FMTquietlogger.cpp" />
+    <ClCompile Include="FMTsaevent.cpp" />
+    <ClCompile Include="FMTsaeventcontainer.cpp" />
     <ClCompile Include="FMTsamodel.cpp" />
     <ClCompile Include="FMTsaschedule.cpp" />
     <ClCompile Include="FMTsasolution.cpp" />
     <ClCompile Include="FMTserializablematrix.cpp" />
+    <ClCompile Include="FMTlpsolver.cpp" />
     <ClCompile Include="FMTsolverinterface.cpp" />
     <ClCompile Include="FMTtransitionmask.cpp" />
     <ClCompile Include="FMTmodel.cpp" />
@@ -316,7 +348,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;FMT_EXPORTS;_WINDOWS;_USRDLL;BOOST_PYTHON_STATIC_LIB;HAVE_SNPRINTF;BOOST_DYNAMIC_BITSET_DONT_USE_FRIENDS;FMTPY;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;FMT_EXPORTS;_WINDOWS;_USRDLL;BOOST_PYTHON_STATIC_LIB;HAVE_SNPRINTF;BOOST_DYNAMIC_BITSET_DONT_USE_FRIENDS;FMTWITHPYTHON;FMTWITHGDAL;FMTWITHOSI;FMTWITHMOSEK;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>C:\Python27amd64\include;C:\Mrnmicro\Applic\gdal-2.3.2\include;C:\Mrnmicro\Applic\boost_1_70_0;C:\Mrnmicro\Applic\Cbc-2.10.2\Clp\src;C:\Mrnmicro\Applic\Cbc-2.10.2\Clp\src\OsiClp;C:\Mrnmicro\Applic\Cbc-2.10.2\Osi\src;C:\Mrnmicro\Applic\Cbc-2.10.2\Osi\src\Osi;C:\Mrnmicro\Applic\Cbc-2.10.2\Osi\src\OsiCommonTest;C:\Mrnmicro\Applic\Cbc-2.10.2\CoinUtils\src;C:\Mrnmicro\Applic\Cbc-2.10.2\BuildTools\headers;C:\MrnMicro\Applic\mosek\9.1\tools\platform\win64x86\h;C:\Mrnmicro\Applic\Cbc-2.10.2\Osi\src\OsiCpx;C:\Mrnmicro\Applic\Cbc-2.10.2\Osi\src\OsiGrb;C:\Mrnmicro\Applic\Cbc-2.10.2\Osi\src\OsiMsk;C:\Users\cyrgu3\source\repos\FMT\FMT</AdditionalIncludeDirectories>
       <EnablePREfast>false</EnablePREfast>
