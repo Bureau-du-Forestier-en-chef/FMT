@@ -1,0 +1,11 @@
+*.rc
+*.user
+*.vcxproj
+*.filters
+*.APS
+*.cbp
+*.cscope_file_list
+*.depend
+*.layout
+*.obj
+/x64/*
