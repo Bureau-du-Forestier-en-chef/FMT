@@ -98,9 +98,9 @@ def gatherfiles(directory,source):
     return allfiles
 
 if __name__=="__main__":
-    filestomodify = gatherfiles("C:/Users/cyrgu3/source/repos/FMT/FMT/",False)
-    headerfiles = gatherfiles("C:/Users/cyrgu3/source/repos/FMT/FMT/",True)
-    targetdirectory="C:/Users/cyrgu3/Desktop/Commentstest/"
+    filestomodify = gatherfiles("../Source",False)
+    headerfiles = gatherfiles("../Source",True)
+    targetdirectory="../Source"
     commentsource=getcommentselements(headerfiles)
     commentstoreplace=getelementstocomment(filestomodify)
     replaced=buildcommentsreplacement(commentsource,commentstoreplace)
