@@ -8,5 +8,5 @@
 *.depend
 *.layout
 *.obj
-ressource.h
+resource.h
 /x64/*
