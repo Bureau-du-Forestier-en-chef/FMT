@@ -43,7 +43,7 @@ else()
 	FILE(GLOB_RECURSE GDAL_POTENTIAL_LIBRARY $ENV{GDAL_DIR}libgdal.a)
 endif(MSVC)
 
-if (WIN32 AND NOT MSVC)
+if (WIN32 OR CYGWIN AND NOT MSVC)
 	FILE(GLOB_RECURSE GDAL_config_locations $ENV{GDAL_DIR}gdal-config)
 	list(GET GDAL_config_locations 0 GDAL_config_location)
 	file(READ "${GDAL_config_location}" GDAL_CONFIG_FILE)
@@ -56,7 +56,7 @@ if (WIN32 AND NOT MSVC)
 	foreach(gdaldep ${outvar4})
 		list(APPEND GDAL_LINKER_FLAGS "${gdaldep}")
 	endforeach()
-endif(WIN32 AND NOT MSVC)
+endif(WIN32 OR CYGWIN AND NOT MSVC)
 
 
 list(GET GDAL_POTENTIAL_LIBRARY 0 GDAL_LIBRARY)

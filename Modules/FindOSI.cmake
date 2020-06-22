@@ -13,10 +13,10 @@ find_path(OSI_INCLUDE_DIR
           PATHS ${POTOSI_INCLUDE_DIR}
           )
 
-FILE(GLOB_RECURSE OSI_POTENTIAL_LIB $ENV{OSI_DIR}/libOsi${CMAKE_STATIC_LIBRARY_SUFFIX})
+FILE(GLOB_RECURSE OSI_POTENTIAL_LIB $ENV{OSI_DIR}/lib*${CMAKE_STATIC_LIBRARY_SUFFIX})
 
 if (MSVC)
-	foreach(includepath : ${OSI_POTENTIAL_LIB})
+	foreach(includepath ${OSI_POTENTIAL_LIB})
 		get_filename_component(potfolder ${includepath} DIRECTORY)
 		if(("${potfolder}" MATCHES "Release") AND ("${potfolder}" MATCHES "/Cbc/") AND ("${CMAKE_BUILD_TYPE}" STREQUAL "Release"))
 			set(POTOSI_LIB_DIR ${potfolder})
@@ -25,9 +25,14 @@ if (MSVC)
 		endif()
 	endforeach()
 else()
-	list(GET OSI_POTENTIAL_LIB 0 FIRSTLIB)
-	get_filename_component(POTOSI_LIB_DIR ${FIRSTLIB} DIRECTORY)
+	foreach(full_path ${OSI_POTENTIAL_LIB})
+		get_filename_component(LIB_DIR ${full_path} DIRECTORY)
+		list(APPEND POTOSI_LIB_DIR ${LIB_DIR})
+	endforeach()
+	#list(GET OSI_POTENTIAL_LIB 0 FIRSTLIB)
+	#get_filename_component(POTOSI_LIB_DIR ${FIRSTLIB} DIRECTORY)
 endif(MSVC)
+message("${POTOSI_LIB_DIR}")
 
 #get CLP include
 FILE(GLOB_RECURSE CLP_POTENTIAL_INCLUDE $ENV{OSI_DIR}ClpSimplex.hpp)
