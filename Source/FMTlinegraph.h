@@ -24,6 +24,7 @@ class FMTlinegraph : public FMTgraph
         FMTlinegraph(const FMTgraph& rhs);
         FMTlinegraph& operator = (const FMTlinegraph& rhs);
         FMTlinegraph& operator = (const FMTgraph& rhs);
+        int getlastperiod() const;
 		int randomoperate(const std::vector<int>& operables, const Models::FMTmodel& model, std::queue<FMTvertex_descriptor>& actives,
                                             FMTgraphstats& statsdiff, const FMTvertex_descriptor& front_vertex, std::default_random_engine& generator,
                                             const Core::FMTdevelopment& active_development);

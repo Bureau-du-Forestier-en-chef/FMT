@@ -16,6 +16,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTforest.h"
 #include "FMTdisturbancestack.h"
 #include "FMTschedule.h"
+#include "FMTspatialschedule.h"
 #include <vector>
 #include <memory>
 #include <map>
@@ -30,7 +31,7 @@ namespace Models
 // DocString: FMTsesmodel
 /**
 This model is a spatialy explicit simulation (ses) model.
-It uses simple cellular automaton to spatialy simulate FMTactions on 
+It uses simple cellular automaton to spatialy simulate FMTactions on
 a raster stack for a given planning horizon following an harvest schedule.
 The FMTaction ordering is realy important because the simulator will
 attend to place the first action of the list on the map and so on.
@@ -135,7 +136,7 @@ class FMTsesmodel : public FMTmodel
         bool setspactions(const std::vector<Spatial::FMTspatialaction>& lspactions);
 		// DocString: FMTsesmodel::presolve
 		/**
-		Presolve the ses model to get a more simple model call original presolve() and presolve the 
+		Presolve the ses model to get a more simple model call original presolve() and presolve the
 		FMTforest map and the spatial acitons.
 		*/
 		std::unique_ptr<FMTmodel>presolve(int presolvepass = 10,
@@ -148,13 +149,26 @@ class FMTsesmodel : public FMTmodel
 		std::unique_ptr<FMTmodel>postsolve(const FMTmodel& originalbasemodel) const final;
 		// DocString: FMTsesmodel::simulate
 		/**
-		This is the main function to simulate a schedule of actions (schedule) on the actual 
+		This is the main function to simulate a schedule of actions (schedule) on the actual
 		spatialy explicit forest. If the (schedule_only) switch is turned on the simulator wont try
 		to find some operable developements (not present in the potential schedule)
 		even if the area harvested target for that action is not reach. The user can also set the seed
 		to get different solutions from the simulator.
 		*/
 		std::map<std::string,double> simulate(const Core::FMTschedule& schedule,
+                        bool schedule_only = true,
+                        unsigned int seed = 0);
+        // DocString: FMTsesmodel::simulate
+		/**
+		This is the main function to simulate a schedule of actions (schedule) on the actual
+		spatialy explicit forest. If the (schedule_only) switch is turned on the simulator wont try
+		to find some operable developements (not present in the potential schedule)
+		even if the area harvested target for that action is not reach. The user can also set the seed
+		to get different solutions from the simulator.
+		***************** Function only for testing the new architecture ***************************
+		*/
+		std::map<std::string,double> newsimulate(const Core::FMTschedule& schedule,
+                        Spatial::FMTspatialschedule spschedule,
                         bool schedule_only = true,
                         unsigned int seed = 0);
 		// DocString: FMTsesmodel::montecarlosimulate
@@ -171,7 +185,7 @@ class FMTsesmodel : public FMTmodel
 										bool schedule_only = true,
 										unsigned int seed = 0,
 										double tolerance = FMT_DBL_TOLERANCE);
-		
+
     };
 
 }

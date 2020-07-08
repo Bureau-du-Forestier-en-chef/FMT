@@ -53,6 +53,15 @@ namespace Graph
         return *this;
     }
 
+    int FMTlinegraph::getlastperiod() const
+    {
+        std::queue<Graph::FMTvertex_descriptor> actives = getactiveverticies();
+        Graph::FMTvertex_descriptor front_vertex = actives.front();
+        const Graph::FMTvertexproperties& front_properties = data[front_vertex];
+        const int period = front_properties.get().period;
+        return period;
+    }
+
     //Was used before
     /*std::vector<std::pair<size_t,int>> FMTgraph::adjacentevents(const std::vector<Spatial::FMTevent<FMTgraph>>& events, const Spatial::FMTcoordinate& localisation,const int action_id) const
     {
