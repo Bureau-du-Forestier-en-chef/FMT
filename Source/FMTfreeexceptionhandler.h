@@ -52,13 +52,13 @@ public:
 	FMTexception raise(FMTexc lexception, std::string text,
 		const std::string& method, const int& line, const std::string& file,
 		Core::FMTsection lsection = Core::FMTsection::Empty, bool throwit = true) override;
+#if defined FMTWITHGDAL
 	// DocString: FMTfreeexceptionhandler::getCPLdata
 	/**
 	Used in the handelCPLerror called back by GDAL function reutnr a abstract copy of itselft.
 	See getCPLdata of FMTexceptionhandler class.
 	*/
 	FMTexceptionhandler* getCPLdata() override;
-#if defined FMTWITHGDAL
 	// DocString: FMTfreeexceptionhandler::handelCPLerror
 	/**
 	Used has call back in gdal.
