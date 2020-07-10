@@ -203,6 +203,7 @@ class FMTareaparser : public FMTparser
 		/**
 		Default constructor for FMTareaparser
 		*/
+		public:
 		FMTareaparser();
 		// DocString: ~FMTareaparser()
 		/**

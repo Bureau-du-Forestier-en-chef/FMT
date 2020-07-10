@@ -1,3 +1,4 @@
+
 /*
 Copyright (c) 2019 Gouvernement du Québec
 
@@ -10,10 +11,18 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 #include <string>
 
+#ifndef FMT_MAJOR
+    #define FMT_MAJOR 0
+#endif
 
-#define FMT_MAJOR 0
-#define FMT_MINOR 0
-#define FMT_PATCH 0
+#ifndef FMT_MINOR
+    #define FMT_MINOR 0
+#endif
+
+#ifndef FMT_PATCH
+    #define FMT_PATCH 0
+#endif
+
 
 
 namespace Version
@@ -22,7 +31,7 @@ namespace Version
 /**
 The only purpose of this class is to let the user see which version of FMT he's using.
 It also gives some information about the build date and the actual date.
-It also informs the user about which features are avalaible in FMT. 
+It also informs the user about which features are avalaible in FMT.
 */
 
 class FMTversion

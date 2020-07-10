@@ -1,10 +1,12 @@
+
+
 Read this in other languages: [English](README.md), [Français](README.fr.md)
 
 ## FMT is an open source Forest Management library
 
 FMT is a C++ library made to interpret forest planning models based on Woodstock files formulation. FMT can be used through Python, Cran-R or directly from C++. FMT's generic approach to forest planning gives the opportunity to the user to manipulate forest planning models and generate forest planning solutions. The objective behind this project is to bring all forest planning models types onto the same generic library to help the community to develop new approaches to forest planning problem or improve the one that have been there for years.
 
-## License 
+## License
 
 FMT is a liliQ-R 1.1 licensed library [LICENSES\EN](LILIQ-R11EN.txt) for more information.
 
@@ -30,18 +32,18 @@ harvest scheduling or even stochastic events.
   + Boost compiled with zlib. (http://boost.org)
 ### Optional :
   + GEOS library (http://trac.orgeo.org/geos/)
-  + GDAL library (http://GDAL.org)
+  + GDAL 2.3 > library (http://GDAL.org)
   + Mosek library (http://mosek.com)
   + OSI library throught the CBC solver (http://github.com/coin/Cbc)
   + Boost Python library
   + Rcpp and cran-R with at least Rtools40 (http://cran.r-project.org)
-  
+
 ## How to use FMT?
 
 The easiest way to use FMT is to use the cmake >= 3.15 and generate a shared library. The cmake script supports generating FMT on Windows using VS2017 or MINGW-64 on MSYS2 or CYGWIN.
 
 + Generating FMT as a Python library on Visual studio 2017:
- 
+
  ```powershell
  ::Providing the -DPYTHON_DIR will make the script generate a .pyd using Boost Python
  ::You cannot generate an Rcpp module .dll with VS so dont use -DR_DIR with VS
@@ -167,3 +169,4 @@ for (const Core::FMTconstraint& constraint : constraints)
 optimizationmodel.initialsolve();
 ```
 [![License](http://img.shields.io/:license-liliqR11-blue.svg?style=flat-square)](https://forge.gouv.qc.ca/licence/liliq-v1-1/#r%C3%A9ciprocit%C3%A9-liliq-r)
+
