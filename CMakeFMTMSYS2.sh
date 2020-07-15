@@ -5,7 +5,7 @@ cmake CMakeLists.txt -DCMAKE_BUILD_TYPE=Release \
 	-DMOSEK_DIR="C:/MrnMicro/Applic/mosek/" \
 	-DOSI_DIR="C:/MrnMicro/Applic/rtools40/home/Cbc-2.10.5/" \
 	-DBOOST_DIR="C:/MrnMicro/Applic/rtools40/home/boost_1_70_0/" \
-	-DGDAL_DIR="C:/MrnMicro/Applic/rtools40/home/gdal-2.3.2/" \
+	-DGDAL_DIR="C:/MrnMicro/Applic/rtools40/home/gdal-2.3.2/build/" \
 	-DR_DIR="C:/MrnMicro/Applic/R-testing/" \
 	-DGEOS_DIR="C:/MrnMicro/Applic/rtools40/home/geos-3.8.1/" \
 	-G "MSYS Makefiles"
