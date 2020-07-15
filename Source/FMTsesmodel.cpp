@@ -225,8 +225,10 @@ namespace Models
                              unsigned int seed)
         {
 		std::map<std::string, double>results;
+		//Last period in the linegraph
 		const int previousperiod = spschedule.lastperiod();
 		try {
+		    //Create a newschedule for the period we simulate
 			Core::FMTschedule newschedule(previousperiod+1, std::map<Core::FMTaction, std::map<Core::FMTdevelopment, std::vector<double>>>());
 			std::default_random_engine generator(seed);
 			const double total_area = schedule.area();
@@ -237,6 +239,7 @@ namespace Models
 			}
 			//disturbances.push(std::map<std::string, std::vector<Spatial::FMTsesevent<Core::FMTdevelopment>>>());
 			double allocated_area = 0;
+			//Validate this if ??
 			if (!schedule.empty() || !schedule_only)
 			{
 				double pass_allocated_area = 0;
@@ -247,21 +250,22 @@ namespace Models
 				std::vector<boost::unordered_map<Core::FMTdevelopment, Core::FMTdevelopment>>cached_operated(spactions.size(), boost::unordered_map<Core::FMTdevelopment, Core::FMTdevelopment>());
 				do {
 					pass_allocated_area = 0;
-					//const clock_t begin_time = clock();
-					std::map<Core::FMTaction, Spatial::FMTforest> forests = mapping.getschedule(schedule, cached_operability, yields, schedulepass);
+					std::map<Core::FMTaction, std::set<Spatial::FMTcoordinate>> scheduled_coord = spschedule.getschedule(schedule, cached_operability, previousperiod, yields, schedulepass);
 					for (const Spatial::FMTspatialaction& spatial_action : spactions)
 					{
 						std::vector<Spatial::FMTspatialaction>::iterator acit = std::find_if(spactions.begin(), spactions.end(), Core::FMTactioncomparator(spatial_action.getname()));
 						if (acit != spactions.end())
 						{
 							const double action_area = targets[acit->getname()];
-							Spatial::FMTforest* allowable_forest = &forests[spatial_action];
-							if (allowable_forest->area() > 0 && action_area > 0)
+							std::set<Spatial::FMTcoordinate>* allowable_coordinates = &scheduled_coord[spatial_action];
+							if (!allowable_coordinates->empty() && action_area > 0)
 							{
 								const size_t location = std::distance(spactions.begin(), acit);
-								const Spatial::FMTforest spatialy_allowable = allowable_forest->getallowable(*acit, disturbances);
-								if (spatialy_allowable.area() > 0)
+								const std::set<Spatial::FMTcoordinate> spatialy_allowable = spschedule.verifyspatialfeasability(*acit, actions, previousperiod, *allowable_coordinates);
+								if (!spatialy_allowable.empty())
 								{
+								    ///À faire
+								    /*
 									std::vector<Spatial::FMTsesevent<Core::FMTdevelopment>>events = spatialy_allowable.buildharvest(action_area, *acit, generator, action_pass);
 									if (events.size() > 0)
 									{
@@ -273,7 +277,7 @@ namespace Models
 											targets[acit->getname()] -= (newoperated.area());
 											pass_allocated_area += (newoperated.area());
 										}
-									}
+									}*/
 								}
 							}
 						}

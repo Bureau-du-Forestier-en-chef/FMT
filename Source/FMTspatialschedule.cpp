@@ -60,6 +60,12 @@ namespace Spatial
         return (!(*this==rhs));
     }
 
+    int FMTspatialschedule::lastperiod() const
+    {
+        Graph::FMTlinegraph flgraph = mapping.begin()->second;
+        return flgraph.getlastperiod();
+    }
+
     bool FMTspatialschedule::copyfromselected(const FMTspatialschedule& rhs, const std::vector<size_t>& selected)
     {
 		std::map<FMTcoordinate, Graph::FMTlinegraph>::iterator baseit;
@@ -142,29 +148,86 @@ namespace Spatial
                         }
                     }
                 }
-                naction_id++;
+                ++naction_id;
             }
         }
         return true;
     }
 
-    std::set<FMTcoordinate> FMTspatialschedule::getallowable(const FMTspatialaction& targetaction,
-                                                             const std::vector<Core::FMTaction>& modelactions, const int& period) const
+    std::map<Core::FMTaction,std::set<FMTcoordinate>> FMTspatialschedule::getschedule(  const Core::FMTschedule& selection,
+                                                                                        boost::unordered_map<Core::FMTdevelopment,std::vector<bool>>& cached_operability,
+                                                                                        const int& period,
+                                                                                        const Core::FMTyields& yields,
+                                                                                        bool schedule_only) const
     {
-    std::set<FMTcoordinate> allowable;
-    for(std::map<FMTcoordinate,Graph::FMTlinegraph>::const_iterator itc = mapping.begin(); itc != mapping.end(); ++itc)
+        std::map<Core::FMTaction,std::set<FMTcoordinate>>scheduling;
+        for(std::map<FMTcoordinate,Graph::FMTlinegraph>::const_iterator itc = mapping.begin(); itc != mapping.end(); ++itc)
         {
-        if (allow_action(targetaction,modelactions,itc->first,period))
+            std::vector<Core::FMTactualdevelopment> actdev = itc->second.getperiodstopdev(period,0);
+            if (actdev.size()>1)
             {
-            allowable.insert(itc->first);
+                _exhandler->raise(Exception::FMTexc::FMTnotlinegraph,"More than one verticies for the graph at "+std::string(itc->first),
+                                  "FMTspatialschedule::getsechedule",__LINE__, __FILE__);
+            }
+            const Core::FMTdevelopment* cdev = &actdev.at(0);
+            if (cached_operability.find(*cdev) == cached_operability.end())
+            {
+                if (!schedule_only)
+                    {
+                    cached_operability[*cdev] = std::vector<bool>(selection.size(), false);
+                    }
+                int action_id = 0;
+                for(std::map<Core::FMTaction, std::map<Core::FMTdevelopment, std::vector<double>>>::const_iterator it = selection.begin();it != selection.end();it++)
+                {
+
+                    if  (selection.operated(it->first, *cdev)||
+                        (!schedule_only && cdev->operable(it->first,yields)))
+                        {
+                        if (scheduling.find(it->first)==scheduling.end())
+                            {
+                                scheduling[it->first] = std::set<FMTcoordinate>();
+                            }
+                        scheduling[it->first].insert(itc->first);
+                        if (!schedule_only)
+                            {
+                                cached_operability[*cdev][action_id] = true;
+                            }
+                        }
+                    ++action_id;
+                }
+            }else
+            {
+				int action_id = 0;
+				for (std::map<Core::FMTaction, std::map<Core::FMTdevelopment, std::vector<double>>>::const_iterator it = selection.begin(); it != selection.end(); it++)
+				{
+					if (cached_operability[*cdev][action_id])
+					{
+                        if(scheduling.find(it->first) == scheduling.end())
+                        {
+                            scheduling[it->first] = std::set<FMTcoordinate>();
+                        }
+                        scheduling[it->first].insert(itc->first);
+                    }
+                    ++action_id;
+                }
             }
         }
-    return allowable;
+        return scheduling;
     }
 
-    int FMTspatialschedule::lastperiod() const
+    std::set<FMTcoordinate> FMTspatialschedule::verifyspatialfeasability(const FMTspatialaction& targetaction,
+                                                                         const std::vector<Core::FMTaction>& modelactions,
+                                                                         const int& period,
+                                                                         const std::set<FMTcoordinate>& allowable) const
     {
-        Graph::FMTlinegraph flgraph = mapping.begin()->second;
-        return flgraph.getlastperiod();
+    std::set<FMTcoordinate> spatialyallowable;
+    for(std::set<FMTcoordinate>::const_iterator itc = allowable.begin();itc != allowable.end();++itc)
+        {
+        if (allow_action(targetaction,modelactions,*itc,period))
+            {
+            spatialyallowable.insert(*itc);
+            }
+        }
+    return spatialyallowable;
     }
 }
