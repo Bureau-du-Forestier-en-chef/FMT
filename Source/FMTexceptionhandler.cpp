@@ -125,7 +125,7 @@ bool FMTexceptionhandler::needtorethrow() const
 FMTexception FMTexceptionhandler::raise(FMTexc lexception, std::string text,
 	const std::string& method, const int& line, const std::string& file, Core::FMTsection lsection,bool throwit)
 {
-	
+
 
 	FMTexception excp;
 	if (lsection == Core::FMTsection::Empty)
@@ -438,6 +438,11 @@ std::string FMTexceptionhandler::updatestatus(const FMTexc lexception, const std
 		break;
 	case FMTexc::FMTunhandlederror:
 		msg += "Unhandled error: " + message;
+		_level = FMTlev::FMT_logic;
+		++_errorcount;
+		break;
+    case FMTexc::FMTnotlinegraph:
+		msg += "FMTlinegragh error: " + message;
 		_level = FMTlev::FMT_logic;
 		++_errorcount;
 		break;

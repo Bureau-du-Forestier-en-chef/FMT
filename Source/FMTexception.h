@@ -112,7 +112,8 @@ enum FMTexc
 	FMTfunctionfailed = 53,
 	FMTcoinerror = 54,
 	FMTboostgrapherror = 55,
-	FMTunhandlederror = 56
+	FMTunhandlederror = 56,
+	FMTnotlinegraph = 57
     };
 
 // DocString: FMTexception
