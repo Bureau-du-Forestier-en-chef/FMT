@@ -416,7 +416,14 @@ FMTyieldhandler::operator std::string() const
 							}
 						break;
 						}
-
+					case FMTyieldparserop::FMTdelta:
+						{
+						const std::map<std::string, double>source_values = this->getsources(srcsdata, datas, age, period, resume_mask, age_only);
+						int periodtolookat = std::max(0,period + static_cast<int>(cdata->data.back()));
+						const std::map<std::string, double>periodic_source_values = this->getsources(srcsdata, datas, age, periodtolookat, resume_mask, age_only);
+						value = std::abs(source_values.begin()->second - periodic_source_values.begin()->second);
+						break;
+						}
                     default:
                     break;
                     }
