@@ -10,7 +10,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 #include "FMTgraph.h"
 
-#include "FMTsaeventcontainer.h"
+#include "FMTeventcontainer.h"
 
 namespace Graph
 {
@@ -29,11 +29,11 @@ class FMTlinegraph : public FMTgraph
                                             FMTgraphstats& statsdiff, const FMTvertex_descriptor& front_vertex, std::default_random_engine& generator,
                                             const Core::FMTdevelopment& active_development);
         FMTgraphstats randombuild(const Models::FMTmodel& model,std::queue<FMTvertex_descriptor> actives, std::default_random_engine& generator,
-                                  Spatial::FMTsaeventcontainer& events, const Spatial::FMTcoordinate& localisation);
+                                  Spatial::FMTeventcontainer& events, const Spatial::FMTcoordinate& localisation);
         FMTgraphstats clearfromperiod(const int& period);
         FMTlinegraph partialcopy(const int& period) const;
         FMTlinegraph perturbgraph(  const Models::FMTmodel& model, std::default_random_engine& generator,
-                                Spatial::FMTsaeventcontainer& events,
+                                Spatial::FMTeventcontainer& events,
                                 const Spatial::FMTcoordinate& localisation, const int period) const;
 };
 }

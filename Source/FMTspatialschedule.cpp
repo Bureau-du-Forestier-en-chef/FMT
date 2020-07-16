@@ -136,7 +136,7 @@ namespace Spatial
             {
                 if (std::find(targetaction.neighbors.begin(), targetaction.neighbors.end(), mact.getname()) != targetaction.neighbors.end())
                 {
-                    std::vector<FMTsaeventcontainer::const_iterator> eventsatgupaid = events.getevents(green_up,naction_id);
+                    std::vector<FMTeventcontainer::const_iterator> eventsatgupaid = events.getevents(green_up,naction_id);
                     if(!eventsatgupaid.empty())
                     {
                         for(const auto eventit : eventsatgupaid)

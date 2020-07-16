@@ -87,7 +87,7 @@ class FMTspatialschedule : public FMTlayer<Graph::FMTlinegraph>
                           const FMTcoordinate& location,const int& period) const;
         // DocString: FMTspatialschedule::getschedule(const FMTschedule, boost::unordered_map<Core::FMTdevelopment,std::vector<bool>>&, const int&, const Core::FMTyields& = Core::FMTyields(), bool = true)
         /**
-        Return for each action in the FMTschedule passed the FMTcoordinate with operable developments.
+        Return for each action in the FMTschedule the FMTcoordinate with operable developments.
 		*/
         std::map<Core::FMTaction,std::set<FMTcoordinate>> getschedule(  const Core::FMTschedule& selection,
                                                                         boost::unordered_map<Core::FMTdevelopment,std::vector<bool>>& cached_operability,
@@ -96,7 +96,7 @@ class FMTspatialschedule : public FMTlayer<Graph::FMTlinegraph>
                                                                         bool schedule_only = true) const;
         // DocString: FMTspatialschedule::getallowable(const FMTspatialaction, const std::vector<Core::FMTaction>&, const int&)
         /**
-        For the target action, return a set of FMTcoordinate corresponding to the cells that are allowable.
+        For the target action, return a set of FMTcoordinate corresponding to the cells that are spatially allowable.
 		*/
 		std::set<FMTcoordinate> verifyspatialfeasability(const FMTspatialaction& targetaction, const std::vector<Core::FMTaction>& modelactions,
                                                          const int& period, const std::set<FMTcoordinate>& allowable) const;
@@ -106,7 +106,7 @@ class FMTspatialschedule : public FMTlayer<Graph::FMTlinegraph>
         //Modification must replace FMTsaeventcontainer as the equivalent as disturbancestacks for all FMTspatialschedule
         //When build the actions must be in order to fill the graphs and the event container. At the end of the period we must implement a grow for every cell
     protected:
-        FMTsaeventcontainer events;
+        FMTeventcontainer events;
     private:
 };
 }

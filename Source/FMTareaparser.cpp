@@ -17,7 +17,7 @@ namespace Parser{
                                         const std::vector<Core::FMTtheme>& themes, const std::vector<Core::FMTaction>& actions,
                                         const bool& writeevents, int periodstart, int periodstop) const
     {
-        const Spatial::FMTsaeventcontainer& events = solution.getevents();
+        const Spatial::FMTeventcontainer& events = solution.getevents();
         if (periodstart==-1)
         {
             periodstart = events.firstperiod();
@@ -56,12 +56,12 @@ namespace Parser{
                     Spatial::FMTlayer<int> action_layer(solution.copyextent<int>());//Setting layer information
                     int event_id = 1; //To write in the map
                     std::map<int, std::string> event_map;
-                    std::vector<Spatial::FMTsaeventcontainer::const_iterator> eventsit = events.getevents(period,aid);
+                    std::vector<Spatial::FMTeventcontainer::const_iterator> eventsit = events.getevents(period,aid);
                     if (!eventsit.empty())
                     {
                         for(const auto eventit :eventsit)
                         {
-                            Spatial::FMTsaevent event = *eventit;
+                            Spatial::FMTevent event = *eventit;
                             for (std::set<Spatial::FMTcoordinate>::const_iterator coordit = event.elements.begin(); coordit != event.elements.end(); ++coordit)
                             {
 

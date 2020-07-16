@@ -135,7 +135,7 @@ namespace Graph
     }*/
 
     FMTgraphstats FMTlinegraph::randombuild(const Models::FMTmodel& model,std::queue<FMTvertex_descriptor> actives, std::default_random_engine& generator,
-                                            Spatial::FMTsaeventcontainer& events, const Spatial::FMTcoordinate& localisation)
+                                            Spatial::FMTeventcontainer& events, const Spatial::FMTcoordinate& localisation)
 	{
 		FMTgraphstats statsdiff(stats);
 		developments.push_back(std::unordered_map<size_t, FMTvertex_descriptor>());
@@ -378,7 +378,7 @@ namespace Graph
     }*/
 
     FMTlinegraph FMTlinegraph::perturbgraph(const Models::FMTmodel& model, std::default_random_engine& generator,
-                                            Spatial::FMTsaeventcontainer& events,
+                                            Spatial::FMTeventcontainer& events,
                                             const Spatial::FMTcoordinate& localisation, const int period) const
     {
         events.erasecoordinate(localisation,period);

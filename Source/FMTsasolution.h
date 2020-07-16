@@ -47,7 +47,7 @@ class FMTsasolution : public FMTlayer<Graph::FMTlinegraph>
     protected:
         Graph::FMTgraphstats solution_stats;
         double objectivefunctionvalue;//Sum of all penalties
-        FMTsaeventcontainer events;//Modifying in FMTlinegraph
+        FMTeventcontainer events;//Modifying in FMTlinegraph
     public:
 		std::map<std::string, std::pair<std::vector<double>, std::vector<double>>> constraint_outputs_penalties;
         FMTsasolution();
@@ -63,7 +63,7 @@ class FMTsasolution : public FMTlayer<Graph::FMTlinegraph>
         //Function to get info on the solution
         double getobjfvalue()const;
         Graph::FMTgraphstats getsolution_stats() const;
-        const FMTsaeventcontainer& getevents() const;
+        const FMTeventcontainer& getevents() const;
         void getstartstop(const Core::FMTconstraint& constraint, int& periodstart,int& periodstop) const;
 		std::vector<double> getgraphsoutputs(const Models::FMTmodel& model, const Core::FMTconstraint& constraint,
                                     const int& periodstart,const int& periodstop) const;

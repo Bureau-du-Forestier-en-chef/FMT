@@ -95,7 +95,7 @@ namespace Spatial
     {
         return solution_stats;
     }
-    const FMTsaeventcontainer& FMTsasolution::getevents() const
+    const FMTeventcontainer& FMTsasolution::getevents() const
     {
         return events;
     }
@@ -182,7 +182,7 @@ double FMTsasolution::getgraphspenalties(const Models::FMTsamodel& model, const 
         for (int period = periodstart ; period<=periodstop ; ++period)
         {
             //Getevents corresponding to constraint
-            std::vector<FMTsaeventcontainer::const_iterator> eventsperiodact = events.getevents(period,action_id);
+            std::vector<FMTeventcontainer::const_iterator> eventsperiodact = events.getevents(period,action_id);
             if (!eventsperiodact.empty())
             {
                 constraint.getbounds(lower,upper,static_cast<int>(period));
@@ -587,12 +587,12 @@ double FMTsasolution::getgraphspenalties(const Models::FMTsamodel& model, const 
                 FMTlayer<int> action_layer(this->copyextent<int>());//Setting layer information
                 int event_id = 1; //To write in the map
                 std::map<int, std::string> event_map;
-                std::vector<FMTsaeventcontainer::const_iterator> eventsit = events.getevents(period,aid);
+                std::vector<FMTeventcontainer::const_iterator> eventsit = events.getevents(period,aid);
                 if (!eventsit.empty())
                 {
                     for(const auto eventit :eventsit)
                     {
-                        FMTsaevent event = *eventit;
+                        FMTevent event = *eventit;
                         for (std::set<FMTcoordinate>::const_iterator coordit = event.elements.begin(); coordit != event.elements.end(); ++coordit)
                         {
 
