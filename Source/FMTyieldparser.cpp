@@ -12,7 +12,7 @@ namespace Parser{
 
 FMTyieldparser::FMTyieldparser():FMTparser(),
     rxyieldtype("^(\\*Y)([^\\s^\\t]*)([\\s\\t]*)(.+)(_OVERRIDE)|^(\\*Y)([^\\s^\\t]*)([\\s\\t]*)(.+)", std::regex_constants::ECMAScript| std::regex_constants::icase),
-    rxcomplex("^([^\\s^\\t]*)([\\s\\t]*)((_RANGE)|(_MULTIPLY)|(_SUM)|(_SUBTRACT)|(_YTP)|(_MAI)|(_CAI)|(_DIVIDE)|(_EQUATION)|(_ENDPOINT))([\\s\\t]*)(\\()(.+)(\\))", std::regex_constants::ECMAScript| std::regex_constants::icase),
+    rxcomplex("^([^\\s^\\t]*)([\\s\\t]*)((_RANGE)|(_MULTIPLY)|(_SUM)|(_SUBTRACT)|(_YTP)|(_MAI)|(_CAI)|(_DIVIDE)|(_EQUATION)|(_ENDPOINT)|(_DELTA))([\\s\\t]*)(\\()(.+)(\\))", std::regex_constants::ECMAScript| std::regex_constants::icase),
 	rxeqs("([\\(\\)\\-\\+\\*\\/]*)([^\\(\\)\\-\\+\\*\\/]*)"),
 	rxdiscount("^(_DISCOUNTFACTOR)(\\()([\\s\\t]*[\\d]*)([^,]*)(,)([^,]*)(,)([\\s\\t]*(NONE|HALF|FULL)[\\s\\t]*)(\\))")
         {
@@ -103,7 +103,10 @@ Core::FMTyieldparserop FMTyieldparser::getyldctype(const std::string& value) con
 		{
 			return Core::FMTyieldparserop::FMTendpoint;
 		}
-		else {
+		else if (value == "_DELTA")
+		{
+			return Core::FMTyieldparserop::FMTdelta;
+		}else {
 			_exhandler->raise(Exception::FMTexc::FMTinvalid_yield," at line " + std::to_string(_line),"FMTyieldparser::getyldctype", __LINE__, __FILE__, _section);
 		}
 	}catch (...)
@@ -477,11 +480,11 @@ Core::FMTyields FMTyieldparser::read(const std::vector<Core::FMTtheme>& themes,c
 								}
 								else {
 									yldname = kmatch[1];
-									for (int id = 4; id < 14; ++id) //12 - > 13
+									for (int id = 4; id < 15; ++id) //12 - > 13
 									{
 										cyld += std::string(kmatch[id]);
 									}
-									data = kmatch[16];
+									data = kmatch[17];
 								}
 								dump.clear();
 								const std::vector<std::string>theylds = { yldname };
