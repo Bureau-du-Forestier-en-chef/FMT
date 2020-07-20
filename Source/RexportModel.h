@@ -172,8 +172,8 @@ void exportModel()
 			"@DocString(FMTlpmodel::operator!=)")
 		.method("getstats", &Models::FMTlpmodel::getstats,
 			"@DocString(FMTlpmodel::getstats)")
-		.method("getoperatingareaheuristics", &Models::FMTlpmodel::getoperatingareaheuristics,
-			"@DocString(FMTlpmodel::getoperatingareaheuristics)")
+		.method("getoperatingareaschedulerheuristics", &Models::FMTlpmodel::getoperatingareaschedulerheuristics,
+			"@DocString(FMTlpmodel::getoperatingareaschedulerheuristics)")
 		.method("getvariabilities", &Models::FMTlpmodel::getvariabilities,
 			"@DocString(FMTlpmodel::getvariabilities)")
 		.method("getareavariabilities", &Models::FMTlpmodel::getareavariabilities,

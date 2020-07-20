@@ -16,7 +16,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 	#include "FMTmodel.h"
 	#include "FMTlpmodel.h"
 	#include "FMTsesmodel.h"
-	#include "FMToperatingareaheuristic.h"
+	#include "FMToperatingareascheduler.h"
 	#include <typeinfo>
 
 #if defined FMTWITHPYTHON

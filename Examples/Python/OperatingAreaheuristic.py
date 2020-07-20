@@ -13,8 +13,8 @@ def getOAparameters(lpmodel,parameterslocation,themeid):
                 for row in csv_reader:
                         mask = ["?" for theme in themes]
                         mask[themeid] = row["OA"]
-                        opareas.append(Heuristics.FMToperatingarea(Core.FMTmask(mask,themes),int(row["OPT"]),int(row["RET"]),
-                                                    int(row["REP"]),int(row["GUP"]),float(row["OPR"]),float(row["NPE"])))
+                        opareas.append(Heuristics.FMToperatingareascheme(FMToperatingarea(Core.FMTmask(mask,themes),float(row["NPE"])),int(row["OPT"]),int(row["RET"]),
+                                                    int(row["REP"]),int(row["GUP"]),float(row["OPR"])))
         return opareas                       
 
 
@@ -44,7 +44,7 @@ if __name__ == "__main__":
                       nodeofoutput = output.getnodes()[0]
                       print(nodeofoutput)
                       break;
-        opareaheuristics = optimizationmodel.getoperatingareaheuristics(opareawithneighbors,nodeofoutput,1,False)
+        opareaheuristics = optimizationmodel.getoperatingareaschedulerheuristics(opareawithneighbors,nodeofoutput,1,False)
         opareaheuristics[0].initialsolve()
         for handler in opareaheuristics[0].getsolution("youvert"):
             print(handler)

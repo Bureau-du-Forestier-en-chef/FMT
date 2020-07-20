@@ -27,7 +27,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTlpmodel.h"
 #include "FMTsamodel.h"
 #include "FMToperatingarea.h"
-#include "FMToperatingareaheuristic.h"
+#include "FMToperatingareascheduler.h"
 
 #include "FMTmask.h"
 #include "FMTactualdevelopment.h"
@@ -95,7 +95,9 @@ RCPP_DECLAREVECTOR(Models::FMTsamodel);//For vector
 //Heuristics
 #ifdef FMTWITHOSI
 	RCPP_DECLAREVECTOR(Heuristics::FMToperatingarea);//For vector
-	RCPP_DECLAREVECTOR(Heuristics::FMToperatingareaheuristic);//For vector
+	RCPP_DECLAREVECTOR(Heuristics::FMToperatingareascheme);//For vector
+	RCPP_DECLAREVECTOR(Heuristics::FMToperatingareascheduler);//For vector
+
 #endif
 //Core
 RCPP_DECLAREVECTOR(Core::FMTmask);//For vector

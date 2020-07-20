@@ -17,7 +17,8 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTdisturbancestack.h"
 #include "FMTGCBMtransition.h"
 #include <iterator>
-#include "FMToperatingarea.h"
+#include "FMToperatingareascheme.h"
+#include "FMToperatingareacluster.h"
 #include <map>
 #include <string>
 #include <vector>
@@ -111,6 +112,23 @@ class FMTareaparser : public FMTparser
 			std::vector<Heuristics::FMToperatingarea> getneighborsfrompolygons(const std::vector<OGRMultiPolygon>& multipolygons,
 																			std::vector<Heuristics::FMToperatingarea> operatingareas,
 																	const double& buffersize) const;
+			// DocString: FMTareaparser::getunion
+			/**
+			Simply call a union cascaded on all multipartpolygons to create single polygon for each multipart.
+			You need to call the destroypolygons function after to make sure no memory leaks appear.
+			*/
+			std::vector<OGRPolygon*> getunion(const std::vector<OGRMultiPolygon>& multipartpolygons) const;
+			// DocString: FMTareaparser::destroypolygons
+			/**
+			Will destroy all heap allocaed OGRpolygon in the vector.
+			*/
+			void destroypolygons(std::vector<OGRPolygon*>& polygonstodestroy) const;
+
+			std::vector<Heuristics::FMToperatingareacluster> getclustersfrompolygons(const std::vector<OGRPolygon>& multipolygons,
+																		const std::vector<double> statistics,
+																		const std::vector<Heuristics::FMToperatingarea>& operatingareas,
+																		const double& maximaldistance) const;
+
 			#endif
 			// DocString: FMTareaparser::subsetlayer
 			/**
@@ -182,7 +200,7 @@ class FMTareaparser : public FMTparser
 			a (minimal_area) : the minimal area parameters indicate that if a feature has an area lower than the minimal area it wont be selected.
 			For (buffersize) see getneighborsfrompolygons function. The returned operating area will have theirs neighboors vector filled.
 			*/
-			std::vector<Heuristics::FMToperatingarea> getneighbors(std::vector<Heuristics::FMToperatingarea> operatingareaparameters,
+			std::vector<Heuristics::FMToperatingareascheme> getneighbors(std::vector<Heuristics::FMToperatingareascheme> operatingareaparameters,
 							const std::vector<Core::FMTtheme>& themes,const std::string& data_vectors,
 							const std::string& agefield, const std::string& areafield, double agefactor = 1.0,
 							double areafactor = 1, std::string lockfield = "",

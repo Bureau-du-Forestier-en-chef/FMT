@@ -10,7 +10,8 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 
 #include "FMToperatingarea.h"
-#include "FMToperatingareaheuristic.h"
+#include "FMToperatingareascheduler.h"
+#include "FMToperatingareascheme.h"
 #include "FMTlpsolver.h"
 #include "PYdefinitions.h"
 #include "boost/python.hpp"
@@ -31,7 +32,7 @@ void exportHeuristics()
 	#ifdef FMTWITHOSI
 
 	bp::class_<Heuristics::FMToperatingarea>("FMToperatingarea", "@DocString(FMToperatingarea)")
-		.def(bp::init<const Core::FMTmask&, const size_t&, const size_t&, const size_t&, const size_t&, const double&, const double&>())
+		.def(bp::init<const Core::FMTmask&, const double&>())
 		.def_pickle(FMT_pickle_suite<Heuristics::FMToperatingarea>())
 		.def("getneighbors", &Heuristics::FMToperatingarea::getneighbors,
 			"@DocString(FMToperatingarea::getneighbors)")
@@ -41,19 +42,26 @@ void exportHeuristics()
 			"@DocString(FMToperatingarea::getmask)")
 		.def("getneihgborsperimeter", &Heuristics::FMToperatingarea::getneihgborsperimeter,
 			"@DocString(FMToperatingarea::getneihgborsperimeter)");
+
+	bp::class_<Heuristics::FMToperatingareascheme,bp::bases<Heuristics::FMToperatingarea>>("FMToperatingareascheme", "@DocString(FMToperatingareascheme)")
+		.def(bp::init<const Heuristics::FMToperatingarea&,const size_t&,const size_t&,
+			const size_t&, const size_t&, const size_t&>());
 		
 	define_pylist<Heuristics::FMToperatingarea>();
 
-	bp::class_<Heuristics::FMToperatingareaheuristic, bp::bases<Core::FMTobject,Models::FMTlpsolver>>("FMToperatingareaheuristic", "@DocString(FMToperatingareaheuristic)")
-		.def_pickle(FMT_pickle_suite<Heuristics::FMToperatingareaheuristic>())
-		.def("initialsolve", &Heuristics::FMToperatingareaheuristic::initialsolve,
+	bp::class_<Heuristics::FMTlpheuristic, bp::bases<Core::FMTobject, Models::FMTlpsolver>>("FMTlpheuristic", "@DocString(Heuristics::FMTlpheuristic)");
+
+
+	bp::class_<Heuristics::FMToperatingareascheduler, bp::bases<Heuristics::FMTlpheuristic>>("Heuristics::FMToperatingareascheduler", "@DocString(FMToperatingareascheduler)")
+		.def_pickle(FMT_pickle_suite<Heuristics::FMToperatingareascheduler>())
+		.def("initialsolve", &Heuristics::FMToperatingareascheduler::initialsolve,
 			"@DocString(FMToperatingareaheuristic::initialsolve)")
-		.def("branchnboundsolve", &Heuristics::FMToperatingareaheuristic::branchnboundsolve,
+		.def("branchnboundsolve", &Heuristics::FMToperatingareascheduler::branchnboundsolve,
 			"@DocString(FMToperatingareaheuristic::branchnboundsolve)")
-		.def("getsolution", &Heuristics::FMToperatingareaheuristic::getsolution,
+		.def("getsolution", &Heuristics::FMToperatingareascheduler::getsolution,
 			"@DocString(FMToperatingareaheuristic::getsolution)");
 
-	define_pylist<Heuristics::FMToperatingareaheuristic>();
+	define_pylist<Heuristics::FMToperatingareascheduler>();
 	#endif 
 	}
 }

@@ -8,10 +8,32 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTareaparser.h"
 #include <boost/algorithm/string/join.hpp>
 #include <boost/lexical_cast.hpp>
+#include "FMToperatingareaclusterbinary.h"
 
 namespace Parser{
 
 #ifdef FMTWITHGDAL
+
+	std::vector<OGRPolygon*> FMTareaparser::getunion(const std::vector<OGRMultiPolygon>& multipartpolygons) const
+		{
+		std::vector<OGRPolygon*>mergedpolygons;
+		for (const OGRMultiPolygon& polygons : multipartpolygons)
+			{
+			OGRGeometry* geometry = polygons.UnionCascaded();
+			OGRPolygon* polygon = reinterpret_cast<OGRPolygon*>(geometry);
+			mergedpolygons.push_back(polygon);
+			}
+		return mergedpolygons;
+		}
+
+	void FMTareaparser::destroypolygons(std::vector<OGRPolygon*>& polygonstodestroy) const
+		{
+		for (OGRPolygon* polygon : polygonstodestroy)
+			{
+			OGRGeometryFactory::destroyGeometry(polygon);
+			}
+		polygonstodestroy.clear();
+		}
 
     bool FMTareaparser::writesasolution(const std::string location, const Spatial::FMTsasolution& solution,
                                         const std::vector<Core::FMTtheme>& themes, const std::vector<Core::FMTaction>& actions,
@@ -789,8 +811,7 @@ namespace Parser{
 				GDALClose(wdataset);
 			}catch (...)
 				{
-				_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
-					"at "+location,"FMTareaparser::writelayer", __LINE__, __FILE__, _section);
+				_exhandler->raisefromcatch("at "+location,"FMTareaparser::writelayer", __LINE__, __FILE__, _section);
 				}
             return true;
             }
@@ -800,13 +821,7 @@ namespace Parser{
 																						const double& buffersize) const
 				{
 				try {
-					std::vector<OGRPolygon*>mergedpolygons;
-					for (const OGRMultiPolygon& polygons : multipolygons)
-					{
-						OGRGeometry* geometry = polygons.UnionCascaded();
-						OGRPolygon* polygon = reinterpret_cast<OGRPolygon*>(geometry);
-						mergedpolygons.push_back(polygon);
-					}
+					std::vector<OGRPolygon*>mergedpolygons = this->getunion(multipolygons);
 					std::map<Core::FMTmask, std::vector<Core::FMTmask>>neighborhood;
 					for (size_t opareaindex = 0; opareaindex < operatingareas.size(); ++opareaindex)
 					{
@@ -873,24 +888,126 @@ namespace Parser{
 				return operatingareas;
 				}
 
+			std::vector<Heuristics::FMToperatingareacluster> FMTareaparser::getclustersfrompolygons(const std::vector<OGRPolygon>& polygons,
+																								const std::vector<double> statistics,
+																								const std::vector<Heuristics::FMToperatingarea>& operatingareas,
+																								const double& maximaldistance) const
+			{
+				std::vector<Heuristics::FMToperatingareacluster>clusters;
+				try {
+					if (!(polygons.size()==statistics.size() && polygons.size()==operatingareas.size()))
+						{
+						_exhandler->raise(Exception::FMTexc::FMTrangeerror,
+							"Invalid number of polygons / statistics / operating area",
+							"FMTareaparser::getclustersfrompolygons", __LINE__, __FILE__, _section);
+						}
+					std::map<Core::FMTmask, std::map<Core::FMTmask, double>>distances;
+					size_t opareaid = 0;
+					for (const OGRPolygon& polygon : polygons)
+						{
+						distances[operatingareas.at(opareaid).getmask()] = std::map<Core::FMTmask, double>();
+						++opareaid;
+						}
+					size_t mainopareaid = 0;
+					for (const Heuristics::FMToperatingarea& mainoparea : operatingareas)
+						{
+						OGRPoint maincentroid;
+						const Core::FMTmask mainmask = mainoparea.getmask();
+						polygons.at(mainopareaid).Centroid(&maincentroid);
+						size_t sideopareaid = 0;
+						std::vector<Heuristics::FMToperatingareaclusterbinary>binaries;
+						std::vector<size_t>polygonids;
+						for (const Heuristics::FMToperatingarea& sideoparea : operatingareas)
+							{
+							double distance;
+							const Core::FMTmask sidemask = sideoparea.getmask();
+							if (distances.at(mainmask).find(sidemask) !=
+								distances.at(mainmask).end())
+								{
+								distance = distances.at(mainmask).at(sidemask);
+								}else {
+								OGRPoint sidecentroid;
+								polygons.at(sideopareaid).Centroid(&sidecentroid);
+								distance = maincentroid.Distance(&sidecentroid);
+								distances[mainmask][sidemask] = distance;
+								distances[sidemask][mainmask] = distance;
+								}
+							if (distance <= maximaldistance && mainmask != sidemask)
+								{
+								binaries.push_back(Heuristics::FMToperatingareaclusterbinary(sideoparea, statistics[sideopareaid]));
+								polygonids.push_back(sideopareaid);
+								}
+							++sideopareaid;
+							}
+						//delete non neighboring operating area
+						binaries = Heuristics::FMToperatingareaclusterbinary(mainoparea,0).filterneighbors(binaries);
+						size_t binaryid = 0;
+						for (Heuristics::FMToperatingareaclusterbinary& binary : binaries)
+							{
+							std::vector<Core::FMTmask>linkerneighbors;
+							const OGRPolygon* binary_polygon = &polygons.at(polygonids.at(binaryid));
+							OGRPoint binarycentroid;
+							binary_polygon->Centroid(&binarycentroid);
+							OGRLineString linking_line;
+							linking_line.setPoint(0, &maincentroid);
+							linking_line.setPoint(0, &binarycentroid);
+							size_t subbinaryid = 0;
+							for (const Heuristics::FMToperatingareaclusterbinary& subbinary : binaries)
+								{
+								if (subbinary.getmask()!=binary.getmask() && subbinary.getmask()!= mainmask)
+									{
+									OGRPolygon subbinary_polygon = polygons.at(polygonids.at(subbinaryid));
+									OGRPoint subbinarycentroid;
+									subbinary_polygon.Centroid(&subbinarycentroid);
+									if (linking_line.Intersects(&subbinary_polygon))
+										{
+										linkerneighbors.push_back(subbinary.getmask());
+										}
+									}
+								++subbinaryid;
+								}
+							binary.setneighbors(linkerneighbors);
+							++binaryid;
+							}
+						Heuristics::FMToperatingareaclusterbinary basecentroid(mainoparea, statistics.at(mainopareaid));
+						basecentroid.setneighbors(std::vector<Core::FMTmask>());
+						clusters.push_back(Heuristics::FMToperatingareacluster(basecentroid,binaries));
+						++mainopareaid;
+						}
 
-			std::vector<Heuristics::FMToperatingarea> FMTareaparser::getneighbors(std::vector<Heuristics::FMToperatingarea> operatingareaparameters,
+				
+				}catch (...)
+					{
+					_exhandler->raisefromcatch("", "FMTareaparser::getclustersfrompolygons", __LINE__, __FILE__, _section);
+					}
+				return clusters;
+			}
+
+
+			std::vector<Heuristics::FMToperatingareascheme> FMTareaparser::getneighbors(std::vector<Heuristics::FMToperatingareascheme> operatingareaparameters,
 																			const std::vector<Core::FMTtheme>& themes, const std::string& data_vectors,
 																			const std::string& agefield, const std::string& areafield, double agefactor,
 																			double areafactor, std::string lockfield,
 																			double minimal_area , double buffersize) const
 				{
 				try {
-					std::vector<OGRMultiPolygon>multipolygons = this->getmultipolygons(operatingareaparameters, themes, data_vectors,
+					const std::vector<Heuristics::FMToperatingarea>baseoparea(operatingareaparameters.begin(), operatingareaparameters.end());
+					std::vector<OGRMultiPolygon>multipolygons = this->getmultipolygons(baseoparea, themes, data_vectors,
 						agefield, areafield, agefactor,
 						areafactor, lockfield, minimal_area);
-					return getneighborsfrompolygons(multipolygons, operatingareaparameters, buffersize);
+					const std::vector<Heuristics::FMToperatingarea>schemes = getneighborsfrompolygons(multipolygons, baseoparea, buffersize);
+					size_t opareaid = 0;
+					for (const Heuristics::FMToperatingarea& oparea : schemes)
+						{
+						operatingareaparameters[opareaid].setneighbors(oparea.getneighbors());
+						}
+					++opareaid;
 				}catch (...)
 				{
 					_exhandler->printexceptions("", "FMTareaparser::getneighbors", __LINE__, __FILE__, _section);
 				}
 
-				return std::vector<Heuristics::FMToperatingarea>();
+				return std::vector<Heuristics::FMToperatingareascheme>();
 				}
 		#endif
 #endif

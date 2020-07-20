@@ -1485,7 +1485,7 @@ bool FMTlpmodel::locatenodes(const std::vector<Core::FMToutputnode>& nodes, int 
 		return graph.getfirstactiveperiod();
 		}
 
-	std::vector<Heuristics::FMToperatingareaheuristic>FMTlpmodel::getoperatingareaheuristics(const std::vector<Heuristics::FMToperatingarea>& opareas,
+	std::vector<Heuristics::FMToperatingareascheduler>FMTlpmodel::getoperatingareaschedulerheuristics(const std::vector<Heuristics::FMToperatingareascheme>& opareas,
 																						const Core::FMToutputnode& node,
 																						size_t numberofheuristics,
 																						bool copysolver)
@@ -1493,7 +1493,7 @@ bool FMTlpmodel::locatenodes(const std::vector<Core::FMToutputnode>& nodes, int 
 		bool userandomness = false;
 		size_t seedof = 0;
 		double proportionofset = 0.25;
-		std::vector<Heuristics::FMToperatingareaheuristic>allheuristics;
+		std::vector<Heuristics::FMToperatingareascheduler>allheuristics;
 		try {
 			allheuristics.emplace_back(opareas, graph, *this, node, *this, seedof, proportionofset, userandomness, copysolver);
 			for (size_t heuristicid = 1 ; heuristicid < numberofheuristics; ++heuristicid)

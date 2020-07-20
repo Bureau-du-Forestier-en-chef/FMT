@@ -10,7 +10,8 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 
 #include "FMToperatingarea.h"
-#include "FMToperatingareaheuristic.h"
+#include "FMToperatingareascheduler.h"
+#include "FMToperatingareascheme.h"
 #include "FMTlpsolver.h"
 #include "Rdefinitions.h"
 #include <Rcpp.h>
@@ -19,9 +20,12 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 	RCPP_EXPOSED_WRAP(Heuristics::FMToperatingarea);
 	RCPP_EXPOSED_AS(Heuristics::FMToperatingarea);
 	RCPP_DEFINEVECTOR(Heuristics::FMToperatingarea);//For vector
-	RCPP_EXPOSED_WRAP(Heuristics::FMToperatingareaheuristic);
-	RCPP_EXPOSED_AS(Heuristics::FMToperatingareaheuristic);
-	RCPP_DEFINEVECTOR(Heuristics::FMToperatingareaheuristic);//For vector
+	RCPP_EXPOSED_WRAP(Heuristics::FMToperatingareascheme);
+	RCPP_EXPOSED_AS(Heuristics::FMToperatingareascheme);
+	RCPP_DEFINEVECTOR(Heuristics::FMToperatingareascheme);//For vector
+	RCPP_EXPOSED_WRAP(Heuristics::FMToperatingareascheduler);
+	RCPP_EXPOSED_AS(Heuristics::FMToperatingareascheduler);
+	RCPP_DEFINEVECTOR(Heuristics::FMToperatingareascheduler);//For vector
 #endif
 
 namespace R
@@ -33,8 +37,7 @@ void exportHeuristics()
 
 	Rcpp::class_<Heuristics::FMToperatingarea>("FMToperatingarea", "@DocString(FMToperatingarea)")
 		.constructor("@DocString(FMToperatingarea())")
-		.constructor<Core::FMTmask, size_t, size_t, size_t,size_t,double,double>(
-			"@DocString(FMToperatingarea(const Core::FMTmask&,const size_t&,const size_t&,const size_t&,const size_t&,const double&,const double&))")
+		.constructor<Core::FMTmask,double>("@DocString(FMToperatingarea(const Core::FMTmask&,const double&))")
 		.method("getneighbors", &Heuristics::FMToperatingarea::getneighbors,
 			"@DocString(FMToperatingarea::getneighbors)")
 		.method("setneighbors", &Heuristics::FMToperatingarea::setneighbors,
@@ -43,18 +46,25 @@ void exportHeuristics()
 			"@DocString(FMToperatingarea::getmask)")
 		.method("getneihgborsperimeter", &Heuristics::FMToperatingarea::getneihgborsperimeter,
 			"@DocString(FMToperatingarea::getneihgborsperimeter)");
+
+	Rcpp::class_<Heuristics::FMToperatingareascheme>("FMToperatingareascheme", "@DocString(FMToperatingareascheme)")
+		.derives<Heuristics::FMToperatingarea>("FMToperatingarea")
+		.constructor("@DocString(FMToperatingareascheme())")
+		.constructor<Heuristics::FMToperatingarea,size_t,size_t,size_t,size_t,size_t>("@DocString(FMToperatingareascheme(const Heuristics::FMToperatingarea&,const size_t&,const size_t&,const size_t&, const size_t&, const size_t&))");
 		
-
-
-	Rcpp::class_<Heuristics::FMToperatingareaheuristic>("FMToperatingareaheuristic","@DocString(FMToperatingareaheuristic)")
+	Rcpp::class_<Heuristics::FMTlpheuristic>("FMTlpheuristic", "@DocString(FMTlpheuristic)")
 		.derives<Core::FMTobject>("FMTobject")
+		.constructor("@DocString(FMTlpheuristic())");
+
+	Rcpp::class_<Heuristics::FMToperatingareascheduler>("FMToperatingareascheduler","@DocString(FMToperatingareascheduler)")
+		.derives<Heuristics::FMTlpheuristic>("FMTlpheuristic")
 		//.derives<Models::FMTlpsolver>("FMTlpsolver")
-		.constructor("@DocString(FMToperatingareaheuristic())")
-		.method("initialsolve", &Heuristics::FMToperatingareaheuristic::initialsolve,
-			"@DocString(FMToperatingareaheuristic::initialsolve)")
-		.method("branchnboundsolve", &Heuristics::FMToperatingareaheuristic::branchnboundsolve,
+		.constructor("@DocString(FMToperatingareascheduler())")
+		.method("initialsolve", &Heuristics::FMToperatingareascheduler::initialsolve,
+			"@DocString(FMToperatingareascheduler::initialsolve)")
+		.method("branchnboundsolve", &Heuristics::FMToperatingareascheduler::branchnboundsolve,
 			"@DocString(FMToperatingareaheuristic::branchnboundsolve)")
-		.method("getsolution", &Heuristics::FMToperatingareaheuristic::getsolution,
+		.method("getsolution", &Heuristics::FMToperatingareascheduler::getsolution,
 			"@DocString(FMToperatingareaheuristic::getsolution)");
 
 	#endif 

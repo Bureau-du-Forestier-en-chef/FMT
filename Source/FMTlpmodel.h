@@ -43,7 +43,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTmodel.h"
 #include "FMTlpsolver.h"
 #include "FMTsolverinterface.h"
-#include "FMToperatingareaheuristic.h"
+#include "FMToperatingareascheduler.h"
 #include <boost/serialization/export.hpp>
 
 
@@ -367,7 +367,7 @@ class FMTlpmodel : public FMTmodel, public FMTlpsolver
 		of the FMTlpmodel (if numberofheuristics == 1 and copysolver == true). The user can than decide to change
 		some parameters of heuristics that are in the vectors.
 		*/
-		std::vector<Heuristics::FMToperatingareaheuristic>getoperatingareaheuristics(const std::vector<Heuristics::FMToperatingarea>& opareas,
+		std::vector<Heuristics::FMToperatingareascheduler>getoperatingareaschedulerheuristics(const std::vector<Heuristics::FMToperatingareascheme>& opareas,
 																				const Core::FMToutputnode& node,
 																				size_t numberofheuristics=1,
 																				bool copysolver=true);
