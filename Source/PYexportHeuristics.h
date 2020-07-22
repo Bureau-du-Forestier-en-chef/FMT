@@ -53,7 +53,6 @@ void exportHeuristics()
 
 
 	bp::class_<Heuristics::FMToperatingareascheduler, bp::bases<Heuristics::FMTlpheuristic>>("Heuristics::FMToperatingareascheduler", "@DocString(FMToperatingareascheduler)")
-		.def_pickle(FMT_pickle_suite<Heuristics::FMToperatingareascheduler>())
 		.def("initialsolve", &Heuristics::FMToperatingareascheduler::initialsolve,
 			"@DocString(FMToperatingareaheuristic::initialsolve)")
 		.def("branchnboundsolve", &Heuristics::FMToperatingareascheduler::branchnboundsolve,

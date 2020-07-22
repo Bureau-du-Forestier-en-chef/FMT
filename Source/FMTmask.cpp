@@ -184,6 +184,15 @@ FMTmask FMTmask::getunion(const FMTmask& rhs) const
 	return newmask;
 	}
 
+FMTmask FMTmask::getintersect(const FMTmask& rhs) const
+	{
+	FMTmask newmask(*this);
+	newmask.name.clear();
+	newmask.data &= rhs.data;
+	return newmask;
+	}
+
+
 FMTmask::FMTmask(const FMTmask& rhs) : name(rhs.name),data(rhs.data)
             {
 

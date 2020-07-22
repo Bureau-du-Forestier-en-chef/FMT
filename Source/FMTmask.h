@@ -233,6 +233,12 @@ class FMTmask
 		Do a union operation on the dynamic bitset of the FMTmask and the given FMTmask (rhs).
 		*/
 		FMTmask getunion(const FMTmask& rhs) const;
+		// DocString: FMTmask::getintersect
+		/**
+		Do a intersection operation on the dynamic bitset of the FMTmask and the given FMTmask (rhs).
+		*/
+		FMTmask getintersect(const FMTmask& rhs) const;
+
 		// DocString: FMTmask::operator=
 		/**
 		FMTmask copy assignment operator.

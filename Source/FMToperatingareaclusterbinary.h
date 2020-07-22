@@ -14,6 +14,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <boost/serialization/nvp.hpp>
 #include <boost/serialization/export.hpp>
 #include "FMToperatingarea.h"
+#include "FMToutput.h"
 
 namespace Heuristics
 {
@@ -38,8 +39,9 @@ namespace Heuristics
 		FMToperatingareaclusterbinary(const FMToperatingareaclusterbinary&) = default;
 		FMToperatingareaclusterbinary& operator = (const FMToperatingareaclusterbinary&) = default;
 		~FMToperatingareaclusterbinary() = default;
-		FMToperatingareaclusterbinary(const FMToperatingarea& oparea, const double& lstat);
+		FMToperatingareaclusterbinary(const FMToperatingarea& oparea);
 		std::vector<FMToperatingareaclusterbinary> filterneighbors(std::vector<FMToperatingareaclusterbinary> potentiallink) const;
+		Core::FMToutput getoutputintersect(const Core::FMToutput& output) const;
 		inline const int& getvariable() const
 			{
 			return variable;

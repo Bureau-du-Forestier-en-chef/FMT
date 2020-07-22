@@ -58,6 +58,11 @@ namespace Heuristics
 		///The initial area of the operating area used as big M for the MIP.
 		double _area;
 		public:
+			// DocString: FMToperatingarea::operator+=
+			/**
+			Add area to the operating area.
+			*/
+			FMToperatingarea& operator += (const double& value);
 			// DocString: FMToperatingarea::getneighbors
 			/**
 			Getter returning a copy of the neighbors masks data of the operatingarea.

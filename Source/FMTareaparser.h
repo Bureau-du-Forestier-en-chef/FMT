@@ -58,6 +58,17 @@ class FMTareaparser : public FMTparser
 													const Spatial::FMTforest& newfor,
 													const std::vector<Core::FMTtheme>& themes) const;
 		#ifdef FMTWITHGDAL
+			// DocString: FMTareaparser::getunion
+				/**
+				Simply call a union cascaded on all multipartpolygons to create single polygon for each multipart.
+				You need to call the destroypolygons function after to make sure no memory leaks appear.
+				*/
+			std::vector<OGRPolygon*> getunion(const std::vector<OGRMultiPolygon>& multipartpolygons) const;
+			// DocString: FMTareaparser::destroypolygons
+			/**
+			Will destroy all heap allocaed OGRpolygon in the vector.
+			*/
+			void destroypolygons(std::vector<OGRPolygon*>& polygonstodestroy) const;
 			// DocString: FMTareaparser::getfeaturetodevelopment
 			/**
 			When the FMTareaparser read features from a shapefile it needs to convert this feature into
@@ -109,23 +120,16 @@ class FMTareaparser : public FMTparser
 			It returns a vector of FMToperatingarea but with theirs neighbors data member filled.
 			The buffersize is the width of the buffer used to determine the amount of perimeter shared between each operating area.
 			*/
-			std::vector<Heuristics::FMToperatingarea> getneighborsfrompolygons(const std::vector<OGRMultiPolygon>& multipolygons,
+			std::vector<Heuristics::FMToperatingarea> getneighborsfrompolygons(const std::vector<OGRPolygon*>&polygons,
 																			std::vector<Heuristics::FMToperatingarea> operatingareas,
 																	const double& buffersize) const;
-			// DocString: FMTareaparser::getunion
+			
+			// DocString: FMTareaparser::getclustersfrompolygons
 			/**
-			Simply call a union cascaded on all multipartpolygons to create single polygon for each multipart.
-			You need to call the destroypolygons function after to make sure no memory leaks appear.
+			Base on a list of polygons and a list of corresponding operatingareas it returns a list of potential cluster of those
+			FMToperating area based on a maximal clustering distance.
 			*/
-			std::vector<OGRPolygon*> getunion(const std::vector<OGRMultiPolygon>& multipartpolygons) const;
-			// DocString: FMTareaparser::destroypolygons
-			/**
-			Will destroy all heap allocaed OGRpolygon in the vector.
-			*/
-			void destroypolygons(std::vector<OGRPolygon*>& polygonstodestroy) const;
-
-			std::vector<Heuristics::FMToperatingareacluster> getclustersfrompolygons(const std::vector<OGRPolygon>& multipolygons,
-																		const std::vector<double> statistics,
+			std::vector<Heuristics::FMToperatingareacluster> getclustersfrompolygons(const std::vector<OGRPolygon*>&polygons,
 																		const std::vector<Heuristics::FMToperatingarea>& operatingareas,
 																		const double& maximaldistance) const;
 
@@ -193,18 +197,31 @@ class FMTareaparser : public FMTparser
                             int periodstart=-1,
                             int periodstop=-1) const;
 		#ifdef FMTWITHOSI
-			// DocString: FMTareaparser::getneighbors
+			// DocString: FMTareaparser::getschemeneighbors
 			/**
 			Using a vector of operating area (operatingareaparameters), a complete vector of FMTtheme (themes), a vector file (data_vectors),
 			the name of the age field name (agefield) an area field name (areafield), an (gefactor), an (areafactor), an optional (lockfield) name,
 			a (minimal_area) : the minimal area parameters indicate that if a feature has an area lower than the minimal area it wont be selected.
 			For (buffersize) see getneighborsfrompolygons function. The returned operating area will have theirs neighboors vector filled.
 			*/
-			std::vector<Heuristics::FMToperatingareascheme> getneighbors(std::vector<Heuristics::FMToperatingareascheme> operatingareaparameters,
+			std::vector<Heuristics::FMToperatingareascheme> getschemeneighbors(std::vector<Heuristics::FMToperatingareascheme> operatingareaparameters,
 							const std::vector<Core::FMTtheme>& themes,const std::string& data_vectors,
 							const std::string& agefield, const std::string& areafield, double agefactor = 1.0,
 							double areafactor = 1, std::string lockfield = "",
 							double minimal_area = 0.0,double buffersize= 100) const;
+			// DocString: FMTareaparser::getclusters
+			/**
+			Using a vector of operating area (operatingareaparameters), a complete vector of FMTtheme (themes), a vector file (data_vectors),
+			the name of the age field name (agefield) an area field name (areafield), an (gefactor), an (areafactor), an optional (lockfield) name,
+			a (minimal_area) : the minimal area parameters indicate that if a feature has an area lower than the minimal area it wont be selected.
+			For (buffersize) see getneighborsfrompolygons function. The returned operating area clusters with their linker mask.
+			*/
+			std::vector<Heuristics::FMToperatingareacluster> getclusters(const std::vector<Heuristics::FMToperatingarea>& operatingareas,
+							const std::vector<Core::FMTtheme>& themes, const std::string& data_vectors,
+							const std::string& agefield, const std::string& areafield,const double& maximaldistance,
+							double agefactor = 1.0,double areafactor = 1, std::string lockfield = "",
+							double minimal_area = 0.0, double buffersize = 100) const;
+
 		#endif
 		// DocString: FMTareaparser::readvectors
 		/**

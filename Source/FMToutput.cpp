@@ -612,6 +612,20 @@ std::vector<std::string> FMToutput::getdecomposition(const std::vector<FMTtheme>
 	return validdecomp;
 	}
 
+FMToutput FMToutput::intersectwithmask(const Core::FMTmask& mask) const
+	{
+	FMToutput newoutput(*this);
+	for (FMToutputsource& source : newoutput.sources)
+		{
+		if (source.isvariable())
+			{
+			source.setmask(source.getmask().getintersect(mask));
+			}
+		}
+	return newoutput;
+	}
+
+
 void FMToutput::setperiod(const int& newperiod)
 	{
 	for (FMToutputsource& source : sources)

@@ -1,29 +1,27 @@
-
-
-Read this in other languages: [English](README.md), [Français](README.fr.md)
+Read this using other languages: [English](README.md), [Français](README.fr.md)
 
 ## FMT is an open source Forest Management library
 
-FMT is a C++ library made to interpret forest planning models based on Woodstock files formulation. FMT can be used through Python, Cran-R or directly from C++. FMT's generic approach to forest planning gives the opportunity to the user to manipulate forest planning models and generate forest planning solutions. The objective behind this project is to bring all forest planning models types onto the same generic library to help the community to develop new approaches to forest planning problem or improve the one that have been there for years.
+FMT is a C++ library made to interpret forest planning models based on Woodstock files formulation. FMT can be used through Python, Cran-R or directly from C++. FMT's generic approach to forest planning gives the opportunity to the user to manipulate forest planning models and generate forest planning solutions. The objective behind this project is to bring all forest planning models types onto the same generic library to help the community to develop new approaches to forest planning problems or improve the one that have been there for years.
 
-## License
+## License 
 
-FMT is a liliQ-R 1.1 licensed library [LICENSES\EN](LILIQ-R11EN.txt) for more information.
+FMT is a LiLiQ-R 1.1 licensed library [LICENSES\EN](LILIQ-R11EN.txt) for more information.
 
 ## Why FMT?
 
-### Spatialy referenced forest planning
+### Spatially referenced forest planning
 
-FMT gives the opportunity to the user to generate spatialy referenced type III forest planning model problems and solve it. The tool can be used to do sensibility analysis over multiple parameters of the forest planning model. It can also be used for analysing impact of stochastics events such as fire or spruce budworm using Replanning.
+FMT gives the opportunity to the user to generate and solve spatially referenced type III forest planning model problems. The tool can be used to do sensitivity analyses over multiple parameters of the forest planning model. It can also be used for analysing impacts of stochastic events such as fire or spruce budworm using Replanning.
 
 
-### Spatialy explicit forest planning
+### Spatially explicit forest planning
 
-FMT gives a framework to construct heuristics to solve forest planning model. FMT is the perfect tool to solve user specific problem related to forest planning like operating area scheduling. It can also be used to implement simple simulation process. The library offers some tools to spatialize spatialy referenced solution or to generate spatialy explicit solution.
+FMT gives a framework to construct heuristics to solve forest planning model. FMT is the perfect tool to solve user specific problems related to forest planning like operating area scheduling. It can also be used to implement simple simulation process. The library offers some tools to spatialize spatially referenced solutions or to generate spatially explicit solutions.
 FMT is extremely usefull when it comes to implement metaheuristics such has Simulated Annealing, Genetic or Tabu Search into a forest planning context.
 
-If your main inputs are Woodstock files FMT is probably the way to go to develop new approaches for optimizing or simulating
-harvest scheduling or even stochastic events.
+If your main inputs are Woodstock files FMT is probably the way to go to develop new approaches for optimization or simulation
+of harvest schedules or even stochastic events.
 
 
 ## Dependencies
@@ -32,18 +30,18 @@ harvest scheduling or even stochastic events.
   + Boost compiled with zlib. (http://boost.org)
 ### Optional :
   + GEOS library (http://trac.orgeo.org/geos/)
-  + GDAL 2.3 > library (http://GDAL.org)
+  + GDAL library (http://GDAL.org)
   + Mosek library (http://mosek.com)
   + OSI library throught the CBC solver (http://github.com/coin/Cbc)
   + Boost Python library
   + Rcpp and cran-R with at least Rtools40 (http://cran.r-project.org)
-
+  
 ## How to use FMT?
 
 The easiest way to use FMT is to use the cmake >= 3.15 and generate a shared library. The cmake script supports generating FMT on Windows using VS2017 or MINGW-64 on MSYS2 or CYGWIN.
 
 + Generating FMT as a Python library on Visual studio 2017:
-
+ 
  ```powershell
  ::Providing the -DPYTHON_DIR will make the script generate a .pyd using Boost Python
  ::You cannot generate an Rcpp module .dll with VS so dont use -DR_DIR with VS
@@ -87,7 +85,7 @@ The easiest way to use FMT is to use the cmake >= 3.15 and generate a shared lib
   cd Documentation
   doxygen FMTdoxygenconfig
  ```
-+ To populate comments into R and Python sources files (files starting with R and PY):
++ To populate comments into R and Python source files (files starting with R and PY):
 
  ```powershell
   cd Documentation
@@ -169,4 +167,3 @@ for (const Core::FMTconstraint& constraint : constraints)
 optimizationmodel.initialsolve();
 ```
 [![License](http://img.shields.io/:license-liliqR11-blue.svg?style=flat-square)](https://forge.gouv.qc.ca/licence/liliq-v1-1/#r%C3%A9ciprocit%C3%A9-liliq-r)
-

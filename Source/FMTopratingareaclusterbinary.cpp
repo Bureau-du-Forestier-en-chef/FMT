@@ -14,10 +14,15 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 namespace Heuristics
 {
 
-	FMToperatingareaclusterbinary::FMToperatingareaclusterbinary(const FMToperatingarea& oparea, const double& lstat) :
-		FMToperatingarea(oparea), statistic(lstat)
+	FMToperatingareaclusterbinary::FMToperatingareaclusterbinary(const FMToperatingarea& oparea) :
+		FMToperatingarea(oparea), statistic()
 		{
 
+		}
+
+	Core::FMToutput FMToperatingareaclusterbinary::getoutputintersect(const Core::FMToutput& output) const
+		{
+		return output.intersectwithmask(getmask());
 		}
 
 	std::vector<FMToperatingareaclusterbinary> FMToperatingareaclusterbinary::filterneighbors(std::vector<FMToperatingareaclusterbinary> potentiallink) const

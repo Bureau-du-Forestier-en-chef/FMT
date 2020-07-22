@@ -264,6 +264,11 @@ class FMToutput: public FMTobject
 	else returns a empty vector, based on the model (themes).
 	*/
 	std::vector<std::string>getdecomposition(const std::vector<FMTtheme>& themes) const;
+	// DocString: FMToutput::intersectwithmask
+	/**
+	Returns the intersected FMToutput resulting from the mask intersection with this output.
+	*/
+	FMToutput intersectwithmask(const Core::FMTmask& mask) const;
 	// DocString: FMToutput::presolve
 	/**
 	Presolve the FMToutput and remove unused outputsource base on a (basemask), original themes (originalthemes)

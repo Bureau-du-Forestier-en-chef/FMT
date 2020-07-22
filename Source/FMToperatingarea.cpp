@@ -13,6 +13,13 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 namespace Heuristics
 {
 
+FMToperatingarea& FMToperatingarea::operator += (const double& value)
+	{
+	this->_area += value;
+	return *this;
+	}
+
+
 double FMToperatingarea::getarea() const
 	{
 	return _area;

@@ -74,8 +74,8 @@ void exportParser()
 					.method("writedisturbances",&Parser::FMTareaparser::writedisturbances,
 						"@DocString(FMTareaparser::writedisturbances)")
 					#ifdef FMTWITHOSI
-						.method("getneighbors",&Parser::FMTareaparser::getneighbors,
-							"@DocString(FMTareaparser::getneighbors)")
+						.method("getschemeneighbors",&Parser::FMTareaparser::getschemeneighbors,
+							"@DocString(FMTareaparser::getschemeneighbors)")
 					#endif
 				#endif
 				.method("write", &Parser::FMTareaparser::write,
