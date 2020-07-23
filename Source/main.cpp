@@ -12,7 +12,6 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTModels.h"
 #include "FMTSpatials.h"
 #include "FMTversion.h"
-#include "FMToperatingareascheduler.h"
 
 #if defined FMTWITHPYTHON
 #include "FMTpythonpickle.h"
@@ -101,7 +100,7 @@ extern "C"
 		}
 
 // declarations
-extern "C" 
+extern "C"
 	{
 	SEXP FMT();
 	}
