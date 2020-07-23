@@ -20,6 +20,26 @@ namespace Heuristics
 
 		}
 
+	void FMToperatingareaclusterbinary::setstatistic(const double& statvalue)
+		{
+		statistic = statvalue;
+		}
+
+	void FMToperatingareaclusterbinary::setvariable(const int& lvariable)
+		{
+		variable = lvariable;
+		}
+
+	void FMToperatingareaclusterbinary::setmaximalrow(const int& lmaxrow)
+		{
+		maxrow = lmaxrow;
+		}
+
+	void FMToperatingareaclusterbinary::setminimalrow(const int& lminrow)
+		{
+		minrow = lminrow;
+		}
+
 	Core::FMToutput FMToperatingareaclusterbinary::getoutputintersect(const Core::FMToutput& output) const
 		{
 		return output.intersectwithmask(getmask());

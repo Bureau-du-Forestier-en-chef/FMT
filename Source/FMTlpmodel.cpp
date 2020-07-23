@@ -43,6 +43,38 @@ namespace Models
         return stats;
 	}
 
+	Heuristics::FMToperatingareaclusterer FMTlpmodel::getclusterer(
+		const std::vector<Heuristics::FMToperatingareacluster>& initialcluster,
+		const Core::FMToutput& output, const int& period, const double& minimalarea, const double& maximalarea,
+		const int& minimalnumberofclusters, const int& maximalnumberofclusters) const
+	{
+		Heuristics::FMToperatingareaclusterer newclusterer;
+		try {
+			std::vector<Heuristics::FMToperatingareacluster>newclusters;
+			for (const Heuristics::FMToperatingareacluster& originalcluster : initialcluster)
+				{
+				Heuristics::FMToperatingareaclusterbinary centroid = originalcluster.getcentroid();
+				std::vector<Heuristics::FMToperatingareaclusterbinary>allbinaries = originalcluster.getbinaries();
+				const Core::FMToutput& centroidoutput = centroid.getoutputintersect(output);
+				const std::map<std::string, double> centroidvalue = this->getoutput(centroidoutput, period);
+				centroid.setstatistic(centroidvalue.at("Total"));
+				for (Heuristics::FMToperatingareaclusterbinary& binary : allbinaries)
+					{
+					const Core::FMToutput& binaryoutput = binary.getoutputintersect(output);
+					const std::map<std::string, double> binaryvalue = this->getoutput(binaryoutput, period);
+					binary.setstatistic(binaryvalue.at("Total"));
+					}
+				newclusters.push_back(Heuristics::FMToperatingareacluster(centroid,allbinaries));
+				}
+			newclusterer = Heuristics::FMToperatingareaclusterer(newclusters, minimalarea, maximalarea,
+															minimalnumberofclusters,maximalnumberofclusters);
+		}catch (...)
+			{
+			_exhandler->raisefromcatch("", "FMTlpmodel::getclusterer", __LINE__, __FILE__);
+			}
+		return newclusterer;
+	}
+
 	bool FMTlpmodel::boundsolution(int period,double tolerance)
 	{
 		try {
@@ -454,7 +486,7 @@ namespace Models
 
 
 
-	std::map<std::string, double> FMTlpmodel::getoutput(const Core::FMToutput& output,int period, Graph::FMToutputlevel level)
+	std::map<std::string, double> FMTlpmodel::getoutput(const Core::FMToutput& output,int period, Graph::FMToutputlevel level) const
 	{
 		try {
 			const double* solution = this->getColSolution();

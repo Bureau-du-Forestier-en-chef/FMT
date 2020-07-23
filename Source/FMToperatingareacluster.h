@@ -43,7 +43,12 @@ namespace Heuristics
 		FMToperatingareacluster& operator = (const FMToperatingareacluster&) = default;
 		~FMToperatingareacluster() = default;
 		const FMToperatingareaclusterbinary& getbinary(const Core::FMTmask& mask) const;
-
+		FMToperatingareaclusterbinary getcentroid() const;
+		std::vector<FMToperatingareaclusterbinary> getbinaries() const;
+		int getmaximalobjectivevariable() const;
+		int getminimalobjectivevariable() const;
+		void setmaximalobjectivevariable(const int& lmaxvar);
+		void setminimalobjectivevariable(const int& lminvar);
 	};
 }
 

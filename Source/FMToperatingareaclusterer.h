@@ -15,14 +15,26 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #define FMToperatingareaclusterer_H_INCLUDED
 namespace Heuristics
 {
-class FMToperatingareascheduler : public FMTlpheuristic
+class FMToperatingareaclusterer : public FMTlpheuristic
 	{
 	std::vector<FMToperatingareacluster>clusters;
+	double minimalarea;
+	double maximalarea;
+	int minimalnumberofclusters;
+	int maximalnumberofclusters;
+	void addmaxminobjective(const FMToperatingareacluster& cluster, const FMToperatingareaclusterbinary& binary,
+		const std::vector<FMToperatingareaclusterbinary>& binaries);
+	void buildclustersvariables();
+	void addobjective();
+	void addareaconstraints();
 	public:
-		FMToperatingareascheduler() = default;
-		FMToperatingareascheduler(const FMToperatingareascheduler&) = default;
-		FMToperatingareascheduler& operator = (const FMToperatingareascheduler&) = default;
-		~FMToperatingareascheduler() = default;
+		FMToperatingareaclusterer() = default;
+		FMToperatingareaclusterer(const std::vector<FMToperatingareacluster>& lclusters,
+								const double& lminimalarea, const double& lmaximalarea,
+								const int& minimalnumberofclusters,const int& maximalnumberofclusters);
+		FMToperatingareaclusterer(const FMToperatingareaclusterer&) = default;
+		FMToperatingareaclusterer& operator = (const FMToperatingareaclusterer&) = default;
+		~FMToperatingareaclusterer() = default;
 
 	};
 }

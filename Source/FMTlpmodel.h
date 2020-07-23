@@ -44,6 +44,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTlpsolver.h"
 #include "FMTsolverinterface.h"
 #include "FMToperatingareascheduler.h"
+#include "FMToperatingareaclusterer.h"
 #include <boost/serialization/export.hpp>
 
 
@@ -128,6 +129,15 @@ class FMTlpmodel : public FMTmodel, public FMTlpsolver
 	*/
 	bool summarize(const std::map<int, double>& variables ,
 		std::vector<int>& sumvariables, std::vector<double>& sumcoefficiants) const;
+	// DocString: FMTlpmodel::getclusterer
+	/**
+	Using an output this function returns operating area cluster filled with statistic double comming from
+	the output for a given period.
+	*/
+	Heuristics::FMToperatingareaclusterer getclusterer(
+		const std::vector<Heuristics::FMToperatingareacluster>& initialcluster,
+		const Core::FMToutput& output, const int& period,const double& minimalarea,const double& maximalarea,
+		const int& minimalnumberofclusters, const int& maximalnumberofclusters) const;
 	// DocString: FMTlpmodel::initializematrix
 	/**
 	Initialize the solverinterface called once when the FMTgraph was empty after the first call of buildperiod.
@@ -297,7 +307,7 @@ class FMTlpmodel : public FMTmodel, public FMTlpsolver
 		or developement name if level == FMToutputlevel::developpement
 		*/
 		std::map<std::string, double> getoutput(const Core::FMToutput& output,
-			int period, Graph::FMToutputlevel level = Graph::FMToutputlevel::standard);
+			int period, Graph::FMToutputlevel level = Graph::FMToutputlevel::standard) const;
 		// DocString: FMTlpmodel::buildperiod
 		/**
 		This function is the main function used to build the graph and the matrix.

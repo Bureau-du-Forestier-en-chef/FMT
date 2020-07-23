@@ -142,11 +142,14 @@ namespace Logging
 			template<class T>
 			void logwithlevel(const T &msg,const int& messagelevel)
 				{
-				if (this->logLevel()>= messagelevel)
+				#ifdef FMTWITHOSI
+				if (this->logLevel() < messagelevel)
 					{
-					const std::string value = boost::lexical_cast<std::string>(msg);
-					this->cout(value.c_str());
+					return;
 					}
+				#endif
+				const std::string value = boost::lexical_cast<std::string>(msg);
+				this->cout(value.c_str());
 				}
 
 		};

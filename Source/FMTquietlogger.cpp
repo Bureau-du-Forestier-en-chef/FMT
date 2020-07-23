@@ -12,9 +12,11 @@ namespace Logging
 
 FMTquietlogger::FMTquietlogger()
 	{
-	this->setLogLevel(0);
+	#ifdef FMTWITHOSI
+		this->setLogLevel(0);
+	#endif
 	}
-
+#ifdef FMTWITHOSI
 int FMTquietlogger::print()
 	{
 	return FMTlogger::print();
@@ -29,5 +31,6 @@ CoinMessageHandler * FMTquietlogger::clone() const
 	{
 	return new FMTquietlogger(*this);
 	}
+#endif
 }
 

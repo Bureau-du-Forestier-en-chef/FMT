@@ -42,6 +42,10 @@ namespace Heuristics
 		FMToperatingareaclusterbinary(const FMToperatingarea& oparea);
 		std::vector<FMToperatingareaclusterbinary> filterneighbors(std::vector<FMToperatingareaclusterbinary> potentiallink) const;
 		Core::FMToutput getoutputintersect(const Core::FMToutput& output) const;
+		void setstatistic(const double& statvalue);
+		void setvariable(const int& lvariable);
+		void setmaximalrow(const int& lmaxrow);
+		void setminimalrow(const int& lminrow);
 		inline const int& getvariable() const
 			{
 			return variable;
