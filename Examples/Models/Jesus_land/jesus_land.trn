@@ -1,0 +1,15 @@
+*CASE Coupetotale
+*SOURCE  ? ? ?
+*TARGET  ? ? ?  100.0
+
+*CASE aCaribou
+*SOURCE ? ? ?
+*TARGET ? ? ? 100.00 _LOCK 1
+
+*CASE plantation
+*SOURCE  ? ? ?
+*TARGET  ? peuplement1 ?  100
+
+*CASE aFire
+*SOURCE ? ? ?
+*TARGET ? ? ? 100.00

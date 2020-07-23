@@ -1,7 +1,10 @@
-import sys,os,time,csv
+import sys
+sys.path.append("../../")
+sys.path.append("../../Release")
 from FMT import Models
 from FMT import Parser
 from FMT import Core
+from FMT import Version
 
 def getstochasticactionsntransitions(basemodel,actionames):
     stochasticactions=[]
@@ -16,10 +19,10 @@ def doreplanning(solvedglobal,baselocal,basestochastic,seed,replanningrange):
     simulationmodel = Models.FMTnssmodel(basestochastic,seed)
     objectivevalues = []
     for replanningperiod in replanningrange:
-        localmodel=Models.FMTlpmodel(baselocal,Models.FMTsolverinterface.MOSEK)
-        simulationmodel.setarea(optmodel.getarea(replanningperiod))
+        localmodel=Models.FMTlpmodel(baselocal,Models.FMTsolverinterface.CLP)
+        simulationmodel.setarea(solvedglobal.getarea(replanningperiod))
         disturbed = simulationmodel.simulate(actionsproportions)
-        potentialpaths = (disturbed + optmodel.getsolution(replanningperiod))
+        potentialpaths = (disturbed + solvedglobal.getsolution(replanningperiod))
         potentialpaths.setperiod(1)
         localmodel.setarea(simulationmodel.getarea())
         localmodel.setareaperiod(0)
@@ -30,15 +33,15 @@ def doreplanning(solvedglobal,baselocal,basestochastic,seed,replanningrange):
         if localmodel.initialsolve():
             completelocalschedule = localmodel.getsolution(1) + disturbed
             completelocalschedule.setperiod(replanningperiod)
-            optmodel.setsolution(replanningperiod, completelocalschedule)
-            optmodel.eraseperiod(true)
-            if optmodel.boundsolution(replanningperiod):
-                optmodel.eraseperiod()
-                optmodel.buildperiod()
-                optmodel.setobjective(objective)
+            solvedglobal.setsolution(replanningperiod, completelocalschedule)
+            solvedglobal.eraseperiod(true)
+            if solvedglobal.boundsolution(replanningperiod):
+                solvedglobal.eraseperiod()
+                solvedglobal.buildperiod()
+                solvedglobal.setobjective(objective)
                 for constraint in constraints:
-                    optmodel.setconstraint(constraint)
-                if not optmodel.resolve():
+                    solvedglobal.setconstraint(constraint)
+                if not solvedglobal.resolve():
                     print("Infeasible after constraints added")
                     break
             else:
@@ -54,33 +57,35 @@ def doreplanning(solvedglobal,baselocal,basestochastic,seed,replanningrange):
 
 
 if __name__ == "__main__":
-    modelparser = Parser.FMTmodelparser()
-    path = "D:/MrnMicro/localQCmodel/PC_PROV.pri";
-    scenarios = ["04_psa","04_fire"]
-    models = mparser.readproject(path, scenarios)
-    globalmodel = Models.FMTlpmodel(models[0], Models.FMTsolverinterface.MOSEK)
-    stochasticactions,stochastictransitions=getstochasticactionsntransitions(models[1],["AFIRE","ASBW"])
-    stochasticmodel = Models.FMTmodel(models[1])
-    stochasticmodel.setactions(stochasticactions)
-    stochasticmodel.settransitions(stochastictransitions)
-    simulationmodel.setactions(stochasticactions)
-    simulationmodel.settransitions(stochastictransitions)
-    globalactions = globalmodel.getactions()
-    globaltransitions = globalmodel.gettransitions()
-    globalactions+=stochasticactions
-    globaltransitions+=stochastictransitions
-    globalmodel.setactions(globalactions)
-    globalmodel.settransitions(globaltransitions)
-    for period in range(0,10):
-        globalmodel.buildperiod()
-    constraints = globalmodel.getconstraints()
-    objective = constraints.pop(0)
-    globalmodel.setobjective(objective)
-    for constraint in constraints:
-        globalmodel.setconstraint(constraint)
-    actionsproportions = [0.001,0]
-    globalmodel.initialsolve()
-    iterationvalues = []
-    for iteration in range(0,100):
-        iterationvalues.append(doreplanning(globalmodel,models[1],stochasticmodel,iteration,range(1,11)))
-    print(iterationvalues)
+    if Version.FMTversion().hasfeature("OSI"):
+        modelparser = Parser.FMTmodelparser()
+        path = "../Models/Jesus_land/jesus_land.pri"
+        scenarios = ["LP","LPwfire"]
+        models = modelparser.readproject(path, scenarios)
+        print(models)
+        globalmodel = Models.FMTlpmodel(models[0], Models.FMTsolverinterface.CLP)
+        stochasticactions,stochastictransitions=getstochasticactionsntransitions(models[1],["AFIRE"])
+        stochasticmodel = Models.FMTmodel(models[1])
+        stochasticmodel.setactions(stochasticactions)
+        stochasticmodel.settransitions(stochastictransitions)
+        globalactions = globalmodel.getactions()
+        globaltransitions = globalmodel.gettransitions()
+        globalactions+=stochasticactions
+        globaltransitions+=stochastictransitions
+        globalmodel.setactions(globalactions)
+        globalmodel.settransitions(globaltransitions)
+        for period in range(0,10):
+            globalmodel.buildperiod()
+        constraints = globalmodel.getconstraints()
+        objective = constraints.pop(0)
+        globalmodel.setobjective(objective)
+        for constraint in constraints:
+            globalmodel.setconstraint(constraint)
+        actionsproportions = [0.001]
+        globalmodel.initialsolve()
+        iterationvalues = []
+        for iteration in range(0,100):
+            iterationvalues.append(doreplanning(globalmodel,models[1],stochasticmodel,iteration,range(1,11)))
+        print(iterationvalues)
+    else:
+        print("FMT needs to be compiled with OSI")

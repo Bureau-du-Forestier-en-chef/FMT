@@ -8,6 +8,7 @@
 *.depend
 *.layout
 *.obj
+*.stackdump
 resource.h
 /x64/*
 obj/*
@@ -25,3 +26,4 @@ RCa06500
 *.dll
 *.a
 Makefile
+*.pyd

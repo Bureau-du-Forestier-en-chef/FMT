@@ -1,0 +1,20 @@
+;Fonction objectif
+;----------------------------------------------------------------------------------------------------------------------------
+*OBJECTIVE
+_MIN _PENALTY(caribou,recolte) 1.._LENGTH ; minimise la somme des penalty de chaque objectif
+
+
+
+;---------------------------------
+*CONSTRAINTS
+;---------------------------------
+;LHS variable                  RHS toujours constante num (1.. lenght == de la period 1 jusqu'a la fin, goal permet de mettre les points sur les actions)
+oSupMassCar = 400 1.._LENGTH _GOAL(caribou,1);
+oVolRec <= 4000 1.._LENGTH _GOAL(recolte,1)
+oVolRec >= 4000 1.._LENGTH _GOAL(recolte,1)
+
+;---------------------------------
+; Fin de la section Optimize
+;---------------------------------
+
+*FORMAT MOSEK

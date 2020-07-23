@@ -1,0 +1,17 @@
+*OUTPUT oSupRec Superficie récolté
+*SOURCE ? ? ? coupetotale _AREA
+
+*OUTPUT oVolRec Volume récolté
+*SOURCE ? ? ? coupetotale volumetotal
+
+*OUTPUT oSupMassCar Superficie massifs caribou
+*SOURCE ? ? ? aCaribou _AREA
+
+*OUTPUT P2area
+*SOURCE ? PEUPLEMENT2 ? _INVENT _AREA
+
+*OUTPUT Burnedarea
+*SOURCE ? ? ? aFire _AREA
+
+
+

@@ -42,12 +42,14 @@ void exportHeuristics()
 			"@DocString(FMToperatingarea::getmask)")
 		.def("getneihgborsperimeter", &Heuristics::FMToperatingarea::getneihgborsperimeter,
 			"@DocString(FMToperatingarea::getneihgborsperimeter)");
+			
+	define_pylist<Heuristics::FMToperatingarea>();
 
 	bp::class_<Heuristics::FMToperatingareascheme,bp::bases<Heuristics::FMToperatingarea>>("FMToperatingareascheme", "@DocString(FMToperatingareascheme)")
 		.def(bp::init<const Heuristics::FMToperatingarea&,const size_t&,const size_t&,
 			const size_t&, const size_t&, const size_t&>());
 		
-	define_pylist<Heuristics::FMToperatingarea>();
+	define_pylist<Heuristics::FMToperatingareascheme>();
 
 	bp::class_<Heuristics::FMTlpheuristic, bp::bases<Core::FMTobject, Models::FMTlpsolver>>("FMTlpheuristic", "@DocString(Heuristics::FMTlpheuristic)");
 

@@ -1,0 +1,16 @@
+*ACTION COUPEtotale Y CT
+*OPERABLE COUPEtotale
+? ? ? volumetotal >= 100
+
+*ACTION aCaribou N Massif protection du caribou
+*OPERABLE aCaribou
+UC ? ? _AGE >= 8
+
+*ACTION plantation Y _LOCKEXEMPT
+*OPERABLE plantation
+? ? ? _AGE >= 1 AND _AGE <= 3
+
+*ACTION aFire Y
+*OPERABLE AFire
+? ? ? _AGE >= 1
+
