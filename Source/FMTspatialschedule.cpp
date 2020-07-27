@@ -218,10 +218,10 @@ namespace Spatial
     std::set<FMTcoordinate> FMTspatialschedule::verifyspatialfeasability(const FMTspatialaction& targetaction,
                                                                          const std::vector<Core::FMTaction>& modelactions,
                                                                          const int& period,
-                                                                         const std::set<FMTcoordinate>& allowable) const
+                                                                         const std::set<FMTcoordinate>& operables) const
     {
     std::set<FMTcoordinate> spatialyallowable;
-    for(std::set<FMTcoordinate>::const_iterator itc = allowable.begin();itc != allowable.end();++itc)
+    for(std::set<FMTcoordinate>::const_iterator itc = operables.begin();itc != operables.end();++itc)
         {
         if (allow_action(targetaction,modelactions,*itc,period))
             {

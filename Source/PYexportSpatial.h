@@ -104,6 +104,11 @@ void exportSpatial()
 
     define_pylist<Spatial::FMTsasolution>();
 
+	bp::class_<Spatial::FMTspatialschedule, bp::bases<Spatial::FMTlayer<Graph::FMTlinegraph>>>("FMTspatialschedule", "@DocString(FMTspatialschedule)")
+		.def("get_forest_at_period", &Spatial::FMTspatialschedule::getforestperiod, "@DocString(FMTspatialschedule::getforestperiod)");
+
+	define_pylist<Spatial::FMTspatialschedule>();
+
     }
 }
 

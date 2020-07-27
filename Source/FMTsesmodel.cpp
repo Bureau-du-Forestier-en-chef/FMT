@@ -220,7 +220,7 @@ namespace Models
         }
 
     std::map<std::string,double> FMTsesmodel::newsimulate(const Core::FMTschedule& schedule,
-                             Spatial::FMTspatialschedule spschedule,
+                             Spatial::FMTspatialschedule& spschedule,
                              bool schedule_only,
                              unsigned int seed)
         {

@@ -43,7 +43,7 @@ if __name__ == "__main__":
             for theme in simulationmodel.getthemes():
                 themesrasters.append(os.path.join(rasterslocation,"THEME"+str(themeid)+".tif"))
                 themeid+=1
-            initialforestmap=areaparser.readrasters(simulationmodel.getthemes(),themesrasters,ageraster,1,200)
+            initialforestmap=areaparser.readrasters(simulationmodel.getthemes(),themesrasters,ageraster,1,0.0001)
             simulationmodel.setinitialmapping(initialforestmap)
             for period in range(1,11):
                 print(simulationmodel.simulate(lpmodel.getsolution(period),1,False))

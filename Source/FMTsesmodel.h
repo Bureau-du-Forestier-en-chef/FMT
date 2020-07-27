@@ -168,7 +168,7 @@ class FMTsesmodel : public FMTmodel
 		***************** Function only for testing the new architecture ***************************
 		*/
 		std::map<std::string,double> newsimulate(const Core::FMTschedule& schedule,
-                        Spatial::FMTspatialschedule spschedule,
+                        Spatial::FMTspatialschedule& spschedule,
                         bool schedule_only = true,
                         unsigned int seed = 0);
 		// DocString: FMTsesmodel::montecarlosimulate

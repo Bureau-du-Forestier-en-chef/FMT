@@ -96,10 +96,10 @@ class FMTspatialschedule : public FMTlayer<Graph::FMTlinegraph>
                                                                         bool schedule_only = true) const;
         // DocString: FMTspatialschedule::getallowable(const FMTspatialaction, const std::vector<Core::FMTaction>&, const int&)
         /**
-        For the target action, return a set of FMTcoordinate corresponding to the cells that are spatially allowable.
+        For the target action, return a set of FMTcoordinate corresponding to the cells that are spatially allowable from coordinates that are operables.
 		*/
 		std::set<FMTcoordinate> verifyspatialfeasability(const FMTspatialaction& targetaction, const std::vector<Core::FMTaction>& modelactions,
-                                                         const int& period, const std::set<FMTcoordinate>& allowable) const;
+                                                         const int& period, const std::set<FMTcoordinate>& operables) const;
 
 
         //Dont forget to implement FMTforest functions needed plus modify FMTevent to have only one class
