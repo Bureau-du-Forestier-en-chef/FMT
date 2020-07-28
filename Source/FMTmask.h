@@ -312,7 +312,7 @@ class FMTmask
 		// DocString: FMTmask::presolve
 		/**
 		Using a FMTmask (selectedmask) and a subset of the original FMTthemes used to construct the FMTmask,
-		it returns a presolved FMTmask with potentialy less data. 
+		it returns a presolved FMTmask with potentialy less data.
 		*/
 		FMTmask presolve(const FMTmask& selectedmask,const std::vector<FMTtheme>&presolvedthemes) const;
 		// DocString: FMTmask::postsolve
@@ -321,6 +321,29 @@ class FMTmask
 		*/
 		FMTmask postsolve(const FMTmask& selectedmask, const std::vector<FMTtheme>&basethemes) const;
     };
+
+// DocString: FMTmaskcomparator
+/**
+FMTmaskcomparator to check if the mask data already exist in a std container.
+*/
+class FMTmaskcomparator
+	{
+	// DocString: FMTmaskcomparator::base_mask
+	///The mask that we are looking for
+	FMTmask base_mask;
+	public:
+		// DocString: FMTmaskcomparator:(const FMTmask&)
+		/**
+		FMTmaskcomparator constructor lbase_mask is the mask of that we want to match.
+		*/
+		FMTmaskcomparator(const FMTmask& lbase_mask);
+		// DocString: FMTmaskcomparator::operator()(const FMTaction&)
+		/**
+		Matching test operator for FMTmaskcomparator.
+		*/
+		bool operator()(const FMTmask& mask) const;
+
+	};
 
 }
 

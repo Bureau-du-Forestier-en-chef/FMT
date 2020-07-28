@@ -24,7 +24,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 #include "FMTtheme.h"
 
-#if defined FMTWITHR	
+#if defined FMTWITHR
 	#include "Rcpp.h"
 #endif
 
@@ -32,7 +32,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 namespace Core
 {
 
-	std::string  FMTobject::getruntimelocation()
+	std::string  FMTobject::getruntimelocation() const
 	{
 		std::string strDLLpath;
 		try {
@@ -79,7 +79,7 @@ namespace Core
 	#if defined FMTWITHR
 		Rcpp::checkUserInterrupt();
 	#endif
-	
+
 	}
 
 

@@ -386,6 +386,18 @@ FMTmask FMTmask::postsolve(const FMTmask& selectedmask, const std::vector<FMTthe
 	return FMTmask(newmaskname, basethemes);
 	}
 
+FMTmaskcomparator::FMTmaskcomparator(const FMTmask& lbase_mask) : base_mask(lbase_mask)
+    {
+
+    }
+
+bool FMTmaskcomparator::operator()(const FMTmask& mask) const
+    {
+    return (base_mask == mask);
+    }
+
+
+
 }
 
 BOOST_CLASS_EXPORT_IMPLEMENT(Core::FMTmask)

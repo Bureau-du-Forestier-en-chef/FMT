@@ -23,6 +23,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
     #define FMT_PATCH 0
 #endif
 
+#include "FMTobject.h"
 
 
 namespace Version
@@ -34,7 +35,7 @@ It also gives some information about the build date and the actual date.
 It also informs the user about which features are avalaible in FMT.
 */
 
-class FMTversion
+class FMTversion : public Core::FMTobject
 	{
 	public:
 		// DocString: FMTversion()
@@ -88,6 +89,12 @@ class FMTversion
 		Features GDAL,OSI,MOSEK,PYTHON,R.
 		*/
 		static bool hasfeature(const std::string& name);
+		// DocString: FMTversion::getlicense
+		/**
+		Returns thes license has a regular string if french = true the returned license will be in french
+		*/
+		std::string getlicense(bool french=false) const;
+
 	};
 }
 

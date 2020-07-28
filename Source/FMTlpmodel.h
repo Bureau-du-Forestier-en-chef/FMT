@@ -124,20 +124,21 @@ class FMTlpmodel : public FMTmodel, public FMTlpsolver
 	//std::vector<int>deletedvariables;
 	// DocString: FMTlpmodel::summarize
 	/**
-	Simple function to summarize constraints that are un a map structure key = variables, element = coefficiant 
+	Simple function to summarize constraints that are un a map structure key = variables, element = coefficiant
 	to a array structure (vector) for osisolverinterface. map structure is easier to deal with thant two vectors.
 	*/
 	bool summarize(const std::map<int, double>& variables ,
 		std::vector<int>& sumvariables, std::vector<double>& sumcoefficiants) const;
 	// DocString: FMTlpmodel::getclusterer
 	/**
-	Using an output this function returns operating area cluster filled with statistic double comming from
+	Using an inventory output (areaoutput) and an (statisticoutput) at (period) this function returns operating area cluster filled with statistic double comming from
 	the output for a given period.
 	*/
 	Heuristics::FMToperatingareaclusterer getclusterer(
 		const std::vector<Heuristics::FMToperatingareacluster>& initialcluster,
-		const Core::FMToutput& output, const int& period,const double& minimalarea,const double& maximalarea,
-		const int& minimalnumberofclusters, const int& maximalnumberofclusters) const;
+		const Core::FMToutput& areaoutput,
+		const Core::FMToutput& statisticoutput,
+		const int& period) const;
 	// DocString: FMTlpmodel::initializematrix
 	/**
 	Initialize the solverinterface called once when the FMTgraph was empty after the first call of buildperiod.
@@ -153,7 +154,7 @@ class FMTlpmodel : public FMTmodel, public FMTlpsolver
 			const Graph::FMTgraphstats& newstats);
 	// DocString: FMTlpmodel::getsetmatrixelement
 	/**
-	When the user add constraints using the setconstraint function or the setobjective function the model needs to had 
+	When the user add constraints using the setconstraint function or the setobjective function the model needs to had
 	variables and/or constraints to the matrix to satisfy the FMTconstraint. Each type a variable or constraint need to be added
 	to the matrix the function is called and return the index of the element if it exists (already in matrix) or not (new element).
 	*/
@@ -168,7 +169,7 @@ class FMTlpmodel : public FMTmodel, public FMTlpsolver
     bool getgoals(const std::vector<std::string>& goalsnames, std::map<int,double>& index,const double& sense) const;
 	// DocString: FMTlpmodel::getsetlevel
 	/**
-	Will check if the level (variable_level) already exist within the matrix for other constraints than the (constraint) 
+	Will check if the level (variable_level) already exist within the matrix for other constraints than the (constraint)
 	for a given period.
 	*/
     int getsetlevel(const Core::FMTconstraint& constraint,const std::string& variable_level,int period);
@@ -185,7 +186,7 @@ class FMTlpmodel : public FMTmodel, public FMTlpsolver
     void locatelevels(const std::vector<Core::FMToutputnode>& nodes,int period, std::map<int, double>& variables,const Core::FMTconstraint& constraint);
 	// DocString: FMTlpmodel::locatenodes
 	/**
-	For a given period lookup in the graph to fill the variables map (variables) for a given FMTconstraints (nodes). 
+	For a given period lookup in the graph to fill the variables map (variables) for a given FMTconstraints (nodes).
 	Also apply the multiplier to coefficiants of the map the map<variableindex,coefficiants>.
 	*/
 	bool locatenodes(const std::vector<Core::FMToutputnode>& nodes, int period, std::map<int, double>& variables,double multiplier = 1) const;
@@ -205,7 +206,7 @@ class FMTlpmodel : public FMTmodel, public FMTlpsolver
 	// DocString: FMTlpmodel::updateconstraintsmapping
 	/**
 	When the eraseperiod function is called the matrix size is shrinked and the variables/constraints indexes have
-	to be updated. This function update the indexes of all the FMTconstraints of the elements 
+	to be updated. This function update the indexes of all the FMTconstraints of the elements
 	and also the FMTdevelopement constraints and variables of in the graph and delete those variables and constraints
 	from the solverinterface matrix.
 	*/
@@ -259,7 +260,7 @@ class FMTlpmodel : public FMTmodel, public FMTlpsolver
 		bool initialsolve() final;
 		// DocString: FMTlpmodel::setsolution
 		/**
-		If the user wants to set a solution for a given period for warmstarting the model or prepare to 
+		If the user wants to set a solution for a given period for warmstarting the model or prepare to
 		bound the model to that solution.
 		*/
 		bool setsolution(int period, const Core::FMTschedule& schedule);
@@ -302,7 +303,7 @@ class FMTlpmodel : public FMTmodel, public FMTlpsolver
 		// DocString: FMTlpmodel::getoutput
 		/**
 		Get the output value of a output for a given period using the solution of the matrix.
-		the map key returned consist of output name 
+		the map key returned consist of output name
 		if level == FMToutputlevel::standard || level == FMToutputlevel::totalonly,
 		or developement name if level == FMToutputlevel::developpement
 		*/
@@ -312,7 +313,7 @@ class FMTlpmodel : public FMTmodel, public FMTlpsolver
 		/**
 		This function is the main function used to build the graph and the matrix.
 		A call to that function add a period within the graph and the matrix of the FMTlpmodel.
-		If the schedule is not empty than the model is going to be generated in partialbuild mode and 
+		If the schedule is not empty than the model is going to be generated in partialbuild mode and
 		not fullbuild mode. Partialbuild will only build the graph linked to the solution. make it perfect to
 		reinterpret outputs for a given solution without rebuilding the whole graph.
 		*/
@@ -321,7 +322,7 @@ class FMTlpmodel : public FMTmodel, public FMTlpsolver
 		// DocString: FMTlpmodel::setobjective
 		/**
 		This function set the objective of the matrix for the whole planning horizon (graph length).
-		Note that the objective function is always the firts constraint in the constraints vector of a 
+		Note that the objective function is always the firts constraint in the constraints vector of a
 		FMTmodel. If a objective was already set before it will replace it when calling this function.
 		*/
 		Graph::FMTgraphstats setobjective(const Core::FMTconstraint& objective);
@@ -341,7 +342,7 @@ class FMTlpmodel : public FMTmodel, public FMTlpsolver
 		/**
 		Get the variability of multiple outputs for a given tolerance across the planning horizon.
 		Need to call this function after initialsolve.
-		The actual objective function is transform to a constraint and then each output 
+		The actual objective function is transform to a constraint and then each output
 		are minimized and maximized to get their actual range for each period.
 		the returned map key are the name of the output plus UB for upper bound (maximization) and
 		LB for lower bound (minimization). This function  do alot of resolve.
@@ -359,20 +360,20 @@ class FMTlpmodel : public FMTmodel, public FMTlpsolver
 																			double tolerance = FMT_DBL_TOLERANCE);
 		// DocString: FMTlpmodel::eraseperiod
 		/**
-		When doing replanning or simply model update the user may want to delete the first period (front) 
-		of the graph and the matrix to get a FMTmodel - first period. The planning length will be shrinked to 
+		When doing replanning or simply model update the user may want to delete the first period (front)
+		of the graph and the matrix to get a FMTmodel - first period. The planning length will be shrinked to
 		originalsize - 1.
 		*/
 		Graph::FMTgraphstats eraseperiod(bool constraintsonly = false);
 		// DocString: FMTlpmodel::getfirstactiveperiod
 		/**
-		Return the first active period should be always 0 in case or planning. 
+		Return the first active period should be always 0 in case or planning.
 		But when eraseperiod is called the first active period is going to move to 1 and so on.
 		*/
 		int getfirstactiveperiod() const;
-		// DocString: FMTlpmodel::getoperatingareaheuristics
+		// DocString: FMTlpmodel::getoperatingareaschedulerheuristics
 		/**
-		Using multiple operating areas and a simple output node a MIP formulation (using the BFECopt heuristic) is done using the matrix of 
+		Using multiple operating areas and a simple output node a MIP formulation (using the BFECopt heuristic) is done using the matrix of
 		the FMTlpmodel. The matrix can be copied within the operatingareaheuristic or directly uses the matrix
 		of the FMTlpmodel (if numberofheuristics == 1 and copysolver == true). The user can than decide to change
 		some parameters of heuristics that are in the vectors.
@@ -381,6 +382,17 @@ class FMTlpmodel : public FMTmodel, public FMTlpsolver
 																				const Core::FMToutputnode& node,
 																				size_t numberofheuristics=1,
 																				bool copysolver=true);
+        // DocString: FMTlpmodel::getoperatingareaclustererheuristics
+		/**
+		Using multiple operating areas this function generates multiples heuristics for solving the operating area clustering problem.
+        The user can decide to change some parameters of heuristics that are in the vectors.The FMTlpmodel has to be solved so the heuristic can use
+        the value of the (output) of a given (period) has a statistic to perform clustering.
+		*/
+		std::vector<Heuristics::FMToperatingareaclusterer>getoperatingareaclustererheuristics(const std::vector<Heuristics::FMToperatingareacluster>& clusters,
+																				const Core::FMToutput& statisticoutput,
+                                                                                const Core::FMToutput& areaoutput,
+                                                                                const int& period,
+																				size_t numberofheuristics=1) const;
 		// DocString: FMTlpmodel::resolve
 		/**
 		By default call solverinterface->resolve() when some changes are done to the model.
@@ -400,7 +412,7 @@ class FMTlpmodel : public FMTmodel, public FMTlpsolver
 		// DocString: FMTlpmodel::getarea
 		/**
 		This function returns an area for a given period for a FMTlpmodel.
-		If period = 0 the area is the same has FMTmodel::getarea(). 
+		If period = 0 the area is the same has FMTmodel::getarea().
 		For period > 0 the area returned is the FMTdevelopement of the graph
 		that can be (actual of futur) existing at the beginning of the period.
 		Need to have a builded graph with a solution to use this function.
@@ -418,7 +430,7 @@ class FMTlpmodel : public FMTmodel, public FMTlpsolver
 		/**
 		This fonction is based on model hierarchy. The *this FMTlpmodel is considered has the
 		general parent model the localmodel if not empty is considered one part of the child model.
-		The function is going to append the child model to the subset of the general model 
+		The function is going to append the child model to the subset of the general model
 		generated by the selected period.
 		Need to have a builded graph with a solution to use this function.
 		The returned model wont be solved nor builded.

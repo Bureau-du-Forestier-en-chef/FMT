@@ -18,10 +18,7 @@ namespace Heuristics
 class FMToperatingareaclusterer : public FMTlpheuristic
 	{
 	std::vector<FMToperatingareacluster>clusters;
-	double minimalarea;
-	double maximalarea;
-	int minimalnumberofclusters;
-	int maximalnumberofclusters;
+	int numberofsimulationpass;
 	std::map<Core::FMTmask,std::vector<FMToperatingareaclusterbinary>>getallbinaries() const;
 	void addmaxminobjective(const FMToperatingareacluster& cluster, const FMToperatingareaclusterbinary& binary,
 		const std::vector<FMToperatingareaclusterbinary>& binaries);
@@ -30,18 +27,29 @@ class FMToperatingareaclusterer : public FMTlpheuristic
 	void addlinksrows();
 	void addforcingrows();
 	void addareaconstraints();
-	void addclusternumberconstraints();
 	void buildproblem();
-	void setinteger();
+	void setallinteger();
 	double getspreadprobability(const std::vector<FMToperatingareaclusterbinary>& incluster,const FMToperatingareaclusterbinary& target) const;
+	bool spread(const FMToperatingareacluster& ignition,std::vector<FMToperatingareaclusterbinary>& assigned);
+	double gettargetedoperatingareasize(const FMToperatingareacluster& target);
+	void simulatespread();
+	void unboundall();
+	std::vector<int>getbinariesvariables() const;
 	public:
 		FMToperatingareaclusterer() = default;
-		FMToperatingareaclusterer(const std::vector<FMToperatingareacluster>& lclusters,
-								const double& lminimalarea, const double& lmaximalarea,
-								const int& minimalnumberofclusters,const int& maximalnumberofclusters);
+		FMToperatingareaclusterer(const Models::FMTsolverinterface& interfacetype,const size_t& lseed,const std::vector<FMToperatingareacluster>& lclusters);
 		FMToperatingareaclusterer(const FMToperatingareaclusterer&) = default;
 		FMToperatingareaclusterer& operator = (const FMToperatingareaclusterer&) = default;
+		void setnumberofsimulationpass(const int& pass);
 		~FMToperatingareaclusterer() = default;
+		bool initialsolve() final;
+		// DocString: FMToperatingareaclusterer::branchnboundsolve
+		/**
+		Solve problem using Branch and bound on the primal formulation. If the function is called after a call to initialsolve()
+		it's going to use the heuristic solution has a starting MIP solution, if not it's going to directly use the BnB on the formulated problem.
+		*/
+		void branchnboundsolve() final;
+		std::vector<FMToperatingareacluster>getsolution() const;
 
 	};
 }

@@ -123,7 +123,7 @@ class FMTareaparser : public FMTparser
 			std::vector<Heuristics::FMToperatingarea> getneighborsfrompolygons(const std::vector<OGRPolygon*>&polygons,
 																			std::vector<Heuristics::FMToperatingarea> operatingareas,
 																	const double& buffersize) const;
-			
+
 			// DocString: FMTareaparser::getclustersfrompolygons
 			/**
 			Base on a list of polygons and a list of corresponding operatingareas it returns a list of potential cluster of those
@@ -131,7 +131,8 @@ class FMTareaparser : public FMTparser
 			*/
 			std::vector<Heuristics::FMToperatingareacluster> getclustersfrompolygons(const std::vector<OGRPolygon*>&polygons,
 																		const std::vector<Heuristics::FMToperatingarea>& operatingareas,
-																		const double& maximaldistance) const;
+																		const double& maximaldistance,
+																		const double& minimalarea, const double& maximalarea) const;
 
 			#endif
 			// DocString: FMTareaparser::subsetlayer
@@ -219,6 +220,7 @@ class FMTareaparser : public FMTparser
 			std::vector<Heuristics::FMToperatingareacluster> getclusters(const std::vector<Heuristics::FMToperatingarea>& operatingareas,
 							const std::vector<Core::FMTtheme>& themes, const std::string& data_vectors,
 							const std::string& agefield, const std::string& areafield,const double& maximaldistance,
+							const double& minimaloperatingarea, const double& maximaloperatingarea,
 							double agefactor = 1.0,double areafactor = 1, std::string lockfield = "",
 							double minimal_area = 0.0, double buffersize = 100) const;
 

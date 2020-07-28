@@ -883,7 +883,8 @@ namespace Parser{
 
 			std::vector<Heuristics::FMToperatingareacluster> FMTareaparser::getclustersfrompolygons(const std::vector<OGRPolygon*>& polygons,
 																								const std::vector<Heuristics::FMToperatingarea>& operatingareas,
-																								const double& maximaldistance) const
+																								const double& maximaldistance,
+																								const double& minimalarea, const double& maximalarea) const
 			{
 				std::vector<Heuristics::FMToperatingareacluster>clusters;
 				try {
@@ -913,6 +914,7 @@ namespace Parser{
 							{
 							double distance;
 							const Core::FMTmask sidemask = sideoparea.getmask();
+
 							if (distances.at(mainmask).find(sidemask) !=
 								distances.at(mainmask).end())
 								{
@@ -963,11 +965,11 @@ namespace Parser{
 							}
 						Heuristics::FMToperatingareaclusterbinary basecentroid(mainoparea);
 						basecentroid.setneighbors(std::vector<Core::FMTmask>());
-						clusters.push_back(Heuristics::FMToperatingareacluster(basecentroid,binaries));
+						clusters.push_back(Heuristics::FMToperatingareacluster(basecentroid,binaries,minimalarea,maximalarea));
 						++mainopareaid;
 						}
 
-				
+
 				}catch (...)
 					{
 					_exhandler->raisefromcatch("", "FMTareaparser::getclustersfrompolygons", __LINE__, __FILE__, _section);
@@ -1006,7 +1008,9 @@ namespace Parser{
 
 			std::vector<Heuristics::FMToperatingareacluster> FMTareaparser::getclusters(const std::vector<Heuristics::FMToperatingarea>& operatingareas,
 				const std::vector<Core::FMTtheme>& themes, const std::string& data_vectors,
-				const std::string& agefield, const std::string& areafield, const double& maximaldistance, double agefactor,
+				const std::string& agefield, const std::string& areafield, const double& maximaldistance,
+				const double& minimaloperatingarea, const double& maximaloperatingarea,
+                double agefactor,
 				double areafactor, std::string lockfield,
 				double minimal_area, double buffersize) const
 			{
@@ -1018,7 +1022,7 @@ namespace Parser{
 					std::vector<OGRPolygon*>mergedpolygons = this->getunion(multipolygons);
 					std::vector<Heuristics::FMToperatingarea>newopareas(operatingareas.begin(), operatingareas.end());
 					const std::vector<Heuristics::FMToperatingarea>opareawithneighbors = getneighborsfrompolygons(mergedpolygons, newopareas, buffersize);
-					finalclusters = this->getclustersfrompolygons(mergedpolygons, operatingareas, maximaldistance);
+					finalclusters = this->getclustersfrompolygons(mergedpolygons, operatingareas, maximaldistance,minimaloperatingarea,maximaloperatingarea);
 					this->destroypolygons(mergedpolygons);
 				}catch (...)
 				{

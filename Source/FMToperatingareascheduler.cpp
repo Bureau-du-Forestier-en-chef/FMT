@@ -44,7 +44,7 @@ namespace Heuristics
 				else { // dual
 					operatingareait->unboundalldualschemes(targeteditems, bounds);
 				}
-			
+
 				}
 				if (useprimal || atprimal)
 				{
@@ -60,18 +60,24 @@ namespace Heuristics
 
 	void FMToperatingareascheduler::closeprimalbounds()
 		{
-		std::vector<int>variables;
-		std::vector<double>bounds;
-		for (std::vector<FMToperatingareascheme>::const_iterator operatingareait = operatingareas.begin();
-			operatingareait != operatingareas.end(); ++operatingareait)
-				{
-				operatingareait->boundallprimalschemes(variables,bounds,0);
-				}
-		this->setColSetBounds(&variables[0], &variables.back() + 1, &bounds[0]);
+        try{
+            std::vector<int>variables;
+            std::vector<double>bounds;
+            for (std::vector<FMToperatingareascheme>::const_iterator operatingareait = operatingareas.begin();
+                operatingareait != operatingareas.end(); ++operatingareait)
+                    {
+                    operatingareait->boundallprimalschemes(variables,bounds,0);
+                    }
+            this->setColSetBounds(&variables[0], &variables.back() + 1, &bounds[0]);
+        }catch (...)
+            {
+			_exhandler->printexceptions("", "FMToperatingareascheduler::closeprimalbounds", __LINE__, __FILE__);
+            }
 		}
 
 	void FMToperatingareascheduler::setallinteger()
 		{
+        try{
 		if (!useprimal)//need to turn back the formulation to primal to make it work ith MIP
 			{
 				this->clearrowcache();
@@ -109,6 +115,10 @@ namespace Heuristics
 				operatingareait->pushbinaries(integervariables);
 				}
 		this->setInteger(&integervariables[0], static_cast<int>(integervariables.size()));
+        }catch(...)
+            {
+            _exhandler->raisefromcatch("","FMToperatingareascheduler::setallinteger", __LINE__, __FILE__, _section);
+            }
 		}
 
 	int FMToperatingareascheduler::resolvemodel()
@@ -196,14 +206,19 @@ namespace Heuristics
 
 	void FMToperatingareascheduler::branchnboundsolve()
 		{
-		if (this->isProvenOptimal())
-			{
-			//In that order it seems to work...
-			this->setallinteger();
-			this->branchAndBound();
-			this->unboundall(true);
-			this->branchAndBound();
-			}
+        try{
+            if (this->isProvenOptimal())
+                {
+                //In that order it seems to work...
+                this->setallinteger();
+                this->branchAndBound();
+                this->unboundall(true);
+                this->branchAndBound();
+                }
+        }catch(...)
+            {
+            _exhandler->printexceptions("", "FMToperatingareascheduler::branchnboundsolve", __LINE__, __FILE__);
+            }
 		}
 
 
@@ -314,7 +329,7 @@ namespace Heuristics
 						{
 						adjacencyconstraints[simple] = constraintindexes;
 						}
-					
+
 					}
 				}
 			}
@@ -327,10 +342,10 @@ namespace Heuristics
 
 	FMToperatingareascheduler::FMToperatingareascheduler(const FMToperatingareascheduler& rhs) :
 		FMTlpheuristic(rhs),operatingareas(rhs.operatingareas), adjacencyconstraints(rhs.adjacencyconstraints),
-		proportionofset(rhs.proportionofset), 
+		proportionofset(rhs.proportionofset),
 		userandomness(rhs.userandomness),useprimal(false)
 		{
-		
+
 		}
 	FMToperatingareascheduler& FMToperatingareascheduler::operator = (const FMToperatingareascheduler& rhs)
 		{
@@ -382,73 +397,80 @@ namespace Heuristics
 
 	std::vector<std::vector<FMToperatingareascheme>::const_iterator> FMToperatingareascheduler::setdraw()
 		{
-		std::vector<std::vector<FMToperatingareascheme>::const_iterator>potentials;
-		const double* upperbounds = this->getColUpper();
-		const double* lowerbounds = this->getColLower();
-		const double* primalsolution = this->getColSolution();
-		const double* dualsolution = this->getRowActivity();
-		const double* rhsupper = this->getRowUpper();
-		std::vector<FMToperatingareascheme>::const_iterator areait = operatingareas.begin();
-		while (areait != operatingareas.end())
-			{
-			if (!areait->empty() && ((useprimal && !areait->isprimalbounded(lowerbounds, upperbounds) && !areait->isallprimalbounded(lowerbounds, upperbounds))||
-				(!useprimal && !areait->isdualbounded(rhsupper))))
-				{
-				//Make sure it's sorted!
-				double value = 0;
-				if (useprimal)
-					{
-					value = areait->getbinariessum(primalsolution);
-				}else {
-					value = areait->getactivitysum(dualsolution);
-					}
-				if (!potentials.empty())
-					{
-					std::vector<std::vector<FMToperatingareascheme>::const_iterator>::iterator vit = potentials.begin();
-					size_t oldsize = potentials.size();
-					while (potentials.size() == oldsize)
-						{
-						double potentialvalue = 0;
-						if (vit != potentials.end())
-							{ 
-							if (useprimal)
-								{
-									potentialvalue = (*vit)->getbinariessum(primalsolution);
-								}
-								else {
-									potentialvalue = (*vit)->getactivitysum(dualsolution);
-								}
-							}
-						if (vit == potentials.end() || value > potentialvalue)
-							{
-							potentials.insert(vit, areait);
-							}
-							++vit;
-						}
-					}else {
-						potentials.push_back(areait);
-						}
-				}
-			++areait;
-			}
-		const size_t maxareatopick = static_cast<size_t>(static_cast<double>(operatingareas.size()) * proportionofset);
-		if (userandomness)
-			{
-			std::shuffle(potentials.begin(), potentials.end(), this->generator);
-			}
-		std::vector<std::vector<FMToperatingareascheme>::const_iterator>selected;
-		std::vector<std::vector<FMToperatingareascheme>::const_iterator>::iterator randomit = potentials.begin();
-		while ((selected.size() < maxareatopick) && randomit != potentials.end())
-			{
-			selected.push_back(*randomit);
-			++randomit;
-			}
+        std::vector<std::vector<FMToperatingareascheme>::const_iterator>selected;
+        try{
+            std::vector<std::vector<FMToperatingareascheme>::const_iterator>potentials;
+            const double* upperbounds = this->getColUpper();
+            const double* lowerbounds = this->getColLower();
+            const double* primalsolution = this->getColSolution();
+            const double* dualsolution = this->getRowActivity();
+            const double* rhsupper = this->getRowUpper();
+            std::vector<FMToperatingareascheme>::const_iterator areait = operatingareas.begin();
+            while (areait != operatingareas.end())
+                {
+                if (!areait->empty() && ((useprimal && !areait->isprimalbounded(lowerbounds, upperbounds) && !areait->isallprimalbounded(lowerbounds, upperbounds))||
+                    (!useprimal && !areait->isdualbounded(rhsupper))))
+                    {
+                    //Make sure it's sorted!
+                    double value = 0;
+                    if (useprimal)
+                        {
+                        value = areait->getbinariessum(primalsolution);
+                    }else {
+                        value = areait->getactivitysum(dualsolution);
+                        }
+                    if (!potentials.empty())
+                        {
+                        std::vector<std::vector<FMToperatingareascheme>::const_iterator>::iterator vit = potentials.begin();
+                        size_t oldsize = potentials.size();
+                        while (potentials.size() == oldsize)
+                            {
+                            double potentialvalue = 0;
+                            if (vit != potentials.end())
+                                {
+                                if (useprimal)
+                                    {
+                                        potentialvalue = (*vit)->getbinariessum(primalsolution);
+                                    }
+                                    else {
+                                        potentialvalue = (*vit)->getactivitysum(dualsolution);
+                                    }
+                                }
+                            if (vit == potentials.end() || value > potentialvalue)
+                                {
+                                potentials.insert(vit, areait);
+                                }
+                                ++vit;
+                            }
+                        }else {
+                            potentials.push_back(areait);
+                            }
+                    }
+                ++areait;
+                }
+            const size_t maxareatopick = static_cast<size_t>(static_cast<double>(operatingareas.size()) * proportionofset);
+            if (userandomness)
+                {
+                std::shuffle(potentials.begin(), potentials.end(), this->generator);
+                }
+
+            std::vector<std::vector<FMToperatingareascheme>::const_iterator>::iterator randomit = potentials.begin();
+            while ((selected.size() < maxareatopick) && randomit != potentials.end())
+                {
+                selected.push_back(*randomit);
+                ++randomit;
+                }
+        }catch(...)
+            {
+                _exhandler->raisefromcatch("","FMToperatingareascheduler::setdraw", __LINE__, __FILE__);
+            }
 		return selected;
 		}
 
 	size_t FMToperatingareascheduler::setbounds(const std::vector<std::vector<FMToperatingareascheme>::const_iterator>& tobound)
 	{
 		size_t gotschedule = 0;
+		try{
 		const double* primalsolution = this->getColSolution();
 		const double* dualsolution = this->getRowActivity();
 		const double* lowerprimalbounds = this->getColLower();
@@ -511,6 +533,10 @@ namespace Heuristics
 			this->setRowSetBounds(&targeteditems[0], &targeteditems.back() + 1, &bounds[0]);
 			this->clearrowcache();
 			}
+		}catch(...)
+            {
+            _exhandler->raisefromcatch("","FMToperatingareascheduler::setbounds", __LINE__, __FILE__);
+            }
 		return gotschedule;
 		}
 
@@ -518,23 +544,23 @@ namespace Heuristics
 		{
 		std::vector<Core::FMTyieldhandler>allhandlers;
 		try {
-		const double* primalsolution = this->getColSolution();
-		const double* rowupperbound = this->getRowUpper();
-		for (std::vector<FMToperatingareascheme>::const_iterator operatingareait = operatingareas.begin();
-			operatingareait != operatingareas.end(); ++operatingareait)
-			{
-			std::vector<double>data;
-			if (useprimal)
-				{
-				data=operatingareait->getprimalsolution(primalsolution);
-			}else {
-				data=operatingareait->getdualsolution(rowupperbound);
-				}
-			std::vector<std::string>source;
-			Core::FMTyieldhandler handler(Core::FMTyldtype::FMTtimeyld, operatingareait->getmask());
-			handler.push_data(yldname,Core::FMTdata(data, Core::FMTyieldparserop::FMTnone, source));
-			allhandlers.push_back(handler);
-			}
+            const double* primalsolution = this->getColSolution();
+            const double* rowupperbound = this->getRowUpper();
+            for (std::vector<FMToperatingareascheme>::const_iterator operatingareait = operatingareas.begin();
+                operatingareait != operatingareas.end(); ++operatingareait)
+                {
+                std::vector<double>data;
+                if (useprimal)
+                    {
+                    data=operatingareait->getprimalsolution(primalsolution);
+                }else {
+                    data=operatingareait->getdualsolution(rowupperbound);
+                    }
+                std::vector<std::string>source;
+                Core::FMTyieldhandler handler(Core::FMTyldtype::FMTtimeyld, operatingareait->getmask());
+                handler.push_data(yldname,Core::FMTdata(data, Core::FMTyieldparserop::FMTnone, source));
+                allhandlers.push_back(handler);
+                }
 		}catch (...)
 			{
 			_exhandler->raisefromcatch("","FMToperatingareascheduler::getsolution", __LINE__, __FILE__);

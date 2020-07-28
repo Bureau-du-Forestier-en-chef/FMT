@@ -16,6 +16,9 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 namespace Python
 {
+BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(getlicense_overloads,getlicense, 0, 1)
+
+
 void exportVersion()
 {
 	namespace bp = boost::python;
@@ -40,7 +43,8 @@ void exportVersion()
 		.def("isatleast", &Version::FMTversion::isatleast,
 			"@DocString(FMTversion::isatleast)").staticmethod("isatleast")
 		.def("hasfeature", &Version::FMTversion::hasfeature,
-			"@DocString(FMTversion::hasfeature)").staticmethod("hasfeature");
+			"@DocString(FMTversion::hasfeature)").staticmethod("hasfeature")
+        .def("getlicense",&Version::FMTversion::getlicense,getlicense_overloads(bp::args("french"),"@DocString(FMTversion::getlicense)"));
 	}
 }
 

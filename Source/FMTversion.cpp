@@ -6,6 +6,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
 #include "FMTversion.h"
+#include "FMTparser.h"
 #include <chrono>
 #include <ctime>
 
@@ -54,7 +55,7 @@ bool FMTversion::isatleast(int major, int minor, int patch)
 		return true;
 		}
 	return false;
-	}	
+	}
 bool FMTversion::hasfeature(const std::string& name)
 	{
 	#ifdef FMTWITHR
@@ -89,5 +90,44 @@ bool FMTversion::hasfeature(const std::string& name)
 	#endif
 	return false;
 	}
+
+std::string FMTversion::getlicense(bool french) const
+    {
+    std::string fulllicense;
+    try{
+        std::string licenselocation = getruntimelocation();
+        licenselocation += "\\LICENSES";
+        if (!boost::filesystem::is_directory(boost::filesystem::path(licenselocation)))
+            {
+            _exhandler->raise(Exception::FMTexc::FMTinvalid_path,
+                "Cannot find LICENSES directory at "+licenselocation,"FMTversion::getlicense",__LINE__,__FILE__, _section);
+            }
+        if (french)
+            {
+            licenselocation+="\\FR\\LiLiQ-R11unicode.txt";
+            }else{
+            licenselocation+="\\EN\\LILIQ-R11ENunicode.txt";
+            }
+        if (!boost::filesystem::is_regular_file(boost::filesystem::path(licenselocation)))
+            {
+            _exhandler->raise(Exception::FMTexc::FMTinvalid_path,
+                "Cannot find "+licenselocation,"FMTversion::getlicense",__LINE__,__FILE__, _section);
+            }
+    Parser::FMTparser newparser;
+    std::ifstream licensestream(licenselocation);
+    if (newparser.tryopening(licensestream,licenselocation))
+        {
+        while (licensestream.is_open())
+			{
+            const std::string line = newparser.getcleanline(licensestream);
+            fulllicense+=(line+"\n");
+			}
+        }
+    }catch(...)
+        {
+        _exhandler->printexceptions("", "FMTversion::getlicense", __LINE__, __FILE__);
+        }
+    return fulllicense;
+    }
 
 }
