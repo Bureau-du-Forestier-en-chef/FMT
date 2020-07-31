@@ -25,6 +25,8 @@ namespace Python
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(readrasters_overloads,readrasters, 3, 6)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(readvectors_overloads,readvectors, 4, 8)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(getschemeneighbors_overloads, getschemeneighbors, 5, 10)
+BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(getclusters_overloads,getclusters,6, 11)
+
 
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(writeforest_overloads,writeforest, 5, 6)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(writedisturbances_overloads,writedisturbances, 5, 6)
@@ -59,6 +61,7 @@ void exportParser()
 					.def("writedisturbances",&Parser::FMTareaparser::writedisturbances,writedisturbances_overloads(bp::args("location", "disturbances", "for_layer", "out_layer", "themes", "mapping"), "@DocString(FMTareaparser::writedisturbances)"))
 					#ifdef FMTWITHOSI
 						.def("getneighbors",&Parser::FMTareaparser::getschemeneighbors, getschemeneighbors_overloads(bp::args("operatingareaparameters", "themes", "data_vectors", "agefield", "areafield", "agefactor","areafractor","lockfield","minimal_area","buffersize"), "@DocString(FMTareaparser::getschemeneighbors)"))
+                        .def("getclusters",&Parser::FMTareaparser::getclusters,getclusters_overloads(bp::args("operatingareaparameters", "themes", "data_vectors", "agefield", "areafield","maximaldistance","agefactor","areafractor","lockfield","minimal_area","buffersize"),"@DocString(FMTareaparser::getclusters)"))
 					#endif
 				#endif
 				.def("write", &Parser::FMTareaparser::write,
@@ -112,7 +115,7 @@ void exportParser()
 	bp::class_<Parser::FMTmodelparser, bp::bases<Parser::FMTparser>>("FMTmodelparser", "@DocString(FMTmodelparser)")
                 .def("read",&Parser::FMTmodelparser::read, readmodel_overloads(bp::args("con","lan","lif","are","yld","act","tr","out","opt"), "@DocString(FMTmodel::read)"))
 				.def("readproject", &Parser::FMTmodelparser::readproject, readproject_overloads(bp::args("primary_location","scenarios","readarea","readoutputs","readoptimize"), "@DocString(FMTmodel::readproject)"))
-				.def("readschedules", &Parser::FMTmodelparser::readschedules, 
+				.def("readschedules", &Parser::FMTmodelparser::readschedules,
 					"@DocString(FMTmodelparser::readschedules)")
                 .def("write",&Parser::FMTmodelparser::write,
 					"@DocString(FMTmodelparser::write)");

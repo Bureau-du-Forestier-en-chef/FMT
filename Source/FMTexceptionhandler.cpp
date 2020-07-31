@@ -24,27 +24,13 @@ void CPL_STDCALL FMTCPLErrorHandler(CPLErr eErrClass, CPLErrorNum nError, const 
 
 void FMTexceptionhandler::handelCPLerror(CPLErr eErrClass, CPLErrorNum nError, const char * pszErrorMsg)
 	{
-	char buffer[1000];
-	bool log = false;
-	if (eErrClass == CE_Debug)
-		{
-		snprintf(buffer, sizeof(buffer), "%s\n", pszErrorMsg);
-		log = true;
-		}
-	else if (eErrClass == CE_Warning)
-		{
-		snprintf(buffer, sizeof(buffer), "Warning %d: %s\n", nError, pszErrorMsg);
-		log = true;
-		}
-	else
-		{
-		snprintf(buffer, sizeof(buffer), "ERROR %d: %s\n", nError, pszErrorMsg);
-		log = true;
-		}
-	if (log)
-		{
-		*_logger << buffer;
-		}
+    if (eErrClass == CE_Failure || eErrClass == CE_Fatal)
+        {
+        raise(FMTexc::FMTGDALerror,std::string(pszErrorMsg),"FMTdefaultexceptionhandler::handelCPLerror",__LINE__, __FILE__);
+        }else if(eErrClass == CE_Warning)
+            {
+            raise(FMTexc::FMTGDALwarning,std::string(pszErrorMsg),"FMTdefaultexceptionhandler::handelCPLerror",__LINE__, __FILE__);
+            }
 	}
 #endif
 
@@ -451,6 +437,16 @@ std::string FMTexceptionhandler::updatestatus(const FMTexc lexception, const std
 		_level = FMTlev::FMT_range;
 		++_errorcount;
 		break;
+    case FMTexc::FMTGDALerror:
+        msg += "GDAL error: " + message;
+		_level = FMTlev::FMT_range;
+		++_errorcount;
+        break;
+    case FMTexc::FMTGDALwarning:
+        msg += "GDAL warning: " + message;
+		_level = FMTlev::FMT_logic;
+		++_errorcount;
+        break;
 	default:
 		_exception = FMTexc::None;
 		_level = FMTlev::FMT_None;

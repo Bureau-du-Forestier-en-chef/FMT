@@ -62,7 +62,7 @@ void exportParser()
 	Rcpp::class_<Parser::FMTareaparser>("FMTareaparser", "@DocString(FMTareaparser)")
 				.derives<Parser::FMTparser>("FMTparser")
 				.constructor("@DocString(FMTareaparser())")
-                .method("read", &Parser::FMTareaparser::read, 
+                .method("read", &Parser::FMTareaparser::read,
 					"@DocString(FMTareaparser::read)")
 				#ifdef FMTWITHGDAL
 					.method("readvectors", &Parser::FMTareaparser::readvectors,
@@ -76,6 +76,8 @@ void exportParser()
 					#ifdef FMTWITHOSI
 						.method("getschemeneighbors",&Parser::FMTareaparser::getschemeneighbors,
 							"@DocString(FMTareaparser::getschemeneighbors)")
+                        .method("getclusters",&Parser::FMTareaparser::getclusters,
+                             "@DocString(FMTareaparser::getclusters)")
 					#endif
 				#endif
 				.method("write", &Parser::FMTareaparser::write,

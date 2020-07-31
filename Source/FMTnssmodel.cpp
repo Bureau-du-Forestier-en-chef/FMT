@@ -48,7 +48,7 @@ namespace Models
 					}
 				if (!operabledevs.empty())
 					{
-					
+
 					if (scheduledata.find(actions.at(randomactionindex))==scheduledata.end())
 						{
 						scheduledata[actions.at(randomactionindex)] = std::map<Core::FMTdevelopment, std::vector<double>>();
@@ -116,4 +116,4 @@ namespace Models
 		}
 }
 
-BOOST_CLASS_EXPORT_IMPLEMENT(Models::FMTnssmodel);
+BOOST_CLASS_EXPORT_IMPLEMENT(Models::FMTnssmodel)

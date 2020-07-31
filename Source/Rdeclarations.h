@@ -97,7 +97,9 @@ RCPP_DECLAREVECTOR(Models::FMTsamodel);//For vector
 	RCPP_DECLAREVECTOR(Heuristics::FMToperatingarea);//For vector
 	RCPP_DECLAREVECTOR(Heuristics::FMToperatingareascheme);//For vector
 	RCPP_DECLAREVECTOR(Heuristics::FMToperatingareascheduler);//For vector
-
+	RCPP_DECLAREVECTOR(Heuristics::FMToperatingareaclusterbinary);//For vector
+    RCPP_DECLAREVECTOR(Heuristics::FMToperatingareacluster);//For vector
+    RCPP_DECLAREVECTOR(Heuristics::FMToperatingareaclusterer);//For vector
 #endif
 //Core
 RCPP_DECLAREVECTOR(Core::FMTmask);//For vector

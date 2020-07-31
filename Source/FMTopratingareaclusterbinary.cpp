@@ -30,15 +30,6 @@ namespace Heuristics
 		variable = lvariable;
 		}
 
-	void FMToperatingareaclusterbinary::setmaximalrow(const int& lmaxrow)
-		{
-		maxrow = lmaxrow;
-		}
-
-	void FMToperatingareaclusterbinary::setminimalrow(const int& lminrow)
-		{
-		minrow = lminrow;
-		}
 
 	Core::FMToutput FMToperatingareaclusterbinary::getoutputintersect(const Core::FMToutput& output) const
 		{
@@ -74,7 +65,8 @@ namespace Heuristics
 				}
 			for (const FMToperatingareaclusterbinary& mainbinary : potentiallink)
 				{
-				if (std::find(neighbors[mainbinary.getmask()].begin(), neighbors[mainbinary.getmask()].end(), mainbinary.getmask()) != neighbors[mainbinary.getmask()].end())
+				if (std::find(neighbors[mainbinary.getmask()].begin(), neighbors[mainbinary.getmask()].end(), mainbinary.getmask()) != neighbors[mainbinary.getmask()].end()||
+                    std::find(neighbors[mainbinary.getmask()].begin(), neighbors[mainbinary.getmask()].end(), this->getmask()) != neighbors[mainbinary.getmask()].end())
 					{
 					finalbinaries.push_back(mainbinary);
 					}
@@ -82,6 +74,6 @@ namespace Heuristics
 			}
 		return finalbinaries;
 		}
-}	
+}
 
 #endif

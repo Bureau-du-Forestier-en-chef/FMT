@@ -71,7 +71,7 @@ namespace Models
 					binary.setstatistic(binaryvalue.at("Total"));
 					binary.setarea(binaryarea.at("Total"));
 					}
-                const Heuristics::FMToperatingareacluster newopcluster(centroid,allbinaries,originalcluster.getrealminimalarea(),originalcluster.getrealmaximalarea());
+                const Heuristics::FMToperatingareacluster newopcluster(Heuristics::FMToperatingareacluster(centroid,allbinaries),originalcluster.getrealminimalarea(),originalcluster.getrealmaximalarea());
                 if (!newopcluster.isvalidareabounds())
                     {
                     _exhandler->raise(Exception::FMTexc::FMTignore,

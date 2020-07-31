@@ -277,7 +277,7 @@ namespace Heuristics
                             selectedbinaries.push_back(binary);
                             }
                         }
-                    solution.push_back(FMToperatingareacluster(cluster.getcentroid(),selectedbinaries,cluster.getrealminimalarea(),cluster.getrealmaximalarea()));
+                    solution.push_back(FMToperatingareacluster(FMToperatingareacluster(cluster.getcentroid(),selectedbinaries),cluster.getrealminimalarea(),cluster.getrealmaximalarea()));
                     }
                 }
         }catch(...)
@@ -309,7 +309,7 @@ namespace Heuristics
 					this->addCol(0, nullptr, nullptr, 0.0, 1.0, 0.0);
 					++variableid;
 					}
-				newclusterswithvariables.push_back(FMToperatingareacluster(newcentroid, newbinaries,cluster.getminimalarea(),cluster.getmaximalarea()));
+				newclusterswithvariables.push_back(FMToperatingareacluster(FMToperatingareacluster(newcentroid, newbinaries),cluster.getminimalarea(),cluster.getmaximalarea()));
 				}
 			clusters = newclusterswithvariables;
 		}catch (...)
@@ -528,5 +528,5 @@ namespace Heuristics
         }
 
 }
-
+BOOST_CLASS_EXPORT_IMPLEMENT(Heuristics::FMToperatingareaclusterer)
 #endif

@@ -25,5 +25,6 @@ GDAL_DATA/*
 RCa06500
 *.dll
 *.a
+*.def
 Makefile
 *.pyd

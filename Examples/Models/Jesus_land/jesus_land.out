@@ -13,5 +13,8 @@
 *OUTPUT Burnedarea
 *SOURCE ? ? ? aFire _AREA
 
+*OUTPUT totalarea
+*SOURCE ? ? ? _INVENT _AREA
+
 
 
