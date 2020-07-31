@@ -54,5 +54,5 @@ class FMTactualdevelopmentcomparator
 
 }
 
-BOOST_CLASS_EXPORT_KEY(Core::FMTactualdevelopment);
+BOOST_CLASS_EXPORT_KEY(Core::FMTactualdevelopment)
 #endif

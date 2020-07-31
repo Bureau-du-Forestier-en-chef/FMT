@@ -49,7 +49,7 @@ namespace Heuristics
 		///The mask describing the operating area
 		Core::FMTmask mask;
 		// DocString: FMToperatingarea::neighbors
-		///Neighbors mask of the operating area 
+		///Neighbors mask of the operating area
 		std::vector<Core::FMTmask>neighbors;
 		// DocString: FMToperatingarea::neihgborsperimeter
 		///neighborsperimeter is the ratio a operatingarea needs to share to a other operatingarea to be considered neighbor.
@@ -95,7 +95,12 @@ namespace Heuristics
 			the user has to provide to the heuristics all the green-up, returntime etc.... for each operating area.
 			*/
 			FMToperatingarea(const Core::FMTmask& lmask,const double& lneihgborsperimeter);
-			FMToperatingarea(const Core::FMTmask& lmask,const double& larea,const double& lneihgborsperimeter);
+			// DocString: FMToperatingarea::setarea
+			/**
+			Set the area of the operating area.
+			*/
+			void setarea(const double& newarea);
+
 			// DocString: FMToperatingarea()
 			/**
 			Default FMToperatingarea constructor
@@ -144,6 +149,11 @@ namespace Heuristics
 			Constructor of the comparator using the FMTmask as reference.
 			*/
 			FMToperatingareacomparator(const Core::FMTmask& lmask);
+			// DocString: FMToperatingareacomparator(const FMToperatingarea& oparea)
+			/**
+			Constructor of the comparator using the operating area.
+			*/
+			FMToperatingareacomparator(const FMToperatingarea& oparea);
 			// DocString: FMToperatingareacomparator::operator()
 			/**
 			Comparator for FMToperating area.

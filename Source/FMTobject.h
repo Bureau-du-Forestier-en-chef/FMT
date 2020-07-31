@@ -67,7 +67,7 @@ class FMTobject
 		/**
 		This function return the location of the FMT shared library location.
 		*/
-		std::string getruntimelocation();
+		std::string getruntimelocation() const;
 		// DocString: FMTobject::setCPLhandler
 		/**
 		This function is for gdal only it pass the FMT exception handler to gdal exception handler.

@@ -39,14 +39,11 @@ FMToperatingarea::FMToperatingarea(const Core::FMTmask& lmask,const double& lnei
 	{
 
 	}
-FMToperatingarea::FMToperatingarea(const Core::FMTmask& lmask, const double& larea, const double& lneihgborsperimeter):
-	mask(lmask),
-	neighbors(),
-	neihgborsperimeter(lneihgborsperimeter),
-	_area(larea)
-	{
 
-	}
+void FMToperatingarea::setarea(const double& newarea)
+    {
+    _area = newarea;
+    }
 
 void FMToperatingarea::setneighbors(const std::vector<Core::FMTmask>& lneighbors)
 	{
@@ -76,6 +73,13 @@ FMToperatingareacomparator::FMToperatingareacomparator(const Core::FMTmask& lmas
 	{
 
 	}
+
+FMToperatingareacomparator::FMToperatingareacomparator(const FMToperatingarea& oparea):mask(oparea.getmask())
+    {
+
+    }
+
+
 bool FMToperatingareacomparator::operator()(const FMToperatingarea& oparea) const
 	{
 	return (oparea.getmask() == mask);

@@ -17,7 +17,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 namespace Models
 {
 
-	
+
 
 	Graph::FMTgraphstats FMTlpmodel::initializematrix()
 	{
@@ -45,8 +45,9 @@ namespace Models
 
 	Heuristics::FMToperatingareaclusterer FMTlpmodel::getclusterer(
 		const std::vector<Heuristics::FMToperatingareacluster>& initialcluster,
-		const Core::FMToutput& output, const int& period, const double& minimalarea, const double& maximalarea,
-		const int& minimalnumberofclusters, const int& maximalnumberofclusters) const
+		const Core::FMToutput& areaoutput,
+		const Core::FMToutput& statisticoutput,
+		const int& period) const
 	{
 		Heuristics::FMToperatingareaclusterer newclusterer;
 		try {
@@ -55,19 +56,31 @@ namespace Models
 				{
 				Heuristics::FMToperatingareaclusterbinary centroid = originalcluster.getcentroid();
 				std::vector<Heuristics::FMToperatingareaclusterbinary>allbinaries = originalcluster.getbinaries();
-				const Core::FMToutput& centroidoutput = centroid.getoutputintersect(output);
-				const std::map<std::string, double> centroidvalue = this->getoutput(centroidoutput, period);
+				const Core::FMToutput& centroidoutput = centroid.getoutputintersect(statisticoutput);
+				const Core::FMToutput& centroidareaoutput = centroid.getoutputintersect(areaoutput);
+				const std::map<std::string, double> centroidvalue = this->getoutput(centroidoutput,period);
+				const std::map<std::string, double> centroidarea = this->getoutput(centroidareaoutput,period);
 				centroid.setstatistic(centroidvalue.at("Total"));
+				centroid.setarea(centroidarea.at("Total"));
 				for (Heuristics::FMToperatingareaclusterbinary& binary : allbinaries)
 					{
-					const Core::FMToutput& binaryoutput = binary.getoutputintersect(output);
-					const std::map<std::string, double> binaryvalue = this->getoutput(binaryoutput, period);
+					const Core::FMToutput& binaryoutput = binary.getoutputintersect(statisticoutput);
+					const Core::FMToutput& binaryareaoutput = binary.getoutputintersect(areaoutput);
+					const std::map<std::string, double> binaryvalue = this->getoutput(binaryoutput,period);
+					const std::map<std::string, double> binaryarea = this->getoutput(binaryareaoutput,period);
 					binary.setstatistic(binaryvalue.at("Total"));
+					binary.setarea(binaryarea.at("Total"));
 					}
-				newclusters.push_back(Heuristics::FMToperatingareacluster(centroid,allbinaries));
+                const Heuristics::FMToperatingareacluster newopcluster(Heuristics::FMToperatingareacluster(centroid,allbinaries),originalcluster.getrealminimalarea(),originalcluster.getrealmaximalarea());
+                if (!newopcluster.isvalidareabounds())
+                    {
+                    _exhandler->raise(Exception::FMTexc::FMTignore,
+									"Operating area cluster "+std::string(centroid.getmask())+" wont reach its minimal size",
+									"FMTlpmodel::getclusterer",__LINE__, __FILE__, _section);
+                    }
+				newclusters.push_back(newopcluster);
 				}
-			newclusterer = Heuristics::FMToperatingareaclusterer(newclusters, minimalarea, maximalarea,
-															minimalnumberofclusters,maximalnumberofclusters);
+			newclusterer = Heuristics::FMToperatingareaclusterer(solvertype,0,newclusters);
 		}catch (...)
 			{
 			_exhandler->raisefromcatch("", "FMTlpmodel::getclusterer", __LINE__, __FILE__);
@@ -435,7 +448,7 @@ namespace Models
 		graph(rhs.graph),
 		elements(rhs.elements)
 	{
-	
+
 	}
 
 
@@ -467,7 +480,7 @@ namespace Models
 		return std::map<std::string, double>();
 	}
 
-	
+
 
 	Graph::FMTgraphstats FMTlpmodel::buildperiod(Core::FMTschedule schedule, bool forcepartialbuild)
 	{
@@ -518,7 +531,7 @@ namespace Models
 	}
 
 
-bool FMTlpmodel::locatenodes(const std::vector<Core::FMToutputnode>& nodes, int period, 
+bool FMTlpmodel::locatenodes(const std::vector<Core::FMToutputnode>& nodes, int period,
 	std::map<int, double>& variables, double multiplier) const
 	{
 	bool cashhit = false;
@@ -1092,7 +1105,7 @@ bool FMTlpmodel::locatenodes(const std::vector<Core::FMToutputnode>& nodes, int 
 					_exhandler->raise(Exception::FMTexc::FMTunboundedperiod,
 						std::to_string(badperiod),"FMTlpmodel::eraseperiod", __LINE__, __FILE__);
 					}
-			
+
 		}catch (...)
 			{
 				_exhandler->printexceptions("", "FMTlpmodel::eraseperiod", __LINE__, __FILE__);
@@ -1506,10 +1519,34 @@ bool FMTlpmodel::locatenodes(const std::vector<Core::FMToutputnode>& nodes, int 
 				}
 		}catch (...)
 			{
-				_exhandler->printexceptions("", "FMTlpmodel::getoperatingareaheuristics", __LINE__, __FILE__);
+				_exhandler->printexceptions("", "FMTlpmodel::getoperatingareaschedulerheuristics", __LINE__, __FILE__);
 			}
 		return allheuristics;
 		}
+
+    std::vector<Heuristics::FMToperatingareaclusterer>FMTlpmodel::getoperatingareaclustererheuristics(const std::vector<Heuristics::FMToperatingareacluster>& clusters,
+																				const Core::FMToutput& statisticoutput,
+                                                                                const Core::FMToutput& areaoutput,
+                                                                                const int& period,
+																				size_t numberofheuristics) const
+        {
+        size_t seedof = 0;
+        std::vector<Heuristics::FMToperatingareaclusterer>allheuristics;
+        Heuristics::FMToperatingareaclusterer baseclusterer=this->getclusterer(clusters,areaoutput,statisticoutput,period);
+        try{
+            for (size_t heuristicid = 1 ; heuristicid < numberofheuristics; ++heuristicid)
+                {
+                allheuristics.push_back(baseclusterer);
+                allheuristics.back().passinobject(*this);
+                allheuristics.back().setgeneratorseed(seedof);
+                ++seedof;
+                }
+        }catch(...)
+            {
+            _exhandler->printexceptions("", "FMTlpmodel::getoperatingareaclustererheuristics", __LINE__, __FILE__);
+            }
+        return allheuristics;
+        }
 
 
 

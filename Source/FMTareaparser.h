@@ -123,7 +123,7 @@ class FMTareaparser : public FMTparser
 			std::vector<Heuristics::FMToperatingarea> getneighborsfrompolygons(const std::vector<OGRPolygon*>&polygons,
 																			std::vector<Heuristics::FMToperatingarea> operatingareas,
 																	const double& buffersize) const;
-			
+
 			// DocString: FMTareaparser::getclustersfrompolygons
 			/**
 			Base on a list of polygons and a list of corresponding operatingareas it returns a list of potential cluster of those

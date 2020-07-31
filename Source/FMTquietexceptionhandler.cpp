@@ -32,12 +32,12 @@ namespace Exception
 			{
 
 			}
-			else if (_level == FMTlev::FMT_logic || _level == FMTlev::FMT_range) 
+			else if (_level == FMTlev::FMT_logic || _level == FMTlev::FMT_range)
 				{
 				std::throw_with_nested(FMTerror(excp));
 				}
 			}
-		
+
 		return excp;
 	}
 	#ifdef FMTWITHGDAL
@@ -48,7 +48,12 @@ namespace Exception
 			}
 		void FMTquietexceptionhandler::handelCPLerror(CPLErr eErrClass, CPLErrorNum nError, const char * pszErrorMsg)
 			{
-
+            try{
+                FMTexceptionhandler::handelCPLerror(eErrClass,nError,pszErrorMsg);
+            }catch(...)
+                {
+                raisefromcatch("", "FMTquietexceptionhandler::handelCPLerror", __LINE__, __FILE__);
+                }
 			}
 	#endif
 

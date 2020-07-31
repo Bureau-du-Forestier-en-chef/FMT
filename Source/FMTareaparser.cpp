@@ -913,6 +913,7 @@ namespace Parser{
 							{
 							double distance;
 							const Core::FMTmask sidemask = sideoparea.getmask();
+
 							if (distances.at(mainmask).find(sidemask) !=
 								distances.at(mainmask).end())
 								{
@@ -942,7 +943,7 @@ namespace Parser{
 							binary_polygon->Centroid(&binarycentroid);
 							OGRLineString linking_line;
 							linking_line.setPoint(0, &maincentroid);
-							linking_line.setPoint(0, &binarycentroid);
+							linking_line.setPoint(1, &binarycentroid);
 							size_t subbinaryid = 0;
 							for (const Heuristics::FMToperatingareaclusterbinary& subbinary : binaries)
 								{
@@ -967,7 +968,7 @@ namespace Parser{
 						++mainopareaid;
 						}
 
-				
+
 				}catch (...)
 					{
 					_exhandler->raisefromcatch("", "FMTareaparser::getclustersfrompolygons", __LINE__, __FILE__, _section);
@@ -1006,7 +1007,8 @@ namespace Parser{
 
 			std::vector<Heuristics::FMToperatingareacluster> FMTareaparser::getclusters(const std::vector<Heuristics::FMToperatingarea>& operatingareas,
 				const std::vector<Core::FMTtheme>& themes, const std::string& data_vectors,
-				const std::string& agefield, const std::string& areafield, const double& maximaldistance, double agefactor,
+				const std::string& agefield, const std::string& areafield, const double& maximaldistance,
+                double agefactor,
 				double areafactor, std::string lockfield,
 				double minimal_area, double buffersize) const
 			{

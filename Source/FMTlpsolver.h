@@ -112,7 +112,7 @@ class FMTlpsolver
 	void synchronize();
 	// DocString: FMTlpsolver::getcacheelements
 	/**
-	This function is for debugging it returns the constraints and variables to add to the solverinterface 
+	This function is for debugging it returns the constraints and variables to add to the solverinterface
 	sitting in the matrixcache.
 	*/
 	std::string getcacheelements() const;
@@ -139,7 +139,7 @@ class FMTlpsolver
 	}
 	// DocString: FMTlpsolver::sortdeletedcache
 	/**
-	Sorts and remove replicates present in the rows and columns to delete matrix cache. 
+	Sorts and remove replicates present in the rows and columns to delete matrix cache.
 	*/
 	void sortdeletedcache();
 	public:
@@ -361,7 +361,7 @@ class FMTlpsolver
 			}else {
 				solverinterface->addRow(numberInRow, columns, elements, rowLower, rowUpper);
 				}
-			
+
 			}
 		// DocString: FMTlpsolver::addCol
 		/**
@@ -484,11 +484,11 @@ class FMTlpsolver
 		turn off the matrix caching, the number of calls made to osisolverinterface will be greater.
 		*/
 		void disablematrixcaching();
-		
 
-		
-	
-			
+
+
+
+
 	};
 }
 BOOST_CLASS_EXPORT_KEY(Models::FMTlpsolver)

@@ -17,7 +17,12 @@ namespace Exception
 		}
 	void FMTfreeexceptionhandler::handelCPLerror(CPLErr eErrClass, CPLErrorNum nError, const char * pszErrorMsg)
 		{
-
+        try{
+            FMTexceptionhandler::handelCPLerror(eErrClass,nError,pszErrorMsg);
+            }catch(...)
+                {
+                raisefromcatch("", "FMTfreeexceptionhandler::handelCPLerror", __LINE__, __FILE__);
+                }
 		}
 #endif
 
@@ -47,13 +52,13 @@ FMTexception FMTfreeexceptionhandler::raise(FMTexc lexception, std::string text,
 		if (_level == FMTlev::FMT_Warning)
 		{
 
-		}else if (_level == FMTlev::FMT_logic || _level == FMTlev::FMT_range) 
+		}else if (_level == FMTlev::FMT_logic || _level == FMTlev::FMT_range)
 			{
 			//std::throw_with_nested(FMTerror(excp));
 			throw FMTerror(excp);
 			}
 		}
-	
+
 	return excp;
 }
 

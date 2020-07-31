@@ -330,6 +330,7 @@ get_filename_component(GDAL_DATA_NAME "${GDAL_DATA}" NAME)
 if (NOT MSVC)
 	install (CODE
         "set(GDAL_FOUND \"${GDAL_FOUND}\")
+		file(COPY \"${CMAKE_CURRENT_SOURCE_DIR}/LICENSES\" DESTINATION \"${CMAKE_BINARY_DIR}\")
 		if (GDAL_FOUND)
             #Copy gdal data
             file(COPY \"${GDAL_DATA}\" DESTINATION \"${CMAKE_BINARY_DIR}\")
@@ -346,6 +347,7 @@ if (NOT MSVC)
 else()
 	install (CODE
 		"set(GDAL_FOUND \"${GDAL_FOUND}\")
+		file(COPY \"${CMAKE_CURRENT_SOURCE_DIR}/LICENSES\" DESTINATION \"${CMAKE_BINARY_DIR}\")
         if (GDAL_FOUND)
             #Copy gdal data
             file(COPY \"${GDAL_DATA}\" DESTINATION \"${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE}\")

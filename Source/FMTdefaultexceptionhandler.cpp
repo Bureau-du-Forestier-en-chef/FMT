@@ -19,12 +19,12 @@ namespace Exception
 #if defined FMTWITHGDAL
 	void FMTdefaultexceptionhandler::handelCPLerror(CPLErr eErrClass, CPLErrorNum nError, const char * pszErrorMsg)
 		{
-		char buffer[1000];
-		if (eErrClass == CE_Failure || eErrClass == CE_Fatal || eErrClass == CE_Warning)
-			{
-			snprintf(buffer, sizeof(buffer), "%s\n", pszErrorMsg);
-			*_logger << buffer;
-			}
+        try{
+            FMTexceptionhandler::handelCPLerror(eErrClass,nError,pszErrorMsg);
+        }catch(...)
+            {
+            raisefromcatch("", "FMTdefaultexceptionhandler::handelCPLerror", __LINE__, __FILE__);
+            }
 		}
 #endif
 
@@ -33,7 +33,7 @@ namespace Exception
 	FMTexception FMTdefaultexceptionhandler::raise(FMTexc lexception, std::string text,
 		const std::string& method, const int& line, const std::string& file, Core::FMTsection lsection,bool throwit)
 	{
-		
+
 		FMTexception excp = FMTexception(lexception, updatestatus(lexception, text));
 		if (_level != FMTlev::FMT_Warning)
 		{
@@ -50,12 +50,12 @@ namespace Exception
 			if (_level == FMTlev::FMT_Warning)
 			{
 				FMTwarning(excp).warn(_logger);
-			}else if (_level == FMTlev::FMT_logic || _level == FMTlev::FMT_range) 
+			}else if (_level == FMTlev::FMT_logic || _level == FMTlev::FMT_range)
 				{
 				std::throw_with_nested(FMTerror(excp));
 				}
 			}
-		
+
 		return excp;
 	}
 

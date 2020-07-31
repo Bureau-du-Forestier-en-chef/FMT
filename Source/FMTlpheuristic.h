@@ -36,13 +36,13 @@ namespace Heuristics
 {
 	// DocString: FMTlpheuristic
 	/**
-	FMToperatingareaheuristic is a heuristics made to solve spatialization problem 
-	across landscape for multiple operating areas. MIP Forest planning problem tend to be 
-	symmetrical and tought to solve using a regular MIP solver. This heuristics is made to quickly 
+	FMToperatingareaheuristic is a heuristics made to solve spatialization problem
+	across landscape for multiple operating areas. MIP Forest planning problem tend to be
+	symmetrical and tought to solve using a regular MIP solver. This heuristics is made to quickly
 	generate good enought starting solution for those kind of Forest management problem.
 	Before using this class the user must have sets all parameters of a vector of FMToperatingarea
 	so that the heuristic can sets the constraints and variables of each operating area into
-	the matrix. It's up to the user to decide to just generate a good initialsolution or 
+	the matrix. It's up to the user to decide to just generate a good initialsolution or
 	generate a good initialsolution and then try to find the optimaly using a BnB solver.
 	*/
 	class FMTlpheuristic : public Core::FMTobject, public Models::FMTlpsolver
@@ -80,7 +80,7 @@ namespace Heuristics
 		///std random number generator of the heuristic each heuristic has it's own generator to generate different solution
 		std::default_random_engine generator;
 		// DocString: FMTlpheuristic::seed
-		///The random engine seed need to be a data member when serializing the class 
+		///The random engine seed need to be a data member when serializing the class
 		size_t seed;
 		// DocString: FMTlpheuristic::usingsolvercopy
 		///If true the heuristic will work from it's own copy of solverinterface, else it's going to work on the FMTlpmodel solverinterface.
@@ -102,6 +102,11 @@ namespace Heuristics
 		FMTlpheuristic(Models::FMTlpsolver& basesolve, size_t lseed = 0,bool copysolver = true);
 		// DocString: FMTlpheuristic()
 		/**
+		Constructor based on a simple solver type and seed.
+		*/
+		FMTlpheuristic(const Models::FMTsolverinterface& interfacetype,const size_t& lseed);
+		// DocString: FMTlpheuristic()
+		/**
 		Default FMTlpheuristic constructor
 		*/
 		FMTlpheuristic()=default;
@@ -115,6 +120,12 @@ namespace Heuristics
 		FMTlpheuristic copy assignment
 		*/
 		FMTlpheuristic& operator = (const FMTlpheuristic& rhs);
+		// DocString: FMTlpheuristic::branchnboundsolve
+		/**
+		Solve problem using Branch and bound on the primal formulation. If the function is called after a call to initialsolve()
+		it's going to use the heuristic solution has a starting MIP solution, if not it's going to directly use the BnB on the formulated problem.
+		*/
+		virtual void branchnboundsolve();
 		// DocString: FMTlpheuristic::isfeasible
 		/**
 		Return true if the actual solution of the heuristic is feasible.

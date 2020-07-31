@@ -19,12 +19,12 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 namespace Heuristics
 {
-	
+
 	FMTlpheuristic::FMTlpheuristic(const FMTlpheuristic& rhs) :
 		Core::FMTobject(rhs),Models::FMTlpsolver(rhs),
 		generator(rhs.generator),seed(rhs.seed),usingsolvercopy(true)
 		{
-		
+
 		}
 	FMTlpheuristic& FMTlpheuristic::operator = (const FMTlpheuristic& rhs)
 		{
@@ -38,7 +38,13 @@ namespace Heuristics
 			}
 		return *this;
 		}
-	
+
+    FMTlpheuristic::FMTlpheuristic(const Models::FMTsolverinterface& interfacetype,const size_t& lseed):
+        Core::FMTobject(), Models::FMTlpsolver(),generator(lseed),seed(lseed), usingsolvercopy(false)
+        {
+        this->buildsolverinterface(interfacetype);
+        }
+
 	FMTlpheuristic::FMTlpheuristic(Models::FMTlpsolver& basesolve, size_t lseed,bool copysolver):
 		Core::FMTobject(), Models::FMTlpsolver(),generator(lseed),seed(lseed), usingsolvercopy(copysolver)
 		{
@@ -61,6 +67,11 @@ namespace Heuristics
 		seed = lseed;
 		generator.seed(lseed);
 		}
+
+    void FMTlpheuristic::branchnboundsolve()
+        {
+        Models::FMTlpsolver::branchAndBound();
+        }
 
 }
 BOOST_CLASS_EXPORT_IMPLEMENT(Heuristics::FMTlpheuristic)

@@ -36,13 +36,13 @@ namespace Heuristics
 {
 	// DocString: FMToperatingareascheduler
 	/**
-	FMToperatingareaheuristic is a heuristics made to solve spatialization problem 
-	across landscape for multiple operating areas. MIP Forest planning problem tend to be 
-	symmetrical and tought to solve using a regular MIP solver. This heuristics is made to quickly 
+	FMToperatingareaheuristic is a heuristics made to solve spatialization problem
+	across landscape for multiple operating areas. MIP Forest planning problem tend to be
+	symmetrical and tought to solve using a regular MIP solver. This heuristics is made to quickly
 	generate good enought starting solution for those kind of Forest management problem.
 	Before using this class the user must have sets all parameters of a vector of FMToperatingarea
 	so that the heuristic can sets the constraints and variables of each operating area into
-	the matrix. It's up to the user to decide to just generate a good initialsolution or 
+	the matrix. It's up to the user to decide to just generate a good initialsolution or
 	generate a good initialsolution and then try to find the optimaly using a BnB solver.
 	*/
 	class FMToperatingareascheduler : public FMTlpheuristic
@@ -80,7 +80,7 @@ namespace Heuristics
 		// DocString: FMToperatingareascheduler::setoperatingareasconstraints
 		/**
 		The function sets all the operating area constraints (changes the stade of the operating area) and adding all constraints
-		and variables to the solverinterface using the FMTlpmodel graph (maingraph), it's parent class (model) and finaly using 
+		and variables to the solverinterface using the FMTlpmodel graph (maingraph), it's parent class (model) and finaly using
 		an output node (the output node needs to be linked to a least one action of the FMTmodel).
 		*/
 		void setoperatingareasconstraints(const Graph::FMTgraph& maingraph,
@@ -102,7 +102,7 @@ namespace Heuristics
 		std::vector<std::vector<FMToperatingareascheme>::const_iterator> setdraw();
 		// DocString: FMToperatingareascheduler::setbounds
 		/**
-		Depending if we solve the dual or the primal the this function will set a  random schedule if userrandomness == true or 
+		Depending if we solve the dual or the primal the this function will set a  random schedule if userrandomness == true or
 		simply set the best known schedule to a set of operating areas (tobound).
 		*/
 		size_t setbounds(const std::vector<std::vector<FMToperatingareascheme>::const_iterator>& tobound);
@@ -140,7 +140,7 @@ namespace Heuristics
 		// DocString: FMToperatingareascheduler::initialsolve
 		/**
 		Solve the heuristic problem using the original heuristic resolving the problem till finding a initial solution
-		for each operating area. The user can use the function getsolution to first yield solution. 
+		for each operating area. The user can use the function getsolution to first yield solution.
 		*/
 		bool initialsolve() final;
 		// DocString: FMToperatingareascheduler::branchnboundsolve
@@ -148,7 +148,7 @@ namespace Heuristics
 		Solve problem using Branch and bound on the primal formulation. If the function is called after a call to initialsolve()
 		it's going to use the heuristic solution has a starting MIP solution, if not it's going to directly use the BnB on the formulated problem.
 		*/
-		void branchnboundsolve();
+		void branchnboundsolve() final;
 		// DocString: FMToperatingareascheduler::setasrandom
 		/**
 		Sets True the userandomness data member
@@ -166,7 +166,7 @@ namespace Heuristics
 		void setgeneratorseed(const size_t& lseed);
 		// DocString: FMToperatingareascheduler::getsolution
 		/**
-		Gets the actual solution into a FMTyieldhandler format (time yield) 
+		Gets the actual solution into a FMTyieldhandler format (time yield)
 		The user can decide the (yldname) to use. Each operating area will have its own
 		yieldhandler.
 		*/

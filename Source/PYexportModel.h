@@ -28,7 +28,8 @@ BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(get_outputs_overloads, get_outputs, 0, 1)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(getLPoutputoverloads, getoutput, 2, 3)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(warmup_overloads, warmup, 2, 4)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(evaluate_overloads, evaluate, 1, 2)
-BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(getoperatingareaschedulerheuristics_overloads, getoperatingareaschedulerheuristics, 2, 4)
+BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(getoperatingareaschedulerheuristics_overloads, getoperatingareaschedulerheuristics,2, 4)
+BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(getoperatingareaclustererheuristics_overloads,getoperatingareaclustererheuristics,4,5)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(getvariabilities_overloads, getvariabilities, 1, 2)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(getareavariabilities_overloads, getareavariabilities,2,3)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(boundsolution_overloads, boundsolution, 1, 2)
@@ -187,6 +188,7 @@ void exportModel()
 		.def("getstats", &Models::FMTlpmodel::getstats,
 			"@DocString(FMTlpmodel::getstats)")
 		.def("getoperatingareaschedulerheuristics", &Models::FMTlpmodel::getoperatingareaschedulerheuristics, getoperatingareaschedulerheuristics_overloads(bp::args("opareas", "node", "numberofheuristics", "copysolver"), "@DocString(FMTlpmodel::getoperatingareaschedulerheuristics)"))
+		.def("getoperatingareaclustererheuristics", &Models::FMTlpmodel::getoperatingareaclustererheuristics, getoperatingareaclustererheuristics_overloads(bp::args("opareas","statisticoutput","areaoutput","period", "numberofheuristics"), "@DocString(FMTlpmodel::getoperatingareaschedulerheuristics)"))
 		.def("getvariabilities", &Models::FMTlpmodel::getvariabilities, getvariabilities_overloads(bp::args("outputs", "tolerance"), "@DocString(FMTlpmodel::getvariabilities)"))
 		.def("getareavariabilities", &Models::FMTlpmodel::getareavariabilities,getareavariabilities_overloads(bp::args("outputs","globalmask","tolerance"), "@DocString(FMTlpmodel::getareavariabilities)"));
 

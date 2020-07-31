@@ -114,7 +114,9 @@ enum FMTexc
 	FMTboostgrapherror = 55,
 	FMTunhandlederror = 56,
 	FMTnotlinegraph = 57,
-	FMTrangeerror = 58
+	FMTrangeerror = 58,
+	FMTGDALerror = 59,
+	FMTGDALwarning = 60
     };
 
 // DocString: FMTexception
