@@ -62,6 +62,8 @@ if (MSVC)
 	add_definitions("-D_USRDLL")
 	add_definitions("/bigobj")
 	add_definitions("-D_CRT_SECURE_NO_WARNINGS")
+else()
+	add_definitions("-Wa,-mbig-obj")
 endif(MSVC)
 
 add_definitions("-DBOOST_PYTHON_STATIC_LIB")

@@ -131,6 +131,11 @@ namespace Heuristics
 		Return true if the actual solution of the heuristic is feasible.
 		*/
 		virtual ~FMTlpheuristic() = default;
+		// DocString: FMTlpheuristic::passinobject
+		/**
+		Override the passinobject for the Lpsolver
+		*/
+		void passinobject(const FMTobject& rhs) override;
 	};
 }
 BOOST_CLASS_EXPORT_KEY(Heuristics::FMTlpheuristic)

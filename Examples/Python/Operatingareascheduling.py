@@ -13,6 +13,7 @@ if __name__ == "__main__":
             primarylocation = "../Models/Jesus_land/jesus_land.pri"
             modelparser = Parser.FMTmodelparser()
             models = modelparser.readproject(primarylocation,["LP"])
+            models[0].setquietlogger()
             optimizationmodel=Models.FMTlpmodel(models[0],Models.FMTsolverinterface.CLP)
             themes = optimizationmodel.getthemes()
             opareas = []

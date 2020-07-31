@@ -144,7 +144,6 @@ namespace Heuristics
 			if (this->isProvenOptimal())
 			{
 				const double initialobjectivevalue = this->getObjValue();
-				(*_logger) << "initial value " << initialobjectivevalue << "\n";
 				size_t opareaprocessed = 0;
 				std::string problemsolved = "primal";
 				if (!useprimal)
@@ -363,32 +362,35 @@ namespace Heuristics
 	FMToperatingareascheduler::~FMToperatingareascheduler()
 		{
 		try {
-			//Will need a clean matrix to fit with FMTlpmodel!
-			std::vector<int>rowstodelete;
-			std::vector<int>columnstodelete;
-			for (std::vector<FMToperatingareascheme>::const_iterator operatingareait = operatingareas.begin();
-				operatingareait != operatingareas.end(); ++operatingareait)
-			{
-				operatingareait->getressourcestodelete(columnstodelete, rowstodelete);
-			}
-			for (std::map<std::pair<Core::FMTmask, Core::FMTmask>, std::vector<int>>::const_iterator it = adjacencyconstraints.begin(); it != adjacencyconstraints.end(); it++)
-			{
-				rowstodelete.insert(rowstodelete.end(), it->second.begin(), it->second.end());
-			}
-			if (!rowstodelete.empty())
-			{
-				this->deleteRows(rowstodelete.size(), &rowstodelete[0]);
-			}
-			if (!columnstodelete.empty())
-			{
-				this->deleteCols(columnstodelete.size(), &columnstodelete[0]);
-			}
-			if (!rowstodelete.empty() || !columnstodelete.empty())
-			{
-				this->resolvemodel();
-			}
-			operatingareas.clear();
-			adjacencyconstraints.clear();
+		    if (!usingsolvercopy)
+                {
+                  //Will need a clean matrix to fit with FMTlpmodel!
+                std::vector<int>rowstodelete;
+                std::vector<int>columnstodelete;
+                for (std::vector<FMToperatingareascheme>::const_iterator operatingareait = operatingareas.begin();
+                    operatingareait != operatingareas.end(); ++operatingareait)
+                {
+                    operatingareait->getressourcestodelete(columnstodelete, rowstodelete);
+                }
+                for (std::map<std::pair<Core::FMTmask, Core::FMTmask>, std::vector<int>>::const_iterator it = adjacencyconstraints.begin(); it != adjacencyconstraints.end(); it++)
+                {
+                    rowstodelete.insert(rowstodelete.end(), it->second.begin(), it->second.end());
+                }
+                if (!rowstodelete.empty())
+                {
+                    this->deleteRows(rowstodelete.size(), &rowstodelete[0]);
+                }
+                if (!columnstodelete.empty())
+                {
+                    this->deleteCols(columnstodelete.size(), &columnstodelete[0]);
+                }
+                if (!rowstodelete.empty() || !columnstodelete.empty())
+                {
+                    this->resolvemodel();
+                }
+                operatingareas.clear();
+                adjacencyconstraints.clear();
+                }
 		}catch (...)
 			{
 			_exhandler->raisefromcatch("","FMToperatingareascheduler::~", __LINE__, __FILE__);
@@ -448,12 +450,15 @@ namespace Heuristics
                     }
                 ++areait;
                 }
-            const size_t maxareatopick = static_cast<size_t>(static_cast<double>(operatingareas.size()) * proportionofset);
+            if (proportionofset==0)
+                {
+                _exhandler->raise(Exception::FMTexc::FMTrangeerror,"proportion of selected operating area equal 0","FMToperatingareascheduler::setdraw",__LINE__,__FILE__);
+                }
+            const size_t maxareatopick = static_cast<size_t>(std::ceil(static_cast<double>(operatingareas.size()) * proportionofset));
             if (userandomness)
                 {
                 std::shuffle(potentials.begin(), potentials.end(), this->generator);
                 }
-
             std::vector<std::vector<FMToperatingareascheme>::const_iterator>::iterator randomit = potentials.begin();
             while ((selected.size() < maxareatopick) && randomit != potentials.end())
                 {

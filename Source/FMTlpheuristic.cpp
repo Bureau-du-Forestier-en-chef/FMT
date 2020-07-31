@@ -73,6 +73,12 @@ namespace Heuristics
         Models::FMTlpsolver::branchAndBound();
         }
 
+    void FMTlpheuristic::passinobject(const FMTobject& rhs)
+        {
+        FMTobject::passinobject(rhs);
+        FMTlpsolver::passinmessagehandler(*_logger);
+        }
+
 }
 BOOST_CLASS_EXPORT_IMPLEMENT(Heuristics::FMTlpheuristic)
 #endif

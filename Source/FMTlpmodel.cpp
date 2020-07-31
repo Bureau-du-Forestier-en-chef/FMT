@@ -363,7 +363,7 @@ namespace Models
 	Core::FMTschedule FMTlpmodel::getsolution(int period) const
 	{
 		Core::FMTschedule newschedule;
-		try 
+		try
 		{
 			const double* actual_solution = this->getColSolution();
 			newschedule = graph.getschedule(actions,actual_solution,period);

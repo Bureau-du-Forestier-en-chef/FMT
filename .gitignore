@@ -28,3 +28,5 @@ RCa06500
 *.def
 Makefile
 *.pyd
+*.mps
+*.lp
