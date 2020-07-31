@@ -60,6 +60,8 @@ void exportSpatial()
         .def("allow",&Spatial::FMTdisturbancestack::allow,
 			"@DocString(FMTdisturbancestack::allow)");
 
+	bp::class_<Spatial::FMTeventcontainer>("FMTeventcontainer", "@DocString(FMTeventcontainer)")
+		.def(bp::init<Spatial::FMTeventcontainer>());
 
 	bp::class_<Spatial::FMTspatialaction, bp::bases<Core::FMTaction>>("FMTspatialaction", "@DocString(FMTspatialaction)")
         .def(bp::init<Core::FMTaction>())
@@ -105,6 +107,7 @@ void exportSpatial()
     define_pylist<Spatial::FMTsasolution>();
 
 	bp::class_<Spatial::FMTspatialschedule, bp::bases<Spatial::FMTlayer<Graph::FMTlinegraph>>>("FMTspatialschedule", "@DocString(FMTspatialschedule)")
+		.def(bp::init<Spatial::FMTspatialschedule>())
 		.def("get_forest_at_period", &Spatial::FMTspatialschedule::getforestperiod, "@DocString(FMTspatialschedule::getforestperiod)");
 
 	define_pylist<Spatial::FMTspatialschedule>();

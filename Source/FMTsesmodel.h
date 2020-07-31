@@ -51,6 +51,8 @@ class FMTsesmodel : public FMTmodel
 		ar & BOOST_SERIALIZATION_NVP(operatedschedule);
 		ar & BOOST_SERIALIZATION_NVP(disturbances);
 		ar & BOOST_SERIALIZATION_NVP(spactions);
+		ar & BOOST_SERIALIZATION_NVP(events);
+		ar & BOOST_SERIALIZATION_NVP(spschedule);
 		}
     protected:
 		// DocString: FMTsesmodel::mapping
@@ -65,6 +67,8 @@ class FMTsesmodel : public FMTmodel
 		// DocString: FMTsesmodel::spactions
 		///Spatialy explicit actions (actions with green up, adjacency distance etc...).
 		std::vector<Spatial::FMTspatialaction>spactions;
+		Spatial::FMTeventcontainer events;
+		Spatial::FMTspatialschedule spschedule;
     public:
 		// DocString: FMTsesmodel()
 		/**
@@ -112,6 +116,7 @@ class FMTsesmodel : public FMTmodel
 		Getter returning a string of patch stats (area,perimeter ....) that are ine the disturbances stack.
 		*/
 		std::string getdisturbancestats() const;
+		std::string getdisturbancestatssp() const;
 		// DocString: FMTsesmodel::getschedule
 		/**
 		Getter returning a copy of the operated schedules of the FMTsesmodel.
@@ -122,6 +127,7 @@ class FMTsesmodel : public FMTmodel
 			{
 			return operatedschedule;
 			}
+		std::vector<Core::FMTschedule> getschedulesp() const;
 		// DocString: FMTsesmodel::setinitialmapping
 		/**
 		Setter of the initial forest stades (spatial map of FMTdevelopment)
@@ -167,10 +173,9 @@ class FMTsesmodel : public FMTmodel
 		to get different solutions from the simulator.
 		***************** Function only for testing the new architecture ***************************
 		*/
-		std::map<std::string,double> newsimulate(const Core::FMTschedule& schedule,
-                        Spatial::FMTspatialschedule& spschedule,
-                        bool schedule_only = true,
-                        unsigned int seed = 0);
+		std::map<std::string, double> newsimulate(const Core::FMTschedule& schedule,
+													bool schedule_only,// = true,
+													unsigned int seed);// = 0);
 		// DocString: FMTsesmodel::montecarlosimulate
 		/**
 		This function call multiple time the simulate function to find the best possible spatialisation for

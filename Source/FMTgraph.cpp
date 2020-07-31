@@ -14,6 +14,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTtheme.h"
 #include <tuple>
 #include <assert.h>
+#include "FMTexceptionhandler.h"
 
 namespace Graph
 {
@@ -1165,5 +1166,51 @@ FMTgraph FMTgraph::postsolve(const Core::FMTmask& selectedmask,
 	newgraph.generatedevelopments();
 	return newgraph;
 	}
+
+Core::FMTschedule FMTgraph::getschedule(const std::vector<Core::FMTaction>& actions, const double * actual_solution, const int & lperiod) const
+{
+	try {
+		if (static_cast<int>(size()) > lperiod && lperiod > 0)
+		{
+			std::map<Core::FMTaction, std::map<Core::FMTdevelopment, std::map<int, double>>>schedule_solution;
+			//const double* actual_solution = this->getColSolution();
+			for (const auto deviterator : getperiodverticies(lperiod))
+			{
+				const Graph::FMTvertex_descriptor vertex = deviterator.second;
+				std::map<int, int>variables = getoutvariables(vertex);
+				variables.erase(-1);
+				if (!variables.empty())
+				{
+					for (const auto variable_iterator : variables)
+					{
+						if (*(actual_solution + variable_iterator.second) > 0) //basis solution only!!!
+						{
+							if (schedule_solution.find(actions[variable_iterator.first]) == schedule_solution.end())
+							{
+								schedule_solution[actions[variable_iterator.first]] = std::map<Core::FMTdevelopment, std::map<int, double>>();
+							}
+							const Core::FMTdevelopment& basedev = getdevelopment(deviterator.second);
+							Core::FMTdevelopment lockout = basedev.clearlock();
+							if (schedule_solution[actions[variable_iterator.first]].find(lockout) == schedule_solution[actions[variable_iterator.first]].end())
+							{
+								schedule_solution[actions[variable_iterator.first]][lockout] = std::map<int, double>();
+							}
+							schedule_solution[actions[variable_iterator.first]][lockout][basedev.lock] = (*(actual_solution + variable_iterator.second));
+						}
+					}
+
+				}
+			}
+			Core::FMTschedule newschedule(lperiod, schedule_solution);
+			return newschedule;
+		}
+		}
+		catch (...)
+		{
+			Exception::FMTexceptionhandler handler;
+			handler.raisefromcatch("at period " + std::to_string(lperiod), "FMTgraph::getschedule", __LINE__, __FILE__);
+		}
+		return Core::FMTschedule();
+}
 
 }

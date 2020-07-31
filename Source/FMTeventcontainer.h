@@ -99,6 +99,11 @@ class FMTeventcontainer
         Insert an event in the container.
         */
         void insert(const FMTevent& event){events.insert(event);}
+		// DocString: FMTeventcontainer::merge
+		/**
+		Merge two FMTeventcontainer
+		*/
+		void merge(const FMTeventcontainer& levents);
         // DocString: FMTeventcontainer::erase(const FMTevent&)
         /**
         Erase an event from the container.

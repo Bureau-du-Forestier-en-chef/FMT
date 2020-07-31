@@ -35,7 +35,12 @@ namespace Spatial
         events.swap(rhs.events);
     }
 
-    void FMTeventcontainer::erase(const FMTevent& event)
+	void FMTeventcontainer::merge(const FMTeventcontainer & levents)
+	{
+		events.insert(levents.begin(), levents.end());
+	}
+
+	void FMTeventcontainer::erase(const FMTevent& event)
     {
         events.erase(event);
     }

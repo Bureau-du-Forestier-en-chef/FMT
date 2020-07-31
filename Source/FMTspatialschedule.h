@@ -60,9 +60,9 @@ class FMTspatialschedule : public FMTlayer<Graph::FMTlinegraph>
         bool empty() const {return mapping.empty();};
         // DocString: FMTspatialschedule::lasperiod()
         /**
-        Return last period build in the graph of the first cell in the map.
+        Return the last period in the graph.
         */
-        int lastperiod() const;
+        int actperiod() const;
         // DocString: FMTspatialschedule::copyfromselected(const FMTspatialschedule, const std::vector<size_t>)
         /**
 
@@ -85,26 +85,55 @@ class FMTspatialschedule : public FMTlayer<Graph::FMTlinegraph>
         */
         bool allow_action(const FMTspatialaction& targetaction, const std::vector<Core::FMTaction>& modelactions,
                           const FMTcoordinate& location,const int& period) const;
-        // DocString: FMTspatialschedule::getschedule(const FMTschedule, boost::unordered_map<Core::FMTdevelopment,std::vector<bool>>&, const int&, const Core::FMTyields& = Core::FMTyields(), bool = true)
+        // DocString: FMTspatialschedule::getscheduling(const FMTschedule, boost::unordered_map<Core::FMTdevelopment,std::vector<bool>>&, const int&, const Core::FMTyields& = Core::FMTyields(), bool = true)
         /**
-        Return for each action in the FMTschedule the FMTcoordinate with operable developments.
+        Return for each action in the FMTschedule the FMTcoordinate with operable developments at the end of the graph.
 		*/
-        std::map<Core::FMTaction,std::set<FMTcoordinate>> getschedule(  const Core::FMTschedule& selection,
-                                                                        boost::unordered_map<Core::FMTdevelopment,std::vector<bool>>& cached_operability,
-                                                                        const int& period,
-                                                                        const Core::FMTyields& yields = Core::FMTyields(),
-                                                                        bool schedule_only = true) const;
+        std::map<Core::FMTaction,std::set<FMTcoordinate>> getscheduling(  const Core::FMTschedule& selection,
+																			boost::unordered_map<Core::FMTdevelopment,std::vector<bool>>& cached_operability,
+																			const Core::FMTyields& yields = Core::FMTyields(),
+																			bool schedule_only = true) const;
         // DocString: FMTspatialschedule::getallowable(const FMTspatialaction, const std::vector<Core::FMTaction>&, const int&)
         /**
         For the target action, return a set of FMTcoordinate corresponding to the cells that are spatially allowable from coordinates that are operables.
 		*/
 		std::set<FMTcoordinate> verifyspatialfeasability(const FMTspatialaction& targetaction, const std::vector<Core::FMTaction>& modelactions,
                                                          const int& period, const std::set<FMTcoordinate>& operables) const;
+		// DocString: FMTspatialschedule::buildharvest(const FMTspatialaction, const std::vector<Core::FMTaction>&, const int&)
+		/**
+		
+		*/
+		FMTeventcontainer buildharvest(	const double& target, const FMTspatialaction& targetaction, std::default_random_engine& generator, const std::set<FMTcoordinate>& lmapping, 
+										const int& previousperiod, const int& actionid) const;
+		// DocString: FMTspatialschedule::operate(const FMTeventcontainer&, const std::vector<Core::FMTaction>&, const int&)
+		/**
 
+		*/
+		double operate(const FMTeventcontainer& cuts, const FMTspatialaction& action, const int& action_id, const Core::FMTtransition& Transition,
+					 const Core::FMTyields& ylds, const std::vector<Core::FMTtheme>& themes);
+		void addevents(const FMTeventcontainer& newevents);
+		// DocString: FMTspatialschedule::grow()
+		/**
 
-        //Dont forget to implement FMTforest functions needed plus modify FMTevent to have only one class
-        //Modification must replace FMTsaeventcontainer as the equivalent as disturbancestacks for all FMTspatialschedule
-        //When build the actions must be in order to fill the graphs and the event container. At the end of the period we must implement a grow for every cell
+		*/
+		void grow();
+		// DocString: FMTspatialschedule::setnewperiod()
+		/**
+
+		*/
+		void setnewperiod();
+		// DocString: FMTspatialschedule::getschedules()
+		/**
+
+		*/
+		std::vector<Core::FMTschedule> getschedules(const std::vector<Core::FMTaction>& modelactions) const;
+		// DocString: FMTspatialschedule::getgraphsoutputs(const Models::FMTmodel&, const Core::FMTconstraint&, const int&, const int&) const
+		/**
+			Return sum of all graphs outputs related to constraint.
+		*/
+		std::vector<double> getgraphsoutputs(	const Models::FMTmodel& model, const Core::FMTconstraint& constraint,
+												const int& periodstart, const int& periodstop) const;
+		std::string getpatchstats(const std::vector<Core::FMTaction>& actions) const;
     protected:
         FMTeventcontainer events;
     private:

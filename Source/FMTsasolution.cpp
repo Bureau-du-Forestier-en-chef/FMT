@@ -350,7 +350,7 @@ double FMTsasolution::getgraphspenalties(const Models::FMTsamodel& model, const 
                 Graph::FMTlinegraph* local_graph = &graphit->second;
                 std::queue<Graph::FMTvertex_descriptor> actives = local_graph->getactiveverticies();
                 ///Change parameters and function
-                Graph::FMTgraphstats stats = local_graph->randombuild(model,actives,generator,events,graphit->first);
+                Graph::FMTgraphstats stats = local_graph->randombuildperiod(model,actives,generator,events,graphit->first);
                 periodstats += local_graph->getstats();
             }
             //events.push_back(events_id);

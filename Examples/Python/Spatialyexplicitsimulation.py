@@ -24,6 +24,10 @@ if __name__ == "__main__":
             lpmodel.setconstraint(constraint)
         if lpmodel.initialsolve():
             simulationmodel = Models.FMTsesmodel(lpmodel)
+            singletransitions = []
+            for transition in simulationmodel.gettransitions():
+                singletransitions.append(transition.single())
+            simulationmodel.settransitions(singletransitions)
             spatialactions = []
             for action in simulationmodel.getactions():
                 spatialaction=Spatial.FMTspatialaction(action)

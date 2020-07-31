@@ -164,6 +164,7 @@ class FMTgraph
 		FMTgraph postsolve(const Core::FMTmask& selectedmask,
 			const std::vector<Core::FMTtheme>&originalbasethemes,
 			const std::map<int,int>& actionmapconnection) const;
+		Core::FMTschedule getschedule(const std::vector<Core::FMTaction>& actions, const double* actual_solution, const int& lperiod) const;
     };
 }
 #endif // FMTGRAPH_H

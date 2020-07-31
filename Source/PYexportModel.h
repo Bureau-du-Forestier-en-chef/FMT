@@ -108,7 +108,11 @@ void exportModel()
 				"@DocString(FMTsesmodel::setspactions)")
 			.def("getschedule",&Models::FMTsesmodel::getschedule,
 				"@DocString(FMTsesmodel::getschedule)")
+			.def("getschedulesp", &Models::FMTsesmodel::getschedulesp,
+				"@DocString(FMTsesmodel::getschedule)")
 			.def("getdisturbancestats", &Models::FMTsesmodel::getdisturbancestats,
+				"@DocString(FMTsesmodel::getdisturbancestats)")
+			.def("getdisturbancestatssp", &Models::FMTsesmodel::getdisturbancestatssp,
 				"@DocString(FMTsesmodel::getdisturbancestats)")
             .def("simulate",&Models::FMTsesmodel::simulate,
                  simulate_overloads(bp::args("schedule", "schedule_only","seed"), "@DocString(FMTsesmodel::simulate)"))
