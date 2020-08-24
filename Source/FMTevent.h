@@ -228,11 +228,16 @@ class FMTevent
         Return true if coordinate is in elements
         */
         bool contain(const FMTcoordinate& coord)const;
-        // DocString: FMTevent::withinelements(unsigned int, const FMTcoordinate&)
+		// DocString: FMTevent::withinelements(unsigned int, const FMTevent&)
+		/**
+		Return true if coordinate is within specified distance of at least one coordinate in elements
+		*/
+		bool withinelements(unsigned int dist, const FMTevent& rhs) const;
+        // DocString: FMTevent::withinelementsc(unsigned int, const FMTcoordinate&)
         /**
         Return true if coordinate is within specified distance of at least one coordinate in elements
         */
-        bool whithinelements(unsigned int dist, const FMTcoordinate& location) const;
+        bool withinelementsc(unsigned int dist, const FMTcoordinate& location) const;
         // DocString: FMTevent::potentialysplittedevent(const FMTcoordinate&)
         /**
         Fastest way to evaluate if an event will be split after erasing a coordinate.

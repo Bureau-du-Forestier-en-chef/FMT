@@ -29,12 +29,15 @@ class FMTlinegraph : public FMTgraph
         FMTlinegraph& operator = (const FMTgraph& rhs);
         int getperiod() const;
 		void newperiod();
-		void addaction(	const int& actionID,
+		void addaction(	FMTvertex_descriptor active,const int& actionID,
 						const std::vector<Core::FMTdevelopmentpath>& paths);
 		std::vector<Core::FMTdevelopmentpath> operate(	const Core::FMTaction& action, const int& action_id, const Core::FMTtransition& transition, 
 														const Core::FMTyields& ylds, const std::vector<Core::FMTtheme>& themes);
 		void grow();
 		FMTvertex_descriptor getactivevertex() const;
+		int getlastactionid(const int& period)const;
+		Core::FMTdevelopment getperiodstartdev(const int& period) const;
+		Core::FMTdevelopment getperiodstopdev(const int& period) const;
 		int randomoperate(const std::vector<int>& operables, const Models::FMTmodel& model, std::queue<FMTvertex_descriptor>& actives,
                                             FMTgraphstats& statsdiff, const FMTvertex_descriptor& front_vertex, std::default_random_engine& generator,
                                             const Core::FMTdevelopment& active_development);

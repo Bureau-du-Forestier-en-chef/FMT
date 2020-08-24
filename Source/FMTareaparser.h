@@ -9,6 +9,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #define FMTareaparser_H_INCLUDED
 
 #include "FMTdevelopment.h"
+#include "FMTspatialschedule.h"
 #include "FMTsasolution.h"
 #include "FMTactualdevelopment.h"
 #include "FMTparser.h"
@@ -185,6 +186,11 @@ class FMTareaparser : public FMTparser
 								const Spatial::FMTforest& out_layer,
 								const std::vector<Core::FMTtheme>& themes,
 								std::map<std::string, std::string> mapping = std::map<std::string, std::string>()) const;
+		std::vector<Core::FMTGCBMtransition> writedisturbancessp(	const std::string& location,
+																	const Spatial::FMTspatialschedule& disturbances,
+																	const std::vector<Core::FMTaction>& actions,
+																	const std::vector<Core::FMTtheme>& themes,
+																	const int& period) const;
          // DocString: FMTareaparser::writesasolution
 		/**
 

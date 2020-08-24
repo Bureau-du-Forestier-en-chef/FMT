@@ -339,6 +339,48 @@ namespace Parser{
 		return transitions;
 	}
 
+	std::vector<Core::FMTGCBMtransition> FMTareaparser::writedisturbancessp(const std::string& location,
+		const Spatial::FMTspatialschedule& disturbances,
+		const std::vector<Core::FMTaction>& actions,
+		const std::vector<Core::FMTtheme>& themes,
+		const int& period) const
+	{
+		//std::vector<Core::FMTGCBMtransition>GCBM = disturbances.getGCBMtransitions();
+		std::vector<Core::FMTGCBMtransition>transitions;
+		try
+		{
+			if (themes.empty())
+			{
+				Spatial::FMTlayer<std::string> lastdistlayer = disturbances.lastdistlayer(actions, period);
+				std::map<std::string, std::string>lmapping;
+				for (const auto& act : actions)
+				{
+					lmapping[act.getname()] = act.getname();
+				}
+				writelayer<std::string>(lastdistlayer, getdisturbancepath(location, period), lmapping);
+			}
+			else
+			{
+				Spatial::FMTlayer<std::string> lastdistlayer(disturbances.copyextent<std::string>());
+				transitions = disturbances.getGCBMtransitions(lastdistlayer, actions, themes, period);
+				if (!lastdistlayer.getmapping().empty())
+				{
+					std::map<std::string, std::string>lmapping;
+					for (const auto& item : lastdistlayer.getmapping())
+					{
+						lmapping[item.second] = item.second;
+					}
+					writelayer<std::string>(lastdistlayer, getdisturbancepath(location, period), lmapping);
+				}
+			}
+		}
+		catch (...)
+		{
+			_exhandler->printexceptions("at " + location, "FMTareaparser::writedisturbancessp", __LINE__, __FILE__);
+		}
+		return transitions;
+	}
+
     Spatial::FMTforest FMTareaparser::readrasters(const std::vector<Core::FMTtheme>& themes,
                                              const std::vector<std::string>&data_rasters,
                                              const std::string& age,double agefactor,

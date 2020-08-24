@@ -57,6 +57,7 @@ void exportParser()
 					.def("readrasters", &Parser::FMTareaparser::readrasters,readrasters_overloads(bp::args("themes","data_rasters","age","agefactor","areafactor","lock"), "@DocString(FMTareaparser::readrasters)"))
 					.def("writeforest",&Parser::FMTareaparser::writeforest,writeforest_overloads(bp::args("for_layer", "themes", "data_rasters", "age", "lock", "mapping"), "@DocString(FMTareaparser::writeforest)"))
 					.def("writedisturbances",&Parser::FMTareaparser::writedisturbances,writedisturbances_overloads(bp::args("location", "disturbances", "for_layer", "out_layer", "themes", "mapping"), "@DocString(FMTareaparser::writedisturbances)"))
+					.def("writedisturbancessp", &Parser::FMTareaparser::writedisturbancessp, "@DocString(FMTareaparser::writedisturbances)")
 					#ifdef FMTWITHOSI
 						.def("getneighbors",&Parser::FMTareaparser::getschemeneighbors, getschemeneighbors_overloads(bp::args("operatingareaparameters", "themes", "data_vectors", "agefield", "areafield", "agefactor","areafractor","lockfield","minimal_area","buffersize"), "@DocString(FMTareaparser::getschemeneighbors)"))
 					#endif

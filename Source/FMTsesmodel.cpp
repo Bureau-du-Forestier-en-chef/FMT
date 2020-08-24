@@ -19,13 +19,14 @@ namespace Models
 		operatedschedule(rhs.operatedschedule),
         disturbances(rhs.disturbances),
         spactions(rhs.spactions),
+		events(rhs.events),
 		spschedule(rhs.spschedule)
         {
 
         }
     FMTsesmodel::FMTsesmodel(const FMTmodel& rhs):
         FMTmodel(rhs),
-        mapping(), operatedschedule(),disturbances(),spactions(),  spschedule()
+        mapping(), operatedschedule(),disturbances(),spactions(),events(),spschedule()
         {
 
         }
@@ -38,6 +39,7 @@ namespace Models
 			operatedschedule = rhs.operatedschedule;
             disturbances = rhs.disturbances;
             spactions = rhs.spactions;
+			events = rhs.events;
 			spschedule = rhs.spschedule;
             }
         return *this;
@@ -146,6 +148,45 @@ namespace Models
 		return bestresults;
 		}
 
+	std::map<std::string, double> FMTsesmodel::newmontecarlosimulate(const Core::FMTschedule & schedule, const size_t & randomiterations, bool schedule_only, unsigned int seed, double tolerance)
+	{
+		std::map<std::string, double>bestresults;
+		FMTsesmodel bestmodel;
+		try {
+			bestresults["Total"] = 0;
+			for (size_t iteration = 0; iteration < randomiterations; ++iteration)
+			{
+				FMTsesmodel modelcopy(*this);
+				const std::map<std::string, double>results = modelcopy.newsimulate(schedule, schedule_only, seed);
+				if (!results.empty() && results.at("Total") > bestresults.at("Total"))
+				{
+					if (iteration > 0)
+					{
+						_logger->logwithlevel("Better solution found at Monte-Carlo iteration " +
+							std::to_string(iteration) + " value of " + std::to_string(results.at("Total")) + "\n", 1);
+					}
+					bestresults = results;
+					bestmodel = modelcopy;
+					if (bestresults.at("Total") >= (1.0 - tolerance * 1.0))
+					{
+						break;
+					}
+				}
+				++seed;
+			}
+			if (bestresults.at("Total") > 0)
+			{
+				*this = bestmodel;
+			}
+		}
+		catch (...)
+		{
+			_exhandler->printexceptions("", "FMTsesmodel::montecarlosimulate", __LINE__, __FILE__);
+		}
+
+		return bestresults;
+	}
+
 
     std::map<std::string,double> FMTsesmodel::simulate(const Core::FMTschedule& schedule,
                              bool schedule_only,
@@ -238,6 +279,12 @@ namespace Models
 															bool schedule_only,
 															unsigned int seed)
         {
+		/*
+		Two major problem ... by getting the schedule before operating every actions, if two actions are operable, there is a possbility that you do both. Im getting error in dev operate
+		Also, in build harvest, for actions that you dont check for acdjacency, there is a possibility that you have multiple cuts with the same coordinate in it because your always passing the same territory, only the ignit coord are changing
+		For the latest, see the modification in spatialschedule buildharbest. Every time a coordinate is selected in an event, it's removed from the territory that is passed to spread.
+
+		*/
 		std::map<std::string, double>results;
 		try {
 			const int period = spschedule.actperiod();
@@ -250,41 +297,35 @@ namespace Models
 				targets[ait->first.getname()] = schedule.actionarea(ait->first);
 			}
 			double allocated_area = 0;
-			//Validate this if ??
 			if (!schedule.empty() || !schedule_only)
 			{
 				double pass_allocated_area = 0;
 				bool schedulepass = true;
 				int pass = 0;
-				boost::unordered_map<Core::FMTdevelopment, std::vector<bool>>cached_operability;
 				do {
 					pass_allocated_area = 0;
-					std::map<Core::FMTaction, std::set<Spatial::FMTcoordinate>> scheduled_coord = spschedule.getscheduling(schedule, cached_operability, yields, schedulepass);
+					int action_id = 0;
+					boost::unordered_map<Core::FMTdevelopment,std::vector<bool>> cached_operability;//Caching hash FMTdevelopment+actionname
 					for (const Spatial::FMTspatialaction& spatial_action : spactions)
 					{
-						std::vector<Spatial::FMTspatialaction>::iterator acit = std::find_if(spactions.begin(), spactions.end(), Core::FMTactioncomparator(spatial_action.getname()));
-						if (acit != spactions.end())
+						const double action_area = targets[spatial_action.getname()];
+						const std::set<Spatial::FMTcoordinate> allowable_coordinates = spschedule.getscheduling(spatial_action, schedule, yields, schedulepass);
+						if (!allowable_coordinates.empty() && action_area > 0)
 						{
-							const double action_area = targets[acit->getname()];
-							std::set<Spatial::FMTcoordinate>* allowable_coordinates = &scheduled_coord[spatial_action];
-							if (!allowable_coordinates->empty() && action_area > 0)
+							const std::set<Spatial::FMTcoordinate> spatialy_allowable = spschedule.verifyspatialfeasability(spatial_action, actions, period, allowable_coordinates);
+							if (!spatialy_allowable.empty())
 							{
-								const size_t location = std::distance(spactions.begin(), acit);
-								const int action_id = static_cast<int>(location);
-								const std::set<Spatial::FMTcoordinate> spatialy_allowable = spschedule.verifyspatialfeasability(*acit, actions, period, *allowable_coordinates);
-								if (!spatialy_allowable.empty())
+								const Spatial::FMTeventcontainer harvest = spschedule.buildharvest(action_area, spatial_action, generator, spatialy_allowable, period, action_id);
+								if (harvest.size() > 0)
 								{
-									Spatial::FMTeventcontainer harvest = spschedule.buildharvest(action_area, *acit, generator, spatialy_allowable, period, action_id);
-									if (harvest.size() > 0)
-									{
-										double operatedarea = spschedule.operate(harvest, *acit, action_id, transitions[location], yields, themes);
-										spschedule.addevents(harvest);
-										targets[acit->getname()] -= operatedarea;
-										pass_allocated_area += operatedarea;
-									}
+									const double operatedarea = spschedule.operate(harvest, spatial_action, action_id, transitions[action_id], yields, themes);
+									spschedule.addevents(harvest);
+									targets[spatial_action.getname()] -= operatedarea;
+									pass_allocated_area += operatedarea;
 								}
 							}
 						}
+						++action_id;
 					}
 					allocated_area += pass_allocated_area;
 					++pass;

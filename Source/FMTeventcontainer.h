@@ -91,9 +91,14 @@ class FMTeventcontainer
         size_t size() const {return events.size();}
         // DocString: FMTeventcontainer::find
         /**
-        RGet const iterator to the element.
+        Get const iterator to the first event found with the coord at the period specified.
         */
-        const_iterator find(const FMTevent& event) const {return events.find(event);}
+		const_iterator find(const int& period, const FMTcoordinate& coord) const;
+		// DocString: FMTeventcontainer::find
+		/**
+		Get const iterator to the element.
+		*/
+		const_iterator find(const FMTevent& event) const { return events.find(event); }
         // DocString: FMTeventcontainer::insert
         /**
         Insert an event in the container.
