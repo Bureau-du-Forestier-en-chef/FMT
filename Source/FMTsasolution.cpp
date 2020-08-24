@@ -333,8 +333,9 @@ double FMTsasolution::getgraphspenalties(const Models::FMTsamodel& model, const 
         {
             const Graph::FMTlinegraph* local_graph = &graphit->second;
             const std::vector<double> solutions(1,this->getcellsize());
-			std::vector<Core::FMTactualdevelopment> actdev = local_graph->getperiodstopdev(period,&solutions[0]);//
-            forest.mapping[graphit->first]=Core::FMTdevelopment(actdev.front());
+			forest.mapping[graphit->first] = local_graph->getperiodstopdev(period);
+			/*std::vector<Core::FMTactualdevelopment> actdev = local_graph->getperiodstopdev(period,&solutions[0]);//
+            forest.mapping[graphit->first]=Core::FMTdevelopment(actdev.front());*/
         }
         return forest;
     }

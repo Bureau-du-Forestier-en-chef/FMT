@@ -117,9 +117,13 @@ void exportModel()
 				"@DocString(FMTsesmodel::getdisturbancestats)")
             .def("simulate",&Models::FMTsesmodel::simulate,
                  simulate_overloads(bp::args("schedule", "schedule_only","seed"), "@DocString(FMTsesmodel::simulate)"))
-			.def("newsimulate", &Models::FMTsesmodel::newsimulate, "@DocString(FMTsesmodel::newsimulate)")
 			.def("montecarlosimulate", &Models::FMTsesmodel::montecarlosimulate,
-				montecarlosimulate_overloads(bp::args("schedule","numberofiterations", "schedule_only", "seed","tolerance"), "@DocString(FMTsesmodel::montecarlosimulate)"));
+				montecarlosimulate_overloads(bp::args("schedule", "numberofiterations", "schedule_only", "seed", "tolerance"), "@DocString(FMTsesmodel::montecarlosimulate)"))
+			.def("getspschedule", &Models::FMTsesmodel::getspschedule,
+				"@DocString(FMTsesmodel::getdisturbances)")
+			.def("newsimulate", &Models::FMTsesmodel::newsimulate, "@DocString(FMTsesmodel::newsimulate)")
+			.def("newmontecarlosimulate", &Models::FMTsesmodel::newmontecarlosimulate,
+				montecarlosimulate_overloads(bp::args("schedule", "numberofiterations", "schedule_only", "seed", "tolerance"), "@DocString(FMTsesmodel::montecarlosimulate)"));
 
     define_pylist<Models::FMTsesmodel>();
 

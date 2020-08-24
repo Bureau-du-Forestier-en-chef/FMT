@@ -4,6 +4,7 @@
 #include "FMTlayer.h"
 #include "FMTforest.h"
 #include "FMTlinegraph.h"
+#include "FMTGCBMtransition.h"
 
 namespace Spatial
 {
@@ -89,10 +90,10 @@ class FMTspatialschedule : public FMTlayer<Graph::FMTlinegraph>
         /**
         Return for each action in the FMTschedule the FMTcoordinate with operable developments at the end of the graph.
 		*/
-        std::map<Core::FMTaction,std::set<FMTcoordinate>> getscheduling(  const Core::FMTschedule& selection,
-																			boost::unordered_map<Core::FMTdevelopment,std::vector<bool>>& cached_operability,
-																			const Core::FMTyields& yields = Core::FMTyields(),
-																			bool schedule_only = true) const;
+       std::set<FMTcoordinate> getscheduling(	const  Spatial::FMTspatialaction& action,
+												const Core::FMTschedule& selection,
+												const Core::FMTyields& yields = Core::FMTyields(),
+												bool schedule_only = true) const;
         // DocString: FMTspatialschedule::getallowable(const FMTspatialaction, const std::vector<Core::FMTaction>&, const int&)
         /**
         For the target action, return a set of FMTcoordinate corresponding to the cells that are spatially allowable from coordinates that are operables.
@@ -111,6 +112,10 @@ class FMTspatialschedule : public FMTlayer<Graph::FMTlinegraph>
 		*/
 		double operate(const FMTeventcontainer& cuts, const FMTspatialaction& action, const int& action_id, const Core::FMTtransition& Transition,
 					 const Core::FMTyields& ylds, const std::vector<Core::FMTtheme>& themes);
+		// DocString: FMTspatialschedule::addevents(const FMTeventcontainer&)
+		/**
+
+		*/
 		void addevents(const FMTeventcontainer& newevents);
 		// DocString: FMTspatialschedule::grow()
 		/**
@@ -122,22 +127,41 @@ class FMTspatialschedule : public FMTlayer<Graph::FMTlinegraph>
 
 		*/
 		void setnewperiod();
-		// DocString: FMTspatialschedule::getschedules()
+		// DocString: FMTspatialschedule::getschedules(const std::vector<Core::FMTaction>)
 		/**
-
+		Return operated schedules from linegraph. 
 		*/
 		std::vector<Core::FMTschedule> getschedules(const std::vector<Core::FMTaction>& modelactions) const;
-		// DocString: FMTspatialschedule::getgraphsoutputs(const Models::FMTmodel&, const Core::FMTconstraint&, const int&, const int&) const
+		// DocString: FMTspatialschedule::getgraphsoutputs(const Models::FMTmodel&, const Core::FMTconstraint&, const int&, const int&)
 		/**
 			Return sum of all graphs outputs related to constraint.
 		*/
 		std::vector<double> getgraphsoutputs(	const Models::FMTmodel& model, const Core::FMTconstraint& constraint,
 												const int& periodstart, const int& periodstop) const;
+		// DocString: FMTspatialschedule::getgraphsoutputs(const Models::FMTmodel&, const Core::FMTconstraint&, const int&, const int&)
+		/**
+			Return sum of all graphs outputs related to constraint.
+		*/
 		std::string getpatchstats(const std::vector<Core::FMTaction>& actions) const;
+		// DocString: FMTspatialschedule::getgraphsoutputs(const Models::FMTmodel&, const Core::FMTconstraint&, const int&, const int&)
+		/**
+			Return sum of all graphs outputs related to constraint.
+		*/
+		FMTlayer<std::string> lastdistlayer(const std::vector<Core::FMTaction>& modelactions, const int& period) const;
+		// DocString: FMTspatialschedule::getGCBMtransitions(const std::vector<Core::FMTtheme>&)
+		/**
+		
+		*/
+		std::vector<Core::FMTGCBMtransition> getGCBMtransitions(FMTlayer<std::string>& stackedactions, const std::vector<Core::FMTaction>& modelactions, const std::vector<Core::FMTtheme>& classifiers, const int& period) const;
     protected:
+		// DocString: FMTspatialschedule::events
+		/**
+		
+		*/
         FMTeventcontainer events;
     private:
 };
 }
+
 
 #endif // FMTSPATIALSCHEDULE_H

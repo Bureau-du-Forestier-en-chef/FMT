@@ -303,7 +303,35 @@ namespace Spatial
         return false;
     }
 
-    bool FMTevent::whithinelements(unsigned int dist, const FMTcoordinate& location) const
+	bool FMTevent::withinelements(unsigned int dist, const FMTevent & rhs) const
+	{
+		if (ignition.within(dist, rhs.ignition))
+		{
+			return true;
+		}
+		else {
+			for (const FMTcoordinate& coord : enveloppe)
+			{
+				for (const FMTcoordinate& rhscoord : rhs.enveloppe)
+				{
+					if (coord.within(dist, rhscoord))
+					{
+						return true;
+					}
+				}
+			}
+			for (std::set<FMTcoordinate>::const_iterator elemit = rhs.elements.begin(); elemit != rhs.elements.end(); elemit++)
+			{
+				if (withinelementsc(dist,*elemit))
+				{
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+    bool FMTevent::withinelementsc(unsigned int dist, const FMTcoordinate& location) const
     {
         for (std::set<FMTcoordinate>::const_iterator elemit = elements.begin(); elemit != elements.end(); elemit++)
         {

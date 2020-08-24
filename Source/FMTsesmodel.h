@@ -111,6 +111,10 @@ class FMTsesmodel : public FMTmodel
 			{
 			return disturbances;
 			}
+		inline Spatial::FMTspatialschedule getspschedule() const
+		{
+			return spschedule;
+		}
 		// DocString: FMTsesmodel::getdisturbancestats
 		/**
 		Getter returning a string of patch stats (area,perimeter ....) that are ine the disturbances stack.
@@ -174,8 +178,8 @@ class FMTsesmodel : public FMTmodel
 		***************** Function only for testing the new architecture ***************************
 		*/
 		std::map<std::string, double> newsimulate(const Core::FMTschedule& schedule,
-													bool schedule_only,// = true,
-													unsigned int seed);// = 0);
+													bool schedule_only = true,
+													unsigned int seed = 0);
 		// DocString: FMTsesmodel::montecarlosimulate
 		/**
 		This function call multiple time the simulate function to find the best possible spatialisation for
@@ -186,6 +190,11 @@ class FMTsesmodel : public FMTmodel
 		to get different solutions from the simulator.
 		*/
 		std::map<std::string, double> montecarlosimulate(const Core::FMTschedule& schedule,
+										const size_t& randomiterations,
+										bool schedule_only = true,
+										unsigned int seed = 0,
+										double tolerance = FMT_DBL_TOLERANCE);
+		std::map<std::string, double> newmontecarlosimulate(const Core::FMTschedule& schedule,
 										const size_t& randomiterations,
 										bool schedule_only = true,
 										unsigned int seed = 0,

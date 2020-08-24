@@ -35,6 +35,19 @@ namespace Spatial
         events.swap(rhs.events);
     }
 
+	FMTeventcontainer::const_iterator FMTeventcontainer::find(const int & period, const FMTcoordinate & coord) const
+	{
+		std::vector<FMTeventcontainer::const_iterator> eventsfound = getevents(period, coord);
+		if (eventsfound.size() > 1)
+		{
+			return eventsfound.at(0);
+		}
+		else
+		{
+			return events.cend();
+		}
+	}
+
 	void FMTeventcontainer::merge(const FMTeventcontainer & levents)
 	{
 		events.insert(levents.begin(), levents.end());
@@ -130,7 +143,7 @@ namespace Spatial
         std::vector<FMTevent> aroundevents;
         for (auto eventit : events)
         {
-            if (eventit->whithinelements(1,coord))
+            if (eventit->withinelementsc(1,coord))
             {
                 aroundevents.push_back(*eventit);
             }

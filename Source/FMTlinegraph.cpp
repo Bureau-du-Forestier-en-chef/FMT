@@ -8,29 +8,30 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTlinegraph.h"
 #include "FMTexceptionhandler.h"
 #include "FMTmodel.h"
+#include "FMTlogger.h"
 
 namespace Graph
 {
     FMTlinegraph::FMTlinegraph():
-    FMTgraph(FMTgraphbuild::nobuild)
+    FMTgraph(FMTgraphbuild::nobuild),periodstatsdiff()
     {
 
     }
 
     FMTlinegraph::FMTlinegraph(const FMTgraphbuild lbuildtype):
-    FMTgraph(lbuildtype)
+    FMTgraph(lbuildtype),periodstatsdiff()
     {
 
     }
 
     FMTlinegraph::FMTlinegraph(const FMTlinegraph& rhs):
-    FMTgraph(rhs)
+    FMTgraph(rhs),periodstatsdiff(rhs.periodstatsdiff)
     {
 
     }
 
     FMTlinegraph::FMTlinegraph(const FMTgraph& rhs):
-    FMTgraph(rhs)
+    FMTgraph(rhs),periodstatsdiff()
     {
 
     }
@@ -40,6 +41,7 @@ namespace Graph
         if(this!=&rhs)
             {
             FMTgraph::operator = (rhs);
+			periodstatsdiff = rhs.periodstatsdiff;
             }
         return *this;
     }
@@ -49,6 +51,7 @@ namespace Graph
         if(this!=&rhs)
             {
             FMTgraph::operator = (rhs);
+			periodstatsdiff = FMTgraphstats();
             }
         return *this;
     }
@@ -78,7 +81,7 @@ namespace Graph
 		}
 	}
 
-	void FMTlinegraph::addaction(const int& actionID,
+	void FMTlinegraph::addaction(FMTvertex_descriptor active,const int& actionID,
 		const std::vector<Core::FMTdevelopmentpath>& paths)
 	{
 		for (const Core::FMTdevelopmentpath& devpath : paths)
@@ -86,7 +89,7 @@ namespace Graph
 			const FMTedgeproperties newedge(actionID, 0, devpath.proportion);
 			FMTvertex_descriptor tovertex;
 			tovertex = this->adddevelopment(*devpath.development);
-			boost::add_edge(getactivevertex(), tovertex, newedge, data);
+			boost::add_edge(active, tovertex, newedge, data);
 			++stats.edges;
 		}
 	}
@@ -97,19 +100,21 @@ namespace Graph
 																const Core::FMTyields& ylds,
 																const std::vector<Core::FMTtheme>& themes)
 	{
-		const Core::FMTdevelopment& active_development = getdevelopment(getactivevertex());
+		FMTvertex_descriptor activev = getactivevertex();
+		const Core::FMTdevelopment& active_development = getdevelopment(activev);
 		const std::vector<Core::FMTdevelopmentpath> paths = active_development.operate(action, transition, ylds, themes);
-		this->addaction(action_id, paths);
+		this->addaction(activev,action_id, paths);
 		return paths;
 	}
 
 	void FMTlinegraph::grow()
 	{
-		const Core::FMTdevelopment& active_development = getdevelopment(getactivevertex());
+		FMTvertex_descriptor active = getactivevertex();
+		const Core::FMTdevelopment& active_development = getdevelopment(active);
 		const Core::FMTfuturdevelopment grown_up = active_development.grow();
 		Graph::FMTvertex_descriptor next_period = adddevelopment(grown_up);
 		const Graph::FMTedgeproperties newedge(-1, 0, 100);
-		boost::add_edge(getactivevertex(), next_period, newedge, data);
+		boost::add_edge(active, next_period, newedge, data);
 		++stats.edges;
 	}
 	FMTvertex_descriptor FMTlinegraph::getactivevertex() const
@@ -120,6 +125,76 @@ namespace Graph
 		const FMTvertex_descriptor active = *vend;
 		return active;
 	}
+
+	int FMTlinegraph::getlastactionid(const int& period) const
+	{
+		Exception::FMTexceptionhandler handler;
+		std::vector<int> ids;
+		for (const auto& devit : getperiodverticies(period))
+		{
+			const FMTvertex_descriptor& outv = devit.second;
+			if (periodstop(outv))
+			{
+				FMTinedge_iterator inedge_iterator, inedge_end;
+				for (boost::tie(inedge_iterator, inedge_end) = boost::in_edges(outv, data); inedge_iterator != inedge_end; ++inedge_iterator)
+				{
+					const FMTedgeproperties& edgeprop = data[*inedge_iterator];
+					const int id = edgeprop.getactionID();
+					ids.push_back(id);
+				}
+			}
+		}
+		if (ids.size() > 1)
+		{
+			handler.raise(Exception::FMTexc::FMTnotlinegraph, "More than in egde for last development at period "+std::to_string(period), "FMTlinegraph::getlastactionid()", __LINE__, __FILE__);
+		}
+		if (ids.empty())
+		{
+			handler.raise(Exception::FMTexc::FMTnotlinegraph, "Error in building graph " + std::to_string(period), "FMTlinegraph::getlastactionid()", __LINE__, __FILE__);
+		}
+		return ids.at(0);
+	}
+
+	Core::FMTdevelopment FMTlinegraph::getperiodstartdev(const int& period) const
+	{
+		Exception::FMTexceptionhandler handler;
+		std::vector<Core::FMTdevelopment>all_period_start_devs;
+		for (std::unordered_map<size_t, FMTvertex_descriptor>::const_iterator devit = developments.at(period).begin();
+			devit != developments.at(period).end(); devit++)
+		{
+			if (periodstart(devit->second))
+			{
+				const Core::FMTdevelopment& development = data[devit->second].get();
+				all_period_start_devs.push_back(development);
+			}
+		}
+		if (all_period_start_devs.size() > 1)
+		{
+			handler.raise(Exception::FMTexc::FMTnotlinegraph, "More than one development at the beginning of period " + std::to_string(period), "FMTlinegraph::getperiodstartdev()", __LINE__, __FILE__);
+		}
+		return all_period_start_devs.at(0);
+	}
+
+	Core::FMTdevelopment FMTlinegraph::getperiodstopdev(const int & period) const
+	{
+		Exception::FMTexceptionhandler handler;
+		std::vector<Core::FMTdevelopment>all_period_stop_devs;
+		for (std::unordered_map<size_t, FMTvertex_descriptor>::const_iterator devit = developments.at(period).begin();
+			devit != developments.at(period).end(); devit++)
+		{
+			if (periodstop(devit->second))
+			{
+				const Core::FMTdevelopment& development = data[devit->second].get();
+				all_period_stop_devs.push_back(development);
+			}
+		}
+		if (all_period_stop_devs.size() > 1)
+		{
+			handler.raise(Exception::FMTexc::FMTnotlinegraph, "More than one development at the end of period " + std::to_string(period), "FMTlinegraph::getperiodstopdev()", __LINE__, __FILE__);
+		}
+		return all_period_stop_devs.at(0);
+	}
+	
 
     int FMTlinegraph::randomoperate(const std::vector<int>& operables, const Models::FMTmodel& model, std::queue<FMTvertex_descriptor>& actives,
                                             FMTgraphstats& statsdiff, const FMTvertex_descriptor& front_vertex, std::default_random_engine& generator,
