@@ -166,7 +166,71 @@ namespace Spatial
         return true;
     }
 
-   std::set<FMTcoordinate> FMTspatialschedule::getscheduling(	const Spatial::FMTspatialaction& action,
+
+	std::vector<std::set<Spatial::FMTcoordinate>> FMTspatialschedule::getupdatedscheduling(
+																	const std::vector<Spatial::FMTspatialaction>& spactions,
+																	const Core::FMTschedule& selection,
+																	const Core::FMTyields& yields,
+																	bool schedule_only,
+																	std::vector<std::set<Spatial::FMTcoordinate>> original,
+																	std::vector<FMTcoordinate> updatedcoordinate) const
+		{
+		try {
+			if (original.empty())
+				{
+				original.resize(spactions.size());
+				updatedcoordinate.reserve(mapping.size());
+				for (std::map<FMTcoordinate, Graph::FMTlinegraph>::const_iterator itc = mapping.begin(); itc != mapping.end(); ++itc)
+					{
+					updatedcoordinate.push_back(itc->first);
+					}
+				}
+			boost::unordered_map<Core::FMTdevelopment,std::vector<bool>>cachedactions;
+			cachedactions.reserve(updatedcoordinate.size());
+			for (const FMTcoordinate& updated : updatedcoordinate)
+				{
+				const Graph::FMTlinegraph& lg = mapping.at(updated);
+				const Graph::FMTvertex_descriptor& active = lg.getactivevertex();
+				const Core::FMTdevelopment& active_development = lg.getdevelopment(active);
+				boost::unordered_map<Core::FMTdevelopment, std::vector<bool>>::iterator cacheit = cachedactions.find(active_development);
+				if (cacheit == cachedactions.end())
+					{
+					std::pair<boost::unordered_map<Core::FMTdevelopment, std::vector<bool>>::iterator,bool>insertedpair = cachedactions.insert(std::make_pair(active_development, std::vector<bool>(spactions.size(), false)));
+					cacheit = insertedpair.first;
+					size_t actionid = 0;
+					for (const Spatial::FMTspatialaction& action : spactions)
+					{
+						if ((schedule_only && selection.operated(action, active_development)) ||
+							(!schedule_only && active_development.operable(action, yields)))
+						{
+							cacheit->second[actionid] = true;
+						}else {
+							cacheit->second[actionid] = false;
+						}
+					++actionid;
+					}
+					}
+				size_t actionid = 0;
+				for (const Spatial::FMTspatialaction& action : spactions)
+					{
+					if (cacheit->second.at(actionid))
+					{
+						original[actionid].insert(updated);
+					}else{
+						original[actionid].erase(updated);
+						}
+					++actionid;
+					}
+
+				}
+		}catch (...)
+			{
+			_exhandler->raisefromcatch("", "FMTspatialschedule::getupdatedscheduling", __LINE__, __FILE__);
+			}
+		return original;
+		}
+
+   std::set<FMTcoordinate>FMTspatialschedule::getscheduling(	const Spatial::FMTspatialaction& action,
 																const Core::FMTschedule& selection,
 																const Core::FMTyields& yields,
 																bool schedule_only) const
@@ -174,26 +238,16 @@ namespace Spatial
         std::set<FMTcoordinate>scheduling;
 		try
 		{
-			//boost::unordered_map<Core::FMTdevelopment, bool> cache_op;
 			for (std::map<FMTcoordinate, Graph::FMTlinegraph>::const_iterator itc = mapping.begin(); itc != mapping.end(); ++itc)
 			{
 				const Graph::FMTlinegraph& lg = itc->second;
 				const Graph::FMTvertex_descriptor& active = lg.getactivevertex();
 				const Core::FMTdevelopment& active_development = lg.getdevelopment(active);
-				/*if (cache_op.find(active_development) == cache_op.end())
-				{*/
-					if (selection.operated(action, active_development) ||
+				if (selection.operated(action, active_development) ||
 						(!schedule_only && active_development.operable(action, yields)))
 					{
 						scheduling.insert(itc->first);
-						//cache_op[active_development] = true;
 					}
-					/*cache_op[active_development] = false;
-				}
-				else if(cache_op.at(active_development))
-				{
-					scheduling.insert(itc->first); 
-				}*/
 			}
 		}
 		catch(...)
@@ -228,11 +282,12 @@ namespace Spatial
 
 	FMTeventcontainer FMTspatialschedule::buildharvest(	const double & target, const FMTspatialaction & targetaction, 
 														std::default_random_engine & generator, const std::set<FMTcoordinate>& lmapping, 
-														const int& period, const int& actionid) const
+														const int& period, const int& actionid, std::vector<FMTcoordinate>& operated) const
 	{
 		//To gain efficiency, maybe tracking cell that have been ignit actually, we are suposing that we are trying every cell, but its not true because of the random generator
 		double harvested_area = 0;
 		FMTeventcontainer cuts;
+		try {
 		std::set<FMTcoordinate> mapping_pass = lmapping;
 		size_t count = lmapping.size();
 		int tooclosecall = 0;
@@ -271,18 +326,24 @@ namespace Spatial
 						if (!tooclose)
 						{
 							cuts.insert(newcut);
-							std::set<FMTcoordinate>new_mapping;
-							std::set_difference(mapping_pass.begin(),mapping_pass.end(),
-												newcut.elements.begin(), newcut.elements.end(),
-												std::inserter(new_mapping,new_mapping.end()));
-							mapping_pass = new_mapping;
+							operated.reserve(newcut.elements.size());
+							for (const FMTcoordinate& toremove : newcut.elements)
+								{
+								operated.push_back(toremove);
+								mapping_pass.erase(toremove);
+								}
 							harvested_area += (static_cast<double>(newcut.elements.size())*cellsize);
+							count = mapping_pass.size() + 1;
 						}
 					}
 				}
 				--count;
 			}
 		}
+		}catch (...)
+			{
+			_exhandler->raisefromcatch("", "FMTspatialschedule::buildharvest", __LINE__, __FILE__);
+			}
 		return cuts;
 	}
 

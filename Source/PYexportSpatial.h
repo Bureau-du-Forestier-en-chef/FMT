@@ -10,8 +10,9 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 #include "FMTcoordinate.h"
 #include "FMTforest.h"
-#include "FMTdisturbancestack.h"
+#include "FMTspatialschedule.h"
 #include "FMTspatialaction.h"
+#include "FMTeventcontainer.h"
 #include "FMTsaschedule.h"
 #include "FMTgraph.h"
 #include "FMTsasolution.h"
@@ -56,12 +57,14 @@ void exportSpatial()
      define_pylist<Spatial::FMTforest>();
 
 
-	bp::class_<Spatial::FMTdisturbancestack>("FMTdisturbancestack", "@DocString(FMTdisturbancestack)")
-        .def("allow",&Spatial::FMTdisturbancestack::allow,
-			"@DocString(FMTdisturbancestack::allow)");
+	bp::class_<Spatial::FMTspatialschedule>("FMTspatialschedule", "@DocString(FMTspatialschedule)");
+
+	define_pylist<Spatial::FMTspatialschedule>();
 
 	bp::class_<Spatial::FMTeventcontainer>("FMTeventcontainer", "@DocString(FMTeventcontainer)")
 		.def(bp::init<Spatial::FMTeventcontainer>());
+
+	define_pylist<Spatial::FMTeventcontainer>();
 
 	bp::class_<Spatial::FMTspatialaction, bp::bases<Core::FMTaction>>("FMTspatialaction", "@DocString(FMTspatialaction)")
         .def(bp::init<Core::FMTaction>())

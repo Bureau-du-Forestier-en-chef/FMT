@@ -15,7 +15,7 @@ namespace Parser
             rxsource("(\\*SOURCE)([\\s\\t]*)(.+)", std::regex_constants::ECMAScript| std::regex_constants::icase),
             rxtar("(([\\s\\t]*)(_INVENT)([\\s\\t]*)(\\()([\\s\\t]*)([^\\s\\t]*)([\\s\\t]*)(\\))([\\s\\t]*)((_AREA)|([^\\s\\t]*)))|(([\\s\\t]*)((_INVENT)|(_INVLOCK))([\\s\\t]*)((_AREA)|([^\\s\\t]*)))|(([\\s\\t]*)([^\\s\\t]*)([\\s\\t]*)((_AREA)|([^\\s\\t]*)))", std::regex_constants::ECMAScript| std::regex_constants::icase),
             rxgrp("(\\*GROUP)([\\s\\t]*)([^\\s\\t\\(]*)(.+)", std::regex_constants::ECMAScript| std::regex_constants::icase),
-			rxoutputconstant("([^\\[]*)(\\[[\\s\\t]*)(0)([\\s\\t]*\\])", std::regex_constants::ECMAScript | std::regex_constants::icase)
+			rxoutputconstant("([^\\[]*)(\\[[\\s\\t]*)(\\-?[0-9])([\\s\\t]*\\])", std::regex_constants::ECMAScript | std::regex_constants::icase)
             {
 
             }
@@ -162,11 +162,11 @@ namespace Parser
 										else {
 											stacked_char += letter;
 										}
-										if (letter == '(')
+										if (letter == '(' || letter=='[')
 										{
 											inparenthesis = true;
 										}
-										else if (letter == ')')
+										else if (letter == ')' || letter == ']')
 										{
 											inparenthesis = false;
 										}
@@ -279,8 +279,10 @@ namespace Parser
 													if (it==outputs.end())
 														{
 														const std::string outputname = constantmatch[1];
+														const int inttarget_period = getnum<int>(std::string(constantmatch[3]), constants);
 														targetoutput = *find_if(outputs.begin(), outputs.end(), Core::FMToutputcomparator(outputname));
-														targetoutput.setperiod(0);
+														Core::FMTperbounds bounding(Core::FMTsection::Optimize, inttarget_period, inttarget_period);
+														targetoutput = targetoutput.boundto(themes, bounding, "");
 													}else {
 														targetoutput = *it;
 														}
@@ -336,19 +338,37 @@ namespace Parser
 											else {
 												std::string mask = "";
 												std::string rest = " ";
-												size_t id = 0;
-												for (const std::string& value : values)
-												{
-													if (id < themes.size())
+												if ((values.size() < (themes.size() + 2)))//shrinked mask
 													{
-														mask += value + " ";
+													size_t themeid = 0;
+													while (themeid < themes.size() && 
+														themes.at(themeid).isvalid(values.at(themeid)))
+														{
+														mask += values.at(themeid) + " ";
+														++themeid;
+														}
+													while (themeid < values.size())
+														{
+														rest += values.at(themeid) + " ";
+														++themeid;
+														}
+													}else {
+													size_t id = 0;
+													for (const std::string& value : values)
+													{
+														if (id < themes.size())
+														{
+															mask += value + " ";
+														}
+														else {
+															rest += value + " ";
+														}
+														++id;
 													}
-													else {
-														rest += value + " ";
+													
 													}
-													++id;
-												}
 												mask = mask.substr(0, mask.size() - 1);
+												if (!validate(themes, mask, " at line " + std::to_string(_line))) continue;
 												Core::FMTspec spec;
 												const std::string inds = setspec(Core::FMTsection::Outputs, Core::FMTkwor::Source, ylds, constants, spec, rest);
 												if (!spec.empty())
@@ -442,6 +462,9 @@ namespace Parser
 
 														}
 													}
+												}else {
+													_exhandler->raise(Exception::FMTexc::FMTunsupported_output,
+														"Non valid output keywords "+rest + " at line " + std::to_string(_line), "FMToutputparser::read", __LINE__, __FILE__, _section);
 												}
 
 											}

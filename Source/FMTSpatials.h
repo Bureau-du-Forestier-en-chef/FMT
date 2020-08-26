@@ -10,8 +10,9 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 #include "FMTcoordinate.h"
 #include "FMTcut.h"
-#include "FMTdisturbancestack.h"
 #include "FMTevent.h"
+#include "FMTeventcontainer.h"
+#include "FMTspatialschedule.h"
 #include "FMTforest.h"
 #include "FMTlayer.h"
 #include "FMTsaschedule.h"

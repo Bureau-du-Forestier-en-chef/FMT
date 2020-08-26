@@ -102,7 +102,7 @@ void exportModel()
 				"@DocString(FMTsesmodel::getmapping)")
 			.method("getschedule", &Models::FMTsesmodel::getschedule,
 				"@DocString(FMTsesmodel::getschedule)")
-            .method("getdisturbances",&Models::FMTsesmodel::getdisturbances,
+            .method("getspschedule",&Models::FMTsesmodel::getspschedule,
 				"@DocString(FMTsesmodel::getdisturbances)")
             .method("setinitialmapping",&Models::FMTsesmodel::setinitialmapping,
 				"@DocString(FMTsesmodel::setinitialmapping)")

@@ -94,6 +94,19 @@ class FMTspatialschedule : public FMTlayer<Graph::FMTlinegraph>
 												const Core::FMTschedule& selection,
 												const Core::FMTyields& yields = Core::FMTyields(),
 												bool schedule_only = true) const;
+	   // DocString: FMTspatialschedule::getupdatedscheduling()
+		/**
+		Return for all actions the FMTcoordinate with operable developments at the end of the graph.
+		*/
+	   std::vector<std::set<Spatial::FMTcoordinate>>getupdatedscheduling(
+										   const std::vector<Spatial::FMTspatialaction>& spactions,
+										   const Core::FMTschedule& selection,
+										   const Core::FMTyields& yields = Core::FMTyields(),
+										   bool schedule_only = true,
+										   std::vector<std::set<Spatial::FMTcoordinate>> original= std::vector<std::set<Spatial::FMTcoordinate>>(),
+											std::vector<FMTcoordinate> updatedcoordinate= std::vector<FMTcoordinate>()) const;
+
+
         // DocString: FMTspatialschedule::getallowable(const FMTspatialaction, const std::vector<Core::FMTaction>&, const int&)
         /**
         For the target action, return a set of FMTcoordinate corresponding to the cells that are spatially allowable from coordinates that are operables.
@@ -105,7 +118,7 @@ class FMTspatialschedule : public FMTlayer<Graph::FMTlinegraph>
 		
 		*/
 		FMTeventcontainer buildharvest(	const double& target, const FMTspatialaction& targetaction, std::default_random_engine& generator, const std::set<FMTcoordinate>& lmapping, 
-										const int& previousperiod, const int& actionid) const;
+										const int& previousperiod, const int& actionid, std::vector<FMTcoordinate>& operated) const;
 		// DocString: FMTspatialschedule::operate(const FMTeventcontainer&, const std::vector<Core::FMTaction>&, const int&)
 		/**
 

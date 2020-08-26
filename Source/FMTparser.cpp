@@ -315,7 +315,13 @@ std::string FMTparser::setspec(Core::FMTsection section, Core::FMTkwor key,const
 			if (std::regex_search(line, kmatch, FMTparser::rxayld))
 			{
 				const std::string yld = std::string(kmatch[4]) + std::string(kmatch[20]);
-				isyld(ylds, yld, section);
+				bool pushaagebound = false;
+				if (yld=="_AGE")
+					{
+					pushaagebound = true;
+					}else {
+					isyld(ylds, yld, section);
+					}
 				const std::string singlebound = std::string(kmatch[21]) + std::string(kmatch[22]) + std::string(kmatch[23]);
 				double upperbound = std::numeric_limits<double>::max();
 				double lowerbound = std::numeric_limits<double>::min();
@@ -332,7 +338,13 @@ std::string FMTparser::setspec(Core::FMTsection section, Core::FMTkwor key,const
 				else {
 					lowerbound = getnum<double>(singlebound, constants);
 				}
-				spec.addbounds(Core::FMTyldbounds(section, key, yld, upperbound, lowerbound));
+				if (pushaagebound)
+					{
+					spec.addbounds(Core::FMTagebounds(section, key, upperbound, lowerbound));
+				}else {
+					spec.addbounds(Core::FMTyldbounds(section, key, yld, upperbound, lowerbound));
+					}
+				
 				rest = " " + std::string(kmatch[1]) + std::string(kmatch[16]) + std::string(kmatch[28]);
 			}
 			else {

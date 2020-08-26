@@ -220,24 +220,29 @@ namespace Core
 	{
 		//otherinformation = " at line " + std::to_string(_line);
 		bool returnvalue = true;
-		if (themes.size() > values.size())
+		if (themes.size() < values.size())
 		{
 			_exhandler->raise(Exception::FMTexc::FMTinvalid_maskrange, mask + otherinformation,"FMTobject::checkmask", __LINE__, __FILE__, _section);
 			returnvalue = false;
 		}
 		else {
-			int id = 0;
+			size_t id = 0;
 			mask.clear();
 			for (const Core::FMTtheme& theme : themes)
 			{
-				if (!theme.isvalid(values[id]))
+				if (id < values.size() && !theme.isvalid(values[id]))
 				{
 					const std::string message = values[id] + " at theme " + std::to_string(theme.getid() + 1) + otherinformation;
 					_exhandler->raise(Exception::FMTexc::FMTundefined_attribute,message,
 						"FMTobject::checkmask",__LINE__, __FILE__, _section);
 					returnvalue = false;
 				}
-				mask += values[id] + " ";
+				std::string value = "?";
+				if (id < values.size())
+					{
+					value = values[id];
+					}
+				mask += value + " ";
 				++id;
 			}
 			mask.pop_back();

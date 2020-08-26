@@ -19,8 +19,8 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 namespace Python
 {
-BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(simulate_overloads, simulate, 1, 3)
-BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(montecarlosimulate_overloads, montecarlosimulate, 2, 5)
+BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(simulate_overloads, simulate, 1, 4)
+BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(montecarlosimulate_overloads, montecarlosimulate, 2, 4)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(simulatenssm_overloads, simulate, 1, 2)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(buildperiod_overloads, buildperiod, 0, 2)
 //BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(move_solution_overloads, move_solution, 0, 1)
@@ -101,29 +101,20 @@ void exportModel()
 				"@DocString(FMTsesmodel::getmapping)")
 			.def("getschedule", &Models::FMTsesmodel::getschedule,
 				"@DocString(FMTsesmodel::getschedule)")
-            .def("getdisturbances",&Models::FMTsesmodel::getdisturbances,
-				"@DocString(FMTsesmodel::getdisturbances)")
             .def("setinitialmapping",&Models::FMTsesmodel::setinitialmapping,
 				"@DocString(FMTsesmodel::setinitialmapping)")
             .def("setspactions",&Models::FMTsesmodel::setspactions,
 				"@DocString(FMTsesmodel::setspactions)")
 			.def("getschedule",&Models::FMTsesmodel::getschedule,
 				"@DocString(FMTsesmodel::getschedule)")
-			.def("getschedulesp", &Models::FMTsesmodel::getschedulesp,
-				"@DocString(FMTsesmodel::getschedule)")
 			.def("getdisturbancestats", &Models::FMTsesmodel::getdisturbancestats,
 				"@DocString(FMTsesmodel::getdisturbancestats)")
-			.def("getdisturbancestatssp", &Models::FMTsesmodel::getdisturbancestatssp,
-				"@DocString(FMTsesmodel::getdisturbancestats)")
             .def("simulate",&Models::FMTsesmodel::simulate,
-                 simulate_overloads(bp::args("schedule", "schedule_only","seed"), "@DocString(FMTsesmodel::simulate)"))
+                 simulate_overloads(bp::args("schedule", "schedule_only","scheduleatfirstpass","seed"), "@DocString(FMTsesmodel::simulate)"))
 			.def("montecarlosimulate", &Models::FMTsesmodel::montecarlosimulate,
-				montecarlosimulate_overloads(bp::args("schedule", "numberofiterations", "schedule_only", "seed", "tolerance"), "@DocString(FMTsesmodel::montecarlosimulate)"))
+				montecarlosimulate_overloads(bp::args("schedule", "numberofiterations", "seed", "tolerance"), "@DocString(FMTsesmodel::montecarlosimulate)"))
 			.def("getspschedule", &Models::FMTsesmodel::getspschedule,
-				"@DocString(FMTsesmodel::getdisturbances)")
-			.def("newsimulate", &Models::FMTsesmodel::newsimulate, "@DocString(FMTsesmodel::newsimulate)")
-			.def("newmontecarlosimulate", &Models::FMTsesmodel::newmontecarlosimulate,
-				montecarlosimulate_overloads(bp::args("schedule", "numberofiterations", "schedule_only", "seed", "tolerance"), "@DocString(FMTsesmodel::montecarlosimulate)"));
+				"@DocString(FMTsesmodel::getdisturbances)");
 
     define_pylist<Models::FMTsesmodel>();
 

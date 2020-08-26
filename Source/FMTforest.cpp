@@ -196,20 +196,6 @@ FMTforest FMTforest::getcopy(bool copydata) const
     return forest;
     }
 
-FMTforest FMTforest::getallowable(const FMTspatialaction& targetaction,
-                            const FMTdisturbancestack& disturbances) const
-    {
-    FMTlayer<Core::FMTdevelopment> cleanedforest(this->geotransform,this->maxx,this->maxy,this->SRS_WKT,this->cellsize);
-    for(std::map<FMTcoordinate,Core::FMTdevelopment>::const_iterator itc = mapping.begin(); itc != mapping.end(); ++itc)
-        {
-        if (disturbances.allow(targetaction,itc->first))
-            {
-            cleanedforest.mapping[itc->first] = itc->second;
-            }
-        }
-    return cleanedforest;
-    }
-
 std::vector<FMTsesevent<Core::FMTdevelopment>> FMTforest::buildharvest(const double& target,
                                        const FMTspatialaction& targetaction,
 										std::default_random_engine& generator,

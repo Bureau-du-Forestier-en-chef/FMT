@@ -11,7 +11,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <Rcpp.h>
 #include "FMTcoordinate.h"
 #include "FMTforest.h"
-#include "FMTdisturbancestack.h"
+#include "FMTspatialschedule.h"
 #include "FMTspatialaction.h"
 #include "FMTsaschedule.h"
 #include "FMTgraph.h"
@@ -33,8 +33,8 @@ RCPP_EXPOSED_WRAP(Spatial::FMTforest);
 RCPP_EXPOSED_AS(Spatial::FMTforest);
 RCPP_DEFINEVECTOR(Spatial::FMTforest);// For vector
 
-RCPP_EXPOSED_WRAP(Spatial::FMTdisturbancestack);
-RCPP_EXPOSED_AS(Spatial::FMTdisturbancestack);
+RCPP_EXPOSED_WRAP(Spatial::FMTspatialschedule);
+RCPP_EXPOSED_AS(Spatial::FMTspatialschedule);
 
 RCPP_EXPOSED_WRAP(Spatial::FMTspatialaction);
 RCPP_EXPOSED_AS(Spatial::FMTspatialaction);
@@ -84,10 +84,8 @@ void exportSpatial()
 			"@DocString(FMTforest(Spatial::grow))");
 
 
-	Rcpp::class_<Spatial::FMTdisturbancestack>("FMTdisturbancestack", "@DocString(FMTdisturbancestack)")
-		.constructor("@DocString(FMTdisturbancestack())")
-        .method("allow",&Spatial::FMTdisturbancestack::allow,
-			"@DocString(FMTdisturbancestack::allow)");
+	Rcpp::class_<Spatial::FMTspatialschedule>("FMTspatialschedule", "@DocString(FMTspatialschedule)")
+		.constructor("@DocString(FMTspatialschedule())");
 
 
 	Rcpp::class_<Spatial::FMTspatialaction>("FMTspatialaction", "@DocString(FMTspatialaction)")

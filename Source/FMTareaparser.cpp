@@ -282,64 +282,9 @@ namespace Parser{
 		return full_path.string();
 		}
 
+	
+
 	std::vector<Core::FMTGCBMtransition> FMTareaparser::writedisturbances(const std::string& location,
-		const Spatial::FMTdisturbancestack& disturbances,
-		const Spatial::FMTforest& for_layer,
-		const Spatial::FMTforest& out_layer,
-		const std::vector<Core::FMTtheme>& themes,
-		std::map<std::string, std::string> mapping) const
-	{
-		std::vector<Core::FMTGCBMtransition>transitions;
-		try {
-			std::vector<Spatial::FMTlayer<std::string>> distvec = disturbances.getlayers<Core::FMTdevelopment>(for_layer);
-			if (!distvec.empty())
-			{
-				if (mapping.empty())
-				{
-					mapping = disturbances.directmapping();
-				}
-
-				if (!themes.empty())
-				{
-					const std::vector<Spatial::FMTlayer<std::string>>forest_attributes = for_layer.getthemes(themes);
-					const Spatial::FMTlayer<int>ages = out_layer.getage();
-					const int period = static_cast<int>(distvec.size());
-					int themeid = 0;
-					for (const Spatial::FMTlayer<std::string>& attlayer : forest_attributes)
-					{
-						std::map<std::string, std::string>newmap;
-						const std::map<std::string, std::string>theme_names = themes[themeid].getvaluenames();
-						for (std::map<std::string, std::string>::const_iterator it = mapping.begin(); it != mapping.end(); it++)
-						{
-							for (std::map<std::string, std::string>::const_iterator the_it = theme_names.begin(); the_it != theme_names.end(); the_it++)
-							{
-								newmap[it->first + "-" + the_it->first] = it->first + "-" + the_it->first;
-							}
-						}
-						mapping = newmap;
-						distvec.back() += attlayer;
-						++themeid;
-					}
-					transitions = getGCBMtransitions(distvec.back(), ages, out_layer, themes);
-					writelayer<std::string>(distvec.back(), getdisturbancepath(location, period), mapping);
-				}
-				else {
-					int period = 1;
-					for (const Spatial::FMTlayer<std::string>& layer : distvec)
-					{
-						writelayer<std::string>(layer, getdisturbancepath(location, period), mapping);
-						++period;
-					}
-				}
-			}
-		}catch (...)
-			{
-			_exhandler->raisefromcatch("at "+ location,"FMTareaparser::writedisturbances", __LINE__, __FILE__, _section);
-			}
-		return transitions;
-	}
-
-	std::vector<Core::FMTGCBMtransition> FMTareaparser::writedisturbancessp(const std::string& location,
 		const Spatial::FMTspatialschedule& disturbances,
 		const std::vector<Core::FMTaction>& actions,
 		const std::vector<Core::FMTtheme>& themes,

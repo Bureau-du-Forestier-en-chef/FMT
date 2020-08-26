@@ -16,7 +16,6 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTactualdevelopment.h"
 #include "FMTfuturdevelopment.h"
 #include "FMTspatialaction.h"
-#include "FMTdisturbancestack.h"
 #include "FMTcut.h"
 #include "FMTmask.h"
 #include "FMTtheme.h"
@@ -52,8 +51,6 @@ namespace Spatial
 			boost::unordered_map<Core::FMTdevelopment, std::vector<bool>>& cached_operability,
                                           const Core::FMTyields& yields = Core::FMTyields(),
                                           bool schedule_only = true) const;
-        FMTforest getallowable(const FMTspatialaction& targetaction,
-                                const FMTdisturbancestack& disturbances) const;
 		std::vector<FMTsesevent<Core::FMTdevelopment>> buildharvest(const double& target,
                                     const FMTspatialaction& targetaction,
 									std::default_random_engine& generator,

@@ -15,7 +15,6 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTparser.h"
 #include "FMTlayer.h"
 #include "FMTforest.h"
-#include "FMTdisturbancestack.h"
 #include "FMTGCBMtransition.h"
 #include <iterator>
 #include "FMToperatingareascheme.h"
@@ -180,13 +179,7 @@ class FMTareaparser : public FMTparser
 		The function will write all the disturbances in the locaiton .tif file and it will also returns the corresponding GCBMtransition for
 		this planning period.
 		*/
-		std::vector<Core::FMTGCBMtransition> writedisturbances(const std::string& location,
-								const Spatial::FMTdisturbancestack& disturbances,
-								const Spatial::FMTforest& for_layer,
-								const Spatial::FMTforest& out_layer,
-								const std::vector<Core::FMTtheme>& themes,
-								std::map<std::string, std::string> mapping = std::map<std::string, std::string>()) const;
-		std::vector<Core::FMTGCBMtransition> writedisturbancessp(	const std::string& location,
+		std::vector<Core::FMTGCBMtransition> writedisturbances(	const std::string& location,
 																	const Spatial::FMTspatialschedule& disturbances,
 																	const std::vector<Core::FMTaction>& actions,
 																	const std::vector<Core::FMTtheme>& themes,

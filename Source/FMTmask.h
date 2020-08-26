@@ -70,7 +70,10 @@ namespace boost {
 	template <typename Block, typename Alloc>
 	std::size_t hash_value(const boost::dynamic_bitset<Block, Alloc>& bs)
 	{
-		return boost::hash_value(bs.m_bits);
+		//return boost::hash_value(bs.m_bits);
+		std::size_t res = hash_value(bs.m_num_bits);
+		boost::hash_combine(res, bs.m_bits);
+		return res;
 	}
 }
 #endif
