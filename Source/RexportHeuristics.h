@@ -12,7 +12,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMToperatingarea.h"
 #include "FMToperatingareaclusterbinary.h"
 #include "FMToperatingareacluster.h"
-#include "FMTopera
+#include "FMToperatingareaclusterer.h"
 #include "FMToperatingareascheduler.h"
 #include "FMToperatingareascheme.h"
 #include "FMTlpsolver.h"
@@ -62,7 +62,7 @@ void exportHeuristics()
 	Rcpp::class_<Heuristics::FMToperatingareacluster>("FMToperatingareacluster", "@DocString(FMToperatingareacluster)")
         .constructor("@DocString(FMToperatingareacluster())")
         .constructor<Heuristics::FMToperatingareacluster,double,double>("@DocString(FMToperatingareacluster(const FMToperatingareacluster&,const double&,const double&))")
-        .method("getfilteredcluster",&Heuristics::FMToperatingareascheduler::getfilteredcluster,
+        .method("getfilteredcluster",&Heuristics::FMToperatingareacluster::getfilteredcluster,
              "@DocString(FMToperatingareaheuristic::getfilteredcluster)")
         .method("getallmasks",&Heuristics::FMToperatingareacluster::getallmasks,
              "@DocString(FMToperatingareaheuristic::getallmasks)")

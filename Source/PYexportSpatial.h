@@ -56,11 +56,6 @@ void exportSpatial()
 
      define_pylist<Spatial::FMTforest>();
 
-
-	bp::class_<Spatial::FMTspatialschedule>("FMTspatialschedule", "@DocString(FMTspatialschedule)");
-
-	define_pylist<Spatial::FMTspatialschedule>();
-
 	bp::class_<Spatial::FMTeventcontainer>("FMTeventcontainer", "@DocString(FMTeventcontainer)")
 		.def(bp::init<Spatial::FMTeventcontainer>());
 

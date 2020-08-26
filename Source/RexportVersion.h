@@ -50,7 +50,7 @@ bool hasfeaturestaticpass(Version::FMTversion* versionobject, const std::string&
 
 std::string getlicensestaticpass(bool french)
     {
-    return Version::FMTversion::getlicense(french);
+    return Version::FMTversion().getlicense(french);
     }
 
 void exportVersion()
