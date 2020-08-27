@@ -7,6 +7,7 @@
 
 int main()
 	{
+	Logging::FMTlogger().logstamp();
 	if (Version::FMTversion().hasfeature("OSI"))
 		{
 		#if defined _MSC_VER

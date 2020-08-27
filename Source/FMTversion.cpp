@@ -41,7 +41,7 @@ std::string FMTversion::getdatenow()
 
 std::string FMTversion::getbuilddate()
 	{
-	return (static_cast<std::string>((__DATE__)) + static_cast<std::string>(std::string(__TIME__)));
+	return (static_cast<std::string>((__DATE__)) +" "+ static_cast<std::string>(std::string(__TIME__)));
 	}
 
 std::string FMTversion::getversion()

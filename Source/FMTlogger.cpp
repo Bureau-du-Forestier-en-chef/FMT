@@ -55,7 +55,7 @@ namespace Logging
 
 	void FMTlogger::logstamp()
 		{
-		const std::string message = "FMT" + Version::FMTversion().getversion() +
+		const std::string message = "FMT " + Version::FMTversion().getversion() +
 			", build: "+ Version::FMTversion().getbuilddate();
 		*this<<(message)<< "\n";
 		}

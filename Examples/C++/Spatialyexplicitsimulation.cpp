@@ -6,6 +6,7 @@
 
 int main()
 {
+	Logging::FMTlogger().logstamp();
 	#if defined _MSC_VER
 		const std::string modellocation = "../Examples/Models/Jesus_land/";
 	#else
