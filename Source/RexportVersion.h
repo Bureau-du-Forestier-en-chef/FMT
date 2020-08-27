@@ -48,9 +48,10 @@ bool hasfeaturestaticpass(Version::FMTversion* versionobject, const std::string&
 	return Version::FMTversion::hasfeature(feature);
 	}
 
-std::string getlicensestaticpass(bool french)
+std::string getlicensestaticpass(Version::FMTversion* versionobject, bool french)
     {
-    return Version::FMTversion().getlicense(french);
+	const Version::FMTversion version;
+    return version.getlicense(french);
     }
 
 void exportVersion()
@@ -71,7 +72,7 @@ void exportVersion()
 		.method("hasfeature", &hasfeaturestaticpass,
 			"@DocString(FMTversion::hasfeature)")
         .method("getlicense",&getlicensestaticpass,
-			"@DocString(FMTversion::getlicense)";
+			"@DocString(FMTversion::getlicense)");
 	}
 }
 

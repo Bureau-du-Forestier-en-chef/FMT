@@ -99,8 +99,10 @@ if(NOT MSVC)
 	list(APPEND OSI_LINKER_FLAGS "-lz")
 	list(APPEND OSI_LINKER_FLAGS "-llapack")
 	list(APPEND OSI_LINKER_FLAGS "-lBlas")
-	#list(APPEND OSI_LINKER_FLAGS "-lgfortran")
-	#list(APPEND OSI_LINKER_FLAGS "-lquadmath")
+	if(NOT CYGWIN)
+		list(APPEND OSI_LINKER_FLAGS "-lgfortran")
+		list(APPEND OSI_LINKER_FLAGS "-lquadmath")
+	endif(NOT CYGWIN)
 endif(NOT MSVC)
 
 
