@@ -64,11 +64,27 @@ class FMTconstraint: public FMToutput,public FMTspec
 	// DocString: FMTconstraint::type
 	///This enumerator sets the type of constraint of the FMTconstraint (objective/constraint/evenflow...)
 	FMTconstrainttype type;
+	// DocString: FMTconstraint::standardstring
 	/**
 	Function used for string formating for FMTconstraint in to string conversion.
 	*/
-	// DocString: FMTconstraint::standardstring
 	void standardstring(std::string& line, std::string& period_bounds, std::string& goal) const;
+	// DocString: FMTconstraint::getmaxandmin
+	/**
+	Returns the maximal and minimal value of a vector of double for the constraint
+	*/
+	void getmaxandmin(const std::vector<double>& values, double& min,double& max) const;
+	// DocString: FMTconstraint::getsum
+	/**
+	Returns the sum of a vector of double
+	*/
+	double getsum(const std::vector<double>& values) const;
+	// DocString: FMTconstraint::getperiodicvariationcost
+	/**
+	Returns the variation of harvest for a vector of double
+	*/
+	double getperiodicvariationcost(const std::vector<double>& values, bool evaluateupper=false) const;
+
 	public:
 		// DocString: FMTconstraint()
 		/**
@@ -195,6 +211,16 @@ class FMTconstraint: public FMToutput,public FMTspec
 		Get the string reprensentation like in the optimization section  of a FMTconstraint.
 		*/
 		operator std::string() const;
+		// DocString: FMTconstraint::isspatial
+		/**
+		Returns true if spatial constraint
+		*/
+		bool isspatial() const;
+		// DocString: FMTconstraint::getgroup
+		/**
+		Returns the group of the constraint (objective = 0,spatial = 1,other = 2 or userdefined)
+		*/
+		size_t getgroup() const;
 		// DocString: FMTconstraint::outputempty()
 		/**
 		Returns true if the FMTconstraint output is empty.
@@ -216,6 +242,13 @@ class FMTconstraint: public FMToutput,public FMTspec
 		Default destructor for FMTconstraint
 		*/
 		~FMTconstraint()=default;
+		// DocString: FMTconstraint::evaluate()
+		/**
+		Given a vector of double this function will return a double value representing the quality of the solution.
+		For a real constraint the more the value is close to 0 the better it is. For an objective smaller is better (can be negative).
+		*/
+		double evaluate(const std::vector<double>& temporalvalues) const;
+
 	};
 }
 

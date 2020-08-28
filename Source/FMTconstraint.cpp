@@ -484,6 +484,24 @@ namespace Core
             line += " " + period_bounds + "\n";
 		}
 
+		bool FMTconstraint::isspatial() const
+			{
+			return (type==Core::FMTconstrainttype::FMTspatialadjacency||type== Core::FMTconstrainttype::FMTspatialsize);
+			}
+
+		size_t FMTconstraint::getgroup() const
+			{
+			size_t groupofconstraint = 2;//get it with member data for user
+			if (isobjective())
+				{
+				groupofconstraint = 0;
+			}else if (isspatial())
+				{
+				groupofconstraint = 1;
+				}
+			return groupofconstraint;
+			}
+
 		size_t FMTconstraint::outputempty() const
 			{
 			return FMToutput::empty();
@@ -503,6 +521,170 @@ namespace Core
 				_exhandler->raisefromcatch("for " + std::string(*this),"FMTconstraint::presolve", __LINE__, __FILE__, _section);
 				}
 			return newconstraint;
+			}
+
+		void FMTconstraint::getmaxandmin(const std::vector<double>& values, double& min, double& max) const
+			{
+			min = std::numeric_limits<double>::max();
+			max = std::numeric_limits<double>::lowest();
+			const int temporalsize = static_cast<int>(values.size());
+			for (int period = getperiodlowerbound(); ((period < (getperiodupperbound() + 1)) && (period < temporalsize)); ++period)
+				{
+				const double& value = values.at(period);
+				if (value > max)
+				{
+					max = value;
+				}
+				else if (value < min)
+				{
+					min = value;
+				}
+				}
+			}
+
+		double FMTconstraint::getsum(const std::vector<double>& values) const
+			{
+			double totalvalue = 0;
+			const int temporalsize = static_cast<int>(values.size());
+			for (int period = getperiodlowerbound(); ((period < (getperiodupperbound() + 1)) && (period < temporalsize)); ++period)
+				{
+				const double& value = values.at(period);
+				totalvalue += value;
+				}
+			return totalvalue;
+			}
+
+		double FMTconstraint::getperiodicvariationcost(const std::vector<double>& values,bool evaluateupper) const
+			{
+			double lowervariation = 0;
+			double uppervariation = 0;
+			getvariations(lowervariation, uppervariation);
+			const int temporalsize = static_cast<int>(values.size());
+			const int startingperiod = getperiodlowerbound();
+			double lastvalue = 0;
+			double costsum = 0;
+			for (int period = startingperiod; ((period < (getperiodupperbound() + 1)) && (period < temporalsize)); ++period)
+				{
+				const double& value = values.at(period);
+				if (period!=startingperiod)
+					{
+					double variation = value - lastvalue;
+					if (variation<0)
+						{
+						if (lowervariation!=0)
+							{
+							variation = variation <= (lowervariation*lastvalue) ? 0 : variation;
+							}
+						costsum += (-1 * variation);
+					}else if (evaluateupper && variation>0)
+						{
+						if (uppervariation != 0)
+							{
+							variation = variation <= (uppervariation*lastvalue) ? 0 : variation;
+							}
+						costsum += (variation);
+						}
+					}
+				lastvalue = value;
+				}
+			return costsum;
+			}
+
+		double FMTconstraint::evaluate(const std::vector<double>& temporalvalues) const
+			{
+			double returnedvalue = 0;
+			try {
+				switch (this->type)
+				{
+				case FMTconstrainttype::FMTMAXobjective:
+				{
+					returnedvalue = -1.0 * getsum(temporalvalues);
+					break;
+				}
+				case FMTconstrainttype::FMTMINobjective:
+				{
+					returnedvalue = getsum(temporalvalues);
+					break;
+				}
+				case FMTconstrainttype::FMTMAXMINobjective:
+				{
+					double maximal = 0;
+					double minimal = 0;
+					getmaxandmin(temporalvalues, minimal, maximal);
+					returnedvalue = -1.0 * minimal;
+					break;
+				}
+				case FMTconstrainttype::FMTMINMAXobjective:
+				{
+					double maximal = 0;
+					double minimal = 0;
+					getmaxandmin(temporalvalues, minimal, maximal);
+					returnedvalue = maximal;
+					break;
+				}
+				case FMTconstrainttype::FMTevenflow:
+				{
+					double maximal = 0;
+					double minimal = 0;
+					double lowervariation = 0;
+					double uppervariation = 0;
+					getvariations(lowervariation, uppervariation);
+					getmaxandmin(temporalvalues, minimal, maximal);
+					returnedvalue = maximal - minimal;
+					if (lowervariation != 0)
+						{
+						returnedvalue = returnedvalue > (minimal * 1.0 + lowervariation) ? returnedvalue : 0;
+						}
+					break;
+				}
+				case FMTconstrainttype::FMTnondeclining:
+				{
+					returnedvalue = getperiodicvariationcost(temporalvalues);
+					break;
+				}
+				case FMTconstrainttype::FMTsequence:
+				{
+					returnedvalue = getperiodicvariationcost(temporalvalues,true);
+					break;
+				}
+				case FMTconstrainttype::FMTstandard:
+				{
+					const int temporalsize = static_cast<int>(temporalvalues.size());
+					double totalcost = 0;
+					for (int period = getperiodlowerbound(); ((period < (getperiodupperbound() + 1)) && (period < temporalsize)); ++period)
+						{
+						const double& value = temporalvalues.at(period);
+						double lowerbound = 0;
+						double upperbound = 0;
+						getbounds(lowerbound, upperbound, period);
+						if (lowerbound!=std::numeric_limits<double>::lowest()&&value<lowerbound)
+							{
+							totalcost += lowerbound - value;
+							}
+						if (upperbound!= std::numeric_limits<double>::max() && value > upperbound)
+							{
+							totalcost += value - upperbound;
+							}
+						}
+					returnedvalue = totalcost;
+					break;
+				}
+				default:
+				break;
+				}
+			if ((!isobjective()&&(returnedvalue < 0 || std::isnan(returnedvalue) || isinf(returnedvalue)))||
+				(isobjective() && isinf(returnedvalue)))
+				{
+				_exhandler->raise(Exception::FMTexc::FMTrangeerror,
+					"Got a bad global constraint evaluation for "+std::string(*this)+" at "+std::to_string(returnedvalue),
+					"FMTsasolution::evaluate", __LINE__, __FILE__);
+
+				}
+			}catch (...)
+				{
+				_exhandler->raisefromcatch("", "FMTconstraint::evaluate", __LINE__, __FILE__);
+				}
+			return returnedvalue;
 			}
 
 }

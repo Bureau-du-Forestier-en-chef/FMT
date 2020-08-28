@@ -106,6 +106,12 @@ class FMTspatialschedule : public FMTlayer<Graph::FMTlinegraph>
 										   std::vector<std::set<Spatial::FMTcoordinate>> original= std::vector<std::set<Spatial::FMTcoordinate>>(),
 											std::vector<FMTcoordinate> updatedcoordinate= std::vector<FMTcoordinate>()) const;
 
+	   // DocString: FMTspatialschedule::evaluateaspatialconstraint()
+		/**
+		Return the constraint evaluation value of a spatial constraint.
+		*/
+	   double evaluatespatialconstraint(const Core::FMTconstraint& spatialconstraint,
+								const std::vector<Spatial::FMTspatialaction>& spactions) const;
 
         // DocString: FMTspatialschedule::getallowable(const FMTspatialaction, const std::vector<Core::FMTaction>&, const int&)
         /**
@@ -145,12 +151,19 @@ class FMTspatialschedule : public FMTlayer<Graph::FMTlinegraph>
 		Return operated schedules from linegraph. 
 		*/
 		std::vector<Core::FMTschedule> getschedules(const std::vector<Core::FMTaction>& modelactions) const;
-		// DocString: FMTspatialschedule::getgraphsoutputs(const Models::FMTmodel&, const Core::FMTconstraint&, const int&, const int&)
+		// DocString: FMTspatialschedule::getgraphsoutputs()
 		/**
 			Return sum of all graphs outputs related to constraint.
 		*/
-		std::vector<double> getgraphsoutputs(	const Models::FMTmodel& model, const Core::FMTconstraint& constraint,
-												const int& periodstart, const int& periodstop) const;
+		std::vector<double> getgraphsoutputs(const Models::FMTmodel& model, const Core::FMTconstraint& constraint) const;
+		// DocString: FMTspatialschedule::isbetterthan()
+		/**
+			Compare two spatialschedule and returns a vector of bool with true if the constraint group has a better value then the
+			compared solution else false.
+		*/
+		std::vector<bool>isbetterthan(const FMTspatialschedule& newsolution,
+									 const Models::FMTmodel& model,
+									 const std::vector<Spatial::FMTspatialaction>& spactions) const;
 		// DocString: FMTspatialschedule::getgraphsoutputs(const Models::FMTmodel&, const Core::FMTconstraint&, const int&, const int&)
 		/**
 			Return sum of all graphs outputs related to constraint.

@@ -18,14 +18,13 @@ namespace Models
         mapping(rhs.mapping),
 		operatedschedule(rhs.operatedschedule),
         spactions(rhs.spactions),
-		events(rhs.events),
 		spschedule(rhs.spschedule)
         {
 
         }
     FMTsesmodel::FMTsesmodel(const FMTmodel& rhs):
         FMTmodel(rhs),
-        mapping(), operatedschedule(),spactions(),events(),spschedule()
+        mapping(), operatedschedule(),spactions(),spschedule()
         {
 
         }
@@ -37,7 +36,6 @@ namespace Models
             mapping = rhs.mapping;
 			operatedschedule = rhs.operatedschedule;
             spactions = rhs.spactions;
-			events = rhs.events;
 			spschedule = rhs.spschedule;
             }
         return *this;
@@ -100,6 +98,20 @@ namespace Models
 		return true;
         }
 
+	bool FMTsesmodel::operator > (const FMTsesmodel& rhs) const
+		{
+		size_t gotbetter = 0;
+		const std::vector<bool> groupvalues = this->spschedule.isbetterthan(rhs.spschedule, rhs, spactions);
+		for (const bool& groupbetter : groupvalues)
+			{
+			if (groupbetter)
+				{
+				++gotbetter;
+				}
+			}
+		return (gotbetter == groupvalues.size());
+		}
+
 
 	std::map<std::string, double> FMTsesmodel::montecarlosimulate(const Core::FMTschedule & schedule, const size_t & randomiterations, unsigned int seed, double tolerance)
 	{
@@ -117,7 +129,7 @@ namespace Models
 					}
 				const std::map<std::string, double>results = modelcopy.simulate(schedule, false, schedulefirstpass,seed);
 				//*_logger << "iteration id: " << iteration << " objective is: "<< results.at("Total") <<"\n";
-				if (!results.empty() && results.at("Total") > bestresults.at("Total"))
+				if (iteration == 0 || modelcopy> bestmodel/*!results.empty() && results.at("Total") > bestresults.at("Total")*/)
 				{
 					if (iteration > 0)
 					{
@@ -126,17 +138,17 @@ namespace Models
 					}
 					bestresults = results;
 					bestmodel = modelcopy;
-					if (bestresults.at("Total") >= (1.0 - tolerance * 1.0))
+					/*if (bestresults.at("Total") >= (1.0 - tolerance * 1.0))
 					{
 						break;
-					}
+					}*/
 				}
 				++seed;
 			}
-			if (bestresults.at("Total") > 0)
+			/*if (bestresults.at("Total") > 0)
 			{
 				*this = bestmodel;
-			}
+			}*/
 		}
 		catch (...)
 		{
