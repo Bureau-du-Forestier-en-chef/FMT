@@ -606,7 +606,7 @@ bool FMTgraph::constraintlenght(const Core::FMTconstraint& constraint, int& star
 		{
 			--stop;
 		}
-		return (start < static_cast<int>(developments.size()));
+		return (start < static_cast<int>(developments.size()) && start <= stop);
 	}
 
 FMTgraphstats FMTgraph::getstats() const
@@ -837,46 +837,54 @@ std::map<std::string, double> FMTgraph::getoutput(const Models::FMTmodel& model,
 	Core::FMTtheme targettheme;
 	std::vector<std::string>target_attributes;
 	std::map<std::string, double>results;
+	try {
 		if (level != FMToutputlevel::developpement)
+		{
+			if (level == FMToutputlevel::standard)
 			{
-			if (level== FMToutputlevel::standard)
-				{
 				target_attributes = output.getdecomposition(model.themes);
 				if (!target_attributes.empty() && level == FMToutputlevel::standard)
-					{
-					targettheme = output.targettheme(model.themes);
-					}
-				}
-			target_attributes.push_back("Total");
-			for (const std::string& attribute : target_attributes)
 				{
-				results[attribute] = 0;
+					targettheme = output.targettheme(model.themes);
 				}
 			}
+			target_attributes.push_back("Total");
+			for (const std::string& attribute : target_attributes)
+			{
+				results[attribute] = 0;
+			}
+		}
 		if (!output.islevel())
 		{
-			for (const Core::FMToutputnode& output_node : output.getnodes(model.area,model.actions,model.yields))
+			for (const Core::FMToutputnode& output_node : output.getnodes(model.area, model.actions, model.yields))
 			{
 				std::map<std::string, double> srcvalues = getsource(model, output_node, period, targettheme, solution, level);
 				if (level == FMToutputlevel::developpement)
+				{
+					for (std::map<std::string, double>::const_iterator mit = srcvalues.begin(); mit != srcvalues.end(); mit++)
 					{
-					for (std::map<std::string, double>::const_iterator mit = srcvalues.begin(); mit!= srcvalues.end();mit++)
+						if (results.find(mit->first) == results.end())
 						{
-						if (results.find(mit->first)==results.end())
-							{
 							results[mit->first] = 0;
-							}
+						}
 						results[mit->first] += mit->second;
-						}
-				}else {
+					}
+				}
+				else {
 					for (const std::string& attribute : target_attributes)
-						{
+					{
 						results[attribute] += srcvalues[attribute];
-						}
+					}
 				}
 
 			}
 		}
+
+	}catch (...)
+		{
+			Exception::FMTexceptionhandler().raisefromcatch("", "FMTgraph::getoutput", __LINE__, __FILE__);
+		}
+		
 	return results;
 	}
 

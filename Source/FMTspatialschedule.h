@@ -161,7 +161,7 @@ class FMTspatialschedule : public FMTlayer<Graph::FMTlinegraph>
 			Compare two spatialschedule and returns a vector of bool with true if the constraint group has a better value then the
 			compared solution else false.
 		*/
-		std::vector<bool>isbetterthan(const FMTspatialschedule& newsolution,
+		std::vector<int>isbetterthan(const FMTspatialschedule& newsolution,
 									 const Models::FMTmodel& model,
 									 const std::vector<Spatial::FMTspatialaction>& spactions) const;
 		// DocString: FMTspatialschedule::getgraphsoutputs(const Models::FMTmodel&, const Core::FMTconstraint&, const int&, const int&)

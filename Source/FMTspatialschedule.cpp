@@ -385,6 +385,7 @@ namespace Spatial
 
 	void FMTspatialschedule::setnewperiod()
 	{
+		outputscache.clear();
 		for (std::map<FMTcoordinate, Graph::FMTlinegraph>::iterator graphit = this->mapping.begin(); graphit != this->mapping.end(); ++graphit)
 		{
 			Graph::FMTlinegraph* local_graph = &graphit->second;
@@ -482,11 +483,11 @@ namespace Spatial
 		}
 
 
-	std::vector<bool>FMTspatialschedule::isbetterthan(const FMTspatialschedule& newsolution,
+	std::vector<int>FMTspatialschedule::isbetterthan(const FMTspatialschedule& newsolution,
 													const Models::FMTmodel& model,
 													const std::vector<Spatial::FMTspatialaction>& spactions) const
 		{
-		std::vector<bool>groupevaluation;
+		std::vector<int>groupevaluation;
 		try {
 			const std::vector<Core::FMTconstraint> constraints = model.getconstraints();
 			size_t maximalgroup = 0;
@@ -498,9 +499,10 @@ namespace Spatial
 					maximalgroup = groupid;
 					}
 				}
-			std::vector<size_t>actualsoltuiongroups(maximalgroup, 0);
-			std::vector<size_t>newsolutiongroups(maximalgroup, 0);
-			groupevaluation = std::vector<bool>(maximalgroup,false);
+			std::vector<size_t>actualsoltuiongroups(maximalgroup+1, 0);
+			std::vector<size_t>newsolutiongroups(maximalgroup+1, 0);
+			//std::vector<size_t>newsolutiongroups(maximalgroup + 1, 0);
+			groupevaluation = std::vector<int>(maximalgroup+1,0);
 			for (const Core::FMTconstraint& constraint : constraints)
 				{
 				const size_t groupid = constraint.getgroup();
@@ -508,28 +510,24 @@ namespace Spatial
 				double oldvalue = 0;
 				if (!constraint.isspatial())
 					{
-					newvalue = constraint.evaluate(newsolution.getgraphsoutputs(model, constraint));
-					oldvalue = constraint.evaluate(this->getgraphsoutputs(model, constraint));
+					const std::vector<double>newoutputvalues = newsolution.getgraphsoutputs(model, constraint);
+					const std::vector<double>oldoutputvalues = this->getgraphsoutputs(model, constraint);
+					if (!newoutputvalues.empty() && !oldoutputvalues.empty())
+						{
+						newvalue = constraint.evaluate(newoutputvalues);
+						oldvalue = constraint.evaluate(oldoutputvalues);
+						}
+					
 				}else{//evaluate spatial stuff
 					newvalue = newsolution.evaluatespatialconstraint(constraint, spactions);
 					oldvalue = this->evaluatespatialconstraint(constraint, spactions);
 					}
 				if (newvalue<oldvalue)
 					{
-					++newsolutiongroups[groupid];
+					++groupevaluation[groupid];
 				}else if(oldvalue<newvalue)
 					{
-					++actualsoltuiongroups[groupid];
-				}else {
-					++newsolutiongroups[groupid];
-					++actualsoltuiongroups[groupid];
-					}
-				}
-			for (size_t groupid = 0; groupid < maximalgroup;++groupid)
-				{
-				if (actualsoltuiongroups.at(groupid)>newsolutiongroups.at(groupid))
-					{
-					groupevaluation[groupid] = true;
+					--groupevaluation[groupid];
 					}
 				}
 		}catch (...)
@@ -545,39 +543,43 @@ namespace Spatial
 		try {
 			int periodstart = 0;
 			int periodstop = 0;
-			if (this->mapping.empty())
+			if (!this->mapping.empty() && this->mapping.begin()->second.constraintlenght(constraint, periodstart, periodstop))
 			{
-				this->mapping.begin()->second.constraintlenght(constraint, periodstart, periodstop);
-			}
-			periods_values = std::vector<double>(periodstop - periodstart + 1, 0);
-			const std::vector<double> solutions(1, this->getcellsize());
-			for (std::map<FMTcoordinate, Graph::FMTlinegraph>::const_iterator graphit = this->mapping.begin(); graphit != this->mapping.end(); ++graphit)
-			{
-				const Graph::FMTlinegraph* local_graph = &graphit->second;
-				const size_t hashvalue = local_graph->hash(constraint.Core::FMToutput::hash());
-				std::vector<double>graphvalues(periodstop - periodstart + 1, 0);
-				if (outputscache.find(hashvalue) != outputscache.end())
+				periods_values = std::vector<double>(periodstop - periodstart + 1, 0);
+				const std::vector<double> solutions(1, this->getcellsize());
+				const size_t constraint_hash = constraint.hash();
+				for (std::map<FMTcoordinate, Graph::FMTlinegraph>::const_iterator graphit = this->mapping.begin(); graphit != this->mapping.end(); ++graphit)
 				{
-					graphvalues = outputscache.at(hashvalue);
-				}
-				else {
-					for (int period = 1; period < static_cast<int>(local_graph->size() - 1); ++period)
+					const Graph::FMTlinegraph* local_graph = &graphit->second;
+					const size_t hashvalue = local_graph->hash(constraint_hash);
+					std::vector<double>graphvalues(periodstop - periodstart + 1, 0);
+					bool commingfrom = false;
+					if (outputscache.find(hashvalue) != outputscache.end())
 					{
-						const std::map<std::string, double> output = local_graph->getoutput(model, constraint, period, &solutions[0], Graph::FMToutputlevel::totalonly);
-						const double totalperiod = output.at("Total");
-						graphvalues[period - 1] += totalperiod;
+						graphvalues = outputscache.at(hashvalue);
+						commingfrom = true;
 					}
-					outputscache[hashvalue] = graphvalues;
-				}
-				for (int period = periodstart; period <= periodstop; ++period)
-				{
-					periods_values[period - 1] += graphvalues[period - 1];
-				}
+					else {
+						size_t periodid = 0;
+						for (int period = periodstart; period <= periodstop; ++period)
+						{
+							const std::map<std::string, double> output = local_graph->getoutput(model, constraint, period, &solutions[0], Graph::FMToutputlevel::totalonly);
+							const double totalperiod = output.at("Total");
+							graphvalues[periodid] += totalperiod;
+							++periodid;
+						}
+						outputscache[hashvalue] = graphvalues;
+					}
+					for (size_t periodid = 0;periodid<periods_values.size();++periodid)
+					{
+						periods_values[periodid] += graphvalues.at(periodid);
+					}
 
+				}
 			}
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("", "FMTspatialschedule::isbetterthan", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("", "FMTspatialschedule::getgraphsoutputs", __LINE__, __FILE__);
 			}
 		return periods_values;
 	}

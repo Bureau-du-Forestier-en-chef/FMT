@@ -101,13 +101,15 @@ namespace Models
 	bool FMTsesmodel::operator > (const FMTsesmodel& rhs) const
 		{
 		size_t gotbetter = 0;
-		const std::vector<bool> groupvalues = this->spschedule.isbetterthan(rhs.spschedule, rhs, spactions);
-		for (const bool& groupbetter : groupvalues)
+		const std::vector<int> groupvalues = this->spschedule.isbetterthan(rhs.spschedule, rhs, spactions);
+		int groupsummary = 0;
+		for (const int& value : groupvalues)
 			{
-			if (groupbetter)
+			if (value>=0)
 				{
 				++gotbetter;
 				}
+			groupsummary += value;
 			}
 		return (gotbetter == groupvalues.size());
 		}
@@ -123,10 +125,10 @@ namespace Models
 			{
 				FMTsesmodel modelcopy(*this);
 				bool schedulefirstpass = true;
-				if (iteration % 2 == 0)
+				/*if (iteration % 2 == 0)
 					{
 					schedulefirstpass = false;
-					}
+					}*/
 				const std::map<std::string, double>results = modelcopy.simulate(schedule, false, schedulefirstpass,seed);
 				//*_logger << "iteration id: " << iteration << " objective is: "<< results.at("Total") <<"\n";
 				if (iteration == 0 || modelcopy> bestmodel/*!results.empty() && results.at("Total") > bestresults.at("Total")*/)

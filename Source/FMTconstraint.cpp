@@ -527,10 +527,9 @@ namespace Core
 			{
 			min = std::numeric_limits<double>::max();
 			max = std::numeric_limits<double>::lowest();
-			const int temporalsize = static_cast<int>(values.size());
-			for (int period = getperiodlowerbound(); ((period < (getperiodupperbound() + 1)) && (period < temporalsize)); ++period)
-				{
-				const double& value = values.at(period);
+			*_logger << "starting evaluation " << values.size()<<" "<< *values.begin() << "\n";
+			for (const double& value : values)
+			{
 				if (value > max)
 				{
 					max = value;
@@ -539,16 +538,14 @@ namespace Core
 				{
 					min = value;
 				}
-				}
+			}
 			}
 
 		double FMTconstraint::getsum(const std::vector<double>& values) const
 			{
 			double totalvalue = 0;
-			const int temporalsize = static_cast<int>(values.size());
-			for (int period = getperiodlowerbound(); ((period < (getperiodupperbound() + 1)) && (period < temporalsize)); ++period)
+			for (const double& value : values)
 				{
-				const double& value = values.at(period);
 				totalvalue += value;
 				}
 			return totalvalue;
@@ -559,14 +556,12 @@ namespace Core
 			double lowervariation = 0;
 			double uppervariation = 0;
 			getvariations(lowervariation, uppervariation);
-			const int temporalsize = static_cast<int>(values.size());
-			const int startingperiod = getperiodlowerbound();
 			double lastvalue = 0;
 			double costsum = 0;
-			for (int period = startingperiod; ((period < (getperiodupperbound() + 1)) && (period < temporalsize)); ++period)
+			for (size_t periodid = 0; periodid < values.size(); ++periodid)
 				{
-				const double& value = values.at(period);
-				if (period!=startingperiod)
+				const double& value = values.at(periodid);
+				if (periodid !=0)
 					{
 					double variation = value - lastvalue;
 					if (variation<0)
@@ -649,11 +644,11 @@ namespace Core
 				}
 				case FMTconstrainttype::FMTstandard:
 				{
-					const int temporalsize = static_cast<int>(temporalvalues.size());
 					double totalcost = 0;
-					for (int period = getperiodlowerbound(); ((period < (getperiodupperbound() + 1)) && (period < temporalsize)); ++period)
+					int period = getperiodlowerbound();
+					for (size_t periodid = 0; periodid < temporalvalues.size(); ++periodid)
 						{
-						const double& value = temporalvalues.at(period);
+						const double& value = temporalvalues.at(periodid);
 						double lowerbound = 0;
 						double upperbound = 0;
 						getbounds(lowerbound, upperbound, period);
@@ -665,6 +660,7 @@ namespace Core
 							{
 							totalcost += value - upperbound;
 							}
+						++period;
 						}
 					returnedvalue = totalcost;
 					break;
