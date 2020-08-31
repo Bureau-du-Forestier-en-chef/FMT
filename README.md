@@ -1,4 +1,4 @@
-Read this using other languages: [English](README.md), [Français](README.fr.md)
+Read this using other languages: [English](README.md), [FranÃ§ais](README.fr.md)
 
 ## FMT is an open source Forest Management library
 
@@ -143,7 +143,7 @@ for (constraint in modelconstraints)
 optimizationmodel$initialsolve()
  ```
 + Using C++
-``` C++11
+``` C++
 #include <vector>
 #include "FMTlpmodel.h"
 #include "FMTmodelparser.h"
