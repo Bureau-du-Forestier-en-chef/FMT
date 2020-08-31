@@ -1,31 +1,31 @@
-Lire dans une autre langue: [English](README.md), [Français](README.fr.md)
+Lire dans une autre langue: [English](README.md), [FranÃ§ais](README.fr.md)
 
 # FMT - Forest Management Tool
 
-## FMT est une librairie de type logiciel libre pour l'aménagement forestier
+## FMT est une librairie de type logiciel libre pour l'amÃ©nagement forestier
 
-FMT est une librairie C++ faite pour interpréter des modèles de planification forestière basés sur les fichiers Woodstock. FMT peut être utilisé avec Python, Cran-R ou directement en C++. Son approche générique à la planification forestière permet à l'utilisateur de manipuler des modèles de planification forestière et de générer des solutions. L'objectif principal derrière ce projet est d'amener les différents types de modèles de planification forestière sur une même librairie générique pour aider la communauté à développer de nouvelles approches pour résoudre les problèmes de planification forestière et d'améliorer les approches déjà présente depuis longtemps.
+FMT est une librairie C++ faite pour interprÃ©ter des modÃ¨les de planification forestiÃ¨re basÃ©s sur les fichiers Woodstock. FMT peut Ãªtre utilisÃ© avec Python, Cran-R ou directement en C++. Son approche gÃ©nÃ©rique Ã  la planification forestiÃ¨re permet Ã  l'utilisateur de manipuler des modÃ¨les de planification forestiÃ¨re et de gÃ©nÃ©rer des solutions. L'objectif principal derriÃ¨re ce projet est d'amener les diffÃ©rents types de modÃ¨les de planification forestiÃ¨re sur une mÃªme librairie gÃ©nÃ©rique pour aider la communautÃ© Ã  dÃ©velopper de nouvelles approches pour rÃ©soudre les problÃ¨mes de planification forestiÃ¨re et d'amÃ©liorer les approches dÃ©jÃ  prÃ©sente depuis longtemps.
 ## License 
 
 FMT utilise la license LiLiQ-R 1.1 [LICENSES\FR](LILIQ-R11.txt) pour plus d'information.
 
 ## Pourquoi FMT?
 
-### Modèle de planification spatialement référencé
+### ModÃ¨le de planification spatialement rÃ©fÃ©rencÃ©
 
-FMT permet à l'utilisateur de générer et de résoudre des modèles spatialement référencé de TYPE III. L'outil peut être utilisé pour réaliser des analyses de sensibilité sur plusieurs paramètres du modèle de planification. L'outil peut aussi être utilisé pour analyser l'impact d'évènements stochastiques comme les épisodes de feux de forêt et de tordeuse des bourgeons de l'épinette en utilisant la replanification, 
+FMT permet Ã  l'utilisateur de gÃ©nÃ©rer et de rÃ©soudre des modÃ¨les spatialement rÃ©fÃ©rencÃ© de TYPE III. L'outil peut Ãªtre utilisÃ© pour rÃ©aliser des analyses de sensibilitÃ© sur plusieurs paramÃ¨tres du modÃ¨le de planification. L'outil peut aussi Ãªtre utilisÃ© pour analyser l'impact d'Ã©vÃ¨nements stochastiques comme les Ã©pisodes de feux de forÃªt et de tordeuse des bourgeons de l'Ã©pinette en utilisant la replanification, 
 
-### Modèle de planification spatialement explicite
+### ModÃ¨le de planification spatialement explicite
 
-FMT offre une plateforme sur laquelle construire des heuristiques pour solutionner des problèmes de planification forestière. FMT est l'outil parfait pour solutionner des problèmes spécifiques aux enjeux de l'utilisateur comme l'allocation de calendrier de chantier de récolte. Il permet aussi l'implémentation de processus de simulation. La librairie offre aussi des outils permettant la spatialisation de solution spatialement référencée et la génération de solution spatialement explicite. FMT est très utile lorsqu'on doit implémenter des méta-heuristiques comme le Recuit Simulé, génétique ou la recherche tabou dans un contexte de planification forestière. 
+FMT offre une plateforme sur laquelle construire des heuristiques pour solutionner des problÃ¨mes de planification forestiÃ¨re. FMT est l'outil parfait pour solutionner des problÃ¨mes spÃ©cifiques aux enjeux de l'utilisateur comme l'allocation de calendrier de chantier de rÃ©colte. Il permet aussi l'implÃ©mentation de processus de simulation. La librairie offre aussi des outils permettant la spatialisation de solution spatialement rÃ©fÃ©rencÃ©e et la gÃ©nÃ©ration de solution spatialement explicite. FMT est trÃ¨s utile lorsqu'on doit implÃ©menter des mÃ©ta-heuristiques comme le Recuit SimulÃ©, gÃ©nÃ©tique ou la recherche tabou dans un contexte de planification forestiÃ¨re. 
 
-Si votre intrant principal est un modèle Woodstock FMT est probablement un bon choix de plateforme pour développer de nouvelles approches d'optimisation ou de simulation de calendrier de récolte ou d’événements stochastiques.
+Si votre intrant principal est un modÃ¨le Woodstock FMT est probablement un bon choix de plateforme pour dÃ©velopper de nouvelles approches d'optimisation ou de simulation de calendrier de rÃ©colte ou dâ€™Ã©vÃ©nements stochastiques.
 
 
-## Dépendances
+## DÃ©pendances
 
 ### Requises :
-  + Boost compilé avec zlib (http://boost.org)
+  + Boost compilÃ© avec zlib (http://boost.org)
 ### Optionnelles :
   + Librairie GEOS (http://trac.orgeo.org/geos/)
   + Librairie GDAL (http://GDAL.org)
@@ -36,9 +36,9 @@ Si votre intrant principal est un modèle Woodstock FMT est probablement un bon c
   
 ## Comment utiliser FMT?
 
-La façon la plus simple d'utiliser FMT est d'utiliser cmake >= 3.15 et de générer une librairie. Le script cmake supporte la génération de FMT sur Windows à l'aide de VS2017 ou MINGW64 sur MSYS2 ou CYGWIN.
+La faÃ§on la plus simple d'utiliser FMT est d'utiliser cmake >= 3.15 et de gÃ©nÃ©rer une librairie. Le script cmake supporte la gÃ©nÃ©ration de FMT sur Windows Ã  l'aide de VS2017 ou MINGW64 sur MSYS2 ou CYGWIN.
 
-+ Génération de FMT en librairie Python sur Visual Studio 2017: 
++ GÃ©nÃ©ration de FMT en librairie Python sur Visual Studio 2017: 
  
  ```powershell
  ::Providing the -DPYTHON_DIR will make the script generate a .pyd using Boost Python
@@ -57,7 +57,7 @@ La façon la plus simple d'utiliser FMT est d'utiliser cmake >= 3.15 et de génére
   cmake --install . --config Release
 ```
 
-+ Génération de  FMT en librairie R sur MINGW64 avec MSYS2 (Rtools40)
++ GÃ©nÃ©ration de  FMT en librairie R sur MINGW64 avec MSYS2 (Rtools40)
  ```bash
  #Here is a exemple for generating FMT module .dll for R
  #Python .pyd could also be generated using -DPYTHON_DIR but dont use -DPYTHON_DIR and -DR_DIR at the same time
@@ -77,20 +77,20 @@ La façon la plus simple d'utiliser FMT est d'utiliser cmake >= 3.15 et de génére
 
 ## Documentation
 
-+ Pour générer la documentation Doxygen (http://www.doxygen.nl) dans le dossier documentation:
++ Pour gÃ©nÃ©rer la documentation Doxygen (http://www.doxygen.nl) dans le dossier documentation:
 
  ``` powershell
   cd Documentation
   doxygen FMTdoxygenconfig
  ```
-+ Pour charger les commentaires dans les fichiers source R et Python (fichier commençant par R ou PY):
++ Pour charger les commentaires dans les fichiers source R et Python (fichier commenÃ§ant par R ou PY):
 
  ```powershell
   cd Documentation
   python commentsPythonandR.py
  ```
  ## Exemples
- L'exemple suivant lit un modèle, génère un modèle de programmation linéaire de planification forestière de type III et solutionne le problème.
+ L'exemple suivant lit un modÃ¨le, gÃ©nÃ¨re un modÃ¨le de programmation linÃ©aire de planification forestiÃ¨re de type III et solutionne le problÃ¨me.
  + En utilisant Python
   ```python
   from FMT import Models
@@ -141,7 +141,7 @@ for (constraint in modelconstraints)
 optimizationmodel$initialsolve()
 ```
 + En utilisant C++
-``` C++11
+``` C++
 #include <vector>
 #include "FMTlpmodel.h"
 #include "FMTmodelparser.h"
