@@ -1,4 +1,4 @@
-Lire dans une autre langue: [English](README.md), [Français](README.fr.md)
+﻿Lire dans une autre langue: [English](README.md), [Français](README.fr.md)
 
 # FMT - Forest Management Tool
 
@@ -36,7 +36,7 @@ Si votre intrant principal est un modèle Woodstock FMT est probablement un bon 
   
 ## Comment utiliser FMT?
 
-La façon la plus simple d'utiliser FMT est d'utiliser cmake >= 3.15 et de générer une librairie. Le script cmake supporte la génération de FMT sur Windows à l'aide de VS2017 ou MINGW64 sur MSYS2 ou CYGWIN.
+La façon la plus simple d'utiliser FMT est d'utiliser cmake >= 3.15 et de générer une librairie R ou Python our directement en C++ (voir les exemples: FMTSimpleplanning.exe and FMTSpatialyexplicitsimulation.exe). Le script cmake supporte la génération de FMT sur Windows à l'aide de VS2017 ou MINGW64 sur MSYS2 ou CYGWIN.
 
 + Génération de FMT en librairie Python sur Visual Studio 2017: 
  
