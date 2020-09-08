@@ -59,7 +59,7 @@ def doreplanning(solvedglobal,baselocal,basestochastic,seed,replanningrange):
 if __name__ == "__main__":
     if Version.FMTversion().hasfeature("OSI"):
         modelparser = Parser.FMTmodelparser()
-        path = "../Models/Jesus_land/jesus_land.pri"
+        path = "../Models/TWD_land/TWD_land.pri"
         scenarios = ["LP","LPwfire"]
         models = modelparser.readproject(path, scenarios)
         print(models)

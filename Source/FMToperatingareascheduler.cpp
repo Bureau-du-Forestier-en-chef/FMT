@@ -221,14 +221,14 @@ namespace Heuristics
 		}
 
 
-	void FMToperatingareascheduler::setoperatingareasconstraints(const Graph::FMTgraph& maingraph,
+	void FMToperatingareascheduler::setoperatingareasconstraints(const Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>& maingraph,
 																const Models::FMTmodel& model,
 																const Core::FMToutputnode& target)
 		{
 		try {
 			Core::FMToutputnode specifictarget(target);
 			const std::vector<Core::FMTaction>modelactions = model.getactions();
-			const std::unordered_map<size_t, Graph::FMTvertex_descriptor> basedescriptors = maingraph.getperiodverticies(maingraph.getfirstactiveperiod());
+			const std::unordered_map<size_t, Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor> basedescriptors = maingraph.getperiodverticies(maingraph.getfirstactiveperiod());
 			Core::FMToutputnode areatarget(specifictarget);
 			Core::FMTmask areamask = areatarget.source.getmask();
 			for (const Core::FMTtheme& theme : model.getthemes())
@@ -248,15 +248,15 @@ namespace Heuristics
 			{
 				specifictarget.source.setmask(operatingareait->getmask());
 				areatarget.source.setmask(operatingareait->getmask());
-				std::vector<std::vector<Graph::FMTvertex_descriptor>>descriptors;
-				std::vector<Graph::FMTvertex_descriptor>totalareadescriptors;
+				std::vector<std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>>descriptors;
+				std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>totalareadescriptors;
 				for (int period = (maingraph.getfirstactiveperiod() + operatingareait->getstartingperiod()); period < static_cast<int>((maingraph.size() - 1)); ++period)
 				{
 					if (descriptors.empty())
 					{
 						totalareadescriptors = maingraph.getnode(model, areatarget, period);
 					}
-					std::vector<Graph::FMTvertex_descriptor> perioddescriptors;
+					std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor> perioddescriptors;
 					if (!totalareadescriptors.empty())
 					{
 						perioddescriptors = maingraph.getnode(model, specifictarget, period);
@@ -574,7 +574,7 @@ namespace Heuristics
 		}
 
 	FMToperatingareascheduler::FMToperatingareascheduler(const std::vector<FMToperatingareascheme>& loperatingareas,
-		const Graph::FMTgraph& maingraph,
+		const Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>& maingraph,
 		const Models::FMTmodel& model,
 		const Core::FMToutputnode& target,
 		Models::FMTlpsolver& basesolve, size_t lseed,

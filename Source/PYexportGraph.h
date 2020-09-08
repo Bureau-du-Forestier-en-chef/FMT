@@ -56,8 +56,8 @@ void exportGraph()
 		.value("fullbuild", Graph::FMTgraphbuild::fullbuild)
 		.value("nobuild", Graph::FMTgraphbuild::nobuild);
 
-	bp::class_<Graph::FMTgraph>("FMTgraph", "@DocString(FMTgraph)")
-		.def_pickle(FMT_pickle_suite<Graph::FMTgraph>());
+	//bp::class_<Graph::FMTgraph>("FMTgraph", "@DocString(FMTgraph)")
+	//	.def_pickle(FMT_pickle_suite<Graph::FMTgraph>());
 
 }
 

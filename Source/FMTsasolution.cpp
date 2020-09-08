@@ -31,7 +31,7 @@ namespace Spatial
 			std::vector<Core::FMTactualdevelopment> actdevelopment;
             actdevelopment.push_back(Core::FMTactualdevelopment (devit->second,initialmap.getcellsize()));
             Graph::FMTlinegraph local_graph(Graph::FMTgraphbuild::schedulebuild);
-            std::queue<Graph::FMTvertex_descriptor> actives = local_graph.initialize(actdevelopment);
+            std::queue<Graph::FMTgraph<Graph::FMTbasevertexproperties, Graph::FMTbaseedgeproperties>::FMTvertex_descriptor> actives = local_graph.initialize(actdevelopment);
             mapping[devit->first] = local_graph;
             solution_stats += local_graph.getstats();
         }
@@ -349,7 +349,7 @@ double FMTsasolution::getgraphspenalties(const Models::FMTsamodel& model, const 
             for(std::map<FMTcoordinate,Graph::FMTlinegraph>::iterator graphit = this->mapping.begin(); graphit != this->mapping.end(); ++graphit)//change const_iterator to iterator because graph is modified
             {
                 Graph::FMTlinegraph* local_graph = &graphit->second;
-                std::queue<Graph::FMTvertex_descriptor> actives = local_graph->getactiveverticies();
+                std::queue<Graph::FMTgraph<Graph::FMTbasevertexproperties, Graph::FMTbaseedgeproperties>::FMTvertex_descriptor> actives = local_graph->getactiveverticies();
                 ///Change parameters and function
                 Graph::FMTgraphstats stats = local_graph->randombuildperiod(model,actives,generator,events,graphit->first);
                 periodstats += local_graph->getstats();

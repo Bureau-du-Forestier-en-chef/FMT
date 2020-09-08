@@ -185,6 +185,12 @@ class FMTtheme : public FMTobject
 			{
 			return valuenames.size();
 			}
+		// DocString: FMTtheme::getstart
+		/**
+		Return the bit location of the mask at which the theme starts.
+		*/
+		size_t getstart() const;
+
 		// DocString: FMTtheme::getid
 		/**
 		Getter for the FMTtheme id.
@@ -233,6 +239,32 @@ class FMTtheme : public FMTobject
 		*/
         operator std::string() const;
     };
+
+	// DocString: FMTthemecomparator
+	/**
+	FMTthemecomparator to check two themes are the same.
+	*/
+	class FMTthemecomparator
+	{
+		// DocString: FMTthemecomparator::base_theme
+		///The theme that we are looking for
+		FMTtheme base_theme;
+	public:
+		// DocString: FMTthemecomparator(const FMTtheme&)
+		/**
+		FMTthemecomparator constructor ltheme_mask is the theme of that we want to match.
+		*/
+		FMTthemecomparator(const FMTtheme& lbase_theme);
+		// DocString: FMTthemecomparatorr::operator()(const FMTtheme&)
+		/**
+		Matching test operator for FMTthemecomparator.
+		*/
+		bool operator()(const FMTtheme& theme) const;
+
+	};
+
+
+
 }
 
 BOOST_CLASS_EXPORT_KEY(Core::FMTtheme)

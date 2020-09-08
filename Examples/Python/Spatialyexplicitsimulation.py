@@ -11,7 +11,7 @@ from FMT import Version
 if __name__ == "__main__":
     if Version.FMTversion().hasfeature("OSI") and Version.FMTversion().hasfeature("GDAL"):
         modelparser = Parser.FMTmodelparser()
-        path = "../Models/Jesus_land/jesus_land.pri"
+        path = "../Models/TWD_land/TWD_land.pri"
         scenarios = ["LP"]
         models = modelparser.readproject(path, scenarios)
         lpmodel = Models.FMTlpmodel(models[0], Models.FMTsolverinterface.CLP)
@@ -40,7 +40,7 @@ if __name__ == "__main__":
                 spatialactions.append(spatialaction)
             simulationmodel.setspactions(spatialactions)
             areaparser = Parser.FMTareaparser()
-            rasterslocation = "../Models/Jesus_land/rasters/"
+            rasterslocation = "../Models/TWD_land/rasters/"
             ageraster = os.path.join(rasterslocation,"AGE.tif")
             themesrasters = []
             themeid=1

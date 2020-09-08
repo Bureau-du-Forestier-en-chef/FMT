@@ -6,6 +6,9 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
 #include "FMTnssmodel.h"
+#include "FMTfuturdevelopment.h"
+#include "FMTactualdevelopment.h"
+
 namespace Models
 {
 	FMTnssmodel::FMTnssmodel(const FMTmodel& rhs, unsigned int seed):FMTmodel(rhs),generator(seed) {}

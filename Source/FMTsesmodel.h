@@ -47,7 +47,6 @@ class FMTsesmodel : public FMTmodel
 		{
 		ar & boost::serialization::make_nvp("model", boost::serialization::base_object<FMTmodel>(*this));
 		ar & BOOST_SERIALIZATION_NVP(mapping);
-		ar & BOOST_SERIALIZATION_NVP(operatedschedule);
 		ar & BOOST_SERIALIZATION_NVP(spactions);
 		ar & BOOST_SERIALIZATION_NVP(spschedule);
 		}
@@ -55,9 +54,6 @@ class FMTsesmodel : public FMTmodel
 		// DocString: FMTsesmodel::mapping
 		///Map of the FMTdevelopement spatialy located each raster cell has is own FMTdevelopement. Each call to simulate() will change those stades
         Spatial::FMTforest mapping;
-		// DocString: FMTsesmodel::operatedschedule
-		///Real schedules operated by the simulator on the map, some time the potential schedule will differ from the operated.
-		std::vector<Core::FMTschedule> operatedschedule;
 		// DocString: FMTsesmodel::spactions
 		///Spatialy explicit actions (actions with green up, adjacency distance etc...).
 		std::vector<Spatial::FMTspatialaction>spactions;

@@ -9,14 +9,13 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 namespace Models
     {
-    FMTsesmodel::FMTsesmodel(): FMTmodel(),mapping(), operatedschedule(),spactions(),spschedule()
+    FMTsesmodel::FMTsesmodel(): FMTmodel(),mapping(),spactions(),spschedule()
         {
 
         }
     FMTsesmodel::FMTsesmodel(const FMTsesmodel& rhs):
         FMTmodel(rhs),
         mapping(rhs.mapping),
-		operatedschedule(rhs.operatedschedule),
         spactions(rhs.spactions),
 		spschedule(rhs.spschedule)
         {
@@ -24,7 +23,7 @@ namespace Models
         }
     FMTsesmodel::FMTsesmodel(const FMTmodel& rhs):
         FMTmodel(rhs),
-        mapping(), operatedschedule(),spactions(),spschedule()
+        mapping(),spactions(),spschedule()
         {
 
         }
@@ -34,7 +33,6 @@ namespace Models
             {
             FMTmodel::operator = (rhs);
             mapping = rhs.mapping;
-			operatedschedule = rhs.operatedschedule;
             spactions = rhs.spactions;
 			spschedule = rhs.spschedule;
             }
@@ -118,39 +116,33 @@ namespace Models
 	std::map<std::string, double> FMTsesmodel::montecarlosimulate(const Core::FMTschedule & schedule, const size_t & randomiterations, unsigned int seed, double tolerance)
 	{
 		std::map<std::string, double>bestresults;
-		FMTsesmodel bestmodel;
+		FMTsesmodel modelcopy(*this);
 		try {
 			bestresults["Total"] = 0;
 			for (size_t iteration = 0; iteration < randomiterations; ++iteration)
 			{
-				FMTsesmodel modelcopy(*this);
+				//FMTsesmodel modelcopy(modelcopy0);
 				bool schedulefirstpass = true;
 				/*if (iteration % 2 == 0)
 					{
 					schedulefirstpass = false;
 					}*/
 				const std::map<std::string, double>results = modelcopy.simulate(schedule, false, schedulefirstpass,seed);
-				//*_logger << "iteration id: " << iteration << " objective is: "<< results.at("Total") <<"\n";
-				if (iteration == 0 || modelcopy> bestmodel/*!results.empty() && results.at("Total") > bestresults.at("Total")*/)
-				{
-					if (iteration > 0)
+				if (iteration == 0 || modelcopy>*this)
 					{
-						_logger->logwithlevel("Better solution found at Monte-Carlo iteration " +
-							std::to_string(iteration) + " value of " + std::to_string(results.at("Total")) + "\n", 1);
+						if (iteration > 0)
+						{
+							_logger->logwithlevel("Better solution found at Monte-Carlo iteration " +
+								std::to_string(iteration) + " value of " + std::to_string(results.at("Total")) + "\n", 1);
+						}
+						bestresults = results;
+						*this = modelcopy;
 					}
-					bestresults = results;
-					bestmodel = modelcopy;
-					/*if (bestresults.at("Total") >= (1.0 - tolerance * 1.0))
-					{
-						break;
-					}*/
-				}
+				modelcopy.spschedule.eraselastperiod();//clear the last period to redo a simulate and test again!
 				++seed;
 			}
-			/*if (bestresults.at("Total") > 0)
-			{
-				*this = bestmodel;
-			}*/
+			//Need the remove the incomplete stuff from the cash before going to the next step.
+			this->spschedule.cleanincompleteconstraintscash(this->getconstraints());
 		}
 		catch (...)
 		{
@@ -209,7 +201,7 @@ namespace Models
 						const std::set<Spatial::FMTcoordinate> allowable_coordinates = actions_operabilities.at(action_id);
 						if (!allowable_coordinates.empty() && action_area > 0)
 						{
-							const std::set<Spatial::FMTcoordinate> spatialy_allowable = spschedule.verifyspatialfeasability(spatial_action, actions, period, allowable_coordinates);
+							const std::set<Spatial::FMTcoordinate> spatialy_allowable = spschedule.verifyspatialfeasability(spatial_action, spactions, period, allowable_coordinates);
 							if (!spatialy_allowable.empty())
 							{
 								std::vector<Spatial::FMTcoordinate> updatedcells;

@@ -10,7 +10,7 @@ from FMT import Version
 if __name__ == "__main__":
     if Version.FMTversion().hasfeature("OSI"):
         modelparser = Parser.FMTmodelparser()
-        path = "../Models/Jesus_land/jesus_land.pri"
+        path = "../Models/TWD_land/TWD_land.pri"
         scenarios = ["LP"]
         models = modelparser.readproject(path, scenarios)
         lpmodel = Models.FMTlpmodel(models[0], Models.FMTsolverinterface.CLP)

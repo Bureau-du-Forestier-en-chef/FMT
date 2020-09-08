@@ -10,8 +10,8 @@ from FMT import Version
 
 if __name__ == "__main__":
         if Version.FMTversion().hasfeature("OSI") and Version.FMTversion().hasfeature("GDAL"):
-            primarylocation = "../Models/Jesus_land/jesus_land.pri"
-            maplocation = "../Models/Jesus_land/Carte/jesus_land.shp"
+            primarylocation = "../Models/TWD_land/TWD_land.pri"
+            maplocation = "../Models/TWD_land/Carte/TWD_land.shp"
             modelparser = Parser.FMTmodelparser()
             models = modelparser.readproject(primarylocation,["LP"])
             optimizationmodel=Models.FMTlpmodel(models[0],Models.FMTsolverinterface.CLP)

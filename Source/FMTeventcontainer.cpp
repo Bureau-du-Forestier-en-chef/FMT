@@ -183,6 +183,23 @@ namespace Spatial
         return selectedevents;
     }
 
+	std::vector<FMTeventcontainer::const_iterator> FMTeventcontainer::getevents(const int& period, const int& action_id,
+		const FMTcoordinate& minimalcoordinate, const FMTcoordinate& maximalcoordinate) const
+	{
+		FMTeventcontainer::const_iterator lower = lower_bound(period, minimalcoordinate);
+		FMTeventcontainer::const_iterator upper = upper_bound(period, maximalcoordinate);
+		std::vector<FMTeventcontainer::const_iterator> selectedevents;
+		for (FMTeventcontainer::const_iterator it = lower; it != upper; ++it)
+		{
+			if (it->getactionid() == action_id && it->getperiod() == period)
+			{
+				selectedevents.push_back(it);
+			}
+		}
+		return selectedevents;
+	}
+
+
     std::vector<FMTeventcontainer::const_iterator> FMTeventcontainer::getevents(const int& period,
                                                                                     const std::vector<int>& actions_id) const
     {

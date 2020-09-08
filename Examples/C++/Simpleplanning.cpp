@@ -11,9 +11,9 @@ int main()
 	if (Version::FMTversion().hasfeature("OSI"))
 		{
 		#if defined _MSC_VER
-			const std::string primarylocation = "../Examples/Models/Jesus_land/jesus_land.pri";
+			const std::string primarylocation = "../Examples/Models/TWD_land/TWD_land.pri";
 		#else
-			const std::string primarylocation = "Examples/Models/Jesus_land/jesus_land.pri";
+			const std::string primarylocation = "Examples/Models/TWD_land/TWD_land.pri";
 		#endif
 		Parser::FMTmodelparser modelparser;
 		const std::vector<std::string>scenarios(1, "LP");

@@ -188,6 +188,11 @@ class FMTconstraint: public FMToutput,public FMTspec
 		Hasghing for FMTconstraint.
 		*/
 		size_t hash() const;
+		// DocString: FMTconstraint::hashasoutput
+		/**
+		Hasghing for FMToutput.
+		*/
+		size_t hashasoutput() const;
 		// DocString: FMTconstraint::setoutput
 		/**
 		Setter for the FMToutput of the FMTconstraint.

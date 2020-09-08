@@ -251,6 +251,11 @@ namespace Core
 		return seed;
 		}
 
+	size_t FMTconstraint::hashasoutput() const
+		{
+		return FMToutput::hash();
+		}
+
 	void FMTconstraint::setoutput(const FMToutput& out)
 		{
 		FMToutput::operator =(out);
@@ -527,14 +532,13 @@ namespace Core
 			{
 			min = std::numeric_limits<double>::max();
 			max = std::numeric_limits<double>::lowest();
-			*_logger << "starting evaluation " << values.size()<<" "<< *values.begin() << "\n";
 			for (const double& value : values)
 			{
 				if (value > max)
 				{
 					max = value;
 				}
-				else if (value < min)
+				if (value < min)
 				{
 					min = value;
 				}
@@ -673,7 +677,7 @@ namespace Core
 				{
 				_exhandler->raise(Exception::FMTexc::FMTrangeerror,
 					"Got a bad global constraint evaluation for "+std::string(*this)+" at "+std::to_string(returnedvalue),
-					"FMTsasolution::evaluate", __LINE__, __FILE__);
+					"FMTconstraint::evaluate", __LINE__, __FILE__);
 
 				}
 			}catch (...)

@@ -10,6 +10,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTmodel.h"
 #include <chrono>
 #include <memory>
+#include "FMTschedule.h"
 
 
 namespace Models{
@@ -400,6 +401,26 @@ std::vector<Core::FMTtheme> FMTmodel::locatestaticthemes() const
 		}
 	return bestthemes;
 }
+
+std::vector<Core::FMTtheme> FMTmodel::locatedynamicthemes() const
+{
+	std::vector<Core::FMTtheme>dynamicthemes;
+	try {
+		const std::vector<Core::FMTtheme>staticthemes = locatestaticthemes();
+		for (const Core::FMTtheme& theme : themes)
+			{
+			if (std::find_if(staticthemes.begin(), staticthemes.end(), Core::FMTthemecomparator(theme))==staticthemes.end())
+				{
+				dynamicthemes.push_back(theme);
+				}
+			}
+	}catch (...)
+	{
+		_exhandler->raisefromcatch("", "FMTmodel::locatedynamicthemes", __LINE__, __FILE__);
+	}
+	return dynamicthemes;
+}
+
 
 void FMTmodel::validatelistspec(const Core::FMTspec& specifier) const
 	{

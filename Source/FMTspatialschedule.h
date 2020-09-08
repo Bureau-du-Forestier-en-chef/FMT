@@ -84,8 +84,8 @@ class FMTspatialschedule : public FMTlayer<Graph::FMTlinegraph>
         Check in all events around the location during periods corresponding to green up delay
         if an action present in neighbors is in the adjacency limit.
         */
-        bool allow_action(const FMTspatialaction& targetaction, const std::vector<Core::FMTaction>& modelactions,
-                          const FMTcoordinate& location,const int& period) const;
+        bool allow_action(const FMTspatialaction& targetaction, const std::vector<FMTspatialaction>& modelactions,
+                          const FMTcoordinate& location,const int& period,const std::vector<size_t>& maximalpatchsizes) const;
         // DocString: FMTspatialschedule::getscheduling(const FMTschedule, boost::unordered_map<Core::FMTdevelopment,std::vector<bool>>&, const int&, const Core::FMTyields& = Core::FMTyields(), bool = true)
         /**
         Return for each action in the FMTschedule the FMTcoordinate with operable developments at the end of the graph.
@@ -117,7 +117,7 @@ class FMTspatialschedule : public FMTlayer<Graph::FMTlinegraph>
         /**
         For the target action, return a set of FMTcoordinate corresponding to the cells that are spatially allowable from coordinates that are operables.
 		*/
-		std::set<FMTcoordinate> verifyspatialfeasability(const FMTspatialaction& targetaction, const std::vector<Core::FMTaction>& modelactions,
+		std::set<FMTcoordinate> verifyspatialfeasability(const FMTspatialaction& targetaction, const std::vector<FMTspatialaction>& modelactions,
                                                          const int& period, const std::set<FMTcoordinate>& operables) const;
 		// DocString: FMTspatialschedule::buildharvest(const FMTspatialaction, const std::vector<Core::FMTaction>&, const int&)
 		/**
@@ -155,7 +155,8 @@ class FMTspatialschedule : public FMTlayer<Graph::FMTlinegraph>
 		/**
 			Return sum of all graphs outputs related to constraint.
 		*/
-		std::vector<double> getgraphsoutputs(const Models::FMTmodel& model, const Core::FMTconstraint& constraint) const;
+		std::vector<double> getgraphsoutputs(const Models::FMTmodel& model, const Core::FMTconstraint& constraint,
+											 const FMTspatialschedule*	friendlysolution = nullptr) const;
 		// DocString: FMTspatialschedule::isbetterthan()
 		/**
 			Compare two spatialschedule and returns a vector of bool with true if the constraint group has a better value then the
@@ -179,12 +180,50 @@ class FMTspatialschedule : public FMTlayer<Graph::FMTlinegraph>
 		
 		*/
 		std::vector<Core::FMTGCBMtransition> getGCBMtransitions(FMTlayer<std::string>& stackedactions, const std::vector<Core::FMTaction>& modelactions, const std::vector<Core::FMTtheme>& classifiers, const int& period) const;
-    protected:
+		// DocString: FMTspatialschedule::eraselastperiod()
+		 /**
+		 This function erase the last period of the FMTspatialschedule.
+		 */
+		void eraselastperiod();
+		// DocString: FMTspatialschedule::cleanincompleteconstraintscash()
+		 /**
+		 When constraint cashing is used if the spatialschedule is build for only a given number of period the hashing
+		 of constraint with period > graphperiod wont be valid hash so those hashes need to be cleaned.
+		 */
+		void cleanincompleteconstraintscash(const std::vector<Core::FMTconstraint>& constraints);
+
+	protected:
 		// DocString: FMTspatialschedule::events
 		/**
 		
 		*/
         FMTeventcontainer events;
+		// DocString: FMTspatialschedule::getfromevents()
+		 /**
+		 Get theline graph using the eventcontainer
+		 */
+		std::vector<const Graph::FMTlinegraph*>getfromevents(const Core::FMTconstraint& constraint, const std::vector<Core::FMTaction>& actions, const int& start, const int& stop) const;
+		// DocString: FMTspatialschedule::getfromevents()
+		 /**
+		 set the output requested from a given linegraph into periods_values
+		 */
+		void setoutputfromgraph(const Graph::FMTlinegraph& linegraph,const Models::FMTmodel & model,std::vector<double>& periods_values,
+								const Core::FMTconstraint & constraint,const double* solution, const int& start, const int& stop,size_t hashvalue) const;
+		// DocString: FMTspatialschedule::getgraphsfromstatic()
+		 /**
+		 Based on variable outputnode in the constraint returns a subset of the solution based on the dynamic themes.
+		 */
+		std::vector<const Graph::FMTlinegraph*>getgraphsfromdynamic(const Core::FMTconstraint & constraint, 
+																	const Models::FMTmodel& model,
+																	std::vector<const Graph::FMTlinegraph*> searchspace = std::vector<const Graph::FMTlinegraph*>()) const;
+		// DocString: FMTspatialschedule::getmaximalpatchsizes()
+		 /**
+		 Return the maximal patch size of a vector of spatialactions.
+		 */
+		std::vector<size_t>getmaximalpatchsizes(const std::vector<FMTspatialaction>& spactions) const;
+
+
+
     private:
 };
 }

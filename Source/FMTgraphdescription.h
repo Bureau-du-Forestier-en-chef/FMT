@@ -22,13 +22,16 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 namespace Graph
 {
 
-	typedef boost::adjacency_list< boost::listS,
+	/*typedef boost::adjacency_list< boost::listS,
 		boost::listS,
 		boost::bidirectionalS,
 		FMTvertexproperties,
 		FMTedgeproperties,
 		boost::no_property,
 		boost::listS>FMTadjacency_list;
+
+
+
 	//https://www.boost.org/doc/libs/1_47_0/libs/graph/doc/adjacency_list.html
 
 	typedef boost::graph_traits<FMTadjacency_list>::vertex_descriptor FMTvertex_descriptor;
@@ -38,7 +41,7 @@ namespace Graph
 	typedef boost::graph_traits<FMTadjacency_list>::vertex_iterator FMTvertex_iterator;
 	typedef boost::graph_traits<FMTadjacency_list>::edge_iterator FMTedge_iterator;
 	typedef std::pair<FMToutedge_iterator, FMToutedge_iterator> FMToutedge_pair;
-	typedef std::pair<FMTvertex_iterator,FMTvertex_iterator> FMTvertex_pair;
+	typedef std::pair<FMTvertex_iterator,FMTvertex_iterator> FMTvertex_pair;*/
 
 
 }

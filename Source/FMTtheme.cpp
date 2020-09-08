@@ -343,6 +343,28 @@ FMTtheme FMTtheme::presolve(const FMTmask& basemask, int& newid, int& newstart, 
 	return FMTtheme();
 	}
 
+size_t FMTtheme::getstart() const
+	{
+	int realstart = start;
+	if (!start == 0)
+		{
+		++realstart;
+		}
+	return static_cast<size_t>(realstart);
+	}
+
+FMTthemecomparator::FMTthemecomparator(const FMTtheme& lbase_theme): base_theme(lbase_theme)
+	{
+
+	}
+
+bool FMTthemecomparator::operator()(const FMTtheme& theme) const
+	{
+	return (theme == base_theme);
+	}
+
+
+
 }
 
 BOOST_CLASS_EXPORT_IMPLEMENT(Core::FMTtheme)

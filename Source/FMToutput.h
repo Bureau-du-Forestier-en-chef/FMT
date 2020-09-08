@@ -269,6 +269,12 @@ class FMToutput: public FMTobject
 	Returns the intersected FMToutput resulting from the mask intersection with this output.
 	*/
 	FMToutput intersectwithmask(const Core::FMTmask& mask) const;
+
+	// DocString: FMToutput::getvariableintersect
+	/**
+	Returns the intersected FMTmask of all variables
+	*/
+	FMTmask getvariableintersect() const;
 	// DocString: FMToutput::presolve
 	/**
 	Presolve the FMToutput and remove unused outputsource base on a (basemask), original themes (originalthemes)
@@ -285,6 +291,17 @@ class FMToutput: public FMTobject
 	Set the outputsource to one period.
 	*/
 	void setperiod(const int& newperiod);
+	// DocString: FMToutput::isactionbased
+	/**
+	Returns true if the output constaints action nodes
+	*/
+	bool isactionbased() const;
+	// DocString: FMToutput::isinventory
+	/**
+	Returns true if contains inventory
+	*/
+	bool isinventory() const;
+
     };
 // DocString: FMToutputcomparator
 /**

@@ -15,7 +15,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 namespace Graph
 {
-class FMTlinegraph : public FMTgraph
+class FMTlinegraph : public FMTgraph<FMTbasevertexproperties,FMTbaseedgeproperties>
 {
 	protected:
 		FMTgraphstats periodstatsdiff;
@@ -24,9 +24,9 @@ class FMTlinegraph : public FMTgraph
         ~FMTlinegraph()=default;
         FMTlinegraph(const FMTgraphbuild lbuildtype);
         FMTlinegraph(const FMTlinegraph& rhs);
-        FMTlinegraph(const FMTgraph& rhs);
+        FMTlinegraph(const FMTgraph<FMTbasevertexproperties, FMTbaseedgeproperties>& rhs);
         FMTlinegraph& operator = (const FMTlinegraph& rhs);
-        FMTlinegraph& operator = (const FMTgraph& rhs);
+        FMTlinegraph& operator = (const FMTgraph<FMTbasevertexproperties,FMTbaseedgeproperties>& rhs);
         int getperiod() const;
 		void newperiod();
 		void addaction(	FMTvertex_descriptor active,const int& actionID,
@@ -48,6 +48,9 @@ class FMTlinegraph : public FMTgraph
         FMTlinegraph perturbgraph(  const Models::FMTmodel& model, std::default_random_engine& generator,
 									Spatial::FMTeventcontainer& events,
 									const Spatial::FMTcoordinate& localisation, const int period) const;
+		bool hashforconstraint(size_t& hashvalue,const int&start,const int& stop) const;
+		bool isonlygrow() const;
+		
 };
 }
 

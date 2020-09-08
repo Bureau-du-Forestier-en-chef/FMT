@@ -21,20 +21,20 @@ namespace Graph {
 		{
 
 		}
-	#ifdef FMTWITHOSI
+	/*#ifdef FMTWITHOSI
 		FMTgraphstats::FMTgraphstats(const std::unique_ptr<OsiSolverInterface>& solverinterface,
-			const FMTadjacency_list& graph, int ltransfer_rows, int loutput_rows, int loutput_cols):
+			const FMTgraph<FMTvertexproperties, FMTedgeproperties>::FMTadjacency_list& graph, int ltransfer_rows, int loutput_rows, int loutput_cols):
 			cols(solverinterface->getNumCols()),
 			rows(solverinterface->getNumRows()),
-			vertices(num_vertices(graph)),
-			edges(num_edges(graph)),
+			vertices(boost::num_vertices(graph)),
+			edges(boost::num_edges(graph)),
 			transfer_rows(ltransfer_rows),
 			output_rows(loutput_rows),
 			output_cols(loutput_cols)
 			{
 
 			}
-	#endif
+	#endif*/
 
 	FMTgraphstats::FMTgraphstats(const FMTgraphstats& rhs):
 		cols(rhs.cols),

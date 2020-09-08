@@ -4,7 +4,7 @@ Copyright (c) 2019 Gouvernement du Québec
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
-
+/*
 #include "FMTgraph.h"
 
 #include "FMTmodel.h"
@@ -15,6 +15,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <tuple>
 #include <assert.h>
 #include "FMTexceptionhandler.h"
+#include "boost/graph/graphviz.hpp"
 
 namespace Graph
 {
@@ -437,12 +438,12 @@ std::vector<FMTvertex_descriptor> FMTgraph::getnode(const Models::FMTmodel& mode
 				std::vector<const Core::FMTaction*> selected;
 				if (isvalidouputnode(model, output_node, selected, node_period))
 				{
-					for (const int localnodeperiod : targetedperiods)
+					for (const int& localnodeperiod : targetedperiods)
 						{
 						while (nodescache.size()!=developments.size())
 							{
 							const size_t devindex = nodescache.size();
-							nodescache.push_back(FMToutputnodecache(developments.at(devindex)));
+							nodescache.emplace_back(developments.at(devindex));
 							}
 						bool exactverticies = false;
 						const std::vector<FMTvertex_descriptor>& descriptors = nodescache.at(localnodeperiod).getverticies(output_node,model.actions,model.themes, exactverticies);
@@ -858,7 +859,7 @@ std::map<std::string, double> FMTgraph::getoutput(const Models::FMTmodel& model,
 		{
 			for (const Core::FMToutputnode& output_node : output.getnodes(model.area, model.actions, model.yields))
 			{
-				std::map<std::string, double> srcvalues = getsource(model, output_node, period, targettheme, solution, level);
+				const std::map<std::string, double> srcvalues = getsource(model, output_node, period, targettheme, solution, level);
 				if (level == FMToutputlevel::developpement)
 				{
 					for (std::map<std::string, double>::const_iterator mit = srcvalues.begin(); mit != srcvalues.end(); mit++)
@@ -873,7 +874,7 @@ std::map<std::string, double> FMTgraph::getoutput(const Models::FMTmodel& model,
 				else {
 					for (const std::string& attribute : target_attributes)
 					{
-						results[attribute] += srcvalues[attribute];
+						results[attribute] += srcvalues.at(attribute);
 					}
 				}
 
@@ -1221,4 +1222,14 @@ Core::FMTschedule FMTgraph::getschedule(const std::vector<Core::FMTaction>& acti
 		return Core::FMTschedule();
 }
 
+FMTgraph::operator std::string() const
+	{
+	std::ostringstream stream;
+	//write_graphviz(stream, data);
+	return stream.str();
+	}
+
+
+
 }
+*/
