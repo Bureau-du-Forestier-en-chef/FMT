@@ -280,19 +280,45 @@ size_t FMTmask::size() const
 
 bool FMTmask::isnotthemessubset(const FMTmask& rhs, const std::vector<FMTtheme>& themes) const
 	{
-	const boost::dynamic_bitset<> intersection = (rhs.data & this->data);
+	for (const FMTtheme& theme : themes)
+		{
+		const size_t themestart = theme.getstart();
+		const size_t themestop = themestart + theme.size();
+		if (!(rhs.data[themestart]&this->data[themestart])&&
+			!(rhs.data[themestop]&this->data[themestop]))
+			{
+			size_t bitloc = themestart;
+			while (bitloc<=themestop && !(rhs.data[bitloc] & this->data[bitloc]))
+				{
+				++bitloc;
+				}
+			if (bitloc== themestop)
+				{
+				return true;
+				}
+			}
+		}
+	return false;
+
+	/*const boost::dynamic_bitset<> intersection = (rhs.data & this->data);
 	size_t thid = 0;
 	size_t bitloc = 0;
 	size_t totalthemelength = 0;
 	bool founddifference = false;
 	size_t falsefound = 0;
+	std::vector<size_t>themesizes;
+	themesizes.reserve(themes.size());
+	for (const FMTtheme& theme : themes)
+	{
+		themesizes.push_back(theme.size());
+	}
 	while (!founddifference && bitloc < data.size())
 		{
 		if (!intersection[bitloc])
 			{
 			++falsefound;
 			}
-		const size_t themesize = themes.at(thid).size();
+		const size_t themesize = themesizes.at(thid);
 		if (bitloc == (themesize + totalthemelength)-1)
 			{
 			if (themesize == falsefound)//in that case we accept aggregate and "?")
@@ -305,7 +331,7 @@ bool FMTmask::isnotthemessubset(const FMTmask& rhs, const std::vector<FMTtheme>&
 			}
 		++bitloc;
 		}
-	return founddifference;
+	return founddifference;*/
 	}
 
 std::string FMTmask::getbitsstring() const

@@ -98,7 +98,7 @@ namespace Models
 				std::vector<double>bounds;
 				for (const auto& descriptors : graph.getperiodverticies(period))
 				{
-					const Graph::FMTvertex_descriptor vertex_descriptor = descriptors.second;
+					const Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor vertex_descriptor = descriptors.second;
 					const std::map<int, int>variables = graph.getoutvariables(vertex_descriptor);
 					for (std::map<int, int>::const_iterator varit = variables.begin(); varit != variables.end(); varit++)
 					{
@@ -135,7 +135,7 @@ namespace Models
 				const double* columnslowerbounds = this->getColLower();
 				for (const auto& descriptors : graph.getperiodverticies(period))
 				{
-					const Graph::FMTvertex_descriptor& vertex_descriptor = descriptors.second;
+					const Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor& vertex_descriptor = descriptors.second;
 					const std::map<int, int>variables = graph.getoutvariables(vertex_descriptor);
 					for (std::map<int, int>::const_iterator varit = variables.begin(); varit != variables.end(); varit++)
 					{
@@ -168,7 +168,7 @@ namespace Models
 				std::vector<double>bounds;
 				for (const auto& descriptors : graph.getperiodverticies(period))
 				{
-					const Graph::FMTvertex_descriptor vertex_descriptor = descriptors.second;
+					const Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor vertex_descriptor = descriptors.second;
 					std::map<int, int>variables = graph.getoutvariables(vertex_descriptor);
 					for (std::map<int, int>::const_iterator varit = variables.begin(); varit != variables.end(); varit++)
 					{
@@ -205,7 +205,7 @@ namespace Models
 					{
 					new_solution[colid] = *(actual_solution + colid);
 					}*/
-				for (std::unordered_map<size_t, Graph::FMTvertex_descriptor>::const_iterator devit = graph.getperiodverticies(period).begin();
+				for (std::unordered_map<size_t, Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>::const_iterator devit = graph.getperiodverticies(period).begin();
 					devit != graph.getperiodverticies(period).end(); devit++)
 				{
 					const std::map<int, int>variables = graph.getoutvariables(devit->second);
@@ -225,7 +225,7 @@ namespace Models
 					{
 						if (actionit.first.dorespectlock() && graph.containsdevelopment(devit.first))
 						{
-							const Graph::FMTvertex_descriptor vdescriptor = graph.getdevelopment(devit.first);
+							const Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor vdescriptor = graph.getdevelopment(devit.first);
 							const int variable = graph.getoutvariables(vdescriptor)[actionid];
 							new_solution[variable] = devit.second.at(0);
 							++allocated;
@@ -239,7 +239,7 @@ namespace Models
 							{
 								if (graph.containsdevelopment(locked))
 								{
-									const Graph::FMTvertex_descriptor vdescriptor = graph.getdevelopment(locked);
+									const Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor vdescriptor = graph.getdevelopment(locked);
 									const int variable = graph.getoutvariables(vdescriptor)[actionid];
 									/*if (area_id==0)
 										{
@@ -277,9 +277,9 @@ namespace Models
 					}
 				}
 				//Fill up natural evolution
-				std::unordered_map<size_t, Graph::FMTvertex_descriptor>processed;
-				std::queue<Graph::FMTvertex_descriptor>descriptors;
-				for (std::unordered_map<size_t, Graph::FMTvertex_descriptor>::const_iterator devit = graph.getperiodverticies(period).begin();
+				std::unordered_map<size_t, Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>processed;
+				std::queue<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>descriptors;
+				for (std::unordered_map<size_t, Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>::const_iterator devit = graph.getperiodverticies(period).begin();
 					devit != graph.getperiodverticies(period).end(); devit++)
 				{
 					if (graph.periodstart(devit->second))//get inperiod
@@ -319,7 +319,7 @@ namespace Models
 
 				while (!descriptors.empty())
 				{
-					Graph::FMTvertex_descriptor first = descriptors.front();
+					Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor first = descriptors.front();
 					std::map<int, int>variables = graph.getoutvariables(first);
 					const double* solution = &new_solution[0];
 					double rest = graph.inarea(first, solution);
@@ -376,7 +376,7 @@ namespace Models
 		return newschedule;
 	}
 
-	Graph::FMTgraphstats FMTlpmodel::updatematrix(const std::unordered_map<size_t, Graph::FMTvertex_descriptor>& targets,
+	Graph::FMTgraphstats FMTlpmodel::updatematrix(const std::unordered_map<size_t, Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>& targets,
 		const Graph::FMTgraphstats& newstats)
 	{
 
@@ -485,7 +485,7 @@ namespace Models
 	Graph::FMTgraphstats FMTlpmodel::buildperiod(Core::FMTschedule schedule, bool forcepartialbuild)
 	{
 		try {
-			std::queue<Graph::FMTvertex_descriptor> actives;
+			std::queue<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor> actives;
 			Graph::FMTgraphstats buildstats;
 			if (graph.empty())
 			{
@@ -766,13 +766,13 @@ bool FMTlpmodel::locatenodes(const std::vector<Core::FMToutputnode>& nodes, int 
 		{
 		std::map<std::string, std::vector<double>>uppernlower;
 		try {
-			const std::unordered_map<size_t, Graph::FMTvertex_descriptor>& initialperiod = graph.getperiodverticies(0);
+			const std::unordered_map<size_t, Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>& initialperiod = graph.getperiodverticies(0);
 			std::vector<int>colstarget;
 			std::vector<double>originalbounds;
 			std::vector<double>lowerbounds;
 			std::vector<double>upperbounds;
 			const double* collowerbounds = this->getColLower();
-			for (std::unordered_map<size_t, Graph::FMTvertex_descriptor>::const_iterator vertexit = initialperiod.begin();
+			for (std::unordered_map<size_t, Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>::const_iterator vertexit = initialperiod.begin();
 				vertexit != initialperiod.end(); vertexit++)
 			{
 				if (graph.getdevelopment(vertexit->second).mask.issubsetof(globalmask))
@@ -1576,9 +1576,9 @@ bool FMTlpmodel::locatenodes(const std::vector<Core::FMToutputnode>& nodes, int 
 			{
 				return FMTmodel::getarea();
 			}
-			std::unordered_map<size_t, Graph::FMTvertex_descriptor> perioddescriptors = graph.getperiodverticies(period);
+			std::unordered_map<size_t, Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor> perioddescriptors = graph.getperiodverticies(period);
 			const double* modelsolution = this->getColSolution();
-			for (std::unordered_map<size_t, Graph::FMTvertex_descriptor>::const_iterator vertexit = perioddescriptors.begin();
+			for (std::unordered_map<size_t, Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>::const_iterator vertexit = perioddescriptors.begin();
 				vertexit != perioddescriptors.end(); vertexit++)
 			{
 				if (graph.periodstart(vertexit->second))

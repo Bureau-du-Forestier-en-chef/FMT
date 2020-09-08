@@ -13,10 +13,10 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 namespace Heuristics
 {
 
-double FMToperatingareascheme::getprimalarea(const double* primalsolution, const Graph::FMTgraph& maingraph, const std::vector<Graph::FMTvertex_descriptor>& verticies) const//Get the area of the operating area base on a solution
+double FMToperatingareascheme::getprimalarea(const double* primalsolution, const Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>& maingraph, const std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>& verticies) const//Get the area of the operating area base on a solution
 	{
 	double area = 0;
-	for (const Graph::FMTvertex_descriptor& descriptor : verticies)
+	for (const Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor& descriptor : verticies)
 		{
 		if (maingraph.periodstart(descriptor))
 			{
@@ -41,12 +41,12 @@ size_t FMToperatingareascheme::getbestschemeid(const double* primalsolution) con
 	return bestid;
 	}
 
-std::vector<std::vector<std::vector<Graph::FMTvertex_descriptor>>> FMToperatingareascheme::generateschemes(const std::vector<std::vector<Graph::FMTvertex_descriptor>>& verticies)// Generate unique schemes base on parameters
+std::vector<std::vector<std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>>> FMToperatingareascheme::generateschemes(const std::vector<std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>>& verticies)// Generate unique schemes base on parameters
 	{
-	std::vector<std::vector<std::vector<Graph::FMTvertex_descriptor>>>schemes;
+	std::vector<std::vector<std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>>>schemes;
 	for (size_t id = 0 ; id < verticies.size();++id)
 		{
-		std::vector<std::vector<Graph::FMTvertex_descriptor>> newscheme;
+		std::vector<std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>> newscheme;
 		size_t localid = id;
 		bool validscheme = true;
 		while (localid< verticies.size())
@@ -78,12 +78,12 @@ std::vector<std::vector<std::vector<Graph::FMTvertex_descriptor>>> FMToperatinga
 	return schemes;
 	}
 
-	void FMToperatingareascheme::schemestoLP(const std::vector<std::vector<std::vector<Graph::FMTvertex_descriptor>>>& schemes,
-		const std::vector<std::vector<Graph::FMTvertex_descriptor>>& periodics,
-		const std::vector<Graph::FMTvertex_descriptor>& totalareaverticies,
+	void FMToperatingareascheme::schemestoLP(const std::vector<std::vector<std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>>>& schemes,
+		const std::vector<std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>>& periodics,
+		const std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>& totalareaverticies,
 		Models::FMTlpsolver& solver,
 		const double* primalsolution,
-		const Graph::FMTgraph& maingraph, const std::vector<int>& actionIDS)
+		const Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>& maingraph, const std::vector<int>& actionIDS)
 	{
 		//int binaryid = matrixbuild.getlastcolindex()+1;
 		int binaryid = solver.getNumCols();
@@ -96,11 +96,11 @@ std::vector<std::vector<std::vector<Graph::FMTvertex_descriptor>>> FMToperatinga
 		std::map<int, std::vector<int>>periodicsblocksvariables;
 		std::vector<size_t>selectedschemes;
 		size_t schemeid = 0;
-		for (const std::vector<std::vector<Graph::FMTvertex_descriptor>>& scheme : schemes)
+		for (const std::vector<std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>>& scheme : schemes)
 		{
 			bool shemehasactions = false;
 			size_t blockid = 0;
-			for (const std::vector<Graph::FMTvertex_descriptor>& localblock : scheme)
+			for (const std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>& localblock : scheme)
 			{
 				if (!localblock.empty())
 				{
@@ -108,7 +108,7 @@ std::vector<std::vector<std::vector<Graph::FMTvertex_descriptor>>> FMToperatinga
 					if (periodicsblocksvariables.find(period) == periodicsblocksvariables.end())
 					{
 						periodicsblocksvariables[period] = std::vector<int>();
-						for (const Graph::FMTvertex_descriptor& descriptor : localblock)
+						for (const Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor& descriptor : localblock)
 						{
 							const std::map<int, int>actions = maingraph.getoutvariables(descriptor);
 							if (actions.size() > 1)
@@ -367,14 +367,14 @@ std::vector<double>FMToperatingareascheme::getprimalsolution(const double* prima
 	return this->fillpattern(pattern, startingat);
 	}
 
-std::vector<std::vector<int>> FMToperatingareascheme::schemestoperiods(const std::vector<std::vector<std::vector<Graph::FMTvertex_descriptor>>>& schemes,
-														const Graph::FMTgraph& maingraph) const
+std::vector<std::vector<int>> FMToperatingareascheme::schemestoperiods(const std::vector<std::vector<std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>>>& schemes,
+														const Graph::FMTgraph<Graph::FMTvertexproperties,Graph::FMTedgeproperties>& maingraph) const
 	{
 	std::vector<std::vector<int>>periods;
-	for (const std::vector<std::vector<Graph::FMTvertex_descriptor>> scheme : schemes)
+	for (const std::vector<std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>> scheme : schemes)
 		{
 		std::vector<int>periodids;
-		for (const std::vector<Graph::FMTvertex_descriptor>& block : scheme)
+		for (const std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>& block : scheme)
 			{
 			if (!block.empty())
 				{
@@ -412,13 +412,13 @@ FMToperatingareascheme::FMToperatingareascheme(const FMToperatingarea& oparea,co
 	}
 
 
-void FMToperatingareascheme::setconstraints(const std::vector<std::vector<Graph::FMTvertex_descriptor>>& verticies,
-	const std::vector<Graph::FMTvertex_descriptor>& totalareaverticies,
-	const Graph::FMTgraph& graph, Models::FMTlpsolver& solver,
+void FMToperatingareascheme::setconstraints(const std::vector<std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>>& verticies,
+	const std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>& totalareaverticies,
+	const Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>& graph, Models::FMTlpsolver& solver,
 	const double* primalsolution,
 	const std::vector<int>& actionIDS)
 	{
-	const std::vector<std::vector<std::vector<Graph::FMTvertex_descriptor>>> schemes = this->generateschemes(verticies);
+	const std::vector<std::vector<std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>>> schemes = this->generateschemes(verticies);
 	schemesperiods = schemestoperiods(schemes, graph);
 	schemestoLP(schemes, verticies, totalareaverticies, solver, primalsolution, graph, actionIDS);
 	}

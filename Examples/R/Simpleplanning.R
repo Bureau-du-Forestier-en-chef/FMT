@@ -5,7 +5,7 @@ FMT<-Module("FMT",dyn.load(paste(pathtopackage,"\\FMT.dll",sep="")))
 if (new(FMT$FMTversion).hasfeature("OSI"))
 	{
 	newparser<-new(FMT$FMTmodelparser)
-	modelslist<-newparser$readproject("../Models/Jesus_land/jesus_land.pri",c("LP"),TRUE,TRUE,TRUE)
+	modelslist<-newparser$readproject("../Models/TWD_land/TWD_land.pri",c("LP"),TRUE,TRUE,TRUE)
 	solverinterface<-list(CLP=1,MOSEK=2,CPLEX=3,GUROBI=4)
 	lpmodel<-new(FMT$FMTlpmodel,modelslist[[1]],solverinterface$CLP)
 	emptyschedule<-new(FMT$FMTschedule)

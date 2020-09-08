@@ -10,28 +10,29 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTmodel.h"
 #include "FMTlogger.h"
 
+
 namespace Graph
 {
     FMTlinegraph::FMTlinegraph():
-    FMTgraph(FMTgraphbuild::nobuild),periodstatsdiff()
+		FMTgraph<FMTbasevertexproperties, FMTbaseedgeproperties>(FMTgraphbuild::nobuild),periodstatsdiff()
     {
 
     }
 
     FMTlinegraph::FMTlinegraph(const FMTgraphbuild lbuildtype):
-    FMTgraph(lbuildtype),periodstatsdiff()
+		FMTgraph<FMTbasevertexproperties, FMTbaseedgeproperties>(lbuildtype),periodstatsdiff()
     {
 
     }
 
     FMTlinegraph::FMTlinegraph(const FMTlinegraph& rhs):
-    FMTgraph(rhs),periodstatsdiff(rhs.periodstatsdiff)
+		FMTgraph<FMTbasevertexproperties, FMTbaseedgeproperties>(rhs),periodstatsdiff(rhs.periodstatsdiff)
     {
 
     }
 
-    FMTlinegraph::FMTlinegraph(const FMTgraph& rhs):
-    FMTgraph(rhs),periodstatsdiff()
+    FMTlinegraph::FMTlinegraph(const FMTgraph<FMTbasevertexproperties, FMTbaseedgeproperties>& rhs):
+		FMTgraph<FMTbasevertexproperties, FMTbaseedgeproperties>(rhs),periodstatsdiff()
     {
 
     }
@@ -40,17 +41,17 @@ namespace Graph
     {
         if(this!=&rhs)
             {
-            FMTgraph::operator = (rhs);
+			FMTgraph<FMTbasevertexproperties, FMTbaseedgeproperties>::operator = (rhs);
 			periodstatsdiff = rhs.periodstatsdiff;
             }
         return *this;
     }
 
-    FMTlinegraph& FMTlinegraph::operator = (const FMTgraph& rhs)
+    FMTlinegraph& FMTlinegraph::operator = (const FMTgraph<FMTbasevertexproperties, FMTbaseedgeproperties>& rhs)
     {
         if(this!=&rhs)
             {
-            FMTgraph::operator = (rhs);
+			FMTgraph<FMTbasevertexproperties, FMTbaseedgeproperties>::operator = (rhs);
 			periodstatsdiff = FMTgraphstats();
             }
         return *this;
@@ -58,9 +59,9 @@ namespace Graph
 
     int FMTlinegraph::getperiod() const
     {
-        std::queue<Graph::FMTvertex_descriptor> actives = getactiveverticies();
-        Graph::FMTvertex_descriptor front_vertex = actives.front();
-        const Graph::FMTvertexproperties& front_properties = data[front_vertex];
+        std::queue<FMTgraph<FMTbasevertexproperties, FMTbaseedgeproperties>::FMTvertex_descriptor> actives = getactiveverticies();
+		FMTgraph<FMTbasevertexproperties, FMTbaseedgeproperties>::FMTvertex_descriptor front_vertex = actives.front();
+        const Graph::FMTbasevertexproperties& front_properties = data[front_vertex];
         const int period = front_properties.get().period;
         return period;
     }
@@ -112,12 +113,12 @@ namespace Graph
 		FMTvertex_descriptor active = getactivevertex();
 		const Core::FMTdevelopment& active_development = getdevelopment(active);
 		const Core::FMTfuturdevelopment grown_up = active_development.grow();
-		Graph::FMTvertex_descriptor next_period = adddevelopment(grown_up);
+		FMTgraph<FMTbasevertexproperties, FMTbaseedgeproperties>::FMTvertex_descriptor next_period = adddevelopment(grown_up);
 		const Graph::FMTedgeproperties newedge(-1, 0, 100);
 		boost::add_edge(active, next_period, newedge, data);
 		++stats.edges;
 	}
-	FMTvertex_descriptor FMTlinegraph::getactivevertex() const
+	FMTgraph<FMTbasevertexproperties, FMTbaseedgeproperties>::FMTvertex_descriptor FMTlinegraph::getactivevertex() const
 	{
 		FMTvertex_iterator vertex, vend;
 		boost::tie(vertex, vend) = vertices(data);
@@ -138,7 +139,7 @@ namespace Graph
 				FMTinedge_iterator inedge_iterator, inedge_end;
 				for (boost::tie(inedge_iterator, inedge_end) = boost::in_edges(outv, data); inedge_iterator != inedge_end; ++inedge_iterator)
 				{
-					const FMTedgeproperties& edgeprop = data[*inedge_iterator];
+					const FMTbaseedgeproperties& edgeprop = data[*inedge_iterator];
 					const int id = edgeprop.getactionID();
 					ids.push_back(id);
 				}
@@ -150,7 +151,7 @@ namespace Graph
 		}
 		if (ids.empty())
 		{
-			handler.raise(Exception::FMTexc::FMTnotlinegraph, "Error in building graph " + std::to_string(period), "FMTlinegraph::getlastactionid()", __LINE__, __FILE__);
+			handler.raise(Exception::FMTexc::FMTnotlinegraph, "No inedge for  " +std::string(*this)+" at period "+ std::to_string(period), "FMTlinegraph::getlastactionid()", __LINE__, __FILE__);
 		}
 		return ids.at(0);
 	}
@@ -233,7 +234,7 @@ namespace Graph
         {
 			const FMTvertex_descriptor front_vertex = actives.front();
 			actives.pop();
-			const FMTvertexproperties& front_properties = data[front_vertex];
+			const FMTbasevertexproperties& front_properties = data[front_vertex];
 			const Core::FMTdevelopment& active_development = front_properties.get();
             std::vector<Core::FMTaction> actions = model.getactions();
 			int action_id = 0;
@@ -310,5 +311,63 @@ namespace Graph
 
     return newgraph;
     }
+
+	bool FMTlinegraph::isonlygrow() const
+		{
+		return size() == boost::num_edges(data);
+		}
+
+	bool FMTlinegraph::hashforconstraint(size_t& hashvalue, const int&start, const int& stop) const
+	{
+		FMTvertex_iterator vertex_iterator, vertex_iterator_end;
+		boost::tie(vertex_iterator, vertex_iterator_end) = boost::vertices(data);
+		boost::hash_combine(hashvalue, boost::hash<Core::FMTdevelopment>()(getdevelopment(*vertex_iterator)));
+		FMTedge_iterator edge_iterator, edge_iterator_end;
+		boost::tie(edge_iterator, edge_iterator_end) = boost::edges(data);
+		//the first edge is suppose to be natural evolution so
+		int periodcount = 0;
+		int cashin = 0;
+		while (edge_iterator!=edge_iterator_end)
+			{
+			if (periodcount<=stop)
+				{
+				const FMTbaseedgeproperties& edgeprop = data[*edge_iterator];
+				const int actionid = edgeprop.getactionID();
+				if (periodcount>=start)
+					{
+					boost::hash_combine(hashvalue, edgeprop.getactionID());
+					++cashin;
+					}
+				if (!(stop == std::numeric_limits<int>::max()) && periodcount == stop)
+					{
+					return true;
+					}
+				if (actionid < 0)
+				{
+					++periodcount;
+				}
+				}
+			++edge_iterator;
+			}
+		/*for (boost::tie(edge_iterator, edge_iterator_end) = boost::edges(data); edge_iterator != edge_iterator_end; ++edge_iterator)
+		{
+			const FMTvertex_descriptor& sourcevertex = boost::source(*edge_iterator, data);
+			const int sourceperiod = getdevelopment(sourcevertex).period;
+			if (sourceperiod<=stop)
+				{
+				const FMTedgeproperties& edgeprop = data[*edge_iterator];
+				boost::hash_combine(hashvalue, edgeprop.getactionID());
+				if (!(stop==std::numeric_limits<int>::max())&&sourceperiod==stop)
+					{
+					return true;
+					}
+				
+				}
+		}*/
+		return false;
+	}
+
+	
+
 
 }

@@ -14,6 +14,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTtheme.h"
 #include "FMTaction.h"
 #include "FMTtransition.h"
+#include "FMTschedule.h"
 #include "FMTyields.h"
 #include "FMTlifespans.h"
 #include "FMTactualdevelopment.h"
@@ -21,7 +22,6 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMToutput.h"
 #include "FMTconstraint.h"
 #include <memory>
-#include "FMTgraph.h"
 #include "FMTlist.h"
 #include "FMTmodelstats.h"
 #include <boost/serialization/vector.hpp>
@@ -31,6 +31,11 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <boost/serialization/export.hpp>
 
 
+namespace Graph
+{
+	template<class T1, class T2>
+	class FMTgraph;
+}
 
 namespace Models
 {
@@ -48,6 +53,7 @@ class FMTmodel : public Core::FMTobject
 	/**
 	Save and load functions are for serialization, used to do multiprocessing across multiple cpus (pickle in Pyhton)
 	*/
+	template<class T1,class T2>
     friend class Graph::FMTgraph;
 	friend class boost::serialization::access;
 	template<class Archive>
@@ -350,6 +356,11 @@ class FMTmodel : public Core::FMTobject
 		that are not used into the transition (staticthemes)... will return themes based on spatial units.
 		*/
 		std::vector<Core::FMTtheme> locatestaticthemes() const;
+		// DocString: FMTmodel::locatedynamicthemes
+		/**
+		Returns themes used in the transition scheme.
+		*/
+		std::vector<Core::FMTtheme> locatedynamicthemes() const;
 		// DocString: FMTmodel(FMTmodel)
 		/**
 		Copy constructor of FMTmodel

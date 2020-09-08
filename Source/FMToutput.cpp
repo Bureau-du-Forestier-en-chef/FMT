@@ -374,23 +374,22 @@ std::vector<FMToutputnode> FMToutput::getnodes(const std::vector<FMTactualdevelo
 		size_t src_id = 0;
 		size_t op_id = 0;
 		FMToutputsource main_source;
-		FMToutputsource main_factor = FMToutputsource(FMTotar::val, 1);
+		FMToutputsource main_factor(FMTotar::val,1);
 		double constant = 1;
+		nodes.reserve(sources.size());
 		for (const FMToutputsource& source : sources)
 		{
 			if (((source.isvariable() && !source.canbededucedtoconstant()) || source.islevel()))
 			{
 				if (!main_source.getmask().empty() || main_source.isvariablelevel())
 				{
-					FMToutputnode newnode(main_source, main_factor, constant);
-					if (!newnode.isnull())
+					if (!((main_factor.isconstant() && main_factor.getvalue() == 0) || constant == 0))
 					{
-						if (newnode.source.isaverage())
-						{
-							newnode.constant *= multiplier;
-						}
-
-						nodes.push_back(newnode);
+						if (main_source.isaverage())
+							{
+							constant *= multiplier;
+							}
+						nodes.emplace_back(main_source, main_factor, constant);
 					}
 				}
 				main_factor = FMToutputsource(FMTotar::val, 1);
@@ -426,15 +425,16 @@ std::vector<FMToutputnode> FMToutput::getnodes(const std::vector<FMTactualdevelo
 		}
 		if (main_source.isvariablelevel() || main_source.isvariable())
 		{
-			FMToutputnode newnode(main_source, main_factor, constant);
-			if (!newnode.isnull())
+			if (!((main_factor.isconstant() && main_factor.getvalue() == 0) || constant == 0))
 			{
-				if (newnode.source.isaverage())
+				if (main_source.isaverage())
 				{
-					newnode.constant *= multiplier;
+					constant *= multiplier;
 				}
-				nodes.push_back(newnode);
+				nodes.emplace_back(main_source, main_factor, constant);
 			}
+
+
 		}
 	}catch (...)
 		{
@@ -625,6 +625,25 @@ FMToutput FMToutput::intersectwithmask(const Core::FMTmask& mask) const
 	return newoutput;
 	}
 
+FMTmask FMToutput::getvariableintersect() const
+{
+	FMTmask mask;
+	for (const FMToutputsource& source :sources)
+	{
+		if (source.isvariable())
+		{
+			if (mask.empty())
+				{
+				mask = source.getmask();
+			}else {
+				mask = mask.getintersect(source.getmask());
+			}
+			
+		}
+	}
+	return mask;
+}
+
 
 void FMToutput::setperiod(const int& newperiod)
 	{
@@ -632,6 +651,31 @@ void FMToutput::setperiod(const int& newperiod)
 		{
 		source.setbounds(FMTperbounds(FMTsection::Outputs, newperiod, newperiod));
 		}
+	}
+
+bool FMToutput::isactionbased() const
+	{
+	for (const FMToutputsource& source : sources)
+		{
+		if (!source.getaction().empty())
+			{
+			return true;
+			}
+		}
+	return false;
+	}
+
+
+bool FMToutput::isinventory() const
+	{
+	for (const FMToutputsource& source : sources)
+	{
+		if (source.isinventory())
+		{
+			return true;
+		}
+	}
+	return false;
 	}
 
 FMTtheme FMToutput::targettheme(const std::vector<FMTtheme>& themes) const

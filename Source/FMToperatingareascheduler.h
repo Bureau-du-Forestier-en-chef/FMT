@@ -83,7 +83,7 @@ namespace Heuristics
 		and variables to the solverinterface using the FMTlpmodel graph (maingraph), it's parent class (model) and finaly using
 		an output node (the output node needs to be linked to a least one action of the FMTmodel).
 		*/
-		void setoperatingareasconstraints(const Graph::FMTgraph& maingraph,
+		void setoperatingareasconstraints(const Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>& maingraph,
 			const Models::FMTmodel& model,
 			const Core::FMToutputnode& target);
 		// DocString: FMToperatingareascheduler::setadjacencyconstraints
@@ -180,7 +180,7 @@ namespace Heuristics
 		about the FMTlpmodel.
 		*/
 		FMToperatingareascheduler(const std::vector<FMToperatingareascheme>& loperatingareas,
-			const Graph::FMTgraph& maingraph,
+			const Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>& maingraph,
 			const Models::FMTmodel& model,
 			const Core::FMToutputnode& target,
 			Models::FMTlpsolver& basesolve, size_t lseed = 0,

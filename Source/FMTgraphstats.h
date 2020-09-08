@@ -9,16 +9,20 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #define FMTgraphstats_H_INCLUDED
 
 #include "FMTgraphdescription.h"
-#ifdef FMTWITHOSI
+/*#ifdef FMTWITHOSI
 	#include "OsiSolverInterface.hpp"
-#endif
+#endif*/
 #include <boost/serialization/serialization.hpp>
 #include <boost/serialization/nvp.hpp>
 #include <memory>
 #include <string>
+#include "FMTvertexproperties.h"
+#include "FMTedgeproperties.h"
 
 namespace Graph
 {
+
+
 class FMTgraphstats
 	{
 	friend class boost::serialization::access;
@@ -42,11 +46,11 @@ class FMTgraphstats
 		int output_rows;
 		int output_cols;
 		FMTgraphstats();
-		#ifdef FMTWITHOSI
+		/*#ifdef FMTWITHOSI
 			FMTgraphstats(const std::unique_ptr<OsiSolverInterface>& solverinterface,
-				const FMTadjacency_list& graph,
+				const FMTgraph<FMTvertexproperties,FMTedgeproperties>::FMTadjacency_list& graph,
 				int ltransfer_rows, int loutput_rows, int loutput_cols);
-		#endif
+		#endif*/
 		FMTgraphstats(const FMTgraphstats& rhs);
 		FMTgraphstats& operator = (const FMTgraphstats& rhs);
 		FMTgraphstats& operator += (const FMTgraphstats& rhs);

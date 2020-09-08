@@ -10,15 +10,15 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 #include "Rdefinitions.h"
 #include "FMTgraphstats.h"
-#include "FMTgraph.h"
+//#include "FMTgraph.h"
 #include <Rcpp.h>
 
 RCPP_EXPOSED_ENUM_NODECL(Graph::FMToutputlevel);
 RCPP_EXPOSED_WRAP(Graph::FMTgraphstats);
 RCPP_EXPOSED_AS(Graph::FMTgraphstats);
 RCPP_EXPOSED_ENUM_NODECL(Graph::FMTgraphbuild);
-RCPP_EXPOSED_WRAP(Graph::FMTgraph);
-RCPP_EXPOSED_AS(Graph::FMTgraph);
+//RCPP_EXPOSED_WRAP(Graph::FMTgraph);
+//RCPP_EXPOSED_AS(Graph::FMTgraph);
 
 namespace R
 {
@@ -43,8 +43,8 @@ void exportGraph()
 		.field("output_cols", &Graph::FMTgraphstats::output_cols,
 			"@DocString(FMTgraphstats::output_cols)");
 
-	Rcpp::class_<Graph::FMTgraph>("FMTgraph", "@DocString(FMTgraph)")
-		.constructor("@DocString(FMTgraph())");
+	//Rcpp::class_<Graph::FMTgraph>("FMTgraph", "@DocString(FMTgraph)")
+	//	.constructor("@DocString(FMTgraph())");
 
 	}
 

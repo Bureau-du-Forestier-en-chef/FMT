@@ -321,7 +321,7 @@ namespace Parser{
 		}
 		catch (...)
 		{
-			_exhandler->printexceptions("at " + location, "FMTareaparser::writedisturbancessp", __LINE__, __FILE__);
+			_exhandler->printexceptions("at " + location, "FMTareaparser::writedisturbances", __LINE__, __FILE__);
 		}
 		return transitions;
 	}

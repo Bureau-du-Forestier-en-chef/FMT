@@ -13,28 +13,27 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <boost/serialization/serialization.hpp>
 #include <boost/serialization/unique_ptr.hpp>
 #include <memory>
+#include "FMTbasevertexproperties.h"
 
 
 
 namespace Graph
 {
-	class FMTvertexproperties
+	class FMTvertexproperties : public FMTbasevertexproperties
 		{
 		friend class boost::serialization::access;
 		template<class Archive>
 		void serialize(Archive& ar, const unsigned int version)
 			{
-			ar & BOOST_SERIALIZATION_NVP(development);
+			ar & boost::serialization::make_nvp("FMTbasevertexproperties", boost::serialization::base_object<FMTbasevertexproperties>(*this));
 			ar & BOOST_SERIALIZATION_NVP(constraintID);
 			}
-			std::unique_ptr<Core::FMTdevelopment>development;
 			int constraintID;
 		public:
 			~FMTvertexproperties() = default;
-			FMTvertexproperties();
-			bool operator < (const FMTvertexproperties& rhs) const;
-			FMTvertexproperties(const FMTvertexproperties& rhs);
-			FMTvertexproperties& operator = (const FMTvertexproperties& rhs);
+			FMTvertexproperties() = default;
+			FMTvertexproperties(const FMTvertexproperties& rhs) = default;
+			FMTvertexproperties& operator = (const FMTvertexproperties& rhs) = default;
 			FMTvertexproperties(const Core::FMTfuturdevelopment& ldevelopment,
 				const int& lconstraintID);
 			FMTvertexproperties(const Core::FMTactualdevelopment& ldevelopment,
@@ -42,20 +41,13 @@ namespace Graph
             FMTvertexproperties(const Core::FMTdevelopment& ldevelopment,
                 const int& lconstraintID);
 			std::string constraintname() const;
-			inline int getconstraintID() const
+			inline int getconstraintID() const override
 				{
 				return constraintID;
 				}
 			void setconstraintID(const int& ID);
-			inline const Core::FMTdevelopment& get() const
-				{
-				return (*development);
-				}
-			void setdevlopementmask(const Core::FMTmask& newmask);
-			double getbaseRHS() const;
-			size_t hash() const;
-			bool operator == (const FMTvertexproperties& rhs) const;
-			bool operator != (const FMTvertexproperties& rhs) const;
+			double getbaseRHS() const override;
+			size_t hash() const override;
 		};
 }
 

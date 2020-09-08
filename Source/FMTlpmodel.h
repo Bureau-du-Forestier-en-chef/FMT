@@ -46,6 +46,8 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMToperatingareascheduler.h"
 #include "FMToperatingareaclusterer.h"
 #include <boost/serialization/export.hpp>
+#include "FMTvertexproperties.h"
+#include "FMTedgeproperties.h"
 
 
 namespace Models
@@ -111,7 +113,7 @@ class FMTlpmodel : public FMTmodel, public FMTlpsolver
 	BOOST_SERIALIZATION_SPLIT_MEMBER()
 	// DocString: FMTlpmodel::graph
 	///graph holding the FMTdevelopments for all the periods.
-	Graph::FMTgraph graph;
+	Graph::FMTgraph<Graph::FMTvertexproperties,Graph::FMTedgeproperties> graph;
 	// DocString: FMTlpmodel::elements
 	///Locations of the constraints and variables in the matrix for the constraints / objective.
 	std::vector<std::unordered_map<size_t,
@@ -150,7 +152,7 @@ class FMTlpmodel : public FMTmodel, public FMTlpsolver
 	need to be updated. Variables and constraints related to each of those new developements will be added to the matrix.
 	So area transfer row and natural growth plus action variables.
 	*/
-	Graph::FMTgraphstats updatematrix(const std::unordered_map<size_t, Graph::FMTvertex_descriptor>& targets,
+	Graph::FMTgraphstats updatematrix(const std::unordered_map<size_t, Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>& targets,
 			const Graph::FMTgraphstats& newstats);
 	// DocString: FMTlpmodel::getsetmatrixelement
 	/**
