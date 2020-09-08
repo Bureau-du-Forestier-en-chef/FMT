@@ -1,4 +1,4 @@
-Read this using other languages: [English](README.md), [Français](README.fr.md)
+﻿Read this using other languages: [English](README.md), [Français](README.fr.md)
 
 ## FMT is an open source Forest Management library
 
@@ -38,7 +38,7 @@ of harvest schedules or even stochastic events.
   
 ## How to use FMT?
 
-The easiest way to use FMT is to use the cmake >= 3.15 and generate a shared library. The cmake script supports generating FMT on Windows using VS2017 or MINGW-64 on MSYS2 or CYGWIN.
+The easiest way to use FMT is to use the cmake >= 3.15 and generate a shared library for R or Python or directly from C++ (see examples: FMTSimpleplanning.exe and FMTSpatialyexplicitsimulation.exe). The cmake script supports generating FMT on Windows using VS2017 or MINGW-64 on MSYS2 or CYGWIN.
 
 + Generating FMT as a Python library on Visual studio 2017:
  
