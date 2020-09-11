@@ -9,21 +9,19 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 namespace Models
     {
-    FMTsesmodel::FMTsesmodel(): FMTmodel(),mapping(),spactions(),spschedule()
+    FMTsesmodel::FMTsesmodel(): FMTmodel(),spactions(),spschedule()
         {
 
         }
     FMTsesmodel::FMTsesmodel(const FMTsesmodel& rhs):
         FMTmodel(rhs),
-        mapping(rhs.mapping),
         spactions(rhs.spactions),
 		spschedule(rhs.spschedule)
         {
 
         }
     FMTsesmodel::FMTsesmodel(const FMTmodel& rhs):
-        FMTmodel(rhs),
-        mapping(),spactions(),spschedule()
+        FMTmodel(rhs),spactions(),spschedule()
         {
 
         }
@@ -32,24 +30,24 @@ namespace Models
         if (this!=&rhs)
             {
             FMTmodel::operator = (rhs);
-            mapping = rhs.mapping;
             spactions = rhs.spactions;
 			spschedule = rhs.spschedule;
             }
         return *this;
         }
 
-    bool FMTsesmodel::setspactions(const std::vector<Spatial::FMTspatialaction>& lspactions)
+    bool FMTsesmodel::setspactions(std::vector<Spatial::FMTspatialaction> lspactions)
         {
 		try {
 			std::vector<Core::FMTtransition>newtransitions;
 			std::vector<Spatial::FMTspatialaction>newspatials;
 			std::vector<Core::FMTaction>newbaseactions;
-			for (const Spatial::FMTspatialaction& spaction : lspactions)
+			for (Spatial::FMTspatialaction spaction : lspactions)
 			{
 				std::vector<Core::FMTtransition>::const_iterator trn_iterator = std::find_if(transitions.begin(), transitions.end(), Core::FMTtransitioncomparator(spaction.getname()));
 				if (trn_iterator != transitions.end())
 				{
+					spaction.passinobject(*this);
 					newtransitions.push_back(*trn_iterator);
 					newspatials.push_back(spaction);
 					newbaseactions.push_back(spaction);
@@ -82,11 +80,10 @@ namespace Models
 		}
 		return std::vector<Core::FMTschedule>();
 	}
-	bool FMTsesmodel::setinitialmapping(const Spatial::FMTforest& forest)
+	bool FMTsesmodel::setinitialmapping(Spatial::FMTforest forest)
         {
 		try {
-			mapping = forest;
-			mapping.setperiod(1);
+			forest.passinobject(*this);
 			spschedule = Spatial::FMTspatialschedule(forest);
 		}catch (...)
 		{
@@ -184,14 +181,16 @@ namespace Models
 				bool schedulepass = scheduleatfirstpass;
 				bool schedulechange = false;
 				int pass = 0;
-				std::vector<std::set<Spatial::FMTcoordinate>>actions_operabilities = spschedule.getupdatedscheduling(spactions, schedule, yields, schedulepass);
+				boost::unordered_map<Core::FMTdevelopment, std::vector<bool>>cachedactions;
+				std::vector<std::set<Spatial::FMTcoordinate>>actions_operabilities = spschedule.getupdatedscheduling(spactions, schedule, cachedactions, yields, schedulepass);
 				do {
 					//*_logger << "pass: " << pass<<" schedule pass: "<< schedulepass <<"\n";
 					pass_allocated_area = 0;
 					int action_id = 0;
 					if (schedulechange)
 						{
-						actions_operabilities = spschedule.getupdatedscheduling(spactions, schedule, yields, schedulepass);
+						cachedactions.clear();
+						actions_operabilities = spschedule.getupdatedscheduling(spactions, schedule, cachedactions, yields, schedulepass);
 						schedulechange = false;
 						}
 					for (const Spatial::FMTspatialaction& spatial_action : spactions)
@@ -210,7 +209,7 @@ namespace Models
 								{
 									const double operatedarea = spschedule.operate(harvest, spatial_action, action_id, transitions[action_id], yields, themes);
 									spschedule.addevents(harvest);
-									actions_operabilities = spschedule.getupdatedscheduling(spactions,schedule, yields, schedulepass, actions_operabilities, updatedcells);
+									actions_operabilities = spschedule.getupdatedscheduling(spactions,schedule, cachedactions, yields, schedulepass, actions_operabilities, updatedcells);
 									targets[spatial_action.getname()] -= operatedarea;
 									pass_allocated_area += operatedarea;
 								}
@@ -256,15 +255,16 @@ namespace Models
 		std::vector<Core::FMTactualdevelopment> optionaldevelopments ) const
 		{
 		try {
-			if (spschedule.empty())//just presolve if no solution
+			if (spschedule.actperiod() == 1)//just presolve if no solution
 			{
-				const std::vector<Core::FMTactualdevelopment>areas = mapping.getarea();
+				const std::vector<Core::FMTactualdevelopment>areas = spschedule.getforestperiod(0).getarea();
 				optionaldevelopments.insert(optionaldevelopments.end(), areas.begin(), areas.end());
 				std::unique_ptr<FMTmodel>presolvedmod(new FMTsesmodel(*(FMTmodel::presolve(presolvepass, optionaldevelopments))));
 				FMTsesmodel*presolvedses = dynamic_cast<FMTsesmodel*>(presolvedmod.get());
 				const Core::FMTmask presolvedmask = presolvedses->getselectedmask(themes);
 				const Core::FMTmask basemask = this->getbasemask(optionaldevelopments);
-				presolvedses->mapping = this->mapping.presolve(presolvedmask, presolvedses->themes);
+				const boost::dynamic_bitset<>&bitsets = basemask.getbitsetreference();
+				presolvedses->spschedule = Spatial::FMTspatialschedule(spschedule.getforestperiod(0).presolve(presolvedmask, presolvedses->themes));
 				std::vector<Spatial::FMTspatialaction>newspatialactions;
 				for (const Spatial::FMTspatialaction& spaction : spactions)
 				{
@@ -280,7 +280,7 @@ namespace Models
 			}
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("","FMTsesmodel::presolve", __LINE__, __FILE__);
+			_exhandler->printexceptions("", "FMTsesmodel::presolve", __LINE__, __FILE__);
 			}
 		return std::unique_ptr<FMTmodel>(nullptr);
 		}
@@ -288,12 +288,12 @@ namespace Models
 	std::unique_ptr<FMTmodel>FMTsesmodel::postsolve(const FMTmodel& originalbasemodel) const
 		{
 		try {
-			if (!spschedule.empty())//just postsolve if you have a solution
+			if (spschedule.actperiod()>=1)//just postsolve if you have a solution
 			{
 				std::unique_ptr<FMTmodel>presolvedmod(new FMTsesmodel(*(FMTmodel::postsolve(originalbasemodel))));
 				const Core::FMTmask presolvedmask = this->getselectedmask(themes);
 				FMTsesmodel*postsolvedses = dynamic_cast<FMTsesmodel*>(presolvedmod.get());
-				postsolvedses->mapping = this->mapping.postsolve(presolvedmask, postsolvedses->themes);
+				//postsolvedses->mapping = this->mapping.postsolve(presolvedmask, postsolvedses->themes);
 				//Disturbance stack doesn't need changes
 				//take care of the FMTspatialactions
 				std::vector<Spatial::FMTspatialaction>newspatialactions;
@@ -315,6 +315,11 @@ namespace Models
 			_exhandler->raisefromcatch("", "FMTsesmodel::presolve", __LINE__, __FILE__);
 			}
 		return std::unique_ptr<FMTmodel>(nullptr);
+		}
+
+	Spatial::FMTforest FMTsesmodel::getmapping() const
+		{
+		return spschedule.getforestperiod(spschedule.actperiod());
 		}
 
     }

@@ -60,16 +60,11 @@ std::vector<FMTmask> FMTmask::decompose(const FMTtheme &theme) const
     }
 boost::dynamic_bitset<> FMTmask::subset(const FMTtheme& theme) const
     {
-    boost::dynamic_bitset<> sub(theme.size());
+    boost::dynamic_bitset<> sub(theme.size(),false);
     int locit = 0;
     for(int id = theme.start; id < (theme.start + static_cast<int>(theme.size())); ++id)
         {
-        if (data[id])
-            {
-            sub[locit] = true;
-            }else{
-            sub[locit] = false;
-            }
+		sub[locit] = data[id];
         ++locit;
         }
     return sub;
@@ -79,12 +74,7 @@ void FMTmask::setsubset(const FMTtheme& theme,const boost::dynamic_bitset<>& sub
     int locit = 0;
     for(int id = theme.start; id < (theme.start+static_cast<int>(theme.size())); ++id)
         {
-        if (subset[locit])
-            {
-            data[id] = true;
-            }else{
-            data[id] = false;
-            }
+        data[id] = subset[locit];
         ++locit;
         }
     }
@@ -280,22 +270,28 @@ size_t FMTmask::size() const
 
 bool FMTmask::isnotthemessubset(const FMTmask& rhs, const std::vector<FMTtheme>& themes) const
 	{
+	
 	for (const FMTtheme& theme : themes)
 		{
 		const size_t themestart = theme.getstart();
-		const size_t themestop = themestart + theme.size();
+		const size_t themestop = themestart + theme.size()-1;
 		if (!(rhs.data[themestart]&this->data[themestart])&&
-			!(rhs.data[themestop]&this->data[themestop]))
+			!(rhs.data[themestop]&this->data[themestop])&&
+			!((subset(theme) & rhs.subset(theme)).any()))
 			{
-			size_t bitloc = themestart;
+			return true;
+			/*size_t bitloc = themestart;
+			std::cout << "IN NOT SUBSET "<<theme.getid() << "\n";
 			while (bitloc<=themestop && !(rhs.data[bitloc] & this->data[bitloc]))
 				{
+				std::cout << "ADVANCE "<< bitloc <<" "<< themestop << "\n";
 				++bitloc;
 				}
 			if (bitloc== themestop)
 				{
+				std::cout << "OUT TRUE" << "\n";
 				return true;
-				}
+				}*/
 			}
 		}
 	return false;
@@ -352,7 +348,6 @@ std::string FMTmask::getbitsstring() const
 
 FMTmask FMTmask::presolve(const FMTmask& selectedmask, const std::vector<FMTtheme>&presolvedthemes) const
 	{
-	std::vector<std::string>bases;
 	size_t basesize = 0;
 	for (const FMTtheme& theme : presolvedthemes)
 		{

@@ -41,22 +41,28 @@ namespace Spatial
 			std::vector<Core::FMTactualdevelopment>getarea() const;
         FMTforest getcopy(bool copydata = true) const;
         FMTforest grow() const;
-        FMTforest operate(const std::vector<FMTsesevent<Core::FMTdevelopment>>& cuts,const FMTspatialaction& action,const Core::FMTtransition& Transition,
-                     const Core::FMTyields& ylds,const std::vector<Core::FMTtheme>& themes, boost::unordered_map<Core::FMTdevelopment,Core::FMTdevelopment>& cached_transitions, Core::FMTschedule& schedule) const;
+        /*FMTforest operate(const std::vector<FMTsesevent<Core::FMTdevelopment>>& cuts,const FMTspatialaction& action,const Core::FMTtransition& Transition,
+                     const Core::FMTyields& ylds,const std::vector<Core::FMTtheme>& themes, boost::unordered_map<Core::FMTdevelopment,Core::FMTdevelopment>& cached_transitions, Core::FMTschedule& schedule) const;*/
 		std::vector<FMTlayer<std::string>> getthemes(const std::vector<Core::FMTtheme>& themes) const;
         FMTlayer<int>getage() const;
         FMTlayer<std::string>getlock() const;
 		void setperiod(int period);
-		std::map<Core::FMTaction,FMTforest> getschedule(const Core::FMTschedule& selection,
+		/*std::map<Core::FMTaction,FMTforest> getschedule(const Core::FMTschedule& selection,
 			boost::unordered_map<Core::FMTdevelopment, std::vector<bool>>& cached_operability,
                                           const Core::FMTyields& yields = Core::FMTyields(),
                                           bool schedule_only = true) const;
 		std::vector<FMTsesevent<Core::FMTdevelopment>> buildharvest(const double& target,
                                     const FMTspatialaction& targetaction,
 									std::default_random_engine& generator,
-									const int& pass) const;
+									const int& pass) const;*/
 		FMTforest presolve(const Core::FMTmask& selectedmask, const std::vector<Core::FMTtheme>&presolvedthemes) const;
 		FMTforest postsolve(const Core::FMTmask& selectedmask, const std::vector<Core::FMTtheme>&originalbasethemes) const;
+		// DocString: FMTmodel::passinobject
+		/**
+		It's sometime usefull to pass in the exception handler and the logger  of an other FMTobject to
+		a FMTobject.
+		*/
+		void passinobject(const Core::FMTobject& rhs) override;
         };
     }
 #endif // FMTFOREST_H_INCLUDED

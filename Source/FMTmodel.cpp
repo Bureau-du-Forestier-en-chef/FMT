@@ -554,7 +554,7 @@ Core::FMTmask FMTmodel::getbasemask(std::vector<Core::FMTactualdevelopment> opti
 
 Core::FMTmask FMTmodel::getselectedmask(const std::vector<Core::FMTtheme>& originalthemes) const
 	{
-	size_t presolvedthemeid = 0;
+	
 	size_t newmasksize = 0;
 	for (const Core::FMTtheme& theme : originalthemes)
 		{
@@ -563,25 +563,38 @@ Core::FMTmask FMTmodel::getselectedmask(const std::vector<Core::FMTtheme>& origi
 	boost::dynamic_bitset<>selection(newmasksize, false);
 	try {
 		size_t bitselection = 0;
-		for (const Core::FMTtheme& theme : originalthemes)
-		{
-			if (presolvedthemeid < themes.size())
+		size_t presolvedthemeid = 0;
+		size_t themeid = 0;
+		while (presolvedthemeid<themes.size()&&themeid< originalthemes.size())
 			{
-				const std::map<std::string, std::string> prsolvedvalues = themes.at(presolvedthemeid).getvaluenames();
-				for (const auto& themevalues : theme.getvaluenames())
+			const Core::FMTtheme& originaltheme = originalthemes.at(themeid);
+			const std::map<std::string, std::string> prsolvedvalues = themes.at(presolvedthemeid).getvaluenames();
+			size_t foundcount = 0;
+			std::vector<bool>themebits(originaltheme.size(),false);
+			size_t bitid = 0;
+			for (const auto& themevalues : originaltheme.getvaluenames())
 				{
-					if (prsolvedvalues.find(themevalues.first) != prsolvedvalues.end())
+				if (prsolvedvalues.find(themevalues.first) != prsolvedvalues.end())
 					{
-						selection[bitselection] = true;
+					themebits[bitid] = true;
+					++foundcount;
 					}
-					++bitselection;
+				++bitid;
+				
 				}
+			if (foundcount == prsolvedvalues.size())
+				{
+				for (const bool& bitvalue : themebits)
+					{
+					selection[bitselection] = bitvalue;
+					++bitselection;
+					}
+				++presolvedthemeid;
+			}else {
+				bitselection += themebits.size();
+				}
+			++themeid;
 			}
-			else {
-				bitselection += theme.size();
-			}
-			++presolvedthemeid;
-		}
 	}catch (...)
 		{
 		_exhandler->raisefromcatch("","FMTmodel::getselectedmask", __LINE__, __FILE__);

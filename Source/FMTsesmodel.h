@@ -46,14 +46,10 @@ class FMTsesmodel : public FMTmodel
 	void serialize(Archive& ar, const unsigned int version)
 		{
 		ar & boost::serialization::make_nvp("model", boost::serialization::base_object<FMTmodel>(*this));
-		ar & BOOST_SERIALIZATION_NVP(mapping);
 		ar & BOOST_SERIALIZATION_NVP(spactions);
 		ar & BOOST_SERIALIZATION_NVP(spschedule);
 		}
     protected:
-		// DocString: FMTsesmodel::mapping
-		///Map of the FMTdevelopement spatialy located each raster cell has is own FMTdevelopement. Each call to simulate() will change those stades
-        Spatial::FMTforest mapping;
 		// DocString: FMTsesmodel::spactions
 		///Spatialy explicit actions (actions with green up, adjacency distance etc...).
 		std::vector<Spatial::FMTspatialaction>spactions;
@@ -90,10 +86,7 @@ class FMTsesmodel : public FMTmodel
 		/**
 		Getter returning a copy the actual spatial forest stades of each FMTdevelopement (map).
 		*/
-		inline Spatial::FMTforest getmapping() const
-			{
-			return mapping;
-			}
+		Spatial::FMTforest getmapping() const;
 		// DocString: FMTsesmodel::getspschedule
 		/**
 		Getter returning a copy of the spatially explicit solution.
@@ -119,13 +112,13 @@ class FMTsesmodel : public FMTmodel
 		Setter of the initial forest stades (spatial map of FMTdevelopment)
 		Has to be set before simulation() is called.
 		*/
-        bool setinitialmapping(const Spatial::FMTforest& forest);
+        bool setinitialmapping(Spatial::FMTforest forest);
 		// DocString: FMTsesmodel::setspactions
 		/**
 		Setter of the spatialy explicit actions (green-up,adjacency etc...)
 		Has to be set before simulation() is called.
 		*/
-        bool setspactions(const std::vector<Spatial::FMTspatialaction>& lspactions);
+        bool setspactions(std::vector<Spatial::FMTspatialaction> lspactions);
 		// DocString: FMTsesmodel::presolve
 		/**
 		Presolve the ses model to get a more simple model call original presolve() and presolve the

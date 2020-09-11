@@ -19,21 +19,21 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 namespace Spatial
 {
 
-class FMTfire : public FMTevent<FMTdevelopment>
+class FMTfire : public FMTevent
     {
 	friend class boost::serialization::access;
 	template<class Archive>
 	void serialize(Archive& ar, const unsigned int version)
 	{
-		ar & boost::serialization::make_nvp("event", boost::serialization::base_object<FMTevent<Core::FMTdevelopment>>(*this));
+		ar & boost::serialization::make_nvp("event", boost::serialization::base_object<FMTevent>(*this));
 	}
     protected:
 		std::normal_distribution<unsigned int>spread_distribution;
 		std::weibull_distribution<unsigned int>size_distribuion;
     public:
-    FMTfire():FMTevent<Core::FMTdevelopment>(){};
+    FMTfire():FMTevent(){};
     FMTfire& operator = (const FMTfire& rhs){};
-    FMTfire(const FMTfire& rhs):FMTevent<Core::FMTdevelopment>(rhs),
+    FMTfire(const FMTfire& rhs):FMTevent(rhs),
     spread_distribution(rhs.spread_distribution),
     size_distribuion(rhs.size_distribuion){}
     };

@@ -10,21 +10,14 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 namespace Spatial
 {
 FMTcut::FMTcut():
-    FMTsesevent<Core::FMTdevelopment>()
+    FMTevent()
     {
 
     }
 
 
-
-FMTcut::FMTcut(const std::map<FMTcoordinate,Core::FMTdevelopment>& lterritory, const int& pass):
-                 FMTsesevent<Core::FMTdevelopment>(lterritory,pass)
-                 {
-
-                 }
-
     FMTcut::FMTcut(const FMTcut& rhs):
-        FMTsesevent<Core::FMTdevelopment>(rhs)
+        FMTevent(rhs)
     {
 
     }
@@ -32,7 +25,7 @@ FMTcut& FMTcut::operator = (const FMTcut& rhs)
     {
     if(this!=&rhs)
         {
-        FMTsesevent<Core::FMTdevelopment>::operator = (rhs);
+        FMTevent::operator = (rhs);
         }
     return *this;
     }
