@@ -9,7 +9,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #define FMTCUT_H_INCLUDED
 
 #include "FMTcoordinate.h"
-#include "FMTsesevent.h"
+#include "FMTevent.h"
 #include "FMTdevelopment.h"
 #include <boost/serialization/serialization.hpp>
 #include <boost/serialization/nvp.hpp>
@@ -18,18 +18,17 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 namespace Spatial
 {
 
-class FMTcut : public FMTsesevent<Core::FMTdevelopment>
+class FMTcut : public FMTevent
     {
 	friend class boost::serialization::access;
 	template<class Archive>
 	void serialize(Archive& ar, const unsigned int version)
 	{
-		ar & boost::serialization::make_nvp("event", boost::serialization::base_object<FMTsesevent<Core::FMTdevelopment>>(*this));
+		ar & boost::serialization::make_nvp("event", boost::serialization::base_object<FMTevent>(*this));
 	}
     public:
         FMTcut();
         ~FMTcut()=default;
-        FMTcut(const std::map<FMTcoordinate,Core::FMTdevelopment>& lterritory,const int& pass);
         FMTcut(const FMTcut& rhs);
         FMTcut& operator = (const FMTcut& rhs);
     };

@@ -117,6 +117,7 @@ namespace Spatial
     FMTforest FMTspatialschedule::getforestperiod(const int& period) const
     {
         FMTforest forest(this->copyextent<Core::FMTdevelopment>());//Setting layer information
+		forest.passinobject(*this);
         for(std::map<FMTcoordinate,Graph::FMTlinegraph>::const_iterator graphit = this->mapping.begin(); graphit != this->mapping.end(); ++graphit)
         {
             const Graph::FMTlinegraph* local_graph = &graphit->second;
@@ -173,6 +174,7 @@ namespace Spatial
 	std::vector<std::set<Spatial::FMTcoordinate>> FMTspatialschedule::getupdatedscheduling(
 																	const std::vector<Spatial::FMTspatialaction>& spactions,
 																	const Core::FMTschedule& selection,
+																	boost::unordered_map<Core::FMTdevelopment, std::vector<bool>>& cachedactions,
 																	const Core::FMTyields& yields,
 																	bool schedule_only,
 																	std::vector<std::set<Spatial::FMTcoordinate>> original,
@@ -188,8 +190,8 @@ namespace Spatial
 					updatedcoordinate.push_back(itc->first);
 					}
 				}
-			boost::unordered_map<Core::FMTdevelopment,std::vector<bool>>cachedactions;
-			cachedactions.reserve(updatedcoordinate.size());
+			//boost::unordered_map<Core::FMTdevelopment,std::vector<bool>>cachedactions;
+			//cachedactions.reserve(updatedcoordinate.size());
 			for (const FMTcoordinate& updated : updatedcoordinate)
 				{
 				const Graph::FMTlinegraph& lg = mapping.at(updated);
@@ -409,6 +411,7 @@ namespace Spatial
 			for (int period = 1; period < actperiod(); ++period)
 			{
 				Core::FMTschedule schedule = git->second.getschedule(modelactions,&solution[0],period);
+				schedule.passinobject(*this);
 				operatedschedules[period - 1] += schedule;
 			}
 		}
@@ -559,8 +562,8 @@ namespace Spatial
 				if (!(periodstart==periodstop && constraint.acrossperiod()))
 					{
 					const size_t constrainthash = constraint.hash();
-					/*std::vector<const Graph::FMTlinegraph*>graphs;
-					if (constraint.isactionbased() && !constraint.isinventory())//get the graphs from the events
+					std::vector<const Graph::FMTlinegraph*>graphs;
+					/*if (constraint.isactionbased() && !constraint.isinventory())//get the graphs from the events
 						{
 							graphs = getgraphsfromdynamic(constraint,model,getfromevents(constraint, model.getactions(), periodstart, periodstop));
 						}else {
@@ -589,7 +592,8 @@ namespace Spatial
 			if (friendlysolution != nullptr && 
 				oldcachesize!=outputscache.size())
 				{
-				friendlysolution->outputscache.insert(outputscache.begin(), outputscache.end());
+				//friendlysolution->outputscache.insert(outputscache.begin(), outputscache.end());
+				friendlysolution->outputscache = outputscache;
 				}
 			}
 		}catch (...)

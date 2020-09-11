@@ -1306,6 +1306,7 @@ class FMTgraph
 		return mapping;
 	}
 
+
  template<> std::vector<Core::FMTdevelopmentpath> FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::getpaths(const FMTvertex_descriptor& out_vertex,const int& actionID) const
  {
 	 std::vector<Core::FMTdevelopmentpath>paths;
@@ -1320,6 +1321,8 @@ class FMTgraph
 	 }
 	 return paths;
  }
+
+
 
  template<> double FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::inarea(const FMTvertex_descriptor& out_vertex,const double*&  solution, bool growth) const
  {

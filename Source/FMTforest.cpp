@@ -71,7 +71,7 @@ FMTforest FMTforest::grow() const
             return newforest;
             }
 
-FMTforest FMTforest::operate(const std::vector<FMTsesevent<Core::FMTdevelopment>>& cuts,const FMTspatialaction& action,const Core::FMTtransition& Transition,
+/*FMTforest FMTforest::operate(const std::vector<FMTsesevent<Core::FMTdevelopment>>& cuts,const FMTspatialaction& action,const Core::FMTtransition& Transition,
                      const Core::FMTyields& ylds,const std::vector<Core::FMTtheme>& themes, boost::unordered_map<Core::FMTdevelopment,Core::FMTdevelopment>& cached_transitions,
 					Core::FMTschedule& schedule) const
             {
@@ -108,7 +108,7 @@ FMTforest FMTforest::operate(const std::vector<FMTsesevent<Core::FMTdevelopment>
                     }
                 }
             return newforest;
-            }
+            }*/
 
 std::vector<FMTlayer<std::string>> FMTforest::getthemes(const std::vector<Core::FMTtheme>& themes) const
             {
@@ -133,7 +133,7 @@ FMTlayer<int>FMTforest::getage() const
             return newlayer;
             }
 
-std::map<Core::FMTaction,FMTforest> FMTforest::getschedule(const Core::FMTschedule& selection,
+/*std::map<Core::FMTaction,FMTforest> FMTforest::getschedule(const Core::FMTschedule& selection,
 										boost::unordered_map<Core::FMTdevelopment, std::vector<bool>>& cached_operability,
                                              const Core::FMTyields& yields,
                                              bool schedule_only) const
@@ -184,7 +184,7 @@ std::map<Core::FMTaction,FMTforest> FMTforest::getschedule(const Core::FMTschedu
 					}
                 }
             return scheduling;
-            }
+            }*/
 
 FMTforest FMTforest::getcopy(bool copydata) const
     {
@@ -196,7 +196,7 @@ FMTforest FMTforest::getcopy(bool copydata) const
     return forest;
     }
 
-std::vector<FMTsesevent<Core::FMTdevelopment>> FMTforest::buildharvest(const double& target,
+/*std::vector<FMTsesevent<Core::FMTdevelopment>> FMTforest::buildharvest(const double& target,
                                        const FMTspatialaction& targetaction,
 										std::default_random_engine& generator,
 										const int& pass) const
@@ -249,18 +249,37 @@ std::vector<FMTsesevent<Core::FMTdevelopment>> FMTforest::buildharvest(const dou
             }
         }
     return cuts;
-    }
+    }*/
 
 FMTforest FMTforest::presolve(const Core::FMTmask& selectedmask, const std::vector<Core::FMTtheme>&presolvedthemes) const
 	{
 	FMTforest newforest(*this);
-	for (std::map<FMTcoordinate,Core::FMTdevelopment>::iterator coordit  = newforest.mapping.begin();
-		coordit != newforest.mapping.end();++coordit)
-		{
-		coordit->second = Core::FMTactualdevelopment(coordit->second, 0.0).presolve(selectedmask, presolvedthemes);
-		}
+	try{
+		for (std::map<FMTcoordinate, Core::FMTdevelopment>::iterator coordit = newforest.mapping.begin();
+			coordit != newforest.mapping.end(); ++coordit)
+			{
+			coordit->second = Core::FMTactualdevelopment(coordit->second, 0.0).presolve(selectedmask, presolvedthemes);
+			}
+	
+	}catch (...)
+	{
+		_exhandler->raisefromcatch("", "FMTforest::presolve", __LINE__, __FILE__);
+	}
+	
+	
 	return newforest;
 	}
+
+void FMTforest::passinobject(const Core::FMTobject& rhs)
+	{
+	FMTobject::passinobject(rhs);
+	for (std::map<FMTcoordinate, Core::FMTdevelopment>::iterator coordit = mapping.begin();
+		coordit != mapping.end(); ++coordit)
+		{
+		coordit->second.passinobject(rhs);
+		}
+	}
+
 
 FMTforest FMTforest::postsolve(const Core::FMTmask& selectedmask, const std::vector<Core::FMTtheme>&originalbasethemes) const
 	{

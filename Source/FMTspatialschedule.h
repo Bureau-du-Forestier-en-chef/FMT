@@ -101,6 +101,7 @@ class FMTspatialschedule : public FMTlayer<Graph::FMTlinegraph>
 	   std::vector<std::set<Spatial::FMTcoordinate>>getupdatedscheduling(
 										   const std::vector<Spatial::FMTspatialaction>& spactions,
 										   const Core::FMTschedule& selection,
+											boost::unordered_map<Core::FMTdevelopment, std::vector<bool>>& cachedaction,
 										   const Core::FMTyields& yields = Core::FMTyields(),
 										   bool schedule_only = true,
 										   std::vector<std::set<Spatial::FMTcoordinate>> original= std::vector<std::set<Spatial::FMTcoordinate>>(),

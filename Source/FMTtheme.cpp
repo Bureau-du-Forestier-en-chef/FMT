@@ -216,7 +216,7 @@ std::string FMTtheme::bitstostr(const boost::dynamic_bitset<>& bits) const
                         }
                     }
 				_exhandler->raise(Exception::FMTexc::FMTundefined_attribute,
-					"for bitset in theme " + std::to_string(id),"FMTtheme::bitstostr", __LINE__, __FILE__, _section);
+					"for bitset count of "+std::to_string(bits.count())+" in theme " + std::to_string(id),"FMTtheme::bitstostr", __LINE__, __FILE__, _section);
                 }
         return value;
         }
@@ -345,12 +345,7 @@ FMTtheme FMTtheme::presolve(const FMTmask& basemask, int& newid, int& newstart, 
 
 size_t FMTtheme::getstart() const
 	{
-	int realstart = start;
-	if (!start == 0)
-		{
-		++realstart;
-		}
-	return static_cast<size_t>(realstart);
+	return static_cast<size_t>(start);
 	}
 
 FMTthemecomparator::FMTthemecomparator(const FMTtheme& lbase_theme): base_theme(lbase_theme)
