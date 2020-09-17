@@ -42,9 +42,14 @@ class FMTyields : public FMTlist<FMTyieldhandler>
 	template<class Archive>
 	void serialize(Archive& ar, const unsigned int version)
 	{
-		ar & boost::serialization::make_nvp("handlers", boost::serialization::base_object<FMTlist<FMTyieldhandler>>(*this));
-		ar & BOOST_SERIALIZATION_NVP(names);
-		ar & BOOST_SERIALIZATION_NVP(null_names);
+		try{
+			ar & boost::serialization::make_nvp("handlers", boost::serialization::base_object<FMTlist<FMTyieldhandler>>(*this));
+			ar & BOOST_SERIALIZATION_NVP(names);
+			ar & BOOST_SERIALIZATION_NVP(null_names);
+		}catch (...)
+			{
+			_exhandler->printexceptions("", "FMTyields::serialize", __LINE__, __FILE__);
+			}
 	}
 	// DocString: FMTyields::names
 	///this data member is used has a caching facility to have all the yield name that the FMTlist contains.

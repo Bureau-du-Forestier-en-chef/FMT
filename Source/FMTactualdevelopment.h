@@ -22,8 +22,14 @@ class FMTactualdevelopment : public FMTdevelopment
 	template<class Archive>
 	void serialize(Archive& ar, const unsigned int version)
 	{
-		ar & boost::serialization::make_nvp("development", boost::serialization::base_object<FMTdevelopment>(*this));
-		ar & BOOST_SERIALIZATION_NVP(area);
+		try {
+
+			ar & boost::serialization::make_nvp("development", boost::serialization::base_object<FMTdevelopment>(*this));
+			ar & BOOST_SERIALIZATION_NVP(area);
+		}catch (...)
+			{
+			_exhandler->printexceptions("", "FMTactualdevelopment::serialize", __LINE__, __FILE__);
+			}
 	}
 		double area;
 	public:

@@ -163,6 +163,12 @@ class FMTsesmodel : public FMTmodel
 		the rhs FMTsesmodel. If all groups are better then the model if "better".
 		*/
 		bool operator > (const FMTsesmodel& rhs) const;
+		// DocString: FMTsesmodel::passinobject
+		/**
+		It's sometime usefull to pass in the exception handler and the logger  of an other FMTobject to
+		a FMTobject.
+		*/
+		void passinobject(const Core::FMTobject& rhs) override;
 
     };
 

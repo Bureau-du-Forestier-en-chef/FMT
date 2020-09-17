@@ -46,10 +46,16 @@ namespace Core
 		template<class Archive>
 		void save(Archive& ar, const unsigned int version) const
 			{
+			try {
+			ar & boost::serialization::make_nvp("FMTobject", boost::serialization::base_object<FMTobject>(*this));
 			ar & BOOST_SERIALIZATION_NVP(data);
 			ar & BOOST_SERIALIZATION_NVP(filter);
 			std::vector<std::pair<FMTmask, std::vector<int>>>vecfastpass(fastpass.begin(), fastpass.end());
 			ar & BOOST_SERIALIZATION_NVP(vecfastpass);
+			}catch (...)
+				{
+				_exhandler->printexceptions("", "FMTlist::save", __LINE__, __FILE__);
+				}
 			}
 		// DocString: FMTlist::load
 		/**

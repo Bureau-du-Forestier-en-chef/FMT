@@ -20,12 +20,36 @@ namespace Graph
 {
 	class FMTbasevertexproperties
 	{
+		// DocString: FMTbasevertexproperties::save
+		/**
+		Save function is for serialization, used to do multiprocessing across multiple cpus (pickle in Pyhton)
+		*/
 		friend class boost::serialization::access;
 		template<class Archive>
-		void serialize(Archive& ar, const unsigned int version)
+		void save(Archive& ar, const unsigned int version) const
+			{
+			ar & development->getarea();
+			ar & (*development); //turn it to a non virtual class
+			}
+		// DocString: FMTbasevertexproperties::load
+		/**
+		Load function is for serialization, used to do multiprocessing across multiple cpus (pickle in Pyhton)
+		*/
+		template<class Archive>
+		void load(Archive& ar, const unsigned int version)
 		{
-			ar & BOOST_SERIALIZATION_NVP(development);
+			double areavalue = 0;
+			ar & areavalue;
+			Core::FMTdevelopment base();
+			ar & base;
+			if (areavalue!=0)
+				{
+				development = std::unique_ptr<Core::FMTdevelopment>(new Core::FMTactualdevelopment(base, areavalue));
+			}else {
+				development = std::unique_ptr<Core::FMTfuturdevelopment>(new Core::FMTfuturdevelopment(base));
+				}
 		}
+		BOOST_SERIALIZATION_SPLIT_MEMBER()
 	protected:
 		std::unique_ptr<Core::FMTdevelopment>development;
 	public:
@@ -58,6 +82,10 @@ namespace Graph
 		bool operator != (const FMTbasevertexproperties& rhs) const;
 	};
 }
+
+
+BOOST_CLASS_EXPORT_KEY(Graph::FMTbasevertexproperties)
+
 
 namespace boost {
 

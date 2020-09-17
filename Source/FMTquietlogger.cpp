@@ -34,3 +34,5 @@ CoinMessageHandler * FMTquietlogger::clone() const
 #endif
 }
 
+BOOST_CLASS_EXPORT_IMPLEMENT(Logging::FMTquietlogger)
+

@@ -43,3 +43,5 @@ namespace Logging
 #endif
 
 	}
+
+BOOST_CLASS_EXPORT_IMPLEMENT(Logging::FMTdefaultlogger)

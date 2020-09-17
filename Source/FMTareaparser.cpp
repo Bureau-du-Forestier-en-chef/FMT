@@ -486,6 +486,15 @@ namespace Parser{
 			const std::string projection = agedataset->GetProjectionRef();
 			const unsigned int xsize = ageband->GetXSize();
 			const unsigned int ysize = ageband->GetYSize();
+			GDALClose(agedataset);
+			for (GDALDataset* dataset : datasets)
+				{
+				GDALClose(dataset);
+				}
+			if (lockdataset != NULL)
+				{
+				GDALClose(lockdataset);
+				}
 			return Spatial::FMTlayer<Core::FMTdevelopment>(mapping, pad, xsize, ysize, projection, cellsize);
 		}catch (...)
 			{

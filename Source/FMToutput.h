@@ -43,11 +43,17 @@ class FMToutput: public FMTobject
 	template<class Archive>
 	void serialize(Archive& ar, const unsigned int version)
 	{
-		ar & BOOST_SERIALIZATION_NVP(sources);
-		ar & BOOST_SERIALIZATION_NVP(operators);
-		ar & BOOST_SERIALIZATION_NVP(theme_target);
-		ar & BOOST_SERIALIZATION_NVP(name);
-		ar & BOOST_SERIALIZATION_NVP(description);
+		try {
+			ar & boost::serialization::make_nvp("FMTobject", boost::serialization::base_object<FMTobject>(*this));
+			ar & BOOST_SERIALIZATION_NVP(sources);
+			ar & BOOST_SERIALIZATION_NVP(operators);
+			ar & BOOST_SERIALIZATION_NVP(theme_target);
+			ar & BOOST_SERIALIZATION_NVP(name);
+			ar & BOOST_SERIALIZATION_NVP(description);
+		}catch (...)
+			{
+			_exhandler->printexceptions("", "FMToutput::serialize", __LINE__, __FILE__);
+			}
 	}
 	protected:
 	// DocString: FMToutput::sources

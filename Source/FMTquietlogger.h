@@ -18,6 +18,16 @@ FMTquietlogger will not print any solver informations from osisolverinterface.
 */
 class FMTquietlogger final : public FMTlogger
 	{
+	// DocString: FMTquietlogger::serialize
+	/**
+	Serialize function is for serialization, used to do multiprocessing across multiple cpus (pickle in Pyhton)
+	*/
+	friend class boost::serialization::access;
+	template<class Archive>
+	void serialize(Archive& ar, const unsigned int version)
+	{
+		ar & boost::serialization::make_nvp("FMTlogger", boost::serialization::base_object<FMTlogger>(*this));
+	}
 	public:
 		// DocString: FMTquietlogger()
 		/**
@@ -60,6 +70,6 @@ class FMTquietlogger final : public FMTlogger
 	};
 }
 
-
+BOOST_CLASS_EXPORT_KEY(Logging::FMTquietlogger)
 
 #endif

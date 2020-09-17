@@ -10,6 +10,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <boost/serialization/serialization.hpp>
 #include <boost/serialization/nvp.hpp>
 #include <boost/serialization/split_member.hpp>
+#include <boost/serialization/export.hpp>
 #include <boost/lexical_cast.hpp>
 #ifdef FMTWITHOSI
 	#include <CoinMessageHandler.hpp>
@@ -155,4 +156,7 @@ namespace Logging
 		};
 
 }
+
+BOOST_CLASS_EXPORT_KEY(Logging::FMTlogger)
+
 #endif

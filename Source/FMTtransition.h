@@ -43,8 +43,14 @@ class FMTtransition : public FMTlist<FMTfork>
 	template<class Archive>
 	void serialize(Archive& ar, const unsigned int version)
 	{
-		ar & boost::serialization::make_nvp("data", boost::serialization::base_object<FMTlist<FMTfork>>(*this));
-		ar & BOOST_SERIALIZATION_NVP(name);
+		try{
+			ar & boost::serialization::make_nvp("data", boost::serialization::base_object<FMTlist<FMTfork>>(*this));
+			ar & BOOST_SERIALIZATION_NVP(name);
+		}
+		catch (...)
+		{
+			_exhandler->printexceptions("", "FMTtransition::serialize", __LINE__, __FILE__);
+		}
 	}
 	protected:
 		// DocString: FMTtransition::name

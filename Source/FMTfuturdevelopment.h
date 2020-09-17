@@ -21,7 +21,12 @@ namespace Core
 		template<class Archive>
 		void serialize(Archive& ar, const unsigned int version)
 		{
+			try {
 			ar & boost::serialization::make_nvp("development", boost::serialization::base_object<FMTdevelopment>(*this));
+			}catch (...)
+			{
+			_exhandler->printexceptions("", "FMTfuturdevelopment::serialize", __LINE__, __FILE__);
+			}
 		}
 		public:
 			FMTfuturdevelopment();

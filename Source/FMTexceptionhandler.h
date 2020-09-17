@@ -17,6 +17,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #endif
 #include <boost/serialization/serialization.hpp>
 #include <boost/serialization/nvp.hpp>
+#include <boost/serialization/export.hpp>
 #include <memory>
 
 namespace Exception
@@ -49,6 +50,7 @@ namespace Exception
 			ar & BOOST_SERIALIZATION_NVP(_errorcount);
 			ar & BOOST_SERIALIZATION_NVP(_warningcount);
 			ar & BOOST_SERIALIZATION_NVP(_logger);
+			ar & BOOST_SERIALIZATION_NVP(usenestedexceptions);
 		}
 	protected:
 		// DocString: FMTexceptionhandler::_level
@@ -162,5 +164,7 @@ namespace Exception
 	};
 
 }
+
+BOOST_CLASS_EXPORT_KEY(Exception::FMTexceptionhandler)
 
 #endif

@@ -49,7 +49,8 @@ Core::FMTsection FMTparser::from_extension(const std::string& ext) const
     }
 
 FMTparser::FMTparser() : Core::FMTobject(),
-		rxnumber("[-+]?([0-9]*\\.[0-9]+|[0-9]+)"),
+		//rxnumber("[-+]?([0-9]*\\.[0-9]+|[0-9]+)"),
+		rxnumber("-?[\\d.]+(?:E-?\\d+)?"),
         rxremovecomment("^(.*?)([;]+.*)"),
         rxvalid("^(?!\\s*$).+"),
 		rxinclude("^(\\*INCLUDE)([\\s\\t]*)(.+)"),

@@ -12,6 +12,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTlogger.h"
 #include <boost/serialization/shared_ptr.hpp>
 #include <boost/serialization/nvp.hpp>
+#include <boost/serialization/export.hpp>
 #include <memory>
 
 
@@ -45,10 +46,36 @@ class FMTobject
 	template<class Archive>
 	void serialize(Archive& ar, const unsigned int version)
 	{
-		ar & BOOST_SERIALIZATION_NVP(_exhandler);
-		ar & BOOST_SERIALIZATION_NVP(_logger);
+		//ar & BOOST_SERIALIZATION_NVP(_exhandler);
+		//ar & BOOST_SERIALIZATION_NVP(_logger);
+		//ar & BOOST_SERIALIZATION_NVP(_section);
 	}
 	protected:
+		// DocString: FMTobject:: forcesave
+		/**
+		By Default the serialization of a FMTobject does nothing if you want to get some usefull information use this function.
+		*/
+		template<class Archive>
+		void forcesave(Archive& ar, const unsigned int version) const
+		{
+			//ar & BOOST_SERIALIZATION_NVP(_exhandler);
+			//ar & BOOST_SERIALIZATION_NVP(_logger);
+			ar & BOOST_SERIALIZATION_NVP(_section);
+		}
+		// DocString: FMTobject:: forceload
+		/**
+		By Default the serialization of a FMTobject does nothing if you want to get some usefull information use this function.
+		*/
+		template<class Archive>
+		void forceload(Archive& ar, const unsigned int version)
+		{
+			//ar & BOOST_SERIALIZATION_NVP(_exhandler);
+			//ar & BOOST_SERIALIZATION_NVP(_logger);
+			setdefaultlogger();
+			setdefaultexceptionhandler();
+			ar & BOOST_SERIALIZATION_NVP(_section);
+		}
+
 		// DocString: FMTobject::_exhandler
 		///A shared pointer to the exception handler.
 		mutable std::shared_ptr<Exception::FMTexceptionhandler> _exhandler;
@@ -187,6 +214,9 @@ class FMTobject
 
 	};
 }
+BOOST_SERIALIZATION_ASSUME_ABSTRACT(Core::FMTobject)
+BOOST_CLASS_TRACKING(Core::FMTobject, boost::serialization::track_always)
+BOOST_CLASS_EXPORT_KEY(Core::FMTobject)
 
 #endif
 

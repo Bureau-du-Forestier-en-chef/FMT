@@ -63,3 +63,5 @@ FMTexception FMTfreeexceptionhandler::raise(FMTexc lexception, std::string text,
 }
 
 }
+
+BOOST_CLASS_EXPORT_IMPLEMENT(Exception::FMTfreeexceptionhandler)
