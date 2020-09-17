@@ -49,16 +49,18 @@ generate the problem based on LP/SA or to simply simulate the FMTmodel.
 
 class FMTmodel : public Core::FMTobject
     {
-	// DocString: FMTmodel::serialize
-	/**
-	Save and load functions are for serialization, used to do multiprocessing across multiple cpus (pickle in Pyhton)
-	*/
 	template<class T1,class T2>
     friend class Graph::FMTgraph;
+	// DocString: FMTmodel::save
+	/**
+	Save function is for serialization, used to do multiprocessing across multiple cpus (pickle in Pyhton)
+	*/
 	friend class boost::serialization::access;
 	template<class Archive>
-	void serialize(Archive& ar, const unsigned int version)
+	void save(Archive& ar, const unsigned int version) const
 	{
+		ar & boost::serialization::make_nvp("FMTobject", boost::serialization::base_object<FMTobject>(*this));
+		FMTobject::forcesave(ar, version);
 		ar & BOOST_SERIALIZATION_NVP(area);
 		ar & BOOST_SERIALIZATION_NVP(themes);
 		ar & BOOST_SERIALIZATION_NVP(actions);
@@ -69,6 +71,27 @@ class FMTmodel : public Core::FMTobject
 		ar & BOOST_SERIALIZATION_NVP(constraints);
 		ar & BOOST_SERIALIZATION_NVP(name);
 	}
+	// DocString: FMTmodel::load
+	/**
+	Load function is for serialization, used to do multiprocessing across multiple cpus (pickle in Pyhton)
+	*/
+	template<class Archive>
+	void load(Archive& ar, const unsigned int version)
+	{
+		ar & boost::serialization::make_nvp("FMTobject", boost::serialization::base_object<FMTobject>(*this));
+		FMTobject::forceload(ar, version);//get the object information for the global object
+		ar & BOOST_SERIALIZATION_NVP(area);
+		ar & BOOST_SERIALIZATION_NVP(themes);
+		ar & BOOST_SERIALIZATION_NVP(actions);
+		ar & BOOST_SERIALIZATION_NVP(transitions);
+		ar & BOOST_SERIALIZATION_NVP(yields);
+		ar & BOOST_SERIALIZATION_NVP(lifespan);
+		ar & BOOST_SERIALIZATION_NVP(outputs);
+		ar & BOOST_SERIALIZATION_NVP(constraints);
+		ar & BOOST_SERIALIZATION_NVP(name);
+		this->passinobject(*this);//Distribute global object to local object
+	}
+	BOOST_SERIALIZATION_SPLIT_MEMBER()
 	// DocString: FMTmodel::validatelistmasks
 	/**
 	Function used to validate FMTmask in a FMTlist element like FMTaction, FMTtransition etc...

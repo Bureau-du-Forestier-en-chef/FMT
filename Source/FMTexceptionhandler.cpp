@@ -559,3 +559,6 @@ void FMTexceptionhandler::printexceptions(std::string text,
 
 
 }
+
+
+BOOST_CLASS_EXPORT_IMPLEMENT(Exception::FMTexceptionhandler)

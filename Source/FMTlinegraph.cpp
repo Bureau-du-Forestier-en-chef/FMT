@@ -9,6 +9,8 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTexceptionhandler.h"
 #include "FMTmodel.h"
 #include "FMTlogger.h"
+#include <boost/iostreams/stream.hpp>
+#include <boost/archive/binary_oarchive.hpp>
 
 
 namespace Graph
@@ -349,21 +351,6 @@ namespace Graph
 				}
 			++edge_iterator;
 			}
-		/*for (boost::tie(edge_iterator, edge_iterator_end) = boost::edges(data); edge_iterator != edge_iterator_end; ++edge_iterator)
-		{
-			const FMTvertex_descriptor& sourcevertex = boost::source(*edge_iterator, data);
-			const int sourceperiod = getdevelopment(sourcevertex).period;
-			if (sourceperiod<=stop)
-				{
-				const FMTedgeproperties& edgeprop = data[*edge_iterator];
-				boost::hash_combine(hashvalue, edgeprop.getactionID());
-				if (!(stop==std::numeric_limits<int>::max())&&sourceperiod==stop)
-					{
-					return true;
-					}
-				
-				}
-		}*/
 		return false;
 	}
 
@@ -371,3 +358,5 @@ namespace Graph
 
 
 }
+
+BOOST_CLASS_EXPORT_IMPLEMENT(Graph::FMTlinegraph)

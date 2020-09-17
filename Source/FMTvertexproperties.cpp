@@ -46,3 +46,5 @@ namespace Graph
 		return "D" + std::to_string(constraintID);
 		}
 }
+
+BOOST_CLASS_EXPORT_IMPLEMENT(Graph::FMTvertexproperties)

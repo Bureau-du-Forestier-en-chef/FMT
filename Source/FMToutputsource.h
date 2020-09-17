@@ -29,12 +29,12 @@ class FMToutputsource : public FMTspec
 	template<class Archive>
 	void serialize(Archive& ar, const unsigned int version)
 	{
-		ar & boost::serialization::make_nvp("specification", boost::serialization::base_object<FMTspec>(*this));
-		ar & BOOST_SERIALIZATION_NVP(mask);
-		ar & BOOST_SERIALIZATION_NVP(target);
-		ar & BOOST_SERIALIZATION_NVP(action);
-		ar & BOOST_SERIALIZATION_NVP(yield);
-		ar & BOOST_SERIALIZATION_NVP(values);
+			ar & boost::serialization::make_nvp("specification", boost::serialization::base_object<FMTspec>(*this));
+			ar & BOOST_SERIALIZATION_NVP(mask);
+			ar & BOOST_SERIALIZATION_NVP(target);
+			ar & BOOST_SERIALIZATION_NVP(action);
+			ar & BOOST_SERIALIZATION_NVP(yield);
+			ar & BOOST_SERIALIZATION_NVP(values);
 	}
     FMTmask mask;
     FMTotar target;

@@ -29,7 +29,7 @@ namespace Exception
 		template<class Archive>
 		void serialize(Archive& ar, const unsigned int version)
 		{
-			ar & boost::serialization::make_nvp("parent_handler", boost::serialization::base_object<FMTexceptionhandler>(*this));
+			ar & boost::serialization::make_nvp("FMTexceptionhandler", boost::serialization::base_object<FMTexceptionhandler>(*this));
 		}
 	public:
 		// DocString: FMTquietexceptionhandler()
@@ -67,5 +67,6 @@ namespace Exception
 	};
 
 }
+BOOST_CLASS_EXPORT_KEY(Exception::FMTquietexceptionhandler)
 #endif
 

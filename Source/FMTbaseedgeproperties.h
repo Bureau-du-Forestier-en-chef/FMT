@@ -11,6 +11,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTaction.h"
 #include <boost/serialization/serialization.hpp>
 #include <boost/serialization/nvp.hpp>
+#include <boost/serialization/export.hpp>
 #include <vector>
 #include <string>
 
@@ -60,5 +61,7 @@ namespace Graph
 
 	};
 }
+
+BOOST_CLASS_EXPORT_KEY(Graph::FMTbaseedgeproperties)
 
 #endif

@@ -35,8 +35,14 @@ class FMTschedule : public FMTobject
 	template<class Archive>
 	void serialize(Archive& ar, const unsigned int version)
 	{
-		ar & BOOST_SERIALIZATION_NVP(period);
-		ar & BOOST_SERIALIZATION_NVP(elements);
+		try {
+			ar & boost::serialization::make_nvp("FMTobject", boost::serialization::base_object<FMTobject>(*this));
+			ar & BOOST_SERIALIZATION_NVP(period);
+			ar & BOOST_SERIALIZATION_NVP(elements);
+	}catch (...)
+		{
+		_exhandler->printexceptions("", "FMTschedule::serialize", __LINE__, __FILE__);
+		}
 	}
 	// DocString: FMTschedule::period
 	///The period at which the schedule needs to be applied

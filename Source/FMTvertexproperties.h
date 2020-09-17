@@ -51,6 +51,8 @@ namespace Graph
 		};
 }
 
+BOOST_CLASS_EXPORT_KEY(Graph::FMTvertexproperties)
+
 namespace boost {
 
 	template <>

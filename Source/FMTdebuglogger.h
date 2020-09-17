@@ -17,6 +17,16 @@ namespace Logging
 	*/
 	class FMTdebuglogger final : public FMTlogger
 	{
+		// DocString: FMTdebuglogger::serialize
+		/**
+		Serialize function is for serialization, used to do multiprocessing across multiple cpus (pickle in Pyhton)
+		*/
+		friend class boost::serialization::access;
+		template<class Archive>
+		void serialize(Archive& ar, const unsigned int version)
+			{
+			ar & boost::serialization::make_nvp("FMTlogger", boost::serialization::base_object<FMTlogger>(*this));
+			}
 	public:
 		// DocString: FMTdebuglogger()
 		/**
@@ -59,6 +69,8 @@ namespace Logging
 		~FMTdebuglogger() = default;
 	};
 }
+
+BOOST_CLASS_EXPORT_KEY(Logging::FMTdebuglogger)
 
 #endif
 

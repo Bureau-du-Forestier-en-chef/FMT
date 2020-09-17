@@ -61,3 +61,5 @@ namespace Exception
 #endif
 
 }
+
+BOOST_CLASS_EXPORT_IMPLEMENT(Exception::FMTdebugexceptionhandler)

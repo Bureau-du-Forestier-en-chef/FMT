@@ -34,7 +34,12 @@ class FMTconstants : public FMTobject
 	template<class Archive>
 	void serialize(Archive& ar, const unsigned int version)
 		{
-		ar & BOOST_SERIALIZATION_NVP(data);
+		try{
+			ar & BOOST_SERIALIZATION_NVP(data);
+		}catch (...)
+			{
+			_exhandler->printexceptions("", "FMTconstants::serialize", __LINE__, __FILE__);
+			}
 		}
 	// DocString: FMTconstants::data
 	///This unordered_map keeps uses the constant definition string has key and the double value has elements.

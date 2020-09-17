@@ -12,11 +12,20 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 #include "FMTeventcontainer.h"
 #include "FMTspatialaction.h"
+#include <boost/serialization/export.hpp>
 
 namespace Graph
 {
 class FMTlinegraph : public FMTgraph<FMTbasevertexproperties,FMTbaseedgeproperties>
 {
+	friend class boost::serialization::access;
+	template<class Archive>
+	void serialize(Archive& ar, const unsigned int version)
+	{
+		ar & boost::serialization::make_nvp("Graph::FMTgraph<Graph::FMTbasevertexproperties,Graph::FMTbaseedgeproperties>",boost::serialization::base_object<FMTgraph<FMTbasevertexproperties, FMTbaseedgeproperties>>(*this));
+		ar & BOOST_SERIALIZATION_NVP(periodstatsdiff);
+
+	}
 	protected:
 		FMTgraphstats periodstatsdiff;
     public:
@@ -53,5 +62,7 @@ class FMTlinegraph : public FMTgraph<FMTbasevertexproperties,FMTbaseedgeproperti
 		
 };
 }
+
+BOOST_CLASS_EXPORT_KEY(Graph::FMTlinegraph)
 
 #endif // FMTLINEGRAPH_H

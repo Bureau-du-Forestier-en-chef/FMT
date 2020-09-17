@@ -46,3 +46,5 @@ namespace Graph
 		}
 
 }
+
+BOOST_CLASS_EXPORT_IMPLEMENT(Graph::FMTedgeproperties)

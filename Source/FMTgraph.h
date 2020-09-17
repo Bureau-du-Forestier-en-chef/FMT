@@ -28,6 +28,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <boost/serialization/split_member.hpp>
 #include <boost/serialization/unordered_map.hpp>
 #include <boost/serialization/vector.hpp>
+#include <boost/serialization/export.hpp>
 
 #include <memory>
 #include <unordered_map>
@@ -87,7 +88,6 @@ class FMTgraph
 		ar & BOOST_SERIALIZATION_NVP(buildtype);
 	}
 	BOOST_SERIALIZATION_SPLIT_MEMBER()
-	public:
 		typedef boost::adjacency_list< boost::listS,
 			boost::listS,
 			boost::bidirectionalS,
@@ -1357,7 +1357,39 @@ class FMTgraph
 
  }
 
-
-
 }
+
+
+
+namespace boost 
+	{ 
+	namespace serialization 
+		{
+		template<> struct guid_defined<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>> : boost::mpl::true_
+			{
+		
+			}; 
+		template<> struct guid_defined<Graph::FMTgraph<Graph::FMTbasevertexproperties, Graph::FMTbaseedgeproperties>> : boost::mpl::true_
+			{
+
+			};
+		template<> inline const char * guid<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>>()
+			{
+			return "Graph::FMTgraph<Graph::FMTvertexproperties,Graph::FMTedgeproperties>";
+			} 
+		template<> inline const char * guid<Graph::FMTgraph<Graph::FMTbasevertexproperties, Graph::FMTbaseedgeproperties>>()
+			{
+			return "Graph::FMTgraph<Graph::FMTbasevertexproperties,Graph::FMTbaseedgeproperties>";
+			}
+		} 
+	}
+
+
+
+
+
+
+
+
 #endif // FMTGRAPH_H
+

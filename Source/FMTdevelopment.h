@@ -46,10 +46,16 @@ class FMTdevelopment : public FMTobject
 	template<class Archive>
 	void serialize(Archive& ar, const unsigned int version)
 	{
-		ar & BOOST_SERIALIZATION_NVP(mask);
-		ar & BOOST_SERIALIZATION_NVP(age);
-		ar & BOOST_SERIALIZATION_NVP(lock);
-		ar & BOOST_SERIALIZATION_NVP(period);
+		try {
+			ar & boost::serialization::make_nvp("FMTobject", boost::serialization::base_object<FMTobject>(*this));
+			ar & BOOST_SERIALIZATION_NVP(mask);
+			ar & BOOST_SERIALIZATION_NVP(age);
+			ar & BOOST_SERIALIZATION_NVP(lock);
+			ar & BOOST_SERIALIZATION_NVP(period);
+		}catch (...)
+			{
+			_exhandler->printexceptions("", "FMTdevelopment::serialize", __LINE__, __FILE__);
+			}
 	}
     public:
 		// DocString: FMTdevelopment::mask
@@ -217,7 +223,8 @@ namespace boost {
 
 
 }
-
+BOOST_SERIALIZATION_ASSUME_ABSTRACT(Core::FMTdevelopment)
+BOOST_CLASS_TRACKING(Core::FMTdevelopment, boost::serialization::track_always)
 BOOST_CLASS_EXPORT_KEY(Core::FMTdevelopment)
 
 #endif // FMTDEV_H_INCLUDED

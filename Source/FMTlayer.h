@@ -30,6 +30,7 @@ namespace Spatial
 		template<class Archive>
 		void serialize(Archive& ar, const unsigned int version)
 		{
+			ar & boost::serialization::make_nvp("FMTobject", boost::serialization::base_object<FMTobject>(*this));
 			ar & BOOST_SERIALIZATION_NVP(geotransform);
 			ar & BOOST_SERIALIZATION_NVP(maxx);
 			ar & BOOST_SERIALIZATION_NVP(maxy);

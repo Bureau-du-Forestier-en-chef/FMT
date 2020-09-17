@@ -33,3 +33,4 @@ namespace Logging
 }
 
 
+BOOST_CLASS_EXPORT_IMPLEMENT(Logging::FMTdebuglogger)

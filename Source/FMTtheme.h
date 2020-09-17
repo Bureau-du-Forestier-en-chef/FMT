@@ -51,13 +51,19 @@ class FMTtheme : public FMTobject
 		template<class Archive>
 		void serialize(Archive& ar, const unsigned int version)
 		{
-			ar & BOOST_SERIALIZATION_NVP(id);
-			ar & BOOST_SERIALIZATION_NVP(start);
-			ar & BOOST_SERIALIZATION_NVP(aggregates);
-			ar & BOOST_SERIALIZATION_NVP(source_aggregates);
-			ar & BOOST_SERIALIZATION_NVP(valuenames);
-			ar & BOOST_SERIALIZATION_NVP(indexes);
-			ar & BOOST_SERIALIZATION_NVP(name);
+			try{
+				ar & boost::serialization::make_nvp("FMTobject", boost::serialization::base_object<FMTobject>(*this));
+				ar & BOOST_SERIALIZATION_NVP(id);
+				ar & BOOST_SERIALIZATION_NVP(start);
+				ar & BOOST_SERIALIZATION_NVP(aggregates);
+				ar & BOOST_SERIALIZATION_NVP(source_aggregates);
+				ar & BOOST_SERIALIZATION_NVP(valuenames);
+				ar & BOOST_SERIALIZATION_NVP(indexes);
+				ar & BOOST_SERIALIZATION_NVP(name);
+			}catch (...)
+				{
+				_exhandler->printexceptions("", "FMTtheme::serialize", __LINE__, __FILE__);
+				}
 		}
 		// DocString: FMTtheme::aggregates
 		///This map hold the aggregates (key) of the theme and all attributes of the theme (vector item)

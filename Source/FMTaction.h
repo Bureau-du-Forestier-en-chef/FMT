@@ -39,17 +39,22 @@ class FMTaction : public FMTlist<FMTspec>
 	friend class boost::serialization::access;
 	template<class Archive>
 	void serialize(Archive& ar, const unsigned int version)
-		{
-		ar & boost::serialization::make_nvp("specs",boost::serialization::base_object<FMTlist<FMTspec>>(*this));
-		ar & BOOST_SERIALIZATION_NVP(partials);
-		ar & BOOST_SERIALIZATION_NVP(agelowerbound);
-		ar & BOOST_SERIALIZATION_NVP(ageupperbound);
-		ar & BOOST_SERIALIZATION_NVP(periodlowerbound);
-		ar & BOOST_SERIALIZATION_NVP(periodupperbound);
-		ar & BOOST_SERIALIZATION_NVP(name);
-		ar & BOOST_SERIALIZATION_NVP(aggregates);
-		ar & BOOST_SERIALIZATION_NVP(lock);
-		ar & BOOST_SERIALIZATION_NVP(reset);
+	{
+		try {
+			ar & boost::serialization::make_nvp("specs", boost::serialization::base_object<FMTlist<FMTspec>>(*this));
+			ar & BOOST_SERIALIZATION_NVP(partials);
+			ar & BOOST_SERIALIZATION_NVP(agelowerbound);
+			ar & BOOST_SERIALIZATION_NVP(ageupperbound);
+			ar & BOOST_SERIALIZATION_NVP(periodlowerbound);
+			ar & BOOST_SERIALIZATION_NVP(periodupperbound);
+			ar & BOOST_SERIALIZATION_NVP(name);
+			ar & BOOST_SERIALIZATION_NVP(aggregates);
+			ar & BOOST_SERIALIZATION_NVP(lock);
+			ar & BOOST_SERIALIZATION_NVP(reset);
+		}catch (...)
+			{
+			_exhandler->printexceptions("", "FMTaction::serialize", __LINE__, __FILE__);
+			}
 		}
 	protected:
 		// DocString: FMTaction::aggregates

@@ -319,7 +319,24 @@ namespace Models
 
 	Spatial::FMTforest FMTsesmodel::getmapping() const
 		{
-		return spschedule.getforestperiod(spschedule.actperiod());
+		try {
+			return spschedule.getforestperiod(spschedule.actperiod()-1);
+		}
+		catch (...)
+			{
+			_exhandler->printexceptions("", "FMTsesmodel::getmapping", __LINE__, __FILE__);
+			}
+		return Spatial::FMTforest();
+		}
+
+	void FMTsesmodel::passinobject(const Core::FMTobject& rhs)
+		{
+		FMTmodel::passinobject(rhs);
+		for (Spatial::FMTspatialaction& action: spactions)
+			{
+			action.passinobject(rhs);
+			}
+
 		}
 
     }

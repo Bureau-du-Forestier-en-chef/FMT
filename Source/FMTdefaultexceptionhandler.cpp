@@ -60,3 +60,5 @@ namespace Exception
 	}
 
 }
+
+BOOST_CLASS_EXPORT_IMPLEMENT(Exception::FMTdefaultexceptionhandler)

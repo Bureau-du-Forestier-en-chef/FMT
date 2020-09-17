@@ -117,15 +117,20 @@ namespace Spatial
     FMTforest FMTspatialschedule::getforestperiod(const int& period) const
     {
         FMTforest forest(this->copyextent<Core::FMTdevelopment>());//Setting layer information
-		forest.passinobject(*this);
-        for(std::map<FMTcoordinate,Graph::FMTlinegraph>::const_iterator graphit = this->mapping.begin(); graphit != this->mapping.end(); ++graphit)
-        {
-            const Graph::FMTlinegraph* local_graph = &graphit->second;
-            const std::vector<double> solutions(1,this->getcellsize());
-			forest.mapping[graphit->first] = local_graph->getperiodstopdev(period);
-			/*std::vector<Core::FMTactualdevelopment> actdev = local_graph->getperiodstopdev(period,&solutions[0]);//
-            forest.mapping[graphit->first]=Core::FMTdevelopment(actdev.front());*/
-        }
+		try {
+			forest.passinobject(*this);
+			for(std::map<FMTcoordinate,Graph::FMTlinegraph>::const_iterator graphit = this->mapping.begin(); graphit != this->mapping.end(); ++graphit)
+			{
+				const Graph::FMTlinegraph* local_graph = &graphit->second;
+				const std::vector<double> solutions(1,this->getcellsize());
+				forest.mapping[graphit->first] = local_graph->getperiodstopdev(period);
+				/*std::vector<Core::FMTactualdevelopment> actdev = local_graph->getperiodstopdev(period,&solutions[0]);//
+				forest.mapping[graphit->first]=Core::FMTdevelopment(actdev.front());*/
+			}
+		}catch (...)
+			{
+			_exhandler->raisefromcatch("For period "+std::to_string(period), "FMTspatialschedule::getforestperiod", __LINE__, __FILE__);
+			}
         return forest;
     }
 
