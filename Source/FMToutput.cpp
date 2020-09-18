@@ -615,12 +615,18 @@ std::vector<std::string> FMToutput::getdecomposition(const std::vector<FMTtheme>
 FMToutput FMToutput::intersectwithmask(const Core::FMTmask& mask) const
 	{
 	FMToutput newoutput(*this);
-	for (FMToutputsource& source : newoutput.sources)
-		{
-		if (source.isvariable())
+	try{
+		for (FMToutputsource& source : newoutput.sources)
 			{
-			source.setmask(source.getmask().getintersect(mask));
+			if (source.isvariable())
+				{
+				source.setmask(source.getmask().getintersect(mask));
+				}
 			}
+	}catch (...)
+		{
+			_exhandler->raisefromcatch(
+				"", "FMToutput::intersectwithmask", __LINE__, __FILE__, _section);
 		}
 	return newoutput;
 	}
@@ -628,21 +634,74 @@ FMToutput FMToutput::intersectwithmask(const Core::FMTmask& mask) const
 FMTmask FMToutput::getvariableintersect() const
 {
 	FMTmask mask;
-	for (const FMToutputsource& source :sources)
-	{
-		if (source.isvariable())
+	try{
+		for (const FMToutputsource& source :sources)
 		{
-			if (mask.empty())
-				{
-				mask = source.getmask();
-			}else {
-				mask = mask.getintersect(source.getmask());
-			}
+			if (source.isvariable())
+			{
+				if (mask.empty())
+					{
+					mask = source.getmask();
+				}else {
+					mask = mask.getintersect(source.getmask());
+				}
 			
+			}
 		}
-	}
+	}catch (...)
+		{
+		_exhandler->raisefromcatch(
+			"", "FMToutput::getvariableintersect", __LINE__, __FILE__, _section);
+		}
 	return mask;
 }
+
+std::vector<Core::FMTtheme>FMToutput::getstaticthemes(const std::vector<Core::FMTtheme>& themes, const Core::FMTyields& yields) const
+{
+	std::vector<Core::FMTtheme>statics = themes;
+	try {
+		std::vector<std::string>yieldstolookat;
+		for (const FMToutputsource& source : sources)
+		{
+			if (source.isvariable())
+			{
+				statics = source.getmask().getstaticthemes(statics);
+				const std::string yieldvalue = source.getyield();
+				for (const std::string& yldbound : source.getylds())
+					{
+					if (yields.isyld(yldbound))
+						{
+						yieldstolookat.push_back(yldbound);
+						}
+					}
+				if (!yieldvalue.empty())
+					{
+					yieldstolookat.push_back(yieldvalue);
+					}
+			}
+		}
+		std::vector< std::pair<FMTmask, FMTyieldhandler>>::const_iterator handlerit = yields.begin();
+		while (handlerit!=yields.end()&&!yieldstolookat.empty())
+			{
+			std::vector<std::string>::const_iterator yieldit = yieldstolookat.begin();
+			while (yieldit!= yieldstolookat.end() && handlerit->second.elements.find(*yieldit)==handlerit->second.elements.end())
+				{
+				++yieldit;
+				}
+			if (yieldit != yieldstolookat.end())
+				{
+				statics = Core::FMTmask(std::string(handlerit->first),themes).getstaticthemes(statics);
+				yieldstolookat.erase(yieldit);
+				}
+			++handlerit;
+			}
+	}catch (...)
+		{
+			_exhandler->raisefromcatch(
+				"", "FMToutput::getstaticthemes", __LINE__, __FILE__, _section);
+		}
+	return statics;
+	}
 
 
 void FMToutput::setperiod(const int& newperiod)

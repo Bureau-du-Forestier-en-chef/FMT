@@ -243,11 +243,17 @@ namespace Core
 		}
 
 
-	size_t FMTconstraint::hash() const
+	size_t FMTconstraint::hash(bool hashrhs) const
 		{
 		size_t seed = 0;
 		boost::hash_combine(seed, FMToutput::hash());
-		boost::hash_combine(seed, FMTspec::hash());
+		if (hashrhs)
+		{
+			boost::hash_combine(seed, FMTspec::hash());
+		}else {//only hash periods from the constraint
+			boost::hash_combine(seed, FMTspec::getperiodlowerbound());
+			boost::hash_combine(seed, FMTspec::getperiodupperbound());
+			}
 		return seed;
 		}
 

@@ -553,6 +553,7 @@ namespace Spatial
 			int periodstop = 0;
 			if (!this->mapping.empty() && this->mapping.begin()->second.constraintlenght(constraint, periodstart, periodstop))
 			{
+				const Core::FMTmask dynamicmask = model.getdynamicmask(constraint.getstaticthemes(model.getthemes(),model.getyields()));
 				size_t oldcachesize = 0;
 				if (friendlysolution!=nullptr 
 					&& !friendlysolution->outputscache.empty()
@@ -566,18 +567,8 @@ namespace Spatial
 				const std::vector<double> solutions(1, this->getcellsize());
 				if (!(periodstart==periodstop && constraint.acrossperiod()))
 					{
-					const size_t constrainthash = constraint.hash();
+					const size_t constrainthash = constraint.hash(false);
 					std::vector<const Graph::FMTlinegraph*>graphs;
-					/*if (constraint.isactionbased() && !constraint.isinventory())//get the graphs from the events
-						{
-							graphs = getgraphsfromdynamic(constraint,model,getfromevents(constraint, model.getactions(), periodstart, periodstop));
-						}else {
-							graphs = getgraphsfromdynamic(constraint,model);
-						}
-					for (const Graph::FMTlinegraph* graphptr : graphs)
-						{
-						setoutputfromgraph(*graphptr, model, periods_values, constraint, &solutions[0], periodstart, periodstop, constrainthash);
-						}*/
 					if (constraint.isactionbased() && !constraint.isinventory())//get the graphs from the events
 						{
 						for (const Graph::FMTlinegraph* graph : getfromevents(constraint, model.getactions(), periodstart, periodstop))
@@ -755,7 +746,7 @@ namespace Spatial
 				int periodstop = 0;
 				if (!this->mapping.empty() && this->mapping.begin()->second.constraintlenght(constraint, periodstart, periodstop))
 					{
-					const size_t constraint_hashing = constraint.hash();
+					const size_t constraint_hashing = constraint.hash(false);
 					const bool outputneedsaction = constraint.isactionbased();
 					for (std::map<FMTcoordinate, Graph::FMTlinegraph>::iterator graphit = this->mapping.begin(); graphit != this->mapping.end(); ++graphit)
 						{

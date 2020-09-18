@@ -134,7 +134,7 @@ class FMTgraph
 			}
 			else {
 				Exception::FMTexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed,
-					"", "FMTgraph::generatedevelopments", __LINE__, __FILE__);
+					"", "FMTgraph::getfirstblock", __LINE__, __FILE__);
 			}
 			return periodit;
 		}
@@ -1103,14 +1103,27 @@ class FMTgraph
 			}
 			return values;
 		}
+		int getperiod() const
+		{
+			try {
+				FMTvertex_iterator vertex, vend;
+				boost::tie(vertex, vend) = vertices(data);
+				--vend;
+				return (data[*vend].get().period);
+			}catch (...)
+				{
+				Exception::FMTexceptionhandler().raisefromcatch("", "FMTgraph::getperiod", __LINE__, __FILE__);
+				}
+			return 0;
+		}
+
+
         void generatedevelopments()
 		{
 			try {
 				developments.clear();
+				const size_t max_period = static_cast<size_t>(getperiod());
 				FMTvertex_iterator vertex, vend;
-				boost::tie(vertex, vend) = vertices(data);
-				--vend;
-				const size_t max_period = (data[*vend].get().period);
 				developments.resize(max_period + 1);
 				for (boost::tie(vertex, vend) = vertices(data); vertex != vend; ++vertex)
 				{

@@ -36,7 +36,6 @@ class FMTlinegraph : public FMTgraph<FMTbasevertexproperties,FMTbaseedgeproperti
         FMTlinegraph(const FMTgraph<FMTbasevertexproperties, FMTbaseedgeproperties>& rhs);
         FMTlinegraph& operator = (const FMTlinegraph& rhs);
         FMTlinegraph& operator = (const FMTgraph<FMTbasevertexproperties,FMTbaseedgeproperties>& rhs);
-        int getperiod() const;
 		void newperiod();
 		void addaction(	FMTvertex_descriptor active,const int& actionID,
 						const std::vector<Core::FMTdevelopmentpath>& paths);
