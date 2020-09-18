@@ -59,15 +59,6 @@ namespace Graph
         return *this;
     }
 
-    int FMTlinegraph::getperiod() const
-    {
-        std::queue<FMTgraph<FMTbasevertexproperties, FMTbaseedgeproperties>::FMTvertex_descriptor> actives = getactiveverticies();
-		FMTgraph<FMTbasevertexproperties, FMTbaseedgeproperties>::FMTvertex_descriptor front_vertex = actives.front();
-        const Graph::FMTbasevertexproperties& front_properties = data[front_vertex];
-        const int period = front_properties.get().period;
-        return period;
-    }
-
 	void FMTlinegraph::newperiod()
 	{
 		Exception::FMTexceptionhandler handler;
@@ -323,6 +314,39 @@ namespace Graph
 	{
 		FMTvertex_iterator vertex_iterator, vertex_iterator_end;
 		boost::tie(vertex_iterator, vertex_iterator_end) = boost::vertices(data);
+		const Core::FMTdevelopment& development = getdevelopment(*vertex_iterator);
+		boost::hash_combine(hashvalue, boost::hash<Core::FMTdevelopment>()(development));
+		const int actperiod = getperiod()-1;
+		std::string hashstr;
+		if (!isonlygrow())
+			{
+			FMTedge_iterator edge_iterator, edge_iterator_end;
+			boost::tie(edge_iterator, edge_iterator_end) = boost::edges(data);
+			int periodcount = 0;
+			while (edge_iterator != edge_iterator_end && periodcount<=stop)
+				{
+				const FMTbaseedgeproperties& edgeprop = data[*edge_iterator];
+				const int actionid = edgeprop.getactionID();
+				hashstr += std::to_string(actionid);
+				if (actionid < 0)
+					{
+					++periodcount;
+					}
+				++edge_iterator;
+				}
+
+		}else {
+			for (int period = 0; period <= std::min(actperiod,stop);++period)
+				{
+				hashstr += "-1";
+				}
+			}
+		boost::hash_combine(hashvalue, hashstr);
+		return (stop <= actperiod);
+
+
+		/*FMTvertex_iterator vertex_iterator, vertex_iterator_end;
+		boost::tie(vertex_iterator, vertex_iterator_end) = boost::vertices(data);
 		boost::hash_combine(hashvalue, boost::hash<Core::FMTdevelopment>()(getdevelopment(*vertex_iterator)));
 		FMTedge_iterator edge_iterator, edge_iterator_end;
 		boost::tie(edge_iterator, edge_iterator_end) = boost::edges(data);
@@ -351,7 +375,7 @@ namespace Graph
 				}
 			++edge_iterator;
 			}
-		return false;
+		return false;*/
 	}
 
 	

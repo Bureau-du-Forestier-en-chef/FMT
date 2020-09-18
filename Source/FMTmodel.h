@@ -384,6 +384,12 @@ class FMTmodel : public Core::FMTobject
 		Returns themes used in the transition scheme.
 		*/
 		std::vector<Core::FMTtheme> locatedynamicthemes() const;
+		// DocString: FMTmodel::getdynamicmask
+		/**
+		Based on static and dynamic themes will return a mask where the static attributes will have a value of 0 and dynamic value a value of 1.
+		You can pass a optional vector considered static to be kept in the mask (1).
+		*/
+		Core::FMTmask getdynamicmask(std::vector<Core::FMTtheme>optionalstatictokeep = std::vector<Core::FMTtheme>()) const;
 		// DocString: FMTmodel(FMTmodel)
 		/**
 		Copy constructor of FMTmodel

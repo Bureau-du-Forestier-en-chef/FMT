@@ -422,6 +422,39 @@ std::vector<Core::FMTtheme> FMTmodel::locatedynamicthemes() const
 }
 
 
+Core::FMTmask FMTmodel::getdynamicmask(std::vector<Core::FMTtheme>optionalstatictokeep) const
+	{
+	Core::FMTmask selection;
+	try {
+		const std::vector<Core::FMTtheme>staticcthemes = locatestaticthemes();
+		std::string basename;
+		for (const Core::FMTtheme& theme : themes)
+			{
+			basename += "? ";
+			}
+		basename.pop_back();
+		const Core::FMTmask submask(basename,themes);
+		boost::dynamic_bitset<>bits = submask.getbitsetreference();
+		for (const Core::FMTtheme& theme : staticcthemes)
+			{
+			if (std::find_if(optionalstatictokeep.begin(),optionalstatictokeep.end(),Core::FMTthemecomparator(theme))==optionalstatictokeep.end())
+				{
+				const size_t start = static_cast<size_t>(theme.getstart());
+				for (size_t bitid = start; bitid < (theme.size() + start); ++bitid)
+					{
+					bits[bitid] = false;
+					}
+				}
+			}
+		selection = Core::FMTmask(basename, bits);
+	}catch (...)
+		{
+		_exhandler->raisefromcatch("", "FMTmodel::getdynamicmask", __LINE__, __FILE__);
+		}
+	return selection;
+	}
+
+
 void FMTmodel::validatelistspec(const Core::FMTspec& specifier) const
 	{
 	try {

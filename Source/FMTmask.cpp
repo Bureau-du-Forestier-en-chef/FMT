@@ -121,7 +121,7 @@ bool FMTmask::empty() const
 std::vector<FMTtheme>FMTmask::getstaticthemes(const std::vector<FMTtheme>& themes) const
 	{
 	std::vector<FMTtheme>staticths;
-	for (const FMTtheme& theme : staticths)
+	for (const FMTtheme& theme : themes)
 		{
 		const std::string value = this->get(theme);
 		if (!theme.isaggregate(value) && !theme.isattribute(value))
