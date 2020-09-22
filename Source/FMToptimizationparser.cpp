@@ -14,8 +14,9 @@ namespace Parser
 		rxsections("^(\\*)([^\\s^\\t]*)", std::regex_constants::ECMAScript | std::regex_constants::icase),
 		rxobjectives("^(_MAXMIN|_MINMAX|_MAX|_MIN|_GOAL)([\\s\\t]*)(.+)([\\s\\t])((([\\d]*|#.+)(\\.\\.)(#.+|_LENGTH|[\\d]*))|(#.+|[\\d]*))", std::regex_constants::ECMAScript | std::regex_constants::icase),
 		rxexclude("^(\\*EXCLUDE)([\\s\\t]*)([^\\s^\\t]*)([\\s\\t]*)((([\\d]*|#.+)(\\.\\.)(#.+|_LENGTH|[\\d]*))|(#.+|[\\d]*))", std::regex_constants::ECMAScript | std::regex_constants::icase),
-		rxconstraints("^(_EVEN|_NDY|_SEQ)([\\s\\t]*)(\\()((([^,]*)(,)([\\d\\.]*%|[\\d\\.]*)(,)([\\d\\.]*%|[\\d\\.]*))|(([^,]*)(,)([\\d\\.]*%|[\\d\\.]*))|([^\\)^,]*))(\\)*)([\\s\\t]*)((([\\d]*|#.+)(\\.\\.)(#.+|_LENGTH|[\\d]*))|(#.+|[\\d]*))", std::regex_constants::ECMAScript | std::regex_constants::icase),
-		rxequations("^(((.+)((<=)|(>=))(.+))|((.+)(=)(.+)))([\\s\\t])((([\\d]*|#.+)(\\.\\.)(#.+|_LENGTH|[\\d]*))|(#.+|[\\d]*))", std::regex_constants::ECMAScript | std::regex_constants::icase),
+		rxconstraints("^(_EVEN|_NDY|_SEQ)([\\s\\t]*)(\\()((([^,^\\)]*)(,)([\\d\\.]*%|[\\d\\.]*)(,)([\\d\\.]*%|[\\d\\.]*))|(([^,^\\)]*)(,)([\\d\\.]*%|[\\d\\.]*))|([^\\)^,]*))(\\)*)([\\s\\t]*)(.+)", std::regex_constants::ECMAScript | std::regex_constants::icase),
+		rxequations("^(.+)((((<=)|(>=))(.+))|((.+)((=))(.+)))(?<=[^,])[\\s\\t](?=\\d)(.+)"),
+		rxperiods("^([\\s\\t]*)((([\\d]*|#.+)(\\.\\.)(#.+|_LENGTH|[\\d]*))|(#.+|[\\d]*))", std::regex_constants::ECMAScript | std::regex_constants::icase),
 		rxgoal("^(.+)(_GOAL)(\\()([^,]*)(,)([^\\)]*)(\\))", std::regex_constants::ECMAScript | std::regex_constants::icase),
 		rxoutput("^(.+)(\\()([^)]*)(\\))(\\[)(#.+|[-\\d]*)(\\])|(.+)(\\()([^)]*)(\\))|(.+)(\\[)(#.+|[-\\d]*)(\\])|(.+)", std::regex_constants::ECMAScript | std::regex_constants::icase),
 		rxpenalty("^(_PENALTY)(\\()([^\\)]*)(\\))", std::regex_constants::ECMAScript | std::regex_constants::icase),
@@ -32,6 +33,7 @@ namespace Parser
 		rxexclude(rhs.rxexclude),
 		rxconstraints(rhs.rxconstraints),
 		rxequations(rhs.rxequations),
+		rxperiods(rxperiods),
 		rxgoal(rhs.rxgoal),
 		rxoutput(rhs.rxoutput),
 		rxpenalty(rhs.rxpenalty),
@@ -50,6 +52,7 @@ namespace Parser
 			rxexclude = rhs.rxexclude;
 			rxconstraints = rhs.rxconstraints;
 			rxequations = rhs.rxequations;
+			rxperiods = rhs.rxperiods;
 			rxgoal = rhs.rxgoal;
 			rxoutput = rhs.rxoutput;
 			rxpenalty = rhs.rxpenalty;
@@ -77,7 +80,7 @@ namespace Parser
 		return false;
 		}
 
-	void FMToptimizationparser::setperiods(Core::FMTconstraint& constraint, const std::string& lower, const std::string& upper, const Core::FMTconstants& constants)
+	void FMToptimizationparser::setperiods(Core::FMTconstraint& constraint, const std::string& lower, const std::string& upper, const Core::FMTconstants& constants) const
 		{
 		try {
 			const int startperiod = getnum<int>(lower, constants);
@@ -272,10 +275,13 @@ namespace Parser
         }
 
 
-	Core::FMTconstraint FMToptimizationparser::getconstraint(const std::string& line, const Core::FMTconstants& constants,
+	std::vector<Core::FMTconstraint> FMToptimizationparser::getconstraints(const std::string& line, const Core::FMTconstants& constants,
 												const std::vector<Core::FMToutput>& outputs, const std::vector<Core::FMTtheme>& themes)
 		{
 		Core::FMTconstraint constraint;
+		std::vector<Core::FMTconstraint>returnedconstraints;
+		boost::match_results<std::string::const_iterator> Bmatch;
+		boost::match_flag_type flags = boost::match_default;
 		try {
 			std::smatch kmatch;
 			std::string rest = line;
@@ -293,6 +299,7 @@ namespace Parser
 				{
 					target += ")";
 				}
+				
 				std::map<std::string, double> nodes = getequation(target, constants, outputs, target.size());
 				nodes.erase("RHS");
 				const Core::FMToutput targetout = resume_output(nodes, outputs, themes, constants);
@@ -336,20 +343,18 @@ namespace Parser
 				}
 				const std::string yld_name = "Variation";
 				constraint.addbounds(Core::FMTyldbounds(Core::FMTsection::Optimize, yld_name, higher_var, lower_var));
-				const std::string start_str = std::string(kmatch[20]) + std::string(kmatch[23]);
-				const std::string stop_str = std::string(kmatch[22]);
-				setperiods(constraint, start_str, stop_str, constants);
+				const std::string periodstring = std::string(kmatch[18]);
+				returnedconstraints = getperiodsbounds(periodstring, constraint, constants);
+
 			}
-			else if (std::regex_search(rest, kmatch, rxequations))
+			else if (boost::regex_search(rest.cbegin(),rest.cend(), Bmatch, rxequations))
 			{
 				Core::FMTconstrainttype cctype = Core::FMTconstrainttype::FMTstandard;
-				std::string lower_period = std::string(kmatch[15]) + std::string(kmatch[18]);
-				std::string upper_period = std::string(kmatch[17]);
-				setperiods(constraint, lower_period, upper_period, constants);
-				const std::string str_operator = std::string(kmatch[5]) + std::string(kmatch[6]) + std::string(kmatch[10]);
-				const std::string LHS = std::string(kmatch[3]) + std::string(kmatch[9]);
-				const std::string RHS = std::string(kmatch[7]) + std::string(kmatch[11]);
-				const std::string full_equation = LHS + std::string(1, '+') + RHS;
+				const std::string periodstring = std::string(Bmatch[13]);
+				const std::string str_operator = std::string(Bmatch[5]) + std::string(Bmatch[6]) + std::string(Bmatch[11]);
+				const std::string LHS = std::string(Bmatch[1]);
+				const std::string RHS = std::string(Bmatch[7]) + std::string(Bmatch[12]);
+				const std::string full_equation = LHS + std::string(1, ' ')+std::string(1, '+') + RHS;
 				std::map<std::string, double> nodes = getequation(full_equation, constants, outputs, LHS.size());
 				double bound = nodes["RHS"];
 				nodes.erase("RHS");
@@ -370,16 +375,54 @@ namespace Parser
 					lower = std::numeric_limits<double>::lowest();
 					upper = bound;
 				}
-				Core::FMToutput final_output = resume_output(nodes, outputs, themes, constants);
-				constraint.setoutput(final_output);
-				constraint.setconstrainttype(cctype);
-				constraint.setrhs(lower, upper);
-			}
+				const Core::FMToutput final_output = resume_output(nodes, outputs, themes, constants);
+				for (Core::FMTconstraint baseconstraint : getperiodsbounds(periodstring, constraint, constants))
+					{
+					baseconstraint.setoutput(final_output);
+					baseconstraint.setconstrainttype(cctype);
+					baseconstraint.setrhs(lower, upper);
+					returnedconstraints.push_back(baseconstraint);
+					}
+			}else {
+				_exhandler->raise(Exception::FMTexc::FMTinvalid_constraint,
+					line+"  at line " + std::to_string(_line),
+					"FMToptimizationparser::getperiodsbounds", __LINE__, __FILE__, _section);
+				}
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("at line "+line,"FMToptimizationparser::getconstraint", __LINE__, __FILE__, _section);
+			_exhandler->raisefromcatch("at line "+line,"FMToptimizationparser::getconstraints", __LINE__, __FILE__, _section);
 			}
-		return constraint;
+		return returnedconstraints;
+		}
+
+		std::vector<Core::FMTconstraint> FMToptimizationparser::getperiodsbounds(std::string periodstr, const Core::FMTconstraint& constraint, const Core::FMTconstants& constants) const
+		{
+			std::vector<Core::FMTconstraint>constraints;
+			try {
+				std::vector<std::string>splitted;
+				boost::split(splitted,periodstr, boost::is_any_of(","));
+				for (const std::string& value : splitted)
+					{
+					Core::FMTconstraint newconstraint(constraint);
+					std::smatch kmatch;
+					if (std::regex_search(value,kmatch,rxperiods))
+						{
+						const std::string lower_period = std::string(kmatch[4]) + std::string(kmatch[7]);
+						const std::string upper_period = std::string(kmatch[6]);
+						setperiods(newconstraint, lower_period, upper_period, constants);
+					}else {
+						_exhandler->raise(Exception::FMTexc::FMTemptybound,
+							" for " + value,
+							"FMToptimizationparser::getperiodsbounds", __LINE__, __FILE__, _section);
+						}
+					constraints.push_back(newconstraint);
+					}
+	
+			}catch (...)
+				{
+				_exhandler->raisefromcatch("for " + periodstr, "FMToptimizationparser::getperiodsbounds", __LINE__, __FILE__, _section);
+				}
+			return constraints;
 		}
 
 
@@ -556,9 +599,12 @@ namespace Parser
 								}
 								case FMToptimizationsection::constraints:
 								{
-									Core::FMTconstraint constraint = getconstraint(line, constants, outputs, themes);
-									constraint.passinobject(*this);
-									constraints.push_back(constraint);
+									for (Core::FMTconstraint baseconstraint : getconstraints(line, constants, outputs, themes))
+										{
+										baseconstraint.passinobject(*this);
+										constraints.push_back(baseconstraint);
+										}
+									
 									break;
 								}
 								case FMToptimizationsection::exclude:

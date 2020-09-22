@@ -139,7 +139,7 @@ namespace Models
 				++seed;
 			}
 			//Need the remove the incomplete stuff from the cash before going to the next step.
-			this->spschedule.cleanincompleteconstraintscash(this->getconstraints());
+			this->spschedule.cleanincompleteconstraintscash(*this);
 		}
 		catch (...)
 		{
