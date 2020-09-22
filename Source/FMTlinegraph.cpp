@@ -310,12 +310,15 @@ namespace Graph
 		return size() == boost::num_edges(data);
 		}
 
-	bool FMTlinegraph::hashforconstraint(size_t& hashvalue, const int&start, const int& stop) const
+	bool FMTlinegraph::hashforconstraint(size_t& hashvalue, const int&start, const int& stop, const Core::FMTmask& dynamicmask) const
 	{
 		FMTvertex_iterator vertex_iterator, vertex_iterator_end;
 		boost::tie(vertex_iterator, vertex_iterator_end) = boost::vertices(data);
 		const Core::FMTdevelopment& development = getdevelopment(*vertex_iterator);
-		boost::hash_combine(hashvalue, boost::hash<Core::FMTdevelopment>()(development));
+		//boost::hash_combine(hashvalue, development.mask.getintersect(dynamicmask));
+		boost::hash_combine(hashvalue, development.mask);
+		boost::hash_combine(hashvalue, development.age);
+		//boost::hash_combine(hashvalue, boost::hash<Core::FMTdevelopment>()(development));
 		const int actperiod = getperiod()-1;
 		std::string hashstr;
 		if (!isonlygrow())

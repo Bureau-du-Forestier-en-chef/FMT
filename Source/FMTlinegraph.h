@@ -56,7 +56,7 @@ class FMTlinegraph : public FMTgraph<FMTbasevertexproperties,FMTbaseedgeproperti
         FMTlinegraph perturbgraph(  const Models::FMTmodel& model, std::default_random_engine& generator,
 									Spatial::FMTeventcontainer& events,
 									const Spatial::FMTcoordinate& localisation, const int period) const;
-		bool hashforconstraint(size_t& hashvalue,const int&start,const int& stop) const;
+		bool hashforconstraint(size_t& hashvalue,const int&start,const int& stop,const Core::FMTmask& dynamicmask) const;
 		bool isonlygrow() const;
 		
 };

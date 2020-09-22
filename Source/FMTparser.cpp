@@ -541,6 +541,14 @@ std::vector<std::string>FMTparser::regexloop(std::regex& cutregex, std::string& 
                         }
                     }
                 }
+			if (_incomment && !_comment.empty() && _comment.find('}') != std::string::npos)
+				{
+				_incomment = false;
+				}
+			if (!_comment.empty() && _comment.find('{') != std::string::npos)
+				{
+				_incomment = true;
+				}
             }else{
             stream.close();
             }

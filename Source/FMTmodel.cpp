@@ -387,11 +387,11 @@ void FMTmodel::setoutputs(const std::vector<Core::FMToutput>& newoutputs)
 	}
 
 
-std::vector<Core::FMTtheme> FMTmodel::locatestaticthemes() const
+std::vector<Core::FMTtheme> FMTmodel::locatestaticthemes(const Core::FMToutput& output) const
 {
-	std::vector<Core::FMTtheme>bestthemes = getthemes();
+	std::vector<Core::FMTtheme>bestthemes = output.getstaticthemes(themes,yields);
 	try {
-		for (const Core::FMTtransition& transition : gettransitions())
+		for (const Core::FMTtransition& transition : transitions)
 		{
 			bestthemes = transition.getstaticthemes(bestthemes);
 		}
@@ -402,11 +402,11 @@ std::vector<Core::FMTtheme> FMTmodel::locatestaticthemes() const
 	return bestthemes;
 }
 
-std::vector<Core::FMTtheme> FMTmodel::locatedynamicthemes() const
+std::vector<Core::FMTtheme> FMTmodel::locatedynamicthemes(const Core::FMToutput& output) const
 {
 	std::vector<Core::FMTtheme>dynamicthemes;
 	try {
-		const std::vector<Core::FMTtheme>staticthemes = locatestaticthemes();
+		const std::vector<Core::FMTtheme>staticthemes = locatestaticthemes(output);
 		for (const Core::FMTtheme& theme : themes)
 			{
 			if (std::find_if(staticthemes.begin(), staticthemes.end(), Core::FMTthemecomparator(theme))==staticthemes.end())
@@ -422,11 +422,11 @@ std::vector<Core::FMTtheme> FMTmodel::locatedynamicthemes() const
 }
 
 
-Core::FMTmask FMTmodel::getdynamicmask(std::vector<Core::FMTtheme>optionalstatictokeep) const
+Core::FMTmask FMTmodel::getdynamicmask(const Core::FMToutput& output) const
 	{
 	Core::FMTmask selection;
 	try {
-		const std::vector<Core::FMTtheme>staticcthemes = locatestaticthemes();
+		const std::vector<Core::FMTtheme>staticcthemes = locatestaticthemes(output);
 		std::string basename;
 		for (const Core::FMTtheme& theme : themes)
 			{
@@ -437,13 +437,10 @@ Core::FMTmask FMTmodel::getdynamicmask(std::vector<Core::FMTtheme>optionalstatic
 		boost::dynamic_bitset<>bits = submask.getbitsetreference();
 		for (const Core::FMTtheme& theme : staticcthemes)
 			{
-			if (std::find_if(optionalstatictokeep.begin(),optionalstatictokeep.end(),Core::FMTthemecomparator(theme))==optionalstatictokeep.end())
+			const size_t start = static_cast<size_t>(theme.getstart());
+			for (size_t bitid = start; bitid < (theme.size() + start); ++bitid)
 				{
-				const size_t start = static_cast<size_t>(theme.getstart());
-				for (size_t bitid = start; bitid < (theme.size() + start); ++bitid)
-					{
-					bits[bitid] = false;
-					}
+				bits[bitid] = false;
 				}
 			}
 		selection = Core::FMTmask(basename, bits);

@@ -191,7 +191,7 @@ class FMTspatialschedule : public FMTlayer<Graph::FMTlinegraph>
 		 When constraint cashing is used if the spatialschedule is build for only a given number of period the hashing
 		 of constraint with period > graphperiod wont be valid hash so those hashes need to be cleaned.
 		 */
-		void cleanincompleteconstraintscash(const std::vector<Core::FMTconstraint>& constraints);
+		void cleanincompleteconstraintscash(const Models::FMTmodel& model);
 
 	protected:
 		// DocString: FMTspatialschedule::events
@@ -209,7 +209,8 @@ class FMTspatialschedule : public FMTlayer<Graph::FMTlinegraph>
 		 set the output requested from a given linegraph into periods_values
 		 */
 		void setoutputfromgraph(const Graph::FMTlinegraph& linegraph,const Models::FMTmodel & model,std::vector<double>& periods_values,
-								const Core::FMTconstraint & constraint,const double* solution, const int& start, const int& stop,size_t hashvalue) const;
+								const Core::FMTconstraint & constraint,const double* solution, const int& start, const int& stop,size_t hashvalue,
+								const Core::FMTmask& dynamicmask) const;
 		// DocString: FMTspatialschedule::getgraphsfromstatic()
 		 /**
 		 Based on variable outputnode in the constraint returns a subset of the solution based on the dynamic themes.

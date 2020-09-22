@@ -20,6 +20,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <regex>
 #include "FMTconstants.h"
 #include "FMTtheme.h"
+#include <boost/regex.hpp>
 #include <limits>
 
 namespace Parser
@@ -39,7 +40,8 @@ namespace Parser
 		std::regex rxobjectives;
 		std::regex rxexclude;
 		std::regex rxconstraints;
-		std::regex rxequations;
+		boost::regex rxequations;
+		std::regex rxperiods;
 		std::regex rxgoal;
 		std::regex rxoutput;
 		std::regex rxpenalty;
@@ -49,10 +51,10 @@ namespace Parser
                              const std::vector<Core::FMToutput>& outputs,
                              const std::vector<Core::FMTtheme>& themes);
 		FMToptimizationsection getsection(const std::string& line) const;
-		Core::FMTconstraint getconstraint(const std::string& line, const Core::FMTconstants& constants,
+		std::vector<Core::FMTconstraint> getconstraints(const std::string& line, const Core::FMTconstants& constants,
 			const std::vector<Core::FMToutput>& outputs, const std::vector<Core::FMTtheme>& themes);
 		bool setgoal(Core::FMTconstraint& constraint, const std::string& line, const Core::FMTconstants& constants);
-		void setperiods(Core::FMTconstraint& constraint, const std::string& lower,const std::string& upper, const Core::FMTconstants& constants);
+		void setperiods(Core::FMTconstraint& constraint, const std::string& lower,const std::string& upper, const Core::FMTconstants& constants) const;
 		Core::FMToutput resume_output(const std::map<std::string,double>& nodes,
                           const std::vector<Core::FMToutput>& outputs,
                           const std::vector<Core::FMTtheme>& themes,
@@ -62,6 +64,7 @@ namespace Parser
 		std::queue<std::string> geteachlines(const std::string& line,const Core::FMTconstants& constants,const std::vector<Core::FMToutput>& outputs, const std::vector<Core::FMTtheme>& themes) const;
 		std::map<std::string,double>getequation(const std::string& line, const Core::FMTconstants& constants,
                                 const std::vector<Core::FMToutput>& outputs,size_t lhssize= std::numeric_limits<size_t>::max());
+		std::vector<Core::FMTconstraint> getperiodsbounds(std::string periodstr,const Core::FMTconstraint& constraint, const Core::FMTconstants& constants) const;
 	public:
 		FMToptimizationparser();
 		FMToptimizationparser(const FMToptimizationparser& rhs);
