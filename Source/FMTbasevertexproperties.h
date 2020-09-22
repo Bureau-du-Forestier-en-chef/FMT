@@ -40,10 +40,11 @@ namespace Graph
 		{
 			double areavalue = 0;
 			ar & areavalue;
-			Core::FMTdevelopment base();
+			Core::FMTdevelopment base;
 			ar & base;
 			if (areavalue!=0)
 				{
+
 				development = std::unique_ptr<Core::FMTdevelopment>(new Core::FMTactualdevelopment(base, areavalue));
 			}else {
 				development = std::unique_ptr<Core::FMTfuturdevelopment>(new Core::FMTfuturdevelopment(base));
