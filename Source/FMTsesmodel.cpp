@@ -93,18 +93,18 @@ namespace Models
 		return true;
         }
 
-	bool FMTsesmodel::operator > (const FMTsesmodel& rhs) const
+	bool FMTsesmodel::operator >= (const FMTsesmodel& rhs) const
 		{
 		size_t gotbetter = 0;
-		const std::vector<int> groupvalues = this->spschedule.isbetterthan(rhs.spschedule, rhs, spactions);
-		int groupsummary = 0;
+		std::vector<int> groupvalues = this->spschedule.isbetterthan(rhs.spschedule, rhs, spactions);
+		size_t groupid = 0;
 		for (const int& value : groupvalues)
 			{
 			if (value>=0)
 				{
 				++gotbetter;
 				}
-			groupsummary += value;
+			++groupid;
 			}
 		return (gotbetter == groupvalues.size());
 		}
@@ -120,20 +120,17 @@ namespace Models
 			{
 				//FMTsesmodel modelcopy(modelcopy0);
 				bool schedulefirstpass = true;
-				/*if (iteration % 2 == 0)
+				if (iteration % 2 == 0)
 					{
 					schedulefirstpass = false;
-					}*/
+					}
 				const std::map<std::string, double>results = modelcopy.simulate(schedule, false, schedulefirstpass,seed);
-				if (iteration == 0 || modelcopy>*this)
+				if (iteration == 0 || modelcopy>=*this)
 					{
-						if (iteration > 0)
-						{
-							_logger->logwithlevel("Better solution found at Monte-Carlo iteration " +
-								std::to_string(iteration) + " value of " + std::to_string(results.at("Total")) + "\n", 1);
-						}
 						bestresults = results;
 						*this = modelcopy;
+						this->spschedule.logsolutionstatus(*this, spactions);
+						//*_logger << "Reevaluation 2 " << (modelcopy > *this) << "\n";
 					}
 				modelcopy.spschedule.eraselastperiod();//clear the last period to redo a simulate and test again!
 				++seed;

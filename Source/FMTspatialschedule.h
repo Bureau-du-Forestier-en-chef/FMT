@@ -160,12 +160,42 @@ class FMTspatialschedule : public FMTlayer<Graph::FMTlinegraph>
 											 const FMTspatialschedule*	friendlysolution = nullptr) const;
 		// DocString: FMTspatialschedule::isbetterthan()
 		/**
-			Compare two spatialschedule and returns a vector of bool with true if the constraint group has a better value then the
+			Compare two spatialschedule and return a vector of bool with true if the constraint group has a better value then the
 			compared solution else false.
 		*/
-		std::vector<int>isbetterthan(const FMTspatialschedule& newsolution,
+		std::vector<int> isbetterthan(const FMTspatialschedule& newsolution,
 									 const Models::FMTmodel& model,
 									 const std::vector<Spatial::FMTspatialaction>& spactions) const;
+		// DocString: FMTspatialschedule::getconstraintevaluation()
+		/**
+			Returns the double value of the evaluated solution constraint.
+		*/
+		double getconstraintevaluation(const Core::FMTconstraint&constraint,
+			const Models::FMTmodel& model,const std::vector<Spatial::FMTspatialaction>& spactions,
+			const FMTspatialschedule*	friendlysolution = nullptr) const;
+		// DocString: FMTspatialschedule::getdualinfeasibility()
+		/**
+			Returns dual infeasibility of a set of constraints.
+		*/
+		double getprimalinfeasibility(const std::vector<Core::FMTconstraint>& constraints, const Models::FMTmodel& model,
+			const std::vector<Spatial::FMTspatialaction>& spactions,
+			const FMTspatialschedule*	friendlysolution = nullptr) const;
+		// DocString: FMTspatialschedule::logsolutionstatus()
+		/**
+			Log the status of the solution
+		*/
+		void logsolutionstatus(const Models::FMTmodel& model,
+			const std::vector<Spatial::FMTspatialaction>& spactions,
+			const FMTspatialschedule*	friendlysolution = nullptr) const;
+
+		// DocString: FMTspatialschedule::getobjectivevaluey()
+		/**
+			Returns the objective value of the spatialschedule
+		*/
+		double getobjectivevalue(const Core::FMTconstraint& constraint, const Models::FMTmodel& model,
+			const std::vector<Spatial::FMTspatialaction>& spactions,
+			const FMTspatialschedule*	friendlysolution = nullptr) const;
+
 		// DocString: FMTspatialschedule::getgraphsoutputs(const Models::FMTmodel&, const Core::FMTconstraint&, const int&, const int&)
 		/**
 			Return sum of all graphs outputs related to constraint.

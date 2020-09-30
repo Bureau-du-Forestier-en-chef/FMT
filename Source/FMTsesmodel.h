@@ -157,12 +157,12 @@ class FMTsesmodel : public FMTmodel
 										const size_t& randomiterations,
 										unsigned int seed = 0,
 										double tolerance = FMT_DBL_TOLERANCE);
-		// DocString: FMTsesmodel::operator>
+		// DocString: FMTsesmodel::operator>=
 		/**
 		Base on bool constraints groups evaluation test if this FMTsesmodel spatialsolution has a better groups spatialsolution than
 		the rhs FMTsesmodel. If all groups are better then the model if "better".
 		*/
-		bool operator > (const FMTsesmodel& rhs) const;
+		bool operator >= (const FMTsesmodel& rhs) const;
 		// DocString: FMTsesmodel::passinobject
 		/**
 		It's sometime usefull to pass in the exception handler and the logger  of an other FMTobject to

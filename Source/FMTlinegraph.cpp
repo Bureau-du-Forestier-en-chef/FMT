@@ -307,7 +307,7 @@ namespace Graph
 
 	bool FMTlinegraph::isonlygrow() const
 		{
-		return size() == boost::num_edges(data);
+		return (size()-1) == boost::num_edges(data);
 		}
 
 	bool FMTlinegraph::hashforconstraint(size_t& hashvalue, const int&start, const int& stop, const Core::FMTmask& dynamicmask) const
