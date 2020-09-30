@@ -202,6 +202,12 @@ namespace Spatial
 				const Graph::FMTlinegraph& lg = mapping.at(updated);
 				const Graph::FMTgraph<Graph::FMTbasevertexproperties, Graph::FMTbaseedgeproperties>::FMTvertex_descriptor& active = lg.getactivevertex();
 				const Core::FMTdevelopment& active_development = lg.getdevelopment(active);
+				if (active_development.period != selection.getperiod())
+					{
+					_exhandler->raise(Exception::FMTexc::FMTrangeerror,
+						"Wrong developement/schedule period " + std::to_string(active_development.period),
+						"FMTspatialschedule::getupdatedscheduling", __LINE__, __FILE__);
+					}
 				boost::unordered_map<Core::FMTdevelopment, std::vector<bool>>::iterator cacheit = cachedactions.find(active_development);
 				if (cacheit == cachedactions.end())
 					{
@@ -389,6 +395,7 @@ namespace Spatial
 		for (std::map<FMTcoordinate, Graph::FMTlinegraph>::iterator graphit = this->mapping.begin(); graphit != this->mapping.end(); ++graphit)
 		{
 			Graph::FMTlinegraph* local_graph = &graphit->second;
+
 			local_graph->grow();
 		}
 	}
@@ -492,12 +499,70 @@ namespace Spatial
 		return returnvalue;
 		}
 
+	double FMTspatialschedule::getconstraintevaluation(const Core::FMTconstraint&constraint,
+		const Models::FMTmodel& model, const std::vector<Spatial::FMTspatialaction>& spactions,
+		const FMTspatialschedule*	friendlysolution) const
+	{
+		double value = 0;
+		try {
+			if (!constraint.isspatial())
+			{
+				const std::vector<double>outputvalues = this->getgraphsoutputs(model, constraint, friendlysolution);
+				if (!outputvalues.empty())
+				{
+					value = constraint.evaluate(outputvalues);
+				}
 
-	std::vector<int>FMTspatialschedule::isbetterthan(const FMTspatialschedule& newsolution,
+			}
+			else {//evaluate spatial stuff
+				value = this->evaluatespatialconstraint(constraint, spactions);
+			}
+		}catch (...)
+		{
+			_exhandler->raisefromcatch("", "FMTspatialschedule::getconstraintevaluation", __LINE__, __FILE__);
+		}
+	return value;
+	}
+
+	double FMTspatialschedule::getprimalinfeasibility(const std::vector<Core::FMTconstraint>& constraints, const Models::FMTmodel& model,
+		const std::vector<Spatial::FMTspatialaction>& spactions,
+		const FMTspatialschedule*	friendlysolution) const
+	{
+		double value = 0;
+		try {
+			for (const Core::FMTconstraint& constraint: constraints)
+				{
+				value += getconstraintevaluation(constraint, model, spactions, friendlysolution);
+				}
+			
+		}catch (...)
+			{
+			_exhandler->raisefromcatch("", "FMTspatialschedule::getprimalinfeasibility", __LINE__, __FILE__);
+			}
+		return value;
+	}
+
+	double FMTspatialschedule::getobjectivevalue(const Core::FMTconstraint& constraint, const Models::FMTmodel& model,
+		const std::vector<Spatial::FMTspatialaction>& spactions,
+		const FMTspatialschedule*	friendlysolution) const
+	{
+		double value = 0;
+		try {
+			value = getconstraintevaluation(constraint, model, spactions, friendlysolution);
+		}
+		catch (...)
+		{
+			_exhandler->raisefromcatch("", "FMTspatialschedule::getobjectivevalue", __LINE__, __FILE__);
+		}
+		return value;
+	}
+
+
+	std::vector<int> FMTspatialschedule::isbetterthan(const FMTspatialschedule& newsolution,
 													const Models::FMTmodel& model,
 													const std::vector<Spatial::FMTspatialaction>& spactions) const
 		{
-		std::vector<int>groupevaluation;
+		std::vector<int> groupevaluation;
 		try {
 			const std::vector<Core::FMTconstraint> constraints = model.getconstraints();
 			size_t maximalgroup = 0;
@@ -509,33 +574,24 @@ namespace Spatial
 					maximalgroup = groupid;
 					}
 				}
-			groupevaluation = std::vector<int>(maximalgroup+1,0);
+			groupevaluation = std::vector<int>(maximalgroup + 1, 0);
 			for (const Core::FMTconstraint& constraint : constraints)
 				{
-				const size_t groupid = constraint.getgroup();
-				double newvalue = 0;
-				double oldvalue = 0;
-				if (!constraint.isspatial())
+				const double oldvalue = this->getconstraintevaluation(constraint, model, spactions);
+				const double newvalue= newsolution.getconstraintevaluation(constraint, model, spactions,this);
+				if (newvalue!=0 && oldvalue!=0)
 					{
-					const std::vector<double>oldoutputvalues = this->getgraphsoutputs(model, constraint);
-					const std::vector<double>newoutputvalues = newsolution.getgraphsoutputs(model, constraint,this);
-					if (!newoutputvalues.empty() && !oldoutputvalues.empty())
+					const double constraintdif = (oldvalue - newvalue);
+					const size_t groupid = constraint.getgroup();
+					if (constraintdif < 0)
+					{
+						++groupevaluation[groupid];
+					}else if (constraintdif > FMT_DBL_TOLERANCE)
 						{
-						newvalue = constraint.evaluate(newoutputvalues);
-						oldvalue = constraint.evaluate(oldoutputvalues);
+						--groupevaluation[groupid];
 						}
-					
-				}else{//evaluate spatial stuff
-					newvalue = newsolution.evaluatespatialconstraint(constraint, spactions);
-					oldvalue = this->evaluatespatialconstraint(constraint, spactions);
 					}
-				if (newvalue<oldvalue)
-					{
-					++groupevaluation[groupid];
-				}else if(oldvalue<newvalue)
-					{
-					--groupevaluation[groupid];
-					}
+				
 				}
 		}catch (...)
 			{
@@ -543,6 +599,22 @@ namespace Spatial
 			}
 		return groupevaluation;
 		}
+
+	void FMTspatialschedule::logsolutionstatus(const Models::FMTmodel& model,
+		const std::vector<Spatial::FMTspatialaction>& spactions,
+		const FMTspatialschedule*	friendlysolution) const
+	{
+	try {
+		std::vector<Core::FMTconstraint>constraints = model.getconstraints();
+		const double objective = this->getobjectivevalue(constraints.at(0), model, spactions, friendlysolution);
+		constraints.erase(constraints.begin());
+		const double totalinfeasibility = this->getprimalinfeasibility(constraints, model, spactions, friendlysolution);
+		_logger->logwithlevel("Primal Inf(" + std::to_string(totalinfeasibility) + ") Obj(" + std::to_string(objective) + ")\n", 1);
+	}catch (...)
+		{
+		_exhandler->raisefromcatch("", "FMTspatialschedule::logsolutionstatus", __LINE__, __FILE__);
+		}
+	}
 
 	std::vector<double> FMTspatialschedule::getgraphsoutputs(const Models::FMTmodel & model, const Core::FMTconstraint & constraint,
 															const FMTspatialschedule*	friendlysolution) const
@@ -561,7 +633,10 @@ namespace Spatial
 					outputscache.insert(friendlysolution->outputscache.begin(), friendlysolution->outputscache.end());
 					oldcachesize = outputscache.size();
 					}
-				//*_logger << "calculating with cash size of " << outputscache.size() << "\n";
+				if (constraint.acrossperiod())
+					{
+					++periodstop;
+					}
 				periods_values = std::vector<double>(periodstop - periodstart + 1, 0);
 				const std::vector<double> solutions(1, this->getcellsize());
 				if (!(periodstart==periodstop && constraint.acrossperiod()))
@@ -584,7 +659,6 @@ namespace Spatial
 							}
 						}
 					}
-				//*_logger << "cashit of " << (cashit / static_cast<double>(this->mapping.size())) * 100 << "\n";
 			if (friendlysolution != nullptr && 
 				oldcachesize!=outputscache.size())
 				{
@@ -808,11 +882,8 @@ namespace Spatial
 							graphs.push_back(graphptr);
 							}
 						}
-
 					}
 				}
-			
-
 			}
 		}catch (...)
 			{
