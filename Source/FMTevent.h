@@ -250,6 +250,11 @@ class FMTevent
         Remove all elements from the current event and put it in the events in splittedevents
         */
         bool splitevent(const unsigned int& ldistance, std::vector<FMTevent>& splittedevents) const;
+		// DocString: FMTevent::getterritory
+	   /**
+		Returns the adjacent territory of the event base on a distance.
+	   */
+		std::set<FMTcoordinate>getterritory(const size_t& distance) const;
     };
 }
 

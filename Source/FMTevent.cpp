@@ -497,6 +497,16 @@ namespace Spatial
 
     }
 
+	std::set<FMTcoordinate>FMTevent::getterritory(const size_t& distance) const
+	{
+		std::set<FMTcoordinate>territory;
+		territory.insert(FMTcoordinate(std::max(enveloppe.at(0).getx() - distance, size_t(0)), std::max(enveloppe.at(0).gety() - distance, size_t(0))));
+		territory.insert(FMTcoordinate(enveloppe.at(1).getx() + distance, std::max(enveloppe.at(1).gety() - distance, size_t(0))));
+		territory.insert(FMTcoordinate(std::max(enveloppe.at(2).getx() - distance, size_t(0)), enveloppe.at(2).gety() + distance));
+		territory.insert(FMTcoordinate(enveloppe.at(3).getx() + distance, enveloppe.at(3).gety() + distance));
+		return territory;
+	}
+
     bool FMTevent::splitevent(const unsigned int& ldistance, std::vector<FMTevent>& splittedevents) const
     {
         std::queue<FMTcoordinate> active;

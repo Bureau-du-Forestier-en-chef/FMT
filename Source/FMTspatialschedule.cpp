@@ -7,12 +7,12 @@
 
 namespace Spatial
 {
-    FMTspatialschedule::FMTspatialschedule():FMTlayer<Graph::FMTlinegraph>(),outputscache(),events()
+    FMTspatialschedule::FMTspatialschedule():FMTlayer<Graph::FMTlinegraph>(),outputscache(), outputsmaskcache(),events()
     {
         //ctor
     }
 
-    FMTspatialschedule::FMTspatialschedule(const FMTforest& initialmap):outputscache(),events()
+    FMTspatialschedule::FMTspatialschedule(const FMTforest& initialmap):outputscache(), outputsmaskcache(),events()
     {
         FMTlayer<Graph::FMTlinegraph>::operator = (initialmap.copyextent<Graph::FMTlinegraph>());//Setting layer information
         for(std::map<FMTcoordinate,Core::FMTdevelopment>::const_iterator devit = initialmap.mapping.begin(); devit != initialmap.mapping.end(); ++devit)
@@ -28,6 +28,7 @@ namespace Spatial
     FMTspatialschedule::FMTspatialschedule(const FMTspatialschedule& other):
             FMTlayer<Graph::FMTlinegraph>(other),
             outputscache(other.outputscache),
+			outputsmaskcache(other.outputsmaskcache),
             events(other.events)
     {
         //copy ctor
@@ -40,6 +41,7 @@ namespace Spatial
         FMTlayer<Graph::FMTlinegraph>::operator = (rhs);
         this->events = rhs.events;
 		this->outputscache = rhs.outputscache;
+		this->outputsmaskcache = rhs.outputsmaskcache;
         return *this;
     }
 
@@ -298,65 +300,66 @@ namespace Spatial
     }
 
 	FMTeventcontainer FMTspatialschedule::buildharvest(	const double & target, const FMTspatialaction & targetaction, 
-														std::default_random_engine & generator, const std::set<FMTcoordinate>& lmapping, 
+														std::default_random_engine & generator,std::set<FMTcoordinate> mapping_pass,
 														const int& period, const int& actionid, std::vector<FMTcoordinate>& operated) const
 	{
 		//To gain efficiency, maybe tracking cell that have been ignit actually, we are suposing that we are trying every cell, but its not true because of the random generator
 		double harvested_area = 0;
 		FMTeventcontainer cuts;
 		try {
-		std::set<FMTcoordinate> mapping_pass = lmapping;
-		size_t count = lmapping.size();
-		int tooclosecall = 0;
-		int initdone = 0;
-		int spreaddone = 0;
-		bool check_adjacency = (std::find(targetaction.neighbors.begin(), targetaction.neighbors.end(), targetaction.getname()) != targetaction.neighbors.end());
-		if (!mapping_pass.empty())
-		{
-			std::set<FMTcoordinate>::const_iterator randomit;
-			while (harvested_area < target && count > 0 && !mapping_pass.empty())
+			size_t count = mapping_pass.size();
+			int tooclosecall = 0;
+			int initdone = 0;
+			int spreaddone = 0;
+			bool check_adjacency = (std::find(targetaction.neighbors.begin(), targetaction.neighbors.end(), targetaction.getname()) != targetaction.neighbors.end());
+			if (!mapping_pass.empty())
 			{
-				std::uniform_int_distribution<int> celldistribution(0, mapping_pass.size() - 1);
-				const int cell = celldistribution(generator);//Get cell to ignit
-				randomit = mapping_pass.begin();
-				std::advance(randomit, cell);
-				FMTevent newcut;
-				if (newcut.ignit(targetaction, *randomit, actionid, period))
+				std::set<FMTcoordinate>::const_iterator randomit;
+				while (harvested_area < target && count > 0 && !mapping_pass.empty())
 				{
-					++initdone;
-					if (newcut.spread(targetaction, mapping_pass))
+					std::uniform_int_distribution<int> celldistribution(0, mapping_pass.size() - 1);
+					const int cell = celldistribution(generator);//Get cell to ignit
+					randomit = mapping_pass.begin();
+					std::advance(randomit, cell);
+					FMTevent newcut;
+					if (newcut.ignit(targetaction, *randomit, actionid, period))
 					{
-						++spreaddone;
-						bool tooclose = false;
-						if (check_adjacency)
+						++initdone;
+						if (newcut.spread(targetaction, mapping_pass))
 						{
-							for (const FMTevent& cut :cuts)
+							++spreaddone;
+							bool tooclose = false;
+							if (check_adjacency)
 							{
-								if (cut.within(static_cast<unsigned int>(targetaction.adjacency), newcut))
+								const size_t adjacency = static_cast<size_t>(targetaction.adjacency);
+								const size_t maximaldistance = adjacency + static_cast<size_t>(targetaction.maximal_size);
+								for (const std::set<FMTevent>::const_iterator cutit :cuts.getevents(period,newcut.getterritory(maximaldistance)))
 								{
-									tooclose = true;
-									++tooclosecall;
-									break;
+									if (cutit->within(adjacency, newcut))
+									{
+										tooclose = true;
+										++tooclosecall;
+										break;
+									}
 								}
 							}
-						}
-						if (!tooclose)
-						{
-							cuts.insert(newcut);
-							operated.reserve(newcut.elements.size());
-							for (const FMTcoordinate& toremove : newcut.elements)
-								{
-								operated.push_back(toremove);
-								mapping_pass.erase(toremove);
-								}
-							harvested_area += (static_cast<double>(newcut.elements.size())*cellsize);
-							count = mapping_pass.size() + 1;
+							if (!tooclose)
+							{
+								cuts.insert(newcut);
+								operated.reserve(newcut.elements.size());
+								for (const FMTcoordinate& toremove : newcut.elements)
+									{
+									operated.push_back(toremove);
+									mapping_pass.erase(toremove);
+									}
+								harvested_area += (static_cast<double>(newcut.elements.size())*cellsize);
+								count = mapping_pass.size() + 1;
+							}
 						}
 					}
+					--count;
 				}
-				--count;
 			}
-		}
 		}catch (...)
 			{
 			_exhandler->raisefromcatch("", "FMTspatialschedule::buildharvest", __LINE__, __FILE__);
@@ -548,7 +551,7 @@ namespace Spatial
 	{
 		double value = 0;
 		try {
-			value = getconstraintevaluation(constraint, model, spactions, friendlysolution);
+			value = getconstraintevaluation(constraint, model, spactions, friendlysolution)*constraint.sense();
 		}
 		catch (...)
 		{
@@ -575,23 +578,31 @@ namespace Spatial
 					}
 				}
 			groupevaluation = std::vector<int>(maximalgroup + 1, 0);
+			std::vector<double>groupsprimalinfeasibilitygap(maximalgroup + 1, 0);
 			for (const Core::FMTconstraint& constraint : constraints)
 				{
 				const double oldvalue = this->getconstraintevaluation(constraint, model, spactions);
 				const double newvalue= newsolution.getconstraintevaluation(constraint, model, spactions,this);
-				if (newvalue!=0 && oldvalue!=0)
+				if (!(newvalue==0 && oldvalue==0))
 					{
-					const double constraintdif = (oldvalue - newvalue);
 					const size_t groupid = constraint.getgroup();
-					if (constraintdif < 0)
+					const double constraintdif = (oldvalue - newvalue);
+					groupsprimalinfeasibilitygap[groupid] += constraintdif;
+					/*if (constraintdif < 0)
 					{
 						++groupevaluation[groupid];
 					}else if (constraintdif > FMT_DBL_TOLERANCE)
 						{
 						--groupevaluation[groupid];
-						}
+						}*/
 					}
-				
+				}
+			for (size_t groupid = 0 ;groupid < groupevaluation.size();++groupid)
+				{
+				if (groupsprimalinfeasibilitygap[groupid]>0)//Make sure the primalinfeasibility get better for the group!
+					{
+					groupevaluation[groupid] = -1;
+					}
 				}
 		}catch (...)
 			{
@@ -600,21 +611,32 @@ namespace Spatial
 		return groupevaluation;
 		}
 
-	void FMTspatialschedule::logsolutionstatus(const Models::FMTmodel& model,
-		const std::vector<Spatial::FMTspatialaction>& spactions,
-		const FMTspatialschedule*	friendlysolution) const
+	void FMTspatialschedule::logsolutionstatus(const size_t& iteration,const double& objective, const double& primalinfeasibility) const
 	{
 	try {
-		std::vector<Core::FMTconstraint>constraints = model.getconstraints();
-		const double objective = this->getobjectivevalue(constraints.at(0), model, spactions, friendlysolution);
-		constraints.erase(constraints.begin());
-		const double totalinfeasibility = this->getprimalinfeasibility(constraints, model, spactions, friendlysolution);
-		_logger->logwithlevel("Primal Inf(" + std::to_string(totalinfeasibility) + ") Obj(" + std::to_string(objective) + ")\n", 1);
+		_logger->logwithlevel("Iteration "+std::to_string(iteration)+" Primal Inf(" + std::to_string(primalinfeasibility) + ") Obj(" + std::to_string(objective) + ")\n", 1);
 	}catch (...)
 		{
 		_exhandler->raisefromcatch("", "FMTspatialschedule::logsolutionstatus", __LINE__, __FILE__);
 		}
 	}
+
+	void FMTspatialschedule::getsolutionstatus(double& objective, double& primalinfeasibility, const Models::FMTmodel& model,
+		const std::vector<Spatial::FMTspatialaction>& spactions,
+		const FMTspatialschedule*	friendlysolution) const
+	{
+		try {
+			std::vector<Core::FMTconstraint>constraints = model.getconstraints();
+			objective = this->getobjectivevalue(constraints.at(0), model, spactions, friendlysolution);
+			constraints.erase(constraints.begin());
+			primalinfeasibility = this->getprimalinfeasibility(constraints, model, spactions, friendlysolution);
+		}
+		catch (...)
+		{
+			_exhandler->raisefromcatch("", "FMTspatialschedule::getsolutionstatus", __LINE__, __FILE__);
+		}
+	}
+
 
 	std::vector<double> FMTspatialschedule::getgraphsoutputs(const Models::FMTmodel & model, const Core::FMTconstraint & constraint,
 															const FMTspatialschedule*	friendlysolution) const
@@ -641,8 +663,18 @@ namespace Spatial
 				const std::vector<double> solutions(1, this->getcellsize());
 				if (!(periodstart==periodstop && constraint.acrossperiod()))
 					{
-					const Core::FMTmask dynamicmask;// = model.getdynamicmask(constraint);
 					const size_t constrainthash = constraint.hash(false);
+					const size_t outputhash = constraint.hash(false, true);
+					Core::FMTmask dynamicmask;
+					std::unordered_map<size_t, Core::FMTmask>::const_iterator maskit = outputsmaskcache.find(outputhash);
+					if (maskit != outputsmaskcache.end())
+					{
+						dynamicmask = maskit->second;
+					}
+					else {
+						dynamicmask = model.getdynamicmask(constraint);
+						outputsmaskcache[outputhash] = dynamicmask;
+					}
 					std::vector<const Graph::FMTlinegraph*>graphs;
 					if (constraint.isactionbased() && !constraint.isinventory())//get the graphs from the events
 						{
@@ -792,7 +824,8 @@ namespace Spatial
 			for (std::map<FMTcoordinate, Graph::FMTlinegraph>::iterator graphit = this->mapping.begin(); graphit != this->mapping.end(); ++graphit)
 				{
 				lastperiod = graphit->second.getperiod()-1;
-				graphit->second = graphit->second.partialcopy(lastperiod);
+				//graphit->second = graphit->second.partialcopy(lastperiod);
+				graphit->second.clearfromperiod(lastperiod, true);
 				}
 			if (lastperiod!=-1)
 				{
@@ -822,8 +855,17 @@ namespace Spatial
 				if (!this->mapping.empty() && this->mapping.begin()->second.constraintlenght(constraint, periodstart, periodstop))
 					{
 					const size_t constraint_hashing = constraint.hash(false);
+					const size_t outputhash = constraint.hash(false,true);
 					const bool outputneedsaction = constraint.isactionbased();
-					const Core::FMTmask dynamicmask;// = model.getdynamicmask(constraint);
+					Core::FMTmask dynamicmask;
+					std::unordered_map<size_t, Core::FMTmask>::const_iterator maskit = outputsmaskcache.find(outputhash);
+					if (maskit != outputsmaskcache.end())
+						{
+						dynamicmask = maskit->second;
+					}else {
+						dynamicmask = model.getdynamicmask(constraint);
+						outputsmaskcache[outputhash] = dynamicmask;
+						}
 					for (std::map<FMTcoordinate, Graph::FMTlinegraph>::iterator graphit = this->mapping.begin(); graphit != this->mapping.end(); ++graphit)
 						{
 						size_t graphhash = constraint_hashing;
@@ -850,6 +892,7 @@ namespace Spatial
 	std::vector<const Graph::FMTlinegraph*>FMTspatialschedule::getfromevents(const Core::FMTconstraint& constraint, const std::vector<Core::FMTaction>& actions, const int& start,const int& stop) const
 		{
 		std::vector<const Graph::FMTlinegraph*>graphs;
+		
 		try {
 		if (constraint.isactionbased())
 			{
@@ -870,6 +913,7 @@ namespace Spatial
 					}
 				}
 			std::sort(targetedactions.begin(), targetedactions.end());
+			std::set<FMTcoordinate>collected;
 			for (int period = start; period <=stop; ++period)
 				{
 				for (std::set<FMTevent>::const_iterator eventit : events.getevents(period, targetedactions))
@@ -877,10 +921,15 @@ namespace Spatial
 					for (const FMTcoordinate& coordinate : eventit->elements)
 						{
 						const Graph::FMTlinegraph* graphptr = &(mapping.find(coordinate)->second);
-						if (std::find(graphs.begin(), graphs.end(), graphptr) == graphs.end())
+						if (collected.find(coordinate)==collected.end())
 							{
+							collected.insert(coordinate);
 							graphs.push_back(graphptr);
 							}
+						/*if (std::find(graphs.begin(), graphs.end(), graphptr) == graphs.end())
+							{
+							graphs.push_back(graphptr);
+							}*/
 						}
 					}
 				}

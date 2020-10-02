@@ -84,6 +84,11 @@ class FMTconstraint: public FMToutput,public FMTspec
 	Returns the variation of harvest for a vector of double
 	*/
 	double getperiodicvariationcost(const std::vector<double>& values, bool evaluateupper=false) const;
+	// DocString: FMTconstraint::getvariability
+	/**
+	Returns the variability based on a double input
+	*/
+	double getvariability(const std::vector<double>& values,const double& var,const double& lowarvar) const;
 
 	public:
 		// DocString: FMTconstraint()
@@ -187,7 +192,7 @@ class FMTconstraint: public FMToutput,public FMTspec
 		/**
 		Hasghing for FMTconstraint.
 		*/
-		size_t hash(bool hashrhs = true) const;
+		size_t hash(bool hashrhs = true,bool hashoutputonly = false) const;
 		// DocString: FMTconstraint::hashasoutput
 		/**
 		Hasghing for FMToutput.

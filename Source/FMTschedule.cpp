@@ -331,6 +331,25 @@ FMTschedule::operator std::string() const
 			}
 		}
 
+	FMTschedule FMTschedule::getnewschedule(const double& factor) const
+		{
+		FMTschedule newscedule(*this);
+		for (std::map<FMTaction, std::map<FMTdevelopment, std::vector<double>>>::iterator actit = newscedule.elements.begin();
+			actit != newscedule.elements.end(); actit++)
+			{
+				for (std::map<FMTdevelopment, std::vector<double>>::iterator devit = actit->second.begin();devit != actit->second.end(); devit++)
+				{
+					for (double& value : devit->second)
+					{
+						value *= factor;
+					}
+
+				}
+
+			}
+		return newscedule;
+		}
+
 	std::map<FMTdevelopment, std::vector<double>>& FMTschedule::operator[](const FMTaction& action)
 	{
 		return elements[action];

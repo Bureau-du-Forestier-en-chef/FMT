@@ -114,29 +114,81 @@ namespace Models
 	{
 		std::map<std::string, double>bestresults;
 		FMTsesmodel modelcopy(*this);
+		const size_t maxstall = 5;
+		std::default_random_engine generator(seed);
+		const double factorgap = 0.5;
+		std::uniform_real_distribution<double>scheduledistribution(1- factorgap,1);
+		size_t stalcount = 0;
+		size_t iteration = 0;
+		const unsigned int initialseed = seed;
 		try {
 			bestresults["Total"] = 0;
-			for (size_t iteration = 0; iteration < randomiterations; ++iteration)
+			const double totaliterations = static_cast<double>(randomiterations);
+			double lastprimalinf = 0;
+			double lastobjective = 0;
+			double lastschedulefactor = 1;
+			size_t failediterations = 0;
+			bool didregular = false;
+			while ((stalcount< maxstall && failediterations < randomiterations) && ((randomiterations > 1)||(randomiterations == 1)&& iteration < 1))//&& iteration < randomiterations
 			{
-				//FMTsesmodel modelcopy(modelcopy0);
-				bool schedulefirstpass = true;
-				if (iteration % 2 == 0)
+				double factorit = (static_cast<double>(iteration) / totaliterations);
+				if (factorit>1)
 					{
-					schedulefirstpass = false;
+					factorit = scheduledistribution(generator);
 					}
-				const std::map<std::string, double>results = modelcopy.simulate(schedule, false, schedulefirstpass,seed);
+				double schedulefactor = (randomiterations == 1) ? 1 : 1 - ((1 - factorit) * factorgap);//bottom up
+				if (failediterations == (randomiterations - 1) && !didregular)//The last try will be the regular stuff
+					{
+					seed = initialseed;
+					schedulefactor = 1;
+					didregular = true;
+					}
+				bool scheduleonly = false;
+				const Core::FMTschedule factoredschedule = schedule.getnewschedule(schedulefactor);
+				const std::map<std::string, double>results = modelcopy.simulate(factoredschedule,false,true,seed);
+
 				if (iteration == 0 || modelcopy>=*this)
 					{
 						bestresults = results;
+						lastschedulefactor = schedulefactor;
 						*this = modelcopy;
-						this->spschedule.logsolutionstatus(*this, spactions);
-						//*_logger << "Reevaluation 2 " << (modelcopy > *this) << "\n";
+						double newprimalinf = 0;
+						double newobjective = 0;
+						this->spschedule.getsolutionstatus(newobjective, newprimalinf, *this, spactions);
+						this->spschedule.logsolutionstatus(iteration, newobjective, newprimalinf);
+						if(std::abs(lastprimalinf-newprimalinf)<=FMT_DBL_TOLERANCE &&
+							std::abs(lastobjective - newobjective)<=FMT_DBL_TOLERANCE)
+							{
+							++stalcount;
+						}else {
+							stalcount = 0;
+							}
+						lastprimalinf = newprimalinf;
+						lastobjective = newobjective;
+						failediterations = 0;
+					}else {
+						++failediterations;
 					}
 				modelcopy.spschedule.eraselastperiod();//clear the last period to redo a simulate and test again!
 				++seed;
+				++iteration;
 			}
+			if (stalcount== maxstall)
+				{
+				_logger->logwithlevel("Stalled after " + std::to_string(stalcount) + " iterations Skipping\n", 1);
+				}
+			if (failediterations == randomiterations)
+				{
+				_logger->logwithlevel("Solution stuck after " + std::to_string(iteration) + " iterations Skipping\n", 1);
+				}
 			//Need the remove the incomplete stuff from the cash before going to the next step.
 			this->spschedule.cleanincompleteconstraintscash(*this);
+			for (std::map<std::string, double>::iterator facit = bestresults.begin();facit != bestresults.end();facit++)
+				{
+				facit->second *= (lastschedulefactor < 1 ? 1+(1-lastschedulefactor) : 1-(lastschedulefactor-1));
+				}
+			bestresults["Primalinfeasibility"] = lastprimalinf;
+			bestresults["Objective"] = lastobjective;
 		}
 		catch (...)
 		{

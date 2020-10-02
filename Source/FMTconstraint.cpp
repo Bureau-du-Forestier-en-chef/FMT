@@ -243,17 +243,22 @@ namespace Core
 		}
 
 
-	size_t FMTconstraint::hash(bool hashrhs) const
+	size_t FMTconstraint::hash(bool hashrhs,bool hashoutputonly) const
 		{
 		size_t seed = 0;
 		boost::hash_combine(seed, FMToutput::hash());
-		if (hashrhs)
+		if (!hashoutputonly)
 		{
-			boost::hash_combine(seed, FMTspec::hash());
-		}else {//only hash periods from the constraint
-			boost::hash_combine(seed, FMTspec::getperiodlowerbound());
-			boost::hash_combine(seed, FMTspec::getperiodupperbound());
+			if (hashrhs)
+			{
+				boost::hash_combine(seed, FMTspec::hash());
 			}
+			else {//only hash periods from the constraint
+				boost::hash_combine(seed, FMTspec::getperiodlowerbound());
+				boost::hash_combine(seed, FMTspec::getperiodlowerbound());
+			}
+		}
+		
 		return seed;
 		}
 
@@ -551,6 +556,22 @@ namespace Core
 			}
 			}
 
+		double FMTconstraint::getvariability(const std::vector<double>& values, const double& var, const double& lowarvar) const
+		{
+			double total = 0;
+			for (const double& value : values)
+			{
+				if (lowarvar != 0)
+				{
+					total += value > (var * 1.0 + lowarvar) ? std::abs(value - var) : 0;
+				}else {
+					total += std::abs(value - var);
+				}
+				
+			}
+			return total;
+		}
+
 		double FMTconstraint::getsum(const std::vector<double>& values) const
 			{
 			double totalvalue = 0;
@@ -568,6 +589,7 @@ namespace Core
 			getvariations(lowervariation, uppervariation);
 			double lastvalue = 0;
 			double costsum = 0;
+
 			for (size_t periodid = 0; periodid < values.size(); ++periodid)
 				{
 				const double& value = values.at(periodid);
@@ -635,11 +657,12 @@ namespace Core
 					double uppervariation = 0;
 					getvariations(lowervariation, uppervariation);
 					getmaxandmin(temporalvalues, minimal, maximal);
-					returnedvalue = maximal - minimal;
+					returnedvalue = getvariability(temporalvalues, minimal, lowervariation);
+					/*returnedvalue = maximal - minimal;
 					if (lowervariation != 0)
 						{
 						returnedvalue = returnedvalue > (minimal * 1.0 + lowervariation) ? returnedvalue : 0;
-						}
+						}*/
 					break;
 				}
 				case FMTconstrainttype::FMTnondeclining:

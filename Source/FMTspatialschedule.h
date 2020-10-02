@@ -17,6 +17,7 @@ with a schedule.
 class FMTspatialschedule : public FMTlayer<Graph::FMTlinegraph>
 {
     mutable std::unordered_map<size_t, std::vector<double>>outputscache;
+	mutable std::unordered_map<size_t,Core::FMTmask>outputsmaskcache;
     public:
         // DocString: FMTspatialschedule()
 		/**
@@ -124,7 +125,7 @@ class FMTspatialschedule : public FMTlayer<Graph::FMTlinegraph>
 		/**
 		
 		*/
-		FMTeventcontainer buildharvest(	const double& target, const FMTspatialaction& targetaction, std::default_random_engine& generator, const std::set<FMTcoordinate>& lmapping, 
+		FMTeventcontainer buildharvest(	const double& target, const FMTspatialaction& targetaction, std::default_random_engine& generator,std::set<FMTcoordinate> mapping_pass,
 										const int& previousperiod, const int& actionid, std::vector<FMTcoordinate>& operated) const;
 		// DocString: FMTspatialschedule::operate(const FMTeventcontainer&, const std::vector<Core::FMTaction>&, const int&)
 		/**
@@ -184,10 +185,15 @@ class FMTspatialschedule : public FMTlayer<Graph::FMTlinegraph>
 		/**
 			Log the status of the solution
 		*/
-		void logsolutionstatus(const Models::FMTmodel& model,
+		void logsolutionstatus(const size_t& iteration, const double& objective, const double& primalinfeasibility) const;
+
+		// DocString: FMTspatialschedule::getsolutionstatus()
+		/**
+			Get the primal infeasibility and objective value
+		*/
+		void getsolutionstatus(double& objective, double& primalinfeasibility,const Models::FMTmodel& model,
 			const std::vector<Spatial::FMTspatialaction>& spactions,
 			const FMTspatialschedule*	friendlysolution = nullptr) const;
-
 		// DocString: FMTspatialschedule::getobjectivevaluey()
 		/**
 			Returns the objective value of the spatialschedule
