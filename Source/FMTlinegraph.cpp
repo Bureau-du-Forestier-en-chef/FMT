@@ -251,10 +251,12 @@ namespace Graph
         return (statsdiff - stats);
 	}
 
-    FMTgraphstats FMTlinegraph::clearfromperiod(const int& period)
+    FMTgraphstats FMTlinegraph::clearfromperiod(const int& period,bool updatedevelopments)
     {
-        for (int location = static_cast<int>(this->size()-1) ; location>=period ; --location)
+		const int basesize = static_cast<int>(this->size() - 1);
+        for (int location = basesize; location>=period ; --location)
         {
+			std::vector<std::unordered_map<size_t, FMTvertex_descriptor>::iterator>removed;
             for (std::unordered_map<size_t, FMTvertex_descriptor>::iterator it = developments.at(location).begin();
                 it != developments.at(location).end(); it++)
                 {
@@ -263,21 +265,32 @@ namespace Graph
                         {
                             --stats.edges;
 							boost::clear_in_edges(vertex_location,data);
+							removed.push_back(it);
                         }
                 }
-                   for (std::unordered_map<size_t, FMTvertex_descriptor>::iterator it = developments[location].begin();
-                    it != developments[location].end(); it++)
-                    {
-                        FMTvertex_descriptor vertex_location = it->second;
-                        if (!(location == period && periodstart(vertex_location)))
-                            {
-                                boost::remove_vertex(vertex_location, data);
-                                --stats.vertices;
-                            }
-                    }
+			for (std::unordered_map<size_t, FMTvertex_descriptor>::iterator it : removed)
+				{
+				boost::remove_vertex(it->second, data);
+				--stats.vertices;
+				if (updatedevelopments)
+					{
+					developments.at(location).erase(it);
+					}
+				}
+			if (updatedevelopments && developments.back().empty())
+				{
+				developments.pop_back();
+				}
+			
         }
+	if (updatedevelopments)
+		{
+		nodescache.clear();
+		}
     return stats;
     }
+
+
 
     FMTlinegraph FMTlinegraph::partialcopy(const int& period) const
     {
@@ -315,8 +328,9 @@ namespace Graph
 		FMTvertex_iterator vertex_iterator, vertex_iterator_end;
 		boost::tie(vertex_iterator, vertex_iterator_end) = boost::vertices(data);
 		const Core::FMTdevelopment& development = getdevelopment(*vertex_iterator);
-		//boost::hash_combine(hashvalue, development.mask.getintersect(dynamicmask));
-		boost::hash_combine(hashvalue, development.mask);
+		//Logging::FMTlogger() << std::string(development) << "\n"; erase theme index 9!
+		boost::hash_combine(hashvalue, development.mask.getintersect(dynamicmask));
+		//boost::hash_combine(hashvalue, development.mask);
 		boost::hash_combine(hashvalue, development.age);
 		//boost::hash_combine(hashvalue, boost::hash<Core::FMTdevelopment>()(development));
 		const int actperiod = getperiod()-1;

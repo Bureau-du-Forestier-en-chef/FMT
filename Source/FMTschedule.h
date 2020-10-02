@@ -173,6 +173,11 @@ class FMTschedule : public FMTobject
 		Setter for the period of the Schedule and the period developements of the schedule.
 		*/
 		void setperiod(const int& newperiod);
+		// DocString: FMTschedule::getnewschedule
+		/**
+		Multiply this schedule with a factor and return it
+		*/
+		FMTschedule getnewschedule(const double& factor) const;
 		/**
 		Functions that make sure the FMTschedule acts like a std c++ container
 		*/
