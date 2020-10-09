@@ -146,7 +146,6 @@ namespace Models
 				bool scheduleonly = false;
 				const Core::FMTschedule factoredschedule = schedule.getnewschedule(schedulefactor);
 				const std::map<std::string, double>results = modelcopy.simulate(factoredschedule,false,true,seed);
-
 				if (iteration == 0 || modelcopy>=*this)
 					{
 						bestresults = results;
@@ -182,7 +181,7 @@ namespace Models
 				_logger->logwithlevel("Solution stuck after " + std::to_string(iteration) + " iterations Skipping\n", 1);
 				}
 			//Need the remove the incomplete stuff from the cash before going to the next step.
-			this->spschedule.cleanincompleteconstraintscash(*this);
+			//this->spschedule.cleanincompleteconstraintscash(*this);
 			for (std::map<std::string, double>::iterator facit = bestresults.begin();facit != bestresults.end();facit++)
 				{
 				facit->second *= (lastschedulefactor < 1 ? 1+(1-lastschedulefactor) : 1-(lastschedulefactor-1));

@@ -350,6 +350,18 @@ FMTschedule::operator std::string() const
 		return newscedule;
 		}
 
+	bool FMTschedule::isfuturconstraints(const std::vector<Core::FMTconstraint>& constraints) const
+		{
+		for (const Core::FMTconstraint& constraint : constraints)
+			{
+			if (constraint.acrossperiod()&&constraint.getperiodlowerbound()==period)
+				{
+				return true;
+				}
+			}
+		return false;
+		}
+
 	std::map<FMTdevelopment, std::vector<double>>& FMTschedule::operator[](const FMTaction& action)
 	{
 		return elements[action];

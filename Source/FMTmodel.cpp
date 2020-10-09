@@ -37,6 +37,7 @@ void FMTmodel::setdefaultobjects()
 		{
 			action.update();
 		}
+		statictransitionthemes = getstatictransitionthemes();
 	}catch (...)
 		{
 		_exhandler->raisefromcatch("","FMTmodel::setdefaultobjects", __LINE__, __FILE__);
@@ -44,8 +45,32 @@ void FMTmodel::setdefaultobjects()
 	
 	}
 
+std::vector<size_t>FMTmodel::getstatictransitionthemes() const
+	{
+	std::vector<size_t>statics;
+	try {
+		std::vector<Core::FMTtheme>bestthemes=themes;
+		for (const Core::FMTtransition& transition : transitions)
+		{
+			bestthemes = transition.getstaticthemes(bestthemes);
+		}
+		for (const Core::FMTtheme& theme : bestthemes)
+			{
+			std::vector<Core::FMTtheme>::const_iterator basit = std::find_if(themes.begin(), themes.end(), Core::FMTthemecomparator(theme));
+			if (basit!=themes.end())
+				{
+				statics.push_back(std::distance(themes.cbegin(), basit));
+				}
+			}
+	}catch (...)
+		{
+		_exhandler->raisefromcatch("", "FMTmodel::getstatictransitionthemes", __LINE__, __FILE__);
+		}
+	return statics;
+	}
 
-FMTmodel::FMTmodel() : Core::FMTobject(),area(),themes(),actions(), transitions(),yields(),lifespan(),outputs(), constraints(),name()
+
+FMTmodel::FMTmodel() : Core::FMTobject(),area(),themes(),actions(), transitions(),yields(),lifespan(),outputs(), constraints(),name(), statictransitionthemes()
 {
 
 }
@@ -55,13 +80,18 @@ FMTmodel::FMTmodel(const std::vector<Core::FMTactualdevelopment>& larea, const s
 	const std::vector<Core::FMTtransition>& ltransitions, const Core::FMTyields& lyields, const Core::FMTlifespans& llifespan,
 	const std::string& lname, const std::vector<Core::FMToutput>& loutputs,std::vector<Core::FMTconstraint> lconstraints) :
 	Core::FMTobject(), area(larea), themes(lthemes), actions(lactions), transitions(ltransitions),
-	yields(lyields), lifespan(llifespan), outputs(loutputs), constraints(lconstraints), name(lname)
+	yields(lyields), lifespan(llifespan), outputs(loutputs), constraints(lconstraints), name(lname), statictransitionthemes()
 	{
 	setdefaultobjects();
 	}
 
 FMTmodel::FMTmodel(const FMTmodel& rhs):Core::FMTobject(rhs),area(rhs.area),themes(rhs.themes),actions(rhs.actions),
-		 transitions(rhs.transitions),yields(rhs.yields),lifespan(rhs.lifespan), outputs(rhs.outputs), constraints(rhs.constraints),name(rhs.name){}
+		 transitions(rhs.transitions),yields(rhs.yields),lifespan(rhs.lifespan), outputs(rhs.outputs), constraints(rhs.constraints),name(rhs.name),
+		statictransitionthemes(statictransitionthemes)
+
+	{
+
+	}
 
 FMTmodel& FMTmodel::operator = (const FMTmodel& rhs)
     {
@@ -77,6 +107,7 @@ FMTmodel& FMTmodel::operator = (const FMTmodel& rhs)
 		outputs = rhs.outputs;
 		constraints = rhs.constraints;
         name = rhs.name;
+		statictransitionthemes = rhs.statictransitionthemes;
         }
     return *this;
     }
@@ -301,6 +332,7 @@ void FMTmodel::setthemes(const std::vector<Core::FMTtheme>& lthemes)
 			theme.passinobject(*this);
 		}
 		//After theme change every masks needs to be reevaluated?.
+		statictransitionthemes = getstatictransitionthemes();
 	}catch (...)
 	{
 		_exhandler->printexceptions("", "FMTmodel::setthemes", __LINE__, __FILE__);
@@ -335,6 +367,7 @@ void FMTmodel::settransitions(const std::vector<Core::FMTtransition>& ltransitio
 			transition.update();
 		}
 		this->setdefaultobjects();
+		statictransitionthemes = getstatictransitionthemes();
 	}catch (...)
 		{
 			_exhandler->printexceptions("", "FMTmodel::settransitions", __LINE__, __FILE__);
@@ -387,14 +420,12 @@ void FMTmodel::setoutputs(const std::vector<Core::FMToutput>& newoutputs)
 	}
 
 
-std::vector<Core::FMTtheme> FMTmodel::locatestaticthemes(const Core::FMToutput& output) const
+std::vector<Core::FMTtheme> FMTmodel::locatestaticthemes(const Core::FMToutput& output, bool ignoreoutputvariables) const
 {
-	std::vector<Core::FMTtheme>bestthemes = output.getstaticthemes(themes,yields);
+	std::vector<Core::FMTtheme> bestthemes;
 	try {
-		for (const Core::FMTtransition& transition : transitions)
-		{
-			bestthemes = transition.getstaticthemes(bestthemes);
-		}
+		bestthemes = locatestatictransitionsthemes();
+		bestthemes = output.getstaticthemes(bestthemes, yields, ignoreoutputvariables);
 	}catch (...)
 		{
 		_exhandler->raisefromcatch("","FMTmodel::locatestaticthemes", __LINE__, __FILE__);
@@ -402,11 +433,103 @@ std::vector<Core::FMTtheme> FMTmodel::locatestaticthemes(const Core::FMToutput& 
 	return bestthemes;
 }
 
-std::vector<Core::FMTtheme> FMTmodel::locatedynamicthemes(const Core::FMToutput& output) const
+std::vector<Core::FMTtheme>FMTmodel::locatestatictransitionsthemes() const
+{
+	std::vector<Core::FMTtheme>bestthemes;
+	try {
+		for (const size_t& location : statictransitionthemes)
+		{
+			bestthemes.push_back(themes.at(location));
+		}
+	}
+	catch (...)
+	{
+		_exhandler->raisefromcatch("", "FMTmodel::locatestatictransitionsthemes", __LINE__, __FILE__);
+	}
+	return bestthemes;
+
+}
+
+std::vector<Core::FMTtheme>FMTmodel::locatenodestaticthemes(const Core::FMToutputnode& node,
+	bool ignoreoutputvariables,
+	std::vector<Core::FMTtheme> basethemes) const
+{
+	std::vector<Core::FMTtheme>statics;
+	if (!basethemes.empty())
+		{
+		statics = basethemes;
+	}
+	else {
+		statics = themes;
+	}
+	try {
+		std::vector<std::string>yieldstolookat;
+		if (node.source.isvariable())
+		{
+			if (!ignoreoutputvariables)
+			{
+				statics = node.source.getmask().getstaticthemes(statics);
+			}
+			const std::string yieldvalue = node.source.getyield();
+			for (const std::string& yldbound : node.source.getylds())
+			{
+				if (yields.isyld(yldbound))
+				{
+					yieldstolookat.push_back(yldbound);
+				}
+			}
+			if (!yieldvalue.empty())
+			{
+				yieldstolookat.push_back(yieldvalue);
+			}
+		}
+		std::vector<std::pair<Core::FMTmask, Core::FMTyieldhandler>>::const_iterator handlerit = yields.begin();
+		while (handlerit != yields.end() && !yieldstolookat.empty())
+		{
+			std::vector<std::string>::const_iterator yieldit = yieldstolookat.begin();
+			while (yieldit != yieldstolookat.end() && handlerit->second.elements.find(*yieldit) == handlerit->second.elements.end())
+			{
+				++yieldit;
+			}
+			if (yieldit != yieldstolookat.end())
+			{
+				statics = Core::FMTmask(std::string(handlerit->first), themes).getstaticthemes(statics);
+				yieldstolookat.erase(yieldit);
+			}
+			++handlerit;
+		}
+	}
+	catch (...)
+	{
+		_exhandler->raisefromcatch("", "FMTmodel::locatenodestaticthemes", __LINE__, __FILE__);
+	}
+	return statics;
+
+
+}
+
+
+
+std::vector<Core::FMTtheme> FMTmodel::locatestaticthemes(const Core::FMToutputnode& node, bool ignoreoutputvariables) const
+{
+	std::vector<Core::FMTtheme>statics;
+	try {
+		statics = locatestatictransitionsthemes();
+		statics = locatenodestaticthemes(node, ignoreoutputvariables, statics);
+		
+	}catch (...)
+	{
+		_exhandler->raisefromcatch("", "FMTmodel::locatestaticthemes", __LINE__, __FILE__);
+	}
+	return statics;
+
+}
+
+std::vector<Core::FMTtheme> FMTmodel::locatedynamicthemes(const Core::FMToutput& output, bool ignoreoutputvariables) const
 {
 	std::vector<Core::FMTtheme>dynamicthemes;
 	try {
-		const std::vector<Core::FMTtheme>staticthemes = locatestaticthemes(output);
+		const std::vector<Core::FMTtheme>staticthemes = locatestaticthemes(output, ignoreoutputvariables);
 		for (const Core::FMTtheme& theme : themes)
 			{
 			if (std::find_if(staticthemes.begin(), staticthemes.end(), Core::FMTthemecomparator(theme))==staticthemes.end())
@@ -422,16 +545,18 @@ std::vector<Core::FMTtheme> FMTmodel::locatedynamicthemes(const Core::FMToutput&
 }
 
 
-Core::FMTmask FMTmodel::getdynamicmask(const Core::FMToutput& output) const
+Core::FMTmask FMTmodel::getdynamicmask(const Core::FMToutput& output, bool ignoreoutputvariables) const
 	{
 	Core::FMTmask selection;
 	try {
-		const std::vector<Core::FMTtheme>staticcthemes = locatestaticthemes(output);
+		const std::vector<Core::FMTtheme>staticcthemes = locatestaticthemes(output, ignoreoutputvariables);
 		std::string basename;
 		for (const Core::FMTtheme& theme : themes)
 			{
+			
 			basename += "? ";
 			}
+		
 		basename.pop_back();
 		const Core::FMTmask submask(basename,themes);
 		boost::dynamic_bitset<>bits = submask.getbitsetreference();
@@ -450,6 +575,40 @@ Core::FMTmask FMTmodel::getdynamicmask(const Core::FMToutput& output) const
 		}
 	return selection;
 	}
+
+Core::FMTmask FMTmodel::getdynamicmask(const Core::FMToutputnode& node, bool ignoreoutputvariables) const
+{
+	Core::FMTmask selection;
+	try {
+		std::vector<Core::FMTtheme>staticcthemes = locatestatictransitionsthemes();
+		staticcthemes = locatenodestaticthemes(node, ignoreoutputvariables, staticcthemes);
+		std::string basename;
+		for (const Core::FMTtheme& theme : themes)
+		{
+
+			basename += "? ";
+		}
+
+		basename.pop_back();
+		const Core::FMTmask submask(basename, themes);
+		boost::dynamic_bitset<>bits = submask.getbitsetreference();
+		for (const Core::FMTtheme& theme : staticcthemes)
+		{
+			const size_t start = static_cast<size_t>(theme.getstart());
+			for (size_t bitid = start; bitid < (theme.size() + start); ++bitid)
+			{
+				bits[bitid] = false;
+			}
+		}
+		selection = Core::FMTmask(basename, bits);
+	}
+	catch (...)
+	{
+		_exhandler->raisefromcatch("", "FMTmodel::getdynamicmask", __LINE__, __FILE__);
+	}
+	return selection;
+
+}
 
 
 void FMTmodel::validatelistspec(const Core::FMTspec& specifier) const

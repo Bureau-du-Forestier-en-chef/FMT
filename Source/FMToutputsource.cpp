@@ -419,7 +419,7 @@ double FMToutputsource::getcoef(const FMTdevelopment& development,
 	return coef;
 	}
 
-size_t FMToutputsource::hash(int period) const
+size_t FMToutputsource::hash(int period, bool withyield) const
 	{
 	size_t seed = 0;
 	boost::hash_combine(seed,mask.hash());
@@ -433,6 +433,10 @@ size_t FMToutputsource::hash(int period) const
 	if (period >= 0)
 		{
 		boost::hash_combine(seed, period);
+		}
+	if (withyield)
+		{
+		boost::hash_combine(seed,yield);
 		}
 	return seed;
 	}

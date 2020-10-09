@@ -47,6 +47,13 @@ namespace Graph
 			}
 			std::sort(basenode.begin(), basenode.end());
 		}
+		void setinitialcache(const std::vector<tvdescriptor>& baseelements)
+		{
+			searchtree.clear();
+			basenode = baseelements;
+			std::sort(basenode.begin(), basenode.end());
+
+		}
 		const std::vector<tvdescriptor>& getcleandescriptors(const Core::FMToutputnode& targetnode,const std::vector<Core::FMTaction>& actions,
 										const std::vector<Core::FMTtheme>&themes, bool& exactnode) const
 		{
@@ -192,6 +199,11 @@ namespace Graph
 			{
 				this->setinitialcache(initialgraph);
 			}
+		FMToutputnodecache(const std::vector<tvdescriptor>& initialnodes) :
+			basenode(), searchtree()
+		{
+			this->setinitialcache(initialnodes);
+		}
 		const std::vector<tvdescriptor>& getverticies(const Core::FMToutputnode& targetnode, const std::vector<Core::FMTaction>& actions,
 			const std::vector<Core::FMTtheme>&themes, bool& exactvecticies) const
 			{
@@ -206,6 +218,14 @@ namespace Graph
 			basenode.clear();
 			searchtree.clear();
 		}
+		void insert(const FMToutputnodecache& rhs)
+			{
+			if (basenode.size()<rhs.basenode.size())
+				{
+				basenode = rhs.basenode;
+				}
+			searchtree.insert(rhs.searchtree.begin(), rhs.searchtree.end());
+			}
 	};
 
 }

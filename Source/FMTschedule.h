@@ -13,6 +13,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTdevelopment.h"
 #include "FMTaction.h"
 #include "FMTobject.h"
+#include "FMTconstraint.h"
 #include <iterator>
 #include <boost/serialization/export.hpp>
 
@@ -178,6 +179,11 @@ class FMTschedule : public FMTobject
 		Multiply this schedule with a factor and return it
 		*/
 		FMTschedule getnewschedule(const double& factor) const;
+		// DocString: FMTschedule::isfuturconstraints
+		/**
+		Check if the schedule period will be bounded by new constraints.
+		*/
+		bool isfuturconstraints(const std::vector<Core::FMTconstraint>& constraints) const;
 		/**
 		Functions that make sure the FMTschedule acts like a std c++ container
 		*/

@@ -164,6 +164,12 @@ class FMTmask
 		to generate a FMTmask.
 		*/
         FMTmask(const std::vector<std::string>& values,const std::vector<FMTtheme>& themes);
+		// DocString: FMTmask(const std::vector<FMTtheme>&,const std::vector<FMTtheme>&)
+		/**
+		FMTmask constructor using a vector of string for the attributes and a vector of sorted themes
+		to generate a FMTmask.
+		*/
+		FMTmask(const std::vector<FMTtheme>& themes);
 		// DocString: FMTmask::clear
 		/**
 		Clear the data and name members.
@@ -241,7 +247,12 @@ class FMTmask
 		Do a intersection operation on the dynamic bitset of the FMTmask and the given FMTmask (rhs).
 		*/
 		FMTmask getintersect(const FMTmask& rhs) const;
-
+		// DocString: FMTmask::getbitsetintersect
+		/**
+		Do a intersection operation on the dynamic bitset of the FMTmask and the given FMTmask (rhs)
+		but return the bitset.
+		*/
+		boost::dynamic_bitset<> getbitsetintersect(const FMTmask& rhs) const;
 		// DocString: FMTmask::operator=
 		/**
 		FMTmask copy assignment operator.

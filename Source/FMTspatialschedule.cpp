@@ -4,17 +4,20 @@
 #include <algorithm>
 #include <set>
 #include <iterator>
+#include "FMTspatialnodescache.h"
 
 namespace Spatial
 {
-    FMTspatialschedule::FMTspatialschedule():FMTlayer<Graph::FMTlinegraph>(),outputscache(), outputsmaskcache(),events()
+    FMTspatialschedule::FMTspatialschedule():FMTlayer<Graph::FMTlinegraph>(),cache(),events()
     {
         //ctor
     }
 
-    FMTspatialschedule::FMTspatialschedule(const FMTforest& initialmap):outputscache(), outputsmaskcache(),events()
+    FMTspatialschedule::FMTspatialschedule(const FMTforest& initialmap) : FMTlayer<Graph::FMTlinegraph>(), cache(), events()
     {
         FMTlayer<Graph::FMTlinegraph>::operator = (initialmap.copyextent<Graph::FMTlinegraph>());//Setting layer information
+		std::vector<FMTcoordinate>coordinates;
+		coordinates.reserve(initialmap.mapping.size());
         for(std::map<FMTcoordinate,Core::FMTdevelopment>::const_iterator devit = initialmap.mapping.begin(); devit != initialmap.mapping.end(); ++devit)
         {
 			std::vector<Core::FMTactualdevelopment> actdevelopment;
@@ -22,13 +25,14 @@ namespace Spatial
             Graph::FMTlinegraph local_graph(Graph::FMTgraphbuild::schedulebuild);
             std::queue<Graph::FMTgraph<Graph::FMTbasevertexproperties,Graph ::FMTbaseedgeproperties>::FMTvertex_descriptor> actives = local_graph.initialize(actdevelopment);
             mapping[devit->first] = local_graph;
+			coordinates.push_back(devit->first);
         }
+		cache = FMTspatialnodescache(coordinates);
     }
 
     FMTspatialschedule::FMTspatialschedule(const FMTspatialschedule& other):
             FMTlayer<Graph::FMTlinegraph>(other),
-            outputscache(other.outputscache),
-			outputsmaskcache(other.outputsmaskcache),
+            cache(other.cache),
             events(other.events)
     {
         //copy ctor
@@ -40,8 +44,7 @@ namespace Spatial
         //assignment operator
         FMTlayer<Graph::FMTlinegraph>::operator = (rhs);
         this->events = rhs.events;
-		this->outputscache = rhs.outputscache;
-		this->outputsmaskcache = rhs.outputsmaskcache;
+		cache = rhs.cache;
         return *this;
     }
 
@@ -76,9 +79,9 @@ namespace Spatial
 		std::map<FMTcoordinate, Graph::FMTlinegraph>::const_iterator newvalueit;
 		//No location check sooo make sure you copy the same kind of solution...
 		events = rhs.events;
-		if (outputscache.size()<rhs.outputscache.size())
+		if (cache.size()<rhs.cache.size())
 			{
-			outputscache = rhs.outputscache;
+			cache = rhs.cache;
 			}
 		if (this->size() == rhs.size())
 			{
@@ -99,10 +102,10 @@ namespace Spatial
 		std::map<FMTcoordinate, Graph::FMTlinegraph>::iterator newvalueit;
 		//No location check sooo make sure you copy the same kind of solution...
 		events.swap(rhs.events);
-		if (outputscache.size() < rhs.outputscache.size())
+		/*if (cache.size() < rhs.cache.size())
 		{
-			outputscache.swap(rhs.outputscache);
-		}
+			cache.swap(rhs.cache);
+		}*/
 		if (this->size() == rhs.size())
 		{
 			for (const size_t& selection : selected)
@@ -649,53 +652,123 @@ namespace Spatial
 			{
 				size_t oldcachesize = 0;
 				if (friendlysolution!=nullptr 
-					&& !friendlysolution->outputscache.empty()
-					&& outputscache.size()!=friendlysolution->outputscache.size())
+					&& !friendlysolution->cache.empty()
+					&& cache.size()!=friendlysolution->cache.size())
 					{
-					outputscache.insert(friendlysolution->outputscache.begin(), friendlysolution->outputscache.end());
-					oldcachesize = outputscache.size();
+					cache.insert(friendlysolution->cache);
+					oldcachesize = cache.size();
 					}
 				if (constraint.acrossperiod())
 					{
 					++periodstop;
 					}
 				periods_values = std::vector<double>(periodstop - periodstart + 1, 0);
+				const int constraintupperbound = constraint.getperiodupperbound();
 				const std::vector<double> solutions(1, this->getcellsize());
-				if (!(periodstart==periodstop && constraint.acrossperiod()))
-					{
-					const size_t constrainthash = constraint.hash(false);
-					const size_t outputhash = constraint.hash(false, true);
-					Core::FMTmask dynamicmask;
-					std::unordered_map<size_t, Core::FMTmask>::const_iterator maskit = outputsmaskcache.find(outputhash);
-					if (maskit != outputsmaskcache.end())
-					{
-						dynamicmask = maskit->second;
-					}
-					else {
-						dynamicmask = model.getdynamicmask(constraint);
-						outputsmaskcache[outputhash] = dynamicmask;
-					}
-					std::vector<const Graph::FMTlinegraph*>graphs;
-					if (constraint.isactionbased() && !constraint.isinventory())//get the graphs from the events
-						{
-						for (const Graph::FMTlinegraph* graph : getfromevents(constraint, model.getactions(), periodstart, periodstop))
-							{
-							setoutputfromgraph(*graph, model, periods_values,constraint, &solutions[0], periodstart, periodstop, constrainthash, dynamicmask);
-							}
-
-						}else{
-						for (std::map<FMTcoordinate, Graph::FMTlinegraph>::const_iterator graphit = this->mapping.begin(); graphit != this->mapping.end(); ++graphit)
-							{
-							setoutputfromgraph(graphit->second, model, periods_values, constraint, &solutions[0], periodstart, periodstop, constrainthash, dynamicmask);
-
-							}
-						}
-					}
-			if (friendlysolution != nullptr && 
-				oldcachesize!=outputscache.size())
+				if (!(periodstart == periodstop && constraint.acrossperiod()))
 				{
-				//friendlysolution->outputscache.insert(outputscache.begin(), outputscache.end());
-				friendlysolution->outputscache = outputscache;
+					const std::vector<Core::FMTtheme> statictransitionsthemes = model.locatestatictransitionsthemes();
+					for (const Core::FMToutputnode& node : constraint.getnodes(model.area, model.actions, model.yields))
+					{
+						if (node.source.isvariable())
+							{
+							bool exactnode = false;
+							const std::vector<FMTcoordinate>& nodescoordinates = cache.getnode(node, model, exactnode);//starting point to simplification
+							std::vector<std::pair<size_t,int>>periodstolookfor;
+							size_t periodid = 0;
+							for (int period = periodstart; period <= periodstop; ++period)
+								{
+								if (!cache.getactualnodecache()->gotcachevalue(period))
+									{
+									periodstolookfor.push_back(std::pair<size_t, int>(periodid,period));
+								}else {
+									periods_values[periodid] = cache.getactualnodecache()->getcachevalue(period);
+									}
+								++periodid;
+								}
+							if (!periodstolookfor.empty())
+								{
+								if (!exactnode&&cache.getactualnodecache()->worthintersecting)
+									{
+									//setgraphcachebystatic(nodescoordinates, node); Needs to be fixed !!!
+									}
+								const std::vector<FMTcoordinate>& staticcoordinates = cache.getnode(node, model, exactnode);//Will possibility return the whole map...
+								const Core::FMTmask dynamicmask = cache.getactualnodecache()->dynamicmask;
+								if (node.isactionbased() && !node.source.isinventory())
+								{
+									for (const std::pair<size_t, int>& periodpair : periodstolookfor)
+									{
+										const std::vector<FMTcoordinate>eventscoordinate = getfromevents(node, model.getactions(), periodpair.second);
+										std::vector<FMTcoordinate>selection;
+										if (cache.getactualnodecache()->worthintersecting)
+											{
+											std::set_intersection(staticcoordinates.begin(), staticcoordinates.end(),
+												eventscoordinate.begin(), eventscoordinate.end(),
+												std::back_inserter(selection));//filter from the static selection and the events selected....
+										}else {
+											selection = eventscoordinate;
+											}
+										if (cache.getactualnodecache()->worthintersecting &&
+											selection.size()== eventscoordinate.size())//Then the intersection was useless...say it to the cache
+											{
+											cache.getactualnodecache()->worthintersecting = false;
+											//*_logger << "intersect not usefull for " << std::string(node) << "\n";
+										}
+										/*else if (cache.getactualnodecache()->worthintersecting && selection.size() != eventscoordinate.size())
+											{
+											*_logger << "intersect proved usefull for " <<std::string(node) <<"\n";
+											}*/
+										for (const FMTcoordinate& coordinate: selection)
+										{
+											size_t patternhash = 0;
+											const Graph::FMTlinegraph* graph = &mapping.at(coordinate);
+											graph->hashforconstraint(patternhash, periodpair.second, dynamicmask);
+											periods_values[periodpair.first] += getoutputfromgraph(*graph, model, node, &solutions[0], periodpair.second, patternhash, cache.getactualnodecache()->patternvalues);
+										}
+									}
+								}else {
+									bool useless = false;
+									for (const FMTcoordinate& coordinate : staticcoordinates)
+										{
+											const Graph::FMTlinegraph* graph = &mapping.at(coordinate);
+											const size_t basegraphhash = graph->getbasehash(dynamicmask);
+											for (const std::pair<size_t, int>& periodpair : periodstolookfor)
+											{
+												size_t patternhash = graph->getedgeshash(periodpair.second, useless);
+												boost::hash_combine(patternhash, basegraphhash);
+												periods_values[periodpair.first] += getoutputfromgraph(*graph, model, node, &solutions[0], periodpair.second, patternhash, cache.getactualnodecache()->patternvalues);
+											}
+										}
+								}
+								//double cash = 0;
+								//double notcash = 0;
+								for (const std::pair<size_t, int>& periodpair : periodstolookfor)
+								{
+									
+									/*if (cache.getactualnodecache()->gotcachevalue(periodpair.second))
+									{
+										cash += cache.getactualnodecache()->getcachevalue(periodpair.second);
+										notcash += periods_values[periodpair.first];
+									}*/
+									
+									
+									cache.getactualnodecache()->setvalue(periodpair.second, periods_values[periodpair.first]);
+								}
+								/*if (cash > 0 && notcash > 0 && cash != notcash)
+								{
+									*_logger << std::string(node) << " cash " << cash << " not cash " << notcash  << "\n";
+								}*/
+								
+								
+								}
+						}
+						
+					}
+				}
+			if (friendlysolution != nullptr && 
+				oldcachesize!=cache.size())
+				{
+				friendlysolution->cache.insert(cache);
 				}
 			}
 		}catch (...)
@@ -819,21 +892,17 @@ namespace Spatial
 
 	void FMTspatialschedule::eraselastperiod()
 		{
-		int lastperiod = -1;
 		try {
+			const int lastperiod = this->mapping.begin()->second.getperiod() - 1;
+			cache.removeperiod(lastperiod);
 			for (std::map<FMTcoordinate, Graph::FMTlinegraph>::iterator graphit = this->mapping.begin(); graphit != this->mapping.end(); ++graphit)
 				{
-				lastperiod = graphit->second.getperiod()-1;
-				//graphit->second = graphit->second.partialcopy(lastperiod);
 				graphit->second.clearfromperiod(lastperiod, true);
 				}
-			if (lastperiod!=-1)
+			std::set<FMTevent>::const_iterator periodit = events.getbounds(lastperiod).first;
+			while (periodit!=events.end())
 				{
-				std::set<FMTevent>::const_iterator periodit = events.getbounds(lastperiod).first;
-				while (periodit!=events.end())
-					{
-					periodit = events.erase(periodit);
-					}
+				periodit = events.erase(periodit);
 				}
 		}catch (...)
 			{
@@ -842,7 +911,7 @@ namespace Spatial
 
 		}
 
-	void FMTspatialschedule::cleanincompleteconstraintscash(const Models::FMTmodel& model)
+	/*void FMTspatialschedule::cleanincompleteconstraintscash(const Models::FMTmodel& model)
 		{
 		try {
 			std::unordered_map<size_t, std::vector<double>> newcashing;
@@ -854,31 +923,38 @@ namespace Spatial
 				int periodstop = 0;
 				if (!this->mapping.empty() && this->mapping.begin()->second.constraintlenght(constraint, periodstart, periodstop))
 					{
-					const size_t constraint_hashing = constraint.hash(false);
-					const size_t outputhash = constraint.hash(false,true);
-					const bool outputneedsaction = constraint.isactionbased();
-					Core::FMTmask dynamicmask;
-					std::unordered_map<size_t, Core::FMTmask>::const_iterator maskit = outputsmaskcache.find(outputhash);
-					if (maskit != outputsmaskcache.end())
+					
+					const int contraintupper = constraint.getperiodupperbound();
+					for (Core::FMToutputnode& node : constraint.getnodes(model.area,model.actions,model.yields))
 						{
-						dynamicmask = maskit->second;
-					}else {
-						dynamicmask = model.getdynamicmask(constraint);
-						outputsmaskcache[outputhash] = dynamicmask;
+						size_t nodehash = node.hash();
+						Core::FMTmask dynamicmask;
+						std::unordered_map<size_t, Core::FMTmask>::const_iterator maskit = nodesmaskcache.find(nodehash);
+						if (maskit != nodesmaskcache.end())
+						{
+							dynamicmask = maskit->second;
 						}
-					for (std::map<FMTcoordinate, Graph::FMTlinegraph>::iterator graphit = this->mapping.begin(); graphit != this->mapping.end(); ++graphit)
+						else {
+							dynamicmask = model.getdynamicmask(node);
+							nodesmaskcache[nodehash] = dynamicmask;
+						}
+						boost::hash_combine(nodehash, periodstop);
+						for (std::map<FMTcoordinate, Graph::FMTlinegraph>::iterator graphit = this->mapping.begin(); graphit != this->mapping.end(); ++graphit)
 						{
-						size_t graphhash = constraint_hashing;
-						if (!(outputneedsaction && graphit->second.isonlygrow())&&graphit->second.hashforconstraint(graphhash, periodstart,periodstop, dynamicmask))
+							size_t graphhash = nodehash;
+							if (!(node.isactionbased() && graphit->second.isonlygrow()) && graphit->second.hashforconstraint(graphhash, contraintupper, dynamicmask))
 							{
-							std::unordered_map<size_t, std::vector<double>>::const_iterator cacheit = outputscache.find(graphhash);
-							if (cacheit!= outputscache.end())
+								std::unordered_map<size_t, std::vector<double>>::const_iterator cacheit = outputscache.find(graphhash);
+								if (cacheit != outputscache.end())
 								{
-								newcashing[graphhash] = cacheit->second;
+									newcashing[graphhash] = cacheit->second;
 								}
 
 							}
 						}
+						}
+					
+
 					}
 				}
 			outputscache = newcashing;
@@ -887,7 +963,48 @@ namespace Spatial
 			_exhandler->raisefromcatch("", "FMTspatialschedule::cleanincompleteconstraintscash", __LINE__, __FILE__);
 			}
 
+		} */
+
+	std::vector<FMTcoordinate>FMTspatialschedule::getfromevents(const Core::FMToutputnode& node, const std::vector<Core::FMTaction>& actions, const int& period) const
+	{
+		//std::vector<const Graph::FMTlinegraph*>graphs;
+		std::vector<FMTcoordinate>coordinates;
+		try {
+			if (node.isactionbased())
+			{
+				std::vector<int>targetedactions;
+				if (node.source.isvariable())
+				{
+					for (const Core::FMTaction* actionptr : node.source.targets(actions))
+					{
+						const int actionid = static_cast<int>(std::distance(&(*actions.cbegin()), actionptr));
+						if (std::find(targetedactions.begin(), targetedactions.end(), actionid) == targetedactions.end())
+						{
+							targetedactions.push_back(actionid);
+						}
+
+					}
+				}
+				std::sort(targetedactions.begin(), targetedactions.end());
+				for (std::set<FMTevent>::const_iterator eventit : events.getevents(period, targetedactions))
+					{
+						for (const FMTcoordinate& coordinate : eventit->elements)
+						{
+							//const Graph::FMTlinegraph* graphptr = &(mapping.find(coordinate)->second);
+							//graphs.push_back(graphptr);
+							coordinates.push_back(coordinate);
+						}
+					}
+				std::sort(coordinates.begin(), coordinates.end());
+			}
 		}
+		catch (...)
+		{
+			_exhandler->raisefromcatch("", "FMTspatialschedule::getfromevents", __LINE__, __FILE__);
+		}
+		return coordinates;
+
+	}
 
 	std::vector<const Graph::FMTlinegraph*>FMTspatialschedule::getfromevents(const Core::FMTconstraint& constraint, const std::vector<Core::FMTaction>& actions, const int& start,const int& stop) const
 		{
@@ -941,7 +1058,38 @@ namespace Spatial
 		return graphs;
 		}
 
-void FMTspatialschedule::setoutputfromgraph(const Graph::FMTlinegraph& linegraph, const Models::FMTmodel & model, std::vector<double>& periods_values,
+double FMTspatialschedule::getoutputfromgraph(const Graph::FMTlinegraph& linegraph, const Models::FMTmodel & model,
+											 const Core::FMToutputnode& node, const double* solution, const int&period, const size_t& hashvalue,
+											 std::unordered_map<size_t, double>& nodecache) const
+	{
+	double value = 0;
+	try{
+	if (!(node.isactionbased()&&linegraph.isonlygrow()))
+	{
+		//const Graph::FMTlinegraph* local_graph = &linegraph;
+		//linegraph.hashforconstraint(hashvalue,constraintupperbound, dynamicmask);
+		Core::FMTtheme targettheme;
+		bool complete = false;
+		//boost::hash_combine(hashvalue,period);
+		std::unordered_map<size_t,double>::const_iterator cashit = nodecache.find(hashvalue);
+		if (cashit != nodecache.end())//get it from cashing
+		{
+			value = cashit->second;
+		}else {//get it and add to cashing
+			const std::map<std::string, double> output = linegraph.getsource(model, node, period, targettheme, solution, Graph::FMToutputlevel::totalonly);
+			value = output.at("Total");
+			nodecache[hashvalue] = value;
+
+		}
+	}
+	}catch (...)
+		{
+		_exhandler->raisefromcatch("", "FMTspatialschedule::getoutputfromgraph", __LINE__, __FILE__);
+		}
+	return value;
+	}
+
+/*void FMTspatialschedule::setoutputfromgraph(const Graph::FMTlinegraph& linegraph, const Models::FMTmodel & model, std::vector<double>& periods_values,
 											const Core::FMTconstraint & constraint, const double* solution, const int& start, const int& stop,size_t hashvalue,
 											const Core::FMTmask& dynamicmask) const
 	{
@@ -949,7 +1097,7 @@ void FMTspatialschedule::setoutputfromgraph(const Graph::FMTlinegraph& linegraph
 	if (!(constraint.isactionbased() && linegraph.isonlygrow()))
 		{
 			const Graph::FMTlinegraph* local_graph = &linegraph;
-			local_graph->hashforconstraint(hashvalue,start, constraint.getperiodupperbound(),dynamicmask);
+			local_graph->hashforconstraint(hashvalue,constraint.getperiodupperbound(),dynamicmask);
 			std::unordered_map<size_t, std::vector<double>>::const_iterator cashit = outputscache.find(hashvalue);
 			if (cashit != outputscache.end())//get it from cashing
 			{
@@ -977,57 +1125,29 @@ void FMTspatialschedule::setoutputfromgraph(const Graph::FMTlinegraph& linegraph
 		{
 		_exhandler->raisefromcatch("", "FMTspatialschedule::setoutputfromgraph", __LINE__, __FILE__);
 		}
-	}
+	}*/
 
-std::vector<const Graph::FMTlinegraph*>FMTspatialschedule::getgraphsfromdynamic(const Core::FMTconstraint & constraint,
-															const Models::FMTmodel& model,
-															std::vector<const Graph::FMTlinegraph*> searchspace) const
+void FMTspatialschedule::setgraphcachebystatic(const std::vector<FMTcoordinate>& coordinates,const Core::FMToutputnode& node) const
 	{
-	std::vector<const Graph::FMTlinegraph*>graphs;
+	//we should use a static  output node cache here
+	std::vector<FMTcoordinate>goodcoordinates;
 	try {
-		const std::vector<Core::FMTtheme>dynamicthemes = model.locatedynamicthemes(constraint);
-		const Core::FMTmask intersection = constraint.getvariableintersect();
-		std::string nameofintersect;
-		for (const Core::FMTtheme& theme : model.getthemes())
-			{
-			nameofintersect += "? ";
-			}
-		nameofintersect.pop_back();
-		Core::FMTmask newmask(nameofintersect, intersection.getbitsetreference());
-		for (const Core::FMTtheme& theme : dynamicthemes)
-			{
-			newmask.set(theme, "?");
-			}
-		double totalsize = 0;
-		if (!searchspace.empty())
-			{
-			totalsize = static_cast<double>(searchspace.size());
-			for (const Graph::FMTlinegraph* graphptr  : searchspace)
+			//double totalsize = static_cast<double>(this->mapping.size());
+			for (const FMTcoordinate& coordinate : coordinates)
 				{
-				if (graphptr->getperiodstopdev(0).mask.issubsetof(newmask))
+				const Graph::FMTlinegraph* linegraph = &mapping.at(coordinate);
+				if (linegraph->getbasedevelopment().mask.issubsetof(cache.getactualnodecache()->staticmask))
 					{
-					graphs.push_back(graphptr);
+					goodcoordinates.push_back(coordinate);
 					}
 				}
-		}else {
-			totalsize = static_cast<double>(this->mapping.size());
-			for (std::map<FMTcoordinate, Graph::FMTlinegraph>::const_iterator graphit = this->mapping.begin(); graphit != this->mapping.end(); ++graphit)
-			{
-				const Graph::FMTlinegraph* graphptr = &graphit->second;
-				if (graphptr->getperiodstopdev(0).mask.issubsetof(newmask))
-				{
-					graphs.push_back(graphptr);
-				}
-			}
-
-		}
-		const double efficiency = (1 - (static_cast<double>(graphs.size()) / totalsize)) * 100;
-		*_logger << "Efficiency of " << efficiency << " of "<<std::string(constraint)<<"\n";
+			cache.setnode(node, goodcoordinates);
+			//const double efficiency = (1 - (static_cast<double>(graphs.size()) / totalsize)) * 100;
+			//*_logger << "Efficiency of " << efficiency << "\n";
 	}catch (...)
 		{
-		_exhandler->raisefromcatch("", "FMTspatialschedule::getgraphsfromdynamic", __LINE__, __FILE__);
+		_exhandler->raisefromcatch("", "FMTspatialschedule::setgraphcachebystatic", __LINE__, __FILE__);
 		}
-	return graphs;
 	}
 
 std::vector<size_t>FMTspatialschedule::getmaximalpatchsizes(const std::vector<FMTspatialaction>& spactions) const

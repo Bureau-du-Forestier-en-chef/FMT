@@ -81,6 +81,15 @@ namespace Core
 		return seed;
 		}
 
+	size_t FMToutputnode::hashforvalue() const
+		{
+		size_t seed = 0;
+		boost::hash_combine(seed, source.hash(-1,true));
+		boost::hash_combine(seed, factor.hash(-1, true));
+		boost::hash_combine(seed,constant);
+		return seed;
+		}
+
 	bool FMToutputnode::operator < (const FMToutputnode& rhs) const
 		{
 		return (source<rhs.source);
@@ -104,6 +113,11 @@ namespace Core
 	bool FMToutputnode::issamebutdifferentaction(const FMToutputnode& rhs) const
 		{
 		return source.issamebutdifferentaction(rhs.source);
+		}
+
+	bool FMToutputnode::isactionbased() const
+		{
+		return !source.getaction().empty();
 		}
 
 
@@ -170,6 +184,8 @@ namespace Core
 		return node_period;
 		}
 
+	
+
 	FMToutputnodehashcomparator::FMToutputnodehashcomparator(size_t hash) : sourcehash(hash)
 	{
 
@@ -179,5 +195,7 @@ namespace Core
 	{
 		return (node.source.hash() == sourcehash);
 	}
+
+	
 
 }
