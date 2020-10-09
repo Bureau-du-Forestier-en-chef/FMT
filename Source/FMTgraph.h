@@ -68,6 +68,7 @@ enum FMToutputlevel
 	developpement = 3
 	};
 
+
 template <class tvertexproperties,class tedgeproperties>
 class FMTgraph
     {

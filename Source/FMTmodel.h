@@ -37,6 +37,13 @@ namespace Graph
 	class FMTgraph;
 }
 
+namespace Spatial
+{
+	class FMTspatialschedule;
+	class FMTspatialnodescache;
+}
+
+
 namespace Models
 {
 // DocString: FMTmodel
@@ -51,6 +58,8 @@ class FMTmodel : public Core::FMTobject
     {
 	template<class T1,class T2>
     friend class Graph::FMTgraph;
+	friend class Spatial::FMTspatialschedule;
+	friend class Spatial::FMTspatialnodescache;
 	// DocString: FMTmodel::save
 	/**
 	Save function is for serialization, used to do multiprocessing across multiple cpus (pickle in Pyhton)
@@ -145,6 +154,9 @@ class FMTmodel : public Core::FMTobject
 		// DocString: FMTmodel::name
 		///The name of the Model (name of the .pri file without extension)
 		std::string name;
+		// DocString: FMTmodel::statictransitionthemes
+		///The location of the themes static from transitions
+		std::vector<size_t>statictransitionthemes;
 		// DocString: FMTmodel::setdefaultobjects
 		/**
 		If the user has not defined the _DEATH action and/or the _DEATH transition default _DEATH action and transition are
@@ -162,6 +174,11 @@ class FMTmodel : public Core::FMTobject
 		Return a mask covering the actual bits used by the FMTmodel and the optionaldevelopements.
 		*/
 		Core::FMTmask getbasemask(std::vector<Core::FMTactualdevelopment> optionaldevelopments) const;
+		// DocString: FMTmodel::locatestatictransitionthemesptr
+		/**
+		locate the static transition themes.
+		*/
+		std::vector<size_t>getstatictransitionthemes() const;
     public:
 		// DocString: FMTmodel()
 		/**
@@ -378,17 +395,40 @@ class FMTmodel : public Core::FMTobject
 		Based on the FMTmodel looks at every theme to located in the FMTtransitions and return themes 
 		that are not used into the transition and in a given output (staticthemes)... will return themes based on spatial units.
 		*/
-		std::vector<Core::FMTtheme> locatestaticthemes(const Core::FMToutput& output) const;
+		std::vector<Core::FMTtheme> locatestaticthemes(const Core::FMToutput& output, bool ignoreoutputvariables = false) const;
+		// DocString: FMTmodel::locatestaticthemes
+		/**
+		Based on the FMTmodel looks at every theme to located in the FMTtransitions and return themes
+		that are not used into the transition and in a given output node (staticthemes)... will return themes based on spatial units.
+		*/
+		std::vector<Core::FMTtheme> locatestaticthemes(const Core::FMToutputnode& output, bool ignoreoutputvariables = false) const;
 		// DocString: FMTmodel::locatedynamicthemes
 		/**
 		Returns themes used in the transition scheme.
 		*/
-		std::vector<Core::FMTtheme> locatedynamicthemes(const Core::FMToutput& outpu) const;
+		std::vector<Core::FMTtheme> locatedynamicthemes(const Core::FMToutput& outpu, bool ignoreoutputvariables = false) const;
 		// DocString: FMTmodel::getdynamicmask
 		/**
 		Based on static and dynamic themes will return a mask where the static attributes will have a value of 0 and dynamic value a value of 1.
 		*/
-		Core::FMTmask getdynamicmask(const Core::FMToutput& output) const;
+		Core::FMTmask getdynamicmask(const Core::FMToutput& output, bool ignoreoutputvariables = false) const;
+		// DocString: FMTmodel::getdynamicmask
+		/**
+		Based on static and dynamic themes will return a mask where the static attributes will have a value of 0 and dynamic value a value of 1.
+		*/
+		Core::FMTmask getdynamicmask(const Core::FMToutputnode& node, bool ignoreoutputvariables = false) const;
+		// DocString: FMTmodel::locatestatictransitionsthemes
+		/**
+		Returns the static themes based on model transitions.
+		*/
+		std::vector<Core::FMTtheme>locatestatictransitionsthemes() const;
+		// DocString: FMTmodel::locatenotestaticthemes
+		/**
+		Returns the static themes based on model transitions.
+		*/
+		std::vector<Core::FMTtheme>locatenodestaticthemes(const Core::FMToutputnode& node, 
+			bool ignoreoutputvariables = false,
+			std::vector<Core::FMTtheme> basethemes = std::vector<Core::FMTtheme>()) const;
 		// DocString: FMTmodel(FMTmodel)
 		/**
 		Copy constructor of FMTmodel

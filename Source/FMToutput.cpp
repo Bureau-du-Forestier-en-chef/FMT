@@ -656,7 +656,7 @@ FMTmask FMToutput::getvariableintersect() const
 	return mask;
 }
 
-std::vector<Core::FMTtheme>FMToutput::getstaticthemes(const std::vector<Core::FMTtheme>& themes, const Core::FMTyields& yields) const
+std::vector<Core::FMTtheme>FMToutput::getstaticthemes(const std::vector<Core::FMTtheme>& themes, const Core::FMTyields& yields, bool ignoreoutputvariables) const
 {
 	std::vector<Core::FMTtheme>statics = themes;
 	try {
@@ -665,7 +665,10 @@ std::vector<Core::FMTtheme>FMToutput::getstaticthemes(const std::vector<Core::FM
 		{
 			if (source.isvariable())
 			{
-				statics = source.getmask().getstaticthemes(statics);
+				if (!ignoreoutputvariables)
+					{
+					statics = source.getmask().getstaticthemes(statics);
+					}
 				const std::string yieldvalue = source.getyield();
 				for (const std::string& yldbound : source.getylds())
 					{

@@ -323,76 +323,60 @@ namespace Graph
 		return (size()-1) == boost::num_edges(data);
 		}
 
-	bool FMTlinegraph::hashforconstraint(size_t& hashvalue, const int&start, const int& stop, const Core::FMTmask& dynamicmask) const
-	{
+	const Core::FMTdevelopment& FMTlinegraph::getbasedevelopment() const
+		{
 		FMTvertex_iterator vertex_iterator, vertex_iterator_end;
 		boost::tie(vertex_iterator, vertex_iterator_end) = boost::vertices(data);
-		const Core::FMTdevelopment& development = getdevelopment(*vertex_iterator);
-		//Logging::FMTlogger() << std::string(development) << "\n"; erase theme index 9!
+		return getdevelopment(*vertex_iterator);
+		}
+
+	size_t FMTlinegraph::getbasehash(const Core::FMTmask& dynamicmask) const
+		{
+		size_t hashvalue = 0;
+		const Core::FMTdevelopment& development = getbasedevelopment();
 		boost::hash_combine(hashvalue, development.mask.getintersect(dynamicmask));
-		//boost::hash_combine(hashvalue, development.mask);
 		boost::hash_combine(hashvalue, development.age);
-		//boost::hash_combine(hashvalue, boost::hash<Core::FMTdevelopment>()(development));
-		const int actperiod = getperiod()-1;
+		return hashvalue;
+		}
+
+	size_t FMTlinegraph::getedgeshash(const int& maximalperiod, bool& gotthewhole) const
+		{
+		const int actperiod = getperiod() - 1;
 		std::string hashstr;
 		if (!isonlygrow())
-			{
+		{
 			FMTedge_iterator edge_iterator, edge_iterator_end;
 			boost::tie(edge_iterator, edge_iterator_end) = boost::edges(data);
 			int periodcount = 0;
-			while (edge_iterator != edge_iterator_end && periodcount<=stop)
-				{
+			while (edge_iterator != edge_iterator_end && periodcount <= maximalperiod)
+			{
 				const FMTbaseedgeproperties& edgeprop = data[*edge_iterator];
 				const int actionid = edgeprop.getactionID();
 				hashstr += std::to_string(actionid);
 				if (actionid < 0)
-					{
+				{
 					++periodcount;
-					}
+				}
 				++edge_iterator;
-				}
-
-		}else {
-			for (int period = 0; period <= std::min(actperiod,stop);++period)
-				{
-				hashstr += "-1";
-				}
 			}
-		boost::hash_combine(hashvalue, hashstr);
-		return (stop <= actperiod);
 
-
-		/*FMTvertex_iterator vertex_iterator, vertex_iterator_end;
-		boost::tie(vertex_iterator, vertex_iterator_end) = boost::vertices(data);
-		boost::hash_combine(hashvalue, boost::hash<Core::FMTdevelopment>()(getdevelopment(*vertex_iterator)));
-		FMTedge_iterator edge_iterator, edge_iterator_end;
-		boost::tie(edge_iterator, edge_iterator_end) = boost::edges(data);
-		//the first edge is suppose to be natural evolution so
-		int periodcount = 0;
-		int cashin = 0;
-		while (edge_iterator!=edge_iterator_end)
+		}
+		else {
+			for (int period = 0; period <= std::min(actperiod, maximalperiod); ++period)
 			{
-			if (periodcount<=stop)
-				{
-				const FMTbaseedgeproperties& edgeprop = data[*edge_iterator];
-				const int actionid = edgeprop.getactionID();
-				if (periodcount>=start)
-					{
-					boost::hash_combine(hashvalue, edgeprop.getactionID());
-					++cashin;
-					}
-				if (!(stop == std::numeric_limits<int>::max()) && periodcount == stop)
-					{
-					return true;
-					}
-				if (actionid < 0)
-				{
-					++periodcount;
-				}
-				}
-			++edge_iterator;
+				hashstr += "-1";
 			}
-		return false;*/
+		}
+		gotthewhole = (maximalperiod <= actperiod);
+		return boost::hash<std::string>{}(hashstr);
+		}
+
+	bool FMTlinegraph::hashforconstraint(size_t& hashvalue,const int& stop, const Core::FMTmask& dynamicmask) const
+	{
+		boost::hash_combine(hashvalue,getbasehash(dynamicmask));
+		bool gotthewholegraph = false;
+		boost::hash_combine(hashvalue,getedgeshash(stop,gotthewholegraph));
+		return gotthewholegraph;
 	}
 
 	

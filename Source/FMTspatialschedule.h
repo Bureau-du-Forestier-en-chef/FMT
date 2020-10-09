@@ -3,8 +3,10 @@
 
 #include "FMTlayer.h"
 #include "FMTforest.h"
+#include "FMTspatialnodescache.h"
 #include "FMTlinegraph.h"
 #include "FMTGCBMtransition.h"
+
 
 namespace Spatial
 {
@@ -16,8 +18,10 @@ with a schedule.
 */
 class FMTspatialschedule : public FMTlayer<Graph::FMTlinegraph>
 {
-    mutable std::unordered_map<size_t, std::vector<double>>outputscache;
-	mutable std::unordered_map<size_t,Core::FMTmask>outputsmaskcache;
+    //mutable std::unordered_map<size_t, std::unordered_map<size_t,double>>outputscache;
+	//mutable std::unordered_map<size_t, Core::FMTmask>nodesmaskcache;
+	//mutable Graph::FMToutputnodecache<const Graph::FMTlinegraph*>staticnodecache;
+	mutable FMTspatialnodescache cache;
     public:
         // DocString: FMTspatialschedule()
 		/**
@@ -227,7 +231,7 @@ class FMTspatialschedule : public FMTlayer<Graph::FMTlinegraph>
 		 When constraint cashing is used if the spatialschedule is build for only a given number of period the hashing
 		 of constraint with period > graphperiod wont be valid hash so those hashes need to be cleaned.
 		 */
-		void cleanincompleteconstraintscash(const Models::FMTmodel& model);
+		//void cleanincompleteconstraintscash(const Models::FMTmodel& model);
 
 	protected:
 		// DocString: FMTspatialschedule::events
@@ -242,18 +246,29 @@ class FMTspatialschedule : public FMTlayer<Graph::FMTlinegraph>
 		std::vector<const Graph::FMTlinegraph*>getfromevents(const Core::FMTconstraint& constraint, const std::vector<Core::FMTaction>& actions, const int& start, const int& stop) const;
 		// DocString: FMTspatialschedule::getfromevents()
 		 /**
+		 Get theline graph using the eventcontainer
+		 */
+		std::vector<FMTcoordinate>getfromevents(const Core::FMToutputnode& node, const std::vector<Core::FMTaction>& actions, const int& period) const;
+
+		// DocString: FMTspatialschedule::setoutputfromgraph
+		 /**
 		 set the output requested from a given linegraph into periods_values
 		 */
-		void setoutputfromgraph(const Graph::FMTlinegraph& linegraph,const Models::FMTmodel & model,std::vector<double>& periods_values,
+		/*void setoutputfromgraph(const Graph::FMTlinegraph& linegraph,const Models::FMTmodel & model,std::vector<double>& periods_values,
 								const Core::FMTconstraint & constraint,const double* solution, const int& start, const int& stop,size_t hashvalue,
-								const Core::FMTmask& dynamicmask) const;
-		// DocString: FMTspatialschedule::getgraphsfromstatic()
+								const Core::FMTmask& dynamicmask) const;*/
+		// DocString: FMTspatialschedule::setoutputfromgraph
 		 /**
-		 Based on variable outputnode in the constraint returns a subset of the solution based on the dynamic themes.
+		 set the output requested from a given linegraph into periods_values
 		 */
-		std::vector<const Graph::FMTlinegraph*>getgraphsfromdynamic(const Core::FMTconstraint & constraint, 
-																	const Models::FMTmodel& model,
-																	std::vector<const Graph::FMTlinegraph*> searchspace = std::vector<const Graph::FMTlinegraph*>()) const;
+		double getoutputfromgraph(const Graph::FMTlinegraph& linegraph, const Models::FMTmodel & model,
+			const Core::FMToutputnode& node, const double* solution,const int&period, const size_t& hashvalue,
+			std::unordered_map<size_t, double>& nodecache) const;
+		// DocString: FMTspatialschedule::getgraphsbystatic()
+		 /**
+		 Based on variable outputnode in the constraint returns a subset of the solution based on the static themes.
+		 */
+		void setgraphcachebystatic(const std::vector<FMTcoordinate>& coordinates, const Core::FMToutputnode& node) const;
 		// DocString: FMTspatialschedule::getmaximalpatchsizes()
 		 /**
 		 Return the maximal patch size of a vector of spatialactions.

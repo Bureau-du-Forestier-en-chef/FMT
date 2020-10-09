@@ -25,6 +25,7 @@ class FMToutputnode
 		FMToutputnode(const FMToutputsource& lsource, const FMToutputsource& lfactor, const double& lconstant);
 		FMToutputnode(const FMToutputnode& rhs);
 		size_t hash() const;
+		size_t hashforvalue() const;
 		bool allowcashdeduction() const;
 		bool singleperiod() const;
 		bool multiperiod() const;
@@ -35,6 +36,7 @@ class FMToutputnode
 		bool issubsetof(const FMToutputnode& rhs) const;
 		bool issubsetof(const FMToutputnode& rhs,const std::vector<Core::FMTaction>& actions) const;
 		bool issamebutdifferentaction(const FMToutputnode& rhs) const;
+		bool isactionbased() const;
 		operator std::string() const;
 		FMToutputnode setperiod(int period) const;
 		FMToutputnode& operator = (const FMToutputnode& rhs);
