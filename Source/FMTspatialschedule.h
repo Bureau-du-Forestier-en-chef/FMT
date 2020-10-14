@@ -205,6 +205,18 @@ class FMTspatialschedule : public FMTlayer<Graph::FMTlinegraph>
 		double getobjectivevalue(const Core::FMTconstraint& constraint, const Models::FMTmodel& model,
 			const std::vector<Spatial::FMTspatialaction>& spactions,
 			const FMTspatialschedule*	friendlysolution = nullptr) const;
+		// DocString: FMTspatialschedule::removegraphfromcache
+		/**
+			Removes the cached values for every nodes of the model of a given graph.
+		*/
+		void removegraphfromcache(const Graph::FMTlinegraph& graph,
+			const Models::FMTmodel& model,const std::vector<Spatial::FMTspatialaction>& spactions);
+		// DocString: FMTspatialschedule::addgraphfromcache
+		/**
+			Removes the cached values for every nodes of the model of a given graph.
+		*/
+		void addgraphtocache(const Graph::FMTlinegraph& graph,
+			const Models::FMTmodel& model, const std::vector<Spatial::FMTspatialaction>& spactions);
 
 		// DocString: FMTspatialschedule::getgraphsoutputs(const Models::FMTmodel&, const Core::FMTconstraint&, const int&, const int&)
 		/**
