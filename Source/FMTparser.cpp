@@ -630,14 +630,20 @@ std::queue<std::string> FMTparser::tryinclude(const std::string& line, const std
 	if (std::regex_search(line, kmatch, FMTparser::rxinclude))
 		{
 		std::string location = kmatch[3];
-		if (boost::starts_with(location, "."))
+		boost::filesystem::path includedpath(location);
+		if (includedpath.is_absolute())
 			{
 			const boost::filesystem::path l_ppath(_location);
 			const boost::filesystem::path parent_path = l_ppath.parent_path();
-			location.erase(0, 1);
-			const boost::filesystem::path full_path = parent_path / location;
-			location = full_path.string();
-			}
+			location = boost::filesystem::canonical(includedpath, parent_path).string();
+			}else if (boost::starts_with(location, "."))
+				{
+				const boost::filesystem::path l_ppath(_location);
+				const boost::filesystem::path parent_path = l_ppath.parent_path();
+				location.erase(0, 1);
+				const boost::filesystem::path full_path = parent_path / location;
+				location = full_path.string();
+				}
 		FMTparser newparser;
 		std::ifstream newstream(location);
 		if (newparser.tryopening(newstream, location))

@@ -145,6 +145,11 @@ FMTactionparser& FMTactionparser::operator = (const FMTactionparser& rhs)
 						else if (!operable.empty())
 						{
 							operablename = kmatch[15];
+							if (operablename.empty())
+								{
+								_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,"Empty operable for "+actions.back().getname() + " at line " + std::to_string(_line),
+														"FMTactionparser::read", __LINE__, __FILE__, _section);
+								}
 							const std::vector<Core::FMTaction*>pactions = sameactionas(operablename, actions);
 							theaction = pactions.at(0);
 							operablename = theaction->getname();
@@ -162,6 +167,7 @@ FMTactionparser& FMTactionparser::operator = (const FMTactionparser& rhs)
 						else if (!aggregate.empty())
 						{
 							aggregatename = kmatch[18];
+							boost::trim(aggregatename);
 							operablename.clear();
 							partialname.clear();
 							aggregates[aggregatename] = std::vector<std::string>();
@@ -202,7 +208,7 @@ FMTactionparser& FMTactionparser::operator = (const FMTactionparser& rhs)
 								}
 								else {
 									_exhandler->raise(Exception::FMTexc::FMTundefined_aggregate_value,
-										val + " at line" + std::to_string(_line),"FMTactionparser::read", __LINE__, __FILE__, _section);
+										val + " at line " + std::to_string(_line),"FMTactionparser::read", __LINE__, __FILE__, _section);
 								}
 							}
 						}
@@ -210,7 +216,7 @@ FMTactionparser& FMTactionparser::operator = (const FMTactionparser& rhs)
 						{
 							if (theaction && theaction->isresetage())
 							{
-								_exhandler->raise(Exception::FMTexc::FMTwrong_partial, partialname + " at line" + std::to_string(_line),
+								_exhandler->raise(Exception::FMTexc::FMTwrong_partial, partialname + " at line " + std::to_string(_line),
 									"FMTactionparser::read", __LINE__, __FILE__, _section);
 							}
 							const std::vector<std::string>splited = FMTparser::spliter(line, FMTparser::rxseparator);

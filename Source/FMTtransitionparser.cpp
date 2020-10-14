@@ -6,6 +6,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
 #include "FMTtransitionparser.h"
+#include "FMToperator.h"
 
 
 namespace Parser{
@@ -14,7 +15,7 @@ FMTtransitionparser::FMTtransitionparser():FMTparser(),
     rxsection("^(\\*CASE)([\\s\\t]*)([^\\s^\\t]*)|(\\*SOURCE)([\\s\\t]*)(.+)|(\\*TARGET)([\\s\\t]*)(.+)", std::regex_constants::ECMAScript| std::regex_constants::icase),
     rxlock("^(.+)(_LOCK)([\\s\\t]*)([0-9]*)(.+)", std::regex_constants::ECMAScript| std::regex_constants::icase),
     rxage("^(.+)(_AGE)([\\s\\t]*)([0-9]*)(.+)", std::regex_constants::ECMAScript| std::regex_constants::icase),
-    rxreplace("^(.+)(_REPLACE)(....)([0-9]*)([\\s\\t]*)(\\,)([\\s\\t]*)(_TH)([0-9]*)([\\s\\t]*)(\\+)([\\s\\t]*)([0-9]*)(.+)", std::regex_constants::ECMAScript| std::regex_constants::icase),
+    rxreplace("^(.+)(_REPLACE)(....)([0-9]*)([\\s\\t]*)(\\,)([\\s\\t]*)(_TH)([0-9]*)([\\s\\t]*)([\\+\\-\\*\\/])([\\s\\t]*)([0-9]*)(.+)", std::regex_constants::ECMAScript| std::regex_constants::icase),
     rxtyld("^([\\s\\t]*)([^\\s^\\t]*)([\\s\\t]*)([^\\s^\\t]*)", std::regex_constants::ECMAScript| std::regex_constants::icase)
     {
 
@@ -128,16 +129,28 @@ std::vector<Core::FMTtransitionmask> FMTtransitionparser::getmasktran(const std:
 		{
 			const std::string strtargettheme = kmatch[4];
 			const std::string stroptheme = kmatch[9];
+			const std::string stroperator = kmatch[11];
+			Core::FMToperator baseoperator;
+			if (!stroperator.empty())
+				{
+				baseoperator = Core::FMToperator(stroperator);
+				}
 			const std::string stradd = kmatch[13];
 			const int targettheme = getnum<int>(strtargettheme) - 1;
-			const int addupp = getnum<int>(stradd);
+			const double addupp = getnum<double>(stradd);
 			Core::FMTmask targetmask(mask, themes);
 			targetmask.set(themes[targettheme], sourcemask.get(themes[targettheme]));
 			for (Core::FMTmask& lmask : targetmask.decompose(themes[targettheme]))
 			{
 				const std::string actual = lmask.get(themes[targettheme]);
-				int newint = getnum<int>(actual) + addupp;
-				const std::string newval = std::to_string(newint);
+				std::string newval;
+				if (isnum(actual))//just math
+					{
+					const int newint =  static_cast<int>(baseoperator.call(getnum<double>(actual),addupp));
+					newval = std::to_string(newint);
+				}else {
+					newval = actual+ stradd;
+					}
 				if (themes[targettheme].isattribute(newval))
 				{
 					lmask.set(themes[targettheme], newval);

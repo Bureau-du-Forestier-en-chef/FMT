@@ -112,7 +112,7 @@ namespace Parser{
 			int xsize = -1;
 			int ysize = -1;
 			int rastercount = -1;
-			int overview = -1;
+			//int overview = -1;
 			std::string projection = "";
 			for (const std::string& location : data_rasters)
 			{
@@ -120,7 +120,7 @@ namespace Parser{
 				GDALRasterBand* band = getband(data);
 				if (xsize > 0)
 				{
-					if ((data->GetRasterXSize() != xsize) || (data->GetRasterYSize() != ysize) || (data->GetRasterCount() != rastercount) || (data->GetProjectionRef() != projection) || (band->GetOverviewCount() != overview))
+					if ((data->GetRasterXSize() != xsize) || (data->GetRasterYSize() != ysize) || (data->GetRasterCount() != rastercount) || (data->GetProjectionRef() != projection) /*|| (band->GetOverviewCount() != overview)*/)
 					{
 						_exhandler->raise(Exception::FMTexc::FMTinvalidband,
 							"Rasters are not the same " + std::string(data->GetDescription()),
@@ -132,7 +132,7 @@ namespace Parser{
 					ysize = data->GetRasterYSize();
 					rastercount = data->GetRasterCount();
 					projection = data->GetProjectionRef();
-					overview = band->GetOverviewCount();
+					//overview = band->GetOverviewCount();
 				}
 				GDALClose(data);
 			}

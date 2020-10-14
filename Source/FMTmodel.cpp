@@ -87,7 +87,7 @@ FMTmodel::FMTmodel(const std::vector<Core::FMTactualdevelopment>& larea, const s
 
 FMTmodel::FMTmodel(const FMTmodel& rhs):Core::FMTobject(rhs),area(rhs.area),themes(rhs.themes),actions(rhs.actions),
 		 transitions(rhs.transitions),yields(rhs.yields),lifespan(rhs.lifespan), outputs(rhs.outputs), constraints(rhs.constraints),name(rhs.name),
-		statictransitionthemes(statictransitionthemes)
+		statictransitionthemes(rhs.statictransitionthemes)
 
 	{
 
@@ -582,6 +582,7 @@ Core::FMTmask FMTmodel::getdynamicmask(const Core::FMToutputnode& node, bool ign
 	try {
 		std::vector<Core::FMTtheme>staticcthemes = locatestatictransitionsthemes();
 		staticcthemes = locatenodestaticthemes(node, ignoreoutputvariables, staticcthemes);
+		
 		std::string basename;
 		for (const Core::FMTtheme& theme : themes)
 		{
@@ -590,10 +591,13 @@ Core::FMTmask FMTmodel::getdynamicmask(const Core::FMToutputnode& node, bool ign
 		}
 
 		basename.pop_back();
+		
+		
 		const Core::FMTmask submask(basename, themes);
 		boost::dynamic_bitset<>bits = submask.getbitsetreference();
 		for (const Core::FMTtheme& theme : staticcthemes)
 		{
+			
 			const size_t start = static_cast<size_t>(theme.getstart());
 			for (size_t bitid = start; bitid < (theme.size() + start); ++bitid)
 			{

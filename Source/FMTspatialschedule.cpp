@@ -690,7 +690,7 @@ namespace Spatial
 								{
 								if (!exactnode&&cache.getactualnodecache()->worthintersecting)
 									{
-									//setgraphcachebystatic(nodescoordinates, node); Needs to be fixed !!!
+									setgraphcachebystatic(nodescoordinates, node); //Needs to be fixed !!!
 									}
 								const std::vector<FMTcoordinate>& staticcoordinates = cache.getnode(node, model, exactnode);//Will possibility return the whole map...
 								const Core::FMTmask dynamicmask = cache.getactualnodecache()->dynamicmask;
@@ -740,24 +740,21 @@ namespace Spatial
 											}
 										}
 								}
-								//double cash = 0;
-								//double notcash = 0;
 								for (const std::pair<size_t, int>& periodpair : periodstolookfor)
 								{
 									
 									/*if (cache.getactualnodecache()->gotcachevalue(periodpair.second))
 									{
-										cash += cache.getactualnodecache()->getcachevalue(periodpair.second);
-										notcash += periods_values[periodpair.first];
+										double cash = cache.getactualnodecache()->getcachevalue(periodpair.second);
+										double notcash = periods_values[periodpair.first];
+										if (cash > 0 && notcash > 0 && cash != notcash)
+										{
+											*_logger << std::string(node) << " cash " << cash << " not cash " << notcash << "\n";
+										}
 									}*/
-									
-									
 									cache.getactualnodecache()->setvalue(periodpair.second, periods_values[periodpair.first]);
 								}
-								/*if (cash > 0 && notcash > 0 && cash != notcash)
-								{
-									*_logger << std::string(node) << " cash " << cash << " not cash " << notcash  << "\n";
-								}*/
+								
 								
 								
 								}
@@ -1165,6 +1162,85 @@ std::vector<size_t>FMTspatialschedule::getmaximalpatchsizes(const std::vector<FM
 		}
 	return maxsizes;
 	}
+
+
+void FMTspatialschedule::removegraphfromcache(const Graph::FMTlinegraph& graph,
+	const Models::FMTmodel& model, const std::vector<Spatial::FMTspatialaction>& spactions)
+{
+	const std::vector<double> solutions(1, this->getcellsize());
+	std::unordered_set<size_t>nodesnperiodremoved;
+	for (const Core::FMTconstraint& constraint : model.constraints)
+		{
+		int periodstart = 0;
+		int periodstop = 0;
+		bool exact = false;
+		if (graph.constraintlenght(constraint, periodstart, periodstop))
+			{
+			for (const Core::FMToutputnode& node : constraint.getnodes(model.area, model.actions, model.yields))
+				{
+				if (node.source.isvariable())
+					{
+						const size_t completenodehash = node.hashforvalue();
+						cache.getnode(node, model, exact);
+						const Core::FMTmask dynamicmask = cache.getactualnodecache()->dynamicmask;
+						const size_t basegraphhash = graph.getbasehash(dynamicmask);
+						for (int period = periodstart; period <= periodstop; ++period)
+						{
+							size_t nodenperiodhash = 0;
+							boost::hash_combine(nodenperiodhash, completenodehash);
+							if (nodesnperiodremoved.find(nodenperiodhash) == nodesnperiodremoved.end())
+							{
+								size_t patternhash = graph.getedgeshash(period, exact);
+								const double graphvalue = getoutputfromgraph(graph, model, node, &solutions[0], period, patternhash, cache.getactualnodecache()->patternvalues);
+								cache.getactualnodecache()->removevaluefromperiod(period, graphvalue);
+								nodesnperiodremoved.insert(nodenperiodhash);
+							}
+						}
+					}
+					}
+				}
+		}
+
+}
+
+void FMTspatialschedule::addgraphtocache(const Graph::FMTlinegraph& graph,
+	const Models::FMTmodel& model, const std::vector<Spatial::FMTspatialaction>& spactions)
+{
+	const std::vector<double> solutions(1, this->getcellsize());
+	std::unordered_set<size_t>nodesnperiodremoved;
+	for (const Core::FMTconstraint& constraint : model.constraints)
+	{
+		int periodstart = 0;
+		int periodstop = 0;
+		bool exact = false;
+		if (graph.constraintlenght(constraint, periodstart, periodstop))
+		{
+			for (const Core::FMToutputnode& node : constraint.getnodes(model.area, model.actions, model.yields))
+			{
+				if (node.source.isvariable())
+				{
+					const size_t completenodehash = node.hashforvalue();
+					cache.getnode(node, model, exact);
+					const Core::FMTmask dynamicmask = cache.getactualnodecache()->dynamicmask;
+					const size_t basegraphhash = graph.getbasehash(dynamicmask);
+					for (int period = periodstart; period <= periodstop; ++period)
+					{
+						size_t nodenperiodhash = 0;
+						boost::hash_combine(nodenperiodhash, completenodehash);
+						if (nodesnperiodremoved.find(nodenperiodhash) == nodesnperiodremoved.end())
+						{
+							size_t patternhash = graph.getedgeshash(period, exact);
+							const double graphvalue = getoutputfromgraph(graph, model, node, &solutions[0], period, patternhash, cache.getactualnodecache()->patternvalues);
+							cache.getactualnodecache()->addvaluefromperiod(period, graphvalue);
+							nodesnperiodremoved.insert(nodenperiodhash);
+						}
+					}
+				}
+			}
+		}
+	}
+
+}
 
 
 }
