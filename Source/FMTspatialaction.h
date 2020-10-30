@@ -63,6 +63,11 @@ namespace Spatial
             bool simulated_annealing_valid()const;
 			std::vector<Core::FMTconstraint> to_constraints() const;
         };
+
+
+
+
+
 }
 
 

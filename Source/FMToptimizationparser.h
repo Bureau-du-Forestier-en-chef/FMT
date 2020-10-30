@@ -46,13 +46,14 @@ namespace Parser
 		std::regex rxoutput;
 		std::regex rxpenalty;
 		std::regex rxspecialoutput;
+		std::regex rxspatial;
 		std::queue<std::string>ineach;
 		Core::FMTconstraint getobjective(const std::string& line, const Core::FMTconstants& constants,
                              const std::vector<Core::FMToutput>& outputs,
                              const std::vector<Core::FMTtheme>& themes);
 		FMToptimizationsection getsection(const std::string& line) const;
 		std::vector<Core::FMTconstraint> getconstraints(const std::string& line, const Core::FMTconstants& constants,
-			const std::vector<Core::FMToutput>& outputs, const std::vector<Core::FMTtheme>& themes);
+			const std::vector<Core::FMToutput>& outputs, const std::vector<Core::FMTtheme>& themes, const std::vector<Core::FMTaction>& actions);
 		bool setgoal(Core::FMTconstraint& constraint, const std::string& line, const Core::FMTconstants& constants);
 		void setperiods(Core::FMTconstraint& constraint, const std::string& lower,const std::string& upper, const Core::FMTconstants& constants) const;
 		Core::FMToutput resume_output(const std::map<std::string,double>& nodes,
@@ -65,6 +66,9 @@ namespace Parser
 		std::map<std::string,double>getequation(const std::string& line, const Core::FMTconstants& constants,
                                 const std::vector<Core::FMToutput>& outputs,size_t lhssize= std::numeric_limits<size_t>::max());
 		std::vector<Core::FMTconstraint> getperiodsbounds(std::string periodstr,const Core::FMTconstraint& constraint, const Core::FMTconstants& constants) const;
+		void fillbounds(const std::string& operatorvalue, const double& rhs, double& lower,double& upper) const;
+		Core::FMTconstraint getspatialconstraint(const std::smatch& match, const std::string& line,
+			const Core::FMTconstants& constants, const std::vector<Core::FMTaction>& actions) const;
 	public:
 		FMToptimizationparser();
 		FMToptimizationparser(const FMToptimizationparser& rhs);

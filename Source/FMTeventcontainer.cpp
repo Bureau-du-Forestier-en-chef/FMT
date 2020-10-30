@@ -143,7 +143,7 @@ namespace Spatial
         std::vector<FMTevent> aroundevents;
         for (auto eventit : events)
         {
-            if (eventit->withinelementsc(1,coord))
+            if (eventit->within(1,coord))
             {
                 aroundevents.push_back(*eventit);
             }
@@ -327,4 +327,32 @@ namespace Spatial
     }
     return distancevalue;
     }
+
+	double FMTeventcontainer::evaluatedistance(const FMTevent& eventof, 
+											const double& lowerdistancetoevent,
+											const double& upperdistancetoevent,
+											const int& period, const std::vector<int>& actionsid) const
+	{
+	double distancevalue = 0;
+	const size_t lowerdistance = static_cast<size_t>(lowerdistancetoevent);
+	const size_t upperdistance = static_cast<size_t>(upperdistancetoevent);
+	const bool testlower = (lowerdistancetoevent == -std::numeric_limits<double>::infinity()) ? false : true;
+	const bool testupper = (upperdistancetoevent == std::numeric_limits<double>::infinity()) ? false : true;
+	for (FMTeventcontainer::const_iterator eventit : getevents(period, actionsid))
+		{
+			if (&(*eventit) != &eventof)//They will have the same address if it's the same event!
+			{
+			if (testlower && eventit->within(lowerdistance,eventof)) //too close
+				{
+				distancevalue += (lowerdistancetoevent - eventit->distance(eventof));
+				}
+			if (testupper && !eventit->within(upperdistance, eventof)) //too far
+				{
+				distancevalue += (eventit->distance(eventof)-upperdistancetoevent);
+				}
+
+			}
+		}
+	return distancevalue;
+	}
 }

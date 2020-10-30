@@ -106,15 +106,11 @@ void exportModel()
 				"@DocString(FMTsesmodel::getdisturbances)")
             .method("setinitialmapping",&Models::FMTsesmodel::setinitialmapping,
 				"@DocString(FMTsesmodel::setinitialmapping)")
-            .method("setspactions",&Models::FMTsesmodel::setspactions,
-				"@DocString(FMTsesmodel::setspactions)")
 			.method("getschedule",&Models::FMTsesmodel::getschedule,
 				"@DocString(FMTsesmodel::getschedule)")
 			.method("getdisturbancestats", &Models::FMTsesmodel::getdisturbancestats,
 				"@DocString(FMTsesmodel::getdisturbancestats)")
-            .method("simulate",&Models::FMTsesmodel::simulate,
-				"@DocString(FMTsesmodel::simulate)")
-			.method("montecarlosimulate", &Models::FMTsesmodel::montecarlosimulate,
+			.method("greedyreferencebuild", &Models::FMTsesmodel::greedyreferencebuild,
 				"@DocString(FMTsesmodel::montecarlosimulate)");
 
 	Rcpp::class_<Models::FMTnssmodel>("FMTnssmodel", "@DocString(FMTnssmodel)")

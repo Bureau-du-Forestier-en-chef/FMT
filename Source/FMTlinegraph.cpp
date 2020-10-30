@@ -200,7 +200,7 @@ namespace Graph
         if(!operables.empty() && distribution_select != size_op)//Take care ok _DEATH hereeeeee ... I think it's implicitly done &!&!Validate
             {
                 const int action_id = operables.at(distribution_select);
-                const std::vector<Core::FMTdevelopmentpath> paths = active_development.operate(model.getactions().at(action_id), model.gettransitions().at(action_id), model.getyields(), model.getthemes());
+                const std::vector<Core::FMTdevelopmentpath> paths = active_development.operate(model.actions.at(action_id), model.transitions.at(action_id), model.yields, model.themes);
                 const size_t active_size = actives.size();
 				//FIX safunctions with the new small funcionts
                 //addaction(action_id, statsdiff, actives, front_vertex, paths);
@@ -229,12 +229,11 @@ namespace Graph
 			actives.pop();
 			const FMTbasevertexproperties& front_properties = data[front_vertex];
 			const Core::FMTdevelopment& active_development = front_properties.get();
-            std::vector<Core::FMTaction> actions = model.getactions();
 			int action_id = 0;
 			std::vector<int> operables;
-			for (const Core::FMTaction& action : actions)
+			for (const Core::FMTaction& action : model.actions)
 			{
-				if (active_development.operable(action, model.getyields()))
+				if (active_development.operable(action, model.yields))
 				{
                     {
                         operables.push_back(action_id);
@@ -310,8 +309,6 @@ namespace Graph
         while(this->size() != newgraph.size())
         {
             std::queue<FMTvertex_descriptor> actives = newgraph.getactiveverticies();
-            //FMTvertex_descriptor front_vertex = actives.front();
-			//const FMTvertexproperties& front_properties = data[front_vertex];
             newgraph.randombuildperiod(model,actives,generator,events,localisation);
         }
 
@@ -369,6 +366,25 @@ namespace Graph
 		}
 		gotthewhole = (maximalperiod <= actperiod);
 		return boost::hash<std::string>{}(hashstr);
+		}
+
+	void FMTlinegraph::addfromevents(const Spatial::FMTcoordinate& localisation, const Models::FMTmodel& model, Spatial::FMTeventcontainer& events) const
+		{
+		FMTedge_iterator edge_iterator,edge_iterator_end;
+		boost::tie(edge_iterator,edge_iterator_end) = boost::edges(data);
+		while (edge_iterator!= edge_iterator_end)
+			{
+			const FMTbaseedgeproperties& edgeprop = data[*edge_iterator];
+			const int actionid = edgeprop.getactionID();
+			if (actionid>=0)
+				{
+				const FMTvertex_descriptor descriptor = boost::source(*edge_iterator,data);
+				const FMTbasevertexproperties& vertexprop = data[descriptor];
+				events.addaction(localisation, vertexprop.get().period, actionid);
+				}
+			++edge_iterator;
+			}
+
 		}
 
 	bool FMTlinegraph::hashforconstraint(size_t& hashvalue,const int& stop, const Core::FMTmask& dynamicmask) const

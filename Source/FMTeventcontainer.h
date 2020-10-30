@@ -184,7 +184,15 @@ class FMTeventcontainer
         is return. It's principally use to calculate penalty for simulated annealing models.
         */
         double minimaldistance(const FMTevent&,const unsigned int& distancel,const int& period, const std::vector<int>& actionsid) const;
-
+		// DocString: FMTeventcontainer::minimaldistance
+		/**
+		The function add each distance from the event if the even is within the ditancetoevent for a given period if within = true. If within = false
+		the if the event is not within the distance it will add up the distances.
+		*/
+		double evaluatedistance(const FMTevent&,
+			const double& lowerdistancetoevent,
+			const double& upperdistancetoevent,
+			const int& period, const std::vector<int>& actionsid) const;
      private:
         ///Set containing the events
         std::set<FMTevent> events;

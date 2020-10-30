@@ -19,11 +19,9 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 namespace Python
 {
-BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(simulate_overloads, simulate, 1, 4)
-BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(montecarlosimulate_overloads, montecarlosimulate, 2, 4)
+BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(greedyreferencebuild_overloads,greedyreferencebuild, 2, 4)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(simulatenssm_overloads, simulate, 1, 2)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(buildperiod_overloads, buildperiod, 0, 2)
-//BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(move_solution_overloads, move_solution, 0, 1)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(get_outputs_overloads, get_outputs, 0, 1)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(getLPoutputoverloads, getoutput, 2, 3)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(warmup_overloads, warmup, 2, 4)
@@ -103,16 +101,12 @@ void exportModel()
 				"@DocString(FMTsesmodel::getschedule)")
             .def("setinitialmapping",&Models::FMTsesmodel::setinitialmapping,
 				"@DocString(FMTsesmodel::setinitialmapping)")
-            .def("setspactions",&Models::FMTsesmodel::setspactions,
-				"@DocString(FMTsesmodel::setspactions)")
 			.def("getschedule",&Models::FMTsesmodel::getschedule,
 				"@DocString(FMTsesmodel::getschedule)")
 			.def("getdisturbancestats", &Models::FMTsesmodel::getdisturbancestats,
 				"@DocString(FMTsesmodel::getdisturbancestats)")
-            .def("simulate",&Models::FMTsesmodel::simulate,
-                 simulate_overloads(bp::args("schedule", "schedule_only","scheduleatfirstpass","seed"), "@DocString(FMTsesmodel::simulate)"))
-			.def("montecarlosimulate", &Models::FMTsesmodel::montecarlosimulate,
-				montecarlosimulate_overloads(bp::args("schedule", "numberofiterations", "seed", "tolerance"), "@DocString(FMTsesmodel::montecarlosimulate)"))
+			.def("greedyreferencebuild", &Models::FMTsesmodel::greedyreferencebuild,
+				greedyreferencebuild_overloads(bp::args("schedule", "numberofiterations", "seed", "tolerance"), "@DocString(FMTsesmodel::greedyreferencebuild)"))
 			.def("getspschedule", &Models::FMTsesmodel::getspschedule,
 				"@DocString(FMTsesmodel::getdisturbances)");
 

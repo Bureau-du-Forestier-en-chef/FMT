@@ -560,7 +560,7 @@ bool FMTlpmodel::locatenodes(const std::vector<Core::FMToutputnode>& nodes, int 
 	Graph::FMTgraphstats FMTlpmodel::setconstraint(const Core::FMTconstraint& constraint)
 		{
 		try {
-			if (!constraint.isobjective())
+			if (!constraint.isobjective()&&!constraint.isspatial())
 			{
 				int first_period = 0;
 				int last_period = 0;

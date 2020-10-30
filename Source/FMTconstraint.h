@@ -38,7 +38,7 @@ enum  FMTconstrainttype
 	FMTstandard = 8,///Regular constraint type like output = 1...
 	FMTspatialsize = 9,
 	FMTspatialadjacency = 10,
-	FMTspatialgreenup = 11
+	FMTspatialgreenup = 11 //need to be deleted
 };
 // DocString: FMTconstraint
 /**
@@ -258,6 +258,11 @@ class FMTconstraint: public FMToutput,public FMTspec
 		For a real constraint the more the value is close to 0 the better it is. For an objective smaller is better (can be negative).
 		*/
 		double evaluate(const std::vector<double>& temporalvalues) const;
+		// DocString: FMTconstraint::getactionids()
+		/**
+		If the constraint is a spatial constraint it will return a vector of action ids to which the constraint apply to.
+		*/
+		std::vector<int>getactionids(const std::vector<Core::FMTaction>& actions) const;
 
 	};
 }

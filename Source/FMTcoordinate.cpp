@@ -30,25 +30,50 @@ namespace Spatial
         id = (id - (factor-1) * 8);
         return FMTcoordinate(x+(x_n[id]*factor),y+(y_n[id]*factor));
         }
+
+	void FMTcoordinate::getxygap(const FMTcoordinate& rhs, int& xgap, int& y_gap) const
+		{
+		xgap = (static_cast<int>(x) - static_cast<int>(rhs.x));
+		y_gap = (static_cast<int>(y) - static_cast<int>(rhs.y));
+		}
+
     double FMTcoordinate::distance(const FMTcoordinate& coord) const
         {
-        const int distancex = (x - coord.x);
-        const int distancey = (y - coord.y);
-        return sqrt(distancex*distancex+distancey*distancey);
+        return std::sqrt(distanceapproximation(coord));
         }
+
+	double FMTcoordinate::distanceapproximation(const FMTcoordinate& coord) const
+		{
+		int distancex = 0;
+		int distancey = 0;
+		getxygap(coord, distancex, distancey);
+		return static_cast<double>(distancex * distancex + distancey * distancey);
+		}
+
+	std::set<FMTcoordinate>::const_iterator FMTcoordinate::closest(const std::vector<std::set<FMTcoordinate>::const_iterator>& coordinates, double& approximation) const
+		{
+		approximation = std::numeric_limits<double>::infinity();
+		std::set<FMTcoordinate>::const_iterator bestcoordinate;
+		for (const std::set<FMTcoordinate>::const_iterator& coordinate : coordinates)
+			{
+			const double value = distanceapproximation(*coordinate);
+			if (value < approximation)
+				{
+				approximation = value;
+				bestcoordinate = coordinate;
+				}
+			}
+		return bestcoordinate;
+		}
+
+
     bool FMTcoordinate::within(unsigned int ldistance,const FMTcoordinate& coord) const
         {
-        const int distancex = (x - coord.x);
-        const int distancey = (y - coord.y);
-        if (static_cast<unsigned int>(abs(distancex))<=ldistance &&
-			(static_cast<unsigned int>(abs(distancey))<=ldistance))
-            {
-            if (this->distance(coord) <= double(ldistance))
-                {
-                return true;
-                }
-            }
-        return false;
+		int distancex = 0;
+		int distancey = 0;
+		getxygap(coord, distancex, distancey);
+		return (static_cast<int>(std::abs(distancex)) <= ldistance && static_cast<int>(std::abs(distancey)) <= ldistance &&
+			std::sqrt(distancex * distancex + distancey * distancey)<= static_cast<double>(ldistance));
         }
     unsigned int FMTcoordinate::getx() const
         {

@@ -14,23 +14,10 @@ int main()
 	#endif
 	const std::string	primarylocation = modellocation + "TWD_land.pri";
 	Parser::FMTmodelparser mparser;
-	const std::vector<std::string>scenarios(1, "LP");
+	const std::vector<std::string>scenarios(1, "Spatial");
 	const std::vector<Models::FMTmodel> models = mparser.readproject(primarylocation, scenarios);
 	Models::FMTsesmodel simulationmodel(models.at(0));
 	const std::vector<std::vector<Core::FMTschedule>> schedules = mparser.readschedules(primarylocation, models);
-	std::vector<Spatial::FMTspatialaction> spactions;
-	for (const auto action : simulationmodel.getactions())
-		{
-		Spatial::FMTspatialaction spaction(action);
-		spaction.neighbors = std::vector<std::string>(1, "coupetotale");
-		spaction.green_up = 1;
-		spaction.adjacency = 1;
-		spaction.minimal_size = 1;
-		spaction.maximal_size = 2;
-		spaction.neighbors_size = 4;
-		spactions.push_back(spaction);
-		}
-	simulationmodel.setspactions(spactions);
 	std::vector<Core::FMTtransition> strans;
 	for (const auto& tran : simulationmodel.gettransitions())
 		{
@@ -47,9 +34,10 @@ int main()
 		}
 	Spatial::FMTforest initialforestmap = areaparser.readrasters(simulationmodel.getthemes(), themesrast, agerast, 1, 0.0001);
 	simulationmodel.setinitialmapping(initialforestmap);
+	const size_t greedysearch = 10;
 	for (int period = 0; period < 10; ++period)
 		{
-		for (const auto& t : simulationmodel.simulate(schedules.at(0).at(period), false, 1))
+		for (const auto& t : simulationmodel.greedyreferencebuild(schedules.at(0).at(period), greedysearch))
 			{
 			Logging::FMTlogger() << t.first << " " << t.second << " ";
 			}
