@@ -44,6 +44,7 @@ namespace Models
 
     FMTsamodel::FMTsamodel():
         FMTmodel(),
+		solution(),
         movetype(Spatial::FMTsamovetype::opt1),
         min_ratio_moves(0),
         max_ratio_moves(1),
@@ -65,6 +66,7 @@ namespace Models
 
     FMTsamodel::FMTsamodel(const FMTsamodel& rhs):
         FMTmodel(rhs),
+		solution(rhs.solution),
         movetype(rhs.movetype),
         min_ratio_moves(rhs.min_ratio_moves),
         max_ratio_moves(rhs.max_ratio_moves),
@@ -86,6 +88,7 @@ namespace Models
 
     FMTsamodel::FMTsamodel(const FMTmodel& rhs):
         FMTmodel(rhs),
+		solution(),
         movetype(Spatial::FMTsamovetype::opt1),
         min_ratio_moves(0),
         max_ratio_moves(1),
@@ -97,7 +100,7 @@ namespace Models
         accepted_solutions(),
         mapidmodified(),
         probabs(),
-        cooling_schedule(),
+        cooling_schedule(std::unique_ptr<Spatial::FMTexponentialschedule>(new Spatial::FMTexponentialschedule())),
         best_solution(),
         current_solution(),
         new_solution()
@@ -110,6 +113,7 @@ namespace Models
         if (this!=&rhs)
             {
             FMTmodel::operator = (rhs);
+			solution = rhs.solution;
             movetype = rhs.movetype;
             min_ratio_moves = rhs.min_ratio_moves;
             max_ratio_moves = rhs.max_ratio_moves;
@@ -419,7 +423,8 @@ namespace Models
 
     bool FMTsamodel::setinitial_mapping(const Spatial::FMTforest& forest)
     {
-        current_solution = Spatial::FMTsasolution(forest);
+        //current_solution = Spatial::FMTsasolution(forest);
+		solution = Spatial::FMTspatialschedule(forest);
 		return true;
     }
 
@@ -496,7 +501,8 @@ namespace Models
 
     Graph::FMTgraphstats FMTsamodel::buildperiod()
     {
-        return current_solution.buildperiod(*this,generator);
+        //return current_solution.buildperiod(*this,generator);
+		return solution.randombuild(*this,generator);
     }
 
     Graph::FMTgraphstats FMTsamodel::move_solution()
@@ -509,4 +515,105 @@ namespace Models
         mapidmodified = id;
         return true;
     }
+
+
+	bool FMTsamodel::evaluate(const double& temp, const Spatial::FMTspatialschedule& actual,const Spatial::FMTspatialschedule& candidat) const
+		{
+		try {
+			const double actualglobalobjective = actual.getglobalobjective(*this, &candidat);
+			const double candidatglobalobjective = candidat.getglobalobjective(*this,&actual);
+			const double probability = std::exp((-1 * (actualglobalobjective)-candidatglobalobjective) / temp);
+			std::uniform_real_distribution<double>random_distribution(0.0,1.0);
+			const double random_probability = random_distribution(generator);
+			return  (probability > random_probability);
+		}catch (...)
+			{
+			_exhandler->printexceptions("", "FMTsamodel::evaluate", __LINE__, __FILE__);
+		}	
+		return false;
+		}
+
+	Spatial::FMTspatialschedule FMTsamodel::move(const Spatial::FMTspatialschedule& actual) const
+		{
+		Spatial::FMTspatialschedule newsolution(actual);
+		try {
+			std::vector<std::map<Spatial::FMTcoordinate, Graph::FMTlinegraph>::const_iterator> selectionpool = actual.getgraphs();
+			std::shuffle(selectionpool.begin(), selectionpool.end(), generator);
+			std::map<Spatial::FMTcoordinate, Graph::FMTlinegraph>::const_iterator luckygraph = *selectionpool.begin();
+			std::uniform_int_distribution<int> perioddistribution(1, luckygraph->second.size() - 2);//period to change
+			const int period = perioddistribution(generator);
+			newsolution.perturbgraph(luckygraph->first, luckygraph->second, period, *this, generator);
+		}catch (...)
+			{
+			_exhandler->printexceptions("", "FMTsamodel::move", __LINE__, __FILE__);
+			}
+		return newsolution;
+		}
+
+	double FMTsamodel::warmup(const Spatial::FMTspatialschedule& actual, double initprobability, size_t iterations) const
+		{
+		double temperature = 0;
+		try {
+			const double actualobjective = actual.getglobalobjective(*this);
+			const double totalits = static_cast<double>(iterations);
+			double deltasum = 0;
+			while (iterations>0)
+				{
+				const Spatial::FMTspatialschedule newsolution = move(actual);
+				const double newobjective = newsolution.getglobalobjective(*this, &actual);
+				deltasum += (actualobjective - newobjective);
+				--iterations;
+				}
+			temperature = -(deltasum / totalits) / std::log(initprobability);
+		}catch (...)
+			{
+			_exhandler->printexceptions("", "FMTsamodel::warmup", __LINE__, __FILE__);
+			}
+		return temperature;
+		}
+
+	void FMTsamodel::initialsolve()
+		{
+		try {
+			double primalinf = 0;
+			double objective = 0;
+			double temperature = warmup(solution);
+			_logger->logwithlevel("Annealer temperature at : "+std::to_string(temperature)+"\n", 1);
+			solution.getsolutionstatus(objective, primalinf, *this);
+			solution.logsolutionstatus(0, objective, primalinf);
+			size_t notaccepted = 0;
+			size_t temperaturelevel = 0;
+			size_t totaliteration = 0;
+			while (notaccepted<100)
+				{
+				size_t iteration = 0;
+				while (notaccepted < 100 && iteration <1000)
+					{
+					const Spatial::FMTspatialschedule newsolution = move(solution);
+					if (evaluate(temperature,solution,newsolution))
+						{
+						solution = newsolution;
+						notaccepted = 0;
+					}else {
+						++notaccepted;
+						}
+					if (totaliteration % 100 == 0)
+						{
+						double primalinf = 0;
+						double objective = 0;
+						solution.getsolutionstatus(objective, primalinf,*this);
+						solution.logsolutionstatus(totaliteration, objective,primalinf);
+						}
+					++iteration;
+					++totaliteration;
+					}
+				temperature = cool_down(temperature);
+				_logger->logwithlevel("Annealer temperature at: " + std::to_string(temperature) + "\n", 1);
+				}
+		}catch (...)
+			{
+			_exhandler->printexceptions("", "FMTsamodel::initialsolve", __LINE__, __FILE__);
+			}
+		}
+
 }

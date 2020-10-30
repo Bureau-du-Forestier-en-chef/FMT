@@ -35,6 +35,7 @@ namespace Graph
 {
 	template<class T1, class T2>
 	class FMTgraph;
+	class FMTlinegraph;
 }
 
 namespace Spatial
@@ -58,6 +59,7 @@ class FMTmodel : public Core::FMTobject
     {
 	template<class T1,class T2>
     friend class Graph::FMTgraph;
+	friend class Graph::FMTlinegraph;
 	friend class Spatial::FMTspatialschedule;
 	friend class Spatial::FMTspatialnodescache;
 	// DocString: FMTmodel::save

@@ -22,6 +22,7 @@ namespace Parser
 		rxoutput("^(.+)(\\()([^)]*)(\\))(\\[)(#.+|[-\\d]*)(\\])|(.+)(\\()([^)]*)(\\))|(.+)(\\[)(#.+|[-\\d]*)(\\])|(.+)", std::regex_constants::ECMAScript | std::regex_constants::icase),
 		rxpenalty("^(_PENALTY)(\\()([^\\)]*)(\\))", std::regex_constants::ECMAScript | std::regex_constants::icase),
 		rxspecialoutput("^(_AVG|_SUM)(\\()(([^,]*)(,)(([^,]*)(([\\d]*|#.+)(\\.\\.)(#.+|_LENGTH|[\\d]*))|(#.+|[\\d]*))|(.+))(\\))", std::regex_constants::ECMAScript | std::regex_constants::icase),
+		rxspatial("^(_SIZE|_ADJACENCY)([\\s\\t]*)(\\()(.+)(\\))([\\s\\t]*)(>=|<=|=)([\\s\\t]*)(#[^\\s^\\t]*|[\\d]*)(.+)",std::regex_constants::ECMAScript | std::regex_constants::icase),
 		ineach()
 		{
 
@@ -39,6 +40,7 @@ namespace Parser
 		rxoutput(rhs.rxoutput),
 		rxpenalty(rhs.rxpenalty),
 		rxspecialoutput(rhs.rxspecialoutput),
+		rxspatial(rhs.rxspatial),
 		ineach(rhs.ineach)
 		{
 
@@ -58,6 +60,7 @@ namespace Parser
 			rxoutput = rhs.rxoutput;
 			rxpenalty = rhs.rxpenalty;
 			rxspecialoutput = rhs.rxspecialoutput;
+			rxspatial = rhs.rxspatial;
 			ineach = rhs.ineach;
 			}
 		return *this;
@@ -275,9 +278,68 @@ namespace Parser
         return final_output;
         }
 
+	Core::FMTconstraint FMToptimizationparser::getspatialconstraint(const std::smatch& match,const std::string& line,
+		const Core::FMTconstants& constants, const std::vector<Core::FMTaction>& actions) const
+	{
+		Core::FMTconstraint constraint;
+		try {
+			const std::string constrainttypestr(match[1]);
+			const std::string senseofconstraint(match[7]);
+			const std::string rhsstring(match[9]);
+			const std::string periodstring(match[10]);
+			Core::FMTconstrainttype constrainttype;
+			double lowergreenup = 0;
+			double uppergreenup = std::numeric_limits<double>::max();
+			double lowerneighborsize = 0;
+			double upperneighborsize =std::numeric_limits<double>::max();
+			std::vector<std::string>splitted;
+			const std::string inargument(match[4]);
+			boost::split(splitted, inargument, boost::is_any_of(","));
+			const std::string actionoraggregates(boost::trim_copy(splitted.at(0)));
+			isact(_section, actions, actionoraggregates);
+			const std::string naming = constrainttypestr + "(" + inargument + ")";
+			if (constrainttypestr=="_SIZE")
+			{
+				constrainttype = Core::FMTconstrainttype::FMTspatialsize;
+				lowerneighborsize = getnum<double>(boost::trim_copy(splitted.at(1)), constants);
+			}else if (constrainttypestr == "_ADJACENCY")
+				{
+				lowergreenup = getnum<double>(boost::trim_copy(splitted.at(1)), constants);
+				constrainttype = Core::FMTconstrainttype::FMTspatialadjacency;
+				}
+			constraint = Core::FMTconstraint(constrainttype, Core::FMToutput(naming));
+			if (Core::FMTconstrainttype::FMTspatialadjacency==constrainttype)
+				{
+				const std::string target("GUP");
+				constraint.addbounds(Core::FMTyldbounds(Core::FMTsection::Optimize, target, uppergreenup, lowergreenup));
+			}else if (Core::FMTconstrainttype::FMTspatialsize==constrainttype)
+				{
+				const std::string target("NSIZE");
+				constraint.addbounds(Core::FMTyldbounds(Core::FMTsection::Optimize, target, upperneighborsize, lowerneighborsize));
+				}
+			double lower = 0;
+			double upper = 0;
+			const double rhs = getnum<double>(rhsstring, constants);
+			fillbounds(senseofconstraint, rhs,lower,upper);
+			const std::string target("RHS");
+			constraint.addbounds(Core::FMTyldbounds(Core::FMTsection::Optimize, target,upper,lower));
+			for (const Core::FMTaction* actionptr : Core::FMTactioncomparator(actionoraggregates).getallaggregates(actions))
+				{
+				constraint.addbounds(Core::FMTyldbounds(Core::FMTsection::Optimize, actionptr->getname(), rhs, rhs));
+				}
+			const std::vector<Core::FMTconstraint> returnedconstraints = getperiodsbounds(periodstring, constraint, constants);
+			constraint = *returnedconstraints.begin();
+		}catch (...)
+		{
+			_exhandler->raisefromcatch("at line " + line, "FMToptimizationparser::getspatialconstraint", __LINE__, __FILE__, _section);
+		}
+		return constraint;
+	}
+
 
 	std::vector<Core::FMTconstraint> FMToptimizationparser::getconstraints(const std::string& line, const Core::FMTconstants& constants,
-												const std::vector<Core::FMToutput>& outputs, const std::vector<Core::FMTtheme>& themes)
+												const std::vector<Core::FMToutput>& outputs, const std::vector<Core::FMTtheme>& themes,
+												const std::vector<Core::FMTaction>& actions)
 		{
 		Core::FMTconstraint constraint;
 		std::vector<Core::FMTconstraint>returnedconstraints;
@@ -291,16 +353,18 @@ namespace Parser
 				rest = line.substr(0, rest.find("_GOAL"));
 				boost::trim(rest);
 			}
-
-			if (std::regex_search(rest, kmatch, rxconstraints))
+			if (std::regex_search(rest, kmatch, rxspatial))
 			{
+				returnedconstraints.push_back(getspatialconstraint(kmatch, line, constants, actions));
+			}else if (std::regex_search(rest, kmatch, rxconstraints))
+				{
 				std::string target = std::string(kmatch[6]) + std::string(kmatch[12]) + std::string(kmatch[15]);
 				boost::trim(target);
 				if (target.find("(") != std::string::npos && target.find(")") == std::string::npos)
 				{
 					target += ")";
 				}
-				
+
 				std::map<std::string, double> nodes = getequation(target, constants, outputs, target.size());
 				nodes.erase("RHS");
 				const Core::FMToutput targetout = resume_output(nodes, outputs, themes, constants);
@@ -348,43 +412,29 @@ namespace Parser
 				returnedconstraints = getperiodsbounds(periodstring, constraint, constants);
 
 			}
-			else if (boost::regex_search(rest.cbegin(),rest.cend(), Bmatch, rxequations))
+			else if (boost::regex_search(rest.cbegin(), rest.cend(), Bmatch, rxequations))
 			{
 				Core::FMTconstrainttype cctype = Core::FMTconstrainttype::FMTstandard;
 				const std::string periodstring = std::string(Bmatch[13]);
 				const std::string str_operator = std::string(Bmatch[5]) + std::string(Bmatch[6]) + std::string(Bmatch[11]);
 				const std::string LHS = std::string(Bmatch[1]);
 				const std::string RHS = std::string(Bmatch[7]) + std::string(Bmatch[12]);
-				const std::string full_equation = LHS + std::string(1, ' ')+std::string(1, '+') + RHS;
+				const std::string full_equation = LHS + std::string(1, ' ') + std::string(1, '+') + RHS;
 				std::map<std::string, double> nodes = getequation(full_equation, constants, outputs, LHS.size());
 				double bound = nodes["RHS"];
 				nodes.erase("RHS");
 				double lower = 0;
 				double upper = 0;
-				if (str_operator == "=")
-				{
-					lower = bound;
-					upper = bound;
-				}
-				else if (str_operator == ">=")
-				{
-					lower = bound;
-					upper = std::numeric_limits<double>::infinity();
-				}
-				else if (str_operator == "<=")
-				{
-					lower = std::numeric_limits<double>::lowest();
-					upper = bound;
-				}
+				fillbounds(str_operator, bound, lower, upper);
 				const Core::FMToutput final_output = resume_output(nodes, outputs, themes, constants);
 				for (Core::FMTconstraint baseconstraint : getperiodsbounds(periodstring, constraint, constants))
-					{
+				{
 					baseconstraint.setoutput(final_output);
 					baseconstraint.setconstrainttype(cctype);
 					baseconstraint.setrhs(lower, upper);
 					returnedconstraints.push_back(baseconstraint);
-					}
-			}else {
+				}
+			}else{
 				_exhandler->raise(Exception::FMTexc::FMTinvalid_constraint,
 					line+"  at line " + std::to_string(_line),
 					"FMToptimizationparser::getperiodsbounds", __LINE__, __FILE__, _section);
@@ -395,6 +445,32 @@ namespace Parser
 			}
 		return returnedconstraints;
 		}
+
+		void FMToptimizationparser::fillbounds(const std::string& operatorvalue, const double& rhs, double& lower, double& upper) const
+			{
+			try {
+				lower = 0;
+				upper = 0;
+				if (operatorvalue == "=")
+				{
+					lower = rhs;
+					upper = rhs;
+				}
+				else if (operatorvalue == ">=")
+				{
+					lower = rhs;
+					upper = std::numeric_limits<double>::infinity();
+				}
+				else if (operatorvalue == "<=")
+				{
+					lower = std::numeric_limits<double>::lowest();
+					upper = rhs;
+				}
+			}catch (...)
+				{
+				_exhandler->raisefromcatch("","FMToptimizationparser::fillbounds", __LINE__, __FILE__, _section);
+				}
+			}
 
 		std::vector<Core::FMTconstraint> FMToptimizationparser::getperiodsbounds(std::string periodstr, const Core::FMTconstraint& constraint, const Core::FMTconstants& constants) const
 		{
@@ -600,7 +676,7 @@ namespace Parser
 								}
 								case FMToptimizationsection::constraints:
 								{
-									for (Core::FMTconstraint baseconstraint : getconstraints(line, constants, outputs, themes))
+									for (Core::FMTconstraint baseconstraint : getconstraints(line, constants, outputs, themes,actions))
 										{
 										baseconstraint.passinobject(*this);
 										constraints.push_back(baseconstraint);

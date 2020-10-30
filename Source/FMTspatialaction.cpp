@@ -173,7 +173,7 @@ namespace Spatial
             newconst.setbounds(Core::FMTperbounds(Core::FMTsection::Optimize, stopperiod, startperiod));
             constraints.push_back(newconst);
         }
-        if ( green_up>0)
+       /* if ( green_up>0)
         {
             Core::FMTconstraint newconst(Core::FMTconstrainttype::FMTspatialgreenup,Core::FMToutput(name));
 			std::string target = "RHS";
@@ -187,7 +187,7 @@ namespace Spatial
 			}
 			newconst.setbounds(Core::FMTperbounds(Core::FMTsection::Optimize, stopperiod, startperiod));
             constraints.push_back(newconst);
-        }
+        }*/
         return constraints;
     }
 

@@ -12,7 +12,7 @@ if __name__ == "__main__":
     if Version.FMTversion().hasfeature("OSI") and Version.FMTversion().hasfeature("GDAL"):
         modelparser = Parser.FMTmodelparser()
         path = "../Models/TWD_land/TWD_land.pri"
-        scenarios = ["LP"]
+        scenarios = ["Spatial"]
         models = modelparser.readproject(path, scenarios)
         lpmodel = Models.FMTlpmodel(models[0], Models.FMTsolverinterface.CLP)
         for period in range(0,10):
@@ -28,17 +28,6 @@ if __name__ == "__main__":
             for transition in simulationmodel.gettransitions():
                 singletransitions.append(transition.single())
             simulationmodel.settransitions(singletransitions)
-            spatialactions = []
-            for action in simulationmodel.getactions():
-                spatialaction=Spatial.FMTspatialaction(action)
-                spatialaction.neighbors = ["coupetotale"]
-                spatialaction.green_up=1
-                spatialaction.adjacency=1
-                spatialaction.minimal_size=1
-                spatialaction.maximal_size=2
-                spatialaction.neighbors_size=4
-                spatialactions.append(spatialaction)
-            simulationmodel.setspactions(spatialactions)
             areaparser = Parser.FMTareaparser()
             rasterslocation = "../Models/TWD_land/rasters/"
             ageraster = os.path.join(rasterslocation,"AGE.tif")
@@ -49,8 +38,9 @@ if __name__ == "__main__":
                 themeid+=1
             initialforestmap=areaparser.readrasters(simulationmodel.getthemes(),themesrasters,ageraster,1,0.0001)
             simulationmodel.setinitialmapping(initialforestmap)
+            #Stop aftet 10 search and no decrease into infeasibility and objective
             for period in range(1,11):
-                print(simulationmodel.simulate(lpmodel.getsolution(period),1,False))
+                print(simulationmodel.greedyreferencebuild(lpmodel.getsolution(period),10))
     else:
         print("FMT needs to be compiled with OSI and GDAL")
         

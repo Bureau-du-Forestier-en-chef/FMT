@@ -30,7 +30,6 @@ class FMTevent
 	void serialize(Archive& ar, const unsigned int version)
 	{
 		ar & BOOST_SERIALIZATION_NVP(ignition);
-		ar & BOOST_SERIALIZATION_NVP(enveloppe);
 		ar & BOOST_SERIALIZATION_NVP(active);
 		ar & BOOST_SERIALIZATION_NVP(action_id);
 		ar & BOOST_SERIALIZATION_NVP(period);
@@ -53,14 +52,6 @@ class FMTevent
         Coordinate where the event started
         */
         FMTcoordinate ignition;
-        // DocString: FMTevent::enveloppe
-        /**
-        Coordinates that create the envelope of the event
-        //0//-//1//
-		//-//-//-//
-		//2//-//3//
-        */
-		std::vector<FMTcoordinate>enveloppe;
 		// DocString: FMTevent::active
 		/**
 		Used in spread, the active coordinate are the next to spread.
@@ -192,22 +183,23 @@ class FMTevent
         /**
         Getter of the action id
         */
-        inline int getactionid() const {return action_id;}
+        inline const int& getactionid() const {return action_id;}
         // DocString: FMTevent::getperiod()
         /**
         Getter of the period
         */
-        inline int getperiod() const {return period;}
+        inline const int& getperiod() const {return period;}
         // DocString: FMTevent::ignit(const FMTspatialaction&, const FMTcoordinate&, const int&, const int&)
         /**
 
         */
-        virtual bool ignit(const FMTspatialaction& action,const FMTcoordinate& ignit, const int& laction_id, const int& lperiod);
+        virtual bool ignit(const size_t& eventmaximalsize,const FMTcoordinate& ignit, const int& laction_id, const int& lperiod);
         // DocString: FMTevent::spread(const FMTspatialaction&, const std::set<FMTcoordinate>&)
         /**
 
         */
-        virtual bool spread(const FMTspatialaction& action, const std::set<FMTcoordinate>& territory);
+        virtual bool spread(const size_t& eventminimalsize,const size_t& eventmaximalsize,
+			const size_t& eventeventsize,const std::set<FMTcoordinate>& territory);
         // DocString: FMTevent::distance(const FMTevent&)
         /**
         Return the distance between this event and the event pass as argument
@@ -222,22 +214,12 @@ class FMTevent
         /**
         Return true if coordinate is within specified distance of the envelope
         */
-        bool withinc(unsigned int dist, const FMTcoordinate& location) const;
+        bool within(unsigned int dist, const FMTcoordinate& location) const;
         // DocString: FMTevent::contain(const FMTcoordinate&)
         /**
         Return true if coordinate is in elements
         */
         bool contain(const FMTcoordinate& coord)const;
-		// DocString: FMTevent::withinelements(unsigned int, const FMTevent&)
-		/**
-		Return true if coordinate is within specified distance of at least one coordinate in elements
-		*/
-		bool withinelements(unsigned int dist, const FMTevent& rhs) const;
-        // DocString: FMTevent::withinelementsc(unsigned int, const FMTcoordinate&)
-        /**
-        Return true if coordinate is within specified distance of at least one coordinate in elements
-        */
-        bool withinelementsc(unsigned int dist, const FMTcoordinate& location) const;
         // DocString: FMTevent::potentialysplittedevent(const FMTcoordinate&)
         /**
         Fastest way to evaluate if an event will be split after erasing a coordinate.
@@ -255,6 +237,27 @@ class FMTevent
 		Returns the adjacent territory of the event base on a distance.
 	   */
 		std::set<FMTcoordinate>getterritory(const size_t& distance) const;
+		// DocString: FMTevent::getborders
+	   /**
+		Returns coordinate of the border of the even
+	   */
+		std::vector<std::set<FMTcoordinate>::const_iterator>getborders() const;
+		// DocString: FMTevent::getenveloppe
+		/**
+		Coordinates that create the envelope of the event
+		//0//-//1//
+		//-//-//-//
+		//2//-//3//
+		Returns coordinate of the enveloppe
+		*/
+		std::vector<FMTcoordinate>getenveloppe() const;
+		// DocString: FMTevent::getclosescoordinate
+		/**
+		Return the closes coordinate between two FMTevent
+		*/
+		void getclosescoordinates(const FMTevent& rhs,
+			std::set<FMTcoordinate>::const_iterator thiscoordinate,
+			std::set<FMTcoordinate>::const_iterator rhscoordinate) const;
     };
 }
 

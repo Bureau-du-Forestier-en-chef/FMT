@@ -30,6 +30,7 @@ namespace Spatial
 			ar & BOOST_SERIALIZATION_NVP(y);
 			}
         unsigned int x,y;
+		void getxygap(const FMTcoordinate& rhs, int& xgap, int& y_gap) const;
     public:
         FMTcoordinate();
         ~FMTcoordinate()=default;
@@ -37,6 +38,7 @@ namespace Spatial
         FMTcoordinate(const FMTcoordinate& rhs);
         FMTcoordinate at(unsigned int id) const;
         double distance(const FMTcoordinate& coord) const;
+		double distanceapproximation(const FMTcoordinate& coord) const;
         bool within(unsigned int ldistance,const FMTcoordinate& coord) const;
         void upenveloppe(std::vector<FMTcoordinate>& enveloppe) const;
         FMTcoordinate& operator = (const FMTcoordinate& rhs);
@@ -44,6 +46,7 @@ namespace Spatial
         unsigned int gety() const;
         bool operator == (const FMTcoordinate& rhs) const;
         bool operator < (const FMTcoordinate& rhs) const;
+		std::set<FMTcoordinate>::const_iterator closest(const std::vector<std::set<FMTcoordinate>::const_iterator>& coordinates, double& approximation) const;
         operator std::string() const;
         std::set<FMTcoordinate> getneighbors(const unsigned int& nsize,const bool& circle=false) const;
         };

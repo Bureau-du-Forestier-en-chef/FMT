@@ -179,8 +179,7 @@ namespace Core
         lower = 0;
         upper = 0;
 		const std::map<std::string, FMTyldbounds> thebounds = this->getyldsbounds();
-        if (type == FMTconstrainttype::FMTstandard || type == FMTconstrainttype::FMTspatialadjacency ||
-            type == FMTconstrainttype::FMTspatialgreenup || type == FMTconstrainttype::FMTspatialsize )
+        if (type == FMTconstrainttype::FMTstandard || type == FMTconstrainttype::FMTspatialadjacency ||type == FMTconstrainttype::FMTspatialsize )
             {
             lower = thebounds.at("RHS").getlower();
             upper = thebounds.at("RHS").getupper();
@@ -460,14 +459,9 @@ namespace Core
                 standardstring(line,period_bounds,goal);
 				break;
 				}
-            case FMTconstrainttype::FMTspatialgreenup:
-                {
-                standardstring(line,period_bounds,goal);
-				break;
-				}
             case FMTconstrainttype::FMTspatialsize :
                 {
-                standardstring(line,period_bounds,goal);
+				standardstring(line, period_bounds, goal);
 				break;
 				}
 			default:
@@ -714,6 +708,26 @@ namespace Core
 				_exhandler->raisefromcatch("", "FMTconstraint::evaluate", __LINE__, __FILE__);
 				}
 			return returnedvalue;
+			}
+
+		std::vector<int>FMTconstraint::getactionids(const std::vector<Core::FMTaction>& actions) const
+			{
+			std::vector<int>ids;
+			try {
+				for (const std::string& actionname : this->getylds())
+					{
+					std::vector<Core::FMTaction>::const_iterator cit = std::find_if(actions.begin(), actions.end(),Core::FMTactioncomparator(actionname));
+					if (cit!= actions.end())
+						{
+						const int distance = static_cast<size_t>(std::distance(actions.cbegin(), cit));
+						ids.push_back(distance);
+						}
+					}
+			}catch(...)
+				{
+				_exhandler->raisefromcatch("", "FMTconstraint::getactionids", __LINE__, __FILE__);
+				}
+			return ids;
 			}
 
 }

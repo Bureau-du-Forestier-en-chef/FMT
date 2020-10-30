@@ -14,6 +14,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTforest.h"
 #include "FMTsaschedule.h"
 #include "FMTsasolution.h"
+#include "FMTspatialschedule.h"
 #include <memory>
 #include <vector>
 #include <random>
@@ -48,6 +49,33 @@ cooling schedule and FMTspatialaction must be set for the model.
 class FMTsamodel : public FMTmodel
     {
     protected:
+		///Best schedule
+		Spatial::FMTspatialschedule solution;
+		// DocString: FMTsamodel::evaluate
+		/**
+		Evaluate the actual and a candidat solution and return true if the candidat solution is choose to replace
+		the actual solution.Based on a temp.
+		*/
+		bool evaluate(const double& temp,const Spatial::FMTspatialschedule& actual, const Spatial::FMTspatialschedule& candidat) const;
+		// DocString: FMTsamodel::move
+		/**
+		Perturb a solution and produce a new one
+		*/
+		Spatial::FMTspatialschedule move(const Spatial::FMTspatialschedule& actual) const;
+		// DocString: FMTsamodel::warmup
+		/**
+		Using an initprobability close to one, a base solution and a bunch of iterations get a initial temperature.
+		*/
+		double warmup(const Spatial::FMTspatialschedule& actual,double initprobability = 0.8,size_t iterations=10) const;
+		// DocString: FMTsamodel::initialsolve
+		/**
+		Try to solve the model from a coldstart.
+		*/
+	public:
+		void initialsolve();
+	private:
+		
+
         ///
         Spatial::FMTsamovetype movetype;
         /// Range of ratio of the map to perturb at each iteration.
@@ -61,7 +89,7 @@ class FMTsamodel : public FMTmodel
         ///FMTsaeventcontainer == std::set<FMTsaevent>
 		std::vector<std::map<std::string, std::pair<std::vector<double>, std::vector<double>>>> constraints_values_penalties;
 		///Random number generator.
-		std::default_random_engine generator;
+		mutable std::default_random_engine generator;
 		///Spatial actions presents in the model.
 		std::vector<Spatial::FMTspatialaction> spactions;//should be FMTmodel action pointer...
 		///Vector to track accepted solution base on the iteration number.
