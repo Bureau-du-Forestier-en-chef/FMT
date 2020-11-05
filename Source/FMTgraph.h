@@ -99,14 +99,14 @@ class FMTgraph
 	protected:
 		FMTadjacency_list data;
 	public:
-		typename typedef boost::graph_traits<FMTadjacency_list>::vertex_descriptor FMTvertex_descriptor;
-		typename typedef boost::graph_traits<FMTadjacency_list>::edge_descriptor FMTedge_descriptor;
-		typename typedef boost::graph_traits<FMTadjacency_list>::in_edge_iterator FMTinedge_iterator;
-		typename typedef boost::graph_traits<FMTadjacency_list>::out_edge_iterator FMToutedge_iterator;
-		typename typedef boost::graph_traits<FMTadjacency_list>::vertex_iterator FMTvertex_iterator;
-		typename typedef boost::graph_traits<FMTadjacency_list>::edge_iterator FMTedge_iterator;
-		typename typedef std::pair<FMToutedge_iterator, FMToutedge_iterator> FMToutedge_pair;
-		typename typedef std::pair<FMTvertex_iterator, FMTvertex_iterator> FMTvertex_pair;
+		typedef typename boost::graph_traits<FMTadjacency_list>::vertex_descriptor FMTvertex_descriptor;
+		typedef typename boost::graph_traits<FMTadjacency_list>::edge_descriptor FMTedge_descriptor;
+		typedef typename boost::graph_traits<FMTadjacency_list>::in_edge_iterator FMTinedge_iterator;
+		typedef typename boost::graph_traits<FMTadjacency_list>::out_edge_iterator FMToutedge_iterator;
+		typedef typename boost::graph_traits<FMTadjacency_list>::vertex_iterator FMTvertex_iterator;
+		typedef typename boost::graph_traits<FMTadjacency_list>::edge_iterator FMTedge_iterator;
+		typedef typename std::pair<FMToutedge_iterator, FMToutedge_iterator> FMToutedge_pair;
+		typedef typename std::pair<FMTvertex_iterator, FMTvertex_iterator> FMTvertex_pair;
 	protected:
         FMTgraphbuild buildtype;
         std::vector<std::unordered_map<size_t,FMTvertex_descriptor>> developments;
@@ -1303,86 +1303,29 @@ class FMTgraph
 			//write_graphviz(stream, data);
 			return stream.str();
 		}
-		
+
     };
 
- 
- template<> std::map<int, int> FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::getoutvariables(const FMTvertex_descriptor& out_vertex) const
-	{
-		std::map<int, int> mapping;
-		FMToutedge_pair edge_pair;
-		for (edge_pair = boost::out_edges(out_vertex, data); edge_pair.first != edge_pair.second; ++edge_pair.first)
-		{
-			const FMTedgeproperties& edgeprop = data[*edge_pair.first];
-			int actionid = edgeprop.getactionID();
-			mapping[actionid] = edgeprop.getvariableID();
-		}
-		return mapping;
-	}
+ template<> std::map<int, int> FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::getoutvariables(const FMTvertex_descriptor& out_vertex) const;
 
+ template<> std::vector<Core::FMTdevelopmentpath> FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::getpaths(const FMTvertex_descriptor& out_vertex,const int& actionID) const;
 
- template<> std::vector<Core::FMTdevelopmentpath> FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::getpaths(const FMTvertex_descriptor& out_vertex,const int& actionID) const
- {
-	 std::vector<Core::FMTdevelopmentpath>paths;
-	 for (FMToutedge_pair edge_pair = boost::out_edges(out_vertex, data); edge_pair.first != edge_pair.second; ++edge_pair.first)
-	 {
-		 const FMTedgeproperties& edgeprop = data[*edge_pair.first];
-		 if (edgeprop.getactionID() == actionID)
-		 {
-			 const FMTbasevertexproperties& vertex_target = data[target(*edge_pair.first, data)];
-			 paths.push_back(Core::FMTdevelopmentpath(vertex_target.get(), edgeprop.getproportion()));
-		 }
-	 }
-	 return paths;
- }
+ template<> double FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::inarea(const FMTvertex_descriptor& out_vertex,const double*&  solution, bool growth) const;
 
-
-
- template<> double FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::inarea(const FMTvertex_descriptor& out_vertex,const double*&  solution, bool growth) const
- {
-	 FMTinedge_iterator inedge_iterator, inedge_end;
-	 double area = 0;
-	 for (boost::tie(inedge_iterator, inedge_end) = boost::in_edges(out_vertex, data); inedge_iterator != inedge_end; ++inedge_iterator)
-	 {
-		 const FMTedgeproperties& edgeprop = data[*inedge_iterator];
-		 if (edgeprop.getactionID() < 0 || !growth)
-		 {
-			 area += *(solution + edgeprop.getvariableID()) * (edgeprop.getproportion() / 100);
-		 }
-	 }
-	 return area;
- }
-
- template<> double FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::outarea(const FMTvertex_descriptor& out_vertex, const int& actionID, const double*&  solution) const
- {
-	 {
-		 FMToutedge_iterator outedge_iterator, outedge_end;
-		 double value = 0;
-		 for (boost::tie(outedge_iterator, outedge_end) = boost::out_edges(out_vertex, data); outedge_iterator != outedge_end; ++outedge_iterator)
-		 {
-			 const FMTedgeproperties& edgeprop = data[*outedge_iterator];
-			 if (edgeprop.getactionID() == actionID)
-			 {
-				 value += *(solution + edgeprop.getvariableID()) * (edgeprop.getproportion() / 100);
-			 }
-		 }
-		 return value;
-	 }
-
- }
+ template<> double FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::outarea(const FMTvertex_descriptor& out_vertex, const int& actionID, const double*&  solution) const;
 
 }
 
 
 
-namespace boost 
-	{ 
-	namespace serialization 
+namespace boost
+	{
+	namespace serialization
 		{
 		template<> struct guid_defined<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>> : boost::mpl::true_
 			{
-		
-			}; 
+
+			};
 		template<> struct guid_defined<Graph::FMTgraph<Graph::FMTbasevertexproperties, Graph::FMTbaseedgeproperties>> : boost::mpl::true_
 			{
 
@@ -1390,12 +1333,12 @@ namespace boost
 		template<> inline const char * guid<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>>()
 			{
 			return "Graph::FMTgraph<Graph::FMTvertexproperties,Graph::FMTedgeproperties>";
-			} 
+			}
 		template<> inline const char * guid<Graph::FMTgraph<Graph::FMTbasevertexproperties, Graph::FMTbaseedgeproperties>>()
 			{
 			return "Graph::FMTgraph<Graph::FMTbasevertexproperties,Graph::FMTbaseedgeproperties>";
 			}
-		} 
+		}
 	}
 
 

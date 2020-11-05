@@ -200,7 +200,7 @@ void exportModel()
 				"@DocString(FMTsamodel::get_new_solution)")
             .def("getspatialactions",&Models::FMTsamodel::getspatialactions,
 				"@DocString(FMTsamodel::getspatialactions)")
-            .def("evaluate",&Models::FMTsamodel::evaluate,evaluate_overloads(bp::args("temp", "all_data"), "@DocString(FMTsamodel::evaluate)"))
+            //.def("evaluate",&Models::FMTsamodel::evaluate,evaluate_overloads(bp::args("temp", "all_data"), "@DocString(FMTsamodel::evaluate)"))
             .def("setinitial_mapping",&Models::FMTsamodel::setinitial_mapping,
 				"@DocString(FMTsamodel::setinitial_mapping)")
             .def("setspactions",&Models::FMTsamodel::setspactions,
@@ -225,7 +225,7 @@ void exportModel()
 				"@DocString(FMTsamodel::write_solutions_events)")
             .def("get_number_moves",&Models::FMTsamodel::get_number_moves,
 				"@DocString(FMTsamodel::get_number_moves)")
-            .def("warmup",&Models::FMTsamodel::warmup,warmup_overloads(bp::args("initprob","iterations","keep_best","type"), "@DocString(FMTsamodel::warmup)"))
+            //.def("warmup",&Models::FMTsamodel::warmup,warmup_overloads(bp::args("initprob","iterations","keep_best","type"), "@DocString(FMTsamodel::warmup)"))
 			.def("set_movetype", &Models::FMTsamodel::set_movetype, "@DocString(FMTsamodel::set_movetype)");
 
     define_pylist<Models::FMTsamodel>();

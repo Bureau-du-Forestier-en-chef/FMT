@@ -9,6 +9,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #define FMTBINDINGSPATIALACTION_H_INCLUDED
 
 #include <vector>
+#include <limits>
 
 namespace Spatial
 
@@ -49,7 +50,7 @@ namespace Spatial
 		inline const size_t& getminimaladjacency() const
 			{
 			return minimal_adjacency;
-			}	
+			}
 		inline const size_t& getmaximaladjacency() const
 			{
 			return maximal_adjacency;

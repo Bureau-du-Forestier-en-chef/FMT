@@ -504,7 +504,7 @@ namespace Spatial
 				{
 				value += getconstraintevaluation(constraint, model,friendlysolution);
 				}
-			
+
 		}catch (...)
 			{
 			_exhandler->raisefromcatch("", "FMTspatialschedule::getprimalinfeasibility", __LINE__, __FILE__);
@@ -620,7 +620,7 @@ namespace Spatial
 			if (!this->mapping.empty() && this->mapping.begin()->second.constraintlenght(constraint, periodstart, periodstop))
 			{
 				size_t oldcachesize = 0;
-				if (friendlysolution!=nullptr 
+				if (friendlysolution!=nullptr
 					&& !friendlysolution->cache.empty()
 					&& cache.size()!=friendlysolution->cache.size())
 					{
@@ -711,7 +711,7 @@ namespace Spatial
 								}
 								for (const std::pair<size_t, int>& periodpair : periodstolookfor)
 								{
-									
+
 									/*if (cache.getactualnodecache()->gotcachevalue(periodpair.second))
 									{
 										double cash = cache.getactualnodecache()->getcachevalue(periodpair.second);
@@ -723,15 +723,15 @@ namespace Spatial
 									}*/
 									cache.getactualnodecache()->setvalue(periodpair.second, periods_values[periodpair.first]);
 								}
-								
-								
-								
+
+
+
 								}
 						}
-						
+
 					}
 				}
-			if (friendlysolution != nullptr && 
+			if (friendlysolution != nullptr &&
 				oldcachesize!=cache.size())
 				{
 				friendlysolution->cache.insert(cache);
@@ -770,7 +770,7 @@ namespace Spatial
 			{
 				distlayer.mapping[graphit->first] = modelactions.at(graphit->second.getlastactionid(period)).getname();
 			}
-			
+
 		}
 		return distlayer;
 	}
@@ -832,11 +832,11 @@ namespace Spatial
 		//Iter through ageafter container where the first key is the stackname
 		for (std::map<std::string, std::vector<int>>::const_iterator ageit = ageaftercontainer.begin(); ageit != ageaftercontainer.end(); ++ageit)
 		{
-			//Calculate average age 
+			//Calculate average age
 			//Last argument in accumulate is the first element to add ... So we put a float and the return is a float to be able to round up
 			const int ageafter = static_cast<int>(std::round(std::accumulate(ageit->second.begin(), ageit->second.end(), 0.0) / static_cast<float>(ageit->second.size())));
 			std::map<std::string, std::string>theme_collection;
-			//For each theme return the finalattributes that is the most present 
+			//For each theme return the finalattributes that is the most present
 			for (std::map<std::string, std::map<std::string, int>>::const_iterator themeit = finalattributes.at(ageit->first).begin(); themeit != finalattributes.at(ageit->first).end(); ++themeit)
 			{
 				int maxhit = 0;
@@ -889,7 +889,7 @@ namespace Spatial
 				int periodstop = 0;
 				if (!this->mapping.empty() && this->mapping.begin()->second.constraintlenght(constraint, periodstart, periodstop))
 					{
-					
+
 					const int contraintupper = constraint.getperiodupperbound();
 					for (Core::FMToutputnode& node : constraint.getnodes(model.area,model.actions,model.yields))
 						{
@@ -919,7 +919,7 @@ namespace Spatial
 							}
 						}
 						}
-					
+
 
 					}
 				}
@@ -975,7 +975,7 @@ namespace Spatial
 	std::vector<const Graph::FMTlinegraph*>FMTspatialschedule::getfromevents(const Core::FMTconstraint& constraint, const std::vector<Core::FMTaction>& actions, const int& start,const int& stop) const
 		{
 		std::vector<const Graph::FMTlinegraph*>graphs;
-		
+
 		try {
 		if (constraint.isactionbased())
 			{
@@ -1134,7 +1134,7 @@ std::vector<Spatial::FMTbindingspatialaction> FMTspatialschedule::getbindingacti
 		bindings.reserve(nactions);
 		for (const Core::FMTconstraint& constraint : model.constraints)
 		{
-			if (constraint.isspatial() && 
+			if (constraint.isspatial() &&
 				period >= constraint.getperiodlowerbound() &&
 				period <= constraint.getperiodupperbound())
 			{
@@ -1144,14 +1144,14 @@ std::vector<Spatial::FMTbindingspatialaction> FMTspatialschedule::getbindingacti
 				const std::vector<int>actionids = constraint.getactionids(model.actions);
 				for (const int& actionid : actionids)
 					{
-					
+
 					for (const int& subid : actionids)
 						{
 						if (std::find(neighboring.at(actionid).begin(), neighboring.at(actionid).end(), subid) == neighboring.at(actionid).end())
 							{
 							neighboring.at(actionid).push_back(subid);
 							}
-						}	
+						}
 					}
 				if (constraint.getconstrainttype() == Core::FMTconstrainttype::FMTspatialsize)
 				{
@@ -1205,7 +1205,7 @@ std::vector<Spatial::FMTbindingspatialaction> FMTspatialschedule::getbindingacti
 				}
 
 			}
-			
+
 
 		}
 		for (size_t actionid = 0; actionid < nactions;++actionid)
@@ -1229,8 +1229,8 @@ std::vector<Spatial::FMTbindingspatialaction> FMTspatialschedule::getbindingacti
 				*_logger << "minimaladjacency " << minimaladjacency << "\n";
 				*_logger << "maximaladjacenc " << maximaladjacency << "\n";
 			}*/
-			
-			
+
+
 			bindings.emplace_back(neighboring.at(actionid), minimalgreenup, maximalgreenup, minimaladjacency, maximaladjacency,minimalsize, maximalsize, minimalnsize, maximalnsize);
 			}
 	}catch (...)
@@ -1525,7 +1525,7 @@ void FMTspatialschedule::perturbgraph(const FMTcoordinate& coordinate, const Gra
 		removegraphfromcache(graph, model);
 		const Graph::FMTlinegraph newgraph = graph.perturbgraph(model, generator, events,coordinate,period);
 		mapping[coordinate] = newgraph;
-		addgraphtocache(graph, model);
+		addgraphtocache(newgraph, model);
 	}catch (...)
 		{
 		_exhandler->printexceptions("", "FMTspatialschedule::perturbgraph", __LINE__, __FILE__);
