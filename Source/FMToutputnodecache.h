@@ -34,6 +34,7 @@ namespace Graph
 		}
 		std::vector<tvdescriptor>basenode;
 		mutable std::map<Core::FMToutputnode, std::vector<tvdescriptor>>searchtree;
+        typedef typename std::map<Core::FMToutputnode,std::vector<tvdescriptor>>::const_iterator notecacheit;
 		void setinitialcache(const std::unordered_map<size_t,tvdescriptor>& initialgraph)
 		{
 			searchtree.clear();
@@ -90,7 +91,7 @@ namespace Graph
 					cleaned = difference;
 				}
 			}
-			std::pair<std::map<Core::FMToutputnode, std::vector<tvdescriptor>>::const_iterator, bool> returniterator;
+			std::pair<notecacheit, bool> returniterator;
 			returniterator = searchtree.insert(std::pair<Core::FMToutputnode, std::vector<tvdescriptor>>(targetnode, cleaned));
 			return (returniterator.first)->second;
 		}
@@ -103,12 +104,12 @@ namespace Graph
 			const std::vector<const Core::FMTaction*>aggregatesptr = Core::FMTactioncomparator(actionname).getallaggregates(actions, true);
 			if (!actionname.empty() && !aggregatesptr.empty()) //so it's a aggregate!
 			{
-				std::map<std::string, std::vector< std::map<Core::FMToutputnode, std::vector<tvdescriptor>>::const_iterator>>potentials;
+				std::map<std::string, std::vector< notecacheit>>potentials;
 				for (const Core::FMTaction* attributeptr : aggregatesptr)
 				{
-					potentials[attributeptr->getname()] = std::vector< std::map<Core::FMToutputnode, std::vector<tvdescriptor>>::const_iterator>();
+					potentials[attributeptr->getname()] = std::vector< notecacheit>();
 				}
-				for (typename std::map<Core::FMToutputnode, std::vector<tvdescriptor>>::const_iterator sit = searchtree.begin();
+				for (notecacheit sit = searchtree.begin();
 					sit != searchtree.end(); sit++)
 				{
 					if (sit->first.issubsetof(targetnode, actions))
@@ -124,7 +125,7 @@ namespace Graph
 						return; //not a perfect rebuilt need to be complete!!
 					}
 				}
-				typename std::vector< std::map<Core::FMToutputnode, std::vector<tvdescriptor>>::const_iterator>::const_iterator testting = potentials.begin()->second.begin();
+				typename std::vector< notecacheit>::const_iterator testting = potentials.begin()->second.begin();
 				while (testting != potentials.begin()->second.end())
 				{
 					size_t attid = 0;
@@ -134,7 +135,7 @@ namespace Graph
 					{
 						if (attid != 0)
 						{
-							for (typename std::map<Core::FMToutputnode, std::vector<tvdescriptor>>::const_iterator it : potentials.at(attribute.first))
+							for (notecacheit it : potentials.at(attribute.first))
 							{
 								if ((*testting)->first.issamebutdifferentaction(it->first))
 								{
@@ -169,9 +170,9 @@ namespace Graph
 
 			}
 		}
-		typename std::map<Core::FMToutputnode, std::vector<tvdescriptor>>::const_iterator getparentnode(const Core::FMToutputnode& targetnode, const std::vector<Core::FMTaction>& actions, bool& exactnode) const
+		notecacheit getparentnode(const Core::FMToutputnode& targetnode, const std::vector<Core::FMTaction>& actions, bool& exactnode) const
 			{
-				typename std::map<Core::FMToutputnode, std::vector<tvdescriptor>>::const_iterator parentit = searchtree.find(targetnode);
+				notecacheit parentit = searchtree.find(targetnode);
 				if (parentit != searchtree.end())
 				{
 					exactnode = true;

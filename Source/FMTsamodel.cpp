@@ -529,7 +529,7 @@ namespace Models
 		}catch (...)
 			{
 			_exhandler->printexceptions("", "FMTsamodel::evaluate", __LINE__, __FILE__);
-		}	
+		}
 		return false;
 		}
 
@@ -537,7 +537,7 @@ namespace Models
 		{
 		Spatial::FMTspatialschedule newsolution(actual);
 		try {
-			std::vector<std::map<Spatial::FMTcoordinate, Graph::FMTlinegraph>::const_iterator> selectionpool = actual.getgraphs();
+			std::vector<std::map<Spatial::FMTcoordinate, Graph::FMTlinegraph>::const_iterator> selectionpool = newsolution.getgraphs();
 			std::shuffle(selectionpool.begin(), selectionpool.end(), generator);
 			std::map<Spatial::FMTcoordinate, Graph::FMTlinegraph>::const_iterator luckygraph = *selectionpool.begin();
 			std::uniform_int_distribution<int> perioddistribution(1, luckygraph->second.size() - 2);//period to change
