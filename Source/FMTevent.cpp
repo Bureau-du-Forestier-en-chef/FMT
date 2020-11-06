@@ -130,6 +130,21 @@ namespace Spatial
     return total;
     }
 
+	size_t FMTevent::hash() const// {return boost::hash<Spatial::FMTcoordinate>()(ignition); }
+		{
+		size_t hashs = boost::hash<Spatial::FMTcoordinate>()(ignition);
+		boost::hash_combine(hashs, action_id);
+		boost::hash_combine(hashs,period);
+		return hashs;
+		}
+
+	size_t FMTevent::getrelation(const FMTevent& rhs) const
+	{
+		size_t hashs = this->hash();
+		boost::hash_combine(hashs, rhs.hash());
+		return hashs;
+	}
+
 	size_t FMTevent::height() const
     {
 	const std::vector<FMTcoordinate>enveloppe = getenveloppe();

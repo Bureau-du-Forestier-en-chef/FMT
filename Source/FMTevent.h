@@ -112,7 +112,12 @@ class FMTevent
         /**
 
         */
-        size_t hash() const{return boost::hash<Spatial::FMTcoordinate>()(ignition);}
+		size_t hash() const;// {return boost::hash<Spatial::FMTcoordinate>()(ignition); }
+		// DocString: FMTevent::getrelation(const FMTevent&)
+		/**
+
+		*/
+		size_t getrelation(const FMTevent& rhs) const;
         // DocString: FMTevent::operator==(const FMTevent&)
         /**
         Comparison operator equal to
