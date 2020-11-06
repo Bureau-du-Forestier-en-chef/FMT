@@ -8,16 +8,14 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #ifndef FMTgraphstats_H_INCLUDED
 #define FMTgraphstats_H_INCLUDED
 
-#include "FMTgraphdescription.h"
 /*#ifdef FMTWITHOSI
 	#include "OsiSolverInterface.hpp"
 #endif*/
 #include <boost/serialization/serialization.hpp>
 #include <boost/serialization/nvp.hpp>
+#include <boost/serialization/export.hpp>
 #include <memory>
 #include <string>
-#include "FMTvertexproperties.h"
-#include "FMTedgeproperties.h"
 
 namespace Graph
 {
@@ -63,5 +61,5 @@ class FMTgraphstats
 		~FMTgraphstats()=default;
 	};
 }
-
+BOOST_CLASS_EXPORT_KEY(Graph::FMTgraphstats)
 #endif

@@ -12,7 +12,10 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 #include "FMTeventcontainer.h"
 #include "FMTspatialaction.h"
+
+#include <boost/serialization/serialization.hpp>
 #include <boost/serialization/export.hpp>
+#include <boost/serialization/nvp.hpp>
 
 namespace Graph
 {
@@ -39,7 +42,7 @@ class FMTlinegraph : public FMTgraph<FMTbasevertexproperties,FMTbaseedgeproperti
 		void newperiod();
 		void addaction(	FMTvertex_descriptor active,const int& actionID,
 						const std::vector<Core::FMTdevelopmentpath>& paths);
-		std::vector<Core::FMTdevelopmentpath> operate(	const Core::FMTaction& action, const int& action_id, const Core::FMTtransition& transition, 
+		std::vector<Core::FMTdevelopmentpath> operate(	const Core::FMTaction& action, const int& action_id, const Core::FMTtransition& transition,
 														const Core::FMTyields& ylds, const std::vector<Core::FMTtheme>& themes);
 		void grow();
 		FMTvertex_descriptor getactivevertex() const;
@@ -62,7 +65,7 @@ class FMTlinegraph : public FMTgraph<FMTbasevertexproperties,FMTbaseedgeproperti
 		bool hashforconstraint(size_t& hashvalue,const int& stop,const Core::FMTmask& dynamicmask) const;
 		bool isonlygrow() const;
 		void addfromevents(const Spatial::FMTcoordinate& localisation,const Models::FMTmodel& model, Spatial::FMTeventcontainer& events) const;
-		
+
 };
 }
 

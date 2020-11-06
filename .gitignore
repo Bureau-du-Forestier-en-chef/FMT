@@ -31,3 +31,4 @@ Makefile
 *.mps
 *.lp
 gdal/*
+*.exe
