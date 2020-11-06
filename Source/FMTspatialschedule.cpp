@@ -422,6 +422,7 @@ namespace Spatial
 			const Core::FMTconstrainttype spatialconstrainttype = spatialconstraint.getconstrainttype();
 			double lower = 0;
 			double upper = 0;
+			std::unordered_set<size_t>relations;
 			for (int period = periodstart; period <= periodstop; ++period)
 			{
 				spatialconstraint.getbounds(lower, upper,period);
@@ -450,7 +451,7 @@ namespace Spatial
 						const int lowergup = static_cast<int>(boundsyld.getlower());
 						for (int gupperiod = std::max(1, period - lowergup); gupperiod <= period; ++gupperiod)
 						{
-							event_objective += events.evaluatedistance(*eventit, lower, upper, gupperiod, actionids);
+							event_objective += events.evaluatedistance(*eventit, lower, upper, gupperiod, actionids, relations);
 						}
 						break;
 					}
