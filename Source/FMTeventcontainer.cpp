@@ -331,7 +331,8 @@ namespace Spatial
 	double FMTeventcontainer::evaluatedistance(const FMTevent& eventof, 
 											const double& lowerdistancetoevent,
 											const double& upperdistancetoevent,
-											const int& period, const std::vector<int>& actionsid) const
+											const int& period, const std::vector<int>& actionsid,
+											std::unordered_set<size_t>& relations) const
 	{
 	double distancevalue = 0;
 	const size_t lowerdistance = static_cast<size_t>(lowerdistancetoevent);
@@ -342,13 +343,21 @@ namespace Spatial
 		{
 			if (&(*eventit) != &eventof)//They will have the same address if it's the same event!
 			{
-			if (testlower && eventit->within(lowerdistance,eventof)) //too close
+			const size_t straightrelation = eventof.getrelation(*eventit);
+			const size_t reverserelation = eventit->getrelation(eventof);
+			if (relations.find(straightrelation)==relations.end() && 
+				relations.find(reverserelation) == relations.end())
 				{
-				distancevalue += (lowerdistancetoevent - eventit->distance(eventof));
-				}
-			if (testupper && !eventit->within(upperdistance, eventof)) //too far
-				{
-				distancevalue += (eventit->distance(eventof)-upperdistancetoevent);
+				if (testlower && eventit->within(lowerdistance, eventof)) //too close
+					{
+					distancevalue += (lowerdistancetoevent - eventit->distance(eventof));
+					}
+				if (testupper && !eventit->within(upperdistance, eventof)) //too far
+					{
+					distancevalue += (eventit->distance(eventof) - upperdistancetoevent);
+					}
+				relations.insert(straightrelation);
+				relations.insert(reverserelation);
 				}
 
 			}
