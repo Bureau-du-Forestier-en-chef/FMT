@@ -152,9 +152,9 @@ if (DEFINED PYTHONNAMING)
         else()
             set(BPY "python${PYTHONMAJOR}")
         endif("${PYTHONMAJOR}" STREQUAL "2")
-        find_package(Boost COMPONENTS system filesystem serialization iostreams "${BPY}") #add zlib
+        find_package(Boost COMPONENTS system filesystem serialization iostreams regex "${BPY}") #add zlib
     else()
-        find_package(Boost COMPONENTS system filesystem serialization iostreams) #add zlib
+        find_package(Boost COMPONENTS system filesystem serialization iostreams regex) #add zlib
 endif(DEFINED PYTHONNAMING)
 
 if (Boost_FOUND)
@@ -173,6 +173,7 @@ if (NOT Boost_FOUND)
         ("${libname}" MATCHES "system") OR
         ("${libname}" MATCHES "serialization") OR
         ("${libname}" MATCHES "iostreams") OR
+		("${libname}" MATCHES "regex") OR
         (PythonLibs_FOUND AND "${libname}" MATCHES "${PYTHONNAMING}"))
         )
             if (((("${libname}" MATCHES "d-x64-") OR ("${libname}" MATCHES "gd-x64")) AND ("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")) OR

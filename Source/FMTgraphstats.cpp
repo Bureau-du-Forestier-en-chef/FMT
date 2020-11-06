@@ -113,7 +113,7 @@ namespace Graph {
 	bool FMTgraphstats::operator == (const FMTgraphstats& rhs) const
 		{
 		return (cols == rhs.cols && rows == rhs.rows &&
-			vertices == rhs.vertices && edges == rhs.edges && 
+			vertices == rhs.vertices && edges == rhs.edges &&
 			transfer_rows == rhs.transfer_rows && output_rows == rhs.output_rows &&
 			output_cols == rhs.output_cols);
 		}
@@ -124,3 +124,4 @@ namespace Graph {
 
 }
 
+BOOST_CLASS_EXPORT_IMPLEMENT(Graph::FMTgraphstats)
