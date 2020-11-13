@@ -8,8 +8,16 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #ifndef FMTGRAPH_H
 #define FMTGRAPH_H
 
+#include <boost/graph/adjacency_list.hpp>
+#include <boost/graph/adjacency_matrix.hpp>
+#include <boost/graph/labeled_graph.hpp>
+#include <boost/graph/copy.hpp>
+#include <boost/graph/graph_utility.hpp>
+#include <boost/graph/adj_list_serialize.hpp>
+
+#include "FMTvertexproperties.h"
+#include "FMTedgeproperties.h"
 #include "FMTgraphstats.h"
-#include "FMTgraphdescription.h"
 
 #include "FMToutputnode.h"
 #include "FMTdevelopment.h"
