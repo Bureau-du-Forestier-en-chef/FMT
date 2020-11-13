@@ -75,7 +75,7 @@ namespace Graph
 		}
 	}
 
-	void FMTlinegraph::addaction(FMTvertex_descriptor active,const int& actionID,
+	void FMTlinegraph::setaction(FMTvertex_descriptor active,const int& actionID,
 		const std::vector<Core::FMTdevelopmentpath>& paths)
 	{
 		for (const Core::FMTdevelopmentpath& devpath : paths)
@@ -97,7 +97,7 @@ namespace Graph
 		FMTvertex_descriptor activev = getactivevertex();
 		const Core::FMTdevelopment& active_development = getdevelopment(activev);
 		const std::vector<Core::FMTdevelopmentpath> paths = active_development.operate(action, transition, ylds, themes);
-		this->addaction(activev,action_id, paths);
+		setaction(activev,action_id, paths);
 		return paths;
 	}
 
@@ -149,62 +149,57 @@ namespace Graph
 		return ids.at(0);
 	}
 
-	Core::FMTdevelopment FMTlinegraph::getperiodstartdev(const int& period) const
+	const Core::FMTdevelopment& FMTlinegraph::getperiodstartdev(const int& period) const
 	{
-		Exception::FMTexceptionhandler handler;
-		std::vector<Core::FMTdevelopment>all_period_start_devs;
 		for (std::unordered_map<size_t, FMTvertex_descriptor>::const_iterator devit = developments.at(period).begin();
 			devit != developments.at(period).end(); devit++)
 		{
 			if (periodstart(devit->second))
 			{
-				const Core::FMTdevelopment& development = data[devit->second].get();
-				all_period_start_devs.push_back(development);
+				return data[devit->second].get();
 			}
 		}
-		if (all_period_start_devs.size() > 1)
-		{
-			handler.raise(Exception::FMTexc::FMTnotlinegraph, "More than one development at the beginning of period " + std::to_string(period), "FMTlinegraph::getperiodstartdev()", __LINE__, __FILE__);
-		}
-		return all_period_start_devs.at(0);
+	return data[developments.at(period).begin()->second].get();
 	}
 
-	Core::FMTdevelopment FMTlinegraph::getperiodstopdev(const int & period) const
+	const Core::FMTdevelopment& FMTlinegraph::getperiodstopdev(const int & period) const
 	{
-		Exception::FMTexceptionhandler handler;
-		std::vector<Core::FMTdevelopment>all_period_stop_devs;
 		for (std::unordered_map<size_t, FMTvertex_descriptor>::const_iterator devit = developments.at(period).begin();
 			devit != developments.at(period).end(); devit++)
 		{
 			if (periodstop(devit->second))
 			{
-				const Core::FMTdevelopment& development = data[devit->second].get();
-				all_period_stop_devs.push_back(development);
+				return data[devit->second].get();
 			}
 		}
-		if (all_period_stop_devs.size() > 1)
-		{
-			handler.raise(Exception::FMTexc::FMTnotlinegraph, "More than one development at the end of period " + std::to_string(period), "FMTlinegraph::getperiodstopdev()", __LINE__, __FILE__);
-		}
-		return all_period_stop_devs.at(0);
+		return data[developments.at(period).begin()->second].get();
 	}
 	
 
     int FMTlinegraph::randomoperate(const std::vector<int>& operables, const Models::FMTmodel& model, std::queue<FMTvertex_descriptor>& actives,
                                             FMTgraphstats& statsdiff, const FMTvertex_descriptor& front_vertex, std::default_random_engine& generator,
-                                            const Core::FMTdevelopment& active_development)
+                                            const Core::FMTdevelopment& active_development, bool dontchoosegrow)
     {
-        const int size_op =  static_cast<int>(operables.size());
-		std::uniform_int_distribution<int> distribution(0,size_op);
-        int distribution_select = distribution(generator);
-        if(!operables.empty() && distribution_select != size_op)//Take care ok _DEATH hereeeeee ... I think it's implicitly done &!&!Validate
+		int distribution_select = -1;//natural growth
+		if (!operables.empty())
+			{
+			const int size_op = static_cast<int>(operables.size()) - 1;
+			int noaction = -size_op;
+			if (!operables.empty() && dontchoosegrow)
+				{
+				noaction = 0;
+				}
+			std::uniform_int_distribution<int>distribution(noaction, size_op);//50 50 to actionate something
+			distribution_select = distribution(generator);
+			}	
+        if(distribution_select >= 0)//Take care ok _DEATH hereeeeee ... I think it's implicitly done &!&!Validate
             {
                 const int action_id = operables.at(distribution_select);
                 const std::vector<Core::FMTdevelopmentpath> paths = active_development.operate(model.actions.at(action_id), model.transitions.at(action_id), model.yields, model.themes);
-                const size_t active_size = actives.size();
 				//FIX safunctions with the new small funcionts
                 //addaction(action_id, statsdiff, actives, front_vertex, paths);
-                assert(actives.size()==active_size);//Action returning on the same action == mega bug
+				addaction(action_id, statsdiff, actives, front_vertex, paths);
+				//addaction(front_vertex, action_id, paths);
                 return action_id;
             }
          else
@@ -219,7 +214,9 @@ namespace Graph
     }
 
     FMTgraphstats FMTlinegraph::randombuildperiod(const Models::FMTmodel& model,std::queue<FMTvertex_descriptor> actives, std::default_random_engine& generator,
-                                            Spatial::FMTeventcontainer& events, const Spatial::FMTcoordinate& localisation)
+                                            Spatial::FMTeventcontainer& events, const Spatial::FMTcoordinate& localisation,
+											std::unordered_map<size_t, std::vector<int>>* operability,
+											const std::vector<Spatial::FMTbindingspatialaction>* bindings,bool dontchoosegrow)
 	{
 		FMTgraphstats statsdiff(stats);
 		developments.push_back(std::unordered_map<size_t, FMTvertex_descriptor>());
@@ -229,22 +226,44 @@ namespace Graph
 			actives.pop();
 			const FMTbasevertexproperties& front_properties = data[front_vertex];
 			const Core::FMTdevelopment& active_development = front_properties.get();
-			int action_id = 0;
+			const size_t devhash = active_development.hash();
 			std::vector<int> operables;
-			for (const Core::FMTaction& action : model.actions)
-			{
-				if (active_development.operable(action, model.yields))
+			if (operability != nullptr && operability->find(devhash)!=operability->end())
 				{
-                    {
-                        operables.push_back(action_id);
-                    }
+				operables = operability->at(devhash);
+			}else {
+				int action_id = 0;
+				for (const Core::FMTaction& action : model.actions)
+				{
+					if (active_development.operable(action, model.yields))
+					{
+						{
+							operables.push_back(action_id);
+						}
+					}
+					++action_id;
 				}
-				++action_id;
-            }
-            const int selectedaction = randomoperate(operables, model, actives, statsdiff, front_vertex, generator, active_development);
+				if (operability != nullptr)
+					{
+					(*operability)[devhash] = operables;
+					}
+				
+			}
+
+			
+            const int selectedaction = randomoperate(operables, model, actives, statsdiff, front_vertex, generator, active_development, dontchoosegrow);
             if (selectedaction>-1)
             {
-                events.addaction(localisation,active_development.period,selectedaction);
+				//deleted need to be removed from spatial infeasibility
+				//changes need to be added to spatial infeasibility
+				if (bindings != nullptr)
+					{
+					events.addaction(localisation, active_development.period, selectedaction,bindings->at(selectedaction).getmaximalsize());
+				}
+				else {
+					events.addaction(localisation, active_development.period, selectedaction);
+				}
+                
             }
         }
         return (statsdiff - stats);
@@ -303,13 +322,47 @@ namespace Graph
                                             Spatial::FMTeventcontainer& events,
                                             const Spatial::FMTcoordinate& localisation, const int period) const
     {
-        events.erasecoordinate(localisation,period);
+        //events.erasecoordinate(localisation,period);
+		std::map<Core::FMTdevelopment,std::vector<bool>>tabuoperability;
+		const std::vector<std::vector<bool>>actions = getactions(model, period,tabuoperability);
+		std::unordered_map<size_t,std::vector<int>>operability;
+		bool dontbuildgrowth = false;
+		if (!actions.empty())
+			{
+			//Logging::FMTlogger() << "got action! " << "\n";
+			for (std::map<Core::FMTdevelopment, std::vector<bool>>::const_iterator it = tabuoperability.begin(); it != tabuoperability.end(); it++)
+			{
+				int actionid = 0;
+				operability[it->first.hash()] = std::vector<int>();
+				//Logging::FMTlogger() << "setting empty vector "  << "\n";
+				for (const Core::FMTaction& action : model.actions)
+				{
+					if ((!it->second.at(actionid)) && it->first.operable(action, model.yields))
+					{
+						operability[it->first.hash()].push_back(actionid);
+						//Logging::FMTlogger() << "can do " << action.getname() << " at period " << it->first.period << "\n";
+						
+					}
+					++actionid;
+				}
+			///poor thing it can only do one action so grow!
+			}
+			events.erasecoordinate(localisation, period,actions);
+			//Remove the contribution to the infeasibility of the erased and add the contribution of the changes...
+
+		}else {
+			//Logging::FMTlogger() << "got gorwth" << "\n";
+			dontbuildgrowth = true;
+		}
+		
+
+
         FMTlinegraph newgraph = partialcopy(period);
         newgraph.nodescache.clear();
         while(this->size() != newgraph.size())
         {
             std::queue<FMTvertex_descriptor> actives = newgraph.getactiveverticies();
-            newgraph.randombuildperiod(model,actives,generator,events,localisation);
+            newgraph.randombuildperiod(model,actives,generator,events,localisation,&operability,nullptr, dontbuildgrowth);
         }
 
     return newgraph;
@@ -318,6 +371,41 @@ namespace Graph
 	bool FMTlinegraph::isonlygrow() const
 		{
 		return (size()-1) == boost::num_edges(data);
+		}
+
+	bool FMTlinegraph::ismovable(const std::vector<const Core::FMTaction*>& actions,const Core::FMTyields& yields, const int& period,
+		std::unordered_map<size_t,bool>*operability) const
+		{
+		const int lastperiod = getperiod();
+		for (int localperiod = period; localperiod < lastperiod;++localperiod)
+			{
+			const Core::FMTdevelopment& startingdev = getperiodstartdev(localperiod);
+			const size_t devhash = startingdev.hash();
+			bool operable = false;
+			if (operability!=nullptr&&operability->find(devhash)!=operability->end())
+				{
+				operable = operability->at(devhash);
+			}else {
+				if (startingdev.anyoperable(actions, yields))
+					{
+					operable = true;
+					}
+				if (operability != nullptr)
+					{
+					(*operability)[devhash] = operable;
+					}
+				}
+			if (operable)
+				{
+				return true;
+				}
+			}
+		return false;
+		}
+
+	bool FMTlinegraph::operator == (const FMTlinegraph& rhs) const
+		{
+		return FMTgraph::operator==(rhs);
 		}
 
 	const Core::FMTdevelopment& FMTlinegraph::getbasedevelopment() const
@@ -334,6 +422,56 @@ namespace Graph
 		boost::hash_combine(hashvalue, development.mask.getintersect(dynamicmask));
 		boost::hash_combine(hashvalue, development.age);
 		return hashvalue;
+		}
+
+	std::vector<std::vector<bool>>FMTlinegraph::getactions(const Models::FMTmodel& model, const int& fromperiod,
+		std::map<Core::FMTdevelopment, std::vector<bool>>& operability) const
+		{
+		std::vector<std::vector<bool>>allactions;
+		if (!isonlygrow())
+		{
+			FMTedge_iterator edge_iterator, edge_iterator_end;
+			boost::tie(edge_iterator, edge_iterator_end) = boost::edges(data);
+			const int lastperiod = getperiod() - 1;
+			allactions = std::vector<std::vector<bool>>((lastperiod - fromperiod)+1, std::vector<bool>(model.actions.size(), false));
+			//Logging::FMTlogger() << "size " << allactions.size() << "\n";
+			while (edge_iterator != edge_iterator_end)
+			{
+				const FMTbaseedgeproperties& edgeprop = data[*edge_iterator];
+				const int actionid = edgeprop.getactionID();
+				if (actionid >= 0)
+				{
+					const FMTvertex_descriptor descriptor = boost::source(*edge_iterator, data);
+					const FMTbasevertexproperties& vertexprop = data[descriptor];
+					const Core::FMTdevelopment& dev = data[descriptor].get();
+					const int& period = dev.period;
+					if (period>=fromperiod&&period<=lastperiod)
+						{
+						if (operability.find(dev)== operability.end())
+							{
+							operability[dev] = std::vector<bool>(model.actions.size(),false);
+							}
+						operability[dev][actionid] = true;
+						allactions[period - fromperiod][actionid] = true;
+						}
+				}
+				++edge_iterator;
+			}
+		for (std::vector<bool>& actions : allactions)
+			{
+			std::vector<bool>::const_iterator it = actions.begin();
+			while (it!=actions.end()&&(!*it))
+				{
+				++it;
+				}
+			if (it == actions.end())
+				{
+				actions.clear();
+				}
+			}
+		}
+		
+		return allactions;
 		}
 
 	size_t FMTlinegraph::getedgeshash(const int& maximalperiod, bool& gotthewhole) const

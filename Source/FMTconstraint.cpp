@@ -710,18 +710,39 @@ namespace Core
 			return returnedvalue;
 			}
 
+		std::vector<bool>FMTconstraint::isactionsused(const std::vector<Core::FMTaction>& actions) const
+		{
+				std::vector<bool>ids(actions.size(),false);
+				try {
+					for (const std::string& actionname : this->getylds())
+					{
+						std::vector<Core::FMTaction>::const_iterator cit = std::find_if(actions.begin(), actions.end(), Core::FMTactioncomparator(actionname));
+						if (cit != actions.end())
+						{
+							const int distance = static_cast<size_t>(std::distance(actions.cbegin(), cit));
+							ids[distance] = true;
+						}
+					}
+				}
+				catch (...)
+				{
+					_exhandler->raisefromcatch("", "FMTconstraint::isactionsused", __LINE__, __FILE__);
+				}
+				return ids;
+		}
+
 		std::vector<int>FMTconstraint::getactionids(const std::vector<Core::FMTaction>& actions) const
 			{
 			std::vector<int>ids;
 			try {
-				for (const std::string& actionname : this->getylds())
+				int actionid = 0;
+				for (const bool& use : isactionsused(actions))
 					{
-					std::vector<Core::FMTaction>::const_iterator cit = std::find_if(actions.begin(), actions.end(),Core::FMTactioncomparator(actionname));
-					if (cit!= actions.end())
+					if (use)
 						{
-						const int distance = static_cast<size_t>(std::distance(actions.cbegin(), cit));
-						ids.push_back(distance);
+						ids.push_back(actionid);
 						}
+					++actionid;
 					}
 			}catch(...)
 				{

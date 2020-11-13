@@ -421,11 +421,17 @@ namespace Models
         return spactions;
     }
 
-    bool FMTsamodel::setinitial_mapping(const Spatial::FMTforest& forest)
+    bool FMTsamodel::setinitialmapping(const Spatial::FMTforest& forest)
     {
-        //current_solution = Spatial::FMTsasolution(forest);
-		solution = Spatial::FMTspatialschedule(forest);
-		return true;
+		try {
+			solution = Spatial::FMTspatialschedule(forest);
+			return true;
+		}
+		catch (...)
+			{
+			_exhandler->raisefromcatch("", "FMTsamodel::setinitialmapping", __LINE__, __FILE__);
+			}
+		return false;
     }
 
     void FMTsamodel::acceptnew()
@@ -520,9 +526,15 @@ namespace Models
 	bool FMTsamodel::evaluate(const double& temp, const Spatial::FMTspatialschedule& actual,const Spatial::FMTspatialschedule& candidat) const
 		{
 		try {
-			const double actualglobalobjective = actual.getglobalobjective(*this, &candidat);
-			const double candidatglobalobjective = candidat.getglobalobjective(*this,&actual);
-			const double probability = std::exp((-1 * (actualglobalobjective)-candidatglobalobjective) / temp);
+			const double actualglobalobjective = actual.getglobalobjective(*this);
+			const double candidatglobalobjective = candidat.getglobalobjective(*this);
+			//*_logger << "actual " << actualglobalobjective << " new " << candidatglobalobjective << "\n";
+			double probability = 1;
+			if (candidatglobalobjective>actualglobalobjective)
+				{
+				probability =  std::exp((actualglobalobjective - candidatglobalobjective) / temp);
+				}
+			//*_logger << "probability "<< probability << "\n";
 			std::uniform_real_distribution<double>random_distribution(0.0,1.0);
 			const double random_probability = random_distribution(generator);
 			return  (probability > random_probability);
@@ -533,38 +545,97 @@ namespace Models
 		return false;
 		}
 
-	Spatial::FMTspatialschedule FMTsamodel::move(const Spatial::FMTspatialschedule& actual) const
+	Spatial::FMTspatialschedule FMTsamodel::move(const Spatial::FMTspatialschedule& actual,
+										const std::vector<Spatial::FMTcoordinate>*movable,
+										std::unordered_map<size_t, bool>*operability) const
 		{
-		Spatial::FMTspatialschedule newsolution(actual);
+		//Spatial::FMTspatialschedule newsolution(actual);
 		try {
-			std::vector<std::map<Spatial::FMTcoordinate, Graph::FMTlinegraph>::const_iterator> selectionpool = newsolution.getgraphs();
+			const size_t moveminimalsize = 100;
+			std::uniform_int_distribution<int> mosizedist(1, moveminimalsize);
+			const size_t movesize = mosizedist(generator);
+			std::uniform_int_distribution<int> perioddistribution(1, actual.actperiod() - 1);//period to change
+			std::vector<Spatial::FMTcoordinate> selectionpool;
+			int period = 0;
+			while (selectionpool.empty())
+				{
+				period = perioddistribution(generator);
+				selectionpool = actual.getmovablecoordinates(*this, period, movable,operability);
+				}
+			if (selectionpool.empty())
+				{
+				_exhandler->raise(Exception::FMTexc::FMTrangeerror,
+					"Empty solution ", "FMTsamodel::move()", __LINE__, __FILE__);
+				}
 			std::shuffle(selectionpool.begin(), selectionpool.end(), generator);
-			std::map<Spatial::FMTcoordinate, Graph::FMTlinegraph>::const_iterator luckygraph = *selectionpool.begin();
-			std::uniform_int_distribution<int> perioddistribution(1, luckygraph->second.size() - 2);//period to change
-			const int period = perioddistribution(generator);
-			newsolution.perturbgraph(luckygraph->first, luckygraph->second, period, *this, generator);
+			std::vector<Spatial::FMTcoordinate>::const_iterator luckycoordinateit = selectionpool.begin();
+			size_t perturbationdone = 0;
+			const size_t selected = std::min(movesize, selectionpool.size());
+			Spatial::FMTspatialschedule newsolution(actual, selectionpool.begin(), selectionpool.begin() + selected);
+			//Spatial::FMTspatialschedule newsolution(actual);
+			while (luckycoordinateit !=selectionpool.end()&& perturbationdone<movesize)
+				{
+				newsolution.perturbgraph(*luckycoordinateit, period, *this, generator);
+				++perturbationdone;
+				}
+			return newsolution;
 		}catch (...)
 			{
 			_exhandler->printexceptions("", "FMTsamodel::move", __LINE__, __FILE__);
 			}
-		return newsolution;
+		//return newsolution;
+		return actual;
 		}
 
-	double FMTsamodel::warmup(const Spatial::FMTspatialschedule& actual, double initprobability, size_t iterations) const
+	double FMTsamodel::warmup(const Spatial::FMTspatialschedule& actual,
+		const std::vector<Spatial::FMTcoordinate>*movable,
+		std::unordered_map<size_t, bool>*operability,
+		double initprobability, size_t iterations)
 		{
 		double temperature = 0;
 		try {
-			const double actualobjective = actual.getglobalobjective(*this);
+			//const double actualobjective = actual.getglobalobjective(*this);
+			const std::vector<double>actuals = actual.getconstraintsvalues(*this);
+			std::vector<double>maximals = actuals;
+			std::vector<double>deltasums(constraints.size(),0);
+			const double normalizationfactor = 2;
 			const double totalits = static_cast<double>(iterations);
-			double deltasum = 0;
+			//double deltasum = 0;
 			while (iterations>0)
 				{
-				const Spatial::FMTspatialschedule newsolution = move(actual);
-				const double newobjective = newsolution.getglobalobjective(*this, &actual);
-				deltasum += (actualobjective - newobjective);
+				const Spatial::FMTspatialschedule newsolution = move(actual, movable,operability);
+				size_t cntid = 0;
+				for (const double& value : newsolution.getconstraintsvalues(*this))
+					{
+					//*_logger << "Value " << value << "\n";
+					if (value!=0 && (maximals.at(cntid) > 0 && maximals.at(cntid)<value ||
+									maximals.at(cntid) < 0 && maximals.at(cntid)>value))
+						{
+						maximals[cntid] = value;
+						}
+					deltasums[cntid]+=(std::abs(actuals.at(cntid) - value));
+					++cntid;
+					}
+				//const double newobjective = newsolution.getglobalobjective(*this);
+				//*_logger << "old " << actualobjective << " new " << newobjective << "\n";
+				//deltasum += std::abs(actualobjective - newobjective);
 				--iterations;
 				}
+			double deltasum = 0;
+			size_t cntid = 0;
+			for (double& value : maximals)//Need to normalize the calculated delta
+				{
+				if (value==0)
+					{
+					value = 1;
+					}
+				value = (1 / (std::abs(value)*normalizationfactor));
+				//*_logger << "factor " << value<< "\n";
+				deltasum += (deltasums[cntid] * value);
+				++cntid;
+				}
 			temperature = -(deltasum / totalits) / std::log(initprobability);
+			solution.setconstraintsfactor(*this, maximals);
 		}catch (...)
 			{
 			_exhandler->printexceptions("", "FMTsamodel::warmup", __LINE__, __FILE__);
@@ -577,22 +648,31 @@ namespace Models
 		try {
 			double primalinf = 0;
 			double objective = 0;
-			double temperature = warmup(solution);
-			_logger->logwithlevel("Annealer temperature at : "+std::to_string(temperature)+"\n", 1);
-			solution.getsolutionstatus(objective, primalinf, *this);
-			solution.logsolutionstatus(0, objective, primalinf);
+			const std::vector<Spatial::FMTcoordinate>movables = solution.getstaticsmovablecoordinates(*this);
+			std::unordered_map<size_t, bool>operability;
+			double temperature = warmup(solution,&movables,&operability);
+			_logger->logwithlevel("Annealer Temp("+std::to_string(temperature)+")\n", 1);
+			//solution.getsolutionstatus(objective, primalinf, *this);
+			//solution.logsolutionstatus(0, objective, primalinf);
 			size_t notaccepted = 0;
 			size_t temperaturelevel = 0;
 			size_t totaliteration = 0;
 			while (notaccepted<100)
 				{
 				size_t iteration = 0;
+				size_t accepted = 0;
 				while (notaccepted < 100 && iteration <1000)
 					{
-					const Spatial::FMTspatialschedule newsolution = move(solution);
+					const Spatial::FMTspatialschedule newsolution = move(solution,&movables,&operability);
 					if (evaluate(temperature,solution,newsolution))
 						{
-						solution = newsolution;
+						if (newsolution.ispartial())
+							{
+							solution.copyfrompartial(newsolution);
+						}else {
+							solution = newsolution;
+							}
+						++accepted;
 						notaccepted = 0;
 					}else {
 						++notaccepted;
@@ -608,7 +688,8 @@ namespace Models
 					++totaliteration;
 					}
 				temperature = cool_down(temperature);
-				_logger->logwithlevel("Annealer temperature at: " + std::to_string(temperature) + "\n", 1);
+				const double acceptanceratio = (accepted / iteration) * 100;
+				_logger->logwithlevel("Annealer Temp(" + std::to_string(temperature) + ") Ratio("+std::to_string(acceptanceratio)+")\n", 1);
 				}
 		}catch (...)
 			{

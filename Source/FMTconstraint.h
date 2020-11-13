@@ -263,6 +263,11 @@ class FMTconstraint: public FMToutput,public FMTspec
 		If the constraint is a spatial constraint it will return a vector of action ids to which the constraint apply to.
 		*/
 		std::vector<int>getactionids(const std::vector<Core::FMTaction>& actions) const;
+		// DocString: FMTconstraint::isactionsused()
+		/**
+		If the constraint is a spatial constraint it will return a vector of action ids to which the constraint apply to.
+		*/
+		std::vector<bool>isactionsused(const std::vector<Core::FMTaction>& actions) const;
 
 	};
 }
