@@ -61,12 +61,16 @@ class FMTsamodel : public FMTmodel
 		/**
 		Perturb a solution and produce a new one
 		*/
-		Spatial::FMTspatialschedule move(const Spatial::FMTspatialschedule& actual) const;
+		Spatial::FMTspatialschedule move(const Spatial::FMTspatialschedule& actual,
+						const std::vector<Spatial::FMTcoordinate>*movable = nullptr,
+						std::unordered_map<size_t, bool>*operability= nullptr) const;
 		// DocString: FMTsamodel::warmup
 		/**
 		Using an initprobability close to one, a base solution and a bunch of iterations get a initial temperature.
 		*/
-		double warmup(const Spatial::FMTspatialschedule& actual,double initprobability = 0.8,size_t iterations=10) const;
+		double warmup(const Spatial::FMTspatialschedule& actual, const std::vector<Spatial::FMTcoordinate>*movable = nullptr,
+			std::unordered_map<size_t, bool>*operability = nullptr,
+			double initprobability = 0.8,size_t iterations=100);
 		// DocString: FMTsamodel::initialsolve
 		/**
 		Try to solve the model from a coldstart.
@@ -135,7 +139,7 @@ class FMTsamodel : public FMTmodel
         ///Setter of the cooling_schedule.
         bool setschedule(const Spatial::FMTexponentialschedule& schedule);
         ///Setter of the initial_mapping base on FMTforest.
-        bool setinitial_mapping(const Spatial::FMTforest& forest);
+        bool setinitialmapping(const Spatial::FMTforest& forest);
         ///Setter of spatial actions. See FMTspatialaction for info.
         bool setspactions(const std::vector<Spatial::FMTspatialaction>& lspactions);
         ///Setter of min_ratio_moves and max_ratio_moves.

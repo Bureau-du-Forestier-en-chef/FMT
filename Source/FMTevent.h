@@ -29,8 +29,8 @@ class FMTevent
 	template<class Archive>
 	void serialize(Archive& ar, const unsigned int version)
 	{
-		ar & BOOST_SERIALIZATION_NVP(ignition);
-		ar & BOOST_SERIALIZATION_NVP(active);
+		//ar & BOOST_SERIALIZATION_NVP(ignition);
+		//ar & BOOST_SERIALIZATION_NVP(active);
 		ar & BOOST_SERIALIZATION_NVP(action_id);
 		ar & BOOST_SERIALIZATION_NVP(period);
 		ar & BOOST_SERIALIZATION_NVP(elements);
@@ -39,24 +39,27 @@ class FMTevent
     /**
 	Get mid point of elements.
 	*/
-	FMTcoordinate midposition() const
+	inline std::set<FMTcoordinate>::const_iterator midposition() const
 		{
-		const size_t midlocation = (elements.size() / 2);
 		std::set<FMTcoordinate>::const_iterator it = elements.begin();
-		std::advance(it,midlocation);
-		return (*it);
+		if (elements.size()>1)
+			{
+			const size_t midlocation = (elements.size() / 2);
+			std::advance(it, midlocation);
+			}
+		return it;
 		}
     protected:
         // DocString: FMTevent::ignition
         /**
         Coordinate where the event started
         */
-        FMTcoordinate ignition;
+        //FMTcoordinate ignition;
 		// DocString: FMTevent::active
 		/**
 		Used in spread, the active coordinate are the next to spread.
 		*/
-		std::vector<FMTcoordinate>active;
+		//std::vector<FMTcoordinate>active;
 		// DocString: FMTsaevent::action_id
         /**
         Action id from the FMTmodel.
@@ -198,13 +201,13 @@ class FMTevent
         /**
 
         */
-        virtual bool ignit(const size_t& eventmaximalsize,const FMTcoordinate& ignit, const int& laction_id, const int& lperiod);
+        virtual std::vector<std::set<FMTcoordinate>::const_iterator> ignit(const size_t& eventmaximalsize,const std::set<FMTcoordinate>::const_iterator& ignit, const int& laction_id, const int& lperiod);
         // DocString: FMTevent::spread(const FMTspatialaction&, const std::set<FMTcoordinate>&)
         /**
 
         */
         virtual bool spread(const size_t& eventminimalsize,const size_t& eventmaximalsize,
-			const size_t& eventeventsize,const std::set<FMTcoordinate>& territory);
+			const size_t& eventeventsize,const std::set<FMTcoordinate>& territory, std::vector<std::set<FMTcoordinate>::const_iterator> active);
         // DocString: FMTevent::distance(const FMTevent&)
         /**
         Return the distance between this event and the event pass as argument
@@ -264,6 +267,7 @@ class FMTevent
 			std::set<FMTcoordinate>::const_iterator thiscoordinate,
 			std::set<FMTcoordinate>::const_iterator rhscoordinate) const;
     };
+
 }
 
 namespace boost {
@@ -272,10 +276,10 @@ namespace boost {
     struct hash<Spatial::FMTevent>
     {
     std::size_t operator()(const Spatial::FMTevent& event) const
-    {
+		 {
 
       return (event.hash());
-    }
+		}
     };
 
 }

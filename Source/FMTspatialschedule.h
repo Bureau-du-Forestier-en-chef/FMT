@@ -11,6 +11,12 @@
 
 namespace Spatial
 {
+enum  FMTspatialscheduletype
+	{
+		FMTcomplete = 1,
+		FMTpartial = 2
+	};
+
 // DocString: FMTspatialschedule
 /**
 This class is a map containing a linear graph for each cell. The graph represent the stand,
@@ -20,6 +26,8 @@ with a schedule.
 class FMTspatialschedule : public FMTlayer<Graph::FMTlinegraph>
 {
 	mutable FMTspatialnodescache cache;
+	FMTspatialscheduletype scheduletype;
+	std::vector<double>constraintsfactor;
     public:
         // DocString: FMTspatialschedule()
 		/**
@@ -42,6 +50,13 @@ class FMTspatialschedule : public FMTlayer<Graph::FMTlinegraph>
 		Copy constructor of FMTspatialschedule
 		*/
         FMTspatialschedule(const FMTspatialschedule& other);
+		// DocString: FMTspatialschedule(const FMTspatialschedule,const std::vector<FMTcoordinate>)
+		/**
+		Create a partial copy of the complete solution base on coordinates.
+		*/
+		FMTspatialschedule(const FMTspatialschedule& other,
+			const std::vector<FMTcoordinate>::const_iterator& firstcoord,
+			const std::vector<FMTcoordinate>::const_iterator& endcoord);
         // DocString: FMTspatialschedule::=
 		/**
 		Copy assignment of FMTspatialschedule
@@ -106,6 +121,16 @@ class FMTspatialschedule : public FMTlayer<Graph::FMTlinegraph>
 		Return the constraint evaluation value of a spatial constraint.
 		*/
 	   double evaluatespatialconstraint(const Core::FMTconstraint& spatialconstraint,const Models::FMTmodel& model) const;
+	   // DocString: FMTspatialschedule::evaluatedistance
+		/**
+		Return the constraint evaluation value of a spatial constraint.
+		*/
+	   double evaluatedistance(const FMTevent& eventof,
+		   const double& lowerdistancetoevent,
+		   const double& upperdistancetoevent,
+		   const int& period, const std::vector<bool>& actionsused,
+		   std::unordered_set<size_t>& relations,
+		   const std::vector<FMTeventcontainer::const_iterator>& events) const;
 		// DocString: FMTspatialschedule::getallowable
 		/**
 		For the target action, return a set of FMTcoordinate corresponding to the cells that are spatially allowable from coordinates that are operables.
@@ -164,12 +189,18 @@ class FMTspatialschedule : public FMTlayer<Graph::FMTlinegraph>
 		*/
 		double getconstraintevaluation(const Core::FMTconstraint&constraint,
 			const Models::FMTmodel& model,const FMTspatialschedule*	friendlysolution = nullptr) const;
+		// DocString: FMTspatialschedule::getconstraintsvalues()
+		/**
+			Fill up a vector of values for for each contraints (used for normalization)
+		*/
+		std::vector<double> getconstraintsvalues(const Models::FMTmodel& model,
+			const FMTspatialschedule*	friendlysolution = nullptr) const;
 		// DocString: FMTspatialschedule::getdualinfeasibility()
 		/**
 			Returns dual infeasibility of a set of constraints.
 		*/
-		double getprimalinfeasibility(const std::vector<Core::FMTconstraint>& constraints, const Models::FMTmodel& model,
-			const FMTspatialschedule*	friendlysolution = nullptr) const;
+		double getprimalinfeasibility(const std::vector<Core::FMTconstraint>& constraints,
+			const Models::FMTmodel& model,const FMTspatialschedule*	friendlysolution = nullptr, bool withfactorization = false) const;
 		// DocString: FMTspatialschedule::logsolutionstatus()
 		/**
 			Log the status of the solution
@@ -180,29 +211,25 @@ class FMTspatialschedule : public FMTlayer<Graph::FMTlinegraph>
 			Get the primal infeasibility and objective value
 		*/
 		void getsolutionstatus(double& objective, double& primalinfeasibility,const Models::FMTmodel& model,
-			const FMTspatialschedule*	friendlysolution = nullptr, bool withsense = true) const;
+			const FMTspatialschedule*	friendlysolution = nullptr, bool withsense = true, bool withfactorization = false) const;
 		// DocString: FMTspatialschedule::getglobalobjective
 		/**
 		Usefull to evaluate the quality of the solution it mixes objective to infeasibility and return it has double
 		the lower the returned value is better is the solution. You can get a negative global objective.
 		*/
-		double getglobalobjective(const Models::FMTmodel& model,const FMTspatialschedule*	friendlysolution = nullptr) const;
+		double getglobalobjective(const Models::FMTmodel& model,
+			const FMTspatialschedule*	friendlysolution = nullptr) const;
 		// DocString: FMTspatialschedule::getobjectivevaluey()
 		/**
 			Returns the objective value of the spatialschedule
 		*/
 		double getobjectivevalue(const Core::FMTconstraint& constraint, const Models::FMTmodel& model,
 			const FMTspatialschedule*	friendlysolution = nullptr,bool withsense = true) const;
-		// DocString: FMTspatialschedule::removegraphfromcache
+		// DocString: FMTspatialschedule::setgraphfromcache
 		/**
-			Removes the cached values for every nodes of the model of a given graph.
+			Removes the cached values for every nodes of the model of a given graph.If remove = false it add values to cache
 		*/
-		void removegraphfromcache(const Graph::FMTlinegraph& graph, const Models::FMTmodel& model);
-		// DocString: FMTspatialschedule::addgraphfromcache
-		/**
-			Removes the cached values for every nodes of the model of a given graph.
-		*/
-		void addgraphtocache(const Graph::FMTlinegraph& graph,const Models::FMTmodel& model);
+		void setgraphfromcache(const Graph::FMTlinegraph& graph, const Models::FMTmodel& model, bool remove = true);
 
 		// DocString: FMTspatialschedule::getgraphsoutputs(const Models::FMTmodel&, const Core::FMTconstraint&, const int&, const int&)
 		/**
@@ -263,7 +290,7 @@ class FMTspatialschedule : public FMTlayer<Graph::FMTlinegraph>
 		/**
 		Change one graph in the solution remove it's contribution to objective and add contribution to the newly generated to the objective.
 		*/
-		void perturbgraph(const FMTcoordinate& coordinate,const Graph::FMTlinegraph& graph,const int& period, const Models::FMTmodel& model, std::default_random_engine& generator);
+		void perturbgraph(const FMTcoordinate& coordinate,const int& period, const Models::FMTmodel& model, std::default_random_engine& generator);
 		// DocString: FMTspatialschedule::isbetterbygroup
 		/**
 		Compare solution by constraint group.
@@ -273,7 +300,39 @@ class FMTspatialschedule : public FMTlayer<Graph::FMTlinegraph>
 		/**
 		Returns a vector of const iterators to graphs.This thing will need to be cached to increase inficiency
 		*/
-		std::vector<std::map<Spatial::FMTcoordinate, Graph::FMTlinegraph>::const_iterator>getgraphs() const;
+		std::vector<Spatial::FMTcoordinate>getmovablecoordinates(const Models::FMTmodel& model,const int& period,
+																					const std::vector<Spatial::FMTcoordinate>* statics,
+																					std::unordered_map<size_t, bool>*operability = nullptr) const;
+		// DocString: FMTspatialschedule::getstaticsmovablegraphs
+		/**
+		Returns a vector of coordinate that are considered movable
+		*/
+		std::vector<Spatial::FMTcoordinate>getstaticsmovablecoordinates(const Models::FMTmodel& model) const;
+		// DocString: FMTspatialschedule::ispartial
+		/**
+		return true if solution is partial.
+		*/
+		bool ispartial() const;
+		// DocString: FMTspatialschedule::copyfrompartial
+		/**
+		Copy elements from a partial solution.
+		*/
+		void copyfrompartial(const FMTspatialschedule& rhs);
+		// DocString: FMTspatialschedule::setconstraintsfactor
+		/**
+		Set the constraints factors for nomalization
+		*/
+		void setconstraintsfactor(const Models::FMTmodel& model,const std::vector<double>&factors);
+		// DocString: FMTspatialschedule::needsrefactortorization
+		/**
+		Return true if the solution looks unscaled and need new factors
+		*/
+		bool needsrefactortorization(const Models::FMTmodel& model) const;
+		// DocString: FMTspatialschedule::getconstraintsfactor
+		/**
+		Get the constraints factors for nomalization
+		*/
+		std::vector<double> getconstraintsfactor() const;
 	protected:
 		// DocString: FMTspatialschedule::events
 		/**
@@ -307,6 +366,7 @@ class FMTspatialschedule : public FMTlayer<Graph::FMTlinegraph>
 		 Return the maximal patch size of a vector of spatialactions.
 		 */
 		//std::vector<size_t>getmaximalpatchsizes(const std::vector<FMTspatialaction>& spactions) const;
+		
     private:
 };
 }
