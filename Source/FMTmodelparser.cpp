@@ -75,6 +75,24 @@ Models::FMTmodel FMTmodelparser::read(const std::string& con,const std::string& 
 		con, lan, lif, are, yld, act, trn, out, opt);
     }
 
+std::vector<Core::FMTconstraint>FMTmodelparser::getconstraintsfromstring(std::string constraintstr, const Models::FMTmodel& model, Core::FMTconstants constants)
+{
+	std::vector<Core::FMTconstraint>constraints;
+	try {
+		FMToptimizationparser optparser;
+		boost::to_upper(constraintstr);
+		for (Core::FMTconstraint constraint : optparser.getconstraints(constraintstr, constants, model.outputs, model.themes, model.actions))
+			{
+			constraint.passinobject(model);
+			constraints.push_back(constraint);
+			}
+	}catch (...)
+	{
+		_exhandler->printexceptions("While getting constraint from "+ constraintstr, "FMTmodelparser::getconstraintsfromstring", __LINE__, __FILE__, _section);
+	}
+	return constraints;
+}
+
 
 Models::FMTmodel FMTmodelparser::referenceread(std::map<std::string, std::vector<int>>& common_sections,
 	std::vector<Models::FMTmodel>& models,

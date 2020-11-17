@@ -116,11 +116,12 @@ class FMTspatialschedule : public FMTlayer<Graph::FMTlinegraph>
 										   std::vector<std::set<Spatial::FMTcoordinate>> original= std::vector<std::set<Spatial::FMTcoordinate>>(),
 											std::vector<FMTcoordinate> updatedcoordinate= std::vector<FMTcoordinate>()) const;
 
-	   // DocString: FMTspatialschedule::evaluateaspatialconstraint()
+	   // DocString: FMTspatialschedule::evaluatespatialconstraint()
 		/**
-		Return the constraint evaluation value of a spatial constraint.
+		Return the constraint evaluation value of a spatial constraint. If the subset is not a nullptr the 
 		*/
-	   double evaluatespatialconstraint(const Core::FMTconstraint& spatialconstraint,const Models::FMTmodel& model) const;
+	   double evaluatespatialconstraint(const Core::FMTconstraint& spatialconstraint,
+		   const Models::FMTmodel& model,const FMTeventcontainer* subset = nullptr) const;
 	   // DocString: FMTspatialschedule::evaluatedistance
 		/**
 		Return the constraint evaluation value of a spatial constraint.
@@ -256,6 +257,11 @@ class FMTspatialschedule : public FMTlayer<Graph::FMTlinegraph>
 		 Get the binding actions based on model constraints.
 		 */
 		std::vector<Spatial::FMTbindingspatialaction> getbindingactions(const Models::FMTmodel& model, const int& period) const;
+		// DocString: FMTspatialschedule::getbindingactions
+		 /**
+		 Get the binding actions based on model constraints.
+		 */
+		std::vector<std::vector<Spatial::FMTbindingspatialaction>>getbindingactionsbyperiod(const Models::FMTmodel& model) const;
 		// DocString: FMTspatialschedule::referencebuild
 		/**
 		This is the main function to simulate a schedule of actions (schedule) on the actual

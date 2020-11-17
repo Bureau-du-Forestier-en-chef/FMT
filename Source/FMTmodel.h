@@ -38,6 +38,11 @@ namespace Graph
 	class FMTlinegraph;
 }
 
+namespace Parser
+{
+	class FMTmodelparser;
+}
+
 namespace Spatial
 {
 	class FMTspatialschedule;
@@ -62,6 +67,7 @@ class FMTmodel : public Core::FMTobject
 	friend class Graph::FMTlinegraph;
 	friend class Spatial::FMTspatialschedule;
 	friend class Spatial::FMTspatialnodescache;
+	friend class Parser::FMTmodelparser;
 	// DocString: FMTmodel::save
 	/**
 	Save function is for serialization, used to do multiprocessing across multiple cpus (pickle in Pyhton)
