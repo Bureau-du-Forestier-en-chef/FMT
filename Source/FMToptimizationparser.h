@@ -52,8 +52,6 @@ namespace Parser
                              const std::vector<Core::FMToutput>& outputs,
                              const std::vector<Core::FMTtheme>& themes);
 		FMToptimizationsection getsection(const std::string& line) const;
-		std::vector<Core::FMTconstraint> getconstraints(const std::string& line, const Core::FMTconstants& constants,
-			const std::vector<Core::FMToutput>& outputs, const std::vector<Core::FMTtheme>& themes, const std::vector<Core::FMTaction>& actions);
 		bool setgoal(Core::FMTconstraint& constraint, const std::string& line, const Core::FMTconstants& constants);
 		void setperiods(Core::FMTconstraint& constraint, const std::string& lower,const std::string& upper, const Core::FMTconstants& constants) const;
 		Core::FMToutput resume_output(const std::map<std::string,double>& nodes,
@@ -79,6 +77,8 @@ namespace Parser
 				  const std::vector<Core::FMToutput>& outputs,
 				  std::vector<Core::FMTaction>& excluded,
 				  const std::string& location);
+		std::vector<Core::FMTconstraint> getconstraints(const std::string& line, const Core::FMTconstants& constants,
+			const std::vector<Core::FMToutput>& outputs, const std::vector<Core::FMTtheme>& themes, const std::vector<Core::FMTaction>& actions);
 		void write(const std::vector<Core::FMTconstraint>& constraints,const std::string& location) const;
 		~FMToptimizationparser()=default;
 	};

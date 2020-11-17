@@ -629,8 +629,7 @@ namespace Models
 					{
 					value = 1;
 					}
-				value = (1 / (std::abs(value)*normalizationfactor));
-				//*_logger << "factor " << value<< "\n";
+				value = (1000 / (std::abs(value)*normalizationfactor));
 				deltasum += (deltasums[cntid] * value);
 				++cntid;
 				}
@@ -688,7 +687,7 @@ namespace Models
 					++totaliteration;
 					}
 				temperature = cool_down(temperature);
-				const double acceptanceratio = (accepted / iteration) * 100;
+				const double acceptanceratio = (static_cast<double>(accepted) / static_cast<double>(iteration)) * 100;
 				_logger->logwithlevel("Annealer Temp(" + std::to_string(temperature) + ") Ratio("+std::to_string(acceptanceratio)+")\n", 1);
 				}
 		}catch (...)

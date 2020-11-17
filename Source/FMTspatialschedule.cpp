@@ -519,7 +519,10 @@ namespace Spatial
 		return distancevalue;
 	}
 
-	double FMTspatialschedule::evaluatespatialconstraint(const Core::FMTconstraint& spatialconstraint, const Models::FMTmodel& model) const
+
+
+	double FMTspatialschedule::evaluatespatialconstraint(const Core::FMTconstraint& spatialconstraint, const Models::FMTmodel& model,
+		const FMTeventcontainer* subset) const
 	{
 	double returnvalue = 0;
 	try {
@@ -529,6 +532,11 @@ namespace Spatial
 		{
 			const std::vector<bool>actionused = spatialconstraint.isactionsused(model.actions);
 			const Core::FMTconstrainttype spatialconstrainttype = spatialconstraint.getconstrainttype();
+			FMTeventcontainer const* container = &events;
+			if (subset!=nullptr)
+				{
+				container = subset;
+				}
 			double lower = 0;
 			double upper = 0;
 			if (spatialconstrainttype==Core::FMTconstrainttype::FMTspatialsize)
@@ -536,7 +544,7 @@ namespace Spatial
 				for (int period = periodstart; period <= periodstop; ++period)
 					{
 					spatialconstraint.getbounds(lower, upper, period);
-					for (const FMTeventcontainer::const_iterator& eventit : events.getevents(period, actionused))
+					for (const FMTeventcontainer::const_iterator& eventit : container->getevents(period, actionused))
 						{
 						const double event_val = static_cast<double>(eventit->size());
 						double event_objective = 0;
@@ -563,7 +571,12 @@ namespace Spatial
 					const bool testlower = (lower == -std::numeric_limits<double>::infinity()) ? false : true;
 					const bool testupper = (upper == std::numeric_limits<double>::infinity()) ? false : true;
 					const size_t baselookup = testlower ? static_cast<size_t>(lower) : static_cast<size_t>(upper);//Add up the maximal size of all the actions!
-					const std::vector<FMTeventcontainer::const_iterator> allevents = events.getevents(period, actionused);
+					std::vector<FMTeventcontainer::const_iterator> allevents = events.getevents(period, actionused);
+					const size_t eventsize = allevents.size();
+					if (container!=&events)
+						{
+						allevents = container->getevents(period, actionused);
+						}
 					for (const FMTeventcontainer::const_iterator eventit : allevents)
 					{
 						const size_t containerlookup = baselookup + eventit->size();
@@ -583,11 +596,18 @@ namespace Spatial
 							const double periodfactor = (lowergup - (period - gupperiod));
 							for (const FMTeventcontainer::const_iterator eventof : events.getevents(gupperiod, actionused, minimalcoord, maximalcoord))
 							{
-								if (eventit != eventof)//They will have the same address if it's the same event!
-								{
-									const size_t straightrelation = eventof->getrelation(*eventit);
-									const size_t reverserelation = eventit->getrelation(*eventof);
-									if (relations.find(straightrelation) == relations.end() &&
+								//if (eventit != eventof)//They will have the same address if it's the same event!
+								//{
+									const size_t ofhash = eventof->hash();
+									const size_t ithash = eventit->hash();
+									size_t reverserelation = 0;
+									boost::hash_combine(reverserelation, ofhash);
+									boost::hash_combine(reverserelation, ithash);
+									size_t straightrelation = 0;
+									boost::hash_combine(straightrelation, ithash);
+									boost::hash_combine(straightrelation, ofhash);
+									if (ofhash!=ithash&&
+										relations.find(straightrelation) == relations.end()&&
 										relations.find(reverserelation) == relations.end())
 									{
 										if (eventit->within(baselookup, *eventof)) //too close
@@ -599,14 +619,13 @@ namespace Spatial
 											++totalwithincount;
 										}
 										relations.insert(straightrelation);
-										relations.insert(reverserelation);
 									}
 
-								}
+								//}
 							}
 							if (testupper)
 							{
-								returnvalue += ((static_cast<double>(allevents.size()) - totalwithincount)*upper)*periodfactor;
+								returnvalue += ((static_cast<double>(eventsize) - totalwithincount)*upper)*periodfactor;
 							}
 							}
 					}
@@ -637,9 +656,10 @@ namespace Spatial
 				}
 
 			}
-			else {//evaluate spatial stuff
+			else
+				{//evaluate spatial stuff
 				value = this->evaluatespatialconstraint(constraint,model);
-			}
+				}
 		}catch (...)
 		{
 			_exhandler->raisefromcatch("", "FMTspatialschedule::getconstraintevaluation", __LINE__, __FILE__);
@@ -864,7 +884,7 @@ namespace Spatial
 								{
 									for (const std::pair<size_t, int>& periodpair : periodstolookfor)
 									{
-										const std::vector<FMTcoordinate>eventscoordinate = getfromevents(node, model.getactions(), periodpair.second);
+										const std::vector<FMTcoordinate>eventscoordinate = getfromevents(node, model.actions, periodpair.second);
 										std::vector<FMTcoordinate>selection;
 										if (cache.getactualnodecache()->worthintersecting)
 											{
@@ -1253,6 +1273,16 @@ void FMTspatialschedule::setgraphcachebystatic(const std::vector<FMTcoordinate>&
 		}
 	}
 
+std::vector<std::vector<Spatial::FMTbindingspatialaction>>FMTspatialschedule::getbindingactionsbyperiod(const Models::FMTmodel& model) const
+{
+	std::vector<std::vector<Spatial::FMTbindingspatialaction>>allbindings;
+	for (int period = 1 ; period < mapping.begin()->second.getperiod(); ++period)
+		{
+		allbindings.push_back(getbindingactions(model,period));
+		}
+	return allbindings;
+}
+
 
 std::vector<Spatial::FMTbindingspatialaction> FMTspatialschedule::getbindingactions(const Models::FMTmodel& model, const int& period) const
 	{
@@ -1533,7 +1563,7 @@ std::map<std::string, double> FMTspatialschedule::referencebuild(const Core::FMT
 	}
 	catch (...)
 	{
-		_exhandler->printexceptions("", "FMTspatialschedule::newsimulate", __LINE__, __FILE__);
+		_exhandler->printexceptions("", "FMTspatialschedule::referencebuild", __LINE__, __FILE__);
 	}
 	return results;
 
@@ -1664,7 +1694,49 @@ void FMTspatialschedule::perturbgraph(const FMTcoordinate& coordinate,const int&
 	try {
 		const Graph::FMTlinegraph graph = mapping.at(coordinate);
 		setgraphfromcache(graph, model,true);
-		const Graph::FMTlinegraph newgraph = graph.perturbgraph(model, generator, events,coordinate,period);
+		//const Graph::FMTlinegraph newgraph = graph.perturbgraph(model, generator, events,coordinate,period);
+		std::map<Core::FMTdevelopment, std::vector<bool>>tabuoperability;
+		const std::vector<std::vector<bool>>actions = graph.getactions(model, period, tabuoperability);
+		std::unordered_map<size_t, std::vector<int>>operability;
+		bool dontbuildgrowth = false;
+		if (!actions.empty())
+		{
+			for (std::map<Core::FMTdevelopment, std::vector<bool>>::const_iterator it = tabuoperability.begin(); it != tabuoperability.end(); it++)
+			{
+				int actionid = 0;
+				operability[it->first.hash()] = std::vector<int>();
+				for (const Core::FMTaction& action : model.actions)
+				{
+					if ((!it->second.at(actionid)) && it->first.operable(action, model.yields))
+					{
+						operability[it->first.hash()].push_back(actionid);
+					}
+					++actionid;
+				}
+				///poor thing it can only do one action so grow!
+			}
+			const size_t buffer = 1;
+			FMTeventcontainer newevents;
+			const FMTeventcontainer eventstoerase = events.geteventstoerase(period, actions, coordinate, buffer, newevents);
+			//remove contribution of old events to PI(eventstoerase)
+			//const double oldeventsPI = getprimalinfeasibility(model.constraints, model, nullptr,true,true,false);
+			//*_logger << "old event contribution " << oldeventsPI << "\n";
+			newevents = events.addupdate(newevents, eventstoerase);
+			//add contribution of new events to PI (newevents)
+
+			//events.erasecoordinate(coordinate, period, actions);
+		}else {
+			dontbuildgrowth = true;
+			}
+		Graph::FMTlinegraph newgraph = graph.partialcopy(period);
+		newgraph.clearnodecache();
+		while (graph.size() != newgraph.size())
+		{
+			std::queue<Graph::FMTlinegraph::FMTvertex_descriptor> actives = newgraph.getactiveverticies();
+			newgraph.randombuildperiod(model, actives, generator, events, coordinate, &operability, nullptr, dontbuildgrowth);
+		}
+
+
 		mapping[coordinate] = newgraph;
 		setgraphfromcache(newgraph, model,false);
 	}catch (...)
@@ -1759,9 +1831,9 @@ bool FMTspatialschedule::needsrefactortorization(const Models::FMTmodel& model) 
 			size_t cntid = 0;
 			for (const double& value : getconstraintsvalues(model))
 				{
-				const double reversemax = (1 / constraintsfactor.at(cntid))*value;
-				const double reversemin = -(1 / constraintsfactor.at(cntid))*value;
-				if (reversemax>1|| reversemin<-1)
+				const double reversemax = (1000 / constraintsfactor.at(cntid))*value;
+				const double reversemin = -(1000 / constraintsfactor.at(cntid))*value;
+				if (reversemax>1000|| reversemin<-1000)
 					{
 					return true;
 					}

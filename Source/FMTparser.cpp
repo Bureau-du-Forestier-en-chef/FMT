@@ -49,7 +49,7 @@ Core::FMTsection FMTparser::from_extension(const std::string& ext) const
     }
 
 FMTparser::FMTparser() : Core::FMTobject(),
-		//rxnumber("[-+]?([0-9]*\\.[0-9]+|[0-9]+)"),
+		rxvectortheme("^(THEME)([\\d]*)$"),
 		rxnumber("-?[\\d.]+(?:E-?\\d+)?"),
         rxremovecomment("^(.*?)([;]+.*)"),
         rxvalid("^(?!\\s*$).+"),
@@ -83,6 +83,7 @@ FMTparser::FMTparser() : Core::FMTobject(),
 
 FMTparser::FMTparser(const FMTparser& rhs):
 		Core::FMTobject(rhs),
+		rxvectortheme(rhs.rxvectortheme),
 		rxnumber(rhs.rxnumber),
         rxremovecomment(rhs.rxremovecomment),
         rxvalid(rhs.rxvalid),
@@ -110,6 +111,7 @@ FMTparser& FMTparser::operator = (const FMTparser& rhs)
         if (this!=&rhs)
             {
 			Core::FMTobject::operator = (rhs);
+			rxvectortheme = rhs.rxvectortheme;
 			rxnumber = rhs.rxnumber;
             rxremovecomment = rhs.rxremovecomment;
             rxvalid = rhs.rxvalid;
@@ -263,10 +265,12 @@ void FMTparser::getWSfields(OGRLayer* layer, std::map<int, int>& themes, int& ag
 				OGRFieldDefn* fielddef = fdef->GetFieldDefn(iField);
 				std::string fname = fielddef->GetNameRef();
 				boost::to_upper(fname);
-				if (fname.find("THEME") != std::string::npos)
+				std::smatch kmatch;
+				if (std::regex_search(fname, kmatch,rxvectortheme)/*fname.find("THEME") != std::string::npos*/)
 				{
-					fname.erase(0, 5);
-					themes[getnum<int>(fname) - 1] = iField;
+					//fname.erase(0, 5);
+					//themes[getnum<int>(fname) - 1] = iField;
+					themes[getnum<int>(std::string(kmatch[2])) - 1] = iField;
 				}
 				else if (fname == caplock)
 				{

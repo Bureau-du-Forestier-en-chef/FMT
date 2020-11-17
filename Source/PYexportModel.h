@@ -201,8 +201,8 @@ void exportModel()
             .def("getspatialactions",&Models::FMTsamodel::getspatialactions,
 				"@DocString(FMTsamodel::getspatialactions)")
             //.def("evaluate",&Models::FMTsamodel::evaluate,evaluate_overloads(bp::args("temp", "all_data"), "@DocString(FMTsamodel::evaluate)"))
-            .def("setinitial_mapping",&Models::FMTsamodel::setinitial_mapping,
-				"@DocString(FMTsamodel::setinitial_mapping)")
+            .def("setinitial_mapping",&Models::FMTsamodel::setinitialmapping,
+				"@DocString(FMTsamodel::setinitialmapping)")
             .def("setspactions",&Models::FMTsamodel::setspactions,
 				"@DocString(FMTsamodel::setspactions)")
             .def("set_min_max_moves",&Models::FMTsamodel::set_min_max_moves,
