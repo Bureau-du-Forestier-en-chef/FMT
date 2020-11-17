@@ -50,7 +50,7 @@ class FMTlinegraph : public FMTgraph<FMTbasevertexproperties,FMTbaseedgeproperti
 		int randomoperate(const std::vector<int>& operables, const Models::FMTmodel& model, std::queue<FMTvertex_descriptor>& actives,
                                             FMTgraphstats& statsdiff, const FMTvertex_descriptor& front_vertex, std::default_random_engine& generator,
                                             const Core::FMTdevelopment& active_development,bool dontchoosegrow=false);
-        FMTgraphstats randombuildperiod(const Models::FMTmodel& model, std::queue<FMTvertex_descriptor> actives, std::default_random_engine& generator,
+		FMTgraphstats randombuildperiod(const Models::FMTmodel& model, std::queue<FMTvertex_descriptor> actives, std::default_random_engine& generator,
 									Spatial::FMTeventcontainer& events, const Spatial::FMTcoordinate& localisation,
 									std::unordered_map<size_t, std::vector<int>>* operability=nullptr,
 									const std::vector<Spatial::FMTbindingspatialaction>* bindings = nullptr,
@@ -71,6 +71,7 @@ class FMTlinegraph : public FMTgraph<FMTbasevertexproperties,FMTbaseedgeproperti
 		bool ismovable(const std::vector<const Core::FMTaction*>& actions,
 			const Core::FMTyields& yields, const int& period,std::unordered_map<size_t,bool>*operability=nullptr) const;
 		bool operator == (const FMTlinegraph& rhs) const;
+		void clearnodecache();
 		
 };
 }

@@ -343,7 +343,19 @@ void FMTmodel::setthemes(const std::vector<Core::FMTtheme>& lthemes)
 void FMTmodel::setactions(const std::vector<Core::FMTaction>& lactions)
     {
 	try {
-		actions = lactions;
+		std::vector<Core::FMTtransition>newtransitions;
+		std::vector<Core::FMTaction>newbaseactions;
+		for (const Core::FMTaction& action : lactions)
+		{
+			std::vector<Core::FMTtransition>::const_iterator trn_iterator = std::find_if(transitions.begin(), transitions.end(), Core::FMTtransitioncomparator(action.getname()));
+			if (trn_iterator != transitions.end())
+			{
+				newtransitions.push_back(*trn_iterator);
+				newbaseactions.push_back(action);
+			}
+		}
+		actions = newbaseactions;
+		transitions = newtransitions;
 		for (Core::FMTaction& action : actions)
 		{
 			action.passinobject(*this);

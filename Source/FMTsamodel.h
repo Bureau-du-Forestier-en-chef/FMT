@@ -68,7 +68,8 @@ class FMTsamodel : public FMTmodel
 		/**
 		Using an initprobability close to one, a base solution and a bunch of iterations get a initial temperature.
 		*/
-		double warmup(const Spatial::FMTspatialschedule& actual, const std::vector<Spatial::FMTcoordinate>*movable = nullptr,
+		double warmup(const Spatial::FMTspatialschedule& actual,
+			const std::vector<Spatial::FMTcoordinate>*movable = nullptr,
 			std::unordered_map<size_t, bool>*operability = nullptr,
 			double initprobability = 0.8,size_t iterations=100);
 		// DocString: FMTsamodel::initialsolve

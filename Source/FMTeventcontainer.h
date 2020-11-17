@@ -193,6 +193,35 @@ class FMTeventcontainer
         ///Get events at specified period with specified coordinates
         */
         std::vector<const_iterator> getevents(const int& period, const FMTcoordinate& coord) const;
+		// DocString: FMTeventcontainer::getevents(const int&, const FMTcoordinate&)
+		/*
+		Get events starting from a period based on a buffer around events returns the events to delete if you remove coord
+		The newevents container is the container containing modified events resulting from erasing the coord. Following a move,
+		get the infeasibility of the erased events, add the infeasibility of the events in the newevents added the this container with erased events.
+		*/
+		FMTeventcontainer geteventstoerase(const int& fromperiod, const std::vector<std::vector<bool>>& actionstarget,
+			const FMTcoordinate& coord,const size_t& buffer,FMTeventcontainer& newevents) const;
+		// DocString: FMTeventcontainer::geteventstoadd
+		/*
+		Add the action to the coordinate and return the modified events that infeasibility need to be calculated (removed). The newevents
+		contains the new events to calculated infeasibility you need to delete the vector returned and add the newevents to the container and
+		calculate the infeasibility of those events.
+		*/
+		FMTeventcontainer geteventstoadd(const FMTcoordinate& coord, const int& period, const int& actionid,
+									const size_t& buffer, FMTeventcontainer& newevents) const;
+		// DocString: FMTeventcontainer::getcontainer
+		/*
+		Get container subset on the interesting coordinates.
+		*/
+		FMTeventcontainer getcontainer(std::vector<FMTcoordinate> coordinates, const int& minperiod, const int& maxperiod, const size_t& buffer) const;
+
+		// DocString: FMTeventcontainer::addupdate
+		/*
+		Update the events container.
+		Used to calculate infeasibility.
+		*/
+		FMTeventcontainer addupdate(const FMTeventcontainer& newevents,const FMTeventcontainer& eventstoremove);
+
         // DocString: FMTeventcontainer::getevents(const int&, const std::set<FMTcoordinate>&)
         /*
         ///Get events at specified period with multiple specified coordinates

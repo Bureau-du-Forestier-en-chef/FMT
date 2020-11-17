@@ -48,6 +48,7 @@ namespace Parser
 class FMTparser: public Core::FMTobject
     {
     private:
+		std::regex rxvectortheme;
 		std::regex rxnumber;
         std::regex rxremovecomment;
 		std::regex rxvalid;
