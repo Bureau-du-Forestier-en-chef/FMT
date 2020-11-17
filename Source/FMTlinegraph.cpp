@@ -373,6 +373,11 @@ namespace Graph
 		return (size()-1) == boost::num_edges(data);
 		}
 
+	void FMTlinegraph::clearnodecache()
+		{
+		nodescache.clear();
+		}
+
 	bool FMTlinegraph::ismovable(const std::vector<const Core::FMTaction*>& actions,const Core::FMTyields& yields, const int& period,
 		std::unordered_map<size_t,bool>*operability) const
 		{

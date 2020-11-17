@@ -99,6 +99,12 @@ class FMTmodelparser : public FMTparser
 		*/
 		std::vector<std::vector<Core::FMTschedule>>readschedules(const std::string& primary_location,
 			const std::vector<Models::FMTmodel>& models);
+		// DocString: FMTmodelparser::getconstraintsfromstring
+		/**
+		Get constraints from string.
+		*/
+		std::vector<Core::FMTconstraint>getconstraintsfromstring(std::string constraintstr,
+			const Models::FMTmodel& model,Core::FMTconstants constants = Core::FMTconstants());
 		// DocString: FMTmodelparser::write
 		/**
 		The write function write a FMTmodel (model) in to a folder (folder) all the files are going to be named

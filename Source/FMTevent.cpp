@@ -103,7 +103,7 @@ namespace Spatial
             return false;
          }
 
-         if (size() < rhs.size())
+         /*if (size() < rhs.size())
          {
              return true;
          }
@@ -111,7 +111,7 @@ namespace Spatial
 		 if (rhs.size() < size())
          {
              return false;
-         }
+         }*/
 		 return false;
     }
 
