@@ -162,6 +162,8 @@ void exportModel()
 			"@DocString(FMTlpmodel::initialsolve)")
 		.method("getoutput", &Models::FMTlpmodel::getoutput,
 			"@DocString(FMTlpmodel::getoutput)")
+		.method("getoutputsdataframe", &Models::FMTlpmodel::getoutputsdataframe,
+			"@DocString(FMTlpmodel::getoutputsdataframe)")
 		.method("eq", &Models::FMTlpmodel::operator ==,
 			"@DocString(FMTlpmodel::operator==)")
 		.method("ne", &Models::FMTlpmodel::operator !=,
@@ -180,45 +182,45 @@ void exportModel()
 
 	
 	Rcpp::class_<Models::FMTsamodel>("FMTsamodel", "@DocString(FMTsamodel)")
-			.derives<Models::FMTmodel>("FMTmodel")
-			.constructor<Models::FMTmodel>("@DocString(FMTsamodel(FMTmodel))")
-			.constructor("@DocString(FMTsamodel())")
-            .method("get_current_solution",&Models::FMTsamodel::get_current_solution,
-				"@DocString(FMTsamodel::get_current_solution)")
-            .method("get_new_solution",&Models::FMTsamodel::get_new_solution,
-				"@DocString(FMTsamodel::get_new_solution)")
-            .method("getspatialactions",&Models::FMTsamodel::getspatialactions,
-				"@DocString(FMTsamodel::getspatialactions)")
-            .method("evaluate",&Models::FMTsamodel::evaluate,
-				"@DocString(FMTsamodel::evaluate)")
-            .method("setinitial_mapping",&Models::FMTsamodel::setinitial_mapping,
-				"@DocString(FMTsamodel::setinitial_mapping)")
-            .method("setspactions",&Models::FMTsamodel::setspactions,
-				"@DocString(FMTsamodel::setspactions)")
-            .method("set_min_max_moves",&Models::FMTsamodel::set_min_max_moves,
-				"@DocString(FMTsamodel::set_min_max_moves)")
-            .method("cool_down",&Models::FMTsamodel::cool_down,
-				"@DocString(FMTsamodel::cool_down)")
-            .method("get_cool_schedule_type",&Models::FMTsamodel::getcoolingscheduletype,
-				"@DocString(FMTsamodel::get_cool_schedule_type)")
-            .method("setschedule",&Models::FMTsamodel::setschedule,
-				"@DocString(FMTsamodel::setschedule)")
-            .method("buildperiod",&Models::FMTsamodel::buildperiod,
-				"@DocString(FMTsamodel::buildperiod)")
-            .method("move",&Models::FMTsamodel::move_solution,
-				"@DocString(FMTsamodel::move_solution)")
-            .method("acceptnew",&Models::FMTsamodel::acceptnew,
-				"@DocString(FMTsamodel::acceptnew)")
-            .method("write_outputs_at",&Models::FMTsamodel::write_outputs_at,
-				"@DocString(FMTsamodel::write_outputs_at)")
-            .method("get_outputs",&Models::FMTsamodel::get_outputs,
-				"@DocString(FMTsamodel::get_outputs)")
-            .method("write_solutions_events",&Models::FMTsamodel::write_solutions_events,
-				"@DocString(FMTsamodel::write_solutions_events)")
-            .method("get_number_moves",&Models::FMTsamodel::get_number_moves,
-				"@DocString(FMTsamodel::get_number_moves)")
-            .method("warmup", &Models::FMTsamodel::warmup,
-				"@DocString(FMTsamodel::warmup)");
+		.derives<Models::FMTmodel>("FMTmodel")
+		.constructor<Models::FMTmodel>("@DocString(FMTsamodel(FMTmodel))")
+		.constructor("@DocString(FMTsamodel())")
+		.method("get_current_solution", &Models::FMTsamodel::get_current_solution,
+			"@DocString(FMTsamodel::get_current_solution)")
+		.method("get_new_solution", &Models::FMTsamodel::get_new_solution,
+			"@DocString(FMTsamodel::get_new_solution)")
+		.method("getspatialactions", &Models::FMTsamodel::getspatialactions,
+			"@DocString(FMTsamodel::getspatialactions)")
+		//.method("evaluate",&Models::FMTsamodel::evaluate,
+		//	"@DocString(FMTsamodel::evaluate)")
+		.method("initialsolve", &Models::FMTsamodel::initialsolve,
+			"@DocString(FMTsamodel::initialsolve)")
+		.method("setinitialmapping", &Models::FMTsamodel::setinitialmapping,
+			"@DocString(FMTsamodel::setinitial_mapping)")
+		.method("setspactions", &Models::FMTsamodel::setspactions,
+			"@DocString(FMTsamodel::setspactions)")
+		.method("set_min_max_moves", &Models::FMTsamodel::set_min_max_moves,
+			"@DocString(FMTsamodel::set_min_max_moves)")
+		.method("cool_down", &Models::FMTsamodel::cool_down,
+			"@DocString(FMTsamodel::cool_down)")
+		.method("get_cool_schedule_type", &Models::FMTsamodel::getcoolingscheduletype,
+			"@DocString(FMTsamodel::get_cool_schedule_type)")
+		.method("setschedule", &Models::FMTsamodel::setschedule,
+			"@DocString(FMTsamodel::setschedule)")
+		.method("buildperiod", &Models::FMTsamodel::buildperiod,
+			"@DocString(FMTsamodel::buildperiod)")
+		.method("move", &Models::FMTsamodel::move_solution,
+			"@DocString(FMTsamodel::move_solution)")
+		.method("acceptnew", &Models::FMTsamodel::acceptnew,
+			"@DocString(FMTsamodel::acceptnew)")
+		.method("write_outputs_at", &Models::FMTsamodel::write_outputs_at,
+			"@DocString(FMTsamodel::write_outputs_at)")
+		.method("get_outputs", &Models::FMTsamodel::get_outputs,
+			"@DocString(FMTsamodel::get_outputs)")
+		.method("write_solutions_events", &Models::FMTsamodel::write_solutions_events,
+			"@DocString(FMTsamodel::write_solutions_events)")
+		.method("get_number_moves", &Models::FMTsamodel::get_number_moves,
+			"@DocString(FMTsamodel::get_number_moves)");
 	
     }
 }

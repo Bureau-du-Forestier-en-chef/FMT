@@ -27,6 +27,10 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 	#include "OsiMskSolverInterface.hpp"
 #endif
 
+#if defined FMTWITHR
+	#include <Rcpp.h>
+#endif 
+
 #include "OsiSolverInterface.hpp"
 #include <boost/serialization/split_member.hpp>
 #include <boost/serialization/unordered_map.hpp>
@@ -265,7 +269,7 @@ class FMTlpmodel : public FMTmodel, public FMTlpsolver
 		If the user wants to set a solution for a given period for warmstarting the model or prepare to
 		bound the model to that solution.
 		*/
-		bool setsolution(int period, const Core::FMTschedule& schedule);
+		bool setsolution(int period, const Core::FMTschedule& schedule, double tolerance = FMT_DBL_TOLERANCE);
 		// DocString: FMTlpmodel::boundsolution
 		/**
 		This function bounds the primal variables to the primal solution present within the matrix for
@@ -311,6 +315,16 @@ class FMTlpmodel : public FMTmodel, public FMTlpsolver
 		*/
 		std::map<std::string, double> getoutput(const Core::FMToutput& output,
 			int period, Graph::FMToutputlevel level = Graph::FMToutputlevel::standard) const;
+		#if defined FMTWITHR
+			// DocString: FMTlpmodel::getoutputsdataframe
+			/**
+			Returns a dataframe filled up with outputs from first period to last period at the developement level.
+			For multiple outputs.
+			*/
+			Rcpp::DataFrame getoutputsdataframe(const std::vector<Core::FMToutput>& outputsdata,int firstperiod,int lastperiod) const;
+		#endif 
+
+
 		// DocString: FMTlpmodel::buildperiod
 		/**
 		This function is the main function used to build the graph and the matrix.
@@ -354,12 +368,12 @@ class FMTlpmodel : public FMTmodel, public FMTlpsolver
 		// DocString: FMTlpmodel::getareavariabilities
 		/**
 		Sometime it is usefull to know what is the impact on some outputs of changing a set of developements
-		of the area of the model for a given global mask. This function uses the globalmask has target and returns
-		the variabilities between the given tolerance of changing the area.
+		of the area of the model for a given global mask. This function uses the globalmasks has target and returns
+		the change in outputs resulting from a variation > 0 or < 0, will generate no map key if infeasible.
 		*/
 		std::map<std::string, std::vector<double>>getareavariabilities(const std::vector<Core::FMToutput>& localoutputs,
-																			const Core::FMTmask& globalmask,
-																			double tolerance = FMT_DBL_TOLERANCE);
+				const std::vector<Core::FMTmask>& globalmasks,
+				std::vector<double> tolerances = std::vector<double>());
 		// DocString: FMTlpmodel::eraseperiod
 		/**
 		When doing replanning or simply model update the user may want to delete the first period (front)

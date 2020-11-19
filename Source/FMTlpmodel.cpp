@@ -192,7 +192,7 @@ namespace Models
 		return false;
 		}
 
-	bool FMTlpmodel::setsolution(int period, const Core::FMTschedule& schedule)
+	bool FMTlpmodel::setsolution(int period, const Core::FMTschedule& schedule,double tolerance)
 	{
 		try {
 			if (static_cast<int>(graph.size()) > period && period > 0)
@@ -305,7 +305,7 @@ namespace Models
 							//rest -= *(actual_solution + varit->second);
 							rest -= new_solution[varit->second];
 						}
-						if ((rest + FMT_DBL_TOLERANCE) < 0)
+						if ((rest + tolerance) < 0)
 						{
 							_exhandler->raise(Exception::FMTexc::FMTinvalid_number,
 								 std::to_string(rest) + " negative growth solution for " +
@@ -338,7 +338,7 @@ namespace Models
 						}
 						rest -= new_solution[varit->second];
 					}
-					if ((rest + FMT_DBL_TOLERANCE) < 0)
+					if ((rest + tolerance) < 0)
 					{
 						_exhandler->raise(Exception::FMTexc::FMTinvalid_number,
 							 std::to_string(rest) + " negative growth solution for " +
@@ -761,45 +761,79 @@ bool FMTlpmodel::locatenodes(const std::vector<Core::FMToutputnode>& nodes, int 
 		}
 
 	std::map<std::string, std::vector<double>>FMTlpmodel::getareavariabilities(const std::vector<Core::FMToutput>& localoutputs,
-																					const Core::FMTmask& globalmask,
-																					double tolerance)
-		{
+		const std::vector<Core::FMTmask>& globalmasks,
+		std::vector<double> tolerances)
+	{
 		std::map<std::string, std::vector<double>>uppernlower;
 		try {
+			if (tolerances.empty())
+				{
+				tolerances = std::vector<double>(FMT_DBL_TOLERANCE,globalmasks.size());
+				}
+			if (tolerances.size()!=globalmasks.size())
+				{
+				_exhandler->raise(Exception::FMTexc::FMTrangeerror,
+					"Global masks and tolerances are not the same length", "FMTlpmodel::getareavariabilities", __LINE__, __FILE__);
+				}
 			const std::unordered_map<size_t, Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>& initialperiod = graph.getperiodverticies(0);
 			std::vector<int>colstarget;
 			std::vector<double>originalbounds;
-			std::vector<double>lowerbounds;
-			std::vector<double>upperbounds;
+			std::vector<double>newbounds;
 			const double* collowerbounds = this->getColLower();
+			std::vector<bool>foundcorresponding(globalmasks.size(),false);
 			for (std::unordered_map<size_t, Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>::const_iterator vertexit = initialperiod.begin();
 				vertexit != initialperiod.end(); vertexit++)
 			{
-				if (graph.getdevelopment(vertexit->second).mask.issubsetof(globalmask))
-				{
-					const int varindex = graph.getoutvariables(vertexit->second).at(-1);
-					colstarget.push_back(varindex);
-					const double originalboundvalue = *(collowerbounds + varindex);
-					originalbounds.push_back(originalboundvalue);
-					originalbounds.push_back(originalboundvalue);
-					const double lowerboundvalue = originalboundvalue - (originalboundvalue * tolerance);
-					lowerbounds.push_back(lowerboundvalue);
-					lowerbounds.push_back(lowerboundvalue);
-					const double upperboundvalue = originalboundvalue + (originalboundvalue * tolerance);
-					upperbounds.push_back(upperboundvalue);
-					upperbounds.push_back(upperboundvalue);
-				}
+				size_t maskid = 0;
+				size_t gotvariables = 0;
+				for (const Core::FMTmask& globalmask : globalmasks)
+					{
+						if (graph.getdevelopment(vertexit->second).mask.issubsetof(globalmask))
+						{
+							const int varindex = graph.getoutvariables(vertexit->second).at(-1);
+							colstarget.push_back(varindex);
+							const double originalboundvalue = *(collowerbounds + varindex);
+							originalbounds.push_back(originalboundvalue);
+							originalbounds.push_back(originalboundvalue);
+							foundcorresponding[maskid] = true;
+							const double newboundvalue = originalboundvalue + (originalboundvalue * tolerances.at(maskid));
+							newbounds.push_back(newboundvalue);
+							newbounds.push_back(newboundvalue);
+							++gotvariables;
+						}
+					++maskid;
+					}
+				if (gotvariables>1)
+					{
+					_exhandler->raise(Exception::FMTexc::FMTinvalid_maskrange,
+						"Got more than one global mask for "+std::string(graph.getdevelopment(vertexit->second).mask),
+						"FMTlpmodel::getareavariabilities", __LINE__, __FILE__);
+					}
 			}
-			for (const Core::FMToutput& output : localoutputs)
+			size_t mskid = 0;
+			for (const bool& gotone : foundcorresponding)
+				{
+				if (!gotone)
+					{
+					_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
+						"No corresponding development found for " + std::string(globalmasks.at(mskid)),
+						"FMTlpmodel::getareavariabilities", __LINE__, __FILE__);
+					}
+				++mskid;
+				}
+			if (this->isProvenOptimal())
 			{
-				std::vector<double>outputvalues;
-				for (int period = 0; period <= static_cast<int>(graph.size() - 2); ++period)
+				for (const Core::FMToutput& output : localoutputs)
 				{
-					outputvalues.push_back(this->getoutput(output, period).begin()->second);
+					std::vector<double>outputvalues;
+					for (int period = 0; period <= static_cast<int>(graph.size() - 2); ++period)
+					{
+						outputvalues.push_back(this->getoutput(output, period).begin()->second);
+					}
+					uppernlower["OLD_" + output.getname()] = outputvalues;
 				}
-				uppernlower["M" + output.getname()] = outputvalues;
 			}
-			this->setColSetBounds(&colstarget[0], &colstarget.back() + 1, &lowerbounds[0]);
+			this->setColSetBounds(&colstarget[0], &colstarget.back() + 1, &newbounds[0]);
 			this->resolve();
 			if (this->isProvenOptimal())
 			{
@@ -810,31 +844,18 @@ bool FMTlpmodel::locatenodes(const std::vector<Core::FMToutputnode>& nodes, int 
 					{
 						outputvalues.push_back(this->getoutput(output, period).begin()->second);
 					}
-					uppernlower["L" + output.getname()] = outputvalues;
-				}
-			}
-			this->setColSetBounds(&colstarget[0], &colstarget.back() + 1, &upperbounds[0]);
-			this->resolve();
-			if (this->isProvenOptimal())
-			{
-				for (const Core::FMToutput& output : localoutputs)
-				{
-					std::vector<double>outputvalues;
-					for (int period = 0; period <= static_cast<int>(graph.size() - 2); ++period)
-					{
-						outputvalues.push_back(this->getoutput(output, period).begin()->second);
-					}
-					uppernlower["U" + output.getname()] = outputvalues;
+					uppernlower["NEW_" + output.getname()] = outputvalues;
 				}
 			}
 			this->setColSetBounds(&colstarget[0], &colstarget.back() + 1, &originalbounds[0]);
 			this->resolve();
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("for "+name,"FMTlpmodel::getareavariabilities", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("for " + name, "FMTlpmodel::getareavariabilities", __LINE__, __FILE__);
 			}
-		return uppernlower;
-		}
+	return uppernlower;
+	}
+
 
 
 	std::map<std::string, std::vector<double>>FMTlpmodel::getvariabilities(const std::vector<Core::FMToutput>& outputs,double tolerance)
@@ -1617,6 +1638,95 @@ bool FMTlpmodel::locatenodes(const std::vector<Core::FMToutputnode>& nodes, int 
 		//Need to add a constraint over the global objective
 		return FMTlpmodel (localmodel, solvertype);
 		}
+	
+	#if defined FMTWITHR
+	Rcpp::DataFrame FMTlpmodel::getoutputsdataframe(const std::vector<Core::FMToutput>& outputsdata, int firstperiod, int lastperiod) const
+		{
+		Rcpp::DataFrame data = Rcpp::DataFrame();
+		try {
+			std::map<std::string, std::vector<double>>generalcatch;
+			const double* solution = this->getColSolution();
+			for (int period  = firstperiod; period <= lastperiod;++period)
+				{
+				size_t outputid = 0;
+				for (const Core::FMToutput& output : outputsdata)
+					{
+					const std::map<std::string,double> values  = graph.getoutput(*this, output, period, solution, Graph::FMToutputlevel::developpement);
+					for (std::map<std::string, double>::const_iterator it = values.begin(); it!= values.end();++it)
+						{
+						if (generalcatch.find(it->first) ==generalcatch.end())
+							{
+							generalcatch[it->first] = std::vector<double>(outputsdata.size(), std::numeric_limits<double>::quiet_NaN());
+							}
+						generalcatch[it->first][outputid] = it->second;
+						}
+					++outputid;
+					}
+				}
+			std::vector<std::vector<std::string>>attributes(themes.size(),std::vector<std::string>(generalcatch.size(),""));
+			std::vector<std::vector<double>>outputsvec(outputsdata.size(), std::vector<double>(generalcatch.size(), std::numeric_limits<double>::quiet_NaN()));
+			Rcpp::IntegerVector age(generalcatch.size());
+			Rcpp::IntegerVector lock(generalcatch.size());
+			Rcpp::IntegerVector period(generalcatch.size());
+			Rcpp::StringVector scenario(generalcatch.size());
+			size_t devid = 0;
+			for (std::map<std::string,std::vector<double>>::const_iterator it = generalcatch.begin(); it != generalcatch.end(); ++it)
+				{
+				std::vector<std::string>devdata;
+				boost::split(devdata,it->first, boost::is_any_of(FMT_STR_SEPARATOR), boost::token_compress_on);
+				devdata.pop_back();
+				period[devid] = std::stoi(devdata.back());
+				devdata.pop_back();
+				lock[devid] = std::stoi(devdata.back());
+				devdata.pop_back();
+				age[devid] = std::stoi(devdata.back());
+				devdata.pop_back();
+				scenario[devid] = getname();
+				size_t atid = 0;
+				for (const std::string& attribute : devdata)
+					{
+					attributes[atid][devid] = attribute;
+					++atid;
+					}
+				size_t outid = 0;
+				for (const Core::FMToutput& output : outputsdata)
+					{
+					outputsvec[outid][devid] = it->second.at(outid);
+					++outid;
+					}
+				++devid;
+				}
+			generalcatch.clear();
+			size_t themeid = 1;
+			for (const std::vector<std::string>& attributevalues : attributes)
+				{
+				const std::string colname = "THEME" + std::to_string(themeid);
+				Rcpp::StringVector themevec(attributevalues.begin(), attributevalues.end());
+				data.push_back(themevec, colname);
+				++themeid;
+				}
+			data.push_back(age, "AGE");
+			data.push_back(lock, "LOCK");
+			data.push_back(period, "PERIOD");
+			data.push_back(scenario, "SCENARIO");
+			size_t outputid = 0;
+			for (const std::vector<double>& outputvalues : outputsvec)
+				{
+				const std::string colname = outputsdata.at(outputid).getname();
+				Rcpp::NumericVector outputvec(outputvalues.begin(), outputvalues.end());
+				data.push_back(outputvec, colname);
+				++outputid;
+				}
+			data.attr("class") = "data.frame";
+			data.attr("row.names") = Rcpp::seq(1, age.size());
+		}catch (...)
+			{
+			_exhandler->printexceptions("", "FMTlpmodel::getoutputsdataframe", __LINE__, __FILE__);
+			}
+		return data;
+		}
+
+	#endif 
 
 }
 
