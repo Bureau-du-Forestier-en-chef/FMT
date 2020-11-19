@@ -85,6 +85,8 @@ void exportCore()
 		py_pair<Core::FMTaction, std::map<Core::FMTdevelopment, std::vector<double>>>();
 		py_pair<Core::FMTaction const, std::map<Core::FMTdevelopment, std::vector<double>>>();
 
+		bool (Core::FMTmask::*issubsetof)(const Core::FMTmask&) const = &Core::FMTmask::issubsetof;
+
 		bp::class_<Core::FMTmask>("FMTmask", "@DocString(FMTmask)")
 				.def_pickle(FMT_pickle_suite<Core::FMTmask>())
 				.def(bp::init<const std::vector<std::string>&,const std::vector<Core::FMTtheme>&>())
@@ -99,7 +101,9 @@ void exportCore()
 					"@DocString(FMTmask::operator!=)")
 				.def("__lt__", &Core::FMTmask::operator <,
 					"@DocString(FMTmask::operator<)")
-                .def("__hash__",&boost::pyhash<Core::FMTmask>);
+                .def("__hash__",&boost::pyhash<Core::FMTmask>)
+				.def("issubsetof",issubsetof,
+					"@DocString(FMTmask::issubsetof)");
 
 		bp::class_<Core::FMTdevelopment>("FMTdevelopment", "@DocString(FMTdevelopment)")
 				.def_pickle(FMT_pickle_suite<Core::FMTdevelopment>())

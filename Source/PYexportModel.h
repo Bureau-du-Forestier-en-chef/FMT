@@ -32,6 +32,7 @@ BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(getvariabilities_overloads, getvariabilit
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(getareavariabilities_overloads, getareavariabilities,2,3)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(boundsolution_overloads, boundsolution, 1, 2)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(eraseperiod_overloads, eraseperiod,0,1)
+BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(setsolution_overloads,setsolution, 2, 3)
 
 void exportModel()
     {
@@ -156,7 +157,7 @@ void exportModel()
 		.def("getsolution", &Models::FMTlpmodel::getsolution,
 			"@DocString(FMTlpmodel::getsolution)")
 		.def("setsolution", &Models::FMTlpmodel::setsolution,
-			"@DocString(FMTlpmodel::setsolution)")
+			setsolution_overloads(bp::args("period", "schedule", "tolerance"), "@DocString(FMTlpmodel::setsolution)"))
 		.def("setobjective", &Models::FMTlpmodel::setobjective,
 			"@DocString(FMTlpmodel::setobjective)")
 		.def("setconstraint", &Models::FMTlpmodel::setconstraint,
@@ -164,7 +165,7 @@ void exportModel()
 		.def("eraseconstraint", &Models::FMTlpmodel::eraseconstraint,
 			"@DocString(FMTlpmodel::eraseconstraint)")
 		.def("eraseperiod", &Models::FMTlpmodel::eraseperiod,
-			eraseperiod_overloads(bp::args("constraintsonly"),"@DocString(FMTlpmodel::eraseperiod)"))
+			eraseperiod_overloads(bp::args("constraintsonly"), "@DocString(FMTlpmodel::eraseperiod)"))
 		.def("resolve", &Models::FMTlpmodel::resolve,
 			"@DocString(FMTlpmodel::resolve)")
 		.def("initialsolve", &Models::FMTlpmodel::initialsolve,
@@ -177,9 +178,10 @@ void exportModel()
 		.def("getstats", &Models::FMTlpmodel::getstats,
 			"@DocString(FMTlpmodel::getstats)")
 		.def("getoperatingareaschedulerheuristics", &Models::FMTlpmodel::getoperatingareaschedulerheuristics, getoperatingareaschedulerheuristics_overloads(bp::args("opareas", "node", "numberofheuristics", "copysolver"), "@DocString(FMTlpmodel::getoperatingareaschedulerheuristics)"))
-		.def("getoperatingareaclustererheuristics", &Models::FMTlpmodel::getoperatingareaclustererheuristics, getoperatingareaclustererheuristics_overloads(bp::args("opareas","statisticoutput","areaoutput","period", "numberofheuristics"), "@DocString(FMTlpmodel::getoperatingareaschedulerheuristics)"))
+		.def("getoperatingareaclustererheuristics", &Models::FMTlpmodel::getoperatingareaclustererheuristics, getoperatingareaclustererheuristics_overloads(bp::args("opareas", "statisticoutput", "areaoutput", "period", "numberofheuristics"), "@DocString(FMTlpmodel::getoperatingareaschedulerheuristics)"))
 		.def("getvariabilities", &Models::FMTlpmodel::getvariabilities, getvariabilities_overloads(bp::args("outputs", "tolerance"), "@DocString(FMTlpmodel::getvariabilities)"))
-		.def("getareavariabilities", &Models::FMTlpmodel::getareavariabilities,getareavariabilities_overloads(bp::args("outputs","globalmask","tolerance"), "@DocString(FMTlpmodel::getareavariabilities)"));
+		.def("getareavariabilities", &Models::FMTlpmodel::getareavariabilities, getareavariabilities_overloads(bp::args("outputs", "globalmask", "tolerance"), "@DocString(FMTlpmodel::getareavariabilities)"));
+		
 
 	define_pylist<Models::FMTlpmodel>();
 	#endif
