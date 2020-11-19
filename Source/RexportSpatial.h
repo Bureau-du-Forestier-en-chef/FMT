@@ -15,6 +15,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTspatialaction.h"
 #include "FMTsaschedule.h"
 #include "FMTgraph.h"
+#include "FMTlinegraph.h"
 #include "FMTsasolution.h"
 #include "Rdefinitions.h"
 #include "FMTevent.h"
@@ -40,7 +41,9 @@ RCPP_EXPOSED_WRAP(Spatial::FMTspatialaction);
 RCPP_EXPOSED_AS(Spatial::FMTspatialaction);
 RCPP_DEFINEVECTOR(Spatial::FMTspatialaction);//For vector
 
-RCPP_DEFINEMAP(Spatial::FMTcoordinate,Graph::FMTgraph);//For FMTlayer
+RCPP_EXPOSED_WRAP(Graph::FMTlinegraph);
+RCPP_EXPOSED_AS(Graph::FMTlinegraph);
+RCPP_DEFINEMAP(Spatial::FMTcoordinate,Graph::FMTlinegraph);//For FMTlayer
 
 RCPP_EXPOSED_WRAP(Spatial::FMTexponentialschedule);
 RCPP_EXPOSED_AS(Spatial::FMTexponentialschedule);
@@ -117,12 +120,12 @@ void exportSpatial()
         .constructor<double>("@DocString(FMTexponentialschedule(double))");
 
 
-	define_FMTlayer<Graph::FMTgraph>("FMTgraphlayer");
+	define_FMTlayer<Graph::FMTlinegraph>("FMTgraphlayer");
 
 
     Rcpp::class_<Spatial::FMTsasolution>("FMTsasolution", "@DocString(FMTsasolution)")
 		.constructor("@DocString(FMTsasolution())")
-		.derives<Spatial::FMTlayer<Graph::FMTgraph>>("FMTgraphlayer")
+		.derives<Spatial::FMTlayer<Graph::FMTlinegraph>>("FMTgraphlayer")
         .method("get_stats",&Spatial::FMTsasolution::getsolution_stats,
 			"@DocString(FMTsasolution::getsolution_stats)")
         .method("getobjfvalue",&Spatial::FMTsasolution::getobjfvalue,
