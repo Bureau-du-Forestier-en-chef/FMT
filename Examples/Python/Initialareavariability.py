@@ -1,5 +1,6 @@
 import sys
 sys.path.append("../../")
+sys.path.append("../../../x64/Release")
 sys.path.append("../../Release")
 from FMT import Models
 from FMT import Parser
@@ -22,11 +23,23 @@ if __name__ == "__main__":
             for constraint in allconstraints:
                 optimizationmodel.setconstraint(constraint)
             optimizationmodel.initialsolve()
-            masktarget=Core.FMTmask("? PEUPLEMENT2 ?", optimizationmodel.getthemes())
+            themes = optimizationmodel.getthemes()
+            masktargets=[Core.FMTmask("? PEUPLEMENT2 ?",themes),Core.FMTmask("? PEUPLEMENT3 ?",themes)]#
+            proportions=[0.01,#add 1% to peuplement2
+                         -0.10]#Remove 10% to Peuplement3
+            #Validate that globalmasks does not intersect
+            for development in optimizationmodel.getarea():
+                count= 0
+                for target in masktargets:
+                    if development.mask.issubsetof(target):
+                        count+=1
+                if (count>1):
+                    print("Intersecting globalmask!")
+                    exit(-1)
             outputstocheck = []
             for output in optimizationmodel.getoutputs():
                     if output.getname() in ["OVOLREC"]:
                           outputstocheck.append(output)
-            print(optimizationmodel.getareavariabilities(outputstocheck,masktarget,0.01))
+            print(optimizationmodel.getareavariabilities(outputstocheck,masktargets,proportions))
         else:
             print("FMT needs to be compiled with OSI")
