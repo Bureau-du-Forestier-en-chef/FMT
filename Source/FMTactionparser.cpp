@@ -258,7 +258,7 @@ FMTactionparser& FMTactionparser::operator = (const FMTactionparser& rhs)
 				action.passinobject(*this);
 				}
 			}
-			std::sort(cleanedactions.begin(), cleanedactions.end());
+			//std::sort(cleanedactions.begin(), cleanedactions.end());
 		}catch (...)
 			{
 			_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,

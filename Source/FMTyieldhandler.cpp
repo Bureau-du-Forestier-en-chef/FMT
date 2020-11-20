@@ -12,6 +12,7 @@ namespace Core{
 FMTyieldhandler::operator std::string() const
         {
 		std::string value = "";
+		try{
         if (yldtype==FMTyldtype::FMTageyld)
             {
             value += "*Y " + std::string(mask) + "\n";
@@ -59,17 +60,23 @@ FMTyieldhandler::operator std::string() const
                         }
 
                     }
+		}
+		catch (...)
+		{
+			_exhandler->raisefromcatch("", "FMTyieldhandler::std::string()", __LINE__, __FILE__, _section);
+		}
         return value;
         }
 
 
-	FMTyieldhandler::FMTyieldhandler():yldtype(),mask(),bases(),elements() {}
+	FMTyieldhandler::FMTyieldhandler():FMTobject(),yldtype(),mask(),bases(),elements() {}
 
 
-    FMTyieldhandler::FMTyieldhandler(FMTyldtype ltype,const FMTmask& lmask) : yldtype(ltype),mask(lmask),bases(),elements(){}
+    FMTyieldhandler::FMTyieldhandler(FMTyldtype ltype,const FMTmask& lmask) : FMTobject(), yldtype(ltype),mask(lmask),bases(),elements(){}
 
 
     FMTyieldhandler::FMTyieldhandler(const FMTyieldhandler& rhs) :
+			FMTobject(rhs),
             yldtype(rhs.yldtype),
             mask(rhs.mask),
             bases(rhs.bases),
@@ -82,6 +89,7 @@ FMTyieldhandler::operator std::string() const
         {
         if (this!=&rhs)
             {
+			FMTobject::operator=(rhs);
             yldtype = rhs.yldtype;
             mask = rhs.mask;
             bases = rhs.bases;
@@ -112,6 +120,7 @@ FMTyieldhandler::operator std::string() const
 	std::vector<std::string> FMTyieldhandler::indexes(const std::vector<std::string>& names) const
         {
 		std::vector<std::string>indexs;
+		try{
         if (yldtype == FMTyldtype::FMTcomplexyld)
             {
             for (std::map<std::string,FMTdata>::const_iterator data_it = elements.begin(); data_it != elements.end(); data_it++)
@@ -132,6 +141,11 @@ FMTyieldhandler::operator std::string() const
                     }
                 }
             }
+		}
+		catch (...)
+		{
+			_exhandler->raisefromcatch("", "FMTyieldhandler::indexes", __LINE__, __FILE__, _section);
+		}
         return indexs;
         }
 
@@ -152,6 +166,7 @@ FMTyieldhandler::operator std::string() const
 	std::vector<std::string> FMTyieldhandler::compare(const std::vector<std::string>& keys) const
         {
 		std::vector<std::string>same;
+		try{
         for(const std::string& key : keys)
             {
             if (elements.find(key) != elements.end())
@@ -159,6 +174,11 @@ FMTyieldhandler::operator std::string() const
                 same.push_back(key);
                 }
             }
+		}
+		catch (...)
+		{
+			_exhandler->raisefromcatch("", "FMTyieldhandler::compare", __LINE__, __FILE__, _section);
+		}
         return same;
         }
 
@@ -166,20 +186,40 @@ FMTyieldhandler::operator std::string() const
                                     const std::vector<std::string>& names,const std::string& original) const
         {
 		std::map<std::string,const FMTyieldhandler*>alldata;
-        for(const FMTyieldhandler* yield : datas)
-                {
+		try {
+			for (const FMTyieldhandler* yield : datas)
+			{
 				for (const std::string& name : names)
-                    {
-                    if (yield->elements.find(name)!=yield->elements.end() && alldata.find(name)== alldata.end() && !(this == yield && original == name))
-                        {
-                        alldata[name] = yield;
-                        }
-                    if(alldata.size() == names.size())
-                        {
-                        return alldata;
-                        }
-                    }
-                }
+				{
+					if (yield->elements.find(name) != yield->elements.end() && alldata.find(name) == alldata.end() && !(this == yield && original == name))
+					{
+						alldata[name] = yield;
+					}
+					if (alldata.size() == names.size())
+					{
+						return alldata;
+					}
+				}
+			}
+			if (alldata.size() != names.size())
+				{
+				for (const std::string& name : names)
+					{
+					if (!name.empty()&&alldata.find(name)==alldata.end())
+						{
+						alldata[name] = nullptr;
+						/*_exhandler->raise(Exception::FMTexc::FMTignore,
+							"Missing requested yield "+name, "FMTyieldhandler::getdata", __LINE__, __FILE__);*/
+						}
+
+					}
+
+				}
+		}
+		catch (...)
+		{
+			_exhandler->raisefromcatch("", "FMTyieldhandler::getdata", __LINE__, __FILE__, _section);
+		}
         return alldata;
         }
 
@@ -196,15 +236,26 @@ FMTyieldhandler::operator std::string() const
 		 const int& age,const int& period, const FMTmask& resume_mask,bool& age_only) const
         {
 		 std::map<std::string, double>alldata;
+		 try{
 		 for (std::map<std::string, const FMTyieldhandler*>::const_iterator datait = srcdata.begin(); datait != srcdata.end(); datait++)
 			{
-			 const FMTyieldhandler* yldata = datait->second;
-			 if (yldata->gettype()!= FMTyldtype::FMTageyld)
+			 alldata[datait->first] = 0;
+			 if (datait->second!=nullptr)
 				{
-				age_only = false;
+				const FMTyieldhandler* yldata = datait->second;
+				if (yldata->gettype() != FMTyldtype::FMTageyld)
+					{
+					 age_only = false;
+					}
+				alldata[datait->first] = yldata->get(datas, datait->first, age, period, resume_mask);
 				}
-			 alldata[datait->first] = yldata->get(datas, datait->first, age, period, resume_mask);
+			 
 			}
+		 }
+		 catch (...)
+		 {
+			 _exhandler->raisefromcatch("", "FMTyieldhandler::getsources", __LINE__, __FILE__, _section);
+		 }
 		 return alldata;
         }
 
@@ -213,17 +264,24 @@ FMTyieldhandler::operator std::string() const
 							const FMTmask& resume_mask) const 
         {
         double value = 0;
+		try{
         int target = 0;
          if (yldtype == FMTyldtype::FMTageyld)
             {
+			 try{
 			 target = age;
 			 if (elements.find(yld) != elements.end())
 				{
 				 const FMTdata* lvalues = &elements.at(yld);
 				 value = getlinearvalue(lvalues->data, target);
 				}
+			 }catch (...)
+				{
+				 _exhandler->raisefromcatch("Getting age yield", "FMTyieldhandler::get", __LINE__, __FILE__, _section);
+				 }
             }else if(yldtype==FMTyldtype::FMTtimeyld)
                 {
+				try{
                 target = period;
 				if (elements.find(yld) != elements.end())
 					{
@@ -251,6 +309,10 @@ FMTyieldhandler::operator std::string() const
 							}
 						}
 					}
+				}catch (...)
+				{
+					_exhandler->raisefromcatch("Getting time yield", "FMTyieldhandler::get", __LINE__, __FILE__, _section);
+				}
                 }else{
 				const FMTdata* cdata = &elements.at(yld);
 				if (cdata->cachevalue(resume_mask,age,period))
@@ -260,6 +322,7 @@ FMTyieldhandler::operator std::string() const
 				bool age_only = true;
 				const std::vector<std::string> sources = cdata->getsource();
 				std::map<std::string, const FMTyieldhandler*> srcsdata = this->getdata(datas, sources, yld);
+				try{
                 switch(cdata->getop())
                     {
                     case FMTyieldparserop::FMTrange:
@@ -386,8 +449,18 @@ FMTyieldhandler::operator std::string() const
 					case FMTyieldparserop::FMTequation:
 						{
 						const FMTexpression expression = cdata->toexpression();
-						const std::map<std::string, double>source_values = this->getsources(srcsdata, datas, age, period,resume_mask, age_only);
-						value = expression.shuntingyard(source_values);
+						try{
+							const std::map<std::string, double>source_values = this->getsources(srcsdata, datas, age, period,resume_mask, age_only);
+							value = expression.shuntingyard(source_values);
+							}catch (...)
+								{
+								std::string baseeq;
+								for (const std::string& opstr : expression.getinfix())
+									{
+									baseeq += opstr + " ";
+									}
+								_exhandler->raisefromcatch("For complex equation " + baseeq, "FMTyieldhandler::get", __LINE__, __FILE__, _section);
+								}
 						break;
 						}
 					case FMTyieldparserop::FMTendpoint:
@@ -427,19 +500,24 @@ FMTyieldhandler::operator std::string() const
                     default:
                     break;
                     }
+				}catch (...)
+					{
+						_exhandler->raisefromcatch("Getting complex yield of type "+std::to_string(static_cast<int>(cdata->getop())), "FMTyieldhandler::get", __LINE__, __FILE__, _section);
+					}
 				value = std::round(value * 100000000) / 100000000;
 				cdata->set(value, resume_mask, age, period, age_only);
-                return value;
                 }
-
-
-
+		}catch (...)
+			{
+			_exhandler->raisefromcatch("at yield "+yld, "FMTyieldhandler::get", __LINE__, __FILE__, _section);
+			}
         return value;
         }
 
 	double FMTyieldhandler::getlinearvalue(const std::vector<double>& dls, const int& agetarget) const
 		{
 		double value = 0;
+		try{
 		if (agetarget >= bases.back())
 			{
 			value = dls.back();
@@ -472,6 +550,11 @@ FMTyieldhandler::operator std::string() const
 				value = dls[highindex];
 				}
 			}
+		}
+		catch (...)
+		{
+			_exhandler->raisefromcatch("", "FMTyieldhandler::getlinearvalue", __LINE__, __FILE__, _section);
+		}
 		return value;
 		}
 
@@ -494,6 +577,7 @@ FMTyieldhandler::operator std::string() const
 	double FMTyieldhandler::getchangesfrom(const int& targetage, const int& peakstep) const
 		{
 		double value = 0;
+		try{
 		if (peakstep > 0)
 			{
 			const size_t agesize = static_cast<size_t>(targetage);
@@ -507,6 +591,11 @@ FMTyieldhandler::operator std::string() const
 			}
 			value = peakvalues.at(targetage);
 			}
+		}
+		catch (...)
+		{
+			_exhandler->raisefromcatch("", "FMTyieldhandler::getchangesfrom", __LINE__, __FILE__, _section);
+		}
 		return value;
 		}
 
@@ -515,6 +604,7 @@ FMTyieldhandler::operator std::string() const
 		std::map<std::string, FMTdata>::const_iterator it = elements.find(yld);
 		int location = 0;
 		int peak = -1;
+		try{
 		std::vector<double>::const_iterator dblit = it->second.data.begin();
 		while (dblit != it->second.data.end())
 			{
@@ -526,12 +616,18 @@ FMTyieldhandler::operator std::string() const
 				++location;
 				++dblit;
 			}
+		}
+		catch (...)
+		{
+			_exhandler->raisefromcatch("", "FMTyieldhandler::getpeakfrom", __LINE__, __FILE__, _section);
+		}
 		return peak;
 		}
 
 	int FMTyieldhandler::getendpoint(const std::string& yld, const int& lowerstep, const double& bound, const double& value) const
 		{
 		size_t locid = 0;
+		try{
 		if (this->gettype() == FMTyldtype::FMTageyld)
 			{
 				std::map<std::string, FMTdata>::const_iterator it = elements.find(yld);
@@ -548,6 +644,11 @@ FMTyieldhandler::operator std::string() const
 				locid = std::min(locid, (it->second.data.size() - 1));
 				locid = std::max(size_t(0), locid);
 			}
+		}
+		catch (...)
+		{
+			_exhandler->raisefromcatch("", "FMTyieldhandler::getendpoint", __LINE__, __FILE__, _section);
+		}
 		return static_cast<int>(locid);
 		}
 
@@ -555,11 +656,17 @@ FMTyieldhandler::operator std::string() const
     double FMTyieldhandler::getpeak(const std::string& yld, const int& targetage) const
         {
         double value = 0;
+		try{
         if (this->gettype() == FMTyldtype::FMTageyld)
             {
 			const int peak = static_cast<int>(getpeakfrom(yld));
 			value = getchangesfrom(targetage, peak);
 			}
+		}
+		catch (...)
+		{
+			_exhandler->raisefromcatch("", "FMTyieldhandler::getpeak", __LINE__, __FILE__, _section);
+		}
         return value;
         }
 
@@ -567,6 +674,7 @@ FMTyieldhandler::operator std::string() const
     int FMTyieldhandler::getage(const std::string yld, const double& value, const int& starting_age) const
         {
         int age = 0;
+		try{
 		std::map<std::string,FMTdata>::const_iterator it = elements.find(yld);
         if (it!=elements.end())
             {
@@ -586,13 +694,23 @@ FMTyieldhandler::operator std::string() const
 				}
 			age = std::max(bases.at(minimal_gap_index),1);
             }
+		}
+		catch (...)
+		{
+			_exhandler->raisefromcatch("", "FMTyieldhandler::getage", __LINE__, __FILE__, _section);
+		}
         return age;
         }
 
 	FMTyieldhandler FMTyieldhandler::presolve(const FMTmask& presolvedmask, const std::vector<FMTtheme>& newthemes) const
 		{
 		FMTyieldhandler newhandler(*this);
-		newhandler.mask = newhandler.mask.presolve(presolvedmask, newthemes);
+		try {
+			newhandler.mask = newhandler.mask.presolve(presolvedmask, newthemes);
+		}catch (...)
+		{
+			_exhandler->raisefromcatch("", "FMTyieldhandler::presolve", __LINE__, __FILE__, _section);
+		}
 		return newhandler;
 		}
 
@@ -600,6 +718,7 @@ FMTyieldhandler::operator std::string() const
 		std::vector<std::string>yieldnames) const
 		{
 		FMTyieldhandler newhandler(*this);
+		try{
 		if (newhandler.gettype() == FMTyldtype::FMTageyld)
 			{
 			std::vector<std::map<std::string, FMTdata>::iterator>iterators;
@@ -625,6 +744,11 @@ FMTyieldhandler::operator std::string() const
 					datait->second = ((datait->second)*factor);
 					}
 			}
+		}
+		catch (...)
+		{
+			_exhandler->raisefromcatch("", "FMTyieldhandler::getfromfactor", __LINE__, __FILE__, _section);
+		}
 		return newhandler;
 		}
 }

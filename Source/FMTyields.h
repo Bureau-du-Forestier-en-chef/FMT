@@ -146,6 +146,12 @@ class FMTyields : public FMTlist<FMTyieldhandler>
 		the yieldnames and nullyieldsname caching.
 		*/
         void update() override;
+		// DocString: FMTyields::passinobject
+		/**
+		It's sometime usefull to pass in the exception handler and the logger  of an other FMTobject to
+		a FMTobject.
+		*/
+		void passinobject(const FMTobject& rhs) override;
 		// DocString: FMTyields::presolve
 		/**
 		Presolving might be realy usefull for FMTyields because this class tend to get realy large and contains

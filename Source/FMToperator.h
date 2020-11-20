@@ -27,9 +27,9 @@ namespace Core
 		divide = 2,
 		add = 3,
 		sub = 4,
-		comma = 7,
-		pow = 8,
-		notvalid = 9
+		comma = 5,
+		pow = 6,
+		notvalid = 7
 	};
 
 class FMToperator

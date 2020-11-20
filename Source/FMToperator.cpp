@@ -7,6 +7,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 #include "FMToperator.h"
 #include <algorithm>
+#include "FMTlogger.h"
 
 namespace Core{
 
@@ -40,22 +41,34 @@ bool FMToperator::operator == (const FMToperator& rhs) const
 double FMToperator::call(const double& rhs1, const double& rhs2) const
     {
 	double returnval = 0;
-    switch (key)
-        {
-        case FMTokey::add:
-			returnval = rhs1 + rhs2;
-        break;
-        case FMTokey::sub:
-			returnval = rhs1 - rhs2;
-        break;
-        case FMTokey::divide:
-			returnval = rhs1 / rhs2;
-        break;
-        case FMTokey::multiply:
-			returnval = rhs1 * rhs2;
-        break;
-		case FMTokey::pow:
-			returnval = pow(rhs1, rhs2);
+	switch (key)
+	{
+
+	case FMTokey::add:
+	{
+		returnval = rhs1 + rhs2;
+		break;
+	}
+	case FMTokey::sub:
+	{
+		returnval = rhs1 - rhs2;
+		break;
+	}
+	case FMTokey::divide:
+	{
+		returnval = rhs1 / rhs2;
+		break;
+	}
+	case FMTokey::multiply:
+	{
+		returnval = rhs1 * rhs2;
+		break;
+	}
+	case FMTokey::pow:
+	{
+	returnval = std::pow(rhs1, rhs2);
+	break;
+	}
         default:
 			returnval = 0;
         break;

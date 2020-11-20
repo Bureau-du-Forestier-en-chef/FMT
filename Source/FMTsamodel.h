@@ -71,12 +71,12 @@ class FMTsamodel : public FMTmodel
 		double warmup(const Spatial::FMTspatialschedule& actual,
 			const std::vector<Spatial::FMTcoordinate>*movable = nullptr,
 			std::unordered_map<size_t, bool>*operability = nullptr,
-			double initprobability = 0.8,size_t iterations=100);
+			double initprobability = 0.5,size_t iterations=10);
+	public:
 		// DocString: FMTsamodel::initialsolve
 		/**
 		Try to solve the model from a coldstart.
 		*/
-	public:
 		void initialsolve();
 	private:
 		

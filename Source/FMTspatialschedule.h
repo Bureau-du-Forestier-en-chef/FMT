@@ -334,6 +334,11 @@ class FMTspatialschedule : public FMTlayer<Graph::FMTlinegraph>
 		Return true if the solution looks unscaled and need new factors
 		*/
 		bool needsrefactortorization(const Models::FMTmodel& model) const;
+		// DocString: FMTspatialschedule::dorefactortorization
+		/**
+		Return true if the solution looks unscaled and need new factors
+		*/
+		void dorefactortorization(const Models::FMTmodel& model);
 		// DocString: FMTspatialschedule::getconstraintsfactor
 		/**
 		Get the constraints factors for nomalization
