@@ -551,8 +551,8 @@ namespace Models
 		{
 		//Spatial::FMTspatialschedule newsolution(actual);
 		try {
-			const size_t moveminimalsize = 100;
-			std::uniform_int_distribution<int> mosizedist(1, moveminimalsize);
+			const size_t movamaximalsize = std::max(size_t(1),solution.size()/10);//10 % of the map
+			std::uniform_int_distribution<int> mosizedist(1, movamaximalsize);
 			const size_t movesize = mosizedist(generator);
 			std::uniform_int_distribution<int> perioddistribution(1, actual.actperiod() - 1);//period to change
 			std::vector<Spatial::FMTcoordinate> selectionpool;
@@ -682,13 +682,15 @@ namespace Models
 						double objective = 0;
 						solution.getsolutionstatus(objective, primalinf,*this);
 						solution.logsolutionstatus(totaliteration, objective,primalinf);
+						solution.dorefactortorization(*this);
 						}
 					++iteration;
 					++totaliteration;
 					}
-				temperature = cool_down(temperature);
+				++temperaturelevel;
 				const double acceptanceratio = (static_cast<double>(accepted) / static_cast<double>(iteration)) * 100;
 				_logger->logwithlevel("Annealer Temp(" + std::to_string(temperature) + ") Ratio("+std::to_string(acceptanceratio)+")\n", 1);
+				temperature = cool_down(temperature);
 				}
 		}catch (...)
 			{

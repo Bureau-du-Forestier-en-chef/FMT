@@ -16,5 +16,11 @@
 *OUTPUT totalarea
 *SOURCE ? ? ? _INVENT _AREA
 
+*OUTPUT totalcar
+*SOURCE ? ? ? _INVENT YBM_RTM_F
+
+
+
+
 
 
