@@ -17,11 +17,12 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTmask.h"
 #include <vector>
 #include "FMTutility.h"
+#include "FMTobject.h"
 
 namespace Core
 {
 
-class FMTyieldhandler
+class FMTyieldhandler : public FMTobject
     {
 	friend class boost::serialization::access;
 	template<class Archive>

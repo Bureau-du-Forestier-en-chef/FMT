@@ -105,6 +105,21 @@ void FMTyields::update()
 		}
     }
 
+void FMTyields::passinobject(const FMTobject& rhs)
+	{
+	try {
+		FMTlist<FMTyieldhandler>::passinobject(rhs);
+		for (auto&  handler : *this)
+			{
+			handler.second.passinobject(rhs);
+			}
+	}catch (...)
+		{
+		_exhandler->raisefromcatch("", "FMTyields::passinobject", __LINE__, __FILE__, _section);
+		}
+
+	}
+
 FMTyields FMTyields::presolve(const FMTmask& basemask,
 	const std::vector<FMTtheme>& originalthemes,
 	const FMTmask& presolvedmask,
@@ -149,6 +164,7 @@ std::map<std::string, double>FMTyields::get(const FMTdevelopment& dev,
 	const std::vector<std::string>& targets) const
 	{
 	std::map<std::string, double>values;
+	std::string actualyield;
 	try {
 		const std::vector<const FMTyieldhandler*>datas = this->findsets(dev.mask);
 		if (!datas.empty() && !targets.empty())
@@ -159,6 +175,7 @@ std::map<std::string, double>FMTyields::get(const FMTdevelopment& dev,
 				{
 					if (data->elements.find(name) != data->elements.end() && values.find(name) == values.end())
 					{
+						actualyield = name;
 						values[name] = data->get(datas, name, dev.age, dev.period, dev.mask);
 					}
 				}
@@ -167,7 +184,7 @@ std::map<std::string, double>FMTyields::get(const FMTdevelopment& dev,
 		}
 	}catch (...)
 		{
-		_exhandler->raisefromcatch("for development "+std::string(dev),"FMTyields::get", __LINE__, __FILE__, _section);
+		_exhandler->raisefromcatch("for development "+std::string(dev)+" for yield("+ actualyield +")","FMTyields::get", __LINE__, __FILE__, _section);
 		}
 	return values;
 	}

@@ -326,7 +326,7 @@ std::vector<Core::FMTtransition> FMTtransitionparser::read(const std::vector<Cor
 				}
 
 			}
-			std::sort(transitions.begin(), transitions.end());
+			//std::sort(transitions.begin(), transitions.end());
 		}
 	}catch (...)
 		{

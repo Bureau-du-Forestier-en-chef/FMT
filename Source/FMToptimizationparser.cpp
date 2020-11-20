@@ -713,7 +713,6 @@ namespace Parser
 											std::vector<Core::FMTaction>::iterator actit = std::find_if(excluded.begin(), excluded.end(), Core::FMTactioncomparator(target_actionptr->getname()));
 											if (actit != excluded.end())
 											{
-
 												for (auto& specobject : *actit)
 												{
 													if (str_upper != "_LENGTH")
