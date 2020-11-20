@@ -184,17 +184,20 @@ namespace Graph
 		if (!operables.empty())
 			{
 			const int size_op = static_cast<int>(operables.size()) - 1;
-			int noaction = -size_op;
+			//Logging::FMTlogger() << "size of op " << size_op<<" "<< operables.at(0) << "\n";
+			int noaction = -(size_op);
 			if (!operables.empty() && dontchoosegrow)
 				{
 				noaction = 0;
 				}
 			std::uniform_int_distribution<int>distribution(noaction, size_op);//50 50 to actionate something
 			distribution_select = distribution(generator);
+			
 			}	
         if(distribution_select >= 0)//Take care ok _DEATH hereeeeee ... I think it's implicitly done &!&!Validate
             {
                 const int action_id = operables.at(distribution_select);
+				//Logging::FMTlogger() << "selected " << std::string(model.actions.at(action_id)) << "\n";
                 const std::vector<Core::FMTdevelopmentpath> paths = active_development.operate(model.actions.at(action_id), model.transitions.at(action_id), model.yields, model.themes);
 				//FIX safunctions with the new small funcionts
                 //addaction(action_id, statsdiff, actives, front_vertex, paths);
@@ -236,11 +239,9 @@ namespace Graph
 				for (const Core::FMTaction& action : model.actions)
 				{
 					if (active_development.operable(action, model.yields))
-					{
 						{
-							operables.push_back(action_id);
+						operables.push_back(action_id);
 						}
-					}
 					++action_id;
 				}
 				if (operability != nullptr)
@@ -252,10 +253,12 @@ namespace Graph
 
 			
             const int selectedaction = randomoperate(operables, model, actives, statsdiff, front_vertex, generator, active_development, dontchoosegrow);
+			
             if (selectedaction>-1)
             {
 				//deleted need to be removed from spatial infeasibility
 				//changes need to be added to spatial infeasibility
+				
 				if (bindings != nullptr)
 					{
 					events.addaction(localisation, active_development.period, selectedaction,bindings->at(selectedaction).getmaximalsize());

@@ -202,8 +202,10 @@ void exportModel()
 				"@DocString(FMTsamodel::get_new_solution)")
             .def("getspatialactions",&Models::FMTsamodel::getspatialactions,
 				"@DocString(FMTsamodel::getspatialactions)")
+			.def("initialsolve", &Models::FMTsamodel::initialsolve,
+				"@DocString(FMTsamodel::initialsolve)")
             //.def("evaluate",&Models::FMTsamodel::evaluate,evaluate_overloads(bp::args("temp", "all_data"), "@DocString(FMTsamodel::evaluate)"))
-            .def("setinitial_mapping",&Models::FMTsamodel::setinitialmapping,
+            .def("setinitialmapping",&Models::FMTsamodel::setinitialmapping,
 				"@DocString(FMTsamodel::setinitialmapping)")
             .def("setspactions",&Models::FMTsamodel::setspactions,
 				"@DocString(FMTsamodel::setspactions)")

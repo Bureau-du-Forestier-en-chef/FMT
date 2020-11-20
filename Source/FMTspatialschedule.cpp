@@ -1661,7 +1661,7 @@ std::map<std::string, double> FMTspatialschedule::greedyreferencebuild(const Cor
 		}
 		catch (...)
 		{
-			_exhandler->printexceptions("", "FMTsesmodel::montecarlosimulate", __LINE__, __FILE__);
+			_exhandler->printexceptions("", "FMTsesmodel::greedyreferencebuild", __LINE__, __FILE__);
 		}
 
 		return bestresults;
@@ -1695,13 +1695,14 @@ void FMTspatialschedule::perturbgraph(const FMTcoordinate& coordinate,const int&
 		const Graph::FMTlinegraph graph = mapping.at(coordinate);
 		setgraphfromcache(graph, model,true);
 		//const Graph::FMTlinegraph newgraph = graph.perturbgraph(model, generator, events,coordinate,period);
+		
 		std::map<Core::FMTdevelopment, std::vector<bool>>tabuoperability;
 		const std::vector<std::vector<bool>>actions = graph.getactions(model, period, tabuoperability);
 		std::unordered_map<size_t, std::vector<int>>operability;
 		bool dontbuildgrowth = false;
 		if (!actions.empty())
 		{
-			for (std::map<Core::FMTdevelopment, std::vector<bool>>::const_iterator it = tabuoperability.begin(); it != tabuoperability.end(); it++)
+		for (std::map<Core::FMTdevelopment, std::vector<bool>>::const_iterator it = tabuoperability.begin(); it != tabuoperability.end(); it++)
 			{
 				int actionid = 0;
 				operability[it->first.hash()] = std::vector<int>();
@@ -1709,6 +1710,7 @@ void FMTspatialschedule::perturbgraph(const FMTcoordinate& coordinate,const int&
 				{
 					if ((!it->second.at(actionid)) && it->first.operable(action, model.yields))
 					{
+						//Logging::FMTlogger() << "operable to  " << std::string(action) << "\n";
 						operability[it->first.hash()].push_back(actionid);
 					}
 					++actionid;
@@ -1823,6 +1825,32 @@ void FMTspatialschedule::copyfrompartial(const FMTspatialschedule& rhs)
 
 }
 
+void FMTspatialschedule::dorefactortorization(const Models::FMTmodel& model)
+{
+	try {
+		if (!constraintsfactor.empty())
+		{
+			size_t cntid = 0;
+			for (const double& value : getconstraintsvalues(model))
+			{
+				const double valuewfactor = constraintsfactor.at(cntid)*value;
+				if (valuewfactor > 1000 || valuewfactor < -1000)
+				{
+					constraintsfactor[cntid] = std::abs(1000 / value);
+				}
+				++cntid;
+			}
+		}
+	}
+	catch (...)
+	{
+		_exhandler->printexceptions("", "FMTspatialschedule::dorefactortorization", __LINE__, __FILE__);
+	}
+
+}
+
+
+
 bool FMTspatialschedule::needsrefactortorization(const Models::FMTmodel& model) const
 {
 	try {
@@ -1831,9 +1859,8 @@ bool FMTspatialschedule::needsrefactortorization(const Models::FMTmodel& model) 
 			size_t cntid = 0;
 			for (const double& value : getconstraintsvalues(model))
 				{
-				const double reversemax = (1000 / constraintsfactor.at(cntid))*value;
-				const double reversemin = -(1000 / constraintsfactor.at(cntid))*value;
-				if (reversemax>1000|| reversemin<-1000)
+				const double valuewfactor = constraintsfactor.at(cntid)*value;
+				if (valuewfactor >1000||valuewfactor <-1000)
 					{
 					return true;
 					}

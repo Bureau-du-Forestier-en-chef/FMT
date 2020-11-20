@@ -83,6 +83,7 @@ FMTmodel::FMTmodel(const std::vector<Core::FMTactualdevelopment>& larea, const s
 	yields(lyields), lifespan(llifespan), outputs(loutputs), constraints(lconstraints), name(lname), statictransitionthemes()
 	{
 	setdefaultobjects();
+	cleanactionsntransitions();
 	}
 
 FMTmodel::FMTmodel(const FMTmodel& rhs):Core::FMTobject(rhs),area(rhs.area),themes(rhs.themes),actions(rhs.actions),
@@ -151,7 +152,7 @@ void FMTmodel::cleanactionsntransitions()
 	try {
 		std::vector<Core::FMTaction>newactions;
 		std::vector<Core::FMTtransition>newtransitions;
-		sort(actions.begin(), actions.end());
+		//sort(actions.begin(), actions.end());
 		for (size_t id = 0; id < actions.size(); ++id)
 		{
 			if (!actions[id].empty())
