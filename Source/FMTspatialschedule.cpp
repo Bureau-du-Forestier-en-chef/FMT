@@ -667,6 +667,45 @@ namespace Spatial
 	return value;
 	}
 
+	std::vector<double> FMTspatialschedule::getweightedfactors(const Models::FMTmodel& model,
+		const FMTspatialschedule*	friendlysolution) const
+	{
+		std::vector<double>allvalues;
+		try {
+			double objective = 0;
+			double infeasibilities = 0;
+			getsolutionstatus(objective, infeasibilities, model, friendlysolution, false, false);
+			const double global = (objective + infeasibilities);
+			std::vector<Core::FMTconstraint>constraints = model.getconstraints();
+			const double sizefactor = static_cast<double>(constraints.size());
+			const double localw = std::abs(global / sizefactor);
+			double value = 1;
+			if (objective>0)
+				{
+				value = std::abs(localw / objective);
+				}
+			allvalues.push_back(value);
+			constraints.erase(constraints.begin());
+			for (const Core::FMTconstraint& constraint : constraints)
+				{
+				const double constraintvalue = getconstraintevaluation(constraint, model, friendlysolution);
+				double value = 1;
+				if (constraintvalue>0)
+					{
+					value = localw / constraintvalue;
+					}
+				allvalues.push_back(value);
+				}
+		}
+		catch (...)
+		{
+			_exhandler->raisefromcatch("", "FMTspatialschedule::getweightedfactors", __LINE__, __FILE__);
+		}
+		return allvalues;
+
+	}
+
+
 	std::vector<double> FMTspatialschedule::getconstraintsvalues(const Models::FMTmodel& model,
 		const FMTspatialschedule*	friendlysolution) const
 	{
@@ -790,7 +829,7 @@ namespace Spatial
 	}
 
 	void FMTspatialschedule::getsolutionstatus(double& objective, double& primalinfeasibility, const Models::FMTmodel& model,
-		const FMTspatialschedule*	friendlysolution, bool withsense,bool withfactorization) const
+		const FMTspatialschedule*	friendlysolution, bool withsense,bool withfactorization, bool withspatial) const
 	{
 		try {
 			std::vector<Core::FMTconstraint>constraints = model.getconstraints();
@@ -800,7 +839,16 @@ namespace Spatial
 				objective = (objective*constraintsfactor.at(0));
 				}
 			constraints.erase(constraints.begin());
-			primalinfeasibility = this->getprimalinfeasibility(constraints, model,friendlysolution, withfactorization);
+			std::vector<Core::FMTconstraint>constraintssubset;
+			for (const Core::FMTconstraint& constraint : constraints)
+				{
+				if (withspatial || !constraint.isspatial())
+					{
+					constraintssubset.push_back(constraint);
+					}
+
+				}
+			primalinfeasibility = this->getprimalinfeasibility(constraintssubset, model,friendlysolution, withfactorization);
 		}
 		catch (...)
 		{
@@ -1577,10 +1625,10 @@ std::map<std::string, double> FMTspatialschedule::greedyreferencebuild(const Cor
 	{
 		std::map<std::string, double>bestresults;
 		FMTspatialschedule solutioncopy(*this);
-		const size_t maxstall = 5;
+		const size_t maxstall = 3;
 		std::default_random_engine generator(seed);
 		const double factorgap = 0.5;
-		std::uniform_real_distribution<double>scheduledistribution(1 - factorgap, 1);
+		
 		size_t stalcount = 0;
 		size_t iteration = 0;
 		const unsigned int initialseed = seed;
@@ -1598,54 +1646,73 @@ std::map<std::string, double> FMTspatialschedule::greedyreferencebuild(const Cor
 			double lastschedulefactor = 1;
 			size_t failediterations = 0;
 			bool didregular = false;
+			bool mergingprimal = true;
+			const double objsense = model.constraints.at(0).sense();
 			while ((stalcount < maxstall && failediterations < randomiterations) && ((randomiterations > 1) || (randomiterations == 1) && iteration < 1))//&& iteration < randomiterations
 			{
 				double factorit = (static_cast<double>(iteration) / totaliterations);
-				if (factorit > 1)
-				{
-					factorit = scheduledistribution(generator);
-				}
 				double schedulefactor = (randomiterations == 1) ? 1 : 1 - ((1 - factorit) * factorgap);//bottom up
+				if (factorit > 1)
+					{
+					std::uniform_real_distribution<double>scheduledistribution(lastschedulefactor-0.05,lastschedulefactor+0.05);
+					schedulefactor = scheduledistribution(generator);
+					}
 				if (failediterations == (randomiterations - 1) && !didregular)//The last try will be the regular stuff
 				{
 					seed = initialseed;
 					schedulefactor = 1;
 					didregular = true;
 				}
+				//*_logger << "factor of " << schedulefactor << "\n";
 				bool scheduleonly = false;
 				const Core::FMTschedule factoredschedule = schedule.getnewschedule(schedulefactor);
 				const std::map<std::string, double>results = solutioncopy.referencebuild(factoredschedule,model, false, true, seed);
-				if (iteration == 0 || solutioncopy.isbetterbygroup(*this,model))
+				double newprimalinf = 0;
+				double newobjective = 0;
+				solutioncopy.getsolutionstatus(newobjective, newprimalinf, model,nullptr,true,false,false);
+				const double primalgap = (newprimalinf - lastprimalinf);
+				const double objgap = ((newobjective*objsense) - (lastobjective * objsense));
+				if (iteration == 0 || (mergingprimal && (primalgap <=FMT_DBL_TOLERANCE))||
+					(!mergingprimal && ((primalgap <= FMT_DBL_TOLERANCE) && (objgap <= FMT_DBL_TOLERANCE))))/*solutioncopy.isbetterbygroup(*this, model)*/
 				{
 					bestresults = results;
 					lastschedulefactor = schedulefactor;
 					*this = solutioncopy;
-					double newprimalinf = 0;
-					double newobjective = 0;
-					this->getsolutionstatus(newobjective, newprimalinf,model);
-					this->logsolutionstatus(iteration, newobjective, newprimalinf);
-					if (std::abs(lastprimalinf - newprimalinf) <= FMT_DBL_TOLERANCE &&
-						std::abs(lastobjective - newobjective) <= FMT_DBL_TOLERANCE)
-					{
-						++stalcount;
-					}
-					else {
-						stalcount = 0;
-					}
+					if (iteration==0)
+						{
+						this->getsolutionstatus(newobjective, newprimalinf, model, nullptr, true, false, false);
+						}
+					
 					lastprimalinf = newprimalinf;
 					lastobjective = newobjective;
 					failediterations = 0;
-				}
-				else {
+					if ((primalgap >= -FMT_DBL_TOLERANCE) && (objgap >= -FMT_DBL_TOLERANCE))
+						{
+						++stalcount;
+					}else {
+						stalcount = 0;
+						}
+					
+				}else {
 					++failediterations;
+					}
+				if (mergingprimal&& failediterations== randomiterations)
+					{
+					mergingprimal = false;
+					failediterations = 0;
+					}
+				if ((iteration % 10) ==0)
+				{
+					this->logsolutionstatus(iteration, lastobjective, lastprimalinf);
 				}
+
 				solutioncopy.eraselastperiod();//clear the last period to redo a simulate and test again!
 				++seed;
 				++iteration;
 			}
 			if (stalcount == maxstall)
 			{
-				_logger->logwithlevel("Stalled after " + std::to_string(stalcount) + " iterations Skipping\n", 1);
+				_logger->logwithlevel("Stalled after " + std::to_string(iteration) + " iterations Skipping\n", 1);
 			}
 			if (failediterations == randomiterations)
 			{
@@ -1654,7 +1721,8 @@ std::map<std::string, double> FMTspatialschedule::greedyreferencebuild(const Cor
 			//Need the remove the incomplete stuff from the cash before going to the next step.
 			for (std::map<std::string, double>::iterator facit = bestresults.begin(); facit != bestresults.end(); facit++)
 			{
-				facit->second *= (lastschedulefactor < 1 ? 1 + (1 - lastschedulefactor) : 1 - (lastschedulefactor - 1));
+				//facit->second *= (lastschedulefactor < 1 ? 1 + (1 - lastschedulefactor) : 1 - (lastschedulefactor - 1));
+				facit->second *= lastschedulefactor;
 			}
 			bestresults["Primalinfeasibility"] = lastprimalinf;
 			bestresults["Objective"] = lastobjective;
