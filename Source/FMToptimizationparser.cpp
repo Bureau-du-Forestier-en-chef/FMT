@@ -17,9 +17,9 @@ namespace Parser
 		//rxconstraints("^(_EVEN|_NDY|_SEQ)([\\s\\t]*)(\\()((([^,^\\)]*)(,)([\\d\\.]*%|[\\d\\.]*)(,)([\\d\\.]*%|[\\d\\.]*))|(([^,^\\)]*)(,)([\\d\\.]*%|[\\d\\.]*))|([^\\)^,]*))(\\)*)([\\s\\t]*)(.+)", std::regex_constants::ECMAScript | std::regex_constants::icase),
 		rxconstraints("^(_EVEN|_NDY|_SEQ)([\\s\\t]*)(\\()((([^,]*)(,)([\\d\\.]*%|[\\d\\.]*)(,)([\\d\\.]*%|[\\d\\.]*))|(([^,]*)(,)([\\d\\.]*%|[\\d\\.]*))|([^,]*))(\\))([\\s\\t]*)(.+)", std::regex_constants::ECMAScript | std::regex_constants::icase),
 		rxequations("^(.+)((((<=)|(>=))(.+))|((.+)((=))(.+)))(?<=[^,])[\\s\\t](?=\\d)(.+)"),
-		rxperiods("^([\\s\\t]*)((([\\d]*|#.+)(\\.\\.)(#.+|_LENGTH|[\\d]*))|(#.+|[\\d]*))", std::regex_constants::ECMAScript | std::regex_constants::icase),
+		rxperiods("^([\\s\\t]*)((([\\d]*|#.+)(\\.\\.)(#.+|_LENGTH|[\\d]*)|(_LENGTH))|(#.+|[\\d]*))", std::regex_constants::ECMAScript | std::regex_constants::icase),
 		rxgoal("^(.+)(_GOAL)(\\()([^,]*)(,)([^\\)]*)(\\))", std::regex_constants::ECMAScript | std::regex_constants::icase),
-		rxoutput("^(.+)(\\()([^)]*)(\\))(\\[)(#.+|[-\\d]*)(\\])|(.+)(\\()([^)]*)(\\))|(.+)(\\[)(#.+|[-\\d]*)(\\])|(.+)", std::regex_constants::ECMAScript | std::regex_constants::icase),
+		rxoutput("^(.+)(\\()([^)]*)(\\))(\\[)(#.+|[-\\d]*)(\\])|([^\\[]*)(\\()([^)]*)(\\))|(.+)(\\[)(#.+|[-\\d]*)(\\])|(.+)", std::regex_constants::ECMAScript | std::regex_constants::icase),
 		rxpenalty("^(_PENALTY)(\\()([^\\)]*)(\\))", std::regex_constants::ECMAScript | std::regex_constants::icase),
 		rxspecialoutput("^(_AVG|_SUM)(\\()(([^,]*)(,)(([^,]*)(([\\d]*|#.+)(\\.\\.)(#.+|_LENGTH|[\\d]*))|(#.+|[\\d]*))|(.+))(\\))", std::regex_constants::ECMAScript | std::regex_constants::icase),
 		rxspatial("^(_SIZE|_ADJACENCY)([\\s\\t]*)(\\()(.+)(\\))([\\s\\t]*)(>=|<=|=)([\\s\\t]*)(#[^\\s^\\t]*|[\\d]*)(.+)",std::regex_constants::ECMAScript | std::regex_constants::icase),
@@ -87,16 +87,16 @@ namespace Parser
 	void FMToptimizationparser::setperiods(Core::FMTconstraint& constraint, const std::string& lower, const std::string& upper, const Core::FMTconstants& constants) const
 		{
 		try {
-			const int startperiod = getnum<int>(lower, constants);
+			int startperiod = std::numeric_limits<int>::max();
+			if (lower!="_LENGTH")
+				{
+				startperiod = getnum<int>(lower, constants);
+				}
 			int stopperiod = startperiod;
 			if (!upper.empty() && upper != "_LENGTH")
-			{
+				{
 				stopperiod = getnum<int>(upper, constants);
-			}
-			else if (upper == "_LENGTH")
-			{
-				stopperiod = std::numeric_limits<int>::max();
-			}
+				}
 			constraint.setlength(startperiod, stopperiod);
 		}catch (...)
 			{
@@ -484,8 +484,9 @@ namespace Parser
 					std::smatch kmatch;
 					if (std::regex_search(value,kmatch,rxperiods))
 						{
-						const std::string lower_period = std::string(kmatch[4]) + std::string(kmatch[7]);
-						const std::string upper_period = std::string(kmatch[6]);
+						const std::string justlength = std::string(kmatch[7]);
+						const std::string lower_period = std::string(kmatch[4]) + std::string(kmatch[8]) + justlength;
+						const std::string upper_period = std::string(kmatch[6])+ justlength;
 						setperiods(newconstraint, lower_period, upper_period, constants);
 					}else {
 						_exhandler->raise(Exception::FMTexc::FMTemptybound,

@@ -308,11 +308,25 @@ namespace Models
 		}
 		}
 
-	void FMTlpsolver::setColSetBounds(const int* indexFirst, const int* indexLast, const double* boundlist)
+
+	void FMTlpsolver::setColSetBounds(const int* indexFirst, const int* indexLast, const double* boundlist,int firstfutur)
 		{
 		try {
 			matrixcache.synchronize(solverinterface);
 			solverinterface->setColSetBounds(indexFirst, indexLast, boundlist);
+			if (solvertype == FMTsolverinterface::CLP)
+				{
+				if (firstfutur < 0)
+					{
+						Exception::FMTexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed,
+							"Need first futur developement index for CLP interface",
+							"FMTlpsolver::setColSetBounds", __LINE__, __FILE__);
+					}
+				for (int index = firstfutur; index < solverinterface->getNumCols();++index)
+					{
+					solverinterface->setColBounds(index,0.0,COIN_DBL_MAX);
+					}
+				}
 		}catch (...)
 			{
 			Exception::FMTexceptionhandler().raisefromcatch("", "FMTlpsolver::setColSetBounds", __LINE__, __FILE__);

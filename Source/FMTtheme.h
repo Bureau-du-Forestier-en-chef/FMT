@@ -157,7 +157,12 @@ class FMTtheme : public FMTobject
 		/**
 		Return true if the (value) is an index of the FMTtheme (only use in yields section).
 		*/
-        bool isindex(const std::string& value) const;
+        bool isindex(const std::string& attribute, const std::string& value) const;
+		// DocString: FMTtheme::isindex
+		/**
+		Return true if the (value) is an index of the FMTtheme (only use in yields section).
+		*/
+		bool isindex(const std::string& value) const;
 		// DocString: FMTtheme::useindex
 		/**
 		Return true if the FMTtheme uses index.

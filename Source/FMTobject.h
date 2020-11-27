@@ -164,6 +164,11 @@ class FMTobject
 		It sets the section member of the FMTobject.
 		*/
 		void setsection(const FMTsection& section) const;
+		// DocString: FMTobject::redirectlogtofile
+		/**
+		redict the log to a specific file (will append to it)
+		*/
+		void redirectlogtofile(const std::string& location);
 		// DocString: FMTobject::setdefaultlogger
 		/**
 		Create and set a default logger to the FMTobject.
