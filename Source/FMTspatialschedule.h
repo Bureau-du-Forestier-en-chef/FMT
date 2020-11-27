@@ -196,6 +196,12 @@ class FMTspatialschedule : public FMTlayer<Graph::FMTlinegraph>
 		*/
 		std::vector<double> getconstraintsvalues(const Models::FMTmodel& model,
 			const FMTspatialschedule*	friendlysolution = nullptr) const;
+		// DocString: FMTspatialschedule::getweightedfactors()
+		/**
+			Generates factors based on the actual solution.
+		*/
+		std::vector<double> getweightedfactors(const Models::FMTmodel& model,
+			const FMTspatialschedule*	friendlysolution = nullptr) const;
 		// DocString: FMTspatialschedule::getdualinfeasibility()
 		/**
 			Returns dual infeasibility of a set of constraints.
@@ -212,7 +218,7 @@ class FMTspatialschedule : public FMTlayer<Graph::FMTlinegraph>
 			Get the primal infeasibility and objective value
 		*/
 		void getsolutionstatus(double& objective, double& primalinfeasibility,const Models::FMTmodel& model,
-			const FMTspatialschedule*	friendlysolution = nullptr, bool withsense = true, bool withfactorization = false) const;
+			const FMTspatialschedule*	friendlysolution = nullptr, bool withsense = true, bool withfactorization = false,bool withspatial = true) const;
 		// DocString: FMTspatialschedule::getglobalobjective
 		/**
 		Usefull to evaluate the quality of the solution it mixes objective to infeasibility and return it has double

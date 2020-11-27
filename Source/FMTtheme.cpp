@@ -129,8 +129,24 @@ bool FMTtheme::isvalid(const std::string& value) const
 	}
 
 bool FMTtheme::isindex(const std::string& value) const
+{
+	if (!indexes.empty())
+	{
+		for (std::map<std::string, std::map<std::string, double>>::const_iterator index_it = indexes.begin(); index_it != indexes.end(); index_it++)
+		{
+			if (index_it->second.find(value) != index_it->second.end())
+			{
+				return true;
+			}
+		}
+	}
+	return false;
+
+}
+
+bool FMTtheme::isindex(const std::string& attribute, const std::string& value) const
     {
-    if(!indexes.empty())
+    if(!indexes.empty() && indexes.find(attribute)!=indexes.end())
         {
         for (std::map<std::string, std::map<std::string,double>>::const_iterator index_it = indexes.begin(); index_it != indexes.end(); index_it++)
             {

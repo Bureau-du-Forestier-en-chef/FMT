@@ -45,6 +45,7 @@ namespace Logging
 				const int logl = this->logLevel();
 				ar & BOOST_SERIALIZATION_NVP(logl);
 			#endif
+				ar & filepath;
 		}
 		// DocString: FMTlogger::load
 		/**
@@ -58,12 +59,25 @@ namespace Logging
 				ar & BOOST_SERIALIZATION_NVP(coinloglevel);
 				this->setLogLevel(coinloglevel);
 			#endif
+				ar & filepath;
+				if (!filepath.empty())
+					{
+					settofile(filepath);
+					}
 		}
 		BOOST_SERIALIZATION_SPLIT_MEMBER()
+		// DocString: FMTlogger::settofile
+		/**
+		Redirect the log information to a file.
+		*/
+		void settofile(const std::string& filename) const;
 		protected:
+			// DocString: FMTlogger::pathtostream
+			///string path the the potential filestream
+			std::string filepath;
 			// DocString: FMTlogger::filestream
-			///Pointer to a stream if the logger redirect the logging into somesort of file.
-			std::ofstream* filestream;
+			///stream if the logger redirect the logging into somesort of file.
+			mutable std::ofstream* filestream;
 			// DocString: FMTlogger::cout
 			/**
 			cout function of the logger sometimes on Windows if using boost::python the std::cout needs
@@ -86,6 +100,11 @@ namespace Logging
 			FMTlogger copy constructor.
 			*/
 			FMTlogger(const FMTlogger& rhs);
+			// DocString: FMTlogger::redirectofile
+			/**
+			Redirect the log information to a file.
+			*/
+			void redirectofile(const std::string& filename);
 			// DocString: FMTlogger::operator=
 			/**
 			FMTlogger copy assignment operator.
@@ -119,11 +138,7 @@ namespace Logging
 			The logtime function log the actual time at which the function is called.
 			*/
 			void logtime();
-			// DocString: FMTlogger::settostream
-			/**
-			This function set a ofstream to the filestream object.
-			*/
-			void settostream(std::ofstream& stream);
+			
 			// DocString: FMTlogger::operator<<
 			/**
 			This function is the main function used for sending elements to print to the FMTlogger.
