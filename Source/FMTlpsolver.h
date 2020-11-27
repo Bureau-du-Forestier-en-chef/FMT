@@ -438,7 +438,7 @@ class FMTlpsolver
 		It synchronize the matrix and then
 		set the columns index (indexFirst) to (indexlast) lower and upper bounds (boundlist)
 		*/
-		void setColSetBounds(const int* indexFirst, const int* indexLast, const double* boundlist);
+		void setColSetBounds(const int* indexFirst, const int* indexLast, const double* boundlist, int firstfutur=-1);
 		// DocString: FMTlpsolver::setRowSetBoundss
 		/**
 		It synchronize the matrix and then

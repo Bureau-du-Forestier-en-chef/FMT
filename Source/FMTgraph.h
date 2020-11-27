@@ -807,7 +807,12 @@ class FMTgraph
 		}
 		bool constraintlenght(const Core::FMTconstraint& constraint, int& start, int& stop) const
 		{
-			start = std::max(constraint.getperiodlowerbound(), getfirstactiveperiod() + 1);
+			int constraintlower = constraint.getperiodlowerbound();
+			if (constraintlower==std::numeric_limits<int>::max())
+				{
+				constraintlower = static_cast<int>((developments.size() - 2));
+				}
+			start = std::max(constraintlower, getfirstactiveperiod() + 1);
 			stop = static_cast<int>((constraint.getperiodupperbound() > static_cast<int>((developments.size() - 2))) ? (developments.size() - 2) : constraint.getperiodupperbound());
 			if (constraint.acrossperiod())
 			{

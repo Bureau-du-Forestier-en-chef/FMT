@@ -431,6 +431,7 @@ namespace Models
 		graph(Graph::FMTgraphbuild::nobuild),
 		elements()
 	{
+	
 	}
 
 	FMTlpmodel::FMTlpmodel() :
@@ -780,46 +781,56 @@ bool FMTlpmodel::locatenodes(const std::vector<Core::FMToutputnode>& nodes, int 
 			std::vector<double>originalbounds;
 			std::vector<double>newbounds;
 			const double* collowerbounds = this->getColLower();
-			std::vector<bool>foundcorresponding(globalmasks.size(),false);
-			for (std::unordered_map<size_t, Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>::const_iterator vertexit = initialperiod.begin();
-				vertexit != initialperiod.end(); vertexit++)
-			{
-				size_t maskid = 0;
-				size_t gotvariables = 0;
-				for (const Core::FMTmask& globalmask : globalmasks)
+			const double* colupperbounds = this->getColUpper();
+			std::vector<bool>foundcorresponding(globalmasks.size(), false);
+			const int firstfutrecolumn = static_cast<int>(initialperiod.size());
+				for (std::unordered_map<size_t, Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>::const_iterator vertexit = initialperiod.begin();
+					vertexit != initialperiod.end(); vertexit++)
+				{
+					size_t maskid = 0;
+					size_t gotvariables = 0;
+					for (const Core::FMTmask& globalmask : globalmasks)
 					{
 						if (graph.getdevelopment(vertexit->second).mask.issubsetof(globalmask))
 						{
 							const int varindex = graph.getoutvariables(vertexit->second).at(-1);
+							if (*(colupperbounds + varindex) == COIN_DBL_MAX)
+							{
+								_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
+									"Changing a bound on a non initial variable for developmenets" + std::string(graph.getdevelopment(vertexit->second)),
+									"FMTlpmodel::getareavariabilities", __LINE__, __FILE__);
+							}
 							colstarget.push_back(varindex);
-							const double originalboundvalue = *(collowerbounds + varindex);
-							originalbounds.push_back(originalboundvalue);
-							originalbounds.push_back(originalboundvalue);
+							const double originallowerboundvalue = *(collowerbounds + varindex);
+							const double originalupperboundvalue = *(colupperbounds + varindex);
+							originalbounds.push_back(originallowerboundvalue);
+							originalbounds.push_back(originalupperboundvalue);
 							foundcorresponding[maskid] = true;
-							const double newboundvalue = originalboundvalue + (originalboundvalue * tolerances.at(maskid));
-							newbounds.push_back(newboundvalue);
-							newbounds.push_back(newboundvalue);
+							const double newlowerboundvalue = originallowerboundvalue + (originallowerboundvalue * tolerances.at(maskid));
+							const double newupperboundvalue = originalupperboundvalue + (originalupperboundvalue * tolerances.at(maskid));
+							newbounds.push_back(newlowerboundvalue);
+							newbounds.push_back(newupperboundvalue);
 							++gotvariables;
 						}
-					++maskid;
+						++maskid;
 					}
-				if (gotvariables>1)
+					if (gotvariables > 1)
 					{
-					_exhandler->raise(Exception::FMTexc::FMTinvalid_maskrange,
-						"Got more than one global mask for "+std::string(graph.getdevelopment(vertexit->second).mask),
-						"FMTlpmodel::getareavariabilities", __LINE__, __FILE__);
+						_exhandler->raise(Exception::FMTexc::FMTinvalid_maskrange,
+							"Got more than one global mask for " + std::string(graph.getdevelopment(vertexit->second).mask),
+							"FMTlpmodel::getareavariabilities", __LINE__, __FILE__);
 					}
-			}
-			size_t mskid = 0;
-			for (const bool& gotone : foundcorresponding)
+				}
+				size_t mskid = 0;
+				for (const bool& gotone : foundcorresponding)
 				{
-				if (!gotone)
+					if (!gotone)
 					{
-					_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
-						"No corresponding development found for " + std::string(globalmasks.at(mskid)),
-						"FMTlpmodel::getareavariabilities", __LINE__, __FILE__);
+						_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
+							"No corresponding development found for " + std::string(globalmasks.at(mskid)),
+							"FMTlpmodel::getareavariabilities", __LINE__, __FILE__);
 					}
-				++mskid;
+					++mskid;
 				}
 			if (this->isProvenOptimal())
 			{
@@ -828,30 +839,37 @@ bool FMTlpmodel::locatenodes(const std::vector<Core::FMToutputnode>& nodes, int 
 					std::vector<double>outputvalues;
 					for (int period = 0; period <= static_cast<int>(graph.size() - 2); ++period)
 					{
-						outputvalues.push_back(this->getoutput(output, period).begin()->second);
+						outputvalues.push_back(this->getoutput(output, period).at("Total"));
 					}
 					uppernlower["OLD_" + output.getname()] = outputvalues;
 				}
 			}
-			this->setColSetBounds(&colstarget[0], &colstarget.back() + 1, &newbounds[0]);
-			this->resolve();
-			if (this->isProvenOptimal())
+			//this->writeLP("T:/Donnees/Usagers/FORBR3/Pentes LIDAR/Nouvelle méthode/06251/a1");
+			this->setColSetBounds(&(*colstarget.cbegin()), &(*colstarget.cend()), &newbounds[0], firstfutrecolumn);
+			if (this->resolve())
 			{
 				for (const Core::FMToutput& output : localoutputs)
 				{
 					std::vector<double>outputvalues;
 					for (int period = 0; period <= static_cast<int>(graph.size() - 2); ++period)
 					{
-						outputvalues.push_back(this->getoutput(output, period).begin()->second);
+						outputvalues.push_back(this->getoutput(output, period).at("Total"));
 					}
 					uppernlower["NEW_" + output.getname()] = outputvalues;
 				}
 			}
-			this->setColSetBounds(&colstarget[0], &colstarget.back() + 1, &originalbounds[0]);
-			this->resolve();
+			//this->writeLP("T:/Donnees/Usagers/FORBR3/Pentes LIDAR/Nouvelle méthode/06251/a2");
+			this->setColSetBounds(&(*colstarget.cbegin()), &(*colstarget.cend()), &originalbounds[0], firstfutrecolumn);
+			//this->writeLP("T:/Donnees/Usagers/FORBR3/Pentes LIDAR/Nouvelle méthode/06251/a3");
+			if (!this->resolve())
+				{
+				_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
+					"Cannot regenerate initial optimal solution",
+					"FMTlpmodel::getareavariabilities", __LINE__, __FILE__);
+				}
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("for " + name, "FMTlpmodel::getareavariabilities", __LINE__, __FILE__);
+			_exhandler->printexceptions("for " + name, "FMTlpmodel::getareavariabilities", __LINE__, __FILE__);
 			}
 	return uppernlower;
 	}

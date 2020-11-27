@@ -131,7 +131,9 @@ void exportCore()
 		.method("setdefaultlogger", &Core::FMTobject::setdefaultlogger,
 			"@DocString(FMTobject::setdefaultlogger")
 		.method("setdebuglogger", &Core::FMTobject::setdebuglogger,
-			"@DocString(FMTobject::setdebuglogger");
+			"@DocString(FMTobject::setdebuglogger")
+		.method("redirectlogtofile", &Core::FMTobject::redirectlogtofile,
+			"@DocString(FMTobject::redirectlogtofile)");
 
 		Rcpp::class_<Core::FMTmask>("FMTmask", "@DocString(FMTmask)")
 				.constructor("@DocString(FMTmask())")
