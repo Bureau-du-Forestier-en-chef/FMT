@@ -161,6 +161,12 @@ namespace Core
 		this->checksignals();
 		}
 
+	void FMTobject::redirectlogtofile(const std::string& location)
+		{
+		_logger->redirectofile(location);
+		this->checksignals();
+		}
+
 	void FMTobject::setdefaultlogger()
 		{
 		this->checksignals();

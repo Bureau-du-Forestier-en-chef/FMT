@@ -431,6 +431,7 @@ namespace Models
 		graph(Graph::FMTgraphbuild::nobuild),
 		elements()
 	{
+	
 	}
 
 	FMTlpmodel::FMTlpmodel() :
@@ -781,23 +782,24 @@ bool FMTlpmodel::locatenodes(const std::vector<Core::FMToutputnode>& nodes, int 
 			std::vector<double>newbounds;
 			const double* collowerbounds = this->getColLower();
 			const double* colupperbounds = this->getColUpper();
-			std::vector<bool>foundcorresponding(globalmasks.size(),false);
-			for (std::unordered_map<size_t, Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>::const_iterator vertexit = initialperiod.begin();
-				vertexit != initialperiod.end(); vertexit++)
-			{
-				size_t maskid = 0;
-				size_t gotvariables = 0;
-				for (const Core::FMTmask& globalmask : globalmasks)
+			std::vector<bool>foundcorresponding(globalmasks.size(), false);
+			const int firstfutrecolumn = static_cast<int>(initialperiod.size());
+				for (std::unordered_map<size_t, Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>::const_iterator vertexit = initialperiod.begin();
+					vertexit != initialperiod.end(); vertexit++)
+				{
+					size_t maskid = 0;
+					size_t gotvariables = 0;
+					for (const Core::FMTmask& globalmask : globalmasks)
 					{
 						if (graph.getdevelopment(vertexit->second).mask.issubsetof(globalmask))
 						{
 							const int varindex = graph.getoutvariables(vertexit->second).at(-1);
-							if (*(colupperbounds + varindex)==COIN_DBL_MAX)
-								{
+							if (*(colupperbounds + varindex) == COIN_DBL_MAX)
+							{
 								_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
 									"Changing a bound on a non initial variable for developmenets" + std::string(graph.getdevelopment(vertexit->second)),
 									"FMTlpmodel::getareavariabilities", __LINE__, __FILE__);
-								}
+							}
 							colstarget.push_back(varindex);
 							const double originallowerboundvalue = *(collowerbounds + varindex);
 							const double originalupperboundvalue = *(colupperbounds + varindex);
@@ -810,25 +812,25 @@ bool FMTlpmodel::locatenodes(const std::vector<Core::FMToutputnode>& nodes, int 
 							newbounds.push_back(newupperboundvalue);
 							++gotvariables;
 						}
-					++maskid;
+						++maskid;
 					}
-				if (gotvariables>1)
+					if (gotvariables > 1)
 					{
-					_exhandler->raise(Exception::FMTexc::FMTinvalid_maskrange,
-						"Got more than one global mask for "+std::string(graph.getdevelopment(vertexit->second).mask),
-						"FMTlpmodel::getareavariabilities", __LINE__, __FILE__);
+						_exhandler->raise(Exception::FMTexc::FMTinvalid_maskrange,
+							"Got more than one global mask for " + std::string(graph.getdevelopment(vertexit->second).mask),
+							"FMTlpmodel::getareavariabilities", __LINE__, __FILE__);
 					}
-			}
-			size_t mskid = 0;
-			for (const bool& gotone : foundcorresponding)
+				}
+				size_t mskid = 0;
+				for (const bool& gotone : foundcorresponding)
 				{
-				if (!gotone)
+					if (!gotone)
 					{
-					_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
-						"No corresponding development found for " + std::string(globalmasks.at(mskid)),
-						"FMTlpmodel::getareavariabilities", __LINE__, __FILE__);
+						_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
+							"No corresponding development found for " + std::string(globalmasks.at(mskid)),
+							"FMTlpmodel::getareavariabilities", __LINE__, __FILE__);
 					}
-				++mskid;
+					++mskid;
 				}
 			if (this->isProvenOptimal())
 			{
@@ -842,10 +844,9 @@ bool FMTlpmodel::locatenodes(const std::vector<Core::FMToutputnode>& nodes, int 
 					uppernlower["OLD_" + output.getname()] = outputvalues;
 				}
 			}
-			this->writeLP("T:/Donnees/Usagers/FORBR3/Pentes LIDAR/Nouvelle méthode/06251/a1");
-			this->setColSetBounds(&(*colstarget.cbegin()), &(*colstarget.cend()), &newbounds[0]);
-			this->resolve();
-			if (this->isProvenOptimal())
+			//this->writeLP("T:/Donnees/Usagers/FORBR3/Pentes LIDAR/Nouvelle méthode/06251/a1");
+			this->setColSetBounds(&(*colstarget.cbegin()), &(*colstarget.cend()), &newbounds[0], firstfutrecolumn);
+			if (this->resolve())
 			{
 				for (const Core::FMToutput& output : localoutputs)
 				{
@@ -857,9 +858,9 @@ bool FMTlpmodel::locatenodes(const std::vector<Core::FMToutputnode>& nodes, int 
 					uppernlower["NEW_" + output.getname()] = outputvalues;
 				}
 			}
-			this->writeLP("T:/Donnees/Usagers/FORBR3/Pentes LIDAR/Nouvelle méthode/06251/a2");
-			this->setColSetBounds(&(*colstarget.cbegin()), &(*colstarget.cend()), &originalbounds[0]);
-			this->writeLP("T:/Donnees/Usagers/FORBR3/Pentes LIDAR/Nouvelle méthode/06251/a3");
+			//this->writeLP("T:/Donnees/Usagers/FORBR3/Pentes LIDAR/Nouvelle méthode/06251/a2");
+			this->setColSetBounds(&(*colstarget.cbegin()), &(*colstarget.cend()), &originalbounds[0], firstfutrecolumn);
+			//this->writeLP("T:/Donnees/Usagers/FORBR3/Pentes LIDAR/Nouvelle méthode/06251/a3");
 			if (!this->resolve())
 				{
 				_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,

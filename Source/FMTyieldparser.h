@@ -45,6 +45,10 @@ class FMTyieldparser : public FMTparser
                 const Core::FMTconstants& constants,
                 const Core::FMTyields& ylds,
                 const std::vector<Core::FMTtheme>& themes);
+		void cleanup(Core::FMTyields& yields, const std::vector<Core::FMTtheme>& themes) const;
+		std::map<std::string, double>getindexvalues(const Core::FMTmask& mask,
+			const std::vector<Core::FMTtheme>& themes,
+			const std::vector<std::string>&indexvalues) const;
     public:
         FMTyieldparser();
 		~FMTyieldparser() = default;

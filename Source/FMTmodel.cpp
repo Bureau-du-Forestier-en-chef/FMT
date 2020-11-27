@@ -1153,6 +1153,7 @@ void FMTmodel::passinobject(const Core::FMTobject& rhs)
 		{
 			constraint.passinobject(rhs);
 		}
+		FMTobject::passinobject(rhs);
 	}catch (...)
 		{
 		_exhandler->raisefromcatch("","FMTmodel::passinobject", __LINE__, __FILE__);

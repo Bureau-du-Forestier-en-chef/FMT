@@ -16,9 +16,27 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 namespace Logging
 {
 
-	void FMTlogger::settostream(std::ofstream& stream)
+
+
+	void FMTlogger::settofile(const std::string& filename) const
 		{
-		filestream = &stream;
+		if (filestream!=nullptr)
+			{
+			filestream->close();
+			delete filestream;
+			}
+		filestream = new std::ofstream(filename);
+		}
+
+	FMTlogger::FMTlogger() : filepath(),filestream()
+		{
+
+		}
+
+	void FMTlogger::redirectofile(const std::string& filename)
+		{
+		filepath = filename;
+		settofile(filepath);
 		if (filestream && filestream->is_open())
 			{
 			this->logstamp();
@@ -26,21 +44,17 @@ namespace Logging
 			}
 		}
 
-	FMTlogger::FMTlogger() : filestream(nullptr)
+	FMTlogger::FMTlogger(const FMTlogger& rhs): filepath(rhs.filepath), filestream()
 		{
-
-		}
-
-	FMTlogger::FMTlogger(const FMTlogger& rhs): filestream(rhs.filestream)
-		{
-
+		settofile(filepath);
 		}
 
 	FMTlogger& FMTlogger::operator = (const FMTlogger& rhs)
 		{
 		if (this!=&rhs)
 			{
-			filestream = rhs.filestream;
+			filepath = rhs.filepath;
+			settofile(filepath);
 			}
 		return *this;
 		}
@@ -50,6 +64,8 @@ namespace Logging
 		if (filestream && filestream->is_open())
 			{
 			this->logtime();
+			filestream->close();
+			delete filestream;
 			}
 		}
 
@@ -63,7 +79,7 @@ namespace Logging
 	void FMTlogger::logtime()
 		{
 		const std::string message = Version::FMTversion().getdatenow();
-		*this << (message) << "\n";
+		*this << (message);
 		}
 	#ifdef FMTWITHOSI
 		void FMTlogger::checkSeverity()
@@ -79,15 +95,16 @@ namespace Logging
 
 	void FMTlogger::cout(const char* message) const
 		{
-		#if defined(FMTWITHPYTHON)
-				PySys_WriteStdout(message);
-		#else
-				std::cout << message << std::flush;
-		#endif
-		/*if (filestream && filestream->is_open())
+		if (filestream && filestream->is_open())
 			{
-			filestream->operator <<(message);
-			}*/
+			(*filestream)<<(message);
+		}else {
+			#if defined(FMTWITHPYTHON)
+					PySys_WriteStdout(message);
+			#else
+					std::cout << message << std::flush;
+			#endif
+			}
 		}
 	#ifdef FMTWITHOSI
 		int FMTlogger::print()

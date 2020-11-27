@@ -197,7 +197,7 @@ Core::FMTdata FMTyieldparser::geteq(const std::string& basestr,
 				if (isvalid(token))
 				{
 					double number = 0;
-					std::string source_value;
+					std::string source_value(token);
 					if (isnum(token) || constants.isconstant(token))
 					{
 						number = getnum<double>(token, constants);
@@ -218,15 +218,15 @@ Core::FMTdata FMTyieldparser::geteq(const std::string& basestr,
 							}
 							if (should_throw)
 							{
-								_exhandler->raise(Exception::FMTexc::FMTinvalid_yield,
+								/*_exhandler->raise(Exception::FMTexc::FMTinvalid_yield,
 									token + " at line " + std::to_string(_line),"FMTyieldparser::geteq",
-									__LINE__, __FILE__, _section);
+									__LINE__, __FILE__, _section);*/
+								_exhandler->raise(Exception::FMTexc::FMTignore,
+									"No theme index provided for " + token +" replaced by a value of 0" , "FMTyieldparser::read", __LINE__, __FILE__, _section);
+								source_value = "0";
 							}
 						}
-						source_value = token;
-					}
-					else {
-						source_value = token;
+						
 					}
 					valuesnoperators.push_back(source_value);
 					numbers.push_back(number);
@@ -245,6 +245,7 @@ Core::FMTdata FMTyieldparser::geteq(const std::string& basestr,
 Core::FMTyields FMTyieldparser::read(const std::vector<Core::FMTtheme>& themes,const Core::FMTconstants& constants,const std::string& location)
     {
 	Core::FMTyields yields;
+	std::string lineerror;
 	try {
 		std::ifstream yieldstream(location);
 		std::vector<std::string>yldsnames;
@@ -262,6 +263,7 @@ Core::FMTyields FMTyieldparser::read(const std::vector<Core::FMTtheme>& themes,c
 				std::string line = FMTparser::getcleanlinewfor(yieldstream, themes, constants);
 				if (!line.empty())
 				{
+					lineerror = line;
 					std::smatch kmatch;
 					if (std::regex_search(line, kmatch, rxyieldtype))
 					{
@@ -513,15 +515,15 @@ Core::FMTyields FMTyieldparser::read(const std::vector<Core::FMTtheme>& themes,c
 										}
 										else if (values[id].find("#") != std::string::npos)
 										{
-											_exhandler->raise(Exception::FMTexc::FMTundefined_constant, 
-												values[id] + " at line " + std::to_string(_line),"FMTyieldparser::read", __LINE__, __FILE__, _section);
+											_exhandler->raise(Exception::FMTexc::FMTundefined_constant,
+												values[id] + " at line " + std::to_string(_line), "FMTyieldparser::read", __LINE__, __FILE__, _section);
 										}
 										else {
 											const std::vector<std::string>ylds = yields.getyldsnames(); //not so optimzed
 											if (find(ylds.begin(), ylds.end(), values[id]) == ylds.end())
 											{
 												_exhandler->raise(Exception::FMTexc::FMTignore,
-													values[id] + " at line " + std::to_string(_line),"FMTyieldparser::read", __LINE__, __FILE__, _section);
+													values[id] + " at line " + std::to_string(_line), "FMTyieldparser::read", __LINE__, __FILE__, _section);
 											}
 											stacking.push_back(true);
 											csource.push_back(values[id]);
@@ -531,112 +533,147 @@ Core::FMTyields FMTyieldparser::read(const std::vector<Core::FMTtheme>& themes,c
 								}
 							}
 							else {
-								_exhandler->raise(Exception::FMTexc::FMTunsupported_yield, 
-									line + " at line " + std::to_string(_line),"FMTyieldparser::read", __LINE__, __FILE__, _section);
+								_exhandler->raise(Exception::FMTexc::FMTunsupported_yield,
+									line + " at line " + std::to_string(_line), "FMTyieldparser::read", __LINE__, __FILE__, _section);
 							}
 						}
 					}
-				}
-			}
-			//iterate on all yieldhandler if equation with index then take the handler
-			//delete the handler at it's yields location
-			//decompose and insert all new handlers
-			//std::vector<Core::FMTyieldhandler>::iterator handler_it = yields.databegin();
-			std::vector<std::pair<Core::FMTmask, Core::FMTyieldhandler>>::iterator handler_it = yields.begin();
-			const std::vector<std::string>yldnames = yields.getyldsnames();
-			while (handler_it != yields.end())
-			{
-				const std::vector<std::string>indexvalues = handler_it->second.indexes(yldnames);
-				if (!indexvalues.empty())
-				{
-					size_t location = std::distance(yields.begin(), handler_it);
-					const Core::FMTmask oldmask = (yields.begin() + location)->first;
-					const Core::FMTyieldhandler oldhandler = handler_it->second;
-					yields.erase(location);
-					std::vector<Core::FMTmask>todecompose;
-					todecompose.push_back(oldmask);
-					std::vector<Core::FMTtheme>themes_windex;
-					for (const Core::FMTtheme& theme : themes)
-					{
-						if (theme.useindex())
-						{
-							for (const std::string& index : indexvalues)
-							{
-								if (theme.isindex(index))
-								{
-									std::vector<Core::FMTmask>newdecomposer;
-									while (!todecompose.empty())
-									{
-										const std::vector<Core::FMTmask>allmasks = (todecompose.front()).decompose(theme);
-										todecompose.erase(todecompose.begin());
-										newdecomposer.insert(newdecomposer.end(), allmasks.begin(), allmasks.end());
-									}
-									todecompose = newdecomposer;
-									themes_windex.push_back(theme);
-									break;
-								}
-							}
-						}
-					}
-					for (const Core::FMTmask& newmask : todecompose)
-					{
-						Core::FMTyieldhandler newhandler(Core::FMTyldtype::FMTcomplexyld, newmask);
-						std::map<std::string, double>handler_values;
-						for (const Core::FMTtheme& theme : themes_windex)
-						{
-							const std::string attribute = newmask.get(theme);
-							for (const std::string& index : indexvalues)
-							{
-								if (theme.isindex(index))
-								{
-									handler_values[index] = theme.getindex(attribute, index);
-								}
-							}
-						}
-						std::map<std::string, Core::FMTdata>alladata = oldhandler.getdataelements();
-						for (std::map<std::string, Core::FMTdata>::const_iterator datait = alladata.begin(); datait != alladata.end(); datait++)
-						{
-							const Core::FMTexpression expression = datait->second.toexpression();
-							const std::vector<std::string>allvalues = expression.getinfix();
-							std::vector<double>numbers(allvalues.size(), 0);
-							std::vector<std::string>valuesnoperators(allvalues.size());
-							size_t data_loc = 0;
-							for (const std::string& source : allvalues)
-							{
-								if (handler_values.find(source) != handler_values.end())
-								{
-									numbers[data_loc] = handler_values.at(source);
-								}
-								else if (isnum(source))
-								{
-									numbers[data_loc] = stod(source);
-								}
-								else {
-									valuesnoperators[data_loc] = source;
-								}
-								++data_loc;
-							}
-							newhandler.push_data(datait->first, Core::FMTdata(numbers, Core::FMTyieldparserop::FMTequation, valuesnoperators));
-						}
-						yields.insert(location, newmask, newhandler);
-						++location;
-					}
-					handler_it = (yields.begin() + location);
-				}
-				else {
-					++handler_it;
 				}
 			}
 		}
-		yields.update();
-		yields.passinobject(*this);
+		cleanup(yields, themes);
 	}catch(...)
 		{
 		_exhandler->raisefromcatch(
-			"at "+location,"FMTyieldparser::read", __LINE__, __FILE__,_section);
+			"at "+location+" at line "+std::to_string(_line),"FMTyieldparser::read", __LINE__, __FILE__,_section);
 		}
     return yields;
     }
+
+	std::map<std::string, double>FMTyieldparser::getindexvalues(const Core::FMTmask& mask,
+		const std::vector<Core::FMTtheme>& themes,const std::vector<std::string>&indexvalues) const
+	{
+		std::map<std::string, double>handler_values;
+		std::string indexerror;
+		int themeid;
+		try {
+			
+			for (const Core::FMTtheme& theme : themes)
+			{
+				const std::string attribute = mask.get(theme);
+				themeid = theme.getid()+1;
+				for (const std::string& index : indexvalues)
+				{
+					indexerror = index;
+					if (theme.isindex(attribute,index))
+					{
+						handler_values[index] = theme.getindex(attribute, index);
+					}else {
+						_exhandler->raise(Exception::FMTexc::FMTignore,
+							"No theme index provided for "+attribute+" at theme "+std::to_string(themeid)+" replaced by a value of 0", "FMTyieldparser::read", __LINE__, __FILE__, _section);
+						handler_values[index] = 0;
+						}
+				}
+			}
+		}
+		catch (...)
+		{
+			_exhandler->raisefromcatch(
+				"for "+std::string(mask)+" at index "+ indexerror+" for theme "+std::to_string(themeid), "FMTyieldparser::getindexvalues", __LINE__, __FILE__, _section);
+		}
+	return handler_values;
+	}
+
+void FMTyieldparser::cleanup(Core::FMTyields& yields,const std::vector<Core::FMTtheme>& themes) const
+	{
+	try {
+		//iterate on all yieldhandler if equation with index then take the handler
+			//delete the handler at it's yields location
+			//decompose and insert all new handlers
+			//std::vector<Core::FMTyieldhandler>::iterator handler_it = yields.databegin();
+		std::vector<std::pair<Core::FMTmask, Core::FMTyieldhandler>>::iterator handler_it = yields.begin();
+		const std::vector<std::string>yldnames = yields.getyldsnames();
+		while (handler_it != yields.end())
+		{
+			const std::vector<std::string>indexvalues = handler_it->second.indexes(yldnames);
+			if (!indexvalues.empty())
+			{
+				size_t location = std::distance(yields.begin(), handler_it);
+				const Core::FMTmask oldmask = (yields.begin() + location)->first;
+				const Core::FMTyieldhandler oldhandler = handler_it->second;
+				yields.erase(location);
+				std::vector<Core::FMTmask>todecompose;
+				todecompose.push_back(oldmask);
+				std::vector<Core::FMTtheme>themes_windex;
+				for (const Core::FMTtheme& theme : themes)
+				{
+					
+					if (theme.useindex())
+					{
+						for (const std::string& index : indexvalues)
+						{
+							if (theme.isindex(index))
+							{
+								std::vector<Core::FMTmask>newdecomposer;
+								while (!todecompose.empty())
+								{
+									const std::vector<Core::FMTmask>allmasks = (todecompose.front()).decompose(theme);
+									todecompose.erase(todecompose.begin());
+									newdecomposer.insert(newdecomposer.end(), allmasks.begin(), allmasks.end());
+								}
+								todecompose = newdecomposer;
+								themes_windex.push_back(theme);
+								break;
+							}
+						}
+					}
+				}
+				for (const Core::FMTmask& newmask : todecompose)
+				{
+					Core::FMTyieldhandler newhandler(Core::FMTyldtype::FMTcomplexyld, newmask);
+					std::map<std::string, double>handler_values = getindexvalues(newmask, themes_windex, indexvalues);
+					std::map<std::string, Core::FMTdata>alladata = oldhandler.getdataelements();
+					for (std::map<std::string, Core::FMTdata>::const_iterator datait = alladata.begin(); datait != alladata.end(); datait++)
+					{
+						const Core::FMTexpression expression = datait->second.toexpression();
+						const std::vector<std::string>allvalues = expression.getinfix();
+						std::vector<double>numbers(allvalues.size(), 0);
+						std::vector<std::string>valuesnoperators(allvalues.size());
+						size_t data_loc = 0;
+						for (const std::string& source : allvalues)
+						{
+							if (handler_values.find(source) != handler_values.end())
+							{
+								numbers[data_loc] = handler_values.at(source);
+							}
+							else if (isnum(source))
+							{
+								numbers[data_loc] = std::stod(source);
+							}
+							else {
+								valuesnoperators[data_loc] = source;
+							}
+							++data_loc;
+						}
+						newhandler.push_data(datait->first, Core::FMTdata(numbers, Core::FMTyieldparserop::FMTequation, valuesnoperators));
+					}
+					yields.insert(location, newmask, newhandler);
+					++location;
+				}
+				handler_it = (yields.begin() + location);
+			}
+			else {
+				++handler_it;
+			}
+		}
+	yields.update();
+	yields.passinobject(*this);
+	}catch (...)
+		{
+		_exhandler->raisefromcatch(
+			"", "FMTyieldparser::cleanup", __LINE__, __FILE__, _section);
+		}
+	}
 
 void FMTyieldparser::write(const Core::FMTyields& yields,const std::string& location) const
     {
@@ -654,8 +691,7 @@ void FMTyieldparser::write(const Core::FMTyields& yields,const std::string& loca
 		}
 		}catch (...)
 			{
-			_exhandler->raisefromcatch(
-				"at " + location,"FMTyieldparser::write", __LINE__, __FILE__,_section);
+			_exhandler->raisefromcatch("at " + location,"FMTyieldparser::write", __LINE__, __FILE__,_section);
 			}
     }
 }
