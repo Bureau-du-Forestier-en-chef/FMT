@@ -45,7 +45,7 @@ namespace Heuristics
 	the matrix. It's up to the user to decide to just generate a good initialsolution or
 	generate a good initialsolution and then try to find the optimaly using a BnB solver.
 	*/
-	class FMTlpheuristic : public Core::FMTobject, public Models::FMTlpsolver
+	class FMTlpheuristic : public Models::FMTlpsolver
 	{
 		// DocString: FMTlpheuristic::save
 		/**
@@ -55,7 +55,6 @@ namespace Heuristics
 		template<class Archive>
 		void save(Archive& ar, const unsigned int version) const
 		{
-			ar & boost::serialization::make_nvp("object", boost::serialization::base_object<FMTobject>(*this));
 			ar & boost::serialization::make_nvp("lpsolve", boost::serialization::base_object<FMTlpsolver>(*this));
 			ar & BOOST_SERIALIZATION_NVP(seed);
 			ar & BOOST_SERIALIZATION_NVP(usingsolvercopy);
@@ -67,7 +66,6 @@ namespace Heuristics
 		template<class Archive>
 		void load(Archive& ar, const unsigned int version)
 		{
-			ar & boost::serialization::make_nvp("object", boost::serialization::base_object<FMTobject>(*this));
 			ar & boost::serialization::make_nvp("lpsolve", boost::serialization::base_object<FMTlpsolver>(*this));
 			this->passinmessagehandler(*this->_logger);
 			ar & BOOST_SERIALIZATION_NVP(seed);

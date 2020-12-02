@@ -496,7 +496,7 @@ std::vector<std::vector<Core::FMTschedule>>FMTmodelparser::readschedules(const s
 			const boost::filesystem::path root_solution(bases.at(Core::FMTsection::Schedule));
 			const std::vector<Core::FMTaction>actions = model_it->getactions();
 			const std::vector<Core::FMTtheme>themes = model_it->getthemes();
-			schedules[location] = scheduleparser.read(themes, actions, root_solution.string());
+			schedules[location] = scheduleparser.read(themes,actions, root_solution.string());
 			}
 		const boost::filesystem::path scenarios_path = (primary_path.parent_path() / boost::filesystem::path("Scenarios"));
 		if (boost::filesystem::is_directory(scenarios_path))
@@ -521,7 +521,8 @@ std::vector<std::vector<Core::FMTschedule>>FMTmodelparser::readschedules(const s
 								const size_t location = std::distance<std::vector<Models::FMTmodel>::const_iterator>(models.begin(), model_it);
 								const std::vector<Core::FMTaction>actions = model_it->getactions();
 								const std::vector<Core::FMTtheme>themes = model_it->getthemes();
-								schedules[location] = scheduleparser.read(themes, actions, solutionpath.string());
+								const std::vector<Core::FMTactualdevelopment>area = model_it->getarea();
+								schedules[location] = scheduleparser.read(themes,actions, solutionpath.string());
 								}
 							}
 						}

@@ -350,6 +350,12 @@ class FMTspatialschedule : public FMTlayer<Graph::FMTlinegraph>
 		Get the constraints factors for nomalization
 		*/
 		std::vector<double> getconstraintsfactor() const;
+		// DocString: FMTspatialschedule::passinobject
+		/**
+		It's sometime usefull to pass in the exception handler and the logger  of an other FMTobject to
+		a FMTobject.
+		*/
+		void passinobject(const Core::FMTobject& rhs) override;
 	protected:
 		// DocString: FMTspatialschedule::events
 		/**

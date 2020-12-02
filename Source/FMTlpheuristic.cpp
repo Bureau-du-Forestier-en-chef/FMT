@@ -21,7 +21,7 @@ namespace Heuristics
 {
 
 	FMTlpheuristic::FMTlpheuristic(const FMTlpheuristic& rhs) :
-		Core::FMTobject(rhs),Models::FMTlpsolver(rhs),
+		Models::FMTlpsolver(rhs),
 		generator(rhs.generator),seed(rhs.seed),usingsolvercopy(true)
 		{
 
@@ -30,7 +30,6 @@ namespace Heuristics
 		{
 		if (this!=&rhs)
 			{
-			FMTobject::operator = (rhs);
 			FMTlpsolver::operator = (rhs);
 			generator=rhs.generator;
 			seed = rhs.seed;
@@ -40,13 +39,13 @@ namespace Heuristics
 		}
 
     FMTlpheuristic::FMTlpheuristic(const Models::FMTsolverinterface& interfacetype,const size_t& lseed):
-        Core::FMTobject(), Models::FMTlpsolver(),generator(lseed),seed(lseed), usingsolvercopy(false)
+       Models::FMTlpsolver(),generator(lseed),seed(lseed), usingsolvercopy(false)
         {
         this->buildsolverinterface(interfacetype);
         }
 
 	FMTlpheuristic::FMTlpheuristic(Models::FMTlpsolver& basesolve, size_t lseed,bool copysolver):
-		Core::FMTobject(), Models::FMTlpsolver(),generator(lseed),seed(lseed), usingsolvercopy(copysolver)
+		Models::FMTlpsolver(),generator(lseed),seed(lseed), usingsolvercopy(copysolver)
 		{
 		try {
 			if (copysolver)
@@ -68,14 +67,19 @@ namespace Heuristics
 		generator.seed(lseed);
 		}
 
-    void FMTlpheuristic::branchnboundsolve()
-        {
-        Models::FMTlpsolver::branchAndBound();
-        }
+	void FMTlpheuristic::branchnboundsolve()
+		{
+		try {
+			Models::FMTlpsolver::branchAndBound();
+		}catch (...)
+			{
+			_exhandler->raisefromcatch("", "FMTlpheuristic::branchnboundsolve", __LINE__, __FILE__);
+			}
+       }
 
     void FMTlpheuristic::passinobject(const FMTobject& rhs)
         {
-        FMTobject::passinobject(rhs);
+		FMTlpsolver::passinobject(rhs);
         FMTlpsolver::passinmessagehandler(*_logger);
         }
 

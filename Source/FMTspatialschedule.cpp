@@ -23,6 +23,7 @@ namespace Spatial
 			std::vector<Core::FMTactualdevelopment> actdevelopment;
             actdevelopment.push_back(Core::FMTactualdevelopment (devit->second,initialmap.getcellsize()));
             Graph::FMTlinegraph local_graph(Graph::FMTgraphbuild::schedulebuild);
+			local_graph.passinobject(initialmap);
             std::queue<Graph::FMTgraph<Graph::FMTbasevertexproperties,Graph ::FMTbaseedgeproperties>::FMTvertex_descriptor> actives = local_graph.initialize(actdevelopment);
             mapping[devit->first] = local_graph;
 			coordinates.push_back(devit->first);
@@ -1985,6 +1986,15 @@ void FMTspatialschedule::setconstraintsfactor(const Models::FMTmodel& model,cons
 std::vector<double> FMTspatialschedule::getconstraintsfactor() const
 	{
 	return constraintsfactor;
+	}
+
+void FMTspatialschedule::passinobject(const Core::FMTobject& rhs)
+	{
+	FMTlayer<Graph::FMTlinegraph>::passinobject(rhs);
+	for (std::map<FMTcoordinate, Graph::FMTlinegraph>::iterator graphit = this->mapping.begin(); graphit != this->mapping.end(); ++graphit)
+		{
+		graphit->second.passinobject(rhs);
+		}
 	}
 
 

@@ -146,7 +146,7 @@ void exportModel()
 			"@DocString(FMTlpsolver::writeMPS)");
 
 
-	bp::class_<Models::FMTlpmodel, bp::bases<Models::FMTmodel, Models::FMTlpsolver>>("FMTlpmodel", "@DocString(FMTlpmodel)")
+	bp::class_<Models::FMTlpmodel, bp::bases<Models::FMTmodel>>("FMTlpmodel", "@DocString(FMTlpmodel)")
 		.def(bp::init<Models::FMTmodel, Models::FMTsolverinterface>())
 		.def(bp::init<Models::FMTlpmodel>())
 		.def_pickle(FMT_pickle_suite<Models::FMTlpmodel>())
