@@ -28,7 +28,7 @@ reduce the overhead caused by the addrow / addcol osisolverinterface during recu
 All calls related to add/remove columns or rows checking for primal or dual solution getting the number of
 rows or columns dont need synchronization with the cache. So those calls are going to be faster when usecache = true.
 */
-class FMTlpsolver
+class FMTlpsolver: public Core::FMTobject
 	{
 	// DocString: FMTlpsolver::save
 	/**
@@ -38,6 +38,7 @@ class FMTlpsolver
 	template<class Archive>
 	void save(Archive& ar, const unsigned int version) const
 		{
+		ar & boost::serialization::make_nvp("FMTobject", boost::serialization::base_object<Core::FMTobject>(*this));
 		ar & BOOST_SERIALIZATION_NVP(usecache);
 		matrixcache.synchronize(solverinterface);
 		const FMTserializablematrix matrix(solverinterface);
@@ -51,6 +52,7 @@ class FMTlpsolver
 	template<class Archive>
 	void load(Archive& ar, const unsigned int version)
 	{
+		ar & boost::serialization::make_nvp("FMTobject", boost::serialization::base_object<FMTobject>(*this));
 		ar & BOOST_SERIALIZATION_NVP(usecache);
 		matrixcache.synchronize(solverinterface);
 		FMTserializablematrix matrix;
@@ -104,44 +106,6 @@ class FMTlpsolver
 	A synchronization will be done when calling this function.
 	*/
 	bool stockresolve();
-	// DocString: FMTlpsolver::synchronize
-	/**
-	If the users as added or deleted constraints or variables this function is going to update the
-	Osisolverinterface using the cachedmatrix informations (new or deleted rows and columns).
-	*/
-	void synchronize();
-	// DocString: FMTlpsolver::getcacheelements
-	/**
-	This function is for debugging it returns the constraints and variables to add to the solverinterface
-	sitting in the matrixcache.
-	*/
-	std::string getcacheelements() const;
-	// DocString: FMTlpsolver::lowernuppertostr
-	/**
-	Function to convert double bounds to string bounds (-inf,inf).
-	*/
-	std::string lowernuppertostr(const double& lower, const double& upper) const;
-	// DocString: FMTlpsolver::getcachedeletedconstraints
-	/**
-	It will returns rows ids that are in the cache and marked as deleted.
-	*/
-	inline const std::vector<int>& getcachedeletedconstraints() const
-	{
-		return matrixcache.getdeletedconstraints();
-	}
-	// DocString: FMTlpsolver::getcachedeletedvariable
-	/**
-	It will returns the cols ids that are in the cache and marked as deleted.
-	*/
-	inline const std::vector<int>& getcachedeletedvariables() const
-	{
-		return matrixcache.getdeletedvariables();
-	}
-	// DocString: FMTlpsolver::sortdeletedcache
-	/**
-	Sorts and remove replicates present in the rows and columns to delete matrix cache.
-	*/
-	void sortdeletedcache();
 	public:
 		// DocString: FMTlpsolver()
 		/**
@@ -484,11 +448,52 @@ class FMTlpsolver
 		turn off the matrix caching, the number of calls made to osisolverinterface will be greater.
 		*/
 		void disablematrixcaching();
-
-
-
-
-
+		// DocString: FMTlpsolver::getsolvertype()
+		/**
+		Return the solver type of the solver.
+		*/
+		inline FMTsolverinterface getsolvertype() const
+		{
+			return solvertype;
+		}
+		// DocString: FMTlpsolver::synchronize
+		/**
+		If the users as added or deleted constraints or variables this function is going to update the
+		Osisolverinterface using the cachedmatrix informations (new or deleted rows and columns).
+		*/
+		void synchronize();
+		// DocString: FMTlpsolver::sortdeletedcache
+		/**
+		Sorts and remove replicates present in the rows and columns to delete matrix cache.
+		*/
+		void sortdeletedcache();
+		// DocString: FMTlpsolver::getcachedeletedconstraints
+		/**
+		It will returns rows ids that are in the cache and marked as deleted.
+		*/
+		inline const std::vector<int>& getcachedeletedconstraints() const
+		{
+			return matrixcache.getdeletedconstraints();
+		}
+		// DocString: FMTlpsolver::getcachedeletedvariable
+		/**
+		It will returns the cols ids that are in the cache and marked as deleted.
+		*/
+		inline const std::vector<int>& getcachedeletedvariables() const
+		{
+			return matrixcache.getdeletedvariables();
+		}
+		// DocString: FMTlpsolver::lowernuppertostr
+		/**
+		Function to convert double bounds to string bounds (-inf,inf).
+		*/
+		std::string lowernuppertostr(const double& lower, const double& upper) const;
+		// DocString: FMTlpsolver::getcacheelements
+		/**
+		This function is for debugging it returns the constraints and variables to add to the solverinterface
+		sitting in the matrixcache.
+		*/
+		std::string getcacheelements() const;
 	};
 }
 BOOST_CLASS_EXPORT_KEY(Models::FMTlpsolver)

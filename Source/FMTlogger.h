@@ -78,6 +78,9 @@ namespace Logging
 			// DocString: FMTlogger::filestream
 			///stream if the logger redirect the logging into somesort of file.
 			mutable std::ofstream* filestream;
+			// DocString: FMTlogger::flushstream
+			///If true will flush stream at each write
+			bool flushstream;
 			// DocString: FMTlogger::cout
 			/**
 			cout function of the logger sometimes on Windows if using boost::python the std::cout needs
@@ -105,6 +108,11 @@ namespace Logging
 			Redirect the log information to a file.
 			*/
 			void redirectofile(const std::string& filename);
+			// DocString: FMTlogger::closefilestream
+			/**
+			Close the file stream if error occured.
+			*/
+			void closefilestream();
 			// DocString: FMTlogger::operator=
 			/**
 			FMTlogger copy assignment operator.
@@ -138,7 +146,11 @@ namespace Logging
 			The logtime function log the actual time at which the function is called.
 			*/
 			void logtime();
-			
+			// DocString: FMTlogger::setstreamflush
+			/**
+			Force the flushing on file stream
+			*/
+			void setstreamflush(bool flush);
 			// DocString: FMTlogger::operator<<
 			/**
 			This function is the main function used for sending elements to print to the FMTlogger.
