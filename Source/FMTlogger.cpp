@@ -28,7 +28,7 @@ namespace Logging
 		filestream = new std::ofstream(filename);
 		}
 
-	FMTlogger::FMTlogger() : filepath(),filestream()
+	FMTlogger::FMTlogger() : filepath(),filestream(), flushstream(false)
 		{
 
 		}
@@ -44,7 +44,7 @@ namespace Logging
 			}
 		}
 
-	FMTlogger::FMTlogger(const FMTlogger& rhs): filepath(rhs.filepath), filestream()
+	FMTlogger::FMTlogger(const FMTlogger& rhs): filepath(rhs.filepath), filestream(), flushstream(rhs.flushstream)
 		{
 		settofile(filepath);
 		}
@@ -55,8 +55,20 @@ namespace Logging
 			{
 			filepath = rhs.filepath;
 			settofile(filepath);
+			flushstream = rhs.flushstream;
 			}
 		return *this;
+		}
+
+	void FMTlogger::closefilestream()
+		{
+		if (filestream && filestream->is_open())
+			{
+			this->logtime();
+			filestream->close();
+			filepath.clear();
+			delete filestream;
+			}
 		}
 
 	FMTlogger::~FMTlogger()
@@ -81,6 +93,13 @@ namespace Logging
 		const std::string message = Version::FMTversion().getdatenow();
 		*this << (message);
 		}
+
+	void FMTlogger::setstreamflush(bool flush)
+		{
+		flushstream = flush;
+		}
+
+
 	#ifdef FMTWITHOSI
 		void FMTlogger::checkSeverity()
 			{
@@ -98,6 +117,10 @@ namespace Logging
 		if (filestream && filestream->is_open())
 			{
 			(*filestream)<<(message);
+			if (flushstream)
+				{
+				filestream->flush();
+				}
 		}else {
 			#if defined(FMTWITHPYTHON)
 					PySys_WriteStdout(message);

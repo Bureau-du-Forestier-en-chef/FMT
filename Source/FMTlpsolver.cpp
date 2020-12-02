@@ -20,26 +20,31 @@ namespace Models
 	std::shared_ptr<OsiSolverInterface> FMTlpsolver::buildsolverinterface(const FMTsolverinterface& lsolvertype) const
 	{
 		std::shared_ptr<OsiSolverInterface>newsolverinterface;
-		switch (lsolvertype)
-		{
-		case FMTsolverinterface::CLP:
-			newsolverinterface = std::shared_ptr<OsiClpSolverInterface>(new OsiClpSolverInterface);
-			break;
+		try {
+			switch (lsolvertype)
+			{
+			case FMTsolverinterface::CLP:
+				newsolverinterface = std::shared_ptr<OsiClpSolverInterface>(new OsiClpSolverInterface);
+				break;
 #ifdef  FMTWITHMOSEK
-		case FMTsolverinterface::MOSEK:
-			newsolverinterface = std::shared_ptr<OsiMskSolverInterface>(new OsiMskSolverInterface);
-			break;
+			case FMTsolverinterface::MOSEK:
+				newsolverinterface = std::shared_ptr<OsiMskSolverInterface>(new OsiMskSolverInterface);
+				break;
 #endif
-			/*case FMTsolverinterface::CPLEX:
-				newsolverinterface = shared_ptr<OsiCpxSolverInterface>(new OsiCpxSolverInterface);
-			break;
-			case FMTsolverinterface::GUROBI:
-				newsolverinterface = shared_ptr<OsiGrbSolverInterface>(new OsiGrbSolverInterface);
-			break;*/
-		default:
-			newsolverinterface = std::shared_ptr<OsiClpSolverInterface>(new OsiClpSolverInterface);
-			break;
-		}
+				/*case FMTsolverinterface::CPLEX:
+					newsolverinterface = shared_ptr<OsiCpxSolverInterface>(new OsiCpxSolverInterface);
+				break;
+				case FMTsolverinterface::GUROBI:
+					newsolverinterface = shared_ptr<OsiGrbSolverInterface>(new OsiGrbSolverInterface);
+				break;*/
+			default:
+				newsolverinterface = std::shared_ptr<OsiClpSolverInterface>(new OsiClpSolverInterface);
+				break;
+			}
+		}catch (...)
+			{
+			_exhandler->raisefromcatch("Cannot build solver",+"FMTlpsolver::buildsolverinterface", __LINE__, __FILE__);
+			}
 		return newsolverinterface;
 	}
 
@@ -47,6 +52,7 @@ namespace Models
 	std::shared_ptr<OsiSolverInterface> FMTlpsolver::copysolverinterface(const std::shared_ptr<OsiSolverInterface>& solver_ptr,const FMTsolverinterface& lsolvertype) const
 	{
 		std::shared_ptr<OsiSolverInterface>newsolverinterface;
+		try{
 		switch (lsolvertype)
 		{
 		case FMTsolverinterface::CLP:
@@ -67,10 +73,15 @@ namespace Models
 			newsolverinterface = std::shared_ptr<OsiClpSolverInterface>(new OsiClpSolverInterface(*dynamic_cast<OsiClpSolverInterface*>(solver_ptr.get())));
 			break;
 		}
+		}
+		catch (...)
+		{
+			_exhandler->raisefromcatch("Cannot copy solver", +"FMTlpsolver::copysolverinterface", __LINE__, __FILE__);
+		}
 		return newsolverinterface;
 	}
 
-	FMTlpsolver::FMTlpsolver(const FMTlpsolver& rhs) : solverinterface(), usecache(rhs.usecache),matrixcache(rhs.matrixcache),solvertype(rhs.solvertype)
+	FMTlpsolver::FMTlpsolver(const FMTlpsolver& rhs) :Core::FMTobject(rhs), solverinterface(), usecache(rhs.usecache),matrixcache(rhs.matrixcache),solvertype(rhs.solvertype)
 		{
 		solverinterface = copysolverinterface(rhs.solverinterface, rhs.solvertype);
 		solverinterface->passInMessageHandler(rhs.solverinterface->messageHandler());
@@ -79,6 +90,7 @@ namespace Models
 		{
 		if (this!=&rhs)
 			{
+			Core::FMTobject::operator = (rhs);
 			matrixcache = rhs.matrixcache;
 			usecache = rhs.usecache;
 			solvertype = rhs.solvertype;
@@ -87,7 +99,7 @@ namespace Models
 			}
 		return *this;
 		}
-	FMTlpsolver::FMTlpsolver(FMTsolverinterface lsolvertype, Logging::FMTlogger& logger):solverinterface(), usecache(true),matrixcache(), solvertype(lsolvertype)
+	FMTlpsolver::FMTlpsolver(FMTsolverinterface lsolvertype, Logging::FMTlogger& logger):Core::FMTobject(),solverinterface(), usecache(true),matrixcache(), solvertype(lsolvertype)
 		{
 		solverinterface = buildsolverinterface(lsolvertype);
 		this->passinmessagehandler(logger);
@@ -95,44 +107,50 @@ namespace Models
 
 	bool FMTlpsolver::resolve()
 		{
-		matrixcache.synchronize(solverinterface);
-		if (solvertype == Models::FMTsolverinterface::CLP)//clp with dual simplex
-		{
-			OsiClpSolverInterface* clpsolver = dynamic_cast<OsiClpSolverInterface*>(solverinterface.get());
-			ClpSimplex* splexmodel = clpsolver->getModelPtr();
-			splexmodel->setPerturbation(-6);
-			splexmodel->setSpecialOptions(64 | 128 | 1024 | 2048 | 4096 | 32768 | 262144 | 0x01000000);
-			splexmodel->tightenPrimalBounds();
-			splexmodel->dual();
-		}
-		#ifdef  FMTWITHMOSEK
-		else if (solvertype == Models::FMTsolverinterface::MOSEK) //Mosek with interior point
-		{
-			OsiMskSolverInterface* msksolver = dynamic_cast<OsiMskSolverInterface*>(solverinterface.get());
-			msksolver->freeCachedData();
-			MSKtask_t task = msksolver->getMutableLpPtr();
-			MSK_putintparam(task, MSK_IPAR_OPTIMIZER, MSK_OPTIMIZER_INTPNT);
-			MSK_putintparam(task, MSK_IPAR_INTPNT_BASIS, MSK_BI_IF_FEASIBLE);
-			MSK_putintparam(task, MSK_IPAR_SIM_HOTSTART, MSK_SIM_HOTSTART_NONE);
-			MSK_putintparam(task, MSK_IPAR_PRESOLVE_USE, MSK_ON);
-			MSK_putintparam(task, MSK_IPAR_INTPNT_STARTING_POINT, MSK_STARTING_POINT_CONSTANT);
-			MSK_putintparam(task, MSK_IPAR_BI_CLEAN_OPTIMIZER, MSK_OPTIMIZER_PRIMAL_SIMPLEX);
-			MSK_putdouparam(task, MSK_DPAR_INTPNT_TOL_PSAFE, 100.0);
-			MSK_putdouparam(task, MSK_DPAR_INTPNT_TOL_PATH, 1.0e-2);
-			MSK_putintparam(task, MSK_IPAR_LOG, 10);
-			MSK_putintparam(task, MSK_IPAR_LOG_INTPNT, 4);
-			MSKrescodee error = MSK_optimize(task);
-			
-		}
+		try {
+			matrixcache.synchronize(solverinterface);
+			if (solvertype == Models::FMTsolverinterface::CLP)//clp with dual simplex
+			{
+				OsiClpSolverInterface* clpsolver = dynamic_cast<OsiClpSolverInterface*>(solverinterface.get());
+				ClpSimplex* splexmodel = clpsolver->getModelPtr();
+				splexmodel->setPerturbation(-6);
+				splexmodel->setSpecialOptions(64 | 128 | 1024 | 2048 | 4096 | 32768 | 262144 | 0x01000000);
+				splexmodel->tightenPrimalBounds();
+				splexmodel->dual();
+			}
+#ifdef  FMTWITHMOSEK
+			else if (solvertype == Models::FMTsolverinterface::MOSEK) //Mosek with interior point
+			{
+				OsiMskSolverInterface* msksolver = dynamic_cast<OsiMskSolverInterface*>(solverinterface.get());
+				msksolver->freeCachedData();
+				MSKtask_t task = msksolver->getMutableLpPtr();
+				MSK_putintparam(task, MSK_IPAR_OPTIMIZER, MSK_OPTIMIZER_INTPNT);
+				MSK_putintparam(task, MSK_IPAR_INTPNT_BASIS, MSK_BI_IF_FEASIBLE);
+				MSK_putintparam(task, MSK_IPAR_SIM_HOTSTART, MSK_SIM_HOTSTART_NONE);
+				MSK_putintparam(task, MSK_IPAR_PRESOLVE_USE, MSK_ON);
+				MSK_putintparam(task, MSK_IPAR_INTPNT_STARTING_POINT, MSK_STARTING_POINT_CONSTANT);
+				MSK_putintparam(task, MSK_IPAR_BI_CLEAN_OPTIMIZER, MSK_OPTIMIZER_PRIMAL_SIMPLEX);
+				MSK_putdouparam(task, MSK_DPAR_INTPNT_TOL_PSAFE, 100.0);
+				MSK_putdouparam(task, MSK_DPAR_INTPNT_TOL_PATH, 1.0e-2);
+				MSK_putintparam(task, MSK_IPAR_LOG, 10);
+				MSK_putintparam(task, MSK_IPAR_LOG_INTPNT, 4);
+				MSKrescodee error = MSK_optimize(task);
+
+			}
 #endif
-		else {//default
-			solverinterface->resolve();
+			else {//default
+				solverinterface->resolve();
+			}
+		}catch (...)
+			{
+			_exhandler->raisefromcatch("", +"FMTlpsolver::resolve", __LINE__, __FILE__);
 			}
 		return solverinterface->isProvenOptimal();
 		}
 
 	bool FMTlpsolver::initialsolve()
 		{
+		try{
 		matrixcache.synchronize(solverinterface);
 		switch (solvertype)
 		{
@@ -226,17 +244,29 @@ namespace Models
 		}
 		break;
 		}
+		}
+		catch (...)
+		{
+			_exhandler->raisefromcatch("", +"FMTlpsolver::initialsolve", __LINE__, __FILE__);
+		}
 		return solverinterface->isProvenOptimal();
 		}
 
 	void FMTlpsolver::passinmessagehandler(Logging::FMTlogger& logger)
 		{
+		try{
 		solverinterface->passInMessageHandler(&logger);
+		}
+		catch (...)
+		{
+			_exhandler->raisefromcatch("", +"FMTlpsolver::passinmessagehandler", __LINE__, __FILE__);
+		}
 		}
 
 	bool FMTlpsolver::gotlicense() const
 		{
 		bool licensestatus = false;
+		try{
 		switch (solvertype)
 		{
 		#ifdef FMTWITHMOSEK
@@ -260,35 +290,46 @@ namespace Models
 		}
 		break;
 		}
+		}
+		catch (...)
+		{
+			_exhandler->raisefromcatch("", +"FMTlpsolver::gotlicense", __LINE__, __FILE__);
+		}
 		return licensestatus;
 		}
 
 	std::string FMTlpsolver::getsolvername() const
 		{
 		std::string name;
-		switch (solvertype)
-		{
-		case FMTsolverinterface::CLP:
-			name = "CLP";
-		break;
-		#ifdef FMTWITHMOSEK
-				case FMTsolverinterface::MOSEK:
-					name = "MOSEK";
+		try {
+			switch (solvertype)
+			{
+			case FMTsolverinterface::CLP:
+				name = "CLP";
 				break;
-		#endif
-		
-		/*case FMTsolverinterface::CPLEX:
-			name = "CPLEX";
-		break;
-		case FMTsolverinterface::GUROBI:
-			name = "GUROBI";
-		break;*/
-		default:
-		{
-			name = "CLP";
-		}
-		break;
-		}
+#ifdef FMTWITHMOSEK
+			case FMTsolverinterface::MOSEK:
+				name = "MOSEK";
+				break;
+#endif
+
+				/*case FMTsolverinterface::CPLEX:
+					name = "CPLEX";
+				break;
+				case FMTsolverinterface::GUROBI:
+					name = "GUROBI";
+				break;*/
+			default:
+			{
+				name = "CLP";
+			}
+			break;
+			}
+			}
+			catch (...)
+			{
+				_exhandler->raisefromcatch("", +"FMTlpsolver::getsolvername", __LINE__, __FILE__);
+			}
 		return name;
 		}
 
@@ -304,7 +345,7 @@ namespace Models
 			solverinterface->setColSolution(newsolution);
 		}catch (...)
 		{
-			Exception::FMTexceptionhandler().raisefromcatch("", "FMTlpsolver::setColSolution", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("", "FMTlpsolver::setColSolution", __LINE__, __FILE__);
 		}
 		}
 
@@ -329,7 +370,7 @@ namespace Models
 				}
 		}catch (...)
 			{
-			Exception::FMTexceptionhandler().raisefromcatch("", "FMTlpsolver::setColSetBounds", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("", "FMTlpsolver::setColSetBounds", __LINE__, __FILE__);
 			}
 		}
 
@@ -340,32 +381,36 @@ namespace Models
 			solverinterface->setRowSetBounds(indexFirst, indexLast, boundlist);
 		}catch (...)
 			{
-			Exception::FMTexceptionhandler().raisefromcatch("", "FMTlpsolver::setRowSetBounds", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("", "FMTlpsolver::setRowSetBounds", __LINE__, __FILE__);
 			}
 		}
 
 	void FMTlpsolver::deleteRow(const int& rowindex)
 		{
-		//if (usecache)
-		//	{
+		try{
 			matrixcache.deleteRow(rowindex);
-		//}else {
-		//	solverinterface->deleteRows(1, &rowindex);
-		//	}
+		}
+		catch (...)
+		{
+			_exhandler->raisefromcatch("", "FMTlpsolver::deleteRow", __LINE__, __FILE__);
+		}
 		}
 	void FMTlpsolver::deleteCol(const int& colindex)
 		{
-		//if (usecache)
-		//	{
+		try {
 			matrixcache.deleteCol(colindex);
-		//	}else {
-		//	solverinterface->deleteCols(1, &colindex);
-		//	}
+		}
+		catch (...)
+		{
+			_exhandler->raisefromcatch("", "FMTlpsolver::deleteCol", __LINE__, __FILE__);
+		}
+			
 		}
 
 	int FMTlpsolver::getiterationcount() const
 		{
 		int iterations = 0;
+		try{
 		switch (solvertype)
 		{
 		case FMTsolverinterface::CLP:
@@ -396,6 +441,11 @@ namespace Models
 			}
 		break;
 		}
+		}
+		catch (...)
+		{
+			_exhandler->raisefromcatch("", "FMTlpsolver::getiterationcount", __LINE__, __FILE__);
+		}
 		return iterations;
 		}
 
@@ -406,15 +456,23 @@ namespace Models
 
 	void FMTlpsolver::passinsolver(FMTlpsolver& solver)
 		{
+		try{
+		Core::FMTobject::operator=(solver);
 		usecache = solver.usecache;
 		matrixcache = solver.matrixcache;
 		solvertype = solver.solvertype;
 		solverinterface = solver.solverinterface;
 		solverinterface->passInMessageHandler(solver.solverinterface->messageHandler());
 		}
+		catch (...)
+		{
+			_exhandler->raisefromcatch("", "FMTlpsolver::passinsolver", __LINE__, __FILE__);
+		}
+		}
 
 	void FMTlpsolver::clearrowcache()
 		{
+		try{
 		#ifdef  FMTWITHMOSEK
 			matrixcache.synchronize(solverinterface);
 			if (solvertype == Models::FMTsolverinterface::MOSEK)
@@ -424,6 +482,11 @@ namespace Models
 				}
 		#endif
 		}
+		catch (...)
+		{
+			_exhandler->raisefromcatch("", "FMTlpsolver::clearrowcache", __LINE__, __FILE__);
+		}
+		}
 
 	void FMTlpsolver::setInteger(const int& colindex)
 		{
@@ -432,14 +495,20 @@ namespace Models
 			solverinterface->setInteger(colindex);
 		}catch (...)
 			{
-			Exception::FMTexceptionhandler().raisefromcatch("at column index " + colindex, "FMTlpsolver::setInteger", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("at column index " + colindex, "FMTlpsolver::setInteger", __LINE__, __FILE__);
 			}
 		}
 
 	bool FMTlpsolver::stockresolve()
 		{
-		matrixcache.synchronize(solverinterface);
-		solverinterface->resolve();
+		try {
+			matrixcache.synchronize(solverinterface);
+			solverinterface->resolve();
+		}
+		catch (...)
+		{
+			_exhandler->raisefromcatch("", "FMTlpsolver::stockresolve", __LINE__, __FILE__);
+		}
 		return solverinterface->isProvenOptimal();
 		}
 
@@ -450,7 +519,7 @@ namespace Models
 			solverinterface->setInteger(indices, len);
 		}catch (...)
 			{
-			Exception::FMTexceptionhandler().raisefromcatch("", "FMTlpsolver::setInteger", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("", "FMTlpsolver::setInteger", __LINE__, __FILE__);
 			}
 
 		}
@@ -462,7 +531,7 @@ namespace Models
 			solverinterface->setObjective(objectivevalues);
 		}catch (...)
 			{
-			Exception::FMTexceptionhandler().raisefromcatch("", "FMTlpsolver::setObjective", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("", "FMTlpsolver::setObjective", __LINE__, __FILE__);
 			}
 		}
 	void FMTlpsolver::setObjSense(const double& newsense)
@@ -471,7 +540,7 @@ namespace Models
 			solverinterface->setObjSense(newsense);
 		}catch (...)
 			{
-			Exception::FMTexceptionhandler().raisefromcatch("", "FMTlpsolver::setObjSense", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("", "FMTlpsolver::setObjSense", __LINE__, __FILE__);
 			}
 		}
 
@@ -482,7 +551,7 @@ namespace Models
 			solverinterface->deleteRows(numberofrows, rowindexes);
 		}catch (...)
 			{
-			Exception::FMTexceptionhandler().raisefromcatch("", "FMTlpsolver::deleteRows", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("", "FMTlpsolver::deleteRows", __LINE__, __FILE__);
 			}
 
 		}
@@ -494,36 +563,64 @@ namespace Models
 			solverinterface->deleteCols(numberofcols, colindexes);
 		}catch (...)
 			{
-			Exception::FMTexceptionhandler().raisefromcatch("", "FMTlpsolver::deleteCols", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("", "FMTlpsolver::deleteCols", __LINE__, __FILE__);
 			}
 		}
 
 	const CoinPackedMatrix* FMTlpsolver::getMatrixByRow() const
 		{
-		matrixcache.synchronize(solverinterface);
-		return solverinterface->getMatrixByRow();
+		try {
+			matrixcache.synchronize(solverinterface);
+			return solverinterface->getMatrixByRow();
+		}catch (...)
+			{
+				_exhandler->raisefromcatch("", "FMTlpsolver::getMatrixByRow", __LINE__, __FILE__);
+			}
+		return nullptr;
 		}
 	const CoinPackedMatrix* FMTlpsolver::getMatrixByCol() const
 		{
-		matrixcache.synchronize(solverinterface);
-		return solverinterface->getMatrixByCol();
+		try {
+			matrixcache.synchronize(solverinterface);
+			return solverinterface->getMatrixByCol();
+		}catch (...)
+			{
+				_exhandler->raisefromcatch("", "FMTlpsolver::getMatrixByCol", __LINE__, __FILE__);
+			}
+		return nullptr;
 		}
 
 	void FMTlpsolver::writeLP(const std::string& location) const
 		{
-		matrixcache.synchronize(solverinterface);
-		solverinterface->writeLp(location.c_str());
+		try{
+			matrixcache.synchronize(solverinterface);
+			solverinterface->writeLp(location.c_str());
+		}catch (...)
+			{
+			_exhandler->raisefromcatch("", "FMTlpsolver::writeLP", __LINE__, __FILE__);
+			}
 		}
 	void FMTlpsolver::writeMPS(const std::string& location) const
 		{
-		matrixcache.synchronize(solverinterface);
-		solverinterface->writeMps(location.c_str());
+		try {
+			matrixcache.synchronize(solverinterface);
+			solverinterface->writeMps(location.c_str());
+		}catch (...)
+			{
+				_exhandler->raisefromcatch("", "FMTlpsolver::writeMPS", __LINE__, __FILE__);
+			}
 		}
 
 	void FMTlpsolver::branchAndBound()
 		{
+		try{
 		matrixcache.synchronize(solverinterface);
 		solverinterface->branchAndBound();
+		}
+		catch (...)
+		{
+			_exhandler->raisefromcatch("", "FMTlpsolver::branchAndBound", __LINE__, __FILE__);
+		}
 		}
 
 	void FMTlpsolver::synchronize()
@@ -532,7 +629,7 @@ namespace Models
 			matrixcache.synchronize(solverinterface);
 		}catch (...)
 			{
-			Exception::FMTexceptionhandler().raisefromcatch("", "FMTlpsolver::synchronize", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("", "FMTlpsolver::synchronize", __LINE__, __FILE__);
 			}
 		}
 
@@ -552,13 +649,23 @@ namespace Models
 		}
 	void FMTlpsolver::disablematrixcaching()
 		{
-		matrixcache.synchronize(solverinterface);
-		usecache = false;
+		try {
+			matrixcache.synchronize(solverinterface);
+			usecache = false;
+		}catch (...)
+			{
+			_exhandler->raisefromcatch("", "FMTlpsolver::disablematrixcaching", __LINE__, __FILE__);
+			}
 		}
 
 	void FMTlpsolver::sortdeletedcache()
 		{
+		try{
 		matrixcache.sortandcleandeleted();
+		}catch (...)
+			{
+			_exhandler->raisefromcatch("", "FMTlpsolver::sortdeletedcache", __LINE__, __FILE__);
+			}
 		}
 
 	FMTlpsolver::FMTlpsolver(): solverinterface(), usecache(), solvertype()
@@ -575,6 +682,7 @@ namespace Models
 	std::string FMTlpsolver::lowernuppertostr(const double& lower, const double& upper) const
 		{
 		std::string value;
+		try{
 		value += " lower bound of ";
 		if (lower==-COIN_DBL_MAX)
 			{
@@ -590,12 +698,18 @@ namespace Models
 		else {
 			value += std::to_string(upper);
 			}
+		}
+		catch (...)
+		{
+			_exhandler->raisefromcatch("", "FMTlpsolver::lowernuppertostr", __LINE__, __FILE__);
+		}
 		return value;
 		}
 
 	int FMTlpsolver::getrow(int whichRow, double &rowLower, double &rowUpper,
 		std::vector<int>&indices, std::vector<double>&elements) const
 		{
+		try{
 		const int numberofnoncacherows = solverinterface->getNumRows();
 		if (matrixcache.numberofdeletedRows() >0 || matrixcache.numberofdeletedCols() > 0)
 			{
@@ -623,15 +737,20 @@ namespace Models
 				}
 			return static_cast<int>(indices.size());
 			}else {
-				Exception::FMTexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed,
+					_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
 					"for row id " + whichRow, "FMTlpsolver::getrow", __LINE__, __FILE__);
 				}
+		}catch (...)
+			{
+			_exhandler->raisefromcatch("", "FMTlpsolver::getrow", __LINE__, __FILE__);
+			}
 		return -1;
 		}
 
 	int FMTlpsolver::getcol(int whichCol, double &colLower, double &colUpper, double &objectiveValue,
 		std::vector<int>& indices, std::vector<double>&elements) const
 		{
+		try{
 		const int numberofnoncachecols = solverinterface-> getNumCols();
 		const int numberofdeletedcols = matrixcache.numberofdeletedCols();
 		if (matrixcache.numberofdeletedRows() > 0 || matrixcache.numberofdeletedCols() > 0)
@@ -665,6 +784,11 @@ namespace Models
 		else {
 			Exception::FMTexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed,
 				"for column id " + std::to_string(whichCol), "FMTlpsolver::getcol", __LINE__, __FILE__);
+		}
+		}
+		catch (...)
+		{
+			_exhandler->raisefromcatch("", "FMTlpsolver::getcol", __LINE__, __FILE__);
 		}
 		return -1;
 		}

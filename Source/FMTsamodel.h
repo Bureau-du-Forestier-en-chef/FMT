@@ -140,7 +140,7 @@ class FMTsamodel : public FMTmodel
         ///Setter of the cooling_schedule.
         bool setschedule(const Spatial::FMTexponentialschedule& schedule);
         ///Setter of the initial_mapping base on FMTforest.
-        bool setinitialmapping(const Spatial::FMTforest& forest);
+        bool setinitialmapping(Spatial::FMTforest forest);
         ///Setter of spatial actions. See FMTspatialaction for info.
         bool setspactions(const std::vector<Spatial::FMTspatialaction>& lspactions);
         ///Setter of min_ratio_moves and max_ratio_moves.
