@@ -421,9 +421,10 @@ namespace Models
         return spactions;
     }
 
-    bool FMTsamodel::setinitialmapping(const Spatial::FMTforest& forest)
+    bool FMTsamodel::setinitialmapping(Spatial::FMTforest forest)
     {
 		try {
+			forest.passinobject(*this);
 			solution = Spatial::FMTspatialschedule(forest);
 			return true;
 		}

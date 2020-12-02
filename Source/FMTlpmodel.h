@@ -82,7 +82,7 @@ shrinked (by the front) using the function eraseperiod.
 The matrix is held within the solverinterface pointer.
 */
 
-class FMTlpmodel : public FMTmodel, public FMTlpsolver
+class FMTlpmodel : public FMTmodel
 	{
 	// DocString: FMTlpmodel::save
 	/**
@@ -93,7 +93,7 @@ class FMTlpmodel : public FMTmodel, public FMTlpsolver
 	void save(Archive& ar, const unsigned int version) const
 		{
 		ar & boost::serialization::make_nvp("model", boost::serialization::base_object<FMTmodel>(*this));
-		ar & boost::serialization::make_nvp("lpsolve", boost::serialization::base_object<FMTlpsolver>(*this));
+		ar & BOOST_SERIALIZATION_NVP(solver);
 		ar & BOOST_SERIALIZATION_NVP(graph);
 		ar & BOOST_SERIALIZATION_NVP(elements);
 		//ar & BOOST_SERIALIZATION_NVP(deletedconstraints);
@@ -107,10 +107,10 @@ class FMTlpmodel : public FMTmodel, public FMTlpsolver
 	void load(Archive& ar, const unsigned int version)
 		{
 		ar & boost::serialization::make_nvp("model", boost::serialization::base_object<FMTmodel>(*this));
-		ar & boost::serialization::make_nvp("lpsolve", boost::serialization::base_object<FMTlpsolver>(*this));
+		ar & BOOST_SERIALIZATION_NVP(solver);
 		ar & BOOST_SERIALIZATION_NVP(graph);
 		ar & BOOST_SERIALIZATION_NVP(elements);
-		this->passinmessagehandler(*this->_logger);
+		solver.passinmessagehandler(*this->_logger);
 		//ar & BOOST_SERIALIZATION_NVP(deletedconstraints);
 		//ar & BOOST_SERIALIZATION_NVP(deletedvariables);
 		}
@@ -122,13 +122,9 @@ class FMTlpmodel : public FMTmodel, public FMTlpsolver
 	///Locations of the constraints and variables in the matrix for the constraints / objective.
 	std::vector<std::unordered_map<size_t,
 		std::vector<std::vector<int>>>>elements;
-	// DocString: FMTlpmodel::deletedconstraints
-	///Deleted constraints used in replanning context when the constraints indexes need to be updated.
-	//std::vector<int>deletedconstraints;
-	// DocString: FMTlpmodel::deletedvariables
-	///Deleted variables used in replanning context when the variables indexes need to be updated.
-	//std::vector<int>deletedvariables;
-	// DocString: FMTlpmodel::summarize
+	// DocString: FMTlpmodel::solver
+	///The lpsolver
+	FMTlpsolver solver;
 	/**
 	Simple function to summarize constraints that are un a map structure key = variables, element = coefficiant
 	to a array structure (vector) for osisolverinterface. map structure is easier to deal with thant two vectors.
@@ -263,13 +259,13 @@ class FMTlpmodel : public FMTmodel, public FMTlpsolver
 		this function will try to use the best solver parameters for a Type III Forest planning model.
 		For all solvers interior point is considered the best algorith.
 		*/
-		bool initialsolve() final;
+		bool initialsolve();
 		// DocString: FMTlpmodel::setsolution
 		/**
 		If the user wants to set a solution for a given period for warmstarting the model or prepare to
 		bound the model to that solution.
 		*/
-		bool setsolution(int period, const Core::FMTschedule& schedule, double tolerance = FMT_DBL_TOLERANCE);
+		bool setsolution(int period,const Core::FMTschedule& schedule, double tolerance = FMT_DBL_TOLERANCE);
 		// DocString: FMTlpmodel::boundsolution
 		/**
 		This function bounds the primal variables to the primal solution present within the matrix for
@@ -414,7 +410,7 @@ class FMTlpmodel : public FMTmodel, public FMTlpsolver
 		By default call solverinterface->resolve() when some changes are done to the model.
 		The user dont necessery need the call initialsolve every time the matrix has changed a call to resolve maybe enought.
 		*/
-		bool resolve() final;
+		bool resolve();
 		// DocString: FMTlpmodel::operator=
 		/**
 		Copy assignment of FMTlpmodel
@@ -452,6 +448,11 @@ class FMTlpmodel : public FMTmodel, public FMTlpsolver
 		The returned model wont be solved nor builded.
 		*/
 		FMTlpmodel getlocalmodel(FMTmodel localmodel = FMTmodel(),int period = 0) const;
+		// DocString: FMTlpmodel::getsolverptr()
+		/**
+		Get a pointer to the solver behind the model.
+		*/
+		FMTlpsolver* getsolverptr();
 
 	};
 

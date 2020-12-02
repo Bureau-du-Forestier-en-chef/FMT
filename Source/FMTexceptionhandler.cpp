@@ -511,6 +511,7 @@ void FMTexceptionhandler::printexceptions(std::string text,
 	FMTexc lexception = FMTexc::FMTfunctionfailed;
 	const std::exception_ptr expointer = std::current_exception();
 	const FMTexception newexception = this->raise(lexception, text, method, line, fil, lsection, false);
+	_logger->setstreamflush(true);
 	if (expointer)
 		{
 		int nestedlevel = 0;

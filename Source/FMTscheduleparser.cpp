@@ -36,6 +36,13 @@ namespace Parser {
 		}
 		return value;
 	}
+
+	
+
+	
+
+
+
 	FMTscheduleparser& FMTscheduleparser::operator = (const FMTscheduleparser& rhs)
 	{
 		if (this != &rhs)
@@ -44,7 +51,8 @@ namespace Parser {
 		}
 		return *this;
 	}
-	std::vector<Core::FMTschedule> FMTscheduleparser::read(const std::vector<Core::FMTtheme>& themes, const std::vector<Core::FMTaction>& actions, const std::string& location, double tolerance)
+	std::vector<Core::FMTschedule> FMTscheduleparser::read(const std::vector<Core::FMTtheme>& themes,
+		const std::vector<Core::FMTaction>& actions, const std::string& location, double tolerance)
 	{
 		std::vector<Core::FMTschedule>schedules;
 		try {

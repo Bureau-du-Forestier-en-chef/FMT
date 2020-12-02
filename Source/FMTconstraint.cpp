@@ -719,7 +719,7 @@ namespace Core
 						std::vector<Core::FMTaction>::const_iterator cit = std::find_if(actions.begin(), actions.end(), Core::FMTactioncomparator(actionname));
 						if (cit != actions.end())
 						{
-							const int distance = static_cast<size_t>(std::distance(actions.cbegin(), cit));
+							const int distance = static_cast<int>(std::distance(actions.cbegin(), cit));
 							ids[distance] = true;
 						}
 					}
