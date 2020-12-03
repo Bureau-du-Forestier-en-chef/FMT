@@ -163,21 +163,33 @@ void FMTyieldparser::checkpreexisting(const std::vector<std::string>& preexists)
 double FMTyieldparser::getnumwithproportion(const std::string& value,const Core::FMTconstants& constants,
 	const std::vector<double>& proportions, const int& location)
 	{
-	double factor = 1;
-	if (!proportions.empty())
+	try {
+		double factor = 1;
+		if (!proportions.empty())
 		{
-		factor = proportions.at(std::min(static_cast<int>(proportions.size()) - 1, location));
+			factor = proportions.at(std::min(static_cast<int>(proportions.size()) - 1, location));
 		}
-	return getnum<double>(value, constants)*factor;
+		return getnum<double>(value, constants)*factor;
+	}
+	catch (...)
+	{
+		_exhandler->raisefromcatch("", "FMTyieldparser::getnumwithproportion", __LINE__, __FILE__, _section);
+	}
+	return 0;
 	}
 
 bool FMTyieldparser::isfunction(const std::string& strfunction) const
 	{
-	const std::vector<std::string>cplxf = {"EXP","LN"};
-	if (std::find(cplxf.begin(), cplxf.end(), strfunction)!= cplxf.end())
+	try {
+		const std::vector<std::string>cplxf = { "EXP","LN" };
+		if (std::find(cplxf.begin(), cplxf.end(), strfunction) != cplxf.end())
 		{
-		return true;
+			return true;
 		}
+	}catch (...)
+	{
+		_exhandler->raisefromcatch("", "FMTyieldparser::isfunction", __LINE__, __FILE__, _section);
+	}
 	return false;
 	}
 
