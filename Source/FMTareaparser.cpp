@@ -17,28 +17,43 @@ namespace Parser{
 	std::vector<OGRPolygon*> FMTareaparser::getunion(const std::vector<OGRMultiPolygon>& multipartpolygons) const
 		{
 		std::vector<OGRPolygon*>mergedpolygons;
-		for (const OGRMultiPolygon& polygons : multipartpolygons)
+		try {
+			for (const OGRMultiPolygon& polygons : multipartpolygons)
 			{
-			OGRGeometry* geometry = polygons.UnionCascaded();
-			OGRPolygon* polygon = reinterpret_cast<OGRPolygon*>(geometry);
-			mergedpolygons.push_back(polygon);
+				OGRGeometry* geometry = polygons.UnionCascaded();
+				OGRPolygon* polygon = reinterpret_cast<OGRPolygon*>(geometry);
+				mergedpolygons.push_back(polygon);
 			}
+		}
+		catch (...)
+		{
+			_exhandler->raisefromcatch(
+				"", "FMTareaparser::getunion", __LINE__, __FILE__, _section);
+		}
 		return mergedpolygons;
 		}
 
 	void FMTareaparser::destroypolygons(std::vector<OGRPolygon*>& polygonstodestroy) const
 		{
+		try{
 		for (OGRPolygon* polygon : polygonstodestroy)
 			{
 			OGRGeometryFactory::destroyGeometry(polygon);
 			}
 		polygonstodestroy.clear();
 		}
+		catch (...)
+		{
+			_exhandler->raisefromcatch(
+				"", "FMTareaparser::destroypolygons", __LINE__, __FILE__, _section);
+		}
+		}
 
     bool FMTareaparser::writesasolution(const std::string location, const Spatial::FMTsasolution& solution,
                                         const std::vector<Core::FMTtheme>& themes, const std::vector<Core::FMTaction>& actions,
                                         const bool& writeevents, int periodstart, int periodstop) const
     {
+		try{
         const Spatial::FMTeventcontainer& events = solution.getevents();
         if (periodstart==-1)
         {
@@ -103,6 +118,12 @@ namespace Parser{
                 }
             }
         }
+		}
+		catch (...)
+		{
+			_exhandler->raisefromcatch(
+				"", "FMTareaparser::writesasolution", __LINE__, __FILE__, _section);
+		}
         return true;
     }
 

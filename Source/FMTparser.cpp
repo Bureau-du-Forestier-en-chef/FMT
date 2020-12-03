@@ -16,36 +16,43 @@ namespace Parser
 
 Core::FMTsection FMTparser::from_extension(const std::string& ext) const
     {
-	const std::array<std::string, 21>baseextensions = { ".run",".lan",".are",".act",".trn",".yld",".out",".opt",".con",".seq",".lif",
-							"._lan","._are","._act","._trn","._yld","._out","._opt","._con","._seq","._lif" };
-	const std::string lowercase = boost::to_lower_copy(ext);
-	const std::array<std::string, 21>::const_iterator it = std::find(baseextensions.begin(), baseextensions.end(), lowercase);
-    const size_t id = (it - baseextensions.begin());
-    switch (id)
-        {
-            case 0 :return Core::FMTsection::Control;
-            case 1 :return Core::FMTsection::Landscape;
-            case 2 :return Core::FMTsection::Area;
-            case 3 :return Core::FMTsection::Action;
-            case 4 :return Core::FMTsection::Transition;
-            case 5 :return Core::FMTsection::Yield;
-            case 6 :return Core::FMTsection::Outputs;
-            case 7 :return Core::FMTsection::Optimize;
-            case 8 :return Core::FMTsection::Constants;
-            case 9 :return Core::FMTsection::Schedule;
-			case 10:return Core::FMTsection::Lifespan;
-			case 11:return Core::FMTsection::Landscape;
-			case 12:return Core::FMTsection::Area;
-			case 13:return Core::FMTsection::Action;
-			case 14:return Core::FMTsection::Transition;
-			case 15:return Core::FMTsection::Yield;
-			case 16:return Core::FMTsection::Outputs;
-			case 17:return Core::FMTsection::Optimize;
-			case 18:return Core::FMTsection::Constants;
-			case 19:return Core::FMTsection::Schedule;
-			case 20:return Core::FMTsection::Lifespan;
-            default:      return Core::FMTsection::Empty;
-        }
+	try {
+		const std::array<std::string, 21>baseextensions = { ".run",".lan",".are",".act",".trn",".yld",".out",".opt",".con",".seq",".lif",
+								"._lan","._are","._act","._trn","._yld","._out","._opt","._con","._seq","._lif" };
+		const std::string lowercase = boost::to_lower_copy(ext);
+		const std::array<std::string, 21>::const_iterator it = std::find(baseextensions.begin(), baseextensions.end(), lowercase);
+		const size_t id = (it - baseextensions.begin());
+		switch (id)
+		{
+		case 0:return Core::FMTsection::Control;
+		case 1:return Core::FMTsection::Landscape;
+		case 2:return Core::FMTsection::Area;
+		case 3:return Core::FMTsection::Action;
+		case 4:return Core::FMTsection::Transition;
+		case 5:return Core::FMTsection::Yield;
+		case 6:return Core::FMTsection::Outputs;
+		case 7:return Core::FMTsection::Optimize;
+		case 8:return Core::FMTsection::Constants;
+		case 9:return Core::FMTsection::Schedule;
+		case 10:return Core::FMTsection::Lifespan;
+		case 11:return Core::FMTsection::Landscape;
+		case 12:return Core::FMTsection::Area;
+		case 13:return Core::FMTsection::Action;
+		case 14:return Core::FMTsection::Transition;
+		case 15:return Core::FMTsection::Yield;
+		case 16:return Core::FMTsection::Outputs;
+		case 17:return Core::FMTsection::Optimize;
+		case 18:return Core::FMTsection::Constants;
+		case 19:return Core::FMTsection::Schedule;
+		case 20:return Core::FMTsection::Lifespan;
+		default:      return Core::FMTsection::Empty;
+		}
+	}
+	catch (...)
+	{
+		_exhandler->raisefromcatch("", "FMTparser::from_extension", __LINE__, __FILE__);
+	}
+	return Core::FMTsection::Empty;
     }
 
 FMTparser::FMTparser() : Core::FMTobject(),
@@ -137,6 +144,7 @@ FMTparser& FMTparser::operator = (const FMTparser& rhs)
 GDALDataset* FMTparser::getdataset(const std::string& location) const
     {
 	GDALDataset* data = nullptr;
+	try{
 	if (isvalidfile(location))
 		{
 		data = (GDALDataset*)GDALOpen(location.c_str(), GA_ReadOnly);
@@ -146,17 +154,29 @@ GDALDataset* FMTparser::getdataset(const std::string& location) const
 				data->GetDescription(),"FMTparser::getdataset", __LINE__, __FILE__,_section);
 			}
 		}
+	}
+	catch (...)
+	{
+		_exhandler->raisefromcatch("", "FMTparser::getdataset", __LINE__, __FILE__);
+	}
     return data;
     }
 
 GDALRasterBand* FMTparser::getband(GDALDataset* dataset,int bandid) const
     {
-    GDALRasterBand* band = dataset->GetRasterBand(bandid);
+	GDALRasterBand* band;
+	try{
+	band = dataset->GetRasterBand(bandid);
     if (band == nullptr)
         {
         _exhandler->raise(Exception::FMTexc::FMTinvalidband,
 			dataset->GetDescription(),"FMTparser::getband", __LINE__, __FILE__, _section);
         }
+	}
+	catch (...)
+	{
+		_exhandler->raisefromcatch("", "FMTparser::getband", __LINE__, __FILE__);
+	}
     return band;
     }
 
@@ -206,12 +226,18 @@ std::vector<std::string>FMTparser::getcat(GDALDataset* dataset,int bandid) const
 
 GDALRasterBand* FMTparser::getoverview(GDALRasterBand* band,int view) const
     {
-    GDALRasterBand* overview = band->GetOverview(view);
+	GDALRasterBand* overview;
+	try{
+	overview = band->GetOverview(view);
     if (overview == nullptr)
         {
         _exhandler->raise(Exception::FMTexc::FMTinvalidoverview,band->GetDataset()->GetDescription(),
 			"FMTparser::getoverview",__LINE__, __FILE__, _section);
         }
+	}catch (...)
+		{
+		_exhandler->raisefromcatch("", "FMTparser::getoverview", __LINE__, __FILE__);
+		}
     return overview;
     }
 
@@ -237,12 +263,19 @@ GDALDataset* FMTparser::getvectordataset(const std::string& location) const
 
 OGRLayer* FMTparser::getlayer(GDALDataset* dataset,int id) const
     {
-    OGRLayer * layer =dataset->GetLayer(id);
+	OGRLayer * layer;
+	try{
+	layer = dataset->GetLayer(id);
     if( layer == nullptr )
         {
         _exhandler->raise(Exception::FMTexc::FMTinvalidlayer,dataset->GetDescription(),
 			"FMTparser::getlayer",__LINE__, __FILE__, _section);
         }
+	}
+	catch (...)
+	{
+		_exhandler->raisefromcatch("", "FMTparser::getlayer", __LINE__, __FILE__);
+	}
     return layer;
     }
 
@@ -387,6 +420,7 @@ std::string FMTparser::setspec(Core::FMTsection section, Core::FMTkwor key,const
 
 bool FMTparser::isact(Core::FMTsection section,const std::vector<Core::FMTaction>& actions, std::string action) const
     {
+	try{
     if (std::find_if(actions.begin(),actions.end(), Core::FMTactioncomparator(action,true))==actions.end())
         {
         _exhandler->raise(Exception::FMTexc::FMTundefined_action,action+" at line " + std::to_string(_line),"FMTparser::isact", __LINE__, __FILE__,section);
@@ -394,18 +428,29 @@ bool FMTparser::isact(Core::FMTsection section,const std::vector<Core::FMTaction
         }else{
         return true;
         }
+	}
+	catch (...)
+	{
+		_exhandler->raisefromcatch("", "FMTparser::isact", __LINE__, __FILE__);
+	}
+	return false;
     }
 
 
 
 bool FMTparser::isyld(const Core::FMTyields& ylds,const std::string& value, Core::FMTsection section) const
     {
+	try{
     if (ylds.isyld(value))
         {
         return true;
         }
      _exhandler->raise(Exception::FMTexc::FMTinvalid_yield,value+" at line " + std::to_string(_line),
 		 "FMTparser::isyld",__LINE__, __FILE__,section);
+	}catch (...)
+		{
+		_exhandler->raisefromcatch("", "FMTparser::isyld", __LINE__, __FILE__);
+		}
      return false;
     }
 
@@ -414,6 +459,7 @@ bool FMTparser::isyld(const Core::FMTyields& ylds,const std::string& value, Core
 
 bool FMTparser::tryopening(const std::ifstream& stream, const std::string& location) const
         {
+		try{
         _location = location;
 		std::string extension = boost::filesystem::extension(location);
         transform(extension.begin(), extension.end(), extension.begin(), ::tolower);
@@ -424,11 +470,17 @@ bool FMTparser::tryopening(const std::ifstream& stream, const std::string& locat
 				"FMTparser::tryopening", __LINE__, __FILE__, _section);
             return false;
             }
+		}
+		catch (...)
+		{
+			_exhandler->raisefromcatch("", "FMTparser::tryopening", __LINE__, __FILE__);
+		}
         return true;
         }
 
 bool FMTparser::tryopening(const std::ofstream& stream, const std::string& location) const
         {
+		try{
         _location = location;
         if (!stream.is_open())
             {
@@ -436,19 +488,28 @@ bool FMTparser::tryopening(const std::ofstream& stream, const std::string& locat
 				"FMTparser::tryopening", __LINE__, __FILE__, _section);
             return false;
             }
+		}catch (...)
+			{
+			_exhandler->raisefromcatch("", "FMTparser::tryopening", __LINE__, __FILE__);
+			}
         return true;
         }
 
 bool FMTparser::isvalidfile(const std::string& location) const
 	{
-	boost::filesystem::path pathObj(location);
-	std::string extension = boost::filesystem::extension(location);
-	transform(extension.begin(), extension.end(), extension.begin(), ::tolower);
-	if (!boost::filesystem::exists(pathObj) || !boost::filesystem::is_regular_file(pathObj))
+	try {
+		boost::filesystem::path pathObj(location);
+		std::string extension = boost::filesystem::extension(location);
+		transform(extension.begin(), extension.end(), extension.begin(), ::tolower);
+		if (!boost::filesystem::exists(pathObj) || !boost::filesystem::is_regular_file(pathObj))
 		{
-		_exhandler->raise(Exception::FMTexc::FMTinvalid_path, location,
-			"FMTparser::isvalidfile", __LINE__, __FILE__,_section);
-		return false;
+			_exhandler->raise(Exception::FMTexc::FMTinvalid_path, location,
+				"FMTparser::isvalidfile", __LINE__, __FILE__, _section);
+			return false;
+		}
+		}catch (...)
+		{
+			_exhandler->raisefromcatch("", "FMTparser::isvalidfile", __LINE__, __FILE__);
 		}
 	return true;
 	}
@@ -464,6 +525,7 @@ bool FMTparser::isnum(std::string value) const
 std::vector<std::string>FMTparser::regexloop(std::regex& cutregex, std::string& str) const
         {
 		std::vector<std::string>result;
+		try{
         auto els_begin = std::sregex_iterator(str.begin(), str.end(), cutregex);
         auto els_end = std::sregex_iterator();
         for (std::sregex_iterator i = els_begin; i != els_end; ++i)
@@ -472,6 +534,11 @@ std::vector<std::string>FMTparser::regexloop(std::regex& cutregex, std::string& 
 			std::string match_str = match.str();
             result.push_back(match_str);
             }
+		}
+		catch (...)
+		{
+			_exhandler->raisefromcatch("", "FMTparser::regexloop", __LINE__, __FILE__);
+		}
         return result;
         }
     bool FMTparser::isvalid(std::string& line) const
@@ -480,22 +547,33 @@ std::vector<std::string>FMTparser::regexloop(std::regex& cutregex, std::string& 
         }
     void FMTparser::clearcomments(std::string& line)
         {
-		std::smatch kmatch;
-        if (std::regex_search(line,kmatch,rxremovecomment))
-            {
-			_comment = std::string(kmatch[2]);
-			boost::to_upper(_comment);
-			line = std::string(kmatch[1]);
+		try {
+			std::smatch kmatch;
+			if (std::regex_search(line, kmatch, rxremovecomment))
+			{
+				_comment = std::string(kmatch[2]);
+				boost::to_upper(_comment);
+				line = std::string(kmatch[1]);
 			}
+		}catch (...)
+		{
+			_exhandler->raisefromcatch("", "FMTparser::clearcomments", __LINE__, __FILE__);
+		}
         }
 	std::string FMTparser::upper(const std::string& lowercases) const
         {
 		std::locale loc;
 		std::string uppercases;
+		try{
         for (std::string::size_type i=0;i<lowercases.size(); ++i)
             {
             uppercases+=toupper(lowercases[i],loc);
             }
+		}
+		catch (...)
+		{
+			_exhandler->raisefromcatch("", "FMTparser::upper", __LINE__, __FILE__);
+		}
         return uppercases;
         }
 	std::vector<std::string>FMTparser::spliter(std::string strmask, std::regex& xspliter) const
@@ -503,6 +581,7 @@ std::vector<std::string>FMTparser::regexloop(std::regex& cutregex, std::string& 
 		std::smatch kmatch;
 		std::string value;
 		std::vector<std::string>vecmask;
+		try{
         size_t endsize;
         while(!strmask.empty())
             {
@@ -515,12 +594,18 @@ std::vector<std::string>FMTparser::regexloop(std::regex& cutregex, std::string& 
             endsize = (std::string(kmatch[0]).size());
             strmask.erase(strmask.begin(),strmask.begin()+endsize);
             }
+		}
+		catch (...)
+		{
+			_exhandler->raisefromcatch("", "FMTparser::spliter", __LINE__, __FILE__);
+		}
         return vecmask;
         }
 	std::string FMTparser::getcleanline(std::ifstream& stream)
         {
         ++_line;
 		std::string newline;
+		try{
         if (safeGetline(stream, newline))
             {
 			_comment.clear();
@@ -557,11 +642,16 @@ std::vector<std::string>FMTparser::regexloop(std::regex& cutregex, std::string& 
             stream.close();
             }
         boost::trim(newline);
+		}catch (...)
+			{
+			_exhandler->raisefromcatch("", "FMTparser::getcleanline", __LINE__, __FILE__);
+			}
         return newline;
         }
 
 bool FMTparser::getforloops(std::string& line,const std::vector<Core::FMTtheme>& themes, const Core::FMTconstants& cons, std::vector<std::string>& allvalues, std::string& target)
 	{
+	try{
 	std::smatch kmatch;
 	if (std::regex_search(line, kmatch, rxfor))
 	{
@@ -624,6 +714,10 @@ bool FMTparser::getforloops(std::string& line,const std::vector<Core::FMTtheme>&
 		}
 		return true;
 	}
+	}catch (...)
+		{
+		_exhandler->raisefromcatch("", "FMTparser::getforloops", __LINE__, __FILE__);
+		}
 	return false;
 	}
 
@@ -631,6 +725,7 @@ std::queue<std::string> FMTparser::tryinclude(const std::string& line, const std
 	{
 	std::smatch kmatch;
 	std::queue<std::string>included_lines;
+	try{
 	if (std::regex_search(line, kmatch, FMTparser::rxinclude))
 		{
 		std::string location = kmatch[3];
@@ -662,12 +757,18 @@ std::queue<std::string> FMTparser::tryinclude(const std::string& line, const std
 				}
 			}
 		}
+	}
+	catch (...)
+	{
+		_exhandler->raisefromcatch("", "FMTparser::tryinclude", __LINE__, __FILE__);
+	}
 	return included_lines;
 	}
 
 std::string FMTparser::returninclude(const std::string& line, const std::vector<Core::FMTtheme>& themes, const Core::FMTconstants& cons)
 	{
 	std::string thereturn = "";
+	try{
 	if (!_included.empty())
 		{
 		thereturn = _included.front();
@@ -684,6 +785,11 @@ std::string FMTparser::returninclude(const std::string& line, const std::vector<
 				}
 
 			}
+	}
+	catch (...)
+	{
+		_exhandler->raisefromcatch("", "FMTparser::returninclude", __LINE__, __FILE__);
+	}
 	return thereturn;
 	}
 
@@ -691,97 +797,107 @@ std::string FMTparser::getcleanlinewfor(std::ifstream& stream,const std::vector<
     {
 	std::smatch kmatch;
 	std::string line;
-	while (!_included.empty())
+	try {
+		while (!_included.empty())
 		{
-		line = _included.front();
-		_included.pop();
-		return line;
+			line = _included.front();
+			_included.pop();
+			return line;
 		}
-	if(_forvalues.empty())
+		if (_forvalues.empty())
 		{
-		std::map<std::string, std::vector<std::string>>loops_replaces;
-		std::map<std::string, std::pair<int,int>>forlocation;
-		int lineid = 0;
-		std::stack<std::string>keys;
-		std::vector<std::pair<int, std::string>>Sequence;
-		std::vector<std::string>ordered_keys;
-		do{
+			std::map<std::string, std::vector<std::string>>loops_replaces;
+			std::map<std::string, std::pair<int, int>>forlocation;
+			int lineid = 0;
+			std::stack<std::string>keys;
+			std::vector<std::pair<int, std::string>>Sequence;
+			std::vector<std::string>ordered_keys;
+			do {
 
-			line = getcleanline(stream);
-			std::vector<std::string>allvalues;
-			std::string target;
-			bool gotfor = getforloops(line, themes, cons, allvalues, target);
-			if (!gotfor && line.find("FOREACH")!= std::string::npos)
+				line = getcleanline(stream);
+				std::vector<std::string>allvalues;
+				std::string target;
+				bool gotfor = getforloops(line, themes, cons, allvalues, target);
+				if (!gotfor && line.find("FOREACH") != std::string::npos)
 				{
 
-				do {
-					line += getcleanline(stream);
-				} while (line.find(")") == std::string::npos);
-				gotfor = getforloops(line, themes, cons, allvalues, target);
+					do {
+						line += getcleanline(stream);
+					} while (line.find(")") == std::string::npos);
+					gotfor = getforloops(line, themes, cons, allvalues, target);
 				}
-			if (gotfor)
+				if (gotfor)
 				{
-				loops_replaces[target] = allvalues;
-				forlocation[target] = std::pair<int,int>(lineid,0);
-				keys.push(target);
-				}else if(keys.empty())
-					{
-					return returninclude(line,themes,cons);
-					}else if(std::regex_search(line,kmatch,FMTparser::rxend))
-							{
-							std::string endfor = keys.top();
-							keys.pop();
-							forlocation[endfor].second = lineid;
-							ordered_keys.push_back(endfor);
-					}else if (isvalid(line)){
-					Sequence.push_back(std::pair<int, std::string>(lineid,line));
+					loops_replaces[target] = allvalues;
+					forlocation[target] = std::pair<int, int>(lineid, 0);
+					keys.push(target);
+				}
+				else if (keys.empty())
+				{
+					return returninclude(line, themes, cons);
+				}
+				else if (std::regex_search(line, kmatch, FMTparser::rxend))
+				{
+					std::string endfor = keys.top();
+					keys.pop();
+					forlocation[endfor].second = lineid;
+					ordered_keys.push_back(endfor);
+				}
+				else if (isvalid(line)) {
+					Sequence.push_back(std::pair<int, std::string>(lineid, line));
 					++lineid;
-					}
-		} while (!keys.empty());
-		for (const std::string& key : ordered_keys)
+				}
+			} while (!keys.empty());
+			for (const std::string& key : ordered_keys)
 			{
-			std::vector<std::pair<int, std::string>>frontsequence;
-			std::vector<std::pair<int, std::string>>backsequence;
-			std::vector<std::pair<int, std::string>>process;
-			for (std::pair<int, std::string> tline : Sequence)
+				std::vector<std::pair<int, std::string>>frontsequence;
+				std::vector<std::pair<int, std::string>>backsequence;
+				std::vector<std::pair<int, std::string>>process;
+				for (std::pair<int, std::string> tline : Sequence)
 				{
-				if (tline.first < forlocation[key].first)
+					if (tline.first < forlocation[key].first)
 					{
-					frontsequence.push_back(tline);
-				}else if (tline.first >= forlocation[key].first && tline.first < forlocation[key].second)
+						frontsequence.push_back(tline);
+					}
+					else if (tline.first >= forlocation[key].first && tline.first < forlocation[key].second)
 					{
-					process.push_back(tline);
-					}else{
-					backsequence.push_back(tline);
+						process.push_back(tline);
+					}
+					else {
+						backsequence.push_back(tline);
 					}
 				}
-			std::vector<std::pair<int, std::string>>midsequence;
-			for (const std::string& value : loops_replaces[key])
+				std::vector<std::pair<int, std::string>>midsequence;
+				for (const std::string& value : loops_replaces[key])
 				{
-				for (std::pair<int, std::string> tline : process)
+					for (std::pair<int, std::string> tline : process)
 					{
-					midsequence.push_back(std::pair<int, std::string>(tline.first, std::regex_replace(tline.second, std::regex(key), value)));
+						midsequence.push_back(std::pair<int, std::string>(tline.first, std::regex_replace(tline.second, std::regex(key), value)));
 					}
 				}
-			Sequence.clear();
-			Sequence.insert(Sequence.end(), frontsequence.begin(), frontsequence.end());
-			Sequence.insert(Sequence.end(), midsequence.begin(), midsequence.end());
-			Sequence.insert(Sequence.end(), backsequence.begin(), backsequence.end());
+				Sequence.clear();
+				Sequence.insert(Sequence.end(), frontsequence.begin(), frontsequence.end());
+				Sequence.insert(Sequence.end(), midsequence.begin(), midsequence.end());
+				Sequence.insert(Sequence.end(), backsequence.begin(), backsequence.end());
 			}
 			for (const std::pair<int, std::string>& nline : Sequence)
-				{
+			{
 				_forvalues.push(nline.second);
-				}
 			}
-
-	 while(!_forvalues.empty())
-		{
-		line = _forvalues.front();
-		_forvalues.pop();
-		return returninclude(line, themes, cons);
 		}
 
+		while (!_forvalues.empty())
+		{
+			line = _forvalues.front();
+			_forvalues.pop();
+			return returninclude(line, themes, cons);
+		}
 	return returninclude(line, themes, cons);
+	}catch (...)
+	 {
+		 _exhandler->raisefromcatch("", "FMTparser::getcleanlinewfor", __LINE__, __FILE__);
+	 }
+	return std::string();
     }
 
 std::map<Core::FMTsection, std::string> FMTparser::getprimary(const std::string& primarylocation)
@@ -830,6 +946,7 @@ std::array<std::string, 5>FMTparser::getbaseoperators() const
 std::vector<std::string> FMTparser::sameas(const std::string& allset) const
         {
 		std::vector<std::string>all_elements;
+		try{
 		std::string separator = "_SAMEAS";
         if (allset.find(separator)!= std::string::npos)
             {
@@ -844,6 +961,11 @@ std::vector<std::string> FMTparser::sameas(const std::string& allset) const
             boost::trim(realname);
             all_elements.push_back(realname);
             }
+		}
+		catch (...)
+		{
+			_exhandler->raisefromcatch("", "FMTparser::sameas", __LINE__, __FILE__);
+		}
         return all_elements;
         }
 
@@ -889,6 +1011,7 @@ std::istream& FMTparser::safeGetline(std::istream& is, std::string& t) const
 	t.clear();
 	std::istream::sentry se(is, true);
 	std::streambuf* sb = is.rdbuf();
+	try{
 	for (;;) {
 		int c = sb->sbumpc();
 		switch (c) {
@@ -906,7 +1029,11 @@ std::istream& FMTparser::safeGetline(std::istream& is, std::string& t) const
 			t += (char)c;
 		}
 	}
-
+	}catch (...)
+	{
+		_exhandler->raisefromcatch("", "FMTparser::safeGetline", __LINE__, __FILE__);
+	}
+	return is;
 	}
 
 }

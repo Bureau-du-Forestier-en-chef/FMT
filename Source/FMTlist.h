@@ -74,8 +74,14 @@ namespace Core
 				}
 			}
 		BOOST_SERIALIZATION_SPLIT_MEMBER()
+		// DocString: FMTlist::data
+		///The container holding the data and the masks of the FMTlist.
 		std::vector<std::pair<FMTmask, T>>data;
+		// DocString: FMTlist::filter
+		///The mask filter used by the FMTlist to shrink the original FMTmask.
 		FMTmaskfilter filter;
+		// DocString: FMTlist::fastpass
+		///unordered_map used to do caching of mask subsets of the FMTlist.
 		mutable boost::unordered_map<FMTmask, std::vector<int>>fastpass;
 	protected:
 		// DocString: FMTlist::presolvelist
@@ -118,6 +124,10 @@ namespace Core
 				}
 			}
 	public:
+		// DocString: FMTlist::getunion
+		/**
+		Get a global union mask from all the masks of the FMTlist.
+		*/
 		FMTmask getunion(const std::vector<FMTtheme>& themes) const
 			{
 				Core::FMTmask testedmask(std::string(this->begin()->first), themes);
@@ -128,11 +138,19 @@ namespace Core
 				}
 				return testedmask;
 			}
+		// DocString: FMTlist()
+		/**
+		Default constructor for FMTlist.
+		*/
 		FMTlist() :
 			FMTobject(),
 			data(),
 			filter(),
 			fastpass(){};
+		// DocString: FMTlist(const FMTlist&)
+		/**
+		Default copy constructor for FMTlist.
+		*/
 		FMTlist(const FMTlist<T>& rhs) :
 			FMTobject(rhs),
 			data(rhs.data),
@@ -141,6 +159,10 @@ namespace Core
 		{
 
 		}
+		// DocString: FMTlist::operator=
+		/**
+		Default copy assignment for FMTlist.
+		*/
 		FMTlist& operator = (const FMTlist<T>& rhs)
 		{
 			if (this != &rhs)
@@ -152,25 +174,48 @@ namespace Core
 			}
 			return *this;
 		}
-
+		// DocString: FMTlist::operator==
+		/**
+		Comparison operator of FMTlist.
+		*/
 		bool operator == (const FMTlist<T>& rhs) const
 			{
 			return (data == rhs.data);
 			}
-
+		// DocString: ~FMTlist()
+		/**
+		Default destructor for FMTlist.
+		*/
 		~FMTlist() = default;
+		// DocString: FMTlist::empty
+		/**
+		Returns true if the FMTlist is empty else false.
+		*/
 		bool empty() const
 			{
 			return data.empty();
 			}
+		// DocString: FMTlist::canshrink
+		/**
+		Returns true if the FMTlist can be shrink else false.
+		*/
 		bool canshrink() const
 			{
 			return filter.empty();
 			}
+		// DocString: FMTlist::size
+		/**
+		Returns the size of the FMTlist
+		*/
 		size_t size() const
 		{
 			return data.size();
 		}
+		// DocString: FMTlist::findsets
+		/**
+		Here is the main function used on FMTlist. Giving a global (mask) it will returns elements that are a subset of the global (mask), in the same order
+		present in the FMTlist. It will also use caching to try to get elements faster next time it's asked by the user.
+		*/
 		std::vector<const T*> findsets(const FMTmask& mask) const
 		{
 			std::vector<const T*>allhits;
@@ -202,12 +247,18 @@ namespace Core
 				}
 			return allhits;
 		}
-
+		// DocString: FMTlist::filtermask
+		/**
+		Function used to shrink the FMTmask (basemask) using the global filter of the FMTlist.
+		*/
 		inline FMTmask filtermask(const FMTmask& basemask) const
 			{
 			return filter.filter(basemask);
 			}
-
+		// DocString: FMTlist::shrink
+		/**
+		Reduce the size of the FMTmask used in the FMTlist for less complexity.
+		*/
 		void shrink()
 		{
 				std::vector<std::pair<FMTmask, T>>newdata;
@@ -218,7 +269,10 @@ namespace Core
 				}
 				data = newdata;
 		}
-
+		// DocString: FMTlist::unshrink
+		/**
+		Bring back the complexity of each FMTmask into the FMTlist.
+		*/
 		void unshrink(const std::vector<FMTtheme>& themes)
 		{
 			std::vector<std::pair<FMTmask, T>>newdata;
@@ -231,13 +285,18 @@ namespace Core
 			data = newdata;
 
 		}
-
-		
-
+		// DocString: FMTlist::push_back
+		/**
+		Push back an element at the end of the FMTlist.
+		*/
 		void push_back(const FMTmask& mask, const T& value)
 		{
 			data.emplace_back(mask,value);
 		}
+		// DocString: FMTlist::update
+		/**
+		Update the FMTlist filter and shrink it if any changes appened in the list.
+		*/
 		virtual void update()
 			{
 				if (canshrink())
@@ -245,12 +304,18 @@ namespace Core
 					shrink();
 					}
 			}
-		
+		// DocString: FMTlist::push_back
+		/**
+		Push back an element at the end of the FMTlist.
+		*/
 		void push_back(const std::pair<FMTmask,T>& value)
 			{
 			data.emplace_back(value);
 			}
-
+		// DocString: FMTlist::push_back
+		/**
+		Push back a whole FMTlist at the end of this FMTlist.
+		*/
 		void push_back(const FMTlist<T>& rhs)
 		{
 			if (this->canshrink() && rhs.canshrink())
@@ -262,56 +327,99 @@ namespace Core
 				this->shrink();
 			}
 		}
-
+		// DocString: FMTlist::push_front
+		/**
+		Push front an element at the beginning of the FMTlist.
+		*/
 		void push_front(const FMTmask& mask, const T& value)
 		{
 			data.emplace(data.begin(), mask, value);
 		}
+		// DocString: FMTlist::push_front
+		/**
+		Push front an element at the beginning of the FMTlist.
+		*/
 		void push_front(const std::pair<FMTmask, T>& value)
 		{
 			data.emplace(data.begin(), value);
 		}
-
+		// DocString: FMTlist::pop_back
+		/**
+		Pop back an element at the end of the FMTlist.
+		*/
 		void pop_back()
             {
 			data.pop_back();
             }
+		// DocString: FMTlist::erase
+		/**
+		Erase a specific element in the FMTlist.
+		*/
 		void erase(const size_t& location)
             {
 			data.erase(data.begin() + location);
             }
-
+		// DocString: FMTlist::insert
+		/**
+		Insert an element in the FMTlist at a specific location.
+		*/
         void insert(const size_t& location,const FMTmask& mask, const T& value)
             {
 			data.insert(data.begin() + location,std::pair<FMTmask,T>(mask,value));
             }
-
+		// DocString: FMTlist::insert
+		/**
+		Insert an element in the FMTlist at a specific location.
+		*/
 		void insert(const size_t& location,const std::pair<FMTmask, T>& value)
 		{
 			data.insert(data.begin() + location, value);
 		}
+		// DocString: FMTlist::value_type
+		///Value typedef of the FMTlist
 		typedef typename std::vector<std::pair<FMTmask, T>>::value_type value_type;
+		// DocString: FMTlist::iterator
+		///Iterator typedef of the FMTlist
 		typedef typename std::vector<std::pair<FMTmask, T>>::iterator iterator;
+		// DocString: FMTlist::const_iterator
+		///Const_Iterator typedef of the FMTlist
 		typedef typename std::vector<std::pair<FMTmask, T>>::const_iterator const_iterator;
+		// DocString: FMTlist::append
+		/**
+		Append an element at the end of the FMTlist.
+		*/
 		void append(FMTlist<T>::value_type element)
 			{
 			data.push_back(filtermask(element->first), element->second);
 			}
+		// DocString: FMTlist::begin
+		/**
+		Returns an iterator at the beginning of the FMTlist.
+		*/
 		iterator begin()
 			{
 			return data.begin();
 			}
-
+		// DocString: FMTlist::begin
+		/**
+		Returns an const iterator at the beginning of the FMTlist.
+		*/
 		const_iterator begin() const
 			{
 			return data.begin();
 			}
-
+		// DocString: FMTlist::end
+		/**
+		Returns an iterator at the end of the FMTlist.
+		*/
 		iterator  end()
 			{
 			return data.end();
 			}
-
+		// DocString: FMTlist::end
+		/**
+		Returns an const iterator at the end of the FMTlist.
+		*/
 		const_iterator end() const
 			{
 			return data.end();
