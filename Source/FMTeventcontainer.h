@@ -176,16 +176,20 @@ class FMTeventcontainer
 		*/
 		std::vector<const_iterator> getevents(const int& period, const int& action_id,
 			const FMTcoordinate& minimalcoordinate, const FMTcoordinate& maximalcoordinate) const;
-         // DocString: FMTeventcontainer::getevents(const int&, const std::vector<int>&)
+        // DocString: FMTeventcontainer::getevents(const int&, const std::vector<int>&)
         /*
         Get events at specified period with multiple actions id
         */
         std::vector<const_iterator> getevents(const int& period, const std::vector<int>& actions_id) const;
 		// DocString: FMTeventcontainer::getevents(const int&, const std::vector<bool>&)
-		  /*
-		  Get events at specified period is action is used
-		   */
+		/*
+		 Get events at specified period is action is used
+		 */
 		std::vector<const_iterator> getevents(const int& period, const std::vector<bool>& actions_used) const;
+		// DocString: FMTeventcontainer::getevents(const int&, const std::vector<bool>&,const FMTcoordinate&, const FMTcoordinate&)
+		/*
+		Get events at specified period for multiple (actions_used), between a minimal coordinate and a maximal coordinate.
+		*/
 		std::vector<const_iterator> getevents(const int& period, const std::vector<bool>& actions_used,
 			const FMTcoordinate& minimalcoordinate, const FMTcoordinate& maximalcoordinate) const;
         // DocString: FMTeventcontainer::getevents(const int&, const FMTcoordinate&)

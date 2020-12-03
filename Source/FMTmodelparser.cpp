@@ -69,10 +69,16 @@ Models::FMTmodel FMTmodelparser::read(const std::string& con,const std::string& 
                       const std::string& lif,const std::string& are,const std::string& yld,
                       const std::string& act,const std::string& trn,const std::string& out, std::string opt)
     {
+	try {
 	std::map<std::string, std::vector<int>> commons;
 	std::vector<Models::FMTmodel>models;
 	return referenceread(commons, models,
 		con, lan, lif, are, yld, act, trn, out, opt);
+	}catch (...)
+		{
+		_exhandler->raisefromcatch("", "FMTmodelparser::read", __LINE__, __FILE__, _section);
+		}
+	return Models::FMTmodel();
     }
 
 std::vector<Core::FMTconstraint>FMTmodelparser::getconstraintsfromstring(std::string constraintstr, const Models::FMTmodel& model, Core::FMTconstants constants)
