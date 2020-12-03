@@ -75,7 +75,7 @@ FMTactionparser& FMTactionparser::operator = (const FMTactionparser& rhs)
 			}
 		}catch (...)
 			{
-			_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
+			_exhandler->raisefromcatch(
 				"for "+line,"FMTactionparser::getbounds", __LINE__, __FILE__, _section);
 			}
         return mask;
@@ -94,7 +94,7 @@ FMTactionparser& FMTactionparser::operator = (const FMTactionparser& rhs)
 				}
 		}catch (...)
 			{
-			_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
+			_exhandler->raisefromcatch(
 				"","FMTactionparser::valagg", __LINE__, __FILE__, _section);
 			}
         return aggs;
@@ -261,7 +261,7 @@ FMTactionparser& FMTactionparser::operator = (const FMTactionparser& rhs)
 			//std::sort(cleanedactions.begin(), cleanedactions.end());
 		}catch (...)
 			{
-			_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
+			_exhandler->raisefromcatch(
 				"","FMTactionparser::read", __LINE__, __FILE__, _section);
 			}
         return cleanedactions;
@@ -301,7 +301,7 @@ FMTactionparser& FMTactionparser::operator = (const FMTactionparser& rhs)
 			}
 		}catch (...)
 			{
-			_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
+			_exhandler->raisefromcatch(
 				"","FMTactionparser::write", __LINE__, __FILE__, _section);
 			}
         }
@@ -317,7 +317,7 @@ FMTactionparser& FMTactionparser::operator = (const FMTactionparser& rhs)
 				}
 		}catch (...)
 			{
-			_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
+			_exhandler->raisefromcatch(
 				"","FMTactionparser::sameactionas", __LINE__, __FILE__, _section);
 			}
         return all_pointers;
