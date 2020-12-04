@@ -228,7 +228,7 @@ namespace Heuristics
 		try {
 			Core::FMToutputnode specifictarget(target);
 			const std::vector<Core::FMTaction>modelactions = model.getactions();
-			const std::unordered_map<size_t, Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor> basedescriptors = maingraph.getperiodverticies(maingraph.getfirstactiveperiod());
+			//const std::unordered_map<size_t, Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor> basedescriptors = maingraph.getperiodverticies(maingraph.getfirstactiveperiod());
 			Core::FMToutputnode areatarget(specifictarget);
 			Core::FMTmask areamask = areatarget.source.getmask();
 			for (const Core::FMTtheme& theme : model.getthemes())
