@@ -15,7 +15,8 @@ namespace Parser
 		rxobjectives("^(_MAXMIN|_MINMAX|_MAX|_MIN|_GOAL)([\\s\\t]*)(.+)([\\s\\t])((([\\d]*|#.+)(\\.\\.)(#.+|_LENGTH|[\\d]*))|(#.+|[\\d]*))", std::regex_constants::ECMAScript | std::regex_constants::icase),
 		rxexclude("^(\\*EXCLUDE)([\\s\\t]*)([^\\s^\\t]*)([\\s\\t]*)((([\\d]*|#.+)(\\.\\.)(#.+|_LENGTH|[\\d]*))|(#.+|[\\d]*))", std::regex_constants::ECMAScript | std::regex_constants::icase),
 		//rxconstraints("^(_EVEN|_NDY|_SEQ)([\\s\\t]*)(\\()((([^,^\\)]*)(,)([\\d\\.]*%|[\\d\\.]*)(,)([\\d\\.]*%|[\\d\\.]*))|(([^,^\\)]*)(,)([\\d\\.]*%|[\\d\\.]*))|([^\\)^,]*))(\\)*)([\\s\\t]*)(.+)", std::regex_constants::ECMAScript | std::regex_constants::icase),
-		rxconstraints("^(_EVEN|_NDY|_SEQ)([\\s\\t]*)(\\()((([^,]*)(,)([\\d\\.]*%|[\\d\\.]*)(,)([\\d\\.]*%|[\\d\\.]*))|(([^,]*)(,)([\\d\\.]*%|[\\d\\.]*))|([^,]*))(\\))([\\s\\t]*)(.+)", std::regex_constants::ECMAScript | std::regex_constants::icase),
+		//rxconstraints("^(_EVEN|_NDY|_SEQ)([\\s\\t]*)(\\()((([^,]*)(,)([\\d\\.]*%|[\\d\\.]*)(,)([\\d\\.]*%|[\\d\\.]*))|(([^,]*)(,)([\\d\\.]*%|[\\d\\.]*))|([^,]*))(\\))([\\s\\t]*)(.+)", std::regex_constants::ECMAScript | std::regex_constants::icase),
+		rxconstraints("^(_EVEN|_NDY|_SEQ)([\\s\\t]*)(\\()((([^,]*)(,)([\\s\\t]*)([\\d\\.]*%|[\\d\\.]*)([\\s\\t]*)(,)([\\s\\t]*)([\\d\\.]*%|[\\d\\.]*))|(([^,]*)(,)([\\s\\t]*)([\\d\\.]*%|[\\d\\.]*))|([^,]*))([\\s\\t]*)(\\))([\\s\\t]*)(.+)", std::regex_constants::ECMAScript | std::regex_constants::icase),
 		rxequations("^(.+)((((<=)|(>=))(.+))|((.+)((=))(.+)))(?<=[^,])[\\s\\t](?=\\d)(.+)"),
 		rxperiods("^([\\s\\t]*)((([\\d]*|#.+)(\\.\\.)(#.+|_LENGTH|[\\d]*)|(_LENGTH))|(#.+|[\\d]*))", std::regex_constants::ECMAScript | std::regex_constants::icase),
 		rxgoal("^(.+)(_GOAL)(\\()([^,]*)(,)([^\\)]*)(\\))", std::regex_constants::ECMAScript | std::regex_constants::icase),
@@ -358,7 +359,8 @@ namespace Parser
 				returnedconstraints.push_back(getspatialconstraint(kmatch, line, constants, actions));
 			}else if (std::regex_search(rest, kmatch, rxconstraints))
 				{
-				std::string target = std::string(kmatch[6]) + std::string(kmatch[12]) + std::string(kmatch[15]);
+				//std::string target = std::string(kmatch[6]) + std::string(kmatch[12]) + std::string(kmatch[15]);
+				std::string target = std::string(kmatch[6]) + std::string(kmatch[15]) + std::string(kmatch[19]);
 				boost::trim(target);
 				if (target.find("(") != std::string::npos && target.find(")") == std::string::npos)
 				{
@@ -386,7 +388,8 @@ namespace Parser
 				}
 				constraint.setoutput(targetout);
 				constraint.setconstrainttype(ctype);
-				std::string lower_variation = std::string(kmatch[14]) + std::string(kmatch[8]);
+				//std::string lower_variation = std::string(kmatch[14]) + std::string(kmatch[8]);
+				std::string lower_variation = std::string(kmatch[18]) + std::string(kmatch[9]);
 				double lower_var = 0;
 				double higher_var = 0;
 				if (!lower_variation.empty())
@@ -397,7 +400,8 @@ namespace Parser
 					}
 					lower_var = getnum<double>(lower_variation, constants);
 				}
-				std::string high_variation = std::string(kmatch[10]);
+				//std::string high_variation = std::string(kmatch[10]);
+				std::string high_variation = std::string(kmatch[13]);
 				if (!high_variation.empty())
 				{
 					if (high_variation.find('%') != std::string::npos)
@@ -408,7 +412,8 @@ namespace Parser
 				}
 				const std::string yld_name = "Variation";
 				constraint.addbounds(Core::FMTyldbounds(Core::FMTsection::Optimize, yld_name, higher_var, lower_var));
-				const std::string periodstring = std::string(kmatch[18]);
+				//const std::string periodstring = std::string(kmatch[18]);
+				const std::string periodstring = std::string(kmatch[23]);
 				returnedconstraints = getperiodsbounds(periodstring, constraint, constants);
 
 			}

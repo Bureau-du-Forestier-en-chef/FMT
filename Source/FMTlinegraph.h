@@ -52,7 +52,7 @@ class FMTlinegraph : public FMTgraph<FMTbasevertexproperties,FMTbaseedgeproperti
                                             const Core::FMTdevelopment& active_development,bool dontchoosegrow=false);
 		FMTgraphstats randombuildperiod(const Models::FMTmodel& model, std::queue<FMTvertex_descriptor> actives, std::default_random_engine& generator,
 									Spatial::FMTeventcontainer& events, const Spatial::FMTcoordinate& localisation,
-									std::unordered_map<size_t, std::vector<int>>* operability=nullptr,
+									boost::unordered_map<Core::FMTdevelopment, std::vector<int>>* operability=nullptr,
 									const std::vector<Spatial::FMTbindingspatialaction>* bindings = nullptr,
 									bool dontchoosegrow=false);
         FMTgraphstats clearfromperiod(const int& period,bool updatedevelopments=false);
@@ -69,7 +69,7 @@ class FMTlinegraph : public FMTgraph<FMTbasevertexproperties,FMTbaseedgeproperti
 		bool isonlygrow() const;
 		void addfromevents(const Spatial::FMTcoordinate& localisation,const Models::FMTmodel& model, Spatial::FMTeventcontainer& events) const;
 		bool ismovable(const std::vector<const Core::FMTaction*>& actions,
-			const Core::FMTyields& yields, const int& period,std::unordered_map<size_t,bool>*operability=nullptr) const;
+			const Core::FMTyields& yields, const int& period, boost::unordered_map<Core::FMTdevelopment, bool>*operability =nullptr) const;
 		bool operator == (const FMTlinegraph& rhs) const;
 		void clearnodecache();
 		

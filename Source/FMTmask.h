@@ -70,10 +70,9 @@ namespace boost {
 	template <typename Block, typename Alloc>
 	std::size_t hash_value(const boost::dynamic_bitset<Block, Alloc>& bs)
 	{
-		//return boost::hash_value(bs.m_bits);
-		std::size_t res = hash_value(bs.m_num_bits);
-		boost::hash_combine(res, bs.m_bits);
-		return res;
+	std::size_t hash = hash_value(bs.m_num_bits);
+	boost::hash_combine(hash, bs.m_bits); 
+	return hash;
 	}
 }
 #endif
@@ -284,7 +283,7 @@ class FMTmask
 		*/
 		inline size_t hash() const
 			{
-			return boost::hash_value(data.m_bits);
+			return boost::hash<boost::dynamic_bitset<>>()(data);
 			}
 		// DocString: FMTmask::getbitsstring
 		/**

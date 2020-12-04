@@ -1741,7 +1741,7 @@ Graph::FMTgraphstats FMTspatialschedule::randombuild(const Models::FMTmodel& mod
 	Graph::FMTgraphstats periodstats;
 	try {
 		periodstats = Graph::FMTgraphstats();
-		std::unordered_map<size_t, std::vector<int>>operability;
+		boost::unordered_map<Core::FMTdevelopment,std::vector<int>>operability;
 		const int period = this->mapping.begin()->second.getperiod();
 		const std::vector<FMTbindingspatialaction> bindings = getbindingactions(model, period);
 		for (std::map<FMTcoordinate, Graph::FMTlinegraph>::iterator graphit = this->mapping.begin(); graphit != this->mapping.end(); ++graphit)
@@ -1767,20 +1767,20 @@ void FMTspatialschedule::perturbgraph(const FMTcoordinate& coordinate,const int&
 		
 		std::map<Core::FMTdevelopment, std::vector<bool>>tabuoperability;
 		const std::vector<std::vector<bool>>actions = graph.getactions(model, period, tabuoperability);
-		std::unordered_map<size_t, std::vector<int>>operability;
+		boost::unordered_map<Core::FMTdevelopment, std::vector<int>>operability;
 		bool dontbuildgrowth = false;
 		if (!actions.empty())
 		{
 		for (std::map<Core::FMTdevelopment, std::vector<bool>>::const_iterator it = tabuoperability.begin(); it != tabuoperability.end(); it++)
 			{
 				int actionid = 0;
-				operability[it->first.hash()] = std::vector<int>();
+				operability[it->first] = std::vector<int>();
 				for (const Core::FMTaction& action : model.actions)
 				{
 					if ((!it->second.at(actionid)) && it->first.operable(action, model.yields))
 					{
 						//Logging::FMTlogger() << "operable to  " << std::string(action) << "\n";
-						operability[it->first.hash()].push_back(actionid);
+						operability[it->first].push_back(actionid);
 					}
 					++actionid;
 				}
@@ -1818,7 +1818,7 @@ void FMTspatialschedule::perturbgraph(const FMTcoordinate& coordinate,const int&
 
 std::vector<Spatial::FMTcoordinate>FMTspatialschedule::getmovablecoordinates(const Models::FMTmodel& model, const int& period,
 																			const std::vector<Spatial::FMTcoordinate>* statics,
-																			std::unordered_map<size_t, bool>*operability) const
+																			boost::unordered_map<Core::FMTdevelopment, bool>*operability) const
 {
 	std::vector<Spatial::FMTcoordinate>coordinates;
 	try {
@@ -2001,7 +2001,7 @@ void FMTspatialschedule::passinobject(const Core::FMTobject& rhs)
 std::vector<Spatial::FMTcoordinate>FMTspatialschedule::getstaticsmovablecoordinates(const Models::FMTmodel& model) const
 {
 	std::vector<Spatial::FMTcoordinate>coordinates;
-	std::unordered_map<size_t, bool>operability;
+	boost::unordered_map<Core::FMTdevelopment, bool>operability;
 	try {
 		std::vector<const Core::FMTaction*>actions;
 		for (const Core::FMTaction& action : model.actions)

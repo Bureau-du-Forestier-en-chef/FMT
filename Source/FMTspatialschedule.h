@@ -314,7 +314,7 @@ class FMTspatialschedule : public FMTlayer<Graph::FMTlinegraph>
 		*/
 		std::vector<Spatial::FMTcoordinate>getmovablecoordinates(const Models::FMTmodel& model,const int& period,
 																					const std::vector<Spatial::FMTcoordinate>* statics,
-																					std::unordered_map<size_t, bool>*operability = nullptr) const;
+																					boost::unordered_map<Core::FMTdevelopment, bool>*operability = nullptr) const;
 		// DocString: FMTspatialschedule::getstaticsmovablegraphs
 		/**
 		Returns a vector of coordinate that are considered movable

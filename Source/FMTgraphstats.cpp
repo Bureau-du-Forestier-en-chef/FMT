@@ -102,7 +102,7 @@ namespace Graph {
 		std::string values = "";
 		values += "Columns: " + std::to_string(cols);
 		values += " Rows: " + std::to_string(rows);
-		values += " Verticies: " + std::to_string(vertices);
+		values += " Vertices: " + std::to_string(vertices);
 		values += " Edges: " + std::to_string(edges);
 		values += " Transfer Rows: " + std::to_string(transfer_rows);
 		values += " Output Rows: " + std::to_string(output_rows);
