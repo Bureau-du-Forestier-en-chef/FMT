@@ -16,6 +16,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <boost/serialization/serialization.hpp>
 #include <boost/serialization/nvp.hpp>
 #include <boost/serialization/set.hpp>
+#include "FMTeventrelation.h"
 namespace Spatial
 {
 // DocString: FMTevent
@@ -35,20 +36,6 @@ class FMTevent
 		ar & BOOST_SERIALIZATION_NVP(period);
 		ar & BOOST_SERIALIZATION_NVP(elements);
 	}
-	// DocString: FMTevent::midposition()
-    /**
-	Get mid point of elements.
-	*/
-	inline std::set<FMTcoordinate>::const_iterator midposition() const
-		{
-		std::set<FMTcoordinate>::const_iterator it = elements.begin();
-		if (elements.size()>1)
-			{
-			const size_t midlocation = (elements.size() / 2);
-			std::advance(it, midlocation);
-			}
-		return it;
-		}
     protected:
         // DocString: FMTevent::ignition
         /**
@@ -71,6 +58,20 @@ class FMTevent
         */
         int period;
     public:
+		// DocString: FMTevent::midposition()
+		/**
+		Get mid point of elements.
+		*/
+		inline std::set<FMTcoordinate>::const_iterator midposition() const
+		{
+			std::set<FMTcoordinate>::const_iterator it = elements.begin();
+			if (elements.size() > 1)
+			{
+				const size_t midlocation = (elements.size() / 2);
+				std::advance(it, midlocation);
+			}
+			return it;
+		}
         // DocString: FMTevent::elements
         /**
         Coordinates presents in the event
@@ -120,7 +121,7 @@ class FMTevent
 		/**
 
 		*/
-		size_t getrelation(const FMTevent& rhs) const;
+		FMTeventrelation getrelation(const FMTevent& rhs) const;
         // DocString: FMTevent::operator==(const FMTevent&)
         /**
         Comparison operator equal to

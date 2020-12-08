@@ -36,7 +36,7 @@ namespace Spatial
 		std::map<int, double>periodicvalues;
 		public:
 			bool worthintersecting;
-			std::unordered_map<size_t, double>patternvalues;
+			std::unordered_map<std::string, double>patternvalues;
 			Core::FMTmask staticmask;
 			Core::FMTmask dynamicmask;
 			FMTnodecache() = default;
@@ -54,7 +54,7 @@ namespace Spatial
 		};
 	FMTnodecache* actualcache;
 	Graph::FMToutputnodecache<FMTcoordinate>* staticnodes;
-	std::unordered_map<size_t, FMTnodecache>patterncache;
+	std::unordered_map<std::string, FMTnodecache>patterncache;
 	public:
 		FMTspatialnodescache() = default;
 		~FMTspatialnodescache();

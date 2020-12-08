@@ -63,7 +63,7 @@ namespace Graph
 	{
 		try {
 			std::queue<FMTvertex_descriptor> actives = getactiveverticies();
-			developments.push_back(std::unordered_map<size_t, FMTvertex_descriptor>());
+			developments.push_back(boost::unordered_set<FMTvertexlookup<FMTvertex_descriptor>>());
 			periodstatsdiff = getstats();
 			if (actives.size() > 1)
 			{
@@ -155,7 +155,7 @@ namespace Graph
 		try {
 			for (const auto& devit : getperiodverticies(period))
 			{
-				const FMTvertex_descriptor& outv = devit.second;
+				const FMTvertex_descriptor& outv = devit.descriptor;
 				if (periodstop(outv))
 				{
 					FMTinedge_iterator inedge_iterator, inedge_end;
@@ -186,30 +186,30 @@ namespace Graph
 	const Core::FMTdevelopment& FMTlinegraph::getperiodstartdev(const int& period) const
 	{
 		try {
-			for (std::unordered_map<size_t, FMTvertex_descriptor>::const_iterator devit = developments.at(period).begin();
+			for (boost::unordered_set<FMTvertexlookup<FMTvertex_descriptor>>::const_iterator devit = developments.at(period).begin();
 				devit != developments.at(period).end(); devit++)
 			{
-				if (periodstart(devit->second))
+				if (periodstart(devit->descriptor))
 				{
-					return data[devit->second].get();
+					return getdevelopment(devit->descriptor);
 				}
 			}
 		}catch (...)
 		{
 			_exhandler->raisefromcatch("", "FMTlinegraph::getperiodstartdev", __LINE__, __FILE__);
 		}
-	return data[developments.at(period).begin()->second].get();
+	return getdevelopment(developments.at(period).begin()->descriptor);
 	}
 
 	const Core::FMTdevelopment& FMTlinegraph::getperiodstopdev(const int & period) const
 	{
 		try {
-			for (std::unordered_map<size_t, FMTvertex_descriptor>::const_iterator devit = developments.at(period).begin();
+			for (boost::unordered_set<FMTvertexlookup<FMTvertex_descriptor>>::const_iterator devit = developments.at(period).begin();
 				devit != developments.at(period).end(); devit++)
 			{
-				if (periodstop(devit->second))
+				if (periodstop(devit->descriptor))
 				{
-					return data[devit->second].get();
+					return getdevelopment(devit->descriptor);
 				}
 			}
 		}
@@ -217,7 +217,7 @@ namespace Graph
 		{
 			_exhandler->raisefromcatch("", "FMTlinegraph::getperiodstopdev", __LINE__, __FILE__);
 		}
-		return data[developments.at(period).begin()->second].get();
+		return getdevelopment(developments.at(period).begin()->descriptor);
 	}
 	
 
@@ -269,23 +269,22 @@ namespace Graph
 
     FMTgraphstats FMTlinegraph::randombuildperiod(const Models::FMTmodel& model,std::queue<FMTvertex_descriptor> actives, std::default_random_engine& generator,
                                             Spatial::FMTeventcontainer& events, const Spatial::FMTcoordinate& localisation,
-											std::unordered_map<size_t, std::vector<int>>* operability,
+											boost::unordered_map<Core::FMTdevelopment, std::vector<int>>* operability,
 											const std::vector<Spatial::FMTbindingspatialaction>* bindings,bool dontchoosegrow)
 	{
 		FMTgraphstats statsdiff(stats);
 		try {
-			developments.push_back(std::unordered_map<size_t, FMTvertex_descriptor>());
+			developments.push_back(boost::unordered_set<FMTvertexlookup<FMTvertex_descriptor>>());
 			while (!actives.empty())
 			{
 				const FMTvertex_descriptor front_vertex = actives.front();
 				actives.pop();
 				const FMTbasevertexproperties& front_properties = data[front_vertex];
 				const Core::FMTdevelopment& active_development = front_properties.get();
-				const size_t devhash = active_development.hash();
 				std::vector<int> operables;
-				if (operability != nullptr && operability->find(devhash) != operability->end())
+				if (operability != nullptr && operability->find(active_development) != operability->end())
 				{
-					operables = operability->at(devhash);
+					operables = operability->at(active_development);
 				}
 				else {
 					int action_id = 0;
@@ -299,7 +298,7 @@ namespace Graph
 					}
 					if (operability != nullptr)
 					{
-						(*operability)[devhash] = operables;
+						(*operability)[active_development] = operables;
 					}
 
 				}
@@ -335,11 +334,11 @@ namespace Graph
 			const int basesize = static_cast<int>(this->size() - 1);
 			for (int location = basesize; location >= period; --location)
 			{
-				std::vector<std::unordered_map<size_t, FMTvertex_descriptor>::iterator>removed;
-				for (std::unordered_map<size_t, FMTvertex_descriptor>::iterator it = developments.at(location).begin();
+				std::vector<boost::unordered_set<FMTvertexlookup<FMTvertex_descriptor>>::iterator>removed;
+				for (boost::unordered_set<FMTvertexlookup<FMTvertex_descriptor>>::iterator it = developments.at(location).begin();
 					it != developments.at(location).end(); it++)
 				{
-					FMTvertex_descriptor vertex_location = it->second;
+					FMTvertex_descriptor vertex_location = (*it).descriptor;
 					if (!(location == period && periodstart(vertex_location)))
 					{
 						--stats.edges;
@@ -347,9 +346,9 @@ namespace Graph
 						removed.push_back(it);
 					}
 				}
-				for (std::unordered_map<size_t, FMTvertex_descriptor>::iterator it : removed)
+				for (boost::unordered_set<FMTvertexlookup<FMTvertex_descriptor>>::iterator it : removed)
 				{
-					boost::remove_vertex(it->second, data);
+					boost::remove_vertex(it->descriptor, data);
 					--stats.vertices;
 					if (updatedevelopments)
 					{
@@ -390,7 +389,7 @@ namespace Graph
         //events.erasecoordinate(localisation,period);
 		std::map<Core::FMTdevelopment,std::vector<bool>>tabuoperability;
 		const std::vector<std::vector<bool>>actions = getactions(model, period,tabuoperability);
-		std::unordered_map<size_t,std::vector<int>>operability;
+		boost::unordered_map<Core::FMTdevelopment,std::vector<int>>operability;
 		bool dontbuildgrowth = false;
 		if (!actions.empty())
 			{
@@ -398,13 +397,13 @@ namespace Graph
 			for (std::map<Core::FMTdevelopment, std::vector<bool>>::const_iterator it = tabuoperability.begin(); it != tabuoperability.end(); it++)
 			{
 				int actionid = 0;
-				operability[it->first.hash()] = std::vector<int>();
+				operability[it->first] = std::vector<int>();
 				//Logging::FMTlogger() << "setting empty vector "  << "\n";
 				for (const Core::FMTaction& action : model.actions)
 				{
 					if ((!it->second.at(actionid)) && it->first.operable(action, model.yields))
 					{
-						operability[it->first.hash()].push_back(actionid);
+						operability[it->first].push_back(actionid);
 						//Logging::FMTlogger() << "can do " << action.getname() << " at period " << it->first.period << "\n";
 						
 					}
@@ -444,17 +443,16 @@ namespace Graph
 		}
 
 	bool FMTlinegraph::ismovable(const std::vector<const Core::FMTaction*>& actions,const Core::FMTyields& yields, const int& period,
-		std::unordered_map<size_t,bool>*operability) const
+		boost::unordered_map<Core::FMTdevelopment,bool>*operability) const
 		{
 		const int lastperiod = getperiod();
 		for (int localperiod = period; localperiod < lastperiod;++localperiod)
 			{
 			const Core::FMTdevelopment& startingdev = getperiodstartdev(localperiod);
-			const size_t devhash = startingdev.hash();
 			bool operable = false;
-			if (operability!=nullptr&&operability->find(devhash)!=operability->end())
+			if (operability!=nullptr&&operability->find(startingdev)!=operability->end())
 				{
-				operable = operability->at(devhash);
+				operable = operability->at(startingdev);
 			}else {
 				if (startingdev.anyoperable(actions, yields))
 					{
@@ -462,7 +460,7 @@ namespace Graph
 					}
 				if (operability != nullptr)
 					{
-					(*operability)[devhash] = operable;
+					(*operability)[startingdev] = operable;
 					}
 				}
 			if (operable)
@@ -492,6 +490,47 @@ namespace Graph
 		boost::hash_combine(hashvalue, development.mask.getintersect(dynamicmask));
 		boost::hash_combine(hashvalue, development.age);
 		return hashvalue;
+		}
+
+	std::string FMTlinegraph::getbasestr(const Core::FMTmask& dynamicmask) const
+		{
+		std::string value;
+		const Core::FMTdevelopment& development = getbasedevelopment();
+		value += development.mask.getintersect(dynamicmask).getbitsstring();
+		value += std::to_string(development.age);
+		return value;
+		}
+
+	std::string FMTlinegraph::getedgesstr(const int& maximalperiod, bool& gotthewhole) const
+		{
+		const int actperiod = getperiod() - 1;
+		std::string hashstr;
+		if (!isonlygrow())
+		{
+			FMTedge_iterator edge_iterator, edge_iterator_end;
+			boost::tie(edge_iterator, edge_iterator_end) = boost::edges(data);
+			int periodcount = 0;
+			while (edge_iterator != edge_iterator_end && periodcount <= maximalperiod)
+			{
+				const FMTbaseedgeproperties& edgeprop = data[*edge_iterator];
+				const int actionid = edgeprop.getactionID();
+				hashstr += std::to_string(actionid);
+				if (actionid < 0)
+				{
+					++periodcount;
+				}
+				++edge_iterator;
+			}
+
+		}
+		else {
+			for (int period = 0; period <= std::min(actperiod, maximalperiod); ++period)
+			{
+				hashstr += "-1";
+			}
+		}
+		gotthewhole = (maximalperiod <= actperiod);
+		return hashstr;
 		}
 
 	std::vector<std::vector<bool>>FMTlinegraph::getactions(const Models::FMTmodel& model, const int& fromperiod,
@@ -546,34 +585,7 @@ namespace Graph
 
 	size_t FMTlinegraph::getedgeshash(const int& maximalperiod, bool& gotthewhole) const
 		{
-		const int actperiod = getperiod() - 1;
-		std::string hashstr;
-		if (!isonlygrow())
-		{
-			FMTedge_iterator edge_iterator, edge_iterator_end;
-			boost::tie(edge_iterator, edge_iterator_end) = boost::edges(data);
-			int periodcount = 0;
-			while (edge_iterator != edge_iterator_end && periodcount <= maximalperiod)
-			{
-				const FMTbaseedgeproperties& edgeprop = data[*edge_iterator];
-				const int actionid = edgeprop.getactionID();
-				hashstr += std::to_string(actionid);
-				if (actionid < 0)
-				{
-					++periodcount;
-				}
-				++edge_iterator;
-			}
-
-		}
-		else {
-			for (int period = 0; period <= std::min(actperiod, maximalperiod); ++period)
-			{
-				hashstr += "-1";
-			}
-		}
-		gotthewhole = (maximalperiod <= actperiod);
-		return boost::hash<std::string>{}(hashstr);
+		return boost::hash<std::string>{}(getedgesstr(maximalperiod, gotthewhole));
 		}
 
 	void FMTlinegraph::addfromevents(const Spatial::FMTcoordinate& localisation, const Models::FMTmodel& model, Spatial::FMTeventcontainer& events) const
@@ -600,6 +612,14 @@ namespace Graph
 		boost::hash_combine(hashvalue,getbasehash(dynamicmask));
 		bool gotthewholegraph = false;
 		boost::hash_combine(hashvalue,getedgeshash(stop,gotthewholegraph));
+		return gotthewholegraph;
+	}
+
+	bool FMTlinegraph::stringforconstraint(std::string& value, const int& stop, const Core::FMTmask& dynamicmask) const
+	{
+		value += getbasestr(dynamicmask);
+		bool gotthewholegraph = false;
+		value += getedgesstr(stop, gotthewholegraph);
 		return gotthewholegraph;
 	}
 

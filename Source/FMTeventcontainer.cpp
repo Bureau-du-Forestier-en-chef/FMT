@@ -6,6 +6,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
 #include "FMTeventcontainer.h"
+
 #include <limits>
 #include <queue>
 
@@ -646,7 +647,7 @@ namespace Spatial
 											const double& lowerdistancetoevent,
 											const double& upperdistancetoevent,
 											const int& period, const std::vector<bool>& actionsused,
-											std::unordered_set<size_t>& relations) const
+											boost::unordered_set<FMTeventrelation>& relations) const
 	{
 	double distancevalue = 0;
 	const size_t lowerdistance = static_cast<size_t>(lowerdistancetoevent);
@@ -657,8 +658,8 @@ namespace Spatial
 		{
 			if (&(*eventit) != &eventof)//They will have the same address if it's the same event!
 			{
-			const size_t straightrelation = eventof.getrelation(*eventit);
-			const size_t reverserelation = eventit->getrelation(eventof);
+			const FMTeventrelation straightrelation = eventof.getrelation(*eventit);
+			const FMTeventrelation reverserelation = eventit->getrelation(eventof);
 			if (relations.find(straightrelation)==relations.end() && 
 				relations.find(reverserelation) == relations.end())
 				{

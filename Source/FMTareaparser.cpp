@@ -1087,7 +1087,7 @@ namespace Parser{
 						if (FMTparser::tryopening(areastream, location))
 						{
 							bool inactualdevs = false;
-							std::unordered_map<size_t, size_t>devsindex;
+							boost::unordered_map<Core::FMTdevelopment,size_t>devsindex;
 							while (areastream.is_open())
 							{
 								std::string line = FMTparser::getcleanlinewfor(areastream, themes, constants);
@@ -1133,11 +1133,10 @@ namespace Parser{
 											}
 											Core::FMTactualdevelopment actualdevelopment(Core::FMTmask(mask, themes), age, lock, area);
 											//Weird non unique area section...
-											const size_t hashform = boost::hash<Core::FMTdevelopment>()(actualdevelopment);
-											std::unordered_map<size_t, size_t>::const_iterator hashit = devsindex.find(hashform);
-											if (devsindex.find(hashform) == devsindex.end())
+											boost::unordered_map<Core::FMTdevelopment, size_t>::const_iterator hashit = devsindex.find(actualdevelopment);
+											if (devsindex.find(actualdevelopment) == devsindex.end())
 											{
-												devsindex[hashform] = areas.size();
+												devsindex[actualdevelopment] = areas.size();
 												actualdevelopment.passinobject(*this);
 												areas.push_back(actualdevelopment);
 											}

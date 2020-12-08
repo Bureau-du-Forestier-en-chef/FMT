@@ -164,7 +164,7 @@ GDALDataset* FMTparser::getdataset(const std::string& location) const
 
 GDALRasterBand* FMTparser::getband(GDALDataset* dataset,int bandid) const
     {
-	GDALRasterBand* band;
+	GDALRasterBand* band = nullptr;
 	try{
 	band = dataset->GetRasterBand(bandid);
     if (band == nullptr)
@@ -263,7 +263,7 @@ GDALDataset* FMTparser::getvectordataset(const std::string& location) const
 
 OGRLayer* FMTparser::getlayer(GDALDataset* dataset,int id) const
     {
-	OGRLayer * layer;
+	OGRLayer * layer = nullptr;
 	try{
 	layer = dataset->GetLayer(id);
     if( layer == nullptr )
