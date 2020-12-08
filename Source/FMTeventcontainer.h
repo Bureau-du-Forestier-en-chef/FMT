@@ -13,6 +13,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <boost/serialization/nvp.hpp>
 #include <boost/serialization/set.hpp>
 #include <unordered_set>
+#include <boost/unordered_set.hpp>
 
 
 namespace Spatial
@@ -247,7 +248,7 @@ class FMTeventcontainer
 			const double& lowerdistancetoevent,
 			const double& upperdistancetoevent,
 			const int& period, const std::vector<bool>& actionsused,
-			std::unordered_set<size_t>& relations) const;
+			boost::unordered_set<FMTeventrelation>& relations) const;
      private:
         ///Set containing the events
         std::set<FMTevent> events;

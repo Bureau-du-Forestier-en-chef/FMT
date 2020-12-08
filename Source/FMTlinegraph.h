@@ -64,7 +64,10 @@ class FMTlinegraph : public FMTgraph<FMTbasevertexproperties,FMTbaseedgeproperti
 			std::map<Core::FMTdevelopment, std::vector<bool>>& operability) const;
 		const Core::FMTdevelopment& getbasedevelopment() const;
 		size_t getbasehash(const Core::FMTmask& dynamicmask) const;
+		std::string getbasestr(const Core::FMTmask& dynamicmask) const;
 		size_t getedgeshash(const int& maximalperiod,bool& gotthewhole) const;
+		std::string getedgesstr(const int& maximalperiod, bool& gotthewhole) const;
+		bool stringforconstraint(std::string& value, const int& stop, const Core::FMTmask& dynamicmask) const;
 		bool hashforconstraint(size_t& hashvalue,const int& stop,const Core::FMTmask& dynamicmask) const;
 		bool isonlygrow() const;
 		void addfromevents(const Spatial::FMTcoordinate& localisation,const Models::FMTmodel& model, Spatial::FMTeventcontainer& events) const;

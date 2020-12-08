@@ -120,7 +120,7 @@ class FMTlpmodel : public FMTmodel
 	Graph::FMTgraph<Graph::FMTvertexproperties,Graph::FMTedgeproperties> graph;
 	// DocString: FMTlpmodel::elements
 	///Locations of the constraints and variables in the matrix for the constraints / objective.
-	std::vector<std::unordered_map<size_t,
+	std::vector<std::unordered_map<std::string,
 		std::vector<std::vector<int>>>>elements;
 	// DocString: FMTlpmodel::solver
 	///The lpsolver

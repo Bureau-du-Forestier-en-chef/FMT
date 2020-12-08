@@ -95,6 +95,7 @@ namespace Core
 	FMTobject::FMTobject() : _exhandler(std::make_shared<Exception::FMTdefaultexceptionhandler>()),
 		_logger(std::make_shared<Logging::FMTdefaultlogger>()), _section(FMTsection::Empty)
 	{
+		_exhandler->passinlogger(_logger);
 		this->checksignals();
 			setCPLhandler();
 	}

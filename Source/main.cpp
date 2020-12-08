@@ -99,19 +99,22 @@ extern "C"
 		R::exportHeuristics();
 		}
 
-// declarations
-extern "C"
+		// declarations
+	extern "C"
 	{
-	SEXP FMT();
+		SEXP FMT();
 	}
 
 // definition
 SEXP FMT()// use that part for exception handling to return custom exception to R
 	{
 		BEGIN_RCPP
-
+		//Exceptions
+		
 		END_RCPP
 	}
+
+
 
 
 

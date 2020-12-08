@@ -492,6 +492,47 @@ namespace Graph
 		return hashvalue;
 		}
 
+	std::string FMTlinegraph::getbasestr(const Core::FMTmask& dynamicmask) const
+		{
+		std::string value;
+		const Core::FMTdevelopment& development = getbasedevelopment();
+		value += development.mask.getintersect(dynamicmask).getbitsstring();
+		value += std::to_string(development.age);
+		return value;
+		}
+
+	std::string FMTlinegraph::getedgesstr(const int& maximalperiod, bool& gotthewhole) const
+		{
+		const int actperiod = getperiod() - 1;
+		std::string hashstr;
+		if (!isonlygrow())
+		{
+			FMTedge_iterator edge_iterator, edge_iterator_end;
+			boost::tie(edge_iterator, edge_iterator_end) = boost::edges(data);
+			int periodcount = 0;
+			while (edge_iterator != edge_iterator_end && periodcount <= maximalperiod)
+			{
+				const FMTbaseedgeproperties& edgeprop = data[*edge_iterator];
+				const int actionid = edgeprop.getactionID();
+				hashstr += std::to_string(actionid);
+				if (actionid < 0)
+				{
+					++periodcount;
+				}
+				++edge_iterator;
+			}
+
+		}
+		else {
+			for (int period = 0; period <= std::min(actperiod, maximalperiod); ++period)
+			{
+				hashstr += "-1";
+			}
+		}
+		gotthewhole = (maximalperiod <= actperiod);
+		return hashstr;
+		}
+
 	std::vector<std::vector<bool>>FMTlinegraph::getactions(const Models::FMTmodel& model, const int& fromperiod,
 		std::map<Core::FMTdevelopment, std::vector<bool>>& operability) const
 		{
@@ -544,34 +585,7 @@ namespace Graph
 
 	size_t FMTlinegraph::getedgeshash(const int& maximalperiod, bool& gotthewhole) const
 		{
-		const int actperiod = getperiod() - 1;
-		std::string hashstr;
-		if (!isonlygrow())
-		{
-			FMTedge_iterator edge_iterator, edge_iterator_end;
-			boost::tie(edge_iterator, edge_iterator_end) = boost::edges(data);
-			int periodcount = 0;
-			while (edge_iterator != edge_iterator_end && periodcount <= maximalperiod)
-			{
-				const FMTbaseedgeproperties& edgeprop = data[*edge_iterator];
-				const int actionid = edgeprop.getactionID();
-				hashstr += std::to_string(actionid);
-				if (actionid < 0)
-				{
-					++periodcount;
-				}
-				++edge_iterator;
-			}
-
-		}
-		else {
-			for (int period = 0; period <= std::min(actperiod, maximalperiod); ++period)
-			{
-				hashstr += "-1";
-			}
-		}
-		gotthewhole = (maximalperiod <= actperiod);
-		return boost::hash<std::string>{}(hashstr);
+		return boost::hash<std::string>{}(getedgesstr(maximalperiod, gotthewhole));
 		}
 
 	void FMTlinegraph::addfromevents(const Spatial::FMTcoordinate& localisation, const Models::FMTmodel& model, Spatial::FMTeventcontainer& events) const
@@ -598,6 +612,14 @@ namespace Graph
 		boost::hash_combine(hashvalue,getbasehash(dynamicmask));
 		bool gotthewholegraph = false;
 		boost::hash_combine(hashvalue,getedgeshash(stop,gotthewholegraph));
+		return gotthewholegraph;
+	}
+
+	bool FMTlinegraph::stringforconstraint(std::string& value, const int& stop, const Core::FMTmask& dynamicmask) const
+	{
+		value += getbasestr(dynamicmask);
+		bool gotthewholegraph = false;
+		value += getedgesstr(stop, gotthewholegraph);
 		return gotthewholegraph;
 	}
 

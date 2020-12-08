@@ -20,6 +20,7 @@ namespace Graph
 		tdescriptor descriptor;
 		const Core::FMTdevelopment* development;
 		FMTvertexlookup() = default;
+		~FMTvertexlookup() = default;
 		//For looking
 		FMTvertexlookup(const Core::FMTdevelopment& dev) :
 			descriptor(), development(&dev)
