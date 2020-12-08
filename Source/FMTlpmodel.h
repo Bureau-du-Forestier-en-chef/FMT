@@ -120,7 +120,7 @@ class FMTlpmodel : public FMTmodel
 	Graph::FMTgraph<Graph::FMTvertexproperties,Graph::FMTedgeproperties> graph;
 	// DocString: FMTlpmodel::elements
 	///Locations of the constraints and variables in the matrix for the constraints / objective.
-	std::vector<std::unordered_map<size_t,
+	std::vector<std::unordered_map<std::string,
 		std::vector<std::vector<int>>>>elements;
 	// DocString: FMTlpmodel::solver
 	///The lpsolver
@@ -152,7 +152,7 @@ class FMTlpmodel : public FMTmodel
 	need to be updated. Variables and constraints related to each of those new developements will be added to the matrix.
 	So area transfer row and natural growth plus action variables.
 	*/
-	Graph::FMTgraphstats updatematrix(const std::unordered_map<size_t, Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>& targets,
+	Graph::FMTgraphstats updatematrix(const boost::unordered_set<Graph::FMTvertexlookup<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>>& targets,
 			const Graph::FMTgraphstats& newstats);
 	// DocString: FMTlpmodel::getsetmatrixelement
 	/**

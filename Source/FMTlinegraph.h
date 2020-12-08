@@ -52,7 +52,7 @@ class FMTlinegraph : public FMTgraph<FMTbasevertexproperties,FMTbaseedgeproperti
                                             const Core::FMTdevelopment& active_development,bool dontchoosegrow=false);
 		FMTgraphstats randombuildperiod(const Models::FMTmodel& model, std::queue<FMTvertex_descriptor> actives, std::default_random_engine& generator,
 									Spatial::FMTeventcontainer& events, const Spatial::FMTcoordinate& localisation,
-									std::unordered_map<size_t, std::vector<int>>* operability=nullptr,
+									boost::unordered_map<Core::FMTdevelopment, std::vector<int>>* operability=nullptr,
 									const std::vector<Spatial::FMTbindingspatialaction>* bindings = nullptr,
 									bool dontchoosegrow=false);
         FMTgraphstats clearfromperiod(const int& period,bool updatedevelopments=false);
@@ -64,12 +64,15 @@ class FMTlinegraph : public FMTgraph<FMTbasevertexproperties,FMTbaseedgeproperti
 			std::map<Core::FMTdevelopment, std::vector<bool>>& operability) const;
 		const Core::FMTdevelopment& getbasedevelopment() const;
 		size_t getbasehash(const Core::FMTmask& dynamicmask) const;
+		std::string getbasestr(const Core::FMTmask& dynamicmask) const;
 		size_t getedgeshash(const int& maximalperiod,bool& gotthewhole) const;
+		std::string getedgesstr(const int& maximalperiod, bool& gotthewhole) const;
+		bool stringforconstraint(std::string& value, const int& stop, const Core::FMTmask& dynamicmask) const;
 		bool hashforconstraint(size_t& hashvalue,const int& stop,const Core::FMTmask& dynamicmask) const;
 		bool isonlygrow() const;
 		void addfromevents(const Spatial::FMTcoordinate& localisation,const Models::FMTmodel& model, Spatial::FMTeventcontainer& events) const;
 		bool ismovable(const std::vector<const Core::FMTaction*>& actions,
-			const Core::FMTyields& yields, const int& period,std::unordered_map<size_t,bool>*operability=nullptr) const;
+			const Core::FMTyields& yields, const int& period, boost::unordered_map<Core::FMTdevelopment, bool>*operability =nullptr) const;
 		bool operator == (const FMTlinegraph& rhs) const;
 		void clearnodecache();
 		

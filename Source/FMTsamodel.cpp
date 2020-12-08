@@ -548,7 +548,7 @@ namespace Models
 
 	Spatial::FMTspatialschedule FMTsamodel::move(const Spatial::FMTspatialschedule& actual,
 										const std::vector<Spatial::FMTcoordinate>*movable,
-										std::unordered_map<size_t, bool>*operability) const
+										boost::unordered_map<Core::FMTdevelopment, bool>*operability) const
 		{
 		//Spatial::FMTspatialschedule newsolution(actual);
 		try {
@@ -590,7 +590,7 @@ namespace Models
 
 	double FMTsamodel::warmup(const Spatial::FMTspatialschedule& actual,
 		const std::vector<Spatial::FMTcoordinate>*movable,
-		std::unordered_map<size_t, bool>*operability,
+		boost::unordered_map<Core::FMTdevelopment, bool>*operability,
 		double initprobability, size_t iterations)
 		{
 		double temperature = 0;
@@ -649,7 +649,7 @@ namespace Models
 			double primalinf = 0;
 			double objective = 0;
 			const std::vector<Spatial::FMTcoordinate>movables = solution.getstaticsmovablecoordinates(*this);
-			std::unordered_map<size_t, bool>operability;
+			boost::unordered_map<Core::FMTdevelopment, bool>operability;
 			double temperature = warmup(solution,&movables,&operability);
 			_logger->logwithlevel("Annealer Temp("+std::to_string(temperature)+")\n", 1);
 			//solution.getsolutionstatus(objective, primalinf, *this);

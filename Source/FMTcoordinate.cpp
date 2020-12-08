@@ -101,6 +101,14 @@ namespace Spatial
         return ((y<rhs.y)||((y==rhs.y)&&(x<rhs.x)));
         }
 
+	 size_t FMTcoordinate::hash() const
+		{
+		 size_t hash = 0;
+		 boost::hash_combine(hash, x);
+		 boost::hash_combine(hash, y);
+		 return hash;
+		}
+
     void FMTcoordinate::upenveloppe(std::vector<FMTcoordinate>& enveloppe) const
         {
 		//0//-//1//

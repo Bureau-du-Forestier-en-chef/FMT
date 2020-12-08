@@ -118,8 +118,8 @@ class FMTparser: public Core::FMTobject
 			GDALDataset* createdataset(const std::string& location,const Spatial::FMTlayer<T>& layer, const GDALDataType datatype) const
 				{
 				const char *pszFormat = "GTiff";
-				GDALDriver *poDriver;
-				GDALDataset *poDstDS;
+				GDALDriver *poDriver = nullptr;
+				GDALDataset *poDstDS = nullptr;
 				try{
 				poDriver = GetGDALDriverManager()->GetDriverByName(pszFormat);
 				if( poDriver == nullptr )

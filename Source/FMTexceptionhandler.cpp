@@ -8,6 +8,11 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTexceptionhandler.h"
 #include <boost/algorithm/string/replace.hpp>
 
+#if defined FMTWITHR
+	#include <Rcpp.h>
+#endif
+
+
 namespace Exception
 
 {
@@ -58,15 +63,22 @@ FMTexceptionhandler& FMTexceptionhandler::operator = (const FMTexceptionhandler&
 }
 
 
-
 void FMTexceptionhandler::throw_nested(const  std::exception& texception, int level,bool rethrow)
 {
 		const std::string linereplacement = "\n" + std::string(level, ' ');
 		std::string message = texception.what();
 		boost::replace_all(message, "\n", linereplacement);
 		*_logger << std::string(level, ' ') << message << "\n";
+			#if defined FMTWITHR
+				const std::nested_exception * nested = dynamic_cast<const std::nested_exception *>(&texception);
+				const std::exception_ptr  excp = nested->nested_ptr();
+				if (excp == nullptr)//If last element just get out of c++ and get back to R
+				{
+					throw(Rcpp::exception(message.c_str()));
+				}
+			#endif
 		try {
-			std::rethrow_if_nested(texception);
+				std::rethrow_if_nested(texception);
 		}
 		catch (const  std::exception& texception)
 		{
@@ -74,11 +86,18 @@ void FMTexceptionhandler::throw_nested(const  std::exception& texception, int le
 		}
 		catch (...)
 		{
+		#if defined FMTWITHR
+		#else
 			throw;
+		#endif
+					
 		}
 	if (rethrow)
 		{
-		throw;
+		#if defined FMTWITHR
+		#else
+				throw;
+		#endif
 		}
 }
 
@@ -511,7 +530,11 @@ void FMTexceptionhandler::printexceptions(std::string text,
 	FMTexc lexception = FMTexc::FMTfunctionfailed;
 	const std::exception_ptr expointer = std::current_exception();
 	const FMTexception newexception = this->raise(lexception, text, method, line, fil, lsection, false);
-	_logger->setstreamflush(true);
+	if (_logger)
+	{
+		_logger->setstreamflush(true);
+	}
+	
 	if (expointer)
 		{
 		int nestedlevel = 0;
