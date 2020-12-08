@@ -1077,10 +1077,10 @@ bool FMTlpmodel::locatenodes(const std::vector<Core::FMToutputnode>& nodes, int 
 	Graph::FMTgraphstats FMTlpmodel::eraseconstraint(const Core::FMTconstraint& constraint, int period)
 		{
 		try {
-		if (static_cast<int>(elements.size()) > period && elements.at(period).find(constraint.hash())!= elements.at(period).end())
+		if (static_cast<int>(elements.size()) > period && elements.at(period).find(std::string(constraint))!= elements.at(period).end())
 			{
-			std::vector<std::vector<int>>all_elements = elements.at(period).at(constraint.hash());
-			elements.at(period).erase(elements.at(period).find(constraint.hash()));
+			std::vector<std::vector<int>>all_elements = elements.at(period).at(std::string(constraint));
+			elements.at(period).erase(elements.at(period).find(std::string(constraint)));
 			int removedrow = -1;
 			if (!all_elements.at(FMTmatrixelement::constraint).empty())
 				{
@@ -1089,7 +1089,7 @@ bool FMTlpmodel::locatenodes(const std::vector<Core::FMToutputnode>& nodes, int 
 					bool removeconstraint = true;
 					for (int locator = (period + 1); locator < static_cast<int>(elements.size()); ++locator)
 					{
-						for (std::unordered_map<size_t, std::vector<std::vector<int>>>::iterator elit = elements.at(locator).begin(); elit != elements.at(locator).end(); elit++)
+						for (std::unordered_map<std::string, std::vector<std::vector<int>>>::iterator elit = elements.at(locator).begin(); elit != elements.at(locator).end(); elit++)
 						{
 							if (std::find(elit->second.at(FMTmatrixelement::constraint).begin(), elit->second.at(FMTmatrixelement::constraint).end(), levelid) != elit->second.at(FMTmatrixelement::constraint).end())
 							{
@@ -1130,7 +1130,7 @@ bool FMTlpmodel::locatenodes(const std::vector<Core::FMToutputnode>& nodes, int 
 					{
 					for (int locator = (period+1); locator < static_cast<int>(elements.size());++locator)
 						{
-						for (std::unordered_map<size_t, std::vector<std::vector<int>>>::iterator elit = elements.at(locator).begin(); elit != elements.at(locator).end(); elit++)
+						for (std::unordered_map<std::string, std::vector<std::vector<int>>>::iterator elit = elements.at(locator).begin(); elit != elements.at(locator).end(); elit++)
 							{
 							if (std::find(elit->second.at(FMTmatrixelement::levelvariable).begin(), elit->second.at(FMTmatrixelement::levelvariable).end(), levelid) != elit->second.at(FMTmatrixelement::levelvariable).end() ||
 								std::find(elit->second.at(FMTmatrixelement::objectivevariable).begin(), elit->second.at(FMTmatrixelement::objectivevariable).end(), levelid) != elit->second.at(FMTmatrixelement::objectivevariable).end())
@@ -1166,10 +1166,10 @@ bool FMTlpmodel::locatenodes(const std::vector<Core::FMToutputnode>& nodes, int 
 		try {
 			if (!Dvariables.empty() || !Dconstraints.empty())
 			{
-				std::vector<std::unordered_map<size_t, std::vector<std::vector<int>>>>::iterator periodit = elements.begin();
+				std::vector<std::unordered_map<std::string, std::vector<std::vector<int>>>>::iterator periodit = elements.begin();
 				while (periodit != elements.end())
 				{
-					for (std::unordered_map<size_t, std::vector<std::vector<int>>>::iterator constraintit = periodit->begin(); constraintit != periodit->end(); constraintit++)
+					for (std::unordered_map<std::string, std::vector<std::vector<int>>>::iterator constraintit = periodit->begin(); constraintit != periodit->end(); constraintit++)
 					{
 						if (!Dconstraints.empty())
 						{
@@ -1358,8 +1358,8 @@ bool FMTlpmodel::locatenodes(const std::vector<Core::FMToutputnode>& nodes, int 
 			period = graph.getfirstactiveperiod()+1;
 			}
 		return((period < static_cast<int>(elements.size()) &&
-			(elements.at(period).find(constraint.hash()) != elements.at(period).end()) &&
-			!elements.at(period).at(constraint.hash()).at(element_type).empty()));
+			(elements.at(period).find(std::string(constraint)) != elements.at(period).end()) &&
+			!elements.at(period).at(std::string(constraint)).at(element_type).empty()));
 	}
 
 	bool FMTlpmodel::issamematrixelement(const int& matrixindex, const FMTmatrixelement& element_type,
@@ -1561,7 +1561,7 @@ bool FMTlpmodel::locatenodes(const std::vector<Core::FMToutputnode>& nodes, int 
 				{
 					foundperiod = graph.getfirstactiveperiod() + 1;
 				}
-				const std::vector<int>& alllocalelements = elements.at(foundperiod).at(constraint.hash()).at(element_type);
+				const std::vector<int>& alllocalelements = elements.at(foundperiod).at(std::string(constraint)).at(element_type);
 				for (const int& elid : alllocalelements)
 				{
 					if (issamematrixelement(elid, element_type, lowerbound, upperbound, indexes))
@@ -1611,7 +1611,7 @@ bool FMTlpmodel::locatenodes(const std::vector<Core::FMToutputnode>& nodes, int 
 				{
 					for (size_t id = 0; id < to_resize; ++id)
 					{
-						elements.push_back(std::unordered_map<size_t, std::vector<std::vector<int>>>());
+						elements.push_back(std::unordered_map<std::string, std::vector<std::vector<int>>>());
 					}
 				}
 
@@ -1625,11 +1625,11 @@ bool FMTlpmodel::locatenodes(const std::vector<Core::FMToutputnode>& nodes, int 
 			}
 			for (int locid = starting; locid < stoping; ++locid)
 			{
-				if (elements[locid].find(constraint.hash()) == elements[locid].end())
+				if (elements[locid].find(std::string(constraint)) == elements[locid].end())
 				{
-					elements[locid][constraint.hash()] = std::vector<std::vector<int>>(FMTmatrixelement::nr_items);
+					elements[locid][std::string(constraint)] = std::vector<std::vector<int>>(FMTmatrixelement::nr_items);
 				}
-				elements[locid][constraint.hash()][element_type].push_back(element_id);
+				elements[locid][std::string(constraint)][element_type].push_back(element_id);
 			}
 		}catch (...)
 			{
@@ -1642,9 +1642,9 @@ bool FMTlpmodel::locatenodes(const std::vector<Core::FMToutputnode>& nodes, int 
 
 	std::vector<std::vector<int>>FMTlpmodel::getmatrixelement(const Core::FMTconstraint& constraint,int period) const
         {
-        if ((period < static_cast<int>(elements.size())) && (elements.at(period).find(constraint.hash()) != elements.at(period).end()))
+        if ((period < static_cast<int>(elements.size())) && (elements.at(period).find(std::string(constraint)) != elements.at(period).end()))
             {
-            return elements.at(period).at(constraint.hash());
+            return elements.at(period).at(std::string(constraint));
             }
         return std::vector<std::vector<int>>(FMTmatrixelement::nr_items);
         }

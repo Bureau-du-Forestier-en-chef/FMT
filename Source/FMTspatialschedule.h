@@ -126,12 +126,12 @@ class FMTspatialschedule : public FMTlayer<Graph::FMTlinegraph>
 		/**
 		Return the constraint evaluation value of a spatial constraint.
 		*/
-	   double evaluatedistance(const FMTevent& eventof,
+	   /*double evaluatedistance(const FMTevent& eventof,
 		   const double& lowerdistancetoevent,
 		   const double& upperdistancetoevent,
 		   const int& period, const std::vector<bool>& actionsused,
 		   std::unordered_set<size_t>& relations,
-		   const std::vector<FMTeventcontainer::const_iterator>& events) const;
+		   const std::vector<FMTeventcontainer::const_iterator>& events) const;*/
 		// DocString: FMTspatialschedule::getallowable
 		/**
 		For the target action, return a set of FMTcoordinate corresponding to the cells that are spatially allowable from coordinates that are operables.
@@ -377,8 +377,8 @@ class FMTspatialschedule : public FMTlayer<Graph::FMTlinegraph>
 		 set the output requested from a given linegraph into periods_values
 		 */
 		double getoutputfromgraph(const Graph::FMTlinegraph& linegraph, const Models::FMTmodel & model,
-			const Core::FMToutputnode& node, const double* solution,const int&period, const size_t& hashvalue,
-			std::unordered_map<size_t, double>& nodecache) const;
+			const Core::FMToutputnode& node, const double* solution,const int&period,const std::string& nodename,
+			std::unordered_map<std::string, double>& nodecache) const;
 		// DocString: FMTspatialschedule::getgraphsbystatic()
 		 /**
 		 Based on variable outputnode in the constraint returns a subset of the solution based on the static themes.

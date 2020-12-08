@@ -63,14 +63,14 @@ class FMTsamodel : public FMTmodel
 		*/
 		Spatial::FMTspatialschedule move(const Spatial::FMTspatialschedule& actual,
 						const std::vector<Spatial::FMTcoordinate>*movable = nullptr,
-						std::unordered_map<size_t, bool>*operability= nullptr) const;
+						boost::unordered_map<Core::FMTdevelopment, bool>*operability= nullptr) const;
 		// DocString: FMTsamodel::warmup
 		/**
 		Using an initprobability close to one, a base solution and a bunch of iterations get a initial temperature.
 		*/
 		double warmup(const Spatial::FMTspatialschedule& actual,
 			const std::vector<Spatial::FMTcoordinate>*movable = nullptr,
-			std::unordered_map<size_t, bool>*operability = nullptr,
+			boost::unordered_map<Core::FMTdevelopment, bool>*operability = nullptr,
 			double initprobability = 0.5,size_t iterations=10);
 	public:
 		// DocString: FMTsamodel::initialsolve

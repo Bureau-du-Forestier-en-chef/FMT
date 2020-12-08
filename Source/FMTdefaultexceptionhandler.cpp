@@ -7,6 +7,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 #include "FMTdefaultexceptionhandler.h"
 
+
 namespace Exception
 
 {
@@ -52,7 +53,7 @@ namespace Exception
 				FMTwarning(excp).warn(_logger);
 			}else if (_level == FMTlev::FMT_logic || _level == FMTlev::FMT_range)
 				{
-				std::throw_with_nested(FMTerror(excp));
+					std::throw_with_nested(FMTerror(excp));
 				}
 			}
 

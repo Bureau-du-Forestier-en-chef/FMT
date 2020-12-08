@@ -41,6 +41,7 @@ namespace Spatial
 		double distanceapproximation(const FMTcoordinate& coord) const;
         bool within(unsigned int ldistance,const FMTcoordinate& coord) const;
         void upenveloppe(std::vector<FMTcoordinate>& enveloppe) const;
+		size_t hash() const;
         FMTcoordinate& operator = (const FMTcoordinate& rhs);
         unsigned int getx() const;
         unsigned int gety() const;

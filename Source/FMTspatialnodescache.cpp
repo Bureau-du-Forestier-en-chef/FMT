@@ -96,13 +96,14 @@ namespace Spatial
 
 	const std::vector<FMTcoordinate>& FMTspatialnodescache::getnode(const Core::FMToutputnode& node, const Models::FMTmodel& model, bool& exactnode)
 		{
-		const size_t hashvalue = node.hashforvalue();
-		std::unordered_map<size_t, FMTnodecache>::iterator nodecacheit = patterncache.find(hashvalue);
+		//const size_t hashvalue = node.hashforvalue();
+		const std::string nodestr = std::string(node);
+		std::unordered_map<std::string, FMTnodecache>::iterator nodecacheit = patterncache.find(nodestr);
 		if (nodecacheit == patterncache.end())
 		{
-			patterncache[hashvalue] = FMTnodecache(node, model);
+			patterncache[nodestr] = FMTnodecache(node, model);
 		}
-		actualcache = &patterncache[hashvalue];
+		actualcache = &patterncache[nodestr];
 		return staticnodes->getverticies(node, model.actions,model.themes, exactnode);
 		}
 
@@ -113,7 +114,7 @@ namespace Spatial
 
 	void FMTspatialnodescache::removeperiod(const int& period)
 		{
-		for (std::unordered_map<size_t, FMTnodecache>::iterator cit = patterncache.begin(); cit != patterncache.end(); cit++)
+		for (std::unordered_map<std::string, FMTnodecache>::iterator cit = patterncache.begin(); cit != patterncache.end(); cit++)
 			{
 			cit->second.removeperiod(period);
 			}
@@ -131,7 +132,7 @@ namespace Spatial
 	size_t FMTspatialnodescache::size() const
 		{
 		size_t totalsize = 0;
-		for (std::unordered_map<size_t,FMTnodecache>::const_iterator cit = patterncache.begin();cit!=patterncache.end();cit++)
+		for (std::unordered_map<std::string,FMTnodecache>::const_iterator cit = patterncache.begin();cit!=patterncache.end();cit++)
 			{
 			totalsize += cit->second.patternvalues.size();
 			}
@@ -140,7 +141,7 @@ namespace Spatial
 
 	void FMTspatialnodescache::insert(const FMTspatialnodescache& rhs)
 		{
-		for (std::unordered_map<size_t, FMTnodecache>::const_iterator cit = rhs.patterncache.begin(); cit != rhs.patterncache.end(); cit++)
+		for (std::unordered_map<std::string, FMTnodecache>::const_iterator cit = rhs.patterncache.begin(); cit != rhs.patterncache.end(); cit++)
 			{
 			if (patterncache.find(cit->first)!=patterncache.end())
 				{

@@ -144,11 +144,9 @@ namespace Spatial
 		return hashs;
 		}
 
-	size_t FMTevent::getrelation(const FMTevent& rhs) const
+	FMTeventrelation FMTevent::getrelation(const FMTevent& rhs) const
 	{
-		size_t hashs = this->hash();
-		boost::hash_combine(hashs, rhs.hash());
-		return hashs;
+		return FMTeventrelation(*this, rhs);
 	}
 
 	size_t FMTevent::height() const
