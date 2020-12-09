@@ -193,6 +193,41 @@ namespace Models
 		return false;
 		}
 
+	size_t FMTlpmodel::getamountofpaths(const Core::FMTdevelopment& dev, const int& actionid) const
+		{
+		size_t amount = 0;
+		try {
+			std::vector<Core::FMTdevelopmentpath> paths;
+			if (actionid>=0)
+			{
+				paths = dev.operate(actions.at(actionid), transitions.at(actionid), yields, themes);
+			}else {
+				paths.push_back(Core::FMTdevelopmentpath(dev.grow(), 1.0));
+			}
+			for (const Core::FMTdevelopmentpath& path : paths)
+				{
+				int period = path.development->period;
+				Core::FMTdevelopment dev(*path.development);
+				while (period < graph.size())
+					{
+					if (graph.containsdevelopment(dev))
+						{
+						const Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor vdescriptor = graph.getdevelopment(dev);
+						std::map<int, int>vars = graph.getoutvariables(vdescriptor);
+						vars.erase(-1);
+						amount += vars.size();
+						}
+					dev = dev.grow();
+					++period;
+					}
+				}
+		}catch (...)
+			{
+			_exhandler->printexceptions("for "+std::string(dev), "FMTlpmodel::getamountofpaths", __LINE__, __FILE__);
+			}
+		return amount;
+		}
+
 	bool FMTlpmodel::setsolution(int period,const Core::FMTschedule& schedule,double tolerance)
 	{
 		try {
@@ -211,6 +246,18 @@ namespace Models
 				}
 
 				int maximallock = -1;
+				/*std::vector<Core::FMTschedule::const_iterator>orderedschedule;
+				for (Core::FMTschedule::const_iterator actionit = schedule.begin(); actionit != schedule.end();actionit++)
+				{
+					if (actionit->first.dorespectlock())
+					{
+						orderedschedule.insert(orderedschedule.begin(), actionit);
+					}else {
+						orderedschedule.push_back(actionit);
+					}
+
+				}*/
+
 				//Core::FMTschedule locked_schedule;
 				for (const auto& actionit : schedule)
 				{
@@ -235,6 +282,7 @@ namespace Models
 							//std::sort(lockstoadress.begin(), lockstoadress.end());
 							//std::reverse(lockstoadress.begin(), lockstoadress.end());
 							std::vector<std::pair<Core::FMTdevelopment,double>>locksfound;
+							std::vector<std::pair<int,size_t>>locksorter;
 							Core::FMTdevelopment locked(devit.first);
 							for (int lockid = 0; lockid <= maximallock;++lockid)
 								{
@@ -248,18 +296,35 @@ namespace Models
 										{
 										originalinarea = std::numeric_limits<double>::max();
 										}
-									if (!(graph.onlypertiodstart(vdescriptor) == 1 && originalinarea == std::numeric_limits<double>::max()))
+									if (!(graph.onlypertiodstart(vdescriptor) && originalinarea == std::numeric_limits<double>::max()))
 										{
-										//*_logger << "found " << std::string(locked) << " " << originalinarea << "\n";
+										/*if (std::string(locked).find("15+")!=std::string::npos&&locked.period==2&&locked.age==10&&
+											std::string(locked).find("S27034") != std::string::npos)
+											{
+											*_logger << "found " << std::string(locked) << " amount of " << getamountofpaths(locked, actionid) << "\n";
+											*_logger << "no action " << getamountofpaths(locked,-1) << "\n";
+											}*/
+										locksorter.push_back(std::pair<size_t, size_t>(locksfound.size(), getamountofpaths(locked, -1)));
 										locksfound.push_back(std::pair<Core::FMTdevelopment, double>(locked, originalinarea));
+										
 										}
 									}
 								}
-							/*std::sort(locksfound.begin(),
-								locksfound.end(),
-								[](const std::pair<Core::FMTdevelopment, double>& a,
-									const std::pair<Core::FMTdevelopment, double>& b) {return a.second < b.second; });*/
-							
+	
+							std::sort(locksorter.begin(),
+								locksorter.end(),
+								[](const std::pair<size_t, size_t>& a,
+									const std::pair<size_t, size_t>& b) {return a.second < b.second; });
+
+							std::vector<std::pair<Core::FMTdevelopment, double>>sortedlocksfound;
+							for (const std::pair<size_t, size_t>& id : locksorter)
+							{
+								sortedlocksfound.push_back(locksfound.at(id.first));
+							}
+							locksfound = sortedlocksfound;
+							bool secondpass = false;
+							const size_t initialsize = lockstoadress.size();
+							size_t iteration = 0;
 							while (!lockstoadress.empty())
 								{
 	
@@ -282,7 +347,7 @@ namespace Models
 										//*_logger << "op "<< areatoput <<" " << std::string(element.first) << " " << element.second << "\n";
 										++id;
 									}
-									if (!found)
+									if (secondpass && !found)
 									{
 										id = 0;
 										for (const std::pair<Core::FMTdevelopment, double>& element : locksfound)
@@ -323,14 +388,23 @@ namespace Models
 										lockstoadress.erase(lockstoadress.begin());
 										++allocated;
 									}
-									else {
+									else if(secondpass) 
+										{
 										_exhandler->raise(Exception::FMTexc::FMTinvalid_number,
 											"Cannot allocate area of " + std::to_string(areatoput) + " to " +
 											std::string(devit.first) + " for action " + actionit.first.getname(), "FMTlpmodel::setsolution", __LINE__, __FILE__);
+									}else {
+										lockstoadress.push_back(areatoput);
+										lockstoadress.erase(lockstoadress.begin());
 									}
 								}else {
 									lockstoadress.erase(lockstoadress.begin());
 									}
+								if (iteration == initialsize)
+									{
+									secondpass = true;
+									}
+								++iteration;
 								}
 
 
@@ -1810,7 +1884,7 @@ bool FMTlpmodel::locatenodes(const std::vector<Core::FMToutputnode>& nodes, int 
 			//std::vector<std::vector<std::string>>attributes(themes.size(),std::vector<std::string>(generalcatch.size(),""));
 			//std::vector<std::vector<double>>outputsvec(outputsdata.size(), std::vector<double>(generalcatch.size(), std::numeric_limits<double>::quiet_NaN()));
 			const size_t datasize = generalcatch.size() * outputsdata.size();
-			std::vector<Rcpp::StringVector>attributes(themes.size(), Rcpp::StringVector(datasize));
+			std::vector<std::vector<std::string>>attributes(themes.size(), std::vector<std::string>(datasize));
 			Rcpp::IntegerVector age(datasize);
 			Rcpp::IntegerVector lock(datasize);
 			Rcpp::IntegerVector period(datasize);
@@ -1853,10 +1927,12 @@ bool FMTlpmodel::locatenodes(const std::vector<Core::FMToutputnode>& nodes, int 
 				}
 			generalcatch.clear();
 			size_t themeid = 1;
-			for (const Rcpp::StringVector& attributevalues : attributes)
+			for (const std::vector<std::string>& attributevalues : attributes)
 				{
 				const std::string colname = "THEME" + std::to_string(themeid);
-				data.push_back(attributevalues, colname);
+				Rcpp::StringVector Rattributes(attributevalues.size());
+				std::copy(attributevalues.begin(), attributevalues.end(), Rattributes.begin());
+				data.push_back(Rattributes, colname);
 				++themeid;
 				}
 			data.push_back(age, "AGE");
