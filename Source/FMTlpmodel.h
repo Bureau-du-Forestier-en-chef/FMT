@@ -213,6 +213,11 @@ class FMTlpmodel : public FMTmodel
 	from the solverinterface matrix.
 	*/
 	bool updatematrixngraph();
+	// DocString: FMTlpmodel::getamountofpaths
+	/**
+	Get the number of possible paths if an action is commited on a development.
+	*/
+	size_t getamountofpaths(const Core::FMTdevelopment& dev, const int& actionid) const;
 	// DocString: FMTlpmodel::ismatrixelement
 	/**
 	Check if the FMTconstraint had a element of (element_type) located in the matrix for a given period.
