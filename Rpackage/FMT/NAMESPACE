@@ -1,0 +1,4 @@
+useDynLib("FMT", .registration=TRUE)
+exportPattern("^[[:alpha:]]+") 
+import(methods, Rcpp)
+

@@ -1,14 +1,11 @@
-pathtopackage<-"..\\..\\"
-Sys.setenv(PATH=paste(Sys.getenv("PATH"),pathtopackage,sep=";"))
-library(Rcpp)
-FMT<-Module("FMT",dyn.load(paste(pathtopackage,"\\FMT.dll",sep="")))
-if (new(FMT$FMTversion)$hasfeature("OSI"))
+library(FMT)
+if (new(FMTversion)$hasfeature("OSI"))
 	{
-    newparser <- new(FMT$FMTmodelparser)
+    newparser <- new(FMTmodelparser)
     primarylocation<-"../Models/TWD_land/TWD_land.pri"
     modelslist <- newparser$readproject(primarylocation, c("LP"), TRUE, TRUE, TRUE)
 	solverinterface<-list(CLP=1,MOSEK=2,CPLEX=3,GUROBI=4)
-    lpmodel <- new(FMT$FMTlpmodel, modelslist[[1]], solverinterface$CLP)
+    lpmodel <- new(FMTlpmodel, modelslist[[1]], solverinterface$CLP)
     tolerance <- 0.0001
     schedules <- newparser$readschedules(primarylocation, modelslist)[[1]]
     for (period in 1:length(schedules))
