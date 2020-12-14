@@ -74,6 +74,24 @@ namespace Models
 	return bestresults;
 	}
 
+	std::map<std::string, double> FMTsesmodel::getoutput(const Core::FMToutput& output,
+		int period, Graph::FMToutputlevel level) const
+	{
+		std::map<std::string, double>values;
+		try {
+			const std::map<std::string, std::vector<double>>periodvalues = spschedule.getoutput(*this, output, period, period, level);
+			for (std::map<std::string, std::vector<double>>::const_iterator it = periodvalues.begin();it!=periodvalues.end();it++)
+				{
+				values[it->first] = *it->second.begin();
+				}
+
+		}catch (...)
+			{
+			_exhandler->printexceptions("", "FMTsesmodel::getoutput", __LINE__, __FILE__);
+			}
+		return values;
+	}
+
 	std::string FMTsesmodel::getdisturbancestats() const
 	{
 		return spschedule.getpatchstats(actions);
