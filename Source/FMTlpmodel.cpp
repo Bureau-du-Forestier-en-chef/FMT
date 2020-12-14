@@ -1881,68 +1881,69 @@ bool FMTlpmodel::locatenodes(const std::vector<Core::FMToutputnode>& nodes, int 
 					++outputid;
 					}
 				}
-			//std::vector<std::vector<std::string>>attributes(themes.size(),std::vector<std::string>(generalcatch.size(),""));
-			//std::vector<std::vector<double>>outputsvec(outputsdata.size(), std::vector<double>(generalcatch.size(), std::numeric_limits<double>::quiet_NaN()));
-			const size_t datasize = generalcatch.size() * outputsdata.size();
-			std::vector<std::vector<std::string>>attributes(themes.size(), std::vector<std::string>(datasize));
-			Rcpp::IntegerVector age(datasize);
-			Rcpp::IntegerVector lock(datasize);
-			Rcpp::IntegerVector period(datasize);
-			Rcpp::StringVector scenario(datasize);
-			Rcpp::StringVector outputsvariables(datasize);
-			Rcpp::NumericVector outputsvalues(datasize, std::numeric_limits<double>::quiet_NaN());
-			size_t devid = 0;
-			size_t totalid = 0;
-			for (std::map<std::string,std::vector<double>>::const_iterator it = generalcatch.begin(); it != generalcatch.end(); ++it)
+			if (!generalcatch.empty())
 				{
-				std::vector<std::string>devdata;
-				boost::split(devdata,it->first, boost::is_any_of(FMT_STR_SEPARATOR), boost::token_compress_on);
-				devdata.pop_back();
-				const int periodvalue = std::stoi(devdata.back());
-				devdata.pop_back();
-				const int lockvalue = std::stoi(devdata.back());
-				devdata.pop_back();
-				const int agevalue = std::stoi(devdata.back());
-				devdata.pop_back();
-				const std::string scenarioname = getname();
-				size_t outid = 0;
-				for (const Core::FMToutput& output : outputsdata)
+				const size_t datasize = generalcatch.size() * outputsdata.size();
+				std::vector<std::vector<std::string>>attributes(themes.size(), std::vector<std::string>(datasize));
+				Rcpp::IntegerVector age(datasize);
+				Rcpp::IntegerVector lock(datasize);
+				Rcpp::IntegerVector period(datasize);
+				Rcpp::StringVector scenario(datasize);
+				Rcpp::StringVector outputsvariables(datasize);
+				Rcpp::NumericVector outputsvalues(datasize, std::numeric_limits<double>::quiet_NaN());
+				size_t devid = 0;
+				size_t totalid = 0;
+				for (std::map<std::string, std::vector<double>>::const_iterator it = generalcatch.begin(); it != generalcatch.end(); ++it)
+				{
+					std::vector<std::string>devdata;
+					boost::split(devdata, it->first, boost::is_any_of(FMT_STR_SEPARATOR), boost::token_compress_on);
+					devdata.pop_back();
+					const int periodvalue = std::stoi(devdata.back());
+					devdata.pop_back();
+					const int lockvalue = std::stoi(devdata.back());
+					devdata.pop_back();
+					const int agevalue = std::stoi(devdata.back());
+					devdata.pop_back();
+					const std::string scenarioname = getname();
+					size_t outid = 0;
+					for (const Core::FMToutput& output : outputsdata)
 					{
-					size_t atid = 0;
-					for (const std::string& attribute : devdata)
+						size_t atid = 0;
+						for (const std::string& attribute : devdata)
 						{
-						attributes[atid][totalid] = attribute;
-						++atid;
+							attributes[atid][totalid] = attribute;
+							++atid;
 						}
-					age[totalid] = agevalue;
-					lock[totalid] = lockvalue;
-					period[totalid] = periodvalue;
-					scenario[totalid] = scenarioname;
-					outputsvalues[totalid] = it->second.at(outid);
-					outputsvariables[totalid] = output.getname();
-					++outid;
-					++totalid;
+						age[totalid] = agevalue;
+						lock[totalid] = lockvalue;
+						period[totalid] = periodvalue;
+						scenario[totalid] = scenarioname;
+						outputsvalues[totalid] = it->second.at(outid);
+						outputsvariables[totalid] = output.getname();
+						++outid;
+						++totalid;
 					}
-				++devid;
+					++devid;
 				}
-			generalcatch.clear();
-			size_t themeid = 1;
-			for (const std::vector<std::string>& attributevalues : attributes)
+				generalcatch.clear();
+				size_t themeid = 1;
+				for (const std::vector<std::string>& attributevalues : attributes)
 				{
-				const std::string colname = "THEME" + std::to_string(themeid);
-				Rcpp::StringVector Rattributes(attributevalues.size());
-				std::copy(attributevalues.begin(), attributevalues.end(), Rattributes.begin());
-				data.push_back(Rattributes, colname);
-				++themeid;
+					const std::string colname = "THEME" + std::to_string(themeid);
+					Rcpp::StringVector Rattributes(attributevalues.size());
+					std::copy(attributevalues.begin(), attributevalues.end(), Rattributes.begin());
+					data.push_back(Rattributes, colname);
+					++themeid;
 				}
-			data.push_back(age, "AGE");
-			data.push_back(lock, "LOCK");
-			data.push_back(period, "PERIOD");
-			data.push_back(scenario, "SCENARIO");
-			data.push_back(outputsvariables, "OUTPUT");
-			data.push_back(outputsvalues, "VALUE");
+				data.push_back(age, "AGE");
+				data.push_back(lock, "LOCK");
+				data.push_back(period, "PERIOD");
+				data.push_back(scenario, "SCENARIO");
+				data.push_back(outputsvariables, "OUTPUT");
+				data.push_back(outputsvalues, "VALUE");
+				data.attr("row.names") = Rcpp::seq(1, age.size());
+			}
 			data.attr("class") = "data.frame";
-			data.attr("row.names") = Rcpp::seq(1, age.size());
 		}catch (...)
 			{
 			_exhandler->printexceptions("", "FMTlpmodel::getoutputsdataframe", __LINE__, __FILE__);

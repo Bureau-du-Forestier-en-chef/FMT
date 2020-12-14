@@ -356,6 +356,16 @@ class FMTspatialschedule : public FMTlayer<Graph::FMTlinegraph>
 		a FMTobject.
 		*/
 		void passinobject(const Core::FMTobject& rhs) override;
+		// DocString: FMTspatialschedule::getoutput
+		/**
+		Get the output value of a output for a given period using the solution..
+		the map key returned consist of output name
+		if level == FMToutputlevel::standard || level == FMToutputlevel::totalonly,
+		or developement name if level == FMToutputlevel::developpement
+		*/
+		std::map<std::string, std::vector<double>> getoutput(const Models::FMTmodel & model, const Core::FMToutput& output,
+			const int& periodstart, const int& periodstop,
+			Graph::FMToutputlevel level = Graph::FMToutputlevel::totalonly) const;
 	protected:
 		// DocString: FMTspatialschedule::events
 		/**
@@ -376,9 +386,10 @@ class FMTspatialschedule : public FMTlayer<Graph::FMTlinegraph>
 		 /**
 		 set the output requested from a given linegraph into periods_values
 		 */
-		double getoutputfromgraph(const Graph::FMTlinegraph& linegraph, const Models::FMTmodel & model,
+		std::map<std::string,double> getoutputfromgraph(const Graph::FMTlinegraph& linegraph, const Models::FMTmodel & model,
 			const Core::FMToutputnode& node, const double* solution,const int&period,const std::string& nodename,
-			std::unordered_map<std::string, double>& nodecache) const;
+			std::unordered_map<std::string, double>& nodecache, Graph::FMToutputlevel level = Graph::FMToutputlevel::totalonly) const;
+
 		// DocString: FMTspatialschedule::getgraphsbystatic()
 		 /**
 		 Based on variable outputnode in the constraint returns a subset of the solution based on the static themes.

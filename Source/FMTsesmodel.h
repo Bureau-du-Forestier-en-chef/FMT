@@ -134,6 +134,15 @@ class FMTsesmodel : public FMTmodel
 			const size_t& randomiterations,
 			unsigned int seed = 0,
 			double tolerance = FMT_DBL_TOLERANCE);
+		// DocString: FMTsesmodel::getoutput
+		/**
+		Get the output value of a output for a given period using the spatial solution.
+		the map key returned consist of output name
+		if level == FMToutputlevel::standard || level == FMToutputlevel::totalonly,
+		or developement name if level == FMToutputlevel::developpement
+		*/
+		std::map<std::string, double> getoutput(const Core::FMToutput& output,
+			int period, Graph::FMToutputlevel level = Graph::FMToutputlevel::standard) const;
 		// DocString: FMTsesmodel::passinobject
 		/**
 		It's sometime usefull to pass in the exception handler and the logger  of an other FMTobject to
