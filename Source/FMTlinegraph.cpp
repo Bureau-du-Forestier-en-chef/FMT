@@ -62,14 +62,14 @@ namespace Graph
 	void FMTlinegraph::newperiod()
 	{
 		try {
-			std::queue<FMTvertex_descriptor> actives = getactiveverticies();
+			const size_t activessize = developments.back().size();
 			developments.push_back(boost::unordered_set<FMTvertexlookup<FMTvertex_descriptor>>());
 			periodstatsdiff = getstats();
-			if (actives.size() > 1)
+			if (activessize > 1)
 			{
 				_exhandler->raise(Exception::FMTexc::FMTnotlinegraph, "More than one active at the begining of the period", "FMTlinegraph::newperiod()", __LINE__, __FILE__);
 			}
-			if (actives.size() < 1)
+			if (activessize < 1)
 			{
 				_exhandler->raise(Exception::FMTexc::FMTnotlinegraph, "0 actives at the begining of the period", "FMTlinegraph::newperiod()", __LINE__, __FILE__);
 			}
@@ -98,7 +98,7 @@ namespace Graph
 		}
 	}
 
-	std::vector<Core::FMTdevelopmentpath> FMTlinegraph::operate(const Core::FMTaction& action, 
+	size_t FMTlinegraph::operate(const Core::FMTaction& action, 
 																const int& action_id,
 																const Core::FMTtransition& transition,
 																const Core::FMTyields& ylds,
@@ -115,7 +115,7 @@ namespace Graph
 		{
 			_exhandler->raisefromcatch("", "FMTlinegraph::operate", __LINE__, __FILE__);
 		}
-		return paths;
+		return paths.size();
 	}
 
 	void FMTlinegraph::grow()
@@ -125,7 +125,7 @@ namespace Graph
 			const Core::FMTdevelopment& active_development = getdevelopment(active);
 			const Core::FMTfuturdevelopment grown_up = active_development.grow();
 			FMTgraph<FMTbasevertexproperties, FMTbaseedgeproperties>::FMTvertex_descriptor next_period = adddevelopment(grown_up);
-			const Graph::FMTedgeproperties newedge(-1, 0, 100);
+			const Graph::FMTbaseedgeproperties newedge(-1);
 			boost::add_edge(active, next_period, newedge, data);
 			++stats.edges;
 		}catch (...)
@@ -328,6 +328,9 @@ namespace Graph
         return (statsdiff - stats);
 	}
 
+	
+
+
     FMTgraphstats FMTlinegraph::clearfromperiod(const int& period,bool updatedevelopments)
     {
 		try {
@@ -498,8 +501,42 @@ namespace Graph
 		const Core::FMTdevelopment& development = getbasedevelopment();
 		value += development.mask.getintersect(dynamicmask).getbitsstring();
 		value += std::to_string(development.age);
+		/*const Core::FMTdevelopment& development = getbasedevelopment();
+		std::string value(static_cast<const char*>(static_cast<const void*>(&development)));
+		value += std::string(static_cast<const char*>(static_cast<const void*>(&development.mask.getintersect(dynamicmask))));
+		value += std::string(static_cast<const char*>(static_cast<const void*>(&development.age)));*/
 		return value;
 		}
+
+	Core::FMTmask FMTlinegraph::getbasemask(const Core::FMTmask& dynamicmask) const
+		{
+		const Core::FMTdevelopment& development = getbasedevelopment();
+		Core::FMTmask mask = development.mask.getintersect(dynamicmask);
+		mask.binarizedappend<int>(development.age);
+		return mask;
+		}
+
+	void FMTlinegraph::filledgesmask(Core::FMTmask& mask, const int& maximalperiod) const
+		{
+		if (!isonlygrow())
+			{
+			FMTedge_iterator edge_iterator, edge_iterator_end;
+			boost::tie(edge_iterator, edge_iterator_end) = boost::edges(data);
+			int periodcount = 0;
+			while (edge_iterator != edge_iterator_end && periodcount <= maximalperiod)
+				{
+					const FMTbaseedgeproperties& edgeprop = data[*edge_iterator];
+					const int actionid = edgeprop.getactionID();
+					mask.binarizedappend<int>(actionid);
+					if (actionid < 0)
+					{
+						++periodcount;
+					}
+					++edge_iterator;
+				}
+			}
+		}
+
 
 	std::string FMTlinegraph::getedgesstr(const int& maximalperiod, bool& gotthewhole) const
 		{

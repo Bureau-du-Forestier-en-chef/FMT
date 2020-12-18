@@ -36,7 +36,7 @@ namespace Spatial
 		std::map<int, double>periodicvalues;
 		public:
 			bool worthintersecting;
-			std::unordered_map<std::string, double>patternvalues;
+			boost::unordered_map<Core::FMTmask, double>patternvalues;
 			Core::FMTmask staticmask;
 			Core::FMTmask dynamicmask;
 			FMTnodecache() = default;
@@ -54,17 +54,18 @@ namespace Spatial
 		};
 	FMTnodecache* actualcache;
 	Graph::FMToutputnodecache<FMTcoordinate>* staticnodes;
-	std::unordered_map<std::string, FMTnodecache>patterncache;
+	boost::unordered_map<Core::FMTmask, FMTnodecache>patterncache;
 	public:
 		FMTspatialnodescache() = default;
 		~FMTspatialnodescache();
 		FMTspatialnodescache(const std::vector<FMTcoordinate>& mapping);
 		FMTspatialnodescache(const FMTspatialnodescache& rhs);
 		FMTspatialnodescache& operator = (const FMTspatialnodescache& rhs);
-		const std::vector<FMTcoordinate>& getnode(const Core::FMToutputnode& node, const Models::FMTmodel& model,bool& exactnode);
+		const std::vector<FMTcoordinate>& getnode(const Core::FMToutputnode& node, const Models::FMTmodel& model,bool& exactnode, const Core::FMTmask& mask);
 		void setnode(const Core::FMToutputnode& node, const std::vector<FMTcoordinate>& coordinates);
 		void removeperiod(const int& period);
 		FMTnodecache* getactualnodecache();
+		void swap(FMTspatialnodescache& rhs);
 		bool empty() const;
 		size_t size() const;
 		void insert(const FMTspatialnodescache& rhs);

@@ -54,6 +54,7 @@ namespace Core
 		return (std::string(source) + " " + std::string(factor) + " *" + std::to_string(constant));
 		}
 
+
     FMToutputnode FMToutputnode::setperiod(int period) const
         {
         FMToutputnode newnode(*this);
@@ -183,6 +184,31 @@ namespace Core
 		}
 		return node_period;
 		}
+
+	std::string FMToutputnode::gethashstring() const
+	{
+		/*std::string value(static_cast<const char*>(static_cast<const void*>(&source)));
+		value += std::string(static_cast<const char*>(static_cast<const void*>(&factor)));
+		value += std::string(static_cast<const char*>(static_cast<const void*>(&constant)));
+		return value;*/
+		//return FMTbinarizer().binarize<FMToutputnode>(*this);
+		return std::string(*this);
+	}
+
+	Core::FMTmask FMToutputnode::gethashmask() const
+	{
+		Core::FMTmask basemask;
+		source.fillhashmask(basemask);
+		factor.fillhashmask(basemask);
+		basemask.binarizedappend<double>(constant);
+		return basemask;
+	}
+
+	void FMToutputnode::fillhashmaskspec(Core::FMTmask& basemask) const
+	{
+		source.fillhashspec(basemask);
+		factor.fillhashspec(basemask);
+	}
 
 	
 

@@ -139,6 +139,25 @@ namespace Spatial
                     }
                 return *this;
                 }
+			// DocString: FMTlayer::swap
+			/**
+			Swap operator for FMTlayer.
+			*/
+			void swap(FMTlayer<T>& rhs)
+				{
+				try {
+					mapping.swap(rhs.mapping);
+					geotransform.swap(rhs.geotransform);
+					std::swap(maxx, rhs.maxx);
+					std::swap(maxy, rhs.maxy);
+					std::swap(SRS_WKT, rhs.SRS_WKT);
+					std::swap(cellsize, rhs.cellsize);
+				}catch (...)
+					{
+					_exhandler->raisefromcatch("", "FMTlayer::swap", __LINE__, __FILE__);
+					}
+				}
+
 			// DocString: FMTlayer::setextentfrom
 			/**
 			Using an other layer (rhs) it's going to set the informations (other than the main map) to this.

@@ -26,6 +26,7 @@ namespace Spatial
         return *this;
     }
 
+
     bool FMTeventcontainer::operator==(const FMTeventcontainer& rhs) const
     {
         return events==rhs.events;
