@@ -308,6 +308,11 @@ class FMTspatialschedule : public FMTlayer<Graph::FMTlinegraph>
 		Compare solution by constraint group.
 		*/
 		bool isbetterbygroup(const FMTspatialschedule& rhs, const Models::FMTmodel& model) const;
+		// DocString: FMTspatialschedule::swap
+		/**
+		Swap operator for FMTspatialschedule.
+		*/
+		void swap(FMTspatialschedule& rhs);
 		// DocString: FMTspatialschedule::getgraphs
 		/**
 		Returns a vector of const iterators to graphs.This thing will need to be cached to increase inficiency
@@ -387,8 +392,8 @@ class FMTspatialschedule : public FMTlayer<Graph::FMTlinegraph>
 		 set the output requested from a given linegraph into periods_values
 		 */
 		std::map<std::string,double> getoutputfromgraph(const Graph::FMTlinegraph& linegraph, const Models::FMTmodel & model,
-			const Core::FMToutputnode& node, const double* solution,const int&period,const std::string& nodename,
-			std::unordered_map<std::string, double>& nodecache, Graph::FMToutputlevel level = Graph::FMToutputlevel::totalonly) const;
+			const Core::FMToutputnode& node, const double* solution,const int&period, const Core::FMTmask& nodemask,
+			boost::unordered_map<Core::FMTmask, double>& nodecache, Graph::FMToutputlevel level = Graph::FMToutputlevel::totalonly) const;
 
 		// DocString: FMTspatialschedule::getgraphsbystatic()
 		 /**

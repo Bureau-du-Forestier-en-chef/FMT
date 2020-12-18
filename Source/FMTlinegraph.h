@@ -40,7 +40,7 @@ class FMTlinegraph : public FMTgraph<FMTbasevertexproperties,FMTbaseedgeproperti
 		void newperiod();
 		void setaction(	FMTvertex_descriptor active,const int& actionID,
 						const std::vector<Core::FMTdevelopmentpath>& paths);
-		std::vector<Core::FMTdevelopmentpath> operate(	const Core::FMTaction& action, const int& action_id, const Core::FMTtransition& transition, 
+		size_t operate(	const Core::FMTaction& action, const int& action_id, const Core::FMTtransition& transition, 
 														const Core::FMTyields& ylds, const std::vector<Core::FMTtheme>& themes);
 		void grow();
 		FMTvertex_descriptor getactivevertex() const;
@@ -65,8 +65,10 @@ class FMTlinegraph : public FMTgraph<FMTbasevertexproperties,FMTbaseedgeproperti
 		const Core::FMTdevelopment& getbasedevelopment() const;
 		size_t getbasehash(const Core::FMTmask& dynamicmask) const;
 		std::string getbasestr(const Core::FMTmask& dynamicmask) const;
+		Core::FMTmask getbasemask(const Core::FMTmask& dynamicmask) const;
 		size_t getedgeshash(const int& maximalperiod,bool& gotthewhole) const;
 		std::string getedgesstr(const int& maximalperiod, bool& gotthewhole) const;
+		void filledgesmask(Core::FMTmask& mask, const int& maximalperiod) const;
 		bool stringforconstraint(std::string& value, const int& stop, const Core::FMTmask& dynamicmask) const;
 		bool hashforconstraint(size_t& hashvalue,const int& stop,const Core::FMTmask& dynamicmask) const;
 		bool isonlygrow() const;

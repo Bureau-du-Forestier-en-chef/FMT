@@ -106,6 +106,8 @@ void exportModel()
 				"@DocString(FMTsesmodel::getschedule)")
 			.def("getdisturbancestats", &Models::FMTsesmodel::getdisturbancestats,
 				"@DocString(FMTsesmodel::getdisturbancestats)")
+			.def("getoutput", &Models::FMTsesmodel::getoutput,
+				getLPoutputoverloads(bp::args("output", "period", "level"), "@DocString(FMTsesmodel::getoutput)"))
 			.def("greedyreferencebuild", &Models::FMTsesmodel::greedyreferencebuild,
 				greedyreferencebuild_overloads(bp::args("schedule", "numberofiterations", "seed", "tolerance"), "@DocString(FMTsesmodel::greedyreferencebuild)"))
 			.def("getspschedule", &Models::FMTsesmodel::getspschedule,

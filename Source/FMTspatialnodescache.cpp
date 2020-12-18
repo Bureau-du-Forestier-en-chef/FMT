@@ -94,16 +94,16 @@ namespace Spatial
 		return *this;
 		}
 
-	const std::vector<FMTcoordinate>& FMTspatialnodescache::getnode(const Core::FMToutputnode& node, const Models::FMTmodel& model, bool& exactnode)
+	const std::vector<FMTcoordinate>& FMTspatialnodescache::getnode(const Core::FMToutputnode& node, const Models::FMTmodel& model, bool& exactnode,const Core::FMTmask& basemask)
 		{
-		//const size_t hashvalue = node.hashforvalue();
-		const std::string nodestr = std::string(node);
-		std::unordered_map<std::string, FMTnodecache>::iterator nodecacheit = patterncache.find(nodestr);
+		boost::unordered_map<Core::FMTmask, FMTnodecache>::iterator nodecacheit = patterncache.find(basemask);
 		if (nodecacheit == patterncache.end())
 		{
-			patterncache[nodestr] = FMTnodecache(node, model);
+			std::pair<Core::FMTmask, FMTnodecache>newcache(basemask, FMTnodecache(node, model));
+			nodecacheit = patterncache.insert(newcache).first;
+			//patterncache[basemask] = FMTnodecache(node, model);
 		}
-		actualcache = &patterncache[nodestr];
+		actualcache = &nodecacheit->second;
 		return staticnodes->getverticies(node, model.actions,model.themes, exactnode);
 		}
 
@@ -112,9 +112,16 @@ namespace Spatial
 		staticnodes->setvalidverticies(node, coordinates);
 		}
 
+	void FMTspatialnodescache::swap(FMTspatialnodescache& rhs)
+		{
+		std::swap(actualcache,rhs.actualcache);
+		std::swap(staticnodes, rhs.staticnodes);
+		patterncache.swap(rhs.patterncache);
+		}
+
 	void FMTspatialnodescache::removeperiod(const int& period)
 		{
-		for (std::unordered_map<std::string, FMTnodecache>::iterator cit = patterncache.begin(); cit != patterncache.end(); cit++)
+		for (boost::unordered_map<Core::FMTmask, FMTnodecache>::iterator cit = patterncache.begin(); cit != patterncache.end(); cit++)
 			{
 			cit->second.removeperiod(period);
 			}
@@ -132,7 +139,7 @@ namespace Spatial
 	size_t FMTspatialnodescache::size() const
 		{
 		size_t totalsize = 0;
-		for (std::unordered_map<std::string,FMTnodecache>::const_iterator cit = patterncache.begin();cit!=patterncache.end();cit++)
+		for (boost::unordered_map<Core::FMTmask, FMTnodecache>::const_iterator cit = patterncache.begin();cit!=patterncache.end();cit++)
 			{
 			totalsize += cit->second.patternvalues.size();
 			}
@@ -141,7 +148,7 @@ namespace Spatial
 
 	void FMTspatialnodescache::insert(const FMTspatialnodescache& rhs)
 		{
-		for (std::unordered_map<std::string, FMTnodecache>::const_iterator cit = rhs.patterncache.begin(); cit != rhs.patterncache.end(); cit++)
+		for (boost::unordered_map<Core::FMTmask, FMTnodecache>::const_iterator cit = rhs.patterncache.begin(); cit != rhs.patterncache.end(); cit++)
 			{
 			if (patterncache.find(cit->first)!=patterncache.end())
 				{
