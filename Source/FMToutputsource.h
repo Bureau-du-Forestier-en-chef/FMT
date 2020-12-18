@@ -91,6 +91,8 @@ class FMToutputsource : public FMTspec
 		double getconstantvalue(const std::vector<Core::FMTactualdevelopment>& area,
 								const std::vector<Core::FMTaction>&actions, const FMTyields& yields) const;
 		size_t hash(int period = -1,bool withyield = false) const;
+		void fillhashmask(Core::FMTmask& basemask) const;
+		void fillhashspec(Core::FMTmask& basemask) const;
     };
 
 class FMToutputsourcecomparator

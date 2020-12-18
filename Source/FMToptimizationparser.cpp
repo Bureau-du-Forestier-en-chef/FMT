@@ -98,6 +98,10 @@ namespace Parser
 				{
 				stopperiod = getnum<int>(upper, constants);
 				}
+			else if (upper == "_LENGTH")
+			{
+				stopperiod = std::numeric_limits<int>::max();
+			}
 			constraint.setlength(startperiod, stopperiod);
 		}catch (...)
 			{

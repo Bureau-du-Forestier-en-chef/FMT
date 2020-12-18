@@ -236,6 +236,26 @@ class FMTmask
 		Append a bitsets to the bitset data member of the FMTmask.
 		*/
         void append(const boost::dynamic_bitset<> &bits);
+		// DocString: FMTmask::binarizedappend
+		/**
+		Binarize any class and append it to the mask.
+		*/
+		template <class typetobinarize>
+		void binarizedappend(const typetobinarize& element)
+		{
+			size_t  location = data.size();
+			data.resize(data.size() + (sizeof(typetobinarize) * 8));
+			const char* charelements = reinterpret_cast<const char*>(&element);
+			for (size_t charit = 0; charit < sizeof(typetobinarize); ++charit)
+			{
+				const char value = charelements[charit];
+				for (int i = 7; i >= 0; --i)
+				{
+					data[location] = ((value & (1 << i)));
+					++location;
+				}
+			}
+		}
 		// DocString: FMTmask::getunion
 		/**
 		Do a union operation on the dynamic bitset of the FMTmask and the given FMTmask (rhs).
@@ -334,6 +354,40 @@ class FMTmask
 		*/
 		FMTmask postsolve(const FMTmask& selectedmask, const std::vector<FMTtheme>&basethemes) const;
     };
+
+
+template<> inline void FMTmask::binarizedappend<std::string>(const std::string& element)
+	{
+		size_t  location = data.size();
+		data.resize(data.size() + (element.size() * 8));
+		const char* charelements = element.c_str();
+		for (size_t charit = 0; charit < element.size(); ++charit)
+		{
+			const char value = charelements[charit];
+			for (int i = 7; i >= 0; --i)
+			{
+				data[location] = ((value & (1 << i)));
+				++location;
+			}
+		}
+	}
+
+template<> inline void FMTmask::binarizedappend<double>(const double& element)
+{
+	size_t  location = data.size();
+	const int corrected = static_cast<int>(element*(1 / FMT_DBL_TOLERANCE));
+	data.resize(data.size() + (sizeof(int) * 8));
+	const char* charelements = reinterpret_cast<const char*>(&corrected);
+	for (size_t charit = 0; charit < sizeof(int); ++charit)
+	{
+		const char value = charelements[charit];
+		for (int i = 7; i >= 0; --i)
+		{
+			data[location] = ((value & (1 << i)));
+			++location;
+		}
+	}
+}
 
 // DocString: FMTmaskcomparator
 /**

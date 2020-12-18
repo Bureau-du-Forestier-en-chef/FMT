@@ -612,6 +612,26 @@ class FMTgraph : public Core::FMTobject
 			}
 			return value;
 		}
+
+		FMTvertex_descriptor getgrowthsource(const FMTvertex_descriptor& out_vertex) const
+		{
+			try {
+				FMTinedge_iterator inedge_iterator, inedge_end;
+				for (boost::tie(inedge_iterator, inedge_end) = boost::in_edges(out_vertex, data); inedge_iterator != inedge_end; ++inedge_iterator)
+				{
+					const FMTbaseedgeproperties& edgeprop = data[*inedge_iterator];
+					if (edgeprop.getactionID() < 0)
+						{
+						return boost::source(*inedge_iterator, data);
+						}
+				}
+			}catch (...)
+				{
+				_exhandler->raisefromcatch("", "FMTgraph::getgrowthsource", __LINE__, __FILE__);
+				}
+			return FMTvertex_descriptor();
+		}
+
 		double inarea(const FMTvertex_descriptor& out_vertex,
                         const double*&  solution, bool growth = false) const
 		{
@@ -1313,7 +1333,13 @@ class FMTgraph : public Core::FMTobject
 						}
 						else if (level == FMToutputlevel::developpement)
 						{
-							value = std::string(development);
+							if (node.source.isnextperiod())//If it looks at next period make sure to show the right dev...
+								{
+								value = std::string(data[getgrowthsource(vertex)].get());
+							}else {
+								value = std::string(development);
+								}
+							
 							values[value] = 0;
 						}
 						else {

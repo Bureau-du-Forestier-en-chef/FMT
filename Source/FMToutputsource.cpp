@@ -74,6 +74,25 @@ FMToutputsource& FMToutputsource::operator = (const FMToutputsource& rhs)
     return *this;
     }
 
+void FMToutputsource::fillhashmask(Core::FMTmask& basemask) const
+	{
+		//basemask.append(mask.getbitsetreference());
+		basemask.binarizedappend<std::string>(std::string(mask));
+		basemask.binarizedappend<int>(static_cast<int>(target));
+		for (const double& lvalue : values)
+		{
+			basemask.binarizedappend<double>(lvalue);
+		}
+		basemask.binarizedappend<std::string>(yield);
+		basemask.binarizedappend<std::string>(action);
+	}
+
+void FMToutputsource::fillhashspec(Core::FMTmask& basemask) const
+	{
+	basemask.binarizedappend<std::string>(FMTspec::operator std::string());
+	}
+
+
 FMToutputsource::operator std::string() const
     {
 	std::string line = "";

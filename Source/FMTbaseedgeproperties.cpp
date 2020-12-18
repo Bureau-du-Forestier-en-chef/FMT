@@ -48,10 +48,6 @@ namespace Graph
 		return (!(*this == rhs));
 	}
 
-	FMTbaseedgeproperties::FMTbaseedgeproperties(const int& laction) :action(laction)
-	{
-
-	}
 
 }
 

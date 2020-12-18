@@ -35,6 +35,7 @@ namespace Graph
 		FMTbaseedgeproperties(const int& laction,
 						const int& lvariableID,
 						const double& lproportion);
+		constexpr FMTbaseedgeproperties(const int& laction) : action(laction) {}
 		virtual inline int	getvariableID() const
 			{
 			return 0;
@@ -50,7 +51,6 @@ namespace Graph
 		void setactionID(const int& newid);
 		bool isaction(const std::vector<Core::FMTaction>& actions,
 			const Core::FMTaction& rhsaction) const;
-		FMTbaseedgeproperties(const int& laction);
 		virtual bool operator == (const FMTbaseedgeproperties& rhs) const;
 		virtual bool operator != (const FMTbaseedgeproperties& rhs) const;
 		bool operator < (const FMTbaseedgeproperties& rhs) const;
