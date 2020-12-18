@@ -38,6 +38,9 @@ class FMToutputnode
 		bool issamebutdifferentaction(const FMToutputnode& rhs) const;
 		bool isactionbased() const;
 		operator std::string() const;
+		std::string gethashstring() const;
+		Core::FMTmask gethashmask() const;
+		void fillhashmaskspec(Core::FMTmask& basemask) const;
 		FMToutputnode setperiod(int period) const;
 		FMToutputnode& operator = (const FMToutputnode& rhs);
 		int settograph(std::vector<int>& targetedperiods, int period,int max_period);

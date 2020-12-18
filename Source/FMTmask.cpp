@@ -168,16 +168,14 @@ void FMTmask::update(const std::vector<FMTtheme>& themes)
 
 FMTmask FMTmask::getunion(const FMTmask& rhs) const
 	{
-	FMTmask newmask(*this);
-	newmask.name.clear();
+	FMTmask newmask(data);
 	newmask.data |= rhs.data;
 	return newmask;
 	}
 
 FMTmask FMTmask::getintersect(const FMTmask& rhs) const
 	{
-	FMTmask newmask(*this);
-	newmask.name.clear();
+	FMTmask newmask(data);
 	newmask.data &= rhs.data;
 	return newmask;
 	}
@@ -337,18 +335,9 @@ bool FMTmask::isnotthemessubset(const FMTmask& rhs, const std::vector<FMTtheme>&
 
 std::string FMTmask::getbitsstring() const
             {
-            std::string bits = "";
-            for (size_t i=0; i<data.size(); ++i)
-                {
-                if (data[i])
-                    {
-                    bits+="1 ";
-                    }else{
-                    bits+="0 ";
-                    }
-                }
-            bits.pop_back();
-            return bits;
+			std::string buffer;
+			boost::to_string(data, buffer);
+            return buffer;
             }
 
 FMTmask FMTmask::presolve(const FMTmask& selectedmask, const std::vector<FMTtheme>&presolvedthemes) const
