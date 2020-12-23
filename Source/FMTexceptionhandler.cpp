@@ -58,6 +58,8 @@ FMTexceptionhandler& FMTexceptionhandler::operator = (const FMTexceptionhandler&
 		_errorcount = rhs._errorcount;
 		_warningcount = rhs._warningcount;
 		_logger = rhs._logger;
+		usenestedexceptions = rhs.usenestedexceptions;
+		cplhandlerpushed = rhs.cplhandlerpushed;
 	}
 	return *this;
 }
@@ -160,7 +162,8 @@ FMTexceptionhandler::FMTexceptionhandler(const FMTexceptionhandler& rhs) :
 	_errorcount(rhs._errorcount),
 	_warningcount(rhs._warningcount),
 	_logger(rhs._logger),
-	usenestedexceptions(rhs.usenestedexceptions)
+	usenestedexceptions(rhs.usenestedexceptions),
+	cplhandlerpushed(rhs.cplhandlerpushed)
 	{
 
 	}
@@ -170,10 +173,18 @@ FMTexceptionhandler::FMTexceptionhandler() : _level(FMTlev::FMT_None),
 		_errorcount(0),
 		_warningcount(0),
 		_logger(),
-		usenestedexceptions(true)
+		usenestedexceptions(true),
+		cplhandlerpushed(false)
 		{
 
 		}
+
+#if defined FMTWITHGDAL
+void FMTexceptionhandler::setCPLpushed()
+	{
+	cplhandlerpushed = true;
+	}
+#endif
 
 std::string FMTexceptionhandler::updatestatus(const FMTexc lexception, const std::string message)
 {

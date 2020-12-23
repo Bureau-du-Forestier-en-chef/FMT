@@ -37,6 +37,7 @@ class FMToutputnode
 		bool issubsetof(const FMToutputnode& rhs,const std::vector<Core::FMTaction>& actions) const;
 		bool issamebutdifferentaction(const FMToutputnode& rhs) const;
 		bool isactionbased() const;
+		bool issamevalues(const FMToutputnode& rhs) const;
 		operator std::string() const;
 		std::string gethashstring() const;
 		Core::FMTmask gethashmask() const;
@@ -47,14 +48,19 @@ class FMToutputnode
 		~FMToutputnode()=default;
 	};
 
-class FMToutputnodehashcomparator
+class FMToutputnodevaluecomparator
 	{
-		size_t sourcehash;
 	public:
-		FMToutputnodehashcomparator(size_t hash);
-		bool operator()(const FMToutputnode& node) const;
+		bool operator()(const FMToutputnode& node1, const FMToutputnode& node2) const;
 
 	};
+
+class FMToutputnodehasher 
+	{
+	public:
+		size_t operator()(const FMToutputnode & node) const;
+	};
+
 
 }
 

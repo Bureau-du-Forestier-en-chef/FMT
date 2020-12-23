@@ -68,6 +68,14 @@ class FMTbounds
             {
             return upper;
             }
+		 inline bool out(const T&  value) const
+			{
+			 return ((lower > value) || (upper < value));
+			}
+		 inline bool in(const T&  value) const
+			{
+			 return (empty() || (value <= upper && value >= lower));
+			}
         FMTbounds(const FMTbounds<T>& rhs) :
             andbound(rhs.andbound),
             use(rhs.use),
@@ -332,13 +340,15 @@ class FMTspec
 		ar & BOOST_SERIALIZATION_NVP(per);
 		ar & BOOST_SERIALIZATION_NVP(age);
 		ar & BOOST_SERIALIZATION_NVP(lock);
-		ar & BOOST_SERIALIZATION_NVP(ylds);
+		ar & BOOST_SERIALIZATION_NVP(yieldnames);
+		ar & BOOST_SERIALIZATION_NVP(yieldbounds);
 	}
 protected:
     FMTperbounds per;
     FMTagebounds age;
     FMTlockbounds lock;
-	std::map<std::string, FMTyldbounds>ylds;
+	std::vector<std::string>yieldnames;
+	std::vector<FMTyldbounds>yieldbounds;
 public:
     FMTspec();
     virtual ~FMTspec()=default;
@@ -351,24 +361,46 @@ public:
     bool addbounds(const FMTlockbounds& bound);
 	inline bool allowwithoutyield(const int& tperiod, const int& tage, const int& tlock) const
 		{
-		return ((per.empty() || (tperiod <= per.upper && tperiod >= per.lower)) &&
-			(age.empty() || (tage <= age.upper && tage >= age.lower)) &&
+		return (per.in(tperiod) &&
+			age.in(tage) &&
 			(lock.empty() || (tlock >= lock.lower)));
 		}
-	inline bool allow(const int& tperiod, const int& tage, const int& tlock, const std::map<std::string, double>& names) const
+	inline const FMTyldbounds& getyieldbound(const std::string& name) const
 		{
-		for (std::map<std::string, FMTyldbounds>::const_iterator it = ylds.begin(); it != ylds.end(); ++it)
+		return yieldbounds.at(std::distance(yieldnames.begin(), std::find(yieldnames.begin(), yieldnames.end(), name)));
+		}
+	inline bool allowyields(const std::vector<double>& values) const
+	{
+		for (size_t location = 0; location < yieldnames.size(); ++location)
+		{
+			if (yieldbounds.at(location).out(values.at(location)))
 			{
-				const FMTyldbounds* bnds = &it->second;
-				if ((bnds->lower > names.at(it->first)) || (bnds->upper < names.at(it->first)))
-				{
-					return false;
-				}
+				return false;
 			}
+		}
+
+		return true;
+	}
+	inline bool allow(const int& tperiod, const int& tage, const int& tlock, const std::vector<double>& values) const
+		{
+		for (size_t location = 0; location < yieldnames.size(); ++location)
+		{
+			if (yieldbounds.at(location).out(values.at(location)))
+				{
+				return false;
+				}
+		}
 		return (allowwithoutyield(tperiod,tage,tlock));
 		}
-	std::map<std::string,FMTyldbounds>getyldsbounds() const;
-	std::vector<std::string>getylds() const;
+	//std::map<std::string,FMTyldbounds>getyldsbounds() const;
+	inline const std::vector<std::string>& getylds() const
+		{
+		return yieldnames;
+		}
+	inline const std::vector<FMTyldbounds>& getyldbounds() const
+		{
+		return yieldbounds;
+		}
     virtual operator std::string() const;
 	bool operator == (const FMTspec& rhs) const;
 	bool operator < (const FMTspec& rhs) const;

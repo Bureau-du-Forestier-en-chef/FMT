@@ -224,6 +224,24 @@ std::vector<const FMTaction*>FMTactioncomparator::getallaggregates(const std::ve
 	return actionsptr;
 	}
 
+std::unordered_set<int>FMTactioncomparator::getallaggregatesset(const std::vector<FMTaction>&actions, bool aggregateonly) const
+{
+	std::unordered_set<int>actionsptr;
+	std::vector<FMTaction>::const_iterator actit = actions.begin();
+	int actionid = 0;
+	while (actit != actions.end())
+	{
+		if ((!aggregateonly && actit->name == action_name) || (std::find(actit->aggregates.begin(), actit->aggregates.end(), action_name) != actit->aggregates.end()))
+		{
+			actionsptr.insert(actionid);
+		}
+		++actit;
+	++actionid;
+	}
+	return actionsptr;
+}
+
+
 FMTaction FMTaction::presolve(const FMTmask& basemask,
 	const std::vector<FMTtheme>& originalthemes,
 	const FMTmask& presolvedmask,

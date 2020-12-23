@@ -21,7 +21,7 @@ namespace Spatial
 			delete staticnodes;
 			}
 		}
-	FMTspatialnodescache::FMTnodecache::FMTnodecache(const Core::FMToutputnode& node, const Models::FMTmodel& model):periodicvalues(),worthintersecting(true),patternvalues(), staticmask(), dynamicmask()
+	FMTspatialnodescache::FMTnodecache::FMTnodecache(const Core::FMToutputnode& node, const Models::FMTmodel& model):periodicvalues(),worthintersecting(true),patternvalues(), staticmask(), dynamicmask(),actions(node.source.targetsset(model.actions))
 		{
 		dynamicmask  = model.getdynamicmask(node);
 		const Core::FMTmask dymask = model.getdynamicmask(node, true);
@@ -94,14 +94,13 @@ namespace Spatial
 		return *this;
 		}
 
-	const std::vector<FMTcoordinate>& FMTspatialnodescache::getnode(const Core::FMToutputnode& node, const Models::FMTmodel& model, bool& exactnode,const Core::FMTmask& basemask)
+	const std::vector<FMTcoordinate>& FMTspatialnodescache::getnode(const Core::FMToutputnode& node, const Models::FMTmodel& model, bool& exactnode)
 		{
-		boost::unordered_map<Core::FMTmask, FMTnodecache>::iterator nodecacheit = patterncache.find(basemask);
+		ucaching::iterator nodecacheit = patterncache.find(node);
 		if (nodecacheit == patterncache.end())
 		{
-			std::pair<Core::FMTmask, FMTnodecache>newcache(basemask, FMTnodecache(node, model));
+			std::pair<Core::FMToutputnode, FMTnodecache>newcache(node,FMTnodecache(node, model));
 			nodecacheit = patterncache.insert(newcache).first;
-			//patterncache[basemask] = FMTnodecache(node, model);
 		}
 		actualcache = &nodecacheit->second;
 		return staticnodes->getverticies(node, model.actions,model.themes, exactnode);
@@ -121,7 +120,11 @@ namespace Spatial
 
 	void FMTspatialnodescache::removeperiod(const int& period)
 		{
-		for (boost::unordered_map<Core::FMTmask, FMTnodecache>::iterator cit = patterncache.begin(); cit != patterncache.end(); cit++)
+		/*for (boost::unordered_map<Core::FMTmask, FMTnodecache>::iterator cit = patterncache.begin(); cit != patterncache.end(); cit++)
+			{
+			cit->second.removeperiod(period);
+			}*/
+		for (ucaching::iterator cit = patterncache.begin(); cit != patterncache.end(); cit++)
 			{
 			cit->second.removeperiod(period);
 			}
@@ -132,6 +135,11 @@ namespace Spatial
 		return actualcache;
 		}
 
+	void FMTspatialnodescache::setnodecache(FMTspatialnodescache::ucaching::iterator cashit)
+		{
+		actualcache = &cashit->second;
+		}
+
 	bool FMTspatialnodescache::empty() const
 		{
 		return patterncache.empty();
@@ -139,16 +147,20 @@ namespace Spatial
 	size_t FMTspatialnodescache::size() const
 		{
 		size_t totalsize = 0;
-		for (boost::unordered_map<Core::FMTmask, FMTnodecache>::const_iterator cit = patterncache.begin();cit!=patterncache.end();cit++)
+		/*for (boost::unordered_map<Core::FMTmask, FMTnodecache>::const_iterator cit = patterncache.begin();cit!=patterncache.end();cit++)
 			{
 			totalsize += cit->second.patternvalues.size();
-			}
+			}*/
+		for (ucaching::const_iterator cit = patterncache.begin(); cit != patterncache.end(); cit++)
+		{
+			totalsize += cit->second.patternvalues.size();
+		}
 		return totalsize;
 		}
 
 	void FMTspatialnodescache::insert(const FMTspatialnodescache& rhs)
 		{
-		for (boost::unordered_map<Core::FMTmask, FMTnodecache>::const_iterator cit = rhs.patterncache.begin(); cit != rhs.patterncache.end(); cit++)
+		/*for (boost::unordered_map<Core::FMTmask, FMTnodecache>::const_iterator cit = rhs.patterncache.begin(); cit != rhs.patterncache.end(); cit++)
 			{
 			if (patterncache.find(cit->first)!=patterncache.end())
 				{
@@ -160,8 +172,31 @@ namespace Spatial
 				patterncache[cit->first] = cit->second;
 				patterncache[cit->first].clearperiod();
 				}
+			}*/
+		for (ucaching::const_iterator cit = rhs.patterncache.begin(); cit != rhs.patterncache.end(); cit++)
+		{
+			if (patterncache.find(cit->first) != patterncache.end())
+			{
+				patterncache[cit->first].worthintersecting = cit->second.worthintersecting;
+				patterncache[cit->first].patternvalues.insert(cit->second.patternvalues.begin(), cit->second.patternvalues.end());
+				patterncache[cit->first].staticmask = cit->second.staticmask;
+				patterncache[cit->first].dynamicmask = cit->second.dynamicmask;
 			}
+			else {
+				patterncache[cit->first] = cit->second;
+				patterncache[cit->first].clearperiod();
+			}
+		}
 		staticnodes->insert(*rhs.staticnodes);
+		}
+
+	FMTspatialnodescache::ucaching::iterator FMTspatialnodescache::begin()
+		{
+		return patterncache.begin();
+		}
+	FMTspatialnodescache::ucaching::iterator FMTspatialnodescache::end()
+		{
+		return patterncache.end();
 		}
 
 }

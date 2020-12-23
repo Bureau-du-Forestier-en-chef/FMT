@@ -5,12 +5,72 @@ SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
-#ifndef FMTvertexlookup_H_INCLUDED
-#define FMTvertexlookup_H_INCLUDED
+#ifndef FMTlookup_H_INCLUDED
+#define FMTlookup_H_INCLUDED
 
-#include "FMTdevelopment.h"
+//#include "FMTdevelopment.h"
 #include <boost/functional/hash.hpp>
 
+namespace Core
+{
+	template<class inmemory,class pointer>
+	class FMTlookup
+	{
+	public:
+		inmemory memoryobject;
+		const pointer* pointerobject;
+		FMTlookup() = default;
+		~FMTlookup() = default;
+		//For looking
+		FMTlookup(const pointer& ptr) :
+			memoryobject(), pointerobject(&ptr)
+		{
+
+		}
+		//For keeping
+		FMTlookup(const inmemory& des, const pointer& dev) :
+			memoryobject(des), pointerobject(&dev)
+		{
+
+		}
+		FMTlookup(const FMTlookup& rhs) :
+			memoryobject(rhs.memoryobject), pointerobject(rhs.pointerobject)
+		{
+
+		}
+		FMTlookup& operator = (const FMTlookup& rhs)
+		{
+			if (*this != &rhs)
+			{
+				memoryobject = rhs.memoryobject;
+				pointerobject = rhs.pointerobject;
+			}
+			return *this;
+		}
+		bool operator == (const FMTlookup& rhs) const
+		{
+			return  (pointerobject != nullptr && rhs.pointerobject != nullptr && (*pointerobject) == (*rhs.pointerobject));
+		}
+
+	};
+}
+
+namespace boost
+{
+
+	template<class inmemory, class pointer>
+	struct hash<Core::FMTlookup<inmemory,pointer>>
+	{
+		std::size_t operator()(const Core::FMTlookup<inmemory, pointer>& lookup) const
+		{
+			return lookup.pointerobject->hash();
+		}
+	};
+
+
+}
+
+/*
 namespace Graph
 {
 	template<class tdescriptor>
@@ -68,6 +128,6 @@ namespace boost
 	};
 
 
-}
+}*/
 
 #endif

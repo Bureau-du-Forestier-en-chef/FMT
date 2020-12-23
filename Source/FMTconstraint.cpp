@@ -92,7 +92,24 @@ namespace Core
 		std::vector<std::string>penalties;
         if (!this->emptyylds())
 			{
-			const std::map<std::string, FMTyldbounds> thebounds = this->getyldsbounds();
+			for (size_t id = 0; id < yieldnames.size(); ++id)
+				{
+				if (yieldnames.at(id).find("Penalty") != std::string::npos)
+					{
+					std::vector<std::string>names;
+					boost::split(names, yieldnames.at(id), boost::is_any_of("_"));
+					char str_sense = names.at(0).back();
+					if (str_sense == '-')
+						{
+						sense = -1;
+						}
+					for (size_t nameid = 0; nameid < names.size(); ++nameid)
+						{
+						penalties.push_back(names.at(1));
+						}
+					}
+				}
+			/*const std::map<std::string, FMTyldbounds> thebounds = this->getyldsbounds();
 			for (std::map<std::string,FMTyldbounds>::const_iterator yields = thebounds.begin();
 				yields != thebounds.end(); yields++)
 				{
@@ -110,7 +127,7 @@ namespace Core
                         penalties.push_back(names.at(1));
                         }
 					}
-				}
+				}*/
             }
         return penalties;
         }
@@ -119,7 +136,18 @@ namespace Core
         {
         if (!this->emptyylds())
 			{
-				const std::map<std::string, FMTyldbounds> thebounds = this->getyldsbounds();
+			for (size_t id = 0; id < yieldnames.size(); ++id)
+			{
+				if (yieldnames.at(id).find("GOAL_") != std::string::npos)
+				{
+					std::vector<std::string>names;
+					boost::split(names, yieldnames.at(id), boost::is_any_of("_"));
+					name = names[1];
+					value = yieldbounds.at(id).getlower();
+					break;
+				}
+			}
+				/*const std::map<std::string, FMTyldbounds> thebounds = this->getyldsbounds();
 				for (std::map<std::string, FMTyldbounds>::const_iterator yields = thebounds.begin();
 					yields != thebounds.end(); yields++)
 					{
@@ -131,7 +159,7 @@ namespace Core
                         value = yields->second.getlower();
                         break;
 						}
-					}
+					}*/
 			}
         }
 
@@ -139,7 +167,15 @@ namespace Core
 		{
 		if (!this->emptyylds())
 			{
-				std::map<std::string, FMTyldbounds> thebounds = this->getyldsbounds();
+			for (size_t id = 0; id < yieldnames.size(); ++id)
+			{
+				if (yieldnames.at(id).find("GOAL_") != std::string::npos ||
+					yieldnames.at(id).find("Penalty") != std::string::npos)
+				{
+					return true;
+				}
+			}
+				/*std::map<std::string, FMTyldbounds> thebounds = this->getyldsbounds();
 				for (std::map<std::string, FMTyldbounds>::const_iterator yields = thebounds.begin();
 					yields != thebounds.end(); yields++)
 					{
@@ -148,7 +184,7 @@ namespace Core
 						{
 						return true;
 						}
-					}
+					}*/
 			}
 		return false;
 		}
@@ -178,12 +214,24 @@ namespace Core
 		{
         lower = 0;
         upper = 0;
-		const std::map<std::string, FMTyldbounds> thebounds = this->getyldsbounds();
+		if (type == FMTconstrainttype::FMTstandard || type == FMTconstrainttype::FMTspatialadjacency || type == FMTconstrainttype::FMTspatialsize)
+		{
+			for (size_t id = 0; id < yieldnames.size(); ++id)
+			{
+				if (yieldnames.at(id).find("RHS") != std::string::npos)
+				{
+					lower = yieldbounds.at(id).getlower();
+					upper = yieldbounds.at(id).getupper();
+					break;
+				}
+			}
+		}
+		/*const std::map<std::string, FMTyldbounds> thebounds = this->getyldsbounds();
         if (type == FMTconstrainttype::FMTstandard || type == FMTconstrainttype::FMTspatialadjacency ||type == FMTconstrainttype::FMTspatialsize )
             {
             lower = thebounds.at("RHS").getlower();
             upper = thebounds.at("RHS").getupper();
-            }
+            }*/
         if (islevel())
             {
             size_t location = 0;
@@ -227,18 +275,35 @@ namespace Core
 		{
 		lower = 0;
 		upper = 0;
-		std::map<std::string, FMTyldbounds> thebounds = this->getyldsbounds();
+		for (size_t id = 0; id < yieldnames.size(); ++id)
+		{
+			if (yieldnames.at(id).find("Variation") != std::string::npos)
+			{
+				lower = (yieldbounds.at(id).getlower() / 100);
+				upper = (yieldbounds.at(id).getupper() / 100);
+				break;
+			}
+		}
+		/*std::map<std::string, FMTyldbounds> thebounds = this->getyldsbounds();
 		if (thebounds.find("Variation") != thebounds.end())
 			{
 			lower = (thebounds.at("Variation").getlower() / 100);
 			upper = (thebounds.at("Variation").getupper() / 100);
-			}
+			}*/
 		}
 
 	bool FMTconstraint::ismultiple() const
 		{
-		std::map<std::string, FMTyldbounds> thebounds = this->getyldsbounds();
-		return (thebounds.find("Variation") != thebounds.end());
+		//std::map<std::string, FMTyldbounds> thebounds = this->getyldsbounds();
+		//return (thebounds.find("Variation") != thebounds.end());
+		for (size_t id = 0; id < yieldnames.size(); ++id)
+			{
+				if (yieldnames.at(id).find("Variation") != std::string::npos)
+					{
+					return true;
+					}
+			}
+		return false;
 		}
 
 
@@ -297,7 +362,33 @@ namespace Core
 		std::string variation = "";
 		if (!this->emptyylds())
 			{
-			std::map<std::string, FMTyldbounds> thebounds = this->getyldsbounds();
+			size_t location = 0;
+			bool gotvariation = false;
+			for (const std::string& yldname : yieldnames)
+				{
+				if (yldname.find("Variation") != std::string::npos)
+				{
+					gotvariation = true;
+					break;
+				}
+				++location;
+				}
+			if (gotvariation)
+			{
+				if (yieldbounds.at(location).getlower() != yieldbounds.at(location).getupper()
+					&& yieldbounds.at(location).getupper() > 0)
+				{
+					variation += "," + std::to_string(static_cast<int>(yieldbounds.at(location).getlower())) + "%,";
+					variation += std::to_string(static_cast<int>(yieldbounds.at(location).getupper())) + "%";
+				}
+				else if (yieldbounds.at(location).getlower() != 0)
+				{
+					variation += "," + std::to_string(static_cast<int>(yieldbounds.at(location).getlower())) + "%";
+				}
+
+
+			}
+			/*std::map<std::string, FMTyldbounds> thebounds = this->getyldsbounds();
 
 			if (thebounds.find("Variation") != thebounds.end())
 				{
@@ -313,7 +404,7 @@ namespace Core
 					}
 
 
-				}
+				}*/
 			}
 
 
@@ -321,7 +412,38 @@ namespace Core
 		std::string penalty = "";
 		if (!this->emptyylds())
 			{
-			const std::map<std::string, FMTyldbounds> thebounds = this->getyldsbounds();
+			for (size_t id = 0; id < yieldnames.size(); ++id)
+			{
+				if (yieldnames.at(id).find("GOAL_") != std::string::npos)
+				{
+					std::vector<std::string>names;
+					boost::split(names, yieldnames.at(id), boost::is_any_of("_"));
+					goal += names[1] + ",";
+					goal += std::to_string(yieldbounds.at(id).getlower());
+				}
+				if (yieldnames.at(id).find("Penalty") != std::string::npos)
+				{
+					std::vector<std::string>names;
+					boost::split(names, yieldnames.at(id), boost::is_any_of("_"));
+
+					if (names.at(1) == "ALL")
+					{
+						penalty += (std::string(1, names.at(0).back()) + "_PENALTY(_ALL");
+					}
+					else {
+						if (!penalty.empty())
+						{
+							penalty += "," + names.at(1);
+						}
+						else {
+							penalty += (std::string(1, names.at(0).back()) + "_PENALTY(");
+							penalty += names.at(1);
+						}
+
+					}
+				}
+			}
+			/*const std::map<std::string, FMTyldbounds> thebounds = this->getyldsbounds();
 			for (std::map<std::string,FMTyldbounds>::const_iterator yields = thebounds.begin();
 				yields != thebounds.end(); yields++)
 				{
@@ -352,7 +474,7 @@ namespace Core
 						}
 					}
 
-				}
+				}*/
 			if (!penalty.empty())
 				{
 				penalty += ")";
@@ -472,9 +594,20 @@ namespace Core
 
 		void FMTconstraint::standardstring(std::string& line, std::string& period_bounds, std::string& goal) const
 		{
-			const std::map<std::string, FMTyldbounds> thebounds = this->getyldsbounds();
+			/*const std::map<std::string, FMTyldbounds> thebounds = this->getyldsbounds();
             const double lower_b = thebounds.at("RHS").getlower();
-            const double upper_b = thebounds.at("RHS").getupper();
+            const double upper_b = thebounds.at("RHS").getupper();*/
+			double lower_b = 0;
+			double upper_b = 0;
+			for (size_t id = 0; id < yieldnames.size(); ++id)
+			{
+				if (yieldnames.at(id)=="RHS")
+				{
+					lower_b = yieldbounds.at(id).getlower();
+					upper_b = yieldbounds.at(id).getupper();
+					break;
+				}
+			}
 			std::string opt_str = "";
             if (lower_b == upper_b)
             {

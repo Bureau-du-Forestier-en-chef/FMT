@@ -547,6 +547,7 @@ namespace Models
 		}
 
 	Spatial::FMTspatialschedule FMTsamodel::move(const Spatial::FMTspatialschedule& actual,
+										const Spatial::FMTspatialschedule::actionbindings& bindings,
 										const std::vector<Spatial::FMTcoordinate>*movable,
 										boost::unordered_map<Core::FMTdevelopment, bool>*operability) const
 		{
@@ -576,7 +577,7 @@ namespace Models
 			//Spatial::FMTspatialschedule newsolution(actual);
 			while (luckycoordinateit !=selectionpool.end()&& perturbationdone<movesize)
 				{
-				newsolution.perturbgraph(*luckycoordinateit, period, *this, generator);
+				newsolution.perturbgraph(*luckycoordinateit, period, *this, generator, bindings);
 				++perturbationdone;
 				}
 			return newsolution;
@@ -589,6 +590,7 @@ namespace Models
 		}
 
 	double FMTsamodel::warmup(const Spatial::FMTspatialschedule& actual,
+		const Spatial::FMTspatialschedule::actionbindings& bindings,
 		const std::vector<Spatial::FMTcoordinate>*movable,
 		boost::unordered_map<Core::FMTdevelopment, bool>*operability,
 		double initprobability, size_t iterations)
@@ -604,7 +606,7 @@ namespace Models
 			//double deltasum = 0;
 			while (iterations>0)
 				{
-				const Spatial::FMTspatialschedule newsolution = move(actual, movable,operability);
+				const Spatial::FMTspatialschedule newsolution = move(actual,bindings, movable,operability);
 				size_t cntid = 0;
 				for (const double& value : newsolution.getconstraintsvalues(*this))
 					{
@@ -649,8 +651,9 @@ namespace Models
 			double primalinf = 0;
 			double objective = 0;
 			const std::vector<Spatial::FMTcoordinate>movables = solution.getstaticsmovablecoordinates(*this);
+			const Spatial::FMTspatialschedule::actionbindings actionsbinding = solution.getbindingactionsbyperiod(*this);
 			boost::unordered_map<Core::FMTdevelopment, bool>operability;
-			double temperature = warmup(solution,&movables,&operability);
+			double temperature = warmup(solution, actionsbinding,&movables,&operability);
 			_logger->logwithlevel("Annealer Temp("+std::to_string(temperature)+")\n", 1);
 			//solution.getsolutionstatus(objective, primalinf, *this);
 			//solution.logsolutionstatus(0, objective, primalinf);
@@ -663,7 +666,7 @@ namespace Models
 				size_t accepted = 0;
 				while (notaccepted < 100 && iteration <1000)
 					{
-					const Spatial::FMTspatialschedule newsolution = move(solution,&movables,&operability);
+					const Spatial::FMTspatialschedule newsolution = move(solution, actionsbinding,&movables,&operability);
 					if (evaluate(temperature,solution,newsolution))
 						{
 						if (newsolution.ispartial())
