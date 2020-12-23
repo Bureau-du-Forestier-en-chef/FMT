@@ -166,6 +166,12 @@ class FMTeventcontainer
 		if possible.
 		*/
 		void addaction(const FMTcoordinate& coord, const int& period, const int& actionid,const size_t& maxsize);
+		// DocString: FMTeventcontainer::addactions()
+		/*
+		Add actions at coordinate and add to existing event if possible or aggregate events
+		if possible.
+		*/
+		void addactions(const FMTcoordinate& coord, const int& period, const std::vector<int>& actionids, const size_t& maxsize);
         // DocString: FMTeventcontainer::getevents(const int&, const int&)
         /*
         Get events at specified period with specified action
@@ -177,6 +183,12 @@ class FMTeventcontainer
 		*/
 		std::vector<const_iterator> getevents(const int& period, const int& action_id,
 			const FMTcoordinate& minimalcoordinate, const FMTcoordinate& maximalcoordinate) const;
+		// DocString: FMTeventcontainer::getmultipleevents()
+		/*
+		Get events at specified period with specified action for a minimal and maximalcoordinate.
+		*/
+		std::vector<std::vector<const_iterator>> getmultipleevents(const int& period, const std::vector<int>& action_ids,
+						const FMTcoordinate& minimalcoordinate, const FMTcoordinate& maximalcoordinate) const;
         // DocString: FMTeventcontainer::getevents(const int&, const std::vector<int>&)
         /*
         Get events at specified period with multiple actions id

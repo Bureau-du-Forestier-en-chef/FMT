@@ -99,7 +99,7 @@ namespace Models
 				std::vector<double>bounds;
 				for (const auto& descriptors : graph.getperiodverticies(period))
 				{
-					const Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor vertex_descriptor = descriptors.descriptor;
+					const Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor vertex_descriptor = descriptors.memoryobject;
 					const std::map<int, int>variables = graph.getoutvariables(vertex_descriptor);
 					for (std::map<int, int>::const_iterator varit = variables.begin(); varit != variables.end(); varit++)
 					{
@@ -136,7 +136,7 @@ namespace Models
 				const double* columnslowerbounds = solver.getColLower();
 				for (const auto& descriptors : graph.getperiodverticies(period))
 				{
-					const Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor& vertex_descriptor = descriptors.descriptor;
+					const Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor& vertex_descriptor = descriptors.memoryobject;
 					const std::map<int, int>variables = graph.getoutvariables(vertex_descriptor);
 					for (std::map<int, int>::const_iterator varit = variables.begin(); varit != variables.end(); varit++)
 					{
@@ -169,7 +169,7 @@ namespace Models
 				std::vector<double>bounds;
 				for (const auto& descriptors : graph.getperiodverticies(period))
 				{
-					const Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor vertex_descriptor = descriptors.descriptor;
+					const Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor vertex_descriptor = descriptors.memoryobject;
 					std::map<int, int>variables = graph.getoutvariables(vertex_descriptor);
 					for (std::map<int, int>::const_iterator varit = variables.begin(); varit != variables.end(); varit++)
 					{
@@ -238,7 +238,7 @@ namespace Models
 				for (Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::lookconst_iterator devit = graph.begin(period);
 					devit != graph.end(period); devit++)
 				{
-					const std::map<int, int>variables = graph.getoutvariables(devit->descriptor);
+					const std::map<int, int>variables = graph.getoutvariables(devit->memoryobject);
 					for (std::map<int, int>::const_iterator varit = variables.begin(); varit != variables.end(); varit++)
 					{
 						new_solution[varit->second] = 0;
@@ -454,17 +454,17 @@ namespace Models
 				for (Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::lookconst_iterator devit = graph.begin(period);
 					devit != graph.end(period); devit++)
 				{
-					if (graph.periodstart(devit->descriptor))//get inperiod
+					if (graph.periodstart(devit->memoryobject))//get inperiod
 					{
 						const double* solution = &new_solution[0];
-						double rest = graph.inarea(devit->descriptor, solution);
+						double rest = graph.inarea(devit->memoryobject, solution);
 						//double rest = graph.inarea(devit->second, actual_solution);
-						std::map<int, int>variables = graph.getoutvariables(devit->descriptor);
+						std::map<int, int>variables = graph.getoutvariables(devit->memoryobject);
 						int growth = variables[-1];
 						variables.erase(-1);
 						for (std::map<int, int>::const_iterator varit = variables.begin(); varit != variables.end(); varit++)
 						{
-							std::vector<Core::FMTdevelopmentpath> paths = graph.getpaths(devit->descriptor, varit->first);
+							std::vector<Core::FMTdevelopmentpath> paths = graph.getpaths(devit->memoryobject, varit->first);
 							for (const Core::FMTdevelopmentpath path : paths)
 							{
 								if (path.development->period == period && processed.find(*path.development) == processed.end())
@@ -484,9 +484,9 @@ namespace Models
 								actionnames += actions.at(varit->first).getname() + ",";
 								}
 							actionnames.pop_back();
-							const Core::FMTdevelopment dev(graph.getdevelopment(devit->descriptor));
+							const Core::FMTdevelopment dev(graph.getdevelopment(devit->memoryobject));
 							const double* solution = &new_solution[0];
-							const double inarea = graph.inarea(devit->descriptor,solution);
+							const double inarea = graph.inarea(devit->memoryobject,solution);
 							std::string locking;
 							if (dev.lock>0)
 								{
@@ -572,7 +572,7 @@ namespace Models
 		return newschedule;
 	}
 
-	Graph::FMTgraphstats FMTlpmodel::updatematrix(const boost::unordered_set<Graph::FMTvertexlookup<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>>& targets,
+	Graph::FMTgraphstats FMTlpmodel::updatematrix(const boost::unordered_set<Core::FMTlookup<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor, Core::FMTdevelopment>>& targets,
 		const Graph::FMTgraphstats& newstats)
 	{
 
@@ -598,8 +598,8 @@ namespace Models
 			int newconstraintID = solver.getNumRows();
 			for (auto& vertex_it : targets)
 			{
-				graph.setconstraintID(vertex_it.descriptor, newconstraintID);
-				if (graph.gettransferrow(vertex_it.descriptor, row_Starts, targetcols, elements))
+				graph.setconstraintID(vertex_it.memoryobject, newconstraintID);
+				if (graph.gettransferrow(vertex_it.memoryobject, row_Starts, targetcols, elements))
 				{
 
 				}
@@ -972,7 +972,7 @@ bool FMTlpmodel::locatenodes(const std::vector<Core::FMToutputnode>& nodes, int 
 				_exhandler->raise(Exception::FMTexc::FMTrangeerror,
 					"Global masks and tolerances are not the same length", "FMTlpmodel::getareavariabilities", __LINE__, __FILE__);
 				}
-			const boost::unordered_set<Graph::FMTvertexlookup<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>>& initialperiod = graph.getperiodverticies(0);
+			const boost::unordered_set<Core::FMTlookup<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor,Core::FMTdevelopment>>& initialperiod = graph.getperiodverticies(0);
 			std::vector<int>colstarget;
 			std::vector<double>originalbounds;
 			std::vector<double>newbounds;
@@ -980,20 +980,20 @@ bool FMTlpmodel::locatenodes(const std::vector<Core::FMToutputnode>& nodes, int 
 			const double* colupperbounds = solver.getColUpper();
 			std::vector<bool>foundcorresponding(globalmasks.size(), false);
 			const int firstfutrecolumn = static_cast<int>(initialperiod.size());
-				for (boost::unordered_set<Graph::FMTvertexlookup<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>>::const_iterator vertexit = initialperiod.begin();
+				for (boost::unordered_set<Core::FMTlookup<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor, Core::FMTdevelopment>>::const_iterator vertexit = initialperiod.begin();
 					vertexit != initialperiod.end(); vertexit++)
 				{
 					size_t maskid = 0;
 					size_t gotvariables = 0;
 					for (const Core::FMTmask& globalmask : globalmasks)
 					{
-						if (vertexit->development->mask.issubsetof(globalmask))
+						if (vertexit->pointerobject->mask.issubsetof(globalmask))
 						{
-							const int varindex = graph.getoutvariables(vertexit->descriptor).at(-1);
+							const int varindex = graph.getoutvariables(vertexit->memoryobject).at(-1);
 							if (*(colupperbounds + varindex) == COIN_DBL_MAX)
 							{
 								_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
-									"Changing a bound on a non initial variable for developmenets" + std::string(*(vertexit->development)),
+									"Changing a bound on a non initial variable for developmenets" + std::string(*(vertexit->pointerobject)),
 									"FMTlpmodel::getareavariabilities", __LINE__, __FILE__);
 							}
 							colstarget.push_back(varindex);
@@ -1013,7 +1013,7 @@ bool FMTlpmodel::locatenodes(const std::vector<Core::FMToutputnode>& nodes, int 
 					if (gotvariables > 1)
 					{
 						_exhandler->raise(Exception::FMTexc::FMTinvalid_maskrange,
-							"Got more than one global mask for " + std::string((vertexit->development->mask)),
+							"Got more than one global mask for " + std::string((vertexit->pointerobject->mask)),
 							"FMTlpmodel::getareavariabilities", __LINE__, __FILE__);
 					}
 				}
@@ -1815,10 +1815,10 @@ bool FMTlpmodel::locatenodes(const std::vector<Core::FMToutputnode>& nodes, int 
 			for (Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::lookconst_iterator vertexit = graph.begin(period);
 				vertexit != graph.end(period); vertexit++)
 			{
-				if (graph.periodstart(vertexit->descriptor))
+				if (graph.periodstart(vertexit->memoryobject))
 				{
-					const Core::FMTdevelopment& graphdevelopement = *vertexit->development;
-					const double areaofdevelopement = graph.inarea(vertexit->descriptor, modelsolution, true);
+					const Core::FMTdevelopment& graphdevelopement = *vertexit->pointerobject;
+					const double areaofdevelopement = graph.inarea(vertexit->memoryobject, modelsolution, true);
 					if (areaofdevelopement > 0)
 					{
 						returnedarea.push_back(Core::FMTactualdevelopment(graphdevelopement, areaofdevelopement));
@@ -1872,11 +1872,15 @@ bool FMTlpmodel::locatenodes(const std::vector<Core::FMToutputnode>& nodes, int 
 					const std::map<std::string,double> values  = graph.getoutput(*this, output, period, solution, Graph::FMToutputlevel::developpement);
 					for (std::map<std::string, double>::const_iterator it = values.begin(); it!= values.end();++it)
 						{
-						if (generalcatch.find(it->first) ==generalcatch.end())
+						if ((it->second <= -FMT_DBL_TOLERANCE) || (it->second >= FMT_DBL_TOLERANCE))
 							{
-							generalcatch[it->first] = std::vector<double>(outputsdata.size(), std::numeric_limits<double>::quiet_NaN());
+							if (generalcatch.find(it->first) == generalcatch.end())
+								{
+								generalcatch[it->first] = std::vector<double>(outputsdata.size(), std::numeric_limits<double>::quiet_NaN());
+								}
+							generalcatch[it->first][outputid] = it->second;
 							}
-						generalcatch[it->first][outputid] = it->second;
+						
 						}
 					++outputid;
 					}

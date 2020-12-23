@@ -33,12 +33,13 @@ namespace Spatial
 	{
 	class FMTnodecache
 		{
-		std::map<int, double>periodicvalues;
 		public:
+			std::unordered_map<int, double>periodicvalues;
 			bool worthintersecting;
 			boost::unordered_map<Core::FMTmask, double>patternvalues;
 			Core::FMTmask staticmask;
 			Core::FMTmask dynamicmask;
+			std::unordered_set<int>actions;
 			FMTnodecache() = default;
 			FMTnodecache(const Core::FMToutputnode& node, const Models::FMTmodel& model);
 			~FMTnodecache() = default;
@@ -54,21 +55,28 @@ namespace Spatial
 		};
 	FMTnodecache* actualcache;
 	Graph::FMToutputnodecache<FMTcoordinate>* staticnodes;
-	boost::unordered_map<Core::FMTmask, FMTnodecache>patterncache;
+	//boost::unordered_map<Core::FMTmask, FMTnodecache>patterncache;
+	public:
+		typedef std::unordered_map<Core::FMToutputnode, FMTnodecache, Core::FMToutputnodehasher, Core::FMToutputnodevaluecomparator> ucaching;
+	private:
+		ucaching patterncache;
 	public:
 		FMTspatialnodescache() = default;
 		~FMTspatialnodescache();
 		FMTspatialnodescache(const std::vector<FMTcoordinate>& mapping);
 		FMTspatialnodescache(const FMTspatialnodescache& rhs);
 		FMTspatialnodescache& operator = (const FMTspatialnodescache& rhs);
-		const std::vector<FMTcoordinate>& getnode(const Core::FMToutputnode& node, const Models::FMTmodel& model,bool& exactnode, const Core::FMTmask& mask);
+		const std::vector<FMTcoordinate>& getnode(const Core::FMToutputnode& node, const Models::FMTmodel& model,bool& exactnode);
 		void setnode(const Core::FMToutputnode& node, const std::vector<FMTcoordinate>& coordinates);
 		void removeperiod(const int& period);
 		FMTnodecache* getactualnodecache();
+		void setnodecache(ucaching::iterator cashit);
 		void swap(FMTspatialnodescache& rhs);
 		bool empty() const;
 		size_t size() const;
 		void insert(const FMTspatialnodescache& rhs);
+		ucaching::iterator begin();
+		ucaching::iterator end();
 
 	};
 

@@ -116,6 +116,11 @@ namespace Core
 		return source.issamebutdifferentaction(rhs.source);
 		}
 
+	bool FMToutputnode::issamevalues(const FMToutputnode& rhs) const
+		{
+		return (constant == rhs.constant &&  factor.isequalbyvalue(rhs.factor) && source.isequalbyvalue(rhs.source));
+		}
+
 	bool FMToutputnode::isactionbased() const
 		{
 		return !source.getaction().empty();
@@ -212,15 +217,18 @@ namespace Core
 
 	
 
-	FMToutputnodehashcomparator::FMToutputnodehashcomparator(size_t hash) : sourcehash(hash)
-	{
 
-	}
+	bool FMToutputnodevaluecomparator::operator()(const FMToutputnode& node1, const FMToutputnode& node2) const
+		{
+		return node1.issamevalues(node2);
+		}
 
-	bool FMToutputnodehashcomparator::operator()(const FMToutputnode& node) const
-	{
-		return (node.source.hash() == sourcehash);
-	}
+
+	size_t FMToutputnodehasher::operator()(const FMToutputnode & node) const
+		{
+		return node.hashforvalue();
+		}
+
 
 	
 

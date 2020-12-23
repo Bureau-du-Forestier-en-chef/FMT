@@ -71,6 +71,9 @@ namespace Exception
 		// DocString: FMTexceptionhandler::usenestedexceptions
 		///If usenested = true then the handler will throw nested exceptions
 		bool usenestedexceptions;
+		// DocString: FMTexceptionhandler::cplhandlerpushed
+		///If CPL handler pushed true else false
+		bool cplhandlerpushed;
 		// DocString: FMTexceptionhandler::updatestatus
 		/**
 		This functions updates the status of the handler adding up to the warning or the error counts.
@@ -161,6 +164,23 @@ namespace Exception
 		Disable the nested exception throw.
 		*/
 		void disablenestedexceptions();
+		
+		#if defined FMTWITHGDAL
+		// DocString: FMTexceptionhandler::isCPLpushed
+		/**
+		Check if CPL handler been pushed.
+		*/
+		inline bool isCPLpushed() const
+			{
+			return cplhandlerpushed;
+			}
+		// DocString: FMTexceptionhandler::setCPLpushed
+		/**
+		Set CPL pushed to true.
+		*/
+		void setCPLpushed();
+		#endif
+		
 	};
 
 }

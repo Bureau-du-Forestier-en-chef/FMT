@@ -67,13 +67,11 @@ FMTfork::FMTfork():FMTspec(),transitions(){}
 	std::vector<FMTdevelopmentpath> FMTfork::getpaths(const FMTdevelopment& base,
 		 const FMTyields& ylds, const std::vector<FMTtheme>& themes, const bool& reset_age) const
 		{
-		std::vector<FMTdevelopmentpath>paths(transitions.size());
-		int id = 0;
+		std::vector<FMTdevelopmentpath>paths;
+		paths.reserve(transitions.size());
 		for (const FMTtransitionmask& tran : transitions)
 			{
-			 const FMTdevelopmentpath newpath(tran.disturb(base, ylds, themes,reset_age), tran.getproportion());
-			 paths[id] = newpath;
-			 ++id;
+			paths.emplace_back(tran.disturb(base, ylds, themes, reset_age), tran.getproportion());
 			}
 		 return paths;
 		}

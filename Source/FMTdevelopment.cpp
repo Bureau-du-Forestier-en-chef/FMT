@@ -71,17 +71,13 @@ namespace Core{
         {
         if (worthtestingoperability(action))
             {
-			const std::vector<const FMTspec*>it = action.findsets(mask);
-            if (!it.empty())
-                {
-				for (const FMTspec* spec : it)
+			for (const FMTspec* spec : action.findsets(mask))
+				{
+				if (is(*spec, ylds))
 					{
-					if (is(*spec, ylds))
-						{
-						return true;
-						}
+					return true;
 					}
-                }
+				}
             }
         return false;
         }
@@ -187,34 +183,26 @@ namespace Core{
 
 	bool FMTdevelopment::is(const FMTspec& specification, const FMTyields& ylds) const
 		{
-		std::map<std::string, double> yields;
+		bool allow = false;
 		try {
-		if (specification.emptyylds())
-			{
-			return specification.allowwithoutyield(period, age, lock);
-			}
-		yields = ylds.getylds(*this, specification);
-		for (const std::string& yield : specification.getylds())
-			{
-				if (yields.find(yield) == yields.end())
-					{
-						_exhandler->raise(Exception::FMTexc::FMTmissingyield,
-							yield + " for development type " + std::string(*this),
-							"FMTdevelopment::is",__LINE__, __FILE__);
-					}
-			}
+			allow = specification.allowwithoutyield(period, age, lock);
+			if (allow && !specification.emptyylds())
+				{
+				const std::vector<double> yields = ylds.getylds(*this, specification);
+				allow = specification.allowyields(yields);
+				}
 		}catch (...)
 			{
 			_exhandler->raisefromcatch(
 				"for " + std::string(*this),
 				"FMTdevelopment::is",__LINE__, __FILE__, _section);
 			}
-		return (specification.allow(period, age, lock, yields));
+		return allow;
 		}
 	double FMTdevelopment::getinventorycoef(const FMTyields& ylds, const std::string& target_yield) const
 		{
-		std::vector<std::string>targets(1, target_yield);
-		return ylds.get(*this, targets)[target_yield];
+		const std::vector<std::string>targets(1, target_yield);
+		return *ylds.get(*this, targets).begin();
 		}
 	double FMTdevelopment::getharvestcoef(const std::vector<FMTdevelopmentpath>& topaths,
 			const FMTaction& action,const FMTyields& ylds,const std::string& target_yield) const

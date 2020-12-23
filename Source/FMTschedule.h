@@ -16,6 +16,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTconstraint.h"
 #include <iterator>
 #include <boost/serialization/export.hpp>
+#include <boost/unordered_set.hpp>
 
 namespace Core
 {
@@ -142,6 +143,11 @@ class FMTschedule : public FMTobject
 		*/
 		bool operated(const FMTaction& action,
 			const FMTdevelopment& developement) const;
+		// DocString: FMTschedule::getoperabilities
+		/**
+		Get all operabilities of the schedules in an hash table.
+		*/
+		std::vector<boost::unordered_set<FMTdevelopment>> getoperabilities(const std::vector<FMTaction>& actions) const;
 		// DocString: FMTschedule::sort
 		/**
 		Sort the vector of double of the lock level per area for the FMTschedule.

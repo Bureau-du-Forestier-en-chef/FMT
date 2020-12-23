@@ -16,6 +16,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <boost/serialization/nvp.hpp>
 #include <string>
 #include <vector>
+#include <unordered_set>
 #include <boost/serialization/export.hpp>
 
 namespace Core
@@ -268,6 +269,12 @@ class FMTactioncomparator
 		the action_name if aggregateonly = true it will return only matching aggregates.
 		*/
 		std::vector<const FMTaction*>getallaggregates(const std::vector<FMTaction>&actions,bool aggregateonly = false) const;
+		// DocString: FMTactioncomparator::getallaggregatesset
+		/**
+		Looking at the actions vector if aggregateonly = false it will returns actions ids mathching
+		the action_name if aggregateonly = true it will return only matching aggregates.
+		*/
+		std::unordered_set<int>getallaggregatesset(const std::vector<FMTaction>&actions, bool aggregateonly = false) const;
 		// DocString: FMTactioncomparator::operator()(const FMTaction&)
 		/**
 		Matching test operator for FMTactioncomparator.

@@ -87,6 +87,13 @@ void FMToutputsource::fillhashmask(Core::FMTmask& basemask) const
 		basemask.binarizedappend<std::string>(action);
 	}
 
+bool FMToutputsource::isequalbyvalue(const FMToutputsource& rhs) const
+	{
+	return (target == rhs.target && yield == rhs.yield && action == rhs.action && values == rhs.values &&
+			FMTspec::operator == (rhs) && mask == rhs.mask);
+	}
+
+
 void FMToutputsource::fillhashspec(Core::FMTmask& basemask) const
 	{
 	basemask.binarizedappend<std::string>(FMTspec::operator std::string());
@@ -391,6 +398,16 @@ std::vector<const FMTaction*>FMToutputsource::targets(const std::vector<FMTactio
         }
 	return std::vector<const FMTaction*>();
 	}
+
+std::unordered_set<int>FMToutputsource::targetsset(const std::vector<FMTaction>& actions) const
+{
+	if (target != FMTotar::level && !action.empty())
+	{
+		return FMTactioncomparator(action).getallaggregatesset(actions);
+	}
+	return std::unordered_set<int>();
+}
+
 
 bool FMToutputsource::isinventory() const
 	{
