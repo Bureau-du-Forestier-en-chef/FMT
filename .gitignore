@@ -32,3 +32,5 @@ Makefile
 *.lp
 gdal/*
 *.exe
+*.cproject
+*.project
