@@ -9,8 +9,6 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 cmake_minimum_required(VERSION 3.6)
 project(FMT VERSION 0.9.1 LANGUAGES CXX)
 
-
-
 set(FMTMAJOR "-DFMT_MAJOR=${PROJECT_VERSION_MAJOR}")
 add_definitions("${FMTMAJOR}")
 set(FMTMINOR "-DFMT_MINOR=${PROJECT_VERSION_MINOR}")
@@ -75,6 +73,14 @@ add_library(FMT SHARED ${FMTSOURCEFILES})
 include_directories(${FMTINCLUDEDIR})
 set_target_properties(FMT PROPERTIES PREFIX "")
 
+if (CYGWIN)
+set_target_properties( FMT
+    PROPERTIES
+    ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE}"
+    LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE}"
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE}"
+)
+endif(CYGWIN)
 
 set_property(TARGET FMT PROPERTY CXX_STANDARD 11)
 set_property(TARGET FMT PROPERTY CXX_STANDARD_REQUIRED ON)
@@ -347,7 +353,7 @@ ENDIF(NOT MSVC)
 get_filename_component(GDAL_DATA_NAME "${GDAL_DATA}" NAME)
 
 #install part
-if (NOT MSVC)
+if (NOT MSVC AND NOT CYGWIN)
 	install (CODE
         "set(GDAL_FOUND \"${GDAL_FOUND}\")
 		file(COPY \"${CMAKE_CURRENT_SOURCE_DIR}/LICENSES\" DESTINATION \"${CMAKE_BINARY_DIR}\")
@@ -381,7 +387,7 @@ else()
                 file(COPY \"\${FMTdep}\" DESTINATION \"${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE}\")
             endforeach()
 		endif()")
-endif(NOT MSVC)
+endif(NOT MSVC AND NOT CYGWIN)
 
 
 include(${CMAKE_CURRENT_SOURCE_DIR}/Examples/C++/CMakeLists.txt)
