@@ -312,7 +312,7 @@ namespace Graph
         return actioned;
 	}
 
-	bool FMTlinegraph::isanyvertexusage(const const FMTbasevertexproperties& vertexproperty, const Core::FMToutputsource& source, const Core::FMTyields& yields) const
+	bool FMTlinegraph::isanyvertexusage(const FMTbasevertexproperties& vertexproperty, const Core::FMToutputsource& source, const Core::FMTyields& yields) const
 	{
 		try {
 			const Core::FMTdevelopment& dev = vertexproperty.get();
