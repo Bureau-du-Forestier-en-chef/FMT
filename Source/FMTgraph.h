@@ -1286,7 +1286,7 @@ class FMTgraph : public Core::FMTobject
 		{
 			std::map<std::string, double>emptyreturn;
 			try{
-			std::vector<FMTvertex_descriptor>verticies = getnode(model, node, period);
+			const std::vector<FMTvertex_descriptor>verticies = getnode(model, node, period);
 			return getvalues(model, verticies, node, theme, solution, level);
 			}catch (...)
 				{
@@ -1400,6 +1400,7 @@ class FMTgraph : public Core::FMTobject
         void generatedevelopments()
 		{
 			try {
+				nodescache.clear();
 				developments.clear();
 				const size_t max_period = static_cast<size_t>(getperiod());
 				FMTvertex_iterator vertex, vend;
