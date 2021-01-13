@@ -16,25 +16,25 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 namespace Graph
 {
     FMTlinegraph::FMTlinegraph():
-		FMTgraph<FMTbasevertexproperties, FMTbaseedgeproperties>(FMTgraphbuild::nobuild),periodstatsdiff()
+		FMTgraph<FMTbasevertexproperties, FMTbaseedgeproperties>(FMTgraphbuild::nobuild)
     {
 
     }
 
     FMTlinegraph::FMTlinegraph(const FMTgraphbuild lbuildtype):
-		FMTgraph<FMTbasevertexproperties, FMTbaseedgeproperties>(lbuildtype),periodstatsdiff()
+		FMTgraph<FMTbasevertexproperties, FMTbaseedgeproperties>(lbuildtype)
     {
 
     }
 
     FMTlinegraph::FMTlinegraph(const FMTlinegraph& rhs):
-		FMTgraph<FMTbasevertexproperties, FMTbaseedgeproperties>(rhs),periodstatsdiff(rhs.periodstatsdiff)
+		FMTgraph<FMTbasevertexproperties, FMTbaseedgeproperties>(rhs)
     {
 
     }
 
     FMTlinegraph::FMTlinegraph(const FMTgraph<FMTbasevertexproperties, FMTbaseedgeproperties>& rhs):
-		FMTgraph<FMTbasevertexproperties, FMTbaseedgeproperties>(rhs),periodstatsdiff()
+		FMTgraph<FMTbasevertexproperties, FMTbaseedgeproperties>(rhs)
     {
 
     }
@@ -44,7 +44,6 @@ namespace Graph
         if(this!=&rhs)
             {
 			FMTgraph<FMTbasevertexproperties, FMTbaseedgeproperties>::operator = (rhs);
-			periodstatsdiff = rhs.periodstatsdiff;
             }
         return *this;
     }
@@ -54,7 +53,6 @@ namespace Graph
         if(this!=&rhs)
             {
 			FMTgraph<FMTbasevertexproperties, FMTbaseedgeproperties>::operator = (rhs);
-			periodstatsdiff = FMTgraphstats();
             }
         return *this;
     }
@@ -64,7 +62,6 @@ namespace Graph
 		try {
 			const size_t activessize = developments.back().size();
 			developments.push_back(boost::unordered_set<Core::FMTlookup<FMTvertex_descriptor,Core::FMTdevelopment>>());
-			periodstatsdiff = getstats();
 			if (activessize > 1)
 			{
 				_exhandler->raise(Exception::FMTexc::FMTnotlinegraph, "More than one active at the begining of the period", "FMTlinegraph::newperiod()", __LINE__, __FILE__);
@@ -315,44 +312,72 @@ namespace Graph
         return actioned;
 	}
 
-	bool FMTlinegraph::anyusageof(const Core::FMToutputsource& source,const  Core::FMTyields& yields) const
+	bool FMTlinegraph::isanyvertexusage(const const FMTbasevertexproperties& vertexproperty, const Core::FMToutputsource& source, const Core::FMTyields& yields) const
 	{
 		try {
-			FMTvertex_iterator vertex, vend;
-			for (boost::tie(vertex, vend) = vertices(data); vertex != vend; ++vertex)
-			{
-				const FMTbasevertexproperties& properties = data[*vertex];
-				const Core::FMTdevelopment& dev = properties.get();
-				if (source.use(dev,yields))
+			const Core::FMTdevelopment& dev = vertexproperty.get();
+			return  (source.use(dev, yields));
+		}catch (...)
+		{
+			_exhandler->raisefromcatch("", "FMTlinegraph::isanyvertexusage", __LINE__, __FILE__);
+		}
+		return false;
+
+	}
+
+	std::vector<int> FMTlinegraph::anyusageof(const Core::FMToutputsource& source, const Core::FMTyields& yields, const std::unordered_set<int>& actions) const
+	{
+		std::vector<int>periods;
+		try {
+				FMTvertex_iterator vertex, vend;
+				for (boost::tie(vertex, vend) = vertices(data); vertex != vend; ++vertex)
+				{
+					const FMTbasevertexproperties& properties = data[*vertex];
+					if (isanyvertexusage(properties, source, yields))
 					{
-					return true;
+						const int period = properties.get().period;
+						bool usefull = true;
+						if (!actions.empty())
+							{
+							usefull = false;
+							FMToutedge_iterator outedge_iterator, outedge_end;
+							boost::tie(outedge_iterator, outedge_end) = boost::out_edges(*vertex, data);
+							if (outedge_iterator != outedge_end)
+							{
+								const FMTbaseedgeproperties& edgeprop = data[*outedge_iterator];
+								if (isanyactionofedge(edgeprop, actions))
+									{
+									usefull = true;
+									}
+							}
+							}
+						if (usefull && std::find(periods.begin(), periods.end(), period) == periods.end())
+						{
+							periods.push_back(period);
+						}
 					}
-			}
+				}
+			
 		}
 		catch (...)
 		{
 			_exhandler->raisefromcatch("", "FMTlinegraph::anyusageof", __LINE__, __FILE__);
 		}
-		return false;
+		return periods;
 	}
 
-	bool FMTlinegraph::isanyactionsof(const std::unordered_set<int>& actions) const
+
+	bool FMTlinegraph::isanyactionofedge(const FMTbaseedgeproperties& edgeproperty, const std::unordered_set<int>& actions) const
 	{
 		try {
-			FMTedge_iterator edge_iterator, edge_end;
-			for (boost::tie(edge_iterator, edge_end) = boost::edges(data); edge_iterator != edge_end; ++edge_iterator)
-			{
-				const FMTbaseedgeproperties& edgeprop = data[*edge_iterator];
-				const int id = edgeprop.getactionID();
-				if (actions.find(id) != actions.end())
-				{
-					return true;
-				}
-			}
-		}catch (...)
-			{
-			_exhandler->raisefromcatch("", "FMTlinegraph::isanyactionsof", __LINE__, __FILE__);
-			}
+			
+			const int id = edgeproperty.getactionID();
+			return  (id >=0 && actions.find(id) != actions.end());
+		}
+		catch (...)
+		{
+			_exhandler->raisefromcatch("", "FMTlinegraph::isanyactionofedge", __LINE__, __FILE__);
+		}
 		return false;
 	}
 

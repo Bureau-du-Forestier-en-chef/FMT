@@ -784,12 +784,7 @@ namespace Core
 					double uppervariation = 0;
 					getvariations(lowervariation, uppervariation);
 					getmaxandmin(temporalvalues, minimal, maximal);
-					returnedvalue = getvariability(temporalvalues, minimal, lowervariation);
-					/*returnedvalue = maximal - minimal;
-					if (lowervariation != 0)
-						{
-						returnedvalue = returnedvalue > (minimal * 1.0 + lowervariation) ? returnedvalue : 0;
-						}*/
+					returnedvalue = getvariability(temporalvalues, maximal, lowervariation);
 					break;
 				}
 				case FMTconstrainttype::FMTnondeclining:

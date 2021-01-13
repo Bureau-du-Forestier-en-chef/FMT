@@ -1572,28 +1572,29 @@ void FMTspatialschedule::setgraphfromcache(const Graph::FMTlinegraph& graph, con
 						(graphisonlygrowth && !(actionbased && !it->first.source.isinventory()))))
 					{
 						cache.setnodecache(it);
-						if (basegraphmask.issubsetof(cache.getactualnodecache()->staticmask) &&
-							((actionbased && graph.isanyactionsof(cache.getactualnodecache()->actions)) ||
-							(!actionbased && graph.anyusageof(it->first.source, model.yields))))
+						if (basegraphmask.issubsetof(cache.getactualnodecache()->staticmask))
 						{
+							const std::vector<int>periods = graph.anyusageof(it->first.source, model.yields, cache.getactualnodecache()->actions);
+							if (!periods.empty())
+								{
 								const Core::FMTmask dynamicmask = cache.getactualnodecache()->dynamicmask;
 								const Core::FMTmask basemask = graph.getbasemask(dynamicmask);
-								for (std::unordered_map<int, double>::iterator mit = cache.getactualnodecache()->periodicvalues.begin();
-									mit != cache.getactualnodecache()->periodicvalues.end(); mit++)
-								{
+								for (const int& period : periods)
+									{
 									Core::FMTmask nodemask(basemask);
-									graph.filledgesmask(nodemask, mit->first);
-									const std::map<std::string, double> graphvalue = getoutputfromgraph(graph, model, it->first, &cellsize, mit->first, nodemask, cache.getactualnodecache()->patternvalues);
+									graph.filledgesmask(nodemask, period);
+									const std::map<std::string, double> graphvalue = getoutputfromgraph(graph, model, it->first, &cellsize, period, nodemask, cache.getactualnodecache()->patternvalues);
 									const double value = graphvalue.at("Total");
 									if (value != 0)
 									{
 										if (remove)
 										{
-											mit->second -= value;
+											cache.getactualnodecache()->periodicvalues[period] -= value;
 										}
 										else {
-											mit->second += value;
+											cache.getactualnodecache()->periodicvalues[period] += value;
 										}
+									}
 									}
 								}
 							}
@@ -1771,7 +1772,7 @@ std::map<std::string, double> FMTspatialschedule::greedyreferencebuild(const Cor
 				double schedulefactor = (randomiterations == 1) ? 1 : 1 - ((1 - factorit) * factorgap);//bottom up
 				if (factorit > 1)
 					{
-					std::uniform_real_distribution<double>scheduledistribution(lastschedulefactor-0.05,lastschedulefactor+0.05);
+					std::uniform_real_distribution<double>scheduledistribution(lastschedulefactor - 0.05, std::min(lastschedulefactor + 0.05, 1.05));
 					schedulefactor = scheduledistribution(generator);
 					}
 				//*_logger << "fact " << factorit<<" "<< schedulefactor << "\n";

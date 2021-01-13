@@ -24,11 +24,10 @@ class FMTlinegraph : public FMTgraph<FMTbasevertexproperties,FMTbaseedgeproperti
 	void serialize(Archive& ar, const unsigned int version)
 	{
 		ar & boost::serialization::make_nvp("Graph::FMTgraph<Graph::FMTbasevertexproperties,Graph::FMTbaseedgeproperties>",boost::serialization::base_object<FMTgraph<FMTbasevertexproperties, FMTbaseedgeproperties>>(*this));
-		ar & BOOST_SERIALIZATION_NVP(periodstatsdiff);
 
 	}
-	protected:
-		FMTgraphstats periodstatsdiff;
+	bool isanyactionofedge(const FMTbaseedgeproperties& edgeproperty,const std::unordered_set<int>& actions) const;
+	bool isanyvertexusage(const FMTbasevertexproperties& vertexproperty, const Core::FMToutputsource& source, const Core::FMTyields& yields) const;
     public:
         FMTlinegraph();
         ~FMTlinegraph()=default;
@@ -75,8 +74,7 @@ class FMTlinegraph : public FMTgraph<FMTbasevertexproperties,FMTbaseedgeproperti
 			const Core::FMTyields& yields, const int& period, boost::unordered_map<Core::FMTdevelopment, bool>*operability =nullptr) const;
 		bool operator == (const FMTlinegraph& rhs) const;
 		void clearnodecache();
-		bool isanyactionsof(const std::unordered_set<int>& actions) const;
-		bool anyusageof(const Core::FMToutputsource& source,const Core::FMTyields& yields) const;
+		std::vector<int> anyusageof(const Core::FMToutputsource& source,const Core::FMTyields& yields, const std::unordered_set<int>& actions) const;
 		
 		
 };
