@@ -208,6 +208,33 @@ FMTschedule::operator std::string() const
 		return value;
 	}
 
+	std::vector<boost::unordered_set<FMTdevelopment>> FMTschedule::getoperabilities(const std::vector<FMTaction>& actions) const
+	{
+		std::vector<boost::unordered_set<FMTdevelopment>>table(actions.size(),boost::unordered_set<FMTdevelopment>());
+		try {
+			size_t actionid = 0;
+			for (const FMTaction& action : actions)
+				{
+				std::map<FMTaction, std::map<FMTdevelopment, std::vector<double>>>::const_iterator actit = elements.find(action);
+				if (actit != elements.end())
+					{
+					for (std::map<FMTdevelopment, std::vector<double>>::const_iterator devit = actit->second.begin(); devit != actit->second.end(); ++devit)
+						{
+						if (table.at(actionid).find(devit->first) == table.at(actionid).end())
+							{
+							table[actionid].insert(devit->first);
+							}
+						}
+					}
+				++actionid;
+				}
+		}catch (...)
+			{
+			_exhandler->raisefromcatch("", "FMTschedule::getoperabilities", __LINE__, __FILE__);
+			}
+		return table;
+	}
+
 	bool FMTschedule::operated(const FMTaction& action,
 		const FMTdevelopment& developement) const
 	{

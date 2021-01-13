@@ -110,18 +110,21 @@ class FMTyields : public FMTlist<FMTyieldhandler>
 		Getter for the null yield names of the FMTyields.
 		*/
 		std::vector<std::string>getnullyldsnames() const;
+		//std::map<std::string, double>get(const FMTdevelopment& dev,
+		//	const std::vector<std::string>& targets) const;
 		// DocString: FMTyields::get
 		/**
 		This function is the main function used to get the yields value (targets) for a given FMTdevelopement (dev),
 		looking at age,period,lock,mask etc... it returns a map of yield name (keys) and there vlues(items).
 		*/
-		std::map<std::string, double>get(const FMTdevelopment& dev,
+		std::vector<double>get(const FMTdevelopment& dev,
 			const std::vector<std::string>& targets) const;
+		//std::map<std::string,double>getylds(const FMTdevelopment& dev,const FMTspec& spec) const;
 		// DocString: FMTyields::getylds
 		/**
 		This function gets the yields used and its values (map) by a given specification (spec) for a given developement (dev).
 		*/
-		std::map<std::string,double>getylds(const FMTdevelopment& dev,const FMTspec& spec) const;
+		std::vector<double>getylds(const FMTdevelopment& dev, const FMTspec& spec) const;
 		// DocString: FMTyields::getage
 		/**
 		This function is used to get the new age of a FMTdevelopement (dev) 

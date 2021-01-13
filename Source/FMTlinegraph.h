@@ -24,11 +24,10 @@ class FMTlinegraph : public FMTgraph<FMTbasevertexproperties,FMTbaseedgeproperti
 	void serialize(Archive& ar, const unsigned int version)
 	{
 		ar & boost::serialization::make_nvp("Graph::FMTgraph<Graph::FMTbasevertexproperties,Graph::FMTbaseedgeproperties>",boost::serialization::base_object<FMTgraph<FMTbasevertexproperties, FMTbaseedgeproperties>>(*this));
-		ar & BOOST_SERIALIZATION_NVP(periodstatsdiff);
 
 	}
-	protected:
-		FMTgraphstats periodstatsdiff;
+	bool isanyactionofedge(const FMTbaseedgeproperties& edgeproperty,const std::unordered_set<int>& actions) const;
+	bool isanyvertexusage(const FMTbasevertexproperties& vertexproperty, const Core::FMToutputsource& source, const Core::FMTyields& yields) const;
     public:
         FMTlinegraph();
         ~FMTlinegraph()=default;
@@ -47,19 +46,17 @@ class FMTlinegraph : public FMTgraph<FMTbasevertexproperties,FMTbaseedgeproperti
 		int getlastactionid(const int& period)const;
 		const Core::FMTdevelopment& getperiodstartdev(const int& period) const;
 		const Core::FMTdevelopment& getperiodstopdev(const int& period) const;
-		int randomoperate(const std::vector<int>& operables, const Models::FMTmodel& model, std::queue<FMTvertex_descriptor>& actives,
-                                            FMTgraphstats& statsdiff, const FMTvertex_descriptor& front_vertex, std::default_random_engine& generator,
+		int randomoperate(const std::vector<int>& operables, const Models::FMTmodel& model,
+                                            FMTvertex_descriptor& front_vertex, std::default_random_engine& generator,
                                             const Core::FMTdevelopment& active_development,bool dontchoosegrow=false);
-		FMTgraphstats randombuildperiod(const Models::FMTmodel& model, std::queue<FMTvertex_descriptor> actives, std::default_random_engine& generator,
-									Spatial::FMTeventcontainer& events, const Spatial::FMTcoordinate& localisation,
-									boost::unordered_map<Core::FMTdevelopment, std::vector<int>>* operability=nullptr,
-									const std::vector<Spatial::FMTbindingspatialaction>* bindings = nullptr,
+		std::vector<int> randombuildperiod(const Models::FMTmodel& model,std::default_random_engine& generator,
+									boost::unordered_map<Core::FMTdevelopment, std::vector<int>>& operability,
 									bool dontchoosegrow=false);
         FMTgraphstats clearfromperiod(const int& period,bool updatedevelopments=false);
         FMTlinegraph partialcopy(const int& period) const;
-        FMTlinegraph perturbgraph(  const Models::FMTmodel& model, std::default_random_engine& generator,
+        /*FMTlinegraph perturbgraph(  const Models::FMTmodel& model, std::default_random_engine& generator,
 									Spatial::FMTeventcontainer& events,
-									const Spatial::FMTcoordinate& localisation, const int period) const;
+									const Spatial::FMTcoordinate& localisation, const int period) const;*/
 		std::vector<std::vector<bool>>getactions(const Models::FMTmodel& model,const int& fromperiod,
 			std::map<Core::FMTdevelopment, std::vector<bool>>& operability) const;
 		const Core::FMTdevelopment& getbasedevelopment() const;
@@ -77,6 +74,8 @@ class FMTlinegraph : public FMTgraph<FMTbasevertexproperties,FMTbaseedgeproperti
 			const Core::FMTyields& yields, const int& period, boost::unordered_map<Core::FMTdevelopment, bool>*operability =nullptr) const;
 		bool operator == (const FMTlinegraph& rhs) const;
 		void clearnodecache();
+		std::vector<int> anyusageof(const Core::FMToutputsource& source,const Core::FMTyields& yields, const std::unordered_set<int>& actions) const;
+		
 		
 };
 }

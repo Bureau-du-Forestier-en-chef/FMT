@@ -56,7 +56,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <tuple>
 #include <assert.h>
 #include "FMTexceptionhandler.h"
-#include "FMTvertexlookup.h"
+#include "FMTlookup.h"
 #include "boost/graph/graphviz.hpp"
 
 //namespace Models
@@ -104,6 +104,7 @@ class FMTgraph : public Core::FMTobject
 		ar & BOOST_SERIALIZATION_NVP(buildtype);
 	}
 	BOOST_SERIALIZATION_SPLIT_MEMBER()
+	protected:
 		typedef boost::adjacency_list< boost::listS,
 			boost::listS,
 			boost::bidirectionalS,
@@ -111,7 +112,6 @@ class FMTgraph : public Core::FMTobject
 			tedgeproperties,
 			boost::no_property,
 			boost::listS>FMTadjacency_list;
-	protected:
 		FMTadjacency_list data;
 	public:
 		typedef typename boost::graph_traits<FMTadjacency_list>::vertex_descriptor FMTvertex_descriptor;
@@ -122,11 +122,11 @@ class FMTgraph : public Core::FMTobject
 		typedef typename boost::graph_traits<FMTadjacency_list>::edge_iterator FMTedge_iterator;
 		typedef typename std::pair<FMToutedge_iterator, FMToutedge_iterator> FMToutedge_pair;
 		typedef typename std::pair<FMTvertex_iterator, FMTvertex_iterator> FMTvertex_pair;
-		typedef typename boost::unordered_set<Graph::FMTvertexlookup<FMTvertex_descriptor>>::iterator lookiterator;
-		typedef typename boost::unordered_set<Graph::FMTvertexlookup<FMTvertex_descriptor>>::const_iterator lookconst_iterator;
+		typedef typename boost::unordered_set<Core::FMTlookup<FMTvertex_descriptor,Core::FMTdevelopment>>::iterator lookiterator;
+		typedef typename boost::unordered_set<Core::FMTlookup<FMTvertex_descriptor,Core::FMTdevelopment>>::const_iterator lookconst_iterator;
 	protected:
         FMTgraphbuild buildtype;
-		std::vector<boost::unordered_set<FMTvertexlookup<FMTvertex_descriptor>>>developments;
+		std::vector<boost::unordered_set<Core::FMTlookup<FMTvertex_descriptor,Core::FMTdevelopment>>>developments;
 		mutable std::vector<FMToutputnodecache<FMTvertex_descriptor>>nodescache;
         FMTgraphstats stats;
 		void updatevarsmap(std::map<int,double>& variables,const int& var,const double& coef) const
@@ -146,9 +146,9 @@ class FMTgraph : public Core::FMTobject
 				_exhandler->raisefromcatch("", "FMTgraph::updatevarsmap", __LINE__, __FILE__);
 			}
 		}
-		typename std::vector<boost::unordered_set<FMTvertexlookup<FMTvertex_descriptor>>>::iterator getfirstblock()
+		typename std::vector<boost::unordered_set<Core::FMTlookup<FMTvertex_descriptor,Core::FMTdevelopment>>>::iterator getfirstblock()
 		{
-			typename std::vector<boost::unordered_set<FMTvertexlookup<FMTvertex_descriptor>>>::iterator periodit = developments.begin();
+			typename std::vector<boost::unordered_set<Core::FMTlookup<FMTvertex_descriptor,Core::FMTdevelopment>>>::iterator periodit = developments.begin();
 			try {
 				if (!developments.empty())
 				{
@@ -168,9 +168,9 @@ class FMTgraph : public Core::FMTobject
 			return periodit;
 		}
 
-		typename std::vector<boost::unordered_set<FMTvertexlookup<FMTvertex_descriptor>>>::const_iterator getfirstconstblock() const
+		typename std::vector<boost::unordered_set<Core::FMTlookup<FMTvertex_descriptor,Core::FMTdevelopment>>>::const_iterator getfirstconstblock() const
 		{
-			typename std::vector<boost::unordered_set<FMTvertexlookup<FMTvertex_descriptor>>>::const_iterator periodit = developments.begin();
+			typename std::vector<boost::unordered_set<Core::FMTlookup<FMTvertex_descriptor,Core::FMTdevelopment>>>::const_iterator periodit = developments.begin();
 			try {
 				if (!developments.empty())
 				{
@@ -226,11 +226,12 @@ class FMTgraph : public Core::FMTobject
 
 		void swap(FMTgraph& rhs)
 		{
-			buildtype = rhs.buildtype;
+			std::swap(buildtype,rhs.buildtype);
 			nodescache.swap(rhs.nodescache);
-			stats = rhs.stats;
+			std::swap(stats,rhs.stats);
 			data.swap(rhs.data);
-			generatedevelopments();
+			std::swap(developments, rhs.developments);
+			//generatedevelopments();
 		}
 
 
@@ -254,19 +255,19 @@ class FMTgraph : public Core::FMTobject
 				if (buildtype == rhs.buildtype &&
 					stats == rhs.stats)
 				{
-					typename std::vector<boost::unordered_set<FMTvertexlookup<FMTvertex_descriptor>>>::const_iterator devsit = this->getfirstconstblock();
+					typename std::vector<boost::unordered_set<Core::FMTlookup<FMTvertex_descriptor,Core::FMTdevelopment>>>::const_iterator devsit = this->getfirstconstblock();
 					size_t location = 0;
 					while (devsit != developments.end())
 					{
-						for (typename boost::unordered_set<FMTvertexlookup<FMTvertex_descriptor>>::const_iterator it = developments.at(location).begin(); it != developments.at(location).end(); it++)
+						for (typename boost::unordered_set<Core::FMTlookup<FMTvertex_descriptor,Core::FMTdevelopment>>::const_iterator it = developments.at(location).begin(); it != developments.at(location).end(); it++)
 						{
 							if (rhs.developments.at(location).find(*it) == rhs.developments.at(location).end())
 							{
 								return false;
 							}
 							else {
-								const FMTvertex_descriptor vertex_location = it->descriptor;
-								const FMTvertex_descriptor rhsvertex_location = rhs.developments.at(location).find(*it)->descriptor;
+								const FMTvertex_descriptor vertex_location = it->memoryobject;
+								const FMTvertex_descriptor rhsvertex_location = rhs.developments.at(location).find(*it)->memoryobject;
 								FMTinedge_iterator inedge_iterator, inedge_end;
 								std::vector<FMTbaseedgeproperties>edges;
 								std::vector<FMTbaseedgeproperties>rhsedges;
@@ -313,7 +314,7 @@ class FMTgraph : public Core::FMTobject
 		bool containsdevelopment(const Core::FMTdevelopment& development) const
 			{
 			return ((static_cast<int>(developments.size()) > (development.period)) &&
-				developments.at((development.period)).find(FMTvertexlookup<FMTvertex_descriptor>(development)) != developments.at((development.period)).end());
+				developments.at((development.period)).find(Core::FMTlookup<FMTvertex_descriptor,Core::FMTdevelopment>(development)) != developments.at((development.period)).end());
 			}
 
 		std::queue<FMTvertex_descriptor> initialize(const std::vector<Core::FMTactualdevelopment>& actdevelopments)
@@ -321,9 +322,9 @@ class FMTgraph : public Core::FMTobject
 				std::queue<FMTvertex_descriptor>actives;
 				try {
 					developments.clear();
-					developments.push_back(boost::unordered_set<FMTvertexlookup<FMTvertex_descriptor>>());
+					developments.push_back(boost::unordered_set<Core::FMTlookup<FMTvertex_descriptor,Core::FMTdevelopment>>());
 					developments.back().reserve(actdevelopments.size());
-					developments.push_back(boost::unordered_set<FMTvertexlookup<FMTvertex_descriptor>>());
+					developments.push_back(boost::unordered_set<Core::FMTlookup<FMTvertex_descriptor,Core::FMTdevelopment>>());
 					developments.back().reserve(actdevelopments.size());
 					const int constraint_id = -1;
 					int edge_id = -1;
@@ -335,7 +336,7 @@ class FMTgraph : public Core::FMTobject
 						//P0
 						const FMTvertexproperties properties(development, constraint_id);
 						FMTvertex_descriptor newvertex = boost::add_vertex(properties, data);
-						developments[0].insert(FMTvertexlookup<FMTvertex_descriptor>(newvertex,data[newvertex].get()));
+						developments[0].insert(Core::FMTlookup<FMTvertex_descriptor,Core::FMTdevelopment>(newvertex,data[newvertex].get()));
 						++stats.vertices;
 						//P1
 						Core::FMTfuturdevelopment P1dev(development);
@@ -362,7 +363,7 @@ class FMTgraph : public Core::FMTobject
 		{
 			FMTgraphstats statsdiff(stats);
 			try {
-				developments.push_back(boost::unordered_set<FMTvertexlookup<FMTvertex_descriptor>>());
+				developments.push_back(boost::unordered_set<Core::FMTlookup<FMTvertex_descriptor,Core::FMTdevelopment>>());
 				while (!actives.empty())
 				{
 					const FMTvertex_descriptor front_vertex = actives.front();
@@ -407,7 +408,7 @@ class FMTgraph : public Core::FMTobject
 		{
 			FMTgraphstats statsdiff(stats);
 			try {
-				developments.push_back(boost::unordered_set<FMTvertexlookup<FMTvertex_descriptor>>());
+				developments.push_back(boost::unordered_set<Core::FMTlookup<FMTvertex_descriptor,Core::FMTdevelopment>>());
 				while (!actives.empty())
 				{
 					const FMTvertex_descriptor front_vertex = actives.front();
@@ -432,7 +433,7 @@ class FMTgraph : public Core::FMTobject
 		{
 			std::vector<Core::FMTactualdevelopment>all_period_stop_devs;
 			try {
-				for (typename boost::unordered_set<FMTvertexlookup<FMTvertex_descriptor>>::const_iterator devit = developments.at(location).begin();
+				for (typename boost::unordered_set<Core::FMTlookup<FMTvertex_descriptor,Core::FMTdevelopment>>::const_iterator devit = developments.at(location).begin();
 					devit != developments.at(location).end(); devit++)
 				{
 					if (periodstop(devit->descriptor))
@@ -510,8 +511,8 @@ class FMTgraph : public Core::FMTobject
 		}
 		FMTvertex_descriptor getdevelopment(const Core::FMTdevelopment& developement) const
 		{
-			const FMTvertexlookup<FMTvertex_descriptor> tofind(developement);
-			return developments.at(developement.period).find(tofind)->descriptor;
+			const Core::FMTlookup<FMTvertex_descriptor,Core::FMTdevelopment> tofind(developement);
+			return developments.at(developement.period).find(tofind)->memoryobject;
 		}
 		const Core::FMTdevelopment& getdevelopment(const FMTvertex_descriptor& descriptor) const
 			{
@@ -525,7 +526,7 @@ class FMTgraph : public Core::FMTobject
 					const int constraint_id = -1;
 					const FMTvertexproperties properties(futurdevelopement, constraint_id);
 					FMTvertex_descriptor newvertex = boost::add_vertex(properties, data);
-					developments[futurdevelopement.period].insert(FMTvertexlookup<FMTvertex_descriptor>(newvertex,data[newvertex].get()));
+					developments[futurdevelopement.period].insert(Core::FMTlookup<FMTvertex_descriptor,Core::FMTdevelopment>(newvertex,data[newvertex].get()));
 					++stats.vertices;
 					return newvertex;
 				}
@@ -540,7 +541,7 @@ class FMTgraph : public Core::FMTobject
 		size_t hash(size_t seed = 0) const
 		{
 			try {
-				boost::hash_combine(seed, boost::hash<Core::FMTdevelopment>()(*developments.at(0).begin()->development));
+				boost::hash_combine(seed, boost::hash<Core::FMTdevelopment>()(*developments.at(0).begin()->pointerobject));
 				FMTedge_iterator edge_iterator, edge_iterator_end;
 				for (boost::tie(edge_iterator, edge_iterator_end) = boost::edges(data); edge_iterator != edge_iterator_end; ++edge_iterator)
 				{
@@ -700,12 +701,12 @@ class FMTgraph : public Core::FMTobject
 		{
 			int lock = 0;
 			try {
-				for (typename boost::unordered_set<FMTvertexlookup<FMTvertex_descriptor>>::const_iterator devit = developments.at(period).begin();
+				for (typename boost::unordered_set<Core::FMTlookup<FMTvertex_descriptor,Core::FMTdevelopment>>::const_iterator devit = developments.at(period).begin();
 					devit != developments.at(period).end(); devit++)
 					{
-					if (devit->development->lock>lock)
+					if (devit->pointerobject->lock>lock)
 						{
-						lock = devit->development->lock;
+						lock = devit->pointerobject->lock;
 						}
 					}
 			}catch (...)
@@ -1064,7 +1065,7 @@ class FMTgraph : public Core::FMTobject
 		{
 			FMTgraphstats statsdiff(stats);
 			try {
-				developments.push_back(boost::unordered_set<FMTvertexlookup<FMTvertex_descriptor>>());
+				developments.push_back(boost::unordered_set<Core::FMTlookup<FMTvertex_descriptor,Core::FMTdevelopment>>());
 				developments.back().reserve(actives.size());
 				while (!actives.empty())
 				{
@@ -1119,14 +1120,14 @@ class FMTgraph : public Core::FMTobject
 			bool keepbounded = false)
 		{
 			try {
-				typename std::vector<boost::unordered_set<FMTvertexlookup<FMTvertex_descriptor>>>::iterator periodit = this->getfirstblock();
-				for (typename boost::unordered_set<FMTvertexlookup<FMTvertex_descriptor>>::iterator it = periodit->begin();
+				typename std::vector<boost::unordered_set<Core::FMTlookup<FMTvertex_descriptor,Core::FMTdevelopment>>>::iterator periodit = this->getfirstblock();
+				for (typename boost::unordered_set<Core::FMTlookup<FMTvertex_descriptor,Core::FMTdevelopment>>::iterator it = periodit->begin();
 					it != periodit->end(); it++)
 				{
-					const FMTvertex_descriptor& vertex_location = it->descriptor;
+					const FMTvertex_descriptor& vertex_location = it->memoryobject;
 					FMTinedge_iterator inedge_iterator, inedge_end;
 					bool gotinedges = false;
-					for (boost::tie(inedge_iterator, inedge_end) = boost::in_edges((*it).descriptor, data); inedge_iterator != inedge_end; ++inedge_iterator)
+					for (boost::tie(inedge_iterator, inedge_end) = boost::in_edges((*it).memoryobject, data); inedge_iterator != inedge_end; ++inedge_iterator)
 					{
 						gotinedges = true;
 						const FMTedgeproperties& edgeproperty = data[*inedge_iterator];
@@ -1154,11 +1155,11 @@ class FMTgraph : public Core::FMTobject
 					}
 					boost::clear_in_edges(vertex_location, data);
 				}
-				boost::unordered_set<FMTvertexlookup<FMTvertex_descriptor>>restingdevelopments;
-				for (typename boost::unordered_set<FMTvertexlookup<FMTvertex_descriptor>>::iterator it = periodit->begin();
+				boost::unordered_set<Core::FMTlookup<FMTvertex_descriptor,Core::FMTdevelopment>>restingdevelopments;
+				for (typename boost::unordered_set<Core::FMTlookup<FMTvertex_descriptor,Core::FMTdevelopment>>::iterator it = periodit->begin();
 					it != periodit->end(); it++)
 				{
-					const FMTvertex_descriptor& vertex_location = (*it).descriptor;
+					const FMTvertex_descriptor& vertex_location = (*it).memoryobject;
 					FMTvertexproperties& vertexproperty = data[vertex_location];
 					const int constvalue = vertexproperty.getconstraintID();
 					if (constvalue >= 0)
@@ -1199,7 +1200,7 @@ class FMTgraph : public Core::FMTobject
 			try {
 				for (auto& lastperiod : developments.back())
 				{
-					actives.push(lastperiod.descriptor);
+					actives.push(lastperiod.memoryobject);
 				}
 			}
 			catch (...)
@@ -1208,7 +1209,7 @@ class FMTgraph : public Core::FMTobject
 			}
 			return actives;
 		}
-		const boost::unordered_set<FMTvertexlookup<FMTvertex_descriptor>>& getperiodverticies(int period) const
+		const boost::unordered_set<Core::FMTlookup<FMTvertex_descriptor,Core::FMTdevelopment>>& getperiodverticies(int period) const
 			{
 			return developments.at(period);
 			}
@@ -1270,7 +1271,7 @@ class FMTgraph : public Core::FMTobject
 			try {
 				for (const auto& descriptors : developments.at(0))
 				{
-					const FMTvertex_descriptor descriptor = descriptors.descriptor;
+					const FMTvertex_descriptor descriptor = descriptors.memoryobject;
 					const FMTvertexproperties& property = data[descriptor];
 					const std::map<int, int>outs = getoutvariables(descriptor);
 					lower_bounds[outs.at(-1)] = property.getbaseRHS();
@@ -1293,7 +1294,7 @@ class FMTgraph : public Core::FMTobject
 		{
 			std::map<std::string, double>emptyreturn;
 			try{
-			std::vector<FMTvertex_descriptor>verticies = getnode(model, node, period);
+			const std::vector<FMTvertex_descriptor>verticies = getnode(model, node, period);
 			return getvalues(model, verticies, node, theme, solution, level);
 			}catch (...)
 				{
@@ -1407,6 +1408,7 @@ class FMTgraph : public Core::FMTobject
         void generatedevelopments()
 		{
 			try {
+				nodescache.clear();
 				developments.clear();
 				const size_t max_period = static_cast<size_t>(getperiod());
 				FMTvertex_iterator vertex, vend;
@@ -1416,7 +1418,7 @@ class FMTgraph : public Core::FMTobject
 					const FMTbasevertexproperties& properties = data[*vertex];
 					const Core::FMTdevelopment& dev = properties.get();
 					const size_t period_location = (dev.period);
-					developments[period_location].insert(FMTvertexlookup<FMTvertex_descriptor>(*vertex,dev));
+					developments[period_location].insert(Core::FMTlookup<FMTvertex_descriptor,Core::FMTdevelopment>(*vertex,dev));
 				}
 			}
 			catch (...)
@@ -1561,7 +1563,7 @@ class FMTgraph : public Core::FMTobject
 					//const double* actual_solution = this->getColSolution();
 					for (const auto deviterator : getperiodverticies(lperiod))
 					{
-						const FMTvertex_descriptor vertex = deviterator.descriptor;
+						const FMTvertex_descriptor vertex = deviterator.memoryobject;
 						std::map<int, int>variables = getoutvariables(vertex);
 						variables.erase(-1);
 						if (!variables.empty())
@@ -1574,7 +1576,7 @@ class FMTgraph : public Core::FMTobject
 									{
 										schedule_solution[actions[variable_iterator.first]] = std::map<Core::FMTdevelopment, std::map<int, double>>();
 									}
-									const Core::FMTdevelopment& basedev = getdevelopment(deviterator.descriptor);
+									const Core::FMTdevelopment& basedev = getdevelopment(deviterator.memoryobject);
 									Core::FMTdevelopment lockout = basedev.clearlock();
 									if (schedule_solution[actions[variable_iterator.first]].find(lockout) == schedule_solution[actions[variable_iterator.first]].end())
 									{

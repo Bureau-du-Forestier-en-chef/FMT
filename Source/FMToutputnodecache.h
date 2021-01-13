@@ -18,7 +18,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <boost/serialization/serialization.hpp>
 #include <boost/serialization/map.hpp>
 #include <boost/serialization/vector.hpp>
-#include "FMTvertexlookup.h"
+#include "FMTlookup.h"
 #include "FMTgraph.h"
 
 namespace Graph
@@ -36,15 +36,15 @@ namespace Graph
 		std::vector<tvdescriptor>basenode;
 		mutable std::map<Core::FMToutputnode, std::vector<tvdescriptor>>searchtree;
         typedef typename std::map<Core::FMToutputnode,std::vector<tvdescriptor>>::const_iterator notecacheit;
-		void setinitialcache(const boost::unordered_set<FMTvertexlookup<tvdescriptor>>& initialgraph)
+		void setinitialcache(const boost::unordered_set<Core::FMTlookup<tvdescriptor,Core::FMTdevelopment>>& initialgraph)
 		{
 			searchtree.clear();
 			basenode.resize(initialgraph.size());
 			size_t idv = 0;
-			for (typename boost::unordered_set<FMTvertexlookup<tvdescriptor>>::const_iterator itgraph = initialgraph.begin();
+			for (typename boost::unordered_set<Core::FMTlookup<tvdescriptor,Core::FMTdevelopment>>::const_iterator itgraph = initialgraph.begin();
 				itgraph != initialgraph.end(); itgraph++)
 			{
-				basenode[idv] = itgraph->descriptor;
+				basenode[idv] = itgraph->memoryobject;
 				++idv;
 			}
 			std::sort(basenode.begin(), basenode.end());
@@ -196,7 +196,7 @@ namespace Graph
 		FMToutputnodecache(const FMToutputnodecache& rhs) = default;
 		FMToutputnodecache& operator = (const FMToutputnodecache& rhs) = default;
 		~FMToutputnodecache() = default;
-		FMToutputnodecache(const boost::unordered_set<FMTvertexlookup<tvdescriptor>>& initialgraph) :
+		FMToutputnodecache(const boost::unordered_set<Core::FMTlookup<tvdescriptor,Core::FMTdevelopment>>& initialgraph) :
 			basenode(), searchtree()
 			{
 				this->setinitialcache(initialgraph);

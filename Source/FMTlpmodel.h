@@ -152,7 +152,7 @@ class FMTlpmodel : public FMTmodel
 	need to be updated. Variables and constraints related to each of those new developements will be added to the matrix.
 	So area transfer row and natural growth plus action variables.
 	*/
-	Graph::FMTgraphstats updatematrix(const boost::unordered_set<Graph::FMTvertexlookup<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>>& targets,
+	Graph::FMTgraphstats updatematrix(const boost::unordered_set<Core::FMTlookup<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor,Core::FMTdevelopment>>& targets,
 			const Graph::FMTgraphstats& newstats);
 	// DocString: FMTlpmodel::getsetmatrixelement
 	/**

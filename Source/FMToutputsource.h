@@ -73,6 +73,7 @@ class FMToutputsource : public FMTspec
 		bool isnull(const FMTyields& ylds) const;
 		bool istimeyield() const;
 		std::vector<const FMTaction*>targets(const std::vector<FMTaction>& actions) const;
+		std::unordered_set<int>targetsset(const std::vector<FMTaction>& actions) const;
 		bool isinventory() const;
 		bool useinedges() const;
 		bool isnextperiod() const;
@@ -93,6 +94,7 @@ class FMToutputsource : public FMTspec
 		size_t hash(int period = -1,bool withyield = false) const;
 		void fillhashmask(Core::FMTmask& basemask) const;
 		void fillhashspec(Core::FMTmask& basemask) const;
+		bool isequalbyvalue(const FMToutputsource& rhs) const;
     };
 
 class FMToutputsourcecomparator

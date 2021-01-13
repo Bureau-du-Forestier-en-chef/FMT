@@ -157,7 +157,8 @@ void FMTmask::append(const boost::dynamic_bitset<> &bits)
 
 void FMTmask::update(const std::vector<FMTtheme>& themes)
     {
-    name = "";
+    //name = "";
+	name.clear();
     for(const FMTtheme& the : themes)
         {
         const boost::dynamic_bitset<>sub = subset(the);
