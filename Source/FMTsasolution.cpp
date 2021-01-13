@@ -349,9 +349,9 @@ double FMTsasolution::getgraphspenalties(const Models::FMTsamodel& model, const 
             for(std::map<FMTcoordinate,Graph::FMTlinegraph>::iterator graphit = this->mapping.begin(); graphit != this->mapping.end(); ++graphit)//change const_iterator to iterator because graph is modified
             {
                 Graph::FMTlinegraph* local_graph = &graphit->second;
-                std::queue<Graph::FMTgraph<Graph::FMTbasevertexproperties, Graph::FMTbaseedgeproperties>::FMTvertex_descriptor> actives = local_graph->getactiveverticies();
+                //std::queue<Graph::FMTgraph<Graph::FMTbasevertexproperties, Graph::FMTbaseedgeproperties>::FMTvertex_descriptor> actives = local_graph->getactiveverticies();
                 ///Change parameters and function
-                Graph::FMTgraphstats stats = local_graph->randombuildperiod(model,actives,generator,events,graphit->first);
+				Graph::FMTgraphstats stats;// = local_graph->randombuildperiod(model, generator, events, graphit->first);
                 periodstats += local_graph->getstats();
             }
             //events.push_back(events_id);
@@ -388,7 +388,7 @@ double FMTsasolution::getgraphspenalties(const Models::FMTsamodel& model, const 
 				std::uniform_int_distribution<int> perioddistribution(1,luckygraph->second.size()-2);//period to change
                 const int period = perioddistribution(generator);
                 newsolution.solution_stats -= luckygraph->second.getstats();
-                Graph::FMTlinegraph newgraph = luckygraph -> second.perturbgraph(model,generator,newsolution.events,luckygraph->first,period);//perturb cell
+				Graph::FMTlinegraph newgraph;// = luckygraph->second.perturbgraph(model, generator, newsolution.events, luckygraph->first, period);//perturb cell
                 newsolution.solution_stats += newgraph.getstats();
                 newsolution.mapping[luckygraph->first] = newgraph;
                 ChangedId.push_back(map_lenght.at(id));
@@ -411,7 +411,7 @@ double FMTsasolution::getgraphspenalties(const Models::FMTsamodel& model, const 
             std::uniform_int_distribution<int> perioddistribution(1,luckygraph->second.size()-2);//period to change
             const int period = perioddistribution(generator);
             newsolution.solution_stats -= luckygraph->second.getstats();
-            Graph::FMTlinegraph newgraph = luckygraph -> second.perturbgraph(model,generator,newsolution.events,luckygraph->first,period);//perturb cell
+			Graph::FMTlinegraph newgraph;// = luckygraph->second.perturbgraph(model, generator, newsolution.events, luckygraph->first, period);//perturb cell
             newsolution.solution_stats += newgraph.getstats();
             newsolution.mapping[luckygraph->first] = newgraph;
             //ChangedId.push_back(map_lenght.at(id));

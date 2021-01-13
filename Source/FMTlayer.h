@@ -78,6 +78,21 @@ namespace Spatial
 			Default destructor for FMTlayer.
 			*/
             virtual~FMTlayer()=default;
+			// DocString: FMTlayer(FMTlayer&&)
+			/**
+			Default move constructor for FMTlayer.
+			*/
+			FMTlayer(FMTlayer&& rhs) noexcept :
+				Core::FMTobject(std::move(rhs)),
+				geotransform(std::move(rhs.geotransform)),
+				maxx(std::move(rhs.maxx)),
+				maxy(std::move(rhs.maxy)),
+				SRS_WKT(std::move(rhs.SRS_WKT)),
+				cellsize(std::move(rhs.cellsize)),
+				mapping(std::move(rhs.mapping))
+					{
+			
+					}
 			// DocString: FMTlayer(const std::vector<double>&,const unsigned int&,const unsigned int&,const std::string&,const double&)
 			/**
 			Constructor for the FMTlayer taking a geotransform, max x, max y, projection string and cell size.

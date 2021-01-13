@@ -125,18 +125,18 @@ std::vector<FMTtheme>FMTtransition::getstaticthemes(const std::vector<FMTtheme>&
 const FMTfork* FMTtransition::getfork(const FMTdevelopment& dev,
                                const FMTyields& ylds) const
     {
-	const std::vector<const FMTfork*> forks = this->findsets(dev.mask);
-    if (!forks.empty())
-        {
-        for(const FMTfork* fork : forks)
-            {
-			const std::map<std::string,double>yields = ylds.getylds(dev,*fork);
-            if (fork->allow(dev.period,dev.age,dev.lock,yields))
-                {
-                return fork;
-                }
-            }
+    for(const FMTfork* fork : this->findsets(dev.mask))
+       {
+		if (fork->allowwithoutyield(dev.period, dev.age, dev.lock))
+			{
+			const std::vector<double>yields = ylds.getylds(dev, *fork);
+			if (fork->allowyields(yields))
+				{
+				return fork;
+				}
+			}
         }
+        
     return nullptr;
     }
 

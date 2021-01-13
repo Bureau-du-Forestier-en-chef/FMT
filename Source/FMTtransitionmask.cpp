@@ -81,7 +81,7 @@ FMTtransitionmask::FMTtransitionmask(const std::string& lmask,const std::vector<
             {
             newdev.age = age.getlower();
 			age_change = true;
-            }else if(!ylds.empty())
+            }else if(!yieldnames.empty())
                 {
                 newdev.age = yields.getage(newdev,*this);
 				age_change = true;

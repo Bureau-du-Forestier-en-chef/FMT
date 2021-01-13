@@ -86,8 +86,12 @@ namespace Core
 		void FMTobject::setCPLhandler()
 			{
 			#if defined  FMTWITHGDAL
-				CPLPopErrorHandler();
-				CPLPushErrorHandlerEx(Exception::FMTCPLErrorHandler, _exhandler->getCPLdata());
+			if (!_exhandler->isCPLpushed())
+				{
+					CPLPopErrorHandler();
+					CPLPushErrorHandlerEx(Exception::FMTCPLErrorHandler, _exhandler->getCPLdata());
+					_exhandler->setCPLpushed();
+				}
 			#endif
 			}
 
@@ -154,6 +158,7 @@ namespace Core
 		{
 		_exhandler = rhs._exhandler;
 		_logger = rhs._logger;
+		_exhandler->passinlogger(_logger);
 		}
 
 	void FMTobject::setsection(const FMTsection& section) const

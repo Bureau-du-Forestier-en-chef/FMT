@@ -1,3 +1,9 @@
+/*
+Copyright (c) 2019 Gouvernement du Québec
+
+SPDX-License-Identifier: LiLiQ-R-1.1
+License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
+*/
 #ifndef FMTSPATIALSCHEDULE_H
 #define FMTSPATIALSCHEDULE_H
 
@@ -29,6 +35,12 @@ class FMTspatialschedule : public FMTlayer<Graph::FMTlinegraph>
 	FMTspatialscheduletype scheduletype;
 	std::vector<double>constraintsfactor;
     public:
+		typedef std::vector<std::vector<Spatial::FMTbindingspatialaction>> actionbindings;
+		// DocString: FMTspatialschedule(FMTspatialschedule&&)
+		/**
+		Default move constructor for FMTspatialschedule.
+		*/
+		FMTspatialschedule(FMTspatialschedule&& rhs) noexcept;
         // DocString: FMTspatialschedule()
 		/**
 		Default constructor of FMTspatialschedule
@@ -108,10 +120,10 @@ class FMTspatialschedule : public FMTlayer<Graph::FMTlinegraph>
 		Return for all actions the FMTcoordinate with operable developments at the end of the graph.
 		*/
 	   std::vector<std::set<Spatial::FMTcoordinate>>getupdatedscheduling(
-											const std::vector<Core::FMTaction>& actions,
-										   const Core::FMTschedule& selection,
+											const Models::FMTmodel& model,	
+											 const std::vector<int>& actiontargets,
 											boost::unordered_map<Core::FMTdevelopment, std::vector<bool>>& cachedaction,
-										   const Core::FMTyields& yields = Core::FMTyields(),
+										  const std::vector<boost::unordered_set<Core::FMTdevelopment>>& scheduleoperabilities,
 										   bool schedule_only = true,
 										   std::vector<std::set<Spatial::FMTcoordinate>> original= std::vector<std::set<Spatial::FMTcoordinate>>(),
 											std::vector<FMTcoordinate> updatedcoordinate= std::vector<FMTcoordinate>()) const;
@@ -267,7 +279,7 @@ class FMTspatialschedule : public FMTlayer<Graph::FMTlinegraph>
 		 /**
 		 Get the binding actions based on model constraints.
 		 */
-		std::vector<std::vector<Spatial::FMTbindingspatialaction>>getbindingactionsbyperiod(const Models::FMTmodel& model) const;
+		actionbindings getbindingactionsbyperiod(const Models::FMTmodel& model) const;
 		// DocString: FMTspatialschedule::referencebuild
 		/**
 		This is the main function to simulate a schedule of actions (schedule) on the actual
@@ -277,6 +289,7 @@ class FMTspatialschedule : public FMTlayer<Graph::FMTlinegraph>
 		to get different solutions from the simulator.
 		*/
 		std::map<std::string, double> referencebuild(const Core::FMTschedule& schedule, const Models::FMTmodel& model,
+										const std::vector<boost::unordered_set<Core::FMTdevelopment>>& scheduleoperabilities,
 										bool schedule_only = true,
 										bool scheduleatfirstpass = true,
 										unsigned int seed = 0);
@@ -302,7 +315,9 @@ class FMTspatialschedule : public FMTlayer<Graph::FMTlinegraph>
 		/**
 		Change one graph in the solution remove it's contribution to objective and add contribution to the newly generated to the objective.
 		*/
-		void perturbgraph(const FMTcoordinate& coordinate,const int& period, const Models::FMTmodel& model, std::default_random_engine& generator);
+		void perturbgraph(const FMTcoordinate& coordinate,const int& period,
+			const Models::FMTmodel& model, std::default_random_engine& generator,
+			const actionbindings& bindings);
 		// DocString: FMTspatialschedule::isbetterbygroup
 		/**
 		Compare solution by constraint group.
@@ -405,6 +420,8 @@ class FMTspatialschedule : public FMTlayer<Graph::FMTlinegraph>
 		 Return the maximal patch size of a vector of spatialactions.
 		 */
 		//std::vector<size_t>getmaximalpatchsizes(const std::vector<FMTspatialaction>& spactions) const;
+		bool inscheduleoperabilities(const std::vector<boost::unordered_set<Core::FMTdevelopment>>& scheduleoperabilities,
+			Core::FMTdevelopment const* dev,const int& actionid, const Core::FMTaction& action) const;
 		
     private:
 };
