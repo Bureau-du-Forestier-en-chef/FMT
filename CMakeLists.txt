@@ -20,7 +20,6 @@ message("Generating Build file for FMT ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSIO
 set(FMTSOURCEDIR "${CMAKE_CURRENT_SOURCE_DIR}/Source/")
 set(FMTINCLUDEDIR "${CMAKE_CURRENT_SOURCE_DIR}/Source/")
 
-
 if (DEFINED MOSEK_DIR)
 	set(ENV{MOSEK_DIR} "${MOSEK_DIR}")
 endif(DEFINED MOSEK_DIR)
@@ -389,5 +388,8 @@ else()
 		endif()")
 endif(NOT MSVC AND NOT CYGWIN)
 
-
-include(${CMAKE_CURRENT_SOURCE_DIR}/Examples/C++/CMakeLists.txt)
+if (DEFINED ReleaseTesting)
+	include(${CMAKE_CURRENT_SOURCE_DIR}/Examples/C++/ReleaseTesting/CMakeLists.txt)
+else()
+	include(${CMAKE_CURRENT_SOURCE_DIR}/Examples/C++/CMakeLists.txt)
+endif(DEFINED ReleaseTesting)
