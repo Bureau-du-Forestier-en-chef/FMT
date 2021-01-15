@@ -36,7 +36,10 @@ class FMToutputnode
 		bool issubsetof(const FMToutputnode& rhs) const;
 		bool issubsetof(const FMToutputnode& rhs,const std::vector<Core::FMTaction>& actions) const;
 		bool issamebutdifferentaction(const FMToutputnode& rhs) const;
-		bool isactionbased() const;
+		inline bool isactionbased() const
+			{
+			return source.isaction();
+			}
 		bool issamevalues(const FMToutputnode& rhs) const;
 		operator std::string() const;
 		std::string gethashstring() const;
