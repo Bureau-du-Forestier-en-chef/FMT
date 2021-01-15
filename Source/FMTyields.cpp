@@ -190,7 +190,7 @@ std::vector<double>FMTyields::get(const FMTdevelopment& dev,
 	}
 	catch (...)
 	{
-		_exhandler->raisefromcatch("", "FMTyields::get", __LINE__, __FILE__, _section);
+		_exhandler->raisefromcatch("for development type " + std::string(dev), "FMTyields::get", __LINE__, __FILE__, _section);
 	}
 	return values;
 }

@@ -325,41 +325,19 @@ namespace Graph
 
 	}
 
-	std::vector<int> FMTlinegraph::anyusageof(const Core::FMToutputsource& source, const Core::FMTyields& yields, const std::unordered_set<int>& actions) const
+	std::vector<int> FMTlinegraph::anyusageof(Core::FMToutputnode output_node, const Models::FMTmodel& model,const int& startingperiod) const
 	{
 		std::vector<int>periods;
 		try {
-				FMTvertex_iterator vertex, vend;
-				for (boost::tie(vertex, vend) = vertices(data); vertex != vend; ++vertex)
-				{
-					const FMTbasevertexproperties& properties = data[*vertex];
-					if (isanyvertexusage(properties, source, yields))
+			for (int period = startingperiod; period < getperiod(); ++period)
+			{
+				const std::vector<FMTvertex_descriptor>verticies = getnode(model, output_node, period);
+				if (!verticies.empty())
 					{
-						const int period = properties.get().period;
-						bool usefull = true;
-						if (!actions.empty())
-							{
-							usefull = false;
-							FMToutedge_iterator outedge_iterator, outedge_end;
-							boost::tie(outedge_iterator, outedge_end) = boost::out_edges(*vertex, data);
-							if (outedge_iterator != outedge_end)
-							{
-								const FMTbaseedgeproperties& edgeprop = data[*outedge_iterator];
-								if (isanyactionofedge(edgeprop, actions))
-									{
-									usefull = true;
-									}
-							}
-							}
-						if (usefull && std::find(periods.begin(), periods.end(), period) == periods.end())
-						{
-							periods.push_back(period);
-						}
+					periods.push_back(period);
 					}
-				}
-			
-		}
-		catch (...)
+			}
+		}catch (...)
 		{
 			_exhandler->raisefromcatch("", "FMTlinegraph::anyusageof", __LINE__, __FILE__);
 		}
@@ -488,8 +466,12 @@ namespace Graph
     return newgraph;
     }*/
 
-	bool FMTlinegraph::isonlygrow() const
+	bool FMTlinegraph::isonlygrow(int period) const
 		{
+		if (period > 0)
+			{
+			return (developments.at(period).size() == 1);
+			}
 		return (size()-1) == boost::num_edges(data);
 		}
 

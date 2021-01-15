@@ -248,7 +248,7 @@ class FMTspatialschedule : public FMTlayer<Graph::FMTlinegraph>
 		/**
 			Removes the cached values for every nodes of the model of a given graph.If remove = false it add values to cache
 		*/
-		void setgraphfromcache(const Graph::FMTlinegraph& graph, const Models::FMTmodel& model, bool remove = true);
+		void setgraphfromcache(const Graph::FMTlinegraph& graph, const Models::FMTmodel& model, const int&startingperiod, bool remove = true);
 
 		// DocString: FMTspatialschedule::getgraphsoutputs(const Models::FMTmodel&, const Core::FMTconstraint&, const int&, const int&)
 		/**
