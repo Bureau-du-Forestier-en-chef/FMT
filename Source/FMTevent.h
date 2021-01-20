@@ -265,8 +265,8 @@ class FMTevent
 		Return the closes coordinate between two FMTevent
 		*/
 		void getclosescoordinates(const FMTevent& rhs,
-			std::set<FMTcoordinate>::const_iterator thiscoordinate,
-			std::set<FMTcoordinate>::const_iterator rhscoordinate) const;
+			std::set<FMTcoordinate>::const_iterator& thiscoordinate,
+			std::set<FMTcoordinate>::const_iterator& rhscoordinate) const;
     };
 
 }
