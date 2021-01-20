@@ -253,11 +253,10 @@ namespace Parser{
 					mapping.clear();
 					for (const Core::FMTtheme& theme : themes)
 					{
-						const std::map<std::string, std::string> themes_mapping = theme.getvaluenames();
 						std::map<std::string, std::string> layer_map;
-						for (std::map<std::string, std::string>::const_iterator dit = themes_mapping.begin(); dit != themes_mapping.end(); dit++)
+						for (const std::string& attribute : theme.getbaseattributes())
 						{
-							layer_map[dit->first] = dit->first;
+							layer_map[attribute] = attribute;
 						}
 						mapping.push_back(layer_map);
 					}

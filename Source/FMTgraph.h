@@ -503,7 +503,7 @@ class FMTgraph : public Core::FMTobject
 			}
 			catch (...)
 			{
-				_exhandler->raisefromcatch("", "FMTgraph::getoutput", __LINE__, __FILE__);
+				_exhandler->raisefromcatch("For output: "+std::string(output), "FMTgraph::getoutput", __LINE__, __FILE__);
 			}
 
 			return results;
@@ -1298,7 +1298,7 @@ class FMTgraph : public Core::FMTobject
 			return getvalues(model, verticies, node, theme, solution, level);
 			}catch (...)
 				{
-				_exhandler->raisefromcatch("", "FMTgraph::getsource", __LINE__, __FILE__);
+				_exhandler->raisefromcatch("For node: "+std::string(node), "FMTgraph::getsource", __LINE__, __FILE__);
 				}
 			return emptyreturn;
 		}
@@ -1310,9 +1310,9 @@ class FMTgraph : public Core::FMTobject
 			try {
 				if (level == FMToutputlevel::standard)
 				{
-					for (auto attribute_id : theme.getvaluenames())
+					for (const std::string& attribute : theme.getbaseattributes())
 					{
-						values[attribute_id.first] = 0;
+						values[attribute] = 0;
 					}
 				}
 				else if (level == FMToutputlevel::totalonly)
@@ -1386,7 +1386,7 @@ class FMTgraph : public Core::FMTobject
 			}
 			catch (...)
 			{
-				_exhandler->raisefromcatch("", "FMTgraph::getvalues", __LINE__, __FILE__);
+				_exhandler->raisefromcatch("For node: "+std::string(node), "FMTgraph::getvalues", __LINE__, __FILE__);
 			}
 			return values;
 		}

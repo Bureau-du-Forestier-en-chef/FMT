@@ -121,11 +121,6 @@ namespace Core
 		return (constant == rhs.constant &&  factor.isequalbyvalue(rhs.factor) && source.isequalbyvalue(rhs.source));
 		}
 
-	bool FMToutputnode::isactionbased() const
-		{
-		return !source.getaction().empty();
-		}
-
 
 	FMToutputnode& FMToutputnode::operator = (const FMToutputnode& rhs)
 		{

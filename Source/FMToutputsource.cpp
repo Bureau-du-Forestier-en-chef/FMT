@@ -89,8 +89,7 @@ void FMToutputsource::fillhashmask(Core::FMTmask& basemask) const
 
 bool FMToutputsource::isequalbyvalue(const FMToutputsource& rhs) const
 	{
-	return (target == rhs.target && yield == rhs.yield && action == rhs.action && values == rhs.values &&
-			FMTspec::operator == (rhs) && mask == rhs.mask);
+	return (FMTspec::operator == (rhs) && mask == rhs.mask && target == rhs.target && yield == rhs.yield && action == rhs.action && values == rhs.values);
 	}
 
 
@@ -199,8 +198,7 @@ bool FMToutputsource::operator < (const FMToutputsource& rhs) const
 
 bool FMToutputsource::operator == (const FMToutputsource& rhs) const
 	{
-	return (FMTspec::operator == (rhs) && mask==rhs.mask && target==rhs.target &&
-		action == rhs.action);
+	return (FMTspec::operator == (rhs) && target == rhs.target && mask==rhs.mask  && action == rhs.action);
 	}
 
 bool FMToutputsource::operator != (const FMToutputsource& rhs) const
@@ -208,10 +206,6 @@ bool FMToutputsource::operator != (const FMToutputsource& rhs) const
 	return (!(*this==rhs));
 	}
 
-const FMTmask& FMToutputsource::getmask() const
-	{
-	return mask;
-	}
 
 bool FMToutputsource::issubsetof(const FMToutputsource& rhs) const
 	{
@@ -230,18 +224,20 @@ bool FMToutputsource::issubsetof(const FMToutputsource& rhs) const
 
 bool FMToutputsource::issamebutdifferentaction(const FMToutputsource& rhs) const
 	{
-	return (FMTspec::operator == (rhs) && mask == rhs.mask && target == rhs.target &&
-		action != rhs.action);
+	return (FMTspec::operator == (rhs) && target == rhs.target && mask == rhs.mask && action != rhs.action);
 	}
 
 bool FMToutputsource::isinaggregate(const FMToutputsource& rhs, const std::vector<Core::FMTaction>& actions) const
 	{
-	const std::vector<const FMTaction*>allactions = FMTactioncomparator(rhs.action).getallaggregates(actions);
-	for (const FMTaction* actptr : allactions)
+	if (isaction() && rhs.isaction())
 		{
-		if (actptr->getname() == action)
+		const std::vector<const FMTaction*>allactions = FMTactioncomparator(rhs.action).getallaggregates(actions);
+		for (const FMTaction* actptr : allactions)
 			{
-			return true;
+				if (actptr->getname() == action)
+				{
+					return true;
+				}
 			}
 		}
 	return false;
@@ -309,36 +305,6 @@ void FMToutputsource::setaverage()
 	average = true;
 	}
 
-bool FMToutputsource::isaverage() const
-	{
-	return average;
-	}
-
-bool FMToutputsource::isvariable() const
-	{
-	return bool(mask);
-	}
-
-bool FMToutputsource::islevel() const
-	{
-	return (target == FMTotar::level);
-	}
-
-bool FMToutputsource::isvariablelevel() const
-	{
-	return (!action.empty() && islevel());
-	}
-
-bool FMToutputsource::isconstant() const
-	{
-	return (target == FMTotar::val);
-	}
-
-std::string FMToutputsource::getlevel() const
-	{
-	return yield;
-	}
-
 bool FMToutputsource::isnull(const FMTyields& ylds) const
 	{
 	if (!yield.empty())
@@ -352,10 +318,6 @@ bool FMToutputsource::isnull(const FMTyields& ylds) const
 	return false;
 	}
 
-bool FMToutputsource::istimeyield() const
-	{
-	return (target == FMTotar::timeyld);
-	}
 double FMToutputsource::getvalue(int period) const
 	{
 	double returnvalue = 0;
@@ -373,21 +335,6 @@ double FMToutputsource::getvalue(int period) const
 void FMToutputsource::setmask(const FMTmask& newmask)
 	{
 	mask = newmask;
-	}
-
-
-std::string FMToutputsource::getaction() const
-	{
-	return action;
-	}
-
-std::string FMToutputsource::getyield() const
-	{
-	return yield;
-	}
-FMTotar FMToutputsource::gettarget() const
-	{
-	return target;
 	}
 
 std::vector<const FMTaction*>FMToutputsource::targets(const std::vector<FMTaction>& actions) const
@@ -408,26 +355,6 @@ std::unordered_set<int>FMToutputsource::targetsset(const std::vector<FMTaction>&
 	return std::unordered_set<int>();
 }
 
-
-bool FMToutputsource::isinventory() const
-	{
-	return (target == FMTotar::inventory);
-	}
-
-bool FMToutputsource::useinedges() const
-	{
-	return (target == FMTotar::inventory);
-	}
-
-bool FMToutputsource::isnextperiod() const
-	{
-	return (target == FMTotar::inventory && action.empty());
-	}
-
-bool FMToutputsource::useoutedges() const
-	{
-	return (target == FMTotar::actual);
-	}
 
 double FMToutputsource::getcoef(const FMTdevelopment& development,
 	const FMTyields& yields, const FMTaction& modelaction,

@@ -62,7 +62,7 @@ boost::dynamic_bitset<> FMTmask::subset(const FMTtheme& theme) const
     {
     boost::dynamic_bitset<> sub(theme.size(),false);
     int locit = 0;
-    for(int id = theme.start; id < (theme.start + static_cast<int>(theme.size())); ++id)
+    for(size_t id = theme.start; id < (theme.start + theme.size()); ++id)
         {
 		sub[locit] = data[id];
         ++locit;
@@ -72,7 +72,7 @@ boost::dynamic_bitset<> FMTmask::subset(const FMTtheme& theme) const
 void FMTmask::setsubset(const FMTtheme& theme,const boost::dynamic_bitset<>& subset)
     {
     int locit = 0;
-    for(int id = theme.start; id < (theme.start+static_cast<int>(theme.size())); ++id)
+    for(size_t id = theme.start; id < (theme.start+theme.size()); ++id)
         {
         data[id] = subset[locit];
         ++locit;
@@ -391,7 +391,7 @@ FMTmask FMTmask::postsolve(const FMTmask& selectedmask, const std::vector<FMTthe
 		boost::dynamic_bitset<> msubset = newmask.subset(theme);
 		if (msubset.size() == 1)
 			{
-			nameofattribute = (theme.getvaluenames().begin()->first);
+			nameofattribute = (*theme.getbaseattributes().begin());
 		}else if (msubset.count()>0)
 			{
 			nameofattribute = theme.bitstostr(msubset);

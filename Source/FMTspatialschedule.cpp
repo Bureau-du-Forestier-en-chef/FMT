@@ -971,7 +971,7 @@ namespace Spatial
 									Core::FMTmask nodemask = graph->getbasemask(dynamicmask);
 									graph->filledgesmask(nodemask, periodpair.second);
 									const std::map<std::string, double> graphreturn = getoutputfromgraph(*graph, model, node, &cellsize, periodpair.second, nodemask, cache.getactualnodecache()->patternvalues, level);
-									if (level == Graph::FMToutputlevel::totalonly)
+									if (!graphreturn.empty() && level == Graph::FMToutputlevel::totalonly)
 									{
 										values["Total"][periodpair.first] += graphreturn.at("Total");
 									}
@@ -1000,7 +1000,7 @@ namespace Spatial
 									Core::FMTmask nodemask(basemask);
 									graph->filledgesmask(nodemask, periodpair.second);
 									const std::map<std::string, double> graphreturn = getoutputfromgraph(*graph, model, node, &cellsize, periodpair.second, nodemask, cache.getactualnodecache()->patternvalues, level);
-									if (level == Graph::FMToutputlevel::totalonly)
+									if (!graphreturn.empty()&&level == Graph::FMToutputlevel::totalonly)
 									{
 										values["Total"][periodpair.first] += graphreturn.at("Total");
 									}
@@ -1345,7 +1345,7 @@ std::map<std::string,double> FMTspatialschedule::getoutputfromgraph(const Graph:
 	{
 	std::map<std::string, double> values;
 	try{
-	if (!(node.isactionbased()&&linegraph.isonlygrow()))
+	if (!(node.isactionbased()&&linegraph.isonlygrow(period)))
 	{
 		bool complete = false;
 		boost::unordered_map<Core::FMTmask,double>::const_iterator cashit = nodecache.find(nodemask);
@@ -1356,7 +1356,6 @@ std::map<std::string,double> FMTspatialschedule::getoutputfromgraph(const Graph:
 			Core::FMTtheme targettheme;
 			values = linegraph.getsource(model, node, period, targettheme, solution,level);
 			nodecache[nodemask] = values.at("Total");
-
 		}
 	}
 	}catch (...)
@@ -1558,7 +1557,7 @@ std::vector<Spatial::FMTbindingspatialaction> FMTspatialschedule::getbindingacti
 
 
 
-void FMTspatialschedule::setgraphfromcache(const Graph::FMTlinegraph& graph, const Models::FMTmodel& model,bool remove)
+void FMTspatialschedule::setgraphfromcache(const Graph::FMTlinegraph& graph, const Models::FMTmodel& model,const int&startingperiod,bool remove)
 {
 	try {
 		const double cellsize = this->getcellsize();
@@ -1574,30 +1573,37 @@ void FMTspatialschedule::setgraphfromcache(const Graph::FMTlinegraph& graph, con
 						cache.setnodecache(it);
 						if (basegraphmask.issubsetof(cache.getactualnodecache()->staticmask))
 						{
-							const std::vector<int>periods = graph.anyusageof(it->first.source, model.yields, cache.getactualnodecache()->actions);
-							if (!periods.empty())
-								{
-								const Core::FMTmask dynamicmask = cache.getactualnodecache()->dynamicmask;
+							//const std::vector<int>periods = graph.anyusageof(it->first.source, model.yields, cache.getactualnodecache()->actions);
+							//const std::vector<int>periods = graph.anyusageof(it->first,model, startingperiod);
+							//if (!periods.empty())
+							//	{
+								const Core::FMTmask& dynamicmask = cache.getactualnodecache()->dynamicmask;
 								const Core::FMTmask basemask = graph.getbasemask(dynamicmask);
-								for (const int& period : periods)
+								for (int period = startingperiod; period < maxperiod;++period)
 									{
-									Core::FMTmask nodemask(basemask);
-									graph.filledgesmask(nodemask, period);
-									const std::map<std::string, double> graphvalue = getoutputfromgraph(graph, model, it->first, &cellsize, period, nodemask, cache.getactualnodecache()->patternvalues);
-									const double value = graphvalue.at("Total");
-									if (value != 0)
+									if (cache.getactualnodecache()->periodicvalues.find(period)!= cache.getactualnodecache()->periodicvalues.end()&&
+										!(it->first.isactionbased() && graph.isonlygrow(period)))
 									{
-										if (remove)
-										{
-											cache.getactualnodecache()->periodicvalues[period] -= value;
-										}
-										else {
-											cache.getactualnodecache()->periodicvalues[period] += value;
-										}
+										Core::FMTmask nodemask(basemask);
+										graph.filledgesmask(nodemask, period);
+										if (!remove || (cache.getactualnodecache()->patternvalues.find(nodemask) != cache.getactualnodecache()->patternvalues.end()))
+											{
+											const std::map<std::string, double> graphvalue = getoutputfromgraph(graph, model, it->first, &cellsize, period, nodemask, cache.getactualnodecache()->patternvalues);
+											const double value = graphvalue.at("Total");
+											if (remove)
+											{
+												cache.getactualnodecache()->periodicvalues[period] -= value;
+											}
+											else {
+												cache.getactualnodecache()->periodicvalues[period] += value;
+											}
+											
+											}
 									}
+									
 									}
 								}
-							}
+						//	}
 							
 						}
 		}
@@ -1896,7 +1902,7 @@ void FMTspatialschedule::perturbgraph(const FMTcoordinate& coordinate,const int&
 	try {
 		const Graph::FMTlinegraph& graph = mapping.at(coordinate);
 		const size_t graphsize = graph.size();
-		setgraphfromcache(graph, model,true);
+		setgraphfromcache(graph, model,period,true);
 		std::map<Core::FMTdevelopment, std::vector<bool>>tabuoperability;
 		const std::vector<std::vector<bool>>actions = graph.getactions(model, period, tabuoperability);
 		boost::unordered_map<Core::FMTdevelopment, std::vector<int>>operability;
@@ -1952,7 +1958,7 @@ void FMTspatialschedule::perturbgraph(const FMTcoordinate& coordinate,const int&
 			
 			++localperiod;
 		}
-		setgraphfromcache(newgraph, model, false);
+		setgraphfromcache(newgraph, model,period, false);
 		mapping[coordinate] = newgraph;
 	}catch (...)
 		{

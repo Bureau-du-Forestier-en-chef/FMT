@@ -10,6 +10,8 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 #include <string>
 #include <map>
+#include <unordered_map>
+#include <unordered_set>
 #include <algorithm>
 #include <boost/serialization/serialization.hpp>
 #include <boost/serialization/nvp.hpp>
@@ -37,11 +39,11 @@ class FMTyieldhandler : public FMTobject
         FMTyldtype yldtype;
         FMTmask mask;
 		std::vector<int>bases;
-
+		mutable std::unordered_set<std::string>lookat;
     public:
 		std::map<std::string,FMTdata>elements;
         operator std::string() const;
-		FMTyieldhandler();
+		FMTyieldhandler()=default;
 		~FMTyieldhandler() = default;
         FMTyieldhandler(FMTyldtype ltype,const FMTmask& lmask);
         FMTyieldhandler(const FMTyieldhandler& rhs);
@@ -52,7 +54,8 @@ class FMTyieldhandler : public FMTobject
         bool push_data(const std::string& yld,const FMTdata& data);
 		std::vector<std::string> indexes(const std::vector<std::string>& names) const;
 		double get(const std::vector<const FMTyieldhandler*>& datas,
-                   const std::string yld,const int& age,const int& period, const FMTmask& resume_mask) const;
+                   const std::string yld,const int& age,const int& period,
+					const FMTmask& resume_mask) const;
 		int getlastbase() const;
 		const std::vector<int>& getbases() const;
 		double getlinearvalue(const std::vector<double>& dls, const int& agetarget) const;
