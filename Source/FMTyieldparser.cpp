@@ -216,8 +216,7 @@ Core::FMTdata FMTyieldparser::geteq(const std::string& basestr,
 					}
 					else if (!Core::FMToperator(token).valid() && !Core::FMTfunctioncall(token).valid() && token != "(" && token != ")")
 					{
-						const std::vector<std::string>yldss = ylds.getyldsnames();
-						if (find(yldss.begin(), yldss.end(), token) == yldss.end())
+						if (!ylds.isyld(token, true))
 						{
 							bool should_throw = true;
 							for (const Core::FMTtheme& theme : themes)
@@ -233,6 +232,7 @@ Core::FMTdata FMTyieldparser::geteq(const std::string& basestr,
 								/*_exhandler->raise(Exception::FMTexc::FMTinvalid_yield,
 									token + " at line " + std::to_string(_line),"FMTyieldparser::geteq",
 									__LINE__, __FILE__, _section);*/
+								
 								_exhandler->raise(Exception::FMTexc::FMTignore,
 									"No theme index provided for " + token +" replaced by a value of 0" , "FMTyieldparser::read", __LINE__, __FILE__, _section);
 								source_value = "0";
@@ -531,8 +531,7 @@ Core::FMTyields FMTyieldparser::read(const std::vector<Core::FMTtheme>& themes,c
 												values[id] + " at line " + std::to_string(_line), "FMTyieldparser::read", __LINE__, __FILE__, _section);
 										}
 										else {
-											const std::vector<std::string>ylds = yields.getyldsnames(); //not so optimzed
-											if (find(ylds.begin(), ylds.end(), values[id]) == ylds.end())
+											if (!yields.isyld(values[id], true))
 											{
 												_exhandler->raise(Exception::FMTexc::FMTignore,
 													values[id] + " at line " + std::to_string(_line), "FMTyieldparser::read", __LINE__, __FILE__, _section);
@@ -553,7 +552,7 @@ Core::FMTyields FMTyieldparser::read(const std::vector<Core::FMTtheme>& themes,c
 				}
 			}
 		}
-		cleanup(yields, themes);
+		cleanup(yields, themes,constants);
 	}catch(...)
 		{
 		_exhandler->raisefromcatch(
@@ -563,11 +562,11 @@ Core::FMTyields FMTyieldparser::read(const std::vector<Core::FMTtheme>& themes,c
     }
 
 	std::map<std::string, double>FMTyieldparser::getindexvalues(const Core::FMTmask& mask,
-		const std::vector<Core::FMTtheme>& themes,const std::vector<std::string>&indexvalues) const
+		const std::vector<Core::FMTtheme>& themes,const std::vector<std::string>&indexvalues, const Core::FMTconstants& constants) const
 	{
 		std::map<std::string, double>handler_values;
 		std::string indexerror;
-		int themeid;
+		size_t themeid;
 		try {
 			
 			for (const Core::FMTtheme& theme : themes)
@@ -577,12 +576,17 @@ Core::FMTyields FMTyieldparser::read(const std::vector<Core::FMTtheme>& themes,c
 				for (const std::string& index : indexvalues)
 				{
 					indexerror = index;
+					if (isnum(index) || constants.isconstant(index))
+						{
+						handler_values[index] = getnum<double>(index,constants);
+						continue;
+						}
 					if (theme.isindex(attribute,index))
 					{
 						handler_values[index] = theme.getindex(attribute, index);
 					}else {
 						_exhandler->raise(Exception::FMTexc::FMTignore,
-							"No theme index provided for "+attribute+" at theme "+std::to_string(themeid)+" replaced by a value of 0", "FMTyieldparser::read", __LINE__, __FILE__, _section);
+							"No theme index provided for "+attribute+" at theme "+std::to_string(themeid)+" replaced "+index+" by a value of 0", "FMTyieldparser::read", __LINE__, __FILE__, _section);
 						handler_values[index] = 0;
 						}
 				}
@@ -596,7 +600,7 @@ Core::FMTyields FMTyieldparser::read(const std::vector<Core::FMTtheme>& themes,c
 	return handler_values;
 	}
 
-void FMTyieldparser::cleanup(Core::FMTyields& yields,const std::vector<Core::FMTtheme>& themes) const
+void FMTyieldparser::cleanup(Core::FMTyields& yields,const std::vector<Core::FMTtheme>& themes, const Core::FMTconstants& constants) const
 	{
 	try {
 		//iterate on all yieldhandler if equation with index then take the handler
@@ -604,7 +608,7 @@ void FMTyieldparser::cleanup(Core::FMTyields& yields,const std::vector<Core::FMT
 			//decompose and insert all new handlers
 			//std::vector<Core::FMTyieldhandler>::iterator handler_it = yields.databegin();
 		std::vector<std::pair<Core::FMTmask, Core::FMTyieldhandler>>::iterator handler_it = yields.begin();
-		const std::vector<std::string>yldnames = yields.getyldsnames();
+		const std::vector<std::string>yldnames = yields.getallyieldnames();
 		while (handler_it != yields.end())
 		{
 			const std::vector<std::string>indexvalues = handler_it->second.indexes(yldnames);
@@ -643,7 +647,7 @@ void FMTyieldparser::cleanup(Core::FMTyields& yields,const std::vector<Core::FMT
 				for (const Core::FMTmask& newmask : todecompose)
 				{
 					Core::FMTyieldhandler newhandler(Core::FMTyldtype::FMTcomplexyld, newmask);
-					std::map<std::string, double>handler_values = getindexvalues(newmask, themes_windex, indexvalues);
+					std::map<std::string, double>handler_values = getindexvalues(newmask, themes_windex, indexvalues,constants);
 					std::map<std::string, Core::FMTdata>alladata = oldhandler.getdataelements();
 					for (std::map<std::string, Core::FMTdata>::const_iterator datait = alladata.begin(); datait != alladata.end(); datait++)
 					{

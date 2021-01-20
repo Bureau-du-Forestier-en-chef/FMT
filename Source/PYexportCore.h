@@ -198,9 +198,7 @@ void exportCore()
 			bp::class_<Core::FMTyields, bp::bases<Core::FMTlist<Core::FMTyieldhandler>>>("FMTyields", "@DocString(FMTyields)")
 				.def_pickle(FMT_pickle_suite<Core::FMTyields>())
 				.def("getallyields", &Core::FMTyields::getallyields,
-					"@DocString(FMTyields::getallyields)")
-				.def("getnullyldsnames", &Core::FMTyields::getnullyldsnames,
-					"@DocString(FMTyields::getnullyldsnames)");
+					"@DocString(FMTyields::getallyields)");
 
 
 

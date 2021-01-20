@@ -331,6 +331,7 @@ Models::FMTmodel FMTmodelparser::referenceread(std::map<std::string, std::vector
 					FMToutputparser outparser;
 					outparser.passinobject(*this);
 					outputs = outparser.read(themes, actions, yields, constants, out);
+					
 				}
 				if (!opt.empty() && constraints.empty())
 				{
