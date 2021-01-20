@@ -278,8 +278,8 @@ namespace Spatial
 
 
 	void FMTevent::getclosescoordinates(const FMTevent& rhs,
-		std::set<FMTcoordinate>::const_iterator thiscoordinate,
-		std::set<FMTcoordinate>::const_iterator rhscoordinate) const
+		std::set<FMTcoordinate>::const_iterator& thiscoordinate,
+		std::set<FMTcoordinate>::const_iterator& rhscoordinate) const
 	{
 		const std::vector<std::set<FMTcoordinate>::const_iterator>rhsborders = rhs.getborders();
 		double bestapproximation = std::numeric_limits<double>::infinity();

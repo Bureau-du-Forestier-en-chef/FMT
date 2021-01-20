@@ -541,7 +541,7 @@ namespace Models
 			return  (probability > random_probability);
 		}catch (...)
 			{
-			_exhandler->printexceptions("", "FMTsamodel::evaluate", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("", "FMTsamodel::evaluate", __LINE__, __FILE__);
 		}
 		return false;
 		}
@@ -583,7 +583,7 @@ namespace Models
 			return newsolution;
 		}catch (...)
 			{
-			_exhandler->printexceptions("", "FMTsamodel::move", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("", "FMTsamodel::move", __LINE__, __FILE__);
 			}
 		//return newsolution;
 		return actual;
@@ -640,7 +640,7 @@ namespace Models
 			solution.setconstraintsfactor(*this, maximals);
 		}catch (...)
 			{
-			_exhandler->printexceptions("", "FMTsamodel::warmup", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("", "FMTsamodel::warmup", __LINE__, __FILE__);
 			}
 		return temperature;
 		}
