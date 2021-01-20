@@ -116,13 +116,12 @@ optimizationmodel.initialsolve()
  ```
   + En utilisant R
   ```R
-library(Rcpp)
-FMT<-Module("FMT",dyn.load(paste(pathtopackage,"\\FMT.dll",sep="")))
-modelparser<-new(FMT$FMTmodelparser)
+library(FMT)
+modelparser<-new(FMTmodelparser)
 models<-modelparser$readproject("pathtoprimaryfile",c("scenariox"),TRUE,TRUE,TRUE)#read scenario x from the primay file (.pri)
 solverinterface<-list(CLP=1,MOSEK=2,CPLEX=3,GUROBI=4)
-optimizationmodel<-new(FMT$FMTlpmodel,models[[1]],solverinterface$CLP)#Construct a type III linear programming model from the FMTmodel
-emptyschedule<-new(FMT$FMTschedule)
+optimizationmodel<-new(FMTlpmodel,models[[1]],solverinterface$CLP)#Construct a type III linear programming model from the FMTmodel
+emptyschedule<-new(FMTschedule)
 #Build the graph for 10 periods
 for (period in 1:10)
 	{

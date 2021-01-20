@@ -54,9 +54,6 @@ class FMTlinegraph : public FMTgraph<FMTbasevertexproperties,FMTbaseedgeproperti
 									bool dontchoosegrow=false);
         FMTgraphstats clearfromperiod(const int& period,bool updatedevelopments=false);
         FMTlinegraph partialcopy(const int& period) const;
-        /*FMTlinegraph perturbgraph(  const Models::FMTmodel& model, std::default_random_engine& generator,
-									Spatial::FMTeventcontainer& events,
-									const Spatial::FMTcoordinate& localisation, const int period) const;*/
 		std::vector<std::vector<bool>>getactions(const Models::FMTmodel& model,const int& fromperiod,
 			std::map<Core::FMTdevelopment, std::vector<bool>>& operability) const;
 		const Core::FMTdevelopment& getbasedevelopment() const;
@@ -68,13 +65,13 @@ class FMTlinegraph : public FMTgraph<FMTbasevertexproperties,FMTbaseedgeproperti
 		void filledgesmask(Core::FMTmask& mask, const int& maximalperiod) const;
 		bool stringforconstraint(std::string& value, const int& stop, const Core::FMTmask& dynamicmask) const;
 		bool hashforconstraint(size_t& hashvalue,const int& stop,const Core::FMTmask& dynamicmask) const;
-		bool isonlygrow() const;
+		bool isonlygrow(int period=0) const;
 		void addfromevents(const Spatial::FMTcoordinate& localisation,const Models::FMTmodel& model, Spatial::FMTeventcontainer& events) const;
 		bool ismovable(const std::vector<const Core::FMTaction*>& actions,
 			const Core::FMTyields& yields, const int& period, boost::unordered_map<Core::FMTdevelopment, bool>*operability =nullptr) const;
 		bool operator == (const FMTlinegraph& rhs) const;
 		void clearnodecache();
-		std::vector<int> anyusageof(const Core::FMToutputsource& source,const Core::FMTyields& yields, const std::unordered_set<int>& actions) const;
+		std::vector<int> anyusageof(Core::FMToutputnode output_node, const Models::FMTmodel& model, const int& startingperiod) const;
 		
 		
 };

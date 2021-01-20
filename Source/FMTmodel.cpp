@@ -774,13 +774,14 @@ Core::FMTmask FMTmodel::getselectedmask(const std::vector<Core::FMTtheme>& origi
 		while (presolvedthemeid<themes.size()&&themeid< originalthemes.size())
 			{
 			const Core::FMTtheme& originaltheme = originalthemes.at(themeid);
-			const std::map<std::string, std::string> prsolvedvalues = themes.at(presolvedthemeid).getvaluenames();
+			//const std::map<std::string, std::string> prsolvedvalues = themes.at(presolvedthemeid).getvaluenames();
+			const std::vector<std::string>& prsolvedvalues = themes.at(presolvedthemeid).getbaseattributes();
 			size_t foundcount = 0;
 			std::vector<bool>themebits(originaltheme.size(),false);
 			size_t bitid = 0;
-			for (const auto& themevalues : originaltheme.getvaluenames())
+			for (const std::string& themevalues : originaltheme.getbaseattributes())
 				{
-				if (prsolvedvalues.find(themevalues.first) != prsolvedvalues.end())
+				if (std::find(prsolvedvalues.begin(), prsolvedvalues.end(), themevalues)!= prsolvedvalues.end()/*prsolvedvalues.find(themevalues.first) != prsolvedvalues.end()*/)
 					{
 					themebits[bitid] = true;
 					++foundcount;
@@ -843,8 +844,8 @@ std::unique_ptr<FMTmodel> FMTmodel::presolve(int presolvepass,std::vector<Core::
 			}
 			Core::FMTmask selectedattributes; //selected attribute keeps the binaries used by the new attribute selection.
 			//Checkout to reduce the themes complexity
-			int themeid = 0;
-			int themestart = 0;
+			size_t themeid = 0;
+			size_t themestart = 0;
 			size_t themedataremoved = 0;
 			for (const Core::FMTtheme& theme : oldthemes)
 			{

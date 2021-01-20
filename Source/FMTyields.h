@@ -18,6 +18,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <boost/serialization/serialization.hpp>
 #include "FMTutility.h"
 #include "FMTtheme.h"
+#include <unordered_map>
 #include <boost/serialization/export.hpp>
 
 
@@ -44,19 +45,15 @@ class FMTyields : public FMTlist<FMTyieldhandler>
 	{
 		try{
 			ar & boost::serialization::make_nvp("handlers", boost::serialization::base_object<FMTlist<FMTyieldhandler>>(*this));
-			ar & BOOST_SERIALIZATION_NVP(names);
-			ar & BOOST_SERIALIZATION_NVP(null_names);
+			updateyieldpresence();
 		}catch (...)
 			{
 			_exhandler->printexceptions("", "FMTyields::serialize", __LINE__, __FILE__);
 			}
 	}
-	// DocString: FMTyields::names
-	///this data member is used has a caching facility to have all the yield name that the FMTlist contains.
-	std::vector<std::string>names;
-	// DocString: FMTyields::null_names
-	///this data member is used has a caching facility containing the yield names that are equal to 0.
-	std::vector<std::string>null_names;
+	// DocString: FMTyields::yieldpresence
+	///If yields section as yield = true else false.
+	std::unordered_map<std::string,bool>yieldpresence;
 	// DocString: FMTyields::gethandleroftype
 	/**
 	The function returns a vector of pointer to all yieldhandler of a given (type).
@@ -69,7 +66,17 @@ class FMTyields : public FMTlist<FMTyieldhandler>
 	returns the maximum age seen in thos yieldhandler.
 	*/
 	int getmaxbase(const std::vector<const FMTyieldhandler*>& handlers) const;
+	// DocString: FMTyields::updateyieldpresence
+	/**
+	Update the yields presence true or false.
+	*/
+	void updateyieldpresence();
     public:
+		// DocString: FMTyields::getallyieldnames
+		/**
+		return all yield names from the FMTlist.
+		*/
+		std::vector<std::string> getallyieldnames() const;
 		// DocString: FMTyields()
 		/**
 		Default constructor for FMTyields.
@@ -94,24 +101,12 @@ class FMTyields : public FMTlist<FMTyieldhandler>
 		/**
 		This function returns true if the FMTyields section contains a given (value) non null yield.
 		*/
-        bool isyld(const std::string& value) const;
+        bool isyld(const std::string& value,bool fromsource = false) const;
 		// DocString: FMTyields::isnullyld
 		/**
 		This function returns true if the FMTyields section contains a given (value) null yield.
 		*/
 		bool isnullyld(const std::string& value) const;
-		// DocString: FMTyields::getyldsnames
-		/**
-		Getter for the non null yield names of the FMTyields.
-		*/
-		std::vector<std::string>getyldsnames() const;
-		// DocString: FMTyields::getnullyldsnames
-		/**
-		Getter for the null yield names of the FMTyields.
-		*/
-		std::vector<std::string>getnullyldsnames() const;
-		//std::map<std::string, double>get(const FMTdevelopment& dev,
-		//	const std::vector<std::string>& targets) const;
 		// DocString: FMTyields::get
 		/**
 		This function is the main function used to get the yields value (targets) for a given FMTdevelopement (dev),

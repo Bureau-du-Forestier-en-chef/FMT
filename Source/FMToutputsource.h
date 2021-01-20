@@ -59,25 +59,67 @@ class FMToutputsource : public FMTspec
 		bool issubsetof(const FMToutputsource& rhs, const std::vector<Core::FMTaction>& actions) const;
 		bool issubsetof(const FMToutputsource& rhs) const;
 		bool issamebutdifferentaction(const FMToutputsource& rhs) const;
-		const FMTmask& getmask() const;
+		inline const FMTmask& getmask() const
+			{
+			return mask;
+			}
 		void setmask(const FMTmask& newmask);
-		std::string getaction() const;
-		std::string getyield() const;
-		FMTotar gettarget() const;
+		inline const std::string& getaction() const
+			{
+			return action;
+			}
+		inline const std::string& getyield() const
+			{
+			return yield;
+			}
+		inline const FMTotar& gettarget() const
+			{
+			return target;
+			}
 		double getvalue(int period = 0) const;
-		bool isvariable() const;
-		bool islevel() const;
-		bool isconstant() const;
-		bool isvariablelevel() const;
-		std::string getlevel() const;
+		inline bool isvariable() const
+			{
+			return bool(mask);
+			}
+		inline bool islevel() const
+			{
+			return (target == FMTotar::level);
+			}
+		inline bool isconstant() const
+			{
+			return (target == FMTotar::val);
+			}
+		inline bool isvariablelevel() const
+			{
+			return (!action.empty() && islevel());
+			}
+		inline const std::string& getlevel() const
+			{
+			return yield;
+			}
 		bool isnull(const FMTyields& ylds) const;
-		bool istimeyield() const;
+		inline bool istimeyield() const
+			{
+			return (target == FMTotar::timeyld);
+			}
 		std::vector<const FMTaction*>targets(const std::vector<FMTaction>& actions) const;
 		std::unordered_set<int>targetsset(const std::vector<FMTaction>& actions) const;
-		bool isinventory() const;
-		bool useinedges() const;
-		bool isnextperiod() const;
-		bool useoutedges() const;
+		inline bool isinventory() const
+			{
+			return (target == FMTotar::inventory);
+			}
+		inline bool useinedges() const
+			{
+			return (target == FMTotar::inventory);
+			}
+		inline bool isnextperiod() const
+			{
+			return (target == FMTotar::inventory && action.empty());
+			}
+		inline bool useoutedges() const
+			{
+			return (target == FMTotar::actual);
+			}
 		double getcoef(const FMTdevelopment& development,
 			const FMTyields& yields, const FMTaction& action,
 			const std::vector<FMTdevelopmentpath>& paths) const;
@@ -87,7 +129,10 @@ class FMToutputsource : public FMTspec
 			}
 		FMToutputsource presolve(const FMTmask& presolvedmask,const std::vector<FMTtheme>& newthemes) const;
 		void setaverage();
-		bool isaverage() const;
+		inline bool isaverage() const
+			{
+			return average;
+			}
 		bool canbededucedtoconstant() const;
 		double getconstantvalue(const std::vector<Core::FMTactualdevelopment>& area,
 								const std::vector<Core::FMTaction>&actions, const FMTyields& yields) const;
@@ -95,6 +140,10 @@ class FMToutputsource : public FMTspec
 		void fillhashmask(Core::FMTmask& basemask) const;
 		void fillhashspec(Core::FMTmask& basemask) const;
 		bool isequalbyvalue(const FMToutputsource& rhs) const;
+		inline bool isaction() const
+			{
+			return !action.empty();
+			}
     };
 
 class FMToutputsourcecomparator

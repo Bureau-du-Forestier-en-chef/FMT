@@ -312,7 +312,7 @@ namespace Graph
         return actioned;
 	}
 
-	bool FMTlinegraph::isanyvertexusage(const const FMTbasevertexproperties& vertexproperty, const Core::FMToutputsource& source, const Core::FMTyields& yields) const
+	bool FMTlinegraph::isanyvertexusage(const FMTbasevertexproperties& vertexproperty, const Core::FMToutputsource& source, const Core::FMTyields& yields) const
 	{
 		try {
 			const Core::FMTdevelopment& dev = vertexproperty.get();
@@ -325,41 +325,19 @@ namespace Graph
 
 	}
 
-	std::vector<int> FMTlinegraph::anyusageof(const Core::FMToutputsource& source, const Core::FMTyields& yields, const std::unordered_set<int>& actions) const
+	std::vector<int> FMTlinegraph::anyusageof(Core::FMToutputnode output_node, const Models::FMTmodel& model,const int& startingperiod) const
 	{
 		std::vector<int>periods;
 		try {
-				FMTvertex_iterator vertex, vend;
-				for (boost::tie(vertex, vend) = vertices(data); vertex != vend; ++vertex)
-				{
-					const FMTbasevertexproperties& properties = data[*vertex];
-					if (isanyvertexusage(properties, source, yields))
+			for (int period = startingperiod; period < getperiod(); ++period)
+			{
+				const std::vector<FMTvertex_descriptor>verticies = getnode(model, output_node, period);
+				if (!verticies.empty())
 					{
-						const int period = properties.get().period;
-						bool usefull = true;
-						if (!actions.empty())
-							{
-							usefull = false;
-							FMToutedge_iterator outedge_iterator, outedge_end;
-							boost::tie(outedge_iterator, outedge_end) = boost::out_edges(*vertex, data);
-							if (outedge_iterator != outedge_end)
-							{
-								const FMTbaseedgeproperties& edgeprop = data[*outedge_iterator];
-								if (isanyactionofedge(edgeprop, actions))
-									{
-									usefull = true;
-									}
-							}
-							}
-						if (usefull && std::find(periods.begin(), periods.end(), period) == periods.end())
-						{
-							periods.push_back(period);
-						}
+					periods.push_back(period);
 					}
-				}
-			
-		}
-		catch (...)
+			}
+		}catch (...)
 		{
 			_exhandler->raisefromcatch("", "FMTlinegraph::anyusageof", __LINE__, __FILE__);
 		}
@@ -431,65 +409,25 @@ namespace Graph
     FMTlinegraph FMTlinegraph::partialcopy(const int& period) const
     {
         FMTlinegraph newgraph(*this);
+		try {
         const FMTgraphstats delstats = newgraph.clearfromperiod(period);
         newgraph.generatedevelopments();
+		}
+		catch (...)
+		{
+			_exhandler->raisefromcatch("", "FMTlinegraph::partialcopy", __LINE__, __FILE__);
+		}
         return newgraph;
     }
 
-    /*FMTlinegraph FMTlinegraph::perturbgraph(const Models::FMTmodel& model, std::default_random_engine& generator,
-                                            Spatial::FMTeventcontainer& events,
-                                            const Spatial::FMTcoordinate& localisation, const int period) const
-    {
-        //events.erasecoordinate(localisation,period);
-		std::map<Core::FMTdevelopment,std::vector<bool>>tabuoperability;
-		const std::vector<std::vector<bool>>actions = getactions(model, period,tabuoperability);
-		boost::unordered_map<Core::FMTdevelopment,std::vector<int>>operability;
-		bool dontbuildgrowth = false;
-		if (!actions.empty())
-			{
-			//Logging::FMTlogger() << "got action! " << "\n";
-			for (std::map<Core::FMTdevelopment, std::vector<bool>>::const_iterator it = tabuoperability.begin(); it != tabuoperability.end(); it++)
-			{
-				int actionid = 0;
-				operability[it->first] = std::vector<int>();
-				//Logging::FMTlogger() << "setting empty vector "  << "\n";
-				for (const Core::FMTaction& action : model.actions)
-				{
-					if ((!it->second.at(actionid)) && it->first.operable(action, model.yields))
-					{
-						operability[it->first].push_back(actionid);
-						//Logging::FMTlogger() << "can do " << action.getname() << " at period " << it->first.period << "\n";
-						
-					}
-					++actionid;
-				}
-			///poor thing it can only do one action so grow!
-			}
-			events.erasecoordinate(localisation, period,actions);
-			//Remove the contribution to the infeasibility of the erased and add the contribution of the changes...
+    
 
-		}else {
-			//Logging::FMTlogger() << "got gorwth" << "\n";
-			dontbuildgrowth = true;
-		}
-		
-        FMTlinegraph newgraph = partialcopy(period);
-        newgraph.nodescache.clear();
-		int localperiod = period;
-        while(this->size() != newgraph.size())
-        {
-			for (const int& actionid : newgraph.randombuildperiod(model, generator, operability, dontbuildgrowth))
-				{
-				events.addaction(localisation, localperiod,actionid, bindings.at(actionid).getmaximalsize());
-				}
-			++localperiod;
-		}
-
-    return newgraph;
-    }*/
-
-	bool FMTlinegraph::isonlygrow() const
+	bool FMTlinegraph::isonlygrow(int period) const
 		{
+		if (period > 0)
+			{
+			return (developments.at(period).size() == 1);
+			}
 		return (size()-1) == boost::num_edges(data);
 		}
 
@@ -501,6 +439,7 @@ namespace Graph
 	bool FMTlinegraph::ismovable(const std::vector<const Core::FMTaction*>& actions,const Core::FMTyields& yields, const int& period,
 		boost::unordered_map<Core::FMTdevelopment,bool>*operability) const
 		{
+		try{
 		const int lastperiod = getperiod();
 		for (int localperiod = period; localperiod < lastperiod;++localperiod)
 			{
@@ -524,6 +463,11 @@ namespace Graph
 				return true;
 				}
 			}
+		}
+		catch (...)
+		{
+			_exhandler->raisefromcatch("", "FMTlinegraph::ismovable", __LINE__, __FILE__);
+		}
 		return false;
 		}
 
@@ -542,22 +486,30 @@ namespace Graph
 	size_t FMTlinegraph::getbasehash(const Core::FMTmask& dynamicmask) const
 		{
 		size_t hashvalue = 0;
+		try{
 		const Core::FMTdevelopment& development = getbasedevelopment();
 		boost::hash_combine(hashvalue, development.mask.getintersect(dynamicmask));
 		boost::hash_combine(hashvalue, development.age);
+		}
+		catch (...)
+		{
+			_exhandler->raisefromcatch("", "FMTlinegraph::getbasehash", __LINE__, __FILE__);
+		}
 		return hashvalue;
 		}
 
 	std::string FMTlinegraph::getbasestr(const Core::FMTmask& dynamicmask) const
 		{
 		std::string value;
+		try{
 		const Core::FMTdevelopment& development = getbasedevelopment();
 		value += development.mask.getintersect(dynamicmask).getbitsstring();
 		value += std::to_string(development.age);
-		/*const Core::FMTdevelopment& development = getbasedevelopment();
-		std::string value(static_cast<const char*>(static_cast<const void*>(&development)));
-		value += std::string(static_cast<const char*>(static_cast<const void*>(&development.mask.getintersect(dynamicmask))));
-		value += std::string(static_cast<const char*>(static_cast<const void*>(&development.age)));*/
+		}
+		catch (...)
+		{
+			_exhandler->raisefromcatch("", "FMTlinegraph::getbasestr", __LINE__, __FILE__);
+		}
 		return value;
 		}
 
@@ -571,6 +523,7 @@ namespace Graph
 
 	void FMTlinegraph::filledgesmask(Core::FMTmask& mask, const int& maximalperiod) const
 		{
+		try{
 		if (!isonlygrow())
 			{
 			FMTedge_iterator edge_iterator, edge_iterator_end;
@@ -589,12 +542,19 @@ namespace Graph
 				}
 			}
 		}
+		catch (...)
+		{
+			_exhandler->raisefromcatch("", "FMTlinegraph::filledgesmask", __LINE__, __FILE__);
+		}
+		}
 
 
 	std::string FMTlinegraph::getedgesstr(const int& maximalperiod, bool& gotthewhole) const
 		{
-		const int actperiod = getperiod() - 1;
+		
 		std::string hashstr;
+		try {
+			const int actperiod = getperiod() - 1;
 		if (!isonlygrow())
 		{
 			FMTedge_iterator edge_iterator, edge_iterator_end;
@@ -620,6 +580,11 @@ namespace Graph
 			}
 		}
 		gotthewhole = (maximalperiod <= actperiod);
+		}
+		catch (...)
+		{
+			_exhandler->raisefromcatch("", "FMTlinegraph::getedgesstr", __LINE__, __FILE__);
+		}
 		return hashstr;
 		}
 
@@ -627,13 +592,13 @@ namespace Graph
 		std::map<Core::FMTdevelopment, std::vector<bool>>& operability) const
 		{
 		std::vector<std::vector<bool>>allactions;
+		try{
 		if (!isonlygrow())
 		{
 			FMTedge_iterator edge_iterator, edge_iterator_end;
 			boost::tie(edge_iterator, edge_iterator_end) = boost::edges(data);
 			const int lastperiod = getperiod() - 1;
 			allactions = std::vector<std::vector<bool>>((lastperiod - fromperiod)+1, std::vector<bool>(model.actions.size(), false));
-			//Logging::FMTlogger() << "size " << allactions.size() << "\n";
 			while (edge_iterator != edge_iterator_end)
 			{
 				const FMTbaseedgeproperties& edgeprop = data[*edge_iterator];
@@ -669,7 +634,11 @@ namespace Graph
 				}
 			}
 		}
-		
+		}
+		catch (...)
+		{
+			_exhandler->raisefromcatch("", "FMTlinegraph::getactions", __LINE__, __FILE__);
+		}
 		return allactions;
 		}
 
@@ -680,6 +649,7 @@ namespace Graph
 
 	void FMTlinegraph::addfromevents(const Spatial::FMTcoordinate& localisation, const Models::FMTmodel& model, Spatial::FMTeventcontainer& events) const
 		{
+		try{
 		FMTedge_iterator edge_iterator,edge_iterator_end;
 		boost::tie(edge_iterator,edge_iterator_end) = boost::edges(data);
 		while (edge_iterator!= edge_iterator_end)
@@ -694,22 +664,37 @@ namespace Graph
 				}
 			++edge_iterator;
 			}
-
+		}
+		catch (...)
+		{
+			_exhandler->raisefromcatch("", "FMTlinegraph::addfromevents", __LINE__, __FILE__);
+		}
 		}
 
 	bool FMTlinegraph::hashforconstraint(size_t& hashvalue,const int& stop, const Core::FMTmask& dynamicmask) const
 	{
-		boost::hash_combine(hashvalue,getbasehash(dynamicmask));
 		bool gotthewholegraph = false;
+		try{
+		boost::hash_combine(hashvalue,getbasehash(dynamicmask));
 		boost::hash_combine(hashvalue,getedgeshash(stop,gotthewholegraph));
+		}catch (...)
+		{
+			_exhandler->raisefromcatch("", "FMTlinegraph::hashforconstraint", __LINE__, __FILE__);
+		}
 		return gotthewholegraph;
 	}
 
 	bool FMTlinegraph::stringforconstraint(std::string& value, const int& stop, const Core::FMTmask& dynamicmask) const
 	{
-		value += getbasestr(dynamicmask);
 		bool gotthewholegraph = false;
+		try{
+		value += getbasestr(dynamicmask);
 		value += getedgesstr(stop, gotthewholegraph);
+		}
+		catch (...)
+		{
+			_exhandler->raisefromcatch("", "FMTlinegraph::stringforconstraint", __LINE__, __FILE__);
+		}
 		return gotthewholegraph;
 	}
 

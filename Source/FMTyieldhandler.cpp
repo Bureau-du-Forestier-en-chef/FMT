@@ -69,10 +69,8 @@ FMTyieldhandler::operator std::string() const
         }
 
 
-	FMTyieldhandler::FMTyieldhandler():FMTobject(),yldtype(),mask(),bases(),elements() {}
 
-
-    FMTyieldhandler::FMTyieldhandler(FMTyldtype ltype,const FMTmask& lmask) : FMTobject(), yldtype(ltype),mask(lmask),bases(),elements(){}
+    FMTyieldhandler::FMTyieldhandler(FMTyldtype ltype,const FMTmask& lmask) : FMTobject(), yldtype(ltype),mask(lmask),bases(),elements(), lookat(){}
 
 
     FMTyieldhandler::FMTyieldhandler(const FMTyieldhandler& rhs) :
@@ -80,7 +78,8 @@ FMTyieldhandler::operator std::string() const
             yldtype(rhs.yldtype),
             mask(rhs.mask),
             bases(rhs.bases),
-            elements(rhs.elements)
+            elements(rhs.elements),
+			lookat(rhs.lookat)
 
         {
 
@@ -94,6 +93,7 @@ FMTyieldhandler::operator std::string() const
             mask = rhs.mask;
             bases = rhs.bases;
             elements = rhs.elements;
+			lookat = rhs.lookat;
             }
         return *this;
         }
@@ -191,7 +191,8 @@ FMTyieldhandler::operator std::string() const
 			{
 				for (const std::string& name : names)
 				{
-					if (yield->elements.find(name) != yield->elements.end() && alldata.find(name) == alldata.end() && !(this == yield && original == name))
+					if (yield->elements.find(name) != yield->elements.end() && alldata.find(name) == alldata.end() &&
+						!(this == yield && original == name) && (yield->lookat.find(name) == yield->lookat.end()))
 					{
 						alldata[name] = yield;
 					}
@@ -261,12 +262,12 @@ FMTyieldhandler::operator std::string() const
 
     double FMTyieldhandler::get(const std::vector<const FMTyieldhandler*>& datas,
                            const std::string yld,const int& age,const int& period,
-							const FMTmask& resume_mask) const 
+							const FMTmask& resume_mask) const
         {
         double value = 0;
 		try{
-        int target = 0;
-         if (yldtype == FMTyldtype::FMTageyld)
+		int target = 0;
+        if (yldtype == FMTyldtype::FMTageyld)
             {
 			 try{
 			 target = age;
@@ -323,6 +324,14 @@ FMTyieldhandler::operator std::string() const
 				const std::vector<std::string> sources = cdata->getsource();
 				std::map<std::string, const FMTyieldhandler*> srcsdata = this->getdata(datas, sources, yld);
 				try{
+					if (lookat.find(yld) == lookat.end())
+					{
+						lookat.insert(yld);
+					}
+					else {
+						_exhandler->raise(Exception::FMTexc::FMTinvalid_yield, "Recursivity detected for complexe yield " + yld,
+							"FMTyieldhandler::get", __LINE__, __FILE__);
+					}
                 switch(cdata->getop())
                     {
                     case FMTyieldparserop::FMTrange:
@@ -500,6 +509,7 @@ FMTyieldhandler::operator std::string() const
                     default:
                     break;
                     }
+				lookat.erase(yld);
 				}catch (...)
 					{
 						_exhandler->raisefromcatch("Getting complex yield of type "+std::to_string(static_cast<int>(cdata->getop())), "FMTyieldhandler::get", __LINE__, __FILE__, _section);
@@ -511,6 +521,7 @@ FMTyieldhandler::operator std::string() const
 			{
 			_exhandler->raisefromcatch("at yield "+yld, "FMTyieldhandler::get", __LINE__, __FILE__, _section);
 			}
+		
         return value;
         }
 
