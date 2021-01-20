@@ -844,8 +844,8 @@ std::unique_ptr<FMTmodel> FMTmodel::presolve(int presolvepass,std::vector<Core::
 			}
 			Core::FMTmask selectedattributes; //selected attribute keeps the binaries used by the new attribute selection.
 			//Checkout to reduce the themes complexity
-			int themeid = 0;
-			int themestart = 0;
+			size_t themeid = 0;
+			size_t themestart = 0;
 			size_t themedataremoved = 0;
 			for (const Core::FMTtheme& theme : oldthemes)
 			{

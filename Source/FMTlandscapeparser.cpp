@@ -67,8 +67,8 @@ FMTlandscapeparser::FMTlandscapeparser() :
 		std::vector<Core::FMTtheme>themes;
 		try {
         GDALAllRegister();
-        int start = 0;
-        int id = 0;
+        size_t start = 0;
+		size_t id = 0;
         for(const std::string& location : locations)
             {
             GDALDataset* dataset = getdataset(location);
@@ -115,14 +115,14 @@ FMTlandscapeparser::FMTlandscapeparser() :
 			++_line;
 			}
 			GDALClose(dataset);
-			int start = 0;
-			int id = 0;
+			size_t start = 0;
+			size_t id = 0;
 			for (const std::vector<std::string>& themeattribute : themesattributes)
 			{
 				themes.push_back(Core::FMTtheme(themeattribute, id, start, ""));
 				themes.back().passinobject(*this);
 				++id;
-				start += static_cast<int>(themeattribute.size());
+				start += themeattribute.size();
 			}
 		}catch (...)
 			{
@@ -139,10 +139,6 @@ FMTlandscapeparser::FMTlandscapeparser() :
 		std::vector<Core::FMTtheme>themes;
 		try {
 			std::ifstream landstream(location);
-			//std::map<std::string, std::vector<std::string>>aggregates;
-			//std::map<std::string, std::string>valuenames;
-			//std::map<std::string, std::map<std::string, double>>indexes_values;
-			
 			std::vector<std::string>attributes;
 			std::vector<std::string>attributenames;
 			std::vector<std::string>aggregates;
@@ -150,11 +146,11 @@ FMTlandscapeparser::FMTlandscapeparser() :
 			std::vector<std::map<std::string, double>>indexes_values;
 
 			std::string themename, aggregatename;
-			int id = 0;
-			int stop = 0;
+			size_t id = 0;
+			size_t stop = 0;
 			bool aggregate_redefiniton = false;
-			int start = 0;
-			int unknownID = 1;
+			size_t start = 0;
+			size_t unknownID = 1;
 			if (FMTparser::tryopening(landstream, location))
 			{
 				while (landstream.is_open())
@@ -169,25 +165,26 @@ FMTlandscapeparser::FMTlandscapeparser() :
 						const std::string aggregate = std::string(kmatch[8]);
 						if (!potentialtheme.empty())
 						{
-							int tempid = 1;
+							size_t tempid = 1;
 							if (!std::string(kmatch[7]).empty() && theme.empty())
 							{
 								tempid = unknownID;
 							}
 							else {
-								tempid = getnum<int>(theme, constants);
+								tempid = getnum<size_t>(theme, constants);
 							}
 							++unknownID;
 							if (tempid > 1)
 							{
-								stop = static_cast<int>(attributes.size());
+								stop = attributes.size();
 								if (attributes.size() == 0)
 								{
 									_exhandler->raise(Exception::FMTexc::FMTempty_theme,
 										"Theme " + std::to_string(id + 1),"FMTlandscapeparser::read", __LINE__, __FILE__, _section);
 								}
+								
 								themes.push_back(Core::FMTtheme(attributes, attributenames,aggregates,aggregatenames, indexes_values, id, start, themename));
-								//themes.push_back(Core::FMTtheme(aggregates, valuenames, indexes_values, id, start, themename));
+								
 								themes.back().passinobject(*this);
 								start += stop;
 								attributes.clear();
@@ -196,7 +193,7 @@ FMTlandscapeparser::FMTlandscapeparser() :
 								aggregatename.clear();
 								aggregates.clear();
 								themename.clear();
-								//valuenames.clear();
+							
 								indexes_values.clear();
 							}
 							id = tempid - 1;
@@ -206,7 +203,7 @@ FMTlandscapeparser::FMTlandscapeparser() :
 						{
 							aggregatename = kmatch[10];
 							aggregate_redefiniton = false;
-							if (std::find(aggregates.begin(), aggregates.end(), aggregatename)!= aggregates.end()/*aggregates.find(aggregatename) != aggregates.end()*/)
+							if (std::find(aggregates.begin(), aggregates.end(), aggregatename)!= aggregates.end())
 							{
 								aggregate_redefiniton = true;
 								_exhandler->raise(Exception::FMTexc::FMTaggregate_redefinition,
@@ -214,7 +211,7 @@ FMTlandscapeparser::FMTlandscapeparser() :
 							}
 							aggregates.push_back(aggregatename);
 							aggregatenames.push_back(std::vector<std::string>());
-							//aggregates[aggregatename] = std::vector<std::string>();
+							
 						}
 						else if (!aggregatename.empty() && !aggregate_redefiniton)
 						{
@@ -222,11 +219,12 @@ FMTlandscapeparser::FMTlandscapeparser() :
 							const std::vector<std::string>splited = FMTparser::spliter(value, FMTparser::rxseparator);
 							for (const std::string& val : splited)
 							{
-								if ((std::find(attributenames.begin(), attributenames.end(), val) == attributenames.end()) &&
+								if ((std::find(attributes.begin(), attributes.end(), val) == attributes.end()) &&
 									((std::find(aggregates.begin(), aggregates.end(), val) == aggregates.end()) || (aggregatename == val))
 								
-									/*valuenames.find(val) == valuenames.end() && (aggregates.find(val) == aggregates.end() || aggregatename == val)*/)
+									)
 								{
+									
 									_exhandler->raise(Exception::FMTexc::FMTignore,
 										val + " at line " + std::to_string(_line),"FMTlandscapeparser::read", __LINE__, __FILE__, _section);
 
@@ -254,9 +252,8 @@ FMTlandscapeparser::FMTlandscapeparser() :
 								if (!indexes.empty())
 								{
 									const size_t indexlocation = std::distance(attributes.begin(), std::find(attributes.begin(), attributes.end(), ltheme));
-									indexes_values.resize(indexlocation + 1);
+									indexes_values.resize(indexlocation+1);
 									indexes_values[indexlocation] = indexes;
-									//indexes_values[ltheme] = indexes;
 									name.clear();
 								}
 							}
@@ -268,8 +265,11 @@ FMTlandscapeparser::FMTlandscapeparser() :
 							}
 							else {
 								attributes.push_back(ltheme);
+								if (!indexes_values.empty() && attributes.size() != indexes_values.size())
+									{
+									indexes_values.resize(attributes.size());
+									}
 								attributenames.push_back(name);
-								//valuenames[ltheme] = std::string(name);
 							}
 
 						}
@@ -281,7 +281,7 @@ FMTlandscapeparser::FMTlandscapeparser() :
 					_exhandler->raise(Exception::FMTexc::FMTempty_theme, "Theme " + std::to_string(id + 1),
 						"FMTlandscapeparser::read",__LINE__, __FILE__,_section);
 				}
-				//themes.push_back(Core::FMTtheme(aggregates, valuenames, indexes_values, id, start, themename));
+				
 				themes.push_back(Core::FMTtheme(attributes,attributenames,aggregates,aggregatenames,indexes_values, id, start, themename));
 				themes.back().passinobject(*this);
 			}

@@ -21,8 +21,6 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTexception.h"
 #include "FMTmask.h"
 #include "FMTobject.h"
-#include "FMTlookup.h"
-#include <boost/unordered_set.hpp>
 
 
 
@@ -39,11 +37,11 @@ class FMTtheme : public FMTobject
     friend class FMTmask;
     protected:
 		// DocString: FMTtheme::id
-		/// Id is the id of the theme first theme in the landscape section is number 1
-		int id;
+		/// Id is the id of the theme first theme in the landscape section is number 1.
+		size_t id;
 		// DocString: FMTtheme::start
 		/// Start is the bit location in the FMTmask at which the attributes of the theme starts.
-        int start;
+		size_t start;
     private:
 		// DocString: FMTtheme::serialize
 		/**
@@ -69,35 +67,27 @@ class FMTtheme : public FMTobject
 				_exhandler->printexceptions("", "FMTtheme::serialize", __LINE__, __FILE__);
 				}
 		}
-		// DocString: FMTtheme::aggregates
-		///This map hold the aggregates (key) of the theme and all attributes of the theme (vector item)
-        //std::map<std::string, std::vector<std::string>>aggregates;
-		// DocString: FMTtheme::source_aggregates
-		///This map hold the aggregates (key) of the theme and all attributes or aggregates of the theme (vector item)
-		//std::map<std::string, std::vector<std::string>>source_aggregates;
-		// DocString: FMTtheme::valuenames
-		///This is the main map that keep track of the attributes for the theme and the relative name of the attribute
-		//std::map<std::string, size_t>valuelocations;
-		//std::map<std::string, size_t>aggregateslocations;
-		///new!
+		// DocString: FMTtheme::attributes
+		///Attributes of the theme
 		std::vector<std::string>attributes;
+		// DocString: FMTtheme::attributenames
+		///Attributes names of the theme (can be empty).
 		std::vector<std::string>attributenames;
+		// DocString: FMTtheme::aggregates
+		///Aggregates of the theme (can be empty).
 		std::vector<std::string>aggregates;
+		// DocString: FMTtheme::aggregates
+		///Aggregate names of the theme (can be empty).
 		std::vector<std::vector<std::string>>aggregatenames;
-		std::vector<std::map<std::string, double>>indexes;
-		boost::unordered_set<FMTlookup<std::vector<size_t>, std::string>>attribute_locations;
-		void buildattributelocations();
-		////
-		//std::map<std::string, std::string>valuenames;
 		// DocString: FMTtheme::indexes
-		///This data member is only used for the usage of the key word _index in the yield seciton
-		//std::map<std::string, std::map<std::string,double>>indexes;
-		// DocString: FMTtheme::desagregate
-		/**
-		Using (aggregates) the function turns the map with aggregates as key and aggregates as value to a map with
-		aggregates as key and attributes as values.
-		*/
-		//std::map<std::string,std::vector<std::string>>desagregate(std::map<std::string, std::vector<std::string>>aggregates,const std::vector<std::string>&bases);
+		///Indexes for each attributes (can be empty).
+		std::vector<std::map<std::string, double>>indexes;
+		// DocString: FMTtheme::attribute_locations
+		///Attributes location used for optimization of the whole class.
+		boost::unordered_map<std::string, std::vector<size_t>>attribute_locations;
+		// DocString: FMTtheme::lookiterator
+		///Lookup iterator for the attributes.
+		typedef typename boost::unordered_map<std::string, std::vector<size_t>>::const_iterator lookiterator;
 		// DocString: FMTtheme::name
 		///The name of the FMTtheme if their's a name provided by the user.
 		std::string name;
@@ -110,10 +100,17 @@ class FMTtheme : public FMTobject
 		/**
 		Convert a bitset to an attribute|aggregate|? (value) for the entire theme size.
 		*/
-		//std::string bitstostr(const boost::dynamic_bitset<>& bits) const;
 		std::string bitstostr(const boost::dynamic_bitset<>& bits) const;
-
-		boost::unordered_set<FMTlookup<std::vector<size_t>, std::string>>::const_iterator getattribute(const std::string& value, bool raiseifnotfound = false) const;
+		// DocString: FMTtheme::getattribute
+		/**
+		Get the attribute iterator, will raise if not found.
+		*/
+		lookiterator getattribute(const std::string& value, bool raiseifnotfound = false) const;
+		// DocString: FMTtheme::buildattributelocations
+		/**
+		For optimization build the attribute location of the theme.
+		*/
+		void buildattributelocations();
 	public:
 		// DocString: FMTtheme()
 		/**
@@ -125,35 +122,22 @@ class FMTtheme : public FMTobject
 		Default destructor for FMTtheme.
 		*/
 		~FMTtheme() = default;
-		// DocString: FMTtheme(const std::map<std::string,std::vector<std::string>>&,const  std::map<std::string,std::string>&,const int&,const int&,const std::string&)
-		/**
-		FMTtheme main constructor.
-		*/
-        /*FMTtheme(const std::map<std::string, std::vector<std::string>>&laggregates,
-			    const  std::map<std::string,std::string>&lvaluenames, 
-				const int& lid,const int& lstart, const std::string& lname);*/
-		// DocString: FMTtheme(const std::map<std::string,std::vector<std::string>>&,const std::map<std::string,std::string>&,const std::map<std::string,std::map<std::string,double>>&,const int&, const int&,const std::string&)
+		// DocString: FMTtheme(const std::vector<std::string>&,const std::vector<std::string>&,const std::vector<std::vector<std::string>>,const std::vector<std::map<std::string, double>>&,const size_t&, const size_t&, const std::string&)
 		/**
 		FMTtheme constructor to use for FMTtheme indexing.
 		*/
-        /*FMTtheme(const std::map<std::string, std::vector<std::string>>&laggregates,
-				 const std::map<std::string, std::string>&lvaluenames,
-                 const std::map<std::string, std::map<std::string,double>>& indexing,
-				const int& lid,const int& lstart,const std::string& lname);*/
-		// DocString: FMTtheme(const std::vector<std::string>&, const int&,const int&,const std::string&)
-		/**
-		A more simple constructor for FMTtheme without aggregates and indexing.
-		*/
-		//FMTtheme(const std::vector<std::string>& lvaluenames, const int& lid, const int& lstart, const std::string& lname);
 		FMTtheme(const std::vector<std::string>& lattributes,
 			const std::vector<std::string>& lattributenames,
 			const std::vector<std::string>& laggregates,
 			const std::vector<std::vector<std::string>>& laggregatenames,
 			const std::vector<std::map<std::string, double>>& lindexes,
-			const int& lid, const int& lstart, const std::string& lname);
-
+			const size_t& lid, const size_t& lstart, const std::string& lname);
+		// DocString: FMTtheme(const std::vector<std::string>& lattributes,const size_t&,const size_t&,const std::string&)
+		/**
+		A more simple constructor for FMTtheme without aggregates and indexing.
+		*/
 		FMTtheme(const std::vector<std::string>& lattributes,
-			const int& lid, const int& lstart, const std::string& lname);
+			const size_t& lid, const size_t& lstart, const std::string& lname);
 
 		// DocString: FMTtheme(const FMTtheme&)
 		/**
@@ -222,20 +206,21 @@ class FMTtheme : public FMTobject
 		*/
 		inline size_t size() const
 			{
-			//return valuenames.size();
 			return attributes.size();
 			}
 		// DocString: FMTtheme::getstart
 		/**
 		Return the bit location of the mask at which the theme starts.
 		*/
-		size_t getstart() const;
-
+		inline const size_t& getstart() const
+			{
+			return start;
+			}
 		// DocString: FMTtheme::getid
 		/**
 		Getter for the FMTtheme id.
 		*/
-		inline int getid() const
+		inline const size_t& getid() const
 			{
 			return id;
 			}
@@ -253,20 +238,18 @@ class FMTtheme : public FMTobject
 		*/
 		inline bool empty() const
 			{
-			//return valuenames.empty();
+			return attributes.empty();
 			}
-		// DocString: FMTtheme::getvaluenames
-		/**
-		Getter the mapping of the attributes of the FMTtheme (attribute for key and attribute name for value).
-		*/
-		//std::map<std::string, std::string>getvaluenames() const;
 		// DocString: FMTtheme::getattributes
 		/**
 		Get the attributes of a aggregate (value) for the FMTtheme if aggregate_source == true then the
 		aggregate source map is used.
 		*/
 		std::vector<std::string>getattributes(const std::string& value, bool aggregate_source = false) const;
-
+		// DocString: FMTtheme::getbaseattributes
+		/**
+		Get a reference to the base attributes of the theme.
+		*/
 		inline const std::vector<std::string>& getbaseattributes() const
 			{
 			return attributes;
@@ -277,7 +260,7 @@ class FMTtheme : public FMTobject
 		selected mask we the selected attribute is the presolved FMTtheme is not empty and size > 1 then
 		it gets an newid and a newstart and increment both.
 		*/
-		FMTtheme presolve(const FMTmask& basemask,int& newid,int& newstart, FMTmask& selected) const;
+		FMTtheme presolve(const FMTmask& basemask, size_t& newid, size_t& newstart, FMTmask& selected) const;
 		// DocString: FMTtheme::operator std::string
 		/**
 		Return a string representation of the FMTtheme seen in a landscape file 

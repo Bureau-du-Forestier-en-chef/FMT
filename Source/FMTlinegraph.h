@@ -54,9 +54,6 @@ class FMTlinegraph : public FMTgraph<FMTbasevertexproperties,FMTbaseedgeproperti
 									bool dontchoosegrow=false);
         FMTgraphstats clearfromperiod(const int& period,bool updatedevelopments=false);
         FMTlinegraph partialcopy(const int& period) const;
-        /*FMTlinegraph perturbgraph(  const Models::FMTmodel& model, std::default_random_engine& generator,
-									Spatial::FMTeventcontainer& events,
-									const Spatial::FMTcoordinate& localisation, const int period) const;*/
 		std::vector<std::vector<bool>>getactions(const Models::FMTmodel& model,const int& fromperiod,
 			std::map<Core::FMTdevelopment, std::vector<bool>>& operability) const;
 		const Core::FMTdevelopment& getbasedevelopment() const;

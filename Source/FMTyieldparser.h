@@ -90,14 +90,14 @@ class FMTyieldparser : public FMTparser
 		/**
 		Clean up yields from index by replacing values present in the themes.
 		*/
-		void cleanup(Core::FMTyields& yields, const std::vector<Core::FMTtheme>& themes) const;
+		void cleanup(Core::FMTyields& yields, const std::vector<Core::FMTtheme>& themes, const Core::FMTconstants& constants) const;
 		// DocString: FMTyieldparser::getindexvalues
 		/**
 		This functions returns the value of themes indexes based on a mask, and for the indexvalues we are looking for.
 		*/
 		std::map<std::string, double>getindexvalues(const Core::FMTmask& mask,
 			const std::vector<Core::FMTtheme>& themes,
-			const std::vector<std::string>&indexvalues) const;
+			const std::vector<std::string>&indexvalues, const Core::FMTconstants& constants) const;
     public:
 		// DocString: FMTyieldparser()
 		/**

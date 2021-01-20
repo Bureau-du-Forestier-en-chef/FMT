@@ -67,6 +67,11 @@ namespace boost
 		}
 	};
 
+	template<> inline std::size_t hash<Core::FMTlookup<std::vector<size_t>, std::string>>::operator()(const Core::FMTlookup<std::vector<size_t>, std::string>& lookup) const
+		{
+		return boost::hash<std::string>()(*lookup.pointerobject);
+		}
+
 
 }
 
