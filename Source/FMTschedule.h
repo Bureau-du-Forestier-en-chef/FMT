@@ -49,6 +49,9 @@ class FMTschedule : public FMTobject
 	// DocString: FMTschedule::period
 	///The period at which the schedule needs to be applied
     int period;
+	// DocString: FMTschedule::uselock
+	///If true the schedule contains locked development by default it is False.
+	bool uselock;
 	// DocString: FMTschedule::elements
 	///Main FMTschedule elements action has key, followed by a map of FMTdevelopement and a vector of double
 	///The vector of double represent the _lock level.
@@ -127,6 +130,19 @@ class FMTschedule : public FMTobject
 			{
 			return period;
 			}
+		// DocString: FMTschedule::douselock
+		/**
+		Return true if the schedule can contains locked developement.
+		*/
+		inline bool douselock() const
+		{
+			return uselock;
+		}
+		// DocString: FMTschedule::setuselock
+		/**
+		Mark the schedule has can contains locked developement.
+		*/
+		void setuselock(const bool& lock);
 		// DocString: FMTschedule::actionarea
 		/**
 		Return the total harvested area of a FMTaction present in the FMTschedule.

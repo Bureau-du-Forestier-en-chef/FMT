@@ -97,6 +97,7 @@ namespace Models
 				const double* actual_solution = solver.getColSolution();
 				std::vector<int>variable_index;
 				std::vector<double>bounds;
+				int maximalvariableset = 0;//This is for clp (bug on setcolsetbounds)
 				for (const auto& descriptors : graph.getperiodverticies(period))
 				{
 					const Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor vertex_descriptor = descriptors.memoryobject;
@@ -106,13 +107,18 @@ namespace Models
 						if (std::find(variable_index.begin(), variable_index.end(), varit->second) == variable_index.end())
 						{
 							variable_index.push_back(varit->second);
+							if (varit->second>maximalvariableset)
+								{
+								maximalvariableset = varit->second;
+								}
 							//Had tolerance on primal infeasibilities with FMT_DBL_TOLERANCE ...
 							bounds.push_back(*(actual_solution + varit->second)*(1 - tolerance));
 							bounds.push_back(*(actual_solution + varit->second)*(1 + tolerance));
 						}
 					}
 				}
-				solver.setColSetBounds(&variable_index[0], &variable_index.back() + 1, &bounds[0]);
+				maximalvariableset += 1;
+				solver.setColSetBounds(&variable_index[0], &variable_index.back() + 1, &bounds[0],maximalvariableset);
 				return this->resolve();
 			}
 		}catch (...)
@@ -265,14 +271,14 @@ namespace Models
 					size_t allocated = 0;
 					for (const auto& devit : actionit.second)
 					{
-						if (actionit.first.dorespectlock() && graph.containsdevelopment(devit.first))
+						if ((schedule.douselock()||actionit.first.dorespectlock()) && graph.containsdevelopment(devit.first))
 						{
 							const Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor vdescriptor = graph.getdevelopment(devit.first);
 							const int variable = graph.getoutvariables(vdescriptor)[actionid];
 							new_solution[variable] = devit.second.at(0);
 							++allocated;
 						}
-						else if (!actionit.first.dorespectlock())
+						else if (!schedule.douselock()&&!actionit.first.dorespectlock())
 						{
 							if (maximallock==-1)
 								{
@@ -556,13 +562,13 @@ namespace Models
 		return true;
 	}
 
-	Core::FMTschedule FMTlpmodel::getsolution(int period) const
+	Core::FMTschedule FMTlpmodel::getsolution(int period, bool withlock) const
 	{
 		Core::FMTschedule newschedule;
 		try
 		{
 			const double* actual_solution = solver.getColSolution();
-			newschedule = graph.getschedule(actions,actual_solution,period);
+			newschedule = graph.getschedule(actions,actual_solution,period,withlock);
 			newschedule.passinobject(*this);
 
 		}catch (...)
@@ -1957,7 +1963,135 @@ bool FMTlpmodel::locatenodes(const std::vector<Core::FMToutputnode>& nodes, int 
 
 	#endif 
 
+	void FMTlpmodel::passinobjecttomembers(const Core::FMTobject& rhs)
+	{
+		try {
+			graph.passinobject(rhs);
+			solver.passinobject(rhs);
+		}
+		catch (...)
+		{
+			_exhandler->raisefromcatch("", "FMTlpmodel::passinobjecttomembers", __LINE__, __FILE__);
+		}
+	}
+
+	void FMTlpmodel::passinobject(const Core::FMTobject& rhs)
+	{
+		try{
+		FMTmodel::passinobject(rhs);
+		passinobjecttomembers(rhs);
+		}
+		catch (...)
+		{
+			_exhandler->raisefromcatch("", "FMTlpmodel::passinobject", __LINE__, __FILE__);
+		}
+
+	}
+
+	void FMTlpmodel::setdefaultlogger()
+	{
+		try{
+		FMTmodel::setdefaultlogger();
+		passinobjecttomembers(*this);
+		}
+		catch (...)
+		{
+			_exhandler->raisefromcatch("", "FMTlpmodel::setdefaultlogger", __LINE__, __FILE__);
+		}
+	}
+
+	void FMTlpmodel::setquietlogger()
+	{
+		try{
+		FMTmodel::setquietlogger();
+		passinobjecttomembers(*this);
+		}
+		catch (...)
+		{
+			_exhandler->raisefromcatch("", "FMTlpmodel::setquietlogger", __LINE__, __FILE__);
+		}
+	}
+	void FMTlpmodel::setdebuglogger()
+	{
+		try{
+		FMTmodel::setdebuglogger();
+		passinobjecttomembers(*this);
+		}
+		catch (...)
+		{
+			_exhandler->raisefromcatch("", "FMTlpmodel::setdebuglogger", __LINE__, __FILE__);
+		}
+	}
+	void FMTlpmodel::setdefaultexceptionhandler()
+	{
+		try{
+		FMTmodel::setdefaultexceptionhandler();
+		passinobjecttomembers(*this);
+		}
+		catch (...)
+		{
+			_exhandler->raisefromcatch("", "FMTlpmodel::setdefaultexceptionhandler", __LINE__, __FILE__);
+		}
+
+	}
+	void FMTlpmodel::setquietexceptionhandler()
+	{
+		try{
+		FMTmodel::setquietexceptionhandler();
+		passinobjecttomembers(*this);
+		}
+		catch (...)
+		{
+			_exhandler->raisefromcatch("", "FMTlpmodel::setquietexceptionhandler", __LINE__, __FILE__);
+		}
+	}
+	void FMTlpmodel::setdebugexceptionhandler()
+	{
+		try{
+		FMTmodel::setdebugexceptionhandler();
+		passinobjecttomembers(*this);
+		}
+		catch (...)
+		{
+			_exhandler->raisefromcatch("", "FMTlpmodel::setdebugexceptionhandler", __LINE__, __FILE__);
+		}
+	}
+	void FMTlpmodel::setfreeexceptionhandler()
+	{
+		try{
+		FMTmodel::setfreeexceptionhandler();
+		passinobjecttomembers(*this);
+		}
+		catch (...)
+		{
+			_exhandler->raisefromcatch("", "FMTlpmodel::setfreeexceptionhandler", __LINE__, __FILE__);
+		}
+	}
+	void FMTlpmodel::disablenestedexceptions()
+	{
+		try{
+		FMTmodel::disablenestedexceptions();
+		passinobjecttomembers(*this);
+		}
+		catch (...)
+		{
+			_exhandler->raisefromcatch("", "FMTlpmodel::disablenestedexceptions", __LINE__, __FILE__);
+		}
+	}
+	void FMTlpmodel::enablenestedexceptions()
+	{
+		try{
+		FMTmodel::enablenestedexceptions();
+		passinobjecttomembers(*this);
+		}
+		catch (...)
+		{
+			_exhandler->raisefromcatch("", "FMTlpmodel::enablenestedexceptions", __LINE__, __FILE__);
+		}
+	}
 }
+
+
 
 BOOST_CLASS_EXPORT_IMPLEMENT(Models::FMTlpmodel)
 #endif

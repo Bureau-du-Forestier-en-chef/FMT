@@ -1778,7 +1778,7 @@ std::map<std::string, double> FMTspatialschedule::greedyreferencebuild(const Cor
 				double schedulefactor = (randomiterations == 1) ? 1 : 1 - ((1 - factorit) * factorgap);//bottom up
 				if (factorit > 1)
 					{
-					std::uniform_real_distribution<double>scheduledistribution(lastschedulefactor - 0.05, std::min(lastschedulefactor + 0.05, 1.05));
+					std::uniform_real_distribution<double>scheduledistribution(lastschedulefactor - 0.05, std::min(lastschedulefactor + 0.05, 1.00));
 					schedulefactor = scheduledistribution(generator);
 					}
 				//*_logger << "fact " << factorit<<" "<< schedulefactor << "\n";

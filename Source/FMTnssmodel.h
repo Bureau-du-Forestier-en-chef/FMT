@@ -59,6 +59,50 @@ namespace Models
 		// DocString: FMTnssmodel::generator
 		///This simulation model need to have it's own random number generator
 		std::default_random_engine generator;
+		// DocString: FMTnssmodel::getperiod
+		/**
+		Get the period on the actual developments.
+		*/
+		int getperiod() const;
+		// DocString: FMTnssmodel::constraintstotarget
+		/**
+		Using the constraints generate random level or determinist level of output to generate
+		*/
+		std::vector<const Core::FMToutput*> constraintstotarget(std::vector<double>& targets);
+		// DocString: FMTnssmodel::getoperabilities
+		/**
+		Get potential operabilities of an actualdevelopment
+		*/
+		std::vector<std::pair<size_t, const Core::FMTaction*>> getoperabilities(const Core::FMTactualdevelopment& development,
+			std::vector<std::vector<const Core::FMTaction*>> targets,
+			const std::vector<const Core::FMToutput*>& alloutputs);
+		// DocString: FMTnssmodel::etactionstargets
+		/**
+		Get the potential actions of each output.
+		*/
+		std::vector<std::vector<const Core::FMTaction*>> getactionstargets(const std::vector<const Core::FMToutput*>& alloutputs) const;
+		// DocString: FMTnssmodel::operate
+		/**
+		Operate and fill FMTschedule
+		*/
+		std::vector<Core::FMTdevelopmentpath> operate(const Core::FMTactualdevelopment& development,const double& areatarget,const Core::FMTaction* target,Core::FMTschedule& schedule) const;
+		// DocString: FMTnssmodel::updatearea
+		/**
+		update the actual developments in the area vector.
+		*/
+		void updatearea(std::vector<Core::FMTactualdevelopment>::iterator developmentit,const std::vector<Core::FMTdevelopmentpath>& paths, const double& operatedarea);
+		// DocString: FMTnssmodel::grow
+		/**
+		Grow all developments in the area.
+		*/
+		void grow();
+		// DocString: FMTnssmodel::updateareatargets
+		/**
+		Update all the stuff related to the targeted area, knowing that an area has been operated on a given location.
+		*/
+		void updateareatargets(const double& areaoperated,const size_t& outtarget,
+			std::vector<const Core::FMToutput*>& alloutputs,std::vector<double>& targets,
+			std::vector<std::vector<const Core::FMTaction*>>& actiontargets) const;
 		public:
 			// DocString: FMTnssmodel()
 			/**
@@ -87,11 +131,11 @@ namespace Models
 			FMTnssmodel(const FMTmodel& rhs, unsigned int seed);
 			// DocString: FMTnssmodel::simulate
 			/**
-			This functions simulate the actions vector using the actionsproportions vector to fix the area to simulate for
-			each action like totalarea * actionsproportions[x] = area to simulate for action id x.
-			If grow = true then all developement are grown to the next period in the area section.
+			This function do a non spatial simulation based on the area constraints in the optimize section.
+			The resulting schedule can contain locked developement.
 			*/
-			Core::FMTschedule simulate(const std::vector<double>& actionsproportions,bool grow=false);
+			Core::FMTschedule simulate(bool grow = false);
+			
 		};
 }
 
