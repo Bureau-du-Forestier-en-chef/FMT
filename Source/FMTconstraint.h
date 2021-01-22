@@ -38,7 +38,8 @@ enum  FMTconstrainttype
 	FMTstandard = 8,///Regular constraint type like output = 1...
 	FMTspatialsize = 9,
 	FMTspatialadjacency = 10,
-	FMTspatialgreenup = 11 //need to be deleted
+	FMTspatialgreenup = 11,
+	FMTrandomaction = 12//need to be deleted
 };
 // DocString: FMTconstraint
 /**
@@ -226,6 +227,11 @@ class FMTconstraint: public FMToutput,public FMTspec
 		Returns true if spatial constraint
 		*/
 		bool isspatial() const;
+		// DocString: FMTconstraint::israndomaction
+		/**
+		Returns true if spatial constraint
+		*/
+		bool israndomaction() const;
 		// DocString: FMTconstraint::getgroup
 		/**
 		Returns the group of the constraint (objective = 0,spatial = 1,other = 2 or userdefined)

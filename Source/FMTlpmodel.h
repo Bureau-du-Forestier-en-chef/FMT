@@ -240,6 +240,11 @@ class FMTlpmodel : public FMTmodel
 	Returns constraints indexes of the lower and upper bounds of the constraints set for the objective.
 	*/
 	std::vector<int>setobjectivebounds(bool dolower = true, bool doupper = true, double tolerance = FMT_DBL_TOLERANCE);
+	// DocString: FMTlpmodel::passinobjecttomembers
+	/**
+	Pass FMTobject to members data.
+	*/
+	void passinobjecttomembers(const Core::FMTobject& rhs);
 	public:
 	// DocString: FMTlpmodel(const FMTmodel,FMTsolverinterface)
 	/**
@@ -290,8 +295,9 @@ class FMTlpmodel : public FMTmodel
 		// DocString: FMTlpmodel::getsolution
 		/**
 		Get the standard solution for a given period (FMTschedule dont have natural growth solution included).
+		If with lock is true then the schedule will contain locked developement.
 		*/
-		Core::FMTschedule getsolution(int period) const;
+		Core::FMTschedule getsolution(int period,bool withlock = false) const;
 		// DocString: FMTlpmodel::getstats
 		/**
 		Get the graph stats of the graph and matrix (number of columns/rows/edges/verticies...)
@@ -458,6 +464,59 @@ class FMTlpmodel : public FMTmodel
 		Get a pointer to the solver behind the model.
 		*/
 		FMTlpsolver* getsolverptr();
+		// DocString: FMTlpmodel::passinobject
+		/**
+		It's sometime usefull to pass in the exception handler and the logger  of an other FMTobject to
+		a FMTobject.
+		*/
+		void passinobject(const Core::FMTobject& rhs) override;
+		// DocString: FMTlpmodel::setdefaultlogger
+		/**
+		Create and set a default logger to the FMTobject.
+		*/
+		void setdefaultlogger() override;
+		// DocString: FMTlpmodel::setquietlogger
+		/**
+		Create and set a quiet logger to the FMTobject.
+		*/
+		void setquietlogger() override;
+		// DocString: FMTlpmodel::setdebuglogger
+		/**
+		Create and set a debug logger to the FMTobject.
+		*/
+		void setdebuglogger() override;
+		// DocString: FMTlpmodel::setdefaultexceptionhandler
+		/**
+		Create and set a default exception handler to the FMTobject.
+		*/
+		void setdefaultexceptionhandler() override;
+		// DocString: FMTlpmodel::setquietexceptionhandler
+		/**
+		Create and set a quiet exception handler to the FMTobject.
+		*/
+		void setquietexceptionhandler() override;
+		// DocString: FMTlpmodel::setdebugexceptionhandler
+		/**
+		Create and set a debug exception handler to the FMTobject.
+		*/
+		void setdebugexceptionhandler() override;
+		// DocString: FMTlpmodel::setfreeexceptionhandle
+		/**
+		Create and set a free exception handler to the FMTobject.
+		*/
+		void setfreeexceptionhandler() override;
+		// DocString: FMTlpmodel::disablenestedexceptions
+		/**
+		Disable nested exception throw of the Exceptionhandler by default all handlers
+		do nested exception throw.
+		*/
+		void disablenestedexceptions() override;
+		// DocString: FMTlpmodel::enablenestedexceptions
+		/**
+		Enable nested exception throw of the Exceptionhandler by default all handlers
+		do nested exception throw.
+		*/
+		void enablenestedexceptions() override;
 
 	};
 

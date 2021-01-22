@@ -1,28 +1,16 @@
-; Scénario: LP
-; Sauvegardé le JUN  9 2020 à 3:28:20 pm
-;Fonction objectif
-;----------------------------------------------------------------------------------------------------------------------------
+
 *OBJECTIVE
 _MAXMIN oVolRec 1.._LENGTH
-;_MAX totalcar 1.._LENGTH
-;_MAX oVolRec 1.._LENGTH
 
-;---------------------------------
-*EXCLUDE
-;aFire 1.._LENGTH
-;aCaribou 1.._LENGTH
-;plantation 1.._LENGTH
 *CONSTRAINTS
-;---------------------------------
+
 Burnedarea = 0 1.._LENGTH
 oVolRec <= 48000 1.._LENGTH
 _EVEN(oVolRec) 1.._LENGTH
+
 ;spatial constraint
 _SIZE(coupetotale,4) >= 1 1.._LENGTH
 _SIZE(coupetotale,4) <= 1 1.._LENGTH
 _ADJACENCY(coupetotale,1) >= 1 1.._LENGTH
-;---------------------------------
-; Fin de la section Optimize
-;---------------------------------
 
 *FORMAT MOSEK

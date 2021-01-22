@@ -214,7 +214,7 @@ namespace Core
 		{
         lower = 0;
         upper = 0;
-		if (type == FMTconstrainttype::FMTstandard || type == FMTconstrainttype::FMTspatialadjacency || type == FMTconstrainttype::FMTspatialsize)
+		if (type == FMTconstrainttype::FMTstandard || type == FMTconstrainttype::FMTspatialadjacency || type == FMTconstrainttype::FMTspatialsize || type == FMTconstrainttype::FMTrandomaction)
 		{
 			for (size_t id = 0; id < yieldnames.size(); ++id)
 			{
@@ -586,6 +586,11 @@ namespace Core
 				standardstring(line, period_bounds, goal);
 				break;
 				}
+			case FMTconstrainttype::FMTrandomaction:
+			{
+				standardstring(line, period_bounds, goal);
+				break;
+			}
 			default:
 			break;
 			}
@@ -630,6 +635,11 @@ namespace Core
 		bool FMTconstraint::isspatial() const
 			{
 			return (type==Core::FMTconstrainttype::FMTspatialadjacency||type== Core::FMTconstrainttype::FMTspatialsize);
+			}
+
+		bool FMTconstraint::israndomaction() const
+			{
+			return (type == Core::FMTconstrainttype::FMTrandomaction);
 			}
 
 		size_t FMTconstraint::getgroup() const

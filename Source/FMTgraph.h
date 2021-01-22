@@ -234,6 +234,24 @@ class FMTgraph : public Core::FMTobject
 			//generatedevelopments();
 		}
 
+		void passinobject(const Core::FMTobject& rhs) override
+			{
+			FMTobject::passinobject(rhs);
+			try {
+				FMTvertex_iterator vertex_iterator, vertex_iterator_end;
+				boost::tie(vertex_iterator, vertex_iterator_end) = boost::vertices(data);
+				while(vertex_iterator!= vertex_iterator_end)
+					{
+					data[*vertex_iterator].passinobject(rhs);
+					++vertex_iterator;
+					}
+			}catch (...)
+				{
+					_exhandler->raisefromcatch("", "FMTgraph::passinobject", __LINE__, __FILE__);
+				}
+
+			}	
+
 
 		FMTgraph& operator = (const FMTgraph& rhs)
 		{
@@ -1554,7 +1572,7 @@ class FMTgraph : public Core::FMTobject
 			}
 			return newgraph;
 		}
-		Core::FMTschedule getschedule(const std::vector<Core::FMTaction>& actions, const double* actual_solution, const int& lperiod) const
+		Core::FMTschedule getschedule(const std::vector<Core::FMTaction>& actions, const double* actual_solution, const int& lperiod,bool withlock = false) const
 		{
 			try {
 				if (static_cast<int>(size()) > lperiod && lperiod > 0)
@@ -1578,17 +1596,28 @@ class FMTgraph : public Core::FMTobject
 									}
 									const Core::FMTdevelopment& basedev = getdevelopment(deviterator.memoryobject);
 									Core::FMTdevelopment lockout = basedev.clearlock();
+									int leveltarget = basedev.lock;
+									if (withlock)
+										{
+										lockout = basedev;
+										leveltarget = 0;
+										}
 									if (schedule_solution[actions[variable_iterator.first]].find(lockout) == schedule_solution[actions[variable_iterator.first]].end())
 									{
 										schedule_solution[actions[variable_iterator.first]][lockout] = std::map<int, double>();
 									}
-									schedule_solution[actions[variable_iterator.first]][lockout][basedev.lock] = (*(actual_solution + variable_iterator.second));
+									schedule_solution[actions[variable_iterator.first]][lockout][leveltarget] = (*(actual_solution + variable_iterator.second));
 								}
 							}
 
 						}
 					}
 					Core::FMTschedule newschedule(lperiod, schedule_solution);
+					newschedule.passinobject(*this);
+					if (withlock)
+						{
+						newschedule.setuselock(true);
+						}
 					return newschedule;
 				}
 			}

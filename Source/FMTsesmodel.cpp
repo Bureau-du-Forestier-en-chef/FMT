@@ -152,11 +152,131 @@ namespace Models
 		return Spatial::FMTforest();
 		}
 
+	void FMTsesmodel::passinobjecttomembers(const Core::FMTobject& rhs)
+	{
+		try {
+			spschedule.passinobject(rhs);
+		}
+		catch (...)
+		{
+			_exhandler->printexceptions("", "FMTsesmodel::passinobjecttomembers", __LINE__, __FILE__);
+		}
+	}
+
 	void FMTsesmodel::passinobject(const Core::FMTobject& rhs)
 		{
-		FMTmodel::passinobject(rhs);
-		spschedule.passinobject(rhs);
+		try {
+			FMTmodel::passinobject(rhs);
+			passinobjecttomembers(rhs);
 		}
+		catch (...)
+		{
+			_exhandler->printexceptions("", "FMTsesmodel::passinobject", __LINE__, __FILE__);
+		}
+		
+		}
+
+	void FMTsesmodel::setdefaultlogger()
+	{
+		try {
+
+		}
+		catch (...)
+		{
+			_exhandler->printexceptions("", "FMTsesmodel::setdefaultlogger", __LINE__, __FILE__);
+		}
+	}
+	void FMTsesmodel::setquietlogger()
+	{
+		try {
+			FMTmodel::setquietlogger();
+			passinobjecttomembers(*this);
+		}
+		catch (...)
+		{
+			_exhandler->printexceptions("", "FMTsesmodel::setquietlogger", __LINE__, __FILE__);
+		}
+	}
+	void FMTsesmodel::setdebuglogger()
+	{
+		try {
+			FMTmodel::setdebuglogger();
+			passinobjecttomembers(*this);
+		}
+		catch (...)
+		{
+			_exhandler->printexceptions("", "FMTsesmodel::setdebuglogger", __LINE__, __FILE__);
+		}
+	}
+
+	void FMTsesmodel::setdefaultexceptionhandler()
+	{
+		try {
+			FMTmodel::setdefaultexceptionhandler();
+			passinobjecttomembers(*this);
+		}
+		catch (...)
+		{
+			_exhandler->printexceptions("", "FMTsesmodel::setdefaultexceptionhandler", __LINE__, __FILE__);
+		}
+	}
+
+	void FMTsesmodel::setquietexceptionhandler()
+	{
+		try {
+			FMTmodel::setquietexceptionhandler();
+			passinobjecttomembers(*this);
+		}
+		catch (...)
+		{
+			_exhandler->printexceptions("", "FMTsesmodel::setquietexceptionhandler", __LINE__, __FILE__);
+		}
+	}
+
+	void FMTsesmodel::setdebugexceptionhandler()
+	{
+		try {
+			FMTmodel::setdebugexceptionhandler();
+			passinobjecttomembers(*this);
+		}
+		catch (...)
+		{
+			_exhandler->printexceptions("", "FMTsesmodel::setdebugexceptionhandler", __LINE__, __FILE__);
+		}
+	}
+	void FMTsesmodel::setfreeexceptionhandler()
+	{
+		try {
+			FMTsesmodel::setfreeexceptionhandler();
+			passinobjecttomembers(*this);
+		}
+		catch (...)
+		{
+			_exhandler->printexceptions("", "FMTsesmodel::setfreeexceptionhandler", __LINE__, __FILE__);
+		}
+	}
+	void FMTsesmodel::disablenestedexceptions()
+	{
+		try {
+			FMTsesmodel::disablenestedexceptions();
+			passinobjecttomembers(*this);
+		}
+		catch (...)
+		{
+			_exhandler->printexceptions("", "FMTsesmodel::disablenestedexceptions", __LINE__, __FILE__);
+		}
+	}
+	void FMTsesmodel::enablenestedexceptions()
+	{
+		try {
+			FMTsesmodel::enablenestedexceptions();
+			passinobjecttomembers(*this);
+		}
+		catch (...)
+		{
+			_exhandler->printexceptions("", "FMTsesmodel::enablenestedexceptions", __LINE__, __FILE__);
+		}
+	}
 
     }
 
