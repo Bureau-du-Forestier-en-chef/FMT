@@ -103,7 +103,7 @@ bool FMTyields::isyld(const std::string& value, bool fromsource) const
 	if (!fromsource)
 	{
 		std::unordered_map<std::string, bool>::const_iterator presenceit = yieldpresence.find(value);
-		returnvalue = (presenceit != yieldpresence.end() && presenceit->second);
+		returnvalue = (presenceit != yieldpresence.end());
 	}else {
 		for (const auto& handlerobj : *this)
 		{

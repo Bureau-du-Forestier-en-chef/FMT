@@ -1,0 +1,15 @@
+
+*EXCLUDE
+
+aCaribou 1.._LENGTH
+plantation 1.._LENGTH
+COUPEtotale 1.._LENGTH
+
+
+*CONSTRAINTS
+
+_RANDOM(Burnedarea) >= 200 1.._LENGTH
+_RANDOM(Burnedarea) <= 600 1.._LENGTH
+
+
+*FORMAT MOSEK

@@ -1163,56 +1163,110 @@ void FMTmodel::passinobject(const Core::FMTobject& rhs)
 
 void FMTmodel::setdefaultlogger()
 {
+	try {
 	FMTobject::setdefaultlogger();
 	this->passinobject(*this);
+	}
+	catch (...)
+	{
+		_exhandler->raisefromcatch("", "FMTmodel::setdefaultlogger", __LINE__, __FILE__);
+	}
 }
 
 void FMTmodel::setquietlogger()
 {
+	try{
 	FMTobject::setquietlogger();
 	this->passinobject(*this);
+	}
+	catch (...)
+	{
+		_exhandler->raisefromcatch("", "FMTmodel::setquietlogger", __LINE__, __FILE__);
+	}
 }
 
 void FMTmodel::setdebuglogger()
 {
+	try{
 	FMTobject::setdebuglogger();
 	this->passinobject(*this);
+	}
+	catch (...)
+	{
+		_exhandler->raisefromcatch("", "FMTmodel::setdebuglogger", __LINE__, __FILE__);
+	}
 }
 
 void FMTmodel::setdefaultexceptionhandler()
 {
+	try{
 	FMTobject::setdefaultexceptionhandler();
 	this->passinobject(*this);
+	}
+	catch (...)
+	{
+		_exhandler->raisefromcatch("", "FMTmodel::setdefaultexceptionhandler", __LINE__, __FILE__);
+	}
 }
 
 void FMTmodel::setquietexceptionhandler()
 {
+	try{
 	FMTobject::setquietexceptionhandler();
 	this->passinobject(*this);
+	}
+	catch (...)
+	{
+		_exhandler->raisefromcatch("", "FMTmodel::setquietexceptionhandler", __LINE__, __FILE__);
+	}
 }
 
 void FMTmodel::setdebugexceptionhandler()
 {
+	try{
 	FMTobject::setdebugexceptionhandler();
 	this->passinobject(*this);
+	}
+	catch (...)
+	{
+		_exhandler->raisefromcatch("", "FMTmodel::setdebugexceptionhandler", __LINE__, __FILE__);
+	}
 }
 
 void FMTmodel::setfreeexceptionhandler()
 {
+	try{
 	FMTobject::setfreeexceptionhandler();
 	this->passinobject(*this);
+	}
+	catch (...)
+	{
+		_exhandler->raisefromcatch("", "FMTmodel::setfreeexceptionhandler", __LINE__, __FILE__);
+	}
 }
 
 void FMTmodel::disablenestedexceptions()
 {
+	try{
 	FMTobject::disablenestedexceptions();
 	this->passinobject(*this);
+	}
+	catch (...)
+	{
+		_exhandler->raisefromcatch("", "FMTmodel::disablenestedexceptions", __LINE__, __FILE__);
+	}
 }
 
 void FMTmodel::enablenestedexceptions()
 {
+	try{
 	FMTobject::enablenestedexceptions();
 	this->passinobject(*this);
+	}
+	catch (...)
+	{
+		_exhandler->raisefromcatch("", "FMTmodel::enablenestedexceptions", __LINE__, __FILE__);
+	}
 }
 
 

@@ -20,9 +20,10 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 namespace Python
 {
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(greedyreferencebuild_overloads,greedyreferencebuild, 2, 4)
-BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(simulatenssm_overloads, simulate, 1, 2)
+BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(simulatenssm_overloads, simulate, 0, 1)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(buildperiod_overloads, buildperiod, 0, 2)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(get_outputs_overloads, get_outputs, 0, 1)
+BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(getsolution_overloads, getsolution, 1, 2)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(getLPoutputoverloads, getoutput, 2, 3)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(warmup_overloads, warmup, 2, 4)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(evaluate_overloads, evaluate, 1, 2)
@@ -119,7 +120,7 @@ void exportModel()
 		.def(bp::init<Models::FMTmodel,unsigned int>())
 		.def_pickle(FMT_pickle_suite<Models::FMTnssmodel>())
 		.def("simulate", &Models::FMTnssmodel::simulate,
-			simulatenssm_overloads(bp::args("actionsproportions", "grow"),"@DocString(FMTnssmodel::simulate)"));
+			simulatenssm_overloads(bp::args( "grow"),"@DocString(FMTnssmodel::simulate)"));
 
 	define_pylist<Models::FMTnssmodel>();
 
@@ -157,7 +158,7 @@ void exportModel()
 			boundsolution_overloads(bp::args("period", "tolerance"),
 				"@DocString(FMTlpmodel::boundsolution)"))
 		.def("getsolution", &Models::FMTlpmodel::getsolution,
-			"@DocString(FMTlpmodel::getsolution)")
+			getsolution_overloads(bp::args("period", "withlock"), "@DocString(FMTlpmodel::getsolution)"))
 		.def("setsolution", &Models::FMTlpmodel::setsolution,
 			setsolution_overloads(bp::args("period", "schedule", "tolerance"), "@DocString(FMTlpmodel::setsolution)"))
 		.def("setobjective", &Models::FMTlpmodel::setobjective,
