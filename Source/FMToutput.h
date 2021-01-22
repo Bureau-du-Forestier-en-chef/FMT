@@ -242,6 +242,15 @@ class FMToutput: public FMTobject
 		{
 		return sources;
 		}
+
+	// DocString: FMToutput::getsourcesreference
+	/**
+	Getter for the vector of FMToutputsource of the FMToutput.
+	*/
+	inline const std::vector<FMToutputsource>& getsourcesreference() const
+		{
+		return sources;
+		}
 	// DocString: FMToutput::getopes
 	/**
 	Getter for the FMToperator of the FMToutput.

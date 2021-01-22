@@ -14,8 +14,6 @@ namespace Parser
 		rxsections("^(\\*)([^\\s^\\t]*)", std::regex_constants::ECMAScript | std::regex_constants::icase),
 		rxobjectives("^(_MAXMIN|_MINMAX|_MAX|_MIN|_GOAL)([\\s\\t]*)(.+)([\\s\\t])((([\\d]*|#.+)(\\.\\.)(#.+|_LENGTH|[\\d]*))|(#.+|[\\d]*))", std::regex_constants::ECMAScript | std::regex_constants::icase),
 		rxexclude("^(\\*EXCLUDE)([\\s\\t]*)([^\\s^\\t]*)([\\s\\t]*)((([\\d]*|#.+)(\\.\\.)(#.+|_LENGTH|[\\d]*))|(#.+|[\\d]*))", std::regex_constants::ECMAScript | std::regex_constants::icase),
-		//rxconstraints("^(_EVEN|_NDY|_SEQ)([\\s\\t]*)(\\()((([^,^\\)]*)(,)([\\d\\.]*%|[\\d\\.]*)(,)([\\d\\.]*%|[\\d\\.]*))|(([^,^\\)]*)(,)([\\d\\.]*%|[\\d\\.]*))|([^\\)^,]*))(\\)*)([\\s\\t]*)(.+)", std::regex_constants::ECMAScript | std::regex_constants::icase),
-		//rxconstraints("^(_EVEN|_NDY|_SEQ)([\\s\\t]*)(\\()((([^,]*)(,)([\\d\\.]*%|[\\d\\.]*)(,)([\\d\\.]*%|[\\d\\.]*))|(([^,]*)(,)([\\d\\.]*%|[\\d\\.]*))|([^,]*))(\\))([\\s\\t]*)(.+)", std::regex_constants::ECMAScript | std::regex_constants::icase),
 		rxconstraints("^(_EVEN|_NDY|_SEQ)([\\s\\t]*)(\\()((([^,]*)(,)([\\s\\t]*)([\\d\\.]*%|[\\d\\.]*)([\\s\\t]*)(,)([\\s\\t]*)([\\d\\.]*%|[\\d\\.]*))|(([^,]*)(,)([\\s\\t]*)([\\d\\.]*%|[\\d\\.]*))|([^,]*))([\\s\\t]*)(\\))([\\s\\t]*)(.+)", std::regex_constants::ECMAScript | std::regex_constants::icase),
 		rxequations("^(.+)((((<=)|(>=))(.+))|((.+)((=))(.+)))(?<=[^,])[\\s\\t](?=\\d)(.+)"),
 		rxperiods("^([\\s\\t]*)((([\\d]*|#.+)(\\.\\.)(#.+|_LENGTH|[\\d]*)|(_LENGTH))|(#.+|[\\d]*))", std::regex_constants::ECMAScript | std::regex_constants::icase),
@@ -23,7 +21,7 @@ namespace Parser
 		rxoutput("^(.+)(\\()([^)]*)(\\))(\\[)(#.+|[-\\d]*)(\\])|([^\\[]*)(\\()([^)]*)(\\))|(.+)(\\[)(#.+|[-\\d]*)(\\])|(.+)", std::regex_constants::ECMAScript | std::regex_constants::icase),
 		rxpenalty("^(_PENALTY)(\\()([^\\)]*)(\\))", std::regex_constants::ECMAScript | std::regex_constants::icase),
 		rxspecialoutput("^(_AVG|_SUM)(\\()(([^,]*)(,)(([^,]*)(([\\d]*|#.+)(\\.\\.)(#.+|_LENGTH|[\\d]*))|(#.+|[\\d]*))|(.+))(\\))", std::regex_constants::ECMAScript | std::regex_constants::icase),
-		rxspatial("^(_SIZE|_ADJACENCY)([\\s\\t]*)(\\()(.+)(\\))([\\s\\t]*)(>=|<=|=)([\\s\\t]*)(#[^\\s^\\t]*|[\\d]*)(.+)",std::regex_constants::ECMAScript | std::regex_constants::icase),
+		rxspatial("^(_SIZE|_ADJACENCY|_RANDOM)([\\s\\t]*)(\\()(.+)(\\))([\\s\\t]*)(>=|<=|=)([\\s\\t]*)(#[^\\s^\\t]*|[\\d]*)(.+)",std::regex_constants::ECMAScript | std::regex_constants::icase),
 		ineach()
 		{
 
@@ -284,7 +282,8 @@ namespace Parser
         }
 
 	Core::FMTconstraint FMToptimizationparser::getspatialconstraint(const std::smatch& match,const std::string& line,
-		const Core::FMTconstants& constants, const std::vector<Core::FMTaction>& actions) const
+		const Core::FMTconstants& constants, const std::vector<Core::FMTaction>& actions,
+		const std::vector<Core::FMToutput>& outputs, const std::vector<Core::FMTtheme>& themes)
 	{
 		Core::FMTconstraint constraint;
 		try {
@@ -299,39 +298,57 @@ namespace Parser
 			double upperneighborsize =std::numeric_limits<double>::max();
 			std::vector<std::string>splitted;
 			const std::string inargument(match[4]);
-			boost::split(splitted, inargument, boost::is_any_of(","));
-			const std::string actionoraggregates(boost::trim_copy(splitted.at(0)));
-			isact(_section, actions, actionoraggregates);
-			const std::string naming = constrainttypestr + "(" + inargument + ")";
-			if (constrainttypestr=="_SIZE")
+			std::string actionoraggregates;
+			if (constrainttypestr == "_RANDOM")
 			{
-				constrainttype = Core::FMTconstrainttype::FMTspatialsize;
-				lowerneighborsize = getnum<double>(boost::trim_copy(splitted.at(1)), constants);
-			}else if (constrainttypestr == "_ADJACENCY")
+				std::map<std::string, double> nodes = getequation(inargument, constants, outputs, inargument.size());
+				nodes.erase("RHS");
+				const Core::FMToutput targetout = resume_output(nodes, outputs, themes, constants);
+				constrainttype = Core::FMTconstrainttype::FMTrandomaction;
+				constraint = Core::FMTconstraint(constrainttype, targetout);
+				
+			}
+			else {
+				boost::split(splitted, inargument, boost::is_any_of(","));
+				std::string actionoraggregates=boost::trim_copy(splitted.at(0));
+				isact(_section, actions, actionoraggregates);
+				const std::string naming = constrainttypestr + "(" + inargument + ")";
+				if (constrainttypestr == "_SIZE")
 				{
-				lowergreenup = getnum<double>(boost::trim_copy(splitted.at(1)), constants);
-				constrainttype = Core::FMTconstrainttype::FMTspatialadjacency;
+					constrainttype = Core::FMTconstrainttype::FMTspatialsize;
+					lowerneighborsize = getnum<double>(boost::trim_copy(splitted.at(1)), constants);
 				}
-			constraint = Core::FMTconstraint(constrainttype, Core::FMToutput(naming));
-			if (Core::FMTconstrainttype::FMTspatialadjacency==constrainttype)
+				else if (constrainttypestr == "_ADJACENCY")
 				{
-				const std::string target("GUP");
-				constraint.addbounds(Core::FMTyldbounds(Core::FMTsection::Optimize, target, uppergreenup, lowergreenup));
-			}else if (Core::FMTconstrainttype::FMTspatialsize==constrainttype)
-				{
-				const std::string target("NSIZE");
-				constraint.addbounds(Core::FMTyldbounds(Core::FMTsection::Optimize, target, upperneighborsize, lowerneighborsize));
+					lowergreenup = getnum<double>(boost::trim_copy(splitted.at(1)), constants);
+					constrainttype = Core::FMTconstrainttype::FMTspatialadjacency;
 				}
+				constraint = Core::FMTconstraint(constrainttype, Core::FMToutput(naming));
+				if (Core::FMTconstrainttype::FMTspatialadjacency == constrainttype)
+				{
+					const std::string target("GUP");
+					constraint.addbounds(Core::FMTyldbounds(Core::FMTsection::Optimize, target, uppergreenup, lowergreenup));
+				}
+				else if (Core::FMTconstrainttype::FMTspatialsize == constrainttype)
+				{
+					const std::string target("NSIZE");
+					constraint.addbounds(Core::FMTyldbounds(Core::FMTsection::Optimize, target, upperneighborsize, lowerneighborsize));
+				}
+			}
 			double lower = 0;
 			double upper = 0;
 			const double rhs = getnum<double>(rhsstring, constants);
 			fillbounds(senseofconstraint, rhs,lower,upper);
 			const std::string target("RHS");
+			
 			constraint.addbounds(Core::FMTyldbounds(Core::FMTsection::Optimize, target,upper,lower));
-			for (const Core::FMTaction* actionptr : Core::FMTactioncomparator(actionoraggregates).getallaggregates(actions))
+			if (constrainttypestr != "_RANDOM")
+			{
+				for (const Core::FMTaction* actionptr : Core::FMTactioncomparator(actionoraggregates).getallaggregates(actions))
 				{
-				constraint.addbounds(Core::FMTyldbounds(Core::FMTsection::Optimize, actionptr->getname(), rhs, rhs));
+					constraint.addbounds(Core::FMTyldbounds(Core::FMTsection::Optimize, actionptr->getname(), rhs, rhs));
 				}
+			}
 			const std::vector<Core::FMTconstraint> returnedconstraints = getperiodsbounds(periodstring, constraint, constants);
 			constraint = *returnedconstraints.begin();
 		}catch (...)
@@ -360,7 +377,7 @@ namespace Parser
 			}
 			if (std::regex_search(rest, kmatch, rxspatial))
 			{
-				returnedconstraints.push_back(getspatialconstraint(kmatch, line, constants, actions));
+				returnedconstraints.push_back(getspatialconstraint(kmatch, line, constants, actions,outputs,themes));
 			}else if (std::regex_search(rest, kmatch, rxconstraints))
 				{
 				//std::string target = std::string(kmatch[6]) + std::string(kmatch[12]) + std::string(kmatch[15]);

@@ -66,7 +66,10 @@ namespace Parser
 		std::vector<Core::FMTconstraint> getperiodsbounds(std::string periodstr,const Core::FMTconstraint& constraint, const Core::FMTconstants& constants) const;
 		void fillbounds(const std::string& operatorvalue, const double& rhs, double& lower,double& upper) const;
 		Core::FMTconstraint getspatialconstraint(const std::smatch& match, const std::string& line,
-			const Core::FMTconstants& constants, const std::vector<Core::FMTaction>& actions) const;
+			const Core::FMTconstants& constants,
+			const std::vector<Core::FMTaction>& actions,
+			const std::vector<Core::FMToutput>& outputs,
+			const std::vector<Core::FMTtheme>& themes);
 	public:
 		FMToptimizationparser();
 		FMToptimizationparser(const FMToptimizationparser& rhs);

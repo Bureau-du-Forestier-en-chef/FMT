@@ -340,6 +340,33 @@ Models::FMTmodel FMTmodelparser::referenceread(std::map<std::string, std::vector
 					std::vector<Core::FMTaction>excluded(actions); //should we realy use? excluded is actualy the same actions but with more period specification...
 					optzparser.passinobject(*this);
 					constraints = optzparser.read(themes, actions, constants, outputs, excluded, opt);
+					bool shouldcrapreference = (actions.size() != excluded.size());
+					if (!shouldcrapreference)
+						{
+						size_t location = 0;
+						for (const Core::FMTaction& action : actions)
+							{
+							if (action!=excluded.at(location))
+								{
+								shouldcrapreference = true;
+								break;
+								}
+							++location;
+							}
+						}
+					if (shouldcrapreference)//send a signal to make sure no other model reference to this one!
+					{//This model is not suppose to be considered common!
+						common_sections[act].pop_back();
+						if (common_sections.at(act).empty())
+						{
+							common_sections.erase(act);
+						}
+						common_sections[tr].pop_back();
+						if (common_sections.at(tr).empty())
+						{
+							common_sections.erase(tr);
+						}
+					}
 					actions = excluded; //here we go
 					returnedmodel = Models::FMTmodel(areas, themes, actions,
 						transitions, yields, lifespan, modelname, outputs, constraints);
