@@ -96,7 +96,7 @@ La façon la plus simple d'utiliser FMT est d'utiliser cmake >= 3.15 et de gén�
   from FMT import Models
 from FMT import Parser
 
-modelparser = WSParser.FMTmodelparser()
+modelparser = Parser.FMTmodelparser()
 models = modelparser.readproject("pathtoprimaryfile",["scenariox"])#read scenario x from the primay file (.pri)
 optimizationmodel=Models.FMTlpmodel(models[0],Models.FMTsolverinterface.CLP)#Construct a type III linear programming model from the FMTmodel
 
@@ -145,9 +145,9 @@ optimizationmodel$initialsolve()
 #include "FMTlpmodel.h"
 #include "FMTmodelparser.h"
 
-Parser::FMTmodelparser modelparserparser;
+Parser::FMTmodelparser modelparser;
 const std::vector<std::string>scenarios(1, "scenariox");
-const std::vector<Models::FMTmodel> models = modelparserparser.readproject("pathtoprimaryfile", scenarios);
+const std::vector<Models::FMTmodel> models = modelparser.readproject("pathtoprimaryfile", scenarios);
 Models::FMTlpmodel optimizationmodel(models.at(0), Models::FMTsolverinterface::MOSEK);
 for (size_t period = 0; period < 10; ++period)
 	{

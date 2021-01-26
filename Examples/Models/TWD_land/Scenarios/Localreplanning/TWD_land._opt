@@ -1,11 +1,11 @@
 
 *OBJECTIVE
-_MAXMIN oVolRec 1.._LENGTH
+_MAX oVollocaltarget 1.._LENGTH
 
 *EXCLUDE
 aCaribou 1.._LENGTH
 
 *CONSTRAINTS
-oVolRec<= 65733 1.._LENGTH
+oVolRec<= 40272 1.._LENGTH
 Burnedarea = 0 1.._LENGTH
 *FORMAT MOSEK

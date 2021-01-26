@@ -20,11 +20,12 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 namespace Python
 {
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(greedyreferencebuild_overloads,greedyreferencebuild, 2, 4)
-BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(simulatenssm_overloads, simulate, 0, 1)
+BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(simulatenssm_overloads, simulate, 0, 2)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(buildperiod_overloads, buildperiod, 0, 2)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(get_outputs_overloads, get_outputs, 0, 1)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(getsolution_overloads, getsolution, 1, 2)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(getLPoutputoverloads, getoutput, 2, 3)
+BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(getschedulesoverloads, getschedule, 0, 1)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(warmup_overloads, warmup, 2, 4)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(evaluate_overloads, evaluate, 1, 2)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(getoperatingareaschedulerheuristics_overloads, getoperatingareaschedulerheuristics,2, 4)
@@ -104,7 +105,7 @@ void exportModel()
             .def("setinitialmapping",&Models::FMTsesmodel::setinitialmapping,
 				"@DocString(FMTsesmodel::setinitialmapping)")
 			.def("getschedule",&Models::FMTsesmodel::getschedule,
-				"@DocString(FMTsesmodel::getschedule)")
+				getschedulesoverloads(bp::args("withlock"), "@DocString(FMTsesmodel::getschedule)"))
 			.def("getdisturbancestats", &Models::FMTsesmodel::getdisturbancestats,
 				"@DocString(FMTsesmodel::getdisturbancestats)")
 			.def("getoutput", &Models::FMTsesmodel::getoutput,
@@ -120,7 +121,7 @@ void exportModel()
 		.def(bp::init<Models::FMTmodel,unsigned int>())
 		.def_pickle(FMT_pickle_suite<Models::FMTnssmodel>())
 		.def("simulate", &Models::FMTnssmodel::simulate,
-			simulatenssm_overloads(bp::args( "grow"),"@DocString(FMTnssmodel::simulate)"));
+			simulatenssm_overloads(bp::args( "grow", "withlock"),"@DocString(FMTnssmodel::simulate)"));
 
 	define_pylist<Models::FMTnssmodel>();
 

@@ -1566,7 +1566,13 @@ class FMTgraph : public Core::FMTobject
 		}
 		Core::FMTschedule getschedule(const std::vector<Core::FMTaction>& actions, const double* actual_solution, const int& lperiod,bool withlock = false) const
 		{
+			Core::FMTschedule newschedule;
 			try {
+				newschedule.passinobject(*this);
+				if (withlock)
+					{
+					newschedule.setuselock(true);
+					}
 				if (static_cast<int>(size()) > lperiod && lperiod > 0)
 				{
 					std::map<Core::FMTaction, std::map<Core::FMTdevelopment, std::map<int, double>>>schedule_solution;
@@ -1582,12 +1588,14 @@ class FMTgraph : public Core::FMTobject
 							{
 								if (*(actual_solution + variable_iterator.second) > 0) //basis solution only!!!
 								{
-									if (schedule_solution.find(actions[variable_iterator.first]) == schedule_solution.end())
+									
+									/*if (schedule_solution.find(actions[variable_iterator.first]) == schedule_solution.end())
 									{
 										schedule_solution[actions[variable_iterator.first]] = std::map<Core::FMTdevelopment, std::map<int, double>>();
 									}
-									const Core::FMTdevelopment& basedev = getdevelopment(deviterator.memoryobject);
-									Core::FMTdevelopment lockout = basedev.clearlock();
+									const Core::FMTdevelopment& basedev = getdevelopment(deviterator.memoryobject);*/									
+									newschedule.addevent(*deviterator.pointerobject, *(actual_solution + variable_iterator.second), actions.at(variable_iterator.first));
+									/*Core::FMTdevelopment lockout = basedev.clearlock();
 									int leveltarget = basedev.lock;
 									if (withlock)
 										{
@@ -1598,26 +1606,28 @@ class FMTgraph : public Core::FMTobject
 									{
 										schedule_solution[actions[variable_iterator.first]][lockout] = std::map<int, double>();
 									}
-									schedule_solution[actions[variable_iterator.first]][lockout][leveltarget] = (*(actual_solution + variable_iterator.second));
+									schedule_solution[actions[variable_iterator.first]][lockout][leveltarget] = (*(actual_solution + variable_iterator.second));*/
 								}
 							}
 
 						}
 					}
-					Core::FMTschedule newschedule(lperiod, schedule_solution);
+					newschedule.clean();
+					/*Core::FMTschedule newschedule(lperiod, schedule_solution);
 					newschedule.passinobject(*this);
 					if (withlock)
 						{
 						newschedule.setuselock(true);
-						}
-					return newschedule;
+						}*/
+					//return newschedule;
 				}
 			}
 			catch (...)
 			{
 				_exhandler->raisefromcatch("at period " + std::to_string(lperiod), "FMTgraph::getschedule", __LINE__, __FILE__);
 			}
-			return Core::FMTschedule();
+			
+			return newschedule;
 		}
 		operator std::string() const
 		{

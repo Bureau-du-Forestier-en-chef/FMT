@@ -28,7 +28,11 @@ namespace Logging
 		filestream = new std::ofstream(filename);
 		}
 
-	FMTlogger::FMTlogger() : filepath(),filestream(), flushstream(false)
+	FMTlogger::FMTlogger() : 
+		#ifdef FMTWITHOSI
+			CoinMessageHandler(),
+		#endif
+		filepath(),filestream(), flushstream(false)
 		{
 
 		}
@@ -44,7 +48,11 @@ namespace Logging
 			}
 		}
 
-	FMTlogger::FMTlogger(const FMTlogger& rhs): filepath(rhs.filepath), filestream(), flushstream(rhs.flushstream)
+	FMTlogger::FMTlogger(const FMTlogger& rhs): 
+		#ifdef FMTWITHOSI
+				CoinMessageHandler(rhs),
+		#endif
+		filepath(rhs.filepath), filestream(), flushstream(rhs.flushstream)
 		{
 		settofile(filepath);
 		}
@@ -53,6 +61,9 @@ namespace Logging
 		{
 		if (this!=&rhs)
 			{
+			#ifdef FMTWITHOSI
+				CoinMessageHandler::operator=(rhs),
+			#endif
 			filepath = rhs.filepath;
 			settofile(filepath);
 			flushstream = rhs.flushstream;
