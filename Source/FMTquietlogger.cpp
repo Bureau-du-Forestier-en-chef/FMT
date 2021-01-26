@@ -19,7 +19,8 @@ FMTquietlogger::FMTquietlogger()
 #ifdef FMTWITHOSI
 int FMTquietlogger::print()
 	{
-	return FMTlogger::print();
+	//return FMTlogger::print();
+	return 0;
 	}
 
 void FMTquietlogger::checkSeverity()

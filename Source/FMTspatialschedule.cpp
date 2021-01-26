@@ -477,7 +477,7 @@ namespace Spatial
 		}
 	}
 
-	std::vector<Core::FMTschedule> FMTspatialschedule::getschedules(const std::vector<Core::FMTaction>& modelactions) const
+	std::vector<Core::FMTschedule> FMTspatialschedule::getschedules(const std::vector<Core::FMTaction>& modelactions, bool withlock) const
 	{
 		std::vector<Core::FMTschedule> operatedschedules;
 		try {
@@ -499,7 +499,7 @@ namespace Spatial
 		{
 			for (int period = 1; period < actperiod(); ++period)
 			{
-				Core::FMTschedule schedule = git->second.getschedule(modelactions,&solution[0],period);
+				Core::FMTschedule schedule = git->second.getschedule(modelactions,&solution[0],period,withlock);
 				schedule.passinobject(*this);
 				operatedschedules[period - 1] += schedule;
 			}

@@ -60,6 +60,8 @@ namespace Parser {
 			if (FMTparser::tryopening(schedulestream, location))
 			{
 				std::vector<std::map<Core::FMTaction, std::map<Core::FMTdevelopment, std::map<int, double>>>>data;
+				bool uselock = false;
+				bool firstline = true;
 				while (schedulestream.is_open())
 				{
 					std::string line = FMTparser::getcleanline(schedulestream);
@@ -73,6 +75,13 @@ namespace Parser {
 						}
 						else {
 							int variable = getvariable();
+							if (firstline&&line.find("_FUTURE")==std::string::npos&&
+								line.find("_EXISTING")==std::string::npos&&
+								(values.size()-themes.size())==5)
+								{
+								uselock = true;
+								}
+							firstline = false;
 							std::string mask = "";
 							int id = 0;
 							for (; id < static_cast<int>(themes.size()); ++id)
@@ -131,8 +140,9 @@ namespace Parser {
 				int period = 1;
 				for (const std::map<Core::FMTaction, std::map<Core::FMTdevelopment, std::map<int, double>>>& inschedule : data)
 				{
-					schedules.push_back(Core::FMTschedule(period, inschedule));
+					schedules.emplace_back(period, inschedule);
 					schedules.back().passinobject(*this);
+					schedules.back().setuselock(uselock);
 					++period;
 				}
 			}

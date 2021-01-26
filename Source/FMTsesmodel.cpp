@@ -34,11 +34,11 @@ namespace Models
         return *this;
         }
 
-	std::vector<Core::FMTschedule> FMTsesmodel::getschedule() const
+	std::vector<Core::FMTschedule> FMTsesmodel::getschedule(bool withlock) const
 	{
 		try
 		{
-			return spschedule.getschedules(actions);
+			return spschedule.getschedules(actions,withlock);
 		}
 		catch (...)
 		{

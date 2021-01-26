@@ -1575,12 +1575,6 @@ bool FMTlpmodel::locatenodes(const std::vector<Core::FMToutputnode>& nodes, int 
      bool FMTlpmodel::resolve()
         {
 		 try {
-			 if (!solver.gotlicense())
-				{
-				 _exhandler->raise(Exception::FMTexc::FMTmissinglicense,
-					 "missing " + solver.getsolvername() + " License ",
-					 "FMTlpmodel::resolve ",__LINE__, __FILE__);
-				}
 		return solver.resolve();
 		 }catch (...)
 		 {
@@ -1794,12 +1788,6 @@ bool FMTlpmodel::locatenodes(const std::vector<Core::FMToutputnode>& nodes, int 
 	bool FMTlpmodel::initialsolve()
 		{
 		try {
-			if (!solver.gotlicense())
-			{
-				_exhandler->raise(Exception::FMTexc::FMTmissinglicense,
-					" Missing solver " + solver.getsolvername() + " License ",
-					"FMTlpmodel::initialsolve",__LINE__, __FILE__);
-			}
 			return solver.initialsolve();
 		}catch (...)
 		{
