@@ -108,6 +108,7 @@ namespace Models
 	bool FMTlpsolver::resolve()
 		{
 		try {
+			bool erroroccured = false;
 			matrixcache.synchronize(solverinterface);
 			if (solvertype == Models::FMTsolverinterface::CLP)//clp with dual simplex
 			{
@@ -135,11 +136,22 @@ namespace Models
 				MSK_putintparam(task, MSK_IPAR_LOG, 10);
 				MSK_putintparam(task, MSK_IPAR_LOG_INTPNT, 4);
 				MSKrescodee error = MSK_optimize(task);
+				if (error > 0)
+					{
+					solverinterface->resolve();
+					erroroccured = true;
+					}
 
 			}
 #endif
 			else {//default
 				solverinterface->resolve();
+			}
+			if (erroroccured && !gotlicense())
+			{
+				_exhandler->raise(Exception::FMTexc::FMTmissinglicense,
+					" Missing solver " + getsolvername() + " License ",
+					"FMTlpsolver::initialsolve", __LINE__, __FILE__);
 			}
 		}catch (...)
 			{
@@ -152,6 +164,7 @@ namespace Models
 		{
 		try{
 		matrixcache.synchronize(solverinterface);
+		bool erroroccured = false;
 		switch (solvertype)
 		{
 		case FMTsolverinterface::CLP:
@@ -229,6 +242,13 @@ namespace Models
 			MSK_putdouparam(task, MSK_DPAR_INTPNT_TOL_PSAFE, 100.0);
 			MSK_putdouparam(task, MSK_DPAR_INTPNT_TOL_PATH, 1.0e-2);
 			MSKrescodee error = MSK_optimize(task);
+			if (error > 0)
+				{
+				//Just to make sure the class is updated...
+				solverinterface->initialSolve();
+				erroroccured = true;
+				}
+			
 		}
 		break;
 		#endif
@@ -244,6 +264,12 @@ namespace Models
 		}
 		break;
 		}
+		if (erroroccured && !gotlicense())
+			{
+			_exhandler->raise(Exception::FMTexc::FMTmissinglicense,
+					" Missing solver " + getsolvername() + " License ",
+					"FMTlpsolver::initialsolve", __LINE__, __FILE__);
+			}
 		}
 		catch (...)
 		{
@@ -273,8 +299,8 @@ namespace Models
 				case FMTsolverinterface::MOSEK:
 				{
 					const OsiMskSolverInterface* msksolver = dynamic_cast<OsiMskSolverInterface*>(solverinterface.get());
-					const MSKtask_t task = msksolver->getMutableLpPtr();
 					licensestatus = !msksolver->isLicenseError();
+
 				}
 		break;
 		#endif

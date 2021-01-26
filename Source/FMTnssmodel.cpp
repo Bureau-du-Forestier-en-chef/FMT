@@ -112,15 +112,7 @@ namespace Models
 	try {
 			const size_t location = std::distance(&*actions.begin(), target);
 			paths = development.operate(actions.at(location), transitions.at(location), yields, themes);
-			if (schedule.find(*target) == schedule.end())
-				{
-				schedule[*target] = std::map<Core::FMTdevelopment, std::vector<double>>();
-				}
-			if (schedule[*target].find(development)== schedule[*target].end())
-				{
-				schedule[*target][development] = std::vector<double>(1,0);
-				}
-			schedule[*target][development][0] += areatarget;
+			schedule.addevent(development, areatarget, *target);
 		}catch (...)
 			{
 			_exhandler->raisefromcatch("", "FMTnssmodel::operate", __LINE__, __FILE__);
@@ -130,7 +122,7 @@ namespace Models
 
 	std::vector<std::pair<size_t, const Core::FMTaction*>> FMTnssmodel::getoperabilities(const Core::FMTactualdevelopment& development,
 		std::vector<std::vector<const Core::FMTaction*>> targets,
-		const std::vector<const Core::FMToutput*>& alloutputs)
+		const std::vector<const Core::FMToutput*>& alloutputs) const
 	{
 		std::vector<std::pair<size_t, const Core::FMTaction*>>selection;
 		try {
@@ -139,7 +131,6 @@ namespace Models
 				{
 				if (output->getsourcesreference().begin()->use(development,yields))
 					{
-					std::shuffle(targets.at(location).begin(), targets.at(location).end(), generator);
 					std::vector<const Core::FMTaction*>::const_iterator actit = targets.at(location).begin();
 					while (actit!= targets.at(location).end() && !development.operable(**actit,yields))
 						{
@@ -217,12 +208,15 @@ namespace Models
 			}
 	}
 
-	Core::FMTschedule FMTnssmodel::simulate(bool grow)
+	Core::FMTschedule FMTnssmodel::simulate(bool grow, bool schedulewithlock)
 	{
 		Core::FMTschedule schedule;
-		schedule.setuselock(true);
-		schedule.passinobject(*this);
 		try {
+			if (schedulewithlock)
+				{
+				schedule.setuselock(true);
+				}
+			schedule.passinobject(*this);
 			std::vector<double>targetedarea;
 			std::vector<const Core::FMToutput*> targetedoutputs = constraintstotarget(targetedarea);
 			std::vector<std::vector<const Core::FMTaction*>> targetedactions= getactionstargets(targetedoutputs);
@@ -280,6 +274,7 @@ namespace Models
 				{
 				this->grow();
 				}
+			schedule.clean();
 		}catch (...)
 		{
 			_exhandler->raisefromcatch("", "FMTnssmodel::simulate", __LINE__, __FILE__);

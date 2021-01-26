@@ -12,6 +12,12 @@ unite2
 peuplement1
 peuplement2
 peuplement3
+feu
+
+*AGGREGATE prod
+peuplement1
+peuplement2
+peuplement3
 
 *THEME  3
 UTR1

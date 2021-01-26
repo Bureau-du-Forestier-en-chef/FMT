@@ -10,7 +10,13 @@ UC ? ? _AGE >= 8
 *OPERABLE plantation
 ? ? ? _AGE >= 1 AND _AGE <= 3
 
-*ACTION aFire Y
+*ACTION aFire N
 *OPERABLE AFire
-? ? ? _AGE >= 1
+? prod ? _AGE >= 1
+
+
+*ACTION arecup Y
+*OPERABLE arecup
+? feu ? _AGE = 0
+
 

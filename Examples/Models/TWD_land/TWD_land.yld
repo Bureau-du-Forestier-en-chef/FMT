@@ -28,6 +28,17 @@ _AGE volumetotal
 25   250
 30   200
 
+*Y ? feu ?
+_AGE volumetotal
+0    0
+5    50
+10   100
+15   150
+20   200
+25   230
+30   150
+
+
 *YC ? ? ?
 YBM_RTM_BOG _EQUATION(1.2159259330000001*10^0.87191668899999997)
 YBM_RTM_F _SUM(YBM_RTM_BOG,YBM_RTM_MEH)

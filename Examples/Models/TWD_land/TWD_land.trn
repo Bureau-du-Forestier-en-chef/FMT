@@ -12,4 +12,8 @@
 
 *CASE aFire
 *SOURCE ? ? ?
-*TARGET ? ? ? 100.00
+*TARGET ? feu ? 100.00
+
+*CASE arecup
+*SOURCE ? feu ?
+*TARGET  ? peuplement1 ?  100.00
