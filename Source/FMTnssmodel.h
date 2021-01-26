@@ -75,7 +75,7 @@ namespace Models
 		*/
 		std::vector<std::pair<size_t, const Core::FMTaction*>> getoperabilities(const Core::FMTactualdevelopment& development,
 			std::vector<std::vector<const Core::FMTaction*>> targets,
-			const std::vector<const Core::FMToutput*>& alloutputs);
+			const std::vector<const Core::FMToutput*>& alloutputs) const;
 		// DocString: FMTnssmodel::etactionstargets
 		/**
 		Get the potential actions of each output.
@@ -134,7 +134,7 @@ namespace Models
 			This function do a non spatial simulation based on the area constraints in the optimize section.
 			The resulting schedule can contain locked developement.
 			*/
-			Core::FMTschedule simulate(bool grow = false);
+			Core::FMTschedule simulate(bool grow = false,bool schedulewithlock = false);
 			
 		};
 }

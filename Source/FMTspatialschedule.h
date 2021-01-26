@@ -182,7 +182,7 @@ class FMTspatialschedule : public FMTlayer<Graph::FMTlinegraph>
 		/**
 		Return operated schedules from linegraph. 
 		*/
-		std::vector<Core::FMTschedule> getschedules(const std::vector<Core::FMTaction>& modelactions) const;
+		std::vector<Core::FMTschedule> getschedules(const std::vector<Core::FMTaction>& modelactions,bool withlock=false) const;
 		// DocString: FMTspatialschedule::getgraphsoutputs()
 		/**
 			Return sum of all graphs outputs related to constraint.

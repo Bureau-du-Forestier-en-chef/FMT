@@ -148,6 +148,17 @@ class FMTschedule : public FMTobject
 		Return the total harvested area of a FMTaction present in the FMTschedule.
 		*/
         double actionarea(const FMTaction& action) const;
+		// DocString: FMTschedule::addevent
+		/**
+		Add a new event to the shedule based on the developement,action and area. See clean function also.
+		*/
+		void addevent(const Core::FMTdevelopment& dev, const double& area, const Core::FMTaction& action);
+		// DocString: FMTschedule::clean
+		/**
+		After calling multiple time addevent the schedule will end up with empty area if uselock == false.
+		So you need to call this function to clean the schedule before using it.
+		*/
+		void clean();
 		// DocString: FMTschedule::area
 		/**
 		Return the total area of the schedule operated by all schedule actions.

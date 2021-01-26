@@ -185,7 +185,12 @@ FMTschedule::operator std::string() const
             const FMTdevelopment* dev = &devit->first;
 			for (const double & value : devit->second)
 				{
-				line += std::string(dev->mask) + " " + std::to_string(dev->age) + " " + std::to_string(value) + " " + actit->first.getname() + " " + std::to_string(period) + "\n";
+				line += std::string(dev->mask) + " " + std::to_string(dev->age) + " " + std::to_string(value) + " " + actit->first.getname() + " " + std::to_string(period);
+				if (uselock)
+					{
+					line += " " + std::to_string(dev->lock);
+					}
+				line+=+"\n";
 				}
             }
 		}
@@ -200,6 +205,72 @@ FMTschedule::operator std::string() const
 	void FMTschedule::setuselock(const bool& lock)
 	{
 		uselock = lock;
+	}
+
+	void FMTschedule::clean()
+	{
+		try {
+			if (!uselock)
+			{
+				for (std::map<FMTaction, std::map<FMTdevelopment, std::vector<double>>>::iterator actit = elements.begin(); actit != elements.end(); actit++)
+				{
+					for (std::map<FMTdevelopment, std::vector<double>>::iterator devit = actit->second.begin(); devit != actit->second.end(); devit++)
+						{
+						std::vector<double>cleaned;
+						for (const double& value : devit->second)
+							{
+							if (value>0)
+								{
+								cleaned.push_back(value);
+								}
+							}
+						devit->second = cleaned;
+						}
+				}
+				
+			}
+			
+		}
+		catch (...)
+		{
+			_exhandler->raisefromcatch("", "FMTschedule::clean", __LINE__, __FILE__);
+		}
+	}
+
+	void FMTschedule::addevent(const Core::FMTdevelopment& dev, const double& area, const Core::FMTaction& action)
+	{
+		try {
+			iterator actit = elements.find(action);
+			if (actit ==elements.end())
+				{
+				actit = elements.insert(std::pair<Core::FMTaction, std::map<Core::FMTdevelopment, std::vector<double>>>(action, std::map<Core::FMTdevelopment, std::vector<double>>())).first;
+				}
+			std::map<FMTdevelopment, std::vector<double>>::iterator devit = actit->second.end(); 
+			if (uselock)
+			{
+				devit = actit->second.find(dev);
+				if (devit == actit->second.end())
+					{
+					devit = actit->second.insert(std::pair<Core::FMTdevelopment, std::vector<double>>(dev, std::vector<double>(1, 0))).first;
+					}
+				devit->second[0] += area;
+			}else {
+				const Core::FMTdevelopment lockout = dev.clearlock();
+				const int leveltarget = dev.lock;
+				devit = actit->second.find(lockout);
+				if (devit == actit->second.end())
+					{
+					devit = actit->second.insert(std::pair<Core::FMTdevelopment, std::vector<double>>(lockout, std::vector<double>(1, 0))).first;
+					}
+				devit->second.resize(leveltarget + 1,0.0);
+				devit->second[leveltarget] += area;
+			}
+		}
+		catch (...)
+		{
+			_exhandler->raisefromcatch("", "FMTschedule::addevent", __LINE__, __FILE__);
+		}
+
 	}
 
 

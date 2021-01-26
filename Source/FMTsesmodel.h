@@ -106,7 +106,7 @@ class FMTsesmodel : public FMTmodel
 		The operated schedule can differ from the potential schedule provided by the user in the function
 		simulate(). Which we call spatialisation impact.
 		*/
-		std::vector<Core::FMTschedule> getschedule() const;
+		std::vector<Core::FMTschedule> getschedule(bool withlock=false) const;
 		// DocString: FMTsesmodel::setinitialmapping
 		/**
 		Setter of the initial forest stades (spatial map of FMTdevelopment)

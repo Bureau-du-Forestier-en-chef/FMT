@@ -8,6 +8,7 @@ aCaribou 1.._LENGTH
 *CONSTRAINTS
 
 Burnedarea = 0 1.._LENGTH
+recuparea = 0 1.._LENGTH
 
 _NDY(oVolRec) 1.._LENGTH
 
