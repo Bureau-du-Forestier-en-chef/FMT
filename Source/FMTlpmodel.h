@@ -245,6 +245,17 @@ class FMTlpmodel : public FMTmodel
 	Pass FMTobject to members data.
 	*/
 	void passinobjecttomembers(const Core::FMTobject& rhs);
+	// DocString: FMTlpmodel::updatematrixnaming
+	/**
+	Update the row and variables name based on graph.
+	*/
+	void updatematrixnaming();
+	// DocString: FMTlpmodel::updategeneralconstraintsnaming
+	/**
+	Update the row and variables using the general constraints of the model.
+	*/
+	void updategeneralconstraintsnaming(std::unordered_map<int, std::string>& rows,
+		std::unordered_map<int, std::string>& cols) const;
 	public:
 	// DocString: FMTlpmodel(const FMTmodel,FMTsolverinterface)
 	/**
@@ -292,6 +303,12 @@ class FMTlpmodel : public FMTmodel
 		Check if FMTdevelopment area are bounded on there primal variables for a given period.
 		*/
 		bool isperiodbounded(int period) const;
+		// DocString: FMTlpmodel::getlocalconstraints
+		/**
+		During replaning some local constraints need to be ajusted to the global model.
+		The function will take a vector of local constraint and ajust the bounds using the solution of this global model.
+		*/
+		std::vector<Core::FMTconstraint> getlocalconstraints(const std::vector<Core::FMTconstraint>& localconstraints,const int& period) const;
 		// DocString: FMTlpmodel::getsolution
 		/**
 		Get the standard solution for a given period (FMTschedule dont have natural growth solution included).
@@ -517,6 +534,16 @@ class FMTlpmodel : public FMTmodel
 		do nested exception throw.
 		*/
 		void enablenestedexceptions() override;
+		// DocString: FMTlpmodel::writeLP
+		/**
+		Write the solverinterface matrix to a file (location) using the lp formulation.
+		*/
+		void writeLP(const std::string& location);
+		// DocString: FMTlpmodel::writeMPS
+		/**
+		Write the solverinterface matrix to a file (location) using the MPS formulation.
+		*/
+		void writeMPS(const std::string& location);
 
 	};
 

@@ -24,6 +24,9 @@
 
 *OUTPUT oVollocaltarget
 *SOURCE ? ? ? coupetotale volumetotal + ? ? ? arecup volumetotal * 100
+*OUTPUT oSuppl
+*SOURCE ? ? ? plantation _AREA
+
 
 
 
