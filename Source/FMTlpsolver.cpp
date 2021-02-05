@@ -380,8 +380,14 @@ namespace Models
 		{
 		try {
 			matrixcache.synchronize(solverinterface);
+			/*if (solvertype == FMTsolverinterface::CLP)
+				{
+				OsiClpSolverInterface* clpsolver = dynamic_cast<OsiClpSolverInterface*>(solverinterface.get());
+				ClpSimplex* splexmodel = clpsolver->getModelPtr();
+				splexmodel->setWhatsChanged(65337);
+				}*/
 			solverinterface->setColSetBounds(indexFirst, indexLast, boundlist);
-			if (solvertype == FMTsolverinterface::CLP)
+			/*if (solvertype == FMTsolverinterface::CLP)
 				{
 				if (firstfutur < 0)
 					{
@@ -391,9 +397,10 @@ namespace Models
 					}
 				for (int index = firstfutur; index < solverinterface->getNumCols();++index)
 					{
-					solverinterface->setColBounds(index,0.0,COIN_DBL_MAX);
+					solverinterface->setColBounds(index,0,COIN_DBL_MAX);
 					}
-				}
+				}*/
+			
 		}catch (...)
 			{
 			_exhandler->raisefromcatch("", "FMTlpsolver::setColSetBounds", __LINE__, __FILE__);
@@ -615,6 +622,36 @@ namespace Models
 			}
 		return nullptr;
 		}
+
+	void FMTlpsolver::updatematrixnaming(const std::unordered_map<int, std::string>& colsnames,
+		const std::unordered_map<int, std::string>& rownames)
+	{
+		try {
+			matrixcache.synchronize(solverinterface);
+			for (int colid = 0 ; colid < solverinterface->getNumCols();++colid)
+			{
+				std::string name = "C"  + std::to_string(colid);
+				if (colsnames.find(colid)!= colsnames.end())
+					{
+					name = colsnames.at(colid);
+					}
+			solverinterface->setColName(colid, name);
+			}
+			for (int rowid = 0; rowid < solverinterface->getNumRows(); ++rowid)
+			{
+				std::string name = "R" + std::to_string(rowid);
+				if (rownames.find(rowid) != rownames.end())
+					{
+					name = rownames.at(rowid);
+					}
+				solverinterface->setRowName(rowid, name);
+			}
+		}
+		catch (...)
+		{
+			_exhandler->raisefromcatch("", "FMTlpsolver::updatematrixnaming", __LINE__, __FILE__);
+		}
+	}
 
 	void FMTlpsolver::writeLP(const std::string& location) const
 		{

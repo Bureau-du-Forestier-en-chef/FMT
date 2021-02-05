@@ -17,7 +17,7 @@ namespace Parser
 		rxconstraints("^(_EVEN|_NDY|_SEQ)([\\s\\t]*)(\\()((([^,]*)(,)([\\s\\t]*)([\\d\\.]*%|[\\d\\.]*)([\\s\\t]*)(,)([\\s\\t]*)([\\d\\.]*%|[\\d\\.]*))|(([^,]*)(,)([\\s\\t]*)([\\d\\.]*%|[\\d\\.]*))|([^,]*))([\\s\\t]*)(\\))([\\s\\t]*)(.+)", std::regex_constants::ECMAScript | std::regex_constants::icase),
 		rxequations("^(.+)((((<=)|(>=))(.+))|((.+)((=))(.+)))(?<=[^,])[\\s\\t](?=\\d)(.+)"),
 		rxperiods("^([\\s\\t]*)((([\\d]*|#.+)(\\.\\.)(#.+|_LENGTH|[\\d]*)|(_LENGTH))|(#.+|[\\d]*))", std::regex_constants::ECMAScript | std::regex_constants::icase),
-		rxgoal("^(.+)(_GOAL)(\\()([^,]*)(,)([^\\)]*)(\\))", std::regex_constants::ECMAScript | std::regex_constants::icase),
+		rxending("^(.+)(((_GOAL)(\\()([^,]*)(,)([^\\)]*)(\\)))|(_SETTOGLOBAL))", std::regex_constants::ECMAScript | std::regex_constants::icase),
 		rxoutput("^(.+)(\\()([^)]*)(\\))(\\[)(#.+|[-\\d]*)(\\])|([^\\[]*)(\\()([^)]*)(\\))|(.+)(\\[)(#.+|[-\\d]*)(\\])|(.+)", std::regex_constants::ECMAScript | std::regex_constants::icase),
 		rxpenalty("^(_PENALTY)(\\()([^\\)]*)(\\))", std::regex_constants::ECMAScript | std::regex_constants::icase),
 		rxspecialoutput("^(_AVG|_SUM)(\\()(([^,]*)(,)(([^,]*)(([\\d]*|#.+)(\\.\\.)(#.+|_LENGTH|[\\d]*))|(#.+|[\\d]*))|(.+))(\\))", std::regex_constants::ECMAScript | std::regex_constants::icase),
@@ -35,7 +35,7 @@ namespace Parser
 		rxconstraints(rhs.rxconstraints),
 		rxequations(rhs.rxequations),
 		rxperiods(rxperiods),
-		rxgoal(rhs.rxgoal),
+		rxending(rhs.rxending),
 		rxoutput(rhs.rxoutput),
 		rxpenalty(rhs.rxpenalty),
 		rxspecialoutput(rhs.rxspecialoutput),
@@ -55,7 +55,7 @@ namespace Parser
 			rxconstraints = rhs.rxconstraints;
 			rxequations = rhs.rxequations;
 			rxperiods = rhs.rxperiods;
-			rxgoal = rhs.rxgoal;
+			rxending = rhs.rxending;
 			rxoutput = rhs.rxoutput;
 			rxpenalty = rhs.rxpenalty;
 			rxspecialoutput = rhs.rxspecialoutput;
@@ -64,21 +64,28 @@ namespace Parser
 			}
 		return *this;
 		}
-	bool FMToptimizationparser::setgoal(Core::FMTconstraint& constraint, const std::string& line, const Core::FMTconstants& constants)
+	bool FMToptimizationparser::setending(Core::FMTconstraint& constraint,std::string& line, const Core::FMTconstants& constants)
 		{
 		std::smatch kmatch;
 		try{
-		if (std::regex_search(line, kmatch, rxgoal))
+		if (std::regex_search(line, kmatch, rxending))
 			{
-			const std::string target = "GOAL_"+ std::string(kmatch[4]);
-			const std::string value = kmatch[6];
-			const double goal_var = getnum<double>(value, constants);
-			constraint.addbounds(Core::FMTyldbounds(Core::FMTsection::Optimize, target, goal_var, goal_var));
+			const std::string target = std::string(kmatch[4]) + std::string(kmatch[10]);
+			double variale_value = 0;
+			std::string value(target);
+			if (target == "GOAL_")
+				{
+				value = std::string(kmatch[8]);
+				variale_value = getnum<double>(value, constants);
+				}
+			line = line.substr(0, line.find(target));
+			constraint.addbounds(Core::FMTyldbounds(Core::FMTsection::Optimize, target, variale_value, variale_value));
+			boost::trim(line);
 			return true;
 			}
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("at line " + line,"FMToptimizationparser::setgoal", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("at line " + line,"FMToptimizationparser::setending", __LINE__, __FILE__);
 			}
 		return false;
 		}
@@ -370,11 +377,7 @@ namespace Parser
 		try {
 			std::smatch kmatch;
 			std::string rest = line;
-			if (setgoal(constraint, line, constants))
-			{
-				rest = line.substr(0, rest.find("_GOAL"));
-				boost::trim(rest);
-			}
+			setending(constraint, rest, constants);
 			if (std::regex_search(rest, kmatch, rxspatial))
 			{
 				returnedconstraints.push_back(getspatialconstraint(kmatch, line, constants, actions,outputs,themes));

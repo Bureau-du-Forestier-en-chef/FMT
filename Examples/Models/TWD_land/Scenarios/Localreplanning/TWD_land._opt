@@ -6,6 +6,7 @@ _MAX oVollocaltarget 1.._LENGTH
 aCaribou 1.._LENGTH
 
 *CONSTRAINTS
-oVolRec<= 40272 1.._LENGTH
+oVolRec<= 40272 1.._LENGTH _SETTOGLOBAL
+osuppl>= 20 1.._LENGTH _SETTOGLOBAL
 Burnedarea = 0 1.._LENGTH
 *FORMAT MOSEK

@@ -133,7 +133,9 @@ void exportCore()
 					"@DocString(FMTdevelopment::operator std::string)")
                 .setattr("__hash__",&boost::pyhash<Core::FMTdevelopment>);
 
-		bp::class_<Core::FMTspec>("FMTspec","@DocString(FMTspec)");
+		bp::class_<Core::FMTspec>("FMTspec", "@DocString(FMTspec)")
+			.def("getarea", &Core::FMTspec::getperiodlowerbound,
+				"@DocString(FMTspec::getperiodlowerbound)");
 
 		bp::class_<Core::FMTactualdevelopment, bp::bases<Core::FMTdevelopment>>("FMTactualdevelopment", "@DocString(FMTactualdevelopment)")
                 .def("getarea", &Core::FMTactualdevelopment::getarea,
