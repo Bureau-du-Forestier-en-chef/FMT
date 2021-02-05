@@ -14,6 +14,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTmatrixbuild.h"
 #include "FMTobject.h"
 #include <memory>
+#include <unordered_map>
 #include <boost/serialization/split_member.hpp>
 #include <boost/serialization/export.hpp>
 
@@ -421,6 +422,12 @@ class FMTlpsolver: public Core::FMTobject
 		sets multiple columns (indices) with a given size (len) integer variable.
 		*/
 		void setInteger(const int* indices,int len);
+		// DocString: FMTlpsolver::updatematrixnaming
+		/**
+		Update constraints and variables names.
+		*/
+		void updatematrixnaming(const std::unordered_map<int, std::string>& colsnames,
+			const std::unordered_map<int, std::string>& rownames);
 		// DocString: FMTlpsolver::writeLP
 		/**
 		Write the solverinterface matrix to a file (location) using the lp formulation.

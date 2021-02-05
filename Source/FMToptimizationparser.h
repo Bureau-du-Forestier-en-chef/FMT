@@ -42,7 +42,7 @@ namespace Parser
 		std::regex rxconstraints;
 		boost::regex rxequations;
 		std::regex rxperiods;
-		std::regex rxgoal;
+		std::regex rxending;
 		std::regex rxoutput;
 		std::regex rxpenalty;
 		std::regex rxspecialoutput;
@@ -52,7 +52,7 @@ namespace Parser
                              const std::vector<Core::FMToutput>& outputs,
                              const std::vector<Core::FMTtheme>& themes);
 		FMToptimizationsection getsection(const std::string& line) const;
-		bool setgoal(Core::FMTconstraint& constraint, const std::string& line, const Core::FMTconstants& constants);
+		bool setending(Core::FMTconstraint& constraint,std::string& line, const Core::FMTconstants& constants);
 		void setperiods(Core::FMTconstraint& constraint, const std::string& lower,const std::string& upper, const Core::FMTconstants& constants) const;
 		Core::FMToutput resume_output(const std::map<std::string,double>& nodes,
                           const std::vector<Core::FMToutput>& outputs,

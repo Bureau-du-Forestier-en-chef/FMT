@@ -447,6 +447,61 @@ class FMTgraph : public Core::FMTobject
 			return (statsdiff - stats);
 
 		}
+		std::unordered_map<int, std::string> getvariablenames(const std::vector<Core::FMTaction>& actions) const
+		{
+			std::unordered_map<int, std::string>variablenames;
+			try {
+				FMTvertex_iterator vertex_iterator, vertex_iterator_end;
+				for (boost::tie(vertex_iterator, vertex_iterator_end) = boost::vertices(data); vertex_iterator != vertex_iterator_end;++vertex_iterator)
+					{
+					std::string basename=std::string(Core::FMTdevelopment(data[*vertex_iterator].get()));
+					boost::replace_all(basename, " ", "_");
+					FMToutedge_iterator outit, outend;
+					for (boost::tie(outit, outend) = boost::out_edges(*vertex_iterator,data);outit!=outend;++outit)
+						{
+						std::string actionname = "EVO";
+						const int variableid = data[*outit].getvariableID();
+						const int actionid = data[*outit].getactionID();
+						if (actionid >=0)
+							{
+							actionname = actions.at(actionid).getname();
+							}
+						if (variablenames.find(variableid)== variablenames.end())
+							{
+							variablenames[variableid] = basename + "("+actionname + ")";
+							}
+						}
+
+					}
+			}
+			catch (...)
+			{
+				_exhandler->raisefromcatch("", "FMTgraph::getvariablenames", __LINE__, __FILE__);
+			}
+			return variablenames;
+		}
+
+		std::unordered_map<int, std::string> gettransferrownames() const
+		{
+			std::unordered_map<int, std::string>rownames;
+			try {
+				FMTvertex_iterator vertex_iterator, vertex_iterator_end;
+				for (boost::tie(vertex_iterator, vertex_iterator_end) = boost::vertices(data); vertex_iterator != vertex_iterator_end; ++vertex_iterator)
+				{
+					const int rowid = data[*vertex_iterator].getconstraintID();
+					std::string basename = std::string(Core::FMTdevelopment(data[*vertex_iterator].get()));
+					boost::replace_all(basename, " ", "_");
+					rownames[rowid] = basename;
+				}
+			}
+			catch (...)
+			{
+				_exhandler->raisefromcatch("", "FMTgraph::gettransferrownames", __LINE__, __FILE__);
+			}
+			return rownames;
+		}
+
+
 		std::vector<Core::FMTactualdevelopment> getperiodstopdev(const int location, const double* actual_solution) const
 		{
 			std::vector<Core::FMTactualdevelopment>all_period_stop_devs;
@@ -494,9 +549,10 @@ class FMTgraph : public Core::FMTobject
 				}
 				if (!output.islevel())
 				{
+					const int localperiod = getfirstactiveperiod() + period;//Normal planning first active period is 0, in replanning it wont be 0!.
 					for (const Core::FMToutputnode& output_node : output.getnodes(model.area, model.actions, model.yields))
 					{
-						const std::map<std::string, double> srcvalues = getsource(model, output_node, period, targettheme, solution, level);
+						const std::map<std::string, double> srcvalues = getsource(model, output_node, localperiod, targettheme, solution, level);
 						if (level == FMToutputlevel::developpement)
 						{
 							for (std::map<std::string, double>::const_iterator mit = srcvalues.begin(); mit != srcvalues.end(); mit++)
@@ -620,6 +676,7 @@ class FMTgraph : public Core::FMTobject
 					const FMTbaseedgeproperties& edgeprop = data[*outedge_iterator];
 					if (edgeprop.getactionID() == actionID)
 					{
+						
 						value += *(solution + edgeprop.getvariableID()) * (edgeprop.getproportion() / 100);
 					}
 				}
@@ -1202,6 +1259,7 @@ class FMTgraph : public Core::FMTobject
 				{
 					nodescache[firstperiod].clear();
 				}
+				
 			}catch (...)
 				{
 				_exhandler->raisefromcatch("", "FMTgraph::eraseperiod", __LINE__, __FILE__);
@@ -1313,6 +1371,12 @@ class FMTgraph : public Core::FMTobject
 			std::map<std::string, double>emptyreturn;
 			try{
 			const std::vector<FMTvertex_descriptor>verticies = getnode(model, node, period);
+			/**_logger << "size of " << verticies.size() << "\n";
+			for (FMTvertex_descriptor ver : verticies)
+				{
+				*_logger << "verticies found " << std::string(data[ver].get()) << "\n";
+				}*/
+			
 			return getvalues(model, verticies, node, theme, solution, level);
 			}catch (...)
 				{
@@ -1583,6 +1647,7 @@ class FMTgraph : public Core::FMTobject
 					}
 				if (static_cast<int>(size()) > lperiod && lperiod > 0)
 				{
+					newschedule.setperiod(lperiod);
 					std::map<Core::FMTaction, std::map<Core::FMTdevelopment, std::map<int, double>>>schedule_solution;
 					//const double* actual_solution = this->getColSolution();
 					for (const auto deviterator : getperiodverticies(lperiod))

@@ -40,6 +40,13 @@ namespace Models
 					actualperiod>=constraint.getperiodlowerbound() &&
 					actualperiod<=constraint.getperiodupperbound())
 					{
+				
+					if (!constraint.dosupportrandom())
+						{
+						_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
+							"Constraint "+std::string(constraint)+" does not support _RANDOM keyword", "FMTnssmodel::constraintstotarget", __LINE__, __FILE__);
+						}
+					
 					double lower = 0;
 					double upper = 0;
 					constraint.getbounds(lower, upper, actualperiod);
