@@ -132,6 +132,23 @@ class FMTconstraint: public FMToutput,public FMTspec
 		Returns true if the constraint have goal weight
 		*/
 		bool isgoal() const;
+		// DocString: FMTconstraint::issettoglobal()
+		/**
+		Returns true if the constraint need to be set by a global model.
+		*/
+		bool issettoglobal() const;
+		// DocString: FMTconstraint::dosupportrandom()
+		/**
+		Return true if the constraint has only one source and only based on action area.
+		So the contraint will support _RANDOM keywod.
+		*/
+		bool dosupportrandom() const;
+		// DocString: FMTconstraint::settoglobal
+		/**
+		Using the value of the global model for the constraint output it will
+		return a new constraints set with the global model value.
+		*/
+		Core::FMTconstraint settoglobal(const double& value) const;
 		// DocString: FMTconstraint::getpenalties
 		/**
 		If the constraint is goal then you can get the name of the penalties of the constraint. like _GOAL(penaltyname,weight)

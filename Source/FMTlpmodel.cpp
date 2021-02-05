@@ -562,6 +562,36 @@ namespace Models
 		return true;
 	}
 
+	std::vector<Core::FMTconstraint> FMTlpmodel::getlocalconstraints(const std::vector<Core::FMTconstraint>& localconstraints, const int& period) const
+	{
+		std::vector<Core::FMTconstraint>newconstraints;
+		try
+		{
+			if (!solver.isProvenOptimal())
+				{
+				_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
+					"Cannot getlocalconstraints from a non optimal global",
+					"FMTlpmodel::getlocalconstraints", __LINE__, __FILE__);
+				}
+			for (const Core::FMTconstraint& constraint : localconstraints)
+				{
+				if (constraint.issettoglobal())
+					{
+					const double value = getoutput(constraint,period, Graph::FMToutputlevel::totalonly).at("Total");
+					//*_logger << "got value of " << value << "\n";
+					newconstraints.push_back(constraint.settoglobal(value));
+				}else {
+					newconstraints.push_back(constraint);
+					}
+				}
+			//solver.writeLP("C:/Users/cyrgu3/Desktop/test");
+		}catch (...)
+		{
+			_exhandler->printexceptions("", "FMTlpmodel::getlocalconstraints", __LINE__, __FILE__);
+		}
+		return newconstraints;
+	}
+
 	Core::FMTschedule FMTlpmodel::getsolution(int period, bool withlock) const
 	{
 		Core::FMTschedule newschedule;
@@ -676,6 +706,7 @@ namespace Models
 	{
 		try {
 			const double* solution = solver.getColSolution();
+			//*_logger << "for output " << std::string(output) << "\n";
 			return graph.getoutput(*this, output, period, solution, level);
 		}catch (...)
 			{
@@ -1048,6 +1079,7 @@ bool FMTlpmodel::locatenodes(const std::vector<Core::FMToutputnode>& nodes, int 
 			}
 			//this->writeLP("T:/Donnees/Usagers/FORBR3/Pentes LIDAR/Nouvelle méthode/06251/a1");
 			solver.setColSetBounds(&(*colstarget.cbegin()), &(*colstarget.cend()), &newbounds[0], firstfutrecolumn);
+			
 			if (this->resolve())
 			{
 				for (const Core::FMToutput& output : localoutputs)
@@ -1160,6 +1192,7 @@ bool FMTlpmodel::locatenodes(const std::vector<Core::FMToutputnode>& nodes, int 
 		if (static_cast<int>(elements.size()) > period && elements.at(period).find(std::string(constraint))!= elements.at(period).end())
 			{
 			std::vector<std::vector<int>>all_elements = elements.at(period).at(std::string(constraint));
+			
 			elements.at(period).erase(elements.at(period).find(std::string(constraint)));
 			int removedrow = -1;
 			if (!all_elements.at(FMTmatrixelement::constraint).empty())
@@ -1324,6 +1357,7 @@ bool FMTlpmodel::locatenodes(const std::vector<Core::FMToutputnode>& nodes, int 
 						graph.eraseperiod(deletedconstraints, deletedvariables);
 					}
 					++firstperiod;
+					
 					for (const Core::FMTconstraint& constraint : constraints)
 					{
 						this->eraseconstraint(constraint, firstperiod);
@@ -1513,6 +1547,7 @@ bool FMTlpmodel::locatenodes(const std::vector<Core::FMToutputnode>& nodes, int 
 					lowerbound = std::numeric_limits<double>::lowest();
 				}
 				const int variable_id = getsetmatrixelement(objective, FMTmatrixelement::objectivevariable, all_variables);
+				//*_logger << "variable id of " << variable_id << "\n";
 				bool gotvariables = false;
 				for (int period = first_period; period <= last_period; ++period)
 				{
@@ -1630,6 +1665,7 @@ bool FMTlpmodel::locatenodes(const std::vector<Core::FMToutputnode>& nodes, int 
 		try {
 			if (ismatrixelement(constraint, element_type, period))
 			{
+				
 				int foundperiod = period;
 				if (period == -1)
 				{
@@ -1670,7 +1706,7 @@ bool FMTlpmodel::locatenodes(const std::vector<Core::FMToutputnode>& nodes, int 
 				++stats->cols;
 				++stats->output_cols;
 			}
-			if (elements.size() != (graph.size() - 1) && period >= static_cast<int>(elements.size())) //just for resizing!
+			if ((elements.size() != (graph.size() - 1)) && (period >= static_cast<int>(elements.size()))||period<0) //just for resizing!
 			{
 				size_t location = 0;
 				if (period < 0)
@@ -1697,12 +1733,18 @@ bool FMTlpmodel::locatenodes(const std::vector<Core::FMToutputnode>& nodes, int 
 				starting = 0;
 				stoping = static_cast<int>(elements.size());
 			}
+			//*_logger << "starting " << starting<< " "<<stoping << "\n";
 			for (int locid = starting; locid < stoping; ++locid)
 			{
 				if (elements[locid].find(std::string(constraint)) == elements[locid].end())
 				{
 					elements[locid][std::string(constraint)] = std::vector<std::vector<int>>(FMTmatrixelement::nr_items);
 				}
+				/*if (element_type==2)
+				{
+					*_logger << "pushing at " << locid << "\n";
+				}*/
+				
 				elements[locid][std::string(constraint)][element_type].push_back(element_id);
 			}
 		}catch (...)
@@ -1960,6 +2002,63 @@ bool FMTlpmodel::locatenodes(const std::vector<Core::FMToutputnode>& nodes, int 
 		catch (...)
 		{
 			_exhandler->raisefromcatch("", "FMTlpmodel::passinobjecttomembers", __LINE__, __FILE__);
+		}
+	}
+
+
+	void FMTlpmodel::writeLP(const std::string& location)
+	{
+		try {
+			updatematrixnaming();
+			*_logger<<"Obj before write " << solver.getObjValue() << "\n";
+			const std::string name = location + getname();
+			solver.writeLP(name);
+		}
+		catch (...)
+		{
+			_exhandler->raisefromcatch("", "FMTlpmodel::writeLP", __LINE__, __FILE__);
+		}
+	}
+
+
+	void FMTlpmodel::writeMPS(const std::string& location)
+	{
+		try {
+			updatematrixnaming();
+			solver.writeMPS(location);
+		}
+		catch (...)
+		{
+			_exhandler->raisefromcatch("", "FMTlpmodel::writeMPS", __LINE__, __FILE__);
+		}
+	}
+
+	void FMTlpmodel::updategeneralconstraintsnaming(std::unordered_map<int, std::string>& rows,
+		std::unordered_map<int, std::string>& cols) const
+	{
+		try {
+
+
+		}
+		catch (...)
+		{
+			_exhandler->raisefromcatch("", "FMTlpmodel::updategeneralconstraintsnaming", __LINE__, __FILE__);
+		}
+
+	}
+
+
+	void FMTlpmodel::updatematrixnaming()
+	{
+		try {
+			const std::unordered_map<int, std::string>colnames = graph.getvariablenames(actions);
+			std::unordered_map<int, std::string>rownames = graph.gettransferrownames();
+			solver.updatematrixnaming(colnames, rownames);
+
+		}
+		catch (...)
+		{
+			_exhandler->raisefromcatch("", "FMTlpmodel::updatematrixnaming", __LINE__, __FILE__);
 		}
 	}
 
