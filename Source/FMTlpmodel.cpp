@@ -97,7 +97,6 @@ namespace Models
 				const double* actual_solution = solver.getColSolution();
 				std::vector<int>variable_index;
 				std::vector<double>bounds;
-				int maximalvariableset = 0;//This is for clp (bug on setcolsetbounds)
 				for (const auto& descriptors : graph.getperiodverticies(period))
 				{
 					const Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor vertex_descriptor = descriptors.memoryobject;
@@ -107,18 +106,13 @@ namespace Models
 						if (std::find(variable_index.begin(), variable_index.end(), varit->second) == variable_index.end())
 						{
 							variable_index.push_back(varit->second);
-							if (varit->second>maximalvariableset)
-								{
-								maximalvariableset = varit->second;
-								}
 							//Had tolerance on primal infeasibilities with FMT_DBL_TOLERANCE ...
 							bounds.push_back(*(actual_solution + varit->second)*(1 - tolerance));
 							bounds.push_back(*(actual_solution + varit->second)*(1 + tolerance));
 						}
 					}
 				}
-				maximalvariableset += 1;
-				solver.setColSetBounds(&variable_index[0], &variable_index.back() + 1, &bounds[0],maximalvariableset);
+				solver.setColSetBounds(&variable_index[0], &variable_index.back() + 1, &bounds[0]);
 				return this->resolve();
 			}
 		}catch (...)
@@ -1016,7 +1010,7 @@ bool FMTlpmodel::locatenodes(const std::vector<Core::FMToutputnode>& nodes, int 
 			const double* collowerbounds = solver.getColLower();
 			const double* colupperbounds = solver.getColUpper();
 			std::vector<bool>foundcorresponding(globalmasks.size(), false);
-			const int firstfutrecolumn = static_cast<int>(initialperiod.size());
+			//const int firstfutrecolumn = static_cast<int>(initialperiod.size());
 				for (boost::unordered_set<Core::FMTlookup<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor, Core::FMTdevelopment>>::const_iterator vertexit = initialperiod.begin();
 					vertexit != initialperiod.end(); vertexit++)
 				{
@@ -1078,7 +1072,7 @@ bool FMTlpmodel::locatenodes(const std::vector<Core::FMToutputnode>& nodes, int 
 				}
 			}
 			//this->writeLP("T:/Donnees/Usagers/FORBR3/Pentes LIDAR/Nouvelle méthode/06251/a1");
-			solver.setColSetBounds(&(*colstarget.cbegin()), &(*colstarget.cend()), &newbounds[0], firstfutrecolumn);
+			solver.setColSetBounds(&(*colstarget.cbegin()), &(*colstarget.cend()), &newbounds[0]);
 			
 			if (this->resolve())
 			{
@@ -1093,7 +1087,7 @@ bool FMTlpmodel::locatenodes(const std::vector<Core::FMToutputnode>& nodes, int 
 				}
 			}
 			//this->writeLP("T:/Donnees/Usagers/FORBR3/Pentes LIDAR/Nouvelle méthode/06251/a2");
-			solver.setColSetBounds(&(*colstarget.cbegin()), &(*colstarget.cend()), &originalbounds[0], firstfutrecolumn);
+			solver.setColSetBounds(&(*colstarget.cbegin()), &(*colstarget.cend()), &originalbounds[0]);
 			//this->writeLP("T:/Donnees/Usagers/FORBR3/Pentes LIDAR/Nouvelle méthode/06251/a3");
 			if (!this->resolve())
 				{
@@ -2010,7 +2004,6 @@ bool FMTlpmodel::locatenodes(const std::vector<Core::FMToutputnode>& nodes, int 
 	{
 		try {
 			updatematrixnaming();
-			*_logger<<"Obj before write " << solver.getObjValue() << "\n";
 			const std::string name = location + getname();
 			solver.writeLP(name);
 		}

@@ -116,7 +116,7 @@ namespace Models
 				ClpSimplex* splexmodel = clpsolver->getModelPtr();
 				splexmodel->setPerturbation(-6);
 				splexmodel->setSpecialOptions(64 | 128 | 1024 | 2048 | 4096 | 32768 | 262144 | 0x01000000);
-				splexmodel->tightenPrimalBounds();
+				//splexmodel->tightenPrimalBounds();
 				splexmodel->dual();
 			}
 #ifdef  FMTWITHMOSEK
@@ -376,31 +376,11 @@ namespace Models
 		}
 
 
-	void FMTlpsolver::setColSetBounds(const int* indexFirst, const int* indexLast, const double* boundlist,int firstfutur)
+	void FMTlpsolver::setColSetBounds(const int* indexFirst, const int* indexLast, const double* boundlist)
 		{
 		try {
 			matrixcache.synchronize(solverinterface);
-			/*if (solvertype == FMTsolverinterface::CLP)
-				{
-				OsiClpSolverInterface* clpsolver = dynamic_cast<OsiClpSolverInterface*>(solverinterface.get());
-				ClpSimplex* splexmodel = clpsolver->getModelPtr();
-				splexmodel->setWhatsChanged(65337);
-				}*/
 			solverinterface->setColSetBounds(indexFirst, indexLast, boundlist);
-			/*if (solvertype == FMTsolverinterface::CLP)
-				{
-				if (firstfutur < 0)
-					{
-						Exception::FMTexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed,
-							"Need first futur developement index for CLP interface",
-							"FMTlpsolver::setColSetBounds", __LINE__, __FILE__);
-					}
-				for (int index = firstfutur; index < solverinterface->getNumCols();++index)
-					{
-					solverinterface->setColBounds(index,0,COIN_DBL_MAX);
-					}
-				}*/
-			
 		}catch (...)
 			{
 			_exhandler->raisefromcatch("", "FMTlpsolver::setColSetBounds", __LINE__, __FILE__);
