@@ -1,6 +1,7 @@
 import sys
 sys.path.append("../../")
 sys.path.append("../../Release")
+sys.path.append("../../../x64/Release")
 from FMT import Models
 from FMT import Parser
 from FMT import Core
@@ -16,9 +17,10 @@ if __name__ == "__main__":
         path = "../Models/TWD_land/TWD_land.pri"
         scenarios = ["Globalreplanning","Localreplanning","Globalfire"]
         models = modelparser.readproject(path, scenarios)
-        maxperiod = 20
+        maxperiod = 10
+        replanningperiods = 10
         globalmodel = Models.FMTlpmodel(models[0], Models.FMTsolverinterface.CLP)
-        for period in range(0,maxperiod):
+        for period in range(0,maxperiod+replanningperiods):
             globalmodel.buildperiod()
         globalconstraints = globalmodel.getconstraints()
         globalobjective = globalconstraints[0]
@@ -34,7 +36,7 @@ if __name__ == "__main__":
             for period in range(1,maxperiod+1):
                 print(int(globalmodel.getoutput(baseoutput, period,Graph.FMToutputlevel.totalonly)["Total"]),end=' ')
             print()
-            for iteration in range(1,11):
+            for iteration in range(1,maxperiod+1):
                localglobal = Models.FMTlpmodel(globalmodel)
                print( "It ", iteration, end=' ')
                localsimulation = Models.FMTnssmodel(models[2], iteration)
@@ -46,18 +48,22 @@ if __name__ == "__main__":
                    localmodel.setarea(localsimulation.getarea())
                    localmodel.setareaperiod(0)
                    potentialpaths.setperiod(1)
-                   localmodel.buildperiod(potentialpaths,True)
+                   localmodel.buildperiod()
                    localconstraints = localmodel.getconstraints()
                    localobjective = localconstraints[0]
                    localmodel.setobjective(localobjective)
                    localconstraints.pop()
-                   for constraint in localconstraints:
+                   globalysetconstraints = localglobal.getlocalconstraints(localconstraints,1);
+                   for constraint in globalysetconstraints:
                        localmodel.setconstraint(constraint)
                    if localmodel.initialsolve():
                        print(int(localmodel.getoutput(baseoutput,1,Graph.FMToutputlevel.totalonly)["Total"]), end=' ')
                        completelocalschedule = localmodel.getsolution(1,True) + disturbed
                        completelocalschedule.setperiod(replanningperiod)
-                       localglobal.setsolution(replanningperiod, completelocalschedule)
+                       schparser=Parser.FMTscheduleparser() 
+                       schparser.write([completelocalschedule], "C:/Users/cyrgu3/Desktop/test/scheduledone.sch");
+                       schparser.write([potentialpaths], "C:/Users/cyrgu3/Desktop/test/pot.sch");
+                       localglobal.setsolution(replanningperiod, completelocalschedule,0.001)
                        localglobal.eraseperiod(True)
                        if localglobal.boundsolution(replanningperiod):
                            localglobal.eraseperiod()

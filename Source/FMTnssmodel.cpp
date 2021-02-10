@@ -83,7 +83,7 @@ namespace Models
 				if (uppers.at(outid)!= std::numeric_limits<double>::infinity())
 					{
 					const double upperbound = uppers.at(outid);
-					std::uniform_real<double>udist(lowerbound, upperbound);
+					std::uniform_real_distribution<double>udist(lowerbound, upperbound);
 					
 					value = udist(generator);
 					}

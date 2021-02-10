@@ -134,7 +134,7 @@ void exportCore()
                 .setattr("__hash__",&boost::pyhash<Core::FMTdevelopment>);
 
 		bp::class_<Core::FMTspec>("FMTspec", "@DocString(FMTspec)")
-			.def("getarea", &Core::FMTspec::getperiodlowerbound,
+			.def("getperiodlowerbound", &Core::FMTspec::getperiodlowerbound,
 				"@DocString(FMTspec::getperiodlowerbound)");
 
 		bp::class_<Core::FMTactualdevelopment, bp::bases<Core::FMTdevelopment>>("FMTactualdevelopment", "@DocString(FMTactualdevelopment)")
@@ -293,7 +293,7 @@ void exportCore()
 				.add_property("themes", bp::make_getter(&Core::FMTGCBMtransition::themes, bp::return_value_policy<bp::return_by_value>()),
 					bp::make_setter(&Core::FMTGCBMtransition::themes, bp::return_value_policy<bp::return_by_value>()));
 
-			bp::class_<Core::FMTconstraint, bp::bases<Core::FMToutput>>("FMTconstraint", "@DocString(FMTconstraint)")
+			bp::class_<Core::FMTconstraint, bp::bases<Core::FMToutput,Core::FMTspec>>("FMTconstraint", "@DocString(FMTconstraint)")
 				.def("__str__", &Core::FMTconstraint::operator std::string,
 					"@DocString(FMTconstraint::operator std::string)")
 				.def("__eq__", &Core::FMTconstraint::operator ==,
