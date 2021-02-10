@@ -1651,7 +1651,7 @@ class FMTgraph : public Core::FMTobject
 						{
 							for (const auto variable_iterator : variables)
 							{
-								if (*(actual_solution + variable_iterator.second) > 0) //basis solution only!!!
+								if (*(actual_solution + variable_iterator.second) > FMT_DBL_TOLERANCE) //basis solution only!!!
 								{
 									
 									/*if (schedule_solution.find(actions[variable_iterator.first]) == schedule_solution.end())

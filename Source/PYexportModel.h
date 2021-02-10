@@ -181,6 +181,9 @@ void exportModel()
 			"@DocString(FMTlpmodel::operator!=)")
 		.def("getstats", &Models::FMTlpmodel::getstats,
 			"@DocString(FMTlpmodel::getstats)")
+		.def("getlocalconstraints",
+			&Models::FMTlpmodel::getlocalconstraints,
+			"@DocString(FMTlpmodel::getlocalconstraints)")
 		.def("getoperatingareaschedulerheuristics", &Models::FMTlpmodel::getoperatingareaschedulerheuristics, getoperatingareaschedulerheuristics_overloads(bp::args("opareas", "node", "numberofheuristics", "copysolver"), "@DocString(FMTlpmodel::getoperatingareaschedulerheuristics)"))
 		.def("getoperatingareaclustererheuristics", &Models::FMTlpmodel::getoperatingareaclustererheuristics, getoperatingareaclustererheuristics_overloads(bp::args("opareas", "statisticoutput", "areaoutput", "period", "numberofheuristics"), "@DocString(FMTlpmodel::getoperatingareaschedulerheuristics)"))
 		.def("getvariabilities", &Models::FMTlpmodel::getvariabilities, getvariabilities_overloads(bp::args("outputs", "tolerance"), "@DocString(FMTlpmodel::getvariabilities)"))
