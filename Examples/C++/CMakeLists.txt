@@ -19,14 +19,14 @@ endforeach()
 if (OSI_FOUND)
 	project(FMTSimpleplanning VERSION "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH}" LANGUAGES CXX)
 	add_executable(FMTSimpleplanning ${FMTSimpleplanningSOURCEFILES})
-	if (CYGWIN)
+	if (NOT MSVC)
 		set_target_properties( FMTSimpleplanning
 			PROPERTIES
 			ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE}"
 			LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE}"
 			RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE}"
 		)
-	endif(CYGWIN)
+	endif(NOT MSVC)
 	set_property(TARGET FMTSimpleplanning PROPERTY CXX_STANDARD 11)
 	set_property(TARGET FMTSimpleplanning PROPERTY CXX_STANDARD_REQUIRED ON)
 	if (MOSEK_FOUND AND MSVC)
@@ -37,14 +37,14 @@ endif(OSI_FOUND)
 if (GDAL_FOUND)
 	project(FMTSpatialyexplicitsimulation VERSION "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH}" LANGUAGES CXX)
 	add_executable(FMTSpatialyexplicitsimulation ${FMTSpatialyexplicitsimulationSOURCEFILES})
-	if (CYGWIN)
+	if (NOT MSVC)
 		set_target_properties( FMTSpatialyexplicitsimulation
 			PROPERTIES
 			ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE}"
 			LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE}"
 			RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE}"
 		)
-	endif(CYGWIN)
+	endif(NOT MSVC)
 	set_property(TARGET FMTSpatialyexplicitsimulation PROPERTY CXX_STANDARD 11)
 	set_property(TARGET FMTSpatialyexplicitsimulation PROPERTY CXX_STANDARD_REQUIRED ON)
 	if (MOSEK_FOUND AND MSVC)
