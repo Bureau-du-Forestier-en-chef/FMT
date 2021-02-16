@@ -203,6 +203,7 @@ std::vector<double>FMTyields::get(const FMTdevelopment& dev,
 	try {
 		const std::vector<const FMTyieldhandler*>datas = this->findsets(dev.mask);
 		values.reserve(targets.size());
+		
 		for (const std::string& name : targets)
 		{
 			bool gotyield = false;

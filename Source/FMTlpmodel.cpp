@@ -327,9 +327,7 @@ namespace Models
 							size_t iteration = 0;
 							while (!lockstoadress.empty())
 								{
-	
 								const double areatoput = *lockstoadress.begin();
-								//*_logger << "allocatin " << areatoput << "\n";
 								if (tolerance < areatoput)
 								{
 									size_t id = 0;
@@ -337,6 +335,7 @@ namespace Models
 									bool exact = false;
 									for (const std::pair<Core::FMTdevelopment, double>& element : locksfound)
 									{
+										//*_logger << "testing " << std::string(element.first) << " " << element.second<<" for "<< areatoput << "\n";
 										if (std::abs(areatoput - element.second)<tolerance)
 										{
 											found = true;

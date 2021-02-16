@@ -70,7 +70,7 @@ Core::FMTconstants FMTconstantparser::read(const std::string& location)
 		}
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("at "+location,"FMTconstantparser::read", __LINE__, __FILE__, _section);
+			_exhandler->raisefromcatch("In " + _location + " at line " + std::to_string(_line),"FMTconstantparser::read", __LINE__, __FILE__, _section);
 			}
 	constants.passinobject(*this);
     return constants;
