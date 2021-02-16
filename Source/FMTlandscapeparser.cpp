@@ -288,7 +288,7 @@ FMTlandscapeparser::FMTlandscapeparser() :
 			}catch(...)
 				{
 				_exhandler->raisefromcatch(
-					"at "+location,"FMTlandscapeparser::read ", __LINE__, __FILE__,_section);
+					"In " + _location + " at line " + std::to_string(_line),"FMTlandscapeparser::read ", __LINE__, __FILE__,_section);
 				}
         return themes;
         }

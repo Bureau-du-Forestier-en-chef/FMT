@@ -213,6 +213,7 @@ std::vector<Core::FMTtransition> FMTtransitionparser::read(const std::vector<Cor
 				std::string line = getcleanlinewfor(transitionstream, themes, constants);
 				if (!line.empty())
 				{
+					
 					std::smatch kmatch;
 					if (!std::regex_search(line, kmatch, FMTtransitionparser::rxsection))
 					{
@@ -243,6 +244,7 @@ std::vector<Core::FMTtransition> FMTtransitionparser::read(const std::vector<Cor
 						data = kmatch[6];
 						Core::FMTfork fork;
 						srcmsk = getsource(data, fork, themes, Core::FMTsection::Transition, constants, ylds);
+						
 						last_transition->push_back(srcmsk, fork);
 						fptrs.clear();
 						fork_ids.clear();
@@ -253,6 +255,7 @@ std::vector<Core::FMTtransition> FMTtransitionparser::read(const std::vector<Cor
 					else if (!TARGET.empty())
 					{
 						int replaced = -1;
+						
 						std::vector<Core::FMTtransitionmask>mtrs = getmasktran(line, themes, constants, ylds, srcmsk, replaced);
 						if (replaced > -1)
 						{
@@ -330,7 +333,7 @@ std::vector<Core::FMTtransition> FMTtransitionparser::read(const std::vector<Cor
 		}
 	}catch (...)
 		{
-		_exhandler->raisefromcatch("","FMTtransitionparser::read", __LINE__, __FILE__, _section);
+		_exhandler->raisefromcatch("In " + _location + " at line " + std::to_string(_line),"FMTtransitionparser::read", __LINE__, __FILE__, _section);
 		}
     return transitions;
     }

@@ -262,7 +262,7 @@ FMTactionparser& FMTactionparser::operator = (const FMTactionparser& rhs)
 		}catch (...)
 			{
 			_exhandler->raisefromcatch(
-				"","FMTactionparser::read", __LINE__, __FILE__, _section);
+				"In "+_location+" at line "+std::to_string(_line),"FMTactionparser::read", __LINE__, __FILE__, _section);
 			}
         return cleanedactions;
         }

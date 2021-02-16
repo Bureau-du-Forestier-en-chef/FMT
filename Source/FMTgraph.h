@@ -1153,7 +1153,9 @@ class FMTgraph : public Core::FMTobject
 							{
 								death = true;
 							}
+							
 							const std::vector<Core::FMTdevelopmentpath> paths = active_development.operate(action, model.transitions[action_id], model.yields, model.themes);
+							
 							addaction(action_id, statsdiff, actives,
 								front_vertex, paths);
 						}
