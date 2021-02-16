@@ -556,7 +556,7 @@ Core::FMTyields FMTyieldparser::read(const std::vector<Core::FMTtheme>& themes,c
 	}catch(...)
 		{
 		_exhandler->raisefromcatch(
-			"at "+location+" at line "+std::to_string(_line),"FMTyieldparser::read", __LINE__, __FILE__,_section);
+			"In " + _location + " at line " + std::to_string(_line),"FMTyieldparser::read", __LINE__, __FILE__,_section);
 		}
     return yields;
     }

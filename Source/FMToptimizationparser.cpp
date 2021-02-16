@@ -781,7 +781,7 @@ namespace Parser
 			}
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("at "+location,"FMToptimizationparser::read", __LINE__, __FILE__, _section);
+			_exhandler->raisefromcatch("In " + _location + " at line " + std::to_string(_line),"FMToptimizationparser::read", __LINE__, __FILE__, _section);
 			}
 		return constraints;
 		}
