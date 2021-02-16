@@ -609,8 +609,8 @@ double FMTsasolution::getgraphspenalties(const Models::FMTsamodel& model, const 
                     const std::string action_name = model_actions.at(aid).getname();
                     const std::string out_location = out_path+action_name+"_"+addon+"_events_period_"+std::to_string(period)+".tif";
                 #ifdef FMTWITHGDAL
-                    Parser::FMTareaparser parser;
-                    parser.writelayer(action_layer,out_location,event_map);
+                    //Parser::FMTareaparser parser;
+                    //parser.writelayer(action_layer,out_location,event_map);
                 #endif
                 }
                 std::cout<<model_actions.at(aid).getname()<<" done"<<std::endl;

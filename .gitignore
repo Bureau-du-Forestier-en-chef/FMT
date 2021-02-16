@@ -34,3 +34,4 @@ gdal/*
 *.exe
 *.cproject
 *.project
+.settings/*
