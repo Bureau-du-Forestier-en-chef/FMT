@@ -494,7 +494,7 @@ namespace Parser
 				}
 			}catch (...)
 				{
-				_exhandler->raisefromcatch("at "+location,"FMToutputparser::read", __LINE__, __FILE__,_section);
+				_exhandler->raisefromcatch("In " + _location + " at line " + std::to_string(_line),"FMToutputparser::read", __LINE__, __FILE__,_section);
 				}
             return outputs;
             }

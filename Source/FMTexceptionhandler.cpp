@@ -74,7 +74,7 @@ void FMTexceptionhandler::throw_nested(const  std::exception& texception, int le
 			#if defined FMTWITHR
 				const std::nested_exception * nested = dynamic_cast<const std::nested_exception *>(&texception);
 				const std::exception_ptr  excp = nested->nested_ptr();
-				if (excp == nullptr)//If last element just get out of c++ and get back to R
+				if (excp == nullptr||(message.find("FMTexc(56)") != std::string::npos))//If last element just get out of c++ and get back to R
 					{
 					throw(Rcpp::exception(message.c_str()));
 					}

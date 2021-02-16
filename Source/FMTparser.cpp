@@ -66,7 +66,7 @@ FMTparser::FMTparser() : Core::FMTobject(),
         _incomment(false),
          _forvalues(),
 		_included(),
-		rxayld("^(.+)(\\@YLD\\()([\\s\\t]*)(.+)(\\,)([\\s\\t]*)((#[^\\.]*)|(\\d*.\\d*))(\\.\\.)((#[^\\.]*)|(\\d*.\\d*)|(_MAXAGE))(\\))(.+)|(.+)(\\@YLD\\()([\\s\\t]*)(.+)(\\,)([\\s\\t]*)((#[^\\.]*)|(\\d*)|(\\d*.\\d*))(\\))(.+)", std::regex_constants::ECMAScript | std::regex_constants::icase),
+		rxayld("^(.+)(\\@YLD\\()([\\s\\t]*)(.+)(\\,)([\\s\\t]*)((#[^\\.]*)|([-]*\\d*.[-]*\\d*))(\\.\\.)((#[^\\.]*)|([-]*\\d*.[-]*\\d*)|(_MAXAGE))(\\))(.+)|(.+)(\\@YLD\\()([\\s\\t]*)(.+)(\\,)([\\s\\t]*)((#[^\\.]*)|([-]*\\d*)|([-]*\\d*.[-]*\\d*))(\\))(.+)", std::regex_constants::ECMAScript | std::regex_constants::icase),
         rxaage("^(.+)(\\@AGE\\()([\\s\\t]*)((#[^\\.]*)|(\\d*)|(\\d*.\\d*))(\\.\\.)((#[^\\.]*)|(\\d*)|(\\d*.\\d*)|(_MAXAGE))(\\))(.+)|(.+)(\\@AGE\\()([\\s\\t]*)((#[^\\.]*)|(\\d*)|(\\d*.\\d*))(\\))(.+)", std::regex_constants::ECMAScript| std::regex_constants::icase),
 		rxoperators("([^\\+\\-\\/\\*]*)([\\+\\-\\/\\*]*)", std::regex_constants::icase),
 		rxprimary("^([^\\[]*)(\\[)([^\\]]*)(.+)"),
@@ -350,6 +350,7 @@ std::string FMTparser::setspec(Core::FMTsection section, Core::FMTkwor key,const
 	std::string rest = "";
 	try {
 			std::smatch kmatch;
+			
 			if (std::regex_search(line, kmatch, FMTparser::rxayld))
 			{
 				const std::string yld = std::string(kmatch[4]) + std::string(kmatch[20]);
@@ -742,7 +743,22 @@ std::queue<std::string> FMTparser::tryinclude(const std::string& line, const std
 				location.erase(0, 1);
 				const boost::filesystem::path full_path = parent_path / location;
 				location = full_path.string();
+				
 				}
+		if (!boost::filesystem::exists(location))//If does not exist then try with the _ type path.
+			{
+			const std::string extension = boost::filesystem::extension(_location);
+			std::string actualextension = boost::filesystem::extension(location);
+			if (extension.find("_")!=std::string::npos&&
+				actualextension.find("_")==std::string::npos)
+				{
+				actualextension.erase(0, 1);
+				const std::string newextension = "._" + actualextension;
+				boost::filesystem::path full_path(location);
+				full_path.replace_extension(newextension);
+				location = full_path.string();
+				}
+			}
 		FMTparser newparser;
 		std::ifstream newstream(location);
 		if (newparser.tryopening(newstream, location))
@@ -952,6 +968,11 @@ std::vector<std::string> FMTparser::sameas(const std::string& allset) const
             {
 			std::string realname = allset.substr(0, allset.find(separator));
             boost::trim(realname);
+			if (realname.empty())
+				{
+				_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
+					"Empty target "+allset, "FMTparser::sameas", __LINE__, __FILE__, _section);
+				}
             all_elements.push_back(realname);
 			std::string sameasstr = allset.substr(allset.find(separator)+separator.size());
             boost::trim(sameasstr);
