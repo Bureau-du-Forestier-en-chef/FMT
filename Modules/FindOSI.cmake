@@ -95,14 +95,29 @@ if(NOT MSVC)
 				NAMES libClpSolver libClpSolver.a
 				PATHS ${POTOSI_LIB_DIR}
 				)
-	list(APPEND OSI_LINKER_FLAGS "-lbz2")
-	list(APPEND OSI_LINKER_FLAGS "-lz")
-	list(APPEND OSI_LINKER_FLAGS "-llapack")
-	list(APPEND OSI_LINKER_FLAGS "-lBlas")
-	if(NOT CYGWIN)
-		list(APPEND OSI_LINKER_FLAGS "-lgfortran")
-		list(APPEND OSI_LINKER_FLAGS "-lquadmath")
-	endif(NOT CYGWIN)
+    find_library(OSI_LAPACK
+                NAMES liblapack.a
+                PATHS $ENV{HOME})
+    if (OSI_LAPACK)
+        list(APPEND OSI_LINKER_FLAGS "-llapack")
+        	if(NOT CYGWIN)
+                list(APPEND OSI_LINKER_FLAGS "-lgfortran")
+                list(APPEND OSI_LINKER_FLAGS "-lquadmath")
+            endif(NOT CYGWIN)
+        list(APPEND OSI_LINKER_FLAGS "-lBlas")
+    endif(OSI_LAPACK)
+    find_library(OSI_LIBZ
+                NAMES libz.a libbz2.a
+                PATHS $ENV{HOME})
+    if (OSI_LIBZ)
+        list(APPEND OSI_LINKER_FLAGS "-lz")
+    endif(OSI_LIBZ)
+    find_library(OSI_BZ2
+                NAMES libbz2.a
+                PATHS $ENV{HOME})
+    if (OSI_BZ2)
+        list(APPEND OSI_LINKER_FLAGS "-lbz2")
+    endif(OSI_BZ2)
 endif(NOT MSVC)
 
 
