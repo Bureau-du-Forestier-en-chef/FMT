@@ -8,7 +8,7 @@ aCaribou 1.._LENGTH
 *CONSTRAINTS
 oVolRec<= 40272 1.._LENGTH _SETTOGLOBAL
 osuppl>= 20 1.._LENGTH _Goal(G1,9999,9999)
-oVolRec<= 30000 1.._LENGTH
-
+oVolRec<= 20000 1.._LENGTH
+;recuparea = 0 1.._LENGTH
 Burnedarea = 0 1.._LENGTH
 *FORMAT MOSEK

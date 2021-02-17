@@ -25,7 +25,7 @@ if __name__ == "__main__":
         globalconstraints = globalmodel.getconstraints()
         globalobjective = globalconstraints[0]
         globalmodel.setobjective(globalobjective)
-        globalconstraints.pop()
+        globalconstraints.pop(0)
         for output in globalmodel.getoutputs():
             if (output.getname() == "OVOLREC"):
                 baseoutput = output
@@ -36,11 +36,15 @@ if __name__ == "__main__":
             for period in range(1,maxperiod+1):
                 print(int(globalmodel.getoutput(baseoutput, period,Graph.FMToutputlevel.totalonly)["Total"]),end=' ')
             print()
-            for iteration in range(1,maxperiod+1):
+            for iteration in range(1,replanningperiods+1):
                localglobal = Models.FMTlpmodel(globalmodel)
                print( "It ", iteration, end=' ')
                localsimulation = Models.FMTnssmodel(models[2], iteration)
+               localconstraints = models[1].getconstraints()
+               localobjective = localconstraints[0]
+               localconstraints.pop(0)
                for replanningperiod in range(1,maxperiod+1):
+                   basearea = localglobal.getarea(replanningperiod)
                    localsimulation.setarea(localglobal.getarea(replanningperiod))
                    disturbed = localsimulation.simulate(False,True)
                    potentialpaths = localglobal.getsolution(replanningperiod,True)
@@ -49,23 +53,18 @@ if __name__ == "__main__":
                    localmodel.setareaperiod(0)
                    potentialpaths.setperiod(1)
                    localmodel.buildperiod()
-                   localconstraints = localmodel.getconstraints()
-                   localobjective = localconstraints[0]
                    localmodel.setobjective(localobjective)
-                   localconstraints.pop()
-                   globalysetconstraints = localglobal.getlocalconstraints(localconstraints,1);
+                   globalysetconstraints = localglobal.getlocalconstraints(localconstraints,1)
                    for constraint in globalysetconstraints:
                        localmodel.setconstraint(constraint)
                    if localmodel.initialsolve():
                        print(int(localmodel.getoutput(baseoutput,1,Graph.FMToutputlevel.totalonly)["Total"]), end=' ')
-                       completelocalschedule = localmodel.getsolution(1,True) + disturbed
+                       completelocalschedule = localmodel.getsolution(1,True)+ disturbed
                        completelocalschedule.setperiod(replanningperiod)
                        schparser=Parser.FMTscheduleparser() 
-                       schparser.write([completelocalschedule], "C:/Users/cyrgu3/Desktop/test/scheduledone.sch");
-                       schparser.write([potentialpaths], "C:/Users/cyrgu3/Desktop/test/pot.sch");
                        localglobal.setsolution(replanningperiod, completelocalschedule,0.001)
                        localglobal.eraseperiod(True)
-                       if localglobal.boundsolution(replanningperiod):
+                       if localglobal.boundsolution(replanningperiod,0.00001):
                            localglobal.eraseperiod()
                            localglobal.buildperiod()
                            localglobal.setobjective(globalobjective)

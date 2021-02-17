@@ -233,12 +233,15 @@ namespace Models
 		try {
 			if (static_cast<int>(graph.size()) > period && period > 0)
 			{
+				std::vector<Core::FMTaction>::const_iterator cit = std::find_if(actions.begin(), actions.end(), Core::FMTactioncomparator("_DEATH"));
+				const int deathid = static_cast<int>(std::distance(actions.cbegin(), cit));
 				const double* actual_solution = solver.getColSolution();
 				std::vector<double>new_solution(actual_solution, actual_solution + solver.getNumCols());
 				for (Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::lookconst_iterator devit = graph.begin(period);
 					devit != graph.end(period); devit++)
 				{
 					const std::map<int, int>variables = graph.getoutvariables(devit->memoryobject);
+					
 					for (std::map<int, int>::const_iterator varit = variables.begin(); varit != variables.end(); varit++)
 					{
 						new_solution[varit->second] = 0;
@@ -246,21 +249,9 @@ namespace Models
 				}
 
 				int maximallock = -1;
-				/*std::vector<Core::FMTschedule::const_iterator>orderedschedule;
-				for (Core::FMTschedule::const_iterator actionit = schedule.begin(); actionit != schedule.end();actionit++)
-				{
-					if (actionit->first.dorespectlock())
-					{
-						orderedschedule.insert(orderedschedule.begin(), actionit);
-					}else {
-						orderedschedule.push_back(actionit);
-					}
-
-				}*/
-
-				//Core::FMTschedule locked_schedule;
 				for (const auto& actionit : schedule)
 				{
+					
 					int actionid = int(std::distance(actions.begin(), find_if(actions.begin(), actions.end(), Core::FMTactioncomparator(actionit.first.getname()))));
 					size_t allocated = 0;
 					for (const auto& devit : actionit.second)
@@ -279,8 +270,6 @@ namespace Models
 								maximallock = graph.getmaximalock(period);
 								}
 							std::vector<double>lockstoadress(devit.second);
-							//std::sort(lockstoadress.begin(), lockstoadress.end());
-							//std::reverse(lockstoadress.begin(), lockstoadress.end());
 							std::vector<std::pair<Core::FMTdevelopment,double>>locksfound;
 							std::vector<std::pair<int,size_t>>locksorter;
 							Core::FMTdevelopment locked(devit.first);
@@ -298,12 +287,6 @@ namespace Models
 										}
 									if (!(graph.onlypertiodstart(vdescriptor) && originalinarea == std::numeric_limits<double>::max()))
 										{
-										/*if (std::string(locked).find("15+")!=std::string::npos&&locked.period==2&&locked.age==10&&
-											std::string(locked).find("S27034") != std::string::npos)
-											{
-											*_logger << "found " << std::string(locked) << " amount of " << getamountofpaths(locked, actionid) << "\n";
-											*_logger << "no action " << getamountofpaths(locked,-1) << "\n";
-											}*/
 										locksorter.push_back(std::pair<size_t, size_t>(locksfound.size(), getamountofpaths(locked, -1)));
 										locksfound.push_back(std::pair<Core::FMTdevelopment, double>(locked, originalinarea));
 										
@@ -374,16 +357,6 @@ namespace Models
 												locksfound.erase(locksfound.begin() + id);
 												}
 											}
-										
-										/*if (exact)
-											{
-											locksfound.erase(locksfound.begin() + id);
-										}else if (locksfound.at(id).second<std::numeric_limits<double>::max())
-											{
-											locksfound.at(id).second -= areatoput;
-
-											//to set
-											}*/
 										lockstoadress.erase(lockstoadress.begin());
 										++allocated;
 									}
@@ -405,40 +378,6 @@ namespace Models
 									}
 								++iteration;
 								}
-
-
-							/*int area_id = 0;
-							int last_lock = 0;
-							while (area_id < static_cast<int>(devit.second.size()))
-							{
-								if (graph.containsdevelopment(locked))
-								{
-									//const double originalinarea = graph.inarea(devit->second, solution);
-									const Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor vdescriptor = graph.getdevelopment(locked);
-									const int variable = graph.getoutvariables(vdescriptor)[actionid];
-									new_solution[variable] += devit.second.at(area_id);
-									last_lock = locked.lock;
-									++allocated;
-									++area_id;
-									++locked.lock;
-								}
-								if (area_id < static_cast<int>(devit.second.size()))//continue looking for a developpement!
-								{
-									size_t checked = 0;
-									const size_t allocated_bound = (graph.getperiodverticies(period).size() - allocated);
-									while (!graph.containsdevelopment(locked) &&
-										checked < allocated_bound)
-									{
-										++locked.lock;
-										++checked;
-									}
-									if (checked == allocated_bound)//no lock available so get back to regular
-									{
-										locked.lock = last_lock; //go back to last good hit!
-									}
-								}
-
-							}*/
 						}
 						else {
 							_exhandler->raise(Exception::FMTexc::FMTmissingdevelopement,std::string(devit.first) + " at period " + std::to_string(period) + " operated by " + actionit.first.getname(),
@@ -459,56 +398,69 @@ namespace Models
 						double rest = graph.inarea(devit->memoryobject, solution);
 						//double rest = graph.inarea(devit->second, actual_solution);
 						std::map<int, int>variables = graph.getoutvariables(devit->memoryobject);
-						int growth = variables[-1];
-						variables.erase(-1);
-						for (std::map<int, int>::const_iterator varit = variables.begin(); varit != variables.end(); varit++)
-						{
-							std::vector<Core::FMTdevelopmentpath> paths = graph.getpaths(devit->memoryobject, varit->first);
-							for (const Core::FMTdevelopmentpath path : paths)
+						int targetaction = -1;
+						if ((variables.find(-1) == variables.end()))//process only if you have evolution
 							{
-								if (path.development->period == period && processed.find(*path.development) == processed.end())
-								{
-									processed[*path.development] = graph.getdevelopment(*path.development);
-									descriptors.push(graph.getdevelopment(*path.development));
-								}
+							targetaction = deathid;
 							}
-							//rest -= *(actual_solution + varit->second);
-							rest -= new_solution[varit->second];
-						}
-						if ((rest + tolerance) < 0)
-						{
-							std::string actionnames;
+						const int growth = variables[targetaction];
+						if (targetaction<0)
+							{
+							variables.erase(targetaction);
+							}
+						
 							for (std::map<int, int>::const_iterator varit = variables.begin(); varit != variables.end(); varit++)
+							{
+								std::vector<Core::FMTdevelopmentpath> paths = graph.getpaths(devit->memoryobject, varit->first);
+								for (const Core::FMTdevelopmentpath path : paths)
 								{
-								actionnames += actions.at(varit->first).getname() + ",";
-								}
-							actionnames.pop_back();
-							const Core::FMTdevelopment dev(graph.getdevelopment(devit->memoryobject));
-							const double* solution = &new_solution[0];
-							const double inarea = graph.inarea(devit->memoryobject,solution);
-							std::string locking;
-							if (dev.lock>0)
-								{
-								Core::FMTdevelopment locked(dev);
-								locking += " lock(";
-								for (int locklevel = 0; locklevel < 30;++locklevel)
+									if (path.development->period == period && processed.find(*path.development) == processed.end())
 									{
-									locked.lock = locklevel;
-									if (graph.containsdevelopment(locked))
+										processed[*path.development] = graph.getdevelopment(*path.development);
+										descriptors.push(graph.getdevelopment(*path.development));
+									}
+								}
+								//rest -= *(actual_solution + varit->second);
+								rest -= new_solution[varit->second];
+							}
+
+							if ((rest + tolerance) < 0)
+							{
+								std::string actionnames;
+								for (std::map<int, int>::const_iterator varit = variables.begin(); varit != variables.end(); varit++)
+								{
+									actionnames += actions.at(varit->first).getname() + ",";
+								}
+								actionnames.pop_back();
+								const Core::FMTdevelopment dev(graph.getdevelopment(devit->memoryobject));
+								const double* solution = &new_solution[0];
+								const double inarea = graph.inarea(devit->memoryobject, solution);
+								std::string locking;
+								if (dev.lock > 0)
+								{
+									Core::FMTdevelopment locked(dev);
+									locking += " lock(";
+									for (int locklevel = 0; locklevel < 30; ++locklevel)
+									{
+										locked.lock = locklevel;
+										if (graph.containsdevelopment(locked))
 										{
-										locking += std::to_string(locklevel)+",";
+											locking += std::to_string(locklevel) + ",";
 										}
 									}
-								locking.pop_back();
-								locking += ")";
+									locking.pop_back();
+									locking += ")";
 								}
-							_exhandler->raise(Exception::FMTexc::FMTinvalid_number,
-								 std::to_string(rest) + " negative growth solution for " +
-								std::string(dev)+" operated by "+ actionnames + locking+" in area "+ std::to_string(inarea),
-								"FMTlpmodel::setsolution",__LINE__, __FILE__);
-						}
-						new_solution[growth] = rest;
-
+								_exhandler->raise(Exception::FMTexc::FMTinvalid_number,
+									std::to_string(rest) + " negative growth solution for " +
+									std::string(dev) + " operated by " + actionnames + locking + " in area " + std::to_string(inarea),
+									"FMTlpmodel::setsolution", __LINE__, __FILE__);
+							}
+							if (targetaction < 0)//Ajust only natural growth and not _DEATH
+								{
+								new_solution[growth] = rest;
+								}
+							
 					}
 				}
 
@@ -518,29 +470,42 @@ namespace Models
 					std::map<int, int>variables = graph.getoutvariables(first);
 					const double* solution = &new_solution[0];
 					double rest = graph.inarea(first, solution);
-					int growth = variables[-1];
-					variables.erase(-1);
-					for (std::map<int, int>::const_iterator varit = variables.begin(); varit != variables.end(); varit++)
-					{
-						std::vector<Core::FMTdevelopmentpath> paths = graph.getpaths(first, varit->first);
-						for (const Core::FMTdevelopmentpath path : paths)
+					int targetaction = -1;
+					if ((variables.find(-1) == variables.end()))//Dont need to fill up if you dont have natural evolution
 						{
-							if (path.development->period == period && processed.find(*path.development) == processed.end())
-							{
-								processed[*path.development] = graph.getdevelopment(*path.development);
-								descriptors.push(graph.getdevelopment(*path.development));
-							}
+						targetaction = deathid;
 						}
-						rest -= new_solution[varit->second];
-					}
-					if ((rest + tolerance) < 0)
-					{
-						_exhandler->raise(Exception::FMTexc::FMTinvalid_number,
-							 std::to_string(rest) + " negative growth solution for " +
-							std::string(graph.getdevelopment(first)),
-							"FMTlpmodel::setsolution",__LINE__, __FILE__);
-					}
-					new_solution[growth] = rest;
+						const int growth = variables[targetaction];
+						if (targetaction < 0)
+						{
+							variables.erase(targetaction);
+						}
+						for (std::map<int, int>::const_iterator varit = variables.begin(); varit != variables.end(); varit++)
+						{
+							std::vector<Core::FMTdevelopmentpath> paths = graph.getpaths(first, varit->first);
+							for (const Core::FMTdevelopmentpath path : paths)
+							{
+								if (path.development->period == period && processed.find(*path.development) == processed.end())
+								{
+									processed[*path.development] = graph.getdevelopment(*path.development);
+									descriptors.push(graph.getdevelopment(*path.development));
+								}
+							}
+							
+							rest -= new_solution[varit->second];
+						}
+						if ((rest + tolerance) < 0)
+						{
+							_exhandler->raise(Exception::FMTexc::FMTinvalid_number,
+								std::to_string(rest) + " negative growth solution for " +
+								std::string(graph.getdevelopment(first)),
+								"FMTlpmodel::setsolution", __LINE__, __FILE__);
+						}
+						if (targetaction<0)
+							{
+							
+							new_solution[growth] = rest;
+							}
 					descriptors.pop();
 				}
 				solver.setColSolution(&new_solution[0]);
