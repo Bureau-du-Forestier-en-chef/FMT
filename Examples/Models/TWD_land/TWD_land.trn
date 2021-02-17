@@ -17,3 +17,9 @@
 *CASE arecup
 *SOURCE ? feu ?
 *TARGET  ? peuplement1 ?  100.00
+
+*CASE _DEATH
+*SOURCE ? feu ?
+*TARGET  ? peuplement1 ?  100.00
+*SOURCE ? ? ?
+*TARGET  ? ? ?  100.00
