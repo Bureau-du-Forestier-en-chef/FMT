@@ -192,7 +192,7 @@ Core::FMTaction FMTmodel::defaultdeathaction(const Core::FMTlifespans& llifespan
 			const std::string mask(intobject.first);
 			const Core::FMTmask amask(mask, lthemes);
 			Core::FMTspec specifier;
-			specifier.addbounds(Core::FMTagebounds(Core::FMTsection::Action, intobject.second, intobject.second));
+			specifier.addbounds(Core::FMTagebounds(Core::FMTsection::Action, std::numeric_limits<int>::max(), intobject.second));
 			death_action.push_back(amask, specifier);
 		}
 		death_action.shrink();

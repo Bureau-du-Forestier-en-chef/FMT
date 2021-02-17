@@ -118,6 +118,7 @@ namespace Core{
 			 if (fork)
 			 {
 				 newpaths = fork->getpaths(*this, ylds, themes, action.isresetage());
+		
 			 }
 			 else {
 				 _exhandler->raise(Exception::FMTexc::FMTinvalid_transition_case,Transition.getname() + " for " + std::string(*this),
