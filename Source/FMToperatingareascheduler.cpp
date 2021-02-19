@@ -344,7 +344,8 @@ namespace Heuristics
 		proportionofset(rhs.proportionofset),
 		userandomness(rhs.userandomness),useprimal(false)
 		{
-
+		
+		
 		}
 	FMToperatingareascheduler& FMToperatingareascheduler::operator = (const FMToperatingareascheduler& rhs)
 		{

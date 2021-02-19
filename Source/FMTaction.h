@@ -206,6 +206,11 @@ class FMTaction : public FMTlist<FMTspec>
 			{
 			return reset;
 			}
+		// DocString: FMTaction::useyield()
+		/**
+		Return true if the yield is used by the action to set operability.
+		*/
+		bool useyield(const std::string& yldname) const;
 		// DocString: FMTaction::getaggregates()
 		/**
 		Gets all the aggregates name of which the action is part of.

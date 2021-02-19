@@ -66,8 +66,16 @@ namespace Core
 	FMToutputnode::FMToutputnode(const FMToutputsource& lsource, const FMToutputsource& lfactor, const double& lconstant) :
 		source(lsource), factor(lfactor), constant(lconstant)
 		{
-
+		
 		}
+
+	FMToutputnode::FMToutputnode(const Core::FMTmask& generalmask, const std::string& actionaggregate):
+		source(FMTspec(), generalmask, Core::FMTotar::actual, "", actionaggregate),
+		factor(FMTotar::val, 1),
+		constant(1.0)
+	{
+		
+	}
 
 	FMToutputnode::FMToutputnode(const FMToutputnode& rhs) :
 		source(rhs.source), factor(rhs.factor), constant(rhs.constant)
