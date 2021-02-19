@@ -17,6 +17,10 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 namespace Models
 {
+	bool FMTlpsolver::canupdatesource() const
+	{
+	return (solverinterface.use_count() == 2);
+	}
 	std::shared_ptr<OsiSolverInterface> FMTlpsolver::buildsolverinterface(const FMTsolverinterface& lsolvertype) const
 	{
 		std::shared_ptr<OsiSolverInterface>newsolverinterface;
@@ -53,7 +57,9 @@ namespace Models
 	{
 		std::shared_ptr<OsiSolverInterface>newsolverinterface;
 		try{
-		switch (lsolvertype)
+			newsolverinterface.reset(solver_ptr->clone(true));
+			newsolverinterface->resolve();
+		/*switch (lsolvertype)
 		{
 		case FMTsolverinterface::CLP:
 			newsolverinterface = std::shared_ptr<OsiClpSolverInterface>(new OsiClpSolverInterface(*dynamic_cast<OsiClpSolverInterface*>(solver_ptr.get())));
@@ -61,18 +67,19 @@ namespace Models
 	#ifdef  FMTWITHMOSEK
 			case FMTsolverinterface::MOSEK:
 				newsolverinterface = std::shared_ptr<OsiMskSolverInterface>(new OsiMskSolverInterface(*dynamic_cast<OsiMskSolverInterface*>(solver_ptr.get())));
+				newsolverinterface->resolve();
 				break;
 	#endif
-			/*case FMTsolverinterface::CPLEX:
-				newsolverinterface = shared_ptr<OsiCpxSolverInterface>(new OsiCpxSolverInterface(*dynamic_cast<OsiCpxSolverInterface*>(solver_ptr.get())));
-			break;
-			case FMTsolverinterface::GUROBI:
-				newsolverinterface = shared_ptr<OsiGrbSolverInterface>(new OsiGrbSolverInterface(*dynamic_cast<OsiGrbSolverInterface*>(solver_ptr.get())));
-			break;*/
+			//case FMTsolverinterface::CPLEX:
+				//newsolverinterface = shared_ptr<OsiCpxSolverInterface>(new OsiCpxSolverInterface(*dynamic_cast<OsiCpxSolverInterface*>(solver_ptr.get())));
+			//break;
+			//case FMTsolverinterface::GUROBI:
+				//newsolverinterface = shared_ptr<OsiGrbSolverInterface>(new OsiGrbSolverInterface(*dynamic_cast<OsiGrbSolverInterface*>(solver_ptr.get())));
+			//break;
 		default:
 			newsolverinterface = std::shared_ptr<OsiClpSolverInterface>(new OsiClpSolverInterface(*dynamic_cast<OsiClpSolverInterface*>(solver_ptr.get())));
 			break;
-		}
+		}*/
 		}
 		catch (...)
 		{
@@ -86,6 +93,7 @@ namespace Models
 		solverinterface = copysolverinterface(rhs.solverinterface, rhs.solvertype);
 		solverinterface->passInMessageHandler(rhs.solverinterface->messageHandler());
 		}
+
 	FMTlpsolver& FMTlpsolver::operator =(const FMTlpsolver& rhs)
 		{
 		if (this!=&rhs)
@@ -467,7 +475,7 @@ namespace Models
 		lsolvertype = solvertype;
 		}
 
-	void FMTlpsolver::passinsolver(FMTlpsolver& solver)
+	void FMTlpsolver::passinsolver(const FMTlpsolver& solver)
 		{
 		try{
 		Core::FMTobject::operator=(solver);

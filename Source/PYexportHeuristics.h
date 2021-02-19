@@ -83,7 +83,9 @@ void exportHeuristics()
 		.def("branchnboundsolve", &Heuristics::FMToperatingareascheduler::branchnboundsolve,
 			"@DocString(FMToperatingareaheuristic::branchnboundsolve)")
 		.def("getsolution", &Heuristics::FMToperatingareascheduler::getsolution,
-			"@DocString(FMToperatingareaheuristic::getsolution)");
+			"@DocString(FMToperatingareaheuristic::getsolution)")
+		.def("setasprimal", &Heuristics::FMToperatingareascheduler::setasprimal,
+			"@DocString(FMToperatingareaheuristic::setasprimal)");
 
 	define_pylist<Heuristics::FMToperatingareascheduler>();
 	#endif

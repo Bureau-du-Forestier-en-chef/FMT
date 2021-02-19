@@ -76,6 +76,11 @@ class FMTlpsolver: public Core::FMTobject
 	// DocString: FMTlpsolver::solvertype
 	///Solver type used maybe usefull for initialsolve or resolve to know what solver we are using to speed-up the process.
 	FMTsolverinterface solvertype;
+	// DocString: FMTlpsolver::canupdatesource
+	/**
+
+	*/
+	bool canupdatesource() const;
 	// DocString: FMTlpsolver::buildsolverinterface
 	/**
 	Function used to build a shared pointer of a solverinterface passing the message handler to the pointer.
@@ -123,6 +128,11 @@ class FMTlpsolver: public Core::FMTobject
 		Default copy constructor for FMTlpsolver.
 		*/
 		FMTlpsolver(const FMTlpsolver& rhs);
+		// DocString: FMTlpsolver(const FMTlpsolver&&)
+		/**
+		Default move constructor for FMTlpsolver.
+		*/
+		FMTlpsolver(FMTlpsolver&& rhs)=default;
 		// DocString: FMTlpsolver::operator=
 		/**
 		Default copy assignment for FMTlpsolver.
@@ -171,7 +181,7 @@ class FMTlpsolver: public Core::FMTobject
 		/**
 		This will share the solverinterface pointer of (solver).
 		*/
-		void passinsolver(FMTlpsolver& solver);
+		void passinsolver(const FMTlpsolver& solver);
 		// DocString: FMTlpsolver::passinmessagehandler
 		/**
 		This will pass the FMTlogger to the solverinterface.
