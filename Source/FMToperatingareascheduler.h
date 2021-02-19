@@ -190,11 +190,16 @@ namespace Heuristics
 		Default FMToperatingareaheuristic constructor
 		*/
 		FMToperatingareascheduler()=default;
-		// DocString: FMToperatingareascheduler(const FMToperatingareaheuristic)
+		// DocString: FMToperatingareascheduler(const FMToperatingareaheuristic&)
 		/**
 		FMToperatingareaheuristic copy constructor
 		*/
 		FMToperatingareascheduler(const FMToperatingareascheduler& rhs);
+		// DocString: FMToperatingareascheduler(const FMToperatingareaheuristic&&)
+		/**
+		FMToperatingareaheuristic move constructor
+		*/
+		FMToperatingareascheduler(FMToperatingareascheduler&& rhs)=default;
 		// DocString: FMToperatingareascheduler::operator=
 		/**
 		FMToperatingareaheuristic copy assignment

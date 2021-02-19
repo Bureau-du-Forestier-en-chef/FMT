@@ -108,11 +108,16 @@ namespace Heuristics
 		Default FMTlpheuristic constructor
 		*/
 		FMTlpheuristic()=default;
-		// DocString: FMTlpheuristic(const FMTlpheuristic)
+		// DocString: FMTlpheuristic(const FMTlpheuristic&)
 		/**
 		FMTlpheuristic copy constructor
 		*/
 		FMTlpheuristic(const FMTlpheuristic& rhs);
+		// DocString: FMTlpheuristic(const FMTlpheuristic&&)
+		/**
+		FMTlpheuristic move constructor
+		*/
+		FMTlpheuristic(FMTlpheuristic&& rhs)=default;
 		// DocString: FMTlpheuristic::operator=
 		/**
 		FMTlpheuristic copy assignment

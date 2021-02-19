@@ -266,6 +266,11 @@ namespace Heuristics
 				if (!descriptors.empty())
 				{
 					operatingareait->setconstraints(descriptors, totalareadescriptors, maingraph, *this, primalsolution, actionids);
+				}else{
+					_exhandler->raise(Exception::FMTexc::FMTignore,
+											"No nodes found in graph for "+
+											std::string(operatingareait->getmask()),
+											"FMToperatingareascheduler::setoperatingareasconstraints", __LINE__, __FILE__);
 				}
 				if (operatingareait->getarea()==0)
 					{
@@ -342,10 +347,11 @@ namespace Heuristics
 	FMToperatingareascheduler::FMToperatingareascheduler(const FMToperatingareascheduler& rhs) :
 		FMTlpheuristic(rhs),operatingareas(rhs.operatingareas), adjacencyconstraints(rhs.adjacencyconstraints),
 		proportionofset(rhs.proportionofset),
-		userandomness(rhs.userandomness),useprimal(false)
+		userandomness(rhs.userandomness),useprimal(rhs.useprimal)
 		{
 
 		}
+
 	FMToperatingareascheduler& FMToperatingareascheduler::operator = (const FMToperatingareascheduler& rhs)
 		{
 		if (this!=&rhs)
@@ -355,14 +361,14 @@ namespace Heuristics
 			adjacencyconstraints=rhs.adjacencyconstraints;
 			proportionofset = rhs.proportionofset;
 			userandomness = rhs.userandomness;
-			useprimal = false;
+			useprimal = rhs.useprimal;
 			}
 		return *this;
 		}
 	FMToperatingareascheduler::~FMToperatingareascheduler()
 		{
 		try {
-		    if (!usingsolvercopy)
+		    if (!usingsolvercopy&&canupdatesource())
                 {
                   //Will need a clean matrix to fit with FMTlpmodel!
                 std::vector<int>rowstodelete;
