@@ -144,6 +144,8 @@ void exportModel()
 			"@DocString(FMTlpsolver::isProvenOptimal)")
 		.def("getObjValue", &Models::FMTlpsolver::getObjValue,
 			"@DocString(FMTlpsolver::getObjValue)")
+		.def("getObjSense", &Models::FMTlpsolver::getObjSense,
+			"@DocString(FMTlpsolver::getObjSense)")
 		.def("writeLP", &Models::FMTlpsolver::writeLP,
 			"@DocString(FMTlpsolver::writeLP)")
 		.def("writeMPS", &Models::FMTlpsolver::writeMPS,

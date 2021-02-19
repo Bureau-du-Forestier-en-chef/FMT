@@ -844,6 +844,11 @@ namespace Models
 		return -1;
 		}
 
+	void FMTlpsolver::passinlogger(const std::shared_ptr<Logging::FMTlogger>& logger)
+		{
+		*_logger << "CAlling derived passin logger!!!!" << "\n";
+		}
+
 }
 BOOST_CLASS_EXPORT_IMPLEMENT(Models::FMTlpsolver)
 #endif

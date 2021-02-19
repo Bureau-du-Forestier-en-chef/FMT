@@ -511,6 +511,7 @@ class FMTlpsolver: public Core::FMTobject
 		sitting in the matrixcache.
 		*/
 		std::string getcacheelements() const;
+		virtual void passinlogger(const std::shared_ptr<Logging::FMTlogger>& logger) override;
 	};
 }
 BOOST_CLASS_EXPORT_KEY(Models::FMTlpsolver)
