@@ -24,6 +24,12 @@ class FMToutputnode
 		FMToutputnode();
 		FMToutputnode(const FMToutputsource& lsource, const FMToutputsource& lfactor, const double& lconstant);
 		FMToutputnode(const FMToutputnode& rhs);
+		// DocString: FMTlpheuristic::FMToutputnode
+		/**
+		This constructor will create a  general node targeting an action name or actions aggregate.
+		It meant to be used with the scheduler heuristic.
+		*/
+		FMToutputnode(const Core::FMTmask& generalmask,const std::string& actionaggregate);
 		size_t hash() const;
 		size_t hashforvalue() const;
 		bool allowcashdeduction() const;

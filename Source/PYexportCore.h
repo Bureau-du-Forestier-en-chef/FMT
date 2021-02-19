@@ -175,6 +175,12 @@ void exportCore()
 					"@DocString(FMTaction::getname)")
                 .def("dorespectlock",&Core::FMTaction::dorespectlock,
 					"@DocString(FMTaction::dorespectlock)")
+				.def("useyield", &Core::FMTaction::useyield,
+					"@DocString(FMTaction::useyield)")
+				.def("push_aggregate", &Core::FMTaction::push_aggregate,
+					"@DocString(FMTaction::push_aggregate)")
+				.def("getaggregates", &Core::FMTaction::getaggregates,
+					"@DocString(FMTaction::getaggregates)")
                 .def_readwrite("isresetage",&Core::FMTaction::isresetage,
 					"@DocString(FMTaction::isresetage)")
                 .setattr("__hash__",&boost::pyhash<Core::FMTaction>);
@@ -227,6 +233,7 @@ void exportCore()
 
 
 			bp::class_<Core::FMToutputnode>("FMToutputnode", "@DocString(FMToutputnode)")
+				.def(bp::init<const Core::FMTmask&,const std::string&>())
 				.def("__str__", &Core::FMToutputnode::operator std::string,
 					"@DocString(FMToutputnode::operator std::string)");
 
