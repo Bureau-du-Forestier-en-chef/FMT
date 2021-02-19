@@ -172,6 +172,23 @@ FMTaction::FMTaction():FMTlist<FMTspec>(),
         return line;
         }
 
+bool FMTaction::useyield(const std::string& yldname) const
+	{
+	for (const auto& speclitit : *this)
+		{
+		if (!speclitit.second.emptyylds())
+			{
+			const std::vector<std::string> specyields = speclitit.second.getylds();
+			if (std::find(specyields.begin(), specyields.end(),yldname)!= specyields.end())
+				{
+				return true;
+				}
+			}
+
+		}
+	return false;
+	}
+
 std::vector<std::string>FMTaction::getaggregates() const
 	{
 	return aggregates;
