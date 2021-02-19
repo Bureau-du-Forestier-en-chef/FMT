@@ -140,25 +140,40 @@ namespace Core
 	}
 	void FMTobject::passinlogger(const std::shared_ptr<Logging::FMTlogger>& logger)
 		{
-		this->checksignals();
-		_logger = logger;
-		_exhandler->passinlogger(_logger);
-		setCPLhandler();
+		try{
+			this->checksignals();
+			_logger = logger;
+			_exhandler->passinlogger(_logger);
+			setCPLhandler();
+		}catch (...)
+			{
+			_exhandler->raisefromcatch("", "FMTobject::passinlogger", __LINE__, __FILE__);
+			}
 		}
 
 	void FMTobject::passinexceptionhandler(const std::shared_ptr<Exception::FMTexceptionhandler>& exhandler)
 		{
-		this->checksignals();
-		_exhandler = exhandler;
-		_exhandler->passinlogger(_logger);
-		setCPLhandler();
+		try{
+			this->checksignals();
+			_exhandler = exhandler;
+			_exhandler->passinlogger(_logger);
+			setCPLhandler();
+		}catch (...)
+			{
+			_exhandler->raisefromcatch("", "FMTobject::passinexceptionhandler", __LINE__, __FILE__);
+			}
 		}
 
 	void FMTobject::passinobject(const FMTobject& rhs)
 		{
-		_exhandler = rhs._exhandler;
-		_logger = rhs._logger;
-		_exhandler->passinlogger(_logger);
+		try {
+			_exhandler = rhs._exhandler;
+			_logger = rhs._logger;
+			_exhandler->passinlogger(_logger);
+		}catch (...)
+			{
+			_exhandler->raisefromcatch("", "FMTobject::passinobject", __LINE__, __FILE__);
+			}
 		}
 
 	void FMTobject::setsection(const FMTsection& section) const
@@ -175,56 +190,89 @@ namespace Core
 
 	void FMTobject::setdefaultlogger()
 		{
-		this->checksignals();
-		_logger = std::make_shared<Logging::FMTdefaultlogger>();
-		_exhandler->passinlogger(_logger);
-		setCPLhandler();
+		try {
+			this->checksignals();
+			this->passinlogger(std::make_shared<Logging::FMTdefaultlogger>());
+			setCPLhandler();
+		}catch (...)
+			{
+			_exhandler->raisefromcatch("", "FMTobject::setdefaultlogger", __LINE__, __FILE__);
+			}
 		}
 
 	void FMTobject::setquietlogger()
 		{
-		this->checksignals();
-		_logger = std::make_shared<Logging::FMTquietlogger>();
-		_exhandler->passinlogger(_logger);
-		setCPLhandler();
+		try{
+			this->checksignals();
+			this->passinlogger(std::make_shared<Logging::FMTquietlogger>());
+			setCPLhandler();
+		}
+		catch (...)
+		{
+			_exhandler->raisefromcatch("", "FMTobject::setquietlogger", __LINE__, __FILE__);
+		}
 		}
 
 	void FMTobject::setdebuglogger()
 		{
-		this->checksignals();
-		_logger = std::make_shared<Logging::FMTdebuglogger>();
-		_exhandler->passinlogger(_logger);
-		setCPLhandler();
+		try {
+			this->checksignals();
+			this->passinlogger(std::make_shared<Logging::FMTdebuglogger>());
+			setCPLhandler();
+		}
+		catch (...)
+		{
+			_exhandler->raisefromcatch("", "FMTobject::setdebuglogger", __LINE__, __FILE__);
+		}
 		}
 
 	void FMTobject::setdefaultexceptionhandler()
 		{
-		this->checksignals();
-		_exhandler = std::make_shared<Exception::FMTdefaultexceptionhandler>();
-		_exhandler->passinlogger(_logger);
-		setCPLhandler();
+		try{
+			this->checksignals();
+			this->passinexceptionhandler(std::make_shared<Exception::FMTdefaultexceptionhandler>());
+			setCPLhandler();
+		}
+		catch (...)
+		{
+			_exhandler->raisefromcatch("", "FMTobject::setdefaultexceptionhandler", __LINE__, __FILE__);
+		}
 		}
 	void FMTobject::setquietexceptionhandler()
 	{
-		this->checksignals();
-		_exhandler = std::make_shared<Exception::FMTquietexceptionhandler>();
-		_exhandler->passinlogger(_logger);
-		setCPLhandler();
+		try{
+			this->checksignals();
+			this->passinexceptionhandler(std::make_shared<Exception::FMTquietexceptionhandler>());
+			setCPLhandler();
+		}catch (...)
+			{
+			_exhandler->raisefromcatch("", "FMTobject::setquietexceptionhandler", __LINE__, __FILE__);
+			}
 	}
 	void FMTobject::setdebugexceptionhandler()
 	{
+		try{
 		this->checksignals();
-		_exhandler = std::make_shared<Exception::FMTdebugexceptionhandler>();
-		_exhandler->passinlogger(_logger);
+		this->passinexceptionhandler(std::make_shared<Exception::FMTdebugexceptionhandler>());
 		setCPLhandler();
+		}
+		catch (...)
+		{
+			_exhandler->raisefromcatch("", "FMTobject::setdebugexceptionhandler", __LINE__, __FILE__);
+		}
 	}
 
 	void  FMTobject::setfreeexceptionhandler()
 	{
-		this->checksignals();
-		_exhandler = std::make_shared<Exception::FMTfreeexceptionhandler>();
-		_exhandler->passinlogger(_logger);
-		setCPLhandler();
+		try{
+			this->checksignals();
+			this->passinexceptionhandler(std::make_shared<Exception::FMTfreeexceptionhandler>());
+			setCPLhandler();
+		}
+		catch (...)
+		{
+			_exhandler->raisefromcatch("", "FMTobject::setfreeexceptionhandler", __LINE__, __FILE__);
+		}
 	}
 
 	bool FMTobject::checkmask(const std::vector<Core::FMTtheme>& themes,

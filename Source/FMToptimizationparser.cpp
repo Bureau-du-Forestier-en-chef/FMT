@@ -446,7 +446,13 @@ namespace Parser
 				Core::FMTconstrainttype cctype = Core::FMTconstrainttype::FMTstandard;
 				const std::string periodstring = std::string(Bmatch[13]);
 				const std::string str_operator = std::string(Bmatch[5]) + std::string(Bmatch[6]) + std::string(Bmatch[11]);
-				const std::string LHS = std::string(Bmatch[1]);
+				std::string LHS = std::string(Bmatch[1]);
+				std::string beempty(Bmatch[9]);
+				boost::trim(beempty);
+				if (!beempty.empty())
+					{
+					LHS += beempty;
+					}
 				const std::string RHS = std::string(Bmatch[7]) + std::string(Bmatch[12]);
 				const std::string full_equation = LHS + std::string(1, ' ') + std::string(1, '+') + RHS;
 				std::map<std::string, double> nodes = getequation(full_equation, constants, outputs, LHS.size());
