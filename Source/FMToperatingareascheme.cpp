@@ -194,7 +194,13 @@ std::vector<std::vector<std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, 
 			//matrixbuild.setlastrowindex(maximalschemesconstraint);
 			solver.addRow(static_cast<int>(openingbinaries.size()), &openingbinaries[0], &maxelements[0], std::numeric_limits<double>::lowest(), 1);
 			}
-
+		//Weird fix
+		std::vector<std::vector<int>>nschemesperiods;
+		for (const size_t& shemeidselected : selectedschemes)
+		{
+			nschemesperiods.push_back(schemesperiods.at(shemeidselected));
+		}
+		schemesperiods=nschemesperiods;
 	}
 
 
@@ -344,7 +350,10 @@ std::vector<double> FMToperatingareascheme::getdualsolution(const double* upperb
 	if (getdualsolutionindex(upperbounds, solutionid))
 		{
 		startingat = *(schemesperiods.at(solutionid).begin());
-		pattern[0] = 1;
+		for (size_t opid=0;opid<this->openingtime;++opid)
+		{
+			pattern[opid] = 1;
+		}
 		}
 	return this->fillpattern(pattern, startingat);
 	}
@@ -360,7 +369,10 @@ std::vector<double>FMToperatingareascheme::getprimalsolution(const double* prima
 			if (*(primalsolution + binary) > 0) // got a the scheme if non integer going to fill everything!
 				{
 				startingat = *(schemesperiods.at(id).begin());
-				pattern[0] = 1;
+				for (size_t opid=0;opid<this->openingtime;++opid)
+					{
+						pattern[opid] = 1;
+					}
 				}
 			++id;
 		}
@@ -451,7 +463,7 @@ std::map<int, std::vector<int>>FMToperatingareascheme::getcommonbinairies(const 
 
 						}
 					}
-				
+
 				}
 			}
 		neighboringscheme[scheme_binary] = neighborsbinaries;
