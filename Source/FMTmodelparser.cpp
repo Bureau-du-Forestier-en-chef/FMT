@@ -138,8 +138,8 @@ Models::FMTmodel FMTmodelparser::referenceread(std::map<std::string, std::vector
 				common_sets.resize(common_it - common_sets.begin());
 				if (!common_sets.empty())
 					{
-					themes = models.at(*common_it).getthemes();
 					std::sort(common_sets.begin(), common_sets.end());
+					themes = models.at(*common_sets.begin()).getthemes();
 					if (area_it != common_sections.end())
 						{
 						std::vector<int>common_area(common_sets.size()+ area_it->second.size());
@@ -148,7 +148,8 @@ Models::FMTmodel FMTmodelparser::referenceread(std::map<std::string, std::vector
 						common_area.resize(common_it - common_area.begin());
 						if (!common_area.empty())
 							{
-							areas = models.at(*common_it).getarea();
+							std::sort(common_area.begin(), common_area.end());
+							areas = models.at(*common_area.begin()).getarea();
 							}
 						}
 					if (yield_it != common_sections.end())
@@ -159,7 +160,8 @@ Models::FMTmodel FMTmodelparser::referenceread(std::map<std::string, std::vector
 						common_yield.resize(common_it - common_yield.begin());
 						if (!common_yield.empty())
 							{
-							yields = models.at(*common_it).getyields();
+							std::sort(common_yield.begin(), common_yield.end());
+							yields = models.at(*common_yield.begin()).getyields();
 							}
 						}
 					if (lifespan_it != common_sections.end())
@@ -170,8 +172,8 @@ Models::FMTmodel FMTmodelparser::referenceread(std::map<std::string, std::vector
 						common_lif.resize(common_it - common_lif.begin());
 						if (!common_lif.empty())
 							{
-							lifespan = models.at(*common_it).getlifespan();
 							std::sort(common_lif.begin(), common_lif.end());
+							lifespan = models.at(*common_lif.begin()).getlifespan();
 							if (actions_it != common_sections.end())
 								{
 								std::vector<int>common_actions(common_lif.size() + actions_it->second.size());
@@ -180,8 +182,8 @@ Models::FMTmodel FMTmodelparser::referenceread(std::map<std::string, std::vector
 								common_actions.resize(common_it - common_actions.begin());
 								if (!common_actions.empty())
 									{
-									actions = models.at(*common_it).getactions();
 									std::sort(common_actions.begin(), common_actions.end());
+									actions = models.at(*common_actions.begin()).getactions();
 									if (transitions_it != common_sections.end())
 										{
 										std::vector<int>common_transitions(common_actions.size() + transitions_it->second.size());
@@ -190,8 +192,8 @@ Models::FMTmodel FMTmodelparser::referenceread(std::map<std::string, std::vector
 										common_transitions.resize(common_it - common_transitions.begin());
 										if (!common_transitions.empty())
 											{
-											transitions = models.at(*common_it).gettransitions();
 											std::sort(common_transitions.begin(), common_transitions.end());
+											transitions = models.at(*common_transitions.begin()).gettransitions();
 											}
 										}
 									}
@@ -207,8 +209,8 @@ Models::FMTmodel FMTmodelparser::referenceread(std::map<std::string, std::vector
 						common_output.resize(common_it - common_output.begin());
 						if (!common_output.empty())
 							{
-							outputs = models.at(*common_it).getoutputs();
 							std::sort(common_output.begin(), common_output.end());
+							outputs = models.at(*common_output.begin()).getoutputs();
 							if (optimize_it != common_sections.end())
 								{
 								std::vector<int>common_optimize(common_output.size() + optimize_it->second.size());
@@ -217,7 +219,8 @@ Models::FMTmodel FMTmodelparser::referenceread(std::map<std::string, std::vector
 								common_optimize.resize(common_it - common_optimize.begin());
 								if (!common_optimize.empty())
 									{
-									constraints = models.at(*common_it).getconstraints();
+									std::sort(common_optimize.begin(), common_optimize.end());
+									constraints = models.at(*common_optimize.begin()).getconstraints();
 									}
 								}
 							}
@@ -397,7 +400,12 @@ std::vector<Models::FMTmodel>FMTmodelparser::readproject(const std::string& prim
 	try {
 		std::vector<Models::FMTmodel>models;
 		std::map<std::string, std::vector<int>>commons;
+		if (_logger->logwithlevel("Reading " + primary_location+" ", 0))
+			{
+			_logger->logtime();
+			}
 		std::map<Core::FMTsection, std::string>bases = getprimary(primary_location);
+		
 		if (!readarea)
 		{
 			bases.at(Core::FMTsection::Area) = "";
@@ -414,6 +422,7 @@ std::vector<Models::FMTmodel>FMTmodelparser::readproject(const std::string& prim
 		bool tookroot = (std::find(scenarios.begin(), scenarios.end(), "ROOT") != scenarios.end());
 		if (tookroot || scenarios.empty()) //load the modelroot!
 		{
+			_logger->logwithlevel("Reading scenario ROOT\n", 0);
 			Models::FMTmodel scenario = referenceread(commons,
 				models,
 				bases.at(Core::FMTsection::Constants),
@@ -473,6 +482,7 @@ std::vector<Models::FMTmodel>FMTmodelparser::readproject(const std::string& prim
 						{
 							scenario_files.at(Core::FMTsection::Optimize) = "";
 						}
+						_logger->logwithlevel("Reading scenario "+ model_name+"\n", 0);
 						Models::FMTmodel scenario = referenceread(commons,
 							models,
 							scenario_files.at(Core::FMTsection::Constants),
@@ -510,6 +520,10 @@ std::vector<Models::FMTmodel>FMTmodelparser::readproject(const std::string& prim
 	}catch (...)
 		{
 		_exhandler->printexceptions("at " + primary_location, "FMTmodelparser::readproject", __LINE__, __FILE__);
+		}
+	if (_logger->logwithlevel("Done reading ", 0))
+		{
+		_logger->logtime();
 		}
 	return sortedmodels;
 	}

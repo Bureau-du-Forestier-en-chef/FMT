@@ -121,6 +121,12 @@ namespace Logging
 			{
 			return new FMTlogger(*this);
 			}
+
+		CoinMessageHandler * FMTlogger::getpointer() const
+			{
+			return dynamic_cast<CoinMessageHandler*>(const_cast<FMTlogger*>(this));
+			}
+
 	#endif
 
 	void FMTlogger::cout(const char* message) const

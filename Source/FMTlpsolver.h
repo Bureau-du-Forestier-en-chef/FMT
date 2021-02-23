@@ -167,6 +167,11 @@ class FMTlpsolver: public Core::FMTobject
 		For all solvers interior point is considered the best algorith.
 		*/
 		virtual bool initialsolve();
+		// DocString: FMTlpsolver::setnumberofthreads
+		/**
+		set the maximum number of threads to be used by the solver.
+		*/
+		void setnumberofthreads(const size_t& nthread);
 		// DocString: FMTlpsolver::getObjValue
 		/**
 		Get the objective value of the solved matrix.
@@ -511,6 +516,10 @@ class FMTlpsolver: public Core::FMTobject
 		sitting in the matrixcache.
 		*/
 		std::string getcacheelements() const;
+		// DocString: FMTlpsolver::passinlogger
+		/**
+		It's sometime usefull to pass in the logger of an other FMTobject.
+		*/
 		virtual void passinlogger(const std::shared_ptr<Logging::FMTlogger>& logger) override;
 	};
 }

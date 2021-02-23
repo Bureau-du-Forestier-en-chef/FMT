@@ -379,7 +379,8 @@ std::vector<FMToutputnode> FMToutput::getnodes(const std::vector<FMTactualdevelo
 		nodes.reserve(sources.size());
 		for (const FMToutputsource& source : sources)
 		{
-			if (((source.isvariable() && !source.canbededucedtoconstant()) || source.islevel()))
+			if (((source.isvariable() && (!source.canbededucedtoconstant()||
+				(source.canbededucedtoconstant() && !((op_id < operators.size()) && operators.at(op_id).isfactor())))) || source.islevel()))
 			{
 				if (!main_source.getmask().empty() || main_source.isvariablelevel())
 				{

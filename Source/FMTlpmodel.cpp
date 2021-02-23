@@ -730,6 +730,7 @@ bool FMTlpmodel::locatenodes(const std::vector<Core::FMToutputnode>& nodes, int 
 	try {
 		for (const Core::FMToutputnode& node : nodes)
 			{
+			
 			const std::map<int, double>node_map = graph.locatenode(*this, node, period);
 			for (std::map<int, double>::const_iterator node_it = node_map.begin(); node_it != node_map.end(); node_it++)
 				{
@@ -2024,115 +2025,36 @@ bool FMTlpmodel::locatenodes(const std::vector<Core::FMToutputnode>& nodes, int 
 		try{
 		FMTmodel::passinobject(rhs);
 		passinobjecttomembers(rhs);
-		}
-		catch (...)
+		}catch (...)
 		{
 			_exhandler->raisefromcatch("", "FMTlpmodel::passinobject", __LINE__, __FILE__);
 		}
 
 	}
 
-	void FMTlpmodel::setdefaultlogger()
-	{
-		try{
-		FMTmodel::setdefaultlogger();
-		passinobjecttomembers(*this);
-		}
-		catch (...)
-		{
-			_exhandler->raisefromcatch("", "FMTlpmodel::setdefaultlogger", __LINE__, __FILE__);
-		}
-	}
 
-	void FMTlpmodel::setquietlogger()
-	{
-		try{
-		FMTmodel::setquietlogger();
-		passinobjecttomembers(*this);
-		}
-		catch (...)
+	void  FMTlpmodel::passinlogger(const std::shared_ptr<Logging::FMTlogger>& logger)
 		{
-			_exhandler->raisefromcatch("", "FMTlpmodel::setquietlogger", __LINE__, __FILE__);
-		}
-	}
-	void FMTlpmodel::setdebuglogger()
-	{
-		try{
-		FMTmodel::setdebuglogger();
-		passinobjecttomembers(*this);
-		}
-		catch (...)
-		{
-			_exhandler->raisefromcatch("", "FMTlpmodel::setdebuglogger", __LINE__, __FILE__);
-		}
-	}
-	void FMTlpmodel::setdefaultexceptionhandler()
-	{
-		try{
-		FMTmodel::setdefaultexceptionhandler();
-		passinobjecttomembers(*this);
-		}
-		catch (...)
-		{
-			_exhandler->raisefromcatch("", "FMTlpmodel::setdefaultexceptionhandler", __LINE__, __FILE__);
+		try {
+			FMTmodel::passinlogger(logger);
+			FMTlpmodel::passinobject(*this);
+		}catch (...)
+			{
+			_exhandler->raisefromcatch("", "FMTlpmodel::passinlogger", __LINE__, __FILE__);
+			}
 		}
 
-	}
-	void FMTlpmodel::setquietexceptionhandler()
-	{
-		try{
-		FMTmodel::setquietexceptionhandler();
-		passinobjecttomembers(*this);
+	void  FMTlpmodel::passinexceptionhandler(const std::shared_ptr<Exception::FMTexceptionhandler>& exhandler)
+		{
+		try {
+			FMTmodel::passinexceptionhandler(exhandler);
+			FMTlpmodel::passinobject(*this);
 		}
 		catch (...)
-		{
-			_exhandler->raisefromcatch("", "FMTlpmodel::setquietexceptionhandler", __LINE__, __FILE__);
+			{
+			_exhandler->raisefromcatch("", "FMTlpmodel::passinexceptionhandler", __LINE__, __FILE__);
 		}
-	}
-	void FMTlpmodel::setdebugexceptionhandler()
-	{
-		try{
-		FMTmodel::setdebugexceptionhandler();
-		passinobjecttomembers(*this);
 		}
-		catch (...)
-		{
-			_exhandler->raisefromcatch("", "FMTlpmodel::setdebugexceptionhandler", __LINE__, __FILE__);
-		}
-	}
-	void FMTlpmodel::setfreeexceptionhandler()
-	{
-		try{
-		FMTmodel::setfreeexceptionhandler();
-		passinobjecttomembers(*this);
-		}
-		catch (...)
-		{
-			_exhandler->raisefromcatch("", "FMTlpmodel::setfreeexceptionhandler", __LINE__, __FILE__);
-		}
-	}
-	void FMTlpmodel::disablenestedexceptions()
-	{
-		try{
-		FMTmodel::disablenestedexceptions();
-		passinobjecttomembers(*this);
-		}
-		catch (...)
-		{
-			_exhandler->raisefromcatch("", "FMTlpmodel::disablenestedexceptions", __LINE__, __FILE__);
-		}
-	}
-	void FMTlpmodel::enablenestedexceptions()
-	{
-		try{
-		FMTmodel::enablenestedexceptions();
-		passinobjecttomembers(*this);
-		}
-		catch (...)
-		{
-			_exhandler->raisefromcatch("", "FMTlpmodel::enablenestedexceptions", __LINE__, __FILE__);
-		}
-	}
 }
 
 

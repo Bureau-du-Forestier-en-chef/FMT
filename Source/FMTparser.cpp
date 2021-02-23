@@ -424,9 +424,10 @@ bool FMTparser::isact(Core::FMTsection section,const std::vector<Core::FMTaction
 	try{
     if (std::find_if(actions.begin(),actions.end(), Core::FMTactioncomparator(action,true))==actions.end())
         {
-        _exhandler->raise(Exception::FMTexc::FMTundefined_action,action+" at line " + std::to_string(_line),"FMTparser::isact", __LINE__, __FILE__,section);
+			_exhandler->raise(Exception::FMTexc::FMTignore, "No action named " + action + " at line " + std::to_string(_line), "FMTparser::isact", __LINE__, __FILE__, section);
         return false;
-        }else{
+        }else
+		{
         return true;
         }
 	}
@@ -731,6 +732,7 @@ std::queue<std::string> FMTparser::tryinclude(const std::string& line, const std
 		{
 		std::string location = kmatch[3];
 		boost::filesystem::path includedpath(location);
+		boost::filesystem::path basepath;
 		if (includedpath.is_absolute())
 			{
 			const boost::filesystem::path l_ppath(_location);
@@ -743,8 +745,8 @@ std::queue<std::string> FMTparser::tryinclude(const std::string& line, const std
 				location.erase(0, 1);
 				const boost::filesystem::path full_path = parent_path / location;
 				location = full_path.string();
-				
 				}
+			basepath = boost::filesystem::path(location);
 		if (!boost::filesystem::exists(location))//If does not exist then try with the _ type path.
 			{
 			const std::string extension = boost::filesystem::extension(_location);
@@ -759,6 +761,14 @@ std::queue<std::string> FMTparser::tryinclude(const std::string& line, const std
 				location = full_path.string();
 				}
 			}
+		if (!boost::filesystem::exists(location))//Look back to the original folder...
+			{
+			const boost::filesystem::path llpath(location);
+			const boost::filesystem::path parentdir = llpath.parent_path();
+			const boost::filesystem::path finalpath = parentdir / boost::filesystem::path("../..") / basepath.filename();
+			location = finalpath.string();
+			}
+
 		FMTparser newparser;
 		std::ifstream newstream(location);
 		if (newparser.tryopening(newstream, location))
