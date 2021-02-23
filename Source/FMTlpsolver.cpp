@@ -168,6 +168,16 @@ namespace Models
 		return solverinterface->isProvenOptimal();
 		}
 
+	void FMTlpsolver::setnumberofthreads(const size_t& nthread)
+		{
+		if (solvertype== FMTsolverinterface::MOSEK)
+			{
+			OsiMskSolverInterface* msksolver = dynamic_cast<OsiMskSolverInterface*>(solverinterface.get());
+			MSKtask_t task = msksolver->getMutableLpPtr();
+			MSK_putintparam(task, MSK_IPAR_NUM_THREADS, static_cast<int>(std::max(size_t(1), nthread)));
+			}
+		}
+
 	bool FMTlpsolver::initialsolve()
 		{
 		try{
@@ -846,7 +856,13 @@ namespace Models
 
 	void FMTlpsolver::passinlogger(const std::shared_ptr<Logging::FMTlogger>& logger)
 		{
-		*_logger << "CAlling derived passin logger!!!!" << "\n";
+		try {
+			FMTobject::passinlogger(logger);
+			solverinterface->passInMessageHandler(logger->getpointer());
+		}catch (...)
+			{
+			_exhandler->raisefromcatch("", "FMTlpsolver::passinlogger", __LINE__, __FILE__);
+			}
 		}
 
 }

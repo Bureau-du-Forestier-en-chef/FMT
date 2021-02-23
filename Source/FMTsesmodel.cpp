@@ -176,105 +176,27 @@ namespace Models
 		
 		}
 
-	void FMTsesmodel::setdefaultlogger()
+	void FMTsesmodel::passinlogger(const std::shared_ptr<Logging::FMTlogger>& logger)
 	{
 		try {
-
+			FMTmodel::passinlogger(logger);
+			FMTsesmodel::passinobject(*this);
 		}
 		catch (...)
 		{
-			_exhandler->printexceptions("", "FMTsesmodel::setdefaultlogger", __LINE__, __FILE__);
-		}
-	}
-	void FMTsesmodel::setquietlogger()
-	{
-		try {
-			FMTmodel::setquietlogger();
-			passinobjecttomembers(*this);
-		}
-		catch (...)
-		{
-			_exhandler->printexceptions("", "FMTsesmodel::setquietlogger", __LINE__, __FILE__);
-		}
-	}
-	void FMTsesmodel::setdebuglogger()
-	{
-		try {
-			FMTmodel::setdebuglogger();
-			passinobjecttomembers(*this);
-		}
-		catch (...)
-		{
-			_exhandler->printexceptions("", "FMTsesmodel::setdebuglogger", __LINE__, __FILE__);
+			_exhandler->printexceptions("", "FMTsesmodel::passinlogger", __LINE__, __FILE__);
 		}
 	}
 
-	void FMTsesmodel::setdefaultexceptionhandler()
+	void FMTsesmodel::passinexceptionhandler(const std::shared_ptr<Exception::FMTexceptionhandler>& exhandler)
 	{
 		try {
-			FMTmodel::setdefaultexceptionhandler();
-			passinobjecttomembers(*this);
+			FMTmodel::passinexceptionhandler(exhandler);
+			FMTsesmodel::passinobject(*this);
 		}
 		catch (...)
 		{
-			_exhandler->printexceptions("", "FMTsesmodel::setdefaultexceptionhandler", __LINE__, __FILE__);
-		}
-	}
-
-	void FMTsesmodel::setquietexceptionhandler()
-	{
-		try {
-			FMTmodel::setquietexceptionhandler();
-			passinobjecttomembers(*this);
-		}
-		catch (...)
-		{
-			_exhandler->printexceptions("", "FMTsesmodel::setquietexceptionhandler", __LINE__, __FILE__);
-		}
-	}
-
-	void FMTsesmodel::setdebugexceptionhandler()
-	{
-		try {
-			FMTmodel::setdebugexceptionhandler();
-			passinobjecttomembers(*this);
-		}
-		catch (...)
-		{
-			_exhandler->printexceptions("", "FMTsesmodel::setdebugexceptionhandler", __LINE__, __FILE__);
-		}
-	}
-	void FMTsesmodel::setfreeexceptionhandler()
-	{
-		try {
-			FMTsesmodel::setfreeexceptionhandler();
-			passinobjecttomembers(*this);
-		}
-		catch (...)
-		{
-			_exhandler->printexceptions("", "FMTsesmodel::setfreeexceptionhandler", __LINE__, __FILE__);
-		}
-	}
-	void FMTsesmodel::disablenestedexceptions()
-	{
-		try {
-			FMTsesmodel::disablenestedexceptions();
-			passinobjecttomembers(*this);
-		}
-		catch (...)
-		{
-			_exhandler->printexceptions("", "FMTsesmodel::disablenestedexceptions", __LINE__, __FILE__);
-		}
-	}
-	void FMTsesmodel::enablenestedexceptions()
-	{
-		try {
-			FMTsesmodel::enablenestedexceptions();
-			passinobjecttomembers(*this);
-		}
-		catch (...)
-		{
-			_exhandler->printexceptions("", "FMTsesmodel::enablenestedexceptions", __LINE__, __FILE__);
+			_exhandler->printexceptions("", "FMTsesmodel::passinexceptionhandler", __LINE__, __FILE__);
 		}
 	}
 

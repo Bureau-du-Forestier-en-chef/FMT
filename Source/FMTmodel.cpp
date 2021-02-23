@@ -1115,14 +1115,24 @@ void FMTmodel::setareaperiod(const int& period)
 
 void FMTmodel::passinlogger(const std::shared_ptr<Logging::FMTlogger>& logger)
 	{
-	FMTobject::passinlogger(logger);
-	this->passinobject(*this);
+	try{
+		FMTobject::passinlogger(logger);
+		this->passinobject(*this);
+	}catch (...)
+		{
+		_exhandler->raisefromcatch("", "FMTmodel::passinlogger", __LINE__, __FILE__);
+		}
 	}	
 
 void FMTmodel::passinexceptionhandler(const std::shared_ptr<Exception::FMTexceptionhandler>& exhandler)
 	{
-	FMTobject::passinexceptionhandler(exhandler);
-	this->passinobject(*this);
+	try {
+		FMTobject::passinexceptionhandler(exhandler);
+		this->passinobject(*this);
+	}catch (...)
+		{
+		_exhandler->raisefromcatch("", "FMTmodel::passinexceptionhandler", __LINE__, __FILE__);
+		}
 	}
 
 void FMTmodel::passinobject(const Core::FMTobject& rhs)
@@ -1160,115 +1170,6 @@ void FMTmodel::passinobject(const Core::FMTobject& rhs)
 		_exhandler->raisefromcatch("","FMTmodel::passinobject", __LINE__, __FILE__);
 		}
 	}
-
-void FMTmodel::setdefaultlogger()
-{
-	try {
-	FMTobject::setdefaultlogger();
-	this->passinobject(*this);
-	}
-	catch (...)
-	{
-		_exhandler->raisefromcatch("", "FMTmodel::setdefaultlogger", __LINE__, __FILE__);
-	}
-}
-
-void FMTmodel::setquietlogger()
-{
-	try{
-	FMTobject::setquietlogger();
-	this->passinobject(*this);
-	}
-	catch (...)
-	{
-		_exhandler->raisefromcatch("", "FMTmodel::setquietlogger", __LINE__, __FILE__);
-	}
-}
-
-void FMTmodel::setdebuglogger()
-{
-	try{
-	FMTobject::setdebuglogger();
-	this->passinobject(*this);
-	}
-	catch (...)
-	{
-		_exhandler->raisefromcatch("", "FMTmodel::setdebuglogger", __LINE__, __FILE__);
-	}
-}
-
-void FMTmodel::setdefaultexceptionhandler()
-{
-	try{
-	FMTobject::setdefaultexceptionhandler();
-	this->passinobject(*this);
-	}
-	catch (...)
-	{
-		_exhandler->raisefromcatch("", "FMTmodel::setdefaultexceptionhandler", __LINE__, __FILE__);
-	}
-}
-
-void FMTmodel::setquietexceptionhandler()
-{
-	try{
-	FMTobject::setquietexceptionhandler();
-	this->passinobject(*this);
-	}
-	catch (...)
-	{
-		_exhandler->raisefromcatch("", "FMTmodel::setquietexceptionhandler", __LINE__, __FILE__);
-	}
-}
-
-void FMTmodel::setdebugexceptionhandler()
-{
-	try{
-	FMTobject::setdebugexceptionhandler();
-	this->passinobject(*this);
-	}
-	catch (...)
-	{
-		_exhandler->raisefromcatch("", "FMTmodel::setdebugexceptionhandler", __LINE__, __FILE__);
-	}
-}
-
-void FMTmodel::setfreeexceptionhandler()
-{
-	try{
-	FMTobject::setfreeexceptionhandler();
-	this->passinobject(*this);
-	}
-	catch (...)
-	{
-		_exhandler->raisefromcatch("", "FMTmodel::setfreeexceptionhandler", __LINE__, __FILE__);
-	}
-}
-
-void FMTmodel::disablenestedexceptions()
-{
-	try{
-	FMTobject::disablenestedexceptions();
-	this->passinobject(*this);
-	}
-	catch (...)
-	{
-		_exhandler->raisefromcatch("", "FMTmodel::disablenestedexceptions", __LINE__, __FILE__);
-	}
-}
-
-void FMTmodel::enablenestedexceptions()
-{
-	try{
-	FMTobject::enablenestedexceptions();
-	this->passinobject(*this);
-	}
-	catch (...)
-	{
-		_exhandler->raisefromcatch("", "FMTmodel::enablenestedexceptions", __LINE__, __FILE__);
-	}
-}
-
 
 
 

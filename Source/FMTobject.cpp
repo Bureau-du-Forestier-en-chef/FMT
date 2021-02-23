@@ -280,7 +280,7 @@ namespace Core
 	{
 		//otherinformation = " at line " + std::to_string(_line);
 		bool returnvalue = true;
-		if (themes.size() < values.size())
+		if (themes.size() > values.size())
 		{
 			_exhandler->raise(Exception::FMTexc::FMTinvalid_maskrange, mask + otherinformation,"FMTobject::checkmask", __LINE__, __FILE__, _section);
 			returnvalue = false;
@@ -320,16 +320,28 @@ namespace Core
 
 	void FMTobject::disablenestedexceptions()
 		{
-		this->checksignals();
-		this->_exhandler->disablenestedexceptions();
-		setCPLhandler();
+		try {
+			this->checksignals();
+			this->_exhandler->disablenestedexceptions();
+			this->passinexceptionhandler(this->_exhandler);
+			setCPLhandler();
+		}catch (...)
+			{
+			_exhandler->raisefromcatch("", "FMTobject::disablenestedexceptions", __LINE__, __FILE__);
+			}
 		}
 
 	void FMTobject::enablenestedexceptions()
 		{
-		this->checksignals();
-		this->_exhandler->enablenestedexceptions();
-		setCPLhandler();
+		try{
+			this->checksignals();
+			this->_exhandler->enablenestedexceptions();
+			this->passinexceptionhandler(this->_exhandler);
+			setCPLhandler();
+		}catch (...)
+			{
+			_exhandler->raisefromcatch("", "FMTobject::enablenestedexceptions", __LINE__, __FILE__);
+			}
 		}
 
 

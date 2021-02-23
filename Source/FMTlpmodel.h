@@ -481,59 +481,22 @@ class FMTlpmodel : public FMTmodel
 		Get a pointer to the solver behind the model.
 		*/
 		FMTlpsolver* getsolverptr();
+		// DocString: FMTlpmodel::passinlogger
+		/**
+		It's sometime usefull to pass in the logger of an other FMTobject.
+		*/
+		virtual void passinlogger(const std::shared_ptr<Logging::FMTlogger>& logger) override;
+		// DocString: FMTlpmodel::passinexceptionhandler
+		/**
+		It's sometime usefull to pass in the exception handler of an other FMTobject.
+		*/
+		virtual void passinexceptionhandler(const std::shared_ptr<Exception::FMTexceptionhandler>& exhandler) override;
 		// DocString: FMTlpmodel::passinobject
 		/**
 		It's sometime usefull to pass in the exception handler and the logger  of an other FMTobject to
 		a FMTobject.
 		*/
-		void passinobject(const Core::FMTobject& rhs) override;
-		// DocString: FMTlpmodel::setdefaultlogger
-		/**
-		Create and set a default logger to the FMTobject.
-		*/
-		void setdefaultlogger() override;
-		// DocString: FMTlpmodel::setquietlogger
-		/**
-		Create and set a quiet logger to the FMTobject.
-		*/
-		void setquietlogger() override;
-		// DocString: FMTlpmodel::setdebuglogger
-		/**
-		Create and set a debug logger to the FMTobject.
-		*/
-		void setdebuglogger() override;
-		// DocString: FMTlpmodel::setdefaultexceptionhandler
-		/**
-		Create and set a default exception handler to the FMTobject.
-		*/
-		void setdefaultexceptionhandler() override;
-		// DocString: FMTlpmodel::setquietexceptionhandler
-		/**
-		Create and set a quiet exception handler to the FMTobject.
-		*/
-		void setquietexceptionhandler() override;
-		// DocString: FMTlpmodel::setdebugexceptionhandler
-		/**
-		Create and set a debug exception handler to the FMTobject.
-		*/
-		void setdebugexceptionhandler() override;
-		// DocString: FMTlpmodel::setfreeexceptionhandle
-		/**
-		Create and set a free exception handler to the FMTobject.
-		*/
-		void setfreeexceptionhandler() override;
-		// DocString: FMTlpmodel::disablenestedexceptions
-		/**
-		Disable nested exception throw of the Exceptionhandler by default all handlers
-		do nested exception throw.
-		*/
-		void disablenestedexceptions() override;
-		// DocString: FMTlpmodel::enablenestedexceptions
-		/**
-		Enable nested exception throw of the Exceptionhandler by default all handlers
-		do nested exception throw.
-		*/
-		void enablenestedexceptions() override;
+		virtual void passinobject(const Core::FMTobject& rhs) override;
 		// DocString: FMTlpmodel::writeLP
 		/**
 		Write the solverinterface matrix to a file (location) using the lp formulation.

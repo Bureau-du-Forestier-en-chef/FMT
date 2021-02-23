@@ -135,6 +135,11 @@ namespace Logging
 				Clone function needed for the usage of abstract coingmessagehandler class.
 				*/
 				CoinMessageHandler * clone() const override;
+				// DocString: FMTlogger::getpointer
+				/**
+				Get a non const pointer from this object.
+				*/
+				CoinMessageHandler * getpointer() const;
 			#endif
 			// DocString: FMTlogger::logstamp
 			/**
@@ -168,16 +173,17 @@ namespace Logging
 			then it will be printed
 			*/
 			template<class T>
-			void logwithlevel(const T &msg,const int& messagelevel)
+			bool logwithlevel(const T &msg,const int& messagelevel) const
 				{
 				#ifdef FMTWITHOSI
 				if (this->logLevel() < messagelevel)
 					{
-					return;
+					return false;
 					}
 				#endif
 				const std::string value = boost::lexical_cast<std::string>(msg);
 				this->cout(value.c_str());
+				return true;
 				}
 
 		};

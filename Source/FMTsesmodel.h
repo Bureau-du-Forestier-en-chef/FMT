@@ -153,54 +153,17 @@ class FMTsesmodel : public FMTmodel
 		It's sometime usefull to pass in the exception handler and the logger  of an other FMTobject to
 		a FMTobject.
 		*/
-		void passinobject(const Core::FMTobject& rhs) override;
-		// DocString: FMTsesmodel::setdefaultlogger
+		virtual void passinobject(const Core::FMTobject& rhs) override;
+		// DocString: FMTsesmodel::passinlogger
 		/**
-		Create and set a default logger to the FMTobject.
+		It's sometime usefull to pass in the logger of an other FMTobject.
 		*/
-		void setdefaultlogger() override;
-		// DocString: FMTsesmodel::setquietlogger
+		virtual void passinlogger(const std::shared_ptr<Logging::FMTlogger>& logger) override;
+		// DocString: FMTsesmodel::passinexceptionhandler
 		/**
-		Create and set a quiet logger to the FMTobject.
+		It's sometime usefull to pass in the exception handler of an other FMTobject.
 		*/
-		void setquietlogger() override;
-		// DocString: FMTsesmodel::setdebuglogger
-		/**
-		Create and set a debug logger to the FMTobject.
-		*/
-		void setdebuglogger() override;
-		// DocString: FMTsesmodel::setdefaultexceptionhandler
-		/**
-		Create and set a default exception handler to the FMTobject.
-		*/
-		void setdefaultexceptionhandler() override;
-		// DocString: FMTsesmodel::setquietexceptionhandler
-		/**
-		Create and set a quiet exception handler to the FMTobject.
-		*/
-		void setquietexceptionhandler() override;
-		// DocString: FMTsesmodel::setdebugexceptionhandler
-		/**
-		Create and set a debug exception handler to the FMTobject.
-		*/
-		void setdebugexceptionhandler() override;
-		// DocString: FMTsesmodel::setfreeexceptionhandle
-		/**
-		Create and set a free exception handler to the FMTobject.
-		*/
-		void setfreeexceptionhandler() override;
-		// DocString: FMTsesmodel::disablenestedexceptions
-		/**
-		Disable nested exception throw of the Exceptionhandler by default all handlers
-		do nested exception throw.
-		*/
-		void disablenestedexceptions() override;
-		// DocString: FMTsesmodel::enablenestedexceptions
-		/**
-		Enable nested exception throw of the Exceptionhandler by default all handlers
-		do nested exception throw.
-		*/
-		void enablenestedexceptions() override;
+		virtual void passinexceptionhandler(const std::shared_ptr<Exception::FMTexceptionhandler>& exhandler) override;
 
     };
 
