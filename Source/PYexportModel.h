@@ -146,6 +146,10 @@ void exportModel()
 			"@DocString(FMTlpsolver::getObjValue)")
 		.def("getObjSense", &Models::FMTlpsolver::getObjSense,
 			"@DocString(FMTlpsolver::getObjSense)")
+		.def("setnumberofthreads", &Models::FMTlpsolver::setnumberofthreads,
+			"@DocString(FMTlpsolver::setnumberofthreads)")
+		.def("setMIPgaptolerance", &Models::FMTlpsolver::setMIPgaptolerance,
+			"@DocString(FMTlpsolver::setMIPgaptolerance)")
 		.def("writeLP", &Models::FMTlpsolver::writeLP,
 			"@DocString(FMTlpsolver::writeLP)")
 		.def("writeMPS", &Models::FMTlpsolver::writeMPS,
