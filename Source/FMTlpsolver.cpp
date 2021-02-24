@@ -47,7 +47,7 @@ namespace Models
 			}
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("Cannot build solver",+"FMTlpsolver::buildsolverinterface", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("Cannot build solver","FMTlpsolver::buildsolverinterface", __LINE__, __FILE__);
 			}
 		return newsolverinterface;
 	}
@@ -163,20 +163,61 @@ namespace Models
 			}
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("", +"FMTlpsolver::resolve", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("", "FMTlpsolver::resolve", __LINE__, __FILE__);
 			}
 		return solverinterface->isProvenOptimal();
 		}
 
 	void FMTlpsolver::setnumberofthreads(const size_t& nthread)
 		{
-		if (solvertype== FMTsolverinterface::MOSEK)
+		try {
+			switch (solvertype)
+				{
+				#ifdef  FMTWITHMOSEK
+				case FMTsolverinterface::MOSEK:
+					{
+					OsiMskSolverInterface* msksolver = dynamic_cast<OsiMskSolverInterface*>(solverinterface.get());
+					MSKtask_t task = msksolver->getMutableLpPtr();
+					MSK_putintparam(task, MSK_IPAR_NUM_THREADS, static_cast<int>(std::max(size_t(1), nthread)));
+					break;
+					}
+				#endif
+				default:
+					_exhandler->raise(Exception::FMTexc::FMTignore, "Cannot set number of threads used for "+getsolvername(),
+						"FMTlpsolver::setnumberofthreads", __LINE__, __FILE__);
+				break;
+				}
+		}catch (...)
 			{
-			OsiMskSolverInterface* msksolver = dynamic_cast<OsiMskSolverInterface*>(solverinterface.get());
-			MSKtask_t task = msksolver->getMutableLpPtr();
-			MSK_putintparam(task, MSK_IPAR_NUM_THREADS, static_cast<int>(std::max(size_t(1), nthread)));
+			_exhandler->raisefromcatch("", "FMTlpsolver::setnumberofthreads", __LINE__, __FILE__);
 			}
 		}
+
+	void FMTlpsolver::setMIPgaptolerance(const double& gap)
+	{
+		try {
+			switch (solvertype)
+			{
+			#ifdef  FMTWITHMOSEK
+			case FMTsolverinterface::MOSEK:
+				{
+					OsiMskSolverInterface* msksolver = dynamic_cast<OsiMskSolverInterface*>(solverinterface.get());
+					MSKtask_t task = msksolver->getMutableLpPtr();
+					MSK_putdouparam(task, MSK_DPAR_MIO_TOL_REL_GAP, gap);
+					break;
+				}
+			#endif
+			default:
+				_exhandler->raise(Exception::FMTexc::FMTignore, "Cannot set gap tolerance for " + getsolvername(),
+					"FMTlpsolver::setMIPgaptolerance", __LINE__, __FILE__);
+				break;
+			}
+		}
+		catch (...)
+		{
+			_exhandler->raisefromcatch("", "FMTlpsolver::setMIPgaptolerance", __LINE__, __FILE__);
+		}
+	}
 
 	bool FMTlpsolver::initialsolve()
 		{

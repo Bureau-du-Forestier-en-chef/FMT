@@ -1,18 +1,15 @@
 
 *EXCLUDE
 
-aCTNAT 1.._LENGTH
-aCTPL 1.._LENGTH
-aCTPL16 1.._LENGTH
-aEC 1.._LENGTH
-aCP 1.._LENGTH
-aEPC 1.._LENGTH
+aCT 1.._LENGTH
+acaribou 1.._LENGTH
+aplantation 1.._LENGTH
 arecup 1.._LENGTH
 
 *CONSTRAINTS
 
-_RANDOM(osuprealFEU_UA(R10)) >= 200 1.._LENGTH
-_RANDOM(osuprealFEU_UA(R10)) <= 600 1.._LENGTH
+_RANDOM(Burnedarea) >= 200 1.._LENGTH
+_RANDOM(Burnedarea) <= 600 1.._LENGTH
 
 
 *FORMAT MOSEK

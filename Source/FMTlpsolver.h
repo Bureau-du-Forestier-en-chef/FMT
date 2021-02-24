@@ -170,8 +170,16 @@ class FMTlpsolver: public Core::FMTobject
 		// DocString: FMTlpsolver::setnumberofthreads
 		/**
 		set the maximum number of threads to be used by the solver.
+		Not all solver can have numberof threads sets.
 		*/
 		void setnumberofthreads(const size_t& nthread);
+		// DocString: FMTlpsolver::setMIPgaptolerance
+		/**
+		set The tolerance between the relaxed optimal and the integer optimal.
+		Default it 1.0-4...might be better to use a larger gap like 0.01 (1%) or even 5%...
+		Not all solver can have the MIPgap set...
+		*/
+		void setMIPgaptolerance(const double& gap);
 		// DocString: FMTlpsolver::getObjValue
 		/**
 		Get the objective value of the solved matrix.

@@ -138,6 +138,7 @@ namespace Models
 				{
 				if (output->getsourcesreference().begin()->use(development,yields))
 					{
+					
 					std::vector<const Core::FMTaction*>::const_iterator actit = targets.at(location).begin();
 					while (actit!= targets.at(location).end() && !development.operable(**actit,yields))
 						{
@@ -226,7 +227,9 @@ namespace Models
 			schedule.passinobject(*this);
 			std::vector<double>targetedarea;
 			std::vector<const Core::FMToutput*> targetedoutputs = constraintstotarget(targetedarea);
+			
 			std::vector<std::vector<const Core::FMTaction*>> targetedactions= getactionstargets(targetedoutputs);
+			
 			if (targetedarea.empty())
 				{
 				const int period = getperiod();
@@ -263,6 +266,7 @@ namespace Models
 					}
 				if (!operables.empty())
 					{
+					
 					const double operatedarea = std::min(targetedarea.at(operables.begin()->first), devit->getarea());
 					const std::vector<Core::FMTdevelopmentpath> paths = operate(*devit, operatedarea, operables.begin()->second, schedule);
 					updatearea(devit, paths, operatedarea);
