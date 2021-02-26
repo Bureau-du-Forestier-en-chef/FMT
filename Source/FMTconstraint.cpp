@@ -164,14 +164,26 @@ namespace Core
 		try {
 			double lower = 0;
 			double upper = 0;
+			double factor = 1.0;
+			if (!this->emptyylds())
+			{
+				for (size_t id = 0; id < yieldnames.size(); ++id)
+				{
+					if (yieldnames.at(id).find("_SETTOGLOBAL") != std::string::npos)
+					{
+						factor = yieldbounds.at(id).getlower();
+						break;
+					}
+				}
+			}
 			getbounds(lower, upper);
 			if (lower != std::numeric_limits<double>::lowest())
 			{
-				lower = value;
+				lower = value*factor;
 			}
 			if (upper != std::numeric_limits<double>::infinity())
 			{
-				upper = value;
+				upper = value * factor;
 			}
 			newconstraint.setrhs(lower, upper);
 		}
@@ -409,6 +421,7 @@ namespace Core
 
 		std::string goal = "";
 		std::string penalty = "";
+		std::string global = "";
 		if (!this->emptyylds())
 			{
 			for (size_t id = 0; id < yieldnames.size(); ++id)
@@ -420,12 +433,16 @@ namespace Core
 					goal += names[1] + ",";
 					goal += std::to_string(yieldbounds.at(id).getlower());
 				}
+				if (yieldnames.at(id).find("_SETTOGLOBAL") != std::string::npos)
+				{
+					global += std::to_string(yieldbounds.at(id).getlower());
+				}
 				if (yieldnames.at(id).find("Penalty") != std::string::npos)
 				{
 					std::vector<std::string>names;
 					boost::split(names, yieldnames.at(id), boost::is_any_of("_"));
 
-					if (names.at(1) == "ALL")
+					if (names.at(1) == "_ALL")
 					{
 						penalty += (std::string(1, names.at(0).back()) + "_PENALTY(_ALL");
 					}
@@ -451,6 +468,10 @@ namespace Core
 				{
 				goal.pop_back();
 				goal = "_GOAL(" + goal + ")";
+				}
+			if (!global.empty())
+				{
+				global = "_SETTOGLOBAL(" + global + ")";
 				}
 			}
 		switch (this->type)
@@ -541,22 +562,22 @@ namespace Core
 				}
 			case FMTconstrainttype::FMTstandard:
 				{
-                standardstring(line,period_bounds,goal);
+                standardstring(line,period_bounds,goal,global);
 				break;
 				}
             case FMTconstrainttype::FMTspatialadjacency:
                 {
-                standardstring(line,period_bounds,goal);
+                standardstring(line,period_bounds,goal, global);
 				break;
 				}
             case FMTconstrainttype::FMTspatialsize :
                 {
-				standardstring(line, period_bounds, goal);
+				standardstring(line, period_bounds, goal, global);
 				break;
 				}
 			case FMTconstrainttype::FMTrandomaction:
 			{
-				standardstring(line, period_bounds, goal);
+				standardstring(line, period_bounds, goal, global);
 				break;
 			}
 			default:
@@ -570,7 +591,7 @@ namespace Core
 		return line;
 		}
 
-		void FMTconstraint::standardstring(std::string& line, std::string& period_bounds, std::string& goal) const
+		void FMTconstraint::standardstring(std::string& line, std::string& period_bounds, std::string& goal, std::string& global) const
 		{
 			try {
 				double lower_b = 0;
@@ -599,7 +620,7 @@ namespace Core
 					opt_str = "<=";
 					opt_str += std::to_string(upper_b);
 				}
-				line += (this->name + " " + opt_str + " " + goal);
+				line += (this->name + " " + opt_str + " " + goal+" "+global);
 				line += " " + period_bounds + "\n";
 		}
 		catch (...)

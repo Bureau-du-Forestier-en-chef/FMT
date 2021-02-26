@@ -17,7 +17,7 @@ namespace Parser
 		rxconstraints("^(_EVEN|_NDY|_SEQ)([\\s\\t]*)(\\()((([^,]*)(,)([\\s\\t]*)([\\d\\.]*%|[\\d\\.]*)([\\s\\t]*)(,)([\\s\\t]*)([\\d\\.]*%|[\\d\\.]*))|(([^,]*)(,)([\\s\\t]*)([\\d\\.]*%|[\\d\\.]*))|([^,]*))([\\s\\t]*)(\\))([\\s\\t]*)(.+)", std::regex_constants::ECMAScript | std::regex_constants::icase),
 		rxequations("^(.+)((((<=)|(>=))(.+))|((.+)((=))(.+)))(?<=[^,])[\\s\\t](?=\\d)(.+)"),
 		rxperiods("^([\\s\\t]*)((([\\d]*|#.+)(\\.\\.)(#.+|_LENGTH|[\\d]*)|(_LENGTH))|(#.+|[\\d]*))", std::regex_constants::ECMAScript | std::regex_constants::icase),
-		rxending("^(.+)(((_GOAL)(\\()([^,]*)(,)([^\\)]*)(\\)))|(_SETTOGLOBAL))", std::regex_constants::ECMAScript | std::regex_constants::icase),
+		rxending("^(.+)(((_GOAL)(\\()([^,]*)(,)([^\\)]*)(\\)))|(_SETTOGLOBAL)([\\s\\t]*)(\\()([\\s\\t]*)(.+)([\\s\\t]*)(\\)))", std::regex_constants::ECMAScript | std::regex_constants::icase),
 		rxoutput("^(.+)(\\()([^)]*)(\\))(\\[)(#.+|[-\\d]*)(\\])|([^\\[]*)(\\()([^)]*)(\\))|(.+)(\\[)(#.+|[-\\d]*)(\\])|(.+)", std::regex_constants::ECMAScript | std::regex_constants::icase),
 		rxpenalty("^(_PENALTY)(\\()([^\\)]*)(\\))", std::regex_constants::ECMAScript | std::regex_constants::icase),
 		rxspecialoutput("^(_AVG|_SUM)(\\()(([^,]*)(,)(([^,]*)(([\\d]*|#.+)(\\.\\.)(#.+|_LENGTH|[\\d]*))|(#.+|[\\d]*))|(.+))(\\))", std::regex_constants::ECMAScript | std::regex_constants::icase),
@@ -71,16 +71,20 @@ namespace Parser
 		if (std::regex_search(line, kmatch, rxending))
 			{
 			const std::string target = std::string(kmatch[4]) + std::string(kmatch[10]);
-			double variale_value = 0;
-			std::string value(target);
-			if (target == "GOAL_")
+			const std::string numvalue = std::string(kmatch[8]) + std::string(kmatch[14]);
+			const double variale_value = getnum<double>(numvalue, constants);;
+			std::string yieldtarget(target);
+			if (target == "_GOAL")
 				{
-				value = std::string(kmatch[8]);
-				variale_value = getnum<double>(value, constants);
+				yieldtarget ="GOAL_"+ std::string(kmatch[6]);
 				}
+			constraint.addbounds(Core::FMTyldbounds(Core::FMTsection::Optimize, yieldtarget, variale_value, variale_value));
 			line = line.substr(0, line.find(target));
-			constraint.addbounds(Core::FMTyldbounds(Core::FMTsection::Optimize, target, variale_value, variale_value));
 			boost::trim(line);
+			if (target != "_GOAL" && !line.empty())
+				{
+				setending(constraint, line, constants);
+				}
 			return true;
 			}
 		}catch (...)

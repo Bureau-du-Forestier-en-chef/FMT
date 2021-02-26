@@ -421,7 +421,7 @@ class FMTlpmodel : public FMTmodel
 		std::vector<Heuristics::FMToperatingareascheduler>getoperatingareaschedulerheuristics(const std::vector<Heuristics::FMToperatingareascheme>& opareas,
 																				const Core::FMToutputnode& node,
 																				size_t numberofheuristics=1,
-																				bool copysolver=true);
+																				bool copysolver=true,bool updatematrixname=false);
         // DocString: FMTlpmodel::getoperatingareaclustererheuristics
 		/**
 		Using multiple operating areas this function generates multiples heuristics for solving the operating area clustering problem.

@@ -69,7 +69,7 @@ class FMTconstraint: public FMToutput,public FMTspec
 	/**
 	Function used for string formating for FMTconstraint in to string conversion.
 	*/
-	void standardstring(std::string& line, std::string& period_bounds, std::string& goal) const;
+	void standardstring(std::string& line, std::string& period_bounds, std::string& goal, std::string& global) const;
 	// DocString: FMTconstraint::getmaxandmin
 	/**
 	Returns the maximal and minimal value of a vector of double for the constraint

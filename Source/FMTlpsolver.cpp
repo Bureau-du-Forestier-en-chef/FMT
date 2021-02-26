@@ -674,7 +674,15 @@ namespace Models
 					{
 					name = colsnames.at(colid);
 					}
-			solverinterface->setColName(colid, name);
+			if (solvertype== Models::FMTsolverinterface::MOSEK)
+				{
+				OsiMskSolverInterface* msksolver = dynamic_cast<OsiMskSolverInterface*>(solverinterface.get());
+				MSKtask_t task = msksolver->getMutableLpPtr();
+				MSK_putvarname(task, colid, name.c_str());
+			}else {
+				solverinterface->setColName(colid, name);
+				}
+			
 			}
 			for (int rowid = 0; rowid < solverinterface->getNumRows(); ++rowid)
 			{
@@ -683,7 +691,16 @@ namespace Models
 					{
 					name = rownames.at(rowid);
 					}
-				solverinterface->setRowName(rowid, name);
+				if (solvertype == Models::FMTsolverinterface::MOSEK)
+				{
+					OsiMskSolverInterface* msksolver = dynamic_cast<OsiMskSolverInterface*>(solverinterface.get());
+					MSKtask_t task = msksolver->getMutableLpPtr();
+					MSK_putconname(task, rowid, name.c_str());
+				}
+				else {
+					solverinterface->setRowName(rowid, name);
+				}
+				
 			}
 		}
 		catch (...)
@@ -696,7 +713,39 @@ namespace Models
 		{
 		try{
 			matrixcache.synchronize(solverinterface);
-			solverinterface->writeLp(location.c_str());
+			if (solvertype == Models::FMTsolverinterface::MOSEK)
+			{
+				std::vector<char*>rownames;
+				std::vector<char*>colnames;
+				OsiMskSolverInterface* msksolver = dynamic_cast<OsiMskSolverInterface*>(solverinterface.get());
+				MSKtask_t task = msksolver->getMutableLpPtr();
+				for (int colid = 0; colid < solverinterface->getNumCols();++colid)
+					{
+					char buffer[COIN_MESSAGE_HANDLER_MAX_BUFFER_SIZE];
+					MSK_getvarname(task, colid, COIN_MESSAGE_HANDLER_MAX_BUFFER_SIZE, buffer);
+					colnames.push_back(strdup(buffer));
+					}
+				for (int rowid = 0; rowid < solverinterface->getNumRows(); ++rowid)
+				{
+					char buffer[COIN_MESSAGE_HANDLER_MAX_BUFFER_SIZE];
+					MSK_getconname(task, rowid, COIN_MESSAGE_HANDLER_MAX_BUFFER_SIZE, buffer);
+					rownames.push_back(strdup(buffer));
+				}
+				rownames.push_back(strdup("objective"));
+				const std::string locationwextension(location + ".lp");
+				solverinterface->writeLpNative(locationwextension.c_str(), &rownames[0], &colnames[0], 1.0e-5, 10, 5, solverinterface->getObjSense());
+				for (char* value : colnames)
+					{
+					free(value);
+					}
+				for (char* value : rownames)
+					{
+					free(value);
+					}
+			}else {
+				solverinterface->writeLp(location.c_str());
+			}
+			
 		}catch (...)
 			{
 			_exhandler->raisefromcatch("", "FMTlpsolver::writeLP", __LINE__, __FILE__);
