@@ -16,6 +16,7 @@ if __name__ == "__main__":
         modelparser.setquietlogger()
         path = "../Models/TWD_land/TWD_land.pri"
         scenarios = ["Globalreplanning","Localreplanning","Globalfire"]
+        outputnames = ["OVOLREC"]
         models = modelparser.readproject(path, scenarios)
         maxperiod = 10
         replanningperiods = 10
@@ -24,17 +25,21 @@ if __name__ == "__main__":
             globalmodel.buildperiod()
         globalconstraints = globalmodel.getconstraints()
         globalobjective = globalconstraints[0]
-        globalmodel.setobjective(globalobjective)
         globalconstraints.pop(0)
+        alloutputs = []
         for output in globalmodel.getoutputs():
-            if (output.getname() == "OVOLREC"):
-                baseoutput = output
+            for name in alloutputs:
+                if (output.getname() == name):
+                    alloutputs.append(output)
+                    break
         for constraint in globalconstraints:
             globalmodel.setconstraint(constraint)
+        globalmodel.setobjective(globalobjective)
         if globalmodel.initialsolve():
             print('Ba:', end = '')
             for period in range(1,maxperiod+1):
-                print(int(globalmodel.getoutput(baseoutput, period,Graph.FMToutputlevel.totalonly)["Total"]),end=' ')
+                for output in alloutputs:
+                    print(int(globalmodel.getoutput(output,period,Graph.FMToutputlevel.totalonly)["Total"]),end=' ')
             print()
             for iteration in range(1,replanningperiods+1):
                localglobal = Models.FMTlpmodel(globalmodel)
@@ -53,12 +58,13 @@ if __name__ == "__main__":
                    localmodel.setareaperiod(0)
                    potentialpaths.setperiod(1)
                    localmodel.buildperiod()
-                   localmodel.setobjective(localobjective)
                    globalysetconstraints = localglobal.getlocalconstraints(localconstraints,1)
                    for constraint in globalysetconstraints:
                        localmodel.setconstraint(constraint)
+                   localmodel.setobjective(localobjective)
                    if localmodel.initialsolve():
-                       print(int(localmodel.getoutput(baseoutput,1,Graph.FMToutputlevel.totalonly)["Total"]), end=' ')
+                       for output in alloutputs:
+                           print(int(localmodel.getoutput(baseoutput,1,Graph.FMToutputlevel.totalonly)["Total"]), end=' ')
                        completelocalschedule = localmodel.getsolution(1,True)+ disturbed
                        completelocalschedule.setperiod(replanningperiod)
                        schparser=Parser.FMTscheduleparser() 

@@ -1533,6 +1533,8 @@ bool FMTlpmodel::locatenodes(const std::vector<Core::FMToutputnode>& nodes, int 
 				if (!getgoals(targets, all_variables, penalty_sense))
 				{
 					//No goals set...
+					_exhandler->raise(Exception::FMTexc::FMTnonaddedconstraint,
+						"No goals detected", "FMTlpmodel::setobjective", __LINE__, __FILE__);
 				}
 			}
 			std::vector<double>finalobj(static_cast<size_t>(solver.getNumCols()), 0.0);
@@ -1588,12 +1590,14 @@ bool FMTlpmodel::locatenodes(const std::vector<Core::FMToutputnode>& nodes, int 
 			{
 				if (!constraint.isobjective() && constraint.isgoal())
 				{
+					
 					std::string name;
 					double value = 1;
 					constraint.getgoal(name, value);
 					value *= sense;
 					if (goalsnames.at(0) == "ALL" || (std::find(goalsnames.begin(), goalsnames.end(), name) != goalsnames.end()))
 					{
+						
 						int first_period = 0;
 						int last_period = 0;
 						graph.constraintlenght(constraint, first_period, last_period);
@@ -1737,13 +1741,18 @@ bool FMTlpmodel::locatenodes(const std::vector<Core::FMToutputnode>& nodes, int 
 	std::vector<Heuristics::FMToperatingareascheduler>FMTlpmodel::getoperatingareaschedulerheuristics(const std::vector<Heuristics::FMToperatingareascheme>& opareas,
 																						const Core::FMToutputnode& node,
 																						size_t numberofheuristics,
-																						bool copysolver)
+																						bool copysolver,
+																						bool updatematrixname)
 		{
 		bool userandomness = false;
 		size_t seedof = 0;
 		double proportionofset = 0.25;
 		std::vector<Heuristics::FMToperatingareascheduler>allheuristics;
 		try {
+			if (updatematrixname)//For debugging matrix
+				{
+				updatematrixnaming();
+				}
 			allheuristics.emplace_back(opareas, graph, *this, node,*this->getsolverptr(), seedof, proportionofset, userandomness, copysolver);
 			for (size_t heuristicid = 1 ; heuristicid < numberofheuristics; ++heuristicid)
 				{

@@ -484,6 +484,13 @@ class FMTmodel : public Core::FMTobject
 		a FMTobject.
 		*/
 		virtual void passinobject(const Core::FMTobject& rhs) override;
+		// DocString: FMTmodel::getpotentialschedule
+		/**
+		The function will remove (toremove) developments from a selected vector (selection). Test operability of the 
+		difference and return a schedule containing an area of 1.0 if the developement is operable to this actions.
+		*/
+		Core::FMTschedule getpotentialschedule(std::vector<Core::FMTactualdevelopment> toremove,
+											    std::vector<Core::FMTactualdevelopment> selection,bool withlock=true) const;
 
     };
 // DocString: FMTmodelcomparator

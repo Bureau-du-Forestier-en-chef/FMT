@@ -1171,6 +1171,37 @@ void FMTmodel::passinobject(const Core::FMTobject& rhs)
 		}
 	}
 
+Core::FMTschedule FMTmodel::getpotentialschedule(std::vector<Core::FMTactualdevelopment> toremove,
+	std::vector<Core::FMTactualdevelopment> selection, bool withlock) const
+{
+	Core::FMTschedule schedule;
+	schedule.setuselock(withlock);
+	try {
+		for (const Core::FMTactualdevelopment& actdev : selection)
+			{
+			if (std::find_if(toremove.begin(),toremove.end(),Core::FMTactualdevelopmentcomparator(dynamic_cast<const Core::FMTdevelopment*>(&actdev)))==toremove.end())
+				{
+				for (const Core::FMTaction& action : actions)
+					{
+					if (actdev.operable(action,yields))
+						{
+						schedule.addevent(actdev, 1.0, action);
+						}
+					}
+				}
+			}
+		if (!selection.empty())
+			{
+			schedule.setperiod(selection.back().period);
+			}
+		schedule.clean();
+	}catch (...)
+	{
+		_exhandler->raisefromcatch("", " FMTmodel::getpotentialschedule", __LINE__, __FILE__);
+	}
+	return schedule;
+}
+
 
 
 FMTmodelcomparator::FMTmodelcomparator(std::string name) :model_name(name) {}
