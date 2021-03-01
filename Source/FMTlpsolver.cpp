@@ -724,16 +724,24 @@ namespace Models
 					char buffer[COIN_MESSAGE_HANDLER_MAX_BUFFER_SIZE];
 					MSK_getvarname(task, colid, COIN_MESSAGE_HANDLER_MAX_BUFFER_SIZE, buffer);
 					colnames.push_back(strdup(buffer));
+					if (strlen(buffer)>100)
+						{
+						_exhandler->raise(Exception::FMTexc::FMTrangeerror, "Buffer size for colnames is bigger than allowed in CLPIO", "FMTlpsolver::writeLP", __LINE__, __FILE__);
+						}
 					}
 				for (int rowid = 0; rowid < solverinterface->getNumRows(); ++rowid)
 				{
 					char buffer[COIN_MESSAGE_HANDLER_MAX_BUFFER_SIZE];
 					MSK_getconname(task, rowid, COIN_MESSAGE_HANDLER_MAX_BUFFER_SIZE, buffer);
 					rownames.push_back(strdup(buffer));
+					if (strlen(buffer)>100)
+					{
+						_exhandler->raise(Exception::FMTexc::FMTrangeerror, "Buffer size for rownames is bigger than allowed in CLPIO", "FMTlpsolver::writeLP", __LINE__, __FILE__);
+					}
 				}
 				rownames.push_back(strdup("objective"));
 				const std::string locationwextension(location + ".lp");
-				solverinterface->writeLpNative(locationwextension.c_str(), &rownames[0], &colnames[0], 1.0e-5, 10, 5, solverinterface->getObjSense());
+				solverinterface->writeLpNative(locationwextension.c_str(), &rownames[0], &colnames[0], 1.0e-5, 10, 5, 1);
 				for (char* value : colnames)
 					{
 					free(value);
