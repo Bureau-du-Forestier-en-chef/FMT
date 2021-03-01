@@ -455,7 +455,7 @@ class FMTgraph : public Core::FMTobject
 				for (boost::tie(vertex_iterator, vertex_iterator_end) = boost::vertices(data); vertex_iterator != vertex_iterator_end;++vertex_iterator)
 					{
 					std::string basename=std::string(Core::FMTdevelopment(data[*vertex_iterator].get()));
-					boost::replace_all(basename, " ", "_");
+					boost::replace_all(basename, " ", "");
 					FMToutedge_iterator outit, outend;
 					for (boost::tie(outit, outend) = boost::out_edges(*vertex_iterator,data);outit!=outend;++outit)
 						{
@@ -468,7 +468,7 @@ class FMTgraph : public Core::FMTobject
 							}
 						if (variablenames.find(variableid)== variablenames.end())
 							{
-							variablenames[variableid] = basename + "("+actionname + ")";
+							variablenames[variableid] = basename +actionname ;
 							}
 						}
 
@@ -490,7 +490,7 @@ class FMTgraph : public Core::FMTobject
 				{
 					const int rowid = data[*vertex_iterator].getconstraintID();
 					std::string basename = std::string(Core::FMTdevelopment(data[*vertex_iterator].get()));
-					boost::replace_all(basename, " ", "_");
+					boost::replace_all(basename, " ", "");
 					rownames[rowid] = basename;
 				}
 			}
