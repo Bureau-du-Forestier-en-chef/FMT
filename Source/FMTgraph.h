@@ -550,7 +550,7 @@ class FMTgraph : public Core::FMTobject
 				if (!output.islevel())
 				{
 					const int localperiod = getfirstactiveperiod() + period;//Normal planning first active period is 0, in replanning it wont be 0!.
-					for (const Core::FMToutputnode& output_node : output.getnodes(model.area, model.actions, model.yields))
+					for (const Core::FMToutputnode& output_node : output.getnodes(/*model.area, model.actions, model.yields*/))
 					{
 						const std::map<std::string, double> srcvalues = getsource(model, output_node, localperiod, targettheme, solution, level);
 						if (level == FMToutputlevel::developpement)
