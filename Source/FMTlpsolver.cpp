@@ -963,6 +963,30 @@ namespace Models
 			}
 		}
 
+	void FMTlpsolver::passinobject(const Core::FMTobject& object)
+	{
+		try {
+			FMTobject::passinobject(object);
+			FMTlpsolver::passinlogger(this->_logger);
+		}
+		catch (...)
+		{
+			_exhandler->raisefromcatch("", "FMTlpsolver::passinobject", __LINE__, __FILE__);
+		}
+	}
+
+	void FMTlpsolver::passinexceptionhandler(const std::shared_ptr<Exception::FMTexceptionhandler>& exhandler)
+	{
+		try {
+			FMTobject::passinexceptionhandler(exhandler);
+			FMTlpsolver::passinlogger(this->_logger);
+		}
+		catch (...)
+		{
+			_exhandler->raisefromcatch("", "FMTlpsolver::passinexceptionhandler", __LINE__, __FILE__);
+		}
+	}
+
 }
 BOOST_CLASS_EXPORT_IMPLEMENT(Models::FMTlpsolver)
 #endif

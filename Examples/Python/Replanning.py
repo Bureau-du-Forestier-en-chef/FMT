@@ -19,16 +19,17 @@ if __name__ == "__main__":
         outputnames = ["OVOLREC"]
         models = modelparser.readproject(path, scenarios)
         maxperiod = 10
-        replanningperiods = 10
+        replanningperiods = min(10,maxperiod)
+        iterations = 50
         globalmodel = Models.FMTlpmodel(models[0], Models.FMTsolverinterface.CLP)
-        for period in range(0,maxperiod+replanningperiods):
+        for period in range(0,maxperiod):
             globalmodel.buildperiod()
         globalconstraints = globalmodel.getconstraints()
         globalobjective = globalconstraints[0]
         globalconstraints.pop(0)
         alloutputs = []
         for output in globalmodel.getoutputs():
-            for name in alloutputs:
+            for name in outputnames:
                 if (output.getname() == name):
                     alloutputs.append(output)
                     break
@@ -41,41 +42,46 @@ if __name__ == "__main__":
                 for output in alloutputs:
                     print(int(globalmodel.getoutput(output,period,Graph.FMToutputlevel.totalonly)["Total"]),end=' ')
             print()
-            for iteration in range(1,replanningperiods+1):
+            for iteration in range(1,iterations+1):
                localglobal = Models.FMTlpmodel(globalmodel)
                print( "It ", iteration, end=' ')
                localsimulation = Models.FMTnssmodel(models[2], iteration)
                localconstraints = models[1].getconstraints()
                localobjective = localconstraints[0]
                localconstraints.pop(0)
-               for replanningperiod in range(1,maxperiod+1):
+               for replanningperiod in range(1,replanningperiods+1):
                    basearea = localglobal.getarea(replanningperiod)
-                   localsimulation.setarea(localglobal.getarea(replanningperiod))
+                   localsimulation.setarea(basearea)
                    disturbed = localsimulation.simulate(False,True)
-                   potentialpaths = localglobal.getsolution(replanningperiod,True)
+                   
                    localmodel = Models.FMTlpmodel(models[1], Models.FMTsolverinterface.CLP)
-                   localmodel.setarea(localsimulation.getarea())
-                   localmodel.setareaperiod(0)
-                   potentialpaths.setperiod(1)
-                   localmodel.buildperiod()
-                   globalysetconstraints = localglobal.getlocalconstraints(localconstraints,1)
+                   simulatedarea = localsimulation.getarea()
+                   localmodel.setarea(basearea)
+                   newpotential = localmodel.getpotentialschedule(basearea, simulatedarea)
+                   localmodel.setarea(simulatedarea)
+                   localmodel.setareaperiod(replanningperiod-1)
+                   potentialpaths = localglobal.getsolution(replanningperiod,True) + newpotential
+                   localmodel.buildperiod(potentialpaths,True)
+                   globalysetconstraints = localglobal.getlocalconstraints(localconstraints,replanningperiod)
+                   globalysetconstraints.insert(0,localobjective)
+                   localmodel.setconstraints(globalysetconstraints)
                    for constraint in globalysetconstraints:
                        localmodel.setconstraint(constraint)
                    localmodel.setobjective(localobjective)
                    if localmodel.initialsolve():
                        for output in alloutputs:
-                           print(int(localmodel.getoutput(baseoutput,1,Graph.FMToutputlevel.totalonly)["Total"]), end=' ')
-                       completelocalschedule = localmodel.getsolution(1,True)+ disturbed
-                       completelocalschedule.setperiod(replanningperiod)
+                           print(int(localmodel.getoutput(output,replanningperiod,Graph.FMToutputlevel.totalonly)["Total"]), end=' ')
+                       completelocalschedule = localmodel.getsolution(replanningperiod,True)+ disturbed
                        schparser=Parser.FMTscheduleparser() 
                        localglobal.setsolution(replanningperiod, completelocalschedule,0.001)
                        localglobal.eraseperiod(True)
                        if localglobal.boundsolution(replanningperiod,0.00001):
                            localglobal.eraseperiod()
-                           localglobal.buildperiod()
-                           localglobal.setobjective(globalobjective)
+                           #localglobal.buildperiod()
+                          
                            for constraint in globalconstraints:
                                localglobal.setconstraint(constraint)
+                           localglobal.setobjective(globalobjective)
                            if not localglobal.resolve():
                               print("Global model infeasible at replanning-period ", replanningperiod)
                        else:

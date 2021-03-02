@@ -340,10 +340,21 @@ class FMTgraph : public Core::FMTobject
 				std::queue<FMTvertex_descriptor>actives;
 				try {
 					developments.clear();
-					developments.push_back(boost::unordered_set<Core::FMTlookup<FMTvertex_descriptor,Core::FMTdevelopment>>());
+					/*developments.push_back(boost::unordered_set<Core::FMTlookup<FMTvertex_descriptor,Core::FMTdevelopment>>());
 					developments.back().reserve(actdevelopments.size());
 					developments.push_back(boost::unordered_set<Core::FMTlookup<FMTvertex_descriptor,Core::FMTdevelopment>>());
-					developments.back().reserve(actdevelopments.size());
+					developments.back().reserve(actdevelopments.size());*/
+					const int startingperiod = actdevelopments.begin()->period;
+					const int actualperiod = startingperiod+1;
+					for (int period = 0 ; period <= actualperiod;++period)
+						{
+						developments.push_back(boost::unordered_set<Core::FMTlookup<FMTvertex_descriptor, Core::FMTdevelopment>>());
+						}
+					for (int period = startingperiod; period <= actualperiod; ++period)
+						{
+						developments[period].reserve(actdevelopments.size());
+						}
+
 					const int constraint_id = -1;
 					int edge_id = -1;
 					const double proportion = 100;
@@ -358,7 +369,7 @@ class FMTgraph : public Core::FMTobject
 						++stats.vertices;
 						//P1
 						Core::FMTfuturdevelopment P1dev(development);
-						P1dev.period = 1;
+						P1dev.period = actualperiod;
 						FMTvertex_descriptor tovertex;
 						tovertex = adddevelopment(P1dev);
 						actives.push(tovertex);
@@ -468,7 +479,7 @@ class FMTgraph : public Core::FMTobject
 							}
 						if (variablenames.find(variableid)== variablenames.end())
 							{
-							variablenames[variableid] = basename +actionname ;
+							variablenames[variableid] = basename + actionname ;
 							}
 						}
 
@@ -549,10 +560,15 @@ class FMTgraph : public Core::FMTobject
 				}
 				if (!output.islevel())
 				{
-					const int localperiod = getfirstactiveperiod() + period;//Normal planning first active period is 0, in replanning it wont be 0!.
+				
+					//const int localperiod = getfirstactiveperiod() + period;//Normal planning first active period is 0, in replanning it wont be 0!.
+					if (getfirstactiveperiod()>0)
+						{
+						++period;
+						}
 					for (const Core::FMToutputnode& output_node : output.getnodes(/*model.area, model.actions, model.yields*/))
 					{
-						const std::map<std::string, double> srcvalues = getsource(model, output_node, localperiod, targettheme, solution, level);
+						const std::map<std::string, double> srcvalues = getsource(model, output_node,period, targettheme, solution, level);
 						if (level == FMToutputlevel::developpement)
 						{
 							for (std::map<std::string, double>::const_iterator mit = srcvalues.begin(); mit != srcvalues.end(); mit++)
@@ -1347,7 +1363,8 @@ class FMTgraph : public Core::FMTobject
 		void getinitialbounds(std::vector<double>& lower_bounds, std::vector<double>& upper_bounds) const
 		{
 			try {
-				for (const auto& descriptors : developments.at(0))
+				
+				for (const auto& descriptors : developments.at(getfirstactiveperiod()))
 				{
 					const FMTvertex_descriptor descriptor = descriptors.memoryobject;
 					const FMTvertexproperties& property = data[descriptor];
@@ -1609,6 +1626,14 @@ class FMTgraph : public Core::FMTobject
 		{
 			return static_cast<int>(std::distance(developments.begin(), getfirstconstblock()));
 		}
+		/*int getfirstmatchperiod(const int& period) const
+		{
+			const int firstactive = getfirstactiveperiod();
+			const int firstperiod = developments.at(firstactive).begin()->pointerobject.period;
+			int jump = (period - firstperiod);
+
+			return target;
+		}*/
 		FMTgraph postsolve(const Core::FMTmask& selectedmask,
 			const std::vector<Core::FMTtheme>&originalbasethemes,
 			const std::map<int,int>& actionmapconnection) const
