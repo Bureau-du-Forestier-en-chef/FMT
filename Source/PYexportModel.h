@@ -26,6 +26,7 @@ BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(get_outputs_overloads, get_outputs, 0, 1)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(getsolution_overloads, getsolution, 1, 2)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(getLPoutputoverloads, getoutput, 2, 3)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(getschedulesoverloads, getschedule, 0, 1)
+BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(getpotentialscheduleoverloads, getpotentialschedule,2,3)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(warmup_overloads, warmup, 2, 4)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(evaluate_overloads, evaluate, 1, 2)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(getoperatingareaschedulerheuristics_overloads, getoperatingareaschedulerheuristics,2, 5)
@@ -89,7 +90,7 @@ void exportModel()
             .def("isvalid",&Models::FMTmodel::isvalid,
 				"@DocString(FMTmodel::isvalid)")
 		.def("getpotentialschedule", &Models::FMTmodel::getpotentialschedule,
-			"@DocString(FMTmodel::getpotentialschedule)");
+			getpotentialscheduleoverloads(bp::args("toremove","selection","withlock"),"@DocString(FMTmodel::getpotentialschedule)"));
 
     define_pylist<Models::FMTmodel>();
 

@@ -664,7 +664,7 @@ namespace Models
 	{
 		try {
 			const double* solution = solver.getColSolution();
-			//*_logger << "for output " << std::string(output) << "\n";
+			//*_logger << "active period " << graph.getfirstactiveperiod() << "\n";
 			return graph.getoutput(*this, output, period, solution, level);
 		}catch (...)
 			{
