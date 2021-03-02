@@ -765,7 +765,7 @@ bool FMTlpmodel::locatenodes(const std::vector<Core::FMToutputnode>& nodes, int 
 					{
 						averagefactor = (1 / (last_period - first_period));
 					}
-					std::vector<Core::FMToutputnode>all_nodes = constraint.getnodes(area,actions,yields,averagefactor);
+					std::vector<Core::FMToutputnode>all_nodes = constraint.getnodes(/*area,actions,yields,*/averagefactor);
 					double lowerbound = 0;
 					double upperbound = 0;
 					double coef_multiplier_lower = 1;
@@ -1485,7 +1485,7 @@ bool FMTlpmodel::locatenodes(const std::vector<Core::FMToutputnode>& nodes, int 
 			{
 				averagefactor = (1 / (last_period - first_period));
 			}
-			const std::vector<Core::FMToutputnode>all_nodes = objective.getnodes(area,actions,yields,averagefactor);
+			const std::vector<Core::FMToutputnode>all_nodes = objective.getnodes(/*area,actions,yields,*/averagefactor);
 			std::map<int, double>all_variables;
 			if (!objective.extravariables())
 			{

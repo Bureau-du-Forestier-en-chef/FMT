@@ -209,9 +209,9 @@ class FMToutput: public FMTobject
 	This function returns a vector of FMToutputnode generated from the outputnodesource and FMToperators for the FMTouput,
 	a multiplier can be added to multiply all the nodesource with a factor.
 	*/
-	std::vector<FMToutputnode> getnodes(const std::vector<FMTactualdevelopment>&area,
+	std::vector<FMToutputnode> getnodes(/*const std::vector<FMTactualdevelopment>&area,
 										const std::vector<Core::FMTaction>&actions,
-										const FMTyields& yields,
+										const FMTyields& yields,*/
 										double multiplier = 1) const;
 	// DocString: FMToutput::issingleperiod
 	/**

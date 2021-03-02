@@ -363,9 +363,9 @@ FMToutput FMToutput::boundto(const std::vector<FMTtheme>& themes, const FMTperbo
 	return newoutput;
 	}
 
-std::vector<FMToutputnode> FMToutput::getnodes(const std::vector<FMTactualdevelopment>&area,
+std::vector<FMToutputnode> FMToutput::getnodes(/*const std::vector<FMTactualdevelopment>&area,
 											   const std::vector<Core::FMTaction>&actions,
-											   const FMTyields& yields,
+											   const FMTyields& yields,*/
 											   double multiplier) const
 	{
 	//set a expression and get the nodes! check if the node is positive or negative accross the equation!!!
@@ -379,8 +379,11 @@ std::vector<FMToutputnode> FMToutput::getnodes(const std::vector<FMTactualdevelo
 		nodes.reserve(sources.size());
 		for (const FMToutputsource& source : sources)
 		{
-			if (((source.isvariable() && (!source.canbededucedtoconstant()||
-				(source.canbededucedtoconstant() && !((op_id < operators.size()) && operators.at(op_id).isfactor())))) || source.islevel()))
+			/**_logger<<std::string(source)<<"\n";
+			*_logger<<!((op_id < operators.size()) && operators.at(op_id).isfactor())<<"\n";
+			if(op_id < operators.size()){*_logger<<std::string(operators.at(op_id))<<"\n";}*/
+			if ((source.isvariable() /*&& (!source.canbededucedtoconstant()||
+				(source.canbededucedtoconstant() && !((op_id < operators.size()) && operators.at(op_id).isfactor()))))*/ || source.islevel()))
 			{
 				if (!main_source.getmask().empty() || main_source.isvariablelevel())
 				{
@@ -412,11 +415,11 @@ std::vector<FMToutputnode> FMToutput::getnodes(const std::vector<FMTactualdevelo
 					const double value = source.getvalue();
 					constant = operators.at(op_id).call(constant, value);
 				}
-				else if (source.canbededucedtoconstant())
+				/*else if (source.canbededucedtoconstant())
 				{
 					const double value = source.getconstantvalue(area, actions, yields);
 					constant = operators.at(op_id).call(constant, value);
-				}
+				}*/
 			}
 			if (src_id > 0)
 			{
