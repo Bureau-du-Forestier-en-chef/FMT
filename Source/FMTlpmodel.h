@@ -481,6 +481,11 @@ class FMTlpmodel : public FMTmodel
 		Get a pointer to the solver behind the model.
 		*/
 		FMTlpsolver* getsolverptr();
+		// DocString: FMTlpmodel::getObjValue
+		/**
+		Get the objective value of the solved matrix.
+		*/
+		double getObjValue() const;
 		// DocString: FMTlpmodel::passinlogger
 		/**
 		It's sometime usefull to pass in the logger of an other FMTobject.
