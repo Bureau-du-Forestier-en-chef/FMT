@@ -190,6 +190,8 @@ void exportModel()
 			"@DocString(FMTlpmodel::operator!=)")
 		.def("getstats", &Models::FMTlpmodel::getstats,
 			"@DocString(FMTlpmodel::getstats)")
+		.def("getObjValue", &Models::FMTlpmodel::getObjValue,
+					"@DocString(FMTlpmodel::getObjValue)")
 		.def("getlocalconstraints",
 			&Models::FMTlpmodel::getlocalconstraints,
 			"@DocString(FMTlpmodel::getlocalconstraints)")
