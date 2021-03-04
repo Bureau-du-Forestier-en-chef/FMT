@@ -365,7 +365,7 @@ class FMTgraph : public Core::FMTobject
 						//P0
 						const FMTvertexproperties properties(development, constraint_id);
 						FMTvertex_descriptor newvertex = boost::add_vertex(properties, data);
-						developments[0].insert(Core::FMTlookup<FMTvertex_descriptor,Core::FMTdevelopment>(newvertex,data[newvertex].get()));
+						developments[startingperiod].insert(Core::FMTlookup<FMTvertex_descriptor,Core::FMTdevelopment>(newvertex,data[newvertex].get()));
 						++stats.vertices;
 						//P1
 						Core::FMTfuturdevelopment P1dev(development);
@@ -562,10 +562,10 @@ class FMTgraph : public Core::FMTobject
 				{
 				
 					//const int localperiod = getfirstactiveperiod() + period;//Normal planning first active period is 0, in replanning it wont be 0!.
-					if (getfirstactiveperiod()>0)
+					/*if (getfirstactiveperiod()>0)
 						{
 						++period;
-						}
+						}*/
 					for (const Core::FMToutputnode& output_node : output.getnodes(/*model.area, model.actions, model.yields*/))
 					{
 						const std::map<std::string, double> srcvalues = getsource(model, output_node,period, targettheme, solution, level);
@@ -1126,7 +1126,8 @@ class FMTgraph : public Core::FMTobject
 				{
 					constraintlower = static_cast<int>((developments.size() - 2));
 				}
-				start = std::max(constraintlower, getfirstactiveperiod() + 1);
+				//start = std::max(constraintlower, getfirstactiveperiod() + 1);
+				start = std::max(constraintlower, getfirstperiod());
 				stop = static_cast<int>((constraint.getperiodupperbound() > static_cast<int>((developments.size() - 2))) ? (developments.size() - 2) : constraint.getperiodupperbound());
 				if (constraint.acrossperiod())
 				{
@@ -1626,14 +1627,10 @@ class FMTgraph : public Core::FMTobject
 		{
 			return static_cast<int>(std::distance(developments.begin(), getfirstconstblock()));
 		}
-		/*int getfirstmatchperiod(const int& period) const
-		{
-			const int firstactive = getfirstactiveperiod();
-			const int firstperiod = developments.at(firstactive).begin()->pointerobject.period;
-			int jump = (period - firstperiod);
-
-			return target;
-		}*/
+		int getfirstperiod() const
+			{
+			return developments.at(getfirstactiveperiod() +1).begin()->pointerobject->period;
+			}
 		FMTgraph postsolve(const Core::FMTmask& selectedmask,
 			const std::vector<Core::FMTtheme>&originalbasethemes,
 			const std::map<int,int>& actionmapconnection) const

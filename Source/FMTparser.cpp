@@ -7,6 +7,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 #include "FMTparser.h"
 #include <boost/filesystem.hpp>
+#include <boost/locale.hpp>
 
 
 
@@ -455,6 +456,9 @@ bool FMTparser::isyld(const Core::FMTyields& ylds,const std::string& value, Core
 		}
      return false;
     }
+
+
+
 
 
 

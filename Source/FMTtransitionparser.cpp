@@ -142,6 +142,7 @@ std::vector<Core::FMTtransitionmask> FMTtransitionparser::getmasktran(const std:
 			targetmask.set(themes[targettheme], sourcemask.get(themes[targettheme]));
 			for (Core::FMTmask& lmask : targetmask.decompose(themes[targettheme]))
 			{
+				
 				const std::string actual = lmask.get(themes[targettheme]);
 				std::string newval;
 				if (isnum(actual))//just math
@@ -155,8 +156,13 @@ std::vector<Core::FMTtransitionmask> FMTtransitionparser::getmasktran(const std:
 				{
 					lmask.set(themes[targettheme], newval);
 					multiples.push_back(lmask);
+				}else {
+					_exhandler->raise(Exception::FMTexc::FMTignore,
+						"_REPLACE generated " + newval+" THEME("+std::string(strtargettheme)+") not in landscape", "FMTtransitionparser::getmasktran", __LINE__, __FILE__,_section);
 				}
+
 			}
+			
 			replaced = targettheme;
 			rest = std::string(kmatch[1]) + std::string(kmatch[14]);
 		}

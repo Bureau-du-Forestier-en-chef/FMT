@@ -432,6 +432,11 @@ std::string FMTexceptionhandler::updatestatus(const FMTexc lexception, const std
 		_level = FMTlev::FMT_Warning;
 		++_warningcount;
 		break;
+	case FMTexc::FMTinfeasibleconstraint:
+		msg += "Infeasible constraint: " + message;
+		_level = FMTlev::FMT_logic;
+		++_errorcount;
+		break;
 	case FMTexc::FMTmissinglicense:
 		msg += "License error: " + message;
 		_level = FMTlev::FMT_logic;
