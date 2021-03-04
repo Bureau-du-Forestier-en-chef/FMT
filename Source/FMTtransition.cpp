@@ -129,6 +129,7 @@ const FMTfork* FMTtransition::getfork(const FMTdevelopment& dev,
        {
 		if (fork->allowwithoutyield(dev.period, dev.age, dev.lock))
 			{
+			
 			const std::vector<double>yields = ylds.getylds(dev, *fork);
 			
 			if (fork->allowyields(yields))

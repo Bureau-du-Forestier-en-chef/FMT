@@ -402,6 +402,8 @@ std::vector<Models::FMTmodel>FMTmodelparser::readproject(const std::string& prim
 		std::map<std::string, std::vector<int>>commons;
 		if (_logger->logwithlevel("Reading " + primary_location+" ", 0))
 			{
+			*_logger << "\n";
+			_logger->logstamp();
 			_logger->logtime();
 			}
 		std::map<Core::FMTsection, std::string>bases = getprimary(primary_location);

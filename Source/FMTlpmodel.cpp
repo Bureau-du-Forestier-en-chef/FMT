@@ -1647,9 +1647,18 @@ bool FMTlpmodel::locatenodes(const std::vector<Core::FMToutputnode>& nodes, int 
 			{
 				std::string cname = std::string(constraint);
 				cname.erase(std::remove(cname.begin(), cname.end(), '\n'), cname.end());
-				_exhandler->raise(Exception::FMTexc::FMTnonaddedconstraint,
-					std::string(cname) + " at period " + std::to_string(period),
-					"FMTlpmodel::getsetmatrixelement",__LINE__, __FILE__);
+				if (period>(graph.getfirstactiveperiod())&&period<static_cast<int>(graph.size())&&
+					constraint.getconstrainttype() == Core::FMTconstrainttype::FMTstandard &&
+					(upperbound< 0 || lowerbound > 0))
+					{
+					_exhandler->raise(Exception::FMTexc::FMTinfeasibleconstraint,
+						std::string(cname) + " at period " + std::to_string(period),
+						"FMTlpmodel::getsetmatrixelement", __LINE__, __FILE__);
+				}else {
+					_exhandler->raise(Exception::FMTexc::FMTnonaddedconstraint,
+						std::string(cname) + " at period " + std::to_string(period),
+						"FMTlpmodel::getsetmatrixelement", __LINE__, __FILE__);
+					}
 				return -1;
 			}
 			std::vector<int>sumvariables;
