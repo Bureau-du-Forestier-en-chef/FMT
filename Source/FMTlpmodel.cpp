@@ -1867,7 +1867,7 @@ bool FMTlpmodel::locatenodes(const std::vector<Core::FMToutputnode>& nodes, int 
 			{
 			return solver.getObjValue();
 			}else{
-				_exhandler->raise(Exception::FMTexc::FMTnotoptimal,"Can not get objective value","FMTlpmodel::getObjValue",__LINE__, __FILE__);
+				_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,"Can not get objective value because model is NOT PROVEN OPTIMAL","FMTlpmodel::getObjValue",__LINE__, __FILE__);
 			}
 		}
 

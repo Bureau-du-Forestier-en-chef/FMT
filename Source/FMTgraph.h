@@ -387,7 +387,57 @@ class FMTgraph : public Core::FMTobject
 				return actives;
 
 			}
+		// DocString: FMTgraph::build(const Models::FMTmodel&,std::queue<FMTvertex_descriptor>)
+		/**
+		This function build one period at the end of the graph. Like in Woodstock, future developements of a given action
+		can not be operate by an action that is before in the section action. The actions in the model must be
+		ordered to take that in account.
+		*/
 		FMTgraphstats build(const Models::FMTmodel& model,
+					std::queue<FMTvertex_descriptor> actives)
+				{
+					FMTgraphstats statsdiff(stats);
+					try {
+						developments.push_back(boost::unordered_set<Core::FMTlookup<FMTvertex_descriptor,Core::FMTdevelopment>>());
+						int action_id = 0;
+						for (const Core::FMTaction& action : model.actions)
+						{
+							std::queue<FMTvertex_descriptor> new_actives;
+							while (!actives.empty())
+							{
+								const FMTvertex_descriptor front_vertex = actives.front();
+								actives.pop();
+								FMTvertexproperties front_properties = data[front_vertex];
+								const Core::FMTdevelopment active_development = front_properties.get();
+								bool death = false;
+								if (active_development.operable(action, model.yields))
+								{
+									if (action.getname() == "_DEATH")
+									{
+										death = true;
+									}
+									const std::vector<Core::FMTdevelopmentpath> paths = active_development.operate(action, model.transitions[action_id], model.yields, model.themes);
+									addaction(action_id, statsdiff, new_actives, front_vertex, paths);
+								}
+								if (!death)
+								{
+									new_actives.push(front_vertex);
+								}
+
+							}
+							actives = new_actives;
+							++action_id;
+						}
+
+					}
+					catch (...)
+					{
+						_exhandler->raisefromcatch("", "FMTgraph::build", __LINE__, __FILE__);
+					}
+					return naturalgrowth(actives,statsdiff);
+				}
+
+		/*FMTgraphstats build(const Models::FMTmodel& model,
 			std::queue<FMTvertex_descriptor> actives)
 		{
 			FMTgraphstats statsdiff(stats);
@@ -432,12 +482,12 @@ class FMTgraph : public Core::FMTobject
 			}
 			return (statsdiff - stats);
 
-		}
-		FMTgraphstats naturalgrowth(std::queue<FMTvertex_descriptor> actives)
+		}*/
+		FMTgraphstats naturalgrowth(std::queue<FMTvertex_descriptor> actives,FMTgraphstats statsdiff)
 		{
-			FMTgraphstats statsdiff(stats);
+			//FMTgraphstats statsdiff(stats);
 			try {
-				developments.push_back(boost::unordered_set<Core::FMTlookup<FMTvertex_descriptor,Core::FMTdevelopment>>());
+				//developments.push_back(boost::unordered_set<Core::FMTlookup<FMTvertex_descriptor,Core::FMTdevelopment>>());
 				while (!actives.empty())
 				{
 					const FMTvertex_descriptor front_vertex = actives.front();
@@ -446,9 +496,15 @@ class FMTgraph : public Core::FMTobject
 					const Core::FMTdevelopment active_development = front_properties.get();
 					const Core::FMTfuturdevelopment grown_up = active_development.grow();
 					FMTvertex_descriptor next_period = this->adddevelopment(grown_up); //getset
-					const FMTedgeproperties newedge(-1, 0, 100);
+					const FMTedgeproperties newedge(-1, statsdiff.cols, 100);
+					++statsdiff.cols;
 					boost::add_edge(front_vertex, next_period, newedge, data);
 					++stats.edges;
+					/*const Core::FMTfuturdevelopment grown_up = active_development.grow();
+					FMTvertex_descriptor next_period = this->adddevelopment(grown_up); //getset
+					const FMTedgeproperties newedge(-1, 0, 100);
+					boost::add_edge(front_vertex, next_period, newedge, data);
+					++stats.edges;*/
 				}
 			}
 			catch (...)
