@@ -37,6 +37,8 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #endif
 
 #include <boost/filesystem.hpp>
+#include <boost/filesystem/operations.hpp>
+#include <ctime>
 
 #include "FMTobject.h"
 
@@ -109,6 +111,9 @@ class FMTparser: public Core::FMTobject
 		// DocString: FMTparser::_location
 		///File location of the section read by the parser.
 		mutable std::string _location;
+		// DocString: FMTparser::mostrecentfile
+		///The most recent file time read by this parser.
+		mutable std::time_t mostrecentfile;
 		// DocString: FMTparser::createdataset
 		/**
 		The function create an empty GDALDataset for a given FMTlayer.
@@ -256,6 +261,11 @@ class FMTparser: public Core::FMTobject
 		Default destructor for FMTparser.
 		*/
         virtual ~FMTparser()=default;
+		// DocString: FMTparser::getmostrecentfiletime
+		/**
+		Get the most recentfiletime of the files read by ther parser.
+		*/
+		std::time_t getmostrecentfiletime() const;
 		// DocString: FMTparser::tryopening
 		/**
 		Open a input stream at a given location.
