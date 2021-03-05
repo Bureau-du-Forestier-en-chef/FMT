@@ -38,6 +38,7 @@ FMTactionparser& FMTactionparser::operator = (const FMTactionparser& rhs)
 			const std::array<std::string, 5> baseoperators = this->getbaseoperators();
 			size_t loc = 0;
 			int maskloc = 0;
+			bool gotsomething = false;
 			std::vector<std::string>yields;
 			for (const std::string& op : elements)
 			{
@@ -60,9 +61,14 @@ FMTactionparser& FMTactionparser::operator = (const FMTactionparser& rhs)
 					{
 						maskloc = static_cast<int>(loc) - 1;
 					}
+					gotsomething = true;
 				}
 				++loc;
 			}
+			if (!gotsomething)
+				{
+				maskloc = static_cast<int>(elements.size());
+				}
 			mask = "";
 			for (int id = 0; id < maskloc; ++id)
 			{
@@ -122,6 +128,7 @@ FMTactionparser& FMTactionparser::operator = (const FMTactionparser& rhs)
 					if (!line.empty())
 					{
 						std::smatch kmatch;
+						
 						if (!std::regex_search(line, kmatch, FMTactionparser::rxsection))
 						{
 							//crash here
@@ -192,6 +199,7 @@ FMTactionparser& FMTactionparser::operator = (const FMTactionparser& rhs)
 						{
 							Core::FMTspec spec;
 							std::string mask = getbounds(line, spec, constants, yields);
+							
 							if (!validate(themes, mask, " at line " + std::to_string(_line))) continue;
 							const Core::FMTmask newmask(mask, themes);
 							const size_t loc = std::distance(actions.begin(), std::find_if(actions.begin(), actions.end(), Core::FMTactioncomparator(operablename)));

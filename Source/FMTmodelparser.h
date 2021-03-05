@@ -96,6 +96,8 @@ class FMTmodelparser : public FMTparser
 		/**
 		The readschedules function read the schedule files of the specified (models) based on a primary file
 		(primary_location). It returns a vector of vector of FMTschedule ordered the same way as the models.
+		If validate file date is true then it will validate that the parser most recent file is older than the
+		schedule parser most recent file, if it is not it will return a empty schedule.
 		*/
 		std::vector<std::vector<Core::FMTschedule>>readschedules(const std::string& primary_location,
 			const std::vector<Models::FMTmodel>& models);

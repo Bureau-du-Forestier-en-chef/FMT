@@ -282,11 +282,25 @@ namespace Core
 		bool returnvalue = true;
 		if (themes.size() > values.size())
 		{
-			_exhandler->raise(Exception::FMTexc::FMTinvalid_maskrange, mask + otherinformation,"FMTobject::checkmask", __LINE__, __FILE__, _section);
-			returnvalue = false;
+			//_exhandler->raise(Exception::FMTexc::FMTinvalid_maskrange, mask + otherinformation,"FMTobject::checkmask", __LINE__, __FILE__, _section);
+			const std::string original(mask);
+			mask.clear();
+			for (const std::string& value : values)
+			{
+				mask += value + " ";
+			}
+			for (size_t id = values.size(); id < themes.size(); ++id)
+			{
+				mask += "? ";
+			}
+			mask.pop_back();
+			_exhandler->raise(Exception::FMTexc::FMTignore,
+				"Extended mask " + original + " to " + mask, "FMTobject::checkmask", __LINE__, __FILE__);
+			returnvalue = true;
 		}
 		else {
 			size_t id = 0;
+			const std::string original(mask);
 			mask.clear();
 			for (const Core::FMTtheme& theme : themes)
 			{
@@ -306,6 +320,12 @@ namespace Core
 				++id;
 			}
 			mask.pop_back();
+			if (values.size()!= themes.size())
+				{
+				_exhandler->raise(Exception::FMTexc::FMTignore,
+					"Subset mask " + original + " to " + mask, "FMTobject::checkmask", __LINE__, __FILE__);
+				}
+			
 		}
 		return  returnvalue;
 	}

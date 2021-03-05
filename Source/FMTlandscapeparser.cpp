@@ -203,6 +203,8 @@ FMTlandscapeparser::FMTlandscapeparser() :
 						{
 							aggregatename = kmatch[10];
 							aggregate_redefiniton = false;
+							
+							
 							if (std::find(aggregates.begin(), aggregates.end(), aggregatename)!= aggregates.end())
 							{
 								aggregate_redefiniton = true;

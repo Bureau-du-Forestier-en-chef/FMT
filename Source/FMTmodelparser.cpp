@@ -281,29 +281,34 @@ Models::FMTmodel FMTmodelparser::referenceread(std::map<std::string, std::vector
 				FMTconstantparser cparser;
 				cparser.passinobject(*this);
 				constants = cparser.read(con);
+				mostrecentfile = std::max(cparser.getmostrecentfiletime(), mostrecentfile);
 				if (themes.empty())
 				{
 					FMTlandscapeparser landparser;
 					landparser.passinobject(*this);
 					themes = landparser.read(constants, lan);
+					mostrecentfile = std::max(landparser.getmostrecentfiletime(), mostrecentfile);
 				}
 				if (areas.empty())
 				{
 					FMTareaparser areaparser;
 					areaparser.passinobject(*this);
 					areas = areaparser.read(themes, constants, are);
+					mostrecentfile = std::max(areaparser.getmostrecentfiletime(), mostrecentfile);
 				}
 				if (lifespan.empty())
 				{
 					FMTlifespanparser lifespanparser;
 					lifespanparser.passinobject(*this);
 					lifespan = lifespanparser.read(themes, constants, lif);
+					mostrecentfile = std::max(lifespanparser.getmostrecentfiletime(), mostrecentfile);
 				}
 				if (yields.empty())
 				{
 					FMTyieldparser yldparser;
 					yldparser.passinobject(*this);
 					yields = yldparser.read(themes, constants, yld);
+					mostrecentfile = std::max(yldparser.getmostrecentfiletime(), mostrecentfile);
 				}
 				if (actions.empty())
 				{
@@ -316,6 +321,7 @@ Models::FMTmodel FMTmodelparser::referenceread(std::map<std::string, std::vector
 							"_DEATH","FMTmodelparser::referenceread", __LINE__, __FILE__, Core::FMTsection::Action);
 						actions.push_back(Models::FMTmodel::defaultdeathaction(lifespan, themes));
 					}
+					mostrecentfile = std::max(actparser.getmostrecentfiletime(), mostrecentfile);
 				}
 				if (transitions.empty())
 				{
@@ -328,13 +334,14 @@ Models::FMTmodel FMTmodelparser::referenceread(std::map<std::string, std::vector
 							"_DEATH","FMTmodelparser::referenceread", __LINE__, __FILE__, Core::FMTsection::Transition);
 						transitions.push_back(Models::FMTmodel::defaultdeathtransition(lifespan, themes));
 					}
+					mostrecentfile = std::max(trnparser.getmostrecentfiletime(), mostrecentfile);
 				}
 				if (outputs.empty())
 				{
 					FMToutputparser outparser;
 					outparser.passinobject(*this);
 					outputs = outparser.read(themes, actions, yields, constants, out);
-					
+					mostrecentfile = std::max(outparser.getmostrecentfiletime(), mostrecentfile);
 				}
 				if (!opt.empty() && constraints.empty())
 				{
@@ -343,6 +350,7 @@ Models::FMTmodel FMTmodelparser::referenceread(std::map<std::string, std::vector
 					std::vector<Core::FMTaction>excluded(actions); //should we realy use? excluded is actualy the same actions but with more period specification...
 					optzparser.passinobject(*this);
 					constraints = optzparser.read(themes, actions, constants, outputs, excluded, opt);
+					mostrecentfile = std::max(optzparser.getmostrecentfiletime(), mostrecentfile);
 					bool shouldcrapreference = (actions.size() != excluded.size());
 					if (!shouldcrapreference)
 						{
@@ -577,6 +585,12 @@ std::vector<std::vector<Core::FMTschedule>>FMTmodelparser::readschedules(const s
 							}
 						}
 				}
+			}
+		if (std::difftime(mostrecentfile, scheduleparser.getmostrecentfiletime()) > 0)
+			{
+			*_logger << mostrecentfile << " " << scheduleparser.getmostrecentfiletime() << "\n";
+			_exhandler->raise(Exception::FMTexc::FMTignore,
+				"Schedules files older than the model at " + primary_location, "FMTmodelparser::readschedules", __LINE__, __FILE__);
 			}
 		}catch (...)
 			{
