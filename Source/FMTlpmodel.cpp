@@ -1870,6 +1870,16 @@ bool FMTlpmodel::locatenodes(const std::vector<Core::FMToutputnode>& nodes, int 
 		return &solver;
 		}
 	
+	double FMTlpmodel::getObjValue() const
+		{
+		if (solver.isProvenOptimal())
+			{
+			return solver.getObjValue();
+			}else{
+				_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,"Can not get objective value because model is NOT PROVEN OPTIMAL","FMTlpmodel::getObjValue",__LINE__, __FILE__);
+			}
+		}
+
 	#if defined FMTWITHR
 	Rcpp::DataFrame FMTlpmodel::getoutputsdataframe(const std::vector<Core::FMToutput>& outputsdata, int firstperiod, int lastperiod) const
 		{
