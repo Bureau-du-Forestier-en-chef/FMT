@@ -116,8 +116,7 @@ enum FMTexc
 	FMTnotlinegraph = 57,
 	FMTrangeerror = 58,
 	FMTGDALerror = 59,
-	FMTGDALwarning = 60,
-	FMTnotoptimal = 61
+	FMTGDALwarning = 60
     };
 
 // DocString: FMTexception
