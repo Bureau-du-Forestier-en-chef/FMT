@@ -67,14 +67,15 @@ FMTparser::FMTparser() : Core::FMTobject(),
         _incomment(false),
          _forvalues(),
 		_included(),
-		rxayld("^(.+)(\\@YLD\\()([\\s\\t]*)(.+)(\\,)([\\s\\t]*)((#[^\\.]*)|([-]*\\d*.[-]*\\d*))(\\.\\.)((#[^\\.]*)|([-]*\\d*.[-]*\\d*)|(_MAXAGE))(\\))(.+)|(.+)(\\@YLD\\()([\\s\\t]*)(.+)(\\,)([\\s\\t]*)((#[^\\.]*)|([-]*\\d*)|([-]*\\d*.[-]*\\d*))(\\))(.+)", std::regex_constants::ECMAScript | std::regex_constants::icase),
-        rxaage("^(.+)(\\@AGE\\()([\\s\\t]*)((#[^\\.]*)|(\\d*)|(\\d*.\\d*))(\\.\\.)((#[^\\.]*)|(\\d*)|(\\d*.\\d*)|(_MAXAGE))(\\))(.+)|(.+)(\\@AGE\\()([\\s\\t]*)((#[^\\.]*)|(\\d*)|(\\d*.\\d*))(\\))(.+)", std::regex_constants::ECMAScript| std::regex_constants::icase),
+		rxayld("^(.+)(\\@YLD[\\s\\t]*\\()([\\s\\t]*)(.+)(\\,)([\\s\\t]*)((#[^\\.]*)|([-]*\\d*.[-]*\\d*))(\\.\\.)((#[^\\.]*)|([-]*\\d*.[-]*\\d*)|(_MAXAGE))(\\))(.+)|(.+)(\\@YLD[\\s\\t]*\\()([\\s\\t]*)(.+)(\\,)([\\s\\t]*)((#[^\\.]*)|([-]*\\d*)|([-]*\\d*.[-]*\\d*))(\\))(.+)", std::regex_constants::ECMAScript | std::regex_constants::icase),
+        rxaage("^(.+)(\\@AGE[\\s\\t]*\\()([\\s\\t]*)((#[^\\.]*)|(\\d*)|(\\d*.\\d*))(\\.\\.)((#[^\\.]*)|(\\d*)|(\\d*.\\d*)|(_MAXAGE))(\\))(.+)|(.+)(\\@AGE[\\s\\t]*\\()([\\s\\t]*)((#[^\\.]*)|(\\d*)|(\\d*.\\d*))(\\))(.+)", std::regex_constants::ECMAScript| std::regex_constants::icase),
 		rxoperators("([^\\+\\-\\/\\*]*)([\\+\\-\\/\\*]*)", std::regex_constants::icase),
 		rxprimary("^([^\\[]*)(\\[)([^\\]]*)(.+)"),
 		_constreplacement(0),
         _line(0),
 		_comment(),
        _location(),
+		mostrecentfile(),
         rxseparator("([\\s\\t]*)([^\\s\\t]*)")
         {
 		#ifdef FMTWITHGDAL
@@ -109,6 +110,7 @@ FMTparser::FMTparser(const FMTparser& rhs):
         _line(rhs._line),
 		_comment(rhs._comment),
         _location(rhs._location),
+		mostrecentfile(rhs.mostrecentfile),
         rxseparator(rhs.rxseparator)
     {
 
@@ -137,6 +139,7 @@ FMTparser& FMTparser::operator = (const FMTparser& rhs)
 			_comment = rhs._comment;
             _line = rhs._line;
             _location = rhs._location;
+			mostrecentfile = rhs.mostrecentfile;
             }
     return *this;
     }
@@ -458,7 +461,10 @@ bool FMTparser::isyld(const Core::FMTyields& ylds,const std::string& value, Core
     }
 
 
-
+std::time_t FMTparser::getmostrecentfiletime() const
+	{
+	return mostrecentfile;
+	}
 
 
 
@@ -481,6 +487,12 @@ bool FMTparser::tryopening(const std::ifstream& stream, const std::string& locat
 		{
 			_exhandler->raisefromcatch("", "FMTparser::tryopening", __LINE__, __FILE__);
 		}
+		boost::filesystem::path pathtofile(location);
+		const std::time_t temp = boost::filesystem::last_write_time(pathtofile);
+		if (std::difftime(mostrecentfile,temp)>0|| mostrecentfile ==0)
+			{
+			mostrecentfile = temp;
+			}
         return true;
         }
 
@@ -980,7 +992,7 @@ std::vector<std::string> FMTparser::sameas(const std::string& allset) const
 		std::string separator = "_SAMEAS";
         if (allset.find(separator)!= std::string::npos)
             {
-			std::string realname = allset.substr(0, allset.find(separator));
+			std::string realname = allset.substr(allset.find(separator)+ separator.size());
             boost::trim(realname);
 			if (realname.empty())
 				{
