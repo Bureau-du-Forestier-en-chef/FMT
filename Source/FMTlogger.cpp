@@ -84,6 +84,8 @@ namespace Logging
 
 	FMTlogger::~FMTlogger()
 		{
+		//this->logstamp();
+		//this->logtime();
 		if (filestream && filestream->is_open())
 			{
 			this->logtime();

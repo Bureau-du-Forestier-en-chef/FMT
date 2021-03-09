@@ -39,13 +39,13 @@ namespace Heuristics
 		}
 
     FMTlpheuristic::FMTlpheuristic(const Models::FMTsolverinterface& interfacetype,const size_t& lseed):
-       Models::FMTlpsolver(),generator(lseed),seed(lseed), usingsolvercopy(false)
+       Models::FMTlpsolver(),generator(static_cast<unsigned int>(lseed)),seed(lseed), usingsolvercopy(false)
         {
         this->buildsolverinterface(interfacetype);
         }
 
 	FMTlpheuristic::FMTlpheuristic(Models::FMTlpsolver& basesolve, size_t lseed,bool copysolver):
-		Models::FMTlpsolver(),generator(lseed),seed(lseed), usingsolvercopy(copysolver)
+		Models::FMTlpsolver(),generator(static_cast<unsigned int>(lseed)),seed(lseed), usingsolvercopy(copysolver)
 		{
 		try {
 			if (copysolver)
@@ -64,7 +64,7 @@ namespace Heuristics
 	void FMTlpheuristic::setgeneratorseed(const size_t& lseed)
 		{
 		seed = lseed;
-		generator.seed(lseed);
+		generator.seed(static_cast<unsigned int>(lseed));
 		}
 
 	void FMTlpheuristic::branchnboundsolve()

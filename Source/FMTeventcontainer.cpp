@@ -285,20 +285,22 @@ namespace Spatial
 
 	void FMTeventcontainer::addaction(const FMTcoordinate& coord, const int& period, const int& actionid, const size_t& maxsize)
 		{
-		const size_t minx = coord.getx() > maxsize ? coord.getx() - maxsize : 0;
-		const size_t miny = coord.gety() > maxsize ? coord.gety() - maxsize : 0;
+		const unsigned int maxsizeof = static_cast<unsigned int>(maxsize);
+		const unsigned int minx = coord.getx() > maxsizeof ? coord.getx() - maxsizeof : 0;
+		const unsigned int miny = coord.gety() > maxsizeof ? coord.gety() - maxsizeof : 0;
 		const FMTcoordinate lower(minx, miny);
-		const FMTcoordinate upper(coord.getx()+maxsize, coord.gety() + maxsize);
+		const FMTcoordinate upper(coord.getx()+ maxsizeof, coord.gety() + maxsizeof);
 		const std::vector<FMTeventcontainer::const_iterator>eventits = getevents(period, actionid, lower, upper);
 		pushaction(eventits, coord, period, actionid);
 		}
 
 	void FMTeventcontainer::addactions(const FMTcoordinate& coord, const int& period, const std::vector<int>& actionids, const size_t& maxsize)
 		{
-		const size_t minx = coord.getx() > maxsize ? coord.getx() - maxsize : 0;
-		const size_t miny = coord.gety() > maxsize ? coord.gety() - maxsize : 0;
+		const unsigned int maxsizeof = static_cast<unsigned int>(maxsize);
+		const unsigned int minx = coord.getx() > maxsizeof ? coord.getx() - maxsizeof : 0;
+		const unsigned int miny = coord.gety() > maxsizeof ? coord.gety() - maxsizeof : 0;
 		const FMTcoordinate lower(minx, miny);
-		const FMTcoordinate upper(coord.getx() + maxsize, coord.gety() + maxsize);
+		const FMTcoordinate upper(coord.getx() + maxsizeof, coord.gety() + maxsizeof);
 		size_t id = 0;
 		for (const std::vector<FMTeventcontainer::const_iterator>& eventits : getmultipleevents(period, actionids, lower, upper))
 			{
@@ -332,10 +334,11 @@ namespace Spatial
 	FMTeventcontainer FMTeventcontainer::geteventstoadd(const FMTcoordinate& coord, const int& period, const int& actionid,
 		const size_t& buffer, FMTeventcontainer& newevents) const
 	{
-		const size_t minx = coord.getx() > buffer ? coord.getx() - buffer : 0;
-		const size_t miny = coord.gety() > buffer ? coord.gety() - buffer : 0;
+		const unsigned int bufferof = static_cast<unsigned int>(buffer);
+		const unsigned int minx = coord.getx() > bufferof ? coord.getx() - bufferof : 0;
+		const unsigned int miny = coord.gety() > bufferof ? coord.gety() - bufferof : 0;
 		const FMTcoordinate lower(minx, miny);
-		const FMTcoordinate upper(coord.getx() + buffer, coord.gety() + buffer);
+		const FMTcoordinate upper(coord.getx() + bufferof, coord.gety() + bufferof);
 		const std::vector<FMTeventcontainer::const_iterator>eventits = getevents(period, actionid, lower, upper);
 		std::vector<FMTeventcontainer::const_iterator>aroundevents;
 		aroundevents.reserve(8);
@@ -390,11 +393,12 @@ namespace Spatial
 		FMTeventcontainer newcontainer;
 		if (!coordinates.empty())
 			{
+			const unsigned int bufferof = static_cast<unsigned int>(buffer);
 			std::sort(coordinates.begin(), coordinates.end());
-			const size_t minx = coordinates.begin()->getx() > buffer ? coordinates.begin()->getx() - buffer : 0;
-			const size_t miny = coordinates.begin()->gety() > buffer ? coordinates.begin()->gety() - buffer : 0;
+			const unsigned int minx = coordinates.begin()->getx() > bufferof ? coordinates.begin()->getx() - bufferof : 0;
+			const unsigned int miny = coordinates.begin()->gety() > bufferof ? coordinates.begin()->gety() - bufferof : 0;
 			const FMTcoordinate minimalcoord(minx, miny);
-			const FMTcoordinate maximalcoord(coordinates.back().getx() + buffer, coordinates.back().gety() + buffer);
+			const FMTcoordinate maximalcoord(coordinates.back().getx() + bufferof, coordinates.back().gety() + bufferof);
 			for (int period = minperiod; period<=maxperiod ; ++period)
 				{
 				FMTeventcontainer::const_iterator lower = lower_bound(period, minimalcoord);
@@ -412,10 +416,11 @@ namespace Spatial
 	FMTeventcontainer FMTeventcontainer::geteventstoerase(const int& fromperiod, const std::vector<std::vector<bool>>& actionstarget,
 																				const FMTcoordinate& coord, const size_t& buffer, FMTeventcontainer& newevents) const
 	{
-		const size_t minx = coord.getx() > buffer ? coord.getx() - buffer : 0;
-		const size_t miny = coord.gety() > buffer ? coord.gety() - buffer : 0;
+		const unsigned int bufferof = static_cast<unsigned int>(buffer);
+		const unsigned int minx = coord.getx() > bufferof ? coord.getx() - bufferof : 0;
+		const unsigned int miny = coord.gety() > bufferof ? coord.gety() - bufferof : 0;
 		const FMTcoordinate minimalcoord(minx, miny);
-		const FMTcoordinate maximalcoord(coord.getx()+buffer,coord.gety()+buffer);
+		const FMTcoordinate maximalcoord(coord.getx()+ bufferof,coord.gety()+ bufferof);
 		const int lastperiod = static_cast<int>(actionstarget.size()) + fromperiod;
 		size_t periodid = 0;
 		FMTeventcontainer erased;
@@ -684,8 +689,8 @@ namespace Spatial
 											boost::unordered_set<FMTeventrelation>& relations) const
 	{
 	double distancevalue = 0;
-	const size_t lowerdistance = static_cast<size_t>(lowerdistancetoevent);
-	const size_t upperdistance = static_cast<size_t>(upperdistancetoevent);
+	const unsigned int lowerdistance = static_cast<unsigned int>(lowerdistancetoevent);
+	const unsigned int upperdistance = static_cast<unsigned int>(upperdistancetoevent);
 	const bool testlower = (lowerdistancetoevent == -std::numeric_limits<double>::infinity()) ? false : true;
 	const bool testupper = (upperdistancetoevent == std::numeric_limits<double>::infinity()) ? false : true;
 	for (FMTeventcontainer::const_iterator eventit : getevents(period, actionsused))

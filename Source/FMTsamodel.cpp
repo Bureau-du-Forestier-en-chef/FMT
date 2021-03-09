@@ -554,7 +554,7 @@ namespace Models
 		//Spatial::FMTspatialschedule newsolution(actual);
 		try {
 			const size_t movamaximalsize = std::max(size_t(1),solution.size()/10);//10 % of the map
-			std::uniform_int_distribution<int> mosizedist(1, movamaximalsize);
+			std::uniform_int_distribution<int> mosizedist(1, static_cast<int>(movamaximalsize));
 			const size_t movesize = mosizedist(generator);
 			std::uniform_int_distribution<int> perioddistribution(1, actual.actperiod() - 1);//period to change
 			std::vector<Spatial::FMTcoordinate> selectionpool;

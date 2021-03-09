@@ -961,7 +961,7 @@ bool FMTlpmodel::locatenodes(const std::vector<Core::FMToutputnode>& nodes, int 
 		try {
 			if (tolerances.empty())
 				{
-				tolerances = std::vector<double>(FMT_DBL_TOLERANCE,globalmasks.size());
+				tolerances = std::vector<double>(globalmasks.size(),FMT_DBL_TOLERANCE);
 				}
 			if (tolerances.size()!=globalmasks.size())
 				{

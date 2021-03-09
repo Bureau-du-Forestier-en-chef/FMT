@@ -240,7 +240,7 @@ namespace Heuristics
 			std::vector<int>actionids;
 			for (const Core::FMTaction* actptr : actions)
 			{
-				actionids.push_back(std::distance(&modelactions[0], actptr));
+				actionids.push_back(static_cast<int>(std::distance(&modelactions[0], actptr)));
 			}
 			const double* primalsolution = this->getColSolution();
 			for (std::vector<FMToperatingareascheme>::iterator operatingareait = operatingareas.begin();
@@ -250,7 +250,7 @@ namespace Heuristics
 				areatarget.source.setmask(operatingareait->getmask());
 				std::vector<std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>>descriptors;
 				std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>totalareadescriptors;
-				for (int period = (maingraph.getfirstactiveperiod() + operatingareait->getstartingperiod()); period < static_cast<int>((maingraph.size() - 1)); ++period)
+				for (int period = static_cast<int>((maingraph.getfirstactiveperiod() + operatingareait->getstartingperiod())); period < static_cast<int>((maingraph.size() - 1)); ++period)
 				{
 					if (descriptors.empty())
 					{
@@ -385,11 +385,11 @@ namespace Heuristics
                 }
                 if (!rowstodelete.empty())
                 {
-                    this->deleteRows(rowstodelete.size(), &rowstodelete[0]);
+                    this->deleteRows(static_cast<int>(rowstodelete.size()), &rowstodelete[0]);
                 }
                 if (!columnstodelete.empty())
                 {
-                    this->deleteCols(columnstodelete.size(), &columnstodelete[0]);
+                    this->deleteCols(static_cast<int>(columnstodelete.size()), &columnstodelete[0]);
                 }
                 if (!rowstodelete.empty() || !columnstodelete.empty())
                 {
@@ -619,7 +619,7 @@ namespace Heuristics
 	void FMToperatingareascheduler::setgeneratorseed(const size_t& lseed)
 		{
 		seed = lseed;
-		generator.seed(lseed);
+		generator.seed(static_cast<unsigned int>(lseed));
 		}
 
 }

@@ -164,10 +164,10 @@ namespace Spatial
 	FMTcoordinate FMTevent::averagecentroid() const
     {
 	const std::vector<FMTcoordinate>enveloppe = getenveloppe();
-    const size_t startx = enveloppe.at(0).getx();
-    const size_t starty = enveloppe.at(0).gety();
-    const size_t plusx = (enveloppe.at(1).getx() - startx)/2;
-    const size_t plusy = (enveloppe.at(2).gety() - starty)/2;
+    const unsigned int startx = enveloppe.at(0).getx();
+    const unsigned int starty = enveloppe.at(0).gety();
+    const unsigned int plusx = (enveloppe.at(1).getx() - startx)/2;
+    const unsigned int plusy = (enveloppe.at(2).gety() - starty)/2;
     return FMTcoordinate(startx + plusx, starty + plusy);
     }
 
@@ -376,7 +376,7 @@ namespace Spatial
         }
         std::set<int>::const_iterator upit = coordat.upper_bound(4);
         std::set<int>::const_iterator firstit = coordat.begin();
-        const int casetype = std::distance(firstit,upit);
+        const int casetype = static_cast<int>(std::distance(firstit,upit));
         switch (casetype)
         {
             case 1:
@@ -513,11 +513,13 @@ namespace Spatial
 	std::set<FMTcoordinate>FMTevent::getterritory(const size_t& distance) const
 	{
 		std::set<FMTcoordinate>territory;
+		const unsigned int distanceof = static_cast<unsigned int>(distance);
+		const unsigned int zeroof = 0;
 		const std::vector<FMTcoordinate>enveloppe = getenveloppe();
-		territory.insert(FMTcoordinate(std::max(enveloppe.at(0).getx() - distance, size_t(0)), std::max(enveloppe.at(0).gety() - distance, size_t(0))));
-		territory.insert(FMTcoordinate(enveloppe.at(1).getx() + distance, std::max(enveloppe.at(1).gety() - distance, size_t(0))));
-		territory.insert(FMTcoordinate(std::max(enveloppe.at(2).getx() - distance, size_t(0)), enveloppe.at(2).gety() + distance));
-		territory.insert(FMTcoordinate(enveloppe.at(3).getx() + distance, enveloppe.at(3).gety() + distance));
+		territory.insert(FMTcoordinate(std::max(enveloppe.at(0).getx() - distanceof, zeroof), std::max(enveloppe.at(0).gety() - distanceof, zeroof)));
+		territory.insert(FMTcoordinate(enveloppe.at(1).getx() + distanceof, std::max(enveloppe.at(1).gety() - distanceof, zeroof)));
+		territory.insert(FMTcoordinate(std::max(enveloppe.at(2).getx() - distanceof, zeroof), enveloppe.at(2).gety() + distanceof));
+		territory.insert(FMTcoordinate(enveloppe.at(3).getx() + distanceof, enveloppe.at(3).gety() + distanceof));
 		return territory;
 	}
 

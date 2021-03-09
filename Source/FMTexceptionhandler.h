@@ -95,7 +95,7 @@ namespace Exception
 		/**
 		Default virtual destructor for FMTexceptionhandler.
 		*/
-		virtual ~FMTexceptionhandler() = default;
+		virtual ~FMTexceptionhandler()=default;
 		// DocString: FMTexceptionhandler(const FMTexceptionhandler&)
 		/**
 		Copy constructor for FMTexceptionhandler.

@@ -208,20 +208,21 @@ namespace Spatial
 			const size_t targetmaximalsize = bindingactions.at(targetaction).getmaximalsize();
 			const int lowergup = static_cast<int>(bindingactions.at(targetaction).getminimalgreenup());
 			const size_t loweradjacency = bindingactions.at(targetaction).getminimaladjacency();
+			const unsigned int loweradjacencyof = static_cast<unsigned int>(loweradjacency);
 			for (int green_up = std::max(1,period- lowergup); green_up <= period; ++green_up)
 				{
 				for (const int& mact : bindingactions.at(targetaction).getneighbors())
 							{
-							const size_t distance = loweradjacency + std::max(targetmaximalsize, bindingactions.at(mact).getmaximalsize());
-							const size_t minx = distance > location.getx() ? 0 : location.getx() - distance;
-							const size_t miny = distance > location.gety() ? 0 : location.gety() - distance;
-							const size_t maxofx = (distance + location.getx()) > maxx ? maxx : (distance + location.getx());
-							const size_t maxofy = (distance + location.gety()) > maxy ? maxy : (distance + location.gety());
+							const unsigned int distance = static_cast<int>(loweradjacency + std::max(targetmaximalsize, bindingactions.at(mact).getmaximalsize()));
+							const unsigned int minx = distance > location.getx() ? 0 : location.getx() - distance;
+							const unsigned int miny = distance > location.gety() ? 0 : location.gety() - distance;
+							const unsigned int maxofx = (distance + location.getx()) > maxx ? maxx : (distance + location.getx());
+							const unsigned int maxofy = (distance + location.gety()) > maxy ? maxy : (distance + location.gety());
 							const FMTcoordinate minimallocation(minx, miny);
 							const FMTcoordinate maximallocation(maxofx, maxofy);
 							for (const FMTeventcontainer::const_iterator eventit : events.getevents(green_up, mact, minimallocation, maximallocation))
 								{
-								if (eventit->within(loweradjacency, location))
+								if (eventit->within(loweradjacencyof, location))
 									{
 									return false;
 
@@ -356,7 +357,7 @@ namespace Spatial
 				std::set<FMTcoordinate>::const_iterator randomit;
 				while (harvested_area < target && count > 0 && !mapping_pass.empty())
 				{
-					std::uniform_int_distribution<int> celldistribution(0, mapping_pass.size() - 1);
+					std::uniform_int_distribution<int> celldistribution(0, static_cast<int>(mapping_pass.size()) - 1);
 					const int cell = celldistribution(generator);//Get cell to ignit
 					randomit = mapping_pass.begin();
 					std::advance(randomit, cell);
@@ -373,9 +374,10 @@ namespace Spatial
 							{
 								const size_t adjacency = targetaction.getminimaladjacency();
 								const size_t maximaldistance = adjacency + targetaction.getmaximalsize();
+								const unsigned int adjacencyof = static_cast<unsigned int>(adjacency);
 								for (const std::set<FMTevent>::const_iterator cutit : cuts.getevents(period, newcut.getterritory(maximaldistance)))
 								{
-									if (cutit->within(adjacency, newcut))
+									if (cutit->within(adjacencyof, newcut))
 									{
 										tooclose = true;
 										++tooclosecall;
@@ -608,6 +610,7 @@ namespace Spatial
 					const bool testlower = (lower == -std::numeric_limits<double>::infinity()) ? false : true;
 					const bool testupper = (upper == std::numeric_limits<double>::infinity()) ? false : true;
 					const size_t baselookup = testlower ? static_cast<size_t>(lower) : static_cast<size_t>(upper);//Add up the maximal size of all the actions!
+					const unsigned int baselookupof = static_cast<unsigned int>(baselookup);
 					std::vector<FMTeventcontainer::const_iterator> allevents = events.getevents(period, actionused);
 					const size_t eventsize = allevents.size();
 					if (container!=&events)
@@ -616,15 +619,16 @@ namespace Spatial
 						}
 					for (const FMTeventcontainer::const_iterator eventit : allevents)
 					{
-						const size_t containerlookup = baselookup + eventit->size();
+						const unsigned int containerlookup = static_cast<unsigned int>(baselookup + eventit->size());
+						
 						//0//-//1//
 						//-//-//-//
 						//2//-//3//
 						const std::vector<FMTcoordinate> enveloppe = eventit->getenveloppe();
-						const size_t minimalx = containerlookup < enveloppe.at(0).getx() ? enveloppe.at(0).getx() - containerlookup : 0;
-						const size_t minimaly = containerlookup < enveloppe.at(0).gety() ? enveloppe.at(0).gety() - containerlookup : 0;
-						const size_t maximalx = enveloppe.at(3).getx() + containerlookup;
-						const size_t maximaly = enveloppe.at(3).gety() + containerlookup;
+						const unsigned int minimalx = containerlookup < enveloppe.at(0).getx() ? enveloppe.at(0).getx() - containerlookup : 0;
+						const unsigned int minimaly = containerlookup < enveloppe.at(0).gety() ? enveloppe.at(0).gety() - containerlookup : 0;
+						const unsigned int maximalx = enveloppe.at(3).getx() + containerlookup;
+						const unsigned int maximaly = enveloppe.at(3).gety() + containerlookup;
 						const FMTcoordinate minimalcoord(minimalx, minimaly);
 						const FMTcoordinate maximalcoord(maximalx, maximaly);
 						double totalwithincount = 0;
@@ -640,7 +644,7 @@ namespace Spatial
 									if (relations.find(ofrelation) == relations.end()&&
 										relations.find(itrelation) == relations.end())
 									{
-										if (eventit->within(baselookup, *eventof)) //too close
+										if (eventit->within(baselookupof, *eventof)) //too close
 										{
 											if (testlower)
 											{
