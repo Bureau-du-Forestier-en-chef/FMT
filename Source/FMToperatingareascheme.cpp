@@ -138,7 +138,7 @@ std::vector<std::vector<std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, 
 		}
 		//int constraintid = matrixbuild.getlastrowindex()+1;
 		int constraintid = solver.getNumRows();
-		std::map<int, std::vector<int>>constraintsmap;
+		std::map<size_t, std::vector<int>>constraintsmap;
 		for (std::map<int, std::vector<int>>::const_iterator periodics = periodicsblocksvariables.begin();
 			periodics != periodicsblocksvariables.end(); ++periodics)
 		{

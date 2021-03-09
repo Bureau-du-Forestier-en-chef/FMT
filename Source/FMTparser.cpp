@@ -383,7 +383,7 @@ std::string FMTparser::setspec(Core::FMTsection section, Core::FMTkwor key,const
 				}
 				if (pushaagebound)
 					{
-					spec.addbounds(Core::FMTagebounds(section, key, upperbound, lowerbound));
+					spec.addbounds(Core::FMTagebounds(section, key, static_cast<int>(upperbound), static_cast<int>(lowerbound)));
 				}else {
 					spec.addbounds(Core::FMTyldbounds(section, key, yld, upperbound, lowerbound));
 					}
