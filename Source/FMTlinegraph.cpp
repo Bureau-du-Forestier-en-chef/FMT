@@ -146,38 +146,72 @@ namespace Graph
 		return active;
 	}
 
-	int FMTlinegraph::getlastactionid(const int& period) const
+	int FMTlinegraph::getinedgeactionid(const FMTvertex_descriptor& vdesc)const
 	{
 		std::vector<int> ids;
+		try
+		{
+			FMTinedge_iterator inedge_iterator, inedge_end;
+			for (boost::tie(inedge_iterator, inedge_end) = boost::in_edges(vdesc, data); inedge_iterator != inedge_end; ++inedge_iterator)
+			{
+				const FMTbaseedgeproperties& edgeprop = data[*inedge_iterator];
+				const int id = edgeprop.getactionID();
+				ids.push_back(id);
+			}
+			if (ids.size() > 1)
+			{
+				_exhandler->raise(Exception::FMTexc::FMTnotlinegraph,
+						"More than in egde for development " + std::string(getdevelopment(vdesc)),
+						"FMTlinegraph::getinedgeactionid()", __LINE__, __FILE__);
+			}
+			if (ids.empty())
+			{
+				_exhandler->raise(Exception::FMTexc::FMTnotlinegraph,
+						"No inedge for  " + std::string(getdevelopment(vdesc)),
+						"FMTlinegraph::getinedgeactionid()", __LINE__, __FILE__);
+			}
+		}
+		catch (...)
+		{
+			_exhandler->raisefromcatch("", "FMTlinegraph::getinedgeactionid()", __LINE__, __FILE__);
+		}
+		return ids.at(0);
+
+	}
+
+	int FMTlinegraph::getlastactionid(const int& period) const
+	{
+		//std::vector<int> ids;
+		int id = -1;
+		int perstcount=0;
 		try {
 			for (const auto& devit : getperiodverticies(period))
 			{
 				const FMTvertex_descriptor& outv = devit.memoryobject;
 				if (periodstop(outv))
 				{
-					FMTinedge_iterator inedge_iterator, inedge_end;
+					perstcount++;
+					id = getinedgeactionid(outv);
+					/*FMTinedge_iterator inedge_iterator, inedge_end;
 					for (boost::tie(inedge_iterator, inedge_end) = boost::in_edges(outv, data); inedge_iterator != inedge_end; ++inedge_iterator)
 					{
 						const FMTbaseedgeproperties& edgeprop = data[*inedge_iterator];
 						const int id = edgeprop.getactionID();
 						ids.push_back(id);
-					}
+					}*/
 				}
 			}
-			if (ids.size() > 1)
+			if (perstcount > 1)
 			{
-				_exhandler->raise(Exception::FMTexc::FMTnotlinegraph, "More than in egde for last development at period " + std::to_string(period), "FMTlinegraph::getlastactionid()", __LINE__, __FILE__);
-			}
-			if (ids.empty())
-			{
-				_exhandler->raise(Exception::FMTexc::FMTnotlinegraph, "No inedge for  " + std::string(*this) + " at period " + std::to_string(period), "FMTlinegraph::getlastactionid()", __LINE__, __FILE__);
+				_exhandler->raise(Exception::FMTexc::FMTnotlinegraph, "More than development at the end of period " + std::to_string(period), "FMTlinegraph::getlastactionid()", __LINE__, __FILE__);
 			}
 		}
 		catch (...)
 		{
 			_exhandler->raisefromcatch("", "FMTlinegraph::getlastactionid", __LINE__, __FILE__);
 		}
-		return ids.at(0);
+		//return ids.at(0);
+		return id;
 	}
 
 	const Core::FMTdevelopment& FMTlinegraph::getperiodstartdev(const int& period) const
