@@ -88,7 +88,9 @@ class FMToutput: public FMTobject
 	theme_target,sources and operators.
 	*/
     FMToutput(const std::string& lname,const std::string& ldescription,
-		const int& ltheme_target, std::vector<FMToutputsource>& lsources, std::vector<FMToperator>& loperators);
+		const int& ltheme_target,
+		std::vector<FMToutputsource>& lsources,
+		std::vector<FMToperator>& loperators);
 	// DocString: FMToutput(const std::string&)
 	/**
 	Partial constructor for FMToutput with only name
@@ -212,7 +214,8 @@ class FMToutput: public FMTobject
 	std::vector<FMToutputnode> getnodes(/*const std::vector<FMTactualdevelopment>&area,
 										const std::vector<Core::FMTaction>&actions,
 										const FMTyields& yields,*/
-										double multiplier = 1) const;
+										double multiplier = 1,
+										bool orderbyoutputid = false) const;
 	// DocString: FMToutput::issingleperiod
 	/**
 	Returns true if the FMToutput cover only one single period of the FMTgraph, false if 

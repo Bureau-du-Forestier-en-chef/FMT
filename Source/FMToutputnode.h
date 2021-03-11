@@ -42,6 +42,10 @@ class FMToutputnode
 		bool issubsetof(const FMToutputnode& rhs) const;
 		bool issubsetof(const FMToutputnode& rhs,const std::vector<Core::FMTaction>& actions) const;
 		bool issamebutdifferentaction(const FMToutputnode& rhs) const;
+		inline int getoutputid() const
+			{
+			return source.getoutputorigin();
+			}
 		inline bool isactionbased() const
 			{
 			return source.isaction();
@@ -63,6 +67,13 @@ class FMToutputnodevaluecomparator
 		bool operator()(const FMToutputnode& node1, const FMToutputnode& node2) const;
 
 	};
+
+class FMToutputnodeorigincomparator
+{
+public:
+	bool operator()(const FMToutputnode& node1, const FMToutputnode& node2) const;
+
+};
 
 class FMToutputnodehasher 
 	{

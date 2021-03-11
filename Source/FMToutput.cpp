@@ -158,7 +158,7 @@ FMToutput& FMToutput::operator /=(const double& rhs)
 			}
 			if (source.isvariable() || source.isvariablelevel())
 			{
-				new_sources.push_back(FMToutputsource(FMTotar::val, rhs));
+				new_sources.push_back(FMToutputsource(FMTotar::val, rhs,"","",source.getoutputorigin()));
 				new_operators.push_back(FMToperator("/"));
 			}
 			++location;
@@ -366,7 +366,7 @@ FMToutput FMToutput::boundto(const std::vector<FMTtheme>& themes, const FMTperbo
 std::vector<FMToutputnode> FMToutput::getnodes(/*const std::vector<FMTactualdevelopment>&area,
 											   const std::vector<Core::FMTaction>&actions,
 											   const FMTyields& yields,*/
-											   double multiplier) const
+											   double multiplier,bool orderbyoutputid) const
 	{
 	//set a expression and get the nodes! check if the node is positive or negative accross the equation!!!
 	std::vector<FMToutputnode>nodes;
@@ -396,7 +396,7 @@ std::vector<FMToutputnode> FMToutput::getnodes(/*const std::vector<FMTactualdeve
 						nodes.emplace_back(main_source, main_factor, constant);
 					}
 				}
-				main_factor = FMToutputsource(FMTotar::val, 1);
+				main_factor = FMToutputsource(FMTotar::val, 1,"","",source.getoutputorigin());
 				main_source = source;
 				constant = 1;
 			}
@@ -440,6 +440,10 @@ std::vector<FMToutputnode> FMToutput::getnodes(/*const std::vector<FMTactualdeve
 
 
 		}
+		if (orderbyoutputid)
+			{
+			std::sort(nodes.begin(), nodes.end(), FMToutputnodeorigincomparator());
+			}
 	}catch (...)
 		{
 		_exhandler->raisefromcatch(
