@@ -744,7 +744,7 @@ namespace Parser
 										}
 										else if (str_upper.empty())
 										{
-											period_upper = period_lower;
+											period_upper = period_lower+1;
 										}
 										for (const Core::FMTaction* target_actionptr : action_ptrs)
 										{
@@ -755,8 +755,10 @@ namespace Parser
 											{
 												for (auto& specobject : *actit)
 												{
+													int startperiod_upper = period_lower - 1;
 													if (str_upper != "_LENGTH")
 													{
+														startperiod_upper = 0;
 														Core::FMTspec upperspec = specobject.second;
 														constexpr int max_upper = std::numeric_limits<int>::max() - 2;
 														const int upper = period_upper + 1;
@@ -764,7 +766,6 @@ namespace Parser
 														newspecs.push_back(upperspec);
 														newmask.push_back(specobject.first);
 													}
-													const int startperiod_upper = period_lower - 1;
 													specobject.second.setbounds(Core::FMTperbounds(Core::FMTsection::Action, period_lower, startperiod_upper));
 
 												}
