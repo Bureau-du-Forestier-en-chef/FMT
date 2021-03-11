@@ -173,6 +173,8 @@ void exportModel()
 			setsolution_overloads(bp::args("period", "schedule", "tolerance"), "@DocString(FMTlpmodel::setsolution)"))
 		.def("setobjective", &Models::FMTlpmodel::setobjective,
 			"@DocString(FMTlpmodel::setobjective)")
+		.def("setstrictlypositivesoutputsmatrix", &Models::FMTlpmodel::setstrictlypositivesoutputsmatrix,
+			"@DocString(FMTlpmodel::setstrictlypositivesoutputsmatrix)")
 		.def("setconstraint", &Models::FMTlpmodel::setconstraint,
 			"@DocString(FMTlpmodel::setconstraint)")
 		.def("eraseconstraint", &Models::FMTlpmodel::eraseconstraint,
