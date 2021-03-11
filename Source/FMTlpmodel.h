@@ -68,7 +68,8 @@ enum FMTmatrixelement
 	levelvariable=1,//general
 	objectivevariable=2,//general
 	constraint=3,//period base...
-	nr_items=4
+	nr_items=4,
+	strictlypositive=5//when an output have negative coef, be sure that the value of the output in the graph is strictly positive (like in woodstock)
 	};
 
 // DocString: FMTlpmodel
@@ -115,6 +116,9 @@ class FMTlpmodel : public FMTmodel
 		//ar & BOOST_SERIALIZATION_NVP(deletedvariables);
 		}
 	BOOST_SERIALIZATION_SPLIT_MEMBER()
+	//DocString: FMTlpmodel::strictlypositivesoutputsmatrix
+	//Default is false, when true if an output have negative coef, the value of the output in the graph will be strictly positive (like in Woodstock)
+	bool strictlypositivesoutputsmatrix;
 	// DocString: FMTlpmodel::graph
 	///graph holding the FMTdevelopments for all the periods.
 	Graph::FMTgraph<Graph::FMTvertexproperties,Graph::FMTedgeproperties> graph;
@@ -189,9 +193,10 @@ class FMTlpmodel : public FMTmodel
 	// DocString: FMTlpmodel::locatenodes
 	/**
 	For a given period lookup in the graph to fill the variables map (variables) for a given FMTconstraints (nodes).
-	Also apply the multiplier to coefficiants of the map the map<variableindex,coefficiants>.
+	Also apply the multiplier to coefficiants of the map the map<variableindex,coefficiants>. If there is some outputs with negative coef,
+	return a vector containing a map (variables for each outputs).
 	*/
-	bool locatenodes(const std::vector<Core::FMToutputnode>& nodes, int period, std::map<int, double>& variables,double multiplier = 1) const;
+    std::vector<std::map<int, double>> locatenodes(const std::vector<Core::FMToutputnode>& nodes, int period, std::map<int, double>& variables,double multiplier = 1) const;
 	// DocString: FMTlpmodel::updatematrixelements
 	/**
 	When the eraseperiod function is called the matrix size is shrinked and the variables/constraints indexes have
@@ -281,6 +286,11 @@ class FMTlpmodel : public FMTmodel
 		For all solvers interior point is considered the best algorith.
 		*/
 		bool initialsolve();
+		// DocString: FMTlpmodel::setstrictlypositivesoutputsmatrix
+		/**
+		To set strictlypositivesoutputsmatrix at true.
+		*/
+		void setstrictlypositivesoutputsmatrix();
 		// DocString: FMTlpmodel::setsolution
 		/**
 		If the user wants to set a solution for a given period for warmstarting the model or prepare to
