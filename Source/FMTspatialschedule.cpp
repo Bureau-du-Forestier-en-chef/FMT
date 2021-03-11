@@ -269,6 +269,7 @@ namespace Spatial
 				const Graph::FMTlinegraph& lg = mapping.at(updated);
 				const Graph::FMTgraph<Graph::FMTbasevertexproperties, Graph::FMTbaseedgeproperties>::FMTvertex_descriptor& active = lg.getactivevertex();
 				const Core::FMTdevelopment& active_development = lg.getdevelopment(active);
+				const int lastactionid = lg.getinedgeactionid(active);
 				/*if (active_development.period != selection.getperiod())
 					{
 					_exhandler->raise(Exception::FMTexc::FMTrangeerror,
@@ -282,8 +283,9 @@ namespace Spatial
 					cacheit = insertedpair.first;
 					for (const int& actionid : actiontargets)
 						{
-						if ((schedule_only && (inscheduleoperabilities(scheduleoperabilities, &active_development, actionid, model.actions.at(actionid))/*selection.operated(action, active_development)*/)) ||
-							(!schedule_only && active_development.operable(model.actions.at(actionid), model.yields)))
+						if ((actionid > lastactionid || lastactionid < 0) &&
+							((schedule_only && (inscheduleoperabilities(scheduleoperabilities, &active_development, actionid, model.actions.at(actionid))/*selection.operated(action, active_development)*/)) ||
+							(!schedule_only && active_development.operable(model.actions.at(actionid), model.yields))))
 						{
 							cacheit->second[actionid] = true;
 						}
