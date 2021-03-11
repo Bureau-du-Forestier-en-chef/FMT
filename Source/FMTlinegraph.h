@@ -44,6 +44,7 @@ class FMTlinegraph : public FMTgraph<FMTbasevertexproperties,FMTbaseedgeproperti
 		void grow();
 		FMTvertex_descriptor getactivevertex() const;
 		int getlastactionid(const int& period)const;
+		int getinedgeactionid(const FMTvertex_descriptor& vdesc)const;
 		const Core::FMTdevelopment& getperiodstartdev(const int& period) const;
 		const Core::FMTdevelopment& getperiodstopdev(const int& period) const;
 		int randomoperate(const std::vector<int>& operables, const Models::FMTmodel& model,
