@@ -59,6 +59,7 @@ namespace Parser
 					int themetarget = -1;
 					//size_t lastopt = 0;
 					size_t lastoutput = 0;
+					int outputid = 0;
 					if (FMTparser::tryopening(outputstream, location))
 					{
 						while (outputstream.is_open())
@@ -74,10 +75,11 @@ namespace Parser
 									{
 										if (processing_level && sources.empty())
 										{
-											sources.push_back(Core::FMToutputsource(Core::FMTotar::level, 0, "", name));
+											sources.push_back(Core::FMToutputsource(Core::FMTotar::level, 0, "", name,outputid));
 										}
 										outputs.push_back(Core::FMToutput(name, description, themetarget, sources, operators));
 										outputs.back().passinobject(*this);
+										++outputid;
 									}
 									sources.clear();
 									//lastopt = 0;
@@ -219,7 +221,7 @@ namespace Parser
 														else {
 															newoperators.push_back(Core::FMToperator(lastoperator));
 														}
-														newsources.push_back(Core::FMToutputsource(Core::FMTotar::val, value));
+														newsources.push_back(Core::FMToutputsource(Core::FMTotar::val, value,"","", sources.at(id).getoutputorigin()));
 													}
 													if (sources.at(id).isvariable() || sources.at(id).islevel())
 													{
@@ -233,7 +235,7 @@ namespace Parser
 												}
 												if (newsources.back().isvariable() || newsources.back().islevel())
 												{
-													newsources.push_back(Core::FMToutputsource(Core::FMTotar::val, value));
+													newsources.push_back(Core::FMToutputsource(Core::FMTotar::val, value,"","", newsources.back().getoutputorigin()));
 													newoperators.push_back(Core::FMToperator(lastoperator));
 												}
 
@@ -241,7 +243,7 @@ namespace Parser
 												sources = newsources;
 											}
 											else {
-												sources.push_back(Core::FMToutputsource(Core::FMTotar::val, value));
+												sources.push_back(Core::FMToutputsource(Core::FMTotar::val, value,"","",outputid));
 
 											}
 
@@ -264,7 +266,7 @@ namespace Parser
 													values.push_back(getnum<double>(number, constants));
 												}
 											}
-											sources.push_back(Core::FMToutputsource(Core::FMTotar::level, values));//constant level!
+											sources.push_back(Core::FMToutputsource(Core::FMTotar::level, values,outputid));//constant level!
 										}
 										else {
 											std::vector<std::string>values = spliter(strsrc, FMTparser::rxseparator);
@@ -313,7 +315,7 @@ namespace Parser
 														}
 													}
 													else {
-														sources.push_back(Core::FMToutputsource(Core::FMTotar::level, 0, strsrc));
+														sources.push_back(Core::FMToutputsource(Core::FMTotar::level, 0, strsrc,"",outputid));
 													}
 													if (!stroperators.empty())
 													{
@@ -328,7 +330,7 @@ namespace Parser
 												}
 												else if (ylds.isyld(strsrc))//isyld(ylds,strsrc,_section))
 												{
-													sources.push_back(Core::FMToutputsource(Core::FMTotar::timeyld, 0, strsrc));
+													sources.push_back(Core::FMToutputsource(Core::FMTotar::timeyld, 0, strsrc,"",outputid));
 
 												}else{
 													_exhandler->raise(Exception::FMTexc::FMTundefined_output,
@@ -405,7 +407,7 @@ namespace Parser
 																yld = "";
 															}
 															sources.push_back(Core::FMToutputsource(spec, Core::FMTmask(mask, themes),
-																Core::FMTotar::actual, yld, action));
+																Core::FMTotar::actual, yld, action,outputid));
 														}
 														else if (!std::string(kmatch[17]).empty() || !std::string(kmatch[18]).empty())
 														{
@@ -435,7 +437,7 @@ namespace Parser
 															}
 
 															sources.push_back(Core::FMToutputsource(spec, Core::FMTmask(mask, themes),
-																Core::FMTotar::inventory, yld));
+																Core::FMTotar::inventory, yld,"",outputid));
 														}
 														else if (!std::string(kmatch[3]).empty())
 														{
@@ -458,7 +460,7 @@ namespace Parser
 															}
 
 															sources.push_back(Core::FMToutputsource(spec, Core::FMTmask(mask, themes),
-																Core::FMTotar::inventory, yld, action));
+																Core::FMTotar::inventory, yld, action,outputid));
 
 														}
 													}
@@ -489,6 +491,7 @@ namespace Parser
 							}
 							outputs.push_back(Core::FMToutput(name, description, themetarget, sources, operators));
 							outputs.back().passinobject(*this);
+							++outputid;
 						}
 					}
 				}

@@ -14,29 +14,33 @@ FMToutputsource::FMToutputsource() : FMTspec(), mask(),
 		action(),
 		yield(),
 		values(),
-		average()
+		average(),
+		outputorigin(-1)
 	{
 
 	}
 
 
-FMToutputsource::FMToutputsource(const FMTotar ltarget,double lvalue, std::string lyield,std::string laction) : FMTspec(),mask(),
+FMToutputsource::FMToutputsource(const FMTotar ltarget,double lvalue, std::string lyield,
+	std::string laction,int origin) : FMTspec(),mask(),
     target(ltarget),
     action(laction),
     yield(lyield),
     values(1,lvalue),
-	average()
+	average(),
+	outputorigin(origin)
     {
 
     }
 
 
-FMToutputsource::FMToutputsource(const FMTotar ltarget,std::vector<double>lvalues): FMTspec(),mask(),
+FMToutputsource::FMToutputsource(const FMTotar ltarget,std::vector<double>lvalues, int origin): FMTspec(),mask(),
     target(ltarget),
     action(),
     yield(),
     values(lvalues),
-	average()
+	average(),
+	outputorigin(origin)
     {
 
 
@@ -45,16 +49,16 @@ FMToutputsource::FMToutputsource(const FMTotar ltarget,std::vector<double>lvalue
 
 FMToutputsource::FMToutputsource(const FMTspec& spec,const FMTmask& lmask,
                const FMTotar ltarget,std::string lyield,
-			std::string laction) :
+			std::string laction, int origin) :
                 FMTspec(spec),mask(lmask),
-                target(ltarget),action(laction),yield(lyield),values(),average()
+                target(ltarget),action(laction),yield(lyield),values(),average(), outputorigin(origin)
     {
 
 
     }
 
 FMToutputsource::FMToutputsource(const FMToutputsource& rhs) : FMTspec(rhs),mask(rhs.mask),target(rhs.target),
-    action(rhs.action),yield(rhs.yield),values(rhs.values), average(rhs.average)
+    action(rhs.action),yield(rhs.yield),values(rhs.values), average(rhs.average),outputorigin(rhs.outputorigin)
     {
 
     }
@@ -70,6 +74,7 @@ FMToutputsource& FMToutputsource::operator = (const FMToutputsource& rhs)
         FMTspec::operator=(rhs);
         mask = rhs.mask;
 		average = rhs.average;
+		outputorigin = rhs.outputorigin;
         }
     return *this;
     }
@@ -226,6 +231,7 @@ bool FMToutputsource::issamebutdifferentaction(const FMToutputsource& rhs) const
 	{
 	return (FMTspec::operator == (rhs) && target == rhs.target && mask == rhs.mask && action != rhs.action);
 	}
+
 
 bool FMToutputsource::isinaggregate(const FMToutputsource& rhs, const std::vector<Core::FMTaction>& actions) const
 	{

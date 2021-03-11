@@ -226,6 +226,11 @@ namespace Core
 		return node1.issamevalues(node2);
 		}
 
+	bool FMToutputnodeorigincomparator::operator()(const FMToutputnode& node1, const FMToutputnode& node2) const
+		{
+		return (node1.getoutputid()<node2.getoutputid());
+		}
+
 
 	size_t FMToutputnodehasher::operator()(const FMToutputnode & node) const
 		{
