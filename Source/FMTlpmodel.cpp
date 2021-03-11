@@ -617,6 +617,7 @@ namespace Models
 
 	FMTlpmodel::FMTlpmodel(const FMTmodel& base, FMTsolverinterface lsolvertype) :
 		FMTmodel(base),
+		strictlypositivesoutputsmatrix(false),
 		graph(Graph::FMTgraphbuild::nobuild),
 		elements(),
 		solver(lsolvertype, *this->_logger)
@@ -628,6 +629,7 @@ namespace Models
 
 	FMTlpmodel::FMTlpmodel() :
 		FMTmodel(),
+		strictlypositivesoutputsmatrix(false),
 		graph(Graph::FMTgraphbuild::nobuild),
 		elements(),
 		solver()
@@ -637,6 +639,7 @@ namespace Models
 
 	FMTlpmodel::FMTlpmodel(const FMTlpmodel& rhs) :
 		FMTmodel(rhs),
+		strictlypositivesoutputsmatrix(rhs.strictlypositivesoutputsmatrix),
 		graph(rhs.graph),
 		elements(rhs.elements),
 		solver(rhs.solver)
@@ -649,6 +652,7 @@ namespace Models
 	{
 		return (FMTmodel::operator == (rhs) &&
 			solver == (rhs.solver) &&
+			strictlypositivesoutputsmatrix == rhs.strictlypositivesoutputsmatrix &&
 			graph == rhs.graph &&
 			elements == rhs.elements);
 	}
@@ -658,6 +662,10 @@ namespace Models
 		return !(*this == rhs);
 	}
 
+	void FMTlpmodel::setstrictlypositivesoutputsmatrix()
+	{
+		strictlypositivesoutputsmatrix=true;
+	}
 
 
 	std::map<std::string, double> FMTlpmodel::getoutput(const Core::FMToutput& output,int period, Graph::FMToutputlevel level) const
@@ -716,6 +724,7 @@ namespace Models
 		if (this != &rhs)
 		{
 			FMTmodel::operator = (rhs);
+			strictlypositivesoutputsmatrix = (rhs.strictlypositivesoutputsmatrix);
 			solver = (rhs.solver);
 			graph = rhs.graph;
 		}
@@ -723,14 +732,22 @@ namespace Models
 	}
 
 
-bool FMTlpmodel::locatenodes(const std::vector<Core::FMToutputnode>& nodes, int period,
+std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Core::FMToutputnode>& nodes, int period,
 	std::map<int, double>& variables, double multiplier) const
 	{
-	bool cashhit = false;
+	std::vector<std::map<int, double>> strictlypositivesoutputs;
 	try {
+		std::map<int, double> outputmap;
+		//int outputid=-9999;
 		for (const Core::FMToutputnode& node : nodes)
 			{
-			
+			/*const int id = node.getoutputid();
+			if (outputid!=id && outputid!=-9999)
+			{
+				strictlypositivesoutputs.push_back(outputmap);
+				outputmap.clear();
+			}
+			outputid = id;*/
 			const std::map<int, double>node_map = graph.locatenode(*this, node, period);
 			for (std::map<int, double>::const_iterator node_it = node_map.begin(); node_it != node_map.end(); node_it++)
 				{
@@ -738,14 +755,20 @@ bool FMTlpmodel::locatenodes(const std::vector<Core::FMToutputnode>& nodes, int 
 					{
 					variables[node_it->first] = 0;
 					}
+				if (node_it->second<0 && strictlypositivesoutputsmatrix)
+					{
+						*_logger<<node_it->first<<" "<<node_it->second<<"\n";
+						outputmap[node_it->first]=node_it->second;
+					}
 				variables[node_it->first] += node_it->second*multiplier;
 				}
 			}
+			strictlypositivesoutputs.push_back(outputmap);
 		}catch (...)
 			{
 			_exhandler->raisefromcatch("", "FMTlpmodel::locatenodes", __LINE__, __FILE__);
 			}
-	return cashhit;
+	return strictlypositivesoutputs;
 	}
 
 
@@ -765,7 +788,15 @@ bool FMTlpmodel::locatenodes(const std::vector<Core::FMToutputnode>& nodes, int 
 					{
 						averagefactor = (1 / (last_period - first_period));
 					}
-					std::vector<Core::FMToutputnode>all_nodes = constraint.getnodes(/*area,actions,yields,*/averagefactor);
+					std::vector<Core::FMToutputnode>all_nodes;
+					if (strictlypositivesoutputsmatrix)
+						{
+						//all_nodes = constraint.getnodes(/*area,actions,yields,*/averagefactor,sort=true);
+						all_nodes = constraint.getnodes(/*area,actions,yields,*/averagefactor);
+						}else{
+							all_nodes = constraint.getnodes(/*area,actions,yields,*/averagefactor);
+						}
+					//std::vector<Core::FMToutputnode>all_nodes = constraint.getnodes(/*area,actions,yields,*/averagefactor);
 					double lowerbound = 0;
 					double upperbound = 0;
 					double coef_multiplier_lower = 1;
@@ -808,7 +839,7 @@ bool FMTlpmodel::locatenodes(const std::vector<Core::FMToutputnode>& nodes, int 
 									upperbound = 0;
 									const int lower_constraint_id = getsetmatrixelement(constraint, FMTmatrixelement::constraint, localvariables, -1, lowerbound, upperbound);
 								}
-								locatenodes(all_nodes, period, all_variables, 1);
+								std::vector<std::map<int, double>> outputvarpos = locatenodes(all_nodes, period, all_variables, 1);
 								all_variables[lower_even_variable] = -1;
 								lowerbound = 0;
 								upperbound = std::numeric_limits<double>::max();
