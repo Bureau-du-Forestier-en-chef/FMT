@@ -68,8 +68,8 @@ enum FMTmatrixelement
 	levelvariable=1,//general
 	objectivevariable=2,//general
 	constraint=3,//period base...
-	nr_items=4,
-	strictlypositive=5//when an output have negative coef, be sure that the value of the output in the graph is strictly positive (like in woodstock)
+	strictlypositive=4,//when an output have negative coef, be sure that the value of the output in the graph is strictly positive (like in woodstock)
+	nr_items=5
 	};
 
 // DocString: FMTlpmodel
@@ -261,6 +261,11 @@ class FMTlpmodel : public FMTmodel
 	*/
 	void updategeneralconstraintsnaming(std::unordered_map<int, std::string>& rows,
 		std::unordered_map<int, std::string>& cols) const;
+	// DocString: FMTlpmodel::setpositiveoutputsinmatrix
+	/**
+	Update the row and variables using the general constraints of the model.
+	*/
+	bool setpositiveoutputsinmatrix(const Core::FMTconstraint& constraint, const std::vector<std::map<int, double>>& strictlypositivesoutputs,int period);
 	public:
 	// DocString: FMTlpmodel(const FMTmodel,FMTsolverinterface)
 	/**
