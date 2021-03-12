@@ -737,17 +737,9 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 	{
 	std::vector<std::map<int, double>> strictlypositivesoutputs;
 	try {
-		std::map<int, double> outputmap;
-		//int outputid=-9999;
+		bool negvar=false;
 		for (const Core::FMToutputnode& node : nodes)
 			{
-			/*const int id = node.getoutputid();
-			if (outputid!=id && outputid!=-9999)
-			{
-				strictlypositivesoutputs.push_back(outputmap);
-				outputmap.clear();
-			}
-			outputid = id;*/
 			const std::map<int, double>node_map = graph.locatenode(*this, node, period);
 			for (std::map<int, double>::const_iterator node_it = node_map.begin(); node_it != node_map.end(); node_it++)
 				{
@@ -755,20 +747,60 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 					{
 					variables[node_it->first] = 0;
 					}
-				if (node_it->second<0 && strictlypositivesoutputsmatrix)
+				if (strictlypositivesoutputsmatrix && node_it->second<0)
 					{
-						*_logger<<node_it->first<<" "<<node_it->second<<"\n";
-						outputmap[node_it->first]=node_it->second;
+						*_logger<<node_it->first<<node_it->second<<"\n";
+						negvar=true;
 					}
 				variables[node_it->first] += node_it->second*multiplier;
 				}
 			}
-			strictlypositivesoutputs.push_back(outputmap);
+			if (strictlypositivesoutputsmatrix && negvar)
+			{
+				int outputid=-9999;
+				for (const Core::FMToutputnode& node : nodes)
+				{
+					const std::map<int, double>node_map = graph.locatenode(*this, node, period);
+					const int id = node.getoutputid();
+					if (id==-1)
+					{
+						_exhandler->raise(	Exception::FMTexc::FMTfunctionfailed,
+											"Invalid output id from node :"+std::string(node), "FMTlpmodel::locatenodes", __LINE__, __FILE__);
+					}
+					if (outputid!=id)
+					{
+						strictlypositivesoutputs.push_back(node_map);
+					}else{
+						strictlypositivesoutputs.back().insert(node_map.begin(),node_map.end());
+					}
+					outputid = id;
+				}
+			}
+
 		}catch (...)
 			{
 			_exhandler->raisefromcatch("", "FMTlpmodel::locatenodes", __LINE__, __FILE__);
 			}
 	return strictlypositivesoutputs;
+	}
+
+	bool FMTlpmodel::setpositiveoutputsinmatrix(const Core::FMTconstraint& constraint, const std::vector<std::map<int, double>>& strictlypositivesoutputs,int period)
+	{
+		try
+		{
+			if (!strictlypositivesoutputs.empty())
+			{
+				for (const auto& outvariable:strictlypositivesoutputs)
+				{
+					getsetmatrixelement(constraint, FMTmatrixelement::strictlypositive, outvariable, period,0);
+				}
+				return true;
+			}
+		}catch (...)
+		{
+		_exhandler->raisefromcatch("", "FMTlpmodel::setpositiveoutputsinmatrix", __LINE__, __FILE__);
+		}
+		return false;
 	}
 
 
@@ -788,15 +820,7 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 					{
 						averagefactor = (1 / (last_period - first_period));
 					}
-					std::vector<Core::FMToutputnode>all_nodes;
-					if (strictlypositivesoutputsmatrix)
-						{
-						//all_nodes = constraint.getnodes(/*area,actions,yields,*/averagefactor,sort=true);
-						all_nodes = constraint.getnodes(/*area,actions,yields,*/averagefactor);
-						}else{
-							all_nodes = constraint.getnodes(/*area,actions,yields,*/averagefactor);
-						}
-					//std::vector<Core::FMToutputnode>all_nodes = constraint.getnodes(/*area,actions,yields,*/averagefactor);
+					std::vector<Core::FMToutputnode>all_nodes = constraint.getnodes(/*area,actions,yields,*/averagefactor,strictlypositivesoutputsmatrix);
 					double lowerbound = 0;
 					double upperbound = 0;
 					double coef_multiplier_lower = 1;
@@ -839,7 +863,8 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 									upperbound = 0;
 									const int lower_constraint_id = getsetmatrixelement(constraint, FMTmatrixelement::constraint, localvariables, -1, lowerbound, upperbound);
 								}
-								std::vector<std::map<int, double>> outputvarpos = locatenodes(all_nodes, period, all_variables, 1);
+								const std::vector<std::map<int, double>> outputvarpos = locatenodes(all_nodes, period, all_variables, 1);
+								setpositiveoutputsinmatrix(constraint,outputvarpos,period);
 								all_variables[lower_even_variable] = -1;
 								lowerbound = 0;
 								upperbound = std::numeric_limits<double>::max();
@@ -884,11 +909,13 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 							constraint.getbounds(lowerbound, upperbound, period);
 						}
 						//size_t left_location = 0;
-						locatenodes(all_nodes, period, all_variables, 1);
+						const std::vector<std::map<int, double>> outputvarpos = locatenodes(all_nodes, period, all_variables, 1);
+						setpositiveoutputsinmatrix(constraint,outputvarpos,period);
 						if (constraint.acrossperiod() && !all_variables.empty())
 						{
 							const size_t sizebeforecrossing = all_variables.size();
-							locatenodes(all_nodes, (period + 1), all_variables, -1);
+							const std::vector<std::map<int, double>> outputvarposloc = locatenodes(all_nodes, (period + 1), all_variables, -1);
+							setpositiveoutputsinmatrix(constraint,outputvarposloc,period+1);
 							size_t sizeaftercrossing = all_variables.size();
 							if (sizebeforecrossing == sizeaftercrossing)//dont want empty periods!
 							{
@@ -1182,37 +1209,40 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 		if (static_cast<int>(elements.size()) > period && elements.at(period).find(std::string(constraint))!= elements.at(period).end())
 			{
 			std::vector<std::vector<int>>all_elements = elements.at(period).at(std::string(constraint));
-			
 			elements.at(period).erase(elements.at(period).find(std::string(constraint)));
 			int removedrow = -1;
-			if (!all_elements.at(FMTmatrixelement::constraint).empty())
+			std::vector<FMTmatrixelement> simpleelements={FMTmatrixelement::constraint,FMTmatrixelement::strictlypositive};
+			for (const auto& elementtype : simpleelements)
+			{
+				if (!all_elements.at(elementtype).empty())
 				{
-				for (const int& levelid : all_elements.at(FMTmatrixelement::constraint))
-				{
-					bool removeconstraint = true;
-					for (int locator = (period + 1); locator < static_cast<int>(elements.size()); ++locator)
+					for (const int& levelid : all_elements.at(elementtype))
 					{
-						for (std::unordered_map<std::string, std::vector<std::vector<int>>>::iterator elit = elements.at(locator).begin(); elit != elements.at(locator).end(); elit++)
+						bool removeconstraint = true;
+						for (int locator = (period + 1); locator < static_cast<int>(elements.size()); ++locator)
 						{
-							if (std::find(elit->second.at(FMTmatrixelement::constraint).begin(), elit->second.at(FMTmatrixelement::constraint).end(), levelid) != elit->second.at(FMTmatrixelement::constraint).end())
+							for (std::unordered_map<std::string, std::vector<std::vector<int>>>::iterator elit = elements.at(locator).begin(); elit != elements.at(locator).end(); elit++)
 							{
-								removeconstraint = false;
-								break;
+								if (std::find(elit->second.at(elementtype).begin(), elit->second.at(elementtype).end(), levelid) != elit->second.at(elementtype).end())
+								{
+									removeconstraint = false;
+									break;
+								}
 							}
+							if (!removeconstraint)
+								{
+								break;
+								}
 						}
-						if (!removeconstraint)
+						if (removeconstraint)
 							{
-							break;
+							solver.deleteRow(levelid);
+							--graph.getstatsptr()->rows;
+							--graph.getstatsptr()->output_rows;
 							}
 					}
-					if (removeconstraint)
-						{
-						solver.deleteRow(levelid);
-						--graph.getstatsptr()->rows;
-						--graph.getstatsptr()->output_rows;
-						}
 				}
-				}
+			}
 			if (!all_elements.at(FMTmatrixelement::goalvariable).empty())
 				{
 				for (const int& colid : all_elements.at(FMTmatrixelement::goalvariable))
@@ -1222,7 +1252,6 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 					--graph.getstatsptr()->output_cols;
 					}
 				}
-
 			if (!all_elements.at(FMTmatrixelement::levelvariable).empty() || !all_elements.at(FMTmatrixelement::objectivevariable).empty())
 				{
 				std::vector<int>potentialcols;
@@ -1257,7 +1286,8 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 					}
 				}
 			}
-			}catch (...)
+		}
+			catch (...)
 				{
 				_exhandler->raisefromcatch("for "+std::string(constraint),"FMTlpmodel::eraseconstraint", __LINE__, __FILE__);
 				}
@@ -1475,7 +1505,7 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 			double objective;
 			std::vector<int>indicies;
 			std::vector<double>elements;
-		if (element_type == FMTmatrixelement::constraint)
+		if (element_type == FMTmatrixelement::constraint || element_type == FMTmatrixelement::strictlypositive)
 			{
 			const int rownelement = solver.getrow(matrixindex, lower, upper, indicies, elements);
 		}else {
@@ -1516,13 +1546,15 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 			{
 				averagefactor = (1 / (last_period - first_period));
 			}
-			const std::vector<Core::FMToutputnode>all_nodes = objective.getnodes(/*area,actions,yields,*/averagefactor);
+			const std::vector<Core::FMToutputnode>all_nodes = objective.getnodes(/*area,actions,yields,*/averagefactor,strictlypositivesoutputsmatrix);
 			std::map<int, double>all_variables;
 			if (!objective.extravariables())
 			{
 				for (int period = first_period; period <= last_period; ++period)
 				{
-					locatenodes(all_nodes, period, all_variables);
+					const std::vector<std::map<int, double>> outputvarpos = locatenodes(all_nodes, period, all_variables);
+					setpositiveoutputsinmatrix(objective,outputvarpos,period);
+					//locatenodes(all_nodes, period, all_variables);
 					locatelevels(all_nodes, period, all_variables, objective);
 				}
 			}
@@ -1542,7 +1574,9 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 				for (int period = first_period; period <= last_period; ++period)
 				{
 					std::map<int, double>period_variables;
-					locatenodes(all_nodes, period, period_variables);
+					const std::vector<std::map<int, double>> outputvarpos = locatenodes(all_nodes, period, period_variables);
+					setpositiveoutputsinmatrix(objective,outputvarpos,period);
+					//locatenodes(all_nodes, period, period_variables);
 					locatelevels(all_nodes, period, all_variables, objective);
 					if (!period_variables.empty())
 					{
@@ -1696,7 +1730,7 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 			std::vector<double>sumcoefficiants;
 			summarize(indexes, sumvariables, sumcoefficiants);
 			Graph::FMTgraphstats* stats = graph.getstatsptr();
-			if (element_type == FMTmatrixelement::constraint)
+			if (element_type == FMTmatrixelement::constraint || element_type == FMTmatrixelement::strictlypositive)
 			{
 				element_id = stats->rows;
 				solver.addRow(static_cast<int>(sumvariables.size()), &sumvariables[0], &sumcoefficiants[0], lowerbound, upperbound);
