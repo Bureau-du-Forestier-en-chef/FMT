@@ -31,9 +31,9 @@ namespace Heuristics
 		}
 
 
-	Core::FMToutput FMToperatingareaclusterbinary::getoutputintersect(const Core::FMToutput& output) const
+	Core::FMToutput FMToperatingareaclusterbinary::getoutputintersect(const Core::FMToutput& output,const std::vector<Core::FMTtheme>& themes) const
 		{
-		return output.intersectwithmask(getmask());
+		return output.intersectwithmask(getmask(),themes);
 		}
 
 	std::vector<FMToperatingareaclusterbinary> FMToperatingareaclusterbinary::filterneighbors(std::vector<FMToperatingareaclusterbinary> potentiallink) const

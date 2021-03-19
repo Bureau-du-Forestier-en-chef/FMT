@@ -41,7 +41,8 @@ FMTmask::FMTmask(const std::vector<std::string>&values,const std::vector<FMTthem
         {
         name+=el+" ";
         }
-    name = name.substr(0, name.size()-1);
+    //name = name.substr(0, name.size()-1);
+	name.pop_back();
 	this->set(themes, name);
     }
 std::vector<FMTmask> FMTmask::decompose(const FMTtheme &theme) const

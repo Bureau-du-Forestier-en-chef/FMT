@@ -25,12 +25,12 @@ int main()
 		}
 		std::vector<Core::FMTconstraint>constraints = optimizationmodel.getconstraints();
 		const Core::FMTconstraint objective = constraints.at(0);
-		optimizationmodel.setobjective(objective);
 		constraints.erase(constraints.begin());
 		for (const Core::FMTconstraint& constraint : constraints)
 		{
 			optimizationmodel.setconstraint(constraint);
 		}
+		optimizationmodel.setobjective(objective);
 		optimizationmodel.initialsolve();
 	}else {
 		Logging::FMTlogger() << "FMT needs to be compiled with OSI" << "\n";

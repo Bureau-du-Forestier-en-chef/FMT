@@ -15,12 +15,15 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 #include "OsiClpSolverInterface.hpp"
 
+
 namespace Models
 {
 	bool FMTlpsolver::canupdatesource() const
 	{
 	return (solverinterface.use_count() == 2);
 	}
+
+
 	std::shared_ptr<OsiSolverInterface> FMTlpsolver::buildsolverinterface(const FMTsolverinterface& lsolvertype) const
 	{
 		std::shared_ptr<OsiSolverInterface>newsolverinterface;
@@ -57,8 +60,11 @@ namespace Models
 	{
 		std::shared_ptr<OsiSolverInterface>newsolverinterface;
 		try{
-			newsolverinterface.reset(solver_ptr->clone(true));
-			newsolverinterface->resolve();
+			if (solver_ptr)
+				{
+				newsolverinterface.reset(solver_ptr->clone(true));
+				newsolverinterface->resolve();
+				}
 		/*switch (lsolvertype)
 		{
 		case FMTsolverinterface::CLP:
@@ -107,10 +113,10 @@ namespace Models
 			}
 		return *this;
 		}
-	FMTlpsolver::FMTlpsolver(FMTsolverinterface lsolvertype, Logging::FMTlogger& logger):Core::FMTobject(),solverinterface(), usecache(true),matrixcache(), solvertype(lsolvertype)
+	FMTlpsolver::FMTlpsolver(FMTsolverinterface lsolvertype/*, Logging::FMTlogger& logger*/):Core::FMTobject(),solverinterface(), usecache(true),matrixcache(), solvertype(lsolvertype)
 		{
 		solverinterface = buildsolverinterface(lsolvertype);
-		this->passinmessagehandler(logger);
+		//this->passinmessagehandler(logger);
 		}
 
 	bool FMTlpsolver::resolve()
@@ -662,6 +668,61 @@ namespace Models
 		return nullptr;
 		}
 
+	void FMTlpsolver::setcolname(const std::string& name, const int& columnid)
+	{
+		try {
+			matrixcache.setcolname(name, columnid);
+		}
+		catch (...)
+		{
+			_exhandler->raisefromcatch("", "FMTlpsolver::setcolname", __LINE__, __FILE__);
+		}
+	}
+	
+	void FMTlpsolver::setrowname(const std::string& name, const int& rowid)
+	{
+		try {
+			matrixcache.setrowname(name, rowid);
+		}
+		catch (...)
+		{
+			_exhandler->raisefromcatch("", "FMTlpsolver::setrowname", __LINE__, __FILE__);
+		}
+	}
+
+	void FMTlpsolver::updaterowsandcolsnames(bool shortformat)
+	{
+		try {
+			matrixcache.synchronize(solverinterface);
+			matrixcache.formatallnames(shortformat);
+			OsiSolverInterface::OsiNameVec& cachedrownames = matrixcache.getrownames();
+			OsiSolverInterface::OsiNameVec& cachedcolnames = matrixcache.getcolumnnames();
+			if (solvertype == Models::FMTsolverinterface::MOSEK)
+			{
+				OsiMskSolverInterface* msksolver = dynamic_cast<OsiMskSolverInterface*>(solverinterface.get());
+				MSKtask_t task = msksolver->getMutableLpPtr();
+				for (int colid = 0; colid < static_cast<int>(cachedcolnames.size()); ++colid)
+					{
+					MSK_putvarname(task, colid, cachedcolnames.at(colid).c_str());
+					}
+				for (int rowid = 0; rowid < static_cast<int>(cachedrownames.size()); ++rowid)
+				{
+					MSK_putconname(task, rowid, cachedrownames.at(rowid).c_str());
+				}
+				
+			}else {
+				solverinterface->setColNames(cachedcolnames, 0, static_cast<int>(cachedcolnames.size()), 0);
+				solverinterface->setRowNames(cachedrownames, 0, static_cast<int>(cachedrownames.size()), 0);
+			
+			}
+
+		}
+		catch (...)
+		{
+			_exhandler->raisefromcatch("", "FMTlpsolver::updaterowsandcolsnames", __LINE__, __FILE__);
+		}
+	}
+
 	void FMTlpsolver::updatematrixnaming(const std::unordered_map<int, std::string>& colsnames,
 		const std::unordered_map<int, std::string>& rownames)
 	{
@@ -713,6 +774,7 @@ namespace Models
 		{
 		try{
 			matrixcache.synchronize(solverinterface);
+			
 			if (solvertype == Models::FMTsolverinterface::MOSEK)
 			{
 				std::vector<char*>rownames;

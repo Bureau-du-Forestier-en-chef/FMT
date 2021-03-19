@@ -24,9 +24,10 @@ if __name__ == "__main__":
             for period in range(0,10):
                     print(optimizationmodel.buildperiod())
             allconstraints = optimizationmodel.getconstraints()
-            optimizationmodel.setobjective(allconstraints.pop(0))
+            objective = allconstraints.pop(0)
             for constraint in allconstraints:
                     optimizationmodel.setconstraint(constraint)
+            optimizationmodel.setobjective(objective)
             optimizationmodel.initialsolve()
             nodeofoutput = None
             for output in optimizationmodel.getoutputs():

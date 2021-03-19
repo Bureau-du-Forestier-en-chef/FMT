@@ -81,7 +81,8 @@ statistic and finaly the statistic varlue of the binary used to calculate the ob
         Using an (output) this function is going to intersect the mask of the output with the mask of the operating area and it will result
         of an output targeting only the operating area.
 		*/
-		Core::FMToutput getoutputintersect(const Core::FMToutput& output) const;
+		Core::FMToutput getoutputintersect(const Core::FMToutput& output,
+			const std::vector<Core::FMTtheme>& themes) const;
 		// DocString: FMToperatingareaclusterbinary::setstatistic
 		/**
         Setter for the statistic of the clusterbinary that is going to be used in the global objective for minimizing heterogenity.

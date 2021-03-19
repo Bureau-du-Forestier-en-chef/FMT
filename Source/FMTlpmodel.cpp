@@ -56,18 +56,18 @@ namespace Models
 				{
 				Heuristics::FMToperatingareaclusterbinary centroid = originalcluster.getcentroid();
 				std::vector<Heuristics::FMToperatingareaclusterbinary>allbinaries = originalcluster.getbinaries();
-				const Core::FMToutput& centroidoutput = centroid.getoutputintersect(statisticoutput);
-				const Core::FMToutput& centroidareaoutput = centroid.getoutputintersect(areaoutput);
-				const std::map<std::string, double> centroidvalue = this->getoutput(centroidoutput,period);
-				const std::map<std::string, double> centroidarea = this->getoutput(centroidareaoutput,period);
+				const Core::FMToutput centroidoutput = centroid.getoutputintersect(statisticoutput,themes);
+				const Core::FMToutput centroidareaoutput = centroid.getoutputintersect(areaoutput, themes);
+				const std::map<std::string, double> centroidvalue = this->getoutput(centroidoutput,period,Graph::FMToutputlevel::totalonly);
+				const std::map<std::string, double> centroidarea = this->getoutput(centroidareaoutput,period,Graph::FMToutputlevel::totalonly);
 				centroid.setstatistic(centroidvalue.at("Total"));
 				centroid.setarea(centroidarea.at("Total"));
 				for (Heuristics::FMToperatingareaclusterbinary& binary : allbinaries)
 					{
-					const Core::FMToutput& binaryoutput = binary.getoutputintersect(statisticoutput);
-					const Core::FMToutput& binaryareaoutput = binary.getoutputintersect(areaoutput);
-					const std::map<std::string, double> binaryvalue = this->getoutput(binaryoutput,period);
-					const std::map<std::string, double> binaryarea = this->getoutput(binaryareaoutput,period);
+					const Core::FMToutput binaryoutput = binary.getoutputintersect(statisticoutput,themes);
+					const Core::FMToutput binaryareaoutput = binary.getoutputintersect(areaoutput,themes);
+					const std::map<std::string, double> binaryvalue = this->getoutput(binaryoutput,period,Graph::FMToutputlevel::totalonly);
+					const std::map<std::string, double> binaryarea = this->getoutput(binaryareaoutput,period,Graph::FMToutputlevel::totalonly);
 					binary.setstatistic(binaryvalue.at("Total"));
 					binary.setarea(binaryarea.at("Total"));
 					}
@@ -82,6 +82,7 @@ namespace Models
 				}
 			newclusterer = Heuristics::FMToperatingareaclusterer(solver.getsolvertype(),0,newclusters);
 			newclusterer.passinobject(*this);
+			newclusterer.buildproblem();
 		}catch (...)
 			{
 			_exhandler->raisefromcatch("", "FMTlpmodel::getclusterer", __LINE__, __FILE__);
@@ -620,7 +621,7 @@ namespace Models
 		strictlypositivesoutputsmatrix(false),
 		graph(Graph::FMTgraphbuild::nobuild),
 		elements(),
-		solver(lsolvertype, *this->_logger)
+		solver(lsolvertype)
 	{
 		solver.passinobject(base);
 		graph.passinobject(base);
@@ -1932,8 +1933,9 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
         size_t seedof = 0;
         std::vector<Heuristics::FMToperatingareaclusterer>allheuristics;
         Heuristics::FMToperatingareaclusterer baseclusterer=this->getclusterer(clusters,areaoutput,statisticoutput,period);
-        try{
-            for (size_t heuristicid = 1 ; heuristicid < numberofheuristics; ++heuristicid)
+		
+		try{
+            for (size_t heuristicid = 0 ; heuristicid < numberofheuristics; ++heuristicid)
                 {
                 allheuristics.push_back(baseclusterer);
                 allheuristics.back().passinobject(*this);

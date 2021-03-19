@@ -4,11 +4,11 @@
 
 *ACTION aCaribou N Massif protection du caribou
 *OPERABLE aCaribou
-UC ? ? _AGE >= 8
+UC prod ? _AGE >= 8
 
 *ACTION plantation Y _LOCKEXEMPT
 *OPERABLE plantation
-? ? ? _AGE >= 1 AND _AGE <= 3
+? prod ? _AGE >= 1 AND _AGE <= 3
 
 *ACTION aFire N
 *OPERABLE AFire

@@ -286,7 +286,8 @@ class FMToutput: public FMTobject
 	/**
 	Returns the intersected FMToutput resulting from the mask intersection with this output.
 	*/
-	FMToutput intersectwithmask(const Core::FMTmask& mask) const;
+	FMToutput intersectwithmask(const Core::FMTmask& mask,
+					const std::vector<Core::FMTtheme>& themes) const;
 	// DocString: FMToutput::getvariableintersect
 	/**
 	Returns the intersected FMTmask of all variables
