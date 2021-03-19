@@ -12,6 +12,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 #include "CoinBuild.hpp"
 #include "OsiSolverInterface.hpp"
+
 #include <memory>
 
 namespace Models
@@ -44,12 +45,54 @@ namespace Models
 		// DocString: FMTmatrixbuild::deletedvariables
 		///Deleted variables used in replanning context when the variables indexes need to be updated.
 		std::vector<int>deletedvariables;
+		// DocString: FMTmatrixbuild::columnnames
+		///Cached column names;
+		OsiSolverInterface::OsiNameVec columnnames;
+		// DocString: FMTmatrixbuild::rownames
+		///Cached row names;
+		OsiSolverInterface::OsiNameVec rownames;
 		// DocString: FMTmatrixbuild::sortelementsandclean
 		/**
 		The function removes duplicate and sort a vector of (elements).
 		*/
 		void sortelementsandclean(std::vector<int>& elements) const;
+		// DocString: FMTmatrixbuild::formatformatrixname
+		/**
+		Format a string for matrix naming variables and constraints.
+		*/
+		std::string formatformatrixname(std::string name, bool shortformat) const;
 	public:
+		// DocString: FMTmatrixbuild::getcolumnnames
+		/**
+		Return cached column names.
+		*/
+		inline OsiSolverInterface::OsiNameVec& getcolumnnames()
+			{
+			return columnnames;
+			}
+		// DocString: FMTmatrixbuild::getrownames
+		/**
+		Return cached row names.
+		*/
+		inline OsiSolverInterface::OsiNameVec& getrownames()
+			{
+			return rownames;
+			}
+		// DocString: FMTmatrixbuild::formatallnames
+		/**
+		Formats names of row and column in cache.
+		*/
+		void formatallnames(bool shortformat);
+		// DocString: FMTmatrixbuild::setcolname
+		/**
+		set column name.
+		*/
+		void setcolname(const std::string& name,const int& columnid);
+		// DocString: FMTmatrixbuild::setrowname
+		/**
+		set row name.
+		*/
+		void setrowname(const std::string& name, const int& rowid);
 		// DocString: FMTmatrixbuild::synchronize
 		/**
 		This function synchronize the cols from colsbuild and the row of rowbuild 

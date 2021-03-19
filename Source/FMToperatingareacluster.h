@@ -141,6 +141,11 @@ namespace Heuristics
 		Get the maximal area of the potential cluster considering the number of binaries in the cluster.
 		*/
 		double getmaximalarea() const;
+		// DocString: FMToperatingareacluster::getmaximalstats
+		/**
+		Get maximal stats for the whole cluster.
+		*/
+		double getmaximalstats() const;
 		// DocString: FMToperatingareacluster::getrealminimalarea
 		/**
 		Getter for the minimalarea.

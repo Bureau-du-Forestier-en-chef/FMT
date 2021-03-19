@@ -8,8 +8,8 @@ arecup 1.._LENGTH
 
 *CONSTRAINTS
 
-_RANDOM(Burnedarea) >= 200 1.._LENGTH
-_RANDOM(Burnedarea) <= 600 1.._LENGTH
+_RANDOM(Burnedarea) >= 0 1.._LENGTH
+_RANDOM(Burnedarea) <= 1 1.._LENGTH
 
 
 *FORMAT MOSEK
