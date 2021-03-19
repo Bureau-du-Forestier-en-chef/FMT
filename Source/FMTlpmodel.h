@@ -259,8 +259,8 @@ class FMTlpmodel : public FMTmodel
 	/**
 	Update the row and variables using the general constraints of the model.
 	*/
-	void updategeneralconstraintsnaming(std::unordered_map<int, std::string>& rows,
-		std::unordered_map<int, std::string>& cols) const;
+	void updategeneralconstraintsnaming(std::vector<std::string>& colnames,
+										std::vector<std::string>& rownames) const;
 	// DocString: FMTlpmodel::setpositiveoutputsinmatrix
 	/**
 	Set the variables in the map of variables strictlypositivesoutputs to be >=0 int the matrix.

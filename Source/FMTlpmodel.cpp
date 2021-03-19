@@ -2167,10 +2167,84 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 		}
 	}
 
-	void FMTlpmodel::updategeneralconstraintsnaming(std::unordered_map<int, std::string>& rows,
-		std::unordered_map<int, std::string>& cols) const
+	void FMTlpmodel::updategeneralconstraintsnaming(std::vector<std::string>& colnames,
+													std::vector<std::string>& rownames) const
 	{
 		try {
+			int constraintid = 0;
+			for (const Core::FMTconstraint& constraint : constraints)
+				{
+				int first_period = 0;
+				int last_period = 0;
+				if (graph.constraintlenght(constraint, first_period,last_period))
+					{
+					const std::string constraintname("ID"+std::to_string(constraintid));
+					for (int period = first_period;period <= last_period;++period)
+						{
+						const std::string constnperiod(constraintname + "_P" + std::to_string(period));
+						const std::vector<std::vector<int>>constraintindex = getmatrixelement(constraint, period);
+						int elementid = 0;
+						for (const std::vector<int>& elements : constraintindex)
+							{
+							if (!elements.empty())
+								{
+								const FMTmatrixelement elementtype = static_cast<FMTmatrixelement>(elementid);
+								std::string* original; 
+								if (elementtype== FMTmatrixelement::constraint)
+									{
+									original = &rownames[*elements.begin()];
+								}else {
+									original = &colnames[*elements.begin()];
+									}
+								if (!original->empty())
+								{
+									if (original->at(original->size() - 2) == '_')
+									{
+										*original = original->substr(0, original->size() - 1) + std::to_string(period);
+									}else {
+										*original = *original + "_" + std::to_string(period);
+										}
+								}else{
+									std::string tag;
+									switch (elementtype)
+									{
+									case FMTmatrixelement::constraint:
+									{
+										tag = "CON_";
+										break;
+									}
+									case FMTmatrixelement::goalvariable:
+									{
+										tag = "GOAL_";
+										break;
+									}
+									case FMTmatrixelement::levelvariable:
+									{
+										tag = "LEVEL_";
+										break;
+									}
+									case FMTmatrixelement::objectivevariable:
+									{
+										tag = "OBJ_";
+										break;
+									}
+									case FMTmatrixelement::strictlypositive:
+									{
+										tag = "POS_";
+										break;
+									}
+									default:
+										break;
+									}
+									*original = tag + constnperiod;
+								}
+								}
+							++elementid;
+							}
+						}
+					}
+				++constraintid;
+				}
 
 
 		}
@@ -2185,9 +2259,24 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 	void FMTlpmodel::updatematrixnaming()
 	{
 		try {
-			const std::unordered_map<int, std::string>colnames = graph.getvariablenames(actions);
-			std::unordered_map<int, std::string>rownames = graph.gettransferrownames();
-			solver.updatematrixnaming(colnames, rownames);
+			std::vector<std::string>colnames(solver.getNumCols());
+			std::vector<std::string>rownames(solver.getNumRows());
+			graph.getvariablenames(actions,colnames);
+			graph.gettransferrownames(rownames);
+			updategeneralconstraintsnaming(colnames,rownames);
+			int colid = 0;
+			for (const std::string& name : colnames)
+				{
+				solver.setcolname(name, colid);
+				++colid;
+				}
+			int rowid = 0;
+			for (const std::string& name : rownames)
+				{
+				solver.setrowname(name, rowid);
+				++rowid;
+				}
+			solver.updaterowsandcolsnames();
 
 		}
 		catch (...)

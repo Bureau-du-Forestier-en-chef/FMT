@@ -102,7 +102,7 @@ namespace Heuristics
 
     FMToperatingareacluster FMToperatingareacluster::getfilteredcluster(const Core::FMTmask& filtermask) const
         {
-        FMToperatingareacluster newcluster;
+        FMToperatingareacluster newcluster(*this);
         if (centroid.getmask().issubsetof(filtermask))
             {
             std::vector<FMToperatingareaclusterbinary>newbinaries;
@@ -124,7 +124,8 @@ namespace Heuristics
                     newbinaries.push_back(newbinary);
                     }
                 }
-            newcluster = FMToperatingareacluster(FMToperatingareacluster(centroid,newbinaries),minimalarea,maximalarea);
+			newcluster.binaries = newbinaries;
+			newcluster.centroid = centroid;
             }
         return newcluster;
         }

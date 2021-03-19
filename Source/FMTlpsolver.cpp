@@ -722,7 +722,7 @@ namespace Models
 			_exhandler->raisefromcatch("", "FMTlpsolver::updaterowsandcolsnames", __LINE__, __FILE__);
 		}
 	}
-
+	/*
 	void FMTlpsolver::updatematrixnaming(const std::unordered_map<int, std::string>& colsnames,
 		const std::unordered_map<int, std::string>& rownames)
 	{
@@ -769,6 +769,7 @@ namespace Models
 			_exhandler->raisefromcatch("", "FMTlpsolver::updatematrixnaming", __LINE__, __FILE__);
 		}
 	}
+	*/
 
 	void FMTlpsolver::writeLP(const std::string& location) const
 		{

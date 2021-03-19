@@ -96,14 +96,22 @@ namespace Models
 
 	void FMTmatrixbuild::setcolname(const std::string& name, const int& columnid)
 		{
-		columnnames.resize(static_cast<size_t>(columnid + 1));
+		const size_t sizeofcontainer = static_cast<size_t>(columnid + 1);
+		if (sizeofcontainer>columnnames.size())
+			{
+			columnnames.resize(sizeofcontainer);
+			}
 		columnnames[columnid] = name;
 		}
 
 
 	void FMTmatrixbuild::setrowname(const std::string& name, const int& rowid)
 		{
-		rownames.resize(static_cast<size_t>(rowid + 1));
+		const size_t sizeofcontainer = static_cast<size_t>(rowid + 1);
+		if (sizeofcontainer > rownames.size())
+		{
+			rownames.resize(sizeofcontainer);
+		}
 		rownames[rowid] = name;
 		}
 
