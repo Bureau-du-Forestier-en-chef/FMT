@@ -42,16 +42,18 @@ class FMToutputsource : public FMTspec
 	std::vector<double>values;
 	bool average;
 	int outputorigin;
+	int themetarget;
+	//target =-1 or themetarget constructor
     public:
 		FMToutputsource();
 		~FMToutputsource() = default;
         FMToutputsource(const FMTotar ltarget,double lvalue = 0,
-			std::string lyield= "", std::string laction = "",int origin=-1);
+			std::string lyield= "", std::string laction = "",int origin=-1, int ttarget=-1);
         FMToutputsource(const FMTotar ltarget,
-			std::vector<double>lvalues, int origin = -1);
+			std::vector<double>lvalues, int origin = -1, int ttarget=-1);
         FMToutputsource(const FMTspec& spec,const FMTmask& lmask,
                const FMTotar ltarget, std::string lyield= "",
-               std::string laction = "", int origin = -1);
+               std::string laction = "", int origin = -1, int ttarget=-1);
         FMToutputsource(const FMToutputsource& rhs);
         FMToutputsource& operator = (const FMToutputsource& rhs);
         operator std::string() const override;
@@ -62,6 +64,11 @@ class FMToutputsource : public FMTspec
 			{
 			return outputorigin;
 			}
+		inline int getthemetarget() const
+			{
+			return themetarget;
+			}
+		void setthemetarget(const int& newttarget);
 		bool isinaggregate(const FMToutputsource& rhs, const std::vector<Core::FMTaction>& actions) const;
 		bool issubsetof(const FMToutputsource& rhs, const std::vector<Core::FMTaction>& actions) const;
 		bool issubsetof(const FMToutputsource& rhs) const;

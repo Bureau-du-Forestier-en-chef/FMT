@@ -749,34 +749,100 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 					}
 				if (strictlypositivesoutputsmatrix && node_it->second<0)
 					{
-						*_logger<<node_it->first<<node_it->second<<"\n";
 						negvar=true;
 					}
+				//*_logger<<"node id val "<<node_it->first<<node_it->second<<"\n";
 				variables[node_it->first] += node_it->second*multiplier;
 				}
 			}
 			if (strictlypositivesoutputsmatrix && negvar)
 			{
 				int outputid=-9999;
+				std::map<std::string,std::map<int,double>> node_map_theme_id;
 				for (const Core::FMToutputnode& node : nodes)
 				{
-					const std::map<int, double>node_map = graph.locatenode(*this, node, period);
-					const int id = node.getoutputid();
-					if (id==-1)
+					const std::map<std::string,std::map<int,double>> node_map_theme = graph.locatenodebytheme(*this, node, period);
+					if (!node_map_theme.empty())
+					{
+						const int id = node.getoutputid();
+						if (id==-1)
+						{
+							_exhandler->raise(	Exception::FMTexc::FMTfunctionfailed,
+												"Invalid output id from node :"+std::string(node), "FMTlpmodel::locatenodes", __LINE__, __FILE__);
+						}
+						if (outputid!=id)
+						{
+							if(!node_map_theme_id.empty())
+							{
+								int counttheme = 0;
+								bool foundna = false;
+								for(const auto& nmti:node_map_theme_id)
+								{
+									if (!nmti.second.empty())
+									{
+										strictlypositivesoutputs.push_back(nmti.second);
+										if(nmti.first=="NA"){foundna=true;}
+										++counttheme;
+									}
+								}
+								if(counttheme>1 && foundna)
+								{
+									_exhandler->raise(	Exception::FMTexc::FMTfunctionfailed,
+														"Differences in thematics of certains outputs and there sources", "FMTlpmodel::locatenodes", __LINE__, __FILE__);
+								}
+							}
+							node_map_theme_id.clear();
+						}
+						for(const auto& nmt:node_map_theme)
+							{
+								if (node_map_theme_id.find(nmt.first)==node_map_theme_id.end())
+								{
+									node_map_theme_id[nmt.first]=nmt.second;
+								}else{
+									node_map_theme_id[nmt.first].insert(nmt.second.begin(),nmt.second.end());
+								}
+							}
+						outputid = id;
+					}
+					/*const std::map<int, double>node_map = graph.locatenode(*this, node, period);
+					if (!node_map.empty())
+					{
+						const int id = node.getoutputid();
+						if (id==-1)
+						{
+							_exhandler->raise(	Exception::FMTexc::FMTfunctionfailed,
+												"Invalid output id from node :"+std::string(node), "FMTlpmodel::locatenodes", __LINE__, __FILE__);
+						}
+						if (outputid!=id)
+						{
+
+							strictlypositivesoutputs.push_back(node_map);
+						}else{
+							strictlypositivesoutputs.back().insert(node_map.begin(),node_map.end());
+						}
+						outputid = id;
+					}*/
+				}
+				if(!node_map_theme_id.empty())
+				{
+					int counttheme = 0;
+					bool foundna = false;
+					for(const auto& nmti:node_map_theme_id)
+					{
+						if (!nmti.second.empty())
+						{
+							strictlypositivesoutputs.push_back(nmti.second);
+							if(nmti.first=="NA"){foundna=true;}
+							++counttheme;
+						}
+					}
+					if(counttheme>1 && foundna)
 					{
 						_exhandler->raise(	Exception::FMTexc::FMTfunctionfailed,
-											"Invalid output id from node :"+std::string(node), "FMTlpmodel::locatenodes", __LINE__, __FILE__);
+											"Differences in thematics of certains outputs and there sources", "FMTlpmodel::locatenodes", __LINE__, __FILE__);
 					}
-					if (outputid!=id)
-					{
-						strictlypositivesoutputs.push_back(node_map);
-					}else{
-						strictlypositivesoutputs.back().insert(node_map.begin(),node_map.end());
-					}
-					outputid = id;
 				}
 			}
-
 		}catch (...)
 			{
 			_exhandler->raisefromcatch("", "FMTlpmodel::locatenodes", __LINE__, __FILE__);
@@ -909,12 +975,17 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 							constraint.getbounds(lowerbound, upperbound, period);
 						}
 						//size_t left_location = 0;
+						//*_logger<<"Period even "<<period<<"\n";
+						//*_logger<<"Enter size "<<all_variables.size()<<"\n";
 						const std::vector<std::map<int, double>> outputvarpos = locatenodes(all_nodes, period, all_variables, 1);
+						//*_logger<<"Out size "<<all_variables.size()<<"\n";
 						setpositiveoutputsinmatrix(constraint,outputvarpos,period);
 						if (constraint.acrossperiod() && !all_variables.empty())
 						{
 							const size_t sizebeforecrossing = all_variables.size();
+							//*_logger<<"Enter size second "<<all_variables.size()<<"\n";
 							const std::vector<std::map<int, double>> outputvarposloc = locatenodes(all_nodes, (period + 1), all_variables, -1);
+							//*_logger<<"Out size second "<<all_variables.size()<<"\n";
 							setpositiveoutputsinmatrix(constraint,outputvarposloc,period+1);
 							size_t sizeaftercrossing = all_variables.size();
 							if (sizebeforecrossing == sizeaftercrossing)//dont want empty periods!
@@ -1476,8 +1547,11 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 			sumcoefficiants.reserve(variables.size());
 			for (std::map<int,double>::const_iterator varit = variables.begin();varit!=variables.end();varit++)
 				{
-				sumvariables.push_back(varit->first);
-				sumcoefficiants.push_back(varit->second);
+				if (varit->second!=0)
+					{
+					sumvariables.push_back(varit->first);
+					sumcoefficiants.push_back(varit->second);
+					}
 				}
 			return true;
 			}
@@ -1526,6 +1600,7 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 					}
 			}
 		}
+		else{return false;}
 		}catch (...)
 			{
 			_exhandler->raisefromcatch("for " + std::to_string(matrixindex)+
@@ -1691,9 +1766,10 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
         {
 		int element_id = 0;
 		try {
+			//*_logger<<"Enter " <<std::string(constraint)<<" "<<element_type<< " "<<period<<"\n";
 			if (ismatrixelement(constraint, element_type, period))
 			{
-				
+				//*_logger<<"Issamematrix " <<std::string(constraint)<<" "<<element_type<< " "<<period<<"\n";
 				int foundperiod = period;
 				if (period == -1)
 				{
@@ -1708,7 +1784,7 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 					}
 				}
 			}
-			else if (element_type == FMTmatrixelement::constraint && indexes.empty())
+			else if (element_type == FMTmatrixelement::constraint  && indexes.empty())
 			{
 				std::string cname = std::string(constraint);
 				cname.erase(std::remove(cname.begin(), cname.end(), '\n'), cname.end());
@@ -1732,10 +1808,14 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 			Graph::FMTgraphstats* stats = graph.getstatsptr();
 			if (element_type == FMTmatrixelement::constraint || element_type == FMTmatrixelement::strictlypositive)
 			{
-				element_id = stats->rows;
-				solver.addRow(static_cast<int>(sumvariables.size()), &sumvariables[0], &sumcoefficiants[0], lowerbound, upperbound);
-				++stats->rows;
-				++stats->output_rows;
+				//*_logger<<"Add " <<std::string(constraint)<<" "<<element_type<< " "<<period<<"\n";
+				if (sumvariables.size()>0)
+				{
+					element_id = stats->rows;
+					solver.addRow(static_cast<int>(sumvariables.size()), &sumvariables[0], &sumcoefficiants[0], lowerbound, upperbound);
+					++stats->rows;
+					++stats->output_rows;
+				}
 			}
 			else {
 				element_id = stats->cols;

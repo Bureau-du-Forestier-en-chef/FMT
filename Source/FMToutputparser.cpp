@@ -75,7 +75,7 @@ namespace Parser
 									{
 										if (processing_level && sources.empty())
 										{
-											sources.push_back(Core::FMToutputsource(Core::FMTotar::level, 0, "", name,outputid));
+											sources.push_back(Core::FMToutputsource(Core::FMTotar::level, 0, "", name,outputid,themetarget));
 										}
 										outputs.push_back(Core::FMToutput(name, description, themetarget, sources, operators));
 										outputs.back().passinobject(*this);
@@ -98,7 +98,7 @@ namespace Parser
 									{
 										thtarget.erase(thtarget.begin(), thtarget.begin() + 3);
 										themetarget = getnum<int>(thtarget) - 1;
-									}
+									}else{themetarget=-1;}
 									name = std::string(kmatch[4]) + std::string(kmatch[14]);
 									description = std::string(kmatch[10]) + std::string(kmatch[16]);
 									boost::trim_right(description);
@@ -221,7 +221,7 @@ namespace Parser
 														else {
 															newoperators.push_back(Core::FMToperator(lastoperator));
 														}
-														newsources.push_back(Core::FMToutputsource(Core::FMTotar::val, value,"","", sources.at(id).getoutputorigin()));
+														newsources.push_back(Core::FMToutputsource(Core::FMTotar::val, value,"","", sources.at(id).getoutputorigin(),sources.at(id).getthemetarget()));
 													}
 													if (sources.at(id).isvariable() || sources.at(id).islevel())
 													{
@@ -235,7 +235,7 @@ namespace Parser
 												}
 												if (newsources.back().isvariable() || newsources.back().islevel())
 												{
-													newsources.push_back(Core::FMToutputsource(Core::FMTotar::val, value,"","", newsources.back().getoutputorigin()));
+													newsources.push_back(Core::FMToutputsource(Core::FMTotar::val, value,"","", newsources.back().getoutputorigin(),newsources.back().getthemetarget()));
 													newoperators.push_back(Core::FMToperator(lastoperator));
 												}
 
@@ -243,7 +243,7 @@ namespace Parser
 												sources = newsources;
 											}
 											else {
-												sources.push_back(Core::FMToutputsource(Core::FMTotar::val, value,"","",outputid));
+												sources.push_back(Core::FMToutputsource(Core::FMTotar::val, value,"","",outputid,themetarget));
 
 											}
 
@@ -266,7 +266,7 @@ namespace Parser
 													values.push_back(getnum<double>(number, constants));
 												}
 											}
-											sources.push_back(Core::FMToutputsource(Core::FMTotar::level, values,outputid));//constant level!
+											sources.push_back(Core::FMToutputsource(Core::FMTotar::level, values,outputid,themetarget));//constant level!
 										}
 										else {
 											std::vector<std::string>values = spliter(strsrc, FMTparser::rxseparator);
@@ -292,9 +292,29 @@ namespace Parser
 													if (!targetoutput.islevel() || (targetoutput.islevel() && !targetoutput.getsources().empty()))
 													{
 														lastoutput = sources.size();
+														bool themediff=false;
 														for (const Core::FMToutputsource& src : targetoutput.getsources())
 														{
-															sources.push_back(src);
+															if(src.getthemetarget()!=themetarget)
+															{
+																//warning
+																Core::FMToutputsource newsource = src;
+																newsource.setthemetarget(themetarget);
+																sources.push_back(newsource);
+																themediff=true;
+
+															}else{
+																sources.push_back(src);
+															}
+														}
+														if (themediff)
+														{
+															_exhandler->raise(Exception::FMTexc::FMTthematic_output_diff,
+																				"The thematic of the output "+name+ " is different from the source "+it->getname(),
+																				"FMToutputparser::read",
+																				__LINE__,
+																				__FILE__,
+																				_section);
 														}
 														//lastopt = operators.size();
 														bool convertoperator = false;
@@ -315,7 +335,7 @@ namespace Parser
 														}
 													}
 													else {
-														sources.push_back(Core::FMToutputsource(Core::FMTotar::level, 0, strsrc,"",outputid));
+														sources.push_back(Core::FMToutputsource(Core::FMTotar::level, 0, strsrc,"",outputid,themetarget));
 													}
 													if (!stroperators.empty())
 													{
@@ -330,7 +350,7 @@ namespace Parser
 												}
 												else if (ylds.isyld(strsrc))//isyld(ylds,strsrc,_section))
 												{
-													sources.push_back(Core::FMToutputsource(Core::FMTotar::timeyld, 0, strsrc,"",outputid));
+													sources.push_back(Core::FMToutputsource(Core::FMTotar::timeyld, 0, strsrc,"",outputid,themetarget));
 
 												}else{
 													_exhandler->raise(Exception::FMTexc::FMTundefined_output,
@@ -407,7 +427,7 @@ namespace Parser
 																yld = "";
 															}
 															sources.push_back(Core::FMToutputsource(spec, Core::FMTmask(mask, themes),
-																Core::FMTotar::actual, yld, action,outputid));
+																Core::FMTotar::actual, yld, action,outputid,themetarget));
 														}
 														else if (!std::string(kmatch[17]).empty() || !std::string(kmatch[18]).empty())
 														{
@@ -437,7 +457,7 @@ namespace Parser
 															}
 
 															sources.push_back(Core::FMToutputsource(spec, Core::FMTmask(mask, themes),
-																Core::FMTotar::inventory, yld,"",outputid));
+																Core::FMTotar::inventory, yld,"",outputid,themetarget));
 														}
 														else if (!std::string(kmatch[3]).empty())
 														{
@@ -460,7 +480,7 @@ namespace Parser
 															}
 
 															sources.push_back(Core::FMToutputsource(spec, Core::FMTmask(mask, themes),
-																Core::FMTotar::inventory, yld, action,outputid));
+																Core::FMTotar::inventory, yld, action,outputid,themetarget));
 
 														}
 													}
@@ -487,7 +507,7 @@ namespace Parser
 						{
 							if (processing_level && sources.empty())
 							{
-								sources.push_back(Core::FMToutputsource(Core::FMTotar::level, 0, "", name));
+								sources.push_back(Core::FMToutputsource(Core::FMTotar::level, 0, "", name,outputid,themetarget));
 							}
 							outputs.push_back(Core::FMToutput(name, description, themetarget, sources, operators));
 							outputs.back().passinobject(*this);

@@ -968,6 +968,43 @@ class FMTgraph : public Core::FMTobject
 			return emptyreturn;
 
 		}
+		std::map<std::string,std::map<int,double>>  locatenodebytheme(const Models::FMTmodel& model,Core::FMToutputnode output_node, int period) const
+				{
+				std::map<std::string,std::map<int,double>> variablesreturn;
+				//std::vector<std::map<int,double>> variablesreturn;
+					try {
+						const std::vector<FMTvertex_descriptor>verticies = getnode(model, output_node, period);
+						int themetarget = output_node.source.getthemetarget();
+						if(themetarget<0)
+						{
+							variablesreturn["NA"]=getvariables(model, output_node, verticies);
+							//variablesreturn.push_back(getvariables(model, output_node, verticies));
+						}else{
+							std::map<std::string,std::vector<FMTvertex_descriptor>> orderedtarget;
+							for (const auto& vert : verticies)
+							{
+								const Core::FMTdevelopment& dev = getdevelopment(vert);
+								const std::string value = dev.mask.get(model.themes.at(themetarget));
+								if(orderedtarget.find(value)==orderedtarget.end())
+								{
+									orderedtarget[value]=std::vector<FMTvertex_descriptor>();
+								}
+								orderedtarget[value].push_back(vert);
+							}
+							for (const auto& odtar:orderedtarget)
+							{
+								variablesreturn[odtar.first]=getvariables(model,output_node,odtar.second);
+								//variablesreturn.push_back(getvariables(model,output_node,odtar.second));
+							}
+						}
+					}
+					catch (...)
+					{
+						_exhandler->raisefromcatch("", "FMTgraph::locatenodebytheme", __LINE__, __FILE__);
+					}
+					return variablesreturn;
+
+				}
 		std::vector<FMTvertex_descriptor> getnode(const Models::FMTmodel& model, Core::FMToutputnode output_node, int period) const
 		{
 			std::vector<FMTvertex_descriptor>locations;

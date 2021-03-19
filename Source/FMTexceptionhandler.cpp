@@ -482,6 +482,11 @@ std::string FMTexceptionhandler::updatestatus(const FMTexc lexception, const std
 		_level = FMTlev::FMT_logic;
 		++_errorcount;
         break;
+    case FMTexc::FMTthematic_output_diff:
+		msg += "Differences in output thematic: " + message;
+		_level = FMTlev::FMT_Warning;
+		++_warningcount;
+		break;
 	default:
 		_exception = FMTexc::None;
 		_level = FMTlev::FMT_None;

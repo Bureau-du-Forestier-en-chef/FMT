@@ -194,7 +194,7 @@ class FMTlpmodel : public FMTmodel
 	/**
 	For a given period lookup in the graph to fill the variables map (variables) for a given FMTconstraints (nodes).
 	Also apply the multiplier to coefficiants of the map the map<variableindex,coefficiants>. If there is some outputs with negative coef,
-	return a vector containing a map (variables for each outputs).
+	return a vector containing a map (variables for each outputs) if strictlypositivesoutputsmatrix is true.
 	*/
     std::vector<std::map<int, double>> locatenodes(const std::vector<Core::FMToutputnode>& nodes, int period, std::map<int, double>& variables,double multiplier = 1) const;
 	// DocString: FMTlpmodel::updatematrixelements
@@ -263,7 +263,7 @@ class FMTlpmodel : public FMTmodel
 		std::unordered_map<int, std::string>& cols) const;
 	// DocString: FMTlpmodel::setpositiveoutputsinmatrix
 	/**
-	Update the row and variables using the general constraints of the model.
+	Set the variables in the map of variables strictlypositivesoutputs to be >=0 int the matrix.
 	*/
 	bool setpositiveoutputsinmatrix(const Core::FMTconstraint& constraint, const std::vector<std::map<int, double>>& strictlypositivesoutputs,int period);
 	public:
