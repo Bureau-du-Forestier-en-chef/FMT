@@ -20,9 +20,9 @@ if __name__ == "__main__":
             lpmodel.buildperiod()
         constraints = lpmodel.getconstraints()
         objective = constraints.pop(0)
-        lpmodel.setobjective(objective)
         for constraint in constraints:
             lpmodel.setconstraint(constraint)
+        lpmodel.setobjective(objective)
         if lpmodel.initialsolve():
             simulationmodel = Models.FMTsesmodel(lpmodel)
             singletransitions = []

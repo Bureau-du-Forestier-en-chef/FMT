@@ -52,7 +52,8 @@ class FMToperatingareaclusterer : public FMTlpheuristic
 		This function adds objective rows to the lpmodel for a given cluster. Called by add objective.
 		*/
         void addmaxminobjective(const FMToperatingareacluster& cluster, const FMToperatingareaclusterbinary& binary,
-            const std::vector<FMToperatingareaclusterbinary>& binaries);
+            const std::vector<FMToperatingareaclusterbinary>& binaries,
+			const int& clusterid);
         // DocString: FMToperatingareaclusterer::buildclustersvariables()
 		/**
 		First function to call to construct the lp formulation used by the heuristic, the function add and map variables for
@@ -82,12 +83,7 @@ class FMToperatingareaclusterer : public FMTlpheuristic
 		This function adds minimal and maximal area constraints for each potential cluster.
 		*/
         void addareaconstraints();
-        // DocString: FMToperatingareaclusterer::buildproblem()
-		/**
-		This function build the whole problem by calling in this order buildclustersvariable,addobjective,addlinksrows,addforcingrows,addareaconstraints.
-		to generate a complete formulation for minimizing the heterogenity.
-		*/
-        void buildproblem();
+       
         // DocString: FMToperatingareaclusterer::setallinteger()
 		/**
 		This functions sets the binary variable has integer, normaly used before sending the problem to the branchandbound solve.
@@ -135,7 +131,7 @@ class FMToperatingareaclusterer : public FMTlpheuristic
 		/**
 		Default copy constructor for FMToperatingareaclusterer.
 		*/
-		FMToperatingareaclusterer(const FMToperatingareaclusterer&) = default;
+		FMToperatingareaclusterer(const FMToperatingareaclusterer&);
 		 // DocString: FMToperatingareaclusterer::operator =
 		/**
 		Default copy assignement for FMToperatingareaclusterer.
@@ -169,6 +165,12 @@ class FMToperatingareaclusterer : public FMTlpheuristic
 		Returns the clustering solution with cleaned operatingclusters, the user can then use the solution.
 		*/
 		std::vector<FMToperatingareacluster>getsolution() const;
+		// DocString: FMToperatingareaclusterer::buildproblem()
+	   /**
+	   This function build the whole problem by calling in this order buildclustersvariable,addobjective,addlinksrows,addforcingrows,addareaconstraints.
+	   to generate a complete formulation for minimizing the heterogenity.
+	   */
+		void buildproblem();
 
 	};
 }

@@ -18,7 +18,7 @@ if __name__ == "__main__":
         scenarios = ["Globalreplanning","Localreplanning","Globalfire"]
         outputnames = ["OVOLREC"]
         models = modelparser.readproject(path, scenarios)
-        maxperiod = 10
+        maxperiod = 20
         replanningperiods = min(10,maxperiod)
         iterations = 50
         globalmodel = Models.FMTlpmodel(models[0], Models.FMTsolverinterface.CLP)
@@ -47,13 +47,11 @@ if __name__ == "__main__":
                print( "It ", iteration, end=' ')
                localsimulation = Models.FMTnssmodel(models[2], iteration)
                localconstraints = models[1].getconstraints()
-               localobjective = localconstraints[0]
-               localconstraints.pop(0)
+               localobjective = localconstraints.pop(0)
                for replanningperiod in range(1,replanningperiods+1):
                    basearea = localglobal.getarea(replanningperiod)
                    localsimulation.setarea(basearea)
                    disturbed = localsimulation.simulate(False,True)
-                   
                    localmodel = Models.FMTlpmodel(models[1], Models.FMTsolverinterface.CLP)
                    simulatedarea = localsimulation.getarea()
                    localmodel.setarea(basearea)
@@ -72,13 +70,12 @@ if __name__ == "__main__":
                        for output in alloutputs:
                            print(int(localmodel.getoutput(output,replanningperiod,Graph.FMToutputlevel.totalonly)["Total"]), end=' ')
                        completelocalschedule = localmodel.getsolution(replanningperiod,True)+ disturbed
-                       schparser=Parser.FMTscheduleparser() 
+                       schparser=Parser.FMTscheduleparser()
                        localglobal.setsolution(replanningperiod, completelocalschedule,0.001)
                        localglobal.eraseperiod(True)
-                       if localglobal.boundsolution(replanningperiod,0.00001):
+                       if localglobal.boundsolution(replanningperiod,0.001):
                            localglobal.eraseperiod()
-                           #localglobal.buildperiod()
-                          
+                           localglobal.buildperiod()
                            for constraint in globalconstraints:
                                localglobal.setconstraint(constraint)
                            localglobal.setobjective(globalobjective)

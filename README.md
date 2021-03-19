@@ -109,10 +109,9 @@ for period in range(0,10):
 #Now add objective function to the FMTlpmodel and all the constraints
 constraints = optimizationmodel.getconstraints()
 objective = constraints.pop(0)
-print(optimizationmodel.setobjective(objective))
 for constraint in constraints:
     print(optimizationmodel.setconstraint(constraint))
-
+print(optimizationmodel.setobjective(objective))
 #Do a initial solve of the forest planning model
 optimizationmodel.initialsolve()
  ```
@@ -132,12 +131,12 @@ for (period in 1:10)
 #Now add objective function to the FMTlpmodel and all the constraints
 allmodelconstraints<-optimizationmodel$getconstraints()
 modelobjective<-allmodelconstraints[[1]]
-print(optimizationmodel$setobjective(modelobjective)$str())
 modelconstraints<-allmodelconstraints[2:length(allmodelconstraints)]
 for (constraint in modelconstraints)
 	{
 	print(optimizationmodel$setconstraint(constraint)$str())
 	}
+print(optimizationmodel$setobjective(modelobjective)$str())
 #Do a initial solve of the forest planning model
 optimizationmodel$initialsolve()
  ```
@@ -157,12 +156,12 @@ for (size_t period = 0; period < 10; ++period)
 	}
 std::vector<Core::FMTconstraint>constraints = optimizationmodel.getconstraints();
 const Core::FMTconstraint objective = constraints.at(0);
-optimizationmodel.setobjective(objective);
 constraints.erase(constraints.begin());
 for (const Core::FMTconstraint& constraint : constraints)
 	{
 	optimizationmodel.setconstraint(constraint);
 	}
+optimizationmodel.setobjective(objective);
 optimizationmodel.initialsolve();
 ```
 [![License](http://img.shields.io/:license-liliqR11-blue.svg?style=flat-square)](https://forge.gouv.qc.ca/licence/liliq-v1-1/#r%C3%A9ciprocit%C3%A9-liliq-r)

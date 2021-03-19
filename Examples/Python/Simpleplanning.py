@@ -18,9 +18,9 @@ if __name__ == "__main__":
             lpmodel.buildperiod()
         constraints = lpmodel.getconstraints()
         objective = constraints.pop(0)
-        lpmodel.setobjective(objective)
         for constraint in constraints:
             lpmodel.setconstraint(constraint)
+        lpmodel.setobjective(objective)
         print("Global optimality? " + str(lpmodel.initialsolve()))
     else:
         print("FMT needs to be compiled with OSI")

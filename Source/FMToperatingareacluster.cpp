@@ -53,6 +53,23 @@ namespace Heuristics
         return std::min(maximalarea,gettotalpotentialarea());
         }
 
+	double FMToperatingareacluster::getmaximalstats() const
+		{
+		double maxincluster = 0;
+		for (const FMToperatingareaclusterbinary& binary : getbinaries())
+			{
+				if (binary.getstatistic() > maxincluster)
+				{
+					maxincluster = binary.getstatistic();
+				}
+			}
+		if (getcentroid().getstatistic() > maxincluster)
+			{
+			maxincluster = getcentroid().getstatistic();
+			}
+		return maxincluster;
+		}
+
     bool FMToperatingareacluster::isvalidarea(const double& area) const
         {
         return (area >= getminimalarea() && area <= getmaximalarea());

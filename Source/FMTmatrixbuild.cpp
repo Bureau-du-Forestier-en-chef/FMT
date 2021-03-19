@@ -11,10 +11,22 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTexceptionhandler.h"
 #include "FMTerror.h"
 #include <algorithm>
+#include <boost/algorithm/string.hpp> 
 
 namespace Models
 
 {
+
+	std::string FMTmatrixbuild::formatformatrixname(std::string name,bool shortformat) const
+	{
+		std::string to = "_";
+		if (shortformat)
+			{
+			to = "";
+			}
+		boost::replace_all(name," ",to);
+		return name;
+	}
 
 	void FMTmatrixbuild::sortelementsandclean(std::vector<int>& elements) const
 		{
@@ -55,6 +67,46 @@ namespace Models
 		//need to delete arrays?
 		return sizeofcol;
 		}
+
+	void FMTmatrixbuild::formatallnames(bool shortformat)
+		{
+		int colid = 0;
+		for (std::string& colname : columnnames)
+			{
+			if (colname.empty())
+				{
+				colname = "C" + std::to_string(colid);
+				}
+			colname = formatformatrixname(colname, shortformat);
+			++colid;
+			}
+		int rowid = 0;
+		for (std::string& rowname : rownames)
+			{
+			if (rowname.empty())
+				{
+				rowname = "R" + std::to_string(rowid);
+				}
+			rowname = formatformatrixname(rowname, shortformat);
+			++rowid;
+			}
+
+		}
+
+
+	void FMTmatrixbuild::setcolname(const std::string& name, const int& columnid)
+		{
+		columnnames.resize(static_cast<size_t>(columnid + 1));
+		columnnames[columnid] = name;
+		}
+
+
+	void FMTmatrixbuild::setrowname(const std::string& name, const int& rowid)
+		{
+		rownames.resize(static_cast<size_t>(rowid + 1));
+		rownames[rowid] = name;
+		}
+
 
 	void FMTmatrixbuild::synchronize(std::shared_ptr<OsiSolverInterface> solver)
 		{
