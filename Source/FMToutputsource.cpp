@@ -15,32 +15,35 @@ FMToutputsource::FMToutputsource() : FMTspec(), mask(),
 		yield(),
 		values(),
 		average(),
-		outputorigin(-1)
+		outputorigin(-1),
+		themetarget(-1)
 	{
 
 	}
 
 
 FMToutputsource::FMToutputsource(const FMTotar ltarget,double lvalue, std::string lyield,
-	std::string laction,int origin) : FMTspec(),mask(),
+	std::string laction,int origin,int ttarget) : FMTspec(),mask(),
     target(ltarget),
     action(laction),
     yield(lyield),
     values(1,lvalue),
 	average(),
-	outputorigin(origin)
+	outputorigin(origin),
+	themetarget(ttarget)
     {
 
     }
 
 
-FMToutputsource::FMToutputsource(const FMTotar ltarget,std::vector<double>lvalues, int origin): FMTspec(),mask(),
+FMToutputsource::FMToutputsource(const FMTotar ltarget,std::vector<double>lvalues, int origin, int ttarget): FMTspec(),mask(),
     target(ltarget),
     action(),
     yield(),
     values(lvalues),
 	average(),
-	outputorigin(origin)
+	outputorigin(origin),
+	themetarget(ttarget)
     {
 
 
@@ -49,16 +52,16 @@ FMToutputsource::FMToutputsource(const FMTotar ltarget,std::vector<double>lvalue
 
 FMToutputsource::FMToutputsource(const FMTspec& spec,const FMTmask& lmask,
                const FMTotar ltarget,std::string lyield,
-			std::string laction, int origin) :
+			std::string laction, int origin,int ttarget) :
                 FMTspec(spec),mask(lmask),
-                target(ltarget),action(laction),yield(lyield),values(),average(), outputorigin(origin)
+                target(ltarget),action(laction),yield(lyield),values(),average(), outputorigin(origin),themetarget(ttarget)
     {
 
 
     }
 
 FMToutputsource::FMToutputsource(const FMToutputsource& rhs) : FMTspec(rhs),mask(rhs.mask),target(rhs.target),
-    action(rhs.action),yield(rhs.yield),values(rhs.values), average(rhs.average),outputorigin(rhs.outputorigin)
+    action(rhs.action),yield(rhs.yield),values(rhs.values), average(rhs.average),outputorigin(rhs.outputorigin),themetarget(rhs.themetarget)
     {
 
     }
@@ -75,6 +78,7 @@ FMToutputsource& FMToutputsource::operator = (const FMToutputsource& rhs)
         mask = rhs.mask;
 		average = rhs.average;
 		outputorigin = rhs.outputorigin;
+		themetarget=rhs.themetarget;
         }
     return *this;
     }
@@ -211,6 +215,10 @@ bool FMToutputsource::operator != (const FMToutputsource& rhs) const
 	return (!(*this==rhs));
 	}
 
+void FMToutputsource::setthemetarget(const int& newttarget)
+	{
+		themetarget=newttarget;
+	}
 
 bool FMToutputsource::issubsetof(const FMToutputsource& rhs) const
 	{
