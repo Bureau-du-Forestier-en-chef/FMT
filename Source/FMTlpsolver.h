@@ -449,8 +449,8 @@ class FMTlpsolver: public Core::FMTobject
 		/**
 		Update constraints and variables names.
 		*/
-		void updatematrixnaming(const std::unordered_map<int, std::string>& colsnames,
-			const std::unordered_map<int, std::string>& rownames);
+		//void updatematrixnaming(const std::unordered_map<int, std::string>& colsnames,
+		//	const std::unordered_map<int, std::string>& rownames);
 		// DocString: FMTlpsolver::setcolname
 		/**
 		set column name.

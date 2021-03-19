@@ -514,15 +514,13 @@ class FMTgraph : public Core::FMTobject
 			return (statsdiff - stats);
 
 		}
-		std::unordered_map<int, std::string> getvariablenames(const std::vector<Core::FMTaction>& actions) const
+		void getvariablenames(const std::vector<Core::FMTaction>& actions, std::vector<std::string>& colnames) const
 		{
-			std::unordered_map<int, std::string>variablenames;
 			try {
 				FMTvertex_iterator vertex_iterator, vertex_iterator_end;
 				for (boost::tie(vertex_iterator, vertex_iterator_end) = boost::vertices(data); vertex_iterator != vertex_iterator_end;++vertex_iterator)
 					{
-					std::string basename=std::string(Core::FMTdevelopment(data[*vertex_iterator].get()));
-					boost::replace_all(basename, " ", "");
+					const std::string basename=std::string(Core::FMTdevelopment(data[*vertex_iterator].get()));
 					FMToutedge_iterator outit, outend;
 					for (boost::tie(outit, outend) = boost::out_edges(*vertex_iterator,data);outit!=outend;++outit)
 						{
@@ -533,10 +531,7 @@ class FMTgraph : public Core::FMTobject
 							{
 							actionname = actions.at(actionid).getname();
 							}
-						if (variablenames.find(variableid)== variablenames.end())
-							{
-							variablenames[variableid] = basename + actionname ;
-							}
+						colnames[variableid] = basename + actionname;
 						}
 
 					}
@@ -545,27 +540,25 @@ class FMTgraph : public Core::FMTobject
 			{
 				_exhandler->raisefromcatch("", "FMTgraph::getvariablenames", __LINE__, __FILE__);
 			}
-			return variablenames;
 		}
 
-		std::unordered_map<int, std::string> gettransferrownames() const
+		void gettransferrownames(std::vector<std::string>& rownames) const
 		{
-			std::unordered_map<int, std::string>rownames;
 			try {
 				FMTvertex_iterator vertex_iterator, vertex_iterator_end;
 				for (boost::tie(vertex_iterator, vertex_iterator_end) = boost::vertices(data); vertex_iterator != vertex_iterator_end; ++vertex_iterator)
 				{
 					const int rowid = data[*vertex_iterator].getconstraintID();
-					std::string basename = std::string(Core::FMTdevelopment(data[*vertex_iterator].get()));
-					boost::replace_all(basename, " ", "");
-					rownames[rowid] = basename;
+					if (rowid>=0)
+						{
+						rownames[rowid] = std::string(Core::FMTdevelopment(data[*vertex_iterator].get()));
+						}
 				}
 			}
 			catch (...)
 			{
 				_exhandler->raisefromcatch("", "FMTgraph::gettransferrownames", __LINE__, __FILE__);
 			}
-			return rownames;
 		}
 
 

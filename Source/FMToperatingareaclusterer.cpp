@@ -270,6 +270,7 @@ namespace Heuristics
                     return false;
                     }else{
                         this->setColSetBounds(&varindexes[0],&varindexes.back() + 1,&bestcolsbound[0]);
+					
 					return Models::FMTlpsolver::resolve();
                     }
                 }
@@ -443,7 +444,7 @@ namespace Heuristics
 				columnidclosed.push_back(cluster.getminimalobjectivevariable());
 				setrowname("OF" + std::to_string(clusterid), getNumRows());
 				this->addRow(2, &columnidclosed[0], &variableclosed[0], -COIN_DBL_MAX,0.0);
-				this->addmaxminobjective(cluster, cluster.getcentroid(), cluster.getbinaries(),clusterid);
+				this->addmaxminobjective(cluster, cluster.getcentroid(), choices.at(cluster.getcentroid().getmask()),clusterid);
 				for (const FMToperatingareaclusterbinary& binary : cluster.getbinaries())
 					{
                     this->addmaxminobjective(cluster,binary,choices.at(binary.getmask()), clusterid);
@@ -545,14 +546,30 @@ namespace Heuristics
                     minvalues.push_back(binary.getarea());
                     minindexes.push_back(binary.getvariable());
                     }
-				
                 if(cluster.getminimalarea()>0)
                     {
+					if (minvalues.size() == 1 && minvalues.at(0) < 0)
+						{
+						_exhandler->raise(Exception::FMTexc::FMTinfeasibleconstraint,
+							"at minimal area of cluster centroid " + std::string(cluster.getcentroid().getmask()),
+							"FMToperatingareaclusterer::addareaconstraints", __LINE__, __FILE__);
+						}
 					setrowname("MINA" + std::to_string(clusterid), getNumRows());
                     this->addRow(static_cast<int>(minvalues.size()),&minindexes[0],&minvalues[0],0);
                     }
                 if (cluster.getmaximalarea()>0)
                     {
+					double total = 0;
+					for (const double& value : maxvalues)
+						{
+						total += value;
+						}
+					if (total<cluster.getmaximalarea())
+						{
+						_exhandler->raise(Exception::FMTexc::FMTinfeasibleconstraint,
+							"at maximal area of cluster centroid " + std::string(cluster.getcentroid().getmask()),
+							"FMToperatingareaclusterer::addareaconstraints", __LINE__, __FILE__);
+						}
 					setrowname("MAXA" + std::to_string(clusterid), getNumRows());
                     this->addRow(static_cast<int>(maxvalues.size()),&maxindexes[0],&maxvalues[0],-COIN_DBL_MAX,cluster.getmaximalarea());
                     }
@@ -591,7 +608,7 @@ namespace Heuristics
             this->addforcingrows();
             this->addareaconstraints();
 			this->updaterowsandcolsnames(false);
-			this->writeLP("C:/Users/cyrgu3/Desktop/test/all");
+			//this->writeLP("C:/Users/cyrgu3/Desktop/test/all");
          }catch(...)
             {
             _exhandler->raisefromcatch("", "FMToperatingareaclusterer::buildproblem", __LINE__, __FILE__);
