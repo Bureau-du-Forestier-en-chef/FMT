@@ -142,7 +142,7 @@ class FMTlpsolver: public Core::FMTobject
 		/**
 		Constructor for FMTlpsolver with a (lsolvertype) and a (logger). It's the main constructor used.
 		*/
-		FMTlpsolver(FMTsolverinterface lsolvertype,Logging::FMTlogger& logger);
+		FMTlpsolver(FMTsolverinterface lsolvertype/*,Logging::FMTlogger& logger*/);
 		// DocString: FMTlpsolver::operator==
 		/**
 		Comparison operator of FMTlpsolver
@@ -451,6 +451,16 @@ class FMTlpsolver: public Core::FMTobject
 		*/
 		void updatematrixnaming(const std::unordered_map<int, std::string>& colsnames,
 			const std::unordered_map<int, std::string>& rownames);
+		// DocString: FMTlpsolver::setcolname
+		/**
+		set column name.
+		*/
+		void setcolname(const std::string& name, const int& columnid);
+		// DocString: FMTlpsolver::setrowname
+		/**
+		set row name.
+		*/
+		void setrowname(const std::string& name, const int& rowid);
 		// DocString: FMTlpsolver::writeLP
 		/**
 		Write the solverinterface matrix to a file (location) using the lp formulation.
@@ -539,6 +549,11 @@ class FMTlpsolver: public Core::FMTobject
 		Passing object (logger and exception handler)
 		*/
 		virtual void passinobject(const Core::FMTobject& object) override;
+		// DocString: FMTlpsolver::updaterowsandcolsnames
+		/**
+		Update the rows and columns names
+		*/
+		void updaterowsandcolsnames(bool shortformat = true);
 	};
 }
 BOOST_CLASS_EXPORT_KEY(Models::FMTlpsolver)

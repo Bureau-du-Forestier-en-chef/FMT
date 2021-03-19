@@ -620,7 +620,8 @@ std::vector<std::string> FMToutput::getdecomposition(const std::vector<FMTtheme>
 	return validdecomp;
 	}
 
-FMToutput FMToutput::intersectwithmask(const Core::FMTmask& mask) const
+FMToutput FMToutput::intersectwithmask(const Core::FMTmask& mask,
+	const std::vector<Core::FMTtheme>& themes) const
 	{
 	FMToutput newoutput(*this);
 	try{
@@ -628,7 +629,9 @@ FMToutput FMToutput::intersectwithmask(const Core::FMTmask& mask) const
 			{
 			if (source.isvariable())
 				{
-				source.setmask(source.getmask().getintersect(mask));
+				Core::FMTmask newmask(source.getmask().getintersect(mask));
+				newmask.update(themes);
+				source.setmask(newmask);
 				}
 			}
 	}catch (...)

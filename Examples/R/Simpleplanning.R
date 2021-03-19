@@ -12,12 +12,12 @@ if (new(FMTversion)$hasfeature("OSI"))
 		}
 	allmodelconstraints<-lpmodel$getconstraints()
 	modelobjective<-allmodelconstraints[[1]]
-	print(lpmodel$setobjective(modelobjective)$str())
 	modelconstraints<-allmodelconstraints[2:length(allmodelconstraints)]
 	for (constraint in modelconstraints)
 		{
 		print(lpmodel$setconstraint(constraint)$str())
 		}
+        print(lpmodel$setobjective(modelobjective)$str())
 	print(paste0("Objective value of ",lpmodel$initialsolve()))
 	}else{
 	print("FMT needs to be compiled with OSI")

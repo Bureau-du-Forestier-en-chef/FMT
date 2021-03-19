@@ -19,8 +19,17 @@ namespace Heuristics
 		clusters(lclusters),
 		numberofsimulationpass(100)
 	{
+		
+	}
+
+	FMToperatingareaclusterer::FMToperatingareaclusterer(const FMToperatingareaclusterer& rhs):
+		FMTlpheuristic(rhs),
+		clusters(rhs.clusters),
+		numberofsimulationpass(rhs.numberofsimulationpass)
+	{
 
 	}
+
 	void FMToperatingareaclusterer::setallinteger()
 		{
 		try {
@@ -87,11 +96,15 @@ namespace Heuristics
     bool FMToperatingareaclusterer::spread(const FMToperatingareacluster& ignition,std::vector<FMToperatingareaclusterbinary>& assigned)
         {
         try{
-            return (std::find_if(assigned.begin(),assigned.end(),FMToperatingareacomparator(ignition.getcentroid()))!=assigned.end());
+			if (std::find_if(assigned.begin(), assigned.end(), FMToperatingareacomparator(ignition.getcentroid())) != assigned.end())
+				{
+				return true;
+				}
             double firesize = ignition.getcentroid().getarea();
             std::vector<FMToperatingareaclusterbinary>incluster(1,ignition.getcentroid());
             std::vector<FMToperatingareaclusterbinary>outcluster;
             std::vector<FMToperatingareaclusterbinary>actives;
+			
             for (const FMToperatingareaclusterbinary& binary : ignition.getbinaries())
                 {
                 if (std::find_if(assigned.begin(),assigned.end(),FMToperatingareacomparator(binary))==assigned.end())
@@ -105,58 +118,62 @@ namespace Heuristics
                     }
                 }
             const double maximalfiresize = this->gettargetedoperatingareasize(ignition);
-            while(!actives.empty() && firesize < maximalfiresize)
+			while((!actives.empty()|| ignition.isvalidarea(firesize)) && firesize <= maximalfiresize)
                 {
-                    std::vector<double>probabilities;
-                    double totaldifference = 0;
-                    for (const FMToperatingareaclusterbinary& active : actives)
-                        {
-                        const double difference = getspreadprobability(incluster,active);
-                        totaldifference+=difference;
-                        probabilities.push_back(difference);
-                        }
-                    std::vector<int>intprobability;
-                    for(const double& probability : probabilities)
-                        {
-                        intprobability.push_back(static_cast<int>(probability/totaldifference)*100);
-                        }
-                    std::discrete_distribution<int>spreaddistribution(intprobability.begin(),intprobability.end());
-                    const int selection = spreaddistribution(generator);
-                    const FMToperatingareaclusterbinary selected = actives.at(selection);
-                    actives.erase(actives.begin()+selection);
-                    incluster.push_back(selected);
-                    firesize+=selected.getarea();
-                    std::vector<FMToperatingareaclusterbinary>updatedoutcluster;
-                    for (const FMToperatingareaclusterbinary& outbinary : outcluster)
-                        {
-                        const std::vector<Core::FMTmask>neighbors = outbinary.getneighbors();
-                        if (std::find_if(neighbors.begin(),neighbors.end(),Core::FMTmaskcomparator(selected.getmask()))!=neighbors.end())
-                            {
-                                int fullsize = static_cast<int>(neighbors.size());
-                                for (const FMToperatingareaclusterbinary& inbinary : incluster)
-                                    {
-                                    if (std::find_if(neighbors.begin(),neighbors.end(),Core::FMTmaskcomparator(inbinary.getmask()))!=neighbors.end())
-                                        {
-                                        --fullsize;
-                                        }
+				if (!ignition.isvalidarea(firesize))
+					{
+						std::vector<double>probabilities;
+						double totaldifference = 0;
+						for (const FMToperatingareaclusterbinary& active : actives)
+							{
+							const double difference = getspreadprobability(incluster,active);
+							totaldifference+=difference;
+							probabilities.push_back(difference);
+							}
+						std::vector<int>intprobability;
+						for(const double& probability : probabilities)
+							{
+							intprobability.push_back(static_cast<int>(probability/totaldifference)*100);
+							}
+						std::discrete_distribution<int>spreaddistribution(intprobability.begin(),intprobability.end());
+						const int selection = spreaddistribution(generator);
+						const FMToperatingareaclusterbinary selected = actives.at(selection);
+						actives.erase(actives.begin()+selection);
+						incluster.push_back(selected);
+						firesize+=selected.getarea();
+						std::vector<FMToperatingareaclusterbinary>updatedoutcluster;
+						for (const FMToperatingareaclusterbinary& outbinary : outcluster)
+							{
+							const std::vector<Core::FMTmask>neighbors = outbinary.getneighbors();
+							if (std::find_if(neighbors.begin(),neighbors.end(),Core::FMTmaskcomparator(selected.getmask()))!=neighbors.end())
+								{
+									int fullsize = static_cast<int>(neighbors.size());
+									for (const FMToperatingareaclusterbinary& inbinary : incluster)
+										{
+										if (std::find_if(neighbors.begin(),neighbors.end(),Core::FMTmaskcomparator(inbinary.getmask()))!=neighbors.end())
+											{
+											--fullsize;
+											}
 
-                                    }
-                                if(fullsize == 0)
-                                    {
-                                    actives.push_back(outbinary);
-                                    }else{
-                                    updatedoutcluster.push_back(outbinary);
-                                    }
+										}
+									if(fullsize == 0)
+										{
+										actives.push_back(outbinary);
+										}else{
+										updatedoutcluster.push_back(outbinary);
+										}
 
-                            }else{
-                            updatedoutcluster.push_back(outbinary);
-                            }
-                        }
-                    outcluster = updatedoutcluster;
-                    std::vector<double>bounds;
-                    std::vector<int>indexes;
+								}else{
+								updatedoutcluster.push_back(outbinary);
+								}
+							}
+						outcluster = updatedoutcluster;
+					}
+                  
                     if (ignition.isvalidarea(firesize))
                         {
+						std::vector<double>bounds;
+						std::vector<int>indexes;
                         for (const FMToperatingareaclusterbinary& inbinary : incluster)
                             {
                             assigned.push_back(inbinary);
@@ -198,6 +215,7 @@ namespace Heuristics
         {
         try{
             double passleft =  numberofsimulationpass;
+			bool gotonesolution = false;
             if (Models::FMTlpsolver::initialsolve())
                 {
                 double bestobjectivevalue = 0;
@@ -221,7 +239,7 @@ namespace Heuristics
                             ++iterationdone;
                             }
                         if (clustertospread.empty() && Models::FMTlpsolver::resolve() &&
-                            (Models::FMTlpsolver::getObjSense()*Models::FMTlpsolver::getObjValue()) < bestobjectivevalue)
+                            (!gotonesolution||(Models::FMTlpsolver::getObjValue() < bestobjectivevalue)))
                             {
                             bestcolsbound.clear();
                             const double* upperbound = Models::FMTlpsolver::getColUpper();
@@ -234,12 +252,14 @@ namespace Heuristics
                                 for (const FMToperatingareaclusterbinary& binary : cluster.getbinaries())
                                     {
                                     const int binaryvar = binary.getvariable();
-                                    bestcolsbound.push_back(*(lowerbound+centroidvar));
-                                    bestcolsbound.push_back(*(upperbound+centroidvar));
+                                    bestcolsbound.push_back(*(lowerbound+ binaryvar));
+                                    bestcolsbound.push_back(*(upperbound+ binaryvar));
+									
                                     }
                                 }
-                            bestobjectivevalue = (Models::FMTlpsolver::getObjSense()*Models::FMTlpsolver::getObjValue());
-                            (*_logger) << "Feasible solution found objective: " + std::to_string(bestobjectivevalue)<< "\n";
+                            bestobjectivevalue = Models::FMTlpsolver::getObjValue();
+							gotonesolution = true;
+							_logger->logwithlevel<std::string>("Feasible solution found objective: " + std::to_string(bestobjectivevalue)+"\n",0);
                             }
                         }
                     --passleft;
@@ -250,7 +270,7 @@ namespace Heuristics
                     return false;
                     }else{
                         this->setColSetBounds(&varindexes[0],&varindexes.back() + 1,&bestcolsbound[0]);
-                    return Models::FMTlpsolver::resolve();
+					return Models::FMTlpsolver::resolve();
                     }
                 }
             }catch(...)
@@ -294,22 +314,26 @@ namespace Heuristics
 			std::vector<FMToperatingareacluster>newclusterswithvariables;
 			std::vector<int>variablesadded;
 			int variableid = 0;
+			int clusterid = 0;
 			for (const FMToperatingareacluster& cluster : clusters)
 				{
 				FMToperatingareaclusterbinary newcentroid = cluster.getcentroid();
 				newcentroid.setvariable(variableid);
 				this->addCol(0, nullptr, nullptr, 0.0, 1.0, 0.0);
+				this->setcolname("C_" + std::to_string(clusterid) + "_" + std::string(cluster.getcentroid().getmask()), variableid);
 				variablesadded.push_back(variableid);
 				++variableid;
 				std::vector<FMToperatingareaclusterbinary>newbinaries = cluster.getbinaries();
 				for (FMToperatingareaclusterbinary& neighbor : newbinaries)
 					{
 					neighbor.setvariable(variableid);
+					this->setcolname("B_" + std::to_string(clusterid) + "_" + std::string(neighbor.getmask()), variableid);
 					variablesadded.push_back(variableid);
 					this->addCol(0, nullptr, nullptr, 0.0, 1.0, 0.0);
 					++variableid;
 					}
 				newclusterswithvariables.push_back(FMToperatingareacluster(FMToperatingareacluster(newcentroid, newbinaries),cluster.getminimalarea(),cluster.getmaximalarea()));
+				++clusterid;
 				}
 			clusters = newclusterswithvariables;
 		}catch (...)
@@ -320,7 +344,8 @@ namespace Heuristics
 		}
 
 	void FMToperatingareaclusterer::addmaxminobjective(const FMToperatingareacluster& cluster, const FMToperatingareaclusterbinary& binary,
-		const std::vector<FMToperatingareaclusterbinary>& binaries)
+		const std::vector<FMToperatingareaclusterbinary>& binaries,
+		const int& clusterid)
 	{
 		try {
 			std::vector<double>maxvariables;
@@ -329,23 +354,36 @@ namespace Heuristics
 			std::vector<int>indexesofmaxvariables;
 			indexesofmaxvariables.push_back(binary.getvariable());
 			indexesofmaxvariables.push_back(cluster.getmaximalobjectivevariable());
-			this->addRow(2, &indexesofmaxvariables[0], &maxvariables[0], -COIN_DBL_MAX,1.0);
+			setrowname("MAXO_" + std::to_string(clusterid) + "_" +std::string(binary.getmask()), getNumRows());
+			this->addRow(2, &indexesofmaxvariables[0], &maxvariables[0], -COIN_DBL_MAX,0);
+			/*std::vector<double>baseminvariables;
+			baseminvariables.push_back(-binary.getstatistic());
+			baseminvariables.push_back(-1.0);
+			std::vector<int>baseindexesofminvariables;
+			baseindexesofminvariables.push_back(binary.getvariable());
+			baseindexesofminvariables.push_back(cluster.getminimalobjectivevariable());
+			this->addRow(2, &baseindexesofminvariables[0], &baseminvariables[0], -COIN_DBL_MAX, 0);*/
+
+			
 			std::vector<double>minvariables;
 			std::vector<int>indexesofminvariables;
+			const double maxincluster = cluster.getmaximalstats();
+			minvariables.push_back(-binary.getstatistic());
+			indexesofminvariables.push_back(binary.getvariable());
 			for (const FMToperatingareaclusterbinary& localbinary : binaries)
 				{
 				if (binary.getvariable()!=localbinary.getvariable())
 					{
-					minvariables.push_back(-1.0);
+					minvariables.push_back(-maxincluster);
 					indexesofminvariables.push_back(localbinary.getvariable());
-				}else {
-					minvariables.push_back(-binary.getstatistic());
-					indexesofminvariables.push_back(binary.getvariable());
 					}
 				}
 			minvariables.push_back(-1.0);
-			indexesofmaxvariables.push_back(cluster.getminimalobjectivevariable());
-			this->addRow(static_cast<int>(indexesofminvariables.size()), &indexesofminvariables[0], &minvariables[0], -COIN_DBL_MAX, 1.0);
+			indexesofminvariables.push_back(cluster.getminimalobjectivevariable());
+			setrowname("MINO_" + std::to_string(clusterid) + "_" +std::string(binary.getmask()), getNumRows());
+			this->addRow(static_cast<int>(indexesofminvariables.size()), &indexesofminvariables[0], &minvariables[0], -COIN_DBL_MAX, 0.0);
+		
+		
 		}catch (...)
 			{
 			_exhandler->raisefromcatch("", "FMToperatingareaclusterer::addmaxminobjective", __LINE__, __FILE__);
@@ -385,25 +423,46 @@ namespace Heuristics
 		{
 		try {
 		    std::map<Core::FMTmask,std::vector<FMToperatingareaclusterbinary>>choices = this->getallbinaries();
+			int clusterid = 0;
 			for (FMToperatingareacluster& cluster : clusters)
                 {
 				int columnid = this->getNumCols();
 				cluster.setmaximalobjectivevariable(columnid);
-				this->addCol(0, nullptr, nullptr,0.0, 1.0, 1.0);
+				this->addCol(0, nullptr, nullptr,0.0,COIN_DBL_MAX, 1.0);
+				setcolname("MAX" + std::to_string(clusterid), columnid);
 				++columnid;
 				cluster.setminimalobjectivevariable(columnid);
-				this->addCol(0, nullptr, nullptr,-1.0,0, 1.0);
-				std::vector<double>variableclosed(2,-1);
+				this->addCol(0, nullptr, nullptr,-COIN_DBL_MAX,0, 1.0);
+				setcolname("MIN" + std::to_string(clusterid), columnid);
+				std::vector<double>variableclosed;
+				const double maxincluster = cluster.getmaximalstats();
+				variableclosed.push_back(-maxincluster);
+				variableclosed.push_back(-1);
 				std::vector<int>columnidclosed;
 				columnidclosed.push_back(cluster.getcentroid().getvariable());
 				columnidclosed.push_back(cluster.getminimalobjectivevariable());
-				this->addRow(2, &columnidclosed[0], &variableclosed[0],-COIN_DBL_MAX, 0.0);
-				this->addmaxminobjective(cluster, cluster.getcentroid(), cluster.getbinaries());
+				setrowname("OF" + std::to_string(clusterid), getNumRows());
+				this->addRow(2, &columnidclosed[0], &variableclosed[0], -COIN_DBL_MAX,0.0);
+				this->addmaxminobjective(cluster, cluster.getcentroid(), cluster.getbinaries(),clusterid);
 				for (const FMToperatingareaclusterbinary& binary : cluster.getbinaries())
 					{
-                    this->addmaxminobjective(cluster,binary,choices.at(binary.getmask()));
+                    this->addmaxminobjective(cluster,binary,choices.at(binary.getmask()), clusterid);
 					}
-                }
+
+				/*std::vector<double>alllowerpar;
+				std::vector<int>alllowervar;
+				alllowervar.push_back(cluster.getcentroid().getvariable());
+				alllowerpar.push_back(-cluster.getcentroid().getstatistic());
+				for (const FMToperatingareaclusterbinary& binary : cluster.getbinaries())
+					{
+					alllowervar.push_back(binary.getvariable());
+					alllowerpar.push_back(-binary.getstatistic());
+					}
+				alllowerpar.push_back(-1);
+				alllowervar.push_back(cluster.getminimalobjectivevariable());
+				this->addRow(static_cast<int>(alllowervar.size()), &alllowervar[0], &alllowerpar[0], -COIN_DBL_MAX, 0);*/
+				++clusterid;
+				}
 			this->setObjSense(1.0);
 		}catch (...)
             {
@@ -414,6 +473,7 @@ namespace Heuristics
     void FMToperatingareaclusterer::addlinksrows()
         {
         try {
+			int clusterid = 0;
             for (const FMToperatingareacluster& cluster : clusters)
                 {
                 const std::vector<FMToperatingareaclusterbinary>clusterbinaries = cluster.getbinaries();
@@ -431,9 +491,10 @@ namespace Heuristics
                         linkvalues.push_back(1.0);
                         linkindex.push_back(neighborit->getvariable());
                         }
+					setrowname("L" + std::to_string(clusterid) + "_" + std::string(binary.getmask()), getNumRows());
                     this->addRow(static_cast<int>(linkindex.size()),&linkindex[0],&linkvalues[0],0);
                     }
-
+				++clusterid;
                 }
         }catch (...)
 			{
@@ -454,6 +515,7 @@ namespace Heuristics
                     values.push_back(1.0);
                     indexes.push_back(neighbor.getvariable());
                     }
+				setrowname("F" +std::string(binit->first), getNumRows());
                 this->addRow(static_cast<int>(indexes.size()),&indexes[0],&values[0],1.0,1.0);
                 }
 
@@ -468,11 +530,13 @@ namespace Heuristics
 	void FMToperatingareaclusterer::addareaconstraints()
 		{
 		try {
+			int clusterid = 0;
 			for (const FMToperatingareacluster& cluster : clusters)
 				{
                 std::vector<double>maxvalues(1,cluster.getcentroid().getarea());
                 std::vector<int>maxindexes(1,cluster.getcentroid().getvariable());
-                std::vector<double>minvalues(1,-cluster.getminimalarea()+cluster.getcentroid().getarea());
+				const double rest = cluster.getminimalarea() - cluster.getcentroid().getarea();
+                std::vector<double>minvalues(1,-rest);
                 std::vector<int>minindexes(1,cluster.getcentroid().getvariable());
                 for (const FMToperatingareaclusterbinary& binary : cluster.getbinaries())
                     {
@@ -481,15 +545,18 @@ namespace Heuristics
                     minvalues.push_back(binary.getarea());
                     minindexes.push_back(binary.getvariable());
                     }
+				
                 if(cluster.getminimalarea()>0)
                     {
+					setrowname("MINA" + std::to_string(clusterid), getNumRows());
                     this->addRow(static_cast<int>(minvalues.size()),&minindexes[0],&minvalues[0],0);
                     }
                 if (cluster.getmaximalarea()>0)
                     {
+					setrowname("MAXA" + std::to_string(clusterid), getNumRows());
                     this->addRow(static_cast<int>(maxvalues.size()),&maxindexes[0],&maxvalues[0],-COIN_DBL_MAX,cluster.getmaximalarea());
                     }
-
+				++clusterid;
 				}
 		}catch (...)
 			{
@@ -504,6 +571,7 @@ namespace Heuristics
                 {
                 //In that order it seems to work...
                 this->setallinteger();
+				//this->writeLP("C:/Users/cyrgu3/Desktop/test/integer");
                 this->branchAndBound();
                 this->unboundall();
                 this->branchAndBound();
@@ -517,10 +585,13 @@ namespace Heuristics
    void FMToperatingareaclusterer::buildproblem()
         {
         try{
+			this->buildclustersvariables();
             this->addobjective();
             this->addlinksrows();
             this->addforcingrows();
             this->addareaconstraints();
+			this->updaterowsandcolsnames(false);
+			this->writeLP("C:/Users/cyrgu3/Desktop/test/all");
          }catch(...)
             {
             _exhandler->raisefromcatch("", "FMToperatingareaclusterer::buildproblem", __LINE__, __FILE__);
