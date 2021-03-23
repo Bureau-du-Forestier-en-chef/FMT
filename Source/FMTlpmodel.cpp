@@ -771,7 +771,7 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 	{
 	std::vector<std::map<int, double>> strictlypositivesoutputs;
 	try {
-		bool negvar=false;
+		std::unordered_set<int> output_negvar;
 		for (const Core::FMToutputnode& node : nodes)
 			{
 			const std::map<int, double>node_map = graph.locatenode(*this, node, period);
@@ -783,50 +783,53 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 					}
 				if (strictlypositivesoutputsmatrix && node_it->second<0)
 					{
-						negvar=true;
+						output_negvar.insert(node.getoutputid());
 					}
-				//*_logger<<"node id val "<<node_it->first<<node_it->second<<"\n";
+
 				variables[node_it->first] += node_it->second*multiplier;
 				}
 			}
-			if (strictlypositivesoutputsmatrix && negvar)
+			if (strictlypositivesoutputsmatrix && !output_negvar.empty())
 			{
-				int outputid=-9999;
-				std::map<std::string,std::map<int,double>> node_map_theme_id;
-				for (const Core::FMToutputnode& node : nodes)
+				for (const auto& onid:output_negvar)
 				{
-					const std::map<std::string,std::map<int,double>> node_map_theme = graph.locatenodebytheme(*this, node, period);
-					if (!node_map_theme.empty())
+					int outputid=-9999;
+					std::map<std::string,std::map<int,double>> node_map_theme_id;
+					for (const Core::FMToutputnode& node : outputs.at(onid).getnodes(1,true))
 					{
 						const int id = node.getoutputid();
-						if (id==-1)
+						const std::map<std::string,std::map<int,double>> node_map_theme = graph.locatenodebytheme(*this, node, period);
+						if (!node_map_theme.empty())
 						{
-							_exhandler->raise(	Exception::FMTexc::FMTfunctionfailed,
-												"Invalid output id from node :"+std::string(node), "FMTlpmodel::locatenodes", __LINE__, __FILE__);
+							if (id==-1)
+							{
+								_exhandler->raise(	Exception::FMTexc::FMTfunctionfailed,
+													"Invalid output id from node :"+std::string(node), "FMTlpmodel::locatenodes", __LINE__, __FILE__);
+							}
 						}
 						if (outputid!=id)
-						{
-							if(!node_map_theme_id.empty())
 							{
-								int counttheme = 0;
-								bool foundna = false;
-								for(const auto& nmti:node_map_theme_id)
+								if(!node_map_theme_id.empty())
 								{
-									if (!nmti.second.empty())
+									int counttheme = 0;
+									bool foundna = false;
+									for(const auto& nmti:node_map_theme_id)
 									{
-										strictlypositivesoutputs.push_back(nmti.second);
-										if(nmti.first=="NA"){foundna=true;}
-										++counttheme;
+										if (!nmti.second.empty())
+										{
+											strictlypositivesoutputs.push_back(nmti.second);
+											if(nmti.first=="nothemetargetid"){foundna=true;}
+											++counttheme;
+										}
+									}
+									if(counttheme>1 && foundna)
+									{
+										_exhandler->raise(	Exception::FMTexc::FMTfunctionfailed,
+															"Differences in thematics of certains outputs and there sources", "FMTlpmodel::locatenodes", __LINE__, __FILE__);
 									}
 								}
-								if(counttheme>1 && foundna)
-								{
-									_exhandler->raise(	Exception::FMTexc::FMTfunctionfailed,
-														"Differences in thematics of certains outputs and there sources", "FMTlpmodel::locatenodes", __LINE__, __FILE__);
-								}
+								node_map_theme_id.clear();
 							}
-							node_map_theme_id.clear();
-						}
 						for(const auto& nmt:node_map_theme)
 							{
 								if (node_map_theme_id.find(nmt.first)==node_map_theme_id.end())
@@ -838,42 +841,24 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 							}
 						outputid = id;
 					}
-					/*const std::map<int, double>node_map = graph.locatenode(*this, node, period);
-					if (!node_map.empty())
+					if(!node_map_theme_id.empty())
 					{
-						const int id = node.getoutputid();
-						if (id==-1)
+						int counttheme = 0;
+						bool foundna = false;
+						for(const auto& nmti:node_map_theme_id)
+						{
+							if (!nmti.second.empty())
+							{
+								strictlypositivesoutputs.push_back(nmti.second);
+								if(nmti.first=="nothemetargetid"){foundna=true;}
+								++counttheme;
+							}
+						}
+						if(counttheme>1 && foundna)
 						{
 							_exhandler->raise(	Exception::FMTexc::FMTfunctionfailed,
-												"Invalid output id from node :"+std::string(node), "FMTlpmodel::locatenodes", __LINE__, __FILE__);
+												"Differences in thematics of certains outputs and there sources", "FMTlpmodel::locatenodes", __LINE__, __FILE__);
 						}
-						if (outputid!=id)
-						{
-
-							strictlypositivesoutputs.push_back(node_map);
-						}else{
-							strictlypositivesoutputs.back().insert(node_map.begin(),node_map.end());
-						}
-						outputid = id;
-					}*/
-				}
-				if(!node_map_theme_id.empty())
-				{
-					int counttheme = 0;
-					bool foundna = false;
-					for(const auto& nmti:node_map_theme_id)
-					{
-						if (!nmti.second.empty())
-						{
-							strictlypositivesoutputs.push_back(nmti.second);
-							if(nmti.first=="NA"){foundna=true;}
-							++counttheme;
-						}
-					}
-					if(counttheme>1 && foundna)
-					{
-						_exhandler->raise(	Exception::FMTexc::FMTfunctionfailed,
-											"Differences in thematics of certains outputs and there sources", "FMTlpmodel::locatenodes", __LINE__, __FILE__);
 					}
 				}
 			}
@@ -920,7 +905,7 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 					{
 						averagefactor = (1 / (last_period - first_period));
 					}
-					std::vector<Core::FMToutputnode>all_nodes = constraint.getnodes(/*area,actions,yields,*/averagefactor,strictlypositivesoutputsmatrix);
+					std::vector<Core::FMToutputnode>all_nodes = constraint.getnodes(/*area,actions,yields,*/averagefactor);
 					double lowerbound = 0;
 					double upperbound = 0;
 					double coef_multiplier_lower = 1;
@@ -1843,8 +1828,10 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 			if (element_type == FMTmatrixelement::constraint || element_type == FMTmatrixelement::strictlypositive)
 			{
 				//*_logger<<"Add " <<std::string(constraint)<<" "<<element_type<< " "<<period<<"\n";
-				if (sumvariables.size()>0)
+				if (sumvariables.empty() && element_type == FMTmatrixelement::strictlypositive)
 				{
+					return -1;
+				}else{
 					element_id = stats->rows;
 					solver.addRow(static_cast<int>(sumvariables.size()), &sumvariables[0], &sumcoefficiants[0], lowerbound, upperbound);
 					++stats->rows;
@@ -1895,7 +1882,6 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 				{
 					*_logger << "pushing at " << locid << "\n";
 				}*/
-				
 				elements[locid][std::string(constraint)][element_type].push_back(element_id);
 			}
 		}catch (...)
@@ -2213,6 +2199,10 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 				int last_period = 0;
 				if (graph.constraintlenght(constraint, first_period,last_period))
 					{
+					if(constraint.acrossperiod())
+					{
+						++last_period;
+					}
 					const std::string constraintname("ID"+std::to_string(constraintid));
 					for (int period = first_period;period <= last_period;++period)
 						{
@@ -2225,11 +2215,14 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 								{
 								const FMTmatrixelement elementtype = static_cast<FMTmatrixelement>(elementid);
 								std::string* original; 
-								if (elementtype== FMTmatrixelement::constraint)
+								size_t elid=0;
+								for (const auto& el:elements)
+								{
+									if (elementtype== FMTmatrixelement::constraint||elementtype==FMTmatrixelement::strictlypositive)
 									{
-									original = &rownames[*elements.begin()];
+									original = &rownames[el];
 								}else {
-									original = &colnames[*elements.begin()];
+									original = &colnames[el];
 									}
 								if (!original->empty())
 								{
@@ -2271,7 +2264,9 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 									default:
 										break;
 									}
-									*original = tag + constnperiod;
+									*original = tag + std::to_string(elid) + constnperiod;
+								}
+								++elid;
 								}
 								}
 							++elementid;

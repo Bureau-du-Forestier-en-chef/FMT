@@ -10,23 +10,23 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 namespace Core{
 
 
-FMToutput::FMToutput(const std::string& lname,const std::string& ldescription,const int& ltheme_target,
+FMToutput::FMToutput(const std::string& lname,const std::string& ldescription,/*const int& ltheme_target,*/
 	std::vector<FMToutputsource>& lsources, std::vector<FMToperator>& loperators):
 	FMTobject(),
     sources(lsources),
     operators(loperators),
-	theme_target(ltheme_target),
+	//theme_target(ltheme_target),
     name(lname),
     description(ldescription)
 
     {
 
     }
-FMToutput::FMToutput(const std::string& lname) :FMTobject(), sources(),operators(), theme_target(-1),name(lname),description()
+FMToutput::FMToutput(const std::string& lname) :FMTobject(), sources(),operators()/*, theme_target(-1)*/,name(lname),description()
     {
 
     }
-FMToutput::FMToutput() : FMTobject(),sources(),operators(), theme_target(-1),name(),description()
+FMToutput::FMToutput() : FMTobject(),sources(),operators(),/* theme_target(-1),*/name(),description()
     {
 
     }
@@ -35,7 +35,7 @@ FMToutput::FMToutput(const FMToutput& rhs) :
 	FMTobject(rhs),
     sources(rhs.sources),
     operators(rhs.operators),
-	theme_target(rhs.theme_target),
+	//theme_target(rhs.theme_target),
     name(rhs.name),
     description(rhs.description)
     {
@@ -48,7 +48,7 @@ FMToutput& FMToutput::operator = (const FMToutput& rhs)
 		FMTobject::operator=(rhs);
         name = rhs.name;
         sources = rhs.sources;
-		theme_target =rhs.theme_target;
+		//theme_target =rhs.theme_target;
         operators = rhs.operators;
         description = rhs.description;
         }
@@ -71,10 +71,10 @@ FMToutput& FMToutput::operator +=(const FMToutput& rhs)
 	this->sources.insert(this->sources.end(), rhs.sources.begin(), rhs.sources.end());
 
 	this->operators.insert(this->operators.end(),rhs.operators.begin(),rhs.operators.end());
-	if (this->theme_target != rhs.theme_target)
+	/*if (this->theme_target != rhs.theme_target)
 		{
 		this->theme_target = -1;
-		}
+		}*/
 	return *this;
 	}
 FMToutput& FMToutput::operator -=(const FMToutput& rhs)
@@ -93,10 +93,10 @@ FMToutput& FMToutput::operator -=(const FMToutput& rhs)
 		}
 	this->sources.insert(this->sources.end(), rhs.sources.begin(), rhs.sources.end());
 
-	if (this->theme_target != rhs.theme_target)
+	/*if (this->theme_target != rhs.theme_target)
 		{
 		this->theme_target = -1;
-		}
+		}*/
 	for (const FMToperator& rhsop : rhs.operators)
 		{
 		operators.push_back(rhsop.reverse());
@@ -122,7 +122,7 @@ FMToutput& FMToutput::operator  *= (const double& rhs)
 			if (source.isvariable() || source.isvariablelevel())
 				{
                 new_operators.push_back(FMToperator("*"));
-				new_sources.push_back(FMToutputsource(FMTotar::val, rhs));
+				new_sources.push_back(FMToutputsource(FMTotar::val, rhs,"","",source.getoutputorigin(),source.getthemetarget()));
 				}
 			if (location < operators.size())
 				{
@@ -158,7 +158,7 @@ FMToutput& FMToutput::operator /=(const double& rhs)
 			}
 			if (source.isvariable() || source.isvariablelevel())
 			{
-				new_sources.push_back(FMToutputsource(FMTotar::val, rhs,"","",source.getoutputorigin()));
+				new_sources.push_back(FMToutputsource(FMTotar::val, rhs,"","",source.getoutputorigin(),source.getthemetarget()));
 				new_operators.push_back(FMToperator("/"));
 			}
 			++location;
@@ -178,9 +178,9 @@ FMToutput::operator std::string() const
 		line = "*LEVEL ";
 		}
 	line += name;
-	if (theme_target!=-1)
+	if (targetthemeid()!=-1)
 		{
-		line += " (_TH" + std::to_string(theme_target + 1) + ")";
+		line += " (_TH" + std::to_string(targetthemeid() + 1) + ")";
 		}
 	line+=" " + description + "\n";
 	if (!sources.empty() && ((islevel() && sources.at(0).getaction().empty()) || (!islevel())))
@@ -346,7 +346,7 @@ FMToutput FMToutput::boundto(const std::vector<FMTtheme>& themes, const FMTperbo
 					if (!attribute.empty())
 					{
 						FMTmask oldmask = FMTmask(source.getmask());
-						oldmask.set(themes.at(theme_target), attribute);
+						oldmask.set(themes.at(targetthemeid()), attribute);
 						source.setmask(oldmask);
 					}
 					if (!specialbound.empty() && specialbound == "_AVG")
@@ -500,7 +500,7 @@ bool FMToutput::operator == (const FMToutput& rhs) const
     return (name == rhs.name ||
 		(!sources.empty() && !rhs.empty() &&
 		description == rhs.description &&
-		theme_target == rhs.theme_target &&
+		targetthemeid() == rhs.targetthemeid() &&
 		sources == rhs.sources &&
 		operators == rhs.operators));
     }
@@ -527,10 +527,10 @@ FMToutput FMToutput::presolve(const FMTmask& basemask,
 		std::vector<FMToperator>newoperators;
 		size_t operatorid = 0;
 		int lastnotpushed = -10;
-		if (!presolvedmask.empty())
+		/*if (!presolvedmask.empty())
 		{
 			newoutput.theme_target = -1;
-		}
+		}*/
 		for (size_t sourceid = 0; sourceid < sources.size(); ++sourceid)
 		{
 			bool pushedsource = true;
@@ -590,7 +590,7 @@ FMToutput FMToutput::presolve(const FMTmask& basemask,
 std::vector<std::string> FMToutput::getdecomposition(const std::vector<FMTtheme>& themes) const
 	{
 	std::vector<std::string>validdecomp;
-	if (theme_target!=-1)
+	if (targetthemeid()!=-1)
 		{
 		int srcid = 0;
 		for (const FMToutputsource& source : sources)
@@ -599,9 +599,9 @@ std::vector<std::string> FMToutput::getdecomposition(const std::vector<FMTtheme>
 				{
 				const FMTmask srcmask = source.getmask();
 				std::vector<std::string>unique_selection;
-				for (const FMTmask& decmask : srcmask.decompose(themes[theme_target]))
+				for (const FMTmask& decmask : srcmask.decompose(themes[targetthemeid()]))
 					{
-					unique_selection.push_back(decmask.get(themes[theme_target]));
+					unique_selection.push_back(decmask.get(themes[targetthemeid()]));
 					}
 				if (srcid==0)
 					{
@@ -753,9 +753,9 @@ bool FMToutput::isinventory() const
 
 FMTtheme FMToutput::targettheme(const std::vector<FMTtheme>& themes) const
 	{
-	if (theme_target>=0)
+	if (targetthemeid()>=0)
 		{
-		return themes[theme_target];
+		return themes[targetthemeid()];
 		}
 	return FMTtheme();
 	}

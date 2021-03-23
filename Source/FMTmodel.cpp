@@ -225,9 +225,9 @@ void FMTmodel::addoutput(const std::string& name,
 	{
 	try {
 		std::vector<Core::FMToutputsource>sources;
-		sources.push_back(Core::FMToutputsource(Core::FMTspec(), Core::FMTmask(maskstring, themes), outputtarget, yield, action));
+		sources.push_back(Core::FMToutputsource(Core::FMTspec(), Core::FMTmask(maskstring, themes), outputtarget, yield, action,outputs.size(),targettheme));
 		std::vector<Core::FMToperator>operators;
-		outputs.push_back(Core::FMToutput(name, description, targettheme, sources, operators));
+		outputs.push_back(Core::FMToutput(name, description, sources, operators));
 	}
 	catch (...)
 	{
