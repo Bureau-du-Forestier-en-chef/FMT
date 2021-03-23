@@ -142,7 +142,7 @@ void exportModel()
 		.value("GUROBI", Models::FMTsolverinterface::GUROBI);
 
 	bp::class_<Models::FMTlpsolver>("FMTlpolver", "@DocString(FMTlpolver)")
-		.def(bp::init<Models::FMTsolverinterface, Logging::FMTlogger&>())
+		.def(bp::init<Models::FMTsolverinterface>())
 		.def("isProvenOptimal", &Models::FMTlpsolver::isProvenOptimal,
 			"@DocString(FMTlpsolver::isProvenOptimal)")
 		.def("getObjValue", &Models::FMTlpsolver::getObjValue,

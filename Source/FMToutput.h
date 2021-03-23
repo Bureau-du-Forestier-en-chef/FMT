@@ -47,7 +47,7 @@ class FMToutput: public FMTobject
 			ar & boost::serialization::make_nvp("FMTobject", boost::serialization::base_object<FMTobject>(*this));
 			ar & BOOST_SERIALIZATION_NVP(sources);
 			ar & BOOST_SERIALIZATION_NVP(operators);
-			ar & BOOST_SERIALIZATION_NVP(theme_target);
+			//ar & BOOST_SERIALIZATION_NVP(theme_target);
 			ar & BOOST_SERIALIZATION_NVP(name);
 			ar & BOOST_SERIALIZATION_NVP(description);
 		}catch (...)
@@ -64,7 +64,7 @@ class FMToutput: public FMTobject
 	std::vector<FMToperator>operators;
 	// DocString: FMToutput::theme_target
 	///Sometime output can specify multiple attributes of a given themes
-	int theme_target;
+	//int theme_target;
 	// DocString: FMToutput::name
 	///This is the name of the output
 	std::string name;
@@ -88,7 +88,7 @@ class FMToutput: public FMTobject
 	theme_target,sources and operators.
 	*/
     FMToutput(const std::string& lname,const std::string& ldescription,
-		const int& ltheme_target,
+		//const int& ltheme_target,
 		std::vector<FMToutputsource>& lsources,
 		std::vector<FMToperator>& loperators);
 	// DocString: FMToutput(const std::string&)
@@ -274,7 +274,7 @@ class FMToutput: public FMTobject
 	*/
 	inline int targetthemeid() const
 		{
-		return theme_target;
+		return sources.begin()->getthemetarget();
 		}
 	// DocString: FMToutput::getdecomposition
 	/**
