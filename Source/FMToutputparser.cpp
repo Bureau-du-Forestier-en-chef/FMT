@@ -77,7 +77,12 @@ namespace Parser
 										{
 											sources.push_back(Core::FMToutputsource(Core::FMTotar::level, 0, "", name,outputid,themetarget));
 										}
-										outputs.push_back(Core::FMToutput(name, description, themetarget, sources, operators));
+										outputs.push_back(Core::FMToutput(name, description, /*themetarget,*/ sources, operators));
+										/*
+										*_logger<<name<<"\n";
+										*_logger<<themetarget<<"\n";
+										for(const auto& s:sources){*_logger<<s.getthemetarget()<<"\n";}
+										*/
 										outputs.back().passinobject(*this);
 										++outputid;
 									}
@@ -98,7 +103,9 @@ namespace Parser
 									{
 										thtarget.erase(thtarget.begin(), thtarget.begin() + 3);
 										themetarget = getnum<int>(thtarget) - 1;
-									}else{themetarget=-1;}
+									}else{
+										themetarget=-1;
+									}
 									name = std::string(kmatch[4]) + std::string(kmatch[14]);
 									description = std::string(kmatch[10]) + std::string(kmatch[16]);
 									boost::trim_right(description);
@@ -509,7 +516,7 @@ namespace Parser
 							{
 								sources.push_back(Core::FMToutputsource(Core::FMTotar::level, 0, "", name,outputid,themetarget));
 							}
-							outputs.push_back(Core::FMToutput(name, description, themetarget, sources, operators));
+							outputs.push_back(Core::FMToutput(name, description, /*themetarget,*/ sources, operators));
 							outputs.back().passinobject(*this);
 							++outputid;
 						}

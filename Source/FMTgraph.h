@@ -970,7 +970,7 @@ class FMTgraph : public Core::FMTobject
 						int themetarget = output_node.source.getthemetarget();
 						if(themetarget<0)
 						{
-							variablesreturn["NA"]=getvariables(model, output_node, verticies);
+							variablesreturn["nothemetargetid"]=getvariables(model, output_node, verticies);
 							//variablesreturn.push_back(getvariables(model, output_node, verticies));
 						}else{
 							std::map<std::string,std::vector<FMTvertex_descriptor>> orderedtarget;

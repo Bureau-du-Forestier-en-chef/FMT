@@ -35,6 +35,7 @@ class FMToutputsource : public FMTspec
 			ar & BOOST_SERIALIZATION_NVP(action);
 			ar & BOOST_SERIALIZATION_NVP(yield);
 			ar & BOOST_SERIALIZATION_NVP(values);
+			ar & BOOST_SERIALIZATION_NVP(themetarget);
 	}
     FMTmask mask;
     FMTotar target;
@@ -68,7 +69,6 @@ class FMToutputsource : public FMTspec
 			{
 			return themetarget;
 			}
-		void setthemetarget(const int& newttarget);
 		bool isinaggregate(const FMToutputsource& rhs, const std::vector<Core::FMTaction>& actions) const;
 		bool issubsetof(const FMToutputsource& rhs, const std::vector<Core::FMTaction>& actions) const;
 		bool issubsetof(const FMToutputsource& rhs) const;
@@ -78,6 +78,7 @@ class FMToutputsource : public FMTspec
 			return mask;
 			}
 		void setmask(const FMTmask& newmask);
+		void setthemetarget(const int& newttarget);
 		inline const std::string& getaction() const
 			{
 			return action;
