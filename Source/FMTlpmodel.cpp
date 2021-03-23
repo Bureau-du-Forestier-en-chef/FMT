@@ -47,11 +47,14 @@ namespace Models
 		const std::vector<Heuristics::FMToperatingareacluster>& initialcluster,
 		const Core::FMToutput& areaoutput,
 		const Core::FMToutput& statisticoutput,
-		const int& period) const
+		const int& period, int minimalnumberofclusters, int maximalnumberofclusters) const
 	{
 		Heuristics::FMToperatingareaclusterer newclusterer;
 		try {
 			std::vector<Heuristics::FMToperatingareacluster>newclusters;
+			double minimalstatistic, minimalarea = COIN_DBL_MAX;
+			double maximalstatistic, maximalarea = 0;
+			const double minimalstatisticvalue = FMT_DBL_TOLERANCE*10000;
 			for (const Heuristics::FMToperatingareacluster& originalcluster : initialcluster)
 				{
 				Heuristics::FMToperatingareaclusterbinary centroid = originalcluster.getcentroid();
@@ -60,17 +63,44 @@ namespace Models
 				const Core::FMToutput centroidareaoutput = centroid.getoutputintersect(areaoutput, themes);
 				const std::map<std::string, double> centroidvalue = this->getoutput(centroidoutput,period,Graph::FMToutputlevel::totalonly);
 				const std::map<std::string, double> centroidarea = this->getoutput(centroidareaoutput,period,Graph::FMToutputlevel::totalonly);
-				centroid.setstatistic(centroidvalue.at("Total"));
-				centroid.setarea(centroidarea.at("Total"));
+				double cstatistic(centroidvalue.at("Total"));
+				if (cstatistic<0)
+					{
+					_exhandler->raise(Exception::FMTexc::FMTrangeerror,
+						"Operating area cluster " + std::string(centroid.getmask()) + " cannot have a negative stats",
+						"FMTlpmodel::getclusterer", __LINE__, __FILE__, _section);
+					}
+				cstatistic = std::max(minimalstatisticvalue,cstatistic);
+				const double carea(centroidarea.at("Total"));
+				minimalstatistic = std::min(minimalstatistic, cstatistic);
+				minimalarea = std::min(minimalarea, carea);
+				maximalstatistic = std::max(maximalstatistic, cstatistic);
+				maximalarea = std::max(maximalarea, carea);
+				centroid.setstatistic(cstatistic);
+				centroid.setarea(carea);
 				for (Heuristics::FMToperatingareaclusterbinary& binary : allbinaries)
 					{
 					const Core::FMToutput binaryoutput = binary.getoutputintersect(statisticoutput,themes);
 					const Core::FMToutput binaryareaoutput = binary.getoutputintersect(areaoutput,themes);
 					const std::map<std::string, double> binaryvalue = this->getoutput(binaryoutput,period,Graph::FMToutputlevel::totalonly);
 					const std::map<std::string, double> binaryarea = this->getoutput(binaryareaoutput,period,Graph::FMToutputlevel::totalonly);
-					binary.setstatistic(binaryvalue.at("Total"));
-					binary.setarea(binaryarea.at("Total"));
+					double statistic(binaryvalue.at("Total"));
+					if (statistic < 0)
+					{
+						_exhandler->raise(Exception::FMTexc::FMTrangeerror,
+							"Operating area cluster " + std::string(binary.getmask()) + " cannot have a negative stats",
+							"FMTlpmodel::getclusterer", __LINE__, __FILE__, _section);
 					}
+					statistic = std::max(minimalstatisticvalue, statistic);
+					const double area(binaryarea.at("Total"));
+					minimalstatistic = std::min(minimalstatistic,statistic);
+					minimalarea = std::min(minimalarea,area);
+					maximalstatistic = std::max(maximalstatistic,statistic);
+					maximalarea = std::max(maximalarea,area);
+					binary.setstatistic(statistic);
+					binary.setarea(area);
+					}
+				
                 const Heuristics::FMToperatingareacluster newopcluster(Heuristics::FMToperatingareacluster(centroid,allbinaries),originalcluster.getrealminimalarea(),originalcluster.getrealmaximalarea());
                 if (!newopcluster.isvalidareabounds())
                     {
@@ -79,8 +109,11 @@ namespace Models
 									"FMTlpmodel::getclusterer",__LINE__, __FILE__, _section);
                     }
 				newclusters.push_back(newopcluster);
+				
 				}
-			newclusterer = Heuristics::FMToperatingareaclusterer(solver.getsolvertype(),0,newclusters);
+			newclusterer = Heuristics::FMToperatingareaclusterer(solver.getsolvertype(),0,newclusters,minimalnumberofclusters,maximalnumberofclusters);
+			_logger->logwithlevel<std::string>("Units: ("+std::to_string(newclusterer.getbinariescount() )+")\nStats: min(" + std::to_string(minimalstatistic) + ")" +
+				" max(" + std::to_string(maximalstatistic) + ") \nArea: min(" + std::to_string(minimalarea) + ") max(" + std::to_string(maximalarea) + ")\n", 0);
 			newclusterer.passinobject(*this);
 			newclusterer.buildproblem();
 		}catch (...)
@@ -1928,13 +1961,15 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 																				const Core::FMToutput& statisticoutput,
                                                                                 const Core::FMToutput& areaoutput,
                                                                                 const int& period,
-																				size_t numberofheuristics) const
+																				size_t numberofheuristics,
+																				int minimalnumberofclusters,
+																				int maximalnumberofclusters) const
         {
         size_t seedof = 0;
         std::vector<Heuristics::FMToperatingareaclusterer>allheuristics;
-        Heuristics::FMToperatingareaclusterer baseclusterer=this->getclusterer(clusters,areaoutput,statisticoutput,period);
-		
-		try{
+		try {
+			Heuristics::FMToperatingareaclusterer baseclusterer=this->getclusterer(clusters,areaoutput,statisticoutput,period,
+				minimalnumberofclusters, maximalnumberofclusters);
             for (size_t heuristicid = 0 ; heuristicid < numberofheuristics; ++heuristicid)
                 {
                 allheuristics.push_back(baseclusterer);

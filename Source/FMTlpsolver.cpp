@@ -116,6 +116,7 @@ namespace Models
 	FMTlpsolver::FMTlpsolver(FMTsolverinterface lsolvertype/*, Logging::FMTlogger& logger*/):Core::FMTobject(),solverinterface(), usecache(true),matrixcache(), solvertype(lsolvertype)
 		{
 		solverinterface = buildsolverinterface(lsolvertype);
+		this->setquietlogger();//lazy
 		//this->passinmessagehandler(logger);
 		}
 

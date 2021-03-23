@@ -144,7 +144,7 @@ class FMTlpmodel : public FMTmodel
 		const std::vector<Heuristics::FMToperatingareacluster>& initialcluster,
 		const Core::FMToutput& areaoutput,
 		const Core::FMToutput& statisticoutput,
-		const int& period) const;
+		const int& period,int minimalnumberofclusters = -1,int maximalnumberofclusters = -1) const;
 	// DocString: FMTlpmodel::initializematrix
 	/**
 	Initialize the solverinterface called once when the FMTgraph was empty after the first call of buildperiod.
@@ -447,7 +447,9 @@ class FMTlpmodel : public FMTmodel
 																				const Core::FMToutput& statisticoutput,
                                                                                 const Core::FMToutput& areaoutput,
                                                                                 const int& period,
-																				size_t numberofheuristics=1) const;
+																				size_t numberofheuristics=1,
+																				int minimalnumberofclusters = -1,
+																				int maximalnumberofclusters = -1) const;
 		// DocString: FMTlpmodel::resolve
 		/**
 		By default call solverinterface->resolve() when some changes are done to the model.
