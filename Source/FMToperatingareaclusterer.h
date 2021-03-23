@@ -42,11 +42,22 @@ class FMToperatingareaclusterer : public FMTlpheuristic
 	// DocString: FMToperatingareaclusterer::numberofsimulationpass
     ///Number of tries made by the heuristic to find a feasible and/or a better solution.
 	int numberofsimulationpass;
+	// DocString: FMToperatingareaclusterer::minimalnumberofclusters
+	///Minimal number of cluster to generate. If -1 none
+	int minimalnumberofclusters;
+	// DocString: FMToperatingareaclusterer::maximalnumberofclusters
+	///Maximal number of cluster to generate. If -1 none
+	int maximalnumberofclusters;
         // DocString: FMToperatingareaclusterer::getallbinaries()
 		/**
 		Returns all the binary decicions contained in the clusters data member, mapped by the mask.
 		*/
         std::map<Core::FMTmask,std::vector<FMToperatingareaclusterbinary>>getallbinaries() const;
+		// DocString: FMToperatingareaclusterer::gettotalarea()
+		/**
+		Get total area.
+		*/
+		double gettotalarea() const;
         // DocString: FMToperatingareaclusterer::addmaxminobjective()
 		/**
 		This function adds objective rows to the lpmodel for a given cluster. Called by add objective.
@@ -78,6 +89,11 @@ class FMToperatingareaclusterer : public FMTlpheuristic
 		two Clusters at the same time we force the solver to choose between those two.
 		*/
         void addforcingrows();
+		// DocString: FMToperatingareaclusterer::addnumberofclusterrows()
+		/**
+		Add the minimal and maximal number of clusters.
+		*/
+		void addnumberofclusterrows();
         // DocString: FMToperatingareaclusterer::addareaconstraints()
 		/**
 		This function adds minimal and maximal area constraints for each potential cluster.
@@ -106,6 +122,12 @@ class FMToperatingareaclusterer : public FMTlpheuristic
 		For a given cluster (target) this function generates a random targeted cluster size within the minimal and maximal area of the cluster.
 		*/
         double gettargetedoperatingareasize(const FMToperatingareacluster& target);
+		// DocString: FMToperatingareaclusterer::isvalidarea
+		/**
+		Check if the area calculated is valid.
+		*/
+		bool isvalidarea(const FMToperatingareacluster& cluster,
+			const double& area, const size_t& actives) const;
          // DocString: FMToperatingareaclusterer::unboundall()
 		/**
 		This function release the bounds set by the heuristic on the binaries decision variables for the whole model.
@@ -126,7 +148,9 @@ class FMToperatingareaclusterer : public FMTlpheuristic
 		/**
 		Constructor for FMToperatingareaclusterer taking a solver (interfacetype) a seed (lseed) an a vector of (clusters) to aggregate.
 		*/
-		FMToperatingareaclusterer(const Models::FMTsolverinterface& interfacetype,const size_t& lseed,const std::vector<FMToperatingareacluster>& lclusters);
+		FMToperatingareaclusterer(const Models::FMTsolverinterface& interfacetype,
+			const size_t& lseed,const std::vector<FMToperatingareacluster>& lclusters,
+			int minimalnumberofclusters = -1,int maximalnumberofclusters = -1);
 		 // DocString: FMToperatingareaclusterer::FMToperatingareaclusterer(const FMToperatingareaclusterer&)
 		/**
 		Default copy constructor for FMToperatingareaclusterer.
@@ -148,6 +172,11 @@ class FMToperatingareaclusterer : public FMTlpheuristic
 		Default destructor for FMToperatingareaclusterer.
 		*/
 		~FMToperatingareaclusterer() = default;
+		// DocString: FMToperatingareaclusterer::getbinariescount
+		/**
+		Get number of binaries in the whole problem.
+		*/
+		size_t getbinariescount() const;
 		// DocString: FMToperatingareaclusterer::initialsolve
 		/**
 		Solve the heuristic problem using the original heuristic resolving the problem till finding a initial solution
