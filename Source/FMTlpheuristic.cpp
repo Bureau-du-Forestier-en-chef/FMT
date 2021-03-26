@@ -67,7 +67,7 @@ namespace Heuristics
 		generator.seed(static_cast<unsigned int>(lseed));
 		}
 
-	void FMTlpheuristic::branchnboundsolve()
+	bool FMTlpheuristic::branchnboundsolve()
 		{
 		try {
 			Models::FMTlpsolver::branchAndBound();
@@ -75,6 +75,7 @@ namespace Heuristics
 			{
 			_exhandler->raisefromcatch("", "FMTlpheuristic::branchnboundsolve", __LINE__, __FILE__);
 			}
+		return Models::FMTlpsolver::isProvenOptimal();
        }
 
     void FMTlpheuristic::passinobject(const FMTobject& rhs)

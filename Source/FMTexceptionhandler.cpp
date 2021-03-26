@@ -24,7 +24,10 @@ namespace Exception
 void CPL_STDCALL FMTCPLErrorHandler(CPLErr eErrClass, CPLErrorNum nError, const char * pszErrorMsg)
 {
 	FMTexceptionhandler* handler = reinterpret_cast<FMTexceptionhandler*>(CPLGetErrorHandlerUserData());
-	handler->handelCPLerror(eErrClass, nError, pszErrorMsg);
+	if (handler)
+		{
+		handler->handelCPLerror(eErrClass, nError, pszErrorMsg);
+		}
 }
 
 void FMTexceptionhandler::handelCPLerror(CPLErr eErrClass, CPLErrorNum nError, const char * pszErrorMsg)
@@ -479,8 +482,8 @@ std::string FMTexceptionhandler::updatestatus(const FMTexc lexception, const std
         break;
     case FMTexc::FMTGDALwarning:
         msg += "GDAL warning: " + message;
-		_level = FMTlev::FMT_logic;
-		++_errorcount;
+		_level = FMTlev::FMT_Warning;
+		++_warningcount;
         break;
     case FMTexc::FMTthematic_output_diff:
 		msg += "Differences in output thematic: " + message;

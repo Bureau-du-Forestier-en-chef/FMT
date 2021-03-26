@@ -55,23 +55,37 @@ namespace Models
 			double minimalstatistic, minimalarea = COIN_DBL_MAX;
 			double maximalstatistic, maximalarea = 0;
 			const double minimalstatisticvalue = FMT_DBL_TOLERANCE*10000;
+			std::map<Core::FMTmask,std::pair<double,double>>outputcaching;
 			for (const Heuristics::FMToperatingareacluster& originalcluster : initialcluster)
 				{
 				Heuristics::FMToperatingareaclusterbinary centroid = originalcluster.getcentroid();
 				std::vector<Heuristics::FMToperatingareaclusterbinary>allbinaries = originalcluster.getbinaries();
-				const Core::FMToutput centroidoutput = centroid.getoutputintersect(statisticoutput,themes);
-				const Core::FMToutput centroidareaoutput = centroid.getoutputintersect(areaoutput, themes);
-				const std::map<std::string, double> centroidvalue = this->getoutput(centroidoutput,period,Graph::FMToutputlevel::totalonly);
-				const std::map<std::string, double> centroidarea = this->getoutput(centroidareaoutput,period,Graph::FMToutputlevel::totalonly);
-				double cstatistic(centroidvalue.at("Total"));
-				if (cstatistic<0)
+				const Core::FMTmask centroidmask = centroid.getmask();
+				double cstatistic = 0;
+				double carea = 0;
+				if (outputcaching.find(centroidmask)!= outputcaching.end())
+				{
+					cstatistic = outputcaching.at(centroidmask).first;
+					carea = outputcaching.at(centroidmask).second;
+				}
+				else {
+					const Core::FMToutput centroidoutput = centroid.getoutputintersect(statisticoutput, themes);
+					const Core::FMToutput centroidareaoutput = centroid.getoutputintersect(areaoutput, themes);
+					const std::map<std::string, double> centroidvalue = this->getoutput(centroidoutput, period, Graph::FMToutputlevel::totalonly);
+					const std::map<std::string, double> centroidarea = this->getoutput(centroidareaoutput, period, Graph::FMToutputlevel::totalonly);
+					cstatistic = centroidvalue.at("Total");
+					carea = centroidarea.at("Total");
+					outputcaching[centroidmask] = std::pair<double, double>(cstatistic, carea);
+					if (cstatistic < 0)
 					{
-					_exhandler->raise(Exception::FMTexc::FMTrangeerror,
-						"Operating area cluster " + std::string(centroid.getmask()) + " cannot have a negative stats",
-						"FMTlpmodel::getclusterer", __LINE__, __FILE__, _section);
+						_exhandler->raise(Exception::FMTexc::FMTignore,
+							"Negative stats value rounded to " + std::to_string(minimalstatisticvalue) +
+							" for " + std::string(centroidmask),
+							"FMTlpmodel::getclusterer", __LINE__, __FILE__, _section);
 					}
+					
+				}
 				cstatistic = std::max(minimalstatisticvalue,cstatistic);
-				const double carea(centroidarea.at("Total"));
 				minimalstatistic = std::min(minimalstatistic, cstatistic);
 				minimalarea = std::min(minimalarea, carea);
 				maximalstatistic = std::max(maximalstatistic, cstatistic);
@@ -80,19 +94,33 @@ namespace Models
 				centroid.setarea(carea);
 				for (Heuristics::FMToperatingareaclusterbinary& binary : allbinaries)
 					{
-					const Core::FMToutput binaryoutput = binary.getoutputintersect(statisticoutput,themes);
-					const Core::FMToutput binaryareaoutput = binary.getoutputintersect(areaoutput,themes);
-					const std::map<std::string, double> binaryvalue = this->getoutput(binaryoutput,period,Graph::FMToutputlevel::totalonly);
-					const std::map<std::string, double> binaryarea = this->getoutput(binaryareaoutput,period,Graph::FMToutputlevel::totalonly);
-					double statistic(binaryvalue.at("Total"));
-					if (statistic < 0)
+					const Core::FMTmask binarymask = binary.getmask();
+					double statistic = 0;
+					double area = 0;
+					if (outputcaching.find(binarymask) != outputcaching.end())
 					{
-						_exhandler->raise(Exception::FMTexc::FMTrangeerror,
-							"Operating area cluster " + std::string(binary.getmask()) + " cannot have a negative stats",
-							"FMTlpmodel::getclusterer", __LINE__, __FILE__, _section);
+						statistic = outputcaching.at(binarymask).first;
+						area = outputcaching.at(binarymask).second;
+					}
+					else {
+						const Core::FMToutput binaryoutput = binary.getoutputintersect(statisticoutput, themes);
+						const Core::FMToutput binaryareaoutput = binary.getoutputintersect(areaoutput, themes);
+						const std::map<std::string, double> binaryvalue = this->getoutput(binaryoutput, period, Graph::FMToutputlevel::totalonly);
+						const std::map<std::string, double> binaryarea = this->getoutput(binaryareaoutput, period, Graph::FMToutputlevel::totalonly);
+						statistic = binaryvalue.at("Total");
+						area = binaryarea.at("Total");
+						outputcaching[binarymask] = std::pair<double, double>(statistic,area);
+						//double statistic(binaryvalue.at("Total"));
+						if (statistic < 0)
+						{
+							_exhandler->raise(Exception::FMTexc::FMTignore,
+								"Negative stats value rounded to " + std::to_string(minimalstatisticvalue) +
+								" for " + std::string(binarymask),
+								"FMTlpmodel::getclusterer", __LINE__, __FILE__, _section);
+						}
 					}
 					statistic = std::max(minimalstatisticvalue, statistic);
-					const double area(binaryarea.at("Total"));
+					//const double area(binaryarea.at("Total"));
 					minimalstatistic = std::min(minimalstatistic,statistic);
 					minimalarea = std::min(minimalarea,area);
 					maximalstatistic = std::max(maximalstatistic,statistic);
@@ -1058,7 +1086,9 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 			}
 		}catch (...)
 			{
-				_exhandler->printexceptions("for " + std::string(constraint), "FMTlpmodel::setconstraint", __LINE__, __FILE__);
+			std::string constraintname = std::string(constraint);
+			constraintname.pop_back();
+				_exhandler->printexceptions("for " + constraintname, "FMTlpmodel::setconstraint", __LINE__, __FILE__);
 			}
 		return graph.getstats();
 		}

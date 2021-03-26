@@ -83,13 +83,23 @@ namespace Core
 	}
 
 
-		void FMTobject::setCPLhandler()
+		void FMTobject::setCPLhandler(bool onlynull)
 			{
 			#if defined  FMTWITHGDAL
-			if (!_exhandler->isCPLpushed())
+
+			if (_exhandler!=nullptr&&!_exhandler->isCPLpushed())
 				{
-					CPLPopErrorHandler();
-					CPLPushErrorHandlerEx(Exception::FMTCPLErrorHandler, _exhandler->getCPLdata());
+					Exception::FMTexceptionhandler* handler = reinterpret_cast<Exception::FMTexceptionhandler*>(CPLGetErrorHandlerUserData());
+
+					if (handler == nullptr || (!onlynull && handler != _exhandler->getCPLdata()))
+					{
+						if (handler != nullptr)
+						{
+							CPLPopErrorHandler();
+						}
+						CPLPushErrorHandlerEx(Exception::FMTCPLErrorHandler, _exhandler->getCPLdata());
+					}
+					
 					_exhandler->setCPLpushed();
 				}
 			#endif
@@ -101,7 +111,7 @@ namespace Core
 	{
 		_exhandler->passinlogger(_logger);
 		this->checksignals();
-			setCPLhandler();
+			setCPLhandler(true);
 	}
 
 	FMTobject::~FMTobject()

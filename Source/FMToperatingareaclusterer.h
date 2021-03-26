@@ -48,6 +48,9 @@ class FMToperatingareaclusterer : public FMTlpheuristic
 	// DocString: FMToperatingareaclusterer::maximalnumberofclusters
 	///Maximal number of cluster to generate. If -1 none
 	int maximalnumberofclusters;
+	// DocString: FMToperatingareaclusterer::totalarea
+	///total area of the full map
+	double totalarea;
         // DocString: FMToperatingareaclusterer::getallbinaries()
 		/**
 		Returns all the binary decicions contained in the clusters data member, mapped by the mask.
@@ -57,7 +60,15 @@ class FMToperatingareaclusterer : public FMTlpheuristic
 		/**
 		Get total area.
 		*/
-		double gettotalarea() const;
+		double calculatetotalarea() const;
+		// DocString: FMToperatingareaclusterer::gettotalarea()
+		/**
+		Get total area.
+		*/
+		inline const double& gettotalarea() const
+			{
+			return totalarea;
+			}
         // DocString: FMToperatingareaclusterer::addmaxminobjective()
 		/**
 		This function adds objective rows to the lpmodel for a given cluster. Called by add objective.
@@ -188,7 +199,7 @@ class FMToperatingareaclusterer : public FMTlpheuristic
 		Solve problem using Branch and bound on the primal formulation. If the function is called after a call to initialsolve()
 		it's going to use the heuristic solution has a starting MIP solution, if not it's going to directly use the BnB on the formulated problem.
 		*/
-		void branchnboundsolve() final;
+		bool branchnboundsolve() final;
 		 // DocString: FMToperatingareaclusterer::getsolution()
 		/**
 		Returns the clustering solution with cleaned operatingclusters, the user can then use the solution.
