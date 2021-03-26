@@ -99,7 +99,7 @@ class FMTobject
 		/**
 		This function is for gdal only it pass the FMT exception handler to gdal exception handler.
 		*/
-		void setCPLhandler();
+		void setCPLhandler(bool onlynull=false);
 		// DocString: FMTobject::validate
 		/**
 		The funciton validate a the construction of a valid FMTmask using the mask string based on the

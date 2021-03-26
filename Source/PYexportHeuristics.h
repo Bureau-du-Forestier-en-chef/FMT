@@ -53,12 +53,18 @@ void exportHeuristics()
 
 	define_pylist<Heuristics::FMToperatingareascheme>();
 
+	bp::class_<Heuristics::FMToperatingareaclusterbinary,bp::bases<Heuristics::FMToperatingarea>>("FMToperatingareaclusterbinary", "@DocString(FMToperatingareaclusterbinary)");
+
+	define_pylist<Heuristics::FMToperatingareaclusterbinary>();
+
 	bp::class_<Heuristics::FMToperatingareacluster>("FMToperatingareacluster", "@DocString(FMToperatingareacluster)")
         .def(bp::init<const Heuristics::FMToperatingareacluster&,const double&, const double&>())
         .def("getfilteredcluster",&Heuristics::FMToperatingareacluster::getfilteredcluster,
              "@DocString(FMToperatingareaheuristic::getfilteredcluster)")
         .def("getallmasks",&Heuristics::FMToperatingareacluster::getallmasks,
              "@DocString(FMToperatingareaheuristic::getallmasks)")
+		.def("getcentroid", &Heuristics::FMToperatingareacluster::getcentroid,
+			"@DocString(FMToperatingareaheuristic::getcentroid)")
         .def("setminimalarea",&Heuristics::FMToperatingareacluster::setminimalarea,
              "@DocString(FMToperatingareaheuristic::setminimalarea)")
         .def("setmaximalarea",&Heuristics::FMToperatingareacluster::setmaximalarea,
@@ -73,9 +79,12 @@ void exportHeuristics()
 			"@DocString(FMToperatingareaclusterer::initialsolve)")
 		.def("branchnboundsolve", &Heuristics::FMToperatingareaclusterer::branchnboundsolve,
 			"@DocString(FMToperatingareaclusterer::branchnboundsolve)")
+		.def("setnumberofsimulationpass", &Heuristics::FMToperatingareaclusterer::setnumberofsimulationpass,
+			"@DocString(FMToperatingareaclusterer::setnumberofsimulationpass)")
 		.def("getsolution", &Heuristics::FMToperatingareaclusterer::getsolution,
 			"@DocString(FMToperatingareaclusterer::getsolution)");
 
+	define_pylist<Heuristics::FMToperatingareaclusterer>();
 
 	bp::class_<Heuristics::FMToperatingareascheduler, bp::bases<Heuristics::FMTlpheuristic>>("Heuristics::FMToperatingareascheduler", "@DocString(FMToperatingareascheduler)")
 		.def("initialsolve", &Heuristics::FMToperatingareascheduler::initialsolve,

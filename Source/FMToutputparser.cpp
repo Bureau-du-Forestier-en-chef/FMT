@@ -317,7 +317,7 @@ namespace Parser
 														if (themediff)
 														{
 															_exhandler->raise(Exception::FMTexc::FMTthematic_output_diff,
-																				"The thematic of the output "+name+ " is different from the source "+it->getname(),
+																				"The thematic of the output "+name+ " is different from the source "+ targetoutput.getname(),
 																				"FMToutputparser::read",
 																				__LINE__,
 																				__FILE__,

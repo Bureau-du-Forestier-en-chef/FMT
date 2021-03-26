@@ -20,7 +20,8 @@ namespace Heuristics
 		clusters(lclusters),
 		numberofsimulationpass(100),
 		minimalnumberofclusters(minimalnumberofclusters),
-		maximalnumberofclusters(maximalnumberofclusters)
+		maximalnumberofclusters(maximalnumberofclusters),
+		totalarea(calculatetotalarea())
 	{
 		
 	}
@@ -30,7 +31,8 @@ namespace Heuristics
 		clusters(rhs.clusters),
 		numberofsimulationpass(rhs.numberofsimulationpass),
 		minimalnumberofclusters(rhs.minimalnumberofclusters),
-		maximalnumberofclusters(rhs.maximalnumberofclusters)
+		maximalnumberofclusters(rhs.maximalnumberofclusters),
+		totalarea(rhs.totalarea)
 	{
 
 	}
@@ -279,9 +281,10 @@ namespace Heuristics
                         size_t iterationdone = 0;
                         while(!clustertospread.empty() && iterationdone < (clusters.size()*2))
                             {
-                            if (this->spread(*clustertospread.begin(),assigned))
+                            if (this->spread(clustertospread.back()/**clustertospread.begin()*/,assigned))
                                 {
-                                clustertospread.erase(clustertospread.begin());
+								clustertospread.pop_back();
+                                //clustertospread.erase(clustertospread.begin());
                                 }
                             ++iterationdone;
                             }
@@ -444,7 +447,7 @@ namespace Heuristics
 			}
 		}
 
-	double FMToperatingareaclusterer::gettotalarea() const
+	double FMToperatingareaclusterer::calculatetotalarea() const
 	{
 		double totalarea = 0;
 		try {
@@ -466,19 +469,21 @@ namespace Heuristics
         try {
             for (const FMToperatingareacluster& cluster : clusters)
                 {
-                if (allbinaries.find(cluster.getcentroid().getmask())!=allbinaries.end())
+				const Core::FMTmask centroidmask = cluster.getcentroid().getmask();
+                if (allbinaries.find(centroidmask)!=allbinaries.end())
                     {
-                    allbinaries[cluster.getcentroid().getmask()].push_back(cluster.getcentroid());
+                    allbinaries[centroidmask].push_back(cluster.getcentroid());
                     }else{
-                    allbinaries[cluster.getcentroid().getmask()]=std::vector<FMToperatingareaclusterbinary>(1,cluster.getcentroid());
+                    allbinaries[centroidmask]=std::vector<FMToperatingareaclusterbinary>(1,cluster.getcentroid());
                     }
                 for (const FMToperatingareaclusterbinary& binary : cluster.getbinaries())
                     {
-                    if (allbinaries.find(binary.getmask())!=allbinaries.end())
+					const Core::FMTmask binarymask = binary.getmask();
+                    if (allbinaries.find(binarymask)!=allbinaries.end())
                         {
-                        allbinaries[binary.getmask()].push_back(binary);
+                        allbinaries[binarymask].push_back(binary);
                         }else{
-                        allbinaries[binary.getmask()]=std::vector<FMToperatingareaclusterbinary>(1,binary);
+                        allbinaries[binarymask]=std::vector<FMToperatingareaclusterbinary>(1,binary);
                         }
                     }
                 }
@@ -694,7 +699,7 @@ namespace Heuristics
 			}
 		}
 
-    void FMToperatingareaclusterer::branchnboundsolve()
+    bool FMToperatingareaclusterer::branchnboundsolve()
         {
         try{
 			this->setallinteger();
@@ -715,6 +720,7 @@ namespace Heuristics
             {
             _exhandler->printexceptions("", "FMToperatingareaclusterer::branchnboundsolve", __LINE__, __FILE__);
             }
+		return this->isProvenOptimal();
         }
 
    void FMToperatingareaclusterer::buildproblem()
@@ -727,7 +733,6 @@ namespace Heuristics
             this->addareaconstraints();
 			this->addnumberofclusterrows();
 			this->updaterowsandcolsnames(false);
-			//this->writeLP("C:/Users/cyrgu3/Desktop/test/all");
          }catch(...)
             {
             _exhandler->raisefromcatch("", "FMToperatingareaclusterer::buildproblem", __LINE__, __FILE__);

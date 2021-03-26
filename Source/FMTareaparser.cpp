@@ -666,6 +666,9 @@ namespace Parser{
         return devs;
         }
 	#ifdef FMTWITHOSI
+
+
+
 	std::vector<OGRMultiPolygon>FMTareaparser::getmultipolygons(const std::vector<Heuristics::FMToperatingarea>& operatingareas,
 												const std::vector<Core::FMTtheme>& themes, const std::string& data_vectors,
 												const std::string& agefield, const std::string& areafield, double agefactor,
@@ -689,21 +692,25 @@ namespace Parser{
 					lock_field, area_field, agefactor, areafactor, minimal_area);
 				if (!actualdev.mask.empty())
 					{
-					const OGRGeometry* polygon = feature->GetGeometryRef();
-					if (polygon->IsValid())
-						{
 						size_t opid = 0;
+						bool foundoaunit = false;
 						for (const Heuristics::FMToperatingarea& oparea : operatingareas)
 							{
 								if (actualdev.mask.issubsetof(oparea.getmask()))
 								{
-									multipolygons[opid].addGeometry(polygon);
+									foundoaunit = true;
 									break;
 								}
 								++opid;
 							}
-						}
-
+						if (foundoaunit)
+							{
+							const OGRGeometry* polygon = feature->GetGeometryRef();
+							if (polygon!=nullptr&&polygon->IsValid())
+								{
+								multipolygons[opid].addGeometry(polygon);
+								}
+							}
 					}
 				OGRFeature::DestroyFeature(feature);
 			}
@@ -910,17 +917,21 @@ namespace Parser{
 							"FMTareaparser::getclustersfrompolygons", __LINE__, __FILE__, _section);
 						}
 					std::map<Core::FMTmask, std::map<Core::FMTmask, double>>distances;
+					std::map<Core::FMTmask, std::map<Core::FMTmask, std::set<Core::FMTmask>>>excludedfromlink;
+				
 					size_t opareaid = 0;
 					for (const OGRPolygon* polygon : polygons)
 						{
 						distances[operatingareas.at(opareaid).getmask()] = std::map<Core::FMTmask, double>();
+						excludedfromlink[operatingareas.at(opareaid).getmask()] = std::map<Core::FMTmask, std::set<Core::FMTmask>>();
 						++opareaid;
 						}
+
 					size_t mainopareaid = 0;
 					for (const Heuristics::FMToperatingarea& mainoparea : operatingareas)
 						{
 						OGRPoint maincentroid;
-						const Core::FMTmask mainmask = mainoparea.getmask();
+						const Core::FMTmask mainmask(mainoparea.getmask());
 						polygons.at(mainopareaid)->Centroid(&maincentroid);
 						size_t sideopareaid = 0;
 						std::vector<Heuristics::FMToperatingareaclusterbinary>binaries;
@@ -953,6 +964,7 @@ namespace Parser{
 						size_t binaryid = 0;
 						for (Heuristics::FMToperatingareaclusterbinary& binary : binaries)
 							{
+							const Core::FMTmask binarymask(binary.getmask());
 							std::vector<Core::FMTmask>linkerneighbors;
 							const OGRPolygon* binary_polygon = polygons.at(polygonids.at(binaryid));
 							OGRPoint binarycentroid;
@@ -960,21 +972,36 @@ namespace Parser{
 							OGRLineString linking_line;
 							linking_line.setPoint(0, &maincentroid);
 							linking_line.setPoint(1, &binarycentroid);
+							if (excludedfromlink.at(mainmask).find(binarymask)== excludedfromlink.at(mainmask).end())
+								{
+								excludedfromlink[mainmask][binarymask] = std::set<Core::FMTmask>();
+								excludedfromlink[binarymask][mainmask] = std::set<Core::FMTmask>();
+								}
+							std::set<Core::FMTmask> * exclusion = &excludedfromlink[mainmask][binarymask];
 							size_t subbinaryid = 0;
 							for (const Heuristics::FMToperatingareaclusterbinary& subbinary : binaries)
 								{
-								if (subbinary.getmask()!=binary.getmask() && subbinary.getmask()!= mainmask)
-									{
-									OGRPolygon* subbinary_polygon = polygons.at(polygonids.at(subbinaryid));
-									OGRPoint subbinarycentroid;
-									subbinary_polygon->Centroid(&subbinarycentroid);
+								const Core::FMTmask subbinarymask(subbinary.getmask());
+								if (subbinarymask != binarymask &&
+									subbinarymask != mainmask&&
+									exclusion->find(subbinarymask)==exclusion->end())
+								{
+									const OGRPolygon* subbinary_polygon = polygons.at(polygonids.at(subbinaryid));
+									//OGRPoint subbinarycentroid;
+									//subbinary_polygon->Centroid(&subbinarycentroid);
 									if (linking_line.Intersects(subbinary_polygon))
-										{
-										linkerneighbors.push_back(subbinary.getmask());
-										}
+									{
+										linkerneighbors.push_back(subbinarymask);
 									}
+									else {
+										exclusion->insert(subbinarymask);
+									}
+									
+								}
 								++subbinaryid;
 								}
+							excludedfromlink[binarymask][mainmask] = *exclusion;
+
 							binary.setneighbors(linkerneighbors);
 							++binaryid;
 							}

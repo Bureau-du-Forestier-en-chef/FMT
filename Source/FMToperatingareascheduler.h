@@ -148,7 +148,7 @@ namespace Heuristics
 		Solve problem using Branch and bound on the primal formulation. If the function is called after a call to initialsolve()
 		it's going to use the heuristic solution has a starting MIP solution, if not it's going to directly use the BnB on the formulated problem.
 		*/
-		void branchnboundsolve() final;
+		bool branchnboundsolve() final;
 		// DocString: FMToperatingareascheduler::setasrandom
 		/**
 		Sets True the userandomness data member

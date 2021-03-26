@@ -203,21 +203,22 @@ namespace Heuristics
 		return this->isProvenOptimal();
 		}
 
-	void FMToperatingareascheduler::branchnboundsolve()
+	bool FMToperatingareascheduler::branchnboundsolve()
 		{
         try{
-            if (this->isProvenOptimal())
-                {
-                //In that order it seems to work...
-                this->setallinteger();
-                this->branchAndBound();
-                this->unboundall(true);
-                this->branchAndBound();
-                }
+			if (this->isProvenOptimal())
+			{
+				//In that order it seems to work...
+				this->setallinteger();
+				this->branchAndBound();
+			}
+        this->unboundall(true);
+        this->branchAndBound();
         }catch(...)
             {
             _exhandler->printexceptions("", "FMToperatingareascheduler::branchnboundsolve", __LINE__, __FILE__);
             }
+		return this->isProvenOptimal();
 		}
 
 
