@@ -59,6 +59,7 @@ namespace Parser
 					int themetarget = -1;
 					//size_t lastopt = 0;
 					size_t lastoutput = 0;
+					int lastsourcelineid =0;
 					int outputid = 0;
 					if (FMTparser::tryopening(outputstream, location))
 					{
@@ -77,6 +78,11 @@ namespace Parser
 										{
 											sources.push_back(Core::FMToutputsource(Core::FMTotar::level, 0, "", name,outputid,themetarget));
 										}
+										if (operators.size()!=sources.size()-1)
+											{
+												_exhandler->raise(Exception::FMTexc::FMTunsupported_output,
+																	name +" at line "+std::to_string(lastsourcelineid) ,"FMToutputparser::read", __LINE__, __FILE__, _section);
+											}
 										outputs.push_back(Core::FMToutput(name, description, /*themetarget,*/ sources, operators));
 										/*
 										*_logger<<name<<"\n";
@@ -107,6 +113,7 @@ namespace Parser
 										themetarget=-1;
 									}
 									name = std::string(kmatch[4]) + std::string(kmatch[14]);
+									lastsourcelineid = _line;
 									description = std::string(kmatch[10]) + std::string(kmatch[16]);
 									boost::trim_right(description);
 									insource = false;
@@ -507,7 +514,6 @@ namespace Parser
 									insource = true;
 
 								}
-
 							}
 						}
 						if (!sources.empty() || (processing_level && !insource))
@@ -516,6 +522,11 @@ namespace Parser
 							{
 								sources.push_back(Core::FMToutputsource(Core::FMTotar::level, 0, "", name,outputid,themetarget));
 							}
+							if (operators.size()!=sources.size()-1)
+								{
+									_exhandler->raise(Exception::FMTexc::FMTunsupported_output,
+														name +" at line "+std::to_string(lastsourcelineid) ,"FMToutputparser::read", __LINE__, __FILE__, _section);
+								}
 							outputs.push_back(Core::FMToutput(name, description, /*themetarget,*/ sources, operators));
 							outputs.back().passinobject(*this);
 							++outputid;
