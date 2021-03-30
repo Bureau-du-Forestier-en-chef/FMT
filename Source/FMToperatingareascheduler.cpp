@@ -287,6 +287,12 @@ namespace Heuristics
 						}
 			}
 			this->synchronize();
+			if (!this->stockresolve()){
+						_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
+													"Infeasible model",
+													"FMToperatingareascheduler::setoperatingareasconstraints", __LINE__, __FILE__, _section);
+
+					}
 		}catch (...)
 			{
 			_exhandler->raisefromcatch("","FMToperatingareascheduler::setoperatingareasconstraints", __LINE__, __FILE__);
@@ -339,6 +345,12 @@ namespace Heuristics
 				}
 			}
 		this->synchronize();
+		if (!this->stockresolve()){
+			_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
+										"Infeasible model",
+										"FMToperatingareascheduler::setadjacencyconstraints", __LINE__, __FILE__, _section);
+
+		}
 		}catch (...)
 			{
 			_exhandler->raisefromcatch("","FMToperatingareascheduler::setadjacencyconstraints", __LINE__, __FILE__);
@@ -591,16 +603,16 @@ namespace Heuristics
 		userandomness(userandomness), useprimal(false)
 		{
 		try {
-			if (copysolver)
+			/*if (copysolver)
 				{
+				*_logger<<"copy"<<"\n";
 				FMTlpsolver::operator=(basesolve);
 			}else {
 				FMTlpsolver::passinsolver(basesolve);
-
-				}
+				}*/
 			this->setoperatingareasconstraints(maingraph, model, target);
 			this->setadjacencyconstraints();
-			this->resolvemodel();
+			//this->resolvemodel();
 		}catch (...)
 			{
 			_exhandler->raisefromcatch("","FMToperatingareascheduler::FMToperatingareaheuristic", __LINE__, __FILE__);
@@ -621,6 +633,11 @@ namespace Heuristics
 		{
 		seed = lseed;
 		generator.seed(static_cast<unsigned int>(lseed));
+		}
+
+	void FMToperatingareascheduler::setproportionofset(const double& proportion)
+		{
+		proportionofset=proportion;
 		}
 
 }

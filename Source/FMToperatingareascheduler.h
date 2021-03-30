@@ -164,6 +164,11 @@ namespace Heuristics
 		Setter for the seed data member
 		*/
 		void setgeneratorseed(const size_t& lseed);
+		// DocString: FMToperatingareascheduler::setproportionofset
+		/**
+		Set the allowed proportion of operating area status change allowed before resolving the problem. Default = 0.25
+		*/
+		void setproportionofset(const double& proportion);
 		// DocString: FMToperatingareascheduler::getsolution
 		/**
 		Gets the actual solution into a FMTyieldhandler format (time yield)

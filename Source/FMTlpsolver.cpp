@@ -226,6 +226,32 @@ namespace Models
 		}
 	}
 
+	void FMTlpsolver::setoptimizerMAXtime(const double& time)
+		{
+			try {
+				switch (solvertype)
+				{
+				#ifdef  FMTWITHMOSEK
+				case FMTsolverinterface::MOSEK:
+					{
+						OsiMskSolverInterface* msksolver = dynamic_cast<OsiMskSolverInterface*>(solverinterface.get());
+						MSKtask_t task = msksolver->getMutableLpPtr();
+						MSK_putdouparam(task, MSK_DPAR_OPTIMIZER_MAX_TIME, time);
+						break;
+					}
+				#endif
+				default:
+					_exhandler->raise(Exception::FMTexc::FMTignore, "Cannot set max time for " + getsolvername(),
+						"FMTlpsolver::setoptimizerMAXtime", __LINE__, __FILE__);
+					break;
+				}
+			}
+			catch (...)
+			{
+				_exhandler->raisefromcatch("", "FMTlpsolver::setMIPgaptolerance", __LINE__, __FILE__);
+			}
+		}
+
 	bool FMTlpsolver::initialsolve()
 		{
 		try{

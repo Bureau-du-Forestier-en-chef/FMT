@@ -180,6 +180,11 @@ class FMTlpsolver: public Core::FMTobject
 		Not all solver can have the MIPgap set...
 		*/
 		void setMIPgaptolerance(const double& gap);
+		// DocString: FMTlpsolver::setoptimizerMAXtime
+		/**
+		Maximum amount of time the optimizer is allowed to spent on the optimization. A negative number means infinity.
+		*/
+		void setoptimizerMAXtime(const double& time);
 		// DocString: FMTlpsolver::getObjValue
 		/**
 		Get the objective value of the solved matrix.
