@@ -94,7 +94,9 @@ void exportHeuristics()
 		.def("getsolution", &Heuristics::FMToperatingareascheduler::getsolution,
 			"@DocString(FMToperatingareaheuristic::getsolution)")
 		.def("setasprimal", &Heuristics::FMToperatingareascheduler::setasprimal,
-			"@DocString(FMToperatingareaheuristic::setasprimal)");
+			"@DocString(FMToperatingareaheuristic::setasprimal)")
+		.def("setproportionofset", &Heuristics::FMToperatingareascheduler::setproportionofset,
+			"@DocString(FMToperatingareaheuristic::setproportionofset)");
 
 	define_pylist<Heuristics::FMToperatingareascheduler>();
 	#endif

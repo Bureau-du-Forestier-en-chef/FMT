@@ -153,6 +153,8 @@ void exportModel()
 			"@DocString(FMTlpsolver::setnumberofthreads)")
 		.def("setMIPgaptolerance", &Models::FMTlpsolver::setMIPgaptolerance,
 			"@DocString(FMTlpsolver::setMIPgaptolerance)")
+		.def("setoptimizerMAXtime", &Models::FMTlpsolver::setoptimizerMAXtime,
+			"@DocString(FMTlpsolver::setoptimizerMAXtime)")
 		.def("writeLP", &Models::FMTlpsolver::writeLP,
 			"@DocString(FMTlpsolver::writeLP)")
 		.def("writeMPS", &Models::FMTlpsolver::writeMPS,
