@@ -929,7 +929,6 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 				{
 					Core::FMTconstrainttype constraint_type = constraint.getconstrainttype();
 					double averagefactor = 1;
-					*_logger<<first_period<<last_period<<"\n";
 					if (last_period != first_period)
 					{
 						averagefactor = (1 / (last_period - first_period));
