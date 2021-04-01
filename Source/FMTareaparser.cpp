@@ -287,20 +287,22 @@ namespace Parser{
 		return false;
         }
 
-	std::string FMTareaparser::getdisturbancepath(const std::string& location, const int& period) const
-		{
+
+	std::string FMTareaparser::getperiodpathname(const std::string& location, const int& period, const std::string& name) const
+	{
 		boost::filesystem::path full_path;
 		try {
 			const boost::filesystem::path dir(location);
-			const std::string layername = "DIST_" + std::to_string(period) + ".tif";
+			const std::string layername = name+"_" + std::to_string(period) + ".tif";
 			const boost::filesystem::path file(layername);
 			full_path = dir / file;
-		}catch (...)
-			{
-			_exhandler->raisefromcatch("at "+ location,"FMTareaparser::getdisturbancepath", __LINE__, __FILE__, _section);
-			}
-		return full_path.string();
 		}
+		catch (...)
+		{
+			_exhandler->raisefromcatch("at " + location, "FMTareaparser::getperiodpathname", __LINE__, __FILE__, _section);
+		}
+		return full_path.string();
+	}
 
 	
 
@@ -322,7 +324,7 @@ namespace Parser{
 				{
 					lmapping[act.getname()] = act.getname();
 				}
-				writelayer<std::string>(lastdistlayer, getdisturbancepath(location, period), lmapping);
+				writelayer<std::string>(lastdistlayer, getperiodpathname(location, period,"DIST"), lmapping);
 			}
 			else
 			{
@@ -335,7 +337,7 @@ namespace Parser{
 					{
 						lmapping[item.second] = item.second;
 					}
-					writelayer<std::string>(lastdistlayer, getdisturbancepath(location, period), lmapping);
+					writelayer<std::string>(lastdistlayer, getperiodpathname(location, period,"DIST"), lmapping);
 				}
 			}
 		}
@@ -345,6 +347,30 @@ namespace Parser{
 		}
 		return transitions;
 	}
+
+	std::vector<std::vector<Graph::FMTcarbonpredictor>> FMTareaparser::writecarbonpredictors(const std::string& location,
+		const Spatial::FMTspatialschedule& spatialsolution,
+		const std::vector<std::string>& yieldnames,
+		const Core::FMTyields& yields,
+		const int& period) const
+	{
+		std::vector<std::vector<Graph::FMTcarbonpredictor>>predictors;
+		try {
+			Spatial::FMTlayer<int> predictorids(spatialsolution.copyextent<int>());
+			//transitions = disturbances.getGCBMtransitions(lastdistlayer, actions, themes, period);
+			if (!spatialsolution.empty())
+			{
+				predictors = spatialsolution.getcarbonpredictors(predictorids, yieldnames, yields, period);
+				std::map<int, std::string>mapping;
+				writelayer<int>(predictorids, getperiodpathname(location, period,"PREDID"), mapping);
+			}
+		}catch (...)
+			{
+			_exhandler->printexceptions("at " + location, "FMTareaparser::writecarbonpredictors", __LINE__, __FILE__);
+			}
+		return predictors;
+	}
+
 
     Spatial::FMTforest FMTareaparser::readrasters(const std::vector<Core::FMTtheme>& themes,
                                              const std::vector<std::string>&data_rasters,

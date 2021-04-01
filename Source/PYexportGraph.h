@@ -51,6 +51,14 @@ void exportGraph()
 		.def_readwrite("output_cols", &Graph::FMTgraphstats::output_cols,
 			"@DocString(FMTgraphstats::output_cols)");
 
+	bp::class_<Graph::FMTcarbonpredictor>("FMTcarbonpredictor", "@DocString(FMTcarbonpredictor)")
+		.def("getpredictors", &Graph::FMTcarbonpredictor::getpredictors,
+			"@DocString(FMTcarbonpredictor::getpredictors)")
+		.def("getpredictorsmap", &Graph::FMTcarbonpredictor::getpredictorsmap,
+			"@DocString(FMTcarbonpredictor::getpredictorsmap)");
+
+	define_pylist<Graph::FMTcarbonpredictor>();
+
 	bp::enum_<Graph::FMTgraphbuild>("FMTsolverinterface")
 		.value("schedulebuild", Graph::FMTgraphbuild::schedulebuild)
 		.value("fullbuild", Graph::FMTgraphbuild::fullbuild)

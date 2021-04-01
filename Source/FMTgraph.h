@@ -31,6 +31,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTcoordinate.h"
 #include "FMToutputnodecache.h"
 #include <boost\unordered_set.hpp>
+#include "FMTcarbonpredictor.h"
 
 
 
@@ -831,7 +832,7 @@ class FMTgraph : public Core::FMTobject
 			}
 			catch (...)
 			{
-				_exhandler->raisefromcatch("", "FMTgraph::in_degree", __LINE__, __FILE__);
+				_exhandler->raisefromcatch("", "FMTgraph::onlypertiodstart", __LINE__, __FILE__);
 			}
 			return false;
 
@@ -1713,6 +1714,70 @@ class FMTgraph : public Core::FMTobject
 		{
 			return static_cast<int>(std::distance(developments.begin(), getfirstconstblock()));
 		}
+
+		FMTinedge_iterator getlastdisturbance(FMTinedge_iterator activeedge,int& periodtolastdisturbance) const
+		{
+			FMTinedge_iterator lastedge;
+			try {
+				std::queue<FMTinedge_iterator>actives;
+				actives.push(activeedge);
+				while (!actives.empty())
+					{
+					activeedge = actives.front();
+					actives.pop();
+					const FMTvertex_descriptor vertexsource = boost::source(*activeedge, data);
+					if (data[*activeedge].getactionID() >= 0)
+						{
+						periodtolastdisturbance = data[vertexsource].get().period;
+						return activeedge;
+						}
+					FMTinedge_iterator inedge_iterator, inedge_end;
+					for (boost::tie(inedge_iterator, inedge_end) = boost::in_edges(vertexsource, data); inedge_iterator != inedge_end; ++inedge_iterator)
+						{
+						actives.push(inedge_iterator);
+						}
+					}
+				lastedge = activeedge;
+			}catch (...)
+			{
+				_exhandler->raisefromcatch("", "FMTgraph::getlastdisturbance", __LINE__, __FILE__);
+			}
+			
+			return lastedge;
+		}
+
+		std::vector<FMTcarbonpredictor> getcarbonpredictors(const FMTvertex_descriptor& targetdescriptor, const std::vector<std::string>& yieldnames, const Core::FMTyields&yields) const
+			{
+			std::vector<FMTcarbonpredictor> predictors;
+			try {
+				FMTinedge_iterator inedge_iterator, inedge_end;
+				const FMTbasevertexproperties& targetproperties = data[targetdescriptor];
+				for (boost::tie(inedge_iterator, inedge_end) = boost::in_edges(targetdescriptor, data); inedge_iterator != inedge_end; ++inedge_iterator)
+				{
+					const FMTbaseedgeproperties& inedgeproperties = data[*inedge_iterator];
+					const FMTvertex_descriptor& sourcevertex = boost::source(*inedge_iterator, data);
+					const FMTbasevertexproperties& sourceproperties = data[sourcevertex];
+					FMTinedge_iterator sourceinedge_iterator, sourceinedge_end;
+					for (boost::tie(sourceinedge_iterator, sourceinedge_end) = boost::in_edges(sourcevertex, data); sourceinedge_iterator != sourceinedge_end; ++sourceinedge_iterator)
+						{
+						int periodtolastdisturbance = 0;
+						const FMTbaseedgeproperties& lastdisturbance = data[*getlastdisturbance(sourceinedge_iterator, periodtolastdisturbance)];
+						const int gaptolastdisturbance = targetproperties.get().period- periodtolastdisturbance;
+						predictors.emplace_back(yieldnames, yields, sourceproperties, targetproperties, inedgeproperties,&lastdisturbance, gaptolastdisturbance);
+						}
+					if (boost::in_degree(sourcevertex,data)==0)
+						{
+						predictors.emplace_back(yieldnames, yields, sourceproperties, targetproperties, inedgeproperties);
+						}	
+				}
+
+			}catch (...)
+				{
+				_exhandler->raisefromcatch("", "FMTgraph::getcarbonpredictors", __LINE__, __FILE__);
+				}
+			return predictors;
+			}
+
 		int getfirstperiod() const
 			{
 			return developments.at(getfirstactiveperiod() +1).begin()->pointerobject->period;
