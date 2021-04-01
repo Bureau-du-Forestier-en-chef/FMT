@@ -44,6 +44,7 @@ class FMTlinegraph : public FMTgraph<FMTbasevertexproperties,FMTbaseedgeproperti
 		void grow();
 		FMTvertex_descriptor getactivevertex() const;
 		int getlastactionid(const int& period)const;
+		std::vector<FMTcarbonpredictor>getperiodcarbonpredictors(const int& period,const std::vector<std::string>& yieldnames, const Core::FMTyields& ylds) const;
 		int getinedgeactionid(const FMTvertex_descriptor& vdesc)const;
 		const Core::FMTdevelopment& getperiodstartdev(const int& period) const;
 		const Core::FMTdevelopment& getperiodstopdev(const int& period) const;
