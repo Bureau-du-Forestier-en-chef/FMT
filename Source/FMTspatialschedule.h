@@ -255,7 +255,7 @@ class FMTspatialschedule : public FMTlayer<Graph::FMTlinegraph>
 			Return sum of all graphs outputs related to constraint.
 		*/
 		std::string getpatchstats(const std::vector<Core::FMTaction>& actions) const;
-		// DocString: FMTspatialschedule::getgraphsoutputs(const Models::FMTmodel&, const Core::FMTconstraint&, const int&, const int&)
+		// DocString: FMTspatialschedule::lastdistlayer(const Models::FMTmodel&, const Core::FMTconstraint&, const int&, const int&)
 		/**
 			Return sum of all graphs outputs related to constraint.
 		*/
@@ -265,6 +265,12 @@ class FMTspatialschedule : public FMTlayer<Graph::FMTlinegraph>
 		
 		*/
 		std::vector<Core::FMTGCBMtransition> getGCBMtransitions(FMTlayer<std::string>& stackedactions, const std::vector<Core::FMTaction>& modelactions, const std::vector<Core::FMTtheme>& classifiers, const int& period) const;
+		// DocString: FMTspatialschedule::getcarbonpredictors(FMTlayer<int>& graphids,const int& period,const std::vector<std::string>& yieldnames,const Core::FMTyields& yields)
+		/**
+			Get the carbon predictors for the whole solution and write down the predictorsids into a layer.
+		*/
+		std::vector<std::vector<Graph::FMTcarbonpredictor>> getcarbonpredictors(FMTlayer<int>& predictorids, const std::vector<std::string>& yieldnames, const Core::FMTyields& yields, const int& period) const;
+		
 		// DocString: FMTspatialschedule::eraselastperiod()
 		 /**
 		 This function erase the last period of the FMTspatialschedule.

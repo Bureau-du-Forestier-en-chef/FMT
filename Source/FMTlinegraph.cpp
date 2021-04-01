@@ -179,6 +179,28 @@ namespace Graph
 
 	}
 
+	std::vector<FMTcarbonpredictor>FMTlinegraph::getperiodcarbonpredictors(const int& period, const std::vector<std::string>& yieldnames, const Core::FMTyields& ylds) const
+	{
+		std::vector<FMTcarbonpredictor>allpredictors;
+		try {
+			for (const auto& devit : getperiodverticies(period))
+				{
+				const FMTvertex_descriptor& outv = devit.memoryobject;
+				if (periodstop(outv))
+					{
+					const std::vector<FMTcarbonpredictor>devpredictor = FMTgraph::getcarbonpredictors(outv, yieldnames, ylds);
+					allpredictors.insert(allpredictors.end(), devpredictor.begin(), devpredictor.end());
+					}
+				}
+		}
+		catch (...)
+		{
+			_exhandler->raisefromcatch("", "FMTlinegraph::getperiodcarbonpredictors", __LINE__, __FILE__);
+		}
+		return allpredictors;
+	}
+
+
 	int FMTlinegraph::getlastactionid(const int& period) const
 	{
 		//std::vector<int> ids;
