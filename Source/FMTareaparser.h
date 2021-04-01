@@ -41,12 +41,12 @@ class FMTareaparser : public FMTparser
 		// DocString: FMTareaparser::rxcleanarea
 		///This regex is used to capture the information kept in the .are section.
         std::regex rxcleanarea;
-		// DocString: FMTareaparser::getdisturbancepath
+		// DocString: FMTareaparser::getperiodpathname
 		/**
-		This function is only usefull whe using GCBM, giving a folder (location) and a (period)
+		Giving a folder (location) and a (period) and a (name)
 		the function returns the path to a disturbance layer (.tiff) raster file.
 		*/
-		std::string getdisturbancepath(const std::string& location, const int& period) const;
+		std::string getperiodpathname(const std::string& location, const int& period,const std::string& name) const;
 		// DocString: FMTareaparser::getGCBMtransitions
 		/**
 		This function is only usefull whe using GCBM. Using the FMTsesmodel elements disturbances (stacked_actions),
@@ -184,6 +184,18 @@ class FMTareaparser : public FMTparser
 																	const std::vector<Core::FMTaction>& actions,
 																	const std::vector<Core::FMTtheme>& themes,
 																	const int& period) const;
+		// DocString: FMTareaparser::writecarbonpredictors()
+		/**
+		Giving a .tif file (location) and a spatialschedule (spatialsolution).
+		a complete vector of model (yieldnames) and  a yield section (yields)
+		The function will write all the carbonpredictor id in the location .tif file and it will also returns the corresponding carbonpredictors for
+		this planning period.
+		*/
+		std::vector<std::vector<Graph::FMTcarbonpredictor>> writecarbonpredictors(const std::string& location,
+															const Spatial::FMTspatialschedule& spatialsolution,
+															const std::vector<std::string>& yieldnames,
+															const Core::FMTyields& yields,
+															const int& period) const;
          // DocString: FMTareaparser::writesasolution
 		/**
 

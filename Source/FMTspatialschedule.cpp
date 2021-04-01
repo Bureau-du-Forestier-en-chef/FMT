@@ -1148,7 +1148,46 @@ namespace Spatial
 		return distlayer;
 	}
 
-	std::vector<Core::FMTGCBMtransition> FMTspatialschedule::getGCBMtransitions(FMTlayer<std::string>& stackedactions, const std::vector<Core::FMTaction>& modelactions, const std::vector<Core::FMTtheme>& classifiers, const int& period) const
+	std::vector<std::vector<Graph::FMTcarbonpredictor>>FMTspatialschedule::getcarbonpredictors(FMTlayer<int>& predictorids, const std::vector<std::string>& yieldnames, const Core::FMTyields& yields, const int& period) const
+	{
+		std::vector<std::vector<Graph::FMTcarbonpredictor>>predictors;
+		try {
+			if (scheduletype != FMTspatialscheduletype::FMTcomplete)
+			{
+				_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
+					"Cannot use a non complete schedule ",
+					"FMTspatialschedule::getcarbonpredictors", __LINE__, __FILE__);
+			}
+			std::set<std::vector<Graph::FMTcarbonpredictor>>predictorsset;
+			std::vector<std::set<std::vector<Graph::FMTcarbonpredictor>>::iterator>predictorlocalisations;
+			for (std::map<FMTcoordinate, Graph::FMTlinegraph>::const_iterator graphit = this->mapping.begin(); graphit != this->mapping.end(); ++graphit)
+				{
+				const std::vector<Graph::FMTcarbonpredictor> graphpredictors = graphit->second.getperiodcarbonpredictors(period, yieldnames, yields);
+				std::set<std::vector<Graph::FMTcarbonpredictor>>::iterator setit = predictorsset.find(graphpredictors);
+				if (setit==predictorsset.end())
+					{
+					const std::pair<std::set<std::vector<Graph::FMTcarbonpredictor>>::iterator,bool> ret = predictorsset.insert(graphpredictors);
+					predictorlocalisations.push_back(ret.first);
+					}
+				predictorlocalisations.push_back(setit);
+				}
+			predictors.insert(predictors.end(), predictorsset.begin(), predictorsset.end());
+			size_t graphid = 0;
+			for (std::map<FMTcoordinate, Graph::FMTlinegraph>::const_iterator graphit = this->mapping.begin(); graphit != this->mapping.end(); ++graphit)
+				{
+				const int predictorid = static_cast<int>(std::distance(predictorsset.begin(), predictorlocalisations.at(graphid)));
+				predictorids.mapping[graphit->first] = predictorid;
+				++graphid;
+				}
+
+		}catch (...)
+		{
+			_exhandler->raisefromcatch("", "FMTspatialschedule::getcarbonpredictors", __LINE__, __FILE__);
+		}
+		return predictors;
+	}
+
+	std::vector<Core::FMTGCBMtransition>FMTspatialschedule::getGCBMtransitions(FMTlayer<std::string>& stackedactions, const std::vector<Core::FMTaction>& modelactions, const std::vector<Core::FMTtheme>& classifiers, const int& period) const
 	{
 		std::vector<Core::FMTGCBMtransition>GCBM;
 		try {
