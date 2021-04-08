@@ -12,6 +12,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <boost/serialization/split_member.hpp>
 #include <boost/serialization/export.hpp>
 #include <boost/lexical_cast.hpp>
+#include <mutex>
 #ifdef FMTWITHOSI
 	#include <CoinMessageHandler.hpp>
 #endif
@@ -78,6 +79,9 @@ namespace Logging
 			// DocString: FMTlogger::filestream
 			///stream if the logger redirect the logging into somesort of file.
 			mutable std::ofstream* filestream;
+			// DocString: FMTlogger::mtx
+			///Mutex for multi-threading.
+			mutable std::recursive_mutex mtx;
 			// DocString: FMTlogger::flushstream
 			///If true will flush stream at each write
 			bool flushstream;
@@ -185,6 +189,8 @@ namespace Logging
 				this->cout(value.c_str());
 				return true;
 				}
+			void acquirelock() const;
+			void releaselock() const;
 
 		};
 

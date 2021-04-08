@@ -185,6 +185,11 @@ class FMTlpsolver: public Core::FMTobject
 		Maximum amount of time the optimizer is allowed to spent on the optimization. A negative number means infinity.
 		*/
 		void setoptimizerMAXtime(const double& time);
+		// DocString: FMTlpsolver::setFeasiblePumpImprovSol
+		/**
+		Controls the way the Feasibility Pump heuristic is employed by the mixed-integer optimizer.The Feasibility Pump is enabled with an effort to improve solution quality. And others
+		*/
+		void MIPparameters();
 		// DocString: FMTlpsolver::getObjValue
 		/**
 		Get the objective value of the solved matrix.

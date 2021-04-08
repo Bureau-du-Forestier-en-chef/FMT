@@ -91,7 +91,9 @@ std::vector<std::vector<std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, 
 		//std::vector<std::vector<Graph::FMTvertex_descriptor>>::const_iterator perit = periodics.begin();
 		if (!totalareaverticies.empty())
 			{
-			_area = this->getprimalarea(primalsolution, maingraph, totalareaverticies);
+			const double area = this->getprimalarea(primalsolution, maingraph, totalareaverticies);
+			//To remove the numeric instability from the multiplication in the graph inarea
+			_area = static_cast<double>((static_cast<int>(area/100)*100)+100);//this->getprimalarea(primalsolution, maingraph, totalareaverticies);
 			}
 		std::map<int, std::vector<int>>periodicsblocksvariables;
 		std::vector<size_t>selectedschemes;
@@ -258,7 +260,7 @@ size_t FMToperatingareascheme::unboundalldualschemes(std::vector<int>& targets, 
 				if (std::find(targets.begin(), targets.end(), newconstraint)== targets.end())
 					{
 					targets.push_back(newconstraint);
-					bounds.push_back(std::numeric_limits<double>::lowest());
+					bounds.push_back(-COIN_DBL_MAX);
 					bounds.push_back(_area);
 					}
 				}
@@ -515,7 +517,7 @@ bool FMToperatingareascheme::havepotentialsolution(const double* primalsolution)
 	{
 	for (const int& binary : openingbinaries)
 		{
-			if (*(primalsolution + binary) > 0)
+			if (*(primalsolution + binary) > FMT_DBL_TOLERANCE)
 			{
 				return true;
 			}
@@ -529,7 +531,7 @@ bool FMToperatingareascheme::haveactivitysolution(const double* dualsolution) co
 	{
 		for (const int& constid : constraints)
 			{
-			if (*(dualsolution + constid) > 0)
+			if (*(dualsolution + constid) > FMT_DBL_TOLERANCE)
 				{
 				return true;
 				}
@@ -578,7 +580,7 @@ std::vector<size_t>FMToperatingareascheme::getpotentialprimalschemes(const doubl
 						}
 					++indexid;
 					}
-			}else if(actualvalue>0)
+			}else if(actualvalue>FMT_DBL_TOLERANCE)
 				{
 				potentialindexes.push_back(binit - this->openingbinaries.begin());
 				}
@@ -641,7 +643,7 @@ std::vector<size_t>FMToperatingareascheme::getpotentialdualschemes(const double*
 						++indexid;
 					}
 				}
-				else if (actualvalue > 0)
+				else if (actualvalue > FMT_DBL_TOLERANCE)
 				{
 					potentialindexes.push_back(binit - this->openingbinaries.begin());
 				}
