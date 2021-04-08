@@ -159,11 +159,6 @@ namespace Heuristics
 		Sets True the useprimal data member
 		*/
 		void setasprimal();
-		// DocString: FMToperatingareascheduler::setgeneratorseed
-		/**
-		Setter for the seed data member
-		*/
-		void setgeneratorseed(const size_t& lseed);
 		// DocString: FMToperatingareascheduler::setproportionofset
 		/**
 		Set the allowed proportion of operating area status change allowed before resolving the problem. Default = 0.25
