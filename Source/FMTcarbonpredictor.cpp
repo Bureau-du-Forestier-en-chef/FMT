@@ -77,7 +77,7 @@ namespace Graph
 		double sourceedgevalue = -2;
 		if (source_edge != nullptr)
 			{
-			sourceedgevalue = source_edge->getactionID();
+			sourceedgevalue = static_cast<double>(source_edge->getactionID());
 			}
 		returned[0] = static_cast<double>(periodgap);
 		returned[1]= sourceedgevalue;
@@ -95,7 +95,7 @@ namespace Graph
 		return returned;
 	}
 
-	std::map<std::string, double>FMTcarbonpredictor::getpredictorsmap(const std::vector<std::string>& yieldnames)const
+	std::map<std::string, double>FMTcarbonpredictor::getpredictorsmap(const std::vector<std::string>& yieldnames, const std::vector<int>& actionsindex)const
 	{
 		const std::vector<std::string>devpredictornames = { "disturbance","age","lock","period" };
 		std::vector<std::string>predictornames;
@@ -125,7 +125,12 @@ namespace Graph
 		std::map<std::string, double>mapping;
 		for (size_t predid = 0; predid < predictor_values.size();++predid)
 			{
-			mapping[predictornames.at(predid)] = predictor_values.at(predid);
+			double value = predictor_values.at(predid);
+			if (value>=0 && (predid == 1 || predid == (yieldnames.size() + 5)))
+				{
+				value = static_cast<double>(actionsindex.at(static_cast<int>(value)));
+				}
+			mapping[predictornames.at(predid)] = value;
 			}
 		return mapping;
 	}

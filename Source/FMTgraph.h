@@ -126,6 +126,15 @@ class FMTgraph : public Core::FMTobject
 		typedef typename boost::unordered_set<Core::FMTlookup<FMTvertex_descriptor,Core::FMTdevelopment>>::iterator lookiterator;
 		typedef typename boost::unordered_set<Core::FMTlookup<FMTvertex_descriptor,Core::FMTdevelopment>>::const_iterator lookconst_iterator;
 	protected:
+		class lookupsorter
+		{
+			public:
+			inline bool operator() (const Core::FMTlookup<FMTvertex_descriptor, Core::FMTdevelopment>& lookup1,
+				const Core::FMTlookup<FMTvertex_descriptor, Core::FMTdevelopment>& lookup2)
+			{
+				return (*lookup1.pointerobject < *lookup2.pointerobject);
+			}
+		};
         FMTgraphbuild buildtype;
 		std::vector<boost::unordered_set<Core::FMTlookup<FMTvertex_descriptor,Core::FMTdevelopment>>>developments;
 		mutable std::vector<FMToutputnodecache<FMTvertex_descriptor>>nodescache;
@@ -1376,11 +1385,26 @@ class FMTgraph : public Core::FMTobject
 		{
 			return developments.empty();
 		}
+		std::vector<Core::FMTlookup<FMTvertex_descriptor, Core::FMTdevelopment>>getsortedverticies(const boost::unordered_set<Core::FMTlookup<FMTvertex_descriptor, Core::FMTdevelopment>>& uset) const
+		{
+			std::vector<Core::FMTlookup<FMTvertex_descriptor, Core::FMTdevelopment>>sorted;
+			try {
+				sorted = std::vector<Core::FMTlookup<FMTvertex_descriptor, Core::FMTdevelopment>>(uset.begin(), uset.end());
+				std::sort(sorted.begin(), sorted.end(),lookupsorter());
+			}
+			catch (...)
+			{
+				_exhandler->raisefromcatch("", "FMTgraph::getsortedverticies", __LINE__, __FILE__);
+			}
+			return sorted;
+		}
+
+
 		std::queue<FMTvertex_descriptor> getactiveverticies() const
 		{
 			std::queue<FMTvertex_descriptor>actives;
 			try {
-				for (auto& lastperiod : developments.back())
+				for (auto& lastperiod : /*getsortedverticies(*/developments.back()/*)*/)
 				{
 					actives.push(lastperiod.memoryobject);
 				}
@@ -1391,6 +1415,19 @@ class FMTgraph : public Core::FMTobject
 			}
 			return actives;
 		}
+		std::vector<Core::FMTlookup<FMTvertex_descriptor, Core::FMTdevelopment>>getsortedperiodverticies(int period) const
+		{
+			std::vector<Core::FMTlookup<FMTvertex_descriptor, Core::FMTdevelopment>>sorted;
+			try {
+				sorted = getsortedverticies(getperiodverticies(period));
+			}
+			catch (...)
+			{
+				_exhandler->raisefromcatch("", "FMTgraph::getsortedperiodverticies", __LINE__, __FILE__);
+			}
+			return sorted;
+		}
+
 		const boost::unordered_set<Core::FMTlookup<FMTvertex_descriptor,Core::FMTdevelopment>>& getperiodverticies(int period) const
 			{
 			return developments.at(period);

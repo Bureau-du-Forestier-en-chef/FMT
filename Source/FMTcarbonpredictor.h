@@ -37,7 +37,7 @@ namespace Graph
 		bool operator==(const FMTcarbonpredictor& rhs) const;
 		bool operator<(const FMTcarbonpredictor& rhs) const;
 		std::vector<double>getpredictors() const;
-		std::map<std::string,double>getpredictorsmap(const std::vector<std::string>& yieldnames)const;
+		std::map<std::string,double>getpredictorsmap(const std::vector<std::string>& yieldnames,const std::vector<int>& actionsindex)const;
 	};
 }
 
