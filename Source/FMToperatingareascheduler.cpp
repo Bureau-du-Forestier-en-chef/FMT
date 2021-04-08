@@ -46,6 +46,7 @@ namespace Heuristics
 				}
 
 				}
+
 				if (useprimal || atprimal)
 				{
 					this->setColSetBounds(&targeteditems[0], &targeteditems.back() + 1, &bounds[0]);
@@ -146,6 +147,15 @@ namespace Heuristics
 				const double initialobjectivevalue = this->getObjValue();
 				size_t opareaprocessed = 0;
 				std::string problemsolved = "primal";
+				/*{
+				Logging::FMTlogger log;
+				log.redirectofile("D:/rowactivity1.txt");
+				const double* solution1=this->getRowActivity();
+				for (int colid = 0; colid < this->getNumRows();++colid)
+				{
+					log<<*(solution1+colid)<<"\n";
+				}
+				}*/
 				if (!useprimal)
 				{
 					this->unboundall(); //Make sure rhs are right need to be released
@@ -212,12 +222,14 @@ namespace Heuristics
 				this->setallinteger();
 				this->branchAndBound();
 			}
-        this->unboundall(true);
-        this->branchAndBound();
-        }catch(...)
-            {
-            _exhandler->printexceptions("", "FMToperatingareascheduler::branchnboundsolve", __LINE__, __FILE__);
-            }
+			this->MIPparameters();
+			this->unboundall(true);
+			this->branchAndBound();
+        	}catch(...)
+            	{
+        		_exhandler->printexceptions("", "FMToperatingareascheduler::branchnboundsolve", __LINE__, __FILE__);
+            	}
+        useprimal=true;
 		return this->isProvenOptimal();
 		}
 
@@ -441,7 +453,7 @@ namespace Heuristics
                     }else {
                         value = areait->getactivitysum(dualsolution);
                         }
-                    if (!potentials.empty())
+                    if (!potentials.empty() && !userandomness)
                         {
                         std::vector<std::vector<FMToperatingareascheme>::const_iterator>::iterator vit = potentials.begin();
                         size_t oldsize = potentials.size();
@@ -458,7 +470,7 @@ namespace Heuristics
                                         potentialvalue = (*vit)->getactivitysum(dualsolution);
                                     }
                                 }
-                            if (vit == potentials.end() || value > potentialvalue)
+                            if (vit == potentials.end() || (value - potentialvalue)>FMT_DBL_TOLERANCE)
                                 {
                                 potentials.insert(vit, areait);
                                 }
@@ -479,12 +491,12 @@ namespace Heuristics
                 {
                 std::shuffle(potentials.begin(), potentials.end(), this->generator);
                 }
-            std::vector<std::vector<FMToperatingareascheme>::const_iterator>::iterator randomit = potentials.begin();
-            while ((selected.size() < maxareatopick) && randomit != potentials.end())
-                {
-                selected.push_back(*randomit);
-                ++randomit;
-                }
+			std::vector<std::vector<FMToperatingareascheme>::const_iterator>::iterator randomit = potentials.begin();
+			while ((selected.size() < maxareatopick) && randomit != potentials.end())
+				{
+				selected.push_back(*randomit);
+				++randomit;
+				}
         }catch(...)
             {
                 _exhandler->raisefromcatch("","FMToperatingareascheduler::setdraw", __LINE__, __FILE__);
@@ -525,17 +537,20 @@ namespace Heuristics
 			}
 			if (!potentialschemes.empty())
 			{
+				//std::vector<size_t>::const_iterator luckypotential = potentialschemes.begin();
 				if (userandomness)
 				{
-					std::shuffle(potentialschemes.begin(), potentialschemes.end(), this->generator);
+					//std::uniform_int_distribution<> distrib(0, static_cast<int>(potentialschemes.size()-1));
+					//luckypotential = potentialschemes.begin()+distrib(generator);
+					std::shuffle(potentialschemes.begin(), potentialschemes.end(), generator);
 				}
 				++gotschedule;
 				if (useprimal)
 				{
-					opit->boundprimalscheme(targeteditems, bounds, *potentialschemes.begin());
+					opit->boundprimalscheme(targeteditems, bounds, *potentialschemes.begin());//*luckypotential);
 				}
 				else {
-					opit->unbounddualscheme(targeteditems, bounds, *potentialschemes.begin());
+					opit->unbounddualscheme(targeteditems, bounds, *potentialschemes.begin());//*luckypotential);
 				}
 			}
 			else {
@@ -627,12 +642,6 @@ namespace Heuristics
 	void FMToperatingareascheduler::setasprimal()
 		{
 		useprimal = true;
-		}
-
-	void FMToperatingareascheduler::setgeneratorseed(const size_t& lseed)
-		{
-		seed = lseed;
-		generator.seed(static_cast<unsigned int>(lseed));
 		}
 
 	void FMToperatingareascheduler::setproportionofset(const double& proportion)

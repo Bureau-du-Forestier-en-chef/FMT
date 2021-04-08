@@ -1949,7 +1949,7 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 																						bool updatematrixname)
 		{
 		bool userandomness = false;
-		size_t seedof = 0;
+		size_t seedof = 1;
 		double proportionofset = 0.25;
 		std::vector<Heuristics::FMToperatingareascheduler>allheuristics;
 		try {

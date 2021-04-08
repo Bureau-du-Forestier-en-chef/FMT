@@ -166,6 +166,14 @@ namespace Logging
 			return 0;
 			}
 	#endif
+	void FMTlogger::acquirelock() const
+	{
+		mtx.lock();
+	}
+	void FMTlogger::releaselock() const
+	{
+		mtx.unlock();
+	}
 
 }
 
