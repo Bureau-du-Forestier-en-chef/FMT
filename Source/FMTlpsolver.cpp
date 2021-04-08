@@ -226,6 +226,41 @@ namespace Models
 		}
 	}
 
+	void FMTlpsolver::MIPparameters()
+		{
+			try {
+				switch (solvertype)
+				{
+				#ifdef  FMTWITHMOSEK
+				case FMTsolverinterface::MOSEK:
+					{
+						OsiMskSolverInterface* msksolver = dynamic_cast<OsiMskSolverInterface*>(solverinterface.get());
+						MSKtask_t task = msksolver->getMutableLpPtr();
+						MSK_putintparam(task, MSK_IPAR_MIO_FEASPUMP_LEVEL, 1);
+						MSK_putintparam(task, MSK_IPAR_MIO_HEURISTIC_LEVEL, 100);
+						MSK_putintparam(task, MSK_IPAR_MIO_CUT_SELECTION_LEVEL, 0);
+						MSK_putintparam(task, MSK_IPAR_MIO_RINS_MAX_NODES, 1000);
+						MSK_putintparam(task, MSK_IPAR_MIO_CUT_CLIQUE, MSK_OFF);
+						MSK_putintparam(task, MSK_IPAR_MIO_CUT_CMIR, MSK_OFF);
+						MSK_putintparam(task, MSK_IPAR_MIO_CUT_GMI, MSK_OFF);
+						MSK_putintparam(task, MSK_IPAR_MIO_CUT_IMPLIED_BOUND, MSK_OFF);
+						MSK_putintparam(task, MSK_IPAR_MIO_CUT_KNAPSACK_COVER, MSK_OFF);
+						break;
+					}
+				#endif
+				default:
+					_exhandler->raise(Exception::FMTexc::FMTignore, "Cannot set gap feasible pump level for " + getsolvername(),
+						"FMTlpsolver::MIPparameters", __LINE__, __FILE__);
+					break;
+				}
+			}
+			catch (...)
+			{
+				_exhandler->raisefromcatch("", "FMTlpsolver::setMIPgaptolerance", __LINE__, __FILE__);
+			}
+		}
+
+
 	void FMTlpsolver::setoptimizerMAXtime(const double& time)
 		{
 			try {
