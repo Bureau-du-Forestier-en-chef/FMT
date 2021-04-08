@@ -40,7 +40,7 @@ namespace Core
 		}
 		FMTlookup& operator = (const FMTlookup& rhs)
 		{
-			if (*this != &rhs)
+			if (this != &rhs)
 			{
 				memoryobject = rhs.memoryobject;
 				pointerobject = rhs.pointerobject;

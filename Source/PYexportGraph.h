@@ -58,7 +58,7 @@ void exportGraph()
 			"@DocString(FMTcarbonpredictor::getpredictorsmap)");
 
 	define_pylist<Graph::FMTcarbonpredictor>();
-
+	define_pylist<std::vector<Graph::FMTcarbonpredictor>>();
 	bp::enum_<Graph::FMTgraphbuild>("FMTsolverinterface")
 		.value("schedulebuild", Graph::FMTgraphbuild::schedulebuild)
 		.value("fullbuild", Graph::FMTgraphbuild::fullbuild)
