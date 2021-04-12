@@ -374,16 +374,6 @@ namespace Core
 			}
 		}
 
-	void FMTobject::acquirelock() const
-		{
-			_logger->acquirelock();
-		}
-		void FMTobject::releaselock() const
-		{
-			_logger->releaselock();
-		}
-
-
 }
 
 BOOST_CLASS_EXPORT_IMPLEMENT(Core::FMTobject)

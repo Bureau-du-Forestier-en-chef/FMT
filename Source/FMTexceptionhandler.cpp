@@ -32,6 +32,7 @@ void CPL_STDCALL FMTCPLErrorHandler(CPLErr eErrClass, CPLErrorNum nError, const 
 
 void FMTexceptionhandler::handelCPLerror(CPLErr eErrClass, CPLErrorNum nError, const char * pszErrorMsg)
 	{
+	std::lock_guard<std::recursive_mutex> guard(mtx);
     if (eErrClass == CE_Failure || eErrClass == CE_Fatal)
         {
         raise(FMTexc::FMTGDALerror,std::string(pszErrorMsg),"FMTdefaultexceptionhandler::handelCPLerror",__LINE__, __FILE__);
@@ -56,6 +57,9 @@ FMTexceptionhandler& FMTexceptionhandler::operator = (const FMTexceptionhandler&
 {
 	if (this != &rhs)
 	{
+		std::lock(mtx, rhs.mtx);
+		std::lock_guard<std::recursive_mutex> self_lock(mtx, std::adopt_lock);
+		std::lock_guard<std::recursive_mutex> other_lock(rhs.mtx, std::adopt_lock);
 		_level = rhs._level;
 		_exception = rhs._exception;
 		_errorcount = rhs._errorcount;
@@ -70,6 +74,7 @@ FMTexceptionhandler& FMTexceptionhandler::operator = (const FMTexceptionhandler&
 
 void FMTexceptionhandler::throw_nested(const  std::exception& texception, int level,bool rethrow)
 {
+		std::lock_guard<std::recursive_mutex> guard(mtx);
 		const std::string linereplacement = "\n" + std::string(level, ' ');
 		std::string message = texception.what();
 		boost::replace_all(message, "\n", linereplacement);
@@ -108,16 +113,19 @@ void FMTexceptionhandler::throw_nested(const  std::exception& texception, int le
 
 void FMTexceptionhandler::enablenestedexceptions()
 	{
+	std::lock_guard<std::recursive_mutex> guard(mtx);
 	usenestedexceptions = true;
 	}
 
 void FMTexceptionhandler::disablenestedexceptions()
 	{
+	std::lock_guard<std::recursive_mutex> guard(mtx);
 	usenestedexceptions = false;
 	}
 
 bool FMTexceptionhandler::needtorethrow() const
 	{
+	std::lock_guard<std::recursive_mutex> guard(mtx);
 	if (!usenestedexceptions &&
 		(_exception == FMTexc::FMTfunctionfailed || _exception == FMTexc::FMTunhandlederror))
 		{
@@ -135,8 +143,7 @@ bool FMTexceptionhandler::needtorethrow() const
 FMTexception FMTexceptionhandler::raise(FMTexc lexception, std::string text,
 	const std::string& method, const int& line, const std::string& file, Core::FMTsection lsection,bool throwit)
 {
-
-
+	std::lock_guard<std::recursive_mutex> guard(mtx);
 	FMTexception excp;
 	if (lsection == Core::FMTsection::Empty)
 	{
@@ -159,16 +166,16 @@ FMTexception FMTexceptionhandler::raise(FMTexc lexception, std::string text,
 	return excp;
 }
 
-FMTexceptionhandler::FMTexceptionhandler(const FMTexceptionhandler& rhs) :
-	_level(rhs._level),
-	_exception(rhs._exception),
-	_errorcount(rhs._errorcount),
-	_warningcount(rhs._warningcount),
-	_logger(rhs._logger),
-	usenestedexceptions(rhs.usenestedexceptions),
-	cplhandlerpushed(rhs.cplhandlerpushed)
+FMTexceptionhandler::FMTexceptionhandler(const FMTexceptionhandler& rhs)
 	{
-
+		std::lock_guard<std::recursive_mutex> lock(rhs.mtx);
+		_level=rhs._level;
+		_exception=rhs._exception;
+		_errorcount=rhs._errorcount;
+		_warningcount=rhs._warningcount;
+		_logger=rhs._logger;
+		usenestedexceptions=rhs.usenestedexceptions;
+		cplhandlerpushed=rhs.cplhandlerpushed;
 	}
 
 FMTexceptionhandler::FMTexceptionhandler() : _level(FMTlev::FMT_None),
@@ -185,12 +192,14 @@ FMTexceptionhandler::FMTexceptionhandler() : _level(FMTlev::FMT_None),
 #if defined FMTWITHGDAL
 void FMTexceptionhandler::setCPLpushed()
 	{
+	std::lock_guard<std::recursive_mutex> guard(mtx);
 	cplhandlerpushed = true;
 	}
 #endif
 
 std::string FMTexceptionhandler::updatestatus(const FMTexc lexception, const std::string message)
 {
+	std::lock_guard<std::recursive_mutex> guard(mtx);
 	_exception = lexception;
 	std::string msg;
 	switch (_exception)
@@ -502,6 +511,7 @@ FMTexception FMTexceptionhandler::raisefromcatch(std::string text,
 	const std::string& method, const int& line, const std::string& file,
 	Core::FMTsection lsection)
 {
+	std::lock_guard<std::recursive_mutex> guard(mtx);
 	FMTexc lexception = FMTexc::FMTfunctionfailed;
 	const std::exception_ptr expointer = std::current_exception();
 	if (expointer)
@@ -551,6 +561,7 @@ void FMTexceptionhandler::printexceptions(std::string text,
 	const std::string& method, const int& line, const std::string& fil,
 	Core::FMTsection lsection)
 	{
+	std::lock_guard<std::recursive_mutex> guard(mtx);
 	FMTexc lexception = FMTexc::FMTfunctionfailed;
 	const std::exception_ptr expointer = std::current_exception();
 	bool rethrowing = false;

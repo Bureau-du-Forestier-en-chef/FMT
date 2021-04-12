@@ -236,15 +236,16 @@ namespace Models
 					{
 						OsiMskSolverInterface* msksolver = dynamic_cast<OsiMskSolverInterface*>(solverinterface.get());
 						MSKtask_t task = msksolver->getMutableLpPtr();
-						MSK_putintparam(task, MSK_IPAR_MIO_FEASPUMP_LEVEL, 1);
+						MSK_putintparam(task, MSK_IPAR_MIO_FEASPUMP_LEVEL, 0);
 						MSK_putintparam(task, MSK_IPAR_MIO_HEURISTIC_LEVEL, 100);
-						MSK_putintparam(task, MSK_IPAR_MIO_CUT_SELECTION_LEVEL, 0);
+						MSK_putintparam(task, MSK_IPAR_MIO_MAX_NUM_ROOT_CUT_ROUNDS, 10);
+						//MSK_putintparam(task, MSK_IPAR_MIO_CUT_SELECTION_LEVEL, 0);
 						MSK_putintparam(task, MSK_IPAR_MIO_RINS_MAX_NODES, 1000);
-						MSK_putintparam(task, MSK_IPAR_MIO_CUT_CLIQUE, MSK_OFF);
+						/*MSK_putintparam(task, MSK_IPAR_MIO_CUT_CLIQUE, MSK_OFF);
 						MSK_putintparam(task, MSK_IPAR_MIO_CUT_CMIR, MSK_OFF);
 						MSK_putintparam(task, MSK_IPAR_MIO_CUT_GMI, MSK_OFF);
 						MSK_putintparam(task, MSK_IPAR_MIO_CUT_IMPLIED_BOUND, MSK_OFF);
-						MSK_putintparam(task, MSK_IPAR_MIO_CUT_KNAPSACK_COVER, MSK_OFF);
+						MSK_putintparam(task, MSK_IPAR_MIO_CUT_KNAPSACK_COVER, MSK_OFF);*/
 						break;
 					}
 				#endif
