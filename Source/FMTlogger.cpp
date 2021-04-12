@@ -32,13 +32,14 @@ namespace Logging
 		#ifdef FMTWITHOSI
 			CoinMessageHandler(),
 		#endif
-		filepath(),filestream(), flushstream(false)
+		filepath(),filestream(), mtx(),flushstream(false)
 		{
 
 		}
 
 	void FMTlogger::redirectofile(const std::string& filename)
 		{
+		std::lock_guard<std::recursive_mutex> guard(mtx);
 		filepath = filename;
 		settofile(filepath);
 		if (filestream && filestream->is_open())
@@ -48,19 +49,24 @@ namespace Logging
 			}
 		}
 
-	FMTlogger::FMTlogger(const FMTlogger& rhs): 
-		#ifdef FMTWITHOSI
-				CoinMessageHandler(rhs),
-		#endif
-		filepath(rhs.filepath), filestream(), flushstream(rhs.flushstream)
+	FMTlogger::FMTlogger(const FMTlogger& rhs)
 		{
+		std::lock_guard<std::recursive_mutex> lock(rhs.mtx);
+		#ifdef FMTWITHOSI
+			CoinMessageHandler::operator=(rhs),
+		#endif
+		filepath=rhs.filepath;
 		settofile(filepath);
+		flushstream=rhs.flushstream;
 		}
 
 	FMTlogger& FMTlogger::operator = (const FMTlogger& rhs)
 		{
 		if (this!=&rhs)
 			{
+			std::lock(mtx, rhs.mtx);
+			std::lock_guard<std::recursive_mutex> self_lock(mtx, std::adopt_lock);
+			std::lock_guard<std::recursive_mutex> other_lock(rhs.mtx, std::adopt_lock);
 			#ifdef FMTWITHOSI
 				CoinMessageHandler::operator=(rhs),
 			#endif
@@ -73,6 +79,7 @@ namespace Logging
 
 	void FMTlogger::closefilestream()
 		{
+		std::lock_guard<std::recursive_mutex> guard(mtx);
 		if (filestream && filestream->is_open())
 			{
 			this->logtime();
@@ -96,6 +103,7 @@ namespace Logging
 
 	void FMTlogger::logstamp()
 		{
+		std::lock_guard<std::recursive_mutex> guard(mtx);
 		const std::string message = "FMT " + Version::FMTversion().getversion() +
 			", build: "+ Version::FMTversion().getbuilddate();
 		*this<<(message)<< "\n";
@@ -103,12 +111,14 @@ namespace Logging
 
 	void FMTlogger::logtime()
 		{
+		std::lock_guard<std::recursive_mutex> guard(mtx);
 		const std::string message = Version::FMTversion().getdatenow();
 		*this << (message);
 		}
 
 	void FMTlogger::setstreamflush(bool flush)
 		{
+		std::lock_guard<std::recursive_mutex> guard(mtx);
 		flushstream = flush;
 		}
 
@@ -116,16 +126,19 @@ namespace Logging
 	#ifdef FMTWITHOSI
 		void FMTlogger::checkSeverity()
 			{
+			std::lock_guard<std::recursive_mutex> guard(mtx);
 			CoinMessageHandler::checkSeverity();
 			}
 	
 		CoinMessageHandler* FMTlogger::clone() const
 			{
+			std::lock_guard<std::recursive_mutex> guard(mtx);
 			return new FMTlogger(*this);
 			}
 
 		CoinMessageHandler * FMTlogger::getpointer() const
 			{
+			std::lock_guard<std::recursive_mutex> guard(mtx);
 			return dynamic_cast<CoinMessageHandler*>(const_cast<FMTlogger*>(this));
 			}
 
@@ -133,6 +146,7 @@ namespace Logging
 
 	void FMTlogger::cout(const char* message) const
 		{
+		std::lock_guard<std::recursive_mutex> guard(mtx);
 		if (filestream && filestream->is_open())
 			{
 			(*filestream)<<(message);
@@ -151,6 +165,7 @@ namespace Logging
 	#ifdef FMTWITHOSI
 		int FMTlogger::print()
 			{
+			std::lock_guard<std::recursive_mutex> guard(mtx);
 			if (messageOut_ > messageBuffer_)
 				{
 				char buffer[COIN_MESSAGE_HANDLER_MAX_BUFFER_SIZE];
@@ -166,14 +181,7 @@ namespace Logging
 			return 0;
 			}
 	#endif
-	void FMTlogger::acquirelock() const
-	{
-		mtx.lock();
-	}
-	void FMTlogger::releaselock() const
-	{
-		mtx.unlock();
-	}
+
 
 }
 

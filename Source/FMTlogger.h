@@ -189,8 +189,6 @@ namespace Logging
 				this->cout(value.c_str());
 				return true;
 				}
-			void acquirelock() const;
-			void releaselock() const;
 
 		};
 

@@ -74,6 +74,9 @@ namespace Exception
 		// DocString: FMTexceptionhandler::cplhandlerpushed
 		///If CPL handler pushed true else false
 		bool cplhandlerpushed;
+		// DocString: FMTexceptionhandler::mtx
+		///Mutex for multi-threading.
+		mutable std::recursive_mutex mtx;
 		// DocString: FMTexceptionhandler::updatestatus
 		/**
 		This functions updates the status of the handler adding up to the warning or the error counts.
