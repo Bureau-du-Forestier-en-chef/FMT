@@ -995,6 +995,10 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 								{
 									all_variables.clear();
 								}
+								if (goal_variable != -1)
+								{
+									all_variables[goal_variable] = -1;
+								}
 								const int uppervalue = getsetmatrixelement(constraint, FMTmatrixelement::constraint, all_variables,
 									period, lowerbound, upperbound);
 								if (period == last_period)
@@ -1059,6 +1063,10 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 								}
 							}
 						}
+						if (goal_variable != -1&& lowerbound == std::numeric_limits<double>::lowest())
+							{
+							lowervars[goal_variable] = -1;
+							}
 						const int lower_constraint_id = getsetmatrixelement(constraint, FMTmatrixelement::constraint, lowervars,
 							period, lowerbound, upperbound);
 						//ismultiple
@@ -1077,6 +1085,10 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 							}
 							lowerbound = 0;
 							upperbound = std::numeric_limits<double>::max();
+							if (goal_variable != -1 && lowerbound == std::numeric_limits<double>::lowest())
+								{
+								uppervars[goal_variable] = -1;
+								}
 							const int upper_constraint_id = getsetmatrixelement(constraint, FMTmatrixelement::constraint, uppervars,
 								period, lowerbound, upperbound);
 						}
