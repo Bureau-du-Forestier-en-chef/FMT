@@ -100,26 +100,21 @@ namespace Graph
 		const std::vector<std::string>devpredictornames = { "disturbance","age","lock","period" };
 		std::vector<std::string>predictornames;
 		predictornames.push_back("source_distance");
-		size_t id = 0;
 		for (const std::string& name : devpredictornames)
 			{
-			predictornames.push_back(std::to_string(id)+"_source_"+name);
-			++id;
+			predictornames.push_back("source_"+name);
 			}
 		for (const std::string& name : yieldnames)
 			{
-			predictornames.push_back(std::to_string(id) + "_source_" + name);
-			++id;
+			predictornames.push_back("source_" + name);
 			}
 		for (const std::string& name : devpredictornames)
 			{
-			predictornames.push_back(std::to_string(id) + "_target_" + name);
-			++id;
+			predictornames.push_back("target_" + name);
 			}
 		for (const std::string& name : yieldnames)
 			{
-			predictornames.push_back(std::to_string(id) + "_target_" + name);
-			++id;
+			predictornames.push_back("target_" + name);
 			}
 		const std::vector<double>predictor_values= getpredictors();
 		std::map<std::string, double>mapping;
