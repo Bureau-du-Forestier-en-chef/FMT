@@ -238,7 +238,7 @@ namespace Models
 						MSKtask_t task = msksolver->getMutableLpPtr();
 						MSK_putintparam(task, MSK_IPAR_MIO_FEASPUMP_LEVEL, 0);
 						MSK_putintparam(task, MSK_IPAR_MIO_HEURISTIC_LEVEL, 100);
-						MSK_putintparam(task, MSK_IPAR_MIO_MAX_NUM_ROOT_CUT_ROUNDS, 10);
+						MSK_putintparam(task, MSK_IPAR_MIO_MAX_NUM_ROOT_CUT_ROUNDS, 1);
 						//MSK_putintparam(task, MSK_IPAR_MIO_CUT_SELECTION_LEVEL, 0);
 						MSK_putintparam(task, MSK_IPAR_MIO_RINS_MAX_NODES, 1000);
 						/*MSK_putintparam(task, MSK_IPAR_MIO_CUT_CLIQUE, MSK_OFF);

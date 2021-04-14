@@ -213,6 +213,78 @@ namespace Heuristics
 		return this->isProvenOptimal();
 		}
 
+	void FMToperatingareascheduler::parallelinitialsolve(const int& nothread)
+		{
+		try {
+			if (this->isProvenOptimal())
+			{
+				const double initialobjectivevalue = this->getObjValue();
+				size_t opareaprocessed = 0;
+				std::string problemsolved = "primal";
+				/*{
+				Logging::FMTlogger log;
+				log.redirectofile("D:/rowactivity1.txt");
+				const double* solution1=this->getRowActivity();
+				for (int colid = 0; colid < this->getNumRows();++colid)
+				{
+					log<<*(solution1+colid)<<"\n";
+				}
+				}*/
+				if (!useprimal)
+				{
+					this->unboundall(); //Make sure rhs are right need to be released
+					this->closeprimalbounds(); //Need that to get some activities
+					this->resolvemodel();
+					problemsolved = "dual";
+				}
+				std::vector<std::vector<FMToperatingareascheme>::const_iterator> selected;
+				do {
+					this->clearrowcache();
+					selected = this->setdraw();
+					const size_t setssize = this->setbounds(selected);
+					const int iterations = this->resolvemodel();
+					opareaprocessed += selected.size();
+					if (!selected.empty())
+					{
+						int setratio = static_cast<int>(((static_cast<double>(opareaprocessed)) / (static_cast<double>(this->operatingareas.size()))) * 100);
+						(*_logger) << "Thread-"+std::to_string(nothread)+" : Solution generation phase (" + std::to_string(setratio) + "%) took " + std::to_string(iterations) + " iterations on " + problemsolved +" formulation" << "\n";
+					}
+					if (!this->isProvenOptimal())
+					{
+						_exhandler->raise(Exception::FMTexc::FMTignore,
+							"Thread-"+std::to_string(nothread)+" : FMToperatingareascheduler failed... Switching to random",
+							"FMToperatingareascheduler::parallelinitialsolve", __LINE__, __FILE__, _section);
+						userandomness = true; //Switch to random now
+						this->unboundall(); //release everything
+						if (!useprimal)
+						{
+							this->closeprimalbounds();
+						}
+						this->resolvemodel();
+						opareaprocessed = 0;
+					}
+					if (opareaprocessed > this->operatingareas.size())
+						{
+						_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
+							"Thread-"+std::to_string(nothread)+" : Unable to bound operating areas ",
+							"FMToperatingareascheduler::parallelinitialsolve", __LINE__, __FILE__, _section);
+						}
+				} while (!selected.empty() && this->isProvenOptimal());
+				if (this->isProvenOptimal())
+				{
+					const double newobjective = this->getObjValue();
+					const double dblgap = (100 - (round((newobjective / initialobjectivevalue) * 1000) / 10));
+					(*_logger) << "Thread-"+std::to_string(nothread)+" : Feasible solution found objective: " + std::to_string(round(newobjective)) + " (" + std::to_string(dblgap) + "%)" << "\n";
+					this->clearrowcache();
+				}
+				this->clearrowcache();
+			}
+		}catch (...)
+		{
+			_exhandler->printexceptions("", "FMToperatingareascheduler::parallelinitialsolve", __LINE__, __FILE__);
+		}
+		}
+
 	bool FMToperatingareascheduler::branchnboundsolve()
 		{
         try{
@@ -537,13 +609,11 @@ namespace Heuristics
 			}
 			if (!potentialschemes.empty())
 			{
-				//std::vector<size_t>::const_iterator luckypotential = potentialschemes.begin();
-				if (userandomness)
+
+				/*if (userandomness)
 				{
-					//std::uniform_int_distribution<> distrib(0, static_cast<int>(potentialschemes.size()-1));
-					//luckypotential = potentialschemes.begin()+distrib(generator);
 					std::shuffle(potentialschemes.begin(), potentialschemes.end(), generator);
-				}
+				}*/
 				++gotschedule;
 				if (useprimal)
 				{
