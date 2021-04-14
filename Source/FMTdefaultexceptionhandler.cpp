@@ -20,6 +20,7 @@ namespace Exception
 #if defined FMTWITHGDAL
 	void FMTdefaultexceptionhandler::handelCPLerror(CPLErr eErrClass, CPLErrorNum nError, const char * pszErrorMsg)
 		{
+		std::lock_guard<std::recursive_mutex> guard(mtx);
         try{
             FMTexceptionhandler::handelCPLerror(eErrClass,nError,pszErrorMsg);
         }catch(...)
@@ -34,7 +35,7 @@ namespace Exception
 	FMTexception FMTdefaultexceptionhandler::raise(FMTexc lexception, std::string text,
 		const std::string& method, const int& line, const std::string& file, Core::FMTsection lsection,bool throwit)
 	{
-
+		std::lock_guard<std::recursive_mutex> guard(mtx);
 		FMTexception excp = FMTexception(lexception, updatestatus(lexception, text));
 		if (_level != FMTlev::FMT_Warning)
 		{
