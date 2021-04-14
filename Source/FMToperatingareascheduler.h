@@ -143,6 +143,12 @@ namespace Heuristics
 		for each operating area. The user can use the function getsolution to first yield solution.
 		*/
 		bool initialsolve() final;
+		// DocString: FMToperatingareascheduler::parallelinitialsolve
+		/**
+		Solve the heuristic problem using the original heuristic resolving the problem till finding a initial solution
+		for each operating area. Use in multithread.
+		*/
+		void parallelinitialsolve(const int& nothread) final;
 		// DocString: FMToperatingareascheduler::branchnboundsolve
 		/**
 		Solve problem using Branch and bound on the primal formulation. If the function is called after a call to initialsolve()

@@ -84,6 +84,12 @@ namespace Heuristics
         FMTlpsolver::passinmessagehandler(*_logger);
         }
 
+    void FMTlpheuristic::parallelinitialsolve(const int& nothread)
+    {
+    	*_logger<<"No heuristic defined for thread no :"+std::to_string(nothread)<<"\n";
+    }
+
+
 }
 BOOST_CLASS_EXPORT_IMPLEMENT(Heuristics::FMTlpheuristic)
 #endif

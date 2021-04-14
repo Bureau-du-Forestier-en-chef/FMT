@@ -129,6 +129,11 @@ namespace Heuristics
 		it's going to use the heuristic solution has a starting MIP solution, if not it's going to directly use the BnB on the formulated problem.
 		*/
 		virtual bool branchnboundsolve();
+		// DocString: FMTlpheuristic::parallelinitialsolve()
+		/**
+		Virtual function to launch initialsolve in multithread for derived class
+		*/
+		virtual void parallelinitialsolve(const int& nothread);
 		// DocString: FMTlpheuristic::isfeasible
 		/**
 		Return true if the actual solution of the heuristic is feasible.
@@ -139,7 +144,9 @@ namespace Heuristics
 		Override the passinobject for the Lpsolver
 		*/
 		void passinobject(const FMTobject& rhs) override;
+
 	};
+
 }
 BOOST_CLASS_EXPORT_KEY(Heuristics::FMTlpheuristic)
 #endif

@@ -14,6 +14,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMToperatingareaclusterer.h"
 #include "FMToperatingareascheme.h"
 #include "FMToperatingareacluster.h"
+#include "FMTlpheuristicmthandler.h"
 #include "FMTlpsolver.h"
 #include "PYdefinitions.h"
 #include "boost/python.hpp"
@@ -32,6 +33,13 @@ void exportHeuristics()
 		"   :synopsis: Module used for Heuristics.\n"
 		"\n";
 	#ifdef FMTWITHOSI
+
+	bp::class_<Heuristics::FMTlpheuristicmthandler>("FMTlpheuristicmthandler", "@DocString(FMTlpheuristicmthandler)")
+		//.def(bp::init<std::vector<Heuristics::FMToperatingareascheduler>&>())
+		//.def(bp::init<std::vector<Heuristics::FMToperatingareaclusterer>&>())
+		.def(bp::init<boost::python::list&>())
+		.def("initialsolve", &Heuristics::FMTlpheuristicmthandler::initialsolve,
+					"@DocString(FMTlpheuristicmthandler::initialsolve)");
 
 	bp::class_<Heuristics::FMToperatingarea>("FMToperatingarea", "@DocString(FMToperatingarea)")
 		.def(bp::init<const Core::FMTmask&, const double&>())

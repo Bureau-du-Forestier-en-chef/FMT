@@ -216,8 +216,7 @@ class FMTobject
 		do nested exception throw.
 		*/
 		virtual void enablenestedexceptions();
-		void acquirelock() const;
-		void releaselock() const;
+
 
 	};
 }
