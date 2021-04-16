@@ -187,7 +187,11 @@ class FMTmodel : public Core::FMTobject
 		locate the static transition themes.
 		*/
 		std::vector<size_t>getstatictransitionthemes() const;
+		void clearactionscache();
+		void clearyieldcache();
+		void cleartransitioncache();
     public:
+		virtual void clearcache();
 		// DocString: FMTmodel()
 		/**
 		Main constructor for FMTmodel used in Parser::FMTmodelparser, the constraints are optional.

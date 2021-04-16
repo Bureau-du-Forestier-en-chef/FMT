@@ -95,6 +95,19 @@ std::vector<std::string> FMTyields::getallyieldnames() const
 	return alls;
 	}
 
+void FMTyields::clearcache()
+	{
+		//Clearcache of FMTlist
+		FMTlist<FMTyieldhandler>::clearcache();
+		for (auto& yh:*this)
+		{
+			for (auto& el:yh.second.elements)
+			{
+				//Clearcache of FMTdata in FMTyieldhandler
+				el.second.clearcache();
+			}
+		}
+	}
 
 bool FMTyields::isyld(const std::string& value, bool fromsource) const
     {

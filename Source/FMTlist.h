@@ -204,6 +204,14 @@ namespace Core
 			{
 			return filter.empty();
 			}
+		// DocString: FMTlist::clearcache
+		/**
+		Clear fastpass by swaping with an empty container.
+		*/
+		virtual void clearcache()
+			{
+				boost::unordered_map<FMTmask, std::vector<int>>().swap(fastpass);
+			}
 		// DocString: FMTlist::size
 		/**
 		Returns the size of the FMTlist

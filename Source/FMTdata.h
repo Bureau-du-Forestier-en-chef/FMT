@@ -57,6 +57,7 @@ class FMTdata
 				const std::vector<bool>& varstack);
         FMTdata& operator = (const FMTdata& rhs);
         FMTyieldparserop getop() const;
+        void clearcache();
 		bool constant() const;
 		bool nulldata() const;
 		bool cachevalue(const FMTmask& mask, const int& age, const int& period) const;

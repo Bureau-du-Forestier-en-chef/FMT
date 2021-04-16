@@ -101,6 +101,7 @@ class FMTyields : public FMTlist<FMTyieldhandler>
 		/**
 		This function returns true if the FMTyields section contains a given (value) non null yield.
 		*/
+        void clearcache() final;
         bool isyld(const std::string& value,bool fromsource = false) const;
 		// DocString: FMTyields::isnullyld
 		/**
