@@ -31,7 +31,7 @@ namespace Graph
 
 	void FMTbaseedgeproperties::setactionID(const int& newid)
 	{
-		action = newid;
+		action = static_cast<short int>(newid);
 	}
 
 	bool FMTbaseedgeproperties::operator < (const FMTbaseedgeproperties& rhs) const

@@ -58,7 +58,7 @@ namespace Core
 			}
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("for "+std::string(*this),"FMTactualdevelopment::presolve", __LINE__, __FILE__, _section);
+			_exhandler->raisefromcatch("for "+std::string(*this),"FMTactualdevelopment::presolve", __LINE__, __FILE__);
 			}
 		return newdev;
 		}

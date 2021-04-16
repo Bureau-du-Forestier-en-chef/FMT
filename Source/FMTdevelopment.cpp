@@ -107,6 +107,27 @@ namespace Core{
 		 return potentials;
 		}
 
+	 std::vector<bool> FMTdevelopment::isanyworthtestingoperability(const std::vector<const FMTaction*>& actions,
+		 const std::vector<FMTaction>& allactions) const noexcept
+	 {
+		 std::vector<bool>returnvalues(allactions.size(),false);
+		 bool clear = true;
+			 const FMTaction* firstaction = &(*allactions.begin());
+			 for (const FMTaction* action : actions)
+			 {
+				 if (this->worthtestingoperability(*action))
+				 {
+					 returnvalues[std::distance(firstaction, action)] = true;
+					 clear = false;
+				 }
+			 }
+			 if (clear)
+				{
+				returnvalues.clear();
+				}
+		 return returnvalues;
+	 }
+
 	 std::vector<FMTdevelopmentpath> FMTdevelopment::operate(const FMTaction& action,
 		 const FMTtransition& Transition,
 		 const FMTyields& ylds,
@@ -126,7 +147,7 @@ namespace Core{
 			 }
 		 }catch (...)
 			{
-			 _exhandler->raisefromcatch("for " + std::string(*this),"FMTdevelopment::operate", __LINE__, __FILE__, _section);
+			 _exhandler->raisefromcatch("for " + std::string(*this),"FMTdevelopment::operate", __LINE__, __FILE__);
 			}
 		 return newpaths;
 		}
@@ -196,7 +217,7 @@ namespace Core{
 			{
 			_exhandler->raisefromcatch(
 				"for " + std::string(*this),
-				"FMTdevelopment::is",__LINE__, __FILE__, _section);
+				"FMTdevelopment::is",__LINE__, __FILE__);
 			}
 		return allow;
 		}

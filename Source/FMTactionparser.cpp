@@ -12,11 +12,13 @@ namespace Parser{
 FMTactionparser::FMTactionparser() : FMTparser(),
     rxsection("^(\\*ACTION)([\\s\\t]*)([^\\s^\\t]*)([\\s\\t]*)([NY])([\\s\\t]*)(_LOCKEXEMPT)|(\\*ACTION)([\\s\\t]*)([^\\s^\\t]*)([\\s\\t]*)([NY])|(\\*OPERABLE)([\\s\\t]*)([^\\s^\\t]*)|(\\*AGGREGATE)([\\s\\t])(.+)|(\\*PARTIAL)([\\s\\t])(.+)",std::regex_constants::ECMAScript| std::regex_constants::icase),
     rxoperator("((\\w+)[\\s\\t]*([<=>]*)[\\s\\t]*(\\d+))|(and)|(or)|([^\\s^\\t]*)", std::regex_constants::ECMAScript| std::regex_constants::icase)
-    {}
+    {
+	setsection(Core::FMTsection::Action);
+	}
 
 FMTactionparser::FMTactionparser(const FMTactionparser& rhs):FMTparser(rhs),rxsection(rhs.rxsection),rxoperator(rhs.rxoperator)
     {
-
+	setsection(Core::FMTsection::Action);
     }
 FMTactionparser& FMTactionparser::operator = (const FMTactionparser& rhs)
     {
@@ -25,6 +27,7 @@ FMTactionparser& FMTactionparser::operator = (const FMTactionparser& rhs)
         FMTparser::operator=(rhs);
         rxsection = rhs.rxsection;
         rxoperator = rhs.rxoperator;
+		setsection(Core::FMTsection::Action);
         }
     return *this;
     }

@@ -275,6 +275,7 @@ namespace Models
 					anyallocation = true;
 					}
 				}
+			std::sort(area.begin(), area.end());
 			if (!anyallocation)
 				{
 				const int period = getperiod();

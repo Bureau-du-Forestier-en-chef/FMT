@@ -11,18 +11,19 @@ namespace Parser{
 
 FMTlifespanparser::FMTlifespanparser():FMTparser()
     {
-
+	setsection(Core::FMTsection::Lifespan);
     }
 
 FMTlifespanparser::FMTlifespanparser(const FMTlifespanparser& rhs):FMTparser(rhs)
     {
-
+	setsection(Core::FMTsection::Lifespan);
     }
 FMTlifespanparser& FMTlifespanparser::operator = (const FMTlifespanparser& rhs)
     {
     if (this!=&rhs)
         {
         FMTparser::operator=(rhs);
+		setsection(Core::FMTsection::Lifespan);
         }
     return *this;
     }

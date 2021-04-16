@@ -145,6 +145,7 @@ FMTexception FMTexceptionhandler::raise(FMTexc lexception, std::string text,
 {
 	std::lock_guard<std::recursive_mutex> guard(mtx);
 	FMTexception excp;
+	
 	if (lsection == Core::FMTsection::Empty)
 	{
 		excp = FMTexception(lexception, updatestatus(lexception, text), method, file, line);

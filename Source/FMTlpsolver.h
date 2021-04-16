@@ -92,9 +92,9 @@ class FMTlpsolver: public Core::FMTobject
 	*/
 	std::shared_ptr<OsiSolverInterface> copysolverinterface(const std::shared_ptr<OsiSolverInterface>& solver_ptr, const FMTsolverinterface& lsolvertype) const;
 	// DocString: FMTlpsolver::clearrowcache
-	/**
-	Clears the row caching of the osisolverinterface if Mosek is used.
-	*/
+		/**
+		Clears the row caching of the osisolverinterface if Mosek is used.
+		*/
 	void clearrowcache();
 	// DocString: FMTlpsolver::getMatrixByRow
 	/**
@@ -106,13 +106,18 @@ class FMTlpsolver: public Core::FMTobject
 	Returns a Coinpackedmatrix by column of the problem. A synchronization will be done when calling this function.
 	*/
 	const CoinPackedMatrix* getMatrixByCol() const;
-	// DocString: FMTlpsolver::stockresolve
-	/**
-	Returns true if the solving result in a optimal solution. It calls the plain old osisolverinterface->resolve().
-	A synchronization will be done when calling this function.
-	*/
-	bool stockresolve();
 	public:
+		// DocString: FMTlpsolver::unmarkHotStart
+		/**
+		Clear all cached data in osisolverinterface.
+		*/
+		void unmarkHotStart();
+		// DocString: FMTlpsolver::stockresolve
+		/**
+		Returns true if the solving result in a optimal solution. It calls the plain old osisolverinterface->resolve().
+		A synchronization will be done when calling this function.
+		*/
+		bool stockresolve();
 		// DocString: FMTlpsolver()
 		/**
 		Default constructor for FMTlpsolver.

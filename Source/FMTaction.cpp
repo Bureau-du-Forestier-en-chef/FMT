@@ -117,7 +117,7 @@ FMTaction::FMTaction():FMTlist<FMTspec>(),
 		}catch (...)
 			{
 			_exhandler->raisefromcatch("for action "+this->getname(),
-				"FMTaction::setbounds", __LINE__, __FILE__, _section);
+				"FMTaction::setbounds", __LINE__, __FILE__,Core::FMTsection::Action);
 			}
 		}
 
@@ -129,7 +129,7 @@ FMTaction::FMTaction():FMTlist<FMTspec>(),
 		}catch (...)
 			{
 			_exhandler->raisefromcatch("for action " + this->getname(),
-				"FMTaction::update", __LINE__, __FILE__, _section);
+				"FMTaction::update", __LINE__, __FILE__, Core::FMTsection::Action);
 			}
 		}
 
@@ -271,7 +271,7 @@ FMTaction FMTaction::presolve(const FMTmask& basemask,
 	}catch (...)
 		{
 		_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,"for action "+this->getname(),
-			"FMTaction::presolve", __LINE__, __FILE__, _section);
+			"FMTaction::presolve", __LINE__, __FILE__, Core::FMTsection::Action);
 		}
 	return newaction;
 	}
