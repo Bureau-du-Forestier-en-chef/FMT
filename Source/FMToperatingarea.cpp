@@ -84,6 +84,19 @@ bool FMToperatingareacomparator::operator()(const FMToperatingarea& oparea) cons
 	{
 	return (oparea.getmask() == mask);
 	}
+FMToperatingarea FMToperatingarea::presolve(const Core::FMTmask& selectedmask, const std::vector<Core::FMTtheme>&presolvedthemes) const
+{
+	FMToperatingarea presolvedoparea(*this);
+	presolvedoparea.mask = presolvedoparea.mask.presolve(selectedmask, presolvedthemes);
+	return presolvedoparea;
+}
+
+FMToperatingarea FMToperatingarea::postsolve(const Core::FMTmask& selectedmask, const std::vector<Core::FMTtheme>&presolvedthemes) const
+{
+	FMToperatingarea postsolvedoparea(*this);
+	postsolvedoparea.mask = postsolvedoparea.mask.postsolve(selectedmask, presolvedthemes);
+	return postsolvedoparea;
+}
 
 
 }
