@@ -50,6 +50,10 @@ void exportHeuristics()
 			"@DocString(FMToperatingarea::setneighbors)")
 		.def("getmask", &Heuristics::FMToperatingarea::getmask,
 			"@DocString(FMToperatingarea::getmask)")
+		.def("presolve", &Heuristics::FMToperatingarea::presolve,
+			"@DocString(FMToperatingarea::presolve)")
+		.def("postsolve", &Heuristics::FMToperatingarea::postsolve,
+			"@DocString(FMToperatingarea::postsolve)")
 		.def("getneihgborsperimeter", &Heuristics::FMToperatingarea::getneihgborsperimeter,
 			"@DocString(FMToperatingarea::getneihgborsperimeter)");
 

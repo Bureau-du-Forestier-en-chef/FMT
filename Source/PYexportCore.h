@@ -106,7 +106,11 @@ void exportCore()
 					"@DocString(FMTmask::operator<)")
                 .def("__hash__",&boost::pyhash<Core::FMTmask>)
 				.def("issubsetof",issubsetof,
-					"@DocString(FMTmask::issubsetof)");
+					"@DocString(FMTmask::issubsetof)")
+				.def("presolve",&Core::FMTmask::presolve,
+					"@DocString(FMTmask::presolve)")
+				.def("postsolve",&Core::FMTmask::postsolve,
+					"@DocString(FMTmask::postsolve)");
 
 		bp::class_<Core::FMTdevelopment>("FMTdevelopment", "@DocString(FMTdevelopment)")
 				.def_pickle(FMT_pickle_suite<Core::FMTdevelopment>())
