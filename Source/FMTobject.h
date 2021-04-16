@@ -60,7 +60,7 @@ class FMTobject
 		{
 			//ar & BOOST_SERIALIZATION_NVP(_exhandler);
 			//ar & BOOST_SERIALIZATION_NVP(_logger);
-			ar & BOOST_SERIALIZATION_NVP(_section);
+			//ar & BOOST_SERIALIZATION_NVP(_section);
 		}
 		// DocString: FMTobject:: forceload
 		/**
@@ -73,7 +73,7 @@ class FMTobject
 			//ar & BOOST_SERIALIZATION_NVP(_logger);
 			setdefaultlogger();
 			setdefaultexceptionhandler();
-			ar & BOOST_SERIALIZATION_NVP(_section);
+			//ar & BOOST_SERIALIZATION_NVP(_section);
 		}
 
 		// DocString: FMTobject::_exhandler
@@ -82,9 +82,6 @@ class FMTobject
 		// DocString: FMTobject::_logger
 		///A shared pointer to the logger.
 		std::shared_ptr<Logging::FMTlogger> _logger;
-		// DocString: FMTobject::FMTsection
-		///The section in which the child class is in
-		mutable FMTsection _section;
 		// DocString: FMTobject::checksignals
 		/**
 		This function only check if the user has sent a ctrl-c signal using boost::python to FMT.
@@ -153,17 +150,17 @@ class FMTobject
 		It's sometime usefull to pass in the exception handler of an other FMTobject.
 		*/
 		virtual void passinexceptionhandler(const std::shared_ptr<Exception::FMTexceptionhandler>& exhandler);
+		// DocString: FMTobject::sharewith
+		/**
+		Returns true if the object share the same exception handler and logger with the other object.
+		*/
+		virtual bool sharewith(const FMTobject& rhs) const;
 		// DocString: FMTobject::passinobject
 		/**
 		It's sometime usefull to pass in the exception handler and the logger  of an other FMTobject to
 		a FMTobject.
 		*/
 		virtual void passinobject(const FMTobject& rhs);
-		// DocString: FMTobject::setsection
-		/**
-		It sets the section member of the FMTobject.
-		*/
-		void setsection(const FMTsection& section) const;
 		// DocString: FMTobject::redirectlogtofile
 		/**
 		redict the log to a specific file (will append to it)

@@ -948,13 +948,17 @@ class FMTgraph : public Core::FMTobject
 					{
 						if ((development.period == 0 || periodstart(vertex_descriptor)) && ((selected.empty() && (node.source.isnextperiod() || !node.source.emptylock())) ||
 							(((buildtype == FMTgraphbuild::schedulebuild) && development.anyoperable(selected, model.yields)) ||
-								anyoperables(vertex_descriptor, development.anyworthtestingoperability(selected, *model.actions.begin())))))
+								isanyoperables(vertex_descriptor, development.isanyworthtestingoperability(selected, model.actions)))))
+								//anyoperables(vertex_descriptor, development.anyworthtestingoperability(selected, *model.actions.begin())))))
 						{
+							/*isanyoperables(vertex_descriptor, development.isanyworthtestingoperability(selected,model.actions)))))*/
 							return true;
 						}
 					}
-					else if ((anyoperables(vertex_descriptor, development.anyworthtestingoperability(selected, *model.actions.begin())))) //out edges
+					else if (isanyoperables(vertex_descriptor, development.isanyworthtestingoperability(selected, model.actions))) //out edges
 					{
+						//(anyoperables(vertex_descriptor, development.anyworthtestingoperability(selected, *model.actions.begin())))
+						/*isanyoperables(vertex_descriptor, development.isanyworthtestingoperability(selected, model.actions))*/
 						return true;
 					}
 				}
@@ -1136,6 +1140,33 @@ class FMTgraph : public Core::FMTobject
 			}
 			return variables;
 		}
+		bool isanyoperables(const FMTvertex_descriptor& descriptor, const std::vector<bool>& actionsop) const noexcept
+		{
+			//try {
+				if (!actionsop.empty())
+				{
+					FMToutedge_pair edge_pair;
+					for (edge_pair = boost::out_edges(descriptor, data); edge_pair.first != edge_pair.second; ++edge_pair.first)
+					{
+						const FMTbaseedgeproperties& edgeprop = data[*edge_pair.first];
+						const short int* actionid = edgeprop.getactionptr();
+						if (*actionid >= 0 && actionsop.at(*actionid))
+						{
+							return true;
+						}
+					}
+				}
+				
+			/*}
+			catch (...)
+			{
+				_exhandler->raisefromcatch("", "FMTgraph::isanyoperables", __LINE__, __FILE__);
+			}*/
+			return false;
+		}
+
+
+
         bool anyoperables(const FMTvertex_descriptor& descriptor, const std::vector<int>& action_ids) const
 		{
 			try {
@@ -1187,10 +1218,10 @@ class FMTgraph : public Core::FMTobject
 					for (edge_pair = boost::out_edges(out_vertex, data); edge_pair.first != edge_pair.second; ++edge_pair.first)
 					{
 						const FMTedgeproperties& edgeprop = data[*edge_pair.first];
-						const int* actionid = edgeprop.getactionptr();
+						const short int* actionid = edgeprop.getactionptr();
 						if ((*actionid) >= 0)
 						{
-							actions.emplace_back(*actionid);
+							actions.emplace_back(static_cast<int>(*actionid));
 						}
 					}
 					std::sort(actions.begin(), actions.end());
@@ -1858,17 +1889,12 @@ class FMTgraph : public Core::FMTobject
 		}
 		Core::FMTschedule getschedule(const std::vector<Core::FMTaction>& actions, const double* actual_solution, const int& lperiod,bool withlock = false) const
 		{
-			Core::FMTschedule newschedule;
+			Core::FMTschedule newschedule(lperiod,*this, withlock);
 			try {
-				newschedule.passinobject(*this);
-				if (withlock)
-					{
-					newschedule.setuselock(true);
-					}
 				if (static_cast<int>(size()) > lperiod && lperiod > 0)
 				{
-					newschedule.setperiod(lperiod);
-					std::map<Core::FMTaction, std::map<Core::FMTdevelopment, std::map<int, double>>>schedule_solution;
+					//newschedule.setperiod(lperiod);
+					//std::map<Core::FMTaction, std::map<Core::FMTdevelopment, std::map<int, double>>>schedule_solution;
 					//const double* actual_solution = this->getColSolution();
 					for (const auto deviterator : getperiodverticies(lperiod))
 					{

@@ -28,7 +28,7 @@ namespace Graph
 			ar & BOOST_SERIALIZATION_NVP(proportion);
 			}
 		int variableID;
-		double proportion;
+		float proportion;
 		public:
 			~FMTedgeproperties()=default;
 			FMTedgeproperties()=default;
@@ -41,7 +41,7 @@ namespace Graph
 			void setvariableID(const int& newvariableID);
 			inline  double getproportion() const override
 				{
-				return proportion;
+				return static_cast<double>(proportion);
 				}
 			FMTedgeproperties(const int& laction,
 							const int& lvariableID,

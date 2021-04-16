@@ -191,6 +191,12 @@ class FMTdevelopment : public FMTobject
 		the firestaction.
 		*/
 		std::vector<int> anyworthtestingoperability(const std::vector<const FMTaction*>& actions, const FMTaction& firstaction) const;
+		// DocString: FMTdevelopment::isanyworthtestingoperability
+		/**
+		Return a vector if true worth testting if false dont test for operability.
+		*/
+		std::vector<bool> isanyworthtestingoperability(const std::vector<const FMTaction*>& actions,
+			const std::vector<FMTaction>& allactions) const noexcept;
 		// DocString: FMTdevelopment::hash
 		/**
 		Hash function for FMTdevelopment combining mask,age,lock and period of the FMTdevelopement.

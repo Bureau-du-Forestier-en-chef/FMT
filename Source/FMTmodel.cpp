@@ -313,10 +313,14 @@ void FMTmodel::setarea(const std::vector<Core::FMTactualdevelopment>& ldevs)
     {
 	try {
 		area = ldevs;
-		for (Core::FMTactualdevelopment& development : area)
-		{
-			development.passinobject(*this);
-		}
+		std::sort(area.begin(), area.end());
+		if (!area.begin()->sharewith(*this))
+			{
+			for (Core::FMTactualdevelopment& development : area)
+				{
+				development.passinobject(*this);
+				}
+			}
 	}catch (...)
 	{
 		_exhandler->printexceptions("", "FMTmodel::setarea", __LINE__, __FILE__);
@@ -649,7 +653,7 @@ void FMTmodel::validatelistspec(const Core::FMTspec& specifier) const
 bool FMTmodel::isvalid()
     {
 	try {
-		this->setsection(Core::FMTsection::Landscape);
+		//this->setsection(Core::FMTsection::Landscape);
 		for (const Core::FMTtheme& theme : themes)
 		{
 			if (theme.empty())
@@ -659,19 +663,19 @@ bool FMTmodel::isvalid()
 					"FMTmodel::isvalid", __LINE__, __FILE__, Core::FMTsection::Landscape);
 			}
 		}
-		this->setsection(Core::FMTsection::Area);
+		//this->setsection(Core::FMTsection::Area);
 		for (const Core::FMTactualdevelopment& developement : area)
 		{
 			std::string name = std::string(developement.mask);
 			this->validate(themes, name);
 		}
-		this->setsection(Core::FMTsection::Yield);
+		//this->setsection(Core::FMTsection::Yield);
 		this->validatelistmasks(yields);
 
-		this->setsection(Core::FMTsection::Lifespan);
+		//this->setsection(Core::FMTsection::Lifespan);
 		this->validatelistmasks(lifespan);
 
-		this->setsection(Core::FMTsection::Action);
+		//this->setsection(Core::FMTsection::Action);
 		for (const Core::FMTaction& action : actions)
 		{
 			this->validatelistmasks(action);
@@ -680,7 +684,7 @@ bool FMTmodel::isvalid()
 				validatelistspec(specobject.second);
 			}
 		}
-		this->setsection(Core::FMTsection::Transition);
+		//this->setsection(Core::FMTsection::Transition);
 		for (const Core::FMTtransition& transition : transitions)
 		{
 			this->validatelistmasks(transition);
@@ -703,7 +707,7 @@ bool FMTmodel::isvalid()
 					"FMTmodel::isvalid", __LINE__, __FILE__);
 			}
 		}
-		this->setsection(Core::FMTsection::Outputs);
+		//this->setsection(Core::FMTsection::Outputs);
 		for (const Core::FMToutput& output : outputs)
 		{
 			//Need a validate output function
@@ -722,7 +726,7 @@ bool FMTmodel::isvalid()
 				validatelistspec(source);
 			}
 		}
-		this->setsection(Core::FMTsection::Empty);
+		//this->setsection(Core::FMTsection::Empty);
 	}catch (...)
 	{
 		_exhandler->printexceptions("", "FMTmodel::isvalid", __LINE__, __FILE__);
@@ -836,6 +840,32 @@ Core::FMTmask FMTmodel::getselectedmask(const std::vector<Core::FMTtheme>& origi
 		}
 	return Core::FMTmask(selection);
 	}
+
+Core::FMTmask FMTmodel::getpostsolvebasemask() const
+{
+	Core::FMTmask presolvemask;
+	try {
+		presolvemask = getbasemask(area);
+	}
+	catch (...)
+	{
+		_exhandler->printexceptions("for " + name, "FMTmodel::getpostsolvebasemask", __LINE__, __FILE__);
+	}
+	return presolvemask;
+}
+
+FMTmodel FMTmodel::basepresolve(int presolvepass) const
+{
+	std::unique_ptr<FMTmodel>mdlptr;
+	try {
+		mdlptr = presolve(presolvepass, area);
+
+	}catch (...)
+		{
+		_exhandler->printexceptions("for " + name, "FMTmodel::basepresolve", __LINE__, __FILE__);
+		}
+	return *mdlptr;
+}
 
 
 std::unique_ptr<FMTmodel> FMTmodel::presolve(int presolvepass,std::vector<Core::FMTactualdevelopment> optionaldevelopments) const
@@ -961,7 +991,7 @@ std::unique_ptr<FMTmodel> FMTmodel::presolve(int presolvepass,std::vector<Core::
 	presolvedmodel->cleanactionsntransitions();
 	}catch (...)
 		{
-		_exhandler->raisefromcatch("for "+name,"FMTmodel::presolve", __LINE__, __FILE__);
+		_exhandler->printexceptions("for "+name,"FMTmodel::presolve", __LINE__, __FILE__);
 		}
 	return presolvedmodel;
 	}
@@ -1202,12 +1232,18 @@ void FMTmodel::passinobject(const Core::FMTobject& rhs)
 Core::FMTschedule FMTmodel::getpotentialschedule(std::vector<Core::FMTactualdevelopment> toremove,
 	std::vector<Core::FMTactualdevelopment> selection, bool withlock) const
 {
-	Core::FMTschedule schedule;
-	schedule.setuselock(withlock);
+	int period = 1;
+	if (!selection.empty())
+	{
+		period = selection.back().period;
+	}
+	Core::FMTschedule schedule(period,*this, withlock);
 	try {
-		for (const Core::FMTactualdevelopment& actdev : selection)
+		boost::unordered_set<Core::FMTdevelopment>settoremove(toremove.begin(), toremove.end());
+		for (Core::FMTactualdevelopment& actdev : selection)
 			{
-			if (std::find_if(toremove.begin(),toremove.end(),Core::FMTactualdevelopmentcomparator(dynamic_cast<const Core::FMTdevelopment*>(&actdev)))==toremove.end())
+			//if (std::find_if(toremove.begin(),toremove.end(),Core::FMTactualdevelopmentcomparator(dynamic_cast<const Core::FMTdevelopment*>(&actdev)))==toremove.end())
+				if (settoremove.find(actdev)== settoremove.end())
 				{
 				for (const Core::FMTaction& action : actions)
 					{
@@ -1217,10 +1253,6 @@ Core::FMTschedule FMTmodel::getpotentialschedule(std::vector<Core::FMTactualdeve
 						}
 					}
 				}
-			}
-		if (!selection.empty())
-			{
-			schedule.setperiod(selection.back().period);
 			}
 		schedule.clean();
 	}catch (...)

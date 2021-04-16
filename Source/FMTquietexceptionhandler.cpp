@@ -17,6 +17,10 @@ namespace Exception
 	{
 		std::lock_guard<std::recursive_mutex> guard(mtx);
 		FMTexception excp = FMTexception(lexception, updatestatus(lexception, text));
+		if (lsection != Core::FMTsection::Empty)
+		{
+			excp = FMTexception(lexception, lsection, updatestatus(lexception, text));
+		}
 		if (_level != FMTlev::FMT_Warning)
 		{
 			if (lsection == Core::FMTsection::Empty)

@@ -62,6 +62,11 @@ class FMTschedule : public FMTobject
 	*/
 	bool sameelements(const FMTschedule& rhs) const;
     public:
+		// DocString: FMTschedule(const int&)
+		/**
+		FMTschedule constructor for an empty schedule at given period
+		*/
+		FMTschedule(const int& lperiod, const FMTobject& obj, const bool& luselock);
 		// DocString: FMTschedule(const int&,std::vector<FMTschedule>&)
 		/**
 		FMTschedule constructor for a complete construction of FMTschedule with multiple FMTschedule

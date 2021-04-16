@@ -18,7 +18,7 @@ FMTtransitionparser::FMTtransitionparser():FMTparser(),
     rxreplace("^(.+)(_REPLACE)(....)([0-9]*)([\\s\\t]*)(\\,)([\\s\\t]*)(_TH)([0-9]*)([\\s\\t]*)([\\+\\-\\*\\/])([\\s\\t]*)([0-9]*)(.+)", std::regex_constants::ECMAScript| std::regex_constants::icase),
     rxtyld("^([\\s\\t]*)([^\\s^\\t]*)([\\s\\t]*)([^\\s^\\t]*)", std::regex_constants::ECMAScript| std::regex_constants::icase)
     {
-
+	setsection(Core::FMTsection::Transition);
     }
 
 FMTtransitionparser::FMTtransitionparser(const FMTtransitionparser& rhs) : FMTparser(rhs),
@@ -28,7 +28,7 @@ FMTtransitionparser::FMTtransitionparser(const FMTtransitionparser& rhs) : FMTpa
     rxreplace(rhs.rxreplace),
     rxtyld(rhs.rxtyld)
     {
-
+	setsection(Core::FMTsection::Transition);
     }
 FMTtransitionparser& FMTtransitionparser::operator = (const FMTtransitionparser& rhs)
     {
@@ -40,6 +40,7 @@ FMTtransitionparser& FMTtransitionparser::operator = (const FMTtransitionparser&
         rxage = rhs.rxage;
         rxtyld = rhs.rxtyld;
         rxreplace = rhs.rxreplace;
+		setsection(Core::FMTsection::Transition);
         }
     return *this;
     }

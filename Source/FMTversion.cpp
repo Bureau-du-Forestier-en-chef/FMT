@@ -100,7 +100,7 @@ std::string FMTversion::getlicense(bool french) const
         if (!boost::filesystem::is_directory(boost::filesystem::path(licenselocation)))
             {
             _exhandler->raise(Exception::FMTexc::FMTinvalid_path,
-                "Cannot find LICENSES directory at "+licenselocation,"FMTversion::getlicense",__LINE__,__FILE__, _section);
+                "Cannot find LICENSES directory at "+licenselocation,"FMTversion::getlicense",__LINE__,__FILE__);
             }
         if (french)
             {
@@ -111,7 +111,7 @@ std::string FMTversion::getlicense(bool french) const
         if (!boost::filesystem::is_regular_file(boost::filesystem::path(licenselocation)))
             {
             _exhandler->raise(Exception::FMTexc::FMTinvalid_path,
-                "Cannot find "+licenselocation,"FMTversion::getlicense",__LINE__,__FILE__, _section);
+                "Cannot find "+licenselocation,"FMTversion::getlicense",__LINE__,__FILE__);
             }
     Parser::FMTparser newparser;
     std::ifstream licensestream(licenselocation);
