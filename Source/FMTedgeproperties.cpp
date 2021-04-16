@@ -29,7 +29,7 @@ namespace Graph
 		}
 
 	FMTedgeproperties::FMTedgeproperties(const int& laction,
-		const int& lvariableID,const double& lproportion):FMTbaseedgeproperties(laction), variableID(lvariableID),proportion(lproportion)
+		const int& lvariableID,const double& lproportion):FMTbaseedgeproperties(laction), variableID(lvariableID),proportion(static_cast<float>(lproportion))
 		{
 	
 		}

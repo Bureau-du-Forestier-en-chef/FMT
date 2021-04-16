@@ -300,7 +300,7 @@ double FMToutput::shuntingyard(const std::vector<double>& sourcevalues,const std
 		return newexpression.shuntingyard(mapping);
 	}catch (...)
 		{
-		_exhandler->raisefromcatch("for " + std::string(*this),"FMToutput::shuntingyard", __LINE__, __FILE__, _section);
+		_exhandler->raisefromcatch("for " + std::string(*this),"FMToutput::shuntingyard", __LINE__, __FILE__, Core::FMTsection::Outputs);
 		}
 	return 0;
 	}
@@ -358,7 +358,7 @@ FMToutput FMToutput::boundto(const std::vector<FMTtheme>& themes, const FMTperbo
 		}
 	}catch (...)
 		{
-		_exhandler->raisefromcatch("for "+std::string(*this),"FMToutput::boundto", __LINE__, __FILE__,_section);
+		_exhandler->raisefromcatch("for "+std::string(*this),"FMToutput::boundto", __LINE__, __FILE__, Core::FMTsection::Outputs);
 		}
 	return newoutput;
 	}
@@ -447,7 +447,7 @@ std::vector<FMToutputnode> FMToutput::getnodes(/*const std::vector<FMTactualdeve
 	}catch (...)
 		{
 		_exhandler->raisefromcatch(
-			"","FMToutput::getnodes", __LINE__, __FILE__,_section);
+			"","FMToutput::getnodes", __LINE__, __FILE__, Core::FMTsection::Outputs);
 		}
 	return nodes;
 	}
@@ -582,7 +582,7 @@ FMToutput FMToutput::presolve(const FMTmask& basemask,
 		newoutput.operators = newoperators;
 	}catch (...)
 		{
-		_exhandler->raisefromcatch("for "+std::string(*this),"FMToutput::presolve", __LINE__, __FILE__, _section);
+		_exhandler->raisefromcatch("for "+std::string(*this),"FMToutput::presolve", __LINE__, __FILE__, Core::FMTsection::Outputs);
 		}
 	return newoutput;
 	}
@@ -637,7 +637,7 @@ FMToutput FMToutput::intersectwithmask(const Core::FMTmask& mask,
 	}catch (...)
 		{
 			_exhandler->raisefromcatch(
-				"", "FMToutput::intersectwithmask", __LINE__, __FILE__, _section);
+				"", "FMToutput::intersectwithmask", __LINE__, __FILE__, Core::FMTsection::Outputs);
 		}
 	return newoutput;
 	}
@@ -662,7 +662,7 @@ FMTmask FMToutput::getvariableintersect() const
 	}catch (...)
 		{
 		_exhandler->raisefromcatch(
-			"", "FMToutput::getvariableintersect", __LINE__, __FILE__, _section);
+			"", "FMToutput::getvariableintersect", __LINE__, __FILE__, Core::FMTsection::Outputs);
 		}
 	return mask;
 }
@@ -712,7 +712,7 @@ std::vector<Core::FMTtheme>FMToutput::getstaticthemes(const std::vector<Core::FM
 	}catch (...)
 		{
 			_exhandler->raisefromcatch(
-				"", "FMToutput::getstaticthemes", __LINE__, __FILE__, _section);
+				"", "FMToutput::getstaticthemes", __LINE__, __FILE__, Core::FMTsection::Outputs);
 		}
 	return statics;
 	}

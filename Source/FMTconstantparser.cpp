@@ -12,15 +12,20 @@ namespace Parser{
 
 FMTconstantparser::FMTconstantparser(): FMTparser()
     {
+	setsection(Core::FMTsection::Constants);
     }
 
-FMTconstantparser::FMTconstantparser(const FMTconstantparser& rhs):FMTparser(rhs){}
+FMTconstantparser::FMTconstantparser(const FMTconstantparser& rhs):FMTparser(rhs)
+{
+	setsection(Core::FMTsection::Constants);
+}
 
 
 FMTconstantparser& FMTconstantparser::operator = (const FMTconstantparser& rhs)
     {
         if (this!=&rhs)
         {
+			setsection(Core::FMTsection::Constants);
             FMTparser::operator=(rhs);
         }
     return *this;

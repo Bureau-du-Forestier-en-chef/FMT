@@ -27,7 +27,7 @@ void FMTlifespans::update()
 	}catch (...)
 		{
 		_exhandler->raisefromcatch(
-			"","FMTlifespans::update", __LINE__, __FILE__, _section);
+			"","FMTlifespans::update", __LINE__, __FILE__, Core::FMTsection::Lifespan);
 		}
 	}
 
@@ -42,7 +42,7 @@ FMTlifespans FMTlifespans::presolve(const FMTmask& basemask,
 		newlifespans.update();
 	}catch (...)
 		{
-		_exhandler->raisefromcatch("","FMTlifespans::presolve", __LINE__, __FILE__, _section);
+		_exhandler->raisefromcatch("","FMTlifespans::presolve", __LINE__, __FILE__, Core::FMTsection::Lifespan);
 		}
 	return newlifespans;
 	}

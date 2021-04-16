@@ -62,6 +62,8 @@ class FMTyieldhandler : public FMTobject
 		double getlastvalue(const std::string yld) const;
 		std::map<std::string,double> getsources(const std::map<std::string, const FMTyieldhandler*>& srcdata, const std::vector<const FMTyieldhandler*>& datas,
 										const int& age, const int& period ,const FMTmask& resume_mask, bool& age_only) const;
+		std::vector<double>getsourcesarray(const std::map<std::string, const FMTyieldhandler*>& srcdata, const std::vector<const FMTyieldhandler*>& datas,
+			const int& age, const int& period, const FMTmask& resume_mask, bool& age_only) const;
 		std::map<std::string,const FMTyieldhandler*> getdata(const std::vector<const FMTyieldhandler*>& datas,
                                     const std::vector<std::string>& names, const std::string& original) const;
 		bool operator == (const FMTyieldhandler& rhs) const;

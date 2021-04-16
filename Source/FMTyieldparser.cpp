@@ -16,12 +16,12 @@ FMTyieldparser::FMTyieldparser():FMTparser(),
 	rxeqs("([\\(\\)\\-\\+\\*\\/]*)([^\\(\\)\\-\\+\\*\\/]*)"),
 	rxdiscount("^(_DISCOUNTFACTOR)(\\()([\\s\\t]*[\\d]*)([^,]*)(,)([^,]*)(,)([\\s\\t]*(NONE|HALF|FULL)[\\s\\t]*)(\\))")
         {
-
+		setsection(Core::FMTsection::Yield);
         }
 
 FMTyieldparser::FMTyieldparser(const FMTyieldparser& rhs) : FMTparser(rhs),rxyieldtype(rhs.rxyieldtype),rxcomplex(rhs.rxcomplex), rxeqs(rhs.rxeqs), rxdiscount(rhs.rxdiscount)
     {
-
+	setsection(Core::FMTsection::Yield);
     }
 FMTyieldparser& FMTyieldparser::operator = (const FMTyieldparser& rhs)
     {
@@ -32,6 +32,7 @@ FMTyieldparser& FMTyieldparser::operator = (const FMTyieldparser& rhs)
         rxcomplex = rhs.rxcomplex;
 		rxeqs = rhs.rxeqs;
 		rxdiscount = rhs.rxdiscount;
+		setsection(Core::FMTsection::Yield);
         }
     return *this;
     }

@@ -138,6 +138,7 @@ FMTexception FMTexceptionhandler::raise(FMTexc lexception, std::string text,
 
 
 	FMTexception excp;
+	
 	if (lsection == Core::FMTsection::Empty)
 	{
 		excp = FMTexception(lexception, updatestatus(lexception, text), method, file, line);

@@ -55,7 +55,7 @@ namespace Heuristics
 					}
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("", "FMToperatingareascheduler::unboundall", __LINE__, __FILE__, _section);
+			_exhandler->raisefromcatch("", "FMToperatingareascheduler::unboundall", __LINE__, __FILE__);
 			}
 		}
 
@@ -118,7 +118,7 @@ namespace Heuristics
 		this->setInteger(&integervariables[0], static_cast<int>(integervariables.size()));
         }catch(...)
             {
-            _exhandler->raisefromcatch("","FMToperatingareascheduler::setallinteger", __LINE__, __FILE__, _section);
+            _exhandler->raisefromcatch("","FMToperatingareascheduler::setallinteger", __LINE__, __FILE__);
             }
 		}
 
@@ -134,7 +134,7 @@ namespace Heuristics
 			}
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("","FMToperatingareascheduler::resolvemodel", __LINE__, __FILE__, _section);
+			_exhandler->raisefromcatch("","FMToperatingareascheduler::resolvemodel", __LINE__, __FILE__);
 			}
 		return FMTlpsolver::getiterationcount();
 		}
@@ -179,7 +179,7 @@ namespace Heuristics
 					{
 						_exhandler->raise(Exception::FMTexc::FMTignore,
 							"FMToperatingareascheduler failed switching to random",
-							"FMToperatingareascheduler::initialsolve", __LINE__, __FILE__, _section);
+							"FMToperatingareascheduler::initialsolve", __LINE__, __FILE__);
 						userandomness = true; //Switch to random now
 						this->unboundall(); //release everything
 						if (!useprimal)
@@ -193,7 +193,7 @@ namespace Heuristics
 						{
 						_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
 							"unable to bound operating areas ",
-							"FMToperatingareascheduler::initialsolve", __LINE__, __FILE__, _section);
+							"FMToperatingareascheduler::initialsolve", __LINE__, __FILE__);
 						}
 				} while (!selected.empty() && this->isProvenOptimal());
 				if (this->isProvenOptimal())
@@ -302,7 +302,7 @@ namespace Heuristics
 			if (!this->stockresolve()){
 						_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
 													"Infeasible model",
-													"FMToperatingareascheduler::setoperatingareasconstraints", __LINE__, __FILE__, _section);
+													"FMToperatingareascheduler::setoperatingareasconstraints", __LINE__, __FILE__);
 
 					}
 		}catch (...)
@@ -360,7 +360,7 @@ namespace Heuristics
 		if (!this->stockresolve()){
 			_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
 										"Infeasible model",
-										"FMToperatingareascheduler::setadjacencyconstraints", __LINE__, __FILE__, _section);
+										"FMToperatingareascheduler::setadjacencyconstraints", __LINE__, __FILE__);
 
 		}
 		}catch (...)

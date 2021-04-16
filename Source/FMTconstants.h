@@ -80,7 +80,7 @@ class FMTconstants : public FMTobject
 			boost::unordered_map<std::string, std::vector<double>>::const_iterator it = data.find(key);
 			if (it== data.end())
 				{
-				_exhandler->raise(Exception::FMTexc::FMTundefined_constant,key + " at period " + std::to_string(period),"FMTconstants::get", __LINE__, __FILE__, _section);
+				_exhandler->raise(Exception::FMTexc::FMTundefined_constant,key + " at period " + std::to_string(period),"FMTconstants::get", __LINE__, __FILE__,Core::FMTsection::Constants);
 				}
 			std::vector<double> const* location = &it->second;
 			if (period >= static_cast<int>(location->size()))
@@ -90,7 +90,7 @@ class FMTconstants : public FMTobject
 			return static_cast<T>(location->at(period));
 		}catch (...)
 			{
-			_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,"for " + key+ " at period "+ std::to_string(period),"FMTconstants::get", __LINE__, __FILE__, _section);
+			_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,"for " + key+ " at period "+ std::to_string(period),"FMTconstants::get", __LINE__, __FILE__, Core::FMTsection::Constants);
 			}
 		return T();
         }
@@ -109,7 +109,7 @@ class FMTconstants : public FMTobject
 			}
 		}catch (...)
 			{
-			_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,"for "+key,"FMTconstants::getall", __LINE__, __FILE__, _section);
+			_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,"for "+key,"FMTconstants::getall", __LINE__, __FILE__, Core::FMTsection::Constants);
 			}
 		return values;
         }

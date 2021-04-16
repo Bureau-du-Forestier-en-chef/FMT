@@ -218,6 +218,18 @@ class FMTmodel : public Core::FMTobject
 		The function is going to clean the FMTconstraints and keep the objective.
 		*/
 		virtual FMTmodel getcopy(int period = 0) const;
+		// DocString: FMTmodel::basepresolve
+		/**
+		This function use the existin area and call the presolve function
+		The function can reduce the number of global themes/actions/transitions/yields/lifespans/outputs/constraints data
+		if the model is badly formulated.
+		*/
+		FMTmodel basepresolve(int presolvepass = 10) const;
+		// DocString: FMTmodel::getpostsolvebasemask
+		/**
+		Get the postsolve basemask used by the presolve (in case you want to turn presolved mask into postsolve mask).
+		*/
+		Core::FMTmask getpostsolvebasemask() const;
 		// DocString: FMTmodel::presolve
 		/**
 		This function use a vector of developments and the actual transitions of the model and return new presolved FMTmodel.

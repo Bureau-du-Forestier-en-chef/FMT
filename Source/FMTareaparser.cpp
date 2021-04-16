@@ -1112,7 +1112,7 @@ namespace Parser{
 
 			FMTareaparser::FMTareaparser(const FMTareaparser& rhs) : FMTparser(rhs), rxcleanarea(rhs.rxcleanarea)
 			{
-
+				setsection(Core::FMTsection::Area);
 			}
 			FMTareaparser& FMTareaparser::operator = (const FMTareaparser& rhs)
 			{
@@ -1120,6 +1120,7 @@ namespace Parser{
 				{
 					FMTparser::operator = (rhs);
 					rxcleanarea = rhs.rxcleanarea;
+					setsection(Core::FMTsection::Area);
 				}
 				return *this;
 			}

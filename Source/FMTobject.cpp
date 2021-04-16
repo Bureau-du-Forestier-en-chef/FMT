@@ -62,7 +62,7 @@ namespace Core
 			strDLLpath = boost_path.parent_path().string();
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("", "FMTobject::getruntimelocation", __LINE__, __FILE__,_section);
+			_exhandler->raisefromcatch("", "FMTobject::getruntimelocation", __LINE__, __FILE__);
 			}
 		return strDLLpath;
 	}
@@ -107,7 +107,7 @@ namespace Core
 
 
 	FMTobject::FMTobject() : _exhandler(std::make_shared<Exception::FMTdefaultexceptionhandler>()),
-		_logger(std::make_shared<Logging::FMTdefaultlogger>()), _section(FMTsection::Empty)
+		_logger(std::make_shared<Logging::FMTdefaultlogger>())
 	{
 		_exhandler->passinlogger(_logger);
 		this->checksignals();
@@ -121,7 +121,7 @@ namespace Core
 	}
 
 	FMTobject::FMTobject(const std::shared_ptr<Exception::FMTexceptionhandler> exhandler) :
-		_exhandler(exhandler), _logger(std::make_shared<Logging::FMTdefaultlogger>()), _section(FMTsection::Empty)
+		_exhandler(exhandler), _logger(std::make_shared<Logging::FMTdefaultlogger>())
 	{
 		_exhandler->passinlogger(_logger);
 		setCPLhandler();
@@ -129,7 +129,7 @@ namespace Core
 
 	}
 	FMTobject::FMTobject(const FMTobject& rhs) :
-		_exhandler(rhs._exhandler), _logger(rhs._logger), _section(rhs._section)
+		_exhandler(rhs._exhandler), _logger(rhs._logger)
 	{
 		_exhandler->passinlogger(_logger);
 		setCPLhandler();
@@ -144,7 +144,6 @@ namespace Core
 			_logger = rhs._logger;
 			_exhandler->passinlogger(_logger);
 			setCPLhandler();
-			_section = rhs._section;
 		}
 		return *this;
 	}
@@ -174,6 +173,19 @@ namespace Core
 			}
 		}
 
+	bool FMTobject::sharewith(const FMTobject& rhs) const
+	{
+		
+		try {
+			return (_exhandler == rhs._exhandler && _logger == rhs._logger);
+		}
+		catch (...)
+		{
+			_exhandler->raisefromcatch("", "FMTobject::sharewith", __LINE__, __FILE__);
+		}
+		return false;
+	}
+
 	void FMTobject::passinobject(const FMTobject& rhs)
 		{
 		try {
@@ -184,12 +196,6 @@ namespace Core
 			{
 			_exhandler->raisefromcatch("", "FMTobject::passinobject", __LINE__, __FILE__);
 			}
-		}
-
-	void FMTobject::setsection(const FMTsection& section) const
-		{
-		_section = section;
-		this->checksignals();
 		}
 
 	void FMTobject::redirectlogtofile(const std::string& location)
@@ -318,7 +324,7 @@ namespace Core
 				{
 					const std::string message = values[id] + " at theme " + std::to_string(theme.getid() + 1) + otherinformation;
 					_exhandler->raise(Exception::FMTexc::FMTundefined_attribute,message,
-						"FMTobject::checkmask",__LINE__, __FILE__, _section);
+						"FMTobject::checkmask",__LINE__, __FILE__);
 					returnvalue = false;
 				}
 				std::string value = "?";

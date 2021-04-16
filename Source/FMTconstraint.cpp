@@ -153,7 +153,7 @@ namespace Core
 			return (sources.size() == 2 && sources.at(0).isaction() && !sources.at(0).isinventory() && sources.at(0).isvariable());
 		}catch (...)
 			{
-			_exhandler->printexceptions("", "FMTconstraint::dosupportrandom", __LINE__, __FILE__);
+			_exhandler->printexceptions("", "FMTconstraint::dosupportrandom", __LINE__, __FILE__,Core::FMTsection::Optimize);
 			}
 		return false;
 		}
@@ -189,7 +189,7 @@ namespace Core
 		}
 		catch (...)
 		{
-			_exhandler->printexceptions("", "FMTconstraint::settoglobal", __LINE__, __FILE__);
+			_exhandler->printexceptions("", "FMTconstraint::settoglobal", __LINE__, __FILE__, Core::FMTsection::Optimize);
 		}
 		return newconstraint;
 	}
@@ -287,7 +287,7 @@ namespace Core
 		}
 		catch (...)
 		{
-			_exhandler->printexceptions("", "FMTconstraint::getbounds", __LINE__, __FILE__);
+			_exhandler->printexceptions("", "FMTconstraint::getbounds", __LINE__, __FILE__, Core::FMTsection::Optimize);
 		}
 		}
 
@@ -586,7 +586,7 @@ namespace Core
 			}
 			catch (...)
 			{
-				_exhandler->printexceptions("", "FMTconstraint::operator std::string()", __LINE__, __FILE__);
+				_exhandler->printexceptions("", "FMTconstraint::operator std::string()", __LINE__, __FILE__, Core::FMTsection::Optimize);
 			}
 		return line;
 		}
@@ -625,7 +625,7 @@ namespace Core
 		}
 		catch (...)
 		{
-			_exhandler->printexceptions("", "FMTconstraint::standardstring", __LINE__, __FILE__);
+			_exhandler->printexceptions("", "FMTconstraint::standardstring", __LINE__, __FILE__, Core::FMTsection::Optimize);
 		}
 		}
 
@@ -668,7 +668,7 @@ namespace Core
 				newconstraint.setoutput(FMToutput::presolve(basemask, originalthemes, presolvedmask, newthemes, actions, yields));
 			}catch (...)
 				{
-				_exhandler->raisefromcatch("for " + std::string(*this),"FMTconstraint::presolve", __LINE__, __FILE__, _section);
+				_exhandler->raisefromcatch("for " + std::string(*this),"FMTconstraint::presolve", __LINE__, __FILE__, Core::FMTsection::Optimize);
 				}
 			return newconstraint;
 			}
@@ -753,7 +753,7 @@ namespace Core
 			}
 			catch (...)
 			{
-				_exhandler->printexceptions("", "FMTconstraint::getperiodicvariationcost", __LINE__, __FILE__);
+				_exhandler->printexceptions("", "FMTconstraint::getperiodicvariationcost", __LINE__, __FILE__, Core::FMTsection::Optimize);
 			}
 			return costsum;
 			}
@@ -868,7 +868,7 @@ namespace Core
 				}
 				catch (...)
 				{
-					_exhandler->raisefromcatch("", "FMTconstraint::isactionsused", __LINE__, __FILE__);
+					_exhandler->raisefromcatch("", "FMTconstraint::isactionsused", __LINE__, __FILE__, Core::FMTsection::Optimize);
 				}
 				return ids;
 		}
@@ -888,7 +888,7 @@ namespace Core
 					}
 			}catch(...)
 				{
-				_exhandler->raisefromcatch("", "FMTconstraint::getactionids", __LINE__, __FILE__);
+				_exhandler->raisefromcatch("", "FMTconstraint::getactionids", __LINE__, __FILE__, Core::FMTsection::Optimize);
 				}
 			return ids;
 			}

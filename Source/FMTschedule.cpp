@@ -9,6 +9,8 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 namespace Core{
 
+FMTschedule::FMTschedule(const int& lperiod,const FMTobject& obj, const bool& luselock) :FMTobject(obj), period(lperiod), uselock(luselock), elements() {}
+
 FMTschedule::FMTschedule():FMTobject(),period(), uselock(false),elements(){}
 
 FMTschedule::FMTschedule(const int& lperiod, std::vector<FMTschedule>& schedules) : FMTobject(),period(lperiod), uselock(false),elements()
@@ -104,7 +106,7 @@ bool FMTschedule::sameelements(const FMTschedule& rhs) const
 		}
 	}catch (...)
 		{
-		_exhandler->raisefromcatch("", "FMTschedule::sameelements", __LINE__, __FILE__);
+		_exhandler->raisefromcatch("", "FMTschedule::sameelements", __LINE__, __FILE__, Core::FMTsection::Schedule);
 		}
 	return true;
 	}
@@ -156,7 +158,7 @@ FMTschedule& FMTschedule::operator += (const FMTschedule& rhs)
 	}
 	catch (...)
 	{
-		_exhandler->raisefromcatch("", "FMTschedule::operator+=", __LINE__, __FILE__);
+		_exhandler->raisefromcatch("", "FMTschedule::operator+=", __LINE__, __FILE__, Core::FMTsection::Schedule);
 	}
     return *this;
     }
@@ -168,7 +170,7 @@ FMTschedule FMTschedule::operator + (const FMTschedule& rhs) const
 		newschedule += rhs;
 	}catch (...)
 		{
-		_exhandler->raisefromcatch("", "FMTschedule::operator+", __LINE__, __FILE__);
+		_exhandler->raisefromcatch("", "FMTschedule::operator+", __LINE__, __FILE__, Core::FMTsection::Schedule);
 		}
     return newschedule;
     }
@@ -197,7 +199,7 @@ FMTschedule::operator std::string() const
 	}
 	catch (...)
 	{
-		_exhandler->raisefromcatch("", "FMTschedule::operatorstd::string()", __LINE__, __FILE__);
+		_exhandler->raisefromcatch("", "FMTschedule::operatorstd::string()", __LINE__, __FILE__, Core::FMTsection::Schedule);
 	}
 		return line;
 	}
@@ -233,7 +235,7 @@ FMTschedule::operator std::string() const
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTschedule::clean", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("", "FMTschedule::clean", __LINE__, __FILE__, Core::FMTsection::Schedule);
 		}
 	}
 
@@ -268,7 +270,7 @@ FMTschedule::operator std::string() const
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTschedule::addevent", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("", "FMTschedule::addevent", __LINE__, __FILE__, Core::FMTsection::Schedule);
 		}
 
 	}
@@ -291,7 +293,7 @@ FMTschedule::operator std::string() const
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTschedule::actionarea", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("", "FMTschedule::actionarea", __LINE__, __FILE__, Core::FMTsection::Schedule);
 		}
 		return value;
 	}
@@ -314,7 +316,7 @@ FMTschedule::operator std::string() const
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTschedule::area", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("", "FMTschedule::area", __LINE__, __FILE__, Core::FMTsection::Schedule);
 		}
 		return value;
 	}
@@ -341,7 +343,7 @@ FMTschedule::operator std::string() const
 				}
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("", "FMTschedule::getoperabilities", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("", "FMTschedule::getoperabilities", __LINE__, __FILE__, Core::FMTsection::Schedule);
 			}
 		return table;
 	}
@@ -370,7 +372,7 @@ FMTschedule::operator std::string() const
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTschedule::operated", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("", "FMTschedule::operated", __LINE__, __FILE__, Core::FMTsection::Schedule);
 		}
 		return value;
 	}
@@ -393,7 +395,7 @@ FMTschedule::operator std::string() const
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTschedule::sort", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("", "FMTschedule::sort", __LINE__, __FILE__, Core::FMTsection::Schedule);
 		}
 	}
 
@@ -426,7 +428,7 @@ FMTschedule::operator std::string() const
 			}
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("","FMTschedule::presolve", __LINE__, __FILE__, _section);
+			_exhandler->raisefromcatch("","FMTschedule::presolve", __LINE__, __FILE__,Core::FMTsection::Schedule);
 			}
 	return newschedule;
 	}
@@ -458,7 +460,7 @@ FMTschedule::operator std::string() const
 			}
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("","FMTschedule::postsolve", __LINE__, __FILE__, _section);
+			_exhandler->raisefromcatch("","FMTschedule::postsolve", __LINE__, __FILE__, Core::FMTsection::Schedule);
 			}
 		return newschedule;
 	}
@@ -483,7 +485,7 @@ FMTschedule::operator std::string() const
 			}
 			catch (...)
 			{
-				_exhandler->raisefromcatch("", "FMTschedule::setperiod", __LINE__, __FILE__);
+				_exhandler->raisefromcatch("", "FMTschedule::setperiod", __LINE__, __FILE__,Core::FMTsection::Schedule);
 			}
 		}
 
@@ -507,7 +509,7 @@ FMTschedule::operator std::string() const
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTschedule::getnewschedule", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("", "FMTschedule::getnewschedule", __LINE__, __FILE__, Core::FMTsection::Schedule);
 		}
 		return newscedule;
 		}
@@ -525,7 +527,7 @@ FMTschedule::operator std::string() const
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTschedule::isfuturconstraints", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("", "FMTschedule::isfuturconstraints", __LINE__, __FILE__, Core::FMTsection::Schedule);
 		}
 		return false;
 		}

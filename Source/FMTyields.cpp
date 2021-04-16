@@ -137,7 +137,7 @@ void FMTyields::update()
 		updateyieldpresence();
 	}catch (...)
 		{
-		_exhandler->raisefromcatch("","FMTyields::update", __LINE__, __FILE__, _section);
+		_exhandler->raisefromcatch("","FMTyields::update", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
     }
 
@@ -151,7 +151,7 @@ void FMTyields::passinobject(const FMTobject& rhs)
 			}
 	}catch (...)
 		{
-		_exhandler->raisefromcatch("", "FMTyields::passinobject", __LINE__, __FILE__, _section);
+		_exhandler->raisefromcatch("", "FMTyields::passinobject", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 
 	}
@@ -174,7 +174,7 @@ FMTyields FMTyields::presolve(const FMTmask& basemask,
 		newyields.update();
 	}catch (...)
 		{
-		_exhandler->raisefromcatch("","FMTyields::presolve", __LINE__, __FILE__, _section);
+		_exhandler->raisefromcatch("","FMTyields::presolve", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 	return newyields;
 	}
@@ -191,7 +191,7 @@ FMTyields FMTyields::getfromfactor(const double& factor,
 	}catch (...)
 		{
 		_exhandler->raisefromcatch("for factor "+std::to_string(factor),
-			"FMTyields::getfromfactor", __LINE__, __FILE__, _section);
+			"FMTyields::getfromfactor", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 	return newyields;
 	}
@@ -220,14 +220,14 @@ std::vector<double>FMTyields::get(const FMTdevelopment& dev,
 			{
 				_exhandler->raise(Exception::FMTexc::FMTmissingyield,
 					name + " for development type " + std::string(dev),
-					"FMTyields::get", __LINE__, __FILE__);
+					"FMTyields::get", __LINE__, __FILE__, Core::FMTsection::Yield);
 			}
 		}
 			
 	}
 	catch (...)
 	{
-		_exhandler->raisefromcatch("for development type " + std::string(dev), "FMTyields::get", __LINE__, __FILE__, _section);
+		_exhandler->raisefromcatch("for development type " + std::string(dev), "FMTyields::get", __LINE__, __FILE__);
 	}
 	return values;
 }
@@ -240,7 +240,7 @@ std::vector<double>FMTyields::getylds(const FMTdevelopment& dev, const FMTspec& 
 	}
 	catch (...)
 	{
-		_exhandler->raisefromcatch("for development " + std::string(dev), "FMTyields::getylds", __LINE__, __FILE__, _section);
+		_exhandler->raisefromcatch("for development " + std::string(dev), "FMTyields::getylds", __LINE__, __FILE__);
 	}
 	return std::vector<double>();
 }
@@ -340,7 +340,7 @@ std::map<std::string, std::map<std::string, std::vector<double>>>FMTyields::geta
 		}
 		}catch (...)
 		{
-			_exhandler->raisefromcatch("","FMTyields::getallyields", __LINE__, __FILE__, _section);
+			_exhandler->raisefromcatch("","FMTyields::getallyields", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 	return result;
 	}
@@ -376,7 +376,7 @@ int FMTyields::getage(const FMTdevelopment& dev,const FMTspec& spec) const
 		}
 	}catch (...)
 		{
-		_exhandler->raisefromcatch("for developement "+std::string(dev),"FMTyields::getage", __LINE__, __FILE__, _section);
+		_exhandler->raisefromcatch("for developement "+std::string(dev),"FMTyields::getage", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 	return age;
 	}
