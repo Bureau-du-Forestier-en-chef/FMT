@@ -81,7 +81,7 @@ namespace Models
 						_exhandler->raise(Exception::FMTexc::FMTignore,
 							"Negative stats value rounded to " + std::to_string(minimalstatisticvalue) +
 							" for " + std::string(centroidmask),
-							"FMTlpmodel::getclusterer", __LINE__, __FILE__, _section);
+							"FMTlpmodel::getclusterer", __LINE__, __FILE__);
 					}
 					
 				}
@@ -116,7 +116,7 @@ namespace Models
 							_exhandler->raise(Exception::FMTexc::FMTignore,
 								"Negative stats value rounded to " + std::to_string(minimalstatisticvalue) +
 								" for " + std::string(binarymask),
-								"FMTlpmodel::getclusterer", __LINE__, __FILE__, _section);
+								"FMTlpmodel::getclusterer", __LINE__, __FILE__);
 						}
 					}
 					statistic = std::max(minimalstatisticvalue, statistic);
@@ -134,7 +134,7 @@ namespace Models
                     {
                     _exhandler->raise(Exception::FMTexc::FMTignore,
 									"Operating area cluster "+std::string(centroid.getmask())+" wont reach its minimal size",
-									"FMTlpmodel::getclusterer",__LINE__, __FILE__, _section);
+									"FMTlpmodel::getclusterer",__LINE__, __FILE__);
                     }
 				newclusters.push_back(newopcluster);
 				
@@ -176,6 +176,7 @@ namespace Models
 				}
 				solver.setColSetBounds(&variable_index[0], &variable_index.back() + 1, &bounds[0]);
 				return this->resolve();
+				//return solver.stockresolve();
 			}
 		}catch (...)
 		{
@@ -584,7 +585,7 @@ namespace Models
 
 	std::vector<Core::FMTconstraint> FMTlpmodel::getlocalconstraints(const std::vector<Core::FMTconstraint>& localconstraints, const int& period) const
 	{
-		std::vector<Core::FMTconstraint>newconstraints;
+		std::vector<Core::FMTconstraint>newconstraints(localconstraints.begin(), localconstraints.end());
 		try
 		{
 			if (!solver.isProvenOptimal())
@@ -593,18 +594,16 @@ namespace Models
 					"Cannot getlocalconstraints from a non optimal global",
 					"FMTlpmodel::getlocalconstraints", __LINE__, __FILE__);
 				}
+			size_t constraintid = 0;
 			for (const Core::FMTconstraint& constraint : localconstraints)
 				{
 				if (constraint.issettoglobal())
 					{
 					const double value = getoutput(constraint,period, Graph::FMToutputlevel::totalonly).at("Total");
-					//*_logger << "got value of " << value << "\n";
-					newconstraints.push_back(constraint.settoglobal(value));
-				}else {
-					newconstraints.push_back(constraint);
+					newconstraints[constraintid]=constraint.settoglobal(value);
 					}
+				++constraintid;
 				}
-			//solver.writeLP("C:/Users/cyrgu3/Desktop/test");
 		}catch (...)
 		{
 			_exhandler->printexceptions("", "FMTlpmodel::getlocalconstraints", __LINE__, __FILE__);
@@ -619,7 +618,7 @@ namespace Models
 		{
 			const double* actual_solution = solver.getColSolution();
 			newschedule = graph.getschedule(actions,actual_solution,period,withlock);
-			newschedule.passinobject(*this);
+			//newschedule.passinobject(*this);
 
 		}catch (...)
 		{
@@ -949,6 +948,12 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 					}
 					for (int period = first_period; period <= last_period; ++period)
 					{
+						if (containsmatrixelements(constraint,period)&&
+							(!constraint.acrossperiod()|| (constraint.acrossperiod()&&containsmatrixelements(constraint, period+1))))
+							{
+							//If you get here your are probably making replanning if not you are not suppose to fall here!
+							continue;
+							}
 						std::map<int, double>all_variables;
 						int goal_variable = -1;
 						if (constraint.isgoal())
@@ -1102,6 +1107,8 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 			constraintname.pop_back();
 				_exhandler->printexceptions("for " + constraintname, "FMTlpmodel::setconstraint", __LINE__, __FILE__);
 			}
+		//elements.clear();
+		//solver.unmarkHotStart();
 		return graph.getstats();
 		}
 
@@ -1621,7 +1628,7 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 
 	bool FMTlpmodel::ismatrixelement(const Core::FMTconstraint& constraint,
 		const FMTmatrixelement& element_type, int period) const
-	{
+		{
 		if (period == -1)
 			{
 			period = graph.getfirstactiveperiod()+1;
@@ -1629,7 +1636,13 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 		return((period < static_cast<int>(elements.size()) &&
 			(elements.at(period).find(std::string(constraint)) != elements.at(period).end()) &&
 			!elements.at(period).at(std::string(constraint)).at(element_type).empty()));
-	}
+		}
+
+	bool FMTlpmodel::containsmatrixelements(const Core::FMTconstraint& constraint, int period) const
+		{
+		return(period < static_cast<int>(elements.size()) &&
+			(elements.at(period).find(std::string(constraint)) != elements.at(period).end()));
+		}
 
 	bool FMTlpmodel::issamematrixelement(const int& matrixindex, const FMTmatrixelement& element_type,
 		const double& lowerb, const double& upperb, const std::map<int, double>& variables) const
@@ -2048,6 +2061,7 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 					}
 				}
 			}
+			std::sort(returnedarea.begin(), returnedarea.end());
 		}catch (...)
 			{
 				_exhandler->printexceptions("", "FMTlpmodel::getarea", __LINE__, __FILE__);

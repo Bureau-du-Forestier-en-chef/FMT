@@ -101,7 +101,7 @@ unsigned int FMTtransition::age_after(const std::vector<FMTdevelopment>& devs,
 		}
 	}catch (...)
 		{
-		_exhandler->raisefromcatch("for transition "+this->getname(),"FMTtransition::age_after", __LINE__, __FILE__, _section);
+		_exhandler->raisefromcatch("for transition "+this->getname(),"FMTtransition::age_after", __LINE__, __FILE__, Core::FMTsection::Transition);
 		}
     return (total_age/age_count);
     }
@@ -223,7 +223,7 @@ const FMTfork* FMTtransition::getfork(const FMTdevelopment& dev,
 		}
 	}catch (...)
 		{
-		_exhandler->raisefromcatch("for transition "+this->getname(),"FMTtransition::presolve", __LINE__, __FILE__, _section);
+		_exhandler->raisefromcatch("for transition "+this->getname(),"FMTtransition::presolve", __LINE__, __FILE__, Core::FMTsection::Transition);
 		}	
 	return newtransition;
 	}

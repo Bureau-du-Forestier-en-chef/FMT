@@ -229,6 +229,11 @@ class FMTlpmodel : public FMTmodel
 	*/
 	bool ismatrixelement(const Core::FMTconstraint& constraint,
 			const FMTmatrixelement& element_type, int period) const;
+	// DocString: FMTlpmodel::containsmatrixelements
+	/**
+	Check if the FMTconstraint have elements related to it.
+	*/
+	bool containsmatrixelements(const Core::FMTconstraint& constraint,int period) const;
 	// DocString: FMTlpmodel::issamematrixelement
 	/**
 	Check if the requested matrix element (matrixindex) is the same as the found one (LB/UB + variables).

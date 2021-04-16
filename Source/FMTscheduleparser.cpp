@@ -11,10 +11,11 @@ namespace Parser {
 
 	FMTscheduleparser::FMTscheduleparser() :FMTparser()
 	{
-
+		setsection(Core::FMTsection::Schedule);
 	}
 	FMTscheduleparser::FMTscheduleparser(const FMTscheduleparser& rhs) : FMTparser(rhs)
 	{
+		setsection(Core::FMTsection::Schedule);
 	}
 
 	int FMTscheduleparser::getvariable() const
@@ -48,6 +49,7 @@ namespace Parser {
 		if (this != &rhs)
 		{
 			FMTparser::operator=(rhs);
+			setsection(Core::FMTsection::Schedule);
 		}
 		return *this;
 	}

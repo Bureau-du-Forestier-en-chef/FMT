@@ -24,7 +24,7 @@ namespace Parser
 		rxspatial("^(_SIZE|_ADJACENCY|_RANDOM)([\\s\\t]*)(\\()(.+)(\\))([\\s\\t]*)(>=|<=|=)([\\s\\t]*)(#[^\\s^\\t]*|[\\d]*)(.+)",std::regex_constants::ECMAScript | std::regex_constants::icase),
 		ineach()
 		{
-
+		setsection(Core::FMTsection::Optimize);
 		}
 
 	FMToptimizationparser::FMToptimizationparser(const FMToptimizationparser& rhs) :
@@ -42,7 +42,7 @@ namespace Parser
 		rxspatial(rhs.rxspatial),
 		ineach(rhs.ineach)
 		{
-
+		setsection(Core::FMTsection::Optimize);
 		}
 	FMToptimizationparser& FMToptimizationparser::operator = (const FMToptimizationparser& rhs)
 		{
@@ -61,6 +61,7 @@ namespace Parser
 			rxspecialoutput = rhs.rxspecialoutput;
 			rxspatial = rhs.rxspatial;
 			ineach = rhs.ineach;
+			setsection(Core::FMTsection::Optimize);
 			}
 		return *this;
 		}

@@ -87,6 +87,9 @@ class FMTparser: public Core::FMTobject
 		///A safe get line function for Linux/Windows
 		std::istream& safeGetline(std::istream& is, std::string& t) const;
     protected:
+		// DocString: FMTparser::FMTsection
+		///The section in which the child class is in
+		mutable Core::FMTsection _section;
 		// DocString: FMTparser::rxayld
 		///A regex for capturing age/period/yield specification
 		std::regex rxayld;
@@ -156,6 +159,11 @@ class FMTparser: public Core::FMTobject
 					}
 				return poDstDS;
 				}
+			// DocString: FMTparser:setsection
+			/**
+			It sets the section member of the FMTobject.
+			*/
+			void setsection(const Core::FMTsection& section) const;
 			// DocString: FMTparser::getdataset
 			/**
 			Open in readonly a GDALdataset from a given (location), will throw if anything went wrong.
@@ -364,7 +372,7 @@ class FMTparser: public Core::FMTobject
 			}
 			catch (...)
 				{
-					_exhandler->raisefromcatch("", "FMTparser::getnum", __LINE__, __FILE__);
+					_exhandler->raisefromcatch("", "FMTparser::getnum", __LINE__, __FILE__, _section);
 				}
             return nvalue;
             }
@@ -388,7 +396,7 @@ class FMTparser: public Core::FMTobject
 				}
 			catch (...)
 			{
-				_exhandler->raisefromcatch("", "FMTparser::getnum", __LINE__, __FILE__);
+				_exhandler->raisefromcatch("", "FMTparser::getnum", __LINE__, __FILE__, _section);
 			}
 			return nvalue;
 			}
@@ -447,7 +455,7 @@ class FMTparser: public Core::FMTobject
 				}
 			}catch (...)
 				{
-					_exhandler->raisefromcatch("", "FMTparser::bounds", __LINE__, __FILE__);
+					_exhandler->raisefromcatch("", "FMTparser::bounds", __LINE__, __FILE__, _section);
 				}
             return Core::FMTbounds<T>(section,lupper,llower);
             }

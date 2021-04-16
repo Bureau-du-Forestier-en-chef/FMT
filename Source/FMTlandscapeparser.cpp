@@ -17,11 +17,14 @@ FMTlandscapeparser::FMTlandscapeparser() :
 	rxindex("^(_INDEX)(\\()([^\\)]*)(\\))", std::regex_constants::ECMAScript| std::regex_constants::icase),
     rxparameter("^([^=]*)(=)(#.+|[\\d.]*)", std::regex_constants::ECMAScript| std::regex_constants::icase)
         {
-
+		setsection(Core::FMTsection::Landscape);
         }
 
 
-        FMTlandscapeparser::FMTlandscapeparser(const FMTlandscapeparser& rhs):FMTparser(rhs),rxcleanlans(rhs.rxcleanlans),rxindex(rhs.rxindex),rxparameter(rhs.rxparameter){}
+        FMTlandscapeparser::FMTlandscapeparser(const FMTlandscapeparser& rhs):FMTparser(rhs),rxcleanlans(rhs.rxcleanlans),rxindex(rhs.rxindex),rxparameter(rhs.rxparameter)
+		{
+			setsection(Core::FMTsection::Landscape);
+		}
         FMTlandscapeparser& FMTlandscapeparser::operator = (const FMTlandscapeparser& rhs)
             {
                 if(this!=&rhs)
@@ -30,6 +33,7 @@ FMTlandscapeparser::FMTlandscapeparser() :
                 rxcleanlans = rhs.rxcleanlans;
                 rxindex = rhs.rxindex;
                 rxparameter = rhs.rxparameter;
+				setsection(Core::FMTsection::Landscape);
                 }
             return *this;
             }

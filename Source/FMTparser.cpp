@@ -67,6 +67,7 @@ FMTparser::FMTparser() : Core::FMTobject(),
         _incomment(false),
          _forvalues(),
 		_included(),
+		_section(Core::FMTsection::Empty),
 		rxayld("^(.+)(\\@YLD[\\s\\t]*\\()([\\s\\t]*)(.+)(\\,)([\\s\\t]*)((#[^\\.]*)|([-]*\\d*.[-]*\\d*))(\\.\\.)((#[^\\.]*)|([-]*\\d*.[-]*\\d*)|(_MAXAGE))(\\))(.+)|(.+)(\\@YLD[\\s\\t]*\\()([\\s\\t]*)(.+)(\\,)([\\s\\t]*)((#[^\\.]*)|([-]*\\d*)|([-]*\\d*.[-]*\\d*))(\\))(.+)", std::regex_constants::ECMAScript | std::regex_constants::icase),
         rxaage("^(.+)(\\@AGE[\\s\\t]*\\()([\\s\\t]*)((#[^\\.]*)|(\\d*)|(\\d*.\\d*))(\\.\\.)((#[^\\.]*)|(\\d*)|(\\d*.\\d*)|(_MAXAGE))(\\))(.+)|(.+)(\\@AGE[\\s\\t]*\\()([\\s\\t]*)((#[^\\.]*)|(\\d*)|(\\d*.\\d*))(\\))(.+)", std::regex_constants::ECMAScript| std::regex_constants::icase),
 		rxoperators("([^\\+\\-\\/\\*]*)([\\+\\-\\/\\*]*)", std::regex_constants::icase),
@@ -102,6 +103,7 @@ FMTparser::FMTparser(const FMTparser& rhs):
          _incomment(rhs._incomment),
         _forvalues(rhs._forvalues),
 		_included(rhs._included),
+		_section(rhs._section),
         rxayld(rhs.rxayld),
         rxaage(rhs.rxaage),
 		rxoperators(rhs.rxoperators),
@@ -129,6 +131,7 @@ FMTparser& FMTparser::operator = (const FMTparser& rhs)
             _incomment = rhs._incomment;
             _forvalues = rhs._forvalues;
 			_included = rhs._included;
+			_section = rhs._section;
             rxayld = rhs.rxayld;
             rxaage = rhs.rxaage;
 			rxoperators = rhs.rxoperators;
@@ -143,6 +146,12 @@ FMTparser& FMTparser::operator = (const FMTparser& rhs)
             }
     return *this;
     }
+
+void FMTparser::setsection(const Core::FMTsection& section) const
+{
+	_section = section;
+}
+
 #ifdef FMTWITHGDAL
 
 GDALDataset* FMTparser::getdataset(const std::string& location) const
@@ -161,7 +170,7 @@ GDALDataset* FMTparser::getdataset(const std::string& location) const
 	}
 	catch (...)
 	{
-		_exhandler->raisefromcatch("", "FMTparser::getdataset", __LINE__, __FILE__);
+		_exhandler->raisefromcatch("", "FMTparser::getdataset", __LINE__, __FILE__, _section);
 	}
     return data;
     }
@@ -179,7 +188,7 @@ GDALRasterBand* FMTparser::getband(GDALDataset* dataset,int bandid) const
 	}
 	catch (...)
 	{
-		_exhandler->raisefromcatch("", "FMTparser::getband", __LINE__, __FILE__);
+		_exhandler->raisefromcatch("", "FMTparser::getband", __LINE__, __FILE__, _section);
 	}
     return band;
     }
@@ -278,7 +287,7 @@ OGRLayer* FMTparser::getlayer(GDALDataset* dataset,int id) const
 	}
 	catch (...)
 	{
-		_exhandler->raisefromcatch("", "FMTparser::getlayer", __LINE__, __FILE__);
+		_exhandler->raisefromcatch("", "FMTparser::getlayer", __LINE__, __FILE__, _section);
 	}
     return layer;
     }
@@ -437,7 +446,7 @@ bool FMTparser::isact(Core::FMTsection section,const std::vector<Core::FMTaction
 	}
 	catch (...)
 	{
-		_exhandler->raisefromcatch("", "FMTparser::isact", __LINE__, __FILE__);
+		_exhandler->raisefromcatch("", "FMTparser::isact", __LINE__, __FILE__, _section);
 	}
 	return false;
     }
@@ -455,7 +464,7 @@ bool FMTparser::isyld(const Core::FMTyields& ylds,const std::string& value, Core
 		 "FMTparser::isyld",__LINE__, __FILE__,section);
 	}catch (...)
 		{
-		_exhandler->raisefromcatch("", "FMTparser::isyld", __LINE__, __FILE__);
+		_exhandler->raisefromcatch("", "FMTparser::isyld", __LINE__, __FILE__, _section);
 		}
      return false;
     }
@@ -476,6 +485,7 @@ bool FMTparser::tryopening(const std::ifstream& stream, const std::string& locat
 		std::string extension = boost::filesystem::extension(location);
         transform(extension.begin(), extension.end(), extension.begin(), ::tolower);
         this->setsection(from_extension(extension));
+		//*_logger << "extt " << _section << "\n";
         if (!stream.is_open())
             {
             _exhandler->raise(Exception::FMTexc::FMTinvalid_path,location,
@@ -485,7 +495,7 @@ bool FMTparser::tryopening(const std::ifstream& stream, const std::string& locat
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTparser::tryopening", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("", "FMTparser::tryopening", __LINE__, __FILE__, _section);
 		}
 		boost::filesystem::path pathtofile(location);
 		const std::time_t temp = boost::filesystem::last_write_time(pathtofile);
@@ -508,7 +518,7 @@ bool FMTparser::tryopening(const std::ofstream& stream, const std::string& locat
             }
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("", "FMTparser::tryopening", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("", "FMTparser::tryopening", __LINE__, __FILE__, _section);
 			}
         return true;
         }
@@ -527,7 +537,7 @@ bool FMTparser::isvalidfile(const std::string& location) const
 		}
 		}catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTparser::isvalidfile", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("", "FMTparser::isvalidfile", __LINE__, __FILE__, _section);
 		}
 	return true;
 	}
@@ -555,7 +565,7 @@ std::vector<std::string>FMTparser::regexloop(std::regex& cutregex, std::string& 
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTparser::regexloop", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("", "FMTparser::regexloop", __LINE__, __FILE__, _section);
 		}
         return result;
         }
@@ -575,7 +585,7 @@ std::vector<std::string>FMTparser::regexloop(std::regex& cutregex, std::string& 
 			}
 		}catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTparser::clearcomments", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("", "FMTparser::clearcomments", __LINE__, __FILE__, _section);
 		}
         }
 	std::string FMTparser::upper(const std::string& lowercases) const
@@ -590,7 +600,7 @@ std::vector<std::string>FMTparser::regexloop(std::regex& cutregex, std::string& 
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTparser::upper", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("", "FMTparser::upper", __LINE__, __FILE__, _section);
 		}
         return uppercases;
         }
@@ -615,7 +625,7 @@ std::vector<std::string>FMTparser::regexloop(std::regex& cutregex, std::string& 
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTparser::spliter", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("", "FMTparser::spliter", __LINE__, __FILE__, _section);
 		}
         return vecmask;
         }
@@ -662,7 +672,7 @@ std::vector<std::string>FMTparser::regexloop(std::regex& cutregex, std::string& 
         boost::trim(newline);
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("", "FMTparser::getcleanline", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("", "FMTparser::getcleanline", __LINE__, __FILE__, _section);
 			}
         return newline;
         }
@@ -734,7 +744,7 @@ bool FMTparser::getforloops(std::string& line,const std::vector<Core::FMTtheme>&
 	}
 	}catch (...)
 		{
-		_exhandler->raisefromcatch("", "FMTparser::getforloops", __LINE__, __FILE__);
+		_exhandler->raisefromcatch("", "FMTparser::getforloops", __LINE__, __FILE__, _section);
 		}
 	return false;
 	}
@@ -802,7 +812,7 @@ std::queue<std::string> FMTparser::tryinclude(const std::string& line, const std
 	}
 	catch (...)
 	{
-		_exhandler->raisefromcatch("", "FMTparser::tryinclude", __LINE__, __FILE__);
+		_exhandler->raisefromcatch("", "FMTparser::tryinclude", __LINE__, __FILE__, _section);
 	}
 	return included_lines;
 	}
@@ -830,7 +840,7 @@ std::string FMTparser::returninclude(const std::string& line, const std::vector<
 	}
 	catch (...)
 	{
-		_exhandler->raisefromcatch("", "FMTparser::returninclude", __LINE__, __FILE__);
+		_exhandler->raisefromcatch("", "FMTparser::returninclude", __LINE__, __FILE__, _section);
 	}
 	return thereturn;
 	}
@@ -937,7 +947,7 @@ std::string FMTparser::getcleanlinewfor(std::ifstream& stream,const std::vector<
 	return returninclude(line, themes, cons);
 	}catch (...)
 	 {
-		 _exhandler->raisefromcatch("", "FMTparser::getcleanlinewfor", __LINE__, __FILE__);
+		 _exhandler->raisefromcatch("", "FMTparser::getcleanlinewfor", __LINE__, __FILE__, _section);
 	 }
 	return std::string();
     }
@@ -1011,7 +1021,7 @@ std::vector<std::string> FMTparser::sameas(const std::string& allset) const
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTparser::sameas", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("", "FMTparser::sameas", __LINE__, __FILE__, _section);
 		}
         return all_elements;
         }
@@ -1078,7 +1088,7 @@ std::istream& FMTparser::safeGetline(std::istream& is, std::string& t) const
 	}
 	}catch (...)
 	{
-		_exhandler->raisefromcatch("", "FMTparser::safeGetline", __LINE__, __FILE__);
+		_exhandler->raisefromcatch("", "FMTparser::safeGetline", __LINE__, __FILE__, _section);
 	}
 	return is;
 	}
