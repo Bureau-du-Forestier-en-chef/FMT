@@ -34,6 +34,11 @@ FMTyieldparserop FMTdata::getop() const
     return ops;
     }
 
+void FMTdata::clearcache()
+	{
+		std::map<size_t,double>().swap(_cache);
+	}
+
 bool FMTdata::constant() const
 	{
 	if (ops == FMTyieldparserop::FMTnone)

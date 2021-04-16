@@ -731,6 +731,34 @@ bool FMTmodel::isvalid()
     return true;
     }
 
+void  FMTmodel::clearactionscache()
+	{
+		for (auto& action:actions)
+		{
+			action.clearcache();
+		}
+	}
+
+void  FMTmodel::clearyieldcache()
+	{
+		yields.clearcache();
+	}
+
+void  FMTmodel::cleartransitioncache()
+	{
+		for (auto& transition:transitions)
+		{
+			transition.clearcache();
+		}
+	}
+
+void FMTmodel::clearcache()
+	{
+		cleartransitioncache();
+		clearyieldcache();
+		clearactionscache();
+	}
+
 Core::FMTmask FMTmodel::getbasemask(std::vector<Core::FMTactualdevelopment> optionaldevelopments) const
 	{
 	optionaldevelopments.insert(optionaldevelopments.end(), area.begin(), area.end());

@@ -267,6 +267,9 @@ class FMTlpmodel : public FMTmodel
 	*/
 	bool setpositiveoutputsinmatrix(const Core::FMTconstraint& constraint, const std::vector<std::map<int, double>>& strictlypositivesoutputs,int period);
 	public:
+	void clearcache() final;
+	void cleargraphdevelopements();
+	void clearconstraintlocation();
 	// DocString: FMTlpmodel(const FMTmodel,FMTsolverinterface)
 	/**
 	Main constructor used to build FMTlpmodel using it's base class and to let the user choose the solvertype

@@ -331,6 +331,14 @@ class FMTgraph : public Core::FMTobject
 			{
 			return (!(*this == rhs));
 			}
+        void clearcache()
+			{
+        		std::vector<FMToutputnodecache<FMTvertex_descriptor>>().swap(nodescache);
+			}
+        void cleardevelopments()
+			{
+        		std::vector<boost::unordered_set<Core::FMTlookup<FMTvertex_descriptor,Core::FMTdevelopment>>>().swap(developments);
+			}
 		FMTgraphbuild getbuildtype() const
 			{
 			return buildtype;

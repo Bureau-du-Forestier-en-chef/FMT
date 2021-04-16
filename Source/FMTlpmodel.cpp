@@ -916,7 +916,21 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 		return false;
 	}
 
+	void FMTlpmodel::clearcache()
+	{
+		FMTmodel::clearcache();
+		graph.clearcache();
+	}
 
+	void FMTlpmodel::cleargraphdevelopements()
+	{
+		graph.cleardevelopments();
+	}
+
+	void FMTlpmodel::clearconstraintlocation()
+	{
+		std::vector<std::unordered_map<std::string,std::vector<std::vector<int>>>>().swap(elements);
+	}
 
 	Graph::FMTgraphstats FMTlpmodel::setconstraint(const Core::FMTconstraint& constraint)
 		{

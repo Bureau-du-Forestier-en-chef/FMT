@@ -107,7 +107,7 @@ namespace Heuristics
 					}
 				this->setRowSetBounds(&rowsitems[0], &rowsitems.back() + 1, &rowsbounds[0]);
 				this->setColSetBounds(&colsitems[0], &colsitems.back() + 1, &colsbounds[0]);
-				this->resolvemodel();
+				this->stockresolve();
 			}
 		std::vector<int>integervariables;
 		for (std::vector<FMToperatingareascheme>::const_iterator operatingareait = operatingareas.begin();
@@ -208,8 +208,6 @@ namespace Heuristics
 		{
 			_exhandler->printexceptions("", "FMToperatingareascheduler::initialsolve", __LINE__, __FILE__);
 		}
-
-
 		return this->isProvenOptimal();
 		}
 
