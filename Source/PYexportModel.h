@@ -36,7 +36,7 @@ BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(getareavariabilities_overloads, getareava
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(boundsolution_overloads, boundsolution, 1, 2)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(eraseperiod_overloads, eraseperiod,0,1)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(setsolution_overloads,setsolution, 2, 3)
-BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(presolve_overloads,presolve, 0, 2)
+BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(basepresolve_overloads,basepresolve, 0, 1)
 
 void exportModel()
     {
@@ -92,8 +92,10 @@ void exportModel()
 				"@DocString(FMTmodel::isvalid)")
 			.def("clearcache",&Models::FMTmodel::clearcache,
 				"@DocString(FMTmodel::clearcache)")
-			.def("presolve",&Models::FMTmodel::presolve,
-				presolve_overloads(bp::args("presolvepass","optionaldevelopments"),"@DocString(FMTmodel::presolve)"))
+			.def("basepresolve",&Models::FMTmodel::basepresolve,
+				basepresolve_overloads(bp::args("presolvepass"),"@DocString(FMTmodel::basepresolve)"))
+			.def("getpostsolvebasemask",&Models::FMTmodel::getpostsolvebasemask,
+				"@DocString(FMTmodel::getpostsolvebasemask)")
 		.def("getpotentialschedule", &Models::FMTmodel::getpotentialschedule,
 			getpotentialscheduleoverloads(bp::args("toremove","selection","withlock"),"@DocString(FMTmodel::getpotentialschedule)"));
 

@@ -251,7 +251,7 @@ namespace Heuristics
 					{
 						_exhandler->raise(Exception::FMTexc::FMTignore,
 							"Thread-"+std::to_string(nothread)+" : FMToperatingareascheduler failed... Switching to random",
-							"FMToperatingareascheduler::parallelinitialsolve", __LINE__, __FILE__, _section);
+							"FMToperatingareascheduler::parallelinitialsolve", __LINE__, __FILE__);
 						userandomness = true; //Switch to random now
 						this->unboundall(); //release everything
 						if (!useprimal)
@@ -265,7 +265,7 @@ namespace Heuristics
 						{
 						_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
 							"Thread-"+std::to_string(nothread)+" : Unable to bound operating areas ",
-							"FMToperatingareascheduler::parallelinitialsolve", __LINE__, __FILE__, _section);
+							"FMToperatingareascheduler::parallelinitialsolve", __LINE__, __FILE__);
 						}
 				} while (!selected.empty() && this->isProvenOptimal());
 				if (this->isProvenOptimal())
