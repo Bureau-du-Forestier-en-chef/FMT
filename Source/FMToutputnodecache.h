@@ -36,6 +36,7 @@ namespace Graph
 		std::vector<tvdescriptor>basenode;
 		mutable std::map<Core::FMToutputnode, std::vector<tvdescriptor>>searchtree;
         typedef typename std::map<Core::FMToutputnode,std::vector<tvdescriptor>>::const_iterator notecacheit;
+		
 		void setinitialcache(const boost::unordered_set<Core::FMTlookup<tvdescriptor,Core::FMTdevelopment>>& initialgraph)
 		{
 			searchtree.clear();
@@ -205,6 +206,39 @@ namespace Graph
 			basenode(), searchtree()
 		{
 			this->setinitialcache(initialnodes);
+		}
+		unsigned long long getpotentialsize() const
+			{
+			return static_cast<unsigned long long>(searchtree.size()) * static_cast<unsigned long long>(basenode.size()) * sizeof(tvdescriptor);
+			}
+
+		void erasenode(const Core::FMToutputnode& node)
+			{
+			searchtree.erase(node);
+			}
+
+		unsigned long long removelargest()
+		{
+			size_t largestsize = 0;
+			unsigned long long  removedmemory = 0;
+			notecacheit largestiterator = searchtree.end();
+			for (typename std::map<Core::FMToutputnode, std::vector<tvdescriptor>>::iterator mapit = searchtree.begin(); mapit != searchtree.end(); mapit++)
+			{
+				size_t sizeofvec = mapit->second.size();
+				if (sizeofvec > largestsize)
+				{
+					largestsize = mapit->second.size();
+					largestiterator = mapit;
+				}
+
+			}
+			if (largestiterator != searchtree.end())
+			{
+				removedmemory = largestsize * sizeof(tvdescriptor);
+				//std::vector<tvdescriptor>().swap(largestiterator->second);
+				searchtree.erase(largestiterator);
+			}
+			return removedmemory;
 		}
 		const std::vector<tvdescriptor>& getverticies(const Core::FMToutputnode& targetnode, const std::vector<Core::FMTaction>& actions,
 			const std::vector<Core::FMTtheme>&themes, bool& exactvecticies) const
