@@ -275,6 +275,7 @@ class FMTlpmodel : public FMTmodel
 	void clearcache() final;
 	void cleargraphdevelopements();
 	void clearconstraintlocation();
+	void cleargraphcache();
 	// DocString: FMTlpmodel(const FMTmodel,FMTsolverinterface)
 	/**
 	Main constructor used to build FMTlpmodel using it's base class and to let the user choose the solvertype

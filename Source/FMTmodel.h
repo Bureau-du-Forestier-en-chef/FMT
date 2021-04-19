@@ -171,12 +171,6 @@ class FMTmodel : public Core::FMTobject
 		going to be defined when the FMTmodel class is constructed.
 		*/
 		void setdefaultobjects();
-		// DocString: FMTmodel::getselectedmask
-		/**
-		If the model is presolved you can call this function to get the selection mask that you need
-		to use to presolve a FMTmask.
-		*/
-		Core::FMTmask getselectedmask(const std::vector<Core::FMTtheme>& originalthemes) const;
 		// DocString: FMTmodel::getbasemask
 		/**
 		Return a mask covering the actual bits used by the FMTmodel and the optionaldevelopements.
@@ -229,11 +223,12 @@ class FMTmodel : public Core::FMTobject
 		if the model is badly formulated.
 		*/
 		FMTmodel basepresolve(int presolvepass = 10) const;
-		// DocString: FMTmodel::getpostsolvebasemask
+		// DocString: FMTmodel::getselectedmask
 		/**
-		Get the postsolve basemask used by the presolve (in case you want to turn presolved mask into postsolve mask).
+		If the model is presolved you can call this function to get the selection mask that you need
+		to use to presolve a FMTmask.
 		*/
-		Core::FMTmask getpostsolvebasemask() const;
+		Core::FMTmask getselectedmask(const std::vector<Core::FMTtheme>& originalthemes) const;
 		// DocString: FMTmodel::presolve
 		/**
 		This function use a vector of developments and the actual transitions of the model and return new presolved FMTmodel.

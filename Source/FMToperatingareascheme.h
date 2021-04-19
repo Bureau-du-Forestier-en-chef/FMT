@@ -326,6 +326,12 @@ namespace Heuristics
 			Default FMToperatingareascheme destructor
 			*/
 			~FMToperatingareascheme()=default;
+			// DocString: FMToperatingareascheme::presolve
+			/**
+			Using a FMTmask (selectedmask) and a subset of the original FMTthemes used to construct the FMTmask,
+			it returns a presolved FMTmask with potentialy less data.
+			*/
+			FMToperatingareascheme presolve(const Core::FMTmask& selectedmask,const std::vector<Core::FMTtheme>&presolvedthemes) const;
 
 		};
 

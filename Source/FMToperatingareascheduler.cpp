@@ -618,7 +618,7 @@ namespace Heuristics
 					opit->boundprimalscheme(targeteditems, bounds, *potentialschemes.begin());//*luckypotential);
 				}
 				else {
-					opit->unbounddualscheme(targeteditems, bounds, *potentialschemes.begin());//*luckypotential);
+					bool emptyness = opit->unbounddualscheme(targeteditems, bounds, *potentialschemes.begin());//*luckypotential);
 				}
 			}
 			else {
