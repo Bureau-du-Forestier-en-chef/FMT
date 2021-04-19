@@ -28,9 +28,40 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 	#include "Rcpp.h"
 #endif
 
+#if defined _WIN32
+#include <windows.h>
+#endif
+
+#if defined __unix
+#include <sys/sysinfo.h>
+#endif
+
 
 namespace Core
 {
+
+	unsigned long long FMTobject::getavailablememory() const
+	{
+		unsigned long long available = 0;
+		try {
+			#if defined _WIN32
+			MEMORYSTATUSEX status;
+			status.dwLength = sizeof(status);
+			GlobalMemoryStatusEx(&status);
+			available = static_cast<unsigned long long>(status.ullAvailPhys);
+			#endif
+			#if defined __unix
+			struct sysinfo i;
+			short status = sysinfo(&i);
+			available = static_cast<unsigned long long>(sysinfo.freeram*sysinfo.mem_unit);
+			#endif
+		}catch (...)
+			{
+				_exhandler->raisefromcatch("", "FMTobject::getratioofavailablememory", __LINE__, __FILE__);
+			}
+		return available;
+	}
+
 
 	std::string  FMTobject::getruntimelocation() const
 	{
