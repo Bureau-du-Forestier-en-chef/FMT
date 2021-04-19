@@ -841,19 +841,6 @@ Core::FMTmask FMTmodel::getselectedmask(const std::vector<Core::FMTtheme>& origi
 	return Core::FMTmask(selection);
 	}
 
-Core::FMTmask FMTmodel::getpostsolvebasemask() const
-{
-	Core::FMTmask presolvemask;
-	try {
-		presolvemask = getbasemask(area);
-	}
-	catch (...)
-	{
-		_exhandler->printexceptions("for " + name, "FMTmodel::getpostsolvebasemask", __LINE__, __FILE__);
-	}
-	return presolvemask;
-}
-
 FMTmodel FMTmodel::basepresolve(int presolvepass) const
 {
 	std::unique_ptr<FMTmodel>mdlptr;

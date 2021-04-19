@@ -918,12 +918,16 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 	void FMTlpmodel::clearcache()
 	{
 		FMTmodel::clearcache();
-		graph.clearcache();
+		cleargraphcache();
 	}
 
 	void FMTlpmodel::cleargraphdevelopements()
 	{
 		graph.cleardevelopments();
+	}
+	void FMTlpmodel::cleargraphcache()
+	{
+		graph.clearcache();
 	}
 
 	void FMTlpmodel::clearconstraintlocation()

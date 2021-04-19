@@ -92,10 +92,10 @@ void exportModel()
 				"@DocString(FMTmodel::isvalid)")
 			.def("clearcache",&Models::FMTmodel::clearcache,
 				"@DocString(FMTmodel::clearcache)")
+			.def("getselectedmask",&Models::FMTmodel::getselectedmask,
+				"@DocString(FMTmodel::getselectedmask)")
 			.def("basepresolve",&Models::FMTmodel::basepresolve,
 				basepresolve_overloads(bp::args("presolvepass"),"@DocString(FMTmodel::basepresolve)"))
-			.def("getpostsolvebasemask",&Models::FMTmodel::getpostsolvebasemask,
-				"@DocString(FMTmodel::getpostsolvebasemask)")
 		.def("getpotentialschedule", &Models::FMTmodel::getpotentialschedule,
 			getpotentialscheduleoverloads(bp::args("toremove","selection","withlock"),"@DocString(FMTmodel::getpotentialschedule)"));
 

@@ -280,6 +280,7 @@ bool FMToperatingareascheme::boundprimalscheme(std::vector<int>& targets, std::v
 
 bool FMToperatingareascheme::unbounddualscheme(std::vector<int>& targets, std::vector<double>& bounds, const size_t& schemeid) const //Looking at the primal solution set the best scheme to the solverinterface 1<=B<=1 and check optimality
 {
+	//Logging::FMTlogger log;
 	size_t cid = 0;
 	for (const std::vector<int>& constraints : openingconstraints)
 		{
@@ -775,6 +776,12 @@ bool FMToperatingareascheme::isdualbounded(const double* upperbounds) const
 		}
 	return false;
 	}
+
+FMToperatingareascheme FMToperatingareascheme::presolve(const Core::FMTmask& selectedmask, const std::vector<Core::FMTtheme>& presolvedthemes) const
+{
+	const FMToperatingarea presolveoparea = FMToperatingarea::presolveoperatingarea(selectedmask,presolvedthemes);
+	return FMToperatingareascheme(presolveoparea,this->openingtime, this->returntime,this->repetition, this->greenup,this->startingperiod);
+}
 
 
 size_t FMToperatingareascheme::getstartingperiod() const

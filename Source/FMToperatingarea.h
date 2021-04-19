@@ -136,12 +136,12 @@ namespace Heuristics
 			Using a FMTmask (selectedmask) and a subset of the original FMTthemes used to construct the FMTmask,
 			it returns a presolved FMTmask with potentialy less data.
 			*/
-			FMToperatingarea presolve(const Core::FMTmask& selectedmask,const std::vector<Core::FMTtheme>&presolvedthemes) const;
+			FMToperatingarea presolveoperatingarea(const Core::FMTmask& selectedmask,const std::vector<Core::FMTtheme>&presolvedthemes) const;
 			// DocString: FMToperatingarea::postsolve
 			/**
 			Using a FMTmask (selectedmask) and the original FMTthemes it returns a postsolved FMTmask.
 			*/
-			FMToperatingarea postsolve(const Core::FMTmask& selectedmask, const std::vector<Core::FMTtheme>&basethemes) const;
+			FMToperatingarea postsolveoperatingarea(const Core::FMTmask& selectedmask, const std::vector<Core::FMTtheme>&basethemes) const;
 
 		};
 

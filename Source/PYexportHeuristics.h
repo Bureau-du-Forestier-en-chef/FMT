@@ -50,10 +50,6 @@ void exportHeuristics()
 			"@DocString(FMToperatingarea::setneighbors)")
 		.def("getmask", &Heuristics::FMToperatingarea::getmask,
 			"@DocString(FMToperatingarea::getmask)")
-		.def("presolve", &Heuristics::FMToperatingarea::presolve,
-			"@DocString(FMToperatingarea::presolve)")
-		.def("postsolve", &Heuristics::FMToperatingarea::postsolve,
-			"@DocString(FMToperatingarea::postsolve)")
 		.def("getneihgborsperimeter", &Heuristics::FMToperatingarea::getneihgborsperimeter,
 			"@DocString(FMToperatingarea::getneihgborsperimeter)");
 
@@ -61,7 +57,9 @@ void exportHeuristics()
 
 	bp::class_<Heuristics::FMToperatingareascheme,bp::bases<Heuristics::FMToperatingarea>>("FMToperatingareascheme", "@DocString(FMToperatingareascheme)")
 		.def(bp::init<const Heuristics::FMToperatingarea&,const size_t&,const size_t&,
-			const size_t&, const size_t&, const size_t&>());
+			const size_t&, const size_t&, const size_t&>())
+		.def("presolve", &Heuristics::FMToperatingareascheme::presolve,
+			"@DocString(FMToperatingareascheme::presolve)");
 
 	define_pylist<Heuristics::FMToperatingareascheme>();
 
