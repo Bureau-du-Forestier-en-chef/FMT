@@ -138,6 +138,7 @@ class FMTgraph : public Core::FMTobject
         FMTgraphbuild buildtype;
 		std::vector<boost::unordered_set<Core::FMTlookup<FMTvertex_descriptor,Core::FMTdevelopment>>>developments;
 		mutable std::vector<FMToutputnodecache<FMTvertex_descriptor>>nodescache;
+		typedef typename std::vector<FMToutputnodecache<FMTvertex_descriptor>>::reverse_iterator reversecachenodeit;
         FMTgraphstats stats;
 		void updatevarsmap(std::map<int,double>& variables,const int& var,const double& coef) const
 		{
@@ -557,6 +558,47 @@ class FMTgraph : public Core::FMTobject
 			catch (...)
 			{
 				_exhandler->raisefromcatch("", "FMTgraph::getvariablenames", __LINE__, __FILE__);
+			}
+		}
+
+		void cleannodecaching(unsigned long long minbytes= 10000000000) const//5 Go max
+		{
+			try {
+				if (!nodescache.empty()&& boost::num_vertices(data)>1000000)
+				{
+					unsigned long long potsize = 0;
+					for (reversecachenodeit cacheit = nodescache.rbegin(); cacheit != nodescache.rend(); ++cacheit)
+					{
+						potsize += cacheit->getpotentialsize();
+					}
+					if (potsize>= minbytes)
+					{
+						unsigned long long avmemory = FMTobject::getavailablememory();
+						if (avmemory < minbytes)
+						{
+							unsigned long long rest = (minbytes - avmemory);
+							unsigned long long totalclean = 1;
+							while (totalclean >= 1 && rest > 0)
+							{
+								totalclean = 0;
+								for (reversecachenodeit cacheit = nodescache.rbegin(); cacheit != nodescache.rend(); ++cacheit)
+								{
+									const unsigned long long lastclean = cacheit->removelargest();
+									rest -= lastclean;
+									totalclean += lastclean;
+									if (lastclean > 0)
+									{
+										break;
+									}
+
+								}
+							}
+						}
+					}
+				}
+			}catch (...)
+			{
+				_exhandler->raisefromcatch("", "FMTgraph::cleannodecaching", __LINE__, __FILE__);
 			}
 		}
 
@@ -1031,12 +1073,13 @@ class FMTgraph : public Core::FMTobject
 				{
 					return locations;
 				}
-				//size_t lookedat_size = 0;
 				if (!output_node.source.isvariablelevel())
 				{
+					constexpr size_t minimalcachedrop = 25;//10 %
 					std::vector<const Core::FMTaction*> selected;
 					if (isvalidouputnode(model, output_node, selected, node_period))
 					{
+						cleannodecaching();
 						for (const int& localnodeperiod : targetedperiods)
 						{
 							while (nodescache.size() != developments.size())
@@ -1061,8 +1104,15 @@ class FMTgraph : public Core::FMTobject
 										locations.push_back(potential);
 									}
 								}
-								std::sort(revisited.begin(), revisited.end());
-								nodescache.at(localnodeperiod).setvalidverticies(output_node, revisited);
+								if (revisited.size()<=((descriptors.size()/100)*(100-minimalcachedrop)))//Dont add too much
+									{
+									std::sort(revisited.begin(), revisited.end());
+									nodescache.at(localnodeperiod).setvalidverticies(output_node, revisited);
+								}
+								else {
+									nodescache[localnodeperiod].erasenode(output_node);
+								}
+								
 							}
 						}
 
