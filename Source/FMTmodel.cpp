@@ -167,6 +167,8 @@ void FMTmodel::cleanactionsntransitions()
 		}
 		actions = newactions;
 		transitions = newtransitions;
+		actions.shrink_to_fit();
+		transitions.shrink_to_fit();
 	}catch (...)
 		{
 		_exhandler->raisefromcatch("","FMTmodel::cleanactionsntransitions", __LINE__, __FILE__);
@@ -228,6 +230,7 @@ void FMTmodel::addoutput(const std::string& name,
 		sources.push_back(Core::FMToutputsource(Core::FMTspec(), Core::FMTmask(maskstring, themes), outputtarget, yield, action,outputs.size(),targettheme));
 		std::vector<Core::FMToperator>operators;
 		outputs.push_back(Core::FMToutput(name, description, sources, operators));
+		outputs.shrink_to_fit();
 	}
 	catch (...)
 	{
@@ -245,6 +248,7 @@ void FMTmodel::setconstraints(const std::vector<Core::FMTconstraint>& lconstrain
 		{
 			constraint.passinobject(*this);
 		}
+		constraints.shrink_to_fit();
 	}catch (...)
 	{
 		_exhandler->printexceptions("", "FMTmodel::setconstraints", __LINE__, __FILE__);
@@ -321,6 +325,7 @@ void FMTmodel::setarea(const std::vector<Core::FMTactualdevelopment>& ldevs)
 				development.passinobject(*this);
 				}
 			}
+		area.shrink_to_fit();
 	}catch (...)
 	{
 		_exhandler->printexceptions("", "FMTmodel::setarea", __LINE__, __FILE__);
@@ -336,8 +341,10 @@ void FMTmodel::setthemes(const std::vector<Core::FMTtheme>& lthemes)
 		{
 			theme.passinobject(*this);
 		}
+		themes.shrink_to_fit();
 		//After theme change every masks needs to be reevaluated?.
 		statictransitionthemes = getstatictransitionthemes();
+		statictransitionthemes.shrink_to_fit();
 	}catch (...)
 	{
 		_exhandler->printexceptions("", "FMTmodel::setthemes", __LINE__, __FILE__);
@@ -367,6 +374,8 @@ void FMTmodel::setactions(const std::vector<Core::FMTaction>& lactions)
 			action.update();
 		}
 		this->setdefaultobjects();
+		actions.shrink_to_fit();
+		transitions.shrink_to_fit();
 	}catch (...)
 	{
 		_exhandler->printexceptions("", "FMTmodel::setactions", __LINE__, __FILE__);
@@ -385,6 +394,8 @@ void FMTmodel::settransitions(const std::vector<Core::FMTtransition>& ltransitio
 		}
 		this->setdefaultobjects();
 		statictransitionthemes = getstatictransitionthemes();
+		statictransitionthemes.shrink_to_fit();
+		transitions.shrink_to_fit();
 	}catch (...)
 		{
 			_exhandler->printexceptions("", "FMTmodel::settransitions", __LINE__, __FILE__);
@@ -429,6 +440,7 @@ void FMTmodel::setoutputs(const std::vector<Core::FMToutput>& newoutputs)
 		{
 			output.passinobject(*this);
 		}
+		outputs.shrink_to_fit();
 	}catch (...)
 	{
 		_exhandler->printexceptions("", "FMTmodel::setoutputs", __LINE__, __FILE__);
@@ -940,26 +952,35 @@ std::unique_ptr<FMTmodel> FMTmodel::presolve(int presolvepass,std::vector<Core::
 			newlifespans = oldlifespans.presolve(basemask, oldthemes, selectedattributes, newthemes);
 			//Outputs and data
 			size_t outputdataremoved = 0;
+			std::set<int> keptoutputid;
+			int oldid=0;
 			for (const Core::FMToutput& output : oldoutputs)
 			{
 				const Core::FMToutput presolvedoutput = output.presolve(basemask, oldthemes, selectedattributes, newthemes, newactions, oldyields);
 				outputdataremoved += (output.size() - presolvedoutput.size());
-				if (!presolvedoutput.empty())
+				if(!presolvedoutput.empty())
 				{
+					keptoutputid.insert(oldid);
 					newoutputs.push_back(presolvedoutput);
 				}
+				oldid+=1;
+			}
+			for (Core::FMToutput& output : newoutputs)
+			{
+				output.changeoutputsorigin(keptoutputid);
 			}
 			//Constraints and data
+			//Add feature to automatically put the output[0] as constant in sources
 			size_t constraintdataremoved = 0;
 			for (const Core::FMTconstraint& constraint : oldconstraints)
 			{
-				const Core::FMTconstraint presolvedconstraint = constraint.presolve(basemask, oldthemes, selectedattributes, newthemes, newactions, oldyields);
+				/*const*/Core::FMTconstraint presolvedconstraint = constraint.presolve(basemask, oldthemes, selectedattributes, newthemes, newactions, oldyields);
 				constraintdataremoved += (constraint.size() - presolvedconstraint.size());
 				if (!presolvedconstraint.outputempty())
 				{
+					presolvedconstraint.changeoutputsorigin(keptoutputid);
 					newconstraints.push_back(presolvedconstraint);
 				}
-
 			}
 			oldthemes = newthemes;
 			oldarea = newarea;
@@ -973,6 +994,12 @@ std::unique_ptr<FMTmodel> FMTmodel::presolve(int presolvepass,std::vector<Core::
 			--presolvepass;
 			didonepass = true;
 		}
+	oldthemes.shrink_to_fit();
+	oldarea.shrink_to_fit();
+	oldactions.shrink_to_fit();
+	oldtransitions.shrink_to_fit();
+	oldoutputs.shrink_to_fit();
+	oldconstraints.shrink_to_fit();
 	presolvedmodel = std::unique_ptr<FMTmodel>(new FMTmodel(oldarea, oldthemes, oldactions, oldtransitions, oldyields, oldlifespans, name, oldoutputs, oldconstraints));
 	presolvedmodel->passinobject(*this);
 	presolvedmodel->cleanactionsntransitions();
