@@ -29,6 +29,7 @@ namespace Graph
 
 
 	{
+		
 
 	}
 	FMTcarbonpredictor::FMTcarbonpredictor(const FMTcarbonpredictor& rhs) :
@@ -79,7 +80,12 @@ namespace Graph
 			{
 			sourceedgevalue = static_cast<double>(source_edge->getactionID());
 			}
-		returned[0] = static_cast<double>(periodgap);
+		int theestimatedgap = periodgap;
+		if (periodgap == -1)
+			{
+			theestimatedgap = source_vertex->get().age;
+			}
+		returned[0] = static_cast<double>(theestimatedgap);
 		returned[1]= sourceedgevalue;
 		returned[2]= static_cast<double>(source_vertex->get().age);
 		returned[3] = static_cast<double>(source_vertex->get().lock);
@@ -92,6 +98,7 @@ namespace Graph
 		returned[thesize+2] = static_cast<double>(target_vertex->get().lock);
 		returned[thesize+3] = static_cast<double>(target_vertex->get().period);
 		returned.insert(returned.end(), target_yields.begin(), target_yields.end());
+		returned.shrink_to_fit();
 		return returned;
 	}
 
