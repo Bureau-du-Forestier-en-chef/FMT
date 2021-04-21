@@ -1213,6 +1213,7 @@ namespace Parser{
 							}
 						}
 					}
+				areas.shrink_to_fit();
 				}catch (...)
 					{
 					_exhandler->raisefromcatch("In " + _location + " at line " + std::to_string(_line),"FMTareaparser::read", __LINE__, __FILE__, _section);

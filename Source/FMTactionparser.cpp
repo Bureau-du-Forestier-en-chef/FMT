@@ -270,6 +270,7 @@ FMTactionparser& FMTactionparser::operator = (const FMTactionparser& rhs)
 				}
 			}
 			//std::sort(cleanedactions.begin(), cleanedactions.end());
+			cleanedactions.shrink_to_fit();
 		}catch (...)
 			{
 			_exhandler->raisefromcatch(

@@ -291,6 +291,7 @@ FMTlandscapeparser::FMTlandscapeparser() :
 				themes.push_back(Core::FMTtheme(attributes,attributenames,aggregates,aggregatenames,indexes_values, id, start, themename));
 				themes.back().passinobject(*this);
 			}
+			themes.shrink_to_fit();
 			}catch(...)
 				{
 				_exhandler->raisefromcatch(

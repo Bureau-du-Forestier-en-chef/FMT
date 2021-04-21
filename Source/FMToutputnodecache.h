@@ -34,8 +34,8 @@ namespace Graph
 			ar & BOOST_SERIALIZATION_NVP(searchtree);
 		}
 		std::vector<tvdescriptor>basenode;
-		mutable std::map<Core::FMToutputnode, std::vector<tvdescriptor>>searchtree;
-        typedef typename std::map<Core::FMToutputnode,std::vector<tvdescriptor>>::const_iterator notecacheit;
+		mutable std::map<Core::FMToutputsource,std::vector<tvdescriptor>>searchtree;
+        typedef typename std::map<Core::FMToutputsource,std::vector<tvdescriptor>>::const_iterator notecacheit;
 		
 		void setinitialcache(const boost::unordered_set<Core::FMTlookup<tvdescriptor,Core::FMTdevelopment>>& initialgraph)
 		{
@@ -49,19 +49,21 @@ namespace Graph
 				++idv;
 			}
 			std::sort(basenode.begin(), basenode.end());
+			basenode.shrink_to_fit();
 		}
 		void setinitialcache(const std::vector<tvdescriptor>& baseelements)
 		{
 			searchtree.clear();
 			basenode = baseelements;
 			std::sort(basenode.begin(), basenode.end());
+			basenode.shrink_to_fit();
 
 		}
 		const std::vector<tvdescriptor>& getcleandescriptors(const Core::FMToutputnode& targetnode,const std::vector<Core::FMTaction>& actions,
 										const std::vector<Core::FMTtheme>&themes, bool& exactnode) const
 		{
 			bool exact = false;
-			typename std::map<Core::FMToutputnode, std::vector<tvdescriptor>>::const_iterator parent = this->getparentnode(targetnode, actions, exact);
+			typename std::map<Core::FMToutputsource, std::vector<tvdescriptor>>::const_iterator parent = this->getparentnode(targetnode, actions, exact);
 			if (exact)
 			{
 				return parent->second;
@@ -75,11 +77,11 @@ namespace Graph
 			if (!exact)
 			{
 				std::vector<tvdescriptor>toremove;
-				for (typename std::map<Core::FMToutputnode, std::vector<tvdescriptor>>::const_reverse_iterator sit = searchtree.rbegin();
+				for (typename std::map<Core::FMToutputsource, std::vector<tvdescriptor>>::const_reverse_iterator sit = searchtree.rbegin();
 					sit != searchtree.rend(); sit++)
 				{
 
-					if (targetnode.source.getmask().isnotthemessubset(sit->first.source.getmask(), themes))//deal only with mask
+					if (targetnode.source.getmask().isnotthemessubset(sit->first.getmask(), themes))//deal only with mask
 					{
 						toremove.insert(toremove.end(), sit->second.begin(), sit->second.end());
 					}
@@ -94,7 +96,7 @@ namespace Graph
 				}
 			}
 			std::pair<notecacheit, bool> returniterator;
-			returniterator = searchtree.insert(std::pair<Core::FMToutputnode, std::vector<tvdescriptor>>(targetnode, cleaned));
+			returniterator = searchtree.insert(std::pair<Core::FMToutputsource, std::vector<tvdescriptor>>(targetnode.source, cleaned));
 			return (returniterator.first)->second;
 		}
 		void getactionrebuild(const Core::FMToutputnode& targetnode,
@@ -114,9 +116,9 @@ namespace Graph
 				for (notecacheit sit = searchtree.begin();
 					sit != searchtree.end(); sit++)
 				{
-					if (sit->first.issubsetof(targetnode, actions))
+					if (sit->first.issubsetof(targetnode.source, actions))
 					{
-						const std::string nodeaction = sit->first.source.getaction();
+						const std::string nodeaction = sit->first.getaction();
 						potentials[nodeaction].push_back(sit);
 					}
 				}
@@ -154,7 +156,7 @@ namespace Graph
 					if (insertingdone == potentials.size())
 					{
 						std::sort(finalselection.begin(), finalselection.end());
-						if ((*testting)->first.issamebutdifferentaction(targetnode)) //we got a exact match!!!
+						if ((*testting)->first.issamebutdifferentaction(targetnode.source)) //we got a exact match!!!
 						{
 							exactnode = true;
 							cleaned = finalselection;
@@ -174,7 +176,7 @@ namespace Graph
 		}
 		notecacheit getparentnode(const Core::FMToutputnode& targetnode, const std::vector<Core::FMTaction>& actions, bool& exactnode) const
 			{
-				notecacheit parentit = searchtree.find(targetnode);
+				notecacheit parentit = searchtree.find(targetnode.source);
 				if (parentit != searchtree.end())
 				{
 					exactnode = true;
@@ -184,7 +186,7 @@ namespace Graph
 				exactnode = false;
 				while (parentit != searchtree.end())
 				{
-					if (targetnode.issubsetof(parentit->first, actions))
+					if (targetnode.source.issubsetof(parentit->first, actions))
 					{
 						return parentit;
 					}
@@ -214,7 +216,7 @@ namespace Graph
 
 		void erasenode(const Core::FMToutputnode& node)
 			{
-			searchtree.erase(node);
+			searchtree.erase(node.source);
 			}
 
 		unsigned long long removelargest()
@@ -222,7 +224,7 @@ namespace Graph
 			size_t largestsize = 0;
 			unsigned long long  removedmemory = 0;
 			notecacheit largestiterator = searchtree.end();
-			for (typename std::map<Core::FMToutputnode, std::vector<tvdescriptor>>::iterator mapit = searchtree.begin(); mapit != searchtree.end(); mapit++)
+			for (typename std::map<Core::FMToutputsource, std::vector<tvdescriptor>>::iterator mapit = searchtree.begin(); mapit != searchtree.end(); mapit++)
 			{
 				size_t sizeofvec = mapit->second.size();
 				if (sizeofvec > largestsize)
@@ -247,7 +249,8 @@ namespace Graph
 			}
 		void setvalidverticies(const Core::FMToutputnode& targetnode,const std::vector<tvdescriptor>& verticies) const
 			{
-			searchtree[targetnode] = verticies;
+			searchtree[targetnode.source] = verticies;
+			searchtree[targetnode.source].shrink_to_fit();
 			}
 		void clear()
 		{

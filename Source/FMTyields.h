@@ -115,6 +115,12 @@ class FMTyields : public FMTlist<FMTyieldhandler>
 		*/
 		std::vector<double>get(const FMTdevelopment& dev,
 			const std::vector<std::string>& targets) const;
+		// DocString: FMTyields::getsingle
+		/**
+		This function is the main function used to get the yield value (target) for a given FMTdevelopement (dev),
+		looking at age,period,lock,mask etc... it returns  the yield value.
+		*/
+		double getsingle(const FMTdevelopment& dev,const std::string& target) const;
 		//std::map<std::string,double>getylds(const FMTdevelopment& dev,const FMTspec& spec) const;
 		// DocString: FMTyields::getylds
 		/**

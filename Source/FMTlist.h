@@ -119,6 +119,7 @@ namespace Core
 				}
 				data = newdata;
 				this->update();
+				data.shrink_to_fit();
 			}catch (...)
 				{
 				_exhandler->raisefromcatch("","FMTlist::presolvelist", __LINE__, __FILE__);
@@ -252,6 +253,7 @@ namespace Core
 						}
 						++location;
 					}
+					fastpass[newkey].shrink_to_fit();
 					}
 				}
 			return allhits;
@@ -277,6 +279,7 @@ namespace Core
 					newdata.push_back(std::pair<FMTmask, T>(filter.filter(object.first), object.second));
 				}
 				data = newdata;
+				data.shrink_to_fit();
 		}
 		// DocString: FMTlist::unshrink
 		/**

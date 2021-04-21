@@ -549,6 +549,7 @@ namespace Parser
 						}
 					}
 				}
+			outputs.shrink_to_fit();
 			}catch (...)
 				{
 				_exhandler->raisefromcatch("In " + _location + " at line " + std::to_string(_line),"FMToutputparser::read", __LINE__, __FILE__,_section);
