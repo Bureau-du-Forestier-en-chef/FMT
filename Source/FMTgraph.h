@@ -1075,11 +1075,11 @@ class FMTgraph : public Core::FMTobject
 				}
 				if (!output_node.source.isvariablelevel())
 				{
-					constexpr size_t minimalcachedrop = 25;//10 %
+					//constexpr size_t minimalcachedrop = 25;//10 %
 					std::vector<const Core::FMTaction*> selected;
 					if (isvalidouputnode(model, output_node, selected, node_period))
 					{
-						cleannodecaching();
+						//cleannodecaching();
 						for (const int& localnodeperiod : targetedperiods)
 						{
 							while (nodescache.size() != developments.size())
@@ -1096,6 +1096,8 @@ class FMTgraph : public Core::FMTobject
 							}
 							else {
 								std::vector<FMTvertex_descriptor>revisited;
+								revisited.reserve(descriptors.size());
+								locations.reserve(descriptors.size());
 								for (const FMTvertex_descriptor& potential : descriptors)
 								{
 									if (isvalidgraphnode(model, potential, output_node, selected))
@@ -1104,14 +1106,14 @@ class FMTgraph : public Core::FMTobject
 										locations.push_back(potential);
 									}
 								}
-								if (revisited.size()<=((descriptors.size()/100)*(100-minimalcachedrop)))//Dont add too much
-									{
+								//if (revisited.size()<=((descriptors.size()/100)*(100-minimalcachedrop)))//Dont add too much
+								//	{
 									std::sort(revisited.begin(), revisited.end());
 									nodescache.at(localnodeperiod).setvalidverticies(output_node, revisited);
-								}
+								/*}
 								else {
 									nodescache[localnodeperiod].erasenode(output_node);
-								}
+								}*/
 								
 							}
 						}

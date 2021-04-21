@@ -1127,6 +1127,7 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 			}
 		//elements.clear();
 		//solver.unmarkHotStart();
+		//*_logger << "setting done of " << std::string(constraint) << "\n";
 		return graph.getstats();
 		}
 

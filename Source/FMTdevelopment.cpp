@@ -223,8 +223,7 @@ namespace Core{
 		}
 	double FMTdevelopment::getinventorycoef(const FMTyields& ylds, const std::string& target_yield) const
 		{
-		const std::vector<std::string>targets(1, target_yield);
-		return *ylds.get(*this, targets).begin();
+		return ylds.getsingle(*this, target_yield);
 		}
 	double FMTdevelopment::getharvestcoef(const std::vector<FMTdevelopmentpath>& topaths,
 			const FMTaction& action,const FMTyields& ylds,const std::string& target_yield) const

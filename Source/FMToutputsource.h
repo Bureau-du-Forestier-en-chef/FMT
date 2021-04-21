@@ -140,7 +140,7 @@ class FMToutputsource : public FMTspec
 			const std::vector<FMTdevelopmentpath>& paths) const;
 		inline bool use(const FMTdevelopment& development, const FMTyields& ylds) const
 			{
-			return (mask && development.mask.issubsetof(mask) && development.is(*this, ylds));
+			return (/*mask && */development.mask.issubsetof(mask) && development.is(*this, ylds));
 			}
 		FMToutputsource presolve(const FMTmask& presolvedmask,const std::vector<FMTtheme>& newthemes) const;
 		void setaverage();

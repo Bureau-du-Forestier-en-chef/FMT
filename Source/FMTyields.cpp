@@ -209,14 +209,36 @@ FMTyields FMTyields::getfromfactor(const double& factor,
 	return newyields;
 	}
 
+double FMTyields::getsingle(const FMTdevelopment& dev,
+	const std::string& target) const
+{
+	try {
+		const std::vector<const FMTyieldhandler*>datas = this->findsets(dev.mask);
+		for (const FMTyieldhandler* data : datas)
+		{
+			if (data->elements.find(target) != data->elements.end())
+			{
+				return data->get(datas, target, dev.age, dev.period, dev.mask);
+			}
+		}
+
+	_exhandler->raise(Exception::FMTexc::FMTmissingyield,
+			target + " for development type " + std::string(dev),
+					"FMTyields::get", __LINE__, __FILE__, Core::FMTsection::Yield);
+	}catch (...)
+		{
+		_exhandler->raisefromcatch("for development type " + std::string(dev), "FMTyields::get", __LINE__, __FILE__);
+		}
+	return 0;
+}
+
 std::vector<double>FMTyields::get(const FMTdevelopment& dev,
 	const std::vector<std::string>& targets) const
 {
-	std::vector<double>values;
+	std::vector<double>values(targets.size());
 	try {
 		const std::vector<const FMTyieldhandler*>datas = this->findsets(dev.mask);
-		values.reserve(targets.size());
-		
+		size_t location = 0;
 		for (const std::string& name : targets)
 		{
 			bool gotyield = false;
@@ -224,7 +246,7 @@ std::vector<double>FMTyields::get(const FMTdevelopment& dev,
 			{
 				if (data->elements.find(name) != data->elements.end())
 				{
-					values.push_back(data->get(datas, name, dev.age, dev.period, dev.mask));
+					values[location] = data->get(datas, name, dev.age, dev.period, dev.mask);
 					gotyield = true;
 					break;
 				}
@@ -235,6 +257,7 @@ std::vector<double>FMTyields::get(const FMTdevelopment& dev,
 					name + " for development type " + std::string(dev),
 					"FMTyields::get", __LINE__, __FILE__, Core::FMTsection::Yield);
 			}
+			++location;
 		}
 			
 	}
