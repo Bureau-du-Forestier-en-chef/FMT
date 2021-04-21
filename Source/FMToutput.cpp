@@ -587,6 +587,23 @@ FMToutput FMToutput::presolve(const FMTmask& basemask,
 	return newoutput;
 	}
 
+void FMToutput::changeoutputsorigin(const std::set<int>& newoutputsorigin)
+	{
+		for (Core::FMToutputsource& source : sources)
+		{
+			const int oldorigin = source.getoutputorigin();
+			std::set<int>::const_iterator koit = newoutputsorigin.find(oldorigin);
+			int neworigin = std::distance(newoutputsorigin.begin(),koit);
+			if (koit==newoutputsorigin.end() && !(source.getmask().empty()))
+			{
+				_exhandler->raise(Exception::FMTexc::FMTignore,"The outputorigin "+std::to_string(oldorigin)+" for the mask "+std::string(source.getmask())+" is not in the newsoutputorigin after presolve",
+							"FMToutput::changeoutputsorigin", __LINE__, __FILE__);
+			}
+			//*_logger<<oldorigin<<neworigin<<"Next"<<"\n";
+			source.setoutputorigin(neworigin);
+		}
+	}
+
 std::vector<std::string> FMToutput::getdecomposition(const std::vector<FMTtheme>& themes) const
 	{
 	std::vector<std::string>validdecomp;

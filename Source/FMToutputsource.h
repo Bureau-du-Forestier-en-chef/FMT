@@ -79,6 +79,7 @@ class FMToutputsource : public FMTspec
 			}
 		void setmask(const FMTmask& newmask);
 		void setthemetarget(const int& newttarget);
+		void setoutputorigin(const int& neworigin);
 		inline const std::string& getaction() const
 			{
 			return action;
