@@ -54,10 +54,11 @@ void exportGraph()
 	bp::class_<Graph::FMTcarbonpredictor>("FMTcarbonpredictor", "@DocString(FMTcarbonpredictor)")
 		.def("getpredictors", &Graph::FMTcarbonpredictor::getpredictors,
 			"@DocString(FMTcarbonpredictor::getpredictors)")
-		.def("getpredictorsmap", &Graph::FMTcarbonpredictor::getpredictorsmap,
-			"@DocString(FMTcarbonpredictor::getpredictorsmap)");
+		.def("getpredictornames", &Graph::FMTcarbonpredictor::getpredictornames,
+			"@DocString(FMTcarbonpredictor::getpredictornames)");
 
 	define_pylist<Graph::FMTcarbonpredictor>();
+	define_pydict<int, int>();
 	define_pylist<std::vector<Graph::FMTcarbonpredictor>>();
 	bp::enum_<Graph::FMTgraphbuild>("FMTsolverinterface")
 		.value("schedulebuild", Graph::FMTgraphbuild::schedulebuild)

@@ -179,7 +179,7 @@ namespace Graph
 
 	}
 
-	std::vector<FMTcarbonpredictor>FMTlinegraph::getperiodcarbonpredictors(const int& period, const std::vector<std::string>& yieldnames, const Core::FMTyields& ylds) const
+	std::vector<FMTcarbonpredictor>FMTlinegraph::getperiodcarbonpredictors(const int& period, const std::map<int, int>& actionsindex, const std::vector<std::string>& yieldnames, const Core::FMTyields& ylds) const
 	{
 		std::vector<FMTcarbonpredictor>allpredictors;
 		try {
@@ -188,7 +188,7 @@ namespace Graph
 				const FMTvertex_descriptor& outv = devit.memoryobject;
 				if (periodstop(outv))
 					{
-					const std::vector<FMTcarbonpredictor>devpredictor = FMTgraph::getcarbonpredictors(outv, yieldnames, ylds);
+					const std::vector<FMTcarbonpredictor>devpredictor = FMTgraph::getcarbonpredictors(outv, actionsindex, yieldnames, ylds);
 					allpredictors.insert(allpredictors.end(), devpredictor.begin(), devpredictor.end());
 					}
 				}

@@ -1874,7 +1874,7 @@ class FMTgraph : public Core::FMTobject
 			return lastedge;
 		}
 
-		std::vector<FMTcarbonpredictor> getcarbonpredictors(const FMTvertex_descriptor& targetdescriptor, const std::vector<std::string>& yieldnames, const Core::FMTyields&yields) const
+		std::vector<FMTcarbonpredictor> getcarbonpredictors(const FMTvertex_descriptor& targetdescriptor, const std::map<int, int>& actionsindex, const std::vector<std::string>& yieldnames, const Core::FMTyields&yields) const
 			{
 			std::vector<FMTcarbonpredictor> predictors;
 			try {
@@ -1891,14 +1891,14 @@ class FMTgraph : public Core::FMTobject
 						int periodtolastdisturbance = 0;
 						const FMTbaseedgeproperties& lastdisturbance = data[*getlastdisturbance(sourceinedge_iterator, periodtolastdisturbance)];
 						const int gaptolastdisturbance = targetproperties.get().period- periodtolastdisturbance;
-						predictors.emplace_back(yieldnames, yields, sourceproperties, targetproperties, inedgeproperties,&lastdisturbance, gaptolastdisturbance);
+						predictors.emplace_back(actionsindex,yieldnames, yields, sourceproperties, targetproperties, inedgeproperties,&lastdisturbance, gaptolastdisturbance);
 						}
 					if (boost::in_degree(sourcevertex,data)==0)
 						{
-						predictors.emplace_back(yieldnames, yields, sourceproperties, targetproperties, inedgeproperties);
+						predictors.emplace_back(actionsindex,yieldnames, yields, sourceproperties, targetproperties, inedgeproperties);
 						}	
 				}
-
+			predictors.shrink_to_fit();
 			}catch (...)
 				{
 				_exhandler->raisefromcatch("", "FMTgraph::getcarbonpredictors", __LINE__, __FILE__);
