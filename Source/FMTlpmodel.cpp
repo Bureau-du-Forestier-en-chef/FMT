@@ -967,7 +967,9 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 					for (int period = first_period; period <= last_period; ++period)
 					{
 						if (containsmatrixelements(constraint,period)&&
-							(!constraint.acrossperiod()|| (constraint.acrossperiod()&&containsmatrixelements(constraint, period+1))))
+							(!constraint.acrossperiod()||
+							(constraint.acrossperiod()&&containsmatrixelements(constraint, period+1)&&
+							!(lower_variation!=0 && constraint_type == Core::FMTconstrainttype::FMTevenflow))))
 							{
 							//If you get here your are probably making replanning if not you are not suppose to fall here!
 							continue;

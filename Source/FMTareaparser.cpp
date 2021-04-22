@@ -350,6 +350,7 @@ namespace Parser{
 
 	std::vector<std::vector<Graph::FMTcarbonpredictor>> FMTareaparser::writecarbonpredictors(const std::string& location,
 		const Spatial::FMTspatialschedule& spatialsolution,
+		const std::map<int, int>& actionsindex,
 		const std::vector<std::string>& yieldnames,
 		const Core::FMTyields& yields,
 		const int& period) const
@@ -360,7 +361,7 @@ namespace Parser{
 			//transitions = disturbances.getGCBMtransitions(lastdistlayer, actions, themes, period);
 			if (!spatialsolution.empty())
 			{
-				predictors = spatialsolution.getcarbonpredictors(predictorids, yieldnames, yields, period);
+				predictors = spatialsolution.getcarbonpredictors(predictorids, actionsindex, yieldnames, yields, period);
 				std::map<int, std::string>mapping;
 				writelayer<int>(predictorids, getperiodpathname(location, period,"PREDID"), mapping);
 			}

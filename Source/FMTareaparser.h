@@ -193,6 +193,7 @@ class FMTareaparser : public FMTparser
 		*/
 		std::vector<std::vector<Graph::FMTcarbonpredictor>> writecarbonpredictors(const std::string& location,
 															const Spatial::FMTspatialschedule& spatialsolution,
+															const std::map<int, int>& actionsindex,
 															const std::vector<std::string>& yieldnames,
 															const Core::FMTyields& yields,
 															const int& period) const;

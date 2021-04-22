@@ -16,7 +16,7 @@ namespace Graph
 	}
 
 
-	FMTcarbonpredictor::FMTcarbonpredictor(const std::vector<std::string>& yieldnames, const Core::FMTyields& yields,
+	FMTcarbonpredictor::FMTcarbonpredictor(const std::map<int, int>& actionsindex, const std::vector<std::string>& yieldnames, const Core::FMTyields& yields,
 		const FMTbasevertexproperties& source, const FMTbasevertexproperties& target,
 		const FMTbaseedgeproperties& edge,const FMTbaseedgeproperties* lastedge,int lperiodgap):
 		source_edge(lastedge),
@@ -25,12 +25,19 @@ namespace Graph
 		target_vertex(&target),
 		source_yields(getyields(source,yields,yieldnames)),
 		target_yields(getyields(target, yields, yieldnames)),
-		periodgap(lperiodgap)
+		periodgap(lperiodgap),
+		sourceaction(),
+		targetaction()
 
 
 	{
-		
-
+		double sourceedgevalue = -2;
+		if (source_edge != nullptr)
+		{
+			sourceedgevalue = static_cast<double>(source_edge->getactionID());
+		}
+		sourceaction = actionsindex.at(sourceedgevalue);
+		targetaction = actionsindex.at(target_edge->getactionID());
 	}
 	FMTcarbonpredictor::FMTcarbonpredictor(const FMTcarbonpredictor& rhs) :
 		source_edge(rhs.source_edge),
@@ -39,7 +46,9 @@ namespace Graph
 		target_vertex(rhs.target_vertex),
 		source_yields(rhs.source_yields),
 		target_yields(rhs.target_yields),
-		periodgap(rhs.periodgap)
+		periodgap(rhs.periodgap),
+		sourceaction(rhs.sourceaction),
+		targetaction(rhs.targetaction)
 	{
 
 	}
@@ -54,6 +63,8 @@ namespace Graph
 			source_yields = rhs.source_yields;
 			target_yields = rhs.target_yields;
 			periodgap = rhs.periodgap;
+			sourceaction=rhs.sourceaction;
+			targetaction=rhs.targetaction;
 		}
 	return *this;
 	}
@@ -75,25 +86,20 @@ namespace Graph
 	std::vector<double>FMTcarbonpredictor::getpredictors() const
 	{
 		std::vector<double>returned(5,0);
-		double sourceedgevalue = -2;
-		if (source_edge != nullptr)
-			{
-			sourceedgevalue = static_cast<double>(source_edge->getactionID());
-			}
 		int theestimatedgap = periodgap;
 		if (periodgap == -1)
 			{
 			theestimatedgap = source_vertex->get().age;
 			}
 		returned[0] = static_cast<double>(theestimatedgap);
-		returned[1]= sourceedgevalue;
+		returned[1]= static_cast<double>(sourceaction);
 		returned[2]= static_cast<double>(source_vertex->get().age);
 		returned[3] = static_cast<double>(source_vertex->get().lock);
 		returned[4] = static_cast<double>(source_vertex->get().period);
 		returned.insert(returned.end(), source_yields.begin(), source_yields.end());
 		const size_t thesize = returned.size();
 		returned.resize(thesize + 4);
-		returned[thesize] = static_cast<double>(target_edge->getactionID());
+		returned[thesize] = static_cast<double>(targetaction);
 		returned[thesize+1] = static_cast<double>(target_vertex->get().age);
 		returned[thesize+2] = static_cast<double>(target_vertex->get().lock);
 		returned[thesize+3] = static_cast<double>(target_vertex->get().period);
@@ -102,7 +108,7 @@ namespace Graph
 		return returned;
 	}
 
-	std::map<std::string, double>FMTcarbonpredictor::getpredictorsmap(const std::vector<std::string>& yieldnames, const std::vector<int>& actionsindex)const
+	std::vector<std::string>FMTcarbonpredictor::getpredictornames(const std::vector<std::string>& yieldnames)const
 	{
 		const std::vector<std::string>devpredictornames = { "disturbance","age","lock","period" };
 		std::vector<std::string>predictornames;
@@ -123,18 +129,8 @@ namespace Graph
 			{
 			predictornames.push_back("target_" + name);
 			}
-		const std::vector<double>predictor_values= getpredictors();
-		std::map<std::string, double>mapping;
-		for (size_t predid = 0; predid < predictor_values.size();++predid)
-			{
-			double value = predictor_values.at(predid);
-			if (value>=0 && (predid == 1 || predid == (yieldnames.size() + 5)))
-				{
-				value = static_cast<double>(actionsindex.at(static_cast<int>(value)));
-				}
-			mapping[predictornames.at(predid)] = value;
-			}
-		return mapping;
+		predictornames.shrink_to_fit();
+		return predictornames;
 	}
 
 }

@@ -1148,7 +1148,7 @@ namespace Spatial
 		return distlayer;
 	}
 
-	std::vector<std::vector<Graph::FMTcarbonpredictor>>FMTspatialschedule::getcarbonpredictors(FMTlayer<int>& predictorids, const std::vector<std::string>& yieldnames, const Core::FMTyields& yields, const int& period) const
+	std::vector<std::vector<Graph::FMTcarbonpredictor>>FMTspatialschedule::getcarbonpredictors(FMTlayer<int>& predictorids,const std::map<int, int>& actionsindex, const std::vector<std::string>& yieldnames, const Core::FMTyields& yields, const int& period) const
 	{
 		std::vector<std::vector<Graph::FMTcarbonpredictor>>predictors;
 		try {
@@ -1162,7 +1162,7 @@ namespace Spatial
 			std::vector<std::set<std::vector<Graph::FMTcarbonpredictor>>::iterator>predictorlocalisations;
 			for (std::map<FMTcoordinate, Graph::FMTlinegraph>::const_iterator graphit = this->mapping.begin(); graphit != this->mapping.end(); ++graphit)
 				{
-				const std::vector<Graph::FMTcarbonpredictor> graphpredictors = graphit->second.getperiodcarbonpredictors(period, yieldnames, yields);
+				const std::vector<Graph::FMTcarbonpredictor> graphpredictors = graphit->second.getperiodcarbonpredictors(period, actionsindex, yieldnames, yields);
 				std::set<std::vector<Graph::FMTcarbonpredictor>>::iterator setit = predictorsset.end();
 				if (!graphpredictors.empty())
 				{
