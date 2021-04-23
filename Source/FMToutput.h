@@ -11,6 +11,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <vector>
 #include <string>
 #include <stack>
+#include <set>
 #include "FMToutputsource.h"
 #include "FMToperator.h"
 #include "FMTexpression.h"
