@@ -309,6 +309,12 @@ class FMToutput: public FMTobject
 		const FMTmask& presolvedmask,
 		const std::vector<FMTtheme>& newthemes,
 		const std::vector<FMTaction>& actions,const FMTyields& yields) const;
+	// DocString: FMToutput::changeoutputsorigin
+	/**
+	Change outputorigin and targetthemeid of each source with the distance from the begining of the set corresponding to the old outputorigin and themeid.
+	Every output origin in the sources must be in the set. Normally used after presolve when some output are removed. Could also be overided with map.
+	*/
+	void changesourcesid(const std::set<int>& newoutputsorigin,const std::set<int>& newthemeid);
 	// DocString: FMToutput::setperiod
 	/**
 	Set the outputsource to one period.

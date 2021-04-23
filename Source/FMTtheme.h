@@ -277,12 +277,15 @@ class FMTtheme : public FMTobject
 		// DocString: FMTthemecomparator::base_theme
 		///The theme that we are looking for
 		FMTtheme base_theme;
+		// DocString: FMTthemecomparator::comparedwithpresolved
+		///If true, the comparator is different
+		bool comparedwithpresolved;
 	public:
-		// DocString: FMTthemecomparator(const FMTtheme&)
+		// DocString: FMTthemecomparator(const FMTtheme&,const bool&)
 		/**
 		FMTthemecomparator constructor ltheme_mask is the theme of that we want to match.
 		*/
-		FMTthemecomparator(const FMTtheme& lbase_theme);
+		FMTthemecomparator(const FMTtheme& lbase_theme,const bool& lcomparedwithpresolved=false);
 		// DocString: FMTthemecomparatorr::operator()(const FMTtheme&)
 		/**
 		Matching test operator for FMTthemecomparator.

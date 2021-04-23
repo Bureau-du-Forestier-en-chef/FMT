@@ -508,14 +508,26 @@ FMTtheme FMTtheme::presolve(const FMTmask& basemask, size_t& newid, size_t& news
 	}
 
 
-FMTthemecomparator::FMTthemecomparator(const FMTtheme& lbase_theme): base_theme(lbase_theme)
+FMTthemecomparator::FMTthemecomparator(const FMTtheme& lbase_theme, const bool& lcomparedwithpresolved): base_theme(lbase_theme),comparedwithpresolved(lcomparedwithpresolved)
 	{
 
 	}
 
 bool FMTthemecomparator::operator()(const FMTtheme& theme) const
 	{
-	return (theme == base_theme);
+	if (!comparedwithpresolved)
+	{
+		return (theme == base_theme);
+	}else{
+		for (const std::string& attribute : theme.getbaseattributes())
+		{
+			if (!base_theme.isattribute(attribute))
+			{
+				return false;
+			}
+		}
+		return true;
+	}
 	}
 
 

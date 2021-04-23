@@ -219,6 +219,10 @@ void FMToutputsource::setthemetarget(const int& newttarget)
 	{
 		themetarget=newttarget;
 	}
+void FMToutputsource::setoutputorigin(const int& neworigin)
+	{
+		outputorigin=neworigin;
+	}
 
 bool FMToutputsource::issubsetof(const FMToutputsource& rhs) const
 	{
