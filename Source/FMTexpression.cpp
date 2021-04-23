@@ -36,7 +36,7 @@ FMTexpression::operator std::string() const
         {
         exx+=" "+value;
         }
-    exx.pop_back();
+    //exx.pop_back();
     return exx;
     }
 
@@ -140,6 +140,7 @@ FMTexpression FMTexpression::simplify(std::map<std::string,double>& values) cons
             }
         }
     double rest = this->shuntingyard(shuntvalues);
+	
     values["RHS"] = -rest;
 	std::vector<std::string>new_expression;
     for (std::map<std::string,double>::iterator shuntit = shuntvalues.begin(); shuntit != shuntvalues.end(); shuntit++)
@@ -152,7 +153,7 @@ FMTexpression FMTexpression::simplify(std::map<std::string,double>& values) cons
             values[shuntit->first] = variable_factor;
             new_expression.push_back(shuntit->first);
             new_expression.push_back("*");
-             if (variable_factor > 0)
+            if (variable_factor > 0)
                 {
                 new_expression.push_back(std::to_string(variable_factor));
                 }else{
@@ -163,7 +164,7 @@ FMTexpression FMTexpression::simplify(std::map<std::string,double>& values) cons
             }
         shuntit->second = 0; //unset
         }
-    new_expression.pop_back();
+	new_expression.pop_back();
     if (rest != 0)
         {
         if (rest > 0)

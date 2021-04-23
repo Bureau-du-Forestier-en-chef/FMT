@@ -526,11 +526,8 @@ FMToutput FMToutput::presolve(const FMTmask& basemask,
 		std::vector<FMToutputsource>newsources;
 		std::vector<FMToperator>newoperators;
 		size_t operatorid = 0;
-		int lastnotpushed = -10;
-		/*if (!presolvedmask.empty())
-		{
-			newoutput.theme_target = -1;
-		}*/
+		bool pushfactor = true;
+		bool turntonegative = false;
 		for (size_t sourceid = 0; sourceid < sources.size(); ++sourceid)
 		{
 			bool pushedsource = true;
@@ -540,43 +537,59 @@ FMToutput FMToutput::presolve(const FMTmask& basemask,
 				const std::string actionname = sources.at(sourceid).getaction();
 				if ((!sources.at(sourceid).getmask().isnotthemessubset(basemask, originalthemes)) &&
 					(actionname.empty() ||
-						std::find_if(actions.begin(), actions.end(), FMTactioncomparator(actionname, true)) != actions.end()) &&
+						std::find_if(actions.begin(), actions.end(), FMTactioncomparator(actionname, true)) != actions.end()) && 
 						(yieldname.empty() || !yields.isnullyld(yieldname)))
 				{
 					FMToutputsource newsource = sources.at(sourceid);
+					
 					if (!presolvedmask.empty())
 					{
 						newsource = newsource.presolve(presolvedmask, newthemes);
+						newsources.push_back(newsource);
+						pushfactor = true;
+					}else {
+						pushedsource = false;
 					}
-					newsources.push_back(newsource);
+					
 				}
 				else {
 					pushedsource = false;
-					lastnotpushed = static_cast<int>(sourceid);
 				}
 			}
-			else if (!sources.at(sourceid).isvariable() && (sources.at(sourceid).islevel() || (sources.at(sourceid).istimeyield() && !yields.isnullyld(yieldname)) ||
-				(sources.at(sourceid).isconstant() && lastnotpushed != static_cast<int>(sourceid - 1))))
+			else if (pushfactor&&!sources.at(sourceid).isvariable() && (sources.at(sourceid).islevel() || (sources.at(sourceid).istimeyield() && !yields.isnullyld(yieldname)) ||
+				(sources.at(sourceid).isconstant())))
 			{
 				pushedsource = true;
-				newsources.push_back(sources.at(sourceid));
+				if (turntonegative)
+				{
+					newsources.push_back(FMToutputsource(sources.at(sourceid).gettarget(),
+						sources.at(sourceid).getvalue()*-1,
+						sources.at(sourceid).getyield(),
+						sources.at(sourceid).getaction(),
+						sources.at(sourceid).getoutputorigin(),
+						sources.at(sourceid).getthemetarget()));
+				}
+				else {
+					newsources.push_back(sources.at(sourceid));
+				}
 			}
 			else {
 				pushedsource = false;
 			}
-
-			if (operatorid < operators.size() && pushedsource && sourceid>0)
+			turntonegative = false;
+			if (operatorid < operators.size() && pushedsource)
 			{
 				newoperators.push_back(operators.at(operatorid));
-			}
-			if (sourceid > 0)
+			}else if (operatorid < operators.size() && !pushedsource
+				&&operators.at(operatorid).isfactor())
 			{
-				++operatorid;
-			}
-			if (pushedsource)
-			{
-				lastnotpushed = -10;
-			}
+				pushfactor = false;
+			}else if (operatorid < operators.size() && !pushedsource&&
+				operators.at(operatorid).call(1,1)==0)
+				{
+				turntonegative = true;
+				}
+		++operatorid;
 		}
 		newoutput.sources = newsources;
 		newoutput.operators = newoperators;
