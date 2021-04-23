@@ -31,10 +31,10 @@ namespace Graph
 
 
 	{
-		double sourceedgevalue = -2;
+		int sourceedgevalue = -2;
 		if (source_edge != nullptr)
 		{
-			sourceedgevalue = static_cast<double>(source_edge->getactionID());
+			sourceedgevalue = source_edge->getactionID();
 		}
 		sourceaction = actionsindex.at(sourceedgevalue);
 		targetaction = actionsindex.at(target_edge->getactionID());

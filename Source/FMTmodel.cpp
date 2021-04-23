@@ -872,6 +872,7 @@ std::unique_ptr<FMTmodel> FMTmodel::presolve(int presolvepass,std::vector<Core::
 		Core::FMTmask oldselectedattributes;
 		//Passiterator
 		bool didonepass = false;
+		//_logger->redirectofile("C:/Users/cyrgu3/Desktop/test/nodes.txt");
 		while (presolvepass > 0)
 		{
 			//Presolved data
