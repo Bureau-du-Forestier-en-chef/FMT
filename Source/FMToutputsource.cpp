@@ -126,7 +126,7 @@ FMToutputsource::operator std::string() const
                 {
                 line += std::to_string(lvalue) + " ";
                 }
-            if (!line.empty())
+            if (!values.empty())
                 {
                 line.pop_back();
                 }
@@ -173,7 +173,7 @@ FMToutputsource::operator std::string() const
                     {
                     line += std::to_string(lvalue) + " ";
                     }
-                 if (!line.empty())
+                 if (!values.empty())
                     {
                     line.pop_back();
                     }
