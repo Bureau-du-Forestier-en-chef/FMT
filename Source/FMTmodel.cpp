@@ -904,14 +904,18 @@ std::unique_ptr<FMTmodel> FMTmodel::presolve(int presolvepass,std::vector<Core::
 			size_t themeid = 0;
 			size_t themestart = 0;
 			size_t themedataremoved = 0;
+			std::set<int> keptthemeid;
+			int oldthemeid = 0;
 			for (const Core::FMTtheme& theme : oldthemes)
 			{
 				const Core::FMTtheme presolvedtheme = theme.presolve(basemask, themeid, themestart, selectedattributes);
 				if (!presolvedtheme.empty())
 				{
 					themedataremoved += (theme.size() - presolvedtheme.size());
+					keptthemeid.insert(oldthemeid);
 					newthemes.push_back(presolvedtheme);
 				}
+				oldthemeid+=1;
 			}
 			if (!selectedattributes.empty())
 			{
@@ -953,24 +957,24 @@ std::unique_ptr<FMTmodel> FMTmodel::presolve(int presolvepass,std::vector<Core::
 			//Outputs and data
 			size_t outputdataremoved = 0;
 			std::set<int> keptoutputid;
-			int oldid=0;
+			int oloutputdid=0;
 			for (const Core::FMToutput& output : oldoutputs)
 			{
 				const Core::FMToutput presolvedoutput = output.presolve(basemask, oldthemes, selectedattributes, newthemes, newactions, oldyields);
 				outputdataremoved += (output.size() - presolvedoutput.size());
 				if(!presolvedoutput.empty())
 				{
-					keptoutputid.insert(oldid);
+					keptoutputid.insert(oloutputdid);
 					newoutputs.push_back(presolvedoutput);
 				}
-				oldid+=1;
+				oloutputdid+=1;
 			}
 			for (Core::FMToutput& output : newoutputs)
 			{
-				output.changeoutputsorigin(keptoutputid);
+				output.changesourcesid(keptoutputid,keptthemeid);
 			}
 			//Constraints and data
-			//Add feature to automatically put the output[0] as constant in sources
+			//Add feature to automatically interpret the output[0] as constant in sources
 			size_t constraintdataremoved = 0;
 			for (const Core::FMTconstraint& constraint : oldconstraints)
 			{
@@ -978,7 +982,7 @@ std::unique_ptr<FMTmodel> FMTmodel::presolve(int presolvepass,std::vector<Core::
 				constraintdataremoved += (constraint.size() - presolvedconstraint.size());
 				if (!presolvedconstraint.outputempty())
 				{
-					presolvedconstraint.changeoutputsorigin(keptoutputid);
+					presolvedconstraint.changesourcesid(keptoutputid,keptthemeid);
 					newconstraints.push_back(presolvedconstraint);
 				}
 			}
