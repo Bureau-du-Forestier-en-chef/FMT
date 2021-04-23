@@ -587,20 +587,35 @@ FMToutput FMToutput::presolve(const FMTmask& basemask,
 	return newoutput;
 	}
 
-void FMToutput::changeoutputsorigin(const std::set<int>& newoutputsorigin)
+void FMToutput::changesourcesid(const std::set<int>& newoutputsorigin,const std::set<int>& newthemeid)
 	{
 		for (Core::FMToutputsource& source : sources)
 		{
 			const int oldorigin = source.getoutputorigin();
 			std::set<int>::const_iterator koit = newoutputsorigin.find(oldorigin);
-			int neworigin = std::distance(newoutputsorigin.begin(),koit);
+			const int neworigin = std::distance(newoutputsorigin.begin(),koit);
 			if (koit==newoutputsorigin.end() && !(source.getmask().empty()))
 			{
 				_exhandler->raise(Exception::FMTexc::FMTignore,"The outputorigin "+std::to_string(oldorigin)+" for the mask "+std::string(source.getmask())+" is not in the newsoutputorigin after presolve",
 							"FMToutput::changeoutputsorigin", __LINE__, __FILE__);
+			}else if(oldorigin!=neworigin)
+			{
+				source.setoutputorigin(neworigin);
 			}
-			//*_logger<<oldorigin<<neworigin<<"Next"<<"\n";
-			source.setoutputorigin(neworigin);
+			const int oldthemetarget = source.getthemetarget();
+			if (oldthemetarget >= 0)
+			{
+				std::set<int>::const_iterator ktit = newthemeid.find(oldthemetarget);
+				int newtarget = std::distance(newthemeid.begin(),ktit);
+				if (ktit==newoutputsorigin.end())
+				{
+					newtarget = -1;
+				}
+				if (oldthemetarget!=newtarget)
+				{
+					source.setthemetarget(newtarget);
+				}
+			}
 		}
 	}
 
