@@ -245,6 +245,7 @@ void exportCore()
 			define_FMTlist<Core::FMToutputnode>();
 
 			bp::class_<Core::FMToutput>("FMToutput", "@DocString(FMToutput)")
+				.def(bp::init<const Core::FMToutput&>())
 				.def_pickle(FMT_pickle_suite<Core::FMTtransition>())
                 .def("getname",&Core::FMToutput::getname,
 					"@DocString(FMToutput::getname)")
