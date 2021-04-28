@@ -93,7 +93,7 @@ std::string FMTmask::get(const std::vector<FMTtheme>& themes) const
     }
 void FMTmask::set(const std::vector<FMTtheme>& themes,const std::string& value)
     {
-    name = value;
+	name = value;
 	std::vector<std::string>bases;
     boost::split(bases,value,boost::is_any_of(FMT_STR_SEPARATOR),boost::token_compress_on);
     size_t fullsize = 0;

@@ -1874,29 +1874,59 @@ class FMTgraph : public Core::FMTobject
 			return lastedge;
 		}
 
-		std::vector<FMTcarbonpredictor> getcarbonpredictors(const FMTvertex_descriptor& targetdescriptor, const std::map<int, int>& actionsindex, const std::vector<std::string>& yieldnames, const Core::FMTyields&yields) const
+		void filluplastactions(const int& targetperiod,const FMTvertex_descriptor& targetdescriptor,std::vector<const FMTbaseedgeproperties*>& lastactions, std::vector<int>& distances,const size_t& depth) const
+		{
+			try {
+				std::queue<FMTvertex_descriptor>activevertex;
+				activevertex.push(targetdescriptor);
+				while (!activevertex.empty()&&lastactions.size() <= depth)
+				{
+					FMTvertex_descriptor descriptor = activevertex.front();
+					activevertex.pop();
+					FMTinedge_iterator inedge_iterator, inedge_end;
+					for (boost::tie(inedge_iterator, inedge_end) = boost::in_edges(descriptor, data); inedge_iterator != inedge_end; ++inedge_iterator)
+					{
+						const FMTbaseedgeproperties& inedgeproperties = data[*inedge_iterator];
+						const FMTvertex_descriptor& sourcevertex = boost::source(*inedge_iterator, data);
+						activevertex.push(sourcevertex);
+						lastactions.push_back(&inedgeproperties);
+						distances.push_back(targetperiod - data[sourcevertex].get().period);
+					}
+				}
+			}
+			catch (...)
+			{
+				_exhandler->raisefromcatch("", "FMTgraph::filluplastactions", __LINE__, __FILE__);
+			}
+
+		}
+
+
+
+		std::vector<FMTcarbonpredictor> getcarbonpredictors(const FMTvertex_descriptor& targetdescriptor, const std::map<int, int>& actionsindex,
+			const std::vector<std::string>& yieldnames, const Core::FMTyields&yields,const size_t& depth) const
 			{
 			std::vector<FMTcarbonpredictor> predictors;
 			try {
 				FMTinedge_iterator inedge_iterator, inedge_end;
 				const FMTbasevertexproperties& targetproperties = data[targetdescriptor];
+				const int targetperiod = targetproperties.get().period;
 				for (boost::tie(inedge_iterator, inedge_end) = boost::in_edges(targetdescriptor, data); inedge_iterator != inedge_end; ++inedge_iterator)
 				{
-					const FMTbaseedgeproperties& inedgeproperties = data[*inedge_iterator];
+					std::vector<const FMTbaseedgeproperties*>lastactions;
+					std::vector<int>distances;
 					const FMTvertex_descriptor& sourcevertex = boost::source(*inedge_iterator, data);
 					const FMTbasevertexproperties& sourceproperties = data[sourcevertex];
-					FMTinedge_iterator sourceinedge_iterator, sourceinedge_end;
-					for (boost::tie(sourceinedge_iterator, sourceinedge_end) = boost::in_edges(sourcevertex, data); sourceinedge_iterator != sourceinedge_end; ++sourceinedge_iterator)
+					lastactions.push_back(&data[*inedge_iterator]);
+					distances.push_back(targetperiod-sourceproperties.get().period);
+					filluplastactions(targetperiod, sourcevertex, lastactions, distances, depth);
+					while (lastactions.size()<= depth)
 						{
-						int periodtolastdisturbance = 0;
-						const FMTbaseedgeproperties& lastdisturbance = data[*getlastdisturbance(sourceinedge_iterator, periodtolastdisturbance)];
-						const int gaptolastdisturbance = targetproperties.get().period- periodtolastdisturbance;
-						predictors.emplace_back(actionsindex,yieldnames, yields, sourceproperties, targetproperties, inedgeproperties,&lastdisturbance, gaptolastdisturbance);
+						lastactions.push_back(nullptr);
+						distances.push_back(-1);
 						}
-					if (boost::in_degree(sourcevertex,data)==0)
-						{
-						predictors.emplace_back(actionsindex,yieldnames, yields, sourceproperties, targetproperties, inedgeproperties);
-						}	
+
+					predictors.emplace_back(actionsindex, yieldnames, yields, sourceproperties, targetproperties, lastactions, distances);
 				}
 			predictors.shrink_to_fit();
 			}catch (...)

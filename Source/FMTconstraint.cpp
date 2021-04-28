@@ -158,6 +158,33 @@ namespace Core
 		return false;
 		}
 
+
+	Core::FMTconstraint FMTconstraint::getiterationchange(const std::vector<double>& periodchanges) const
+	{
+		Core::FMTconstraint newconstraint(*this);
+		try {
+			const int period = newconstraint.getperiodlowerbound();
+			double lower = 0;
+			double upper = 0;
+			getbounds(lower, upper);
+			if (lower!= std::numeric_limits<double>::lowest())
+			{
+				lower = periodchanges.at(period - 1);
+			}
+			if (upper!= std::numeric_limits<double>::infinity())
+			{
+				upper = periodchanges.at(period - 1);
+			}
+				newconstraint.setrhs(lower,upper);
+		}
+		catch (...)
+		{
+			_exhandler->printexceptions("", "FMTconstraint::getiterationchange", __LINE__, __FILE__, Core::FMTsection::Optimize);
+		}
+		return newconstraint;
+	}
+
+
 	Core::FMTconstraint FMTconstraint::settoglobal(const double& value) const
 	{
 		Core::FMTconstraint newconstraint(*this);
