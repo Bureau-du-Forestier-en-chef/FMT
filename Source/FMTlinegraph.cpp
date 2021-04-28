@@ -188,7 +188,7 @@ namespace Graph
 				const FMTvertex_descriptor& outv = devit.memoryobject;
 				if (periodstop(outv))
 					{
-					const std::vector<FMTcarbonpredictor>devpredictor = FMTgraph::getcarbonpredictors(outv, actionsindex, yieldnames, ylds);
+					const std::vector<FMTcarbonpredictor>devpredictor = FMTgraph::getcarbonpredictors(outv, actionsindex, yieldnames, ylds,3);
 					allpredictors.insert(allpredictors.end(), devpredictor.begin(), devpredictor.end());
 					}
 				}

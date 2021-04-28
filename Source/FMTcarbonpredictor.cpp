@@ -17,38 +17,33 @@ namespace Graph
 
 
 	FMTcarbonpredictor::FMTcarbonpredictor(const std::map<int, int>& actionsindex, const std::vector<std::string>& yieldnames, const Core::FMTyields& yields,
-		const FMTbasevertexproperties& source, const FMTbasevertexproperties& target,
-		const FMTbaseedgeproperties& edge,const FMTbaseedgeproperties* lastedge,int lperiodgap):
-		source_edge(lastedge),
-		target_edge(&edge),
+		const FMTbasevertexproperties& source, const FMTbasevertexproperties& target, const std::vector<const FMTbaseedgeproperties*>& edges, const std::vector<int>& gaps):
 		source_vertex(&source),
 		target_vertex(&target),
 		source_yields(getyields(source,yields,yieldnames)),
 		target_yields(getyields(target, yields, yieldnames)),
-		periodgap(lperiodgap),
-		sourceaction(),
-		targetaction()
+		periodgaps(gaps),
+		sourceactions()
 
 
 	{
-		int sourceedgevalue = -2;
-		if (source_edge != nullptr)
-		{
-			sourceedgevalue = source_edge->getactionID();
-		}
-		sourceaction = actionsindex.at(sourceedgevalue);
-		targetaction = actionsindex.at(target_edge->getactionID());
+		for (const FMTbaseedgeproperties* edgeprop : edges)
+			{
+			if (edgeprop!=nullptr)
+				{
+				sourceactions.push_back(actionsindex.at(edgeprop->getactionID()));
+			}else {
+				sourceactions.push_back(actionsindex.at(-2));
+				}
+			}
 	}
 	FMTcarbonpredictor::FMTcarbonpredictor(const FMTcarbonpredictor& rhs) :
-		source_edge(rhs.source_edge),
-		target_edge(rhs.target_edge),
 		source_vertex(rhs.source_vertex),
 		target_vertex(rhs.target_vertex),
 		source_yields(rhs.source_yields),
 		target_yields(rhs.target_yields),
-		periodgap(rhs.periodgap),
-		sourceaction(rhs.sourceaction),
-		targetaction(rhs.targetaction)
+		periodgaps(rhs.periodgaps),
+		sourceactions(rhs.sourceactions)
 	{
 
 	}
@@ -56,15 +51,12 @@ namespace Graph
 	{
 		if (this!=&rhs)
 		{
-			source_edge = rhs.source_edge;
-			target_edge = rhs.target_edge;
 			source_vertex = rhs.source_vertex;
 			target_vertex = rhs.target_vertex;
 			source_yields = rhs.source_yields;
 			target_yields = rhs.target_yields;
-			periodgap = rhs.periodgap;
-			sourceaction=rhs.sourceaction;
-			targetaction=rhs.targetaction;
+			periodgaps = rhs.periodgaps;
+			sourceactions=rhs.sourceactions;
 		}
 	return *this;
 	}
@@ -85,24 +77,29 @@ namespace Graph
 	}
 	std::vector<double>FMTcarbonpredictor::getpredictors() const
 	{
-		std::vector<double>returned(5,0);
-		int theestimatedgap = periodgap;
-		if (periodgap == -1)
+		std::vector<double>returned;
+		for (size_t actid = 1; actid < sourceactions.size();++actid)
 			{
-			theestimatedgap = source_vertex->get().age;
+			if (periodgaps.at(actid)<0)
+				{
+				returned.push_back(std::numeric_limits<double>::signaling_NaN());
+			}else {
+				returned.push_back(static_cast<double>(periodgaps.at(actid)));
+				}
+			returned.push_back(static_cast<double>(sourceactions.at(actid)));
 			}
-		returned[0] = static_cast<double>(theestimatedgap);
-		returned[1]= static_cast<double>(sourceaction);
-		returned[2]= static_cast<double>(source_vertex->get().age);
-		returned[3] = static_cast<double>(source_vertex->get().lock);
-		returned[4] = static_cast<double>(source_vertex->get().period);
+		returned.push_back(static_cast<double>(source_vertex->get().age));
+		returned.push_back(static_cast<double>(source_vertex->get().period));
 		returned.insert(returned.end(), source_yields.begin(), source_yields.end());
-		const size_t thesize = returned.size();
-		returned.resize(thesize + 4);
-		returned[thesize] = static_cast<double>(targetaction);
-		returned[thesize+1] = static_cast<double>(target_vertex->get().age);
-		returned[thesize+2] = static_cast<double>(target_vertex->get().lock);
-		returned[thesize+3] = static_cast<double>(target_vertex->get().period);
+		double gap = periodgaps.at(0);
+		if (sourceactions.at(0)==-2)
+		{
+			gap = std::numeric_limits<double>::signaling_NaN();
+		}
+		returned.push_back(static_cast<double>(gap));
+		returned.push_back(static_cast<double>(sourceactions.at(0)));
+		returned.push_back(static_cast<double>(target_vertex->get().age));
+		returned.push_back(static_cast<double>(target_vertex->get().period));
 		returned.insert(returned.end(), target_yields.begin(), target_yields.end());
 		returned.shrink_to_fit();
 		return returned;
@@ -110,25 +107,30 @@ namespace Graph
 
 	std::vector<std::string>FMTcarbonpredictor::getpredictornames(const std::vector<std::string>& yieldnames)const
 	{
-		const std::vector<std::string>devpredictornames = { "disturbance","age","lock","period" };
 		std::vector<std::string>predictornames;
-		predictornames.push_back("source_distance");
-		for (const std::string& name : devpredictornames)
+		const std::vector<std::string>devpredictornames = { "disturbance","age","period" };
+		for (size_t actid = 1; actid < sourceactions.size(); ++actid)
 			{
-			predictornames.push_back("source_"+name);
+			const std::string distname = "s" + std::to_string(actid) + "_disturbance";
+			const std::string distgap = "s" + std::to_string(actid) + "_distance";
+			predictornames.push_back(distgap);
+			predictornames.push_back(distname);
+			
 			}
+		predictornames.push_back("source_age");
+		predictornames.push_back("source_period");
 		for (const std::string& name : yieldnames)
 			{
 			predictornames.push_back("source_" + name);
 			}
-		for (const std::string& name : devpredictornames)
-			{
-			predictornames.push_back("target_" + name);
-			}
+		predictornames.push_back("target_distance");
+		predictornames.push_back("target_disturbance");
+		predictornames.push_back("target_age");
+		predictornames.push_back("target_period");
 		for (const std::string& name : yieldnames)
-			{
+		{
 			predictornames.push_back("target_" + name);
-			}
+		}
 		predictornames.shrink_to_fit();
 		return predictornames;
 	}

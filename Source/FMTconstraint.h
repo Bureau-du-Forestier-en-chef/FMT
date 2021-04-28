@@ -149,6 +149,11 @@ class FMTconstraint: public FMToutput,public FMTspec
 		return a new constraints set with the global model value.
 		*/
 		Core::FMTconstraint settoglobal(const double& value) const;
+		// DocString: FMTconstraint::getiterationchange
+		/**
+		Based on constraint period it will set bounds to the double specified in the vector for the constraint period.
+		*/
+		Core::FMTconstraint getiterationchange(const std::vector<double>& periodchanges) const;
 		// DocString: FMTconstraint::getpenalties
 		/**
 		If the constraint is goal then you can get the name of the penalties of the constraint. like _GOAL(penaltyname,weight)

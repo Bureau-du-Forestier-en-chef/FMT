@@ -310,7 +310,9 @@ void exportCore()
 				.def("__str__", &Core::FMTconstraint::operator std::string,
 					"@DocString(FMTconstraint::operator std::string)")
 				.def("__eq__", &Core::FMTconstraint::operator ==,
-					"@DocString(FMTconstraint::operator==)");
+					"@DocString(FMTconstraint::operator==)")
+				.def("getiterationchange",&Core::FMTconstraint::getiterationchange,
+					"@DocString(FMTconstants::getiterationchange,)");
 
 			define_FMTlist<Core::FMTconstraint>();
 			define_FMTlist<Core::FMTGCBMtransition>();
