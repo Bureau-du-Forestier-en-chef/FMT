@@ -37,9 +37,11 @@ void exportHeuristics()
 	bp::class_<Heuristics::FMTlpheuristicmthandler>("FMTlpheuristicmthandler", "@DocString(FMTlpheuristicmthandler)")
 		//.def(bp::init<std::vector<Heuristics::FMToperatingareascheduler>&>())
 		//.def(bp::init<std::vector<Heuristics::FMToperatingareaclusterer>&>())
-		.def(bp::init<boost::python::list&>())
+		.def(bp::init<boost::python::list&,const double&>())
 		.def("initialsolve", &Heuristics::FMTlpheuristicmthandler::initialsolve,
-					"@DocString(FMTlpheuristicmthandler::initialsolve)");
+					"@DocString(FMTlpheuristicmthandler::initialsolve)")
+		.def("greedysolve", &Heuristics::FMTlpheuristicmthandler::greedysolve,
+					"@DocString(FMTlpheuristicmthandler::greedysolve)");
 
 	bp::class_<Heuristics::FMToperatingarea>("FMToperatingarea", "@DocString(FMToperatingarea)")
 		.def(bp::init<const Core::FMTmask&, const double&>())

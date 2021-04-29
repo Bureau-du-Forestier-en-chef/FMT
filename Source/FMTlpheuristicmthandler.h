@@ -23,15 +23,19 @@ namespace Heuristics
 	class FMTlpheuristicmthandler
 		{
 		private:
+		double initialsolution;
 		std::vector<FMTlpheuristic*> heuristics;
+		size_t best_heuristic() const;
+		void reset_number_of_threads(const unsigned int& ncpu) const;
 		public:
 		FMTlpheuristicmthandler();
-		FMTlpheuristicmthandler(std::vector<FMToperatingareascheduler>& lheuristics);
-		FMTlpheuristicmthandler(std::vector<FMToperatingareaclusterer>& lheuristics);
+		FMTlpheuristicmthandler(std::vector<FMToperatingareascheduler>& lheuristics, const double& linitialsolution);
+		FMTlpheuristicmthandler(std::vector<FMToperatingareaclusterer>& lheuristics, const double& linitialsolution);
 		#if defined FMTWITHPYTHON
-			FMTlpheuristicmthandler(boost::python::list& lheuristics);
+			FMTlpheuristicmthandler(boost::python::list& lheuristics, const double& linitialsolution);
 		#endif
 		size_t initialsolve() const;
+		size_t greedysolve(const unsigned int& iterations, const double& maxtime) const;
 	    };
 }
 BOOST_CLASS_EXPORT_KEY(Heuristics::FMTlpheuristicmthandler)

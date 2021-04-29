@@ -194,12 +194,6 @@ class FMToperatingareaclusterer : public FMTlpheuristic
 		for each operating area.The fire spread heuristic will try to get a good initial clustering solution.
 		*/
 		bool initialsolve() final;
-		// DocString: FMToperatingareaclusterer::parallelinitialsolve
-		/**
-		Solve the heuristic problem using the original heuristic resolving the problem till finding a initial solution
-		for each operating area. Use in multithread.
-		*/
-		void parallelinitialsolve(const int& nothread) final;
 		// DocString: FMToperatingareaclusterer::branchnboundsolve
 		/**
 		Solve problem using Branch and bound on the primal formulation. If the function is called after a call to initialsolve()

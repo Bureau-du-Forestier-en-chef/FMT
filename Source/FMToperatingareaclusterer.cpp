@@ -261,6 +261,11 @@ namespace Heuristics
 
     bool FMToperatingareaclusterer::initialsolve()
         {
+    	std::string addon = "";
+    	if (nothread>-1)
+		{
+			addon = "Thread-"+std::to_string(nothread)+" : ";
+		}
         try{
             double passleft =  numberofsimulationpass;
 			bool gotonesolution = false;
@@ -310,9 +315,9 @@ namespace Heuristics
                             bestobjectivevalue = Models::FMTlpsolver::getObjValue();
 							if (!gotonesolution)
 								{
-								_logger->logwithlevel<std::string>("Feasible solution found\n", 0);
+								_logger->logwithlevel<std::string>(addon+"Feasible solution found\n", 0);
 								}
-							_logger->logwithlevel<std::string>("Obj(" +
+							_logger->logwithlevel<std::string>(addon+"Obj(" +
 								std::to_string(bestobjectivevalue) + ") it(" + std::to_string(iteration) + ")\n", 0);
 							gotonesolution = true;
                             }
@@ -335,82 +340,6 @@ namespace Heuristics
                 _exhandler->printexceptions("", "FMToperatingareaclusterer::initialsolve", __LINE__, __FILE__);
                 }
         return false;
-        }
-
-    void FMToperatingareaclusterer::parallelinitialsolve(const int& nothread)
-        {
-        try{
-            double passleft =  numberofsimulationpass;
-			bool gotonesolution = false;
-            if (Models::FMTlpsolver::initialsolve())
-                {
-                double bestobjectivevalue = 0;
-                std::vector<double>bestcolsbound;
-                const std::vector<int>varindexes = this->getbinariesvariables();
-				size_t iteration = 0;
-                while(passleft>0)
-                    {
-                    this->unboundall();
-                    std::vector<FMToperatingareaclusterbinary>assigned;
-                    if (Models::FMTlpsolver::resolve())
-                        {
-                        std::vector<FMToperatingareacluster>clustertospread=clusters;
-                        std::shuffle(clustertospread.begin(),clustertospread.end(),generator);
-                        size_t iterationdone = 0;
-                        while(!clustertospread.empty() && iterationdone < (clusters.size()*2))
-                            {
-                            if (this->spread(clustertospread.back()/**clustertospread.begin()*/,assigned))
-                                {
-								clustertospread.pop_back();
-                                //clustertospread.erase(clustertospread.begin());
-                                }
-                            ++iterationdone;
-                            }
-                        if (clustertospread.empty() && Models::FMTlpsolver::resolve() &&
-                            (!gotonesolution||(Models::FMTlpsolver::getObjValue() < bestobjectivevalue)))
-                            {
-                            bestcolsbound.clear();
-                            const double* upperbound = Models::FMTlpsolver::getColUpper();
-                            const double* lowerbound = Models::FMTlpsolver::getColLower();
-                            for (const FMToperatingareacluster& cluster : clusters)
-                                {
-                                const int centroidvar = cluster.getcentroid().getvariable();
-                                bestcolsbound.push_back(*(lowerbound+centroidvar));
-                                bestcolsbound.push_back(*(upperbound+centroidvar));
-                                for (const FMToperatingareaclusterbinary& binary : cluster.getbinaries())
-                                    {
-                                    const int binaryvar = binary.getvariable();
-                                    bestcolsbound.push_back(*(lowerbound+ binaryvar));
-                                    bestcolsbound.push_back(*(upperbound+ binaryvar));
-
-                                    }
-                                }
-                            bestobjectivevalue = Models::FMTlpsolver::getObjValue();
-							if (!gotonesolution)
-								{
-								_logger->logwithlevel<std::string>("Thread-"+std::to_string(nothread)+" : Feasible solution found\n", 0);
-								}
-							_logger->logwithlevel<std::string>("Thread-"+std::to_string(nothread)+" : Obj(" +
-								std::to_string(bestobjectivevalue) + ") it(" + std::to_string(iteration) + ")\n", 0);
-							gotonesolution = true;
-                            }
-                        }
-                    --passleft;
-					++iteration;
-                    }
-                if (bestcolsbound.empty())
-                    {
-                    this->unboundall();
-                    }else{
-                        this->setColSetBounds(&varindexes[0],&varindexes.back() + 1,&bestcolsbound[0]);
-
-					Models::FMTlpsolver::resolve();
-                    }
-                }
-            }catch(...)
-                {
-                _exhandler->printexceptions("", "FMToperatingareaclusterer::initialsolve", __LINE__, __FILE__);
-                }
         }
 
     std::vector<FMToperatingareacluster>FMToperatingareaclusterer::getsolution() const
