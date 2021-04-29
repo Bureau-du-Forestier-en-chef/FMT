@@ -1889,8 +1889,12 @@ class FMTgraph : public Core::FMTobject
 						const FMTbaseedgeproperties& inedgeproperties = data[*inedge_iterator];
 						const FMTvertex_descriptor& sourcevertex = boost::source(*inedge_iterator, data);
 						activevertex.push(sourcevertex);
-						lastactions.push_back(&inedgeproperties);
-						distances.push_back(targetperiod - data[sourcevertex].get().period);
+						if (inedgeproperties.getactionID()>=0)
+							{
+							lastactions.push_back(&inedgeproperties);
+							distances.push_back(targetperiod - data[sourcevertex].get().period);
+							}
+						
 					}
 				}
 			}
