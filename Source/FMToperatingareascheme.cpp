@@ -250,7 +250,7 @@ size_t FMToperatingareascheme::unboundallprimalschemes(std::vector<int>& targets
 
 size_t FMToperatingareascheme::unboundalldualschemes(std::vector<int>& targets, std::vector<double>& bounds) const
 	{
-	size_t processed = 0;
+	int processed = 0;
 	for (const std::vector<int>& constraints : openingconstraints)
 		{
 		if (!constraints.empty())
@@ -264,7 +264,7 @@ size_t FMToperatingareascheme::unboundalldualschemes(std::vector<int>& targets, 
 					bounds.push_back(_area);
 					}
 				}
-			processed += 1;
+				processed += 1;
 			}
 		}
 	return processed;
