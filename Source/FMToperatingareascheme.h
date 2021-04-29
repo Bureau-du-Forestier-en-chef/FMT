@@ -242,7 +242,7 @@ namespace Heuristics
 			size_t unboundallprimalschemes(std::vector<int>& targets, std::vector<double>& bounds) const;
 			// DocString: FMToperatingareascheme::unboundalldualschemes
 			/**
-			Push constraints index into vector (targets) and push into (bounds) -inf and _area.
+			Push constraints index into vector (targets) and push into (bounds) -inf and _area and return the id of the scheme unbounded
 			*/
 			size_t unboundalldualschemes(std::vector<int>& targets, std::vector<double>& bounds) const;
 			// DocString: FMToperatingareascheme::boundallprimalschemes

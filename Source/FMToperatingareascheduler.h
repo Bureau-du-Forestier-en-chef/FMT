@@ -27,6 +27,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <memory>
 #include <map>
 #include <vector>
+//#include <chrono>
 #include <boost/serialization/serialization.hpp>
 #include <boost/serialization/nvp.hpp>
 #include <boost/serialization/export.hpp>
@@ -100,18 +101,43 @@ namespace Heuristics
 		looking at the actual primal or dual solution. If userrandomness == true the draw is going to be shuffled
 		*/
 		std::vector<std::vector<FMToperatingareascheme>::const_iterator> setdraw();
+		// DocString: FMToperatingareascheduler::draw
+		/**
+		Returns a vector selected oeprating areas based on the vector passed.
+		Depending if userandomness == false the draw will select the first elements until the max area is reach.
+		If userrandomness == true the draw is going to be shuffled
+		*/
+		std::vector<std::vector<FMToperatingareascheme>::const_iterator> draw(std::vector<std::vector<FMToperatingareascheme>::const_iterator>& oparea);
 		// DocString: FMToperatingareascheduler::setbounds
 		/**
 		Depending if we solve the dual or the primal the this function will set a  random schedule if userrandomness == true or
 		simply set the best known schedule to a set of operating areas (tobound).
+		If schemetoskip is not empty, for each operatingareascheme at the same index in tobound, it will try to use another schemeid.(schemestoskip) need to be the same size as (tobound) or be empty.
 		*/
-		size_t setbounds(const std::vector<std::vector<FMToperatingareascheme>::const_iterator>& tobound);
+		size_t setbounds(const std::vector<std::vector<FMToperatingareascheme>::const_iterator>& tobound,const std::vector<int>& schemestoskip=std::vector<int>());
+		// DocString: FMToperatingareascheduler::selectscheme
+		/**
+		Select a scheme in potentialscheme that is different from the schemeid to skip
+		*/
+		size_t selectscheme(std::vector<size_t>& potentialschemes, const int& schemetoskip) const;
+		// DocString: FMToperatingareascheduler::getbounds
+		/**
+		Fill targeteditems and bounds according to the scheme id. If boundall == true, no scheme id is needed.
+		If boundall == false, the default schemeid is 0, the user must pass the good one.
+		*/
+		bool getbounds(const std::vector<FMToperatingareascheme>::const_iterator& operatingareaiterator,std::vector<int>& targeteditems,std::vector<double>& bounds, const bool& boundall, const size_t& schemeid=0) const;
 		// DocString: FMToperatingareascheduler::unboundall
 		/**
 		This function is like a reset button, it will unselect all schedules already selected for each management units
 		and unbound all variables/constraints related to all operating areas in the solverinterface.
 		*/
 		void unboundall(bool atprimal = false);
+		// DocString: FMToperatingareascheduler::unbound
+		/**
+		This function is like a reset button, it will unselect all schedules already selected for management units to unbound
+		and unbound all variables/constraints related to all operating areas in the solverinterface.
+		*/
+		void unbound(const std::vector<std::vector<FMToperatingareascheme>::const_iterator>& tounbound,bool atprimal = false);
 		// DocString: FMToperatingareascheduler::closeprimalbounds
 		/**
 		Sets all binary variables of all operating area to 0 by fixing theirs primal bounds.
@@ -136,6 +162,11 @@ namespace Heuristics
 		So the row memory cache needs to be cleared.
 		*/
 		void clearrowcache();
+		// DocString: FMToperatingareascheduler::getsolutionindexes
+		/*
+		Return the scheme index which is bounded for each operatingareascheme pass to the function in the same order.
+		*/
+		std::vector<int> getsolutionindexes(const std::vector<std::vector<FMToperatingareascheme>::const_iterator>& opareaits) const;
 	public:
 		// DocString: FMToperatingareascheduler::initialsolve
 		/**
@@ -143,18 +174,17 @@ namespace Heuristics
 		for each operating area. The user can use the function getsolution to first yield solution.
 		*/
 		bool initialsolve() final;
-		// DocString: FMToperatingareascheduler::parallelinitialsolve
-		/**
-		Solve the heuristic problem using the original heuristic resolving the problem till finding a initial solution
-		for each operating area. Use in multithread.
-		*/
-		void parallelinitialsolve(const int& nothread) final;
 		// DocString: FMToperatingareascheduler::branchnboundsolve
 		/**
 		Solve problem using Branch and bound on the primal formulation. If the function is called after a call to initialsolve()
 		it's going to use the heuristic solution has a starting MIP solution, if not it's going to directly use the BnB on the formulated problem.
 		*/
 		bool branchnboundsolve() final;
+		// DocString: FMToperatingareascheduler::greedypass
+		/**
+
+		*/
+		bool greedypass(const double& initsol, const unsigned int& iteration) final;
 		// DocString: FMToperatingareascheduler::setasrandom
 		/**
 		Sets True the userandomness data member
