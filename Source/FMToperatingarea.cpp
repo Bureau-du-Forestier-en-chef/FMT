@@ -88,10 +88,10 @@ bool FMToperatingareacomparator::operator()(const FMToperatingarea& oparea) cons
 FMToperatingarea FMToperatingarea::presolveoperatingarea(const Core::FMTmask& selectedmask, const std::vector<Core::FMTtheme>& presolvedthemes) const
 {
 	FMToperatingarea presolvedoparea(*this);
-	presolvedoparea.mask = presolvedoparea.mask.presolve(selectedmask, presolvedthemes);
-	for(size_t i=0; i < presolvedoparea.neighbors.size(); i++)
+	presolvedoparea.mask = this->mask.presolve(selectedmask, presolvedthemes);
+	for(size_t i=0; i < presolvedoparea.neighbors.size(); ++i)
 	{
-		presolvedoparea.neighbors[i]=presolvedoparea.neighbors[i].presolve(selectedmask, presolvedthemes);
+		presolvedoparea.neighbors[i]=this->neighbors[i].presolve(selectedmask, presolvedthemes);
 	}
 	return presolvedoparea;
 }
