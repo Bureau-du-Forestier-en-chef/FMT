@@ -206,7 +206,9 @@ void exportCore()
 			bp::class_<Core::FMTyieldhandler>("FMTyieldhandler", "@DocString(FMTyieldhandler)")
 				.def_pickle(FMT_pickle_suite<Core::FMTyieldhandler>())
 				.def("__str__", &Core::FMTyieldhandler::operator std::string,
-					"@DocString(FMTyieldhandler::operator std::string)");
+					"@DocString(FMTyieldhandler::operator std::string)")
+				.def("postsolve", &Core::FMTyieldhandler::postsolve,
+					"@DocString(FMTyieldhandler::postsolve)");
 
 			bp::class_<Core::FMTyields, bp::bases<Core::FMTlist<Core::FMTyieldhandler>>>("FMTyields", "@DocString(FMTyields)")
 				.def_pickle(FMT_pickle_suite<Core::FMTyields>())

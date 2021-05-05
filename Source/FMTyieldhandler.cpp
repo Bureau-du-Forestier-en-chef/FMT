@@ -753,6 +753,18 @@ FMTyieldhandler::operator std::string() const
 		return newhandler;
 		}
 
+	FMTyieldhandler FMTyieldhandler::postsolve(const FMTmask& selectedmask, const std::vector<FMTtheme>& basethemes) const
+			{
+			FMTyieldhandler newhandler(*this);
+			try {
+				newhandler.mask = newhandler.mask.postsolve(selectedmask, basethemes);
+			}catch (...)
+			{
+				_exhandler->raisefromcatch("", "FMTyieldhandler::presolve", __LINE__, __FILE__, Core::FMTsection::Yield);
+			}
+			return newhandler;
+			}
+
 	FMTyieldhandler FMTyieldhandler::getfromfactor(const double& factor,
 		std::vector<std::string>yieldnames) const
 		{

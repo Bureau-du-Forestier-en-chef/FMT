@@ -76,6 +76,7 @@ class FMTyieldhandler : public FMTobject
         FMTyldtype gettype() const;
 		FMTmask getmask() const;
 		FMTyieldhandler presolve(const FMTmask& presolvedmask, const std::vector<FMTtheme>& newthemes) const;
+		FMTyieldhandler postsolve(const FMTmask& selectedmask, const std::vector<FMTtheme>& basethemes) const;
 		FMTyieldhandler getfromfactor(const double& factor,
 			std::vector<std::string>yieldnames = std::vector<std::string>()) const;
     };
