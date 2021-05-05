@@ -242,6 +242,13 @@ namespace Heuristics
 					(*_logger) << addonthreadno()+"Feasible solution found objective: " + std::to_string(round(newobjective)) + " (" + std::to_string(dblgap) + "%)" << "\n";
 					this->clearrowcache();
 				}
+			}else{
+				{
+					_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
+														"Model is not optimal at the beginning of initialsolve",
+														"FMToperatingareascheduler::intialsolve", __LINE__, __FILE__);
+
+				}
 			}
 		}catch (...)
 		{
@@ -453,12 +460,12 @@ namespace Heuristics
 						}
 			}
 			this->synchronize();
-			if (!this->stockresolve()){
+			/*if (!this->stockresolve()){
 						_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
 													"Infeasible model",
 													"FMToperatingareascheduler::setoperatingareasconstraints", __LINE__, __FILE__);
 
-					}
+					}*/
 		}catch (...)
 			{
 			_exhandler->raisefromcatch("","FMToperatingareascheduler::setoperatingareasconstraints", __LINE__, __FILE__);
@@ -511,12 +518,12 @@ namespace Heuristics
 				}
 			}
 		this->synchronize();
-		if (!this->stockresolve()){
+		/*if (!this->stockresolve()){
 			_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
 										"Infeasible model",
 										"FMToperatingareascheduler::setadjacencyconstraints", __LINE__, __FILE__);
 
-		}
+		}*/
 		}catch (...)
 			{
 			_exhandler->raisefromcatch("","FMToperatingareascheduler::setadjacencyconstraints", __LINE__, __FILE__);
@@ -879,7 +886,14 @@ namespace Heuristics
 				}*/
 			this->setoperatingareasconstraints(maingraph, model, target);
 			this->setadjacencyconstraints();
-			//this->resolvemodel();
+			this->resolvemodel();
+			if (!this->isProvenOptimal())
+			{
+				_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
+													"Infeasible model",
+													"FMToperatingareascheduler::FMToperatingareascheduler", __LINE__, __FILE__);
+
+			}
 		}catch (...)
 			{
 			_exhandler->raisefromcatch("","FMToperatingareascheduler::FMToperatingareaheuristic", __LINE__, __FILE__);
