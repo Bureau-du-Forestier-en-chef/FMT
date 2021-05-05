@@ -808,7 +808,7 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 					{
 					variables[node_it->first] = 0;
 					}
-				if (strictlypositivesoutputsmatrix && node_it->second<0)
+				if (strictlypositivesoutputsmatrix && node_it->second<0 && !node.source.getyield().empty())
 					{
 						output_negvar.insert(node.getoutputid());
 					}
@@ -821,51 +821,62 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 				for (const auto& onid:output_negvar)
 				{
 					int outputid=-9999;
+					bool _area = false;
 					std::map<std::string,std::map<int,double>> node_map_theme_id;
 					for (const Core::FMToutputnode& node : outputs.at(onid).getnodes(1,true))
 					{
 						const int id = node.getoutputid();
-						const std::map<std::string,std::map<int,double>> node_map_theme = graph.locatenodebytheme(*this, node, period);
-						if (!node_map_theme.empty())
+						if (!node.source.getyield().empty())
 						{
-							if (id==-1)
+							if(_area)
 							{
 								_exhandler->raise(	Exception::FMTexc::FMTfunctionfailed,
-													"Invalid output id from node :"+std::string(node), "FMTlpmodel::locatenodes", __LINE__, __FILE__);
+													"Output id from node :"+std::string(node)+" contain different type of output", "FMTlpmodel::locatenodes", __LINE__, __FILE__);
 							}
-						}
-						if (outputid!=id)
+							const std::map<std::string,std::map<int,double>> node_map_theme = graph.locatenodebytheme(*this, node, period);
+							if (!node_map_theme.empty())
 							{
-								if(!node_map_theme_id.empty())
+								if (id==-1)
 								{
-									int counttheme = 0;
-									bool foundna = false;
-									for(const auto& nmti:node_map_theme_id)
+									_exhandler->raise(	Exception::FMTexc::FMTfunctionfailed,
+														"Invalid output id from node :"+std::string(node), "FMTlpmodel::locatenodes", __LINE__, __FILE__);
+								}
+							}
+							if (outputid!=id)
+								{
+									if(!node_map_theme_id.empty())
 									{
-										if (!nmti.second.empty())
+										int counttheme = 0;
+										bool foundna = false;
+										for(const auto& nmti:node_map_theme_id)
 										{
-											strictlypositivesoutputs.push_back(nmti.second);
-											if(nmti.first=="~nothemetargetid~"){foundna=true;}
-											++counttheme;
+											if (!nmti.second.empty())
+											{
+												strictlypositivesoutputs.push_back(nmti.second);
+												if(nmti.first=="~nothemetargetid~"){foundna=true;}
+												++counttheme;
+											}
+										}
+										if(counttheme>1 && foundna)
+										{
+											_exhandler->raise(	Exception::FMTexc::FMTfunctionfailed,
+																"Differences in thematics of certains outputs and there sources", "FMTlpmodel::locatenodes", __LINE__, __FILE__);
 										}
 									}
-									if(counttheme>1 && foundna)
+									node_map_theme_id.clear();
+								}
+							for(const auto& nmt:node_map_theme)
+								{
+									if (node_map_theme_id.find(nmt.first)==node_map_theme_id.end())
 									{
-										_exhandler->raise(	Exception::FMTexc::FMTfunctionfailed,
-															"Differences in thematics of certains outputs and there sources", "FMTlpmodel::locatenodes", __LINE__, __FILE__);
+										node_map_theme_id[nmt.first]=nmt.second;
+									}else{
+										node_map_theme_id[nmt.first].insert(nmt.second.begin(),nmt.second.end());
 									}
 								}
-								node_map_theme_id.clear();
-							}
-						for(const auto& nmt:node_map_theme)
-							{
-								if (node_map_theme_id.find(nmt.first)==node_map_theme_id.end())
-								{
-									node_map_theme_id[nmt.first]=nmt.second;
-								}else{
-									node_map_theme_id[nmt.first].insert(nmt.second.begin(),nmt.second.end());
-								}
-							}
+						}else{
+							_area=true;
+						}
 						outputid = id;
 					}
 					if(!node_map_theme_id.empty())

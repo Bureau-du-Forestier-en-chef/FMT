@@ -93,7 +93,9 @@ std::vector<std::vector<std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, 
 			{
 			const double area = this->getprimalarea(primalsolution, maingraph, totalareaverticies);
 			//To remove the numeric instability from the multiplication in the graph inarea
-			_area = static_cast<double>((static_cast<int>(area/100)*100)+100);//this->getprimalarea(primalsolution, maingraph, totalareaverticies);
+			_area = static_cast<double>((static_cast<int>(area/100)*100)+100);
+			//_area=this->getprimalarea(primalsolution, maingraph, totalareaverticies);
+			//_area = 1000000;
 			}
 		std::map<int, std::vector<int>>periodicsblocksvariables;
 		std::vector<size_t>selectedschemes;
