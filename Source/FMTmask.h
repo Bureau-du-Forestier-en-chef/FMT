@@ -179,6 +179,11 @@ class FMTmask
 		Returns the size of the bitsets data member.
 		*/
 		size_t size() const;
+		// DocString: FMTmask::count
+		/**
+		Get the number of bits set.
+		*/
+		size_t count() const;
 		// DocString: FMTmask::get
 		/**
 		Gets the string mask name of the FMTmask based on the bitset data and the sorted themes.

@@ -375,8 +375,9 @@ std::unordered_set<int>FMToutputsource::targetsset(const std::vector<FMTaction>&
 
 
 double FMToutputsource::getcoef(const FMTdevelopment& development,
-	const FMTyields& yields, const FMTaction& modelaction,
-	const std::vector<FMTdevelopmentpath>& paths) const
+	const FMTyields& yields,
+	std::vector<FMTdevelopmentpath> const * paths,
+	FMTaction const * modelaction) const
 	{
 	double coef = 1;
 	if (isvariable())
@@ -388,7 +389,7 @@ double FMToutputsource::getcoef(const FMTdevelopment& development,
 				coef = development.getinventorycoef(yields, yield);
 			}
 			else {
-				coef = development.getharvestcoef(paths, modelaction, yields, yield);
+				coef = development.getharvestcoef(*paths, *modelaction, yields, yield);
 			}
 			}
 		}else if (istimeyield())

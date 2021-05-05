@@ -30,6 +30,16 @@ FMTmask::FMTmask(const boost::dynamic_bitset<>& bits): name(),data(bits)
 
 	}
 
+FMTmask::FMTmask(const std::vector<FMTtheme>& themes)
+	{
+	size_t basesize = 0;
+	for (const FMTtheme& theme : themes)
+	{
+		basesize += theme.size();
+	}
+	data.resize(basesize, false);
+	}
+
 
 FMTmask::FMTmask(const std::string& mask,const std::vector<FMTtheme>& themes):name(),data()
     {
@@ -271,6 +281,11 @@ void FMTmask::clear()
 size_t FMTmask::size() const
 	{
 	return data.size();
+	}
+
+size_t FMTmask::count() const
+	{
+	return data.count();
 	}
 
 bool FMTmask::isnotthemessubset(const FMTmask& rhs, const std::vector<FMTtheme>& themes) const

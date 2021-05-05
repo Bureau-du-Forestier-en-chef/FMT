@@ -13,6 +13,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <algorithm>
 #include <boost/algorithm/string.hpp> 
 
+
 namespace Models
 
 {
@@ -116,9 +117,12 @@ namespace Models
 		}
 
 
+
+
 	void FMTmatrixbuild::synchronize(std::shared_ptr<OsiSolverInterface> solver)
 		{
 		try {
+			
 			if (!deletedconstraints.empty())
 			{
 				sortelementsandclean(deletedconstraints);
