@@ -68,9 +68,10 @@ FMTtransitionmask::FMTtransitionmask(const std::string& lmask,const std::vector<
         }
     FMTdevelopment FMTtransitionmask::disturb(const FMTdevelopment& dev,const FMTyields& yields,const std::vector<FMTtheme>& themes, const bool& reset_age) const
         {
-        FMTdevelopment newdev(dev);
-        newdev.mask = this->trans(dev.mask);
-        newdev.lock = 0;
+        //FMTdevelopment newdev(dev);
+        //newdev.mask = this->trans(dev.mask);
+		FMTdevelopment newdev(this->trans(dev.mask),dev.age,0,dev.period);
+        //newdev.lock = 0;
 		bool age_change = false;
         if(!lock.empty())
             {

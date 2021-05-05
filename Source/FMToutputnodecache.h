@@ -21,6 +21,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTlookup.h"
 #include "FMTgraph.h"
 
+
 namespace Graph
 {
 	template <class tvdescriptor>
@@ -62,32 +63,39 @@ namespace Graph
 		const std::vector<tvdescriptor>& getcleandescriptors(const Core::FMToutputnode& targetnode,const std::vector<Core::FMTaction>& actions,
 										const std::vector<Core::FMTtheme>&themes, bool& exactnode) const
 		{
-			bool exact = false;
-			typename std::map<Core::FMToutputsource, std::vector<tvdescriptor>>::const_iterator parent = this->getparentnode(targetnode, actions, exact);
-			if (exact)
+			//bool exact = false;
+			exactnode = false;
+			typename std::map<Core::FMToutputsource, std::vector<tvdescriptor>>::const_iterator parent = this->getparentnode(targetnode, actions, exactnode);
+			//std::cout << "exact? " << exact << "\n";
+			if (exactnode)
 			{
 				return parent->second;
 			}
-			std::vector<tvdescriptor> cleaned = basenode;
+			std::vector<tvdescriptor> cleaned(basenode);
 			if (parent != searchtree.end())
 			{
 				cleaned = parent->second;
 			}
 			getactionrebuild(targetnode, actions, cleaned, exactnode); // should be able to find also exact!!!!!!!!
-			if (!exact)
+			if (!exactnode)
 			{
 				std::vector<tvdescriptor>toremove;
+				const size_t basenodesize = basenode.size();
+				const Core::FMTmask& targetmask = targetnode.source.getmask();
+				//Core::FMTmask unionmask(themes);
 				for (typename std::map<Core::FMToutputsource, std::vector<tvdescriptor>>::const_reverse_iterator sit = searchtree.rbegin();
 					sit != searchtree.rend(); sit++)
 				{
-
-					if (targetnode.source.getmask().isnotthemessubset(sit->first.getmask(), themes))//deal only with mask
+					const Core::FMTmask& nodemask = sit->first.getmask();
+					if (targetmask.isnotthemessubset(nodemask, themes))//deal only with mask
 					{
+						//unionmask = unionmask.getunion(nodemask);
 						toremove.insert(toremove.end(), sit->second.begin(), sit->second.end());
 					}
 				}
 				if (!toremove.empty())
 				{
+					//std::cout << "mask size of " << unionmask.size() << " " << unionmask.count() << "\n";
 					std::vector<tvdescriptor>difference;
 					std::sort(toremove.begin(), toremove.end());
 					std::set_difference(cleaned.begin(), cleaned.end(),

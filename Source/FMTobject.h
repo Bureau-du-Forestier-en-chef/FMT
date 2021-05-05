@@ -113,12 +113,12 @@ class FMTobject
 		bool checkmask(const std::vector<Core::FMTtheme>& themes,
 			const std::vector<std::string>& values, std::string& mask,
 			const std::string& otherinformation) const;
+	public:
 		// DocString: FMTobject::getavailablememory
 		/**
 		Get the available memory in bytes
 		*/
 		unsigned long long getavailablememory() const;
-	public:
 		// DocString: FMTobject()
 		/**
 		FMTobject default constructor.

@@ -27,6 +27,7 @@ namespace Graph
 
 
 	{
+		size_t location = 0;
 		for (const FMTbaseedgeproperties* edgeprop : edges)
 			{
 			if (edgeprop!=nullptr)
@@ -34,7 +35,9 @@ namespace Graph
 				sourceactions.push_back(actionsindex.at(edgeprop->getactionID()));
 			}else {
 				sourceactions.push_back(actionsindex.at(-2));
+				periodgaps[location] = source_vertex->get().age;
 				}
+			++location;
 			}
 	}
 	FMTcarbonpredictor::FMTcarbonpredictor(const FMTcarbonpredictor& rhs) :
@@ -89,7 +92,7 @@ namespace Graph
 			returned.push_back(static_cast<double>(sourceactions.at(actid)));
 			}
 		returned.push_back(static_cast<double>(source_vertex->get().age));
-		returned.push_back(static_cast<double>(source_vertex->get().period));
+		//returned.push_back(static_cast<double>(source_vertex->get().period));
 		returned.insert(returned.end(), source_yields.begin(), source_yields.end());
 		double gap = periodgaps.at(0);
 		if (sourceactions.at(0)==-2)
@@ -99,7 +102,7 @@ namespace Graph
 		returned.push_back(static_cast<double>(gap));
 		returned.push_back(static_cast<double>(sourceactions.at(0)));
 		returned.push_back(static_cast<double>(target_vertex->get().age));
-		returned.push_back(static_cast<double>(target_vertex->get().period));
+		//returned.push_back(static_cast<double>(target_vertex->get().period));
 		returned.insert(returned.end(), target_yields.begin(), target_yields.end());
 		returned.shrink_to_fit();
 		return returned;
@@ -118,7 +121,7 @@ namespace Graph
 			
 			}
 		predictornames.push_back("source_age");
-		predictornames.push_back("source_period");
+		//predictornames.push_back("source_period");
 		for (const std::string& name : yieldnames)
 			{
 			predictornames.push_back("source_" + name);
@@ -126,7 +129,7 @@ namespace Graph
 		predictornames.push_back("target_distance");
 		predictornames.push_back("target_disturbance");
 		predictornames.push_back("target_age");
-		predictornames.push_back("target_period");
+		//predictornames.push_back("target_period");
 		for (const std::string& name : yieldnames)
 		{
 			predictornames.push_back("target_" + name);

@@ -137,8 +137,9 @@ class FMToutputsource : public FMTspec
 			return (target == FMTotar::actual);
 			}
 		double getcoef(const FMTdevelopment& development,
-			const FMTyields& yields, const FMTaction& action,
-			const std::vector<FMTdevelopmentpath>& paths) const;
+			const FMTyields& yields,
+			std::vector<FMTdevelopmentpath> const * paths=nullptr,
+			 FMTaction const * action=nullptr) const;
 		inline bool use(const FMTdevelopment& development, const FMTyields& ylds) const
 			{
 			return (/*mask && */development.mask.issubsetof(mask) && development.is(*this, ylds));

@@ -427,7 +427,7 @@ class FMTgraph : public Core::FMTobject
 								const FMTvertex_descriptor front_vertex = actives.front();
 								actives.pop();
 								FMTvertexproperties front_properties = data[front_vertex];
-								const Core::FMTdevelopment active_development = front_properties.get();
+								const Core::FMTdevelopment& active_development = front_properties.get();
 								bool death = false;
 								if (active_development.operable(action, model.yields))
 								{
@@ -1091,29 +1091,33 @@ class FMTgraph : public Core::FMTobject
 							const std::vector<FMTvertex_descriptor>& descriptors = nodescache.at(localnodeperiod).getverticies(output_node, model.actions, model.themes, exactverticies);
 							if (exactverticies)
 							{
+								//*_logger << "got exact for " << std::string(output_node) << "\n";
 								locations.reserve(locations.size() + descriptors.size());
 								locations.insert(locations.end(), descriptors.begin(), descriptors.end());
 							}
 							else {
-								std::vector<FMTvertex_descriptor>revisited;
-								revisited.reserve(descriptors.size());
+								//std::vector<FMTvertex_descriptor>revisited;
+								//revisited.reserve(descriptors.size());
 								locations.reserve(descriptors.size());
 								for (const FMTvertex_descriptor& potential : descriptors)
 								{
 									if (isvalidgraphnode(model, potential, output_node, selected))
 									{
-										revisited.push_back(potential);
+										//revisited.push_back(potential);
 										locations.push_back(potential);
 									}
 								}
 								//if (revisited.size()<=((descriptors.size()/100)*(100-minimalcachedrop)))//Dont add too much
 								//	{
-									std::sort(revisited.begin(), revisited.end());
-									nodescache.at(localnodeperiod).setvalidverticies(output_node, revisited);
+									//std::sort(revisited.begin(), revisited.end());
+								    std::sort(locations.begin(), locations.end());
+									//nodescache.at(localnodeperiod).setvalidverticies(output_node, revisited);
+									nodescache.at(localnodeperiod).setvalidverticies(output_node, locations);
 								/*}
 								else {
 									nodescache[localnodeperiod].erasenode(output_node);
 								}*/
+									//*_logger << "pushed size "<<std::string(output_node)<<" "<< locations.size()<<" " <<descriptors.size() <<"\n";
 								
 							}
 						}
@@ -1135,15 +1139,15 @@ class FMTgraph : public Core::FMTobject
 			try {
 				if (!verticies.empty())
 				{
-					std::vector<Core::FMTdevelopmentpath>paths;
-					Core::FMTaction optimization_action;
+					//std::vector<Core::FMTdevelopmentpath>paths;
+					//Core::FMTaction optimization_action;
 					const std::vector<const Core::FMTaction*> selected = output_node.source.targets(model.actions);
 					for (const FMTvertex_descriptor& vertex : verticies)
 					{
 						const Core::FMTdevelopment& development = data[vertex].get();
 						if (output_node.source.useinedges())
 						{
-							const double coef = output_node.source.getcoef(development, model.yields, optimization_action, paths) * output_node.factor.getcoef(development, model.yields, optimization_action, paths) * output_node.constant;
+							const double coef = output_node.source.getcoef(development, model.yields) * output_node.factor.getcoef(development, model.yields) * output_node.constant;
 							if (development.period == 0)
 							{
 								const std::map<int, int>vars = getoutvariables(vertex);
@@ -1177,8 +1181,8 @@ class FMTgraph : public Core::FMTobject
 								const int actionID = static_cast<int>(std::distance(&(*model.actions.begin()), act));
 								if (outvars.find(actionID) != outvars.end())
 								{
-									paths = getpaths(vertex, actionID);
-									const double action_coef = output_node.source.getcoef(development, model.yields, *act, paths) * output_node.factor.getcoef(development, model.yields, *act, paths) * output_node.constant;
+									const std::vector<Core::FMTdevelopmentpath>paths = getpaths(vertex, actionID);
+									const double action_coef = output_node.source.getcoef(development, model.yields,&paths,act) * output_node.factor.getcoef(development, model.yields,&paths,act) * output_node.constant;
 									updatevarsmap(variables, outvars.at(actionID), action_coef);
 								}
 							}
@@ -1639,8 +1643,8 @@ class FMTgraph : public Core::FMTobject
 				if (!verticies.empty())
 				{
 					const std::vector<const Core::FMTaction*> selected = node.source.targets(model.actions);
-					std::vector<Core::FMTdevelopmentpath>paths;
-					Core::FMTaction optimization_action;
+					
+					//Core::FMTaction optimization_action;
 					for (const FMTvertex_descriptor& vertex : verticies)
 					{
 						const Core::FMTdevelopment& development = data[vertex].get();
@@ -1666,7 +1670,7 @@ class FMTgraph : public Core::FMTobject
 
 						if (node.source.useinedges())
 						{
-							const double coef = node.source.getcoef(development, model.yields, optimization_action, paths) * node.factor.getcoef(development, model.yields, optimization_action, paths) * node.constant;
+							const double coef = node.source.getcoef(development, model.yields) * node.factor.getcoef(development, model.yields) * node.constant;
 							double area = 0;
 							if (development.period == 0)
 							{
@@ -1682,8 +1686,8 @@ class FMTgraph : public Core::FMTobject
 							{
 								double action_value = 0;
 								const int actionID = static_cast<int>(std::distance(&(*model.actions.begin()), act));
-								paths = getpaths(vertex, actionID);
-								const double action_coef = node.source.getcoef(development, model.yields, *act, paths) * node.factor.getcoef(development, model.yields, *act, paths) * node.constant;
+								const std::vector<Core::FMTdevelopmentpath>paths = getpaths(vertex, actionID);
+								const double action_coef = node.source.getcoef(development, model.yields,&paths,act) * node.factor.getcoef(development, model.yields,&paths,act) * node.constant;
 								action_value = action_coef * (outarea(vertex, actionID, solution));
 								values[value] += action_value;
 							}
