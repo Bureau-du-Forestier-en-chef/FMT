@@ -69,20 +69,26 @@ namespace Core{
 
      bool FMTdevelopment::operable(const FMTaction& action,const FMTyields& ylds) const
         {
-        if (worthtestingoperability(action))
-            {
-			for (const FMTspec* spec : action.findsets(mask))
+		 try{
+			if (worthtestingoperability(action))
 				{
-				if (is(*spec, ylds))
+				for (const FMTspec* spec : action.findsets(mask))
 					{
-					return true;
+					if (is(*spec, ylds))
+						{
+						return true;
+						}
 					}
 				}
-            }
+		 }catch (...)
+			{
+			 _exhandler->raisefromcatch("for " + std::string(*this)+" for action "+action.getname(), "FMTdevelopment::operable", __LINE__, __FILE__);
+			}
         return false;
         }
 	 bool FMTdevelopment::anyoperable(const std::vector<const FMTaction*>& actions, const FMTyields& ylds) const
 		{
+		 try{
 		 for (const FMTaction* action : actions)
 			{
 			 if (this->operable(*action,ylds))
@@ -90,20 +96,31 @@ namespace Core{
 				return true;
 				}
 			}
+		 }
+		 catch (...)
+		 {
+			 _exhandler->raisefromcatch("for " + std::string(*this), "FMTdevelopment::anyoperable", __LINE__, __FILE__);
+		 }
 		 return false;
 		}
 
 	 std::vector<int> FMTdevelopment::anyworthtestingoperability(const std::vector<const FMTaction*>& actions, const FMTaction& firstaction) const
 		{
 		 std::vector<int>potentials;
-		for (const FMTaction* action : actions)
-			{
-			 if (this->worthtestingoperability(*action))
+		 try{
+			for (const FMTaction* action : actions)
 				{
-				 const int location = static_cast<int>(std::distance(&firstaction, action));
-				 potentials.push_back(location);
+				 if (this->worthtestingoperability(*action))
+					{
+					 const int location = static_cast<int>(std::distance(&firstaction, action));
+					 potentials.push_back(location);
+					}
 				}
-			}
+		 }
+		 catch (...)
+		 {
+			 _exhandler->raisefromcatch("for " + std::string(*this), "FMTdevelopment::anyworthtestingoperability", __LINE__, __FILE__);
+		 }
 		 return potentials;
 		}
 
@@ -111,7 +128,8 @@ namespace Core{
 		 const std::vector<FMTaction>& allactions) const noexcept
 	 {
 		 std::vector<bool>returnvalues(allactions.size(),false);
-		 bool clear = true;
+		 try {
+			 bool clear = true;
 			 const FMTaction* firstaction = &(*allactions.begin());
 			 for (const FMTaction* action : actions)
 			 {
@@ -122,9 +140,14 @@ namespace Core{
 				 }
 			 }
 			 if (clear)
-				{
-				returnvalues.clear();
-				}
+			 {
+				 returnvalues.clear();
+			 }
+		 }
+		 catch (...)
+		 {
+			 _exhandler->raisefromcatch("for " + std::string(*this), "FMTdevelopment::isanyworthtestingoperability", __LINE__, __FILE__);
+		 }
 		 return returnvalues;
 	 }
 
@@ -147,7 +170,7 @@ namespace Core{
 			 }
 		 }catch (...)
 			{
-			 _exhandler->raisefromcatch("for " + std::string(*this),"FMTdevelopment::operate", __LINE__, __FILE__);
+			 _exhandler->raisefromcatch("for " + std::string(*this)+" for action "+action.getname(),"FMTdevelopment::operate", __LINE__, __FILE__);
 			}
 		 return newpaths;
 		}
@@ -222,24 +245,37 @@ namespace Core{
 		return allow;
 		}
 	double FMTdevelopment::getinventorycoef(const FMTyields& ylds, const std::string& target_yield) const
-		{
+	{
+		try {
 		return ylds.getsingle(*this, target_yield);
+		}catch (...)
+		{
+			_exhandler->raisefromcatch("for " + std::string(*this) , "FMTdevelopment::getinventorycoef", __LINE__, __FILE__);
+		}
+		return 0;
 		}
 	double FMTdevelopment::getharvestcoef(const std::vector<FMTdevelopmentpath>& topaths,
 			const FMTaction& action,const FMTyields& ylds,const std::string& target_yield) const
 		{
 		double value = 0;
-		const double actual_value = this->getinventorycoef(ylds,target_yield);
-		if (action.partial(target_yield))
+		try {
+			const double actual_value = this->getinventorycoef(ylds, target_yield);
+			if (action.partial(target_yield))
 			{
-			for (const FMTdevelopmentpath& path : topaths)
+				for (const FMTdevelopmentpath& path : topaths)
 				{
-				const double dif_value = (actual_value - path.development->getinventorycoef(ylds,target_yield));
-				value += (dif_value * (path.proportion/ 100));
+					const double dif_value = (actual_value - path.development->getinventorycoef(ylds, target_yield));
+					value += (dif_value * (path.proportion / 100));
 				}
-			}else {
-			value = actual_value;
 			}
+			else {
+				value = actual_value;
+			}
+		}
+		catch (...)
+		{
+			_exhandler->raisefromcatch("for " + std::string(*this)+" for action "+action.getname(), "FMTdevelopment::getharvestcoef", __LINE__, __FILE__);
+		}
 		return value;
 		}
 
