@@ -28,14 +28,20 @@ namespace Graph
 
 	{
 		size_t location = 0;
+		bool lastnotedone = true;
 		for (const FMTbaseedgeproperties* edgeprop : edges)
 			{
 			if (edgeprop!=nullptr)
 				{
 				sourceactions.push_back(actionsindex.at(edgeprop->getactionID()));
-			}else {
+			}else if(lastnotedone)
+				{
 				sourceactions.push_back(actionsindex.at(-2));
 				periodgaps[location] = source_vertex->get().age;
+				lastnotedone = false;
+			}else {
+				sourceactions.push_back(actionsindex.at(-2));
+				//periodgaps[location] = source_vertex->get().age;
 				}
 			++location;
 			}
@@ -86,10 +92,11 @@ namespace Graph
 			if (periodgaps.at(actid)<0)
 				{
 				returned.push_back(std::numeric_limits<double>::signaling_NaN());
+				returned.push_back(std::numeric_limits<double>::signaling_NaN());
 			}else {
 				returned.push_back(static_cast<double>(periodgaps.at(actid)));
+				returned.push_back(static_cast<double>(sourceactions.at(actid)));
 				}
-			returned.push_back(static_cast<double>(sourceactions.at(actid)));
 			}
 		returned.push_back(static_cast<double>(source_vertex->get().age));
 		//returned.push_back(static_cast<double>(source_vertex->get().period));

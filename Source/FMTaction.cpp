@@ -174,18 +174,25 @@ FMTaction::FMTaction():FMTlist<FMTspec>(),
 
 bool FMTaction::useyield(const std::string& yldname) const
 	{
-	for (const auto& speclitit : *this)
+	try {
+		for (const auto& speclitit : *this)
 		{
-		if (!speclitit.second.emptyylds())
+			if (!speclitit.second.emptyylds())
 			{
-			const std::vector<std::string> specyields = speclitit.second.getylds();
-			if (std::find(specyields.begin(), specyields.end(),yldname)!= specyields.end())
+				const std::vector<std::string> specyields = speclitit.second.getylds();
+				if (std::find(specyields.begin(), specyields.end(), yldname) != specyields.end())
 				{
-				return true;
+					return true;
 				}
 			}
 
 		}
+	}
+	catch (...)
+	{
+		_exhandler->raisefromcatch("for action " + this->getname(),
+			"FMTaction::useyield", __LINE__, __FILE__, Core::FMTsection::Action);
+	}
 	return false;
 	}
 

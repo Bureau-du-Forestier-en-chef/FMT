@@ -56,29 +56,37 @@ FMToutput& FMToutput::operator = (const FMToutput& rhs)
     }
 FMToutput& FMToutput::operator +=(const FMToutput& rhs)
 	{
-	if (!this->name.empty())
+	try {
+		if (!this->name.empty())
 		{
-		this->name = this->name + "+" + rhs.name;
-		this->description = this->description + "+" + rhs.description;
-	}else {
-		this->name = rhs.name;
-		this->description = rhs.description;
+			this->name = this->name + "+" + rhs.name;
+			this->description = this->description + "+" + rhs.description;
 		}
-    if (!this->sources.empty())
+		else {
+			this->name = rhs.name;
+			this->description = rhs.description;
+		}
+		if (!this->sources.empty())
 		{
-		this->operators.push_back(FMToperator("+"));
+			this->operators.push_back(FMToperator("+"));
 		}
-	this->sources.insert(this->sources.end(), rhs.sources.begin(), rhs.sources.end());
+		this->sources.insert(this->sources.end(), rhs.sources.begin(), rhs.sources.end());
 
-	this->operators.insert(this->operators.end(),rhs.operators.begin(),rhs.operators.end());
-	/*if (this->theme_target != rhs.theme_target)
+		this->operators.insert(this->operators.end(), rhs.operators.begin(), rhs.operators.end());
+		/*if (this->theme_target != rhs.theme_target)
+			{
+			this->theme_target = -1;
+			}*/
+	}catch (...)
 		{
-		this->theme_target = -1;
-		}*/
+		_exhandler->raisefromcatch(
+			"", "FMToutput::operator+=", __LINE__, __FILE__, Core::FMTsection::Outputs);
+		}
 	return *this;
 	}
 FMToutput& FMToutput::operator -=(const FMToutput& rhs)
 	{
+	try{
 	if (!this->name.empty())
 		{
 		this->name = this->name + "-" + rhs.name;
@@ -101,44 +109,58 @@ FMToutput& FMToutput::operator -=(const FMToutput& rhs)
 		{
 		operators.push_back(rhsop.reverse());
 		}
+	}
+	catch (...)
+	{
+		_exhandler->raisefromcatch(
+			"", "FMToutput::operator-=", __LINE__, __FILE__, Core::FMTsection::Outputs);
+	}
 	return *this;
 	}
 
 FMToutput& FMToutput::operator  *= (const double& rhs)
 	{
-	if (!this->name.empty())
+	try {
+		if (!this->name.empty())
 		{
-		this->name =  this->name+"*"+ std::to_string(rhs);
-		this->description = this->description +"*" + std::to_string(rhs);
+			this->name = this->name + "*" + std::to_string(rhs);
+			this->description = this->description + "*" + std::to_string(rhs);
 		}
-	if (!sources.empty())
+		if (!sources.empty())
 		{
-		std::vector<FMToutputsource>new_sources;
-		std::vector<FMToperator>new_operators;
-		size_t location = 0;
-		for (FMToutputsource& source : sources)
+			std::vector<FMToutputsource>new_sources;
+			std::vector<FMToperator>new_operators;
+			size_t location = 0;
+			for (FMToutputsource& source : sources)
 			{
-			new_sources.push_back(source);
-			if (source.isvariable() || source.isvariablelevel())
+				new_sources.push_back(source);
+				if (source.isvariable() || source.isvariablelevel())
 				{
-                new_operators.push_back(FMToperator("*"));
-				new_sources.push_back(FMToutputsource(FMTotar::val, rhs,"","",source.getoutputorigin(),source.getthemetarget()));
+					new_operators.push_back(FMToperator("*"));
+					new_sources.push_back(FMToutputsource(FMTotar::val, rhs, "", "", source.getoutputorigin(), source.getthemetarget()));
 				}
-			if (location < operators.size())
+				if (location < operators.size())
 				{
-				new_operators.push_back(operators.at(location));
+					new_operators.push_back(operators.at(location));
 				}
 
-			++location;
+				++location;
 			}
-		sources = new_sources;
-		operators = new_operators;
+			sources = new_sources;
+			operators = new_operators;
 		}
+	}
+	catch (...)
+	{
+		_exhandler->raisefromcatch(
+			"", "FMToutput::operator *=", __LINE__, __FILE__, Core::FMTsection::Outputs);
+	}
 	return *this;
 	}
 
 FMToutput& FMToutput::operator /=(const double& rhs)
 	{
+	try{
 	if (!this->name.empty())
 		{
 		this->name = this->name + "/" + std::to_string(rhs);
@@ -166,6 +188,12 @@ FMToutput& FMToutput::operator /=(const double& rhs)
 		sources = new_sources;
 		operators = new_operators;
 	}
+	}
+	catch (...)
+	{
+		_exhandler->raisefromcatch(
+			"", "FMToutput::operator/=", __LINE__, __FILE__, Core::FMTsection::Outputs);
+	}
 	return *this;
 	}
 
@@ -173,6 +201,7 @@ FMToutput& FMToutput::operator /=(const double& rhs)
 FMToutput::operator std::string() const
     {
 	std::string line = "*OUTPUT ";
+	try{
 	if (islevel())
 		{
 		line = "*LEVEL ";
@@ -196,6 +225,12 @@ FMToutput::operator std::string() const
 			}
 		}
     line+="\n";
+	}
+	catch (...)
+	{
+		_exhandler->raisefromcatch(
+			"", "FMToutput::operator std::string()", __LINE__, __FILE__, Core::FMTsection::Outputs);
+	}
     return line;
     }
 bool FMToutput::empty() const
@@ -229,6 +264,7 @@ bool FMToutput::isconstant() const
 double FMToutput::getconstantvalue() const
 	{
 	double value = 0;
+	try{
 	std::vector<double>values;
 	if (isconstant())
 		{
@@ -238,6 +274,12 @@ double FMToutput::getconstantvalue() const
 			}
 		value = shuntingyard(values, this->operators);
 		}
+	}
+	catch (...)
+	{
+		_exhandler->raisefromcatch(
+			"for "+this->getname(), "FMToutput::getconstantvalue", __LINE__, __FILE__, Core::FMTsection::Outputs);
+	}
 	return value;
 	}
 
@@ -256,6 +298,7 @@ bool FMToutput::containslevel() const
 
 bool FMToutput::linear() const
 	{
+	try{
 	if (sources.size() > 1 && (find(operators.begin(), operators.end(), FMToperator("*")) != operators.end() ||
 		find(operators.begin(), operators.end(), FMToperator("/")) != operators.end()))
 		{
@@ -276,6 +319,12 @@ bool FMToutput::linear() const
 			}
 
 		}
+	}
+	catch (...)
+	{
+		_exhandler->raisefromcatch(
+			"for " + this->getname(), "FMToutput::linear", __LINE__, __FILE__, Core::FMTsection::Outputs);
+	}
 	return true;
 	}
 double FMToutput::shuntingyard(const std::vector<double>& sourcevalues,const std::vector<FMToperator>& simple_operators) const
@@ -300,7 +349,7 @@ double FMToutput::shuntingyard(const std::vector<double>& sourcevalues,const std
 		return newexpression.shuntingyard(mapping);
 	}catch (...)
 		{
-		_exhandler->raisefromcatch("for " + std::string(*this),"FMToutput::shuntingyard", __LINE__, __FILE__, Core::FMTsection::Outputs);
+		_exhandler->raisefromcatch("for " + this->getname(),"FMToutput::shuntingyard", __LINE__, __FILE__, Core::FMTsection::Outputs);
 		}
 	return 0;
 	}
@@ -358,7 +407,7 @@ FMToutput FMToutput::boundto(const std::vector<FMTtheme>& themes, const FMTperbo
 		}
 	}catch (...)
 		{
-		_exhandler->raisefromcatch("for "+std::string(*this),"FMToutput::boundto", __LINE__, __FILE__, Core::FMTsection::Outputs);
+		_exhandler->raisefromcatch("for "+this->getname(),"FMToutput::boundto", __LINE__, __FILE__, Core::FMTsection::Outputs);
 		}
 	return newoutput;
 	}
@@ -595,13 +644,14 @@ FMToutput FMToutput::presolve(const FMTmask& basemask,
 		newoutput.operators = newoperators;
 	}catch (...)
 		{
-		_exhandler->raisefromcatch("for "+std::string(*this),"FMToutput::presolve", __LINE__, __FILE__, Core::FMTsection::Outputs);
+		_exhandler->raisefromcatch("for "+this->getname(),"FMToutput::presolve", __LINE__, __FILE__, Core::FMTsection::Outputs);
 		}
 	return newoutput;
 	}
 
 void FMToutput::changesourcesid(const std::set<int>& newoutputsorigin,const std::set<int>& newthemeid)
 	{
+	try{
 		for (Core::FMToutputsource& source : sources)
 		{
 			const int oldorigin = source.getoutputorigin();
@@ -630,11 +680,16 @@ void FMToutput::changesourcesid(const std::set<int>& newoutputsorigin,const std:
 				}
 			}
 		}
+	}catch (...)
+		{
+		_exhandler->raisefromcatch("for " + this->getname(), "FMToutput::changesourcesid", __LINE__, __FILE__, Core::FMTsection::Outputs);
+		}
 	}
 
 std::vector<std::string> FMToutput::getdecomposition(const std::vector<FMTtheme>& themes) const
 	{
 	std::vector<std::string>validdecomp;
+	try{
 	if (targetthemeid()!=-1)
 		{
 		int srcid = 0;
@@ -662,6 +717,11 @@ std::vector<std::string> FMToutput::getdecomposition(const std::vector<FMTtheme>
 
 			}
 		}
+	}
+	catch (...)
+	{
+		_exhandler->raisefromcatch("for " + this->getname(), "FMToutput::getdecomposition", __LINE__, __FILE__, Core::FMTsection::Outputs);
+	}
 	return validdecomp;
 	}
 
