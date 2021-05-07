@@ -802,6 +802,19 @@ Core::FMTmask FMTmodel::getbasemask(std::vector<Core::FMTactualdevelopment> opti
 	return basemask;
 	}
 
+Core::FMTmask FMTmodel::getpostsolvebasemask() const
+{
+	Core::FMTmask presolvemask;
+	try {
+		presolvemask = getbasemask(area);
+	}
+	catch (...)
+	{
+		_exhandler->printexceptions("for " + name, "FMTmodel::getpostsolvebasemask", __LINE__, __FILE__);
+	}
+	return presolvemask;
+}
+
 Core::FMTmask FMTmodel::getselectedmask(const std::vector<Core::FMTtheme>& originalthemes) const
 	{
 	
