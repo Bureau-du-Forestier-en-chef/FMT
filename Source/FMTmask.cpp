@@ -405,13 +405,21 @@ FMTmask FMTmask::postsolve(const FMTmask& selectedmask, const std::vector<FMTthe
 		{
 		std::string nameofattribute = "?";
 		boost::dynamic_bitset<> msubset = newmask.subset(theme);
-		if (msubset.size() == 1)
+		/*if (msubset.size() == 1)
 			{
+			std::cout<<"if"<<std::endl;
 			nameofattribute = (*theme.getbaseattributes().begin());
+			std::cout<<nameofattribute<<std::endl;
 		}else if (msubset.count()>0)
 			{
+			std::cout<<"else if"<<std::endl;
 			nameofattribute = theme.bitstostr(msubset);
-			}
+			std::cout<<nameofattribute<<std::endl;
+			}*/
+		if (msubset.count()==1)
+		{
+			nameofattribute = theme.bitstostr(msubset);
+		}
 		newmaskname += nameofattribute + " ";
 		}
 	newmaskname.pop_back();
