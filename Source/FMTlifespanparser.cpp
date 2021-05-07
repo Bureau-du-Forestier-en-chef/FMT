@@ -37,7 +37,7 @@ Core::FMTlifespans FMTlifespanparser::read(const std::vector<Core::FMTtheme>& th
 		{
 			while (LIFstream.is_open())
 			{
-				const std::string line = FMTparser::getcleanline(LIFstream);
+				const std::string line = FMTparser::getcleanlinewfor(LIFstream,themes, constants);
 				if (!line.empty())
 				{
 					std::vector<std::string>splited = FMTparser::spliter(line, FMTparser::rxseparator);
