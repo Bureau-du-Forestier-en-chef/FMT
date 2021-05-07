@@ -757,10 +757,23 @@ FMTyieldhandler::operator std::string() const
 			{
 			FMTyieldhandler newhandler(*this);
 			try {
+				std::vector<std::string> values;
+				boost::split(values,std::string(newhandler.mask),boost::is_any_of(FMT_STR_SEPARATOR),boost::token_compress_on);
+				for (const std::string& value : values)
+				{
+					for (const FMTtheme& bt : basethemes)
+					{
+						if(bt.isaggregate(value))
+						{
+							_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, "Cannot postsolve mask with aggregates " + std::string(newhandler.mask),
+														"FMTyieldhandler::postsolve", __LINE__, __FILE__);
+						}
+					}
+				}
 				newhandler.mask = newhandler.mask.postsolve(selectedmask, basethemes);
 			}catch (...)
 			{
-				_exhandler->raisefromcatch("", "FMTyieldhandler::presolve", __LINE__, __FILE__, Core::FMTsection::Yield);
+				_exhandler->printexceptions("", "FMTyieldhandler::postsolve", __LINE__, __FILE__, Core::FMTsection::Yield);
 			}
 			return newhandler;
 			}

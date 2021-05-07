@@ -17,6 +17,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <boost/serialization/nvp.hpp>
 #include "FMTdata.h"
 #include "FMTmask.h"
+#include "FMTtheme.h"
 #include <vector>
 #include "FMTutility.h"
 #include "FMTobject.h"

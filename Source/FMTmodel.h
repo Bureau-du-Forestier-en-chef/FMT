@@ -223,6 +223,11 @@ class FMTmodel : public Core::FMTobject
 		if the model is badly formulated.
 		*/
 		FMTmodel basepresolve(int presolvepass = 10) const;
+		// DocString: FMTmodel::getpostsolvebasemask
+		/**
+		Get the postsolve basemask used by the presolve (in case you want to turn presolved mask into postsolve mask).
+		*/
+		Core::FMTmask getpostsolvebasemask() const;
 		// DocString: FMTmodel::getselectedmask
 		/**
 		If the model is presolved you can call this function to get the selection mask that you need

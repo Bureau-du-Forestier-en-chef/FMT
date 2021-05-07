@@ -268,6 +268,7 @@ Core::FMTyields FMTyieldparser::read(const std::vector<Core::FMTtheme>& themes,c
 		std::vector<std::pair<Core::FMTmask, Core::FMTyieldhandler>>::iterator datait = yields.end();
 		Core::FMTmask tmask;
 		bool sided = false;
+		bool multipledef = false;
 		std::vector<double>proportion;
 		if (FMTparser::tryopening(yieldstream, location))
 		{
@@ -326,6 +327,7 @@ Core::FMTyields FMTyieldparser::read(const std::vector<Core::FMTtheme>& themes,c
 							if (values[0] == "_AGE")
 							{
 								sided = false;
+								multipledef = false;
 								yldsnames.clear();
 								dump.clear();
 								values.erase(values.begin());
@@ -343,9 +345,20 @@ Core::FMTyields FMTyieldparser::read(const std::vector<Core::FMTtheme>& themes,c
 								}
 								values.erase(values.begin());
 								int id = 0;
+								std::set<std::string> passednames;
 								for (const std::string& value : values)
 								{
-									actualyield->second.push_data(yldsnames[id], getnumwithproportion(value, constants, proportion, id));
+									if(passednames.find(yldsnames.at(id))==passednames.end())
+									{
+										actualyield->second.push_data(yldsnames.at(id), getnumwithproportion(value, constants, proportion, id));
+										passednames.insert(yldsnames.at(id));
+									}else if(!multipledef)
+									{
+										_exhandler->raise(Exception::FMTexc::FMTignore,
+															yldsnames.at(id) + " at line " + std::to_string(_line)+ " multiple definition", "FMTyieldparser::read", __LINE__, __FILE__, _section);
+										multipledef = true;
+
+									}
 									++id;
 								}
 							}

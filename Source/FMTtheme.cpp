@@ -346,11 +346,13 @@ std::string FMTtheme::bitstostr(const boost::dynamic_bitset<>& bits) const
 					}
 
 				}
+				std::cout<<"for bitset count of " + std::to_string(bitcounts) + " in theme " + std::to_string(id)<<std::endl;
 				_exhandler->raise(Exception::FMTexc::FMTundefined_attribute,
 					"for bitset count of " + std::to_string(bitcounts) + " in theme " + std::to_string(id), "FMTtheme::bitstostr", __LINE__, __FILE__, Core::FMTsection::Landscape);
 			}
 		}catch (...)
 			{
+			std::cout<<"fail in bittostring"<<std::endl;
 			_exhandler->raisefromcatch("", "FMTtheme::bitstostr", __LINE__, __FILE__, Core::FMTsection::Landscape);
 			}
 		return "";
