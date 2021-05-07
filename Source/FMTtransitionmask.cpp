@@ -70,7 +70,7 @@ FMTtransitionmask::FMTtransitionmask(const std::string& lmask,const std::vector<
         {
         //FMTdevelopment newdev(dev);
         //newdev.mask = this->trans(dev.mask);
-		FMTdevelopment newdev(this->trans(dev.mask),dev.age,0,dev.period);
+		FMTdevelopment newdev(this->trans(dev.mask),dev.age,dev.lock,dev.period);
         //newdev.lock = 0;
 		bool age_change = false;
         if(!lock.empty())
