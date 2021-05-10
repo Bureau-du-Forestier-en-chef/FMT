@@ -758,7 +758,8 @@ FMTyieldhandler::operator std::string() const
 			FMTyieldhandler newhandler(*this);
 			try {
 				std::vector<std::string> values;
-				boost::split(values,std::string(newhandler.mask),boost::is_any_of(FMT_STR_SEPARATOR),boost::token_compress_on);
+				const std::string maskname(std::string(newhandler.mask));
+				boost::split(values, maskname,boost::is_any_of(FMT_STR_SEPARATOR),boost::token_compress_on);
 				for (const std::string& value : values)
 				{
 					for (const FMTtheme& bt : basethemes)
