@@ -39,6 +39,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <boost/serialization/unordered_map.hpp>
 #include <boost/serialization/vector.hpp>
 #include <boost/serialization/export.hpp>
+#include <boost/range/algorithm_ext/erase.hpp>
 
 #include <memory>
 #include <unordered_map>
@@ -537,9 +538,11 @@ class FMTgraph : public Core::FMTobject
 		{
 			try {
 				FMTvertex_iterator vertex_iterator, vertex_iterator_end;
+				const std::string toremove = "+-/*";
 				for (boost::tie(vertex_iterator, vertex_iterator_end) = boost::vertices(data); vertex_iterator != vertex_iterator_end;++vertex_iterator)
 					{
-					const std::string basename=std::string(Core::FMTdevelopment(data[*vertex_iterator].get()));
+					std::string basename=std::string(Core::FMTdevelopment(data[*vertex_iterator].get()));
+					boost::remove_erase_if(basename, boost::is_any_of(toremove));
 					FMToutedge_iterator outit, outend;
 					for (boost::tie(outit, outend) = boost::out_edges(*vertex_iterator,data);outit!=outend;++outit)
 						{
@@ -606,12 +609,15 @@ class FMTgraph : public Core::FMTobject
 		{
 			try {
 				FMTvertex_iterator vertex_iterator, vertex_iterator_end;
+				const std::string toremove = "+-/*";
 				for (boost::tie(vertex_iterator, vertex_iterator_end) = boost::vertices(data); vertex_iterator != vertex_iterator_end; ++vertex_iterator)
 				{
 					const int rowid = data[*vertex_iterator].getconstraintID();
 					if (rowid>=0)
 						{
-						rownames[rowid] = std::string(Core::FMTdevelopment(data[*vertex_iterator].get()));
+						std::string name = std::string(Core::FMTdevelopment(data[*vertex_iterator].get()));
+						boost::remove_erase_if(name, boost::is_any_of(toremove));
+						rownames[rowid] = name;
 						}
 				}
 			}
