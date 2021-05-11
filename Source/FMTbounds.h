@@ -147,7 +147,7 @@ class FMTbounds
             {
             if (!this->empty())
                 {
-                 if (rhs.lower!=std::numeric_limits<T>::min())
+                 if (rhs.lower!=std::numeric_limits<T>::lowest())
                     {
                     lower = rhs.lower;
                     }
@@ -177,7 +177,7 @@ class FMTbounds
                         {
                         line=name+" = "+supper;
                         }else{
-                            if(lower!= std::numeric_limits<T>::min())
+                            if(lower!= std::numeric_limits<T>::lowest())
                                 {
                                 line = name+" >= "+slower;
                                 beenuse = true;
