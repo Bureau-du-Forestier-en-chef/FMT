@@ -202,7 +202,7 @@ namespace Parser
 										boost::algorithm::trim(strsrc);
 										if (!processing_level && (isnum(strsrc) || constants.isconstant(strsrc)))
 										{
-											double value = getnum<double>(strsrc, constants);
+											const double value = getnum<double>(strsrc, constants);
 											if (((!stroperators.empty() &&
 												(stroperators.at(0) == "+" || stroperators.at(0) == "-")) ||
 												(!lastoperator.empty() &&
@@ -231,16 +231,17 @@ namespace Parser
 												}
 												for (; id < sources.size(); ++id)
 												{
+													double srcvalue = value;
 													if (id > 0 && sources.at(id - 1).isvariable())
 													{
 														if (sources.at(id).isconstant())
 														{
-															value = Core::FMToperator(operators.at(lastop)).call(value, sources.at(id).getvalue());
+															srcvalue = Core::FMToperator(operators.at(lastop)).call(srcvalue, sources.at(id).getvalue());
 														}
 														else {
 															newoperators.push_back(Core::FMToperator(lastoperator));
 														}
-														newsources.push_back(Core::FMToutputsource(Core::FMTotar::val, value,"","", sources.at(id).getoutputorigin(),sources.at(id).getthemetarget()));
+														newsources.push_back(Core::FMToutputsource(Core::FMTotar::val, srcvalue,"","", sources.at(id).getoutputorigin(),sources.at(id).getthemetarget()));
 													}
 													if (sources.at(id).isvariable() || sources.at(id).islevel())
 													{
