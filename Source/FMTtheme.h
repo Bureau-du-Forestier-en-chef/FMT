@@ -22,6 +22,10 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTmask.h"
 #include "FMTobject.h"
 
+#if defined FMTWITHR
+	#include <Rcpp.h>
+#endif 
+
 
 
 namespace Core
@@ -111,6 +115,11 @@ class FMTtheme : public FMTobject
 		For optimization build the attribute location of the theme.
 		*/
 		void buildattributelocations();
+		// DocString: FMTtheme::fillupaggregates
+		/**
+		Fill up the aggregates vectors, vector<int> = themeid startingfrom 1, vector<std::string> = attributes, vector<std::string> = aggregates.
+		*/
+		void fillupaggregates(std::vector<int>& themeids, std::vector<std::string>& locattributes, std::vector<std::string>& locaggregates) const;
 	public:
 		// DocString: FMTtheme()
 		/**
@@ -138,6 +147,7 @@ class FMTtheme : public FMTobject
 		*/
 		FMTtheme(const std::vector<std::string>& lattributes,
 			const size_t& lid, const size_t& lstart, const std::string& lname);
+
 
 		// DocString: FMTtheme(const FMTtheme&)
 		/**
@@ -266,6 +276,18 @@ class FMTtheme : public FMTobject
 		Return a string representation of the FMTtheme seen in a landscape file 
 		*/
         operator std::string() const;
+	#if defined FMTWITHR
+			// DocString:  FMTtheme::getaggregatesdataframe
+			/**
+			Returns a dataframe filled up with the aggregates of each themes (col1 = THEME, col2 = ATTRIBUTES,col3 = AGGREGATES)
+			*/
+			Rcpp::DataFrame getaggregatesasdataframe() const;
+			// DocString:  FMTtheme::getattributesasdataframe
+			/**
+			Returns a dataframe filled up with the attributes (col1 = ATTRIBUTE, col2 = NAMES)
+			*/
+			Rcpp::DataFrame getattributesasdataframe() const;
+	#endif
     };
 
 	// DocString: FMTthemecomparator
