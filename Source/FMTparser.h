@@ -425,7 +425,7 @@ class FMTparser: public Core::FMTobject
 		Core::FMTbounds<T>bounds(const Core::FMTconstants& constants, const std::string& value, const std::string& ope, Core::FMTsection section) const
             {
 			T lupper = std::numeric_limits<T>::max();
-			T llower = std::numeric_limits<T>::min();
+			T llower = std::numeric_limits<T>::lowest();
 			try {
 				try {
 					T intvalue = getnum<T>(value, constants);
@@ -440,7 +440,7 @@ class FMTparser: public Core::FMTobject
 					else if (optype == 1)
 					{
 						lupper = intvalue;
-						llower = std::numeric_limits<T>::min();
+						llower = std::numeric_limits<T>::lowest();
 					}
 					else if (optype == 2)
 					{
