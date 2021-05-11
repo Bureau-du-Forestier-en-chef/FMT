@@ -307,7 +307,11 @@ void exportCore()
 				.method("getattributes", &Core::FMTtheme::getattributes,
 					"@DocString(FMTtheme::getattributes)")
 				.method("getname", &Core::FMTtheme::getname,
-					"@DocString(FMTtheme::getname)");
+					"@DocString(FMTtheme::getname)")
+				.method("getaggregatesasdataframe", &Core::FMTtheme::getaggregatesasdataframe,
+					"@DocString(FMTtheme::getaggregatesasdataframee)")
+				.method("getattributesasdataframe", &Core::FMTtheme::getattributesasdataframe,
+					"@DocString(FMTtheme::getattributesasdataframe)");
 
 
 			Rcpp::class_<Core::FMTconstants>("FMTconstants", "@DocString(FMTconstants)")

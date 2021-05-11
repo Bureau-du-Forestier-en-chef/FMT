@@ -28,6 +28,13 @@ if (new(FMTversion)$hasfeature("OSI"))
             }
         }
     outdataframe <- lpmodel$getoutputsdataframe(outputstocalculate, 1, length(schedules))
+    aggregatesdata <- list()
+    attributesdata <- list()
+    for (theme in lpmodel$getthemes())
+	{
+	aggregatesdata[[length(aggregatesdata) + 1]] <- theme$getaggregatesasdataframe()
+	attributesdata[[length(attributesdata) + 1]] <- theme$getattributesasdataframe()
+	}
 	}else{
 	print("FMT needs to be compiled with OSI")
 	}
