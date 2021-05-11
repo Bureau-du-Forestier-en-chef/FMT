@@ -436,6 +436,27 @@ FMTtheme::operator std::string() const
 			}
         return fulltheme;
         }
+
+void FMTtheme::fillupaggregates(std::vector<int>& themeids, std::vector<std::string>& locattributes, std::vector<std::string>& locaggregates) const
+{
+	try {
+		for (const std::string& aggregate : aggregates)
+			{
+			for (const std::string& attribute : getattributes(aggregate))
+				{
+				themeids.push_back(id+1);
+				locattributes.push_back(attribute);
+				locaggregates.push_back(aggregate);
+				}
+			}
+	}catch (...)
+	{
+		_exhandler->raisefromcatch("for theme " + std::to_string(id), "FMTtheme::fillupaggregates", __LINE__, __FILE__, Core::FMTsection::Landscape);
+	}
+
+}
+
+
 FMTtheme FMTtheme::presolve(const FMTmask& basemask, size_t& newid, size_t& newstart, FMTmask& selected) const
 	{
 	try {
@@ -531,6 +552,72 @@ bool FMTthemecomparator::operator()(const FMTtheme& theme) const
 		return true;
 	}
 	}
+
+#if defined FMTWITHR
+Rcpp::DataFrame FMTtheme::getaggregatesasdataframe() const
+{
+	Rcpp::DataFrame data = Rcpp::DataFrame();
+	try {
+		if (!aggregates.empty())
+			{
+			std::vector<int>themeids;
+			std::vector<std::string>locattributes;
+			std::vector<std::string>locaggregates;
+			this->fillupaggregates(themeids, locattributes, locaggregates);
+			Rcpp::IntegerVector rids(themeids.begin(), themeids.end());
+			Rcpp::StringVector rattributes(locattributes.begin(), locattributes.end());
+			Rcpp::StringVector raggregates(locaggregates.begin(), locaggregates.end());
+			data.push_back(rids, "THEMES");
+			data.push_back(rattributes, "ATTRIBUTES");
+			data.push_back(raggregates, "AGGREGATES");
+			data.attr("row.names") = Rcpp::seq(1, themeids.size());
+			}
+		data.attr("class") = "data.frame";
+	}
+	catch (...)
+	{
+		_exhandler->raisefromcatch("", "FMTtheme::getaggregatesasdataframe", __LINE__, __FILE__);
+	}
+	return data;
+}
+
+Rcpp::DataFrame FMTtheme::getattributesasdataframe() const
+{
+	Rcpp::DataFrame data = Rcpp::DataFrame();
+	try {
+		if (!attributenames.empty())
+		{
+			bool gotnames = false;
+			for (const std::string& name : attributenames)
+			{
+				if (!name.empty())
+				{
+					gotnames = true;
+					break;
+				}
+			}
+			if (gotnames)
+			{
+				std::vector<int>ids(attributes.size(), id + 1);
+				Rcpp::IntegerVector rids(ids.begin(), ids.end());
+				Rcpp::StringVector rattributes(attributes.begin(), attributes.end());
+				Rcpp::StringVector rnames(attributenames.begin(), attributenames.end());
+				data.push_back(rids, "THEMES");
+				data.push_back(rattributes, "ATTRIBUTES");
+				data.push_back(rnames, "NAMES");
+				data.attr("row.names") = Rcpp::seq(1, ids.size());
+			}
+		}
+		data.attr("class") = "data.frame";
+	}catch (...)
+	{
+		_exhandler->raisefromcatch("", "FMTtheme::getaggregatesasdataframe", __LINE__, __FILE__);
+	}
+	return data;
+}
+
+
+#endif
 
 
 
