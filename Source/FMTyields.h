@@ -71,6 +71,11 @@ class FMTyields : public FMTlist<FMTyieldhandler>
 	Update the yields presence true or false.
 	*/
 	void updateyieldpresence();
+	// DocString: FMTyields::complexyldtoageyld
+	/**
+	Convert a complex yield to an age yield. Needed in yields::getage when it's call on a complex yield.
+	*/
+	FMTyieldhandler complexyldtoageyld(const FMTyieldhandler* complexyld, const std::vector<const FMTyieldhandler*>& ldatas,const FMTspec& lspec,const FMTdevelopment& ldev) const;
     public:
 		// DocString: FMTyields::getallyieldnames
 		/**
