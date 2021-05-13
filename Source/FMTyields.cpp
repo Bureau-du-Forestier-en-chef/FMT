@@ -381,7 +381,8 @@ std::map<std::string, std::map<std::string, std::vector<double>>>FMTyields::geta
 	return result;
 	}
 
-int FMTyields::getage(const FMTdevelopment& dev,const FMTspec& spec) const
+//Old function before converting complexyield
+/*int FMTyields::getage(const FMTdevelopment& dev,const FMTspec& spec) const
     {
 	int age = dev.age;
 	try {
@@ -402,11 +403,75 @@ int FMTyields::getage(const FMTdevelopment& dev,const FMTspec& spec) const
 							{
 								age = new_age;
 							}
+							*_logger<<"Return age "+std::to_string(age)+" for yield "+std::string(*data) <<"\n";
 							return age;
 						}
 					}
-					
+				}else if(data->gettype() == FMTyldtype::FMTcomplexyld){
+					*_logger<<"Not an age yield "+std::string(*data)<<"\n";
+				}
+			}
+		}
+	}catch (...)
+		{
+		_exhandler->raisefromcatch("for developement "+std::string(dev),"FMTyields::getage", __LINE__, __FILE__, Core::FMTsection::Yield);
+		}
+	return age;
+	}*/
 
+FMTyieldhandler FMTyields::complexyldtoageyld(const FMTyieldhandler* complexyld, const std::vector<const FMTyieldhandler*>& ldatas,const FMTspec& lspec, const FMTdevelopment& ldev) const
+	{
+	const FMTmask cplxmask = complexyld->getmask();
+	FMTyieldhandler nhandler(FMTyldtype::FMTageyld, cplxmask);
+	try{
+		for (size_t id = 0; id < lspec.yieldnames.size();++id)
+		{
+			if (complexyld->elements.find(lspec.yieldnames.at(id)) != complexyld->elements.end())
+			{
+				for(int age = 0; age <= ldev.age ; ++age)
+				{
+					nhandler.push_base(age);
+					nhandler.push_data(lspec.yieldnames.at(id),complexyld->get(ldatas, lspec.yieldnames.at(id), age, ldev.period, ldev.mask));
+				}
+			}
+		}
+	}catch(...){
+		_exhandler->raisefromcatch("Error in converting complexyield to ageyield for yieldhandler "+std::string(*complexyld),"FMTyields::complexyldtoageyld", __LINE__, __FILE__);
+	}
+		return nhandler;
+	}
+
+int FMTyields::getage(const FMTdevelopment& dev,const FMTspec& spec) const
+    {
+	int age = dev.age;
+	try {
+		const std::vector<const FMTyieldhandler*>datas = this->findsets(dev.mask);
+		if (!datas.empty())
+		{
+			FMTyieldhandler agedata;
+			for (const FMTyieldhandler* data : datas)
+			{
+				if(data->gettype() == FMTyldtype::FMTcomplexyld)
+				{
+					//_exhandler->raise(Exception::FMTexc::FMTignore,"Converting yield complex into age yield to get an age from value in the yield", "FMTyields::getage", __LINE__, __FILE__);
+					agedata = complexyldtoageyld(data,datas,spec,dev);
+					data = &agedata;
+				}
+				if (data->gettype() == FMTyldtype::FMTageyld)
+				{
+					for (size_t id = 0; id < spec.yieldnames.size();++id)
+					{
+						if (data->elements.find(spec.yieldnames.at(id)) != data->elements.end())
+						{
+							const FMTyldbounds* bound = &spec.yieldbounds.at(id);
+							const int new_age = data->getage(spec.yieldnames.at(id), bound->getlower(), dev.age);
+							if (new_age < age)
+							{
+								age = new_age;
+							}
+							return age;
+						}
+					}
 				}
 			}
 		}
