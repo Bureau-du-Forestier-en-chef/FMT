@@ -657,6 +657,10 @@ class FMTgraph : public Core::FMTobject
 			std::vector<std::string>target_attributes;
 			std::map<std::string, double>results;
 			try {
+				if(output.targetthemeid() < 0 && !(level == FMToutputlevel::developpement))
+				{
+					level = FMToutputlevel::totalonly;
+				}
 				if (level != FMToutputlevel::developpement)
 				{
 					if (level == FMToutputlevel::standard)
@@ -1713,7 +1717,7 @@ class FMTgraph : public Core::FMTobject
 			}
 			catch (...)
 			{
-				_exhandler->raisefromcatch("For node: "+std::string(node), "FMTgraph::getvalues", __LINE__, __FILE__);
+				_exhandler->raisefromcatch("For node: "+std::string(node)+ " on theme "+std::string(theme), "FMTgraph::getvalues", __LINE__, __FILE__);
 			}
 			return values;
 		}
