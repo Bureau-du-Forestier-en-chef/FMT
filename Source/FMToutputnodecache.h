@@ -164,6 +164,8 @@ namespace Graph
 					if (insertingdone == potentials.size())
 					{
 						std::sort(finalselection.begin(), finalselection.end());
+						//Weird fix BF
+						finalselection.erase(std::unique(finalselection.begin(), finalselection.end()),finalselection.end());
 						if ((*testting)->first.issamebutdifferentaction(targetnode.source)) //we got a exact match!!!
 						{
 							exactnode = true;
