@@ -117,6 +117,11 @@ class FMTparser: public Core::FMTobject
 		// DocString: FMTparser::mostrecentfile
 		///The most recent file time read by this parser.
 		mutable std::time_t mostrecentfile;
+		// DocString: FMTparser:setsection
+		/**
+		It sets the section member of the FMTobject.
+		*/
+		void setsection(const Core::FMTsection& section) const;
 		// DocString: FMTparser::createdataset
 		/**
 		The function create an empty GDALDataset for a given FMTlayer.
@@ -159,11 +164,6 @@ class FMTparser: public Core::FMTobject
 					}
 				return poDstDS;
 				}
-			// DocString: FMTparser:setsection
-			/**
-			It sets the section member of the FMTobject.
-			*/
-			void setsection(const Core::FMTsection& section) const;
 			// DocString: FMTparser::getdataset
 			/**
 			Open in readonly a GDALdataset from a given (location), will throw if anything went wrong.
