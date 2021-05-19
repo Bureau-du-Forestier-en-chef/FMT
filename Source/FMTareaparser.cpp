@@ -959,9 +959,13 @@ namespace Parser{
 						{
 						OGRPoint maincentroid;
 						const Core::FMTmask mainmask(mainoparea.getmask());
+						std::vector<Core::FMTmask>mainneighbors = mainoparea.getneighbors();
+						mainneighbors.push_back(mainmask);
+						std::sort(mainneighbors.begin(), mainneighbors.end());
 						polygons.at(mainopareaid)->Centroid(&maincentroid);
 						size_t sideopareaid = 0;
 						std::vector<Heuristics::FMToperatingareaclusterbinary>binaries;
+						std::vector<Core::FMTmask>binariesmasks;
 						std::vector<size_t>polygonids;
 						for (const Heuristics::FMToperatingarea& sideoparea : operatingareas)
 							{
@@ -982,13 +986,15 @@ namespace Parser{
 							if (distance <= maximaldistance && mainmask != sidemask)
 								{
 								binaries.push_back(Heuristics::FMToperatingareaclusterbinary(sideoparea));
+								binariesmasks.push_back(sidemask);
 								polygonids.push_back(sideopareaid);
 								}
 							++sideopareaid;
 							}
-						//delete non neighboring operating area
-						binaries = Heuristics::FMToperatingareaclusterbinary(mainoparea).filterneighbors(binaries);
+						std::sort(binariesmasks.begin(), binariesmasks.end());
 						size_t binaryid = 0;
+						
+						std::queue<Core::FMTmask>bannedmask;
 						for (Heuristics::FMToperatingareaclusterbinary& binary : binaries)
 							{
 							const Core::FMTmask binarymask(binary.getmask());
@@ -1014,8 +1020,6 @@ namespace Parser{
 									exclusion->find(subbinarymask)==exclusion->end())
 								{
 									const OGRPolygon* subbinary_polygon = polygons.at(polygonids.at(subbinaryid));
-									//OGRPoint subbinarycentroid;
-									//subbinary_polygon->Centroid(&subbinarycentroid);
 									if (linking_line.Intersects(subbinary_polygon))
 									{
 										linkerneighbors.push_back(subbinarymask);
@@ -1023,15 +1027,116 @@ namespace Parser{
 									else {
 										exclusion->insert(subbinarymask);
 									}
-									
+
 								}
 								++subbinaryid;
 								}
 							excludedfromlink[binarymask][mainmask] = *exclusion;
+							if (linkerneighbors.empty())//line break-up detector!
+							{
+								std::vector<Core::FMTmask>binaryn = operatingareas.at(polygonids.at(binaryid)).getneighbors();
+								binaryn.push_back(binarymask);
+								std::vector<Core::FMTmask> intersect;
+								std::sort(binaryn.begin(), binaryn.end());
+								std::set_intersection(mainneighbors.begin(), mainneighbors.end(),
+									binaryn.begin(), binaryn.end(),
+									std::back_inserter(intersect));
+								bool insertiondone = false;
+								if (!intersect.empty())
+									{
+									for (const Core::FMTmask& imask : intersect)
+										{
+										if (imask==binarymask||imask==mainmask)
+											{
+											insertiondone = true;
+											break;
+											}
+										}
+									if (!insertiondone)
+										{
+										std::vector<Core::FMTmask>cleanedintersect;
+										std::set_intersection(intersect.begin(), intersect.end(),
+											binariesmasks.begin(), binariesmasks.end(),
+											std::back_inserter(cleanedintersect));
+										for (const Core::FMTmask& imask : cleanedintersect)
+											{
+											linkerneighbors.push_back(imask);
+											insertiondone = true;
+											}
+										}
+								}
+								if (!insertiondone)
+								{
+									const double distance = linking_line.get_Length();
+									OGRGeometry* bufferedbinary = binary_polygon->Buffer(distance);
+									OGRGeometry* bufferedmain = polygons.at(mainopareaid)->Buffer(distance);
+									OGRGeometry* intersection = bufferedbinary->Intersection(bufferedmain);
+									size_t subbinaryid = 0;
+									for (const Heuristics::FMToperatingareaclusterbinary& subbinary : binaries)
+									{
+										OGRPolygon* subbinary_polygon = polygons.at(polygonids.at(subbinaryid));
+										const Core::FMTmask subbinarymask(subbinary.getmask());
+										if (subbinarymask != binarymask && subbinarymask != mainmask && intersection->Intersect(subbinary_polygon))
+										{
+											OGRPolygon* subintersection = reinterpret_cast<OGRPolygon*>(intersection->Intersection(subbinary_polygon));
+											if (subintersection->get_Area() >= subbinary_polygon->get_Area()*0.5)
+											{
+												insertiondone = true;
+												linkerneighbors.push_back(subbinarymask);
+											}
+											OGRGeometryFactory::destroyGeometry(subintersection);
+										}
+										++subbinaryid;
+									}
+									OGRGeometryFactory::destroyGeometry(intersection);
+									OGRGeometryFactory::destroyGeometry(bufferedbinary);
+									OGRGeometryFactory::destroyGeometry(bufferedmain); 
+								}
+								if (!insertiondone)
+								{
+									bannedmask.push(binarymask);
+								}
 
+
+							}
 							binary.setneighbors(linkerneighbors);
 							++binaryid;
 							}
+						
+						while (!bannedmask.empty())
+							{
+							std::vector<Heuristics::FMToperatingareaclusterbinary>cleanedbinaries;
+							const Core::FMTmask& mask = bannedmask.front();
+							for (const Heuristics::FMToperatingareaclusterbinary& binary : binaries)
+								{
+								const Core::FMTmask binmask = binary.getmask();
+								if (mask != binmask)
+									{
+									bool keepit = true;
+									for (const Core::FMTmask& nmask : binary.getneighbors())
+										{
+										if (nmask== mask)
+											{
+											keepit = false;
+											break;
+											}
+
+										}
+									if (keepit)
+									{
+										cleanedbinaries.push_back(binary);
+									}
+									else {
+										bannedmask.push(binmask);
+									}
+
+									}
+
+								}
+							bannedmask.pop();
+							binaries = cleanedbinaries;
+							}
+
 						Heuristics::FMToperatingareaclusterbinary basecentroid(mainoparea);
 						basecentroid.setneighbors(std::vector<Core::FMTmask>());
 						clusters.push_back(Heuristics::FMToperatingareacluster(basecentroid,binaries));
@@ -1090,7 +1195,7 @@ namespace Parser{
 					std::vector<OGRPolygon*>mergedpolygons = this->getunion(multipolygons);
 					std::vector<Heuristics::FMToperatingarea>newopareas(operatingareas.begin(), operatingareas.end());
 					const std::vector<Heuristics::FMToperatingarea>opareawithneighbors = getneighborsfrompolygons(mergedpolygons, newopareas, buffersize);
-					finalclusters = this->getclustersfrompolygons(mergedpolygons, operatingareas, maximaldistance);
+					finalclusters = this->getclustersfrompolygons(mergedpolygons, opareawithneighbors, maximaldistance);
 					this->destroypolygons(mergedpolygons);
 				}catch (...)
 				{
