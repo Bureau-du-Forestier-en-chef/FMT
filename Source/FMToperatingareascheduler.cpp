@@ -439,7 +439,10 @@ namespace Heuristics
 				}
 				if (!descriptors.empty())
 				{
+					//*_logger<<std::string(operatingareait->getmask())<<"\n";
+					//*_logger<<"Area before setconstraints "+std::to_string(operatingareait->getarea())<<"\n";
 					operatingareait->setconstraints(descriptors, totalareadescriptors, maingraph, *this, primalsolution, actionids);
+					//*_logger<<"Area after setconstraints "+std::to_string(operatingareait->getarea())<<"\n";
 				}else{
 					_exhandler->raise(Exception::FMTexc::FMTignore,
 											"No nodes found in graph for "+
@@ -460,20 +463,21 @@ namespace Heuristics
 						}
 			}
 			this->synchronize();
-			if (!this->stockresolve()){
+			/*if (!this->stockresolve()){
 						_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
 													"Infeasible model",
 													"FMToperatingareascheduler::setoperatingareasconstraints", __LINE__, __FILE__);
 
-					}
+					}*/
 		}catch (...)
 			{
 			_exhandler->raisefromcatch("","FMToperatingareascheduler::setoperatingareasconstraints", __LINE__, __FILE__);
 			}
 		}
 
-	void FMToperatingareascheduler::setadjacencyconstraints()
+	bool FMToperatingareascheduler::setadjacencyconstraints()
 		{
+		bool rowadded = false;
 		try {
 		//Models::FMTmatrixbuild matrixbuild;
 		const std::vector<double>elements(2, 1.0);
@@ -506,6 +510,7 @@ namespace Heuristics
 							columns[0] = binit->first;
 							columns[1] = index;
 							this->addRow(2, &columns[0], &elements[0], 0, 1);
+							rowadded = true;
 							//matrixbuild.addRow(2, &columns[0], &elements[0], 0, 1);
 							}
 						}
@@ -518,16 +523,17 @@ namespace Heuristics
 				}
 			}
 		this->synchronize();
-		if (!this->stockresolve()){
+		/*if (!this->stockresolve()){
 			_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
 										"Infeasible model",
 										"FMToperatingareascheduler::setadjacencyconstraints", __LINE__, __FILE__);
 
-		}
+		}*/
 		}catch (...)
 			{
 			_exhandler->raisefromcatch("","FMToperatingareascheduler::setadjacencyconstraints", __LINE__, __FILE__);
 			}
+		return rowadded;
 		}
 
 	FMToperatingareascheduler::FMToperatingareascheduler(const FMToperatingareascheduler& rhs) :
@@ -884,9 +890,20 @@ namespace Heuristics
 			}else {
 				FMTlpsolver::passinsolver(basesolve);
 				}*/
+			const double baseobj = this->getObjValue();
 			this->setoperatingareasconstraints(maingraph, model, target);
-			this->setadjacencyconstraints();
-			//this->resolvemodel();
+			bool adjacencyconstraintset = this->setadjacencyconstraints();
+			this->resolvemodel();
+			if (!adjacencyconstraintset)
+			{
+				if(std::abs(this->getObjValue() - baseobj)>0.01*baseobj)
+				{
+					_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
+												"Difference in objvalue after setting operating areaconstraints with new objective "+std::to_string(this->getObjValue() - baseobj),
+												"FMToperatingareascheduler::FMToperatingareascheduler", __LINE__, __FILE__);
+
+				}
+			}
 			if (!this->isProvenOptimal())
 			{
 				_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
