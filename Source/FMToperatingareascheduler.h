@@ -93,7 +93,7 @@ namespace Heuristics
 		Adjacency constraints cannot be added from each operating area thats why the constraints are directly linked to
 		the FMToperatingareaheuristic and the FMToperatingarea.
 		*/
-		void setadjacencyconstraints();
+		bool setadjacencyconstraints();
 		// DocString: FMToperatingareascheduler::setdraw
 		/**
 		Returns a vector of potential oeprating areas that have no schedule sets yet. Based on the dual or primal solution if useprimal == true.
