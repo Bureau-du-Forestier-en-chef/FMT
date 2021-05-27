@@ -8,8 +8,11 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #ifndef FMTDATA_H_INCLUDED
 #define FMTDATA_H_INCLUDED
 
+
 #include <vector>
 #include <string>
+//#include <boost/unordered_map.hpp>
+//#include "FMTdevelopment.h"
 #include <map>
 #include "FMToperator.h"
 #include "FMTmask.h"
@@ -25,6 +28,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 namespace Core
 {
+class FMTdevelopment;
 
 class FMTdata
     {
@@ -40,13 +44,15 @@ class FMTdata
     FMTyieldparserop ops;
 	std::vector<std::string>source;
 	std::vector<bool>stacking;//Stacking a string = true stacking a number = false
-	mutable std::map<size_t,double> _cache; //hash base on (age and/or period and/or mask) //only for complex yield!!!!
+	//mutable std::unique_ptr<boost::unordered_map<FMTdevelopment,double>> _cache; //hash base on (age and/or period and/or mask) //only for complex yield!!!!
+	mutable boost::unordered_map<FMTdevelopment,double>* _cache; //hash base on (age and/or period and/or mask) //only for complex yield!!!!
 	mutable bool _agebase;
-	size_t hashdata(const int& period, const int& age, const FMTmask& mask) const;
+	//size_t hashdata(const int& period, const int& age, const FMTmask& mask) const;
+	FMTdevelopment getsummarydevelopment(const int& period, const int& age, const FMTmask& mask) const;
     public:
 		std::vector<double> data;
         FMTdata();
-		~FMTdata() = default;
+		~FMTdata();
         FMTdata(const FMTdata& rhs);
 		FMTdata(const std::vector<double>& lvalues,
 			const FMTyieldparserop& lops,

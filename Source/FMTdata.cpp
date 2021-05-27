@@ -7,13 +7,20 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 #include "FMTdata.h"
 #include <algorithm>
+#include "FMTdevelopment.h"
 
 
 namespace Core{
 
-FMTdata::FMTdata():ops(FMTyieldparserop::FMTnone),source(),stacking(), _cache(),_agebase(false),data(){}
+FMTdata::FMTdata():ops(FMTyieldparserop::FMTnone),source(),stacking(), _cache(),_agebase(false),data()
+		{
+			_cache = new boost::unordered_map<FMTdevelopment,double>();
+		}
 
-FMTdata::FMTdata(const FMTdata& rhs) : ops(rhs.ops),source(rhs.source), stacking(rhs.stacking), _cache(rhs._cache), _agebase(rhs._agebase),data(rhs.data){}
+FMTdata::FMTdata(const FMTdata& rhs) : ops(rhs.ops),source(rhs.source), stacking(rhs.stacking), _cache(), _agebase(rhs._agebase),data(rhs.data)
+	{
+	_cache = new boost::unordered_map<FMTdevelopment,double>(*rhs._cache);
+	}
 
 FMTdata& FMTdata::operator = (const FMTdata& rhs)
     {
@@ -23,7 +30,11 @@ FMTdata& FMTdata::operator = (const FMTdata& rhs)
         ops = rhs.ops;
         source = rhs.source;
 		stacking = rhs.stacking;
-		_cache = rhs._cache;
+		if(_cache!=nullptr)
+		{
+			delete _cache;
+		}
+		_cache = new boost::unordered_map<FMTdevelopment,double>(*rhs._cache);
 		_agebase = rhs._agebase;
         }
     return *this;
@@ -36,7 +47,9 @@ FMTyieldparserop FMTdata::getop() const
 
 void FMTdata::clearcache()
 	{
-		std::map<size_t,double>().swap(_cache);
+		//_cache = std::unique_ptr<boost::unordered_map<FMTdevelopment,double>>(new boost::unordered_map<FMTdevelopment,double>());
+		delete _cache;
+		_cache = new boost::unordered_map<FMTdevelopment,double>();
 	}
 
 bool FMTdata::constant() const
@@ -67,7 +80,7 @@ bool FMTdata::nulldata() const
 	return false;
 	}
 
-size_t FMTdata::hashdata(const int& period, const int& age, const FMTmask& mask) const
+/*size_t FMTdata::hashdata(const int& period, const int& age, const FMTmask& mask) const
 	{
 	std::size_t seed = 0;
 	boost::hash_combine(seed, boost::hash<Core::FMTmask>()(mask));
@@ -80,20 +93,33 @@ size_t FMTdata::hashdata(const int& period, const int& age, const FMTmask& mask)
 			}
 		}
 	return seed;
+	}*/
+
+FMTdevelopment FMTdata::getsummarydevelopment(const int& period, const int& age, const FMTmask& mask) const
+	{
+	int lperiod = period;
+	if (ops != FMTyieldparserop::FMTcai && ops != FMTyieldparserop::FMTmai && ops!= FMTyieldparserop::FMTytp && ops != FMTyieldparserop::FMTrange)
+		{
+		if (!_agebase)
+			{
+			lperiod=0;
+			}
+		}
+	return FMTdevelopment(mask,age,0,period);
 	}
 
 bool FMTdata::cachevalue(const FMTmask& mask, const int& age, const int& period) const
 	{
-	return (_cache.find(this->hashdata(period, age, mask)) != _cache.end());
+	return (_cache->find(this->getsummarydevelopment(period, age, mask)) != _cache->end());
 	}
 double FMTdata::get(const FMTmask& mask, const int& age, const int& period) const
 	{
-	return _cache.at(this->hashdata(period, age, mask));
+	return _cache->at(this->getsummarydevelopment(period, age, mask));
 	}
 void FMTdata::set(const double& value, const FMTmask& mask, const int& age, const int& period,const bool& age_only) const
 	{
 	_agebase = age_only;
-	_cache[this->hashdata(period, age, mask)] = value;
+	_cache->operator[](this->getsummarydevelopment(period, age, mask)) = value;
 	}
 
 std::vector<std::string> FMTdata::getsource() const
@@ -238,12 +264,20 @@ bool FMTdata::operator == (const FMTdata& rhs) const
 
 FMTdata::FMTdata(const std::vector<double>& lvalues,
 	const FMTyieldparserop& lops,
-	const std::vector<std::string>& lsource): ops(lops), source(lsource), stacking(), _cache(), _agebase(),data(lvalues) {}
+	const std::vector<std::string>& lsource): ops(lops), source(lsource), stacking(), _cache(), _agebase(),data(lvalues)
+	{
+		//_cache = std::unique_ptr<boost::unordered_map<FMTdevelopment,double>>(new boost::unordered_map<FMTdevelopment,double>());
+		_cache = new boost::unordered_map<FMTdevelopment,double>();
+	}
 
 FMTdata::FMTdata(const std::vector<double>& lvalues,
                 const FMTyieldparserop& lops,
                 const std::vector<std::string>& lsource,
-				const std::vector<bool>& varstack):ops(lops),source(lsource),stacking(varstack), _cache(), _agebase(),data(lvalues){}
+				const std::vector<bool>& varstack):ops(lops),source(lsource),stacking(varstack), _cache(), _agebase(),data(lvalues)
+	{
+		//_cache = std::unique_ptr<boost::unordered_map<FMTdevelopment,double>>(new boost::unordered_map<FMTdevelopment,double>());
+		_cache = new boost::unordered_map<FMTdevelopment,double>();
+	}
 
 FMTdata FMTdata::operator * (const double& factor) const
 	{
@@ -254,6 +288,11 @@ FMTdata FMTdata::operator * (const double& factor) const
 		}
 	return newdata;
 	}
+
+FMTdata::~FMTdata()
+{
+	delete _cache;
+}
 
 }
 
