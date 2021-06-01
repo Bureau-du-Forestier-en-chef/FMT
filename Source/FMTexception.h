@@ -5,6 +5,8 @@ SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
+	
+
 #ifndef FMTEXCEPTION_H_INCLUDED
 #define FMTEXCEPTION_H_INCLUDED
 
@@ -32,8 +34,18 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
     #include <boost/filesystem.hpp>
 #endif
 
+#if defined FMTSHAREDLIB && _MSC_VER	
+	#define FMTEXPORT __declspec(dllexport)
+#elif defined FMTSHAREDLIB
+	#define FMTEXPORT __attribute__ ((dllexport))
+#elif defined FMTLIBIMPORT && _MSC_VER	
+	#define FMTEXPORT __declspec(dllimport)
+#endif
+
 #include "FMTutility.h"
 #include "FMTlogger.h"
+
+
 
 
 namespace Exception
@@ -126,7 +138,7 @@ enum FMTexc
 FMTexception is the exception base class for FMT. All the informations regarding a given exception
 is kept by this class (type,section and message).
 */
-class FMTexception : public std::exception
+class FMTEXPORT FMTexception : public std::exception
     {
 	// DocString: FMTexception::serialize
 	/**

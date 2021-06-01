@@ -19,7 +19,7 @@ namespace Exception
 	The FMTquietexceptionhandler is derived from the FMTexceptionhandler base class.
 	This class is a silent class it does not throw any kind of logging but throw errors and no warnings.
 	*/
-	class FMTquietexceptionhandler final : public FMTexceptionhandler
+	class FMTEXPORT FMTquietexceptionhandler final : public FMTexceptionhandler
 	{
 		// DocString: FMTquietexceptionhandler::serialize
 		/**

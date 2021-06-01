@@ -24,7 +24,7 @@ namespace Heuristics
     The centroid of the potential cluster is also represented by a FMToperatingareaclusterbinary (centroid). If the centroid clusterbinary is active then the cluster
     is considered active.
     */
-	class FMToperatingareacluster
+	class FMTEXPORT FMToperatingareacluster
 	{
 		friend class boost::serialization::access;
 		// DocString: FMToperatingareacluster:serialize

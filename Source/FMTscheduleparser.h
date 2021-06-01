@@ -23,7 +23,7 @@ namespace Parser
 FMTscheduleparser implement the reading and writing of a vector of FMTschedules.
 This parser is also used by the FMTmodelparser.
 */
-class FMTscheduleparser: public FMTparser
+class FMTEXPORT FMTscheduleparser: public FMTparser
     {
 		// DocString: FMTscheduleparser::getvariable
 		/**

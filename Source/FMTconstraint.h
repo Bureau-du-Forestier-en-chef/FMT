@@ -48,7 +48,7 @@ So even for the object a FMTconstraint will be generated using a optimization se
 A FMTconstraint is also a FMToutput with some specification (FMTspec).
 The main specification used is the period bounds (1.._LENGTH), RHS and variation (_GOAL).
 */
-class FMTconstraint: public FMToutput,public FMTspec
+class FMTEXPORT FMTconstraint: public FMToutput,public FMTspec
 	{
 	// DocString: FMTconstraint::serialize
 	/**

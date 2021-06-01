@@ -29,7 +29,7 @@ This class is a map containing a linear graph for each cell. The graph represent
 the action and the transition at each each period for the cell. Can be build randomly or
 with a schedule.
 */
-class FMTspatialschedule : public FMTlayer<Graph::FMTlinegraph>
+class FMTEXPORT FMTspatialschedule : public FMTlayer<Graph::FMTlinegraph>
 {
 	mutable FMTspatialnodescache cache;
 	FMTspatialscheduletype scheduletype;

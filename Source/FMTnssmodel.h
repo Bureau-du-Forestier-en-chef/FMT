@@ -25,7 +25,7 @@ namespace Models
 	stochastics actions during the local replanning phase. Before using any kind of spatialy explicit model
 	sometime using a simple non spatial model can help to understand the basic idea of simulation.
 	*/
-	class FMTnssmodel : public FMTmodel
+	class FMTEXPORT FMTnssmodel : public FMTmodel
 		{
 		// DocString: FMTnssmodel::save
 		/**

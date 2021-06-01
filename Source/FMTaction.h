@@ -30,7 +30,7 @@ The operability testing for a given action is in the FMTdevelopement class.
 FMTaction consist of a list of specifications that dictate the operability of 
 a subsets of FMTdevelopments.
 */
-class FMTaction : public FMTlist<FMTspec>
+class FMTEXPORT FMTaction : public FMTlist<FMTspec>
     {
 	friend class FMTactioncomparator;
 	// DocString: FMTaction::serialize

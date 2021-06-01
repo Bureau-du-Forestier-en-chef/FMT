@@ -6,7 +6,8 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 #ifdef FMTWITHOSI
 #include "FMTlpheuristicmthandler.h"
-#include <thread>
+//#include <thread>
+#include <boost/thread.hpp>
 #include <functional>
 #if defined FMTWITHPYTHON
 	#include "boost/python.hpp"
@@ -73,19 +74,19 @@ namespace Heuristics
 
 		size_t FMTlpheuristicmthandler::initialsolve() const
 		{
-			const unsigned int processor_count = std::thread::hardware_concurrency();
+			const unsigned int processor_count = boost::thread::hardware_concurrency();
 			int mosek_process = processor_count/heuristics.size();
 			if (mosek_process<1){mosek_process=1;}
-			std::vector<std::thread>threads;
+			std::vector<boost::thread>threads;
 			for(std::size_t i = 0; i < heuristics.size(); ++i)
 			{
 				FMTlpheuristic* heuristic = heuristics[i];
 				heuristic->setnumberofthreads(static_cast<size_t>(mosek_process));
 				heuristic->setnothread(static_cast<int>(i));
 				//threads.push_back(std::thread([heuristic]{heuristic->parallelinitialsolve();}));
-				threads.push_back(std::thread(std::bind(&FMTlpheuristic::initialsolve, heuristic)));
+				threads.push_back(boost::thread(std::bind(&FMTlpheuristic::initialsolve, heuristic)));
 			}
-			for(std::thread& thr : threads)
+			for(boost::thread& thr : threads)
 			{
 				thr.join();
 			}
@@ -95,19 +96,19 @@ namespace Heuristics
 
 		size_t FMTlpheuristicmthandler::greedysolve(const unsigned int& iterations, const double& maxtime) const
 		{
-			const unsigned int processor_count = std::thread::hardware_concurrency();
+			const unsigned int processor_count = boost::thread::hardware_concurrency();
 			int mosek_process = processor_count/heuristics.size();
 			if (mosek_process<1){mosek_process=1;}
-			std::vector<std::thread>threads;
+			std::vector<boost::thread>threads;
 			const std::chrono::steady_clock::time_point Start = std::chrono::steady_clock::now();
 			for(std::size_t i = 0; i < heuristics.size(); ++i)
 			{
 				FMTlpheuristic* heuristic = heuristics[i];
 				heuristic->setnumberofthreads(static_cast<size_t>(mosek_process));
 				heuristic->setnothread(static_cast<int>(i));
-				threads.push_back(std::thread(std::bind(&FMTlpheuristic::paralleloptimize, heuristic, initialsolution,iterations,maxtime,Start)));
+				threads.push_back(boost::thread(std::bind(&FMTlpheuristic::paralleloptimize, heuristic, initialsolution,iterations,maxtime,Start)));
 			}
-			for(std::thread& thr : threads)
+			for(boost::thread& thr : threads)
 			{
 				thr.join();
 			}
