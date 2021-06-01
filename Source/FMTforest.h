@@ -25,7 +25,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 namespace Spatial
     {
-    class FMTforest: public FMTlayer<Core::FMTdevelopment>
+    class FMTEXPORT FMTforest: public FMTlayer<Core::FMTdevelopment>
         {
 		friend class boost::serialization::access;
 		template<class Archive>

@@ -90,7 +90,7 @@ The name data member hold the attribute value as a string. Sometime when the FMT
 the name might not be set. Also if multiple bits are set for a given FMTtheme it means that the mask
 contains a aggregate or a ?.
 */
-class FMTmask
+class FMTEXPORT FMTmask
     {
     friend class FMTtheme;
 	// DocString: FMTmask::serialize

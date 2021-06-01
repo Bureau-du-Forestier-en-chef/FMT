@@ -19,7 +19,7 @@ namespace Exception
 The FMTdefaultexceptionhandler is derived from the FMTexceptionhandler base class and is
 the default exception handler used in FMT.
 */
-class FMTdefaultexceptionhandler final : public FMTexceptionhandler
+class FMTEXPORT FMTdefaultexceptionhandler final : public FMTexceptionhandler
 	{
 	// DocString: FMTdefaultexceptionhandler::serialize
 	/**

@@ -29,7 +29,7 @@ reduce the overhead caused by the addrow / addcol osisolverinterface during recu
 All calls related to add/remove columns or rows checking for primal or dual solution getting the number of
 rows or columns dont need synchronization with the cache. So those calls are going to be faster when usecache = true.
 */
-class FMTlpsolver: public Core::FMTobject
+class FMTEXPORT FMTlpsolver: public Core::FMTobject
 	{
 	// DocString: FMTlpsolver::save
 	/**

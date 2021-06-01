@@ -15,7 +15,7 @@ namespace Spatial
 
 {
 
-    class FMTspatialaction : public Core::FMTaction
+    class FMTEXPORT FMTspatialaction : public Core::FMTaction
         {
 		friend class boost::serialization::access;
 		template<class Archive>

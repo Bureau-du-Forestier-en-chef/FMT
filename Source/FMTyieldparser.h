@@ -29,7 +29,7 @@ namespace Parser
 The yield parser can read and write a yield sections and transform the information into
 an FMTyields object.
 */
-class FMTyieldparser : public FMTparser
+class FMTEXPORT FMTyieldparser : public FMTparser
     {
      private:
 		// DocString: FMTyieldparser::rxyieldtype

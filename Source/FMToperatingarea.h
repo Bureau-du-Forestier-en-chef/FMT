@@ -29,7 +29,7 @@ namespace Heuristics
 	FMToperatingarea gives informations about a given operating area it's mask,neighbors,neighborsperimeter.
 	FMToperating area have to be based on static themes (not used within transitions).
 	*/
-	class FMToperatingarea
+	class FMTEXPORT FMToperatingarea
 		{
 		// DocString: FMToperatingarea::serialize
 		/**

@@ -34,7 +34,7 @@ a raster stack for a given planning horizon following an harvest schedule.
 The FMTaction ordering is realy important because the simulator will
 attend to place the first action of the list on the map and so on.
 */
-class FMTsesmodel : public FMTmodel
+class FMTEXPORT FMTsesmodel : public FMTmodel
     {
 	// DocString: FMTsesmodel::Serialize
 	/**

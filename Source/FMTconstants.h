@@ -24,7 +24,7 @@ FMTconstants is a class only used by the FMTparsers.
 When a model is read sometime the user uses constants defined in the constants section.
 The constant is represented by a string in this section and keeps double values.
 */
-class FMTconstants : public FMTobject
+class FMTEXPORT FMTconstants : public FMTobject
     {
 	// DocString: FMTconstants::serialize
 	/**

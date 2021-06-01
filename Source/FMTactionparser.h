@@ -26,7 +26,7 @@ namespace Parser
 FMTactionparser reads and writes actions from or into an action files.
 This parser is also used by the modelparser.
 */
-class FMTactionparser : public FMTparser
+class FMTEXPORT FMTactionparser : public FMTparser
     {
     private:
 		// DocString: FMTactionparser::rxsection

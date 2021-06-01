@@ -20,7 +20,7 @@ FMTlifespans class keeps the information about the maximum age of an aggregate o
 It's derived from FMTlist<int> each element of the FMTlist is a maximum age given for a FMTmask.
 The class is used by the FMTparser but also into the when generating the default _DEATH action and transition.
 */
-class FMTlifespans : public FMTlist<int>
+class FMTEXPORT FMTlifespans : public FMTlist<int>
     {
 	// DocString: FMTlifespans::serialize
 	/**

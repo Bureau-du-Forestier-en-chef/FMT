@@ -33,7 +33,7 @@ FMTyields hold all the information related to the forest productivity this class
 FMTyields is a class used to check if a given FMTdevelopement can be operable to an action, calculate outputs,
 constraints and disturb a forest stand in a FMTtransition.
 */
-class FMTyields : public FMTlist<FMTyieldhandler>
+class FMTEXPORT FMTyields : public FMTlist<FMTyieldhandler>
     {
 	// DocString: FMTyields::serialize
 	/**

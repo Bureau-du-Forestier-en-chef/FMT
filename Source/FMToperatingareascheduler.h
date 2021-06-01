@@ -46,7 +46,7 @@ namespace Heuristics
 	the matrix. It's up to the user to decide to just generate a good initialsolution or
 	generate a good initialsolution and then try to find the optimaly using a BnB solver.
 	*/
-	class FMToperatingareascheduler : public FMTlpheuristic
+	class FMTEXPORT FMToperatingareascheduler : public FMTlpheuristic
 	{
 		// DocString: FMToperatingareaheuristic::save
 		/**

@@ -32,7 +32,7 @@ namespace Heuristics
 	FMToperatingscheme area have to be based on static themes (not used within transitions).
 	Multiple potential schedules will be generated for the FMToperatingarea formulated as a heuristic and/or MIP.
 	*/
-	class FMToperatingareascheme: public FMToperatingarea
+	class FMTEXPORT FMToperatingareascheme: public FMToperatingarea
 		{
 		// DocString: FMToperatingareascheme::serialize
 		/**

@@ -27,7 +27,7 @@ namespace Parser
 The transition parser can read and write a transitions sections and transform the information into
 an std::vector<Core::FMTtransition> object.
 */
-class FMTtransitionparser : public FMTparser
+class FMTEXPORT FMTtransitionparser : public FMTparser
     {
 		// DocString: FMTtransitionparser::rxsection
 		///Regex to capture the transition section.

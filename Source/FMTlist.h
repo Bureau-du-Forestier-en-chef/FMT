@@ -402,7 +402,7 @@ namespace Core
 		*/
 		void append(FMTlist<T>::value_type element)
 			{
-			data.push_back(filtermask(element->first), element->second);
+			data.push_back(std::pair<FMTmask, T>(filtermask(element.first), element.second));
 			}
 		// DocString: FMTlist::begin
 		/**

@@ -24,6 +24,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 
 
+
 #include <vector>
 
 namespace Core
@@ -36,7 +37,7 @@ This way has soon as a object is create from this base class you can passin the 
 to the newly ceated class. FMTobject plays a big role into exception handling and for ctrl-c signals for boost python.
 It also contains some usefull functions for mask validation and runtimelocation etc...
 */
-class FMTobject
+class FMTEXPORT FMTobject
 	{
 	// DocString: FMTobject::serialize
 	/**

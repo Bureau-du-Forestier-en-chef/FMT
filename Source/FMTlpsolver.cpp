@@ -654,7 +654,7 @@ namespace Models
 			solverinterface->setInteger(colindex);
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("at column index " + colindex, "FMTlpsolver::setInteger", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("at column index " + std::to_string(colindex), "FMTlpsolver::setInteger", __LINE__, __FILE__);
 			}
 		}
 
@@ -1041,7 +1041,7 @@ namespace Models
 			return static_cast<int>(indices.size());
 			}else {
 					_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
-					"for row id " + whichRow, "FMTlpsolver::getrow", __LINE__, __FILE__);
+					"for row id " + std::to_string(whichRow), "FMTlpsolver::getrow", __LINE__, __FILE__);
 				}
 		}catch (...)
 			{
