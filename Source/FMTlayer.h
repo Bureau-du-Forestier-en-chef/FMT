@@ -30,7 +30,7 @@ namespace Spatial
 	It is mostly generated using the FMTareaparser.
 	*/
     template <typename T>
-    class FMTlayer : public Core::FMTobject
+    class FMTEXPORT FMTlayer : public Core::FMTobject
         {
 		friend class boost::serialization::access;
 		// DocString: FMTlifespans::serialize

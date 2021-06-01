@@ -19,7 +19,7 @@ namespace Parser
 The constant parser is used the read and write constants.
 It's used by the FMTmodelparser,
 */
-class FMTconstantparser : public FMTparser
+class FMTEXPORT FMTconstantparser : public FMTparser
     {
     public:
 		// DocString: FMTconstantparser()

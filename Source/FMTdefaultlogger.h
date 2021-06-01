@@ -7,7 +7,6 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 #ifndef FMTdefaultlogger_H_INCLUDED
 #define FMTdefaultlogger_H_INCLUDED
-
 #include "FMTlogger.h"
 
 namespace Logging

@@ -33,7 +33,7 @@ Using a FMTdevelopment you can simulate the impact of harvesting that developmen
 Each fork is a transition source and its linked targets. FMTaction test for operability and FMTtransition only
 "disturb" the FMTdevelopement and generates new FMTdevelopementpath.
 */
-class FMTtransition : public FMTlist<FMTfork>
+class FMTEXPORT FMTtransition : public FMTlist<FMTfork>
     {
 	// DocString: FMTtransition::serialize
 	/**

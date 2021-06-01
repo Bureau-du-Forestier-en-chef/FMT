@@ -46,7 +46,7 @@ An FMTforest is needed to set the initial map. An FMTsaschedule is needed as
 cooling schedule and FMTspatialaction must be set for the model.
 */
 
-class FMTsamodel : public FMTmodel
+class FMTEXPORT FMTsamodel : public FMTmodel
     {
     protected:
 		///Best schedule

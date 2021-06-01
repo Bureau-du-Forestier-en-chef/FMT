@@ -35,7 +35,7 @@ It also gives some information about the build date and the actual date.
 It also informs the user about which features are avalaible in FMT.
 */
 
-class FMTversion : public Core::FMTobject
+class FMTEXPORT FMTversion : public Core::FMTobject
 	{
 	public:
 		// DocString: FMTversion()

@@ -35,7 +35,7 @@ FMTmodelparser is the main parser class used for reading and writing models file
 This class can read single model scenario and multiple model scenarios at the same time.
 The class make use of all other parser class of FMT to read and write a model.
 */
-class FMTmodelparser : public FMTparser
+class FMTEXPORT FMTmodelparser : public FMTparser
     {
 	// DocString: FMTmodelparser::referenceread
 	/**

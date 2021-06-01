@@ -35,7 +35,7 @@ namespace Exception
 	number of warning thrown and error thrown it also has a shared pointer to an abstract FMTlogger.
 	This class is used in the FMTobject class.
 	*/
-	class FMTexceptionhandler
+	class FMTEXPORT FMTexceptionhandler
 	{
 	// DocString: FMTexceptionhandler::serialize
 	/**
@@ -76,7 +76,8 @@ namespace Exception
 		bool cplhandlerpushed;
 		// DocString: FMTexceptionhandler::mtx
 		///Mutex for multi-threading.
-		mutable std::recursive_mutex mtx;
+		//mutable std::recursive_mutex mtx;
+		mutable boost::recursive_mutex mtx;
 		// DocString: FMTexceptionhandler::updatestatus
 		/**
 		This functions updates the status of the handler adding up to the warning or the error counts.

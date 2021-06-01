@@ -12,11 +12,14 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <boost/serialization/split_member.hpp>
 #include <boost/serialization/export.hpp>
 #include <boost/lexical_cast.hpp>
-#include <mutex>
+//#include <mutex>
+#include <boost/thread/recursive_mutex.hpp>
+#include <boost/thread.hpp>
 #ifdef FMTWITHOSI
 	#include <CoinMessageHandler.hpp>
 #endif
 #include <fstream>
+#include "FMTexception.h"
 
 
 
@@ -28,7 +31,7 @@ namespace Logging
 	If FMT is compiled with Osisolverinterface then this class is going to be derived from
 	the Coinmessagehandler class to help handling the log level of the solvers.
 	*/
-	class FMTlogger 
+	class FMTlogger
 		#ifdef FMTWITHOSI
 			: public CoinMessageHandler
 		#endif
@@ -81,7 +84,8 @@ namespace Logging
 			mutable std::ofstream* filestream;
 			// DocString: FMTlogger::mtx
 			///Mutex for multi-threading.
-			mutable std::recursive_mutex mtx;
+			//mutable std::recursive_mutex mtx;
+			mutable boost::recursive_mutex mtx;
 			// DocString: FMTlogger::flushstream
 			///If true will flush stream at each write
 			bool flushstream;

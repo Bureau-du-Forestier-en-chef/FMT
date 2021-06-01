@@ -19,20 +19,20 @@ FMTquietlogger::FMTquietlogger()
 #ifdef FMTWITHOSI
 int FMTquietlogger::print()
 	{
-	std::lock_guard<std::recursive_mutex> guard(mtx);
+	boost::lock_guard<boost::recursive_mutex> guard(mtx);
 	//return FMTlogger::print();
 	return 0;
 	}
 
 void FMTquietlogger::checkSeverity()
 	{
-	std::lock_guard<std::recursive_mutex> guard(mtx);
+	boost::lock_guard<boost::recursive_mutex> guard(mtx);
 	FMTlogger::checkSeverity();
 	}
 
 CoinMessageHandler * FMTquietlogger::clone() const
 	{
-	std::lock_guard<std::recursive_mutex> guard(mtx);
+	boost::lock_guard<boost::recursive_mutex> guard(mtx);
 	return new FMTquietlogger(*this);
 	}
 #endif

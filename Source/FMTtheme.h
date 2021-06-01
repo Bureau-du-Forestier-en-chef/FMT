@@ -36,7 +36,7 @@ FMTtheme hold multiple attributes for only one theme. FMTtheme gives the descrip
 from the start bit to the start + theme.size() bit. It also hold the information about attribute aggregates.
 FMTtheme is realy close to FMTmask class.
 */
-class FMTtheme : public FMTobject
+class FMTEXPORT FMTtheme : public FMTobject
     {
     friend class FMTmask;
     protected:

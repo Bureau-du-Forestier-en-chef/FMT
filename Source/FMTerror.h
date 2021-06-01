@@ -27,7 +27,7 @@ namespace Exception
 	See FMTexception class for more information about the member data.
 	Any error should throw in FMT.
 	*/
-	class FMTerror : public FMTexception
+	class FMTEXPORT FMTerror : public FMTexception
 		{
 		// DocString: FMTerror::serialize
 		/**

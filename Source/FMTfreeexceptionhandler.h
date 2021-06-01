@@ -21,7 +21,7 @@ The FMTfreeexceptionhandler is derived from the FMTexceptionhandler base class.
 This class is realy usefull if you want to pass the exception thrown by FMT directly to the user,
 So he can do whatever he wants to do with it.
 */
-class FMTfreeexceptionhandler final : public FMTexceptionhandler
+class FMTEXPORT FMTfreeexceptionhandler final : public FMTexceptionhandler
 {
 	// DocString: FMTfreeexceptionhandler::serialize
 	/**

@@ -11,6 +11,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <boost/serialization/serialization.hpp>
 #include <boost/serialization/nvp.hpp>
 #include <string>
+#include "FMTexception.h"
 
 namespace Models
 {
@@ -19,7 +20,7 @@ namespace Models
 	This class is used to report the stats of a FMTmodel. Used alot with the presolve and postsolve functions.
 	Calling presolve or postsolve will changes the model stats.
 	*/
-	class FMTmodelstats
+	class FMTEXPORT FMTmodelstats
 	{
 	friend class boost::serialization::access;
 	// DocString: FMTmodelstats::serialize

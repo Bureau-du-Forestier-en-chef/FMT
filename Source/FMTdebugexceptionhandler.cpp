@@ -8,6 +8,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTdebugexceptionhandler.h"
 #include "FMTlogger.h"
 
+
 namespace Exception
 {
 
@@ -21,7 +22,7 @@ namespace Exception
 	FMTexception FMTdebugexceptionhandler::raise(FMTexc lexception, std::string text,
 		const std::string& method,const int& line, const std::string& file, Core::FMTsection lsection, bool throwit)
 	{
-		std::lock_guard<std::recursive_mutex> guard(mtx);
+		boost::lock_guard<boost::recursive_mutex> guard(mtx);
 		FMTexception excp;
 		if (lsection == Core::FMTsection::Empty)
 			{
@@ -51,7 +52,7 @@ namespace Exception
 		}
 	void FMTdebugexceptionhandler::handelCPLerror(CPLErr eErrClass, CPLErrorNum nError, const char * pszErrorMsg)
 		{
-		std::lock_guard<std::recursive_mutex> guard(mtx);
+		boost::lock_guard<boost::recursive_mutex> guard(mtx);
         try{
             FMTexceptionhandler::handelCPLerror(eErrClass, nError, pszErrorMsg);
         }catch(...)

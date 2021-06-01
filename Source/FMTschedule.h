@@ -27,7 +27,7 @@ It describes the area of a given developements for which an FMTaction can be ope
 The vector is a reprensentation of lock level at position 0 in the vector the lock level = 0 (if lock level 0 exist in the graph
 , at position 1 lock level = 1.
 */
-class FMTschedule : public FMTobject
+class FMTEXPORT FMTschedule : public FMTobject
     {
 	// DocString: FMTschedule::serialize
 	/**

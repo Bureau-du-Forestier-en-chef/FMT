@@ -83,7 +83,7 @@ shrinked (by the front) using the function eraseperiod.
 The matrix is held within the solverinterface pointer.
 */
 
-class FMTlpmodel : public FMTmodel
+class FMTEXPORT FMTlpmodel : public FMTmodel
 	{
 	// DocString: FMTlpmodel::save
 	/**

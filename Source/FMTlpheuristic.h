@@ -46,7 +46,7 @@ namespace Heuristics
 	the matrix. It's up to the user to decide to just generate a good initialsolution or
 	generate a good initialsolution and then try to find the optimaly using a BnB solver.
 	*/
-	class FMTlpheuristic : public Models::FMTlpsolver
+	class FMTEXPORT FMTlpheuristic : public Models::FMTlpsolver
 	{
 		// DocString: FMTlpheuristic::save
 		/**

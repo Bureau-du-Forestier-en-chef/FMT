@@ -36,7 +36,7 @@ FMTdevelopment is the base class of FMTactualdevelopement and FMTfuturdevelopeme
 a forest stand. It holds informations about it's age, at which period it exist, the lock level of the stand and finaly
 the mask hold a description of the growth/spatial reference/ and other potential sutff.
 */
-class FMTdevelopment : public FMTobject
+class FMTEXPORT FMTdevelopment : public FMTobject
     {
 	// DocString: FMTdevelopment::serialize
 	/**
