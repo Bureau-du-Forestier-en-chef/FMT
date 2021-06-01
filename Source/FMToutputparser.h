@@ -28,7 +28,7 @@ namespace Parser
 /**
 The FMToutputparser is made to read and write a vector of FMToutput from or into a given file.
 */
-class FMToutputparser : public FMTparser
+class FMTEXPORT FMToutputparser : public FMTparser
     {
 	// DocString: FMToutputparser::rxoutput
 	///Regex to capture the name of the output and other informations.

@@ -21,7 +21,7 @@ namespace Exception
 	See FMTexception class for more information about the member data.
 	In FMT warning are never thrown but only logged depending of the FMTlogger and FMTexceptionhandler used.
 	*/
-	class FMTwarning : public FMTexception
+	class FMTEXPORT FMTwarning : public FMTexception
 	{
 	// DocString: FMTwarning::serialize
 	/**

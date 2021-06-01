@@ -50,7 +50,7 @@ namespace Parser
 The FMTparser is the main parent class of all the other FMTparser available in FMT.
 It has alot of usefull function common to all parser for validation and error throw when turning a std::string to something usefull in FMT.
 */
-class FMTparser: public Core::FMTobject
+class FMTEXPORT FMTparser: public Core::FMTobject
     {
     private:
 		// DocString: FMTparser::rxvectortheme

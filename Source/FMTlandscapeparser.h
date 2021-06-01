@@ -27,7 +27,7 @@ It can also get a landscape section from a vector or raster files (generating FM
 If FMT is compiled without the compile proprocessor FMTWITHGDAL then some funcionalities of the FMTlandscapeparser wont be
 available to the user. This class is also used by the FMTmodelparser.
 */
-class FMTlandscapeparser : public FMTparser
+class FMTEXPORT FMTlandscapeparser : public FMTparser
     {
     private:
 		// DocString: FMTlandscapeparser::rxcleanlans

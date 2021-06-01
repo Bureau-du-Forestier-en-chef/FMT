@@ -23,7 +23,7 @@ namespace Parser
 The lifespan parser is used to read the lifespan part of the model.The class is made to
 read and write lifespan section.
 */
-class FMTlifespanparser : public FMTparser
+class FMTEXPORT FMTlifespanparser : public FMTparser
     {
     public:
 		// DocString: FMTlifespanparser()

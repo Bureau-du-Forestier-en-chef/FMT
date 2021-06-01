@@ -24,7 +24,7 @@ FMToperatingareaclusterbinary is the definition of a non clustered operating are
 The class contains extra informations for an FMToperating area. Eeach clusterbinary has a binary variable id, a maximal and minimal row
 statistic and finaly the statistic varlue of the binary used to calculate the objective function.
 */
-	class FMToperatingareaclusterbinary : public FMToperatingarea
+	class FMTEXPORT FMToperatingareaclusterbinary : public FMToperatingarea
 	{
 		friend class boost::serialization::access;
 		// DocString: FMToperatingareaclusterbinary:serialize

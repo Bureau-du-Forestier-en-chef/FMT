@@ -20,7 +20,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 namespace Heuristics
 {
 
-	class FMTlpheuristicmthandler
+	class FMTEXPORT FMTlpheuristicmthandler
 		{
 		private:
 		double initialsolution;

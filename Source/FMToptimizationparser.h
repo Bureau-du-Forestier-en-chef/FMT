@@ -34,7 +34,7 @@ namespace Parser
 		none = 5
 		};
 
-	class FMToptimizationparser : public FMTparser
+	class FMTEXPORT FMToptimizationparser : public FMTparser
 	{
 		std::regex rxsections;
 		std::regex rxobjectives;

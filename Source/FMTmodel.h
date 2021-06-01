@@ -62,7 +62,7 @@ FMTlpmodel / FMTsamodel / FMTsesmodel use the FMTmodel protected member to
 generate the problem based on LP/SA or to simply simulate the FMTmodel.
 */
 
-class FMTmodel : public Core::FMTobject
+class FMTEXPORT FMTmodel : public Core::FMTobject
     {
 	template<class T1,class T2>
     friend class Graph::FMTgraph;

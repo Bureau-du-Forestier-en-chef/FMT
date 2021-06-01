@@ -35,7 +35,7 @@ FMTareaparser is a important parser in FMT because this parser deals with spatia
 If FMT is compiled without the compile proprocessor FMTWITHGDAL than alot of funcionalities of the FMTareaparser wont be
 available to the user. This class is also used by the FMTmodelparser.
 */
-class FMTareaparser : public FMTparser
+class FMTEXPORT FMTareaparser : public FMTparser
     {
     private:
 		// DocString: FMTareaparser::rxcleanarea

@@ -467,7 +467,7 @@ std::vector<Models::FMTmodel>FMTmodelparser::readproject(const std::string& prim
 						{
 							if (boost::filesystem::is_regular_file(fileitr->path()))
 							{
-								const std::string extension = boost::filesystem::extension(fileitr->path().string());
+								const std::string extension = fileitr->path().extension().string();
 								Core::FMTsection section = from_extension(extension);
 								std::string file_name = fileitr->path().stem().string();
 								boost::to_lower(file_name);

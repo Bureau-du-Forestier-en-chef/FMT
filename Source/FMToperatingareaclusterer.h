@@ -25,7 +25,7 @@ a shapefile. You can define the minimal and maximal area of the resulting cluste
 of a given statistic output of the whole clustered map. The initialsolve will attend to find a good initialsolution
 then the user could try to get an optimal solution with the branchandbound().
 */
-class FMToperatingareaclusterer : public FMTlpheuristic
+class FMTEXPORT FMToperatingareaclusterer : public FMTlpheuristic
 	{
     friend class boost::serialization::access;
 		template<class Archive>

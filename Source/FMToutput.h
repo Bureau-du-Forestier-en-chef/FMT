@@ -34,7 +34,7 @@ FMToutput hold a vector of outputsources and operators. Outputs  that are non li
 matrix constraints formulation. Outputs have multiple outputs node representing a set of FMTdevelopment in the 
 FMTgraph. Each FMTdevelopement can be part of one FMToutput.
 */
-class FMToutput: public FMTobject
+class FMTEXPORT FMToutput: public FMTobject
     {
 	// DocString: FMToutput::serialize
 	/**

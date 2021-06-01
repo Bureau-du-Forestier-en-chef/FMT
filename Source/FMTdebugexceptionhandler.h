@@ -18,7 +18,7 @@ namespace Exception
 	The FMTdebugexceptionhandler is derived from the FMTexceptionhandler base class and is usefull when
 	you want to know in which line/file of the source code the exception is comming from.
 	*/
-	class FMTdebugexceptionhandler final : public FMTexceptionhandler
+	class FMTEXPORT FMTdebugexceptionhandler final : public FMTexceptionhandler
 	{
 		// DocString: FMTdebugexceptionhandler::serialize
 		/**

@@ -6,7 +6,8 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
 #include "FMTparser.h"
-#include <boost/filesystem.hpp>
+#include <boost/filesystem/convenience.hpp>
+//#include <boost/filesystem.hpp>
 //#include <boost/locale.hpp>
 
 
@@ -482,7 +483,8 @@ bool FMTparser::tryopening(const std::ifstream& stream, const std::string& locat
         {
 		try{
         _location = location;
-		std::string extension = boost::filesystem::extension(location);
+		const boost::filesystem::path extpath(location);
+		std::string extension = extpath.extension().string();
         transform(extension.begin(), extension.end(), extension.begin(), ::tolower);
         this->setsection(from_extension(extension));
 		//*_logger << "extt " << _section << "\n";
@@ -526,8 +528,8 @@ bool FMTparser::tryopening(const std::ofstream& stream, const std::string& locat
 bool FMTparser::isvalidfile(const std::string& location) const
 	{
 	try {
-		boost::filesystem::path pathObj(location);
-		std::string extension = boost::filesystem::extension(location);
+		const boost::filesystem::path pathObj(location);
+		std::string extension = pathObj.extension().string();
 		transform(extension.begin(), extension.end(), extension.begin(), ::tolower);
 		if (!boost::filesystem::exists(pathObj) || !boost::filesystem::is_regular_file(pathObj))
 		{
@@ -775,8 +777,10 @@ std::queue<std::string> FMTparser::tryinclude(const std::string& line, const std
 			basepath = boost::filesystem::path(location);
 		if (!boost::filesystem::exists(location))//If does not exist then try with the _ type path.
 			{
-			const std::string extension = boost::filesystem::extension(_location);
-			std::string actualextension = boost::filesystem::extension(location);
+			const boost::filesystem::path llpath(_location);
+			const boost::filesystem::path actllpath(location);
+			const std::string extension = llpath.extension().string();
+			std::string actualextension = actllpath.extension().string();
 			if (extension.find("_")!=std::string::npos&&
 				actualextension.find("_")==std::string::npos)
 				{
@@ -971,7 +975,7 @@ std::map<Core::FMTsection, std::string> FMTparser::getprimary(const std::string&
 						{
 							const std::string file_name = std::string(kmatch[3]);
 							const boost::filesystem::path file_path(file_name);
-							std::string extension = boost::filesystem::extension(file_path.string());
+							std::string extension = file_path.extension().string();
 							boost::to_lower(extension);
 							const Core::FMTsection section = from_extension(extension);
 							targets[section] = (primary_path.parent_path() / file_path).string();
