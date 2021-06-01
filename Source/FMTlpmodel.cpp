@@ -1067,7 +1067,7 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 						const std::vector<std::map<int, double>> outputvarpos = locatenodes(all_nodes, period, all_variables, 1);
 						//*_logger<<"Out size "<<all_variables.size()<<"\n";
 						setpositiveoutputsinmatrix(constraint,outputvarpos,period);
-						if (constraint.acrossperiod() && !all_variables.empty())
+						if (constraint.acrossperiod() )//&& !all_variables.empty())
 						{
 							const size_t sizebeforecrossing = all_variables.size();
 							//*_logger<<"Enter size second "<<all_variables.size()<<"\n";
@@ -1765,6 +1765,10 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 						const int constraint_id = getsetmatrixelement(objective, FMTmatrixelement::constraint, period_variables,
 							period, lowerbound, upperbound);
 						gotvariables = true;
+					}else{
+						_exhandler->raise(Exception::FMTexc::FMTunsupported_objective,
+											"The value of the output in the objective for period "+std::to_string(period)+" is equal to zero, so the solution of your model is zero",
+											"FMTlpmodel::setobjective", __LINE__, __FILE__);
 					}
 				}
 				if (gotvariables)
@@ -1894,7 +1898,7 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 			{
 				std::string cname = std::string(constraint);
 				cname.erase(std::remove(cname.begin(), cname.end(), '\n'), cname.end());
-				if (period>(graph.getfirstactiveperiod())&&period<static_cast<int>(graph.size())&&
+				if (period>(graph.getfirstactiveperiod()) &&period<static_cast<int>(graph.size()) &&
 					constraint.getconstrainttype() == Core::FMTconstrainttype::FMTstandard &&
 					(upperbound< 0 || lowerbound > 0))
 					{
