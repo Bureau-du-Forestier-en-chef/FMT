@@ -24,7 +24,7 @@ namespace Spatial
 This is the base class use to create FMTsaevent or FMTsesevent. It is a set of FMTcoordinate (elements)
 corresponding to the FMTcoordinates presents in the event.
 */
-class FMTevent
+class FMTEXPORT FMTevent
     {
 	friend class boost::serialization::access;
 	template<class Archive>

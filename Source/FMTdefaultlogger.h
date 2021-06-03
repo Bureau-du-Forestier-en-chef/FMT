@@ -16,7 +16,7 @@ namespace Logging
 	FMTdefaultlogger is derived class from FMTlogger standing has the default
 	level of log used by FMT.
 	*/
-	class FMTdefaultlogger final: public FMTlogger
+	class FMTEXPORT FMTdefaultlogger final: public FMTlogger
 	{
 		// DocString: FMTdefaultlogger::serialize
 		/**

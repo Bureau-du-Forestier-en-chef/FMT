@@ -419,6 +419,7 @@ class FMTgraph : public Core::FMTobject
 					FMTgraphstats statsdiff(stats);
 					try {
 						developments.push_back(boost::unordered_set<Core::FMTlookup<FMTvertex_descriptor,Core::FMTdevelopment>>());
+						//developments.back().max_load_factor(0.5);
 						int action_id = 0;
 						for (const Core::FMTaction& action : model.actions)
 						{

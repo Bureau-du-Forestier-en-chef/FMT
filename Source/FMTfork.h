@@ -25,7 +25,7 @@ class FMTdevelopment;
 class FMTtransitionmask;
 class FMTdevelopmentpath;
 
-class FMTfork : public FMTspec
+class FMTEXPORT FMTfork : public FMTspec
     {
 	friend class boost::serialization::access;
 	template<class Archive>

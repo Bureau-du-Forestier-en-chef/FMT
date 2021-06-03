@@ -16,6 +16,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <boost/serialization/export.hpp>
 #include <memory>
 #include <string>
+#include "FMTexception.h"
 
 namespace Graph
 {
@@ -23,7 +24,7 @@ namespace Graph
 /**
 Graph stats gives you information about the FMTgraph and the FMTlpsolver. About there size, elements and type of elements.
 */
-class FMTgraphstats
+class FMTEXPORT FMTgraphstats
 	{
 	friend class boost::serialization::access;
 	// DocString: FMTgraphstats::serialize

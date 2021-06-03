@@ -31,7 +31,7 @@ namespace Logging
 	If FMT is compiled with Osisolverinterface then this class is going to be derived from
 	the Coinmessagehandler class to help handling the log level of the solvers.
 	*/
-	class FMTlogger
+	class FMTEXPORT FMTlogger
 		#ifdef FMTWITHOSI
 			: public CoinMessageHandler
 		#endif

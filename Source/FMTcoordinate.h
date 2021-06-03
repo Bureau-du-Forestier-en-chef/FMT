@@ -17,6 +17,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <boost/serialization/array.hpp>
 #include <string>
 #include <set>
+#include "FMTexception.h"
 
 namespace Spatial
     {

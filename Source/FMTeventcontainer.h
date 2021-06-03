@@ -27,7 +27,7 @@ One container can hold all events for a model. They are sorted by
 period, centroid, action_id and finally by size.
 You can  remove FMTcoordinate and add FMTcoordinate by period and action.
 */
-class FMTeventcontainer
+class FMTEXPORT FMTeventcontainer
 {
     friend class boost::serialization::access;
 	template<class Archive>

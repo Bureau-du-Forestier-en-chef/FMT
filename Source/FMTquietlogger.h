@@ -16,7 +16,7 @@ namespace Logging
 /**
 FMTquietlogger will not print any solver informations from osisolverinterface.
 */
-class FMTquietlogger final : public FMTlogger
+class FMTEXPORT FMTquietlogger final : public FMTlogger
 	{
 	// DocString: FMTquietlogger::serialize
 	/**
