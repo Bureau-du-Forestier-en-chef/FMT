@@ -16,7 +16,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 namespace Core
 
 {
-class FMTactualdevelopment : public FMTdevelopment
+class FMTEXPORT FMTactualdevelopment : public FMTdevelopment
 	{
 	friend class boost::serialization::access;
 	template<class Archive>

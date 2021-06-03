@@ -330,7 +330,7 @@ class FMTlockbounds : public FMTbounds<int>
 
 class FMTyields;
 
-class FMTspec
+class FMTEXPORT FMTspec
     {
 	friend class Core::FMTyields;
 	friend class boost::serialization::access;

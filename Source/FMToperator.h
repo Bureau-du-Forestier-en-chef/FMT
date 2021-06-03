@@ -15,6 +15,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <boost/functional/hash.hpp>
 #include <boost/serialization/serialization.hpp>
 #include <boost/serialization/nvp.hpp>
+#include "FMTexception.h"
 
 
 
@@ -32,7 +33,7 @@ namespace Core
 		notvalid = 7
 	};
 
-class FMToperator
+class FMTEXPORT FMToperator
 {
     FMTokey key;
 	friend class boost::serialization::access;

@@ -16,7 +16,7 @@ namespace Logging
 	FMTdebuglogger is derived class from FMTlogger standing has the debug
 	level of log used by FMT. It's suppose to print more stuff than the FMTdefaultlogger.
 	*/
-	class FMTdebuglogger final : public FMTlogger
+	class FMTEXPORT FMTdebuglogger final : public FMTlogger
 	{
 		// DocString: FMTdebuglogger::serialize
 		/**

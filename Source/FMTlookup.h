@@ -47,6 +47,20 @@ namespace Core
 			}
 			return *this;
 		}
+		bool operator < (const FMTlookup& rhs) const
+		{
+			//strict ordering
+			if (pointerobject == nullptr)
+				return true;
+			if (rhs.pointerobject == nullptr)
+				return false;
+			if ((*pointerobject) < (*rhs.pointerobject))
+				return true;
+			if ((*rhs.pointerobject) < (*pointerobject))
+				return false;
+			return false;
+		}
+		
 		bool operator == (const FMTlookup& rhs) const
 		{
 			return  (pointerobject != nullptr && rhs.pointerobject != nullptr && (*pointerobject) == (*rhs.pointerobject));

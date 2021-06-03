@@ -4,8 +4,8 @@ Copyright (c) 2019 Gouvernement du Québec
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
-
 	
+
 
 #ifndef FMTEXCEPTION_H_INCLUDED
 #define FMTEXCEPTION_H_INCLUDED
@@ -34,18 +34,20 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
     #include <boost/filesystem.hpp>
 #endif
 
-#if defined FMTSHAREDLIB && _MSC_VER	
-	#define FMTEXPORT __declspec(dllexport)
-#elif defined FMTSHAREDLIB
-	#define FMTEXPORT __attribute__ ((dllexport))
-#elif defined FMTLIBIMPORT && _MSC_VER	
-	#define FMTEXPORT __declspec(dllimport)
-#endif
-
 #include "FMTutility.h"
-#include "FMTlogger.h"
+//#include "FMTlogger.h"
 
-
+#ifndef FMTEXPORT
+	#if defined FMTSHAREDLIB && _MSC_VER
+	#define FMTEXPORT __declspec(dllexport)
+	#elif defined FMTSHAREDLIB
+	#define FMTEXPORT __attribute__ ((dllexport))
+	#elif defined FMTLIBIMPORT && _MSC_VER
+	#define FMTEXPORT __declspec(dllimport)
+	#else
+	#define FMTEXPORT
+	#endif
+#endif
 
 
 namespace Exception
