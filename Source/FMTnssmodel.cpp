@@ -17,7 +17,7 @@ namespace Models
 	{
 		int period = 0;
 		try {
-			period = area.begin()->period;
+			period = area.begin()->getperiod();
 		}
 		catch (...)
 		{

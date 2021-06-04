@@ -187,7 +187,7 @@ namespace Graph
 				{
 				const FMTvertex_descriptor& outv = devit.memoryobject;
 				if (periodstop(outv)&&
-					(devit.pointerobject->period != 0)
+					(devit.pointerobject->getperiod() != 0)
 					/*!(devit.pointerobject->period==1 && getinedgeactionid(outv)==-1)*/)
 					{
 					const std::vector<FMTcarbonpredictor>devpredictor = FMTgraph::getcarbonpredictors(outv, actionsindex, yieldnames, ylds,3);
@@ -546,8 +546,8 @@ namespace Graph
 		size_t hashvalue = 0;
 		try{
 		const Core::FMTdevelopment& development = getbasedevelopment();
-		boost::hash_combine(hashvalue, development.mask.getintersect(dynamicmask));
-		boost::hash_combine(hashvalue, development.age);
+		boost::hash_combine(hashvalue, development.getmask().getintersect(dynamicmask));
+		boost::hash_combine(hashvalue, development.getage());
 		}
 		catch (...)
 		{
@@ -561,8 +561,8 @@ namespace Graph
 		std::string value;
 		try{
 		const Core::FMTdevelopment& development = getbasedevelopment();
-		value += development.mask.getintersect(dynamicmask).getbitsstring();
-		value += std::to_string(development.age);
+		value += development.getmask().getintersect(dynamicmask).getbitsstring();
+		value += std::to_string(development.getage());
 		}
 		catch (...)
 		{
@@ -574,8 +574,8 @@ namespace Graph
 	Core::FMTmask FMTlinegraph::getbasemask(const Core::FMTmask& dynamicmask) const
 		{
 		const Core::FMTdevelopment& development = getbasedevelopment();
-		Core::FMTmask mask = development.mask.getintersect(dynamicmask);
-		mask.binarizedappend<int>(development.age);
+		Core::FMTmask mask = development.getmask().getintersect(dynamicmask);
+		mask.binarizedappend<int>(development.getage());
 		return mask;
 		}
 
@@ -666,7 +666,7 @@ namespace Graph
 					const FMTvertex_descriptor descriptor = boost::source(*edge_iterator, data);
 					const FMTbasevertexproperties& vertexprop = data[descriptor];
 					const Core::FMTdevelopment& dev = data[descriptor].get();
-					const int& period = dev.period;
+					const int period = dev.getperiod();
 					if (period>=fromperiod&&period<=lastperiod)
 						{
 						if (operability.find(dev)== operability.end())
@@ -718,7 +718,7 @@ namespace Graph
 				{
 				const FMTvertex_descriptor descriptor = boost::source(*edge_iterator,data);
 				const FMTbasevertexproperties& vertexprop = data[descriptor];
-				events.addaction(localisation, vertexprop.get().period, actionid);
+				events.addaction(localisation, vertexprop.get().getperiod(), actionid);
 				}
 			++edge_iterator;
 			}

@@ -12,7 +12,7 @@ namespace Graph
 
 	bool FMTbasevertexproperties::operator < (const FMTbasevertexproperties& rhs) const
 	{
-		if (this->development->period < rhs.development->period)
+		if (this->development->getperiod() < rhs.development->getperiod())
 		{
 			return true;
 		}
@@ -56,7 +56,7 @@ namespace Graph
 
 	void FMTbasevertexproperties::setdevlopementmask(const Core::FMTmask& newmask)
 	{
-		development->mask = newmask;
+		development->setmask(newmask);
 	}
 
 	double FMTbasevertexproperties::getbaseRHS() const

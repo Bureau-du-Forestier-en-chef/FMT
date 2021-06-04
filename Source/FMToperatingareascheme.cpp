@@ -395,7 +395,7 @@ std::vector<std::vector<int>> FMToperatingareascheme::schemestoperiods(const std
 			{
 			if (!block.empty())
 				{
-				periodids.push_back(maingraph.getdevelopment(*(block.begin())).period);
+				periodids.push_back(maingraph.getdevelopment(*(block.begin())).getperiod());
 				}
 			}
 		if (!periodids.empty())

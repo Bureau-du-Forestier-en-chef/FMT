@@ -33,12 +33,12 @@ namespace Core
 	FMTactualdevelopment::operator std::string() const
 	{
 		std::string line;
-		if (lock > 0)
+		if (getlock() > 0)
 		{
-			line = "*A " + std::string(mask) + " " + std::to_string(age) + " " + std::to_string(area) + " _lock " + std::to_string(lock);
+			line = "*A " + std::string(getmask()) + " " + std::to_string(getage()) + " " + std::to_string(area) + " _lock " + std::to_string(getlock());
 		}
 		else {
-			line = "*A " + std::string(mask) + " " + std::to_string(age) + " " + std::to_string(area);
+			line = "*A " + std::string(getmask()) + " " + std::to_string(getage()) + " " + std::to_string(area);
 		}
 		return line;
 	}
@@ -54,7 +54,8 @@ namespace Core
 		try {
 			if (!selectedmask.empty())
 			{
-				newdev.mask = mask.presolve(selectedmask, presolvedthemes);
+				newdev.setmask(newdev.getmask().presolve(selectedmask, presolvedthemes));
+				//newdev.mask = mask.presolve(selectedmask, presolvedthemes);
 			}
 		}catch (...)
 			{

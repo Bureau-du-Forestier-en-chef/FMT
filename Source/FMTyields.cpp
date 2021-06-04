@@ -213,12 +213,12 @@ double FMTyields::getsingle(const FMTdevelopment& dev,
 	const std::string& target) const
 {
 	try {
-		const std::vector<const FMTyieldhandler*>datas = this->findsets(dev.mask);
+		const std::vector<const FMTyieldhandler*>datas = this->findsets(dev.getmask());
 		for (const FMTyieldhandler* data : datas)
 		{
 			if (data->elements.find(target) != data->elements.end())
 			{
-				return data->get(datas, target, dev.age, dev.period, dev.mask);
+				return data->get(datas, target, dev.getage(), dev.getperiod(), dev.getmask());
 			}
 		}
 
@@ -237,7 +237,7 @@ std::vector<double>FMTyields::get(const FMTdevelopment& dev,
 {
 	std::vector<double>values(targets.size());
 	try {
-		const std::vector<const FMTyieldhandler*>datas = this->findsets(dev.mask);
+		const std::vector<const FMTyieldhandler*>datas = this->findsets(dev.getmask());
 		size_t location = 0;
 		for (const std::string& name : targets)
 		{
@@ -246,7 +246,7 @@ std::vector<double>FMTyields::get(const FMTdevelopment& dev,
 			{
 				if (data->elements.find(name) != data->elements.end())
 				{
-					values[location] = data->get(datas, name, dev.age, dev.period, dev.mask);
+					values[location] = data->get(datas, name, dev.getage(), dev.getperiod(), dev.getmask());
 					gotyield = true;
 					break;
 				}
@@ -428,10 +428,10 @@ FMTyieldhandler FMTyields::complexyldtoageyld(const FMTyieldhandler* complexyld,
 		{
 			if (complexyld->elements.find(lspec.yieldnames.at(id)) != complexyld->elements.end())
 			{
-				for(int age = 0; age <= ldev.age ; ++age)
+				for(int age = 0; age <= ldev.getage() ; ++age)
 				{
 					nhandler.push_base(age);
-					nhandler.push_data(lspec.yieldnames.at(id),complexyld->get(ldatas, lspec.yieldnames.at(id), age, ldev.period, ldev.mask));
+					nhandler.push_data(lspec.yieldnames.at(id),complexyld->get(ldatas, lspec.yieldnames.at(id), age, ldev.getperiod(), ldev.getmask()));
 				}
 			}
 		}
@@ -443,9 +443,9 @@ FMTyieldhandler FMTyields::complexyldtoageyld(const FMTyieldhandler* complexyld,
 
 int FMTyields::getage(const FMTdevelopment& dev,const FMTspec& spec) const
     {
-	int age = dev.age;
+	int age = dev.getage();
 	try {
-		const std::vector<const FMTyieldhandler*>datas = this->findsets(dev.mask);
+		const std::vector<const FMTyieldhandler*>datas = this->findsets(dev.getmask());
 		if (!datas.empty())
 		{
 			FMTyieldhandler agedata;
@@ -464,7 +464,7 @@ int FMTyields::getage(const FMTdevelopment& dev,const FMTspec& spec) const
 						if (data->elements.find(spec.yieldnames.at(id)) != data->elements.end())
 						{
 							const FMTyldbounds* bound = &spec.yieldbounds.at(id);
-							const int new_age = data->getage(spec.yieldnames.at(id), bound->getlower(), dev.age);
+							const int new_age = data->getage(spec.yieldnames.at(id), bound->getlower(), dev.getage());
 							if (new_age < age)
 							{
 								age = new_age;

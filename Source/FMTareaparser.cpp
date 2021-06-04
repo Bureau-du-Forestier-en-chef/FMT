@@ -669,7 +669,7 @@ namespace Parser{
 				const Core::FMTactualdevelopment actualdev = this->getfeaturetodevelopment(feature, themes, themes_fields, age_field,
 					lock_field, area_field, agefactor, areafactor, minimalarea);
 
-				if (!actualdev.mask.empty())
+				if (!actualdev.getmask().empty())
 				{
 					std::vector<Core::FMTactualdevelopment>::iterator it = find(devs.begin(), devs.end(), actualdev);
 					if (it != devs.end())
@@ -717,13 +717,13 @@ namespace Parser{
 			{
 				const Core::FMTactualdevelopment actualdev = this->getfeaturetodevelopment(feature, themes, themes_fields, age_field,
 					lock_field, area_field, agefactor, areafactor, minimal_area);
-				if (!actualdev.mask.empty())
+				if (!actualdev.getmask().empty())
 					{
 						size_t opid = 0;
 						bool foundoaunit = false;
 						for (const Heuristics::FMToperatingarea& oparea : operatingareas)
 							{
-								if (actualdev.mask.issubsetof(oparea.getmask()))
+								if (actualdev.getmask().issubsetof(oparea.getmask()))
 								{
 									foundoaunit = true;
 									break;
@@ -1339,7 +1339,7 @@ namespace Parser{
 					if (tryopening(areastream, location))
 					{
 						areastream << ";Total area: " << std::to_string(sumarea) << "\n";
-						const std::string maskstr(areas.at(0).mask);
+						const std::string maskstr(areas.at(0).getmask());
 						std::vector<std::string>splitted_mask;
 						boost::split(splitted_mask, maskstr, boost::is_any_of(" /t"), boost::token_compress_on);
 						std::string header_line = ";*A ";

@@ -57,19 +57,80 @@ class FMTEXPORT FMTdevelopment : public FMTobject
 			_exhandler->printexceptions("", "FMTdevelopment::serialize", __LINE__, __FILE__);
 			}
 	}
-    public:
+    private:
 		// DocString: FMTdevelopment::mask
 		///Mask of the FMTdevelopment data member
         FMTmask mask;
 		// DocString: FMTdevelopment::age
 		///Age is the age of the FMTdevelopment in period (no unit)
-		int age;
+		uint8_t age;
 		// DocString: FMTdevelopment::lock
 		///Lock is the lock level of the FMTdevelopment if lock == 0 then the development is not locked
-		int lock;
+		uint8_t lock;
 		// DocString: FMTdevelopment::period
 		///period is the period at which the development exist from 0 to ...
-        int period;
+		uint8_t period;
+	public:
+		// DocString: FMTdevelopment::getage
+		/**
+		Get the age of the development.
+		*/
+		inline int getage() const
+			{
+			return static_cast<int>(age);
+			}
+		// DocString: FMTdevelopment::getlock
+		/**
+		Get the lock of the developement.
+		*/
+		inline int getlock() const
+			{
+			return static_cast<int>(lock);
+			}
+		// DocString: FMTdevelopment::getperiod
+		/**
+		Get the period of the developement.
+		*/
+		inline int getperiod() const
+			{
+			return static_cast<int>(period);
+			}
+		// DocString: FMTdevelopment::getmask
+		/**
+		Get the mask of the developement.
+		*/
+		inline const Core::FMTmask& getmask() const
+			{
+			return mask;
+			}
+		// DocString: FMTdevelopment::getmaskcopy
+		/**
+		Get the mask of the developement.
+		*/
+		inline Core::FMTmask getmaskcopy() const
+		{
+			return mask;
+		}
+		// DocString: FMTdevelopment::setage
+		/**
+		Set the age of the development.
+		*/
+		void setage(const int& lage);
+		// DocString: FMTdevelopment::setlock
+		/**
+		Set the lock of the developement.
+		*/
+		void setlock(const int& llock);
+		// DocString: FMTdevelopment::setperiod
+		/**
+		Set the period of the developement.
+		*/
+		void setperiod(const int& lperiod);
+		// DocString: FMTdevelopment::setmask
+		/**
+		Set the mask of the developement.
+		*/
+		void setmask(const Core::FMTmask& lmask);
 		// DocString: FMTdevelopment()
 		/**
 		Default constructor for FMTdevelopement
@@ -205,9 +266,9 @@ class FMTEXPORT FMTdevelopment : public FMTobject
 			{
 			std::size_t seed =0;
 			boost::hash_combine(seed, boost::hash<Core::FMTmask>()(mask));
-			boost::hash_combine(seed, boost::hash<int>()(age));
-			boost::hash_combine(seed, boost::hash<int>()(lock));
-			boost::hash_combine(seed, boost::hash<int>()(period));
+			boost::hash_combine(seed, boost::hash<uint8_t>()(age));
+			boost::hash_combine(seed, boost::hash<uint8_t>()(lock));
+			boost::hash_combine(seed, boost::hash<uint8_t>()(period));
 			return seed;
 			}
     };

@@ -90,7 +90,7 @@ unsigned int FMTtransition::age_after(const std::vector<FMTdevelopment>& devs,
 				const std::vector<FMTdevelopmentpath>newpaths = dev.operate(action, *this, ylds, themes);
 				for (const FMTdevelopmentpath& path : newpaths)
 				{
-					total_age += path.development->age;
+					total_age += path.development->getage();
 					++age_count;
 				}
 			}
@@ -132,9 +132,9 @@ const FMTfork* FMTtransition::getfork(const FMTdevelopment& dev,
                                const FMTyields& ylds) const
     {
 	try{
-    for(const FMTfork* fork : this->findsets(dev.mask))
+    for(const FMTfork* fork : this->findsets(dev.getmask()))
        {
-		if (fork->allowwithoutyield(dev.period, dev.age, dev.lock))
+		if (fork->allowwithoutyield(dev.getperiod(), dev.getage(), dev.getlock()))
 			{
 			
 			const std::vector<double>yields = ylds.getylds(dev, *fork);
@@ -207,7 +207,7 @@ FMTmask FMTtransition::main_target(const std::vector<FMTdevelopment>& devs,
 				 std::string key = this->name;
 				 for (const FMTtheme& theme : themes)
 				 {
-					 key += ("-" + dev.mask.get(theme));
+					 key += ("-" + dev.getmask().get(theme));
 				 }
 				 if (results.find(key) == results.end())
 				 {
