@@ -1220,14 +1220,14 @@ namespace Spatial
 						const Core::FMTdevelopment sdev = graphit->second.getperiodstartdev(period);
 						const Core::FMTdevelopment fdev = graphit->second.getperiodstopdev(period);
 						const Core::FMTdevelopment snpdev = graphit->second.getperiodstartdev(period + 1);
-						const int fage = snpdev.age;
+						const int fage = snpdev.getage();
 						std::map<std::string, std::string> themeattributes;
 						for (const auto& theme : classifiers)
 						{
 							std::string themename = "THEME" + std::to_string(theme.getid() + 1);
-							const std::string fclass = fdev.mask.get(theme);
+							const std::string fclass = fdev.getmask().get(theme);
 							themeattributes[themename] = fclass;
-							const std::string sclass = sdev.mask.get(theme);
+							const std::string sclass = sdev.getmask().get(theme);
 							stackedactions.mapping[graphit->first] += "-" + sclass;
 						}
 						std::string stackname = stackedactions.mapping.at(graphit->first);
@@ -1427,7 +1427,7 @@ void FMTspatialschedule::setgraphcachebystatic(const std::vector<FMTcoordinate>&
 			for (const FMTcoordinate& coordinate : coordinates)
 				{
 				const Graph::FMTlinegraph* linegraph = &mapping.at(coordinate);
-				if (linegraph->getbasedevelopment().mask.issubsetof(cache.getactualnodecache()->staticmask))
+				if (linegraph->getbasedevelopment().getmask().issubsetof(cache.getactualnodecache()->staticmask))
 					{
 					goodcoordinates.push_back(coordinate);
 					}
@@ -1615,7 +1615,7 @@ void FMTspatialschedule::setgraphfromcache(const Graph::FMTlinegraph& graph, con
 		const double cellsize = this->getcellsize();
 		const int maxperiod = graph.getperiod();
 		const bool graphisonlygrowth = graph.isonlygrow();
-		const Core::FMTmask& basegraphmask = graph.getbasedevelopment().mask;
+		const Core::FMTmask& basegraphmask = graph.getbasedevelopment().getmask();
 		for (FMTspatialnodescache::ucaching::iterator it= cache.begin(); it!= cache.end();it++)
 					{
 					const bool actionbased = it->first.isactionbased();

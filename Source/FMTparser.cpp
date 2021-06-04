@@ -1006,8 +1006,8 @@ std::vector<std::string> FMTparser::sameas(const std::string& allset) const
 		std::string separator = "_SAMEAS";
         if (allset.find(separator)!= std::string::npos)
             {
-			std::string realname = allset.substr(allset.find(separator)+ separator.size());
-            boost::trim(realname);
+			std::string realname = allset.substr(0, allset.find(separator));
+			boost::trim(realname);
 			if (realname.empty())
 				{
 				_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,

@@ -37,7 +37,7 @@ namespace Graph
 			}else if(lastnotedone)
 				{
 				sourceactions.push_back(actionsindex.at(-2));
-				periodgaps[location] = source_vertex->get().age;
+				periodgaps[location] = source_vertex->get().getage();
 				lastnotedone = false;
 			}else {
 				sourceactions.push_back(actionsindex.at(-2));
@@ -98,7 +98,7 @@ namespace Graph
 				returned.push_back(static_cast<double>(sourceactions.at(actid)));
 				}
 			}
-		returned.push_back(static_cast<double>(source_vertex->get().age));
+		returned.push_back(static_cast<double>(source_vertex->get().getage()));
 		//returned.push_back(static_cast<double>(source_vertex->get().period));
 		returned.insert(returned.end(), source_yields.begin(), source_yields.end());
 		double gap = periodgaps.at(0);
@@ -108,7 +108,7 @@ namespace Graph
 		}
 		returned.push_back(static_cast<double>(gap));
 		returned.push_back(static_cast<double>(sourceactions.at(0)));
-		returned.push_back(static_cast<double>(target_vertex->get().age));
+		returned.push_back(static_cast<double>(target_vertex->get().getage()));
 		//returned.push_back(static_cast<double>(target_vertex->get().period));
 		returned.insert(returned.end(), target_yields.begin(), target_yields.end());
 		returned.shrink_to_fit();

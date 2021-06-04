@@ -70,30 +70,32 @@ FMTtransitionmask::FMTtransitionmask(const std::string& lmask,const std::vector<
         {
         //FMTdevelopment newdev(dev);
         //newdev.mask = this->trans(dev.mask);
-		FMTdevelopment newdev(this->trans(dev.mask),dev.age,dev.lock,dev.period);
+		FMTdevelopment newdev(this->trans(dev.getmask()),dev.getage(),dev.getlock(),dev.getperiod());
         //newdev.lock = 0;
 		bool age_change = false;
         if(!lock.empty())
             {
 			const int lower_lock = lock.getlower();
-            newdev.lock = lower_lock;
+            newdev.setlock(lower_lock);
             }
         if(!age.empty())
             {
-            newdev.age = age.getlower();
+            newdev.setage(age.getlower());
 			age_change = true;
             }else if(!yieldnames.empty())
                 {
-                newdev.age = yields.getage(newdev,*this);
+                newdev.setage(yields.getage(newdev,*this));
 				age_change = true;
                 }
         if(!themes.empty())
             {
-            newdev.mask.update(themes);
+			Core::FMTmask newmask = newdev.getmask();
+			newmask.update(themes);
+            newdev.setmask(newmask);
             }
 		if (reset_age && !age_change)
 			{
-			newdev.age = 0;
+			newdev.setage(0);
 			}
         return newdev;
         }

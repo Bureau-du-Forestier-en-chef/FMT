@@ -269,7 +269,7 @@ namespace Models
 			}
 			for (const Core::FMTdevelopmentpath& path : paths)
 				{
-				int period = path.development->period;
+				int period = path.development->getperiod();
 				Core::FMTdevelopment dev(*path.development);
 				while (period < graph.size())
 					{
@@ -338,7 +338,7 @@ namespace Models
 							Core::FMTdevelopment locked(devit.first);
 							for (int lockid = 0; lockid <= maximallock;++lockid)
 								{
-								locked.lock = lockid;
+								locked.setlock(lockid);
 								if (graph.containsdevelopment(locked))
 									{
 									const Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor vdescriptor = graph.getdevelopment(locked);
@@ -477,7 +477,7 @@ namespace Models
 								std::vector<Core::FMTdevelopmentpath> paths = graph.getpaths(devit->memoryobject, varit->first);
 								for (const Core::FMTdevelopmentpath path : paths)
 								{
-									if (path.development->period == period && processed.find(*path.development) == processed.end())
+									if (path.development->getperiod() == period && processed.find(*path.development) == processed.end())
 									{
 										processed[*path.development] = graph.getdevelopment(*path.development);
 										descriptors.push(graph.getdevelopment(*path.development));
@@ -499,13 +499,13 @@ namespace Models
 								const double* solution = &new_solution[0];
 								const double inarea = graph.inarea(devit->memoryobject, solution);
 								std::string locking;
-								if (dev.lock > 0)
+								if (dev.getlock() > 0)
 								{
 									Core::FMTdevelopment locked(dev);
 									locking += " lock(";
 									for (int locklevel = 0; locklevel < 30; ++locklevel)
 									{
-										locked.lock = locklevel;
+										locked.setlock(locklevel);
 										if (graph.containsdevelopment(locked))
 										{
 											locking += std::to_string(locklevel) + ",";
@@ -548,7 +548,7 @@ namespace Models
 							std::vector<Core::FMTdevelopmentpath> paths = graph.getpaths(first, varit->first);
 							for (const Core::FMTdevelopmentpath path : paths)
 							{
-								if (path.development->period == period && processed.find(*path.development) == processed.end())
+								if (path.development->getperiod() == period && processed.find(*path.development) == processed.end())
 								{
 									processed[*path.development] = graph.getdevelopment(*path.development);
 									descriptors.push(graph.getdevelopment(*path.development));
@@ -1212,7 +1212,7 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 					size_t gotvariables = 0;
 					for (const Core::FMTmask& globalmask : globalmasks)
 					{
-						if (vertexit->pointerobject->mask.issubsetof(globalmask))
+						if (vertexit->pointerobject->getmask().issubsetof(globalmask))
 						{
 							const int varindex = graph.getoutvariables(vertexit->memoryobject).at(-1);
 							if (*(colupperbounds + varindex) == COIN_DBL_MAX)
@@ -1238,7 +1238,7 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 					if (gotvariables > 1)
 					{
 						_exhandler->raise(Exception::FMTexc::FMTinvalid_maskrange,
-							"Got more than one global mask for " + std::string((vertexit->pointerobject->mask)),
+							"Got more than one global mask for " + std::string((vertexit->pointerobject->getmask())),
 							"FMTlpmodel::getareavariabilities", __LINE__, __FILE__);
 					}
 				}

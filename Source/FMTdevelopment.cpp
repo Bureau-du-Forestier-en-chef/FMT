@@ -10,17 +10,66 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 namespace Core{
 
-	
+	void FMTdevelopment::setage(const int& lage)
+	{
+		try {
+			age = static_cast<unsigned char>(lage);
+		}
+		catch (...)
+		{
+			_exhandler->raisefromcatch("for " + std::string(*this), "FMTdevelopment::setage", __LINE__, __FILE__);
+		}
+	}
 
-  FMTdevelopment::FMTdevelopment():FMTobject(), mask(),age(),lock(),period(0){}
+	void FMTdevelopment::setlock(const int& llock)
+	{
+		try{
+		lock = static_cast<unsigned char>(llock);
+		}
+		catch (...)
+		{
+			_exhandler->raisefromcatch("for " + std::string(*this), "FMTdevelopment::setlock", __LINE__, __FILE__);
+		}
+	}
+
+	void FMTdevelopment::setperiod(const int& lperiod)
+	{
+		try{
+		period = static_cast<unsigned char>(lperiod);
+		}
+		catch (...)
+		{
+			_exhandler->raisefromcatch("for " + std::string(*this), "FMTdevelopment::setperiod", __LINE__, __FILE__);
+		}
+	}
+
+	void FMTdevelopment::setmask(const Core::FMTmask& lmask)
+	{
+		mask = lmask;
+	}
+
+  FMTdevelopment::FMTdevelopment():FMTobject(), mask(),age(),lock(),period(0)
+  {
+
+
+  }
 
 
 
-  FMTdevelopment::FMTdevelopment(const FMTmask& mask,const int& age,const int& lock) : FMTobject(),mask(mask),age(age),lock(lock),period(0)
+  FMTdevelopment::FMTdevelopment(const FMTmask& lmask,const int& lage,const int& llock) : FMTobject(),
+	  mask(lmask),
+	  age(static_cast<uint8_t>(lage)),
+	  lock(static_cast<uint8_t>(llock)),
+	  period(0)
         {
 
         }
-  FMTdevelopment::FMTdevelopment(const FMTmask&  lmask,const int& lage,const int& llock,const int& lperiod): FMTobject(),mask(lmask),age(lage),lock(llock),period(lperiod)
+  FMTdevelopment::FMTdevelopment(const FMTmask&  lmask,const int& lage,const int& llock,const int& lperiod): 
+	  FMTobject(),
+	  mask(lmask),
+	  age(static_cast<uint8_t>(lage)),
+	  lock(static_cast<uint8_t>(llock)),
+	  period(static_cast<uint8_t>(lperiod))
         {
 
         }
@@ -51,20 +100,25 @@ namespace Core{
     FMTfuturdevelopment FMTdevelopment::grow() const
         {
         FMTfuturdevelopment newdev(*this);
-        ++newdev.age;
-        if(newdev.lock>0)
-            {
-            --newdev.lock;
-            }
-        ++newdev.period;
+		try {
+			++newdev.age;
+			if (newdev.lock > 0)
+			{
+				--newdev.lock;
+			}
+			++newdev.period;
+		}catch (...)
+			{
+			_exhandler->raisefromcatch("for " + std::string(*this), "FMTdevelopment::grow", __LINE__, __FILE__);
+			}
         return newdev;
         }
 
 	bool FMTdevelopment::worthtestingoperability(const FMTaction& action) const
 		{
 		return (((action.dorespectlock() && lock == 0) || !action.dorespectlock()) &&
-			action.getagelowerbound() <= age && age <= action.getageupperbound() &&
-			action.getperiodlowerbound() <= period && period <= action.getperiodupperbound());
+			action.getagelowerbound() <= getage() && getage() <= action.getageupperbound() &&
+			action.getperiodlowerbound() <= getperiod() && getperiod() <= action.getperiodupperbound());
 		}
 
      bool FMTdevelopment::operable(const FMTaction& action,const FMTyields& ylds) const
@@ -230,7 +284,7 @@ namespace Core{
 		{
 		bool allow = false;
 		try {
-			allow = specification.allowwithoutyield(period, age, lock);
+			allow = specification.allowwithoutyield(getperiod(), getage(), getlock());
 			if (allow && !specification.emptyylds())
 				{
 				const std::vector<double> yields = ylds.getylds(*this, specification);

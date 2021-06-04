@@ -26,7 +26,7 @@ namespace Graph
 			ar & BOOST_SERIALIZATION_NVP(action);
 		}
 	protected:
-		short int action;
+		int8_t action;
 	public:
 		virtual ~FMTbaseedgeproperties() = default;
 		FMTbaseedgeproperties()=default;
@@ -35,7 +35,7 @@ namespace Graph
 		FMTbaseedgeproperties(const int& laction,
 						const int& lvariableID,
 						const double& lproportion);
-		constexpr FMTbaseedgeproperties(const int& laction) : action(static_cast<short int>(laction)) {}
+		constexpr FMTbaseedgeproperties(const int& laction) : action(static_cast<int8_t>(laction)) {}
 		virtual inline int	getvariableID() const
 			{
 			return 0;
@@ -44,7 +44,7 @@ namespace Graph
 			{
 			return 100;
 			}
-		inline short int getactionID() const
+		inline int getactionID() const
 			{
 			return static_cast<int>(action);
 			}
@@ -54,10 +54,10 @@ namespace Graph
 		virtual bool operator == (const FMTbaseedgeproperties& rhs) const;
 		virtual bool operator != (const FMTbaseedgeproperties& rhs) const;
 		bool operator < (const FMTbaseedgeproperties& rhs) const;
-		inline const short int* getactionptr() const
+		/*inline const short int* getactionptr() const
 			{
 			return &action;
-			}
+			}*/
 
 	};
 }

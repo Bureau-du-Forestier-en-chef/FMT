@@ -187,10 +187,10 @@ FMTschedule::operator std::string() const
             const FMTdevelopment* dev = &devit->first;
 			for (const double & value : devit->second)
 				{
-				line += std::string(dev->mask) + " " + std::to_string(dev->age) + " " + std::to_string(value) + " " + actit->first.getname() + " " + std::to_string(period);
+				line += std::string(dev->getmask()) + " " + std::to_string(dev->getage()) + " " + std::to_string(value) + " " + actit->first.getname() + " " + std::to_string(period);
 				if (uselock)
 					{
-					line += " " + std::to_string(dev->lock);
+					line += " " + std::to_string(dev->getlock());
 					}
 				line+=+"\n";
 				}
@@ -258,7 +258,7 @@ FMTschedule::operator std::string() const
 				devit->second[0] += area;
 			}else {
 				const Core::FMTdevelopment lockout = dev.clearlock();
-				const int leveltarget = dev.lock;
+				const int leveltarget = dev.getlock();
 				devit = actit->second.find(lockout);
 				if (devit == actit->second.end())
 					{
@@ -414,7 +414,7 @@ FMTschedule::operator std::string() const
 				{
 					FMTdevelopment newdev(devit->first);
 
-					newdev.mask = newdev.mask.presolve(presolvedmask, newthemes);
+					newdev.setmask(newdev.getmask().presolve(presolvedmask, newthemes));
 					newmapping[newdev] = devit->second;
 				}
 				if (!newmapping.empty())
@@ -446,7 +446,7 @@ FMTschedule::operator std::string() const
 				{
 					FMTdevelopment newdev(devit->first);
 
-					newdev.mask = newdev.mask.postsolve(presolvedmask, originalbasethemes);
+					newdev.setmask(newdev.getmask().postsolve(presolvedmask, originalbasethemes));
 					newmapping[newdev] = devit->second;
 				}
 				if (!newmapping.empty())
@@ -477,7 +477,7 @@ FMTschedule::operator std::string() const
 					devit != actit->second.end(); devit++)
 					{
 					FMTdevelopment newdev(devit->first);
-					newdev.period = newperiod;
+					newdev.setperiod(newperiod);
 					newmapping[newdev] = devit->second;
 					}
 				actit->second = newmapping;

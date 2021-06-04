@@ -50,7 +50,7 @@ namespace Graph
 				++idv;
 			}
 			std::sort(basenode.begin(), basenode.end());
-			basenode.shrink_to_fit();
+			//basenode.shrink_to_fit();
 		}
 		void setinitialcache(const std::vector<tvdescriptor>& baseelements)
 		{

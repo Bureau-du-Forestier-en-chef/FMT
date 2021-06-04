@@ -678,7 +678,7 @@ bool FMTmodel::isvalid()
 		//this->setsection(Core::FMTsection::Area);
 		for (const Core::FMTactualdevelopment& developement : area)
 		{
-			std::string name = std::string(developement.mask);
+			std::string name = std::string(developement.getmask());
 			this->validate(themes, name);
 		}
 		//this->setsection(Core::FMTsection::Yield);
@@ -778,7 +778,7 @@ void FMTmodel::clearcache()
 Core::FMTmask FMTmodel::getbasemask(std::vector<Core::FMTactualdevelopment> optionaldevelopments) const
 	{
 	optionaldevelopments.insert(optionaldevelopments.end(), area.begin(), area.end());
-	Core::FMTmask basemask(optionaldevelopments.begin()->mask);
+	Core::FMTmask basemask(optionaldevelopments.begin()->getmask());
 	try {
 		for (const Core::FMTtransition& transition : transitions)
 		{
@@ -793,7 +793,7 @@ Core::FMTmask FMTmodel::getbasemask(std::vector<Core::FMTactualdevelopment> opti
 		}
 		for (const Core::FMTactualdevelopment& developement : optionaldevelopments)
 		{
-			basemask = basemask.getunion(developement.mask);
+			basemask = basemask.getunion(developement.getmask());
 		}
 	}catch (...)
 		{
@@ -1198,7 +1198,7 @@ void FMTmodel::setareaperiod(const int& period)
 	{
 	for (Core::FMTactualdevelopment& basedev : area)
 		{
-		basedev.period = period;
+		basedev.setperiod(period);
 		}
 	}
 
@@ -1267,7 +1267,7 @@ Core::FMTschedule FMTmodel::getpotentialschedule(std::vector<Core::FMTactualdeve
 	int period = 1;
 	if (!selection.empty())
 	{
-		period = selection.back().period;
+		period = selection.back().getperiod();
 	}
 	Core::FMTschedule schedule(period,*this, withlock);
 	try {

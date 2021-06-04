@@ -26,9 +26,9 @@ FMTlayer<std::string>FMTforest::getlock() const
     FMTlayer<std::string>newlayer(this->geotransform,this->maxx,this->maxy,this->SRS_WKT,this->cellsize);
     for(std::map<FMTcoordinate,Core::FMTdevelopment>::const_iterator it = mapping.begin(); it != mapping.end(); ++it)
         {
-        if (it->second.lock > 0 )
+        if (it->second.getlock() > 0 )
             {
-            newlayer.mapping[it->first] = "_Lock " + std::to_string(it->second.lock);
+            newlayer.mapping[it->first] = "_Lock " + std::to_string(it->second.getlock());
             }
         }
     return newlayer;
@@ -38,7 +38,7 @@ void FMTforest::setperiod(int period)
 	{
 	for (std::map<FMTcoordinate, Core::FMTdevelopment>::iterator it = mapping.begin(); it != mapping.end(); ++it)
 		{
-		it->second.period = period;
+		it->second.setperiod(period);
 		}
 	}
 
@@ -117,7 +117,7 @@ std::vector<FMTlayer<std::string>> FMTforest::getthemes(const std::vector<Core::
                 {
                 for(size_t id = 0 ; id < newlayers.size();++id)
                     {
-					const std::string value = it->second.mask.get(themes[id]);
+					const std::string value = it->second.getmask().get(themes[id]);
                     newlayers[id].mapping[it->first] = value;
                     }
                 }
@@ -128,7 +128,7 @@ FMTlayer<int>FMTforest::getage() const
             FMTlayer<int>newlayer(this->geotransform,this->maxx,this->maxy,this->SRS_WKT,this->cellsize);
             for(std::map<FMTcoordinate,Core::FMTdevelopment>::const_iterator it = mapping.begin(); it != mapping.end(); ++it)
                 {
-                newlayer.mapping[it->first] = it->second.age;
+                newlayer.mapping[it->first] = it->second.getage();
                 }
             return newlayer;
             }
@@ -287,7 +287,7 @@ FMTforest FMTforest::postsolve(const Core::FMTmask& selectedmask, const std::vec
 	for (std::map<FMTcoordinate, Core::FMTdevelopment>::iterator coordit = newforest.mapping.begin();
 		coordit != newforest.mapping.end(); ++coordit)
 		{
-		coordit->second.mask = coordit->second.mask.postsolve(selectedmask, originalbasethemes);
+		coordit->second.setmask(coordit->second.getmask().postsolve(selectedmask, originalbasethemes));
 		}
 	return newforest;
 	}

@@ -155,14 +155,22 @@ void exportCore()
 
 		Rcpp::class_<Core::FMTdevelopment>("FMTdevelopment", "@DocString(FMTdevelopment)")
 				.constructor("@DocString(FMTdevelopment())")
-                .field("age", &Core::FMTdevelopment::age,
-					"@DocString(FMTdevelopment::age)")
-				.field("period", &Core::FMTdevelopment::period,
-					"@DocString(FMTdevelopment::period)")
-                .field("lock", &Core::FMTdevelopment::lock,
-					"@DocString(FMTdevelopment::lock)")
-                .field("mask", &Core::FMTdevelopment::mask,
-					"@DocString(FMTdevelopment::mask)")
+				.method("getage", &Core::FMTdevelopment::getage,
+					"@DocString(FMTdevelopment::getage)")
+				.method("getlock", &Core::FMTdevelopment::getlock,
+					"@DocString(FMTdevelopment::getlock)")
+				.method("getperiod", &Core::FMTdevelopment::getperiod,
+					"@DocString(FMTdevelopment::getperiod)")
+				.method("getmask", &Core::FMTdevelopment::getmaskcopy,
+					"@DocString(FMTdevelopment::getmask)")
+				.method("setage", &Core::FMTdevelopment::setage,
+					"@DocString(FMTdevelopment::setage)")
+				.method("setlock", &Core::FMTdevelopment::setlock,
+					"@DocString(FMTdevelopment::setlock)")
+				.method("setperiod", &Core::FMTdevelopment::setperiod,
+					"@DocString(FMTdevelopment::setperiod)")
+				.method("setmask", &Core::FMTdevelopment::setmask,
+					"@DocString(FMTdevelopment::setmask)")
 				.method("eq", &Core::FMTdevelopment::operator ==,
 					"@DocString(FMTdevelopment::operator==)")
 				.method("ne", &Core::FMTdevelopment::operator !=,

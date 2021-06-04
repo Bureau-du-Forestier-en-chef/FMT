@@ -23,15 +23,15 @@ namespace Graph
 
 	FMTbaseedgeproperties::FMTbaseedgeproperties(const int& laction,
 		const int& lvariableID,
-		const double& lproportion) :action(laction)
+		const double& lproportion) :action()
 	{
-
+		setactionID(laction);
 
 	}
 
 	void FMTbaseedgeproperties::setactionID(const int& newid)
 	{
-		action = static_cast<short int>(newid);
+		action = static_cast<int8_t>(newid);
 	}
 
 	bool FMTbaseedgeproperties::operator < (const FMTbaseedgeproperties& rhs) const

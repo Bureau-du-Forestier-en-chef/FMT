@@ -184,6 +184,7 @@ FMTactionparser& FMTactionparser::operator = (const FMTactionparser& rhs)
 						}
 						else if (!partial.empty())
 						{
+							
 							partialname = kmatch[21];
 							const std::vector<Core::FMTaction*>pactions = sameactionas(partialname, actions);
 							operablename.clear();
@@ -196,6 +197,7 @@ FMTactionparser& FMTactionparser::operator = (const FMTactionparser& rhs)
 								{
 									theaction->push_partials(samepartial);
 								}
+								
 							}
 						}
 						else if (!operablename.empty())

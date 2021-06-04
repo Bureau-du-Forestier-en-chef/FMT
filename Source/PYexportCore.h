@@ -114,14 +114,22 @@ void exportCore()
 
 		bp::class_<Core::FMTdevelopment>("FMTdevelopment", "@DocString(FMTdevelopment)")
 				.def_pickle(FMT_pickle_suite<Core::FMTdevelopment>())
-                .def_readwrite("age", &Core::FMTdevelopment::age,
-					"@DocString(FMTdevelopment::age)")
-				.def_readwrite("period", &Core::FMTdevelopment::period,
-					"@DocString(FMTdevelopment::period)")
-                .def_readwrite("lock", &Core::FMTdevelopment::lock,
-					"@DocString(FMTdevelopment::lock)")
-                .def_readwrite("mask", &Core::FMTdevelopment::mask,
-					"@DocString(FMTdevelopment::mask)")
+				.def("getage", &Core::FMTdevelopment::getage,
+					"@DocString(FMTdevelopment::getage)")
+				.def("getlock", &Core::FMTdevelopment::getlock,
+					"@DocString(FMTdevelopment::getlock)")
+				.def("getperiod", &Core::FMTdevelopment::getperiod,
+					"@DocString(FMTdevelopment::getperiod)")
+				.def("getmask", &Core::FMTdevelopment::getmaskcopy,
+					"@DocString(FMTdevelopment::getmask)")
+				.def("setage", &Core::FMTdevelopment::setage,
+					"@DocString(FMTdevelopment::setage)")
+				.def("setlock", &Core::FMTdevelopment::setlock,
+					"@DocString(FMTdevelopment::setlock)")
+				.def("setperiod", &Core::FMTdevelopment::setperiod,
+					"@DocString(FMTdevelopment::setperiod)")
+				.def("setmask", &Core::FMTdevelopment::setmask,
+					"@DocString(FMTdevelopment::setmask)")
 				.def("__eq__", &Core::FMTdevelopment::operator ==,
 					"@DocString(FMTdevelopment::operator==)")
 				.def("__ne__", &Core::FMTdevelopment::operator !=,
