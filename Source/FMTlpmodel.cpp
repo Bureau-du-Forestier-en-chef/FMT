@@ -1067,7 +1067,8 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 						const std::vector<std::map<int, double>> outputvarpos = locatenodes(all_nodes, period, all_variables, 1);
 						//*_logger<<"Out size "<<all_variables.size()<<"\n";
 						setpositiveoutputsinmatrix(constraint,outputvarpos,period);
-						if (constraint.acrossperiod() )//&& !all_variables.empty())
+						if ((constraint_type == Core::FMTconstrainttype::FMTsequence || constraint_type == Core::FMTconstrainttype::FMTevenflow) ||
+							(constraint_type == Core::FMTconstrainttype::FMTnondeclining && !all_variables.empty()))
 						{
 							const size_t sizebeforecrossing = all_variables.size();
 							//*_logger<<"Enter size second "<<all_variables.size()<<"\n";
