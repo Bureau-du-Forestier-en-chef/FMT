@@ -68,6 +68,7 @@ FMTexceptionhandler& FMTexceptionhandler::operator = (const FMTexceptionhandler&
 		_logger = rhs._logger;
 		usenestedexceptions = rhs.usenestedexceptions;
 		cplhandlerpushed = rhs.cplhandlerpushed;
+		errorstowarnings = rhs.errorstowarnings;
 	}
 	return *this;
 }
@@ -178,6 +179,7 @@ FMTexceptionhandler::FMTexceptionhandler(const FMTexceptionhandler& rhs)
 		_logger=rhs._logger;
 		usenestedexceptions=rhs.usenestedexceptions;
 		cplhandlerpushed=rhs.cplhandlerpushed;
+		errorstowarnings = rhs.errorstowarnings;
 	}
 
 FMTexceptionhandler::FMTexceptionhandler() : _level(FMTlev::FMT_None),
@@ -186,7 +188,8 @@ FMTexceptionhandler::FMTexceptionhandler() : _level(FMTlev::FMT_None),
 		_warningcount(0),
 		_logger(),
 		usenestedexceptions(true),
-		cplhandlerpushed(false)
+		cplhandlerpushed(false),
+		errorstowarnings()
 		{
 
 		}
@@ -198,6 +201,12 @@ void FMTexceptionhandler::setCPLpushed()
 	cplhandlerpushed = true;
 	}
 #endif
+
+void FMTexceptionhandler::seterrorstowarnings(const std::vector<Exception::FMTexc>& errors)
+	{
+	boost::lock_guard<boost::recursive_mutex> guard(mtx);
+	errorstowarnings = errors;
+	}
 
 std::string FMTexceptionhandler::updatestatus(const FMTexc lexception, const std::string message)
 {
@@ -506,6 +515,14 @@ std::string FMTexceptionhandler::updatestatus(const FMTexc lexception, const std
 		_level = FMTlev::FMT_None;
 		break;
 	};
+	if (std::find(errorstowarnings.begin(), errorstowarnings.end(), _exception)
+		!= errorstowarnings.end())
+		{
+		msg += "Ignoring: " + message;
+		_level = FMTlev::FMT_Warning;
+		++_warningcount;
+		--_errorcount;
+		}
 	return msg;
 }
 

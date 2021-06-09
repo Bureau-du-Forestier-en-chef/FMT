@@ -94,7 +94,7 @@ namespace Logging
 			cout function of the logger sometimes on Windows if using boost::python the std::cout needs
 			a little help to print directly into the python window.
 			*/
-			void cout(const char* message) const;
+			virtual void cout(const char* message) const;
 		public:
 			// DocString: FMTlogger()
 			/**
@@ -153,46 +153,53 @@ namespace Logging
 			/**
 			The logstramp function log information about the version of FMT and it's buildate.
 			*/
-			void logstamp();
+			virtual void logstamp();
 			// DocString: FMTlogger::logtime
 			/**
 			The logtime function log the actual time at which the function is called.
 			*/
-			void logtime();
+			virtual void logtime();
 			// DocString: FMTlogger::setstreamflush
 			/**
 			Force the flushing on file stream
 			*/
 			void setstreamflush(bool flush);
-			// DocString: FMTlogger::operator<<
+			// DocString: FMTlogger::operator<<(const std::string& msg)
 			/**
-			This function is the main function used for sending elements to print to the FMTlogger.
+			This function is the main function to add up string.
 			*/
-			template<class T>
-			FMTlogger& operator<<(const T &msg)
-				{
-				const std::string value = boost::lexical_cast<std::string>(msg);
-				this->cout(value.c_str());
-				return *this;
-				}
+			virtual FMTlogger& operator<<(const std::string& msg);
+			// DocString: FMTlogger::operator<<(const int& msg)
+			/**
+			This function is the main function to add up int.
+			*/
+			virtual FMTlogger& operator<<(const int& msg);
+			// DocString: FMTlogger::operator<<(const double& msg)
+			/**
+			This function is the main function to add up double.
+			*/
+			virtual FMTlogger& operator<<(const double& msg);
+			// DocString: FMTlogger::operator<<(const float& msg)
+			/**
+			This function is the main function to add up float.
+			*/
+			virtual FMTlogger& operator<<(const float& msg);
+			// DocString: FMTlogger::operator<<(const std::time_t& msg)
+			/**
+			This function is the main function to add up std::time_t.
+			*/
+			virtual FMTlogger& operator<<(const std::time_t& msg);
+			// DocString: FMTlogger::operator<<(const size_t& msg)
+			/**
+			This function is the main function to add up size_t.
+			*/
+			virtual FMTlogger& operator<<(const size_t& msg);
 			// DocString: FMTlogger::logwithlevel
 			/**
 			Log a message with a given message level if message level is greater of equal to the logger level
 			then it will be printed
 			*/
-			template<class T>
-			bool logwithlevel(const T &msg,const int& messagelevel) const
-				{
-				#ifdef FMTWITHOSI
-				if (this->logLevel() < messagelevel)
-					{
-					return false;
-					}
-				#endif
-				const std::string value = boost::lexical_cast<std::string>(msg);
-				this->cout(value.c_str());
-				return true;
-				}
+			virtual bool logwithlevel(const std::string &msg, const int& messagelevel) const;
 
 		};
 

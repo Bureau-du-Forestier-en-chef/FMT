@@ -411,6 +411,17 @@ namespace Core
 			}
 		}
 
+	void FMTobject::seterrorstowarnings(const std::vector<Exception::FMTexc>& errors)
+	{
+		try {
+			_exhandler->seterrorstowarnings(errors);
+		}
+		catch (...)
+		{
+			_exhandler->raisefromcatch("", "FMTobject::seterrorstowarnings", __LINE__, __FILE__);
+		}
+	}
+
 }
 
 BOOST_CLASS_EXPORT_IMPLEMENT(Core::FMTobject)

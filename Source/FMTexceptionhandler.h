@@ -78,6 +78,11 @@ namespace Exception
 		///Mutex for multi-threading.
 		//mutable std::recursive_mutex mtx;
 		mutable boost::recursive_mutex mtx;
+		// DocString: FMTexceptionhandler::errorstowarnings
+		///If an error is in this list it's going to processed like a warning.
+		std::vector<Exception::FMTexc>errorstowarnings;
+		///Mutex for multi-threading.
+		//mutable std::recursive_mutex mtx;
 		// DocString: FMTexceptionhandler::updatestatus
 		/**
 		This functions updates the status of the handler adding up to the warning or the error counts.
@@ -184,6 +189,13 @@ namespace Exception
 		*/
 		void setCPLpushed();
 		#endif
+		// DocString: seterrorstowarnings()
+		/**
+		Very hazardous function if you want to live dangerously you can
+		set a vector of error to be cast to warnings...
+		*/
+		void seterrorstowarnings(const std::vector<Exception::FMTexc>& errors);
+
 		
 	};
 

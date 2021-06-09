@@ -194,6 +194,11 @@ class FMTEXPORT FMTmask
 		Get the corresponding attribute of the FMTmask for a given FMTtheme.
 		*/
 		std::string get(const FMTtheme& theme) const;
+		// DocString: FMTmask::getsubsetcount
+		/**
+		Get the number of bits set for the given theme subset.
+		*/
+		size_t getsubsetcount(const FMTtheme& theme) const;
 		// DocString: FMTmask::set
 		/**
 		Set the bitset data for some FMTthemes (themes) for a mask string (value).

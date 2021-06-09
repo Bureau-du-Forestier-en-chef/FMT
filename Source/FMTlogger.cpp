@@ -124,6 +124,57 @@ namespace Logging
 		}
 
 
+	FMTlogger& FMTlogger::operator<<(const std::string& msg)
+		{
+		const std::string value = boost::lexical_cast<std::string>(msg);
+		this->cout(value.c_str());
+		return *this;
+		}
+
+	FMTlogger& FMTlogger::operator<<(const int& msg)
+	{
+		const std::string value = std::to_string(msg);
+		this->cout(value.c_str());
+		return *this;
+	}
+
+	FMTlogger& FMTlogger::operator<<(const double& msg)
+	{
+		const std::string value = std::to_string(msg);
+		this->cout(value.c_str());
+		return *this;
+	}
+	FMTlogger& FMTlogger::operator<<(const float& msg)
+	{
+		const std::string value = std::to_string(msg);
+		this->cout(value.c_str());
+		return *this;
+	}
+	FMTlogger& FMTlogger::operator<<(const std::time_t& msg)
+	{
+		const std::string value = std::to_string(msg);
+		this->cout(value.c_str());
+		return *this;
+	}
+	FMTlogger& FMTlogger::operator<<(const size_t& msg)
+	{
+		const std::string value = std::to_string(msg);
+		this->cout(value.c_str());
+		return *this;
+	}
+	bool FMTlogger::logwithlevel(const std::string &msg, const int& messagelevel) const
+	{
+		#ifdef FMTWITHOSI
+			if (this->logLevel() < messagelevel)
+				{
+				return false;
+				}
+		#endif
+	this->cout(msg.c_str());
+	return true;
+	}
+
+
 	#ifdef FMTWITHOSI
 		void FMTlogger::checkSeverity()
 			{
