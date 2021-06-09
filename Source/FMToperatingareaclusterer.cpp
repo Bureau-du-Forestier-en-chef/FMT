@@ -315,9 +315,9 @@ namespace Heuristics
                             bestobjectivevalue = Models::FMTlpsolver::getObjValue();
 							if (!gotonesolution)
 								{
-								_logger->logwithlevel<std::string>(addon+"Feasible solution found\n", 0);
+								_logger->logwithlevel(addon+"Feasible solution found\n", 0);
 								}
-							_logger->logwithlevel<std::string>(addon+"Obj(" +
+							_logger->logwithlevel(addon+"Obj(" +
 								std::to_string(bestobjectivevalue) + ") it(" + std::to_string(iteration) + ")\n", 0);
 							gotonesolution = true;
                             }
@@ -718,7 +718,7 @@ namespace Heuristics
             this->branchAndBound();
 			if (this->isProvenOptimal())
 				{
-				_logger->logwithlevel<std::string>("Optimal solution found\nObj(" +
+				_logger->logwithlevel("Optimal solution found\nObj(" +
 					std::to_string(this->getObjValue()) + ")\n", 0);
 				}
         }catch(...)

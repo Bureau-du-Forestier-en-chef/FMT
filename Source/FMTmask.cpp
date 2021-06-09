@@ -80,6 +80,12 @@ boost::dynamic_bitset<> FMTmask::subset(const FMTtheme& theme) const
         }
     return sub;
     }
+
+size_t FMTmask::getsubsetcount(const FMTtheme& theme) const
+{
+	return subset(theme).count();
+}
+
 void FMTmask::setsubset(const FMTtheme& theme,const boost::dynamic_bitset<>& subset)
     {
     int locit = 0;

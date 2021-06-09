@@ -443,6 +443,17 @@ class FMTEXPORT FMTmodel : public Core::FMTobject
 		Based on static and dynamic themes will return a mask where the static attributes will have a value of 0 and dynamic value a value of 1.
 		*/
 		Core::FMTmask getdynamicmask(const Core::FMToutputnode& node, bool ignoreoutputvariables = false) const;
+		// DocString: FMTmodel::getstaticmask
+		/**
+		Based on static and dynamic themes will return a mask where the static attributes will have a value of 1 and dynamic value a value of 0.
+		*/
+		Core::FMTmask getstaticmask(const Core::FMToutputnode& node, bool ignoreoutputvariables = false) const;
+		// DocString: FMTmodel::isstaticnode
+		/**
+		Based on static and dynamic themes will return true if the node can be used in staticmask fonctions.
+		More that ratio of set is high the more you will get true from this fonction.
+		*/
+		bool isstaticnode(const Core::FMToutputnode& node,double ratioofset = 0.1) const;
 		// DocString: FMTmodel::locatestatictransitionsthemes
 		/**
 		Returns the static themes based on model transitions.

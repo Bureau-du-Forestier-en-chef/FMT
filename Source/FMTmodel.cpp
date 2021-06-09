@@ -643,6 +643,44 @@ Core::FMTmask FMTmodel::getdynamicmask(const Core::FMToutputnode& node, bool ign
 
 }
 
+bool FMTmodel::isstaticnode(const Core::FMToutputnode& node, double ratioofset) const
+{
+	try {
+		if (node.source.isinventory())
+		{
+			for (const size_t& staticid : statictransitionthemes)
+			{
+				const double nvalues = static_cast<double>(node.source.getmask().getsubsetcount(themes.at(staticid)));
+				const double themesize = static_cast<double>(themes.at(staticid).size());
+				if ((nvalues/themesize)<=ratioofset)
+				{
+					return true;
+				}
+
+			}
+		}
+	}catch (...)
+		{
+		_exhandler->raisefromcatch("", "FMTmodel::isstaticnode", __LINE__, __FILE__);
+		}
+	return false;
+}
+
+Core::FMTmask FMTmodel::getstaticmask(const Core::FMToutputnode& node, bool ignoreoutputvariables) const
+{
+	Core::FMTmask selection;
+	try {
+		const Core::FMTmask dymask =this->getdynamicmask(node, ignoreoutputvariables);
+		const Core::FMTmask intersection = node.source.getmask();
+		selection = dymask.getunion(intersection);
+	}
+	catch (...)
+	{
+		_exhandler->raisefromcatch("", "FMTmodel::getstaticmask", __LINE__, __FILE__);
+	}
+	return selection;
+}
+
 
 void FMTmodel::validatelistspec(const Core::FMTspec& specifier) const
 	{

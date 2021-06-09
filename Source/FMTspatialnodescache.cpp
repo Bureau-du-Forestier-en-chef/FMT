@@ -24,9 +24,10 @@ namespace Spatial
 	FMTspatialnodescache::FMTnodecache::FMTnodecache(const Core::FMToutputnode& node, const Models::FMTmodel& model):periodicvalues(),worthintersecting(true),patternvalues(), staticmask(), dynamicmask(),actions(node.source.targetsset(model.actions))
 		{
 		dynamicmask  = model.getdynamicmask(node);
-		const Core::FMTmask dymask = model.getdynamicmask(node, true);
+		/*const Core::FMTmask dymask = model.getdynamicmask(node, true);
 		const Core::FMTmask intersection = node.source.getmask();
-		staticmask = dymask.getunion(intersection);
+		staticmask = dymask.getunion(intersection);*/
+		staticmask = model.getstaticmask(node, true);
 		}
 
 	void FMTspatialnodescache::FMTnodecache::setvalue(const int& period, const double& value)

@@ -219,7 +219,12 @@ class FMTEXPORT FMTobject
 		do nested exception throw.
 		*/
 		virtual void enablenestedexceptions();
-
+		// DocString: FMTobject::seterrorstowarnings
+		/**
+		Very hazardous function if you want to live dangerously you can
+		set a vector of error to be cast to warnings to the exception handler...
+		*/
+		void seterrorstowarnings(const std::vector<Exception::FMTexc>& errors);
 
 	};
 }
