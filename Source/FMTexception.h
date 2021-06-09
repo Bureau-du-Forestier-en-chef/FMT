@@ -132,7 +132,9 @@ enum FMTexc
 	FMTGDALerror = 59,
 	FMTGDALwarning = 60,
 	FMTinfeasibleconstraint = 61,
-	FMTthematic_output_diff=62
+	FMTthematic_output_diff=62,
+	FMToutput_missing_operator=63,
+	FMToutput_operator_ignore=64
     };
 
 // DocString: FMTexception

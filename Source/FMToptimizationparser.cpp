@@ -6,6 +6,8 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
 #include "FMToptimizationparser.h"
+#include <boost/icl/interval.hpp>
+#include <boost/icl/interval_set.hpp>
 
 namespace Parser
 {
@@ -679,6 +681,7 @@ namespace Parser
 		try {
 			if (!location.empty())
 			{
+				std::multimap<std::string,std::pair<int,int>> actperexclude;
 				std::ifstream optimizestream(location);
 				if (FMTparser::tryopening(optimizestream, location))
 				{
@@ -734,10 +737,10 @@ namespace Parser
 									std::smatch kmatch;
 									if (std::regex_search(line, kmatch, rxexclude))
 									{
+
 										std::string action_name = kmatch[3];
-										const std::vector<const Core::FMTaction*>action_ptrs = Core::FMTactioncomparator(action_name).getallaggregates(actions);
-										const int period_lower = getnum<int>(std::string(kmatch[7]) + std::string(kmatch[10]), constants) - 1;
-										int period_upper = std::numeric_limits<int>::max();
+										const int period_lower = getnum<int>(std::string(kmatch[7]) + std::string(kmatch[10]), constants);
+										int period_upper = std::numeric_limits<int>::max()-1;
 										const std::string str_upper = std::string(kmatch[9]);
 										if (!str_upper.empty() && str_upper != "_LENGTH")
 										{
@@ -745,8 +748,10 @@ namespace Parser
 										}
 										else if (str_upper.empty())
 										{
-											period_upper = period_lower+1;
+											period_upper = period_lower;
 										}
+										actperexclude.emplace(action_name,std::pair<int,int>(period_lower,period_upper));
+										/*const std::vector<const Core::FMTaction*>action_ptrs = Core::FMTactioncomparator(action_name).getallaggregates(actions);
 										for (const Core::FMTaction* target_actionptr : action_ptrs)
 										{
 											std::vector<Core::FMTspec>newspecs;
@@ -776,7 +781,7 @@ namespace Parser
 												}
 												actit->update();
 											}
-										}
+										}*/
 									}
 									break;
 								}
@@ -787,6 +792,106 @@ namespace Parser
 								}
 								};
 							}
+						}
+					}
+				}
+				if (!actperexclude.empty())
+				{
+					std::multimap<std::string,std::pair<int,int>>::const_iterator mmit =  actperexclude.begin();
+					while (mmit!=actperexclude.end())
+					{
+						if(actperexclude.count(mmit->first)>1)
+						{
+							std::pair <std::multimap<std::string,std::pair<int,int>>::iterator, std::multimap<std::string,std::pair<int,int>>::iterator> ret;
+							ret = actperexclude.equal_range(mmit->first);
+							const std::vector<const Core::FMTaction*>action_ptrs = Core::FMTactioncomparator(mmit->first).getallaggregates(actions);
+							for (const Core::FMTaction* target_actionptr : action_ptrs)
+							{
+								std::vector<Core::FMTaction>::iterator actit = std::find_if(excluded.begin(), excluded.end(), Core::FMTactioncomparator(target_actionptr->getname()));
+								if (actit != excluded.end())
+								{
+									boost::icl::interval_set <int> perexclude;
+									for (std::multimap<std::string,std::pair<int,int>>::iterator it=ret.first; it!=ret.second; ++it)
+									{
+										perexclude.insert(boost::icl::discrete_interval<int>::closed(it->second.first,it->second.second));
+									}
+									std::vector<Core::FMTspec>newspecs;
+									std::vector<Core::FMTmask>newmask;
+									int nupper = 0;
+									for(boost::icl::interval_set<int>::reverse_iterator rit = perexclude.rbegin(); rit != perexclude.rend(); ++rit)
+									{
+
+										const int period_upper = rit->upper()+1;
+										const int period_lower = rit->lower()-1;
+										for (auto& specobject : *actit)
+										{
+											if (rit == perexclude.rbegin())
+											{
+												if (period_upper != std::numeric_limits<int>::max())
+												{
+													Core::FMTspec upperspec = specobject.second;
+													constexpr int max_upper = std::numeric_limits<int>::max() - 2;
+													upperspec.setbounds(Core::FMTperbounds(Core::FMTsection::Action, max_upper, period_upper));
+													newspecs.push_back(upperspec);
+													newmask.push_back(specobject.first);
+												}
+											}else{
+												Core::FMTspec mspec = specobject.second;
+												mspec.setbounds(Core::FMTperbounds(Core::FMTsection::Action, nupper, period_upper));
+												newspecs.push_back(mspec);
+												newmask.push_back(specobject.first);
+
+											}
+											if (rit == --perexclude.rend())
+											{
+												specobject.second.setbounds(Core::FMTperbounds(Core::FMTsection::Action, period_lower, 0));
+											}
+										nupper = period_lower;
+										}
+
+									}
+									for (size_t newspec = 0; newspec < newspecs.size(); ++newspec)
+									{
+										actit->push_back(newmask.at(newspec), newspecs.at(newspec));
+									}
+									actit->update();
+								}
+							}
+							mmit = ret.second;
+						}
+						else{
+							const std::vector<const Core::FMTaction*>action_ptrs = Core::FMTactioncomparator(mmit->first).getallaggregates(actions);
+							const int period_upper = mmit->second.second+1;
+							const int period_lower = mmit->second.first-1;
+							for (const Core::FMTaction* target_actionptr : action_ptrs)
+							{
+								std::vector<Core::FMTspec>newspecs;
+								std::vector<Core::FMTmask>newmask;
+								std::vector<Core::FMTaction>::iterator actit = std::find_if(excluded.begin(), excluded.end(), Core::FMTactioncomparator(target_actionptr->getname()));
+								if (actit != excluded.end())
+								{
+									for (auto& specobject : *actit)
+									{
+										const int startperiod_upper = 0;
+										if (period_upper != std::numeric_limits<int>::max())
+										{
+											Core::FMTspec upperspec = specobject.second;
+											constexpr int max_upper = std::numeric_limits<int>::max() - 2;
+											upperspec.setbounds(Core::FMTperbounds(Core::FMTsection::Action, max_upper, period_upper));
+											newspecs.push_back(upperspec);
+											newmask.push_back(specobject.first);
+										}
+										specobject.second.setbounds(Core::FMTperbounds(Core::FMTsection::Action, period_lower, startperiod_upper));
+
+									}
+									for (size_t newspec = 0; newspec < newspecs.size(); ++newspec)
+									{
+										actit->push_back(newmask.at(newspec), newspecs.at(newspec));
+									}
+									actit->update();
+								}
+							}
+							++mmit;
 						}
 					}
 				}
@@ -919,3 +1024,4 @@ namespace Parser
 		return line;
 		}
 }
+

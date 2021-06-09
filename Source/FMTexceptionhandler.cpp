@@ -217,7 +217,7 @@ std::string FMTexceptionhandler::updatestatus(const FMTexc lexception, const std
 	{
 	case FMTexc::FMTconstants_replacement:
 		msg += "Replaced Constants: " + message;
-		_level = FMTlev::FMT_Warning;
+		_level = FMTlev::FMT_Debug;
 		++_warningcount;
 		break;
 	case FMTexc::FMTfutur_types:
@@ -510,6 +510,16 @@ std::string FMTexceptionhandler::updatestatus(const FMTexc lexception, const std
 		_level = FMTlev::FMT_Warning;
 		++_warningcount;
 		break;
+    case FMTexc::FMToutput_missing_operator:
+   		msg += "Missing operator for the output: " + message;
+   		_level = FMTlev::FMT_logic;
+   		++_warningcount;
+   		break;
+    case FMTexc::FMToutput_operator_ignore:
+   		msg += "To much operator in the output definition, the last operator will be ignore for the output:" + message;
+   		_level = FMTlev::FMT_Warning;
+   		++_warningcount;
+   		break;
 	default:
 		_exception = FMTexc::None;
 		_level = FMTlev::FMT_None;
