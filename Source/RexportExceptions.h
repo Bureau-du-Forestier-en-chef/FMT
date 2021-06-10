@@ -24,6 +24,7 @@ RCPP_EXPOSED_AS(Exception::FMTquietexceptionhandler);
 RCPP_EXPOSED_WRAP(Exception::FMTdebugexceptionhandler);
 RCPP_EXPOSED_AS(Exception::FMTdebugexceptionhandler);
 RCPP_EXPOSED_ENUM_NODECL(Exception::FMTexc);
+RCPP_DEFINEVECTOR(Exception::FMTexc);//For vector
 RCPP_EXPOSED_ENUM_NODECL(Exception::FMTlev);
 RCPP_EXPOSED_ENUM_NODECL(Core::FMTsection);
 RCPP_EXPOSED_WRAP(Exception::FMTexception);
