@@ -69,7 +69,8 @@ template <> SEXP wrap(const std::map<KEY,OBJECT>& obj);\
 
 #define RCPP_COMMA ,
 
-
+//Exception
+RCPP_DECLAREVECTOR(Exception::FMTexc);//For vector
 
 //Version
 
