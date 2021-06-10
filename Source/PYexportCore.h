@@ -67,7 +67,9 @@ void exportCore()
 		.def("setquietlogger", &Core::FMTobject::setquietlogger,
 			"@DocString(FMTobject::setquietlogger)")
 		.def("redirectlogtofile", &Core::FMTobject::redirectlogtofile,
-			"@DocString(FMTobject::redirectlogtofile)");
+			"@DocString(FMTobject::redirectlogtofile)")
+		.def("seterrorstowarnings", &Core::FMTobject::seterrorstowarnings,
+			"@DocString(FMTobject::seterrorstowarnings)");
 
 
 		define_pylist<Core::FMTmask>();
