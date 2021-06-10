@@ -127,7 +127,7 @@ class FMTgraph : public Core::FMTobject
 		typedef typename boost::unordered_set<Core::FMTlookup<FMTvertex_descriptor,Core::FMTdevelopment>>::iterator lookiterator;
 		typedef typename boost::unordered_set<Core::FMTlookup<FMTvertex_descriptor,Core::FMTdevelopment>>::const_iterator lookconst_iterator;
 	protected:
-		class lookupsorter
+		/*class lookupsorter
 		{
 			public:
 			inline bool operator() (const Core::FMTlookup<FMTvertex_descriptor, Core::FMTdevelopment>& lookup1,
@@ -135,7 +135,7 @@ class FMTgraph : public Core::FMTobject
 			{
 				return (*lookup1.pointerobject < *lookup2.pointerobject);
 			}
-		};
+		};*/
         FMTgraphbuild buildtype;
 		std::vector<boost::unordered_set<Core::FMTlookup<FMTvertex_descriptor,Core::FMTdevelopment>>>developments;
 		mutable std::vector<FMToutputnodecache<FMTvertex_descriptor>>nodescache;
@@ -458,52 +458,7 @@ class FMTgraph : public Core::FMTobject
 					return naturalgrowth(actives,statsdiff);
 				}
 
-		/*FMTgraphstats build(const Models::FMTmodel& model,
-			std::queue<FMTvertex_descriptor> actives)
-		{
-			FMTgraphstats statsdiff(stats);
-			try {
-				developments.push_back(boost::unordered_set<Core::FMTlookup<FMTvertex_descriptor,Core::FMTdevelopment>>());
-				while (!actives.empty())
-				{
-					const FMTvertex_descriptor front_vertex = actives.front();
-					actives.pop();
-					FMTvertexproperties front_properties = data[front_vertex];
-					const Core::FMTdevelopment active_development = front_properties.get();
-					int action_id = 0;
-					bool death = false;
-					for (const Core::FMTaction& action : model.actions)
-					{
-						if (active_development.operable(action, model.yields))
-						{
-							if (action.getname() == "_DEATH")
-							{
-								death = true;
-							}
-							const std::vector<Core::FMTdevelopmentpath> paths = active_development.operate(action, model.transitions[action_id], model.yields, model.themes);
-							addaction(action_id, statsdiff, actives, front_vertex, paths);
-						}
-						++action_id;
-					}
-					if (!death)
-					{
-						const Core::FMTfuturdevelopment grown_up = active_development.grow();
-						FMTvertex_descriptor next_period = this->adddevelopment(grown_up); //getset
-						const FMTedgeproperties newedge(-1, statsdiff.cols, 100);
-						++statsdiff.cols;
-						boost::add_edge(front_vertex, next_period, newedge, data);
-						++stats.edges;
-					}
-
-				}
-			}
-			catch (...)
-			{
-				_exhandler->raisefromcatch("", "FMTgraph::build", __LINE__, __FILE__);
-			}
-			return (statsdiff - stats);
-
-		}*/
+		
 		FMTgraphstats naturalgrowth(std::queue<FMTvertex_descriptor> actives,FMTgraphstats statsdiff)
 		{
 			//FMTgraphstats statsdiff(stats);
@@ -565,7 +520,7 @@ class FMTgraph : public Core::FMTobject
 			}
 		}
 
-		void cleannodecaching(unsigned long long minbytes= 10000000000) const//5 Go max
+		/*void cleannodecaching(unsigned long long minbytes= 10000000000) const//5 Go max
 		{
 			try {
 				if (!nodescache.empty()&& boost::num_vertices(data)>1000000)
@@ -604,7 +559,7 @@ class FMTgraph : public Core::FMTobject
 			{
 				_exhandler->raisefromcatch("", "FMTgraph::cleannodecaching", __LINE__, __FILE__);
 			}
-		}
+		}*/
 
 		void gettransferrownames(std::vector<std::string>& rownames) const
 		{
@@ -1095,7 +1050,7 @@ class FMTgraph : public Core::FMTobject
 							nodescache.reserve(developments.size());
 							}
 						//cleannodecaching();
-						const bool gotstaticnode = false; //model.isstaticnode(output_node);
+						const bool gotstaticnode = model.isstaticnode(output_node);
 						for (const int& localnodeperiod : targetedperiods)
 						{
 							std::vector<FMTvertex_descriptor> const* descriptors = nullptr;
@@ -1357,7 +1312,63 @@ class FMTgraph : public Core::FMTobject
 		{
 			stats = newstats;
 		}
-		FMTgraphstats buildschedule(const Models::FMTmodel& model, std::queue<FMTvertex_descriptor> actives,
+
+		FMTgraphstats buildschedule(const Models::FMTmodel& model,
+			std::queue<FMTvertex_descriptor> actives,
+			const Core::FMTschedule& schedule)
+		{
+			FMTgraphstats statsdiff(stats);
+			try {
+				developments.push_back(boost::unordered_set<Core::FMTlookup<FMTvertex_descriptor, Core::FMTdevelopment>>());
+				developments.back().reserve(actives.size());
+				int action_id = 0;
+				for (const Core::FMTaction& action : model.actions)
+				{
+					if (schedule.find(action) != schedule.end())
+					{
+						std::queue<FMTvertex_descriptor> new_actives;
+						while (!actives.empty())
+						{
+							const FMTvertex_descriptor front_vertex = actives.front();
+							actives.pop();
+							FMTvertexproperties front_properties = data[front_vertex];
+							const Core::FMTdevelopment& active_development = front_properties.get();
+							bool death = false;
+							if ((((schedule.at(action)).find(active_development) != (schedule.at(action)).end()) ||
+								(!action.dorespectlock() && active_development.getlock() != 0 &&
+								(schedule.at(action)).find(active_development.clearlock()) != (schedule.at(action)).end())))
+							{
+								
+								if (active_development.operable(action, model.yields))
+								{
+									if (action.getname() == "_DEATH")
+									{
+										death = true;
+									}
+									const std::vector<Core::FMTdevelopmentpath> paths = active_development.operate(action, model.transitions[action_id], model.yields, model.themes);
+									addaction(action_id, statsdiff, new_actives, front_vertex, paths);
+								}
+							}
+						if (!death)
+							{
+							new_actives.push(front_vertex);
+							}
+						}
+						actives = new_actives;
+					}
+					++action_id;
+				}
+
+			}
+			catch (...)
+			{
+				_exhandler->raisefromcatch("", "FMTgraph::buildschedule", __LINE__, __FILE__);
+			}
+			return naturalgrowth(actives, statsdiff);
+		}
+
+
+		/*FMTgraphstats buildschedule(const Models::FMTmodel& model, std::queue<FMTvertex_descriptor> actives,
 			const Core::FMTschedule& schedule)
 		{
 			FMTgraphstats statsdiff(stats);
@@ -1411,7 +1422,7 @@ class FMTgraph : public Core::FMTobject
 			_exhandler->raisefromcatch("", "FMTgraph::buildschedule", __LINE__, __FILE__);
 		}
 			return (statsdiff - stats);
-		}
+		}*/
 
 
 		FMTgraphstats eraseperiod(std::vector<int>& deletedconstraints,
@@ -1494,7 +1505,7 @@ class FMTgraph : public Core::FMTobject
 		{
 			return developments.empty();
 		}
-		std::vector<Core::FMTlookup<FMTvertex_descriptor, Core::FMTdevelopment>>getsortedverticies(const boost::unordered_set<Core::FMTlookup<FMTvertex_descriptor, Core::FMTdevelopment>>& uset) const
+		/*std::vector<Core::FMTlookup<FMTvertex_descriptor, Core::FMTdevelopment>>getsortedverticies(const boost::unordered_set<Core::FMTlookup<FMTvertex_descriptor, Core::FMTdevelopment>>& uset) const
 		{
 			std::vector<Core::FMTlookup<FMTvertex_descriptor, Core::FMTdevelopment>>sorted;
 			try {
@@ -1506,14 +1517,14 @@ class FMTgraph : public Core::FMTobject
 				_exhandler->raisefromcatch("", "FMTgraph::getsortedverticies", __LINE__, __FILE__);
 			}
 			return sorted;
-		}
+		}*/
 
 
 		std::queue<FMTvertex_descriptor> getactiveverticies() const
 		{
 			std::queue<FMTvertex_descriptor>actives;
 			try {
-				for (auto& lastperiod : /*getsortedverticies(*/developments.back()/*)*/)
+				for (auto& lastperiod : developments.back())
 				{
 					actives.push(lastperiod.memoryobject);
 				}
@@ -1524,7 +1535,7 @@ class FMTgraph : public Core::FMTobject
 			}
 			return actives;
 		}
-		std::vector<Core::FMTlookup<FMTvertex_descriptor, Core::FMTdevelopment>>getsortedperiodverticies(int period) const
+		/*std::vector<Core::FMTlookup<FMTvertex_descriptor, Core::FMTdevelopment>>getsortedperiodverticies(int period) const
 		{
 			std::vector<Core::FMTlookup<FMTvertex_descriptor, Core::FMTdevelopment>>sorted;
 			try {
@@ -1535,7 +1546,7 @@ class FMTgraph : public Core::FMTobject
 				_exhandler->raisefromcatch("", "FMTgraph::getsortedperiodverticies", __LINE__, __FILE__);
 			}
 			return sorted;
-		}
+		}*/
 
 		const boost::unordered_set<Core::FMTlookup<FMTvertex_descriptor,Core::FMTdevelopment>>& getperiodverticies(int period) const
 			{
