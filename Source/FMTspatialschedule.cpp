@@ -1161,20 +1161,25 @@ namespace Spatial
 			std::set<std::vector<Graph::FMTcarbonpredictor>>predictorsset;
 			std::vector<std::set<std::vector<Graph::FMTcarbonpredictor>>::iterator>predictorlocalisations;
 			for (std::map<FMTcoordinate, Graph::FMTlinegraph>::const_iterator graphit = this->mapping.begin(); graphit != this->mapping.end(); ++graphit)
-				{
+			{
 				const std::vector<Graph::FMTcarbonpredictor> graphpredictors = graphit->second.getperiodcarbonpredictors(period, actionsindex, yieldnames, yields);
 				std::set<std::vector<Graph::FMTcarbonpredictor>>::iterator setit = predictorsset.end();
+				bool pushed=false;
 				if (!graphpredictors.empty())
 				{
-					std::set<std::vector<Graph::FMTcarbonpredictor>>::iterator setit = predictorsset.find(graphpredictors);
+					setit = predictorsset.find(graphpredictors);
 					if (setit == predictorsset.end())
 					{
 						const std::pair<std::set<std::vector<Graph::FMTcarbonpredictor>>::iterator, bool> ret = predictorsset.insert(graphpredictors);
 						predictorlocalisations.push_back(ret.first);
+						pushed = true;
 					}
 				}
-				predictorlocalisations.push_back(setit);
+				if(!pushed)
+				{
+					predictorlocalisations.push_back(setit);
 				}
+			}
 			predictors.insert(predictors.end(), predictorsset.begin(), predictorsset.end());
 			size_t graphid = 0;
 			for (std::map<FMTcoordinate, Graph::FMTlinegraph>::const_iterator graphit = this->mapping.begin(); graphit != this->mapping.end(); ++graphit)
@@ -1183,7 +1188,9 @@ namespace Spatial
 					{
 					const int predictorid = static_cast<int>(std::distance(predictorsset.begin(), predictorlocalisations.at(graphid)));
 					predictorids.mapping[graphit->first] = predictorid;
-					}
+					}/*else{
+						*_logger<<period<<" "<<graphid<<" "<<std::string(graphit->first)<<"\n";
+					}*/
 				++graphid;
 				}
 
