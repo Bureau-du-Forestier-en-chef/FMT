@@ -20,13 +20,6 @@ message("Generating Build file for FMT ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSIO
 set(FMTSOURCEDIR "${CMAKE_CURRENT_SOURCE_DIR}/Source/")
 set(FMTINCLUDEDIR "${CMAKE_CURRENT_SOURCE_DIR}/Source/")
 
-if (DEFINED MOSEK_DIR)
-	if (EXISTS "${MOSEK_DIR}")
-		set(ENV{MOSEK_DIR} "${MOSEK_DIR}")
-	else()
-		message(WARNING "${MOSEK_DIR} is not a valid directory")
-	endif(EXISTS "${MOSEK_DIR}")
-endif(DEFINED MOSEK_DIR)
 
 if (DEFINED OSI_DIR)
 	if (EXISTS "${OSI_DIR}")
@@ -35,6 +28,14 @@ if (DEFINED OSI_DIR)
 		message(WARNING "${OSI_DIR} is not a valid directory")
 	endif(EXISTS "${OSI_DIR}")
 endif(DEFINED OSI_DIR)
+
+if (DEFINED MOSEK_DIR)
+	if (EXISTS "${MOSEK_DIR}")
+		set(ENV{MOSEK_DIR} "${MOSEK_DIR}")
+	else()
+		message(WARNING "${MOSEK_DIR} is not a valid directory")
+	endif(EXISTS "${MOSEK_DIR}")
+endif(DEFINED MOSEK_DIR)
 
 if (DEFINED BOOST_DIR)
 	if (EXISTS "${BOOST_DIR}")
