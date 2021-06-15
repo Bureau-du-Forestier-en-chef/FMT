@@ -38,6 +38,11 @@ bool FMToperator::operator == (const FMToperator& rhs) const
 	return key == rhs.key;
 	}
 
+bool FMToperator::operator != (const FMToperator& rhs) const
+	{
+	return !(key == rhs.key);
+	}
+
 double FMToperator::call(const double& rhs1, const double& rhs2) const
     {
 	double returnval = 0;
