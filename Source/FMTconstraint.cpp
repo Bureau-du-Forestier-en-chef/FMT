@@ -920,6 +920,120 @@ namespace Core
 			return ids;
 			}
 
+		bool FMTconstraint::canbeturnedtoyields() const
+		{
+			try {
+				double lower;
+				double upper;
+				getbounds(lower, upper);
+				if (type == Core::FMTconstrainttype::FMTstandard && lower<=0 && upper==0 && !islevel() && !isinventory() && !isobjective() && !isgoal())
+					{
+					for (const Core::FMToutputsource& source: sources)
+					{
+						if (source.isvariable()&&(!source.getyield().empty()||!source.empty()||source.getaction().empty()))
+						{
+							return false;
+						}
+
+					}
+					
+					for (const Core::FMToperator& op : operators)
+						{
+						if (op != Core::FMToperator("+") && 
+							op != Core::FMToperator("*"))
+							{
+							return false;
+							}
+						}
+					return true;
+					}
+			}
+			catch (...)
+			{
+				_exhandler->raisefromcatch("", "FMTconstraint::canbeturnedtoyields", __LINE__, __FILE__, Core::FMTsection::Optimize);
+			}
+			return false;
+		}
+
+		void FMTconstraint::turntoyieldsandactions(const std::vector<Core::FMTtheme>& themes,
+			std::vector<Core::FMTaction>&actions,
+			Core::FMTyields& yields,
+			const int& constraintid) const
+		{
+			
+			try {
+				std::vector<Core::FMTyieldhandler>handlers;
+				const std::string baseyieldnames("~constraint" + std::to_string(constraintid));
+				const int startingperiod = getperiodlowerbound();
+				int stopingperiod = getperiodupperbound();
+				bool dorecloseof = true;
+				if (stopingperiod == std::numeric_limits<int>::max())
+					{
+					stopingperiod = startingperiod;
+					dorecloseof = false;
+					}
+				std::vector<double>patternvalues;
+				for (int period = 1;period< startingperiod;++period)//open
+					{
+					patternvalues.push_back(1.0);
+					}
+				for (int period = startingperiod; period <= stopingperiod; ++period)//closed
+					{
+					patternvalues.push_back(0);
+					}
+				if (dorecloseof)//open
+					{
+					patternvalues.push_back(1.0);
+					}
+				const std::vector<double>defaultvalues(patternvalues.size(),1.0);
+				std::string defaultstrmask;
+				for (const Core::FMTtheme& theme : themes)
+					{
+					defaultstrmask += "? ";
+					}
+				defaultstrmask.pop_back();
+				const Core::FMTmask defaultmask(defaultstrmask, themes);
+				Core::FMTyieldhandler defaulthandler(Core::FMTyldtype::FMTtimeyld, defaultmask);
+				defaulthandler.push_base(0);
+				defaulthandler.push_base(1);
+				size_t sourceid = 0;
+				yields.unshrink(themes);
+				for (const Core::FMToutputsource& source : sources)
+				{
+					if (source.isvariable())
+					{
+						const std::string yieldname(baseyieldnames + "_" + std::to_string(sourceid));
+						for (const Core::FMTaction* actionptr : Core::FMTactioncomparator(source.getaction()).getallaggregates(actions, true))
+						{
+							for (auto& itvalue : actions[std::distance(&*(actions.cbegin()), actionptr)])
+							{
+								itvalue.second.addbounds(Core::FMTyldbounds(Core::FMTsection::Action, yieldname, 1.0, 1.0));
+							}
+						}
+						for (const double& pattern : defaultvalues)
+						{
+							defaulthandler.push_data(yieldname, pattern);
+						}
+						Core::FMTyieldhandler yieldhandler(Core::FMTyldtype::FMTtimeyld, source.getmask());
+						yieldhandler.push_base(0);
+						yieldhandler.push_base(1);
+						for (const double& pattern : patternvalues)
+						{
+							yieldhandler.push_data(yieldname, pattern);
+						}
+						yields.push_back(std::pair<Core::FMTmask, Core::FMTyieldhandler>(source.getmask(), yieldhandler));
+					}
+					++sourceid;
+				}
+				yields.push_back(std::pair<Core::FMTmask, Core::FMTyieldhandler>(defaultmask, defaulthandler));
+				yields.shrink();
+			}
+			catch (...)
+			{
+				_exhandler->raisefromcatch("", "FMTconstraint::turntoyields", __LINE__, __FILE__, Core::FMTsection::Optimize);
+			}
+		}
+
 }
 
 BOOST_CLASS_EXPORT_IMPLEMENT(Core::FMTconstraint)

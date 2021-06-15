@@ -1,4 +1,11 @@
-call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Professional\VC\Auxiliary\Build\vcvars64.bat"
+::call "C:\Program Files (x86)\Microsoft Visual Studio\2017\Professional\VC\Auxiliary\Build\vcvars64.bat"
+::Looking for vcvars64.bat in c:\
+FOR /F "tokens=* USEBACKQ" %%F IN (`dir c:\vcvars64.bat /b /s /p`) DO (
+SET vcvars64loc="%%F"
+GOTO BREAK
+)
+:BREAK
+call %vcvars64loc%
 ::Providing the -DPYTHON_DIR will make the script generate a .pyd using Boost::Python
 ::You cannot generate an Rcpp module .dll with VS so dont use -DR_DIR with VS. It will also generates examples
 ::This file if for generating FMT based on shared boost lib for Windows 7, need boost with dynamic libraries
