@@ -936,6 +936,14 @@ std::unique_ptr<FMTmodel> FMTmodel::presolve(int presolvepass,std::vector<Core::
 		//Passiterator
 		bool didonepass = false;
 		//_logger->redirectofile("C:/Users/cyrgu3/Desktop/test/nodes.txt");
+		std::set<int>constraintsids;
+		int constraintid = 0;
+		for (const Core::FMTconstraint& constraint : constraints)
+			{
+			constraintsids.insert(constraintid);
+			++constraintid;
+			}
+
 		while (presolvepass > 0)
 		{
 			//Presolved data
@@ -957,6 +965,7 @@ std::unique_ptr<FMTmodel> FMTmodel::presolve(int presolvepass,std::vector<Core::
 			size_t themestart = 0;
 			size_t themedataremoved = 0;
 			std::set<int> keptthemeid;
+			std::set<int>contraintsids;
 			int oldthemeid = 0;
 			for (const Core::FMTtheme& theme : oldthemes)
 			{
@@ -1028,16 +1037,30 @@ std::unique_ptr<FMTmodel> FMTmodel::presolve(int presolvepass,std::vector<Core::
 			//Constraints and data
 			//Add feature to automatically interpret the output[0] as constant in sources
 			size_t constraintdataremoved = 0;
+			
+			std::set<int>newconstraintsids;
+			int constraintid = 0;
+			std::set<int>::const_iterator oriit = constraintsids.begin();
 			for (const Core::FMTconstraint& constraint : oldconstraints)
 			{
+				const int originalid = *oriit;
 				/*const*/Core::FMTconstraint presolvedconstraint = constraint.presolve(basemask, oldthemes, selectedattributes, newthemes, newactions, oldyields);
 				constraintdataremoved += (constraint.size() - presolvedconstraint.size());
 				if (!presolvedconstraint.outputempty())
 				{
-					presolvedconstraint.changesourcesid(keptoutputid,keptthemeid);
-					newconstraints.push_back(presolvedconstraint);
+					presolvedconstraint.changesourcesid(keptoutputid, keptthemeid);
+					if (presolvedconstraint.canbeturnedtoyields())
+					{
+						presolvedconstraint.turntoyieldsandactions(newthemes, newactions, newyields,originalid);
+					}else{
+						newconstraintsids.insert(originalid);
+						newconstraints.push_back(presolvedconstraint);
+					}
+					
 				}
+				++oriit;
 			}
+			constraintsids = newconstraintsids;
 			oldthemes = newthemes;
 			oldarea = newarea;
 			oldactions = newactions;

@@ -296,7 +296,22 @@ class FMTEXPORT FMTconstraint: public FMToutput,public FMTspec
 		If the constraint is a spatial constraint it will return a vector of action ids to which the constraint apply to.
 		*/
 		std::vector<bool>isactionsused(const std::vector<Core::FMTaction>& actions) const;
-
+		// DocString: FMTconstraint::canbeturnedtoactionbound
+		/**
+		If the constraint can be turned to a simple action bound using a simple yield this function will returns true.
+		*/
+		bool canbeturnedtoyields() const;
+		// DocString: FMTconstraint::turntoyields
+		/**
+		This function will generate two yields handler from the constraint 1st: value = 0 for specific mask then the default handler.
+		You need to specify the constraint id to generate a decent yield name. It will modify the actions in the action vectors.
+		Then the yields will be included in the yields section. The constraint can be ignored after this.
+		This will help reduce the size of the matrix.
+		*/
+		void turntoyieldsandactions(const std::vector<Core::FMTtheme>& themes,
+						 std::vector<Core::FMTaction>&actions,
+						 Core::FMTyields& yields,
+						 const int& constraintid) const;
 	};
 }
 

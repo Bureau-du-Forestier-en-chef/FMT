@@ -55,6 +55,8 @@ void exportException()
 		.value("FMTunsupported_yield", Exception::FMTexc::FMTunsupported_yield)
 		.export_values();
 
+	define_pylist<Exception::FMTexc>();
+
 	bp::enum_<Core::FMTsection>("FMTsection")
 		.value("Control", Core::FMTsection::Control)
 		.value("Landscape", Core::FMTsection::Landscape)

@@ -48,6 +48,7 @@ public:
     FMToperator(FMTokey lkey);
     FMToperator(std::string strkey);
 	bool operator == (const FMToperator& rhs) const;
+	bool operator != (const FMToperator& rhs) const;
     double call(const double& rhs1, const double& rhs2) const;
     FMToperator(const FMToperator& rhs);
     FMToperator& operator = (const FMToperator& rhs);
