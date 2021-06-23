@@ -28,7 +28,7 @@ FMTlayer<std::string>FMTforest::getlock() const
         {
         if (it->second.getlock() > 0 )
             {
-            newlayer.mapping[it->first] = "_Lock " + std::to_string(it->second.getlock());
+            newlayer[it->first] = "_Lock " + std::to_string(it->second.getlock());
             }
         }
     return newlayer;
@@ -118,7 +118,7 @@ std::vector<FMTlayer<std::string>> FMTforest::getthemes(const std::vector<Core::
                 for(size_t id = 0 ; id < newlayers.size();++id)
                     {
 					const std::string value = it->second.getmask().get(themes[id]);
-                    newlayers[id].mapping[it->first] = value;
+                    newlayers[id][it->first] = value;
                     }
                 }
             return newlayers;
@@ -128,7 +128,7 @@ FMTlayer<int>FMTforest::getage() const
             FMTlayer<int>newlayer(this->geotransform,this->maxx,this->maxy,this->SRS_WKT,this->cellsize);
             for(std::map<FMTcoordinate,Core::FMTdevelopment>::const_iterator it = mapping.begin(); it != mapping.end(); ++it)
                 {
-                newlayer.mapping[it->first] = it->second.getage();
+                newlayer[it->first] = it->second.getage();
                 }
             return newlayer;
             }

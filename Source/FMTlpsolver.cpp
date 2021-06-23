@@ -780,6 +780,7 @@ namespace Models
 			OsiSolverInterface::OsiNameVec& cachedcolnames = matrixcache.getcolumnnames();
 			if (solvertype == Models::FMTsolverinterface::MOSEK)
 			{
+				#ifdef FMTWITHMOSEK
 				OsiMskSolverInterface* msksolver = dynamic_cast<OsiMskSolverInterface*>(solverinterface.get());
 				MSKtask_t task = msksolver->getMutableLpPtr();
 				for (int colid = 0; colid < static_cast<int>(cachedcolnames.size()); ++colid)
@@ -790,6 +791,7 @@ namespace Models
 				{
 					MSK_putconname(task, rowid, cachedrownames.at(rowid).c_str());
 				}
+				#endif
 				
 			}else {
 				solverinterface->setColNames(cachedcolnames, 0, static_cast<int>(cachedcolnames.size()), 0);
@@ -859,6 +861,7 @@ namespace Models
 			
 			if (solvertype == Models::FMTsolverinterface::MOSEK)
 			{
+				#ifdef FMTWITHMOSEK
 				std::vector<char*>rownames;
 				std::vector<char*>colnames;
 				OsiMskSolverInterface* msksolver = dynamic_cast<OsiMskSolverInterface*>(solverinterface.get());
@@ -894,6 +897,7 @@ namespace Models
 					{
 					free(value);
 					}
+			#endif
 			}else {
 				solverinterface->writeLp(location.c_str());
 			}

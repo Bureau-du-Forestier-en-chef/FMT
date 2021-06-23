@@ -26,8 +26,8 @@ namespace Spatial
     {
         FMTlayer<Graph::FMTlinegraph>::operator = (initialmap.copyextent<Graph::FMTlinegraph>());//Setting layer information
 		std::vector<FMTcoordinate>coordinates;
-		coordinates.reserve(initialmap.mapping.size());
-        for(std::map<FMTcoordinate,Core::FMTdevelopment>::const_iterator devit = initialmap.mapping.begin(); devit != initialmap.mapping.end(); ++devit)
+		coordinates.reserve(initialmap.size());
+        for(FMTlayer<Core::FMTdevelopment>::const_iterator devit = initialmap.begin(); devit != initialmap.end(); ++devit)
         {
 			std::vector<Core::FMTactualdevelopment> actdevelopment;
             actdevelopment.push_back(Core::FMTactualdevelopment (devit->second,initialmap.getcellsize()));
@@ -189,7 +189,7 @@ namespace Spatial
 			{
 				const Graph::FMTlinegraph* local_graph = &graphit->second;
 				const std::vector<double> solutions(1,this->getcellsize());
-				forest.mapping[graphit->first] = local_graph->getperiodstopdev(period);
+				forest[graphit->first] = local_graph->getperiodstopdev(period);
 				/*std::vector<Core::FMTactualdevelopment> actdev = local_graph->getperiodstopdev(period,&solutions[0]);//
 				forest.mapping[graphit->first]=Core::FMTdevelopment(actdev.front());*/
 			}
@@ -1136,7 +1136,7 @@ namespace Spatial
 				const int lastactid = graphit->second.getlastactionid(period);
 				if (lastactid > 0)
 				{
-					distlayer.mapping[graphit->first] = modelactions.at(graphit->second.getlastactionid(period)).getname();
+					distlayer[graphit->first] = modelactions.at(graphit->second.getlastactionid(period)).getname();
 				}
 
 			}
@@ -1182,12 +1182,12 @@ namespace Spatial
 			}
 			predictors.insert(predictors.end(), predictorsset.begin(), predictorsset.end());
 			size_t graphid = 0;
-			for (std::map<FMTcoordinate, Graph::FMTlinegraph>::const_iterator graphit = this->mapping.begin(); graphit != this->mapping.end(); ++graphit)
+			for (std::map<FMTcoordinate, Graph::FMTlinegraph>::const_iterator graphit = this->begin(); graphit != this->end(); ++graphit)
 				{
 				if (predictorlocalisations.at(graphid)!= predictorsset.end())
 					{
 					const int predictorid = static_cast<int>(std::distance(predictorsset.begin(), predictorlocalisations.at(graphid)));
-					predictorids.mapping[graphit->first] = predictorid;
+					predictorids[graphit->first] = predictorid;
 					}/*else{
 						*_logger<<period<<" "<<graphid<<" "<<std::string(graphit->first)<<"\n";
 					}*/
@@ -1220,7 +1220,7 @@ namespace Spatial
 				int lastactionid = graphit->second.getlastactionid(period);
 				if (lastactionid >= 0)
 				{
-					stackedactions.mapping[graphit->first] = modelactions.at(lastactionid).getname();
+					stackedactions[graphit->first] = modelactions.at(lastactionid).getname();
 					//For each classifier, append the value at the begining of the period and keep track of value at the end in finalattributes. Also keep the ageafter.
 					if (!classifiers.empty())
 					{
@@ -1235,9 +1235,9 @@ namespace Spatial
 							const std::string fclass = fdev.getmask().get(theme);
 							themeattributes[themename] = fclass;
 							const std::string sclass = sdev.getmask().get(theme);
-							stackedactions.mapping[graphit->first] += "-" + sclass;
+							stackedactions[graphit->first] += "-" + sclass;
 						}
-						std::string stackname = stackedactions.mapping.at(graphit->first);
+						std::string stackname = stackedactions.at(graphit->first);
 						if (ageaftercontainer.find(stackname) != ageaftercontainer.end())
 						{
 							ageaftercontainer[stackname].push_back(fage);

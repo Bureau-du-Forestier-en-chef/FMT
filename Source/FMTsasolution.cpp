@@ -26,7 +26,7 @@ namespace Spatial
     FMTsasolution::FMTsasolution(const FMTforest& initialmap):outputscache(),solution_stats(),objectivefunctionvalue(),events(),constraint_outputs_penalties()
     {
         FMTlayer<Graph::FMTlinegraph>::operator = (initialmap.copyextent<Graph::FMTlinegraph>());//Setting layer information
-        for(std::map<FMTcoordinate,Core::FMTdevelopment>::const_iterator devit = initialmap.mapping.begin(); devit != initialmap.mapping.end(); ++devit)
+        for(FMTlayer<Core::FMTdevelopment>::const_iterator devit = initialmap.begin(); devit != initialmap.end(); ++devit)
         {
 			std::vector<Core::FMTactualdevelopment> actdevelopment;
             actdevelopment.push_back(Core::FMTactualdevelopment (devit->second,initialmap.getcellsize()));
@@ -333,7 +333,7 @@ double FMTsasolution::getgraphspenalties(const Models::FMTsamodel& model, const 
         {
             const Graph::FMTlinegraph* local_graph = &graphit->second;
             const std::vector<double> solutions(1,this->getcellsize());
-			forest.mapping[graphit->first] = local_graph->getperiodstopdev(period);
+			forest[graphit->first] = local_graph->getperiodstopdev(period);
 			/*std::vector<Core::FMTactualdevelopment> actdev = local_graph->getperiodstopdev(period,&solutions[0]);//
             forest.mapping[graphit->first]=Core::FMTdevelopment(actdev.front());*/
         }
@@ -597,14 +597,14 @@ double FMTsasolution::getgraphspenalties(const Models::FMTsamodel& model, const 
                         for (std::set<FMTcoordinate>::const_iterator coordit = event.elements.begin(); coordit != event.elements.end(); ++coordit)
                         {
 
-                            action_layer.mapping[*coordit]=event_id;
+                            action_layer[*coordit]=event_id;
                         }
                         event_map[event_id] = "Event_"+ std::to_string(event_id);
                         event_id++;
 
                     }
                 }
-                if (!action_layer.mapping.empty())
+                if (!action_layer.empty())
                 {
                     const std::string action_name = model_actions.at(aid).getname();
                     const std::string out_location = out_path+action_name+"_"+addon+"_events_period_"+std::to_string(period)+".tif";

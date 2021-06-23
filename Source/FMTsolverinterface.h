@@ -16,9 +16,9 @@ namespace Models
 	enum class FMTsolverinterface
 	{
 		CLP = 1,
-		#ifdef  FMTWITHMOSEK
+		//#ifdef  FMTWITHMOSEK
 			MOSEK = 2,
-		#endif
+		//#endif
 		CPLEX = 3,
 		GUROBI = 4,
 	};

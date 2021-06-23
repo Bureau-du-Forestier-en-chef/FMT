@@ -64,10 +64,83 @@ namespace Spatial
 		// DocString: FMTlayer::cellsize
 		///Size of the pixel in the unit used by the map (SRS_WKT)
         double cellsize;
+		// DocString: FMTlayer::mapping
+		///std::map keeping the information of each pixel.
+		std::map<FMTcoordinate, T>mapping;
         public:
-			// DocString: FMTlayer::mapping
-			///std::map keeping the information of each pixel.
-			std::map<FMTcoordinate,T>mapping;
+			// DocString: FMTlayer::value_type
+			///Value typedef of the FMTlayer
+			typedef typename std::map<FMTcoordinate,T>::value_type value_type;
+			// DocString: FMTlayer::iterator
+			///Iterator typedef of the FMTlayer
+			typedef typename std::map<FMTcoordinate,T>::iterator iterator;
+			// DocString: FMTlayer::const_iterator
+			///Const_Iterator typedef of the FMTlist
+			typedef typename std::map<FMTcoordinate,T>::const_iterator const_iterator;
+			// DocString: FMTlayer::operator[]
+			/**
+			Operator [] for FMTlayer accessing std::map (mapping).
+			*/
+			T& operator [](const FMTcoordinate& coordinate)
+				{
+				return mapping[coordinate];
+				}
+			// DocString: FMTlayer::at()
+			/**
+			at for FMTlayer accessing std::map (mapping).
+			*/
+			const T& at(const FMTcoordinate& coordinate) const
+			{
+				return mapping.at(coordinate);
+			}
+			// DocString: FMTlayer::empty
+			/**
+			Check if the FMTlayer is empty.
+			*/
+			inline bool empty() const
+			{
+				return mapping.empty();
+			}
+			// DocString: FMTlayer::begin
+			/**
+			Returns an iterator at the beginning of the FMTlayer.
+			*/
+			iterator begin()
+			{
+				return mapping.begin();
+			}
+			// DocString: FMTlayer::begin
+			/**
+			Returns an const iterator at the beginning of the FMTlayer.
+			*/
+			const_iterator begin() const
+			{
+				return mapping.begin();
+			}
+			// DocString: FMTlayer::end
+			/**
+			Returns an iterator at the end of the FMTlayer.
+			*/
+			iterator  end()
+			{
+				return mapping.end();
+			}
+			// DocString: FMTlayer::end
+			/**
+			Returns an const iterator at the end of the FMTlayer.
+			*/
+			const_iterator end() const
+			{
+				return mapping.end();
+			}
+			// DocString: FMTlayer::find
+			/**
+			Find the layer element at a given coordinate.
+			*/
+			const_iterator find(const FMTcoordinate& coordinate) const
+			{
+				return mapping.find(coordinate);
+			}
 			// DocString: FMTlayer()
 			/**
 			Default constructor for FMTlayer.

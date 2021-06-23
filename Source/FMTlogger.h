@@ -194,6 +194,11 @@ namespace Logging
 			This function is the main function to add up size_t.
 			*/
 			virtual FMTlogger& operator<<(const size_t& msg);
+			// DocString: FMTlogger::operator<<(const unsigned int& msg)
+			/**
+			This function is the main function to add up unsigned int.
+			*/
+			virtual FMTlogger& operator<<(const unsigned int& msg);
 			// DocString: FMTlogger::logwithlevel
 			/**
 			Log a message with a given message level if message level is greater of equal to the logger level

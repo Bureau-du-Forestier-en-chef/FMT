@@ -30,9 +30,9 @@ namespace Models
         {
             for (std::vector<size_t>::const_iterator it = mapidmodified.begin(); it != mapidmodified.end(); it++)
             {
-				std::map<Spatial::FMTcoordinate,Graph::FMTlinegraph>::const_iterator current_solutionit =  current_solution.mapping.begin();
+				 Spatial::FMTlayer<Graph::FMTlinegraph>::const_iterator current_solutionit =  current_solution.begin();
                  std::advance(current_solutionit,*it);
-                 if(current_solutionit->second != new_solution.mapping.at(current_solutionit->first))
+                 if(current_solutionit->second != new_solution.at(current_solutionit->first))
                  {
                      return false;
                  }
