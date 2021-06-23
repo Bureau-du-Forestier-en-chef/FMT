@@ -162,6 +162,13 @@ namespace Logging
 		this->cout(value.c_str());
 		return *this;
 	}
+	FMTlogger& FMTlogger::operator<<(const unsigned int& msg)
+	{
+		const std::string value = std::to_string(msg);
+		this->cout(value.c_str());
+		return *this;
+	}
+
 	bool FMTlogger::logwithlevel(const std::string &msg, const int& messagelevel) const
 	{
 		#ifdef FMTWITHOSI

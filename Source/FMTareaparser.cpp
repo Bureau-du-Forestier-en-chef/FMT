@@ -102,12 +102,12 @@ namespace Parser{
                             for (std::set<Spatial::FMTcoordinate>::const_iterator coordit = event.elements.begin(); coordit != event.elements.end(); ++coordit)
                             {
 
-                                action_layer.mapping[*coordit]=event_id;
+                                action_layer[*coordit]=event_id;
                             }
                             event_map[event_id] = "Event_"+ std::to_string(event_id);
                             event_id++;
                         }
-                        if (!action_layer.mapping.empty())
+                        if (!action_layer.empty())
                         {
                             const std::string action_name = actions.at(aid).getname();
                             boost::filesystem::path filepath(action_name+"_events_period_"+std::to_string(period)+".tif");
@@ -172,16 +172,16 @@ namespace Parser{
 			std::map<std::string, std::vector<double>>stats;
 			std::map<std::string, std::vector<std::map<std::string,int>>>attributes;
 			const std::vector<Spatial::FMTlayer<std::string>>newforests = newfor.getthemes(themes);
-			for (std::map<Spatial::FMTcoordinate, std::string>::const_iterator itcoord = stacked_actions.mapping.begin();
-				itcoord != stacked_actions.mapping.end(); itcoord++)
+			for (Spatial::FMTlayer<std::string>::const_iterator itcoord = stacked_actions.begin();
+				itcoord != stacked_actions.end(); itcoord++)
 			{
-				if (ages.mapping.find(itcoord->first) != ages.mapping.end())
+				if (ages.find(itcoord->first) != ages.end())
 				{
 					if (stats.find(itcoord->second) == stats.end())
 					{
 						stats[itcoord->second] = std::vector<double>(2, 0);
 					}
-					stats[itcoord->second][0] += ages.mapping.at(itcoord->first);
+					stats[itcoord->second][0] += ages.at(itcoord->first);
 					++stats[itcoord->second][1];
 
 					if (attributes.find(itcoord->second) == attributes.end())
@@ -191,7 +191,7 @@ namespace Parser{
 					int tid = 0;
 					for (const Spatial::FMTlayer<std::string>& nfor : newforests)
 						{
-						const std::string value = nfor.mapping.at(itcoord->first);
+						const std::string value = nfor.at(itcoord->first);
 						if (attributes.at(itcoord->second).at(tid).find(value) == attributes.at(itcoord->second).at(tid).end())
 							{
 							attributes[itcoord->second][tid][value] = 0;
@@ -804,8 +804,8 @@ namespace Parser{
 							for (int iX = 0; iX < nXValid; iX++)
 							{
 								Spatial::FMTcoordinate coordinate(x, y);
-								typename std::map<Spatial::FMTcoordinate, T>::const_iterator it = layer.mapping.find(coordinate);
-								if (it != layer.mapping.end())
+								typename Spatial::FMTlayer<T>::const_iterator it = layer.find(coordinate);
+								if (it != layer.end())
 								{
 									if (!mapping.empty())
 									{

@@ -43,6 +43,30 @@ int main()
 			}
 		Logging::FMTlogger() << "\n";
 		}
+	Core::FMToutput spatialoutput;
+	for (const Core::FMToutput& output : simulationmodel.getoutputs())
+	{
+		if (output.getname() == "OSUPREC")
+		{
+			spatialoutput = output;
+		}
+	}
+	const std::vector<double>solution(1, 1.0);
+	//Logging::FMTlogger() << "test " << simulationmodel.getoutput(spatialoutput,1, Graph::FMToutputlevel::totalonly).at("Total")<<"\n";
+	const Spatial::FMTspatialschedule spatialsolution = simulationmodel.getspschedule();
+	for (Spatial::FMTlayer<Graph::FMTlinegraph>::const_iterator rasterit = spatialsolution.begin();
+		rasterit != spatialsolution.end(); rasterit++)
+	{
+		for (int period = 0; period < 10; ++period)
+		{
+			const double rastercellvalue = rasterit->second.getoutput(simulationmodel, spatialoutput,period, &solution[0]).at("Total");
+			const Spatial::FMTcoordinate& coordinate = rasterit->first;
+			Logging::FMTlogger()<< "period: "<<period<< " X: " <<coordinate.getx()<<" Y: "<<coordinate.gety()<<" value: "<<rastercellvalue<<"\n";
+
+		}
+
+	}
+
 	return 0;
 }
         

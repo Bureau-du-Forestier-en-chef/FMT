@@ -950,10 +950,13 @@ class FMTgraph : public Core::FMTobject
 		{
 			try {
 				const Core::FMTdevelopment& development = data[vertex_descriptor].get();
+				//*_logger << "test dev " << std::string(development) << "\n";
 				if (node.source.use(development, model.yields))
 				{
+					//*_logger << "useit!" << development.isanyworthtestingoperability(selected, model.actions).empty()<< "\n";
 					if (node.source.useinedges())
 					{
+						//*_logger << "useit1" << "\n";
 						if ((development.getperiod() == 0 || periodstart(vertex_descriptor)) && ((selected.empty() && (node.source.isnextperiod() || !node.source.emptylock())) ||
 							(((buildtype == FMTgraphbuild::schedulebuild) && development.anyoperable(selected, model.yields)) ||
 								isanyoperables(vertex_descriptor, development.isanyworthtestingoperability(selected, model.actions)))))
@@ -965,6 +968,7 @@ class FMTgraph : public Core::FMTobject
 					}
 					else if (isanyoperables(vertex_descriptor, development.isanyworthtestingoperability(selected, model.actions))) //out edges
 					{
+						//*_logger << "useit2" << "\n";
 						//(anyoperables(vertex_descriptor, development.anyworthtestingoperability(selected, *model.actions.begin())))
 						/*isanyoperables(vertex_descriptor, development.isanyworthtestingoperability(selected, model.actions))*/
 						return true;
@@ -1035,6 +1039,7 @@ class FMTgraph : public Core::FMTobject
 				std::vector<int>targetedperiods;
 				const int maxperiod = static_cast<int>(developments.size() - 2);
 				const int node_period = output_node.settograph(targetedperiods, period, maxperiod);
+				//*_logger << "node of " << node_period<<"dev size "<< developments.size() << "\n";
 				if (node_period < 0)
 				{
 					return locations;
@@ -1043,8 +1048,10 @@ class FMTgraph : public Core::FMTobject
 				{
 					//constexpr size_t minimalcachedrop = 25;//10 %
 					std::vector<const Core::FMTaction*> selected;
+					//*_logger << "node " << std::string(output_node) << " period " << node_period<<" "<< targetedperiods.size() << "\n";
 					if (isvalidouputnode(model, output_node, selected, node_period))
 					{
+						//*_logger << "valid node! " << "\n";
 						if (nodescache.empty())
 							{
 							nodescache.reserve(developments.size());
@@ -1056,6 +1063,7 @@ class FMTgraph : public Core::FMTobject
 							std::vector<FMTvertex_descriptor> const* descriptors = nullptr;
 							std::vector<FMTvertex_descriptor>staticdescriptors;
 							bool exactverticies = false;
+							
 							if (gotstaticnode)
 							{
 								staticdescriptors = getnodebystaticmask(model, output_node, localnodeperiod);
@@ -1068,12 +1076,14 @@ class FMTgraph : public Core::FMTobject
 								}
 								descriptors = &nodescache.at(localnodeperiod).getverticies(output_node, model.actions, model.themes, exactverticies);
 							}
+							//*_logger << "test? " << gotstaticnode << " " << exactverticies << "\n";
 							if (exactverticies)
 							{
 								locations.reserve(locations.size() + descriptors->size());
 								locations.insert(locations.end(), descriptors->begin(), descriptors->end());
 							}else {
 								std::vector<FMTvertex_descriptor>periodlocations;
+								//*_logger << "testing on "<< descriptors->size()<<" "<< selected .size()<< "\n";
 								for (const FMTvertex_descriptor& potential : *descriptors)
 								{
 									if (isvalidgraphnode(model, potential, output_node, selected))
@@ -1082,6 +1092,7 @@ class FMTgraph : public Core::FMTobject
 										periodlocations.push_back(potential);
 									}
 								}
+								//*_logger << "done on " << periodlocations.size() << "\n";
 							std::sort(periodlocations.begin(), periodlocations.end());
 							if (!gotstaticnode)
 								{
@@ -1682,8 +1693,8 @@ class FMTgraph : public Core::FMTobject
 			std::map<std::string, double>emptyreturn;
 			try{
 			const std::vector<FMTvertex_descriptor>verticies = getnode(model, node, period);
-			/**_logger << "size of " << verticies.size() << "\n";
-			for (FMTvertex_descriptor ver : verticies)
+			//*_logger << "size of verticies " << verticies.size() << "\n";
+			/*for (FMTvertex_descriptor ver : verticies)
 				{
 				*_logger << "verticies found " << std::string(data[ver].get()) << "\n";
 				}*/
