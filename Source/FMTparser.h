@@ -158,6 +158,7 @@ class FMTEXPORT FMTparser: public Core::FMTobject
 				poDstDS->SetProjection(projection.c_str());
 				poDstDS->SetGeoTransform(&geotrans[0]);
 				poDstDS->FlushCache();
+				CSLDestroy( papszOptions );
 				}catch (...)
 					{
 					_exhandler->raisefromcatch("", "FMTparser::createdataset", __LINE__, __FILE__);
@@ -204,7 +205,8 @@ class FMTEXPORT FMTparser: public Core::FMTobject
 			Will fill up all the fields id of the themes,age,area,lock of a given (layer).
 			*/
 			void getWSfields(OGRLayer* layer, std::map<int,int>& themes,int& age,int& area,int& lock, std::string agefield="", std::string areafield="", std::string lockfield="") const;
-		#endif
+			GDALDataset* createvectormemoryds() const;
+			#endif
 		// DocString: FMTparser::getbaseoperators
 		/**
 		Gives a vector of operators normaly found in the different sections.
