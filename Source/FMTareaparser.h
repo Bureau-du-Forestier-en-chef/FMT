@@ -132,8 +132,14 @@ class FMTEXPORT FMTareaparser : public FMTparser
 			std::vector<Heuristics::FMToperatingareacluster> getclustersfrompolygons(const std::vector<OGRPolygon*>&polygons,
 																		const std::vector<Heuristics::FMToperatingarea>& operatingareas,
 																		const double& maximaldistance) const;
-
 			#endif
+			// DocString: FMTareaparser::layerFIDtoDataset
+			/**
+			This function first rasterize the layer to a resolution of 20x20 and then translate the results to the desired
+			resolution by resampling the point using MODE. If (fittoforel), the layer must be projected in ESPG32198 and will
+			align with the Quebec FOREL rasters.
+			*/
+			GDALDataset* layerFIDtoDataset(OGRLayer* layer, const int& resolution,const bool& fittoforel) const;
 			// DocString: FMTareaparser::subsetlayer
 			/**
 			Sometime vector files can be realy large with empty value in the age/area fields or themes fields.
@@ -244,7 +250,13 @@ class FMTEXPORT FMTareaparser : public FMTparser
 		std::vector<Core::FMTactualdevelopment>readvectors(const std::vector<Core::FMTtheme>& themes,const std::string& data_vectors,
                                    const std::string& agefield,const std::string& areafield,double agefactor = 1.0,
                                    double areafactor = 1, std::string lockfield = "",
-								   double minimal_area = 0.0) const;
+								   double minimalarea = 0.0) const;
+
+		std::vector<Core::FMTactualdevelopment>vectormaptorasters( const std::string& outdirpath, const std::string& data_vectors,
+																   const int& resolution,const std::vector<Core::FMTtheme>& themes,
+																   const std::string& agefield,const std::string& areafield,double agefactor = 1.0,
+																   double areafactor = 1, std::string lockfield = "",
+																   double minimalarea = 0.0, const bool& fittoforel = true) const;
 		#endif
 		// DocString: FMTareaparser()
 		/**

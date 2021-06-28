@@ -692,6 +692,167 @@ namespace Parser{
 
         return devs;
         }
+
+	std::vector<Core::FMTactualdevelopment>FMTareaparser::vectormaptorasters(  const std::string& outdirpath, const std::string& data_vectors,
+																			   const int& resolution,const std::vector<Core::FMTtheme>& themes,
+																			   const std::string& agefield,const std::string& areafield,double agefactor,
+																			   double areafactor, std::string lockfield,
+																			   double minimalarea, const bool& fittoforel) const
+	{
+		std::vector<Core::FMTactualdevelopment>devs;
+		try {
+			std::map<int, int>themes_fields;
+			int age_field = -1;
+			int lock_field = -1;
+			int area_field = -1;
+			GDALDataset* dataset = openvectorfile(themes_fields, age_field, lock_field, area_field, data_vectors, agefield, areafield, lockfield, themes);
+			OGRLayer*  layer = getlayer(dataset, 0);
+			layer = this->subsetlayer(layer, themes, agefield, areafield);
+			OGRwkbGeometryType lgeomtype = layer->GetGeomType();
+			if (lgeomtype != wkbMultiPolygon)
+			{
+				_exhandler->raise(Exception::FMTexc::FMTinvalidlayer,
+						dataset->GetDescription(),"FMTareaparser::vectormaptorasters", __LINE__, __FILE__, _section);
+			}
+			OGRFeature *feature;
+			OGRSpatialReference* lspref = layer->GetSpatialRef();
+			// Memory layer with feature id
+			GDALDataset* memds = createvectormemoryds();
+			OGRLayer*  memlayer = memds->CreateLayer( "Memlayer", lspref, wkbMultiPolygon, NULL );
+			OGRCoordinateTransformation* coordtransf;
+			OGRSpatialReference tspref(*lspref);
+			tspref.importFromEPSG(32198);
+			bool reproject = false;
+			if (fittoforel && !(lspref->IsSame(&tspref)))
+			{
+				coordtransf = OGRCreateCoordinateTransformation(lspref, &tspref);
+				if (coordtransf == NULL)
+				{
+					//Create a new exception
+					/*_exhandler->raise(Exception::FMTexc::FMTinvalidlayer,
+							dataset->GetDescription(),"FMTareaparser::vectormaptorasters", __LINE__, __FILE__, _section);*/
+				}
+				reproject=true;
+			}
+			const char* Fieldname = "FID";
+			OGRFieldDefn oField( Fieldname, OFTInteger64 );
+			memlayer->CreateField(&oField);
+			OGRFeatureDefn* memlayerdef = layer->GetLayerDefn();
+			while ((feature = layer->GetNextFeature()) != NULL)
+			{
+				const Core::FMTactualdevelopment actualdev = this->getfeaturetodevelopment(feature, themes, themes_fields, age_field,
+					lock_field, area_field, agefactor, areafactor, minimalarea);
+
+				if (!actualdev.getmask().empty())
+				{
+					devs.push_back(actualdev);
+
+					//memlayer part
+					OGRGeometry* geom = OGRGeometryFactory::createGeometry(wkbMultiPolygon);
+					geom = feature->GetGeometryRef();
+					if (reproject)
+					{
+						geom->transform(coordtransf);
+					}
+					OGRFeature* memfeature = OGRFeature::CreateFeature(memlayerdef);
+					memfeature->SetGeometry(geom);
+					memfeature->SetField(Fieldname,feature->GetFID());
+					if( memlayer->CreateFeature(memfeature) != OGRERR_NONE )
+					{
+						//Create a new exception
+													/*_exhandler->raise(Exception::FMTexc::FMTinvalidlayer,
+															dataset->GetDescription(),"FMTareaparser::vectormaptorasters", __LINE__, __FILE__, _section);*/
+					}
+					OGRGeometryFactory::destroyGeometry(geom);
+					OGRFeature::DestroyFeature(memfeature);
+				}
+				OGRFeature::DestroyFeature(feature);
+				++_line;
+			}
+			OGRCoordinateTransformation::DestroyCT(coordtransf);
+			GDALClose(dataset);
+			//GDALDataset* memraster = foreliser(layer,reprojectESPG32198);
+			GDALClose(memds);
+			//now rasterize part
+			//create memory raster and pass it to FMTlayer and create forest with development
+		}catch (...)
+		{
+			_exhandler->printexceptions("at " + data_vectors, "FMTareaparser::readvectors", __LINE__, __FILE__, _section);
+		}
+
+
+		return devs;
+	}
+
+	GDALDataset* FMTareaparser::layerFIDtoDataset(OGRLayer* layer,const int& resolution, const bool& fittoforel) const
+	{
+		const char *pszFormat = "MEM";
+		GDALDriver *poDriver = nullptr;
+		GDALDataset *poDstDS = nullptr;
+		try{
+			int NXSize,NYSize;
+			OGREnvelope layerextent;
+			layer->GetExtent(&layerextent);
+			if (!layerextent.IsInit());
+			{
+				//raise error in creation of memory layer
+			}
+			const double min_x = layerextent.MinX;
+			const double min_y = layerextent.MinY;
+			const double max_x = layerextent.MaxX;
+			const double max_y = layerextent.MaxY;
+	        NXSize = static_cast<int>((max_x - min_x) / 20);
+			NYSize = static_cast<int>((max_y - min_y) / 20);
+			poDriver = GetGDALDriverManager()->GetDriverByName(pszFormat);
+			if( poDriver == nullptr )
+			{
+				_exhandler->raise(Exception::FMTexc::FMTinvaliddriver,
+					std::string(pszFormat),"FMTparser::foreliser", __LINE__, __FILE__, _section);
+			}
+			char **papszOptions = NULL;
+			papszOptions = CSLSetNameValue( papszOptions, "TILED", "YES" );
+			papszOptions = CSLSetNameValue( papszOptions, "BLOCKXSIZE", "128" );
+			papszOptions = CSLSetNameValue( papszOptions, "BLOCKYSIZE", "128" );
+			papszOptions = CSLSetNameValue( papszOptions, "COMPRESS", "LZW" );
+			papszOptions = CSLSetNameValue( papszOptions, "ZLEVEL", "9" );
+			papszOptions = CSLSetNameValue( papszOptions, "BIGTIFF", "YES" );
+			poDstDS  = poDriver->Create("Rasterinmemory", NXSize, NYSize, 1, GDT_Int32, papszOptions);
+			if (poDstDS == nullptr)
+			{
+				_exhandler->raise(Exception::FMTexc::FMTinvaliddataset
+					,poDstDS->GetDescription(),"FMTparser::layerFIDtoFMTlayer", __LINE__, __FILE__, _section);
+			}
+			std::vector<double>geotrans(5,0);
+			if (fittoforel)
+			{
+				const double minxforel = -831600;
+				const double minyforel = 117980;
+				geotrans[0]=min_x+round((minxforel-min_x)/20)*20;
+				geotrans[2]=20;
+				geotrans[3]=min_y+round((minyforel-min_y)/20)*20;
+				geotrans[5]=20;
+			}else{
+				geotrans[0]=min_x;
+				geotrans[2]=20;
+				geotrans[3]=min_y;
+				geotrans[5]=20;
+			}
+			char** spref;
+			layer->GetSpatialRef()->exportToWkt(spref);
+			poDstDS->SetProjection(*spref);
+			poDstDS->SetGeoTransform(&geotrans[0]);
+			poDstDS->FlushCache();
+			CPLFree(spref);
+			//rasterize
+
+			//translate to resolution with mode
+			CSLDestroy( papszOptions );
+		}catch (...)
+		{
+			_exhandler->raisefromcatch(layer->GetDescription(), "FMTareaparser::layerFIDtoFMTlayer", __LINE__, __FILE__, _section);
+		}
+		return poDstDS;
+	}
 	#ifdef FMTWITHOSI
 
 
