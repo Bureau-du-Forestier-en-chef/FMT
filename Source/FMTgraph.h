@@ -1985,7 +1985,7 @@ class FMTgraph : public Core::FMTobject
 						if (sourceperiod == 0 && lastactions.size() <= depth)
 						{
 							lastactions.push_back(nullptr);
-							distances.push_back(targetperiod + data[sourcevertex].get().getage());
+							distances.push_back(targetperiod-1 + data[sourcevertex].get().getage());//targetperiod-1 because distance between age20 at p1 and p2 == 21, not 22
 						}
 					}
 				}
