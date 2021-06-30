@@ -28,18 +28,18 @@ namespace Graph
 
 	{
 		size_t location = 0;
-		bool lastnotedone = true;
+		//bool lastnotedone = true;
 		for (const FMTbaseedgeproperties* edgeprop : edges)
 			{
 			if (edgeprop!=nullptr)
 				{
 				sourceactions.push_back(actionsindex.at(edgeprop->getactionID()));
-			}else if(lastnotedone)
+			}/*else if(lastnotedone)
 				{
 				sourceactions.push_back(actionsindex.at(-2));
 				periodgaps[location] = source_vertex->get().getage();
 				lastnotedone = false;
-			}else {
+			}*/else {
 				sourceactions.push_back(actionsindex.at(-2));
 				//periodgaps[location] = source_vertex->get().age;
 				}

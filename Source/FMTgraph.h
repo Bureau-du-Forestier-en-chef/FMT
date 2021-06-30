@@ -1976,12 +1976,17 @@ class FMTgraph : public Core::FMTobject
 						const FMTbaseedgeproperties& inedgeproperties = data[*inedge_iterator];
 						const FMTvertex_descriptor& sourcevertex = boost::source(*inedge_iterator, data);
 						activevertex.push(sourcevertex);
+						const int sourceperiod = data[sourcevertex].get().getperiod();
 						if (inedgeproperties.getactionID()>=0)
 							{
 							lastactions.push_back(&inedgeproperties);
-							distances.push_back(targetperiod - data[sourcevertex].get().getperiod());
+							distances.push_back(targetperiod - sourceperiod);
 							}
-						
+						if (sourceperiod == 0 && lastactions.size() <= depth)
+						{
+							lastactions.push_back(nullptr);
+							distances.push_back(targetperiod + data[sourcevertex].get().getage());
+						}
 					}
 				}
 			}
@@ -2008,15 +2013,20 @@ class FMTgraph : public Core::FMTobject
 					std::vector<int>distances;
 					const FMTvertex_descriptor& sourcevertex = boost::source(*inedge_iterator, data);
 					const FMTbasevertexproperties& sourceproperties = data[sourcevertex];
-					lastactions.push_back(&data[*inedge_iterator]);
-					distances.push_back(targetperiod-sourceproperties.get().getperiod());
+					const int sourceperiod = sourceproperties.get().getperiod();
+					if (sourceperiod>0)
+					{
+						lastactions.push_back(&data[*inedge_iterator]);
+						distances.push_back(targetperiod-sourceperiod);
+					}else{
+						break;//if nothing happen in period one, it's not a predictor, because there is no change in yields and other things because P0 = begining of P1
+					}
 					filluplastactions(targetperiod, sourcevertex, lastactions, distances, depth);
 					while (lastactions.size()<= depth)
 						{
-						lastactions.push_back(nullptr);
-						distances.push_back(-1);
+							lastactions.push_back(nullptr);
+							distances.push_back(-1);
 						}
-
 					predictors.emplace_back(actionsindex, yieldnames, yields, sourceproperties, targetproperties, lastactions, distances);
 				}
 			predictors.shrink_to_fit();
