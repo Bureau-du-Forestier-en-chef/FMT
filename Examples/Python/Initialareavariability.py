@@ -15,7 +15,6 @@ if __name__ == "__main__":
             modelparser = Parser.FMTmodelparser()
             models = modelparser.readproject(primarylocation,["LP"])
             optimizationmodel=Models.FMTlpmodel(models[0],Models.FMTsolverinterface.CLP)
-            areaparser = Parser.FMTareaparser()
             for period in range(0,10):
                     print(optimizationmodel.buildperiod())
             allconstraints = optimizationmodel.getconstraints()
