@@ -367,7 +367,8 @@ std::string FMTparser::setspec(Core::FMTsection section, Core::FMTkwor key,const
 			
 			if (std::regex_search(line, kmatch, FMTparser::rxayld))
 			{
-				const std::string yld = std::string(kmatch[4]) + std::string(kmatch[20]);
+				std::string yld = std::string(kmatch[4]) + std::string(kmatch[20]);
+				boost::trim(yld);
 				bool pushaagebound = false;
 				if (yld=="_AGE")
 					{
