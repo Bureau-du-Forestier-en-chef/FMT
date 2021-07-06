@@ -83,7 +83,7 @@ enum FMToutputlevel
 
 
 template <class tvertexproperties,class tedgeproperties>
-class FMTgraph : public Core::FMTobject
+class FMTEXPORT FMTgraph : public Core::FMTobject
     {
 	friend class boost::serialization::access;
 	template<class Archive>

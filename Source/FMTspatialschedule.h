@@ -392,6 +392,12 @@ class FMTEXPORT FMTspatialschedule : public FMTlayer<Graph::FMTlinegraph>
 		std::map<std::string, std::vector<double>> getoutput(const Models::FMTmodel & model, const Core::FMToutput& output,
 			const int& periodstart, const int& periodstop,
 			Graph::FMToutputlevel level = Graph::FMToutputlevel::totalonly) const;
+		// DocString: FMTspatialschedule::getoutputbycoordinate
+		/**
+		Return the output value by coordinate for a given output/model/period.
+		*/
+		std::vector<std::pair<FMTcoordinate, double>>getoutputbycoordinate(const Models::FMTmodel & model,
+			const Core::FMToutput& output, const int& period) const;
 	protected:
 		// DocString: FMTspatialschedule::events
 		/**

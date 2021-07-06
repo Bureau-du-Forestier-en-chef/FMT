@@ -21,7 +21,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 namespace Spatial
     {
-    class FMTcoordinate
+    class FMTEXPORT FMTcoordinate
         {
 		friend class boost::serialization::access;
 		template<class Archive>
