@@ -30,7 +30,7 @@ namespace Spatial
 	It is mostly generated using the FMTareaparser.
 	*/
     template <typename T>
-    class FMTEXPORT FMTlayer : public Core::FMTobject
+    class FMTlayer : public Core::FMTobject
         {
 		friend class boost::serialization::access;
 		// DocString: FMTlifespans::serialize
@@ -273,24 +273,14 @@ namespace Spatial
                                          this->SRS_WKT,
                                          this->cellsize);
                 }
-			// DocString: FMTlayer::operator+=
+			// DocString: FMTlayer::general
 			/**
 			Template specification for adding strings from a layer to a string layer using std::string operator+=.
 			*/
-			FMTlayer<std::string>& operator += (const FMTlayer<std::string>& rhs)
-				{
-				std::map<FMTcoordinate, std::string>new_mapping;
-				for (std::map<FMTcoordinate, std::string>::const_iterator mit = mapping.begin();mit!= mapping.end();mit++)
-					{
-					std::map<FMTcoordinate, std::string>::const_iterator rhsit = rhs.mapping.find(mit->first);
-					if (rhsit != rhs.mapping.end())
-						{
-						new_mapping[mit->first]=(mit->second+ "-" + rhsit->second);
-						}
-					}
-				mapping = new_mapping;
+			FMTlayer<T>& operator+= (const FMTlayer<T>& rhs)
+			{
 				return *this;
-				}
+			}
 			// DocString: FMTlayer::GetXSize
 			/**
 			Returns the maximal x value of the FMTlayer.
@@ -388,6 +378,21 @@ namespace Spatial
                     }
                 }
         };
+
+		template<> inline FMTlayer<std::string>& FMTlayer<std::string>::operator += (const FMTlayer<std::string>& rhs)
+		{
+			std::map<FMTcoordinate, std::string>new_mapping;
+			for (std::map<FMTcoordinate, std::string>::const_iterator mit = mapping.begin(); mit != mapping.end(); mit++)
+			{
+				std::map<FMTcoordinate, std::string>::const_iterator rhsit = rhs.mapping.find(mit->first);
+				if (rhsit != rhs.mapping.end())
+				{
+					new_mapping[mit->first] = (mit->second + "-" + rhsit->second);
+				}
+			}
+			mapping = new_mapping;
+			return *this;
+		}
 
     }
 

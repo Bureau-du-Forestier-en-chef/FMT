@@ -25,7 +25,7 @@ simulate the preocess of growth and havest of a single forest stand where each a
 one new stade. This class is heavely used in the FMTsesmodel and FMTsamodel and is normaly used with
 spatialy explicit models.
 */
-class FMTlinegraph : public FMTgraph<FMTbasevertexproperties,FMTbaseedgeproperties>
+class FMTEXPORT FMTlinegraph : public FMTgraph<FMTbasevertexproperties,FMTbaseedgeproperties>
 {
 	friend class boost::serialization::access;
 	template<class Archive>

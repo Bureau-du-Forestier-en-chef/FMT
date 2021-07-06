@@ -181,6 +181,8 @@ endif()
 
 
 #First try for decent installation of boost
+set(Boost_USE_STATIC_LIBS ON) #Make sure to use the static boost
+set(Boost_USE_STATIC_RUNTIME OFF)
 if (DEFINED PYTHONNAMING)
         if("${PYTHONMAJOR}" STREQUAL "2")
             set(BPY "python")
