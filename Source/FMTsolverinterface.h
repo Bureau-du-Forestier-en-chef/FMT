@@ -9,18 +9,22 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #define FMTsolverinterface_H
 
 #ifdef FMTWITHOSI
-
-
+/// Namespace containing all enumerator and classes used to construct or manipulate the different type of model in FMT.
 namespace Models
 { 
+    
+    //Docstring: FMTsolverinterface
+    /**
+    *Enumerator used to specify the solver to use when solving the FMTlpmodel
+    */
 	enum class FMTsolverinterface
 	{
-		CLP = 1,
+		CLP = 1,/**< Coin-or linear programming solver : https://github.com/coin-or/Clp */
 		//#ifdef  FMTWITHMOSEK
-			MOSEK = 2,
+			MOSEK = 2,/**< MOSEK optimization software : https://www.mosek.com */
 		//#endif
-		CPLEX = 3,
-		GUROBI = 4,
+		CPLEX = 3,/**< IBM CPLEX Optimizer : https://www.ibm.com/analytics/cplex-optimizer */
+		GUROBI = 4,/**< Gurobi optimizer : https://www.gurobi.com/ */
 	};
 
 }
