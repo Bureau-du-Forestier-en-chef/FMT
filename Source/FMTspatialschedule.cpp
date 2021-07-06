@@ -1045,6 +1045,28 @@ namespace Spatial
 		return values;
 	}
 
+	std::vector<std::pair<FMTcoordinate, double>>FMTspatialschedule::getoutputbycoordinate(const Models::FMTmodel & model, const Core::FMToutput& output, const int& period) const
+	{
+		std::vector<std::pair<FMTcoordinate, double>>allvalues;
+		try {
+			allvalues.reserve(mapping.size());
+			std::vector<double>solution(1, 1.0);
+			for (std::map<FMTcoordinate, Graph::FMTlinegraph>::const_iterator graphit = this->mapping.begin(); graphit != this->mapping.end(); ++graphit)
+			{
+				const double rastercellvalue = graphit->second.getoutput(model,output, period, &solution[0]).at("Total");
+				if ((std::abs(rastercellvalue)-FMT_DBL_TOLERANCE)>0)
+					{
+					allvalues.push_back(std::pair<FMTcoordinate, double>(graphit->first, rastercellvalue));
+					}
+			}
+		}
+		catch (...)
+		{
+			_exhandler->raisefromcatch("", "FMTspatialschedule::getoutputbycoordinate", __LINE__, __FILE__);
+		}
+		return allvalues;
+	}
+
 
 	std::vector<double> FMTspatialschedule::getgraphsoutputs(const Models::FMTmodel & model, const Core::FMTconstraint & constraint,
 															const FMTspatialschedule*	friendlysolution) const
@@ -1849,7 +1871,7 @@ std::map<std::string, double> FMTspatialschedule::greedyreferencebuild(const Cor
 				}
 				bool scheduleonly = false;
 				const Core::FMTschedule factoredschedule = schedule.getnewschedule(schedulefactor);
-				const std::map<std::string, double>results = solutioncopy.referencebuild(factoredschedule,model, scheduleoperabilities, false, true, seed);
+				const std::map<std::string, double>results = solutioncopy.referencebuild(factoredschedule,model, scheduleoperabilities,false, true, seed);
 				double newprimalinf = 0;
 				double newobjective = 0;
 				solutioncopy.getsolutionstatus(newobjective, newprimalinf, model,nullptr,true,false,false);
