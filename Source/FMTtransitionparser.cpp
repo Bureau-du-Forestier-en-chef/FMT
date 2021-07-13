@@ -7,6 +7,9 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 #include "FMTtransitionparser.h"
 #include "FMToperator.h"
+#include <boost/archive/xml_iarchive.hpp>
+#include <boost/archive/xml_oarchive.hpp>
+#include <boost/serialization/vector.hpp>
 
 
 namespace Parser{
@@ -363,5 +366,44 @@ void FMTtransitionparser::write(const std::vector<Core::FMTtransition>& transiti
 		_exhandler->raisefromcatch("at "+location,"FMTtransitionparser::write", __LINE__, __FILE__, _section);
 		}
     }
+
+void FMTtransitionparser::writeGCBM(const std::vector<Core::FMTGCBMtransition>& transitions, const std::string& location) const
+	{
+	try{
+		std::ofstream transitionstream;
+		transitionstream.open(location);
+		if (tryopening(transitionstream, location))
+		{
+			boost::archive::xml_oarchive transitionsarchive(transitionstream);
+			transitionsarchive << BOOST_SERIALIZATION_NVP(transitions);
+			transitionstream.close();
+		}
+	}
+	catch (...)
+	{
+		_exhandler->raisefromcatch("at " + location, "FMTtransitionparser::writeGCBM", __LINE__, __FILE__, _section);
+	}
+
+	}
+
+std::vector<Core::FMTGCBMtransition>FMTtransitionparser::readGCBM(const std::string& location) const
+	{
+	std::vector<Core::FMTGCBMtransition>transitions;
+	try {
+		std::ifstream transitionstream;
+		transitionstream.open(location);
+		if (tryopening(transitionstream, location))
+		{
+			boost::archive::xml_iarchive transitionsarchive(transitionstream);
+			transitionsarchive >> BOOST_SERIALIZATION_NVP(transitions);
+			transitionstream.close();
+		}
+	}
+	catch (...)
+	{
+		_exhandler->raisefromcatch("at " + location, "FMTtransitionparser::readGCBM", __LINE__, __FILE__, _section);
+	}
+	return transitions;
+	}
 
 }

@@ -19,6 +19,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "string"
 #include <vector>
 #include "FMTmask.h"
+#include "FMTGCBMtransition.h"
 
 namespace Parser
 {
@@ -92,6 +93,16 @@ class FMTEXPORT FMTtransitionparser : public FMTparser
 		Write a vector of FMTtransitions into a file location.
 		*/
         void write(const std::vector<Core::FMTtransition>& transitions,const std::string& location) const;
+		// DocString: FMTtransitionparser::writeGCBM
+		/**
+		Write a vector of FMTGCBMtransitions into an xml file at (location).
+		*/
+		void writeGCBM(const std::vector<Core::FMTGCBMtransition>& transitions, const std::string& location) const;
+		// DocString: FMTtransitionparser::readGCBM
+		/**
+		From an xml file (location) readGCBM transitions
+		*/
+		std::vector<Core::FMTGCBMtransition>readGCBM(const std::string& location) const;
     };
 }
 #endif // FMTtransitionparser_H_INCLUDED
