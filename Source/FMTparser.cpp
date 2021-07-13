@@ -295,7 +295,7 @@ GDALDataset* FMTparser::createvectormemoryds() const
 			if( dataset == NULL )
 			{
 			    _exhandler->raise(Exception::FMTexc::FMTinvaliddataset,
-						"Memoryds","FMTparser::getemptymemoryds", __LINE__, __FILE__, _section);
+						"Cannot create in memory dataset","FMTparser::getemptymemoryds", __LINE__, __FILE__, _section);
 			}
 		}
 		catch (...)
