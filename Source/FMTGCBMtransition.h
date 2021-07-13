@@ -10,12 +10,28 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 #include <map>
 #include <string>
+#include <boost/serialization/string.hpp>
+#include <boost/serialization/serialization.hpp>
+#include <boost/serialization/export.hpp>
+#include "FMTobject.h"
 
 
 namespace Core
 {
-	class FMTGCBMtransition
+	class FMTEXPORT FMTGCBMtransition
 	{
+		// DocString: FMTGCBMtransition::serialize
+	/**
+	serialize function is for serialization, used to do multiprocessing across multiple cpus (pickle in Pyhton)
+	*/
+	friend class boost::serialization::access;
+	template<class Archive>
+	void serialize(Archive& ar, const unsigned int version)
+		{
+		ar & BOOST_SERIALIZATION_NVP(ageafter);
+		ar & BOOST_SERIALIZATION_NVP(themes);
+		ar & BOOST_SERIALIZATION_NVP(name);
+		}
 	public:
 		int ageafter;
 		std::map<std::string, std::string>themes;
