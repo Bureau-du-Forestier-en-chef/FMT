@@ -65,6 +65,7 @@ void exportParser()
 					//.def("writedisturbances",&Parser::FMTareaparser::writedisturbances,writedisturbances_overloads(bp::args("location", "spatialschedule", "for_layer", "out_layer", "themes", "mapping"), "@DocString(FMTareaparser::writedisturbances)"))
 					.def("writedisturbances", &Parser::FMTareaparser::writedisturbances)
 					.def("writecarbonpredictors", &Parser::FMTareaparser::writecarbonpredictors)
+					.def("vectormaptorasters", &Parser::FMTareaparser::vectormaptorasters)
 					#ifdef FMTWITHOSI
 						.def("getschemeneighbors",&Parser::FMTareaparser::getschemeneighbors, getschemeneighbors_overloads(bp::args("operatingareaparameters", "themes", "data_vectors", "agefield", "areafield", "agefactor","areafractor","lockfield","minimal_area","buffersize"), "@DocString(FMTareaparser::getschemeneighbors)"))
                         .def("getclusters",&Parser::FMTareaparser::getclusters,getclusters_overloads(bp::args("operatingareaparameters", "themes", "data_vectors", "agefield", "areafield","maximaldistance","agefactor","areafractor","lockfield","minimal_area","buffersize"),"@DocString(FMTareaparser::getclusters)"))

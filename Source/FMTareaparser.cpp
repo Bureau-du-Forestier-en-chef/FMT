@@ -9,6 +9,10 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <boost/algorithm/string/join.hpp>
 #include <boost/lexical_cast.hpp>
 #include "FMToperatingareaclusterbinary.h"
+#ifdef FMTWITHGDAL
+	#include "gdal_alg.h"
+	#include "gdal_utils.h"
+#endif
 
 namespace Parser{
 
@@ -701,6 +705,7 @@ namespace Parser{
 	{
 		std::vector<Core::FMTactualdevelopment>devs;
 		try {
+			std::cout<<"ok"<<"\n";
 			std::map<int, int>themes_fields;
 			int age_field = -1;
 			int lock_field = -1;
@@ -709,16 +714,19 @@ namespace Parser{
 			OGRLayer*  layer = getlayer(dataset, 0);
 			layer = this->subsetlayer(layer, themes, agefield, areafield);
 			OGRwkbGeometryType lgeomtype = layer->GetGeomType();
-			if (lgeomtype != wkbMultiPolygon)
+			if (lgeomtype != wkbMultiPolygon && lgeomtype != wkbPolygon )
 			{
 				_exhandler->raise(Exception::FMTexc::FMTinvalidlayer,
-						dataset->GetDescription(),"FMTareaparser::vectormaptorasters", __LINE__, __FILE__, _section);
+						"Geometry type from layer is not valid, must be wkbMultiPolygon or wkbPolygon : "+std::to_string(lgeomtype),"FMTareaparser::vectormaptorasters", __LINE__, __FILE__, _section);
 			}
-			OGRFeature *feature;
 			OGRSpatialReference* lspref = layer->GetSpatialRef();
-			// Memory layer with feature id
 			GDALDataset* memds = createvectormemoryds();
-			OGRLayer*  memlayer = memds->CreateLayer( "Memlayer", lspref, wkbMultiPolygon, NULL );
+			OGRLayer*  memlayer = memds->CreateLayer( "Memlayer", lspref, lgeomtype, NULL );
+			if (memlayer == NULL)
+			{
+				 _exhandler->raise(Exception::FMTexc::FMTinvalidlayer,
+										"Error while creating memory layer","FMTparser::vectormaptorasters", __LINE__, __FILE__, _section);
+			}
 			OGRCoordinateTransformation* coordtransf;
 			OGRSpatialReference tspref(*lspref);
 			tspref.importFromEPSG(32198);
@@ -734,10 +742,17 @@ namespace Parser{
 				}
 				reproject=true;
 			}
-			const char* Fieldname = "FID";
+			const char* Fieldname = "devid";
 			OGRFieldDefn oField( Fieldname, OFTInteger64 );
-			memlayer->CreateField(&oField);
+			if (memlayer->CreateField(&oField) != OGRERR_NONE)
+			{
+				//Create a new exception
+									/*_exhandler->raise(Exception::FMTexc::FMTinvalidlayer,
+											dataset->GetDescription(),"FMTareaparser::vectormaptorasters", __LINE__, __FILE__, _section);*/
+			}
 			OGRFeatureDefn* memlayerdef = layer->GetLayerDefn();
+			int devid = 0;
+			OGRFeature* feature;
 			while ((feature = layer->GetNextFeature()) != NULL)
 			{
 				const Core::FMTactualdevelopment actualdev = this->getfeaturetodevelopment(feature, themes, themes_fields, age_field,
@@ -746,45 +761,54 @@ namespace Parser{
 				if (!actualdev.getmask().empty())
 				{
 					devs.push_back(actualdev);
-
 					//memlayer part
-					OGRGeometry* geom = OGRGeometryFactory::createGeometry(wkbMultiPolygon);
-					geom = feature->GetGeometryRef();
+
+					OGRGeometry* geom;
+					geom = feature->GetGeometryRef()->clone();
+					if(!geom->IsValid())
+					{
+						std::cout<<"Invalid geom"<<"\n";;
+					}
 					if (reproject)
 					{
 						geom->transform(coordtransf);
 					}
-					OGRFeature* memfeature = OGRFeature::CreateFeature(memlayerdef);
+					OGRFeature* memfeature;
+					memfeature = OGRFeature::CreateFeature(memlayerdef);
 					memfeature->SetGeometry(geom);
-					memfeature->SetField(Fieldname,feature->GetFID());
+					memfeature->SetField(0,devid);//There is only one field devid
 					if( memlayer->CreateFeature(memfeature) != OGRERR_NONE )
 					{
+						std::cout<<"Memfeature fail"<<"\n";
 						//Create a new exception
-													/*_exhandler->raise(Exception::FMTexc::FMTinvalidlayer,
-															dataset->GetDescription(),"FMTareaparser::vectormaptorasters", __LINE__, __FILE__, _section);*/
+													//exhandler->raise(Exception::FMTexc::FMTinvalidlayer,
+													//		dataset->GetDescription(),"FMTareaparser::vectormaptorasters", __LINE__, __FILE__, _section);
 					}
-					OGRGeometryFactory::destroyGeometry(geom);
 					OGRFeature::DestroyFeature(memfeature);
+					OGRGeometryFactory::destroyGeometry(geom);
+
+					++devid;
 				}
 				OGRFeature::DestroyFeature(feature);
 				++_line;
 			}
-			OGRCoordinateTransformation::DestroyCT(coordtransf);
 			GDALClose(dataset);
-			//GDALDataset* memraster = foreliser(layer,reprojectESPG32198);
+			if (reproject)
+			{
+				OGRCoordinateTransformation::DestroyCT(coordtransf);
+			}
+			std::cout<<"devIDtoRaster"<<std::endl;
+			GDALDataset* devidraster = devIDtoRaster(memlayer,resolution,fittoforel);
 			GDALClose(memds);
-			//now rasterize part
 			//create memory raster and pass it to FMTlayer and create forest with development
 		}catch (...)
 		{
-			_exhandler->printexceptions("at " + data_vectors, "FMTareaparser::readvectors", __LINE__, __FILE__, _section);
+			_exhandler->printexceptions("at " + data_vectors, "FMTareaparser::vectormaptorasters", __LINE__, __FILE__, _section);
 		}
-
-
 		return devs;
 	}
 
-	GDALDataset* FMTareaparser::layerFIDtoDataset(OGRLayer* layer,const int& resolution, const bool& fittoforel) const
+	GDALDataset* FMTareaparser::devIDtoRaster(OGRLayer* layer,const int& resolution, const bool& fittoforel) const
 	{
 		const char *pszFormat = "MEM";
 		GDALDriver *poDriver = nullptr;
@@ -792,9 +816,15 @@ namespace Parser{
 		try{
 			int NXSize,NYSize;
 			OGREnvelope layerextent;
+			std::cout<<"extent"<<std::endl;
 			layer->GetExtent(&layerextent);
 			if (!layerextent.IsInit());
 			{
+				std::cout<<"Fail extent"<<std::endl;
+				std::cout<<layerextent.MinX<<std::endl;
+				std::cout<<layerextent.MinY<<std::endl;
+				std::cout<<layerextent.MaxX<<std::endl;
+				std::cout<<layerextent.MaxY<<std::endl;
 				//raise error in creation of memory layer
 			}
 			const double min_x = layerextent.MinX;
@@ -803,11 +833,12 @@ namespace Parser{
 			const double max_y = layerextent.MaxY;
 	        NXSize = static_cast<int>((max_x - min_x) / 20);
 			NYSize = static_cast<int>((max_y - min_y) / 20);
+			std::cout<<"Driver"<<std::endl;
 			poDriver = GetGDALDriverManager()->GetDriverByName(pszFormat);
 			if( poDriver == nullptr )
 			{
 				_exhandler->raise(Exception::FMTexc::FMTinvaliddriver,
-					std::string(pszFormat),"FMTparser::foreliser", __LINE__, __FILE__, _section);
+					std::string(pszFormat),"FMTparser::devIDtoRaster", __LINE__, __FILE__, _section);
 			}
 			char **papszOptions = NULL;
 			papszOptions = CSLSetNameValue( papszOptions, "TILED", "YES" );
@@ -816,11 +847,12 @@ namespace Parser{
 			papszOptions = CSLSetNameValue( papszOptions, "COMPRESS", "LZW" );
 			papszOptions = CSLSetNameValue( papszOptions, "ZLEVEL", "9" );
 			papszOptions = CSLSetNameValue( papszOptions, "BIGTIFF", "YES" );
-			poDstDS  = poDriver->Create("Rasterinmemory", NXSize, NYSize, 1, GDT_Int32, papszOptions);
+			poDstDS  = poDriver->Create("Rasterinmemory", NXSize, NYSize, 1, GDT_Int32,NULL);// papszOptions);
+			std::cout<<"Create"<<std::endl;
 			if (poDstDS == nullptr)
 			{
 				_exhandler->raise(Exception::FMTexc::FMTinvaliddataset
-					,poDstDS->GetDescription(),"FMTparser::layerFIDtoFMTlayer", __LINE__, __FILE__, _section);
+					,poDstDS->GetDescription(),"FMTparser::devIDtoRaster", __LINE__, __FILE__, _section);
 			}
 			std::vector<double>geotrans(5,0);
 			if (fittoforel)
@@ -837,19 +869,43 @@ namespace Parser{
 				geotrans[3]=min_y;
 				geotrans[5]=20;
 			}
-			char** spref;
-			layer->GetSpatialRef()->exportToWkt(spref);
-			poDstDS->SetProjection(*spref);
+			char* spref;
+			if (layer->GetSpatialRef()->exportToWkt(&spref)!=OGRERR_NONE)
+			{
+				std::cout<<"failed export to wkt "<<std::endl;
+			}
+			poDstDS->SetProjection(spref);
 			poDstDS->SetGeoTransform(&geotrans[0]);
 			poDstDS->FlushCache();
 			CPLFree(spref);
-			//rasterize
-
-			//translate to resolution with mode
 			CSLDestroy( papszOptions );
+			/*Rasterizepart*/
+			std::cout<<"Rasterize part"<<std::endl;
+			papszOptions = CSLSetNameValue( papszOptions, "ATTRIBUTE", "devid" );
+			int bandlist[1]={1};
+			double burn[1]={-9999};
+			OGRLayerH layers[1] = {OGRLayer::ToHandle(layer)};
+			GDALDatasetH handle = GDALDataset::ToHandle(poDstDS);
+			GDALRasterizeLayers(handle,1,bandlist,1,layers,NULL,NULL,burn,papszOptions,NULL,NULL);
+			CSLDestroy( papszOptions );
+			//poDstDS->FlushCache();
+			/*gdaltranslate*/
+			std::cout<<"translate part"<<std::endl;
+			char ** argv = NULL;
+			//CSLAddString(argv,"-b") ;
+			//CSLAddString(argv,"1") ;
+			GDALTranslateOptions * pOptions = GDALTranslateOptionsNew( argv, NULL );
+			GDALDatasetH nDSH = GDALTranslate("D:\testFMTgdal\test.tif",poDstDS,NULL,NULL);//must be argv instead of FIRST NULL
+			GDALTranslateOptionsFree(pOptions);
+			CSLDestroy( argv );
+			if (nDSH == NULL)
+			{
+				//error
+			}
+			poDstDS = GDALDataset::FromHandle(nDSH);
 		}catch (...)
 		{
-			_exhandler->raisefromcatch(layer->GetDescription(), "FMTareaparser::layerFIDtoFMTlayer", __LINE__, __FILE__, _section);
+			_exhandler->raisefromcatch(layer->GetDescription(), "FMTareaparser::devIDtoRaster", __LINE__, __FILE__, _section);
 		}
 		return poDstDS;
 	}

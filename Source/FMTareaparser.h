@@ -139,7 +139,7 @@ class FMTEXPORT FMTareaparser : public FMTparser
 			resolution by resampling the point using MODE. If (fittoforel), the layer must be projected in ESPG32198 and will
 			align with the Quebec FOREL rasters.
 			*/
-			GDALDataset* layerFIDtoDataset(OGRLayer* layer, const int& resolution,const bool& fittoforel) const;
+			GDALDataset* devIDtoRaster(OGRLayer* layer, const int& resolution,const bool& fittoforel) const;
 			// DocString: FMTareaparser::subsetlayer
 			/**
 			Sometime vector files can be realy large with empty value in the age/area fields or themes fields.
