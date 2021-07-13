@@ -646,7 +646,7 @@ Core::FMTmask FMTmodel::getdynamicmask(const Core::FMToutputnode& node, bool ign
 bool FMTmodel::isstaticnode(const Core::FMToutputnode& node, double ratioofset) const
 {
 	try {
-		if (node.source.isinventory())
+		if (node.source.isinventory()&&!node.source.isaction())
 		{
 			for (const size_t& staticid : statictransitionthemes)
 			{
@@ -1332,20 +1332,23 @@ Core::FMTschedule FMTmodel::getpotentialschedule(std::vector<Core::FMTactualdeve
 	}
 	Core::FMTschedule schedule(period,*this, withlock);
 	try {
-		boost::unordered_set<Core::FMTdevelopment>settoremove(toremove.begin(), toremove.end());
-		for (Core::FMTactualdevelopment& actdev : selection)
+		size_t actionid = 0;
+		for (const Core::FMTaction& action : actions)
 			{
-			//if (std::find_if(toremove.begin(),toremove.end(),Core::FMTactualdevelopmentcomparator(dynamic_cast<const Core::FMTdevelopment*>(&actdev)))==toremove.end())
-				if (settoremove.find(actdev)== settoremove.end())
+			std::vector<Core::FMTactualdevelopment>newselection;
+			for (const Core::FMTactualdevelopment& actdev : selection)
 				{
-				for (const Core::FMTaction& action : actions)
+				if (actdev.operable(action, yields))
 					{
-					if (actdev.operable(action,yields))
+					schedule.addevent(actdev, 1.0, action);
+					for (const Core::FMTdevelopmentpath& path : actdev.operate(action, transitions.at(actionid), yields, themes))
 						{
-						schedule.addevent(actdev, 1.0, action);
+						newselection.emplace_back(*path.development, 0.0);
 						}
 					}
 				}
+			selection.insert(selection.end(),newselection.begin(), newselection.end());
+			++actionid;
 			}
 		schedule.clean();
 	}catch (...)

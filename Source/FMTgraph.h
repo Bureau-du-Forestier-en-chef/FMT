@@ -950,28 +950,17 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 		{
 			try {
 				const Core::FMTdevelopment& development = data[vertex_descriptor].get();
-				//*_logger << "test dev " << std::string(development) << "\n";
 				if (node.source.use(development, model.yields))
 				{
-					//*_logger << "useit!" << development.isanyworthtestingoperability(selected, model.actions).empty()<< "\n";
 					if (node.source.useinedges())
 					{
-						//*_logger << "useit1" << "\n";
-						if ((development.getperiod() == 0 || periodstart(vertex_descriptor)) && ((selected.empty() && (node.source.isnextperiod() || !node.source.emptylock())) ||
+						return ((development.getperiod() == 0 || node.source.isaction() || periodstart(vertex_descriptor)) && ((selected.empty() && (node.source.isnextperiod() || !node.source.emptylock())) ||
 							(((buildtype == FMTgraphbuild::schedulebuild) && development.anyoperable(selected, model.yields)) ||
-								isanyoperables(vertex_descriptor, development.isanyworthtestingoperability(selected, model.actions)))))
-								//anyoperables(vertex_descriptor, development.anyworthtestingoperability(selected, *model.actions.begin())))))
-						{
-							/*isanyoperables(vertex_descriptor, development.isanyworthtestingoperability(selected,model.actions)))))*/
-							return true;
-						}
+								isanyoperables(vertex_descriptor, development.isanyworthtestingoperability(selected, model.actions)))));
 					}
-					else if (isanyoperables(vertex_descriptor, development.isanyworthtestingoperability(selected, model.actions))) //out edges
+					else //out edges
 					{
-						//*_logger << "useit2" << "\n";
-						//(anyoperables(vertex_descriptor, development.anyworthtestingoperability(selected, *model.actions.begin())))
-						/*isanyoperables(vertex_descriptor, development.isanyworthtestingoperability(selected, model.actions))*/
-						return true;
+						return isanyoperables(vertex_descriptor, development.isanyworthtestingoperability(selected, model.actions));
 					}
 				}
 			}
@@ -1052,6 +1041,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 					if (isvalidouputnode(model, output_node, selected, node_period))
 					{
 						//*_logger << "valid node! " << "\n";
+						
 						if (nodescache.empty())
 							{
 							nodescache.reserve(developments.size());
@@ -1084,6 +1074,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 							}else {
 								std::vector<FMTvertex_descriptor>periodlocations;
 								//*_logger << "testing on "<< descriptors->size()<<" "<< selected .size()<< "\n";
+								
 								for (const FMTvertex_descriptor& potential : *descriptors)
 								{
 									if (isvalidgraphnode(model, potential, output_node, selected))
@@ -1139,7 +1130,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 								{
 									const FMTedgeproperties& edgeprop = data[*inedge_iterator];
 									const int actionid = edgeprop.getactionID();
-									if (actionid < 0)
+									if (actionid < 0||output_node.source.isaction())
 									{
 										updatevarsmap(variables, edgeprop.getvariableID(), (edgeprop.getproportion() / 100)*coef);
 										continue;
@@ -1693,12 +1684,6 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 			std::map<std::string, double>emptyreturn;
 			try{
 			const std::vector<FMTvertex_descriptor>verticies = getnode(model, node, period);
-			//*_logger << "size of verticies " << verticies.size() << "\n";
-			/*for (FMTvertex_descriptor ver : verticies)
-				{
-				*_logger << "verticies found " << std::string(data[ver].get()) << "\n";
-				}*/
-			
 			return getvalues(model, verticies, node, theme, solution, level);
 			}catch (...)
 				{
@@ -1754,13 +1739,14 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 						if (node.source.useinedges())
 						{
 							const double coef = node.source.getcoef(development, model.yields) * node.factor.getcoef(development, model.yields) * node.constant;
+							
 							double area = 0;
 							if (development.getperiod() == 0)
 							{
 								area = outarea(vertex, -1, solution);
 							}
 							else {
-								area = inarea(vertex, solution, true);
+								area = inarea(vertex, solution,!node.source.isaction());
 							}
 							values[value] += coef * area;
 						}
@@ -2095,7 +2081,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 									{
 										schedule_solution[actions[variable_iterator.first]] = std::map<Core::FMTdevelopment, std::map<int, double>>();
 									}
-									const Core::FMTdevelopment& basedev = getdevelopment(deviterator.memoryobject);*/									
+									const Core::FMTdevelopment& basedev = getdevelopment(deviterator.memoryobject);*/
 									newschedule.addevent(*deviterator.pointerobject, *(actual_solution + variable_iterator.second), actions.at(variable_iterator.first));
 									/*Core::FMTdevelopment lockout = basedev.clearlock();
 									int leveltarget = basedev.lock;
