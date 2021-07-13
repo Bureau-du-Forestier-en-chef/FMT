@@ -1003,7 +1003,7 @@ namespace Core
 					if (source.isvariable())
 					{
 						const std::string yieldname(baseyieldnames + "_" + std::to_string(sourceid));
-						for (const Core::FMTaction* actionptr : Core::FMTactioncomparator(source.getaction()).getallaggregates(actions, true))
+						for (const Core::FMTaction* actionptr : Core::FMTactioncomparator(source.getaction()).getallaggregates(actions, false))
 						{
 							for (auto& itvalue : actions[std::distance(&*(actions.cbegin()), actionptr)])
 							{
