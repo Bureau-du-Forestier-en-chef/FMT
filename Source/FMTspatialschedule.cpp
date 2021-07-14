@@ -1552,6 +1552,8 @@ std::vector<Spatial::FMTbindingspatialaction> FMTspatialschedule::getbindingacti
 					const Core::FMTyldbounds& yldbounds = constraint.getyieldbound("NSIZE");
 					const double lowernsize = yldbounds.getlower();
 					const double uppernsize = yldbounds.getupper();
+					
+					//*_logger << "Sizes " << actionids.size() << " " << lower << " " << upper << "\n";
 					for (const int& actionid : actionids)
 					{
 						if (upper < maximalsizes.at(actionid))
@@ -1560,6 +1562,7 @@ std::vector<Spatial::FMTbindingspatialaction> FMTspatialschedule::getbindingacti
 						}
 						if (lower > minimalsizes.at(actionid))
 						{
+							//*_logger << "Size " << actionid <<" "<< lower << " " << upper << "\n";
 							minimalsizes[actionid] = lower;
 						}
 						if (uppernsize < maximalnsizes.at(actionid))
@@ -1613,8 +1616,9 @@ std::vector<Spatial::FMTbindingspatialaction> FMTspatialschedule::getbindingacti
 			const size_t maximalnsize = (maximalnsizes.at(actionid) == std::numeric_limits<double>::max()) ? std::numeric_limits<size_t>::max() : static_cast<size_t>(maximalnsizes.at(actionid));
 			const size_t minimaladjacency = static_cast<size_t>(minimaladjacencys.at(actionid));
 			const size_t maximaladjacency = (maximaladjacencys.at(actionid) == std::numeric_limits<double>::max()) ? std::numeric_limits<size_t>::max() : static_cast<size_t>(maximaladjacencys.at(actionid));
-			/*if (actionid==2||actionid==14)
-			{
+			//if (actionid==2||actionid==14)
+			//{
+			/**_logger << "actionid " << actionid << "\n";
 				*_logger << "minimalsize " << minimalsize << "\n";
 				*_logger << "maximalsize " << maximalsize << "\n";
 				*_logger << "minimalgreenup " << minimalgreenup << "\n";
@@ -1622,8 +1626,8 @@ std::vector<Spatial::FMTbindingspatialaction> FMTspatialschedule::getbindingacti
 				*_logger << "minimalnsize " << minimalnsize << "\n";
 				*_logger << "maximalnsize " << maximalnsize << "\n";
 				*_logger << "minimaladjacency " << minimaladjacency << "\n";
-				*_logger << "maximaladjacenc " << maximaladjacency << "\n";
-			}*/
+				*_logger << "maximaladjacenc " << maximaladjacency << "\n";*/
+			//}
 
 
 			bindings.emplace_back(neighboring.at(actionid), minimalgreenup, maximalgreenup, minimaladjacency, maximaladjacency,minimalsize, maximalsize, minimalnsize, maximalnsize);

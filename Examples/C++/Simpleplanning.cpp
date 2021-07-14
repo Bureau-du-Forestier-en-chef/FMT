@@ -11,10 +11,11 @@ int main()
 	if (Version::FMTversion().hasfeature("OSI"))
 		{
 		#if defined _MSC_VER
-			const std::string primarylocation = "../Examples/Models/TWD_land/TWD_land.pri";
+		const std::string folder = "../Examples/Models/TWD_land/";
 		#else
-			const std::string primarylocation = "Examples/Models/TWD_land/TWD_land.pri";
+		const std::string folder = "Examples/Models/TWD_land/";
 		#endif
+		const std::string primarylocation = folder+"TWD_land.pri";
 		Parser::FMTmodelparser modelparser;
 		const std::vector<std::string>scenarios(1, "LP");
 		const std::vector<Models::FMTmodel> models = modelparser.readproject(primarylocation, scenarios);
@@ -31,7 +32,16 @@ int main()
 			optimizationmodel.setconstraint(constraint);
 		}
 		optimizationmodel.setobjective(objective);
-		optimizationmodel.initialsolve();
+		if (optimizationmodel.initialsolve())
+			{
+			Parser::FMTscheduleparser scheduleparser;
+			std::vector<Core::FMTschedule>optimalschedules;
+			for (size_t period = 1; period <= 10; ++period)
+				{
+				optimalschedules.push_back(optimizationmodel.getsolution(period));
+				}
+			scheduleparser.write(optimalschedules, folder + "Scenarios/" + optimizationmodel.getname() + "._seq");
+			}
 	}else {
 		Logging::FMTlogger() << "FMT needs to be compiled with OSI" << "\n";
 		}

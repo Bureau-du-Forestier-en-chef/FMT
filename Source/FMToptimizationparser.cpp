@@ -324,7 +324,7 @@ namespace Parser
 			}
 			else {
 				boost::split(splitted, inargument, boost::is_any_of(","));
-				std::string actionoraggregates=boost::trim_copy(splitted.at(0));
+				actionoraggregates=boost::trim_copy(splitted.at(0));
 				isact(_section, actions, actionoraggregates);
 				const std::string naming = constrainttypestr + "(" + inargument + ")";
 				if (constrainttypestr == "_SIZE")
