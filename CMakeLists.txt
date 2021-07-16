@@ -92,7 +92,7 @@ else()
 	add_definitions("-Wa,-mbig-obj")
 endif(MSVC)
 
-add_definitions("-DBOOST_PYTHON_STATIC_LIB")
+
 add_definitions("-DBOOST_DYNAMIC_BITSET_DONT_USE_FRIENDS")
 add_definitions("-DHAVE_SNPRINTF")
 add_definitions("-DBOOST_FILESYSTEM_NO_DEPRECATED")
@@ -180,56 +180,53 @@ if ((NOT DEFINED ENV{R_DIR}) AND (DEFINED ENV{PYTHON_DIR}))
 endif()
 
 
-#First try for decent installation of boost
-set(Boost_USE_STATIC_LIBS ON) #Make sure to use the static boost
-set(Boost_USE_STATIC_RUNTIME OFF)
+
+#Try to find a dynamic boost lib
 if (DEFINED PYTHONNAMING)
         if("${PYTHONMAJOR}" STREQUAL "2")
             set(BPY "python")
-        else()
+       	else()
             set(BPY ${PYTHONNAMING})
         endif("${PYTHONMAJOR}" STREQUAL "2")
-        find_package(Boost COMPONENTS system filesystem serialization iostreams regex thread "${BPY}") #add zlib
+        find_package(Boost COMPONENTS system filesystem serialization iostreams zlib regex thread "${BPY}") #add zlib
     else()
-        find_package(Boost COMPONENTS system filesystem serialization iostreams regex thread) #add zlib
+        find_package(Boost COMPONENTS system filesystem serialization iostreams zlib regex thread) #add zlib
 endif(DEFINED PYTHONNAMING)
 
+#If you have a dynamic boost lib then go take the .dll
 if (Boost_FOUND)
-    set(Complete_boost "complete")
+	if (MSVC)
+                #Go find the DLL
+                FILE(GLOB_RECURSE BOOST_DLL ${Boost_LIBRARY_DIR_RELEASE}/boost*mt-x64-${Boost_MAJOR_VERSION}_${Boost_MINOR_VERSION}.dll)
+		LIST(APPEND FMTDEPENDENCIES ${BOOST_DLL})
+	endif(MSVC)
+		set(Boost_USE_STATIC_LIBS OFF)
+		add_definitions("-DBOOST_ALL_DYN_LINK")
+		add_definitions("-DBOOST_THREAD_DYN_LINK")
 endif(Boost_FOUND)
 
-#the hard way
-if (NOT Boost_FOUND)
-    find_package(Boost REQUIRED)
-    file(GLOB_RECURSE Boost_LIBRARIES_PATHS $ENV{BOOSTROOT}*${CMAKE_STATIC_LIBRARY_SUFFIX})
-    foreach(boostlibpath ${Boost_LIBRARIES_PATHS})
-        get_filename_component(libname ${boostlibpath} NAME)
-        if( NOT ("${libname}" MATCHES ".dll.a") AND
-        ("${libname}" MATCHES "libboost" AND NOT "${libname}" MATCHES "-s") AND
-        (("${libname}" MATCHES "zlib") OR
-        ("${libname}" MATCHES "system") OR
-        ("${libname}" MATCHES "serialization") OR
-        ("${libname}" MATCHES "iostreams") OR
-	("${libname}" MATCHES "regex") OR
-	("${libname}" MATCHES "thread") OR
-	("${libname}" MATCHES "date_time") OR
-	("${libname}" MATCHES "chrono") OR
-        (PythonLibs_FOUND AND "${libname}" MATCHES "${PYTHONNAMING}"))
-        )
-            if (((("${libname}" MATCHES "d-x64-") OR ("${libname}" MATCHES "gd-x64")) AND ("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")) OR
-            ((NOT (("${libname}" MATCHES "d-x64-") OR ("${libname}" MATCHES "gd-x64"))) AND("${libname}" MATCHES "-x64-") AND ("${CMAKE_BUILD_TYPE}" STREQUAL "Release")) OR
-            CYGWIN )
-                list(APPEND Boost_LIBRARIES ${boostlibpath})
-                set(Complete_boost "complete")
-            endif()
-        endif()
-    endforeach()
+#If you dont have a dynamic boost lib try to find the static
+if (NOT Boost_FOUND)#here try to find a dynamic boost llib
+	set(Boost_USE_STATIC_LIBS ON) #By default try to find a static lib
+	if (DEFINED PYTHONNAMING)
+        	if("${PYTHONMAJOR}" STREQUAL "2")
+            	set(BPY "python")
+        	else()
+            	set(BPY ${PYTHONNAMING})
+        	endif("${PYTHONMAJOR}" STREQUAL "2")
+        	find_package(Boost COMPONENTS system filesystem serialization iostreams zlib regex thread "${BPY}") #add zlib
+    	else()
+        	find_package(Boost COMPONENTS system filesystem serialization iostreams zlib regex thread) #add zlib
+	endif(DEFINED PYTHONNAMING)
+	if (Boost_FOUND)
+		add_definitions("-DBOOST_PYTHON_STATIC_LIB")
+	endif(Boost_FOUND)
 endif(NOT Boost_FOUND)
 
-if (NOT Complete_boost)
-    message(FATAL_ERROR "Boost not found!")
-endif(NOT Complete_boost)
 
+if (NOT Boost_FOUND)
+    message(FATAL_ERROR "Boost not found!")
+endif(NOT Boost_FOUND)
 
 
 message("Found Boost include here: ${Boost_INCLUDE_DIRS}")
