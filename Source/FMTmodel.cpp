@@ -1331,19 +1331,21 @@ Core::FMTschedule FMTmodel::getpotentialschedule(std::vector<Core::FMTactualdeve
 		period = selection.back().getperiod();
 	}
 	Core::FMTschedule schedule(period,*this, withlock);
+
 	try {
+		boost::unordered_set<Core::FMTdevelopment>nottoprocess(toremove.begin(), toremove.end());
 		size_t actionid = 0;
 		for (const Core::FMTaction& action : actions)
 			{
 			std::vector<Core::FMTactualdevelopment>newselection;
 			for (const Core::FMTactualdevelopment& actdev : selection)
 				{
-				if (actdev.operable(action, yields))
+				if (nottoprocess.find(actdev)==nottoprocess.end()&&actdev.operable(action, yields))
 					{
 					schedule.addevent(actdev, 1.0, action);
 					for (const Core::FMTdevelopmentpath& path : actdev.operate(action, transitions.at(actionid), yields, themes))
 						{
-						newselection.emplace_back(*path.development, 0.0);
+						newselection.emplace_back(*path.development,1.0);
 						}
 					}
 				}
