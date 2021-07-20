@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Quï¿½bec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -122,11 +122,21 @@ class FMTEXPORT FMTparser: public Core::FMTobject
 		It sets the section member of the FMTobject.
 		*/
 		void setsection(const Core::FMTsection& section) const;
-		// DocString: FMTparser::createdataset
-		/**
-		The function create an empty GDALDataset for a given FMTlayer.
-		*/
 		#ifdef FMTWITHGDAL
+			// DocString: FMTparser:getFORELspatialref
+			/**
+			Return and OGRspatialReference corresponding to the one used for FORELs in Quebec.
+			*/
+			static inline OGRSpatialReference getFORELspatialref() 
+			{
+					OGRSpatialReference FMTspref(nullptr);
+					FMTspref.importFromEPSG(32198);
+					return FMTspref;
+			}
+			// DocString: FMTparser::createdataset
+			/**
+			The function create an empty GDALDataset for a given FMTlayer.
+			*/
 			template<typename T>
 			GDALDataset* createdataset(const std::string& location,const Spatial::FMTlayer<T>& layer, const GDALDataType datatype) const
 				{
