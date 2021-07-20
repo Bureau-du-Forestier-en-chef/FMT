@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Quï¿½bec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -134,7 +134,9 @@ enum FMTexc
 	FMTinfeasibleconstraint = 61,
 	FMTthematic_output_diff=62,
 	FMToutput_missing_operator=63,
-	FMToutput_operator_ignore=64
+	FMToutput_operator_ignore=64,
+	FMTgdal_constructor_error=65,
+	FMTinvalid_geometry=66
     };
 
 // DocString: FMTexception

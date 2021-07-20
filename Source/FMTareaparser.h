@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Quï¿½bec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -133,13 +133,14 @@ class FMTEXPORT FMTareaparser : public FMTparser
 																		const std::vector<Heuristics::FMToperatingarea>& operatingareas,
 																		const double& maximaldistance) const;
 			#endif
-			// DocString: FMTareaparser::layerFIDtoDataset
+			// DocString: FMTareaparser::getFMTforestfromlayer
 			/**
-			This function first rasterize the layer to a resolution of 20x20 and then translate the results to the desired
-			resolution by resampling the point using MODE. If (fittoforel), the layer must be projected in ESPG32198 and will
-			align with the Quebec FOREL rasters.
+			This function first rasterize the layer to a resolution of 20x20 in memory using gdal virtual file system
+			and reproject it to the desired resolution. Finally, it return and FMTforest based on the raster and 
+			the developments correspondant to the value in the field containing the development id(devidfield).
+			If (fittoforel), the layer must be projected in ESPG32198 and will align with the Quebec FOREL rasters.
 			*/
-			GDALDataset* devIDtoRaster(OGRLayer* layer, const int& resolution,const bool& fittoforel) const;
+			Spatial::FMTforest getFMTforestfromlayer(OGRLayer* layer,const std::vector<Core::FMTactualdevelopment>& actualdevs, const std::string& devidfield, const int& resolution, const double& areafactor,const bool& fittoforel) const;
 			// DocString: FMTareaparser::subsetlayer
 			/**
 			Sometime vector files can be realy large with empty value in the age/area fields or themes fields.
@@ -251,12 +252,25 @@ class FMTEXPORT FMTareaparser : public FMTparser
                                    const std::string& agefield,const std::string& areafield,double agefactor = 1.0,
                                    double areafactor = 1, std::string lockfield = "",
 								   double minimalarea = 0.0) const;
-
-		std::vector<Core::FMTactualdevelopment>vectormaptorasters( const std::string& outdirpath, const std::string& data_vectors,
-																   const int& resolution,const std::vector<Core::FMTtheme>& themes,
-																   const std::string& agefield,const std::string& areafield,double agefactor = 1.0,
-																   double areafactor = 1, std::string lockfield = "",
-																   double minimalarea = 0.0, const bool& fittoforel = true) const;
+		// DocString: FMTareaparser::vectormaptoFMTforest
+		/**	
+		
+		*/
+		Spatial::FMTforest vectormaptoFMTforest(const std::string& data_vectors,
+												const int& resolution,const std::vector<Core::FMTtheme>& themes,
+												const std::string& agefield,const std::string& areafield,double agefactor = 1.0,
+												double areafactor = 1, std::string lockfield = "",
+												double minimalarea = 0.0, const std::string& writeforestfolder = "",
+												const bool& fittoforel = true) const;
+		// DocString: FMTareaparser::OGRlayertoRaster
+		/**
+		This function first rasterize the layer to a resolution of 20x20 in memory using gdal virtual file system.
+		Then, the raster is reproject with the given (resolution) using (for now) only MODE as resampling. 
+		The field to rasterize (fieldname) must be of type int.
+		If (fittoforel), the layer must be projected in ESPG32198 and will align with the Quebec FOREL rasters.
+		--In the future, arguments will be added to change the resampling type and allow field with float type.
+		*/
+		GDALDataset* OGRlayertoRaster(OGRLayer* layer, const std::string& fieldname, const std::string& outfilename ,const int& resolution,const bool& fittoforel) const;
 		#endif
 		// DocString: FMTareaparser()
 		/**

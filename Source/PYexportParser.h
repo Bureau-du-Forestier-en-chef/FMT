@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Quï¿½bec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -65,7 +65,7 @@ void exportParser()
 					//.def("writedisturbances",&Parser::FMTareaparser::writedisturbances,writedisturbances_overloads(bp::args("location", "spatialschedule", "for_layer", "out_layer", "themes", "mapping"), "@DocString(FMTareaparser::writedisturbances)"))
 					.def("writedisturbances", &Parser::FMTareaparser::writedisturbances)
 					.def("writecarbonpredictors", &Parser::FMTareaparser::writecarbonpredictors)
-					.def("vectormaptorasters", &Parser::FMTareaparser::vectormaptorasters)
+					.def("vectormaptoFMTforest", &Parser::FMTareaparser::vectormaptoFMTforest)
 					#ifdef FMTWITHOSI
 						.def("getschemeneighbors",&Parser::FMTareaparser::getschemeneighbors, getschemeneighbors_overloads(bp::args("operatingareaparameters", "themes", "data_vectors", "agefield", "areafield", "agefactor","areafractor","lockfield","minimal_area","buffersize"), "@DocString(FMTareaparser::getschemeneighbors)"))
                         .def("getclusters",&Parser::FMTareaparser::getclusters,getclusters_overloads(bp::args("operatingareaparameters", "themes", "data_vectors", "agefield", "areafield","maximaldistance","agefactor","areafractor","lockfield","minimal_area","buffersize"),"@DocString(FMTareaparser::getclusters)"))
