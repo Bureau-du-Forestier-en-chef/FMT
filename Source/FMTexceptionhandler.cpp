@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Quï¿½bec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -519,6 +519,16 @@ std::string FMTexceptionhandler::updatestatus(const FMTexc lexception, const std
    		msg += "To much operator in the output definition" + message;
    		_level = FMTlev::FMT_Warning;
    		++_warningcount;
+   		break;
+	case FMTexc::FMTgdal_constructor_error:
+   		msg += "Error while contructing gdal object : " + message;
+   		_level = FMTlev::FMT_logic;
+   		++_errorcount;
+   		break;
+	case FMTexc::FMTinvalid_geometry:
+   		msg += "Invalid geometry " + message;
+   		_level = FMTlev::FMT_logic;
+   		++_errorcount;
    		break;
 	default:
 		_exception = FMTexc::None;

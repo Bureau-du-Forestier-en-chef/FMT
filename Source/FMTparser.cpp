@@ -275,6 +275,37 @@ GDALDataset* FMTparser::getvectordataset(const std::string& location) const
     return dataset;
     }
 
+GDALDataset* FMTparser::createvectormemoryds() const
+	{
+	GDALDataset* dataset = nullptr;
+	try
+		{
+			GDALAllRegister();
+			GDALDataset* memds;
+			const char *pszDriverName = "Memory";
+			GDALDriver *poDriver;
+			poDriver = GetGDALDriverManager()->GetDriverByName(pszDriverName );
+			if( poDriver == NULL )
+			{
+				 _exhandler->raise(Exception::FMTexc::FMTinvaliddriver,
+										"Memory","FMTparser::getemptymemoryds", __LINE__, __FILE__, _section);
+
+			}
+			dataset = poDriver->Create( "Memoryds", 0, 0, 0, GDT_Unknown, NULL);
+			if( dataset == NULL )
+			{
+			    _exhandler->raise(Exception::FMTexc::FMTinvaliddataset,
+						"Cannot create in memory dataset","FMTparser::getemptymemoryds", __LINE__, __FILE__, _section);
+			}
+		}
+		catch (...)
+			{
+				_exhandler->raisefromcatch("","FMTparser::getemptymemoryds", __LINE__, __FILE__, _section);
+			}
+	return dataset;
+	}
+
+
 OGRLayer* FMTparser::getlayer(GDALDataset* dataset,int id) const
     {
 	OGRLayer * layer = nullptr;
