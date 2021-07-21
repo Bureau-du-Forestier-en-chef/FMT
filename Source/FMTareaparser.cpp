@@ -970,7 +970,6 @@ namespace Parser{
 			}
 			poDstDS->SetProjection(spref);
 			poDstDS->SetGeoTransform(&geotrans[0]);
-			poDstDS->GetRasterBand(1)->SetNoDataValue(-9999);
         	poDstDS->GetRasterBand(1)->Fill(-9999);
 			poDstDS->FlushCache();
 			char **rasterizeOptions = NULL;
@@ -982,6 +981,7 @@ namespace Parser{
 			if (resolution == 20)
 			{
 				CSLDestroy( papszOptions );
+				poDstDS->GetRasterBand(1)->SetNoDataValue(-9999);
 				poDstDS->FlushCache();
 				return poDstDS;
 			}
@@ -999,12 +999,12 @@ namespace Parser{
 			geotrans[5]=-resolution;
 			nDS->SetProjection(spref);
 			nDS->SetGeoTransform(&geotrans[0]);
-			nDS->GetRasterBand(1)->SetNoDataValue(-9999);
         	nDS->GetRasterBand(1)->Fill(-9999);
 			nDS->FlushCache();
 			CPLFree(spref);
 			CSLDestroy( papszOptions );
 			GDALReprojectImage(poDstDS, NULL, nDS, NULL, GRA_Mode , 0.0, 0.0, NULL, NULL,NULL);
+			nDS->GetRasterBand(1)->SetNoDataValue(-9999);//We only set the nodata here to be sure that is not ignore in the resampling
 			GDALClose(poDstDS);
 			VSIUnlink(basename);
 			nDS->FlushCache();
