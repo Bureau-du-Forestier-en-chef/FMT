@@ -1,5 +1,5 @@
 #[[
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Quï¿½bec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -188,9 +188,17 @@ if (DEFINED PYTHONNAMING)
        	else()
             set(BPY ${PYTHONNAMING})
         endif("${PYTHONMAJOR}" STREQUAL "2")
-        find_package(Boost COMPONENTS system filesystem serialization iostreams zlib regex thread "${BPY}") #add zlib
+		if(MSVC)
+        	find_package(Boost COMPONENTS system filesystem serialization zlib iostreams regex thread "${BPY}")
+		else()
+			find_package(Boost COMPONENTS system filesystem serialization iostreams regex thread "${BPY}") 
+		endif(MSVC)
     else()
-        find_package(Boost COMPONENTS system filesystem serialization iostreams zlib regex thread) #add zlib
+		if(MSVC)
+			find_package(Boost COMPONENTS system filesystem serialization zlib iostreams regex thread "${BPY}")
+		else()
+			find_package(Boost COMPONENTS system filesystem serialization iostreams regex thread "${BPY}") 
+		endif(MSVC)
 endif(DEFINED PYTHONNAMING)
 
 #If you have a dynamic boost lib then go take the .dll
@@ -214,9 +222,17 @@ if (NOT Boost_FOUND)#here try to find a dynamic boost llib
         	else()
             	set(BPY ${PYTHONNAMING})
         	endif("${PYTHONMAJOR}" STREQUAL "2")
-        	find_package(Boost COMPONENTS system filesystem serialization iostreams zlib regex thread "${BPY}") #add zlib
+        	if(MSVC)
+				find_package(Boost COMPONENTS system filesystem serialization zlib iostreams regex thread "${BPY}")
+			else()
+				find_package(Boost COMPONENTS system filesystem serialization iostreams regex thread "${BPY}") 
+			endif(MSVC)
     	else()
-        	find_package(Boost COMPONENTS system filesystem serialization iostreams zlib regex thread) #add zlib
+		if(MSVC)
+			find_package(Boost COMPONENTS system filesystem serialization zlib iostreams regex thread "${BPY}")
+		else()
+			find_package(Boost COMPONENTS system filesystem serialization iostreams regex thread "${BPY}") 
+		endif(MSVC)
 	endif(DEFINED PYTHONNAMING)
 	if (Boost_FOUND)
 		add_definitions("-DBOOST_PYTHON_STATIC_LIB")
