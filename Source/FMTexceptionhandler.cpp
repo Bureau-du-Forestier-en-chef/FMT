@@ -513,13 +513,18 @@ std::string FMTexceptionhandler::updatestatus(const FMTexc lexception, const std
     case FMTexc::FMToutput_missing_operator:
    		msg += "Missing operator for the output: " + message;
    		_level = FMTlev::FMT_logic;
-   		++_warningcount;
+   		++_errorcount;
    		break;
     case FMTexc::FMToutput_operator_ignore:
    		msg += "To much operator in the output definition" + message;
    		_level = FMTlev::FMT_Warning;
    		++_warningcount;
    		break;
+	case FMTexc::FMTinvalidyield_number:
+		msg += "Non valid yield number: " + message;
+		_level = FMTlev::FMT_logic;
+		++_errorcount;
+		break;
 	default:
 		_exception = FMTexc::None;
 		_level = FMTlev::FMT_None;

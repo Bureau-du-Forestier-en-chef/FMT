@@ -54,6 +54,7 @@ void exportException()
 		.value("FMTinvalid_maskrange", Exception::FMTexc::FMTinvalid_maskrange)
 		.value("FMTunsupported_yield", Exception::FMTexc::FMTunsupported_yield)
 		.value("FMToutput_missing_operator", Exception::FMTexc::FMToutput_missing_operator)
+		.value("FMTinvalidyield_number",Exception::FMTexc::FMTinvalidyield_number)
 		.export_values();
 
 	define_pylist<Exception::FMTexc>();

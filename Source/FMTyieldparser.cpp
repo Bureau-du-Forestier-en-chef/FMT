@@ -337,6 +337,10 @@ Core::FMTyields FMTyieldparser::read(const std::vector<Core::FMTtheme>& themes,c
 							}
 							else if (!sided)
 							{
+								if (!isnum(values.at(0), constants))
+								{
+									continue;
+								}
 								const int newbase = getnum<int>(values[0], constants);
 								const std::vector<int>& bases = actualyield->second.getbases();
 								if (std::find(bases.begin(), bases.end(), newbase) == bases.end())
@@ -346,16 +350,21 @@ Core::FMTyields FMTyieldparser::read(const std::vector<Core::FMTtheme>& themes,c
 								values.erase(values.begin());
 								int id = 0;
 								std::set<std::string> passednames;
-								for (const std::string& value : values)
+								for (const std::string& yldname : yldsnames)
 								{
-									if(passednames.find(yldsnames.at(id))==passednames.end())
+									const std::string& value = values.at(id);
+									if(passednames.find(yldname)==passednames.end())
 									{
-										actualyield->second.push_data(yldsnames.at(id), getnumwithproportion(value, constants, proportion, id));
-										passednames.insert(yldsnames.at(id));
+										if (!isnum(value, constants))
+										{
+											continue;
+										}
+										actualyield->second.push_data(yldname, getnumwithproportion(value, constants, proportion, id));
+										passednames.insert(yldname);
 									}else if(!multipledef)
 									{
 										_exhandler->raise(Exception::FMTexc::FMTignore,
-															yldsnames.at(id) + " at line " + std::to_string(_line)+ " multiple definition", "FMTyieldparser::read", __LINE__, __FILE__, _section);
+											yldname + " at line " + std::to_string(_line)+ " multiple definition", "FMTyieldparser::read", __LINE__, __FILE__, _section);
 										multipledef = true;
 
 									}
@@ -372,6 +381,10 @@ Core::FMTyields FMTyieldparser::read(const std::vector<Core::FMTtheme>& themes,c
 									actualyield->second.push_base(getnum<int>(values[0], constants));
 								}
 								const int location = static_cast<int>(actualyield->second.elements.size());
+								if (!isnum(values.at(1),constants))
+									{
+									continue;
+									}
 								actualyield->second.push_data(tyld[0], getnumwithproportion(values[1], constants, proportion, location));
 							}
 
@@ -391,14 +404,19 @@ Core::FMTyields FMTyieldparser::read(const std::vector<Core::FMTtheme>& themes,c
 							}
 							else if (!sided)
 							{
+								if (!isnum(values.at(0), constants))
+								{
+									continue;
+								}
 								if (actualyield->second.elements.empty())
 								{
 									actualyield->second.push_base(getnum<int>(values[0], constants));
 									values.erase(values.begin());
 									int id = 0;
-									for (const std::string& value : values)
+									for (const std::string& yldname : yldsnames)
 									{
-										actualyield->second.push_data(yldsnames[id], getnumwithproportion(value, constants, proportion, id));
+										const std::string& value = values.at(id);
+										actualyield->second.push_data(yldname, getnumwithproportion(value, constants, proportion, id));
 										++id;
 									}
 								}
@@ -409,14 +427,15 @@ Core::FMTyields FMTyieldparser::read(const std::vector<Core::FMTtheme>& themes,c
 									{
 										actualyield->second.push_base(base);
 										int id = 0;
-										for (const std::string& value : values)
+										for (const std::string& yldname : yldsnames)
 										{
-											double thevalue = actualyield->second.getlastvalue(yldsnames[id]);
+											const std::string& value = values.at(id);
+											double thevalue = actualyield->second.getlastvalue(yldname);
 											if (base == newbase)
 											{
 												thevalue = getnum<double>(value, constants);
 											}
-											actualyield->second.push_data(yldsnames[id], thevalue);
+											actualyield->second.push_data(yldname, thevalue);
 											++id;
 										}
 									}
@@ -425,7 +444,7 @@ Core::FMTyields FMTyieldparser::read(const std::vector<Core::FMTtheme>& themes,c
 
 							}
 							else {
-								if (isnum(values[0]))
+								if (isnum(values.at(0),constants,false))
 								{
 									int id = 0;
 									for (const std::string& value : values)
@@ -468,6 +487,10 @@ Core::FMTyields FMTyieldparser::read(const std::vector<Core::FMTtheme>& themes,c
 										actualyield->second.push_data(yldname, Core::FMTdata(yielddata, Core::FMTyieldparserop::FMTdiscountfactor, sources, stacking));
 									}
 									else {
+										if (!isnum(values.at(0), constants))
+											{
+											continue;
+											}
 										actualyield->second.push_base(getnum<int>(values[0], constants));
 										values.erase(values.begin());
 										int id = 0;

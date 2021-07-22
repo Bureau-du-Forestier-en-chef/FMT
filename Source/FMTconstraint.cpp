@@ -930,7 +930,8 @@ namespace Core
 					{
 					for (const Core::FMToutputsource& source: sources)
 					{
-						if (source.isvariable()&&(!source.getyield().empty()||!source.empty()||source.getaction().empty()))
+						if ((source.isvariable()&&(!source.getyield().empty()||!source.empty()||source.getaction().empty()))||
+							(source.isconstant()&&source.getvalue()<0))
 						{
 							return false;
 						}

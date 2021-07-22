@@ -339,6 +339,11 @@ class FMTEXPORT FMTlpmodel : public FMTmodel
 		If with lock is true then the schedule will contain locked developement.
 		*/
 		Core::FMTschedule getsolution(int period,bool withlock = false) const;
+		// DocString: FMTlpmodel::addscheduletoobjective
+		/**
+		This function will addup weight to the objective function for a given schedule.
+		*/
+		void addscheduletoobjective(const Core::FMTschedule& schedule,double weight = 1000) const;
 		// DocString: FMTlpmodel::getstats
 		/**
 		Get the graph stats of the graph and matrix (number of columns/rows/edges/verticies...)
