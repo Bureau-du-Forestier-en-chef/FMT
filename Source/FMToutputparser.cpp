@@ -152,6 +152,7 @@ namespace Parser
 									bool inparenthesis = false;
 									bool inmask = true;
 									bool lastonespace = true;
+									bool gotgeneralspace = false;
 									bool lookslikeoutput = false;
 									size_t thcound = 0;
 									for (const char& letter : rest)
@@ -176,8 +177,10 @@ namespace Parser
 												inmask = false;
 											}
 										}
-										if (stroprators.find(letter) != std::string::npos && (!inmask || lookslikeoutput) && !inparenthesis) // && !inparenthesis 
+							
+										if (stroprators.find(letter) != std::string::npos && (!inmask || lookslikeoutput) && !inparenthesis && gotgeneralspace) // && !inparenthesis 
 										{
+											
 											stroperators.push_back(std::string(1, letter));
 											
 											if (!stacked_char.empty())
@@ -198,6 +201,14 @@ namespace Parser
 										{
 											inparenthesis = false;
 										}
+										if ((letter == ' ' || letter == '\t'))
+										{
+											gotgeneralspace = true;
+										}
+										else {
+											gotgeneralspace = false;
+										}
+
 									}
 									if (!stacked_char.empty())
 									{

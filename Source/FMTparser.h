@@ -344,6 +344,11 @@ class FMTEXPORT FMTparser: public Core::FMTobject
 		Return true if the value is a number.
 		*/
         bool isnum(std::string value) const;
+		// DocString: FMTparser::isnum
+		/**
+		Return true if the value is a number else it will raise (if throwerror = true) being non valid number.
+		*/
+		bool isnum(const std::string& value,const Core::FMTconstants& constant,bool throwerror= true) const;
 		// DocString: FMTparser::getnum
 		/**
 		Template function to get a numeric value from a string (value) based on constant and period.
