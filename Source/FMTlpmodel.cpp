@@ -627,6 +627,42 @@ namespace Models
 		return newschedule;
 	}
 
+	void FMTlpmodel::addscheduletoobjective(const Core::FMTschedule& schedule, double weight)
+	{
+		try
+		{
+			const int period = schedule.getperiod();
+			const double* actualobjective = solver.getObjCoefficients();
+			const double sense = solver.getObjSense();
+			std::vector<double>newobjective(solver.getNumCols(), 0.0);
+			for (int colid = 0 ; colid < solver.getNumCols();++colid)
+				{
+				newobjective[colid] = *(actualobjective + colid);
+				}
+		
+			for (Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::lookconst_iterator devit = graph.begin(period);
+				devit != graph.end(period); devit++)
+			{
+				std::map<int, int>variables = graph.getoutvariables(devit->memoryobject);
+				variables.erase(-1);
+				for (std::map<int, int>::const_iterator varit = variables.begin(); varit != variables.end(); varit++)
+				{
+					if (schedule.find(actions.at(varit->first))!=schedule.end()&&
+						schedule.at(actions.at(varit->first)).find(*devit->pointerobject)!= schedule.at(actions.at(varit->first)).end())
+					{
+						newobjective[varit->second] = (weight*(sense*-1.0))+newobjective.at(varit->second);
+					}
+
+				}
+			}
+			solver.setObjective(&newobjective.at(0));
+		}
+		catch (...)
+		{
+			_exhandler->printexceptions("", "FMTlpmodel::addscheduletoobjective", __LINE__, __FILE__);
+		}
+	}
+
 	Graph::FMTgraphstats FMTlpmodel::updatematrix(const boost::unordered_set<Core::FMTlookup<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor, Core::FMTdevelopment>>& targets,
 		const Graph::FMTgraphstats& newstats)
 	{

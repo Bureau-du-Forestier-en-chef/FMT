@@ -582,6 +582,28 @@ bool FMTparser::isnum(std::string value) const
 	return std::regex_match(value,rxnumber);
     }
 
+bool FMTparser::isnum(const std::string& value, const Core::FMTconstants& constant, bool throwerror) const
+{
+	try {
+		if (!(isnum(value) || constant.isconstant(value)))
+			{
+			if (throwerror)
+				{
+				_exhandler->raise(Exception::FMTexc::FMTinvalidyield_number, value,
+					"FMTparser::isnum", __LINE__, __FILE__, _section);
+				}
+		}
+		else {
+			return true;
+		}
+	}
+	catch (...)
+	{
+		_exhandler->raisefromcatch("", "FMTparser::isnum", __LINE__, __FILE__, _section);
+	}
+	return false;
+}
+
 
 
 std::vector<std::string>FMTparser::regexloop(std::regex& cutregex, std::string& str) const
