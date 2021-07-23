@@ -735,7 +735,7 @@ namespace Parser{
 				 _exhandler->raise(Exception::FMTexc::FMTgdal_constructor_error,
 										"Layer in memory","FMTparser::vectormaptoFMTforest", __LINE__, __FILE__, _section);
 			}
-			OGRCoordinateTransformation* coordtransf;
+			OGRCoordinateTransformation* coordtransf = nullptr;
 			OGRSpatialReference forelspref = getFORELspatialref();
 			bool reproject = false;
 			if (fittoforel && !(lspref->IsSame(&forelspref)))
