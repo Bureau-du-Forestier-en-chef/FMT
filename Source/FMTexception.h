@@ -135,8 +135,9 @@ enum FMTexc
 	FMTthematic_output_diff=62,
 	FMToutput_missing_operator=63,
 	FMToutput_operator_ignore=64,
-	FMTgdal_constructor_error=65,
-	FMTinvalid_geometry=66
+	FMTinvalidyield_number = 65,
+	FMTgdal_constructor_error=66,
+	FMTinvalid_geometry=67
     };
 
 // DocString: FMTexception
