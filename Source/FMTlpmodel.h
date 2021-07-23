@@ -343,7 +343,7 @@ class FMTEXPORT FMTlpmodel : public FMTmodel
 		/**
 		This function will addup weight to the objective function for a given schedule.
 		*/
-		void addscheduletoobjective(const Core::FMTschedule& schedule,double weight = 1000) const;
+		void addscheduletoobjective(const Core::FMTschedule& schedule,double weight = 1000);
 		// DocString: FMTlpmodel::getstats
 		/**
 		Get the graph stats of the graph and matrix (number of columns/rows/edges/verticies...)

@@ -627,7 +627,7 @@ namespace Models
 		return newschedule;
 	}
 
-	void FMTlpmodel::addscheduletoobjective(const Core::FMTschedule& schedule, double weight) const
+	void FMTlpmodel::addscheduletoobjective(const Core::FMTschedule& schedule, double weight)
 	{
 		try
 		{
@@ -639,8 +639,7 @@ namespace Models
 				{
 				newobjective[colid] = *(actualobjective + colid);
 				}
-			*_logger << "SET FOR ¨PERIOD " << schedule.getperiod() << "\n";
-			size_t cpount = 0;
+		
 			for (Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::lookconst_iterator devit = graph.begin(period);
 				devit != graph.end(period); devit++)
 			{
@@ -651,13 +650,12 @@ namespace Models
 					if (schedule.find(actions.at(varit->first))!=schedule.end()&&
 						schedule.at(actions.at(varit->first)).find(*devit->pointerobject)!= schedule.at(actions.at(varit->first)).end())
 					{
-						newobjective[varit->second] = weight*(sense*-1.0);
-						++cpount;
+						newobjective[varit->second] = (weight*(sense*-1.0))+newobjective.at(varit->second);
 					}
 
 				}
 			}
-			*_logger << "TEST " << cpount << "\n";
+			solver.setObjective(&newobjective.at(0));
 		}
 		catch (...)
 		{
