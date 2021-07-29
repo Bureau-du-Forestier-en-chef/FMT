@@ -148,6 +148,8 @@ void exportModel()
 			"@DocString(FMTlpmodel::getsolution)")
 		.method("setsolution", &Models::FMTlpmodel::setsolution,
 			"@DocString(FMTlpmodel::setsolution)")
+		.method("setsolutionbylp", &Models::FMTlpmodel::setsolutionbylp,
+			"@DocString(FMTlpmodel::setsolutionbylp)")
 		.method("setobjective", &Models::FMTlpmodel::setobjective,
 			"@DocString(FMTlpmodel::setobjective)")
 		.method("setconstraint", &Models::FMTlpmodel::setconstraint,

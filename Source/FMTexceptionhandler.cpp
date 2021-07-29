@@ -535,6 +535,11 @@ std::string FMTexceptionhandler::updatestatus(const FMTexc lexception, const std
 		_level = FMTlev::FMT_logic;
 		++_errorcount;
 		break;
+	case FMTexc::FMTundefinedoutput_attribute:
+		msg += "Undefined output attribute value: " + message;
+		_level = FMTlev::FMT_logic;
+		++_errorcount;
+		break;
 	default:
 		_exception = FMTexc::None;
 		_level = FMTlev::FMT_None;

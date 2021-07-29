@@ -59,7 +59,7 @@ Core::FMTsection FMTparser::from_extension(const std::string& ext) const
 
 FMTparser::FMTparser() : Core::FMTobject(),
 		rxvectortheme("^(THEME)([\\d]*)$"),
-		rxnumber("-?[\\d.]+(?:E-?\\d+)?"),
+		rxnumber("-?[\\d.]+(?:E-?[\\d.]+)?",std::regex_constants::icase),
         rxremovecomment("^(.*?)([;]+.*)"),
         rxvalid("^(?!\\s*$).+"),
 		rxinclude("^(\\*INCLUDE)([\\s\\t]*)(.+)"),
@@ -519,6 +519,7 @@ bool FMTparser::tryopening(const std::ifstream& stream, const std::string& locat
 		std::string extension = extpath.extension().string();
         transform(extension.begin(), extension.end(), extension.begin(), ::tolower);
         this->setsection(from_extension(extension));
+		_logger->logwithlevel("Reading " + location+"\n", 2);
 		//*_logger << "extt " << _section << "\n";
         if (!stream.is_open())
             {
@@ -726,6 +727,11 @@ std::vector<std::string>FMTparser::regexloop(std::regex& cutregex, std::string& 
             stream.close();
             }
         boost::trim(newline);
+		if (newline.empty() && _incomment && !_comment.empty() && _comment.find('}') != std::string::npos &&
+			(_comment.find('{') == std::string::npos || _comment.find('{') < _comment.find('}')))
+			{
+			_incomment = false;
+			}
 		}catch (...)
 			{
 			_exhandler->raisefromcatch("", "FMTparser::getcleanline", __LINE__, __FILE__, _section);

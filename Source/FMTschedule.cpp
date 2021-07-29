@@ -187,11 +187,12 @@ FMTschedule::operator std::string() const
             const FMTdevelopment* dev = &devit->first;
 			for (const double & value : devit->second)
 				{
-				line += std::string(dev->getmask()) + " " + std::to_string(dev->getage()) + " " + std::to_string(value) + " " + actit->first.getname() + " " + std::to_string(period);
+				line += std::string(dev->getmask()) + " " + std::to_string(dev->getage()) + " " + std::to_string(value);
 				if (uselock)
 					{
 					line += " " + std::to_string(dev->getlock());
 					}
+				line += +" " + actit->first.getname() + " " + std::to_string(period);
 				line+=+"\n";
 				}
             }
@@ -264,7 +265,10 @@ FMTschedule::operator std::string() const
 					{
 					devit = actit->second.insert(std::pair<Core::FMTdevelopment, std::vector<double>>(lockout, std::vector<double>(1, 0))).first;
 					}
-				devit->second.resize(leveltarget + 1,0.0);
+				if (devit->second.size()< leveltarget + 1)
+					{
+					devit->second.resize(leveltarget + 1, 0.0);
+					}
 				devit->second[leveltarget] += area;
 			}
 		}

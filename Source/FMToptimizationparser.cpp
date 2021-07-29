@@ -97,24 +97,40 @@ namespace Parser
 		return false;
 		}
 
-	void FMToptimizationparser::setperiods(Core::FMTconstraint& constraint, const std::string& lower, const std::string& upper, const Core::FMTconstants& constants) const
-		{
+	Core::FMTperbounds FMToptimizationparser::getperbound(const std::string& lower, const std::string& upper, const Core::FMTconstants& constants) const
+	{
+		Core::FMTperbounds bound;
 		try {
+
 			int startperiod = std::numeric_limits<int>::max();
-			if (lower!="_LENGTH")
-				{
+			if (lower != "_LENGTH")
+			{
 				startperiod = getnum<int>(lower, constants);
-				}
+			}
 			int stopperiod = startperiod;
 			if (!upper.empty() && upper != "_LENGTH")
-				{
+			{
 				stopperiod = getnum<int>(upper, constants);
-				}
+			}
 			else if (upper == "_LENGTH")
 			{
 				stopperiod = std::numeric_limits<int>::max();
 			}
-			constraint.setlength(startperiod, stopperiod);
+			bound = Core::FMTperbounds(Core::FMTsection::Optimize, stopperiod, startperiod);
+		}
+		catch (...)
+		{
+			_exhandler->raisefromcatch("",
+				"FMToptimizationparser::getperbound", __LINE__, __FILE__, _section);
+		}
+		return bound;
+	}
+
+	void FMToptimizationparser::setperiods(Core::FMTspec& constraint, const std::string& lower, const std::string& upper, const Core::FMTconstants& constants) const
+		{
+		try {
+			const Core::FMTperbounds periodbound = getperbound(lower, upper, constants);
+			constraint.setbounds(periodbound);
 		}catch (...)
 			{
 			_exhandler->raisefromcatch("for constraint " + std::string(constraint),
@@ -222,28 +238,33 @@ namespace Parser
 					std::string specialtype;
 					//int minbound = 1;
 					//int maxbound = std::numeric_limits<int>::max();
+					std::string target_attribute;
+					Core::FMTperbounds bounding;
 					if (std::regex_search(output_it->first, special_match, rxspecialoutput))
 					{
 
 						specialtype = special_match[1];
 						const std::string lowerperiod = std::string(special_match[7]) + std::string(special_match[12]);
 						const std::string upperperiod = std::string(special_match[11]) + std::string(special_match[12]);
-						if (!lowerperiod.empty() && !upperperiod.empty())
-						{
-							//minbound = getnum<int>(lowerperiod, constants);
-							//maxbound = getnum<int>(upperperiod, constants);
+						if (!lowerperiod.empty() || !upperperiod.empty())
+						{		
+							bounding = getperbound(lowerperiod, upperperiod, constants);
 						}
 						output_name = std::string(special_match[4]) + std::string(special_match[13]);
 
-						std::smatch outname_match;
-						if (!std::regex_search(output_name, outname_match, rxoutput))
+						//std::smatch outname_match;
+						//out_match = std::smatch();
+						
+						if (!std::regex_search(output_name, out_match, rxoutput))
 						{
 							_exhandler->raise(Exception::FMTexc::FMTinvalid_constraint,
 								output_name + " at line " + std::to_string(_line),
 								"FMToptimizationparser::resume_output", __LINE__, __FILE__, _section);
 						}
 						else {
-							output_name = std::string(outname_match[1]) + std::string(outname_match[8]) + std::string(outname_match[12]) + std::string(outname_match[16]);
+							output_name = std::string(out_match[1]) + std::string(out_match[8]) + std::string(out_match[12]) + std::string(out_match[16]);
+							target_attribute = std::string(out_match[10]) + std::string(out_match[3]);
+							boost::trim(target_attribute);
 						}
 						boost::erase_all(output_name, " ");
 					}
@@ -254,8 +275,12 @@ namespace Parser
 							 output_name + " at line " + std::to_string(_line),
 							"FMToptimizationparser::resume_output", __LINE__, __FILE__, _section);
 					}
-					std::string target_attribute = std::string(out_match[3]) + std::string(out_match[10]);
+					if (target_attribute.empty())
+						{
+						target_attribute = std::string(out_match[10]) + std::string(out_match[3]);
+						}
 					boost::trim(target_attribute);
+
 					const Core::FMTtheme targeted_theme = target_out->targettheme(themes);
 					if (!target_attribute.empty())
 					{
@@ -264,14 +289,15 @@ namespace Parser
 							(!targeted_theme.isattribute(target_attribute) &&
 								!targeted_theme.isaggregate(target_attribute))))
 						{
-							_exhandler->raise(Exception::FMTexc::FMTundefined_attribute,
+							_exhandler->raise(Exception::FMTexc::FMTundefinedoutput_attribute,
 								target_attribute + " at line " + std::to_string(_line),
 								"FMToptimizationparser::resume_output", __LINE__, __FILE__, _section);
+							target_attribute.clear();
 						}
 					}
 					const std::string target_period = std::string(out_match[6]) + std::string(out_match[14]);
 					int inttarget_period = -1;
-					Core::FMTperbounds bounding;
+					
 					if (!target_period.empty())
 					{
 						inttarget_period = getnum<int>(target_period, constants);

@@ -31,14 +31,16 @@ namespace Graph
 		template<class Archive>
 		void serialize(Archive& ar, const unsigned int version)
 		{
+			ar & BOOST_SERIALIZATION_NVP(inmemorynodes);
 			ar & BOOST_SERIALIZATION_NVP(basenode);
 			ar & BOOST_SERIALIZATION_NVP(searchtree);
 		}
-		std::vector<tvdescriptor>basenode;
+		std::vector<tvdescriptor>inmemorynodes;
+		boost::unordered_set<Core::FMTlookup<tvdescriptor, Core::FMTdevelopment>> const * basenode;
 		mutable std::map<Core::FMToutputsource,std::vector<tvdescriptor>>searchtree;
         typedef typename std::map<Core::FMToutputsource,std::vector<tvdescriptor>>::const_iterator notecacheit;
 		
-		void setinitialcache(const boost::unordered_set<Core::FMTlookup<tvdescriptor,Core::FMTdevelopment>>& initialgraph)
+		/*void setinitialcache(const boost::unordered_set<Core::FMTlookup<tvdescriptor,Core::FMTdevelopment>>& initialgraph)
 		{
 			searchtree.clear();
 			basenode.resize(initialgraph.size());
@@ -59,7 +61,7 @@ namespace Graph
 			std::sort(basenode.begin(), basenode.end());
 			basenode.shrink_to_fit();
 
-		}
+		}*/
 		const std::vector<tvdescriptor>& getcleandescriptors(const Core::FMToutputnode& targetnode,const std::vector<Core::FMTaction>& actions,
 										const std::vector<Core::FMTtheme>&themes, bool& exactnode) const
 		{
@@ -71,7 +73,24 @@ namespace Graph
 			{
 				return parent->second;
 			}
-			std::vector<tvdescriptor> cleaned(basenode);
+			//std::vector<tvdescriptor> cleaned(basenode);
+			std::vector<tvdescriptor> cleaned;
+			if (basenode!=nullptr)
+			{
+				cleaned.reserve(basenode->size());
+				for (typename boost::unordered_set<Core::FMTlookup<tvdescriptor, Core::FMTdevelopment>>::const_iterator itgraph = basenode->begin();
+					itgraph != basenode->end(); itgraph++)
+					{
+					cleaned.push_back(itgraph->memoryobject);
+					}
+				std::sort(cleaned.begin(), cleaned.end());
+			}
+			else {
+				cleaned = inmemorynodes;
+			}
+			
+
+			//
 			if (parent != searchtree.end())
 			{
 				cleaned = parent->second;
@@ -80,7 +99,11 @@ namespace Graph
 			if (!exactnode)
 			{
 				std::vector<tvdescriptor>toremove;
-				const size_t basenodesize = basenode.size();
+				size_t basenodesize = inmemorynodes.size();
+				if (basenode != nullptr)
+					{
+					basenode->size();
+					}
 				const Core::FMTmask& targetmask = targetnode.source.getmask();
 				//Core::FMTmask unionmask(themes);
 				for (typename std::map<Core::FMToutputsource, std::vector<tvdescriptor>>::const_reverse_iterator sit = searchtree.rbegin();
@@ -210,18 +233,18 @@ namespace Graph
 		FMToutputnodecache& operator = (const FMToutputnodecache& rhs) = default;
 		~FMToutputnodecache() = default;
 		FMToutputnodecache(const boost::unordered_set<Core::FMTlookup<tvdescriptor,Core::FMTdevelopment>>& initialgraph) :
-			basenode(), searchtree()
+			inmemorynodes(),basenode(&initialgraph), searchtree()
 			{
-				this->setinitialcache(initialgraph);
+				//this->setinitialcache(initialgraph);
 			}
 		FMToutputnodecache(const std::vector<tvdescriptor>& initialnodes) :
-			basenode(), searchtree()
+			inmemorynodes(), basenode(nullptr), searchtree()
 		{
-			this->setinitialcache(initialnodes);
+			//this->setinitialcache(initialnodes);
 		}
 		unsigned long long getpotentialsize() const
 			{
-			return static_cast<unsigned long long>(searchtree.size()) * static_cast<unsigned long long>(basenode.size()) * sizeof(tvdescriptor);
+			return static_cast<unsigned long long>(searchtree.size()) * static_cast<unsigned long long>(basenode->size()) * sizeof(tvdescriptor);
 			}
 
 		void erasenode(const Core::FMToutputnode& node)
@@ -264,15 +287,20 @@ namespace Graph
 			}
 		void clear()
 		{
-			basenode.clear();
+			//basenode.clear();
+			inmemorynodes.clear();
 			searchtree.clear();
 		}
 		void insert(const FMToutputnodecache& rhs)
 			{
-			if (basenode.size()<rhs.basenode.size())
+			if (basenode==nullptr)
+			{
+				if (inmemorynodes.size() < rhs.inmemorynodes.size())
 				{
-				basenode = rhs.basenode;
+					inmemorynodes = rhs.inmemorynodes;
 				}
+			}
+			
 			searchtree.insert(rhs.searchtree.begin(), rhs.searchtree.end());
 			}
 	};

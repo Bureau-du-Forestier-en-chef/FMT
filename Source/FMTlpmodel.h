@@ -311,6 +311,13 @@ class FMTEXPORT FMTlpmodel : public FMTmodel
 		bound the model to that solution.
 		*/
 		bool setsolution(int period,const Core::FMTschedule& schedule, double tolerance = FMT_DBL_TOLERANCE);
+		// DocString: FMTlpmodel::setsolutionbylp
+		/**
+		In some cases if you avec alot of _lockexcempt actions comming from a Ws model it might be easier to
+		use the setsolutionbylp to set the solution on a partial graph. This function will change the objective function,
+		constraints and variables bounds so juste use it in a "Get results" context ( only valid for partial graph).
+		*/
+		bool setsolutionbylp(int period, const Core::FMTschedule& schedule, double tolerance = FMT_DBL_TOLERANCE);
 		// DocString: FMTlpmodel::boundsolution
 		/**
 		This function bounds the primal variables to the primal solution present within the matrix for

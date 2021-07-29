@@ -54,7 +54,8 @@ namespace Parser
                              const std::vector<Core::FMTtheme>& themes);
 		FMToptimizationsection getsection(const std::string& line) const;
 		bool setending(Core::FMTconstraint& constraint,std::string& line, const Core::FMTconstants& constants);
-		void setperiods(Core::FMTconstraint& constraint, const std::string& lower,const std::string& upper, const Core::FMTconstants& constants) const;
+		Core::FMTperbounds getperbound(const std::string& lower, const std::string& upper, const Core::FMTconstants& constants) const;
+		void setperiods(Core::FMTspec& constraint, const std::string& lower,const std::string& upper, const Core::FMTconstants& constants) const;
 		Core::FMToutput resume_output(const std::map<std::string,double>& nodes,
                           const std::vector<Core::FMToutput>& outputs,
                           const std::vector<Core::FMTtheme>& themes,
