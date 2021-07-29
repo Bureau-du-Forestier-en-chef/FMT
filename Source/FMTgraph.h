@@ -82,6 +82,8 @@ enum FMToutputlevel
 	};
 
 
+
+
 template <class tvertexproperties,class tedgeproperties>
 class FMTEXPORT FMTgraph : public Core::FMTobject
     {

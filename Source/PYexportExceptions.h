@@ -55,6 +55,7 @@ void exportException()
 		.value("FMTunsupported_yield", Exception::FMTexc::FMTunsupported_yield)
 		.value("FMToutput_missing_operator", Exception::FMTexc::FMToutput_missing_operator)
 		.value("FMTinvalidyield_number",Exception::FMTexc::FMTinvalidyield_number)
+		.value("FMTundefinedoutput_attribute", Exception::FMTexc::FMTundefinedoutput_attribute)
 		.export_values();
 
 	define_pylist<Exception::FMTexc>();

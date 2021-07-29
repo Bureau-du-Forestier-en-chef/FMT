@@ -124,6 +124,7 @@ namespace Core{
      bool FMTdevelopment::operable(const FMTaction& action,const FMTyields& ylds) const
         {
 		 try{
+	 
 			if (worthtestingoperability(action))
 				{
 				for (const FMTspec* spec : action.findsets(mask))

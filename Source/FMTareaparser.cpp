@@ -1668,7 +1668,6 @@ namespace Parser{
 						for (size_t theme_id = 1; theme_id <= splitted_mask.size(); ++theme_id)
 						{
 							header_line += "TH" + std::to_string(theme_id) + " ";
-							++theme_id;
 						}
 						header_line += "AGE";
 						header_line += " AREA";

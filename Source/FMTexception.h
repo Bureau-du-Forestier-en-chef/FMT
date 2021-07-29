@@ -137,7 +137,8 @@ enum FMTexc
 	FMToutput_operator_ignore=64,
 	FMTinvalidyield_number = 65,
 	FMTgdal_constructor_error=66,
-	FMTinvalid_geometry=67
+	FMTinvalid_geometry=67,
+	FMTundefinedoutput_attribute = 68
     };
 
 // DocString: FMTexception

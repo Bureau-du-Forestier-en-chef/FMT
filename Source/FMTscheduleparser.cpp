@@ -164,11 +164,31 @@ namespace Parser {
 			schedulestream.open(location);
 			if (tryopening(schedulestream, location))
 			{
-				for (const Core::FMTschedule& sch : schedules)
+				//Write an header
+				if (!schedules.empty() && (!schedules.begin()->empty()) && (!schedules.begin()->begin()->second.empty()) &&
+					(!schedules.begin()->begin()->second.begin()->second.empty()))
 				{
-					schedulestream << std::string(sch);
+					const std::string maskstr = std::string(schedules.begin()->begin()->second.begin()->first.getmask());
+					std::vector<std::string>splittedmask;
+					const std::string forstrsep = FMT_STR_SEPARATOR;
+					boost::split(splittedmask, maskstr, boost::is_any_of(forstrsep), boost::token_compress_on);
+					schedulestream << ";";
+					for (size_t thid = 0; thid < splittedmask.size(); ++thid)
+					{
+						schedulestream << "TH" + std::to_string(thid + 1) + " ";
+					}
+					schedulestream << "AGE ";
+					if (schedules.begin()->douselock())
+					{
+						schedulestream << "LOCK ";
+					}
+					schedulestream << "AREA ACTION PERIOD\n";
+					for (const Core::FMTschedule& sch : schedules)
+					{
+						schedulestream << std::string(sch);
+					}
+					schedulestream.close();
 				}
-				schedulestream.close();
 			}
 		}
 		catch (...)
