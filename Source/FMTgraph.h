@@ -451,7 +451,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 							actives = new_actives;
 							++action_id;
 						}
-
+					rebasecache();
 					}
 					catch (...)
 					{
@@ -1362,7 +1362,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 					}
 					++action_id;
 				}
-
+			rebasecache();
 			}
 			catch (...)
 			{
@@ -1493,6 +1493,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 					}
 				}
 				*periodit = restingdevelopments;
+				rebasecache();
 				const int firstperiod = this->getfirstactiveperiod();
 				if (static_cast<size_t>(firstperiod) < nodescache.size())
 				{
@@ -1794,6 +1795,20 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 				_exhandler->raisefromcatch("", "FMTgraph::getperiod", __LINE__, __FILE__);
 				}
 			return 0;
+		}
+
+		void rebasecache()
+		{
+			try {
+				for (size_t nodecacheid = 0; nodecacheid < nodescache.size(); ++nodecacheid)
+				{
+					nodescache[nodecacheid].rebase(developments.at(nodecacheid));
+				}
+			}
+			catch (...)
+			{
+				_exhandler->raisefromcatch("", "FMTgraph::rebasecache", __LINE__, __FILE__);
+			}
 		}
 
 
