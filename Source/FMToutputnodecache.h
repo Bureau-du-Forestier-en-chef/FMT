@@ -39,6 +39,8 @@ namespace Graph
 		boost::unordered_set<Core::FMTlookup<tvdescriptor, Core::FMTdevelopment>> const * basenode;
 		mutable std::map<Core::FMToutputsource,std::vector<tvdescriptor>>searchtree;
         typedef typename std::map<Core::FMToutputsource,std::vector<tvdescriptor>>::const_iterator notecacheit;
+
+		
 		
 		/*void setinitialcache(const boost::unordered_set<Core::FMTlookup<tvdescriptor,Core::FMTdevelopment>>& initialgraph)
 		{
@@ -68,7 +70,7 @@ namespace Graph
 			//bool exact = false;
 			exactnode = false;
 			typename std::map<Core::FMToutputsource, std::vector<tvdescriptor>>::const_iterator parent = this->getparentnode(targetnode, actions, exactnode);
-			//std::cout << "exact? " << exact << "\n";
+			//Logging::FMTlogger() << "exact? " << exactnode << "\n";
 			if (exactnode)
 			{
 				return parent->second;
@@ -88,6 +90,7 @@ namespace Graph
 			else {
 				cleaned = inmemorynodes;
 			}
+			//Logging::FMTlogger() << "cleaned size of " << cleaned.size() << "\n";
 			
 
 			//
@@ -102,7 +105,7 @@ namespace Graph
 				size_t basenodesize = inmemorynodes.size();
 				if (basenode != nullptr)
 					{
-					basenode->size();
+					basenodesize =  basenode->size();
 					}
 				const Core::FMTmask& targetmask = targetnode.source.getmask();
 				//Core::FMTmask unionmask(themes);
@@ -288,8 +291,13 @@ namespace Graph
 		void clear()
 		{
 			//basenode.clear();
+			basenode = nullptr;
 			inmemorynodes.clear();
 			searchtree.clear();
+		}
+		void rebase(const boost::unordered_set<Core::FMTlookup<tvdescriptor, Core::FMTdevelopment>>& initialgraph)
+		{
+			basenode = &initialgraph;
 		}
 		void insert(const FMToutputnodecache& rhs)
 			{

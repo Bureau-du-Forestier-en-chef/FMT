@@ -62,6 +62,7 @@ namespace Graph
 		try {
 			const size_t activessize = developments.back().size();
 			developments.push_back(boost::unordered_set<Core::FMTlookup<FMTvertex_descriptor,Core::FMTdevelopment>>());
+			rebasecache();
 			if (activessize > 1)
 			{
 				_exhandler->raise(Exception::FMTexc::FMTnotlinegraph, "More than one active at the begining of the period", "FMTlinegraph::newperiod()", __LINE__, __FILE__);
@@ -332,6 +333,7 @@ namespace Graph
 		try {
 			Graph::FMTlinegraph::FMTvertex_descriptor active = getactivevertex();
 			developments.push_back(boost::unordered_set<Core::FMTlookup<FMTvertex_descriptor,Core::FMTdevelopment>>());
+			rebasecache();
 			std::vector<int>operated;
 			while (active!= boost::graph_traits<FMTadjacency_list>::null_vertex())
 			{
