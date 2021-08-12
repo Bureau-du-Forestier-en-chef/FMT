@@ -505,7 +505,7 @@ namespace Parser
 			}else{
 				_exhandler->raise(Exception::FMTexc::FMTinvalid_constraint,
 					line+"  at line " + std::to_string(_line),
-					"FMToptimizationparser::getperiodsbounds", __LINE__, __FILE__, _section);
+					"FMToptimizationparser::getconstraints", __LINE__, __FILE__, _section);
 				}
 		}catch (...)
 			{
