@@ -974,7 +974,7 @@ namespace Core
 					dorecloseof = false;
 					}
 				std::vector<double>patternvalues;
-				for (int period = 1;period< startingperiod;++period)//open
+				for (int period = 1;period<= startingperiod;++period)//open
 					{
 					patternvalues.push_back(1.0);
 					}
