@@ -974,7 +974,8 @@ namespace Core
 					dorecloseof = false;
 					}
 				std::vector<double>patternvalues;
-				for (int period = 1;period<= startingperiod;++period)//open
+				//Base is 0 so the first period to iterate is 0 and at the starting period it stops.
+				for (int period = 0;period< startingperiod;++period)//open
 					{
 					patternvalues.push_back(1.0);
 					}
@@ -996,7 +997,7 @@ namespace Core
 				const Core::FMTmask defaultmask(defaultstrmask, themes);
 				Core::FMTyieldhandler defaulthandler(Core::FMTyldtype::FMTtimeyld, defaultmask);
 				defaulthandler.push_base(0);
-				defaulthandler.push_base(1);
+				//defaulthandler.push_base(1);
 				size_t sourceid = 0;
 				yields.unshrink(themes);
 				for (const Core::FMToutputsource& source : sources)
@@ -1017,7 +1018,7 @@ namespace Core
 						}
 						Core::FMTyieldhandler yieldhandler(Core::FMTyldtype::FMTtimeyld, source.getmask());
 						yieldhandler.push_base(0);
-						yieldhandler.push_base(1);
+						//yieldhandler.push_base(1);
 						for (const double& pattern : patternvalues)
 						{
 							yieldhandler.push_data(yieldname, pattern);
