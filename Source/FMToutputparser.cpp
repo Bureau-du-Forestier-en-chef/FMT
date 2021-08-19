@@ -79,20 +79,23 @@ namespace Parser
 										{
 											sources.push_back(Core::FMToutputsource(Core::FMTotar::level, 0, "", name,outputid,themetarget));
 										}
-										if (operators.size()==sources.size())
+										if (!processing_level)
 										{
-											_exhandler->raise(Exception::FMTexc::FMToutput_operator_ignore,
+											if (operators.size()==sources.size())
+											{
+												_exhandler->raise(Exception::FMTexc::FMToutput_operator_ignore,
+																	name +" at line "+std::to_string(lastsourcelineid) ,"FMToutputparser::read", __LINE__, __FILE__, _section);
+												operators.pop_back();
+											}else if(operators.size()>sources.size())
+											{
+												_exhandler->raise(Exception::FMTexc::FMTunsupported_output,
 																name +" at line "+std::to_string(lastsourcelineid) ,"FMToutputparser::read", __LINE__, __FILE__, _section);
-											operators.pop_back();
-										}else if(operators.size()>sources.size())
-										{
-											_exhandler->raise(Exception::FMTexc::FMTunsupported_output,
-															name +" at line "+std::to_string(lastsourcelineid) ,"FMToutputparser::read", __LINE__, __FILE__, _section);
 
-										}else if (operators.size()<sources.size()-1)
-										{
-											_exhandler->raise(Exception::FMTexc::FMToutput_missing_operator,
-																name +" at line "+std::to_string(lastsourcelineid) ,"FMToutputparser::read", __LINE__, __FILE__, _section);
+											}else if (operators.size()<sources.size()-1)
+											{
+												_exhandler->raise(Exception::FMTexc::FMToutput_missing_operator,
+																	name +" at line "+std::to_string(lastsourcelineid) ,"FMToutputparser::read", __LINE__, __FILE__, _section);
+											}
 										}
 										outputs.push_back(Core::FMToutput(name, description, /*themetarget,*/ sources, operators));
 										/*
@@ -558,20 +561,23 @@ namespace Parser
 							{
 								sources.push_back(Core::FMToutputsource(Core::FMTotar::level, 0, "", name,outputid,themetarget));
 							}
-							if (operators.size()==sources.size())
+							if (!processing_level)
 							{
-								_exhandler->raise(Exception::FMTexc::FMToutput_operator_ignore,
+								if (operators.size()==sources.size())
+								{
+									_exhandler->raise(Exception::FMTexc::FMToutput_operator_ignore,
+														name +" at line "+std::to_string(lastsourcelineid) ,"FMToutputparser::read", __LINE__, __FILE__, _section);
+									operators.pop_back();
+								}else if(operators.size()>sources.size())
+								{
+									_exhandler->raise(Exception::FMTexc::FMTunsupported_output,
 													name +" at line "+std::to_string(lastsourcelineid) ,"FMToutputparser::read", __LINE__, __FILE__, _section);
-								operators.pop_back();
-							}else if(operators.size()>sources.size())
-							{
-								_exhandler->raise(Exception::FMTexc::FMTunsupported_output,
-												name +" at line "+std::to_string(lastsourcelineid) ,"FMToutputparser::read", __LINE__, __FILE__, _section);
 
-							}else if (operators.size()<sources.size()-1)
-							{
-								_exhandler->raise(Exception::FMTexc::FMToutput_missing_operator,
-													name +" at line "+std::to_string(lastsourcelineid) ,"FMToutputparser::read", __LINE__, __FILE__, _section);
+								}else if (operators.size()<sources.size()-1)
+								{
+									_exhandler->raise(Exception::FMTexc::FMToutput_missing_operator,
+														name +" at line "+std::to_string(lastsourcelineid) ,"FMToutputparser::read", __LINE__, __FILE__, _section);
+								}
 							}
 							outputs.push_back(Core::FMToutput(name, description, /*themetarget,*/ sources, operators));
 							outputs.back().passinobject(*this);
