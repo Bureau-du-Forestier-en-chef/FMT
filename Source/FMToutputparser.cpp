@@ -83,7 +83,7 @@ namespace Parser
 										{
 											if (operators.size()==sources.size())
 											{
-												_exhandler->raise(Exception::FMTexc::FMToutput_operator_ignore,
+												_exhandler->raise(Exception::FMTexc::FMToutput_too_much_operator,
 																	name +" at line "+std::to_string(lastsourcelineid) ,"FMToutputparser::read", __LINE__, __FILE__, _section);
 												operators.pop_back();
 											}else if(operators.size()>sources.size())
@@ -565,7 +565,7 @@ namespace Parser
 							{
 								if (operators.size()==sources.size())
 								{
-									_exhandler->raise(Exception::FMTexc::FMToutput_operator_ignore,
+									_exhandler->raise(Exception::FMTexc::FMToutput_too_much_operator,
 														name +" at line "+std::to_string(lastsourcelineid) ,"FMToutputparser::read", __LINE__, __FILE__, _section);
 									operators.pop_back();
 								}else if(operators.size()>sources.size())
