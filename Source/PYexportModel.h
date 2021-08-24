@@ -36,6 +36,7 @@ BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(getareavariabilities_overloads, getareava
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(boundsolution_overloads, boundsolution, 1, 2)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(eraseperiod_overloads, eraseperiod,0,1)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(setsolution_overloads,setsolution, 2, 3)
+BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(setsolutionbylp_overloads,setsolutionbylp, 2, 3)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(basepresolve_overloads,basepresolve, 0, 1)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(addscheduletoobjective_overloads, addscheduletoobjective, 1, 2)
 
@@ -183,6 +184,8 @@ void exportModel()
 			getsolution_overloads(bp::args("period", "withlock"), "@DocString(FMTlpmodel::getsolution)"))
 		.def("setsolution", &Models::FMTlpmodel::setsolution,
 			setsolution_overloads(bp::args("period", "schedule", "tolerance"), "@DocString(FMTlpmodel::setsolution)"))
+		.def("setsolutionbylp", &Models::FMTlpmodel::setsolutionbylp,
+			setsolutionbylp_overloads(bp::args("period", "schedule", "tolerance"), "@DocString(FMTlpmodel::setsolutionbylp)"))
 		.def("setobjective", &Models::FMTlpmodel::setobjective,
 			"@DocString(FMTlpmodel::setobjective)")
 		.def("clearcache", &Models::FMTlpmodel::clearcache,
