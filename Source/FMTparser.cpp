@@ -390,6 +390,75 @@ void FMTparser::getWSfields(OGRLayer* layer, std::map<int, int>& themes, int& ag
 }
 
 #endif
+std::string FMTparser::setspecs(Core::FMTsection section, Core::FMTkwor key,const Core::FMTyields& ylds,const Core::FMTconstants& constants,std::vector<Core::FMTspec>& specs, const std::string& line)
+    {
+	std::string rest = "";
+	std::regex rxayldagetest("^(.+)(\\@YLD[\\s\\t]*\\()([^,]*)([,])(.+)(\\))(.+)|^(.+)(\\@AGE[\\s\\t]*\\()(.+)(\\))(.+)", std::regex_constants::ECMAScript | std::regex_constants::icase);
+	std::regex rxbounds("^(.+)(\\.\\.)(.+)|(.+)",std::regex_constants::icase); 
+	try {
+			std::smatch kmatch;
+			
+			if (std::regex_search(line, kmatch, rxayldagetest))
+			{
+				bool pushaagebound = false;
+				std::string boundsmatch = std::string(kmatch[5])+std::string(kmatch[10]);
+				boost::trim(boundsmatch);
+				std::vector<std::string> bounds;
+				boost::split(bounds,boundsmatch,boost::is_any_of(","),boost::algorithm::token_compress_on);
+				std::string yld = std::string(kmatch[3]);
+				boost::trim(yld);
+				if(std::string(kmatch[9]).empty() && yld!="_AGE")
+				{
+					isyld(ylds, yld, section);
+				}else{
+					pushaagebound = true;	
+				}
+				for (std::string& bound : bounds)
+				{
+					boost::trim(bound);
+					std::smatch bmatch;
+					double upperbound = std::numeric_limits<double>::max();
+					double lowerbound = std::numeric_limits<double>::min();
+					if (std::regex_search(bound,bmatch,rxbounds))
+					{
+						std::string singlebound = std::string(bmatch[4]);
+						if(singlebound.empty())
+						{
+							std::string strlower = std::string(bmatch[1]);
+							boost::trim(strlower);
+							lowerbound = getnum<double>(strlower, constants);
+							std::string strupper = std::string(bmatch[3]);
+							boost::trim(strupper);
+							if( strupper != "_MAXAGE")
+							{
+								upperbound = getnum<double>(strupper, constants);						
+							}
+						}else{
+							lowerbound =  getnum<double>(singlebound, constants);
+							upperbound =  getnum<double>(singlebound, constants);	
+						}
+						Core::FMTspec newspec;
+						if (pushaagebound)
+						{
+							newspec.addbounds(Core::FMTagebounds(section, key, static_cast<int>(upperbound), static_cast<int>(lowerbound)));
+						}else {
+							newspec.addbounds(Core::FMTyldbounds(section, key, yld, upperbound, lowerbound));
+							}
+						specs.push_back(newspec);
+					}
+				}
+				rest = " "+std::string(kmatch[1])+std::string(kmatch[7])+std::string(kmatch[12]);
+			}else{
+				rest=line;
+			}
+		}catch (...)
+			{
+			_exhandler->raisefromcatch("",
+				"FMTparser::setspec", __LINE__, __FILE__, _section);
+			}
+    return rest;
+    }
+
 std::string FMTparser::setspec(Core::FMTsection section, Core::FMTkwor key,const Core::FMTyields& ylds,const Core::FMTconstants& constants,Core::FMTspec& spec, const std::string& line)
     {
 	std::string rest = "";
