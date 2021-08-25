@@ -23,6 +23,6 @@ if __name__ == "__main__":
                                             0.0001,
                                             "",
                                             0.0,
-                                            "../Models/TWD_land/rasters/TestmaptoFMTforest/",
+                                            "../Models/TWD_land/rasters/",
                                             False)
 

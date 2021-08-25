@@ -238,6 +238,7 @@ void exportModel()
 
 	bp::class_<Models::FMTsamodel, bp::bases<Models::FMTmodel>>("FMTsamodel", "@DocString(FMTsamodel)")
             .def(bp::init<Models::FMTmodel>())
+			.def(bp::init<Models::FMTsamodel>())	
             .def("get_current_solution",&Models::FMTsamodel::get_current_solution,
 				"@DocString(FMTsamodel::get_current_solution)")
             .def("get_new_solution",&Models::FMTsamodel::get_new_solution,

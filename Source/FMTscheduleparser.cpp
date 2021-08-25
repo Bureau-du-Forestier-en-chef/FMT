@@ -165,10 +165,15 @@ namespace Parser {
 			if (tryopening(schedulestream, location))
 			{
 				//Write an header
-				if (!schedules.empty() && (!schedules.begin()->empty()) && (!schedules.begin()->begin()->second.empty()) &&
-					(!schedules.begin()->begin()->second.begin()->second.empty()))
+				std::vector<Core::FMTschedule>::const_iterator firstnonemptyschedule = schedules.begin();
+				while (firstnonemptyschedule!= schedules.end()&&firstnonemptyschedule->empty())
+					{
+					++firstnonemptyschedule;
+					}
+				if (!schedules.empty() && (!firstnonemptyschedule->empty()) && (!firstnonemptyschedule->begin()->second.empty()) &&
+					(!firstnonemptyschedule->begin()->second.begin()->second.empty()))
 				{
-					const std::string maskstr = std::string(schedules.begin()->begin()->second.begin()->first.getmask());
+					const std::string maskstr = std::string(firstnonemptyschedule->begin()->second.begin()->first.getmask());
 					std::vector<std::string>splittedmask;
 					const std::string forstrsep = FMT_STR_SEPARATOR;
 					boost::split(splittedmask, maskstr, boost::is_any_of(forstrsep), boost::token_compress_on);
@@ -178,14 +183,18 @@ namespace Parser {
 						schedulestream << "TH" + std::to_string(thid + 1) + " ";
 					}
 					schedulestream << "AGE ";
-					if (schedules.begin()->douselock())
+					if (firstnonemptyschedule->douselock())
 					{
 						schedulestream << "LOCK ";
 					}
 					schedulestream << "AREA ACTION PERIOD\n";
 					for (const Core::FMTschedule& sch : schedules)
 					{
-						schedulestream << std::string(sch);
+						if (!sch.empty())
+						{
+							schedulestream << std::string(sch);
+						}
+						
 					}
 					schedulestream.close();
 				}
