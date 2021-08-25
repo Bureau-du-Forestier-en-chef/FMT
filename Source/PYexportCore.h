@@ -93,6 +93,7 @@ void exportCore()
 		bool (Core::FMTmask::*issubsetof)(const Core::FMTmask&) const = &Core::FMTmask::issubsetof;
 
 		bp::class_<Core::FMTmask>("FMTmask", "@DocString(FMTmask)")
+				.def(bp::init<Core::FMTmask>())
 				.def_pickle(FMT_pickle_suite<Core::FMTmask>())
 				.def(bp::init<const std::vector<std::string>&,const std::vector<Core::FMTtheme>&>())
 				.def(bp::init<const std::string&, const std::vector<Core::FMTtheme>&>())
@@ -116,6 +117,7 @@ void exportCore()
 
 		bp::class_<Core::FMTdevelopment>("FMTdevelopment", "@DocString(FMTdevelopment)")
 				.def_pickle(FMT_pickle_suite<Core::FMTdevelopment>())
+			    .def(bp::init<Core::FMTdevelopment>())
 				.def("getage", &Core::FMTdevelopment::getage,
 					"@DocString(FMTdevelopment::getage)")
 				.def("getlock", &Core::FMTdevelopment::getlock,
@@ -153,7 +155,8 @@ void exportCore()
 				"@DocString(FMTspec::getperiodlowerbound)");
 
 		bp::class_<Core::FMTactualdevelopment, bp::bases<Core::FMTdevelopment>>("FMTactualdevelopment", "@DocString(FMTactualdevelopment)")
-                .def("getarea", &Core::FMTactualdevelopment::getarea,
+			    .def(bp::init<Core::FMTactualdevelopment>())
+			    .def("getarea", &Core::FMTactualdevelopment::getarea,
 					"@DocString(FMTactualdevelopment::getarea)")
 				.def("setarea", &Core::FMTactualdevelopment::setarea,
 					"@DocString(FMTactualdevelopment::setarea)")
@@ -178,6 +181,7 @@ void exportCore()
 
 			bp::class_<Core::FMTaction, bp::bases<Core::FMTlist<Core::FMTspec>>>("FMTaction", "@DocString(FMTaction)")
 				.def_pickle(FMT_pickle_suite<Core::FMTaction>())
+				.def(bp::init<Core::FMTaction>())
                 .def("__eq__",&Core::FMTaction::operator ==,
 					"@DocString(FMTaction::operator==)")
                 .def("__ne__",&Core::FMTaction::operator !=,
@@ -221,6 +225,7 @@ void exportCore()
 					"@DocString(FMTyieldhandler::postsolve)");
 
 			bp::class_<Core::FMTyields, bp::bases<Core::FMTlist<Core::FMTyieldhandler>>>("FMTyields", "@DocString(FMTyields)")
+				.def(bp::init<Core::FMTyields>())
 				.def_pickle(FMT_pickle_suite<Core::FMTyields>())
 				.def("getallyields", &Core::FMTyields::getallyields,
 					"@DocString(FMTyields::getallyields)");
@@ -229,6 +234,7 @@ void exportCore()
 
 			bp::class_<Core::FMTtransition, bp::bases<Core::FMTlist<Core::FMTfork>>>("FMTtransition", "@DocString(FMTtransition)")
 				.def_pickle(FMT_pickle_suite<Core::FMTtransition>())
+				.def(bp::init<Core::FMTtransition>())
                 .def("single",&Core::FMTtransition::single,
 					"@DocString(FMTtransition::single)")
 				.def("main_target", &Core::FMTtransition::main_target,
@@ -257,7 +263,7 @@ void exportCore()
 			define_FMTlist<Core::FMToutputnode>();
 
 			bp::class_<Core::FMToutput>("FMToutput", "@DocString(FMToutput)")
-				.def(bp::init<const Core::FMToutput&>())
+				.def(bp::init<Core::FMToutput>())
 				.def_pickle(FMT_pickle_suite<Core::FMTtransition>())
                 .def("getname",&Core::FMToutput::getname,
 					"@DocString(FMToutput::getname)")
@@ -279,6 +285,7 @@ void exportCore()
 
 			bp::class_<Core::FMTtheme>("FMTtheme", "@DocString(FMTtheme)")
 				.def_pickle(FMT_pickle_suite<Core::FMTtheme>())
+				.def(bp::init<Core::FMTtheme>())
 				.def("__str__", &Core::FMTtheme::operator std::string,
 					"@DocString(FMTtheme::operator std::string)")
 				.def("__eq__", &Core::FMTtheme::operator ==,
@@ -291,6 +298,7 @@ void exportCore()
 
 			bp::class_<Core::FMTschedule>("FMTschedule", "@DocString(FMTschedule)")
 				.def_pickle(FMT_pickle_suite<Core::FMTschedule>())
+				.def(bp::init<Core::FMTschedule>())
 				.def(bp::init<int, std::map<Core::FMTaction, std::map<Core::FMTdevelopment, std::vector<double>>>>())
 				.def("__str__", &Core::FMTschedule::operator std::string,
 					"@DocString(FMTschedule::operator std::string)")
@@ -319,6 +327,7 @@ void exportCore()
 					bp::make_setter(&Core::FMTGCBMtransition::themes, bp::return_value_policy<bp::return_by_value>()));
 
 			bp::class_<Core::FMTconstraint, bp::bases<Core::FMToutput,Core::FMTspec>>("FMTconstraint", "@DocString(FMTconstraint)")
+				.def(bp::init<Core::FMTconstraint>())
 				.def("__str__", &Core::FMTconstraint::operator std::string,
 					"@DocString(FMTconstraint::operator std::string)")
 				.def("__eq__", &Core::FMTconstraint::operator ==,
