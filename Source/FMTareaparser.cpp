@@ -282,7 +282,10 @@ namespace Parser{
 				{
 					lockmap[att] = att;
 				}
-				writelayer<std::string>(locklayer, lock, lockmap);
+				if (!locklayer.empty())
+				{
+					writelayer<std::string>(locklayer, lock, lockmap);
+				}
 				return true;
 			}
 		}catch (...)

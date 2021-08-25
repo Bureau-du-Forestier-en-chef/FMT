@@ -9,10 +9,12 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 cmake_minimum_required(VERSION 3.6)
 set(FMTSimpleplanningSOURCEFILES "${CMAKE_CURRENT_SOURCE_DIR}/Examples/C++/Simpleplanning.cpp")
 set(FMTSpatialyexplicitsimulationSOURCEFILES "${CMAKE_CURRENT_SOURCE_DIR}/Examples/C++/Spatialyexplicitsimulation.cpp")
+set(maptoFMTforestSOURCEFILES "${CMAKE_CURRENT_SOURCE_DIR}/Examples/C++/maptoFMTforest.cpp")
 foreach(sourcefile ${FMTSOURCEFILES})
 	if (NOT "${sourcefile}" MATCHES "main.cpp")
 		list(APPEND FMTSimpleplanningSOURCEFILES "${sourcefile}")
 		list(APPEND FMTSpatialyexplicitsimulationSOURCEFILES "${sourcefile}")
+		list(APPEND maptoFMTforestSOURCEFILES "${sourcefile}")
 	endif(NOT "${sourcefile}" MATCHES "main.cpp")
 endforeach()
 
@@ -69,5 +71,20 @@ if (MOSEK_FOUND)
 	target_sources(FMTlib PRIVATE ${OSIMSK_DEFINITION})
 endif(MOSEK_FOUND)
 
-
-
+if (GDAL_FOUND)
+	project(maptoFMTforest VERSION "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH}" LANGUAGES CXX)
+	add_executable(maptoFMTforest ${maptoFMTforestSOURCEFILES})
+	if (NOT MSVC)
+		set_target_properties( maptoFMTforest
+			PROPERTIES
+			ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE}"
+			LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE}"
+			RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE}"
+		)
+	endif(NOT MSVC)
+	set_property(TARGET maptoFMTforest PROPERTY CXX_STANDARD 11)
+	set_property(TARGET maptoFMTforest PROPERTY CXX_STANDARD_REQUIRED ON)
+	if (MOSEK_FOUND AND MSVC)
+		target_sources(maptoFMTforest PRIVATE ${OSIMSK_DEFINITION})
+	endif(MOSEK_FOUND AND MSVC)
+endif(GDAL_FOUND)
