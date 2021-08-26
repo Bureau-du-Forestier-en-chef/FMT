@@ -515,10 +515,10 @@ std::string FMTexceptionhandler::updatestatus(const FMTexc lexception, const std
    		_level = FMTlev::FMT_logic;
    		++_errorcount;
    		break;
-    case FMTexc::FMToutput_operator_ignore:
-   		msg += "To much operator in the output definition" + message;
-   		_level = FMTlev::FMT_Warning;
-   		++_warningcount;
+    case FMTexc::FMToutput_too_much_operator:
+   		msg += "To much operator in the output definition " + message;
+   		_level = FMTlev::FMT_logic;
+   		++_errorcount;
    		break;
 	case FMTexc::FMTgdal_constructor_error:
    		msg += "Error while contructing gdal object : " + message;
