@@ -7,6 +7,8 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 #include "FMTparser.h"
 #include <boost/filesystem/convenience.hpp>
+#include <boost/icl/interval.hpp>
+#include <boost/icl/interval_set.hpp>
 //#include <boost/filesystem.hpp>
 //#include <boost/locale.hpp>
 
@@ -71,6 +73,8 @@ FMTparser::FMTparser() : Core::FMTobject(),
 		_section(Core::FMTsection::Empty),
 		rxayld("^(.+)(\\@YLD[\\s\\t]*\\()([\\s\\t]*)(.+)(\\,)([\\s\\t]*)((#[^\\.]*)|([-]*\\d*.[-]*\\d*))(\\.\\.)((#[^\\.]*)|([-]*\\d*.[-]*\\d*)|(_MAXAGE))(\\))(.+)|(.+)(\\@YLD[\\s\\t]*\\()([\\s\\t]*)(.+)(\\,)([\\s\\t]*)((#[^\\.]*)|([-]*\\d*)|([-]*\\d*.[-]*\\d*))(\\))(.+)", std::regex_constants::ECMAScript | std::regex_constants::icase),
         rxaage("^(.+)(\\@AGE[\\s\\t]*\\()([\\s\\t]*)((#[^\\.]*)|(\\d*)|(\\d*.\\d*))(\\.\\.)((#[^\\.]*)|(\\d*)|(\\d*.\\d*)|(_MAXAGE))(\\))(.+)|(.+)(\\@AGE[\\s\\t]*\\()([\\s\\t]*)((#[^\\.]*)|(\\d*)|(\\d*.\\d*))(\\))(.+)", std::regex_constants::ECMAScript| std::regex_constants::icase),
+		rxayldage("^(.+)(\\@YLD[\\s\\t]*\\()([^,]*)([,])([^\\)]*)(\\))(.+)|^(.+)(\\@AGE[\\s\\t]*\\()([^\\)]*)(\\))(.+)", std::regex_constants::ECMAScript | std::regex_constants::icase),
+		rxbounds("^(.+)(\\.\\.)(.+)|(.+)"), 
 		rxoperators("([^\\+\\-\\/\\*]*)([\\+\\-\\/\\*]*)", std::regex_constants::icase),
 		rxprimary("^([^\\[]*)(\\[)([^\\]]*)(.+)"),
 		_constreplacement(0),
@@ -107,6 +111,8 @@ FMTparser::FMTparser(const FMTparser& rhs):
 		_section(rhs._section),
         rxayld(rhs.rxayld),
         rxaage(rhs.rxaage),
+		rxayldage(rhs.rxayldage),
+		rxbounds(rhs.rxbounds),
 		rxoperators(rhs.rxoperators),
 		rxprimary(rhs.rxprimary),
         _constreplacement(rhs._constreplacement),
@@ -135,6 +141,8 @@ FMTparser& FMTparser::operator = (const FMTparser& rhs)
 			_section = rhs._section;
             rxayld = rhs.rxayld;
             rxaage = rhs.rxaage;
+			rxayldage = rhs.rxayldage;
+			rxbounds = rhs.rxbounds;
 			rxoperators = rhs.rxoperators;
             rxfor = rhs.rxfor;
             rxend = rhs.rxend;
@@ -393,18 +401,16 @@ void FMTparser::getWSfields(OGRLayer* layer, std::map<int, int>& themes, int& ag
 std::string FMTparser::setspecs(Core::FMTsection section, Core::FMTkwor key,const Core::FMTyields& ylds,const Core::FMTconstants& constants,std::vector<Core::FMTspec>& specs, const std::string& line)
     {
 	std::string rest = "";
-	std::regex rxayldagetest("^(.+)(\\@YLD[\\s\\t]*\\()([^,]*)([,])(.+)(\\))(.+)|^(.+)(\\@AGE[\\s\\t]*\\()(.+)(\\))(.+)", std::regex_constants::ECMAScript | std::regex_constants::icase);
-	std::regex rxbounds("^(.+)(\\.\\.)(.+)|(.+)",std::regex_constants::icase); 
 	try {
 			std::smatch kmatch;
 			
-			if (std::regex_search(line, kmatch, rxayldagetest))
+			if (std::regex_search(line, kmatch, rxayldage))
 			{
 				bool pushaagebound = false;
 				std::string boundsmatch = std::string(kmatch[5])+std::string(kmatch[10]);
 				boost::trim(boundsmatch);
-				std::vector<std::string> bounds;
-				boost::split(bounds,boundsmatch,boost::is_any_of(","),boost::algorithm::token_compress_on);
+				std::vector<std::string> strbounds;
+				boost::split(strbounds,boundsmatch,boost::is_any_of(","),boost::algorithm::token_compress_on);
 				std::string yld = std::string(kmatch[3]);
 				boost::trim(yld);
 				if(std::string(kmatch[9]).empty() && yld!="_AGE")
@@ -413,7 +419,8 @@ std::string FMTparser::setspecs(Core::FMTsection section, Core::FMTkwor key,cons
 				}else{
 					pushaagebound = true;	
 				}
-				for (std::string& bound : bounds)
+				boost::icl::interval_set <double> bounds;
+				for (std::string& bound : strbounds)
 				{
 					boost::trim(bound);
 					std::smatch bmatch;
@@ -437,15 +444,19 @@ std::string FMTparser::setspecs(Core::FMTsection section, Core::FMTkwor key,cons
 							lowerbound =  getnum<double>(singlebound, constants);
 							upperbound =  getnum<double>(singlebound, constants);	
 						}
-						Core::FMTspec newspec;
-						if (pushaagebound)
-						{
-							newspec.addbounds(Core::FMTagebounds(section, key, static_cast<int>(upperbound), static_cast<int>(lowerbound)));
-						}else {
-							newspec.addbounds(Core::FMTyldbounds(section, key, yld, upperbound, lowerbound));
-							}
-						specs.push_back(newspec);
+						bounds.insert(boost::icl::continuous_interval<double>::closed(lowerbound,upperbound));
 					}
+				}
+				for(boost::icl::interval_set<double>::reverse_iterator rit = bounds.rbegin(); rit != bounds.rend(); ++rit)
+				{
+					Core::FMTspec newspec;
+					if (pushaagebound)
+					{
+						newspec.addbounds(Core::FMTagebounds(section, key, static_cast<int>(rit->upper()), static_cast<int>(rit->lower())));
+					}else {
+						newspec.addbounds(Core::FMTyldbounds(section, key, yld, rit->upper(), rit->lower()));
+						}
+					specs.push_back(newspec);
 				}
 				rest = " "+std::string(kmatch[1])+std::string(kmatch[7])+std::string(kmatch[12]);
 			}else{

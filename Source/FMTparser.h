@@ -96,6 +96,12 @@ class FMTEXPORT FMTparser: public Core::FMTobject
 		// DocString: FMTparser::rxaage
 		///A regex for capturing age specificaiton
 		std::regex rxaage;
+		// DocString: FMTparser::rxayldage
+		///A regex for capturing age or yield specification
+		std::regex rxayldage;
+		// DocString: FMTparser::rxbounds
+		///A regex for capturing bounds for yield or age specification
+		std::regex rxbounds;
 		// DocString: FMTparser::rxoperators
 		///A regex for capturing simple operators
 		std::regex rxoperators;
