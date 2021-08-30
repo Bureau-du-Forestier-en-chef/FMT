@@ -230,31 +230,28 @@ namespace Core
 		{
 			std::vector<const T*>allhits;
 			const FMTmask newkey = filter.filter(mask);
-			if (!newkey.empty())
+			boost::unordered_map<FMTmask, std::vector<int>>::const_iterator fast_it = fastpass.find(newkey);
+			if (fast_it != fastpass.end())
+			{
+				allhits.reserve(fast_it->second.size());
+				for (const int& location : fast_it->second)
 				{
-				boost::unordered_map<FMTmask, std::vector<int>>::const_iterator fast_it = fastpass.find(newkey);
-				if (fast_it != fastpass.end())
-				{
-					allhits.reserve(fast_it->second.size());
-					for (const int& location : fast_it->second)
-					{
-						allhits.push_back(&data.at(location).second);
-					}
+					allhits.push_back(&data.at(location).second);
 				}
-				else {
-					fastpass[newkey] = std::vector<int>();
-					int location = 0;
-					for (const std::pair<FMTmask,T>& object : data)
+			}
+			else {
+				fastpass[newkey] = std::vector<int>();
+				int location = 0;
+				for (const std::pair<FMTmask,T>& object : data)
+				{
+					if (newkey.issubsetof(object.first))
 					{
-						if (newkey.issubsetof(object.first))
-						{
-							fastpass[newkey].push_back(location);
-							allhits.push_back(&object.second);
-						}
-						++location;
+						fastpass[newkey].push_back(location);
+						allhits.push_back(&object.second);
 					}
-					fastpass[newkey].shrink_to_fit();
-					}
+					++location;
+				}
+				fastpass[newkey].shrink_to_fit();
 				}
 			return allhits;
 		}
@@ -274,6 +271,12 @@ namespace Core
 		{
 				std::vector<std::pair<FMTmask, T>>newdata;
 				fastpass.clear();
+				std::vector<Core::FMTmask> filteredmasks;
+				for (const std::pair<FMTmask, T>& object : data)
+				{
+					filteredmasks.push_back(object.first);
+				}
+				filter=Core::FMTmaskfilter(filteredmasks);
 				for (const std::pair<FMTmask, T>& object : data)
 				{
 					newdata.push_back(std::pair<FMTmask, T>(filter.filter(object.first), object.second));

@@ -224,12 +224,14 @@ FMTmask FMTmask::resume(const boost::dynamic_bitset<>& rhs) const
             {
             FMTmask newmask;
             newmask.name = this->name;
-			newmask.data.resize(rhs.size());
+			newmask.data.resize(rhs.count());
+			size_t id=0;
             for (boost::dynamic_bitset<>::size_type i = 0; i < rhs.size(); ++i)
                 {
                 if (rhs[i])
                     {
-                    newmask.data[i]=(data[i]);
+                    newmask.data[id]=(data[i]);
+					++id;
                     }
                 }
 

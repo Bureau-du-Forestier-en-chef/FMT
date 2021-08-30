@@ -24,13 +24,13 @@ class FMTmaskfilter
 	template<class Archive>
 	void serialize(Archive& ar, const unsigned int version)
 		{
-		ar & BOOST_SERIALIZATION_NVP(fullset);
+		/*ar & BOOST_SERIALIZATION_NVP(fullset);*/
 		ar & BOOST_SERIALIZATION_NVP(selection);
 		ar & BOOST_SERIALIZATION_NVP(flippedselection);
 		ar & BOOST_SERIALIZATION_NVP(index);
 		}
     protected:
-		boost::dynamic_bitset<> fullset;
+		/*boost::dynamic_bitset<> fullset;*/
         boost::dynamic_bitset<> selection;
         boost::dynamic_bitset<> flippedselection;
 		std::vector<int>index;
