@@ -12,8 +12,8 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 namespace Core{
 
 
-FMTmaskfilter::FMTmaskfilter():fullset(),selection(),flippedselection(),index(){}
-FMTmaskfilter::FMTmaskfilter(const FMTmaskfilter& rhs) : fullset(rhs.fullset),selection(rhs.selection), flippedselection(rhs.flippedselection), index(rhs.index)
+FMTmaskfilter::FMTmaskfilter():/*fullset(),*/selection(),flippedselection(),index(){}
+FMTmaskfilter::FMTmaskfilter(const FMTmaskfilter& rhs) : /*fullset(rhs.fullset),*/selection(rhs.selection), flippedselection(rhs.flippedselection), index(rhs.index)
     {
 
     }
@@ -23,26 +23,42 @@ FMTmaskfilter& FMTmaskfilter::operator = (const FMTmaskfilter& rhs)
     {
     if (this!=&rhs)
         {
-		fullset = rhs.fullset;
+		//fullset = rhs.fullset;
         selection = rhs.selection;
         flippedselection = rhs.flippedselection;
         index = rhs.index;
         }
     return *this;
     }
-FMTmaskfilter::FMTmaskfilter(std::vector<FMTmask>& masks): fullset(),selection(), flippedselection(), index()
+FMTmaskfilter::FMTmaskfilter(std::vector<FMTmask>& masks): /*fullset(),*/selection(), flippedselection(), index()
         {
         flippedselection.resize(masks[0].getbitsetreference().size(),true);
+        //std::cout<<"maskbitsize   "<<masks[0].getbitsetreference().size()<<std::endl;
         for(const FMTmask& bits : masks)
             {
-            flippedselection.swap(flippedselection &= bits.getbitsetreference());
-
+            flippedselection &= bits.getbitsetreference();
             }
         selection = flippedselection;
         selection.flip();
+        if(!selection.any())
+        {
+            flippedselection = boost::dynamic_bitset<>(flippedselection.size(),false);
+            selection = boost::dynamic_bitset<>(flippedselection.size(),true);
+        }
+        /*fullset.resize(selection.count(), true);
+        std::cout<<"Fullset   "<<fullset.count()<<" "<<fullset.size()<<std::endl;
+        std::cout<<"Selection   "<<selection.count()<<" "<<selection.size()<<std::endl;
+        std::cout<<"FLIPSelection   "<<flippedselection.count()<<" "<<flippedselection.size()<<std::endl;
+        for (const FMTmask& mask : masks)
+            {
+            std::cout<<"MASK : "<<std::string(mask)<<std::endl;
+            const FMTmask resumemask = filter(mask);
+            std::cout<<"Resumemask : "<<std::string(resumemask)<<" "<<resumemask.count()<<" "<<resumemask.size()<<std::endl;
+            fullset &= resumemask.getbitsetreference();
+            }*/
         }
 
-FMTmaskfilter::FMTmaskfilter(std::vector<FMTmask>& masks,const std::vector<FMTtheme>& themes):fullset(), selection(), flippedselection(), index()
+FMTmaskfilter::FMTmaskfilter(std::vector<FMTmask>& masks,const std::vector<FMTtheme>& themes):/*fullset(),*/ selection(), flippedselection(), index()
     {
     *this = FMTmaskfilter(masks);
     index.resize(selection.count());
@@ -62,12 +78,6 @@ FMTmaskfilter::FMTmaskfilter(std::vector<FMTmask>& masks,const std::vector<FMTth
         start+=static_cast<int>(the.size());
         ++id;
         }
-	fullset.resize(selection.count(), true);
-	for (const FMTmask& mask : masks)
-		{
-		const FMTmask resumemask = filter(mask);
-		fullset &= resumemask.getbitsetreference();
-		}
     }
 FMTmask FMTmaskfilter::filter(const FMTmask& devmask) const
         {
@@ -76,12 +86,14 @@ FMTmask FMTmaskfilter::filter(const FMTmask& devmask) const
             const boost::dynamic_bitset<> newkey = ((devmask.getbitsetreference() & selection) | flippedselection);
             const FMTmask newmask(std::string(devmask),newkey);
             const FMTmask resumemask = newmask.resume(selection);
-			if (resumemask.issubsetof(fullset))
+            //std::cout<<std::string(resumemask)<<" : "<<resumemask.count()<<" "<<resumemask.size() <<std::endl;
+            return resumemask;
+			/*if (resumemask.issubsetof(fullset))
 				{
 				return resumemask;
 			}else {
 				return FMTmask();
-				}
+				}*/
             }
         return devmask;
         }
