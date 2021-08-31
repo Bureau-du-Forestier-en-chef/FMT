@@ -93,6 +93,8 @@ FMTparser::FMTparser() : Core::FMTobject(),
 					"Cannot find GDAL_DATA at "+runtimelocation,"FMTparser::FMTparser()",__LINE__,__FILE__, _section);
 				}
 			CPLSetConfigOption("GDAL_DATA", runtimelocation.c_str());
+			//No need of drivers from shared library see : https://gdal.org/api/gdaldriver_cpp.html ; https://gdal.org/api/cpl.html ; https://trac.osgeo.org/gdal/wiki/ConfigOptions
+			CPLSetConfigOption("GDAL_DRIVER_PATH","");
 		#endif
         }
 
