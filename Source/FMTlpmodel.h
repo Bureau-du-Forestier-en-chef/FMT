@@ -156,8 +156,8 @@ class FMTEXPORT FMTlpmodel : public FMTmodel
 	need to be updated. Variables and constraints related to each of those new developements will be added to the matrix.
 	So area transfer row and natural growth plus action variables.
 	*/
-	Graph::FMTgraphstats updatematrix(const boost::unordered_set<Core::FMTlookup<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor,Core::FMTdevelopment>>& targets,
-			const Graph::FMTgraphstats& newstats);
+	Graph::FMTgraphstats updatematrix(const Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_pair& targets,
+									const Graph::FMTgraphstats& newstats);
 	// DocString: FMTlpmodel::getsetmatrixelement
 	/**
 	When the user add constraints using the setconstraint function or the setobjective function the model needs to had
@@ -222,7 +222,7 @@ class FMTEXPORT FMTlpmodel : public FMTmodel
 	/**
 	Get the number of possible paths if an action is commited on a development.
 	*/
-	size_t getamountofpaths(const Core::FMTdevelopment& dev, const int& actionid) const;
+	//size_t getamountofpaths(const Core::FMTdevelopment& dev, const int& actionid) const;
 	// DocString: FMTlpmodel::ismatrixelement
 	/**
 	Check if the FMTconstraint had a element of (element_type) located in the matrix for a given period.

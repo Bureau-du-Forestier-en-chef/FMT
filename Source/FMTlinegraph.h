@@ -84,7 +84,7 @@ class FMTEXPORT FMTlinegraph : public FMTgraph<FMTbasevertexproperties,FMTbaseed
 		/**
 		Generate a new period container at the end of the linegraph.
 		*/
-		void newperiod();
+		//void newperiod();
 		// DocString: FMTlinegraph::setaction
 		/**
 		Add an edge action based on paths on an active vertex.
