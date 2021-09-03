@@ -24,7 +24,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 namespace Graph
 {
-	template <class tvdescriptor>
+	template <class tvdescriptor,class titerator>
 	class FMToutputnodecache
 	{
 		friend class boost::serialization::access;
@@ -32,38 +32,15 @@ namespace Graph
 		void serialize(Archive& ar, const unsigned int version)
 		{
 			ar & BOOST_SERIALIZATION_NVP(inmemorynodes);
-			ar & BOOST_SERIALIZATION_NVP(basenode);
+			//ar & BOOST_SERIALIZATION_NVP(basenode);
 			ar & BOOST_SERIALIZATION_NVP(searchtree);
 		}
 		std::vector<tvdescriptor>inmemorynodes;
-		boost::unordered_set<Core::FMTlookup<tvdescriptor, Core::FMTdevelopment>> const * basenode;
+		titerator const * beginit;
+		titerator const * endit;
+		//boost::unordered_set<Core::FMTlookup<tvdescriptor, Core::FMTdevelopment>> const * basenode;
 		mutable std::map<Core::FMToutputsource,std::vector<tvdescriptor>>searchtree;
         typedef typename std::map<Core::FMToutputsource,std::vector<tvdescriptor>>::const_iterator notecacheit;
-
-		
-		
-		/*void setinitialcache(const boost::unordered_set<Core::FMTlookup<tvdescriptor,Core::FMTdevelopment>>& initialgraph)
-		{
-			searchtree.clear();
-			basenode.resize(initialgraph.size());
-			size_t idv = 0;
-			for (typename boost::unordered_set<Core::FMTlookup<tvdescriptor,Core::FMTdevelopment>>::const_iterator itgraph = initialgraph.begin();
-				itgraph != initialgraph.end(); itgraph++)
-			{
-				basenode[idv] = itgraph->memoryobject;
-				++idv;
-			}
-			std::sort(basenode.begin(), basenode.end());
-			//basenode.shrink_to_fit();
-		}
-		void setinitialcache(const std::vector<tvdescriptor>& baseelements)
-		{
-			searchtree.clear();
-			basenode = baseelements;
-			std::sort(basenode.begin(), basenode.end());
-			basenode.shrink_to_fit();
-
-		}*/
 		const std::vector<tvdescriptor>& getcleandescriptors(const Core::FMToutputnode& targetnode,const std::vector<Core::FMTaction>& actions,
 										const std::vector<Core::FMTtheme>&themes, bool& exactnode) const
 		{
@@ -77,20 +54,7 @@ namespace Graph
 			}
 			//std::vector<tvdescriptor> cleaned(basenode);
 			std::vector<tvdescriptor> cleaned;
-			if (basenode!=nullptr)
-			{
-				cleaned.reserve(basenode->size());
-				for (typename boost::unordered_set<Core::FMTlookup<tvdescriptor, Core::FMTdevelopment>>::const_iterator itgraph = basenode->begin();
-					itgraph != basenode->end(); itgraph++)
-					{
-					cleaned.push_back(itgraph->memoryobject);
-					}
-				std::sort(cleaned.begin(), cleaned.end());
-			}
-			else {
-				cleaned = inmemorynodes;
-			}
-			//Logging::FMTlogger() << "cleaned size of " << cleaned.size() << "\n";
+			pushtovector(cleaned);
 			
 
 			//
@@ -102,11 +66,11 @@ namespace Graph
 			if (!exactnode)
 			{
 				std::vector<tvdescriptor>toremove;
-				size_t basenodesize = inmemorynodes.size();
+				/*size_t basenodesize = inmemorynodes.size();
 				if (basenode != nullptr)
 					{
 					basenodesize =  basenode->size();
-					}
+					}*/
 				const Core::FMTmask& targetmask = targetnode.source.getmask();
 				//Core::FMTmask unionmask(themes);
 				for (typename std::map<Core::FMToutputsource, std::vector<tvdescriptor>>::const_reverse_iterator sit = searchtree.rbegin();
@@ -235,20 +199,26 @@ namespace Graph
 		FMToutputnodecache(const FMToutputnodecache& rhs) = default;
 		FMToutputnodecache& operator = (const FMToutputnodecache& rhs) = default;
 		~FMToutputnodecache() = default;
-		FMToutputnodecache(const boost::unordered_set<Core::FMTlookup<tvdescriptor,Core::FMTdevelopment>>& initialgraph) :
-			inmemorynodes(),basenode(&initialgraph), searchtree()
+		/*FMToutputnodecache(const boost::unordered_set<Core::FMTlookup<tvdescriptor,Core::FMTdevelopment>>& initialgraph) :
+			inmemorynodes(),beginit(),endit(), searchtree()
 			{
 				//this->setinitialcache(initialgraph);
-			}
+			}*/
 		FMToutputnodecache(const std::vector<tvdescriptor>& initialnodes) :
-			inmemorynodes(), basenode(nullptr), searchtree()
+			inmemorynodes(initialnodes), beginit(nullptr), endit(nullptr), searchtree()
+		{
+			inmemorynodes.shrink_to_fit();
+			//this->setinitialcache(initialnodes);
+		}
+		FMToutputnodecache(const titerator& first, const titerator& last) :
+			inmemorynodes(), beginit(&first), endit(&last), searchtree()
 		{
 			//this->setinitialcache(initialnodes);
 		}
-		unsigned long long getpotentialsize() const
+		/*unsigned long long getpotentialsize() const
 			{
 			return static_cast<unsigned long long>(searchtree.size()) * static_cast<unsigned long long>(basenode->size()) * sizeof(tvdescriptor);
-			}
+			}*/
 
 		void erasenode(const Core::FMToutputnode& node)
 			{
@@ -289,19 +259,21 @@ namespace Graph
 			searchtree[targetnode.source].shrink_to_fit();
 			}
 		void clear()
-		{
+			{
 			//basenode.clear();
-			basenode = nullptr;
+			beginit = nullptr;
+			endit = nullptr;
 			inmemorynodes.clear();
 			searchtree.clear();
-		}
-		void rebase(const boost::unordered_set<Core::FMTlookup<tvdescriptor, Core::FMTdevelopment>>& initialgraph)
-		{
-			basenode = &initialgraph;
-		}
+			}
+		void rebase(const titerator& beginofdevs, const titerator& endofdevs)
+			{
+			beginit = &beginofdevs;
+			endit = &endofdevs;
+			}
 		void insert(const FMToutputnodecache& rhs)
 			{
-			if (basenode==nullptr)
+			if (beginit==nullptr)
 			{
 				if (inmemorynodes.size() < rhs.inmemorynodes.size())
 				{
@@ -311,7 +283,47 @@ namespace Graph
 			
 			searchtree.insert(rhs.searchtree.begin(), rhs.searchtree.end());
 			}
+
+		void pushtovector(std::vector<tvdescriptor>& refvecs) const
+		{
+			if (beginit!=nullptr)
+			{
+				for (titerator it = *beginit; it != *endit; ++it)
+				{
+					refvecs.push_back(*it);
+				}
+				refvecs.shrink_to_fit();
+				std::sort(refvecs.begin(), refvecs.end());
+			}
+			else {
+				refvecs = inmemorynodes;
+			}
+		}
+
 	};
+
+	
+	/*template<> inline void FMToutputnodecache<FMTgraph<FMTvertexproperties,FMTedgeproperties>::FMTvertex_descriptor,FMTgraph<FMTvertexproperties,FMTedgeproperties>::FMTvertex_iterator>::pushtovector(std::vector<FMTgraph<FMTvertexproperties,FMTedgeproperties>::FMTvertex_descriptor>& refvecs) const
+	{
+			for (FMTgraph<FMTvertexproperties,FMTedgeproperties>::FMTvertex_iterator it = *beginit; it != *endit; ++it)
+			{
+				refvecs.push_back(*it);
+
+			}
+			refvecs.shrink_to_fit();
+			std::sort(refvecs.begin(), refvecs.end());
+	}
+
+	template<> inline void FMToutputnodecache<FMTgraph<FMTbasevertexproperties,FMTbaseedgeproperties>::FMTvertex_descriptor,FMTgraph<FMTbasevertexproperties,FMTbaseedgeproperties>::FMTvertex_iterator>::pushtovector(std::vector<FMTgraph<FMTbasevertexproperties,FMTbaseedgeproperties>::FMTvertex_descriptor>& refvecs) const
+	{
+			for (FMTgraph<FMTbasevertexproperties,FMTbaseedgeproperties>::FMTvertex_iterator it = *beginit; it != *endit; ++it)
+			{
+				refvecs.push_back(*it);
+
+			}
+			refvecs.shrink_to_fit();
+			std::sort(refvecs.begin(), refvecs.end());
+	}*/
 
 }
 
