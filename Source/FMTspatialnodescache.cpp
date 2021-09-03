@@ -63,12 +63,12 @@ namespace Spatial
 
 	FMTspatialnodescache::FMTspatialnodescache(const std::vector<FMTcoordinate>& mapping):actualcache(), staticnodes(nullptr), patterncache()
 		{
-		staticnodes = new Graph::FMToutputnodecache<FMTcoordinate>(mapping);
+		staticnodes = new Graph::FMToutputnodecache<FMTcoordinate, FMTcoordinate*>(mapping);
 		}
 
 	FMTspatialnodescache::FMTspatialnodescache(const FMTspatialnodescache& rhs) : actualcache(nullptr), staticnodes(nullptr), patterncache(rhs.patterncache)
 		{
-		staticnodes = new Graph::FMToutputnodecache<FMTcoordinate>(*rhs.staticnodes);
+		staticnodes = new Graph::FMToutputnodecache<FMTcoordinate, FMTcoordinate*>(*rhs.staticnodes);
 		}
 
 	FMTspatialnodescache& FMTspatialnodescache::operator = (const FMTspatialnodescache& rhs)
@@ -87,7 +87,7 @@ namespace Spatial
 				staticnodes = nullptr;
 				if (rhs.staticnodes != nullptr)
 				{
-					staticnodes = new Graph::FMToutputnodecache<FMTcoordinate>(*rhs.staticnodes);
+					staticnodes = new Graph::FMToutputnodecache<FMTcoordinate, FMTcoordinate*>(*rhs.staticnodes);
 				}
 			}
 			patterncache = rhs.patterncache;

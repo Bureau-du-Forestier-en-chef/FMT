@@ -177,7 +177,7 @@ class FMTEXPORT FMTspatialschedule : public FMTlayer<Graph::FMTlinegraph>
 		/**
 
 		*/
-		void setnewperiod();
+		//void setnewperiod();
 		// DocString: FMTspatialschedule::getschedules(const std::vector<Core::FMTaction>)
 		/**
 		Return operated schedules from linegraph. 

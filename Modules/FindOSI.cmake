@@ -5,7 +5,7 @@ SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 ]]
 
-FILE(GLOB_RECURSE OSI_POTENTIAL_INCLUDE $ENV{OSI_DIR}OsiConfig.h)
+FILE(GLOB_RECURSE OSI_POTENTIAL_INCLUDE $ENV{OSI_DIR}OsiConfig.h $ENV{OSI_DIR}/OsiConfig.h)
 list(GET OSI_POTENTIAL_INCLUDE 0 FIRSTINCLUDE)
 get_filename_component(POTOSI_INCLUDE_DIR ${FIRSTINCLUDE} DIRECTORY)
 find_path(OSI_INCLUDE_DIR
@@ -20,11 +20,7 @@ FILE(GLOB_RECURSE OSI_POTENTIAL_LIB $ENV{OSI_DIR}/lib*${CMAKE_STATIC_LIBRARY_SUF
 if (MSVC)
 	foreach(includepath ${OSI_POTENTIAL_LIB})
 		get_filename_component(potfolder ${includepath} DIRECTORY)
-		if(("${potfolder}" MATCHES "Release") AND ("${potfolder}" MATCHES "/Cbc/") AND ("${CMAKE_BUILD_TYPE}" STREQUAL "Release"))
-			set(POTOSI_LIB_DIR ${potfolder})
-		elseif(("${potfolder}" MATCHES "Debug") AND ("${potfolder}" MATCHES "/Cbc/") AND ("${CMAKE_BUILD_TYPE}" STREQUAL "Debug"))
-			set(POTOSI_LIB_DIR ${potfolder})
-		endif()
+        list(APPEND POTOSI_LIB_DIR ${potfolder})
 	endforeach()
 else()
 	foreach(full_path ${OSI_POTENTIAL_LIB})
@@ -38,7 +34,7 @@ endif(MSVC)
 
 
 #get CLP include
-FILE(GLOB_RECURSE CLP_POTENTIAL_INCLUDE $ENV{OSI_DIR}ClpSimplex.hpp)
+FILE(GLOB_RECURSE CLP_POTENTIAL_INCLUDE $ENV{OSI_DIR}ClpSimplex.hpp $ENV{OSI_DIR}/ClpSimplex.hpp)
 list(GET CLP_POTENTIAL_INCLUDE 0 FIRSTINCLUDE)
 get_filename_component(POTCLP_INCLUDE_DIR ${FIRSTINCLUDE} DIRECTORY)
 find_path(CLP_INCLUDE_DIR
@@ -47,7 +43,7 @@ find_path(CLP_INCLUDE_DIR
           )
 
 #get coin utils headers
-FILE(GLOB_RECURSE CU_POTENTIAL_INCLUDE $ENV{OSI_DIR}CoinUtility.hpp)
+FILE(GLOB_RECURSE CU_POTENTIAL_INCLUDE $ENV{OSI_DIR}CoinUtility.hpp $ENV{OSI_DIR}/CoinUtility.hpp)
 
 list(GET CU_POTENTIAL_INCLUDE 0 FIRSTINCLUDE)
 get_filename_component(POTCU_INCLUDE_DIR ${FIRSTINCLUDE} DIRECTORY)
@@ -59,7 +55,7 @@ find_path(CU_INCLUDE_DIR
 
 
 find_library(COINUTILS_LIBRARY
-			NAMES libCoinUtils libCoinUtils.a
+			NAMES CoinUtils libCoinUtils libCoinUtils.a
 			PATHS ${POTOSI_LIB_DIR}
              )
 
@@ -75,7 +71,7 @@ find_library( OSI_CLP_LIBRARY
               )
 
 find_library(CLP_LIBRARY
-              NAMES libClp libclp.a
+              NAMES Clp libClp libclp.a
               PATHS ${POTOSI_LIB_DIR}
               )
 
@@ -125,7 +121,7 @@ endif(NOT MSVC)
 
 
 #Get Osiclpheader
-FILE(GLOB_RECURSE OSI_POTENTIAL_INCLUDE $ENV{OSI_DIR}OsiClpSolverInterface.hpp)
+FILE(GLOB_RECURSE OSI_POTENTIAL_INCLUDE $ENV{OSI_DIR}OsiClpSolverInterface.hpp $ENV{OSI_DIR}/OsiClpSolverInterface.hpp)
 list(GET OSI_POTENTIAL_INCLUDE 0 FIRSTINCLUDE)
 get_filename_component(OSICLP_INCLUDE_DIR ${FIRSTINCLUDE} DIRECTORY)
 

@@ -18,7 +18,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #define FMTSPATIALNODESCACHE_H
 namespace Graph
 {
-	template<class T1>
+	template<class T1,class T2>
 	class FMToutputnodecache;
 }
 
@@ -54,7 +54,7 @@ namespace Spatial
 			double getcachevalue(const int& period) const;
 		};
 	FMTnodecache* actualcache;
-	Graph::FMToutputnodecache<FMTcoordinate>* staticnodes;
+	Graph::FMToutputnodecache<FMTcoordinate,FMTcoordinate*>* staticnodes;
 	//boost::unordered_map<Core::FMTmask, FMTnodecache>patterncache;
 	public:
 		typedef std::unordered_map<Core::FMToutputnode, FMTnodecache, Core::FMToutputnodehasher, Core::FMToutputnodevaluecomparator> ucaching;
