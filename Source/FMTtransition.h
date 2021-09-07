@@ -121,6 +121,11 @@ class FMTEXPORT FMTtransition : public FMTlist<FMTfork>
 		in the FMTtransitionmask (what we call here static themes).
 		*/
 		std::vector<FMTtheme>getstaticthemes(const std::vector<FMTtheme>& themes) const;
+		// DocString: FMTtransition::canproduce
+		/**
+		The function return all the possibles masks, if pass as a source for the transition, that can produce the given(mask).
+		*/
+		std::vector<Core::FMTmask> canproduce(const Core::FMTmask& testmask,const std::vector<Core::FMTtheme>& themes) const;
 		// DocString: FMTtransition::age_after
 		/**
 		For GCBM a GCBMtransition is described by the age of the stand after the disturbance of the stand. Using a

@@ -920,6 +920,79 @@ namespace Core
 			return ids;
 			}
 
+		bool FMTconstraint::canbeturnedtoyieldsbasedontransitions() const
+				{
+				try {
+					double lower;
+					double upper;
+					getbounds(lower, upper);
+					if (type == Core::FMTconstrainttype::FMTstandard && lower<=0 && upper==0 && !islevel() && !isobjective() && !isgoal())
+						{
+						for (const Core::FMToutputsource& source: sources)
+						{
+							if ((source.isvariable()&&(!source.getyield().empty()||!source.empty()||!source.getaction().empty()||!source.emptyage()))||
+								(source.isconstant()&&source.getvalue()<0))
+							{
+								return false;
+							}
+
+						}
+						
+						for (const Core::FMToperator& op : operators)
+							{
+							if (op != Core::FMToperator("+") && 
+								op != Core::FMToperator("*"))
+								{
+								return false;
+								}
+							}
+						return true;
+						}
+				}
+				catch (...)
+				{
+					_exhandler->raisefromcatch("", "FMTconstraint::canbeturnedtoyieldsbasedontransitions", __LINE__, __FILE__, Core::FMTsection::Optimize);
+				}
+				return false;
+				}
+
+		void FMTconstraint::turntoyieldsbasedontransition(	const std::vector<Core::FMTtheme>& themes,
+															const std::vector<Core::FMTtransition>& trans,
+															std::vector<Core::FMTaction>&actions,
+															Core::FMTyields& yields,
+															const int& constraintid) const
+		{
+			try {
+				std::vector<Core::FMToutputsource> sourcestoturnintoyield;
+				std::vector<Core::FMToperator> operatorstoturnintoyield;
+				Core::FMTotar newtarget=FMTotar::actual;
+				size_t transitionid=0;
+				for(const FMTtransition& transition : trans)
+				{
+					const Core::FMTaction trigerringaction=actions.at(transitionid);
+					for (const Core::FMToutputsource& source : sources)
+					{
+						if (source.isvariable())
+						{
+
+							Core::FMTmask sourcemask = source.getmask();
+							for (const FMTmask mask : transition.canproduce(sourcemask,themes))
+							{
+								sourcestoturnintoyield.push_back(Core::FMToutputsource(Core::FMTspec(),mask,newtarget,"",trigerringaction.getname(),source.getoutputorigin(),source.getthemetarget()));
+							}
+						}
+					}
+					++transitionid;
+				}
+				FMTconstraint toturnintoyield(*this);
+				toturnintoyield.sources = sourcestoturnintoyield;
+				toturnintoyield.turntoyieldsandactions(themes, actions, yields,constraintid);
+			}
+			catch (...)
+			{
+				_exhandler->raisefromcatch("", "FMTconstraint::turntoyieldsbasedontransition", __LINE__, __FILE__, Core::FMTsection::Optimize);
+			}
+		}
 		bool FMTconstraint::canbeturnedtoyields() const
 		{
 			try {
@@ -930,7 +1003,7 @@ namespace Core
 					{
 					for (const Core::FMToutputsource& source: sources)
 					{
-						if ((source.isvariable()&&(!source.getyield().empty()||!source.empty()||source.getaction().empty()))||
+						if ((source.isvariable()&&(!source.getyield().empty()||!source.empty()||source.getaction().empty()||!source.emptyage()))||
 							(source.isconstant()&&source.getvalue()<0))
 						{
 							return false;
