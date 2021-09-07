@@ -1626,7 +1626,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 				std::queue<FMTvertex_descriptor>activedescriptors;
 				boost::unordered_set<FMTvertex_descriptor>explored;
 				FMTvertex_iterator vertex_iterator, vertex_iterator_end;
-				const std::vector<FMTvertex_pair>::const_iterator firstconst = getfirstconstblock();
+				const typename std::vector<FMTvertex_pair>::const_iterator firstconst = getfirstconstblock();
 				vertex_iterator_end = firstconst->second;
 				for (vertex_iterator = firstconst->first; vertex_iterator != vertex_iterator_end; ++vertex_iterator)
 				{
