@@ -365,6 +365,26 @@ std::string FMTmask::getbitsstring() const
             return buffer;
             }
 
+FMTmask FMTmask::refine(const FMTmask& mask,const std::vector<FMTtheme>& themes) const
+	{
+		if(size()==count())
+		{
+			return mask;
+		}
+		std::vector<std::string>bases;
+		std::vector<std::string>maskbases;
+		boost::split(bases,name,boost::is_any_of(FMT_STR_SEPARATOR),boost::token_compress_on);
+		boost::split(maskbases,std::string(mask),boost::is_any_of(FMT_STR_SEPARATOR),boost::token_compress_on);
+		for(const FMTtheme& theme : themes)
+			{	
+				if (subset(theme).count() == theme.size())
+				{
+					bases.at(theme.id)=maskbases.at(theme.id);
+				}
+			}
+		return FMTmask(boost::algorithm::join(bases," "),themes);
+	}	
+
 FMTmask FMTmask::presolve(const FMTmask& selectedmask, const std::vector<FMTtheme>&presolvedthemes) const
 	{
 	size_t basesize = 0;

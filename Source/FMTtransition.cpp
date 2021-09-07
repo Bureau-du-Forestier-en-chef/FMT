@@ -128,6 +128,33 @@ std::vector<FMTtheme>FMTtransition::getstaticthemes(const std::vector<FMTtheme>&
 	return staticthemes;
 	}
 
+std::vector<Core::FMTmask> FMTtransition::canproduce(const Core::FMTmask& testmask,const std::vector<Core::FMTtheme>& themes) const
+	{
+		std::vector<Core::FMTmask> possiblesourcesfortransitions;
+		try {
+			for(const auto& forkobj : *this)
+			{
+				const Core::FMTmask unshrinkedsourcemask(std::string(forkobj.first), themes);
+				for (const FMTtransitionmask& transmask : forkobj.second.getmasktrans())
+				{
+					Core::FMTmask refinedmask = transmask.getmask().refine(unshrinkedsourcemask,themes);
+					const Core::FMTmask intersect = refinedmask.getintersect(testmask);
+					if(!testmask.isnotthemessubset(intersect,themes))
+					{
+						possiblesourcesfortransitions.push_back(unshrinkedsourcemask.refine(testmask,themes));
+						break;
+					}
+				}
+			}
+		}
+		catch (...)
+		{
+			_exhandler->raisefromcatch("for transition " + this->getname(), "FMTtransition::getallpossibletransitionsmasks", __LINE__, __FILE__, Core::FMTsection::Transition);
+		}
+		return possiblesourcesfortransitions;	
+
+	}
+
 const FMTfork* FMTtransition::getfork(const FMTdevelopment& dev,
                                const FMTyields& ylds) const
     {

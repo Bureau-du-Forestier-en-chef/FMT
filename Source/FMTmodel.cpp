@@ -1052,11 +1052,19 @@ std::unique_ptr<FMTmodel> FMTmodel::presolve(int presolvepass,std::vector<Core::
 					if (presolvedconstraint.canbeturnedtoyields())
 					{
 						presolvedconstraint.turntoyieldsandactions(newthemes, newactions, newyields,originalid);
-					}else{
+					}else if(presolvedconstraint.canbeturnedtoyieldsbasedontransitions())
+					{
+						presolvedconstraint.turntoyieldsbasedontransition(newthemes, newtransitions ,newactions, newyields,originalid);
+						/*Just to be sure that if there is a subset of a mask from the output in the section AREA, it's forced to change... 
+						Because after turntoyieldsbasedontransition(), the model cannot produce those type of development
+						need to check if it's in the area then push_it back after the presolve*/
+						//newconstraintsids.insert(originalid);
+						//newconstraints.push_back(presolvedconstraint);
+					}
+					else{
 						newconstraintsids.insert(originalid);
 						newconstraints.push_back(presolvedconstraint);
 					}
-					
 				}
 				++oriit;
 			}

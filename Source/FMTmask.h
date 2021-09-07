@@ -352,6 +352,12 @@ class FMTEXPORT FMTmask
 			{
 			return data;
 			}
+		// DocString: FMTmask::refine
+		/**
+		It will return a new FMTmask where the ? are completed with the attribute for the theme from (mask).
+		If the attribute is not ? for this mask, the attribute will not change. 
+		*/
+		FMTmask refine(const FMTmask& mask,const std::vector<FMTtheme>& themes) const;
 		// DocString: FMTmask::presolve
 		/**
 		Using a FMTmask (selectedmask) and a subset of the original FMTthemes used to construct the FMTmask,
