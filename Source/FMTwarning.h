@@ -75,7 +75,7 @@ namespace Exception
 		/**
 		Using a given logger the function log the warning with the logger. 
 		*/
-		void warn(const std::shared_ptr<Logging::FMTlogger>logger) const;
+		void warn(const std::shared_ptr<Logging::FMTlogger>logger,const size_t& warningcount, const size_t& maxwarning) const;
 	};
 }
 #endif

@@ -20,8 +20,14 @@ FMTwarning::FMTwarning(const FMTexc lexception, const Core::FMTsection lsection,
 	const std::string& lmethod, const std::string& lfile, const int& lline):
 	FMTexception(lexception, lsection, message, lmethod, lfile, lline) {}
 
-void FMTwarning::warn(const std::shared_ptr<Logging::FMTlogger>logger) const
+void FMTwarning::warn(const std::shared_ptr<Logging::FMTlogger>logger,const size_t& warningcount, const size_t& maxwarning) const
 	{
-		*logger << _msg << "\n";
+		if(warningcount<=maxwarning)
+		{
+			*logger << _msg << "\n";
+		}else if(warningcount==maxwarning+1)
+		{
+			*logger << "FMTexc("+ std::to_string(exceptiontype) +") has reached the maximum number of times it can be raise."<< "\n";
+		}
 	}
 }

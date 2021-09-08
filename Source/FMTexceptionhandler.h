@@ -15,6 +15,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #if defined FMTWITHGDAL
 	#include "cpl_error.h"
 #endif
+#include <boost/unordered_map.hpp>
 #include <boost/serialization/serialization.hpp>
 #include <boost/serialization/nvp.hpp>
 #include <boost/serialization/export.hpp>
@@ -65,6 +66,12 @@ namespace Exception
 		// DocString: FMTexceptionhandler::_warningcount
 		///Keeps count of the number of warning thrown.
 		int _warningcount;
+		// DocString: FMTexceptionhandler::_specificwarningcount
+		///Keeps count of the number of each type of warning thrown.
+		boost::unordered_map<int,size_t> _specificwarningcount;
+		// DocString: FMTexceptionhandler::maxwarningsbeforesilenced
+		///Number of time that the handler throw a certain warning before stop throwing it.
+		size_t maxwarningsbeforesilenced;
 		// DocString: FMTexceptionhandler::_logger
 		///pointer to the logger used to print the warning / error.
 		std::shared_ptr<Logging::FMTlogger>_logger;
@@ -195,6 +202,11 @@ namespace Exception
 		set a vector of error to be cast to warnings...
 		*/
 		void seterrorstowarnings(const std::vector<Exception::FMTexc>& errors);
+		// DocString: setmaxwarningsbeforesilenced()
+		/**
+		Settter for maxwarningsbeforesilenced.
+		*/
+		void setmaxwarningsbeforesilenced(const size_t& maxwarningcount);
 
 		
 	};
