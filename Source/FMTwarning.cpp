@@ -20,14 +20,26 @@ FMTwarning::FMTwarning(const FMTexc lexception, const Core::FMTsection lsection,
 	const std::string& lmethod, const std::string& lfile, const int& lline):
 	FMTexception(lexception, lsection, message, lmethod, lfile, lline) {}
 
-void FMTwarning::warn(const std::shared_ptr<Logging::FMTlogger>logger,const size_t& warningcount, const size_t& maxwarning) const
+void FMTwarning::warn(const std::shared_ptr<Logging::FMTlogger>logger,boost::unordered_map<int,size_t>& specificwarningcount, const size_t& maxwarning) const
 	{
-		if(warningcount<=maxwarning)
+		boost::unordered_map<int,size_t>::iterator spwit = specificwarningcount.find(exceptiontype);
+		if(spwit!=specificwarningcount.end())
 		{
+			size_t wcount = spwit->second;
+			if(wcount<=maxwarning)
+			{
+				*logger << _msg << "\n";
+				wcount+=1;
+			}
+			else if(wcount==maxwarning+1)
+			{
+				*logger << "FMTexc("+ std::to_string(exceptiontype) +") has reached the maximum number of times it can be raise."<< "\n";
+				wcount+=1;
+			}
+			spwit->second=wcount;
+		}else{
 			*logger << _msg << "\n";
-		}else if(warningcount==maxwarning+1)
-		{
-			*logger << "FMTexc("+ std::to_string(exceptiontype) +") has reached the maximum number of times it can be raise."<< "\n";
+			specificwarningcount[exceptiontype]=1;
 		}
 	}
 }

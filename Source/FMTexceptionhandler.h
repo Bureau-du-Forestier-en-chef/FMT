@@ -66,9 +66,6 @@ namespace Exception
 		// DocString: FMTexceptionhandler::_warningcount
 		///Keeps count of the number of warning thrown.
 		int _warningcount;
-		// DocString: FMTexceptionhandler::_specificwarningcount
-		///Keeps count of the number of each type of warning thrown.
-		boost::unordered_map<int,size_t> _specificwarningcount;
 		// DocString: FMTexceptionhandler::maxwarningsbeforesilenced
 		///Number of time that the handler throw a certain warning before stop throwing it.
 		size_t maxwarningsbeforesilenced;
@@ -102,6 +99,9 @@ namespace Exception
 		*/
 		bool needtorethrow() const;
 	public:
+		// DocString: FMTexceptionhandler::_specificwarningcount
+		///Keeps count of the number of each type of warning thrown.
+		boost::unordered_map<int,size_t> _specificwarningcount;
 		// DocString: FMTexceptionhandler()
 		/**
 		Default constructor for FMTexceptionhandler.

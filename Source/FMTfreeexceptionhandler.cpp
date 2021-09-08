@@ -53,13 +53,7 @@ FMTexception FMTfreeexceptionhandler::raise(FMTexc lexception, std::string text,
 		{
 		if (_level == FMTlev::FMT_Warning)
 		{
-			if (!_specificwarningcount.count(lexception))
-			{
-				_specificwarningcount[lexception]=1;
-			}else{
-				_specificwarningcount[lexception]+=1;
-			}
-			FMTwarning(excp).warn(_logger,_specificwarningcount.at(lexception),maxwarningsbeforesilenced);
+			FMTwarning(excp).warn(_logger,_specificwarningcount,maxwarningsbeforesilenced);
 		}else if (_level == FMTlev::FMT_logic || _level == FMTlev::FMT_range)
 			{
 			//std::throw_with_nested(FMTerror(excp));

@@ -65,12 +65,12 @@ FMTexceptionhandler& FMTexceptionhandler::operator = (const FMTexceptionhandler&
 		_exception = rhs._exception;
 		_errorcount = rhs._errorcount;
 		_warningcount = rhs._warningcount;
-		_specificwarningcount = rhs._specificwarningcount;
 		maxwarningsbeforesilenced = rhs.maxwarningsbeforesilenced;
 		_logger = rhs._logger;
 		usenestedexceptions = rhs.usenestedexceptions;
 		cplhandlerpushed = rhs.cplhandlerpushed;
 		errorstowarnings = rhs.errorstowarnings;
+		_specificwarningcount = rhs._specificwarningcount;
 	}
 	return *this;
 }
@@ -178,24 +178,24 @@ FMTexceptionhandler::FMTexceptionhandler(const FMTexceptionhandler& rhs)
 		_exception=rhs._exception;
 		_errorcount=rhs._errorcount;
 		_warningcount=rhs._warningcount;
-		_specificwarningcount = rhs._specificwarningcount;
 		maxwarningsbeforesilenced = rhs.maxwarningsbeforesilenced;
 		_logger=rhs._logger;
 		usenestedexceptions=rhs.usenestedexceptions;
 		cplhandlerpushed=rhs.cplhandlerpushed;
 		errorstowarnings = rhs.errorstowarnings;
+		_specificwarningcount = rhs._specificwarningcount;
 	}
 
 FMTexceptionhandler::FMTexceptionhandler() : _level(FMTlev::FMT_None),
 		_exception(FMTexc::None),
 		_errorcount(0),
 		_warningcount(0),
-		_specificwarningcount(),
 		maxwarningsbeforesilenced(10),
 		_logger(),
 		usenestedexceptions(true),
 		cplhandlerpushed(false),
-		errorstowarnings()
+		errorstowarnings(),
+		_specificwarningcount()
 		{
 
 		}
