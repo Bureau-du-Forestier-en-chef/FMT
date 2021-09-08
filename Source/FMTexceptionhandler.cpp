@@ -65,6 +65,8 @@ FMTexceptionhandler& FMTexceptionhandler::operator = (const FMTexceptionhandler&
 		_exception = rhs._exception;
 		_errorcount = rhs._errorcount;
 		_warningcount = rhs._warningcount;
+		_specificwarningcount = rhs._specificwarningcount;
+		maxwarningsbeforesilenced = rhs.maxwarningsbeforesilenced;
 		_logger = rhs._logger;
 		usenestedexceptions = rhs.usenestedexceptions;
 		cplhandlerpushed = rhs.cplhandlerpushed;
@@ -159,7 +161,7 @@ FMTexception FMTexceptionhandler::raise(FMTexc lexception, std::string text,
 		{
 		if (_level == FMTlev::FMT_Warning)
 			{
-			std::throw_with_nested(FMTwarning(excp));
+				std::throw_with_nested(FMTwarning(excp));
 			}
 		else if (_level == FMTlev::FMT_logic || _level == FMTlev::FMT_range)
 			{
@@ -176,6 +178,8 @@ FMTexceptionhandler::FMTexceptionhandler(const FMTexceptionhandler& rhs)
 		_exception=rhs._exception;
 		_errorcount=rhs._errorcount;
 		_warningcount=rhs._warningcount;
+		_specificwarningcount = rhs._specificwarningcount;
+		maxwarningsbeforesilenced = rhs.maxwarningsbeforesilenced;
 		_logger=rhs._logger;
 		usenestedexceptions=rhs.usenestedexceptions;
 		cplhandlerpushed=rhs.cplhandlerpushed;
@@ -186,6 +190,8 @@ FMTexceptionhandler::FMTexceptionhandler() : _level(FMTlev::FMT_None),
 		_exception(FMTexc::None),
 		_errorcount(0),
 		_warningcount(0),
+		_specificwarningcount(),
+		maxwarningsbeforesilenced(10),
 		_logger(),
 		usenestedexceptions(true),
 		cplhandlerpushed(false),
@@ -206,6 +212,12 @@ void FMTexceptionhandler::seterrorstowarnings(const std::vector<Exception::FMTex
 	{
 	boost::lock_guard<boost::recursive_mutex> guard(mtx);
 	errorstowarnings = errors;
+	}
+
+void FMTexceptionhandler::setmaxwarningsbeforesilenced(const size_t& maxwarningcount)
+	{
+		boost::lock_guard<boost::recursive_mutex> guard(mtx);
+		maxwarningsbeforesilenced = maxwarningcount;
 	}
 
 std::string FMTexceptionhandler::updatestatus(const FMTexc lexception, const std::string message)

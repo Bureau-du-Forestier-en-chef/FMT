@@ -55,7 +55,13 @@ namespace Exception
 			{
 			if (_level == FMTlev::FMT_Warning)
 			{
-				FMTwarning(excp).warn(_logger);
+				if (!_specificwarningcount.count(lexception))
+				{
+					_specificwarningcount[lexception]=1;
+				}else{
+					_specificwarningcount[lexception]+=1;
+				}
+				FMTwarning(excp).warn(_logger,_specificwarningcount.at(lexception),maxwarningsbeforesilenced);
 			}else if (_level == FMTlev::FMT_logic || _level == FMTlev::FMT_range)
 				{
 					std::throw_with_nested(FMTerror(excp));
