@@ -936,7 +936,7 @@ bool FMTlpmodel::setsolutionbylp(int period, const Core::FMTschedule& schedule, 
 
 
 
-	Graph::FMTgraphstats FMTlpmodel::buildperiod(Core::FMTschedule schedule, bool forcepartialbuild)
+	Graph::FMTgraphstats FMTlpmodel::buildperiod(Core::FMTschedule schedule, bool forcepartialbuild,int compressageclassoperability)
 	{
 		try {
 			std::queue<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor> actives;
@@ -952,7 +952,7 @@ bool FMTlpmodel::setsolutionbylp(int period, const Core::FMTschedule& schedule, 
 			}
 			if (!forcepartialbuild && schedule.empty()) // full build
 			{
-				buildstats = graph.build(*this,actives);
+				buildstats = graph.build(*this,actives,compressageclassoperability);
 				graph.setbuildtype(Graph::FMTgraphbuild::fullbuild);
 			}
 			else {//partial build for result

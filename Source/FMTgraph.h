@@ -418,7 +418,8 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 		ordered to take that in account.
 		*/
 		FMTgraphstats build(const Models::FMTmodel& model,
-					std::queue<FMTvertex_descriptor> actives)
+					std::queue<FMTvertex_descriptor> actives,
+					int compressageoperability=1)
 				{
 					FMTgraphstats statsdiff(stats);
 					try {
@@ -437,7 +438,8 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 								FMTvertexproperties front_properties = data[front_vertex];
 								const Core::FMTdevelopment& active_development = front_properties.get();
 								bool death = false;
-								if (active_development.operable(action, model.yields))
+								if (active_development.operable(action, model.yields) && 
+									active_development.getage()%compressageoperability==0)
 								{
 									if (action.getname() == "_DEATH")
 									{
