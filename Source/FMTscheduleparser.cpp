@@ -182,12 +182,12 @@ namespace Parser {
 					{
 						schedulestream << "TH" + std::to_string(thid + 1) + " ";
 					}
-					schedulestream << "AGE ";
+					schedulestream << "AGE AREA ";
 					if (firstnonemptyschedule->douselock())
 					{
 						schedulestream << "LOCK ";
 					}
-					schedulestream << "AREA ACTION PERIOD\n";
+					schedulestream << "ACTION PERIOD\n";
 					for (const Core::FMTschedule& sch : schedules)
 					{
 						if (!sch.empty())
