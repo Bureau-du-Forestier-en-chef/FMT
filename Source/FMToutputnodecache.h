@@ -208,6 +208,7 @@ namespace Graph
 			inmemorynodes(initialnodes), beginit(nullptr), endit(nullptr), searchtree()
 		{
 			inmemorynodes.shrink_to_fit();
+			std::sort(inmemorynodes.begin(),inmemorynodes.end());
 			//this->setinitialcache(initialnodes);
 		}
 		FMToutputnodecache(const titerator& first, const titerator& last) :
