@@ -33,10 +33,31 @@ Si votre intrant principal est un modèle Woodstock FMT est probablement un bon 
   + Librairie OSI avec le solveur CBC (http://github.com/coin/Cbc)
   + Librairie Boost Python
   + Rcpp et cran-R avec la version de Rtools 40 (http://cran.r-project.org)
+### Compilation des dépendances:
+#### Pour Visual Studio 2017/2019 avec MSYS2:
+  1. Installez MSYS2 à partir de https://www.msys2.org/.
+  2. Installez Intel oneAPI base toolkit + HPC toolkit.
+  3. Installez Mosek à partir de http://mosek.com.
+  4. À partir de l'invite de commande:
+	  +set PATH pathtoyourmsys2\usr\bin;%PATH%
+	  +"C:\Program Files (x86)\Intel\oneAPI\setvars.bat"
+ 5. À partir de l'invite de commande de MSYS2:
+      +pacman -S make wget tar patch pkg-config diffutils dos2unix git svn
+	  +mkdir /coin-or
+	  +cd /coin-or
+	  +wget [https://raw.githubusercontent.com/coin-or/coinbrew/master/coinbrew
+	  + chmod a+x ./coinbrew
+	  + ./coinbrew fetch Cbc --latest-release --no-prompt
+	  + ./coinbrew build Cbc --parallel-jobs=4 --enable-msvc=MD --no-prompt --build=x86_64-w64-mingw32 --tests=none --with-mosek-incdir=pathtoyourmosek/tools/platform/win64x86/h --with-mosek-lib="-link -LIBPATH:pathtoyourmosek/tools/platform/win64x86/bin mosek64_9_3.lib" --prefix=pathtoyourcbcinstallation
+  6. Clonez le répertoire le plus récent de vcpkg https://github.com/microsoft/vcpkg.git.
+  7. À partir de l'invite de commande dans le répertoire de vcpkg:
+	  + Run bootstrap-vcpkg.bat
+	  + vcpkg install boost:x64-windows boost-dll:x64-windows boost-icl:x64-windows boost-python:x64-windows osi:x64-windows gdal:x64-windows geos:x64-windows
+	  
   
 ## Comment utiliser FMT?
 
-La façon la plus simple d'utiliser FMT est d'utiliser cmake >= 3.15 et de générer une librairie R ou Python our directement en C++ (voir les exemples: FMTSimpleplanning.exe and FMTSpatialyexplicitsimulation.exe). Le script cmake supporte la génération de FMT sur Windows à l'aide de VS2017 ou MINGW64 sur MSYS2 ou CYGWIN.
+La façon la plus simple d'utiliser FMT est d'utiliser cmake >= 3.15 et de générer une librairie R ou Python our directement en C++ (voir les exemples: FMTSimpleplanning.exe and FMTSpatialyexplicitsimulation.exe). Le script cmake supporte la génération de FMT sur Windows à l'aide de VS2017/2019 ou MINGW64 sur MSYS2 ou CYGWIN.
 
 + Génération de FMT en librairie Python sur Visual Studio 2017: 
  

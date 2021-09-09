@@ -35,10 +35,31 @@ of harvest schedules or even stochastic events.
   + OSI library throught the CBC solver (http://github.com/coin/Cbc)
   + Boost Python library
   + Rcpp and cran-R with at least Rtools40 (http://cran.r-project.org)
+### Compiling the dependencies:
+#### For Visual Studio 2017/2019 with MSYS2:
+  1. Install MSYS2 from https://www.msys2.org/.
+  2. Install Intel oneAPI base toolkit + HPC toolkit.
+  3. Install Mosek from http://mosek.com.
+  4. From the command line:
+	  +set PATH pathtoyourmsys2\usr\bin;%PATH%
+	  +"C:\Program Files (x86)\Intel\oneAPI\setvars.bat"
+ 5. From MSYS2 terminal:
+      +pacman -S make wget tar patch pkg-config diffutils dos2unix git svn
+	  +mkdir /coin-or
+	  +cd /coin-or
+	  +wget https://raw.githubusercontent.com/coin-or/coinbrew/master/coinbrew
+	  + chmod a+x ./coinbrew
+	  + ./coinbrew fetch Cbc --latest-release --no-prompt
+	  + ./coinbrew build Cbc --parallel-jobs=4 --enable-msvc=MD --no-prompt --build=x86_64-w64-mingw32 --tests=none --with-mosek-incdir=pathtoyourmosek/tools/platform/win64x86/h --with-mosek-lib="-link -LIBPATH:pathtoyourmosek/tools/platform/win64x86/bin mosek64_9_3.lib" --prefix=pathtoyourcbcinstallation
+  6. Clone the latest vcpkg from https://github.com/microsoft/vcpkg.git.
+  7.  From the command line in vcpkg directory:
+	  + Run bootstrap-vcpkg.bat
+	  + vcpkg install boost:x64-windows boost-dll:x64-windows boost-icl:x64-windows boost-python:x64-windows osi:x64-windows gdal:x64-windows geos:x64-windows
+	 
   
 ## How to use FMT?
 
-The easiest way to use FMT is to use the cmake >= 3.15 and generate a shared library for R or Python or directly from C++ (see examples: FMTSimpleplanning.exe and FMTSpatialyexplicitsimulation.exe). The cmake script supports generating FMT on Windows using VS2017 or MINGW-64 on MSYS2 or CYGWIN.
+The easiest way to use FMT is to use the cmake >= 3.15 and generate a shared library for R or Python or directly from C++ (see examples: FMTSimpleplanning.exe and FMTSpatialyexplicitsimulation.exe). The cmake script supports generating FMT on Windows using VS2017/2019 or MINGW-64 on MSYS2 or CYGWIN.
 
 + Generating FMT as a Python library on Visual studio 2017:
  
