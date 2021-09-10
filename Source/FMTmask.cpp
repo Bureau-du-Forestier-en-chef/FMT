@@ -374,7 +374,8 @@ FMTmask FMTmask::refine(const FMTmask& mask,const std::vector<FMTtheme>& themes)
 		std::vector<std::string>bases;
 		std::vector<std::string>maskbases;
 		boost::split(bases,name,boost::is_any_of(FMT_STR_SEPARATOR),boost::token_compress_on);
-		boost::split(maskbases,std::string(mask),boost::is_any_of(FMT_STR_SEPARATOR),boost::token_compress_on);
+		const std::string basemask = std::string(mask);
+		boost::split(maskbases, basemask,boost::is_any_of(FMT_STR_SEPARATOR),boost::token_compress_on);
 		for(const FMTtheme& theme : themes)
 			{	
 				if (subset(theme).count() == theme.size())
