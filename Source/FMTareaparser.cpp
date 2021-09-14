@@ -781,17 +781,18 @@ namespace Parser{
 					{
 						_exhandler->raise(Exception::FMTexc::FMTinvalid_geometry,
 										"for feature "+std::to_string(_line),"FMTparser::vectormaptoFMTforest", __LINE__, __FILE__, _section);
+					}else {
+						OGRFeature* memfeature;
+						memfeature = OGRFeature::CreateFeature(memlayerdef);
+						memfeature->SetGeometry(geom);
+						memfeature->SetField(Fieldname.c_str(), devid);
+						if (memlayer->CreateFeature(memfeature) != OGRERR_NONE)
+						{
+							_exhandler->raise(Exception::FMTexc::FMTgdal_constructor_error,
+								"feature " + std::to_string(_line) + " in memory ", "FMTparser::vectormaptoFMTforest", __LINE__, __FILE__, _section);
+						}
+						OGRFeature::DestroyFeature(memfeature);
 					}
-					OGRFeature* memfeature;
-					memfeature = OGRFeature::CreateFeature(memlayerdef);
-					memfeature->SetGeometry(geom);
-					memfeature->SetField(Fieldname.c_str(),devid);
-					if( memlayer->CreateFeature(memfeature) != OGRERR_NONE )
-					{
-						_exhandler->raise(Exception::FMTexc::FMTgdal_constructor_error,
-											"feature "+std::to_string(_line)+" in memory ","FMTparser::vectormaptoFMTforest", __LINE__, __FILE__, _section);
-					}
-					OGRFeature::DestroyFeature(memfeature);
 					OGRGeometryFactory::destroyGeometry(geom);
 
 					++devid;

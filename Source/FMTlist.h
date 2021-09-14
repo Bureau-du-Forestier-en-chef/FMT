@@ -227,9 +227,18 @@ namespace Core
 		present in the FMTlist. It will also use caching to try to get elements faster next time it's asked by the user.
 		*/
 		std::vector<const T*> findsets(const FMTmask& mask) const
+			{
+			const FMTmask newkey = filter.filter(mask);
+			return findsetswithfiltered(newkey);
+			}
+		// DocString: FMTlist::findsetswithfiltered
+		/**
+		Here is the main function used on FMTlist. Giving a filtered mask (newkey) it will returns elements that are a subset of the global (mask), in the same order
+		present in the FMTlist. It will also use caching to try to get elements faster next time it's asked by the user.
+		*/
+		std::vector<const T*> findsetswithfiltered(const FMTmask& newkey) const
 		{
 			std::vector<const T*>allhits;
-			const FMTmask newkey = filter.filter(mask);
 			boost::unordered_map<FMTmask, std::vector<int>>::const_iterator fast_it = fastpass.find(newkey);
 			if (fast_it != fastpass.end())
 			{
@@ -242,7 +251,7 @@ namespace Core
 			else {
 				fastpass[newkey] = std::vector<int>();
 				int location = 0;
-				for (const std::pair<FMTmask,T>& object : data)
+				for (const std::pair<FMTmask, T>& object : data)
 				{
 					if (newkey.issubsetof(object.first))
 					{
@@ -252,7 +261,7 @@ namespace Core
 					++location;
 				}
 				fastpass[newkey].shrink_to_fit();
-				}
+			}
 			return allhits;
 		}
 		// DocString: FMTlist::filtermask
