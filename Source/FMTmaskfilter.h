@@ -27,13 +27,13 @@ class FMTmaskfilter
 		/*ar & BOOST_SERIALIZATION_NVP(fullset);*/
 		ar & BOOST_SERIALIZATION_NVP(selection);
 		ar & BOOST_SERIALIZATION_NVP(flippedselection);
-		ar & BOOST_SERIALIZATION_NVP(index);
+		//ar & BOOST_SERIALIZATION_NVP(index);
 		}
     protected:
 		/*boost::dynamic_bitset<> fullset;*/
         boost::dynamic_bitset<> selection;
         boost::dynamic_bitset<> flippedselection;
-		std::vector<int>index;
+		//std::vector<size_t>index;
     public:
         FMTmaskfilter();
         virtual ~FMTmaskfilter()=default;
@@ -42,7 +42,7 @@ class FMTmaskfilter
         FMTmaskfilter(std::vector<FMTmask>& masks);
         FMTmaskfilter(std::vector<FMTmask>& masks,const std::vector<FMTtheme>& themes);
         FMTmask filter(const FMTmask& devmask) const;
-        bool within(const FMTmask& intersect) const;
+        //bool within(const FMTmask& intersect) const;
 		inline bool empty() const
 			{
 			return selection.empty();

@@ -304,9 +304,14 @@ class FMTEXPORT FMTmask
         bool operator < (const FMTmask& rhs) const;
 		// DocString: FMTmask::resume
 		/**
-		Using a mask (rhs) returns the corresponding resulting FMTmask with the selected name and data.
+		Using a mask (rhs) fix the corresponding resulting FMTmask with the selected name and data.
 		*/
-        FMTmask resume(const boost::dynamic_bitset<>& rhs) const;
+		FMTmask resume(const boost::dynamic_bitset<>& rhs) const;
+		// DocString: FMTmask::resume
+		/**
+		Using a mask indexes (indexes) fix the corresponding resulting FMTmask with the selected name and data.
+		*/
+		FMTmask resume(const std::vector<size_t>& indexes) const;
 		// DocString: FMTmask::hash
 		/**
 		Hash function for the FMTmask class.
@@ -352,6 +357,14 @@ class FMTEXPORT FMTmask
 			{
 			return data;
 			}
+		// DocString: FMTmask::getstringreference
+		/**
+		Get a const referencer ot the std::string data member.
+		*/
+		inline const std::string& getstringreference() const
+		{
+			return name;
+		}
 		// DocString: FMTmask::refine
 		/**
 		It will return a new FMTmask where the ? are completed with the attribute for the theme from (mask).

@@ -213,8 +213,8 @@ double FMTyields::getsingle(const FMTdevelopment& dev,
 	const std::string& target) const
 {
 	try {
-		const std::vector<const FMTyieldhandler*>datas = this->findsets(dev.getmask());
-		const Core::FMTmask filteredmask = filtermask(dev.getmask());
+		const Core::FMTmask filteredmask = this->filtermask(dev.getmask());
+		const std::vector<const FMTyieldhandler*>datas = this->findsetswithfiltered(filteredmask);
 		for (const FMTyieldhandler* data : datas)
 		{
 			if (data->elements.find(target) != data->elements.end())
@@ -238,10 +238,9 @@ std::vector<double>FMTyields::get(const FMTdevelopment& dev,
 {
 	std::vector<double>values(targets.size());
 	try {
-		const std::vector<const FMTyieldhandler*>datas = this->findsets(dev.getmask());
+		const Core::FMTmask filteredmask = this->filtermask(dev.getmask());
+		const std::vector<const FMTyieldhandler*>datas = this->findsetswithfiltered(filteredmask);
 		size_t location = 0;
-		const Core::FMTmask filteredmask = filtermask(dev.getmask());
-		//std::cout<<this->canshrink()<<" : "<<(filteredmask==dev.getmask())<<std::endl;
 		for (const std::string& name : targets)
 		{
 			bool gotyield = false;

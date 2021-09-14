@@ -222,21 +222,29 @@ FMTmask& FMTmask::operator = (const FMTmask& rhs)
 
 FMTmask FMTmask::resume(const boost::dynamic_bitset<>& rhs) const
             {
-            FMTmask newmask;
-            newmask.name = this->name;
-			newmask.data.resize(rhs.count());
-			size_t id=0;
-            for (boost::dynamic_bitset<>::size_type i = 0; i < rhs.size(); ++i)
-                {
-                if (rhs[i])
-                    {
-                    newmask.data[id]=(data[i]);
-					++id;
-                    }
-                }
-
-            return newmask;
+			FMTmask newmask(name,boost::dynamic_bitset<>(rhs.count()));
+			size_t location = rhs.find_first();
+			size_t newlocation = 0;
+			while (location!=rhs.npos)
+				{
+				newmask.data[newlocation] = data[location];
+				location = rhs.find_next(location);
+				++newlocation;
+				}
+			return newmask;
             }
+
+FMTmask FMTmask::resume(const std::vector<size_t>& indexes) const
+		{
+		FMTmask newmask(name, boost::dynamic_bitset<>(indexes.size()));
+		size_t baseid = 0;
+		for (const size_t& id : indexes)
+			{
+			newmask.data[baseid] = data[id];
+			++baseid;
+			}
+		return newmask;
+		}
 
 
 bool FMTmask::operator == (const FMTmask& rhs) const

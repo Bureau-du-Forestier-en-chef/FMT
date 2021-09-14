@@ -920,7 +920,7 @@ namespace Spatial
 		std::map<std::string, std::vector<double>>values;
 		try {
 			bool cachenotused = true;
-			const std::vector<Core::FMTtheme> statictransitionsthemes = model.locatestatictransitionsthemes();
+			//const std::vector<Core::FMTtheme> statictransitionsthemes = model.locatestatictransitionsthemes();
 			const double cellsize = this->getcellsize();
 			if (level == Graph::FMToutputlevel::totalonly)
 				{
@@ -1845,7 +1845,7 @@ std::map<std::string, double> FMTspatialschedule::greedyreferencebuild(const Cor
 		FMTspatialschedule solutioncopy(*this);
 		const size_t maxstall = 3;
 		std::default_random_engine generator(seed);
-		const double factorgap = 0.5;
+		const double factorgap = 0.1;
 		const std::vector<boost::unordered_set<Core::FMTdevelopment>>scheduleoperabilities = schedule.getoperabilities(model.actions);
 		size_t stalcount = 0;
 		size_t iteration = 0;

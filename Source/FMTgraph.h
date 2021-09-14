@@ -1623,7 +1623,16 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 			std::vector<FMTvertex_descriptor>descriptors;
 			try {
 				const Core::FMTmask staticmask = model.getstaticmask(node, true);
-				std::queue<FMTvertex_descriptor>activedescriptors;
+				FMTvertex_iterator vertex_iterator, vertex_iterator_end;
+				for (boost::tie(vertex_iterator, vertex_iterator_end)=getperiodverticies(period); vertex_iterator != vertex_iterator_end; ++vertex_iterator)
+					{
+					const Core::FMTdevelopment& dev = data[*vertex_iterator].get();
+					if (dev.getmask().issubsetof(staticmask))
+						{
+						descriptors.push_back(*vertex_iterator);
+						}
+					}
+				/*std::queue<FMTvertex_descriptor>activedescriptors;
 				boost::unordered_set<FMTvertex_descriptor>explored;
 				FMTvertex_iterator vertex_iterator, vertex_iterator_end;
 				const typename std::vector<FMTvertex_pair>::const_iterator firstconst = getfirstconstblock();
@@ -1656,7 +1665,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 						descriptors.push_back(active);
 						}
 					activedescriptors.pop();
-				}
+				}*/
 			}catch (...)
 				{
 				_exhandler->raisefromcatch("For node: " + std::string(node), "FMTgraph::getnodebystaticmask", __LINE__, __FILE__);

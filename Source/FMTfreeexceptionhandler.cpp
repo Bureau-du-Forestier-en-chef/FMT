@@ -7,6 +7,10 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 #include "FMTfreeexceptionhandler.h"
 
+#if defined FMTWITHR
+	#include <Rcpp.h>
+#endif
+
 namespace Exception
 {
 
