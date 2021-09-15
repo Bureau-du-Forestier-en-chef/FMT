@@ -17,7 +17,7 @@ int main()
     const std::string	maplocation = modellocation + "/Carte/TWD_land.shp";
     const std::string	writelocation = modellocation + "rasters/";
     Parser::FMTmodelparser mparser;
-    const std::vector<std::string>scenarios(1, "Spatial");
+    const std::vector<std::string>scenarios(1, "ROOT");
     const std::vector<Models::FMTmodel> models = mparser.readproject(primarylocation, scenarios);
     const std::vector<Core::FMTtheme> themes = models.at(0).getthemes();
     Parser::FMTareaparser areaparser;
