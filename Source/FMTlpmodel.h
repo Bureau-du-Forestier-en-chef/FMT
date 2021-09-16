@@ -394,7 +394,7 @@ class FMTEXPORT FMTlpmodel : public FMTmodel
 		reinterpret outputs for a given solution without rebuilding the whole graph.
 		*/
 		Graph::FMTgraphstats buildperiod(Core::FMTschedule schedule = Core::FMTschedule(),
-			bool forcepartialbuild = false);
+			bool forcepartialbuild = false, int compressageclassoperability = 1);
 		// DocString: FMTlpmodel::setobjective
 		/**
 		This function set the objective of the matrix for the whole planning horizon (graph length).
