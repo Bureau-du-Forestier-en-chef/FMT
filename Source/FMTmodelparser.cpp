@@ -527,6 +527,25 @@ std::vector<Models::FMTmodel>FMTmodelparser::readproject(const std::string& prim
 				}
 			}
 		}
+		if(!scenarios.empty() && sortedmodels.size()!=scenarios.size())
+		{
+			std::vector<std::string> missing_scenarios;
+			if (models.empty())
+			{
+				missing_scenarios=scenarios;
+			}else{
+				for (const std::string& scenario : scenarios)
+				{
+					std::vector<Models::FMTmodel>::iterator modelit = std::find_if(models.begin(), models.end(), Models::FMTmodelcomparator(scenario));
+					if (modelit == models.end())
+					{
+						missing_scenarios.push_back(scenario);
+					}
+				}
+			}
+			_exhandler->raise(Exception::FMTexc::FMTmissing_scenarios,
+								boost::algorithm::join(missing_scenarios," ")+" for "+primary_location, "FMTmodelparser::readproject", __LINE__, __FILE__);
+		}
 	}catch (...)
 		{
 		_exhandler->printexceptions("at " + primary_location, "FMTmodelparser::readproject", __LINE__, __FILE__);
@@ -552,9 +571,15 @@ std::vector<std::vector<Core::FMTschedule>>FMTmodelparser::readschedules(const s
 			{
 			const size_t location = std::distance<std::vector<Models::FMTmodel>::const_iterator>(models.begin(), model_it);
 			const boost::filesystem::path root_solution(bases.at(Core::FMTsection::Schedule));
-			const std::vector<Core::FMTaction>actions = model_it->getactions();
-			const std::vector<Core::FMTtheme>themes = model_it->getthemes();
-			schedules[location] = scheduleparser.read(themes,actions, root_solution.string());
+			if (boost::filesystem::is_regular_file(root_solution))
+				{
+					const std::vector<Core::FMTaction>actions = model_it->getactions();
+					const std::vector<Core::FMTtheme>themes = model_it->getthemes();
+					schedules[location] = scheduleparser.read(themes,actions, root_solution.string());
+				}else{
+					_exhandler->raise(Exception::FMTexc::FMTempty_schedules,
+					primary_location+" for the ROOT scenario", "FMTmodelparser::readschedules", __LINE__, __FILE__);
+				}	
 			}
 		const boost::filesystem::path scenarios_path = (primary_path.parent_path() / boost::filesystem::path("Scenarios"));
 		if (boost::filesystem::is_directory(scenarios_path))
@@ -581,6 +606,9 @@ std::vector<std::vector<Core::FMTschedule>>FMTmodelparser::readschedules(const s
 								const std::vector<Core::FMTtheme>themes = model_it->getthemes();
 								const std::vector<Core::FMTactualdevelopment>area = model_it->getarea();
 								schedules[location] = scheduleparser.read(themes,actions, solutionpath.string());
+								}else{
+									_exhandler->raise(Exception::FMTexc::FMTempty_schedules,
+									primary_location+" for the scenario "+model_name, "FMTmodelparser::readschedules", __LINE__, __FILE__);
 								}
 							}
 						}
