@@ -21,7 +21,7 @@ namespace Python
 {
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(greedyreferencebuild_overloads,greedyreferencebuild, 2, 4)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(simulatenssm_overloads, simulate, 0, 2)
-BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(buildperiod_overloads, buildperiod, 0, 2)
+BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(buildperiod_overloads, buildperiod, 0, 3)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(get_outputs_overloads, get_outputs, 0, 1)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(getsolution_overloads, getsolution, 1, 2)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(getLPoutputoverloads, getoutput, 2, 3)
@@ -176,7 +176,7 @@ void exportModel()
 		.def(bp::init<Models::FMTmodel, Models::FMTsolverinterface>())
 		.def(bp::init<Models::FMTlpmodel>())
 		.def_pickle(FMT_pickle_suite<Models::FMTlpmodel>())
-		.def("buildperiod", &Models::FMTlpmodel::buildperiod, buildperiod_overloads(bp::args("schedule", "forcepartialbuild"), "@DocString(FMTlpmodel::buildperiod)"))
+		.def("buildperiod", &Models::FMTlpmodel::buildperiod, buildperiod_overloads(bp::args("schedule", "forcepartialbuild","compressageclass"), "@DocString(FMTlpmodel::buildperiod)"))
 		.def("boundsolution", &Models::FMTlpmodel::boundsolution,
 			boundsolution_overloads(bp::args("period", "tolerance"),
 				"@DocString(FMTlpmodel::boundsolution)"))

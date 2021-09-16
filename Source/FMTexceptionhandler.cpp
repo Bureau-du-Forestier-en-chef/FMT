@@ -552,6 +552,16 @@ std::string FMTexceptionhandler::updatestatus(const FMTexc lexception, const std
 		_level = FMTlev::FMT_logic;
 		++_errorcount;
 		break;
+	case FMTexc::FMTempty_schedules:
+		msg += "No schedule found at : " + message;
+		_level = FMTlev::FMT_logic;
+		++_errorcount;
+		break;
+	case FMTexc::FMTmissing_scenarios:
+		msg += "Cannot find scenarios : " + message;
+		_level = FMTlev::FMT_logic;
+		++_errorcount;
+		break;
 	default:
 		_exception = FMTexc::None;
 		_level = FMTlev::FMT_None;
