@@ -800,6 +800,12 @@ namespace Parser{
 				OGRFeature::DestroyFeature(feature);
 				++_line;
 			}
+			if(memlayer->GetFeatureCount()<=0)
+			{
+				_exhandler->raise(Exception::FMTexc::FMTgdal_constructor_error,
+								"No feature where create in the memory layer, check the areafield : "+areafield+" and the agefield : "+agefield+" because they are used for a subset selection on the layer.",
+								"FMTparser::vectormaptoFMTforest", __LINE__, __FILE__, _section);
+			}
 			GDALClose(dataset);
 			if (reproject)
 			{
