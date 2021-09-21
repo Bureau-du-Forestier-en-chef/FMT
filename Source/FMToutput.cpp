@@ -123,8 +123,11 @@ FMToutput& FMToutput::operator  *= (const double& rhs)
 	try {
 		if (!this->name.empty())
 		{
-			this->name = this->name + "*" + std::to_string(rhs);
-			this->description = this->description + "*" + std::to_string(rhs);
+			if(rhs!=1)
+			{
+				this->name = this->name + "*" + std::to_string(rhs);
+				this->description = this->description + "*" + std::to_string(rhs);
+			}
 		}
 		if (!sources.empty())
 		{
