@@ -391,7 +391,7 @@ class FMTEXPORT FMTspatialschedule : public FMTlayer<Graph::FMTlinegraph>
 		*/
 		std::map<std::string, std::vector<double>> getoutput(const Models::FMTmodel & model, const Core::FMToutput& output,
 			const int& periodstart, const int& periodstop,
-			Graph::FMToutputlevel level = Graph::FMToutputlevel::totalonly) const;
+			Core::FMToutputlevel level = Core::FMToutputlevel::totalonly) const;
 		// DocString: FMTspatialschedule::getoutputbycoordinate
 		/**
 		Return the output value by coordinate for a given output/model/period.
@@ -420,7 +420,7 @@ class FMTEXPORT FMTspatialschedule : public FMTlayer<Graph::FMTlinegraph>
 		 */
 		std::map<std::string,double> getoutputfromgraph(const Graph::FMTlinegraph& linegraph, const Models::FMTmodel & model,
 			const Core::FMToutputnode& node, const double* solution,const int&period, const Core::FMTmask& nodemask,
-			boost::unordered_map<Core::FMTmask, double>& nodecache, Graph::FMToutputlevel level = Graph::FMToutputlevel::totalonly) const;
+			boost::unordered_map<Core::FMTmask, double>& nodecache, Core::FMToutputlevel level = Core::FMToutputlevel::totalonly) const;
 
 		// DocString: FMTspatialschedule::getgraphsbystatic()
 		 /**

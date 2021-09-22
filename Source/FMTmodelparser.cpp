@@ -8,6 +8,11 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTmodelparser.h"
 #include <map>
 
+#ifdef FMTWITHGDAL
+#include "gdal.h"
+#include "gdal_priv.h"
+#endif 
+
 namespace Parser{
 
 FMTmodelparser::FMTmodelparser():FMTparser()
@@ -27,6 +32,101 @@ FMTmodelparser& FMTmodelparser::operator = (const FMTmodelparser& rhs)
         }
     return *this;
     }
+
+#ifdef FMTWITHGDAL
+	void FMTmodelparser::writeresults(const Models::FMTmodel& model,
+		const std::vector<Core::FMToutput>&theoutputs,
+		const int& firstperiod, const int& lastperiod,
+		const std::string& location,
+		Core::FMToutputlevel level,
+		std::string gdaldrivername, int iteration) const
+	{
+		try {
+			GDALAllRegister();
+			GDALDriver* newdriver = GetGDALDriverManager()->GetDriverByName(gdaldrivername.c_str());
+			if (newdriver == NULL)
+			{
+				_exhandler->raise(Exception::FMTexc::FMTinvaliddriver,
+					gdaldrivername, "FMTmodelparser::writeresults", __LINE__, __FILE__, _section);
+			}
+			GDALDataset* newdataset = newdriver->Create(location.c_str(), 0, 0, 0,GDT_Unknown, NULL);
+			if (newdataset == NULL)
+			{
+				_exhandler->raise(Exception::FMTexc::FMTgdal_constructor_error,
+					"Cannote create new dataset at " + location, "FMTmodelparser::writeresults", __LINE__, __FILE__, _section);
+				//Non Valid GDALdataset
+			}
+			OGRLayer *newlayer = newdataset->CreateLayer(model.getname().c_str(), NULL, wkbNone, NULL);
+			if (newlayer == NULL)
+			{
+				_exhandler->raise(Exception::FMTexc::FMTgdal_constructor_error,
+					"Cannote create new layer FMTresults at " + location, "FMTmodelparser::writeresults", __LINE__, __FILE__, _section);
+				//Non Valid Layer
+			}
+			OGRFieldDefn IterationField("Iteration", OFTInteger);
+			IterationField.SetWidth(32);
+			OGRFieldDefn PeriodField("Period", OFTInteger);
+			PeriodField.SetWidth(32);
+			OGRFieldDefn OutputField("Output",OFTString);
+			OutputField.SetWidth(254);
+			OGRFieldDefn TypeField("Type", OFTString);
+			TypeField.SetWidth(254);
+			OGRFieldDefn ValueField("Value", OFTReal);
+			ValueField.SetWidth(32);
+			if (newlayer->CreateField(&IterationField) != OGRERR_NONE||
+				newlayer->CreateField(&PeriodField) != OGRERR_NONE||
+				newlayer->CreateField(&OutputField) != OGRERR_NONE||
+				newlayer->CreateField(&ValueField) != OGRERR_NONE||
+				newlayer->CreateField(&TypeField) != OGRERR_NONE)
+				{
+					_exhandler->raise(Exception::FMTexc::FMTgdal_constructor_error,
+						"Cannote create new fields at " + location, "FMTmodelparser::writeresults", __LINE__, __FILE__, _section);
+					//Cannot create field
+				}
+			size_t featureid = 0;
+			for (const auto& values : model.getoutputsfromperiods(theoutputs, firstperiod, lastperiod, level))
+				{
+				size_t outputid = 0;
+				for (const std::vector<double>& outputvalues : values.second)
+				{
+					int period = firstperiod;
+					for (const double& value : outputvalues)
+					{
+						OGRFeature *newfeature = OGRFeature::CreateFeature(newlayer->GetLayerDefn());
+						if (newfeature == NULL)
+						{
+							_exhandler->raise(Exception::FMTexc::FMTgdal_constructor_error,
+								"Cannote generate new feature at " + location, "FMTmodelparser::writeresults", __LINE__, __FILE__, _section);
+							//Failed to generate feature
+						}
+						newfeature->SetField("Iteration", iteration);
+						newfeature->SetField("Period", period);
+						newfeature->SetField("Output", theoutputs.at(outputid).getname().c_str());
+						newfeature->SetField("Type", values.first.c_str());
+						newfeature->SetField("Value", value);
+						if (newlayer->CreateFeature(newfeature) != OGRERR_NONE)
+							{
+								_exhandler->raise(Exception::FMTexc::FMTgdal_constructor_error,
+									"Cannote create new feature id "+std::to_string(featureid) +" at " + location, "FMTmodelparser::writeresults", __LINE__, __FILE__, _section);
+								//Failed to generate feature
+							}
+						OGRFeature::DestroyFeature(newfeature);
+						++featureid;
+						++period;
+					}
+					++outputid;
+				}
+				
+				}
+
+			GDALClose(newdataset);
+		}catch (...)
+			{
+			_exhandler->printexceptions(" at " + location, "FMTmodelparser::writeresults", __LINE__, __FILE__, _section);
+			}
+	}
+#endif 
+
 
 void FMTmodelparser::write(const Models::FMTmodel& model,const std::string& folder) const
     {

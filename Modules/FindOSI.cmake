@@ -65,10 +65,17 @@ find_library( OSI_LIBRARY
               PATHS ${POTOSI_LIB_DIR}
               )
 
-find_library( OSI_CLP_LIBRARY
-              NAMES OsiClp libOsiClp
-              PATHS  ${POTOSI_LIB_DIR}
-              )
+if (NOT "${POTOSI_LIB_DIR}" MATCHES "vcpkg")
+	find_library( OSI_CLP_LIBRARY
+              	NAMES OsiClp libOsiClp
+              	PATHS  ${POTOSI_LIB_DIR}
+              	)
+else()
+	set(OSI_CLP_LIBRARY "${OSI_LIBRARY}")
+endif(NOT "${POTOSI_LIB_DIR}" MATCHES "vcpkg")
+
+
+
 
 find_library(CLP_LIBRARY
               NAMES Clp libClp libclp.a

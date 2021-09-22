@@ -75,7 +75,7 @@ namespace Models
 	}
 
 	std::map<std::string, double> FMTsesmodel::getoutput(const Core::FMToutput& output,
-		int period, Graph::FMToutputlevel level) const
+		int period, Core::FMToutputlevel level) const
 	{
 		std::map<std::string, double>values;
 		try {
@@ -91,6 +91,44 @@ namespace Models
 			}
 		return values;
 	}
+
+	bool FMTsesmodel::doplanning(const std::vector<Core::FMTschedule>&schedules, bool forcepartialbuild)
+	{
+		try {
+			for (const Core::FMTschedule& schedule : schedules)
+			{
+				this->greedyreferencebuild(schedule,10000);
+			}
+		}
+		catch (...)
+		{
+			_exhandler->printexceptions("", "FMTsesmodel::doplanning", __LINE__, __FILE__);
+		}
+	return true;
+	}
+
+	Core::FMTschedule FMTsesmodel::getsolution(int period, bool withlock) const
+	{
+		Core::FMTschedule baseschedule;
+		try {
+			const std::vector<Core::FMTschedule> allschedules = spschedule.getschedules(actions,withlock);
+			size_t scheduleid = 0;
+			while (scheduleid < allschedules.size())
+			{
+				if (allschedules.at(scheduleid).getperiod()==period)
+					{
+					baseschedule = allschedules.at(scheduleid);
+					break;
+					}
+				++scheduleid;
+			}
+		}catch (...)
+			{
+			_exhandler->printexceptions("", "FMTsesmodel::getsolution", __LINE__, __FILE__);
+			}
+		return baseschedule;
+	}
+
 
 	std::string FMTsesmodel::getdisturbancestats() const
 	{

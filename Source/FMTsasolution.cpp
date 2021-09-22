@@ -124,7 +124,7 @@ namespace Spatial
 				}else {
 				for (int period = 1; period < static_cast<int>(local_graph->size()-1);++period)
 					{
-					const std::map<std::string, double> output = local_graph->getoutput(model, constraint, period, &solutions[0], Graph::FMToutputlevel::totalonly);
+					const std::map<std::string, double> output = local_graph->getoutput(model, constraint, period, &solutions[0], Core::FMToutputlevel::totalonly);
 					const double totalperiod = output.at("Total");
 					graphvalues[period - 1] += totalperiod;
 					}

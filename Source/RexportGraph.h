@@ -13,7 +13,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 //#include "FMTgraph.h"
 #include <Rcpp.h>
 
-RCPP_EXPOSED_ENUM_NODECL(Graph::FMToutputlevel);
+RCPP_EXPOSED_ENUM_NODECL(Core::FMToutputlevel);
 RCPP_EXPOSED_WRAP(Graph::FMTgraphstats);
 RCPP_EXPOSED_AS(Graph::FMTgraphstats);
 RCPP_EXPOSED_ENUM_NODECL(Graph::FMTgraphbuild);
