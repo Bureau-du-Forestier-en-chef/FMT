@@ -113,6 +113,20 @@ class FMTEXPORT FMTmodelparser : public FMTparser
 		based on the name of the FMTmodel.
 		*/
         void write(const Models::FMTmodel& model,const std::string& folder) const;
+		#ifdef FMTWITHGDAL
+		// DocString: FMTmodelparser::writeresults
+		/**
+		The function writeresults for any kind of FMTmodel (optimized or simulated), starting from the first period to the last period, for a vector of outputs.
+		Write the results down in a gdaldriver (gdaldrivername), You can also specify the iteration will be 0 by default.
+		*/
+		void writeresults(const Models::FMTmodel& model,
+			const std::vector<Core::FMToutput>&theoutputs,
+			const int& firstperiod, const int& lastperiod,
+			const std::string& location,
+			Core::FMToutputlevel level = Core::FMToutputlevel::standard,
+			std::string gdaldrivername= "CSV",
+			int iteration = 0) const;
+		#endif 
     };
 }
 

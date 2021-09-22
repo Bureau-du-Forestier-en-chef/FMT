@@ -146,8 +146,19 @@ class FMTEXPORT FMTsesmodel : public FMTmodel
 		if level == FMToutputlevel::standard || level == FMToutputlevel::totalonly,
 		or developement name if level == FMToutputlevel::developpement
 		*/
-		std::map<std::string, double> getoutput(const Core::FMToutput& output,
-			int period, Graph::FMToutputlevel level = Graph::FMToutputlevel::standard) const;
+		virtual std::map<std::string, double> getoutput(const Core::FMToutput& output,
+			int period, Core::FMToutputlevel level = Core::FMToutputlevel::standard) const final;
+		// DocString: FMTsesmodel::getsolution
+		/**
+		Get the standard solution for a given period (FMTschedule dont have natural growth solution included).
+		If with lock is true then the schedule will contain locked developement.
+		*/
+		virtual Core::FMTschedule getsolution(int period, bool withlock = false) const final;
+		// DocString: FMTsesmodel::doplanning
+		/**
+		Build the model and do the initialsolve or simulate.
+		*/
+		virtual bool doplanning(const std::vector<Core::FMTschedule>&schedules,bool forcepartialbuild = false) final;
 		// DocString: FMTsesmodel::passinobject
 		/**
 		It's sometime usefull to pass in the exception handler and the logger  of an other FMTobject to

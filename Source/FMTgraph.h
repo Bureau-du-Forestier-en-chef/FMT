@@ -74,13 +74,6 @@ enum class FMTgraphbuild
 		nobuild = 3
 	};
 
-enum FMToutputlevel
-	{
-	standard = 1,
-	totalonly = 2,
-	developpement = 3
-	};
-
 #define FMT_COMMA ,
 
 
@@ -615,22 +608,22 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 
 		}
 		std::map<std::string, double> getoutput(const Models::FMTmodel& model, const Core::FMToutput& output,
-			int period, const double* solution, FMToutputlevel level = FMToutputlevel::standard) const
+			int period, const double* solution, Core::FMToutputlevel level = Core::FMToutputlevel::standard) const
 		{
 			Core::FMTtheme targettheme;
 			std::vector<std::string>target_attributes;
 			std::map<std::string, double>results;
 			try {
-				if(output.targetthemeid() < 0 && !(level == FMToutputlevel::developpement))
+				if(output.targetthemeid() < 0 && !(level == Core::FMToutputlevel::developpement))
 				{
-					level = FMToutputlevel::totalonly;
+					level = Core::FMToutputlevel::totalonly;
 				}
-				if (level != FMToutputlevel::developpement)
+				if (level != Core::FMToutputlevel::developpement)
 				{
-					if (level == FMToutputlevel::standard)
+					if (level == Core::FMToutputlevel::standard)
 					{
 						target_attributes = output.getdecomposition(model.themes);
-						if (!target_attributes.empty() && level == FMToutputlevel::standard)
+						if (!target_attributes.empty() && level == Core::FMToutputlevel::standard)
 						{
 							targettheme = output.targettheme(model.themes);
 						}
@@ -652,7 +645,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 					for (const Core::FMToutputnode& output_node : output.getnodes(/*model.area, model.actions, model.yields*/))
 					{
 						const std::map<std::string, double> srcvalues = getsource(model, output_node,period, targettheme, solution, level);
-						if (level == FMToutputlevel::developpement)
+						if (level == Core::FMToutputlevel::developpement)
 						{
 							for (std::map<std::string, double>::const_iterator mit = srcvalues.begin(); mit != srcvalues.end(); mit++)
 							{
@@ -1677,7 +1670,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 		std::map<std::string, double> getsource(const Models::FMTmodel& model,
 			const Core::FMToutputnode& node,
 			int period, const Core::FMTtheme& theme,
-			const double* solution, FMToutputlevel level = FMToutputlevel::standard) const
+			const double* solution, Core::FMToutputlevel level = Core::FMToutputlevel::standard) const
 		{
 			std::map<std::string, double>emptyreturn;
 			try{
@@ -1691,18 +1684,18 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 		}
 		std::map<std::string, double> getvalues(const Models::FMTmodel& model, const std::vector<FMTvertex_descriptor>& verticies,
 			const Core::FMToutputnode& node, const Core::FMTtheme& theme,
-			const double* solution, FMToutputlevel level) const
+			const double* solution, Core::FMToutputlevel level) const
 		{
 			std::map<std::string, double>values;
 			try {
-				if (level == FMToutputlevel::standard)
+				if (level == Core::FMToutputlevel::standard)
 				{
 					for (const std::string& attribute : theme.getbaseattributes())
 					{
 						values[attribute] = 0;
 					}
 				}
-				else if (level == FMToutputlevel::totalonly)
+				else if (level == Core::FMToutputlevel::totalonly)
 				{
 					values["Total"] = 0;
 				}
@@ -1715,11 +1708,11 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 					{
 						const Core::FMTdevelopment& development = data[vertex].get();
 						std::string value;
-						if (level == FMToutputlevel::standard)
+						if (level == Core::FMToutputlevel::standard)
 						{
 							value = development.getmask().get(theme);
 						}
-						else if (level == FMToutputlevel::developpement)
+						else if (level == Core::FMToutputlevel::developpement)
 						{
 							if (node.source.isnextperiod())//If it looks at next period make sure to show the right dev...
 								{
@@ -1762,7 +1755,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 
 					}
 				}
-				if (level == FMToutputlevel::standard)
+				if (level == Core::FMToutputlevel::standard)
 				{
 					double total = 0;
 					for (auto valit : values)
