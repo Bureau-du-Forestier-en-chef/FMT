@@ -27,14 +27,36 @@ get_filename_component(POTMOSEK_LIB_DIR ${FIRSTLIB} DIRECTORY)
 FIND_LIBRARY(MOSEK_LIB NAMES "${MOSEK_LIB_NAME}" mosek64 libmosek libmosek.so libmosek64 libmosek64.so libmosek64.a  PATHS ${POTMOSEK_LIB_DIR})
 
 
-#Go find the Osiabstractclass
-FILE(GLOB_RECURSE OSI_POTENTIAL_INCLUDE $ENV{OSI_DIR}OsiMskSolverInterface.hpp)
-list(GET OSI_POTENTIAL_INCLUDE 0 FIRST_HEADER)
-get_filename_component(OSIMSK_INCLUDE ${FIRST_HEADER} DIRECTORY)
-if (MSVC)
-FILE(GLOB_RECURSE OSI_POTENTIAL_INCLUDE $ENV{OSI_DIR}OsiMskSolverInterface.cpp)
-list(GET OSI_POTENTIAL_INCLUDE 0 OSIMSK_DEFINITION)
-endif(MSVC)
+#Go find the Osiabstractclass if you dont have the osimoseklib but have osi and mosek dir
+if (NOT DEFINED OSI_MSK_LIBRARY)
+	FILE(GLOB_RECURSE OSI_POTENTIAL_INCLUDE $ENV{OSI_DIR}OsiMskSolverInterface.hpp)
+	if (NOT "${OSI_POTENTIAL_INCLUDE}" STREQUAL "")
+		message("HELLOOO |${OSI_POTENTIAL_INCLUDE}|")
+		list(GET OSI_POTENTIAL_INCLUDE 0 FIRST_HEADER)
+		get_filename_component(OSIMSK_INCLUDE ${FIRST_HEADER} DIRECTORY)
+		if (MSVC)
+			FILE(GLOB_RECURSE OSI_POTENTIAL_INCLUDE $ENV{OSI_DIR}OsiMskSolverInterface.cpp)
+			list(GET OSI_POTENTIAL_INCLUDE 0 OSIMSK_DEFINITION)
+		endif(MSVC)
+	else()
+		FILE(GLOB_RECURSE OSI_POTENTIAL_INCLUDE $ENV{OSI_DIR}OsiSolverInterface.hpp)
+		if (NOT "${OSI_POTENTIAL_INCLUDE}" STREQUAL "")
+			file(DOWNLOAD
+   			 https://raw.githubusercontent.com/coin-or/Osi/master/src/OsiMsk/OsiMskSolverInterface.hpp
+    			${CMAKE_SOURCE_DIR}/external/include/coin/OsiMskSolverInterface.hpp)
+			file(DOWNLOAD
+   			 https://raw.githubusercontent.com/coin-or/Osi/master/src/OsiMsk/OsiMskConfig.h
+    			${CMAKE_SOURCE_DIR}/external/include/coin/OsiMskConfig.h)
+			file(DOWNLOAD
+   			 https://raw.githubusercontent.com/coin-or/Osi/master/src/OsiMsk/OsiMskSolverInterface.cpp
+    			${CMAKE_SOURCE_DIR}/external/source/coin/OsiMskSolverInterface.cpp)
+			set(OSIMSK_INCLUDE "${CMAKE_SOURCE_DIR}/external/include/coin/")
+			set(OSIMSK_DEFINITION "${CMAKE_SOURCE_DIR}/external/source/coin/")
+		else()
+			message("Cannot find Osisolverinterface header...cannot compile with Mosek")
+		endif(NOT "${OSI_POTENTIAL_INCLUDE}" STREQUAL "")
+	endif(NOT "${OSI_POTENTIAL_INCLUDE}" STREQUAL "")
+endif(NOT DEFINED OSI_MSK_LIBRARY)
 
 #Dependencies
 FILE(GLOB_RECURSE MOSEK_POTENTIAL_DLL $ENV{MOSEK_DIR}mosek64_[1-9]_[1-9].dll)

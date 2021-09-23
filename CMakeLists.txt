@@ -21,6 +21,8 @@ set(FMTSOURCEDIR "${CMAKE_CURRENT_SOURCE_DIR}/Source/")
 set(FMTINCLUDEDIR "${CMAKE_CURRENT_SOURCE_DIR}/Source/")
 
 
+find_package(Clp CONFIG REQUIRED)
+
 if (DEFINED OSI_DIR)
 	if (EXISTS "${OSI_DIR}")
 		set(ENV{OSI_DIR} "${OSI_DIR}")
@@ -397,6 +399,16 @@ if (NOT MSVC)
 	target_link_libraries(FMT "-lz")
 	link_libraries("-lz")
 ENDIF(NOT MSVC)
+
+if (DEFINED CMAKE_TOOLCHAIN_FILE)
+	get_filename_component(PARENT_DIR ${CMAKE_TOOLCHAIN_FILE} DIRECTORY)
+	get_filename_component(PARENT_DIR1 ${PARENT_DIR} DIRECTORY)
+	get_filename_component(PARENT_DIR2 ${PARENT_DIR1} DIRECTORY)
+	FILE(GLOB_RECURSE VCPKG_DLL ${PARENT_DIR2}/installed/${VCPKG_TARGET_TRIPLET}/bin/*.dll)
+	list (APPEND FMTDEPENDENCIES ${VCPKG_DLL})
+	list( REMOVE_DUPLICATES FMTDEPENDENCIES)
+endif(DEFINED CMAKE_TOOLCHAIN_FILE)
+
 
 get_filename_component(GDAL_DATA_NAME "${GDAL_DATA}" NAME)
 
