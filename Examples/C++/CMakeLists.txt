@@ -13,8 +13,11 @@ set(maptoFMTforestSOURCEFILES "${CMAKE_CURRENT_SOURCE_DIR}/Examples/C++/maptoFMT
 foreach(sourcefile ${FMTSOURCEFILES})
 	if (NOT "${sourcefile}" MATCHES "main.cpp")
 		list(APPEND FMTSimpleplanningSOURCEFILES "${sourcefile}")
+		list(APPEND FMTSimpleplanningSOURCEFILES "${FMTHEADERFILES}")
 		list(APPEND FMTSpatialyexplicitsimulationSOURCEFILES "${sourcefile}")
+		list(APPEND FMTSpatialyexplicitsimulationSOURCEFILES "${FMTHEADERFILES}")
 		list(APPEND maptoFMTforestSOURCEFILES "${sourcefile}")
+		list(APPEND maptoFMTforestSOURCEFILES "${FMTHEADERFILES}")
 	endif(NOT "${sourcefile}" MATCHES "main.cpp")
 endforeach()
 

@@ -51,7 +51,7 @@ if (NOT DEFINED OSI_MSK_LIBRARY)
    			 https://raw.githubusercontent.com/coin-or/Osi/master/src/OsiMsk/OsiMskSolverInterface.cpp
     			${CMAKE_SOURCE_DIR}/external/source/coin/OsiMskSolverInterface.cpp)
 			set(OSIMSK_INCLUDE "${CMAKE_SOURCE_DIR}/external/include/coin/")
-			set(OSIMSK_DEFINITION "${CMAKE_SOURCE_DIR}/external/source/coin/")
+			set(OSIMSK_DEFINITION "${CMAKE_SOURCE_DIR}/external/source/coin/OsiMskSolverInterface.cpp")
 		else()
 			message("Cannot find Osisolverinterface header...cannot compile with Mosek")
 		endif(NOT "${OSI_POTENTIAL_INCLUDE}" STREQUAL "")
