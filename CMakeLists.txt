@@ -83,6 +83,16 @@ if (DEFINED PYTHON_DIR)
 	endif(EXISTS "${PYTHON_DIR}")
 endif(DEFINED PYTHON_DIR)
 
+#if (DEFINED TORCH)
+#	set(EXTERNAL_INSTALL_LOCATION ${CMAKE_SOURCE_DIR}/external/torch)
+#ExternalProject_Add(googletest
+#    		GIT_REPOSITORY https://download.pytorch.org/libtorch/nightly/cpu/libtorch-shared-with-deps-latest.zip
+#    		CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${EXTERNAL_INSTALL_LOCATION}
+#		)
+#	include_directories(${CMAKE_SOURCE_DIR}/external/torch/include)
+#	link_directories(${CMAKE_SOURCE_DIR}/external/torch/lib)
+#endif(DEFINED TORCH)
+
 
 if (MSVC)
 	add_definitions("-DFMT_EXPORTS")
@@ -100,6 +110,7 @@ add_definitions("-DHAVE_SNPRINTF")
 add_definitions("-DBOOST_FILESYSTEM_NO_DEPRECATED")
 
 FILE(GLOB FMTSOURCEFILES ${FMTSOURCEDIR}*.cpp)
+FILE(GLOB FMTHEADERFILES ${FMTSOURCEDIR}*.h)
 add_library(FMT SHARED ${FMTSOURCEFILES})
 include_directories(${FMTINCLUDEDIR})
 set_target_properties(FMT PROPERTIES PREFIX "")
@@ -381,6 +392,7 @@ if (DEFINED ENV{OSI_DIR})
 					endforeach()
 				else()
 					target_sources(FMT PRIVATE ${OSIMSK_DEFINITION})
+					list(APPEND sourcefile "${OSIMSK_DEFINITION}")
 				endif(NOT MSVC)
 				if (NOT CYGWIN AND DEFINED MOSEK_DLL)
 					message("MOSEK DLL found here: ${MOSEK_DLL}")
