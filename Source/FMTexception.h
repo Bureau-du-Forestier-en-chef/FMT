@@ -140,7 +140,8 @@ enum FMTexc
 	FMTinvalid_geometry= 67,
 	FMTundefinedoutput_attribute = 68,
 	FMTempty_schedules = 69,
-	FMTmissing_scenarios= 70
+	FMTmissing_scenarios= 70,
+	FMTschemefailed=71
     };
 
 // DocString: FMTexception

@@ -210,13 +210,13 @@ namespace Heuristics
 					{
 						if (!userandomness)
 						{
-							_exhandler->raise(Exception::FMTexc::FMTignore,
+							_exhandler->raise(Exception::FMTexc::FMTschemefailed,
 												addonthreadno()+"FMToperatingareascheduler failed switching to random",
 												"FMToperatingareascheduler::initialsolve", __LINE__, __FILE__);
 							userandomness = true; //Switch to random now
 
 						}else{
-							_exhandler->raise(Exception::FMTexc::FMTignore,
+							_exhandler->raise(Exception::FMTexc::FMTschemefailed,
 												addonthreadno()+"FMToperatingareascheduler at random failed, trying another scheme",
 												"FMToperatingareascheduler::initialsolve", __LINE__, __FILE__);
 						}
