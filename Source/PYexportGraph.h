@@ -27,10 +27,10 @@ void exportGraph()
 		"   :synopsis: Module used to generate graph.\n"
 		"\n";
 
-	bp::enum_<Graph::FMToutputlevel>("FMToutputlevel")
-		.value("standard", Graph::FMToutputlevel::standard)
-		.value("totalonly", Graph::FMToutputlevel::totalonly)
-		.value("developpement", Graph::FMToutputlevel::developpement)
+	bp::enum_<Core::FMToutputlevel>("FMToutputlevel")
+		.value("standard", Core::FMToutputlevel::standard)
+		.value("totalonly", Core::FMToutputlevel::totalonly)
+		.value("developpement", Core::FMToutputlevel::developpement)
 		.export_values();
 
 	bp::class_<Graph::FMTgraphstats>("FMTgraphstats", "@DocString(FMTgraphstats)")

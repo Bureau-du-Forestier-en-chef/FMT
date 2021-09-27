@@ -345,7 +345,7 @@ class FMTEXPORT FMTlpmodel : public FMTmodel
 		Get the standard solution for a given period (FMTschedule dont have natural growth solution included).
 		If with lock is true then the schedule will contain locked developement.
 		*/
-		Core::FMTschedule getsolution(int period,bool withlock = false) const;
+		Core::FMTschedule getsolution(int period,bool withlock = false) const final;
 		// DocString: FMTlpmodel::addscheduletoobjective
 		/**
 		This function will addup weight to the objective function for a given schedule.
@@ -373,8 +373,8 @@ class FMTEXPORT FMTlpmodel : public FMTmodel
 		if level == FMToutputlevel::standard || level == FMToutputlevel::totalonly,
 		or developement name if level == FMToutputlevel::developpement
 		*/
-		std::map<std::string, double> getoutput(const Core::FMToutput& output,
-			int period, Graph::FMToutputlevel level = Graph::FMToutputlevel::standard) const;
+		virtual std::map<std::string, double> getoutput(const Core::FMToutput& output,
+			int period, Core::FMToutputlevel level = Core::FMToutputlevel::standard) const final;
 		#if defined FMTWITHR
 			// DocString: FMTlpmodel::getoutputsdataframe
 			/**
@@ -550,6 +550,12 @@ class FMTEXPORT FMTlpmodel : public FMTmodel
 		Write the solverinterface matrix to a file (location) using the MPS formulation.
 		*/
 		void writeMPS(const std::string& location);
+		// DocString: FMTlpmodel::doplanning
+		/**
+		Build the model and do the initialsolve.
+		*/
+		virtual bool doplanning(const std::vector<Core::FMTschedule>&schedules,
+								bool forcepartialbuild = false) final;
 
 	};
 

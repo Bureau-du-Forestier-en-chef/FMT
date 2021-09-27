@@ -505,6 +505,7 @@ std::string FMTparser::setspec(Core::FMTsection section, Core::FMTkwor key,const
 				else {
 					lowerbound = getnum<double>(singlebound, constants);
 				}
+				
 				if (pushaagebound)
 					{
 					spec.addbounds(Core::FMTagebounds(section, key, static_cast<int>(upperbound), static_cast<int>(lowerbound)));
@@ -535,6 +536,7 @@ std::string FMTparser::setspec(Core::FMTsection section, Core::FMTkwor key,const
 				}
 				else {
 					lowerbound = getnum<int>(singlebound, constants);
+					upperbound = lowerbound;
 				}
 				spec.addbounds(Core::FMTagebounds(section, key, upperbound, lowerbound));
 				rest = " " + std::string(kmatch[1]) + std::string(kmatch[15]) + std::string(kmatch[16]) + std::string(kmatch[24]);

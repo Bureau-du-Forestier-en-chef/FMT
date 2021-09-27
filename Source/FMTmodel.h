@@ -520,6 +520,35 @@ class FMTEXPORT FMTmodel : public Core::FMTobject
 		*/
 		Core::FMTschedule getpotentialschedule(std::vector<Core::FMTactualdevelopment> toremove,
 											    std::vector<Core::FMTactualdevelopment> selection,bool withlock=true) const;
+		// DocString: FMTmodel::doplanning
+		/**
+		Build the model and do the initialsolve or simulate.
+		*/
+		virtual bool doplanning(const std::vector<Core::FMTschedule>&schedules,
+								bool forcepartialbuild = false);
+		// DocString: FMTmodel::getoutput
+		/**
+		Get the output value of a output for a given period using the spatial solution.
+		the map key returned consist of output name
+		if level == FMToutputlevel::standard || level == FMToutputlevel::totalonly,
+		or developement name if level == FMToutputlevel::developpement
+		*/
+		virtual std::map<std::string, double> getoutput(const Core::FMToutput& output,
+			int period, Core::FMToutputlevel level = Core::FMToutputlevel::standard) const;
+		// DocString: FMTmodel::getsolution
+		/**
+		Get the standard solution for a given period (FMTschedule dont have natural growth solution included).
+		If with lock is true then the schedule will contain locked developement.
+		*/
+		virtual Core::FMTschedule getsolution(int period, bool withlock = false) const;
+		// DocString: FMTmodel::getoutputsfromperiods
+		/**
+		For each output get a vector of outputs values starting for first period to last period.
+		*/
+		virtual std::map<std::string,std::vector<std::vector<double>>>getoutputsfromperiods(const std::vector<Core::FMToutput>& theoutputs,
+					const int& firstperiod, const int& lastperiod, Core::FMToutputlevel level = Core::FMToutputlevel::standard) const;
+		
+
 
     };
 // DocString: FMTmodelcomparator
