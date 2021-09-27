@@ -142,10 +142,7 @@ enum FMTexc
 	FMTempty_schedules = 69,
 	FMTmissing_scenarios= 70,
 	FMTschemefailed=71,
-	FMTgdal_constructor_error=72,
-	FMTinvalid_geometry=73,
-	FMTundefinedoutput_attribute = 74,
-	FMTmaxnumberofexception = 75
+	FMTmaxnumberofexception = 72
     };
 
 // DocString: FMTexception
