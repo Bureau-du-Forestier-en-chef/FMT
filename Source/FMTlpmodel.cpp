@@ -71,8 +71,8 @@ namespace Models
 				else {
 					const Core::FMToutput centroidoutput = centroid.getoutputintersect(statisticoutput, themes);
 					const Core::FMToutput centroidareaoutput = centroid.getoutputintersect(areaoutput, themes);
-					const std::map<std::string, double> centroidvalue = this->getoutput(centroidoutput, period, Graph::FMToutputlevel::totalonly);
-					const std::map<std::string, double> centroidarea = this->getoutput(centroidareaoutput, period, Graph::FMToutputlevel::totalonly);
+					const std::map<std::string, double> centroidvalue = this->getoutput(centroidoutput, period, Core::FMToutputlevel::totalonly);
+					const std::map<std::string, double> centroidarea = this->getoutput(centroidareaoutput, period, Core::FMToutputlevel::totalonly);
 					cstatistic = centroidvalue.at("Total");
 					carea = centroidarea.at("Total");
 					outputcaching[centroidmask] = std::pair<double, double>(cstatistic, carea);
@@ -105,8 +105,8 @@ namespace Models
 					else {
 						const Core::FMToutput binaryoutput = binary.getoutputintersect(statisticoutput, themes);
 						const Core::FMToutput binaryareaoutput = binary.getoutputintersect(areaoutput, themes);
-						const std::map<std::string, double> binaryvalue = this->getoutput(binaryoutput, period, Graph::FMToutputlevel::totalonly);
-						const std::map<std::string, double> binaryarea = this->getoutput(binaryareaoutput, period, Graph::FMToutputlevel::totalonly);
+						const std::map<std::string, double> binaryvalue = this->getoutput(binaryoutput, period, Core::FMToutputlevel::totalonly);
+						const std::map<std::string, double> binaryarea = this->getoutput(binaryareaoutput, period, Core::FMToutputlevel::totalonly);
 						statistic = binaryvalue.at("Total");
 						area = binaryarea.at("Total");
 						outputcaching[binarymask] = std::pair<double, double>(statistic,area);
@@ -750,7 +750,7 @@ bool FMTlpmodel::setsolutionbylp(int period, const Core::FMTschedule& schedule, 
 				{
 				if (constraint.issettoglobal())
 					{
-					const double value = getoutput(constraint,period, Graph::FMToutputlevel::totalonly).at("Total");
+					const double value = getoutput(constraint,period, Core::FMToutputlevel::totalonly).at("Total");
 					newconstraints[constraintid]=constraint.settoglobal(value);
 					}
 				++constraintid;
@@ -920,7 +920,7 @@ bool FMTlpmodel::setsolutionbylp(int period, const Core::FMTschedule& schedule, 
 	}
 
 
-	std::map<std::string, double> FMTlpmodel::getoutput(const Core::FMToutput& output,int period, Graph::FMToutputlevel level) const
+	std::map<std::string, double> FMTlpmodel::getoutput(const Core::FMToutput& output,int period, Core::FMToutputlevel level) const
 	{
 		try {
 			const double* solution = solver.getColSolution();
@@ -2346,7 +2346,7 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 				size_t outputid = 0;
 				for (const Core::FMToutput& output : outputsdata)
 					{
-					const std::map<std::string,double> values  = graph.getoutput(*this, output, period, solution, Graph::FMToutputlevel::developpement);
+					const std::map<std::string,double> values  = graph.getoutput(*this, output, period, solution, Core::FMToutputlevel::developpement);
 					for (std::map<std::string, double>::const_iterator it = values.begin(); it!= values.end();++it)
 						{
 						if ((it->second <= -FMT_DBL_TOLERANCE) || (it->second >= FMT_DBL_TOLERANCE))
@@ -2472,6 +2472,28 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 			_exhandler->raisefromcatch("", "FMTlpmodel::writeMPS", __LINE__, __FILE__);
 		}
 	}
+
+	bool FMTlpmodel::doplanning(const std::vector<Core::FMTschedule>&schedules,bool forcepartialbuild)
+		{
+		bool optimal = false;
+		try {
+			for (const Core::FMTschedule& schedule: schedules)
+				{
+				this->buildperiod(schedule,forcepartialbuild);
+				}
+			for (size_t constraintid = 1; constraintid < constraints.size();++constraintid)
+				{
+				this->setconstraint(constraints.at(constraintid));
+				}
+			this->setobjective(constraints.at(0));
+			optimal = this->initialsolve();
+		}catch (...)
+			{
+			_exhandler->raisefromcatch("", "FMTlpmodel::doplanning", __LINE__, __FILE__);
+			}
+			return optimal;
+		}
+
 
 	void FMTlpmodel::updategeneralconstraintsnaming(std::vector<std::string>& colnames,
 													std::vector<std::string>& rownames) const

@@ -1368,6 +1368,52 @@ Core::FMTschedule FMTmodel::getpotentialschedule(std::vector<Core::FMTactualdeve
 	return schedule;
 }
 
+bool FMTmodel::doplanning(const std::vector<Core::FMTschedule>&schedules,
+								bool forcepartialbuild)
+	{
+	return false;
+	}
+
+std::map<std::string, std::vector<std::vector<double>>>FMTmodel::getoutputsfromperiods(const std::vector<Core::FMToutput>& theoutputs,
+	const int& firstperiod, const int& lastperiod, Core::FMToutputlevel level) const
+	{
+	std::map<std::string, std::vector<std::vector<double>>>outs;
+	try {
+
+		for (size_t outid = 0; outid < theoutputs.size(); ++outid)
+			{
+			size_t periodid = 0;
+			for (int period = firstperiod; period <= lastperiod;++period)
+				{
+				for (const auto& values : this->getoutput(theoutputs.at(outid), period, level))
+					{
+					if (outs.find(values.first)==outs.end())
+						{
+						outs[values.first] = std::vector<std::vector<double>>(theoutputs.size(),std::vector<double>((lastperiod-firstperiod)+1,std::numeric_limits<double>::quiet_NaN()));
+						}
+					outs[values.first][outid][periodid] = values.second;
+					}
+				++periodid;
+				}
+			}
+	}catch (...)
+		{
+		_exhandler->raisefromcatch("", "FMTmodel::getoutputsfromperiods", __LINE__, __FILE__);
+		}
+	return outs;
+	}
+
+Core::FMTschedule FMTmodel::getsolution(int period, bool withlock) const
+	{
+	return Core::FMTschedule();
+	}
+
+std::map<std::string, double> FMTmodel::getoutput(const Core::FMToutput& output,
+	int period, Core::FMToutputlevel level) const
+{
+	return std::map<std::string, double>();
+}
+
 
 
 FMTmodelcomparator::FMTmodelcomparator(std::string name) :model_name(name) {}

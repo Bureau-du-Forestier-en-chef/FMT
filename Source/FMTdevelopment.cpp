@@ -13,7 +13,7 @@ namespace Core{
 	void FMTdevelopment::setage(const int& lage)
 	{
 		try {
-			age = static_cast<unsigned char>(lage);
+			age = static_cast<uint8_t>(lage);
 		}
 		catch (...)
 		{
@@ -24,7 +24,7 @@ namespace Core{
 	void FMTdevelopment::setlock(const int& llock)
 	{
 		try{
-		lock = static_cast<unsigned char>(llock);
+		lock = static_cast<uint8_t>(llock);
 		}
 		catch (...)
 		{
@@ -35,7 +35,7 @@ namespace Core{
 	void FMTdevelopment::setperiod(const int& lperiod)
 	{
 		try{
-		period = static_cast<unsigned char>(lperiod);
+		period = static_cast<uint8_t>(lperiod);
 		}
 		catch (...)
 		{

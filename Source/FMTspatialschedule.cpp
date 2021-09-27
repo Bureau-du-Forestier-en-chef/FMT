@@ -915,14 +915,14 @@ namespace Spatial
 	}
 
 	std::map<std::string,std::vector<double>> FMTspatialschedule::getoutput(const Models::FMTmodel & model,
-		const Core::FMToutput& output, const int& periodstart, const int& periodstop,Graph::FMToutputlevel level) const
+		const Core::FMToutput& output, const int& periodstart, const int& periodstop,Core::FMToutputlevel level) const
 	{
 		std::map<std::string, std::vector<double>>values;
 		try {
 			bool cachenotused = true;
 			//const std::vector<Core::FMTtheme> statictransitionsthemes = model.locatestatictransitionsthemes();
 			const double cellsize = this->getcellsize();
-			if (level == Graph::FMToutputlevel::totalonly)
+			if (level == Core::FMToutputlevel::totalonly)
 				{
 				values["Total"] = std::vector<double>((periodstop - periodstart) + 1,0.0);
 				}
@@ -943,7 +943,7 @@ namespace Spatial
 							periodstolookfor.push_back(std::pair<size_t, int>(periodid, period));
 							cachenotused = false;
 							}
-							else if (level == Graph::FMToutputlevel::totalonly)
+							else if (level == Core::FMToutputlevel::totalonly)
 							{
 								values["Total"][periodid] = cache.getactualnodecache()->getcachevalue(period);
 							}
@@ -986,7 +986,7 @@ namespace Spatial
 									graph->filledgesmask(nodemask, periodpair.second);
 									const std::map<std::string, double> graphreturn = getoutputfromgraph(*graph, model, node, &cellsize, periodpair.second, nodemask, cache.getactualnodecache()->patternvalues, level);
 									
-									if (!graphreturn.empty() && level == Graph::FMToutputlevel::totalonly)
+									if (!graphreturn.empty() && level == Core::FMToutputlevel::totalonly)
 									{
 										values["Total"][periodpair.first] += graphreturn.at("Total");
 									}
@@ -1015,7 +1015,7 @@ namespace Spatial
 									Core::FMTmask nodemask(basemask);
 									graph->filledgesmask(nodemask, periodpair.second);
 									const std::map<std::string, double> graphreturn = getoutputfromgraph(*graph, model, node, &cellsize, periodpair.second, nodemask, cache.getactualnodecache()->patternvalues, level);
-									if (!graphreturn.empty()&&level == Graph::FMToutputlevel::totalonly)
+									if (!graphreturn.empty()&&level == Core::FMToutputlevel::totalonly)
 									{
 										values["Total"][periodpair.first] += graphreturn.at("Total");
 									}
@@ -1427,7 +1427,7 @@ namespace Spatial
 std::map<std::string,double> FMTspatialschedule::getoutputfromgraph(const Graph::FMTlinegraph& linegraph, const Models::FMTmodel & model,
 											 const Core::FMToutputnode& node, const double* solution, const int&period,
 											const Core::FMTmask& nodemask,
-											boost::unordered_map<Core::FMTmask, double>& nodecache, Graph::FMToutputlevel level)const
+											boost::unordered_map<Core::FMTmask, double>& nodecache, Core::FMToutputlevel level)const
 	{
 	std::map<std::string, double> values;
 	try{
@@ -1435,7 +1435,7 @@ std::map<std::string,double> FMTspatialschedule::getoutputfromgraph(const Graph:
 	{
 		bool complete = false;
 		boost::unordered_map<Core::FMTmask,double>::const_iterator cashit = nodecache.find(nodemask);
-		if (cashit != nodecache.end() && level == Graph::FMToutputlevel::totalonly)//get it from cashing
+		if (cashit != nodecache.end() && level == Core::FMToutputlevel::totalonly)//get it from cashing
 		{
 			values["Total"] = cashit->second;
 			//*_logger << "period cash" << period << " " << cashit->second << "\n";
