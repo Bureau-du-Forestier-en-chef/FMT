@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du QuÃ©bec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -57,6 +57,7 @@ void exportException()
 		.value("FMTinvalidyield_number",Exception::FMTexc::FMTinvalidyield_number)
 		.value("FMTundefinedoutput_attribute", Exception::FMTexc::FMTundefinedoutput_attribute)
 		.value("FMToutput_too_much_operator", Exception::FMTexc::FMToutput_too_much_operator)
+		.value("FMTinvalid_geometry", Exception::FMTexc::FMTinvalid_geometry)
 		.export_values();
 
 	define_pylist<Exception::FMTexc>();
