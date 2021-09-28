@@ -729,15 +729,6 @@ namespace Parser{
 			}
 			OGRSpatialReference* lspref = layer->GetSpatialRef();
 			GDALDataset* memds = createvectormemoryds();
-			/*
-			Here we create a layer in memory and populate the field 'devid' with the id of the development in (devs) 
-			*/
-			OGRLayer*  memlayer = memds->CreateLayer( "Memlayer", lspref, lgeomtype, NULL );
-			if (memlayer == NULL)
-			{
-				 _exhandler->raise(Exception::FMTexc::FMTgdal_constructor_error,
-										"Layer in memory","FMTparser::vectormaptoFMTforest", __LINE__, __FILE__, _section);
-			}
 			OGRCoordinateTransformation* coordtransf = nullptr;
 			OGRSpatialReference forelspref = getFORELspatialref();
 			bool reproject = false;
@@ -750,6 +741,21 @@ namespace Parser{
 										"Coordinate Transformation","FMTparser::vectormaptoFMTforest", __LINE__, __FILE__, _section);
 				}
 				reproject=true;
+			}
+			/*
+			Here we create a layer in memory and populate the field 'devid' with the id of the development in (devs) 
+			*/
+			OGRLayer*  memlayer = nullptr ;
+			if (reproject)
+			{
+				memlayer = memds->CreateLayer( "Memlayer", &forelspref, lgeomtype, NULL );
+			}else{
+				memlayer = memds->CreateLayer( "Memlayer", lspref, lgeomtype, NULL );
+			}
+			if (memlayer == NULL)
+			{
+				 _exhandler->raise(Exception::FMTexc::FMTgdal_constructor_error,
+										"Layer in memory","FMTparser::vectormaptoFMTforest", __LINE__, __FILE__, _section);
 			}
 			std::string Fieldname = "devid";
 			OGRFieldDefn oField( Fieldname.c_str(), OFTInteger );
