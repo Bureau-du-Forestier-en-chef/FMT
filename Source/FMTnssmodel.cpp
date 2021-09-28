@@ -216,6 +216,11 @@ namespace Models
 			}
 	}
 
+	std::unique_ptr<FMTmodel>FMTnssmodel::clone() const
+		{
+		return std::unique_ptr<FMTmodel>(new FMTnssmodel(*this));
+		}
+
 	Core::FMTschedule FMTnssmodel::simulate(bool grow, bool schedulewithlock)
 	{
 		Core::FMTschedule schedule;

@@ -520,12 +520,17 @@ class FMTEXPORT FMTmodel : public Core::FMTobject
 		*/
 		Core::FMTschedule getpotentialschedule(std::vector<Core::FMTactualdevelopment> toremove,
 											    std::vector<Core::FMTactualdevelopment> selection,bool withlock=true) const;
+		// DocString: FMTmodel::getlocalconstraints
+		/**
+		Ajust constraints that need to be set to a value (getoutput) of the global model and return all constraint. 
+		*/
+		virtual std::vector<Core::FMTconstraint> getlocalconstraints(const std::vector<Core::FMTconstraint>& localconstraints, const int& period) const;
 		// DocString: FMTmodel::doplanning
 		/**
 		Build the model and do the initialsolve or simulate.
 		*/
 		virtual bool doplanning(const std::vector<Core::FMTschedule>&schedules,
-								bool forcepartialbuild = false);
+								bool forcepartialbuild = false,Core::FMTschedule objectiveweight = Core::FMTschedule());
 		// DocString: FMTmodel::getoutput
 		/**
 		Get the output value of a output for a given period using the spatial solution.
@@ -547,8 +552,11 @@ class FMTEXPORT FMTmodel : public Core::FMTobject
 		*/
 		virtual std::map<std::string,std::vector<std::vector<double>>>getoutputsfromperiods(const std::vector<Core::FMToutput>& theoutputs,
 					const int& firstperiod, const int& lastperiod, Core::FMToutputlevel level = Core::FMToutputlevel::standard) const;
-		
-
+		// DocString: FMTmodel::clone
+		/**
+		Get a clone of the FMTmodel
+		*/
+		virtual std::unique_ptr<FMTmodel>clone() const;
 
     };
 // DocString: FMTmodelcomparator

@@ -745,16 +745,7 @@ bool FMTlpmodel::setsolutionbylp(int period, const Core::FMTschedule& schedule, 
 					"Cannot getlocalconstraints from a non optimal global",
 					"FMTlpmodel::getlocalconstraints", __LINE__, __FILE__);
 				}
-			size_t constraintid = 0;
-			for (const Core::FMTconstraint& constraint : localconstraints)
-				{
-				if (constraint.issettoglobal())
-					{
-					const double value = getoutput(constraint,period, Core::FMToutputlevel::totalonly).at("Total");
-					newconstraints[constraintid]=constraint.settoglobal(value);
-					}
-				++constraintid;
-				}
+			return FMTmodel::getlocalconstraints(localconstraints,period);
 		}catch (...)
 		{
 			_exhandler->printexceptions("", "FMTlpmodel::getlocalconstraints", __LINE__, __FILE__);
@@ -2473,7 +2464,7 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 		}
 	}
 
-	bool FMTlpmodel::doplanning(const std::vector<Core::FMTschedule>&schedules,bool forcepartialbuild)
+	bool FMTlpmodel::doplanning(const std::vector<Core::FMTschedule>&schedules,bool forcepartialbuild,Core::FMTschedule objectiveweight)
 		{
 		bool optimal = false;
 		try {
@@ -2486,6 +2477,10 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 				this->setconstraint(constraints.at(constraintid));
 				}
 			this->setobjective(constraints.at(0));
+			if (!objectiveweight.empty())
+				{
+				this->addscheduletoobjective(objectiveweight, 10000);
+				}
 			optimal = this->initialsolve();
 		}catch (...)
 			{
@@ -2591,6 +2586,11 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 		}
 
 	}
+
+	std::unique_ptr<FMTmodel>FMTlpmodel::clone() const
+		{
+		return std::unique_ptr<FMTmodel>(new FMTlpmodel(*this));
+		}
 
 
 	void FMTlpmodel::updatematrixnaming()

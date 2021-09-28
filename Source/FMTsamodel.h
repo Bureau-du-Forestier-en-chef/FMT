@@ -144,7 +144,11 @@ class FMTEXPORT FMTsamodel : public FMTmodel
         FMTsamodel(const FMTmodel& rhs);
         ///Copy assignment operator
         FMTsamodel& operator = (const FMTsamodel& rhs);
-
+		// DocString: FMTsamodel::clone
+		/**
+		Get a clone of the FMTsamodel
+		*/
+		virtual std::unique_ptr<FMTmodel>clone() const final;
         /****************************************
         Functions to set parameters for the model.
         */

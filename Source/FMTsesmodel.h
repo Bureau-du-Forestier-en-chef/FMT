@@ -158,7 +158,8 @@ class FMTEXPORT FMTsesmodel : public FMTmodel
 		/**
 		Build the model and do the initialsolve or simulate.
 		*/
-		virtual bool doplanning(const std::vector<Core::FMTschedule>&schedules,bool forcepartialbuild = false) final;
+		virtual bool doplanning(const std::vector<Core::FMTschedule>&schedules,bool forcepartialbuild = false,
+			Core::FMTschedule objectiveweight = Core::FMTschedule()) final;
 		// DocString: FMTsesmodel::passinobject
 		/**
 		It's sometime usefull to pass in the exception handler and the logger  of an other FMTobject to
@@ -175,6 +176,11 @@ class FMTEXPORT FMTsesmodel : public FMTmodel
 		It's sometime usefull to pass in the exception handler of an other FMTobject.
 		*/
 		virtual void passinexceptionhandler(const std::shared_ptr<Exception::FMTexceptionhandler>& exhandler) override;
+		// DocString: FMTsesmodel::clone
+		/**
+		Get a clone of the FMTsesmodel
+		*/
+		virtual std::unique_ptr<FMTmodel>clone() const final;
 
     };
 

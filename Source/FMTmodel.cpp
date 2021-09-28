@@ -1369,11 +1369,31 @@ Core::FMTschedule FMTmodel::getpotentialschedule(std::vector<Core::FMTactualdeve
 }
 
 bool FMTmodel::doplanning(const std::vector<Core::FMTschedule>&schedules,
-								bool forcepartialbuild)
+								bool forcepartialbuild, Core::FMTschedule objectiveweight)
 	{
 	return false;
 	}
 
+std::vector<Core::FMTconstraint> FMTmodel::getlocalconstraints(const std::vector<Core::FMTconstraint>& localconstraints, const int& period) const
+{
+	std::vector<Core::FMTconstraint>newconstraints(localconstraints.begin(), localconstraints.end());
+	try {
+		size_t constraintid = 0;
+		for (const Core::FMTconstraint& constraint : localconstraints)
+		{
+			if (constraint.issettoglobal())
+			{
+				const double value = getoutput(constraint, period, Core::FMToutputlevel::totalonly).at("Total");
+				newconstraints[constraintid] = constraint.settoglobal(value);
+			}
+			++constraintid;
+		}
+	}catch (...)
+	{
+		_exhandler->raisefromcatch("", "FMTmodel::getlocalconstraints", __LINE__, __FILE__);
+	}
+	return newconstraints;
+}
 std::map<std::string, std::vector<std::vector<double>>>FMTmodel::getoutputsfromperiods(const std::vector<Core::FMToutput>& theoutputs,
 	const int& firstperiod, const int& lastperiod, Core::FMToutputlevel level) const
 	{
@@ -1401,6 +1421,11 @@ std::map<std::string, std::vector<std::vector<double>>>FMTmodel::getoutputsfromp
 		_exhandler->raisefromcatch("", "FMTmodel::getoutputsfromperiods", __LINE__, __FILE__);
 		}
 	return outs;
+	}
+
+std::unique_ptr<FMTmodel> FMTmodel::clone() const
+	{
+	return std::unique_ptr<FMTmodel>(new FMTmodel(*this));
 	}
 
 Core::FMTschedule FMTmodel::getsolution(int period, bool withlock) const

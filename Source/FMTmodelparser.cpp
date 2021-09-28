@@ -34,91 +34,121 @@ FMTmodelparser& FMTmodelparser::operator = (const FMTmodelparser& rhs)
     }
 
 #ifdef FMTWITHGDAL
+OGRLayer* FMTmodelparser::createresultslayer(const Models::FMTmodel& model, GDALDataset* dataset)const
+	{
+	OGRLayer* newlayer = nullptr;
+	try {
+		newlayer = dataset->CreateLayer(model.getname().c_str(), NULL, wkbNone, NULL);
+		if (newlayer == NULL)
+		{
+			_exhandler->raise(Exception::FMTexc::FMTgdal_constructor_error,
+				"Cannote create new layer FMTresults for " + model.getname(), "FMTmodelparser::createresultslayers", __LINE__, __FILE__, _section);
+			//Non Valid Layer
+		}
+		OGRFieldDefn IterationField("Iteration", OFTInteger);
+		IterationField.SetWidth(32);
+		OGRFieldDefn PeriodField("Period", OFTInteger);
+		PeriodField.SetWidth(32);
+		OGRFieldDefn OutputField("Output", OFTString);
+		OutputField.SetWidth(254);
+		OGRFieldDefn TypeField("Type", OFTString);
+		TypeField.SetWidth(254);
+		OGRFieldDefn ValueField("Value", OFTReal);
+		ValueField.SetPrecision(5);
+		ValueField.SetWidth(32);
+		if (newlayer->CreateField(&IterationField) != OGRERR_NONE ||
+			newlayer->CreateField(&PeriodField) != OGRERR_NONE ||
+			newlayer->CreateField(&OutputField) != OGRERR_NONE ||
+			newlayer->CreateField(&ValueField) != OGRERR_NONE ||
+			newlayer->CreateField(&TypeField) != OGRERR_NONE)
+		{
+			_exhandler->raise(Exception::FMTexc::FMTgdal_constructor_error,
+				"Cannote create new fields " + model.getname(), "FMTmodelparser::writeresults", __LINE__, __FILE__, _section);
+			//Cannot create field
+		}
+	}catch (...)
+		{
+		_exhandler->raisefromcatch("", "FMTmodelparser::createresultslayer", __LINE__, __FILE__, _section);
+		}
+	return newlayer;
+	}
+
+void FMTmodelparser::fillupinfeasibles(OGRLayer* layer,
+	const std::vector<Core::FMToutput>&theoutputs,
+	const int& iteration, const int& firstperiod, const int&lastperiod) const
+{
+	try {
+		std::map<std::string,std::vector<std::vector<double>>>allvalues;
+		for (const Core::FMToutput& out: theoutputs)
+		{
+			allvalues[out.getname()] = std::vector<std::vector<double>>(theoutputs.size(), std::vector<double>((lastperiod - firstperiod) + 1, std::numeric_limits<double>::quiet_NaN()));
+		}
+		writefeatures(layer,firstperiod,iteration, theoutputs,allvalues);
+	}
+	catch (...)
+	{
+		_exhandler->raisefromcatch("", "FMTmodelparser::fillupinfeasibles", __LINE__, __FILE__, _section);
+	}
+
+}
+
+void FMTmodelparser::writefeatures(OGRLayer* layer, const int& firstperiod, const int& iteration,
+	const std::vector<Core::FMToutput>& theoutputs,
+	const std::map<std::string, std::vector<std::vector<double>>>& values)const
+{
+	try {
+		for (const auto& toutputvalues : values)
+		{
+			size_t outputid = 0;
+			for (const std::vector<double>& outputvalues : toutputvalues.second)
+			{
+				int period = firstperiod;
+				for (const double& value : outputvalues)
+				{
+					OGRFeature *newfeature = OGRFeature::CreateFeature(layer->GetLayerDefn());
+					if (newfeature == NULL)
+					{
+						_exhandler->raise(Exception::FMTexc::FMTgdal_constructor_error,
+							"Cannote generate new feature ", "FMTmodelparser::writefeatures", __LINE__, __FILE__, _section);
+						//Failed to generate feature
+					}
+					newfeature->SetField("Iteration", iteration);
+					newfeature->SetField("Period", period);
+					newfeature->SetField("Output", theoutputs.at(outputid).getname().c_str());
+					newfeature->SetField("Type", toutputvalues.first.c_str());
+					newfeature->SetField("Value", value);
+					if (layer->CreateFeature(newfeature) != OGRERR_NONE)
+					{
+						_exhandler->raise(Exception::FMTexc::FMTgdal_constructor_error,
+							"Cannote create new feature id " + std::to_string(layer->GetFeatureCount()), "FMTmodelparser::writefeatures", __LINE__, __FILE__, _section);
+						//Failed to generate feature
+					}
+					OGRFeature::DestroyFeature(newfeature);
+					++period;
+				}
+				++outputid;
+			}
+
+		}
+	}
+	catch (...)
+	{
+		_exhandler->raisefromcatch("", "FMTmodelparser::writefeatures", __LINE__, __FILE__, _section);
+	}
+
+}
+
 	void FMTmodelparser::writeresults(const Models::FMTmodel& model,
 		const std::vector<Core::FMToutput>&theoutputs,
 		const int& firstperiod, const int& lastperiod,
 		const std::string& location,
 		Core::FMToutputlevel level,
-		std::string gdaldrivername, int iteration) const
+		std::string gdaldrivername) const
 	{
 		try {
-			GDALAllRegister();
-			GDALDriver* newdriver = GetGDALDriverManager()->GetDriverByName(gdaldrivername.c_str());
-			if (newdriver == NULL)
-			{
-				_exhandler->raise(Exception::FMTexc::FMTinvaliddriver,
-					gdaldrivername, "FMTmodelparser::writeresults", __LINE__, __FILE__, _section);
-			}
-			GDALDataset* newdataset = newdriver->Create(location.c_str(), 0, 0, 0,GDT_Unknown, NULL);
-			if (newdataset == NULL)
-			{
-				_exhandler->raise(Exception::FMTexc::FMTgdal_constructor_error,
-					"Cannote create new dataset at " + location, "FMTmodelparser::writeresults", __LINE__, __FILE__, _section);
-				//Non Valid GDALdataset
-			}
-			OGRLayer *newlayer = newdataset->CreateLayer(model.getname().c_str(), NULL, wkbNone, NULL);
-			if (newlayer == NULL)
-			{
-				_exhandler->raise(Exception::FMTexc::FMTgdal_constructor_error,
-					"Cannote create new layer FMTresults at " + location, "FMTmodelparser::writeresults", __LINE__, __FILE__, _section);
-				//Non Valid Layer
-			}
-			OGRFieldDefn IterationField("Iteration", OFTInteger);
-			IterationField.SetWidth(32);
-			OGRFieldDefn PeriodField("Period", OFTInteger);
-			PeriodField.SetWidth(32);
-			OGRFieldDefn OutputField("Output",OFTString);
-			OutputField.SetWidth(254);
-			OGRFieldDefn TypeField("Type", OFTString);
-			TypeField.SetWidth(254);
-			OGRFieldDefn ValueField("Value", OFTReal);
-			ValueField.SetWidth(32);
-			if (newlayer->CreateField(&IterationField) != OGRERR_NONE||
-				newlayer->CreateField(&PeriodField) != OGRERR_NONE||
-				newlayer->CreateField(&OutputField) != OGRERR_NONE||
-				newlayer->CreateField(&ValueField) != OGRERR_NONE||
-				newlayer->CreateField(&TypeField) != OGRERR_NONE)
-				{
-					_exhandler->raise(Exception::FMTexc::FMTgdal_constructor_error,
-						"Cannote create new fields at " + location, "FMTmodelparser::writeresults", __LINE__, __FILE__, _section);
-					//Cannot create field
-				}
-			size_t featureid = 0;
-			for (const auto& values : model.getoutputsfromperiods(theoutputs, firstperiod, lastperiod, level))
-				{
-				size_t outputid = 0;
-				for (const std::vector<double>& outputvalues : values.second)
-				{
-					int period = firstperiod;
-					for (const double& value : outputvalues)
-					{
-						OGRFeature *newfeature = OGRFeature::CreateFeature(newlayer->GetLayerDefn());
-						if (newfeature == NULL)
-						{
-							_exhandler->raise(Exception::FMTexc::FMTgdal_constructor_error,
-								"Cannote generate new feature at " + location, "FMTmodelparser::writeresults", __LINE__, __FILE__, _section);
-							//Failed to generate feature
-						}
-						newfeature->SetField("Iteration", iteration);
-						newfeature->SetField("Period", period);
-						newfeature->SetField("Output", theoutputs.at(outputid).getname().c_str());
-						newfeature->SetField("Type", values.first.c_str());
-						newfeature->SetField("Value", value);
-						if (newlayer->CreateFeature(newfeature) != OGRERR_NONE)
-							{
-								_exhandler->raise(Exception::FMTexc::FMTgdal_constructor_error,
-									"Cannote create new feature id "+std::to_string(featureid) +" at " + location, "FMTmodelparser::writeresults", __LINE__, __FILE__, _section);
-								//Failed to generate feature
-							}
-						OGRFeature::DestroyFeature(newfeature);
-						++featureid;
-						++period;
-					}
-					++outputid;
-				}
-				
-				}
-
+			GDALDataset* newdataset = createOGRdataset(location, gdaldrivername);
+			OGRLayer *newlayer = createresultslayer(model, newdataset);
+			writefeatures(newlayer, firstperiod,0, theoutputs, model.getoutputsfromperiods(theoutputs, firstperiod, lastperiod, level));
 			GDALClose(newdataset);
 		}catch (...)
 			{
