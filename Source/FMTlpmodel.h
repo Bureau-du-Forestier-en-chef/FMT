@@ -339,7 +339,7 @@ class FMTEXPORT FMTlpmodel : public FMTmodel
 		During replaning some local constraints need to be ajusted to the global model.
 		The function will take a vector of local constraint and ajust the bounds using the solution of this global model.
 		*/
-		std::vector<Core::FMTconstraint> getlocalconstraints(const std::vector<Core::FMTconstraint>& localconstraints,const int& period) const;
+		virtual std::vector<Core::FMTconstraint> getlocalconstraints(const std::vector<Core::FMTconstraint>& localconstraints,const int& period) const final;
 		// DocString: FMTlpmodel::getsolution
 		/**
 		Get the standard solution for a given period (FMTschedule dont have natural growth solution included).
@@ -555,7 +555,12 @@ class FMTEXPORT FMTlpmodel : public FMTmodel
 		Build the model and do the initialsolve.
 		*/
 		virtual bool doplanning(const std::vector<Core::FMTschedule>&schedules,
-								bool forcepartialbuild = false) final;
+								bool forcepartialbuild = false,Core::FMTschedule objectiveweight = Core::FMTschedule()) final;
+		// DocString: FMTlpmodel::clone
+		/**
+		Get a clone of the FMTlpmodel
+		*/
+		virtual std::unique_ptr<FMTmodel>clone() const final;
 
 	};
 

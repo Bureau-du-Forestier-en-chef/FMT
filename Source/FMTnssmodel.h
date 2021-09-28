@@ -56,6 +56,7 @@ namespace Models
 			
 		}
 		BOOST_SERIALIZATION_SPLIT_MEMBER()
+
 		// DocString: FMTnssmodel::generator
 		///This simulation model need to have it's own random number generator
 		std::default_random_engine generator;
@@ -135,6 +136,11 @@ namespace Models
 			The resulting schedule can contain locked developement.
 			*/
 			Core::FMTschedule simulate(bool grow = false,bool schedulewithlock = false);
+			// DocString: FMTnssmodel::clone
+			/**
+			Get a clone of the FMTnssmodel
+			*/
+			virtual std::unique_ptr<FMTmodel>clone() const final;
 			
 		};
 }
