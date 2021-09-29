@@ -5,25 +5,25 @@ SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
+#ifdef FMTWITHOSI
 #include "FMTnssmodel.h"
 #include "FMTfuturdevelopment.h"
 #include "FMTactualdevelopment.h"
 
 namespace Models
 {
-	FMTnssmodel::FMTnssmodel(const FMTmodel& rhs, unsigned int seed):FMTmodel(rhs),generator(seed) {}
-
-	int FMTnssmodel::getperiod() const
+	FMTnssmodel::FMTnssmodel():
+		FMTsrmodel(FMTmodel(), Models::FMTsolverinterface::CLP),
+		generator() 
 	{
-		int period = 0;
-		try {
-			period = area.begin()->getperiod();
-		}
-		catch (...)
-		{
-			_exhandler->raisefromcatch("", "FMTnssmodel::getperiod", __LINE__, __FILE__);
-		}
-		return period;
+	
+	}
+
+	FMTnssmodel::FMTnssmodel(const FMTmodel& rhs, unsigned int seed):
+		FMTsrmodel(rhs,Models::FMTsolverinterface::CLP),
+		generator(seed) 
+	{
+	
 	}
 
 	std::vector<const Core::FMToutput*> FMTnssmodel::constraintstotarget(std::vector<double>& targets)
@@ -33,7 +33,7 @@ namespace Models
 			targets.clear();
 			std::vector<double>lowers;
 			std::vector<double>uppers;
-			const int actualperiod = getperiod();
+			const int actualperiod = std::max(static_cast<int>(getgraphsize()-1),1);
 			for (const Core::FMTconstraint& constraint : constraints)
 				{
 				if (constraint.israndomaction() &&
@@ -158,24 +158,24 @@ namespace Models
 		return selection;
 	}
 
-	void FMTnssmodel::updatearea(std::vector<Core::FMTactualdevelopment>::iterator developmentit, const std::vector<Core::FMTdevelopmentpath>& paths, const double& operatedarea)
+	void FMTnssmodel::updatearea(std::vector<Core::FMTactualdevelopment>& basearea, std::vector<Core::FMTactualdevelopment>::iterator developmentit, const std::vector<Core::FMTdevelopmentpath>& paths, const double& operatedarea)
 	{
 		try {
 			if (operatedarea>= developmentit->getarea())
 				{
-				area.erase(developmentit);
+				basearea.erase(developmentit);
 			}else {
 				developmentit->setarea(developmentit->getarea() - operatedarea);
 				}
 			for (const Core::FMTdevelopmentpath& path : paths)
 				{
 				const double newareavalue = operatedarea * (path.proportion / 100);
-				std::vector<Core::FMTactualdevelopment>::iterator restdev = std::find_if(area.begin(), area.end(), Core::FMTactualdevelopmentcomparator(&(*path.development)));
-				if (restdev != area.end())
+				std::vector<Core::FMTactualdevelopment>::iterator restdev = std::find_if(basearea.begin(), basearea.end(), Core::FMTactualdevelopmentcomparator(&(*path.development)));
+				if (restdev != basearea.end())
 				{
 					restdev->setarea(restdev->getarea() + newareavalue);
 				}else {
-					area.emplace_back(*path.development, newareavalue);
+					basearea.emplace_back(*path.development, newareavalue);
 					}
 				}
 		}catch (...)
@@ -203,41 +203,37 @@ namespace Models
 			}
 	}
 
-	void FMTnssmodel::grow()
-	{
-		try{
-			for (Core::FMTactualdevelopment& dev : area)
-				{
-				dev = Core::FMTactualdevelopment(dev.grow(), dev.getarea());
-				}
-		}catch (...)
-			{
-			_exhandler->raisefromcatch("", "FMTnssmodel::grow", __LINE__, __FILE__);
-			}
-	}
 
 	std::unique_ptr<FMTmodel>FMTnssmodel::clone() const
 		{
 		return std::unique_ptr<FMTmodel>(new FMTnssmodel(*this));
 		}
 
-	Core::FMTschedule FMTnssmodel::simulate(bool grow, bool schedulewithlock)
+	void FMTnssmodel::simulate()
 	{
-		Core::FMTschedule schedule;
 		try {
-			if (schedulewithlock)
-				{
-				schedule.setuselock(true);
-				}
+			Core::FMTschedule schedule;
+			schedule.setuselock(true);
 			schedule.passinobject(*this);
 			std::vector<double>targetedarea;
 			std::vector<const Core::FMToutput*> targetedoutputs = constraintstotarget(targetedarea);
-			
 			std::vector<std::vector<const Core::FMTaction*>> targetedactions= getactionstargets(targetedoutputs);
-			
+			const int graphlength = static_cast<int>(getgraphsize());
+			std::vector<Core::FMTactualdevelopment> actualarea;
+			if (graphlength==0&&area.begin()->getperiod() == 0)
+			{
+				actualarea = area;
+				for (Core::FMTactualdevelopment& actdev : actualarea)
+					{
+					actdev.setperiod(std::max(1, actdev.getperiod()));
+					}
+			}else {
+				actualarea = getarea(graphlength - 1);
+				}
+			schedule.setperiod(std::max(graphlength, 1));
 			if (targetedarea.empty())
 				{
-				const int period = getperiod();
+				const int period = graphlength-1;
 				_exhandler->raise(Exception::FMTexc::FMTignore,
 					"No area to simulate at period "+std::to_string(period), "FMTnssmodel::simulate", __LINE__, __FILE__);
 				}
@@ -247,21 +243,21 @@ namespace Models
 				_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
 					"Area target not the same size has output or actions target", "FMTnssmodel::simulate", __LINE__, __FILE__);
 				}
-			if (area.empty())
+			if (actualarea.empty())
 				{
 				_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
 					"Simulation model has no area to simulate", "FMTnssmodel::simulate", __LINE__, __FILE__);
 				}
 			//Shuffle the area...
-			std::shuffle(area.begin(), area.end(), generator);
+			std::shuffle(actualarea.begin(), actualarea.end(), generator);
 			bool allocatedarea = true;
 			bool anyallocation = false;
 			while (allocatedarea&&!targetedarea.empty())
 				{
-				std::vector<Core::FMTactualdevelopment>::iterator devit = area.begin();
+				std::vector<Core::FMTactualdevelopment>::iterator devit = actualarea.begin();
 				std::vector<std::pair<size_t, const Core::FMTaction*>>operables;
 				allocatedarea = false;
-				while (devit!=area.end()&&operables.empty())
+				while (devit!= actualarea.end()&&operables.empty())
 					{
 					operables = getoperabilities(*devit, targetedactions, targetedoutputs);
 					if (operables.empty())
@@ -274,30 +270,43 @@ namespace Models
 					
 					const double operatedarea = std::min(targetedarea.at(operables.begin()->first), devit->getarea());
 					const std::vector<Core::FMTdevelopmentpath> paths = operate(*devit, operatedarea, operables.begin()->second, schedule);
-					updatearea(devit, paths, operatedarea);
+					updatearea(actualarea,devit, paths, operatedarea);
 					updateareatargets(operatedarea, operables.begin()->first, targetedoutputs, targetedarea, targetedactions);
 					allocatedarea = true;
 					anyallocation = true;
 					}
 				}
-			std::sort(area.begin(), area.end());
+			std::sort(actualarea.begin(), actualarea.end());
 			if (!anyallocation)
 				{
-				const int period = getperiod();
+				const int period = graphlength - 1;
 				_exhandler->raise(Exception::FMTexc::FMTignore,
 					"No area simulated at period " + std::to_string(period), "FMTnssmodel::simulate", __LINE__, __FILE__);
 				}
-			if (grow)
-				{
-				this->grow();
-				}
 			schedule.clean();
+			this->buildperiod(schedule, true);
+			this->setsolution(std::max(graphlength,1),schedule);
 		}catch (...)
 		{
 			_exhandler->raisefromcatch("", "FMTnssmodel::simulate", __LINE__, __FILE__);
 		}
-		return schedule;
 	}
+
+	bool FMTnssmodel::doplanning(const std::vector<Core::FMTschedule>&schedules,
+		bool forcepartialbuild, Core::FMTschedule objectiveweight)
+	{
+		try {
+			simulate();
+		}
+		catch (...)
+		{
+			_exhandler->raisefromcatch("", "FMTnssmodel::doplanning", __LINE__, __FILE__);
+		}
+		return true;
+	}
+
 }
 
 BOOST_CLASS_EXPORT_IMPLEMENT(Models::FMTnssmodel)
+
+#endif

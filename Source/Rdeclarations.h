@@ -23,6 +23,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTsasolution.h"
 #include "FMTmodel.h"
 #include "FMTsesmodel.h"
+#include "FMTsrmodel.h"
 #include "FMTnssmodel.h"
 #include "FMTlpsolver.h"
 #include "FMTlpmodel.h"
@@ -83,16 +84,18 @@ RCPP_DECLAREVECTOR(Spatial::FMTforest);// For vector
 RCPP_DECLAREVECTOR(Spatial::FMTspatialaction);//For vector
 //RCPP_DECLAREMAP(Spatial::FMTcoordinate,Graph::FMTgraph);//For FMTlayer
 RCPP_DECLAREMAP(Spatial::FMTcoordinate, Graph::FMTlinegraph);
+RCPP_DECLAREVECTOR(Models::FMTsesmodel);//For vector
 RCPP_DECLAREVECTOR(Spatial::FMTsasolution);//For vector
 //Models
 RCPP_DECLAREVECTOR(Models::FMTmodel);//For vector
 RCPP_DECLAREMAP(std::string, double);//For map<string,double>
-RCPP_DECLAREVECTOR(Models::FMTsesmodel);//For vector
-RCPP_DECLAREVECTOR(Models::FMTnssmodel);//For vector
+
 
 #ifdef FMTWITHOSI
 	RCPP_DECLAREVECTOR(Models::FMTlpsolver);//For vector
+	RCPP_DECLAREVECTOR(Models::FMTsrmodel);//For vector
 	RCPP_DECLAREVECTOR(Models::FMTlpmodel);//For vector
+	RCPP_DECLAREVECTOR(Models::FMTnssmodel);//For vector
 #endif
 RCPP_DECLAREVECTOR(Models::FMTsamodel);//For vector
 //Heuristics

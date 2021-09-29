@@ -9,49 +9,17 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #ifndef FMTlpmodel_H_INCLUDED
 #define FMTlpmodel_H_INCLUDED
 
-#include "FMTgraphdescription.h"
-#include "FMTdevelopment.h"
-#include "FMTaction.h"
-#include "FMTtransition.h"
-#include "FMTyields.h"
-#include "FMTtheme.h"
-#include "FMTschedule.h"
-#include "FMTutility.h"
-#include "FMTdevelopmentpath.h"
-#include "FMTserializablematrix.h"
 
-#ifdef FMTWITHMOSEK
-	/*
-	#include "OsiCpxSolverInterface.hpp"
-	#include "OsiGrbSolverInterface.hpp"*/
-	#include "OsiMskSolverInterface.hpp"
-#endif
 
-#if defined FMTWITHR
-	#include <Rcpp.h>
-#endif 
 
-#include "OsiSolverInterface.hpp"
-#include <boost/serialization/split_member.hpp>
-#include <boost/serialization/unordered_map.hpp>
-#include <boost/serialization/vector.hpp>
-#include "FMTgraphstats.h"
-#include <memory>
-#include <tuple>
-#include <unordered_map>
-#include <map>
-#include <utility>
-#include <vector>
-#include <queue>
-#include "FMTgraph.h"
-#include "FMTmodel.h"
-#include "FMTlpsolver.h"
-#include "FMTsolverinterface.h"
+
+#include "FMTsrmodel.h"
 #include "FMToperatingareascheduler.h"
 #include "FMToperatingareaclusterer.h"
 #include <boost/serialization/export.hpp>
-#include "FMTvertexproperties.h"
-#include "FMTedgeproperties.h"
+#include <boost/serialization/split_member.hpp>
+#include <boost/serialization/unordered_map.hpp>
+#include <boost/serialization/vector.hpp>
 
 
 namespace Models
@@ -83,7 +51,7 @@ shrinked (by the front) using the function eraseperiod.
 The matrix is held within the solverinterface pointer.
 */
 
-class FMTEXPORT FMTlpmodel : public FMTmodel
+class FMTEXPORT FMTlpmodel : public FMTsrmodel
 	{
 	// DocString: FMTlpmodel::save
 	/**
@@ -93,12 +61,8 @@ class FMTEXPORT FMTlpmodel : public FMTmodel
 	template<class Archive>
 	void save(Archive& ar, const unsigned int version) const
 		{
-		ar & boost::serialization::make_nvp("model", boost::serialization::base_object<FMTmodel>(*this));
-		ar & BOOST_SERIALIZATION_NVP(solver);
-		ar & BOOST_SERIALIZATION_NVP(graph);
+		ar & boost::serialization::make_nvp("model", boost::serialization::base_object<FMTsrmodel>(*this));
 		ar & BOOST_SERIALIZATION_NVP(elements);
-		//ar & BOOST_SERIALIZATION_NVP(deletedconstraints);
-		//ar & BOOST_SERIALIZATION_NVP(deletedvariables);
 		}
 	// DocString: FMTlpmodel::load
 	/**
@@ -107,34 +71,17 @@ class FMTEXPORT FMTlpmodel : public FMTmodel
 	template<class Archive>
 	void load(Archive& ar, const unsigned int version)
 		{
-		ar & boost::serialization::make_nvp("model", boost::serialization::base_object<FMTmodel>(*this));
-		ar & BOOST_SERIALIZATION_NVP(solver);
-		ar & BOOST_SERIALIZATION_NVP(graph);
+		ar & boost::serialization::make_nvp("model", boost::serialization::base_object<FMTsrmodel>(*this));
 		ar & BOOST_SERIALIZATION_NVP(elements);
-		solver.passinmessagehandler(*this->_logger);
-		//ar & BOOST_SERIALIZATION_NVP(deletedconstraints);
-		//ar & BOOST_SERIALIZATION_NVP(deletedvariables);
 		}
 	BOOST_SERIALIZATION_SPLIT_MEMBER()
 	//DocString: FMTlpmodel::strictlypositivesoutputsmatrix
 	//Default is false, when true if an output have negative coef, the value of the output in the graph will be strictly positive (like in Woodstock)
 	bool strictlypositivesoutputsmatrix;
-	// DocString: FMTlpmodel::graph
-	///graph holding the FMTdevelopments for all the periods.
-	Graph::FMTgraph<Graph::FMTvertexproperties,Graph::FMTedgeproperties> graph;
 	// DocString: FMTlpmodel::elements
 	///Locations of the constraints and variables in the matrix for the constraints / objective.
 	std::vector<std::unordered_map<std::string,
 		std::vector<std::vector<int>>>>elements;
-	// DocString: FMTlpmodel::solver
-	///The lpsolver
-	FMTlpsolver solver;
-	/**
-	Simple function to summarize constraints that are un a map structure key = variables, element = coefficiant
-	to a array structure (vector) for osisolverinterface. map structure is easier to deal with thant two vectors.
-	*/
-	bool summarize(const std::map<int, double>& variables ,
-		std::vector<int>& sumvariables, std::vector<double>& sumcoefficiants) const;
 	// DocString: FMTlpmodel::getclusterer
 	/**
 	Using an inventory output (areaoutput) and an (statisticoutput) at (period) this function returns operating area cluster filled with statistic double comming from
@@ -145,19 +92,6 @@ class FMTEXPORT FMTlpmodel : public FMTmodel
 		const Core::FMToutput& areaoutput,
 		const Core::FMToutput& statisticoutput,
 		const int& period,int minimalnumberofclusters = -1,int maximalnumberofclusters = -1) const;
-	// DocString: FMTlpmodel::initializematrix
-	/**
-	Initialize the solverinterface called once when the FMTgraph was empty after the first call of buildperiod.
-	*/
-	Graph::FMTgraphstats initializematrix();
-	// DocString: FMTlpmodel::updatematrix
-	/**
-	During a call to build period after the graph has been updated with nes developments type the solverinterface matrix
-	need to be updated. Variables and constraints related to each of those new developements will be added to the matrix.
-	So area transfer row and natural growth plus action variables.
-	*/
-	Graph::FMTgraphstats updatematrix(const Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_pair& targets,
-									const Graph::FMTgraphstats& newstats);
 	// DocString: FMTlpmodel::getsetmatrixelement
 	/**
 	When the user add constraints using the setconstraint function or the setobjective function the model needs to had
@@ -250,11 +184,6 @@ class FMTEXPORT FMTlpmodel : public FMTmodel
 	Returns constraints indexes of the lower and upper bounds of the constraints set for the objective.
 	*/
 	std::vector<int>setobjectivebounds(bool dolower = true, bool doupper = true, double tolerance = FMT_DBL_TOLERANCE);
-	// DocString: FMTlpmodel::passinobjecttomembers
-	/**
-	Pass FMTobject to members data.
-	*/
-	void passinobjecttomembers(const Core::FMTobject& rhs);
 	// DocString: FMTlpmodel::updatematrixnaming
 	/**
 	Update the row and variables name based on graph.
@@ -273,9 +202,7 @@ class FMTEXPORT FMTlpmodel : public FMTmodel
 	bool setpositiveoutputsinmatrix(const Core::FMTconstraint& constraint, const std::vector<std::map<int, double>>& strictlypositivesoutputs,int period);
 	public:
 	void clearcache() final;
-	void cleargraphdevelopements();
 	void clearconstraintlocation();
-	void cleargraphcache();
 	// DocString: FMTlpmodel(const FMTmodel,FMTsolverinterface)
 	/**
 	Main constructor used to build FMTlpmodel using it's base class and to let the user choose the solvertype
@@ -305,57 +232,23 @@ class FMTEXPORT FMTlpmodel : public FMTmodel
 		To set strictlypositivesoutputsmatrix at true.
 		*/
 		void setstrictlypositivesoutputsmatrix();
-		// DocString: FMTlpmodel::setsolution
-		/**
-		If the user wants to set a solution for a given period for warmstarting the model or prepare to
-		bound the model to that solution.
-		*/
-		bool setsolution(int period,const Core::FMTschedule& schedule, double tolerance = FMT_DBL_TOLERANCE);
-		// DocString: FMTlpmodel::setsolutionbylp
-		/**
-		In some cases if you avec alot of _lockexcempt actions comming from a Ws model it might be easier to
-		use the setsolutionbylp to set the solution on a partial graph. This function will change the objective function,
-		constraints and variables bounds so juste use it in a "Get results" context ( only valid for partial graph).
-		*/
-		bool setsolutionbylp(int period, const Core::FMTschedule& schedule, double tolerance = FMT_DBL_TOLERANCE);
 		// DocString: FMTlpmodel::boundsolution
 		/**
 		This function bounds the primal variables to the primal solution present within the matrix for
 		a given period and tolerance. Perfect function to update a FMTlpmodel or get ready for replanning.
 		*/
 		bool boundsolution(int period,double tolerance = FMT_DBL_TOLERANCE);
-		// DocString: FMTlpmodel::unboundsolution
-		/**
-		Unbound the primal bounds of a given period.
-		*/
-		bool unboundsolution(int period);
-		// DocString: FMTlpmodel::isperiodbounded
-		/**
-		Check if FMTdevelopment area are bounded on there primal variables for a given period.
-		*/
-		bool isperiodbounded(int period) const;
 		// DocString: FMTlpmodel::getlocalconstraints
 		/**
 		During replaning some local constraints need to be ajusted to the global model.
 		The function will take a vector of local constraint and ajust the bounds using the solution of this global model.
 		*/
 		virtual std::vector<Core::FMTconstraint> getlocalconstraints(const std::vector<Core::FMTconstraint>& localconstraints,const int& period) const final;
-		// DocString: FMTlpmodel::getsolution
-		/**
-		Get the standard solution for a given period (FMTschedule dont have natural growth solution included).
-		If with lock is true then the schedule will contain locked developement.
-		*/
-		Core::FMTschedule getsolution(int period,bool withlock = false) const final;
 		// DocString: FMTlpmodel::addscheduletoobjective
 		/**
 		This function will addup weight to the objective function for a given schedule.
 		*/
 		void addscheduletoobjective(const Core::FMTschedule& schedule,double weight = 1000);
-		// DocString: FMTlpmodel::getstats
-		/**
-		Get the graph stats of the graph and matrix (number of columns/rows/edges/verticies...)
-		*/
-		Graph::FMTgraphstats getstats() const;
 		// DocString: FMTlpmodel::operator==
 		/**
 		Comparison operator of FMTlpmodel
@@ -366,35 +259,6 @@ class FMTEXPORT FMTlpmodel : public FMTmodel
 		Comparison operator of FMTlpmodel
 		*/
 		bool operator != (const FMTlpmodel& rhs) const;
-		// DocString: FMTlpmodel::getoutput
-		/**
-		Get the output value of a output for a given period using the solution of the matrix.
-		the map key returned consist of output name
-		if level == FMToutputlevel::standard || level == FMToutputlevel::totalonly,
-		or developement name if level == FMToutputlevel::developpement
-		*/
-		virtual std::map<std::string, double> getoutput(const Core::FMToutput& output,
-			int period, Core::FMToutputlevel level = Core::FMToutputlevel::standard) const final;
-		#if defined FMTWITHR
-			// DocString: FMTlpmodel::getoutputsdataframe
-			/**
-			Returns a dataframe filled up with outputs from first period to last period at the developement level.
-			For multiple outputs.
-			*/
-			Rcpp::DataFrame getoutputsdataframe(const std::vector<Core::FMToutput>& outputsdata,int firstperiod,int lastperiod) const;
-		#endif 
-
-
-		// DocString: FMTlpmodel::buildperiod
-		/**
-		This function is the main function used to build the graph and the matrix.
-		A call to that function add a period within the graph and the matrix of the FMTlpmodel.
-		If the schedule is not empty than the model is going to be generated in partialbuild mode and
-		not fullbuild mode. Partialbuild will only build the graph linked to the solution. make it perfect to
-		reinterpret outputs for a given solution without rebuilding the whole graph.
-		*/
-		Graph::FMTgraphstats buildperiod(Core::FMTschedule schedule = Core::FMTschedule(),
-			bool forcepartialbuild = false, int compressageclassoperability = 1);
 		// DocString: FMTlpmodel::setobjective
 		/**
 		This function set the objective of the matrix for the whole planning horizon (graph length).
@@ -441,12 +305,6 @@ class FMTEXPORT FMTlpmodel : public FMTmodel
 		originalsize - 1.
 		*/
 		Graph::FMTgraphstats eraseperiod(bool constraintsonly = false);
-		// DocString: FMTlpmodel::getfirstactiveperiod
-		/**
-		Return the first active period should be always 0 in case or planning.
-		But when eraseperiod is called the first active period is going to move to 1 and so on.
-		*/
-		int getfirstactiveperiod() const;
 		// DocString: FMTlpmodel::getoperatingareaschedulerheuristics
 		/**
 		Using multiple operating areas and a simple output node a MIP formulation (using the BFECopt heuristic) is done using the matrix of
@@ -487,15 +345,6 @@ class FMTEXPORT FMTlpmodel : public FMTmodel
 		Default destructor of FMTlpmodel
 		*/
 		~FMTlpmodel() = default;
-		// DocString: FMTlpmodel::getarea
-		/**
-		This function returns an area for a given period for a FMTlpmodel.
-		If period = 0 the area is the same has FMTmodel::getarea().
-		For period > 0 the area returned is the FMTdevelopement of the graph
-		that can be (actual of futur) existing at the beginning of the period.
-		Need to have a builded graph with a solution to use this function.
-		*/
-		std::vector<Core::FMTactualdevelopment>getarea(int period = 0) const override;
 		// DocString: FMTlpmodel::getmodel
 		/**
 		This function returns a copy of the FMTmodel of the selected period.
@@ -514,32 +363,11 @@ class FMTEXPORT FMTlpmodel : public FMTmodel
 		The returned model wont be solved nor builded.
 		*/
 		FMTlpmodel getlocalmodel(FMTmodel localmodel = FMTmodel(),int period = 0) const;
-		// DocString: FMTlpmodel::getsolverptr()
-		/**
-		Get a pointer to the solver behind the model.
-		*/
-		FMTlpsolver* getsolverptr();
 		// DocString: FMTlpmodel::getObjValue
 		/**
 		Get the objective value of the solved matrix.
 		*/
 		double getObjValue() const;
-		// DocString: FMTlpmodel::passinlogger
-		/**
-		It's sometime usefull to pass in the logger of an other FMTobject.
-		*/
-		virtual void passinlogger(const std::shared_ptr<Logging::FMTlogger>& logger) override;
-		// DocString: FMTlpmodel::passinexceptionhandler
-		/**
-		It's sometime usefull to pass in the exception handler of an other FMTobject.
-		*/
-		virtual void passinexceptionhandler(const std::shared_ptr<Exception::FMTexceptionhandler>& exhandler) override;
-		// DocString: FMTlpmodel::passinobject
-		/**
-		It's sometime usefull to pass in the exception handler and the logger  of an other FMTobject to
-		a FMTobject.
-		*/
-		virtual void passinobject(const Core::FMTobject& rhs) override;
 		// DocString: FMTlpmodel::writeLP
 		/**
 		Write the solverinterface matrix to a file (location) using the lp formulation.
@@ -555,12 +383,12 @@ class FMTEXPORT FMTlpmodel : public FMTmodel
 		Build the model and do the initialsolve.
 		*/
 		virtual bool doplanning(const std::vector<Core::FMTschedule>&schedules,
-								bool forcepartialbuild = false,Core::FMTschedule objectiveweight = Core::FMTschedule()) final;
+								bool forcepartialbuild = false,Core::FMTschedule objectiveweight = Core::FMTschedule()) override;
 		// DocString: FMTlpmodel::clone
 		/**
 		Get a clone of the FMTlpmodel
 		*/
-		virtual std::unique_ptr<FMTmodel>clone() const final;
+		virtual std::unique_ptr<FMTmodel>clone() const override;
 
 	};
 
