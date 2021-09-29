@@ -92,7 +92,8 @@ namespace Models
 		return values;
 	}
 
-	bool FMTsesmodel::doplanning(const std::vector<Core::FMTschedule>&schedules, bool forcepartialbuild)
+	bool FMTsesmodel::doplanning(const std::vector<Core::FMTschedule>&schedules,
+		bool forcepartialbuild,Core::FMTschedule objectiveweight)
 	{
 		try {
 			for (const Core::FMTschedule& schedule : schedules)
@@ -237,6 +238,11 @@ namespace Models
 			_exhandler->printexceptions("", "FMTsesmodel::passinexceptionhandler", __LINE__, __FILE__);
 		}
 	}
+
+	std::unique_ptr<FMTmodel>FMTsesmodel::clone() const
+		{
+		return std::unique_ptr<FMTmodel>(new FMTsesmodel(*this));
+		}
 
     }
 

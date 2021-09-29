@@ -9,6 +9,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #define PYEXPORTMODEL_H_INCLUDED
 
 #include "FMTmodel.h"
+#include "FMTsrmodel.h"
 #include "FMTlpmodel.h"
 #include "FMTsesmodel.h"
 #include "FMTnssmodel.h"
@@ -20,7 +21,6 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 namespace Python
 {
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(greedyreferencebuild_overloads,greedyreferencebuild, 2, 4)
-BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(simulatenssm_overloads, simulate, 0, 2)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(buildperiod_overloads, buildperiod, 0, 3)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(get_outputs_overloads, get_outputs, 0, 1)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(getsolution_overloads, getsolution, 1, 2)
@@ -131,16 +131,6 @@ void exportModel()
 
     define_pylist<Models::FMTsesmodel>();
 
-	bp::class_<Models::FMTnssmodel, bp::bases<Models::FMTmodel>>("FMTnssmodel", "@DocString(FMTnssmodel)")
-		.def(bp::init<Models::FMTmodel,unsigned int>())
-		.def_pickle(FMT_pickle_suite<Models::FMTnssmodel>())
-		.def("simulate", &Models::FMTnssmodel::simulate,
-			simulatenssm_overloads(bp::args( "grow", "withlock"),"@DocString(FMTnssmodel::simulate)"));
-
-	define_pylist<Models::FMTnssmodel>();
-
-
-
 
 	#ifdef FMTWITHOSI
 
@@ -173,29 +163,44 @@ void exportModel()
 		.def("writeMPS", &Models::FMTlpsolver::writeMPS,
 			"@DocString(FMTlpsolver::writeMPS)");
 
+	bp::class_<Models::FMTsrmodel, bp::bases<Models::FMTmodel>>("FMTsrmodel", "@DocString(FMTsrmodel)")
+		.def_pickle(FMT_pickle_suite<Models::FMTsrmodel>())
+		.def("buildperiod", &Models::FMTsrmodel::buildperiod, buildperiod_overloads(bp::args("schedule", "forcepartialbuild", "compressageclass"), "@DocString(FMTsrmodel::buildperiod)"))
+		.def("getsolution", &Models::FMTsrmodel::getsolution,
+			getsolution_overloads(bp::args("period", "withlock"), "@DocString(FMTsrmodel::getsolution)"))
+		.def("setsolution", &Models::FMTsrmodel::setsolution,
+			setsolution_overloads(bp::args("period", "schedule", "tolerance"), "@DocString(FMTsrmodel::setsolution)"))
+		.def("setsolutionbylp", &Models::FMTsrmodel::setsolutionbylp,
+			setsolutionbylp_overloads(bp::args("period", "schedule", "tolerance"), "@DocString(FMTsrmodel::setsolutionbylp)"))
+		.def("getoutput", &Models::FMTsrmodel::getoutput, getLPoutputoverloads(bp::args("output", "period", "level"), "@DocString(FMTsrmodel::getoutput)"))
+		.def("cleargraphdevelopements", &Models::FMTsrmodel::cleargraphdevelopements,
+			"@DocString(FMTsrmodel::cleargraphdevelopements)")
+		.def("getstats", &Models::FMTsrmodel::getstats,
+			"@DocString(FMTlpmodel::getstats)");
 
-	bp::class_<Models::FMTlpmodel, bp::bases<Models::FMTmodel>>("FMTlpmodel", "@DocString(FMTlpmodel)")
+	define_pylist<Models::FMTsrmodel>();
+	
+	bp::class_<Models::FMTnssmodel, bp::bases<Models::FMTsrmodel>>("FMTnssmodel", "@DocString(FMTnssmodel)")
+		.def(bp::init<Models::FMTmodel, unsigned int>())
+		.def_pickle(FMT_pickle_suite<Models::FMTnssmodel>())
+		.def("simulate", &Models::FMTnssmodel::simulate);
+
+	define_pylist<Models::FMTnssmodel>();
+
+
+	bp::class_<Models::FMTlpmodel, bp::bases<Models::FMTsrmodel>>("FMTlpmodel", "@DocString(FMTlpmodel)")
 		.def(bp::init<Models::FMTmodel, Models::FMTsolverinterface>())
 		.def(bp::init<Models::FMTlpmodel>())
 		.def_pickle(FMT_pickle_suite<Models::FMTlpmodel>())
-		.def("buildperiod", &Models::FMTlpmodel::buildperiod, buildperiod_overloads(bp::args("schedule", "forcepartialbuild","compressageclass"), "@DocString(FMTlpmodel::buildperiod)"))
 		.def("boundsolution", &Models::FMTlpmodel::boundsolution,
 			boundsolution_overloads(bp::args("period", "tolerance"),
 				"@DocString(FMTlpmodel::boundsolution)"))
-		.def("getsolution", &Models::FMTlpmodel::getsolution,
-			getsolution_overloads(bp::args("period", "withlock"), "@DocString(FMTlpmodel::getsolution)"))
-		.def("setsolution", &Models::FMTlpmodel::setsolution,
-			setsolution_overloads(bp::args("period", "schedule", "tolerance"), "@DocString(FMTlpmodel::setsolution)"))
-		.def("setsolutionbylp", &Models::FMTlpmodel::setsolutionbylp,
-			setsolutionbylp_overloads(bp::args("period", "schedule", "tolerance"), "@DocString(FMTlpmodel::setsolutionbylp)"))
 		.def("setobjective", &Models::FMTlpmodel::setobjective,
 			"@DocString(FMTlpmodel::setobjective)")
 		.def("clearcache", &Models::FMTlpmodel::clearcache,
 			"@DocString(FMTlpmodel::clearcache)")
 		.def("clearconstraintlocation", &Models::FMTlpmodel::clearconstraintlocation,
 			"@DocString(FMTlpmodel::clearconstraintlocation)")
-		.def("cleargraphdevelopements", &Models::FMTlpmodel::cleargraphdevelopements,
-			"@DocString(FMTlpmodel::cleargraphdevelopements)")
 		.def("setstrictlypositivesoutputsmatrix", &Models::FMTlpmodel::setstrictlypositivesoutputsmatrix,
 			"@DocString(FMTlpmodel::setstrictlypositivesoutputsmatrix)")
 		.def("setconstraint", &Models::FMTlpmodel::setconstraint,
@@ -208,13 +213,11 @@ void exportModel()
 			"@DocString(FMTlpmodel::resolve)")
 		.def("initialsolve", &Models::FMTlpmodel::initialsolve,
 			"@DocString(FMTlpmodel::initialsolve)")
-		.def("getoutput", &Models::FMTlpmodel::getoutput, getLPoutputoverloads(bp::args("output", "period", "level"), "@DocString(FMTlpmodel::getoutput)"))
 		.def("__eq__", &Models::FMTlpmodel::operator ==,
 			"@DocString(FMTlpmodel::operator==)")
 		.def("__ne__", &Models::FMTlpmodel::operator !=,
 			"@DocString(FMTlpmodel::operator!=)")
-		.def("getstats", &Models::FMTlpmodel::getstats,
-			"@DocString(FMTlpmodel::getstats)")
+		
 		.def("getObjValue", &Models::FMTlpmodel::getObjValue,
 					"@DocString(FMTlpmodel::getObjValue)")
 		.def("getlocalconstraints",
