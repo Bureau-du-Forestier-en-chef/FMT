@@ -250,7 +250,7 @@ std::vector<std::string>FMTparser::getcat(GDALDataset* dataset,int bandid) const
 
 GDALRasterBand* FMTparser::getoverview(GDALRasterBand* band,int view) const
     {
-	GDALRasterBand* overview;
+	GDALRasterBand* overview=nullptr;
 	try{
 	overview = band->GetOverview(view);
     if (overview == nullptr)
@@ -288,25 +288,8 @@ GDALDataset* FMTparser::getvectordataset(const std::string& location) const
 GDALDataset* FMTparser::createvectormemoryds() const
 	{
 	GDALDataset* dataset = nullptr;
-	try
-		{
-			GDALAllRegister();
-			GDALDataset* memds;
-			const char *pszDriverName = "Memory";
-			GDALDriver *poDriver;
-			poDriver = GetGDALDriverManager()->GetDriverByName(pszDriverName );
-			if( poDriver == NULL )
-			{
-				 _exhandler->raise(Exception::FMTexc::FMTinvaliddriver,
-										"Memory","FMTparser::getemptymemoryds", __LINE__, __FILE__, _section);
-
-			}
-			dataset = poDriver->Create( "Memoryds", 0, 0, 0, GDT_Unknown, NULL);
-			if( dataset == NULL )
-			{
-			    _exhandler->raise(Exception::FMTexc::FMTinvaliddataset,
-						"Cannot create in memory dataset","FMTparser::getemptymemoryds", __LINE__, __FILE__, _section);
-			}
+	try{
+		dataset = createOGRdataset("Memoryds", "Memory");
 		}
 		catch (...)
 			{
@@ -314,6 +297,31 @@ GDALDataset* FMTparser::createvectormemoryds() const
 			}
 	return dataset;
 	}
+
+GDALDataset* FMTparser::createOGRdataset(std::string location,
+										std::string gdaldrivername) const
+{
+	GDALDataset* newdataset = nullptr;
+	try {
+		GDALAllRegister();
+		GDALDriver* newdriver = GetGDALDriverManager()->GetDriverByName(gdaldrivername.c_str());
+		if (newdriver == NULL)
+		{
+			_exhandler->raise(Exception::FMTexc::FMTinvaliddriver,
+				gdaldrivername, "FMTparser::createOGRdataset", __LINE__, __FILE__, _section);
+		}
+		newdataset = newdriver->Create(location.c_str(), 0, 0, 0, GDT_Unknown, NULL);
+		if (newdataset == NULL)
+		{
+			_exhandler->raise(Exception::FMTexc::FMTinvaliddataset,
+				"Cannote create new dataset at " + location, "FMTparser::createOGRdataset", __LINE__, __FILE__, _section);
+		}
+	}catch (...)
+		{
+		_exhandler->raisefromcatch("", "FMTparser::createOGRdataset", __LINE__, __FILE__, _section);
+		}
+	return newdataset;
+}
 
 
 OGRLayer* FMTparser::getlayer(GDALDataset* dataset,int id) const

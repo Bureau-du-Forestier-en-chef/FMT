@@ -9,6 +9,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #define REXPORTMODEL_H_INCLUDED
 
 #include "FMTmodel.h"
+#include "FMTsrmodel.h"
 #include "FMTlpmodel.h"
 #include "FMTsesmodel.h"
 #include "FMTnssmodel.h"
@@ -26,10 +27,13 @@ RCPP_DEFINEMAP(std::string,double);//For map<string,double>
 RCPP_EXPOSED_WRAP(Models::FMTsesmodel);
 RCPP_EXPOSED_AS(Models::FMTsesmodel);
 RCPP_DEFINEVECTOR(Models::FMTsesmodel);//For vector
-RCPP_EXPOSED_WRAP(Models::FMTnssmodel);
-RCPP_EXPOSED_AS(Models::FMTnssmodel);
-RCPP_DEFINEVECTOR(Models::FMTnssmodel);//For vector
 #ifdef FMTWITHOSI
+	RCPP_EXPOSED_WRAP(Models::FMTsrmodel);
+	RCPP_EXPOSED_AS(Models::FMTsrmodel);
+	RCPP_DEFINEVECTOR(Models::FMTsrmodel);//For vector
+	RCPP_EXPOSED_WRAP(Models::FMTnssmodel);
+	RCPP_EXPOSED_AS(Models::FMTnssmodel);
+	RCPP_DEFINEVECTOR(Models::FMTnssmodel);//For vector
 	RCPP_EXPOSED_ENUM_NODECL(Models::FMTsolverinterface);
 	RCPP_EXPOSED_WRAP(Models::FMTlpsolver);
 	RCPP_EXPOSED_AS(Models::FMTlpsolver);
@@ -113,14 +117,6 @@ void exportModel()
 			.method("greedyreferencebuild", &Models::FMTsesmodel::greedyreferencebuild,
 				"@DocString(FMTsesmodel::montecarlosimulate)");
 
-	Rcpp::class_<Models::FMTnssmodel>("FMTnssmodel", "@DocString(FMTnssmodel)")
-		.derives<Models::FMTmodel>("FMTmodel")
-		.constructor("@DocString(FMTnssmodel())")
-		.constructor<Models::FMTmodel,unsigned int>("@DocString(FMTnssmodel(Models::FMTmodel,unsigned int))")
-		.method("simulate", &Models::FMTnssmodel::simulate,
-			"@DocString(FMTnssmodel::simulate)");
-	
-	
 	#ifdef FMTWITHOSI
 	Rcpp::class_<Models::FMTlpsolver>("FMTlpsolver", "@DocString(FMTlpsolver)")
 		.constructor("@DocString(FMTlpsolver())")
@@ -133,23 +129,40 @@ void exportModel()
 		.method("writeMPS", &Models::FMTlpsolver::writeMPS,
 			"@DocString(FMTlpsolver::writeMPS)");
 
+	Rcpp::class_<Models::FMTsrmodel>("FMTsrmodel", "@DocString(FMTsrmodel)")
+		.derives<Models::FMTsrmodel>("FMTmodel")
+		.constructor("@DocString(FMTsrmodel())")
+		.method("buildperiod", &Models::FMTsrmodel::buildperiod,
+			"@DocString(FMTsrmodel::buildperiod)")
+		.method("getsolution", &Models::FMTsrmodel::getsolution,
+			"@DocString(FMTsrmodel::getsolution)")
+		.method("setsolution", &Models::FMTsrmodel::setsolution,
+			"@DocString(FMTsrmodel::setsolution)")
+		.method("setsolutionbylp", &Models::FMTsrmodel::setsolutionbylp,
+			"@DocString(FMTsrmodel::setsolutionbylp)")
+		.method("getoutputsdataframe", &Models::FMTsrmodel::getoutputsdataframe,
+			"@DocString(FMTsrmodel::getoutputsdataframe)")
+		.method("getoutput", &Models::FMTsrmodel::getoutput,
+			"@DocString(FMTsrmodel::getoutput)")
+		.method("getstats", &Models::FMTsrmodel::getstats,
+			"@DocString(FMTsrmodel::getstats)");
+
+	Rcpp::class_<Models::FMTnssmodel>("FMTnssmodel", "@DocString(FMTnssmodel)")
+		.derives<Models::FMTsrmodel>("FMTsrmodel")
+		.constructor("@DocString(FMTnssmodel())")
+		.constructor<Models::FMTmodel, unsigned int>("@DocString(FMTnssmodel(Models::FMTmodel,unsigned int))")
+		.method("simulate", &Models::FMTnssmodel::simulate,
+			"@DocString(FMTnssmodel::simulate)");
+		
+
 
 	Rcpp::class_<Models::FMTlpmodel>("FMTlpmodel", "@DocString(FMTlpmodel)")
-		.derives<Models::FMTmodel>("FMTmodel")
-		//.derives<Models::FMTlpsolver>("FMTlpsolver")
+		.derives<Models::FMTsrmodel>("FMTsrmodel")
 		.constructor<Models::FMTmodel, Models::FMTsolverinterface>("@DocString(FMTlpmodel(Models::FMTmodel,Models::FMTsolverinterface))")
 		.constructor("@DocString(FMTlpmodel())")
 		.constructor<Models::FMTlpmodel>("@DocString(FMTlpmodel(const FMTlpmodel&))")
-		.method("buildperiod", &Models::FMTlpmodel::buildperiod,
-			"@DocString(FMTlpmodel::buildperiod)")
 		.method("boundsolution", &Models::FMTlpmodel::boundsolution,
 			"@DocString(FMTlpmodel::boundsolution)")
-		.method("getsolution", &Models::FMTlpmodel::getsolution,
-			"@DocString(FMTlpmodel::getsolution)")
-		.method("setsolution", &Models::FMTlpmodel::setsolution,
-			"@DocString(FMTlpmodel::setsolution)")
-		.method("setsolutionbylp", &Models::FMTlpmodel::setsolutionbylp,
-			"@DocString(FMTlpmodel::setsolutionbylp)")
 		.method("setobjective", &Models::FMTlpmodel::setobjective,
 			"@DocString(FMTlpmodel::setobjective)")
 		.method("setconstraint", &Models::FMTlpmodel::setconstraint,
@@ -162,16 +175,10 @@ void exportModel()
 			"@DocString(FMTlpmodel::resolve)")
 		.method("initialsolve", &Models::FMTlpmodel::initialsolve,
 			"@DocString(FMTlpmodel::initialsolve)")
-		.method("getoutput", &Models::FMTlpmodel::getoutput,
-			"@DocString(FMTlpmodel::getoutput)")
-		.method("getoutputsdataframe", &Models::FMTlpmodel::getoutputsdataframe,
-			"@DocString(FMTlpmodel::getoutputsdataframe)")
 		.method("eq", &Models::FMTlpmodel::operator ==,
 			"@DocString(FMTlpmodel::operator==)")
 		.method("ne", &Models::FMTlpmodel::operator !=,
 			"@DocString(FMTlpmodel::operator!=)")
-		.method("getstats", &Models::FMTlpmodel::getstats,
-			"@DocString(FMTlpmodel::getstats)")
 		.method("getoperatingareaschedulerheuristics", &Models::FMTlpmodel::getoperatingareaschedulerheuristics,
 			"@DocString(FMTlpmodel::getoperatingareaschedulerheuristics)")
 		.method("getvariabilities", &Models::FMTlpmodel::getvariabilities,

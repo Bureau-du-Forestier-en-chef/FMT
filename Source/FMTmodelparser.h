@@ -114,6 +114,25 @@ class FMTEXPORT FMTmodelparser : public FMTparser
 		*/
         void write(const Models::FMTmodel& model,const std::string& folder) const;
 		#ifdef FMTWITHGDAL
+		// DocString: FMTmodelparser::createresultslayer
+		/**
+		Create a results layer on a dataset for a given model.
+		*/
+		OGRLayer* createresultslayer(const Models::FMTmodel& model, GDALDataset* dataset)const;
+		// DocString: FMTmodelparser::fillupinfeasibles
+		/**
+		Fill up the OGRlayer of infeasible values.
+		*/
+		void fillupinfeasibles(OGRLayer* layer,
+			const std::vector<Core::FMToutput>&theoutputs,
+			const int& iteration,const int& firstperiod, const int&lastperiod) const;
+		// DocString: FMTmodelparser::writefeatures
+		/**
+		Write multiple features (outputs)
+		*/
+		void writefeatures(OGRLayer* layer,const int& firstperiod, const int& iteration,
+			const std::vector<Core::FMToutput>&theoutputs,
+			const std::map<std::string,std::vector<std::vector<double>>>& values)const;
 		// DocString: FMTmodelparser::writeresults
 		/**
 		The function writeresults for any kind of FMTmodel (optimized or simulated), starting from the first period to the last period, for a vector of outputs.
@@ -124,8 +143,7 @@ class FMTEXPORT FMTmodelparser : public FMTparser
 			const int& firstperiod, const int& lastperiod,
 			const std::string& location,
 			Core::FMToutputlevel level = Core::FMToutputlevel::standard,
-			std::string gdaldrivername= "CSV",
-			int iteration = 0) const;
+			std::string gdaldrivername= "CSV") const;
 		#endif 
     };
 }

@@ -133,6 +133,11 @@ namespace Models
         return *this;
     }
 
+	std::unique_ptr<FMTmodel>FMTsamodel::clone() const
+		{
+		return std::unique_ptr<FMTmodel>(new FMTsamodel(*this));
+		}
+
     double FMTsamodel::warmup(const double initprob, const size_t iterations,bool keep_best,FMTsawarmuptype type)
     {
         const Spatial::FMTsasolution first=current_solution;//Put it as current at the end

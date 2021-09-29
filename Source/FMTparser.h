@@ -221,6 +221,10 @@ class FMTEXPORT FMTparser: public Core::FMTobject
 			Will fill up all the fields id of the themes,age,area,lock of a given (layer).
 			*/
 			void getWSfields(OGRLayer* layer, std::map<int,int>& themes,int& age,int& area,int& lock, std::string agefield="", std::string areafield="", std::string lockfield="") const;
+			// DocString: FMTparser::createvectormemoryds
+			/**
+			
+			*/
 			GDALDataset* createvectormemoryds() const;
 			#endif
 		// DocString: FMTparser::getbaseoperators
@@ -487,6 +491,14 @@ class FMTEXPORT FMTparser: public Core::FMTobject
 				}
             return Core::FMTbounds<T>(section,lupper,llower);
             }
+		#ifdef FMTWITHGDAL
+				// DocString: FMTparser::getWSfields
+				/**
+				Will Create a OGR vector file based on a given drivername and a location.
+				*/
+				GDALDataset* createOGRdataset(std::string location = std::string(),
+					std::string gdaldrivername = "CSV") const;
+		#endif
     };
 
 }
