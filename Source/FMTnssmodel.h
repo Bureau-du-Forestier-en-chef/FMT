@@ -8,7 +8,9 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #ifndef FMTNSSMODEL_H
 #define FMTNSSMODEL_H
 
-#include "FMTmodel.h"
+#ifdef FMTWITHOSI
+
+#include "FMTsrmodel.h"
 #include <sstream>
 #include <boost/serialization/serialization.hpp>
 #include <boost/serialization/nvp.hpp>
@@ -25,7 +27,7 @@ namespace Models
 	stochastics actions during the local replanning phase. Before using any kind of spatialy explicit model
 	sometime using a simple non spatial model can help to understand the basic idea of simulation.
 	*/
-	class FMTEXPORT FMTnssmodel : public FMTmodel
+	class FMTEXPORT FMTnssmodel : public FMTsrmodel
 		{
 		// DocString: FMTnssmodel::save
 		/**
@@ -35,7 +37,7 @@ namespace Models
 		template<class Archive>
 		void save(Archive& ar, const unsigned int version) const
 		{
-			ar & boost::serialization::make_nvp("model", boost::serialization::base_object<FMTmodel>(*this));
+			ar & boost::serialization::make_nvp("model", boost::serialization::base_object<FMTsrmodel>(*this));
 			std::stringstream basegenerator;
 			basegenerator << generator;
 			const std::string basegeneratorstring(basegenerator.str());
@@ -49,22 +51,16 @@ namespace Models
 		template<class Archive>
 		void load(Archive& ar, const unsigned int version)
 		{
-			ar & boost::serialization::make_nvp("model", boost::serialization::base_object<FMTmodel>(*this));
+			ar & boost::serialization::make_nvp("model", boost::serialization::base_object<FMTsrmodel>(*this));
 			std::string basegeneratorstring;
 			ar & BOOST_SERIALIZATION_NVP(basegeneratorstring);
 			std::stringstream(basegeneratorstring) >> generator;
 			
 		}
 		BOOST_SERIALIZATION_SPLIT_MEMBER()
-
 		// DocString: FMTnssmodel::generator
 		///This simulation model need to have it's own random number generator
 		std::default_random_engine generator;
-		// DocString: FMTnssmodel::getperiod
-		/**
-		Get the period on the actual developments.
-		*/
-		int getperiod() const;
 		// DocString: FMTnssmodel::constraintstotarget
 		/**
 		Using the constraints generate random level or determinist level of output to generate
@@ -91,12 +87,7 @@ namespace Models
 		/**
 		update the actual developments in the area vector.
 		*/
-		void updatearea(std::vector<Core::FMTactualdevelopment>::iterator developmentit,const std::vector<Core::FMTdevelopmentpath>& paths, const double& operatedarea);
-		// DocString: FMTnssmodel::grow
-		/**
-		Grow all developments in the area.
-		*/
-		void grow();
+		void updatearea(std::vector<Core::FMTactualdevelopment>& basearea, std::vector<Core::FMTactualdevelopment>::iterator developmentit,const std::vector<Core::FMTdevelopmentpath>& paths, const double& operatedarea);
 		// DocString: FMTnssmodel::updateareatargets
 		/**
 		Update all the stuff related to the targeted area, knowing that an area has been operated on a given location.
@@ -109,7 +100,7 @@ namespace Models
 			/**
 			Default constructor of FMTnssmodel.
 			*/
-			FMTnssmodel()=default;
+			FMTnssmodel();
 			// DocString: ~FMTnssmodel()
 			/**
 			Default destructor of FMTnssmodel.
@@ -133,18 +124,24 @@ namespace Models
 			// DocString: FMTnssmodel::simulate
 			/**
 			This function do a non spatial simulation based on the area constraints in the optimize section.
-			The resulting schedule can contain locked developement.
 			*/
-			Core::FMTschedule simulate(bool grow = false,bool schedulewithlock = false);
+			void simulate();
 			// DocString: FMTnssmodel::clone
 			/**
 			Get a clone of the FMTnssmodel
 			*/
 			virtual std::unique_ptr<FMTmodel>clone() const final;
+			// DocString: FMTmodel::doplanning
+			/**
+			Build the model and do the initialsolve or simulate.
+			*/
+			virtual bool doplanning(const std::vector<Core::FMTschedule>&schedules,
+				bool forcepartialbuild = false, Core::FMTschedule objectiveweight = Core::FMTschedule());
 			
 		};
 }
 
 BOOST_CLASS_EXPORT_KEY(Models::FMTnssmodel)
 #endif 
+#endif
 

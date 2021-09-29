@@ -250,7 +250,7 @@ std::vector<std::string>FMTparser::getcat(GDALDataset* dataset,int bandid) const
 
 GDALRasterBand* FMTparser::getoverview(GDALRasterBand* band,int view) const
     {
-	GDALRasterBand* overview;
+	GDALRasterBand* overview=nullptr;
 	try{
 	overview = band->GetOverview(view);
     if (overview == nullptr)
