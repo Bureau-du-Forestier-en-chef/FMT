@@ -24,6 +24,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #endif
 
 #include "FMTobject.h"
+#include "FMTsolverinterface.h"
 
 
 namespace Version
@@ -94,6 +95,11 @@ class FMTEXPORT FMTversion : public Core::FMTobject
 		Returns thes license has a regular string if french = true the returned license will be in french
 		*/
 		std::string getlicense(bool french=false) const;
+		// DocString: FMTversion::getavailablesolverinterface
+		/**
+		Return a vector of solverinterface available
+		*/
+		static std::vector<Models::FMTsolverinterface> getavailablesolverinterface();
 
 	};
 }

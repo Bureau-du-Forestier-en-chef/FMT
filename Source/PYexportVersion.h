@@ -44,6 +44,8 @@ void exportVersion()
 			"@DocString(FMTversion::isatleast)").staticmethod("isatleast")
 		.def("hasfeature", &Version::FMTversion::hasfeature,
 			"@DocString(FMTversion::hasfeature)").staticmethod("hasfeature")
+		.def("getavailablesolverinterface", &Version::FMTversion::getavailablesolverinterface,
+			"@DocString(FMTversion::getavailablesolverinterface)").staticmethod("getavailablesolverinterface")
         .def("getlicense",&Version::FMTversion::getlicense,getlicense_overloads(bp::args("french"),"@DocString(FMTversion::getlicense)"));
 	}
 }

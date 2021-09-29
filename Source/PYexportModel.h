@@ -151,6 +151,8 @@ void exportModel()
 		#endif
 		.value("CPLEX", Models::FMTsolverinterface::CPLEX)
 		.value("GUROBI", Models::FMTsolverinterface::GUROBI);
+		
+	define_pylist<Models::FMTsolverinterface>();
 
 	bp::class_<Models::FMTlpsolver>("FMTlpolver", "@DocString(FMTlpolver)")
 		.def(bp::init<Models::FMTsolverinterface>())
