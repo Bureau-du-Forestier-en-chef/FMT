@@ -129,5 +129,17 @@ std::string FMTversion::getlicense(bool french) const
         }
     return fulllicense;
     }
+	
+	std::vector<Models::FMTsolverinterface> FMTversion::getavailablesolverinterface()
+	{	
+		std::vector<Models::FMTsolverinterface> interfaces;
+		#ifdef FMTWITHOSI
+			interfaces.push_back(Models::FMTsolverinterface::CLP);
+			#ifdef  FMTWITHMOSEK
+				interfaces.push_back(Models::FMTsolverinterface::MOSEK);
+			#endif
+		#endif
+	return interfaces;
+	}
 
 }
