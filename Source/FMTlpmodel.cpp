@@ -5,7 +5,6 @@ SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
-#include "OsiSolverInterface.hpp"
 
 #include <memory>
 #include <tuple>
@@ -16,6 +15,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <queue>
 
 #ifdef FMTWITHOSI
+#include "OsiSolverInterface.hpp"
 #include "FMTlpmodel.h"
 #ifdef FMTWITHMOSEK
 	#include "OsiMskSolverInterface.hpp"

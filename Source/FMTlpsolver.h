@@ -17,6 +17,9 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <unordered_map>
 #include <boost/serialization/split_member.hpp>
 #include <boost/serialization/export.hpp>
+#ifdef FMTWITHMOSEK
+	#include "mosek.h"
+#endif
 
 namespace Models
 {
@@ -569,6 +572,13 @@ class FMTEXPORT FMTlpsolver: public Core::FMTobject
 		Update the rows and columns names
 		*/
 		void updaterowsandcolsnames(bool shortformat = true);
+		#ifdef FMTWITHMOSEK
+			// DocString: FMTlpsolver::getmskerrordesc
+			/**
+			Return description of error code from Mosek.
+			*/
+			std::string getmskerrordesc(MSKrescodee error) const;
+		#endif
 	};
 }
 BOOST_CLASS_EXPORT_KEY(Models::FMTlpsolver)

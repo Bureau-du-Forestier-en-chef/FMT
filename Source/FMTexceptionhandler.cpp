@@ -567,6 +567,11 @@ std::string FMTexceptionhandler::updatestatus(const FMTexc lexception, const std
 		_level = FMTlev::FMT_Warning;
 		++_warningcount;
 		break;
+	case FMTexc::FMTmskerror:
+		msg += "Mosek error : " + message;
+		_level = FMTlev::FMT_logic;
+		++_errorcount;
+		break;
 	default:
 		_exception = FMTexc::None;
 		_level = FMTlev::FMT_None;

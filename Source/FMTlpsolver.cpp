@@ -10,7 +10,6 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 #ifdef FMTWITHMOSEK
 	#include "OsiMskSolverInterface.hpp"
-	#include "mosek.h"
 #endif
 
 #include "OsiClpSolverInterface.hpp"
@@ -147,6 +146,7 @@ namespace Models
 				MSK_putintparam(task, MSK_IPAR_PRESOLVE_USE, MSK_ON);
 				MSK_putintparam(task, MSK_IPAR_INTPNT_STARTING_POINT, MSK_STARTING_POINT_CONSTANT);
 				MSK_putintparam(task, MSK_IPAR_BI_CLEAN_OPTIMIZER, MSK_OPTIMIZER_PRIMAL_SIMPLEX);
+				MSK_putintparam(task, MSK_IPAR_BI_MAX_ITERATIONS, 100000000);
 				MSK_putdouparam(task, MSK_DPAR_INTPNT_TOL_PSAFE, 100.0);
 				MSK_putdouparam(task, MSK_DPAR_INTPNT_TOL_PATH, 1.0e-2);
 				MSK_putintparam(task, MSK_IPAR_LOG, 10);
@@ -154,6 +154,8 @@ namespace Models
 				MSKrescodee error = MSK_optimize(task);
 				if (error > 0)
 					{
+					_exhandler->raise(Exception::FMTexc::FMTmskerror,getmskerrordesc(error),"FMTlpsolver::resolve", __LINE__, __FILE__);
+					//In case set to warning
 					solverinterface->resolve();
 					erroroccured = true;
 					}
@@ -167,7 +169,7 @@ namespace Models
 			{
 				_exhandler->raise(Exception::FMTexc::FMTmissinglicense,
 					" Missing solver " + getsolvername() + " License ",
-					"FMTlpsolver::initialsolve", __LINE__, __FILE__);
+					"FMTlpsolver::resolve", __LINE__, __FILE__);
 			}
 		}catch (...)
 			{
@@ -380,9 +382,10 @@ namespace Models
 			MSKrescodee error = MSK_optimize(task);
 			if (error > 0)
 				{
-				//Just to make sure the class is updated...
-				solverinterface->initialSolve();
-				erroroccured = true;
+					_exhandler->raise(Exception::FMTexc::FMTmskerror,getmskerrordesc(error),"FMTlpsolver::initialsolve", __LINE__, __FILE__);
+					//Just to make sure the class is updated...
+					solverinterface->initialSolve();
+					erroroccured = true;
 				}
 			
 		}
@@ -1134,6 +1137,19 @@ namespace Models
 			_exhandler->raisefromcatch("", "FMTlpsolver::passinexceptionhandler", __LINE__, __FILE__);
 		}
 	}
+	#ifdef FMTWITHMOSEK
+		std::string FMTlpsolver::getmskerrordesc(MSKrescodee error) const
+		{
+			std::string errordescription;
+			char symname[MSK_MAX_STR_LEN];
+			char desc[MSK_MAX_STR_LEN];
+			MSK_getcodedesc(error, symname, desc);
+			errordescription+=symname;
+			errordescription+=" ";
+			errordescription+=desc;
+			return errordescription;
+		}
+	#endif
 
 }
 BOOST_CLASS_EXPORT_IMPLEMENT(Models::FMTlpsolver)
