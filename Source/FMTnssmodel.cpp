@@ -220,12 +220,12 @@ namespace Models
 			std::vector<std::vector<const Core::FMTaction*>> targetedactions= getactionstargets(targetedoutputs);
 			const int graphlength = static_cast<int>(getgraphsize());
 			std::vector<Core::FMTactualdevelopment> actualarea;
-			if (graphlength==0&&area.begin()->getperiod() == 0)
+			if (graphlength==0)
 			{
 				actualarea = area;
 				for (Core::FMTactualdevelopment& actdev : actualarea)
 					{
-					actdev.setperiod(std::max(1, actdev.getperiod()));
+					actdev.setperiod(actdev.getperiod()+1);
 					}
 			}else {
 				actualarea = getarea(graphlength - 1);
@@ -285,7 +285,7 @@ namespace Models
 				}
 			schedule.clean();
 			this->buildperiod(schedule, true);
-			this->setsolution(std::max(graphlength,1),schedule);
+			this->setsolution(std::max(graphlength-1,1),schedule);
 		}catch (...)
 		{
 			_exhandler->raisefromcatch("", "FMTnssmodel::simulate", __LINE__, __FILE__);

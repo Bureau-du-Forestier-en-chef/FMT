@@ -10,6 +10,10 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <chrono>
 #include <ctime>
 
+#ifdef FMTWITHGDAL
+	#include "gdal.h"
+#endif
+
 
 namespace Version
 {
@@ -129,17 +133,92 @@ std::string FMTversion::getlicense(bool french) const
         }
     return fulllicense;
     }
-	
+#ifdef FMTWITHOSI
 	std::vector<Models::FMTsolverinterface> FMTversion::getavailablesolverinterface()
 	{	
 		std::vector<Models::FMTsolverinterface> interfaces;
-		#ifdef FMTWITHOSI
-			interfaces.push_back(Models::FMTsolverinterface::CLP);
+		interfaces.push_back(Models::FMTsolverinterface::CLP);
 			#ifdef  FMTWITHMOSEK
 				interfaces.push_back(Models::FMTsolverinterface::MOSEK);
 			#endif
-		#endif
+		
 	return interfaces;
 	}
+#endif
+
+#ifdef FMTWITHGDAL
+	std::vector<GDALDriver*> FMTversion::getallGDALdrivers(const char* spatialtype)
+		{
+		GDALAllRegister();
+		GDALDriverManager* manager = GetGDALDriverManager();
+		std::vector<GDALDriver*>drivers;
+		for (int driverid = 0 ; driverid < manager->GetDriverCount();++driverid)
+			{
+			GDALDriver* driver = manager->GetDriver(driverid);
+			if (driver!=nullptr&&driver->GetMetadataItem(spatialtype))
+				{
+				drivers.push_back(driver);
+				}
+			}
+		return drivers;
+		}
+
+
+	std::vector<std::string>FMTversion::getGDALvectordrivernames()
+	{
+		std::vector<std::string>names;
+		for (GDALDriver* driver : getallGDALdrivers(GDAL_DCAP_VECTOR))
+			{
+			const char* name = driver->GetMetadataItem(GDAL_DMD_LONGNAME);
+			if (name != nullptr)
+			{
+				names.push_back(std::string(name));
+			}
+			}
+		return names;
+	}
+	std::vector<std::string>FMTversion::getGDALrasterdrivernames()
+	{
+		std::vector<std::string>names;
+		for (GDALDriver* driver : getallGDALdrivers(GDAL_DCAP_RASTER))
+		{
+			const char* name = driver->GetMetadataItem(GDAL_DMD_LONGNAME);
+			if (name != nullptr)
+			{
+				names.push_back(std::string(name));
+			}
+		}
+		return names;
+	}
+	std::vector<std::string>FMTversion::getGDALvectordriverextensions()
+	{
+		std::vector<std::string>extensions;
+		for (GDALDriver* driver : getallGDALdrivers(GDAL_DCAP_VECTOR))
+		{
+			const char* extension = driver->GetMetadataItem(GDAL_DMD_EXTENSION);
+			if (extension!=nullptr)
+			{
+				extensions.push_back(std::string(extension));
+			}
+		}
+		return extensions;
+
+	}
+
+	std::vector<std::string>FMTversion::getGDALrasterdriverextensions()
+	{
+		std::vector<std::string>extensions;
+		for (GDALDriver* driver : getallGDALdrivers(GDAL_DCAP_RASTER))
+		{
+			const char* extension = driver->GetMetadataItem(GDAL_DMD_EXTENSION);
+			if (extension != nullptr)
+			{
+				extensions.push_back(std::string(extension));
+			}
+		}
+		return extensions;
+
+	}
+#endif
 
 }
