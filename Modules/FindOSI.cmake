@@ -20,11 +20,17 @@ FILE(GLOB_RECURSE OSI_POTENTIAL_LIB $ENV{OSI_DIR}/lib*${CMAKE_STATIC_LIBRARY_SUF
 if (MSVC)
 	foreach(includepath ${OSI_POTENTIAL_LIB})
 		get_filename_component(potfolder ${includepath} DIRECTORY)
+		if ("${includepath}" MATCHES "debug")
+			set(POTOSI_LIB_DEBUG_DIR "${potfolder}")
+		endif("${includepath}" MATCHES "debug")
         list(APPEND POTOSI_LIB_DIR ${potfolder})
 	endforeach()
 else()
 	foreach(full_path ${OSI_POTENTIAL_LIB})
 		get_filename_component(LIB_DIR ${full_path} DIRECTORY)
+		if ("${full_path}" MATCHES "debug")
+			set(POTOSI_LIB_DEBUG_DIR "${LIB_DIR}")
+		endif("${full_path}" MATCHES "debug")
 		list(APPEND POTOSI_LIB_DIR ${LIB_DIR})
 
 	endforeach()
@@ -54,53 +60,106 @@ find_path(CU_INCLUDE_DIR
 
 
 
-find_library(COINUTILS_LIBRARY
+find_library(COINUTILS_LIBRARY_RELEASE
 			NAMES CoinUtils libCoinUtils libCoinUtils.a
 			PATHS ${POTOSI_LIB_DIR}
              )
 
 
-find_library( OSI_LIBRARY
+find_library( OSI_LIBRARY_RELEASE
               NAMES Osi libOsi
               PATHS ${POTOSI_LIB_DIR}
               )
 
 if (NOT "${POTOSI_LIB_DIR}" MATCHES "vcpkg")
-	find_library( OSI_CLP_LIBRARY
+	find_library( OSI_CLP_LIBRARY_RELEASE
               	NAMES OsiClp libOsiClp
               	PATHS  ${POTOSI_LIB_DIR}
               	)
 else()
-	set(OSI_CLP_LIBRARY "${OSI_LIBRARY}")
+	set(OSI_CLP_LIBRARY_RELEASE "${OSI_LIBRARY_RELEASE}")
 endif(NOT "${POTOSI_LIB_DIR}" MATCHES "vcpkg")
 
 
 
 
-find_library(CLP_LIBRARY
+find_library(CLP_LIBRARY_RELEASE
               NAMES Clp libClp libclp.a
               PATHS ${POTOSI_LIB_DIR}
               )
 
 
+	find_library(COINUTILS_LIBRARY_DEBUG
+			NAMES CoinUtils libCoinUtils libCoinUtils.a
+			PATHS ${POTOSI_LIB_DEBUG_DIR}
+			NO_DEFAULT_PATH
+             )
+
+
+	find_library( OSI_LIBRARY_DEBUG
+              NAMES Osi libOsi
+              PATHS ${POTOSI_LIB_DEBUG_DIR}
+	      NO_DEFAULT_PATH
+              )
+
+
+	if (NOT "${POTOSI_LIB_DEBUG_DIR}" MATCHES "vcpkg")
+		find_library( OSI_CLP_LIBRARY_DEBUG
+              	NAMES OsiClp libOsiClp
+              	PATHS  ${POTOSI_LIB_DEBUG_DIR}
+		NO_DEFAULT_PATH
+              	)
+	else()
+		set(OSI_CLP_LIBRARY_DEBUG "${OSI_LIBRARY_DEBUG}")
+	endif(NOT "${POTOSI_LIB_DEBUG_DIR}" MATCHES "vcpkg")
+
+
+	find_library(CLP_LIBRARY_DEBUG
+              NAMES Clp libClp libclp.a
+              PATHS ${POTOSI_LIB_DEBUG_DIR}
+	      NO_DEFAULT_PATH
+              )
+
+
+
+
+
 
 if(NOT MSVC AND DEFINED ENV{MOSEK_DIR})
-	find_library(OSI_MSK_LIBRARY
+	find_library(OSI_MSK_LIBRARY_RELEASE
 				  NAMES libOsiMsk libOsiMsk.a
 				  PATHS ${POTOSI_LIB_DIR}
 				  )
+
+	find_library(OSI_MSK_LIBRARY_DEBUG
+				  NAMES libOsiMsk libOsiMsk.a
+				  PATHS ${POTOSI_LIB_DEBUG_DIR}
+				  NO_DEFAULT_PATH
+				  )
+
+
     if(NOT OSI_MSK_LIBRARY AND DEFINED ENV{MOSEK_DIR})
         message(WARNING "Mosek path provided but Osi is not compiled with Mosek")
     endif(NOT OSI_MSK_LIBRARY AND DEFINED ENV{MOSEK_DIR})
 endif(NOT MSVC AND DEFINED ENV{MOSEK_DIR})
 if(NOT MSVC)
-	find_library(CLP_SOLVER_LIBRARY
+	find_library(CLP_SOLVER_LIBRARY_RELEASE
 				NAMES libClpSolver libClpSolver.a
 				PATHS ${POTOSI_LIB_DIR}
 				)
+
+	find_library(CLP_SOLVER_LIBRARY_DEBUG
+				NAMES libClpSolver libClpSolver.a
+				PATHS ${POTOSI_LIB_DEBUG_DIR}
+				NO_DEFAULT_PATH
+				)
+
+
     find_library(OSI_LAPACK
                 NAMES liblapack.a
                 PATHS $ENV{HOME})
+
+
     if (OSI_LAPACK)
         list(APPEND OSI_LINKER_FLAGS "-llapack")
         	if(NOT CYGWIN)
@@ -136,23 +195,24 @@ get_filename_component(OSICLP_INCLUDE_DIR ${FIRSTINCLUDE} DIRECTORY)
 
 set(OSI_INCLUDE_DIRS "${OSI_INCLUDE_DIR};${CLP_INCLUDE_DIR};${CU_INCLUDE_DIR};${OSICLP_INCLUDE_DIR}" )
 if(NOT MSVC AND DEFINED ENV{MOSEK_DIR} AND OSI_MSK_LIBRARY)
-	set(OSI_LIBRARIES "${OSI_CLP_LIBRARY};${CLP_SOLVER_LIBRARY};${CLP_LIBRARY};${OSI_MSK_LIBRARY};${OSI_LIBRARY};${COINUTILS_LIBRARY}")
+	set(OSI_LIBRARIES "optimized;${OSI_CLP_LIBRARY_RELEASE};debug;${OSI_CLP_LIBRARY_DEBUG};optimized;${CLP_SOLVER_LIBRARY_RELEASE};debug;${CLP_SOLVER_LIBRARY_DEBUG};optimized;${CLP_LIBRARY_RELEASE};debug;${CLP_LIBRARY_DEBUG};optimized;${OSI_MSK_LIBRARY_RElEASE};debug;${OSI_MSK_LIBRARY_DEBUG};optimized;${OSI_LIBRARY_RELEASE};debug;${OSI_LIBRARY_DEBUG};optimized;${COINUTILS_LIBRARY_RELEASE};debug;${COINUTILS_LIBRARY_DEBUG}")
 else()
-	set(OSI_LIBRARIES "${OSI_CLP_LIBRARY};${CLP_SOLVER_LIBRARY};${CLP_LIBRARY};${OSI_LIBRARY};${COINUTILS_LIBRARY}")
+	set(OSI_LIBRARIES "optimized;${OSI_CLP_LIBRARY_RELEASE};debug;${OSI_CLP_LIBRARY_DEBUG};optimized;${CLP_SOLVER_LIBRARY_RELEASE};debug;${CLP_SOLVER_LIBRARY_DEBUG};optimized;${CLP_LIBRARY_RELEASE};debug;${CLP_LIBRARY_DEBUG};optimized;${OSI_LIBRARY_RELEASE};debug;${OSI_LIBRARY_DEBUG};optimized;${COINUTILS_LIBRARY_RELEASE};debug;${COINUTILS_LIBRARY_DEBUG}")
 endif(NOT MSVC AND DEFINED ENV{MOSEK_DIR} AND OSI_MSK_LIBRARY)
+
 
 include(FindPackageHandleStandardArgs)
 
 if (NOT MSVC)
 find_package_handle_standard_args(OSI  DEFAULT_MSG
-                                  OSI_LIBRARY OSI_CLP_LIBRARY COINUTILS_LIBRARY CLP_LIBRARY OSI_INCLUDE_DIRS CLP_INCLUDE_DIR CU_INCLUDE_DIR OSI_LINKER_FLAGS OSICLP_INCLUDE_DIR)
+                                  OSI_LIBRARY_RELEASE OSI_CLP_LIBRARY_RELEASE COINUTILS_LIBRARY_RELEASE CLP_LIBRARY_RELEASE OSI_INCLUDE_DIRS CLP_INCLUDE_DIR CU_INCLUDE_DIR OSI_LINKER_FLAGS OSICLP_INCLUDE_DIR)
 
 mark_as_advanced(OSI_INCLUDE_DIRS CLP_INCLUDE_DIR
-					OSI_LIBRARY OSI_CLP_LIBRARY COINUTILS_LIBRARY CLP_LIBRARY CU_INCLUDE_DIR OSICLP_INCLUDE_DIR OSI_LINKER_FLAGS OSI_FOUND)
+					OSI_LIBRARY_RELEASE OSI_CLP_LIBRARY_RELEASE COINUTILS_LIBRARY_RELEASE CLP_LIBRARY_RELEASE CU_INCLUDE_DIR OSICLP_INCLUDE_DIR OSI_LINKER_FLAGS OSI_FOUND)
 else()
 find_package_handle_standard_args(OSI  DEFAULT_MSG
-                                  OSI_LIBRARY OSI_CLP_LIBRARY COINUTILS_LIBRARY CLP_LIBRARY OSI_INCLUDE_DIRS CLP_INCLUDE_DIR CU_INCLUDE_DIR OSICLP_INCLUDE_DIR)
+                                  OSI_LIBRARY_RELEASE OSI_CLP_LIBRARY_RELEASE COINUTILS_LIBRARY_RELEASE CLP_LIBRARY_RELEASE OSI_INCLUDE_DIRS CLP_INCLUDE_DIR CU_INCLUDE_DIR OSICLP_INCLUDE_DIR)
 
 mark_as_advanced(OSI_INCLUDE_DIRS CLP_INCLUDE_DIR
-					OSI_LIBRARY OSI_CLP_LIBRARY COINUTILS_LIBRARY CLP_LIBRARY CU_INCLUDE_DIR OSICLP_INCLUDE_DIR OSI_FOUND)
+					OSI_LIBRARY_RELEASE OSI_CLP_LIBRARY_RELEASE COINUTILS_LIBRARY_RELEASE CLP_LIBRARY_RELEASE CU_INCLUDE_DIR OSICLP_INCLUDE_DIR OSI_FOUND)
 endif(NOT MSVC)
