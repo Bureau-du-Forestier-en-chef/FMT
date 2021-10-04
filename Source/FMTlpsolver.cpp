@@ -375,7 +375,7 @@ namespace Models
 			MSK_putintparam(task, MSK_IPAR_BI_CLEAN_OPTIMIZER, MSK_OPTIMIZER_PRIMAL_SIMPLEX);
 			MSK_putdouparam(task, MSK_DPAR_INTPNT_TOL_PSAFE, 100.0);
 			MSK_putdouparam(task, MSK_DPAR_INTPNT_TOL_PATH, 1.0e-2);
-			MSK_putdouparam(task, MSK_DPAR_INTPNT_TOL_PATH, 1.0e-2);
+			MSK_putintparam(task, MSK_IPAR_BI_MAX_ITERATIONS, 100000000);
 			//MSK_putintparam(task, MSK_IPAR_INTPNT_ORDER_METHOD, MSK_ORDER_METHOD_APPMINLOC);
 			//MSK_putintparam(task, MSK_IPAR_INTPNT_SCALING, MSK_SCALING_AGGRESSIVE);
 			//MSK_putintparam(task, MSK_IPAR_INTPNT_OFF_COL_TRH,1);
