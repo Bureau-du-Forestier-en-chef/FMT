@@ -1,120 +1,96 @@
-﻿
-Read this using other languages: [English](README.md), [Français](README.fr.md)
+[🇼🇫 Click here for a french version](README.fr.md)
 
-## FMT is an open source Forest Management library
+# 📑 Description
 
-FMT is a C++ library made to interpret forest planning models based on Woodstock files formulation. FMT can be used through Python, Cran-R or directly from C++. FMT's generic approach to forest planning gives the opportunity to the user to manipulate forest planning models and generate forest planning solutions. The objective behind this project is to bring all forest planning models types onto the same generic library to help the community to develop new approaches to forest planning problems or improve the one that have been there for years.
+FMT (**F**orest **M**anagement **T**ool) is an open source Forest Management library.
 
-## License 
-
-FMT is a LiLiQ-R 1.1 licensed library [LICENSES\EN](LILIQ-R11EN.txt) for more information.
-
-## Why FMT?
-
-### Spatially referenced forest planning
-
-FMT gives the opportunity to the user to generate and solve spatially referenced type III forest planning model problems. The tool can be used to do sensitivity analyses over multiple parameters of the forest planning model. It can also be used for analysing impacts of stochastic events such as fire or spruce budworm using Replanning.
+- It is a C++ library made to interpret forest planning models based on Woodstock files formulation. 
+- It can be used through Python, Cran-R or directly from C++. 
+- FMT's generic approach to forest planning gives the opportunity to the user to manipulate forest planning models and generate forest planning solutions. 
+- The objective behind this project is to bring all forest planning models types onto the same generic library to help the community to develop new approaches to forest planning problems or improve the one that have been there for years.
 
 
-### Spatially explicit forest planning
+# ✨ Features
+
+## Spatially referenced forest planning
+
+FMT allows the user to generate and solve spatially referenced type III forest planning model problems. The tool can be used to do sensitivity analyses over multiple parameters of the forest planning model. It can also be used for analysing impacts of stochastic events such as fire or spruce budworm using Replanning.
+
+## Spatially explicit forest planning
 
 FMT gives a framework to construct heuristics to solve forest planning model. FMT is the perfect tool to solve user specific problems related to forest planning like operating area scheduling. It can also be used to implement simple simulation process. The library offers some tools to spatialize spatially referenced solutions or to generate spatially explicit solutions.
+
 FMT is extremely usefull when it comes to implement metaheuristics such has Simulated Annealing, Genetic or Tabu Search into a forest planning context.
 
-If your main inputs are Woodstock files FMT is probably the way to go to develop new approaches for optimization or simulation
-of harvest schedules or even stochastic events.
+If your main inputs are Woodstock files FMT is probably the way to go to develop new approaches for optimization or simulation of harvest schedules or even stochastic events.
 
+# 💽 Installation
 
-## Dependencies
+The easiest way to use FMT is to use Cmake >= 3.15 to generate a shared library for R or Python or directly from C++. The Cmake script of this repository supports generating FMT on Windows using VS2017/2019 or MINGW-64 on MSYS2 or CYGWIN.
 
-### Required :
+To create a Python library from FMT on Windows, follow these instructions :
+
+1. Download and install [Visual Studio Community](https://visualstudio.microsoft.com/vs/community/)
+2. Download and install [Mosek](https://www.mosek.com/)
+3. Create a `FMT-Installation` folder in your computer. Make sure that there is no spaces or accents in the path leading to the folder.
+4. Open a command prompt, and use the `cd` command to navigate to the `FMT-Installation` folder.
+5. Use `git clone https://github.com/microsoft/vcpkg.git` in the command prompt to download [vcpkg](https://github.com/microsoft/vcpkg). If you don't have git installed on your computer, install it from [here](https://git-scm.com/).
+6. Use `cd ./vcpkg` to navigate into the vcpkg folder.
+7. Use the following command to install the dependencies necessary to compile FMT (⚠️ **This will take time, and will use some space on your computer**): `vcpkg install boost:x64-windows boost-dll:x64-windows boost-icl:x64-windows boost-python:x64-windows gdal:x64-windows geos:x64-windows pthreads:x64-windows clp:x64-windows`
+8. Use `cd ..` to go back to the `FMT-Installation` folder.
+9. Clone this repository using `git clone https://github.com/gcyr/FMT.git`
+10. Use `cd ./FMT` to navigate into the FMT folder.
+11. Use the following commands to compile FMT (⚠️ **This will take time**):
+
+```bash
+cmake CMakeLists.txt -G "Visual Studio 16 2019" -DVCPKG_TARGET_TRIPLET=x64-windows -DCMAKE_TOOLCHAIN_FILE=../vcpkg/scripts/buildsystems/vcpkg.cmake -DBOOST_DIR="../vcpkg/installed/x64-windows/" -DCMAKE_BUILD_TYPE=Release -DGDAL_DIR="../vcpkg/installed/x64-windows/" -DGEOS_DIR="../vcpkg/installed/x64-windows/" -DOSI_DIR="../vcpkg/installed/x64-windows/" -DPYTHON_DIR="../vcpkg/packages/python3_x64-windows/" -DMOSEK_DIR="C:/PROGRA~1/Mosek/"`
+cmake --build . --config Release
+cmake --install . --config Release
+```
+
+12. Import FMT into Python by using:
+
+```python
+import sys
+sys.path.append(r"<Path to FMT folder>/")
+sys.path.append(r"<Path to FMT folder>/Release/")
+from FMT import Models
+from FMT import Parser
+from FMT import Core
+from FMT import Version
+```
+
+# 📦 Dependencies
+
+## Required :
   + Boost compiled with zlib. (http://boost.org)
-### Optional :
+## Optional :
   + GEOS library (http://trac.orgeo.org/geos/)
   + GDAL library (http://GDAL.org)
   + Mosek library (http://mosek.com)
   + OSI library throught the CBC solver (http://github.com/coin/Cbc)
   + Boost Python library
   + Rcpp and cran-R with at least Rtools40 (http://cran.r-project.org)
-### Compiling the dependencies:
-#### For Visual Studio 2017/2019 and vcpkg:
-  1. Clone the latest vcpkg from https://github.com/microsoft/vcpkg.git.
-  2. From the command line in vcpkg directory:
-	  + Run bootstrap-vcpkg.bat
-	  + vcpkg install boost:x64-windows boost-dll:x64-windows boost-icl:x64-windows boost-python:x64-windows pthreads:x64-windows clp:x64-windows gdal:x64-windows geos:x64-windows
- 
-## How to use FMT?
 
-The easiest way to use FMT is to use the cmake >= 3.15 and generate a shared library for R or Python or directly from C++ (see examples: FMTSimpleplanning.exe and FMTSpatialyexplicitsimulation.exe). The cmake script supports generating FMT on Windows using VS2017/2019 or MINGW-64 on MSYS2 or CYGWIN.
-+ Generating FMT as a Python library on Visual studio 2017 with vcpkg
- ```powershell
- 	call vcvars64.bat
- 	cmake CMakeLists.txt 
-		-DVCPKG_TARGET_TRIPLET=x64-windows ^
-		-DCMAKE_TOOLCHAIN_FILE="path to vcpkg.cmake" ^
-		-DCMAKE_BUILD_TYPE=Release ^
-		-DMOSEK_DIR="path to /vcpkg/installed/x64-windows/" ^
-		-DOSI_DIR="path to /vcpkg/installed/x64-windows/" ^
-		-DBOOST_DIR="path to /vcpkg/installed/x64-windows/" ^
-		-DGDAL_DIR="path to /vcpkg/installed/x64-windows/" ^
-		-DGEOS_DIR="path to /vcpkg/installed/x64-windows/" ^
-		-DPYTHON_DIR="path to /vcpkg/installed/x64-windows/" ^
-		-G "Visual Studio 15 2017 Win64"
-  	cmake --build . --config Release
-  	cmake --install . --config Release
-```
-+ Generating FMT as a Python library on Visual studio 2017:
- 
- ```powershell
- ::Providing the -DPYTHON_DIR will make the script generate a .pyd using Boost Python
- ::You cannot generate an Rcpp module .dll with VS so dont use -DR_DIR with VS
- call vcvars64.bat
- cmake CMakeLists.txt -DCMAKE_BUILD_TYPE=Release ^
-	-DMOSEK_DIR="path to MOSEK" ^
-	-DOSI_DIR="path to OSI" ^
-	-DBOOST_DIR="path to BOOST" ^
-	-DGDAL_DIR="path to GDAL" ^
-	-DGEOS_DIR="path to GEOS" ^
-	-DPYTHON_DIR="path to PYTHON" ^
-	-G "Visual Studio 15 2017 Win64"
-  cmake --build . --config Release
-  ::This will copy dependencies next to FMT.pyd.
-  cmake --install . --config Release
-```
+# 📖 Documentation
 
-+ Generating FMT as a R library on MINGW-64 with MSYS2 (Rtools40)
- ```bash
- #Here is a example for generating FMT module .dll for R
- #Python .pyd could also be generated using -DPYTHON_DIR but dont use -DPYTHON_DIR and -DR_DIR at the same time
- #To generate a R .dll you need to use at least Rtools40 R4 >.
- cmake CMakeLists.txt -DCMAKE_BUILD_TYPE=Release \
-	-DMOSEK_DIR="path to MOSEK" \
-	-DOSI_DIR="path to OSI" \
-	-DBOOST_DIR="path to BOOST" \
-	-DGDAL_DIR="path to GDAL" \
-	-DR_DIR="path to R" \
-	-DGEOS_DIR="path to GEOS" \
-	-G "MSYS Makefiles"
- cmake --build . --config Release
- #This will copy dependencies next to FMT.dll.
- cmake --install . --config Release
- ```
+The documentation of FMT must be compiled with Doxygen (http://www.doxygen.nl).
 
-## Documentation
-
-+ For generating Doxygen documentation (http://www.doxygen.nl) into the documentation folder:
+With a powershell prompt, go into the FMT folder and use:
 
  ``` powershell
   cd Documentation
   doxygen FMTdoxygenconfig
  ```
-+ To populate comments into R and Python source files (files starting with R and PY):
+To populate comments in R and Python source files (files starting with R and PY):
 
  ```powershell
   cd Documentation
   python commentsPythonandR.py
  ```
- ## Examples
+
+# 👉 Examples
+
  Here's a short example for reading a forest planning model and solve the type III Linear programming formulation.
  + Using Python
   ```python
@@ -187,4 +163,9 @@ for (const Core::FMTconstraint& constraint : constraints)
 optimizationmodel.setobjective(objective);
 optimizationmodel.initialsolve();
 ```
+
+# 🔑 License 
+
+FMT is a [LiLiQ-R 1.1](https://github.com/gcyr/FMT/blob/master/LICENSES/EN/LILIQ-R11EN.pdf) licensed library.
+
 [![License](http://img.shields.io/:license-liliqR11-blue.svg?style=flat-square)](https://forge.gouv.qc.ca/licence/liliq-v1-1/#r%C3%A9ciprocit%C3%A9-liliq-r)
