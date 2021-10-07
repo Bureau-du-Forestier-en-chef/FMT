@@ -94,6 +94,8 @@ endif(DEFINED PYTHON_DIR)
 #	link_directories(${CMAKE_SOURCE_DIR}/external/torch/lib)
 #endif(DEFINED TORCH)
 
+find_package(Boost COMPONENTS system filesystem serialization iostreams regex thread)
+
 
 if (MSVC)
 	add_definitions("-DFMT_EXPORTS")
@@ -116,12 +118,22 @@ add_library(FMT SHARED ${FMTSOURCEFILES})
 include_directories(${FMTINCLUDEDIR})
 set_target_properties(FMT PROPERTIES PREFIX "")
 
+set( CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin )
+set( CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin )
+
 if (NOT MSVC)
 set_target_properties( FMT
     PROPERTIES
-    ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE}"
-    LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE}"
-    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE}"
+    ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}"
+    LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}"
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}"
+)
+else()
+set_target_properties( FMT
+    PROPERTIES
+    ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
+    LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
 )
 endif(NOT MSVC)
 
@@ -194,7 +206,6 @@ if ((NOT DEFINED ENV{R_DIR}) AND (DEFINED ENV{PYTHON_DIR}))
 endif()
 
 
-
 #Try to find a dynamic boost lib
 if (DEFINED PYTHONNAMING)
         if("${PYTHONMAJOR}" STREQUAL "2")
@@ -203,15 +214,15 @@ if (DEFINED PYTHONNAMING)
             set(BPY ${PYTHONNAMING})
         endif("${PYTHONMAJOR}" STREQUAL "2")
 		if(MSVC)
-        	find_package(Boost COMPONENTS system filesystem serialization iostreams regex thread "${BPY}")
+        	find_package(Boost COMPONENTS system filesystem serialization iostreams regex thread "${BPY}" OPTIONAL_COMPONENTS zlib)
 		else()
-			find_package(Boost COMPONENTS system filesystem serialization iostreams regex thread "${BPY}") 
+			find_package(Boost COMPONENTS system filesystem serialization iostreams regex thread "${BPY}" OPTIONAL_COMPONENTS zlib) 
 		endif(MSVC)
     else()
 		if(MSVC)
-			find_package(Boost COMPONENTS system filesystem serialization iostreams regex thread "${BPY}")
+			find_package(Boost COMPONENTS system filesystem serialization iostreams regex thread "${BPY}" OPTIONAL_COMPONENTS zlib)
 		else()
-			find_package(Boost COMPONENTS system filesystem serialization iostreams regex thread "${BPY}") 
+			find_package(Boost COMPONENTS system filesystem serialization iostreams regex thread "${BPY}" OPTIONAL_COMPONENTS zlib) 
 		endif(MSVC)
 endif(DEFINED PYTHONNAMING)
 
@@ -237,21 +248,50 @@ if (NOT Boost_FOUND)#here try to find a dynamic boost llib
             	set(BPY ${PYTHONNAMING})
         	endif("${PYTHONMAJOR}" STREQUAL "2")
         	if(MSVC)
-				find_package(Boost COMPONENTS system filesystem serialization iostreams regex thread "${BPY}")
+				find_package(Boost COMPONENTS system filesystem serialization iostreams regex thread "${BPY}" OPTIONAL_COMPONENTS zlib)
 			else()
-				find_package(Boost COMPONENTS system filesystem serialization iostreams regex thread "${BPY}") 
+				find_package(Boost COMPONENTS system filesystem serialization iostreams regex thread "${BPY}" OPTIONAL_COMPONENTS zlib) 
 			endif(MSVC)
     	else()
 		if(MSVC)
-			find_package(Boost COMPONENTS system filesystem serialization iostreams regex thread "${BPY}")
+			find_package(Boost COMPONENTS system filesystem serialization iostreams regex thread "${BPY}" OPTIONAL_COMPONENTS zlib)
 		else()
-			find_package(Boost COMPONENTS system filesystem serialization iostreams regex thread "${BPY}") 
+			find_package(Boost COMPONENTS system filesystem serialization iostreams regex thread "${BPY}" OPTIONAL_COMPONENTS zlib) 
 		endif(MSVC)
 	endif(DEFINED PYTHONNAMING)
 	if (Boost_FOUND)
 		add_definitions("-DBOOST_PYTHON_STATIC_LIB")
 	endif(Boost_FOUND)
 endif(NOT Boost_FOUND)
+
+
+#the hard way
+if (NOT Boost_FOUND AND NOT MSVC)
+    find_package(Boost REQUIRED)
+    file(GLOB_RECURSE Boost_LIBRARIES_PATHS $ENV{BOOSTROOT}*${CMAKE_STATIC_LIBRARY_SUFFIX})
+    foreach(boostlibpath ${Boost_LIBRARIES_PATHS})
+        get_filename_component(libname ${boostlibpath} NAME)
+        if( NOT ("${libname}" MATCHES ".dll.a") AND
+        ("${libname}" MATCHES "libboost" AND NOT "${libname}" MATCHES "-s") AND
+        (("${libname}" MATCHES "zlib") OR
+        ("${libname}" MATCHES "system") OR
+        ("${libname}" MATCHES "serialization") OR
+        ("${libname}" MATCHES "iostreams") OR
+	("${libname}" MATCHES "regex") OR
+	("${libname}" MATCHES "thread") OR
+        (PythonLibs_FOUND AND "${libname}" MATCHES "${PYTHONNAMING}"))
+        )
+	   if ("${libname}" MATCHES "gd-x64" OR "${libname}" MATCHES "d-x64-")
+		list(APPEND Boost_LIBRARIES "debug")
+                list(APPEND Boost_LIBRARIES ${boostlibpath})
+                set(Complete_boost "complete")
+           elseif("${libname}" MATCHES "-x64")
+		list(APPEND Boost_LIBRARIES "optimized")
+                list(APPEND Boost_LIBRARIES ${boostlibpath})
+           endif()
+        endif()
+    endforeach()
+endif(NOT Boost_FOUND AND NOT MSVC)
 
 
 if (NOT Boost_FOUND)
@@ -428,18 +468,18 @@ get_filename_component(GDAL_DATA_NAME "${GDAL_DATA}" NAME)
 #install part
 install (CODE
     "set(GDAL_FOUND \"${GDAL_FOUND}\")
-    file(COPY \"${CMAKE_CURRENT_SOURCE_DIR}/LICENSES\" DESTINATION \"${CMAKE_BINARY_DIR}\")
+    file(COPY \"${CMAKE_CURRENT_SOURCE_DIR}/LICENSES\" DESTINATION \"${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}\")
     if (GDAL_FOUND)
         #Copy gdal data
-        file(COPY \"${GDAL_DATA}\" DESTINATION \"${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE}\")
-        file(RENAME \"${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE}/${GDAL_DATA_NAME}\" \"${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE}/GDAL_DATA\")
+        file(COPY \"${GDAL_DATA}\" DESTINATION \"${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}\")
+        file(RENAME \"${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}/${GDAL_DATA_NAME}\" \"${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}/GDAL_DATA\")
     endif()
     set(DEPENDENCIES \"${FMTDEPENDENCIES}\")
     if (DEPENDENCIES)
         #Copy dependencies
         foreach(FMTdep \${DEPENDENCIES}\)
             get_filename_component(depname \"\${FMTdep}\" NAME)
-            file(COPY \"\${FMTdep}\" DESTINATION \"${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE}\")
+            file(COPY \"\${FMTdep}\" DESTINATION \"${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}\")
         endforeach()
     endif()")
 

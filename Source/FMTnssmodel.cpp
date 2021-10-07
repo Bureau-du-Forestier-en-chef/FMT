@@ -138,7 +138,6 @@ namespace Models
 				{
 				if (output->getsourcesreference().begin()->use(development,yields))
 					{
-					
 					std::vector<const Core::FMTaction*>::const_iterator actit = targets.at(location).begin();
 					while (actit!= targets.at(location).end() && !development.operable(**actit,yields))
 						{
@@ -218,25 +217,27 @@ namespace Models
 			std::vector<double>targetedarea;
 			std::vector<const Core::FMToutput*> targetedoutputs = constraintstotarget(targetedarea);
 			std::vector<std::vector<const Core::FMTaction*>> targetedactions= getactionstargets(targetedoutputs);
-			const int graphlength = static_cast<int>(getgraphsize());
+			const int actualgraphlength = static_cast<int>(getgraphsize());
 			std::vector<Core::FMTactualdevelopment> actualarea;
-			if (graphlength==0)
+			int simulatedperiod = (actualgraphlength-1);
+			if (actualgraphlength ==0)
 			{
 				actualarea = area;
 				for (Core::FMTactualdevelopment& actdev : actualarea)
 					{
+					simulatedperiod =actdev.getperiod() + 1;
 					actdev.setperiod(actdev.getperiod()+1);
 					}
 			}else {
-				actualarea = getarea(graphlength - 1);
+				actualarea = getarea(actualgraphlength - 1);
 				}
-			schedule.setperiod(std::max(graphlength, 1));
+			schedule.setperiod(simulatedperiod);
 			if (targetedarea.empty())
 				{
-				const int period = graphlength-1;
 				_exhandler->raise(Exception::FMTexc::FMTignore,
-					"No area to simulate at period "+std::to_string(period), "FMTnssmodel::simulate", __LINE__, __FILE__);
-				}
+					"No area to simulate at period "+std::to_string(simulatedperiod), "FMTnssmodel::simulate", __LINE__, __FILE__);
+			}
+
 			if (targetedarea.size()!= targetedoutputs.size() ||
 				targetedactions.size()!= targetedarea.size())
 				{
@@ -257,9 +258,11 @@ namespace Models
 				std::vector<Core::FMTactualdevelopment>::iterator devit = actualarea.begin();
 				std::vector<std::pair<size_t, const Core::FMTaction*>>operables;
 				allocatedarea = false;
+				
 				while (devit!= actualarea.end()&&operables.empty())
 					{
 					operables = getoperabilities(*devit, targetedactions, targetedoutputs);
+					
 					if (operables.empty())
 						{
 						++devit;
@@ -267,7 +270,6 @@ namespace Models
 					}
 				if (!operables.empty())
 					{
-					
 					const double operatedarea = std::min(targetedarea.at(operables.begin()->first), devit->getarea());
 					const std::vector<Core::FMTdevelopmentpath> paths = operate(*devit, operatedarea, operables.begin()->second, schedule);
 					updatearea(actualarea,devit, paths, operatedarea);
@@ -276,16 +278,23 @@ namespace Models
 					anyallocation = true;
 					}
 				}
-			std::sort(actualarea.begin(), actualarea.end());
+			//Need to take care of the _DEATH!
+			const Core::FMTaction& deathaction = actions.back();
+			for (const Core::FMTactualdevelopment& developement : actualarea)
+				{
+				if (developement.operable(deathaction,yields))
+					{
+					schedule.addevent(developement, developement.getarea(),deathaction);
+					}
+				}				
 			if (!anyallocation)
 				{
-				const int period = graphlength - 1;
 				_exhandler->raise(Exception::FMTexc::FMTignore,
-					"No area simulated at period " + std::to_string(period), "FMTnssmodel::simulate", __LINE__, __FILE__);
+					"No area simulated at period " + std::to_string(simulatedperiod), "FMTnssmodel::simulate", __LINE__, __FILE__);
 				}
 			schedule.clean();
 			this->buildperiod(schedule, true);
-			this->setsolution(std::max(graphlength-1,1),schedule);
+			this->setsolution(simulatedperiod,schedule);
 		}catch (...)
 		{
 			_exhandler->raisefromcatch("", "FMTnssmodel::simulate", __LINE__, __FILE__);

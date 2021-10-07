@@ -112,7 +112,7 @@ FMTmodel& FMTmodel::operator = (const FMTmodel& rhs)
         }
     return *this;
     }
-std::vector<Core::FMTactualdevelopment>FMTmodel::getarea(int period) const
+std::vector<Core::FMTactualdevelopment>FMTmodel::getarea(int period,bool beforegrow ) const
     {
     return area;
     }

@@ -765,7 +765,7 @@ namespace Models
 	}
 
 
-	std::vector<Core::FMTactualdevelopment>FMTsrmodel::getarea(int period) const
+	std::vector<Core::FMTactualdevelopment>FMTsrmodel::getarea(int period, bool beforegrow) const
 	{
 		std::vector<Core::FMTactualdevelopment>returnedarea;
 		try {
@@ -777,15 +777,20 @@ namespace Models
 			Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_iterator vertex_iterator, vertex_iterator_end;
 			for (boost::tie(vertex_iterator, vertex_iterator_end) = graph.getperiodverticies(period); vertex_iterator != vertex_iterator_end; ++vertex_iterator)
 			{
-				if (graph.periodstart(*vertex_iterator))
+				if ((!beforegrow&&graph.periodstart(*vertex_iterator)) || (beforegrow && graph.periodstop(*vertex_iterator)))
 				{
 					const Core::FMTdevelopment& graphdevelopement = graph.getdevelopment(*vertex_iterator);
 					const double areaofdevelopement = graph.inarea(*vertex_iterator, modelsolution, true);
+					if (beforegrow&&std::string(graphdevelopement).find("FEU")!=std::string::npos)
+					{
+						*_logger << "BEFORE GROW!" << std::string(graphdevelopement) << "\n";
+					}
 					if (areaofdevelopement > 0)
 					{
 						returnedarea.push_back(Core::FMTactualdevelopment(graphdevelopement, areaofdevelopement));
 					}
 				}
+				
 			}
 			std::sort(returnedarea.begin(), returnedarea.end());
 		}

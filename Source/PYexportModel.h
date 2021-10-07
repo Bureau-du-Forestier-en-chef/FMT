@@ -39,6 +39,7 @@ BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(setsolution_overloads,setsolution, 2, 3)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(setsolutionbylp_overloads,setsolutionbylp, 2, 3)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(basepresolve_overloads,basepresolve, 0, 1)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(addscheduletoobjective_overloads, addscheduletoobjective, 1, 2)
+BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(getarea_overloads, getarea, 0, 2)
 
 void exportModel()
     {
@@ -61,7 +62,7 @@ void exportModel()
 				"@DocString(FMTmodel::setyields)")
 			.def("getname", &Models::FMTmodel::getname,
 				"@DocString(FMTmodel::getname)")
-            .def("getarea",&Models::FMTmodel::getarea, getarea_overloads(bp::args("period"), "@DocString(FMTlpmodel::getarea)"))
+            .def("getarea",&Models::FMTmodel::getarea, getarea_overloads(bp::args("period","beforegrow"), "@DocString(FMTlpmodel::getarea)"))
 			.def("setarea", &Models::FMTmodel::setarea,
 				"@DocString(FMTmodel::setarea)")
 			.def("getthemes",&Models::FMTmodel::getthemes,

@@ -30,9 +30,6 @@ void define_FMTlist()
 	define_pylist<T>();
     }
 
-
-BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(getarea_overloads,getarea, 0, 1)
-
 template <class T>
 void define_FMTlayer()
     {
