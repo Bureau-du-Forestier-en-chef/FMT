@@ -66,7 +66,7 @@ bool FMToperatingarea::operator == (const FMToperatingarea& rhs) const
 	}
 bool FMToperatingarea::operator != (const FMToperatingarea& rhs) const
 	{
-	return (*this != rhs);
+	return !(*this == rhs);
 	}
 
 FMToperatingareacomparator::FMToperatingareacomparator(const Core::FMTmask& lmask):mask(lmask)

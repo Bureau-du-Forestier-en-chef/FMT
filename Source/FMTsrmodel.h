@@ -211,7 +211,7 @@ namespace Models
 	that can be (actual of futur) existing at the beginning of the period.
 	Need to have a builded graph with a solution to use this function.
 	*/
-	std::vector<Core::FMTactualdevelopment>getarea(int period = 0) const override;
+	std::vector<Core::FMTactualdevelopment>getarea(int period = 0, bool beforegrow = false) const override;
 	// DocString: FMTsrmodel::getsolverptr()
 	/**
 	Get a pointer to the solver behind the model.
