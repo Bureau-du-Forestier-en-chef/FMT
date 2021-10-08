@@ -105,7 +105,7 @@ namespace Models
 	/**
 	Copy constructor of FMTsrmodel
 	*/
-	FMTsrmodel(const FMTsrmodel& rhs)=default;
+	FMTsrmodel(const FMTsrmodel& rhs);
 	// DocString: FMTsrmodel::operator=
 	/**
 	Copy assignment of FMTsrmodel
@@ -211,7 +211,7 @@ namespace Models
 	that can be (actual of futur) existing at the beginning of the period.
 	Need to have a builded graph with a solution to use this function.
 	*/
-	std::vector<Core::FMTactualdevelopment>getarea(int period = 0, bool beforegrow = false) const override;
+	std::vector<Core::FMTactualdevelopment>getarea(int period = 0, bool beforegrowanddeath = false) const override;
 	// DocString: FMTsrmodel::getsolverptr()
 	/**
 	Get a pointer to the solver behind the model.

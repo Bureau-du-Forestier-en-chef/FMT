@@ -848,7 +848,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 		}
 
 		double inarea(const FMTvertex_descriptor& out_vertex,
-                        const double*&  solution, bool growth = false) const
+                        const double*&  solution,int actionid = -1, bool growth = false) const
 		{
 			double area = 0;
 			try{
@@ -856,7 +856,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 			for (boost::tie(inedge_iterator, inedge_end) = boost::in_edges(out_vertex, data); inedge_iterator != inedge_end; ++inedge_iterator)
 			{
 				const FMTbaseedgeproperties& edgeprop = data[*inedge_iterator];
-				if (edgeprop.getactionID() < 0 || !growth)
+				if (edgeprop.getactionID() == actionid || !growth)
 				{
 					area += *(solution + edgeprop.getvariableID()) * (edgeprop.getproportion() / 100);
 				}
@@ -1282,6 +1282,9 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 			}
 			return mapping;
 		}
+
+
+
 		std::vector<int>getoutactions(const FMTvertex_descriptor& out_vertex) const
 		{
 			std::vector<int>actions;
@@ -2266,7 +2269,7 @@ template<> inline std::vector<Core::FMTdevelopmentpath> FMTgraph<Graph::FMTverte
 
 
 
-template<> inline double FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::inarea(const FMTvertex_descriptor& out_vertex, const double*&  solution, bool growth) const
+template<> inline double FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::inarea(const FMTvertex_descriptor& out_vertex, const double*&  solution, int actionid , bool growth) const
 	{
 		
 		double area = 0;
@@ -2275,7 +2278,7 @@ template<> inline double FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeprop
 			for (boost::tie(inedge_iterator, inedge_end) = boost::in_edges(out_vertex, data); inedge_iterator != inedge_end; ++inedge_iterator)
 			{
 				const FMTedgeproperties& edgeprop = data[*inedge_iterator];
-				if (edgeprop.getactionID() < 0 || !growth)
+				if (edgeprop.getactionID() == actionid || !growth)
 				{
 					area += *(solution + edgeprop.getvariableID()) * (edgeprop.getproportion() / 100);
 				}

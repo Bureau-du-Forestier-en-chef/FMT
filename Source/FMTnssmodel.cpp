@@ -19,6 +19,13 @@ namespace Models
 	
 	}
 
+	FMTnssmodel::FMTnssmodel(const FMTnssmodel& rhs) :
+		FMTsrmodel(rhs),
+		generator(rhs.generator)
+	{
+
+	}
+
 	FMTnssmodel::FMTnssmodel(const FMTmodel& rhs, unsigned int seed):
 		FMTsrmodel(rhs,Models::FMTsolverinterface::CLP),
 		generator(seed) 

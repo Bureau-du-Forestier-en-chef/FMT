@@ -62,7 +62,7 @@ void exportModel()
 				"@DocString(FMTmodel::setyields)")
 			.def("getname", &Models::FMTmodel::getname,
 				"@DocString(FMTmodel::getname)")
-            .def("getarea",&Models::FMTmodel::getarea, getarea_overloads(bp::args("period","beforegrow"), "@DocString(FMTlpmodel::getarea)"))
+            .def("getarea",&Models::FMTmodel::getarea, getarea_overloads(bp::args("period","beforegrowanddeath"), "@DocString(FMTlpmodel::getarea)"))
 			.def("setarea", &Models::FMTmodel::setarea,
 				"@DocString(FMTmodel::setarea)")
 			.def("getthemes",&Models::FMTmodel::getthemes,
@@ -183,6 +183,7 @@ void exportModel()
 	
 	bp::class_<Models::FMTnssmodel, bp::bases<Models::FMTsrmodel>>("FMTnssmodel", "@DocString(FMTnssmodel)")
 		.def(bp::init<Models::FMTmodel, unsigned int>())
+		.def(bp::init<Models::FMTnssmodel>())
 		.def_pickle(FMT_pickle_suite<Models::FMTnssmodel>())
 		.def("simulate", &Models::FMTnssmodel::simulate);
 
