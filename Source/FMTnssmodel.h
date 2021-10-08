@@ -110,7 +110,7 @@ namespace Models
 			/**
 			Default copy constructor of FMTnssmodel.
 			*/
-			FMTnssmodel(const FMTnssmodel& rhs) = default;
+			FMTnssmodel(const FMTnssmodel& rhs);
 			// DocString: FMTnssmodel::operator=
 			/**
 			Default copy assignment of MTnssmodel.

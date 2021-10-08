@@ -94,8 +94,6 @@ endif(DEFINED PYTHON_DIR)
 #	link_directories(${CMAKE_SOURCE_DIR}/external/torch/lib)
 #endif(DEFINED TORCH)
 
-find_package(Boost COMPONENTS system filesystem serialization iostreams regex thread)
-
 
 if (MSVC)
 	add_definitions("-DFMT_EXPORTS")
@@ -189,6 +187,7 @@ if ((NOT DEFINED ENV{R_DIR}) AND (DEFINED ENV{PYTHON_DIR}))
 		string(REGEX MATCH "^([0-9]*)(.)([0-9]*)(.)([0-9]*)" dummy ${PYTHONLIBS_VERSION_STRING})
 		set(PYTHONNAMING "python${CMAKE_MATCH_1}${CMAKE_MATCH_3}")
 		set(PYTHONMAJOR "${CMAKE_MATCH_1}")
+		set(PYTHONMINOR "${CMAKE_MATCH_3}")
 		set(FMTWITHPYTHON "-DFMTWITHPYTHON")
 		#add_definitions("${FMTWITHPYTHON}")
 		target_compile_definitions(FMT PRIVATE "${FMTWITHPYTHON}")
@@ -200,6 +199,12 @@ if ((NOT DEFINED ENV{R_DIR}) AND (DEFINED ENV{PYTHON_DIR}))
 		if (NOT CYGWIN)
 			set_target_properties(FMT PROPERTIES SUFFIX ".pyd")
 		endif(NOT CYGWIN)
+		configure_file("${CMAKE_CURRENT_SOURCE_DIR}/Templates/__init__.py.in"
+                    "${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}/__init__.py" @ONLY
+                )
+        configure_file("${CMAKE_CURRENT_SOURCE_DIR}/Templates/setup.py.in"
+                    "${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}/setup.py" @ONLY
+                )
 	else()
 		message("Python not found")
 	endif(PythonLibs_FOUND)
@@ -481,7 +486,15 @@ install (CODE
             get_filename_component(depname \"\${FMTdep}\" NAME)
             file(COPY \"\${FMTdep}\" DESTINATION \"${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}\")
         endforeach()
-    endif()")
+    endif()
+	if (EXISTS \"${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}/setup.py\")
+        find_program(PYTHON \"python\" PATHS \"${PYTHON_DIR}\")
+        execute_process(
+          COMMAND \"$\{PYTHON\}\" -m pip wheel .
+          WORKING_DIRECTORY \"${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}\"
+        )
+    endif (EXISTS \"${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}/setup.py\")
+")
 
 if (DEFINED ReleaseTesting)
 	include(${CMAKE_CURRENT_SOURCE_DIR}/Examples/C++/ReleaseTesting/CMakeLists.txt)
