@@ -17,6 +17,7 @@ set(FMTPATCH "-DFMT_PATCH=${PROJECT_VERSION_PATCH}")
 add_definitions("${FMTPATCH}")
 message("Generating Build file for FMT ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH}")
 
+
 set(FMTSOURCEDIR "${CMAKE_CURRENT_SOURCE_DIR}/Source/")
 set(FMTINCLUDEDIR "${CMAKE_CURRENT_SOURCE_DIR}/Source/")
 
@@ -84,15 +85,17 @@ if (DEFINED PYTHON_DIR)
 	endif(EXISTS "${PYTHON_DIR}")
 endif(DEFINED PYTHON_DIR)
 
-#if (DEFINED TORCH)
-#	set(EXTERNAL_INSTALL_LOCATION ${CMAKE_SOURCE_DIR}/external/torch)
-#ExternalProject_Add(googletest
-#    		GIT_REPOSITORY https://download.pytorch.org/libtorch/nightly/cpu/libtorch-shared-with-deps-latest.zip
-#    		CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${EXTERNAL_INSTALL_LOCATION}
-#		)
-#	include_directories(${CMAKE_SOURCE_DIR}/external/torch/include)
-#	link_directories(${CMAKE_SOURCE_DIR}/external/torch/lib)
-#endif(DEFINED TORCH)
+
+if (DEFINED Torch_DIR)
+	if (EXISTS "${Torch_DIR}")
+		set(ENV{Torch_DIR} "${Torch_DIR}")
+	else()
+		message(WARNING "${Torch_DIR} is not a valid directory")
+	endif(EXISTS "${Torch_DIR}")
+endif(DEFINED Torch_DIR)
+
+
+
 
 
 if (MSVC)
@@ -135,7 +138,23 @@ set_target_properties( FMT
 )
 endif(NOT MSVC)
 
-set_property(TARGET FMT PROPERTY CXX_STANDARD 11)
+find_package(Torch)
+if (TORCH_FOUND)
+	message("Found Torch FMT will be compiled using C++14")
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${TORCH_CXX_FLAGS}")
+	set_property(TARGET FMT PROPERTY CXX_STANDARD 14)
+	target_link_libraries(FMT ${TORCH_LIBRARIES})
+	link_libraries(${TORCH_LIBRARIES})
+	include_directories(${TORCH_INCLUDE_DIRS})
+	set(FMTWITHTORCH "-DFMTWITHTORCH")
+	add_definitions("${FMTWITHTORCH}")
+  	file(GLOB TORCH_DLLS "${TORCH_INSTALL_PREFIX}/lib/*.dll")
+	list (APPEND FMTDEPENDENCIES ${TORCH_DLLS})
+else()
+	set_property(TARGET FMT PROPERTY CXX_STANDARD 11)
+endif(TORCH_FOUND)
+
+
 set_property(TARGET FMT PROPERTY CXX_STANDARD_REQUIRED ON)
 
 
@@ -209,6 +228,9 @@ if ((NOT DEFINED ENV{R_DIR}) AND (DEFINED ENV{PYTHON_DIR}))
 		message("Python not found")
 	endif(PythonLibs_FOUND)
 endif()
+
+
+
 
 
 #Try to find a dynamic boost lib

@@ -33,19 +33,18 @@ namespace Models
 	
 	}
 
-	std::vector<const Core::FMToutput*> FMTnssmodel::constraintstotarget(std::vector<double>& targets)
+	std::vector<const Core::FMToutput*> FMTnssmodel::constraintstotarget(std::vector<double>& targets, const int& period)
 		{
 		std::vector<const Core::FMToutput*>targetedoutputs;
 		try {
 			targets.clear();
 			std::vector<double>lowers;
 			std::vector<double>uppers;
-			const int actualperiod = std::max(static_cast<int>(getgraphsize()-1),1);
 			for (const Core::FMTconstraint& constraint : constraints)
 				{
 				if (constraint.israndomaction() &&
-					actualperiod>=constraint.getperiodlowerbound() &&
-					actualperiod<=constraint.getperiodupperbound())
+					period>=constraint.getperiodlowerbound() &&
+					period<=constraint.getperiodupperbound())
 					{
 				
 					if (!constraint.dosupportrandom())
@@ -56,7 +55,7 @@ namespace Models
 					
 					double lower = 0;
 					double upper = 0;
-					constraint.getbounds(lower, upper, actualperiod);
+					constraint.getbounds(lower, upper,period);
 					size_t location = 0;
 					bool added = false;
 					for (const Core::FMToutput* doneit : targetedoutputs)
@@ -221,12 +220,10 @@ namespace Models
 			Core::FMTschedule schedule;
 			schedule.setuselock(true);
 			schedule.passinobject(*this);
-			std::vector<double>targetedarea;
-			std::vector<const Core::FMToutput*> targetedoutputs = constraintstotarget(targetedarea);
-			std::vector<std::vector<const Core::FMTaction*>> targetedactions= getactionstargets(targetedoutputs);
 			const int actualgraphlength = static_cast<int>(getgraphsize());
 			std::vector<Core::FMTactualdevelopment> actualarea;
 			int simulatedperiod = (actualgraphlength-1);
+			
 			if (actualgraphlength ==0)
 			{
 				actualarea = area;
@@ -238,6 +235,9 @@ namespace Models
 			}else {
 				actualarea = getarea(actualgraphlength - 1);
 				}
+			std::vector<double>targetedarea;
+			std::vector<const Core::FMToutput*> targetedoutputs = constraintstotarget(targetedarea, simulatedperiod);
+			std::vector<std::vector<const Core::FMTaction*>> targetedactions = getactionstargets(targetedoutputs);
 			schedule.setperiod(simulatedperiod);
 			if (targetedarea.empty())
 				{

@@ -91,7 +91,7 @@ FMTmodel::FMTmodel(const FMTmodel& rhs):Core::FMTobject(rhs),area(rhs.area),them
 		statictransitionthemes(rhs.statictransitionthemes)
 
 	{
-
+	
 	}
 
 FMTmodel& FMTmodel::operator = (const FMTmodel& rhs)
