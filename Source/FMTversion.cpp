@@ -92,6 +92,12 @@ bool FMTversion::hasfeature(const std::string& name)
 			}
 		#endif
 	#endif
+	#ifdef FMTWITHTORCH
+		if (name == "TORCH")
+			{
+			return true;
+			}
+	#endif
 	return false;
 	}
 

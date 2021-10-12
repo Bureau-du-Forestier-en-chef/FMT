@@ -1813,30 +1813,33 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 				FMTvertex_iterator base_iterator, base_iterator_end;
 				//End always stay the same use .end() for non valid period
 				boost::tie(base_iterator, base_iterator_end) = boost::vertices(data);
-				developments.resize(getperiod() + 1, FMTvertex_pair(base_iterator_end, base_iterator_end));
-				FMTvertex_iterator vertex, vend;
-				int actualperiod = 0;
-				size_t vertexid = 0;
-				FMTvertex_iterator firstvertex;
-				for (boost::tie(vertex, vend) = boost::vertices(data); vertex != vend; ++vertex)
+				if (base_iterator!= base_iterator_end)
 				{
-					const FMTbasevertexproperties& properties = data[*vertex];
-					const Core::FMTdevelopment& dev = properties.get();
-					const size_t period_location = (dev.getperiod());
-					if (vertexid==0)
+					developments.resize(getperiod() + 1, FMTvertex_pair(base_iterator_end, base_iterator_end));
+					FMTvertex_iterator vertex, vend;
+					int actualperiod = 0;
+					size_t vertexid = 0;
+					FMTvertex_iterator firstvertex;
+					for (boost::tie(vertex, vend) = boost::vertices(data); vertex != vend; ++vertex)
 					{
-						firstvertex = vertex;
-						actualperiod = dev.getperiod();
+						const FMTbasevertexproperties& properties = data[*vertex];
+						const Core::FMTdevelopment& dev = properties.get();
+						const size_t period_location = (dev.getperiod());
+						if (vertexid == 0)
+						{
+							firstvertex = vertex;
+							actualperiod = dev.getperiod();
+						}
+						if (actualperiod != dev.getperiod())//periodchanges!
+						{
+							developments[period_location - 1] = FMTvertex_pair(firstvertex, vertex);
+							firstvertex = vertex;
+							actualperiod = dev.getperiod();
+						}
+						++vertexid;
 					}
-					if (actualperiod != dev.getperiod())//periodchanges!
-					{
-						developments[period_location-1] = FMTvertex_pair(firstvertex, vertex);
-						firstvertex = vertex;
-						actualperiod = dev.getperiod();
-					}
-					++vertexid;
+					developments.back() = FMTvertex_pair(firstvertex, base_iterator_end);
 				}
-				developments.back() = FMTvertex_pair(firstvertex,base_iterator_end);
 			}
 			catch (...)
 			{

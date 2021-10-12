@@ -25,7 +25,7 @@ foreach(sourcefile ${FMTSOURCEFILES})
 endforeach()
 
 if (OSI_FOUND)
-	project(FMTSimpleplanning VERSION "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH}" LANGUAGES CXX)
+	#project(FMTSimpleplanning VERSION "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH}" LANGUAGES CXX)
 	add_executable(FMTSimpleplanning ${FMTSimpleplanningSOURCEFILES})
 	if (NOT MSVC)
 		set_target_properties( FMTSimpleplanning
@@ -43,8 +43,8 @@ if (OSI_FOUND)
 endif(OSI_FOUND)
 
 if (GDAL_FOUND)
-	project(FMTSpatialyexplicitsimulation VERSION "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH}" LANGUAGES CXX)
-	project(GetCarbonpredictors VERSION "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH}" LANGUAGES CXX)
+	#project(FMTSpatialyexplicitsimulation VERSION "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH}" LANGUAGES CXX)
+	#project(GetCarbonpredictors VERSION "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH}" LANGUAGES CXX)
 	add_executable(FMTSpatialyexplicitsimulation ${FMTSpatialyexplicitsimulationSOURCEFILES})
 	add_executable(GetCarbonpredictors ${GetCarbonpredictorsSOURCEFILES})
 	if (NOT MSVC)
@@ -71,7 +71,7 @@ if (GDAL_FOUND)
 	endif(MOSEK_FOUND AND MSVC)
 endif(GDAL_FOUND)
 
-project(FMTlib VERSION "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH}" LANGUAGES CXX)
+#project(FMTlib VERSION "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH}" LANGUAGES CXX)
 add_library(FMTlib SHARED ${FMTSOURCEFILES})
 if (NOT MSVC)
 		set_target_properties( FMTlib
@@ -97,7 +97,7 @@ if (MOSEK_FOUND)
 endif(MOSEK_FOUND)
 
 if (GDAL_FOUND)
-	project(maptoFMTforest VERSION "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH}" LANGUAGES CXX)
+	#project(maptoFMTforest VERSION "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH}" LANGUAGES CXX)
 	add_executable(maptoFMTforest ${maptoFMTforestSOURCEFILES})
 	if (NOT MSVC)
 		set_target_properties( maptoFMTforest
