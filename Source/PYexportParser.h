@@ -26,6 +26,7 @@ BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(readrasters_overloads,readrasters, 3, 6)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(readvectors_overloads,readvectors, 4, 8)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(getschemeneighbors_overloads, getschemeneighbors, 5, 10)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(getclusters_overloads,getclusters,6, 11)
+BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(addoutputs_overloads,addoutputs,6, 7)
 
 
 
@@ -112,6 +113,7 @@ void exportParser()
 	bp::class_<Parser::FMToutputparser, bp::bases<Parser::FMTparser>>("FMToutputparser", "@DocString(FMToutputparser)")
                 .def("read",&Parser::FMToutputparser::read,
 					"@DocString(FMToutputparser::read)")
+				.def("addoutputs",&Parser::FMToutputparser::addoutputs,addoutputs_overloads(bp::args("oldoutputs","themes","actions","ylds","constants","location","outputsname"),"@DocString(FMToutputparser::addoutputs)"))
                 .def("write",&Parser::FMToutputparser::write,
 					"@DocString(FMToutputparser::write)");
 	bp::class_<Parser::FMToptimizationparser, bp::bases<Parser::FMTparser>>("FMToptimizationparser", "@DocString(FMToptimizationparser)")
