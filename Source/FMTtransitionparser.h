@@ -95,12 +95,12 @@ class FMTEXPORT FMTtransitionparser : public FMTparser
         void write(const std::vector<Core::FMTtransition>& transitions,const std::string& location) const;
 		// DocString: FMTtransitionparser::writeGCBM
 		/**
-		Write a vector of FMTGCBMtransitions into an xml file at (location).
+		Write a vector of FMTGCBMtransitions into a text file at (location).
 		*/
 		void writeGCBM(const std::vector<Core::FMTGCBMtransition>& transitions, const std::string& location) const;
 		// DocString: FMTtransitionparser::readGCBM
 		/**
-		From an xml file (location) readGCBM transitions
+		From a text file (location) readGCBM transitions
 		*/
 		std::vector<Core::FMTGCBMtransition>readGCBM(const std::string& location) const;
     };

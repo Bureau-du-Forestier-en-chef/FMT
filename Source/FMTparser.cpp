@@ -70,6 +70,7 @@ FMTparser::FMTparser() : Core::FMTobject(),
         _incomment(false),
          _forvalues(),
 		_included(),
+		mtx(),
 		_section(Core::FMTsection::Empty),
 		rxayld("^(.+)(\\@YLD[\\s\\t]*\\()([\\s\\t]*)(.+)(\\,)([\\s\\t]*)((#[^\\.]*)|([-]*\\d*.[-]*\\d*))(\\.\\.)((#[^\\.]*)|([-]*\\d*.[-]*\\d*)|(_MAXAGE))(\\))(.+)|(.+)(\\@YLD[\\s\\t]*\\()([\\s\\t]*)(.+)(\\,)([\\s\\t]*)((#[^\\.]*)|([-]*\\d*)|([-]*\\d*.[-]*\\d*))(\\))(.+)", std::regex_constants::ECMAScript | std::regex_constants::icase),
         rxaage("^(.+)(\\@AGE[\\s\\t]*\\()([\\s\\t]*)((#[^\\.]*)|(\\d*)|(\\d*.\\d*))(\\.\\.)((#[^\\.]*)|(\\d*)|(\\d*.\\d*)|(_MAXAGE))(\\))(.+)|(.+)(\\@AGE[\\s\\t]*\\()([\\s\\t]*)((#[^\\.]*)|(\\d*)|(\\d*.\\d*))(\\))(.+)", std::regex_constants::ECMAScript| std::regex_constants::icase),
@@ -110,6 +111,7 @@ FMTparser::FMTparser(const FMTparser& rhs):
          _incomment(rhs._incomment),
         _forvalues(rhs._forvalues),
 		_included(rhs._included),
+		mtx(),
 		_section(rhs._section),
         rxayld(rhs.rxayld),
         rxaage(rhs.rxaage),
@@ -124,13 +126,16 @@ FMTparser::FMTparser(const FMTparser& rhs):
 		mostrecentfile(rhs.mostrecentfile),
         rxseparator(rhs.rxseparator)
     {
-
+		boost::lock(mtx, rhs.mtx);
     }
 
 FMTparser& FMTparser::operator = (const FMTparser& rhs)
     {
         if (this!=&rhs)
             {
+			boost::lock(mtx, rhs.mtx);
+			boost::lock_guard<boost::recursive_mutex> self_lock(mtx, boost::adopt_lock);
+			boost::lock_guard<boost::recursive_mutex> other_lock(rhs.mtx, boost::adopt_lock);
 			Core::FMTobject::operator = (rhs);
 			rxvectortheme = rhs.rxvectortheme;
 			rxnumber = rhs.rxnumber;
