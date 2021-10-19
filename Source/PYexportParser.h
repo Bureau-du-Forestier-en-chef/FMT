@@ -94,7 +94,11 @@ void exportParser()
                 .def("read",&Parser::FMTtransitionparser::read,
 					"@DocString(FMTtransitionparser::read)")
                 .def("write",&Parser::FMTtransitionparser::write,
-					"@DocString(FMTtransitionparser::write)");
+					"@DocString(FMTtransitionparser::write)")
+				.def("readGCBM", &Parser::FMTtransitionparser::readGCBM,
+					"@DocString(FMTtransitionparser::readGCBM)")
+				.def("writeGCBM", &Parser::FMTtransitionparser::writeGCBM,
+					"@DocString(FMTtransitionparser::writeGCBM)");
 	bp::class_<Parser::FMTconstantparser, bp::bases<Parser::FMTparser>>("FMTconstantparser", "@DocString(FMTconstantparser)")
                 .def("read",&Parser::FMTconstantparser::read,
 					"@DocString(FMTconstantparser::read)")

@@ -7,8 +7,8 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 #include "FMTtransitionparser.h"
 #include "FMToperator.h"
-#include <boost/archive/xml_iarchive.hpp>
-#include <boost/archive/xml_oarchive.hpp>
+#include <boost/archive/text_iarchive.hpp>
+#include <boost/archive/text_oarchive.hpp>
 #include <boost/serialization/vector.hpp>
 
 
@@ -374,7 +374,7 @@ void FMTtransitionparser::writeGCBM(const std::vector<Core::FMTGCBMtransition>& 
 		transitionstream.open(location);
 		if (tryopening(transitionstream, location))
 		{
-			boost::archive::xml_oarchive transitionsarchive(transitionstream);
+			boost::archive::text_oarchive transitionsarchive(transitionstream);
 			transitionsarchive << BOOST_SERIALIZATION_NVP(transitions);
 			transitionstream.close();
 		}
@@ -394,7 +394,7 @@ std::vector<Core::FMTGCBMtransition>FMTtransitionparser::readGCBM(const std::str
 		transitionstream.open(location);
 		if (tryopening(transitionstream, location))
 		{
-			boost::archive::xml_iarchive transitionsarchive(transitionstream);
+			boost::archive::text_iarchive transitionsarchive(transitionstream);
 			transitionsarchive >> BOOST_SERIALIZATION_NVP(transitions);
 			transitionstream.close();
 		}

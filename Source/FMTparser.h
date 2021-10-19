@@ -39,6 +39,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <boost/filesystem.hpp>
 #include <boost/filesystem/operations.hpp>
 #include <ctime>
+#include <boost/thread/recursive_mutex.hpp>
 
 #include "FMTobject.h"
 
@@ -87,6 +88,9 @@ class FMTEXPORT FMTparser: public Core::FMTobject
 		///A safe get line function for Linux/Windows
 		std::istream& safeGetline(std::istream& is, std::string& t) const;
     protected:
+		// DocString: FMTparser::mtx
+		///Mutex for multi-threading.
+		mutable boost::recursive_mutex mtx;
 		// DocString: FMTparser::FMTsection
 		///The section in which the child class is in
 		mutable Core::FMTsection _section;
