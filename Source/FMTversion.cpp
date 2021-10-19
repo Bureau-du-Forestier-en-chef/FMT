@@ -161,7 +161,9 @@ std::string FMTversion::getlicense(bool french) const
 		for (int driverid = 0 ; driverid < manager->GetDriverCount();++driverid)
 			{
 			GDALDriver* driver = manager->GetDriver(driverid);
-			if (driver!=nullptr&&driver->GetMetadataItem(spatialtype))
+			if (driver!=nullptr&&driver->GetMetadataItem(spatialtype)&&
+				GDALGetDriverShortName(driver)!=nullptr&&
+				driver->GetMetadataItem(GDAL_DMD_EXTENSION)!=nullptr)
 				{
 				drivers.push_back(driver);
 				}
@@ -175,11 +177,7 @@ std::string FMTversion::getlicense(bool french) const
 		std::vector<std::string>names;
 		for (GDALDriver* driver : getallGDALdrivers(GDAL_DCAP_VECTOR))
 			{
-			const char* name = driver->GetMetadataItem(GDAL_DMD_LONGNAME);
-			if (name != nullptr)
-			{
-				names.push_back(std::string(name));
-			}
+			names.push_back(std::string(GDALGetDriverShortName(driver)));
 			}
 		return names;
 	}
@@ -188,11 +186,7 @@ std::string FMTversion::getlicense(bool french) const
 		std::vector<std::string>names;
 		for (GDALDriver* driver : getallGDALdrivers(GDAL_DCAP_RASTER))
 		{
-			const char* name = driver->GetMetadataItem(GDAL_DMD_LONGNAME);
-			if (name != nullptr)
-			{
-				names.push_back(std::string(name));
-			}
+			names.push_back(std::string(GDALGetDriverShortName(driver)));
 		}
 		return names;
 	}
@@ -201,11 +195,7 @@ std::string FMTversion::getlicense(bool french) const
 		std::vector<std::string>extensions;
 		for (GDALDriver* driver : getallGDALdrivers(GDAL_DCAP_VECTOR))
 		{
-			const char* extension = driver->GetMetadataItem(GDAL_DMD_EXTENSION);
-			if (extension!=nullptr)
-			{
-				extensions.push_back(std::string(extension));
-			}
+			extensions.push_back(std::string(driver->GetMetadataItem(GDAL_DMD_EXTENSION)));
 		}
 		return extensions;
 
@@ -216,11 +206,7 @@ std::string FMTversion::getlicense(bool french) const
 		std::vector<std::string>extensions;
 		for (GDALDriver* driver : getallGDALdrivers(GDAL_DCAP_RASTER))
 		{
-			const char* extension = driver->GetMetadataItem(GDAL_DMD_EXTENSION);
-			if (extension != nullptr)
-			{
-				extensions.push_back(std::string(extension));
-			}
+				extensions.push_back(std::string(driver->GetMetadataItem(GDAL_DMD_EXTENSION)));
 		}
 		return extensions;
 
