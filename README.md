@@ -2,12 +2,12 @@
 
 # 📑 Description
 
-FMT (**F**orest **M**anagement **T**ool) is an open source Forest Management library.
+FMT (**F**orest **M**anagement **T**ool) is an **open source Forest Management library**.
 
-- It is a C++ library made to interpret forest planning models based on Woodstock files formulation. 
+- It is a C++ library made to interpret forest planning models based on the Woodstock files formulation. 
 - It can be used through Python, Cran-R or directly from C++. 
-- FMT's generic approach to forest planning gives the opportunity to the user to manipulate forest planning models and generate forest planning solutions. 
-- The objective behind this project is to bring all forest planning models types onto the same generic library to help the community to develop new approaches to forest planning problems or improve the one that have been there for years.
+- It's generic approach to forest planning gives the opportunity to the user to manipulate forest planning models and generate forest planning solutions. 
+- It's objective is to bring all forest planning models types onto the same generic library to help the community to develop new approaches to forest planning problems or improve the one that have been there for years.
 
 
 # ✨ Features
@@ -20,33 +20,34 @@ FMT allows the user to generate and solve spatially referenced type III forest p
 
 FMT gives a framework to construct heuristics to solve forest planning model. FMT is the perfect tool to solve user specific problems related to forest planning like operating area scheduling. It can also be used to implement simple simulation process. The library offers some tools to spatialize spatially referenced solutions or to generate spatially explicit solutions.
 
-FMT is extremely usefull when it comes to implement metaheuristics such has Simulated Annealing, Genetic or Tabu Search into a forest planning context.
+FMT is extremely usefull when it comes to implement metaheuristics such as [Simulated Annealing](https://en.wikipedia.org/wiki/Simulated_annealing), [Genetic](https://en.wikipedia.org/wiki/Genetic_algorithm) or [Tabu](https://en.wikipedia.org/wiki/Tabu_search) Search into a forest planning context.
 
-If your main inputs are Woodstock files FMT is probably the way to go to develop new approaches for optimization or simulation of harvest schedules or even stochastic events.
+If your main inputs are Woodstock files, FMT is probably the way to go to develop new approaches for optimization or simulation of harvest schedules or even stochastic events.
 
 # 💽 Installation
 
-The easiest way to use FMT is to use Cmake >= 3.15 to generate a shared library for R or Python or directly from C++. The Cmake script of this repository supports generating FMT on Windows using VS2017/2019 or MINGW-64 on MSYS2 or CYGWIN.
+The easiest way to use FMT is to use Cmake >= 3.15 to generate a shared library for R or Python, or directly from C++. The Cmake script of this repository supports generating FMT on Windows using VS2017/2019 or MINGW-64 on MSYS2 or CYGWIN.
 
-To create a Python library from FMT on Windows, follow these instructions :
+To create a Python library from FMT on Windows (in `.pyd` and `.whl` format), follow these instructions :
 
 1. Download and install [Visual Studio Community](https://visualstudio.microsoft.com/vs/community/)
 2. Download and install [Mosek](https://www.mosek.com/)
-3. Create a `FMT-Installation` folder in your computer. Make sure that there is no spaces or accents in the path leading to the folder.
+3. Create a `FMT-Installation` folder in your computer. **Make sure that there is no spaces or accents in the path leading to the folder.**
 4. Open a command prompt, and use the `cd` command to navigate to the `FMT-Installation` folder.
 5. Use `git clone https://github.com/microsoft/vcpkg.git` in the command prompt to download [vcpkg](https://github.com/microsoft/vcpkg). If you don't have git installed on your computer, install it from [here](https://git-scm.com/).
 6. Use `cd ./vcpkg` to navigate into the vcpkg folder.
 7. Use the following command to install the dependencies necessary to compile FMT (⚠️ **This will take time, and will use some space on your computer**): `vcpkg install boost:x64-windows boost-dll:x64-windows boost-icl:x64-windows boost-python:x64-windows gdal:x64-windows geos:x64-windows pthreads:x64-windows clp:x64-windows`
 8. Use `cd ..` to go back to the `FMT-Installation` folder.
 9. Clone this repository using `git clone https://github.com/gcyr/FMT.git`
-10. Use `cd ./FMT` to navigate into the FMT folder.
+10. Use `cd ./FMT` to navigate into the FMT folder downloaded from this repository.
 11. Use the following commands to compile FMT (⚠️ **This will take time**):
 
 ```bash
-cmake CMakeLists.txt -G "Visual Studio 16 2019" -DVCPKG_TARGET_TRIPLET=x64-windows -DCMAKE_TOOLCHAIN_FILE=../vcpkg/scripts/buildsystems/vcpkg.cmake -DBOOST_DIR="../vcpkg/installed/x64-windows/" -DCMAKE_BUILD_TYPE=Release -DGDAL_DIR="../vcpkg/installed/x64-windows/" -DGEOS_DIR="../vcpkg/installed/x64-windows/" -DOSI_DIR="../vcpkg/installed/x64-windows/" -DPYTHON_DIR="../vcpkg/packages/python3_x64-windows/" -DMOSEK_DIR="C:/PROGRA~1/Mosek/"`
-cmake --build . --config Release
-cmake --install . --config Release
+cmake CMakeLists.txt -B build/release -G "Visual Studio 16 2019" -DVCPKG_TARGET_TRIPLET=x64-windows -DCMAKE_TOOLCHAIN_FILE="../vcpkg/scripts/buildsystems/vcpkg.cmake" -DBOOST_DIR="../vcpkg/installed/x64-windows/" -DCMAKE_BUILD_TYPE=Release -DGDAL_DIR="../vcpkg/installed/x64-windows/" -DGEOS_DIR="../vcpkg/installed/x64-windows/" -DOSI_DIR="../vcpkg/installed/x64-windows/" -DPYTHON_DIR="../vcpkg/packages/python3_x64-windows/" -DMOSEK_DIR="C:/PROGRA~1/Mosek/"
+cmake --build build/release --config Release
+cmake --install build/release --config Release
 ```
+> 💡 Be careful that in the first `cmake` command, the `DMOSEK_DIR` parameter must point to the folder where you have installed Mosek.
 
 12. Import FMT into Python by using:
 
@@ -59,6 +60,14 @@ from FMT import Parser
 from FMT import Core
 from FMT import Version
 ```
+
+Or by installing FMT via pip and the `.whl` file that you have created by compiling FMT. 
+The `.whl` file is located in the folder `FMT/build/release/bin/Release`. To install it, use the following command in an Anaconda prompt, or [after installing Pip](https://packaging.python.org/tutorials/installing-packages/):
+
+```bash
+pip install "<path to FMT folder>\build\release\bin\Release/FMT-0.9.1-py3-none-any.whl"
+```
+
 
 # 📦 Dependencies
 
@@ -78,7 +87,7 @@ The documentation of FMT must be compiled with Doxygen (http://www.doxygen.nl).
 
 With a powershell prompt, go into the FMT folder and use:
 
- ``` powershell
+ ```powershell
   cd Documentation
   doxygen FMTdoxygenconfig
  ```
