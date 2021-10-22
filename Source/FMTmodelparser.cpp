@@ -8,6 +8,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTmodelparser.h"
 #include <map>
 
+
 #ifdef FMTWITHGDAL
 #include "gdal.h"
 #include "gdal_priv.h"
@@ -78,6 +79,7 @@ void FMTmodelparser::fillupinfeasibles(OGRLayer* layer,
 	const int& iteration, const int& firstperiod, const int&lastperiod) const
 {
 	try {
+		boost::lock_guard<boost::recursive_mutex> guard(mtx);
 		std::map<std::string,std::vector<std::vector<double>>>allvalues;
 		for (const Core::FMToutput& out: theoutputs)
 		{
@@ -97,6 +99,7 @@ void FMTmodelparser::writefeatures(OGRLayer* layer, const int& firstperiod, cons
 	const std::map<std::string, std::vector<std::vector<double>>>& values)const
 {
 	try {
+		boost::lock_guard<boost::recursive_mutex> guard(mtx);
 		for (const auto& toutputvalues : values)
 		{
 			size_t outputid = 0;

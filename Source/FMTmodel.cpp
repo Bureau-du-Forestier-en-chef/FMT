@@ -91,7 +91,7 @@ FMTmodel::FMTmodel(const FMTmodel& rhs):Core::FMTobject(rhs),area(rhs.area),them
 		statictransitionthemes(rhs.statictransitionthemes)
 
 	{
-
+	
 	}
 
 FMTmodel& FMTmodel::operator = (const FMTmodel& rhs)
@@ -112,7 +112,7 @@ FMTmodel& FMTmodel::operator = (const FMTmodel& rhs)
         }
     return *this;
     }
-std::vector<Core::FMTactualdevelopment>FMTmodel::getarea(int period) const
+std::vector<Core::FMTactualdevelopment>FMTmodel::getarea(int period,bool beforegrowanddeath) const
     {
     return area;
     }

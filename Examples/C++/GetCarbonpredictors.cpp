@@ -11,17 +11,21 @@ Example to get FMTcarbonpredictors on a FMTsesmodel
 #include "FMTexception.h"
 #include "FMTcarbonpredictor.h"
 
+#ifdef FMTWITHTORCH
+	#include <torch/torch.h>
+#endif
+
 
 int main()
 	{
 	Logging::FMTlogger().logstamp();
 	if (Version::FMTversion().hasfeature("OSI"))
 		{
-		#if defined _MSC_VER
-		const std::string folder = "../Examples/Models/TWD_land/";
-		#else
-		const std::string folder = "Examples/Models/TWD_land/";
+		#ifdef FMTWITHTORCH
+			torch::Tensor tensor = torch::eye(3);
+			Logging::FMTlogger() << tensor.nbytes() << "\n";
 		#endif
+		const std::string folder = "../../../../Examples/Models/TWD_land/";
 		const std::string primarylocation = folder+"TWD_land.pri";
 		const std::string maplocation = folder+"Carte/TWD_land.shp";
 		const std::string agefield = "AGE";
@@ -30,7 +34,6 @@ int main()
 		const std::string scenario_name = "LP";
 		const std::string outdir = "";
 		const std::vector<std::string> yieldsforpredictors(1,"VOLUMETOTAL");
-		Models::FMTsolverinterface solver(Models::FMTsolverinterface::CLP);
 		Parser::FMTmodelparser modelparser;
         std::vector<Exception::FMTexc> errors;
         errors.push_back(Exception::FMTexc::FMTmissingyield);
@@ -38,7 +41,7 @@ int main()
         modelparser.seterrorstowarnings(errors);
 		const std::vector<std::string>scenarios(1, scenario_name);
 		const std::vector<Models::FMTmodel> models = modelparser.readproject(primarylocation, scenarios);
-		Models::FMTlpmodel optimizationmodel(models.at(0),solver);
+		Models::FMTlpmodel optimizationmodel(models.at(0), Models::FMTsolverinterface::CLP);
 		for (size_t period = 0; period < 5; ++period)
 		{
 			optimizationmodel.buildperiod();

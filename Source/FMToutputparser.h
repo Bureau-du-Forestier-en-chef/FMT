@@ -45,6 +45,15 @@ class FMTEXPORT FMToutputparser : public FMTparser
 	// DocString: FMToutputparser::rxoutputconstant
 	///Regex to capture constant output.
 	std::regex rxoutputconstant;
+	// DocString: FMToutputparser::readnfill
+	/**
+	Main function used by read and addoutputs to parse a file and fill a vector of outputs
+	*/
+	void readnfill(std::vector<Core::FMToutput>* outputs, 
+					const std::vector<Core::FMTtheme>& themes,
+					const std::vector<Core::FMTaction>& actions,
+					const Core::FMTyields& ylds,const Core::FMTconstants& constants,
+					const std::string& location);
     public:
 		// DocString: FMToutputparser()
 		/**
@@ -74,6 +83,18 @@ class FMTEXPORT FMToutputparser : public FMTparser
                             const std::vector<Core::FMTaction>& actions,
                             const Core::FMTyields& ylds,const Core::FMTconstants& constants,
 							const std::string& location);
+		// DocString: FMToutputparser::addoutputs
+		/**
+		This function read a output file and add the desired outputs(outputsnames) found in the output file(location) to the vector of outputs(oldoutputs) 
+		based on (themes),(actions),(yields),(constants) and returns a vector of FMToutput. If outputsnames is empty, all the outputs in the file will
+		be add to the vector of outputs.
+		*/
+		std::vector<Core::FMToutput> addoutputs(const std::vector<Core::FMToutput> oldoutputs, 
+							const std::vector<Core::FMTtheme>& themes,
+                            const std::vector<Core::FMTaction>& actions,
+                            const Core::FMTyields& ylds,const Core::FMTconstants& constants,
+							const std::string& location,
+							std::vector<std::string> outputsnames = std::vector<std::string>());
 		// DocString: FMToutputparser::write
 		/**
 		This function write a vector of FMToutput to a file at a given (location).

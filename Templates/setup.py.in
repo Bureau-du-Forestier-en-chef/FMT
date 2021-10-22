@@ -1,0 +1,20 @@
+from setuptools import setup, find_packages
+from glob import glob
+
+setup(
+    name="FMT",
+    version="@PROJECT_VERSION@",
+    description="FMT",
+    long_description="FMT",
+    url="",
+    author="",
+    author_email="",
+    install_requires=[],
+    extras_require={},
+    include_package_data=True,
+    packages=["FMT"],
+    package_dir={"FMT": ""},
+    package_data={"FMT": ["*.dll", "*.lib", "*.exp", "*.pyd", "GDAL_DATA/*.*", "GDAL_DATA/html/*.*"]},
+    entry_points={},
+    python_requires="==@PYTHONMAJOR@.@PYTHONMINOR@.*"
+)

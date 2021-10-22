@@ -135,6 +135,8 @@ void exportParser()
 				.constructor("@DocString(FMToutputparser())")
                 .method("read",&Parser::FMToutputparser::read,
 					"@DocString(FMToutputparser::read)")
+				.method("addoutputs",&Parser::FMToutputparser::addoutputs,
+					"@DocString(FMToutputparser::addoutputs)")
                 .method("write",&Parser::FMToutputparser::write,
 					"@DocString(FMToutputparser::write)");
 	Rcpp::class_<Parser::FMToptimizationparser>("FMToptimizationparser", "@DocString(FMToptimizationparser)")

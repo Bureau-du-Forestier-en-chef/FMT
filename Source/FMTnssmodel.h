@@ -65,7 +65,7 @@ namespace Models
 		/**
 		Using the constraints generate random level or determinist level of output to generate
 		*/
-		std::vector<const Core::FMToutput*> constraintstotarget(std::vector<double>& targets);
+		std::vector<const Core::FMToutput*> constraintstotarget(std::vector<double>& targets,const int& period);
 		// DocString: FMTnssmodel::getoperabilities
 		/**
 		Get potential operabilities of an actualdevelopment
@@ -110,7 +110,7 @@ namespace Models
 			/**
 			Default copy constructor of FMTnssmodel.
 			*/
-			FMTnssmodel(const FMTnssmodel& rhs) = default;
+			FMTnssmodel(const FMTnssmodel& rhs);
 			// DocString: FMTnssmodel::operator=
 			/**
 			Default copy assignment of MTnssmodel.

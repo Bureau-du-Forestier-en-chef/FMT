@@ -43,11 +43,12 @@ namespace Parser
             return *this;
             }
 
-
-		std::vector<Core::FMToutput> FMToutputparser::read(const std::vector<Core::FMTtheme>& themes,const std::vector<Core::FMTaction>& actions,
-			const Core::FMTyields& ylds,const Core::FMTconstants& constants, const std::string& location)
-            {
-			std::vector<Core::FMToutput>outputs;
+		void FMToutputparser::readnfill(std::vector<Core::FMToutput>* outputs, 
+					const std::vector<Core::FMTtheme>& themes,
+					const std::vector<Core::FMTaction>& actions,
+					const Core::FMTyields& ylds,const Core::FMTconstants& constants,
+					const std::string& location)
+		{
 			try {
 				if (!location.empty())
 				{
@@ -62,6 +63,10 @@ namespace Parser
 					size_t lastoutput = 0;
 					int lastsourcelineid =0;
 					int outputid = 0;
+					if (!outputs->empty())
+					{
+						outputid = outputs->size();
+					}
 					if (FMTparser::tryopening(outputstream, location))
 					{
 						while (outputstream.is_open())
@@ -97,13 +102,13 @@ namespace Parser
 																	name +" at line "+std::to_string(lastsourcelineid) ,"FMToutputparser::read", __LINE__, __FILE__, _section);
 											}
 										}
-										outputs.push_back(Core::FMToutput(name, description, /*themetarget,*/ sources, operators));
+										outputs->push_back(Core::FMToutput(name, description, /*themetarget,*/ sources, operators));
 										/*
 										*_logger<<name<<"\n";
 										*_logger<<themetarget<<"\n";
 										for(const auto& s:sources){*_logger<<s.getthemetarget()<<"\n";}
 										*/
-										outputs.back().passinobject(*this);
+										outputs->back().passinobject(*this);
 										++outputid;
 									}
 									sources.clear();
@@ -230,7 +235,7 @@ namespace Parser
 												(stroperators.at(0) == "+" || stroperators.at(0) == "-")) ||
 												(!lastoperator.empty() &&
 												(lastoperator == "+" || lastoperator == "-"))) &&
-													(find_if(sources.begin(), sources.end(), Core::FMToutputsourcecomparator(true)) == sources.end()))
+													(std::find_if(sources.begin(), sources.end(), Core::FMToutputsourcecomparator(true)) == sources.end()))
 											{
 												
 												_exhandler->raise(Exception::FMTexc::FMTunsupported_output,
@@ -325,15 +330,15 @@ namespace Parser
 											if (values.size() == 1)
 											{
 												//need to use get equation to simplify output!!!
-												std::vector<Core::FMToutput>::const_iterator it = find_if(outputs.begin(), outputs.end(), Core::FMToutputcomparator(strsrc));
-												if (it != outputs.end()||std::regex_search(strsrc, constantmatch, rxoutputconstant))
+												std::vector<Core::FMToutput>::const_iterator it = std::find_if(outputs->begin(), outputs->end(), Core::FMToutputcomparator(strsrc));
+												if (it != outputs->end()||std::regex_search(strsrc, constantmatch, rxoutputconstant))
 												{
 													Core::FMToutput targetoutput;
-													if (it==outputs.end())
+													if (it==outputs->end())
 														{
 														const std::string outputname = constantmatch[1];
 														const int inttarget_period = getnum<int>(std::string(constantmatch[3]), constants);
-														targetoutput = *find_if(outputs.begin(), outputs.end(), Core::FMToutputcomparator(outputname));
+														targetoutput = *std::find_if(outputs->begin(), outputs->end(), Core::FMToutputcomparator(outputname));
 														Core::FMTperbounds bounding(Core::FMTsection::Optimize, inttarget_period, inttarget_period);
 														targetoutput = targetoutput.boundto(themes, bounding, "");
 													}else {
@@ -406,7 +411,7 @@ namespace Parser
 
 												}else{
 													_exhandler->raise(Exception::FMTexc::FMTundefined_output,
-														 strsrc + " at line " + std::to_string(_line),"FMToutputparser::read", __LINE__, __FILE__, _section);
+															strsrc + " at line " + std::to_string(_line),"FMToutputparser::read", __LINE__, __FILE__, _section);
 												}
 											}
 											else {
@@ -678,19 +683,80 @@ namespace Parser
 														name +" at line "+std::to_string(lastsourcelineid) ,"FMToutputparser::read", __LINE__, __FILE__, _section);
 								}
 							}
-							outputs.push_back(Core::FMToutput(name, description, /*themetarget,*/ sources, operators));
-							outputs.back().passinobject(*this);
+							outputs->push_back(Core::FMToutput(name, description, /*themetarget,*/ sources, operators));
+							outputs->back().passinobject(*this);
 							++outputid;
 						}
 					}
 				}
-			outputs.shrink_to_fit();
+			outputs->shrink_to_fit();
+			}catch(...)
+			{
+				_exhandler->raisefromcatch("In " + _location + " at line " + std::to_string(_line),"FMToutputparser::readnfill", __LINE__, __FILE__,_section);
+			}
+		}
+
+
+		std::vector<Core::FMToutput> FMToutputparser::read(const std::vector<Core::FMTtheme>& themes,const std::vector<Core::FMTaction>& actions,
+			const Core::FMTyields& ylds,const Core::FMTconstants& constants, const std::string& location)
+            {
+			std::vector<Core::FMToutput>outputs;
+			try {
+				readnfill(&outputs,themes,actions,ylds,constants,location);
 			}catch (...)
 				{
 				_exhandler->raisefromcatch("In " + _location + " at line " + std::to_string(_line),"FMToutputparser::read", __LINE__, __FILE__,_section);
 				}
             return outputs;
             }
+		std::vector<Core::FMToutput> FMToutputparser::addoutputs(const std::vector<Core::FMToutput> oldoutputs, 
+																	const std::vector<Core::FMTtheme>& themes,
+																	const std::vector<Core::FMTaction>& actions,
+																	const Core::FMTyields& ylds,const Core::FMTconstants& constants,
+																	const std::string& location,
+																	std::vector<std::string> outputsnames)
+		{
+			std::vector<Core::FMToutput>outputs = oldoutputs;
+			try {
+				readnfill(&outputs,themes,actions,ylds,constants,location);
+				//This part remove all outputs parsed from file that are not in outputsname
+				if (!outputsnames.empty())
+				{
+					std::vector<Core::FMToutput>returnoutputs = oldoutputs;
+					std::set<int> themeids;
+					for(int themeid=0;themeid<themes.size();++themeid)
+					{
+						themeids.insert(themeid);
+					}
+					std::set<int> outputkeptid;
+					std::set<int>::const_iterator hint=outputkeptid.end();
+					for(int oldoutputid=0;oldoutputid<oldoutputs.size();++oldoutputid)
+					{
+						outputkeptid.insert(hint,oldoutputid);
+					}
+					for(const std::string& outputname : outputsnames)
+					{
+						std::vector<Core::FMToutput>::const_iterator it = std::find_if(outputs.begin()+oldoutputs.size(), outputs.end(), Core::FMToutputcomparator(outputname));
+						if(it==outputs.end())
+						{
+							_exhandler->raise(Exception::FMTexc::FMTundefined_output,
+														outputname+" not found in file "+location,"FMToutputparser::addoutputs", __LINE__, __FILE__, _section);
+						}
+						returnoutputs.push_back(*it);
+						outputkeptid.insert(std::distance(outputs.cbegin(),it));
+					}
+					for(Core::FMToutput& output : returnoutputs)
+					{
+						output.changesourcesid(outputkeptid,themeids);
+					}
+					outputs=returnoutputs;
+				}
+			}catch (...)
+				{
+				_exhandler->printexceptions("In " + _location + " at line " + std::to_string(_line),"FMToutputparser::addoutputs", __LINE__, __FILE__,_section);
+				}
+            return outputs;
+           }
         void FMToutputparser::write(const std::vector<Core::FMToutput>& outputs, const std::string& location) const
             {
 			try {

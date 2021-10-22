@@ -184,7 +184,11 @@ void exportModel()
 		.method("getvariabilities", &Models::FMTlpmodel::getvariabilities,
 			"@DocString(FMTlpmodel::getvariabilities)")
 		.method("getareavariabilities", &Models::FMTlpmodel::getareavariabilities,
-			"@DocString(FMTlpmodel::getareavariabilities)");
+			"@DocString(FMTlpmodel::getareavariabilities)")
+		.method("writeLP", &Models::FMTlpmodel::writeLP,
+			"@DocString(FMTlpmodel::writeLP)")
+		.method("writeMPS", &Models::FMTlpmodel::writeMPS,
+			"@DocString(FMTlpmodel::writeMPS)");;
 	
 
 	#endif

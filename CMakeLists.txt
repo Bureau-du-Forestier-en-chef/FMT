@@ -17,6 +17,7 @@ set(FMTPATCH "-DFMT_PATCH=${PROJECT_VERSION_PATCH}")
 add_definitions("${FMTPATCH}")
 message("Generating Build file for FMT ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH}")
 
+
 set(FMTSOURCEDIR "${CMAKE_CURRENT_SOURCE_DIR}/Source/")
 set(FMTINCLUDEDIR "${CMAKE_CURRENT_SOURCE_DIR}/Source/")
 
@@ -84,15 +85,17 @@ if (DEFINED PYTHON_DIR)
 	endif(EXISTS "${PYTHON_DIR}")
 endif(DEFINED PYTHON_DIR)
 
-#if (DEFINED TORCH)
-#	set(EXTERNAL_INSTALL_LOCATION ${CMAKE_SOURCE_DIR}/external/torch)
-#ExternalProject_Add(googletest
-#    		GIT_REPOSITORY https://download.pytorch.org/libtorch/nightly/cpu/libtorch-shared-with-deps-latest.zip
-#    		CMAKE_ARGS -DCMAKE_INSTALL_PREFIX=${EXTERNAL_INSTALL_LOCATION}
-#		)
-#	include_directories(${CMAKE_SOURCE_DIR}/external/torch/include)
-#	link_directories(${CMAKE_SOURCE_DIR}/external/torch/lib)
-#endif(DEFINED TORCH)
+
+if (DEFINED Torch_DIR)
+	if (EXISTS "${Torch_DIR}")
+		set(ENV{Torch_DIR} "${Torch_DIR}")
+	else()
+		message(WARNING "${Torch_DIR} is not a valid directory")
+	endif(EXISTS "${Torch_DIR}")
+endif(DEFINED Torch_DIR)
+
+
+
 
 
 if (MSVC)
@@ -116,16 +119,42 @@ add_library(FMT SHARED ${FMTSOURCEFILES})
 include_directories(${FMTINCLUDEDIR})
 set_target_properties(FMT PROPERTIES PREFIX "")
 
+set( CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin )
+set( CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin )
+
 if (NOT MSVC)
 set_target_properties( FMT
     PROPERTIES
-    ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE}"
-    LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE}"
-    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE}"
+    ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}"
+    LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}"
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}"
+)
+else()
+set_target_properties( FMT
+    PROPERTIES
+    ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
+    LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
 )
 endif(NOT MSVC)
 
-set_property(TARGET FMT PROPERTY CXX_STANDARD 11)
+find_package(Torch)
+if (TORCH_FOUND)
+	message("Found Torch FMT will be compiled using C++14")
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${TORCH_CXX_FLAGS}")
+	set_property(TARGET FMT PROPERTY CXX_STANDARD 14)
+	target_link_libraries(FMT ${TORCH_LIBRARIES})
+	link_libraries(${TORCH_LIBRARIES})
+	include_directories(${TORCH_INCLUDE_DIRS})
+	set(FMTWITHTORCH "-DFMTWITHTORCH")
+	add_definitions("${FMTWITHTORCH}")
+  	file(GLOB TORCH_DLLS "${TORCH_INSTALL_PREFIX}/lib/*.dll")
+	list (APPEND FMTDEPENDENCIES ${TORCH_DLLS})
+else()
+	set_property(TARGET FMT PROPERTY CXX_STANDARD 11)
+endif(TORCH_FOUND)
+
+
 set_property(TARGET FMT PROPERTY CXX_STANDARD_REQUIRED ON)
 
 
@@ -177,6 +206,7 @@ if ((NOT DEFINED ENV{R_DIR}) AND (DEFINED ENV{PYTHON_DIR}))
 		string(REGEX MATCH "^([0-9]*)(.)([0-9]*)(.)([0-9]*)" dummy ${PYTHONLIBS_VERSION_STRING})
 		set(PYTHONNAMING "python${CMAKE_MATCH_1}${CMAKE_MATCH_3}")
 		set(PYTHONMAJOR "${CMAKE_MATCH_1}")
+		set(PYTHONMINOR "${CMAKE_MATCH_3}")
 		set(FMTWITHPYTHON "-DFMTWITHPYTHON")
 		#add_definitions("${FMTWITHPYTHON}")
 		target_compile_definitions(FMT PRIVATE "${FMTWITHPYTHON}")
@@ -188,10 +218,18 @@ if ((NOT DEFINED ENV{R_DIR}) AND (DEFINED ENV{PYTHON_DIR}))
 		if (NOT CYGWIN)
 			set_target_properties(FMT PROPERTIES SUFFIX ".pyd")
 		endif(NOT CYGWIN)
+		configure_file("${CMAKE_CURRENT_SOURCE_DIR}/Templates/__init__.py.in"
+                    "${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}/__init__.py" @ONLY
+                )
+        configure_file("${CMAKE_CURRENT_SOURCE_DIR}/Templates/setup.py.in"
+                    "${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}/setup.py" @ONLY
+                )
 	else()
 		message("Python not found")
 	endif(PythonLibs_FOUND)
 endif()
+
+
 
 
 
@@ -203,15 +241,15 @@ if (DEFINED PYTHONNAMING)
             set(BPY ${PYTHONNAMING})
         endif("${PYTHONMAJOR}" STREQUAL "2")
 		if(MSVC)
-        	find_package(Boost COMPONENTS system filesystem serialization iostreams regex thread "${BPY}")
+        	find_package(Boost COMPONENTS system filesystem serialization iostreams regex thread "${BPY}" OPTIONAL_COMPONENTS zlib)
 		else()
-			find_package(Boost COMPONENTS system filesystem serialization iostreams regex thread "${BPY}") 
+			find_package(Boost COMPONENTS system filesystem serialization iostreams regex thread "${BPY}" OPTIONAL_COMPONENTS zlib) 
 		endif(MSVC)
     else()
 		if(MSVC)
-			find_package(Boost COMPONENTS system filesystem serialization iostreams regex thread "${BPY}")
+			find_package(Boost COMPONENTS system filesystem serialization iostreams regex thread "${BPY}" OPTIONAL_COMPONENTS zlib)
 		else()
-			find_package(Boost COMPONENTS system filesystem serialization iostreams regex thread "${BPY}") 
+			find_package(Boost COMPONENTS system filesystem serialization iostreams regex thread "${BPY}" OPTIONAL_COMPONENTS zlib) 
 		endif(MSVC)
 endif(DEFINED PYTHONNAMING)
 
@@ -237,21 +275,50 @@ if (NOT Boost_FOUND)#here try to find a dynamic boost llib
             	set(BPY ${PYTHONNAMING})
         	endif("${PYTHONMAJOR}" STREQUAL "2")
         	if(MSVC)
-				find_package(Boost COMPONENTS system filesystem serialization iostreams regex thread "${BPY}")
+				find_package(Boost COMPONENTS system filesystem serialization iostreams regex thread "${BPY}" OPTIONAL_COMPONENTS zlib)
 			else()
-				find_package(Boost COMPONENTS system filesystem serialization iostreams regex thread "${BPY}") 
+				find_package(Boost COMPONENTS system filesystem serialization iostreams regex thread "${BPY}" OPTIONAL_COMPONENTS zlib) 
 			endif(MSVC)
     	else()
 		if(MSVC)
-			find_package(Boost COMPONENTS system filesystem serialization iostreams regex thread "${BPY}")
+			find_package(Boost COMPONENTS system filesystem serialization iostreams regex thread "${BPY}" OPTIONAL_COMPONENTS zlib)
 		else()
-			find_package(Boost COMPONENTS system filesystem serialization iostreams regex thread "${BPY}") 
+			find_package(Boost COMPONENTS system filesystem serialization iostreams regex thread "${BPY}" OPTIONAL_COMPONENTS zlib) 
 		endif(MSVC)
 	endif(DEFINED PYTHONNAMING)
 	if (Boost_FOUND)
 		add_definitions("-DBOOST_PYTHON_STATIC_LIB")
 	endif(Boost_FOUND)
 endif(NOT Boost_FOUND)
+
+
+#the hard way
+if (NOT Boost_FOUND AND NOT MSVC)
+    find_package(Boost REQUIRED)
+    file(GLOB_RECURSE Boost_LIBRARIES_PATHS $ENV{BOOSTROOT}*${CMAKE_STATIC_LIBRARY_SUFFIX})
+    foreach(boostlibpath ${Boost_LIBRARIES_PATHS})
+        get_filename_component(libname ${boostlibpath} NAME)
+        if( NOT ("${libname}" MATCHES ".dll.a") AND
+        ("${libname}" MATCHES "libboost" AND NOT "${libname}" MATCHES "-s") AND
+        (("${libname}" MATCHES "zlib") OR
+        ("${libname}" MATCHES "system") OR
+        ("${libname}" MATCHES "serialization") OR
+        ("${libname}" MATCHES "iostreams") OR
+	("${libname}" MATCHES "regex") OR
+	("${libname}" MATCHES "thread") OR
+        (PythonLibs_FOUND AND "${libname}" MATCHES "${PYTHONNAMING}"))
+        )
+	   if ("${libname}" MATCHES "gd-x64" OR "${libname}" MATCHES "d-x64-")
+		list(APPEND Boost_LIBRARIES "debug")
+                list(APPEND Boost_LIBRARIES ${boostlibpath})
+                set(Complete_boost "complete")
+           elseif("${libname}" MATCHES "-x64")
+		list(APPEND Boost_LIBRARIES "optimized")
+                list(APPEND Boost_LIBRARIES ${boostlibpath})
+           endif()
+        endif()
+    endforeach()
+endif(NOT Boost_FOUND AND NOT MSVC)
 
 
 if (NOT Boost_FOUND)
@@ -428,20 +495,28 @@ get_filename_component(GDAL_DATA_NAME "${GDAL_DATA}" NAME)
 #install part
 install (CODE
     "set(GDAL_FOUND \"${GDAL_FOUND}\")
-    file(COPY \"${CMAKE_CURRENT_SOURCE_DIR}/LICENSES\" DESTINATION \"${CMAKE_BINARY_DIR}\")
+    file(COPY \"${CMAKE_CURRENT_SOURCE_DIR}/LICENSES\" DESTINATION \"${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}\")
     if (GDAL_FOUND)
         #Copy gdal data
-        file(COPY \"${GDAL_DATA}\" DESTINATION \"${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE}\")
-        file(RENAME \"${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE}/${GDAL_DATA_NAME}\" \"${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE}/GDAL_DATA\")
+        file(COPY \"${GDAL_DATA}\" DESTINATION \"${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}\")
+        file(RENAME \"${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}/${GDAL_DATA_NAME}\" \"${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}/GDAL_DATA\")
     endif()
     set(DEPENDENCIES \"${FMTDEPENDENCIES}\")
     if (DEPENDENCIES)
         #Copy dependencies
         foreach(FMTdep \${DEPENDENCIES}\)
             get_filename_component(depname \"\${FMTdep}\" NAME)
-            file(COPY \"\${FMTdep}\" DESTINATION \"${CMAKE_BINARY_DIR}/${CMAKE_BUILD_TYPE}\")
+            file(COPY \"\${FMTdep}\" DESTINATION \"${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}\")
         endforeach()
-    endif()")
+    endif()
+	if (EXISTS \"${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}/setup.py\")
+        find_program(PYTHON \"python\" PATHS \"${PYTHON_DIR}\")
+        execute_process(
+          COMMAND \"$\{PYTHON\}\" -m pip wheel .
+          WORKING_DIRECTORY \"${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}\"
+        )
+    endif (EXISTS \"${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}/setup.py\")
+")
 
 if (DEFINED ReleaseTesting)
 	include(${CMAKE_CURRENT_SOURCE_DIR}/Examples/C++/ReleaseTesting/CMakeLists.txt)

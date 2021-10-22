@@ -47,6 +47,7 @@ La façon la plus simple d'utiliser FMT est d'utiliser cmake >= 3.15 et de gén�
  ```powershell
  	call vcvars64.bat
  	cmake CMakeLists.txt 
+		-B build/release ^
 		-DVCPKG_TARGET_TRIPLET=x64-windows ^
 		-DCMAKE_TOOLCHAIN_FILE="path to vcpkg.cmake" ^
 		-DCMAKE_BUILD_TYPE=Release ^
@@ -57,8 +58,8 @@ La façon la plus simple d'utiliser FMT est d'utiliser cmake >= 3.15 et de gén�
 		-DGEOS_DIR="path to /vcpkg/installed/x64-windows/" ^
 		-DPYTHON_DIR="path to /vcpkg/installed/x64-windows/" ^
 		-G "Visual Studio 15 2017 Win64"
-  	cmake --build . --config Release
-  	cmake --install . --config Release
+  	cmake --build build/release --config Release
+  	cmake --install build/release --config Release
 ```
 + Génération de FMT en librairie Python sur Visual Studio 2017: 
  
@@ -66,7 +67,9 @@ La façon la plus simple d'utiliser FMT est d'utiliser cmake >= 3.15 et de gén�
  ::Providing the -DPYTHON_DIR will make the script generate a .pyd using Boost Python
  ::You cannot generate an Rcpp module .dll with VS so dont use -DR_DIR with VS
  call vcvars64.bat
- cmake CMakeLists.txt -DCMAKE_BUILD_TYPE=Release ^
+ cmake CMakeLists.txt 
+	-B build/release ^
+	-DCMAKE_BUILD_TYPE=Release ^
 	-DMOSEK_DIR="path to MOSEK" ^
 	-DOSI_DIR="path to OSI" ^
 	-DBOOST_DIR="path to BOOST" ^
@@ -74,9 +77,8 @@ La façon la plus simple d'utiliser FMT est d'utiliser cmake >= 3.15 et de gén�
 	-DGEOS_DIR="path to GEOS" ^
 	-DPYTHON_DIR="path to PYTHON" ^
 	-G "Visual Studio 15 2017 Win64"
-  cmake --build . --config Release
-  ::This will copy dependencies next to FMT.pyd.
-  cmake --install . --config Release
+  cmake --build build/release --config Release
+  cmake --install build/release --config Release
 ```
 
 + Génération de  FMT en librairie R sur MINGW64 avec MSYS2 (Rtools40)
@@ -84,7 +86,9 @@ La façon la plus simple d'utiliser FMT est d'utiliser cmake >= 3.15 et de gén�
  #Here is a exemple for generating FMT module .dll for R
  #Python .pyd could also be generated using -DPYTHON_DIR but dont use -DPYTHON_DIR and -DR_DIR at the same time
  #To generate a R .dll you need to use at least Rtools40 R4 >.
- cmake CMakeLists.txt -DCMAKE_BUILD_TYPE=Release \
+ cmake CMakeLists.txt 
+	-B build/release ^
+	-DCMAKE_BUILD_TYPE=Release \
 	-DMOSEK_DIR="path to MOSEK" \
 	-DOSI_DIR="path to OSI" \
 	-DBOOST_DIR="path to BOOST" \
@@ -92,9 +96,9 @@ La façon la plus simple d'utiliser FMT est d'utiliser cmake >= 3.15 et de gén�
 	-DR_DIR="path to R" \
 	-DGEOS_DIR="path to GEOS" \
 	-G "MSYS Makefiles"
- cmake --build . --config Release
+ cmake --build build/release --config Release
  #This will copy dependencies next to FMT.dll.
- cmake --install . --config Release
+ cmake --install build/release --config Release
  ```
 
 ## Documentation

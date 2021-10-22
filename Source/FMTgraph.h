@@ -848,7 +848,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 		}
 
 		double inarea(const FMTvertex_descriptor& out_vertex,
-                        const double*&  solution, bool growth = false) const
+                        const double*&  solution,int actionid = -1, bool growth = false) const
 		{
 			double area = 0;
 			try{
@@ -856,7 +856,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 			for (boost::tie(inedge_iterator, inedge_end) = boost::in_edges(out_vertex, data); inedge_iterator != inedge_end; ++inedge_iterator)
 			{
 				const FMTbaseedgeproperties& edgeprop = data[*inedge_iterator];
-				if (edgeprop.getactionID() < 0 || !growth)
+				if (edgeprop.getactionID() == actionid || !growth)
 				{
 					area += *(solution + edgeprop.getvariableID()) * (edgeprop.getproportion() / 100);
 				}
@@ -1282,6 +1282,9 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 			}
 			return mapping;
 		}
+
+
+
 		std::vector<int>getoutactions(const FMTvertex_descriptor& out_vertex) const
 		{
 			std::vector<int>actions;
@@ -1810,30 +1813,33 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 				FMTvertex_iterator base_iterator, base_iterator_end;
 				//End always stay the same use .end() for non valid period
 				boost::tie(base_iterator, base_iterator_end) = boost::vertices(data);
-				developments.resize(getperiod() + 1, FMTvertex_pair(base_iterator_end, base_iterator_end));
-				FMTvertex_iterator vertex, vend;
-				int actualperiod = 0;
-				size_t vertexid = 0;
-				FMTvertex_iterator firstvertex;
-				for (boost::tie(vertex, vend) = boost::vertices(data); vertex != vend; ++vertex)
+				if (base_iterator!= base_iterator_end)
 				{
-					const FMTbasevertexproperties& properties = data[*vertex];
-					const Core::FMTdevelopment& dev = properties.get();
-					const size_t period_location = (dev.getperiod());
-					if (vertexid==0)
+					developments.resize(getperiod() + 1, FMTvertex_pair(base_iterator_end, base_iterator_end));
+					FMTvertex_iterator vertex, vend;
+					int actualperiod = 0;
+					size_t vertexid = 0;
+					FMTvertex_iterator firstvertex;
+					for (boost::tie(vertex, vend) = boost::vertices(data); vertex != vend; ++vertex)
 					{
-						firstvertex = vertex;
-						actualperiod = dev.getperiod();
+						const FMTbasevertexproperties& properties = data[*vertex];
+						const Core::FMTdevelopment& dev = properties.get();
+						const size_t period_location = (dev.getperiod());
+						if (vertexid == 0)
+						{
+							firstvertex = vertex;
+							actualperiod = dev.getperiod();
+						}
+						if (actualperiod != dev.getperiod())//periodchanges!
+						{
+							developments[period_location - 1] = FMTvertex_pair(firstvertex, vertex);
+							firstvertex = vertex;
+							actualperiod = dev.getperiod();
+						}
+						++vertexid;
 					}
-					if (actualperiod != dev.getperiod())//periodchanges!
-					{
-						developments[period_location-1] = FMTvertex_pair(firstvertex, vertex);
-						firstvertex = vertex;
-						actualperiod = dev.getperiod();
-					}
-					++vertexid;
+					developments.back() = FMTvertex_pair(firstvertex, base_iterator_end);
 				}
-				developments.back() = FMTvertex_pair(firstvertex,base_iterator_end);
 			}
 			catch (...)
 			{
@@ -2266,7 +2272,7 @@ template<> inline std::vector<Core::FMTdevelopmentpath> FMTgraph<Graph::FMTverte
 
 
 
-template<> inline double FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::inarea(const FMTvertex_descriptor& out_vertex, const double*&  solution, bool growth) const
+template<> inline double FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::inarea(const FMTvertex_descriptor& out_vertex, const double*&  solution, int actionid , bool growth) const
 	{
 		
 		double area = 0;
@@ -2275,7 +2281,7 @@ template<> inline double FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeprop
 			for (boost::tie(inedge_iterator, inedge_end) = boost::in_edges(out_vertex, data); inedge_iterator != inedge_end; ++inedge_iterator)
 			{
 				const FMTedgeproperties& edgeprop = data[*inedge_iterator];
-				if (edgeprop.getactionID() < 0 || !growth)
+				if (edgeprop.getactionID() == actionid || !growth)
 				{
 					area += *(solution + edgeprop.getvariableID()) * (edgeprop.getproportion() / 100);
 				}

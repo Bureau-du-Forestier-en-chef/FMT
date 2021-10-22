@@ -209,9 +209,9 @@ class FMTEXPORT FMTmodel : public Core::FMTobject
 		virtual ~FMTmodel()=default;
 		// DocString: FMTmodel::getarea
 		/**
-			Virtual function to get the area of a given period into actualdevelopement.
+			Virtual function to get the area of a given period into actualdevelopement. If before grow = true it will returns the developement before it grow and death to the next period.
 		*/
-		virtual std::vector<Core::FMTactualdevelopment>getarea(int period = 0) const;
+		virtual std::vector<Core::FMTactualdevelopment>getarea(int period = 0,bool beforegrowanddeath =false) const;
 		// DocString: FMTmodel::getcopy
 		/**
 		This function returns a copy of the FMTmodel of the selected period.
