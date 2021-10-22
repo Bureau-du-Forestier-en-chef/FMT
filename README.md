@@ -9,7 +9,6 @@ FMT (**F**orest **M**anagement **T**ool) is an **open source Forest Management l
 - It's generic approach to forest planning gives the opportunity to the user to manipulate forest planning models and generate forest planning solutions. 
 - It's objective is to bring all forest planning models types onto the same generic library to help the community to develop new approaches to forest planning problems or improve the one that have been there for years.
 
-
 # ✨ Features
 
 ## Spatially referenced forest planning
@@ -67,7 +66,6 @@ The `.whl` file is located in the folder `FMT/build/release/bin/Release`. To ins
 ```bash
 pip install "<path to FMT folder>\build\release\bin\Release/FMT-0.9.1-py3-none-any.whl"
 ```
-
 
 # 📦 Dependencies
 
