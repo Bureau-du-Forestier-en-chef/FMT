@@ -70,23 +70,24 @@ std::vector<size_t>FMTmodel::getstatictransitionthemes() const
 	}
 
 
-FMTmodel::FMTmodel() : Core::FMTobject(),area(),themes(),actions(), transitions(),yields(),lifespan(),outputs(), constraints(),name(), statictransitionthemes()
+FMTmodel::FMTmodel() : Core::FMTobject(),parameters(),area(),themes(),actions(), transitions(),yields(),lifespan(),outputs(), constraints(),name(), statictransitionthemes()
 {
-
+	parameters.passinobject(*this);
 }
 
 FMTmodel::FMTmodel(const std::vector<Core::FMTactualdevelopment>& larea, const std::vector<Core::FMTtheme>& lthemes,
 	const std::vector<Core::FMTaction>& lactions,
 	const std::vector<Core::FMTtransition>& ltransitions, const Core::FMTyields& lyields, const Core::FMTlifespans& llifespan,
-	const std::string& lname, const std::vector<Core::FMToutput>& loutputs,std::vector<Core::FMTconstraint> lconstraints) :
-	Core::FMTobject(), area(larea), themes(lthemes), actions(lactions), transitions(ltransitions),
+	const std::string& lname, const std::vector<Core::FMToutput>& loutputs,std::vector<Core::FMTconstraint> lconstraints,FMTmodelparameters lparameters) :
+	Core::FMTobject(), parameters(lparameters),area(larea), themes(lthemes), actions(lactions), transitions(ltransitions),
 	yields(lyields), lifespan(llifespan), outputs(loutputs), constraints(lconstraints), name(lname), statictransitionthemes()
 	{
 	setdefaultobjects();
 	cleanactionsntransitions();
+	parameters.passinobject(*this);
 	}
 
-FMTmodel::FMTmodel(const FMTmodel& rhs):Core::FMTobject(rhs),area(rhs.area),themes(rhs.themes),actions(rhs.actions),
+FMTmodel::FMTmodel(const FMTmodel& rhs):Core::FMTobject(rhs),parameters(rhs.parameters),area(rhs.area),themes(rhs.themes),actions(rhs.actions),
 		 transitions(rhs.transitions),yields(rhs.yields),lifespan(rhs.lifespan), outputs(rhs.outputs), constraints(rhs.constraints),name(rhs.name),
 		statictransitionthemes(rhs.statictransitionthemes)
 
@@ -99,6 +100,7 @@ FMTmodel& FMTmodel::operator = (const FMTmodel& rhs)
     if (this!=&rhs)
         {
         Core::FMTobject::operator = (rhs);
+		parameters = rhs.parameters;
         area = rhs.area;
         themes = rhs.themes;
         actions = rhs.actions;
@@ -1081,6 +1083,7 @@ std::unique_ptr<FMTmodel> FMTmodel::presolve(int presolvepass,std::vector<Core::
 			--presolvepass;
 			didonepass = true;
 		}
+		//logger Nb action : 1000 (presolved 500)
 	oldthemes.shrink_to_fit();
 	oldarea.shrink_to_fit();
 	oldactions.shrink_to_fit();
@@ -1323,6 +1326,7 @@ void FMTmodel::passinobject(const Core::FMTobject& rhs)
 		{
 			constraint.passinobject(rhs);
 		}
+		parameters.passinobject(rhs);
 		FMTobject::passinobject(rhs);
 	}catch (...)
 		{
@@ -1368,8 +1372,7 @@ Core::FMTschedule FMTmodel::getpotentialschedule(std::vector<Core::FMTactualdeve
 	return schedule;
 }
 
-bool FMTmodel::doplanning(const std::vector<Core::FMTschedule>&schedules,
-								bool forcepartialbuild, Core::FMTschedule objectiveweight)
+bool FMTmodel::doplanning(const bool& solve,std::vector<Core::FMTschedule> schedules)
 	{
 	return false;
 	}
@@ -1439,6 +1442,145 @@ std::map<std::string, double> FMTmodel::getoutput(const Core::FMToutput& output,
 	return std::map<std::string, double>();
 }
 
+bool FMTmodel::setparameter(const FMTintmodelparameters& key, const int& value)
+{
+	try{
+		if (parameters.setintparameter(key,value)) return (true);
+	}catch(...){
+		_exhandler->printexceptions("", "FMTmodel::setparameter", __LINE__, __FILE__);
+	}
+	return false;
+}
+
+bool FMTmodel::setparameter(const FMTdblmodelparameters& key, const double& value)
+{
+	try{
+		if (parameters.setdblparameter(key,value)) return (true);
+	}catch(...){
+		_exhandler->printexceptions("", "FMTmodel::setparameter", __LINE__, __FILE__);
+	}
+	return false;
+
+}
+
+bool FMTmodel::setparameter(const FMTboolmodelparameters& key, const bool& value)
+{
+	try{
+		if (parameters.setboolparameter(key,value)) return (true);
+	}catch(...){
+		_exhandler->printexceptions("", "FMTmodel::setparameter", __LINE__, __FILE__);
+	}
+	return false;
+
+}
+
+int FMTmodel::getparameter(const FMTintmodelparameters& key)const
+{
+	int value;
+	try{
+		value = parameters.getintparameter(key);
+	}catch(...)
+	{
+		_exhandler->raisefromcatch("", "FMTmodel::getparameter", __LINE__, __FILE__);
+	}
+	return value;
+}
+
+double FMTmodel::getparameter(const FMTdblmodelparameters& key)const
+{
+	double value;
+	try{
+		value = parameters.getdblparameter(key);
+	}catch(...)
+	{
+		_exhandler->raisefromcatch("", "FMTmodel::getparameter", __LINE__, __FILE__);
+	}
+	return value;
+}
+
+bool FMTmodel::getparameter(const FMTboolmodelparameters& key) const
+{
+	bool value;
+	try{
+		value = parameters.getboolparameter(key);
+	}catch(...)
+	{
+		_exhandler->raisefromcatch("", "FMTmodel::getparameter", __LINE__, __FILE__);
+	}
+	return value;
+}
+
+bool FMTmodel::setcompresstime(const int& periodstart, const int& periodstop, const int& value)
+{
+	bool returnbool = true;
+	try{
+		for (int period = (periodstart-1);period<periodstop;++period)
+		{
+			if (!parameters.setperiodcompresstime(period,value)) 
+			{
+				returnbool=false;
+			}
+		}
+	}catch(...)
+	{
+		_exhandler->raisefromcatch("", "FMTmodel::setcompresstime", __LINE__, __FILE__);
+	}
+	return returnbool;
+}
+
+std::vector<int> FMTmodel::getcompresstime() const
+{
+	return parameters.getcompresstime();
+}
+
+void FMTmodel::showparameters(const bool& showhelp)const
+{
+	std::string message=" - Parameters for model "+getname()+"\n";
+	try{
+	*_logger<<message<<"	-- Int parameters"<<"\n";
+	message="	LENGTH                   : "+std::to_string(parameters.getintparameter(LENGTH))+"\n";
+	if(showhelp) message+="	(The number of period to optimize or simulate. DEFAULT=30)\n";
+	message+="	SEED                     : "+std::to_string(parameters.getintparameter(SEED))+"\n";
+	if(showhelp) message+="	(The seed used for stochastique process in FMTsamodel, FMTnssmodel and FMTsesmodel. DEFAULT=25)\n";
+	message+="	NUMBER_OF_ITERATIONS     : "+std::to_string(parameters.getintparameter(NUMBER_OF_ITERATIONS))+"\n";
+	if(showhelp) message+="	(The number of iterations to do in FMTsesmodel::greedyreferencebuild. DEFAULT=10)\n";
+	message+="	PRESOLVE_ITERATIONS      : "+std::to_string(parameters.getintparameter(PRESOLVE_ITERATIONS))+"\n";
+	if(showhelp) message+="	(The number of iterations to do in FMTmodel::presolve. DEFAULT=10)\n";
+	message+="	NUMBER_OF_THREADS        : "+std::to_string(parameters.getintparameter(NUMBER_OF_THREADS))+"\n";
+	if(showhelp) message+="	(Number of thread use by solver for optimisation. DEFAULT=Number of concurrent threads supported)\n";
+	message+="	GOALING_SCHEDULE_WEIGHT  : "+std::to_string(parameters.getintparameter(GOALING_SCHEDULE_WEIGHT))+"\n";
+	if(showhelp) message+="	(The weight to use when trying goal a schedule from a strategic model. DEFAULT=10000)\n";
+	*_logger<<message<<"\n	-- Double parameters"<<"\n";
+	message="	TOLERANCE                : "+std::to_string(parameters.getdblparameter(TOLERANCE))+"\n";
+	if(showhelp) message+="	(Double tolerance used when setting a solution from schedules. DEFAULT=0.000100)\n";
+	*_logger<<message<<"\n	-- Bool parameters"<<"\n";
+	std::string boolval;
+	boolval = (parameters.getboolparameter(FORCE_PARTIAL_BUILD)) ? "true\n" : "false\n";
+	message="	FORCE_PARTIAL_BUILD      : "+boolval;
+	if(showhelp) message+="	(Force partial build on graph and matrix for period which schedules are passed to FMTlpmodel::doplanning. DEFAULT=false)\n";
+	boolval = (parameters.getboolparameter(STRICTLY_POSITIVE)) ? "true\n" : "false\n";
+	message+="	STRICTLY_POSITIVE        : "+boolval;
+	if(showhelp) message+="	(Force matrix to have bound >= 0 for the outputs use in constraints or objective. DEFAULT=true)\n";
+	boolval = (parameters.getboolparameter(POSTSOLVE)) ? "true\n" : "false\n";
+	message+="	POSTSOLVE                : "+boolval;
+	if(showhelp) message+="	(Postsolve model after doplanning. DEFAULT=true)\n";
+	boolval = (parameters.getboolparameter(SHOW_LOCK_IN_SCHEDULES)) ? "true\n" : "false\n";
+	message+="	SHOW_LOCK_IN_SCHEDULES   : "+boolval;
+	if(showhelp) message+="	(When user ask for a schedule, if true, lock will appear in it. DEFAULT=false)\n";
+	/*
+	std::string compresstimes;
+	std::vector<int>::const_iterator cit = compresstime.cbegin();
+	while(*cit == *(cit+1))
+
+	//Vector for compresstime at each period
+	compresstime = std::vector<int>(30,1);
+	*/
+	*_logger<<message<<"\n";
+	}catch(...)
+	{
+
+	}
+}
 
 
 FMTmodelcomparator::FMTmodelcomparator(std::string name) :model_name(name) {}

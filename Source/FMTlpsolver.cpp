@@ -183,6 +183,13 @@ namespace Models
 		try {
 			switch (solvertype)
 				{
+				case FMTsolverinterface::CLP:
+				{
+				const OsiClpSolverInterface* clpsolver = dynamic_cast<OsiClpSolverInterface*>(solverinterface.get());
+				ClpSimplex* splexmodel = clpsolver->getModelPtr();
+				splexmodel->setNumberThreads(nthread);
+				break;
+				}
 				#ifdef  FMTWITHMOSEK
 				case FMTsolverinterface::MOSEK:
 					{

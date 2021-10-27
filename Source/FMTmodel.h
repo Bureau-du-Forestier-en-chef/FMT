@@ -24,6 +24,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <memory>
 #include "FMTlist.h"
 #include "FMTmodelstats.h"
+#include "FMTmodelparameters.h"
 #include <boost/serialization/vector.hpp>
 #include <boost/serialization/map.hpp>
 #include <boost/serialization/unordered_map.hpp>
@@ -80,6 +81,7 @@ class FMTEXPORT FMTmodel : public Core::FMTobject
 	{
 		ar & boost::serialization::make_nvp("FMTobject", boost::serialization::base_object<FMTobject>(*this));
 		FMTobject::forcesave(ar, version);
+		ar & BOOST_SERIALIZATION_NVP(parameters);
 		ar & BOOST_SERIALIZATION_NVP(area);
 		ar & BOOST_SERIALIZATION_NVP(themes);
 		ar & BOOST_SERIALIZATION_NVP(actions);
@@ -99,6 +101,7 @@ class FMTEXPORT FMTmodel : public Core::FMTobject
 	{
 		ar & boost::serialization::make_nvp("FMTobject", boost::serialization::base_object<FMTobject>(*this));
 		FMTobject::forceload(ar, version);//get the object information for the global object
+		ar & BOOST_SERIALIZATION_NVP(parameters);
 		ar & BOOST_SERIALIZATION_NVP(area);
 		ar & BOOST_SERIALIZATION_NVP(themes);
 		ar & BOOST_SERIALIZATION_NVP(actions);
@@ -137,6 +140,9 @@ class FMTEXPORT FMTmodel : public Core::FMTobject
 	*/
 	void validatelistspec(const Core::FMTspec& specifier) const;
     protected:
+		// DocString: FMTmodel::parameters
+		///Parameters needed to be solve by the different types of FMTmodel
+		FMTmodelparameters parameters;
 		// DocString: FMTmodel::area
 		///Actualdevelopments for period 0, seen in the area section or the shapefile/raster
 		std::vector<Core::FMTactualdevelopment>area;
@@ -190,13 +196,14 @@ class FMTEXPORT FMTmodel : public Core::FMTobject
 		virtual void clearcache();
 		// DocString: FMTmodel()
 		/**
-		Main constructor for FMTmodel used in Parser::FMTmodelparser, the constraints are optional.
+		Main constructor for FMTmodel used in Parser::FMTmodelparser, the constraints and parameters are optional.
 		For the FMTsesmodel no constraints are needed.
 		*/
 		FMTmodel(const std::vector<Core::FMTactualdevelopment>& larea, const std::vector<Core::FMTtheme>& lthemes,
 			const std::vector<Core::FMTaction>& lactions,
 			const std::vector<Core::FMTtransition>& ltransitions, const Core::FMTyields& lyields, const Core::FMTlifespans& llifespan,
-			const std::string& lname, const std::vector<Core::FMToutput>& loutputs, std::vector<Core::FMTconstraint> lconstraints = std::vector<Core::FMTconstraint>());
+			const std::string& lname, const std::vector<Core::FMToutput>& loutputs, std::vector<Core::FMTconstraint> lconstraints = std::vector<Core::FMTconstraint>(),
+			FMTmodelparameters lparameters = FMTmodelparameters());
 		// DocString: FMTmodel()
 		/**
 			Default constructor of FMTmodel.
@@ -529,8 +536,7 @@ class FMTEXPORT FMTmodel : public Core::FMTobject
 		/**
 		Build the model and do the initialsolve or simulate.
 		*/
-		virtual bool doplanning(const std::vector<Core::FMTschedule>&schedules,
-								bool forcepartialbuild = false,Core::FMTschedule objectiveweight = Core::FMTschedule());
+		virtual bool doplanning(const bool& solve,std::vector<Core::FMTschedule> schedules = std::vector<Core::FMTschedule>());
 		// DocString: FMTmodel::getoutput
 		/**
 		Get the output value of a output for a given period using the spatial solution.
@@ -557,6 +563,26 @@ class FMTEXPORT FMTmodel : public Core::FMTobject
 		Get a clone of the FMTmodel
 		*/
 		virtual std::unique_ptr<FMTmodel>clone() const;
+		//#### Getter and setter for parameters
+		// DocString: FMTmodel::setparameter
+		/**
+		
+		*/
+		bool setparameter(const FMTintmodelparameters& key, const int& value);
+		bool setparameter(const FMTdblmodelparameters& key, const double& value);
+		bool setparameter(const FMTboolmodelparameters& key, const bool& value);
+		// DocString: FMTmodel::getparameter
+		/**
+		
+		*/
+		int getparameter(const FMTintmodelparameters& key) const;
+		double getparameter(const FMTdblmodelparameters& key) const;
+		bool getparameter(const FMTboolmodelparameters& key) const;
+
+		bool setcompresstime(const int& periodstart, const int& periodstop, const int& value);
+		std::vector<int> getcompresstime() const;
+
+		virtual void showparameters(const bool& showhelp=false)const;
 
     };
 // DocString: FMTmodelcomparator
