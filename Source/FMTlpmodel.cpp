@@ -1588,31 +1588,85 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 		}
 	}
 
-	bool FMTlpmodel::doplanning(const std::vector<Core::FMTschedule>&schedules,bool forcepartialbuild,Core::FMTschedule objectiveweight)
+	bool FMTlpmodel::doplanning(const bool& solve,std::vector<Core::FMTschedule> schedules)
 		{
+			//J'utiliserais pas le presolve car ça serait à l'uytilisateur de dire si il veut que ça aille plus 
+			//vite... Si on fait ca, on a pas de postsoolve sur le la matrice mais oui pour le graph, donc est-ce que le getoutput va fonctionner ?
 		bool optimal = false;
 		try {
-			for (const Core::FMTschedule& schedule: schedules)
+			const int length = parameters.getintparameter(LENGTH);
+			const int presolve_iterations = parameters.getintparameter(PRESOLVE_ITERATIONS);
+			const bool postsolve = parameters.getboolparameter(POSTSOLVE);
+			const bool forcepartialbuild = parameters.getboolparameter(FORCE_PARTIAL_BUILD);
+			/**_logger<<"Presolving model with "+std::to_string(presolve_iterations)+" iterations"<<"\n";
+			//pointeur presolve swap début fin
+			std::unique_ptr<FMTmodel> presolve_model = this->presolve(presolve_iterations,area);*/
+			if (parameters.getboolparameter(STRICTLY_POSITIVE))
+			{
+				setstrictlypositivesoutputsmatrix();
+			}
+			solver.setnumberofthreads(parameters.getintparameter(NUMBER_OF_THREADS));
+			std::string addon = "";
+			if(!schedules.empty())
+			{
+				addon = "FMT will use schedules pass by argument for periods 1 to "+std::to_string(schedules.size());
+			}
+			*_logger<<"Building model for "+std::to_string(length)+" periods. "+addon<<"\n";
+			//Period start at 0 but it's the period 1 that is created first. Reason is that schedules is a vector and the first elements 
+			//is the schedule for period 1 
+			for (int period = 0; period<length;++period)
 				{
-				this->buildperiod(schedule,forcepartialbuild);
+					if((!schedules.empty()) && (period<schedules.size()))
+					{
+						*_logger << std::string(this->buildperiod(schedules.at(period),forcepartialbuild,parameters.getperiodcompresstime(period)))<<"\n";
+					}else{
+						*_logger << std::string(this->buildperiod(Core::FMTschedule(),false,parameters.getperiodcompresstime(period)))<<"\n";
+					}
 				}
+			if(!schedules.empty())
+			{
+				addon = "FMT will use schedules pass by argument for periods 1 to "+std::to_string(schedules.size())+" to set the solution in the matrix.";
+			}
+			*_logger<<"Setting constraints on the model. "+addon<<"\n";
 			for (size_t constraintid = 1; constraintid < constraints.size();++constraintid)
 				{
 				this->setconstraint(constraints.at(constraintid));
 				}
-			this->setobjective(constraints.at(0));
-			if (!objectiveweight.empty())
+			*_logger<<"*Graph stats with all constraints : \n"<<std::string(this->setobjective(constraints.at(0)))<<"\n";
+			if( !schedules.empty() && length<=schedules.size() )
+			{
+				bool bylp = false;
+				int period = 1;
+				for (const Core::FMTschedule& schedule : schedules)
 				{
-				this->addscheduletoobjective(objectiveweight, 10000);
+					this->setsolution(period,schedule,parameters.getdblparameter(TOLERANCE));
+					++period;
+					//Checker pour implémenter avec Guillaume
+					/*if (!bylp)
+					{
+						try{
+
+						}catch(...)
+						{
+							if()
+							{
+								bylp=true;
+							}
+						}
+
+					}*/
 				}
-			optimal = this->initialsolve();
+			}
+			if (solve) 
+			{
+				optimal = this->initialsolve();
+			}
 		}catch (...)
 			{
 			_exhandler->raisefromcatch("", "FMTlpmodel::doplanning", __LINE__, __FILE__);
 			}
 			return optimal;
 		}
-
 
 	void FMTlpmodel::updategeneralconstraintsnaming(std::vector<std::string>& colnames,
 													std::vector<std::string>& rownames) const

@@ -380,10 +380,9 @@ class FMTEXPORT FMTlpmodel : public FMTsrmodel
 		void writeMPS(const std::string& location);
 		// DocString: FMTlpmodel::doplanning
 		/**
-		Build the model and do the initialsolve.
+		Build the model using the model parameters and do the initialsolve if (solve).
 		*/
-		virtual bool doplanning(const std::vector<Core::FMTschedule>&schedules,
-								bool forcepartialbuild = false,Core::FMTschedule objectiveweight = Core::FMTschedule()) override;
+		virtual bool doplanning(const bool& solve,std::vector<Core::FMTschedule> schedules = std::vector<Core::FMTschedule>()) final;
 		// DocString: FMTlpmodel::clone
 		/**
 		Get a clone of the FMTlpmodel
