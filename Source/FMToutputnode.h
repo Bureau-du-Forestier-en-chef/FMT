@@ -22,7 +22,7 @@ enum FMToutputlevel
 		developpement = 3
 	};
 
-class FMToutputnode
+class FMTEXPORT FMToutputnode
 	{
 	public:
 		FMToutputsource source;
@@ -90,5 +90,7 @@ class FMToutputnodehasher
 
 
 }
+
+BOOST_CLASS_EXPORT_KEY(Core::FMToutputnode)
 
 #endif
