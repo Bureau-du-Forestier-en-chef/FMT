@@ -7,16 +7,19 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 #ifndef FMTactionparser_H_INCLUDED
 #define FMTactionparser_H_INCLUDED
-#include "FMTlist.h"
 #include "FMTparser.h"
-#include "FMTconstants.h"
-#include "FMTtheme.h"
-#include "FMTaction.h"
-#include "FMTyields.h"
 #include "FMTutility.h"
 #include <regex>
 #include <vector>
 #include <map>
+
+namespace Core 
+{
+	class FMTconstants;
+	class FMTtheme;
+	class FMTaction;
+	class FMTyields;
+}
 
 
 namespace Parser
@@ -87,6 +90,11 @@ class FMTEXPORT FMTactionparser : public FMTparser
 		*/
         void write(const std::vector<Core::FMTaction>& actions,
 			const std::string& location) const;
+		// DocString: FMTactionparser::getactionsidsofmodelyields
+		/**
+		Returns the corresponding actions ids of the vector of actions read from the .json file in YieldPredModels.
+		*/
+		std::vector<Core::FMTaction>getGCBMactionsaggregate(const std::vector<Core::FMTaction>& actions) const;
     };
 
 }

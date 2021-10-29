@@ -9,12 +9,15 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #define FMTscheduleparser_H_INCLUDED
 
 #include "FMTparser.h"
-#include "FMTtheme.h"
-#include "FMTaction.h"
-#include "FMTschedule.h"
 #include "FMTutility.h"
 #include <vector>
 #include <string>
+
+namespace Core {
+	class FMTtheme;
+	class FMTaction;
+	class FMTschedule;
+}
 
 namespace Parser
 {

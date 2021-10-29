@@ -24,6 +24,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTyields.h"
 #include "FMTconstants.h"
 #include "boost/python.hpp"
+#include "FMTdata.h"
 
 namespace Python
 {
@@ -89,6 +90,8 @@ void exportCore()
         define_pydict<Core::FMTaction,std::map<Core::FMTdevelopment, std::vector<double>>>();
 		py_pair<Core::FMTaction, std::map<Core::FMTdevelopment, std::vector<double>>>();
 		py_pair<Core::FMTaction const, std::map<Core::FMTdevelopment, std::vector<double>>>();
+
+	
 
 		bool (Core::FMTmask::*issubsetof)(const Core::FMTmask&) const = &Core::FMTmask::issubsetof;
 
@@ -174,7 +177,7 @@ void exportCore()
 
 			define_FMTlist<int>();
 			//define_pylist<string>();
-			define_FMTlist<Core::FMTyieldhandler>();
+			//define_FMTlist<std::unique_ptr<Core::FMTyieldhandler>>();
 			define_FMTlist<Core::FMTfork>();
 
 
@@ -217,14 +220,16 @@ void exportCore()
 
 			define_pydict<std::string, std::vector<double>>();
 
-			bp::class_<Core::FMTyieldhandler>("FMTyieldhandler", "@DocString(FMTyieldhandler)")
-				.def_pickle(FMT_pickle_suite<Core::FMTyieldhandler>())
-				.def("__str__", &Core::FMTyieldhandler::operator std::string,
-					"@DocString(FMTyieldhandler::operator std::string)")
-				.def("postsolve", &Core::FMTyieldhandler::postsolve,
-					"@DocString(FMTyieldhandler::postsolve)");
+			
 
-			bp::class_<Core::FMTyields, bp::bases<Core::FMTlist<Core::FMTyieldhandler>>>("FMTyields", "@DocString(FMTyields)")
+			bp::class_<Core::FMTtimeyieldhandler>("FMTtimeyieldhandler", "@DocString(FMTtimeyieldhandler)")
+				.def_pickle(FMT_pickle_suite<Core::FMTtimeyieldhandler>())
+				.def("__str__", &Core::FMTtimeyieldhandler::operator std::string,
+					"@DocString(FMTtimeyieldhandler::operator std::string)")
+				.def("postsolve", &Core::FMTtimeyieldhandler::postsolve,
+					"@DocString(FMTtimeyieldhandler::postsolve)");
+
+			bp::class_<Core::FMTyields/*, bp::bases<Core::FMTlist<std::unique_ptr<Core::FMTyieldhandler>>>*/>("FMTyields", "@DocString(FMTyields)")
 				.def(bp::init<Core::FMTyields>())
 				.def_pickle(FMT_pickle_suite<Core::FMTyields>())
 				.def("getallyields", &Core::FMTyields::getallyields,

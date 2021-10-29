@@ -26,6 +26,8 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <boost/serialization/export.hpp>
 #include "FMTobject.h"
 #include <iterator>
+#include <memory>
+#include "FMTyieldhandler.h"
 
 namespace Core
 {
@@ -104,8 +106,8 @@ namespace Core
 				{
 					unshrink(originalthemes);
 				}
-				std::vector<std::pair<FMTmask, T>>newdata;
-				for (const std::pair<FMTmask, T>& object : data)
+				//std::vector<std::pair<FMTmask, T>>newdata;
+				for (std::pair<FMTmask, T>& object : data)
 				{
 					if (!object.first.isnotthemessubset(basemask, originalthemes))
 					{
@@ -114,16 +116,21 @@ namespace Core
 						{
 							mskkey = mskkey.presolve(presolvedmask, newthemes);
 						}
-						newdata.push_back(std::pair<FMTmask, T>(mskkey, object.second));
+						//newdata.push_back(std::pair<FMTmask, T>(mskkey, object.second));
+						object.first = mskkey;
 					}
 				}
-				data = newdata;
+				//data = newdata;
 				this->update();
 				data.shrink_to_fit();
 			}catch (...)
 				{
 				_exhandler->raisefromcatch("","FMTlist::presolvelist", __LINE__, __FILE__);
 				}
+			}
+		void copydata(const Core::FMTlist<T>& rhs)
+			{
+			data = rhs.data;
 			}
 	public:
 		// DocString: FMTlist::getunion
@@ -155,11 +162,11 @@ namespace Core
 		*/
 		FMTlist(const FMTlist<T>& rhs) :
 			FMTobject(rhs),
-			data(rhs.data),
+			data(),
 			filter(rhs.filter),
 			fastpass(rhs.fastpass)
 		{
-
+			copydata(rhs);
 		}
 		// DocString: FMTlist::operator=
 		/**
@@ -170,7 +177,7 @@ namespace Core
 			if (this != &rhs)
 			{
 				FMTobject::operator=(rhs);
-				data = rhs.data;
+				copydata(rhs);
 				filter = rhs.filter;
 				fastpass = rhs.fastpass;
 			}
@@ -278,7 +285,6 @@ namespace Core
 		*/
 		void shrink()
 		{
-				std::vector<std::pair<FMTmask, T>>newdata;
 				fastpass.clear();
 				std::vector<Core::FMTmask> filteredmasks;
 				for (const std::pair<FMTmask, T>& object : data)
@@ -286,11 +292,10 @@ namespace Core
 					filteredmasks.push_back(object.first);
 				}
 				filter=Core::FMTmaskfilter(filteredmasks);
-				for (const std::pair<FMTmask, T>& object : data)
+				for (std::pair<FMTmask, T>& object : data)
 				{
-					newdata.push_back(std::pair<FMTmask, T>(filter.filter(object.first), object.second));
+					object.first = filter.filter(object.first);
 				}
-				data = newdata;
 				data.shrink_to_fit();
 		}
 		// DocString: FMTlist::unshrink
@@ -299,15 +304,11 @@ namespace Core
 		*/
 		void unshrink(const std::vector<FMTtheme>& themes)
 		{
-			std::vector<std::pair<FMTmask, T>>newdata;
 			fastpass.clear();
-			filter = FMTmaskfilter();
-			for (const std::pair<FMTmask, T>& object : data)
+			for (std::pair<FMTmask, T>& object : data)
 				{
-				newdata.push_back(std::pair<FMTmask,T>(FMTmask(std::string(object.first), themes), object.second));
+				object.first = FMTmask(std::string(object.first), themes);
 				}
-			data = newdata;
-
 		}
 		// DocString: FMTlist::push_back
 		/**
@@ -330,24 +331,13 @@ namespace Core
 			}
 		// DocString: FMTlist::push_back
 		/**
-		Push back an element at the end of the FMTlist.
-		*/
-		void push_back(const std::pair<FMTmask,T>& value)
-			{
-			data.emplace_back(value);
-			}
-		// DocString: FMTlist::push_back
-		/**
 		Push back a whole FMTlist at the end of this FMTlist.
 		*/
 		void push_back(const FMTlist<T>& rhs)
 		{
 			if (this->canshrink() && rhs.canshrink())
 			{
-				for (const std::pair<FMTmask, T>& object : rhs.data)
-				{
-					this->push_back(object);
-				}
+				copydata(rhs);
 				this->shrink();
 			}
 		}
@@ -357,15 +347,7 @@ namespace Core
 		*/
 		void push_front(const FMTmask& mask, const T& value)
 		{
-			data.emplace(data.begin(), mask, value);
-		}
-		// DocString: FMTlist::push_front
-		/**
-		Push front an element at the beginning of the FMTlist.
-		*/
-		void push_front(const std::pair<FMTmask, T>& value)
-		{
-			data.emplace(data.begin(), value);
+			insert(0, mask, value);
 		}
 		// DocString: FMTlist::pop_back
 		/**
@@ -391,14 +373,6 @@ namespace Core
             {
 			data.insert(data.begin() + location,std::pair<FMTmask,T>(mask,value));
             }
-		// DocString: FMTlist::insert
-		/**
-		Insert an element in the FMTlist at a specific location.
-		*/
-		void insert(const size_t& location,const std::pair<FMTmask, T>& value)
-		{
-			data.insert(data.begin() + location, value);
-		}
 		// DocString: FMTlist::value_type
 		///Value typedef of the FMTlist
 		typedef typename std::vector<std::pair<FMTmask, T>>::value_type value_type;
@@ -408,14 +382,6 @@ namespace Core
 		// DocString: FMTlist::const_iterator
 		///Const_Iterator typedef of the FMTlist
 		typedef typename std::vector<std::pair<FMTmask, T>>::const_iterator const_iterator;
-		// DocString: FMTlist::append
-		/**
-		Append an element at the end of the FMTlist.
-		*/
-		void append(FMTlist<T>::value_type element)
-			{
-			data.push_back(std::pair<FMTmask, T>(filtermask(element.first), element.second));
-			}
 		// DocString: FMTlist::begin
 		/**
 		Returns an iterator at the beginning of the FMTlist.
@@ -448,8 +414,33 @@ namespace Core
 			{
 			return data.end();
 			}
+		
 
 	};
+
+
+	template<> inline void FMTlist<std::unique_ptr<Core::FMTyieldhandler>>::copydata(const FMTlist<std::unique_ptr<Core::FMTyieldhandler>>& rhs)
+	{
+		data.reserve(rhs.data.size());
+		for (const std::pair<Core::FMTmask, std::unique_ptr<Core::FMTyieldhandler>>& object : rhs.data)
+		{
+			std::pair<Core::FMTmask, std::unique_ptr<Core::FMTyieldhandler>> newobject = std::make_pair(object.first, std::move(object.second->clone()));
+			data.push_back(std::move(newobject));
+		}
+	}
+
+	template<> inline void FMTlist<std::unique_ptr<Core::FMTyieldhandler>>::insert(const size_t& location, const FMTmask& mask, const std::unique_ptr<Core::FMTyieldhandler>& value)
+	{
+		std::pair<Core::FMTmask, std::unique_ptr<Core::FMTyieldhandler>> newobject = std::make_pair(mask, std::move(value->clone()));
+		data.insert(data.begin() + location, std::move(newobject));
+	}
+
+	template<> inline void FMTlist<std::unique_ptr<Core::FMTyieldhandler>>::push_back(const FMTmask& mask, const std::unique_ptr<Core::FMTyieldhandler>& value)
+	{
+		std::pair<Core::FMTmask, std::unique_ptr<Core::FMTyieldhandler>> newobject = std::make_pair(mask, std::move(value->clone()));
+		data.push_back(std::move(newobject));
+	}
+
 
 }
 

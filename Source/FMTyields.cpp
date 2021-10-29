@@ -6,14 +6,15 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
 #include "FMTyields.h"
+#include "FMTyieldrequest.h"
 
 namespace Core{
 
-FMTyields::FMTyields():FMTlist<FMTyieldhandler>(), yieldpresence()
+FMTyields::FMTyields():FMTlist<std::unique_ptr<FMTyieldhandler>>(), yieldpresence()
         {
 		updateyieldpresence();
         }
-    FMTyields::FMTyields(const FMTyields& rhs): FMTlist<FMTyieldhandler>(rhs),yieldpresence(rhs.yieldpresence)
+    FMTyields::FMTyields(const FMTyields& rhs): FMTlist<std::unique_ptr<FMTyieldhandler>>(rhs),yieldpresence(rhs.yieldpresence)
         {
 
         }
@@ -21,7 +22,7 @@ FMTyields::FMTyields():FMTlist<FMTyieldhandler>(), yieldpresence()
         {
         if(this!=&rhs)
             {
-			FMTlist<FMTyieldhandler>::operator = (rhs);
+			FMTlist<std::unique_ptr<FMTyieldhandler>>::operator = (rhs);
 			yieldpresence = rhs.yieldpresence;
             }
         return *this;
@@ -33,7 +34,7 @@ FMTyields::FMTyields():FMTlist<FMTyieldhandler>(), yieldpresence()
 			for (const auto& handlerobj : *this)
 			{
 				std::string value = "";
-				value += std::string(handlerobj.second) + "\n";
+				value += std::string(*handlerobj.second) + "\n";
 				values.push_back(value);
 			}
 		}
@@ -52,17 +53,19 @@ void FMTyields::updateyieldpresence()
 		yieldpresence.clear();
 		for (const auto& handlerobj : *this)
 		{
-			for (std::map<std::string, FMTdata>::const_iterator itd = handlerobj.second.elements.begin(); itd != handlerobj.second.elements.end(); ++itd)
+			for (const std::string& yldname : handlerobj.second->getyieldnames())
 			{
-				if (yieldpresence.find(itd->first) != yieldpresence.end())
+				//const FMTdata& data = handlerobj.second->at(yldname);
+				const bool nulldata = handlerobj.second->isnullyield(yldname);
+				if (yieldpresence.find(yldname) != yieldpresence.end())
 				{
-					if (!itd->second.nulldata())
+					if (!nulldata)
 					{
-						yieldpresence[itd->first] = true;
+						yieldpresence[yldname] = true;
 					}
 				}
 				else {
-					yieldpresence[itd->first] = !itd->second.nulldata();
+					yieldpresence[yldname] = !nulldata;
 				}
 
 			}
@@ -80,11 +83,11 @@ std::vector<std::string> FMTyields::getallyieldnames() const
 	try {
 		for (const auto& handlerobj : *this)
 			{
-			for (std::map<std::string, FMTdata>::const_iterator itd = handlerobj.second.elements.begin(); itd != handlerobj.second.elements.end(); ++itd)
+			for (const std::string& yldname : handlerobj.second->getyieldnames())
 				{
-				if (std::find(alls.begin(),alls.end(), itd->first)== alls.end())
+				if (std::find(alls.begin(),alls.end(), yldname)== alls.end())
 					{
-					alls.push_back(itd->first);
+					alls.push_back(yldname);
 					}
 				}
 			}
@@ -98,14 +101,10 @@ std::vector<std::string> FMTyields::getallyieldnames() const
 void FMTyields::clearcache()
 	{
 		//Clearcache of FMTlist
-		FMTlist<FMTyieldhandler>::clearcache();
+		FMTlist<std::unique_ptr<FMTyieldhandler>>::clearcache();
 		for (auto& yh:*this)
 		{
-			for (auto& el:yh.second.elements)
-			{
-				//Clearcache of FMTdata in FMTyieldhandler
-				el.second.clearcache();
-			}
+			yh.second->clearcache();
 		}
 	}
 
@@ -120,13 +119,10 @@ bool FMTyields::isyld(const std::string& value, bool fromsource) const
 	}else {
 		for (const auto& handlerobj : *this)
 		{
-			for (std::map<std::string, FMTdata>::const_iterator itd = handlerobj.second.elements.begin(); itd != handlerobj.second.elements.end(); ++itd)
-			{
-				if (itd->first==value)
-					{
-					return true;
-					}
-			}
+			if (handlerobj.second->containsyield(value))
+				{
+				return true;
+				}
 		}
 	}
 	}
@@ -146,7 +142,7 @@ bool FMTyields::isnullyld(const std::string& value) const
 void FMTyields::update()
     {
 	try {
-		FMTlist<FMTyieldhandler>::update();
+		FMTlist<std::unique_ptr<FMTyieldhandler>>::update();
 		updateyieldpresence();
 	}catch (...)
 		{
@@ -157,10 +153,10 @@ void FMTyields::update()
 void FMTyields::passinobject(const FMTobject& rhs)
 	{
 	try {
-		FMTlist<FMTyieldhandler>::passinobject(rhs);
+		FMTlist<std::unique_ptr<FMTyieldhandler>>::passinobject(rhs);
 		for (auto&  handler : *this)
 			{
-			handler.second.passinobject(rhs);
+			handler.second->passinobject(rhs);
 			}
 	}catch (...)
 		{
@@ -181,7 +177,7 @@ FMTyields FMTyields::presolve(const FMTmask& basemask,
 		{
 			for (auto& yieldobject : newyields)
 			{
-				yieldobject.second = yieldobject.second.presolve(presolvedmask, newthemes);
+				yieldobject.second = yieldobject.second->presolve(presolvedmask, newthemes);
 			}
 		}
 		newyields.update();
@@ -199,7 +195,7 @@ FMTyields FMTyields::getfromfactor(const double& factor,
 	try {
 		for (auto& handlerobj : newyields)
 		{
-			handlerobj.second = handlerobj.second.getfromfactor(factor, yieldnames);
+			handlerobj.second = handlerobj.second->getfromfactor(factor, yieldnames);
 		}
 	}catch (...)
 		{
@@ -209,7 +205,35 @@ FMTyields FMTyields::getfromfactor(const double& factor,
 	return newyields;
 	}
 
-double FMTyields::getsingle(const FMTdevelopment& dev,
+double FMTyields::get(const FMTyieldrequest& request, const std::string& yld) const
+{
+	try {
+		bool gotyield = false;
+		request.updatedata(*this);
+		for (const std::unique_ptr<FMTyieldhandler>* data : request.getdatas())
+		{
+			if ((*data)->containsyield(yld))
+			{
+				return (*data)->get(yld,request);
+				gotyield = true;
+				break;
+			}
+		}
+		if (!gotyield)
+		{
+			_exhandler->raise(Exception::FMTexc::FMTmissingyield,
+				yld + " for developement " + std::string(request.getdevelopment()),
+				"FMTyields::get", __LINE__, __FILE__, Core::FMTsection::Yield);
+		}
+	}
+	catch (...)
+	{
+		_exhandler->raisefromcatch("for development type " + std::string(request.getdevelopment()), "FMTyields::get", __LINE__, __FILE__);
+	}
+	return 0;
+}
+
+/*double FMTyields::getsingle(const FMTdevelopment& dev,
 	const std::string& target) const
 {
 	try {
@@ -231,24 +255,24 @@ double FMTyields::getsingle(const FMTdevelopment& dev,
 		_exhandler->raisefromcatch("for development type " + std::string(dev), "FMTyields::get", __LINE__, __FILE__);
 		}
 	return 0;
-}
+}*/
 
-std::vector<double>FMTyields::get(const FMTdevelopment& dev,
-	const std::vector<std::string>& targets) const
+/*
+std::vector<double>FMTyields::get(const std::vector<FMTyieldrequest>& requests) const
 {
-	std::vector<double>values(targets.size());
+	std::vector<double>values(requests.size());
 	try {
-		const Core::FMTmask filteredmask = this->filtermask(dev.getmask());
-		const std::vector<const FMTyieldhandler*>datas = this->findsetswithfiltered(filteredmask);
+		//const Core::FMTmask filteredmask = this->filtermask(dev.getmask());
+		//const std::vector<const FMTyieldhandler*>datas = this->findsetswithfiltered(filteredmask);
 		size_t location = 0;
-		for (const std::string& name : targets)
+		for (const FMTyieldrequest& request : requests)
 		{
 			bool gotyield = false;
-			for (const FMTyieldhandler* data : datas)
+			for (const FMTyieldhandler* data : request.getdatas())
 			{
-				if (data->elements.find(name) != data->elements.end())
+				if (data->elements.find(request.getyld()) != data->elements.end())
 				{
-					values[location] = data->get(datas, name, dev.getage(), dev.getperiod(), filteredmask);
+					values[location] = data->get(request);
 					gotyield = true;
 					break;
 				}
@@ -256,7 +280,7 @@ std::vector<double>FMTyields::get(const FMTdevelopment& dev,
 			if (!gotyield)
 			{
 				_exhandler->raise(Exception::FMTexc::FMTmissingyield,
-					name + " for development type " + std::string(dev),
+					request.getyld() + " for yield request " + std::string(request),
 					"FMTyields::get", __LINE__, __FILE__, Core::FMTsection::Yield);
 			}
 			++location;
@@ -265,7 +289,7 @@ std::vector<double>FMTyields::get(const FMTdevelopment& dev,
 	}
 	catch (...)
 	{
-		_exhandler->raisefromcatch("for development type " + std::string(dev), "FMTyields::get", __LINE__, __FILE__);
+		_exhandler->raisefromcatch("for yield request " + std::string(*requests.begin()), "FMTyields::get", __LINE__, __FILE__);
 	}
 	return values;
 }
@@ -281,13 +305,13 @@ std::vector<double>FMTyields::getylds(const FMTdevelopment& dev, const FMTspec& 
 		_exhandler->raisefromcatch("for development " + std::string(dev), "FMTyields::getylds", __LINE__, __FILE__);
 	}
 	return std::vector<double>();
-}
+}*/
 
 
 bool FMTyields::operator == (const FMTyields& rhs) const
 	{
 	return (yieldpresence == rhs.yieldpresence &&
-		FMTlist<FMTyieldhandler>::operator==(rhs));
+		FMTlist<std::unique_ptr<FMTyieldhandler>>::operator==(rhs));
 
 	}
 
@@ -297,9 +321,9 @@ std::vector<const FMTyieldhandler*> FMTyields::gethandleroftype(FMTyldtype type)
 	try{
 	for (const auto& handlerobj : *this)
 		{
-		if (handlerobj.second.gettype() == type)
+		if (handlerobj.second->gettype() == type)
 			{
-			selectedhandlers.push_back(&(handlerobj.second));
+			selectedhandlers.push_back(handlerobj.second.get());
 			}
 		}
 	}
@@ -309,6 +333,53 @@ std::vector<const FMTyieldhandler*> FMTyields::gethandleroftype(FMTyldtype type)
 	}
 	return selectedhandlers;
 	}
+
+std::vector<FMTyieldhandler*> FMTyields::gethandlers(FMTyldtype type)
+	{
+	std::vector<FMTyieldhandler*>selectedhandlers;
+	try {
+		for (auto& handlerobj : *this)
+		{
+			if (handlerobj.second->gettype() == type)
+			{
+				selectedhandlers.push_back(handlerobj.second.get());
+			}
+		}
+	}
+	catch (...)
+	{
+		_exhandler->raisefromcatch("", "FMTyields::gethandlers", __LINE__, __FILE__, FMTsection::Yield);
+	}
+	return selectedhandlers;
+	}
+
+bool FMTyields::gotyieldtype(FMTyldtype type) const
+{
+	try {
+		return !gethandleroftype(type).empty();
+	}
+	catch (...)
+	{
+		_exhandler->raisefromcatch("", "FMTyields::gotyieldtype", __LINE__, __FILE__, FMTsection::Yield);
+	}
+	return false;
+}
+
+void FMTyields::setactionsmappingtomodelhandlers(const std::vector<int>& actionids)
+{
+	
+	try {
+		for (FMTyieldhandler* handler : gethandlers(FMTyldtype::FMTmodelyld))
+		{
+			handler->setbase(actionids);
+		}
+	}
+	catch (...)
+	{
+		_exhandler->raisefromcatch("", "FMTyields::setactionsmappingtomodelhandlers", __LINE__, __FILE__, FMTsection::Yield);
+	}
+}
+
 
 int FMTyields::getmaxbase(const std::vector<const FMTyieldhandler*>& handlers) const
 	{
@@ -340,40 +411,7 @@ std::map<std::string, std::map<std::string, std::vector<double>>>FMTyields::geta
 		const int maxbase = getmaxbase(handlers);
 		for (const FMTyieldhandler* handler : handlers)
 		{
-			std::map<std::string, std::vector<double>>localstuff;
-			if (type == FMTyldtype::FMTageyld)
-			{
-				const int lastbase = handler->getlastbase();
-				std::vector<int>bases = handler->getbases();
-				for (std::map<std::string, FMTdata>::const_iterator cit = handler->elements.begin(); cit != handler->elements.end(); cit++)
-				{
-					localstuff[cit->first] = std::vector<double>();
-					for (int base = 0; base <= maxbase; ++base)
-					{
-						std::vector<int>::const_iterator baseit = std::find(bases.begin(), bases.end(), base);
-						if (baseit != bases.end())
-						{
-							size_t index = std::distance<std::vector<int>::const_iterator>(bases.begin(), baseit);
-							localstuff[cit->first].push_back(cit->second.data.at(index));
-						}
-						else if (base < lastbase)
-						{
-							localstuff[cit->first].push_back(0);
-						}
-						else {
-							localstuff[cit->first].push_back(cit->second.data.back());
-						}
-					}
-				}
-			}
-			else if (type == FMTyldtype::FMTtimeyld)
-			{
-				for (std::map<std::string, FMTdata>::const_iterator cit = handler->elements.begin(); cit != handler->elements.end(); cit++)
-				{
-					localstuff[cit->first] = cit->second.data;
-				}
-			}
-
+			const std::map<std::string, std::vector<double>>localstuff = handler->getallyieldsdata(maxbase);
 			result[handler->getmask().get(target)] = localstuff;
 		}
 		}catch (...)
@@ -419,68 +457,53 @@ std::map<std::string, std::map<std::string, std::vector<double>>>FMTyields::geta
 		_exhandler->raisefromcatch("for developement "+std::string(dev),"FMTyields::getage", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 	return age;
-	}*/
-
-FMTyieldhandler FMTyields::complexyldtoageyld(const FMTyieldhandler* complexyld, const std::vector<const FMTyieldhandler*>& ldatas,const FMTspec& lspec, const FMTdevelopment& ldev) const
+	}
+	
+FMTyieldhandler FMTyields::complexyldtoageyld(const FMTyieldhandler* complexyld, const FMTyieldrequest& request,const FMTspec& lspec) const
 	{
 	const FMTmask cplxmask = complexyld->getmask();
 	FMTyieldhandler nhandler(FMTyldtype::FMTageyld, cplxmask);
-	try{
-		for (size_t id = 0; id < lspec.yieldnames.size();++id)
+	try {
+		const std::vector<std::string>& yldnames = lspec.getylds();
+		for (size_t id = 0; id < yldnames.size(); ++id)
 		{
-			if (complexyld->elements.find(lspec.yieldnames.at(id)) != complexyld->elements.end())
+			if (complexyld->containsyield(yldnames.at(id)))
 			{
-				for(int age = 0; age <= ldev.getage() ; ++age)
+				Core::FMTdevelopment newdev(request.getdevelopment());
+				for (int age = 0; age <= request.getdevelopment().getage(); ++age)
 				{
+					newdev.setage(age);
+					const FMTyieldrequest newrequest(newdev);
 					nhandler.push_base(age);
-					nhandler.push_data(lspec.yieldnames.at(id),complexyld->get(ldatas, lspec.yieldnames.at(id), age, ldev.getperiod(), ldev.getmask()));
+					nhandler.push_data(yldnames.at(id), complexyld->get(yldnames.at(id), newrequest));
 				}
 			}
 		}
-	}catch(...){
-		_exhandler->raisefromcatch("Error in converting complexyield to ageyield for yieldhandler "+std::string(*complexyld),"FMTyields::complexyldtoageyld", __LINE__, __FILE__);
 	}
-		return nhandler;
+	catch (...) {
+		_exhandler->raisefromcatch("Error in converting complexyield to ageyield for yieldhandler " + std::string(*complexyld), "FMTyieldrequest::complexyldtoageyld", __LINE__, __FILE__);
 	}
+	return nhandler;
+	}*/
 
-int FMTyields::getage(const FMTdevelopment& dev,const FMTspec& spec) const
+int FMTyields::getage(const FMTyieldrequest& request,const FMTspec& spec) const
     {
-	int age = dev.getage();
+	int age = request.getdevelopment().getage();
 	try {
-		const std::vector<const FMTyieldhandler*>datas = this->findsets(dev.getmask());
-		if (!datas.empty())
+		request.updatedata(*this);
+		if (!request.getdatas().empty())
 		{
 			FMTyieldhandler agedata;
-			for (const FMTyieldhandler* data : datas)
+			for (const std::unique_ptr<FMTyieldhandler>* data : request.getdatas())
 			{
-				if(data->gettype() == FMTyldtype::FMTcomplexyld)
-				{
-					//_exhandler->raise(Exception::FMTexc::FMTignore,"Converting yield complex into age yield to get an age from value in the yield", "FMTyields::getage", __LINE__, __FILE__);
-					agedata = complexyldtoageyld(data,datas,spec,dev);
-					data = &agedata;
-				}
-				if (data->gettype() == FMTyldtype::FMTageyld)
-				{
-					for (size_t id = 0; id < spec.yieldnames.size();++id)
-					{
-						if (data->elements.find(spec.yieldnames.at(id)) != data->elements.end())
-						{
-							const FMTyldbounds* bound = &spec.yieldbounds.at(id);
-							const int new_age = data->getage(spec.yieldnames.at(id), bound->getlower(), dev.getage());
-							if (new_age < age)
-							{
-								age = new_age;
-							}
-							return age;
-						}
-					}
-				}
+				return (*data)->getage(request, spec);
 			}
 		}
-	}catch (...)
-		{
-		_exhandler->raisefromcatch("for developement "+std::string(dev),"FMTyields::getage", __LINE__, __FILE__, Core::FMTsection::Yield);
-		}
+	}
+	catch (...)
+	{
+		_exhandler->raisefromcatch("for developement " + std::string(request.getdevelopment()), "FMTyield::getage", __LINE__, __FILE__, Core::FMTsection::Yield);
+	}
 	return age;
 	}
 

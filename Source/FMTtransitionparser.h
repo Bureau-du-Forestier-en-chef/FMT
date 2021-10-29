@@ -9,17 +9,21 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #define FMTtransitionparser_H_INCLUDED
 
 #include "FMTparser.h"
-#include "FMTconstants.h"
-#include "FMTtheme.h"
-#include "FMTaction.h"
-#include "FMTtransition.h"
-#include "FMTtransitionmask.h"
-#include "FMTyields.h"
 #include <regex>
 #include "string"
 #include <vector>
-#include "FMTmask.h"
-#include "FMTGCBMtransition.h"
+
+
+namespace Core {
+	class FMTmask;
+	class FMTyields;
+	class FMTtransition;
+	class FMTaction;
+	class FMTtheme;
+	class FMTconstants;
+	class FMTtransitionmask;
+	class FMTGCBMtransition;
+}
 
 namespace Parser
 {

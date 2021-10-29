@@ -9,8 +9,12 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #define FMTconstantparser_H_INCLUDED
 
 #include "FMTparser.h"
-#include "FMTconstants.h"
 #include <string>
+
+namespace Core
+{
+	class FMTconstants;
+}
 
 namespace Parser
 {

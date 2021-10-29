@@ -16,6 +16,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTobject.h"
 
 
+
 namespace Core
 {
 	class FMTEXPORT FMTGCBMtransition

@@ -24,7 +24,9 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTyields.h"
 #include "FMTconstants.h"
 #include "Rdefinitions.h"
+#include "FMTtimeyieldhandler.h"
 #include "FMTdevelopmentpath.h"
+#include "FMTdata.h"
 
 #include <vector>
 #include <Rcpp.h>
@@ -57,10 +59,10 @@ RCPP_EXPOSED_WRAP(Core::FMTlifespans);
 RCPP_EXPOSED_AS(Core::FMTlifespans);
 RCPP_DEFINEPAIR(Core::FMTmask, int);//pair for FMTlist
 RCPP_EXPOSED_ENUM_NODECL(Core::FMTyldtype);
-RCPP_EXPOSED_WRAP(Core::FMTyieldhandler);
-RCPP_EXPOSED_AS(Core::FMTyieldhandler);
-RCPP_DEFINEPAIR(Core::FMTmask, Core::FMTyieldhandler);//pair for FMTlist
-RCPP_DEFINEVECTOR(Core::FMTyieldhandler);//For vector
+RCPP_EXPOSED_WRAP(Core::FMTtimeyieldhandler);
+RCPP_EXPOSED_AS(Core::FMTtimeyieldhandler);
+RCPP_DEFINEPAIR(Core::FMTmask, Core::FMTtimeyieldhandler);//pair for FMTlist
+RCPP_DEFINEVECTOR(Core::FMTtimeyieldhandler);//For vector
 RCPP_EXPOSED_WRAP(Core::FMTyields);
 RCPP_EXPOSED_AS(Core::FMTyields);
 RCPP_EXPOSED_WRAP(Core::FMTfork);
@@ -107,7 +109,7 @@ void exportCore()
     {
 	define_FMTlist<Core::FMTspec>("FMTspeclist");
 	define_FMTlist<int>("FMTintlist");
-	define_FMTlist<Core::FMTyieldhandler>("FMTyieldhandlerlist");
+	//define_FMTlist<Core::FMTyieldhandler>("FMTyieldhandlerlist");
 	define_FMTlist<Core::FMTfork>("FMTforklist");
 
 	Rcpp::class_<Core::FMTobject>("FMTobject", "@DocString(FMTobject)")
@@ -241,16 +243,16 @@ void exportCore()
 				.constructor("@DocString(FMTfork())");
 	
 			
-			Rcpp::class_<Core::FMTyieldhandler>("FMTyieldhandler", "@DocString(FMTyieldhandler)")
-				.constructor("@DocString(FMTyieldhandler())")
-				.method("str", &Core::FMTyieldhandler::operator std::string,
-					"@DocString(FMTyieldhandler::operator std::string)");
+			Rcpp::class_<Core::FMTtimeyieldhandler>("FMTtimeyieldhandler", "@DocString(FMTtimeyieldhandler)")
+				.constructor("@DocString(FMTtimeyieldhandler())")
+				.method("str", &Core::FMTtimeyieldhandler::operator std::string,
+					"@DocString(FMTtimeyieldhandler::operator std::string)");
 
 
 			
 
 			Rcpp::class_<Core::FMTyields>("FMTyields", "@DocString(FMTyields)")
-				.derives<Core::FMTlist<Core::FMTyieldhandler>>("FMTyieldhandlerlist")
+				//.derives<Core::FMTlist<Core::FMTyieldhandler>>("FMTyieldhandlerlist")
 				.constructor("@DocString(FMTyields())")
 				.method("getallyields", &Core::FMTyields::getallyields,
 					"@DocString(FMTyields::getallyields)");

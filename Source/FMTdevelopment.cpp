@@ -7,6 +7,8 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 #include "FMTdevelopment.h"
 #include "FMTfuturdevelopment.h"
+#include "FMTyieldrequest.h"
+#include "FMTgraphvertextoyield.h"
 
 namespace Core{
 
@@ -121,15 +123,23 @@ namespace Core{
 			action.getperiodlowerbound() <= getperiod() && getperiod() <= action.getperiodupperbound());
 		}
 
-     bool FMTdevelopment::operable(const FMTaction& action,const FMTyields& ylds) const
+	FMTyieldrequest FMTdevelopment::getyieldrequest(const Graph::FMTgraphvertextoyield* graphyieldrequest) const
+		{
+			if (graphyieldrequest != nullptr)
+			{
+				return FMTyieldrequest(*this,*graphyieldrequest);
+			}
+			return FMTyieldrequest(*this);
+		}
+
+     bool FMTdevelopment::operable(const FMTaction& action,const FMTyields& ylds, const Graph::FMTgraphvertextoyield* graphyieldrequest) const
         {
 		 try{
-	 
 			if (worthtestingoperability(action))
 				{
 				for (const FMTspec* spec : action.findsets(mask))
 					{
-					if (is(*spec, ylds))
+					if (is(*spec, ylds,graphyieldrequest))
 						{
 						return true;
 						}
@@ -141,12 +151,13 @@ namespace Core{
 			}
         return false;
         }
-	 bool FMTdevelopment::anyoperable(const std::vector<const FMTaction*>& actions, const FMTyields& ylds) const
+	 bool FMTdevelopment::anyoperable(const std::vector<const FMTaction*>& actions, const FMTyields& ylds,
+		 const Graph::FMTgraphvertextoyield* graphyieldrequest) const
 		{
 		 try{
 		 for (const FMTaction* action : actions)
 			{
-			 if (this->operable(*action,ylds))
+			 if (this->operable(*action,ylds,graphyieldrequest))
 				{
 				return true;
 				}
@@ -213,7 +224,7 @@ namespace Core{
 		{
 		 std::vector<FMTdevelopmentpath>newpaths;
 		 try {
-			 const FMTfork* fork = Transition.getfork(*this, ylds);
+			 const FMTfork* fork = Transition.getfork(*this,ylds);
 			 if (fork)
 			 {
 				 newpaths = fork->getpaths(*this, ylds, themes, action.isresetage());
@@ -281,15 +292,21 @@ namespace Core{
 		return nolock;
 		}
 
-	bool FMTdevelopment::is(const FMTspec& specification, const FMTyields& ylds) const
+	bool FMTdevelopment::is(const FMTspec& specification, const FMTyields& ylds,
+		const Graph::FMTgraphvertextoyield* graphyieldrequest) const
 		{
-		bool allow = false;
 		try {
-			allow = specification.allowwithoutyield(getperiod(), getage(), getlock());
-			if (allow && !specification.emptyylds())
+			if (specification.allowwithoutyield(getperiod(), getage(), getlock()) && !specification.emptyylds())
 				{
-				const std::vector<double> yields = ylds.getylds(*this, specification);
-				allow = specification.allowyields(yields);
+				const FMTyieldrequest request = getyieldrequest(graphyieldrequest);
+				for (const std::string& yldname : specification.getylds())
+					{
+					const FMTyldbounds& yldbound = specification.getyieldbound(yldname);
+					if (yldbound.out(ylds.get(request,yldname)))
+						{
+						return false;
+						}
+					}
 				}
 		}catch (...)
 			{
@@ -297,12 +314,14 @@ namespace Core{
 				"for " + std::string(*this),
 				"FMTdevelopment::is",__LINE__, __FILE__);
 			}
-		return allow;
+		return true;
 		}
-	double FMTdevelopment::getinventorycoef(const FMTyields& ylds, const std::string& target_yield) const
+	double FMTdevelopment::getinventorycoef(const FMTyields& ylds, const std::string& target_yield,
+		const Graph::FMTgraphvertextoyield* graphyieldrequest) const
 	{
 		try {
-		return ylds.getsingle(*this, target_yield);
+			const FMTyieldrequest request = getyieldrequest(graphyieldrequest);
+			return ylds.get(request,target_yield);
 		}catch (...)
 		{
 			_exhandler->raisefromcatch("for " + std::string(*this) , "FMTdevelopment::getinventorycoef", __LINE__, __FILE__);
@@ -310,16 +329,17 @@ namespace Core{
 		return 0;
 		}
 	double FMTdevelopment::getharvestcoef(const std::vector<FMTdevelopmentpath>& topaths,
-			const FMTaction& action,const FMTyields& ylds,const std::string& target_yield) const
+			const FMTaction& action,const FMTyields& ylds,const std::string& target_yield,
+		const Graph::FMTgraphvertextoyield* graphyieldrequest) const
 		{
 		double value = 0;
 		try {
-			const double actual_value = this->getinventorycoef(ylds, target_yield);
+			const double actual_value = this->getinventorycoef(ylds, target_yield, graphyieldrequest);
 			if (action.partial(target_yield))
 			{
 				for (const FMTdevelopmentpath& path : topaths)
 				{
-					const double dif_value = (actual_value - path.development->getinventorycoef(ylds, target_yield));
+					const double dif_value = (actual_value - path.development->getinventorycoef(ylds, target_yield, graphyieldrequest));
 					value += (dif_value * (path.proportion / 100));
 				}
 			}

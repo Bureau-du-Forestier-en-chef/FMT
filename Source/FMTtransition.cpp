@@ -6,6 +6,8 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
 #include "FMTtransition.h"
+#include "FMTyieldrequest.h"
+#include "FMTdevelopment.h"
 
 namespace Core{
 FMTtransition::FMTtransition():name(){}
@@ -155,18 +157,27 @@ std::vector<Core::FMTmask> FMTtransition::canproduce(const Core::FMTmask& testma
 
 	}
 
-const FMTfork* FMTtransition::getfork(const FMTdevelopment& dev,
-                               const FMTyields& ylds) const
+const FMTfork* FMTtransition::getfork(const Core::FMTdevelopment& developement,const FMTyields& ylds) const
     {
 	try{
-    for(const FMTfork* fork : this->findsets(dev.getmask()))
+	const Core::FMTyieldrequest& request = developement.getyieldrequest();
+    for(const FMTfork* fork : this->findsets(developement.getmask()))
        {
-		if (fork->allowwithoutyield(dev.getperiod(), dev.getage(), dev.getlock()))
+		if (fork->allowwithoutyield(developement.getperiod(), developement.getage(), developement.getlock()))
 			{
-			
-			const std::vector<double>yields = ylds.getylds(dev, *fork);
-			
-			if (fork->allowyields(yields))
+			const std::vector<FMTyldbounds>&bounds = fork->getyldbounds();
+			size_t bid = 0;
+			bool usefork = true;
+			for (const std::string& yldname : fork->getylds())
+			{
+				if (!bounds.at(bid).out(ylds.get(request,yldname)))
+					{
+					usefork = false;
+					break;
+					}
+				++bid;
+			}
+			if (usefork)
 				{
 				return fork;
 				}
@@ -188,7 +199,7 @@ FMTmask FMTtransition::main_target(const std::vector<FMTdevelopment>& devs,
 		std::map<FMTmask, unsigned int>hits;
 	for (const FMTdevelopment& dev : devs)
 	{
-		const FMTfork* fork = this->getfork(dev, ylds);
+		const FMTfork* fork = this->getfork(dev,ylds);
 		if (fork)
 		{
 			for (const FMTtransitionmask& target : fork->getmasktrans())
@@ -228,7 +239,7 @@ FMTmask FMTtransition::main_target(const std::vector<FMTdevelopment>& devs,
 	 try {
 		 for (const FMTdevelopment& dev : devs)
 		 {
-			 const FMTfork* fork = this->getfork(dev, ylds);
+			 const FMTfork* fork = this->getfork(dev,ylds);
 			 if (fork)
 			 {
 				 std::string key = this->name;

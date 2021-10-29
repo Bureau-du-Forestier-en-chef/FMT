@@ -32,6 +32,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMToutputnodecache.h"
 #include <boost\unordered_set.hpp>
 #include "FMTcarbonpredictor.h"
+#include "FMTgraphvertextoyield.h"
 
 
 
@@ -428,10 +429,11 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 							{
 								const FMTvertex_descriptor front_vertex = actives.front();
 								actives.pop();
+								const Graph::FMTgraphvertextoyield vertexinfo = getvertextoyieldinfo(front_vertex);
 								FMTvertexproperties front_properties = data[front_vertex];
-								const Core::FMTdevelopment& active_development = front_properties.get();
+								const Core::FMTdevelopment& active_development = front_properties.get();					
 								bool death = false;
-								if (active_development.operable(action, model.yields) && 
+								if (active_development.operable(action,model.yields,&vertexinfo) &&
 									active_development.getage()%compressageoperability==0)
 								{
 									if (action.getname() == "_DEATH")
@@ -1165,9 +1167,10 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 					for (const FMTvertex_descriptor& vertex : verticies)
 					{
 						const Core::FMTdevelopment& development = data[vertex].get();
+						const Graph::FMTgraphvertextoyield vertexinfo = getvertextoyieldinfo(vertex);
 						if (output_node.source.useinedges())
 						{
-							const double coef = output_node.source.getcoef(development, model.yields) * output_node.factor.getcoef(development, model.yields) * output_node.constant;
+							const double coef = output_node.source.getcoef(development, model.yields,&vertexinfo) * output_node.factor.getcoef(development, model.yields,&vertexinfo) * output_node.constant;
 							if (development.getperiod() == 0)
 							{
 								const std::map<int, int>vars = getoutvariables(vertex);
@@ -1202,7 +1205,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 								if (outvars.find(actionID) != outvars.end())
 								{
 									const std::vector<Core::FMTdevelopmentpath>paths = getpaths(vertex, actionID);
-									const double action_coef = output_node.source.getcoef(development, model.yields,&paths,act) * output_node.factor.getcoef(development, model.yields,&paths,act) * output_node.constant;
+									const double action_coef = output_node.source.getcoef(development, model.yields,&vertexinfo,&paths,act) * output_node.factor.getcoef(development, model.yields,&vertexinfo,&paths,act) * output_node.constant;
 									updatevarsmap(variables, outvars.at(actionID), action_coef);
 								}
 							}
@@ -1395,8 +1398,8 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 								(!action.dorespectlock() && active_development.getlock() != 0 &&
 								(schedule.at(action)).find(active_development.clearlock()) != (schedule.at(action)).end())))
 							{
-								
-								if (active_development.operable(action, model.yields))
+								const Graph::FMTgraphvertextoyield vertexinfo = getvertextoyieldinfo(front_vertex);
+								if (active_development.operable(action, model.yields, &vertexinfo))
 								{
 									if (action.getname() == "_DEATH")
 									{
@@ -1687,6 +1690,33 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 				}
 			return emptyreturn;
 		}
+
+		Graph::FMTgraphvertextoyield getvertextoyieldinfo(const FMTvertex_descriptor& descriptor) const
+			{
+			try {
+				return Graph::FMTgraphvertextoyield(*this, reinterpret_cast<const void*>(&descriptor));
+			}catch (...)
+				{
+				_exhandler->raisefromcatch("", "FMTgraph::getvertextoyieldinfo", __LINE__, __FILE__);
+				}
+			return Graph::FMTgraphvertextoyield();
+			}
+
+		const FMTvertex_descriptor* getvertexfromvertexinfo(const Graph::FMTgraphvertextoyield* info) const
+		{
+			try {
+				reinterpret_cast<const FMTvertex_descriptor*>(info->getvertexptr());
+			}
+			catch (...)
+			{
+				_exhandler->raisefromcatch("", "FMTgraph::getvertexfromvertexinfo", __LINE__, __FILE__);
+			}
+			return nullptr;
+		}
+
+
+
+
 		std::map<std::string, double> getvalues(const Models::FMTmodel& model, const std::vector<FMTvertex_descriptor>& verticies,
 			const Core::FMToutputnode& node, const Core::FMTtheme& theme,
 			const double* solution, Core::FMToutputlevel level) const
@@ -1712,6 +1742,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 					for (const FMTvertex_descriptor& vertex : verticies)
 					{
 						const Core::FMTdevelopment& development = data[vertex].get();
+						const Graph::FMTgraphvertextoyield vertexinfo = getvertextoyieldinfo(vertex);
 						std::string value;
 						if (level == Core::FMToutputlevel::standard)
 						{
@@ -1731,11 +1762,9 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 						else {
 							value = "Total";
 						}
-
 						if (node.source.useinedges())
 						{
-							const double coef = node.source.getcoef(development, model.yields) * node.factor.getcoef(development, model.yields) * node.constant;
-							
+							const double coef = node.source.getcoef(development, model.yields, &vertexinfo) * node.factor.getcoef(development, model.yields, &vertexinfo) * node.constant;
 							double area = 0;
 							if (development.getperiod() == 0)
 							{
@@ -1752,7 +1781,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 								double action_value = 0;
 								const int actionID = static_cast<int>(std::distance(&(*model.actions.begin()), act));
 								const std::vector<Core::FMTdevelopmentpath>paths = getpaths(vertex, actionID);
-								const double action_coef = node.source.getcoef(development, model.yields,&paths,act) * node.factor.getcoef(development, model.yields,&paths,act) * node.constant;
+								const double action_coef = node.source.getcoef(development, model.yields, &vertexinfo,&paths,act) * node.factor.getcoef(development, model.yields, &vertexinfo,&paths,act) * node.constant;
 								action_value = action_coef * (outarea(vertex, actionID, solution));
 								values[value] += action_value;
 							}
@@ -2083,7 +2112,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 
 
 
-		std::vector<FMTcarbonpredictor> getcarbonpredictors(const FMTvertex_descriptor& targetdescriptor, const std::map<int, int>& actionsindex,
+		std::vector<FMTcarbonpredictor> getcarbonpredictors(const FMTvertex_descriptor& targetdescriptor,const std::vector<int>& actionsindex,
 			const std::vector<std::string>& yieldnames, const Core::FMTyields&yields,const size_t& depth) const
 			{
 			std::vector<FMTcarbonpredictor> predictors;

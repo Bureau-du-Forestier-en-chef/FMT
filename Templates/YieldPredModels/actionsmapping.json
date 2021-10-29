@@ -1,0 +1,178 @@
+{
+"APLLI":{
+	"name":"97% clearcut with plantation",
+	"id":0
+	},
+"APLIN":{
+	"name":"97% clearcut with plantation",
+	"id":0
+	},
+"APL":{
+	"name":"97% clearcut with plantation",
+	"id":0
+	},
+"APLBA":{
+	"name":"97% clearcut with plantation",
+	"id":0
+	},
+"AREG":{
+	"name":"97% clearcut with plantation",
+	"id":0
+	},
+"ASCA":{
+	"name":"97% clearcut",
+	"id":1
+	},
+"AEPC":{
+	"name":"85% precommercial thinning",
+	"id":2
+	},
+"ADEGNAT":{
+	"name":"85% precommercial thinning",
+	"id":2
+	},
+"ADEGPL":{
+	"name":"85% precommercial thinning",
+	"id":2
+	},
+"ACT":{
+	"name":"97% clearcut",
+	"id":1
+	},
+"ACFP":{
+	"name":"97% clearcut",
+	"id":1
+	},
+"ACPPTM":{
+	"name":"94% clearcut",
+	"id":1
+	},
+"ACRS":{
+	"name":"75% Commercial thinning",
+	"id":3
+	},
+"ACRV":{
+	"name":"75% Commercial thinning",
+	"id":3
+	},
+"ACA":{
+	"name":"30% Commercial thinning",
+	"id":4
+	},
+"ACA2":{
+	"name":"30% Commercial thinning",
+	"id":4
+	},
+"ACJ":{
+	"name":"30% Commercial thinning",
+	"id":4
+	},
+"ACPJ":{
+	"name":"30% Commercial thinning",
+	"id":4
+	},
+"ACPIL":{
+	"name":"45% Commercial thinning",
+	"id":5
+	},
+"ACPIP":{
+	"name":"35% Commercial thinning",
+	"id":6
+	},
+"ACPROG":{
+	"name":"40% Commercial thinning",
+	"id":7
+	},
+"ACP":{
+	"name":"30% Commercial thinning",
+	"id":4
+	},
+"ACPFORT":{
+	"name":"45% Commercial thinning",
+	"id":5
+	},
+"ACPFAIBL":{
+	"name":"35% Commercial thinning",
+	"id":6
+	},
+"AEC":{
+	"name":"30% Commercial thinning",
+	"id":4
+	},
+"AEC2":{
+	"name":"30% Commercial thinning",
+	"id":4
+	},
+"AEC3":{
+	"name":"30% Commercial thinning",
+	"id":4
+	},
+"ANET":{
+	"name":"85% precommercial thinning",
+	"id":2
+	},
+"ASNAT":{
+	"name":"Stand Replacing Natural Succession",
+	"id":8
+	},
+"AFEUX":{
+	"name":"Wild Fire",
+	"id":9
+	},
+"AFEUXRECUP":{
+	"name":"Salvage logging after fire",
+	"id":10
+	},
+"ATBEL":{
+	"name":"Spruce Budworm in QC, Light annual defoliation, 6yr cumulative defoliation 46-55%",
+	"id":11
+	},
+"ATBES":{
+	"name":"SBW for old fir stands  - Impact Type 27",
+	"id":12
+	},
+"ATBERETARD":{
+	"name":"Spruce Budworm in QC, Light annual defoliation, 6yr cumulative defoliation 46-55%",
+	"id":11
+	},
+"ATBEMORT":{
+	"name":"Spruce Budworm in QC, Severe annual defoliation, 6yr cumulative defoliation 46-55%",
+	"id":13
+	},
+"CHABLIS":{
+	"name":"generic 95% mortality",
+	"id":14
+	},
+"_DEATH":{
+	"name":"Stand Replacing Natural Succession",
+	"id":15
+	},
+"GROWTH":{
+	"name":"GROWTH",
+	"id":16
+	},
+"UNKNOWN":{
+	"name":"UNKNOWN",
+	"id":17
+	},
+"COUPETOTALE":{
+	"name":"97% clearcut",
+	"id":1
+	},
+"ACARIBOU":{
+	"name":"test",
+	"id":18
+	},
+"PLANTATION":{
+	"name":"97% clearcut with plantation",
+	"id":0
+	},
+"AFIRE":{
+	"name":"Wild Fire",
+	"id":9
+	},
+"ARECUP":{
+	"name":"Salvage logging after fire",
+	"id":10
+	}
+}

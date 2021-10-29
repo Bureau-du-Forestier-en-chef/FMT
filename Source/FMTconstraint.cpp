@@ -6,6 +6,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
 #include "FMTconstraint.h"
+#include <memory>
 
 namespace Core
 
@@ -1068,8 +1069,8 @@ namespace Core
 					}
 				defaultstrmask.pop_back();
 				const Core::FMTmask defaultmask(defaultstrmask, themes);
-				Core::FMTyieldhandler defaulthandler(Core::FMTyldtype::FMTtimeyld, defaultmask);
-				defaulthandler.push_base(0);
+				std::unique_ptr<Core::FMTyieldhandler> defaulthandler(new Core::FMTyieldhandler(defaultmask));
+				defaulthandler->push_base(0);
 				//defaulthandler.push_base(1);
 				size_t sourceid = 0;
 				yields.unshrink(themes);
@@ -1087,20 +1088,20 @@ namespace Core
 						}
 						for (const double& pattern : defaultvalues)
 						{
-							defaulthandler.push_data(yieldname, pattern);
+							defaulthandler->push_data(yieldname, pattern);
 						}
-						Core::FMTyieldhandler yieldhandler(Core::FMTyldtype::FMTtimeyld, source.getmask());
-						yieldhandler.push_base(0);
+						std::unique_ptr<Core::FMTyieldhandler> yieldhandler(new Core::FMTyieldhandler(source.getmask()));
+						yieldhandler->push_base(0);
 						//yieldhandler.push_base(1);
 						for (const double& pattern : patternvalues)
 						{
-							yieldhandler.push_data(yieldname, pattern);
+							yieldhandler->push_data(yieldname, pattern);
 						}
-						yields.push_back(std::pair<Core::FMTmask, Core::FMTyieldhandler>(source.getmask(), yieldhandler));
+						yields.push_back(source.getmask(), yieldhandler);
 					}
 					++sourceid;
 				}
-				yields.push_back(std::pair<Core::FMTmask, Core::FMTyieldhandler>(defaultmask, defaulthandler));
+				yields.push_back(defaultmask, defaulthandler);
 				yields.shrink();
 			}
 			catch (...)

@@ -8,6 +8,10 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMToptimizationparser.h"
 #include <boost/icl/interval.hpp>
 #include <boost/icl/interval_set.hpp>
+#include "FMTconstants.h"
+#include "FMTtheme.h"
+#include "FMToutput.h"
+#include "FMTconstraint.h"
 
 namespace Parser
 {
