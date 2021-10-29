@@ -19,6 +19,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTscheduleparser.h"
 #include "FMTmodelparser.h"
 #include "boost/python.hpp"
+#include "FMTlifespanparser.h"
 
 namespace Python
 {

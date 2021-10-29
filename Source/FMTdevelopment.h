@@ -23,13 +23,19 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <memory>
 #include <vector>
 #include <boost/serialization/export.hpp>
+namespace Graph
+{
+	class FMTgraphvertextoyield;
+}
+
 
 
 namespace Core
 {
 
 class FMTfuturdevelopment;
-class  FMTtransition;
+class FMTtransition;
+class FMTyieldrequest;
 // DocString: FMTdevelopment
 /**
 FMTdevelopment is the base class of FMTactualdevelopement and FMTfuturdevelopement. This class is the thing that look like
@@ -187,16 +193,23 @@ class FMTEXPORT FMTdevelopment : public FMTobject
 		decreasing the lock level if the lock level was > 0.
 		*/
         FMTfuturdevelopment grow() const;
+		// DocString: FMTdevelopment::getyieldrequest
+		/**
+		Get a yieldrequest without any reference to a FMTgraph for a given (ylds) and this FMTdevelopement.
+		*/
+		FMTyieldrequest getyieldrequest(const Graph::FMTgraphvertextoyield* graphyieldrequest = nullptr) const;
 		// DocString: FMTdevelopment::operable
 		/**
 		Check if this FMTdevelopement is operable to an FMTaction (action) based on multiple yields (yields).
 		*/
-        bool operable(const FMTaction& action,const FMTyields& ylds) const;
+        bool operable(const FMTaction& action,const Core::FMTyields& ylds,
+			const Graph::FMTgraphvertextoyield* graphyieldrequest = nullptr) const;
 		// DocString: FMTdevelopment::anyoperable
 		/**
 		Check if this FMTdevelopement is operable to any of FMTaction in the (actions) vector based on multiple yields (yields).
 		*/
-		bool anyoperable(const std::vector<const FMTaction*>& actions,const FMTyields& ylds) const;
+		bool anyoperable(const std::vector<const FMTaction*>& actions, const Core::FMTyields& ylds,
+			const Graph::FMTgraphvertextoyield* graphyieldrequest = nullptr) const;
 		// DocString: FMTdevelopment::operator std::string
 		/**
 		Returns the string reprensentation of a FMTdevelopment like in the area section.
@@ -219,14 +232,15 @@ class FMTEXPORT FMTdevelopment : public FMTobject
 		*/
 		std::vector<FMTdevelopmentpath> operate(const FMTaction& action,
 			const FMTtransition& Transition,
-			const FMTyields& ylds,
+			const Core::FMTyields& ylds,
 			const std::vector<FMTtheme>& themes) const;
 		// DocString: FMTdevelopment::getinventorycoef
 		/**
 		Returns inventory coefficiant of the FMTdevelopement for a given yield (target_yield) based on (yields).
 		The amount of (yield) do this FMTdevelopement has.
 		*/
-		double getinventorycoef(const FMTyields& ylds, const std::string& target_yield) const;
+		double getinventorycoef(const Core::FMTyields& ylds,const std::string& target_yield,
+			const Graph::FMTgraphvertextoyield* graphyieldrequest = nullptr) const;
 		// DocString: FMTdevelopment::getharvestcoef
 		/**
 		Returns the harvest coefficiant of the FMTdevelopement for a given yield (target_yield) if it follows
@@ -234,12 +248,14 @@ class FMTEXPORT FMTdevelopment : public FMTobject
 		It gives the amount of yield the action produce if the *this FMTdevelopement is operated.
 		*/
 		double getharvestcoef(const std::vector<FMTdevelopmentpath>& topaths,
-			const FMTaction& action,const FMTyields& ylds,const std::string& target_yield) const;
+			const FMTaction& action,const Core::FMTyields& ylds,const std::string& target_yield,
+			const Graph::FMTgraphvertextoyield* graphyieldrequest = nullptr) const;
 		// DocString: FMTdevelopment::is
 		/**
 		Check if this FMTdevelopment respects some specifications based on multiple yields.
 		*/
-		bool is(const FMTspec& specification, const FMTyields& ylds) const;
+		bool is(const FMTspec& specification, const Core::FMTyields& ylds,
+			const Graph::FMTgraphvertextoyield* graphyieldrequest = nullptr) const;
 		// DocString: FMTdevelopment::worthtestingoperability
 		/**
 		This function returns true if the function worth testing for operability for the action.

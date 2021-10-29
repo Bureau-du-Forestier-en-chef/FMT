@@ -492,10 +492,12 @@ endif(DEFINED CMAKE_TOOLCHAIN_FILE)
 
 get_filename_component(GDAL_DATA_NAME "${GDAL_DATA}" NAME)
 
+
 #install part
 install (CODE
     "set(GDAL_FOUND \"${GDAL_FOUND}\")
     file(COPY \"${CMAKE_CURRENT_SOURCE_DIR}/LICENSES\" DESTINATION \"${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}\")
+    file(COPY \"${CMAKE_CURRENT_SOURCE_DIR}/Templates/YieldPredModels\" DESTINATION \"${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}\")
     if (GDAL_FOUND)
         #Copy gdal data
         file(COPY \"${GDAL_DATA}\" DESTINATION \"${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}\")

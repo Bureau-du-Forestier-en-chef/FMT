@@ -557,7 +557,12 @@ class FMTEXPORT FMTmodel : public Core::FMTobject
 		Get a clone of the FMTmodel
 		*/
 		virtual std::unique_ptr<FMTmodel>clone() const;
-
+		// DocString: FMTmodel::getGCBMactionids
+		/**
+		Get the corresponding ids of each action of the model. Your actions names should me mapped in YieldPredModels/actionsmapping.json
+		If not the function will throw.
+		*/
+		std::vector<int>getGCBMactionids() const;
     };
 // DocString: FMTmodelcomparator
 /**

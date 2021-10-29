@@ -8,12 +8,15 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #ifndef FMTlifespanparser_H_INCLUDED
 #define FMTlifespanparser_H_INCLUDED
 
-#include "FMTlist.h"
+
 #include "FMTparser.h"
-#include "FMTlifespans.h"
-#include "FMTtheme.h"
-#include "FMTconstants.h"
 #include <string>
+
+namespace Core {
+	class FMTlifespans;
+	class FMTtheme;
+	class FMTconstants;
+}
 
 namespace Parser
 

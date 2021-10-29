@@ -75,23 +75,13 @@ int main()
 					}
 					Logging::FMTlogger() << "\n";
 				}
-				Spatial::FMTspatialschedule spatialschedule = simulationmodel.getspschedule();
-				std::map<int,int>actionindex;
-				int actionid = 0;
-				for (const auto& action : simulationmodel.getactions())
-				{
-					actionindex[actionid]=actionid;
-					Logging::FMTlogger() <<"Action id "+std::to_string(actionid) +" for : "+action.getname()<< "\n";
-					++actionid;
-				}
-				actionindex[-1]=-1;
-				actionindex[-2]=-2;
+				Spatial::FMTspatialschedule spatialschedule = simulationmodel.getspschedule();	
 				std::vector<std::vector<std::vector<std::pair<std::string,double>>>> allpredictors;
 				std::set<std::string> allprednames;
 				for (size_t period = 1; period <= 5; ++period)
 				{
 					std::vector<std::vector<std::pair<std::string,double>>> periodpredictors;
-					std::vector<std::vector<Graph::FMTcarbonpredictor>> predictors = areaparser.writecarbonpredictors(outdir,spatialschedule,actionindex,yieldsforpredictors,simulationmodel.getyields(),period);
+					std::vector<std::vector<Graph::FMTcarbonpredictor>> predictors = areaparser.writecarbonpredictors(outdir,spatialschedule,yieldsforpredictors,simulationmodel,period);
 					for (const auto& predictorslist : predictors)
 					{
 						for (const auto& predict : predictorslist)

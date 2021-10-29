@@ -138,11 +138,13 @@ class FMTEXPORT FMToutputsource : public FMTspec
 			}
 		double getcoef(const FMTdevelopment& development,
 			const FMTyields& yields,
+			const Graph::FMTgraphvertextoyield* graphinfo =nullptr,
 			std::vector<FMTdevelopmentpath> const * paths=nullptr,
 			 FMTaction const * action=nullptr) const;
-		inline bool use(const FMTdevelopment& development, const FMTyields& ylds) const
+		inline bool use(const FMTdevelopment& development, const FMTyields& ylds,
+			const Graph::FMTgraphvertextoyield* graphinfo=nullptr) const
 			{
-			return (/*mask && */development.getmask().issubsetof(mask) && development.is(*this, ylds));
+			return (development.getmask().issubsetof(mask) && development.is(*this, ylds, graphinfo));
 			}
 		FMToutputsource presolve(const FMTmask& presolvedmask,const std::vector<FMTtheme>& newthemes) const;
 		void setaverage();

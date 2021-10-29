@@ -13,7 +13,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTlist.h"
 #include "FMTaction.h"
 #include "FMTyields.h"
-#include "FMTdevelopment.h"
+//#include "FMTdevelopment.h"
 #include "FMTtheme.h"
 #include <boost/serialization/serialization.hpp>
 #include <boost/serialization/string.hpp>
@@ -26,6 +26,8 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 namespace Core
 {
 class FMTfork;
+class FMTyieldrequest;
+class FMTdevelopment;
 // DocString: FMTtransition
 /**
 FMTtransition is a list of FMTfork (FMTspec). Each FMTaction has it's FMTtransition.
@@ -113,8 +115,7 @@ class FMTEXPORT FMTtransition : public FMTlist<FMTfork>
 		Returns the FMTfork pointer for which the FMTdevelopment (dev) can be disturbed based on a given FMTyields section (ylds).
 		Looking at every possible fork returns only the first usefull fork.
 		*/
-        const FMTfork* getfork(const FMTdevelopment& dev,
-                               const FMTyields& ylds) const;
+        const FMTfork* getfork(const Core::FMTdevelopment& developement, const FMTyields& ylds) const;
 		// DocString: FMTtransition::getstaticthemes
 		/**
 		Using a list of (themes) this function returns a subset of the theme list for which their's no attribute change

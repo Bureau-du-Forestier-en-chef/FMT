@@ -9,17 +9,18 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #define FMToutputparser_H_INCLUDED
 
 #include "FMTparser.h"
-#include "FMTtheme.h"
-#include "FMTaction.h"
-#include "FMTyields.h"
-#include "FMTconstants.h"
-#include "FMToutput.h"
 #include "FMTutility.h"
 #include <regex>
-#include "FMTconstants.h"
-#include "FMTtheme.h"
-#include "FMTaction.h"
 #include <string>
+
+namespace Core
+{
+	class FMTtheme;
+	class FMTaction;
+	class FMTyields;
+	class FMTconstants;
+	class FMToutput;
+}
 
 namespace Parser
 

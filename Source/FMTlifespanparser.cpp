@@ -6,6 +6,9 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
 #include "FMTlifespanparser.h"
+#include "FMTlifespans.h"
+#include "FMTtheme.h"
+#include "FMTconstants.h"
 
 namespace Parser{
 

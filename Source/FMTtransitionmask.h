@@ -9,7 +9,6 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #define FMTMASKTRAN_H_INCLUDED
 
 #include "FMTbounds.h"
-#include "FMTdevelopment.h"
 #include "FMTmask.h"
 #include "FMTmaskfilter.h"
 #include <boost/serialization/serialization.hpp>
@@ -18,11 +17,13 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTtheme.h"
 
 
+
 namespace Core
 {
 
 class FMTdevelopment;
 class FMTyields;
+class FMTyieldrequest;
 
 class FMTtransitionmask : public FMTmaskfilter,public FMTspec
     {
@@ -47,7 +48,7 @@ class FMTtransitionmask : public FMTmaskfilter,public FMTspec
         FMTtransitionmask(const FMTtransitionmask& rhs);
         FMTtransitionmask(const FMTtransitionmask& rhs,const FMTmask& lmask,const std::vector<FMTtheme>& themes);
         FMTtransitionmask& operator = (const FMTtransitionmask& rhs);
-        FMTdevelopment disturb(const FMTdevelopment& dev,const FMTyields& yields,
+        FMTdevelopment disturb(const Core::FMTdevelopment& dev, const FMTyields& yields,
 			const std::vector<FMTtheme>& themes,const bool& reset_age) const;
 		std::map<std::string, std::string>get(const std::vector<FMTtheme>& themes) const;
 		bool operator == (const FMTtransitionmask& rhs) const;

@@ -9,27 +9,36 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #define FMTmodelparser_H_INCLUDED
 
 
-#include "FMTparser.h"
-#include "FMTconstantparser.h"
-#include "FMTlandscapeparser.h"
-#include "FMTareaparser.h"
-#include "FMTyieldparser.h"
-#include "FMTactionparser.h"
-#include "FMTtransitionparser.h"
-#include "FMTlifespanparser.h"
-#include "FMToutputparser.h"
-#include "FMToptimizationparser.h"
-#include "FMTscheduleparser.h"
-#include "FMTmodel.h"
 #include "boost/filesystem.hpp"
 #include <map>
 #include <string>
 #include <vector>
-#include "FMTschedule.h"
+#include "FMTparser.h"
+#include "FMToutput.h"
+
+namespace Models {
+	class FMTmodel;
+}
+
+
+namespace Core {
+	class FMTschedule;
+	class FMTconstraint;
+	class FMToutput;
+}
 
 
 namespace Parser
 {
+class FMTconstantparser;
+class FMTlandscapeparser;
+class FMTareaparser;
+class FMTyieldparser;
+class FMTactionparser;
+class FMTlifespanparser;
+class FMToutputparser;
+class FMToptimizationparser;
+class FMTscheduleparser;
 // DocString: FMTmodelparser
 /**
 FMTmodelparser is the main parser class used for reading and writing models files.

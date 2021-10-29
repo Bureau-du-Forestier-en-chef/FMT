@@ -6,6 +6,9 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
 #include "FMTscheduleparser.h"
+#include "FMTtheme.h"
+#include "FMTaction.h"
+#include "FMTschedule.h"
 
 namespace Parser {
 

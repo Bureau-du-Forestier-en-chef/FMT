@@ -36,7 +36,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTfuturdevelopment.h"
 #include "FMTaction.h"
 #include "FMTbounds.h"
-#include "FMTyieldhandler.h"
+#include "FMTtimeyieldhandler.h"
 #include "FMTfork.h"
 #include "FMTtransition.h"
 #include "FMToutputnode.h"
@@ -117,8 +117,8 @@ RCPP_DECLAREVECTOR(Core::FMTactualdevelopment);//For vector
 RCPP_DECLAREVECTOR(Core::FMTfuturdevelopment);//For vector
 RCPP_DECLAREVECTOR(Core::FMTaction);//For vector
 RCPP_DECLAREPAIR(Core::FMTmask, int);//pair for FMTlist
-RCPP_DECLAREPAIR(Core::FMTmask, Core::FMTyieldhandler);//pair for FMTlist
-RCPP_DECLAREVECTOR(Core::FMTyieldhandler);//For vector
+RCPP_DECLAREPAIR(Core::FMTmask, Core::FMTtimeyieldhandler);//pair for FMTlist
+RCPP_DECLAREVECTOR(Core::FMTtimeyieldhandler);//For vector
 RCPP_DECLAREPAIR(Core::FMTmask, Core::FMTfork);//pair for FMTlist
 RCPP_DECLAREVECTOR(Core::FMTfork);//For vector
 RCPP_DECLAREVECTOR(Core::FMTtransition);//For vector
