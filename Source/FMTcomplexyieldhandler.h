@@ -9,6 +9,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #define FMTCOMPLEXYIELDHANDLER_H_INCLUDED
 
 #include "FMTyieldhandler.h"
+#include "FMTdata.h"
 #include <string>
 #include <boost/serialization/serialization.hpp>
 #include <boost/serialization/nvp.hpp>
@@ -16,7 +17,6 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 namespace Core
 {
-	class FMTdata;
 	class FMTEXPORT FMTcomplexyieldhandler final : public FMTyieldhandler
 	{
 		friend class boost::serialization::access;

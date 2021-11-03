@@ -10,6 +10,11 @@ Example to get FMTcarbonpredictors on a FMTsesmodel
 #include "FMTlogger.h"
 #include "FMTexception.h"
 #include "FMTcarbonpredictor.h"
+#include "FMTconstraint.h"
+#include "FMTtransition.h"
+#include "FMTspatialschedule.h"
+#include "FMTareaparser.h"
+#include "FMTforest.h"
 
 #ifdef FMTWITHTORCH
 	#include <torch/torch.h>
