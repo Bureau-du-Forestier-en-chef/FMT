@@ -12,10 +12,10 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <string>
 #include <boost/serialization/serialization.hpp>
 #include <boost/serialization/nvp.hpp>
+#include "FMTdata.h"
 
 namespace Core
 {
-	class FMTdata;
 	class FMTEXPORT FMTageyieldhandler final : public FMTyieldhandler
 	{
 		friend class boost::serialization::access;

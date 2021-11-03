@@ -130,7 +130,7 @@ void exportModel()
 			"@DocString(FMTlpsolver::writeMPS)");
 
 	Rcpp::class_<Models::FMTsrmodel>("FMTsrmodel", "@DocString(FMTsrmodel)")
-		.derives<Models::FMTsrmodel>("FMTmodel")
+		.derives<Models::FMTmodel>("FMTmodel")
 		.constructor("@DocString(FMTsrmodel())")
 		.method("buildperiod", &Models::FMTsrmodel::buildperiod,
 			"@DocString(FMTsrmodel::buildperiod)")

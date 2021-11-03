@@ -3,6 +3,8 @@
 #include "FMTmodelparser.h"
 #include "FMTversion.h"
 #include "FMTlogger.h"
+#include "FMTconstraint.h"
+#include "FMTscheduleparser.h"
 
 
 int main()

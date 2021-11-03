@@ -183,10 +183,10 @@ void exportCore()
 					"@DocString(FMTdevelopment::operator<)")
                 .method("grow",&Core::FMTdevelopment::grow,
 					"@DocString(FMTdevelopment::grow)")
-                .method("operable",&Core::FMTdevelopment::operable,
-					"@DocString(FMTdevelopment::operable)")
-                .method("operate",&Core::FMTdevelopment::operate,
-					"@DocString(FMTdevelopment::operate)")
+                //.method("operable",&Core::FMTdevelopment::operable,
+				//	"@DocString(FMTdevelopment::operable)")
+                //.method("operate",&Core::FMTdevelopment::operate,
+				//	"@DocString(FMTdevelopment::operate)")
 				.method("str", &Core::FMTdevelopment::operator std::string,
 					"@DocString(FMTdevelopment::operate std::string)");
 

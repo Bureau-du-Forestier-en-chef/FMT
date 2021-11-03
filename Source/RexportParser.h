@@ -12,6 +12,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTparser.h"
 #include "FMTlandscapeparser.h"
 #include "FMTconstantparser.h"
+#include "FMTlifespanparser.h"
 #include "FMTyieldparser.h"
 #include "FMTareaparser.h"
 #include "FMTactionparser.h"
