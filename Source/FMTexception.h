@@ -143,7 +143,8 @@ enum FMTexc
 	FMTmissing_scenarios= 70,
 	FMTschemefailed=71,
 	FMTmaxnumberofexception = 72,
-	FMTmskerror = 73
+	FMTmskerror = 73,
+	FMToveridedyield = 74
     };
 
 // DocString: FMTexception

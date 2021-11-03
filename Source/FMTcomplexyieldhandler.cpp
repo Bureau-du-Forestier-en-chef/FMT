@@ -78,31 +78,6 @@ namespace Core {
 			elements == rhs.elements);
 	}
 
-	std::vector<double>FMTcomplexyieldhandler::getsourcesarray(const std::map<std::string, const std::unique_ptr<FMTyieldhandler>*>& srcdata, const FMTyieldrequest& request, bool& age_only) const
-	{
-		std::vector<double>alldata(srcdata.size(), 0.0);
-		try {
-			size_t location = 0;
-			for (std::map<std::string, const std::unique_ptr<FMTyieldhandler>*>::const_iterator datait = srcdata.begin(); datait != srcdata.end(); datait++)
-			{
-				if (datait->second != nullptr)
-				{
-					const std::unique_ptr<FMTyieldhandler>* yldata = datait->second;
-					if ((*yldata)->gettype() != FMTyldtype::FMTageyld)
-					{
-						age_only = false;
-					}
-					alldata[location] = (*yldata)->get(datait->first, request);
-				}
-				++location;
-			}
-		}
-		catch (...)
-		{
-			_exhandler->raisefromcatch("", "FMTcomplexyieldhandler::getsourcesarray", __LINE__, __FILE__, Core::FMTsection::Yield);
-		}
-		return alldata;
-	}
 
 
 	std::map<std::string, double> FMTcomplexyieldhandler::getsources(const std::map<std::string, const std::unique_ptr<FMTyieldhandler>*>& srcdata, const FMTyieldrequest& request, bool& age_only) const
@@ -131,6 +106,103 @@ namespace Core {
 		return alldata;
 	}
 
+	std::unique_ptr<FMTyieldhandler>FMTcomplexyieldhandler::toageyld(const FMTyieldrequest& request,
+		const std::vector<std::string>& yieldnames, const int& minage, const int& maxage) const
+	{
+		FMTageyieldhandler nhandler(mask);
+		try {
+			for (int age = minage; age <= maxage; ++age)
+			{
+				nhandler.push_base(age);
+			}
+			for (size_t id = 0; id < yieldnames.size(); ++id)
+			{
+				if (containsyield(yieldnames.at(id)))
+				{
+					Core::FMTdevelopment newdev(request.getdevelopment());
+					for (int age = minage; age <= maxage; ++age)
+					{
+						newdev.setage(age);
+						const FMTyieldrequest newrequest(newdev, request);
+						nhandler.push_data(yieldnames.at(id), get(yieldnames.at(id), newrequest));
+					}
+				}
+			}
+		}
+		catch (...) {
+			_exhandler->raisefromcatch("Error in converting complexyield to ageyield for yieldhandler " + std::string(*this), "FMTcomplexyieldhandler::toageyld", __LINE__, __FILE__);
+		}
+		return nhandler.clone();
+	}
+
+
+	std::vector<double>FMTcomplexyieldhandler::getsourcesarray(const std::map<std::string, const std::unique_ptr<FMTyieldhandler>*>& srcdata, const FMTyieldrequest& request, bool& age_only) const
+	{
+		std::vector<double>alldata(srcdata.size(), 0.0);
+		try {
+			size_t location = 0;
+			for (std::map<std::string, const std::unique_ptr<FMTyieldhandler>*>::const_iterator datait = srcdata.begin(); datait != srcdata.end(); datait++)
+			{
+				if (datait->second != nullptr)
+				{
+					const std::unique_ptr<FMTyieldhandler>* yldata = datait->second;
+					if ((*yldata)->gettype() != FMTyldtype::FMTageyld)
+					{
+						age_only = false;
+					}
+					alldata[location] = (*yldata)->get(datait->first, request);
+				}
+				++location;
+			}
+		}
+		catch (...)
+		{
+			_exhandler->raisefromcatch("", "FMTcomplexyieldhandler::getsourcesarray", __LINE__, __FILE__, Core::FMTsection::Yield);
+		}
+		return alldata;
+	}
+
+	bool FMTcomplexyieldhandler::comparesources(const std::string& yield, const FMTcomplexyieldhandler& overridedyield) const
+	{
+		try {
+				for (const auto& data : elements)
+				{
+				const std::vector<std::string>sources = data.second.getsource();
+				if (std::find(sources.begin(), sources.end(), yield)!=sources.end())
+					{
+					return false;
+					}
+				}
+			
+		}catch (...)
+		{
+			_exhandler->raisefromcatch("", "FMTcomplexyieldhandler::comparesources", __LINE__, __FILE__, Core::FMTsection::Yield);
+		}
+		return true;
+	}
+
+	void FMTcomplexyieldhandler::settabou(const size_t& index)
+		{
+		overridetabou.insert(index);
+		}
+
+	void FMTcomplexyieldhandler::settabou(const FMTcomplexyieldhandler& rhs)
+		{
+		overrideindex = rhs.overrideindex;
+		overridetabou = rhs.overridetabou;
+		}
+
+	void FMTcomplexyieldhandler::setoverrideindex(const size_t& newindex)
+		{
+		overrideindex = newindex;
+		}
+
+	size_t  FMTcomplexyieldhandler::getoverrideindex() const
+		{
+		return overrideindex;
+		}
+
+
 	std::map<std::string, const std::unique_ptr<FMTyieldhandler>*> FMTcomplexyieldhandler::getdata(const FMTyieldrequest& request,
 		const std::vector<std::string>& names, const std::string& original) const
 	{
@@ -138,18 +210,23 @@ namespace Core {
 		try {
 			for (const std::unique_ptr<FMTyieldhandler>* yield : request.getdatas())
 			{
-				for (const std::string& name : names)
+				if (overridetabou.find((*yield)->getoverrideindex())== overridetabou.end())
 				{
-					if ((*yield)->containsyield(name) && alldata.find(name) == alldata.end() &&
-						!(this == &(**yield) && original == name) && (!inlookat(name)))
+					
+					for (const std::string& name : names)
 					{
-						alldata[name] = yield;
-					}
-					if (alldata.size() == names.size())
-					{
-						return alldata;
+						if ((*yield)->containsyield(name) && alldata.find(name) == alldata.end() &&
+							!(this == &(**yield) && original == name) && (!inlookat(name)))
+						{
+							alldata[name] = yield;
+						}
+						if (alldata.size() == names.size())
+						{
+							return alldata;
+						}
 					}
 				}
+				
 			}
 			if (alldata.size() != names.size())
 			{
@@ -171,7 +248,9 @@ namespace Core {
 			_exhandler->raisefromcatch("", "FMTcomplexyieldhandler::getdata", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 		return alldata;
+
 	}
+
 
 	double FMTcomplexyieldhandler::get(const std::string& yld, const FMTyieldrequest& request) const
 	{
@@ -277,7 +356,7 @@ namespace Core {
 					case FMTyieldparserop::FMTytp:
 					{
 						const std::unique_ptr<FMTyieldhandler>* ddata = srcsdata.begin()->second;
-						value = (*ddata)->getpeak(srcsdata.begin()->first, age);
+						value = (*ddata)->getpeak(request,srcsdata.begin()->first, age);
 						break;
 					}
 					case FMTyieldparserop::FMTmai:
@@ -374,6 +453,11 @@ namespace Core {
 		return value;
 	}
 
+	int FMTcomplexyieldhandler::getlastbase() const
+	{
+		return 0;
+	}
+
 	const std::map<std::string, FMTdata>& FMTcomplexyieldhandler::getdataelements() const
 	{
 		return elements;
@@ -428,7 +512,7 @@ namespace Core {
 		return FMTyldtype::FMTcomplexyld;
 	}
 
-	FMTcomplexyieldhandler::FMTcomplexyieldhandler(const FMTmask& mask) :
+	FMTcomplexyieldhandler::FMTcomplexyieldhandler(const FMTmask& mask):
 		FMTyieldhandler(mask)
 	{
 
@@ -436,28 +520,26 @@ namespace Core {
 
 	std::unique_ptr<FMTyieldhandler> FMTcomplexyieldhandler::complexyldtoageyld(const FMTyieldrequest& request, const FMTspec& lspec) const
 	{
-		FMTageyieldhandler nhandler(mask);
+		
 		try {
-			const std::vector<std::string>& yldnames = lspec.getylds();
-			for (size_t id = 0; id < yldnames.size(); ++id)
-			{
-				if (containsyield(yldnames.at(id)))
-				{
-					Core::FMTdevelopment newdev(request.getdevelopment());
-					for (int age = 0; age <= request.getdevelopment().getage(); ++age)
-					{
-						newdev.setage(age);
-						const FMTyieldrequest newrequest(newdev);
-						nhandler.push_base(age);
-						nhandler.push_data(yldnames.at(id),get(yldnames.at(id), newrequest));
-					}
-				}
-			}
+			return toageyld(request, lspec.getylds(), 0, request.getdevelopment().getage());
 		}
 		catch (...) {
 			_exhandler->raisefromcatch("Error in converting complexyield to ageyield for yieldhandler " + std::string(*this), "FMTyieldrequest::complexyldtoageyld", __LINE__, __FILE__);
 		}
-		return nhandler.clone();
+		return std::unique_ptr<FMTyieldhandler>();
+	}
+
+	double FMTcomplexyieldhandler::getpeak(const FMTyieldrequest& request, const std::string& yld, const int& targetage) const
+	{
+		try {
+			std::vector<std::string>ylds(1, yld);
+			const int maxbase = getmaxbase(request);
+			return toageyld(request, ylds, 0, maxbase)->getpeak(request,yld,targetage);
+		}catch (...) {
+			_exhandler->raisefromcatch("", "FMTcomplexyieldhandler::getpeak", __LINE__, __FILE__);
+		}
+		return 0;
 	}
 
 	int FMTcomplexyieldhandler::getage(const FMTyieldrequest& request, const FMTspec& spec) const

@@ -55,10 +55,10 @@ namespace Core {
 		return (basepush_data(elements, yld,data));
 	}
 
-	FMTageyieldhandler::FMTageyieldhandler(const FMTmask& mask):
+	FMTageyieldhandler::FMTageyieldhandler(const FMTmask& mask) :
 		FMTyieldhandler(mask)
 	{
-		
+
 	}
 
 	
@@ -315,7 +315,7 @@ namespace Core {
 		return static_cast<int>(locid);
 	}
 
-	double FMTageyieldhandler::getpeak(const std::string& yld, const int& targetage) const
+	double FMTageyieldhandler::getpeak(const FMTyieldrequest& request,const std::string& yld, const int& targetage) const
 	{
 		double value = 0;
 		try {

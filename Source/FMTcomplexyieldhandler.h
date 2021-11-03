@@ -27,14 +27,24 @@ namespace Core
 			ar & BOOST_SERIALIZATION_NVP(elements);
 		}
 		std::map<std::string, FMTdata>elements;
-		std::vector<double>getsourcesarray(const std::map<std::string, const std::unique_ptr<FMTyieldhandler>*>& srcdata,
-			const FMTyieldrequest& request, bool& age_only) const;
 		std::map<std::string, double> getsources(const std::map<std::string, const std::unique_ptr<FMTyieldhandler>*>& srcdata,
 			const FMTyieldrequest& request, bool& age_only) const;
 		std::map<std::string, const std::unique_ptr<FMTyieldhandler>*> getdata(const FMTyieldrequest& request,
 			const std::vector<std::string>& names, const std::string& original) const;
+		std::vector<double>getsourcesarray(const std::map<std::string, const std::unique_ptr<FMTyieldhandler>*>& srcdata,
+			const FMTyieldrequest& request, bool& age_only) const;
+		std::unique_ptr<FMTyieldhandler>toageyld(const FMTyieldrequest& request,
+			const std::vector<std::string>& yieldnames, const int& minage, const int& maxage) const;
+		std::unordered_set<size_t>overridetabou;
+		size_t overrideindex;
 	public:
+		void settabou(const size_t& index);
+		void settabou(const FMTcomplexyieldhandler& rhs);
+		virtual void setoverrideindex(const size_t& newindex);
+		virtual size_t  getoverrideindex() const;
+		virtual int getlastbase() const;
 		virtual double get(const std::string& yld, const FMTyieldrequest& request) const;
+		bool comparesources(const std::string& yield,const FMTcomplexyieldhandler& overridedyield) const;
 		virtual  operator std::string() const;
 		~FMTcomplexyieldhandler() = default;
 		FMTcomplexyieldhandler() = default;
@@ -43,7 +53,9 @@ namespace Core
 		FMTcomplexyieldhandler(const FMTmask& mask);
 		const std::map<std::string, FMTdata>& getdataelements() const;
 		virtual std::vector<std::string> indexes(const std::vector<std::string>& names) const;
-		std::unique_ptr<FMTyieldhandler>complexyldtoageyld(const FMTyieldrequest& request, const FMTspec& lspec) const;		virtual bool push_data(const std::string& yld, const double& value);
+		virtual double getpeak(const FMTyieldrequest& request, const std::string& yld, const int& targetage) const;
+		std::unique_ptr<FMTyieldhandler>complexyldtoageyld(const FMTyieldrequest& request, const FMTspec& lspec) const;
+		virtual bool push_data(const std::string& yld, const double& value);
 		virtual bool push_data(const std::string& yld, const FMTdata& data);
 		virtual std::unique_ptr<FMTyieldhandler>clone() const;
 		virtual bool operator == (const FMTcomplexyieldhandler& rhs) const;
@@ -56,6 +68,7 @@ namespace Core
 		virtual std::vector<std::string>getyieldnames() const;
 		virtual void clearcache();
 		virtual int getage(const FMTyieldrequest& request, const FMTspec& spec) const;
+		
 		
 		
 	};

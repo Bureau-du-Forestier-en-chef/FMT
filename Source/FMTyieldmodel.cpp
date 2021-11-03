@@ -54,7 +54,22 @@ namespace Core {
 		}
 		return false;
 	}
-	std::vector<double>FMTyieldmodel::Predict(const Graph::FMTgraphvertextoyield& graphinfo) const
+	std::vector<std::string>FMTyieldmodel::GetYieldsSources() const
+	{
+		try {
+			//_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, "Calling pure virtual function ",
+			//	"FMTyieldmodel::GetYieldsSources", __LINE__, __FILE__, Core::FMTsection::Yield);
+		}
+		catch (...)
+		{
+			_exhandler->raisefromcatch("", "FMTyieldmodel::GetYieldsSources", __LINE__, __FILE__, Core::FMTsection::Yield);
+		}
+		return std::vector<std::string>();
+	}
+
+
+	std::vector<double>FMTyieldmodel::Predict(const Graph::FMTgraphvertextoyield& graphinfo,
+											 const std::vector<double>& sourceyieldvalues) const
 	{
 		try {
 			_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, "Calling pure virtual function ",

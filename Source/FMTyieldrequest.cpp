@@ -8,6 +8,8 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTyieldrequest.h"
 #include "FMTyields.h"
 #include "FMTdevelopment.h"
+#include "FMTyieldhandler.h"
+#include "FMTgraphvertextoyield.h"
 
 namespace Core
 { 
@@ -15,19 +17,55 @@ namespace Core
 		const Graph::FMTgraphvertextoyield& lgraphvertex) :
 		datas(),
 		resume_mask(),
+		yldsptr(),
 		development(&ldevelopment),
 		graphvertex(&lgraphvertex)
 	{
 
 	}
 
+	FMTyieldrequest::FMTyieldrequest(const FMTdevelopment& ldevelopment,
+		const FMTyieldrequest& oldrequest):
+		datas(),
+		resume_mask(),
+		yldsptr(oldrequest.yldsptr),
+		development(&ldevelopment),
+		graphvertex(oldrequest.graphvertex)
+	{
+
+
+	}
+
 	FMTyieldrequest::FMTyieldrequest(const Core::FMTdevelopment& ldevelopment):
 		datas(),
 		resume_mask(),
+		yldsptr(),
 		development(&ldevelopment),
 		graphvertex(nullptr)
 	{
 
+	}
+
+	const FMTdevelopment& FMTyieldrequest::getdevelopment() const
+	{
+		return *development;
+	}
+	const std::vector<const std::unique_ptr<FMTyieldhandler>*>&FMTyieldrequest::getdatas() const
+	{
+		return datas;
+	}
+	const Core::FMTmask& FMTyieldrequest::getresumemask() const
+	{
+		return resume_mask;
+	}
+	const Graph::FMTgraphvertextoyield* FMTyieldrequest::getvertexgraphinfo() const
+	{
+		return graphvertex;
+	}
+
+const Core::FMTyields& FMTyieldrequest::getyields() const
+	{
+	return *yldsptr;
 	}
 
 void FMTyieldrequest::updatedata(const FMTyields& yields) const
@@ -37,6 +75,7 @@ void FMTyieldrequest::updatedata(const FMTyields& yields) const
 		{
 			resume_mask = yields.filtermask(development->getmask());
 			datas = yields.findsetswithfiltered(resume_mask);
+			yldsptr = &yields;
 		}
 	}
 	catch (...)

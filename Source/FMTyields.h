@@ -21,13 +21,12 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <unordered_map>
 #include <memory>
 #include <boost/serialization/export.hpp>
+#include "FMTyieldrequest.h"
 
 
 namespace Core
 {
-
 class FMTdevelopment;
-class FMTyieldrequest;
 // DocString: FMTyields
 /**
 FMTyields is one FMTlist containing multiple yieldhandlers has seen in the yield section.
@@ -80,11 +79,6 @@ class FMTEXPORT FMTyields : public FMTlist<std::unique_ptr<FMTyieldhandler>>
 	Update the yields presence true or false.
 	*/
 	void updateyieldpresence();
-	// DocString: FMTyields::complexyldtoageyld
-	/**
-	Convert a complex yield to an age yield. Needed in yields::getage when it's call on a complex yield.
-	*/
-	//FMTyieldhandler complexyldtoageyld(const FMTyieldhandler* complexyld, const FMTyieldrequest& request, const FMTspec& lspec) const;
     public:
 		// DocString: FMTyields::gotyieldtype
 		/**

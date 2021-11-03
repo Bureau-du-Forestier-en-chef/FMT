@@ -111,16 +111,26 @@ namespace Core {
 			const size_t modelid = yldnames.at(yld).first;
 			const size_t yieldid = yldnames.at(yld).second;
 			const std::unique_ptr<FMTyieldmodel>&model = models.at(modelid);
-			const std::vector<double>predictions = model->Predict(*request.getvertexgraphinfo());
+			const std::vector<std::string>sources = model->GetYieldsSources();
+			if (lookat.find(yld) == lookat.end())
+			{
+				lookat.insert(yld);
+			}
+			else {
+				_exhandler->raise(Exception::FMTexc::FMTinvalid_yield, "Recursivity detected for complexe yield " + yld,
+					"FMTmodelyieldhandler::get", __LINE__, __FILE__, Core::FMTsection::Yield);
+			}
+			//const std::map<std::string, const std::unique_ptr<FMTyieldhandler>*> srcsdata = this->getdata(request, sources, yld);
+			// age_only = true;
+			const std::vector<double>sourceyieldsvalues;// = getsourcesarray(srcsdata, request, age_only);
+			const std::vector<double>predictions = model->Predict(*request.getvertexgraphinfo(), sourceyieldsvalues);
 			return (predictions.at(yieldid));
 			//Do caching here...
 			//Patch for unique yield...
-			
-		}
-		catch (...)
-		{
+		}catch (...)
+			{
 			_exhandler->raisefromcatch("at yield " + yld, "FMTmodelyieldhandler::get", __LINE__, __FILE__, Core::FMTsection::Yield);
-		}
+			}
 		return 0;
 	}
 

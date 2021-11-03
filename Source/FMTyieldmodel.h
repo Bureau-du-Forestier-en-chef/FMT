@@ -19,6 +19,7 @@ namespace Graph
 }
 
 
+
 namespace Core 
 {
 	class FMTyieldmodel : public FMTobject
@@ -41,7 +42,9 @@ namespace Core
 		virtual std::unique_ptr<FMTyieldmodel>Clone() const;
 		virtual std::string GetModelInfo() const;
 		virtual bool Validate(const std::vector<std::string>& YieldsAvailable) const;
-		virtual std::vector<double>Predict(const Graph::FMTgraphvertextoyield& graphinfo) const;
+		virtual std::vector<std::string>GetYieldsSources() const;
+		virtual std::vector<double>Predict(const Graph::FMTgraphvertextoyield& graphinfo,
+											const std::vector<double>& sourceyieldvalues) const;
 		virtual size_t GetOutputSize() const;
 	};
 }

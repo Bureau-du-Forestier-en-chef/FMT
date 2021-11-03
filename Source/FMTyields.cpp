@@ -493,10 +493,17 @@ int FMTyields::getage(const FMTyieldrequest& request,const FMTspec& spec) const
 		request.updatedata(*this);
 		if (!request.getdatas().empty())
 		{
-			FMTyieldhandler agedata;
 			for (const std::unique_ptr<FMTyieldhandler>* data : request.getdatas())
 			{
-				return (*data)->getage(request, spec);
+				for (const std::string& yldname : spec.yieldnames)
+				{
+					if ((*data)->containsyield(yldname))
+					{
+						return (*data)->getage(request, spec);
+					}
+				}
+				
+				
 			}
 		}
 	}

@@ -53,7 +53,7 @@ namespace Core
 		virtual std::unique_ptr<FMTyieldhandler> getfromfactor(const double& factor,
 			std::vector<std::string>yieldnames = std::vector<std::string>()) const;
 		virtual int getendpoint(const std::string& yld, const int& lowerstep, const double& bound, const double& value) const;
-		virtual double getpeak(const std::string& yld, const int& targetage) const;
+		virtual double getpeak(const FMTyieldrequest& request,const std::string& yld, const int& targetage) const;
 		virtual double getpeakfrom(const std::string& yld, double maxvalue = std::numeric_limits<double>::lowest()) const;
 		virtual int getage(const FMTyieldrequest& request, const FMTspec& spec) const;
 		virtual double getyieldlinearvalue(const std::string&yldname, const int& agetarget) const;

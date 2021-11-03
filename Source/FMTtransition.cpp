@@ -170,7 +170,7 @@ const FMTfork* FMTtransition::getfork(const Core::FMTdevelopment& developement,c
 			bool usefork = true;
 			for (const std::string& yldname : fork->getylds())
 			{
-				if (!bounds.at(bid).out(ylds.get(request,yldname)))
+				if (bounds.at(bid).out(ylds.get(request,yldname)))
 					{
 					usefork = false;
 					break;

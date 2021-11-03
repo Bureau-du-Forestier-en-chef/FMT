@@ -9,16 +9,9 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #define FMTDEV_H_INCLUDED
 
 #include "FMTmask.h"
-#include "FMTlifespans.h"
-#include "FMTtransition.h"
-#include "FMTyields.h"
-#include "FMTaction.h"
-#include "FMTtransitionmask.h"
-#include "FMTdevelopmentpath.h"
 #include <boost/serialization/serialization.hpp>
 #include <boost/serialization/nvp.hpp>
 #include <boost/serialization/string.hpp>
-#include "FMTbounds.h"
 #include "FMTobject.h"
 #include <memory>
 #include <vector>
@@ -32,10 +25,13 @@ namespace Graph
 
 namespace Core
 {
-
 class FMTfuturdevelopment;
 class FMTtransition;
+class FMTaction;
 class FMTyieldrequest;
+class FMTyields;
+class FMTdevelopmentpath;
+class FMTspec;
 // DocString: FMTdevelopment
 /**
 FMTdevelopment is the base class of FMTactualdevelopement and FMTfuturdevelopement. This class is the thing that look like
