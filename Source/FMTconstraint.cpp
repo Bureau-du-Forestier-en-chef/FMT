@@ -6,6 +6,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
 #include "FMTconstraint.h"
+#include "FMTtransition.h"
 #include <memory>
 
 namespace Core

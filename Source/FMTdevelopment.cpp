@@ -9,6 +9,13 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTfuturdevelopment.h"
 #include "FMTyieldrequest.h"
 #include "FMTgraphvertextoyield.h"
+#include "FMTlifespans.h"
+#include "FMTtransition.h"
+#include "FMTaction.h"
+#include "FMTtransitionmask.h"
+#include "FMTyields.h"
+#include "FMTdevelopmentpath.h"
+#include "FMTbounds.h"
 
 namespace Core{
 
@@ -135,6 +142,7 @@ namespace Core{
      bool FMTdevelopment::operable(const FMTaction& action,const FMTyields& ylds, const Graph::FMTgraphvertextoyield* graphyieldrequest) const
         {
 		 try{
+
 			if (worthtestingoperability(action))
 				{
 				for (const FMTspec* spec : action.findsets(mask))

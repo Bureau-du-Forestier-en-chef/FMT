@@ -140,142 +140,149 @@ namespace Models
 				}
 
 				int maximallock = -1;
-				for (const auto& actionit : schedule)
+				for (int actionid = 0; actionid < static_cast<int>(actions.size()); ++actionid/*const auto& actionit : schedule*/)
 				{
-
-					int actionid = int(std::distance(actions.begin(), std::find_if(actions.begin(), actions.end(), Core::FMTactioncomparator(actionit.first.getname()))));
-					size_t allocated = 0;
-					for (const auto& devit : actionit.second)
+					
+					//int actionid = int(std::distance(actions.begin(), std::find_if(actions.begin(), actions.end(), Core::FMTactioncomparator(actionit.first.getname()))));
+					const auto& actionit = schedule.find(actions.at(actionid));
+					if (actionit != schedule.end())
 					{
-						if ((schedule.douselock() || actionit.first.dorespectlock()) && graph.containsdevelopment(devit.first, lookup))
+						//*_logger << "processinh " << actionit->first.getname() << "\n";
+						size_t allocated = 0;
+						for (const auto& devit : actionit->second)
 						{
-							const Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor vdescriptor = graph.getdevelopment(devit.first, lookup);
-							const int variable = graph.getoutvariables(vdescriptor)[actionid];
-							new_solution[variable] = devit.second.at(0);
-							++allocated;
-						}
-						else if (!schedule.douselock() && !actionit.first.dorespectlock())
-						{
-							if (maximallock == -1)
+							if ((schedule.douselock() || actionit->first.dorespectlock()) && graph.containsdevelopment(devit.first, lookup))
 							{
-								maximallock = graph.getmaximalock(period);
+								//*_logger << "t1 " << actionit->first.getname() << "\n";
+								const Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor vdescriptor = graph.getdevelopment(devit.first, lookup);
+								const int variable = graph.getoutvariables(vdescriptor)[actionid];
+								new_solution[variable] = devit.second.at(0);
+								++allocated;
 							}
-							std::vector<double>lockstoadress(devit.second);
-							std::vector<std::pair<Core::FMTdevelopment, double>>locksfound;
-							std::vector<std::pair<int, size_t>>locksorter;
-							Core::FMTdevelopment locked(devit.first);
-							for (int lockid = 0; lockid <= maximallock; ++lockid)
+							else if (!schedule.douselock() && !actionit->first.dorespectlock())
 							{
-								locked.setlock(lockid);
-								if (graph.containsdevelopment(locked, lookup))
+								//*_logger << "t2 " << actionit->first.getname() << "\n";
+								if (maximallock == -1)
 								{
-									const Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor vdescriptor = graph.getdevelopment(locked, lookup);
-
-									double originalinarea = graph.inarea(vdescriptor, actual_solution, true);
-									if (originalinarea == 0)
+									maximallock = graph.getmaximalock(period);
+								}
+								std::vector<double>lockstoadress(devit.second);
+								std::vector<std::pair<Core::FMTdevelopment, double>>locksfound;
+								std::vector<std::pair<int, size_t>>locksorter;
+								Core::FMTdevelopment locked(devit.first);
+								for (int lockid = 0; lockid <= maximallock; ++lockid)
+								{
+									locked.setlock(lockid);
+									if (graph.containsdevelopment(locked, lookup))
 									{
-										originalinarea = std::numeric_limits<double>::max();
-									}
-									if (!(graph.onlypertiodstart(vdescriptor) && originalinarea == std::numeric_limits<double>::max()))
-									{
-										locksorter.push_back(std::pair<size_t, size_t>(locksfound.size(), graph.getamountofpaths(locked, -1, *this, lookup)));
-										locksfound.push_back(std::pair<Core::FMTdevelopment, double>(locked, originalinarea));
+										const Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor vdescriptor = graph.getdevelopment(locked, lookup);
+										const double* newsolutionptr = &new_solution[0];
+										double originalinarea = graph.inarea(vdescriptor, newsolutionptr, true);
+										if (originalinarea == 0)
+										{
+											originalinarea = std::numeric_limits<double>::max();
+										}
+										if (!(graph.onlypertiodstart(vdescriptor) && originalinarea == std::numeric_limits<double>::max()))
+										{
+											locksorter.push_back(std::pair<size_t, size_t>(locksfound.size(), graph.getamountofpaths(locked, -1, *this, lookup)));
+											locksfound.push_back(std::pair<Core::FMTdevelopment, double>(locked, originalinarea));
 
+										}
 									}
 								}
-							}
+								//*_logger << "got " << locksfound.size() << " for " << actionit->first.getname() << "\n";
+								std::sort(locksorter.begin(),
+									locksorter.end(),
+									[](const std::pair<size_t, size_t>& a,
+										const std::pair<size_t, size_t>& b) {return a.second < b.second; });
 
-							std::sort(locksorter.begin(),
-								locksorter.end(),
-								[](const std::pair<size_t, size_t>& a,
-									const std::pair<size_t, size_t>& b) {return a.second < b.second; });
-
-							std::vector<std::pair<Core::FMTdevelopment, double>>sortedlocksfound;
-							for (const std::pair<size_t, size_t>& id : locksorter)
-							{
-								sortedlocksfound.push_back(locksfound.at(id.first));
-							}
-							locksfound = sortedlocksfound;
-							bool secondpass = false;
-							const size_t initialsize = lockstoadress.size();
-							size_t iteration = 0;
-							while (!lockstoadress.empty())
-							{
-								const double areatoput = *lockstoadress.begin();
-								if (tolerance < areatoput)
+								std::vector<std::pair<Core::FMTdevelopment, double>>sortedlocksfound;
+								for (const std::pair<size_t, size_t>& id : locksorter)
 								{
-									size_t id = 0;
-									bool found = false;
-									bool exact = false;
-									for (const std::pair<Core::FMTdevelopment, double>& element : locksfound)
+									sortedlocksfound.push_back(locksfound.at(id.first));
+								}
+								locksfound = sortedlocksfound;
+								bool secondpass = false;
+								const size_t initialsize = lockstoadress.size();
+								size_t iteration = 0;
+								while (!lockstoadress.empty())
+								{
+									const double areatoput = *lockstoadress.begin();
+									if (tolerance < areatoput)
 									{
-										//*_logger << "testing " << std::string(element.first) << " " << element.second<<" for "<< areatoput << "\n";
-										if (std::abs(areatoput - element.second) < tolerance)
-										{
-											found = true;
-											exact = true;
-											//*_logger << "exact " << std::string(element.first) << " " << element.second << "\n";
-											break;
-										}
-										//*_logger << "op "<< areatoput <<" " << std::string(element.first) << " " << element.second << "\n";
-										++id;
-									}
-									if (secondpass && !found)
-									{
-										id = 0;
+										size_t id = 0;
+										bool found = false;
+										bool exact = false;
 										for (const std::pair<Core::FMTdevelopment, double>& element : locksfound)
 										{
-											if (areatoput <= (element.second + tolerance))
+											//*_logger << "testing " << std::string(element.first) << " " << element.second<<" for "<< areatoput << "\n";
+											if (std::abs(areatoput - element.second) < tolerance)
 											{
 												found = true;
-												//*_logger << "non exact " << std::string(element.first) << " " << element.second << "\n";
+												exact = true;
+											//	*_logger << "exact " << std::string(element.first) << " " << element.second << "\n";
 												break;
 											}
+											//*_logger << "op "<< areatoput <<" " << std::string(element.first) << " " << element.second << "\n";
 											++id;
 										}
-									}
-									if (found)
-									{
-										const Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor vdescriptor = graph.getdevelopment(locksfound.at(id).first, lookup);
-										const int variable = graph.getoutvariables(vdescriptor)[actionid];
-										new_solution[variable] += areatoput;
-										if (locksfound.at(id).second < std::numeric_limits<double>::max())
+										if (secondpass && !found)
 										{
-											locksfound.at(id).second -= areatoput;
-											if (exact || locksfound.at(id).second < tolerance)
+											id = 0;
+											for (const std::pair<Core::FMTdevelopment, double>& element : locksfound)
 											{
-												//*_logger << "Removing " << std::string(locksfound.at(id).first)<<" "<< locksfound.at(id).second << "\n";
-												locksfound.erase(locksfound.begin() + id);
+												if (areatoput <= (element.second + tolerance))
+												{
+													found = true;
+												//	*_logger << "non exact " << std::string(element.first) << " " << element.second << "\n";
+													break;
+												}
+												++id;
 											}
 										}
-										lockstoadress.erase(lockstoadress.begin());
-										++allocated;
-									}
-									else if (secondpass)
-									{
-										_exhandler->raise(Exception::FMTexc::FMTinvalid_number,
-											"Cannot allocate area of " + std::to_string(areatoput) + " to " +
-											std::string(devit.first) + " for action " + actionit.first.getname(), "FMTsrmodel::setsolution", __LINE__, __FILE__);
+										if (found)
+										{
+											const Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor vdescriptor = graph.getdevelopment(locksfound.at(id).first, lookup);
+											const int variable = graph.getoutvariables(vdescriptor)[actionid];
+											new_solution[variable] += areatoput;
+											if (locksfound.at(id).second < std::numeric_limits<double>::max())
+											{
+												locksfound.at(id).second -= areatoput;
+												if (exact || locksfound.at(id).second < tolerance)
+												{
+													//*_logger << "Removing " << std::string(locksfound.at(id).first)<<" "<< locksfound.at(id).second << "\n";
+													locksfound.erase(locksfound.begin() + id);
+												}
+											}
+											lockstoadress.erase(lockstoadress.begin());
+											++allocated;
+										}
+										else if (secondpass)
+										{
+											_exhandler->raise(Exception::FMTexc::FMTinvalid_number,
+												"Cannot allocate area of " + std::to_string(areatoput) + " to " +
+												std::string(devit.first) + " for action " + actionit->first.getname(), "FMTsrmodel::setsolution", __LINE__, __FILE__);
+										}
+										else {
+											lockstoadress.push_back(areatoput);
+											lockstoadress.erase(lockstoadress.begin());
+										}
 									}
 									else {
-										lockstoadress.push_back(areatoput);
 										lockstoadress.erase(lockstoadress.begin());
 									}
+									if (iteration == initialsize)
+									{
+										secondpass = true;
+									}
+									++iteration;
 								}
-								else {
-									lockstoadress.erase(lockstoadress.begin());
-								}
-								if (iteration == initialsize)
-								{
-									secondpass = true;
-								}
-								++iteration;
 							}
-						}
-						else {
-							_exhandler->raise(Exception::FMTexc::FMTmissingdevelopement, std::string(devit.first) + " at period " + std::to_string(period) + " operated by " + actionit.first.getname(),
-								"FMTsrmodel::setsolution", __LINE__, __FILE__);
-							return false;
+							else {
+								_exhandler->raise(Exception::FMTexc::FMTmissingdevelopement, std::string(devit.first) + " at period " + std::to_string(period) + " operated by " + actionit->first.getname(),
+									"FMTsrmodel::setsolution", __LINE__, __FILE__);
+								return false;
+							}
 						}
 					}
 				}

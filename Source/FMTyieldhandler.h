@@ -19,6 +19,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <vector>
 #include "FMTutility.h"
 #include "FMTobject.h"
+#include "FMTbounds.h"
 
 namespace Core
 {
@@ -42,15 +43,17 @@ protected:
 	bool basepush_data(std::map<std::string, FMTdata>& elements,const std::string& yld, const double& value);
 	bool basepush_data(std::map<std::string, FMTdata>& elements,const std::string& yld, const FMTdata& data);
 	double getchangesfrom(const int& targetage, const int& peakstep) const;
-	
+	int getmaxbase(const FMTyieldrequest& request) const;
 public:
+	virtual size_t getoverrideindex() const;
+	virtual void setoverrideindex(const size_t& newindex);
 	virtual ~FMTyieldhandler() = default;
 	FMTyieldhandler() = default;
 	FMTyieldhandler(const FMTyieldhandler& rhs) = default;
 	FMTyieldhandler& operator = (const FMTyieldhandler& rhs) = default;
 	FMTyieldhandler(const FMTmask& lmask);
 	double getlinearvalue(const std::vector<double>& dls, const int& agetarget) const;
-	int getlastbase() const;
+	virtual int getlastbase() const;
 	const std::vector<int>& getbases() const;
 	FMTmask getmask() const;
 	bool push_base(const int& base);
@@ -80,7 +83,7 @@ public:
 	virtual std::unique_ptr<FMTyieldhandler> getfromfactor(const double& factor,
 		std::vector<std::string>yieldnames = std::vector<std::string>()) const;
 	virtual int getendpoint(const std::string& yld, const int& lowerstep, const double& bound, const double& value) const;
-	virtual double getpeak(const std::string& yld, const int& targetage) const;
+	virtual double getpeak(const FMTyieldrequest& request,const std::string& yld, const int& targetage) const;
 	virtual int getage(const FMTyieldrequest& request, const FMTspec& spec) const;
 	virtual double getyieldlinearvalue(const std::string&yldname, const int& agetarget) const;
 

@@ -9,6 +9,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTaction.h"
 #include "FMTdevelopment.h"
 #include "FMTyieldrequest.h"
+#include "FMTyields.h"
 
 namespace Graph
 {

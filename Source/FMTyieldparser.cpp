@@ -171,14 +171,59 @@ Core::FMTyieldparserop FMTyieldparser::getyldctype(const std::string& value) con
 		}
 	return Core::FMTyieldparserop::FMTnone;
     }
+void FMTyieldparser::setoveridedylds(Core::FMTyields& yielddata,
+	std::vector<std::pair<Core::FMTmask, std::unique_ptr<Core::FMTyieldhandler>>>::iterator actualyield,
+	const std::string& yld) const
+{
+	try {
+		std::vector<std::pair<Core::FMTmask, std::unique_ptr<Core::FMTyieldhandler>>>::iterator it = yielddata.begin();
+		const Core::FMTmask& actual_msk = actualyield->first;//(yielddata.begin() + std::distance(yielddata.begin(), actualyield))->first;
+		++it;//because this overided yield is the first on the list..
+		size_t location = 1;
+		while (it != yielddata.end())
+		{
+			if (it->first.issubsetof(actual_msk) ||
+				actual_msk.issubsetof(it->first) ||
+				it->first == actual_msk)
+			{
+				if (it->second->gettype()==Core::FMTyldtype::FMTcomplexyld)
+				{
+					Core::FMTcomplexyieldhandler* yldptr = dynamic_cast<Core::FMTcomplexyieldhandler*>(it->second.get());
+					const Core::FMTcomplexyieldhandler* actptr = dynamic_cast<const Core::FMTcomplexyieldhandler*>(actualyield->second.get());
+					if (!yldptr->comparesources(yld, *actptr))
+					{
+						_exhandler->raise(Exception::FMTexc::FMToveridedyield, "For overrided yield " + yld
+							+ " at line " + std::to_string(_line) + " ",
+							"FMTyieldparser::getylduse", __LINE__, __FILE__, _section);
+					}
+					if (actualyield->second->getoverrideindex()==0)
+					{
+						_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, "Cannot use non overrided at line " + std::to_string(_line) + " ",
+							"FMTyieldparser::getylduse", __LINE__, __FILE__, _section);
+					}
+					yldptr->settabou(actualyield->second->getoverrideindex());
+				}
+				}
+			++it;
+			++location;
+		}
+	}
+	catch (...)
+	{
+		_exhandler->raisefromcatch("", "FMTyieldparser::setoveridedylds", __LINE__, __FILE__, _section);
+	}
+}
+
+
 std::vector<std::string> FMTyieldparser::getylduse(Core::FMTyields& yielddata,
 	std::vector<std::pair<Core::FMTmask, std::unique_ptr<Core::FMTyieldhandler>>>::iterator actualyield,
                                    const std::vector<std::string>& values) const
     {
 	std::vector<std::string>dump;
+	
 	try {
 		std::vector<std::pair<Core::FMTmask,std::unique_ptr<Core::FMTyieldhandler>>>::const_iterator it = yielddata.begin();
-		const Core::FMTmask& actual_msk = (yielddata.begin() + std::distance(yielddata.begin(), actualyield))->first;
+		const Core::FMTmask& actual_msk = actualyield->first;//(yielddata.begin() + std::distance(yielddata.begin(), actualyield))->first;
 		while (it != actualyield)
 		{
 			if (it->first.issubsetof(actual_msk) ||
@@ -194,6 +239,7 @@ std::vector<std::string> FMTyieldparser::getylduse(Core::FMTyields& yielddata,
 						dump.push_back(name);
 					}
 				}
+				
 			}
 			++it;
 		}
@@ -359,7 +405,9 @@ Core::FMTyields FMTyieldparser::read(const std::vector<Core::FMTtheme>& themes,c
 		Core::FMTmask tmask;
 		bool sided = false;
 		bool multipledef = false;
+		bool overyld = false;
 		std::vector<double>proportion;
+		size_t overrideid = 1;
 		if (FMTparser::tryopening(yieldstream, location))
 		{
 			while (yieldstream.is_open())
@@ -371,10 +419,11 @@ Core::FMTyields FMTyieldparser::read(const std::vector<Core::FMTtheme>& themes,c
 					std::smatch kmatch;
 					if (std::regex_search(line, kmatch, rxyieldtype))
 					{
+						
+						overyld = false;
 						const std::string yieldtype = "Y" + std::string(kmatch[2]) + std::string(kmatch[7]);
 						std::string mask = std::string(kmatch[4]) + std::string(kmatch[9]);
 						boost::trim(mask);
-						bool overyld = false;
 						sided = true;
 						if (!std::string(kmatch[5]).empty())
 						{
@@ -391,10 +440,13 @@ Core::FMTyields FMTyieldparser::read(const std::vector<Core::FMTtheme>& themes,c
 							datait = --yields.end();
 						}
 						else {
+							newyield->setoverrideindex(overrideid);
+							++overrideid;
 							yields.push_front(tmask, newyield);
 							datait = yields.begin();
 						}
 						actualyield = datait;
+
 						proportion.clear();
 					}
 					else {
@@ -629,8 +681,7 @@ Core::FMTyields FMTyieldparser::read(const std::vector<Core::FMTtheme>& themes,c
 								}
 								dump.clear();
 								const std::vector<std::string>theylds = { yldname };
-								dump = getylduse(yields, actualyield, theylds);
-								checkpreexisting(dump);
+								
 								const Core::FMTyieldparserop complextype = getyldctype(cyld);
 								std::vector<std::string>values;
 								boost::trim_if(data, boost::is_any_of(FMT_STR_SEPARATOR));
@@ -669,6 +720,15 @@ Core::FMTyields FMTyieldparser::read(const std::vector<Core::FMTtheme>& themes,c
 									}
 									actualyield->second->push_data(yldname, Core::FMTdata(cvalues, complextype, csource, stacking));
 								}
+								dump = getylduse(yields, actualyield, theylds);
+								checkpreexisting(dump);
+								if (overyld)//deal with the last inserted yield to take into account override!
+								{
+									setoveridedylds(yields, actualyield,yldname);
+								}
+								
+								
+
 							}
 							else {
 								_exhandler->raise(Exception::FMTexc::FMTunsupported_yield,
@@ -698,6 +758,12 @@ Core::FMTyields FMTyieldparser::read(const std::vector<Core::FMTtheme>& themes,c
 									const std::unique_ptr<Core::FMTyieldmodel>yldmodel = readyieldmodel(modelname);
 									const std::vector<std::string> allyields = yields.getallyieldnames();
 									yldmodel->Validate(allyields);
+									if (newyields.size()!=yldmodel->GetOutputSize())
+										{
+										_exhandler->raise(Exception::FMTexc::FMTinvalidyield_number,
+											"Different size in model "+yldmodel->GetModelName()+" outputs for yields "+ yieldsarray+" " + std::to_string(_line),
+											"FMTyieldparser::read", __LINE__, __FILE__, _section);
+										}
 									handlerptr->push_backmodel(yldmodel);
 								}
 								size_t yldid = 0;
@@ -818,6 +884,8 @@ void FMTyieldparser::cleanup(Core::FMTyields& yields,const std::vector<Core::FMT
 					std::unique_ptr<Core::FMTyieldhandler>newhandler = gethandler(newmask, Core::FMTyldtype::FMTcomplexyld);
 					std::map<std::string, double>handler_values = getindexvalues(newmask, themes_windex, indexvalues,constants);
 					const Core::FMTcomplexyieldhandler* oldhandlerptr = dynamic_cast<const Core::FMTcomplexyieldhandler*>(oldhandler.get());
+					Core::FMTcomplexyieldhandler* newhandlerptr = dynamic_cast<Core::FMTcomplexyieldhandler*>(newhandler.get());
+					newhandlerptr->settabou(*oldhandlerptr);
 					const std::map<std::string, Core::FMTdata>& alladata = oldhandlerptr->getdataelements();
 					for (std::map<std::string, Core::FMTdata>::const_iterator datait = alladata.begin(); datait != alladata.end(); datait++)
 					{

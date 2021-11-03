@@ -10,6 +10,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTdevelopment.h"
 #include "FMTbounds.h"
 #include "FMTdata.h"
+#include "FMTtheme.h"
 
 namespace Core{
 
@@ -27,8 +28,14 @@ FMTyieldhandler::operator std::string() const
         }
 
 
-
-    FMTyieldhandler::FMTyieldhandler(const FMTmask& lmask) : FMTobject(), mask(lmask),bases(), lookat(){}
+    FMTyieldhandler::FMTyieldhandler(const FMTmask& lmask) :
+		FMTobject(),
+		mask(lmask),
+		bases(),
+		lookat()
+	{
+	
+	}
 
 
 	std::unique_ptr<FMTyieldhandler>FMTyieldhandler::clone() const
@@ -184,6 +191,8 @@ FMTyieldhandler::operator std::string() const
 		return 0;
         }
 
+	
+
 	double FMTyieldhandler::getlinearvalue(const std::vector<double>& dls, const int& agetarget) const
 		{
 		double value = 0;
@@ -231,6 +240,16 @@ FMTyieldhandler::operator std::string() const
 	int FMTyieldhandler::getlastbase() const
 		{
 		return bases.back();
+		}
+
+	size_t FMTyieldhandler::getoverrideindex() const
+		{
+		return 0;
+		}
+
+	void FMTyieldhandler::setoverrideindex(const size_t& newindex)
+		{
+		
 		}
 
 	const std::vector<int>& FMTyieldhandler::getbases() const
@@ -316,8 +335,29 @@ double FMTyieldhandler::getyieldlinearvalue(const std::string&yldname, const int
 		return 0;
 	}
 
+	int FMTyieldhandler::getmaxbase(const FMTyieldrequest& request) const
+	{
+		int maxage = 0;
+		try {
+			for (const auto& data : request.getdatas())
+			{
+				const int maxbase = (*data)->getlastbase();
+				if (maxbase> maxage)
+				{
+					maxage = maxbase;
+				}
+			}
 
-    double FMTyieldhandler::getpeak(const std::string& yld, const int& targetage) const
+		}
+		catch (...)
+		{
+			_exhandler->raisefromcatch("", "FMTyieldhandler::getmaxbase", __LINE__, __FILE__, Core::FMTsection::Yield);
+		}
+		return maxage;
+	}
+
+
+    double FMTyieldhandler::getpeak(const FMTyieldrequest& request,const std::string& yld, const int& targetage) const
         {
 		try {
 			_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, "Calling pure virtual function ",

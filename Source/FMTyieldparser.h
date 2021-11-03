@@ -79,6 +79,13 @@ class FMTEXPORT FMTyieldparser : public FMTparser
 		std::vector<std::string> getylduse(Core::FMTyields& yielddata,
 			std::vector<std::pair<Core::FMTmask,std::unique_ptr<Core::FMTyieldhandler>>>::iterator actualyield,
                                    const std::vector<std::string>& values) const;
+		// DocString: FMTyieldparser::setoveridedylds
+		/**
+		Modify the yiedldata based on the actualyield handler.
+		*/
+		void setoveridedylds(Core::FMTyields& yielddata,
+			std::vector<std::pair<Core::FMTmask, std::unique_ptr<Core::FMTyieldhandler>>>::iterator actualyield,
+			const std::string& yld) const;
 		// DocString: FMTyieldparser::checkpreexisting
 		/**
 		This function checks precxisting yields and throw warning if it already exist.
