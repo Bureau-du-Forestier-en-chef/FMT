@@ -11,6 +11,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <chrono>
 #include <memory>
 #include "FMTschedule.h"
+#include "FMTmodelstats.h"
 
 
 namespace Models{
@@ -1090,7 +1091,7 @@ std::unique_ptr<FMTmodel> FMTmodel::presolve(int presolvepass,std::vector<Core::
 	oldtransitions.shrink_to_fit();
 	oldoutputs.shrink_to_fit();
 	oldconstraints.shrink_to_fit();
-	presolvedmodel = std::unique_ptr<FMTmodel>(new FMTmodel(oldarea, oldthemes, oldactions, oldtransitions, oldyields, oldlifespans, name, oldoutputs, oldconstraints));
+	presolvedmodel = std::unique_ptr<FMTmodel>(new FMTmodel(oldarea, oldthemes, oldactions, oldtransitions, oldyields, oldlifespans, name, oldoutputs, oldconstraints,parameters));
 	presolvedmodel->passinobject(*this);
 	presolvedmodel->cleanactionsntransitions();
 	}catch (...)
@@ -1374,7 +1375,46 @@ Core::FMTschedule FMTmodel::getpotentialschedule(std::vector<Core::FMTactualdeve
 
 bool FMTmodel::doplanning(const bool& solve,std::vector<Core::FMTschedule> schedules)
 	{
-	return false;
+	bool optimal_solved = false;
+	try{
+		const int presolve_iterations = parameters.getintparameter(PRESOLVE_ITERATIONS);
+		std::unique_ptr<FMTmodel> presolved_model;
+		if(presolve_iterations>0)
+		{
+			*_logger<<"Presolving model with "+std::to_string(presolve_iterations)+" iterations"<<"\n";
+			presolved_model = this->presolve(presolve_iterations,area);
+		}else{
+			presolved_model = this->clone();
+		}
+		std::vector<Core::FMTschedule> presolved_schedules;
+		if(presolve_iterations>0 && !schedules.empty())
+		{
+			for (const Core::FMTschedule schedule : schedules )
+			{
+				presolved_schedules.push_back(presolved_model->presolveschedule(schedule,*this));
+			}
+		}else{
+			presolved_schedules = schedules;
+		}
+		presolved_model->build(presolved_schedules);
+		if(solve)
+		{
+			optimal_solved = presolved_model->solve();
+		}
+		if(parameters.getboolparameter(POSTSOLVE) && presolve_iterations>0)
+		{
+			*_logger<<"Postsolving model"<<"\n";
+			std::unique_ptr<FMTmodel> postsolved = presolved_model->postsolve(*this);
+			*_logger<<"copy postsolved model to this..."<<"\n";
+			this->swap_ptr(postsolved);
+		}else{
+			*_logger<<"Not Postsolving model"<<"\n";
+			this->swap_ptr(presolved_model);
+		}
+	}catch(...){
+		_exhandler->raisefromcatch("", " FMTmodel::doplanning", __LINE__, __FILE__);
+	}
+	return optimal_solved;
 	}
 
 std::vector<Core::FMTconstraint> FMTmodel::getlocalconstraints(const std::vector<Core::FMTconstraint>& localconstraints, const int& period) const
@@ -1460,7 +1500,6 @@ bool FMTmodel::setparameter(const FMTdblmodelparameters& key, const double& valu
 		_exhandler->printexceptions("", "FMTmodel::setparameter", __LINE__, __FILE__);
 	}
 	return false;
-
 }
 
 bool FMTmodel::setparameter(const FMTboolmodelparameters& key, const bool& value)
@@ -1471,7 +1510,6 @@ bool FMTmodel::setparameter(const FMTboolmodelparameters& key, const bool& value
 		_exhandler->printexceptions("", "FMTmodel::setparameter", __LINE__, __FILE__);
 	}
 	return false;
-
 }
 
 int FMTmodel::getparameter(const FMTintmodelparameters& key)const
@@ -1543,16 +1581,16 @@ void FMTmodel::showparameters(const bool& showhelp)const
 	message+="	SEED                     : "+std::to_string(parameters.getintparameter(SEED))+"\n";
 	if(showhelp) message+="	(The seed used for stochastique process in FMTsamodel, FMTnssmodel and FMTsesmodel. DEFAULT=25)\n";
 	message+="	NUMBER_OF_ITERATIONS     : "+std::to_string(parameters.getintparameter(NUMBER_OF_ITERATIONS))+"\n";
-	if(showhelp) message+="	(The number of iterations to do in FMTsesmodel::greedyreferencebuild. DEFAULT=10)\n";
+	if(showhelp) message+="	(The number of iterations to do in FMTsesmodel::greedyreferencebuild. DEFAULT=10000)\n";
 	message+="	PRESOLVE_ITERATIONS      : "+std::to_string(parameters.getintparameter(PRESOLVE_ITERATIONS))+"\n";
 	if(showhelp) message+="	(The number of iterations to do in FMTmodel::presolve. DEFAULT=10)\n";
 	message+="	NUMBER_OF_THREADS        : "+std::to_string(parameters.getintparameter(NUMBER_OF_THREADS))+"\n";
 	if(showhelp) message+="	(Number of thread use by solver for optimisation. DEFAULT=Number of concurrent threads supported)\n";
-	message+="	GOALING_SCHEDULE_WEIGHT  : "+std::to_string(parameters.getintparameter(GOALING_SCHEDULE_WEIGHT))+"\n";
-	if(showhelp) message+="	(The weight to use when trying goal a schedule from a strategic model. DEFAULT=10000)\n";
 	*_logger<<message<<"\n	-- Double parameters"<<"\n";
 	message="	TOLERANCE                : "+std::to_string(parameters.getdblparameter(TOLERANCE))+"\n";
-	if(showhelp) message+="	(Double tolerance used when setting a solution from schedules. DEFAULT=0.000100)\n";
+	if(showhelp) message+="	(Double tolerance used when setting a solution from schedules. DEFAULT="+std::to_string(FMT_DBL_TOLERANCE)+")\n";
+	message+="	GOALING_SCHEDULE_WEIGHT  : "+std::to_string(parameters.getdblparameter(GOALING_SCHEDULE_WEIGHT))+"\n";
+	if(showhelp) message+="	(The weight to use when trying goal a schedule from a strategic model. DEFAULT=10000)\n";
 	*_logger<<message<<"\n	-- Bool parameters"<<"\n";
 	std::string boolval;
 	boolval = (parameters.getboolparameter(FORCE_PARTIAL_BUILD)) ? "true\n" : "false\n";
@@ -1580,6 +1618,11 @@ void FMTmodel::showparameters(const bool& showhelp)const
 	{
 
 	}
+}
+
+void FMTmodel::swap_ptr(const std::unique_ptr<FMTmodel>& rhs)
+{
+	*this = std::move(*rhs); 
 }
 
 
