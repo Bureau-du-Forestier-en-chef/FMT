@@ -13,6 +13,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTlinegraph.h"
 #include "FMTGCBMtransition.h"
 #include "FMTbindingspatialaction.h"
+#include "FMToutput.h"
 
 
 namespace Spatial
@@ -269,7 +270,7 @@ class FMTEXPORT FMTspatialschedule : public FMTlayer<Graph::FMTlinegraph>
 		/**
 			Get the carbon predictors for the whole solution and write down the predictorsids into a layer.
 		*/
-		std::vector<std::vector<Graph::FMTcarbonpredictor>> getcarbonpredictors(FMTlayer<int>& predictorids,const std::map<int, int>& actionsindex, const std::vector<std::string>& yieldnames, const Core::FMTyields& yields, const int& period) const;
+		std::vector<std::vector<Graph::FMTcarbonpredictor>> getcarbonpredictors(FMTlayer<int>& predictorids, const std::vector<int>& actionsindex, const std::vector<std::string>& yieldnames, const Core::FMTyields& yields, const int& period) const;
 		
 		// DocString: FMTspatialschedule::eraselastperiod()
 		 /**

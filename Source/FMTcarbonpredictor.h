@@ -7,12 +7,16 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #ifndef FMTCARBONPREDICTOR_H
 #define FMTCARBONPREDICTOR_H
 
-#include "FMTyields.h"
 #include "FMTbasevertexproperties.h"
 #include "FMTbaseedgeproperties.h"
 #include <vector>
 #include <string>
 #include <map>
+
+namespace Core
+{
+	class FMTyields;
+}
 
 namespace Graph
 {
@@ -28,7 +32,7 @@ namespace Graph
 	public:
 		FMTcarbonpredictor() = default;
 		~FMTcarbonpredictor() = default;
-		FMTcarbonpredictor(const std::map<int, int>& actionsindex, const std::vector<std::string>& yieldnames, const Core::FMTyields& yields,
+		FMTcarbonpredictor(const std::vector<int>& actionsindex, const std::vector<std::string>& yieldnames, const Core::FMTyields& yields,
 			const FMTbasevertexproperties& source, const FMTbasevertexproperties& target, const std::vector<const FMTbaseedgeproperties*>& edges, const std::vector<int>& gaps);
 		FMTcarbonpredictor(const FMTcarbonpredictor& rhs);
 		FMTcarbonpredictor& operator = (const FMTcarbonpredictor& rhs);

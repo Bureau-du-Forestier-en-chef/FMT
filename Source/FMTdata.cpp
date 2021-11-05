@@ -8,6 +8,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTdata.h"
 #include <algorithm>
 #include "FMTdevelopment.h"
+#include "FMTyieldrequest.h"
 
 
 namespace Core{
@@ -95,9 +96,10 @@ bool FMTdata::nulldata() const
 	return seed;
 	}*/
 
-FMTdevelopment FMTdata::getsummarydevelopment(const int& period, const int& age, const FMTmask& mask) const
+FMTdevelopment FMTdata::getsummarydevelopment(const FMTyieldrequest& request) const
 	{
-	int lperiod = period;
+	const Core::FMTdevelopment& refdev = request.getdevelopment();
+	int lperiod = refdev.getperiod();
 	if (ops != FMTyieldparserop::FMTcai && ops != FMTyieldparserop::FMTmai && ops!= FMTyieldparserop::FMTytp && ops != FMTyieldparserop::FMTrange)
 		{
 		if (!_agebase)
@@ -105,21 +107,21 @@ FMTdevelopment FMTdata::getsummarydevelopment(const int& period, const int& age,
 			lperiod=0;
 			}
 		}
-	return FMTdevelopment(mask,age,0,period);
+	return FMTdevelopment(request.getresumemask(), refdev.getage(),0, refdev.getperiod());
 	}
 
-bool FMTdata::cachevalue(const FMTmask& mask, const int& age, const int& period) const
+bool FMTdata::cachevalue(const FMTyieldrequest& request) const
 	{
-	return (_cache->find(this->getsummarydevelopment(period, age, mask)) != _cache->end());
+	return (_cache->find(this->getsummarydevelopment(request)) != _cache->end());
 	}
-double FMTdata::get(const FMTmask& mask, const int& age, const int& period) const
+double FMTdata::get(const FMTyieldrequest& request) const
 	{
-	return _cache->at(this->getsummarydevelopment(period, age, mask));
+	return _cache->at(this->getsummarydevelopment(request));
 	}
-void FMTdata::set(const double& value, const FMTmask& mask, const int& age, const int& period,const bool& age_only) const
+void FMTdata::set(const double& value, const FMTyieldrequest& request,const bool& age_only) const
 	{
 	_agebase = age_only;
-	_cache->operator[](this->getsummarydevelopment(period, age, mask)) = value;
+	_cache->operator[](this->getsummarydevelopment(request)) = value;
 	}
 
 std::vector<std::string> FMTdata::getsource() const
@@ -135,6 +137,9 @@ std::vector<std::string> FMTdata::getsource() const
 				}
 			}
 		return nsources;
+	}else if (ops==FMTyieldparserop::FMTmodelpred)
+		{
+		//Get sources from the model
 		}
     return source;
     }
@@ -176,6 +181,9 @@ FMTdata::operator std::string() const
 		break;
 		case FMTyieldparserop::FMTdiscountfactor:
 		value += "_DISCOUNTFACTOR(";
+		break;
+		case FMTyieldparserop::FMTmodelpred:
+			value += "_PRED(";
 		break;
         default:
         break;

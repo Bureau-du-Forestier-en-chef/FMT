@@ -10,9 +10,14 @@ Example to get FMTcarbonpredictors on a FMTsesmodel
 #include "FMTlogger.h"
 #include "FMTexception.h"
 #include "FMTcarbonpredictor.h"
+#include "FMTconstraint.h"
+#include "FMTtransition.h"
+#include "FMTspatialschedule.h"
+#include "FMTareaparser.h"
+#include "FMTforest.h"
 
-#ifdef FMTWITHTORCH
-	#include <torch/torch.h>
+#ifdef FMTWITHONNXR
+	
 #endif
 
 
@@ -21,9 +26,9 @@ int main()
 	Logging::FMTlogger().logstamp();
 	if (Version::FMTversion().hasfeature("OSI"))
 		{
-		#ifdef FMTWITHTORCH
-			torch::Tensor tensor = torch::eye(3);
-			Logging::FMTlogger() << tensor.nbytes() << "\n";
+		#ifdef FMTWITHONNXR
+			
+
 		#endif
 		const std::string folder = "../../../../Examples/Models/TWD_land/";
 		const std::string primarylocation = folder+"TWD_land.pri";
@@ -75,23 +80,13 @@ int main()
 					}
 					Logging::FMTlogger() << "\n";
 				}
-				Spatial::FMTspatialschedule spatialschedule = simulationmodel.getspschedule();
-				std::map<int,int>actionindex;
-				int actionid = 0;
-				for (const auto& action : simulationmodel.getactions())
-				{
-					actionindex[actionid]=actionid;
-					Logging::FMTlogger() <<"Action id "+std::to_string(actionid) +" for : "+action.getname()<< "\n";
-					++actionid;
-				}
-				actionindex[-1]=-1;
-				actionindex[-2]=-2;
+				Spatial::FMTspatialschedule spatialschedule = simulationmodel.getspschedule();	
 				std::vector<std::vector<std::vector<std::pair<std::string,double>>>> allpredictors;
 				std::set<std::string> allprednames;
 				for (size_t period = 1; period <= 5; ++period)
 				{
 					std::vector<std::vector<std::pair<std::string,double>>> periodpredictors;
-					std::vector<std::vector<Graph::FMTcarbonpredictor>> predictors = areaparser.writecarbonpredictors(outdir,spatialschedule,actionindex,yieldsforpredictors,simulationmodel.getyields(),period);
+					std::vector<std::vector<Graph::FMTcarbonpredictor>> predictors = areaparser.writecarbonpredictors(outdir,spatialschedule,yieldsforpredictors,simulationmodel,period);
 					for (const auto& predictorslist : predictors)
 					{
 						for (const auto& predict : predictorslist)

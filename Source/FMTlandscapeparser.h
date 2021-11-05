@@ -8,14 +8,19 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #ifndef FMTlandscapeparser_H_INCLUDED
 #define FMTlandscapeparser_H_INCLUDED
 
-#include "FMTtheme.h"
-#include "FMTconstants.h"
+
 #include "FMTparser.h"
 #include "FMTutility.h"
 #include <regex>
 #include <string>
 #include <map>
 #include <vector>
+
+namespace Core
+{
+	class FMTtheme;
+	class FMTconstants;
+}
 
 
 namespace Parser

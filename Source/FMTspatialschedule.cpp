@@ -1175,7 +1175,7 @@ namespace Spatial
 		return distlayer;
 	}
 
-	std::vector<std::vector<Graph::FMTcarbonpredictor>>FMTspatialschedule::getcarbonpredictors(FMTlayer<int>& predictorids,const std::map<int, int>& actionsindex, const std::vector<std::string>& yieldnames, const Core::FMTyields& yields, const int& period) const
+	std::vector<std::vector<Graph::FMTcarbonpredictor>>FMTspatialschedule::getcarbonpredictors(FMTlayer<int>& predictorids,const std::vector<int>& actionsindex, const std::vector<std::string>& yieldnames, const Core::FMTyields& yields, const int& period) const
 	{
 		std::vector<std::vector<Graph::FMTcarbonpredictor>>predictors;
 		try {

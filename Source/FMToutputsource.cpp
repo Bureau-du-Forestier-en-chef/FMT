@@ -6,6 +6,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
 #include "FMToutputsource.h"
+#include "FMTgraphvertextoyield.h"
 
 namespace Core{
 
@@ -376,6 +377,7 @@ std::unordered_set<int>FMToutputsource::targetsset(const std::vector<FMTaction>&
 
 double FMToutputsource::getcoef(const FMTdevelopment& development,
 	const FMTyields& yields,
+	const Graph::FMTgraphvertextoyield* graphinfo,
 	std::vector<FMTdevelopmentpath> const * paths,
 	FMTaction const * modelaction) const
 	{
@@ -386,15 +388,15 @@ double FMToutputsource::getcoef(const FMTdevelopment& development,
 			{
 			if (target == FMTotar::inventory)
 			{
-				coef = development.getinventorycoef(yields, yield);
+				coef = development.getinventorycoef(yields, yield, graphinfo);
 			}
 			else {
-				coef = development.getharvestcoef(*paths, *modelaction, yields, yield);
+				coef = development.getharvestcoef(*paths, *modelaction, yields, yield, graphinfo);
 			}
 			}
 		}else if (istimeyield())
 			{
-			coef = development.getinventorycoef(yields, yield);
+			coef = development.getinventorycoef(yields, yield, graphinfo);
 			}else {
 			coef = values.at(0);
 			}

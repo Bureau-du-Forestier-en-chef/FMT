@@ -19,6 +19,12 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <unordered_set>
 #include <boost/serialization/export.hpp>
 
+
+#define FMTGCBMDEATHID 15
+#define FMTGCBMGROWTHID 16
+#define FMTGCBMUNKNOWNID 17
+
+
 namespace Core
 {
 
@@ -83,6 +89,11 @@ class FMTEXPORT FMTaction : public FMTlist<FMTspec>
 		agelowerbound, ageupperbound,periodlowerbound,periodupperbound and sets all member data.
 		*/
 		void setbounds();
+		// DocString: FMTaction::getGCBMactiondef()
+		/**
+		Returns the corresponding GCBM action definition.
+		*/
+		std::vector<std::string>getGCBMactiondef() const;
     public:
 		// DocString: FMTaction()
 		/**
@@ -246,6 +257,16 @@ class FMTEXPORT FMTaction : public FMTlist<FMTspec>
 		Check if the yield needs to be considered has partial for this action.
 		*/
 		bool partial(const std::string& yield) const;
+		// DocString: FMTaction::getGCBMactionid()
+		/**
+		Returns the corresponding GCBM action id.
+		*/
+		int getGCBMactionid() const;
+		// DocString: FMTaction::getGCBMactionname()
+		/**
+		Returns the corresponding GCBM action name.
+		*/
+		std::string getGCBMactionname() const;
     };
 
 // DocString: FMTactioncomparator

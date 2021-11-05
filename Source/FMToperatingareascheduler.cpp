@@ -16,6 +16,8 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 	#include "mosek.h"
 #endif
 //#include "FMTmatrixbuild.h"
+#include "FMTtimeyieldhandler.h"
+#include "FMTdata.h"
 
 namespace Heuristics
 {
@@ -845,9 +847,9 @@ namespace Heuristics
 			return gotschedule;
 			}
 
-	std::vector<Core::FMTyieldhandler> FMToperatingareascheduler::getsolution(const std::string& yldname) const
+	std::vector<Core::FMTtimeyieldhandler> FMToperatingareascheduler::getsolution(const std::string& yldname) const
 		{
-		std::vector<Core::FMTyieldhandler>allhandlers;
+		std::vector<Core::FMTtimeyieldhandler>allhandlers;
 		try {
             const double* primalsolution = this->getColSolution();
             const double* rowupperbound = this->getRowUpper();
@@ -862,7 +864,7 @@ namespace Heuristics
                     data=operatingareait->getdualsolution(rowupperbound);
                     }
                 std::vector<std::string>source;
-                Core::FMTyieldhandler handler(Core::FMTyldtype::FMTtimeyld, operatingareait->getmask());
+				Core::FMTtimeyieldhandler handler(operatingareait->getmask());
                 handler.push_data(yldname,Core::FMTdata(data, Core::FMTyieldparserop::FMTnone, source));
                 allhandlers.push_back(handler);
                 }

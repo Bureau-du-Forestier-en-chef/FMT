@@ -356,20 +356,21 @@ namespace Parser{
 		return transitions;
 	}
 
-	std::vector<std::vector<Graph::FMTcarbonpredictor>> FMTareaparser::writecarbonpredictors(const std::string& location,
+	std::vector<std::vector<Graph::FMTcarbonpredictor>> FMTareaparser::writecarbonpredictors(
+		const std::string& location,
 		const Spatial::FMTspatialschedule& spatialsolution,
-		const std::map<int, int>& actionsindex,
 		const std::vector<std::string>& yieldnames,
-		const Core::FMTyields& yields,
+		const Models::FMTmodel& model,
 		const int& period) const
 	{
 		std::vector<std::vector<Graph::FMTcarbonpredictor>>predictors;
 		try {
 			Spatial::FMTlayer<int> predictorids(spatialsolution.copyextent<int>());
+			const std::vector<int>actionsindex = model.getGCBMactionids();
 			//transitions = disturbances.getGCBMtransitions(lastdistlayer, actions, themes, period);
 			if (!spatialsolution.empty())
 			{
-				predictors = spatialsolution.getcarbonpredictors(predictorids, actionsindex, yieldnames, yields, period);
+				predictors = spatialsolution.getcarbonpredictors(predictorids, actionsindex, yieldnames,model.getyields(), period);
 				std::map<int, std::string>mapping;
 				writelayer<int>(predictorids, getperiodpathname(location, period,"PREDID"), mapping);
 			}

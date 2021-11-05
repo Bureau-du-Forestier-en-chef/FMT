@@ -6,46 +6,55 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
 #include "FMTcarbonpredictor.h"
+#include "FMTaction.h"
+#include "FMTdevelopment.h"
+#include "FMTyieldrequest.h"
+#include "FMTyields.h"
 
 namespace Graph
 {
 
 	std::vector<double>FMTcarbonpredictor::getyields(const FMTbasevertexproperties& vertex,const Core::FMTyields& yields, const std::vector<std::string>& yieldnames) const
 	{
-		return yields.get(vertex.get(), yieldnames);
+		std::vector<double>values;
+		values.reserve(yieldnames.size());
+		const Core::FMTyieldrequest request = vertex.get().getyieldrequest();
+		for (const std::string& yldname : yieldnames)
+		{
+			values.push_back(yields.get(request, yldname));
+		}
+		return values;
 	}
 
-
-	FMTcarbonpredictor::FMTcarbonpredictor(const std::map<int, int>& actionsindex, const std::vector<std::string>& yieldnames, const Core::FMTyields& yields,
+	FMTcarbonpredictor::FMTcarbonpredictor(const std::vector<int>& actionsindex, const std::vector<std::string>& yieldnames, const Core::FMTyields& yields,
 		const FMTbasevertexproperties& source, const FMTbasevertexproperties& target, const std::vector<const FMTbaseedgeproperties*>& edges, const std::vector<int>& gaps):
 		source_vertex(&source),
 		target_vertex(&target),
-		source_yields(getyields(source,yields,yieldnames)),
+		source_yields(getyields(source, yields, yieldnames)),
 		target_yields(getyields(target, yields, yieldnames)),
 		periodgaps(gaps),
 		sourceactions()
-
-
 	{
 		size_t location = 0;
 		//bool lastnotedone = true;
 		for (const FMTbaseedgeproperties* edgeprop : edges)
+		{
+			if (edgeprop != nullptr)
 			{
-			if (edgeprop!=nullptr)
+				if (edgeprop->getactionID()<0)
 				{
-				sourceactions.push_back(actionsindex.at(edgeprop->getactionID()));
-			}/*else if(lastnotedone)
-				{
-				sourceactions.push_back(actionsindex.at(-2));
-				periodgaps[location] = source_vertex->get().getage();
-				lastnotedone = false;
-			}*/else {
-				sourceactions.push_back(actionsindex.at(-2));
-				//periodgaps[location] = source_vertex->get().age;
-				}
-			++location;
+					sourceactions.push_back(FMTGCBMGROWTHID);
+				}else {
+					sourceactions.push_back(actionsindex.at(edgeprop->getactionID()));
+					}
+			}else {
+				sourceactions.push_back(FMTGCBMUNKNOWNID);
 			}
+			++location;
+		}
+
 	}
+
 	FMTcarbonpredictor::FMTcarbonpredictor(const FMTcarbonpredictor& rhs) :
 		source_vertex(rhs.source_vertex),
 		target_vertex(rhs.target_vertex),

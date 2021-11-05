@@ -17,11 +17,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <stack>
 #include <queue>
 #include <list>
-#include "FMTbounds.h"
 #include "FMTutility.h"
-#include "FMTtheme.h"
-#include "FMTyields.h"
-#include "FMTaction.h"
 #include "FMTconstants.h"
 #include "FMTlayer.h"
 #include <array>
@@ -43,7 +39,14 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 #include "FMTobject.h"
 
+namespace Core {
+	class FMTtheme;
+	class FMTaction;
+	class FMTyields;
+	class FMTspec;
+}
 
+/// Namespace handling all FMT's parsers. Everything related to I/O should be located in this namespace.
 namespace Parser
 {
 // DocString: FMTparser

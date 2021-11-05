@@ -6,6 +6,13 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
 #include "FMTactionparser.h"
+#include "FMTconstants.h"
+#include "FMTtheme.h"
+#include "FMTaction.h"
+#include "FMTyields.h"
+//#ifdef FMTWITHTORCH
+	#include <boost/property_tree/json_parser.hpp>
+//#endif // FMTWITHTORCH
 
 namespace Parser{
 
@@ -168,7 +175,7 @@ FMTactionparser& FMTactionparser::operator = (const FMTactionparser& rhs)
 								std::vector<std::pair<Core::FMTmask, Core::FMTspec>>::const_iterator dataof = pactions.at(1)->begin();
 								for (size_t id = 0; id < pactions.at(1)->size(); ++id)
 								{
-									theaction->push_back(*dataof);
+									theaction->push_back(dataof->first,dataof->second);
 								}
 							}
 							aggregatename.clear();
@@ -271,7 +278,9 @@ FMTactionparser& FMTactionparser::operator = (const FMTactionparser& rhs)
 				action.passinobject(*this);
 				}
 			}
-			//std::sort(cleanedactions.begin(), cleanedactions.end());
+			//#ifdef FMTWITHTORCH
+			cleanedactions = getGCBMactionsaggregate(cleanedactions);
+			//#endif // FMTWITHTORCH
 			cleanedactions.shrink_to_fit();
 		}catch (...)
 			{
@@ -280,6 +289,52 @@ FMTactionparser& FMTactionparser::operator = (const FMTactionparser& rhs)
 			}
         return cleanedactions;
         }
+
+		std::vector<Core::FMTaction>FMTactionparser::getGCBMactionsaggregate(const std::vector<Core::FMTaction>& actions) const
+		{
+			std::vector<Core::FMTaction>actionswithgcbmaggregate(actions);
+			try {
+			//#ifdef FMTWITHTORCH
+				const boost::filesystem::path filelocation = boost::filesystem::path(getruntimelocation()) / boost::filesystem::path("YieldPredModels") / boost::filesystem::path("actionsmapping.json");
+				std::ifstream jsonstream(filelocation.string());
+				if (FMTparser::tryopening(jsonstream, filelocation.string()))
+				{
+					boost::property_tree::ptree root;
+					boost::property_tree::read_json(jsonstream, root);
+					for (Core::FMTaction& action : actionswithgcbmaggregate)
+						{
+						if (root.find(action.getname())==root.not_found()||
+							root.get_child(action.getname()).find("id") == root.get_child(action.getname()).not_found()||
+							root.get_child(action.getname()).find("name") == root.get_child(action.getname()).not_found())
+							{
+							_exhandler->raise(Exception::FMTexc::FMTignore, action.getname() + " at line " + std::to_string(_line),
+								"FMTactionparser::getactionsidsofmodelyields", __LINE__, __FILE__, _section);
+						}else {
+							//test to int!
+							const int idofaction = getnum<int>(root.get<std::string>(action.getname() + ".id"));
+							if (idofaction== FMTGCBMGROWTHID || idofaction == FMTGCBMUNKNOWNID || idofaction == FMTGCBMDEATHID)
+								{
+								_exhandler->raise(Exception::FMTinvalid_number,"cannot use GCBM actions id "+std::to_string(FMTGCBMGROWTHID)+" or "+ std::to_string(FMTGCBMUNKNOWNID) + " or " + std::to_string(FMTGCBMDEATHID) + " at line " + std::to_string(_line),
+									"FMTactionparser::getactionsidsofmodelyields", __LINE__, __FILE__, _section);
+								}
+							const std::string GCBMaggregate = "~GCBM:" + root.get<std::string>(action.getname() + ".id") + ":" + root.get<std::string>(action.getname() + ".name");
+							action.push_aggregate(GCBMaggregate);
+							}
+						}
+					jsonstream.close();
+				}
+
+			//#endif // FMTWITHTORCH
+			}
+			catch (...)
+			{
+				_exhandler->raisefromcatch(
+					"", "FMTactionparser::getGCBMactionsaggregates", __LINE__, __FILE__, _section);
+			}
+			return actionswithgcbmaggregate;
+		}
+
+
     void FMTactionparser::write(const std::vector<Core::FMTaction>& actions,
 		const std::string& location) const
         {

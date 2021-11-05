@@ -802,11 +802,11 @@ std::vector<Core::FMTtheme>FMToutput::getstaticthemes(const std::vector<Core::FM
 					}
 			}
 		}
-		std::vector< std::pair<FMTmask, FMTyieldhandler>>::const_iterator handlerit = yields.begin();
+		std::vector< std::pair<FMTmask, std::unique_ptr<FMTyieldhandler>>>::const_iterator handlerit = yields.begin();
 		while (handlerit!=yields.end()&&!yieldstolookat.empty())
 			{
 			std::vector<std::string>::const_iterator yieldit = yieldstolookat.begin();
-			while (yieldit!= yieldstolookat.end() && handlerit->second.elements.find(*yieldit)==handlerit->second.elements.end())
+			while (yieldit!= yieldstolookat.end() && !handlerit->second->containsyield(*yieldit))
 				{
 				++yieldit;
 				}

@@ -25,10 +25,12 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <boost/serialization/binary_object.hpp>
 #include <boost/serialization/export.hpp>
 #include "FMTutility.h"
+#include "FMTyieldmodel.h"
 
 namespace Core
 {
 class FMTdevelopment;
+class FMTyieldrequest;
 
 class FMTdata
     {
@@ -48,7 +50,7 @@ class FMTdata
 	mutable boost::unordered_map<FMTdevelopment,double>* _cache; //hash base on (age and/or period and/or mask) //only for complex yield!!!!
 	mutable bool _agebase;
 	//size_t hashdata(const int& period, const int& age, const FMTmask& mask) const;
-	FMTdevelopment getsummarydevelopment(const int& period, const int& age, const FMTmask& mask) const;
+	FMTdevelopment getsummarydevelopment(const FMTyieldrequest& request) const;
     public:
 		std::vector<double> data;
         FMTdata();
@@ -66,9 +68,9 @@ class FMTdata
         void clearcache();
 		bool constant() const;
 		bool nulldata() const;
-		bool cachevalue(const FMTmask& mask, const int& age, const int& period) const;
-		double get(const FMTmask& mask, const int& age, const int& period) const;
-		void set(const double& value, const FMTmask& mask, const int& age, const int& period, const bool& age_only) const;
+		bool cachevalue(const FMTyieldrequest& request) const;
+		double get(const FMTyieldrequest& request) const;
+		void set(const double& value, const FMTyieldrequest& request, const bool& age_only) const;
 		std::vector<std::string> getsource() const;
 		std::vector<double>tovalues(const std::map<std::string, double>& sources) const;
 		FMTexpression toexpression() const;

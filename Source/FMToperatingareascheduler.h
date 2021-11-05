@@ -11,7 +11,6 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #define FMToperatingareascheduler_H_INCLUDED
 
 #include "FMTmask.h"
-#include "FMTyieldhandler.h"
 #include "FMToperatingareascheme.h"
 #include "FMTgraph.h"
 #include "FMToutput.h"
@@ -21,7 +20,6 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTsolverinterface.h"
 #include "FMToutputnode.h"
 #include "FMTtheme.h"
-#include "FMTyieldhandler.h"
 #include "FMTlpheuristic.h"
 #include <random>
 #include <memory>
@@ -31,6 +29,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <boost/serialization/serialization.hpp>
 #include <boost/serialization/nvp.hpp>
 #include <boost/serialization/export.hpp>
+#include "FMTtimeyieldhandler.h"
 
 
 namespace Heuristics
@@ -206,7 +205,7 @@ namespace Heuristics
 		The user can decide the (yldname) to use. Each operating area will have its own
 		yieldhandler.
 		*/
-		std::vector<Core::FMTyieldhandler> getsolution(const std::string& yldname) const;
+		std::vector<Core::FMTtimeyieldhandler> getsolution(const std::string& yldname) const;
 		// DocString: FMToperatingareascheduler(const std::vector<FMToperatingarea>,const Graph::FMTgraph,const Models::FMTmodel,const Core::FMToutputnode,std::shared_ptr<OsiSolverInterface>,const Models::FMTsolverinterface,size_t lseed,double proportionofset,bool userandomness,bool copysolver)
 		/**
 		Main constructor used to initialize a FMToperatingareaheuristic, the constructor needs

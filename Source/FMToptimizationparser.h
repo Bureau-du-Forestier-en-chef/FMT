@@ -9,8 +9,6 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #define FMToptimizationparser_H_INCLUDED
 
 #include "FMTparser.h"
-#include "FMToutput.h"
-#include "FMTconstraint.h"
 #include <algorithm>
 #include <vector>
 #include <map>
@@ -18,10 +16,16 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <queue>
 #include "FMTutility.h"
 #include <regex>
-#include "FMTconstants.h"
-#include "FMTtheme.h"
 #include <boost/regex.hpp>
 #include <limits>
+
+namespace Core
+{
+	class FMToutput;
+	class FMTconstraint;
+	class FMTtheme;
+	class FMTconstants;
+}
 
 
 namespace Parser
