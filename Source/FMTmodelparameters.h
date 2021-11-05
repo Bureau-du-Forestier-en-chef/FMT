@@ -22,24 +22,24 @@ namespace Models
         NUMBER_OF_ITERATIONS,/**< The number of iterations to do in FMTsesmodel::greedyreferencebuild  */
         PRESOLVE_ITERATIONS,/**< The number of iterations to do in FMTmodel::presolve */
         NUMBER_OF_THREADS,/**< Number of thread use by solver for optimisation */
-        GOALING_SCHEDULE_WEIGHT,/**< The weight to use when trying goal a schedule from a strategic model */
         LastIntModelParam/**< End marker, used to allocate a fixed-sized array to store int parameters. */
     };
     //DocString: FMTdblmodelparameters
     //
     enum FMTdblmodelparameters
     {
-        TOLERANCE = 0,/**< Double tolerance used when setting a solution from schedules */
+        TOLERANCE = 0,/**< Double tolerance used in doplanning */
+        GOALING_SCHEDULE_WEIGHT,/**< Not needed ... maybe more for task ....The weight to use when trying goal a schedule from a strategic model */
         LastDblModelParam/**< End marker, used to allocate a fixed-sized array to store double parameters. */
     };
     //DocString: FMTboolmodelparameters
     //
     enum FMTboolmodelparameters
     {
-        FORCE_PARTIAL_BUILD = 0,
-        STRICTLY_POSITIVE,/**< Force matrix to have bound >= 0 for the outputs use in constraints or objective */
-        POSTSOLVE,
-        SHOW_LOCK_IN_SCHEDULES,
+        FORCE_PARTIAL_BUILD = 0,/**< Force partial build of the graph if schedules are passed to doplanning */
+        STRICTLY_POSITIVE,/**< Force matrix to have bound >= 0 for the outputs use in constraints or objective if coefficient is negative and it contains a yield for FMTlpmodel */
+        POSTSOLVE,/**< Return a postsolved model for the doplanning */
+        SHOW_LOCK_IN_SCHEDULES,//Not needed or change parameters in fonctions ... maybe more for task
         LastBoolModelParam/**< End marker, used to allocate a fixed-sized array to store bool parameters. */
     };
 
@@ -51,12 +51,12 @@ namespace Models
     Default int parameters are : 
         LENGTH = 30
         SEED = 25
-        NUMBER_OF_ITERATIONS = 10
+        NUMBER_OF_ITERATIONS = 10000
         PRESOLVE_ITERATIONS = 10
         NUMBER_OF_THREADS = 4
-        GOALING_SCHEDULE_WEIGHT = 10000
     Default double parameters are : 
-        TOLERANCE = 0.0001
+        TOLERANCE = FMT_DBL_TOLERANCE
+        GOALING_SCHEDULE_WEIGHT = 10000
     Default bool parameters are :
         FORCE_PARTIAL_BUILD = false
         STRICTLY_POSITIVE = true
@@ -89,18 +89,37 @@ namespace Models
             std::array<double, LastDblModelParam> dblparameters;
             std::array<bool, LastBoolModelParam> boolparameters;
             std::vector<int> compresstime;
-            //Other shit possibly needed
-            //std::vector<Core::FMTschedule>solutions;
-            //Core::FMTschedule objectiveweight;
         public:
             // DocString: FMTmodelparameters()
             /**
             Default constructor
             */
             FMTmodelparameters();
+            // DocString: FMTmodelparameters(const FMTmodelparameters&)
+            /**
+            Copy constructor
+            */
             FMTmodelparameters(const FMTmodelparameters& rhs);
+            // DocString: FMTmodelparameters::operator=(const FMTmodelparameters&)
+            /**
+            Copy assignment
+            */
             FMTmodelparameters& operator = (const FMTmodelparameters& rhs); 
+            // DocString: ~FMTmodelparameters
+            /**
+                Default desctructor of FMTmodelparameters.
+		    */
             ~FMTmodelparameters()=default;
+            // DocString: FMTmodelparameters(FMTmodelparameters&&)
+            /**
+            Default move constructor for FMTmodelparameters.
+            */
+            FMTmodelparameters(FMTmodelparameters&& rhs)=default;
+            // DocString: FMTmodelparameters::operator=(FMTmodelparameters&& rhs) 
+            /**
+            Default move assignment for FMTmodelparameters.
+            */
+            FMTmodelparameters& operator =(FMTmodelparameters&& rhs) =default;
             //###Setter
             bool setintparameter(const FMTintmodelparameters& key,const int& value);
             bool setdblparameter(const FMTdblmodelparameters& key,const double& value);

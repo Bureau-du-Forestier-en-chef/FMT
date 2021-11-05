@@ -15,12 +15,12 @@ namespace Models
         //INTparameters
         intparameters[LENGTH]=30;
         intparameters[SEED]=25;
-        intparameters[NUMBER_OF_ITERATIONS]=10;
+        intparameters[NUMBER_OF_ITERATIONS]=10000;
         intparameters[PRESOLVE_ITERATIONS]=10;
         intparameters[NUMBER_OF_THREADS]=processor_count;
-        intparameters[GOALING_SCHEDULE_WEIGHT]=10000;
         //DBLparameters
-        dblparameters[TOLERANCE]=0.0001;
+        dblparameters[TOLERANCE]= FMT_DBL_TOLERANCE;
+        dblparameters[GOALING_SCHEDULE_WEIGHT]=10000;
         //BOOLparameters
         boolparameters[FORCE_PARTIAL_BUILD]=false;
         boolparameters[STRICTLY_POSITIVE]=true;

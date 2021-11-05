@@ -136,7 +136,7 @@ class FMTEXPORT FMTlpsolver: public Core::FMTobject
 		Default copy constructor for FMTlpsolver.
 		*/
 		FMTlpsolver(const FMTlpsolver& rhs);
-		// DocString: FMTlpsolver(const FMTlpsolver&&)
+		// DocString: FMTlpsolver(FMTlpsolver&&)
 		/**
 		Default move constructor for FMTlpsolver.
 		*/
@@ -146,6 +146,11 @@ class FMTEXPORT FMTlpsolver: public Core::FMTobject
 		Default copy assignment for FMTlpsolver.
 		*/
 		FMTlpsolver& operator =(const FMTlpsolver& rhs);
+		// DocString: FMTlpsolver::operator=
+		/**
+		Default move assignment for FMTlpsolver.
+		*/
+		FMTlpsolver& operator =(FMTlpsolver&& rhs) =default;
 		// DocString: FMTlpsolver(FMTsolverinterface,Logging::FMTlogger&)
 		/**
 		Constructor for FMTlpsolver with a (lsolvertype) and a (logger). It's the main constructor used.

@@ -1395,7 +1395,6 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 								(!action.dorespectlock() && active_development.getlock() != 0 &&
 								(schedule.at(action)).find(active_development.clearlock()) != (schedule.at(action)).end())))
 							{
-								
 								if (active_development.operable(action, model.yields))
 								{
 									if (action.getname() == "_DEATH")
@@ -2144,7 +2143,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 				for (boost::tie(vertex_iterator, vertex_iterator_end) = boost::vertices(data); vertex_iterator != vertex_iterator_end; ++vertex_iterator)
 				{
 					FMTvertexproperties& vertexprop = newgraph.data[*vertex_iterator];
-					vertexprop.setdevlopementmask(vertexprop.get().mask.postsolve(selectedmask, originalbasethemes));
+					vertexprop.setdevlopementmask(vertexprop.get().getmask().postsolve(selectedmask, originalbasethemes));
 				}
 				newgraph.generatedevelopments();
 			}

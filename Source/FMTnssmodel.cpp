@@ -30,7 +30,7 @@ namespace Models
 		FMTsrmodel(rhs,Models::FMTsolverinterface::CLP),
 		generator(seed) 
 	{
-	
+		FMTmodel::setparameter(SEED,seed);
 	}
 
 	std::vector<const Core::FMToutput*> FMTnssmodel::constraintstotarget(std::vector<double>& targets, const int& period)
@@ -308,19 +308,48 @@ namespace Models
 		}
 	}
 
-	bool FMTnssmodel::doplanning(const std::vector<Core::FMTschedule>&schedules,
-		bool forcepartialbuild, Core::FMTschedule objectiveweight)
+	bool FMTnssmodel::build(std::vector<Core::FMTschedule> schedules)
 	{
-		try {
-			simulate();
-		}
-		catch (...)
+		bool simulationdone = false;
+		try{
+			if(!schedules.empty())
+			{
+				//warning
+			}
+			const int length = getparameter(LENGTH);
+			for (int period = 0; period<length;++period)
+			{
+				simulate();
+			}
+			simulationdone = true;
+		}catch(...)
 		{
-			_exhandler->raisefromcatch("", "FMTnssmodel::doplanning", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("", "FMTnssmodel::solve", __LINE__, __FILE__);
 		}
-		return true;
+		return simulationdone;
 	}
 
+	bool FMTnssmodel::setparameter(const FMTintmodelparameters& key, const int& value)
+	{
+		bool parametersetted = false;
+		try{
+			FMTmodel::setparameter(key,value);
+			if(key==SEED)
+			{
+				generator=std::default_random_engine(value);
+			}
+			parametersetted=true;
+		}catch(...)
+		{
+			_exhandler->raisefromcatch("", "FMTnssmodel::setparameter", __LINE__, __FILE__);
+		}
+		return parametersetted;
+	}
+
+	void FMTnssmodel::swap_ptr(const std::unique_ptr<FMTmodel>& rhs)
+	{
+		*this = std::move(*dynamic_cast<FMTnssmodel*>(rhs.get()));
+	}
 }
 
 BOOST_CLASS_EXPORT_IMPLEMENT(Models::FMTnssmodel)

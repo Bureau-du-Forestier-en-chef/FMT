@@ -123,7 +123,9 @@ void exportModel()
 			.def("getcompresstime",&Models::FMTmodel::getcompresstime,
 				"@DocString(FMTmodel::getcompresstime)")
 			.def("showparameters",&Models::FMTmodel::showparameters,
-				showparameters_overloads(bp::args("showhelp"),"@DocString(FMTmodel::showparameters)"));
+				showparameters_overloads(bp::args("showhelp"),"@DocString(FMTmodel::showparameters)"))
+			.def("doplanning",&Models::FMTmodel::doplanning,
+				doplanning_overloads(bp::args("solve"),"@DocString(FMTmodel::doplanning)"));
 
     define_pylist<Models::FMTmodel>();
 
@@ -158,19 +160,20 @@ void exportModel()
 		.value("SEED", Models::FMTintmodelparameters::SEED)
 		.value("NUMBER_OF_ITERATIONS", Models::FMTintmodelparameters::NUMBER_OF_ITERATIONS)
 		.value("PRESOLVE_ITERATIONS", Models::FMTintmodelparameters::PRESOLVE_ITERATIONS)
-		.value("NUMBER_OF_THREADS", Models::FMTintmodelparameters::NUMBER_OF_THREADS)
-		.value("GOALING_SCHEDULE_WEIGHT", Models::FMTintmodelparameters::GOALING_SCHEDULE_WEIGHT);
+		.value("NUMBER_OF_THREADS", Models::FMTintmodelparameters::NUMBER_OF_THREADS);
 	
 	define_pylist<Models::FMTintmodelparameters>();
 	
 	bp::enum_<Models::FMTdblmodelparameters>("FMTdblmodelparameters")
-		.value("TOLERANCE", Models::FMTdblmodelparameters::TOLERANCE);
+		.value("TOLERANCE", Models::FMTdblmodelparameters::TOLERANCE)
+		.value("GOALING_SCHEDULE_WEIGHT", Models::FMTdblmodelparameters::GOALING_SCHEDULE_WEIGHT);
 
 	define_pylist<Models::FMTdblmodelparameters>();
 
 	bp::enum_<Models::FMTboolmodelparameters>("FMTboolmodelparameters")
 		.value("FORCE_PARTIAL_BUILD", Models::FMTboolmodelparameters::FORCE_PARTIAL_BUILD)
 		.value("STRICTLY_POSITIVE", Models::FMTboolmodelparameters::STRICTLY_POSITIVE)
+		.value("POSTSOLVE", Models::FMTboolmodelparameters::POSTSOLVE)
 		.value("SHOW_LOCK_IN_SCHEDULES", Models::FMTboolmodelparameters::SHOW_LOCK_IN_SCHEDULES);
 
 	define_pylist<Models::FMTboolmodelparameters>();
@@ -276,8 +279,8 @@ void exportModel()
 		.def("getoperatingareaclustererheuristics", &Models::FMTlpmodel::getoperatingareaclustererheuristics, getoperatingareaclustererheuristics_overloads(bp::args("opareas", "statisticoutput", "areaoutput", "period", "numberofheuristics"), "@DocString(FMTlpmodel::getoperatingareaschedulerheuristics)"))
 		.def("getvariabilities", &Models::FMTlpmodel::getvariabilities, getvariabilities_overloads(bp::args("outputs", "tolerance"), "@DocString(FMTlpmodel::getvariabilities)"))
 		.def("getareavariabilities", &Models::FMTlpmodel::getareavariabilities, getareavariabilities_overloads(bp::args("outputs", "globalmask", "tolerance"), "@DocString(FMTlpmodel::getareavariabilities)"))
-		.def("addscheduletoobjective", &Models::FMTlpmodel::addscheduletoobjective, addscheduletoobjective_overloads(bp::args("schedule", "weight"),"@DocString(FMTlpmodel::addscheduletoobjective)"))
-		.def("doplanning", &Models::FMTlpmodel::doplanning, doplanning_overloads(bp::args("solve", "schedules"),"@DocString(FMTlpmodel::doplanning)"));
+		.def("addscheduletoobjective", &Models::FMTlpmodel::addscheduletoobjective, addscheduletoobjective_overloads(bp::args("schedule", "weight"),"@DocString(FMTlpmodel::addscheduletoobjective)"));
+		//.def("doplanning", &Models::FMTlpmodel::doplanning, doplanning_overloads(bp::args("solve", "schedules"),"@DocString(FMTlpmodel::doplanning)"));
 		
 
 	define_pylist<Models::FMTlpmodel>();

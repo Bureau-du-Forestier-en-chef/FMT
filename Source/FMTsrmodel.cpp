@@ -121,6 +121,7 @@ namespace Models
 	bool FMTsrmodel::setsolution(int period, const Core::FMTschedule& schedule, double tolerance)
 	{
 		try {
+			const double tolerance = getparameter(TOLERANCE);
 			if (static_cast<int>(graph.size()) > period && period > 0)
 			{
 				std::vector<Core::FMTaction>::const_iterator cit = std::find_if(actions.begin(), actions.end(), Core::FMTactioncomparator("_DEATH"));
@@ -567,7 +568,7 @@ namespace Models
 		try
 		{
 			const double* actual_solution = solver.getColSolution();
-			newschedule = graph.getschedule(actions, actual_solution, period, withlock);
+			newschedule = graph.getschedule(actions, actual_solution, period, getparameter(SHOW_LOCK_IN_SCHEDULES));
 
 		}
 		catch (...)
@@ -648,6 +649,15 @@ namespace Models
 	{
 		solver.passinobject(rhs);
 		graph.passinobject(rhs);
+	}
+	
+	FMTsrmodel::FMTsrmodel(	const FMTmodel& base,const Graph::FMTgraph<Graph::FMTvertexproperties,Graph::FMTedgeproperties>& lgraph,
+							const FMTlpsolver& lsolver) :
+	FMTmodel(base),
+	graph(lgraph),
+	solver(lsolver)
+	{
+	
 	}
 
 	FMTsrmodel::FMTsrmodel() :
