@@ -13,6 +13,8 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <utility>
 #include <vector>
 #include <queue>
+#include "FMToperatingareascheduler.h"
+#include "FMToperatingareaclusterer.h"
 
 #ifdef FMTWITHOSI
 #include "OsiSolverInterface.hpp"
@@ -169,11 +171,8 @@ namespace Models
 			_exhandler->printexceptions("at period " + std::to_string(period), "FMTlpmodel::boundsolution", __LINE__, __FILE__);
 		}
 
-
-
     return false;
 	}
-
 
 	std::vector<Core::FMTconstraint> FMTlpmodel::getlocalconstraints(const std::vector<Core::FMTconstraint>& localconstraints, const int& period) const
 	{
@@ -193,7 +192,6 @@ namespace Models
 		}
 		return newconstraints;
 	}
-
 
 	void FMTlpmodel::addscheduletoobjective(const Core::FMTschedule& schedule, double weight)
 	{
@@ -231,18 +229,23 @@ namespace Models
 		}
 	}
 
-
 	FMTlpmodel::FMTlpmodel(const FMTmodel& base, FMTsolverinterface lsolvertype) :
 		FMTsrmodel(base,lsolvertype),
-		strictlypositivesoutputsmatrix(false),
 		elements()
 	{
-	
+		solver.setnumberofthreads(getparameter(NUMBER_OF_THREADS));	
+	}
+
+	FMTlpmodel::FMTlpmodel(	const FMTmodel& base,const Graph::FMTgraph<Graph::FMTvertexproperties,Graph::FMTedgeproperties>& lgraph,
+							const FMTlpsolver& lsolver,const std::vector<std::unordered_map<std::string,std::vector<std::vector<int>>>>& lelements) :
+	FMTsrmodel(base,lgraph,lsolver),
+	elements(lelements)
+	{
+		solver.setnumberofthreads(getparameter(NUMBER_OF_THREADS));	
 	}
 
 	FMTlpmodel::FMTlpmodel() :
 		FMTsrmodel(),
-		strictlypositivesoutputsmatrix(false),
 		elements()
 	{
 
@@ -250,17 +253,14 @@ namespace Models
 
 	FMTlpmodel::FMTlpmodel(const FMTlpmodel& rhs) :
 		FMTsrmodel(rhs),
-		strictlypositivesoutputsmatrix(rhs.strictlypositivesoutputsmatrix),
 		elements(rhs.elements)
 	{
 
 	}
 
-
 	bool FMTlpmodel::operator == (const FMTlpmodel& rhs) const
 	{
 		return (FMTsrmodel::operator == (rhs) &&
-			strictlypositivesoutputsmatrix == rhs.strictlypositivesoutputsmatrix &&
 			elements == rhs.elements);
 	}
 
@@ -271,27 +271,24 @@ namespace Models
 
 	void FMTlpmodel::setstrictlypositivesoutputsmatrix()
 	{
-		strictlypositivesoutputsmatrix=true;
+		FMTmodel::setparameter(STRICTLY_POSITIVE,true);
 	}
-
-
 
 	FMTlpmodel& FMTlpmodel::operator = (const FMTlpmodel& rhs)
 	{
 		if (this != &rhs)
 		{
 			FMTsrmodel::operator = (rhs);
-			strictlypositivesoutputsmatrix = (rhs.strictlypositivesoutputsmatrix);
 			elements = rhs.elements;
 		}
 		return *this;
 	}
 
-
 std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Core::FMToutputnode>& nodes, int period,
 	std::map<int, double>& variables, double multiplier) const
 	{
 	std::vector<std::map<int, double>> strictlypositivesoutputs;
+	const bool strictlypositivesoutputsmatrix = getparameter(STRICTLY_POSITIVE);
 	try {
 		std::unordered_set<int> output_negvar;
 		for (const Core::FMToutputnode& node : nodes)
@@ -784,8 +781,6 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 	return uppernlower;
 	}
 
-
-
 	std::map<std::string, std::vector<double>>FMTlpmodel::getvariabilities(const std::vector<Core::FMToutput>& outputs,double tolerance)
 		{
 		std::map<std::string, std::vector<double>>uppernlower;
@@ -1185,6 +1180,7 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 	Graph::FMTgraphstats FMTlpmodel::setobjective(const Core::FMTconstraint& objective)
 		{
 		try {
+			const bool strictlypositivesoutputsmatrix = getparameter(STRICTLY_POSITIVE);
 			int first_period = 0;
 			int last_period = 0;
 			graph.constraintlenght(objective, first_period, last_period);
@@ -1588,32 +1584,6 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 		}
 	}
 
-	bool FMTlpmodel::doplanning(const std::vector<Core::FMTschedule>&schedules,bool forcepartialbuild,Core::FMTschedule objectiveweight)
-		{
-		bool optimal = false;
-		try {
-			for (const Core::FMTschedule& schedule: schedules)
-				{
-				this->buildperiod(schedule,forcepartialbuild);
-				}
-			for (size_t constraintid = 1; constraintid < constraints.size();++constraintid)
-				{
-				this->setconstraint(constraints.at(constraintid));
-				}
-			this->setobjective(constraints.at(0));
-			if (!objectiveweight.empty())
-				{
-				this->addscheduletoobjective(objectiveweight, 10000);
-				}
-			optimal = this->initialsolve();
-		}catch (...)
-			{
-			_exhandler->raisefromcatch("", "FMTlpmodel::doplanning", __LINE__, __FILE__);
-			}
-			return optimal;
-		}
-
-
 	void FMTlpmodel::updategeneralconstraintsnaming(std::vector<std::string>& colnames,
 													std::vector<std::string>& rownames) const
 	{
@@ -1716,6 +1686,50 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 		return std::unique_ptr<FMTmodel>(new FMTlpmodel(*this));
 		}
 
+	std::unique_ptr<FMTmodel> FMTlpmodel::presolve(int presolvepass, std::vector<Core::FMTactualdevelopment> optionaldevelopments) const
+	{
+		std::unique_ptr<FMTmodel> presolvedmodel;
+		try{
+			if(graph.empty())
+			{	
+				presolvedmodel = std::unique_ptr<FMTmodel>(new FMTlpmodel(*(FMTmodel::presolve(presolvepass, optionaldevelopments)),solver.getsolvertype()));
+			}else{
+				_exhandler->raise(	Exception::FMTexc::FMTfunctionfailed,
+									"Cannot presolve a lpmodel with period(s) builded in graph.",
+									"FMTlpmodel::presolve",
+									__LINE__, __FILE__);
+			}
+		}catch(...)
+		{
+			_exhandler->raisefromcatch("", "FMTlpmodel::presolve", __LINE__, __FILE__);
+		}
+		return presolvedmodel;
+	}
+
+	std::unique_ptr<FMTmodel> FMTlpmodel::postsolve(const FMTmodel& originalbasemodel) const
+	{
+		std::unique_ptr<FMTmodel> postsolvemodel;
+		try{
+			std::vector<Core::FMTtheme> postsolvethemes = originalbasemodel.getthemes();
+			std::vector<Core::FMTaction> postsolveactions = originalbasemodel.getactions();
+			Core::FMTmask selectedmask = this->getselectedmask(postsolvethemes);
+			std::vector<Core::FMTaction> presolveactions = this->getactions();
+			std::map<int,int>actionmapping;
+			int preactionid = 0;
+			for(const Core::FMTaction action : presolveactions)
+			{
+				const int loc = std::distance(postsolveactions.begin(), std::find_if(postsolveactions.begin(), postsolveactions.end(), Core::FMTactioncomparator(action.getname())));
+				actionmapping[preactionid] = loc;
+				++preactionid;
+			}
+			Graph::FMTgraph<Graph::FMTvertexproperties,Graph::FMTedgeproperties> postsolvegraph = this->graph.postsolve(selectedmask,postsolvethemes,actionmapping);
+			postsolvemodel = std::unique_ptr<FMTmodel>(new FMTlpmodel(*(FMTmodel::postsolve(originalbasemodel)),postsolvegraph,this->solver,this->elements));
+		}catch(...)
+		{
+			_exhandler->raisefromcatch("", "FMTlpmodel::postsolve", __LINE__, __FILE__);
+		}
+		return postsolvemodel;
+	}
 
 	void FMTlpmodel::updatematrixnaming()
 	{
@@ -1744,6 +1758,87 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 		{
 			_exhandler->raisefromcatch("", "FMTlpmodel::updatematrixnaming", __LINE__, __FILE__);
 		}
+	}
+
+	bool FMTlpmodel::build(std::vector<Core::FMTschedule> schedules)
+	{
+		try{
+			const int length = parameters.getintparameter(LENGTH);
+			const bool forcepartialbuild = parameters.getboolparameter(FORCE_PARTIAL_BUILD);
+			std::string addon = "";
+			if(!schedules.empty())
+			{
+				addon = "FMT will use schedules pass by argument for periods 1 to "+std::to_string(schedules.size());
+			}
+			*_logger<<"Building model for "+std::to_string(length)+" periods. "+addon<<"\n";
+			//Period start at 0 but it's the period 1 that is created first. Reason is that schedules is a vector and the first elements 
+			//is the schedule for period 1 
+			for (int period = 0; period<length;++period)
+				{
+					if((!schedules.empty()) && (period<schedules.size()))
+					{
+						*_logger << std::string(this->buildperiod(schedules.at(period),forcepartialbuild,parameters.getperiodcompresstime(period)))<<"\n";
+					}else{
+						*_logger << std::string(this->buildperiod(Core::FMTschedule(),false,parameters.getperiodcompresstime(period)))<<"\n";
+					}
+				}
+			if(!schedules.empty())
+			{
+				addon = "FMT will use schedules pass by argument for periods 1 to "+std::to_string(schedules.size())+" to set the solution in the matrix.";
+			}
+			*_logger<<"Setting constraints on the model. "+addon<<"\n";
+			for (size_t constraintid = 1; constraintid < constraints.size();++constraintid)
+				{
+				this->setconstraint(constraints.at(constraintid));
+				}
+			*_logger<<"*Graph stats with all constraints : \n"<<std::string(this->setobjective(constraints.at(0)))<<"\n";
+			if( !schedules.empty() && length<=schedules.size() )
+			{
+				bool bylp = false;
+				int period = 1;
+				for (const Core::FMTschedule& schedule : schedules)
+				{
+					this->setsolution(period,schedule);
+					++period;
+				}
+			}
+		}catch(...)
+		{
+			_exhandler->raisefromcatch("", "FMTlpmodel::build", __LINE__, __FILE__);
+		}
+		return true;
+	}
+
+	bool FMTlpmodel::solve()
+	{
+		bool optimal = false;
+		try{
+			optimal = this->initialsolve();
+		}catch(...)
+		{
+			_exhandler->raisefromcatch("", "FMTlpmodel::solve", __LINE__, __FILE__);
+		}
+		return optimal;
+	}
+
+	bool FMTlpmodel::setparameter(const FMTintmodelparameters& key, const int& value)
+	{
+		try{
+			FMTmodel::setparameter(key,value);
+			if (key == NUMBER_OF_THREADS)
+			{
+				solver.setnumberofthreads(parameters.getintparameter(NUMBER_OF_THREADS));
+			}
+		}catch(...)
+		{
+			_exhandler->raisefromcatch("", "FMTlpmodel::setparameter", __LINE__, __FILE__);
+		}
+		return true;
+	}
+
+	void FMTlpmodel::swap_ptr(const std::unique_ptr<FMTmodel>& rhs)
+	{
+		*this = std::move(*dynamic_cast<FMTlpmodel*>(rhs.get()));
 	}
 
 }

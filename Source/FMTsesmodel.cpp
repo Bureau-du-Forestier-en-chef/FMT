@@ -7,6 +7,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 #include "FMTsesmodel.h"
 
+
 namespace Models
     {
     FMTsesmodel::FMTsesmodel(): FMTmodel(),spschedule()
@@ -90,22 +91,6 @@ namespace Models
 			_exhandler->printexceptions("", "FMTsesmodel::getoutput", __LINE__, __FILE__);
 			}
 		return values;
-	}
-
-	bool FMTsesmodel::doplanning(const std::vector<Core::FMTschedule>&schedules,
-		bool forcepartialbuild,Core::FMTschedule objectiveweight)
-	{
-		try {
-			for (const Core::FMTschedule& schedule : schedules)
-			{
-				this->greedyreferencebuild(schedule,10000);
-			}
-		}
-		catch (...)
-		{
-			_exhandler->printexceptions("", "FMTsesmodel::doplanning", __LINE__, __FILE__);
-		}
-	return true;
 	}
 
 	Core::FMTschedule FMTsesmodel::getsolution(int period, bool withlock) const
@@ -243,6 +228,26 @@ namespace Models
 		{
 		return std::unique_ptr<FMTmodel>(new FMTsesmodel(*this));
 		}
+	
+	bool FMTsesmodel::build(std::vector<Core::FMTschedule> schedules)
+	{
+		try {
+			for (const Core::FMTschedule& schedule : schedules)
+			{
+				this->greedyreferencebuild(schedule,getparameter(NUMBER_OF_ITERATIONS));
+			}
+		}
+		catch (...)
+		{
+			_exhandler->printexceptions("", "FMTsesmodel::doplanning", __LINE__, __FILE__);
+		}
+	return true;
+	}
+
+	void FMTsesmodel::swap_ptr(const std::unique_ptr<FMTmodel>& rhs)
+	{
+		*this = std::move(*dynamic_cast<FMTsesmodel*>(rhs.get()));
+	}
 
     }
 
