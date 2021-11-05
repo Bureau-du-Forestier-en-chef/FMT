@@ -16,8 +16,8 @@ Example to get FMTcarbonpredictors on a FMTsesmodel
 #include "FMTareaparser.h"
 #include "FMTforest.h"
 
-#ifdef FMTWITHTORCH
-	#include <torch/torch.h>
+#ifdef FMTWITHONNXR
+	
 #endif
 
 
@@ -26,9 +26,9 @@ int main()
 	Logging::FMTlogger().logstamp();
 	if (Version::FMTversion().hasfeature("OSI"))
 		{
-		#ifdef FMTWITHTORCH
-			torch::Tensor tensor = torch::eye(3);
-			Logging::FMTlogger() << tensor.nbytes() << "\n";
+		#ifdef FMTWITHONNXR
+			
+
 		#endif
 		const std::string folder = "../../../../Examples/Models/TWD_land/";
 		const std::string primarylocation = folder+"TWD_land.pri";
