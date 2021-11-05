@@ -1,8 +1,14 @@
 #include <vector>
 #include "FMTsesmodel.h"
 #include "FMTmodelparser.h"
+#include "FMTareaparser.h"
 #include "FMTversion.h"
 #include "FMTlogger.h"
+#include "FMTforest.h"
+#include "FMTspatialschedule.h"
+#include "FMTtransitionparser.h"
+#include "FMTGCBMtransition.h"
+#include "FMToutput.h"
 
 int main()
 {

@@ -24,6 +24,7 @@ namespace Core
 class FMTdevelopment;
 class FMTtransitionmask;
 class FMTdevelopmentpath;
+class FMTyieldrequest;
 
 class FMTEXPORT FMTfork : public FMTspec
     {
@@ -41,8 +42,8 @@ class FMTEXPORT FMTfork : public FMTspec
 		~FMTfork() = default;
         FMTfork& operator = (const FMTfork& rhs);
         void add(FMTtransitionmask& transition);
-		std::vector<FMTdevelopmentpath> getpaths(const FMTdevelopment& base,
-			const FMTyields& ylds, const std::vector<FMTtheme>& themes,const bool& reset_age) const;
+		std::vector<FMTdevelopmentpath> getpaths(const Core::FMTdevelopment& base, const Core::FMTyields& ylds,
+				const std::vector<FMTtheme>& themes,const bool& reset_age) const;
         FMTdevelopment getmax(const FMTdevelopment& base,const FMTyields& ylds,const std::vector<FMTtheme>& themes, const bool& reset_age) const;
 		std::vector<FMTtransitionmask> getmasktrans() const;
 		bool operator == (const FMTfork& rhs) const;

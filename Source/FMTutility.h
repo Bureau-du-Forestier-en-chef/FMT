@@ -39,7 +39,8 @@ enum FMTyldtype
     {
     FMTageyld = 1,
     FMTtimeyld = 2,
-    FMTcomplexyld = 3
+    FMTcomplexyld = 3,
+	FMTmodelyld = 4
     };
 
 enum class FMTyieldparserop
@@ -56,7 +57,8 @@ enum class FMTyieldparserop
 	FMTequation = 9,
 	FMTendpoint = 10,
 	FMTdiscountfactor = 11,
-	FMTdelta = 12
+	FMTdelta = 12,
+	FMTmodelpred = 13
     };
 
 enum FMTotar

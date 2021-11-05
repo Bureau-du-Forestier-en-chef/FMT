@@ -64,8 +64,8 @@ FMTfork::FMTfork():FMTspec(),transitions(){}
 		return newfork;
 		}
 
-	std::vector<FMTdevelopmentpath> FMTfork::getpaths(const FMTdevelopment& base,
-		 const FMTyields& ylds, const std::vector<FMTtheme>& themes, const bool& reset_age) const
+	std::vector<FMTdevelopmentpath> FMTfork::getpaths(const Core::FMTdevelopment& base,const Core::FMTyields& ylds,
+		const std::vector<FMTtheme>& themes, const bool& reset_age) const
 		{
 		std::vector<FMTdevelopmentpath>paths;
 		paths.reserve(transitions.size());

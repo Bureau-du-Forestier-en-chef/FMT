@@ -4,6 +4,10 @@
 #include "FMTareaparser.h"
 #include "FMTversion.h"
 #include "FMTlogger.h"
+#include "FMTareaparser.h"
+#include "FMTforest.h"
+#include "FMTmodel.h"
+#include "FMTtheme.h"
 
 int main()
 {

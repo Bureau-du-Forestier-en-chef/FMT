@@ -12,6 +12,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <memory>
 #include "FMTschedule.h"
 #include "FMTmodelstats.h"
+#include "FMTaction.h"
 
 
 namespace Models{
@@ -200,6 +201,8 @@ Core::FMTaction FMTmodel::defaultdeathaction(const Core::FMTlifespans& llifespan
 			specifier.addbounds(Core::FMTagebounds(Core::FMTsection::Action, std::numeric_limits<int>::max(), intobject.second));
 			death_action.push_back(amask, specifier);
 		}
+		const std::string GCBMaggregate = "~GCBM:" + std::to_string(FMTGCBMDEATHID) + ":Stand Replacing Natural Succession";
+		death_action.push_aggregate(GCBMaggregate);
 		death_action.shrink();
 	return death_action;
 	}
@@ -515,11 +518,11 @@ std::vector<Core::FMTtheme>FMTmodel::locatenodestaticthemes(const Core::FMToutpu
 				yieldstolookat.push_back(yieldvalue);
 			}
 		}
-		std::vector<std::pair<Core::FMTmask, Core::FMTyieldhandler>>::const_iterator handlerit = yields.begin();
+		std::vector<std::pair<Core::FMTmask,std::unique_ptr<Core::FMTyieldhandler>>>::const_iterator handlerit = yields.begin();
 		while (handlerit != yields.end() && !yieldstolookat.empty())
 		{
 			std::vector<std::string>::const_iterator yieldit = yieldstolookat.begin();
-			while (yieldit != yieldstolookat.end() && handlerit->second.elements.find(*yieldit) == handlerit->second.elements.end())
+			while (yieldit != yieldstolookat.end() && !handlerit->second->containsyield(*yieldit))
 			{
 				++yieldit;
 			}
@@ -1465,6 +1468,22 @@ std::map<std::string, std::vector<std::vector<double>>>FMTmodel::getoutputsfromp
 		}
 	return outs;
 	}
+
+std::vector<int>FMTmodel::getGCBMactionids() const
+{
+	std::vector<int>actionids;
+	actionids.reserve(actions.size());
+	try {
+	for (const Core::FMTaction& action : actions)
+		{
+		actionids.push_back(action.getGCBMactionid());
+		}
+}catch (...)
+	{
+	_exhandler->raisefromcatch("", "FMTmodel::getGCBMactionids", __LINE__, __FILE__);
+	}
+return actionids;
+}
 
 std::unique_ptr<FMTmodel> FMTmodel::clone() const
 	{

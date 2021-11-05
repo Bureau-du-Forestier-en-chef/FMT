@@ -86,13 +86,13 @@ if (DEFINED PYTHON_DIR)
 endif(DEFINED PYTHON_DIR)
 
 
-if (DEFINED Torch_DIR)
-	if (EXISTS "${Torch_DIR}")
-		set(ENV{Torch_DIR} "${Torch_DIR}")
+if (DEFINED ONNXR_DIR)
+	if (EXISTS "${ONNXR_DIR}")
+		set(ENV{ONNXR_DIR} "${ONNXR_DIR}")
 	else()
-		message(WARNING "${Torch_DIR} is not a valid directory")
-	endif(EXISTS "${Torch_DIR}")
-endif(DEFINED Torch_DIR)
+		message(WARNING "${ONNXR_DIR} is not a valid directory")
+	endif(EXISTS "${ONNXR_DIR}")
+endif(DEFINED ONNXR_DIR)
 
 
 
@@ -138,23 +138,20 @@ set_target_properties( FMT
 )
 endif(NOT MSVC)
 
-find_package(Torch)
-if (TORCH_FOUND)
-	message("Found Torch FMT will be compiled using C++14")
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${TORCH_CXX_FLAGS}")
-	set_property(TARGET FMT PROPERTY CXX_STANDARD 14)
-	target_link_libraries(FMT ${TORCH_LIBRARIES})
-	link_libraries(${TORCH_LIBRARIES})
-	include_directories(${TORCH_INCLUDE_DIRS})
-	set(FMTWITHTORCH "-DFMTWITHTORCH")
-	add_definitions("${FMTWITHTORCH}")
-  	file(GLOB TORCH_DLLS "${TORCH_INSTALL_PREFIX}/lib/*.dll")
-	list (APPEND FMTDEPENDENCIES ${TORCH_DLLS})
-else()
-	set_property(TARGET FMT PROPERTY CXX_STANDARD 11)
-endif(TORCH_FOUND)
+find_package(onnxruntime)
+if (onnxruntime_FOUND)
+	message("Found Onnxruntime")
+	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${onnxruntime_CXX_FLAGS}")
+	target_link_libraries(FMT ${onnxruntime_LIBRARIES})
+	link_libraries(${onnxruntime_LIBRARIES})
+	include_directories(${onnxruntime_INCLUDE_DIRS})
+	set(FMTWITHONNXR "-DFMTWITHONNXR")
+	add_definitions("${FMTWITHONNXR}")
+  	file(GLOB ONNXR_DLLS "${onnxruntime_INSTALL_PREFIX}/lib/*.dll")
+	list (APPEND FMTDEPENDENCIES ${ONNXR_DLLS})
+endif(onnxruntime_FOUND)
 
-
+set_property(TARGET FMT PROPERTY CXX_STANDARD 11)
 set_property(TARGET FMT PROPERTY CXX_STANDARD_REQUIRED ON)
 
 
@@ -492,10 +489,12 @@ endif(DEFINED CMAKE_TOOLCHAIN_FILE)
 
 get_filename_component(GDAL_DATA_NAME "${GDAL_DATA}" NAME)
 
+
 #install part
 install (CODE
     "set(GDAL_FOUND \"${GDAL_FOUND}\")
     file(COPY \"${CMAKE_CURRENT_SOURCE_DIR}/LICENSES\" DESTINATION \"${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}\")
+    file(COPY \"${CMAKE_CURRENT_SOURCE_DIR}/Templates/YieldPredModels\" DESTINATION \"${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}\")
     if (GDAL_FOUND)
         #Copy gdal data
         file(COPY \"${GDAL_DATA}\" DESTINATION \"${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}\")

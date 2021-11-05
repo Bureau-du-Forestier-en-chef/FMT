@@ -144,7 +144,8 @@ enum FMTexc
 	FMTschemefailed=71,
 	FMTmaxnumberofexception = 72,
 	FMTmskerror = 73,
-	FMTmissing_parameter = 74
+	FMToveridedyield = 74,
+	FMTmissing_parameter = 75
     };
 
 // DocString: FMTexception

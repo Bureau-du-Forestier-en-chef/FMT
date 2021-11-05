@@ -6,6 +6,20 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
 #include "FMTmodelparser.h"
+#include "FMTparser.h"
+#include "FMTconstantparser.h"
+#include "FMTlandscapeparser.h"
+#include "FMTareaparser.h"
+#include "FMTyieldparser.h"
+#include "FMTactionparser.h"
+#include "FMTtransitionparser.h"
+#include "FMTlifespanparser.h"
+#include "FMToutputparser.h"
+#include "FMToptimizationparser.h"
+#include "FMTscheduleparser.h"
+#include "FMTmodel.h"
+#include "FMTschedule.h"
+#include "FMTconstraint.h"
 #include <map>
 
 
@@ -455,6 +469,7 @@ Models::FMTmodel FMTmodelparser::referenceread(std::map<std::string, std::vector
 						actions.push_back(Models::FMTmodel::defaultdeathaction(lifespan, themes));
 					}
 					mostrecentfile = std::max(actparser.getmostrecentfiletime(), mostrecentfile);
+
 				}
 				if (transitions.empty())
 				{
@@ -512,13 +527,9 @@ Models::FMTmodel FMTmodelparser::referenceread(std::map<std::string, std::vector
 						}
 					}
 					actions = excluded; //here we go
-					returnedmodel = Models::FMTmodel(areas, themes, actions,
-						transitions, yields, lifespan, modelname, outputs, constraints);
 				}
-				else {
-					returnedmodel = Models::FMTmodel(areas, themes, actions,
-						transitions, yields, lifespan, modelname, outputs);
-				}
+			returnedmodel = Models::FMTmodel(areas, themes, actions,
+					transitions, yields, lifespan, modelname, outputs, constraints);
 			returnedmodel.passinobject(*this);
 			returnedmodel.cleanactionsntransitions();
 			if (allow_mapping)

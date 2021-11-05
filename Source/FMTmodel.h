@@ -277,6 +277,11 @@ namespace Models
 		Return the statistics of the model, the number of themes, yields, actions, transitions etc...
 		*/
 		FMTmodelstats getmodelstats() const;
+		// DocString: FMTmodel::getGCBMactionids
+		/**
+		Returns GCBM actionids of the FMTmodel.
+		*/
+		std::vector<int>getGCBMactionids() const;
 		// DocString: FMTmodel::cleanactionsntransitions
 		/**
 		Function do delete action that have no defined transition and to delete transition that have no defined action.

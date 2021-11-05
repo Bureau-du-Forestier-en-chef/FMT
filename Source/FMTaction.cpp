@@ -265,6 +265,55 @@ std::unordered_set<int>FMTactioncomparator::getallaggregatesset(const std::vecto
 	return actionsptr;
 }
 
+std::vector<std::string>FMTaction::getGCBMactiondef() const
+{
+	std::vector<std::string> allvalues;
+	try {
+		for (const std::string& aggregate : aggregates)
+		{
+			if (aggregate.find("~GCBM:") != std::string::npos)
+			{
+				boost::split(allvalues, aggregate, boost::is_any_of(":"), boost::token_compress_on);
+				return allvalues;
+			}
+		}
+		_exhandler->raise(Exception::FMTexc::FMTempty_action, "Missing GCBM action for action " + this->getname(),
+			"FMTaction::getGCBMactiondef", __LINE__, __FILE__, Core::FMTsection::Action);
+	}
+	catch (...)
+	{
+		_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, "for action " + this->getname(),
+			"FMTaction::getGCBMactiondef", __LINE__, __FILE__, Core::FMTsection::Action);
+	}
+	return allvalues;
+}
+
+int FMTaction::getGCBMactionid() const
+{
+	try {
+		return std::atoi(getGCBMactiondef().at(1).c_str());
+	}
+	catch (...)
+	{
+		_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, "for action " + this->getname(),
+			"FMTaction::getGCBMactionid", __LINE__, __FILE__, Core::FMTsection::Action);
+	}
+	return 0;
+}
+
+std::string FMTaction::getGCBMactionname() const
+{
+	try {
+		return getGCBMactiondef().at(2).c_str();
+	}
+	catch (...)
+	{
+		_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, "for action " + this->getname(),
+			"FMTaction::getGCBMactionname", __LINE__, __FILE__, Core::FMTsection::Action);
+	}
+	return std::string();
+}
+
 
 FMTaction FMTaction::presolve(const FMTmask& basemask,
 	const std::vector<FMTtheme>& originalthemes,

@@ -202,7 +202,7 @@ namespace Graph
 
 	}
 
-	std::vector<FMTcarbonpredictor>FMTlinegraph::getperiodcarbonpredictors(const int& period, const std::map<int, int>& actionsindex, const std::vector<std::string>& yieldnames, const Core::FMTyields& ylds) const
+	std::vector<FMTcarbonpredictor>FMTlinegraph::getperiodcarbonpredictors(const int& period, const std::vector<int>& actionsindex, const std::vector<std::string>& yieldnames, const Core::FMTyields& ylds) const
 	{
 		std::vector<FMTcarbonpredictor>allpredictors;
 		try {

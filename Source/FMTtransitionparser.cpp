@@ -10,6 +10,14 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <boost/archive/text_iarchive.hpp>
 #include <boost/archive/text_oarchive.hpp>
 #include <boost/serialization/vector.hpp>
+#include "FMTmask.h"
+#include "FMTGCBMtransition.h"
+#include "FMTconstants.h"
+#include "FMTtheme.h"
+#include "FMTaction.h"
+#include "FMTtransition.h"
+#include "FMTtransitionmask.h"
+#include "FMTyields.h"
 
 
 namespace Parser{
@@ -243,7 +251,7 @@ std::vector<Core::FMTtransition> FMTtransitionparser::read(const std::vector<Cor
 							std::vector<Core::FMTtransition>::const_iterator same_tr = find_if(temp_transitions.begin(), temp_transitions.end(), Core::FMTtransitioncomparator(ptransitionname.at(1)));
 							for (const auto& forkobj : *same_tr)
 							{
-								last_transition->push_back(forkobj);
+								last_transition->push_back(forkobj.first,forkobj.second);
 							}
 						}
 						if (!isact(Core::FMTsection::Transition, actions, actionname)) continue;

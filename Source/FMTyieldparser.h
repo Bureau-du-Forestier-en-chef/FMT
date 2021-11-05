@@ -8,19 +8,29 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #ifndef FMTyieldparser_H_INCLUDED
 #define FMTyieldparser_H_INCLUDED
 
-#include "FMTlist.h"
+//#include "FMTlist.h"
 #include "FMTparser.h"
-#include "FMTyields.h"
+//#include "FMTyields.h"
 #include "FMTutility.h"
-#include "FMTconstants.h"
-#include "FMTtheme.h"
-#include "FMTdata.h"
+//#include "FMTconstants.h"
+//#include "FMTtheme.h"
+//#include "FMTdata.h"
 #include <boost/tokenizer.hpp>
 #include <iterator>
 #include <regex>
 #include <string>
 #include <vector>
 #include <utility>
+
+namespace Core
+{
+	class FMTyields;
+	class FMTconstants;
+	class FMTtheme;
+	class FMTdata;
+	class FMTyieldmodel;
+}
+
 
 namespace Parser
 {
@@ -44,11 +54,19 @@ class FMTEXPORT FMTyieldparser : public FMTparser
 		// DocString: FMTyieldparser::rxdiscount
 		///regex to capturediscount factors.
 		std::regex rxdiscount;
+		// DocString: FMTyieldparser::rxpredictor
+		///regex to capture _pred keyword.
+		std::regex rxpredictor;
 		// DocString: FMTyieldparser::getyldtype
 		/**
 		Returns the yield type based on the string of the yield type.
 		*/
 		Core::FMTyldtype getyldtype(const std::string& value) const;
+		// DocString: FMTyieldparser::gethandler
+		/**
+		Returns the yield handler based on the type.
+		*/
+		std::unique_ptr<Core::FMTyieldhandler> gethandler(const Core::FMTmask& mask, const Core::FMTyldtype& yldtype) const;
 		// DocString: FMTyieldparser::getyldctype
 		/**
 		Returns an operator based on a string value.
@@ -59,8 +77,15 @@ class FMTEXPORT FMTyieldparser : public FMTparser
 		This function returns yield names already defined in the yielddata based on (values).
 		*/
 		std::vector<std::string> getylduse(Core::FMTyields& yielddata,
-			std::vector<std::pair<Core::FMTmask, Core::FMTyieldhandler>>::iterator actualyield,
+			std::vector<std::pair<Core::FMTmask,std::unique_ptr<Core::FMTyieldhandler>>>::iterator actualyield,
                                    const std::vector<std::string>& values) const;
+		// DocString: FMTyieldparser::setoveridedylds
+		/**
+		Modify the yiedldata based on the actualyield handler.
+		*/
+		void setoveridedylds(Core::FMTyields& yielddata,
+			std::vector<std::pair<Core::FMTmask, std::unique_ptr<Core::FMTyieldhandler>>>::iterator actualyield,
+			const std::string& yld) const;
 		// DocString: FMTyieldparser::checkpreexisting
 		/**
 		This function checks precxisting yields and throw warning if it already exist.
@@ -98,6 +123,11 @@ class FMTEXPORT FMTyieldparser : public FMTparser
 		std::map<std::string, double>getindexvalues(const Core::FMTmask& mask,
 			const std::vector<Core::FMTtheme>& themes,
 			const std::vector<std::string>&indexvalues, const Core::FMTconstants& constants) const;
+		// DocString: FMTyieldparser::readyieldmodel
+		/**
+		Given a modelname read a yield model in the YieldPredModels folder.
+		*/
+		std::unique_ptr<Core::FMTyieldmodel>readyieldmodel(const std::string& modelname) const;
     public:
 		// DocString: FMTyieldparser()
 		/**

@@ -6,6 +6,11 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
 #include "FMToutputparser.h"
+#include "FMTtheme.h"
+#include "FMTaction.h"
+#include "FMTyields.h"
+#include "FMTconstants.h"
+#include "FMToutput.h"
 
 namespace Parser
 {
