@@ -1429,7 +1429,22 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 		}
 		void getinitialbounds(std::vector<double>& lower_bounds, std::vector<double>& upper_bounds) const
 		{
-			
+			try {
+
+				FMTvertex_iterator vertex_iterator, vertex_iterator_end;
+				for (boost::tie(vertex_iterator, vertex_iterator_end) = developments.at(getfirstactiveperiod()); vertex_iterator != vertex_iterator_end; ++vertex_iterator)
+				{
+					const FMTvertex_descriptor descriptor = *vertex_iterator;
+					const FMTbasevertexproperties& vproperty = data[descriptor];
+					const std::map<int, int>outs = getoutvariables(descriptor);
+					lower_bounds[outs.at(-1)] = vproperty.getbaseRHS();
+					upper_bounds[outs.at(-1)] = vproperty.getbaseRHS();
+				}
+			}
+			catch (...)
+			{
+				_exhandler->raisefromcatch("", "FMTgraph::getinitialbounds", __LINE__, __FILE__);
+			}
 		}
 		size_t nedges() const
 		{
@@ -2291,25 +2306,6 @@ template<> inline bool FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproper
 	return true;
 }
 
-template<> inline void FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::getinitialbounds(std::vector<double>& lower_bounds, std::vector<double>& upper_bounds) const
-{
-	try {
-
-		FMTvertex_iterator vertex_iterator, vertex_iterator_end;
-		for (boost::tie(vertex_iterator, vertex_iterator_end) = developments.at(getfirstactiveperiod()); vertex_iterator != vertex_iterator_end; ++vertex_iterator)
-		{
-			const FMTvertex_descriptor descriptor = *vertex_iterator;
-			const FMTvertexproperties& property = data[descriptor];
-			const std::map<int, int>outs = getoutvariables(descriptor);
-			lower_bounds[outs.at(-1)] = property.getbaseRHS();
-			upper_bounds[outs.at(-1)] = property.getbaseRHS();
-		}
-	}
-	catch (...)
-	{
-		_exhandler->raisefromcatch("", "FMTgraph::getinitialbounds", __LINE__, __FILE__);
-	}
-}
 
 
 template<> inline void FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::updatematrixindex(

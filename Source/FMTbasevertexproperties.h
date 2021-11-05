@@ -78,8 +78,8 @@ namespace Graph
 		FMTbasevertexproperties(const Core::FMTdevelopment& ldevelopment,
 			const int& lconstraintID);
 		void setdevlopementmask(const Core::FMTmask& newmask);
-		virtual double getbaseRHS() const;
-		virtual size_t hash() const;
+		double getbaseRHS() const;
+		size_t hash() const;
 		bool operator == (const FMTbasevertexproperties& rhs) const;
 		bool operator != (const FMTbasevertexproperties& rhs) const;
 	};

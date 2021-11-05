@@ -32,7 +32,7 @@ namespace Graph
 		public:
 			~FMTvertexproperties() = default;
 			FMTvertexproperties() = default;
-			FMTvertexproperties(const FMTvertexproperties& rhs) = default;
+			FMTvertexproperties(const FMTvertexproperties& rhs);
 			FMTvertexproperties& operator = (const FMTvertexproperties& rhs) = default;
 			FMTvertexproperties(const Core::FMTfuturdevelopment& ldevelopment,
 				const int& lconstraintID);
@@ -46,8 +46,6 @@ namespace Graph
 				return constraintID;
 				}
 			void setconstraintID(const int& ID);
-			double getbaseRHS() const override;
-			size_t hash() const override;
 		};
 }
 

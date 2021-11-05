@@ -61,8 +61,9 @@ namespace Graph
 
 	double FMTbasevertexproperties::getbaseRHS() const
 	{
-		return 0;
+		return development->getarea();
 	}
+
 	bool FMTbasevertexproperties::operator == (const FMTbasevertexproperties& rhs) const
 	{
 		return (*development == *rhs.development);
