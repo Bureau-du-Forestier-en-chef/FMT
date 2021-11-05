@@ -40,6 +40,8 @@ BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(setsolutionbylp_overloads,setsolutionbylp
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(basepresolve_overloads,basepresolve, 0, 1)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(addscheduletoobjective_overloads, addscheduletoobjective, 1, 2)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(getarea_overloads, getarea, 0, 2)
+BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(doplanning_overloads,doplanning,1,2)
+BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(showparameters_overloads,showparameters,0,1)
 
 void exportModel()
     {
@@ -62,7 +64,7 @@ void exportModel()
 				"@DocString(FMTmodel::setyields)")
 			.def("getname", &Models::FMTmodel::getname,
 				"@DocString(FMTmodel::getname)")
-            .def("getarea",&Models::FMTmodel::getarea, getarea_overloads(bp::args("period","beforegrowanddeath"), "@DocString(FMTlpmodel::getarea)"))
+            .def("getarea",&Models::FMTmodel::getarea, getarea_overloads(bp::args("period","beforegrowanddeath"), "@DocString(FMTmodel::getarea)"))
 			.def("setarea", &Models::FMTmodel::setarea,
 				"@DocString(FMTmodel::setarea)")
 			.def("getthemes",&Models::FMTmodel::getthemes,
@@ -102,7 +104,28 @@ void exportModel()
 			.def("basepresolve",&Models::FMTmodel::basepresolve,
 				basepresolve_overloads(bp::args("presolvepass"),"@DocString(FMTmodel::basepresolve)"))
 		.def("getpotentialschedule", &Models::FMTmodel::getpotentialschedule,
-			getpotentialscheduleoverloads(bp::args("toremove","selection","withlock"),"@DocString(FMTmodel::getpotentialschedule)"));
+		//The way to expose overload member functions with different args
+			getpotentialscheduleoverloads(bp::args("toremove","selection","withlock"),"@DocString(FMTmodel::getpotentialschedule)"))
+			.def<bool (Models::FMTmodel::*)(const Models::FMTintmodelparameters& key, const int& value)>("setparameter",&Models::FMTmodel::setparameter,
+				"@DocString(FMTmodel::setparameter)")
+			.def<bool (Models::FMTmodel::*)(const Models::FMTdblmodelparameters& key, const double& value)>("setparameter",&Models::FMTmodel::setparameter,
+				"@DocString(FMTmodel::setparameter)")
+			.def<bool (Models::FMTmodel::*)(const Models::FMTboolmodelparameters& key, const bool& value)>("setparameter",&Models::FMTmodel::setparameter,
+				"@DocString(FMTmodel::setparameter)")
+			.def<int (Models::FMTmodel::*)(const Models::FMTintmodelparameters& key)const>("getparameter",&Models::FMTmodel::getparameter,
+				"@DocString(FMTmodel::getparameter)")
+			.def<double (Models::FMTmodel::*)(const Models::FMTdblmodelparameters& key)const>("getparameter",&Models::FMTmodel::getparameter,
+				"@DocString(FMTmodel::getparameter)")
+			.def<bool (Models::FMTmodel::*)(const Models::FMTboolmodelparameters& key)const>("getparameter",&Models::FMTmodel::getparameter,
+				"@DocString(FMTmodel::getparameter)")
+			.def("setcompresstime",&Models::FMTmodel::setcompresstime,
+				"@DocString(FMTmodel::setcompresstime)")
+			.def("getcompresstime",&Models::FMTmodel::getcompresstime,
+				"@DocString(FMTmodel::getcompresstime)")
+			.def("showparameters",&Models::FMTmodel::showparameters,
+				showparameters_overloads(bp::args("showhelp"),"@DocString(FMTmodel::showparameters)"))
+			.def("doplanning",&Models::FMTmodel::doplanning,
+				doplanning_overloads(bp::args("solve"),"@DocString(FMTmodel::doplanning)"));
 
     define_pylist<Models::FMTmodel>();
 
@@ -132,6 +155,30 @@ void exportModel()
 
     define_pylist<Models::FMTsesmodel>();
 
+	bp::enum_<Models::FMTintmodelparameters>("FMTintmodelparameters")
+		.value("LENGTH", Models::FMTintmodelparameters::LENGTH)
+		.value("SEED", Models::FMTintmodelparameters::SEED)
+		.value("NUMBER_OF_ITERATIONS", Models::FMTintmodelparameters::NUMBER_OF_ITERATIONS)
+		.value("PRESOLVE_ITERATIONS", Models::FMTintmodelparameters::PRESOLVE_ITERATIONS)
+		.value("NUMBER_OF_THREADS", Models::FMTintmodelparameters::NUMBER_OF_THREADS);
+	
+	define_pylist<Models::FMTintmodelparameters>();
+	
+	bp::enum_<Models::FMTdblmodelparameters>("FMTdblmodelparameters")
+		.value("TOLERANCE", Models::FMTdblmodelparameters::TOLERANCE)
+		.value("GOALING_SCHEDULE_WEIGHT", Models::FMTdblmodelparameters::GOALING_SCHEDULE_WEIGHT);
+
+	define_pylist<Models::FMTdblmodelparameters>();
+
+	bp::enum_<Models::FMTboolmodelparameters>("FMTboolmodelparameters")
+		.value("FORCE_PARTIAL_BUILD", Models::FMTboolmodelparameters::FORCE_PARTIAL_BUILD)
+		.value("STRICTLY_POSITIVE", Models::FMTboolmodelparameters::STRICTLY_POSITIVE)
+		.value("POSTSOLVE", Models::FMTboolmodelparameters::POSTSOLVE)
+		.value("SHOW_LOCK_IN_SCHEDULES", Models::FMTboolmodelparameters::SHOW_LOCK_IN_SCHEDULES);
+
+	define_pylist<Models::FMTboolmodelparameters>();
+
+	
 
 	#ifdef FMTWITHOSI
 
@@ -233,6 +280,7 @@ void exportModel()
 		.def("getvariabilities", &Models::FMTlpmodel::getvariabilities, getvariabilities_overloads(bp::args("outputs", "tolerance"), "@DocString(FMTlpmodel::getvariabilities)"))
 		.def("getareavariabilities", &Models::FMTlpmodel::getareavariabilities, getareavariabilities_overloads(bp::args("outputs", "globalmask", "tolerance"), "@DocString(FMTlpmodel::getareavariabilities)"))
 		.def("addscheduletoobjective", &Models::FMTlpmodel::addscheduletoobjective, addscheduletoobjective_overloads(bp::args("schedule", "weight"),"@DocString(FMTlpmodel::addscheduletoobjective)"));
+		//.def("doplanning", &Models::FMTlpmodel::doplanning, doplanning_overloads(bp::args("solve", "schedules"),"@DocString(FMTlpmodel::doplanning)"));
 		
 
 	define_pylist<Models::FMTlpmodel>();

@@ -9,7 +9,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #define FMTsolverinterface_H
 
 #ifdef FMTWITHOSI
-/// Namespace containing all enumerator and classes used to construct or manipulate the different type of model in FMT.
+
 namespace Models
 { 
     

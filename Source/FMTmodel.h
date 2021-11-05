@@ -8,30 +8,25 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #ifndef FMTMODEL_H_INCLUDED
 #define FMTMODEL_H_INCLUDED
 
-#include <vector>
-#include <string>
-
 #include "FMTtheme.h"
 #include "FMTaction.h"
 #include "FMTtransition.h"
-#include "FMTschedule.h"
 #include "FMTyields.h"
 #include "FMTlifespans.h"
 #include "FMTactualdevelopment.h"
-#include "FMTconstants.h"
 #include "FMToutput.h"
 #include "FMTconstraint.h"
-#include <memory>
 #include "FMTlist.h"
-#include "FMTmodelstats.h"
+#include "FMTmodelparameters.h"
 #include <boost/serialization/vector.hpp>
 #include <boost/serialization/map.hpp>
 #include <boost/serialization/unordered_map.hpp>
-
 #include <boost/serialization/export.hpp>
 
-
-
+namespace Core
+{
+	class FMTschedule;
+}
 
 namespace Graph
 {
@@ -50,93 +45,99 @@ namespace Spatial
 	class FMTspatialschedule;
 	class FMTspatialnodescache;
 }
-
-
+/// Namespace containing all enumerator and classes used to construct or manipulate the different type of model in FMT.
 namespace Models
 {
-// DocString: FMTmodel
-/**
-FMTmodel is the base class of multiple models in FMT
-It' is the formulation has seen in the Woodstock files of a forest planning problem.
-FMTlpmodel / FMTsamodel / FMTsesmodel use the FMTmodel protected member to
-generate the problem based on LP/SA or to simply simulate the FMTmodel.
-*/
+	class FMTmodelstats;
+	// DocString: FMTmodel
+	/**
+	FMTmodel is the base class of multiple models in FMT
+	It' is the formulation has seen in the Woodstock files of a forest planning problem.
+	FMTlpmodel / FMTsamodel / FMTsesmodel use the FMTmodel protected member to
+	generate the problem based on LP/SA or to simply simulate the FMTmodel.
+	*/
 
-class FMTEXPORT FMTmodel : public Core::FMTobject
+	class FMTEXPORT FMTmodel : public Core::FMTobject
     {
-	template<class T1,class T2>
-    friend class Graph::FMTgraph;
-	friend class Graph::FMTlinegraph;
-	friend class Spatial::FMTspatialschedule;
-	friend class Spatial::FMTspatialnodescache;
-	friend class Parser::FMTmodelparser;
-	// DocString: FMTmodel::save
-	/**
-	Save function is for serialization, used to do multiprocessing across multiple cpus (pickle in Pyhton)
-	*/
-	friend class boost::serialization::access;
-	template<class Archive>
-	void save(Archive& ar, const unsigned int version) const
-	{
-		ar & boost::serialization::make_nvp("FMTobject", boost::serialization::base_object<FMTobject>(*this));
-		FMTobject::forcesave(ar, version);
-		ar & BOOST_SERIALIZATION_NVP(area);
-		ar & BOOST_SERIALIZATION_NVP(themes);
-		ar & BOOST_SERIALIZATION_NVP(actions);
-		ar & BOOST_SERIALIZATION_NVP(transitions);
-		ar & BOOST_SERIALIZATION_NVP(yields);
-		ar & BOOST_SERIALIZATION_NVP(lifespan);
-		ar & BOOST_SERIALIZATION_NVP(outputs);
-		ar & BOOST_SERIALIZATION_NVP(constraints);
-		ar & BOOST_SERIALIZATION_NVP(name);
-	}
-	// DocString: FMTmodel::load
-	/**
-	Load function is for serialization, used to do multiprocessing across multiple cpus (pickle in Pyhton)
-	*/
-	template<class Archive>
-	void load(Archive& ar, const unsigned int version)
-	{
-		ar & boost::serialization::make_nvp("FMTobject", boost::serialization::base_object<FMTobject>(*this));
-		FMTobject::forceload(ar, version);//get the object information for the global object
-		ar & BOOST_SERIALIZATION_NVP(area);
-		ar & BOOST_SERIALIZATION_NVP(themes);
-		ar & BOOST_SERIALIZATION_NVP(actions);
-		ar & BOOST_SERIALIZATION_NVP(transitions);
-		ar & BOOST_SERIALIZATION_NVP(yields);
-		ar & BOOST_SERIALIZATION_NVP(lifespan);
-		ar & BOOST_SERIALIZATION_NVP(outputs);
-		ar & BOOST_SERIALIZATION_NVP(constraints);
-		ar & BOOST_SERIALIZATION_NVP(name);
-		this->passinobject(*this);//Distribute global object to local object
-	}
-	BOOST_SERIALIZATION_SPLIT_MEMBER()
-	// DocString: FMTmodel::validatelistmasks
-	/**
-	Function used to validate FMTmask in a FMTlist element like FMTaction, FMTtransition etc...
-	Will throw exception if the FMTmask string does not match the FMTthemes.
-	*/
-	template<class T>
-	void validatelistmasks(const Core::FMTlist<T>& container) const
+		template<class T1,class T2>
+		friend class Graph::FMTgraph;
+		friend class Graph::FMTlinegraph;
+		friend class Spatial::FMTspatialschedule;
+		friend class Spatial::FMTspatialnodescache;
+		friend class Parser::FMTmodelparser;
+		// DocString: FMTmodel::save
+		/**
+		Save function is for serialization, used to do multiprocessing across multiple cpus (pickle in Pyhton)
+		*/
+		friend class boost::serialization::access;
+		template<class Archive>
+		void save(Archive& ar, const unsigned int version) const
 		{
-		try{
-			for (const auto& listobject : container)
-				{
-				std::string name = std::string(listobject.first);
-				this->validate(themes, name);
-				}
-		}catch (...)
-			{
-			_exhandler->raisefromcatch("", "FMTsesmodel::validatelistmasks", __LINE__, __FILE__);
-			}
+			ar & boost::serialization::make_nvp("FMTobject", boost::serialization::base_object<FMTobject>(*this));
+			FMTobject::forcesave(ar, version);
+			ar & BOOST_SERIALIZATION_NVP(parameters);
+			ar & BOOST_SERIALIZATION_NVP(area);
+			ar & BOOST_SERIALIZATION_NVP(themes);
+			ar & BOOST_SERIALIZATION_NVP(actions);
+			ar & BOOST_SERIALIZATION_NVP(transitions);
+			ar & BOOST_SERIALIZATION_NVP(yields);
+			ar & BOOST_SERIALIZATION_NVP(lifespan);
+			ar & BOOST_SERIALIZATION_NVP(outputs);
+			ar & BOOST_SERIALIZATION_NVP(constraints);
+			ar & BOOST_SERIALIZATION_NVP(name);
 		}
-	// DocString: FMTmodel::validatelistspec
-	/**
-	Function used to validate specifications (check for yields used)
-	Will throw excetion if the yield used in the specificaiton is not defined in FMTyields.
-	*/
-	void validatelistspec(const Core::FMTspec& specifier) const;
+		// DocString: FMTmodel::load
+		/**
+		Load function is for serialization, used to do multiprocessing across multiple cpus (pickle in Pyhton)
+		*/
+		template<class Archive>
+		void load(Archive& ar, const unsigned int version)
+		{
+			ar & boost::serialization::make_nvp("FMTobject", boost::serialization::base_object<FMTobject>(*this));
+			FMTobject::forceload(ar, version);//get the object information for the global object
+			ar & BOOST_SERIALIZATION_NVP(parameters);
+			ar & BOOST_SERIALIZATION_NVP(area);
+			ar & BOOST_SERIALIZATION_NVP(themes);
+			ar & BOOST_SERIALIZATION_NVP(actions);
+			ar & BOOST_SERIALIZATION_NVP(transitions);
+			ar & BOOST_SERIALIZATION_NVP(yields);
+			ar & BOOST_SERIALIZATION_NVP(lifespan);
+			ar & BOOST_SERIALIZATION_NVP(outputs);
+			ar & BOOST_SERIALIZATION_NVP(constraints);
+			ar & BOOST_SERIALIZATION_NVP(name);
+			this->passinobject(*this);//Distribute global object to local object
+		}
+		BOOST_SERIALIZATION_SPLIT_MEMBER()
+		// DocString: FMTmodel::validatelistmasks
+		/**
+		Function used to validate FMTmask in a FMTlist element like FMTaction, FMTtransition etc...
+		Will throw exception if the FMTmask string does not match the FMTthemes.
+		*/
+		template<class T>
+		void validatelistmasks(const Core::FMTlist<T>& container) const
+			{
+			try{
+				for (const auto& listobject : container)
+					{
+					std::string name = std::string(listobject.first);
+					this->validate(themes, name);
+					}
+			}catch (...)
+				{
+				_exhandler->raisefromcatch("", "FMTsesmodel::validatelistmasks", __LINE__, __FILE__);
+				}
+			}
+		// DocString: FMTmodel::validatelistspec
+		/**
+		Function used to validate specifications (check for yields used)
+		Will throw excetion if the yield used in the specificaiton is not defined in FMTyields.
+		*/
+		void validatelistspec(const Core::FMTspec& specifier) const;
     protected:
+		// DocString: FMTmodel::parameters
+		///Parameters needed for the function doplanning by the different types of FMTmodel. 
+		///See FMTmodelparameters for detail description or use FMTmodel::showparameters(true) to see your parameters and a brief description.
+		FMTmodelparameters parameters;
 		// DocString: FMTmodel::area
 		///Actualdevelopments for period 0, seen in the area section or the shapefile/raster
 		std::vector<Core::FMTactualdevelopment>area;
@@ -186,27 +187,43 @@ class FMTEXPORT FMTmodel : public Core::FMTobject
 		void clearactionscache();
 		void clearyieldcache();
 		void cleartransitioncache();
+		// DocString: FMTmodel::swap_ptr
+		/**
+		Swap *this for the element at the end of the rhs unique_ptr.
+		*/
+		virtual void swap_ptr(const std::unique_ptr<FMTmodel>& rhs);
     public:
 		virtual void clearcache();
-		// DocString: FMTmodel()
+		// DocString: FMTmodel(const std::vector<Core::FMTactualdevelopment>& larea, const std::vector<Core::FMTtheme>, const std::vector<Core::FMTaction>, const std::vector<Core::FMTtransition>, const Core::FMTyields, const Core::FMTlifespans, const std::string, const std::vector<Core::FMToutput>, std::vector<Core::FMTconstraint>,FMTmodelparameters)
 		/**
-		Main constructor for FMTmodel used in Parser::FMTmodelparser, the constraints are optional.
+		Main constructor for FMTmodel used in Parser::FMTmodelparser, the constraints and parameters are optional.
 		For the FMTsesmodel no constraints are needed.
 		*/
 		FMTmodel(const std::vector<Core::FMTactualdevelopment>& larea, const std::vector<Core::FMTtheme>& lthemes,
 			const std::vector<Core::FMTaction>& lactions,
 			const std::vector<Core::FMTtransition>& ltransitions, const Core::FMTyields& lyields, const Core::FMTlifespans& llifespan,
-			const std::string& lname, const std::vector<Core::FMToutput>& loutputs, std::vector<Core::FMTconstraint> lconstraints = std::vector<Core::FMTconstraint>());
+			const std::string& lname, const std::vector<Core::FMToutput>& loutputs, std::vector<Core::FMTconstraint> lconstraints = std::vector<Core::FMTconstraint>(),
+			FMTmodelparameters lparameters = FMTmodelparameters());
 		// DocString: FMTmodel()
 		/**
-			Default constructor of FMTmodel.
+		Default constructor of FMTmodel.
 		*/
 		FMTmodel();
-		// DocString: ~FMTmodel()
+		// DocString: ~FMTmodel
 		/**
 			Default virtual desctructor of FMTmodel.
 		*/
 		virtual ~FMTmodel()=default;
+		// DocString: FMTmodel(FMTmodel&&)
+		/**
+		Default move constructor for FMTmodel.
+		*/
+		FMTmodel(FMTmodel&& rhs)=default;
+		// DocString: FMTmodel::operator=(FMTmodel&&) 
+		/**
+		Default move assignment for FMTmodel.
+		*/
+		FMTmodel& operator =(FMTmodel&& rhs) =default;
 		// DocString: FMTmodel::getarea
 		/**
 			Virtual function to get the area of a given period into actualdevelopement. If before grow = true it will returns the developement before it grow and death to the next period.
@@ -345,12 +362,12 @@ class FMTEXPORT FMTmodel : public Core::FMTobject
 		// DocString: FMTmodel::addoutput
 		/**
 		Adds one output to the model base only on strings.
-		name = output name
-		maskstring = string of the mask "? ? ?"
-		outputtarget = type of ouput created
-		action = action string targeted
-		yield = yield string targeted
-		description = description of the output
+			name = output name
+			maskstring = string of the mask "? ? ?"
+			outputtarget = type of ouput created
+			action = action string targeted
+			yield = yield string targeted
+			description = description of the output
 		*/
 		void addoutput(const std::string& name,const std::string& maskstring, Core::FMTotar outputtarget,
 			std::string action = std::string(), std::string yield = std::string(), std::string description = std::string(),int targettheme = -1);
@@ -416,13 +433,13 @@ class FMTEXPORT FMTmodel : public Core::FMTobject
 		return true if the model is valid.
 		*/
 		bool isvalid();
-		// DocString: FMTmodel::locatestaticthemes
+		// DocString: FMTmodel::locatestaticthemes(const Core::FMToutput, bool ignoreoutputvariables)
 		/**
 		Based on the FMTmodel looks at every theme to located in the FMTtransitions and return themes 
 		that are not used into the transition and in a given output (staticthemes)... will return themes based on spatial units.
 		*/
 		std::vector<Core::FMTtheme> locatestaticthemes(const Core::FMToutput& output, bool ignoreoutputvariables = false) const;
-		// DocString: FMTmodel::locatestaticthemes
+		// DocString: FMTmodel::locatestaticthemes(const Core::FMToutputnode, bool ignoreoutputvariables)
 		/**
 		Based on the FMTmodel looks at every theme to located in the FMTtransitions and return themes
 		that are not used into the transition and in a given output node (staticthemes)... will return themes based on spatial units.
@@ -433,12 +450,12 @@ class FMTEXPORT FMTmodel : public Core::FMTobject
 		Returns themes used in the transition scheme.
 		*/
 		std::vector<Core::FMTtheme> locatedynamicthemes(const Core::FMToutput& outpu, bool ignoreoutputvariables = false) const;
-		// DocString: FMTmodel::getdynamicmask
+		// DocString: FMTmodel::getdynamicmask(const Core::FMToutput, bool ignoreoutputvariables)
 		/**
 		Based on static and dynamic themes will return a mask where the static attributes will have a value of 0 and dynamic value a value of 1.
 		*/
 		Core::FMTmask getdynamicmask(const Core::FMToutput& output, bool ignoreoutputvariables = false) const;
-		// DocString: FMTmodel::getdynamicmask
+		// DocString: FMTmodel::getdynamicmask(const Core::FMToutputnode, bool ignoreoutputvariables)
 		/**
 		Based on static and dynamic themes will return a mask where the static attributes will have a value of 0 and dynamic value a value of 1.
 		*/
@@ -527,10 +544,9 @@ class FMTEXPORT FMTmodel : public Core::FMTobject
 		virtual std::vector<Core::FMTconstraint> getlocalconstraints(const std::vector<Core::FMTconstraint>& localconstraints, const int& period) const;
 		// DocString: FMTmodel::doplanning
 		/**
-		Build the model and do the initialsolve or simulate.
+		Build the model and do the initialsolve or simulate. This function use the build and solve overrided functions of the differents model type. 
 		*/
-		virtual bool doplanning(const std::vector<Core::FMTschedule>&schedules,
-								bool forcepartialbuild = false,Core::FMTschedule objectiveweight = Core::FMTschedule());
+		virtual bool doplanning(const bool& solve,std::vector<Core::FMTschedule> schedules = std::vector<Core::FMTschedule>());
 		// DocString: FMTmodel::getoutput
 		/**
 		Get the output value of a output for a given period using the spatial solution.
@@ -557,6 +573,69 @@ class FMTEXPORT FMTmodel : public Core::FMTobject
 		Get a clone of the FMTmodel
 		*/
 		virtual std::unique_ptr<FMTmodel>clone() const;
+		// DocString: FMTmodel::setparameter(const FMTintmodelparameters, const int&)
+		/**
+		Setter for int model parameters. See FMTmodelparameters.h.
+		*/
+		virtual bool setparameter(const FMTintmodelparameters& key, const int& value);
+		// DocString: FMTmodel::setparameter(const FMTdblmodelparameters, const double)
+		/**
+		Setter for double model parameters. See FMTmodelparameters.h.
+		*/
+		virtual bool setparameter(const FMTdblmodelparameters& key, const double& value);
+		// DocString: FMTmodel::setparameter(const FMTboolmodelparameters, const bool)
+		/**
+		Setter for bool model parameters. See FMTmodelparameters.h.
+		*/
+		virtual bool setparameter(const FMTboolmodelparameters& key, const bool& value);
+		// DocString: FMTmodel::getparameter(const FMTintmodelparameters)
+		/**
+		Getter for int model parameters. Return the parameters value. See FMTmodelparameters.h.
+		*/
+		int getparameter(const FMTintmodelparameters& key) const;
+		// DocString: FMTmodel::getparameter(const FMTdblmodelparameters)
+		/**
+		Getter for double model parameters. Return the parameters value. See FMTmodelparameters.h.
+		*/
+		double getparameter(const FMTdblmodelparameters& key) const;
+		// DocString: FMTmodel::getparameter(const FMTboolmodelparameters)
+		/**
+		Getter for bool model parameters. Return the parameters value. See FMTmodelparameters.h.
+		*/
+		bool getparameter(const FMTboolmodelparameters& key) const;
+		// DocString: FMTmodel::setcompresstime
+		/**
+		Set compresstime value for a range of periods (periodstart,periodstop). See FMTmodelparameters.h.
+		*/
+		bool setcompresstime(const int& periodstart, const int& periodstop, const int& value);
+		// DocString: FMTmodel::setcompresstime
+		/**
+		Return avec vector with compresstime value for each periods. First period is the index 0 in the vector. See FMTmodelparameters.h.
+		*/
+		std::vector<int> getcompresstime() const;
+		// DocString: FMTmodel::showparameters
+		/**
+		Show parameters values. If (showhelp) a brief description of each parameters will appear.
+		*/
+		virtual void showparameters(const bool& showhelp=false)const;
+		// DocString: FMTmodel::build
+		/**
+		Virtual function overrided all type of models. In child class, this function is use to build the elements needed to solve the model. 
+		*/
+		virtual bool build(std::vector<Core::FMTschedule> schedules=std::vector<Core::FMTschedule>())
+		{
+			//Mettre message warning
+			return false;
+		}
+		// DocString: FMTmodel::solve
+		/**
+		Virtual function overrided all type of models. In child class, this function is use to solve the model. 
+		*/
+		virtual bool solve()//Only for optimisation
+		{
+			//Mettre message warning
+			return false;
+		}
 
     };
 // DocString: FMTmodelcomparator

@@ -23,12 +23,12 @@ namespace Models
 {
 	// DocString: FMTnssmodel
 	/**
-	FMTnssmodel stands for non spatial simulation model. This model is used to simulate
+	FMTnssmodel stands for non spatial simulation model. This model is mainly used to simulate
 	stochastics actions during the local replanning phase. Before using any kind of spatialy explicit model
 	sometime using a simple non spatial model can help to understand the basic idea of simulation.
 	*/
-	class FMTEXPORT FMTnssmodel : public FMTsrmodel
-		{
+	class FMTEXPORT FMTnssmodel final: public FMTsrmodel
+	{
 		// DocString: FMTnssmodel::save
 		/**
 		Save function is for serialization, used to do multiprocessing across multiple cpus (pickle in Pyhton)
@@ -95,6 +95,7 @@ namespace Models
 		void updateareatargets(const double& areaoperated,const size_t& outtarget,
 			std::vector<const Core::FMToutput*>& alloutputs,std::vector<double>& targets,
 			std::vector<std::vector<const Core::FMTaction*>>& actiontargets) const;
+		virtual void swap_ptr(const std::unique_ptr<FMTmodel>& rhs);
 		public:
 			// DocString: FMTnssmodel()
 			/**
@@ -121,6 +122,16 @@ namespace Models
 			Constructor for FMTnssmodel taking a FMTmodel and a seed to initialize the random number generator.
 			*/
 			FMTnssmodel(const FMTmodel& rhs, unsigned int seed);
+			// DocString: FMTnssmodel(FMTnssmodel&&)
+			/**
+			Default move constructor for FMTnssmodel.
+			*/
+			FMTnssmodel(FMTnssmodel&& rhs)=default;
+			// DocString: FMTnssmodel::operator=(FMTnssmodel&& rhs) 
+			/**
+			Default move assignment for FMTnssmodel.
+			*/
+			FMTnssmodel& operator =(FMTnssmodel&& rhs) =default;
 			// DocString: FMTnssmodel::simulate
 			/**
 			This function do a non spatial simulation based on the area constraints in the optimize section.
@@ -130,15 +141,26 @@ namespace Models
 			/**
 			Get a clone of the FMTnssmodel
 			*/
-			virtual std::unique_ptr<FMTmodel>clone() const final;
-			// DocString: FMTmodel::doplanning
+			virtual std::unique_ptr<FMTmodel>clone() const;
+			// DocString: FMTmodel::build
 			/**
-			Build the model and do the initialsolve or simulate.
+			This function will use the function simulate over the number of period set as LENGTH in model parameters.
 			*/
-			virtual bool doplanning(const std::vector<Core::FMTschedule>&schedules,
-				bool forcepartialbuild = false, Core::FMTschedule objectiveweight = Core::FMTschedule());
-			
-		};
+			virtual bool build(std::vector<Core::FMTschedule> schedules=std::vector<Core::FMTschedule>());
+			// DocString: FMTmodel::solve
+			/**
+			There is no solve since it's only a simulation. The build phase simulate over the LENGTH given in model parameters. 
+			*/
+			virtual bool solve()
+			{
+				return true;
+			}
+			// DocString: FMTmodel::setparameter(const FMTintmodelparameters, const int)
+			/**
+			Override setter for intmodelparameters. 
+			*/
+			virtual bool setparameter(const FMTintmodelparameters& key, const int& value);
+	};
 }
 
 BOOST_CLASS_EXPORT_KEY(Models::FMTnssmodel)
