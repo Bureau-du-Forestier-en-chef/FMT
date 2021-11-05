@@ -9,7 +9,11 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 namespace Graph
 {
+	FMTvertexproperties::FMTvertexproperties(const FMTvertexproperties& rhs):
+		FMTbasevertexproperties(rhs), constraintID(rhs.constraintID)
+	{
 
+	}
 
 	FMTvertexproperties::FMTvertexproperties(const Core::FMTfuturdevelopment& ldevelopment,
 		const int& lconstraintID):FMTbasevertexproperties(ldevelopment),constraintID(lconstraintID)
@@ -26,20 +30,13 @@ namespace Graph
 
 		}
 
-	double FMTvertexproperties::getbaseRHS() const
-		{
-		return development->getarea();
-		}
+	
 
 	void FMTvertexproperties::setconstraintID(const int& ID)
 		{
 		constraintID = ID;
 		}
 
-	size_t FMTvertexproperties::hash() const
-		{
-		return FMTbasevertexproperties::hash();
-		}
 
 	std::string FMTvertexproperties::constraintname() const
 		{
