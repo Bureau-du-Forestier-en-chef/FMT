@@ -39,6 +39,7 @@ BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(getconstraintsfromstring_overloads,getcon
 
 
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(readproject_overloads, readproject,1,5)
+BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(writeresults_overloads, writeresults,5,7)
 
 
 
@@ -132,6 +133,7 @@ void exportParser()
 				.def("getconstraintsfromstring",&Parser::FMTmodelparser::getconstraintsfromstring, getconstraintsfromstring_overloads(bp::args("constraintstr", "model", "constants"), "@DocString(FMTmodel::getconstraintsfromstring)"))
 				.def("readschedules", &Parser::FMTmodelparser::readschedules,
 					"@DocString(FMTmodelparser::readschedules)")
+				.def("writeresults", &Parser::FMTmodelparser::writeresults,writeresults_overloads(bp::args("model","theoutputs","firstperiod","lastperiod","outlocation","outputlevel","gdaldrivername"),"@DocString(FMTmodelparser::writeresults)"))
                 .def("write",&Parser::FMTmodelparser::write,
 					"@DocString(FMTmodelparser::write)");
 	bp::class_<Parser::FMTscheduleparser, bp::bases<Parser::FMTparser>>("FMTscheduleparser", "@DocString(FMTscheduleparser)")
