@@ -25,6 +25,7 @@ namespace Core
 {
 	class FMTdevelopment;
 	class FMTyieldhandler;
+	class FMTyields;
 	// DocString: FMTyieldrequest
 	/**
 	Using a pointer to a given graph and a FMTdevelopement you can create thise class to request yield values.
