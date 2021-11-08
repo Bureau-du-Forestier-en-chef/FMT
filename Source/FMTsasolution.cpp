@@ -14,6 +14,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <math.h>
 #include <cmath>
 #include <cfloat>
+#include "FMTforest.h"
 
 namespace Spatial
 {

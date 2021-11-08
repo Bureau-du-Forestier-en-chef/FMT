@@ -13,6 +13,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTschedule.h"
 #include "FMTmodelstats.h"
 #include "FMTaction.h"
+#include "FMTdevelopmentpath.h"
 
 
 namespace Models{
@@ -1468,22 +1469,6 @@ std::map<std::string, std::vector<std::vector<double>>>FMTmodel::getoutputsfromp
 		}
 	return outs;
 	}
-
-std::vector<int>FMTmodel::getGCBMactionids() const
-{
-	std::vector<int>actionids;
-	actionids.reserve(actions.size());
-	try {
-	for (const Core::FMTaction& action : actions)
-		{
-		actionids.push_back(action.getGCBMactionid());
-		}
-}catch (...)
-	{
-	_exhandler->raisefromcatch("", "FMTmodel::getGCBMactionids", __LINE__, __FILE__);
-	}
-return actionids;
-}
 
 std::unique_ptr<FMTmodel> FMTmodel::clone() const
 	{

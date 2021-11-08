@@ -10,6 +10,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTdevelopment.h"
 #include "FMTageyieldhandler.h"
 #include "FMTdata.h"
+#include "FMTfunctioncall.h"
 
 namespace Core {
 	
@@ -255,7 +256,7 @@ namespace Core {
 	double FMTcomplexyieldhandler::get(const std::string& yld, const FMTyieldrequest& request) const
 	{
 		double value = 0;
-		try {			
+		try {
 			const int age = request.getdevelopment().getage();
 			const int period = request.getdevelopment().getperiod();
 				const FMTdata* cdata = &elements.at(yld);

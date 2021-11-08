@@ -10,17 +10,13 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #ifndef FMToperatingarea_H_INCLUDED
 #define FMToperatingarea_H_INCLUDED
 
-#include "FMTgraphdescription.h"
-#include "FMTgraph.h"
 #include "FMTmask.h"
-#include "OsiSolverInterface.hpp"
 #include <vector>
 #include <map>
 #include <memory>
 #include <boost/serialization/serialization.hpp>
 #include <boost/serialization/nvp.hpp>
 #include <boost/serialization/export.hpp>
-#include "FMTlpsolver.h"
 
 namespace Heuristics
 	{

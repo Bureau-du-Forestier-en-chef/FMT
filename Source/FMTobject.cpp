@@ -14,6 +14,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTdebugexceptionhandler.h"
 #include "FMTfreeexceptionhandler.h"
 #include <boost/filesystem.hpp>
+#include <boost/algorithm/string.hpp>
 
 #if defined __MINGW64__||__CYGWIN__
 	#include "windows.h"

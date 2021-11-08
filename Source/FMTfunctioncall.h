@@ -9,7 +9,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #define FMTfunctioncall_H_INCLUDED
 
 #include <string>
-#include <math.h>
+
 
 
 namespace Core

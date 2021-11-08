@@ -16,7 +16,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <boost/serialization/export.hpp>
 #include <memory>
 #include <string>
-#include "FMTexception.h"
+#include "FMTobject.h"
 
 namespace Graph
 {

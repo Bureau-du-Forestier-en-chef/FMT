@@ -5,14 +5,16 @@ SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 #ifdef FMTWITHOSI
-#include "FMTlpheuristicmthandler.h"
-//#include <thread>
 #include <boost/thread.hpp>
+#include "FMTlpheuristicmthandler.h"
+
 #include <functional>
 #if defined FMTWITHPYTHON
 	#include "boost/python.hpp"
 #endif
-
+#include "FMTlpheuristic.h"
+#include "FMToperatingareascheduler.h"
+#include "FMToperatingareaclusterer.h"
 namespace Heuristics
 {
 		FMTlpheuristicmthandler::FMTlpheuristicmthandler():heuristics()
@@ -83,7 +85,6 @@ namespace Heuristics
 				FMTlpheuristic* heuristic = heuristics[i];
 				heuristic->setnumberofthreads(static_cast<size_t>(mosek_process));
 				heuristic->setnothread(static_cast<int>(i));
-				//threads.push_back(std::thread([heuristic]{heuristic->parallelinitialsolve();}));
 				threads.push_back(boost::thread(std::bind(&FMTlpheuristic::initialsolve, heuristic)));
 			}
 			for(boost::thread& thr : threads)

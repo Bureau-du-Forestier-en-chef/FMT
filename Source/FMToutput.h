@@ -14,15 +14,16 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <set>
 #include "FMToutputsource.h"
 #include "FMToperator.h"
-#include "FMTexpression.h"
-#include "FMTmaskfilter.h"
-#include "FMToutputnode.h"
-#include "FMTtheme.h"
 #include "FMTbounds.h"
 #include "FMTobject.h"
 #include <boost/serialization/string.hpp>
 #include <boost/serialization/serialization.hpp>
 #include <boost/serialization/export.hpp>
+
+namespace Core {
+	class FMToutputnode;
+	class FMTtheme;
+}
 
 
 namespace Core

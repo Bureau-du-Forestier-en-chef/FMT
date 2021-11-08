@@ -6,6 +6,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
 #include "FMTschedule.h"
+#include "FMTconstraint.h"
 
 namespace Core{
 

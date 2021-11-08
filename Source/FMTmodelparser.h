@@ -15,6 +15,8 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <vector>
 #include "FMTparser.h"
 #include "FMToutput.h"
+#include "FMToutputnode.h"
+
 
 namespace Models {
 	class FMTmodel;

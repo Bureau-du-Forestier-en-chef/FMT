@@ -9,12 +9,11 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #define FMTOUTPUTNODE_H_INCLUDED
 
 #include "FMToutputsource.h"
-#include "FMToperator.h"
-#include "FMTaction.h"
 #include <map>
 
 namespace Core
 {
+class FMTaction;
 enum FMToutputlevel
 	{
 		standard = 1,

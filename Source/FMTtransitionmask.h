@@ -12,18 +12,17 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTmask.h"
 #include "FMTmaskfilter.h"
 #include <boost/serialization/serialization.hpp>
-#include "FMTyields.h"
 #include <string>
-#include "FMTtheme.h"
+
 
 
 
 namespace Core
 {
-
 class FMTdevelopment;
 class FMTyields;
 class FMTyieldrequest;
+class FMTtheme;
 
 class FMTtransitionmask : public FMTmaskfilter,public FMTspec
     {

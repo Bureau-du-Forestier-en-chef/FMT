@@ -6,10 +6,11 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
 #include "FMTcarbonpredictor.h"
-#include "FMTaction.h"
+#include "FMTmodel.h"
 #include "FMTdevelopment.h"
 #include "FMTyieldrequest.h"
-#include "FMTyields.h"
+#include "FMTbasevertexproperties.h"
+#include "FMTbaseedgeproperties.h"
 
 namespace Graph
 {
@@ -26,7 +27,7 @@ namespace Graph
 		return values;
 	}
 
-	FMTcarbonpredictor::FMTcarbonpredictor(const std::vector<int>& actionsindex, const std::vector<std::string>& yieldnames, const Core::FMTyields& yields,
+	FMTcarbonpredictor::FMTcarbonpredictor(const std::vector<Core::FMTaction>& actions, const std::vector<std::string>& yieldnames,const Core::FMTyields& yields,
 		const FMTbasevertexproperties& source, const FMTbasevertexproperties& target, const std::vector<const FMTbaseedgeproperties*>& edges, const std::vector<int>& gaps):
 		source_vertex(&source),
 		target_vertex(&target),
@@ -41,19 +42,21 @@ namespace Graph
 		{
 			if (edgeprop != nullptr)
 			{
-				if (edgeprop->getactionID()<0)
+				if (edgeprop->getactionID() < 0)
 				{
 					sourceactions.push_back(FMTGCBMGROWTHID);
-				}else {
-					sourceactions.push_back(actionsindex.at(edgeprop->getactionID()));
-					}
-			}else {
+				}
+				else {
+					sourceactions.push_back(actions.at(edgeprop->getactionID()).getGCBMactionid());
+				}
+			}
+			else {
 				sourceactions.push_back(FMTGCBMUNKNOWNID);
 			}
 			++location;
 		}
-
 	}
+
 
 	FMTcarbonpredictor::FMTcarbonpredictor(const FMTcarbonpredictor& rhs) :
 		source_vertex(rhs.source_vertex),

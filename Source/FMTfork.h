@@ -10,9 +10,6 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 #include "FMTtransitionmask.h"
 #include "FMTbounds.h"
-#include "FMTdevelopment.h"
-#include "FMTdevelopmentpath.h"
-#include "FMTyields.h"
 #include <vector>
 #include <boost/serialization/serialization.hpp>
 #include <boost/serialization/nvp.hpp>
@@ -22,9 +19,9 @@ namespace Core
 {
 
 class FMTdevelopment;
-class FMTtransitionmask;
 class FMTdevelopmentpath;
 class FMTyieldrequest;
+class FMTyields;
 
 class FMTEXPORT FMTfork : public FMTspec
     {

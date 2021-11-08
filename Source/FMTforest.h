@@ -9,18 +9,16 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #define FMTFOREST_H_INCLUDED
 
 
-#include "FMTcoordinate.h"
 #include "FMTlayer.h"
-#include "FMTschedule.h"
 #include "FMTdevelopment.h"
-#include "FMTactualdevelopment.h"
-#include "FMTfuturdevelopment.h"
-#include "FMTspatialaction.h"
-#include "FMTcut.h"
-#include "FMTmask.h"
-#include "FMTtheme.h"
 #include <iterator>
 #include <numeric>
+
+namespace Core {
+	class FMTtheme;
+	class FMTactualdevelopment;
+	class FMTfuturdevelopement;
+}
 
 
 namespace Spatial

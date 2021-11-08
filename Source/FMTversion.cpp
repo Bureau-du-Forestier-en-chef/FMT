@@ -9,6 +9,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTparser.h"
 #include <chrono>
 #include <ctime>
+#include "FMTsolverinterface.h"
 
 #ifdef FMTWITHGDAL
 	#include "gdal.h"

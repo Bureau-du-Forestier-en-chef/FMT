@@ -7,6 +7,10 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 #include "FMToutputsource.h"
 #include "FMTgraphvertextoyield.h"
+#include "FMTaction.h"
+#include "FMTyields.h"
+#include "FMTdevelopment.h"
+#include "FMTactualdevelopment.h"
 
 namespace Core{
 

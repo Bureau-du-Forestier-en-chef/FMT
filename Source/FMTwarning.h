@@ -11,8 +11,12 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <boost/unordered_map.hpp>
 #include "FMTexception.h"
 #include <string>
-#include "FMTlogger.h"
 #include <memory>
+
+namespace Logging
+{
+	class FMTlogger;
+}
 
 namespace Exception
 {

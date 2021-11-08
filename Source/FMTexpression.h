@@ -11,9 +11,6 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <string>
 #include <vector>
 #include <map>
-#include "FMToperator.h"
-#include "FMTfunctioncall.h"
-#include "FMTlogger.h"
 #include <stack>
 
 namespace Core

@@ -429,7 +429,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 							{
 								const FMTvertex_descriptor front_vertex = actives.front();
 								actives.pop();
-								const Graph::FMTgraphvertextoyield vertexinfo = getvertextoyieldinfo(front_vertex);
+								const Graph::FMTgraphvertextoyield vertexinfo = getvertextoyieldinfo(model,front_vertex);
 								const FMTbasevertexproperties& front_properties = data[front_vertex];
 								const Core::FMTdevelopment& active_development = front_properties.get();					
 								bool death = false;
@@ -1338,7 +1338,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 								(!action.dorespectlock() && active_development.getlock() != 0 &&
 								(schedule.at(action)).find(active_development.clearlock()) != (schedule.at(action)).end())))
 							{
-								const Graph::FMTgraphvertextoyield vertexinfo = getvertextoyieldinfo(front_vertex);
+								const Graph::FMTgraphvertextoyield vertexinfo = getvertextoyieldinfo(model,front_vertex);
 								if (active_development.operable(action, model.yields, &vertexinfo))
 								{
 									if (action.getname() == "_DEATH")
@@ -1525,10 +1525,10 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 			return emptyreturn;
 		}
 
-		Graph::FMTgraphvertextoyield getvertextoyieldinfo(const FMTvertex_descriptor& descriptor) const
+		Graph::FMTgraphvertextoyield getvertextoyieldinfo(const Models::FMTmodel& model,const FMTvertex_descriptor& descriptor) const
 			{
 			try {
-				return Graph::FMTgraphvertextoyield(*this, reinterpret_cast<const void*>(&descriptor));
+				return Graph::FMTgraphvertextoyield(model,*this, reinterpret_cast<const void*>(&descriptor));
 			}catch (...)
 				{
 				_exhandler->raisefromcatch("", "FMTgraph::getvertextoyieldinfo", __LINE__, __FILE__);
@@ -1576,7 +1576,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 					for (const FMTvertex_descriptor& vertex : verticies)
 					{
 						const Core::FMTdevelopment& development = data[vertex].get();
-						const Graph::FMTgraphvertextoyield vertexinfo = getvertextoyieldinfo(vertex);
+						const Graph::FMTgraphvertextoyield vertexinfo = getvertextoyieldinfo(model,vertex);
 						std::string value;
 						if (level == Core::FMToutputlevel::standard)
 						{
@@ -1881,8 +1881,8 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 
 
 
-		std::vector<FMTcarbonpredictor> getcarbonpredictors(const FMTvertex_descriptor& targetdescriptor,const std::vector<int>& actionsindex,
-			const std::vector<std::string>& yieldnames, const Core::FMTyields&yields,const size_t& depth) const
+		std::vector<FMTcarbonpredictor> getcarbonpredictors(const FMTvertex_descriptor& targetdescriptor,const Models::FMTmodel& model,
+			const std::vector<std::string>& yieldnames,const size_t& depth) const
 			{
 			std::vector<FMTcarbonpredictor> predictors;
 			try {
@@ -1909,7 +1909,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 							lastactions.push_back(nullptr);
 							distances.push_back(-1);
 						}
-					predictors.emplace_back(actionsindex, yieldnames, yields, sourceproperties, targetproperties, lastactions, distances);
+					predictors.emplace_back(model.actions, yieldnames,model.yields, sourceproperties, targetproperties, lastactions, distances);
 				}
 			predictors.shrink_to_fit();
 			}catch (...)
@@ -2124,7 +2124,7 @@ template<> inline std::map<int, double> FMTgraph<Graph::FMTvertexproperties, Gra
 			for (const FMTvertex_descriptor& vertex : verticies)
 			{
 				const Core::FMTdevelopment& development = data[vertex].get();
-				const Graph::FMTgraphvertextoyield vertexinfo = getvertextoyieldinfo(vertex);
+				const Graph::FMTgraphvertextoyield vertexinfo = getvertextoyieldinfo(model,vertex);
 				if (output_node.source.useinedges())
 				{
 					const double coef = output_node.source.getcoef(development, model.yields, &vertexinfo) * output_node.factor.getcoef(development, model.yields, &vertexinfo) * output_node.constant;

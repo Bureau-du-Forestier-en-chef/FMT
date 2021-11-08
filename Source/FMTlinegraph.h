@@ -9,11 +9,12 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #define FMTLINEGRAPH_H
 
 #include "FMTgraph.h"
-
-#include "FMTeventcontainer.h"
-#include "FMTspatialaction.h"
-#include "FMTbindingspatialaction.h"
 #include <boost/serialization/export.hpp>
+
+namespace Spatial
+{
+	class FMTeventcontainer;
+}
 
 namespace Graph
 {
@@ -116,7 +117,7 @@ class FMTEXPORT FMTlinegraph : public FMTgraph<FMTbasevertexproperties,FMTbaseed
 		/**
 		Returns a vector of carbon predictors for a given (period), (actionsmap), (yieldnames) and yields.
 		*/
-		std::vector<FMTcarbonpredictor>getperiodcarbonpredictors(const int& period, const std::vector<int>& actionsindex, const std::vector<std::string>& yieldnames, const Core::FMTyields& ylds) const;
+		std::vector<FMTcarbonpredictor>getperiodcarbonpredictors(const int& period, const Models::FMTmodel& model, const std::vector<std::string>& yieldnames) const;
 		// DocString: FMTlinegraph::getinedgeactionid
 		/**
 		Get the in edge action id of a vertex.

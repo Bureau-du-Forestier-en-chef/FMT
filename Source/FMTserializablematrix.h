@@ -10,11 +10,12 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #define FMTserializablematrix_H_INCLUDED
 
 #include <CoinPackedMatrix.hpp>
-#include <OsiSolverInterface.hpp>
 #include <memory>
-#include "FMTsolverinterface.h"
 #include <boost/serialization/serialization.hpp>
 #include <boost/serialization/nvp.hpp>
+#include <vector>
+
+class OsiSolverInterface;
 
 
 namespace Models

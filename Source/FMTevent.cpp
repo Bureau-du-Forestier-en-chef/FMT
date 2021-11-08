@@ -6,6 +6,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
 #include "FMTevent.h"
+#include "FMTeventrelation.h"
 #include <queue>
 
 namespace Spatial

@@ -11,6 +11,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTlogger.h"
 #include <boost/iostreams/stream.hpp>
 #include <boost/archive/binary_oarchive.hpp>
+#include "FMTeventcontainer.h"
 
 
 namespace Graph
@@ -202,7 +203,7 @@ namespace Graph
 
 	}
 
-	std::vector<FMTcarbonpredictor>FMTlinegraph::getperiodcarbonpredictors(const int& period, const std::vector<int>& actionsindex, const std::vector<std::string>& yieldnames, const Core::FMTyields& ylds) const
+	std::vector<FMTcarbonpredictor>FMTlinegraph::getperiodcarbonpredictors(const int& period, const Models::FMTmodel& model, const std::vector<std::string>& yieldnames) const
 	{
 		std::vector<FMTcarbonpredictor>allpredictors;
 		try {
@@ -215,7 +216,7 @@ namespace Graph
 					(data[outv].get().getperiod() != 0)
 					/*!(devit.pointerobject->period==1 && getinedgeactionid(outv)==-1)*/)
 				{
-					const std::vector<FMTcarbonpredictor>devpredictor = FMTgraph::getcarbonpredictors(outv, actionsindex, yieldnames, ylds, 3);
+					const std::vector<FMTcarbonpredictor>devpredictor = FMTgraph::getcarbonpredictors(outv, model, yieldnames, 3);
 					allpredictors.insert(allpredictors.end(), devpredictor.begin(), devpredictor.end());
 				}
 			}

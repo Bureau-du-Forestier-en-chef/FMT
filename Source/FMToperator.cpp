@@ -8,6 +8,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMToperator.h"
 #include <algorithm>
 #include "FMTlogger.h"
+#include <algorithm>
 
 namespace Core{
 

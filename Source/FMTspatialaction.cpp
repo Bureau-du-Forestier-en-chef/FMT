@@ -9,6 +9,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMToutput.h"
 #include <iostream>
 #include <limits>
+#include "FMTconstraint.h"
 
 namespace Spatial
 {

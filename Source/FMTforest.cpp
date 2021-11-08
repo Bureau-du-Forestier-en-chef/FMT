@@ -6,6 +6,9 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
 #include "FMTforest.h"
+#include "FMTactualdevelopment.h"
+#include "FMTfuturdevelopment.h"
+#include "FMTtheme.h"
 
 namespace Spatial
 {

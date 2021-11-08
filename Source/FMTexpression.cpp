@@ -6,6 +6,8 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
 #include "FMTexpression.h"
+#include "FMToperator.h"
+#include "FMTfunctioncall.h"
 
 namespace Core
 {

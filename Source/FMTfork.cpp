@@ -6,6 +6,9 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
 #include "FMTfork.h"
+#include "FMTdevelopment.h"
+#include "FMTdevelopmentpath.h"
+#include "FMTyields.h"
 
 
 namespace Core{

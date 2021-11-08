@@ -8,12 +8,17 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #ifndef FMTbaseedgeproperties_H_INCLUDED
 #define FMTbaseedgeproperties_H_INCLUDED
 
-#include "FMTaction.h"
+
 #include <boost/serialization/serialization.hpp>
 #include <boost/serialization/nvp.hpp>
 #include <boost/serialization/export.hpp>
 #include <vector>
 #include <string>
+
+namespace Core
+{
+	class FMTaction;
+}
 
 namespace Graph
 {

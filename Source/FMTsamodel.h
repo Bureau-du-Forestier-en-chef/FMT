@@ -10,14 +10,17 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 #include "FMTmodel.h"
 #include "FMTspatialaction.h"
-#include "FMTlayer.h"
-#include "FMTforest.h"
 #include "FMTsaschedule.h"
 #include "FMTsasolution.h"
 #include "FMTspatialschedule.h"
 #include <memory>
 #include <vector>
 #include <random>
+
+namespace Spatial
+{
+	class FMTforest;
+}
 
 
 namespace Models
