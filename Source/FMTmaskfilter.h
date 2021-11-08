@@ -8,14 +8,18 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #ifndef FMTMASKFILTER_H_INCLUDED
 #define FMTMASKFILTER_H_INCLUDED
 
-#include "FMTmask.h"
+
 #include <boost/dynamic_bitset.hpp>
 #include <boost/serialization/serialization.hpp>
 #include <boost/serialization/nvp.hpp>
+#include <vector>
+#include  <boost/functional/hash.hpp>
 
 
 namespace Core
 {
+	class FMTmask;
+	class FMTtheme;
 
 
 class FMTmaskfilter

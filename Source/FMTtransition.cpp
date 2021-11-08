@@ -8,6 +8,11 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTtransition.h"
 #include "FMTyieldrequest.h"
 #include "FMTdevelopment.h"
+#include "FMTmask.h"
+#include "FMTaction.h"
+#include "FMTyields.h"
+#include "FMTtheme.h"
+#include "FMTdevelopmentpath.h"
 
 namespace Core{
 FMTtransition::FMTtransition():name(){}

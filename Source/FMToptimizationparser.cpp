@@ -12,6 +12,8 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTtheme.h"
 #include "FMToutput.h"
 #include "FMTconstraint.h"
+#include "FMTexpression.h"
+#include "FMTaction.h"
 
 namespace Parser
 {

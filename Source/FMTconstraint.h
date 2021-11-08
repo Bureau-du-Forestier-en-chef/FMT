@@ -13,7 +13,6 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <string>
 #include <limits>
 #include "FMTbounds.h"
-#include "FMToperator.h"
 #include "FMTbounds.h"
 #include <boost/serialization/serialization.hpp>
 #include <boost/serialization/nvp.hpp>
@@ -21,6 +20,10 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 namespace Core
 {
+class FMTtransition;
+class FMTtheme;
+class FMTaction;
+class FMTyields;
 // DocString: FMTconstrainttype
 /**
 Constraints and objectives types found in a regular optimization section

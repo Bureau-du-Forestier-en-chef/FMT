@@ -7,6 +7,8 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 #include "FMTtransitionmask.h"
 #include "FMTyieldrequest.h"
+#include "FMTtheme.h"
+#include "FMTyields.h"
 
 namespace Core{
 
@@ -72,7 +74,12 @@ FMTtransitionmask::FMTtransitionmask(const std::string& lmask,const std::vector<
         //FMTdevelopment newdev(dev);
         //newdev.mask = this->trans(dev.mask);
 		FMTdevelopment newdev(this->trans(dev.getmask()),dev.getage(),dev.getlock(),dev.getperiod());
-        //newdev.lock = 0;
+		if (!themes.empty())
+		{
+			Core::FMTmask newmask = newdev.getmask();
+			newmask.update(themes);
+			newdev.setmask(newmask);
+		}
 		bool age_change = false;
         if(!lock.empty())
             {
@@ -89,12 +96,7 @@ FMTtransitionmask::FMTtransitionmask(const std::string& lmask,const std::vector<
                 newdev.setage(yields.getage(newrequest, *this));
 				age_change = true;
                 }
-        if(!themes.empty())
-            {
-			Core::FMTmask newmask = newdev.getmask();
-			newmask.update(themes);
-            newdev.setmask(newmask);
-            }
+        
 		if (reset_age && !age_change)
 			{
 			newdev.setage(0);

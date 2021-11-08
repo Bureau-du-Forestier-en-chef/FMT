@@ -8,7 +8,6 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 
 #include "FMTobject.h"
-#include "FMTdevelopment.h"
 #include "FMTmask.h"
 
 
@@ -24,7 +23,7 @@ namespace Graph
 
 namespace Core
 {
-	class FMTyields;
+	class FMTdevelopment;
 	class FMTyieldhandler;
 	// DocString: FMTyieldrequest
 	/**
@@ -37,7 +36,6 @@ namespace Core
 		friend class FMTyields;
 		mutable std::vector<const std::unique_ptr<FMTyieldhandler>*> datas;
 		mutable FMTmask resume_mask;
-		mutable FMTyields const* yldsptr;
 		const FMTdevelopment* development;
 		const Graph::FMTgraphvertextoyield* graphvertex;
 		private:
@@ -53,7 +51,6 @@ namespace Core
 		const std::vector<const std::unique_ptr<FMTyieldhandler>*>&getdatas() const;
 		const Core::FMTmask& getresumemask() const;
 		const Graph::FMTgraphvertextoyield* getvertexgraphinfo() const;
-		const Core::FMTyields& getyields() const;
 	};
 	
 

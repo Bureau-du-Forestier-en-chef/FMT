@@ -7,21 +7,24 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 #include "FMTgraphvertextoyield.h"
 #include "FMTgraph.h"
+#include "FMTmodel.h"
 
 namespace Graph
 {
 
-	FMTgraphvertextoyield::FMTgraphvertextoyield(const FMTgraph<FMTbasevertexproperties,FMTbaseedgeproperties>& linegraph,const void* lvertex) :
+	FMTgraphvertextoyield::FMTgraphvertextoyield(const Models::FMTmodel& model,const FMTgraph<FMTbasevertexproperties,FMTbaseedgeproperties>& linegraph,const void* lvertex) :
 		graph(reinterpret_cast<const void* const>(&linegraph)),
 		vertex(lvertex),
-		graphtype(FMTgraphrequest::linegraph)
+		graphtype(FMTgraphrequest::linegraph),
+		modelptr(&model)
 	{
 
 	}
-	FMTgraphvertextoyield::FMTgraphvertextoyield(const FMTgraph<FMTvertexproperties, FMTedgeproperties>& fullgraph,const void* lvertex) :
+	FMTgraphvertextoyield::FMTgraphvertextoyield(const Models::FMTmodel& model,const FMTgraph<FMTvertexproperties, FMTedgeproperties>& fullgraph,const void* lvertex) :
 		graph(reinterpret_cast<const void* const>(&fullgraph)),
 		vertex(lvertex),
-		graphtype(FMTgraphrequest::fullgraph)
+		graphtype(FMTgraphrequest::fullgraph),
+		modelptr(&model)
 	{
 
 	}
@@ -41,6 +44,11 @@ namespace Graph
 			return reinterpret_cast<const FMTgraph<FMTvertexproperties,FMTedgeproperties>* const>(graph);
 		}
 		return nullptr;
+	}
+
+	const Models::FMTmodel& FMTgraphvertextoyield::getmodel() const
+	{
+		return *modelptr;
 	}
 
 }

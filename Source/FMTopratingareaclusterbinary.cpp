@@ -10,6 +10,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMToperatingareaclusterbinary.h"
 #include <vector>
 #include <algorithm>
+#include "FMToutput.h"
 
 namespace Heuristics
 {

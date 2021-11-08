@@ -15,7 +15,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 	#include "OsiMskSolverInterface.hpp"
 	#include "mosek.h"
 #endif
-//#include "FMTmatrixbuild.h"
+#include "FMTsolverinterface.h"
 
 namespace Heuristics
 {

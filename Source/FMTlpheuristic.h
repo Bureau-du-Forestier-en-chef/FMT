@@ -10,18 +10,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #ifndef FMTlpheuristic_H_INCLUDED
 #define FMTlpheuristic_H_INCLUDED
 
-#include "FMTmask.h"
-#include "FMTyieldhandler.h"
-#include "FMToperatingareascheme.h"
-#include "FMTgraph.h"
-#include "FMToutput.h"
-#include "FMTmodel.h"
-#include "OsiSolverInterface.hpp"
-#include "FMTserializablematrix.h"
-#include "FMTsolverinterface.h"
-#include "FMToutputnode.h"
-#include "FMTtheme.h"
-#include "FMTyieldhandler.h"
+
 #include "FMTlpsolver.h"
 #include <random>
 #include <memory>
@@ -31,6 +20,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <boost/serialization/serialization.hpp>
 #include <boost/serialization/nvp.hpp>
 #include <boost/serialization/export.hpp>
+#include "FMTsolverinterface.h"
 
 
 namespace Heuristics

@@ -14,7 +14,12 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <boost/serialization/nvp.hpp>
 #include <boost/serialization/export.hpp>
 #include "FMToperatingarea.h"
-#include "FMToutput.h"
+
+
+namespace Core
+{
+	class FMToutput;
+}
 
 namespace Heuristics
 {

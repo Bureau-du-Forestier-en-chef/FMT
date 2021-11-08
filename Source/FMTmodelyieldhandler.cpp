@@ -123,7 +123,7 @@ namespace Core {
 			//const std::map<std::string, const std::unique_ptr<FMTyieldhandler>*> srcsdata = this->getdata(request, sources, yld);
 			// age_only = true;
 			const std::vector<double>sourceyieldsvalues;// = getsourcesarray(srcsdata, request, age_only);
-			const std::vector<double>predictions = model->Predict(*request.getvertexgraphinfo(), sourceyieldsvalues);
+			const std::vector<double>predictions = model->Predict(request);
 			return (predictions.at(yieldid));
 			//Do caching here...
 			//Patch for unique yield...

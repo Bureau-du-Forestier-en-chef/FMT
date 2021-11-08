@@ -12,16 +12,11 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #ifndef FMTYIELDMODEL_H_INCLUDED
 #define FMTYIELDMODEL_H_INCLUDED
 
-namespace Graph
-{
-	class FMTgraphvertextoyield;
-	class FMTgraphpredictor;
-}
-
 
 
 namespace Core 
 {
+	class FMTyieldrequest;
 	class FMTyieldmodel : public FMTobject
 	{
 		friend class boost::serialization::access;
@@ -43,8 +38,7 @@ namespace Core
 		virtual std::string GetModelInfo() const;
 		virtual bool Validate(const std::vector<std::string>& YieldsAvailable) const;
 		virtual std::vector<std::string>GetYieldsOutputs() const;
-		virtual std::vector<double>Predict(const Graph::FMTgraphvertextoyield& graphinfo,
-											const std::vector<double>& sourceyieldvalues) const;
+		virtual std::vector<double>Predict(const Core::FMTyieldrequest& request) const;
 	};
 }
 

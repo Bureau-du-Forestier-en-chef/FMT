@@ -9,6 +9,9 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <algorithm>
 #include "FMTdevelopment.h"
 #include "FMTyieldrequest.h"
+#include "FMTmask.h"
+#include "FMTexpression.h"
+#include "FMTfunctioncall.h"
 
 
 namespace Core{

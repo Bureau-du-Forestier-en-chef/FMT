@@ -6,6 +6,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
 #include "FMToutputnode.h"
+#include "FMTaction.h"
 
 namespace Core
 

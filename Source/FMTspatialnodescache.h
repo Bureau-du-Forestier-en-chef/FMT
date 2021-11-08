@@ -10,9 +10,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <map>
 #include "FMTmask.h"
 #include "FMToutputnode.h"
-#include "FMTcoordinate.h"
-//#include "FMToutputnodecache.h"
-//#include "FMTmodel.h"
+
 
 #ifndef FMTSPATIALNODESCACHE_H
 #define FMTSPATIALNODESCACHE_H
@@ -29,6 +27,7 @@ namespace Models
 
 namespace Spatial
 {
+	class FMTcoordinate;
 	class FMTspatialnodescache
 	{
 	class FMTnodecache

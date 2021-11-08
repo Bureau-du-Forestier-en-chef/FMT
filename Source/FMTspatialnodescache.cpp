@@ -9,6 +9,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMToutputnodecache.h"
 #include "FMTmodel.h"
 #include "FMToutputnode.h"
+#include "FMTcoordinate.h"
 
 namespace Spatial
 {

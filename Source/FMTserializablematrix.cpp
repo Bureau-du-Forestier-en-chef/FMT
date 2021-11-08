@@ -7,6 +7,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 #ifdef FMTWITHOSI
 #include "FMTserializablematrix.h"
+#include <OsiSolverInterface.hpp>
 
 namespace Models
 {

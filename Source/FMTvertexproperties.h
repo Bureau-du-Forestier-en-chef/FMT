@@ -8,12 +8,17 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #ifndef FMTvertexproperties_H_INCLUDED
 #define FMTvertexproperties_H_INCLUDED
 
-#include "FMTfuturdevelopment.h"
-#include "FMTactualdevelopment.h"
+
 #include <boost/serialization/serialization.hpp>
 #include <boost/serialization/unique_ptr.hpp>
 #include <memory>
 #include "FMTbasevertexproperties.h"
+
+namespace Core
+{
+	class FMTfuturdevelopment;
+	class FMTactualdevelopment;
+}
 
 
 

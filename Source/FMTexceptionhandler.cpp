@@ -6,6 +6,9 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
 #include "FMTexceptionhandler.h"
+#include "FMTexception.h"
+#include "FMTwarning.h"
+#include "FMTerror.h"
 #include <boost/algorithm/string/replace.hpp>
 
 #if defined FMTWITHR

@@ -12,13 +12,13 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <random>
 #include <limits>
 #include <iterator>
-#include "FMTspatialaction.h"
 #include <boost/serialization/serialization.hpp>
 #include <boost/serialization/nvp.hpp>
 #include <boost/serialization/set.hpp>
-#include "FMTeventrelation.h"
+
 namespace Spatial
 {
+class FMTeventrelation;
 // DocString: FMTevent
 /**
 This is the base class use to create FMTsaevent or FMTsesevent. It is a set of FMTcoordinate (elements)

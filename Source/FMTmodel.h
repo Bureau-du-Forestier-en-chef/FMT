@@ -22,17 +22,16 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <boost/serialization/map.hpp>
 #include <boost/serialization/unordered_map.hpp>
 #include <boost/serialization/export.hpp>
+#include "FMToutputnode.h"
+#include "FMTschedule.h"
 
-namespace Core
-{
-	class FMTschedule;
-}
 
 namespace Graph
 {
 	template<class T1, class T2>
 	class FMTgraph;
 	class FMTlinegraph;
+	class FMTgraphvertextoyield;
 }
 
 namespace Parser
@@ -65,6 +64,7 @@ namespace Models
 		friend class Spatial::FMTspatialschedule;
 		friend class Spatial::FMTspatialnodescache;
 		friend class Parser::FMTmodelparser;
+		friend class Graph::FMTgraphvertextoyield;
 		// DocString: FMTmodel::save
 		/**
 		Save function is for serialization, used to do multiprocessing across multiple cpus (pickle in Pyhton)
@@ -277,11 +277,6 @@ namespace Models
 		Return the statistics of the model, the number of themes, yields, actions, transitions etc...
 		*/
 		FMTmodelstats getmodelstats() const;
-		// DocString: FMTmodel::getGCBMactionids
-		/**
-		Returns GCBM actionids of the FMTmodel.
-		*/
-		std::vector<int>getGCBMactionids() const;
 		// DocString: FMTmodel::cleanactionsntransitions
 		/**
 		Function do delete action that have no defined transition and to delete transition that have no defined action.

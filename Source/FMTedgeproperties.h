@@ -8,7 +8,6 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #ifndef FMTedgeproperties_H_INCLUDED
 #define FMTedgeproperties_H_INCLUDED
 
-#include "FMTaction.h"
 #include <boost/serialization/serialization.hpp>
 #include <boost/serialization/nvp.hpp>
 #include <vector>

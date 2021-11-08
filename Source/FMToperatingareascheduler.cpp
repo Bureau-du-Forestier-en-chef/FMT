@@ -18,6 +18,10 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 //#include "FMTmatrixbuild.h"
 #include "FMTtimeyieldhandler.h"
 #include "FMTdata.h"
+#include "FMTgraph.h"
+#include "FMTmodel.h"
+#include "FMToutputnode.h"
+#include "FMTtimeyieldhandler.h"
 
 namespace Heuristics
 {

@@ -6,6 +6,8 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
 #include "FMTvertexproperties.h"
+#include "FMTfuturdevelopment.h"
+#include "FMTactualdevelopment.h"
 
 namespace Graph
 {

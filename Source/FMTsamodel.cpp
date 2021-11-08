@@ -13,6 +13,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <stdio.h>
 #include <boost/filesystem.hpp>
 #include <cstring>
+#include "FMTforest.h"
 
 namespace Models
 

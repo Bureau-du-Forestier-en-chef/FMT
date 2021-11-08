@@ -7,16 +7,9 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 #ifndef FMTLAYER_H_INCLUDED
 #define FMTLAYER_H_INCLUDED
-#include "FMTdevelopment.h"
-#include "FMTactualdevelopment.h"
-#include "FMTexception.h"
-#include "FMTaction.h"
-#include "FMTtransition.h"
-#include "FMTyields.h"
 #include <memory>
 #include <map>
 #include <vector>
-#include "FMTlifespans.h"
 #include "FMTcoordinate.h"
 #include "FMTobject.h"
 #include <boost/serialization/nvp.hpp>

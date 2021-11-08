@@ -303,18 +303,23 @@ namespace Core{
 	bool FMTdevelopment::is(const FMTspec& specification, const FMTyields& ylds,
 		const Graph::FMTgraphvertextoyield* graphyieldrequest) const
 		{
+		bool allow = false;
 		try {
-			if (specification.allowwithoutyield(getperiod(), getage(), getlock()) && !specification.emptyylds())
+			allow = specification.allowwithoutyield(getperiod(), getage(), getlock());
+			if (allow && !specification.emptyylds())
 				{
 				const FMTyieldrequest request = getyieldrequest(graphyieldrequest);
+				const std::vector<Core::FMTyldbounds>& bounds= specification.getyldbounds();
+				size_t boundid = 0;
 				for (const std::string& yldname : specification.getylds())
 					{
-					const FMTyldbounds& yldbound = specification.getyieldbound(yldname);
-					if (yldbound.out(ylds.get(request,yldname)))
+					if (bounds.at(boundid).out(ylds.get(request,yldname)))
 						{
 						return false;
 						}
+					++boundid;
 					}
+				return true;
 				}
 		}catch (...)
 			{
@@ -322,7 +327,7 @@ namespace Core{
 				"for " + std::string(*this),
 				"FMTdevelopment::is",__LINE__, __FILE__);
 			}
-		return true;
+		return allow;
 		}
 	double FMTdevelopment::getinventorycoef(const FMTyields& ylds, const std::string& target_yield,
 		const Graph::FMTgraphvertextoyield* graphyieldrequest) const

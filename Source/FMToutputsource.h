@@ -10,19 +10,28 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 #include "FMTbounds.h"
 #include "FMTmask.h"
-#include "FMTaction.h"
-#include "FMTyields.h"
 #include <vector>
-#include "FMTdevelopment.h"
-#include "FMTactualdevelopment.h"
 #include <boost/serialization/serialization.hpp>
 #include <string>
-#include "FMTaction.h"
 #include "FMTutility.h"
+#include <unordered_set>
+#include "FMTdevelopment.h"
+
+
+namespace Graph
+{
+	class FMTgraphvertextoyield;
+}
+
+
 
 namespace Core
 {
-
+	class FMTaction;
+	class FMTyields;
+	
+	class FMTactualdevelopment;
+	class FMTdevelopmentpath;
 class FMTEXPORT FMToutputsource : public FMTspec
     {
 	friend class boost::serialization::access;

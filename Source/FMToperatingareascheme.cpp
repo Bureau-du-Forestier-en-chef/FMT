@@ -9,6 +9,9 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMToperatingareascheme.h"
 #include "CoinPackedVector.hpp"
 #include "FMTmatrixbuild.h"
+#include "FMTgraph.h"
+#include "FMTmask.h"
+#include "FMTlpsolver.h"
 
 namespace Heuristics
 {

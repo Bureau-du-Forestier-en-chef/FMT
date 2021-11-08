@@ -14,6 +14,11 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <set>
 #include <iterator>
 #include "FMTspatialnodescache.h"
+#include "FMTbindingspatialaction.h"
+#include "FMToutput.h"
+#include "FMTeventrelation.h"
+#include "FMTGCBMtransition.h"
+
 
 namespace Spatial
 {
@@ -1175,7 +1180,7 @@ namespace Spatial
 		return distlayer;
 	}
 
-	std::vector<std::vector<Graph::FMTcarbonpredictor>>FMTspatialschedule::getcarbonpredictors(FMTlayer<int>& predictorids,const std::vector<int>& actionsindex, const std::vector<std::string>& yieldnames, const Core::FMTyields& yields, const int& period) const
+	std::vector<std::vector<Graph::FMTcarbonpredictor>>FMTspatialschedule::getcarbonpredictors(FMTlayer<int>& predictorids, const Models::FMTmodel& model, const std::vector<std::string>& yieldnames, const int& period) const
 	{
 		std::vector<std::vector<Graph::FMTcarbonpredictor>>predictors;
 		try {
@@ -1189,7 +1194,7 @@ namespace Spatial
 			std::vector<std::set<std::vector<Graph::FMTcarbonpredictor>>::iterator>predictorlocalisations;
 			for (std::map<FMTcoordinate, Graph::FMTlinegraph>::const_iterator graphit = this->mapping.begin(); graphit != this->mapping.end(); ++graphit)
 			{
-				const std::vector<Graph::FMTcarbonpredictor> graphpredictors = graphit->second.getperiodcarbonpredictors(period, actionsindex, yieldnames, yields);
+				const std::vector<Graph::FMTcarbonpredictor> graphpredictors = graphit->second.getperiodcarbonpredictors(period,model, yieldnames);
 				std::set<std::vector<Graph::FMTcarbonpredictor>>::iterator setit = predictorsset.end();
 				bool pushed=false;
 				if (!graphpredictors.empty())

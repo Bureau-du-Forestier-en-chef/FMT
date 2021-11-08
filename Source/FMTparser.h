@@ -21,6 +21,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTconstants.h"
 #include "FMTlayer.h"
 #include <array>
+#include "FMTbounds.h"
 
 #ifdef FMTWITHGDAL
 	#include "gdal.h"
@@ -36,6 +37,8 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <boost/filesystem/operations.hpp>
 #include <ctime>
 #include <boost/thread/recursive_mutex.hpp>
+#include <boost/algorithm/string/erase.hpp>
+
 
 #include "FMTobject.h"
 

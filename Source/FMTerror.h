@@ -16,7 +16,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 	#include <CoinError.hpp>
 #endif
 
-#include <boost\graph\exception.hpp>
+#include <boost/graph/exception.hpp>
 
 
 namespace Exception

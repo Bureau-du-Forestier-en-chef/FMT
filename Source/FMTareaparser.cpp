@@ -366,11 +366,10 @@ namespace Parser{
 		std::vector<std::vector<Graph::FMTcarbonpredictor>>predictors;
 		try {
 			Spatial::FMTlayer<int> predictorids(spatialsolution.copyextent<int>());
-			const std::vector<int>actionsindex = model.getGCBMactionids();
 			//transitions = disturbances.getGCBMtransitions(lastdistlayer, actions, themes, period);
 			if (!spatialsolution.empty())
 			{
-				predictors = spatialsolution.getcarbonpredictors(predictorids, actionsindex, yieldnames,model.getyields(), period);
+				predictors = spatialsolution.getcarbonpredictors(predictorids,model, yieldnames, period);
 				std::map<int, std::string>mapping;
 				writelayer<int>(predictorids, getperiodpathname(location, period,"PREDID"), mapping);
 			}

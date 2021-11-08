@@ -13,13 +13,13 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTdevelopment.h"
 #include "FMTaction.h"
 #include "FMTobject.h"
-#include "FMTconstraint.h"
 #include <iterator>
 #include <boost/serialization/export.hpp>
 #include <boost/unordered_set.hpp>
 
 namespace Core
 {
+class FMTconstraint;
 // DocString: FMTschedule
 /**
 FMTschedule is the representation of a spatialy referenced schedule. It can be used by the FMTlpmodel and the FMTsesmodel.

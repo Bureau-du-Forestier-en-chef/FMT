@@ -9,20 +9,25 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #ifndef FMTlpheuristicmthandler_H_INCLUDED
 #define FMTlpheuristicmthandler_H_INCLUDED
 
-#include "FMTlpheuristic.h"
-#include "FMToperatingareascheduler.h"
-#include "FMToperatingareaclusterer.h"
+
 #if defined FMTWITHPYTHON
 	#include "boost/python.hpp"
 #endif
 
+#include "FMTobject.h"
+#include <vector>
+
+
+
 
 namespace Heuristics
 {
+	class FMToperatingareascheduler;
+	class FMToperatingareaclusterer;
+	class FMTlpheuristic;
 
 	class FMTEXPORT FMTlpheuristicmthandler
 		{
-		private:
 		double initialsolution;
 		std::vector<FMTlpheuristic*> heuristics;
 		size_t best_heuristic() const;

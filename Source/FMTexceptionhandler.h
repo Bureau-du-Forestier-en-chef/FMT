@@ -8,9 +8,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #ifndef FMTexceptionhandler_H_INCLUDED
 #define FMTexceptionhandler_H_INCLUDED
 
-#include "FMTexception.h"
-#include "FMTerror.h"
-#include "FMTwarning.h"
+
 #include "FMTlogger.h"
 #if defined FMTWITHGDAL
 	#include "cpl_error.h"
@@ -23,6 +21,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 namespace Exception
 {
+	class FMTexception;
 #if defined FMTWITHGDAL
 	// DocString: FMTCPLErrorHandler()
 	/**

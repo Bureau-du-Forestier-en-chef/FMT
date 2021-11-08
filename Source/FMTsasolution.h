@@ -9,8 +9,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #define FMTSASOLUTION_H
 
 #include "FMTlayer.h"
-#include "FMTforest.h"
-#include "FMTgraphdescription.h"
+#include "FMTeventcontainer.h"
 #include "FMTlinegraph.h"
 #include "FMTgraphstats.h"
 #include <unordered_map>
@@ -21,6 +20,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 namespace Models{class FMTsamodel;}//early declaration for samodel to pass it to sasolution
 namespace Spatial
 {
+class FMTforest;
 enum class FMTsamovetype
     {
         shotgun,

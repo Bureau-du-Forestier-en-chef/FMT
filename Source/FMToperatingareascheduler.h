@@ -12,15 +12,11 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 #include "FMTmask.h"
 #include "FMToperatingareascheme.h"
-#include "FMTgraph.h"
-#include "FMToutput.h"
-#include "FMTmodel.h"
-#include "OsiSolverInterface.hpp"
-#include "FMTserializablematrix.h"
-#include "FMTsolverinterface.h"
-#include "FMToutputnode.h"
-#include "FMTtheme.h"
 #include "FMTlpheuristic.h"
+
+
+
+
 #include <random>
 #include <memory>
 #include <map>
@@ -29,7 +25,24 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <boost/serialization/serialization.hpp>
 #include <boost/serialization/nvp.hpp>
 #include <boost/serialization/export.hpp>
-#include "FMTtimeyieldhandler.h"
+
+
+namespace Graph
+{
+	template<class T1, class T2>
+	class FMTgraph;
+}
+
+namespace Models
+{
+	class FMTmodel;
+}
+
+namespace Core
+{
+	class FMToutputnode;
+	class FMTtimeyieldhandler;
+}
 
 
 namespace Heuristics

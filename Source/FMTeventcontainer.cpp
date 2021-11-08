@@ -6,6 +6,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
 #include "FMTeventcontainer.h"
+#include "FMTeventrelation.h"
 
 #include <limits>
 #include <queue>
@@ -432,7 +433,7 @@ namespace Spatial
 			{
 			for (FMTeventcontainer::const_iterator it = lower; it != upper; ++it)
 				{
-				if (actionstarget.at(periodid).at(it->getactionid()) && it->contain(coord));
+				if (actionstarget.at(periodid).at(it->getactionid()) && it->contain(coord))
 					{
 					std::queue<FMTevent>emodif;
 					if (it->size() > 1)

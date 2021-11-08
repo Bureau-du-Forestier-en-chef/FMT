@@ -9,6 +9,11 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #ifndef FMTGRAPHTOYIELD_H_INCLUDED
 #define FMTGRAPHTOYIELD_H_INCLUDED
 
+namespace Models
+{
+class FMTmodel;
+}
+
 namespace Graph
 {
 	template<class T1, class T2>
@@ -30,9 +35,10 @@ namespace Graph
 		const void* graph;
 		const void* vertex;
 		FMTgraphrequest graphtype;
+		Models::FMTmodel const* modelptr;
 	public:
-		FMTgraphvertextoyield(const FMTgraph<FMTbasevertexproperties, FMTbaseedgeproperties>& linegraph,const void* lvertex);
-		FMTgraphvertextoyield(const FMTgraph<FMTvertexproperties, FMTedgeproperties>& fullgraph,const void* lvertex);
+		FMTgraphvertextoyield(const Models::FMTmodel& model,const FMTgraph<FMTbasevertexproperties, FMTbaseedgeproperties>& linegraph,const void* lvertex);
+		FMTgraphvertextoyield(const Models::FMTmodel& model,const FMTgraph<FMTvertexproperties, FMTedgeproperties>& fullgraph,const void* lvertex);
 		FMTgraphvertextoyield() = default;
 		const FMTgraph<FMTbasevertexproperties, FMTbaseedgeproperties>* const getlinegraph() const;
 		const FMTgraph<FMTvertexproperties, FMTedgeproperties>* const getfullgraph() const;
@@ -40,6 +46,7 @@ namespace Graph
 		{
 			return vertex;
 		}
+		const Models::FMTmodel& getmodel() const;
 	};
 
 }

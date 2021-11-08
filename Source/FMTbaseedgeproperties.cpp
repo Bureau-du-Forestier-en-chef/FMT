@@ -7,6 +7,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 
 #include "FMTbaseedgeproperties.h"
+#include "FMTaction.h"
 
 namespace Graph
 {

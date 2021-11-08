@@ -7,6 +7,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 #include "FMTwarning.h"
 #include "FMTdefaultlogger.h"
+#include "FMTlogger.h"
 
 
 namespace Exception

@@ -18,8 +18,6 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <boost/serialization/map.hpp>
 #include <boost/serialization/export.hpp>
 #include <boost/serialization/string.hpp>
-#include "FMTexception.h"
-#include "FMTmask.h"
 #include "FMTobject.h"
 
 #if defined FMTWITHR
@@ -30,6 +28,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 namespace Core
 {
+class FMTmask;
 // DocString: FMTtheme
 /**
 FMTtheme hold multiple attributes for only one theme. FMTtheme gives the description of a part of a FMTmask

@@ -11,7 +11,6 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTutility.h"
 #include <string>
 #include <vector>
-#include <algorithm>
 #include <boost/functional/hash.hpp>
 #include <boost/serialization/serialization.hpp>
 #include <boost/serialization/nvp.hpp>

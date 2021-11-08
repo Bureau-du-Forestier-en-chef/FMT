@@ -9,7 +9,11 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #define FMTSPACT_H_INCLUDED
 
 #include "FMTaction.h"
-#include "FMTconstraint.h"
+
+
+namespace Core {
+	class FMTconstraint;
+}
 
 namespace Spatial
 

@@ -9,12 +9,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #define FMTTRA_H_INCLUDED
 
 #include "FMTfork.h"
-#include "FMTmask.h"
 #include "FMTlist.h"
-#include "FMTaction.h"
-#include "FMTyields.h"
-//#include "FMTdevelopment.h"
-#include "FMTtheme.h"
 #include <boost/serialization/serialization.hpp>
 #include <boost/serialization/string.hpp>
 #include <boost/serialization/export.hpp>
@@ -25,9 +20,12 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 namespace Core
 {
-class FMTfork;
 class FMTyieldrequest;
 class FMTdevelopment;
+class FMTmask;
+class FMTaction;
+class FMTyields;
+class FMTtheme;
 // DocString: FMTtransition
 /**
 FMTtransition is a list of FMTfork (FMTspec). Each FMTaction has it's FMTtransition.

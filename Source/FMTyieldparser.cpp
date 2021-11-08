@@ -17,6 +17,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTmodelyieldhandler.h"
 #include <boost/property_tree/json_parser.hpp>
 #include <memory>
+#include "FMTfunctioncall.h"
 
 namespace Parser{
 
