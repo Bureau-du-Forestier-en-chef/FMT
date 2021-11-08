@@ -25,6 +25,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTconstants.h"
 #include "boost/python.hpp"
 #include "FMTdata.h"
+#include "FMTtimeyieldhandler.h"
 
 namespace Python
 {
