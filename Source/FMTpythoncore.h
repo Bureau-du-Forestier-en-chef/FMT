@@ -28,6 +28,8 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <boost/dynamic_bitset.hpp>
 #include <boost/unordered_map.hpp>
 #include "FMTexception.h"
+#include "FMTerror.h"
+#include "FMTwarning.h"
 
 
 

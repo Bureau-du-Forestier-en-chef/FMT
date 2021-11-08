@@ -11,6 +11,8 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTdefaultexceptionhandler.h"
 #include "FMTdebugexceptionhandler.h"
 #include "FMTquietexceptionhandler.h"
+#include "FMTerror.h"
+#include "FMTwarning.h"
 #include "boost/python.hpp"
 
 namespace Python
