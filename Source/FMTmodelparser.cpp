@@ -100,7 +100,7 @@ void FMTmodelparser::fillupinfeasibles(OGRLayer* layer,
 		{
 			allvalues[out.getname()] = std::vector<std::vector<double>>(theoutputs.size(), std::vector<double>((lastperiod - firstperiod) + 1, std::numeric_limits<double>::quiet_NaN()));
 		}
-		writefeatures(layer,firstperiod,iteration, theoutputs,allvalues);
+		writefeatures(layer,firstperiod,iteration, theoutputs,allvalues,true);
 	}
 	catch (...)
 	{
@@ -111,7 +111,7 @@ void FMTmodelparser::fillupinfeasibles(OGRLayer* layer,
 
 void FMTmodelparser::writefeatures(OGRLayer* layer, const int& firstperiod, const int& iteration,
 	const std::vector<Core::FMToutput>& theoutputs,
-	const std::map<std::string, std::vector<std::vector<double>>>& values)const
+	const std::map<std::string, std::vector<std::vector<double>>>& values,bool writeNaN)const
 {
 	try {
 		boost::lock_guard<boost::recursive_mutex> guard(mtx);
@@ -123,7 +123,7 @@ void FMTmodelparser::writefeatures(OGRLayer* layer, const int& firstperiod, cons
 				int period = firstperiod;
 				for (const double& value : outputvalues)
 				{
-					if(!std::isnan(value))
+					if(!std::isnan(value) && !writeNaN)
 					{
 						OGRFeature *newfeature = OGRFeature::CreateFeature(layer->GetLayerDefn());
 						if (newfeature == NULL)
