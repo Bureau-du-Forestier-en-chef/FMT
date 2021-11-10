@@ -1445,7 +1445,14 @@ std::map<std::string,double> FMTspatialschedule::getoutputfromgraph(const Graph:
 			values["Total"] = cashit->second;
 			//*_logger << "period cash" << period << " " << cashit->second << "\n";
 		}else {//get it and add to cashing
+			const int themeid = node.source.getthemetarget();
 			Core::FMTtheme targettheme;
+			if(themeid<0)
+			{
+				targettheme = Core::FMTtheme();
+			}else{
+				targettheme = model.getthemes().at(themeid);
+			}
 			values = linegraph.getsource(model, node, period, targettheme, solution,level);
 			//*_logger << "period s" << period << " " << values.at("Total") << "\n";
 			nodecache[nodemask] = values.at("Total");

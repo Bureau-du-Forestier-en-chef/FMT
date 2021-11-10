@@ -27,12 +27,6 @@ void exportGraph()
 		"   :synopsis: Module used to generate graph.\n"
 		"\n";
 
-	bp::enum_<Core::FMToutputlevel>("FMToutputlevel")
-		.value("standard", Core::FMToutputlevel::standard)
-		.value("totalonly", Core::FMToutputlevel::totalonly)
-		.value("developpement", Core::FMToutputlevel::developpement)
-		.export_values();
-
 	bp::class_<Graph::FMTgraphstats>("FMTgraphstats", "@DocString(FMTgraphstats)")
 		.def("__str__", &Graph::FMTgraphstats::operator std::string,
 			"@DocString(FMTgraphstats::operator std::string)")
