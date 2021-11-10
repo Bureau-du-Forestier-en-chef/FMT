@@ -6,7 +6,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
 
-#include "FMTexception.h"
+#include "FMTexception.hpp"
 
 namespace Exception
 {

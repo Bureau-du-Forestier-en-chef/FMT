@@ -7,9 +7,9 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 #ifdef FMTWITHOSI
 
-#include "FMTmatrixbuild.h"
-#include "FMTexceptionhandler.h"
-#include "FMTerror.h"
+#include "FMTmatrixbuild.hpp"
+#include "FMTexceptionhandler.hpp"
+#include "FMTerror.hpp"
 #include <algorithm>
 #include <boost/algorithm/string.hpp> 
 

@@ -5,10 +5,10 @@ SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
-#include "FMTmodelyieldhandler.h"
-#include "FMTyieldrequest.h"
-#include "FMTdevelopment.h"
-#include "FMTyieldmodel.h"
+#include "FMTmodelyieldhandler.hpp"
+#include "FMTyieldrequest.hpp"
+#include "FMTdevelopment.hpp"
+#include "FMTyieldmodel.hpp"
 
 namespace Core {
 
@@ -17,6 +17,7 @@ namespace Core {
 	{
 		std::string value;
 		try {
+			value += "*YM " + std::string(mask) + "\n";
 			std::vector<std::string>modelslines(models.size());
 			for (const auto& data : yldnames)
 				{
@@ -120,13 +121,8 @@ namespace Core {
 				_exhandler->raise(Exception::FMTexc::FMTinvalid_yield, "Recursivity detected for complexe yield " + yld,
 					"FMTmodelyieldhandler::get", __LINE__, __FILE__, Core::FMTsection::Yield);
 			}
-			//const std::map<std::string, const std::unique_ptr<FMTyieldhandler>*> srcsdata = this->getdata(request, sources, yld);
-			// age_only = true;
-			const std::vector<double>sourceyieldsvalues;// = getsourcesarray(srcsdata, request, age_only);
 			const std::vector<double>predictions = model->Predict(request);
 			return (predictions.at(yieldid));
-			//Do caching here...
-			//Patch for unique yield...
 		}catch (...)
 			{
 			_exhandler->raisefromcatch("at yield " + yld, "FMTmodelyieldhandler::get", __LINE__, __FILE__, Core::FMTsection::Yield);

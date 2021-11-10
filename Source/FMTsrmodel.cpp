@@ -6,7 +6,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
 #ifdef FMTWITHOSI
-#include "FMTsrmodel.h"
+#include "FMTsrmodel.hpp"
 #ifdef FMTWITHMOSEK
 	#include "OsiMskSolverInterface.hpp"
 	#include "mosek.h"
@@ -857,6 +857,11 @@ namespace Models
 
 
 	FMTlpsolver* FMTsrmodel::getsolverptr()
+	{
+		return &solver;
+	}
+
+	const FMTlpsolver* FMTsrmodel::getconstsolverptr() const
 	{
 		return &solver;
 	}

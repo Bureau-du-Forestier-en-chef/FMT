@@ -7,17 +7,17 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 
 
-#include "FMTspatialschedule.h"
-#include "FMTmodel.h"
+#include "FMTspatialschedule.hpp"
+#include "FMTmodel.hpp"
 #include <numeric>
 #include <algorithm>
 #include <set>
 #include <iterator>
-#include "FMTspatialnodescache.h"
-#include "FMTbindingspatialaction.h"
-#include "FMToutput.h"
-#include "FMTeventrelation.h"
-#include "FMTGCBMtransition.h"
+#include "FMTspatialnodescache.hpp"
+#include "FMTbindingspatialaction.hpp"
+#include "FMToutput.hpp"
+#include "FMTeventrelation.hpp"
+#include "FMTGCBMtransition.hpp"
 
 
 namespace Spatial
@@ -1446,8 +1446,9 @@ std::map<std::string,double> FMTspatialschedule::getoutputfromgraph(const Graph:
 			//*_logger << "period cash" << period << " " << cashit->second << "\n";
 		}else {//get it and add to cashing
 			Core::FMTtheme targettheme;
+			//*_logger << "test " << linegraph.getnode(model, node, period).size() << "\n";
 			values = linegraph.getsource(model, node, period, targettheme, solution,level);
-			//*_logger << "period s" << period << " " << values.at("Total") << "\n";
+			//*_logger << std::string(node) << period << " " << values.at("Total") << "\n";
 			nodecache[nodemask] = values.at("Total");
 		}
 	}

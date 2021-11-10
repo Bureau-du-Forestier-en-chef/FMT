@@ -5,8 +5,8 @@ SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
-#include "FMTeventcontainer.h"
-#include "FMTeventrelation.h"
+#include "FMTeventcontainer.hpp"
+#include "FMTeventrelation.hpp"
 
 #include <limits>
 #include <queue>

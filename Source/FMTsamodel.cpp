@@ -5,7 +5,7 @@ SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
-#include "FMTsamodel.h"
+#include "FMTsamodel.hpp"
 #include <fstream>
 #include <iostream>
 #include <sys/stat.h>
@@ -13,7 +13,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <stdio.h>
 #include <boost/filesystem.hpp>
 #include <cstring>
-#include "FMTforest.h"
+#include "FMTforest.hpp"
 
 namespace Models
 

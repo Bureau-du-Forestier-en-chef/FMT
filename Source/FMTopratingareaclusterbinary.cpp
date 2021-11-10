@@ -7,10 +7,10 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 #ifdef FMTWITHOSI
 
-#include "FMToperatingareaclusterbinary.h"
+#include "FMToperatingareaclusterbinary.hpp"
 #include <vector>
 #include <algorithm>
-#include "FMToutput.h"
+#include "FMToutput.hpp"
 
 namespace Heuristics
 {

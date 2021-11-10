@@ -5,10 +5,10 @@ SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
-#include "FMTareaparser.h"
+#include "FMTareaparser.hpp"
 #include <boost/algorithm/string/join.hpp>
 #include <boost/lexical_cast.hpp>
-#include "FMToperatingareaclusterbinary.h"
+#include "FMToperatingareaclusterbinary.hpp"
 #ifdef FMTWITHGDAL
 	#include "gdal_alg.h"
 	#include "gdal_utils.h"

@@ -5,14 +5,14 @@ SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
-#include "FMTtransition.h"
-#include "FMTyieldrequest.h"
-#include "FMTdevelopment.h"
-#include "FMTmask.h"
-#include "FMTaction.h"
-#include "FMTyields.h"
-#include "FMTtheme.h"
-#include "FMTdevelopmentpath.h"
+#include "FMTtransition.hpp"
+#include "FMTyieldrequest.hpp"
+#include "FMTdevelopment.hpp"
+#include "FMTmask.hpp"
+#include "FMTaction.hpp"
+#include "FMTyields.hpp"
+#include "FMTtheme.hpp"
+#include "FMTdevelopmentpath.hpp"
 
 namespace Core{
 FMTtransition::FMTtransition():name(){}

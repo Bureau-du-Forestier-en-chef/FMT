@@ -5,8 +5,8 @@ SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
-#include "FMTyields.h"
-#include "FMTyieldrequest.h"
+#include "FMTyields.hpp"
+#include "FMTyieldrequest.hpp"
 
 namespace Core{
 
@@ -67,7 +67,6 @@ void FMTyields::updateyieldpresence()
 				else {
 					yieldpresence[yldname] = !nulldata;
 				}
-
 			}
 		}
 	}
@@ -75,6 +74,7 @@ void FMTyields::updateyieldpresence()
 	{
 		_exhandler->raisefromcatch("", "FMTyields::updateyieldpresence", __LINE__, __FILE__, FMTsection::Yield);
 	}
+
     }
 
 std::vector<std::string> FMTyields::getallyieldnames() const
@@ -401,7 +401,7 @@ int FMTyields::getmaxbase(const std::vector<const FMTyieldhandler*>& handlers) c
 	return maxbase;
 	}
 
-#include "FMTlogger.h"
+#include "FMTlogger.hpp"
 
 std::map<std::string, std::map<std::string, std::vector<double>>>FMTyields::getallyields(const FMTtheme& target,FMTyldtype type) const
 	{
