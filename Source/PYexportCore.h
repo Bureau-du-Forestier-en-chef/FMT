@@ -46,6 +46,11 @@ void exportCore()
     "   :synopsis: Core class for generating Forest Models.\n"
     "\n";
 
+		bp::enum_<Core::FMToutputlevel>("FMToutputlevel")
+		.value("standard", Core::FMToutputlevel::standard)
+		.value("totalonly", Core::FMToutputlevel::totalonly)
+		.value("developpement", Core::FMToutputlevel::developpement)
+		.export_values();
 
 	bp::class_<Core::FMTobject>("FMTobject", "@DocString(FMTobject)")
 		.def("setdefaultexceptionhandler", &Core::FMTobject::setdefaultexceptionhandler,
