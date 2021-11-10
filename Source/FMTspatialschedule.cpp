@@ -924,7 +924,6 @@ namespace Spatial
 	{
 		std::map<std::string, std::vector<double>>values;
 		try {
-			std::cout<<output.getname()<<" --theme id : "<<output.targetthemeid()<<std::endl;
 			if(output.targetthemeid() < 0 && !(level == Core::FMToutputlevel::developpement))
 			{
 				level = Core::FMToutputlevel::totalonly;
