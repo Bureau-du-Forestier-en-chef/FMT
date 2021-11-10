@@ -6,7 +6,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
 
-#include "FMTdefaultlogger.h"
+#include "FMTdefaultlogger.hpp"
 #ifdef FMTWITHOSI
 #include <CoinMessageHandler.hpp>
 #endif

@@ -5,14 +5,14 @@ SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
-#include "FMTparser.h"
+#include "FMTparser.hpp"
 #include <boost/filesystem/convenience.hpp>
 #include <boost/icl/interval.hpp>
 #include <boost/icl/interval_set.hpp>
-#include "FMTtheme.h"
-#include "FMTyields.h"
-#include "FMTaction.h"
-#include "FMTbounds.h"
+#include "FMTtheme.hpp"
+#include "FMTyields.hpp"
+#include "FMTaction.hpp"
+#include "FMTbounds.hpp"
 
 
 

@@ -5,8 +5,8 @@ SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
-#include "FMTtheme.h"
-#include "FMTmask.h"
+#include "FMTtheme.hpp"
+#include "FMTmask.hpp"
 
 namespace Core {
 

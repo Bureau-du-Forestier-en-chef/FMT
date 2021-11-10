@@ -5,12 +5,12 @@ SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
-#include "FMTyieldrequest.h"
-#include "FMTyields.h"
-#include "FMTdevelopment.h"
-#include "FMTyieldhandler.h"
-#include "FMTgraphvertextoyield.h"
-#include "FMTdevelopment.h"
+#include "FMTyieldrequest.hpp"
+#include "FMTyields.hpp"
+#include "FMTdevelopment.hpp"
+#include "FMTyieldhandler.hpp"
+#include "FMTgraphvertextoyield.hpp"
+#include "FMTdevelopment.hpp"
 
 namespace Core
 { 

@@ -5,7 +5,7 @@ SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
-#include "FMTgraphdescription.h"
+#include "FMTgraphdescription.hpp"
 
 
 namespace Graph

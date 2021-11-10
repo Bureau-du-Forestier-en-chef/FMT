@@ -28,7 +28,7 @@
 *SOURCE ? ? ? plantation _AREA
 
 *OUTPUT test
-*SOURCE ? PEUPLEMENT2 ? _INVENT ytest
+*SOURCE ? ? ? _INVENT ytest
 
 
 

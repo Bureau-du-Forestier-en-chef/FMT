@@ -6,15 +6,15 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 #ifdef FMTWITHOSI
 #include <boost/thread.hpp>
-#include "FMTlpheuristicmthandler.h"
+#include "FMTlpheuristicmthandler.hpp"
 
 #include <functional>
 #if defined FMTWITHPYTHON
 	#include "boost/python.hpp"
 #endif
-#include "FMTlpheuristic.h"
-#include "FMToperatingareascheduler.h"
-#include "FMToperatingareaclusterer.h"
+#include "FMTlpheuristic.hpp"
+#include "FMToperatingareascheduler.hpp"
+#include "FMToperatingareaclusterer.hpp"
 namespace Heuristics
 {
 		FMTlpheuristicmthandler::FMTlpheuristicmthandler():heuristics()

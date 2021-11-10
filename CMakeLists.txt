@@ -114,7 +114,7 @@ add_definitions("-DHAVE_SNPRINTF")
 add_definitions("-DBOOST_FILESYSTEM_NO_DEPRECATED")
 
 FILE(GLOB FMTSOURCEFILES ${FMTSOURCEDIR}*.cpp)
-FILE(GLOB FMTHEADERFILES ${FMTSOURCEDIR}*.h)
+FILE(GLOB FMTHEADERFILES ${FMTSOURCEDIR}*.hpp)
 add_library(FMT SHARED ${FMTSOURCEFILES})
 include_directories(${FMTINCLUDEDIR})
 set_target_properties(FMT PROPERTIES PREFIX "")
@@ -138,18 +138,21 @@ set_target_properties( FMT
 )
 endif(NOT MSVC)
 
+
+list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR}/modules)
+
+if (DEFINED ONNXR_DIR)
 find_package(onnxruntime)
 if (onnxruntime_FOUND)
 	message("Found Onnxruntime")
-	set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${onnxruntime_CXX_FLAGS}")
 	target_link_libraries(FMT ${onnxruntime_LIBRARIES})
 	link_libraries(${onnxruntime_LIBRARIES})
 	include_directories(${onnxruntime_INCLUDE_DIRS})
 	set(FMTWITHONNXR "-DFMTWITHONNXR")
 	add_definitions("${FMTWITHONNXR}")
-  	file(GLOB ONNXR_DLLS "${onnxruntime_INSTALL_PREFIX}/lib/*.dll")
-	list (APPEND FMTDEPENDENCIES ${ONNXR_DLLS})
+	list (APPEND FMTDEPENDENCIES ${onnxruntime_DLLs})
 endif(onnxruntime_FOUND)
+endif(DEFINED ONNXR_DIR)
 
 set_property(TARGET FMT PROPERTY CXX_STANDARD 11)
 set_property(TARGET FMT PROPERTY CXX_STANDARD_REQUIRED ON)
@@ -162,7 +165,6 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
 endif()
 
 
-list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR}/modules)
 
 if (NOT MSVC AND DEFINED ENV{R_DIR})
 	find_package(R REQUIRED)

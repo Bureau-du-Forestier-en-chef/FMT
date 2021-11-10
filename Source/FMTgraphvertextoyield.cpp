@@ -5,9 +5,9 @@ SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
-#include "FMTgraphvertextoyield.h"
-#include "FMTgraph.h"
-#include "FMTmodel.h"
+#include "FMTgraphvertextoyield.hpp"
+#include "FMTgraph.hpp"
+#include "FMTmodel.hpp"
 
 namespace Graph
 {
@@ -18,15 +18,24 @@ namespace Graph
 		graphtype(FMTgraphrequest::linegraph),
 		modelptr(&model)
 	{
+		
+	}
+	FMTgraphvertextoyield::FMTgraphvertextoyield():
+		graph(nullptr),
+		vertex(nullptr),
+		graphtype(FMTgraphrequest::nograph),
+		modelptr(nullptr)
+	{
 
 	}
+
 	FMTgraphvertextoyield::FMTgraphvertextoyield(const Models::FMTmodel& model,const FMTgraph<FMTvertexproperties, FMTedgeproperties>& fullgraph,const void* lvertex) :
 		graph(reinterpret_cast<const void* const>(&fullgraph)),
 		vertex(lvertex),
 		graphtype(FMTgraphrequest::fullgraph),
 		modelptr(&model)
 	{
-
+		
 	}
 
 	const FMTgraph<FMTbasevertexproperties,FMTbaseedgeproperties>* const FMTgraphvertextoyield::getlinegraph() const
@@ -46,9 +55,9 @@ namespace Graph
 		return nullptr;
 	}
 
-	const Models::FMTmodel& FMTgraphvertextoyield::getmodel() const
+	const Models::FMTmodel* FMTgraphvertextoyield::getmodel() const
 	{
-		return *modelptr;
+		return modelptr;
 	}
 
 }

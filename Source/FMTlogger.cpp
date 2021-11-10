@@ -5,12 +5,12 @@ SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
-#include "FMTlogger.h"
+#include "FMTlogger.hpp"
 #if defined FMTWITHPYTHON
 	#include <boost/python.hpp>
 #endif // defined FMTWITHPYTHON
 #include <iostream>
-#include "FMTversion.h"
+#include "FMTversion.hpp"
 
 
 namespace Logging

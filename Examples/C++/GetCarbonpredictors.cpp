@@ -3,18 +3,18 @@ Example to get FMTcarbonpredictors on a FMTsesmodel
 */
 
 #include <vector>
-#include "FMTlpmodel.h"
-#include "FMTsesmodel.h"
-#include "FMTmodelparser.h"
-#include "FMTversion.h"
-#include "FMTlogger.h"
-#include "FMTexception.h"
-#include "FMTcarbonpredictor.h"
-#include "FMTconstraint.h"
-#include "FMTtransition.h"
-#include "FMTspatialschedule.h"
-#include "FMTareaparser.h"
-#include "FMTforest.h"
+#include "FMTlpmodel.hpp"
+#include "FMTsesmodel.hpp"
+#include "FMTmodelparser.hpp"
+#include "FMTversion.hpp"
+#include "FMTlogger.hpp"
+#include "FMTexception.hpp"
+#include "FMTcarbonpredictor.hpp"
+#include "FMTconstraint.hpp"
+#include "FMTtransition.hpp"
+#include "FMTspatialschedule.hpp"
+#include "FMTareaparser.hpp"
+#include "FMTforest.hpp"
 
 #ifdef FMTWITHONNXR
 	

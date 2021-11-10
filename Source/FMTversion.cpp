@@ -5,11 +5,11 @@ SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
-#include "FMTversion.h"
-#include "FMTparser.h"
+#include "FMTversion.hpp"
+#include "FMTparser.hpp"
 #include <chrono>
 #include <ctime>
-#include "FMTsolverinterface.h"
+#include "FMTsolverinterface.hpp"
 
 #ifdef FMTWITHGDAL
 	#include "gdal.h"
@@ -93,8 +93,8 @@ bool FMTversion::hasfeature(const std::string& name)
 			}
 		#endif
 	#endif
-	#ifdef FMTWITHTORCH
-		if (name == "TORCH")
+	#ifdef FMTWITHTONNXR
+		if (name == "ONNXRUNTIME")
 			{
 			return true;
 			}

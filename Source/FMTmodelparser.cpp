@@ -5,22 +5,22 @@ SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
-#include "FMTmodelparser.h"
-#include "FMTparser.h"
-#include "FMTconstantparser.h"
-#include "FMTlandscapeparser.h"
-#include "FMTareaparser.h"
-#include "FMTyieldparser.h"
-#include "FMTactionparser.h"
-#include "FMTtransitionparser.h"
-#include "FMTlifespanparser.h"
-#include "FMToutputparser.h"
-#include "FMToptimizationparser.h"
-#include "FMTscheduleparser.h"
-#include "FMTmodel.h"
-#include "FMTschedule.h"
-#include "FMTconstraint.h"
-#include "FMToutput.h"
+#include "FMTmodelparser.hpp"
+#include "FMTparser.hpp"
+#include "FMTconstantparser.hpp"
+#include "FMTlandscapeparser.hpp"
+#include "FMTareaparser.hpp"
+#include "FMTyieldparser.hpp"
+#include "FMTactionparser.hpp"
+#include "FMTtransitionparser.hpp"
+#include "FMTlifespanparser.hpp"
+#include "FMToutputparser.hpp"
+#include "FMToptimizationparser.hpp"
+#include "FMTscheduleparser.hpp"
+#include "FMTmodel.hpp"
+#include "FMTschedule.hpp"
+#include "FMTconstraint.hpp"
+#include "FMToutput.hpp"
 #include <map>
 
 

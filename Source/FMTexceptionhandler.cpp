@@ -5,10 +5,10 @@ SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
-#include "FMTexceptionhandler.h"
-#include "FMTexception.h"
-#include "FMTwarning.h"
-#include "FMTerror.h"
+#include "FMTexceptionhandler.hpp"
+#include "FMTexception.hpp"
+#include "FMTwarning.hpp"
+#include "FMTerror.hpp"
 #include <boost/algorithm/string/replace.hpp>
 
 #if defined FMTWITHR
