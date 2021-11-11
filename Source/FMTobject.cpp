@@ -17,7 +17,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <boost/algorithm/string.hpp>
 
 #if defined __MINGW64__||__CYGWIN__
-	#include "windows.hpp"
+	#include "windows.h"
 	EXTERN_C IMAGE_DOS_HEADER __ImageBase;
 #else
     #include <boost/dll/runtime_symbol_info.hpp>
@@ -26,7 +26,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTtheme.hpp"
 
 #if defined FMTWITHR
-	#include "Rcpp.hpp"
+	#include "Rcpp.h"
 #endif
 
 #if defined _WIN32

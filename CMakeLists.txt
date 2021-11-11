@@ -187,6 +187,7 @@ if (NOT MSVC AND DEFINED ENV{R_DIR})
 				target_link_libraries(FMT ${linkerflags})
 			endforeach()
 			set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,--export-all-symbols")
+			file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/Templates/Rpackage/FMT" DESTINATION "${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}")
 		endif()
 	endif()
 endif()
@@ -499,9 +500,11 @@ install (CODE
     file(COPY \"${CMAKE_CURRENT_SOURCE_DIR}/Templates/YieldPredModels\" DESTINATION \"${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}\")
     if (GDAL_FOUND)
         #Copy gdal data
-        file(COPY \"${GDAL_DATA}\" DESTINATION \"${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}\")
-        file(RENAME \"${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}/${GDAL_DATA_NAME}\" \"${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}/GDAL_DATA\")
-    endif()
+		if (NOT EXISTS \"${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}/GDAL_DATA\")
+			file(COPY \"${GDAL_DATA}\" DESTINATION \"${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}\")
+			file(RENAME \"${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}/${GDAL_DATA_NAME}\" \"${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}/GDAL_DATA\")
+		endif(NOT EXISTS \"${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}/GDAL_DATA\")
+    endif(GDAL_FOUND)
     set(DEPENDENCIES \"${FMTDEPENDENCIES}\")
     if (DEPENDENCIES)
         #Copy dependencies
@@ -509,7 +512,7 @@ install (CODE
             get_filename_component(depname \"\${FMTdep}\" NAME)
             file(COPY \"\${FMTdep}\" DESTINATION \"${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}\")
         endforeach()
-    endif()
+    endif(DEPENDENCIES)
 	if (EXISTS \"${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}/setup.py\")
         find_program(PYTHON \"python\" PATHS \"${PYTHON_DIR}\")
         execute_process(
@@ -517,7 +520,32 @@ install (CODE
           WORKING_DIRECTORY \"${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}\"
         )
     endif (EXISTS \"${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}/setup.py\")
+	if (EXISTS \"${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}/FMT\")
+		file(COPY \"${CMAKE_CURRENT_SOURCE_DIR}/Templates/YieldPredModels\" DESTINATION \"${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}/FMT/inst/libs/x64/\")
+		file(COPY \"${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}/GDAL_DATA\" DESTINATION \"${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}/FMT/inst/libs/x64/\")
+		file(COPY \"${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}/FMT${CMAKE_SHARED_LIBRARY_SUFFIX}\" DESTINATION \"${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}/FMT/inst/libs/x64/\")
+		file(COPY \"${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}/libFMT${CMAKE_SHARED_LIBRARY_SUFFIX}${CMAKE_STATIC_LIBRARY_SUFFIX}\" DESTINATION \"${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}/FMT/inst/libs/x64/\")
+        if (DEPENDENCIES)
+			#Copy dependencies
+			foreach(FMTdep \${DEPENDENCIES}\)
+				file(COPY \"\${FMTdep}\" DESTINATION \"${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}/FMT/inst/libs/x64/\")
+			endforeach()
+		 endif(DEPENDENCIES)
+		find_program(RLOCATION \"R\" PATHS \"${R_DIR}/bin/x64\")
+        execute_process(
+          COMMAND \"$\{RLOCATION\}\" CMD build FMT
+          WORKING_DIRECTORY \"${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}\"
+        )
+		execute_process(
+          COMMAND \"$\{RLOCATION\}\" CMD INSTALL --no-multiarch \"FMT_${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.tar.gz\"
+          WORKING_DIRECTORY \"${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}\"
+        )
+endif (EXISTS \"${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}/FMT\")
 ")
+
+
+
+
 
 if (DEFINED ReleaseTesting)
 	include(${CMAKE_CURRENT_SOURCE_DIR}/Examples/C++/ReleaseTesting/CMakeLists.txt)

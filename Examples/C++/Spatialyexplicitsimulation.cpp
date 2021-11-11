@@ -13,11 +13,7 @@
 int main()
 {
 	Logging::FMTlogger().logstamp();
-	#if defined _MSC_VER
-		const std::string modellocation = "../../../../Examples/Models/TWD_land/";
-	#else
-		const std::string modellocation = "../../../Examples/Models/TWD_land/";
-	#endif
+	const std::string modellocation = "../../../../Examples/Models/TWD_land/";
 	const std::string	primarylocation = modellocation + "TWD_land.pri";
 	Parser::FMTmodelparser mparser;
 	const std::vector<std::string>scenarios(1, "Spatial");
