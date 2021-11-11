@@ -5,14 +5,14 @@ SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
-#include "FMTobject.h"
-#include "FMTdefaultlogger.h"
-#include "FMTdebuglogger.h"
-#include "FMTquietlogger.h"
-#include "FMTquietexceptionhandler.h"
-#include "FMTdefaultexceptionhandler.h"
-#include "FMTdebugexceptionhandler.h"
-#include "FMTfreeexceptionhandler.h"
+#include "FMTobject.hpp"
+#include "FMTdefaultlogger.hpp"
+#include "FMTdebuglogger.hpp"
+#include "FMTquietlogger.hpp"
+#include "FMTquietexceptionhandler.hpp"
+#include "FMTdefaultexceptionhandler.hpp"
+#include "FMTdebugexceptionhandler.hpp"
+#include "FMTfreeexceptionhandler.hpp"
 #include <boost/filesystem.hpp>
 #include <boost/algorithm/string.hpp>
 
@@ -23,7 +23,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
     #include <boost/dll/runtime_symbol_info.hpp>
 #endif
 
-#include "FMTtheme.h"
+#include "FMTtheme.hpp"
 
 #if defined FMTWITHR
 	#include "Rcpp.h"

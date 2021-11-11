@@ -11,6 +11,7 @@ set(FMTSimpleplanningSOURCEFILES "${CMAKE_CURRENT_SOURCE_DIR}/Examples/C++/Simpl
 set(FMTSpatialyexplicitsimulationSOURCEFILES "${CMAKE_CURRENT_SOURCE_DIR}/Examples/C++/Spatialyexplicitsimulation.cpp")
 set(maptoFMTforestSOURCEFILES "${CMAKE_CURRENT_SOURCE_DIR}/Examples/C++/maptoFMTforest.cpp")
 set(GetCarbonpredictorsSOURCEFILES "${CMAKE_CURRENT_SOURCE_DIR}/Examples/C++/GetCarbonpredictors.cpp")
+set(testyieldmodelSOURCEFILES "${CMAKE_CURRENT_SOURCE_DIR}/Examples/C++/testyieldmodel.cpp")
 foreach(sourcefile ${FMTSOURCEFILES})
 	if (NOT "${sourcefile}" MATCHES "main.cpp")
 		list(APPEND FMTSimpleplanningSOURCEFILES "${sourcefile}")
@@ -21,6 +22,8 @@ foreach(sourcefile ${FMTSOURCEFILES})
 		list(APPEND maptoFMTforestSOURCEFILES "${FMTHEADERFILES}")
 		list(APPEND GetCarbonpredictorsSOURCEFILES "${sourcefile}")
 		list(APPEND GetCarbonpredictorsSOURCEFILES "${FMTHEADERFILES}")
+		list(APPEND testyieldmodelSOURCEFILES "${sourcefile}")
+		list(APPEND testyieldmodelSOURCEFILES "${FMTHEADERFILES}")
 	endif(NOT "${sourcefile}" MATCHES "main.cpp")
 endforeach()
 
@@ -47,6 +50,7 @@ if (GDAL_FOUND)
 	#project(GetCarbonpredictors VERSION "${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH}" LANGUAGES CXX)
 	add_executable(FMTSpatialyexplicitsimulation ${FMTSpatialyexplicitsimulationSOURCEFILES})
 	add_executable(GetCarbonpredictors ${GetCarbonpredictorsSOURCEFILES})
+	add_executable(testyieldmodel ${testyieldmodelSOURCEFILES})
 	if (NOT MSVC)
 		set_target_properties( FMTSpatialyexplicitsimulation
 			PROPERTIES
@@ -60,14 +64,23 @@ if (GDAL_FOUND)
 			LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}"
 			RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}"
 		)
+		set_target_properties( testyieldmodel
+			PROPERTIES
+			ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}"
+			LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}"
+			RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}"
+		)
 	endif(NOT MSVC)
 	set_property(TARGET FMTSpatialyexplicitsimulation PROPERTY CXX_STANDARD 11)
 	set_property(TARGET FMTSpatialyexplicitsimulation PROPERTY CXX_STANDARD_REQUIRED ON)
 	set_property(TARGET GetCarbonpredictors PROPERTY CXX_STANDARD 11)
 	set_property(TARGET GetCarbonpredictors PROPERTY CXX_STANDARD_REQUIRED ON)
+	set_property(TARGET testyieldmodel PROPERTY CXX_STANDARD 11)
+	set_property(TARGET testyieldmodel PROPERTY CXX_STANDARD_REQUIRED ON)
 	if (MOSEK_FOUND AND MSVC)
 		target_sources(FMTSpatialyexplicitsimulation PRIVATE ${OSIMSK_DEFINITION})
 		target_sources(GetCarbonpredictors PRIVATE ${OSIMSK_DEFINITION})
+		target_sources(testyieldmodel PRIVATE ${OSIMSK_DEFINITION})
 	endif(MOSEK_FOUND AND MSVC)
 endif(GDAL_FOUND)
 

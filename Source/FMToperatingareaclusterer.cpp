@@ -7,7 +7,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 #ifdef FMTWITHOSI
 
-#include "FMToperatingareaclusterer.h"
+#include "FMToperatingareaclusterer.hpp"
 #include <random>
 
 

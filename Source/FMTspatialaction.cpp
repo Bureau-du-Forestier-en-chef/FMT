@@ -5,11 +5,11 @@ SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
-#include "FMTspatialaction.h"
-#include "FMToutput.h"
+#include "FMTspatialaction.hpp"
+#include "FMToutput.hpp"
 #include <iostream>
 #include <limits>
-#include "FMTconstraint.h"
+#include "FMTconstraint.hpp"
 
 namespace Spatial
 {
