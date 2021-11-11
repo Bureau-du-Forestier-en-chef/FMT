@@ -100,7 +100,7 @@ void FMTmodelparser::fillupinfeasibles(OGRLayer* layer,
 		{
 			allvalues[out.getname()] = std::vector<std::vector<double>>(theoutputs.size(), std::vector<double>((lastperiod - firstperiod) + 1, std::numeric_limits<double>::quiet_NaN()));
 		}
-		writefeatures(layer,firstperiod,iteration, theoutputs,allvalues);
+		writefeatures(layer,firstperiod,iteration, theoutputs,allvalues,true);
 	}
 	catch (...)
 	{
@@ -111,7 +111,7 @@ void FMTmodelparser::fillupinfeasibles(OGRLayer* layer,
 
 void FMTmodelparser::writefeatures(OGRLayer* layer, const int& firstperiod, const int& iteration,
 	const std::vector<Core::FMToutput>& theoutputs,
-	const std::map<std::string, std::vector<std::vector<double>>>& values)const
+	const std::map<std::string, std::vector<std::vector<double>>>& values,bool writeNaN)const
 {
 	try {
 		boost::lock_guard<boost::recursive_mutex> guard(mtx);
@@ -123,25 +123,28 @@ void FMTmodelparser::writefeatures(OGRLayer* layer, const int& firstperiod, cons
 				int period = firstperiod;
 				for (const double& value : outputvalues)
 				{
-					OGRFeature *newfeature = OGRFeature::CreateFeature(layer->GetLayerDefn());
-					if (newfeature == NULL)
+					if(!std::isnan(value) && !writeNaN)
 					{
-						_exhandler->raise(Exception::FMTexc::FMTgdal_constructor_error,
-							"Cannote generate new feature ", "FMTmodelparser::writefeatures", __LINE__, __FILE__, _section);
-						//Failed to generate feature
+						OGRFeature *newfeature = OGRFeature::CreateFeature(layer->GetLayerDefn());
+						if (newfeature == NULL)
+						{
+							_exhandler->raise(Exception::FMTexc::FMTgdal_constructor_error,
+								"Cannote generate new feature ", "FMTmodelparser::writefeatures", __LINE__, __FILE__, _section);
+							//Failed to generate feature
+						}
+						newfeature->SetField("Iteration", iteration);
+						newfeature->SetField("Period", period);
+						newfeature->SetField("Output", theoutputs.at(outputid).getname().c_str());
+						newfeature->SetField("Type", toutputvalues.first.c_str());
+						newfeature->SetField("Value", value);
+						if (layer->CreateFeature(newfeature) != OGRERR_NONE)
+						{
+							_exhandler->raise(Exception::FMTexc::FMTgdal_constructor_error,
+								"Cannote create new feature id " + std::to_string(layer->GetFeatureCount()), "FMTmodelparser::writefeatures", __LINE__, __FILE__, _section);
+							//Failed to generate feature
+						}
+						OGRFeature::DestroyFeature(newfeature);
 					}
-					newfeature->SetField("Iteration", iteration);
-					newfeature->SetField("Period", period);
-					newfeature->SetField("Output", theoutputs.at(outputid).getname().c_str());
-					newfeature->SetField("Type", toutputvalues.first.c_str());
-					newfeature->SetField("Value", value);
-					if (layer->CreateFeature(newfeature) != OGRERR_NONE)
-					{
-						_exhandler->raise(Exception::FMTexc::FMTgdal_constructor_error,
-							"Cannote create new feature id " + std::to_string(layer->GetFeatureCount()), "FMTmodelparser::writefeatures", __LINE__, __FILE__, _section);
-						//Failed to generate feature
-					}
-					OGRFeature::DestroyFeature(newfeature);
 					++period;
 				}
 				++outputid;
