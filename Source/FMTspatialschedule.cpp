@@ -924,6 +924,10 @@ namespace Spatial
 	{
 		std::map<std::string, std::vector<double>>values;
 		try {
+			if(output.targetthemeid() < 0 && !(level == Core::FMToutputlevel::developpement))
+			{
+				level = Core::FMToutputlevel::totalonly;
+			}
 			bool cachenotused = true;
 			//const std::vector<Core::FMTtheme> statictransitionsthemes = model.locatestatictransitionsthemes();
 			const double cellsize = this->getcellsize();
@@ -932,7 +936,6 @@ namespace Spatial
 				values["Total"] = std::vector<double>((periodstop - periodstart) + 1,0.0);
 				}
 			const int maxperiod = actperiod();
-			
 			for (const Core::FMToutputnode& node : output.getnodes(/*model.area, model.actions, model.yields*/))
 			{
 				if (node.source.isvariable())
@@ -942,19 +945,18 @@ namespace Spatial
 					size_t periodid = 0;
 					std::vector<std::pair<size_t, int>>periodstolookfor;
 					for (int period = periodstart; period <= periodstop; ++period)
-						{
+					{
 						if (!cache.getactualnodecache()->gotcachevalue(period))
-							{
+						{
 							periodstolookfor.push_back(std::pair<size_t, int>(periodid, period));
 							cachenotused = false;
-							}
-							else if (level == Core::FMToutputlevel::totalonly)
-							{
-								values["Total"][periodid] = cache.getactualnodecache()->getcachevalue(period);
-							}
-							++periodid;
 						}
-					
+						else if (level == Core::FMToutputlevel::totalonly)
+						{
+							values["Total"][periodid] = cache.getactualnodecache()->getcachevalue(period);
+						}
+						++periodid;
+					}
 					if (!periodstolookfor.empty())
 					{
 						if (!exactnode&&cache.getactualnodecache()->worthintersecting)
@@ -1038,11 +1040,13 @@ namespace Spatial
 							}
 						}
 					}
-							for (const std::pair<size_t, int>& periodpair : periodstolookfor)
-							{
-								cache.getactualnodecache()->setvalue(periodpair.second, values.at("Total").at(periodpair.first));
-							}
-						
+					if(level != Core::FMToutputlevel::developpement)//No caching for developpement because getsource dont return a total for developpement
+					{
+						for (const std::pair<size_t, int>& periodpair : periodstolookfor)
+						{
+							cache.getactualnodecache()->setvalue(periodpair.second, values.at("Total").at(periodpair.first));
+						}
+					}
 				}
 
 			}
@@ -1445,11 +1449,20 @@ std::map<std::string,double> FMTspatialschedule::getoutputfromgraph(const Graph:
 			values["Total"] = cashit->second;
 			//*_logger << "period cash" << period << " " << cashit->second << "\n";
 		}else {//get it and add to cashing
+			const int themeid = node.source.getthemetarget();
 			Core::FMTtheme targettheme;
-			//*_logger << "test " << linegraph.getnode(model, node, period).size() << "\n";
+			if(themeid<0)
+			{
+				targettheme = Core::FMTtheme();
+			}else{
+				targettheme = model.getthemes().at(themeid);
+			}
 			values = linegraph.getsource(model, node, period, targettheme, solution,level);
-			//*_logger << std::string(node) << period << " " << values.at("Total") << "\n";
-			nodecache[nodemask] = values.at("Total");
+			//*_logger << "period s" << period << " " << values.at("Total") << "\n";
+			if(level != Core::FMToutputlevel::developpement)//No caching for developpement
+			{
+				nodecache[nodemask] = values.at("Total");
+			}
 		}
 	}
 	}catch (...)

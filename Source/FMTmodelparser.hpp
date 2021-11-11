@@ -144,7 +144,7 @@ class FMTEXPORT FMTmodelparser : public FMTparser
 		*/
 		void writefeatures(OGRLayer* layer,const int& firstperiod, const int& iteration,
 			const std::vector<Core::FMToutput>&theoutputs,
-			const std::map<std::string,std::vector<std::vector<double>>>& values)const;
+			const std::map<std::string,std::vector<std::vector<double>>>& values, bool writeNaN = false)const;
 		// DocString: FMTmodelparser::writeresults
 		/**
 		The function writeresults for any kind of FMTmodel (optimized or simulated), starting from the first period to the last period, for a vector of outputs.
