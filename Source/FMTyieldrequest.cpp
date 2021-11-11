@@ -26,13 +26,16 @@ namespace Core
 
 	FMTyieldrequest::FMTyieldrequest(const FMTdevelopment& ldevelopment,
 		const FMTyieldrequest& oldrequest):
-		datas(),
-		resume_mask(),
+		datas(oldrequest.datas),
+		resume_mask(oldrequest.resume_mask),
 		development(&ldevelopment),
-		graphvertex(oldrequest.graphvertex)
+		graphvertex()
 	{
-
-
+		if (ldevelopment.getmask()!= oldrequest.development->getmask())
+			{
+			_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, "Cannot create a yield request with a different developement mask ",
+				"FMTyieldrequest::FMTyieldrequest()", __LINE__, __FILE__, Core::FMTsection::Yield);
+			}
 	}
 
 	FMTyieldrequest::FMTyieldrequest(const Core::FMTdevelopment& ldevelopment):
