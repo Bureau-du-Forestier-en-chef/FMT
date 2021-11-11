@@ -95,6 +95,7 @@ namespace Core {
 					{
 						age_only = false;
 					}
+					
 					alldata[datait->first] = (*yldata)->get(datait->first, request);
 				}
 
@@ -228,6 +229,8 @@ namespace Core {
 					}
 				}
 				
+				
+				
 			}
 			if (alldata.size() != names.size())
 			{
@@ -235,6 +238,7 @@ namespace Core {
 				{
 					if (!name.empty() && alldata.find(name) == alldata.end())
 					{
+						
 						alldata[name] = nullptr;
 						/*_exhandler->raise(Exception::FMTexc::FMTignore,
 							"Missing requested yield "+name, "FMTyieldhandler::getdata", __LINE__, __FILE__);*/
@@ -267,7 +271,8 @@ namespace Core {
 				bool age_only = true;
 				const std::vector<std::string> sources = cdata->getsource();
 				const std::map<std::string, const std::unique_ptr<FMTyieldhandler>*> srcsdata = this->getdata(request, sources, yld);
-					if (lookat.find(yld) == lookat.end())
+				
+				if (lookat.find(yld) == lookat.end())
 					{
 						lookat.insert(yld);
 					}
@@ -435,7 +440,7 @@ namespace Core {
 						const int periodtolookat = std::max(0, period + static_cast<int>(cdata->data.back()));
 						Core::FMTdevelopment newdevelopement(request.getdevelopment());
 						newdevelopement.setperiod(periodtolookat);
-						const FMTyieldrequest newrequest(newdevelopement);
+						const FMTyieldrequest newrequest(newdevelopement,request);
 						const std::map<std::string, double>periodic_source_values = this->getsources(srcsdata, newrequest, age_only);
 						value = std::abs(source_values.begin()->second - periodic_source_values.begin()->second);
 						break;

@@ -228,6 +228,7 @@ FMTdata::operator std::string() const
 std::vector<double>FMTdata::tovalues(const std::map<std::string, double>& sources) const
 	{
 	std::vector<double>values(stacking.size(),0.0);
+	
 	size_t varid = 0;
 	size_t numid = 0;
 	int id = 0;
