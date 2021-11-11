@@ -12,11 +12,7 @@
 int main()
 {
     Logging::FMTlogger().logstamp();
-    #if defined _MSC_VER
-        const std::string modellocation = "../../../../Examples/Models/TWD_land/";
-    #else
-        const std::string modellocation = "../../../Examples/Models/TWD_land/";
-    #endif
+    const std::string modellocation = "../../../../Examples/Models/TWD_land/";
     const std::string	primarylocation = modellocation + "TWD_land.pri";
     const std::string	maplocation = modellocation + "/Carte/TWD_land.shp";
     const std::string	writelocation = modellocation + "rasters/";

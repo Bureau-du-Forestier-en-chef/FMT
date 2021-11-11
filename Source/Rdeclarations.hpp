@@ -30,6 +30,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTsamodel.hpp"
 #include "FMToperatingarea.hpp"
 #include "FMToperatingareascheduler.hpp"
+#include "FMToperatingareaclusterbinary.hpp"
 
 #include "FMTmask.hpp"
 #include "FMTactualdevelopment.hpp"

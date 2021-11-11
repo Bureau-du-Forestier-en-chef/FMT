@@ -11,8 +11,11 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTdefaultexceptionhandler.hpp"
 #include "FMTdebugexceptionhandler.hpp"
 #include "FMTquietexceptionhandler.hpp"
+#include "FMTexceptionhandler.hpp"
 #include <Rcpp.h>
 #include "Rdefinitions.hpp"
+#include "FMTerror.hpp"
+#include "FMTwarning.hpp"
 
 
 RCPP_EXPOSED_WRAP(Exception::FMTexceptionhandler);

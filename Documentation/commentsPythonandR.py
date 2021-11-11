@@ -100,7 +100,8 @@ def gatherfiles(directory,source):
 if __name__=="__main__":
     filestomodify = gatherfiles("../Source",False)
     headerfiles = gatherfiles("../Source",True)
-    targetdirectory="../Source"
+    targetdirectory="../Source/include"
+    os.mkdir(targetdirectory)
     commentsource=getcommentselements(headerfiles)
     commentstoreplace=getelementstocomment(filestomodify)
     replaced=buildcommentsreplacement(commentsource,commentstoreplace)

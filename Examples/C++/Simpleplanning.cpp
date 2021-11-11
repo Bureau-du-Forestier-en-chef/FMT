@@ -12,11 +12,7 @@ int main()
 	Logging::FMTlogger().logstamp();
 	if (Version::FMTversion().hasfeature("OSI"))
 		{
-		#if defined _MSC_VER
 		const std::string folder = "../../../../Examples/Models/TWD_land/";
-		#else
-		const std::string folder = "../../../Examples/Models/TWD_land/";
-		#endif
 		const std::string primarylocation = folder+"TWD_land.pri";
 		Parser::FMTmodelparser modelparser;
 		const std::vector<std::string>scenarios(1, "LP");

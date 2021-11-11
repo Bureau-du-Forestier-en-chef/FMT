@@ -1414,7 +1414,7 @@ namespace Parser{
 									{
 										OGRPolygon* subbinary_polygon = polygons.at(polygonids.at(subbinaryid));
 										const Core::FMTmask subbinarymask(subbinary.getmask());
-										if (subbinarymask != binarymask && subbinarymask != mainmask && intersection->Intersect(subbinary_polygon))
+										if (subbinarymask != binarymask && subbinarymask != mainmask && intersection->Intersects(subbinary_polygon))
 										{
 											OGRPolygon* subintersection = reinterpret_cast<OGRPolygon*>(intersection->Intersection(subbinary_polygon));
 											if (subintersection->get_Area() >= subbinary_polygon->get_Area()*0.5)
