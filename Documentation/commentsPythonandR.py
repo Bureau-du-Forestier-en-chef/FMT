@@ -88,7 +88,7 @@ def generatecomments(targetdirectory,originalfiles,generalmatches):
 def gatherfiles(directory,source):
     allfiles = []
     for file in os.listdir(directory):
-        if (file.endswith(".h") and 
+        if (file.endswith(".hpp") and 
             (
                     (not source and (file.startswith("PY") or file.startswith("R"))) or 
                     (source and not (file.startswith("PY") or file.startswith("R")))
@@ -100,7 +100,8 @@ def gatherfiles(directory,source):
 if __name__=="__main__":
     filestomodify = gatherfiles("../Source",False)
     headerfiles = gatherfiles("../Source",True)
-    targetdirectory="../Source"
+    targetdirectory="../Source/include"
+    os.mkdir(targetdirectory)
     commentsource=getcommentselements(headerfiles)
     commentstoreplace=getelementstocomment(filestomodify)
     replaced=buildcommentsreplacement(commentsource,commentstoreplace)

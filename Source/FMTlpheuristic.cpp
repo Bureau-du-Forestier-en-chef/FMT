@@ -7,7 +7,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 #ifdef FMTWITHOSI
 
-#include "FMTlpheuristic.h"
+#include "FMTlpheuristic.hpp"
 #include <algorithm>
 #include <random>
 #include "OsiClpSolverInterface.hpp"
@@ -15,7 +15,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 	#include "OsiMskSolverInterface.hpp"
 	#include "mosek.h"
 #endif
-#include "FMTsolverinterface.h"
+#include "FMTsolverinterface.hpp"
 
 namespace Heuristics
 {

@@ -1,23 +1,19 @@
 #include <vector>
-#include "FMTsesmodel.h"
-#include "FMTmodelparser.h"
-#include "FMTareaparser.h"
-#include "FMTversion.h"
-#include "FMTlogger.h"
-#include "FMTforest.h"
-#include "FMTspatialschedule.h"
-#include "FMTtransitionparser.h"
-#include "FMTGCBMtransition.h"
-#include "FMToutput.h"
+#include "FMTsesmodel.hpp"
+#include "FMTmodelparser.hpp"
+#include "FMTareaparser.hpp"
+#include "FMTversion.hpp"
+#include "FMTlogger.hpp"
+#include "FMTforest.hpp"
+#include "FMTspatialschedule.hpp"
+#include "FMTtransitionparser.hpp"
+#include "FMTGCBMtransition.hpp"
+#include "FMToutput.hpp"
 
 int main()
 {
 	Logging::FMTlogger().logstamp();
-	#if defined _MSC_VER
-		const std::string modellocation = "../Examples/Models/TWD_land/";
-	#else
-		const std::string modellocation = "Examples/Models/TWD_land/";
-	#endif
+	const std::string modellocation = "../../../../Examples/Models/TWD_land/";
 	const std::string	primarylocation = modellocation + "TWD_land.pri";
 	Parser::FMTmodelparser mparser;
 	const std::vector<std::string>scenarios(1, "Spatial");

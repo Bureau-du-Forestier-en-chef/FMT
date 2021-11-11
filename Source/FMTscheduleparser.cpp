@@ -5,10 +5,10 @@ SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
-#include "FMTscheduleparser.h"
-#include "FMTtheme.h"
-#include "FMTaction.h"
-#include "FMTschedule.h"
+#include "FMTscheduleparser.hpp"
+#include "FMTtheme.hpp"
+#include "FMTaction.hpp"
+#include "FMTschedule.hpp"
 
 namespace Parser {
 

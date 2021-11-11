@@ -5,19 +5,19 @@ SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
-#include "FMTyields.h"
-#include "FMTconstants.h"
-#include "FMTtheme.h"
-#include "FMTdata.h"
-#include "FMTyieldmodel.h"
-#include "FMTyieldparser.h"
-#include "FMTageyieldhandler.h"
-#include "FMTtimeyieldhandler.h"
-#include "FMTcomplexyieldhandler.h"
-#include "FMTmodelyieldhandler.h"
+#include "FMTyields.hpp"
+#include "FMTconstants.hpp"
+#include "FMTtheme.hpp"
+#include "FMTdata.hpp"
+#include "FMTyieldmodel.hpp"
+#include "FMTyieldparser.hpp"
+#include "FMTageyieldhandler.hpp"
+#include "FMTtimeyieldhandler.hpp"
+#include "FMTcomplexyieldhandler.hpp"
+#include "FMTmodelyieldhandler.hpp"
 #include <boost/property_tree/json_parser.hpp>
 #include <memory>
-#include "FMTfunctioncall.h"
+#include "FMTfunctioncall.hpp"
 
 namespace Parser{
 
@@ -388,7 +388,7 @@ std::unique_ptr<Core::FMTyieldmodel>FMTyieldparser::readyieldmodel(const std::st
 	{
 	_exhandler->raisefromcatch("While reading model "+modelname,"FMTyieldparser::readyieldmodel", __LINE__, __FILE__, _section);
 	}
-	return std::unique_ptr<Core::FMTyieldmodel>();
+	return std::unique_ptr<Core::FMTyieldmodel>(new Core::FMTyieldmodel(modelname));
 }
 
 
@@ -740,10 +740,10 @@ Core::FMTyields FMTyieldparser::read(const std::vector<Core::FMTtheme>& themes,c
 							std::smatch predmatch;
 							if (std::regex_search(line, predmatch,rxpredictor))
 								{
-								const std::string yieldsarray = predmatch[1];
-								const std::string modelname = predmatch[4];
+								const std::string yieldsarray = boost::trim_copy(std::string(predmatch[1]));
+								const std::string modelname = boost::trim_copy(std::string(predmatch[4]));
 								std::vector<std::string>newyields;
-								const std::string yieldseparators = std::string(",");
+								const std::string yieldseparators = FMT_STR_SEPARATOR + std::string(",");
 								boost::split(newyields, yieldsarray, boost::is_any_of(yieldseparators), boost::token_compress_on);
 								dump = getylduse(yields, actualyield, newyields);
 								checkpreexisting(dump);
@@ -758,12 +758,17 @@ Core::FMTyields FMTyieldparser::read(const std::vector<Core::FMTtheme>& themes,c
 									modelid = handlerptr->size();
 									const std::unique_ptr<Core::FMTyieldmodel>yldmodel = readyieldmodel(modelname);
 									const std::vector<std::string> allyields = yields.getallyieldnames();
-									yldmodel->Validate(allyields);
+									if (!yldmodel->Validate(allyields))
+										{
+										//_exhandler->raise(Exception::FMTexc::FMTinvalid_yield,
+										//	"Missing source yields for " +modelname+" yield model " + std::to_string(_line),
+										//	"FMTyieldparser::read", __LINE__, __FILE__, _section);
+										}
 									if (newyields.size()!=yldmodel->GetYieldsOutputs().size())
 										{
-										_exhandler->raise(Exception::FMTexc::FMTinvalidyield_number,
-											"Different size in model "+yldmodel->GetModelName()+" outputs for yields "+ yieldsarray+" " + std::to_string(_line),
-											"FMTyieldparser::read", __LINE__, __FILE__, _section);
+										//_exhandler->raise(Exception::FMTexc::FMTinvalidyield_number,
+										//	"Different size in model "+yldmodel->GetModelName()+" outputs for yields "+ yieldsarray+" " + std::to_string(_line),
+										//	"FMTyieldparser::read", __LINE__, __FILE__, _section);
 										}
 									handlerptr->push_backmodel(yldmodel);
 								}
@@ -773,10 +778,11 @@ Core::FMTyields FMTyieldparser::read(const std::vector<Core::FMTtheme>& themes,c
 									handlerptr->setyield(modelid, yldid, yldname);
 									++yldid;
 									}
-								#ifndef FMTWITHROCH
-									_exhandler->raise(Exception::FMTexc::FMTinvalid_yield,
-										"Found a model yield but FMT is not compiled with Torch at line " + std::to_string(_line),
-										"FMTyieldparser::read", __LINE__, __FILE__, _section);
+								
+								#ifndef FMTWITHONNXR
+									//_exhandler->raise(Exception::FMTexc::FMTinvalid_yield,
+									//	"Found a model yield but FMT is not compiled with Torch at line " + std::to_string(_line),
+									//	"FMTyieldparser::read", __LINE__, __FILE__, _section);
 								#endif
 							}else {
 								_exhandler->raise(Exception::FMTexc::FMTunsupported_yield,
@@ -788,6 +794,7 @@ Core::FMTyields FMTyieldparser::read(const std::vector<Core::FMTtheme>& themes,c
 				}
 			}
 		}
+		yields.update();
 		cleanup(yields, themes,constants);
 	}catch(...)
 		{

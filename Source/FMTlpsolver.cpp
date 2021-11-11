@@ -6,7 +6,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
 #ifdef FMTWITHOSI
-#include "FMTlpsolver.h"
+#include "FMTlpsolver.hpp"
 
 #ifdef FMTWITHMOSEK
 	#include "OsiMskSolverInterface.hpp"

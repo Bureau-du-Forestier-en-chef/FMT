@@ -1,10 +1,10 @@
 #include <vector>
-#include "FMTlpmodel.h"
-#include "FMTmodelparser.h"
-#include "FMTversion.h"
-#include "FMTlogger.h"
-#include "FMTconstraint.h"
-#include "FMTscheduleparser.h"
+#include "FMTlpmodel.hpp"
+#include "FMTmodelparser.hpp"
+#include "FMTversion.hpp"
+#include "FMTlogger.hpp"
+#include "FMTconstraint.hpp"
+#include "FMTscheduleparser.hpp"
 
 
 int main()
@@ -12,11 +12,7 @@ int main()
 	Logging::FMTlogger().logstamp();
 	if (Version::FMTversion().hasfeature("OSI"))
 		{
-		#if defined _MSC_VER
-		const std::string folder = "../Examples/Models/TWD_land/";
-		#else
-		const std::string folder = "Examples/Models/TWD_land/";
-		#endif
+		const std::string folder = "../../../../Examples/Models/TWD_land/";
 		const std::string primarylocation = folder+"TWD_land.pri";
 		Parser::FMTmodelparser modelparser;
 		const std::vector<std::string>scenarios(1, "LP");

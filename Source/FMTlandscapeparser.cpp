@@ -6,9 +6,9 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
 
-#include "FMTlandscapeparser.h"
-#include "FMTtheme.h"
-#include "FMTconstants.h"
+#include "FMTlandscapeparser.hpp"
+#include "FMTtheme.hpp"
+#include "FMTconstants.hpp"
 #include <boost/algorithm/string/trim.hpp>
 #include <boost/algorithm/string.hpp>
 

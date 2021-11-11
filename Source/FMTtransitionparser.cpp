@@ -5,19 +5,19 @@ SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
-#include "FMTtransitionparser.h"
-#include "FMToperator.h"
+#include "FMTtransitionparser.hpp"
+#include "FMToperator.hpp"
 #include <boost/archive/text_iarchive.hpp>
 #include <boost/archive/text_oarchive.hpp>
 #include <boost/serialization/vector.hpp>
-#include "FMTmask.h"
-#include "FMTGCBMtransition.h"
-#include "FMTconstants.h"
-#include "FMTtheme.h"
-#include "FMTaction.h"
-#include "FMTtransition.h"
-#include "FMTtransitionmask.h"
-#include "FMTyields.h"
+#include "FMTmask.hpp"
+#include "FMTGCBMtransition.hpp"
+#include "FMTconstants.hpp"
+#include "FMTtheme.hpp"
+#include "FMTaction.hpp"
+#include "FMTtransition.hpp"
+#include "FMTtransitionmask.hpp"
+#include "FMTyields.hpp"
 
 
 namespace Parser{

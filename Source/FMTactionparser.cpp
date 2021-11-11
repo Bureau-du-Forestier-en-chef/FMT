@@ -5,14 +5,12 @@ SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
-#include "FMTactionparser.h"
-#include "FMTconstants.h"
-#include "FMTtheme.h"
-#include "FMTaction.h"
-#include "FMTyields.h"
-//#ifdef FMTWITHTORCH
-	#include <boost/property_tree/json_parser.hpp>
-//#endif // FMTWITHTORCH
+#include "FMTactionparser.hpp"
+#include "FMTconstants.hpp"
+#include "FMTtheme.hpp"
+#include "FMTaction.hpp"
+#include "FMTyields.hpp"
+#include <boost/property_tree/json_parser.hpp>
 
 namespace Parser{
 
@@ -278,9 +276,7 @@ FMTactionparser& FMTactionparser::operator = (const FMTactionparser& rhs)
 				action.passinobject(*this);
 				}
 			}
-			//#ifdef FMTWITHTORCH
 			cleanedactions = getGCBMactionsaggregate(cleanedactions);
-			//#endif // FMTWITHTORCH
 			cleanedactions.shrink_to_fit();
 		}catch (...)
 			{
@@ -294,7 +290,6 @@ FMTactionparser& FMTactionparser::operator = (const FMTactionparser& rhs)
 		{
 			std::vector<Core::FMTaction>actionswithgcbmaggregate(actions);
 			try {
-			//#ifdef FMTWITHTORCH
 				const boost::filesystem::path filelocation = boost::filesystem::path(getruntimelocation()) / boost::filesystem::path("YieldPredModels") / boost::filesystem::path("actionsmapping.json");
 				std::ifstream jsonstream(filelocation.string());
 				if (FMTparser::tryopening(jsonstream, filelocation.string()))
@@ -323,8 +318,6 @@ FMTactionparser& FMTactionparser::operator = (const FMTactionparser& rhs)
 						}
 					jsonstream.close();
 				}
-
-			//#endif // FMTWITHTORCH
 			}
 			catch (...)
 			{

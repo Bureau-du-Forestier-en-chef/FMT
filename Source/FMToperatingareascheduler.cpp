@@ -7,7 +7,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 #ifdef FMTWITHOSI
 
-#include "FMToperatingareascheduler.h"
+#include "FMToperatingareascheduler.hpp"
 #include <algorithm>
 #include <random>
 #include "OsiClpSolverInterface.hpp"
@@ -15,13 +15,13 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 	#include "OsiMskSolverInterface.hpp"
 	#include "mosek.h"
 #endif
-//#include "FMTmatrixbuild.h"
-#include "FMTtimeyieldhandler.h"
-#include "FMTdata.h"
-#include "FMTgraph.h"
-#include "FMTmodel.h"
-#include "FMToutputnode.h"
-#include "FMTtimeyieldhandler.h"
+//#include "FMTmatrixbuild.hpp"
+#include "FMTtimeyieldhandler.hpp"
+#include "FMTdata.hpp"
+#include "FMTgraph.hpp"
+#include "FMTmodel.hpp"
+#include "FMToutputnode.hpp"
+#include "FMTtimeyieldhandler.hpp"
 
 namespace Heuristics
 {

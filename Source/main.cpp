@@ -10,27 +10,27 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 
 
-#include "FMTModels.h"
-#include "FMTSpatials.h"
-#include "FMTversion.h"
+#include "FMTModels.hpp"
+#include "FMTSpatials.hpp"
+#include "FMTversion.hpp"
 
 #if defined FMTWITHPYTHON
-#include "FMTpythonpickle.h"
-#include "FMTpythoncore.h"
+#include "FMTpythonpickle.hpp"
+#include "FMTpythoncore.hpp"
 #include <boost/python/docstring_options.hpp>
 #include <boost/python/args.hpp>
 
 //Function to export each namespace in python
 
-#include "PYdefinitions.h"
-#include "PYexportExceptions.h"
-#include "PYexportCore.h"
-#include "PYexportSpatial.h"
-#include "PYexportParser.h"
-#include "PYexportGraph.h"
-#include "PYexportModel.h"
-#include "PYexportVersion.h"
-#include "PYexportHeuristics.h"
+#include "PYdefinitions.hpp"
+#include "PYexportExceptions.hpp"
+#include "PYexportCore.hpp"
+#include "PYexportSpatial.hpp"
+#include "PYexportParser.hpp"
+#include "PYexportGraph.hpp"
+#include "PYexportModel.hpp"
+#include "PYexportVersion.hpp"
+#include "PYexportHeuristics.hpp"
 #include "Python.h"
 
 
@@ -66,16 +66,16 @@ extern "C"
 }
 #elif defined FMTWITHR
 
-#include "Rdeclarations.h"
-#include "Rdefinitions.h"
-#include "RexportExceptions.h"
-#include "RexportCore.h"
-#include "RexportGraph.h"
-#include "RexportSpatial.h"
-#include "RexportModel.h"
-#include "RexportParser.h"
-#include "RexportVersion.h"
-#include "RexportHeuristics.h"
+#include "Rdeclarations.hpp"
+#include "Rdefinitions.hpp"
+#include "RexportExceptions.hpp"
+#include "RexportCore.hpp"
+#include "RexportGraph.hpp"
+#include "RexportSpatial.hpp"
+#include "RexportModel.hpp"
+#include "RexportParser.hpp"
+#include "RexportVersion.hpp"
+#include "RexportHeuristics.hpp"
 #include <Rcpp.h>
 
 

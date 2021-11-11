@@ -5,8 +5,8 @@ SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
-#include "FMTschedule.h"
-#include "FMTconstraint.h"
+#include "FMTschedule.hpp"
+#include "FMTconstraint.hpp"
 
 namespace Core{
 
