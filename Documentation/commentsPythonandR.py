@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-import re,os
+import re,os,sys
 
 doctringregex="(.+)(\"\@DocString)([\s\t]*\()(.+)(\")"
                 
@@ -98,9 +98,10 @@ def gatherfiles(directory,source):
     return allfiles
 
 if __name__=="__main__":
+    pathtotarget = sys.argv[1]
     filestomodify = gatherfiles("../Source",False)
     headerfiles = gatherfiles("../Source",True)
-    targetdirectory="../Source/include"
+    targetdirectory=pathtotarget#"../Source/include"
     os.mkdir(targetdirectory)
     commentsource=getcommentselements(headerfiles)
     commentstoreplace=getelementstocomment(filestomodify)
