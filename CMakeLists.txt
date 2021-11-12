@@ -19,7 +19,6 @@ message("Generating Build file for FMT ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSIO
 
 
 set(FMTSOURCEDIR "${CMAKE_CURRENT_SOURCE_DIR}/Source/")
-set(FMTINCLUDEDIR "${CMAKE_CURRENT_SOURCE_DIR}/Source/")
 
 if (DEFINED VCPKG_TARGET_TRIPLET)
 	find_package(Clp CONFIG REQUIRED)
@@ -113,14 +112,44 @@ add_definitions("-DBOOST_DYNAMIC_BITSET_DONT_USE_FRIENDS")
 add_definitions("-DHAVE_SNPRINTF")
 add_definitions("-DBOOST_FILESYSTEM_NO_DEPRECATED")
 
-FILE(GLOB FMTSOURCEFILES ${FMTSOURCEDIR}*.cpp)
-FILE(GLOB FMTHEADERFILES ${FMTSOURCEDIR}*.hpp)
-add_library(FMT SHARED ${FMTSOURCEFILES})
-include_directories(${FMTINCLUDEDIR})
+FILE(GLOB FMTSOURCEFILES ${FMTSOURCEDIR}FMT*.cpp)
+FILE(GLOB FMTHEADERFILES ${FMTSOURCEDIR}FMT*.hpp)
+list (APPEND FMTHEADERFILES "${FMTSOURCEDIR}/resource.hpp")
+set(FMTPYNRSOURCEFILES "${FMTSOURCEFILES}")
+list(APPEND FMTPYNRSOURCEFILES "${FMTSOURCEDIR}/main.cpp")
+add_library(FMT SHARED ${FMTPYNRSOURCEFILES})
+
 set_target_properties(FMT PROPERTIES PREFIX "")
 
 set( CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin )
 set( CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin )
+
+
+#Create a include directory for the lib
+file(REMOVE_RECURSE "${CMAKE_BINARY_DIR}/include")
+foreach(includedfile ${FMTHEADERFILES})
+	file(COPY "${includedfile}" DESTINATION "${CMAKE_BINARY_DIR}/include")
+endforeach()
+include_directories("${CMAKE_BINARY_DIR}/include")
+#Create R/PY API include need to call python to do that
+if (DEFINED PYTHON_DIR OR DEFINED R_DIR)
+	message("Generating comments in R and Python API")
+	file(REMOVE_RECURSE "${CMAKE_BINARY_DIR}/PYNRinclude")
+	if (DEFINED PYTHON_DIR)#Use python add comments to R and Python
+		find_program(PYTHON python PATHS ${PYTHON_DIR})
+		execute_process(
+			COMMAND "${PYTHON}" commentsPythonandR.py "${CMAKE_BINARY_DIR}/PYNRinclude"
+			WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/Documentation"
+			)
+	else()
+		message(WARNING "Cannot find Python R classes wont be documented ")
+		FILE(GLOB FMTPYNRINCLUDE ${FMTSOURCEDIR}/PY*.hpp ${FMTSOURCEDIR}/R*.hpp)
+		foreach(includedfile ${FMTPYNRINCLUDE})
+			file(COPY "${includedfile}" DESTINATION "${CMAKE_BINARY_DIR}/PYNRinclude")
+		endforeach()
+	endif(DEFINED PYTHON_DIR)
+	target_include_directories(FMT PRIVATE "${CMAKE_BINARY_DIR}/PYNRinclude")
+endif(DEFINED PYTHON_DIR OR DEFINED R_DIR)
 
 if (NOT MSVC)
 set_target_properties( FMT
@@ -491,6 +520,9 @@ endif(DEFINED CMAKE_TOOLCHAIN_FILE)
 
 
 get_filename_component(GDAL_DATA_NAME "${GDAL_DATA}" NAME)
+
+
+
 
 
 #install part
