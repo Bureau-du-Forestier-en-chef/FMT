@@ -11,7 +11,6 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 
 #include "FMTModels.hpp"
-#include "FMTSpatials.hpp"
 #include "FMTversion.hpp"
 
 #if defined FMTWITHPYTHON
