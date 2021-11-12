@@ -121,7 +121,7 @@ namespace Models
 	bool FMTsrmodel::setsolution(int period, const Core::FMTschedule& schedule, double tolerance)
 	{
 		try {
-			const double tolerance = getparameter(TOLERANCE);
+			//const double tolerance = getparameter(TOLERANCE); not ready yet
 			if (static_cast<int>(graph.size()) > period && period > 0)
 			{
 				std::vector<Core::FMTaction>::const_iterator cit = std::find_if(actions.begin(), actions.end(), Core::FMTactioncomparator("_DEATH"));
@@ -260,6 +260,7 @@ namespace Models
 										}
 										else if (secondpass)
 										{
+											
 											_exhandler->raise(Exception::FMTexc::FMTinvalid_number,
 												"Cannot allocate area of " + std::to_string(areatoput) + " to " +
 												std::string(devit.first) + " for action " + actionit->first.getname(), "FMTsrmodel::setsolution", __LINE__, __FILE__);
@@ -519,7 +520,7 @@ namespace Models
 								return false;
 							}
 						}
-						*_logger << "area set of " << actionareaset  <<" set for "<< actionit->first.getname() << "\n";
+						//*_logger << "area set of " << actionareaset  <<" set for "<< actionit->first.getname() << "\n";
 
 					}
 				}
