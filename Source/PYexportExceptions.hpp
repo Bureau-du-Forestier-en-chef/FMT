@@ -60,6 +60,7 @@ void exportException()
 		.value("FMTundefinedoutput_attribute", Exception::FMTexc::FMTundefinedoutput_attribute)
 		.value("FMToutput_too_much_operator", Exception::FMTexc::FMToutput_too_much_operator)
 		.value("FMTinvalid_geometry", Exception::FMTexc::FMTinvalid_geometry)
+		.value("FMToveridedyield", Exception::FMTexc::FMToveridedyield)
 		.export_values();
 
 	define_pylist<Exception::FMTexc>();
