@@ -156,7 +156,17 @@ namespace Models
 							{
 								//*_logger << "t1 " << actionit->first.getname() << "\n";
 								const Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor vdescriptor = graph.getdevelopment(devit.first, lookup);
-								const int variable = graph.getoutvariables(vdescriptor)[actionid];
+								//const int variable = graph.getoutvariables(vdescriptor)[actionid];
+								std::map<int, int> outvariables = graph.getoutvariables(vdescriptor);
+								std::map<int, int>::const_iterator varit = outvariables.find(actionid);
+								if (varit == outvariables.cend())
+								{
+									_exhandler->raise(Exception::FMTexc::FMTinvalid_number,
+												"Developement " + std::string(devit.first) + " is not operable "
+												" for action " + actionit->first.getname(), 
+												"FMTsrmodel::setsolution", __LINE__, __FILE__);
+								}
+								const int variable = varit->second;
 								new_solution[variable] = devit.second.at(0);
 								++allocated;
 							}
@@ -244,7 +254,17 @@ namespace Models
 										if (found)
 										{
 											const Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor vdescriptor = graph.getdevelopment(locksfound.at(id).first, lookup);
-											const int variable = graph.getoutvariables(vdescriptor)[actionid];
+											//const int variable = graph.getoutvariables(vdescriptor)[actionid];
+											std::map<int, int> outvariables = graph.getoutvariables(vdescriptor);
+											std::map<int, int>::const_iterator varit = outvariables.find(actionid);
+											if (varit == outvariables.cend())
+											{
+												_exhandler->raise(Exception::FMTexc::FMTinvalid_number,
+															"Developement " + std::string(devit.first) + " is not operable "
+															" for action " + actionit->first.getname(), 
+															"FMTsrmodel::setsolution", __LINE__, __FILE__);
+											}
+											const int variable = varit->second;
 											new_solution[variable] += areatoput;
 											if (locksfound.at(id).second < std::numeric_limits<double>::max())
 											{
@@ -463,7 +483,17 @@ namespace Models
 							if ((schedule.douselock() || actionit->first.dorespectlock()) && graph.containsdevelopment(devit.first, lookup))
 							{
 								const Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor vdescriptor = graph.getdevelopment(devit.first, lookup);
-								const int variable = graph.getoutvariables(vdescriptor)[actionid];
+								//const int variable = graph.getoutvariables(vdescriptor)[actionid];
+								std::map<int, int> outvariables = graph.getoutvariables(vdescriptor);
+								std::map<int, int>::const_iterator varit = outvariables.find(actionid);
+								if (varit == outvariables.cend())
+								{
+									_exhandler->raise(Exception::FMTexc::FMTinvalid_number,
+												"Developement " + std::string(devit.first) + " is not operable "
+												" for action " + actionit->first.getname(), 
+												"FMTsrmodel::setsolution", __LINE__, __FILE__);
+								}
+								const int variable = varit->second;
 								bounds[variable] = std::pair<double, double>(devit.second.at(0) - tolerance, devit.second.at(0)+tolerance);
 								objcoefs[variable] = 1.0;
 								actionareaset += devit.second.at(0) + tolerance;
@@ -492,7 +522,17 @@ namespace Models
 									if (graph.containsdevelopment(locked, lookup))
 									{
 										const Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor vdescriptor = graph.getdevelopment(locked, lookup);
-										const int variable = graph.getoutvariables(vdescriptor)[actionid];
+										//const int variable = graph.getoutvariables(vdescriptor)[actionid];
+										std::map<int, int> outvariables = graph.getoutvariables(vdescriptor);
+										std::map<int, int>::const_iterator varit = outvariables.find(actionid);
+										if (varit == outvariables.cend())
+										{
+											_exhandler->raise(Exception::FMTexc::FMTinvalid_number,
+														"Developement " + std::string(devit.first) + " is not operable "
+														" for action " + actionit->first.getname(), 
+														"FMTsrmodel::setsolution", __LINE__, __FILE__);
+										}
+										const int variable = varit->second;
 										gotsomething = true;
 										bounds[variable] = std::pair<double, double>(0.0, maximaltobound+tolerance);
 										actionareaset += maximaltobound + tolerance;
