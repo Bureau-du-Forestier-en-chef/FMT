@@ -187,6 +187,8 @@ void exportModel()
 			"@DocString(FMTlpmodel::getareavariabilities)")
 		.method("writeLP", &Models::FMTlpmodel::writeLP,
 			"@DocString(FMTlpmodel::writeLP)")
+		.method("setstrictlypositivesoutputsmatrix", &Models::FMTlpmodel::setstrictlypositivesoutputsmatrix,
+			"@DocString(FMTlpmodel::setstrictlypositivesoutputsmatrix)")
 		.method("writeMPS", &Models::FMTlpmodel::writeMPS,
 			"@DocString(FMTlpmodel::writeMPS)");;
 	
