@@ -31,10 +31,10 @@ Ben-Ameur, W. 2004. Computing the Initial Temperature of Simulated Annealing. Co
 */
 enum class FMTsawarmuptype
     {
-    log,
-    bigdelta,
-    logmax,
-    bootstrapmagic
+    log = 1,
+    bigdelta =2,
+    logmax = 3,
+    bootstrapmagic = 4
     };
 
 /**
