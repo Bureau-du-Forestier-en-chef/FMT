@@ -217,6 +217,15 @@ if (NOT MSVC AND DEFINED ENV{R_DIR})
 			endforeach()
 			set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,--export-all-symbols")
 			file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/Templates/Rpackage/FMT" DESTINATION "${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}")
+			if (DEFINED PYTHON_DIR)
+			find_program(PYTHON python PATHS ${PYTHON_DIR})
+				execute_process(
+					COMMAND "${PYTHON}" ExposeEnum.py "${FMTSOURCEDIR}" "${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}/FMT/R"
+					WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/Templates/Rpackage"
+					)
+				else()
+					message(WARNING "Cannot find Python, enum and enum class exists as list.")
+			endif(DEFINED PYTHON_DIR)
 		endif()
 	endif()
 endif()

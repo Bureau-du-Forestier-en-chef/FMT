@@ -25,7 +25,8 @@ def findenum(directory):
     return enums 
 
 if __name__=="__main__":
-    pathtotarget = sys.argv[1]
-    enums = findenum("../../Source")
+    include_dir = sys.argv[1]
+    pathtotarget =  sys.argv[2]
+    enums = findenum(include_dir)
     createzzz(enums,pathtotarget)
     

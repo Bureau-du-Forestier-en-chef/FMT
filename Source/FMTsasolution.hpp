@@ -23,14 +23,14 @@ namespace Spatial
 class FMTforest;
 enum class FMTsamovetype
     {
-        shotgun,
-        cluster,
-        opt1
+        shotgun = 1,
+        cluster = 2,
+        opt1 = 3
     };
 enum class FMTsapenaltytype
     {
-        linear,
-        exponential
+        linear = 1,
+        exponential = 2
     };
 
 // DocString: FMTsasolution

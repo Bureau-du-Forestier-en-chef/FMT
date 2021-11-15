@@ -18,29 +18,29 @@ namespace Models
     enum FMTintmodelparameters
     {
         LENGTH = 0,/**< The number of period to optimize or simulate */
-        SEED, /**< The seed used for stochastique process in FMTsamodel, FMTnssmodel and FMTsesmodel */
-        NUMBER_OF_ITERATIONS,/**< The number of iterations to do in FMTsesmodel::greedyreferencebuild  */
-        PRESOLVE_ITERATIONS,/**< The number of iterations to do in FMTmodel::presolve */
-        NUMBER_OF_THREADS,/**< Number of thread use by solver for optimisation */
-        LastIntModelParam/**< End marker, used to allocate a fixed-sized array to store int parameters. */
+        SEED = 1, /**< The seed used for stochastique process in FMTsamodel, FMTnssmodel and FMTsesmodel */
+        NUMBER_OF_ITERATIONS = 2,/**< The number of iterations to do in FMTsesmodel::greedyreferencebuild  */
+        PRESOLVE_ITERATIONS = 3,/**< The number of iterations to do in FMTmodel::presolve */
+        NUMBER_OF_THREADS = 4,/**< Number of thread use by solver for optimisation */
+        LastIntModelParam = 5/**< End marker, used to allocate a fixed-sized array to store int parameters. */
     };
     //DocString: FMTdblmodelparameters
     //
     enum FMTdblmodelparameters
     {
         TOLERANCE = 0,/**< Double tolerance used in doplanning */
-        GOALING_SCHEDULE_WEIGHT,/**< Not needed ... maybe more for task ....The weight to use when trying goal a schedule from a strategic model */
-        LastDblModelParam/**< End marker, used to allocate a fixed-sized array to store double parameters. */
+        GOALING_SCHEDULE_WEIGHT = 1,/**< Not needed ... maybe more for task ....The weight to use when trying goal a schedule from a strategic model */
+        LastDblModelParam = 2/**< End marker, used to allocate a fixed-sized array to store double parameters. */
     };
     //DocString: FMTboolmodelparameters
     //
     enum FMTboolmodelparameters
     {
         FORCE_PARTIAL_BUILD = 0,/**< Force partial build of the graph if schedules are passed to doplanning */
-        STRICTLY_POSITIVE,/**< Force matrix to have bound >= 0 for the outputs use in constraints or objective if coefficient is negative and it contains a yield for FMTlpmodel */
-        POSTSOLVE,/**< Return a postsolved model for the doplanning */
-        SHOW_LOCK_IN_SCHEDULES,//Not needed or change parameters in fonctions ... maybe more for task
-        LastBoolModelParam/**< End marker, used to allocate a fixed-sized array to store bool parameters. */
+        STRICTLY_POSITIVE = 1,/**< Force matrix to have bound >= 0 for the outputs use in constraints or objective if coefficient is negative and it contains a yield for FMTlpmodel */
+        POSTSOLVE = 2,/**< Return a postsolved model for the doplanning */
+        SHOW_LOCK_IN_SCHEDULES = 3,//Not needed or change parameters in fonctions ... maybe more for task
+        LastBoolModelParam = 4/**< End marker, used to allocate a fixed-sized array to store bool parameters. */
     };
 
 
