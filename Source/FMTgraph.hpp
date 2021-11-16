@@ -62,9 +62,8 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTlookup.hpp"
 #include "boost/graph/graphviz.hpp"
 
-//namespace Models
-//{class FMTmodel;}
 
+/// Namespace for using/building unidirectional graphs in FMT
 namespace Graph
 {
 

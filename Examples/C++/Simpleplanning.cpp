@@ -1,14 +1,17 @@
 #include <vector>
-#include "FMTlpmodel.hpp"
-#include "FMTmodelparser.hpp"
-#include "FMTversion.hpp"
-#include "FMTlogger.hpp"
-#include "FMTconstraint.hpp"
-#include "FMTscheduleparser.hpp"
+#ifdef FMTWITHOSI
+	#include "FMTlpmodel.hpp"
+	#include "FMTmodelparser.hpp"
+	#include "FMTversion.hpp"
+	#include "FMTlogger.hpp"
+	#include "FMTconstraint.hpp"
+	#include "FMTscheduleparser.hpp"
+#endif
 
-
+#ifdef FMTWITHOSI
 int main()
 	{
+#ifdef FMTWITHOSI
 	Logging::FMTlogger().logstamp();
 	if (Version::FMTversion().hasfeature("OSI"))
 		{
@@ -43,7 +46,7 @@ int main()
 	}else {
 		Logging::FMTlogger() << "FMT needs to be compiled with OSI" << "\n";
 		}
-	
+#endif 
 	return 0;
 	}
 

@@ -666,7 +666,7 @@ void FMToutput::changesourcesid(const std::set<int>& newoutputsorigin,const std:
 		{
 			const int oldorigin = source.getoutputorigin();
 			std::set<int>::const_iterator koit = newoutputsorigin.find(oldorigin);
-			const int neworigin = std::distance(newoutputsorigin.begin(),koit);
+			const int neworigin = static_cast<int>(std::distance(newoutputsorigin.begin(),koit));
 			if (koit==newoutputsorigin.end() && !(source.getmask().empty()))
 			{
 				_exhandler->raise(Exception::FMTexc::FMTignore,"The outputorigin "+std::to_string(oldorigin)+" for the mask "+std::string(source.getmask())+" is not in the newsoutputorigin after presolve",
@@ -679,7 +679,7 @@ void FMToutput::changesourcesid(const std::set<int>& newoutputsorigin,const std:
 			if (oldthemetarget >= 0)
 			{
 				std::set<int>::const_iterator ktit = newthemeid.find(oldthemetarget);
-				int newtarget = std::distance(newthemeid.begin(),ktit);
+				int newtarget = static_cast<int>(std::distance(newthemeid.begin(),ktit));
 				if (ktit==newoutputsorigin.end())
 				{
 					newtarget = -1;

@@ -442,7 +442,7 @@ void FMTtheme::fillupaggregates(std::vector<int>& themeids, std::vector<std::str
 			{
 			for (const std::string& attribute : getattributes(aggregate))
 				{
-				themeids.push_back(id+1);
+				themeids.push_back(static_cast<int>(id)+1);
 				locattributes.push_back(attribute);
 				locaggregates.push_back(aggregate);
 				}
