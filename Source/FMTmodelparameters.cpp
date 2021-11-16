@@ -23,7 +23,7 @@ namespace Models
         dblparameters[GOALING_SCHEDULE_WEIGHT]=10000;
         //BOOLparameters
         boolparameters[FORCE_PARTIAL_BUILD]=false;
-        boolparameters[STRICTLY_POSITIVE]=true;
+        boolparameters[STRICTLY_POSITIVE]=false;
         boolparameters[POSTSOLVE]=true;
         boolparameters[SHOW_LOCK_IN_SCHEDULES]=false;
         //Vector for compresstime at each period
