@@ -70,7 +70,7 @@ namespace Parser
 					int outputid = 0;
 					if (!outputs->empty())
 					{
-						outputid = outputs->size();
+						outputid = static_cast<int>(outputs->size());
 					}
 					if (FMTparser::tryopening(outputstream, location))
 					{
@@ -748,7 +748,7 @@ namespace Parser
 														outputname+" not found in file "+location,"FMToutputparser::addoutputs", __LINE__, __FILE__, _section);
 						}
 						returnoutputs.push_back(*it);
-						outputkeptid.insert(std::distance(outputs.cbegin(),it));
+						outputkeptid.insert(static_cast<int>(std::distance(outputs.cbegin(),it)));
 					}
 					for(Core::FMToutput& output : returnoutputs)
 					{

@@ -2,27 +2,28 @@
 Example to get FMTcarbonpredictors on a FMTsesmodel
 */
 
-#include <vector>
-#include "FMTlpmodel.hpp"
-#include "FMTsesmodel.hpp"
-#include "FMTmodelparser.hpp"
-#include "FMTversion.hpp"
-#include "FMTlogger.hpp"
-#include "FMTexception.hpp"
-#include "FMTcarbonpredictor.hpp"
-#include "FMTconstraint.hpp"
-#include "FMTtransition.hpp"
-#include "FMTspatialschedule.hpp"
-#include "FMTareaparser.hpp"
-#include "FMTforest.hpp"
+#if defined FMTWITHGDAL && defined FMTWITHOSI
+	#include <vector>
+	#include "FMTlpmodel.hpp"
+	#include "FMTsesmodel.hpp"
+	#include "FMTmodelparser.hpp"
+	#include "FMTversion.hpp"
+	#include "FMTlogger.hpp"
+	#include "FMTexception.hpp"
+	#include "FMTcarbonpredictor.hpp"
+	#include "FMTconstraint.hpp"
+	#include "FMTtransition.hpp"
+	#include "FMTspatialschedule.hpp"
+	#include "FMTareaparser.hpp"
+	#include "FMTforest.hpp"
+#endif 
 
-#ifdef FMTWITHONNXR
-	
-#endif
+
 
 
 int main()
 	{
+#if defined FMTWITHGDAL && defined FMTWITHOSI
 	Logging::FMTlogger().logstamp();
 	if (Version::FMTversion().hasfeature("OSI"))
 		{
@@ -141,6 +142,6 @@ int main()
 	}else {
 		Logging::FMTlogger() << "FMT needs to be compiled with OSI" << "\n";
 		}
-	
+#endif 
 	return 0;
 	}

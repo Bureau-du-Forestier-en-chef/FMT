@@ -187,7 +187,7 @@ namespace Models
 				{
 				const OsiClpSolverInterface* clpsolver = dynamic_cast<OsiClpSolverInterface*>(solverinterface.get());
 				ClpSimplex* splexmodel = clpsolver->getModelPtr();
-				splexmodel->setNumberThreads(nthread);
+				splexmodel->setNumberThreads(static_cast<int>(nthread));
 				break;
 				}
 				#ifdef  FMTWITHMOSEK

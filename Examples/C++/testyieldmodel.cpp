@@ -1,15 +1,18 @@
 #include <vector>
-#include "FMTsesmodel.hpp"
-#include "FMTmodelparser.hpp"
-#include "FMTareaparser.hpp"
-#include "FMTversion.hpp"
-#include "FMTlogger.hpp"
-#include "FMTforest.hpp"
-#include "FMTspatialschedule.hpp"
-#include "FMToutput.hpp"
+#ifdef FMTWITHGDAL
+	#include "FMTsesmodel.hpp"
+	#include "FMTmodelparser.hpp"
+	#include "FMTareaparser.hpp"
+	#include "FMTversion.hpp"
+	#include "FMTlogger.hpp"
+	#include "FMTforest.hpp"
+	#include "FMTspatialschedule.hpp"
+	#include "FMToutput.hpp"
+#endif
 
 int main()
 {
+#ifdef FMTWITHGDAL
 	Logging::FMTlogger().logstamp();
 		const std::string modellocation = "../../../../Examples/Models/TWD_land/";
 		const std::string	primarylocation = modellocation + "TWD_land.pri";
@@ -56,6 +59,7 @@ int main()
 		{
 			Logging::FMTlogger() << "output value " << simulationmodel.getoutput(spatialoutput, period, Core::FMToutputlevel::totalonly).at("Total") << " at period " << period << "\n";
 		}
+#endif
 		return 0;
 }
         

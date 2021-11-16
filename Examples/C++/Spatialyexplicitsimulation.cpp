@@ -1,4 +1,5 @@
 #include <vector>
+#ifdef FMTWITHGDAL
 #include "FMTsesmodel.hpp"
 #include "FMTmodelparser.hpp"
 #include "FMTareaparser.hpp"
@@ -9,9 +10,11 @@
 #include "FMTtransitionparser.hpp"
 #include "FMTGCBMtransition.hpp"
 #include "FMToutput.hpp"
+#endif
 
 int main()
 {
+#ifdef FMTWITHGDAL
 	Logging::FMTlogger().logstamp();
 	const std::string modellocation = "../../../../Examples/Models/TWD_land/";
 	const std::string	primarylocation = modellocation + "TWD_land.pri";
@@ -64,7 +67,7 @@ int main()
 				}
 		}
 	const std::vector<Core::FMTaction>actions = simulationmodel.getactions();
-	const std::vector<Core::FMTtheme>growththeme(1,simulationmodel.getthemes().at(4));
+	const std::vector<Core::FMTtheme>growththeme(1,simulationmodel.getthemes().at(1));
 	Parser::FMTtransitionparser transitionparser;
 	for (int period = 1; period <= 10; ++period)
 		{
@@ -74,7 +77,7 @@ int main()
 			growththeme, period);
 		transitionparser.writeGCBM(transitions, rastpath + "transition" + std::to_string(period) + ".xml");
 		}
-
+#endif
 	return 0;
 }
         

@@ -22,7 +22,7 @@ namespace Graph
 }
 
 
-
+/// The Core namespace provides classes for simulating stands/strata growth/harvest through time.
 namespace Core
 {
 class FMTfuturdevelopment;

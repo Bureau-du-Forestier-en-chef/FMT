@@ -34,7 +34,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 	#include "gdal_priv.h"
 #endif
 
-
+/// Namespace for handling FMT versions and features.
 namespace Version
 {
 // DocString: FMTversion
