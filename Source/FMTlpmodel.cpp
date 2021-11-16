@@ -1718,7 +1718,7 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 			int preactionid = 0;
 			for(const Core::FMTaction action : presolveactions)
 			{
-				const int loc = std::distance(postsolveactions.begin(), std::find_if(postsolveactions.begin(), postsolveactions.end(), Core::FMTactioncomparator(action.getname())));
+				const int loc = static_cast<int>(std::distance(postsolveactions.begin(), std::find_if(postsolveactions.begin(), postsolveactions.end(), Core::FMTactioncomparator(action.getname()))));
 				actionmapping[preactionid] = loc;
 				++preactionid;
 			}

@@ -1,4 +1,5 @@
 #include <vector>
+#ifdef FMTWITHGDAL
 #include "FMTforest.hpp"
 #include "FMTmodelparser.hpp"
 #include "FMTareaparser.hpp"
@@ -8,9 +9,11 @@
 #include "FMTforest.hpp"
 #include "FMTmodel.hpp"
 #include "FMTtheme.hpp"
+#endif
 
 int main()
 {
+#ifdef FMTWITHGDAL
     Logging::FMTlogger().logstamp();
     const std::string modellocation = "../../../../Examples/Models/TWD_land/";
     const std::string	primarylocation = modellocation + "TWD_land.pri";
@@ -23,5 +26,6 @@ int main()
     Parser::FMTareaparser areaparser;
     areaparser.setdefaultexceptionhandler();
     Spatial::FMTforest forest = areaparser.vectormaptoFMTforest(maplocation,1420,themes,"AGE","SUPERFICIE",1,0.0001,"",0.0,writelocation,false);
-    return 0;
+#endif
+	return 0;
 }

@@ -14,6 +14,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTobject.hpp"
 #include <boost/serialization/nvp.hpp>
 
+/// The spatial namespace provides classes for spatialy explicit simulation/optimization based on raster files.
 namespace Spatial
     {
 	// DocString: FMTlayer

@@ -77,7 +77,7 @@ namespace Heuristics
 		size_t FMTlpheuristicmthandler::initialsolve() const
 		{
 			const unsigned int processor_count = boost::thread::hardware_concurrency();
-			int mosek_process = processor_count/heuristics.size();
+			int mosek_process = static_cast<int>(processor_count/heuristics.size());
 			if (mosek_process<1){mosek_process=1;}
 			std::vector<boost::thread>threads;
 			for(std::size_t i = 0; i < heuristics.size(); ++i)
@@ -98,7 +98,7 @@ namespace Heuristics
 		size_t FMTlpheuristicmthandler::greedysolve(const unsigned int& iterations, const double& maxtime) const
 		{
 			const unsigned int processor_count = boost::thread::hardware_concurrency();
-			int mosek_process = processor_count/heuristics.size();
+			int mosek_process = static_cast<int>(processor_count/heuristics.size());
 			if (mosek_process<1){mosek_process=1;}
 			std::vector<boost::thread>threads;
 			const std::chrono::steady_clock::time_point Start = std::chrono::steady_clock::now();

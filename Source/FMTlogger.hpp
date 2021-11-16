@@ -22,7 +22,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTexception.hpp"
 
 
-
+/// Namespace for the log management, provides different log handlers.
 namespace Logging
 {
 	// DocString: FMTlogger 

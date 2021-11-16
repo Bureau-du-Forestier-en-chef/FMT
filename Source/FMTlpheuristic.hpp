@@ -22,7 +22,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <boost/serialization/export.hpp>
 #include "FMTsolverinterface.hpp"
 
-
+/// Namespace regrouping all tools for solving LP/MIP problems using an heuristic.
 namespace Heuristics
 {
 	// DocString: FMTlpheuristic
