@@ -1001,8 +1001,8 @@ namespace Parser{
 				poDstDS->FlushCache();
 				return poDstDS;
 			}
-			const double resYsize = static_cast<int>(round(y_delta/resolution));
-			const double resXsize = static_cast<int>(round(x_delta/resolution));
+			const int resYsize = static_cast<int>(round(y_delta/resolution));
+			const int resXsize = static_cast<int>(round(x_delta/resolution));
 			nDS  = poDriver->Create(outfilename.c_str(), resXsize, resYsize, 1, GDT_Int32, papszOptions);
 			if (nDS == nullptr)
 			{

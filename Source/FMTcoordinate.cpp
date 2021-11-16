@@ -72,7 +72,7 @@ namespace Spatial
 		int distancex = 0;
 		int distancey = 0;
 		getxygap(coord, distancex, distancey);
-		return (static_cast<int>(std::abs(distancex)) <= ldistance && static_cast<int>(std::abs(distancey)) <= ldistance &&
+		return (static_cast<unsigned int>(std::abs(distancex)) <= ldistance && static_cast<unsigned int>(std::abs(distancey)) <= ldistance &&
 			std::sqrt(distancex * distancex + distancey * distancey)<= static_cast<double>(ldistance));
         }
     unsigned int FMTcoordinate::getx() const
@@ -144,7 +144,7 @@ namespace Spatial
                 {
 					const int diffint = (ly - y);
                     const int lydistance = std::abs(diffint);
-                    const int lxdistance = sqrt((radius*radius)-(lydistance*lydistance));
+                    const int lxdistance = static_cast<unsigned int>(sqrt((radius*radius)-(lydistance*lydistance)));
                     int lx = x-lxdistance;
                     const int xmax = x+lxdistance;
                     while(lx<=xmax)
