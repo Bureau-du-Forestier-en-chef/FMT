@@ -95,7 +95,11 @@ void exportModel()
             .method("getlifespan",&Models::FMTmodel::getlifespan,
 				"@DocString(FMTmodel::getlifespan)")
             .method("isvalid",&Models::FMTmodel::isvalid,
-				"@DocString(FMTmodel::isvalid)");
+				"@DocString(FMTmodel::isvalid)")
+			.method("showparameters",&Models::FMTmodel::showparameters,
+			"@DocString(FMTmodel::showparameters)")
+			.method("doplanning",&Models::FMTmodel::doplanning,
+				"@DocString(FMTmodel::doplanning)");
 
 
 	Rcpp::class_<Models::FMTsesmodel>("FMTsesmodel", "@DocString(FMTsesmodel)")
@@ -189,6 +193,8 @@ void exportModel()
 			"@DocString(FMTlpmodel::writeLP)")
 		.method("setstrictlypositivesoutputsmatrix", &Models::FMTlpmodel::setstrictlypositivesoutputsmatrix,
 			"@DocString(FMTlpmodel::setstrictlypositivesoutputsmatrix)")
+		.method("getObjValue", &Models::FMTlpmodel::getObjValue,
+					"@DocString(FMTlpmodel::getObjValue)")
 		.method("writeMPS", &Models::FMTlpmodel::writeMPS,
 			"@DocString(FMTlpmodel::writeMPS)");;
 	
