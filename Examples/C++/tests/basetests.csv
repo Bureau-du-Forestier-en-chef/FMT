@@ -1,6 +1,8 @@
 TEST;primarylocation;scenario;doublevalue
-FMTSimpleplanning;;;
-FMTspatialyexplicitsimulation;;;
+Simpleplanning;;;
+Spatialyexplicitsimulation;;;
 GetCarbonpredictors;;;
 maptoFMTforest;;;
 testyieldmodel;;;
+testOPAreaclustering;;;
+testareavariabilities;;;

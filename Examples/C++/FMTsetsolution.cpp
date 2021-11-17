@@ -1,4 +1,4 @@
-#ifdef FMTWITHOSI
+﻿#ifdef FMTWITHOSI
 	#include <vector>
 	#include "FMTlpmodel.hpp"
 	#include "FMTmodelparser.hpp"
@@ -6,6 +6,8 @@
 	#include "FMTlogger.hpp"
 	#include "FMTscheduleparser.hpp"
 	#include "FMTschedule.hpp"
+	#include "FMToutputnode.hpp"
+	#include "FMTfreeexceptionhandler.hpp"
 #endif
 
 int main(int argc, char *argv[])
@@ -38,6 +40,31 @@ int main(int argc, char *argv[])
 			{
 			optimizationmodel.setsolution(period,schedules.at(period-1), tolerance);
 			}
+		if (argc>3)//Got the double for validation!
+			{
+			const double ovoltotrecvalue = std::stod(argv[3]);
+			bool gotovoltotrec = false;
+			for (const Core::FMToutput& output : optimizationmodel.getoutputs())
+				{
+				if (output.getname()=="OVOLTOTREC")
+					{
+					gotovoltotrec = true;
+					const double returnedvalue = optimizationmodel.getoutput(output, 2, Core::FMToutputlevel::totalonly).at("Total");
+					if ((returnedvalue < (ovoltotrecvalue - tolerance))||(returnedvalue > (ovoltotrecvalue + tolerance)))
+						{
+						Exception::FMTfreeexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed, "Wrong value",
+							"FMTsetsolution", __LINE__, primarylocation);
+						}
+					break;
+					}
+				}
+			if (!gotovoltotrec)
+				{
+				Exception::FMTfreeexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed, "No OVOLTOTREC OUPUT",
+					"FMTsetsolution", __LINE__, primarylocation);
+				}
+			}
+
 	}else {
 		Logging::FMTlogger() << "FMT needs to be compiled with OSI" << "\n";
 		}

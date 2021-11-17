@@ -8,7 +8,7 @@
 	#include "FMTscheduleparser.hpp"
 #endif
 
-#ifdef FMTWITHOSI
+
 int main()
 	{
 #ifdef FMTWITHOSI
