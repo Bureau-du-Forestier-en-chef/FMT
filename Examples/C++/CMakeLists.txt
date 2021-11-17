@@ -91,13 +91,6 @@ foreach(testfile ${FMTTESTSfiles})
 							COMMAND ${testname} ${primarylocation} ${scenario} ${dblvalue}
 							WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}"
 							)
-					#add_custom_command(
-					#		 TARGET "${testname}"
-					#		 COMMENT "Run tests"
-					#		 POST_BUILD COMMAND ctest
-					#		 WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}"
-					#		 COMMAND -C $<CONFIGURATION> -R "^${fullname}$"
-					#		)
 			endif(TARGET "${testname}")
 		endif(line)
 	endforeach()

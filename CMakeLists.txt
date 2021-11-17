@@ -532,6 +532,11 @@ get_filename_component(GDAL_DATA_NAME "${GDAL_DATA}" NAME)
 
 
 
+include(${CMAKE_CURRENT_SOURCE_DIR}/Examples/C++/CMakeLists.txt) #will polulate tests
+
+if (NOT DEFINED PARALLEL_TESTS)
+	set(PARALLEL_TESTS 1)
+endif(NOT DEFINED PARALLEL_TESTS)
 
 
 #install part
@@ -582,14 +587,16 @@ install (CODE
           WORKING_DIRECTORY \"${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}\"
         )
 endif (EXISTS \"${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}/FMT\")
+ execute_process(
+          COMMAND ctest -C \"${CMAKE_BUILD_TYPE}\" -j \"${PARALLEL_TESTS}\"
+          WORKING_DIRECTORY \"${CMAKE_BINARY_DIR}\"
+        )
 ")
 
 
 
 
 
-if (DEFINED ReleaseTesting)
-	include(${CMAKE_CURRENT_SOURCE_DIR}/Examples/C++/ReleaseTesting/CMakeLists.txt)
-else()
-	include(${CMAKE_CURRENT_SOURCE_DIR}/Examples/C++/CMakeLists.txt)
-endif(DEFINED ReleaseTesting)
+
+
+

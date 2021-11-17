@@ -304,6 +304,13 @@ class FMTEXPORT FMTlpmodel final : public FMTsrmodel
 		*/
 		std::map<std::string, std::vector<double>>getvariabilities(const std::vector<Core::FMToutput>& outputs,
 																double tolerance = FMT_DBL_TOLERANCE);
+		// DocString: FMTlpmodel::getmodelfromproportions
+		/**
+		Will returns a new FMTlpmodel with changes in the initial area based on the tolerances of each globalmasks
+		provided in the tolerances vector tolerance > 0 = increase in area, tolerance < 0 = decrease in area.
+		*/
+		FMTlpmodel getmodelfromproportions(const std::vector<Core::FMTmask>& globalmasks,
+											std::vector<double> tolerances) const;
 		// DocString: FMTlpmodel::getareavariabilities
 		/**
 		Sometime it is usefull to know what is the impact on some outputs of changing a set of developements
@@ -312,7 +319,7 @@ class FMTEXPORT FMTlpmodel final : public FMTsrmodel
 		*/
 		std::map<std::string, std::vector<double>>getareavariabilities(const std::vector<Core::FMToutput>& localoutputs,
 				const std::vector<Core::FMTmask>& globalmasks,
-				std::vector<double> tolerances = std::vector<double>());
+				std::vector<double> tolerances = std::vector<double>()) const;
 		// DocString: FMTlpmodel::eraseperiod
 		/**
 		When doing replanning or simply model update the user may want to delete the first period (front)

@@ -666,21 +666,16 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 		return bounding;
 		}
 
-	std::map<std::string, std::vector<double>>FMTlpmodel::getareavariabilities(const std::vector<Core::FMToutput>& localoutputs,
-		const std::vector<Core::FMTmask>& globalmasks,
-		std::vector<double> tolerances)
+	FMTlpmodel FMTlpmodel::getmodelfromproportions(const std::vector<Core::FMTmask>& globalmasks,
+		std::vector<double> tolerances) const
 	{
-		std::map<std::string, std::vector<double>>uppernlower;
+		FMTlpmodel modelwithproportion(*this);
 		try {
-			if (tolerances.empty())
-				{
-				tolerances = std::vector<double>(globalmasks.size(),FMT_DBL_TOLERANCE);
-				}
-			if (tolerances.size()!=globalmasks.size())
-				{
+			if (tolerances.size() != globalmasks.size())
+			{
 				_exhandler->raise(Exception::FMTexc::FMTrangeerror,
 					"Global masks and tolerances are not the same length", "FMTlpmodel::getareavariabilities", __LINE__, __FILE__);
-				}
+			}
 			//const boost::unordered_set<Core::FMTlookup<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor,Core::FMTdevelopment>>& initialperiod = graph.getperiodverticies(0);
 			std::vector<int>colstarget;
 			std::vector<double>originalbounds;
@@ -692,51 +687,75 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 			Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_iterator vertex_iterator, vertex_iterator_end;
 			for (boost::tie(vertex_iterator, vertex_iterator_end) = graph.getperiodverticies(0); vertex_iterator != vertex_iterator_end; ++vertex_iterator)
 			{
-					size_t maskid = 0;
-					size_t gotvariables = 0;
-					const Core::FMTdevelopment& dev = graph.getdevelopment(*vertex_iterator);
-					for (const Core::FMTmask& globalmask : globalmasks)
-					{
-						if (dev.getmask().issubsetof(globalmask))
-						{
-							const int varindex = graph.getoutvariables(*vertex_iterator).at(-1);
-							if (*(colupperbounds + varindex) == COIN_DBL_MAX)
-							{
-								_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
-									"Changing a bound on a non initial variable for developmenets" + std::string(dev),
-									"FMTlpmodel::getareavariabilities", __LINE__, __FILE__);
-							}
-							colstarget.push_back(varindex);
-							const double originallowerboundvalue = *(collowerbounds + varindex);
-							const double originalupperboundvalue = *(colupperbounds + varindex);
-							originalbounds.push_back(originallowerboundvalue);
-							originalbounds.push_back(originalupperboundvalue);
-							foundcorresponding[maskid] = true;
-							const double newlowerboundvalue = originallowerboundvalue + (originallowerboundvalue * tolerances.at(maskid));
-							const double newupperboundvalue = originalupperboundvalue + (originalupperboundvalue * tolerances.at(maskid));
-							newbounds.push_back(newlowerboundvalue);
-							newbounds.push_back(newupperboundvalue);
-							++gotvariables;
-						}
-						++maskid;
-					}
-					if (gotvariables > 1)
-					{
-						_exhandler->raise(Exception::FMTexc::FMTinvalid_maskrange,
-							"Got more than one global mask for " + std::string(dev.getmask()),
-							"FMTlpmodel::getareavariabilities", __LINE__, __FILE__);
-					}
-				}
-				size_t mskid = 0;
-				for (const bool& gotone : foundcorresponding)
+				size_t maskid = 0;
+				size_t gotvariables = 0;
+				const Core::FMTdevelopment& dev = graph.getdevelopment(*vertex_iterator);
+				for (const Core::FMTmask& globalmask : globalmasks)
 				{
-					if (!gotone)
+					if (dev.getmask().issubsetof(globalmask))
 					{
-						_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
-							"No corresponding development found for " + std::string(globalmasks.at(mskid)),
-							"FMTlpmodel::getareavariabilities", __LINE__, __FILE__);
+						const int varindex = graph.getoutvariables(*vertex_iterator).at(-1);
+						if (*(colupperbounds + varindex) == COIN_DBL_MAX)
+						{
+							_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
+								"Changing a bound on a non initial variable for developmenets" + std::string(dev),
+								"FMTlpmodel::getareavariabilities", __LINE__, __FILE__);
+						}
+						colstarget.push_back(varindex);
+						const double originallowerboundvalue = *(collowerbounds + varindex);
+						const double originalupperboundvalue = *(colupperbounds + varindex);
+						originalbounds.push_back(originallowerboundvalue);
+						originalbounds.push_back(originalupperboundvalue);
+						foundcorresponding[maskid] = true;
+						const double newlowerboundvalue = originallowerboundvalue + (originallowerboundvalue * tolerances.at(maskid));
+						const double newupperboundvalue = originalupperboundvalue + (originalupperboundvalue * tolerances.at(maskid));
+						newbounds.push_back(newlowerboundvalue);
+						newbounds.push_back(newupperboundvalue);
+						++gotvariables;
 					}
-					++mskid;
+					++maskid;
+				}
+				if (gotvariables > 1)
+				{
+					_exhandler->raise(Exception::FMTexc::FMTinvalid_maskrange,
+						"Got more than one global mask for " + std::string(dev.getmask()),
+						"FMTlpmodel::getareavariabilities", __LINE__, __FILE__);
+				}
+			}
+			size_t mskid = 0;
+			for (const bool& gotone : foundcorresponding)
+			{
+				if (!gotone)
+				{
+					_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
+						"No corresponding development found for " + std::string(globalmasks.at(mskid)),
+						"FMTlpmodel::getareavariabilities", __LINE__, __FILE__);
+				}
+				++mskid;
+			}
+			modelwithproportion.solver.setColSetBounds(&(*colstarget.cbegin()), &(*colstarget.cend()), &newbounds[0]);
+			if (!modelwithproportion.solver.resolve())
+			{
+				_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
+					"Cannot regenerate initial optimal solution",
+					"FMTlpmodel::getareavariabilities", __LINE__, __FILE__);
+			}
+		}catch (...)
+		{
+			_exhandler->printexceptions("for " + name, "FMTlpmodel::getmodelfromproportions", __LINE__, __FILE__);
+		}
+		return modelwithproportion;
+	}
+
+	std::map<std::string, std::vector<double>>FMTlpmodel::getareavariabilities(const std::vector<Core::FMToutput>& localoutputs,
+		const std::vector<Core::FMTmask>& globalmasks,
+		std::vector<double> tolerances) const
+	{
+		std::map<std::string, std::vector<double>>uppernlower;
+		try {
+			if (tolerances.empty())
+				{
+				tolerances = std::vector<double>(globalmasks.size(),FMT_DBL_TOLERANCE);
 				}
 			if (solver.isProvenOptimal())
 			{
@@ -750,30 +769,16 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 					uppernlower["OLD_" + output.getname()] = outputvalues;
 				}
 			}
-			//this->writeLP("T:/Donnees/Usagers/FORBR3/Pentes LIDAR/Nouvelle méthode/06251/a1");
-			solver.setColSetBounds(&(*colstarget.cbegin()), &(*colstarget.cend()), &newbounds[0]);
-			
-			if (this->resolve())
+			const FMTlpmodel newmodelwithproportion = getmodelfromproportions(globalmasks, tolerances);
+			for (const Core::FMToutput& output : localoutputs)
 			{
-				for (const Core::FMToutput& output : localoutputs)
+				std::vector<double>outputvalues;
+				for (int period = 0; period <= static_cast<int>(graph.size() - 2); ++period)
 				{
-					std::vector<double>outputvalues;
-					for (int period = 0; period <= static_cast<int>(graph.size() - 2); ++period)
-					{
-						outputvalues.push_back(this->getoutput(output, period).at("Total"));
-					}
-					uppernlower["NEW_" + output.getname()] = outputvalues;
+					outputvalues.push_back(newmodelwithproportion.getoutput(output, period).at("Total"));
 				}
+				uppernlower["NEW_" + output.getname()] = outputvalues;
 			}
-			//this->writeLP("T:/Donnees/Usagers/FORBR3/Pentes LIDAR/Nouvelle méthode/06251/a2");
-			solver.setColSetBounds(&(*colstarget.cbegin()), &(*colstarget.cend()), &originalbounds[0]);
-			//this->writeLP("T:/Donnees/Usagers/FORBR3/Pentes LIDAR/Nouvelle méthode/06251/a3");
-			if (!this->resolve())
-				{
-				_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
-					"Cannot regenerate initial optimal solution",
-					"FMTlpmodel::getareavariabilities", __LINE__, __FILE__);
-				}
 		}catch (...)
 			{
 			_exhandler->printexceptions("for " + name, "FMTlpmodel::getareavariabilities", __LINE__, __FILE__);

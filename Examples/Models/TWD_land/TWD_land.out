@@ -27,6 +27,8 @@
 *OUTPUT oSuppl
 *SOURCE ? ? ? plantation _AREA
 
+*OUTPUT volinvent
+*SOURCE ? ? ? _INVENT volumetotal
 
 
 
