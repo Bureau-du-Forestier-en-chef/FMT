@@ -15,6 +15,9 @@ namespace Parallel
 {
 	class FMTreplanningtask : public FMTtask
 	{
+		std::shared_ptr<Core::FMTactualdevelopment>basearea;
+		std::shared_ptr<Core::FMTschedule>baseschedule;
+		std::vector<size_t>iterationids;
 		std::unique_ptr<Models::FMTmodel>global;
 		std::unique_ptr<Models::FMTmodel>stochastic;
 		std::unique_ptr<Models::FMTmodel>local;
@@ -30,6 +33,7 @@ namespace Parallel
 		FMTreplanningtask() = default;
 		FMTreplanningtask(const FMTreplanningtask& rhs) = default;
 		FMTreplanningtask& operator = (const FMTreplanningtask& rhs) = default;
+		//generatetask()
 		/*std::unique_ptr<FMTtask>clone() const;
 		virtual void join();
 		virtual void work();*/
