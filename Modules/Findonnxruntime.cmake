@@ -29,7 +29,7 @@ get_filename_component(ONNXRBUILD_DIR ${ONNXLIB_DIR} DIRECTORY)
 
 set(onnxruntime_INCLUDE_DIRS "$ENV{ONNXR_DIR}cmake/external/eigen;${ONNXRBUILD_DIR}/onnx;${ONNXRBUILD_DIR};$ENV{ONNXR_DIR}cmake/external/protobuf/src;$ENV{ONNXR_DIR}cmake/external/onnx;$ENV{ONNXR_DIR}cmake/external/SageInt;$ENV{ONNXR_DIR}/onnxruntime;$ENV{ONNXR_DIR}/include/onnxruntime/core/session;$ENV{ONNXR_DIR}/include/onnxruntime;$ENV{ONNXR_DIR}/include")
 
-FILE(GLOB_RECURSE onnxruntime_DLLs ${ONNXLIB_DIR}/*.dll)
+
 
 #look for libprotobuf
 FILE(GLOB_RECURSE ONNX_POTENTIALprotobin ${ONNXRBUILD_DIR}/libprotobuf${CMAKE_STATIC_LIBRARY_SUFFIX})
@@ -174,6 +174,9 @@ if (DEFINED ONNXLIBDEBUG_DIR)#If got debug
 	)
 	set(onnxruntime_DEBUGLIBRARIES "debug;${onnxruntimedebug_LIBRARY};debug;${win_getopt_widedebug_LIBRARY};debug;${onnxruntime_sessiondebug_LIBRARY};debug;${onnxruntime_optimizerdebug_LIBRARY};debug;${onnxruntime_providersdebug_LIBRARY};debug;${onnxruntime_utildebug_LIBRARY};debug;${onnxruntime_frameworkdebug_LIBRARY};debug;${onnxruntime_graphdebug_LIBRARY};debug;${onnxruntime_commondebug_LIBRARY};debug;${onnxruntime_mlasdebug_LIBRARY};debug;${PROTOLIBdebug_LIBRARY};debug;${RE2debug_LIBRARY};debug;${ONNXPdebug_LIBRARY};debug;${ONNXPROTOdebug_LIBRARY}")
 	list (APPEND onnxruntime_LIBRARIES ${onnxruntime_DEBUGLIBRARIES})
+	FILE(GLOB_RECURSE onnxruntime_DLLs ${ONNXLIBDEBUG_DIR}/*.dll)
+else()
+	FILE(GLOB_RECURSE onnxruntime_DLLs ${ONNXLIB_DIR}/*.dll)
 endif(DEFINED ONNXLIBDEBUG_DIR)
 
 

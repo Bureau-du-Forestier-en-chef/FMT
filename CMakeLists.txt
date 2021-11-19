@@ -299,8 +299,23 @@ endif(DEFINED PYTHONNAMING)
 #If you have a dynamic boost lib then go take the .dll
 if (Boost_FOUND)
 	if (MSVC)
-                #Go find the DLL
-                FILE(GLOB_RECURSE BOOST_DLL ${Boost_LIBRARY_DIR_RELEASE}/boost*mt-x64-${Boost_MAJOR_VERSION}_${Boost_MINOR_VERSION}.dll)
+        #Go find the DLL
+		if(CMAKE_BUILD_TYPE MATCHES Release)
+			if (DEFINED CMAKE_TOOLCHAIN_FILE)#if vcpkg
+				get_filename_component(boost_bin ${Boost_LIBRARY_DIR_RELEASE} DIRECTORY)
+				set(boost_bin "${boost_bin}/bin")
+			else()
+				set(boost_bin "${Boost_LIBRARY_DIR_RELEASE}")
+			endif(DEFINED CMAKE_TOOLCHAIN_FILE)
+		else()
+			if (DEFINED CMAKE_TOOLCHAIN_FILE)#if vcpkg
+					get_filename_component(boost_bin ${Boost_LIBRARY_DIR_DEBUG} DIRECTORY)
+					set(boost_bin "${boost_bin}/bin")
+				else()
+					set(boost_bin "${Boost_LIBRARY_DIR_DEBUG}")
+				endif(DEFINED CMAKE_TOOLCHAIN_FILE)
+		endif(CMAKE_BUILD_TYPE MATCHES Release)
+		FILE(GLOB_RECURSE BOOST_DLL ${boost_bin}/boost*mt-x64-${Boost_MAJOR_VERSION}_${Boost_MINOR_VERSION}.dll)
 		LIST(APPEND FMTDEPENDENCIES ${BOOST_DLL})
 	endif(MSVC)
 		set(Boost_USE_STATIC_LIBS OFF)
