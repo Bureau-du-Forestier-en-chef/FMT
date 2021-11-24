@@ -17,6 +17,7 @@ int main()
 		{
 		const std::string folder = "../../../../Examples/Models/TWD_land/";
 		const std::string primarylocation = folder+"TWD_land.pri";
+		const std::string outdir = "tests/";
 		Parser::FMTmodelparser modelparser;
 		const std::vector<std::string>scenarios(1, "LP");
 		const std::vector<Models::FMTmodel> models = modelparser.readproject(primarylocation, scenarios);
@@ -41,7 +42,7 @@ int main()
 				{
 				optimalschedules.push_back(optimizationmodel.getsolution(period));
 				}
-			scheduleparser.write(optimalschedules, folder + "Scenarios/" + optimizationmodel.getname() + "._seq");
+			scheduleparser.write(optimalschedules, outdir + optimizationmodel.getname() + "._seq");
 			}
 	}else {
 		Logging::FMTlogger() << "FMT needs to be compiled with OSI" << "\n";

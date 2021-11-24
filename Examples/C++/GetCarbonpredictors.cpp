@@ -38,7 +38,7 @@ int main()
 		const std::string areafield = "SUPERFICIE";
 		const std::string lockfield = "";
 		const std::string scenario_name = "LP";
-		const std::string outdir = "";
+		const std::string outdir = "tests/";
 		const std::vector<std::string> yieldsforpredictors(1,"VOLUMETOTAL");
 		Parser::FMTmodelparser modelparser;
         std::vector<Exception::FMTexc> errors;
