@@ -18,6 +18,7 @@ int main()
 	Logging::FMTlogger().logstamp();
 	const std::string modellocation = "../../../../Examples/Models/TWD_land/";
 	const std::string	primarylocation = modellocation + "TWD_land.pri";
+	const std::string outdir = "tests/";
 	Parser::FMTmodelparser mparser;
 	const std::vector<std::string>scenarios(1, "Spatial");
 	const std::vector<Models::FMTmodel> models = mparser.readproject(primarylocation, scenarios);
@@ -71,11 +72,11 @@ int main()
 	Parser::FMTtransitionparser transitionparser;
 	for (int period = 1; period <= 10; ++period)
 		{
-		const std::vector<Core::FMTGCBMtransition>transitions = areaparser.writedisturbances(rastpath,
+		const std::vector<Core::FMTGCBMtransition>transitions = areaparser.writedisturbances(outdir,
 			spatialsolution,
 			actions,
 			growththeme, period);
-		transitionparser.writeGCBM(transitions, rastpath + "transition" + std::to_string(period) + ".xml");
+		transitionparser.writeGCBM(transitions, outdir + "transition" + std::to_string(period) + ".xml");
 		}
 #endif
 	return 0;

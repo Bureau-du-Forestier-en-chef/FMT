@@ -18,7 +18,7 @@ int main()
     const std::string modellocation = "../../../../Examples/Models/TWD_land/";
     const std::string	primarylocation = modellocation + "TWD_land.pri";
     const std::string	maplocation = modellocation + "/Carte/TWD_land.shp";
-    const std::string	writelocation = modellocation + "rasters/";
+    const std::string	writelocation = "tests/";
     Parser::FMTmodelparser mparser;
     const std::vector<std::string>scenarios(1, "ROOT");
     const std::vector<Models::FMTmodel> models = mparser.readproject(primarylocation, scenarios);

@@ -249,7 +249,10 @@ if ((NOT DEFINED ENV{R_DIR}) AND (DEFINED ENV{PYTHON_DIR}))
 		#add_definitions("${FMTWITHPYTHON}")
 		target_compile_definitions(FMT PRIVATE "${FMTWITHPYTHON}")
 		message("Found Python include here: ${PYTHON_INCLUDE_DIRS}")
-		set(PYTHON_LIBRARIES "optimized;${PYTHON_LIBRARIES};debug;${PYTHON_DEBUG_LIBRARIES}")
+		set(PYTHON_LIBRARIES "optimized;${PYTHON_LIBRARIES}")
+		if(PYTHON_DEBUG_LIBRARIES)
+			LIST(APPEND PYTHON_LIBRARIES "debug;${PYTHON_DEBUG_LIBRARIES}")
+		endif(PYTHON_DEBUG_LIBRARIES)
 		message("Found Python library: ${PYTHON_LIBRARIES}")
 		#include_directories(${PYTHON_INCLUDE_DIRS})
 		target_include_directories(FMT PRIVATE ${PYTHON_INCLUDE_DIRS})
@@ -558,10 +561,10 @@ if (NOT DEFINED PARALLEL_TESTS)
 	set(PARALLEL_TESTS 1)
 endif(NOT DEFINED PARALLEL_TESTS)
 
-
 #install part
 install (CODE
-    "set(GDAL_FOUND \"${GDAL_FOUND}\")
+    "set (PATHS_DEPS \"${CMAKE_SYSTEM_LIBRARY_PATH}\")
+	set(GDAL_FOUND \"${GDAL_FOUND}\")
     file(COPY \"${CMAKE_CURRENT_SOURCE_DIR}/LICENSES\" DESTINATION \"${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}\")
     file(COPY \"${CMAKE_CURRENT_SOURCE_DIR}/Templates/YieldPredModels\" DESTINATION \"${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}\")
     if (GDAL_FOUND)
@@ -571,7 +574,21 @@ install (CODE
 			file(RENAME \"${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}/${GDAL_DATA_NAME}\" \"${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}/GDAL_DATA\")
 		endif(NOT EXISTS \"${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}/GDAL_DATA\")
     endif(GDAL_FOUND)
-    set(DEPENDENCIES \"${FMTDEPENDENCIES}\")
+	set(DEPENDENCIES \"${FMTDEPENDENCIES}\")
+	if(${CMAKE_VERSION} VERSION_LESS \"3.16.0\") 
+    	message(\"Please consider to switch to CMake 3.16.0\")
+	else()
+		FILE(GLOB_RECURSE FMTlibLocations \"${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}/FMT.*\")
+		list(GET FMTlibLocations 0 FMTloc)
+		file(	GET_RUNTIME_DEPENDENCIES
+				RESOLVED_DEPENDENCIES_VAR DEPENDENCIESfound
+				UNRESOLVED_DEPENDENCIES_VAR deps_unresolved
+				CONFLICTING_DEPENDENCIES_PREFIX deps_conflicts
+				LIBRARIES \"\${FMTloc}\"
+				DIRECTORIES \${PATHS_DEPS}
+				)
+		list (APPEND DEPENDENCIES \${DEPENDENCIESfound})
+	endif(${CMAKE_VERSION} VERSION_LESS \"3.16.0\")
     if (DEPENDENCIES)
         #Copy dependencies
         foreach(FMTdep \${DEPENDENCIES}\)
@@ -607,10 +624,12 @@ install (CODE
           WORKING_DIRECTORY \"${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}\"
         )
 endif (EXISTS \"${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}/FMT\")
+file(MAKE_DIRECTORY \"${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}/tests\")
  execute_process(
           COMMAND ctest -C \"${CMAKE_BUILD_TYPE}\" -j \"${PARALLEL_TESTS}\"
           WORKING_DIRECTORY \"${CMAKE_BINARY_DIR}\"
         )
+file(REMOVE_RECURSE \"${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}/tests\")
 ")
 
 
