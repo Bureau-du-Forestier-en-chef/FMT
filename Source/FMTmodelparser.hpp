@@ -71,7 +71,7 @@ class FMTEXPORT FMTmodelparser : public FMTparser
 		/**
 		Default destructor for FMTmodelparser.
 		*/
-		~FMTmodelparser() = default;
+		virtual ~FMTmodelparser() = default;
 		// DocString: FMTmodelparser(const FMTmodelparser&)
 		/**
 		Default copy constructor for FMTmodelparser.

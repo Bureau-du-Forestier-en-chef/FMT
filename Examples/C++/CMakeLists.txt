@@ -84,10 +84,10 @@ foreach(testfile ${FMTTESTSfiles})
 			list(GET line 2 scenario)
 			list(GET line 3 dblvalue)
 			if (TARGET "${testname}")#Got the executable!
-					set(fullname "${testname}:${primarylocation}:${scenario}")
+					set(fullname "${testname}${primarylocation}${scenario}")
 					string(REPLACE " " "_" fullname "${fullname}")
 					add_test(
-							NAME "[${fullname}]"
+							NAME "${fullname}"
 							COMMAND ${testname} ${primarylocation} ${scenario} ${dblvalue}
 							WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}"
 							)

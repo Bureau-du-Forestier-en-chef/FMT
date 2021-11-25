@@ -13,6 +13,10 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTyields.hpp"
 #include "FMTaction.hpp"
 #include "FMTbounds.hpp"
+#if defined FMTWITHGDAL
+	#include "gdal_version.h"
+	#include "ogr_srs_api.h"
+#endif 
 
 
 
@@ -88,8 +92,8 @@ FMTparser::FMTparser() : Core::FMTobject(),
         rxseparator("([\\s\\t]*)([^\\s\\t]*)")
         {
 		#ifdef FMTWITHGDAL
-			std::string runtimelocation = getruntimelocation();
-			runtimelocation += "\\GDAL_DATA";
+			const std::string baseruntimelocation = getruntimelocation();
+			const std::string  runtimelocation = baseruntimelocation+"\\GDAL_DATA";
 			if (!boost::filesystem::is_directory(boost::filesystem::path(runtimelocation)))
 				{
 				_exhandler->raise(Exception::FMTexc::FMTinvalid_path,
@@ -98,6 +102,13 @@ FMTparser::FMTparser() : Core::FMTobject(),
 			CPLSetConfigOption("GDAL_DATA", runtimelocation.c_str());
 			//No need of drivers from shared library see : https://gdal.org/api/gdaldriver_cpp.html ; https://gdal.org/api/cpl.html ; https://trac.osgeo.org/gdal/wiki/ConfigOptions
 			CPLSetConfigOption("GDAL_DRIVER_PATH","");
+			#if (GDAL_VERSION_MAJOR>=3)//Since GDAL 3.0
+				const std::string  projruntimelocation = baseruntimelocation + "/proj";
+				std::vector<const char*>projsearch;
+				projsearch.push_back(projruntimelocation.c_str());
+				projsearch.push_back(NULL);
+				OSRSetPROJSearchPaths(&projsearch[0]);
+			#endif
 		#endif
         }
 
