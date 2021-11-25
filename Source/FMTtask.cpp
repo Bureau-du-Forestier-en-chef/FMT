@@ -3,11 +3,28 @@
 
 namespace Parallel
 {
-	FMTtask::FMTtask(const Core::FMTobject& baseobject) :
-		worker(std::bind(&FMTtask::join,this))
-		{
-		this->passinobject(baseobject);
+
+	FMTtask::FMTtask(const FMTtask& rhs) :
+		Core::FMTobject(rhs),
+		worker()
+	{
+
+	}
+
+	std::vector<std::unique_ptr<FMTtask>>FMTtask::split(const size_t& numberoftasks) const
+	{
+		try {
+			_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, "Calling pure virtual function ",
+				"FMTtask::split", __LINE__, __FILE__);
 		}
+		catch (...)
+		{
+			_exhandler->raisefromcatch("", "FMTtask::split", __LINE__, __FILE__);
+		}
+		return std::vector<std::unique_ptr<FMTtask>>();
+	}
+
+
 	std::unique_ptr<FMTtask>FMTtask::clone() const
 	{
 		try {
@@ -23,23 +40,32 @@ namespace Parallel
 	void FMTtask::join()
 	{
 		try {
-			_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, "Calling pure virtual function ",
-				"FMTtask::join", __LINE__, __FILE__);
+			worker.join();
 		}
 		catch (...)
 		{
 			_exhandler->raisefromcatch("", "FMTtask::join", __LINE__, __FILE__);
 		}
 	}
+	void FMTtask::run()
+	{
+		try {
+			worker = boost::thread(std::bind(&FMTtask::work,*this));
+		}catch (...)
+		{
+			_exhandler->raisefromcatch("", "FMTtask::run", __LINE__, __FILE__);
+		}
+	}
+
 	void FMTtask::work()
 	{
 		try {
 			_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, "Calling pure virtual function ",
-				"FMTtask::join", __LINE__, __FILE__);
-		}
-		catch (...)
+				"FMTtask::work", __LINE__, __FILE__);
+		}catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTtask::join", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("", "FMTtask::work", __LINE__, __FILE__);
 		}
 	}
+
 }
