@@ -76,6 +76,7 @@ namespace Parser
 			const std::vector<Core::FMTaction>& actions,
 			const std::vector<Core::FMToutput>& outputs,
 			const std::vector<Core::FMTtheme>& themes);
+		std::vector<std::vector<double>>getreplicatechanges(const std::string& replicateargument);
 	public:
 		FMToptimizationparser();
 		FMToptimizationparser(const FMToptimizationparser& rhs);

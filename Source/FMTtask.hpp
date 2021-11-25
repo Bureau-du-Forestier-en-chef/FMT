@@ -16,14 +16,16 @@ namespace Parallel
 	class FMTtask : public Core::FMTobject
 	{
 		boost::thread worker;
+	protected:
+		virtual void work();
 	public:
 		FMTtask() = default;
-		FMTtask(const FMTtask& rhs) = default;
+		FMTtask(const FMTtask& rhs);
 		FMTtask& operator = (const FMTtask& rhs) = default;
-		FMTtask(const Core::FMTobject& baseobject);
 		std::unique_ptr<FMTtask>clone() const;
+		virtual std::vector<std::unique_ptr<FMTtask>>split(const size_t& numberoftasks) const;
 		virtual void join();
-		virtual void work();
+		virtual void run();
 
 	};
 

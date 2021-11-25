@@ -25,7 +25,7 @@ namespace Parser
 		rxconstraints("^(_EVEN|_NDY|_SEQ)([\\s\\t]*)(\\()((([^,]*)(,)([\\s\\t]*)([\\d\\.]*%|[\\d\\.]*)([\\s\\t]*)(,)([\\s\\t]*)([\\d\\.]*%|[\\d\\.]*))|(([^,]*)(,)([\\s\\t]*)([\\d\\.]*%|[\\d\\.]*))|([^,]*))([\\s\\t]*)(\\))([\\s\\t]*)(.+)", std::regex_constants::ECMAScript | std::regex_constants::icase),
 		rxequations("^(.+)((((<=)|(>=))(.+))|((.+)((=))(.+)))(?<=[^,])[\\s\\t](?=\\d)(.+)"),
 		rxperiods("^([\\s\\t]*)((([\\d]*|#.+)(\\.\\.)(#.+|_LENGTH|[\\d]*)|(_LENGTH))|(#.+|[\\d]*))", std::regex_constants::ECMAScript | std::regex_constants::icase),
-		rxending("^(.+)(((_GOAL)(\\()([^,]*)(,)([^\\)]*)(\\)))|(_SETTOGLOBAL)([\\s\\t]*)(\\()([\\s\\t]*)(.+)([\\s\\t]*)(\\)))", std::regex_constants::ECMAScript | std::regex_constants::icase),
+		rxending("^(.+)(((_GOAL)(\\()([^,]*)(,)([^\\)]*)(\\)))|(_SETTOGLOBAL)([\\s\\t]*)(\\()([\\s\\t]*)(.+)([\\s\\t]*)(\\))|(_REPLICATE)([\\s\\t]*)(\\()([\\s\\t]*)(.+)([\\s\\t]*)(\\)))", std::regex_constants::ECMAScript | std::regex_constants::icase),
 		rxoutput("^(.+)(\\()([^)]*)(\\))(\\[)(#.+|[-\\d]*)(\\])|([^\\[]*)(\\()([^)]*)(\\))|(.+)(\\[)(#.+|[-\\d]*)(\\])|(.+)", std::regex_constants::ECMAScript | std::regex_constants::icase),
 		rxpenalty("^(_PENALTY)(\\()([^\\)]*)(\\))", std::regex_constants::ECMAScript | std::regex_constants::icase),
 		rxspecialoutput("^(_AVG|_SUM)(\\()(([^,]*)(,)(([^,]*)(([\\d]*|#.+)(\\.\\.)(#.+|_LENGTH|[\\d]*))|(#.+|[\\d]*))|(.+))(\\))", std::regex_constants::ECMAScript | std::regex_constants::icase),
@@ -79,15 +79,31 @@ namespace Parser
 		try{
 		if (std::regex_search(line, kmatch, rxending))
 			{
-			const std::string target = std::string(kmatch[4]) + std::string(kmatch[10]);
+			const std::string target = std::string(kmatch[4]) + std::string(kmatch[10]) + std::string(kmatch[17]);
 			const std::string numvalue = std::string(kmatch[8]) + std::string(kmatch[14]);
-			const double variale_value = getnum<double>(numvalue, constants);;
-			std::string yieldtarget(target);
-			if (target == "_GOAL")
+			if (target == "_REPLICATE")
+			{
+				int period = 1;//should selected only the targeted period?!?!?!
+				for (const std::vector<double>& periodvalues : getreplicatechanges(std::string(kmatch[21])))
+					{
+					int replicateid = 0;
+					for (const double& value : periodvalues)
+						{
+						const std::string replicatename = "_REPLICATE_" + std::to_string(replicateid) + "_" + std::to_string(value);
+						//constraint.addbounds(Core::FMTyldbounds(Core::FMTsection::Optimize, yieldtarget, variale_value, variale_value));
+						++replicateid;
+						}
+					++period;
+					}
+			}else {
+				const double variale_value = getnum<double>(numvalue, constants);;
+				std::string yieldtarget(target);
+				if (target == "_GOAL")
 				{
-				yieldtarget ="GOAL_"+ std::string(kmatch[6]);
+					yieldtarget = "GOAL_" + std::string(kmatch[6]);
 				}
-			constraint.addbounds(Core::FMTyldbounds(Core::FMTsection::Optimize, yieldtarget, variale_value, variale_value));
+				constraint.addbounds(Core::FMTyldbounds(Core::FMTsection::Optimize, yieldtarget, variale_value, variale_value));
+				}
 			line = line.substr(0, line.find(target));
 			boost::trim(line);
 			if (target != "_GOAL" && !line.empty())
@@ -225,6 +241,32 @@ namespace Parser
 			}
         return nodes;
         }
+
+	std::vector<std::vector<double>>FMToptimizationparser::getreplicatechanges(const std::string& replicateargument)
+		{
+		std::vector<std::vector<double>>periodicvalues;
+		//_REPPLICATES(filename.txt) keyword?
+		try {
+			const boost::filesystem::path filelocation = boost::filesystem::path(_location).parent_path() / replicateargument;
+			if (boost::filesystem::is_regular_file(filelocation))
+				{
+				for (const std::vector<std::string>& line : readcsv(filelocation.string(), ';'))
+					{
+					std::vector<double>iterationvalues;
+					for (const std::string& itvalue : line)
+						{
+						iterationvalues.push_back(std::stod(itvalue));
+						}
+					periodicvalues.push_back(iterationvalues);
+					}
+				}
+		}catch (...)
+			{
+			_exhandler->raisefromcatch("","FMToptimizationparser::getreplicatechanges", __LINE__, __FILE__, _section);
+			}
+		return periodicvalues;
+		}
+
 
     Core::FMToutput FMToptimizationparser::resume_output(const std::map<std::string,double>& nodes,
                                                    const std::vector<Core::FMToutput>& outputs,
