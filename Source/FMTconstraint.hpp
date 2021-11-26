@@ -157,6 +157,12 @@ class FMTEXPORT FMTconstraint: public FMToutput,public FMTspec
 		Based on constraint period it will set bounds to the double specified in the vector for the constraint period.
 		*/
 		Core::FMTconstraint getiterationchange(const std::vector<double>& periodchanges) const;
+		// DocString: FMTconstraint::getfromreplicate
+		/**
+		If the constraint is build with a replicate tables it will gives a new constraint with the corresponding replicate value
+		See keyword _REPLICATE in optimization seciton.
+		*/
+		Core::FMTconstraint getfromreplicate(const size_t& replicate,const int& period) const;
 		// DocString: FMTconstraint::getpenalties
 		/**
 		If the constraint is goal then you can get the name of the penalties of the constraint. like _GOAL(penaltyname,weight)

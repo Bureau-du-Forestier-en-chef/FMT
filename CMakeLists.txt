@@ -472,13 +472,17 @@ if (DEFINED ENV{GDAL_DIR})
                 LIST(APPEND FMTDEPENDENCIES ${GDAL_DLL})
             endif()
             link_directories(${GDAL_LIBRARY_DIRS})
-			if ("${GDAL_LINKER_FLAGS}" MATCHES "lproj" AND "${GDAL_FULLVERSION}" VERSION_GREATER "3.0")#Try to find proj
-				FILE(GLOB_RECURSE Projdb $ENV{GDAL_DIR}proj.db)#Might be somewhere else
-				if (Projdb)
-					get_filename_component(PROJDIRs ${Projdb} DIRECTORY)
-					list(GET PROJDIRs 0 PROJDIR)
-				endif(Projdb)
-			endif("${GDAL_LINKER_FLAGS}" MATCHES "lproj" AND "${GDAL_FULLVERSION}" VERSION_GREATER "3.0")
+			FILE(GLOB_RECURSE Projdb $ENV{GDAL_DIR}proj.db)#Might be somewhere else
+			FILE(GLOB_RECURSE Projdb2 $ENV{PROJ_LIB}proj.db)#Might be somewhere else
+			list(APPEND Projdb Projdb2)
+			if(Projdb)
+				list(GET Projdb 0 projloc)
+				get_filename_component(PROJDIR "${projloc}" DIRECTORY)
+				get_filename_component(PROJDIRNAME "${PROJDIR}" NAME)
+				message("Found proj here ${PROJDIR}")
+			else()
+				message(WARNING "No proj directory found")
+			endif(Projdb)
 
 
 
@@ -589,6 +593,9 @@ install (CODE
 		endif(NOT EXISTS \"${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}/GDAL_DATA\")
 		if (NOT EXISTS \"${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}/proj\" AND EXISTS \"${PROJDIR}\")
 			file(COPY \"${PROJDIR}\" DESTINATION \"${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}\")
+			if (NOT EXISTS \"${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}/proj\")
+				file(RENAME \"${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}/${PROJDIRNAME}\" \"${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}/proj\")
+			endif(NOT EXISTS \"${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}/proj\")
 		endif(NOT EXISTS \"${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}/proj\" AND EXISTS \"${PROJDIR}\")
     endif(GDAL_FOUND)
 	set(DEPENDENCIES \"${FMTDEPENDENCIES}\")

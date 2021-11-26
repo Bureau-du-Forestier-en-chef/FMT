@@ -89,8 +89,9 @@ namespace Parser
 					int replicateid = 0;
 					for (const double& value : periodvalues)
 						{
-						const std::string replicatename = "_REPLICATE_" + std::to_string(replicateid) + "_" + std::to_string(value);
-						//constraint.addbounds(Core::FMTyldbounds(Core::FMTsection::Optimize, yieldtarget, variale_value, variale_value));
+						//Replicate_replicatedid_perioid
+						const std::string replicatename = "REPLICATE_" + std::to_string(replicateid) + "_" + std::to_string(period);
+						constraint.addbounds(Core::FMTyldbounds(Core::FMTsection::Optimize, replicatename, value, value));
 						++replicateid;
 						}
 					++period;
