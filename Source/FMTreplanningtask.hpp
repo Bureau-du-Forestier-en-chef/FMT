@@ -26,7 +26,7 @@ namespace Core
 namespace Parallel
 {
 	class FMTparallelwriter;
-	class FMTreplanningtask : public FMTtask
+	class FMTEXPORT FMTreplanningtask : public FMTtask
 	{
 		////////////////setbaseinfos()/////////////////
 		///////////////////////////////////////////////

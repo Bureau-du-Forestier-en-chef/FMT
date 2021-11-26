@@ -168,6 +168,12 @@ namespace Parallel
 		bool optimal = false;
 		try {
 			std::unique_ptr<Models::FMTmodel>modelcpy = model->clone();
+			std::vector<Core::FMTconstraint>iterationconstraints;
+			for (const Core::FMTconstraint& constraint : modelcpy->getconstraints())
+				{
+				iterationconstraints.push_back(constraint.getfromreplicate(getiteration(), replanningperiod));
+				}
+			modelcpy->setconstraints(iterationconstraints);
 			modelcpy->setarea(dynamicarea);
 			if (applyscheduleweight)
 			{
