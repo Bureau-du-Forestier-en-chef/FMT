@@ -13,7 +13,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 /// Namespace for parallel tasking may include multithreading / multiprocessing
 namespace Parallel
 {
-	class FMTtask : public Core::FMTobject
+	class FMTEXPORT FMTtask : public Core::FMTobject
 	{
 		boost::thread worker;
 	protected:

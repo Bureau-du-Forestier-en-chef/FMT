@@ -163,6 +163,43 @@ namespace Core
 		return false;
 		}
 
+	Core::FMTconstraint FMTconstraint::getfromreplicate(const size_t& replicate, const int& period) const
+	{
+		try {
+			if (period >= getperiodlowerbound() &&
+				period <= getperiodupperbound())
+			{
+				if (!this->emptyylds())
+				{
+					std::vector<double>values;
+					for (size_t id = 0; id < yieldnames.size(); ++id)
+					{
+						if (yieldnames.at(id).find("REPLICATE_") != std::string::npos)
+						{
+							std::vector<std::string>repvalues;
+							boost::split(repvalues, yieldnames.at(id), boost::is_any_of("_"));
+							const int repperiod = std::stoi(repvalues.at(2));
+							const size_t repid = std::stoi(repvalues.at(1));
+							if (repid== replicate&&
+								repperiod==period)
+								{
+								values.push_back(yieldbounds.at(id).getlower());
+								}
+						}
+					}
+					if (values.empty())
+						{
+						return getiterationchange(values);
+						}
+				}
+			}
+		}catch (...)
+		{
+			_exhandler->printexceptions("", "FMTconstraint::getfromreplicate", __LINE__, __FILE__, Core::FMTsection::Optimize);
+		}
+	return *this;
+	}
+
 
 	Core::FMTconstraint FMTconstraint::getiterationchange(const std::vector<double>& periodchanges) const
 	{
