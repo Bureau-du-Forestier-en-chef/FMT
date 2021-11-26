@@ -62,7 +62,7 @@ void exportModel()
 				"@DocString(FMTmodel::getname)")
             .method("getyields",&Models::FMTmodel::getyields,
 				"@DocString(FMTmodel::getyields)")
-			.method("setarea", &Models::FMTmodel::setyields,
+			.method("setyields", &Models::FMTmodel::setyields,
 				"@DocString(FMTmodel::setyields)")
             .method("getarea",&Models::FMTmodel::getarea,
 				"@DocString(FMTmodel::getarea)")
