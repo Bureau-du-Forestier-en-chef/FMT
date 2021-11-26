@@ -16,7 +16,7 @@ namespace Models {
 
 namespace Parallel
 {
-	class FMTparallelwriter : public Parser::FMTmodelparser
+	class FMTEXPORT FMTparallelwriter : public Parser::FMTmodelparser
 	{
 		std::vector<Core::FMToutput>outputstowrite;
 		GDALDataset* resultsdataset;
