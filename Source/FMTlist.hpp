@@ -86,6 +86,15 @@ namespace Core
 		// DocString: FMTlist::fastpass
 		///unordered_map used to do caching of mask subsets of the FMTlist.
 		mutable boost::unordered_map<FMTmask, std::vector<int>>fastpass;
+		// DocString: FMTlist::pushtodata
+		/**
+		Push data in vector...
+		*/
+		void pushtodata(std::vector<std::pair<FMTmask, T>>& datavector,
+			const FMTmask& mask, const T& maskdata) const
+		{
+			datavector.push_back(std::pair<FMTmask, T>(mask, maskdata));
+		}
 	protected:
 		// DocString: FMTlist::presolvelist
 		/**
@@ -106,8 +115,8 @@ namespace Core
 				{
 					unshrink(originalthemes);
 				}
-				//std::vector<std::pair<FMTmask, T>>newdata;
-				for (std::pair<FMTmask, T>& object : data)
+				std::vector<std::pair<FMTmask, T>>newdata;
+				for (const std::pair<FMTmask, T>& object : data)
 				{
 					if (!object.first.isnotthemessubset(basemask, originalthemes))
 					{
@@ -116,10 +125,10 @@ namespace Core
 						{
 							mskkey = mskkey.presolve(presolvedmask, newthemes);
 						}
-						//newdata.push_back(std::pair<FMTmask, T>(mskkey, object.second));
-						object.first = mskkey;
+						pushtodata(newdata, mskkey, object.second);
 					}
 				}
+				data.swap(newdata);
 				//data = newdata;
 				this->update();
 				data.shrink_to_fit();
@@ -305,6 +314,7 @@ namespace Core
 		void unshrink(const std::vector<FMTtheme>& themes)
 		{
 			fastpass.clear();
+			filter = Core::FMTmaskfilter();
 			for (std::pair<FMTmask, T>& object : data)
 				{
 				object.first = FMTmask(std::string(object.first), themes);
@@ -419,15 +429,7 @@ namespace Core
 	};
 
 
-	template<> inline void FMTlist<std::unique_ptr<Core::FMTyieldhandler>>::copydata(const FMTlist<std::unique_ptr<Core::FMTyieldhandler>>& rhs)
-	{
-		data.reserve(rhs.data.size());
-		for (const std::pair<Core::FMTmask, std::unique_ptr<Core::FMTyieldhandler>>& object : rhs.data)
-		{
-			std::pair<Core::FMTmask, std::unique_ptr<Core::FMTyieldhandler>> newobject = std::make_pair(object.first, std::move(object.second->clone()));
-			data.push_back(std::move(newobject));
-		}
-	}
+	
 
 	template<> inline void FMTlist<std::unique_ptr<Core::FMTyieldhandler>>::insert(const size_t& location, const FMTmask& mask, const std::unique_ptr<Core::FMTyieldhandler>& value)
 	{
@@ -435,10 +437,26 @@ namespace Core
 		data.insert(data.begin() + location, std::move(newobject));
 	}
 
+	template<> inline void FMTlist<std::unique_ptr<Core::FMTyieldhandler>>::pushtodata(std::vector<std::pair<FMTmask, std::unique_ptr<Core::FMTyieldhandler>>>& datavector,
+		const FMTmask& mask, const std::unique_ptr<Core::FMTyieldhandler>& maskdata) const
+	{
+		std::pair<Core::FMTmask, std::unique_ptr<Core::FMTyieldhandler>> newobject = std::make_pair(mask, std::move(maskdata->clone()));
+		datavector.push_back(std::move(newobject));
+	}
+
 	template<> inline void FMTlist<std::unique_ptr<Core::FMTyieldhandler>>::push_back(const FMTmask& mask, const std::unique_ptr<Core::FMTyieldhandler>& value)
 	{
-		std::pair<Core::FMTmask, std::unique_ptr<Core::FMTyieldhandler>> newobject = std::make_pair(mask, std::move(value->clone()));
-		data.push_back(std::move(newobject));
+		pushtodata(data, mask, value);
+	}
+
+	template<> inline void FMTlist<std::unique_ptr<Core::FMTyieldhandler>>::copydata(const FMTlist<std::unique_ptr<Core::FMTyieldhandler>>& rhs)
+	{
+		data.clear();
+		data.reserve(rhs.data.size());
+		for (const std::pair<Core::FMTmask, std::unique_ptr<Core::FMTyieldhandler>>& object : rhs.data)
+		{
+			pushtodata(data, object.first, object.second);
+		}
 	}
 
 

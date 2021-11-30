@@ -375,7 +375,7 @@ double FMTyieldhandler::getyieldlinearvalue(const std::string&yldname, const int
 		{
 		std::unique_ptr<FMTyieldhandler> newhandler = this->clone();
 		try {
-			newhandler->mask = newhandler->mask.presolve(presolvedmask, newthemes);
+			newhandler->mask = this->mask.presolve(presolvedmask, newthemes);
 		}catch (...)
 		{
 			_exhandler->raisefromcatch("", "FMTyieldhandler::presolve", __LINE__, __FILE__, Core::FMTsection::Yield);

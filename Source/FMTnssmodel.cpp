@@ -217,6 +217,7 @@ namespace Models
 	void FMTnssmodel::simulate()
 	{
 		try {
+			generator.seed(getparameter(Models::FMTintmodelparameters::SEED));
 			Core::FMTschedule schedule;
 			schedule.setuselock(true);
 			schedule.passinobject(*this);

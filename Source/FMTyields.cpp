@@ -172,6 +172,7 @@ FMTyields FMTyields::presolve(const FMTmask& basemask,
 	{
 	FMTyields newyields(*this);
 	try {
+		
 		newyields.presolvelist(basemask, originalthemes, presolvedmask, newthemes);
 		if (!presolvedmask.empty())
 		{
@@ -180,6 +181,7 @@ FMTyields FMTyields::presolve(const FMTmask& basemask,
 				yieldobject.second = yieldobject.second->presolve(presolvedmask, newthemes);
 			}
 		}
+		
 		newyields.update();
 	}catch (...)
 		{
