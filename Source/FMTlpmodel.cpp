@@ -1727,6 +1727,7 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 				actionmapping[preactionid] = loc;
 				++preactionid;
 			}
+			actionmapping[-1] = -1;
 			Graph::FMTgraph<Graph::FMTvertexproperties,Graph::FMTedgeproperties> postsolvegraph = this->graph.postsolve(selectedmask,postsolvethemes,actionmapping);
 			postsolvemodel = std::unique_ptr<FMTmodel>(new FMTlpmodel(*(FMTmodel::postsolve(originalbasemodel)),postsolvegraph,this->solver,this->elements));
 		}catch(...)

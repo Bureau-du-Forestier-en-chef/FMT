@@ -634,7 +634,8 @@ namespace Models
 		graph(lgraph),
 		solver(lsolver)
 	{
-
+		solver.passinobject(base);
+		graph.passinobject(base);
 	}
 
 

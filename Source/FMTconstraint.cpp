@@ -10,6 +10,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTaction.hpp"
 #include "FMTtheme.hpp"
 #include "FMTyields.hpp"
+#include "FMTtimeyieldhandler.hpp"
 #include <memory>
 
 namespace Core
@@ -1110,7 +1111,7 @@ namespace Core
 					}
 				defaultstrmask.pop_back();
 				const Core::FMTmask defaultmask(defaultstrmask, themes);
-				std::unique_ptr<Core::FMTyieldhandler> defaulthandler(new Core::FMTyieldhandler(defaultmask));
+				std::unique_ptr<Core::FMTyieldhandler> defaulthandler(new Core::FMTtimeyieldhandler(defaultmask));
 				defaulthandler->push_base(0);
 				//defaulthandler.push_base(1);
 				size_t sourceid = 0;
@@ -1131,7 +1132,7 @@ namespace Core
 						{
 							defaulthandler->push_data(yieldname, pattern);
 						}
-						std::unique_ptr<Core::FMTyieldhandler> yieldhandler(new Core::FMTyieldhandler(source.getmask()));
+						std::unique_ptr<Core::FMTyieldhandler> yieldhandler(new Core::FMTtimeyieldhandler(source.getmask()));
 						yieldhandler->push_base(0);
 						//yieldhandler.push_base(1);
 						for (const double& pattern : patternvalues)
@@ -1147,7 +1148,7 @@ namespace Core
 			}
 			catch (...)
 			{
-				_exhandler->raisefromcatch("", "FMTconstraint::turntoyields", __LINE__, __FILE__, Core::FMTsection::Optimize);
+				_exhandler->raisefromcatch("", "FMTconstraint::turntoyieldsandactions", __LINE__, __FILE__, Core::FMTsection::Optimize);
 			}
 		}
 

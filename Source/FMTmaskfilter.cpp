@@ -47,8 +47,8 @@ FMTmaskfilter::FMTmaskfilter(std::vector<FMTmask>& masks): /*fullset(),*/selecti
             selection = boost::dynamic_bitset<>(flippedselection.size(),true);
 			
         }
-		int indexloc = 0;
-		/*index.resize(selection.count());
+		/*int indexloc = 0;
+		index.resize(selection.count());
 		for (size_t location = 0; location < selection.size(); ++location)
 		{
 			if (selection[location])
