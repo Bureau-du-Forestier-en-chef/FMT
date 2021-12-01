@@ -1900,7 +1900,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 
 
 		std::vector<FMTcarbonpredictor> getcarbonpredictors(const FMTvertex_descriptor& targetdescriptor,const Models::FMTmodel& model,
-			const std::vector<std::string>& yieldnames,const size_t& depth) const
+			const std::vector<std::string>& yieldnames,const size_t& depth,bool withGCBMid =true) const
 			{
 			std::vector<FMTcarbonpredictor> predictors;
 			try {
@@ -1927,7 +1927,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 							lastactions.push_back(nullptr);
 							distances.push_back(-1);
 						}
-					predictors.emplace_back(model.actions, yieldnames,model.yields, sourceproperties, targetproperties, lastactions, distances);
+					predictors.emplace_back(model.actions, yieldnames,model.yields, sourceproperties, targetproperties, lastactions, distances,withGCBMid);
 				}
 			predictors.shrink_to_fit();
 			}catch (...)

@@ -34,6 +34,13 @@ namespace Graph
 	class FMTgraphvertextoyield;
 }
 
+namespace Core
+{
+	class FMTageyieldhandler;
+	class FMTtimeyieldhandler;
+	class FMTcomplexyieldhandler;
+}
+
 namespace Parser
 {
 	class FMTmodelparser;
@@ -361,6 +368,7 @@ namespace Models
 										const std::vector<Core::FMTtheme>& lthemes);
 		// DocString: FMTmodel::addoutput
 		/**
+		Change the function to accept a FMTouptut********
 		Adds one output to the model base only on strings.
 			name = output name
 			maskstring = string of the mask "? ? ?"
@@ -371,6 +379,26 @@ namespace Models
 		*/
 		void addoutput(const std::string& name,const std::string& maskstring, Core::FMTotar outputtarget,
 			std::string action = std::string(), std::string yield = std::string(), std::string description = std::string(),int targettheme = -1);
+		// DocString: FMTmodel::addyieldhandlers
+		/**
+		Add FMTageyieldhandler from vector (yieldhandlers) to yields. 
+		*/		
+		void addyieldhandlers(const std::vector<Core::FMTageyieldhandler>& yieldhandlers);
+		// DocString: FMTmodel::addyieldhandlers
+		/**
+		Add FMTtimeyieldhandler from vector (yieldhandlers) to yields. 
+		*/		
+		void addyieldhandlers(const std::vector<Core::FMTtimeyieldhandler>& yieldhandlers);
+		// DocString: FMTmodel::addyieldhandlers
+		/**
+		Add FMTcomplexyieldhandler from vector (yieldhandlers) to yields. 
+		*/		
+		void addyieldhandlers(const std::vector<Core::FMTcomplexyieldhandler>& yieldhandlers);
+		// DocString: FMTmodel::addyieldhandlers
+		/**
+		Add unique pointer of FMTyieldhandler from vector (yieldhandlers) to yields. 
+		*/		
+		void addyieldhandlersfromptr(const std::vector<std::unique_ptr<Core::FMTyieldhandler>>& yieldhandlers);
 		// DocString: FMTmodel::operator==
 		/**
 		Comparison operator of FMTlpmodel
