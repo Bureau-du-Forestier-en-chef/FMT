@@ -35,7 +35,17 @@ namespace Core
 		FMTageyieldhandler(const FMTageyieldhandler& rhs) = default;
 		FMTageyieldhandler& operator = (const FMTageyieldhandler& rhs) = default;
 		FMTageyieldhandler(const FMTyieldhandler& rhs);
+		// DocString: FMTmodel::FMTageyieldhandler
+		/**
+		Constructor for ageyieldhandler with a FMTmask
+		*/		
 		FMTageyieldhandler(const FMTmask& mask);
+		// DocString: FMTmodel::setvalues
+		/**
+		Set the values for given yield name. (baseages) are the base used to determine the age of the (values) like the _AGE in WS. 
+		The vector of (baseages) must be the same as (values).
+		*/
+		virtual void setvalues(const std::string& yldname,const std::vector<int>& baseages,const std::vector<double>& values);	
 		virtual double getlastvalue(const std::string yld) const;
 		virtual bool push_data(const std::string& yld, const double& value);
 		virtual bool push_data(const std::string& yld, const FMTdata& data);

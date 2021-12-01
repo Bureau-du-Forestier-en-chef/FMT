@@ -62,6 +62,10 @@ void exportModel()
 				"@DocString(FMTmodel::getyields)")
 			.def("setyields", &Models::FMTmodel::setyields,
 				"@DocString(FMTmodel::setyields)")
+			//.def("addyieldhandlers", &Models::FMTmodel::addyieldhandlers,
+			//	"@DocString(FMTmodel::addyieldhandlers)")
+			.def<void (Models::FMTmodel::*)(const std::vector<Core::FMTageyieldhandler>& yieldhandlers)>("addyieldhandlers",&Models::FMTmodel::addyieldhandlers,
+				"@DocString(FMTmodel::addyieldhandlers)")
 			.def("getname", &Models::FMTmodel::getname,
 				"@DocString(FMTmodel::getname)")
             .def("getarea",&Models::FMTmodel::getarea, getarea_overloads(bp::args("period","beforegrowanddeath"), "@DocString(FMTmodel::getarea)"))
