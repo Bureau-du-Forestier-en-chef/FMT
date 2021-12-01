@@ -37,7 +37,7 @@ namespace Graph
 		FMTcarbonpredictor() = default;
 		~FMTcarbonpredictor() = default;
 		FMTcarbonpredictor(const std::vector<Core::FMTaction>& actions, const std::vector<std::string>& yieldnames,const Core::FMTyields& yields,
-			const FMTbasevertexproperties& source, const FMTbasevertexproperties& target, const std::vector<const FMTbaseedgeproperties*>& edges, const std::vector<int>& gaps);
+			const FMTbasevertexproperties& source, const FMTbasevertexproperties& target, const std::vector<const FMTbaseedgeproperties*>& edges, const std::vector<int>& gaps,bool withGCBMid = true);
 		FMTcarbonpredictor(const FMTcarbonpredictor& rhs);
 		FMTcarbonpredictor& operator = (const FMTcarbonpredictor& rhs);
 		bool operator==(const FMTcarbonpredictor& rhs) const;

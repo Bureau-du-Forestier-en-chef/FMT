@@ -355,5 +355,27 @@ namespace Core {
 		return peak;
 	}
 
+	void FMTageyieldhandler::setvalues(const std::string& yldname,const std::vector<int>& baseages,const std::vector<double>& values)
+	{
+		try{
+			if(values.size()!=baseages.size())
+			{
+				_exhandler->raise(Exception::FMTexc::FMTrangeerror,
+				"Vector of baseages and values are not the same size.",
+				"FMTageyieldhandler::setvalues", __LINE__, __FILE__, Core::FMTsection::Yield);
+			}
+			for(const int& age : baseages)
+			{
+				this->push_base(age);
+			}
+			for(const double& value : values)
+			{
+				this->push_data(yldname,value);
+			}
+		}catch(...){
+			_exhandler->raisefromcatch("", "FMTageyieldhandler::setvalues", __LINE__, __FILE__, Core::FMTsection::Yield);
+		}
+	}
+
 }
 
