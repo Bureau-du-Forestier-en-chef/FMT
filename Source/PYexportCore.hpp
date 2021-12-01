@@ -26,6 +26,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "boost/python.hpp"
 #include "FMTdata.hpp"
 #include "FMTtimeyieldhandler.hpp"
+#include "FMTageyieldhandler.hpp"
 
 namespace Python
 {
@@ -33,6 +34,7 @@ namespace Python
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(getattributes_overloads, getattributes, 1, 2)
 //BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(getnodes_overloads, getnodes, 3, 4)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(getnodes_overloads, getnodes, 0, 1)
+BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(getyieldrequest_overloads, getyieldrequest, 0, 0)
 
 void exportCore()
     {
@@ -91,6 +93,7 @@ void exportCore()
         define_pylist<Core::FMToutput>();
         define_pylist<Core::FMTschedule>();
 		define_pylist<std::vector<Core::FMTschedule>>();
+		define_pylist<Core::FMTyieldhandler>();
 
         define_pydict<Core::FMTdevelopment, std::vector<double>>();
         define_pydict<Core::FMTaction,std::map<Core::FMTdevelopment, std::vector<double>>>();
@@ -155,6 +158,7 @@ void exportCore()
 					"@DocString(FMTdevelopment::operable)")
                 .def("operate",&Core::FMTdevelopment::operate,
 					"@DocString(FMTdevelopment::operate)")
+				 .def("getyieldrequest",&Core::FMTdevelopment::getyieldrequest,getyieldrequest_overloads("@DocString(FMToutput::getyieldrequest)"))
 				.def("__str__", &Core::FMTdevelopment::operator std::string,
 					"@DocString(FMTdevelopment::operator std::string)")
                 .setattr("__hash__",&boost::pyhash<Core::FMTdevelopment>);
@@ -226,7 +230,17 @@ void exportCore()
 
 			define_pydict<std::string, std::vector<double>>();
 
-			
+			bp::class_<Core::FMTageyieldhandler>("FMTageyieldhandler", "@DocString(FMTageyieldhandler)")
+				.def(bp::init<const Core::FMTmask&>())
+				.def_pickle(FMT_pickle_suite<Core::FMTageyieldhandler>())
+				.def("__str__", &Core::FMTageyieldhandler::operator std::string,
+					"@DocString(FMTtimeyieldhandler::operator std::string)")
+				.def("postsolve", &Core::FMTageyieldhandler::postsolve,
+					"@DocString(FMTtimeyieldhandler::postsolve)")
+				.def("setvalues", &Core::FMTageyieldhandler::setvalues,
+					"@DocString(FMTtimeyieldhandler::setvalues)");
+				
+			define_pylist<Core::FMTageyieldhandler>();
 
 			bp::class_<Core::FMTtimeyieldhandler>("FMTtimeyieldhandler", "@DocString(FMTtimeyieldhandler)")
 				.def_pickle(FMT_pickle_suite<Core::FMTtimeyieldhandler>())
@@ -234,12 +248,18 @@ void exportCore()
 					"@DocString(FMTtimeyieldhandler::operator std::string)")
 				.def("postsolve", &Core::FMTtimeyieldhandler::postsolve,
 					"@DocString(FMTtimeyieldhandler::postsolve)");
+			
+			define_pylist<Core::FMTageyieldhandler>();
 
 			bp::class_<Core::FMTyields/*, bp::bases<Core::FMTlist<std::unique_ptr<Core::FMTyieldhandler>>>*/>("FMTyields", "@DocString(FMTyields)")
 				.def(bp::init<Core::FMTyields>())
 				.def_pickle(FMT_pickle_suite<Core::FMTyields>())
 				.def("getallyields", &Core::FMTyields::getallyields,
-					"@DocString(FMTyields::getallyields)");
+					"@DocString(FMTyields::getallyields)")
+				.def("get", &Core::FMTyields::get,
+					"@DocString(FMTyields::get)")
+				.def("getallyieldnames", &Core::FMTyields::getallyieldnames,
+					"@DocString(FMTyields::getallyieldnames)");
 
 
 
@@ -348,6 +368,11 @@ void exportCore()
 
 			define_FMTlist<Core::FMTconstraint>();
 			define_FMTlist<Core::FMTGCBMtransition>();
+
+			bp::class_<Core::FMTyieldrequest>("FMTyieldrequest", "@DocString(FMTyieldrequest)");
+			define_FMTlist<Core::FMTyieldrequest>();
+
+
     }
 }
 

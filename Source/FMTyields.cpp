@@ -412,7 +412,15 @@ std::map<std::string, std::map<std::string, std::vector<double>>>FMTyields::geta
 		for (const FMTyieldhandler* handler : handlers)
 		{
 			const std::map<std::string, std::vector<double>>localstuff = handler->getallyieldsdata(maxbase);
-			result[handler->getmask().get(target)] = localstuff;
+			std::string strtarget = handler->getmask().get(target);
+			if (result.find(strtarget) != result.end())
+			{
+				//Validate the logic for overrided yield ? ... Maybe we should iter from end to begin ... 
+				result.at(strtarget).insert(localstuff.begin(),localstuff.end());
+			}else{
+				result[strtarget] = localstuff;
+			}
+			
 		}
 		}catch (...)
 		{

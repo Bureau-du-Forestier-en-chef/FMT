@@ -28,7 +28,7 @@ namespace Graph
 	}
 
 	FMTcarbonpredictor::FMTcarbonpredictor(const std::vector<Core::FMTaction>& actions, const std::vector<std::string>& yieldnames,const Core::FMTyields& yields,
-		const FMTbasevertexproperties& source, const FMTbasevertexproperties& target, const std::vector<const FMTbaseedgeproperties*>& edges, const std::vector<int>& gaps):
+		const FMTbasevertexproperties& source, const FMTbasevertexproperties& target, const std::vector<const FMTbaseedgeproperties*>& edges, const std::vector<int>& gaps,bool withGCBMid):
 		source_vertex(&source),
 		target_vertex(&target),
 		source_yields(getyields(source, yields, yieldnames)),
@@ -44,14 +44,31 @@ namespace Graph
 			{
 				if (edgeprop->getactionID() < 0)
 				{
-					sourceactions.push_back(FMTGCBMGROWTHID);
+					if(withGCBMid)
+					{
+						sourceactions.push_back(FMTGCBMGROWTHID);
+					}else{
+						sourceactions.push_back(-1);
+					}
 				}
 				else {
-					sourceactions.push_back(actions.at(edgeprop->getactionID()).getGCBMactionid());
+					if(withGCBMid)
+					{
+						sourceactions.push_back(actions.at(edgeprop->getactionID()).getGCBMactionid());
+					}else{
+						sourceactions.push_back(edgeprop->getactionID());
+					}
+					
 				}
 			}
 			else {
-				sourceactions.push_back(FMTGCBMUNKNOWNID);
+				if(withGCBMid)
+				{
+					sourceactions.push_back(FMTGCBMUNKNOWNID);
+				}else{
+					sourceactions.push_back(-2);
+				}
+				
 			}
 			++location;
 		}

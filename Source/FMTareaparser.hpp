@@ -202,7 +202,8 @@ class FMTEXPORT FMTareaparser : public FMTparser
 															const Spatial::FMTspatialschedule& spatialsolution,
 															const std::vector<std::string>& yieldnames,
 															const Models::FMTmodel& model,
-															const int& period) const;
+															const int& period,
+															bool withGCBMid = true) const;
          // DocString: FMTareaparser::writesasolution
 		/**
 
