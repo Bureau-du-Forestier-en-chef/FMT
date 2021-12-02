@@ -55,6 +55,11 @@ void exportModel()
     "   :synopsis: Module used to generate all kind of Models (M2/M3).\n"
     "\n";
 
+	//For template function addyieldhandlers
+	//Manual wrapping member function pointer variables
+	//void (Models::FMTmodel::*addageyieldhandlers)(const std::vector<Core::FMTageyieldhandler>&) = &Models::FMTmodel::addyieldhandlers;
+
+
 	bp::class_<Models::FMTmodel, bp::bases<Core::FMTobject>>("FMTmodel", "@DocString(FMTmodel)")
 			.def_pickle(FMT_pickle_suite<Models::FMTmodel>())
 			.def(bp::init<Models::FMTmodel>())
@@ -62,9 +67,9 @@ void exportModel()
 				"@DocString(FMTmodel::getyields)")
 			.def("setyields", &Models::FMTmodel::setyields,
 				"@DocString(FMTmodel::setyields)")
-			//.def("addyieldhandlers", &Models::FMTmodel::addyieldhandlers,
-			//	"@DocString(FMTmodel::addyieldhandlers)")
-			.def<void (Models::FMTmodel::*)(const std::vector<Core::FMTageyieldhandler>& yieldhandlers)>("addyieldhandlers",&Models::FMTmodel::addyieldhandlers,
+			.def("addyieldhandlers", &Models::FMTmodel::addyieldhandlers<Core::FMTageyieldhandler>,
+				"@DocString(FMTmodel::addyieldhandlers)")
+			.def("addyieldhandlers", &Models::FMTmodel::addyieldhandlers<Core::FMTtimeyieldhandler>,
 				"@DocString(FMTmodel::addyieldhandlers)")
 			.def("getname", &Models::FMTmodel::getname,
 				"@DocString(FMTmodel::getname)")
@@ -108,8 +113,8 @@ void exportModel()
 			.def("basepresolve",&Models::FMTmodel::basepresolve,
 				basepresolve_overloads(bp::args("presolvepass"),"@DocString(FMTmodel::basepresolve)"))
 		.def("getpotentialschedule", &Models::FMTmodel::getpotentialschedule,
-		//The way to expose overload member functions with different args
 			getpotentialscheduleoverloads(bp::args("toremove","selection","withlock"),"@DocString(FMTmodel::getpotentialschedule)"))
+			//The way to expose overload member functions with different args
 			.def<bool (Models::FMTmodel::*)(const Models::FMTintmodelparameters& key, const int& value)>("setparameter",&Models::FMTmodel::setparameter,
 				"@DocString(FMTmodel::setparameter)")
 			.def<bool (Models::FMTmodel::*)(const Models::FMTdblmodelparameters& key, const double& value)>("setparameter",&Models::FMTmodel::setparameter,

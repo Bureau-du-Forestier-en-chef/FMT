@@ -16,7 +16,6 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTdevelopmentpath.hpp"
 #include "FMTageyieldhandler.hpp"
 #include "FMTtimeyieldhandler.hpp"
-#include "FMTcomplexyieldhandler.hpp"
 
 
 namespace Models{
@@ -249,60 +248,34 @@ void FMTmodel::addoutput(const std::string& name,
 
 	}
 
-void FMTmodel::addyieldhandlers(const std::vector<Core::FMTageyieldhandler>& yieldhandlers)
+template<typename T>
+void FMTmodel::addyieldhandlers(const std::vector<T>& yieldhandlers)
 {
 	try{
-		std::vector<std::unique_ptr<Core::FMTyieldhandler>> yldhandlerptrs;
-		for(const Core::FMTageyieldhandler& yldhandler : yieldhandlers)
+		yields.unshrink(themes);
+		for (const auto& yldhandler : yieldhandlers)
 		{
-			yldhandlerptrs.push_back(yldhandler.clone());
+			std::unique_ptr<Core::FMTyieldhandler> yldhandlerptr = yldhandler.clone();
+			yields.push_back(yldhandlerptr->getmask(),yldhandlerptr);
 		}
-		this->addyieldhandlersfromptr(yldhandlerptrs);
+		yields.update();
 	}catch(...){
-		_exhandler->printexceptions("", "FMTmodel::addyieldhandlersfromptr", __LINE__, __FILE__);
+		_exhandler->printexceptions("", "FMTmodel::addyieldhandlers", __LINE__, __FILE__);
 	}
 
 }
-
-void FMTmodel::addyieldhandlers(const std::vector<Core::FMTtimeyieldhandler>& yieldhandlers)
-{
-	try{
-		std::vector<std::unique_ptr<Core::FMTyieldhandler>> yldhandlerptrs;
-		for(const Core::FMTtimeyieldhandler& yldhandler : yieldhandlers)
-		{
-			yldhandlerptrs.push_back(yldhandler.clone());
-		}
-		this->addyieldhandlersfromptr(yldhandlerptrs);
-	}catch(...){
-		_exhandler->printexceptions("", "FMTmodel::addyieldhandlersfromptr", __LINE__, __FILE__);
-	}
-
-}
-
-void FMTmodel::addyieldhandlers(const std::vector<Core::FMTcomplexyieldhandler>& yieldhandlers)
-{
-	try{
-		std::vector<std::unique_ptr<Core::FMTyieldhandler>> yldhandlerptrs;
-		for(const Core::FMTcomplexyieldhandler& yldhandler : yieldhandlers)
-		{
-			yldhandlerptrs.push_back(yldhandler.clone());
-		}
-		this->addyieldhandlersfromptr(yldhandlerptrs);
-	}catch(...){
-		_exhandler->printexceptions("", "FMTmodel::addyieldhandlersfromptr", __LINE__, __FILE__);
-	}
-
-}
+template void FMTmodel::addyieldhandlers<Core::FMTageyieldhandler>(const std::vector<Core::FMTageyieldhandler>& yieldhandlers);
+template void FMTmodel::addyieldhandlers<Core::FMTtimeyieldhandler>(const std::vector<Core::FMTtimeyieldhandler>& yieldhandlers);
 
 void FMTmodel::addyieldhandlersfromptr(const std::vector<std::unique_ptr<Core::FMTyieldhandler>>& yieldhandlers)
 {
 	try {
+		yields.unshrink(themes);
 		for (const std::unique_ptr<Core::FMTyieldhandler>& yldhandler : yieldhandlers)
 		{
-			yields.unshrink(themes);
 			yields.push_back(yldhandler->getmask(),yldhandler);
-			yields.update();
 		}
+		yields.update();
 	}catch(...){
 			_exhandler->printexceptions("", "FMTmodel::addyieldhandlersfromptr", __LINE__, __FILE__);
 	}

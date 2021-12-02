@@ -40,3 +40,4 @@ gdal/*
 compile_commands.json
 .cmake/*
 /Examples/C++/tests/BFECtests.csv
+.vscode/*
