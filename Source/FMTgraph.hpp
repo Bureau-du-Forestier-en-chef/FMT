@@ -1900,7 +1900,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 
 
 		std::vector<FMTcarbonpredictor> getcarbonpredictors(const FMTvertex_descriptor& targetdescriptor,const Models::FMTmodel& model,
-			const std::vector<std::string>& yieldnames,const size_t& depth,bool withGCBMid =true) const
+			const std::vector<std::string>& yieldnames,const size_t& depth,bool periodonevalues= false, bool withGCBMid =true) const
 			{
 			std::vector<FMTcarbonpredictor> predictors;
 			try {
@@ -1914,7 +1914,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 					const FMTvertex_descriptor& sourcevertex = boost::source(*inedge_iterator, data);
 					const FMTbasevertexproperties& sourceproperties = data[sourcevertex];
 					const int sourceperiod = sourceproperties.get().getperiod();
-					if (sourceperiod>0)
+					if (sourceperiod>0||periodonevalues)
 					{
 						lastactions.push_back(&data[*inedge_iterator]);
 						distances.push_back(targetperiod-sourceperiod);

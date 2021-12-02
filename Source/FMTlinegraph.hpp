@@ -117,7 +117,7 @@ class FMTEXPORT FMTlinegraph : public FMTgraph<FMTbasevertexproperties,FMTbaseed
 		/**
 		Returns a vector of carbon predictors for a given (period), (actionsmap), (yieldnames) and yields.
 		*/
-		std::vector<FMTcarbonpredictor>getperiodcarbonpredictors(const int& period, const Models::FMTmodel& model, const std::vector<std::string>& yieldnames,bool withGCBMid = true) const;
+		std::vector<FMTcarbonpredictor>getperiodcarbonpredictors(const int& period, const Models::FMTmodel& model, const std::vector<std::string>& yieldnames,bool periodonevalues =false,bool withGCBMid = true) const;
 		// DocString: FMTlinegraph::getinedgeactionid
 		/**
 		Get the in edge action id of a vertex.
