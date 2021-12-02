@@ -33,7 +33,7 @@ BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(addoutputs_overloads,addoutputs,6, 7)
 
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(writeforest_overloads,writeforest, 5, 6)
 //BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(writedisturbances_overloads,writedisturbances, 5, 6)
-BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(writecarbonpredictors_overloads,writecarbonpredictors, 5, 6)
+BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(writecarbonpredictors_overloads,writecarbonpredictors, 5, 7)
 
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(readmodel_overloads, read, 8, 9)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(getconstraintsfromstring_overloads,getconstraintsfromstring,2,3)

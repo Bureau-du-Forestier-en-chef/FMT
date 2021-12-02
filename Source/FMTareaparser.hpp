@@ -203,6 +203,7 @@ class FMTEXPORT FMTareaparser : public FMTparser
 															const std::vector<std::string>& yieldnames,
 															const Models::FMTmodel& model,
 															const int& period,
+															bool periodonevalues = false,
 															bool withGCBMid = true) const;
          // DocString: FMTareaparser::writesasolution
 		/**
