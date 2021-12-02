@@ -26,11 +26,10 @@ namespace Parallel
 		mtx()
 
 	{
-	
 
 	}
 	void FMTparallelwriter::write(const std::unique_ptr<Models::FMTmodel>& modelptr,
-		const int& firstperiod, const int& lastperiod, const size_t& iteration) const
+		const int& firstperiod, const int& lastperiod, const int& iteration) const
 	{
 		boost::lock_guard<boost::recursive_mutex> lock(mtx);
 		try {

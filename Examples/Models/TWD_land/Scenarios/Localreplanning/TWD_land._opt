@@ -1,15 +1,18 @@
 
 *OBJECTIVE
-_MAX oVollocaltarget - _Penalty(_All) 1.._LENGTH
+_MAX ovolrec - _Penalty(_All) 1.._LENGTH
 
 *EXCLUDE
 aCaribou 1.._LENGTH
+afire    1.._LENGTH
+arecup    1.._LENGTH
 
 *CONSTRAINTS
+
 oVolRec<= 40272 1.._LENGTH _SETTOGLOBAL(1)
+
 osuppl >= 0 1.._LENGTH _Goal(G1,9999) _SETTOGLOBAL(1)
+
 oSupRec >= 0 1.._LENGTH _Goal(G2,9999) _SETTOGLOBAL(1)
-;oVolRec<= 20000 1.._LENGTH
-;recuparea = 0 1.._LENGTH
-Burnedarea = 0 1.._LENGTH
+
 *FORMAT MOSEK

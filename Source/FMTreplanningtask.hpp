@@ -58,7 +58,7 @@ namespace Parallel
 		std::shared_ptr<Models::FMTmodel>local;
 		// DocString: FMTreplanningtask::replicateids
 		///The replicates queue that the task needs to do
-		std::queue<size_t>replicateids;
+		std::queue<int>replicateids;
 		// DocString: FMTreplanningtask::dynamicarea
 		///This is the dynamic area that changes at each replanning step
 		std::vector<Core::FMTactualdevelopment>dynamicarea;
@@ -93,13 +93,7 @@ namespace Parallel
 		/**
 		Get the actual iteration done by the task (front in the queue)
 		*/
-		const size_t getiteration() const;
-	protected:
-		// DocString: FMTreplanningtask::work
-		/**
-		Main function that do the replanning task
-		*/
-		virtual void work();
+		const int getiteration() const;
 	public:
 		// DocString: FMTreplanningtask::FMTreplanningtask()
 		/**
@@ -133,14 +127,24 @@ namespace Parallel
 						const std::vector<Core::FMToutput>& outputs,
 						const std::string& outputlocation,
 						const std::string& gdaldriver,
-						const size_t& replicates,
+						const int& replicates,
 						const int& replanningperiodssize,
 						const double& globalwweight);
 		// DocString: FMTreplanningtask::split(...)
 		/**
 		The split fonction that split the main task into multiple tasks of replanning.
 		*/
-		virtual std::vector<std::unique_ptr<FMTtask>>split(const size_t& numberoftasks) const;
+		virtual std::vector<std::unique_ptr<FMTtask>>split(const unsigned int& numberoftasks) const;
+		// DocString: FMTreplanningtask::split()
+		/**
+		Will spawn a minimal task from the master task
+		*/
+		virtual std::unique_ptr<FMTtask>spawn();
+		// DocString: FMTreplanningtask::work
+		/**
+		Main function that do the replanning task
+		*/
+		virtual void work();
 
 	};
 

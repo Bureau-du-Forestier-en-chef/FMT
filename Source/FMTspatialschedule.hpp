@@ -8,7 +8,6 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #define FMTSPATIALSCHEDULE_H
 
 #include "FMTlayer.hpp"
-#include "FMTforest.hpp"
 #include "FMTlinegraph.hpp"
 #include "FMTspatialnodescache.hpp"
 #include "FMTeventcontainer.hpp"
@@ -21,13 +20,15 @@ namespace Core {
 	class FMTconstraint;
 	class FMTyields;
 	class FMTaction;
-	class FMTdevelopement;
+	class FMTdevelopment;
 }
 
 
 
 namespace Spatial
 {
+class FMTforest;
+
 enum  FMTspatialscheduletype
 	{
 		FMTcomplete = 1,
