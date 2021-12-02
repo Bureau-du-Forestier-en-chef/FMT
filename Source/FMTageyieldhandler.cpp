@@ -355,7 +355,7 @@ namespace Core {
 		return peak;
 	}
 
-	void FMTageyieldhandler::setvalues(const std::string& yldname,const std::vector<int>& baseages,const std::vector<double>& values)
+	void FMTageyieldhandler::setyieldvalues(const std::string& yldname,const std::vector<int>& baseages,const std::vector<double>& values)
 	{
 		try{
 			if(values.size()!=baseages.size())
@@ -364,16 +364,21 @@ namespace Core {
 				"Vector of baseages and values are not the same size.",
 				"FMTageyieldhandler::setvalues", __LINE__, __FILE__, Core::FMTsection::Yield);
 			}
-			for(const int& age : baseages)
+			if(this->getbases().empty())
 			{
-				this->push_base(age);
+				this->setbase(baseages);
+			}else if(this->getbases() != baseages)
+			{
+				_exhandler->raise(Exception::FMTexc::FMTrangeerror,
+				"Vector of baseages and values of bases already set are different. \nYou must create a new FMTageyieldhandler for those values",
+				"FMTageyieldhandler::setyieldvalues", __LINE__, __FILE__, Core::FMTsection::Yield);
 			}
 			for(const double& value : values)
 			{
 				this->push_data(yldname,value);
 			}
 		}catch(...){
-			_exhandler->raisefromcatch("", "FMTageyieldhandler::setvalues", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raisefromcatch("", "FMTageyieldhandler::setyieldvalues", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 	}
 

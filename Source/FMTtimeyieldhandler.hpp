@@ -34,7 +34,16 @@ namespace Core
 		FMTtimeyieldhandler() = default;
 		FMTtimeyieldhandler(const FMTtimeyieldhandler& rhs) = default;
 		FMTtimeyieldhandler& operator = (const FMTtimeyieldhandler& rhs) = default;
+		// DocString: FMTtimeyieldhandler(const FMTmask&)
+		/**
+		Constructor for FMTtimeyieldhandler with a FMTmask
+		*/		
 		FMTtimeyieldhandler(const FMTmask& mask);
+		// DocString: FMTtimeyieldhandler::setyieldvalues
+		/**
+		Set the values for given yield name. 
+		*/
+		virtual void setyieldvalues(const std::string& yldname,const int& startingperiod,const std::vector<double>& values);	
 		virtual double getlastvalue(const std::string yld) const;
 		virtual bool push_data(const std::string& yld, const double& value);
 		virtual bool push_data(const std::string& yld, const FMTdata& data);

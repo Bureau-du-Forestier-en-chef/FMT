@@ -210,6 +210,32 @@ namespace Core {
 		return localstuff;
 	}
 
+	void FMTtimeyieldhandler::setyieldvalues(const std::string& yldname,const int& startingperiod,const std::vector<double>& values)
+	{
+		try{
+			if(this->getbases().empty())
+			{
+				this->push_base(startingperiod);
+			}else if(this->getbases().size()>1)
+			{
+				_exhandler->raise(Exception::FMTexc::FMTrangeerror,
+				"Yieldhandler have multiple starting period ...",
+				"FMTtimeyieldhandler::setyieldvalues", __LINE__, __FILE__, Core::FMTsection::Yield);
+			}else if(this->getbases()[0]!=startingperiod)
+			{
+				_exhandler->raise(Exception::FMTexc::FMTrangeerror,
+				"Starting period is different from this FMTtimeyieldhandler. \nYou must create a new FMTtimeyieldhandler for those values",
+				"FMTtimeyieldhandler::setyieldvalues", __LINE__, __FILE__, Core::FMTsection::Yield);
+			}
+			for(const double& value : values)
+			{
+				this->push_data(yldname,value);
+			}
+		}catch(...){
+			_exhandler->raisefromcatch("", "FMTtimeyieldhandler::setyieldvalues", __LINE__, __FILE__, Core::FMTsection::Yield);
+		}
+	}
+
 
 }
 

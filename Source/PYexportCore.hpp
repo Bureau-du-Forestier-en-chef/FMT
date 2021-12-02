@@ -234,11 +234,11 @@ void exportCore()
 				.def(bp::init<const Core::FMTmask&>())
 				.def_pickle(FMT_pickle_suite<Core::FMTageyieldhandler>())
 				.def("__str__", &Core::FMTageyieldhandler::operator std::string,
-					"@DocString(FMTtimeyieldhandler::operator std::string)")
+					"@DocString(FMTageyieldhandler::operator std::string)")
 				.def("postsolve", &Core::FMTageyieldhandler::postsolve,
-					"@DocString(FMTtimeyieldhandler::postsolve)")
-				.def("setvalues", &Core::FMTageyieldhandler::setvalues,
-					"@DocString(FMTtimeyieldhandler::setvalues)");
+					"@DocString(FMTageyieldhandler::postsolve)")
+				.def("setyieldvalues", &Core::FMTageyieldhandler::setyieldvalues,
+					"@DocString(FMTageyieldhandler::setyieldvalues)");
 				
 			define_pylist<Core::FMTageyieldhandler>();
 
@@ -249,7 +249,7 @@ void exportCore()
 				.def("postsolve", &Core::FMTtimeyieldhandler::postsolve,
 					"@DocString(FMTtimeyieldhandler::postsolve)");
 			
-			define_pylist<Core::FMTageyieldhandler>();
+			define_pylist<Core::FMTtimeyieldhandler>();
 
 			bp::class_<Core::FMTyields/*, bp::bases<Core::FMTlist<std::unique_ptr<Core::FMTyieldhandler>>>*/>("FMTyields", "@DocString(FMTyields)")
 				.def(bp::init<Core::FMTyields>())
@@ -370,6 +370,7 @@ void exportCore()
 			define_FMTlist<Core::FMTGCBMtransition>();
 
 			bp::class_<Core::FMTyieldrequest>("FMTyieldrequest", "@DocString(FMTyieldrequest)");
+
 			define_FMTlist<Core::FMTyieldrequest>();
 
 

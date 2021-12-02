@@ -34,13 +34,6 @@ namespace Graph
 	class FMTgraphvertextoyield;
 }
 
-namespace Core
-{
-	class FMTageyieldhandler;
-	class FMTtimeyieldhandler;
-	class FMTcomplexyieldhandler;
-}
-
 namespace Parser
 {
 	class FMTmodelparser;
@@ -382,19 +375,10 @@ namespace Models
 		// DocString: FMTmodel::addyieldhandlers
 		/**
 		Add FMTageyieldhandler from vector (yieldhandlers) to yields. 
-		*/		
-		void addyieldhandlers(const std::vector<Core::FMTageyieldhandler>& yieldhandlers);
-		// DocString: FMTmodel::addyieldhandlers
-		/**
-		Add FMTtimeyieldhandler from vector (yieldhandlers) to yields. 
-		*/		
-		void addyieldhandlers(const std::vector<Core::FMTtimeyieldhandler>& yieldhandlers);
-		// DocString: FMTmodel::addyieldhandlers
-		/**
-		Add FMTcomplexyieldhandler from vector (yieldhandlers) to yields. 
-		*/		
-		void addyieldhandlers(const std::vector<Core::FMTcomplexyieldhandler>& yieldhandlers);
-		// DocString: FMTmodel::addyieldhandlers
+		*/
+		template<typename T>		
+		void addyieldhandlers(const std::vector<T>& yieldhandlers);
+		// DocString: FMTmodel::addyieldhandlersfromptr
 		/**
 		Add unique pointer of FMTyieldhandler from vector (yieldhandlers) to yields. 
 		*/		
