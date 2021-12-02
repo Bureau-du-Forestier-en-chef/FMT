@@ -9,10 +9,25 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <boost/algorithm/string/join.hpp>
 #include <boost/lexical_cast.hpp>
 #include "FMToperatingareaclusterbinary.hpp"
+#include "FMTlayer.hpp"
+#include "FMTforest.hpp"
+#include "FMTGCBMtransition.hpp"
+#include "FMTconstants.hpp"
+#include "FMTtheme.hpp"
+#include "FMToperatingareascheme.hpp"
+#include "FMToperatingareacluster.hpp"
+#include "FMTdevelopment.hpp"
+#include "FMTspatialschedule.hpp"
+#include "FMTsasolution.hpp"
+#include "FMTactualdevelopment.hpp"
+#include <boost/filesystem.hpp>
+#include <boost/filesystem/operations.hpp>
+
 #ifdef FMTWITHGDAL
 	#include "gdal_alg.h"
 	#include "gdal_utils.h"
 	#include "gdalwarper.h"
+	#include "ogrsf_frmts.h"
 #endif
 
 namespace Parser{

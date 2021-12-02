@@ -22,7 +22,7 @@ namespace Parallel
 		const std::vector<Core::FMToutput>& outputs,
 		const std::string& outputlocation,
 		const std::string& gdaldriver,
-		const size_t& replicates,
+		const int& replicates,
 		const int& replanningperiodssize,
 		const double& globalwweight):
 		resultswriter(new FMTparallelwriter(outputlocation, gdaldriver, outputs, globalm)),
@@ -54,7 +54,7 @@ namespace Parallel
 			replicateids.pop();
 			baseschedule = std::shared_ptr<Core::FMTschedule>(new Core::FMTschedule(modelcpy->getsolution(1, true)));
 			localconstraints = modelcpy->getlocalconstraints(local->getconstraints(), 1);
-			for (size_t replicateid = 0; replicateid < replicates; ++replicateid)
+			for (int replicateid = 0; replicateid < replicates; ++replicateid)
 			{
 				replicateids.push(replicateid);
 			}
@@ -70,18 +70,18 @@ namespace Parallel
 		return std::unique_ptr<FMTtask>(new FMTreplanningtask(*this));
 		}
 
-	std::vector<std::unique_ptr<FMTtask>>FMTreplanningtask::split(const size_t& numberoftasks) const
+	std::vector<std::unique_ptr<FMTtask>>FMTreplanningtask::split(const unsigned int& numberoftasks) const
 	{
 		std::vector<std::unique_ptr<FMTtask>>tasks;
 		try {
 			size_t replicate = 0;
-			const size_t replicatepertask = (replicateids.size() / numberoftasks);
-			std::queue<size_t>allreplicates=this->replicateids;
+			 int replicatepertask = (static_cast<int>(replicateids.size()) / numberoftasks);
+			std::queue<int>allreplicates=this->replicateids;
 			for (size_t taskid = 0; taskid < numberoftasks; ++taskid)
 				{
 				FMTreplanningtask newtask(*this);
-				std::queue<size_t>replicatesoftask;
-				for (size_t taskreplicate = 0 ; taskreplicate < replicatepertask;++taskreplicate)
+				std::queue<int>replicatesoftask;
+				for (int taskreplicate = 0 ; taskreplicate < replicatepertask;++taskreplicate)
 					{
 					replicatesoftask.push(allreplicates.front());
 					allreplicates.pop();
@@ -102,6 +102,25 @@ namespace Parallel
 		return tasks;
 	}
 
+	std::unique_ptr<FMTtask>FMTreplanningtask::spawn()
+	{
+		try {
+			if (!replicateids.empty())
+				{
+				FMTreplanningtask newtask(*this);
+				std::queue<int>singlereplicate;
+				singlereplicate.push(replicateids.front());
+				replicateids.pop();
+				newtask.replicateids.swap(singlereplicate);
+				return newtask.clone();
+				}
+		}catch (...)
+			{
+			_exhandler->raisefromcatch("", "FMTreplanningtask::spawn", __LINE__, __FILE__);
+			}
+	return std::unique_ptr<FMTtask>(nullptr);
+	}
+
 	void FMTreplanningtask::writeresults(const std::unique_ptr<Models::FMTmodel>& modelptr, bool onlyfirstperiod)
 	{
 		try {
@@ -118,7 +137,7 @@ namespace Parallel
 		}
 	}
 
-	const size_t FMTreplanningtask::getiteration() const
+	const int FMTreplanningtask::getiteration() const
 		{
 		return replicateids.front();
 		}
@@ -151,6 +170,7 @@ namespace Parallel
 				iterationglobalschedule = *baseschedule;
 				replicateids.pop();
 			}
+			setstatus(true);
 		}catch (...)
 		{
 			_exhandler->raisefromcatch("", "FMTreplanningtask::work", __LINE__, __FILE__);

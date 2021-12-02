@@ -21,6 +21,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <string>
 #include <vector>
 #include <utility>
+#include <memory>
 
 namespace Core
 {
@@ -29,6 +30,7 @@ namespace Core
 	class FMTtheme;
 	class FMTdata;
 	class FMTyieldmodel;
+	class FMTyieldhandler;
 }
 
 

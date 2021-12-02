@@ -28,6 +28,61 @@ bool FMTconstants::isconstant(std::string value) const
         }
     return false;
     }
+
+
+template<typename T>
+T FMTconstants::get(std::string key, int period) const
+{
+	try {
+		if (key.find("#") != std::string::npos)
+		{
+			key.erase(0, 1);
+		}
+		boost::unordered_map<std::string, std::vector<double>>::const_iterator it = data.find(key);
+		if (it == data.end())
+		{
+			_exhandler->raise(Exception::FMTexc::FMTundefined_constant, key + " at period " + std::to_string(period), "FMTconstants::get", __LINE__, __FILE__, Core::FMTsection::Constants);
+		}
+		std::vector<double> const* location = &it->second;
+		if (period >= static_cast<int>(location->size()))
+		{
+			period = static_cast<int>(location->size()) - 1;
+		}
+		return static_cast<T>(location->at(period));
+	}
+	catch (...)
+	{
+		_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, "for " + key + " at period " + std::to_string(period), "FMTconstants::get", __LINE__, __FILE__, Core::FMTsection::Constants);
+	}
+	return T();
+}
+
+template double FMTconstants::get<double>(std::string key, int period) const;
+template int FMTconstants::get<int>(std::string key, int period) const;
+template size_t FMTconstants::get<size_t>(std::string key, int period) const;
+
+template<typename T>
+std::vector<T>FMTconstants::getall(std::string key) const
+{
+	std::vector<T>values;
+	try {
+		for (size_t period = 0; period < length(key); ++period)
+		{
+			values.push_back(get<T>(key, period));
+		}
+	}
+	catch (...)
+	{
+		_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, "for " + key, "FMTconstants::getall", __LINE__, __FILE__, Core::FMTsection::Constants);
+	}
+	return values;
+}
+
+template std::vector<double>FMTconstants::getall<double>(std::string key) const;
+template std::vector<int>FMTconstants::getall<int>(std::string key) const;
+template std::vector<size_t> FMTconstants::getall<size_t>(std::string key) const;
+
+
 FMTconstants& FMTconstants::operator = (const FMTconstants& rhs)
     {
     if (this!=&rhs)

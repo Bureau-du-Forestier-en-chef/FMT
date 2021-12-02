@@ -6,6 +6,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
 #include "FMTsesmodel.hpp"
+#include "FMTforest.hpp"
 
 
 namespace Models
