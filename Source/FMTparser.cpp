@@ -13,12 +13,25 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTyields.hpp"
 #include "FMTaction.hpp"
 #include "FMTbounds.hpp"
+#include "FMTconstants.hpp"
+#include "FMTlayer.hpp"
+
 #if defined FMTWITHGDAL
 	#include "gdal_version.h"
 	#include "ogr_srs_api.h"
+	#include "gdal.h"
+	#include "gdal_priv.h"
+	#include "ogrsf_frmts.h"
+	#include "gdal_rat.h"
+	#if defined (_MSC_VER)
+	#include "cpl_conv.h"
+	#endif
 #endif 
 
-
+#include <boost/filesystem.hpp>
+#include <boost/filesystem/operations.hpp>
+#include <stack>
+#include <string>
 
 namespace Parser
 {
@@ -181,7 +194,182 @@ void FMTparser::setsection(const Core::FMTsection& section) const
 	_section = section;
 }
 
+
+template<typename T>
+T FMTparser::getnum(const std::string& value, const Core::FMTconstants& constant, int period) const
+{
+	T nvalue = 0;
+	try {
+		const std::string newvalue = boost::erase_all_copy(value, ",");
+		if (isnum(newvalue))
+		{
+			nvalue = getnum<T>(newvalue);
+		}
+		else if (constant.isconstant(newvalue))
+		{
+			nvalue = constant.get<T>(newvalue, period);
+			_exhandler->raise(Exception::FMTexc::FMTconstants_replacement,
+				value + "at line " + std::to_string(_line), "FMTparser::getnum", __LINE__, __FILE__, _section);
+			++_constreplacement;
+		}
+		else {
+			_exhandler->raise(Exception::FMTexc::FMTinvalid_number,
+				value + "at line " + std::to_string(_line), "FMTparser::getnum", __LINE__, __FILE__, _section);
+		}
+	}
+	catch (...)
+	{
+		_exhandler->raisefromcatch("", "FMTparser::getnum", __LINE__, __FILE__, _section);
+	}
+	return nvalue;
+}
+
+template int FMTparser::getnum<int>(const std::string& value, const Core::FMTconstants& constant, int period) const;
+template double FMTparser::getnum<double>(const std::string& value, const Core::FMTconstants& constant, int period) const;
+template size_t FMTparser::getnum<size_t>(const std::string& value, const Core::FMTconstants& constant, int period) const;
+
+template<typename T>
+T FMTparser::getnum(const std::string& value) const
+{
+	T nvalue = 0;
+	try {
+		const std::string newvalue = boost::erase_all_copy(value, ",");
+		if (isnum(newvalue))
+		{
+			nvalue = static_cast<T>(std::stod(newvalue));
+		}
+		else {
+			_exhandler->raise(Exception::FMTexc::FMTinvalid_number,
+				value + "at line " + std::to_string(_line), "FMTparser::getnum", __LINE__, __FILE__, _section);
+		}
+	}
+	catch (...)
+	{
+		_exhandler->raisefromcatch("", "FMTparser::getnum", __LINE__, __FILE__, _section);
+	}
+	return nvalue;
+}
+
+template int FMTparser::getnum<int>(const std::string& value) const;
+template double FMTparser::getnum<double>(const std::string& value) const;
+template size_t FMTparser::getnum<size_t>(const std::string& value) const;
+
+template<typename T>
+bool FMTparser::tryfillnumber(T& number, const std::string& value, const Core::FMTconstants& constant, int period) const
+{
+	bool gotit = true;
+	try {
+		number = getnum<T>(value, constant, period);
+	}
+	catch (...)
+	{
+		gotit = false;
+	}
+	return gotit;
+}
+template bool FMTparser::tryfillnumber<int>(int& number, const std::string& value, const Core::FMTconstants& constant, int period) const;
+template bool FMTparser::tryfillnumber<double>(double& number, const std::string& value, const Core::FMTconstants& constant, int period) const;
+
+template<typename T>
+Core::FMTbounds<T> FMTparser::bounds(const Core::FMTconstants& constants, const std::string& value, const std::string& ope, Core::FMTsection section) const
+{
+	T lupper = std::numeric_limits<T>::max();
+	T llower = std::numeric_limits<T>::lowest();
+	try {
+		try {
+			T intvalue = getnum<T>(value, constants);
+			const std::array<std::string, 5> baseoperators = this->getbaseoperators();
+			const std::array<std::string, 5>::const_iterator it = std::find(baseoperators.begin(), baseoperators.end(), ope);
+			const size_t optype = (it - baseoperators.begin());
+			if (optype == 0)
+			{
+				lupper = intvalue;
+				llower = lupper;
+			}
+			else if (optype == 1)
+			{
+				lupper = intvalue;
+				llower = std::numeric_limits<T>::lowest();
+			}
+			else if (optype == 2)
+			{
+				lupper = std::numeric_limits<T>::max();
+				llower = intvalue;
+			}
+		}
+		catch (...)
+		{
+			_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
+				"for value " + value, "FMTparser::bounds", __LINE__, __FILE__, _section);
+		}
+	}
+	catch (...)
+	{
+		_exhandler->raisefromcatch("", "FMTparser::bounds", __LINE__, __FILE__, _section);
+	}
+	return Core::FMTbounds<T>(section, lupper, llower);
+}
+
+template Core::FMTbounds<double> FMTparser::bounds<double>(const Core::FMTconstants& constants, const std::string& value, const std::string& ope, Core::FMTsection section) const;
+template Core::FMTbounds<int> FMTparser::bounds<int>(const Core::FMTconstants& constants, const std::string& value, const std::string& ope, Core::FMTsection section) const;
+
+
+
 #ifdef FMTWITHGDAL
+
+OGRSpatialReference FMTparser::getFORELspatialref()
+{
+	OGRSpatialReference FMTspref(nullptr);
+	FMTspref.importFromEPSG(32198);
+	return FMTspref;
+}
+
+template<typename T>
+GDALDataset* FMTparser::createdataset(const std::string& location, const Spatial::FMTlayer<T>& layer, const GDALDataType datatype) const
+{
+	const char *pszFormat = "GTiff";
+	GDALDriver *poDriver = nullptr;
+	GDALDataset *poDstDS = nullptr;
+	try {
+		poDriver = GetGDALDriverManager()->GetDriverByName(pszFormat);
+		if (poDriver == nullptr)
+		{
+			_exhandler->raise(Exception::FMTexc::FMTinvaliddriver,
+				std::string(pszFormat), "FMTparser::createdataset", __LINE__, __FILE__, _section);
+		}
+		char **papszOptions = NULL;
+		papszOptions = CSLSetNameValue(papszOptions, "TILED", "YES");
+		papszOptions = CSLSetNameValue(papszOptions, "BLOCKXSIZE", "128");
+		papszOptions = CSLSetNameValue(papszOptions, "BLOCKYSIZE", "128");
+		papszOptions = CSLSetNameValue(papszOptions, "COMPRESS", "LZW");
+		papszOptions = CSLSetNameValue(papszOptions, "ZLEVEL", "9");
+		papszOptions = CSLSetNameValue(papszOptions, "BIGTIFF", "YES");
+		poDstDS = poDriver->Create(location.c_str(), layer.GetXSize(), layer.GetYSize(), 1, datatype, papszOptions);
+		if (poDstDS == nullptr)
+		{
+			_exhandler->raise(Exception::FMTexc::FMTinvaliddataset
+				, poDstDS->GetDescription(), "FMTparser::createdataset", __LINE__, __FILE__, _section);
+		}
+		std::vector<double>geotrans = layer.getgeotransform();
+		const std::string projection = layer.getprojection();
+		poDstDS->SetProjection(projection.c_str());
+		poDstDS->SetGeoTransform(&geotrans[0]);
+		poDstDS->FlushCache();
+		CSLDestroy(papszOptions);
+	}
+	catch (...)
+	{
+		_exhandler->raisefromcatch("", "FMTparser::createdataset", __LINE__, __FILE__);
+	}
+	return poDstDS;
+}
+
+template GDALDataset* FMTparser::createdataset<int>(const std::string& location, const Spatial::FMTlayer<int>& layer, const GDALDataType datatype) const;
+template GDALDataset* FMTparser::createdataset<std::string>(const std::string& location, const Spatial::FMTlayer<std::string>& layer, const GDALDataType datatype) const;
+template GDALDataset* FMTparser::createdataset<double>(const std::string& location, const Spatial::FMTlayer<double>& layer, const GDALDataType datatype) const;
+
+
+
 
 GDALDataset* FMTparser::getdataset(const std::string& location) const
     {
@@ -1211,10 +1399,11 @@ std::vector<std::vector<std::string>>FMTparser::readcsv(const std::string& locat
 				std::ifstream csvstream(location);
 				std::string line;
 				std::vector<std::string>splitted;
+				bool gotsomething = true;
 				if (FMTparser::tryopening(csvstream, location))
 					{
 					//bool inactualdevs = false;
-					while (csvstream.is_open())
+					while (gotsomething)
 						{
 						if (FMTparser::safeGetline(csvstream, line))
 							{
@@ -1223,8 +1412,11 @@ std::vector<std::vector<std::string>>FMTparser::readcsv(const std::string& locat
 								{
 								lines.push_back(FMTparser::spliter(line, csvsplitregex));
 								}
-							}
+						}else {
+							gotsomething = false;
 						}
+						}
+					csvstream.close();
 					}
 			}
 	}catch (...)

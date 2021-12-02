@@ -16,6 +16,10 @@ Example to get FMTcarbonpredictors on a FMTsesmodel
 	#include "FMTspatialschedule.hpp"
 	#include "FMTareaparser.hpp"
 	#include "FMTforest.hpp"
+	#include "ogr_srs_api.h"
+	#include "gdal.h"
+	#include "gdal_priv.h"
+	#include "ogrsf_frmts.h"
 #endif 
 
 

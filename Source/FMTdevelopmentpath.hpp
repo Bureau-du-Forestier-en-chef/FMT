@@ -8,7 +8,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #ifndef FMTdevelopmentpath_H_INCLUDED
 #define FMTdevelopmentpath_H_INCLUDED
 
-#include "FMTdevelopment.hpp"
+
 #include <memory>
 
 namespace Core
@@ -25,7 +25,7 @@ class FMTdevelopmentpath
 		FMTdevelopmentpath(const FMTdevelopment& ldevelopment, 
 			const double& lproportion);
 		FMTdevelopmentpath& operator = (const FMTdevelopmentpath& rhs);
-		~FMTdevelopmentpath();
+		~FMTdevelopmentpath()=default;
 	};
 }
 

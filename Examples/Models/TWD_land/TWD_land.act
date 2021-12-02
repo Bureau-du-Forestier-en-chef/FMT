@@ -1,3 +1,11 @@
+*ACTION aFire N
+*OPERABLE AFire
+? prod ? _AGE >= 1
+
+*ACTION arecup Y
+*OPERABLE arecup
+? feu ? volumetotal >= 100
+
 *ACTION COUPEtotale Y CT
 *OPERABLE COUPEtotale
 ? prod ? volumetotal >= 100
@@ -10,13 +18,6 @@ UC prod ? _AGE >= 8
 *OPERABLE plantation
 ? prod ? _AGE >= 1 AND _AGE <= 3
 
-*ACTION aFire N
-*OPERABLE AFire
-? prod ? _AGE >= 1
 
-
-*ACTION arecup Y
-*OPERABLE arecup
-? feu ? volumetotal >= 100
 
 

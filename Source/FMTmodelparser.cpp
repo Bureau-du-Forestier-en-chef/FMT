@@ -27,6 +27,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #ifdef FMTWITHGDAL
 #include "gdal.h"
 #include "gdal_priv.h"
+#include "ogrsf_frmts.h"
 #endif 
 
 namespace Parser{

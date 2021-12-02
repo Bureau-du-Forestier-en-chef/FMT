@@ -9,6 +9,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 #include "FMTspatialschedule.hpp"
 #include "FMTmodel.hpp"
+#include "FMTforest.hpp"
 #include <numeric>
 #include <algorithm>
 #include <set>

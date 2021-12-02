@@ -11,6 +11,9 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTconstants.hpp"
 #include <boost/algorithm/string/trim.hpp>
 #include <boost/algorithm/string.hpp>
+#ifdef FMTWITHGDAL
+	#include "ogrsf_frmts.h"
+#endif
 
 namespace Parser
 {

@@ -8,24 +8,50 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #ifndef FMTareaparser_H_INCLUDED
 #define FMTareaparser_H_INCLUDED
 
-#include "FMTdevelopment.hpp"
-#include "FMTspatialschedule.hpp"
-#include "FMTsasolution.hpp"
-#include "FMTactualdevelopment.hpp"
 #include "FMTparser.hpp"
-#include "FMTlayer.hpp"
-#include "FMTforest.hpp"
-#include "FMTGCBMtransition.hpp"
 #include <iterator>
-#include "FMToperatingareascheme.hpp"
-#include "FMToperatingareacluster.hpp"
 #include <map>
 #include <string>
 #include <vector>
 #include "FMTutility.hpp"
 #include <regex>
-#include "FMTconstants.hpp"
-#include "FMTtheme.hpp"
+
+
+class OGRPolygon;
+class OGRMultiPolygon;
+class OGRFeature;
+
+namespace Core
+{
+	class FMTdevelopment;
+	class FMTactualdevelopment;
+	class FMTGCBMtransition;
+}
+namespace Graph
+{
+	class FMTcarbonpredictor;
+}
+
+namespace Spatial
+{
+	class FMTforest;
+	class FMTspatialschedule;
+	class FMTsasolution;
+}
+
+namespace Heuristics
+{
+	class FMToperatingareascheme;
+	class FMToperatingareacluster;
+	class FMToperatingarea;
+
+}
+
+namespace Models
+{
+	class FMTmodel;
+}
+
 
 namespace Parser
 {

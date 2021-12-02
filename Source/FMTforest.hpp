@@ -17,7 +17,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 namespace Core {
 	class FMTtheme;
 	class FMTactualdevelopment;
-	class FMTfuturdevelopement;
+	class FMTfuturdevelopment;
 }
 
 

@@ -10,6 +10,9 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <chrono>
 #include <ctime>
 #include "FMTsolverinterface.hpp"
+#include <boost/filesystem.hpp>
+#include <boost/filesystem/operations.hpp>
+
 
 #ifdef FMTWITHGDAL
 	#include "gdal.h"

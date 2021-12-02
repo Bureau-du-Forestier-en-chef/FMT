@@ -25,6 +25,7 @@ namespace Core
 	class FMTconstraint;
 	class FMTtheme;
 	class FMTconstants;
+	class FMTperbounds;
 }
 
 
