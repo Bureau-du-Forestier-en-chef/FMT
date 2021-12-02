@@ -8,7 +8,8 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #define FMTTASK_H_INCLUDED
 #include <memory>
 #include "FMTobject.hpp"
-#include <boost/thread/thread.hpp>
+#include <boost/thread/recursive_mutex.hpp>
+
 
 /// Namespace for parallel tasking may include multithreading / multiprocessing
 namespace Parallel
@@ -20,15 +21,18 @@ namespace Parallel
 	*/
 	class FMTEXPORT FMTtask : public Core::FMTobject
 	{
-		// DocString: FMTtask::worker
-		///The thread used for the task.
-		boost::thread worker;
-	protected:
-		// DocString: FMTreplanningtask::work
+		// DocString: FMTtaskhandler::alltasks
+		///If the task is done true else false
+		bool done;
+		// DocString: FMTtaskhandler::mutex
+		///Recursive mutex for the task
+		mutable boost::recursive_mutex taskmutex;
+		protected:
+		// DocString: FMTreplanningtask::setstatus()
 		/**
-		This function is the main job executed by the thread.
+		Change the status of the task
 		*/
-		virtual void work();
+		void setstatus(bool status);
 	public:
 		// DocString: FMTreplanningtask::FMTtask()
 		/**
@@ -59,18 +63,22 @@ namespace Parallel
 		/**
 		Function to split the actual task in multiple tasks.
 		*/
-		virtual std::vector<std::unique_ptr<FMTtask>>split(const size_t& numberoftasks) const;
-		// DocString: FMTreplanningtask::join()
+		virtual std::vector<std::unique_ptr<FMTtask>>split(const unsigned int& numberoftasks) const;
+		// DocString: FMTreplanningtask::spawn()
 		/**
-		The join function for the worker.
+		Will spawn a minimal task from the master task
 		*/
-		virtual void join();
-		// DocString: FMTreplanningtask::run()
+		virtual std::unique_ptr<FMTtask>spawn();
+		// DocString: FMTreplanningtask::work
 		/**
-		The run function is used by the taskhandler to run multiple task.
+		This function is the main job executed by the thread.
 		*/
-		virtual void run();
-
+		virtual void work();
+		// DocString: FMTreplanningtask::isdone()
+		/**
+		Returns true if the job is all done.
+		*/
+		bool isdone() const;
 	};
 
 }

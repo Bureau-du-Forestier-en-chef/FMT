@@ -14,6 +14,8 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTconstraint.hpp"
 #include "FMTexpression.hpp"
 #include "FMTaction.hpp"
+#include <boost/filesystem.hpp>
+#include <boost/filesystem/operations.hpp>
 
 namespace Parser
 {

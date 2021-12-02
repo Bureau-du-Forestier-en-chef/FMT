@@ -18,6 +18,10 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <boost/property_tree/json_parser.hpp>
 #include <memory>
 #include "FMTfunctioncall.hpp"
+#include <set>
+#include <boost/filesystem.hpp>
+#include <boost/filesystem/operations.hpp>
+
 
 namespace Parser{
 

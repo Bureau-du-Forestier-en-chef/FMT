@@ -70,49 +70,13 @@ class FMTEXPORT FMTconstants : public FMTobject
 	For a given constant (key) the function gets a value for a given (period)
 	*/
     template<typename T>
-    T get(std::string key,int period = 0) const
-        {
-		try {
-			if (key.find("#") != std::string::npos)
-			{
-				key.erase(0, 1);
-			}
-			boost::unordered_map<std::string, std::vector<double>>::const_iterator it = data.find(key);
-			if (it== data.end())
-				{
-				_exhandler->raise(Exception::FMTexc::FMTundefined_constant,key + " at period " + std::to_string(period),"FMTconstants::get", __LINE__, __FILE__,Core::FMTsection::Constants);
-				}
-			std::vector<double> const* location = &it->second;
-			if (period >= static_cast<int>(location->size()))
-			{
-				period = static_cast<int>(location->size()) - 1;
-			}
-			return static_cast<T>(location->at(period));
-		}catch (...)
-			{
-			_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,"for " + key+ " at period "+ std::to_string(period),"FMTconstants::get", __LINE__, __FILE__, Core::FMTsection::Constants);
-			}
-		return T();
-        }
+	T get(std::string key, int period = 0) const;
 	// DocString: FMTconstants::getall
 	/**
 	For a given constant (key) the function gets all the values of the constant.
 	*/
     template<typename T>
-	std::vector<T>getall(std::string key) const
-        {
-		std::vector<T>values;
-		try {
-			for (size_t period = 0; period < length(key); ++period)
-			{
-				values.push_back(get<T>(key, period));
-			}
-		}catch (...)
-			{
-			_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,"for "+key,"FMTconstants::getall", __LINE__, __FILE__, Core::FMTsection::Constants);
-			}
-		return values;
-        }
+	std::vector<T>getall(std::string key) const;
 	// DocString: FMTconstants::isconstant
 	/**
 	Returns true if the (value) is considered a constant.

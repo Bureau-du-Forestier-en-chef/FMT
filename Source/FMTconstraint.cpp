@@ -188,7 +188,7 @@ namespace Core
 								}
 						}
 					}
-					if (values.empty())
+					if (!values.empty())
 						{
 						return getiterationchange(values);
 						}

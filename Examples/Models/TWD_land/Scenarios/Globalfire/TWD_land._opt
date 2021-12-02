@@ -8,8 +8,25 @@ arecup 1.._LENGTH
 
 *CONSTRAINTS
 
-_RANDOM(Burnedarea) >= 0 1.._LENGTH
-_RANDOM(Burnedarea) <= 1 1.._LENGTH
-
+_RANDOM(Burnedarea) >= 0 1 _REPLICATE(Burnedarea.csv)
+_RANDOM(Burnedarea) <= 1 1 _REPLICATE(Burnedarea.csv)
+_RANDOM(Burnedarea) >= 0 2 _REPLICATE(Burnedarea.csv)
+_RANDOM(Burnedarea) <= 1 2 _REPLICATE(Burnedarea.csv)
+_RANDOM(Burnedarea) >= 0 3 _REPLICATE(Burnedarea.csv)
+_RANDOM(Burnedarea) <= 1 3 _REPLICATE(Burnedarea.csv)
+_RANDOM(Burnedarea) >= 0 4 _REPLICATE(Burnedarea.csv)
+_RANDOM(Burnedarea) <= 1 4 _REPLICATE(Burnedarea.csv)
+_RANDOM(Burnedarea) >= 0 5 _REPLICATE(Burnedarea.csv)
+_RANDOM(Burnedarea) <= 1 5 _REPLICATE(Burnedarea.csv)
+_RANDOM(Burnedarea) >= 0 6 _REPLICATE(Burnedarea.csv)
+_RANDOM(Burnedarea) <= 1 6 _REPLICATE(Burnedarea.csv)
+_RANDOM(Burnedarea) >= 0 7 _REPLICATE(Burnedarea.csv)
+_RANDOM(Burnedarea) <= 1 7 _REPLICATE(Burnedarea.csv)
+_RANDOM(Burnedarea) >= 0 8 _REPLICATE(Burnedarea.csv)
+_RANDOM(Burnedarea) <= 1 8 _REPLICATE(Burnedarea.csv)
+_RANDOM(Burnedarea) >= 0 9 _REPLICATE(Burnedarea.csv)
+_RANDOM(Burnedarea) <= 1 9 _REPLICATE(Burnedarea.csv)
+_RANDOM(Burnedarea) >= 0 10 _REPLICATE(Burnedarea.csv)
+_RANDOM(Burnedarea) <= 1 10 _REPLICATE(Burnedarea.csv)
 
 *FORMAT MOSEK

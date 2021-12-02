@@ -6,6 +6,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
 #include "FMTdevelopmentpath.hpp"
+#include "FMTdevelopment.hpp"
 
 namespace Core
 
@@ -14,7 +15,6 @@ namespace Core
 		{
 
 		}
-	FMTdevelopmentpath::~FMTdevelopmentpath() {}
 	FMTdevelopmentpath::FMTdevelopmentpath(const FMTdevelopmentpath& rhs) : development(), proportion(rhs.proportion)
 		{
 		development = std::unique_ptr<FMTdevelopment>(new FMTdevelopment(*rhs.development));

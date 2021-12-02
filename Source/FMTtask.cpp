@@ -6,12 +6,13 @@ namespace Parallel
 
 	FMTtask::FMTtask(const FMTtask& rhs) :
 		Core::FMTobject(rhs),
-		worker()
+		done(false),
+		taskmutex()
 	{
 
 	}
 
-	std::vector<std::unique_ptr<FMTtask>>FMTtask::split(const size_t& numberoftasks) const
+	std::vector<std::unique_ptr<FMTtask>>FMTtask::split(const unsigned int& numberoftasks) const
 	{
 		try {
 			_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, "Calling pure virtual function ",
@@ -22,6 +23,19 @@ namespace Parallel
 			_exhandler->raisefromcatch("", "FMTtask::split", __LINE__, __FILE__);
 		}
 		return std::vector<std::unique_ptr<FMTtask>>();
+	}
+
+	std::unique_ptr<FMTtask>FMTtask::spawn()
+	{
+		try {
+			_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, "Calling pure virtual function ",
+				"FMTtask::spawn", __LINE__, __FILE__);
+		}
+		catch (...)
+		{
+			_exhandler->raisefromcatch("", "FMTtask::spawn", __LINE__, __FILE__);
+		}
+		return std::unique_ptr<FMTtask>();
 	}
 
 
@@ -37,25 +51,6 @@ namespace Parallel
 		}
 		return std::unique_ptr<FMTtask>(new FMTtask());
 	}
-	void FMTtask::join()
-	{
-		try {
-			worker.join();
-		}
-		catch (...)
-		{
-			_exhandler->raisefromcatch("", "FMTtask::join", __LINE__, __FILE__);
-		}
-	}
-	void FMTtask::run()
-	{
-		try {
-			worker = boost::thread(std::bind(&FMTtask::work,*this));
-		}catch (...)
-		{
-			_exhandler->raisefromcatch("", "FMTtask::run", __LINE__, __FILE__);
-		}
-	}
 
 	void FMTtask::work()
 	{
@@ -66,6 +61,19 @@ namespace Parallel
 		{
 			_exhandler->raisefromcatch("", "FMTtask::work", __LINE__, __FILE__);
 		}
+	}
+
+	void FMTtask::setstatus(bool status)
+	{
+		boost::lock_guard<boost::recursive_mutex> guard(taskmutex);
+		done = status;
+	}
+
+	bool FMTtask::isdone() const
+	{
+		boost::lock_guard<boost::recursive_mutex> guard(taskmutex);
+		const bool isdone = done;
+		return done;
 	}
 
 }

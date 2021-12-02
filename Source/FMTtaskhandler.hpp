@@ -20,12 +20,21 @@ namespace Parallel
 	*/
 	class FMTEXPORT FMTtaskhandler : public Core::FMTobject
 	{
+	// DocString: FMTtaskhandler::maxnumberofthread
+	///Maximal number of threads
+	unsigned int maxnumberofthread;
+	// DocString: FMTtaskhandler::alltasks
+	///All the tasks that are running
 	std::vector<std::unique_ptr<FMTtask>>alltasks;
+	// DocString: FMTtaskhandler::splittasks
+	/**
+	Will split all task in alltasks and replace it with new splitted tasks
+	*/
+	void splittasks();
 	public:
 		// DocString: FMTtaskhandler::FMTtaskhandler(const std::unique_ptr<FMTtask>&,unsigned int)
 		/**
-		Construct the handler with the number of threads you want. Will use the split task virtual function to
-		generate all the tasks at the same time.
+		Construct the handler with the number of threads you want.
 		*/
 		FMTtaskhandler(const std::unique_ptr<FMTtask>& maintask,
 						unsigned int maxthread = 0);
@@ -57,9 +66,16 @@ namespace Parallel
 		const std::vector<const ptrtype*> gettasksfromdynamiccast() const;
 		// DocString: FMTtaskhandler::conccurentrun()
 		/**
-		Run the task vector conccurently
+		Will use the split task virtual function to
+		generate all the tasks at the same time.
 		*/
 		void conccurentrun();
+		// DocString: FMTtaskhandler::ondemandrun()
+		/**
+		Will use the spawn task virtual function to generate task from the master task and add to a list
+		If the task is completed it will be removed from the list.
+		*/
+		void ondemandrun();
 
 
 

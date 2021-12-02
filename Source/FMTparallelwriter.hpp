@@ -63,7 +63,7 @@ namespace Parallel
 		Write the modelptr results from the firstperiod to the lastperiod for a given iteration (replicate).
 		*/
 		void write(const std::unique_ptr<Models::FMTmodel>& modelptr, const int& firstperiod,
-			const int& lastperiod, const size_t& itertion) const;
+			const int& lastperiod, const int& itertion) const;
 	};
 }
 #endif

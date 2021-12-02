@@ -14,40 +14,39 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <fstream>
 #include <string>
 #include <vector>
-#include <stack>
 #include <queue>
-#include <list>
 #include "FMTutility.hpp"
-#include "FMTconstants.hpp"
-#include "FMTlayer.hpp"
 #include <array>
-#include "FMTbounds.hpp"
-
-#ifdef FMTWITHGDAL
-	#include "gdal.h"
-	#include "gdal_priv.h"
-	#include "ogrsf_frmts.h"
-	#include "gdal_rat.h"
-	#if defined (_MSC_VER)
-		#include "cpl_conv.h"
-	#endif
-#endif
-
-#include <boost/filesystem.hpp>
-#include <boost/filesystem/operations.hpp>
 #include <ctime>
+
 #include <boost/thread/recursive_mutex.hpp>
 #include <boost/algorithm/string/erase.hpp>
 
 
 #include "FMTobject.hpp"
+#include "gdal.h"
+
+class OGRSpatialReference;
+class GDALDataset;
+class OGRLayer;
+class GDALRasterBand;
 
 namespace Core {
 	class FMTtheme;
 	class FMTaction;
 	class FMTyields;
 	class FMTspec;
+	class FMTconstants;
+	template<typename T>
+	class FMTbounds;
 }
+
+namespace Spatial
+{
+	template<typename T>
+	class FMTlayer;
+}
+
 
 /// Namespace handling all FMT's parsers. Everything related to I/O should be located in this namespace.
 namespace Parser
@@ -143,54 +142,13 @@ class FMTEXPORT FMTparser: public Core::FMTobject
 			/**
 			Return and OGRspatialReference corresponding to the one used for FORELs in Quebec.
 			*/
-			static inline OGRSpatialReference getFORELspatialref() 
-			{
-					OGRSpatialReference FMTspref(nullptr);
-					FMTspref.importFromEPSG(32198);
-					return FMTspref;
-			}
+			static OGRSpatialReference getFORELspatialref();
 			// DocString: FMTparser::createdataset
 			/**
 			The function create an empty GDALDataset for a given FMTlayer.
 			*/
 			template<typename T>
-			GDALDataset* createdataset(const std::string& location,const Spatial::FMTlayer<T>& layer, const GDALDataType datatype) const
-				{
-				const char *pszFormat = "GTiff";
-				GDALDriver *poDriver = nullptr;
-				GDALDataset *poDstDS = nullptr;
-				try{
-				poDriver = GetGDALDriverManager()->GetDriverByName(pszFormat);
-				if( poDriver == nullptr )
-					{
-					_exhandler->raise(Exception::FMTexc::FMTinvaliddriver,
-						std::string(pszFormat),"FMTparser::createdataset", __LINE__, __FILE__, _section);
-					}
-				char **papszOptions = NULL;
-				papszOptions = CSLSetNameValue( papszOptions, "TILED", "YES" );
-				papszOptions = CSLSetNameValue( papszOptions, "BLOCKXSIZE", "128" );
-				papszOptions = CSLSetNameValue( papszOptions, "BLOCKYSIZE", "128" );
-				papszOptions = CSLSetNameValue( papszOptions, "COMPRESS", "LZW" );
-				papszOptions = CSLSetNameValue( papszOptions, "ZLEVEL", "9" );
-				papszOptions = CSLSetNameValue( papszOptions, "BIGTIFF", "YES" );
-				poDstDS  = poDriver->Create(location.c_str(), layer.GetXSize(), layer.GetYSize(), 1, datatype, papszOptions);
-				if (poDstDS == nullptr)
-					{
-					_exhandler->raise(Exception::FMTexc::FMTinvaliddataset
-						,poDstDS->GetDescription(),"FMTparser::createdataset", __LINE__, __FILE__, _section);
-					}
-				std::vector<double>geotrans = layer.getgeotransform();
-				const std::string projection = layer.getprojection();
-				poDstDS->SetProjection(projection.c_str());
-				poDstDS->SetGeoTransform(&geotrans[0]);
-				poDstDS->FlushCache();
-				CSLDestroy( papszOptions );
-				}catch (...)
-					{
-					_exhandler->raisefromcatch("", "FMTparser::createdataset", __LINE__, __FILE__);
-					}
-				return poDstDS;
-				}
+			GDALDataset* createdataset(const std::string& location, const Spatial::FMTlayer<T>& layer, const GDALDataType datatype) const;
 			// DocString: FMTparser::getdataset
 			/**
 			Open in readonly a GDALdataset from a given (location), will throw if anything went wrong.
@@ -391,123 +349,31 @@ class FMTEXPORT FMTparser: public Core::FMTobject
 		Template function to get a numeric value from a string (value) based on constant and period.
 		*/
         template<typename T>
-        T getnum(const std::string& value,const Core::FMTconstants& constant, int period = 0) const
-            {
-            T nvalue = 0;
-			try {
-				const std::string newvalue = boost::erase_all_copy(value, ",");
-				if (isnum(newvalue))
-				{
-					nvalue = getnum<T>(newvalue);
-				}
-				else if (constant.isconstant(newvalue))
-				{
-					nvalue = constant.get<T>(newvalue, period);
-					_exhandler->raise(Exception::FMTexc::FMTconstants_replacement,
-						value + "at line " + std::to_string(_line), "FMTparser::getnum", __LINE__, __FILE__, _section);
-					++_constreplacement;
-				}
-				else {
-					_exhandler->raise(Exception::FMTexc::FMTinvalid_number,
-						value + "at line " + std::to_string(_line), "FMTparser::getnum", __LINE__, __FILE__, _section);
-				}
-			}
-			catch (...)
-				{
-					_exhandler->raisefromcatch("", "FMTparser::getnum", __LINE__, __FILE__, _section);
-				}
-            return nvalue;
-            }
+		T getnum(const std::string& value, const Core::FMTconstants& constant, int period = 0) const;
 		// DocString: FMTparser::getnum
 		/**
 		Template function to get a numeric value from a string (value).
 		*/
 		template<typename T>
-		T getnum(const std::string& value) const
-			{
-			T nvalue = 0;
-			try{
-				const std::string newvalue = boost::erase_all_copy(value, ",");
-				if (isnum(newvalue))
-					{
-					nvalue = static_cast<T>(std::stod(newvalue));
-				}else {
-					_exhandler->raise(Exception::FMTexc::FMTinvalid_number,
-						value + "at line " + std::to_string(_line),"FMTparser::getnum", __LINE__, __FILE__, _section);
-					}
-				}
-			catch (...)
-			{
-				_exhandler->raisefromcatch("", "FMTparser::getnum", __LINE__, __FILE__, _section);
-			}
-			return nvalue;
-			}
+		T getnum(const std::string& value) const;
 		// DocString: FMTparser::tryfillnumber
 		/**
 		Try to get a number from a string (value) return false if failed.
 		*/
 		template<typename T>
-		bool tryfillnumber(T& number,const std::string& value, const Core::FMTconstants& constant, int period = 0) const
-			{
-			bool gotit = true;
-			try {
-				number = getnum<T>(value, constant, period);
-			}
-			catch (...)
-				{
-				gotit = false;
-				}
-			return gotit;
-			}
+		bool tryfillnumber(T& number, const std::string& value, const Core::FMTconstants& constant, int period = 0) const;
 		// DocString: FMTparser::bounds
 		/**
 		Templated function to get a FMTbounds from a (value) base on constants and a (section).
 		*/
         template<typename T>
-		Core::FMTbounds<T>bounds(const Core::FMTconstants& constants, const std::string& value, const std::string& ope, Core::FMTsection section) const
-            {
-			T lupper = std::numeric_limits<T>::max();
-			T llower = std::numeric_limits<T>::lowest();
-			try {
-				try {
-					T intvalue = getnum<T>(value, constants);
-					const std::array<std::string, 5> baseoperators = this->getbaseoperators();
-					const std::array<std::string, 5>::const_iterator it = std::find(baseoperators.begin(), baseoperators.end(), ope);
-					const size_t optype = (it - baseoperators.begin());
-					if (optype == 0)
-					{
-						lupper = intvalue;
-						llower = lupper;
-					}
-					else if (optype == 1)
-					{
-						lupper = intvalue;
-						llower = std::numeric_limits<T>::lowest();
-					}
-					else if (optype == 2)
-					{
-						lupper = std::numeric_limits<T>::max();
-						llower = intvalue;
-					}
-				}
-				catch (...)
-				{
-					_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
-						"for value " + value, "FMTparser::bounds", __LINE__, __FILE__, _section);
-				}
-			}catch (...)
-				{
-					_exhandler->raisefromcatch("", "FMTparser::bounds", __LINE__, __FILE__, _section);
-				}
-            return Core::FMTbounds<T>(section,lupper,llower);
-            }
+		Core::FMTbounds<T>bounds(const Core::FMTconstants& constants, const std::string& value, const std::string& ope, Core::FMTsection section) const;
 		#ifdef FMTWITHGDAL
-				// DocString: FMTparser::getWSfields
-				/**
-				Will Create a OGR vector file based on a given drivername and a location.
-				*/
-				GDALDataset* createOGRdataset(std::string location = std::string(),
-					std::string gdaldrivername = "CSV") const;
+		// DocString: FMTparser::getWSfields
+		/**
+		Will Create a OGR vector file based on a given drivername and a location.
+		*/
+		GDALDataset* createOGRdataset(std::string location = std::string(),std::string gdaldrivername = "CSV") const;
 		#endif
     };
 

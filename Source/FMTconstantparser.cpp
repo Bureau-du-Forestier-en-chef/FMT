@@ -8,6 +8,8 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTconstantparser.hpp"
 #include "FMTconstants.hpp"
 #include "FMTtheme.hpp"
+#include <boost/filesystem.hpp>
+#include <boost/filesystem/operations.hpp>
 
 namespace Parser{
 
