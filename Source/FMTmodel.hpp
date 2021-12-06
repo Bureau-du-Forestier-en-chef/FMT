@@ -374,7 +374,8 @@ namespace Models
 			std::string action = std::string(), std::string yield = std::string(), std::string description = std::string(),int targettheme = -1);
 		// DocString: FMTmodel::addyieldhandlers
 		/**
-		Add FMTageyieldhandler from vector (yieldhandlers) to yields. 
+		Add FMTyieldhandler from vector (yieldhandlers) to yields. Can only be use for FMTageyieldhandler and FMTtimeyieldhandler. If you want
+		to add FMTmodelyieldhandler or FMTcomplexyieldhander it must be added in the .yld file to parse with the model.
 		*/
 		template<typename T>		
 		void addyieldhandlers(const std::vector<T>& yieldhandlers);
