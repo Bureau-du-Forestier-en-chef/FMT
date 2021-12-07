@@ -614,9 +614,69 @@ Rcpp::DataFrame FMTtheme::getattributesasdataframe() const
 	return data;
 }
 
-
 #endif
 
+bool FMTtheme::checkmask(const std::vector<Core::FMTtheme>& themes,
+	const std::vector<std::string>& values, std::string& mask, const std::string& otherinformation)
+{
+	//otherinformation = " at line " + std::to_string(_line);
+	bool returnvalue = true;
+	if (themes.size() > values.size())
+	{
+		//_exhandler->raise(Exception::FMTexc::FMTinvalid_maskrange, mask + otherinformation,"FMTobject::checkmask", __LINE__, __FILE__, _section);
+		const std::string original(mask);
+		mask.clear();
+		for (const std::string& value : values)
+		{
+			mask += value + " ";
+		}
+		for (size_t id = values.size(); id < themes.size(); ++id)
+		{
+			mask += "? ";
+		}
+		mask.pop_back();
+		_exhandler->raise(Exception::FMTexc::FMTignore,
+			"Extended mask " + original + " to " + mask, "FMTobject::checkmask", __LINE__, __FILE__);
+		returnvalue = true;
+	}
+	else {
+		size_t id = 0;
+		const std::string original(mask);
+		mask.clear();
+		for (const Core::FMTtheme& theme : themes)
+		{
+			if (id < values.size() && !theme.isvalid(values[id]))
+			{
+				const std::string message = values[id] + " at theme " + std::to_string(theme.getid() + 1) + otherinformation;
+				_exhandler->raise(Exception::FMTexc::FMTundefined_attribute, message,
+					"FMTobject::checkmask", __LINE__, __FILE__);
+				returnvalue = false;
+			}
+			std::string value = "?";
+			if (id < values.size())
+			{
+				value = values[id];
+			}
+			mask += value + " ";
+			++id;
+		}
+		mask.pop_back();
+		if (values.size() != themes.size())
+		{
+			_exhandler->raise(Exception::FMTexc::FMTignore,
+				"Subset mask " + original + " to " + mask, "FMTobject::checkmask", __LINE__, __FILE__);
+		}
+
+	}
+	return  returnvalue;
+}
+
+bool FMTtheme::validate(const std::vector<Core::FMTtheme>& themes, std::string& mask, std::string otherinformation)
+{
+	std::vector<std::string>values;
+	boost::split(values, mask, boost::is_any_of(" \t"), boost::token_compress_on);
+	return checkmask(themes, values, mask, otherinformation);
+}
 
 
 }

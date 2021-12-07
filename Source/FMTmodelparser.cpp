@@ -241,7 +241,7 @@ std::vector<Core::FMTconstraint>FMTmodelparser::getconstraintsfromstring(std::st
 		boost::to_upper(constraintstr);
 		for (Core::FMTconstraint constraint : optparser.getconstraints(constraintstr, constants, model.outputs, model.themes, model.actions))
 			{
-			constraint.passinobject(model);
+			//constraint.passinobject(model);
 			constraints.push_back(constraint);
 			}
 	}catch (...)
@@ -431,41 +431,41 @@ Models::FMTmodel FMTmodelparser::referenceread(std::map<std::string, std::vector
 			const std::string modelname = landfile.stem().string();
 		
 				FMTconstantparser cparser;
-				cparser.passinobject(*this);
+				//cparser.passinobject(*this);
 				constants = cparser.read(con);
 				mostrecentfile = std::max(cparser.getmostrecentfiletime(), mostrecentfile);
 				if (themes.empty())
 				{
 					FMTlandscapeparser landparser;
-					landparser.passinobject(*this);
+					//landparser.passinobject(*this);
 					themes = landparser.read(constants, lan);
 					mostrecentfile = std::max(landparser.getmostrecentfiletime(), mostrecentfile);
 				}
 				if (areas.empty())
 				{
 					FMTareaparser areaparser;
-					areaparser.passinobject(*this);
+					//areaparser.passinobject(*this);
 					areas = areaparser.read(themes, constants, are);
 					mostrecentfile = std::max(areaparser.getmostrecentfiletime(), mostrecentfile);
 				}
 				if (lifespan.empty())
 				{
 					FMTlifespanparser lifespanparser;
-					lifespanparser.passinobject(*this);
+					//lifespanparser.passinobject(*this);
 					lifespan = lifespanparser.read(themes, constants, lif);
 					mostrecentfile = std::max(lifespanparser.getmostrecentfiletime(), mostrecentfile);
 				}
 				if (yields.empty())
 				{
 					FMTyieldparser yldparser;
-					yldparser.passinobject(*this);
+					//yldparser.passinobject(*this);
 					yields = yldparser.read(themes, constants, yld);
 					mostrecentfile = std::max(yldparser.getmostrecentfiletime(), mostrecentfile);
 				}
 				if (actions.empty())
 				{
 					FMTactionparser actparser;
-					actparser.passinobject(*this);
+					//actparser.passinobject(*this);
 					actions = actparser.read(themes, yields, constants, act);
 					if (find_if(actions.begin(), actions.end(), Core::FMTactioncomparator("_DEATH")) == actions.end())
 					{
@@ -479,7 +479,7 @@ Models::FMTmodel FMTmodelparser::referenceread(std::map<std::string, std::vector
 				if (transitions.empty())
 				{
 					FMTtransitionparser trnparser;
-					trnparser.passinobject(*this);
+					//trnparser.passinobject(*this);
 					transitions = trnparser.read(themes, actions, yields, constants, tr);
 					if (find_if(transitions.begin(), transitions.end(), Core::FMTtransitioncomparator("_DEATH")) == transitions.end())
 					{
@@ -492,7 +492,7 @@ Models::FMTmodel FMTmodelparser::referenceread(std::map<std::string, std::vector
 				if (outputs.empty())
 				{
 					FMToutputparser outparser;
-					outparser.passinobject(*this);
+					//outparser.passinobject(*this);
 					outputs = outparser.read(themes, actions, yields, constants, out);
 					mostrecentfile = std::max(outparser.getmostrecentfiletime(), mostrecentfile);
 				}
@@ -501,7 +501,7 @@ Models::FMTmodel FMTmodelparser::referenceread(std::map<std::string, std::vector
 
 					FMToptimizationparser optzparser;
 					std::vector<Core::FMTaction>excluded(actions); //should we realy use? excluded is actualy the same actions but with more period specification...
-					optzparser.passinobject(*this);
+					//optzparser.passinobject(*this);
 					constraints = optzparser.read(themes, actions, constants, outputs, excluded, opt);
 					mostrecentfile = std::max(optzparser.getmostrecentfiletime(), mostrecentfile);
 					bool shouldcrapreference = (actions.size() != excluded.size());
@@ -535,7 +535,7 @@ Models::FMTmodel FMTmodelparser::referenceread(std::map<std::string, std::vector
 				}
 			returnedmodel = Models::FMTmodel(areas, themes, actions,
 					transitions, yields, lifespan, modelname, outputs, constraints);
-			returnedmodel.passinobject(*this);
+			//returnedmodel.passinobject(*this);
 			returnedmodel.cleanactionsntransitions();
 			if (allow_mapping)
 				{

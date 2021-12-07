@@ -38,7 +38,7 @@ namespace Spatial
 			std::vector<Core::FMTactualdevelopment> actdevelopment;
             actdevelopment.push_back(Core::FMTactualdevelopment (devit->second,initialmap.getcellsize()));
             Graph::FMTlinegraph local_graph(Graph::FMTgraphbuild::schedulebuild);
-			local_graph.passinobject(initialmap);
+			//local_graph.passinobject(initialmap);
             std::queue<Graph::FMTgraph<Graph::FMTbasevertexproperties,Graph ::FMTbaseedgeproperties>::FMTvertex_descriptor> actives = local_graph.initialize(actdevelopment);
             mapping[devit->first] = local_graph;
 			coordinates.push_back(devit->first);
@@ -190,7 +190,7 @@ namespace Spatial
 					"Cannot use a non complete schedule ",
 					"FMTspatialschedule::getforestperiod", __LINE__, __FILE__);
 				}
-			forest.passinobject(*this);
+			//forest.passinobject(*this);
 			for(std::map<FMTcoordinate,Graph::FMTlinegraph>::const_iterator graphit = this->mapping.begin(); graphit != this->mapping.end(); ++graphit)
 			{
 				const Graph::FMTlinegraph* local_graph = &graphit->second;
@@ -515,7 +515,7 @@ namespace Spatial
 			for (int period = 1; period < actperiod(); ++period)
 			{
 				Core::FMTschedule schedule = git->second.getschedule(modelactions,&solution[0],period,withlock);
-				schedule.passinobject(*this);
+				//schedule.passinobject(*this);
 				operatedschedules[period - 1] += schedule;
 			}
 		}
@@ -2252,14 +2252,7 @@ std::vector<double> FMTspatialschedule::getconstraintsfactor() const
 	return constraintsfactor;
 	}
 
-void FMTspatialschedule::passinobject(const Core::FMTobject& rhs)
-	{
-	FMTlayer<Graph::FMTlinegraph>::passinobject(rhs);
-	for (std::map<FMTcoordinate, Graph::FMTlinegraph>::iterator graphit = this->mapping.begin(); graphit != this->mapping.end(); ++graphit)
-		{
-		graphit->second.passinobject(rhs);
-		}
-	}
+
 
 
 std::vector<Spatial::FMTcoordinate>FMTspatialschedule::getstaticsmovablecoordinates(const Models::FMTmodel& model) const

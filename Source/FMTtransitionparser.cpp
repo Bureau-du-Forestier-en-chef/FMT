@@ -62,7 +62,7 @@ Core::FMTmask FMTtransitionparser::getsource(std::string& line, Core::FMTspec& s
 		const std::vector<std::string>elements = FMTparser::spliter(line, FMTparser::rxseparator);
 		if (elements.size() == themes.size())
 		{
-			validate(themes, line, " at line " + std::to_string(_line));
+			Core::FMTtheme::validate(themes, line, " at line " + std::to_string(_line));
 			return Core::FMTmask(line, themes);
 		}
 		else {
@@ -80,7 +80,7 @@ Core::FMTmask FMTtransitionparser::getsource(std::string& line, Core::FMTspec& s
 			}
 			mask = mask.substr(0, mask.size() - 1);
 			rest = rest.substr(0, rest.size() - 1);
-			validate(themes, mask, " at line " + std::to_string(_line));
+			Core::FMTtheme::validate(themes, mask, " at line " + std::to_string(_line));
 			const Core::FMTmask newmask(mask, themes);
 			rest += " ";
 			rest = setspec(Core::FMTsection::Transition, Core::FMTkwor::Source, ylds, constants, spec, rest);
@@ -110,7 +110,7 @@ std::vector<Core::FMTtransitionmask> FMTtransitionparser::getmasktran(const std:
 			++id;
 		}
 		mask = mask.substr(0, mask.size() - 1);
-		validate(themes, mask, " at line " + std::to_string(_line));
+		Core::FMTtheme::validate(themes, mask, " at line " + std::to_string(_line));
 		proportion = getnum<double>(elements[id], constants);
 		++id;
 		std::string rest = " ";
@@ -342,7 +342,7 @@ std::vector<Core::FMTtransition> FMTtransitionparser::read(const std::vector<Cor
 					}
 					else {
 						transitions.push_back(transition);
-						transitions.back().passinobject(*this);
+						//transitions.back().passinobject(*this);
 					}
 				}
 
