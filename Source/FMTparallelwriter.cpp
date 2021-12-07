@@ -11,8 +11,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #ifdef FMTWITHGDAL
 	#include "gdal.h"
 	#include "gdal_priv.h"
-#endif 
-
+#endif
 namespace Parallel
 {
 
@@ -21,8 +20,10 @@ namespace Parallel
 		const std::vector<Core::FMToutput>& outputs,
 		const Models::FMTmodel& model) :
 		outputstowrite(outputs),
-		resultsdataset(createOGRdataset(location, driver)),
-		resultslayer(createresultslayer(model,resultsdataset)),
+		#ifdef FMTWITHGDAL
+			resultsdataset(createOGRdataset(location, driver)),
+			resultslayer(createresultslayer(model,resultsdataset)),
+		#endif
 		mtx()
 
 	{
@@ -33,6 +34,7 @@ namespace Parallel
 	{
 		boost::lock_guard<boost::recursive_mutex> lock(mtx);
 		try {
+		#ifdef FMTWITHGDAL
 			if (modelptr)
 				{
 				const std::map<std::string, std::vector<std::vector<double>>> outputvalues = modelptr->getoutputsfromperiods(outputstowrite, firstperiod, lastperiod);
@@ -40,6 +42,7 @@ namespace Parallel
 			}else {
 				fillupinfeasibles(resultslayer, outputstowrite, iteration, firstperiod, lastperiod);
 				}
+		#endif
 		}catch (...)
 		{
 			_exhandler->raisefromcatch("", "FMTparallelwriter::write", __LINE__, __FILE__);

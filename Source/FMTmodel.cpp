@@ -29,14 +29,14 @@ void FMTmodel::setdefaultobjects()
 			_exhandler->raise(Exception::FMTexc::FMTundefineddeathaction,
 				"_DEATH","FMTmodel::setdefaultobjects", __LINE__, __FILE__, Core::FMTsection::Action);
 			actions.push_back(defaultdeathaction(lifespan, themes));
-			actions.back().passinobject(*this);
+			//actions.back().passinobject(*this);
 		}
 		if (std::find_if(transitions.begin(), transitions.end(), Core::FMTtransitioncomparator("_DEATH")) == transitions.end())
 		{
 			_exhandler->raise(Exception::FMTexc::FMTundefineddeathtransition,
 				"_DEATH","FMTmodel::setdefaultobjects", __LINE__, __FILE__, Core::FMTsection::Transition);
 			transitions.push_back(defaultdeathtransition(lifespan, themes));
-			transitions.back().passinobject(*this);
+			//transitions.back().passinobject(*this);
 		}
 		for (Core::FMTaction& action : actions)
 		{
@@ -77,7 +77,7 @@ std::vector<size_t>FMTmodel::getstatictransitionthemes() const
 
 FMTmodel::FMTmodel() : Core::FMTobject(),parameters(),area(),themes(),actions(), transitions(),yields(),lifespan(),outputs(), constraints(),name(), statictransitionthemes()
 {
-	parameters.passinobject(*this);
+	
 }
 
 FMTmodel::FMTmodel(const std::vector<Core::FMTactualdevelopment>& larea, const std::vector<Core::FMTtheme>& lthemes,
@@ -89,7 +89,7 @@ FMTmodel::FMTmodel(const std::vector<Core::FMTactualdevelopment>& larea, const s
 	{
 	setdefaultobjects();
 	cleanactionsntransitions();
-	parameters.passinobject(*this);
+	
 	}
 
 FMTmodel::FMTmodel(const FMTmodel& rhs):Core::FMTobject(rhs),parameters(rhs.parameters),area(rhs.area),themes(rhs.themes),actions(rhs.actions),
@@ -288,10 +288,6 @@ void FMTmodel::setconstraints(const std::vector<Core::FMTconstraint>& lconstrain
 	{
 	try {
 		constraints = lconstraint;
-		for (Core::FMTconstraint& constraint : constraints)
-		{
-			constraint.passinobject(*this);
-		}
 		constraints.shrink_to_fit();
 	}catch (...)
 	{
@@ -362,13 +358,6 @@ void FMTmodel::setarea(const std::vector<Core::FMTactualdevelopment>& ldevs)
 	try {
 		area = ldevs;
 		std::sort(area.begin(), area.end());
-		if (!area.begin()->sharewith(*this))
-			{
-			for (Core::FMTactualdevelopment& development : area)
-				{
-				development.passinobject(*this);
-				}
-			}
 		area.shrink_to_fit();
 	}catch (...)
 	{
@@ -381,10 +370,6 @@ void FMTmodel::setthemes(const std::vector<Core::FMTtheme>& lthemes)
     {
 	try {
 		themes = lthemes;
-		for (Core::FMTtheme& theme : themes)
-		{
-			theme.passinobject(*this);
-		}
 		themes.shrink_to_fit();
 		//After theme change every masks needs to be reevaluated?.
 		statictransitionthemes = getstatictransitionthemes();
@@ -414,7 +399,6 @@ void FMTmodel::setactions(const std::vector<Core::FMTaction>& lactions)
 		transitions = newtransitions;
 		for (Core::FMTaction& action : actions)
 		{
-			action.passinobject(*this);
 			action.update();
 		}
 		this->setdefaultobjects();
@@ -433,7 +417,6 @@ void FMTmodel::settransitions(const std::vector<Core::FMTtransition>& ltransitio
 		transitions = ltransitions;
 		for (Core::FMTtransition& transition : transitions)
 		{
-			transition.passinobject(*this);
 			transition.update();
 		}
 		this->setdefaultobjects();
@@ -450,7 +433,6 @@ void FMTmodel::setyields(const Core::FMTyields& lylds)
     {
 	try {
 		yields = lylds;
-		yields.passinobject(*this);
 		yields.update();
 	}catch (...)
 		{
@@ -462,7 +444,6 @@ void FMTmodel::setlifespan(const Core::FMTlifespans& llifespan)
 	try {
 		lifespan = llifespan;
 		lifespan.update();
-		lifespan.passinobject(*this);
 		this->setdefaultobjects();
 	}catch (...)
 	{
@@ -480,10 +461,6 @@ void FMTmodel::setoutputs(const std::vector<Core::FMToutput>& newoutputs)
 	{
 	try {
 		outputs = newoutputs;
-		for (Core::FMToutput& output : outputs)
-		{
-			output.passinobject(*this);
-		}
 		outputs.shrink_to_fit();
 	}catch (...)
 	{
@@ -761,7 +738,7 @@ bool FMTmodel::isvalid()
 		for (const Core::FMTactualdevelopment& developement : area)
 		{
 			std::string name = std::string(developement.getmask());
-			this->validate(themes, name);
+			Core::FMTtheme::validate(themes, name);
 		}
 		//this->setsection(Core::FMTsection::Yield);
 		this->validatelistmasks(yields);
@@ -810,7 +787,7 @@ bool FMTmodel::isvalid()
 				if (source.isvariable())
 				{
 					std::string name = std::string(source.getmask());
-					validate(themes, name, "for output " + output.getname());
+					Core::FMTtheme::validate(themes, name, "for output " + output.getname());
 					const std::string actionname = source.getaction();
 					if (!actionname.empty())//need to check the targeted action!
 					{
@@ -1133,7 +1110,6 @@ std::unique_ptr<FMTmodel> FMTmodel::presolve(int presolvepass,std::vector<Core::
 	oldoutputs.shrink_to_fit();
 	oldconstraints.shrink_to_fit();
 	presolvedmodel = std::unique_ptr<FMTmodel>(new FMTmodel(oldarea, oldthemes, oldactions, oldtransitions, oldyields, oldlifespans, name, oldoutputs, oldconstraints,parameters));
-	presolvedmodel->passinobject(*this);
 	presolvedmodel->cleanactionsntransitions();
 	}catch (...)
 		{
@@ -1313,66 +1289,6 @@ void FMTmodel::setareaperiod(const int& period)
 	for (Core::FMTactualdevelopment& basedev : area)
 		{
 		basedev.setperiod(period);
-		}
-	}
-
-
-void FMTmodel::passinlogger(const std::shared_ptr<Logging::FMTlogger>& logger)
-	{
-	try{
-		FMTobject::passinlogger(logger);
-		this->passinobject(*this);
-	}catch (...)
-		{
-		_exhandler->raisefromcatch("", "FMTmodel::passinlogger", __LINE__, __FILE__);
-		}
-	}	
-
-void FMTmodel::passinexceptionhandler(const std::shared_ptr<Exception::FMTexceptionhandler>& exhandler)
-	{
-	try {
-		FMTobject::passinexceptionhandler(exhandler);
-		this->passinobject(*this);
-	}catch (...)
-		{
-		_exhandler->raisefromcatch("", "FMTmodel::passinexceptionhandler", __LINE__, __FILE__);
-		}
-	}
-
-void FMTmodel::passinobject(const Core::FMTobject& rhs)
-	{
-	try {
-		for (Core::FMTactualdevelopment& dev : area)
-		{
-			dev.passinobject(rhs);
-		}
-		for (Core::FMTtheme& theme : themes)
-		{
-			theme.passinobject(rhs);
-		}
-		for (Core::FMTaction& action : actions)
-		{
-			action.passinobject(rhs);
-		}
-		for (Core::FMTtransition& transition : transitions)
-		{
-			transition.passinobject(rhs);
-		}
-		yields.passinobject(rhs);
-		lifespan.passinobject(rhs);
-		for (Core::FMToutput& output : outputs)
-		{
-			output.passinobject(rhs);
-		}
-		for (Core::FMTconstraint& constraint : constraints)
-		{
-			constraint.passinobject(rhs);
-		}
-		parameters.passinobject(rhs);
-		FMTobject::passinobject(rhs);
-	}catch (...)
-		{
-		_exhandler->raisefromcatch("","FMTmodel::passinobject", __LINE__, __FILE__);
 		}
 	}
 

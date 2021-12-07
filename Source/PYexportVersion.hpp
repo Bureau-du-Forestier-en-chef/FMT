@@ -16,8 +16,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 namespace Python
 {
-BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(getlicense_overloads,getlicense, 0, 1)
-
+BOOST_PYTHON_FUNCTION_OVERLOADS(getlicense_overloads, Version::FMTversion::getlicense, 0, 1)
 
 void exportVersion()
 {
@@ -30,6 +29,7 @@ void exportVersion()
 		"   :platform: Unix, Windows\n"
 		"   :synopsis: Version module.\n"
 		"\n";
+
 
 	boost::python::class_<Version::FMTversion>("FMTversion", "@DocString(FMTversion)")
 		.def("getmajor", &Version::FMTversion::getmajor,
@@ -44,9 +44,8 @@ void exportVersion()
 			"@DocString(FMTversion::isatleast)").staticmethod("isatleast")
 		.def("hasfeature", &Version::FMTversion::hasfeature,
 			"@DocString(FMTversion::hasfeature)").staticmethod("hasfeature")
-		.def("getavailablesolverinterface", &Version::FMTversion::getavailablesolverinterface,
-			"@DocString(FMTversion::getavailablesolverinterface)").staticmethod("getavailablesolverinterface")
-        .def("getlicense",&Version::FMTversion::getlicense,getlicense_overloads(bp::args("french"),"@DocString(FMTversion::getlicense)"));
+        .def("getlicense",&Version::FMTversion::getlicense,
+			getlicense_overloads(bp::args("french"),"@DocString(FMTversion::getlicense)")).staticmethod("getlicense");
 	}
 }
 

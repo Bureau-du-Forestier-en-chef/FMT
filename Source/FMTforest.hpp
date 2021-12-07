@@ -45,7 +45,6 @@ namespace Spatial
 		void setperiod(int period);
 		FMTforest presolve(const Core::FMTmask& selectedmask, const std::vector<Core::FMTtheme>&presolvedthemes) const;
 		FMTforest postsolve(const Core::FMTmask& selectedmask, const std::vector<Core::FMTtheme>&originalbasethemes) const;
-		void passinobject(const Core::FMTobject& rhs) override;
         };
     }
 #endif // FMTFOREST_H_INCLUDED

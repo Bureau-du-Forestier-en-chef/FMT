@@ -77,7 +77,7 @@ FMTlandscapeparser::FMTlandscapeparser() :
         {
 		std::vector<Core::FMTtheme>themes;
 		try {
-        GDALAllRegister();
+        //GDALAllRegister();
         size_t start = 0;
 		size_t id = 0;
         for(const std::string& location : locations)
@@ -85,7 +85,7 @@ FMTlandscapeparser::FMTlandscapeparser() :
             GDALDataset* dataset = getdataset(location);
 			const std::vector<std::string>categories = getcat(dataset);
             themes.push_back(Core::FMTtheme(categories,id,start,""));
-			themes.back().passinobject(*this);
+			//themes.back().passinobject(*this);
             start+=static_cast<int>(categories.size());
             ++id;
             }
@@ -102,7 +102,7 @@ FMTlandscapeparser::FMTlandscapeparser() :
         {
 		std::vector<Core::FMTtheme>themes;
 		try {
-			GDALAllRegister();
+			//GDALAllRegister();
 			GDALDataset* dataset = getvectordataset(location);
 			OGRLayer * layer = getlayer(dataset, 0);
 			std::map<int, int>themes_fields;
@@ -131,7 +131,7 @@ FMTlandscapeparser::FMTlandscapeparser() :
 			for (const std::vector<std::string>& themeattribute : themesattributes)
 			{
 				themes.push_back(Core::FMTtheme(themeattribute, id, start, ""));
-				themes.back().passinobject(*this);
+				//themes.back().passinobject(*this);
 				++id;
 				start += themeattribute.size();
 			}
@@ -196,7 +196,7 @@ FMTlandscapeparser::FMTlandscapeparser() :
 								
 								themes.push_back(Core::FMTtheme(attributes, attributenames,aggregates,aggregatenames, indexes_values, id, start, themename));
 								
-								themes.back().passinobject(*this);
+								//themes.back().passinobject(*this);
 								start += stop;
 								attributes.clear();
 								attributenames.clear();
@@ -296,7 +296,7 @@ FMTlandscapeparser::FMTlandscapeparser() :
 				}
 				
 				themes.push_back(Core::FMTtheme(attributes,attributenames,aggregates,aggregatenames,indexes_values, id, start, themename));
-				themes.back().passinobject(*this);
+				//themes.back().passinobject(*this);
 			}
 			themes.shrink_to_fit();
 			}catch(...)

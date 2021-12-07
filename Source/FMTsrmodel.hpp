@@ -53,7 +53,7 @@ namespace Models
 			ar & boost::serialization::make_nvp("model", boost::serialization::base_object<FMTmodel>(*this));
 			ar & BOOST_SERIALIZATION_NVP(solver);
 			ar & BOOST_SERIALIZATION_NVP(graph);
-			solver.passinmessagehandler(*this->_logger);
+			solver.passinmessagehandler(*_logger);
 		}
 		BOOST_SERIALIZATION_SPLIT_MEMBER()
 	protected:
@@ -83,17 +83,17 @@ namespace Models
 		*/
 		Graph::FMTgraphstats updatematrix(const Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_pair& targets,
 			const Graph::FMTgraphstats& newstats);
-		// DocString: FMTsrmodel::passinobjecttomembers
-		/**
-		Pass FMTobject to members data.
-		*/
-		void passinobjecttomembers(const Core::FMTobject& rhs);
 		// DocString: FMTsrmodel::getgraphlength
 		/**
 		Return the size of the graph.
 		*/
 		size_t getgraphsize() const;
 	public:
+		// DocString: FMTsrmodel::getavailablesolverinterface
+		/**
+		Return a vector of solverinterface available
+		*/
+		static std::vector<Models::FMTsolverinterface> getavailablesolverinterface();
 		// DocString: FMTsrmodel(const FMTmodel,FMTsolverinterface)
 		/**
 		Main constructor used to build FMTsrmodel using it's base class and to let the user choose the solvertype
@@ -242,22 +242,6 @@ namespace Models
 		Get a pointer to the const solver behind the model.
 		*/
 		const FMTlpsolver* getconstsolverptr() const;
-		// DocString: FMTsrmodel::passinlogger
-		/**
-		It's sometime usefull to pass in the logger of an other FMTobject.
-		*/
-		virtual void passinlogger(const std::shared_ptr<Logging::FMTlogger>& logger) override;
-		// DocString: FMTlsrmodel::passinexceptionhandler
-		/**
-		It's sometime usefull to pass in the exception handler of an other FMTobject.
-		*/
-		virtual void passinexceptionhandler(const std::shared_ptr<Exception::FMTexceptionhandler>& exhandler) override;
-		// DocString: FMTsrmodel::passinobject
-		/**
-		It's sometime usefull to pass in the exception handler and the logger  of an other FMTobject to
-		a FMTobject.
-		*/
-		virtual void passinobject(const Core::FMTobject& rhs) override;
 		// DocString: FMTsrmodel::clone
 		/**
 		Get a clone of the FMTsrmodel

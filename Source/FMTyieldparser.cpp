@@ -435,7 +435,7 @@ Core::FMTyields FMTyieldparser::read(const std::vector<Core::FMTtheme>& themes,c
 							overyld = true;
 						}
 
-						if (!validate(themes, mask, " at line " + std::to_string(_line))) continue;
+						if (!Core::FMTtheme::validate(themes, mask, " at line " + std::to_string(_line))) continue;
 						Core::FMTyldtype yldtype = getyldtype(yieldtype);
 						tmask = Core::FMTmask(mask, themes);
 						std::unique_ptr<Core::FMTyieldhandler>newyield = gethandler(tmask, yldtype);
@@ -933,7 +933,7 @@ void FMTyieldparser::cleanup(Core::FMTyields& yields,const std::vector<Core::FMT
 			}
 		}
 	yields.update();
-	yields.passinobject(*this);
+	//yields.passinobject(*this);
 	}catch (...)
 		{
 		_exhandler->raisefromcatch(

@@ -19,17 +19,22 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <array>
 #include <ctime>
 
+
 #include <boost/thread/recursive_mutex.hpp>
 #include <boost/algorithm/string/erase.hpp>
 
 
 #include "FMTobject.hpp"
-#include "gdal.h"
+#if defined FMTWITHGDAL
+	#include "gdal.h"
+	class OGRSpatialReference;
+	class GDALDataset;
+	class OGRLayer;
+	class GDALRasterBand;
+	class GDALDriver;
+#endif
 
-class OGRSpatialReference;
-class GDALDataset;
-class OGRLayer;
-class GDALRasterBand;
+
 
 namespace Core {
 	class FMTtheme;
@@ -89,9 +94,19 @@ class FMTEXPORT FMTparser: public Core::FMTobject
 		// DocString: FMTparser::_included
 		///lines comming from an included file.
 		std::queue<std::string>_included;
+		// DocString: FMTparser::GDALinitialization;
+		///True if GDAL has been initialized.
+		static bool GDALinitialization;
 		// DocString: FMTparser::safeGetline
 		///A safe get line function for Linux/Windows
 		std::istream& safeGetline(std::istream& is, std::string& t) const;
+		#ifdef FMTWITHGDAL
+		// DocString: FMTparser::GDALinitialization
+		/**
+		Initialize GDAL once
+		*/
+		static void initializeGDAL();
+		#endif
     protected:
 		// DocString: FMTparser::mtx
 		///Mutex for multi-threading.
@@ -132,17 +147,42 @@ class FMTEXPORT FMTparser: public Core::FMTobject
 		// DocString: FMTparser::mostrecentfile
 		///The most recent file time read by this parser.
 		mutable std::time_t mostrecentfile;
-		// DocString: FMTparser:setsection
+		// DocString: FMTparser::setsection
 		/**
 		It sets the section member of the FMTobject.
 		*/
 		void setsection(const Core::FMTsection& section) const;
 		#ifdef FMTWITHGDAL
-			// DocString: FMTparser:getFORELspatialref
+			// DocString: FMTparser::getallGDALdrivernames
+			/**
+			Return a vector of GDAL drivers for a given spatialtype (raster/vector)
+			*/
+			std::vector<GDALDriver*> getallGDALdrivers(const char* spatialtype) const;
+			// DocString: FMTparser::getGDALvectordrivernames
+			/**
+			Return a vector of GDAL vector driver names
+			*/
+			std::vector<std::string>getGDALvectordrivernames() const;
+			// DocString: FMTparser::getGDALrasterdrivernames
+			/**
+			Return a vector of GDAL raster driver names
+			*/
+			std::vector<std::string>getGDALrasterdrivernames() const;
+			// DocString: FMTparser::getGDALvectordriverextensions
+			/**
+			Return a vector of GDAL vector driver extensions
+			*/
+			std::vector<std::string>getGDALvectordriverextensions() const;
+			// DocString: FMTparser::getGDALrasterdriverextensions
+			/**
+			Return a vector of GDAL raster driver extensions
+			*/
+			std::vector<std::string>getGDALrasterdriverextensions() const;
+			// DocString: FMTparser::getFORELspatialref
 			/**
 			Return and OGRspatialReference corresponding to the one used for FORELs in Quebec.
 			*/
-			static OGRSpatialReference getFORELspatialref();
+			OGRSpatialReference getFORELspatialref() const;
 			// DocString: FMTparser::createdataset
 			/**
 			The function create an empty GDALDataset for a given FMTlayer.

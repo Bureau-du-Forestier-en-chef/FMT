@@ -7,4 +7,5 @@ testyieldmodel;;;
 testOPAreaclustering;;;
 testareavariabilities;;;
 replanningtest;;;
+testmultisolutions;;;
 testaddtomodel;;;

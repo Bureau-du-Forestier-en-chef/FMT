@@ -231,7 +231,7 @@ namespace Models
 											{
 												found = true;
 												exact = true;
-											//	*_logger << "exact " << std::string(element.first) << " " << element.second << "\n";
+											//*_logger << "exact " << std::string(element.first) << " " << element.second << "\n";
 												break;
 											}
 											//*_logger << "op "<< areatoput <<" " << std::string(element.first) << " " << element.second << "\n";
@@ -242,10 +242,11 @@ namespace Models
 											id = 0;
 											for (const std::pair<Core::FMTdevelopment, double>& element : locksfound)
 											{
+												//*_logger << "ON second passt "<< std::string(element.first) <<" "<< areatoput<<" "<< (element.second + tolerance) << "\n";
 												if (areatoput <= (element.second + tolerance))
 												{
 													found = true;
-												//	*_logger << "non exact " << std::string(element.first) << " " << element.second << "\n";
+													//*_logger << "non exact " << std::string(element.first) << " " << element.second << "\n";
 													break;
 												}
 												++id;
@@ -606,7 +607,8 @@ namespace Models
 				{
 					scheduleobjective += *(solution + var);
 				}
-				*_logger << "schedule area of " << schedule.area() << " vs "<< scheduleobjective << "\n";
+				const std::string areacomparison = "schedule area of " + std::to_string(schedule.area()) + " vs " + std::to_string(scheduleobjective);
+				_logger->logwithlevel(areacomparison, 1);
 				std::vector<double>varsconstraint(bounds.size(), 1.0);
 				solver.addRow(static_cast<int>(varsconstraint.size()), &variables[0],
 					&varsconstraint[0], std::min(scheduleobjective - tolerance, schedule.area()));
@@ -634,8 +636,8 @@ namespace Models
 		graph(lgraph),
 		solver(lsolver)
 	{
-		solver.passinobject(base);
-		graph.passinobject(base);
+		//solver.passinobject(base);
+		//graph.passinobject(base);
 	}
 
 
@@ -714,8 +716,8 @@ namespace Models
 		graph(Graph::FMTgraphbuild::nobuild),
 		solver(lsolvertype)
 	{
-		solver.passinobject(base);
-		graph.passinobject(base);
+		//solver.passinobject(base);
+		//graph.passinobject(base);
 
 	}
 
@@ -724,8 +726,8 @@ namespace Models
 		graph(rhs.graph),
 		solver(rhs.solver)
 	{
-		solver.passinobject(rhs);
-		graph.passinobject(rhs);
+		//solver.passinobject(rhs);
+		//graph.passinobject(rhs);
 	}
 
 	FMTsrmodel::FMTsrmodel() :
@@ -1010,62 +1012,19 @@ namespace Models
 
 #endif 
 
-	void FMTsrmodel::passinobjecttomembers(const Core::FMTobject& rhs)
-	{
-		try {
-			graph.passinobject(rhs);
-			solver.passinobject(rhs);
-		}
-		catch (...)
-		{
-			_exhandler->raisefromcatch("", "FMTsrmodel::passinobjecttomembers", __LINE__, __FILE__);
-		}
-	}
-
-
 	std::unique_ptr<FMTmodel>FMTsrmodel::clone() const
 	{
 		return std::unique_ptr<FMTmodel>(new FMTsrmodel(*this));
 	}
 
-
-	void FMTsrmodel::passinobject(const Core::FMTobject& rhs)
+	std::vector<Models::FMTsolverinterface> FMTsrmodel::getavailablesolverinterface()
 	{
-		try {
-			FMTmodel::passinobject(rhs);
-			passinobjecttomembers(rhs);
-		}
-		catch (...)
-		{
-			_exhandler->raisefromcatch("", "FMTsrmodel::passinobject", __LINE__, __FILE__);
-		}
-
+		std::vector<Models::FMTsolverinterface> interfaces;
+		interfaces.push_back(Models::FMTsolverinterface::CLP);
+		interfaces.push_back(Models::FMTsolverinterface::MOSEK);
+		return interfaces;
 	}
 
-
-	void  FMTsrmodel::passinlogger(const std::shared_ptr<Logging::FMTlogger>& logger)
-	{
-		try {
-			FMTmodel::passinlogger(logger);
-			FMTsrmodel::passinobject(*this);
-		}
-		catch (...)
-		{
-			_exhandler->raisefromcatch("", "FMTsrmodel::passinlogger", __LINE__, __FILE__);
-		}
-	}
-
-	void  FMTsrmodel::passinexceptionhandler(const std::shared_ptr<Exception::FMTexceptionhandler>& exhandler)
-	{
-		try {
-			FMTmodel::passinexceptionhandler(exhandler);
-			FMTsrmodel::passinobject(*this);
-		}
-		catch (...)
-		{
-			_exhandler->raisefromcatch("", "FMTsrmodel::passinexceptionhandler", __LINE__, __FILE__);
-		}
-	}
 }
 
 

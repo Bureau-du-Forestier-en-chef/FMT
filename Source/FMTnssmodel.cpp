@@ -220,7 +220,7 @@ namespace Models
 			generator.seed(getparameter(Models::FMTintmodelparameters::SEED));
 			Core::FMTschedule schedule;
 			schedule.setuselock(true);
-			schedule.passinobject(*this);
+			//schedule.passinobject(*this);
 			const int actualgraphlength = static_cast<int>(getgraphsize());
 			std::vector<Core::FMTactualdevelopment> actualarea;
 			int simulatedperiod = (actualgraphlength-1);

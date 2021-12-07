@@ -36,6 +36,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 namespace Parser
 {
 
+bool FMTparser::GDALinitialization = false;
 
 Core::FMTsection FMTparser::from_extension(const std::string& ext) const
     {
@@ -78,6 +79,93 @@ Core::FMTsection FMTparser::from_extension(const std::string& ext) const
 	return Core::FMTsection::Empty;
     }
 
+#if defined FMTWITHGDAL
+void FMTparser::initializeGDAL()
+	{
+	if (!GDALinitialization)
+		{
+		const std::string baseruntimelocation = getruntimelocation();
+		const std::string  runtimelocation = baseruntimelocation + "\\GDAL_DATA";
+		if (!boost::filesystem::is_directory(boost::filesystem::path(runtimelocation)))
+		{
+			_exhandler->raise(Exception::FMTexc::FMTinvalid_path,
+				"Cannot find GDAL_DATA at " + runtimelocation, "FMTparser::FMTparser()", __LINE__, __FILE__);
+		}
+		CPLSetConfigOption("GDAL_DATA", runtimelocation.c_str());
+		//No need of drivers from shared library see : https://gdal.org/api/gdaldriver_cpp.html ; https://gdal.org/api/cpl.html ; https://trac.osgeo.org/gdal/wiki/ConfigOptions
+		CPLSetConfigOption("GDAL_DRIVER_PATH", "");
+		#if (GDAL_VERSION_MAJOR>=3)//Since GDAL 3.0
+				const std::string  projruntimelocation = baseruntimelocation + "/proj";
+				std::vector<const char*>projsearch;
+				projsearch.push_back(projruntimelocation.c_str());
+				projsearch.push_back(NULL);
+				OSRSetPROJSearchPaths(&projsearch[0]);
+		#endif
+		GDALAllRegister();
+		GDALinitialization = true;
+		}
+	}
+std::vector<GDALDriver*> FMTparser::getallGDALdrivers(const char* spatialtype) const
+{
+	GDALDriverManager* manager = GetGDALDriverManager();
+	std::vector<GDALDriver*>drivers;
+	for (int driverid = 0; driverid < manager->GetDriverCount(); ++driverid)
+	{
+		GDALDriver* driver = manager->GetDriver(driverid);
+		if (driver != nullptr&&driver->GetMetadataItem(spatialtype) &&
+			GDALGetDriverShortName(driver) != nullptr&&
+			driver->GetMetadataItem(GDAL_DMD_EXTENSION) != nullptr)
+		{
+			drivers.push_back(driver);
+		}
+	}
+	return drivers;
+}
+
+
+std::vector<std::string>FMTparser::getGDALvectordrivernames() const
+{
+	std::vector<std::string>names;
+	for (GDALDriver* driver : getallGDALdrivers(GDAL_DCAP_VECTOR))
+	{
+		names.push_back(std::string(GDALGetDriverShortName(driver)));
+	}
+	return names;
+}
+
+std::vector<std::string>FMTparser::getGDALrasterdrivernames() const
+{
+	std::vector<std::string>names;
+	for (GDALDriver* driver : getallGDALdrivers(GDAL_DCAP_RASTER))
+	{
+		names.push_back(std::string(GDALGetDriverShortName(driver)));
+	}
+	return names;
+}
+std::vector<std::string>FMTparser::getGDALvectordriverextensions() const
+{
+	std::vector<std::string>extensions;
+	for (GDALDriver* driver : getallGDALdrivers(GDAL_DCAP_VECTOR))
+	{
+		extensions.push_back(std::string(driver->GetMetadataItem(GDAL_DMD_EXTENSION)));
+	}
+	return extensions;
+
+}
+
+std::vector<std::string>FMTparser::getGDALrasterdriverextensions() const
+{
+	std::vector<std::string>extensions;
+	for (GDALDriver* driver : getallGDALdrivers(GDAL_DCAP_RASTER))
+	{
+		extensions.push_back(std::string(driver->GetMetadataItem(GDAL_DMD_EXTENSION)));
+	}
+	return extensions;
+
+}
+
+#endif
+
 FMTparser::FMTparser() : Core::FMTobject(),
 		rxvectortheme("^(THEME)([\\d]*)$"),
 		rxnumber("-?[\\d.]+(?:E-?[\\d.]+)?",std::regex_constants::icase),
@@ -105,23 +193,7 @@ FMTparser::FMTparser() : Core::FMTobject(),
         rxseparator("([\\s\\t]*)([^\\s\\t]*)")
         {
 		#ifdef FMTWITHGDAL
-			const std::string baseruntimelocation = getruntimelocation();
-			const std::string  runtimelocation = baseruntimelocation+"\\GDAL_DATA";
-			if (!boost::filesystem::is_directory(boost::filesystem::path(runtimelocation)))
-				{
-				_exhandler->raise(Exception::FMTexc::FMTinvalid_path,
-					"Cannot find GDAL_DATA at "+runtimelocation,"FMTparser::FMTparser()",__LINE__,__FILE__, _section);
-				}
-			CPLSetConfigOption("GDAL_DATA", runtimelocation.c_str());
-			//No need of drivers from shared library see : https://gdal.org/api/gdaldriver_cpp.html ; https://gdal.org/api/cpl.html ; https://trac.osgeo.org/gdal/wiki/ConfigOptions
-			CPLSetConfigOption("GDAL_DRIVER_PATH","");
-			#if (GDAL_VERSION_MAJOR>=3)//Since GDAL 3.0
-				const std::string  projruntimelocation = baseruntimelocation + "/proj";
-				std::vector<const char*>projsearch;
-				projsearch.push_back(projruntimelocation.c_str());
-				projsearch.push_back(NULL);
-				OSRSetPROJSearchPaths(&projsearch[0]);
-			#endif
+			initializeGDAL();
 		#endif
         }
 
@@ -209,12 +281,12 @@ T FMTparser::getnum(const std::string& value, const Core::FMTconstants& constant
 		{
 			nvalue = constant.get<T>(newvalue, period);
 			_exhandler->raise(Exception::FMTexc::FMTconstants_replacement,
-				value + "at line " + std::to_string(_line), "FMTparser::getnum", __LINE__, __FILE__, _section);
+				value + " at line " + std::to_string(_line), "FMTparser::getnum", __LINE__, __FILE__, _section);
 			++_constreplacement;
 		}
 		else {
 			_exhandler->raise(Exception::FMTexc::FMTinvalid_number,
-				value + "at line " + std::to_string(_line), "FMTparser::getnum", __LINE__, __FILE__, _section);
+				value + " at line " + std::to_string(_line), "FMTparser::getnum", __LINE__, __FILE__, _section);
 		}
 	}
 	catch (...)
@@ -240,7 +312,7 @@ T FMTparser::getnum(const std::string& value) const
 		}
 		else {
 			_exhandler->raise(Exception::FMTexc::FMTinvalid_number,
-				value + "at line " + std::to_string(_line), "FMTparser::getnum", __LINE__, __FILE__, _section);
+				value + " at line " + std::to_string(_line), "FMTparser::getnum", __LINE__, __FILE__, _section);
 		}
 	}
 	catch (...)
@@ -317,7 +389,7 @@ template Core::FMTbounds<int> FMTparser::bounds<int>(const Core::FMTconstants& c
 
 #ifdef FMTWITHGDAL
 
-OGRSpatialReference FMTparser::getFORELspatialref()
+OGRSpatialReference FMTparser::getFORELspatialref() const
 {
 	OGRSpatialReference FMTspref(nullptr);
 	FMTspref.importFromEPSG(32198);
@@ -509,7 +581,7 @@ GDALDataset* FMTparser::createOGRdataset(std::string location,
 {
 	GDALDataset* newdataset = nullptr;
 	try {
-		GDALAllRegister();
+		//GDALAllRegister();
 		GDALDriver* newdriver = GetGDALDriverManager()->GetDriverByName(gdaldrivername.c_str());
 		if (newdriver == NULL)
 		{
@@ -614,6 +686,7 @@ void FMTparser::getWSfields(OGRLayer* layer, std::map<int, int>& themes, int& ag
 }
 
 #endif
+
 std::string FMTparser::setspecs(Core::FMTsection section, Core::FMTkwor key,const Core::FMTyields& ylds,const Core::FMTconstants& constants,std::vector<Core::FMTspec>& specs, const std::string& line)
     {
 	std::string rest = "";

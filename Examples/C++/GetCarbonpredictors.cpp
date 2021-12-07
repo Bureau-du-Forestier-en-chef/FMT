@@ -74,7 +74,7 @@ int main()
 					}
 				simulationmodel.settransitions(strans);
 				Parser::FMTareaparser areaparser;
-				areaparser.passinobject(modelparser);
+				//areaparser.passinobject(modelparser);
 				Spatial::FMTforest initialforestmap=areaparser.vectormaptoFMTforest(maplocation,380,optimizationmodel.getthemes(),agefield,areafield,1,0.0001,lockfield,0.0,"",false);
 				simulationmodel.setinitialmapping(initialforestmap);
 				for (size_t period = 1; period <= 5; ++period)

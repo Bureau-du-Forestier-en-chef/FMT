@@ -114,12 +114,6 @@ namespace Heuristics
 			(*_logger) << addonthreadno()+"Best solution found objective: "+std::to_string(getObjValue())+" after "+std::to_string(pass-1)+" iterations --- Waiting for other threads." << "\n";
 		}
 
-    void FMTlpheuristic::passinobject(const FMTobject& rhs)
-        {
-		FMTlpsolver::passinobject(rhs);
-        FMTlpsolver::passinmessagehandler(*_logger);
-        }
-
     void FMTlpheuristic::setnothread(const int& lnothread)
     {
     	nothread=lnothread;

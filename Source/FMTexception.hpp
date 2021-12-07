@@ -35,19 +35,8 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #endif
 
 #include "FMTutility.hpp"
-//#include "FMTlogger.hpp"
 
-#ifndef FMTEXPORT
-	#if defined FMTSHAREDLIB && _MSC_VER
-	#define FMTEXPORT __declspec(dllexport)
-	#elif defined FMTSHAREDLIB
-	#define FMTEXPORT __attribute__ ((dllexport))
-	#elif defined FMTLIBIMPORT && _MSC_VER
-	#define FMTEXPORT __declspec(dllimport)
-	#else
-	#define FMTEXPORT
-	#endif
-#endif
+
 
 /// Namespace for exceptions and exceptions handling (warnings and errors) thrown by FMT and all exceptions handlers available.
 namespace Exception

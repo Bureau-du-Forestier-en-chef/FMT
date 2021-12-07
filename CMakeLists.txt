@@ -7,6 +7,15 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 
 cmake_minimum_required(VERSION 3.6)
+
+if (DEFINED CMAKE_BUILD_TYPE)
+	set(BUILD_TYPE "${CMAKE_BUILD_TYPE}")
+endif()
+if (DEFINED BUILD_TYPE)
+	set(CMAKE_BUILD_TYPE "${BUILD_TYPE}")
+endif()
+
+
 project(FMT VERSION 0.9.1 LANGUAGES CXX)
 
 set(FMTMAJOR "-DFMT_MAJOR=${PROJECT_VERSION_MAJOR}")
@@ -154,9 +163,9 @@ endif(DEFINED PYTHON_DIR OR DEFINED R_DIR)
 if (NOT MSVC)
 set_target_properties( FMT
     PROPERTIES
-    ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}"
-    LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}"
-    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}"
+    ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}"
+    LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}"
+    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}"
 )
 else()
 set_target_properties( FMT
@@ -220,11 +229,11 @@ if (NOT MSVC AND DEFINED ENV{R_DIR})
 			set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,--version-script=${CMAKE_CURRENT_SOURCE_DIR}/Templates/Rpackage/FMTRcpplinkerscript.txt")
 			set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,--allow-multiple-definition")
 			set(CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} -Wl,--allow-multiple-definition")
-			file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/Templates/Rpackage/FMT" DESTINATION "${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}")
+			file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/Templates/Rpackage/FMT" DESTINATION "${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}")
 			if (DEFINED PYTHON_DIR)
 			find_program(PYTHON python PATHS ${PYTHON_DIR})
 				execute_process(
-					COMMAND "${PYTHON}" ExposeEnum.py "${FMTSOURCEDIR}" "${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}/FMT/R"
+					COMMAND "${PYTHON}" ExposeEnum.py "${FMTSOURCEDIR}" "${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}/FMT/R"
 					WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/Templates/Rpackage"
 					)
 				else()
@@ -269,10 +278,10 @@ if ((NOT DEFINED ENV{R_DIR}) AND (DEFINED ENV{PYTHON_DIR}))
 			set_target_properties(FMT PROPERTIES SUFFIX ".pyd")
 		endif(NOT CYGWIN)
 		configure_file("${CMAKE_CURRENT_SOURCE_DIR}/Templates/__init__.py.in"
-                    "${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}/__init__.py" @ONLY
+                    "${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}/__init__.py" @ONLY
                 )
         configure_file("${CMAKE_CURRENT_SOURCE_DIR}/Templates/setup.py.in"
-                    "${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}/setup.py" @ONLY
+                    "${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}/setup.py" @ONLY
                 )
 	else()
 		message("Python not found")
@@ -307,7 +316,7 @@ endif(DEFINED PYTHONNAMING)
 if (Boost_FOUND)
 	if (MSVC)
         #Go find the DLL
-		if(CMAKE_BUILD_TYPE MATCHES Release)
+		if(BUILD_TYPE MATCHES Release)
 			if (DEFINED CMAKE_TOOLCHAIN_FILE)#if vcpkg
 				get_filename_component(boost_bin ${Boost_LIBRARY_DIR_RELEASE} DIRECTORY)
 				set(boost_bin "${boost_bin}/bin")
@@ -321,7 +330,7 @@ if (Boost_FOUND)
 				else()
 					set(boost_bin "${Boost_LIBRARY_DIR_DEBUG}")
 				endif(DEFINED CMAKE_TOOLCHAIN_FILE)
-		endif(CMAKE_BUILD_TYPE MATCHES Release)
+		endif(BUILD_TYPE MATCHES Release)
 		FILE(GLOB_RECURSE BOOST_DLL ${boost_bin}/*.dll)
 		LIST(APPEND FMTDEPENDENCIES ${BOOST_DLL})
 	endif(MSVC)
@@ -583,26 +592,26 @@ endif(NOT DEFINED PARALLEL_TESTS)
 install (CODE
     "set (PATHS_DEPS \"${CMAKE_SYSTEM_LIBRARY_PATH}\")
 	set(GDAL_FOUND \"${GDAL_FOUND}\")
-    file(COPY \"${CMAKE_CURRENT_SOURCE_DIR}/LICENSES\" DESTINATION \"${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}\")
-    file(COPY \"${CMAKE_CURRENT_SOURCE_DIR}/Templates/YieldPredModels\" DESTINATION \"${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}\")
+    file(COPY \"${CMAKE_CURRENT_SOURCE_DIR}/LICENSES\" DESTINATION \"${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}\")
+    file(COPY \"${CMAKE_CURRENT_SOURCE_DIR}/Templates/YieldPredModels\" DESTINATION \"${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}\")
     if (GDAL_FOUND)
         #Copy gdal data
-		if (NOT EXISTS \"${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}/GDAL_DATA\")
-			file(COPY \"${GDAL_DATA}\" DESTINATION \"${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}\")
-			file(RENAME \"${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}/${GDAL_DATA_NAME}\" \"${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}/GDAL_DATA\")
-		endif(NOT EXISTS \"${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}/GDAL_DATA\")
-		if (NOT EXISTS \"${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}/proj\" AND EXISTS \"${PROJDIR}\")
-			file(COPY \"${PROJDIR}\" DESTINATION \"${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}\")
-			if (NOT EXISTS \"${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}/proj\")
-				file(RENAME \"${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}/${PROJDIRNAME}\" \"${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}/proj\")
-			endif(NOT EXISTS \"${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}/proj\")
-		endif(NOT EXISTS \"${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}/proj\" AND EXISTS \"${PROJDIR}\")
+		if (NOT EXISTS \"${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}/GDAL_DATA\")
+			file(COPY \"${GDAL_DATA}\" DESTINATION \"${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}\")
+			file(RENAME \"${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}/${GDAL_DATA_NAME}\" \"${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}/GDAL_DATA\")
+		endif(NOT EXISTS \"${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}/GDAL_DATA\")
+		if (NOT EXISTS \"${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}/proj\" AND EXISTS \"${PROJDIR}\")
+			file(COPY \"${PROJDIR}\" DESTINATION \"${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}\")
+			if (NOT EXISTS \"${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}/proj\")
+				file(RENAME \"${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}/${PROJDIRNAME}\" \"${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}/proj\")
+			endif(NOT EXISTS \"${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}/proj\")
+		endif(NOT EXISTS \"${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}/proj\" AND EXISTS \"${PROJDIR}\")
     endif(GDAL_FOUND)
 	set(DEPENDENCIES \"${FMTDEPENDENCIES}\")
 	if(${CMAKE_VERSION} VERSION_LESS \"3.16.0\") 
     	message(\"Please consider to switch to CMake 3.16.0\")
 	else()
-		FILE(GLOB_RECURSE FMTlibLocations \"${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}/FMT.*\")
+		FILE(GLOB_RECURSE FMTlibLocations \"${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}/FMT.*\")
 		list(GET FMTlibLocations 0 FMTloc)
 		file(	GET_RUNTIME_DEPENDENCIES
 				RESOLVED_DEPENDENCIES_VAR DEPENDENCIESfound
@@ -617,46 +626,46 @@ install (CODE
         #Copy dependencies
         foreach(FMTdep \${DEPENDENCIES}\)
             get_filename_component(depname \"\${FMTdep}\" NAME)
-            file(COPY \"\${FMTdep}\" DESTINATION \"${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}\")
+            file(COPY \"\${FMTdep}\" DESTINATION \"${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}\")
         endforeach()
     endif(DEPENDENCIES)
-	if (EXISTS \"${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}/setup.py\")
+	if (EXISTS \"${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}/setup.py\")
         find_program(PYTHON \"python\" PATHS \"${PYTHON_DIR}\")
         execute_process(
           COMMAND \"$\{PYTHON\}\" -m pip wheel .
-          WORKING_DIRECTORY \"${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}\"
+          WORKING_DIRECTORY \"${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}\"
         )
-    endif (EXISTS \"${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}/setup.py\")
-	if (EXISTS \"${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}/FMT\")
-		file(COPY \"${CMAKE_CURRENT_SOURCE_DIR}/Templates/YieldPredModels\" DESTINATION \"${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}/FMT/inst/libs/x64/\")
-		file(COPY \"${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}/GDAL_DATA\" DESTINATION \"${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}/FMT/inst/libs/x64/\")
-		if (EXISTS \"${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}/proj\")
-			file(COPY \"${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}/proj\" DESTINATION \"${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}/FMT/inst/libs/x64/\")
-		endif(EXISTS \"${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}/proj\")
-		file(COPY \"${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}/FMT${CMAKE_SHARED_LIBRARY_SUFFIX}\" DESTINATION \"${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}/FMT/inst/libs/x64/\")
-		file(COPY \"${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}/libFMT${CMAKE_SHARED_LIBRARY_SUFFIX}${CMAKE_STATIC_LIBRARY_SUFFIX}\" DESTINATION \"${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}/FMT/inst/libs/x64/\")
+    endif (EXISTS \"${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}/setup.py\")
+	if (EXISTS \"${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}/FMT\")
+		file(COPY \"${CMAKE_CURRENT_SOURCE_DIR}/Templates/YieldPredModels\" DESTINATION \"${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}/FMT/inst/libs/x64/\")
+		file(COPY \"${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}/GDAL_DATA\" DESTINATION \"${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}/FMT/inst/libs/x64/\")
+		if (EXISTS \"${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}/proj\")
+			file(COPY \"${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}/proj\" DESTINATION \"${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}/FMT/inst/libs/x64/\")
+		endif(EXISTS \"${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}/proj\")
+		file(COPY \"${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}/FMT${CMAKE_SHARED_LIBRARY_SUFFIX}\" DESTINATION \"${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}/FMT/inst/libs/x64/\")
+		file(COPY \"${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}/libFMT${CMAKE_SHARED_LIBRARY_SUFFIX}${CMAKE_STATIC_LIBRARY_SUFFIX}\" DESTINATION \"${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}/FMT/inst/libs/x64/\")
         if (DEPENDENCIES)
 			#Copy dependencies
 			foreach(FMTdep \${DEPENDENCIES}\)
-				file(COPY \"\${FMTdep}\" DESTINATION \"${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}/FMT/inst/libs/x64/\")
+				file(COPY \"\${FMTdep}\" DESTINATION \"${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}/FMT/inst/libs/x64/\")
 			endforeach()
 		 endif(DEPENDENCIES)
 		find_program(RLOCATION \"R\" PATHS \"${R_DIR}/bin/x64\")
         execute_process(
           COMMAND \"$\{RLOCATION\}\" CMD build FMT
-          WORKING_DIRECTORY \"${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}\"
+          WORKING_DIRECTORY \"${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}\"
         )
 		execute_process(
           COMMAND \"$\{RLOCATION\}\" CMD INSTALL --no-multiarch \"FMT_${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.tar.gz\"
-          WORKING_DIRECTORY \"${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}\"
+          WORKING_DIRECTORY \"${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}\"
         )
-endif (EXISTS \"${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}/FMT\")
-file(MAKE_DIRECTORY \"${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}/tests\")
+endif (EXISTS \"${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}/FMT\")
+file(MAKE_DIRECTORY \"${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}/tests\")
  execute_process(
-          COMMAND ctest -C \"${CMAKE_BUILD_TYPE}\" -j \"${PARALLEL_TESTS}\"
+          COMMAND ctest -C \"${BUILD_TYPE}\" -j \"${PARALLEL_TESTS}\"
           WORKING_DIRECTORY \"${CMAKE_BINARY_DIR}\"
         )
-file(REMOVE_RECURSE \"${CMAKE_BINARY_DIR}/bin/${CMAKE_BUILD_TYPE}/tests\")
+file(REMOVE_RECURSE \"${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}/tests\")
 ")
 
 

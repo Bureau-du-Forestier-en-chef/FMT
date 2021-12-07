@@ -67,8 +67,6 @@ void exportCore()
 			"@DocString(FMTobject::enablenestedexceptions)")
 		.def("disablenestedexceptions", &Core::FMTobject::disablenestedexceptions,
 			"@DocString(FMTobject::disablenestedexceptions)")
-		.def("passinobject", &Core::FMTobject::passinobject,
-			"@DocString(FMTobject::passinobject)")
 		.def("setdefaultlogger", &Core::FMTobject::setdefaultlogger,
 			"@DocString(FMTobject::setdefaultlogger)")
 		.def("setdebuglogger", &Core::FMTobject::setdebuglogger,
