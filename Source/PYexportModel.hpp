@@ -229,7 +229,9 @@ void exportModel()
 		.def("cleargraphdevelopements", &Models::FMTsrmodel::cleargraphdevelopements,
 			"@DocString(FMTsrmodel::cleargraphdevelopements)")
 		.def("getstats", &Models::FMTsrmodel::getstats,
-			"@DocString(FMTlpmodel::getstats)");
+			"@DocString(FMTlpmodel::getstats)")
+		.def("getavailablesolverinterface", &Models::FMTsrmodel::getavailablesolverinterface,
+			"@DocString(FMTsrmodel::getavailablesolverinterface)").staticmethod("getavailablesolverinterface");
 
 	define_pylist<Models::FMTsrmodel>();
 	

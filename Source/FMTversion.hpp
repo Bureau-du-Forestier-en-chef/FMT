@@ -25,14 +25,6 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #endif
 
 #include "FMTobject.hpp"
-#ifdef FMTWITHOSI
-	#include "FMTsolverinterface.hpp"
-#endif
-
-#ifdef FMTWITHGDAL
-	#include "gdal.h"
-	#include "gdal_priv.h"
-#endif
 
 /// Namespace for handling FMT versions and features.
 namespace Version
@@ -48,19 +40,12 @@ It also informs the user about which features are avalaible in FMT.
 
 class FMTEXPORT FMTversion : public Core::FMTobject
 	{
-	#ifdef FMTWITHGDAL
-		// DocString: FMTversion::getallGDALdrivernames
-		/**
-		Return a vector of GDAL drivers for a given spatialtype (raster/vector)
-		*/
-		static std::vector<GDALDriver*> getallGDALdrivers(const char* spatialtype);
-	#endif
 	public:
 		// DocString: FMTversion()
 		/**
 		Default constructor of FMTversion.
 		*/
-		FMTversion();
+		FMTversion()=default;
 		// DocString: ~FMTversion()
 		/**
 		Destructor of FMTversion.
@@ -111,36 +96,7 @@ class FMTEXPORT FMTversion : public Core::FMTobject
 		/**
 		Returns thes license has a regular string if french = true the returned license will be in french
 		*/
-		std::string getlicense(bool french=false) const;
-		#ifdef FMTWITHOSI
-		// DocString: FMTversion::getavailablesolverinterface
-		/**
-		Return a vector of solverinterface available
-		*/
-		static std::vector<Models::FMTsolverinterface> getavailablesolverinterface();
-		#endif
-		#ifdef FMTWITHGDAL
-			// DocString: FMTversion::getGDALvectordrivernames
-			/**
-			Return a vector of GDAL vector driver names
-			*/
-			static std::vector<std::string>getGDALvectordrivernames();
-			// DocString: FMTversion::getGDALrasterdrivernames
-			/**
-			Return a vector of GDAL raster driver names
-			*/
-			static std::vector<std::string>getGDALrasterdrivernames();
-			// DocString: FMTversion::getGDALvectordriverextensions
-			/**
-			Return a vector of GDAL vector driver extensions
-			*/
-			static std::vector<std::string>getGDALvectordriverextensions();
-			// DocString: FMTversion::getGDALrasterdriverextensions
-			/**
-			Return a vector of GDAL raster driver extensions
-			*/
-			static std::vector<std::string>getGDALrasterdriverextensions();
-		#endif
+		static std::string getlicense(bool french=false);
 	};
 }
 

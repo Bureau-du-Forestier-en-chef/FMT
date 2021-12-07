@@ -39,11 +39,6 @@ class FMTEXPORT FMTsesmodel final: public FMTmodel
 		ar & boost::serialization::make_nvp("model", boost::serialization::base_object<FMTmodel>(*this));
 		ar & BOOST_SERIALIZATION_NVP(spschedule);
 		}
-	// DocString: FMTsesmodel::passinobjecttomembers
-	/**
-	Pass FMTobject to members data.
-	*/
-	void passinobjecttomembers(const Core::FMTobject& rhs);
 	virtual void swap_ptr(const std::unique_ptr<FMTmodel>& rhs);
     protected:
 		// DocString: FMTsesmodel::spschedule
@@ -154,22 +149,6 @@ class FMTEXPORT FMTsesmodel final: public FMTmodel
 		If with lock is true then the schedule will contain locked developement.
 		*/
 		virtual Core::FMTschedule getsolution(int period, bool withlock = false) const;
-		// DocString: FMTsesmodel::passinobject
-		/**
-		It's sometime usefull to pass in the exception handler and the logger  of an other FMTobject to
-		a FMTobject.
-		*/
-		virtual void passinobject(const Core::FMTobject& rhs) override;
-		// DocString: FMTsesmodel::passinlogger
-		/**
-		It's sometime usefull to pass in the logger of an other FMTobject.
-		*/
-		virtual void passinlogger(const std::shared_ptr<Logging::FMTlogger>& logger) override;
-		// DocString: FMTsesmodel::passinexceptionhandler
-		/**
-		It's sometime usefull to pass in the exception handler of an other FMTobject.
-		*/
-		virtual void passinexceptionhandler(const std::shared_ptr<Exception::FMTexceptionhandler>& exhandler) override;
 		// DocString: FMTsesmodel::clone
 		/**
 		Get a clone of the FMTsesmodel

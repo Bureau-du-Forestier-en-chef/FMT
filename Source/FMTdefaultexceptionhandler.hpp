@@ -37,6 +37,11 @@ class FMTEXPORT FMTdefaultexceptionhandler final : public FMTexceptionhandler
 		Default constructor for FMTdefaultexceptionhandler.
 		*/
 		FMTdefaultexceptionhandler();
+		// DocString: FMTdefaultexceptionhandler(const std::shared_ptr<Logging::FMTlogger>&)
+		/**
+		Constructor with logger
+		*/
+		FMTdefaultexceptionhandler(const std::shared_ptr<Logging::FMTlogger>& logger);
 		// DocString: ~FMTdefaultexceptionhandler()
 		/**
 		Default destructor for FMTdefaultexceptionhandler.

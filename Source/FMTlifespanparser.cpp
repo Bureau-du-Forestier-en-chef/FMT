@@ -48,13 +48,13 @@ Core::FMTlifespans FMTlifespanparser::read(const std::vector<Core::FMTtheme>& th
 					const int age = getnum<int>(page, constants);
 					splited.pop_back();
 					std::string mask = boost::algorithm::join(splited, " ");
-					if (!validate(themes, mask, " at line " + std::to_string(_line))) continue;
+					if (!Core::FMTtheme::validate(themes, mask, " at line " + std::to_string(_line))) continue;
 					lifespan.push_back(Core::FMTmask(mask, themes), age);
 				}
 			}
 		}
 		lifespan.shrink();
-		lifespan.passinobject(*this);
+		//lifespan.passinobject(*this);
 	}catch (...)
 		{
 		_exhandler->raisefromcatch("In " + _location + " at line " + std::to_string(_line),"FMTlifespanparser::read", __LINE__, __FILE__, _section);

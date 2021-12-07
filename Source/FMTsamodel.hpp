@@ -83,22 +83,6 @@ class FMTEXPORT FMTsamodel : public FMTmodel
 		Try to solve the model from a coldstart.
 		*/
 		void initialsolve();
-		// DocString: FMTsamodel::passinlogger
-		/**
-		It's sometime usefull to pass in the logger of an other FMTobject.
-		*/
-		virtual void passinlogger(const std::shared_ptr<Logging::FMTlogger>& logger) override;
-		// DocString: FMTsamodel::passinexceptionhandler
-		/**
-		It's sometime usefull to pass in the exception handler of an other FMTobject.
-		*/
-		virtual void passinexceptionhandler(const std::shared_ptr<Exception::FMTexceptionhandler>& exhandler) override;
-		// DocString: FMTsamodel::passinobject
-		/**
-		It's sometime usefull to pass in the exception handler and the logger  of an other FMTobject to
-		a FMTobject.
-		*/
-		virtual void passinobject(const Core::FMTobject& rhs) override;
 	private:
 		
 

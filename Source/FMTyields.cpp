@@ -150,20 +150,6 @@ void FMTyields::update()
 		}
     }
 
-void FMTyields::passinobject(const FMTobject& rhs)
-	{
-	try {
-		FMTlist<std::unique_ptr<FMTyieldhandler>>::passinobject(rhs);
-		for (auto&  handler : *this)
-			{
-			handler.second->passinobject(rhs);
-			}
-	}catch (...)
-		{
-		_exhandler->raisefromcatch("", "FMTyields::passinobject", __LINE__, __FILE__, Core::FMTsection::Yield);
-		}
-
-	}
 
 FMTyields FMTyields::presolve(const FMTmask& basemask,
 	const std::vector<FMTtheme>& originalthemes,

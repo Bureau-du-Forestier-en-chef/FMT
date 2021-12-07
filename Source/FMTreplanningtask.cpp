@@ -38,7 +38,7 @@ namespace Parallel
 		globalsolutionweight(globalwweight)
 	{
 		try {
-			passinobject(globalm);
+			//passinobject(globalm);
 			global = std::move(globalm.clone());
 			stochastic = std::move(stochasticm.clone());
 			local = std::move(localm.clone());

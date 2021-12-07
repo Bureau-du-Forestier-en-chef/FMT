@@ -34,6 +34,15 @@ namespace Exception
 
 	FMTdefaultexceptionhandler::FMTdefaultexceptionhandler() :FMTexceptionhandler() {}
 
+	FMTdefaultexceptionhandler::FMTdefaultexceptionhandler(const std::shared_ptr<Logging::FMTlogger>& logger):
+		FMTexceptionhandler(logger)
+	{
+	#if defined  FMTWITHGDAL
+		Exception::FMTexceptionhandler* handler = reinterpret_cast<Exception::FMTexceptionhandler*>(CPLGetErrorHandlerUserData());
+		CPLPushErrorHandlerEx(Exception::FMTCPLErrorHandler, this->getCPLdata());
+	#endif
+	}
+
 	FMTexception FMTdefaultexceptionhandler::raise(FMTexc lexception, std::string text,
 		const std::string& method, const int& line, const std::string& file, Core::FMTsection lsection,bool throwit)
 	{

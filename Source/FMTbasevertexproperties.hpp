@@ -65,7 +65,6 @@ namespace Graph
 		{
 			return (*development);
 		}
-		void passinobject(const Core::FMTobject& rhs);
 		bool operator < (const FMTbasevertexproperties& rhs) const;
 		FMTbasevertexproperties& operator = (const FMTbasevertexproperties& rhs);
 		FMTbasevertexproperties(const Core::FMTfuturdevelopment& ldevelopment);

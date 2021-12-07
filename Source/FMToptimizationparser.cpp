@@ -799,7 +799,7 @@ namespace Parser
 								{
 									for (Core::FMTconstraint baseconstraint : getconstraints(line, constants, outputs, themes,actions))
 										{
-										baseconstraint.passinobject(*this);
+										//baseconstraint.passinobject(*this);
 										constraints.push_back(baseconstraint);
 										}
 									

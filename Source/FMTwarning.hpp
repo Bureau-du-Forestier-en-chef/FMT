@@ -12,6 +12,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTexception.hpp"
 #include <string>
 #include <memory>
+#include "FMTutility.hpp"
 
 namespace Logging
 {

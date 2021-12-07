@@ -72,6 +72,18 @@ enum FMTotar
 
 const char* FMTsection_str(FMTsection section);
 
+#ifndef FMTEXPORT
+#if defined FMTSHAREDLIB && _MSC_VER
+#define FMTEXPORT __declspec(dllexport)
+#elif defined FMTSHAREDLIB
+#define FMTEXPORT __attribute__ ((dllexport))
+#elif defined FMTLIBIMPORT && _MSC_VER
+#define FMTEXPORT __declspec(dllimport)
+#else
+#define FMTEXPORT
+#endif
+#endif
+
 }
 
 #endif // FMTUTILS_H_INCLUDED

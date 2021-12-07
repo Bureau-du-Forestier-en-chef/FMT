@@ -94,7 +94,7 @@ namespace Parser {
 								mask += values[id] + " ";
 							}
 							mask.pop_back();
-							if (!validate(themes, mask, " at line " + std::to_string(_line))) continue;
+							if (!Core::FMTtheme::validate(themes, mask, " at line " + std::to_string(_line))) continue;
 							const int age = getnum<int>(values[id]);
 							++id;
 							const double area = getnum<double>(values[id]);
@@ -119,7 +119,7 @@ namespace Parser {
 									}
 								}
 								Core::FMTdevelopment dev(Core::FMTmask(mask, themes), age, 0, period);
-								dev.passinobject(*this);
+								//dev.passinobject(*this);
 								std::vector<Core::FMTaction>::const_iterator act = find_if(actions.begin(), actions.end(), Core::FMTactioncomparator(actionname));
 								if (act->dorespectlock())
 								{
@@ -146,7 +146,7 @@ namespace Parser {
 				for (const std::map<Core::FMTaction, std::map<Core::FMTdevelopment, std::map<int, double>>>& inschedule : data)
 				{
 					schedules.emplace_back(period, inschedule);
-					schedules.back().passinobject(*this);
+					//schedules.back().passinobject(*this);
 					schedules.back().setuselock(uselock);
 					++period;
 				}

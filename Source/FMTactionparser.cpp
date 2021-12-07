@@ -212,7 +212,7 @@ FMTactionparser& FMTactionparser::operator = (const FMTactionparser& rhs)
 							Core::FMTspec spec;
 							std::string mask = getbounds(line, spec, constants, yields);
 							
-							if (!validate(themes, mask, " at line " + std::to_string(_line))) continue;
+							if (!Core::FMTtheme::validate(themes, mask, " at line " + std::to_string(_line))) continue;
 							const Core::FMTmask newmask(mask, themes);
 							const size_t loc = std::distance(actions.begin(), std::find_if(actions.begin(), actions.end(), Core::FMTactioncomparator(operablename)));
 							actions[loc].push_back(newmask, spec);
@@ -275,7 +275,7 @@ FMTactionparser& FMTactionparser::operator = (const FMTactionparser& rhs)
 					{
 						action.push_aggregate(aggobj.first);
 					}
-				action.passinobject(*this);
+				//action.passinobject(*this);
 				}
 			}
 			cleanedactions = getGCBMactionsaggregate(cleanedactions);
