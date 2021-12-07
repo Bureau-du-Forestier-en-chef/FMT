@@ -113,7 +113,7 @@ namespace Parser
 										*_logger<<themetarget<<"\n";
 										for(const auto& s:sources){*_logger<<s.getthemetarget()<<"\n";}
 										*/
-										outputs->back().passinobject(*this);
+										//outputs->back().passinobject(*this);
 										++outputid;
 									}
 									sources.clear();
@@ -452,7 +452,7 @@ namespace Parser
 													
 													}
 												mask = mask.substr(0, mask.size() - 1);
-												if (!validate(themes, mask, " at line " + std::to_string(_line))) continue;
+												if (!Core::FMTtheme::validate(themes, mask, " at line " + std::to_string(_line))) continue;
 												std::vector<Core::FMTspec> specs; 
 												const std::string inds = setspecs(Core::FMTsection::Outputs, Core::FMTkwor::Source, ylds, constants, specs, rest);
 												if (!specs.empty())
@@ -689,7 +689,7 @@ namespace Parser
 								}
 							}
 							outputs->push_back(Core::FMToutput(name, description, /*themetarget,*/ sources, operators));
-							outputs->back().passinobject(*this);
+							//outputs->back().passinobject(*this);
 							++outputid;
 						}
 					}

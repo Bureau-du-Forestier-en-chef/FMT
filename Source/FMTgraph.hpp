@@ -236,24 +236,6 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 			//generatedevelopments();
 		}
 
-		void passinobject(const Core::FMTobject& rhs) override
-			{
-			FMTobject::passinobject(rhs);
-			try {
-				FMTvertex_iterator vertex_iterator, vertex_iterator_end;
-				boost::tie(vertex_iterator, vertex_iterator_end) = boost::vertices(data);
-				while(vertex_iterator!= vertex_iterator_end)
-					{
-					data[*vertex_iterator].passinobject(rhs);
-					++vertex_iterator;
-					}
-			}catch (...)
-				{
-					_exhandler->raisefromcatch("", "FMTgraph::passinobject", __LINE__, __FILE__);
-				}
-
-			}	
-
 
 		FMTgraph& operator = (const FMTgraph& rhs)
 		{

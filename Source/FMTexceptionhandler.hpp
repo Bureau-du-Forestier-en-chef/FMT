@@ -74,9 +74,6 @@ namespace Exception
 		// DocString: FMTexceptionhandler::usenestedexceptions
 		///If usenested = true then the handler will throw nested exceptions
 		bool usenestedexceptions;
-		// DocString: FMTexceptionhandler::cplhandlerpushed
-		///If CPL handler pushed true else false
-		bool cplhandlerpushed;
 		// DocString: FMTexceptionhandler::mtx
 		///Mutex for multi-threading.
 		//mutable std::recursive_mutex mtx;
@@ -116,6 +113,11 @@ namespace Exception
 		Copy constructor for FMTexceptionhandler.
 		*/
 		FMTexceptionhandler(const FMTexceptionhandler& rhs);
+		// DocString: FMTexceptionhandler(const std::shared_ptr<Logging::FMTlogger>&)
+		/**
+		Constructor with logger.
+		*/
+		FMTexceptionhandler(const std::shared_ptr<Logging::FMTlogger>& logger);
 		// DocString: FMTexceptionhandler::passinlogger
 		/**
 		Pass a logger to the shared pointer of the FMTexceptionhandler class for sharing.
@@ -179,22 +181,6 @@ namespace Exception
 		Disable the nested exception throw.
 		*/
 		void disablenestedexceptions();
-		
-		#if defined FMTWITHGDAL
-		// DocString: FMTexceptionhandler::isCPLpushed
-		/**
-		Check if CPL handler been pushed.
-		*/
-		inline bool isCPLpushed() const
-			{
-			return cplhandlerpushed;
-			}
-		// DocString: FMTexceptionhandler::setCPLpushed
-		/**
-		Set CPL pushed to true.
-		*/
-		void setCPLpushed();
-		#endif
 		// DocString: seterrorstowarnings()
 		/**
 		Very hazardous function if you want to live dangerously you can

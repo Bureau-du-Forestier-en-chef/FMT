@@ -430,7 +430,7 @@ namespace Models
     bool FMTsamodel::setinitialmapping(Spatial::FMTforest forest)
     {
 		try {
-			forest.passinobject(*this);
+			//forest.passinobject(*this);
 			solution = Spatial::FMTspatialschedule(forest);
 			return true;
 		}
@@ -705,42 +705,6 @@ namespace Models
 		}catch (...)
 			{
 			_exhandler->printexceptions("", "FMTsamodel::initialsolve", __LINE__, __FILE__);
-			}
-		}
-
-	void FMTsamodel::passinlogger(const std::shared_ptr<Logging::FMTlogger>& logger)
-		{
-		try {
-			FMTmodel::passinlogger(logger);
-			FMTsamodel::passinobject(*this);
-		}catch (...)
-				{
-				_exhandler->printexceptions("", "FMTsamodel::passinlogger", __LINE__, __FILE__);
-				}
-
-		}
-
-	void FMTsamodel::passinexceptionhandler(const std::shared_ptr<Exception::FMTexceptionhandler>& exhandler)
-		{
-		try {
-			FMTmodel::passinexceptionhandler(exhandler);
-			FMTsamodel::passinobject(*this);
-
-		}
-		catch (...)
-		{
-			_exhandler->printexceptions("", "FMTsamodel::passinexceptionhandler", __LINE__, __FILE__);
-		}
-		}
-
-	void FMTsamodel::passinobject(const Core::FMTobject& rhs)
-		{
-		try {
-			FMTmodel::passinobject(rhs);
-			solution.passinobject(rhs);
-		}catch (...)
-			{
-			_exhandler->printexceptions("", "FMTsamodel::passinobject", __LINE__, __FILE__);
 			}
 		}
 

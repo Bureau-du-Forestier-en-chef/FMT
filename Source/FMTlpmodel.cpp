@@ -128,7 +128,6 @@ namespace Models
 			newclusterer = Heuristics::FMToperatingareaclusterer(solver.getsolvertype(),0,newclusters,minimalnumberofclusters,maximalnumberofclusters);
 			_logger->logwithlevel("Units: ("+std::to_string(newclusterer.getbinariescount() )+")\nStats: min(" + std::to_string(minimalstatistic) + ")" +
 				" max(" + std::to_string(maximalstatistic) + ") \nArea: min(" + std::to_string(minimalarea) + ") max(" + std::to_string(maximalarea) + ")\n", 0);
-			newclusterer.passinobject(*this);
 			newclusterer.buildproblem();
 		}catch (...)
 			{
@@ -1481,7 +1480,7 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 				allheuristics.emplace_back(*allheuristics.begin());
 				allheuristics.back().setasrandom();
 				allheuristics.back().setgeneratorseed(seedof);
-				allheuristics.back().passinobject(*this);
+				//allheuristics.back().passinobject(*this);
 				seedof += 1;
 				}
 		}catch (...)
@@ -1507,7 +1506,7 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
             for (size_t heuristicid = 0 ; heuristicid < numberofheuristics; ++heuristicid)
                 {
                 allheuristics.push_back(baseclusterer);
-                allheuristics.back().passinobject(*this);
+                //allheuristics.back().passinobject(*this);
                 allheuristics.back().setgeneratorseed(seedof);
                 ++seedof;
                 }

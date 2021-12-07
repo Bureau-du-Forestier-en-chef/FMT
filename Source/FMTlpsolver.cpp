@@ -96,7 +96,7 @@ namespace Models
 	FMTlpsolver::FMTlpsolver(const FMTlpsolver& rhs) :Core::FMTobject(rhs), solverinterface(), usecache(rhs.usecache),matrixcache(rhs.matrixcache),solvertype(rhs.solvertype)
 		{
 		solverinterface = copysolverinterface(rhs.solverinterface, rhs.solvertype);
-		solverinterface->passInMessageHandler(rhs.solverinterface->messageHandler());
+		passinmessagehandler(*_logger);
 		}
 
 	FMTlpsolver& FMTlpsolver::operator =(const FMTlpsolver& rhs)
@@ -108,15 +108,14 @@ namespace Models
 			usecache = rhs.usecache;
 			solvertype = rhs.solvertype;
 			solverinterface = copysolverinterface(rhs.solverinterface,rhs.solvertype);
-			solverinterface->passInMessageHandler(rhs.solverinterface->messageHandler());
+			passinmessagehandler(*_logger);
 			}
 		return *this;
 		}
 	FMTlpsolver::FMTlpsolver(FMTsolverinterface lsolvertype/*, Logging::FMTlogger& logger*/):Core::FMTobject(),solverinterface(), usecache(true),matrixcache(), solvertype(lsolvertype)
 		{
 		solverinterface = buildsolverinterface(lsolvertype);
-		this->setquietlogger();//lazy
-		//this->passinmessagehandler(logger);
+		passinmessagehandler(*_logger);
 		}
 
 	bool FMTlpsolver::resolve()
@@ -428,11 +427,10 @@ namespace Models
 		{
 		try{
 		solverinterface->passInMessageHandler(&logger);
-		}
-		catch (...)
-		{
+		}catch (...)
+			{
 			_exhandler->raisefromcatch("", +"FMTlpsolver::passinmessagehandler", __LINE__, __FILE__);
-		}
+			}
 		}
 
 	bool FMTlpsolver::gotlicense() const
@@ -621,7 +619,7 @@ namespace Models
 		matrixcache = solver.matrixcache;
 		solvertype = solver.solvertype;
 		solverinterface = solver.solverinterface;
-		solverinterface->passInMessageHandler(solver.solverinterface->messageHandler());
+		passinmessagehandler(*_logger);
 		}
 		catch (...)
 		{
@@ -758,6 +756,18 @@ namespace Models
 			}
 		return nullptr;
 		}
+
+	void FMTlpsolver::passinlogger(const std::shared_ptr<Logging::FMTlogger>& logger)
+	{
+		try {
+			Core::FMTobject::passinlogger(logger);
+			passinmessagehandler(*logger);
+		}
+		catch (...)
+		{
+			_exhandler->raisefromcatch("", "FMTlpsolver::passinlogger", __LINE__, __FILE__);
+		}
+	}
 
 	void FMTlpsolver::setcolname(const std::string& name, const int& columnid)
 	{
@@ -1110,40 +1120,6 @@ namespace Models
 		return -1;
 		}
 
-	void FMTlpsolver::passinlogger(const std::shared_ptr<Logging::FMTlogger>& logger)
-		{
-		try {
-			FMTobject::passinlogger(logger);
-			solverinterface->passInMessageHandler(logger->getpointer());
-		}catch (...)
-			{
-			_exhandler->raisefromcatch("", "FMTlpsolver::passinlogger", __LINE__, __FILE__);
-			}
-		}
-
-	void FMTlpsolver::passinobject(const Core::FMTobject& object)
-	{
-		try {
-			FMTobject::passinobject(object);
-			FMTlpsolver::passinlogger(this->_logger);
-		}
-		catch (...)
-		{
-			_exhandler->raisefromcatch("", "FMTlpsolver::passinobject", __LINE__, __FILE__);
-		}
-	}
-
-	void FMTlpsolver::passinexceptionhandler(const std::shared_ptr<Exception::FMTexceptionhandler>& exhandler)
-	{
-		try {
-			FMTobject::passinexceptionhandler(exhandler);
-			FMTlpsolver::passinlogger(this->_logger);
-		}
-		catch (...)
-		{
-			_exhandler->raisefromcatch("", "FMTlpsolver::passinexceptionhandler", __LINE__, __FILE__);
-		}
-	}
 	#ifdef FMTWITHMOSEK
 		std::string FMTlpsolver::getmskerrordesc(MSKrescodee error) const
 		{

@@ -273,15 +273,6 @@ FMTforest FMTforest::presolve(const Core::FMTmask& selectedmask, const std::vect
 	return newforest;
 	}
 
-void FMTforest::passinobject(const Core::FMTobject& rhs)
-	{
-	FMTobject::passinobject(rhs);
-	for (std::map<FMTcoordinate, Core::FMTdevelopment>::iterator coordit = mapping.begin();
-		coordit != mapping.end(); ++coordit)
-		{
-		coordit->second.passinobject(rhs);
-		}
-	}
 
 
 FMTforest FMTforest::postsolve(const Core::FMTmask& selectedmask, const std::vector<Core::FMTtheme>&originalbasethemes) const

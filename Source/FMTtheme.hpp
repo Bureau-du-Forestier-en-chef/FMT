@@ -287,6 +287,22 @@ class FMTEXPORT FMTtheme : public FMTobject
 			*/
 			Rcpp::DataFrame getattributesasdataframe() const;
 	#endif
+			// DocString: FMTtheme::validate
+		/**
+		The funciton validate a the construction of a valid FMTmask using the mask string based on the
+		themes. If their's less themes that the number present in the string mask then the string mask is
+		going to be trim for the good number of FMTthemes.
+		*/
+		static bool validate(const std::vector<Core::FMTtheme>& themes,
+				std::string& mask, std::string otherinformation = std::string());
+		// DocString: FMTobject::theme
+		/**
+		This function validate the mask string for a given vector of themes and throw exception if
+		something is not right. It'S called by the validate function.
+		*/
+		static bool checkmask(const std::vector<Core::FMTtheme>& themes,
+			const std::vector<std::string>& values, std::string& mask,
+			const std::string& otherinformation);
     };
 
 	// DocString: FMTthemecomparator

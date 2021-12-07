@@ -105,7 +105,7 @@ namespace Models
 			ar & BOOST_SERIALIZATION_NVP(outputs);
 			ar & BOOST_SERIALIZATION_NVP(constraints);
 			ar & BOOST_SERIALIZATION_NVP(name);
-			this->passinobject(*this);//Distribute global object to local object
+			//this->passinobject(*this);//Distribute global object to local object
 		}
 		BOOST_SERIALIZATION_SPLIT_MEMBER()
 		// DocString: FMTmodel::validatelistmasks
@@ -120,7 +120,7 @@ namespace Models
 				for (const auto& listobject : container)
 					{
 					std::string name = std::string(listobject.first);
-					this->validate(themes, name);
+					Core::FMTtheme::validate(themes, name);
 					}
 			}catch (...)
 				{
@@ -527,22 +527,6 @@ namespace Models
 		Change to initial area period to the new targeted period.
 		*/
 		void setareaperiod(const int& period);
-		// DocString: FMTmodel::passinlogger
-		/**
-		It's sometime usefull to pass in the logger of an other FMTobject.
-		*/
-		virtual void passinlogger(const std::shared_ptr<Logging::FMTlogger>& logger) override;
-		// DocString: FMTmodel::passinexceptionhandler
-		/**
-		It's sometime usefull to pass in the exception handler of an other FMTobject.
-		*/
-		virtual void passinexceptionhandler(const std::shared_ptr<Exception::FMTexceptionhandler>& exhandler) override;
-		// DocString: FMTmodel::passinobject
-		/**
-		It's sometime usefull to pass in the exception handler and the logger  of an other FMTobject to
-		a FMTobject.
-		*/
-		virtual void passinobject(const Core::FMTobject& rhs) override;
 		// DocString: FMTmodel::getpotentialschedule
 		/**
 		The function will remove (toremove) developments from a selected vector (selection). Test operability of the 

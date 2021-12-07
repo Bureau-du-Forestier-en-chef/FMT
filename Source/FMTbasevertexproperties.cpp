@@ -29,10 +29,6 @@ namespace Graph
 		
 		}
 
-	void FMTbasevertexproperties::passinobject(const Core::FMTobject& rhs)
-		{
-		development->passinobject(rhs);
-		}
 	FMTbasevertexproperties::FMTbasevertexproperties(const Core::FMTfuturdevelopment& ldevelopment) : development(new Core::FMTfuturdevelopment(ldevelopment))
 		{
 

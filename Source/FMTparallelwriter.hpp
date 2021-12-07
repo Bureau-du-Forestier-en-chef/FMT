@@ -6,8 +6,10 @@
 #include <memory>
 #include <boost/thread/recursive_mutex.hpp>
 
+#ifdef FMTWITHGDAL
 class GDALDataset;
 class OGRLayer;
+#endif
 
 namespace Models {
 	class FMTmodel;
@@ -25,12 +27,14 @@ namespace Parallel
 		// DocString: FMTparallelwriter::outputstowrite
 		///Outputs that the writer will write for different models.
 		std::vector<Core::FMToutput>outputstowrite;
+		#ifdef FMTWITHGDAL
 		// DocString: FMTparallelwriter::resultsdataset
 		///The dataset of the results.
 		GDALDataset* resultsdataset;
 		// DocString: FMTparallelwriter::resultslayer
 		///The layer of the results.
 		OGRLayer* resultslayer;
+		#endif
 		// DocString: FMTparallelwriter::mtx
 		///The recursive mutex used to control the usage of the writer by the thread.
 		mutable boost::recursive_mutex mtx;

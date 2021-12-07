@@ -133,6 +133,7 @@ void exportModel()
 		.method("writeMPS", &Models::FMTlpsolver::writeMPS,
 			"@DocString(FMTlpsolver::writeMPS)");
 
+
 	Rcpp::class_<Models::FMTsrmodel>("FMTsrmodel", "@DocString(FMTsrmodel)")
 		.derives<Models::FMTmodel>("FMTmodel")
 		.constructor("@DocString(FMTsrmodel())")

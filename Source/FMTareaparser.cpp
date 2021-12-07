@@ -404,7 +404,7 @@ namespace Parser{
                                              double areafactor,std::string lock) const
         {
 		try {
-			GDALAllRegister();
+			//GDALAllRegister();
 			std::vector<std::string>allrasters = data_rasters;
 			allrasters.push_back(age);
 			if (!lock.empty())
@@ -526,7 +526,7 @@ namespace Parser{
 							if (counts[location] == attcounts && agedata[location] != nodata)
 							{
 								std::string maskvalue = st.substr(0, st.size() - 1);
-								if (!validate(themes, maskvalue, " at line " + std::to_string(_line))) continue;
+								if (!Core::FMTtheme::validate(themes, maskvalue, " at line " + std::to_string(_line))) continue;
 								const Core::FMTmask mask(maskvalue, themes);
 								int lock = 0;
 								if (!lockdata.empty())
@@ -537,7 +537,7 @@ namespace Parser{
 									}
 								}
 								Core::FMTdevelopment dev(mask, int(agedata[location] * agefactor), lock);
-								dev.passinobject(*this);
+								//dev.passinobject(*this);
 								mapping[coordinates[location]] = dev;
 							}
 							else {
@@ -613,11 +613,11 @@ namespace Parser{
 					masks[it->first] = attribute;
 				}
 				std::string tmask = boost::algorithm::join(masks, " ");
-				if (validate(themes, tmask, " at line " + std::to_string(_line)))
+				if (Core::FMTtheme::validate(themes, tmask, " at line " + std::to_string(_line)))
 				{
 					const Core::FMTmask mask(tmask, themes);
 					Core::FMTactualdevelopment newdev(mask, age, lock, area);
-					newdev.passinobject(*this);
+					//newdev.passinobject(*this);
 					return newdev;
 				}
 			}
@@ -635,7 +635,7 @@ namespace Parser{
 		{
 		GDALDataset* dataset=nullptr;
 		try {
-		GDALAllRegister();
+		//GDALAllRegister();
 		dataset = getvectordataset(data_vectors);
 		OGRLayer*  layer = getlayer(dataset, 0);
 		getWSfields(layer, themes_fields, age_field, area_field, lock_field, agefield, areafield, lockfield);
@@ -860,7 +860,7 @@ namespace Parser{
 	}
 	Spatial::FMTforest FMTareaparser::getFMTforestfromlayer(OGRLayer* layer,const std::vector<Core::FMTactualdevelopment>& actualdevs, const std::string& devidfield, const int& resolution, const double& areafactor,const bool& fittoforel) const
 	{
-		GDALAllRegister();
+		//GDALAllRegister();
 		Spatial::FMTforest actualforest;
 		try{
 			const std::string vsi_path = "/vsimem/"+devidfield+".tif";
@@ -926,7 +926,7 @@ namespace Parser{
 
 	GDALDataset* FMTareaparser::OGRlayertoRaster(OGRLayer* layer, const std::string& fieldname, const std::string& outfilename, const int& resolution,const bool& fittoforel) const
 	{
-		GDALAllRegister();
+		//GDALAllRegister();
 		const char *pszFormat = "GTiff";
 		GDALDriver *poDriver = nullptr;
 		GDALDataset *nDS = nullptr;
@@ -1110,7 +1110,7 @@ namespace Parser{
         bool FMTareaparser::writelayer(const Spatial::FMTlayer<T>& layer, std::string location,const std::map<T, std::string>& mapping) const
             {
 			try {
-				GDALAllRegister();
+				//GDALAllRegister();
 				GDALDataType datatype = GDT_Int32;
 				if (std::is_same<double, T>::value)
 				{
@@ -1637,7 +1637,7 @@ namespace Parser{
 										if (area > 0)
 										{
 											got0area = false;
-											if (!validate(themes, mask, " at line " + std::to_string(_line))) continue;
+											if (!Core::FMTtheme::validate(themes, mask, " at line " + std::to_string(_line))) continue;
 											potential_futurs = false;
 											age = getnum<int>(splitted.at(linesize - 2), constants);
 											lock = 0;
@@ -1651,7 +1651,7 @@ namespace Parser{
 											if (devsindex.find(actualdevelopment) == devsindex.end())
 											{
 												devsindex[actualdevelopment] = areas.size();
-												actualdevelopment.passinobject(*this);
+												//actualdevelopment.passinobject(*this);
 												areas.push_back(actualdevelopment);
 											}
 											else {
