@@ -257,7 +257,9 @@ void exportCore()
 				.def("get", &Core::FMTyields::get,
 					"@DocString(FMTyields::get)")
 				.def("getallyieldnames", &Core::FMTyields::getallyieldnames,
-					"@DocString(FMTyields::getallyieldnames)");
+					"@DocString(FMTyields::getallyieldnames)")
+				.def("getfromfactor",&Core::FMTyields::getfromfactor,
+					"@DocString(FMTyields::getfromfactor)");
 
 
 
