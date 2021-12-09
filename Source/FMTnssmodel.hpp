@@ -137,6 +137,17 @@ namespace Models
 			This function do a non spatial simulation based on the area constraints in the optimize section.
 			*/
 			void simulate();
+			// DocString: FMTnssmodel::presolve
+			/**
+			This function use a vector of developments and the actual transitions of the model and return new unique pointer to presolved FMTmodel.
+			The function can reduce the number of global themes/actions/transitions/yields/lifespans/outputs/constraints data if the model is badly formulated.
+			*/
+			virtual std::unique_ptr<FMTmodel>presolve(int presolvepass = 10, std::vector<Core::FMTactualdevelopment> optionaldevelopments = std::vector<Core::FMTactualdevelopment>()) const;
+			// DocString: FMTnssmodel::postsolve
+			/*
+			This function is for postsolving the presolved model into the original model. In this case, the FMTgraph of the FMTsrmodel is also postsolved.
+			*/
+			virtual std::unique_ptr<FMTmodel>postsolve(const FMTmodel& originalbasemodel) const;
 			// DocString: FMTnssmodel::clone
 			/**
 			Get a clone of the FMTnssmodel

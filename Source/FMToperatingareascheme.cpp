@@ -800,7 +800,7 @@ bool FMToperatingareascheme::operator == (const FMToperatingareascheme& rhs) con
 	}
 bool FMToperatingareascheme::operator != (const FMToperatingareascheme& rhs) const
 	{
-	return (*this != rhs);
+	return (!(*this == rhs));
 	}
 
 FMToperatingareaschemecomparator::FMToperatingareaschemecomparator(const Core::FMTmask& lmask):mask(lmask)

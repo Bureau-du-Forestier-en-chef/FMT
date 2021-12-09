@@ -88,6 +88,11 @@ namespace Models
 		Return the size of the graph.
 		*/
 		size_t getgraphsize() const;
+		// DocString: FMTsrmodel::postsolvegraph
+		/**
+		Post solve this graph and return a presolved graph for each vertex and edges based on the original model.
+		*/
+		Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>postsolvegraph(const FMTmodel& originalbasemodel) const;
 	public:
 		// DocString: FMTsrmodel::getavailablesolverinterface
 		/**

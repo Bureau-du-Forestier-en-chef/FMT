@@ -214,6 +214,40 @@ namespace Models
 		return std::unique_ptr<FMTmodel>(new FMTnssmodel(*this));
 		}
 
+	std::unique_ptr<FMTmodel>FMTnssmodel::presolve(int presolvepass, std::vector<Core::FMTactualdevelopment> optionaldevelopments) const
+		{
+		std::unique_ptr<FMTmodel> presolvedmodel;
+		try {
+			if (graph.empty())
+			{
+				presolvedmodel = std::unique_ptr<FMTmodel>(new FMTnssmodel(*(FMTmodel::presolve(presolvepass, optionaldevelopments)),this->getparameter(FMTintmodelparameters::SEED)));
+			}
+			else {
+				_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
+					"Cannot presolve a lpmodel with period(s) builded in graph.",
+					"FMTnssmodel::presolve",
+					__LINE__, __FILE__);
+			}
+		}catch (...)
+		{
+			_exhandler->raisefromcatch("", "FMTnssmodel::presolve", __LINE__, __FILE__);
+		}
+		return presolvedmodel;
+		}
+
+	std::unique_ptr<FMTmodel> FMTnssmodel::postsolve(const FMTmodel& originalbasemodel) const
+	{
+		std::unique_ptr<FMTmodel> postsolvemodel;
+		try {
+			postsolvemodel = std::unique_ptr<FMTmodel>(new FMTnssmodel(*(FMTmodel::postsolve(originalbasemodel)), this->getparameter(FMTintmodelparameters::SEED)));
+			dynamic_cast<FMTnssmodel*>(postsolvemodel.get())->graph = this->postsolvegraph(originalbasemodel);
+		}catch (...)
+			{
+			_exhandler->raisefromcatch("", "FMTnssmodel::postsolve", __LINE__, __FILE__);
+			}
+		return postsolvemodel;
+	}
+
 	void FMTnssmodel::simulate()
 	{
 		try {
