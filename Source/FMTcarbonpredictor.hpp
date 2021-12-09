@@ -11,6 +11,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <vector>
 #include <string>
 #include <map>
+#include "FMTutility.hpp"
 
 
 
@@ -24,7 +25,7 @@ namespace Graph
 {
 	class FMTbasevertexproperties;
 	class FMTbaseedgeproperties;
-	class FMTcarbonpredictor
+	class FMTEXPORT FMTcarbonpredictor
 	{
 		const FMTbasevertexproperties* source_vertex;
 		const FMTbasevertexproperties* target_vertex;

@@ -26,6 +26,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 	#if defined (_MSC_VER)
 	#include "cpl_conv.h"
 	#endif
+	#include <cpl_string.h>
 #endif 
 
 #include <boost/filesystem.hpp>
@@ -584,11 +585,16 @@ GDALDataset* FMTparser::createOGRdataset(std::string location,
 		//GDALAllRegister();
 		GDALDriver* newdriver = GetGDALDriverManager()->GetDriverByName(gdaldrivername.c_str());
 		if (newdriver == NULL)
-		{
+			{
 			_exhandler->raise(Exception::FMTexc::FMTinvaliddriver,
 				gdaldrivername, "FMTparser::createOGRdataset", __LINE__, __FILE__, _section);
-		}
-		newdataset = newdriver->Create(location.c_str(), 0, 0, 0, GDT_Unknown, NULL);
+			}
+		const boost::filesystem::path pathObj(location);
+		if (boost::filesystem::exists(pathObj))
+			{
+			newdriver->Delete(location.c_str());
+			}
+		newdataset = newdriver->Create(location.c_str(), 0, 0, 0, GDT_Unknown,NULL);
 		if (newdataset == NULL)
 		{
 			_exhandler->raise(Exception::FMTexc::FMTinvaliddataset,

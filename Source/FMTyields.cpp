@@ -183,11 +183,23 @@ FMTyields FMTyields::getfromfactor(const double& factor,
 	try {
 		for (auto& handlerobj : newyields)
 		{
-			handlerobj.second = handlerobj.second->getfromfactor(factor, yieldnames);
+			bool gotyield = false;
+			for (const std::string& yield : yieldnames)
+			{
+				if (handlerobj.second->containsyield(yield))
+					{
+					gotyield = true;
+					break;
+					}
+			}
+			if (gotyield)
+				{
+				handlerobj.second = handlerobj.second->getfromfactor(factor, yieldnames);
+				}
 		}
 	}catch (...)
 		{
-		_exhandler->raisefromcatch("for factor "+std::to_string(factor),
+		_exhandler->printexceptions("for factor "+std::to_string(factor),
 			"FMTyields::getfromfactor", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 	return newyields;

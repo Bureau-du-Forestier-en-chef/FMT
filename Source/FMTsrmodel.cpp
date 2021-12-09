@@ -853,6 +853,30 @@ namespace Models
 		return graph.getfirstactiveperiod();
 	}
 
+	Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties> FMTsrmodel::postsolvegraph(const FMTmodel& originalbasemodel) const
+	{
+		try {
+			std::vector<Core::FMTtheme> postsolvethemes = originalbasemodel.getthemes();
+			std::vector<Core::FMTaction> postsolveactions = originalbasemodel.getactions();
+			Core::FMTmask selectedmask = this->getselectedmask(postsolvethemes);
+			std::vector<Core::FMTaction> presolveactions = this->getactions();
+			std::map<int, int>actionmapping;
+			int preactionid = 0;
+			for (const Core::FMTaction action : presolveactions)
+			{
+				const int loc = static_cast<int>(std::distance(postsolveactions.begin(), std::find_if(postsolveactions.begin(), postsolveactions.end(), Core::FMTactioncomparator(action.getname()))));
+				actionmapping[preactionid] = loc;
+				++preactionid;
+			}
+			actionmapping[-1] = -1;
+			return this->graph.postsolve(selectedmask, postsolvethemes, actionmapping);
+		}catch (...)
+		{
+			_exhandler->printexceptions("", "FMTsrmodel::postsolvegraph", __LINE__, __FILE__);
+		}
+		return Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>();
+	}
+
 
 	std::vector<Core::FMTactualdevelopment>FMTsrmodel::getarea(int period, bool beforegrowanddeath) const
 	{

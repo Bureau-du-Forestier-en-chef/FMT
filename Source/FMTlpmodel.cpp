@@ -1714,21 +1714,7 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 	{
 		std::unique_ptr<FMTmodel> postsolvemodel;
 		try{
-			std::vector<Core::FMTtheme> postsolvethemes = originalbasemodel.getthemes();
-			std::vector<Core::FMTaction> postsolveactions = originalbasemodel.getactions();
-			Core::FMTmask selectedmask = this->getselectedmask(postsolvethemes);
-			std::vector<Core::FMTaction> presolveactions = this->getactions();
-			std::map<int,int>actionmapping;
-			int preactionid = 0;
-			for(const Core::FMTaction action : presolveactions)
-			{
-				const int loc = static_cast<int>(std::distance(postsolveactions.begin(), std::find_if(postsolveactions.begin(), postsolveactions.end(), Core::FMTactioncomparator(action.getname()))));
-				actionmapping[preactionid] = loc;
-				++preactionid;
-			}
-			actionmapping[-1] = -1;
-			Graph::FMTgraph<Graph::FMTvertexproperties,Graph::FMTedgeproperties> postsolvegraph = this->graph.postsolve(selectedmask,postsolvethemes,actionmapping);
-			postsolvemodel = std::unique_ptr<FMTmodel>(new FMTlpmodel(*(FMTmodel::postsolve(originalbasemodel)),postsolvegraph,this->solver,this->elements));
+			postsolvemodel = std::unique_ptr<FMTmodel>(new FMTlpmodel(*(FMTmodel::postsolve(originalbasemodel)),postsolvegraph(originalbasemodel),this->solver,this->elements));
 		}catch(...)
 		{
 			_exhandler->raisefromcatch("", "FMTlpmodel::postsolve", __LINE__, __FILE__);
