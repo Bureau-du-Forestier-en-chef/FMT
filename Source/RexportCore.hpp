@@ -253,7 +253,9 @@ void exportCore()
 				//.derives<Core::FMTlist<Core::FMTyieldhandler>>("FMTyieldhandlerlist")
 				.constructor("@DocString(FMTyields())")
 				.method("getallyields", &Core::FMTyields::getallyields,
-					"@DocString(FMTyields::getallyields)");
+					"@DocString(FMTyields::getallyields)")
+				method("getfromfactor",&Core::FMTyields::getfromfactor,
+					"@DocString(FMTyields::getfromfactor)");
 
 			
 
