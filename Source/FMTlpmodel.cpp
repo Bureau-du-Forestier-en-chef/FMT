@@ -1395,7 +1395,7 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 					++stats->output_rows;
 				}
 			}
-			else {
+			else if(!sumvariables.empty()) {
 				element_id = stats->cols;
 				solver.addCol(0, &sumvariables[0], &sumcoefficiants[0], lowerbound, upperbound, 0);
 				++stats->cols;
@@ -1761,7 +1761,7 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 			{
 				addon = "FMT will use schedules pass by argument for periods 1 to "+std::to_string(schedules.size());
 			}
-			*_logger<<"Building model for "+std::to_string(length)+" periods. "+addon<<"\n";
+			*_logger<<"Building "+getname()+" for "+std::to_string(length)+" periods. "+addon<<"\n";
 			//Period start at 0 but it's the period 1 that is created first. Reason is that schedules is a vector and the first elements 
 			//is the schedule for period 1 
 			for (int period = 0; period<length;++period)
@@ -1777,7 +1777,7 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 			{
 				addon = "FMT will use schedules pass by argument for periods 1 to "+std::to_string(schedules.size())+" to set the solution in the matrix.";
 			}
-			*_logger<<"Setting constraints on the model. "+addon<<"\n";
+			*_logger<<"Setting constraints on the "+getname()+". "+addon<<"\n";
 			for (size_t constraintid = 1; constraintid < constraints.size();++constraintid)
 				{
 				this->setconstraint(constraints.at(constraintid));
