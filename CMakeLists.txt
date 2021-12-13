@@ -36,6 +36,7 @@ endif(DEFINED VCPKG_TARGET_TRIPLET)
 set(DLLlookuppaths "${CMAKE_SYSTEM_LIBRARY_PATH}")
 if (DEFINED ENV{PATH})
 	list(APPEND DLLlookuppaths $ENV{PATH})
+	string(REPLACE "\\" "/" DLLlookuppaths "${DLLlookuppaths}")
 endif(DEFINED ENV{PATH})
 
 if (DEFINED OSI_DIR)
