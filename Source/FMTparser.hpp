@@ -158,26 +158,6 @@ class FMTEXPORT FMTparser: public Core::FMTobject
 			Return a vector of GDAL drivers for a given spatialtype (raster/vector)
 			*/
 			std::vector<GDALDriver*> getallGDALdrivers(const char* spatialtype) const;
-			// DocString: FMTparser::getGDALvectordrivernames
-			/**
-			Return a vector of GDAL vector driver names
-			*/
-			std::vector<std::string>getGDALvectordrivernames() const;
-			// DocString: FMTparser::getGDALrasterdrivernames
-			/**
-			Return a vector of GDAL raster driver names
-			*/
-			std::vector<std::string>getGDALrasterdrivernames() const;
-			// DocString: FMTparser::getGDALvectordriverextensions
-			/**
-			Return a vector of GDAL vector driver extensions
-			*/
-			std::vector<std::string>getGDALvectordriverextensions() const;
-			// DocString: FMTparser::getGDALrasterdriverextensions
-			/**
-			Return a vector of GDAL raster driver extensions
-			*/
-			std::vector<std::string>getGDALrasterdriverextensions() const;
 			// DocString: FMTparser::getFORELspatialref
 			/**
 			Return and OGRspatialReference corresponding to the one used for FORELs in Quebec.
@@ -414,6 +394,26 @@ class FMTEXPORT FMTparser: public Core::FMTobject
 		Will Create a OGR vector file based on a given drivername and a location.
 		*/
 		GDALDataset* createOGRdataset(std::string location = std::string(),std::string gdaldrivername = "CSV") const;
+		// DocString: FMTparser::getGDALvectordrivernames
+		/**
+		Return a vector of GDAL vector driver names
+		*/
+		std::vector<std::string>getGDALvectordrivernames() const;
+		// DocString: FMTparser::getGDALrasterdrivernames
+		/**
+		Return a vector of GDAL raster driver names
+		*/
+		std::vector<std::string>getGDALrasterdrivernames() const;
+		// DocString: FMTparser::getGDALvectordriverextensions
+		/**
+		Return a vector of GDAL vector driver extensions
+		*/
+		std::vector<std::string>getGDALvectordriverextensions() const;
+		// DocString: FMTparser::getGDALrasterdriverextensions
+		/**
+		Return a vector of GDAL raster driver extensions
+		*/
+		std::vector<std::string>getGDALrasterdriverextensions() const;
 		#endif
     };
 
