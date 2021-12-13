@@ -12,6 +12,18 @@ namespace Parallel
 
 	}
 
+	FMTtask& FMTtask::operator = (const FMTtask& rhs)
+	{
+		if (this!=&rhs)
+		{
+			Core::FMTobject::operator=(rhs);
+			done = rhs.done;
+			boost::lock(taskmutex, rhs.taskmutex);
+
+		}
+		return *this;
+	}
+
 	std::vector<std::unique_ptr<FMTtask>>FMTtask::split(const unsigned int& numberoftasks) const
 	{
 		try {
