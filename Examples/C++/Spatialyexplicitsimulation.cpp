@@ -60,7 +60,7 @@ int main()
 	const Spatial::FMTspatialschedule spatialsolution = simulationmodel.getspschedule();
 	Logging::FMTlogger() <<"xsize : "<< spatialsolution.GetXSize() << "\n";
 	Logging::FMTlogger() << "ysize : " << spatialsolution.GetYSize() << "\n";
-	for (int period = 0; period < 10; ++period)
+	for (int period = 1; period <= 10; ++period)
 		{
 		for (const std::pair<Spatial::FMTcoordinate,double>& value : spatialsolution.getoutputbycoordinate(simulationmodel, spatialoutput, period))
 				{
