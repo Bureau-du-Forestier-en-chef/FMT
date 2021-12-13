@@ -130,6 +130,7 @@ namespace Parallel
 				{
 				lastperiod = modelptr->getparameter(Models::FMTintmodelparameters::LENGTH);
 				}
+			_logger->logwithlevel("Writing results for "+modelptr->getname()+"\n", 3);
 			resultswriter->write(modelptr, firstperiod, lastperiod,getiteration());
 		}catch (...)
 		{
@@ -147,6 +148,7 @@ namespace Parallel
 		try {
 			while (!replicateids.empty())
 			{
+				_logger->logwithlevel("Replanning on replicate " + std::to_string(getiteration())+"\n",3);
 				for (int replanningperiod = 1; replanningperiod <= replanningperiods; ++replanningperiod)
 				{
 					if (replanningperiod != 1)
