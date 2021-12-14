@@ -7,10 +7,12 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 #ifdef FMTWITHOSI
 #include "FMTlpsolver.hpp"
+#include "OsiSolverInterface.hpp"
 
 #ifdef FMTWITHMOSEK
 	#include "OsiMskSolverInterface.hpp"
 #endif
+
 
 #include "OsiClpSolverInterface.hpp"
 
@@ -503,10 +505,115 @@ namespace Models
 		return name;
 		}
 
+	int FMTlpsolver::getNumCols() const
+		{
+		return solverinterface->getNumCols() + matrixcache.numbernewCols() - matrixcache.numberofdeletedCols();
+		}
+
+	int FMTlpsolver::getNumRows() const
+	{
+		return solverinterface->getNumRows() + matrixcache.numbernewRows() - matrixcache.numberofdeletedRows();
+	}
+
+	const double* FMTlpsolver::getColLower() const
+	{
+		matrixcache.synchronize(solverinterface);
+		return solverinterface->getColLower();
+	}
+
+	const double* FMTlpsolver::getColUpper() const
+	{
+		matrixcache.synchronize(solverinterface);
+		return solverinterface->getColUpper();
+	}
+
+	const double* FMTlpsolver::getColSolution() const
+	{
+		//matrixcache.synchronize(solverinterface);
+		return solverinterface->getColSolution();
+	}
+
+	const double* FMTlpsolver::getRowActivity() const
+	{
+		//matrixcache.synchronize(solverinterface);
+		return solverinterface->getRowActivity();
+	}
+
+	const double* FMTlpsolver::getRowUpper() const
+	{
+		matrixcache.synchronize(solverinterface);
+		return solverinterface->getRowUpper();
+	}
+
+	const double* FMTlpsolver::getRowLower() const
+	{
+		matrixcache.synchronize(solverinterface);
+		return solverinterface->getRowLower();
+	}
+
+	double FMTlpsolver::getObjSense() const
+	{
+		matrixcache.synchronize(solverinterface);
+		return solverinterface->getObjSense();
+	}
+
+	const double* FMTlpsolver::getObjCoefficients() const
+	{
+		matrixcache.synchronize(solverinterface);
+		return solverinterface->getObjCoefficients();
+	}
+
 	double FMTlpsolver::getObjValue() const
 		{
 		return solverinterface->getObjValue();
 		}
+
+
+	void FMTlpsolver::addRow(int numberInRow, const int * columns, const double * elements, double rowLower, double rowUpper)
+	{
+		if (usecache)
+		{
+			matrixcache.addRow(numberInRow, columns, elements, rowLower, rowUpper);
+		}
+		else {
+			solverinterface->addRow(numberInRow, columns, elements, rowLower, rowUpper);
+		}
+
+	}
+
+	void FMTlpsolver::addCol(int numberInColumn, const int * rows, const double * elements, double columnLower,
+		double columnUpper, double objectiveValue)
+	{
+		if (usecache)
+		{
+			matrixcache.addCol(numberInColumn, rows, elements, columnLower, columnUpper, objectiveValue);
+		}
+		else {
+			solverinterface->addCol(numberInColumn, rows, elements, columnLower, columnUpper, objectiveValue);
+		}
+	}
+
+	void FMTlpsolver::addRows(const int numrows, const int* rowStarts, const int* columns,
+		const double* elements, const double* rowlb, const double* rowub)
+	{
+		matrixcache.synchronize(solverinterface);
+		solverinterface->addRows(numrows, rowStarts, columns, elements, rowlb, rowub);
+	}
+
+	void FMTlpsolver::addCols(const int numcols, const int* columnStarts, const int* rows,
+		const double* elements, const double* collb, const double* colub, const double* obj)
+	{
+		matrixcache.synchronize(solverinterface);
+		solverinterface->addCols(numcols, columnStarts, rows, elements, collb, colub, obj);
+	}
+	// DocString: FMTlpsolver::isProvenOptimal
+	/**
+	Returns true if the program is optimal but first will synchronize the matrix with the matrix cache.
+	*/
+	bool FMTlpsolver::isProvenOptimal() const
+	{
+		return solverinterface->isProvenOptimal();
+	}
 
 	void FMTlpsolver::setColSolution(const double* newsolution)
 		{
@@ -796,8 +903,8 @@ namespace Models
 		try {
 			matrixcache.synchronize(solverinterface);
 			matrixcache.formatallnames(shortformat);
-			OsiSolverInterface::OsiNameVec& cachedrownames = matrixcache.getrownames();
-			OsiSolverInterface::OsiNameVec& cachedcolnames = matrixcache.getcolumnnames();
+			std::vector<std::string>& cachedrownames = matrixcache.getrownames();
+			std::vector<std::string>& cachedcolnames = matrixcache.getcolumnnames();
 			if (solvertype == Models::FMTsolverinterface::MOSEK)
 			{
 				#ifdef FMTWITHMOSEK

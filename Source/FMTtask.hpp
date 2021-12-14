@@ -53,7 +53,7 @@ namespace Parallel
 		/**
 		Default copy constructor for FMTtask
 		*/
-		FMTtask& operator = (const FMTtask& rhs) = default;
+		FMTtask& operator = (const FMTtask& rhs);
 		// DocString: FMTreplanningtask::clone()
 		/**
 		Clone function for FMTtask.
