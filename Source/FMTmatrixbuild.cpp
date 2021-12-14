@@ -12,6 +12,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTerror.hpp"
 #include <algorithm>
 #include <boost/algorithm/string.hpp> 
+#include "OsiSolverInterface.hpp"
 
 
 namespace Models

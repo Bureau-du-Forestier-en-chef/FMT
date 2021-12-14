@@ -1390,14 +1390,14 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 					return -1;
 				}else{
 					element_id = stats->rows;
-					solver.addRow(static_cast<int>(sumvariables.size()), &sumvariables[0], &sumcoefficiants[0], lowerbound, upperbound);
+					solver.addRow(static_cast<int>(sumvariables.size()), &(*sumvariables.cbegin()),&(*sumcoefficiants.cbegin()), lowerbound, upperbound);
 					++stats->rows;
 					++stats->output_rows;
 				}
 			}
-			else if(!sumvariables.empty()) {
+			else {
 				element_id = stats->cols;
-				solver.addCol(0, &sumvariables[0], &sumcoefficiants[0], lowerbound, upperbound, 0);
+				solver.addCol(0, &(*sumvariables.cbegin()),&(*sumcoefficiants.cbegin()), lowerbound, upperbound, 0);
 				++stats->cols;
 				++stats->output_cols;
 			}
