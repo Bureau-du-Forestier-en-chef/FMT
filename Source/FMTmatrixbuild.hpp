@@ -11,9 +11,13 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #define FMTmatrixbuild_H_INCLUDED
 
 #include "CoinBuild.hpp"
-#include "OsiSolverInterface.hpp"
+#include <vector>
+#include <string>
 
 #include <memory>
+
+class OsiSolverInterface;
+
 
 namespace Models
 
@@ -47,10 +51,10 @@ namespace Models
 		std::vector<int>deletedvariables;
 		// DocString: FMTmatrixbuild::columnnames
 		///Cached column names;
-		OsiSolverInterface::OsiNameVec columnnames;
+		std::vector<std::string>columnnames;
 		// DocString: FMTmatrixbuild::rownames
 		///Cached row names;
-		OsiSolverInterface::OsiNameVec rownames;
+		std::vector<std::string>rownames;
 		// DocString: FMTmatrixbuild::sortelementsandclean
 		/**
 		The function removes duplicate and sort a vector of (elements).
@@ -66,7 +70,7 @@ namespace Models
 		/**
 		Return cached column names.
 		*/
-		inline OsiSolverInterface::OsiNameVec& getcolumnnames()
+		inline std::vector<std::string>& getcolumnnames()
 			{
 			return columnnames;
 			}
@@ -74,7 +78,7 @@ namespace Models
 		/**
 		Return cached row names.
 		*/
-		inline OsiSolverInterface::OsiNameVec& getrownames()
+		inline std::vector<std::string>& getrownames()
 			{
 			return rownames;
 			}

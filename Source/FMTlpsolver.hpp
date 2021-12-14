@@ -8,7 +8,6 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #ifdef FMTWITHOSI
 #ifndef FMTsolve_H_INCLUDED
 #define FMTsolve_H_INCLUDED
-#include <OsiSolverInterface.hpp>
 #include "FMTsolverinterface.hpp"
 #include "FMTserializablematrix.hpp"
 #include "FMTmatrixbuild.hpp"
@@ -17,9 +16,13 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <unordered_map>
 #include <boost/serialization/split_member.hpp>
 #include <boost/serialization/export.hpp>
+
 #ifdef FMTWITHMOSEK
 	#include "mosek.h"
 #endif
+
+
+class OsiSolverInterface;
 
 namespace Models
 {
@@ -247,86 +250,52 @@ class FMTEXPORT FMTlpsolver: public Core::FMTobject
 		/**
 		Returns the number of columns by looking in the solverinterface and in the cache.
 		*/
-		inline int getNumCols() const
-			{
-			return solverinterface->getNumCols() + matrixcache.numbernewCols() - matrixcache.numberofdeletedCols();
-			}
+		int getNumCols() const;
 		// DocString: FMTlpsolver::getNumRows
 		/**
 		Returns the number of rows by looking in the solverinterface and in the cache.
 		*/
-		inline int getNumRows() const
-			{
-			return solverinterface->getNumRows() + matrixcache.numbernewRows() - matrixcache.numberofdeletedRows();
-			}
+		int getNumRows() const;
 		// DocString: FMTlpsolver::getObjCoefficients
 		/**
 		Returns the objective coefficients of the matrix. The function will synchronize the solverinterface with the
 		matrix cache before getting the coefficients.
 		*/
-		inline const double* getObjCoefficients() const
-			{
-			matrixcache.synchronize(solverinterface);
-			return solverinterface->getObjCoefficients();
-			}
+		const double* getObjCoefficients() const;
 		// DocString: FMTlpsolver::getColLower
 		/**
 		Returns columns lower bounds of the matrix. The function will synchronize the solverinterface with the
 		matrix cache before getting the bounds.
 		*/
-		inline const double* getColLower() const
-			{
-			matrixcache.synchronize(solverinterface);
-			return solverinterface->getColLower();
-			}
+		const double* getColLower() const;
 		// DocString: FMTlpsolver::getColUpper
 		/**
 		Returns columns upper bounds of the matrix. The function will synchronize the solverinterface with the
 		matrix cache before getting the bounds.
 		*/
-		inline const double* getColUpper() const
-			{
-			matrixcache.synchronize(solverinterface);
-			return solverinterface->getColUpper();
-			}
+		const double* getColUpper() const;
 		// DocString: FMTlpsolver::getColSolution
 		/**
 		Returns the columns solution of the solverinterface. The function wont synchronize the solverinterface with the cache.
 		*/
-		inline const double* getColSolution() const
-			{
-			//matrixcache.synchronize(solverinterface);
-			return solverinterface->getColSolution();
-			}
+		const double* getColSolution() const;
 		// DocString: FMTlpsolver::getRowActivity
 		/**
 		Returns the rows solution of the solverinterface. The function wont synchronize the solverinterface with the cache.
 		*/
-		inline const double* getRowActivity() const
-			{
-			//matrixcache.synchronize(solverinterface);
-			return solverinterface->getRowActivity();
-			}
+		const double* getRowActivity() const;
 		// DocString: FMTlpsolver::getRowUpper
 		/**
 		Returns rows upper bounds of the solverinterface. The function will synchronize the solverinterface with the
 		matrix cache before getting the bounds.
 		*/
-		inline const double* getRowUpper() const
-			{
-			matrixcache.synchronize(solverinterface);
-			return solverinterface->getRowUpper();
-			}
+		const double* getRowUpper() const;
 		// DocString: FMTlpsolver::getRowLower
 		/**
 		Returns rows lower bounds of the solverinterface. The function will synchronize the solverinterface with the
 		matrix cache before getting the bounds.
 		*/
-		inline const double* getRowLower() const
-			{
-			matrixcache.synchronize(solverinterface);
-			return solverinterface->getRowLower();
-			}
+		const double* getRowLower() const;
 		// DocString: FMTlpsolver::getrow
 		/**
 		Given a g row (whichRow) the function will fill up the row lower bound (rowLower), the row upper bound (rowUpper),
@@ -348,11 +317,7 @@ class FMTEXPORT FMTlpsolver: public Core::FMTobject
 		The function returns the objective sense of the solverinterface.The function will synchronize the solverinterface with the
 		matrix cache before getting the objective sense.
 		*/
-		inline double getObjSense() const
-			{
-			matrixcache.synchronize(solverinterface);
-			return solverinterface->getObjSense();
-			}
+		double getObjSense() const;
 		// DocString: FMTlpsolver::setObjective
 		/**
 		Sets the objective values of the columns of the matrix.
@@ -369,60 +334,32 @@ class FMTEXPORT FMTlpsolver: public Core::FMTobject
 		and a given row upper bound (rowUpper).If usecache is true then it will be only added to the matrix cache else it will
 		be added to the solverinterface.
 		*/
-		inline void addRow(int numberInRow, const int * columns, const double * elements, double rowLower = -COIN_DBL_MAX, double rowUpper = COIN_DBL_MAX)
-			{
-			if (usecache)
-				{
-				matrixcache.addRow(numberInRow, columns, elements, rowLower, rowUpper);
-			}else {
-				solverinterface->addRow(numberInRow, columns, elements, rowLower, rowUpper);
-				}
-
-			}
+		void addRow(int numberInRow, const int * columns, const double * elements, double rowLower = -COIN_DBL_MAX, double rowUpper = COIN_DBL_MAX);
 		// DocString: FMTlpsolver::addCol
 		/**
 		Add a col, with a number of rows (numberInColumn),with rows indexes (rows), with (elements) with a given lower bound (colLower),
 		and a given column upper bound (colUpper) and an objective value (objectiveValue).If usecache is true then it will be only added to the matrix cache else it will
 		be added to the solverinterface.
 		*/
-		inline void addCol(int numberInColumn, const int * rows, const double * elements, double columnLower = 0.0,
-			double columnUpper = COIN_DBL_MAX, double objectiveValue = 0.0)
-			{
-			if (usecache)
-			{
-			matrixcache.addCol(numberInColumn, rows, elements, columnLower,columnUpper, objectiveValue);
-			}else {
-				solverinterface->addCol(numberInColumn, rows, elements, columnLower, columnUpper, objectiveValue);
-				}
-			}
+		void addCol(int numberInColumn, const int * rows, const double * elements, double columnLower = 0.0,
+			double columnUpper = COIN_DBL_MAX, double objectiveValue = 0.0);
 		// DocString: FMTlpsolver::addRows
 		/**
 		Add multiple rows directly to the matrix but first will synchronize the matrix with the matrix cache.
 		*/
-		inline void addRows(const int numrows, const int* rowStarts, const int* columns,
-			const double* elements, const double* rowlb, const double* rowub)
-			{
-			matrixcache.synchronize(solverinterface);
-			solverinterface->addRows(numrows, rowStarts, columns, elements, rowlb, rowub);
-			}
+		void addRows(const int numrows, const int* rowStarts, const int* columns,
+			const double* elements, const double* rowlb, const double* rowub);
 		// DocString: FMTlpsolver::addCols
 		/**
 		Add multiple columns directly to the matrix but first will synchronize the matrix with the matrix cache.
 		*/
-		inline void addCols(const int numcols, const int* columnStarts, const int* rows,
-			const double* elements, const double* collb, const double* colub,const double* obj)
-			{
-			matrixcache.synchronize(solverinterface);
-			solverinterface->addCols(numcols,columnStarts,rows,elements,collb,colub,obj);
-			}
+		void addCols(const int numcols, const int* columnStarts, const int* rows,
+			const double* elements, const double* collb, const double* colub, const double* obj);
 		// DocString: FMTlpsolver::isProvenOptimal
 		/**
 		Returns true if the program is optimal but first will synchronize the matrix with the matrix cache.
 		*/
-		inline bool isProvenOptimal() const
-			{
-			return solverinterface->isProvenOptimal();
-			}
+		bool isProvenOptimal() const;
 		// DocString: FMTlpsolver::deleteRow
 		/**
 		Delete's a given row (rowindex), if usecache is true then it will only delete it from the cache.
