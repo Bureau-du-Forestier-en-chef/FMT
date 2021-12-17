@@ -9,12 +9,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 cmake_minimum_required(VERSION 3.6)
 
 
-#if (DEFINED CMAKE_BUILD_TYPE AND NOT MSVC)
-#	set(BUILD_TYPE "${CMAKE_BUILD_TYPE}")
-#endif()
-#if (DEFINED BUILD_TYPE)
-#	set(CMAKE_BUILD_TYPE "${BUILD_TYPE}")
-#endif()
+
 if (MSVC)
 	SET(CMAKE_CONFIGURATION_TYPES ${BUILD_TYPE} CACHE STRING "" FORCE)
 else()
@@ -25,6 +20,9 @@ endif(MSVC)
 
 
 project(FMT VERSION 0.9.1 LANGUAGES CXX)
+
+
+
 
 set(FMTMAJOR "-DFMT_MAJOR=${PROJECT_VERSION_MAJOR}")
 add_definitions("${FMTMAJOR}")
@@ -151,6 +149,11 @@ list(APPEND FMTPYNRSOURCEFILES "${FMTSOURCEDIR}/main.cpp")
 add_library(FMT SHARED ${FMTPYNRSOURCEFILES})
 
 set_target_properties(FMT PROPERTIES PREFIX "")
+if (MSVC AND (${CMAKE_VERSION} VERSION_GREATER 3.8.0))
+	set_target_properties(
+   		FMT PROPERTIES
+    		VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}")
+endif(MSVC AND (${CMAKE_VERSION} VERSION_GREATER 3.8.0))
 
 set( CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin )
 set( CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin )
@@ -662,6 +665,13 @@ install (CODE
           COMMAND \"$\{PYTHON\}\" -m pip wheel .
           WORKING_DIRECTORY \"${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}\"
         )
+		FILE(GLOB_RECURSE wheelfiles \"${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}/FMT*.whl\")
+		list(GET wheelfiles 0 wheelloc)
+		get_filename_component(wheelname \"\${wheelloc}\" NAME)
+		execute_process(
+          COMMAND \"$\{PYTHON\}\" -m pip install \"\${wheelname}\"
+          WORKING_DIRECTORY \"${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}\"
+        )
     endif (EXISTS \"${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}/setup.py\")
 	if (EXISTS \"${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}/FMT\")
 		file(COPY \"${CMAKE_CURRENT_SOURCE_DIR}/Templates/YieldPredModels\" DESTINATION \"${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}/FMT/inst/libs/x64/\")
@@ -692,7 +702,6 @@ file(MAKE_DIRECTORY \"${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}/tests\")
           COMMAND ctest -C \"${BUILD_TYPE}\" -j \"${PARALLEL_TESTS}\"
           WORKING_DIRECTORY \"${CMAKE_BINARY_DIR}\"
         )
-file(REMOVE_RECURSE \"${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}/tests\")
 ")
 
 

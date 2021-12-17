@@ -14,7 +14,7 @@ setup(
     include_package_data=True,
     packages=["FMT"],
     package_dir={"FMT": ""},
-    package_data={"FMT": ["*.dll", "*.lib", "*.exp", "*.pyd", "GDAL_DATA/*.*", "GDAL_DATA/html/*.*"]},
+    package_data={"FMT": ["*.dll", "*.lib", "*.exp", "*.pyd", "GDAL_DATA/*.*", "GDAL_DATA/html/*.*","LICENSES/*","YieldPredModels/*","proj/*"]},
     entry_points={},
     python_requires="==@PYTHONMAJOR@.@PYTHONMINOR@.*"
 )

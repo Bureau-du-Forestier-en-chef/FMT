@@ -1,8 +1,3 @@
-import sys,os
-sys.path.append("../../")
-sys.path.append("../../../x64/Release")
-sys.path.append("../../Release")
-print(sys.path)
 from FMT import Models
 from FMT import Parser
 
