@@ -1,7 +1,4 @@
-import sys,os
-sys.path.append("../../")
-sys.path.append("../../../x64/Release")
-sys.path.append("../../Release")
+import os
 from FMT import Models
 from FMT import Parser
 from FMT import Spatial
