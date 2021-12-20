@@ -482,6 +482,7 @@ namespace Models
 						double actionareaset = 0;
 						for (const auto& devit : actionit->second)
 						{
+							//(Lock in schedule or action not LOCKEXEMPT) and dev in graph 
 							if ((schedule.douselock() || actionit->first.dorespectlock()) && graph.containsdevelopment(devit.first, lookup))
 							{
 								const Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor vdescriptor = graph.getdevelopment(devit.first, lookup);
@@ -493,13 +494,24 @@ namespace Models
 									_exhandler->raise(Exception::FMTexc::FMTinvalid_number,
 												"Developement " + std::string(devit.first) + " is not operable "
 												" for action " + actionit->first.getname(), 
-												"FMTsrmodel::setsolution", __LINE__, __FILE__);
+												"FMTsrmodel::setsolutionbylp", __LINE__, __FILE__);
 								}
 								const int variable = varit->second;
-								bounds[variable] = std::pair<double, double>(devit.second.at(0) - tolerance, devit.second.at(0)+tolerance);
+								double devarea = devit.second.at(0);
+								if(devit.second.size()>1)
+								{
+									//In case the schedule contain multiple line for the same dev with different lock ...
+									devarea = 0;
+									for(const auto& a : devit.second)
+									{
+										devarea+=a;
+									}
+								}
+								bounds[variable] = std::pair<double, double>(devarea - tolerance, devarea + tolerance);
 								objcoefs[variable] = 1.0;
-								actionareaset += devit.second.at(0) + tolerance;
+								actionareaset += devarea + tolerance;
 							}
+							//LOCKEXEMPT and no lock in schedule
 							else if (!schedule.douselock() && !actionit->first.dorespectlock())
 							{
 								if (maximallock == -1)
@@ -508,13 +520,10 @@ namespace Models
 								}
 								Core::FMTdevelopment locked(devit.first);
 								bool gotsomething = false;
-								double maximaltobound = 0;
 								double totalareaofdevs = 0;
 								for (const double& value : devit.second)
 								{
-									maximaltobound = std::max(value, maximaltobound);
 									totalareaofdevs += value;
-									
 								}
 								//we can add a constraint here to force a given level!
 								std::vector<int>mixedvariables;
@@ -536,8 +545,8 @@ namespace Models
 										}
 										const int variable = varit->second;
 										gotsomething = true;
-										bounds[variable] = std::pair<double, double>(0.0, maximaltobound+tolerance);
-										actionareaset += maximaltobound + tolerance;
+										bounds[variable] = std::pair<double, double>(0.0, totalareaofdevs+tolerance);
+										actionareaset += totalareaofdevs + tolerance;
 										objcoefs[variable] = 1.0;
 										mixedvariables.push_back(variable);
 										
@@ -607,7 +616,7 @@ namespace Models
 				{
 					scheduleobjective += *(solution + var);
 				}
-				const std::string areacomparison = "schedule area of " + std::to_string(schedule.area()) + " vs " + std::to_string(scheduleobjective);
+				const std::string areacomparison = "schedule area of " + std::to_string(schedule.area()) + " vs " + std::to_string(scheduleobjective)+"\n";
 				_logger->logwithlevel(areacomparison, 1);
 				std::vector<double>varsconstraint(bounds.size(), 1.0);
 				solver.addRow(static_cast<int>(varsconstraint.size()), &variables[0],
@@ -646,8 +655,9 @@ namespace Models
 		Core::FMTschedule newschedule;
 		try
 		{
+			//setparameter(SHOW_LOCK_IN_SCHEDULES,withlock);
 			const double* actual_solution = solver.getColSolution();
-			newschedule = graph.getschedule(actions, actual_solution, period, getparameter(SHOW_LOCK_IN_SCHEDULES));
+			newschedule = graph.getschedule(actions, actual_solution, period, withlock);//getparameter(SHOW_LOCK_IN_SCHEDULES));
 
 		}
 		catch (...)

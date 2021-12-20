@@ -590,6 +590,11 @@ std::string FMTexceptionhandler::updatestatus(const FMTexc lexception, const std
 		_level = FMTlev::FMT_logic;
 		++_errorcount;
 		break;
+	case FMTexc::FMTdeathwithlock:
+		msg += "The given FMTactualdevelopement will be dead before the lock expire : " + message;
+		_level = FMTlev::FMT_logic;
+		++_errorcount;
+		break;
 	default:
 		_exception = FMTexc::None;
 		_level = FMTlev::FMT_None;
