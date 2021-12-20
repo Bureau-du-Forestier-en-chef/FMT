@@ -84,9 +84,10 @@ FMTmodel::FMTmodel(const std::vector<Core::FMTactualdevelopment>& larea, const s
 	const std::vector<Core::FMTaction>& lactions,
 	const std::vector<Core::FMTtransition>& ltransitions, const Core::FMTyields& lyields, const Core::FMTlifespans& llifespan,
 	const std::string& lname, const std::vector<Core::FMToutput>& loutputs,std::vector<Core::FMTconstraint> lconstraints,FMTmodelparameters lparameters) :
-	Core::FMTobject(), parameters(lparameters),area(larea), themes(lthemes), actions(lactions), transitions(ltransitions),
+	Core::FMTobject(), parameters(lparameters),area(), themes(lthemes), actions(lactions), transitions(ltransitions),
 	yields(lyields), lifespan(llifespan), outputs(loutputs), constraints(lconstraints), name(lname), statictransitionthemes()
 	{
+	setarea(larea);
 	setdefaultobjects();
 	cleanactionsntransitions();
 	
@@ -356,9 +357,21 @@ bool FMTmodel::operator < (const FMTmodel& rhs) const
 void FMTmodel::setarea(const std::vector<Core::FMTactualdevelopment>& ldevs)
     {
 	try {
-		area = ldevs;
+
+		area = std::vector<Core::FMTactualdevelopment>();
+		area.reserve(ldevs.size());
+		for(const Core::FMTactualdevelopment& adev: ldevs)
+		{
+			Core::FMTactualdevelopment ndev = adev.reducelocktodeath(lifespan);	
+			std::vector<Core::FMTactualdevelopment>::iterator devit = std::find_if(area.begin(), area.end(), Core::FMTactualdevelopmentcomparator(&ndev));
+			if(devit != area.end())
+			{
+				devit->setarea(devit->getarea()+ndev.getarea());
+			}else{
+				area.push_back(ndev);
+			}	
+		}
 		std::sort(area.begin(), area.end());
-		area.shrink_to_fit();
 	}catch (...)
 	{
 		_exhandler->printexceptions("", "FMTmodel::setarea", __LINE__, __FILE__);

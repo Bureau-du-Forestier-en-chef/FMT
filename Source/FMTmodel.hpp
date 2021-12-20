@@ -396,7 +396,10 @@ namespace Models
 		bool operator < (const FMTmodel& rhs) const;
 		// DocString: FMTmodel::setarea
 		/**
-		Setter for initial FMTactualdevelopment (area section) will replace the originals.
+		Setter for initial FMTactualdevelopment (area section) will replace the originals. 
+		This function also check if the actualdevelopement lifespan is shorter than the lock.
+		If not so, it raise the error FMTdeathwithlock and if the error is set to warning,
+		the locks of the FMTactualdevelpement will be reduced accordingly.
 		*/
 		void setarea(const std::vector<Core::FMTactualdevelopment>& ldevs);
 		// DocString: FMTmodel::setthemes

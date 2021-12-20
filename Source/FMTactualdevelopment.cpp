@@ -6,6 +6,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
 #include "FMTactualdevelopment.hpp"
+#include "FMTlifespans.hpp"
 
 
 
@@ -62,6 +63,38 @@ namespace Core
 			_exhandler->raisefromcatch("for "+std::string(*this),"FMTactualdevelopment::presolve", __LINE__, __FILE__);
 			}
 		return newdev;
+		}
+	
+	FMTactualdevelopment FMTactualdevelopment::reducelocktodeath(const FMTlifespans& lifespans) const
+		{
+			FMTactualdevelopment newdev(*this);
+			try {
+					const int lock = newdev.getlock();
+					const int baseage = newdev.getage();
+					if(lock>0)
+					{
+						std::vector<const int *> lifespanfound = lifespans.findsets(newdev.getmask());
+						if(!lifespanfound.empty())
+						{
+							const int devlifespan = *lifespanfound.at(0);
+							const int agelock = baseage+lock;
+							if(agelock >= devlifespan)
+							{
+								const int newlock = std::max(lock-(agelock - devlifespan),0);
+								_exhandler->raise	(Exception::FMTexc::FMTdeathwithlock,
+													std::string(newdev)+" death age is "+std::to_string(devlifespan)+ ". The lock "+std::to_string(lock)+" on the age class "+std::to_string(baseage)+" will exceed the death age. If this error is set to warning, the lock will be reduce to "+std::to_string(newlock)+" to reproduce the behavior of WS.",
+													"FMTactualdevelopment::reducelocktodeath",
+													__LINE__,
+													__FILE__);
+								newdev.setlock(newlock);
+							}
+						}
+					}
+				}catch (...)
+					{
+					_exhandler->raisefromcatch("for "+std::string(*this),"FMTactualdevelopment::reducelocktodeath", __LINE__, __FILE__);
+					}
+			return newdev;
 		}
 
 	bool FMTactualdevelopment::operator != (const FMTactualdevelopment& rhs) const
