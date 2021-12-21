@@ -660,7 +660,7 @@ install (CODE
         endforeach()
     endif(DEPENDENCIES)
 	if (EXISTS \"${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}/setup.py\")
-        find_program(PYTHON \"python\" PATHS \"${PYTHON_DIR}\")
+        find_program(PYTHON \"python\" PATHS \"${PYTHON_DIR}\" NO_DEFAULT_PATH)
         execute_process(
           COMMAND \"$\{PYTHON\}\" -m pip wheel .
           WORKING_DIRECTORY \"${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}\"
