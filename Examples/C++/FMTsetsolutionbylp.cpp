@@ -32,10 +32,10 @@ int main(int argc, char *argv[])
 		const std::vector<Models::FMTmodel> models = modelparser.readproject(primarylocation, scenarios);
 		Models::FMTlpmodel optimizationmodel(models.at(0), Models::FMTsolverinterface::CLP);
 		const std::vector<Core::FMTschedule>schedules = modelparser.readschedules(primarylocation,models).at(0);
-		const double tolerance = 0.01;
+		const double tolerance = 0.0001;
 		for (size_t period = 1; period <= 6; ++period)
 			{
-			optimizationmodel.buildperiod();
+			optimizationmodel.buildperiod(schedules.at(period-1),true);
 			}
 		for (size_t period = 1; period <= 6; ++period)
 			{
@@ -51,7 +51,8 @@ int main(int argc, char *argv[])
 					{
 					gotovoltotrec = true;
 					const double returnedvalue = optimizationmodel.getoutput(output, 2, Core::FMToutputlevel::totalonly).at("Total");
-					if ((returnedvalue < (ovoltotrecvalue - tolerance))||(returnedvalue > (ovoltotrecvalue + tolerance)))
+                    Logging::FMTlogger() << "returned value : "+std::to_string(returnedvalue)+ "\nValue : "+std::to_string(ovoltotrecvalue) << "\n";
+					if ((returnedvalue < (ovoltotrecvalue - 1))||(returnedvalue > (ovoltotrecvalue + 1)))
 						{
 						Exception::FMTfreeexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed, "Wrong value",
 							"FMTsetsolutionbylp", __LINE__, primarylocation);
