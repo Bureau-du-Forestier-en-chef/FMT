@@ -8,7 +8,7 @@ if (new(FMTversion)$hasfeature("OSI"))
 	emptyschedule<-new(FMTschedule)
 	for (period in 1:10)
 		{
-		print(lpmodel$buildperiod(emptyschedule,FALSE)$str())
+		print(lpmodel$buildperiod(emptyschedule,FALSE,1)$str())
 		}
 	allmodelconstraints<-lpmodel$getconstraints()
 	modelobjective<-allmodelconstraints[[1]]
