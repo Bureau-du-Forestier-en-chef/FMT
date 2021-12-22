@@ -4,13 +4,12 @@ if (new(FMTversion)$hasfeature("OSI"))
     newparser <- new(FMTmodelparser)
     primarylocation<-"../Models/TWD_land/TWD_land.pri"
     modelslist <- newparser$readproject(primarylocation, c("LP"), TRUE, TRUE, TRUE)
-	solverinterface<-list(CLP=1,MOSEK=2,CPLEX=3,GUROBI=4)
-    lpmodel <- new(FMTlpmodel, modelslist[[1]], solverinterface$CLP)
+    lpmodel <- new(FMTlpmodel, modelslist[[1]], FMTsolverinterface$CLP)
     tolerance <- 0.0001
     schedules <- newparser$readschedules(primarylocation, modelslist)[[1]]
     for (period in 1:length(schedules))
 		{
-        print(lpmodel$buildperiod(schedules[[period]],TRUE)$str())
+        print(lpmodel$buildperiod(schedules[[period]],TRUE,1)$str())
         }
     for (period in 1:length(schedules))
         {
