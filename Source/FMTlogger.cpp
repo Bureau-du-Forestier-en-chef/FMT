@@ -126,8 +126,7 @@ namespace Logging
 
 	FMTlogger& FMTlogger::operator<<(const std::string& msg)
 		{
-		const std::string value = boost::lexical_cast<std::string>(msg);
-		this->cout(value.c_str());
+		this->cout(msg.c_str());
 		return *this;
 		}
 
@@ -215,7 +214,7 @@ namespace Logging
 				}
 		}else {
 			#if defined(FMTWITHPYTHON)
-					PySys_WriteStdout(message);
+					PySys_FormatStdout(message);
 			#else
 					std::cout << message << std::flush;
 			#endif

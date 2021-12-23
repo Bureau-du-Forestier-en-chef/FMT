@@ -944,6 +944,11 @@ namespace Models
 		return &solver;
 	}
 
+	void FMTsrmodel::passinlogger(const std::shared_ptr<Logging::FMTlogger>& logger)
+	{
+		solver.passinlogger(logger);
+	}
+
 
 #if defined FMTWITHR
 	Rcpp::DataFrame FMTsrmodel::getoutputsdataframe(const std::vector<Core::FMToutput>& outputsdata, int firstperiod, int lastperiod) const
