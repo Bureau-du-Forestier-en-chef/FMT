@@ -233,19 +233,18 @@ void exportCore()
 				.def_pickle(FMT_pickle_suite<Core::FMTageyieldhandler>())
 				.def("__str__", &Core::FMTageyieldhandler::operator std::string,
 					"@DocString(FMTageyieldhandler::operator std::string)")
-				.def("postsolve", &Core::FMTageyieldhandler::postsolve,
-					"@DocString(FMTageyieldhandler::postsolve)")
 				.def("setyieldvalues", &Core::FMTageyieldhandler::setyieldvalues,
 					"@DocString(FMTageyieldhandler::setyieldvalues)");
 				
 			define_pylist<Core::FMTageyieldhandler>();
 
 			bp::class_<Core::FMTtimeyieldhandler>("FMTtimeyieldhandler", "@DocString(FMTtimeyieldhandler)")
+				.def(bp::init<const Core::FMTmask&>())
 				.def_pickle(FMT_pickle_suite<Core::FMTtimeyieldhandler>())
 				.def("__str__", &Core::FMTtimeyieldhandler::operator std::string,
 					"@DocString(FMTtimeyieldhandler::operator std::string)")
-				.def("postsolve", &Core::FMTtimeyieldhandler::postsolve,
-					"@DocString(FMTtimeyieldhandler::postsolve)");
+				.def("setyieldvalues", &Core::FMTtimeyieldhandler::setyieldvalues,
+					"@DocString(FMTtimeyieldhandler::setyieldvalues)");
 			
 			define_pylist<Core::FMTtimeyieldhandler>();
 

@@ -19,7 +19,7 @@ else()
 endif(MSVC)
 
 
-project(FMT VERSION 0.9.1 LANGUAGES CXX)
+project(FMT VERSION 0.9.3 LANGUAGES CXX)
 
 
 
@@ -669,7 +669,7 @@ install (CODE
 		list(GET wheelfiles 0 wheelloc)
 		get_filename_component(wheelname \"\${wheelloc}\" NAME)
 		execute_process(
-          COMMAND \"$\{PYTHON\}\" -m pip install \"\${wheelname}\"
+          COMMAND \"$\{PYTHON\}\" -m pip install \"\${wheelname}\" --force-reinstall
           WORKING_DIRECTORY \"${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}\"
         )
     endif (EXISTS \"${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}/setup.py\")
