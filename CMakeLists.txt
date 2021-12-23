@@ -7,7 +7,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 
 cmake_minimum_required(VERSION 3.6)
-project(FMT VERSION 0.9.1 LANGUAGES CXX)
+project(FMT VERSION 0.9.2 LANGUAGES CXX)
 
 set(FMTMAJOR "-DFMT_MAJOR=${PROJECT_VERSION_MAJOR}")
 add_definitions("${FMTMAJOR}")
