@@ -216,9 +216,13 @@ namespace Heuristics
 		/**
 		Gets the actual solution into a FMTyieldhandler format (time yield)
 		The user can decide the (yldname) to use. Each operating area will have its own
-		yieldhandler.
+		yieldhandler. If (selectedmask) and (basethemes) are given, the yieldhandler return
+		will be postsolve. To get (selectedmask), you must call the function FMTmodel::getselectedmask()
+		after presolving the model. (basethemes) are the themes of the original model. 
 		*/
-		std::vector<Core::FMTtimeyieldhandler> getsolution(const std::string& yldname) const;
+		std::vector<Core::FMTtimeyieldhandler> getsolution(	const std::string& yldname,
+															Core::FMTmask selectedmask=Core::FMTmask(), 
+															std::vector<Core::FMTtheme> basethemes=std::vector<Core::FMTtheme>()) const;
 		// DocString: FMToperatingareascheduler(const std::vector<FMToperatingarea>,const Graph::FMTgraph,const Models::FMTmodel,const Core::FMToutputnode,std::shared_ptr<OsiSolverInterface>,const Models::FMTsolverinterface,size_t lseed,double proportionofset,bool userandomness,bool copysolver)
 		/**
 		Main constructor used to initialize a FMToperatingareaheuristic, the constructor needs
