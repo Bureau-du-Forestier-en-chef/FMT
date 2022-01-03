@@ -84,9 +84,10 @@ FMTmodel::FMTmodel(const std::vector<Core::FMTactualdevelopment>& larea, const s
 	const std::vector<Core::FMTaction>& lactions,
 	const std::vector<Core::FMTtransition>& ltransitions, const Core::FMTyields& lyields, const Core::FMTlifespans& llifespan,
 	const std::string& lname, const std::vector<Core::FMToutput>& loutputs,std::vector<Core::FMTconstraint> lconstraints,FMTmodelparameters lparameters) :
-	Core::FMTobject(), parameters(lparameters),area(larea), themes(lthemes), actions(lactions), transitions(ltransitions),
+	Core::FMTobject(), parameters(lparameters),area(), themes(lthemes), actions(lactions), transitions(ltransitions),
 	yields(lyields), lifespan(llifespan), outputs(loutputs), constraints(lconstraints), name(lname), statictransitionthemes()
 	{
+	setarea(larea);
 	setdefaultobjects();
 	cleanactionsntransitions();
 	
@@ -356,9 +357,21 @@ bool FMTmodel::operator < (const FMTmodel& rhs) const
 void FMTmodel::setarea(const std::vector<Core::FMTactualdevelopment>& ldevs)
     {
 	try {
-		area = ldevs;
+
+		area = std::vector<Core::FMTactualdevelopment>();
+		area.reserve(ldevs.size());
+		for(const Core::FMTactualdevelopment& adev: ldevs)
+		{
+			Core::FMTactualdevelopment ndev = adev.reducelocktodeath(lifespan);	
+			std::vector<Core::FMTactualdevelopment>::iterator devit = std::find_if(area.begin(), area.end(), Core::FMTactualdevelopmentcomparator(&ndev));
+			if(devit != area.end())
+			{
+				devit->setarea(devit->getarea()+ndev.getarea());
+			}else{
+				area.push_back(ndev);
+			}	
+		}
 		std::sort(area.begin(), area.end());
-		area.shrink_to_fit();
 	}catch (...)
 	{
 		_exhandler->printexceptions("", "FMTmodel::setarea", __LINE__, __FILE__);
@@ -1109,13 +1122,13 @@ std::unique_ptr<FMTmodel> FMTmodel::presolve(int presolvepass,std::vector<Core::
 	oldtransitions.shrink_to_fit();
 	oldoutputs.shrink_to_fit();
 	oldconstraints.shrink_to_fit();
-	*_logger <<std::to_string(area.size()) + " (" + std::to_string(static_cast<int>(oldarea.size())- static_cast<int>(area.size())) << ") Developments, "
-			<<std::to_string(themes.size())+" (" + std::to_string(static_cast<int>(oldthemes.size()) - static_cast<int>(themes.size())) << ") Themes, "
-			<<std::to_string(yields.size()) + " (" + std::to_string(static_cast<int>(oldyields.size()) - static_cast<int>(yields.size())) << ") Yields, "
-			<<std::to_string(actions.size()) + " (" + std::to_string(static_cast<int>(oldactions.size()) - static_cast<int>(actions.size())) << ") Actions, "
-			<<std::to_string(transitions.size()) + " (" + std::to_string(static_cast<int>(oldtransitions.size()) - static_cast<int>(transitions.size())) << ") Transitions, "
-			<<std::to_string(outputs.size()) + " (" + std::to_string(static_cast<int>(oldoutputs.size()) - static_cast<int>(outputs.size())) << ") Outputs and "
-			<<std::to_string(constraints.size()) + " (" + std::to_string(static_cast<int>(oldconstraints.size()) - static_cast<int>(constraints.size())) << ") Constraints"<<"\n";
+	*_logger<<	"Developments "+std::to_string(oldarea.size()) + " (" + std::to_string(static_cast<int>(oldarea.size())-static_cast<int>(area.size())) + "), "
+				+"Themes "+std::to_string(oldthemes.size())+" (" + std::to_string(static_cast<int>(oldthemes.size())-static_cast<int>(themes.size())) + "), "
+				+"Yields "+std::to_string(oldyields.size()) + " (" + std::to_string(static_cast<int>(oldyields.size())-static_cast<int>(yields.size())) + "), "
+				+"Actions "+std::to_string(oldactions.size()) + " (" + std::to_string(static_cast<int>(oldactions.size())-static_cast<int>(actions.size())) + "), "
+				+"Transitions "+std::to_string(oldtransitions.size()) + " (" + std::to_string(static_cast<int>(oldtransitions.size())-static_cast<int>(transitions.size())) + "), "
+				+"Outputs "+std::to_string(oldoutputs.size()) + " (" + std::to_string(static_cast<int>(oldoutputs.size())-static_cast<int>(outputs.size())) + ") and "
+				+"Constraints "+std::to_string(oldconstraints.size()) + " (" + std::to_string(static_cast<int>(oldconstraints.size()) - static_cast<int>(constraints.size())) + ")"<<"\n";
 	presolvedmodel = std::unique_ptr<FMTmodel>(new FMTmodel(oldarea, oldthemes, oldactions, oldtransitions, oldyields, oldlifespans, name, oldoutputs, oldconstraints,parameters));
 	presolvedmodel->cleanactionsntransitions();
 	}catch (...)

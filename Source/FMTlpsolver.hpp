@@ -112,12 +112,12 @@ class FMTEXPORT FMTlpsolver: public Core::FMTobject
 	Returns a Coinpackedmatrix by column of the problem. A synchronization will be done when calling this function.
 	*/
 	const CoinPackedMatrix* getMatrixByCol() const;
-	// DocString: FMTlpsolver::passinlogger
-	/**
-	We need to override the passinlogger for the osisolverinterface
-	*/
-	void passinlogger(const std::shared_ptr<Logging::FMTlogger>& logger) override;
 	public:
+		// DocString: FMTlpsolver::passinlogger
+		/**
+		We need to override the passinlogger for the osisolverinterface
+		*/
+		void passinlogger(const std::shared_ptr<Logging::FMTlogger>& logger) override;
 		// DocString: FMTlpsolver::unmarkHotStart
 		/**
 		Clear all cached data in osisolverinterface.

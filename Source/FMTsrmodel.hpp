@@ -252,6 +252,11 @@ namespace Models
 		Get a clone of the FMTsrmodel
 		*/
 		virtual std::unique_ptr<FMTmodel>clone() const override;
+		// DocString: FMTlpmodel::passinlogger
+		/**
+		We need to override the passinlogger for the osisolverinterface
+		*/
+		void passinlogger(const std::shared_ptr<Logging::FMTlogger>& logger) override;
 	};
 
 }
