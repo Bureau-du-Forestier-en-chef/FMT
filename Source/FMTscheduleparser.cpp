@@ -205,7 +205,7 @@ namespace Parser {
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("at " + location,"FMTscheduleparser::write", __LINE__, __FILE__, _section);
+			_exhandler->printexceptions("at " + location,"FMTscheduleparser::write", __LINE__, __FILE__, _section);
 		}
 	}
 
