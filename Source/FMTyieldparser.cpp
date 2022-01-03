@@ -362,7 +362,7 @@ Core::FMTdata FMTyieldparser::geteq(const std::string& basestr,
 
 std::unique_ptr<Core::FMTyieldmodel>FMTyieldparser::readyieldmodel(const std::string& modelname) const
 {
-
+	boost::property_tree::ptree root;
 	try{
 		const boost::filesystem::path modeldirectory = boost::filesystem::path(getruntimelocation()) / boost::filesystem::path("YieldPredModels") / boost::filesystem::path(modelname);
 		if (boost::filesystem::is_directory(modeldirectory))
@@ -376,7 +376,7 @@ std::unique_ptr<Core::FMTyieldmodel>FMTyieldparser::readyieldmodel(const std::st
 					//boost::property_tree::ptree root;
 					//boost::property_tree::read_json(jsonstream, root);
 					//Get the FMTyieldmodel
-					return std::unique_ptr<Core::FMTyieldmodel>(new Core::FMTyieldmodel(modelname));
+					return std::unique_ptr<Core::FMTyieldmodel>(new Core::FMTyieldmodel(root));
 					}
 				jsonstream.close();
 
@@ -392,7 +392,7 @@ std::unique_ptr<Core::FMTyieldmodel>FMTyieldparser::readyieldmodel(const std::st
 	{
 	_exhandler->raisefromcatch("While reading model "+modelname,"FMTyieldparser::readyieldmodel", __LINE__, __FILE__, _section);
 	}
-	return std::unique_ptr<Core::FMTyieldmodel>(new Core::FMTyieldmodel(modelname));
+	return std::unique_ptr<Core::FMTyieldmodel>(new Core::FMTyieldmodel(root));
 }
 
 
