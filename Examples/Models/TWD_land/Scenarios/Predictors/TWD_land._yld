@@ -46,4 +46,4 @@ YBM_RTM_MEH _EQUATION(1.1017722459999999*12^0.83493872400000002)
 
 
 *YM ? ? ?
-ytest _PRED(testmodel)
+ytest,ytest1,ytest2,ytest3,ytest4 _PRED(pools_carbon)
