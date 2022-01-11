@@ -95,6 +95,7 @@ Pour remplir les commentaires dans les fichiers sources R (`.R`) et Python (`.py
   cd Documentation
   python commentsPythonandR.py
  ```
+Voici une présentation pour vous former à l'API FMT(R/Python) [Formation_FMT_R_Python.pptx](Documentation/Formation_FMT_R_Python.pptx) 
 
 # 👉 Exemples
 
