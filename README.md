@@ -96,6 +96,8 @@ To populate comments in R and Python source files (files starting with R and PY)
   python commentsPythonandR.py
  ```
 
+You can take a look at this presentation for a short training on how to use FMT (R/Python) [FMT_R_Python_Training.pptx](Documentation/FMT_R_Python_Training.pptx) 
+
 # 👉 Examples
 
  Here's a short example for reading a forest planning model and solve the type III Linear programming formulation.
