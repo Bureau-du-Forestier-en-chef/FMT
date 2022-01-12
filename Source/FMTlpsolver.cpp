@@ -905,6 +905,11 @@ namespace Models
 			matrixcache.formatallnames(shortformat);
 			std::vector<std::string>& cachedrownames = matrixcache.getrownames();
 			std::vector<std::string>& cachedcolnames = matrixcache.getcolumnnames();
+			if(cachedcolnames.size() != static_cast<size_t>(getNumCols()) || cachedrownames.size() != static_cast<size_t>(getNumRows()))
+			{
+				_exhandler->raise(Exception::FMTexc::FMTrangeerror, 
+								"NumCols or NumRows size is different of the number of names given", "FMTlpsolver::updaterowsandcolsnames", __LINE__, __FILE__);		
+			}
 			if (solvertype == Models::FMTsolverinterface::MOSEK)
 			{
 				#ifdef FMTWITHMOSEK

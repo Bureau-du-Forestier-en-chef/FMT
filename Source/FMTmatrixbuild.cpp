@@ -189,6 +189,8 @@ namespace Models
 			rowsbuild = rhs.rowsbuild;
 			deletedconstraints = rhs.deletedconstraints;
 			deletedvariables = rhs.deletedvariables;
+			columnnames = rhs.columnnames;
+			rownames = rhs.rownames;
 			}
 		return *this;
 		}
