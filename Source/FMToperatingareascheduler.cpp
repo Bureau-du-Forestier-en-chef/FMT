@@ -512,12 +512,13 @@ namespace Heuristics
 						for (const int& index : binit->second)
 							{
 							constraintindexes.push_back(constraintsid);
-							++constraintsid;
 							columns[0] = binit->first;
 							columns[1] = index;
 							this->addRow(2, &columns[0], &elements[0], 0, 1);
+							this->setrowname("adj_"+std::string(operatingareait->getmask())+"_"+std::string(neighbor)+"_"+std::to_string(binit->first)+"_"+std::to_string(index),constraintsid);
 							rowadded = true;
 							//matrixbuild.addRow(2, &columns[0], &elements[0], 0, 1);
+							++constraintsid;
 							}
 						}
 					if (!constraintindexes.empty())
@@ -918,6 +919,7 @@ namespace Heuristics
 			const double baseobj = this->getObjValue();
 			this->setoperatingareasconstraints(maingraph, model, target);
 			bool adjacencyconstraintset = this->setadjacencyconstraints();
+			updaterowsandcolsnames();
 			this->resolvemodel();
 			if (!adjacencyconstraintset)
 			{

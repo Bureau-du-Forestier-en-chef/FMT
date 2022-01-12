@@ -172,6 +172,7 @@ std::vector<std::vector<std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, 
 				if (targetedvariables.size() > periodics->second.size())
 					{
 					solver.addRow(static_cast<int>(targetedvariables.size()), &targetedvariables[0], &elements[0], std::numeric_limits<double>::lowest(), 0);
+					solver.setrowname("schemenode_"+std::string(this->getmask())+"_P"+std::to_string(periodics->first), constraintid);
 					//matrixbuild.addRow(static_cast<int>(targetedvariables.size()), &targetedvariables[0], &elements[0], std::numeric_limits<double>::lowest(), 0);
 					}
 				++constraintid;
@@ -193,6 +194,7 @@ std::vector<std::vector<std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, 
 				{
 				//matrixbuild.addCol(0, nullptr, nullptr, 0, 1);
 				solver.addCol(0, nullptr, nullptr, 0, 1);
+				solver.setcolname("schemebin_"+std::string(this->getmask())+"_binid_"+std::to_string(opid), openingbinaries.at(opid));
 				}
 			//matrixbuild.setlastcolindex(openingbinaries.back());
 			maximalschemesconstraint = constraintid;
@@ -200,6 +202,7 @@ std::vector<std::vector<std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, 
 			//matrixbuild.addRow(static_cast<int>(openingbinaries.size()), &openingbinaries[0], &maxelements[0], std::numeric_limits<double>::lowest(), 1);
 			//matrixbuild.setlastrowindex(maximalschemesconstraint);
 			solver.addRow(static_cast<int>(openingbinaries.size()), &openingbinaries[0], &maxelements[0], std::numeric_limits<double>::lowest(), 1);
+			solver.setrowname("schemechoice_"+std::string(this->getmask()), constraintid);
 			}
 		//Weird fix
 		std::vector<std::vector<int>>nschemesperiods;
