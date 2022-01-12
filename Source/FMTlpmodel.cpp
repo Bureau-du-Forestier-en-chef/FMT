@@ -1462,18 +1462,30 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 	std::vector<Heuristics::FMToperatingareascheduler>FMTlpmodel::getoperatingareaschedulerheuristics(const std::vector<Heuristics::FMToperatingareascheme>& opareas,
 																						const Core::FMToutputnode& node,
 																						size_t numberofheuristics,
-																						bool copysolver,
-																						bool updatematrixname)
+																						bool copysolver)		
 		{
 		bool userandomness = false;
 		size_t seedof = 1;
 		double proportionofset = 0.25;
 		std::vector<Heuristics::FMToperatingareascheduler>allheuristics;
 		try {
-			if (updatematrixname)//For debugging matrix
+			updatematrixnaming();
+			for(int i = 0 ; i < static_cast<int>(opareas.size()) ; ++i)
+			{
+				const Core::FMTmask m1 = opareas.at(i).getmask();
+				for(int ii = i+1 ; ii < static_cast<int>(opareas.size()) ; ++ii)
 				{
-				updatematrixnaming();
+					const Core::FMTmask m2 = opareas.at(ii).getmask();
+					if(!(m1.isnotthemessubset(m2,themes)))
+					{
+						_exhandler->raise(	Exception::FMTexc::FMTfunctionfailed,
+											"The masks of operating area intersects each other : \n"+std::string(m1)+"\n"+std::string(m2),
+											"FMTlpmodel::getObjValue",
+											__LINE__, __FILE__);
+					}
 				}
+			}
+			//Validate intersecting mask of opareas
 			allheuristics.emplace_back(opareas, graph, *this, node,*this->getsolverptr(), seedof, proportionofset, userandomness, copysolver);
 			for (size_t heuristicid = 1 ; heuristicid < numberofheuristics; ++heuristicid)
 				{
