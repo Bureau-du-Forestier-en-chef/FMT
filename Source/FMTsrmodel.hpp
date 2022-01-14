@@ -252,11 +252,17 @@ namespace Models
 		Get a clone of the FMTsrmodel
 		*/
 		virtual std::unique_ptr<FMTmodel>clone() const override;
-		// DocString: FMTlpmodel::passinlogger
+		// DocString: FMTsrmodel::passinlogger
 		/**
 		We need to override the passinlogger for the osisolverinterface
 		*/
 		void passinlogger(const std::shared_ptr<Logging::FMTlogger>& logger) override;
+		// DocString: FMTsrmodel::boundsolution
+		/**
+		This function bounds the primal variables to the primal solution present within the matrix for
+		a given period and tolerance. Perfect function to update a FMTlpmodel or get ready for replanning.
+		*/
+		bool boundsolution(int period, double tolerance = FMT_DBL_TOLERANCE);
 	};
 
 }

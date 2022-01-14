@@ -181,8 +181,7 @@ namespace Core
 							boost::split(repvalues, yieldnames.at(id), boost::is_any_of("_"));
 							const int repperiod = std::stoi(repvalues.at(2));
 							const size_t repid = std::stoi(repvalues.at(1));
-							if (repid== replicate&&
-								repperiod==period)
+							if (repid==( replicate-1)/*&&repperiod==period*/)
 								{
 								values.push_back(yieldbounds.at(id).getlower());
 								}

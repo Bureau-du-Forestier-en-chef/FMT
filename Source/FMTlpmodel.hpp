@@ -247,12 +247,6 @@ class FMTEXPORT FMTlpmodel final : public FMTsrmodel
 		To set the model parameter STRICTLY_POSITIVE at true.
 		*/
 		void setstrictlypositivesoutputsmatrix();
-		// DocString: FMTlpmodel::boundsolution
-		/**
-		This function bounds the primal variables to the primal solution present within the matrix for
-		a given period and tolerance. Perfect function to update a FMTlpmodel or get ready for replanning.
-		*/
-		bool boundsolution(int period,double tolerance = FMT_DBL_TOLERANCE);
 		// DocString: FMTlpmodel::getlocalconstraints
 		/**
 		During replaning some local constraints need to be ajusted to the global model.

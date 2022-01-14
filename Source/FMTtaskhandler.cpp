@@ -73,6 +73,14 @@ namespace Parallel
 
 		}
 
+	void FMTtaskhandler::passinlogger(const std::shared_ptr<Logging::FMTlogger>& logger)
+		{
+		for (std::unique_ptr<FMTtask>& task : alltasks)
+			{
+			task->passinlogger(logger);
+			}
+		}
+
 	void FMTtaskhandler::ondemandrun()
 	{
 		try {

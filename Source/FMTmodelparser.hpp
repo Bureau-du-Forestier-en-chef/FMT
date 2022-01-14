@@ -62,6 +62,30 @@ class FMTEXPORT FMTmodelparser : public FMTparser
 					const std::string& lif, const std::string& are, const std::string& yld,
 					const std::string& act, const std::string& tr, const std::string& out,
 					std::string opt = std::string(),bool allow_mapping=false);
+	protected:
+	#ifdef FMTWITHGDAL
+	// DocString: FMTmodelparser::getiterationsvalues()
+	/**
+	Go back in the layer and get all values per iteration and periods.
+	*/
+	std::map<std::string,std::vector<std::vector<double>>>getiterationsvalues(OGRLayer* layer) const;
+	// DocString: FMTmodelparser::createlayer()
+	/**
+	Create a layer with from a dataset
+	*/
+	OGRLayer* FMTmodelparser::createlayer(GDALDataset* dataset,
+		const std::string& name, std::vector<std::string> creationoptions = std::vector<std::string>()) const;
+	// DocString: FMTmodelparser::createdriftlayer()
+	/**
+	Create a output drift layer.
+	*/
+	OGRLayer* createdriftlayer(GDALDataset* dataset, std::vector<std::string> creationoptions = std::vector<std::string>()) const;
+	// DocString: FMTmodelparser::writedriftr()
+	/**
+	Go back in the layer and get all values per iteration and periods.
+	*/
+	void writedrift(OGRLayer* layer,std::map<std::string,std::map<double,std::vector<double>>>& driftvalues) const;
+	#endif
     public:
 		// DocString: FMTmodelparser()
 		/**
@@ -131,7 +155,8 @@ class FMTEXPORT FMTmodelparser : public FMTparser
 		/**
 		Create a results layer on a dataset for a given model.
 		*/
-		OGRLayer* createresultslayer(const Models::FMTmodel& model, GDALDataset* dataset)const;
+		OGRLayer* createresultslayer(const Models::FMTmodel& model,
+			GDALDataset* dataset, std::vector<std::string> creationoptions=std::vector<std::string>())const;
 		// DocString: FMTmodelparser::fillupinfeasibles
 		/**
 		Fill up the OGRlayer of infeasible values.

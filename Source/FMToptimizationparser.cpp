@@ -98,6 +98,7 @@ namespace Parser
 						}
 					++period;
 					}
+				
 			}else {
 				const double variale_value = getnum<double>(numvalue, constants);;
 				std::string yieldtarget(target);
@@ -372,7 +373,7 @@ namespace Parser
         return final_output;
         }
 
-	Core::FMTconstraint FMToptimizationparser::getspatialconstraint(const std::smatch& match,const std::string& line,
+	Core::FMTconstraint FMToptimizationparser::getspatialconstraint(const Core::FMTconstraint& baseconstraint,const std::smatch& match,const std::string& line,
 		const Core::FMTconstants& constants, const std::vector<Core::FMTaction>& actions,
 		const std::vector<Core::FMToutput>& outputs, const std::vector<Core::FMTtheme>& themes)
 	{
@@ -392,11 +393,13 @@ namespace Parser
 			std::string actionoraggregates;
 			if (constrainttypestr == "_RANDOM")
 			{
+				constraint = baseconstraint;
 				std::map<std::string, double> nodes = getequation(inargument, constants, outputs, inargument.size());
 				nodes.erase("RHS");
 				const Core::FMToutput targetout = resume_output(nodes, outputs, themes, constants);
 				constrainttype = Core::FMTconstrainttype::FMTrandomaction;
-				constraint = Core::FMTconstraint(constrainttype, targetout);
+				constraint.setconstrainttype(constrainttype);
+				constraint.setoutput(targetout);
 				
 			}
 			else {
@@ -464,7 +467,7 @@ namespace Parser
 			setending(constraint, rest, constants);
 			if (std::regex_search(rest, kmatch, rxspatial))
 			{
-				returnedconstraints.push_back(getspatialconstraint(kmatch, line, constants, actions,outputs,themes));
+				returnedconstraints.push_back(getspatialconstraint(constraint,kmatch, line, constants, actions,outputs,themes));
 			}else if (std::regex_search(rest, kmatch, rxconstraints))
 				{
 				//std::string target = std::string(kmatch[6]) + std::string(kmatch[12]) + std::string(kmatch[15]);
@@ -522,6 +525,7 @@ namespace Parser
 				constraint.addbounds(Core::FMTyldbounds(Core::FMTsection::Optimize, yld_name, higher_var, lower_var));
 				//const std::string periodstring = std::string(kmatch[18]);
 				const std::string periodstring = std::string(kmatch[23]);
+				
 				returnedconstraints = getperiodsbounds(periodstring, constraint, constants);
 
 			}

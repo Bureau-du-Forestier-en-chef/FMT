@@ -1122,13 +1122,13 @@ std::unique_ptr<FMTmodel> FMTmodel::presolve(int presolvepass,std::vector<Core::
 	oldtransitions.shrink_to_fit();
 	oldoutputs.shrink_to_fit();
 	oldconstraints.shrink_to_fit();
-	*_logger<<	"Developments "+std::to_string(oldarea.size()) + " (" + std::to_string(static_cast<int>(oldarea.size())-static_cast<int>(area.size())) + "), "
+	_logger->logwithlevel("Developments "+std::to_string(oldarea.size()) + " (" + std::to_string(static_cast<int>(oldarea.size())-static_cast<int>(area.size())) + "), "
 				+"Themes "+std::to_string(oldthemes.size())+" (" + std::to_string(static_cast<int>(oldthemes.size())-static_cast<int>(themes.size())) + "), "
 				+"Yields "+std::to_string(oldyields.size()) + " (" + std::to_string(static_cast<int>(oldyields.size())-static_cast<int>(yields.size())) + "), "
 				+"Actions "+std::to_string(oldactions.size()) + " (" + std::to_string(static_cast<int>(oldactions.size())-static_cast<int>(actions.size())) + "), "
 				+"Transitions "+std::to_string(oldtransitions.size()) + " (" + std::to_string(static_cast<int>(oldtransitions.size())-static_cast<int>(transitions.size())) + "), "
 				+"Outputs "+std::to_string(oldoutputs.size()) + " (" + std::to_string(static_cast<int>(oldoutputs.size())-static_cast<int>(outputs.size())) + ") and "
-				+"Constraints "+std::to_string(oldconstraints.size()) + " (" + std::to_string(static_cast<int>(oldconstraints.size()) - static_cast<int>(constraints.size())) + ")"<<"\n";
+				+"Constraints "+std::to_string(oldconstraints.size()) + " (" + std::to_string(static_cast<int>(oldconstraints.size()) - static_cast<int>(constraints.size())) + ")"+"\n",1);
 	presolvedmodel = std::unique_ptr<FMTmodel>(new FMTmodel(oldarea, oldthemes, oldactions, oldtransitions, oldyields, oldlifespans, name, oldoutputs, oldconstraints,parameters));
 	presolvedmodel->cleanactionsntransitions();
 	}catch (...)
@@ -1358,7 +1358,7 @@ bool FMTmodel::doplanning(const bool& solve,std::vector<Core::FMTschedule> sched
 		std::unique_ptr<FMTmodel> presolved_model;
 		if(presolve_iterations>0)
 		{
-			*_logger<<"Presolving "+getname()+" with "+std::to_string(presolve_iterations)+" iterations"<<"\n";
+			_logger->logwithlevel("Presolving " + getname() + " with " + std::to_string(presolve_iterations) + " iterations\n", 1);
 			presolved_model = this->presolve(presolve_iterations,area);
 		}else{
 			presolved_model = this->clone();
@@ -1380,13 +1380,14 @@ bool FMTmodel::doplanning(const bool& solve,std::vector<Core::FMTschedule> sched
 		}
 		if(parameters.getboolparameter(POSTSOLVE) && presolve_iterations>0)
 		{
-			*_logger<<"Postsolving "+getname()<<"\n";
+			_logger->logwithlevel("Postsolving "+getname()+"\n",1);
 			std::unique_ptr<FMTmodel> postsolved = presolved_model->postsolve(*this);
 			this->swap_ptr(postsolved);
 		}else{
-			*_logger<<"Not Postsolving "+getname()<<"\n";
+			_logger->logwithlevel("Not Postsolving "+getname()+"\n",1);
 			this->swap_ptr(presolved_model);
 		}
+
 	}catch(...){
 		_exhandler->raisefromcatch("", " FMTmodel::doplanning", __LINE__, __FILE__);
 	}

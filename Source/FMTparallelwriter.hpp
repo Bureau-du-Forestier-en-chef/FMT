@@ -32,8 +32,11 @@ namespace Parallel
 		///The dataset of the results.
 		GDALDataset* resultsdataset;
 		// DocString: FMTparallelwriter::resultslayer
-		///The layer of the results.
-		OGRLayer* resultslayer;
+		///The layer of the results. the key is the model name.
+		std::map<std::string,OGRLayer*> resultslayer;
+		// DocString: FMTparallelwriter::driftlayer
+		///The drift layer probability.
+		OGRLayer* driftlayer;
 		#endif
 		// DocString: FMTparallelwriter::mtx
 		///The recursive mutex used to control the usage of the writer by the thread.
@@ -61,13 +64,26 @@ namespace Parallel
 		FMTparallelwriter(const std::string& location,
 			const std::string& driver,
 			const std::vector<Core::FMToutput>& outputs,
-			const Models::FMTmodel& model);
+			const std::vector<Models::FMTmodel*>& allmodels,
+			std::vector<std::string>layersoptions = std::vector<std::string>());
 		// DocString: FMTparallelwriter::write()
 		/**
 		Write the modelptr results from the firstperiod to the lastperiod for a given iteration (replicate).
 		*/
-		void write(const std::unique_ptr<Models::FMTmodel>& modelptr, const int& firstperiod,
-			const int& lastperiod, const int& itertion) const;
+		void write(const std::string& modelname,
+			const std::map<std::string, std::vector<std::vector<double>>>& results,
+			const int& firstperiod, const int& lastperiod, const int& iteration) const;
+		// DocString: FMTparallelwriter::getresults()
+		/**
+		Get the results of a model.
+		*/
+		std::map<std::string, std::vector<std::vector<double>>> getresults(const std::unique_ptr<Models::FMTmodel>& modelptr, const int& firstperiod,const int& lastperiod) const;
+		// DocString: FMTparallelwriter::setdriftprobability()
+		/**
+		Get the results of a model With the global model and the localmodel starting from a minimum drift proportion.
+		*/
+		void setdriftprobability(const double& minimaldrift,
+				const std::string& globalmodel, const std::string& localmodel) const;
 	};
 }
 #endif

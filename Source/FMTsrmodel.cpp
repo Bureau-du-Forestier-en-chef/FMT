@@ -949,6 +949,44 @@ namespace Models
 		solver.passinlogger(logger);
 	}
 
+	bool FMTsrmodel::boundsolution(int period, double tolerance)
+	{
+		try {
+			if (static_cast<int>(graph.size()) > period)
+			{
+				const double* actual_solution = solver.getColSolution();
+				std::vector<int>variable_index;
+				std::vector<double>bounds;
+				Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_iterator it, itend;
+
+				for (boost::tie(it, itend) = graph.getperiodverticies(period); it != itend; ++it)
+				{
+					const Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor vertex_descriptor = *it;
+					const std::map<int, int>variables = graph.getoutvariables(vertex_descriptor);
+					for (std::map<int, int>::const_iterator varit = variables.begin(); varit != variables.end(); varit++)
+					{
+						if (std::find(variable_index.begin(), variable_index.end(), varit->second) == variable_index.end())
+						{
+							variable_index.push_back(varit->second);
+							//Had tolerance on primal infeasibilities with FMT_DBL_TOLERANCE ...
+							bounds.push_back(*(actual_solution + varit->second)*(1 - tolerance));
+							bounds.push_back(*(actual_solution + varit->second)*(1 + tolerance));
+						}
+					}
+				}
+				solver.setColSetBounds(&variable_index[0], &variable_index.back() + 1, &bounds[0]);
+				return solver.resolve();
+				//return solver.stockresolve();
+			}
+		}
+		catch (...)
+		{
+			_exhandler->printexceptions("at period " + std::to_string(period), "FMTlpmodel::boundsolution", __LINE__, __FILE__);
+		}
+
+		return false;
+	}
+
 
 #if defined FMTWITHR
 	Rcpp::DataFrame FMTsrmodel::getoutputsdataframe(const std::vector<Core::FMToutput>& outputsdata, int firstperiod, int lastperiod) const
