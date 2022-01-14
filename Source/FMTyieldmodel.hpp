@@ -32,14 +32,13 @@ namespace Core
 			ar & modelname;
 		}
 	private:
-		std::string modelname;
-		std::unique_ptr<Ort::Env> envPtr = NULL;
-		std::unique_ptr<Ort::Session> sessionPtr = NULL;
-		std::unique_ptr<Ort::AllocatorWithDefaultOptions> allocatorPtr = NULL;
-		std::vector<double> standardParamMeans = {};
-		std::vector<double> standardParamVars = {};
-		std::vector<const char*> inputNames = {};
-		std::vector<const char*> outputNames = {};
+		std::string modelName;
+		std::string modelType;
+		static std::unique_ptr<Ort::Env> envPtr;
+		/*std::unique_ptr<Ort::Session> sessionPtr = NULL;
+		std::unique_ptr<Ort::AllocatorWithDefaultOptions> allocatorPtr = NULL;*/
+		std::vector<float> standardParamMeans = {};
+		std::vector<float> standardParamVars = {};
 	public:
 		FMTyieldmodel()=default;
 		FMTyieldmodel(const FMTyieldmodel & rhs);
@@ -47,12 +46,11 @@ namespace Core
 		virtual ~FMTyieldmodel() = default;
 		FMTyieldmodel(const boost::property_tree::ptree & jsonProps);
 		const std::string& GetModelName() const;
-		const std::vector<double>& GetStandardParamMeans() const;
-		const std::vector<double>& GetStandardParamVars() const;
-		const std::vector<const char*>& GetInputNames() const;
-		const std::vector<const char*>& GetOutputNames() const;
+		const std::string& GetModelType() const;
+		const std::vector<float>& GetStandardParamMeans() const;
+		const std::vector <float> & GetStandardParamVars() const;
 		const std::vector<std::string> getNextLineAndSplitIntoTokens(std::istream& str);
-		void standardize(std::vector<double>& input, const std::vector<double>& means, const std::vector<double>& vars) const;
+		const std::vector<float> standardize(std::vector<float>& input, const std::vector<float>& means, const std::vector<float>& vars) const;
 		virtual std::unique_ptr<FMTyieldmodel>Clone() const;
 		virtual std::string GetModelInfo() const;
 		virtual bool Validate(const std::vector<std::string>& YieldsAvailable) const;
