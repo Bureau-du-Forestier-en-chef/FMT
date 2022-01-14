@@ -171,7 +171,7 @@ namespace Logging
 	bool FMTlogger::logwithlevel(const std::string &msg, const int& messagelevel) const
 	{
 		#ifdef FMTWITHOSI
-			if (this->logLevel() < messagelevel)
+		if (this->logLevel() < messagelevel)
 				{
 				return false;
 				}

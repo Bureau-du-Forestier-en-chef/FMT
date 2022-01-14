@@ -136,42 +136,6 @@ namespace Models
 		return newclusterer;
 	}
 
-	bool FMTlpmodel::boundsolution(int period,double tolerance)
-	{
-		try {
-			if (static_cast<int>(graph.size()) > period)
-			{
-				const double* actual_solution = solver.getColSolution();
-				std::vector<int>variable_index;
-				std::vector<double>bounds;
-				Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_iterator it,itend;
-
-				for (boost::tie(it, itend)=graph.getperiodverticies(period);it!=itend;++it)
-				{
-					const Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor vertex_descriptor = *it;
-					const std::map<int, int>variables = graph.getoutvariables(vertex_descriptor);
-					for (std::map<int, int>::const_iterator varit = variables.begin(); varit != variables.end(); varit++)
-					{
-						if (std::find(variable_index.begin(), variable_index.end(), varit->second) == variable_index.end())
-						{
-							variable_index.push_back(varit->second);
-							//Had tolerance on primal infeasibilities with FMT_DBL_TOLERANCE ...
-							bounds.push_back(*(actual_solution + varit->second)*(1 - tolerance));
-							bounds.push_back(*(actual_solution + varit->second)*(1 + tolerance));
-						}
-					}
-				}
-				solver.setColSetBounds(&variable_index[0], &variable_index.back() + 1, &bounds[0]);
-				return this->resolve();
-				//return solver.stockresolve();
-			}
-		}catch (...)
-		{
-			_exhandler->printexceptions("at period " + std::to_string(period), "FMTlpmodel::boundsolution", __LINE__, __FILE__);
-		}
-
-    return false;
-	}
 
 	std::vector<Core::FMTconstraint> FMTlpmodel::getlocalconstraints(const std::vector<Core::FMTconstraint>& localconstraints, const int& period) const
 	{
@@ -240,6 +204,7 @@ namespace Models
 	FMTsrmodel(base,lgraph,lsolver),
 	elements(lelements)
 	{
+		
 		solver.setnumberofthreads(getparameter(NUMBER_OF_THREADS));	
 	}
 
@@ -1378,12 +1343,13 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 					}
 				return -1;
 			}
-			std::vector<int>sumvariables;
-			std::vector<double>sumcoefficiants;
-			summarize(indexes, sumvariables, sumcoefficiants);
+			
 			Graph::FMTgraphstats* stats = graph.getstatsptr();
 			if (element_type == FMTmatrixelement::constraint || element_type == FMTmatrixelement::strictlypositive)
 			{
+				std::vector<int>sumvariables;
+				std::vector<double>sumcoefficiants;
+				summarize(indexes, sumvariables, sumcoefficiants);
 				//*_logger<<"Add " <<std::string(constraint)<<" "<<element_type<< " "<<period<<"\n";
 				if (sumvariables.empty() && element_type == FMTmatrixelement::strictlypositive)
 				{
@@ -1397,7 +1363,8 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 			}
 			else {
 				element_id = stats->cols;
-				solver.addCol(0, &(*sumvariables.cbegin()),&(*sumcoefficiants.cbegin()), lowerbound, upperbound, 0);
+				//solver.addCol(0, &(*sumvariables.cbegin()),&(*sumcoefficiants.cbegin()), lowerbound, upperbound, 0);
+				solver.addCol(0,nullptr,nullptr, lowerbound, upperbound, 0);
 				++stats->cols;
 				++stats->output_cols;
 			}
@@ -1715,6 +1682,7 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 		std::unique_ptr<FMTmodel> postsolvemodel;
 		try{
 			postsolvemodel = std::unique_ptr<FMTmodel>(new FMTlpmodel(*(FMTmodel::postsolve(originalbasemodel)),postsolvegraph(originalbasemodel),this->solver,this->elements));
+
 		}catch(...)
 		{
 			_exhandler->raisefromcatch("", "FMTlpmodel::postsolve", __LINE__, __FILE__);
@@ -1761,28 +1729,28 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 			{
 				addon = "FMT will use schedules pass by argument for periods 1 to "+std::to_string(schedules.size());
 			}
-			*_logger<<"Building "+getname()+" for "+std::to_string(length)+" periods. "+addon<<"\n";
+			_logger->logwithlevel("Building "+getname()+" for "+std::to_string(length)+" periods. "+addon+"\n",1);
 			//Period start at 0 but it's the period 1 that is created first. Reason is that schedules is a vector and the first elements 
 			//is the schedule for period 1 
 			for (int period = 0; period<length;++period)
 				{
 					if((!schedules.empty()) && (period<schedules.size()))
 					{
-						*_logger << std::string(this->buildperiod(schedules.at(period),forcepartialbuild,parameters.getperiodcompresstime(period)))<<"\n";
+						_logger->logwithlevel(std::string(this->buildperiod(schedules.at(period),forcepartialbuild,parameters.getperiodcompresstime(period)))+"\n",1);
 					}else{
-						*_logger << std::string(this->buildperiod(Core::FMTschedule(),false,parameters.getperiodcompresstime(period)))<<"\n";
+						_logger->logwithlevel(std::string(this->buildperiod(Core::FMTschedule(),false,parameters.getperiodcompresstime(period)))+"\n",1);
 					}
 				}
 			if(!schedules.empty())
 			{
 				addon = "FMT will use schedules pass by argument for periods 1 to "+std::to_string(schedules.size())+" to set the solution in the matrix.";
 			}
-			*_logger<<"Setting constraints on the "+getname()+". "+addon<<"\n";
+			_logger->logwithlevel("Setting constraints on the "+getname()+". "+addon+"\n",1);
 			for (size_t constraintid = 1; constraintid < constraints.size();++constraintid)
 				{
 				this->setconstraint(constraints.at(constraintid));
 				}
-			*_logger<<"*Graph stats with all constraints : \n"<<std::string(this->setobjective(constraints.at(0)))<<"\n";
+			_logger->logwithlevel("*Graph stats with all constraints : \n"+std::string(this->setobjective(constraints.at(0)))+"\n",1);
 			if( !schedules.empty() && length<=schedules.size() )
 			{
 				bool bylp = false;

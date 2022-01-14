@@ -76,6 +76,11 @@ namespace Parallel
 		If the task is completed it will be removed from the list.
 		*/
 		void ondemandrun();
+		// DocString: FMTtaskhandler::passinlogger
+		/**
+		We need to override the passinlogger for the osisolverinterface
+		*/
+		void passinlogger(const std::shared_ptr<Logging::FMTlogger>& logger) override;
 
 
 

@@ -977,11 +977,18 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 			}
 			return false;
 		}
+
+
 		bool isvalidgraphnode(const Models::FMTmodel& model, const FMTvertex_descriptor& vertex_descriptor,
                             const Core::FMToutputnode& node,const std::vector<const Core::FMTaction*>& selected) const
 		{
 			try {
 				const Core::FMTdevelopment& development = data[vertex_descriptor].get();
+				size_t totalmasksize = 0;
+				for (const Core::FMTtheme& theme : model.getthemes())
+				{
+					totalmasksize += theme.size();
+				}
 				if (node.source.use(development, model.yields))
 				{
 					if (node.source.useinedges())
@@ -1134,6 +1141,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 				_exhandler->raisefromcatch("", "FMTgraph::getnode", __LINE__, __FILE__);
 			}
 			std::sort(locations.begin(), locations.end());
+			//*_logger << "Output of getnode!" << "\n";
 			return locations;
 		}
 		std::map<int, double> getvariables(const Models::FMTmodel& model, const Core::FMToutputnode& output_node,const std::vector<FMTvertex_descriptor>& verticies) const
@@ -1933,13 +1941,13 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 				newgraph.nodescache.clear();//Some postsolve can be done here to keep some usefull information but for now just clear
 				//start by remapping the actions
 				FMTedge_iterator edge_iterator, edge_iterator_end;
-				for (boost::tie(edge_iterator, edge_iterator_end) = boost::edges(data); edge_iterator != edge_iterator_end; ++edge_iterator)
+				for (boost::tie(edge_iterator, edge_iterator_end) = boost::edges(newgraph.data); edge_iterator != edge_iterator_end; ++edge_iterator)
 				{
 					FMTbaseedgeproperties& edgeprop = newgraph.data[*edge_iterator];
 					edgeprop.setactionID(actionmapconnection.at(edgeprop.getactionID()));
 				}
 				FMTvertex_iterator vertex_iterator, vertex_iterator_end;
-				for (boost::tie(vertex_iterator, vertex_iterator_end) = boost::vertices(data); vertex_iterator != vertex_iterator_end; ++vertex_iterator)
+				for (boost::tie(vertex_iterator, vertex_iterator_end) = boost::vertices(newgraph.data); vertex_iterator != vertex_iterator_end; ++vertex_iterator)
 				{
 					FMTbasevertexproperties& vertexprop = newgraph.data[*vertex_iterator];
 					vertexprop.setdevlopementmask(vertexprop.get().getmask().postsolve(selectedmask, originalbasethemes));
@@ -1950,6 +1958,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 			{
 				_exhandler->raisefromcatch("", "FMTgraph::postsolve", __LINE__, __FILE__);
 			}
+
 			return newgraph;
 		}
 		Core::FMTschedule getschedule(const std::vector<Core::FMTaction>& actions, const double* actual_solution, const int& lperiod,bool withlock = false) const

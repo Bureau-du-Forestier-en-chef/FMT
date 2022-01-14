@@ -88,7 +88,8 @@ namespace Parallel
 		/**
 		Write the results from a model pointer, if onlyfirsperiod = true will only write first period else write the whole thing.
 		*/
-		void writeresults(const std::unique_ptr<Models::FMTmodel>& modelptr,bool onlyfirstperiod = false);
+		void writeresults(const std::string& modelname,const int& modellength,
+			const std::unique_ptr<Models::FMTmodel>& modelptr, const int& replanningperiod,bool onlyfirstperiod = false);
 		// DocString: FMTreplanningtask::getiteration
 		/**
 		Get the actual iteration done by the task (front in the queue)
@@ -127,6 +128,7 @@ namespace Parallel
 						const std::vector<Core::FMToutput>& outputs,
 						const std::string& outputlocation,
 						const std::string& gdaldriver,
+						const std::vector<std::string>& creationoptions,
 						const int& replicates,
 						const int& replanningperiodssize,
 						const double& globalwweight);
@@ -145,6 +147,11 @@ namespace Parallel
 		Main function that do the replanning task
 		*/
 		virtual void work();
+		// DocString: FMTreplanningtask::passinlogger()
+		/**
+		Pass the logger
+		*/
+		void passinlogger(const std::shared_ptr<Logging::FMTlogger>& logger) override;
 
 	};
 
