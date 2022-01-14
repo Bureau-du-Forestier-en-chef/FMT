@@ -14,21 +14,26 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTsrmodel.hpp"
 
 namespace Core {
+	std::unique_ptr<Ort::Env> FMTyieldmodel::envPtr = std::unique_ptr<Ort::Env>(new Ort::Env());
+
 	const std::string JSON_PROP_MODEL_NAME = "modelFileName";
+	const std::string JSON_PROP_MODEL_TYPE = "modelType";
 	const std::string JSON_PROP_STAND_FILE_PATH = "csvStandardisationFile";
 
 	FMTyieldmodel::FMTyieldmodel(const boost::property_tree::ptree& jsonProps) :
-		FMTobject(), modelname()
+		FMTobject(), modelName(), modelType()
 	{
 		boost::property_tree::ptree::const_assoc_iterator modelNameIt = jsonProps.find(JSON_PROP_MODEL_NAME);
-		modelname = modelNameIt->second.data();
+		modelName = modelNameIt->second.data();
+		boost::property_tree::ptree::const_assoc_iterator modelTypeIt = jsonProps.find(JSON_PROP_MODEL_TYPE);
+		modelType = modelTypeIt->second.data();
 		boost::property_tree::ptree::const_assoc_iterator stdParamsFileNameIt = jsonProps.find(JSON_PROP_STAND_FILE_PATH);
 		std::string stdParamsFileName = stdParamsFileNameIt->second.data();
 
-		std::wstring wideModelName = std::wstring(modelname.begin(), modelname.end());
-		envPtr = std::unique_ptr<Ort::Env>(new Ort::Env());
-		sessionPtr = std::unique_ptr<Ort::Session>(new Ort::Session(*envPtr.get(), wideModelName.c_str(), Ort::SessionOptions{}));
-		allocatorPtr = std::unique_ptr<Ort::AllocatorWithDefaultOptions>(new Ort::AllocatorWithDefaultOptions());
+		/*ortApi = OrtGetApiBase()->GetApi(ORT_API_VERSION);
+		ortApi->CreateEnv(ORT_LOGGING_LEVEL_ERROR, "test", &envPtr);
+		ortApi->CreateSessionOptions(&sessionOptionsPtr);
+		ortApi->CreateSession(envPtr, wideModelName.c_str(), sessionOptionsPtr, &sessionPtr);*/
 
 		std::ifstream file(stdParamsFileName);
 		std::vector<std::string> headers = getNextLineAndSplitIntoTokens(file);
@@ -38,8 +43,8 @@ namespace Core {
 		std::vector<std::string> strVars = getNextLineAndSplitIntoTokens(file);
 		strVars.erase(strVars.begin());
 
-		standardParamMeans = std::vector<double>(strMeans.size());
-		standardParamVars = std::vector<double>(strVars.size());
+		standardParamMeans = std::vector<float>(strMeans.size());
+		standardParamVars = std::vector<float>(strVars.size());
 		for (size_t i = 0; i < strMeans.size(); i++)
 		{
 			standardParamMeans[i] = std::stof(strMeans[i]);
@@ -48,39 +53,32 @@ namespace Core {
 	}
 
 	FMTyieldmodel::FMTyieldmodel(const FMTyieldmodel& rhs) :
-		FMTobject(), modelname(rhs.GetModelName())
+		FMTobject(), 
+		modelName(rhs.GetModelName()),
+		modelType(rhs.GetModelType()), 
+		standardParamMeans(rhs.GetStandardParamMeans()), 
+		standardParamVars(rhs.GetStandardParamVars())
 	{
-		std::wstring wideModelName = std::wstring(modelname.begin(), modelname.end());
-		envPtr = std::unique_ptr<Ort::Env>(new Ort::Env());
-		sessionPtr = std::unique_ptr<Ort::Session>(new Ort::Session(*envPtr.get(), wideModelName.c_str(), Ort::SessionOptions{}));
-		allocatorPtr = std::unique_ptr<Ort::AllocatorWithDefaultOptions>(new Ort::AllocatorWithDefaultOptions());
-		standardParamMeans = rhs.GetStandardParamMeans();
-		standardParamVars = rhs.GetStandardParamVars();
 	}
 
-	const std::vector<double>& FMTyieldmodel::GetStandardParamMeans() const
+	const std::vector<float>& FMTyieldmodel::GetStandardParamMeans() const
 	{
 		return standardParamMeans;
 	}
 
-	const std::vector<double>& FMTyieldmodel::GetStandardParamVars() const
+	const std::vector<float>& FMTyieldmodel::GetStandardParamVars() const
 	{
 		return standardParamVars;
 	}
 
-	const std::vector<const char*>& FMTyieldmodel::GetInputNames() const
-	{
-		return inputNames;
-	}
-
-	const std::vector<const char*>& FMTyieldmodel::GetOutputNames() const
-	{
-		return outputNames;
-	}
-
 	const std::string& FMTyieldmodel::GetModelName() const
 	{
-		return modelname;
+		return modelName;
+	}
+
+	const std::string& FMTyieldmodel::GetModelType() const
+	{
+		return modelType;
 	}
 
 	std::unique_ptr<FMTyieldmodel>FMTyieldmodel::Clone() const
@@ -131,13 +129,15 @@ namespace Core {
 		return result;
 	}
 
-	void FMTyieldmodel::standardize(std::vector<double>& input, const std::vector<double>& means, const std::vector<double>& vars) const
+	const std::vector<float> FMTyieldmodel::standardize(std::vector<float>& input, const std::vector<float>& means, const std::vector<float>& vars) const
 	{
-		std::vector<double> output(input.size());
+		std::vector<float> output(input.size());
 		for (size_t i = 0; i < input.size(); i++)
 		{
-			input[i] = (input[i] - means[i]) / sqrt(vars[i]);
+			output[i] = (input[i] - means[i]) / sqrt(vars[i]);
 		}
+
+		return std::vector<float>(output.begin(), output.end());
 	}
 
 	bool FMTyieldmodel::Validate(const std::vector<std::string>& YieldsAvailable) const
@@ -169,16 +169,27 @@ namespace Core {
 	std::vector<double>FMTyieldmodel::Predict(const Core::FMTyieldrequest& request) const
 	{
 		try {
+			std::vector<std::string> modelinputyields;
+			if (modelType == "POOLS")
+			{
+				modelinputyields.push_back("YV_G_GFI");
+				modelinputyields.push_back("YV_G_GFT");
+				modelinputyields.push_back("YV_G_GR");
+				modelinputyields.push_back("YV_G_GF");
+			}
+
+			std::wstring wideModelName = std::wstring(modelName.begin(), modelName.end());
+			std::unique_ptr<Ort::Session> sessionPtr = std::unique_ptr<Ort::Session>(new Ort::Session(*envPtr.get(), wideModelName.c_str(), Ort::SessionOptions{}));
+			auto memoryInfo = Ort::MemoryInfo::CreateCpu(OrtDeviceAllocator, OrtMemTypeCPU);
+			Ort::AllocatorWithDefaultOptions allocator;
+
 			const Graph::FMTgraphvertextoyield* graphinfo = request.getvertexgraphinfo();
 			const Models::FMTmodel* modelptr = graphinfo->getmodel();
-			const std::vector<std::string>modelinputyields(1, "VOLUMETOTAL");//Les yields inputs du modele 4 dans le cas de FORAC doit etre membre de FMTyieldmodel tu dois ajuster ca dans ta classe ici j'ai harcode nimporte quoi.
+			//const std::vector<std::string>modelinputyields(1, "VOLUMETOTAL");//Les yields inputs du modele 4 dans le cas de FORAC doit etre membre de FMTyieldmodel tu dois ajuster ca dans ta classe ici j'ai harcode nimporte quoi.
 			const Graph::FMTgraph<Graph::FMTbasevertexproperties, Graph::FMTbaseedgeproperties>* linegraph = graphinfo->getlinegraph();
 			const Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>* fullgraph = graphinfo->getfullgraph();
 
-
-			auto memoryInfo = Ort::MemoryInfo::CreateCpu(OrtDeviceAllocator, OrtMemTypeCPU);
-
-
+			std::vector<double> result;
 			if (linegraph != nullptr)//Im a linegraph
 			{
 				const Graph::FMTgraph<Graph::FMTbasevertexproperties, Graph::FMTbaseedgeproperties>::FMTvertex_descriptor* vertex = linegraph->getvertexfromvertexinfo(graphinfo);
@@ -186,15 +197,24 @@ namespace Core {
 				const Graph::FMTcarbonpredictor& predictor = predictors.at(0);//Seulement un predictor car on est un linegraph...								  //return dopredictionson(predictor.getpredictors()) Utiliser se vecteur de double (xs du modele) pour predire
 				//Ta fonction doit retourner quelque chose qui ressemble a ça utilise getpredictors pour avoir tes doubles de prediction
 
-				std::vector<double> inputs = predictor.getpredictors();
-				std::vector<int64_t> shape = sessionPtr->GetInputTypeInfo(0).GetTensorTypeAndShapeInfo().GetShape();
-				const Ort::Value input_tensor = Ort::Value::CreateTensor<double>(memoryInfo, inputs.data(), (size_t)inputs.size(), shape.data(), shape.size());
-				standardize(inputs, GetStandardParamMeans(), GetStandardParamVars());
-				std::vector<Ort::Value> output_tensors = sessionPtr->Run(nullptr, inputNames.data(), &input_tensor, inputNames.size(), outputNames.data(), outputNames.size());
-				const double* outputValues = output_tensors[0].GetTensorMutableData<double>();
-				return std::vector<double>(outputValues, outputValues + outputNames.size());
+				std::vector<int64_t> input_shape = sessionPtr->GetInputTypeInfo(0).GetTensorTypeAndShapeInfo().GetShape();
+				char* inputName = sessionPtr->GetInputName(0, allocator);
+				std::vector<int64_t> output_shapes = sessionPtr->GetOutputTypeInfo(0).GetTensorTypeAndShapeInfo().GetShape();
+				char* outputName = sessionPtr->GetOutputName(0, allocator);
+				std::vector<const char*> inputNames{ inputName };
+				std::vector<const char*> outputNames{ outputName };
 
-				//return dopredictionson(predictor.getpredictors())
+				//std::vector<double> inputsDbl = predictor.getpredictors();
+				std::vector<double> inputsDbl{ 17, 1, 47, 10, 1, 17, 16, 2.49, 0, 85.47, 2.49 };
+				std::vector<float> inputs(inputsDbl.begin(), inputsDbl.end());
+				std::vector<int64_t> inputShape = sessionPtr->GetInputTypeInfo(0).GetTensorTypeAndShapeInfo().GetShape();
+				std::vector<float> stdInput = standardize(inputs, GetStandardParamMeans(), GetStandardParamVars());
+				const Ort::Value input_tensor = Ort::Value::CreateTensor<float>(memoryInfo, stdInput.data(), stdInput.size(), inputShape.data(), inputShape.size());
+				std::vector<Ort::Value> output_tensors = sessionPtr->Run(Ort::RunOptions{nullptr}, inputNames.data(), &input_tensor, inputNames.size(), outputNames.data(), outputNames.size());
+				std::vector<int64_t> outputShape = output_tensors[0].GetTensorTypeAndShapeInfo().GetShape();
+				const float* outputValues = output_tensors[0].GetTensorMutableData<float>();
+				std::vector<float> result_flt(outputValues, outputValues + ((int)outputShape.data()[1]));
+				result = std::vector<double>(result_flt.begin(), result_flt.end());
 			}
 			else if (fullgraph != nullptr)//Im a full graph
 			{
@@ -210,7 +230,7 @@ namespace Core {
 					//C'est le cas qu'on veut optimiser du carbone
 					//Peut-etre faire un "solution" avec des 1 partout pour representer chaque edge de façon equivalente?
 					//Pour l'instant on va mettre un message d'erreur
-					_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, "Cannot use " + modelname + " without solution",
+					_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, "Cannot use " + modelName + " without solution",
 						"FMTyieldmodel::Predict", __LINE__, __FILE__, Core::FMTsection::Yield);
 				}
 				const double* solution = solverptr->getColSolution();
@@ -231,14 +251,18 @@ namespace Core {
 						results[yldid] += (edgeresults.at(yldid) * edgevalue);
 					}
 				}
-				return results;
+				//return results;
 			}
 			else {//Im nothing
-				_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, "Cannot use " + modelname + " yield model without graph info",
+				_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, "Cannot use " + modelName + " yield model without graph info",
 					"FMTyieldmodel::Predict", __LINE__, __FILE__, Core::FMTsection::Yield);
 			}
 
-			_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, "Something went wrong in " + modelname,
+			sessionPtr->release();
+
+			return result;
+
+			_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, "Something went wrong in " + modelName,
 				"FMTyieldmodel::Predict", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 		catch (...)

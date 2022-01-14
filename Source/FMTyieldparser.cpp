@@ -373,12 +373,11 @@ std::unique_ptr<Core::FMTyieldmodel>FMTyieldparser::readyieldmodel(const std::st
 				std::ifstream jsonstream(modeljson.string());
 				if (FMTparser::tryopening(jsonstream, modeljson.string()))
 					{
-					//boost::property_tree::ptree root;
-					//boost::property_tree::read_json(jsonstream, root);
+					boost::property_tree::read_json(jsonstream, root);
+					jsonstream.close();
 					//Get the FMTyieldmodel
 					return std::unique_ptr<Core::FMTyieldmodel>(new Core::FMTyieldmodel(root));
 					}
-				jsonstream.close();
 
 				}
 			_exhandler->raise(Exception::FMTexc::FMTinvalid_path,

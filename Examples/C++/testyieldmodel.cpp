@@ -17,6 +17,7 @@ int main()
 	Parser::FMTmodelparser mparser;
 	const std::vector<std::string>scenarios(1, "Predictors");
 	const std::vector<Models::FMTmodel> models = mparser.readproject(primarylocation, scenarios);
+	mparser.write(models.at(0), "E:/Projects/BFEC_MachineLearning/test/");
 	Models::FMTsesmodel simulationmodel(models.at(0));
 	const std::vector<std::vector<Core::FMTschedule>> schedules = mparser.readschedules(primarylocation, models);
 	std::vector<Core::FMTtransition> strans;
