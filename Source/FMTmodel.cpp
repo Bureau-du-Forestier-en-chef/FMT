@@ -1394,23 +1394,23 @@ bool FMTmodel::doplanning(const bool& solve,std::vector<Core::FMTschedule> sched
 	return optimal_solved;
 	}
 
-std::vector<Core::FMTconstraint> FMTmodel::getlocalconstraints(const std::vector<Core::FMTconstraint>& localconstraints, const int& period) const
+std::vector<Core::FMTconstraint> FMTmodel::getreplanningconstraints(const std::string& modeltype, const std::vector<Core::FMTconstraint>& localconstraints, const int& period) const
 {
 	std::vector<Core::FMTconstraint>newconstraints(localconstraints.begin(), localconstraints.end());
 	try {
 		size_t constraintid = 0;
 		for (const Core::FMTconstraint& constraint : localconstraints)
 		{
-			if (constraint.issettoglobal())
+			if (constraint.issetfrom(modeltype))
 			{
 				const double value = getoutput(constraint, period, Core::FMToutputlevel::totalonly).at("Total");
-				newconstraints[constraintid] = constraint.settoglobal(value);
+				newconstraints[constraintid] = constraint.setfrom(modeltype,value);
 			}
 			++constraintid;
 		}
 	}catch (...)
 	{
-		_exhandler->raisefromcatch("", "FMTmodel::getlocalconstraints", __LINE__, __FILE__);
+		_exhandler->raisefromcatch("", "FMTmodel::getreplanningconstraints", __LINE__, __FILE__);
 	}
 	return newconstraints;
 }

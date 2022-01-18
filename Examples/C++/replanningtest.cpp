@@ -22,22 +22,28 @@ int main(int argc, char *argv[])
 	modelparser.setdefaultexceptionhandler();
 	std::vector<Models::FMTmodel> models = modelparser.readproject(primlocation, allscenarios);
 	Models::FMTlpmodel global(models.at(0), Models::FMTsolverinterface::CLP);
-	global.setparameter(Models::FMTintmodelparameters::LENGTH, 20);
+	global.setparameter(Models::FMTintmodelparameters::LENGTH, 10);
+	global.setparameter(Models::FMTintmodelparameters::NUMBER_OF_THREADS,1);
 	Models::FMTnssmodel stochastic(models.at(1), 0);
 	stochastic.setparameter(Models::FMTintmodelparameters::LENGTH, 1);
-	Models::FMTlpmodel local(models.at(0), Models::FMTsolverinterface::CLP);
+	Models::FMTlpmodel local(models.at(2), Models::FMTsolverinterface::CLP);
 	local.setparameter(Models::FMTintmodelparameters::LENGTH, 1);
+	local.setparameter(Models::FMTintmodelparameters::NUMBER_OF_THREADS,1);
 	std::vector<Core::FMToutput>selectedoutputs;
 	for (const Core::FMToutput& output : global.getoutputs())
 	{
-		if (output.getname() == "HARVESTEDAREA")
+		if (output.getname() == "OVOLREC"|| output.getname() == "VOLINVENT" || output.getname()=="BURNEDAREA")
 		{
 			selectedoutputs.push_back(output);
 		}
 	}
-	const std::string outputlocation = "tests/replanning.csv";
-	std::unique_ptr<Parallel::FMTtask> maintaskptr(new Parallel::FMTreplanningtask(global, stochastic, local, selectedoutputs, outputlocation, "CSV", 10, 20, 100));
-	Parallel::FMTtaskhandler handler(maintaskptr, 2);
+	const std::string outputlocation = "tests/replanning/";
+	std::vector<std::string>layersoptions;
+	layersoptions.push_back("SEPARATOR=SEMICOLON");
+	std::unique_ptr<Parallel::FMTtask> maintaskptr(new Parallel::FMTreplanningtask(global, stochastic, local, selectedoutputs, outputlocation, "CSV", layersoptions,20,10,0,0.5));
+	Parallel::FMTtaskhandler handler(maintaskptr,2);
+	handler.setquietlogger();
+	//handler.ondemandrun();
 	handler.conccurentrun();
 	#endif
 	return 0;

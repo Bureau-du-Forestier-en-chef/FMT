@@ -15,6 +15,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <queue>
 #include <memory>
 #include <string>
+#include "FMTutility.hpp"
 
 
 namespace Models
@@ -65,9 +66,9 @@ namespace Parallel
 		// DocString: FMTreplanningtask::iterationglobalschedule
 		///This is the schedule that the global model generates after a call to doplanning
 		Core::FMTschedule iterationglobalschedule;
-		// DocString: FMTreplanningtask::localconstraints
-		///Local constraints set using the results obtained in the global model.
-		std::vector<Core::FMTconstraint>localconstraints;
+		// DocString: FMTreplanningtask::dynamicconstraints
+		///Local constraints set using the results obtained in the global or local model.
+		std::vector<Core::FMTconstraint>dynamicconstraints;
 		// DocString: FMTreplanningtask::replanningperiods
 		///The number of replanning periods the task needs to do.
 		int replanningperiods;
@@ -83,7 +84,8 @@ namespace Parallel
 			const std::shared_ptr<Models::FMTmodel>model,
 			const int& replanningperiod,
 			bool getsolutionandlocal = false,
-			bool applyscheduleweight = false);
+			bool applyscheduleweight = false,
+			bool setdynamicconstraints=true);
 		// DocString: FMTreplanningtask::writeresults
 		/**
 		Write the results from a model pointer, if onlyfirsperiod = true will only write first period else write the whole thing.
@@ -95,6 +97,16 @@ namespace Parallel
 		Get the actual iteration done by the task (front in the queue)
 		*/
 		const int getiteration() const;
+		// DocString: FMTreplanningtask::setreignore
+		/**
+		Remove reignore constraints based on the replanning period.
+		*/
+		void setreignore(std::unique_ptr<Models::FMTmodel>& modelcpy, const int& replanningperiod) const;
+		// DocString: FMTreplanningtask::setreplicate
+		/**
+		Ajuste constraints based on the replicate keyword
+		*/
+		void setreplicate(std::unique_ptr<Models::FMTmodel>& modelcpy, const int& replanningperiod) const;
 	public:
 		// DocString: FMTreplanningtask::FMTreplanningtask()
 		/**
@@ -111,6 +123,11 @@ namespace Parallel
 		Default copy assignement for FMTreplanningtask
 		*/
 		FMTreplanningtask& operator = (const FMTreplanningtask& rhs) = default;
+		// DocString: FMTreplanningtask::~FMTreplanningtask()
+		/**
+		We need to define a destructor to take care of writing drift probabilities.
+		*/
+		virtual ~FMTreplanningtask();
 		// DocString: FMTreplanningtask::clone
 		/**
 		Clone function for FMTreplanningtask
@@ -131,7 +148,9 @@ namespace Parallel
 						const std::vector<std::string>& creationoptions,
 						const int& replicates,
 						const int& replanningperiodssize,
-						const double& globalwweight);
+						const double& globalwweight,
+						double minimaldrift= 0.5,
+						Core::FMToutputlevel outputlevel = Core::FMToutputlevel::totalonly);
 		// DocString: FMTreplanningtask::split(...)
 		/**
 		The split fonction that split the main task into multiple tasks of replanning.

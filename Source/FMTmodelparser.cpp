@@ -93,12 +93,16 @@ OGRLayer* FMTmodelparser::createdriftlayer(GDALDataset* dataset,std::vector<std:
 		OGRFieldDefn driftfield("Drift", OFTReal);
 		driftfield.SetPrecision(5);
 		driftfield.SetWidth(32);
-		OGRFieldDefn ProbabilityField("Probability", OFTReal);
-		ProbabilityField.SetPrecision(5);
-		ProbabilityField.SetWidth(32);
+		OGRFieldDefn LowerProbabilityField("LowerProbability", OFTReal);
+		LowerProbabilityField.SetPrecision(5);
+		LowerProbabilityField.SetWidth(32);
+		OGRFieldDefn UpperProbabilityField("UpperProbability", OFTReal);
+		UpperProbabilityField.SetPrecision(5);
+		UpperProbabilityField.SetWidth(32);
 		if (newlayer->CreateField(&PeriodField) != OGRERR_NONE ||
 			newlayer->CreateField(&OutputField) != OGRERR_NONE ||
-			newlayer->CreateField(&ProbabilityField) != OGRERR_NONE ||
+			newlayer->CreateField(&LowerProbabilityField) != OGRERR_NONE ||
+			newlayer->CreateField(&UpperProbabilityField) != OGRERR_NONE ||
 			newlayer->CreateField(&driftfield) != OGRERR_NONE)
 		{
 			_exhandler->raise(Exception::FMTexc::FMTgdal_constructor_error,
@@ -113,10 +117,11 @@ OGRLayer* FMTmodelparser::createdriftlayer(GDALDataset* dataset,std::vector<std:
 	return newlayer;
 }
 
-void FMTmodelparser::writedrift(OGRLayer* layer, std::map<std::string, std::map<double, std::vector<double>>>& driftvalues) const
+void FMTmodelparser::writedrift(OGRLayer* layer,const std::map<std::string, std::map<double, std::vector<double>>>& lowervalues,
+	const std::map<std::string, std::map<double, std::vector<double>>>& uppervalues) const
 {
 	try {
-		for (const auto& toutputvalues : driftvalues)
+		for (const auto& toutputvalues : lowervalues)
 		{
 			size_t outputid = 0;
 			for (const auto& driftvalues : toutputvalues.second)
@@ -134,7 +139,8 @@ void FMTmodelparser::writedrift(OGRLayer* layer, std::map<std::string, std::map<
 					newfeature->SetField("Period", period);
 					newfeature->SetField("Output", toutputvalues.first.c_str());
 					newfeature->SetField("Drift", driftvalues.first);
-					newfeature->SetField("Probability", probability);
+					newfeature->SetField("LowerProbability", probability);
+					newfeature->SetField("UpperProbability", uppervalues.at(toutputvalues.first).at(driftvalues.first).at(period-1));
 					if (layer->CreateFeature(newfeature) != OGRERR_NONE)
 					{
 						_exhandler->raise(Exception::FMTexc::FMTgdal_constructor_error,
@@ -172,7 +178,11 @@ std::map<std::string, std::vector<std::vector<double>>>FMTmodelparser::getiterat
 				{
 				sortedresults[output][period] = std::map<int, double>();
 				}
-			sortedresults[output][period][iteration] = value;
+			if (sortedresults.at(output).at(period).find(iteration) == sortedresults.at(output).at(period).end())
+				{
+				sortedresults[output][period][iteration] = 0;
+				}
+			sortedresults[output][period][iteration] += value;
 			OGRFeature::DestroyFeature(feature);
 		}
 		for (const auto& outresult: sortedresults)

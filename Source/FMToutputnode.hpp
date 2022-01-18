@@ -10,16 +10,11 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 #include "FMToutputsource.hpp"
 #include <map>
+#include "FMTutility.hpp"
 
 namespace Core
 {
 class FMTaction;
-enum FMToutputlevel
-	{
-		standard = 1,
-		totalonly = 2,
-		developpement = 3
-	};
 
 class FMTEXPORT FMToutputnode
 	{

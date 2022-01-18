@@ -137,7 +137,7 @@ namespace Models
 	}
 
 
-	std::vector<Core::FMTconstraint> FMTlpmodel::getlocalconstraints(const std::vector<Core::FMTconstraint>& localconstraints, const int& period) const
+	std::vector<Core::FMTconstraint> FMTlpmodel::getreplanningconstraints(const std::string& modeltype, const std::vector<Core::FMTconstraint>& localconstraints, const int& period) const
 	{
 		std::vector<Core::FMTconstraint>newconstraints(localconstraints.begin(), localconstraints.end());
 		try
@@ -148,10 +148,10 @@ namespace Models
 					"Cannot getlocalconstraints from a non optimal global",
 					"FMTlpmodel::getlocalconstraints", __LINE__, __FILE__);
 				}
-			return FMTmodel::getlocalconstraints(localconstraints,period);
+			return FMTmodel::getreplanningconstraints(modeltype,localconstraints,period);
 		}catch (...)
 		{
-			_exhandler->printexceptions("", "FMTlpmodel::getlocalconstraints", __LINE__, __FILE__);
+			_exhandler->printexceptions("", "FMTlpmodel::getreplanningconstraints", __LINE__, __FILE__);
 		}
 		return newconstraints;
 	}
