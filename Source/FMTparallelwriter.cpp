@@ -19,14 +19,18 @@ namespace Parallel
 		const std::string& driver,
 		const std::vector<Core::FMToutput>& outputs,
 		const std::vector<Models::FMTmodel*>& allmodels,
-		std::vector<std::string>layersoptions) :
+		std::vector<std::string>layersoptions,
+		double minimaldrift,
+		Core::FMToutputlevel outputlevel) :
 		outputstowrite(outputs),
 		#ifdef FMTWITHGDAL
 			resultsdataset(createOGRdataset(location, driver)),
 			resultslayer(),
 			driftlayer(),
 		#endif
-		mtx()
+		mtx(),
+		resultsminimaldrift(minimaldrift),
+		outputslevel(outputlevel)
 
 	{
 		if (outputs.empty())
@@ -49,7 +53,7 @@ namespace Parallel
 		try {
 			if (modelptr)
 			{
-				results = modelptr->getoutputsfromperiods(outputstowrite, firstperiod, lastperiod);
+				results = modelptr->getoutputsfromperiods(outputstowrite, firstperiod, lastperiod,outputslevel);
 			}
 			
 		}
@@ -59,49 +63,91 @@ namespace Parallel
 		}
 		return results;
 	}
-
-	void FMTparallelwriter::setdriftprobability(const double& minimaldrift,
-		const std::string& globalmodel, const std::string& localmodel) const
+	const std::map<std::string, std::map<double, std::vector<double>>>FMTparallelwriter::getdriftprobability(
+		const std::map<std::string, std::vector<std::vector<double>>>& globalvalues,
+		const std::map<std::string, std::vector<std::vector<double>>>& localvalues,
+		const bool lower) const
 	{
+		std::map<std::string, std::map<double, std::vector<double>>>drifts;
+		std::string outputname;
+		double driftprob;
+		int periodof;
 		try {
-		#ifdef FMTWITHGDAL
-			const std::map<std::string, std::vector<std::vector<double>>> globalvalues = getiterationsvalues(resultslayer.at(globalmodel));
-			const std::map<std::string, std::vector<std::vector<double>>> localvalues = getiterationsvalues(resultslayer.at(localmodel));
-			std::map<std::string, std::map<double, std::vector<double>>>drifts;
 			for (const auto& globaloutput : globalvalues)
-				{
+			{
+				outputname = globaloutput.first;
 				drifts[globaloutput.first] = std::map<double, std::vector<double>>();
 				//const std::vector<double>& baseglobal = globaloutput.second.at(0);
-				for (double drift = minimaldrift; drift >= 0; drift -=0.05)
-					{
+				for (double drift = resultsminimaldrift; drift >= 0; drift -= 0.05)
+				{
+					driftprob = drift;
+					std::vector<bool>passedlastiteration((*localvalues.at(globaloutput.first).begin()).size(), true);
 					drifts[globaloutput.first][drift] = std::vector<double>();
 					int periodid = 0;
 					for (const std::vector<double>& iterationvalues : localvalues.at(globaloutput.first))
-						{
+					{
+						periodof = periodid;
 						const double total = static_cast<double>(iterationvalues.size());
 						const double globalvalue = globaloutput.second.at(periodid).at(0);
 						double count = 0;
 						if (!std::isnan(globalvalue))
 						{
+							size_t iterationid = 0;
 							for (const double& localvalue : iterationvalues)
 							{
-								if (std::isnan(localvalue))
+								if (passedlastiteration.at(iterationid))
 								{
-									count = 0;
-									break;
+									if (std::isnan(localvalue))
+									{
+										count = 0;
+										passedlastiteration[iterationid] = false;
+										break;
+									}
+									if ((lower && (localvalue >= (globalvalue - (globalvalue *drift))))||
+										(!lower && (localvalue <= (globalvalue + (globalvalue *drift)))))
+									{
+										++count;
+									}
+									else {
+										passedlastiteration[iterationid] = false;
+									}
 								}
-								if (localvalue >= (globalvalue - (globalvalue *drift)))
-								{
-									++count;
-								}
+								++iterationid;
 							}
 						}
 						drifts[globaloutput.first][drift].push_back((count / total));
 						++periodid;
-						}
 					}
 				}
-			writedrift(driftlayer, drifts);
+			}
+
+		}
+		catch (...)
+		{
+			_exhandler->raisefromcatch("On output "+outputname+" "+std::to_string(driftprob)+" period id "+ std::to_string(periodof),
+										"FMTparallelwriter::getdriftprobability", __LINE__, __FILE__);
+
+		}
+		return drifts;
+	}
+
+
+
+	void FMTparallelwriter::setdriftprobability(const std::string& globalmodel, const std::string& localmodel) const
+	{
+		try {
+		#ifdef FMTWITHGDAL
+			if (resultslayer.find(globalmodel)!= resultslayer.end()&&
+				resultslayer.find(localmodel) != resultslayer.end()&&
+				resultslayer.at(globalmodel) &&
+				resultslayer.at(localmodel))
+			{
+				const std::map<std::string, std::vector<std::vector<double>>> globalvalues = getiterationsvalues(resultslayer.at(globalmodel));
+				const std::map<std::string, std::vector<std::vector<double>>> localvalues = getiterationsvalues(resultslayer.at(localmodel));
+				const std::map<std::string, std::map<double, std::vector<double>>>lowerdrifts = getdriftprobability(globalvalues, localvalues);
+				const std::map<std::string, std::map<double, std::vector<double>>>upperdrifts = getdriftprobability(globalvalues, localvalues,false);
+				writedrift(driftlayer, lowerdrifts, upperdrifts);
+			}
 		#endif
 		}catch (...)
 		{

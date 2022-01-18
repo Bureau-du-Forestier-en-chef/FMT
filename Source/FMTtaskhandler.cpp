@@ -66,6 +66,7 @@ namespace Parallel
 				{
 				worker.join();
 				}
+
 		}catch (...)
 			{
 				_exhandler->printexceptions("", "FMTtaskhandler::conccurentrun", __LINE__, __FILE__);

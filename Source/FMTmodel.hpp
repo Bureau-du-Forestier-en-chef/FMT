@@ -537,11 +537,11 @@ namespace Models
 		*/
 		Core::FMTschedule getpotentialschedule(std::vector<Core::FMTactualdevelopment> toremove,
 											    std::vector<Core::FMTactualdevelopment> selection,bool withlock=true) const;
-		// DocString: FMTmodel::getlocalconstraints
+		// DocString: FMTmodel::getreplanningconstraints
 		/**
-		Ajust constraints that need to be set to a value (getoutput) of the global model and return all constraint. 
+		Ajust constraints that need to be set to a value (getoutput) of the global or local model and return all constraint. 
 		*/
-		virtual std::vector<Core::FMTconstraint> getlocalconstraints(const std::vector<Core::FMTconstraint>& localconstraints, const int& period) const;
+		virtual std::vector<Core::FMTconstraint> getreplanningconstraints(const std::string& modeltype,const std::vector<Core::FMTconstraint>& localconstraints, const int& period) const;
 		// DocString: FMTmodel::doplanning
 		/**
 		Build the model and do the initialsolve or simulate. This function use the build and solve overrided functions of the differents model type. 

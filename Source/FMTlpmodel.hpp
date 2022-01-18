@@ -247,12 +247,12 @@ class FMTEXPORT FMTlpmodel final : public FMTsrmodel
 		To set the model parameter STRICTLY_POSITIVE at true.
 		*/
 		void setstrictlypositivesoutputsmatrix();
-		// DocString: FMTlpmodel::getlocalconstraints
+		// DocString: FMTlpmodel::getreplanningconstraints
 		/**
-		During replaning some local constraints need to be ajusted to the global model.
-		The function will take a vector of local constraint and ajust the bounds using the solution of this global model.
+		During replaning some local/global constraints need to be ajusted to the global model.
+		The function will take a vector of local/global constraint and ajust the bounds using the solution of this global/local model.
 		*/
-		virtual std::vector<Core::FMTconstraint> getlocalconstraints(const std::vector<Core::FMTconstraint>& localconstraints,const int& period) const;
+		virtual std::vector<Core::FMTconstraint> getreplanningconstraints(const std::string& modeltype, const std::vector<Core::FMTconstraint>& localconstraints, const int& period) const;
 		// DocString: FMTlpmodel::addscheduletoobjective
 		/**
 		This function will addup weight to the objective function for a given schedule.

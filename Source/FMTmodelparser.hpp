@@ -84,7 +84,8 @@ class FMTEXPORT FMTmodelparser : public FMTparser
 	/**
 	Go back in the layer and get all values per iteration and periods.
 	*/
-	void writedrift(OGRLayer* layer,std::map<std::string,std::map<double,std::vector<double>>>& driftvalues) const;
+	void writedrift(OGRLayer* layer,const std::map<std::string,std::map<double,std::vector<double>>>& lowervalues,
+								const std::map<std::string, std::map<double, std::vector<double>>>& uppervalues) const;
 	#endif
     public:
 		// DocString: FMTmodelparser()

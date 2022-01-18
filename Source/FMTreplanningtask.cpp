@@ -25,7 +25,9 @@ namespace Parallel
 		const std::vector<std::string>& creationoptions,
 		const int& replicates,
 		const int& replanningperiodssize,
-		const double& globalwweight):
+		const double& globalwweight,
+		double minimaldrift,
+		Core::FMToutputlevel outputlevel):
 		resultswriter(),
 		baseschedule(),
 		global(),
@@ -34,7 +36,7 @@ namespace Parallel
 		replicateids(),
 		dynamicarea(globalm.getarea()),
 		iterationglobalschedule(),
-		localconstraints(),
+		dynamicconstraints(),
 		replanningperiods(replanningperiodssize),
 		globalsolutionweight(globalwweight)
 	{
@@ -47,7 +49,7 @@ namespace Parallel
 			modelsptr.push_back(global.get());
 			modelsptr.push_back(stochastic.get());
 			modelsptr.push_back(local.get());
-			resultswriter = std::shared_ptr<FMTparallelwriter>(new FMTparallelwriter(outputlocation, gdaldriver, outputs, modelsptr, creationoptions));
+			resultswriter = std::shared_ptr<FMTparallelwriter>(new FMTparallelwriter(outputlocation, gdaldriver, outputs, modelsptr, creationoptions,minimaldrift,outputlevel));
 			std::unique_ptr<Models::FMTmodel>modelcpy = global->clone();
 			_logger->logwithlevel("Initial planning started\n", 0);
 			if (!modelcpy->doplanning(true))
@@ -63,7 +65,7 @@ namespace Parallel
 			replicateids.pop();
 			baseschedule = std::shared_ptr<Core::FMTschedule>(new Core::FMTschedule(modelcpy->getsolution(1, true)));
 			iterationglobalschedule = *baseschedule;
-			localconstraints = modelcpy->getlocalconstraints(local->getconstraints(), 1);
+			dynamicconstraints = modelcpy->getreplanningconstraints("GLOBAL",local->getconstraints(), 1);
 			for (int replicateid = 1; replicateid < (replicates+1); ++replicateid)
 			{
 				replicateids.push(replicateid);
@@ -72,6 +74,22 @@ namespace Parallel
 		catch (...)
 		{
 			_exhandler->raisefromcatch("", "FMTreplanningtask::FMTreplanningtask", __LINE__, __FILE__);
+		}
+	}
+
+	FMTreplanningtask::~FMTreplanningtask()
+	{
+		try {
+			if (resultswriter&&
+				resultswriter.use_count()==1)
+				{
+				/////
+				resultswriter->setdriftprobability(global->getname(), local->getname());///testt
+				////
+				}
+		}catch (...)
+		{
+			_exhandler->raisefromcatch("", "FMTreplanningtask::~FMTreplanningtask", __LINE__, __FILE__);
 		}
 	}
 
@@ -85,7 +103,7 @@ namespace Parallel
 		std::vector<std::unique_ptr<FMTtask>>tasks;
 		try {
 			size_t replicate = 0;
-			 int replicatepertask = (static_cast<int>(replicateids.size()) / numberoftasks);
+			int replicatepertask = (static_cast<int>(replicateids.size()) / numberoftasks);
 			std::queue<int>allreplicates=this->replicateids;
 			for (size_t taskid = 0; taskid < numberoftasks; ++taskid)
 				{
@@ -184,12 +202,48 @@ namespace Parallel
 		local->passinlogger(logger);
 		}
 
+	void FMTreplanningtask::setreignore(std::unique_ptr<Models::FMTmodel>& modelcpy, const int& replanningperiod) const
+	{
+		try {
+			std::vector<Core::FMTconstraint>newconstraints;
+			for (const Core::FMTconstraint& constraint : modelcpy->getconstraints())
+				{
+				if (!constraint.isreignore(replanningperiod))
+					{
+					newconstraints.push_back(constraint);
+					}
+				}
+			modelcpy->setconstraints(newconstraints);
+		}
+		catch (...)
+		{
+			_exhandler->raisefromcatch("", "FMTreplanningtask::setreignore", __LINE__, __FILE__);
+		}
+	}
+
+	void FMTreplanningtask::setreplicate(std::unique_ptr<Models::FMTmodel>& modelcpy, const int& replanningperiod) const
+	{
+		try {
+			std::vector<Core::FMTconstraint>newconstraints;
+			for (const Core::FMTconstraint& basenssconstraint : modelcpy->getconstraints())
+				{
+				newconstraints.push_back(basenssconstraint.getfromreplicate(getiteration(), replanningperiod));
+				}
+			modelcpy->setconstraints(newconstraints);
+		}
+		catch (...)
+		{
+			_exhandler->raisefromcatch("", "FMTreplanningtask::setreplicate", __LINE__, __FILE__);
+		}
+	}
+
 	void FMTreplanningtask::work()
 	{
 		try {
 			while (!replicateids.empty())
 			{
 				_logger->logwithlevel("Replanning on replicate " + std::to_string(getiteration()) + " started\n",0);
+				
 				for (int replanningperiod = 1; replanningperiod <= replanningperiods; ++replanningperiod)
 				{
 					if (replanningperiod != 1)
@@ -206,19 +260,13 @@ namespace Parallel
 							break;
 							}
 					}
-					stochastic->setparameter(Models::FMTintmodelparameters::SEED, static_cast<int>(getiteration()));
-					std::vector<Core::FMTconstraint>stochasticconstraints;
-					for (const Core::FMTconstraint& basenssconstraint : stochastic->getconstraints())
-						{
-						stochasticconstraints.push_back(basenssconstraint.getfromreplicate(getiteration(), replanningperiod));
-						}
-					stochastic->setconstraints(stochasticconstraints);
-					const std::unique_ptr<Models::FMTmodel> stochasticcopy = domodelplanning(stochastic,replanningperiod);
+
+					
+					const std::unique_ptr<Models::FMTmodel> stochasticcopy = domodelplanning(stochastic,replanningperiod,false,false,false);
 					for (Core::FMTactualdevelopment& developement : dynamicarea)
 						{
 						developement.setperiod(0);
 						}
-					local->setconstraints(localconstraints);
 					const std::unique_ptr<Models::FMTmodel> localcopy = domodelplanning(local, replanningperiod,false,true);
 					if (!localcopy)//infeasible replicate end here
 						{
@@ -230,7 +278,7 @@ namespace Parallel
 								replanningperiods, nullptr, replanningperiod + 1);
 						break;
 						}
-					dynamicarea = localcopy->getarea(2);
+					dynamicarea = localcopy->getarea(localcopy->getparameter(Models::FMTintmodelparameters::LENGTH)+1);
 					for (Core::FMTactualdevelopment& developement : dynamicarea)
 					{
 						developement.setperiod(replanningperiod);
@@ -241,9 +289,6 @@ namespace Parallel
 				_logger->logwithlevel("Replanning on replicate " + std::to_string(getiteration()) + " done\n", 0);
 				replicateids.pop();
 			}
-			/////
-			resultswriter->setdriftprobability(0.5,global->getname(),local->getname());///testt
-			////
 			setstatus(true);
 		}catch (...)
 		{
@@ -257,16 +302,24 @@ namespace Parallel
 		const std::shared_ptr<Models::FMTmodel>model,
 		const int& replanningperiod,
 		bool getsolutionandlocal,
-		bool applyscheduleweight)
+		bool applyscheduleweight,
+		bool setdynamicconstraints)
 	{
 		bool optimal = false;
 		try {
 			std::unique_ptr<Models::FMTmodel>modelcpy = model->clone();
 			int modelsize = modelcpy->getparameter(Models::FMTintmodelparameters::LENGTH);
+			modelcpy->setparameter(Models::FMTintmodelparameters::SEED, static_cast<int>(getiteration()));//For stochastic
 			const std::string modelname = modelcpy->getname();
 			bool writefirstperiodonly = true;
 			modelcpy->setarea(dynamicarea);
-			if (applyscheduleweight)
+			if (setdynamicconstraints)
+				{
+				modelcpy->setconstraints(dynamicconstraints);
+				}
+			setreignore(modelcpy, replanningperiod);
+			setreplicate(modelcpy, replanningperiod);
+			if (applyscheduleweight)//local is here
 			{
 				Models::FMTlpmodel* lpmodel = dynamic_cast<Models::FMTlpmodel*>(modelcpy.get());
 				lpmodel->doplanning(false);
@@ -280,6 +333,11 @@ namespace Parallel
 						"FMTreplanningtask::domodelplanning", __LINE__, __FILE__);
 					modelcpy = std::unique_ptr<Models::FMTmodel>(nullptr);
 				}
+				if (modelsize>1)
+					{
+					writefirstperiodonly = false;
+					}
+				dynamicconstraints = modelcpy->getreplanningconstraints("LOCAL", global->getconstraints(), modelsize);
 				//lpmodel->writeLP("C:/Users/cyrgu3/Desktop/test/FMT2/FMT/build/debug/bin/Debug/tests/testlocal"+std::to_string(replanningperiod));
 			}else {
 				if (modelcpy->doplanning(true))
@@ -287,7 +345,7 @@ namespace Parallel
 					optimal = true;
 					if (getsolutionandlocal)
 					{
-						localconstraints = modelcpy->getlocalconstraints(local->getconstraints(), replanningperiod + 1);
+						dynamicconstraints = modelcpy->getreplanningconstraints("GLOBAL",local->getconstraints(), replanningperiod + 1);
 						iterationglobalschedule = modelcpy->getsolution(replanningperiod, true);
 						iterationglobalschedule.setperiod(1);
 						if (iterationglobalschedule.empty())
