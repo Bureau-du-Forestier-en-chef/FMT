@@ -8,6 +8,12 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #define FMTTASKHANDLER_H_INCLUDED
 #include <memory>
 #include "FMTobject.hpp"
+#if defined FMTWITHPYTHON
+	class boost::python::object;
+#endif
+#if defined FMTWITHR
+	#include <Rinternals.h>
+#endif
 
 /// Namespace for parallel tasking may include multithreading / multiprocessing
 namespace Parallel
@@ -47,12 +53,12 @@ namespace Parallel
 		/**
 		Default copy constructor for FMTtaskhandler
 		*/
-		FMTtaskhandler(const FMTtaskhandler& rhs) = default;
+		FMTtaskhandler(const FMTtaskhandler& rhs);
 		// DocString: FMTtaskhandler::operator=
 		/**
 		Default copy assignement for FMTtaskhandler
 		*/
-		FMTtaskhandler& operator =(const FMTtaskhandler& rhs) = default;
+		FMTtaskhandler& operator =(const FMTtaskhandler& rhs);
 		// DocString: FMTtaskhandler::gettasks()
 		/**
 		Return reference to the task handled by the task handler.
@@ -81,6 +87,20 @@ namespace Parallel
 		We need to override the passinlogger for the osisolverinterface
 		*/
 		void passinlogger(const std::shared_ptr<Logging::FMTlogger>& logger) override;
+		#if defined FMTWITHPYTHON
+		// DocString: FMTtaskhandler::FMTtaskhandler
+		/**
+		Abstract constructor for Python...you need to pass a FMTtask to this constructor.
+		*/
+		FMTtaskhandler(const boost::python::object& maintask, unsigned int maxthread = 0);
+		#endif
+		#if defined FMTWITHR
+		// DocString: FMTtaskhandler::FMTtaskhandler
+		/**
+		Abstract constructor for R...you need to pass a FMTtask to this constructor.
+		*/
+		FMTtaskhandler(SEXP maintask, unsigned int maxthread = 0);
+		#endif
 
 
 
