@@ -70,6 +70,9 @@ target_compile_definitions(FMTlib PRIVATE "-DFMTSHAREDLIB")
 if (MOSEK_FOUND)
 	target_sources(FMTlib PRIVATE ${OSIMSK_DEFINITION})
 endif(MOSEK_FOUND)
+if (MSVC)
+	set_target_properties(FMTlib PROPERTIES COMMON_LANGUAGE_RUNTIME "")
+endif(MSVC)
 
 
 #Get the tests 

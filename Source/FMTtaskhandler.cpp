@@ -10,16 +10,81 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <boost/thread.hpp>
 #include <functional>
 #include <list>
+#if defined FMTWITHPYTHON
+	#include "boost/python.hpp"
+#endif
+
+#if defined FMTWITHR
+	#include <Rcpp.h>
+#endif
 
 namespace Parallel
 {
+#if defined FMTWITHPYTHON
+	FMTtaskhandler::FMTtaskhandler(const boost::python::object& maintask, unsigned int maxthread):
+		maxnumberofthread(std::min(boost::thread::hardware_concurrency(), maxthread)),
+		alltasks()
+		{
+		try {
+			const FMTtask* taskptr = boost::python::extract<const FMTtask*>(maintask);
+			alltasks.push_back(std::move(taskptr->clone()));
+		}catch (...)
+			{
+			_exhandler->raisefromcatch("FMTtaskhandler python object constructor",
+				"FMTtaskhandler::FMTtaskhandler", __LINE__, __FILE__);
+			}
+		}
+#endif
+#if defined FMTWITHR
+	FMTtaskhandler::FMTtaskhandler(SEXP maintask, unsigned int maxthread) :
+		maxnumberofthread(std::min(boost::thread::hardware_concurrency(), maxthread)),
+		alltasks()
+	{
+		try {
+			Rcpp::XPtr<FMTtask> Rtaskptr(maintask);
+			alltasks.push_back(std::move(Rtaskptr->clone()));
+		}
+		catch (...)
+		{
+			_exhandler->raisefromcatch("FMTtaskhandler R object constructor",
+				"FMTtaskhandler::FMTtaskhandler", __LINE__, __FILE__);
+		}
+	}
+#endif
+
+
 	FMTtaskhandler::FMTtaskhandler(const std::unique_ptr<FMTtask>& maintask,
 		unsigned int maxthread) :
 		maxnumberofthread(std::min(boost::thread::hardware_concurrency(), maxthread)),
 		alltasks()
 	{
-		alltasks.push_back(maintask->clone());
+		alltasks.push_back(std::move(maintask->clone()));
 	}
+
+	FMTtaskhandler::FMTtaskhandler(const FMTtaskhandler& rhs):
+		maxnumberofthread(rhs.maxnumberofthread),
+		alltasks()
+		{
+		for (const std::unique_ptr<FMTtask>& task : rhs.alltasks)
+			{
+			alltasks.push_back(std::move(task->clone()));
+			}
+
+		}
+
+	FMTtaskhandler& FMTtaskhandler::operator =(const FMTtaskhandler& rhs)
+		{
+		if (this!=&rhs)
+			{
+			maxnumberofthread = rhs.maxnumberofthread;
+			alltasks.clear();
+			for (const std::unique_ptr<FMTtask>& task : rhs.alltasks)
+				{
+				alltasks.push_back(std::move(task->clone()));
+				}
+			}
+		return *this;
+		}
 
 	const std::vector<std::unique_ptr<FMTtask>>& FMTtaskhandler::gettasks() const
 		{
@@ -45,7 +110,7 @@ namespace Parallel
 				_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, "Too much task to split",
 					"FMTtask::split", __LINE__, __FILE__);
 				}
-			std::vector<std::unique_ptr<FMTtask>> newtasks = alltasks.at(0)->split(maxnumberofthread);
+			std::vector<std::unique_ptr<FMTtask>> newtasks = std::move(alltasks.at(0)->split(maxnumberofthread));
 			alltasks.swap(newtasks);
 		}catch (...)
 			{
@@ -98,7 +163,7 @@ namespace Parallel
 			{
 				tasks.push_back(std::move(newtask));
 				workers.push_back(boost::thread(std::bind(&FMTtask::work, tasks.back().get())));
-				newtask = alltasks.at(0)->spawn();
+				newtask = std::move(alltasks.at(0)->spawn());
 				++taskid;
 			}
 			while (!tasks.empty())
@@ -115,7 +180,7 @@ namespace Parallel
 						{
 							tasks.push_back(std::move(newtask));
 							workers.push_back(boost::thread(std::bind(&FMTtask::work, tasks.back().get())));
-							newtask = alltasks.at(0)->spawn();
+							newtask = std::move(alltasks.at(0)->spawn());
 						}
 						break;
 					}

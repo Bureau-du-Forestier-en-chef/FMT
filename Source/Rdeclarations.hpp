@@ -48,6 +48,11 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTconstraint.hpp"
 #include "FMTcoordinate.hpp"
 
+//Parallel
+#include "FMTtask.hpp"
+#include "FMTtaskhandler.hpp"
+#include "FMTreplanningtask.hpp"
+
 
 #define RCPP_DECLAREVECTOR(CLASS)namespace Rcpp{\
 template <> std::vector<CLASS> as(SEXP obj);\
@@ -90,6 +95,11 @@ RCPP_DECLAREVECTOR(Spatial::FMTsasolution);//For vector
 //Models
 RCPP_DECLAREVECTOR(Models::FMTmodel);//For vector
 RCPP_DECLAREMAP(std::string, double);//For map<string,double>
+//Parallel
+RCPP_DECLAREVECTOR(Parallel::FMTtask);//For vector
+RCPP_DECLAREVECTOR(Parallel::FMTtaskhandler);//For vector
+RCPP_DECLAREVECTOR(Parallel::FMTreplanningtask);//For vector
+
 
 
 #ifdef FMTWITHOSI

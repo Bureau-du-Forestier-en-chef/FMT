@@ -29,6 +29,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "PYexportModel.hpp"
 #include "PYexportVersion.hpp"
 #include "PYexportHeuristics.hpp"
+#include "PYexportParallel.hpp"
 #include "Python.h"
 
 
@@ -59,6 +60,8 @@ extern "C"
 		Python::exportVersion();
 		//Heuristics
 		Python::exportHeuristics();
+		//Parallel
+		Python::exportParallel();
 	}
 
 }
@@ -74,6 +77,7 @@ extern "C"
 #include "RexportParser.hpp"
 #include "RexportVersion.hpp"
 #include "RexportHeuristics.hpp"
+#include "RexportParallel.hpp"
 #include <Rcpp.h>
 
 
@@ -96,6 +100,8 @@ extern "C"
 		R::exportVersion();
 		//Heuristics
 		R::exportHeuristics();
+		//Parallel
+		R::exportParallel();
 		}
 
 		// declarations

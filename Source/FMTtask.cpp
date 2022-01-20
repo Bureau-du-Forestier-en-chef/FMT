@@ -47,7 +47,7 @@ namespace Parallel
 		{
 			_exhandler->raisefromcatch("", "FMTtask::spawn", __LINE__, __FILE__);
 		}
-		return std::unique_ptr<FMTtask>();
+		return std::move(std::unique_ptr<FMTtask>());
 	}
 
 
@@ -61,7 +61,7 @@ namespace Parallel
 		{
 			_exhandler->raisefromcatch("", "FMTtask::clone", __LINE__, __FILE__);
 		}
-		return std::unique_ptr<FMTtask>(new FMTtask());
+		return std::move(std::unique_ptr<FMTtask>(new FMTtask()));
 	}
 
 	void FMTtask::work()
