@@ -14,9 +14,6 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 	#include "boost/python.hpp"
 #endif
 
-#if defined FMTWITHR
-	#include <Rcpp.h>
-#endif
 
 namespace Parallel
 {

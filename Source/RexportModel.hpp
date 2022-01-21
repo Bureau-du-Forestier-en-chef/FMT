@@ -139,6 +139,8 @@ void exportModel()
 		.constructor("@DocString(FMTsrmodel())")
 		.method("buildperiod", &Models::FMTsrmodel::buildperiod,
 			"@DocString(FMTsrmodel::buildperiod)")
+		.method("boundsolution", &Models::FMTsrmodel::boundsolution,
+			"@DocString(FMTsrmodel::boundsolution)")
 		.method("getsolution", &Models::FMTsrmodel::getsolution,
 			"@DocString(FMTsrmodel::getsolution)")
 		.method("setsolution", &Models::FMTsrmodel::setsolution,
@@ -166,8 +168,6 @@ void exportModel()
 		.constructor<Models::FMTmodel, Models::FMTsolverinterface>("@DocString(FMTlpmodel(Models::FMTmodel,Models::FMTsolverinterface))")
 		.constructor("@DocString(FMTlpmodel())")
 		.constructor<Models::FMTlpmodel>("@DocString(FMTlpmodel(const FMTlpmodel&))")
-		.method("boundsolution", &Models::FMTlpmodel::boundsolution,
-			"@DocString(FMTlpmodel::boundsolution)")
 		.method("setobjective", &Models::FMTlpmodel::setobjective,
 			"@DocString(FMTlpmodel::setobjective)")
 		.method("setconstraint", &Models::FMTlpmodel::setconstraint,

@@ -10,6 +10,8 @@ cmake_minimum_required(VERSION 3.6)
 
 
 
+project(FMT VERSION 0.9.3 LANGUAGES CXX)
+
 if (MSVC)
 	SET(CMAKE_CONFIGURATION_TYPES ${BUILD_TYPE} CACHE STRING "" FORCE)
 else()
@@ -17,9 +19,6 @@ else()
 		set(BUILD_TYPE "${CMAKE_BUILD_TYPE}")
 	endif()
 endif(MSVC)
-
-
-project(FMT VERSION 0.9.3 LANGUAGES CXX)
 
 
 
@@ -661,6 +660,16 @@ install (CODE
     endif(DEPENDENCIES)
 	if (EXISTS \"${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}/setup.py\")
         find_program(PYTHON \"python\" PATHS \"${PYTHON_DIR}\" NO_DEFAULT_PATH)
+	if (NOT EXISTS \"$\{PYTHON\}\")
+		#MESSAGE ERREUR
+		messsage(FATAL_ERROR \"No Python found cannot install FMT\")
+	else()
+		#Call pip from python and install it....
+		execute_process(
+          	COMMAND \"$\{PYTHON\}\" -m pip install wheel
+         	 WORKING_DIRECTORY \"${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}\"
+       		 )
+	endif(NOT EXISTS \"$\{PYTHON\}\")
         execute_process(
           COMMAND \"$\{PYTHON\}\" -m pip wheel .
           WORKING_DIRECTORY \"${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}\"

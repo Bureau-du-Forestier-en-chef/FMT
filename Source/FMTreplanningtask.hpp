@@ -135,7 +135,7 @@ namespace Parallel
 		std::unique_ptr<FMTtask>clone() const;
 		// DocString: FMTreplanningtask::FMTreplanningtask(...)
 		/**
-		This is the one and only constructor for that replanningtask, need to have common sections, outputs to write,outputlocation(outfile),
+		The models need to have common sections, outputs to write,outputlocation(outfile),
 		gdaldriver of the output file, the number of replicates, the number of replanning period and the weight of the global schedule applied 
 		to the localschedule.
 		*/
@@ -149,8 +149,36 @@ namespace Parallel
 						const int& replicates,
 						const int& replanningperiodssize,
 						const double& globalwweight,
-						double minimaldrift= 0.5,
-						Core::FMToutputlevel outputlevel = Core::FMToutputlevel::totalonly);
+						const double& minimaldrift,
+						Core::FMToutputlevel outputlevel);
+		// DocString: FMTreplanningtask::FMTreplanningtask(const Models::FMTmodel&,const Models::FMTmodel&,const Models::FMTmodel&)
+		/**
+		Short constructor for replanning task will use the output of globalmodel as outputs.
+		0.5 as minimal drift...
+		You then need to set the number of replanning periods,globalweight, and the number of replicates.
+		*/
+		FMTreplanningtask(const Models::FMTmodel& globalm,
+			const Models::FMTmodel& stochasticm,
+			const Models::FMTmodel& localm,
+			const std::string& outputlocation,
+			const std::string& gdaldriver,
+			const std::vector<std::string>& creationoptions,
+			Core::FMToutputlevel outputlevel);
+		// DocString: FMTreplanningtask::setreplicates()
+		/**
+		Set the number of replicates to use...
+		*/
+		void setreplicates(const int& replicatesnumber);
+		// DocString: FMTreplanningtask::setreplanningperiods()
+		/**
+		Set the number oof replanning periods.
+		*/
+		void setreplanningperiods(const int& periodsnumber);
+		// DocString: FMTreplanningtask::setglobalwweight()
+		/**
+		set the global schedule weight.
+		*/
+		void setglobalweight(const double& weight);
 		// DocString: FMTreplanningtask::split(...)
 		/**
 		The split fonction that split the main task into multiple tasks of replanning.
