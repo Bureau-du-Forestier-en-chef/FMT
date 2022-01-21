@@ -680,7 +680,7 @@ void FMToutput::changesourcesid(const std::set<int>& newoutputsorigin,const std:
 			{
 				std::set<int>::const_iterator ktit = newthemeid.find(oldthemetarget);
 				int newtarget = static_cast<int>(std::distance(newthemeid.begin(),ktit));
-				if (ktit==newoutputsorigin.end())
+				if (ktit== newthemeid.end())
 				{
 					newtarget = -1;
 				}

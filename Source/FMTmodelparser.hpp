@@ -73,7 +73,7 @@ class FMTEXPORT FMTmodelparser : public FMTparser
 	/**
 	Create a layer with from a dataset
 	*/
-	OGRLayer* FMTmodelparser::createlayer(GDALDataset* dataset,
+	OGRLayer* createlayer(GDALDataset* dataset,
 		const std::string& name, std::vector<std::string> creationoptions = std::vector<std::string>()) const;
 	// DocString: FMTmodelparser::createdriftlayer()
 	/**

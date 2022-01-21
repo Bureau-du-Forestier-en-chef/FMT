@@ -12,7 +12,8 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 	class boost::python::object;
 #endif
 #if defined FMTWITHR
-	#include <Rinternals.h>
+	//#include <Rinternals.h>
+	#include <Rcpp.h>
 #endif
 
 /// Namespace for parallel tasking may include multithreading / multiprocessing

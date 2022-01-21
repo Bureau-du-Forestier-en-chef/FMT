@@ -38,20 +38,17 @@ namespace R
 
 		Rcpp::class_<Parallel::FMTtask>("FMTtask", "@DocString(FMTtask)")
 			.derives<Core::FMTobject>("FMTobject")
-			.constructor<Parallel::FMTtask>("@DocString(FMTtask(Parallel::FMTtask))")
 			.constructor("@DocString(FMTtask())");
 
 		Rcpp::class_<Parallel::FMTreplanningtask>("FMTreplanningtask", "@DocString(FMTreplanningtask)")
 			.derives<Parallel::FMTtask>("FMTtask")
-			.constructor<Parallel::FMTreplanningtask>("@DocString(FMTreplanningtask(Parallel::FMTreplanningtask))")
-			.constructor<Models::FMTmodel, Models::FMTmodel, Models::FMTmodel, std::vector<Core::FMToutput>, std::string, std::string, std::vector<std::string>, int, int, double, double, Core::FMToutputlevel>("@DocString(FMTmodel(Models::FMTreplanningtask))")
-			.constructor("@DocString(FMTreplanningtask())");
+			.constructor("@DocString(FMTreplanningtask())")
+			.constructor<Models::FMTmodel,Models::FMTmodel,Models::FMTmodel,std::vector<Core::FMToutput>,std::string,std::string,std::vector<std::string>,int,int,double,double,Core::FMToutputlevel>("@DocString(FMTmodel(Models::FMTreplanningtask))");
 
 		Rcpp::class_<Parallel::FMTtaskhandler>("FMTtaskhandler", "@DocString(FMTtaskhandler)")
-			.derives<Models::FMTobject>("FMTobject")
+			.derives<Core::FMTobject>("FMTobject")
 			.constructor("@DocString(FMTtaskhandler())")
-			.constructor<Parallel::FMTtaskhandler>("@DocString(FMTtaskhandler(Parallel::FMTtaskhandler))")
-			.constructor<SEXP, unsigned int>("@DocString(FMTtaskhandler(Parallel::FMTtaskhandler))")
+			.constructor<SEXP,unsigned int>("@DocString(FMTtaskhandler(Parallel::FMTtaskhandler))")
 			.method("conccurentrun", &Parallel::FMTtaskhandler::conccurentrun,
 				"@DocString(FMTtaskhandler::conccurentrun)")
 			.method("ondemandrun", &Parallel::FMTtaskhandler::ondemandrun,

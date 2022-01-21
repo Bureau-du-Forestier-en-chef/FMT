@@ -1,4 +1,5 @@
 #include <vector>
+#include <string>
 #ifdef FMTWITHOSI
 	#include "FMTtaskhandler.hpp"
 	#include "FMTreplanningtask.hpp"
@@ -38,10 +39,13 @@ int main(int argc, char *argv[])
 			selectedoutputs.push_back(output);
 		}
 	}
-	const std::string outputlocation = "tests/replanning/";
+	std::size_t lastslash = primlocation.find_last_of("/\\");
+	std::size_t nameend= primlocation.find_last_of(".pri");
+	const std::string locname = primlocation.substr(lastslash+1, nameend);
+	const std::string outputlocation = "tests/"+ locname +"/";
 	std::vector<std::string>layersoptions;
 	layersoptions.push_back("SEPARATOR=SEMICOLON");
-	std::unique_ptr<Parallel::FMTtask> maintaskptr(new Parallel::FMTreplanningtask(global, stochastic, local, selectedoutputs, outputlocation, "CSV", layersoptions, replicate,length,100000,0.5));
+	std::unique_ptr<Parallel::FMTtask> maintaskptr(new Parallel::FMTreplanningtask(global, stochastic, local, selectedoutputs, outputlocation, "CSV", layersoptions, replicate,length,100000,0.5, Core::FMToutputlevel::totalonly));
 	Parallel::FMTtaskhandler handler(maintaskptr,2);
 	handler.setquietlogger();
 	//handler.ondemandrun();
