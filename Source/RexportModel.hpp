@@ -48,12 +48,15 @@ RCPP_EXPOSED_WRAP(Models::FMTsamodel);
 RCPP_EXPOSED_AS(Models::FMTsamodel);
 RCPP_DEFINEVECTOR(Models::FMTsamodel);//For vector
 
+RCPP_EXPOSED_ENUM_NODECL(Models::FMTintmodelparameters);
+RCPP_EXPOSED_ENUM_NODECL(Models::FMTdblmodelparameters);
+RCPP_EXPOSED_ENUM_NODECL(Models::FMTboolmodelparameters);
+
 namespace R
 { 
 
 void exportModel()
 {
-
 	Rcpp::class_<Models::FMTmodel>("FMTmodel", "@DocString(FMTmodel)")
 		.derives<Core::FMTobject>("FMTobject")
 		.constructor<Models::FMTmodel>("@DocString(FMTmodel(Models::FMTmodel))")
@@ -96,6 +99,15 @@ void exportModel()
 				"@DocString(FMTmodel::getlifespan)")
             .method("isvalid",&Models::FMTmodel::isvalid,
 				"@DocString(FMTmodel::isvalid)")
+			.method("setboolparameter",
+				static_cast<bool(Models::FMTmodel::*)(const Models::FMTboolmodelparameters&, const bool&)>(&Models::FMTmodel::setparameter),
+				"@DocString(Models::FMTmodel::setparameter(const FMTboolmodelparameters,const bool))")
+			.method("setintparameter",
+				static_cast<bool(Models::FMTmodel::*)(const Models::FMTintmodelparameters&, const int&)>(&Models::FMTmodel::setparameter),
+				"@DocString(Models::FMTmodel::setparameter(const FMTintmodelparameters,const int))")
+			.method("setdblparameter",
+				static_cast<bool(Models::FMTmodel::*)(const Models::FMTdblmodelparameters&, const double&)>(&Models::FMTmodel::setparameter),
+				"@DocString(Models::FMTmodel::setparameter(const FMTdblmodelparameters,const int))")
 			.method("showparameters",&Models::FMTmodel::showparameters,
 			"@DocString(FMTmodel::showparameters)")
 			.method("doplanning",&Models::FMTmodel::doplanning,

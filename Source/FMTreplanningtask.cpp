@@ -21,52 +21,16 @@ namespace Parallel
 		const std::string& gdaldriver,
 		const std::vector<std::string>& creationoptions,
 		Core::FMToutputlevel outputlevel):
-		resultswriter(),
-		baseschedule(),
-		global(),
-		stochastic(),
-		local(),
-		replicateids(),
-		dynamicarea(globalm.getarea()),
-		iterationglobalschedule(),
-		dynamicconstraints(),
-		replanningperiods(globalm.getparameter(Models::FMTintmodelparameters::LENGTH)),
-		globalsolutionweight(0)
+		FMTreplanningtask(globalm, stochasticm, localm,
+			globalm.getoutputs(),outputlocation,
+			gdaldriver, creationoptions,1,
+			globalm.getparameter(Models::FMTintmodelparameters::LENGTH),
+			0,0.5,outputlevel)
 	{
-		try {
-			//passinobject(globalm);
-			global = std::move(globalm.clone());
-			stochastic = std::move(stochasticm.clone());
-			local = std::move(localm.clone());
-			std::vector<Models::FMTmodel*>modelsptr;
-			modelsptr.push_back(global.get());
-			modelsptr.push_back(stochastic.get());
-			modelsptr.push_back(local.get());
-			resultswriter = std::shared_ptr<FMTparallelwriter>(new FMTparallelwriter(outputlocation, gdaldriver, outputs, modelsptr, creationoptions, minimaldrift, outputlevel));
-			std::unique_ptr<Models::FMTmodel>modelcpy = global->clone();
-			_logger->logwithlevel("Initial planning started\n", 0);
-			if (!modelcpy->doplanning(true))
-			{
-				_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
-					"Infeasible Global model",
-					"FMTreplanningtask::FMTreplanningtask", __LINE__, __FILE__);
-			}
-			replicateids.push(0);
-			writeresults(global->getname(),
-				global->getparameter(Models::FMTintmodelparameters::LENGTH), modelcpy, 1);
-			_logger->logwithlevel("Initial planning done\n", 0);
-			replicateids.pop();
-			baseschedule = std::shared_ptr<Core::FMTschedule>(new Core::FMTschedule(modelcpy->getsolution(1, true)));
-			iterationglobalschedule = *baseschedule;
-			dynamicconstraints = modelcpy->getreplanningconstraints("GLOBAL", local->getconstraints(), 1);
-		}
-		catch (...)
-		{
-			_exhandler->raisefromcatch("", "FMTreplanningtask::FMTreplanningtask", __LINE__, __FILE__);
-		}
+
 	}
 
-	void setreplicates(const int& replicatesnumber)
+	void FMTreplanningtask::setreplicates(const int& replicatesnumber)
 	{
 		replicateids=std::queue<int>();
 		for (int replicateid = 1; replicateid < (replicatesnumber + 1); ++replicateid)
@@ -75,12 +39,12 @@ namespace Parallel
 		}
 	}
 
-	void setreplanningperiods(const int& periodsnumber)
+	void FMTreplanningtask::setreplanningperiods(const int& periodsnumber)
 		{
 		replanningperiods = periodsnumber;
 		}
 
-	void setglobalweight(const double& weight)
+	void FMTreplanningtask::setglobalweight(const double& weight)
 		{
 		globalsolutionweight = weight;
 		}
@@ -144,7 +108,7 @@ namespace Parallel
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTreplanningtask::FMTreplanningtask", __LINE__, __FILE__);
+			_exhandler->printexceptions("", "FMTreplanningtask::FMTreplanningtask", __LINE__, __FILE__);
 		}
 	}
 

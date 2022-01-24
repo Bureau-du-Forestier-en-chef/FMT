@@ -43,7 +43,19 @@ namespace R
 		Rcpp::class_<Parallel::FMTreplanningtask>("FMTreplanningtask", "@DocString(FMTreplanningtask)")
 			.derives<Parallel::FMTtask>("FMTtask")
 			.constructor("@DocString(FMTreplanningtask())")
-			.constructor<Models::FMTmodel,Models::FMTmodel,Models::FMTmodel,std::vector<Core::FMToutput>,std::string,std::string,std::vector<std::string>,int,int,double,double,Core::FMToutputlevel>("@DocString(FMTmodel(Models::FMTreplanningtask))");
+			.constructor<const Models::FMTmodel&,
+						const Models::FMTmodel&,
+						const Models::FMTmodel&,
+						std::string,
+						std::string,
+						std::vector<std::string>,
+						Core::FMToutputlevel>("@DocString(Parallel::FMTreplanningtask())")
+			.method("setreplicates", &Parallel::FMTreplanningtask::setreplicates,
+				"@DocString(FMTreplanningtask::setreplicates)")
+			.method("setreplanningperiods", &Parallel::FMTreplanningtask::setreplanningperiods,
+				"@DocString(FMTreplanningtask::setreplanningperiods)")
+			.method("setglobalweight", &Parallel::FMTreplanningtask::setglobalweight,
+				"@DocString(FMTreplanningtask::setglobalweight)");
 
 		Rcpp::class_<Parallel::FMTtaskhandler>("FMTtaskhandler", "@DocString(FMTtaskhandler)")
 			.derives<Core::FMTobject>("FMTobject")

@@ -40,9 +40,8 @@ int main(int argc, char *argv[])
 		}
 	}
 	std::size_t lastslash = primlocation.find_last_of("/\\");
-	std::size_t nameend= primlocation.find_last_of(".pri");
-	const std::string locname = primlocation.substr(lastslash+1, nameend);
-	const std::string outputlocation = "tests/"+ locname +"/";
+	const std::string locname = primlocation.substr(lastslash+1,(primlocation.size()-lastslash)-4);
+	const std::string outputlocation = "tests/"+ locname;
 	std::vector<std::string>layersoptions;
 	layersoptions.push_back("SEPARATOR=SEMICOLON");
 	std::unique_ptr<Parallel::FMTtask> maintaskptr(new Parallel::FMTreplanningtask(global, stochastic, local, selectedoutputs, outputlocation, "CSV", layersoptions, replicate,length,100000,0.5, Core::FMToutputlevel::totalonly));

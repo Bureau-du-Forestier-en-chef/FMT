@@ -47,6 +47,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTGCBMtransition.hpp"
 #include "FMTconstraint.hpp"
 #include "FMTcoordinate.hpp"
+#include "FMTmodelparameters.hpp"
 
 //Parallel
 #include "FMTtask.hpp"
@@ -95,6 +96,11 @@ RCPP_DECLAREVECTOR(Spatial::FMTsasolution);//For vector
 //Models
 RCPP_DECLAREVECTOR(Models::FMTmodel);//For vector
 RCPP_DECLAREMAP(std::string, double);//For map<string,double>
+RCPP_DECLAREVECTOR(Models::FMTintmodelparameters);//For vector
+RCPP_DECLAREVECTOR(Models::FMTdblmodelparameters);//For vector
+RCPP_DECLAREVECTOR(Models::FMTboolmodelparameters);
+
+
 //Parallel
 RCPP_DECLAREVECTOR(Parallel::FMTtask);//For vector
 RCPP_DECLAREVECTOR(Parallel::FMTtaskhandler);//For vector
