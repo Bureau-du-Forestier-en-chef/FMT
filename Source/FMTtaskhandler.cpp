@@ -27,7 +27,7 @@ namespace Parallel
 			alltasks.push_back(std::move(taskptr->clone()));
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("FMTtaskhandler python object constructor",
+			_exhandler->printexceptions("FMTtaskhandler python object constructor",
 				"FMTtaskhandler::FMTtaskhandler", __LINE__, __FILE__);
 			}
 		}
@@ -43,7 +43,7 @@ namespace Parallel
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("FMTtaskhandler R object constructor",
+			_exhandler->printexceptions("FMTtaskhandler R object constructor",
 				"FMTtaskhandler::FMTtaskhandler", __LINE__, __FILE__);
 		}
 	}

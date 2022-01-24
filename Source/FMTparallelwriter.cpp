@@ -33,17 +33,22 @@ namespace Parallel
 		outputslevel(outputlevel)
 
 	{
-		if (outputs.empty())
+		try {
+			if (outputs.empty())
 			{
-			_exhandler->raise(Exception::FMTexc::FMTrangeerror,
-				"No outputs to write",
-				"FMTparallelwriter::FMTparallelwriter()", __LINE__, __FILE__);
+				_exhandler->raise(Exception::FMTexc::FMTrangeerror,
+					"No outputs to write",
+					"FMTparallelwriter::FMTparallelwriter()", __LINE__, __FILE__);
 			}
-		for (const Models::FMTmodel* modelptr : allmodels)
+			for (const Models::FMTmodel* modelptr : allmodels)
 			{
-			resultslayer[modelptr->getname()] = createresultslayer(*modelptr, resultsdataset,layersoptions);
+				resultslayer[modelptr->getname()] = createresultslayer(*modelptr, resultsdataset, layersoptions);
 			}
-		driftlayer = createdriftlayer(resultsdataset, layersoptions);
+			driftlayer = createdriftlayer(resultsdataset, layersoptions);
+		}catch (...)
+			{
+			_exhandler->raisefromcatch("", "FMTparallelwriter::FMTparallelwriter", __LINE__, __FILE__);
+			}
 	}
 
 	std::map<std::string, std::vector<std::vector<double>>> FMTparallelwriter::getresults(const std::unique_ptr<Models::FMTmodel>& modelptr, const int& firstperiod,
