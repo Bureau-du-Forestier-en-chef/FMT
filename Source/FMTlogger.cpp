@@ -9,6 +9,9 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #if defined FMTWITHPYTHON
 	#include <boost/python.hpp>
 #endif // defined FMTWITHPYTHON
+#if defined FMTWITHR
+	#include <Rcpp.h>
+#endif
 #include <iostream>
 #include "FMTversion.hpp"
 
@@ -215,6 +218,8 @@ namespace Logging
 		}else {
 			#if defined(FMTWITHPYTHON)
 					PySys_FormatStdout(message);
+			#elif defined(FMTWITHR)
+					Rcpp::Rcout << message << std::flush;
 			#else
 					std::cout << message << std::flush;
 			#endif
