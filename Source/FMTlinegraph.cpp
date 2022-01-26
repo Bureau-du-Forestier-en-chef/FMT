@@ -297,6 +297,9 @@ namespace Graph
 					return getdevelopment(*vertexit);
 				}
 			}
+			_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, 
+							"The period for which the developement is asked is not complete so there is no period stop developement.", 
+							"FMTlinegraph::getperiodstopdev()", __LINE__, __FILE__);
 		}
 		catch (...)
 		{

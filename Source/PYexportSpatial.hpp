@@ -20,7 +20,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 namespace Python 
 {
-
+BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(getforestperiod_overloads, getforestperiod, 1, 2)
 void exportSpatial()
     {
     namespace bp = boost::python;
@@ -44,6 +44,10 @@ void exportSpatial()
         .setattr("__hash__",&boost::pyhash<Spatial::FMTcoordinate>);
 
     define_FMTlayer<Core::FMTdevelopment>();
+    //Mainly to iter over FMTforest
+    define_pypair<Spatial::FMTcoordinate,Core::FMTdevelopment>();
+    define_pypair<Spatial::FMTcoordinate const,Core::FMTdevelopment>();
+
 
 
 	bp::class_<Spatial::FMTforest, bp::bases<Spatial::FMTlayer<Core::FMTdevelopment>>>("FMTforest", "@DocString(FMTforest)")
@@ -51,7 +55,9 @@ void exportSpatial()
         .def("getarea",&Spatial::FMTforest::getarea,
 			"@DocString(FMTforest::getarea)")
         .def("grow",&Spatial::FMTforest::grow,
-			"@DocString(FMTforest::grow)");
+			"@DocString(FMTforest::grow)")
+        .def("getage",&Spatial::FMTforest::getage,
+			"@DocString(FMTforest::getage)");
 
 
      define_pylist<Spatial::FMTforest>();
@@ -106,7 +112,7 @@ void exportSpatial()
 
 	bp::class_<Spatial::FMTspatialschedule, bp::bases<Spatial::FMTlayer<Graph::FMTlinegraph>>>("FMTspatialschedule", "@DocString(FMTspatialschedule)")
 		.def(bp::init<Spatial::FMTspatialschedule>())
-		.def("get_forest_at_period", &Spatial::FMTspatialschedule::getforestperiod, "@DocString(FMTspatialschedule::getforestperiod)")
+		.def("getforestperiod", &Spatial::FMTspatialschedule::getforestperiod, getforestperiod_overloads(bp::args("period","periodstart"),"@DocString(FMTspatialschedule::getforestperiod)"))
         .def("getoutputbycoordinate", &Spatial::FMTspatialschedule::getoutputbycoordinate, "@DocString(FMTspatialschedule::getoutputbycoordinate)");
 
 	define_pylist<Spatial::FMTspatialschedule>();

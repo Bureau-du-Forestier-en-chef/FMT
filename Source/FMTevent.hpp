@@ -203,12 +203,12 @@ class FMTEXPORT FMTevent
 
         */
         virtual std::vector<std::set<FMTcoordinate>::const_iterator> ignit(const size_t& eventmaximalsize,const std::set<FMTcoordinate>::const_iterator& ignit, const int& laction_id, const int& lperiod);
-        // DocString: FMTevent::spread(const FMTspatialaction&, const std::set<FMTcoordinate>&)
+        // DocString: FMTevent::spread(const size_t& eventminimalsize,const size_t& eventmaximalsize,const size_t& neighboringsize,const std::set<FMTcoordinate>& territory, std::vector<std::set<FMTcoordinate>::const_iterator> active)
         /**
 
         */
         virtual bool spread(const size_t& eventminimalsize,const size_t& eventmaximalsize,
-			const size_t& eventeventsize,const std::set<FMTcoordinate>& territory, std::vector<std::set<FMTcoordinate>::const_iterator> active);
+			const size_t& neighboringsize,const std::set<FMTcoordinate>& territory, std::vector<std::set<FMTcoordinate>::const_iterator> active);
         // DocString: FMTevent::distance(const FMTevent&)
         /**
         Return the distance between this event and the event pass as argument
