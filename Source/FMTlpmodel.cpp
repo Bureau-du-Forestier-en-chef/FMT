@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Quï¿½bec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -804,7 +804,7 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 				std::vector<double>medianvalues;
 				for (int period = first_period; period <= last_period; ++period)
 				{
-					medianvalues.push_back(this->getoutput(output, period).begin()->second);
+					medianvalues.push_back(this->getoutput(output, period,Core::FMToutputlevel::totalonly).begin()->second);
 				}
 				uppernlower["M" + output.getname()] = medianvalues;
 				this->setobjective(maxconstraint);
@@ -812,7 +812,7 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 				std::vector<double>uppervalues;
 				for (int period = first_period; period <= last_period; ++period)
 				{
-					uppervalues.push_back(this->getoutput(output, period).begin()->second);
+					uppervalues.push_back(this->getoutput(output, period,Core::FMToutputlevel::totalonly).begin()->second);
 				}
 				uppernlower["U" + output.getname()] = uppervalues;
 				this->eraseallconstraint(maxconstraint);
@@ -823,7 +823,7 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 				std::vector<double>lowervalues;
 				for (int period = first_period; period <= last_period; ++period)
 				{
-					lowervalues.push_back(this->getoutput(output, period).begin()->second);
+					lowervalues.push_back(this->getoutput(output, period,Core::FMToutputlevel::totalonly).begin()->second);
 				}
 				uppernlower["L" + output.getname()] = lowervalues;
 				this->eraseallconstraint(minconstraint);
