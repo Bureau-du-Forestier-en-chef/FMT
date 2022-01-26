@@ -50,7 +50,9 @@ void define_FMTlayer()
         .def("getcellsize",&Spatial::FMTlayer<T>::getcellsize,
 			"@DocString(FMTlayer::getcellsize)")
         .def("__len__",&Spatial::FMTlayer<T>::size,
-			"@DocString(FMTlayer::size)");
+			"@DocString(FMTlayer::size)")
+        .def("items", boost::python::iterator<Spatial::FMTlayer<T>>())
+        .def("__getitem__",&Spatial::FMTlayer<T>::at,boost::python::return_internal_reference<>(),"@DocString(FMTlayer::at)");
     boost::python::to_python_converter<std::map<Spatial::FMTcoordinate,T>,MapToDict<Spatial::FMTcoordinate,T>>();
     }
 
