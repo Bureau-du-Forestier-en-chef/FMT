@@ -985,7 +985,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 			try {
 				const Core::FMTdevelopment& development = data[vertex_descriptor].get();
 				size_t totalmasksize = 0;
-				for (const Core::FMTtheme& theme : model.getthemes())
+				for (const Core::FMTtheme& theme : model.themes)
 				{
 					totalmasksize += theme.size();
 				}

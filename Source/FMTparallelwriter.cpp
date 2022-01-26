@@ -15,6 +15,17 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 namespace Parallel
 {
 
+	FMTparallelwriter::~FMTparallelwriter()
+		{
+		try {
+			resultslayer.clear();
+			GDALClose(resultsdataset);
+		}catch(...)
+			{
+			_exhandler->raisefromcatch("", "FMTparallelwriter::~FMTparallelwriter", __LINE__, __FILE__);
+			}
+		}
+
 	FMTparallelwriter::FMTparallelwriter(const std::string& location,
 		const std::string& driver,
 		const std::vector<Core::FMToutput>& outputs,

@@ -49,7 +49,7 @@ void exportParallel()
 
 	bp::class_<Parallel::FMTtaskhandler, bp::bases<Core::FMTobject>>("FMTtaskhandler", "@DocString(FMTtaskhandler)")
 		.def(bp::init<Parallel::FMTtaskhandler>())
-		.def(bp::init<const boost::python::object&, unsigned int>(bp::args("Task to provide to the handler", "Number of threads"), "@DocString(FMTtaskhandler::FMTtaskhandler)"))
+		.def(bp::init<const Parallel::FMTtask&, unsigned int>(bp::args("Task to provide to the handler", "Number of threads"), "@DocString(FMTtaskhandler::FMTtaskhandler(const Parallel::FMTtask&,unsigned int))"))
 		.def("conccurentrun", &Parallel::FMTtaskhandler::conccurentrun,"@DocString(FMTreplanningtask::conccurentrun)")
 		.def("ondemandrun", &Parallel::FMTtaskhandler::ondemandrun, "@DocString(FMTreplanningtask::ondemandrun)");
 

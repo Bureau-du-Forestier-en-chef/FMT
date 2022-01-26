@@ -17,38 +17,20 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 namespace Parallel
 {
-#if defined FMTWITHPYTHON
-	FMTtaskhandler::FMTtaskhandler(const boost::python::object& maintask, unsigned int maxthread):
+
+
+	FMTtaskhandler::FMTtaskhandler(const FMTtask& maintask, unsigned int maxthread):
 		maxnumberofthread(std::min(boost::thread::hardware_concurrency(), maxthread)),
 		alltasks()
 		{
 		try {
-			const FMTtask* taskptr = boost::python::extract<const FMTtask*>(maintask);
-			alltasks.push_back(std::move(taskptr->clone()));
+			alltasks.push_back(std::move(maintask.clone()));
 		}catch (...)
 			{
-			_exhandler->printexceptions("FMTtaskhandler python object constructor",
+			_exhandler->printexceptions("FMTtaskhandler reference constructor",
 				"FMTtaskhandler::FMTtaskhandler", __LINE__, __FILE__);
 			}
 		}
-#endif
-#if defined FMTWITHR
-	FMTtaskhandler::FMTtaskhandler(SEXP maintask, unsigned int maxthread) :
-		maxnumberofthread(std::min(boost::thread::hardware_concurrency(), maxthread)),
-		alltasks()
-	{
-		try {
-			Rcpp::XPtr<FMTtask> Rtaskptr(maintask);
-			alltasks.push_back(std::move(Rtaskptr->clone()));
-		}
-		catch (...)
-		{
-			_exhandler->printexceptions("FMTtaskhandler R object constructor",
-				"FMTtaskhandler::FMTtaskhandler", __LINE__, __FILE__);
-		}
-	}
-#endif
-
 
 	FMTtaskhandler::FMTtaskhandler(const std::unique_ptr<FMTtask>& maintask,
 		unsigned int maxthread) :

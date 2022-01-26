@@ -67,7 +67,7 @@ namespace Parallel
 		/**
 		Default destructor for FMTparallelwrite.
 		*/
-		virtual ~FMTparallelwriter() = default;
+		virtual ~FMTparallelwriter();
 		// DocString: FMTparallelwriter::FMTparallelwriter(const FMTparallelwriter&)
 		/**
 		Default copy constructor for FMTparallelwriter.

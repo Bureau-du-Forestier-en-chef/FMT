@@ -60,7 +60,7 @@ namespace R
 		Rcpp::class_<Parallel::FMTtaskhandler>("FMTtaskhandler", "@DocString(FMTtaskhandler)")
 			.derives<Core::FMTobject>("FMTobject")
 			.constructor("@DocString(FMTtaskhandler())")
-			.constructor<SEXP,unsigned int>("@DocString(FMTtaskhandler(Parallel::FMTtaskhandler))")
+			.constructor<const Parallel::FMTtask&,unsigned int>("@DocString(FMTtaskhandler(const Parallel::FMTtask&,unsigned int))")
 			.method("conccurentrun", &Parallel::FMTtaskhandler::conccurentrun,
 				"@DocString(FMTtaskhandler::conccurentrun)")
 			.method("ondemandrun", &Parallel::FMTtaskhandler::ondemandrun,
