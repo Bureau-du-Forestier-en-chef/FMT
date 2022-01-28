@@ -10,6 +10,11 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTobject.hpp"
 #include <boost/thread/recursive_mutex.hpp>
 
+namespace Logger
+{
+	class FMTlogger;
+}
+
 
 /// Namespace for parallel tasking may include multithreading / multiprocessing
 namespace Parallel
@@ -24,10 +29,14 @@ namespace Parallel
 		// DocString: FMTtaskhandler::alltasks
 		///If the task is done true else false
 		bool done;
+		protected:
 		// DocString: FMTtaskhandler::mutex
 		///Recursive mutex for the task
-		mutable boost::recursive_mutex taskmutex;
-		protected:
+		static boost::recursive_mutex taskmutex;
+		// DocString: FMTtaskhandler::tasklogger
+		///Logger for solver in parallel...coinmessagehandler does not support concurency.
+		///This logger wont print anything so dont use it in parallel.
+		std::unique_ptr<Logging::FMTlogger>tasklogger;
 		// DocString: FMTreplanningtask::setstatus()
 		/**
 		Change the status of the task
@@ -38,7 +47,7 @@ namespace Parallel
 		/**
 		Default constructor for FMTtask
 		*/
-		FMTtask() = default;
+		FMTtask();
 		// DocString: ~FMTtask()
 		/**
 		FMTtask default virutal destructor.
@@ -79,6 +88,11 @@ namespace Parallel
 		Returns true if the job is all done.
 		*/
 		bool isdone() const;
+		// DocString: FMTreplanningtask::getthreadid()
+		/**
+		Get the thread id of the task.
+		*/
+		std::string getthreadid() const;
 	};
 
 }

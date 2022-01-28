@@ -229,6 +229,17 @@ Core::FMTtransition FMTmodel::defaultdeathtransition(const Core::FMTlifespans& l
 	return death_Transition;
 	}
 
+void FMTmodel::setparallellogger(Logging::FMTlogger& logger)
+	{
+	try {
+		_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, "Calling pure virtual function ",
+			"FMTmodel::setparallellogger", __LINE__, __FILE__);
+	}catch (...)
+		{
+		_exhandler->printexceptions("", "FMTmodel::setparallellogger", __LINE__, __FILE__);
+		}
+	}
+
 
 
 void FMTmodel::addoutput(const std::string& name,

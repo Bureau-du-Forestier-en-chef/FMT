@@ -944,6 +944,16 @@ namespace Models
 		return &solver;
 	}
 
+	void FMTsrmodel::setparallellogger(Logging::FMTlogger& logger)
+	{
+		try {
+			solver.passinmessagehandler(logger);
+		}catch (...)
+			{
+			_exhandler->printexceptions("", "FMTsrmodel::setparallellogger", __LINE__, __FILE__);
+			}
+	}
+
 	void FMTsrmodel::passinlogger(const std::shared_ptr<Logging::FMTlogger>& logger)
 	{
 		solver.passinlogger(logger);

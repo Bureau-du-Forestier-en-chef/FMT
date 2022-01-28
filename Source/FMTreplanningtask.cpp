@@ -11,6 +11,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMToutput.hpp"
 #include "FMTlpmodel.hpp"
 
+
 namespace Parallel
 {
 
@@ -111,6 +112,20 @@ namespace Parallel
 			_exhandler->printexceptions("", "FMTreplanningtask::FMTreplanningtask", __LINE__, __FILE__);
 		}
 	}
+
+	std::unique_ptr<Models::FMTmodel>FMTreplanningtask::copysharedmodel(const std::shared_ptr<Models::FMTmodel>model)
+		{
+		try {
+			boost::lock_guard<boost::recursive_mutex> guard(taskmutex);
+			std::unique_ptr<Models::FMTmodel>modelcpy = std::move(model->clone());
+			modelcpy->setparallellogger(*tasklogger.get());
+			return std::move(modelcpy);
+			}catch (...)
+			{
+			_exhandler->raisefromcatch("", "FMTreplanningtask::copysharedmodel", __LINE__, __FILE__);
+			}
+		return std::unique_ptr<Models::FMTmodel>(nullptr);
+		}
 
 	FMTreplanningtask::~FMTreplanningtask()
 	{
@@ -215,8 +230,8 @@ namespace Parallel
 					firstperiod = replanningperiod;
 					lastperiod = replanningperiod;
 				}
-				_logger->logwithlevel("Writing results for " + modelname + " first period at: " + 
-					std::to_string(firstperiod)+" for iteration "+ std::to_string(getiteration()) + "\n", 1);
+				_logger->logwithlevel("Thread:"+ getthreadid()+" Writing results for " + modelname + " first period at: " +
+					std::to_string(firstperiod)+" for iteration "+ std::to_string(getiteration()) +  +"\n", 1);
 				resultswriter->write(modelname, results, firstperiod, lastperiod, getiteration());
 			}
 		}catch (...)
@@ -275,9 +290,10 @@ namespace Parallel
 	void FMTreplanningtask::work()
 	{
 		try {
+			
 			while (!replicateids.empty())
 			{
-				_logger->logwithlevel("Replanning on replicate " + std::to_string(getiteration()) + " started\n",0);
+				_logger->logwithlevel("Thread:" + getthreadid() + " Replanning on replicate " + std::to_string(getiteration()) + " started\n",0);
 				
 				for (int replanningperiod = 1; replanningperiod <= replanningperiods; ++replanningperiod)
 				{
@@ -321,7 +337,7 @@ namespace Parallel
 				}
 				dynamicarea = global->getarea();
 				iterationglobalschedule = *baseschedule;
-				_logger->logwithlevel("Replanning on replicate " + std::to_string(getiteration()) + " done\n", 0);
+				_logger->logwithlevel("Thread:" + getthreadid() + " Replanning on replicate " + std::to_string(getiteration()) + " done\n", 0);
 				replicateids.pop();
 			}
 			setstatus(true);
@@ -342,7 +358,8 @@ namespace Parallel
 	{
 		bool optimal = false;
 		try {
-			std::unique_ptr<Models::FMTmodel>modelcpy = std::move(model->clone());
+			_logger->logwithlevel("Thread:" + getthreadid() + " starting model planning on "+ model ->getname()+"\n",3);
+			std::unique_ptr<Models::FMTmodel>modelcpy = copysharedmodel(model);
 			int modelsize = modelcpy->getparameter(Models::FMTintmodelparameters::LENGTH);
 			modelcpy->setparameter(Models::FMTintmodelparameters::SEED, static_cast<int>(getiteration()));//For stochastic
 			const std::string modelname = modelcpy->getname();
@@ -407,6 +424,7 @@ namespace Parallel
 				}
 			}
 			writeresults(modelname,modelsize,modelcpy, replanningperiod, writefirstperiodonly);
+			_logger->logwithlevel("Thread:" + getthreadid() + " Model planning done on " + model->getname() + "\n", 3);
 			return std::move(modelcpy);
 		}catch (...)
 			{

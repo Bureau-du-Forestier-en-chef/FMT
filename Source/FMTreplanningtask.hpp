@@ -75,6 +75,12 @@ namespace Parallel
 		// DocString: FMTreplanningtask::globalsolutionweight;
 		///The weight of the schedule of the global model applied to the local model.
 		double globalsolutionweight;
+		// DocString: FMTreplanningtask::copysharedmodel
+		/**
+		Solver logger make it not save to clone a solver with a common logger.
+		So we need to lock this function to make sure that there's no racing between threads.
+		*/
+		std::unique_ptr<Models::FMTmodel>copysharedmodel(const std::shared_ptr<Models::FMTmodel>model);
 		// DocString: FMTreplanningtask::domodelplanning
 		/**
 		The main do planning function that call doplanning on model for a given replanning period and will keep solution and constraints
