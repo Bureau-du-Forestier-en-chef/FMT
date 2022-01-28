@@ -180,7 +180,7 @@ namespace Spatial
 		return false;
     }
 
-    FMTforest FMTspatialschedule::getforestperiod(const int& period) const
+    FMTforest FMTspatialschedule::getforestperiod(const int& period,bool periodstart) const
     {
         FMTforest forest(this->copyextent<Core::FMTdevelopment>());//Setting layer information
 		try {
@@ -195,7 +195,12 @@ namespace Spatial
 			{
 				const Graph::FMTlinegraph* local_graph = &graphit->second;
 				const std::vector<double> solutions(1,this->getcellsize());
-				forest[graphit->first] = local_graph->getperiodstopdev(period);
+				if(periodstart)
+				{
+					forest[graphit->first] = local_graph->getperiodstartdev(period);	
+				}else{
+					forest[graphit->first] = local_graph->getperiodstopdev(period);	
+				}
 				/*std::vector<Core::FMTactualdevelopment> actdev = local_graph->getperiodstopdev(period,&solutions[0]);//
 				forest.mapping[graphit->first]=Core::FMTdevelopment(actdev.front());*/
 			}

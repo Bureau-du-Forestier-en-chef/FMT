@@ -216,12 +216,12 @@ namespace Spatial
         }
 
 	bool FMTevent::spread(const size_t& eventminimalsize, const size_t& eventmaximalsize,
-		const size_t& eventeventsize, const std::set<FMTcoordinate>& territory, std::vector<std::set<FMTcoordinate>::const_iterator> active)
+		const size_t& neighboringsize, const std::set<FMTcoordinate>& territory, std::vector<std::set<FMTcoordinate>::const_iterator> active)
         {
             while((elements.size() < eventmaximalsize) && (!active.empty()))
                 {
                 std::vector<std::set<FMTcoordinate>::const_iterator>::iterator coordit;
-                for(size_t id = 0; id < eventeventsize; ++id)
+                for(size_t id = 0; id < neighboringsize; ++id)
                     {
 					coordit = active.begin();
                     const FMTcoordinate spread_coord = (*coordit)->at(static_cast<int>(id));

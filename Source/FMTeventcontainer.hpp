@@ -163,7 +163,7 @@ class FMTEXPORT FMTeventcontainer
 		// DocString: FMTeventcontainer::addaction()
 		/*
 		Add an action at coordinate and add to existing event if possible or aggregate events
-		if possible.
+		if possible. Maxsize is the maximal size an event can be. 
 		*/
 		void addaction(const FMTcoordinate& coord, const int& period, const int& actionid,const size_t& maxsize);
 		// DocString: FMTeventcontainer::addactions()
@@ -279,6 +279,7 @@ class FMTEXPORT FMTeventcontainer
         const_iterator lower_bound(const int& period, const FMTcoordinate& minxycoord) const;
 		///Update the container by erasing a coordinate from the iterators
 		///(i.e., either it is equivalent or goes after)
+        ///Now it's splitting automatically if a coord is not within a distance of 1
 		void erase(const FMTcoordinate& coord, const std::vector<const_iterator>& iterators);
 		// DocString: FMTeventcontainer::pushaction
 		/*
