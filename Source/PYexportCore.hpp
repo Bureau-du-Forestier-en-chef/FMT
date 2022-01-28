@@ -35,6 +35,7 @@ BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(getattributes_overloads, getattributes, 1
 //BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(getnodes_overloads, getnodes, 3, 4)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(getnodes_overloads, getnodes, 0, 1)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(getyieldrequest_overloads, getyieldrequest, 0, 0)
+BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(operable_overloads, operable, 2, 3)
 
 void exportCore()
     {
@@ -152,8 +153,7 @@ void exportCore()
 					"@DocString(FMTdevelopment::operator<")
                 .def("grow",&Core::FMTdevelopment::grow,
 					"@DocString(FMTdevelopment::grow)")
-                .def("operable",&Core::FMTdevelopment::operable,
-					"@DocString(FMTdevelopment::operable)")
+                .def("operable",&Core::FMTdevelopment::operable,operable_overloads(bp::args("action,yields,yieldrequest"),"@DocString(FMTdevelopment::operable)"))
                 .def("operate",&Core::FMTdevelopment::operate,
 					"@DocString(FMTdevelopment::operate)")
 				 .def("getyieldrequest",&Core::FMTdevelopment::getyieldrequest,getyieldrequest_overloads("@DocString(FMToutput::getyieldrequest)"))
