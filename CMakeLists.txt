@@ -44,7 +44,6 @@ if (DEFINED ENV{PATH})
 	list(APPEND DLLlookuppaths $ENV{PATH})
 	string(REPLACE "\\" "/" DLLlookuppaths "${DLLlookuppaths}")
 endif(DEFINED ENV{PATH})
-
 if (DEFINED OSI_DIR)
 	if (EXISTS "${OSI_DIR}")
 		set(ENV{OSI_DIR} "${OSI_DIR}")
@@ -647,6 +646,10 @@ install (CODE
 				RESOLVED_DEPENDENCIES_VAR DEPENDENCIESfound
 				UNRESOLVED_DEPENDENCIES_VAR deps_unresolved
 				CONFLICTING_DEPENDENCIES_PREFIX deps_conflicts
+				PRE_EXCLUDE_REGEXES 
+                \"api-ms-*\" 
+            	POST_EXCLUDE_REGEXES
+                \".*system32/.*\\\\.dll\"
 				LIBRARIES \"\${FMTloc}\"
 				DIRECTORIES \${PATHS_DEPS}
 				)
