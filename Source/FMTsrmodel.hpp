@@ -94,6 +94,12 @@ namespace Models
 		*/
 		Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>postsolvegraph(const FMTmodel& originalbasemodel) const;
 	public:
+		// DocString: FMTsrmodel::setparallellogger
+		/**
+		Solver's logger cannot work in parallel so you need to pass a logger owned
+		by the thead to the solver to make sure it does not work in concurrency.
+		*/
+		void setparallellogger(Logging::FMTlogger& logger) override;
 		// DocString: FMTsrmodel::getavailablesolverinterface
 		/**
 		Return a vector of solverinterface available

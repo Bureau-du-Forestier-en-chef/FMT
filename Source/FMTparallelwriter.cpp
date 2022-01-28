@@ -151,6 +151,7 @@ namespace Parallel
 
 	void FMTparallelwriter::setdriftprobability(const std::string& globalmodel, const std::string& localmodel) const
 	{
+		boost::lock_guard<boost::recursive_mutex> lock(mtx);
 		try {
 		#ifdef FMTWITHGDAL
 			if (resultslayer.find(globalmodel)!= resultslayer.end()&&

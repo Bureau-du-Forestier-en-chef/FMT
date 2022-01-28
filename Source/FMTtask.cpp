@@ -1,15 +1,26 @@
 #include "FMTtask.hpp"
 #include <functional>
+#include "FMTquietlogger.hpp"
 
 namespace Parallel
 {
 
+	boost::recursive_mutex FMTtask::taskmutex;
+
+	FMTtask::FMTtask() :
+		Core::FMTobject(),
+		done(false),
+		tasklogger(std::unique_ptr<Logging::FMTlogger>(new Logging::FMTquietlogger()))
+	{
+		
+	}
+
 	FMTtask::FMTtask(const FMTtask& rhs) :
 		Core::FMTobject(rhs),
 		done(false),
-		taskmutex()
+		tasklogger(std::unique_ptr<Logging::FMTlogger>(new Logging::FMTquietlogger()))
 	{
-
+		
 	}
 
 	FMTtask& FMTtask::operator = (const FMTtask& rhs)
@@ -18,7 +29,7 @@ namespace Parallel
 		{
 			Core::FMTobject::operator=(rhs);
 			done = rhs.done;
-			boost::lock(taskmutex, rhs.taskmutex);
+			tasklogger = std::unique_ptr<Logging::FMTlogger>(new Logging::FMTquietlogger());
 
 		}
 		return *this;
@@ -86,6 +97,11 @@ namespace Parallel
 		boost::lock_guard<boost::recursive_mutex> guard(taskmutex);
 		const bool isdone = done;
 		return done;
+	}
+
+	std::string FMTtask::getthreadid() const
+	{
+		return boost::lexical_cast<std::string>(boost::this_thread::get_id());
 	}
 
 }

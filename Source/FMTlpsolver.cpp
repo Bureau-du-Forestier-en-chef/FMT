@@ -431,7 +431,7 @@ namespace Models
 		solverinterface->passInMessageHandler(&logger);
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("", +"FMTlpsolver::passinmessagehandler", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("", "FMTlpsolver::passinmessagehandler", __LINE__, __FILE__);
 			}
 		}
 
