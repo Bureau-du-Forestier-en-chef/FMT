@@ -199,6 +199,11 @@ class FMTEXPORT FMTlpmodel final : public FMTsrmodel
 	*/
 	bool setpositiveoutputsinmatrix(const Core::FMTconstraint& constraint, const std::vector<std::map<int, double>>& strictlypositivesoutputs,int period);
 	virtual void swap_ptr(const std::unique_ptr<FMTmodel>& rhs);
+	// DocString: FMTlpmodel::FMTlpmodel(const FMTsrmodel&)
+	/**
+	Constructor to presolve FMTlpmodel.
+	*/
+	FMTlpmodel(const FMTsrmodel& rhs);
 	public:
 		void clearcache();
 		void clearconstraintlocation();

@@ -263,6 +263,11 @@ namespace Models
 		We need to override the passinlogger for the osisolverinterface
 		*/
 		void passinlogger(const std::shared_ptr<Logging::FMTlogger>& logger) override;
+		// DocString: FMTsrmodel::presolve
+		/**
+		Presolve a FMTsrmodel.
+		*/
+		virtual std::unique_ptr<FMTmodel>presolve(int presolvepass = 10, std::vector<Core::FMTactualdevelopment> optionaldevelopments = std::vector<Core::FMTactualdevelopment>()) const override;
 		// DocString: FMTsrmodel::boundsolution
 		/**
 		This function bounds the primal variables to the primal solution present within the matrix for

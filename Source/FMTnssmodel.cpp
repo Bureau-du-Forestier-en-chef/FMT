@@ -214,25 +214,23 @@ namespace Models
 		return std::unique_ptr<FMTmodel>(new FMTnssmodel(*this));
 		}
 
+	FMTnssmodel::FMTnssmodel(const FMTsrmodel& rhs, unsigned int seed) :
+		FMTsrmodel(rhs),
+		generator(seed)
+	{
+
+	}
+
+
 	std::unique_ptr<FMTmodel>FMTnssmodel::presolve(int presolvepass, std::vector<Core::FMTactualdevelopment> optionaldevelopments) const
 		{
-		std::unique_ptr<FMTmodel> presolvedmodel;
 		try {
-			if (graph.empty())
-			{
-				presolvedmodel = std::unique_ptr<FMTmodel>(new FMTnssmodel(*(FMTmodel::presolve(presolvepass, optionaldevelopments)),this->getparameter(FMTintmodelparameters::SEED)));
-			}
-			else {
-				_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
-					"Cannot presolve a lpmodel with period(s) builded in graph.",
-					"FMTnssmodel::presolve",
-					__LINE__, __FILE__);
-			}
+			return std::unique_ptr<FMTmodel>(new FMTnssmodel(*(dynamic_cast<FMTsrmodel*>(FMTsrmodel::presolve(presolvepass, optionaldevelopments).get())),this->getparameter(FMTintmodelparameters::SEED)));
 		}catch (...)
-		{
+			{
 			_exhandler->raisefromcatch("", "FMTnssmodel::presolve", __LINE__, __FILE__);
-		}
-		return presolvedmodel;
+			}
+		return std::unique_ptr<FMTmodel>(nullptr);
 		}
 
 	std::unique_ptr<FMTmodel> FMTnssmodel::postsolve(const FMTmodel& originalbasemodel) const

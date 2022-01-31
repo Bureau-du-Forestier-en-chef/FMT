@@ -290,7 +290,7 @@ namespace Parallel
 	void FMTreplanningtask::work()
 	{
 		try {
-			
+			const std::vector<Core::FMTconstraint>baselocalconstraints(dynamicconstraints);
 			while (!replicateids.empty())
 			{
 				_logger->logwithlevel("Thread:" + getthreadid() + " Replanning on replicate " + std::to_string(getiteration()) + " started\n",0);
@@ -336,6 +336,7 @@ namespace Parallel
 					}
 				}
 				dynamicarea = global->getarea();
+				dynamicconstraints = baselocalconstraints;
 				iterationglobalschedule = *baseschedule;
 				_logger->logwithlevel("Thread:" + getthreadid() + " Replanning on replicate " + std::to_string(getiteration()) + " done\n", 0);
 				replicateids.pop();
@@ -361,7 +362,8 @@ namespace Parallel
 			_logger->logwithlevel("Thread:" + getthreadid() + " starting model planning on "+ model ->getname()+"\n",3);
 			std::unique_ptr<Models::FMTmodel>modelcpy = copysharedmodel(model);
 			int modelsize = modelcpy->getparameter(Models::FMTintmodelparameters::LENGTH);
-			modelcpy->setparameter(Models::FMTintmodelparameters::SEED, static_cast<int>(getiteration()));//For stochastic
+			const int randomseedperiod = (replanningperiod << 8) + static_cast<int>(getiteration());
+			modelcpy->setparameter(Models::FMTintmodelparameters::SEED, randomseedperiod);//For stochastic
 			const std::string modelname = modelcpy->getname();
 			bool writefirstperiodonly = true;
 			modelcpy->setarea(dynamicarea);

@@ -1657,24 +1657,23 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 		return std::unique_ptr<FMTmodel>(new FMTlpmodel(*this));
 		}
 
+	FMTlpmodel::FMTlpmodel(const FMTsrmodel& rhs) :
+		FMTsrmodel(rhs),
+		elements()
+	{
+
+	}
+
+
 	std::unique_ptr<FMTmodel> FMTlpmodel::presolve(int presolvepass, std::vector<Core::FMTactualdevelopment> optionaldevelopments) const
 	{
-		std::unique_ptr<FMTmodel> presolvedmodel;
 		try{
-			if(graph.empty())
-			{	
-				presolvedmodel = std::unique_ptr<FMTmodel>(new FMTlpmodel(*(FMTmodel::presolve(presolvepass, optionaldevelopments)),solver.getsolvertype()));
-			}else{
-				_exhandler->raise(	Exception::FMTexc::FMTfunctionfailed,
-									"Cannot presolve a lpmodel with period(s) builded in graph.",
-									"FMTlpmodel::presolve",
-									__LINE__, __FILE__);
-			}
+			return std::unique_ptr<FMTmodel>(new FMTlpmodel(*(dynamic_cast<FMTsrmodel*>(FMTsrmodel::presolve(presolvepass, optionaldevelopments).get()))));
 		}catch(...)
 		{
 			_exhandler->raisefromcatch("", "FMTlpmodel::presolve", __LINE__, __FILE__);
 		}
-		return presolvedmodel;
+		return std::unique_ptr<FMTmodel>(nullptr);
 	}
 
 	std::unique_ptr<FMTmodel> FMTlpmodel::postsolve(const FMTmodel& originalbasemodel) const
