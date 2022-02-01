@@ -199,6 +199,11 @@ class FMTEXPORT FMTlpmodel final : public FMTsrmodel
 	*/
 	bool setpositiveoutputsinmatrix(const Core::FMTconstraint& constraint, const std::vector<std::map<int, double>>& strictlypositivesoutputs,int period);
 	virtual void swap_ptr(const std::unique_ptr<FMTmodel>& rhs);
+	// DocString: FMTlpmodel::FMTlpmodel(const FMTsrmodel&)
+	/**
+	Constructor to presolve FMTlpmodel.
+	*/
+	FMTlpmodel(const FMTsrmodel& rhs);
 	public:
 		void clearcache();
 		void clearconstraintlocation();
@@ -247,18 +252,12 @@ class FMTEXPORT FMTlpmodel final : public FMTsrmodel
 		To set the model parameter STRICTLY_POSITIVE at true.
 		*/
 		void setstrictlypositivesoutputsmatrix();
-		// DocString: FMTlpmodel::boundsolution
+		// DocString: FMTlpmodel::getreplanningconstraints
 		/**
-		This function bounds the primal variables to the primal solution present within the matrix for
-		a given period and tolerance. Perfect function to update a FMTlpmodel or get ready for replanning.
+		During replaning some local/global constraints need to be ajusted to the global model.
+		The function will take a vector of local/global constraint and ajust the bounds using the solution of this global/local model.
 		*/
-		bool boundsolution(int period,double tolerance = FMT_DBL_TOLERANCE);
-		// DocString: FMTlpmodel::getlocalconstraints
-		/**
-		During replaning some local constraints need to be ajusted to the global model.
-		The function will take a vector of local constraint and ajust the bounds using the solution of this global model.
-		*/
-		virtual std::vector<Core::FMTconstraint> getlocalconstraints(const std::vector<Core::FMTconstraint>& localconstraints,const int& period) const;
+		virtual std::vector<Core::FMTconstraint> getreplanningconstraints(const std::string& modeltype, const std::vector<Core::FMTconstraint>& localconstraints, const int& period) const;
 		// DocString: FMTlpmodel::addscheduletoobjective
 		/**
 		This function will addup weight to the objective function for a given schedule.

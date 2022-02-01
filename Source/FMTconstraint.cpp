@@ -181,8 +181,7 @@ namespace Core
 							boost::split(repvalues, yieldnames.at(id), boost::is_any_of("_"));
 							const int repperiod = std::stoi(repvalues.at(2));
 							const size_t repid = std::stoi(repvalues.at(1));
-							if (repid== replicate&&
-								repperiod==period)
+							if (repid==( replicate-1)/*&&repperiod==period*/)
 								{
 								values.push_back(yieldbounds.at(id).getlower());
 								}
@@ -210,6 +209,12 @@ namespace Core
 			double lower = 0;
 			double upper = 0;
 			getbounds(lower, upper);
+			if (periodchanges.size()<=(period-1))
+				{
+				_exhandler->raise(Exception::FMTexc::FMTrangeerror,
+					"Constraint " + std::string(*this) + " cannot get replicate for period "+std::to_string(period),
+					"FMTconstraint::getiterationchange", __LINE__, __FILE__);
+				}
 			if (lower!= std::numeric_limits<double>::lowest())
 			{
 				lower = periodchanges.at(period - 1);
@@ -222,13 +227,13 @@ namespace Core
 		}
 		catch (...)
 		{
-			_exhandler->printexceptions("", "FMTconstraint::getiterationchange", __LINE__, __FILE__, Core::FMTsection::Optimize);
+			_exhandler->raisefromcatch("", "FMTconstraint::getiterationchange", __LINE__, __FILE__, Core::FMTsection::Optimize);
 		}
 		return newconstraint;
 	}
 
 
-	Core::FMTconstraint FMTconstraint::settoglobal(const double& value) const
+	Core::FMTconstraint FMTconstraint::setfrom(const std::string& modeltype, const double& value) const
 	{
 		Core::FMTconstraint newconstraint(*this);
 		try {
@@ -239,7 +244,7 @@ namespace Core
 			{
 				for (size_t id = 0; id < yieldnames.size(); ++id)
 				{
-					if (yieldnames.at(id).find("_SETTOGLOBAL") != std::string::npos)
+					if (yieldnames.at(id).find("_SETFROM"+modeltype) != std::string::npos)
 					{
 						factor = yieldbounds.at(id).getlower();
 						break;
@@ -259,25 +264,53 @@ namespace Core
 		}
 		catch (...)
 		{
-			_exhandler->printexceptions("", "FMTconstraint::settoglobal", __LINE__, __FILE__, Core::FMTsection::Optimize);
+			_exhandler->printexceptions("", "FMTconstraint::setfrom", __LINE__, __FILE__, Core::FMTsection::Optimize);
 		}
 		return newconstraint;
 	}
 
-	bool FMTconstraint::issettoglobal() const
+	bool FMTconstraint::isreignore(const int& replanningperiod) const
 	{
 		try {
 			if (!this->emptyylds())
 			{
 				for (size_t id = 0; id < yieldnames.size(); ++id)
 				{
-					if (yieldnames.at(id).find("_SETTOGLOBAL") != std::string::npos)
+					if (yieldnames.at(id).find("_REIGNORE") != std::string::npos&&
+						getyieldbound("_REIGNORE").getlower()<= replanningperiod)
+					{
+						if (type != FMTconstrainttype::FMTstandard)
+						{
+							_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
+								"Constraint " + std::string(*this) + " cannot be set",
+								"FMTconstraint::issetfrom", __LINE__, __FILE__);
+						}
+						return true;
+					}
+				}
+			}
+		}
+		catch (...)
+		{
+			_exhandler->printexceptions("", "FMTconstraint::isreignore", __LINE__, __FILE__);
+		}
+		return false;
+	}
+
+	bool FMTconstraint::issetfrom(const std::string& modeltype) const
+	{
+		try {
+			if (!this->emptyylds())
+			{
+				for (size_t id = 0; id < yieldnames.size(); ++id)
+				{
+					if (yieldnames.at(id).find("_SETFROM"+ modeltype) != std::string::npos)
 					{
 						if (type != FMTconstrainttype::FMTstandard)
 							{
 							_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
-								"Constraint "+std::string(*this)+" cannot be globaly set",
-								"FMTconstraint::issettoglobal", __LINE__, __FILE__);
+								"Constraint "+std::string(*this)+" cannot be set",
+								"FMTconstraint::issetfrom", __LINE__, __FILE__);
 							}
 						return true;
 					}
@@ -286,7 +319,7 @@ namespace Core
 		}
 		catch (...)
 			{
-			_exhandler->printexceptions("", "FMTconstraint::issettoglobal", __LINE__, __FILE__);
+			_exhandler->printexceptions("", "FMTconstraint::issetfrom", __LINE__, __FILE__);
 			}
 		return false;
 	}
