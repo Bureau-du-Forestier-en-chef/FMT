@@ -12,8 +12,8 @@ arecup    1.._LENGTH
 
 _NDY(oVolRec) 1.._LENGTH
 
-oSuppl <= 0 1.._LENGTH _SETFROMLOCAL(0.80)
-oVolRec <= 20000 1 _REIGNORE(1)
+;oSuppl <= 0 1.._LENGTH _SETFROMLOCAL(0.80)
+;oVolRec <= 20000 1 _REIGNORE(1)
 
 ;ovolrec >= 10000000000 1.._LENGTH
 
