@@ -38,6 +38,17 @@ namespace Parallel
 		*/
 		FMTtaskhandler(const std::unique_ptr<FMTtask>& maintask,
 						unsigned int maxthread = 0);
+		// DocString: ~FMTtaskhandler()
+		/**
+		Default destructor for FMTtaskhandler.
+		*/
+		~FMTtaskhandler()=default;
+		// DocString: FMTtaskhandler::FMTtaskhandler
+		/**
+		Abstract constructor for Python and R...you need to pass a FMTtask to this constructor.
+		*/
+		FMTtaskhandler(const FMTtask& maintask,
+			unsigned int maxthread = 0);
 		// DocString: FMTtaskhandler::FMTtaskhandler()
 		/**
 		Default constructor for FMTtaskhandler
@@ -47,12 +58,12 @@ namespace Parallel
 		/**
 		Default copy constructor for FMTtaskhandler
 		*/
-		FMTtaskhandler(const FMTtaskhandler& rhs) = default;
+		FMTtaskhandler(const FMTtaskhandler& rhs);
 		// DocString: FMTtaskhandler::operator=
 		/**
 		Default copy assignement for FMTtaskhandler
 		*/
-		FMTtaskhandler& operator =(const FMTtaskhandler& rhs) = default;
+		FMTtaskhandler& operator =(const FMTtaskhandler& rhs);
 		// DocString: FMTtaskhandler::gettasks()
 		/**
 		Return reference to the task handled by the task handler.
@@ -76,9 +87,11 @@ namespace Parallel
 		If the task is completed it will be removed from the list.
 		*/
 		void ondemandrun();
-
-
-
+		// DocString: FMTtaskhandler::passinlogger
+		/**
+		We need to override the passinlogger for the osisolverinterface
+		*/
+		void passinlogger(const std::shared_ptr<Logging::FMTlogger>& logger) override;
 	};
 
 }

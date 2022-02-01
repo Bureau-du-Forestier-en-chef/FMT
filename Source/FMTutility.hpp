@@ -13,6 +13,12 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 namespace Core
 {
+enum FMToutputlevel
+	{
+	standard = 1,
+	totalonly = 2,
+	developpement = 3
+	};
 enum FMTsection
     {
     Control= 1,

@@ -277,8 +277,8 @@ void exportModel()
 		.def("getObjValue", &Models::FMTlpmodel::getObjValue,
 					"@DocString(FMTlpmodel::getObjValue)")
 		.def("getlocalconstraints",
-			&Models::FMTlpmodel::getlocalconstraints,
-			"@DocString(FMTlpmodel::getlocalconstraints)")
+			&Models::FMTlpmodel::getreplanningconstraints,
+			"@DocString(FMTlpmodel::getreplanningconstraints)")
 		.def("writeLP",
 			&Models::FMTlpmodel::writeLP,
 			"@DocString(FMTlpmodel::writeLP)")

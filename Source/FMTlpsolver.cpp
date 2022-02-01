@@ -98,7 +98,7 @@ namespace Models
 	FMTlpsolver::FMTlpsolver(const FMTlpsolver& rhs) :Core::FMTobject(rhs), solverinterface(), usecache(rhs.usecache),matrixcache(rhs.matrixcache),solvertype(rhs.solvertype)
 		{
 		solverinterface = copysolverinterface(rhs.solverinterface, rhs.solvertype);
-		passinmessagehandler(*_logger);
+		//passinmessagehandler(*_logger);
 		}
 
 	FMTlpsolver& FMTlpsolver::operator =(const FMTlpsolver& rhs)
@@ -110,7 +110,7 @@ namespace Models
 			usecache = rhs.usecache;
 			solvertype = rhs.solvertype;
 			solverinterface = copysolverinterface(rhs.solverinterface,rhs.solvertype);
-			passinmessagehandler(*_logger);
+			//passinmessagehandler(*_logger);
 			}
 		return *this;
 		}
@@ -431,7 +431,7 @@ namespace Models
 		solverinterface->passInMessageHandler(&logger);
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("", +"FMTlpsolver::passinmessagehandler", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("", "FMTlpsolver::passinmessagehandler", __LINE__, __FILE__);
 			}
 		}
 
