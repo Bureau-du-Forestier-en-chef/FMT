@@ -64,6 +64,8 @@ void exportSpatial()
 
 	bp::class_<Spatial::FMTeventcontainer>("FMTeventcontainer", "@DocString(FMTeventcontainer)")
 		.def(bp::init<Spatial::FMTeventcontainer>());
+        //.def<void (Spatial::FMTeventcontainer::*)(const Spatial::FMTcoordinate& coord, const int& period, const int& actionid,const size_t& maxsize, const size_t& neighborsize)>("addaction",&Spatial::FMTeventcontainer::addaction,
+		//		"@DocString(FMTeventcontainer::addaction(const FMTcoordinate&, const int&, const int&,const size_t&, const size_t&))");
 
 	define_pylist<Spatial::FMTeventcontainer>();
 
@@ -113,7 +115,8 @@ void exportSpatial()
 	bp::class_<Spatial::FMTspatialschedule, bp::bases<Spatial::FMTlayer<Graph::FMTlinegraph>>>("FMTspatialschedule", "@DocString(FMTspatialschedule)")
 		.def(bp::init<Spatial::FMTspatialschedule>())
 		.def("getforestperiod", &Spatial::FMTspatialschedule::getforestperiod, getforestperiod_overloads(bp::args("period","periodstart"),"@DocString(FMTspatialschedule::getforestperiod)"))
-        .def("getoutputbycoordinate", &Spatial::FMTspatialschedule::getoutputbycoordinate, "@DocString(FMTspatialschedule::getoutputbycoordinate)");
+        .def("getoutputbycoordinate", &Spatial::FMTspatialschedule::getoutputbycoordinate, "@DocString(FMTspatialschedule::getoutputbycoordinate)")
+        .def("getbindingactions", &Spatial::FMTspatialschedule::getbindingactions, "@DocString(FMTspatialschedule::getbindingactions)");
 
 	define_pylist<Spatial::FMTspatialschedule>();
 

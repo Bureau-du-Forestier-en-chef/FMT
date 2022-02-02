@@ -14,6 +14,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <boost/serialization/set.hpp>
 #include <unordered_set>
 #include <boost/unordered_set.hpp>
+#include "FMTobject.hpp"
 
 
 namespace Spatial
@@ -27,12 +28,13 @@ One container can hold all events for a model. They are sorted by
 period, centroid, action_id and finally by size.
 You can  remove FMTcoordinate and add FMTcoordinate by period and action.
 */
-class FMTEXPORT FMTeventcontainer
+class FMTEXPORT FMTeventcontainer : public Core::FMTobject
 {
     friend class boost::serialization::access;
 	template<class Archive>
 	void serialize(Archive& ar, const unsigned int version)
 	{
+        ar & boost::serialization::make_nvp("FMTobject", boost::serialization::base_object<FMTobject>(*this));
         ar & BOOST_SERIALIZATION_NVP(events);
 	}
 
@@ -154,18 +156,25 @@ class FMTEXPORT FMTeventcontainer
         Return a pair of iterator pointing to the first and the last elements in the period
         */
         std::pair<const_iterator,const_iterator> getbounds(const int& period) const;
-        // DocString: FMTeventcontainer::addaction()
+        // DocString: FMTeventcontainer::addaction(const FMTcoordinate&, const int&, const int&)
         /*
         Add an action at coordinate and add to existing event if possible or aggregate events
         if possible.
         */
         void addaction (const FMTcoordinate& coord, const int& period,const int& actionid);
-		// DocString: FMTeventcontainer::addaction()
+		// DocString: FMTeventcontainer::addaction(const FMTcoordinate&, const int&, const int&,const size_t&)
 		/*
 		Add an action at coordinate and add to existing event if possible or aggregate events
 		if possible. Maxsize is the maximal size an event can be. 
 		*/
 		void addaction(const FMTcoordinate& coord, const int& period, const int& actionid,const size_t& maxsize);
+        // DocString: FMTeventcontainer::addaction(const FMTcoordinate&, const int&, const int&,const size_t&, const size_t&)
+		/*
+		Add an action at coordinate and add to existing event if possible or aggregate events
+		if possible. Maxsize is the maximal size an event can be. Neigborsize is type of spread for the action. 
+        Must be 4,8 or 12
+		*/
+        void addaction(const FMTcoordinate& coord, const int& period, const int& actionid,const size_t& maxsize, const size_t& neighborsize);
 		// DocString: FMTeventcontainer::addactions()
 		/*
 		Add actions at coordinate and add to existing event if possible or aggregate events
@@ -286,7 +295,13 @@ class FMTEXPORT FMTeventcontainer
 		Push an action in container
 		*/
 		void pushaction(const std::vector<FMTeventcontainer::const_iterator>& iterators,
-			const FMTcoordinate& coord, const int& period, const int& actionid);
+			const FMTcoordinate& coord, const int& period, const int& actionid,size_t neighborsize=4);
+        // DocString: FMTeventcontainer::getaroundevents()
+		/*
+		Return iterators to events considerate around based on neighborsize
+		*/
+		std::vector<FMTeventcontainer::const_iterator> getaroundevents(const std::vector<FMTeventcontainer::const_iterator>& iterators,
+			const FMTcoordinate& coord, size_t neighborsize=4);
 		// DocString: FMTeventcontainer::fastsort
 		/*
 		Sort events by proximity to a coordinate
