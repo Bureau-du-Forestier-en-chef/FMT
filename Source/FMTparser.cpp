@@ -747,7 +747,9 @@ std::string FMTparser::setspecs(Core::FMTsection section, Core::FMTkwor key,cons
 					Core::FMTspec newspec;
 					if (pushaagebound)
 					{
-						newspec.addbounds(Core::FMTagebounds(section, key, static_cast<int>(rit->upper()), static_cast<int>(rit->lower())));
+						const int intupper = (rit->upper() == std::numeric_limits<double>::max()) ? std::numeric_limits<int>::max() : static_cast<int>(rit->upper());
+						const int intlower = (rit->lower() == std::numeric_limits<double>::min()) ? std::numeric_limits<int>::min() : static_cast<int>(rit->lower());
+						newspec.addbounds(Core::FMTagebounds(section, key, intupper, intlower));
 					}else {
 						newspec.addbounds(Core::FMTyldbounds(section, key, yld, rit->upper(), rit->lower()));
 						}
