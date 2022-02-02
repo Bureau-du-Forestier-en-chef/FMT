@@ -224,6 +224,16 @@ class FMTEXPORT FMTevent
         Return true if coordinate is within specified distance of the envelope
         */
         bool within(unsigned int dist, const FMTcoordinate& location) const;
+        // DocString: FMTevent::withinlessthan(unsigned int, const FMTevent&)
+        /**
+        Return true if the event is within less than the specified distance of the event
+        */
+        bool withinlessthan(unsigned int dist, const FMTevent& rhs) const;
+        // DocString: FMTevent::withinlessthan(unsigned int, const FMTcoordinate&)
+        /**
+        Return true if coordinate is within less than the specified distance of the event
+        */
+        bool withinlessthan(unsigned int dist, const FMTcoordinate& location) const;
         // DocString: FMTevent::contain(const FMTcoordinate&)
         /**
         Return true if coordinate is in elements
