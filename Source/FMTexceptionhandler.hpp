@@ -19,6 +19,8 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <boost/serialization/export.hpp>
 #include <memory>
 
+#include <boost/thread.hpp>
+
 namespace Exception
 {
 	class FMTexception;
@@ -81,8 +83,9 @@ namespace Exception
 		// DocString: FMTexceptionhandler::errorstowarnings
 		///If an error is in this list it's going to processed like a warning.
 		std::vector<Exception::FMTexc>errorstowarnings;
-		///Mutex for multi-threading.
-		//mutable std::recursive_mutex mtx;
+		// DocString: FMTexceptionhandler::mainthreadid
+		///Main thread id
+		static boost::thread::id mainthreadid;
 		// DocString: FMTexceptionhandler::updatestatus
 		/**
 		This functions updates the status of the handler adding up to the warning or the error counts.
@@ -94,10 +97,20 @@ namespace Exception
 		If usenested exceptions and exception == function error then it will be true and the exception will be rethrown.
 		*/
 		bool needtorethrow() const;
+		// DocString: FMTexceptionhandler::ismainthread()
+		/**
+		Return true if we are on the main thread.
+		*/
+		bool ismainthread() const;
 	public:
 		// DocString: FMTexceptionhandler::_specificwarningcount
 		///Keeps count of the number of each type of warning thrown.
 		boost::unordered_map<int,size_t> _specificwarningcount;
+		// DocString: checksignals()
+		/**
+		Check signals in R and Python, if we are on the main thread.
+		*/
+		void checksignals() const;
 		// DocString: FMTexceptionhandler()
 		/**
 		Default constructor for FMTexceptionhandler.
