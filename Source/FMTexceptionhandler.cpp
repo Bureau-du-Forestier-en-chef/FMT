@@ -12,16 +12,35 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <boost/algorithm/string/replace.hpp>
 
 #if defined FMTWITHR
-	#include <Rcpp.h>
+	#include "Rcpp.h"
 #endif
 
 
 namespace Exception
 
 {
+boost::thread::id FMTexceptionhandler::mainthreadid = boost::this_thread::get_id();
 
+bool FMTexceptionhandler::ismainthread() const
+	{
+	return (boost::this_thread::get_id() == mainthreadid);
+	}
 
-
+void FMTexceptionhandler::checksignals() const
+	{
+	if (FMTexceptionhandler::ismainthread())
+		{
+		#if defined FMTWITHPYTHON
+				if (PyErr_CheckSignals() == -1)
+				{
+					exit(1);
+				}
+		#endif
+		#if defined FMTWITHR
+				Rcpp::checkUserInterrupt();
+		#endif
+		}
+	}
 
 #if defined  FMTWITHGDAL
 void CPL_STDCALL FMTCPLErrorHandler(CPLErr eErrClass, CPLErrorNum nError, const char * pszErrorMsg)
