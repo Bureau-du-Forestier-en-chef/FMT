@@ -780,7 +780,7 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 					uppervalues.push_back(this->getoutput(output, period,Core::FMToutputlevel::totalonly).begin()->second);
 				}
 				uppernlower["U" + output.getname()] = uppervalues;
-				this->eraseallconstraint(maxconstraint);
+				this->eraseconstraint(maxconstraint);
 				Core::FMTconstraint minconstraint(Core::FMTconstrainttype::FMTMINobjective, output);
 				minconstraint.setlength();
 				this->setobjective(minconstraint);
@@ -791,7 +791,7 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 					lowervalues.push_back(this->getoutput(output, period,Core::FMToutputlevel::totalonly).begin()->second);
 				}
 				uppernlower["L" + output.getname()] = lowervalues;
-				this->eraseallconstraint(minconstraint);
+				this->eraseconstraint(minconstraint);
 			}
 			solver.setObjective(&originalcoefficients[0]);
 			solver.setObjSense(originalsense);
@@ -805,31 +805,21 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 		return uppernlower;
 		}
 
-	Graph::FMTgraphstats FMTlpmodel::eraseallconstraint(const Core::FMTconstraint& constraint)
-		{
-		try {
-			int first_period = 0;
-			int last_period = 0;
-			if (graph.constraintlenght(constraint, first_period, last_period))
-			{
-				for (int period = first_period; period <= last_period; ++period)
-				{
-					this->eraseconstraint(constraint, period);
-				}
-			}
-		}catch (...)
-		{
-			_exhandler->printexceptions("", "FMTlpmodel::eraseallconstraint", __LINE__, __FILE__);
-		}
-
-
-		return this->getstats();
-		}
-
 	Graph::FMTgraphstats FMTlpmodel::eraseconstraint(const Core::FMTconstraint& constraint, int period)
 		{
 		try {
-		if (static_cast<int>(elements.size()) > period && elements.at(period).find(std::string(constraint))!= elements.at(period).end())
+		if (period==-1)
+			{
+				int first_period = 0;
+				int last_period = 0;
+				if (graph.constraintlenght(constraint, first_period, last_period))
+				{
+					for (int period = first_period; period <= last_period; ++period)
+					{
+						this->eraseconstraint(constraint, period);
+					}
+				}
+			}else if (static_cast<int>(elements.size()) > period && elements.at(period).find(std::string(constraint))!= elements.at(period).end())
 			{
 			std::vector<std::vector<int>>all_elements = elements.at(period).at(std::string(constraint));
 			elements.at(period).erase(elements.at(period).find(std::string(constraint)));
