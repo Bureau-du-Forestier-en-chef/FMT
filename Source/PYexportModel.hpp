@@ -42,6 +42,7 @@ BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(addscheduletoobjective_overloads, addsche
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(getarea_overloads, getarea, 0, 2)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(doplanning_overloads,doplanning,1,2)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(showparameters_overloads,showparameters,0,1)
+BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(eraseconstraint_overloads,eraseconstraint,1, 2)
 
 void exportModel()
     {
@@ -262,7 +263,7 @@ void exportModel()
 		.def("setconstraint", &Models::FMTlpmodel::setconstraint,
 			"@DocString(FMTlpmodel::setconstraint)")
 		.def("eraseconstraint", &Models::FMTlpmodel::eraseconstraint,
-			"@DocString(FMTlpmodel::eraseconstraint)")
+			eraseconstraint_overloads(bp::args("constraint","period"),"@DocString(FMTlpmodel::eraseconstraint)"))
 		.def("eraseperiod", &Models::FMTlpmodel::eraseperiod,
 			eraseperiod_overloads(bp::args("constraintsonly"), "@DocString(FMTlpmodel::eraseperiod)"))
 		.def("resolve", &Models::FMTlpmodel::resolve,

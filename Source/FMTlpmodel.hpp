@@ -172,11 +172,7 @@ class FMTEXPORT FMTlpmodel final : public FMTsrmodel
 	*/
 	bool issamematrixelement(const int& matrixindex, const FMTmatrixelement& element_type,
 			const double& lowerb, const double& upperb, const std::map<int, double>& variables) const;
-	// DocString: FMTlpmodel::eraseallconstraint
-	/**
-	Erase all constraints / variables related to a FMTconstraint for all the planning horizon (graph length).
-	*/
-	Graph::FMTgraphstats eraseallconstraint(const Core::FMTconstraint& constraint);
+	
 	// DocString: FMTlpmodel::getobjectivebounds
 	/**
 	Returns constraints indexes of the lower and upper bounds of the constraints set for the objective.
@@ -289,9 +285,10 @@ class FMTEXPORT FMTlpmodel final : public FMTsrmodel
 		Graph::FMTgraphstats setconstraint(const Core::FMTconstraint& constraint);
 		// DocString: FMTlpmodel::eraseconstraint
 		/**
-		Erase a constraint for a given period in the matrix and in the model elements.
+		Erase a constraint for a given period in the matrix and in the model elements. If period == -1 then it will erase
+		the constraint for the whole horizon else it will only erase the constraint for the specified period.
 		*/
-		Graph::FMTgraphstats eraseconstraint(const Core::FMTconstraint& constraint, int period);
+		Graph::FMTgraphstats eraseconstraint(const Core::FMTconstraint& constraint,int period=-1);
 		// DocString: FMTlpmodel::getvariabilities
 		/**
 		Get the variability of multiple outputs for a given tolerance across the planning horizon.
