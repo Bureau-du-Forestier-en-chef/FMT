@@ -13,15 +13,17 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 namespace Spatial
 {
-    FMTeventcontainer::FMTeventcontainer():events(){}
+    FMTeventcontainer::FMTeventcontainer():FMTobject(),events(){}
 
     FMTeventcontainer::FMTeventcontainer(const FMTeventcontainer& rhs):
+											FMTobject(rhs),
                                             events(rhs.events){}
 
     FMTeventcontainer& FMTeventcontainer::operator = (const FMTeventcontainer& rhs)
     {
         if (this!=&rhs)
             {
+				FMTobject::operator=(rhs);
                 events = rhs.events;
             }
         return *this;
@@ -221,30 +223,9 @@ namespace Spatial
 
 
 	void FMTeventcontainer::pushaction(const std::vector<FMTeventcontainer::const_iterator>& iterators,
-		const FMTcoordinate& coord, const int& period, const int& actionid)
+		const FMTcoordinate& coord, const int& period, const int& actionid,size_t neighborsize)
 	{
-		std::vector<FMTeventcontainer::const_iterator>aroundevents;
-		aroundevents.reserve(8);
-		/*std::vector<FMTeventcontainer::const_iterator>sorted(iterators);
-		nthelements(sorted, coord, 8);
-		std::vector<FMTeventcontainer::const_iterator>::const_iterator eventit = sorted.begin();
-		size_t checked = 0;
-		while (eventit!= sorted.end()&&checked<8)
-			{
-			if ((*eventit)->within(1, coord))
-				{
-				aroundevents.push_back(*eventit);
-				}
-			++eventit;
-			++checked;
-			}*/
-		for (FMTeventcontainer::const_iterator eventit : iterators)
-		{
-			if (eventit->within(1, coord))
-			{
-				aroundevents.push_back(eventit);
-			}
-		}
+		std::vector<FMTeventcontainer::const_iterator>aroundevents = getaroundevents(iterators,coord,neighborsize);
 		if (aroundevents.empty())
 		{
 			FMTevent newevent(coord, actionid, period);
@@ -262,6 +243,60 @@ namespace Spatial
 			}
 			insert(combinedevents);
 		}
+	}
+
+	std::vector<FMTeventcontainer::const_iterator> FMTeventcontainer::getaroundevents(const std::vector<FMTeventcontainer::const_iterator>& iterators,
+		const FMTcoordinate& coord, size_t neighborsize)
+	{
+		std::vector<FMTeventcontainer::const_iterator>aroundevents;
+		aroundevents.reserve(8);
+		/*std::vector<FMTeventcontainer::const_iterator>sorted(iterators);
+		nthelements(sorted, coord, 8);
+		std::vector<FMTeventcontainer::const_iterator>::const_iterator eventit = sorted.begin();
+		size_t checked = 0;
+		while (eventit!= sorted.end()&&checked<8)
+			{
+			if ((*eventit)->within(1, coord))
+				{
+				aroundevents.push_back(*eventit);
+				}
+			++eventit;
+			++checked;
+			}*/
+		switch (neighborsize)
+		{
+		case 4:
+			for (FMTeventcontainer::const_iterator eventit : iterators)
+			{
+				if (eventit->within(1, coord))
+				{
+					aroundevents.push_back(eventit);
+				}
+			}
+			break;
+		
+		case 8:
+			for (FMTeventcontainer::const_iterator eventit : iterators)
+			{
+				if (eventit->withinlessthan(2, coord))
+				{
+					aroundevents.push_back(eventit);
+				}
+			}
+			break;
+		case 12:
+			for (FMTeventcontainer::const_iterator eventit : iterators)
+			{
+				if (eventit->within(2, coord))
+				{
+					aroundevents.push_back(eventit);
+				}
+			}
+			break;
+		default:
+			break;
+		}
+		return aroundevents;
 	}
 
 	FMTeventcontainer::FMTeventiteratorsorter::FMTeventiteratorsorter(const FMTcoordinate& coordinate) : basecoordinate(coordinate)
