@@ -45,19 +45,24 @@ int main()
 		}
 		Logging::FMTlogger() << "\n";
 	}
-	Core::FMToutput spatialoutput;
+	std::vector<Core::FMToutput> spatialoutput;
 	for (const Core::FMToutput& output : simulationmodel.getoutputs())
 	{
-		if (output.getname() == "TEST")
+		if (output.getname().find("_") != std::string::npos)
 		{
-			spatialoutput = output;
-			break;
+			spatialoutput.push_back(output);
 		}
 	}
+
+	mparser.writeresults(simulationmodel, spatialoutput, 1, 10, "results/", Core::FMToutputlevel::totalonly, "CSV");
+
 	//simulationmodel.solve();
-	for (int period = 1; period < 11; ++period)
+	for (const Core::FMToutput& output : spatialoutput)
 	{
-		Logging::FMTlogger() << "output value " << simulationmodel.getoutput(spatialoutput, period, Core::FMToutputlevel::totalonly).at("Total") << " at period " << period << "\n";
+		for (int period = 1; period < 11; ++period)
+		{
+			Logging::FMTlogger() << "output value " << output.getname() << " " << simulationmodel.getoutput(output, period, Core::FMToutputlevel::totalonly).at("Total") << " at period " << period << "\n";
+		}
 	}
 	return 0;
 }
