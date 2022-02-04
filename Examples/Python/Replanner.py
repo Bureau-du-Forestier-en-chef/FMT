@@ -16,7 +16,7 @@ if __name__ == "__main__":
     ap.add_argument("-fol", "--folder", required=True,help="Dossier de sortie")
     ap.add_argument("-rep", "--replicates", required=True,help="Nombre de replicas")
     ap.add_argument("-len", "--strategiclength", required=True,help="Nombre de periode du strategique")
-    ap.add_argument("-rep", "--replanninglength", required=True,help="Nombre de periode de re-plannification")
+    ap.add_argument("-rel", "--replanninglength", required=True,help="Nombre de periode de re-plannification")
     ap.add_argument("-thr", "--threads", required=True,help="Nombre de threads")
     ap.add_argument("-swe", "--Strategicweight", required=True,help="Poids de la cedule strategique")
     args = vars(ap.parse_args())
@@ -39,7 +39,7 @@ if __name__ == "__main__":
                 selectedoutputs.append(output)
         outputlocation = args["folder"]
         layersoptions=["SEPARATOR=SEMICOLON"]
-        replanningtask=Parallel.FMTreplanningtask(globalmodel,stochastic, localmodel, selectedoutputs, outputlocation, "CSV", layersoptions,int(args["replicates"]),int(args["rep"]),float(args["swe"]),0.5, Core.FMToutputlevel.totalonly)
+        replanningtask=Parallel.FMTreplanningtask(globalmodel,stochastic, localmodel, selectedoutputs, outputlocation, "CSV", layersoptions,int(args["replicates"]),int(args["replanninglength"]),float(args["Strategicweight"]),0.5, Core.FMToutputlevel.totalonly)
         handler = Parallel.FMTtaskhandler(replanningtask,int(args["threads"]))
         handler.setquietlogger()
         handler.conccurentrun()
