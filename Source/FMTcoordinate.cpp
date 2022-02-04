@@ -75,6 +75,15 @@ namespace Spatial
 		return (static_cast<unsigned int>(std::abs(distancex)) <= ldistance && static_cast<unsigned int>(std::abs(distancey)) <= ldistance &&
 			std::sqrt(distancex * distancex + distancey * distancey)<= static_cast<double>(ldistance));
         }
+
+    bool FMTcoordinate::withinlessthan(unsigned int ldistance,const FMTcoordinate& coord) const
+        {
+		int distancex = 0;
+		int distancey = 0;
+		getxygap(coord, distancex, distancey);
+		return (static_cast<unsigned int>(std::abs(distancex)) < ldistance && static_cast<unsigned int>(std::abs(distancey)) < ldistance &&
+			std::sqrt(distancex * distancex + distancey * distancey)< static_cast<double>(ldistance));
+        }
     unsigned int FMTcoordinate::getx() const
         {
         return x;

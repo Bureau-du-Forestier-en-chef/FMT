@@ -134,23 +134,28 @@ class FMTEXPORT FMTconstraint: public FMToutput,public FMTspec
 		Returns true if the constraint have goal weight
 		*/
 		bool isgoal() const;
-		// DocString: FMTconstraint::issettoglobal()
+		// DocString: FMTconstraint::issetfrom()
 		/**
-		Returns true if the constraint need to be set by a global model.
+		Returns true if the constraint needs to be set from a specific model.
 		*/
-		bool issettoglobal() const;
+		bool issetfrom(const std::string& modeltype) const;
+		// DocString: FMTconstraint::isreignore()
+		/**
+		Returns true if we need to ignore the constraint from the replanning period
+		*/
+		bool isreignore(const int& replanningperiod) const;
 		// DocString: FMTconstraint::dosupportrandom()
 		/**
 		Return true if the constraint has only one source and only based on action area.
 		So the contraint will support _RANDOM keywod.
 		*/
 		bool dosupportrandom() const;
-		// DocString: FMTconstraint::settoglobal
+		// DocString: FMTconstraint::setfrom
 		/**
 		Using the value of the global model for the constraint output it will
-		return a new constraints set with the global model value.
+		return a new constraints set with the model type value.
 		*/
-		Core::FMTconstraint settoglobal(const double& value) const;
+		Core::FMTconstraint setfrom(const std::string& modeltype,const double& value) const;
 		// DocString: FMTconstraint::getiterationchange
 		/**
 		Based on constraint period it will set bounds to the double specified in the vector for the constraint period.

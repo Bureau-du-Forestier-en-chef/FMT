@@ -32,6 +32,7 @@ namespace Spatial
 			}
         unsigned int x,y;
 		void getxygap(const FMTcoordinate& rhs, int& xgap, int& y_gap) const;
+        double distanceapproximation(const FMTcoordinate& coord) const;
     public:
         FMTcoordinate();
         ~FMTcoordinate()=default;
@@ -39,8 +40,8 @@ namespace Spatial
         FMTcoordinate(const FMTcoordinate& rhs);
         FMTcoordinate at(unsigned int id) const;
         double distance(const FMTcoordinate& coord) const;
-		double distanceapproximation(const FMTcoordinate& coord) const;
         bool within(unsigned int ldistance,const FMTcoordinate& coord) const;
+        bool withinlessthan(unsigned int ldistance,const FMTcoordinate& coord) const;
         void upenveloppe(std::vector<FMTcoordinate>& enveloppe) const;
 		size_t hash() const;
         FMTcoordinate& operator = (const FMTcoordinate& rhs);

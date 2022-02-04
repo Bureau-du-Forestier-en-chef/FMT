@@ -95,6 +95,7 @@ Pour remplir les commentaires dans les fichiers sources R (`.R`) et Python (`.py
   cd Documentation
   python commentsPythonandR.py
  ```
+Voici une présentation pour vous former à l'API FMT(R/Python) [Formation_FMT_R_Python.pptx](Documentation/Formation_FMT_R_Python.pptx) 
 
 # 👉 Exemples
 
@@ -126,8 +127,7 @@ optimizationmodel.initialsolve()
 library(FMT)
 modelparser<-new(FMTmodelparser)
 models<-modelparser$readproject("pathtoprimaryfile",c("scenariox"),TRUE,TRUE,TRUE)# Lit le scénario x depuis un fichier primaire (.pri)
-solverinterface<-list(CLP=1,MOSEK=2,CPLEX=3,GUROBI=4)
-optimizationmodel<-new(FMTlpmodel,models[[1]],solverinterface$CLP)# Construit un modèle de programmation linéaire de type III depuis un FMTmodel
+optimizationmodel<-new(FMTlpmodel,models[[1]],FMTsolverinterface$CLP)# Construit un modèle de programmation linéaire de type III depuis un FMTmodel
 emptyschedule<-new(FMTschedule)
 
 ### Construit le graphe pendant 10 périodes

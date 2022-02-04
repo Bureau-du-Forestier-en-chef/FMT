@@ -96,6 +96,11 @@ namespace Models
 			std::vector<const Core::FMToutput*>& alloutputs,std::vector<double>& targets,
 			std::vector<std::vector<const Core::FMTaction*>>& actiontargets) const;
 		virtual void swap_ptr(const std::unique_ptr<FMTmodel>& rhs);
+		// DocString: FMTnssmodel(const FMTsrmodel&,unsigned int)
+		/**
+		Constructor for FMTnssmodel taking a FMTsrmodel and a seed to initialize the random number generator.
+		*/
+		FMTnssmodel(const FMTsrmodel& rhs, unsigned int seed);
 		public:
 			// DocString: FMTnssmodel()
 			/**
@@ -122,6 +127,7 @@ namespace Models
 			Constructor for FMTnssmodel taking a FMTmodel and a seed to initialize the random number generator.
 			*/
 			FMTnssmodel(const FMTmodel& rhs, unsigned int seed);
+			
 			// DocString: FMTnssmodel(FMTnssmodel&&)
 			/**
 			Default move constructor for FMTnssmodel.

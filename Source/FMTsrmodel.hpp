@@ -94,6 +94,12 @@ namespace Models
 		*/
 		Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>postsolvegraph(const FMTmodel& originalbasemodel) const;
 	public:
+		// DocString: FMTsrmodel::setparallellogger
+		/**
+		Solver's logger cannot work in parallel so you need to pass a logger owned
+		by the thead to the solver to make sure it does not work in concurrency.
+		*/
+		void setparallellogger(Logging::FMTlogger& logger) override;
 		// DocString: FMTsrmodel::getavailablesolverinterface
 		/**
 		Return a vector of solverinterface available
@@ -252,11 +258,22 @@ namespace Models
 		Get a clone of the FMTsrmodel
 		*/
 		virtual std::unique_ptr<FMTmodel>clone() const override;
-		// DocString: FMTlpmodel::passinlogger
+		// DocString: FMTsrmodel::passinlogger
 		/**
 		We need to override the passinlogger for the osisolverinterface
 		*/
 		void passinlogger(const std::shared_ptr<Logging::FMTlogger>& logger) override;
+		// DocString: FMTsrmodel::presolve
+		/**
+		Presolve a FMTsrmodel.
+		*/
+		virtual std::unique_ptr<FMTmodel>presolve(int presolvepass = 10, std::vector<Core::FMTactualdevelopment> optionaldevelopments = std::vector<Core::FMTactualdevelopment>()) const override;
+		// DocString: FMTsrmodel::boundsolution
+		/**
+		This function bounds the primal variables to the primal solution present within the matrix for
+		a given period and tolerance. Perfect function to update a FMTlpmodel or get ready for replanning.
+		*/
+		bool boundsolution(int period, double tolerance = FMT_DBL_TOLERANCE);
 	};
 
 }

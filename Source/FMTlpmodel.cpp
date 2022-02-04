@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Quï¿½bec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -136,44 +136,8 @@ namespace Models
 		return newclusterer;
 	}
 
-	bool FMTlpmodel::boundsolution(int period,double tolerance)
-	{
-		try {
-			if (static_cast<int>(graph.size()) > period)
-			{
-				const double* actual_solution = solver.getColSolution();
-				std::vector<int>variable_index;
-				std::vector<double>bounds;
-				Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_iterator it,itend;
 
-				for (boost::tie(it, itend)=graph.getperiodverticies(period);it!=itend;++it)
-				{
-					const Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor vertex_descriptor = *it;
-					const std::map<int, int>variables = graph.getoutvariables(vertex_descriptor);
-					for (std::map<int, int>::const_iterator varit = variables.begin(); varit != variables.end(); varit++)
-					{
-						if (std::find(variable_index.begin(), variable_index.end(), varit->second) == variable_index.end())
-						{
-							variable_index.push_back(varit->second);
-							//Had tolerance on primal infeasibilities with FMT_DBL_TOLERANCE ...
-							bounds.push_back(*(actual_solution + varit->second)*(1 - tolerance));
-							bounds.push_back(*(actual_solution + varit->second)*(1 + tolerance));
-						}
-					}
-				}
-				solver.setColSetBounds(&variable_index[0], &variable_index.back() + 1, &bounds[0]);
-				return this->resolve();
-				//return solver.stockresolve();
-			}
-		}catch (...)
-		{
-			_exhandler->printexceptions("at period " + std::to_string(period), "FMTlpmodel::boundsolution", __LINE__, __FILE__);
-		}
-
-    return false;
-	}
-
-	std::vector<Core::FMTconstraint> FMTlpmodel::getlocalconstraints(const std::vector<Core::FMTconstraint>& localconstraints, const int& period) const
+	std::vector<Core::FMTconstraint> FMTlpmodel::getreplanningconstraints(const std::string& modeltype, const std::vector<Core::FMTconstraint>& localconstraints, const int& period) const
 	{
 		std::vector<Core::FMTconstraint>newconstraints(localconstraints.begin(), localconstraints.end());
 		try
@@ -184,10 +148,10 @@ namespace Models
 					"Cannot getlocalconstraints from a non optimal global",
 					"FMTlpmodel::getlocalconstraints", __LINE__, __FILE__);
 				}
-			return FMTmodel::getlocalconstraints(localconstraints,period);
+			return FMTmodel::getreplanningconstraints(modeltype,localconstraints,period);
 		}catch (...)
 		{
-			_exhandler->printexceptions("", "FMTlpmodel::getlocalconstraints", __LINE__, __FILE__);
+			_exhandler->printexceptions("", "FMTlpmodel::getreplanningconstraints", __LINE__, __FILE__);
 		}
 		return newconstraints;
 	}
@@ -240,6 +204,7 @@ namespace Models
 	FMTsrmodel(base,lgraph,lsolver),
 	elements(lelements)
 	{
+		
 		solver.setnumberofthreads(getparameter(NUMBER_OF_THREADS));	
 	}
 
@@ -804,7 +769,7 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 				std::vector<double>medianvalues;
 				for (int period = first_period; period <= last_period; ++period)
 				{
-					medianvalues.push_back(this->getoutput(output, period).begin()->second);
+					medianvalues.push_back(this->getoutput(output, period,Core::FMToutputlevel::totalonly).begin()->second);
 				}
 				uppernlower["M" + output.getname()] = medianvalues;
 				this->setobjective(maxconstraint);
@@ -812,10 +777,10 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 				std::vector<double>uppervalues;
 				for (int period = first_period; period <= last_period; ++period)
 				{
-					uppervalues.push_back(this->getoutput(output, period).begin()->second);
+					uppervalues.push_back(this->getoutput(output, period,Core::FMToutputlevel::totalonly).begin()->second);
 				}
 				uppernlower["U" + output.getname()] = uppervalues;
-				this->eraseallconstraint(maxconstraint);
+				this->eraseconstraint(maxconstraint);
 				Core::FMTconstraint minconstraint(Core::FMTconstrainttype::FMTMINobjective, output);
 				minconstraint.setlength();
 				this->setobjective(minconstraint);
@@ -823,10 +788,10 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 				std::vector<double>lowervalues;
 				for (int period = first_period; period <= last_period; ++period)
 				{
-					lowervalues.push_back(this->getoutput(output, period).begin()->second);
+					lowervalues.push_back(this->getoutput(output, period,Core::FMToutputlevel::totalonly).begin()->second);
 				}
 				uppernlower["L" + output.getname()] = lowervalues;
-				this->eraseallconstraint(minconstraint);
+				this->eraseconstraint(minconstraint);
 			}
 			solver.setObjective(&originalcoefficients[0]);
 			solver.setObjSense(originalsense);
@@ -840,31 +805,21 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 		return uppernlower;
 		}
 
-	Graph::FMTgraphstats FMTlpmodel::eraseallconstraint(const Core::FMTconstraint& constraint)
-		{
-		try {
-			int first_period = 0;
-			int last_period = 0;
-			if (graph.constraintlenght(constraint, first_period, last_period))
-			{
-				for (int period = first_period; period <= last_period; ++period)
-				{
-					this->eraseconstraint(constraint, period);
-				}
-			}
-		}catch (...)
-		{
-			_exhandler->printexceptions("", "FMTlpmodel::eraseallconstraint", __LINE__, __FILE__);
-		}
-
-
-		return this->getstats();
-		}
-
 	Graph::FMTgraphstats FMTlpmodel::eraseconstraint(const Core::FMTconstraint& constraint, int period)
 		{
 		try {
-		if (static_cast<int>(elements.size()) > period && elements.at(period).find(std::string(constraint))!= elements.at(period).end())
+		if (period==-1)
+			{
+				int first_period = 0;
+				int last_period = 0;
+				if (graph.constraintlenght(constraint, first_period, last_period))
+				{
+					for (int period = first_period; period <= last_period; ++period)
+					{
+						this->eraseconstraint(constraint, period);
+					}
+				}
+			}else if (static_cast<int>(elements.size()) > period && elements.at(period).find(std::string(constraint))!= elements.at(period).end())
 			{
 			std::vector<std::vector<int>>all_elements = elements.at(period).at(std::string(constraint));
 			elements.at(period).erase(elements.at(period).find(std::string(constraint)));
@@ -1378,12 +1333,13 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 					}
 				return -1;
 			}
-			std::vector<int>sumvariables;
-			std::vector<double>sumcoefficiants;
-			summarize(indexes, sumvariables, sumcoefficiants);
+			
 			Graph::FMTgraphstats* stats = graph.getstatsptr();
 			if (element_type == FMTmatrixelement::constraint || element_type == FMTmatrixelement::strictlypositive)
 			{
+				std::vector<int>sumvariables;
+				std::vector<double>sumcoefficiants;
+				summarize(indexes, sumvariables, sumcoefficiants);
 				//*_logger<<"Add " <<std::string(constraint)<<" "<<element_type<< " "<<period<<"\n";
 				if (sumvariables.empty() && element_type == FMTmatrixelement::strictlypositive)
 				{
@@ -1397,7 +1353,8 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 			}
 			else {
 				element_id = stats->cols;
-				solver.addCol(0, &(*sumvariables.cbegin()),&(*sumcoefficiants.cbegin()), lowerbound, upperbound, 0);
+				//solver.addCol(0, &(*sumvariables.cbegin()),&(*sumcoefficiants.cbegin()), lowerbound, upperbound, 0);
+				solver.addCol(0,nullptr,nullptr, lowerbound, upperbound, 0);
 				++stats->cols;
 				++stats->output_cols;
 			}
@@ -1462,18 +1419,30 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 	std::vector<Heuristics::FMToperatingareascheduler>FMTlpmodel::getoperatingareaschedulerheuristics(const std::vector<Heuristics::FMToperatingareascheme>& opareas,
 																						const Core::FMToutputnode& node,
 																						size_t numberofheuristics,
-																						bool copysolver,
-																						bool updatematrixname)
+																						bool copysolver)		
 		{
 		bool userandomness = false;
 		size_t seedof = 1;
 		double proportionofset = 0.25;
 		std::vector<Heuristics::FMToperatingareascheduler>allheuristics;
 		try {
-			if (updatematrixname)//For debugging matrix
+			updatematrixnaming();
+			for(int i = 0 ; i < static_cast<int>(opareas.size()) ; ++i)
+			{
+				const Core::FMTmask m1 = opareas.at(i).getmask();
+				for(int ii = i+1 ; ii < static_cast<int>(opareas.size()) ; ++ii)
 				{
-				updatematrixnaming();
+					const Core::FMTmask m2 = opareas.at(ii).getmask();
+					if(!(m1.isnotthemessubset(m2,themes)))
+					{
+						_exhandler->raise(	Exception::FMTexc::FMTfunctionfailed,
+											"The masks of operating area intersects each other : \n"+std::string(m1)+"\n"+std::string(m2),
+											"FMTlpmodel::getObjValue",
+											__LINE__, __FILE__);
+					}
 				}
+			}
+			//Validate intersecting mask of opareas
 			allheuristics.emplace_back(opareas, graph, *this, node,*this->getsolverptr(), seedof, proportionofset, userandomness, copysolver);
 			for (size_t heuristicid = 1 ; heuristicid < numberofheuristics; ++heuristicid)
 				{
@@ -1690,24 +1659,23 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 		return std::unique_ptr<FMTmodel>(new FMTlpmodel(*this));
 		}
 
+	FMTlpmodel::FMTlpmodel(const FMTsrmodel& rhs) :
+		FMTsrmodel(rhs),
+		elements()
+	{
+
+	}
+
+
 	std::unique_ptr<FMTmodel> FMTlpmodel::presolve(int presolvepass, std::vector<Core::FMTactualdevelopment> optionaldevelopments) const
 	{
-		std::unique_ptr<FMTmodel> presolvedmodel;
 		try{
-			if(graph.empty())
-			{	
-				presolvedmodel = std::unique_ptr<FMTmodel>(new FMTlpmodel(*(FMTmodel::presolve(presolvepass, optionaldevelopments)),solver.getsolvertype()));
-			}else{
-				_exhandler->raise(	Exception::FMTexc::FMTfunctionfailed,
-									"Cannot presolve a lpmodel with period(s) builded in graph.",
-									"FMTlpmodel::presolve",
-									__LINE__, __FILE__);
-			}
+			return std::unique_ptr<FMTmodel>(new FMTlpmodel(*(dynamic_cast<FMTsrmodel*>(FMTsrmodel::presolve(presolvepass, optionaldevelopments).get()))));
 		}catch(...)
 		{
 			_exhandler->raisefromcatch("", "FMTlpmodel::presolve", __LINE__, __FILE__);
 		}
-		return presolvedmodel;
+		return std::unique_ptr<FMTmodel>(nullptr);
 	}
 
 	std::unique_ptr<FMTmodel> FMTlpmodel::postsolve(const FMTmodel& originalbasemodel) const
@@ -1715,6 +1683,7 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 		std::unique_ptr<FMTmodel> postsolvemodel;
 		try{
 			postsolvemodel = std::unique_ptr<FMTmodel>(new FMTlpmodel(*(FMTmodel::postsolve(originalbasemodel)),postsolvegraph(originalbasemodel),this->solver,this->elements));
+
 		}catch(...)
 		{
 			_exhandler->raisefromcatch("", "FMTlpmodel::postsolve", __LINE__, __FILE__);
@@ -1761,28 +1730,28 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 			{
 				addon = "FMT will use schedules pass by argument for periods 1 to "+std::to_string(schedules.size());
 			}
-			*_logger<<"Building "+getname()+" for "+std::to_string(length)+" periods. "+addon<<"\n";
+			_logger->logwithlevel("Building "+getname()+" for "+std::to_string(length)+" periods. "+addon+"\n",1);
 			//Period start at 0 but it's the period 1 that is created first. Reason is that schedules is a vector and the first elements 
 			//is the schedule for period 1 
 			for (int period = 0; period<length;++period)
 				{
 					if((!schedules.empty()) && (period<schedules.size()))
 					{
-						*_logger << std::string(this->buildperiod(schedules.at(period),forcepartialbuild,parameters.getperiodcompresstime(period)))<<"\n";
+						_logger->logwithlevel(std::string(this->buildperiod(schedules.at(period),forcepartialbuild,parameters.getperiodcompresstime(period)))+"\n",1);
 					}else{
-						*_logger << std::string(this->buildperiod(Core::FMTschedule(),false,parameters.getperiodcompresstime(period)))<<"\n";
+						_logger->logwithlevel(std::string(this->buildperiod(Core::FMTschedule(),false,parameters.getperiodcompresstime(period)))+"\n",1);
 					}
 				}
 			if(!schedules.empty())
 			{
 				addon = "FMT will use schedules pass by argument for periods 1 to "+std::to_string(schedules.size())+" to set the solution in the matrix.";
 			}
-			*_logger<<"Setting constraints on the "+getname()+". "+addon<<"\n";
+			_logger->logwithlevel("Setting constraints on the "+getname()+". "+addon+"\n",1);
 			for (size_t constraintid = 1; constraintid < constraints.size();++constraintid)
 				{
 				this->setconstraint(constraints.at(constraintid));
 				}
-			*_logger<<"*Graph stats with all constraints : \n"<<std::string(this->setobjective(constraints.at(0)))<<"\n";
+			_logger->logwithlevel("*Graph stats with all constraints : \n"+std::string(this->setobjective(constraints.at(0)))+"\n",1);
 			if( !schedules.empty() && length<=schedules.size() )
 			{
 				bool bylp = false;

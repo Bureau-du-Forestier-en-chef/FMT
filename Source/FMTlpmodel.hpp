@@ -172,11 +172,7 @@ class FMTEXPORT FMTlpmodel final : public FMTsrmodel
 	*/
 	bool issamematrixelement(const int& matrixindex, const FMTmatrixelement& element_type,
 			const double& lowerb, const double& upperb, const std::map<int, double>& variables) const;
-	// DocString: FMTlpmodel::eraseallconstraint
-	/**
-	Erase all constraints / variables related to a FMTconstraint for all the planning horizon (graph length).
-	*/
-	Graph::FMTgraphstats eraseallconstraint(const Core::FMTconstraint& constraint);
+	
 	// DocString: FMTlpmodel::getobjectivebounds
 	/**
 	Returns constraints indexes of the lower and upper bounds of the constraints set for the objective.
@@ -199,6 +195,11 @@ class FMTEXPORT FMTlpmodel final : public FMTsrmodel
 	*/
 	bool setpositiveoutputsinmatrix(const Core::FMTconstraint& constraint, const std::vector<std::map<int, double>>& strictlypositivesoutputs,int period);
 	virtual void swap_ptr(const std::unique_ptr<FMTmodel>& rhs);
+	// DocString: FMTlpmodel::FMTlpmodel(const FMTsrmodel&)
+	/**
+	Constructor to presolve FMTlpmodel.
+	*/
+	FMTlpmodel(const FMTsrmodel& rhs);
 	public:
 		void clearcache();
 		void clearconstraintlocation();
@@ -247,18 +248,12 @@ class FMTEXPORT FMTlpmodel final : public FMTsrmodel
 		To set the model parameter STRICTLY_POSITIVE at true.
 		*/
 		void setstrictlypositivesoutputsmatrix();
-		// DocString: FMTlpmodel::boundsolution
+		// DocString: FMTlpmodel::getreplanningconstraints
 		/**
-		This function bounds the primal variables to the primal solution present within the matrix for
-		a given period and tolerance. Perfect function to update a FMTlpmodel or get ready for replanning.
+		During replaning some local/global constraints need to be ajusted to the global model.
+		The function will take a vector of local/global constraint and ajust the bounds using the solution of this global/local model.
 		*/
-		bool boundsolution(int period,double tolerance = FMT_DBL_TOLERANCE);
-		// DocString: FMTlpmodel::getlocalconstraints
-		/**
-		During replaning some local constraints need to be ajusted to the global model.
-		The function will take a vector of local constraint and ajust the bounds using the solution of this global model.
-		*/
-		virtual std::vector<Core::FMTconstraint> getlocalconstraints(const std::vector<Core::FMTconstraint>& localconstraints,const int& period) const;
+		virtual std::vector<Core::FMTconstraint> getreplanningconstraints(const std::string& modeltype, const std::vector<Core::FMTconstraint>& localconstraints, const int& period) const;
 		// DocString: FMTlpmodel::addscheduletoobjective
 		/**
 		This function will addup weight to the objective function for a given schedule.
@@ -290,9 +285,10 @@ class FMTEXPORT FMTlpmodel final : public FMTsrmodel
 		Graph::FMTgraphstats setconstraint(const Core::FMTconstraint& constraint);
 		// DocString: FMTlpmodel::eraseconstraint
 		/**
-		Erase a constraint for a given period in the matrix and in the model elements.
+		Erase a constraint for a given period in the matrix and in the model elements. If period == -1 then it will erase
+		the constraint for the whole horizon else it will only erase the constraint for the specified period.
 		*/
-		Graph::FMTgraphstats eraseconstraint(const Core::FMTconstraint& constraint, int period);
+		Graph::FMTgraphstats eraseconstraint(const Core::FMTconstraint& constraint,int period=-1);
 		// DocString: FMTlpmodel::getvariabilities
 		/**
 		Get the variability of multiple outputs for a given tolerance across the planning horizon.
@@ -337,7 +333,7 @@ class FMTEXPORT FMTlpmodel final : public FMTsrmodel
 		std::vector<Heuristics::FMToperatingareascheduler>getoperatingareaschedulerheuristics(const std::vector<Heuristics::FMToperatingareascheme>& opareas,
 																				const Core::FMToutputnode& node,
 																				size_t numberofheuristics=1,
-																				bool copysolver=true,bool updatematrixname=false);
+																				bool copysolver=true);
         // DocString: FMTlpmodel::getoperatingareaclustererheuristics
 		/**
 		Using multiple operating areas this function generates multiples heuristics for solving the operating area clustering problem.

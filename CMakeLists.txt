@@ -9,6 +9,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 cmake_minimum_required(VERSION 3.6)
 
 
+
 project(FMT VERSION 0.9.3 LANGUAGES CXX)
 
 if (MSVC)
@@ -18,6 +19,8 @@ else()
 		set(BUILD_TYPE "${CMAKE_BUILD_TYPE}")
 	endif()
 endif(MSVC)
+
+
 
 
 set(FMTMAJOR "-DFMT_MAJOR=${PROJECT_VERSION_MAJOR}")
@@ -40,7 +43,6 @@ if (DEFINED ENV{PATH})
 	list(APPEND DLLlookuppaths $ENV{PATH})
 	string(REPLACE "\\" "/" DLLlookuppaths "${DLLlookuppaths}")
 endif(DEFINED ENV{PATH})
-
 if (DEFINED OSI_DIR)
 	if (EXISTS "${OSI_DIR}")
 		set(ENV{OSI_DIR} "${OSI_DIR}")
@@ -643,6 +645,10 @@ install (CODE
 				RESOLVED_DEPENDENCIES_VAR DEPENDENCIESfound
 				UNRESOLVED_DEPENDENCIES_VAR deps_unresolved
 				CONFLICTING_DEPENDENCIES_PREFIX deps_conflicts
+				PRE_EXCLUDE_REGEXES 
+                \"api-ms-*\" 
+            	POST_EXCLUDE_REGEXES
+                \".*system32/.*\\\\.dll\"
 				LIBRARIES \"\${FMTloc}\"
 				DIRECTORIES \${PATHS_DEPS}
 				)
@@ -657,6 +663,16 @@ install (CODE
     endif(DEPENDENCIES)
 	if (EXISTS \"${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}/setup.py\")
         find_program(PYTHON \"python\" PATHS \"${PYTHON_DIR}\" NO_DEFAULT_PATH)
+	if (NOT EXISTS \"$\{PYTHON\}\")
+		#MESSAGE ERREUR
+		messsage(FATAL_ERROR \"No Python found cannot install FMT\")
+	else()
+		#Call pip from python and install it....
+		execute_process(
+          	COMMAND \"$\{PYTHON\}\" -m pip install wheel
+         	 WORKING_DIRECTORY \"${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}\"
+       		 )
+	endif(NOT EXISTS \"$\{PYTHON\}\")
         execute_process(
           COMMAND \"$\{PYTHON\}\" -m pip wheel .
           WORKING_DIRECTORY \"${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}\"

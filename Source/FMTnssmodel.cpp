@@ -214,25 +214,23 @@ namespace Models
 		return std::unique_ptr<FMTmodel>(new FMTnssmodel(*this));
 		}
 
+	FMTnssmodel::FMTnssmodel(const FMTsrmodel& rhs, unsigned int seed) :
+		FMTsrmodel(rhs),
+		generator(seed)
+	{
+
+	}
+
+
 	std::unique_ptr<FMTmodel>FMTnssmodel::presolve(int presolvepass, std::vector<Core::FMTactualdevelopment> optionaldevelopments) const
 		{
-		std::unique_ptr<FMTmodel> presolvedmodel;
 		try {
-			if (graph.empty())
-			{
-				presolvedmodel = std::unique_ptr<FMTmodel>(new FMTnssmodel(*(FMTmodel::presolve(presolvepass, optionaldevelopments)),this->getparameter(FMTintmodelparameters::SEED)));
-			}
-			else {
-				_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
-					"Cannot presolve a lpmodel with period(s) builded in graph.",
-					"FMTnssmodel::presolve",
-					__LINE__, __FILE__);
-			}
+			return std::unique_ptr<FMTmodel>(new FMTnssmodel(*(dynamic_cast<FMTsrmodel*>(FMTsrmodel::presolve(presolvepass, optionaldevelopments).get())),this->getparameter(FMTintmodelparameters::SEED)));
 		}catch (...)
-		{
+			{
 			_exhandler->raisefromcatch("", "FMTnssmodel::presolve", __LINE__, __FILE__);
-		}
-		return presolvedmodel;
+			}
+		return std::unique_ptr<FMTmodel>(nullptr);
 		}
 
 	std::unique_ptr<FMTmodel> FMTnssmodel::postsolve(const FMTmodel& originalbasemodel) const
@@ -241,6 +239,7 @@ namespace Models
 		try {
 			postsolvemodel = std::unique_ptr<FMTmodel>(new FMTnssmodel(*(FMTmodel::postsolve(originalbasemodel)), this->getparameter(FMTintmodelparameters::SEED)));
 			dynamic_cast<FMTnssmodel*>(postsolvemodel.get())->graph = this->postsolvegraph(originalbasemodel);
+			dynamic_cast<FMTnssmodel*>(postsolvemodel.get())->solver = this->solver;
 		}catch (...)
 			{
 			_exhandler->raisefromcatch("", "FMTnssmodel::postsolve", __LINE__, __FILE__);
@@ -295,6 +294,7 @@ namespace Models
 			std::shuffle(actualarea.begin(), actualarea.end(), generator);
 			bool allocatedarea = true;
 			bool anyallocation = false;
+			double totaloperatedarea = 0;
 			while (allocatedarea&&!targetedarea.empty())
 				{
 				std::vector<Core::FMTactualdevelopment>::iterator devit = actualarea.begin();
@@ -313,6 +313,7 @@ namespace Models
 				if (!operables.empty())
 					{
 					const double operatedarea = std::min(targetedarea.at(operables.begin()->first), devit->getarea());
+					totaloperatedarea += operatedarea;
 					const std::vector<Core::FMTdevelopmentpath> paths = operate(*devit, operatedarea, operables.begin()->second, schedule);
 					updatearea(actualarea,devit, paths, operatedarea);
 					updateareatargets(operatedarea, operables.begin()->first, targetedoutputs, targetedarea, targetedactions);
@@ -337,6 +338,7 @@ namespace Models
 			schedule.clean();
 			this->buildperiod(schedule, true);
 			this->setsolution(simulatedperiod,schedule);
+			this->boundsolution(simulatedperiod);
 		}catch (...)
 		{
 			_exhandler->raisefromcatch("", "FMTnssmodel::simulate", __LINE__, __FILE__);

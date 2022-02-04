@@ -96,6 +96,8 @@ To populate comments in R and Python source files (files starting with R and PY)
   python commentsPythonandR.py
  ```
 
+You can take a look at this presentation for a short training on how to use FMT (R/Python) [FMT_R_Python_Training.pptx](Documentation/FMT_R_Python_Training.pptx) 
+
 # 👉 Examples
 
  Here's a short example for reading a forest planning model and solve the type III Linear programming formulation.
@@ -126,8 +128,7 @@ optimizationmodel.initialsolve()
 library(FMT)
 modelparser<-new(FMTmodelparser)
 models<-modelparser$readproject("pathtoprimaryfile",c("scenariox"),TRUE,TRUE,TRUE)#read scenario x from the primay file (.pri)
-solverinterface<-list(CLP=1,MOSEK=2,CPLEX=3,GUROBI=4)
-optimizationmodel<-new(FMTlpmodel,models[[1]],solverinterface$CLP)#Construct a type III linear programming model from the FMTmodel
+optimizationmodel<-new(FMTlpmodel,models[[1]],FMTsolverinterface$CLP)#Construct a type III linear programming model from the FMTmodel
 emptyschedule<-new(FMTschedule)
 #Build the graph for 10 periods
 for (period in 1:10)

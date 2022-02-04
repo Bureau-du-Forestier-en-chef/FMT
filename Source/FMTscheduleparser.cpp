@@ -102,7 +102,12 @@ namespace Parser {
 							{
 								++id;
 								const std::string actionname = values[id];
-								if (!isact(Core::FMTsection::Schedule, actions, actionname)) continue;
+								if (!isact(Core::FMTsection::Schedule, actions, actionname)) 
+								{
+									_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, 
+									"The schedule must specify an action existing in the model for each developement. No action named " + actionname + " at line " + std::to_string(_line),
+									"FMTscheduleparser::read", __LINE__, __FILE__);
+								}
 								++id;
 								const int period = getnum<int>(values[id]);
 								if (static_cast<size_t>(period) - 1 == data.size())
