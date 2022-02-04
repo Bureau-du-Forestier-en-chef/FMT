@@ -9,7 +9,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTconstants.hpp"
 #include "FMTtheme.hpp"
 #include "FMTdata.hpp"
-#include "FMTyieldmodel.hpp"
+#include "FMTyieldmodelpools.hpp"
 #include "FMTyieldparser.hpp"
 #include "FMTageyieldhandler.hpp"
 #include "FMTtimeyieldhandler.hpp"
@@ -362,38 +362,50 @@ Core::FMTdata FMTyieldparser::geteq(const std::string& basestr,
 
 std::unique_ptr<Core::FMTyieldmodel>FMTyieldparser::readyieldmodel(const std::string& modelname) const
 {
-	boost::property_tree::ptree root;
-	try{
+	try {
 		const boost::filesystem::path modeldirectory = boost::filesystem::path(getruntimelocation()) / boost::filesystem::path("YieldPredModels") / boost::filesystem::path(modelname);
-		if (boost::filesystem::is_directory(modeldirectory))
-			{
-			const boost::filesystem::path modeljson = modeldirectory / boost::filesystem::path(modelname + ".json");
-			if (boost::filesystem::is_regular_file(modeljson))
-				{
-				std::ifstream jsonstream(modeljson.string());
-				if (FMTparser::tryopening(jsonstream, modeljson.string()))
-					{
-					boost::property_tree::read_json(jsonstream, root);
-					jsonstream.close();
-					//Get the FMTyieldmodel
-					return std::unique_ptr<Core::FMTyieldmodel>(new Core::FMTyieldmodel(root));
-					}
-
-				}
+		if (!boost::filesystem::is_directory(modeldirectory))
+		{
 			_exhandler->raise(Exception::FMTexc::FMTinvalid_path,
-				modeljson.string(),
-				"FMTyieldparser::readyieldmodel", __LINE__, __FILE__, _section);
-			}
-		_exhandler->raise(Exception::FMTexc::FMTinvalid_path,
-			modeldirectory.string()+" is not a valid directory ",
-			"FMTyieldparser::readyieldmodel", __LINE__, __FILE__, _section);
-	}catch (...)
-	{
-	_exhandler->raisefromcatch("While reading model "+modelname,"FMTyieldparser::readyieldmodel", __LINE__, __FILE__, _section);
-	}
-	return std::unique_ptr<Core::FMTyieldmodel>(new Core::FMTyieldmodel(root));
-}
+							  modeldirectory.string() + " is not a valid directory ",
+							  "FMTyieldparser::readyieldmodel", __LINE__, __FILE__, _section);
+		}
+		const boost::filesystem::path modeljson = modeldirectory / boost::filesystem::path(modelname + ".json");
+		if (!boost::filesystem::is_regular_file(modeljson))
+		{
 
+			_exhandler->raise(Exception::FMTexc::FMTinvalid_path,
+							  modeljson.string(),
+							  "FMTyieldparser::readyieldmodel", __LINE__, __FILE__, _section);
+		}
+		std::ifstream jsonstream(modeljson.string());
+		if (!FMTparser::tryopening(jsonstream, modeljson.string()))
+		{
+			_exhandler->raise(Exception::FMTunhandlederror,
+							  modeljson.string(),
+							  "FMTyieldparser::readyieldmodel", __LINE__, __FILE__, _section);
+		}
+
+		boost::property_tree::ptree root;
+		boost::property_tree::read_json(jsonstream, root);
+		jsonstream.close();
+
+		//Get the FMTyieldmodel
+		boost::property_tree::ptree::const_assoc_iterator modelTypeIt = root.find("modelType"); //temporary hardcoded string
+		std::string modelType = modelTypeIt->second.data();
+		if(modelType == "POOLS")
+			return std::unique_ptr<Core::FMTyieldmodel>(new Core::FMTyieldmodelpools(root));
+		else
+		{
+			_exhandler->raise(Exception::FMTunhandlederror,
+							  modeljson.string(),
+							  "FMTyieldparser::readyieldmodel", __LINE__, __FILE__, _section);
+		}
+	} catch (...)
+	{
+		_exhandler->raisefromcatch("While reading model "+modelname,"FMTyieldparser::readyieldmodel", __LINE__, __FILE__, _section);
+	}
+}
 
 Core::FMTyields FMTyieldparser::read(const std::vector<Core::FMTtheme>& themes,const Core::FMTconstants& constants,const std::string& location)
     {

@@ -9,15 +9,18 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <boost/serialization/nvp.hpp>
 #include <boost/property_tree/json_parser.hpp>
 
-#ifdef FMTWITHONNXR
-#include  <onnxruntime/core/session/onnxruntime_cxx_api.h>
-#endif
-
-
 #ifndef FMTYIELDMODEL_H_INCLUDED
 #define FMTYIELDMODEL_H_INCLUDED
 
+namespace Ort
+{
+	class Env;
+}
 
+namespace Graph
+{
+	class FMTcarbonpredictor;
+}
 
 namespace Core 
 {
@@ -32,30 +35,28 @@ namespace Core
 			ar & modelname;
 		}
 	private:
-		std::string modelName;
-		std::string modelType;
+	protected:
 		static std::unique_ptr<Ort::Env> envPtr;
-		/*std::unique_ptr<Ort::Session> sessionPtr = NULL;
-		std::unique_ptr<Ort::AllocatorWithDefaultOptions> allocatorPtr = NULL;*/
-		std::vector<float> standardParamMeans = {};
-		std::vector<float> standardParamVars = {};
+		static const float UNKNOWN_DISTURBANCE_CODE;
+		const std::string JSON_PROP_MODEL_NAME = "modelFileName";
+		const std::string JSON_PROP_MODEL_TYPE = "modelType";
+		const std::string JSON_PROP_MODEL_YIELDS = "modelYields";
+		const std::string JSON_PROP_STAND_FILE_PATH = "csvStandardisationFile";
 	public:
-		FMTyieldmodel()=default;
-		FMTyieldmodel(const FMTyieldmodel & rhs);
-		FMTyieldmodel& operator = (const FMTyieldmodel& rhs) = default;
-		virtual ~FMTyieldmodel() = default;
-		FMTyieldmodel(const boost::property_tree::ptree & jsonProps);
-		const std::string& GetModelName() const;
-		const std::string& GetModelType() const;
-		const std::vector<float>& GetStandardParamMeans() const;
-		const std::vector <float> & GetStandardParamVars() const;
-		const std::vector<std::string> getNextLineAndSplitIntoTokens(std::istream& str);
-		const std::vector<float> standardize(std::vector<float>& input, const std::vector<float>& means, const std::vector<float>& vars) const;
-		virtual std::unique_ptr<FMTyieldmodel>Clone() const;
-		virtual std::string GetModelInfo() const;
-		virtual bool Validate(const std::vector<std::string>& YieldsAvailable) const;
-		virtual std::vector<std::string>GetYieldsOutputs() const;
-		virtual std::vector<double>Predict(const Core::FMTyieldrequest& request) const;
+		static const std::vector<std::string> GetNextLineAndSplitIntoTokens(std::istream& str);
+		static const std::vector<float> Standardize(std::vector<float>& input, const std::vector<float>& means, const std::vector<float>& vars);
+		static const void RemoveNans(std::vector<float>& input);
+		const std::vector<double>Predict(const Core::FMTyieldrequest& request) const;
+		virtual const std::string& GetModelName() const = 0;
+		virtual const std::string& GetModelType() const = 0;
+		virtual const std::vector<float>& GetStandardParamMeans() const = 0;
+		virtual const std::vector<float>& GetStandardParamVars() const = 0;
+		virtual const std::vector<std::string>& GetModelYields() const = 0;
+		virtual std::unique_ptr<FMTyieldmodel>Clone() const = 0;
+		virtual const std::string GetModelInfo() const = 0;
+		virtual bool Validate(const std::vector<std::string>& YieldsAvailable) const = 0;
+		virtual const std::vector<std::string>GetYieldsOutputs() const = 0;
+		virtual const std::vector<double> GetInputValues(const Graph::FMTcarbonpredictor& predictor) const = 0;
 	};
 }
 

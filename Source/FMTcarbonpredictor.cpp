@@ -144,6 +144,51 @@ namespace Graph
 		return returned;
 	}
 
+	double FMTcarbonpredictor::getDistance(size_t actId) const
+	{
+		double gap = periodgaps.at(actId);
+		if (actId == 0)
+		{
+			if (sourceactions.at(0) == -2)
+				gap = std::numeric_limits<double>::signaling_NaN();
+		}
+		else if (gap < 0)
+				gap = std::numeric_limits<double>::signaling_NaN();
+
+		return gap;
+	}
+
+	double FMTcarbonpredictor::getDisturbance(size_t actId) const
+	{
+		double dist = sourceactions.at(actId);
+		if(actId > 0 && periodgaps.at(actId) < 0)
+		{
+			dist = std::numeric_limits<double>::signaling_NaN();;
+		}
+
+		return dist;
+	}
+
+	double FMTcarbonpredictor::getSourceAge() const
+	{
+		return static_cast<double>(source_vertex->get().getage());
+	}
+
+	std::vector<double> FMTcarbonpredictor::getSourceYields() const
+	{
+		return source_yields;
+	}
+
+	double FMTcarbonpredictor::getTargetAge() const
+	{
+		return static_cast<double>(target_vertex->get().getage());
+	}
+
+	std::vector<double> FMTcarbonpredictor::getTargetYields() const
+	{
+		return target_yields;
+	}
+
 	std::vector<std::string>FMTcarbonpredictor::getpredictornames(const std::vector<std::string>& yieldnames)const
 	{
 		std::vector<std::string>predictornames;

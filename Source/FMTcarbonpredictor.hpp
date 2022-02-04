@@ -44,6 +44,12 @@ namespace Graph
 		bool operator==(const FMTcarbonpredictor& rhs) const;
 		bool operator<(const FMTcarbonpredictor& rhs) const;
 		std::vector<double>getpredictors() const;
+		double getDistance(size_t actId) const;
+		double getDisturbance(size_t actId) const;
+		double getSourceAge() const;
+		std::vector<double> getSourceYields() const;
+		double getTargetAge() const;
+		std::vector<double> getTargetYields() const;
 		std::vector<std::string>getpredictornames(const std::vector<std::string>& yieldnames)const;
 	};
 }

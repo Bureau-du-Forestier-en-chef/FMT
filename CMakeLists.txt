@@ -9,6 +9,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 cmake_minimum_required(VERSION 3.6)
 
 
+project(FMT VERSION 0.9.3 LANGUAGES CXX)
 
 if (MSVC)
 	SET(CMAKE_CONFIGURATION_TYPES ${BUILD_TYPE} CACHE STRING "" FORCE)
@@ -17,11 +18,6 @@ else()
 		set(BUILD_TYPE "${CMAKE_BUILD_TYPE}")
 	endif()
 endif(MSVC)
-
-
-project(FMT VERSION 0.9.3 LANGUAGES CXX)
-
-
 
 
 set(FMTMAJOR "-DFMT_MAJOR=${PROJECT_VERSION_MAJOR}")
