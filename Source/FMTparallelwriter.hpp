@@ -5,6 +5,7 @@
 #include <string>
 #include <memory>
 #include <boost/thread/recursive_mutex.hpp>
+#include "FMTutility.hpp"
 
 #ifdef FMTWITHGDAL
 class GDALDataset;
@@ -32,18 +33,41 @@ namespace Parallel
 		///The dataset of the results.
 		GDALDataset* resultsdataset;
 		// DocString: FMTparallelwriter::resultslayer
-		///The layer of the results.
-		OGRLayer* resultslayer;
+		///The layer of the results. the key is the model name.
+		std::map<std::string,OGRLayer*> resultslayer;
+		// DocString: FMTparallelwriter::driftlayer
+		///The drift layer probability.
+		OGRLayer* driftlayer;
 		#endif
 		// DocString: FMTparallelwriter::mtx
 		///The recursive mutex used to control the usage of the writer by the thread.
 		mutable boost::recursive_mutex mtx;
+		// DocString: FMTparallelwriter::resultsminimaldrift;
+		///Used when writing drift probability layer
+		double resultsminimaldrift;
+		// DocString: FMTparallelwriter::outputslevel;
+		///The output level of detail
+		Core::FMToutputlevel outputslevel;
+	protected:
+		// DocString: FMTparallelwriter::getdriftprobability()
+		/**
+		Calculate the drift probabilities.
+		*/
+		const std::map<std::string, std::map<double, std::vector<double>>>getdriftprobability(
+			const std::map<std::string, std::vector<std::vector<double>>>& globalvalues,
+			const std::map<std::string, std::vector<std::vector<double>>>& localvalues,
+			const bool lower = true) const;
 	public:
 		// DocString: FMTparallelwriter::FMTparallelwriter()
 		/**
 		Default constructor for FMTparallelwriter.
 		*/
 		FMTparallelwriter() = default;
+		// DocString: ~FMTparallelwrite()
+		/**
+		Default destructor for FMTparallelwrite.
+		*/
+		virtual ~FMTparallelwriter();
 		// DocString: FMTparallelwriter::FMTparallelwriter(const FMTparallelwriter&)
 		/**
 		Default copy constructor for FMTparallelwriter.
@@ -61,13 +85,27 @@ namespace Parallel
 		FMTparallelwriter(const std::string& location,
 			const std::string& driver,
 			const std::vector<Core::FMToutput>& outputs,
-			const Models::FMTmodel& model);
+			const std::vector<Models::FMTmodel*>& allmodels,
+			std::vector<std::string>layersoptions = std::vector<std::string>(),
+			double minimaldrift = 0.5,
+			Core::FMToutputlevel outputlevel = Core::FMToutputlevel::totalonly);
 		// DocString: FMTparallelwriter::write()
 		/**
 		Write the modelptr results from the firstperiod to the lastperiod for a given iteration (replicate).
 		*/
-		void write(const std::unique_ptr<Models::FMTmodel>& modelptr, const int& firstperiod,
-			const int& lastperiod, const int& itertion) const;
+		void write(const std::string& modelname,
+			const std::map<std::string, std::vector<std::vector<double>>>& results,
+			const int& firstperiod, const int& lastperiod, const int& iteration) const;
+		// DocString: FMTparallelwriter::getresults()
+		/**
+		Get the results of a model.
+		*/
+		std::map<std::string, std::vector<std::vector<double>>> getresults(const std::unique_ptr<Models::FMTmodel>& modelptr, const int& firstperiod,const int& lastperiod) const;
+		// DocString: FMTparallelwriter::setdriftprobability()
+		/**
+		Get the results of a model With the global model and the localmodel starting from a minimum drift proportion.
+		*/
+		void setdriftprobability(const std::string& globalmodel, const std::string& localmodel) const;
 	};
 }
 #endif

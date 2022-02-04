@@ -115,7 +115,6 @@ namespace Core
 
 	}
 
-
 		void FMTobject::setCPLhandler()
 			{
 			#if defined  FMTWITHGDAL

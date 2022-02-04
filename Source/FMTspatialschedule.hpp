@@ -101,9 +101,9 @@ class FMTEXPORT FMTspatialschedule : public FMTlayer<Graph::FMTlinegraph>
         Test whether the map is empty.
         */
         bool empty() const {return mapping.empty();};
-        // DocString: FMTspatialschedule::lasperiod()
+        // DocString: FMTspatialschedule::actperiod()
         /**
-        Return the last period in the graph.
+        Return the last period in the graph which is the active one.
         */
         int actperiod() const;
         // DocString: FMTspatialschedule::copyfromselected(const FMTspatialschedule, const std::vector<size_t>)
@@ -118,9 +118,9 @@ class FMTEXPORT FMTspatialschedule : public FMTlayer<Graph::FMTlinegraph>
 		bool swapfromselected(FMTspatialschedule& rhs, const std::vector<size_t>& selected);
         // DocString: FMTspatialschedule::getforestperiod(const int)
         /**
-        Return the FMTforest corresponding to the period asked.
+        Return the FMTforest corresponding to the period asked. If periodstart, the forest pass wil be the one before the actions as been set otherwise, it will be the forest after the actions as been set. 
         */
-        FMTforest getforestperiod(const int& period) const;
+        FMTforest getforestperiod(const int& period,bool periodstart=false) const;
 		// DocString: FMTspatialschedule::allow_action
 		/**
 		Check in all events around the location during periods corresponding to green up delay
@@ -156,9 +156,10 @@ class FMTEXPORT FMTspatialschedule : public FMTlayer<Graph::FMTlinegraph>
 		   const int& period, const std::vector<bool>& actionsused,
 		   std::unordered_set<size_t>& relations,
 		   const std::vector<FMTeventcontainer::const_iterator>& events) const;*/
-		// DocString: FMTspatialschedule::getallowable
+		// DocString: FMTspatialschedule::verifyspatialfeasability
 		/**
-		For the target action, return a set of FMTcoordinate corresponding to the cells that are spatially allowable from coordinates that are operables.
+		For the target action, return a set of FMTcoordinate corresponding to the cells that are spatially allowable from coordinates that are operables. Mainly only check for coord
+		respecting the greenup constraint.
 		*/
 		std::set<FMTcoordinate> verifyspatialfeasability(const int& targetaction,
 			const std::vector<Spatial::FMTbindingspatialaction>& bindingactions,

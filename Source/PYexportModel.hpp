@@ -29,7 +29,7 @@ BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(getschedulesoverloads, getschedule, 0, 1)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(getpotentialscheduleoverloads, getpotentialschedule,2,3)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(warmup_overloads, warmup, 2, 4)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(evaluate_overloads, evaluate, 1, 2)
-BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(getoperatingareaschedulerheuristics_overloads, getoperatingareaschedulerheuristics,2, 5)
+BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(getoperatingareaschedulerheuristics_overloads, getoperatingareaschedulerheuristics,2, 4)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(getoperatingareaclustererheuristics_overloads,getoperatingareaclustererheuristics,4,7)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(getvariabilities_overloads, getvariabilities, 1, 2)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(getareavariabilities_overloads, getareavariabilities,2,3)
@@ -42,6 +42,7 @@ BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(addscheduletoobjective_overloads, addsche
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(getarea_overloads, getarea, 0, 2)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(doplanning_overloads,doplanning,1,2)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(showparameters_overloads,showparameters,0,1)
+BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(eraseconstraint_overloads,eraseconstraint,1, 2)
 
 void exportModel()
     {
@@ -262,7 +263,7 @@ void exportModel()
 		.def("setconstraint", &Models::FMTlpmodel::setconstraint,
 			"@DocString(FMTlpmodel::setconstraint)")
 		.def("eraseconstraint", &Models::FMTlpmodel::eraseconstraint,
-			"@DocString(FMTlpmodel::eraseconstraint)")
+			eraseconstraint_overloads(bp::args("constraint","period"),"@DocString(FMTlpmodel::eraseconstraint)"))
 		.def("eraseperiod", &Models::FMTlpmodel::eraseperiod,
 			eraseperiod_overloads(bp::args("constraintsonly"), "@DocString(FMTlpmodel::eraseperiod)"))
 		.def("resolve", &Models::FMTlpmodel::resolve,
@@ -277,8 +278,8 @@ void exportModel()
 		.def("getObjValue", &Models::FMTlpmodel::getObjValue,
 					"@DocString(FMTlpmodel::getObjValue)")
 		.def("getlocalconstraints",
-			&Models::FMTlpmodel::getlocalconstraints,
-			"@DocString(FMTlpmodel::getlocalconstraints)")
+			&Models::FMTlpmodel::getreplanningconstraints,
+			"@DocString(FMTlpmodel::getreplanningconstraints)")
 		.def("writeLP",
 			&Models::FMTlpmodel::writeLP,
 			"@DocString(FMTlpmodel::writeLP)")

@@ -841,7 +841,7 @@ namespace Parser{
 				*_logger<<"Writing FMTforest to : "<<writeforestfolder<<"\n";
 				boost::filesystem::path basepath(writeforestfolder);
 				boost::filesystem::path agepath = basepath / "AGE.tif";
-        		boost::filesystem::path lockpath = basepath / "LOCK.tif";
+        		boost::filesystem::path lockpath = basepath / "STANLOCK.tif";
 				std::vector<std::string> themespaths;
 				themespaths.reserve(themes.size());
             	for (size_t i = 1; i <= themes.size();i++)
