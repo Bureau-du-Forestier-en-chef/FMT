@@ -153,6 +153,7 @@ namespace Core
 		{
 			if (this->ispastperiod())
 			{
+				node_period = period;
 				if ((this->source.getperiodlowerbound() + period) >= 0)
 				{
 					const FMTperbounds perbound(FMTsection::Optimize, node_period, node_period);
