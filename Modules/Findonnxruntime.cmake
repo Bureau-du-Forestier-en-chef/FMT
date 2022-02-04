@@ -102,13 +102,12 @@ find_library(ONNXPROTO_LIBRARY onnx_proto
 
 
 set(onnxruntime_LIBRARIES "optimized;${onnxruntime_LIBRARY};optimized;${win_getopt_wide_LIBRARY};optimized;${onnxruntime_session_LIBRARY};optimized;${onnxruntime_optimizer_LIBRARY};optimized;${onnxruntime_providers_LIBRARY};optimized;${onnxruntime_util_LIBRARY};optimized;${onnxruntime_framework_LIBRARY};optimized;${onnxruntime_graph_LIBRARY};optimized;${onnxruntime_common_LIBRARY};optimized;${onnxruntime_mlas_LIBRARY};optimized;${PROTOLIB_LIBRARY};optimized;${RE2_LIBRARY};optimized;${ONNXP_LIBRARY};optimized;${ONNXPROTO_LIBRARY}")
-set(onnxruntime_DEBUGLIBRARIES "debug;${onnxruntime_LIBRARY};debug;${win_getopt_wide_LIBRARY};debug;${onnxruntime_session_LIBRARY};debug;${onnxruntime_optimizer_LIBRARY};debug;${onnxruntime_providers_LIBRARY};debug;${onnxruntime_util_LIBRARY};debug;${onnxruntime_framework_LIBRARY};debug;${onnxruntime_graph_LIBRARY};debug;${onnxruntime_common_LIBRARY};debug;${onnxruntime_mlas_LIBRARY};debug;${PROTOLIB_LIBRARY};debug;${RE2_LIBRARY};debug;${ONNXP_LIBRARY};debug;${ONNXPROTO_LIBRARY}")
-list (APPEND onnxruntime_LIBRARIES ${onnxruntime_DEBUGLIBRARIES})
+#set(onnxruntime_DEBUGLIBRARIES "debug;${onnxruntime_LIBRARY};debug;${win_getopt_wide_LIBRARY};debug;${onnxruntime_session_LIBRARY};debug;${onnxruntime_optimizer_LIBRARY};debug;${onnxruntime_providers_LIBRARY};debug;${onnxruntime_util_LIBRARY};debug;${onnxruntime_framework_LIBRARY};debug;${onnxruntime_graph_LIBRARY};debug;${onnxruntime_common_LIBRARY};debug;${onnxruntime_mlas_LIBRARY};debug;${PROTOLIB_LIBRARY};debug;${RE2_LIBRARY};debug;${ONNXP_LIBRARY};debug;${ONNXPROTO_LIBRARY}")
+#list (APPEND onnxruntime_LIBRARIES ${onnxruntime_DEBUGLIBRARIES})
 
 FILE(GLOB_RECURSE onnxruntime_DLLs ${ONNXLIB_DIR}/*.dll)
 
 #Onnxruntime broken in debug...
-#[[
 if (DEFINED ONNXLIBDEBUG_DIR)#If got debug
 	#Needs to be for debug and release here!
 	get_filename_component(ONNXRDEBUGBUILD_DIR ${ONNXLIBDEBUG_DIR} DIRECTORY)
@@ -183,7 +182,7 @@ if (DEFINED ONNXLIBDEBUG_DIR)#If got debug
 else()
 	FILE(GLOB_RECURSE onnxruntime_DLLs ${ONNXLIB_DIR}/*.dll)
 endif(DEFINED ONNXLIBDEBUG_DIR)
-]]
+
 
 
 find_package_handle_standard_args(onnxruntime DEFAULT_MSG onnxruntime_LIBRARIES onnxruntime_INCLUDE_DIRS onnxruntime_DLLs)
