@@ -48,7 +48,8 @@ namespace Core {
 		modelName(rhs.GetModelName()),
 		modelType(rhs.GetModelType()),
 		standardParamMeans(rhs.GetStandardParamMeans()),
-		standardParamVars(rhs.GetStandardParamVars())
+		standardParamVars(rhs.GetStandardParamVars()),
+		modelYields(rhs.GetModelYields())
 	{
 	}
 

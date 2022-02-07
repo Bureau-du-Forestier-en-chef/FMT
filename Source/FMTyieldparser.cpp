@@ -10,6 +10,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTtheme.hpp"
 #include "FMTdata.hpp"
 #include "FMTyieldmodelpools.hpp"
+#include "FMTyieldmodelnep.hpp"
 #include "FMTyieldparser.hpp"
 #include "FMTageyieldhandler.hpp"
 #include "FMTtimeyieldhandler.hpp"
@@ -395,6 +396,8 @@ std::unique_ptr<Core::FMTyieldmodel>FMTyieldparser::readyieldmodel(const std::st
 		std::string modelType = modelTypeIt->second.data();
 		if(modelType == "POOLS")
 			return std::unique_ptr<Core::FMTyieldmodel>(new Core::FMTyieldmodelpools(root));
+		if (modelType == "NEP")
+			return std::unique_ptr<Core::FMTyieldmodel>(new Core::FMTyieldmodelnep(root));
 		else
 		{
 			_exhandler->raise(Exception::FMTunhandlederror,

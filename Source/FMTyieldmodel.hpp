@@ -9,13 +9,17 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <boost/serialization/nvp.hpp>
 #include <boost/property_tree/json_parser.hpp>
 
+#ifdef FMTWITHONNXR
+#include  <onnxruntime/core/session/onnxruntime_cxx_api.h>
+#endif
+
 #ifndef FMTYIELDMODEL_H_INCLUDED
 #define FMTYIELDMODEL_H_INCLUDED
 
-namespace Ort
-{
-	class Env;
-}
+//namespace Ort
+//{
+//	class Env;
+//}
 
 namespace Graph
 {
