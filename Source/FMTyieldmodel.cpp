@@ -13,10 +13,6 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTcarbonpredictor.hpp"
 #include "FMTsrmodel.hpp"
 
-#ifdef FMTWITHONNXR
-#include  <onnxruntime/core/session/onnxruntime_cxx_api.h>
-#endif
-
 namespace Core {
 	std::unique_ptr<Ort::Env> FMTyieldmodel::envPtr = std::unique_ptr<Ort::Env>(new Ort::Env());
 	const float FMTyieldmodel::UNKNOWN_DISTURBANCE_CODE = 17;

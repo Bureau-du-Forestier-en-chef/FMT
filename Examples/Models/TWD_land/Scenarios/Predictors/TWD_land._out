@@ -45,5 +45,5 @@
 *OUTPUT _SoilCPerArea
 *SOURCE _SoilC
 
-
-
+*OUTPUT _NEP
+*SOURCE ? ? ? _INVENT NEP
