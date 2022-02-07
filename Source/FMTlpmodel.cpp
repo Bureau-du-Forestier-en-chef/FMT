@@ -1242,7 +1242,7 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
      bool FMTlpmodel::resolve()
         {
 		 try {
-		return solver.resolve();
+		return solver.stockresolve();
 		 }catch (...)
 		 {
 			 _exhandler->printexceptions("", "FMTlpmodel::resolve", __LINE__, __FILE__);
