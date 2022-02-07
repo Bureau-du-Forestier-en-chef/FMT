@@ -547,7 +547,7 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 								}
 							}
 						}
-						if (goal_variable != -1&& lowerbound == std::numeric_limits<double>::lowest())
+						if (goal_variable != -1 && (lowerbound == std::numeric_limits<double>::lowest() || lowerbound == upperbound))
 							{
 							lowervars[goal_variable] = -1;
 							}
@@ -569,7 +569,7 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 							}
 							lowerbound = 0;
 							upperbound = std::numeric_limits<double>::max();
-							if (goal_variable != -1 && lowerbound == std::numeric_limits<double>::lowest())
+							if (goal_variable != -1 && (lowerbound == std::numeric_limits<double>::lowest() || lowerbound == upperbound))
 								{
 								uppervars[goal_variable] = -1;
 								}

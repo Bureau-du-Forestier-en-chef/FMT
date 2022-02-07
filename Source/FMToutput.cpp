@@ -414,7 +414,16 @@ FMToutput FMToutput::boundto(const std::vector<FMTtheme>& themes, const FMTperbo
 					}
 				}
 			}
-		}
+		}else if(newoutput.islevel())
+			{
+			std::vector<FMToutputsource>levelsources;
+			for (const FMToutputsource& source : newoutput.sources)
+				{
+				levelsources.push_back(Core::FMToutputsource(Core::FMTotar::level,source.getvalue(),"",
+										newoutput.name, source.getoutputorigin(),source.getthemetarget()));
+				}
+			newoutput.sources = levelsources;
+			}
 	}catch (...)
 		{
 		_exhandler->raisefromcatch("for "+this->getname(),"FMToutput::boundto", __LINE__, __FILE__, Core::FMTsection::Outputs);
