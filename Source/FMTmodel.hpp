@@ -179,7 +179,7 @@ namespace Models
 		Return a mask covering the actual bits used by the FMTmodel and the optionaldevelopements.
 		*/
 		Core::FMTmask getbasemask(std::vector<Core::FMTactualdevelopment> optionaldevelopments) const;
-		// DocString: FMTmodel::locatestatictransitionthemesptr
+		// DocString: FMTmodel::getstatictransitionthemes
 		/**
 		locate the static transition themes.
 		*/

@@ -305,9 +305,14 @@ namespace Spatial
 		getclosescoordinates(rhs, thiscoordinate, rhscoordinate);
 		return thiscoordinate->distance(*rhscoordinate);
 		}
-
-	bool FMTevent::within(unsigned int dist, const FMTevent& rhs) const
+    
+    template<typename T>
+	bool FMTevent::within(const T& dist, const FMTevent& rhs) const
 	{
+        if(dist<0)
+        {
+            //raise
+        }
 		const std::set<FMTcoordinate>::const_iterator center = midposition();
 		const std::set<FMTcoordinate>::const_iterator rhscenter = rhs.midposition();
 		if (center->within(dist, *rhscenter))
@@ -328,67 +333,33 @@ namespace Spatial
 			}
 			return false;
 		}
+    template bool FMTevent::within<unsigned int>(const unsigned int& dist, const FMTevent& rhs) const;
+    template bool FMTevent::within<double>(const double& dist, const FMTevent& rhs) const;
 
-
-    bool FMTevent::within(unsigned int dist, const FMTcoordinate& location) const
+    template<typename T>
+    bool FMTevent::within(const T& dist, const FMTcoordinate& location) const
     {
-	const std::set<FMTcoordinate>::const_iterator center = midposition();
-    if(center->within(dist,location))
+        if(dist<0)
         {
-        return true;
-	}else{
-		for (std::set<FMTcoordinate>::const_iterator elemit = elements.begin(); elemit != elements.end(); elemit++)
-			{
-			if (elemit->within(dist, location))
-				{
-				return true;
-				}
-			}
-		}
-    return false;
+            //raise
+        }
+        const std::set<FMTcoordinate>::const_iterator center = midposition();
+        if(center->within(dist,location))
+            {
+            return true;
+        }else{
+            for (std::set<FMTcoordinate>::const_iterator elemit = elements.begin(); elemit != elements.end(); elemit++)
+                {
+                if (elemit->within(dist, location))
+                    {
+                    return true;
+                    }
+                }
+            }
+        return false;
     }
-
-    	bool FMTevent::withinlessthan(unsigned int dist, const FMTevent& rhs) const
-	{
-		const std::set<FMTcoordinate>::const_iterator center = midposition();
-		const std::set<FMTcoordinate>::const_iterator rhscenter = rhs.midposition();
-		if (center->withinlessthan(dist, *rhscenter))
-		{
-			return true;
-		}else
-			{
-			for (std::set<FMTcoordinate>::const_iterator coord = elements.begin();coord!=elements.end();++coord)
-			{
-				for (std::set<FMTcoordinate>::const_iterator rhscoord = rhs.elements.begin(); rhscoord != rhs.elements.end(); ++rhscoord)
-				{
-					if (coord->withinlessthan(dist, *rhscoord))
-					{
-						return true;
-					}
-				}
-			}
-			}
-			return false;
-		}
-
-
-    bool FMTevent::withinlessthan(unsigned int dist, const FMTcoordinate& location) const
-    {
-	const std::set<FMTcoordinate>::const_iterator center = midposition();
-    if(center->withinlessthan(dist,location))
-        {
-        return true;
-	}else{
-		for (std::set<FMTcoordinate>::const_iterator elemit = elements.begin(); elemit != elements.end(); elemit++)
-			{
-			if (elemit->withinlessthan(dist, location))
-				{
-				return true;
-				}
-			}
-		}
-    return false;
-    }
+    template bool FMTevent::within<unsigned int>(const unsigned int& dist, const FMTcoordinate& location) const;
+    template bool FMTevent::within<double>(const double& dist, const FMTcoordinate& location) const;
 
     bool FMTevent::contain(const FMTcoordinate& coord)const
     {

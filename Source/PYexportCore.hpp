@@ -363,7 +363,11 @@ void exportCore()
 				.def("__eq__", &Core::FMTconstraint::operator ==,
 					"@DocString(FMTconstraint::operator==)")
 				.def("getiterationchange",&Core::FMTconstraint::getiterationchange,
-					"@DocString(FMTconstants::getiterationchange,)");
+					"@DocString(FMTconstants::getiterationchange,)")
+				.def("isspatial",&Core::FMTconstraint::isspatial,
+					"@DocString(FMTconstants::isspatial)")
+				.def("sense",&Core::FMTconstraint::sense,
+					"@DocString(FMTconstants::sense)");
 
 			define_FMTlist<Core::FMTconstraint>();
 			define_FMTlist<Core::FMTGCBMtransition>();

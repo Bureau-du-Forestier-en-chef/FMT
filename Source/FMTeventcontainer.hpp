@@ -19,6 +19,9 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 namespace Spatial
 {
+
+class FMTbindingspatialaction;
+
 // DocString: FMTeventcontainer
 /**
 This class is a container for FMTevent. It's build to handle event
@@ -156,31 +159,17 @@ class FMTEXPORT FMTeventcontainer : public Core::FMTobject
         Return a pair of iterator pointing to the first and the last elements in the period
         */
         std::pair<const_iterator,const_iterator> getbounds(const int& period) const;
-        // DocString: FMTeventcontainer::addaction(const FMTcoordinate&, const int&, const int&)
+        // DocString: FMTeventcontainer::addaction(const FMTcoordinate&, const int&, const int&,const FMTbindingspatialaction&)
         /*
-        Add an action at coordinate and add to existing event if possible or aggregate events
-        if possible.
+        Add an action at coordinate and add to existing event if possible or aggregate events based on binding
         */
-        void addaction (const FMTcoordinate& coord, const int& period,const int& actionid);
-		// DocString: FMTeventcontainer::addaction(const FMTcoordinate&, const int&, const int&,const size_t&)
-		/*
-		Add an action at coordinate and add to existing event if possible or aggregate events
-		if possible. Maxsize is the maximal size an event can be. 
-		*/
-		void addaction(const FMTcoordinate& coord, const int& period, const int& actionid,const size_t& maxsize);
-        // DocString: FMTeventcontainer::addaction(const FMTcoordinate&, const int&, const int&,const size_t&, const size_t&)
-		/*
-		Add an action at coordinate and add to existing event if possible or aggregate events
-		if possible. Maxsize is the maximal size an event can be. Neigborsize is type of spread for the action. 
-        Must be 4,8 or 12
-		*/
-        void addaction(const FMTcoordinate& coord, const int& period, const int& actionid,const size_t& maxsize, const size_t& neighborsize);
+        void addaction (const FMTcoordinate& coord, const int& period,const int& actionid,const FMTbindingspatialaction& binding);
 		// DocString: FMTeventcontainer::addactions()
 		/*
-		Add actions at coordinate and add to existing event if possible or aggregate events
-		if possible.
+		Add actions at coordinate and add to existing event if possible or aggregate events based on (bindings). 
+        (bindings) must be the size of the vector of action in model because we use (actionids) to find the right ones.  
 		*/
-		void addactions(const FMTcoordinate& coord, const int& period, const std::vector<int>& actionids, const size_t& maxsize);
+		void addactions(const FMTcoordinate& coord, const int& period, const std::vector<int>& actionids, const std::vector<FMTbindingspatialaction>& bindings);
         // DocString: FMTeventcontainer::getevents(const int&, const int&)
         /*
         Get events at specified period with specified action
@@ -234,7 +223,7 @@ class FMTEXPORT FMTeventcontainer : public Core::FMTobject
 		calculate the infeasibility of those events.
 		*/
 		FMTeventcontainer geteventstoadd(const FMTcoordinate& coord, const int& period, const int& actionid,
-									const size_t& buffer, FMTeventcontainer& newevents) const;
+									const FMTbindingspatialaction& binding, FMTeventcontainer& newevents) const;
 		// DocString: FMTeventcontainer::getcontainer
 		/*
 		Get container subset on the interesting coordinates.
@@ -295,13 +284,13 @@ class FMTEXPORT FMTeventcontainer : public Core::FMTobject
 		Push an action in container
 		*/
 		void pushaction(const std::vector<FMTeventcontainer::const_iterator>& iterators,
-			const FMTcoordinate& coord, const int& period, const int& actionid,size_t neighborsize=4);
+			const FMTcoordinate& coord, const int& period, const int& actionid,size_t neighborsize);
         // DocString: FMTeventcontainer::getaroundevents()
 		/*
 		Return iterators to events considerate around based on neighborsize
 		*/
 		std::vector<FMTeventcontainer::const_iterator> getaroundevents(const std::vector<FMTeventcontainer::const_iterator>& iterators,
-			const FMTcoordinate& coord, size_t neighborsize=4);
+			const FMTcoordinate& coord, const size_t& neighborsize) const;
 		// DocString: FMTeventcontainer::fastsort
 		/*
 		Sort events by proximity to a coordinate
