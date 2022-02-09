@@ -7,6 +7,8 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 #include "FMTeventcontainer.hpp"
 #include "FMTeventrelation.hpp"
+#include "FMTexceptionhandler.hpp"
+#include "FMTbindingspatialaction.hpp"
 
 #include <limits>
 #include <queue>
@@ -225,76 +227,53 @@ namespace Spatial
 	void FMTeventcontainer::pushaction(const std::vector<FMTeventcontainer::const_iterator>& iterators,
 		const FMTcoordinate& coord, const int& period, const int& actionid,size_t neighborsize)
 	{
-		std::vector<FMTeventcontainer::const_iterator>aroundevents = getaroundevents(iterators,coord,neighborsize);
-		if (aroundevents.empty())
+		try
 		{
-			FMTevent newevent(coord, actionid, period);
-			//newevent.insert(coord);
-			insert(newevent);
-		}
-		else
-		{
-			FMTevent combinedevents(coord, actionid, period);
-			//combinedevents.insert(coord);
-			for (FMTeventcontainer::const_iterator e : aroundevents)
+			std::vector<FMTeventcontainer::const_iterator> aroundevents;
+			aroundevents.reserve(8);
+			if(neighborsize>0 && !iterators.empty())
 			{
-				combinedevents.merge(*e);
-				erase(*e);
+				aroundevents = getaroundevents(iterators,coord,neighborsize);
 			}
-			insert(combinedevents);
+			if (aroundevents.empty())
+			{
+				FMTevent newevent(coord, actionid, period);
+				//newevent.insert(coord);
+				insert(newevent);
+			}
+			else
+			{
+				FMTevent combinedevents(coord, actionid, period);
+				//combinedevents.insert(coord);
+				for (FMTeventcontainer::const_iterator e : aroundevents)
+				{
+					combinedevents.merge(*e);
+					erase(*e);
+				}
+				insert(combinedevents);
+			}
+		}catch(...){
+			_exhandler->raisefromcatch("","FMTeventcontainer::pushaction", __LINE__, __FILE__);
 		}
 	}
 
 	std::vector<FMTeventcontainer::const_iterator> FMTeventcontainer::getaroundevents(const std::vector<FMTeventcontainer::const_iterator>& iterators,
-		const FMTcoordinate& coord, size_t neighborsize)
+		const FMTcoordinate& coord, const size_t& neighborsize) const
 	{
 		std::vector<FMTeventcontainer::const_iterator>aroundevents;
 		aroundevents.reserve(8);
-		/*std::vector<FMTeventcontainer::const_iterator>sorted(iterators);
-		nthelements(sorted, coord, 8);
-		std::vector<FMTeventcontainer::const_iterator>::const_iterator eventit = sorted.begin();
-		size_t checked = 0;
-		while (eventit!= sorted.end()&&checked<8)
-			{
-			if ((*eventit)->within(1, coord))
+		try{
+				const FMTcoordinate ndistcalculator = FMTcoordinate(neighborsize+1,neighborsize+1);
+				const double distneighbors = ndistcalculator.at(neighborsize).distance(ndistcalculator);
+				for (FMTeventcontainer::const_iterator eventit : iterators)
 				{
-				aroundevents.push_back(*eventit);
+					if (eventit->within(distneighbors, coord))
+					{
+						aroundevents.push_back(eventit);
+					}
 				}
-			++eventit;
-			++checked;
-			}*/
-		switch (neighborsize)
-		{
-		case 4:
-			for (FMTeventcontainer::const_iterator eventit : iterators)
-			{
-				if (eventit->within(1, coord))
-				{
-					aroundevents.push_back(eventit);
-				}
-			}
-			break;
-		
-		case 8:
-			for (FMTeventcontainer::const_iterator eventit : iterators)
-			{
-				if (eventit->withinlessthan(2, coord))
-				{
-					aroundevents.push_back(eventit);
-				}
-			}
-			break;
-		case 12:
-			for (FMTeventcontainer::const_iterator eventit : iterators)
-			{
-				if (eventit->within(2, coord))
-				{
-					aroundevents.push_back(eventit);
-				}
-			}
-			break;
-		default:
-			break;
+		}catch(...){
+			_exhandler->raisefromcatch("","FMTeventcontainer::getaroundevents", __LINE__, __FILE__);
 		}
 		return aroundevents;
 	}
@@ -319,20 +298,34 @@ namespace Spatial
 		}
 
 
-	void FMTeventcontainer::addaction(const FMTcoordinate& coord, const int& period, const int& actionid, const size_t& maxsize)
+	void FMTeventcontainer::addaction (const FMTcoordinate& coord, const int& period,const int& actionid, const FMTbindingspatialaction& binding)
 		{
-		const unsigned int maxsizeof = static_cast<unsigned int>(maxsize);
+		// If maxsize is numeric limits, it means that there is no evaluation for maxsize and neighborsize
+		//So we push the action as an event for each cell.
+		unsigned int maxsizeof = 0;
+		if(binding.getmaximalsize()<std::numeric_limits<size_t>::max())
+		{
+			maxsizeof = static_cast<unsigned int>(binding.getmaximalsize());
+		}
 		const unsigned int minx = coord.getx() > maxsizeof ? coord.getx() - maxsizeof : 0;
 		const unsigned int miny = coord.gety() > maxsizeof ? coord.gety() - maxsizeof : 0;
 		const FMTcoordinate lower(minx, miny);
 		const FMTcoordinate upper(coord.getx()+ maxsizeof, coord.gety() + maxsizeof);
-		const std::vector<FMTeventcontainer::const_iterator>eventits = getevents(period, actionid, lower, upper);
-		pushaction(eventits, coord, period, actionid);
+		pushaction(getevents(period, actionid, lower, upper), coord, period, actionid, binding.getminimalneighborsize());
 		}
 
-	void FMTeventcontainer::addactions(const FMTcoordinate& coord, const int& period, const std::vector<int>& actionids, const size_t& maxsize)
+	void FMTeventcontainer::addactions(const FMTcoordinate& coord, const int& period, const std::vector<int>& actionids, const std::vector<FMTbindingspatialaction>& bindings)
 		{
-		const unsigned int maxsizeof = static_cast<unsigned int>(maxsize);
+		unsigned int maxsizeof = 0;
+		for (const int& id : actionids)
+		{
+			const FMTbindingspatialaction& binding = bindings.at(id);
+			if(binding.getmaximalsize() < std::numeric_limits<size_t>::max())
+			{
+				const unsigned int msize = static_cast<unsigned int>(binding.getmaximalsize());
+				maxsizeof = msize > maxsizeof ? msize : maxsizeof;
+			}
+		}
 		const unsigned int minx = coord.getx() > maxsizeof ? coord.getx() - maxsizeof : 0;
 		const unsigned int miny = coord.gety() > maxsizeof ? coord.gety() - maxsizeof : 0;
 		const FMTcoordinate lower(minx, miny);
@@ -340,15 +333,10 @@ namespace Spatial
 		size_t id = 0;
 		for (const std::vector<FMTeventcontainer::const_iterator>& eventits : getmultipleevents(period, actionids, lower, upper))
 			{
-			pushaction(eventits, coord, period, actionids.at(id));
+			const int& actid = actionids.at(id);
+			pushaction(eventits, coord, period, actid, bindings.at(actid).getminimalneighborsize());
 			++id;
 			}
-		}
-
-
-	void FMTeventcontainer::addaction (const FMTcoordinate& coord, const int& period,const int& actionid)
-		{
-		pushaction(getevents(period, actionid), coord, period, actionid);
 		}
 
     std::vector<FMTeventcontainer::const_iterator> FMTeventcontainer::getevents(const int& period,
@@ -368,25 +356,26 @@ namespace Spatial
     }
 
 	FMTeventcontainer FMTeventcontainer::geteventstoadd(const FMTcoordinate& coord, const int& period, const int& actionid,
-		const size_t& buffer, FMTeventcontainer& newevents) const
+		const FMTbindingspatialaction& binding, FMTeventcontainer& newevents) const
 	{
-		const unsigned int bufferof = static_cast<unsigned int>(buffer);
-		const unsigned int minx = coord.getx() > bufferof ? coord.getx() - bufferof : 0;
-		const unsigned int miny = coord.gety() > bufferof ? coord.gety() - bufferof : 0;
+		unsigned int maxsizeof = 0;
+		if(binding.getmaximalsize()<std::numeric_limits<size_t>::max())
+		{
+			maxsizeof = static_cast<unsigned int>(binding.getmaximalsize());
+		}
+		const unsigned int minx = coord.getx() > maxsizeof ? coord.getx() - maxsizeof : 0;
+		const unsigned int miny = coord.gety() > maxsizeof ? coord.gety() - maxsizeof : 0;
 		const FMTcoordinate lower(minx, miny);
-		const FMTcoordinate upper(coord.getx() + bufferof, coord.gety() + bufferof);
-		const std::vector<FMTeventcontainer::const_iterator>eventits = getevents(period, actionid, lower, upper);
-		std::vector<FMTeventcontainer::const_iterator>aroundevents;
-		aroundevents.reserve(8);
+		const FMTcoordinate upper(coord.getx()+ maxsizeof, coord.gety() + maxsizeof);
+		const std::vector<FMTeventcontainer::const_iterator> eventits = getevents(period, actionid, lower, upper);
+		std::vector<FMTeventcontainer::const_iterator> aroundevents;
+		const size_t neighborsize = binding.getmaximalneighborsize();
+		if(neighborsize>0 && !eventits.empty())
+		{
+			aroundevents = getaroundevents(eventits,coord,neighborsize);
+		}
 		//std::vector<FMTeventcontainer::const_iterator>tocalculate;
 		FMTeventcontainer tocalculate;
-		for (FMTeventcontainer::const_iterator eventit : eventits)
-		{
-			if (eventit->within(1, coord))
-			{
-				aroundevents.push_back(eventit);
-			}
-		}
 		if (aroundevents.empty())
 		{
 			FMTevent newevent(coord, actionid, period);

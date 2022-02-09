@@ -62,6 +62,9 @@ void exportGraph()
 	//bp::class_<Graph::FMTgraph>("FMTgraph", "@DocString(FMTgraph)")
 	//	.def_pickle(FMT_pickle_suite<Graph::FMTgraph>());
 
+	bp::class_<Graph::FMTlinegraph>("FMTlinegraph","@DocString(FMTgraph)")
+		.def("getperiodactionids",&Graph::FMTlinegraph::getperiodactionids,"@DocString(FMTgraphstats::getperiodactionids)");
+
 }
 
 }

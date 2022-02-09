@@ -40,8 +40,8 @@ namespace Spatial
         FMTcoordinate(const FMTcoordinate& rhs);
         FMTcoordinate at(unsigned int id) const;
         double distance(const FMTcoordinate& coord) const;
-        bool within(unsigned int ldistance,const FMTcoordinate& coord) const;
-        bool withinlessthan(unsigned int ldistance,const FMTcoordinate& coord) const;
+        template<typename T>
+        bool within(const T& ldistance,const FMTcoordinate& coord) const;
         void upenveloppe(std::vector<FMTcoordinate>& enveloppe) const;
 		size_t hash() const;
         FMTcoordinate& operator = (const FMTcoordinate& rhs);
