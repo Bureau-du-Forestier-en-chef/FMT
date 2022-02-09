@@ -266,6 +266,33 @@ namespace Graph
 		return id;
 	}
 
+	std::vector<int> FMTlinegraph::getperiodactionids(const int& period) const
+	{
+		std::vector<int> ids;
+		try {
+			FMTvertex_iterator vertexit;
+			FMTvertex_iterator vertexend;
+			for (boost::tie(vertexit, vertexend) = getperiodverticies(period); vertexit != vertexend; ++vertexit)
+			{
+				const FMTvertex_descriptor& outv = *vertexit;
+				if (!periodstart(outv))
+				{
+					ids.push_back(getinedgeactionid(outv));
+				}
+			}
+			if(ids.size()>1)
+			{
+				std::sort(ids.begin(),ids.end());
+				//Because we operate in order of action and its not recursive, so the first action cannot be triger after the last action. But the last action can be triger after the first action.
+			}
+		}
+		catch (...)
+		{
+			_exhandler->raisefromcatch("", "FMTlinegraph::getperiodactionids", __LINE__, __FILE__);
+		}
+		return ids;
+	}
+
 	const Core::FMTdevelopment& FMTlinegraph::getperiodstartdev(const int& period) const
 	{
 		FMTvertex_iterator vertexit;
@@ -755,7 +782,7 @@ namespace Graph
 		return boost::hash<std::string>{}(getedgesstr(maximalperiod, gotthewhole));
 		}
 
-	void FMTlinegraph::addfromevents(const Spatial::FMTcoordinate& localisation, const Models::FMTmodel& model, Spatial::FMTeventcontainer& events) const
+	/*void FMTlinegraph::addfromevents(const Spatial::FMTcoordinate& localisation, const Models::FMTmodel& model, Spatial::FMTeventcontainer& events) const
 		{
 		try{
 		FMTedge_iterator edge_iterator,edge_iterator_end;
@@ -777,7 +804,7 @@ namespace Graph
 		{
 			_exhandler->raisefromcatch("", "FMTlinegraph::addfromevents", __LINE__, __FILE__);
 		}
-		}
+		}*/
 
 	bool FMTlinegraph::hashforconstraint(size_t& hashvalue,const int& stop, const Core::FMTmask& dynamicmask) const
 	{
