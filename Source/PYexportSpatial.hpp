@@ -120,12 +120,14 @@ void exportSpatial()
         .def("getoutputbycoordinate", &Spatial::FMTspatialschedule::getoutputbycoordinate, "@DocString(FMTspatialschedule::getoutputbycoordinate)")
         .def("getbindingactions", &Spatial::FMTspatialschedule::getbindingactions, "@DocString(FMTspatialschedule::getbindingactions)")
         .def("operatecoord", &Spatial::FMTspatialschedule::operatecoord, "@DocString(FMTspatialschedule::operatecoord)")
-        .def("getconstraintevaluation", &Spatial::FMTspatialschedule::getconstraintevaluation, getconstraintevaluation_overloads(bp::args("constraint","model"),"@DocString(FMTspatialschedule::getconstraintevaluation)"));
-
+        .def("getconstraintevaluation", &Spatial::FMTspatialschedule::getconstraintevaluation, getconstraintevaluation_overloads(bp::args("constraint","model"),"@DocString(FMTspatialschedule::getconstraintevaluation)"))
+        .def("grow", &Spatial::FMTspatialschedule::grow, "@DocString(FMTspatialschedule::grow)");
 	define_pylist<Spatial::FMTspatialschedule>();
 
     bp::class_<Spatial::FMTbindingspatialaction>("FMTbindingspatialaction", "@DocString(FMTbindingspatialaction)")
-		.def(bp::init<Spatial::FMTbindingspatialaction>());
+        .def("getminimaladjacency", &Spatial::FMTbindingspatialaction::getminimaladjacency,boost::python::return_value_policy<boost::python::copy_const_reference>(),"@DocString(FMTspatialschedule::getminimaladjacency)")
+        .def("getminimalsize",&Spatial::FMTbindingspatialaction::getminimalsize,boost::python::return_value_policy<boost::python::copy_const_reference>(),"@DocString(FMTspatialschedule::getminimalsize)")
+        .def("getmaximalsize",&Spatial::FMTbindingspatialaction::getmaximalsize,boost::python::return_value_policy<boost::python::copy_const_reference>(), "@DocString(FMTspatialschedule::getmaximalsize)");
 
 	define_pylist<Spatial::FMTbindingspatialaction>();
 
