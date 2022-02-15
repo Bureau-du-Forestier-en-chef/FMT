@@ -47,7 +47,7 @@ class FMTEXPORT FMTfork : public FMTspec
         FMTfork single() const;
         double sumprop() const;
         size_t size() const;
-		FMTfork presolve(const FMTmask& selectedmask, const std::vector<FMTtheme>&presolvedthemes) const;
+		FMTfork presolve(const FMTmaskfilter& filter, const std::vector<FMTtheme>&presolvedthemes) const;
         operator std::string() const override;
     };
 

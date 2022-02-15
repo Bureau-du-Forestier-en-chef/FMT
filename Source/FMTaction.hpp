@@ -147,9 +147,8 @@ class FMTEXPORT FMTaction : public FMTlist<FMTspec>
 		Eliminate FMTspecification and presolve all masks base on a basemask a preolved mask
 		and presolved themes. The returned action can also be empty.
 		*/
-		FMTaction presolve(const FMTmask& basemask,
+		FMTaction presolve(const FMTmaskfilter& filter,
 			const std::vector<FMTtheme>& originalthemes,
-			const FMTmask& presolvedmask,
 			const std::vector<FMTtheme>& newthemes) const;
 		// DocString: FMTaction::getagelowerbound
 		/**

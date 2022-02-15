@@ -306,9 +306,9 @@ class FMTEXPORT FMToutput: public FMTobject
 	presolved themes (newthemes) and presolved actions vector (actions)
 	and a presolved yields section (yields).
 	*/
-	FMToutput presolve(const FMTmask& basemask,
+	FMToutput presolve(const FMTmaskfilter& filter,
 		const std::vector<FMTtheme>& originalthemes,
-		const FMTmask& presolvedmask,
+		const std::vector<FMTtheme>& selectedthemes,
 		const std::vector<FMTtheme>& newthemes,
 		const std::vector<FMTaction>& actions,const FMTyields& yields) const;
 	// DocString: FMToutput::changeoutputsorigin

@@ -1931,7 +1931,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 			{
 			return data[*developments.at(getfirstactiveperiod() + 1).first].get().getperiod();
 			}
-		FMTgraph postsolve(const Core::FMTmask& selectedmask,
+		FMTgraph postsolve(const Core::FMTmaskfilter& filter,
 			const std::vector<Core::FMTtheme>&originalbasethemes,
 			const std::map<int,int>& actionmapconnection) const
 		{
@@ -1950,7 +1950,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 				for (boost::tie(vertex_iterator, vertex_iterator_end) = boost::vertices(newgraph.data); vertex_iterator != vertex_iterator_end; ++vertex_iterator)
 				{
 					FMTbasevertexproperties& vertexprop = newgraph.data[*vertex_iterator];
-					vertexprop.setdevlopementmask(vertexprop.get().getmask().postsolve(selectedmask, originalbasethemes));
+					vertexprop.setdevlopementmask(vertexprop.get().getmask().postsolve(filter, originalbasethemes));
 				}
 				newgraph.generatedevelopments();
 			}

@@ -47,7 +47,7 @@ class FMTEXPORT FMTactualdevelopment : public FMTdevelopment
 		double getarea() const override;
 		void setarea(const double& newarea);
 		std::unique_ptr<FMTdevelopment> Clone() const override;
-		FMTactualdevelopment presolve(const FMTmask& selectedmask, const std::vector<FMTtheme>&presolvedthemes) const;
+		FMTactualdevelopment presolve(const FMTmaskfilter& filter, const std::vector<FMTtheme>&presolvedthemes) const;
 		// DocString: FMTactualdevelopment::reducelocktodeath
 		/**
 		This function check if the actualdevelopement lifespan is shorter than the lock present in area section. If not so, it raise the 

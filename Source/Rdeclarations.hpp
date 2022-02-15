@@ -48,6 +48,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTconstraint.hpp"
 #include "FMTcoordinate.hpp"
 #include "FMTmodelparameters.hpp"
+#include "FMTmaskfilter.hpp"
 
 //Parallel
 #include "FMTtask.hpp"
@@ -137,6 +138,7 @@ RCPP_DECLAREPAIR(Core::FMTmask, int);//pair for FMTlist
 RCPP_DECLAREPAIR(Core::FMTmask, Core::FMTtimeyieldhandler);//pair for FMTlist
 RCPP_DECLAREVECTOR(Core::FMTtimeyieldhandler);//For vector
 RCPP_DECLAREPAIR(Core::FMTmask, Core::FMTfork);//pair for FMTlist
+RCPP_DECLAREVECTOR(Core::FMTmaskfilter);//For vector
 RCPP_DECLAREVECTOR(Core::FMTfork);//For vector
 RCPP_DECLAREVECTOR(Core::FMTtransition);//For vector
 RCPP_DECLAREVECTOR(Core::FMToutputnode);//For vector

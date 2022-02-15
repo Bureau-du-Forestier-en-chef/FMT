@@ -27,6 +27,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTdata.hpp"
 #include "FMTtimeyieldhandler.hpp"
 #include "FMTageyieldhandler.hpp"
+#include "FMTmaskfilter.hpp"
 
 namespace Python
 {
@@ -79,7 +80,9 @@ void exportCore()
 		.def("seterrorstowarnings", &Core::FMTobject::seterrorstowarnings,
 			"@DocString(FMTobject::seterrorstowarnings)");
 
+		bp::class_<Core::FMTmaskfilter>("FMTmaskfilter", "@DocString(FMTmaskfilter)");
 
+		define_pylist<Core::FMTmaskfilter>();
 		define_pylist<Core::FMTmask>();
         define_pylist<Core::FMTdevelopment>();
         define_pylist<Core::FMTfuturdevelopment>();

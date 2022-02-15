@@ -155,7 +155,7 @@ class FMTEXPORT FMToutputsource : public FMTspec
 			{
 			return (development.getmask().issubsetof(mask) && development.is(*this, ylds, graphinfo));
 			}
-		FMToutputsource presolve(const FMTmask& presolvedmask,const std::vector<FMTtheme>& newthemes) const;
+		FMToutputsource presolve(const FMTmaskfilter& filter,const std::vector<FMTtheme>& newthemes) const;
 		void setaverage();
 		inline bool isaverage() const
 			{
