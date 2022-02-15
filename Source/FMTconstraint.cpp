@@ -760,15 +760,15 @@ namespace Core
 			return FMToutput::empty();
 			}
 
-		FMTconstraint FMTconstraint::presolve(const FMTmask& basemask,
+		FMTconstraint FMTconstraint::presolve(const FMTmaskfilter& filter,
 			const std::vector<FMTtheme>& originalthemes,
-			const FMTmask& presolvedmask,
+			const std::vector<FMTtheme>& selectedthemes,
 			const std::vector<FMTtheme>& newthemes,
 			const std::vector<FMTaction>& actions, const FMTyields& yields) const
 			{
 			FMTconstraint newconstraint(*this);
 			try {
-				newconstraint.setoutput(FMToutput::presolve(basemask, originalthemes, presolvedmask, newthemes, actions, yields));
+				newconstraint.setoutput(FMToutput::presolve(filter, originalthemes, selectedthemes, newthemes, actions, yields));
 			}catch (...)
 				{
 				_exhandler->raisefromcatch("for " + std::string(*this),"FMTconstraint::presolve", __LINE__, __FILE__, Core::FMTsection::Optimize);

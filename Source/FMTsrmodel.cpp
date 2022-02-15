@@ -883,10 +883,10 @@ namespace Models
 	Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties> FMTsrmodel::postsolvegraph(const FMTmodel& originalbasemodel) const
 	{
 		try {
-			std::vector<Core::FMTtheme> postsolvethemes = originalbasemodel.getthemes();
-			std::vector<Core::FMTaction> postsolveactions = originalbasemodel.getactions();
-			Core::FMTmask selectedmask = this->getselectedmask(postsolvethemes);
-			std::vector<Core::FMTaction> presolveactions = this->getactions();
+			const std::vector<Core::FMTtheme>& postsolvethemes = dynamic_cast<const FMTsrmodel*>(&originalbasemodel)->themes;
+			const std::vector<Core::FMTaction>& postsolveactions = dynamic_cast<const FMTsrmodel*>(&originalbasemodel)->actions;
+			const Core::FMTmaskfilter postsolvefilter = this->getpostsolvefilter(originalbasemodel.getthemes(),originalbasemodel.getarea().begin()->getmask());
+			const std::vector<Core::FMTaction>& presolveactions = this->actions;
 			std::map<int, int>actionmapping;
 			int preactionid = 0;
 			for (const Core::FMTaction action : presolveactions)
@@ -896,7 +896,7 @@ namespace Models
 				++preactionid;
 			}
 			actionmapping[-1] = -1;
-			return this->graph.postsolve(selectedmask, postsolvethemes, actionmapping);
+			return this->graph.postsolve(postsolvefilter,postsolvethemes, actionmapping);
 		}catch (...)
 		{
 			_exhandler->printexceptions("", "FMTsrmodel::postsolvegraph", __LINE__, __FILE__);

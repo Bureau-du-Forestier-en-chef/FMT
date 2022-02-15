@@ -371,11 +371,11 @@ double FMTyieldhandler::getyieldlinearvalue(const std::string&yldname, const int
         }
 
 
-	std::unique_ptr<FMTyieldhandler> FMTyieldhandler::presolve(const FMTmask& presolvedmask, const std::vector<FMTtheme>& newthemes) const
+	std::unique_ptr<FMTyieldhandler> FMTyieldhandler::presolve(const FMTmaskfilter& filter, const std::vector<FMTtheme>& newthemes) const
 		{
 		std::unique_ptr<FMTyieldhandler> newhandler = this->clone();
 		try {
-			newhandler->mask = this->mask.presolve(presolvedmask, newthemes);
+			newhandler->mask = this->mask.presolve(filter, newthemes);
 		}catch (...)
 		{
 			_exhandler->raisefromcatch("", "FMTyieldhandler::presolve", __LINE__, __FILE__, Core::FMTsection::Yield);
@@ -383,9 +383,9 @@ double FMTyieldhandler::getyieldlinearvalue(const std::string&yldname, const int
 		return newhandler;
 		}
 
-	std::unique_ptr<FMTyieldhandler> FMTyieldhandler::postsolve(const FMTmask& selectedmask, const std::vector<FMTtheme>& basethemes) const
+	std::unique_ptr<FMTyieldhandler> FMTyieldhandler::postsolve(const FMTmaskfilter& filter, const std::vector<FMTtheme>& basethemes) const
 			{
-		std::unique_ptr<FMTyieldhandler> newhandler = this->clone();
+			std::unique_ptr<FMTyieldhandler> newhandler = this->clone();
 			try {
 				std::vector<std::string> values;
 				const std::string maskname(std::string(newhandler->mask));
@@ -401,7 +401,7 @@ double FMTyieldhandler::getyieldlinearvalue(const std::string&yldname, const int
 						}
 					}
 				}
-				newhandler->mask = newhandler->mask.postsolve(selectedmask, basethemes);
+				newhandler->mask = newhandler->mask.postsolve(filter,basethemes);
 			}catch (...)
 			{
 				_exhandler->printexceptions("", "FMTyieldhandler::postsolve", __LINE__, __FILE__, Core::FMTsection::Yield);
