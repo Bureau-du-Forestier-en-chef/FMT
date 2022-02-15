@@ -49,13 +49,13 @@ namespace Core
 
 		}
 
-	FMTactualdevelopment FMTactualdevelopment::presolve(const FMTmask& selectedmask, const std::vector<FMTtheme>&presolvedthemes) const
+	FMTactualdevelopment FMTactualdevelopment::presolve(const FMTmaskfilter& filter, const std::vector<FMTtheme>&presolvedthemes) const
 		{
 		FMTactualdevelopment newdev(*this);
 		try {
-			if (!selectedmask.empty())
+			if (!filter.emptyflipped())
 			{
-				newdev.setmask(newdev.getmask().presolve(selectedmask, presolvedthemes));
+				newdev.setmask(newdev.getmask().presolve(filter, presolvedthemes));
 				//newdev.mask = mask.presolve(selectedmask, presolvedthemes);
 			}
 		}catch (...)

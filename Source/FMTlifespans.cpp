@@ -20,6 +20,11 @@ FMTlifespans& FMTlifespans::operator = (const FMTlifespans& rhs)
     return *this;
     }
 
+void FMTlifespans::swap(FMTlifespans& rhs)
+	{
+	FMTlist<int>::swap(rhs);
+	}
+
 void FMTlifespans::update()
 	{
 	try {
@@ -31,14 +36,13 @@ void FMTlifespans::update()
 		}
 	}
 
-FMTlifespans FMTlifespans::presolve(const FMTmask& basemask,
+FMTlifespans FMTlifespans::presolve(const FMTmaskfilter& filter,
 	const std::vector<FMTtheme>& originalthemes,
-	const FMTmask& presolvedmask,
 	const std::vector<FMTtheme>& newthemes) const
 	{
 	FMTlifespans newlifespans(*this);
 	try {
-		newlifespans.presolvelist(basemask, originalthemes, presolvedmask, newthemes);
+		newlifespans.presolvelist(filter, originalthemes,newthemes);
 		newlifespans.update();
 	}catch (...)
 		{

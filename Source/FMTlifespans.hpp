@@ -33,6 +33,11 @@ class FMTEXPORT FMTlifespans : public FMTlist<int>
 		ar & boost::serialization::make_nvp("data", boost::serialization::base_object<FMTlist<int>>(*this));
 	}
     public:
+		// DocString: swap
+		/**
+		swap FMTlifespans
+		*/
+		void swap(FMTlifespans& rhs);
 		// DocString: FMTlifespans()
 		/**
 		Default constructor for FMTlifespans.
@@ -74,9 +79,8 @@ class FMTEXPORT FMTlifespans : public FMTlist<int>
 		Eliminate FMTlist elements and presolve all masks based on a basemask a preolved mask
 		and presolved themes.
 		*/
-		FMTlifespans presolve(const FMTmask& basemask,
+		FMTlifespans presolve(const FMTmaskfilter& filter,
 			const std::vector<FMTtheme>& originalthemes,
-			const FMTmask& presolvedmask,
 			const std::vector<FMTtheme>& newthemes) const;
     };
 

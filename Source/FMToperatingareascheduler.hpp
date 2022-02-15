@@ -221,7 +221,7 @@ namespace Heuristics
 		after presolving the model. (basethemes) are the themes of the original model. 
 		*/
 		std::vector<Core::FMTtimeyieldhandler> getsolution(	const std::string& yldname,
-															Core::FMTmask selectedmask=Core::FMTmask(), 
+															Core::FMTmaskfilter filter = Core::FMTmaskfilter(),
 															std::vector<Core::FMTtheme> basethemes=std::vector<Core::FMTtheme>()) const;
 		// DocString: FMToperatingareascheduler(const std::vector<FMToperatingarea>,const Graph::FMTgraph,const Models::FMTmodel,const Core::FMToutputnode,std::shared_ptr<OsiSolverInterface>,const Models::FMTsolverinterface,size_t lseed,double proportionofset,bool userandomness,bool copysolver)
 		/**

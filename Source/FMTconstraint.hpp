@@ -283,9 +283,9 @@ class FMTEXPORT FMTconstraint: public FMToutput,public FMTspec
 		based on a (basemask), the (originalthemes), the presolved themes, the presolved actions and presolved yields.
 		See FMToutput presolve for more information.
 		*/
-		FMTconstraint presolve(const FMTmask& basemask,
+		FMTconstraint presolve(const FMTmaskfilter& filter,
 			const std::vector<FMTtheme>& originalthemes,
-			const FMTmask& presolvedmask,
+			const std::vector<FMTtheme>& selectedthemes,
 			const std::vector<FMTtheme>& newthemes,
 			const std::vector<FMTaction>& actions, const FMTyields& yields) const;
 		// DocString: ~FMTconstraint()

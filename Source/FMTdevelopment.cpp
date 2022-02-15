@@ -252,7 +252,7 @@ namespace Core{
 
     bool FMTdevelopment::operator == (const FMTdevelopment& rhs) const
         {
-        return (mask==rhs.mask && age == rhs.age && lock == rhs.lock && period == rhs.period);
+        return (age == rhs.age && lock == rhs.lock && period == rhs.period && mask == rhs.mask);
         }
     bool FMTdevelopment::operator != (const FMTdevelopment& rhs) const
         {

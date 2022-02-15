@@ -113,6 +113,11 @@ class FMTEXPORT FMTlpsolver: public Core::FMTobject
 	*/
 	const CoinPackedMatrix* getMatrixByCol() const;
 	public:
+		// DocString: FMTlpsolver::swap
+		/**
+		Swap a FMTlpsolver.
+		*/
+		void swap(FMTlpsolver& rhs);
 		// DocString: FMTlpsolver::passinlogger
 		/**
 		We need to override the passinlogger for the osisolverinterface

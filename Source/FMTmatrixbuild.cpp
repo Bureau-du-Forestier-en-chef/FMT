@@ -178,6 +178,18 @@ namespace Models
 
 		}
 
+	void FMTmatrixbuild::swap(FMTmatrixbuild& rhs)
+	{
+		colscount=rhs.colscount;
+		rowscount = rhs.rowscount;
+		colsbuild=rhs.colsbuild;
+		rowsbuild=rhs.rowsbuild;
+		deletedconstraints.swap(rhs.deletedconstraints);
+		deletedvariables.swap(rhs.deletedvariables);
+		columnnames.swap(rhs.columnnames);
+		rownames.swap(rhs.rownames);
+	}
+
 
 	FMTmatrixbuild& FMTmatrixbuild::operator = (const FMTmatrixbuild& rhs)
 		{

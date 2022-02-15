@@ -238,7 +238,8 @@ namespace Models
 		std::unique_ptr<FMTmodel> postsolvemodel;
 		try {
 			postsolvemodel = std::unique_ptr<FMTmodel>(new FMTnssmodel(*(FMTmodel::postsolve(originalbasemodel)), this->getparameter(FMTintmodelparameters::SEED)));
-			dynamic_cast<FMTnssmodel*>(postsolvemodel.get())->graph = this->postsolvegraph(originalbasemodel);
+			Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties> postgraph = this->postsolvegraph(originalbasemodel);
+			dynamic_cast<FMTnssmodel*>(postsolvemodel.get())->graph.swap(postgraph);
 			dynamic_cast<FMTnssmodel*>(postsolvemodel.get())->solver = this->solver;
 		}catch (...)
 			{

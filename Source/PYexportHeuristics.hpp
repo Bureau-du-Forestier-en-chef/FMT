@@ -105,7 +105,7 @@ void exportHeuristics()
 		.def("branchnboundsolve", &Heuristics::FMToperatingareascheduler::branchnboundsolve,
 			"@DocString(FMToperatingareaheuristic::branchnboundsolve)")
 		.def("getsolution", &Heuristics::FMToperatingareascheduler::getsolution,
-			getsolution_overload(bp::args("yldname","selectedmask","basethemes"),"@DocString(FMToperatingareaheuristic::getsolution)"))
+			getsolution_overload(bp::args("yldname","postsolvefiler","basethemes"),"@DocString(FMToperatingareaheuristic::getsolution)"))
 		.def("setasprimal", &Heuristics::FMToperatingareascheduler::setasprimal,
 			"@DocString(FMToperatingareaheuristic::setasprimal)")
 		.def("setproportionofset", &Heuristics::FMToperatingareascheduler::setproportionofset,
