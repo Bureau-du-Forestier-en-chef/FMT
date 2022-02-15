@@ -43,8 +43,8 @@ namespace Spatial
         FMTlayer<int>getage() const;
         FMTlayer<std::string>getlock() const;
 		void setperiod(int period);
-		FMTforest presolve(const Core::FMTmask& selectedmask, const std::vector<Core::FMTtheme>&presolvedthemes) const;
-		FMTforest postsolve(const Core::FMTmask& selectedmask, const std::vector<Core::FMTtheme>&originalbasethemes) const;
+		FMTforest presolve(const Core::FMTmaskfilter& filter, const std::vector<Core::FMTtheme>&presolvedthemes) const;
+		FMTforest postsolve(const Core::FMTmaskfilter& filter, const std::vector<Core::FMTtheme>&originalbasethemes) const;
         };
     }
 #endif // FMTFOREST_H_INCLUDED

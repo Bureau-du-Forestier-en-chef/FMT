@@ -25,6 +25,8 @@ namespace Core
 class FMTmaskfilter
     {
 	friend class boost::serialization::access;
+	friend class FMTtheme;
+	friend class FMTmask;
 	template<class Archive>
 	void serialize(Archive& ar, const unsigned int version)
 		{
@@ -43,10 +45,19 @@ class FMTmaskfilter
         virtual ~FMTmaskfilter()=default;
         FMTmaskfilter(const FMTmaskfilter& rhs);
         FMTmaskfilter& operator = (const FMTmaskfilter& rhs);
+		FMTmaskfilter(const FMTmask& presolveselection, const FMTmask& buffermask);
+		FMTmaskfilter(const FMTmask& presolveselection);
         FMTmaskfilter(std::vector<FMTmask>& masks);
         FMTmaskfilter(std::vector<FMTmask>& masks,const std::vector<FMTtheme>& themes);
         FMTmask filter(const FMTmask& devmask) const;
-        //bool within(const FMTmask& intersect) const;
+		void swap(FMTmaskfilter& rhs);
+		FMTmaskfilter presolve(const std::vector<FMTtheme>& themes) const;
+		bool canpresolve(const FMTmask& mask, const std::vector<Core::FMTtheme>& themes) const;
+		std::vector<Core::FMTtheme> getselectedthemes(const std::vector<Core::FMTtheme>& themes) const;
+		inline bool emptyflipped() const
+			{
+			return flippedselection.empty();
+			}
 		inline bool empty() const
 			{
 			return selection.empty();

@@ -66,6 +66,11 @@ namespace Models
 		*/
 		std::string formatformatrixname(std::string name, bool shortformat) const;
 	public:
+		// DocString: FMTmatrixbuild::swap
+		/**
+		Swap for FMTmatrixbuild
+		*/
+		void swap(FMTmatrixbuild& rhs);
 		// DocString: FMTmatrixbuild::getcolumnnames
 		/**
 		Return cached column names.

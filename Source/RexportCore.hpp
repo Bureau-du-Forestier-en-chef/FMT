@@ -27,6 +27,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTtimeyieldhandler.hpp"
 #include "FMTdevelopmentpath.hpp"
 #include "FMTdata.hpp"
+#include "FMTmaskfilter.hpp"
 
 #include <vector>
 #include <Rcpp.h>
@@ -46,6 +47,9 @@ RCPP_EXPOSED_WRAP(Core::FMTspec);
 RCPP_EXPOSED_AS(Core::FMTspec);
 RCPP_DEFINEPAIR(Core::FMTmask, Core::FMTspec);//pair for FMTlist
 RCPP_DEFINEVECTOR(Core::FMTspec);//For vector
+RCPP_EXPOSED_WRAP(Core::FMTmaskfilter);
+RCPP_EXPOSED_AS(Core::FMTmaskfilter);
+RCPP_DEFINEVECTOR(Core::FMTmaskfilter);//For vector
 RCPP_EXPOSED_WRAP(Core::FMTactualdevelopment);
 RCPP_EXPOSED_AS(Core::FMTactualdevelopment);
 RCPP_DEFINEVECTOR(Core::FMTactualdevelopment);//For vector
@@ -153,6 +157,9 @@ void exportCore()
 					"@DocString(FMTmask::operator!=)")
 				.method("lt", &Core::FMTmask::operator <,
 					"@DocString(FMTmask::operator<)");
+
+		Rcpp::class_<Core::FMTmaskfilter>("FMTmaskfilter", "@DocString(FMTmaskfilter)")
+			.constructor("@DocString(FMTmaskfilter())");
 
 
 		Rcpp::class_<Core::FMTdevelopment>("FMTdevelopment", "@DocString(FMTdevelopment)")

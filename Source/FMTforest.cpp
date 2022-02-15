@@ -254,14 +254,14 @@ FMTforest FMTforest::getcopy(bool copydata) const
     return cuts;
     }*/
 
-FMTforest FMTforest::presolve(const Core::FMTmask& selectedmask, const std::vector<Core::FMTtheme>&presolvedthemes) const
+FMTforest FMTforest::presolve(const Core::FMTmaskfilter& filter, const std::vector<Core::FMTtheme>&presolvedthemes) const
 	{
 	FMTforest newforest(*this);
 	try{
 		for (std::map<FMTcoordinate, Core::FMTdevelopment>::iterator coordit = newforest.mapping.begin();
 			coordit != newforest.mapping.end(); ++coordit)
 			{
-			coordit->second = Core::FMTactualdevelopment(coordit->second, 0.0).presolve(selectedmask, presolvedthemes);
+			coordit->second = Core::FMTactualdevelopment(coordit->second, 0.0).presolve(filter, presolvedthemes);
 			}
 	
 	}catch (...)
@@ -275,13 +275,13 @@ FMTforest FMTforest::presolve(const Core::FMTmask& selectedmask, const std::vect
 
 
 
-FMTforest FMTforest::postsolve(const Core::FMTmask& selectedmask, const std::vector<Core::FMTtheme>&originalbasethemes) const
+FMTforest FMTforest::postsolve(const Core::FMTmaskfilter& filter, const std::vector<Core::FMTtheme>&originalbasethemes) const
 	{
 	FMTforest newforest(*this);
 	for (std::map<FMTcoordinate, Core::FMTdevelopment>::iterator coordit = newforest.mapping.begin();
 		coordit != newforest.mapping.end(); ++coordit)
 		{
-		coordit->second.setmask(coordit->second.getmask().postsolve(selectedmask, originalbasethemes));
+		coordit->second.setmask(coordit->second.getmask().postsolve(filter, originalbasethemes));
 		}
 	return newforest;
 	}

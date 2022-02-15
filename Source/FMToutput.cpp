@@ -583,9 +583,9 @@ size_t FMToutput::size() const
 	return sources.size();
 	}
 
-FMToutput FMToutput::presolve(const FMTmask& basemask,
+FMToutput FMToutput::presolve(const FMTmaskfilter& filter,
 	const std::vector<FMTtheme>& originalthemes,
-	const FMTmask& presolvedmask,
+	const std::vector<FMTtheme>& selectedthemes,
 	const std::vector<FMTtheme>& newthemes,
 	const std::vector<FMTaction>& actions, const FMTyields& yields) const
 	{
@@ -603,17 +603,15 @@ FMToutput FMToutput::presolve(const FMTmask& basemask,
 			if (sources.at(sourceid).isvariable())
 			{
 				const std::string actionname = sources.at(sourceid).getaction();
-				if ((!sources.at(sourceid).getmask().isnotthemessubset(basemask, originalthemes)) &&
+				
+				if (filter.canpresolve(sources.at(sourceid).getmask(), selectedthemes) &&
 					(actionname.empty() ||
 						std::find_if(actions.begin(), actions.end(), FMTactioncomparator(actionname, true)) != actions.end()) && 
 						(yieldname.empty() || !yields.isnullyld(yieldname)))
 				{
-					FMToutputsource newsource = sources.at(sourceid);
-					
-					if (!presolvedmask.empty())
+					if (!filter.emptyflipped())
 					{
-						newsource = newsource.presolve(presolvedmask, newthemes);
-						newsources.push_back(newsource);
+						newsources.push_back(sources.at(sourceid).presolve(filter, newthemes));
 						pushfactor = true;
 					}else {
 						pushedsource = false;
@@ -659,8 +657,8 @@ FMToutput FMToutput::presolve(const FMTmask& basemask,
 				}
 		++operatorid;
 		}
-		newoutput.sources = newsources;
-		newoutput.operators = newoperators;
+		newoutput.sources.swap(newsources);
+		newoutput.operators.swap(newoperators);
 	}catch (...)
 		{
 		_exhandler->raisefromcatch("for "+this->getname(),"FMToutput::presolve", __LINE__, __FILE__, Core::FMTsection::Outputs);

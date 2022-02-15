@@ -405,7 +405,7 @@ FMTschedule::operator std::string() const
 	}
 
 	FMTschedule FMTschedule::presolve(
-		const FMTmask& presolvedmask,
+		const FMTmaskfilter& filter,
 		const std::vector<FMTtheme>& newthemes,
 		const std::vector<FMTaction>&presolvedaction) const
 	{
@@ -419,7 +419,7 @@ FMTschedule::operator std::string() const
 				{
 					FMTdevelopment newdev(devit->first);
 
-					newdev.setmask(newdev.getmask().presolve(presolvedmask, newthemes));
+					newdev.setmask(newdev.getmask().presolve(filter, newthemes));
 					newmapping[newdev] = devit->second;
 				}
 				if (!newmapping.empty())
@@ -438,7 +438,7 @@ FMTschedule::operator std::string() const
 	return newschedule;
 	}
 
-	FMTschedule FMTschedule::postsolve(const FMTmask& presolvedmask,
+	FMTschedule FMTschedule::postsolve(const FMTmaskfilter& filter,
 		const std::vector<FMTtheme>& originalbasethemes, const std::vector<FMTaction>&originalbasebaseactions) const
 	{
 		FMTschedule newschedule(*this);
@@ -451,7 +451,7 @@ FMTschedule::operator std::string() const
 				{
 					FMTdevelopment newdev(devit->first);
 
-					newdev.setmask(newdev.getmask().postsolve(presolvedmask, originalbasethemes));
+					newdev.setmask(newdev.getmask().postsolve(filter, originalbasethemes));
 					newmapping[newdev] = devit->second;
 				}
 				if (!newmapping.empty())

@@ -10,6 +10,9 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 namespace Core{
 
+
+
+
 FMTyields::FMTyields():FMTlist<std::unique_ptr<FMTyieldhandler>>(), yieldpresence()
         {
 		updateyieldpresence();
@@ -18,6 +21,13 @@ FMTyields::FMTyields():FMTlist<std::unique_ptr<FMTyieldhandler>>(), yieldpresenc
         {
 
         }
+
+	void FMTyields::swap(FMTyields& rhs)
+		{
+		FMTlist<std::unique_ptr<FMTyieldhandler>>::swap(rhs);
+		yieldpresence.swap(rhs.yieldpresence);
+		}
+
     FMTyields& FMTyields::operator = (const FMTyields& rhs)
         {
         if(this!=&rhs)
@@ -151,20 +161,19 @@ void FMTyields::update()
     }
 
 
-FMTyields FMTyields::presolve(const FMTmask& basemask,
+FMTyields FMTyields::presolve(const FMTmaskfilter& filter,
 	const std::vector<FMTtheme>& originalthemes,
-	const FMTmask& presolvedmask,
 	const std::vector<FMTtheme>& newthemes) const
 	{
 	FMTyields newyields(*this);
 	try {
 		
-		newyields.presolvelist(basemask, originalthemes, presolvedmask, newthemes);
-		if (!presolvedmask.empty())
+		newyields.presolvelist(filter, originalthemes, newthemes);
+		if (!filter.emptyflipped())
 		{
 			for (auto& yieldobject : newyields)
 			{
-				yieldobject.second = yieldobject.second->presolve(presolvedmask, newthemes);
+				yieldobject.second = yieldobject.second->presolve(filter, newthemes);
 			}
 		}
 		

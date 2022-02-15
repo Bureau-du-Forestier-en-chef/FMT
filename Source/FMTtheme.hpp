@@ -29,6 +29,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 namespace Core
 {
 class FMTmask;
+class FMTmaskfilter;
 // DocString: FMTtheme
 /**
 FMTtheme hold multiple attributes for only one theme. FMTtheme gives the description of a part of a FMTmask
@@ -269,7 +270,7 @@ class FMTEXPORT FMTtheme : public FMTobject
 		selected mask we the selected attribute is the presolved FMTtheme is not empty and size > 1 then
 		it gets an newid and a newstart and increment both.
 		*/
-		FMTtheme presolve(const FMTmask& basemask, size_t& newid, size_t& newstart, FMTmask& selected) const;
+		FMTtheme presolve(FMTmaskfilter& maskfilter, size_t& newid, size_t& newstart) const;
 		// DocString: FMTtheme::operator std::string
 		/**
 		Return a string representation of the FMTtheme seen in a landscape file 

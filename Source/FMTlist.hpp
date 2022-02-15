@@ -28,6 +28,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <iterator>
 #include <memory>
 #include "FMTyieldhandler.hpp"
+#include "FMTtheme.hpp"
 
 namespace Core
 {
@@ -105,9 +106,8 @@ namespace Core
 		Use this function with care because it's going to change the stade of the list
 		if user attempt to reference to a deleted element the model will seems broken.
 		*/
-		void presolvelist(const FMTmask& basemask,
+		void presolvelist(const FMTmaskfilter& filter,
 			const std::vector<FMTtheme>& originalthemes,
-			const FMTmask& presolvedmask,
 			const std::vector<FMTtheme>& newthemes)
 			{
 			try {
@@ -115,22 +115,22 @@ namespace Core
 				{
 					unshrink(originalthemes);
 				}
+				const std::vector<FMTtheme>maskthemes = filter.getselectedthemes(originalthemes);
 				std::vector<std::pair<FMTmask, T>>newdata;
 				for (const std::pair<FMTmask, T>& object : data)
 				{
-					if (!object.first.isnotthemessubset(basemask, originalthemes))
+					if (filter.canpresolve(object.first,maskthemes))
 					{
 						FMTmask mskkey = object.first;
-						if (!presolvedmask.empty())
+						if (!filter.emptyflipped())
 						{
-							mskkey = mskkey.presolve(presolvedmask, newthemes);
+							mskkey = mskkey.presolve(filter, newthemes);
 						}
 						pushtodata(newdata, mskkey, object.second);
 					}
 				}
 				data.swap(newdata);
-				//data = newdata;
-				this->update();
+				FMTlist::update();
 				data.shrink_to_fit();
 			}catch (...)
 				{
@@ -142,6 +142,16 @@ namespace Core
 			data = rhs.data;
 			}
 	public:
+		// DocString: FMTlist::swap
+		/**
+		Swap function for FMTlist.
+		*/
+		void swap(Core::FMTlist<T>& rhs)
+			{
+			data.swap(rhs.data);
+			filter.swap(rhs.filter);
+			fastpass.swap(rhs.fastpass);
+			}
 		// DocString: FMTlist::getunion
 		/**
 		Get a global union mask from all the masks of the FMTlist.
@@ -294,18 +304,28 @@ namespace Core
 		*/
 		void shrink()
 		{
+			try {
 				fastpass.clear();
 				std::vector<Core::FMTmask> filteredmasks;
 				for (const std::pair<FMTmask, T>& object : data)
-				{
+					{
 					filteredmasks.push_back(object.first);
-				}
-				filter=Core::FMTmaskfilter(filteredmasks);
+					}
+				if (filteredmasks.empty()) 
+					{
+					_exhandler->raise(Exception::FMTexc::FMTinvalid_maskrange,"Empty mask", "FMTactionparser::shrink", __LINE__, __FILE__);
+					}
+				filter = Core::FMTmaskfilter(filteredmasks);
 				for (std::pair<FMTmask, T>& object : data)
-				{
+					{
 					object.first = filter.filter(object.first);
-				}
+					}
 				data.shrink_to_fit();
+			}catch (...) {
+
+				_exhandler->raisefromcatch("", "FMTlist::shrink", __LINE__, __FILE__);
+
+			}
 		}
 		// DocString: FMTlist::unshrink
 		/**

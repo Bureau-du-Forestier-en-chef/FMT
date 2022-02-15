@@ -8,6 +8,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 #include "FMTmask.hpp"
 #include "FMTtheme.hpp"
+#include "FMTmaskfilter.hpp"
 
 namespace Core{
 
@@ -149,6 +150,19 @@ std::vector<FMTtheme>FMTmask::getstaticthemes(const std::vector<FMTtheme>& theme
 	return staticths;
 	}
 
+std::vector<FMTtheme> FMTmask::getselectedthemes(const  std::vector<FMTtheme>& themes) const
+{
+	std::vector<FMTtheme>selected;
+	for (const FMTtheme& theme : themes)
+	{
+		if (subset(theme).any())
+		{
+			selected.push_back(theme);
+		}
+	}
+	return selected;
+}
+
 
 void FMTmask::set(const FMTtheme& theme,const std::string& value)
     {
@@ -209,6 +223,12 @@ FMTmask::FMTmask(const FMTmask& rhs) : name(rhs.name),data(rhs.data)
 
 
             }
+
+void FMTmask::swap(FMTmask& rhs)
+	{
+	data.swap(rhs.data);
+	name.swap(rhs.name);
+	}
 
 FMTmask& FMTmask::operator = (const FMTmask& rhs)
             {
@@ -304,9 +324,9 @@ size_t FMTmask::count() const
 	return data.count();
 	}
 
+
 bool FMTmask::isnotthemessubset(const FMTmask& rhs, const std::vector<FMTtheme>& themes) const
 	{
-	
 	for (const FMTtheme& theme : themes)
 		{
 		const size_t themestart = theme.getstart();
@@ -316,54 +336,9 @@ bool FMTmask::isnotthemessubset(const FMTmask& rhs, const std::vector<FMTtheme>&
 			!((subset(theme) & rhs.subset(theme)).any()))
 			{
 			return true;
-			/*size_t bitloc = themestart;
-			std::cout << "IN NOT SUBSET "<<theme.getid() << "\n";
-			while (bitloc<=themestop && !(rhs.data[bitloc] & this->data[bitloc]))
-				{
-				std::cout << "ADVANCE "<< bitloc <<" "<< themestop << "\n";
-				++bitloc;
-				}
-			if (bitloc== themestop)
-				{
-				std::cout << "OUT TRUE" << "\n";
-				return true;
-				}*/
 			}
 		}
 	return false;
-
-	/*const boost::dynamic_bitset<> intersection = (rhs.data & this->data);
-	size_t thid = 0;
-	size_t bitloc = 0;
-	size_t totalthemelength = 0;
-	bool founddifference = false;
-	size_t falsefound = 0;
-	std::vector<size_t>themesizes;
-	themesizes.reserve(themes.size());
-	for (const FMTtheme& theme : themes)
-	{
-		themesizes.push_back(theme.size());
-	}
-	while (!founddifference && bitloc < data.size())
-		{
-		if (!intersection[bitloc])
-			{
-			++falsefound;
-			}
-		const size_t themesize = themesizes.at(thid);
-		if (bitloc == (themesize + totalthemelength)-1)
-			{
-			if (themesize == falsefound)//in that case we accept aggregate and "?")
-				{
-				founddifference = true;
-				}
-			++thid;
-			falsefound = 0;
-			totalthemelength += themesize;
-			}
-		++bitloc;
-		}
-	return founddifference;*/
 	}
 
 std::string FMTmask::getbitsstring() const
@@ -394,73 +369,68 @@ FMTmask FMTmask::refine(const FMTmask& mask,const std::vector<FMTtheme>& themes)
 		return FMTmask(boost::algorithm::join(bases," "),themes);
 	}	
 
-FMTmask FMTmask::presolve(const FMTmask& selectedmask, const std::vector<FMTtheme>&presolvedthemes) const
+FMTmask FMTmask::presolve(const FMTmaskfilter& filter, const std::vector<FMTtheme>&presolvedthemes) const
 	{
-	size_t basesize = 0;
-	for (const FMTtheme& theme : presolvedthemes)
-		{
-		basesize += theme.size();
-		}
-	boost::dynamic_bitset<> newdata(basesize,false);
+	FMTmask newmask;
+	newmask.data.resize(filter.flippedselection.count(), false);
 	size_t selectedloc = 0;
-	for (size_t bitid = 0; bitid < selectedmask.data.size();++bitid)
+	for (size_t bitid = 0; bitid < filter.flippedselection.size();++bitid)
 		{
-		if (selectedmask.data[bitid])
+		if (filter.flippedselection[bitid])
 			{
-			newdata[selectedloc] = data[bitid];
+			newmask.data[selectedloc] = data[bitid];
 			++selectedloc;
 			}
 		}
-	std::string newname;
 	if (!name.empty())
 		{
-		FMTmask newmask(newdata);
 		for (const FMTtheme& theme : presolvedthemes)
 			{
-			newname += theme.bitstostr(newmask.subset(theme)) + " ";
+			newmask.name += theme.bitstostr(newmask.subset(theme)) + " ";
 			}
-		newname.pop_back();
+		newmask.name.pop_back();
 		}
-	return FMTmask(newname, newdata);
+	return newmask;
 	}
 
-FMTmask FMTmask::postsolve(const FMTmask& selectedmask, const std::vector<FMTtheme>&basethemes) const
+FMTmask FMTmask::postsolve(const FMTmaskfilter& filter,
+	const std::vector<FMTtheme>&basethemes) const
 	{
-	boost::dynamic_bitset<>newdata(selectedmask.size(),false);
+	FMTmask newmask;
+	newmask.data.resize(filter.selection.size(), false);
 	size_t presolvedid = 0;
-	for (size_t mid = 0; mid < selectedmask.size();++mid)
+	for (size_t mid = 0; mid < filter.selection.size();++mid)
 		{
-		if (selectedmask.data[mid])
+		if (filter.selection[mid])
 			{
-			newdata[mid] = data[presolvedid];
+			newmask.data[mid] = data[presolvedid];
 			++presolvedid;
 			}
 		}
-	FMTmask newmask(newdata);
-	std::string newmaskname;
 	for (const FMTtheme& theme: basethemes)
 		{
 		std::string nameofattribute = "?";
 		boost::dynamic_bitset<> msubset = newmask.subset(theme);
-		/*if (msubset.size() == 1)
+		if (!msubset.any())
 			{
-			std::cout<<"if"<<std::endl;
-			nameofattribute = (*theme.getbaseattributes().begin());
-			std::cout<<nameofattribute<<std::endl;
-		}else if (msubset.count()>0)
-			{
-			std::cout<<"else if"<<std::endl;
-			nameofattribute = theme.bitstostr(msubset);
-			std::cout<<nameofattribute<<std::endl;
-			}*/
+			size_t subid = 0;
+			for (size_t bid = theme.getstart(); bid < (theme.getstart() + theme.size());++bid)
+				{
+				const bool& flipvalue = filter.flippedselection[bid];
+				newmask.data[bid] = flipvalue;
+				msubset[subid] = flipvalue;
+				++subid;
+				}
+			}
+		//msubset = newmask.subset(theme);
 		if (msubset.count()==1)
 		{
 			nameofattribute = theme.bitstostr(msubset);
 		}
-		newmaskname += nameofattribute + " ";
+		newmask.name += nameofattribute + " ";
 		}
-	newmaskname.pop_back();
-	return FMTmask(newmaskname, basethemes);
+	newmask.name.pop_back();
+	return newmask;
 	}
 
 FMTmaskcomparator::FMTmaskcomparator(const FMTmask& lbase_mask) : base_mask(lbase_mask)
