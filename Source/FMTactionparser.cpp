@@ -245,15 +245,11 @@ FMTactionparser& FMTactionparser::operator = (const FMTactionparser& rhs)
 								theaction->push_partials(val);
 							}
 						}
-
 					}
-
 				}
-				std::vector<size_t>todelete;
-				size_t id = 0;
 				for (Core::FMTaction& action : actions)
 				{
-					if (find(todelete.begin(), todelete.end(), id) == todelete.end())
+					if (!action.empty())
 					{
 						action.shrink();
 						cleanedactions.push_back(action);
@@ -262,7 +258,6 @@ FMTactionparser& FMTactionparser::operator = (const FMTactionparser& rhs)
 						_exhandler->raise(Exception::FMTexc::FMTempty_action, 
 							action.getname(),"FMTactionparser::read", __LINE__, __FILE__, _section);
 					}
-					++id;
 				}
 				std::map<std::string, std::vector<std::string>>cleanedag = valagg(actions, aggregates);
 				aggregates = cleanedag;
