@@ -194,7 +194,7 @@ class FMTEXPORT FMTtheme : public FMTobject
 		/**
 		Get the index for the given (attribute) of the index (value).
 		*/
-        const double& getindex(const std::string& attribute,const std::string& value) const;
+        double getindex(const std::string& attribute,const std::string& value) const;
 		// DocString: FMTtheme::inaggregate
 		/**
 		Check if the (value) is part of the (aggregate).

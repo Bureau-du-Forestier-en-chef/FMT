@@ -1486,6 +1486,41 @@ std::map<std::string,double> FMTspatialschedule::getoutputfromgraph(const Graph:
 	return values;
 	}
 
+void FMTspatialschedule::postsolve(const Core::FMTmaskfilter&  filter,
+									const std::vector<Core::FMTaction>& presolveactions,
+									const Models::FMTmodel& originalbasemodel)
+	{
+	try {
+		const std::vector<Core::FMTtheme> postsolvethemes = originalbasemodel.getthemes();
+		const std::vector<Core::FMTaction> postsolveactions = originalbasemodel.getactions();
+		std::map<int, int>actionmapping;
+		int preactionid = 0;
+		for (const Core::FMTaction action : presolveactions)
+		{
+			const int loc = static_cast<int>(std::distance(postsolveactions.begin(), std::find_if(postsolveactions.begin(), postsolveactions.end(), Core::FMTactioncomparator(action.getname()))));
+			actionmapping[preactionid] = loc;
+			++preactionid;
+		}
+		actionmapping[-1] = -1;
+		cache = FMTspatialnodescache();
+		for (std::map<FMTcoordinate, Graph::FMTlinegraph>::iterator graphit = this->mapping.begin(); graphit != this->mapping.end(); ++graphit)
+			{
+			graphit->second.postsolve(filter, postsolvethemes, actionmapping);
+			}
+		FMTeventcontainer newevents;
+		for (FMTeventcontainer::iterator eventit= events.begin(); eventit!=events.end();eventit++)
+			{
+			FMTevent newevent(*eventit);
+			newevent.setactionid(actionmapping.at(eventit->getactionid()));
+			newevents.insert(newevent);
+			}
+		events = newevents;
+	}catch (...)
+		{
+		_exhandler->raisefromcatch("", "FMTspatialschedule::postsolve", __LINE__, __FILE__);
+		}
+	}
+
 
 void FMTspatialschedule::setgraphcachebystatic(const std::vector<FMTcoordinate>& coordinates,const Core::FMToutputnode& node) const
 	{

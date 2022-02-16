@@ -407,11 +407,6 @@ class FMTEXPORT FMTlpmodel final : public FMTsrmodel
 		The function can reduce the number of global themes/actions/transitions/yields/lifespans/outputs/constraints data if the model is badly formulated.
 		*/
 		virtual std::unique_ptr<FMTmodel>presolve(int presolvepass = 10,std::vector<Core::FMTactualdevelopment> optionaldevelopments = std::vector<Core::FMTactualdevelopment>()) const;
-		// DocString: FMTlpmodel::postsolve
-		/*
-		This function is for postsolving the presolved model into the original model. In this case, the FMTgraph of the FMTlpmodel is also postsolved.
-		*/
-		virtual std::unique_ptr<FMTmodel>postsolve(const FMTmodel& originalbasemodel) const;
 		// DocString: FMTmodel::build
 		/**
 		This function build the graph and setsolution if (schedules) are passed to the function. If FORCE_PARTIAL_BUILD is set at true 

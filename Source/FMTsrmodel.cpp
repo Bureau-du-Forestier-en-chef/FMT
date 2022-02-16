@@ -649,6 +649,18 @@ namespace Models
 		//graph.passinobject(base);
 	}
 
+	void FMTsrmodel::postsolve(const FMTmodel& originalbasemodel)
+	{
+		try {
+			postsolvegraph(originalbasemodel);
+			FMTmodel::postsolve(originalbasemodel);
+		}catch (...)
+		{
+			_exhandler->printexceptions("", "FMTsrmodel::postsolve", __LINE__, __FILE__);
+		}
+
+	}
+
 	std::unique_ptr<FMTmodel>FMTsrmodel::presolve(int presolvepass, std::vector<Core::FMTactualdevelopment> optionaldevelopments) const
 	{
 		try{
@@ -880,7 +892,7 @@ namespace Models
 		return graph.getfirstactiveperiod();
 	}
 
-	Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties> FMTsrmodel::postsolvegraph(const FMTmodel& originalbasemodel) const
+	void FMTsrmodel::postsolvegraph(const FMTmodel& originalbasemodel)
 	{
 		try {
 			const std::vector<Core::FMTtheme>& postsolvethemes = dynamic_cast<const FMTsrmodel*>(&originalbasemodel)->themes;
@@ -896,12 +908,11 @@ namespace Models
 				++preactionid;
 			}
 			actionmapping[-1] = -1;
-			return this->graph.postsolve(postsolvefilter,postsolvethemes, actionmapping);
+			this->graph.postsolve(postsolvefilter,postsolvethemes, actionmapping);
 		}catch (...)
 		{
 			_exhandler->printexceptions("", "FMTsrmodel::postsolvegraph", __LINE__, __FILE__);
 		}
-		return Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>();
 	}
 
 

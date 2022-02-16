@@ -92,8 +92,13 @@ namespace Models
 		/**
 		Post solve this graph and return a presolved graph for each vertex and edges based on the original model.
 		*/
-		Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>postsolvegraph(const FMTmodel& originalbasemodel) const;
+		void postsolvegraph(const FMTmodel& originalbasemodel);
 	public:
+		// DocString: FMTsrmodel::postsolve
+		/*
+		This function is for postsolving the presolved model into the original model. In this case, the FMTgraph of the FMTsrmodel is also postsolved.
+		*/
+		virtual void postsolve(const FMTmodel& originalbasemodel);
 		// DocString: FMTsrmodel::setparallellogger
 		/**
 		Solver's logger cannot work in parallel so you need to pass a logger owned

@@ -406,6 +406,11 @@ class FMTEXPORT FMTspatialschedule : public FMTlayer<Graph::FMTlinegraph>
 		*/
 		std::vector<std::pair<FMTcoordinate, double>>getoutputbycoordinate(const Models::FMTmodel & model,
 			const Core::FMToutput& output, const int& period) const;
+		// DocString: FMTspatialschedule::postsolve
+		/**
+		postsolve the spatial solution.
+		*/
+		void postsolve(const Core::FMTmaskfilter&  filter,const std::vector<Core::FMTaction>& presolveactions,const Models::FMTmodel& originalbasemodel);
 	protected:
 		// DocString: FMTspatialschedule::events
 		/**
