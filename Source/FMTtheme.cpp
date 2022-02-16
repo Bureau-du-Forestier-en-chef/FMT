@@ -253,7 +253,7 @@ bool FMTtheme::useindex() const
     return false;
     }
 
- const double& FMTtheme::getindex(const std::string& attribute,const std::string& value) const
+ double FMTtheme::getindex(const std::string& attribute,const std::string& value) const
     {
 	 try {
 		 lookiterator lookit = getattribute(attribute,true);

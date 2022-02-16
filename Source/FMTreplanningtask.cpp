@@ -315,11 +315,9 @@ namespace Parallel
 					
 					const std::unique_ptr<Models::FMTmodel> stochasticcopy = std::move(domodelplanning(stochastic,replanningperiod,false,false,false));
 					dynamicarea = stochasticcopy->getarea(replanningperiod + 1);
-					double inarea = 0;
 					for (Core::FMTactualdevelopment& developement : dynamicarea)
 						{
 						developement.setperiod(0);
-						inarea += developement.getarea();
 						}
 					const std::unique_ptr<Models::FMTmodel> localcopy = std::move(domodelplanning(local, replanningperiod,false,true));
 					if (!localcopy)//infeasible replicate end here
@@ -333,11 +331,9 @@ namespace Parallel
 						break;
 						}
 					dynamicarea = localcopy->getarea(localcopy->getparameter(Models::FMTintmodelparameters::LENGTH)+1);
-					double outarea = 0;
 					for (Core::FMTactualdevelopment& developement : dynamicarea)
 					{
 						developement.setperiod(replanningperiod);
-						outarea += developement.getarea();
 					}
 				}
 				dynamicarea = global->getarea();

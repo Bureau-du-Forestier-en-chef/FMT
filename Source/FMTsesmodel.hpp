@@ -123,7 +123,7 @@ class FMTEXPORT FMTsesmodel final: public FMTmodel
 		Using the original FMTmodel it postsolve the actual ses model to turn it back into a complete model with all themes,
 		actions and outputs of the original not presolved model.
 		*/
-		std::unique_ptr<FMTmodel>postsolve(const FMTmodel& originalbasemodel) const;
+		void postsolve(const FMTmodel& originalbasemodel);
 		// DocString: FMTsesmodel::greedyreferencebuild
 		/**
 		This function call multiple time the function FMTspatialschedule::referencebuild function to 

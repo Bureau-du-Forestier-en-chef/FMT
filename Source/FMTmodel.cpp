@@ -892,7 +892,8 @@ Core::FMTmaskfilter FMTmodel::getpostsolvefilter(const std::vector<Core::FMTthem
 {
 	try {
 		const Core::FMTmask presolvemask = getselectedmask(originalthemes);
-		return Core::FMTmaskfilter(presolvemask,devmask);
+		const Core::FMTmask emptythemes = devmask.getpostsolvemask(presolvemask, originalthemes);
+		return Core::FMTmaskfilter(presolvemask,emptythemes);
 	}catch (...)
 	{
 		_exhandler->printexceptions("for " + name, "FMTmodel::getpostsolvefilter", __LINE__, __FILE__);
@@ -1053,9 +1054,22 @@ std::unique_ptr<FMTmodel> FMTmodel::presolve(int presolvepass,std::vector<Core::
 			if (!newfilter.emptyflipped())
 			{
 				newarea.reserve(oldarea.size());
+				boost::unordered_map<Core::FMTmask,Core::FMTmask>topresolve;
 				for (const Core::FMTactualdevelopment& development : oldarea)
 				{
-					newarea.push_back(development.presolve(newfilter,newthemes));
+					const Core::FMTmask devmask = development.getmask();
+					Core::FMTactualdevelopment newdev(development);
+					boost::unordered_map<Core::FMTmask, Core::FMTmask>::const_iterator mskit = topresolve.find(devmask);
+					if (mskit != topresolve.end())
+					{
+						newdev.setmask(mskit->second);
+					}
+					else {
+						const Core::FMTmask presolvedmask = devmask.presolve(newfilter, newthemes);
+						topresolve[devmask] = presolvedmask;
+						newdev.setmask(presolvedmask);
+					}
+					newarea.push_back(newdev);
 				}
 			}
 			else {
@@ -1174,9 +1188,9 @@ std::unique_ptr<FMTmodel> FMTmodel::presolve(int presolvepass,std::vector<Core::
 	return presolvedmodel;
 	}
 
-std::unique_ptr<FMTmodel>FMTmodel::postsolve(const FMTmodel& originalbasemodel) const
+void FMTmodel::postsolve(const FMTmodel& originalbasemodel)
 	{
-	return std::unique_ptr<FMTmodel>(new FMTmodel(originalbasemodel));
+	*this = FMTmodel(originalbasemodel);
 	}
 
 Core::FMTschedule FMTmodel::presolveschedule(const Core::FMTschedule& originalbaseschedule,
@@ -1414,16 +1428,12 @@ bool FMTmodel::doplanning(const bool& solve,std::vector<Core::FMTschedule> sched
 		{
 			optimal_solved = presolved_model->solve();
 		}
-		if(parameters.getboolparameter(POSTSOLVE) && presolve_iterations>0)
-		{
-			_logger->logwithlevel("Postsolving "+getname()+"\n",1);
-			std::unique_ptr<FMTmodel> postsolved = presolved_model->postsolve(*this);
-			this->swap_ptr(postsolved);
-		}else{
-			_logger->logwithlevel("Not Postsolving "+getname()+"\n",1);
-			this->swap_ptr(presolved_model);
-		}
-
+		if (parameters.getboolparameter(POSTSOLVE) && presolve_iterations > 0)
+			{
+			_logger->logwithlevel("Postsolving " + getname() + "\n", 1);
+			presolved_model->postsolve(*this);
+			}
+		this->swap_ptr(presolved_model);
 	}catch(...){
 		_exhandler->raisefromcatch("", " FMTmodel::doplanning", __LINE__, __FILE__);
 	}

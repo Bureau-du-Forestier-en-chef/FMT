@@ -1931,35 +1931,42 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 			{
 			return data[*developments.at(getfirstactiveperiod() + 1).first].get().getperiod();
 			}
-		FMTgraph postsolve(const Core::FMTmaskfilter& filter,
+		void postsolve(const Core::FMTmaskfilter& filter,
 			const std::vector<Core::FMTtheme>&originalbasethemes,
-			const std::map<int,int>& actionmapconnection) const
+			const std::map<int,int>& actionmapconnection)
 		{
-			FMTgraph newgraph(*this);
 			try {
-				newgraph.developments.clear();
-				newgraph.nodescache.clear();//Some postsolve can be done here to keep some usefull information but for now just clear
+				developments.clear();
+				nodescache.clear();//Some postsolve can be done here to keep some usefull information but for now just clear
 				//start by remapping the actions
 				FMTedge_iterator edge_iterator, edge_iterator_end;
-				for (boost::tie(edge_iterator, edge_iterator_end) = boost::edges(newgraph.data); edge_iterator != edge_iterator_end; ++edge_iterator)
+				for (boost::tie(edge_iterator, edge_iterator_end) = boost::edges(data); edge_iterator != edge_iterator_end; ++edge_iterator)
 				{
-					FMTbaseedgeproperties& edgeprop = newgraph.data[*edge_iterator];
+					FMTbaseedgeproperties& edgeprop = data[*edge_iterator];
 					edgeprop.setactionID(actionmapconnection.at(edgeprop.getactionID()));
 				}
+				boost::unordered_map<Core::FMTmask,Core::FMTmask>presolvetopostsolve;
 				FMTvertex_iterator vertex_iterator, vertex_iterator_end;
-				for (boost::tie(vertex_iterator, vertex_iterator_end) = boost::vertices(newgraph.data); vertex_iterator != vertex_iterator_end; ++vertex_iterator)
+				for (boost::tie(vertex_iterator, vertex_iterator_end) = boost::vertices(data); vertex_iterator != vertex_iterator_end; ++vertex_iterator)
 				{
-					FMTbasevertexproperties& vertexprop = newgraph.data[*vertex_iterator];
-					vertexprop.setdevlopementmask(vertexprop.get().getmask().postsolve(filter, originalbasethemes));
+					FMTbasevertexproperties& vertexprop = data[*vertex_iterator];
+					const Core::FMTmask& presolvemask = vertexprop.get().getmask();
+					boost::unordered_map<Core::FMTmask, Core::FMTmask>::const_iterator mskit = presolvetopostsolve.find(presolvemask);
+					if (mskit != presolvetopostsolve.end())
+						{
+						vertexprop.setdevlopementmask(mskit->second);
+					}else {
+						const Core::FMTmask postsolvedmask = presolvemask.postsolve(filter, originalbasethemes);
+						presolvetopostsolve[presolvemask] = postsolvedmask;
+						vertexprop.setdevlopementmask(postsolvedmask);
+						}
 				}
-				newgraph.generatedevelopments();
+				generatedevelopments();
 			}
 			catch (...)
 			{
 				_exhandler->raisefromcatch("", "FMTgraph::postsolve", __LINE__, __FILE__);
 			}
-
-			return newgraph;
 		}
 		Core::FMTschedule getschedule(const std::vector<Core::FMTaction>& actions, const double* actual_solution, const int& lperiod,bool withlock = false) const
 		{

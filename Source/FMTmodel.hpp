@@ -270,7 +270,7 @@ namespace Models
 		/*
 		This function is for postsolving the presolved model into the original model.
 		*/
-		virtual std::unique_ptr<FMTmodel>postsolve(const FMTmodel& originalbasemodel) const;
+		virtual void postsolve(const FMTmodel& originalbasemodel);
 		// DocString: FMTmodel::presolveschedule
 		/**
 		Using the original schedule (not presolved) and the original model (not presolved) it returns a new schedule with

@@ -82,6 +82,20 @@ boost::dynamic_bitset<> FMTmask::subset(const FMTtheme& theme) const
     return sub;
     }
 
+FMTmask FMTmask::getpostsolvemask(const FMTmask& mask, const std::vector<FMTtheme>& themes) const
+	{
+	FMTmask postsolvedmask(*this);
+	for (const Core::FMTtheme & basetheme : themes)
+		{
+		if (mask.getsubsetcount(basetheme)!=0)//scrap this theme in the devmask
+			{
+			boost::dynamic_bitset<> sub(basetheme.size(),false);
+			postsolvedmask.setsubset(basetheme, sub);
+			}
+		}
+	return postsolvedmask;
+	}
+
 size_t FMTmask::getsubsetcount(const FMTtheme& theme) const
 {
 	return subset(theme).count();
@@ -396,8 +410,7 @@ FMTmask FMTmask::presolve(const FMTmaskfilter& filter, const std::vector<FMTthem
 FMTmask FMTmask::postsolve(const FMTmaskfilter& filter,
 	const std::vector<FMTtheme>&basethemes) const
 	{
-	FMTmask newmask;
-	newmask.data.resize(filter.selection.size(), false);
+	FMTmask newmask(filter.flippedselection);
 	size_t presolvedid = 0;
 	for (size_t mid = 0; mid < filter.selection.size();++mid)
 		{
@@ -409,25 +422,7 @@ FMTmask FMTmask::postsolve(const FMTmaskfilter& filter,
 		}
 	for (const FMTtheme& theme: basethemes)
 		{
-		std::string nameofattribute = "?";
-		boost::dynamic_bitset<> msubset = newmask.subset(theme);
-		if (!msubset.any())
-			{
-			size_t subid = 0;
-			for (size_t bid = theme.getstart(); bid < (theme.getstart() + theme.size());++bid)
-				{
-				const bool& flipvalue = filter.flippedselection[bid];
-				newmask.data[bid] = flipvalue;
-				msubset[subid] = flipvalue;
-				++subid;
-				}
-			}
-		//msubset = newmask.subset(theme);
-		if (msubset.count()==1)
-		{
-			nameofattribute = theme.bitstostr(msubset);
-		}
-		newmask.name += nameofattribute + " ";
+		newmask.name += theme.bitstostr(newmask.subset(theme)) + " ";
 		}
 	newmask.name.pop_back();
 	return newmask;

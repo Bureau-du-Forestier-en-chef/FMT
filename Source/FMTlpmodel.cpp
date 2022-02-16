@@ -1678,19 +1678,6 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 		return std::unique_ptr<FMTmodel>(nullptr);
 	}
 
-	std::unique_ptr<FMTmodel> FMTlpmodel::postsolve(const FMTmodel& originalbasemodel) const
-	{
-		std::unique_ptr<FMTmodel> postsolvemodel;
-		try{
-			postsolvemodel = std::unique_ptr<FMTmodel>(new FMTlpmodel(*(FMTmodel::postsolve(originalbasemodel)),postsolvegraph(originalbasemodel),this->solver,this->elements));
-
-		}catch(...)
-		{
-			_exhandler->raisefromcatch("", "FMTlpmodel::postsolve", __LINE__, __FILE__);
-		}
-		return postsolvemodel;
-	}
-
 	void FMTlpmodel::updatematrixnaming()
 	{
 		try {
