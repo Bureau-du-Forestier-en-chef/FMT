@@ -44,7 +44,7 @@ int main(int argc, char *argv[])
 	const std::string outputlocation = "tests/"+ locname;
 	std::vector<std::string>layersoptions;
 	layersoptions.push_back("SEPARATOR=SEMICOLON");
-	std::unique_ptr<Parallel::FMTtask> maintaskptr(new Parallel::FMTreplanningtask(global, stochastic, local, selectedoutputs, outputlocation, "CSV", layersoptions, replicate,length,100000,0.5, Core::FMToutputlevel::totalonly));
+	std::unique_ptr<Parallel::FMTtask> maintaskptr(new Parallel::FMTreplanningtask(global, stochastic, local, selectedoutputs, outputlocation, "CSV", layersoptions, replicate,length,0.5, Core::FMToutputlevel::totalonly));
 	Parallel::FMTtaskhandler handler(maintaskptr,2);
 	handler.setquietlogger();
 	//handler.ondemandrun();

@@ -232,6 +232,26 @@ namespace Core
 		return newconstraint;
 	}
 
+	double FMTconstraint::getscheduleweight() const
+	{
+		try {
+			if (!this->emptyylds()&&isobjective())
+			{
+				for (size_t id = 0; id < yieldnames.size(); ++id)
+				{
+					if (yieldnames.at(id).find("_SETGLOBALSCHEDULE") != std::string::npos)
+					{
+						return getyieldbound("_SETGLOBALSCHEDULE").getlower();
+					}
+				}
+			}
+		}catch (...)
+			{
+			_exhandler->printexceptions("", "FMTconstraint::getscheduleweight", __LINE__, __FILE__, Core::FMTsection::Optimize);
+			}
+		return 0;
+	}
+
 
 	Core::FMTconstraint FMTconstraint::setfrom(const std::string& modeltype, const double& value) const
 	{
