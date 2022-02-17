@@ -28,7 +28,7 @@ if __name__ == "__main__":
             os.mkdir("tests")
         outputlocation = "tests/replanning"
         layersoptions=["SEPARATOR=SEMICOLON"]
-        replanningtask=Parallel.FMTreplanningtask(globalmodel,stochastic, localmodel, selectedoutputs, outputlocation, "CSV", layersoptions,20,10,0,0.5, Core.FMToutputlevel.totalonly)
+        replanningtask=Parallel.FMTreplanningtask(globalmodel,stochastic, localmodel, selectedoutputs, outputlocation, "CSV", layersoptions,20,10,0.5, Core.FMToutputlevel.totalonly)
         handler = Parallel.FMTtaskhandler(replanningtask,2)
         handler.setquietlogger()
         handler.conccurentrun()

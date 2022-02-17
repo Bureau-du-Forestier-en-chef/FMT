@@ -53,6 +53,7 @@ namespace Parser
 		std::regex rxpenalty;
 		std::regex rxspecialoutput;
 		std::regex rxspatial;
+		std::regex rxspecialobjective;
 		std::queue<std::string>ineach;
 		Core::FMTconstraint getobjective(const std::string& line, const Core::FMTconstants& constants,
                              const std::vector<Core::FMToutput>& outputs,

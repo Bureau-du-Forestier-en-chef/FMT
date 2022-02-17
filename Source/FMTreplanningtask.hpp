@@ -72,9 +72,6 @@ namespace Parallel
 		// DocString: FMTreplanningtask::replanningperiods
 		///The number of replanning periods the task needs to do.
 		int replanningperiods;
-		// DocString: FMTreplanningtask::globalsolutionweight;
-		///The weight of the schedule of the global model applied to the local model.
-		double globalsolutionweight;
 		// DocString: FMTreplanningtask::copysharedmodel
 		/**
 		Solver logger make it not save to clone a solver with a common logger.
@@ -154,7 +151,6 @@ namespace Parallel
 						const std::vector<std::string>& creationoptions,
 						const int& replicates,
 						const int& replanningperiodssize,
-						const double& globalwweight,
 						const double& minimaldrift,
 						Core::FMToutputlevel outputlevel);
 		// DocString: FMTreplanningtask::FMTreplanningtask(const Models::FMTmodel&,const Models::FMTmodel&,const Models::FMTmodel&)
@@ -180,11 +176,6 @@ namespace Parallel
 		Set the number oof replanning periods.
 		*/
 		void setreplanningperiods(const int& periodsnumber);
-		// DocString: FMTreplanningtask::setglobalwweight()
-		/**
-		set the global schedule weight.
-		*/
-		void setglobalweight(const double& weight);
 		// DocString: FMTreplanningtask::split(...)
 		/**
 		The split fonction that split the main task into multiple tasks of replanning.
