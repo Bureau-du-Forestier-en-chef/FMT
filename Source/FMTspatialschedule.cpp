@@ -1493,15 +1493,13 @@ void FMTspatialschedule::postsolve(const Core::FMTmaskfilter&  filter,
 	try {
 		const std::vector<Core::FMTtheme> postsolvethemes = originalbasemodel.getthemes();
 		const std::vector<Core::FMTaction> postsolveactions = originalbasemodel.getactions();
-		std::map<int, int>actionmapping;
-		int preactionid = 0;
+		std::vector<int>actionmapping;
+		actionmapping.reserve(presolveactions.size());
 		for (const Core::FMTaction action : presolveactions)
 		{
 			const int loc = static_cast<int>(std::distance(postsolveactions.begin(), std::find_if(postsolveactions.begin(), postsolveactions.end(), Core::FMTactioncomparator(action.getname()))));
-			actionmapping[preactionid] = loc;
-			++preactionid;
+			actionmapping.push_back(loc);
 		}
-		actionmapping[-1] = -1;
 		cache = FMTspatialnodescache();
 		for (std::map<FMTcoordinate, Graph::FMTlinegraph>::iterator graphit = this->mapping.begin(); graphit != this->mapping.end(); ++graphit)
 			{
@@ -1514,7 +1512,7 @@ void FMTspatialschedule::postsolve(const Core::FMTmaskfilter&  filter,
 			newevent.setactionid(actionmapping.at(eventit->getactionid()));
 			newevents.insert(newevent);
 			}
-		events = newevents;
+		events.swap(newevents);
 	}catch (...)
 		{
 		_exhandler->raisefromcatch("", "FMTspatialschedule::postsolve", __LINE__, __FILE__);

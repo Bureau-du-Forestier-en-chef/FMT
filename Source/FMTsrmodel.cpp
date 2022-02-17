@@ -899,15 +899,13 @@ namespace Models
 			const std::vector<Core::FMTaction>& postsolveactions = dynamic_cast<const FMTsrmodel*>(&originalbasemodel)->actions;
 			const Core::FMTmaskfilter postsolvefilter = this->getpostsolvefilter(originalbasemodel.getthemes(),originalbasemodel.getarea().begin()->getmask());
 			const std::vector<Core::FMTaction>& presolveactions = this->actions;
-			std::map<int, int>actionmapping;
-			int preactionid = 0;
+			std::vector<int>actionmapping;
+			actionmapping.reserve(presolveactions.size());
 			for (const Core::FMTaction action : presolveactions)
 			{
 				const int loc = static_cast<int>(std::distance(postsolveactions.begin(), std::find_if(postsolveactions.begin(), postsolveactions.end(), Core::FMTactioncomparator(action.getname()))));
-				actionmapping[preactionid] = loc;
-				++preactionid;
+				actionmapping.push_back(loc);
 			}
-			actionmapping[-1] = -1;
 			this->graph.postsolve(postsolvefilter,postsolvethemes, actionmapping);
 		}catch (...)
 		{

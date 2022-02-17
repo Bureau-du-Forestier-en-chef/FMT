@@ -1933,7 +1933,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 			}
 		void postsolve(const Core::FMTmaskfilter& filter,
 			const std::vector<Core::FMTtheme>&originalbasethemes,
-			const std::map<int,int>& actionmapconnection)
+			const std::vector<int>& actionmapconnection)
 		{
 			try {
 				developments.clear();
@@ -1943,7 +1943,10 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 				for (boost::tie(edge_iterator, edge_iterator_end) = boost::edges(data); edge_iterator != edge_iterator_end; ++edge_iterator)
 				{
 					FMTbaseedgeproperties& edgeprop = data[*edge_iterator];
-					edgeprop.setactionID(actionmapconnection.at(edgeprop.getactionID()));
+					if (edgeprop.getactionID()>=0)
+						{
+						edgeprop.setactionID(actionmapconnection.at(edgeprop.getactionID()));
+						}
 				}
 				boost::unordered_map<Core::FMTmask,Core::FMTmask>presolvetopostsolve;
 				FMTvertex_iterator vertex_iterator, vertex_iterator_end;
