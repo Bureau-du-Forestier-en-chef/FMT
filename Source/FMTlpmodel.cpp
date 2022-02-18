@@ -773,7 +773,11 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 				}
 				uppernlower["M" + output.getname()] = medianvalues;
 				this->setobjective(maxconstraint);
-				this->initialsolve();
+				if(!this->initialsolve())
+				{
+					_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
+						"Upper objectif unfeasable","FMTlpmodel::getvariabilities", __LINE__, __FILE__);
+				}
 				std::vector<double>uppervalues;
 				for (int period = first_period; period <= last_period; ++period)
 				{
@@ -784,7 +788,11 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 				Core::FMTconstraint minconstraint(Core::FMTconstrainttype::FMTMINobjective, output);
 				minconstraint.setlength();
 				this->setobjective(minconstraint);
-				this->initialsolve();
+				if (!this->initialsolve())
+				{
+					_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
+						"Lower objectif unfeasable","FMTlpmodel::getvariabilities", __LINE__, __FILE__);
+				}
 				std::vector<double>lowervalues;
 				for (int period = first_period; period <= last_period; ++period)
 				{
@@ -796,7 +804,11 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 			solver.setObjective(&originalcoefficients[0]);
 			solver.setObjSense(originalsense);
 			solver.deleteRows(static_cast<int>(objectivebounds.size()), &objectivebounds[0]);
-			solver.initialsolve();
+			if(!solver.initialsolve())
+			{
+				_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
+						"Cannot resolve to reset initial state","FMTlpmodel::getvariabilities", __LINE__, __FILE__);
+			}
 		}catch (...)
 			{
 			_exhandler->raisefromcatch("for "+name,
