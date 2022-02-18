@@ -60,6 +60,9 @@ class FMTEXPORT FMToutputnode
 		FMToutputnode& operator = (const FMToutputnode& rhs);
 		int settograph(std::vector<int>& targetedperiods, int period,int max_period);
 		~FMToutputnode()=default;
+		void fillupequation(std::map<std::string,std::vector<std::string>>& allequations,
+			const std::map<std::string, double>& graphvalues,
+			const std::vector<std::string>& equation, const size_t& nodeid) const;
 	};
 
 class FMToutputnodevaluecomparator

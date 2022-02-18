@@ -13,6 +13,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTyieldhandler.hpp"
 #include <memory>
 #include "FMTaction.hpp"
+#include <algorithm>
 
 namespace Core{
 
@@ -306,7 +307,7 @@ bool FMToutput::containslevel() const
 	return false;
 	}
 
-bool FMToutput::linear() const
+bool FMToutput::islinear() const
 	{
 	try{
 	if (sources.size() > 1 && (find(operators.begin(), operators.end(), FMToperator("*")) != operators.end() ||
@@ -431,13 +432,12 @@ FMToutput FMToutput::boundto(const std::vector<FMTtheme>& themes, const FMTperbo
 	return newoutput;
 	}
 
-std::vector<FMToutputnode> FMToutput::getnodes(/*const std::vector<FMTactualdevelopment>&area,
-											   const std::vector<Core::FMTaction>&actions,
-											   const FMTyields& yields,*/
-											   double multiplier,bool orderbyoutputid) const
+std::vector<FMToutputnode> FMToutput::getnodes(double multiplier,bool orderbyoutputid,std::vector<std::string>* equationptr) const
 	{
 	//set a expression and get the nodes! check if the node is positive or negative accross the equation!!!
 	std::vector<FMToutputnode>nodes;
+	std::vector<std::string>equation;
+	equation.push_back("(");
 	try {
 		size_t src_id = 0;
 		size_t op_id = 0;
@@ -461,6 +461,8 @@ std::vector<FMToutputnode> FMToutput::getnodes(/*const std::vector<FMTactualdeve
 							{
 							constant *= multiplier;
 							}
+						equation.push_back("O" + std::to_string(nodes.size()));
+						equation.push_back("+");
 						nodes.emplace_back(main_source, main_factor, constant);
 					}
 				}
@@ -482,7 +484,13 @@ std::vector<FMToutputnode> FMToutput::getnodes(/*const std::vector<FMTactualdeve
 				{
 					const double value = source.getvalue();
 					constant = operators.at(op_id).call(constant, value);
-				}
+				}else if (!nodes.empty())
+					{
+					equation.pop_back();
+					equation.push_back(")");
+					equation.push_back(std::string(operators.at(op_id)));
+					equation.push_back("(");
+					}
 				/*else if (source.canbededucedtoconstant())
 				{
 					const double value = source.getconstantvalue(area, actions, yields);
@@ -503,11 +511,17 @@ std::vector<FMToutputnode> FMToutput::getnodes(/*const std::vector<FMTactualdeve
 				{
 					constant *= multiplier;
 				}
+				equation.push_back("O" + std::to_string(nodes.size()));
+				equation.push_back(")");
 				nodes.emplace_back(main_source, main_factor, constant);
 			}
 
 
 		}
+		if (equationptr!=nullptr)
+			{
+			equationptr->swap(equation);
+			}
 		if (orderbyoutputid)
 			{
 			std::sort(nodes.begin(), nodes.end(), FMToutputnodeorigincomparator());
@@ -873,6 +887,34 @@ bool FMToutput::isinventory() const
 	return false;
 	}
 
+void FMToutput::fillfromshuntingyard(std::map<std::string, double>& results,
+						const std::vector<Core::FMToutputnode>& nodes,
+						const std::map<std::string,std::vector<std::string>>& allequations) const
+	{
+	try {
+		for (std::map<std::string, std::vector<std::string>>::const_iterator outit = allequations.begin(); outit != allequations.end(); outit++)
+		{
+			size_t oid = 0;
+			std::vector<std::string> equation(outit->second);
+			for (const Core::FMToutputnode& output_node : nodes)
+				{
+				const std::string oldvalue = "O" + std::to_string(oid);
+				const std::string newvalue("0");
+				std::replace(equation.begin(), equation.end(),oldvalue, newvalue);
+				++oid;
+				}
+			Core::FMTexpression expression(equation);
+			std::map<std::string, double>vals;
+			results[outit->first] = expression.shuntingyard(vals);
+		}
+	}catch (...)
+		{
+		_exhandler->raisefromcatch(
+			"", "FMToutput::getfromshuntingyard", __LINE__, __FILE__, Core::FMTsection::Outputs);
+		}
+	}
+
+
 FMTtheme FMToutput::targettheme(const std::vector<FMTtheme>& themes) const
 	{
 	if (targetthemeid()>=0)
@@ -892,6 +934,8 @@ bool FMToutputcomparator::operator()(const FMToutput& output) const
 	{
 	return output_name == output.getname();
 	}
+
+
 
 
 }
