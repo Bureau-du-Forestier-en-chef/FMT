@@ -23,6 +23,6 @@ if __name__ == "__main__":
         for output in optimizationmodel.getoutputs():
                 if output.getname() in ["P2AREA"]:
                       outputstocheck.append(output)
-        print(optimizationmodel.getvariabilities(outputstocheck))
+        print(optimizationmodel.getvariabilities(outputstocheck,1,10))
     else:
         print("FMT needs to be compiled with OSI")
