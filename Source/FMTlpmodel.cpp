@@ -750,57 +750,61 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 	return uppernlower;
 	}
 
-	std::map<std::string, std::vector<double>>FMTlpmodel::getvariabilities(const std::vector<Core::FMToutput>& outputs,double tolerance)
+	std::map<std::string, std::vector<double>>FMTlpmodel::getvariabilities(const std::vector<Core::FMToutput>& outputs, const int& periodstart,const int& periodstop)
 		{
 		std::map<std::string, std::vector<double>>uppernlower;
 		try {
 			const double* originalcoef = solver.getObjCoefficients();
 			const std::vector<double>originalcoefficients(originalcoef, (originalcoef + solver.getNumCols()));
 			const double originalsense = solver.getObjSense();
-			const std::vector<int>objectivebounds = setobjectivebounds(true, true, tolerance);
+			const std::vector<int>objectivebounds = setobjectivebounds(true, true, parameters.getdblparameter(FMTdblmodelparameters::TOLERANCE));
 			Core::FMToutput outtest;
 			for (const Core::FMToutput& output : outputs)
 			{
-				int first_period = 0;
-				int last_period = 0;
-				Core::FMTconstraint maxconstraint(Core::FMTconstrainttype::FMTMAXobjective, output);
-				maxconstraint.setlength();
-				graph.constraintlenght(maxconstraint, first_period, last_period);
 				std::vector<double>medianvalues;
-				for (int period = first_period; period <= last_period; ++period)
+				for (int period = periodstart; period <= periodstop; ++period)
 				{
 					medianvalues.push_back(this->getoutput(output, period,Core::FMToutputlevel::totalonly).begin()->second);
 				}
 				uppernlower["M" + output.getname()] = medianvalues;
-				this->setobjective(maxconstraint);
-				this->initialsolve();
+				Core::FMTconstraint maxconstraint(Core::FMTconstrainttype::FMTMAXobjective, output);
 				std::vector<double>uppervalues;
-				for (int period = first_period; period <= last_period; ++period)
-				{
-					uppervalues.push_back(this->getoutput(output, period,Core::FMToutputlevel::totalonly).begin()->second);
-				}
-				uppernlower["U" + output.getname()] = uppervalues;
-				this->eraseconstraint(maxconstraint);
 				Core::FMTconstraint minconstraint(Core::FMTconstrainttype::FMTMINobjective, output);
-				minconstraint.setlength();
-				this->setobjective(minconstraint);
-				this->initialsolve();
 				std::vector<double>lowervalues;
-				for (int period = first_period; period <= last_period; ++period)
+				for (int period = periodstart ; period <= periodstop ; ++period )
 				{
+					maxconstraint.setlength(period,period);
+					this->setobjective(maxconstraint);
+					if(!this->resolve())
+					{
+						_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
+							"Upper objectif unfeasable at period "+std::to_string(period),"FMTlpmodel::getvariabilities", __LINE__, __FILE__);
+					}
+					uppervalues.push_back(this->getoutput(output, period,Core::FMToutputlevel::totalonly).begin()->second);
+					minconstraint.setlength(period,period);
+					this->setobjective(minconstraint);
+					if (!this->resolve())
+					{
+						_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
+							"Lower objectif unfeasable at period "+std::to_string(period),"FMTlpmodel::getvariabilities", __LINE__, __FILE__);
+					}
 					lowervalues.push_back(this->getoutput(output, period,Core::FMToutputlevel::totalonly).begin()->second);
 				}
+				uppernlower["U" + output.getname()] = uppervalues;	
 				uppernlower["L" + output.getname()] = lowervalues;
-				this->eraseconstraint(minconstraint);
 			}
 			solver.setObjective(&originalcoefficients[0]);
 			solver.setObjSense(originalsense);
 			solver.deleteRows(static_cast<int>(objectivebounds.size()), &objectivebounds[0]);
-			solver.initialsolve();
+			if(!solver.initialsolve())
+			{
+				_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
+						"Cannot resolve to reset initial state","FMTlpmodel::getvariabilities", __LINE__, __FILE__);
+			}
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("for "+name,
-				"FMTlpmodel::getvariabilities", __LINE__, __FILE__);
+			_exhandler->printexceptions("for "+name,
+										"FMTlpmodel::getvariabilities", __LINE__, __FILE__);
 			}
 		return uppernlower;
 		}
