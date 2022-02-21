@@ -1,2 +1,2 @@
-python Replanner.py -pri ../Models/TWD_land/TWD_land.pri -str Globalfire -tac Localreplanning -sto Globalreplanning -out OVOLREC,OSUPREC -fol replanning -rep 100 -len 10 -rel 10 -rep 10 -thr 2 -swe 0
+python Replanner.py -pri ../Models/TWD_land/TWD_land.pri -str Globalreplanning -tac Localreplanning -sto Globalfire -out OVOLREC,OSUPREC -fol replanning -rep 100 -len 10 -rel 10 -rep 10 -thr 2 -com 5,5 8,10
 PAUSE

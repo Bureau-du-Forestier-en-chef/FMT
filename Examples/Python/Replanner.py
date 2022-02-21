@@ -18,7 +18,7 @@ if __name__ == "__main__":
     ap.add_argument("-len", "--strategiclength", required=True,help="Nombre de periode du strategique")
     ap.add_argument("-rel", "--replanninglength", required=True,help="Nombre de periode de re-plannification")
     ap.add_argument("-thr", "--threads", required=True,help="Nombre de threads")
-    ap.add_argument("-swe", "--Strategicweight", required=True,help="Poids de la cedule strategique")
+    ap.add_argument("-com","--compresstime", nargs="+",help="Compress time sous la forme 20,5 40,8")
     args = vars(ap.parse_args())
     if Version.FMTversion().hasfeature("OSI"):
         modelparser = Parser.FMTmodelparser()
@@ -28,6 +28,9 @@ if __name__ == "__main__":
         globalmodel = Models.FMTlpmodel(models[0], Models.FMTsolverinterface.MOSEK)
         globalmodel.setparameter(Models.FMTintmodelparameters.LENGTH,int(args["strategiclength"]))
         globalmodel.setparameter(Models.FMTintmodelparameters.NUMBER_OF_THREADS,1)
+        if "com" in args:
+            for firstperiod,value in [tuple(int(cmpt.split(",")[0]),float(cmpt.split(",")[1])) for cmpt in args["com"]]:
+                globalmodel.setcompresstime(firstperiod,int(args["strategiclength"]),value)
         stochastic = Models.FMTnssmodel(models[1],0)
         stochastic.setparameter(Models.FMTintmodelparameters.LENGTH, 1)
         localmodel = Models.FMTlpmodel(models[2], Models.FMTsolverinterface.MOSEK)
@@ -39,7 +42,7 @@ if __name__ == "__main__":
                 selectedoutputs.append(output)
         outputlocation = args["folder"]
         layersoptions=["SEPARATOR=SEMICOLON"]
-        replanningtask=Parallel.FMTreplanningtask(globalmodel,stochastic, localmodel, selectedoutputs, outputlocation, "CSV", layersoptions,int(args["replicates"]),int(args["replanninglength"]),float(args["Strategicweight"]),0.5, Core.FMToutputlevel.totalonly)
+        replanningtask=Parallel.FMTreplanningtask(globalmodel,stochastic, localmodel, selectedoutputs, outputlocation, "CSV", layersoptions,int(args["replicates"]),int(args["replanninglength"]),0.5, Core.FMToutputlevel.totalonly)
         handler = Parallel.FMTtaskhandler(replanningtask,int(args["threads"]))
         handler.setquietlogger()
         handler.conccurentrun()
