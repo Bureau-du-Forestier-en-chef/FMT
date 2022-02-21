@@ -945,7 +945,7 @@ namespace Spatial
 			bool cachenotused = true;
 			//const std::vector<Core::FMTtheme> statictransitionsthemes = model.locatestatictransitionsthemes();
 			const double cellsize = this->getcellsize();
-			if (level == Core::FMToutputlevel::totalonly)
+			if (level != Core::FMToutputlevel::developpement)
 				{
 				values["Total"] = std::vector<double>((periodstop - periodstart) + 1,0.0);
 				}
