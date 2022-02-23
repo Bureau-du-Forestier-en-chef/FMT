@@ -279,6 +279,16 @@ namespace Models
 		a given period and tolerance. Perfect function to update a FMTlpmodel or get ready for replanning.
 		*/
 		bool boundsolution(int period, double tolerance = FMT_DBL_TOLERANCE);
+		// DocString: FMTsrmodel::setparameter(const FMTintmodelparameters, const int)
+		/**
+		Override setter for intmodelparameters.
+		*/
+		bool setparameter(const FMTintmodelparameters& key, const int& value) override;
+		// DocString: FMTsrmodel::setparameter(const FMTboolmodelparameters, const bool)
+		/**
+		Override setter for boolmodelparameters.
+		*/
+		bool setparameter(const FMTboolmodelparameters& key, const bool& value) override;
 	};
 
 }

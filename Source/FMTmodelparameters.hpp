@@ -40,7 +40,8 @@ namespace Models
         STRICTLY_POSITIVE = 1,/**< Force matrix to have bound >= 0 for the outputs use in constraints or objective if coefficient is negative and it contains a yield for FMTlpmodel */
         POSTSOLVE = 2,/**< Return a postsolved model for the doplanning */
         SHOW_LOCK_IN_SCHEDULES = 3,//Not needed or change parameters in fonctions ... maybe more for task
-        LastBoolModelParam = 4/**< End marker, used to allocate a fixed-sized array to store bool parameters. */
+		PRESOLVE_CAN_REMOVE_STATIC_THEMES =4,//The presolve will allow the removing of static themes even in use (it can alter the area section).
+        LastBoolModelParam = 5/**< End marker, used to allocate a fixed-sized array to store bool parameters. */
     };
 
 
