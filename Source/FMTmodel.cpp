@@ -75,6 +75,60 @@ std::vector<size_t>FMTmodel::getstatictransitionthemes() const
 	return statics;
 	}
 
+std::vector<Core::FMTtheme>FMTmodel::getstaticpresolvethemes() const
+	{
+	std::vector<Core::FMTtheme>fullstatics(themes);
+	try {
+		for (const Core::FMTconstraint& constraint : constraints)
+			{
+			std::vector<Core::FMTtheme>newstatics;
+			for (const Core::FMTtheme& theme : locatestaticthemes(constraint))
+				{
+				if (std::find_if(fullstatics.begin(), fullstatics.end(), Core::FMTthemecomparator(theme)) != fullstatics.end())
+					{
+					newstatics.push_back(theme);
+					}
+				}
+			fullstatics= newstatics;
+			}
+		std::vector<Core::FMTaction>uactions(actions);
+		for (Core::FMTaction& action : uactions)
+			{
+			action.unshrink(themes);
+			for (const auto& actit : action)
+				{
+				std::vector<Core::FMTtheme>newstatics;
+				for (const Core::FMTtheme& theme :  actit.first.getstaticthemes(fullstatics))
+					{
+					if (std::find_if(fullstatics.begin(), fullstatics.end(), Core::FMTthemecomparator(theme)) != fullstatics.end())
+						{
+						newstatics.push_back(theme);
+						}
+					}
+				fullstatics = newstatics;
+				}
+			}
+		Core::FMTyields uyields(yields);
+		uyields.unshrink(themes);
+		for (auto& yieldit : uyields)
+			{
+			std::vector<Core::FMTtheme>newstatics;
+			for (const Core::FMTtheme& theme : yieldit.first.getstaticthemes(fullstatics))
+			{
+				if (std::find_if(fullstatics.begin(), fullstatics.end(), Core::FMTthemecomparator(theme)) != fullstatics.end())
+				{
+					newstatics.push_back(theme);
+				}
+			}
+			fullstatics = newstatics;
+			}
+	}catch (...)
+		{
+		_exhandler->raisefromcatch("", "FMTmodel::getstaticpresolvethemes", __LINE__, __FILE__);
+		}
+	return fullstatics;
+	}
+
 
 FMTmodel::FMTmodel() : Core::FMTobject(),parameters(),area(),themes(),actions(), transitions(),yields(),lifespan(),outputs(), constraints(),name(), statictransitionthemes()
 {
@@ -501,8 +555,16 @@ std::vector<Core::FMTtheme> FMTmodel::locatestaticthemes(const Core::FMToutput& 
 {
 	std::vector<Core::FMTtheme> bestthemes;
 	try {
-		bestthemes = locatestatictransitionsthemes();
-		bestthemes = output.getstaticthemes(bestthemes, yields, ignoreoutputvariables);
+		//bestthemes = locatestatictransitionsthemes();
+		//bestthemes = output.getstaticthemes(bestthemes, yields, ignoreoutputvariables);
+		const std::vector<Core::FMTtheme>transitionstatic = locatestatictransitionsthemes();
+		for (const Core::FMTtheme& theme : output.getstaticthemes(themes, yields, ignoreoutputvariables))
+			{
+			if (std::find_if(transitionstatic.begin(), transitionstatic.end(), Core::FMTthemecomparator(theme)) != transitionstatic.end())
+				{
+				bestthemes.push_back(theme);
+				}
+			}
 	}catch (...)
 		{
 		_exhandler->raisefromcatch("","FMTmodel::locatestaticthemes", __LINE__, __FILE__);
@@ -881,6 +943,26 @@ Core::FMTmask FMTmodel::getbasemask(std::vector<Core::FMTactualdevelopment> opti
 		{
 			basemask = basemask.getunion(developement.getmask());
 		}
+		if (getparameter(FMTboolmodelparameters::PRESOLVE_CAN_REMOVE_STATIC_THEMES))
+		{
+			boost::dynamic_bitset<>bits;
+			bits.resize(basemask.size(), true);
+			for (const Core::FMTtheme& statictheme : getstaticpresolvethemes())
+				{
+					const size_t start = static_cast<size_t>(statictheme.getstart());
+					for (size_t bitid = start; bitid < (statictheme.size() + start); ++bitid)
+					{
+						if (bitid== ((statictheme.size() + start)-1))
+						{
+							bits[bitid] = true;
+						}else {
+							bits[bitid] = false;
+						}
+						
+					}
+				}
+			basemask = basemask.getintersect(Core::FMTmask(bits));
+		}
 	}catch (...)
 		{
 		_exhandler->raisefromcatch("","FMTmodel::getbasemask", __LINE__, __FILE__);
@@ -1069,10 +1151,22 @@ std::unique_ptr<FMTmodel> FMTmodel::presolve(int presolvepass,std::vector<Core::
 						topresolve[devmask] = presolvedmask;
 						newdev.setmask(presolvedmask);
 					}
-					newarea.push_back(newdev);
-				}
-			}
-			else {
+					
+					if (getparameter(FMTboolmodelparameters::PRESOLVE_CAN_REMOVE_STATIC_THEMES))
+					{
+						std::vector<Core::FMTactualdevelopment>::iterator devit = std::find_if(newarea.begin(), newarea.end(), Core::FMTactualdevelopmentcomparator(&newdev));
+						if (devit != newarea.end())
+						{
+							devit->setarea(devit->getarea() + newdev.getarea());
+						}
+						else {
+							newarea.push_back(newdev);
+						}
+					}else {
+						newarea.push_back(newdev);
+						}
+					}
+			}else {
 				newarea = oldarea;
 			}
 			//reduce the number of actions and presolve the actions

@@ -418,11 +418,7 @@ class FMTEXPORT FMTlpmodel final : public FMTsrmodel
 		This function call initialsolve on the solver.
 		*/
 		virtual bool solve();
-		// DocString: FMTmodel::setparameter(const FMTintmodelparameters, const int)
-		/**
-		Override setter for intmodelparameters. 
-		*/
-		virtual bool setparameter(const FMTintmodelparameters& key, const int& value);
+		
 	};
 
 }

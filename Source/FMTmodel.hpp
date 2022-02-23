@@ -184,6 +184,12 @@ namespace Models
 		locate the static transition themes.
 		*/
 		std::vector<size_t>getstatictransitionthemes() const;
+		// DocString: FMTmodel::getstaticpresolvethemes
+		/**
+		Using the transition themes look at constraints and actions or yields actions to return
+		only themes that are not part of the model.
+		*/
+		std::vector<Core::FMTtheme>getstaticpresolvethemes() const;
 		void clearactionscache();
 		void clearyieldcache();
 		void cleartransitioncache();

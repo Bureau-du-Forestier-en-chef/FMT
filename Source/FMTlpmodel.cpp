@@ -408,7 +408,7 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 					{
 						averagefactor = (1 / (last_period - first_period));
 					}
-					std::vector<Core::FMToutputnode>all_nodes = constraint.getnodes(/*area,actions,yields,*/averagefactor);
+					const std::vector<Core::FMToutputnode>all_nodes = constraint.getnodes(/*area,actions,yields,*/averagefactor);
 					double lowerbound = 0;
 					double upperbound = 0;
 					double coef_multiplier_lower = 1;
@@ -536,7 +536,7 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 
 						//level part
 						locatelevels(all_nodes, period, all_variables, constraint);
-						std::map<int, double>lowervars = all_variables;
+						std::map<int, double>lowervars(all_variables);
 						if (coef_multiplier_lower != 1)
 						{
 							for (std::map<int, double>::iterator varit = lowervars.begin(); varit != lowervars.end(); varit++)
@@ -1772,20 +1772,7 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 		return optimal;
 	}
 
-	bool FMTlpmodel::setparameter(const FMTintmodelparameters& key, const int& value)
-	{
-		try{
-			FMTmodel::setparameter(key,value);
-			if (key == NUMBER_OF_THREADS)
-			{
-				solver.setnumberofthreads(parameters.getintparameter(NUMBER_OF_THREADS));
-			}
-		}catch(...)
-		{
-			_exhandler->raisefromcatch("", "FMTlpmodel::setparameter", __LINE__, __FILE__);
-		}
-		return true;
-	}
+	
 
 	void FMTlpmodel::swap_ptr(const std::unique_ptr<FMTmodel>& rhs)
 	{

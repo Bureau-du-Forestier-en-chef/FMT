@@ -171,7 +171,12 @@ namespace Models
 			/**
 			Override setter for intmodelparameters. 
 			*/
-			virtual bool setparameter(const FMTintmodelparameters& key, const int& value);
+			bool setparameter(const FMTintmodelparameters& key, const int& value) override;
+			// DocString: FMTmodel::setparameter(const FMTboolmodelparameters, const bool)
+			/**
+			Override setter for boolmodelparameters.
+			*/
+			bool setparameter(const FMTboolmodelparameters& key, const bool& value) override;
 	};
 }
 
