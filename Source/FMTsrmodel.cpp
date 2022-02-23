@@ -1138,6 +1138,34 @@ namespace Models
 		return interfaces;
 	}
 
+	bool FMTsrmodel::setparameter(const FMTboolmodelparameters& key, const bool& value)
+	{
+		try {
+			FMTmodel::setparameter(key, value);
+		}
+		catch (...)
+		{
+			_exhandler->raisefromcatch("", "FMTsrmodel::setparameter", __LINE__, __FILE__);
+		}
+		return true;
+	}
+
+	bool FMTsrmodel::setparameter(const FMTintmodelparameters& key, const int& value)
+	{
+		try {
+			FMTmodel::setparameter(key, value);
+			if (key == NUMBER_OF_THREADS)
+			{
+				solver.setnumberofthreads(parameters.getintparameter(NUMBER_OF_THREADS));
+			}
+		}
+		catch (...)
+		{
+			_exhandler->raisefromcatch("", "FMTsrmodel::setparameter", __LINE__, __FILE__);
+		}
+		return true;
+	}
+
 }
 
 

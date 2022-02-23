@@ -24,7 +24,7 @@ FMTmask::operator bool() const
 
 FMTmask::FMTmask(const std::string& mask,const boost::dynamic_bitset<>& bits):name(mask),data(bits)
 	{
-
+	//name.shrink_to_fit();
 	}
 FMTmask::FMTmask(const boost::dynamic_bitset<>& bits): name(),data(bits)
 	{
@@ -45,6 +45,7 @@ FMTmask::FMTmask(const std::vector<FMTtheme>& themes)
 FMTmask::FMTmask(const std::string& mask,const std::vector<FMTtheme>& themes):name(),data()
     {
 	this->set(themes, mask);
+	//name.shrink_to_fit();
     }
 FMTmask::FMTmask(const std::vector<std::string>&values,const std::vector<FMTtheme>& themes):name(),data()
     {
@@ -55,6 +56,7 @@ FMTmask::FMTmask(const std::vector<std::string>&values,const std::vector<FMTthem
     //name = name.substr(0, name.size()-1);
 	name.pop_back();
 	this->set(themes, name);
+	//name.shrink_to_fit();
     }
 std::vector<FMTmask> FMTmask::decompose(const FMTtheme &theme) const
     {
@@ -138,6 +140,7 @@ void FMTmask::set(const std::vector<FMTtheme>& themes,const std::string& value)
         const boost::dynamic_bitset<>bits = theme.strtobits(bases[theme.id]);
 		this->setsubset(theme, bits);
         }
+	//name.shrink_to_fit();
     }
 std::string FMTmask::get(const FMTtheme& theme) const
     {
@@ -186,6 +189,7 @@ void FMTmask::set(const FMTtheme& theme,const std::string& value)
     bases[theme.id] = value;
     name = boost::algorithm::join(bases," ");
     this->setsubset(theme,sub);
+	//name.shrink_to_fit();
     }
 
 void FMTmask::append(const boost::dynamic_bitset<> &bits)
@@ -210,6 +214,7 @@ void FMTmask::update(const std::vector<FMTtheme>& themes)
         name+=the.bitstostr(sub)+" ";
         }
     name = name.substr(0, name.size()-1);
+	//name.shrink_to_fit();
     }
 
 FMTmask FMTmask::getunion(const FMTmask& rhs) const
@@ -403,6 +408,7 @@ FMTmask FMTmask::presolve(const FMTmaskfilter& filter, const std::vector<FMTthem
 			newmask.name += theme.bitstostr(newmask.subset(theme)) + " ";
 			}
 		newmask.name.pop_back();
+		//newmask.name.shrink_to_fit();
 		}
 	return newmask;
 	}
@@ -425,6 +431,7 @@ FMTmask FMTmask::postsolve(const FMTmaskfilter& filter,
 		newmask.name += theme.bitstostr(newmask.subset(theme)) + " ";
 		}
 	newmask.name.pop_back();
+	//newmask.name.shrink_to_fit();
 	return newmask;
 	}
 
