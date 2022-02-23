@@ -840,7 +840,9 @@ std::vector<Core::FMTtheme>FMToutput::getstaticthemes(const std::vector<Core::FM
 				}
 			if (yieldit != yieldstolookat.end())
 				{
-				statics = Core::FMTmask(std::string(handlerit->first),themes).getstaticthemes(statics);
+				const Core::FMTmask maskof(std::string(handlerit->first), themes);
+				const std::vector<Core::FMTtheme>newstatic = maskof.getstaticthemes(statics);
+				statics = newstatic;
 				yieldstolookat.erase(yieldit);
 				}
 			++handlerit;

@@ -353,6 +353,17 @@ namespace Models
 		return simulationdone;
 	}
 
+	bool FMTnssmodel::setparameter(const FMTboolmodelparameters& key, const bool& value)
+	{
+		try {
+			return FMTmodel::setparameter(key, value);
+		}catch (...)
+			{
+			_exhandler->raisefromcatch("", "FMTnssmodel::setparameter", __LINE__, __FILE__);
+			}
+		return false;
+	}
+
 	bool FMTnssmodel::setparameter(const FMTintmodelparameters& key, const int& value)
 	{
 		bool parametersetted = false;

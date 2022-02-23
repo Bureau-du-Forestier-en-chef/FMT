@@ -26,6 +26,7 @@ int main(int argc, char *argv[])
 	Models::FMTlpmodel global(models.at(0), Models::FMTsolverinterface::MOSEK);
 	global.setparameter(Models::FMTintmodelparameters::LENGTH, length);
 	global.setparameter(Models::FMTintmodelparameters::NUMBER_OF_THREADS,1);
+	global.setparameter(Models::FMTboolmodelparameters::PRESOLVE_CAN_REMOVE_STATIC_THEMES, true);
 	Models::FMTnssmodel stochastic(models.at(1), 0);
 	stochastic.setparameter(Models::FMTintmodelparameters::LENGTH, 1);
 	Models::FMTlpmodel local(models.at(2), Models::FMTsolverinterface::MOSEK);
