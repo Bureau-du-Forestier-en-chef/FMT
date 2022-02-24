@@ -179,9 +179,14 @@ class FMTEXPORT FMToutput: public FMTobject
 	bool islinear() const;
 	// DocString: FMToutput::islevel
 	/**
-	Returns true if all outputsources of the FMToutput are level.
+	Returns true if one outputsources of the FMToutput is a level.
 	*/
 	bool islevel() const;
+	// DocString: FMToutput::isonlylevel
+	/**
+	Returns true if all outputsources of the FMToutput are level.
+	*/
+	bool isonlylevel() const;
 	// DocString: FMToutput::isconstant
 	/**
 	Returns true if all outputsources of the FMToutput are constants.

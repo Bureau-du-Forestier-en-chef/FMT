@@ -108,11 +108,16 @@ namespace Parser
 											}
 										}
 										outputs->push_back(Core::FMToutput(name, description, /*themetarget,*/ sources, operators));
-										/*
+										
 										*_logger<<name<<"\n";
-										*_logger<<themetarget<<"\n";
-										for(const auto& s:sources){*_logger<<s.getthemetarget()<<"\n";}
-										*/
+										int id = 0;
+										for(const auto& s:sources)
+										{
+											const std::string operatorstrloop = (id<operators.size()) ? std::string(operators.at(id)) : " ";
+											*_logger<<std::string(s)+" "+operatorstrloop<<"\n";
+											++id;
+										}
+										*_logger<<"\n"<<std::string(outputs->back())<<"\n";
 										//outputs->back().passinobject(*this);
 										++outputid;
 									}
@@ -689,6 +694,15 @@ namespace Parser
 								}
 							}
 							outputs->push_back(Core::FMToutput(name, description, /*themetarget,*/ sources, operators));
+							*_logger<<name<<"\n";
+							int id = 0;
+							for(const auto& s:sources)
+							{
+								const std::string operatorstrloop = (id<operators.size()) ? std::string(operators.at(id)) : " ";
+								*_logger<<std::string(s)+" "+operatorstrloop<<"\n";
+								++id;
+							}
+							*_logger<<"\n"<<std::string(outputs->back())<<"\n";
 							//outputs->back().passinobject(*this);
 							++outputid;
 						}
