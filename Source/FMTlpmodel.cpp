@@ -1726,9 +1726,17 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 			//is the schedule for period 1 
 			for (int period = 0; period<length;++period)
 				{
-					if((!schedules.empty()) && (period<schedules.size()))
+					if(!schedules.empty())
 					{
-						_logger->logwithlevel(std::string(this->buildperiod(schedules.at(period),forcepartialbuild,parameters.getperiodcompresstime(period)))+"\n",1);
+						if(period<schedules.size())
+						{
+							_logger->logwithlevel(std::string(this->buildperiod(schedules.at(period),forcepartialbuild,parameters.getperiodcompresstime(period)))+"\n",1);
+						}
+						else{
+							_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
+												"The lenght to build the graph is bigger than the number of schedule passed to the function. Cannot have mix schedulebuild and fullbuild for now",
+												"FMTlpmodel::build",__LINE__,__FILE__);
+						}
 					}else{
 						_logger->logwithlevel(std::string(this->buildperiod(Core::FMTschedule(),false,parameters.getperiodcompresstime(period)))+"\n",1);
 					}
@@ -1743,15 +1751,9 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 				this->setconstraint(constraints.at(constraintid));
 				}
 			_logger->logwithlevel("*Graph stats with all constraints : \n"+std::string(this->setobjective(constraints.at(0)))+"\n",1);
-			if( !schedules.empty() && length<=schedules.size() )
+			if(!schedules.empty())
 			{
-				bool bylp = false;
-				int period = 1;
-				for (const Core::FMTschedule& schedule : schedules)
-				{
-					this->setsolution(period,schedule);
-					++period;
-				}
+				return trysetsolution(schedules);
 			}
 		}catch(...)
 		{
@@ -1770,6 +1772,35 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 			_exhandler->raisefromcatch("", "FMTlpmodel::solve", __LINE__, __FILE__);
 		}
 		return optimal;
+	}
+
+	bool FMTlpmodel::trysetsolution(const std::vector<Core::FMTschedule>& schedules)
+	{
+		try
+		{
+			bool bylp = false;
+			int period = 1;
+			for (const Core::FMTschedule& schedule : schedules)
+			{
+				if(!bylp)
+				{
+					try
+					{
+						this->setsolution(period,schedule,parameters.getdblparameter(FMTdblmodelparameters::TOLERANCE));
+					}catch(...)
+						{
+							bylp = true;
+							this->setsolutionbylp(period,schedule,parameters.getdblparameter(FMTdblmodelparameters::TOLERANCE));
+						}
+				}else{
+					this->setsolutionbylp(period,schedule,parameters.getdblparameter(FMTdblmodelparameters::TOLERANCE));
+				}
+				++period;
+			}
+		}catch(...){
+			_exhandler->raisefromcatch("", "FMTlpmodel::trysetsolution", __LINE__, __FILE__);
+		}
+		return true;
 	}
 
 	

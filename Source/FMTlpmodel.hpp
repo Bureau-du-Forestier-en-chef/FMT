@@ -200,6 +200,11 @@ class FMTEXPORT FMTlpmodel final : public FMTsrmodel
 	Constructor to presolve FMTlpmodel.
 	*/
 	FMTlpmodel(const FMTsrmodel& rhs);
+	// DocString: FMTlpmodel::trysetsolution(const std::vector<Core::FMTschedule>&)
+	/**
+	Try to setsolution, if not possible try setsolutionbylp
+	*/	
+	bool trysetsolution(const std::vector<Core::FMTschedule>& schedules);
 	public:
 		void clearcache();
 		void clearconstraintlocation();
@@ -411,6 +416,8 @@ class FMTEXPORT FMTlpmodel final : public FMTsrmodel
 		/**
 		This function build the graph and setsolution if (schedules) are passed to the function. If FORCE_PARTIAL_BUILD is set at true 
 		and (schedules) are passed to the function, only a partial graph will be build for the number of period corresponding to schedules passed.
+
+		It will be possible in the futur to have a mix in fullgraph and schedulegraph, but now its not implemented
 		*/
 		virtual bool build(std::vector<Core::FMTschedule> schedules=std::vector<Core::FMTschedule>());
 		// DocString: FMTmodel::solve

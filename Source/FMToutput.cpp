@@ -211,31 +211,83 @@ FMToutput& FMToutput::operator /=(const double& rhs)
 
 FMToutput::operator std::string() const
     {
-	std::string line = "*OUTPUT ";
+		std::string line;
 	try{
-	if (islevel())
+		//Works for normal outputs, level and levels with operators
+		if(!islevel() || isonlylevel())
 		{
-		line = "*LEVEL ";
-		}
-	line += name;
-	if (targetthemeid()!=-1)
-		{
-		line += " (_TH" + std::to_string(targetthemeid() + 1) + ")";
-		}
-	line+=" " + description + "\n";
-	if (!sources.empty() && ((islevel() && sources.at(0).getaction().empty()) || (!islevel())))
-		{
-		line += "*SOURCE ";
-		for (size_t id = 0; id < sources.size(); ++id)
+			line = "*OUTPUT ";
+			if (islevel())
 			{
-			line += std::string(sources[id]) + " ";
-			if (id < operators.size())
-			{
-				line += std::string(operators[id]) + " ";
+				line = "*LEVEL ";
 			}
+			line += name;
+			if (targetthemeid()!=-1)
+			{
+				line += " (_TH" + std::to_string(targetthemeid() + 1) + ")";
+			}
+			line+=" " + description + "\n";
+			if (!sources.empty() && ((islevel() && sources.at(0).getaction().empty()) || (!islevel())))
+			{
+				line += "*SOURCE ";
+				for (size_t id = 0; id < sources.size(); ++id)
+				{
+					line += std::string(sources[id]) + " ";
+					if (id < operators.size())
+					{
+						line += std::string(operators[id]) + " ";
+					}
+				}
 			}
 		}
-    line+="\n";
+		//When a output is a mix between level and output 
+		else
+		{
+			int lid = 1; 
+			for (const FMToutputsource& src : sources)
+			{
+				//Unroll and declare level before the output
+				if (src.gettarget() == FMTotar::level)
+				{
+					line += "*LEVEL ";
+					line += name+"FMTLEVEL"+std::to_string(lid);
+					if (targetthemeid()!=-1)
+					{
+						line += " (_TH" + std::to_string(targetthemeid() + 1) + ")";
+					}
+					line+=" " + description + "\n";
+					line += "*SOURCE ";
+					line += std::string(src) + "\n ";
+					line+="\n";
+					++lid;
+				}
+			}
+			line += "*OUTPUT ";
+			line += name;
+			if (targetthemeid()!=-1)
+			{
+				line += " (_TH" + std::to_string(targetthemeid() + 1) + ")";
+			}
+			line+=" " + description + "\n";
+			line += "*SOURCE ";
+			lid = 1; 
+			for (size_t id = 0; id < sources.size(); ++id)
+			{
+				const FMToutputsource& src = sources.at(id);
+				if(src.gettarget() != FMTotar::level)
+				{
+					line += std::string(src) + " ";
+				}else{
+					line += name+"FMTLEVEL"+std::to_string(lid)+" ";
+					++lid;
+				}
+				if (id < operators.size())
+				{
+					line += std::string(operators[id]) + " ";
+				}
+			}
+		}	
+		line+="\n";
 	}
 	catch (...)
 	{
@@ -258,6 +310,18 @@ bool FMToutput::islevel() const
 			}
 		}
     return false;
+	}
+
+bool FMToutput::isonlylevel() const
+	{
+	for (const FMToutputsource& src : sources)
+		{
+		if (src.gettarget() != FMTotar::level)
+			{
+			return false;
+			}
+		}
+    return true;
 	}
 
 bool FMToutput::isconstant() const
