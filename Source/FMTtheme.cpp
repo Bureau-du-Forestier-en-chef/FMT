@@ -456,6 +456,38 @@ void FMTtheme::fillupaggregates(std::vector<int>& themeids, std::vector<std::str
 }
 
 
+void FMTtheme::push_aggregate(const std::string& aggregatename)
+	{
+	try {
+		if (isaggregate(aggregatename))
+			{
+			_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
+				aggregatename+" is already an aggregate", "FMTtheme::presolve", __LINE__, __FILE__);
+			}
+		aggregates.push_back(aggregatename);
+		aggregatenames.push_back(std::vector<std::string>());
+		buildattributelocations();
+	}catch (...)
+		{
+		_exhandler->raisefromcatch("", "FMTtheme::push_aggregate", __LINE__, __FILE__);
+		}
+	}
+
+
+void FMTtheme::push_aggregate_value(const std::string& aggregatename, const std::string& value)
+	{
+	try {
+		if (isaggregate(aggregatename))
+			{
+			aggregatenames[std::distance(aggregates.begin(), std::find(aggregates.begin(), aggregates.end(), aggregatename))].push_back(value);
+			}
+	}catch (...)
+		{
+		_exhandler->raisefromcatch("", "FMTtheme::push_aggregate_value", __LINE__, __FILE__);
+		}
+	}
+
+
 FMTtheme FMTtheme::presolve(FMTmaskfilter& maskfilter, size_t& newid, size_t& newstart) const
 	{
 	try {

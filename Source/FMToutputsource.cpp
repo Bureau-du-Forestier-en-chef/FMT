@@ -360,6 +360,11 @@ void FMToutputsource::setmask(const FMTmask& newmask)
 	mask = newmask;
 	}
 
+void FMToutputsource::settarget(const FMTotar& newtype)
+	{
+	target = newtype;
+	}
+
 std::vector<const FMTaction*>FMToutputsource::targets(const std::vector<FMTaction>& actions) const
 	{
 	if (target != FMTotar::level && !action.empty())
@@ -402,7 +407,7 @@ double FMToutputsource::getcoef(const FMTdevelopment& development,
 			{
 			coef = development.getinventorycoef(yields, yield, graphinfo);
 			}else {
-			coef = values.at(0);
+			coef = getvalue(development.getperiod());
 			}
 	return coef;
 	}

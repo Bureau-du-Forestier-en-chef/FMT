@@ -611,9 +611,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 						results[attribute] = 0;
 					}
 				}
-				if (!output.islevel())
-				{
-					if (output.islinear())
+					if (!output.islevel()&&output.islinear())
 					{
 						for (const Core::FMToutputnode& output_node : output.getnodes())
 						{
@@ -639,17 +637,22 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 					}else {
 						std::vector<std::string> equation;
 						std::map<std::string,std::vector<std::string>>allequations;
-						const std::vector<Core::FMToutputnode> allnodes = output.getnodes(1, false, &equation);
-						size_t outid = 0;
-						for (const Core::FMToutputnode& output_node : allnodes)
+						const std::vector<Core::FMToutputnode> allnodes = output.getnodes(1, false, &equation,period);
+						if (allnodes.empty())
 						{
-							const std::map<std::string, double> srcvalues = getsource(model, output_node, period, targettheme, solution, level);
-							output_node.fillupequation(allequations, srcvalues, equation, outid);
-							++outid;
+							allequations["Total"] = equation;
+
+						}else {
+							size_t outid = 0;
+							for (const Core::FMToutputnode& output_node : allnodes)
+							{
+								const std::map<std::string, double> srcvalues = getsource(model, output_node, period, targettheme, solution, level);
+								output_node.fillupequation(allequations, srcvalues, equation, outid);
+								++outid;
+							}
 						}
 						output.fillfromshuntingyard(results, allnodes, allequations);
 						}
-				}
 
 			}
 			catch (...)
