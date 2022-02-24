@@ -113,6 +113,11 @@ class FMTEXPORT FMTlinegraph : public FMTgraph<FMTbasevertexproperties,FMTbaseed
 		Get the last action id of the last edge of the (period) of the graph.
 		*/
 		int getlastactionid(const int& period)const;
+		// DocString: FMTlinegraph::getperiodactionids
+		/**
+		Get the action id of every action done in period in order.
+		*/
+		std::vector<int> getperiodactionids(const int& period)const;
 		// DocString: FMTlinegraph::getperiodcarbonpredictors
 		/**
 		Returns a vector of carbon predictors for a given (period), (actionsmap), (yieldnames) and yields.
@@ -220,7 +225,7 @@ class FMTEXPORT FMTlinegraph : public FMTgraph<FMTbasevertexproperties,FMTbaseed
 		/**
 		Add actions (edges) + (verticies) to the graph based an event.
 		*/
-		void addfromevents(const Spatial::FMTcoordinate& localisation,const Models::FMTmodel& model, Spatial::FMTeventcontainer& events) const;
+		//void addfromevents(const Spatial::FMTcoordinate& localisation,const Models::FMTmodel& model, Spatial::FMTeventcontainer& events) const;
 		// DocString: FMTlinegraph::ismovable
 		/**
 		Returns true if the graph can be modified at (period) and operated by different action or can be turned into natural grow.

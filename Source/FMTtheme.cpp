@@ -7,6 +7,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 #include "FMTtheme.hpp"
 #include "FMTmask.hpp"
+#include "FMTmaskfilter.hpp"
 
 namespace Core {
 
@@ -252,7 +253,7 @@ bool FMTtheme::useindex() const
     return false;
     }
 
- const double& FMTtheme::getindex(const std::string& attribute,const std::string& value) const
+ double FMTtheme::getindex(const std::string& attribute,const std::string& value) const
     {
 	 try {
 		 lookiterator lookit = getattribute(attribute,true);
@@ -455,13 +456,17 @@ void FMTtheme::fillupaggregates(std::vector<int>& themeids, std::vector<std::str
 }
 
 
-FMTtheme FMTtheme::presolve(const FMTmask& basemask, size_t& newid, size_t& newstart, FMTmask& selected) const
+FMTtheme FMTtheme::presolve(FMTmaskfilter& maskfilter, size_t& newid, size_t& newstart) const
 	{
 	try {
-		if (selected.empty())
+		if (maskfilter.empty())
 		{
-			selected.data = boost::dynamic_bitset<>(basemask.data.size(), false);
-			selected.name.clear();
+			_exhandler->raise(Exception::FMTexc::FMTinvalid_maskrange,
+				"Empty selection", "FMTtheme::presolve", __LINE__, __FILE__);
+		}
+		if (maskfilter.flippedselection.empty())
+		{
+			maskfilter.flippedselection = boost::dynamic_bitset<>(maskfilter.selection.size(), false);
 		}
 		FMTtheme newtheme(*this);
 		newtheme.attributes.clear();
@@ -476,9 +481,9 @@ FMTtheme FMTtheme::presolve(const FMTmask& basemask, size_t& newid, size_t& news
 		size_t location = 0;
 		for (size_t binlocation = start; binlocation < (start + this->size()); ++binlocation)
 			{
-				if (basemask.data[binlocation])
+				if (maskfilter.selection[binlocation])
 				{
-					selected.data[binlocation] = true;
+					maskfilter.flippedselection[binlocation] = true;
 					newattributes.push_back(attributes.at(location));
 					if (!attributenames.empty())
 						{
@@ -516,7 +521,7 @@ FMTtheme FMTtheme::presolve(const FMTmask& basemask, size_t& newid, size_t& news
 		}else {
 			for (size_t binlocation = start; binlocation < (start + this->size()); ++binlocation)
 			{
-				selected.data[binlocation] = false;
+				maskfilter.flippedselection[binlocation] = false;
 			}
 		}
 		newtheme.buildattributelocations();

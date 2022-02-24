@@ -179,11 +179,17 @@ namespace Models
 		Return a mask covering the actual bits used by the FMTmodel and the optionaldevelopements.
 		*/
 		Core::FMTmask getbasemask(std::vector<Core::FMTactualdevelopment> optionaldevelopments) const;
-		// DocString: FMTmodel::locatestatictransitionthemesptr
+		// DocString: FMTmodel::getstatictransitionthemes
 		/**
 		locate the static transition themes.
 		*/
 		std::vector<size_t>getstatictransitionthemes() const;
+		// DocString: FMTmodel::getstaticpresolvethemes
+		/**
+		Using the transition themes look at constraints and actions or yields actions to return
+		only themes that are not part of the model.
+		*/
+		std::vector<Core::FMTtheme>getstaticpresolvethemes() const;
 		void clearactionscache();
 		void clearyieldcache();
 		void cleartransitioncache();
@@ -248,11 +254,11 @@ namespace Models
 		if the model is badly formulated.
 		*/
 		FMTmodel basepresolve(int presolvepass = 10) const;
-		// DocString: FMTmodel::getpostsolvebasemask
+		// DocString: FMTmodel::getpostsolvefilter
 		/**
-		Get the postsolve basemask used by the presolve (in case you want to turn presolved mask into postsolve mask).
+		Get the postsolve filter used by the presolve (in case you want to turn presolved mask into postsolve mask).
 		*/
-		Core::FMTmask getpostsolvebasemask() const;
+		Core::FMTmaskfilter getpostsolvefilter(const std::vector<Core::FMTtheme>& originalthemes, const Core::FMTmask& devmask) const;
 		// DocString: FMTmodel::getselectedmask
 		/**
 		If the model is presolved you can call this function to get the selection mask that you need
@@ -270,7 +276,7 @@ namespace Models
 		/*
 		This function is for postsolving the presolved model into the original model.
 		*/
-		virtual std::unique_ptr<FMTmodel>postsolve(const FMTmodel& originalbasemodel) const;
+		virtual void postsolve(const FMTmodel& originalbasemodel);
 		// DocString: FMTmodel::presolveschedule
 		/**
 		Using the original schedule (not presolved) and the original model (not presolved) it returns a new schedule with

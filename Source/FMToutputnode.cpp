@@ -7,6 +7,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 #include "FMToutputnode.hpp"
 #include "FMTaction.hpp"
+#include <algorithm>
 
 namespace Core
 
@@ -237,6 +238,24 @@ namespace Core
 	size_t FMToutputnodehasher::operator()(const FMToutputnode & node) const
 		{
 		return node.hashforvalue();
+		}
+
+	void FMToutputnode::fillupequation(std::map<std::string,std::vector<std::string>>& allequations,
+		const std::map<std::string, double>& graphvalues,
+		const std::vector<std::string>& equation, const size_t& nodeid) const
+		{
+		for (std::map<std::string, double>::const_iterator outit = graphvalues.begin(); outit != graphvalues.end(); outit++)
+			{
+				if (allequations.find(outit->first) == allequations.end())
+				{
+					allequations[outit->first] = equation;
+				}
+				std::vector<std::string>localequation(allequations.at(outit->first));
+				const std::string strnode = "O" + std::to_string(nodeid);
+				const std::string toreplace(std::to_string(outit->second));
+				std::replace(localequation.begin(), localequation.end(), strnode, toreplace);
+				allequations[outit->first] = localequation;
+			}
 		}
 
 

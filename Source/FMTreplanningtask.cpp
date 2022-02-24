@@ -26,7 +26,7 @@ namespace Parallel
 			globalm.getoutputs(),outputlocation,
 			gdaldriver, creationoptions,1,
 			globalm.getparameter(Models::FMTintmodelparameters::LENGTH),
-			0,0.5,outputlevel)
+			0.5,outputlevel)
 	{
 
 	}
@@ -45,11 +45,6 @@ namespace Parallel
 		replanningperiods = periodsnumber;
 		}
 
-	void FMTreplanningtask::setglobalweight(const double& weight)
-		{
-		globalsolutionweight = weight;
-		}
-
 
 	FMTreplanningtask::FMTreplanningtask(
 		const Models::FMTmodel& globalm,
@@ -61,7 +56,6 @@ namespace Parallel
 		const std::vector<std::string>& creationoptions,
 		const int& replicates,
 		const int& replanningperiodssize,
-		const double& globalwweight,
 		const double& minimaldrift,
 		Core::FMToutputlevel outputlevel):
 		resultswriter(),
@@ -73,8 +67,7 @@ namespace Parallel
 		dynamicarea(globalm.getarea()),
 		iterationglobalschedule(),
 		dynamicconstraints(),
-		replanningperiods(replanningperiodssize),
-		globalsolutionweight(globalwweight)
+		replanningperiods(replanningperiodssize)
 	{
 		try {
 			//passinobject(globalm);
@@ -380,6 +373,7 @@ namespace Parallel
 				#ifdef FMTWITHOSI
 					Models::FMTlpmodel* lpmodel = dynamic_cast<Models::FMTlpmodel*>(modelcpy.get());
 					lpmodel->doplanning(false);
+					const double  globalsolutionweight = lpmodel->getconstraints().at(0).getscheduleweight();
 					lpmodel->addscheduletoobjective(iterationglobalschedule, globalsolutionweight);
 					solvedmodel = lpmodel->initialsolve();
 				#else

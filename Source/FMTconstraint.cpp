@@ -232,6 +232,26 @@ namespace Core
 		return newconstraint;
 	}
 
+	double FMTconstraint::getscheduleweight() const
+	{
+		try {
+			if (!this->emptyylds()&&isobjective())
+			{
+				for (size_t id = 0; id < yieldnames.size(); ++id)
+				{
+					if (yieldnames.at(id).find("_SETGLOBALSCHEDULE") != std::string::npos)
+					{
+						return getyieldbound("_SETGLOBALSCHEDULE").getlower();
+					}
+				}
+			}
+		}catch (...)
+			{
+			_exhandler->printexceptions("", "FMTconstraint::getscheduleweight", __LINE__, __FILE__, Core::FMTsection::Optimize);
+			}
+		return 0;
+	}
+
 
 	Core::FMTconstraint FMTconstraint::setfrom(const std::string& modeltype, const double& value) const
 	{
@@ -760,15 +780,15 @@ namespace Core
 			return FMToutput::empty();
 			}
 
-		FMTconstraint FMTconstraint::presolve(const FMTmask& basemask,
+		FMTconstraint FMTconstraint::presolve(const FMTmaskfilter& filter,
 			const std::vector<FMTtheme>& originalthemes,
-			const FMTmask& presolvedmask,
+			const std::vector<FMTtheme>& selectedthemes,
 			const std::vector<FMTtheme>& newthemes,
 			const std::vector<FMTaction>& actions, const FMTyields& yields) const
 			{
 			FMTconstraint newconstraint(*this);
 			try {
-				newconstraint.setoutput(FMToutput::presolve(basemask, originalthemes, presolvedmask, newthemes, actions, yields));
+				newconstraint.setoutput(FMToutput::presolve(filter, originalthemes, selectedthemes, newthemes, actions, yields));
 			}catch (...)
 				{
 				_exhandler->raisefromcatch("for " + std::string(*this),"FMTconstraint::presolve", __LINE__, __FILE__, Core::FMTsection::Optimize);

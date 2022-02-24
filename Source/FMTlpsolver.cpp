@@ -101,6 +101,14 @@ namespace Models
 		//passinmessagehandler(*_logger);
 		}
 
+	void FMTlpsolver::swap(FMTlpsolver& rhs)
+	{
+		matrixcache.swap(rhs.matrixcache);
+		usecache=rhs.usecache;
+		solvertype = rhs.solvertype;
+		solverinterface.swap(rhs.solverinterface);
+	}
+
 	FMTlpsolver& FMTlpsolver::operator =(const FMTlpsolver& rhs)
 		{
 		if (this!=&rhs)

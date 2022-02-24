@@ -19,6 +19,12 @@ FMTmaskfilter::FMTmaskfilter(const FMTmaskfilter& rhs) : /*fullset(rhs.fullset),
 
     }
 
+void FMTmaskfilter::swap(FMTmaskfilter& rhs)
+{
+	selection.swap(rhs.selection);
+	flippedselection.swap(rhs.flippedselection);
+}
+
 
 FMTmaskfilter& FMTmaskfilter::operator = (const FMTmaskfilter& rhs)
     {
@@ -31,6 +37,36 @@ FMTmaskfilter& FMTmaskfilter::operator = (const FMTmaskfilter& rhs)
         }
     return *this;
     }
+
+FMTmaskfilter::FMTmaskfilter(const FMTmask& presolveselection, const FMTmask& buffermask):
+	selection(presolveselection.getbitsetreference()),
+	flippedselection(buffermask.getbitsetreference())
+{
+
+}
+
+FMTmaskfilter::FMTmaskfilter(const FMTmask& presolveselection) :
+	selection(presolveselection.getbitsetreference()),
+	flippedselection(boost::dynamic_bitset<>(presolveselection.getbitsetreference().size(), false))
+{
+
+}
+
+bool FMTmaskfilter::canpresolve(const FMTmask& mask, const std::vector<Core::FMTtheme>& themes) const
+	{
+	return !FMTmask(selection).isnotthemessubset(mask, themes);
+	}
+
+std::vector<Core::FMTtheme> FMTmaskfilter::getselectedthemes(const std::vector<Core::FMTtheme>& themes) const
+	{
+	return FMTmask(selection).getselectedthemes(themes);
+	}
+
+FMTmaskfilter FMTmaskfilter::presolve(const std::vector<FMTtheme>& themes) const
+	{
+	return FMTmaskfilter(FMTmask(selection).presolve(*this, themes));
+	}
+
 FMTmaskfilter::FMTmaskfilter(std::vector<FMTmask>& masks): /*fullset(),*/selection(), flippedselection()//, index()
         {
         flippedselection.resize(masks[0].getbitsetreference().size(),true);

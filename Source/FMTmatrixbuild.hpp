@@ -41,7 +41,7 @@ namespace Models
 		///colsbuild keep the track of all columns to add to the matrix
 		CoinBuild colsbuild;
 		// DocString: FMTmatrixbuild::rowsbuild
-		///rowsbuild keep the track of all columns to add to the matrix
+		///rowsbuild keep the track of all rows to add to the matrix
 		CoinBuild rowsbuild;
 		// DocString: FMTmatrixbuild::deletedconstraints
 		///Deleted constraints used in replanning context when the constraints indexes need to be updated.
@@ -66,6 +66,11 @@ namespace Models
 		*/
 		std::string formatformatrixname(std::string name, bool shortformat) const;
 	public:
+		// DocString: FMTmatrixbuild::swap
+		/**
+		Swap for FMTmatrixbuild
+		*/
+		void swap(FMTmatrixbuild& rhs);
 		// DocString: FMTmatrixbuild::getcolumnnames
 		/**
 		Return cached column names.

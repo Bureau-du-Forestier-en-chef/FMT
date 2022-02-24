@@ -145,24 +145,19 @@ namespace Models
 		return std::unique_ptr<FMTmodel>(nullptr);
 		}
 
-	std::unique_ptr<FMTmodel>FMTsesmodel::postsolve(const FMTmodel& originalbasemodel) const
+	void FMTsesmodel::postsolve(const FMTmodel& originalbasemodel)
 		{
 		try {
 			if (spschedule.actperiod()>=1)//just postsolve if you have a solution
 			{
-				std::unique_ptr<FMTmodel>presolvedmod(new FMTsesmodel(*(FMTmodel::postsolve(originalbasemodel))));
-				const Core::FMTmask presolvedmask = this->getselectedmask(themes);
-				FMTsesmodel*postsolvedses = dynamic_cast<FMTsesmodel*>(presolvedmod.get());
-				//postsolvedses->mapping = this->mapping.postsolve(presolvedmask, postsolvedses->themes);
-				//Disturbance stack doesn't need changes
-				//take care of the FMTspatialactions
-				return presolvedmod;
+				const Core::FMTmaskfilter presolvedmask = this->getpostsolvefilter(originalbasemodel.getthemes(), area.begin()->getmask());
+				spschedule.postsolve(presolvedmask,getactions(),originalbasemodel);
+				FMTmodel::postsolve(originalbasemodel);
 			}
 		}catch (...)
 			{
 			_exhandler->raisefromcatch("", "FMTsesmodel::presolve", __LINE__, __FILE__);
 			}
-		return std::unique_ptr<FMTmodel>(nullptr);
 		}
 
 	Spatial::FMTforest FMTsesmodel::getmapping() const

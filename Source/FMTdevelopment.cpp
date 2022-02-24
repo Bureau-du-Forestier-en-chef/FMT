@@ -201,28 +201,32 @@ namespace Core{
 	 std::vector<bool> FMTdevelopment::isanyworthtestingoperability(const std::vector<const FMTaction*>& actions,
 		 const std::vector<FMTaction>& allactions) const noexcept
 	 {
-		 std::vector<bool>returnvalues(allactions.size(),false);
 		 try {
-			 bool clear = true;
 			 const FMTaction* firstaction = &(*allactions.begin());
+			 std::vector<int8_t>worth;
+			 worth.reserve(actions.size());
 			 for (const FMTaction* action : actions)
 			 {
 				 if (this->worthtestingoperability(*action))
 				 {
-					 returnvalues[std::distance(firstaction, action)] = true;
-					 clear = false;
+					 worth.push_back(static_cast<int8_t>(std::distance(firstaction, action)));
 				 }
 			 }
-			 if (clear)
+			 if (!worth.empty())
 			 {
-				 returnvalues.clear();
+				 std::vector<bool>returnvalues(allactions.size(), false);
+				 for (const int8_t& index : worth)
+					 {
+					 returnvalues[index] = true;
+					 }
+				 return returnvalues;
 			 }
 		 }
 		 catch (...)
 		 {
 			 _exhandler->raisefromcatch("for " + std::string(*this), "FMTdevelopment::isanyworthtestingoperability", __LINE__, __FILE__);
 		 }
-		 return returnvalues;
+		 return std::vector<bool>();
 	 }
 
 	 std::vector<FMTdevelopmentpath> FMTdevelopment::operate(const FMTaction& action,
@@ -252,7 +256,7 @@ namespace Core{
 
     bool FMTdevelopment::operator == (const FMTdevelopment& rhs) const
         {
-        return (mask==rhs.mask && age == rhs.age && lock == rhs.lock && period == rhs.period);
+        return (age == rhs.age && lock == rhs.lock && period == rhs.period && mask == rhs.mask);
         }
     bool FMTdevelopment::operator != (const FMTdevelopment& rhs) const
         {

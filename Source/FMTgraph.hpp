@@ -25,10 +25,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTfuturdevelopment.hpp"
 #include "FMTdevelopmentpath.hpp"
 #include "FMTschedule.hpp"
-#include "FMToutputnode.hpp"
 #include "FMTconstraint.hpp"
-#include "FMTevent.hpp"
-#include "FMTcoordinate.hpp"
 #include "FMToutputnodecache.hpp"
 #include <boost\unordered_set.hpp>
 #include "FMTcarbonpredictor.hpp"
@@ -52,13 +49,10 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 #include "FMTmodel.hpp"
 #include "FMTaction.hpp"
-#include "FMTyields.hpp"
-#include "FMTtransition.hpp"
 #include "FMTtheme.hpp"
 #include "FMTobject.hpp"
 #include <tuple>
 #include <assert.h>
-#include "FMTexceptionhandler.hpp"
 #include "FMTlookup.hpp"
 #include "boost/graph/graphviz.hpp"
 
@@ -119,8 +113,6 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 		typedef typename boost::graph_traits<FMTadjacency_list>::edge_iterator FMTedge_iterator;
 		typedef typename std::pair<FMToutedge_iterator, FMToutedge_iterator> FMToutedge_pair;
 		typedef typename std::pair<FMTvertex_iterator, FMTvertex_iterator> FMTvertex_pair;
-		//typedef typename boost::unordered_set<Core::FMTlookup<FMTvertex_descriptor,Core::FMTdevelopment>>::iterator lookiterator;
-		//typedef typename boost::unordered_set<Core::FMTlookup<FMTvertex_descriptor,Core::FMTdevelopment>>::const_iterator lookconst_iterator;
 	protected:
         FMTgraphbuild buildtype;
 		std::vector<FMTvertex_pair>developments;
@@ -621,34 +613,42 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 				}
 				if (!output.islevel())
 				{
-				
-					//const int localperiod = getfirstactiveperiod() + period;//Normal planning first active period is 0, in replanning it wont be 0!.
-					/*if (getfirstactiveperiod()>0)
-						{
-						++period;
-						}*/
-					for (const Core::FMToutputnode& output_node : output.getnodes(/*model.area, model.actions, model.yields*/))
+					if (output.islinear())
 					{
-						const std::map<std::string, double> srcvalues = getsource(model, output_node,period, targettheme, solution, level);
-						if (level == Core::FMToutputlevel::developpement)
+						for (const Core::FMToutputnode& output_node : output.getnodes())
 						{
-							for (std::map<std::string, double>::const_iterator mit = srcvalues.begin(); mit != srcvalues.end(); mit++)
+							const std::map<std::string, double> srcvalues = getsource(model, output_node, period, targettheme, solution, level);
+							if (level == Core::FMToutputlevel::developpement)
 							{
-								if (results.find(mit->first) == results.end())
+								for (std::map<std::string, double>::const_iterator mit = srcvalues.begin(); mit != srcvalues.end(); mit++)
 								{
-									results[mit->first] = 0;
+									if (results.find(mit->first) == results.end())
+									{
+										results[mit->first] = 0;
+									}
+									results[mit->first] += mit->second;
 								}
-								results[mit->first] += mit->second;
+							}
+							else {
+								for (const std::string& attribute : target_attributes)
+								{
+									results[attribute] += srcvalues.at(attribute);
+								}
 							}
 						}
-						else {
-							for (const std::string& attribute : target_attributes)
-							{
-								results[attribute] += srcvalues.at(attribute);
-							}
+					}else {
+						std::vector<std::string> equation;
+						std::map<std::string,std::vector<std::string>>allequations;
+						const std::vector<Core::FMToutputnode> allnodes = output.getnodes(1, false, &equation);
+						size_t outid = 0;
+						for (const Core::FMToutputnode& output_node : allnodes)
+						{
+							const std::map<std::string, double> srcvalues = getsource(model, output_node, period, targettheme, solution, level);
+							output_node.fillupequation(allequations, srcvalues, equation, outid);
+							++outid;
 						}
-
-					}
+						output.fillfromshuntingyard(results, allnodes, allequations);
+						}
 				}
 
 			}
@@ -984,11 +984,6 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 		{
 			try {
 				const Core::FMTdevelopment& development = data[vertex_descriptor].get();
-				size_t totalmasksize = 0;
-				for (const Core::FMTtheme& theme : model.themes)
-				{
-					totalmasksize += theme.size();
-				}
 				if (node.source.use(development, model.yields))
 				{
 					if (node.source.useinedges())
@@ -1931,35 +1926,45 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 			{
 			return data[*developments.at(getfirstactiveperiod() + 1).first].get().getperiod();
 			}
-		FMTgraph postsolve(const Core::FMTmask& selectedmask,
+		void postsolve(const Core::FMTmaskfilter& filter,
 			const std::vector<Core::FMTtheme>&originalbasethemes,
-			const std::map<int,int>& actionmapconnection) const
+			const std::vector<int>& actionmapconnection)
 		{
-			FMTgraph newgraph(*this);
 			try {
-				newgraph.developments.clear();
-				newgraph.nodescache.clear();//Some postsolve can be done here to keep some usefull information but for now just clear
+				developments.clear();
+				nodescache.clear();//Some postsolve can be done here to keep some usefull information but for now just clear
 				//start by remapping the actions
 				FMTedge_iterator edge_iterator, edge_iterator_end;
-				for (boost::tie(edge_iterator, edge_iterator_end) = boost::edges(newgraph.data); edge_iterator != edge_iterator_end; ++edge_iterator)
+				for (boost::tie(edge_iterator, edge_iterator_end) = boost::edges(data); edge_iterator != edge_iterator_end; ++edge_iterator)
 				{
-					FMTbaseedgeproperties& edgeprop = newgraph.data[*edge_iterator];
-					edgeprop.setactionID(actionmapconnection.at(edgeprop.getactionID()));
+					FMTbaseedgeproperties& edgeprop = data[*edge_iterator];
+					if (edgeprop.getactionID()>=0)
+						{
+						edgeprop.setactionID(actionmapconnection.at(edgeprop.getactionID()));
+						}
 				}
+				boost::unordered_map<Core::FMTmask,Core::FMTmask>presolvetopostsolve;
 				FMTvertex_iterator vertex_iterator, vertex_iterator_end;
-				for (boost::tie(vertex_iterator, vertex_iterator_end) = boost::vertices(newgraph.data); vertex_iterator != vertex_iterator_end; ++vertex_iterator)
+				for (boost::tie(vertex_iterator, vertex_iterator_end) = boost::vertices(data); vertex_iterator != vertex_iterator_end; ++vertex_iterator)
 				{
-					FMTbasevertexproperties& vertexprop = newgraph.data[*vertex_iterator];
-					vertexprop.setdevlopementmask(vertexprop.get().getmask().postsolve(selectedmask, originalbasethemes));
+					FMTbasevertexproperties& vertexprop = data[*vertex_iterator];
+					const Core::FMTmask& presolvemask = vertexprop.get().getmask();
+					boost::unordered_map<Core::FMTmask, Core::FMTmask>::const_iterator mskit = presolvetopostsolve.find(presolvemask);
+					if (mskit != presolvetopostsolve.end())
+						{
+						vertexprop.setdevlopementmask(mskit->second);
+					}else {
+						const Core::FMTmask postsolvedmask = presolvemask.postsolve(filter, originalbasethemes);
+						presolvetopostsolve[presolvemask] = postsolvedmask;
+						vertexprop.setdevlopementmask(postsolvedmask);
+						}
 				}
-				newgraph.generatedevelopments();
+				generatedevelopments();
 			}
 			catch (...)
 			{
 				_exhandler->raisefromcatch("", "FMTgraph::postsolve", __LINE__, __FILE__);
 			}
-
-			return newgraph;
 		}
 		Core::FMTschedule getschedule(const std::vector<Core::FMTaction>& actions, const double* actual_solution, const int& lperiod,bool withlock = false) const
 		{

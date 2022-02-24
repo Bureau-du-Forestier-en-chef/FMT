@@ -27,6 +27,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTdata.hpp"
 #include "FMTtimeyieldhandler.hpp"
 #include "FMTageyieldhandler.hpp"
+#include "FMTmaskfilter.hpp"
 
 namespace Python
 {
@@ -79,7 +80,9 @@ void exportCore()
 		.def("seterrorstowarnings", &Core::FMTobject::seterrorstowarnings,
 			"@DocString(FMTobject::seterrorstowarnings)");
 
+		bp::class_<Core::FMTmaskfilter>("FMTmaskfilter", "@DocString(FMTmaskfilter)");
 
+		define_pylist<Core::FMTmaskfilter>();
 		define_pylist<Core::FMTmask>();
         define_pylist<Core::FMTdevelopment>();
         define_pylist<Core::FMTfuturdevelopment>();
@@ -363,7 +366,11 @@ void exportCore()
 				.def("__eq__", &Core::FMTconstraint::operator ==,
 					"@DocString(FMTconstraint::operator==)")
 				.def("getiterationchange",&Core::FMTconstraint::getiterationchange,
-					"@DocString(FMTconstants::getiterationchange,)");
+					"@DocString(FMTconstants::getiterationchange,)")
+				.def("isspatial",&Core::FMTconstraint::isspatial,
+					"@DocString(FMTconstants::isspatial)")
+				.def("sense",&Core::FMTconstraint::sense,
+					"@DocString(FMTconstants::sense)");
 
 			define_FMTlist<Core::FMTconstraint>();
 			define_FMTlist<Core::FMTGCBMtransition>();

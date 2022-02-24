@@ -233,19 +233,6 @@ namespace Models
 		return std::unique_ptr<FMTmodel>(nullptr);
 		}
 
-	std::unique_ptr<FMTmodel> FMTnssmodel::postsolve(const FMTmodel& originalbasemodel) const
-	{
-		std::unique_ptr<FMTmodel> postsolvemodel;
-		try {
-			postsolvemodel = std::unique_ptr<FMTmodel>(new FMTnssmodel(*(FMTmodel::postsolve(originalbasemodel)), this->getparameter(FMTintmodelparameters::SEED)));
-			dynamic_cast<FMTnssmodel*>(postsolvemodel.get())->graph = this->postsolvegraph(originalbasemodel);
-			dynamic_cast<FMTnssmodel*>(postsolvemodel.get())->solver = this->solver;
-		}catch (...)
-			{
-			_exhandler->raisefromcatch("", "FMTnssmodel::postsolve", __LINE__, __FILE__);
-			}
-		return postsolvemodel;
-	}
 
 	void FMTnssmodel::simulate()
 	{
@@ -364,6 +351,17 @@ namespace Models
 			_exhandler->raisefromcatch("", "FMTnssmodel::solve", __LINE__, __FILE__);
 		}
 		return simulationdone;
+	}
+
+	bool FMTnssmodel::setparameter(const FMTboolmodelparameters& key, const bool& value)
+	{
+		try {
+			return FMTmodel::setparameter(key, value);
+		}catch (...)
+			{
+			_exhandler->raisefromcatch("", "FMTnssmodel::setparameter", __LINE__, __FILE__);
+			}
+		return false;
 	}
 
 	bool FMTnssmodel::setparameter(const FMTintmodelparameters& key, const int& value)

@@ -46,7 +46,7 @@ int main()
 					break;
 					}
 				}
-			optimizationmodel.getvariabilities(outputtotest);
+			optimizationmodel.getvariabilities(outputtotest,1,10);
 		}
 	
 #endif 

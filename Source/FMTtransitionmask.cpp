@@ -109,10 +109,10 @@ FMTtransitionmask::FMTtransitionmask(const std::string& lmask,const std::vector<
         proportion  = std::min(newproportion,100.00);
         }
 
-	FMTtransitionmask FMTtransitionmask::presolve(const FMTmask& selectedmask, const std::vector<FMTtheme>&presolvedthemes) const
+	FMTtransitionmask FMTtransitionmask::presolve(const FMTmaskfilter& filter, const std::vector<FMTtheme>&presolvedthemes) const
 		{
 		FMTtransitionmask newtransitionmask(*this);
-		newtransitionmask.mask = newtransitionmask.mask.presolve(selectedmask, presolvedthemes);
+		newtransitionmask.mask = newtransitionmask.mask.presolve(filter, presolvedthemes);
 		newtransitionmask.flippedselection.clear();
 		newtransitionmask.build(newtransitionmask.mask, presolvedthemes);
 		return newtransitionmask;

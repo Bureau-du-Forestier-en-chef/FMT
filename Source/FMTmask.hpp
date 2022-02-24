@@ -82,6 +82,7 @@ namespace Core
 {
 
 class FMTtheme;
+class FMTmaskfilter;
 // DocString: FMTmask
 /**
 FMTmask class is one of the most important class in FMT. Alot of classes are bases on FMTmask.
@@ -123,6 +124,11 @@ class FMTEXPORT FMTmask
 		///dynamic bitset holding the attributes information member.
 		boost::dynamic_bitset<> data;
     public:
+		// DocString: swap()
+		/**
+		Swap for FMTmask.
+		*/
+		void swap(FMTmask& rhs);
 		// DocString: FMTmask()
 		/**
 		Default constructor for FMTmask.
@@ -215,6 +221,11 @@ class FMTEXPORT FMTmask
 		Filter FMTtheme from themes that are only using aggregates or ? for the FMTmask.
 		*/
 		std::vector<FMTtheme>getstaticthemes(const std::vector<FMTtheme>& themes) const;
+		// DocString: FMTmask::getselectedthemes
+		/**
+		Takes vector of FMTtheme and return a vector of FMTtheme from which theme have any true bits.
+		*/
+		std::vector<FMTtheme> getselectedthemes(const  std::vector<FMTtheme>& themes) const;
 		// DocString: FMTmask::isnotthemessubset
 		/**
 		By looking at each FMTtheme in the FMTmask return true if *this is not part of rhs base on sorted FMTtheme (themes).
@@ -372,17 +383,22 @@ class FMTEXPORT FMTmask
 		If the attribute is not ? for this mask, the attribute will not change. 
 		*/
 		FMTmask refine(const FMTmask& mask,const std::vector<FMTtheme>& themes) const;
+		// DocString: FMTmask::getpostsolvemask
+		/**
+		If this is a base postsolve mask it uses mask to turn off bits for themes that are still active.
+		*/
+		FMTmask getpostsolvemask(const FMTmask& mask,const std::vector<FMTtheme>& themes) const;
 		// DocString: FMTmask::presolve
 		/**
-		Using a FMTmask (selectedmask) and a subset of the original FMTthemes used to construct the FMTmask,
+		Using a FMTmaskfilter (filter) and a subset of the original FMTthemes used to construct the FMTmask,
 		it returns a presolved FMTmask with potentialy less data.
 		*/
-		FMTmask presolve(const FMTmask& selectedmask,const std::vector<FMTtheme>&presolvedthemes) const;
+		FMTmask presolve(const FMTmaskfilter& filter,const std::vector<FMTtheme>&presolvedthemes) const;
 		// DocString: FMTmask::postsolve
 		/**
-		Using a FMTmask (selectedmask) and the original FMTthemes it returns a postsolved FMTmask.
+		Using aFMTmaskfilter (filter) and the original FMTthemes it returns a postsolved FMTmask.
 		*/
-		FMTmask postsolve(const FMTmask& selectedmask, const std::vector<FMTtheme>&basethemes) const;
+		FMTmask postsolve(const FMTmaskfilter& filter, const std::vector<FMTtheme>&basethemes) const;
     };
 
 

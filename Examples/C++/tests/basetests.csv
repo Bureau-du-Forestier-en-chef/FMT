@@ -11,3 +11,5 @@ testmultisolutions;;;
 testaddtomodel;;;
 testyieldsfromfactor;;;
 testoutputshadowcost;;;
+testlpyieldmodel;;;
+testlpyieldmodelopt;;;

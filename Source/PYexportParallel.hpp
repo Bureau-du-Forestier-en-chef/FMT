@@ -42,8 +42,8 @@ void exportParallel()
 			.def(bp::init<Parallel::FMTreplanningtask>())
 			.def(bp::init<const Models::FMTmodel&, const Models::FMTmodel&, const Models::FMTmodel&,const std::vector<Core::FMToutput>&,
 				const std::string&, const std::string&,const std::vector<std::string>&,
-				const int&,const int&,const double&,double,Core::FMToutputlevel>(
-					bp::args("Strategic model", "stochastic model","tactic model","selected outputs","Output folder","GDAL driver name","GDAL driver creation options","Number of replicates","Number of replanning periods","Strategic schedule weight","minimaldrift","output level"), "@DocString(FMTreplanningtask::FMTreplanningtask)"));
+				const int&,const int&,double,Core::FMToutputlevel>(
+					bp::args("Strategic model", "stochastic model","tactic model","selected outputs","Output folder","GDAL driver name","GDAL driver creation options","Number of replicates","Number of replanning periods","minimaldrift","output level"), "@DocString(FMTreplanningtask::FMTreplanningtask)"));
 
 	define_pylist<Parallel::FMTreplanningtask>();
 

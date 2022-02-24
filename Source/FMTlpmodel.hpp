@@ -291,15 +291,15 @@ class FMTEXPORT FMTlpmodel final : public FMTsrmodel
 		Graph::FMTgraphstats eraseconstraint(const Core::FMTconstraint& constraint,int period=-1);
 		// DocString: FMTlpmodel::getvariabilities
 		/**
-		Get the variability of multiple outputs for a given tolerance across the planning horizon.
+		Get the variability of multiple outputs for a given tolerance(see modelparameters) for each period between (periodstart) and (periodstop).
 		Need to call this function after initialsolve.
 		The actual objective function is transform to a constraint and then each output
 		are minimized and maximized to get their actual range for each period.
 		the returned map key are the name of the output plus UB for upper bound (maximization) and
-		LB for lower bound (minimization). This function  do alot of resolve.
+		LB for lower bound (minimization). This function  do a lot of resolve.
 		*/
 		std::map<std::string, std::vector<double>>getvariabilities(const std::vector<Core::FMToutput>& outputs,
-																double tolerance = FMT_DBL_TOLERANCE);
+																 const int& periodstart,const int& periodstop);
 		// DocString: FMTlpmodel::getmodelfromproportions
 		/**
 		Will returns a new FMTlpmodel with changes in the initial area based on the tolerances of each globalmasks
@@ -407,11 +407,6 @@ class FMTEXPORT FMTlpmodel final : public FMTsrmodel
 		The function can reduce the number of global themes/actions/transitions/yields/lifespans/outputs/constraints data if the model is badly formulated.
 		*/
 		virtual std::unique_ptr<FMTmodel>presolve(int presolvepass = 10,std::vector<Core::FMTactualdevelopment> optionaldevelopments = std::vector<Core::FMTactualdevelopment>()) const;
-		// DocString: FMTlpmodel::postsolve
-		/*
-		This function is for postsolving the presolved model into the original model. In this case, the FMTgraph of the FMTlpmodel is also postsolved.
-		*/
-		virtual std::unique_ptr<FMTmodel>postsolve(const FMTmodel& originalbasemodel) const;
 		// DocString: FMTmodel::build
 		/**
 		This function build the graph and setsolution if (schedules) are passed to the function. If FORCE_PARTIAL_BUILD is set at true 
@@ -423,11 +418,7 @@ class FMTEXPORT FMTlpmodel final : public FMTsrmodel
 		This function call initialsolve on the solver.
 		*/
 		virtual bool solve();
-		// DocString: FMTmodel::setparameter(const FMTintmodelparameters, const int)
-		/**
-		Override setter for intmodelparameters. 
-		*/
-		virtual bool setparameter(const FMTintmodelparameters& key, const int& value);
+		
 	};
 
 }
