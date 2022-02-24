@@ -56,4 +56,6 @@ _AGE YV_G_GFI YV_G_GFT YV_G_GF YV_G_GR
 
 *YM ? ? ?
 AG_Biomass_C,BG_Biomass_C,Deadwood_C,Litter_C,Soil_C _PRED(pools_carbon)
+
+*YM ? ? ?
 NEP _PRED(nep_carbon)
