@@ -393,6 +393,13 @@ std::unique_ptr<Core::FMTyieldmodel>FMTyieldparser::readyieldmodel(const std::st
 
 		//Get the FMTyieldmodel
 		boost::property_tree::ptree::const_assoc_iterator modelTypeIt = root.find("modelType"); //temporary hardcoded string
+		if (modelTypeIt == root.not_found())
+		{
+			_exhandler->raise(Exception::FMTunhandlederror,
+				modeljson.string(),
+				"FMTyieldparser::readyieldmodel", __LINE__, __FILE__, _section);
+		}
+
 		std::string modelType = modelTypeIt->second.data();
 		if(modelType == "POOLS")
 			return std::unique_ptr<Core::FMTyieldmodel>(new Core::FMTyieldmodelpools(root));
