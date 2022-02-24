@@ -215,7 +215,8 @@ class FMTEXPORT FMToutput: public FMTobject
 	*/
 	std::vector<FMToutputnode> getnodes(double multiplier = 1,
 										bool orderbyoutputid = false,
-										std::vector<std::string>* equationptr = nullptr) const;
+										std::vector<std::string>* equationptr = nullptr,
+										int period = 1) const;
 	// DocString: FMToutput::issingleperiod
 	/**
 	Returns true if the FMToutput cover only one single period of the FMTgraph, false if 
