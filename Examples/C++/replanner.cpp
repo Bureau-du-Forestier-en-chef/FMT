@@ -26,6 +26,7 @@ int main(int argc, char *argv[])
 	Models::FMTlpmodel global(models.at(0), Models::FMTsolverinterface::MOSEK);
 	global.setparameter(Models::FMTintmodelparameters::LENGTH, length);
 	global.setparameter(Models::FMTintmodelparameters::NUMBER_OF_THREADS,1);
+	global.setparameter(Models::FMTboolmodelparameters::PRESOLVE_CAN_REMOVE_STATIC_THEMES, true);
 	Models::FMTnssmodel stochastic(models.at(1), 0);
 	stochastic.setparameter(Models::FMTintmodelparameters::LENGTH, 1);
 	Models::FMTlpmodel local(models.at(2), Models::FMTsolverinterface::MOSEK);
@@ -44,7 +45,7 @@ int main(int argc, char *argv[])
 	const std::string outputlocation = "tests/"+ locname;
 	std::vector<std::string>layersoptions;
 	layersoptions.push_back("SEPARATOR=SEMICOLON");
-	std::unique_ptr<Parallel::FMTtask> maintaskptr(new Parallel::FMTreplanningtask(global, stochastic, local, selectedoutputs, outputlocation, "CSV", layersoptions, replicate,length,100000,0.5, Core::FMToutputlevel::totalonly));
+	std::unique_ptr<Parallel::FMTtask> maintaskptr(new Parallel::FMTreplanningtask(global, stochastic, local, selectedoutputs, outputlocation, "CSV", layersoptions, replicate,length,0.5, Core::FMToutputlevel::totalonly));
 	Parallel::FMTtaskhandler handler(maintaskptr,2);
 	handler.setquietlogger();
 	//handler.ondemandrun();

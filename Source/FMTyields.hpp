@@ -80,6 +80,11 @@ class FMTEXPORT FMTyields : public FMTlist<std::unique_ptr<FMTyieldhandler>>
 	*/
 	void updateyieldpresence();
     public:
+		// DocString: FMTyields::swap
+		/**
+		Swap FMTyield.
+		*/
+		void swap(FMTyields& rhs);
 		// DocString: FMTyields::gotyieldtype
 		/**
 		Returns true if the yield section has a given yield type.
@@ -177,9 +182,8 @@ class FMTEXPORT FMTyields : public FMTlist<std::unique_ptr<FMTyieldhandler>>
 		Presolving might be realy usefull for FMTyields because this class tend to get realy large and contains
 		sometime useless stuff. So using the same presolved information it returns a presolved FMTyields section.
 		*/
-		FMTyields presolve(const FMTmask& basemask,
+		FMTyields presolve(const FMTmaskfilter& filter,
 			const std::vector<FMTtheme>& originalthemes,
-			const FMTmask& presolvedmask,
 			const std::vector<FMTtheme>& newthemes) const;
 		// DocString: FMTyields::getstacked
 		/**

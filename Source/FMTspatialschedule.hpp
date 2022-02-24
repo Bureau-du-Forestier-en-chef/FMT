@@ -96,12 +96,12 @@ class FMTEXPORT FMTspatialschedule : public FMTlayer<Graph::FMTlinegraph>
 		Comparison operator different than
 		*/
         bool operator != (const FMTspatialschedule& rhs)const;
-        // DocString: FMTspatialschedule::empty()
+        // DocString: FMTspatialschedule::empty
         /**
         Test whether the map is empty.
         */
         bool empty() const {return mapping.empty();};
-        // DocString: FMTspatialschedule::actperiod()
+        // DocString: FMTspatialschedule::actperiod
         /**
         Return the last period in the graph which is the active one.
         */
@@ -111,12 +111,12 @@ class FMTEXPORT FMTspatialschedule : public FMTlayer<Graph::FMTlinegraph>
 
         */
         bool copyfromselected(const FMTspatialschedule& rhs, const std::vector<size_t>& selected);
-        // DocString: FMTspatialschedule::swapfromselected(const FMTspatialschedule, const std::vector<size_t>)
+        // DocString: FMTspatialschedule::swapfromselected
         /**
 
         */
 		bool swapfromselected(FMTspatialschedule& rhs, const std::vector<size_t>& selected);
-        // DocString: FMTspatialschedule::getforestperiod(const int)
+        // DocString: FMTspatialschedule::getforestperiod
         /**
         Return the FMTforest corresponding to the period asked. If periodstart, the forest pass wil be the one before the actions as been set otherwise, it will be the forest after the actions as been set. 
         */
@@ -127,7 +127,7 @@ class FMTEXPORT FMTspatialschedule : public FMTlayer<Graph::FMTlinegraph>
 		if an action present in neighbors is in the adjacency limit.
 		*/
 		bool allow_action(const int& targetaction,const std::vector<Spatial::FMTbindingspatialaction>&bindingactions,const FMTcoordinate& location, const int& period) const;
-	   // DocString: FMTspatialschedule::getupdatedscheduling()
+	   // DocString: FMTspatialschedule::getupdatedscheduling
 		/**
 		Return for all actions the FMTcoordinate with operable developments at the end of the graph.
 		*/
@@ -140,7 +140,7 @@ class FMTEXPORT FMTspatialschedule : public FMTlayer<Graph::FMTlinegraph>
 										   std::vector<std::set<Spatial::FMTcoordinate>> original= std::vector<std::set<Spatial::FMTcoordinate>>(),
 											std::vector<FMTcoordinate> updatedcoordinate= std::vector<FMTcoordinate>()) const;
 
-	   // DocString: FMTspatialschedule::evaluatespatialconstraint()
+	   // DocString: FMTspatialschedule::evaluatespatialconstraint
 		/**
 		Return the constraint evaluation value of a spatial constraint. If the subset is not a nullptr the 
 		*/
@@ -170,75 +170,76 @@ class FMTEXPORT FMTspatialschedule : public FMTlayer<Graph::FMTlinegraph>
 		*/
 		FMTeventcontainer buildharvest(const double& target, const Spatial::FMTbindingspatialaction& targetaction, std::default_random_engine& generator, std::set<FMTcoordinate> mapping_pass,
 			const int& previousperiod, const int& actionid, std::vector<FMTcoordinate>& operated) const;
-		// DocString: FMTspatialschedule::operate(const FMTeventcontainer&, const std::vector<Core::FMTaction>&, const int&)
+		// DocString: FMTspatialschedule::operateevents
 		/**
 
 		*/
-		double operate(const FMTeventcontainer& cuts,const Core::FMTaction& action, const int& action_id, const Core::FMTtransition& Transition,
+		double operateevents(const FMTeventcontainer& cuts,const Core::FMTaction& action, const int& action_id, const Core::FMTtransition& Transition,
 					 const Core::FMTyields& ylds, const std::vector<Core::FMTtheme>& themes);
-		// DocString: FMTspatialschedule::addevents(const FMTeventcontainer&)
+		// DocString: FMTspatialschedule::operatecoord
 		/**
-
+		 Operate a coordinate and add it to the events ... That's why the FMTbindingspatialaction is needed
 		*/
-		void addevents(const FMTeventcontainer& newevents);
-		// DocString: FMTspatialschedule::grow()
+		void operatecoord(const FMTcoordinate& coord,const Core::FMTaction& action, const int& action_id, const FMTbindingspatialaction& bindingspaction, const Core::FMTtransition& Transition,
+					 const Core::FMTyields& ylds, const std::vector<Core::FMTtheme>& themes);
+		// DocString: FMTspatialschedule::grow
 		/**
 
 		*/
 		void grow();
-		// DocString: FMTspatialschedule::setnewperiod()
+		// DocString: FMTspatialschedule::setnewperiod
 		/**
 
 		*/
 		//void setnewperiod();
-		// DocString: FMTspatialschedule::getschedules(const std::vector<Core::FMTaction>)
+		// DocString: FMTspatialschedule::getschedules
 		/**
 		Return operated schedules from linegraph. 
 		*/
 		std::vector<Core::FMTschedule> getschedules(const std::vector<Core::FMTaction>& modelactions,bool withlock=false) const;
-		// DocString: FMTspatialschedule::getgraphsoutputs()
+		// DocString: FMTspatialschedule::getgraphsoutputs
 		/**
 			Return sum of all graphs outputs related to constraint.
 		*/
 		std::vector<double> getgraphsoutputs(const Models::FMTmodel& model, const Core::FMTconstraint& constraint,
 											 const FMTspatialschedule*	friendlysolution = nullptr) const;
-		// DocString: FMTspatialschedule::isbetterthan()
+		// DocString: FMTspatialschedule::isbetterthan
 		/**
 			Compare two spatialschedule and return a vector of bool with true if the constraint group has a better value then the
 			compared solution else false.
 		*/
 		std::vector<int> isbetterthan(const FMTspatialschedule& newsolution,
 									 const Models::FMTmodel& model) const;
-		// DocString: FMTspatialschedule::getconstraintevaluation()
+		// DocString: FMTspatialschedule::getconstraintevaluation
 		/**
 			Returns the double value of the evaluated solution constraint.
 		*/
 		double getconstraintevaluation(const Core::FMTconstraint&constraint,
 			const Models::FMTmodel& model,const FMTspatialschedule*	friendlysolution = nullptr) const;
-		// DocString: FMTspatialschedule::getconstraintsvalues()
+		// DocString: FMTspatialschedule::getconstraintsvalues
 		/**
 			Fill up a vector of values for for each contraints (used for normalization)
 		*/
 		std::vector<double> getconstraintsvalues(const Models::FMTmodel& model,
 			const FMTspatialschedule*	friendlysolution = nullptr) const;
-		// DocString: FMTspatialschedule::getweightedfactors()
+		// DocString: FMTspatialschedule::getweightedfactors
 		/**
 			Generates factors based on the actual solution.
 		*/
 		std::vector<double> getweightedfactors(const Models::FMTmodel& model,
 			const FMTspatialschedule*	friendlysolution = nullptr) const;
-		// DocString: FMTspatialschedule::getdualinfeasibility()
+		// DocString: FMTspatialschedule::getdualinfeasibility
 		/**
 			Returns dual infeasibility of a set of constraints.
 		*/
 		double getprimalinfeasibility(const std::vector<Core::FMTconstraint>& constraints,
 			const Models::FMTmodel& model,const FMTspatialschedule*	friendlysolution = nullptr, bool withfactorization = false) const;
-		// DocString: FMTspatialschedule::logsolutionstatus()
+		// DocString: FMTspatialschedule::logsolutionstatus
 		/**
 			Log the status of the solution
 		*/
 		void logsolutionstatus(const size_t& iteration, const double& objective, const double& primalinfeasibility) const;
-		// DocString: FMTspatialschedule::getsolutionstatus()
+		// DocString: FMTspatialschedule::getsolutionstatus
 		/**
 			Get the primal infeasibility and objective value
 		*/
@@ -251,7 +252,7 @@ class FMTEXPORT FMTspatialschedule : public FMTlayer<Graph::FMTlinegraph>
 		*/
 		double getglobalobjective(const Models::FMTmodel& model,
 			const FMTspatialschedule*	friendlysolution = nullptr) const;
-		// DocString: FMTspatialschedule::getobjectivevaluey()
+		// DocString: FMTspatialschedule::getobjectivevaluey
 		/**
 			Returns the objective value of the spatialschedule
 		*/
@@ -263,28 +264,28 @@ class FMTEXPORT FMTspatialschedule : public FMTlayer<Graph::FMTlinegraph>
 		*/
 		void setgraphfromcache(const Graph::FMTlinegraph& graph, const Models::FMTmodel& model, const int&startingperiod, bool remove = true);
 
-		// DocString: FMTspatialschedule::getgraphsoutputs(const Models::FMTmodel&, const Core::FMTconstraint&, const int&, const int&)
+		// DocString: FMTspatialschedule::getpatchstats
 		/**
-			Return sum of all graphs outputs related to constraint.
+			
 		*/
 		std::string getpatchstats(const std::vector<Core::FMTaction>& actions) const;
-		// DocString: FMTspatialschedule::lastdistlayer(const Models::FMTmodel&, const Core::FMTconstraint&, const int&, const int&)
+		// DocString: FMTspatialschedule::lastdistlayer
 		/**
 			Return sum of all graphs outputs related to constraint.
 		*/
 		FMTlayer<std::string> lastdistlayer(const std::vector<Core::FMTaction>& modelactions, const int& period) const;
-		// DocString: FMTspatialschedule::getGCBMtransitions(const std::vector<Core::FMTtheme>&)
+		// DocString: FMTspatialschedule::getGCBMtransitions
 		/**
 		
 		*/
 		std::vector<Core::FMTGCBMtransition> getGCBMtransitions(FMTlayer<std::string>& stackedactions, const std::vector<Core::FMTaction>& modelactions, const std::vector<Core::FMTtheme>& classifiers, const int& period) const;
-		// DocString: FMTspatialschedule::getcarbonpredictors(FMTlayer<int>& graphids,const int& period,const std::vector<std::string>& yieldnames,const Core::FMTyields& yields)
+		// DocString: FMTspatialschedule::getcarbonpredictors
 		/**
 			Get the carbon predictors for the whole solution and write down the predictorsids into a layer.
 		*/
 		std::vector<std::vector<Graph::FMTcarbonpredictor>> getcarbonpredictors(FMTlayer<int>& predictorids, const Models::FMTmodel& model, const std::vector<std::string>& yieldnames, const int& period,bool periodonevalues = false,bool withGCBMid = true) const;
 		
-		// DocString: FMTspatialschedule::eraselastperiod()
+		// DocString: FMTspatialschedule::eraselastperiod
 		 /**
 		 This function erase the last period of the FMTspatialschedule.
 		 */
@@ -294,9 +295,9 @@ class FMTEXPORT FMTspatialschedule : public FMTlayer<Graph::FMTlinegraph>
 		 Get the binding actions based on model constraints.
 		 */
 		std::vector<Spatial::FMTbindingspatialaction> getbindingactions(const Models::FMTmodel& model, const int& period) const;
-		// DocString: FMTspatialschedule::getbindingactions
+		// DocString: FMTspatialschedule::getbindingactionsbyperiod
 		 /**
-		 Get the binding actions based on model constraints.
+		 Get the binding actions based on model constraints in a vector by period.
 		 */
 		actionbindings getbindingactionsbyperiod(const Models::FMTmodel& model) const;
 		// DocString: FMTspatialschedule::referencebuild
@@ -347,14 +348,14 @@ class FMTEXPORT FMTspatialschedule : public FMTlayer<Graph::FMTlinegraph>
 		Swap operator for FMTspatialschedule.
 		*/
 		void swap(FMTspatialschedule& rhs);
-		// DocString: FMTspatialschedule::getgraphs
+		// DocString: FMTspatialschedule::getmovablecoordinates
 		/**
-		Returns a vector of const iterators to graphs.This thing will need to be cached to increase inficiency
+		
 		*/
 		std::vector<Spatial::FMTcoordinate>getmovablecoordinates(const Models::FMTmodel& model,const int& period,
 																					const std::vector<Spatial::FMTcoordinate>* statics,
 																					boost::unordered_map<Core::FMTdevelopment, bool>*operability = nullptr) const;
-		// DocString: FMTspatialschedule::getstaticsmovablegraphs
+		// DocString: FMTspatialschedule::getstaticsmovablecoordinates
 		/**
 		Returns a vector of coordinate that are considered movable
 		*/
@@ -405,40 +406,49 @@ class FMTEXPORT FMTspatialschedule : public FMTlayer<Graph::FMTlinegraph>
 		*/
 		std::vector<std::pair<FMTcoordinate, double>>getoutputbycoordinate(const Models::FMTmodel & model,
 			const Core::FMToutput& output, const int& period) const;
+		// DocString: FMTspatialschedule::postsolve
+		/**
+		postsolve the spatial solution.
+		*/
+		void postsolve(const Core::FMTmaskfilter&  filter,const std::vector<Core::FMTaction>& presolveactions,const Models::FMTmodel& originalbasemodel);
 	protected:
 		// DocString: FMTspatialschedule::events
 		/**
 		
 		*/
         FMTeventcontainer events;
-		// DocString: FMTspatialschedule::getfromevents()
+		// DocString: FMTspatialschedule::getfromevents(const Core::FMTconstraint&, const std::vector<Core::FMTaction>&, const int&, const int&)
 		 /**
 		 Get theline graph using the eventcontainer
 		 */
 		std::vector<const Graph::FMTlinegraph*>getfromevents(const Core::FMTconstraint& constraint, const std::vector<Core::FMTaction>& actions, const int& start, const int& stop) const;
-		// DocString: FMTspatialschedule::getfromevents()
+		// DocString: FMTspatialschedule::getfromevents(const Core::FMToutputnode&, const std::vector<Core::FMTaction>&, const int&)
 		 /**
-		 Get theline graph using the eventcontainer
+		 Get the coordinate presents in the events for the outputnode, the action and the period asked.
 		 */
 		std::vector<FMTcoordinate>getfromevents(const Core::FMToutputnode& node, const std::vector<Core::FMTaction>& actions, const int& period) const;
-		// DocString: FMTspatialschedule::setoutputfromgraph
+		// DocString: FMTspatialschedule::getoutputfromgraph
 		 /**
-		 set the output requested from a given linegraph into periods_values
+		 Get the output requested from a given linegraph into periods_values
 		 */
 		std::map<std::string,double> getoutputfromgraph(const Graph::FMTlinegraph& linegraph, const Models::FMTmodel & model,
 			const Core::FMToutputnode& node, const double* solution,const int&period, const Core::FMTmask& nodemask,
 			boost::unordered_map<Core::FMTmask, double>& nodecache, Core::FMToutputlevel level = Core::FMToutputlevel::totalonly) const;
 
-		// DocString: FMTspatialschedule::getgraphsbystatic()
+		// DocString: FMTspatialschedule::setgraphcachebystatic
 		 /**
-		 Based on variable outputnode in the constraint returns a subset of the solution based on the static themes.
+		 
 		 */
 		void setgraphcachebystatic(const std::vector<FMTcoordinate>& coordinates, const Core::FMToutputnode& node) const;
-		// DocString: FMTspatialschedule::getmaximalpatchsizes()
+		// DocString: FMTspatialschedule::getmaximalpatchsizes
 		 /**
 		 Return the maximal patch size of a vector of spatialactions.
 		 */
 		//std::vector<size_t>getmaximalpatchsizes(const std::vector<FMTspatialaction>& spactions) const;
+		// DocString: FMTspatialschedule::inscheduleoperabilities
+		 /**
+		
+		 */
 		bool inscheduleoperabilities(const std::vector<boost::unordered_set<Core::FMTdevelopment>>& scheduleoperabilities,
 			Core::FMTdevelopment const* dev,const int& actionid, const Core::FMTaction& action) const;
 		

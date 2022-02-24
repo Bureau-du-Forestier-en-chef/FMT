@@ -152,6 +152,7 @@ FMTspec::FMTspec():per(),age(),lock(), yieldnames(), yieldbounds(){}
                                         lock(rhs.lock),
 									yieldnames(rhs.yieldnames), yieldbounds(rhs.yieldbounds)
         {
+
         }
     FMTspec& FMTspec::operator = (const FMTspec& rhs)
         {

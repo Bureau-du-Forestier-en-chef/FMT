@@ -273,20 +273,19 @@ FMTmask FMTtransition::main_target(const std::vector<FMTdevelopment>& devs,
 	return (transition.getname()  == transition_name);
 	}
 
- FMTtransition FMTtransition::presolve(const FMTmask& basemask,
+ FMTtransition FMTtransition::presolve(const FMTmaskfilter& filter,
 	 const std::vector<FMTtheme>& originalthemes,
-	 const FMTmask& presolvedmask,
 	 const std::vector<FMTtheme>& newthemes) const
 	{
 	FMTtransition newtransition(*this);
 	try {
-	newtransition.presolvelist(basemask, originalthemes, presolvedmask, newthemes);
+	newtransition.presolvelist(filter, originalthemes, newthemes);
 	newtransition.update();
-	if (!presolvedmask.empty())
+	if (!filter.emptyflipped())
 		{
 		for (auto& transitionobject : newtransition)
 			{
-			transitionobject.second = transitionobject.second.presolve(presolvedmask, newthemes);
+			transitionobject.second = transitionobject.second.presolve(filter, newthemes);
 			}
 		}
 	}catch (...)

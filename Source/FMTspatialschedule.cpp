@@ -429,7 +429,7 @@ namespace Spatial
 	}
 
 
-	double FMTspatialschedule::operate(const FMTeventcontainer& cuts, const Core::FMTaction& action, const int& action_id, const Core::FMTtransition& Transition,
+	double FMTspatialschedule::operateevents(const FMTeventcontainer& cuts, const Core::FMTaction& action, const int& action_id, const Core::FMTtransition& Transition,
 									 const Core::FMTyields& ylds, const std::vector<Core::FMTtheme>& themes)
 	{
 		double operatedarea = 0;
@@ -443,27 +443,35 @@ namespace Spatial
 					if (pathssize > 1)
 					{
 						_exhandler->raise(Exception::FMTexc::FMTnotlinegraph, "More than one verticies for the graph after operate ... See if you have multiple transitions. Coord at " + std::string(*coordit),
-							"FMTspatialschedule::operate", __LINE__, __FILE__);
+							"FMTspatialschedule::operateevents", __LINE__, __FILE__);
 					}
-					operatedarea += cellsize;
+							operatedarea += cellsize;
 				}
 			}
+			events.merge(cuts);
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTspatialschedule::operate", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("", "FMTspatialschedule::operateevents", __LINE__, __FILE__);
 		}
 		return operatedarea;
 	}
 
-	void FMTspatialschedule::addevents(const FMTeventcontainer& newevents)
+	void FMTspatialschedule::operatecoord(const FMTcoordinate& coord,const Core::FMTaction& action, const int& action_id, const FMTbindingspatialaction& bindingspaction, const Core::FMTtransition& Transition,
+					 const Core::FMTyields& ylds, const std::vector<Core::FMTtheme>& themes)
 	{
-		try {
-			events.merge(newevents);
-		}
-		catch (...)
+		try
 		{
-			_exhandler->raisefromcatch("", "FMTspatialschedule::addevents", __LINE__, __FILE__);
+			Graph::FMTlinegraph* lg = &mapping.at(coord);
+			const size_t pathssize = lg->operate(action, action_id, Transition, ylds, themes);
+			if (pathssize > 1)
+			{
+				_exhandler->raise(Exception::FMTexc::FMTnotlinegraph, "More than one verticies for the graph after operate ... See if you have multiple transitions. Coord at " + std::string(coord),
+					"FMTspatialschedule::operatecoord", __LINE__, __FILE__);
+			}
+			events.addaction(coord,actperiod(),action_id,bindingspaction);
+		}catch(...){
+				_exhandler->printexceptions("", "FMTspatialschedule::operatecoord", __LINE__, __FILE__);
 		}
 	}
 
@@ -937,7 +945,7 @@ namespace Spatial
 			bool cachenotused = true;
 			//const std::vector<Core::FMTtheme> statictransitionsthemes = model.locatestatictransitionsthemes();
 			const double cellsize = this->getcellsize();
-			if (level == Core::FMToutputlevel::totalonly)
+			if (level != Core::FMToutputlevel::developpement)
 				{
 				values["Total"] = std::vector<double>((periodstop - periodstart) + 1,0.0);
 				}
@@ -1478,6 +1486,39 @@ std::map<std::string,double> FMTspatialschedule::getoutputfromgraph(const Graph:
 	return values;
 	}
 
+void FMTspatialschedule::postsolve(const Core::FMTmaskfilter&  filter,
+									const std::vector<Core::FMTaction>& presolveactions,
+									const Models::FMTmodel& originalbasemodel)
+	{
+	try {
+		const std::vector<Core::FMTtheme> postsolvethemes = originalbasemodel.getthemes();
+		const std::vector<Core::FMTaction> postsolveactions = originalbasemodel.getactions();
+		std::vector<int>actionmapping;
+		actionmapping.reserve(presolveactions.size());
+		for (const Core::FMTaction action : presolveactions)
+		{
+			const int loc = static_cast<int>(std::distance(postsolveactions.begin(), std::find_if(postsolveactions.begin(), postsolveactions.end(), Core::FMTactioncomparator(action.getname()))));
+			actionmapping.push_back(loc);
+		}
+		cache = FMTspatialnodescache();
+		for (std::map<FMTcoordinate, Graph::FMTlinegraph>::iterator graphit = this->mapping.begin(); graphit != this->mapping.end(); ++graphit)
+			{
+			graphit->second.postsolve(filter, postsolvethemes, actionmapping);
+			}
+		FMTeventcontainer newevents;
+		for (FMTeventcontainer::iterator eventit= events.begin(); eventit!=events.end();eventit++)
+			{
+			FMTevent newevent(*eventit);
+			newevent.setactionid(actionmapping.at(eventit->getactionid()));
+			newevents.insert(newevent);
+			}
+		events.swap(newevents);
+	}catch (...)
+		{
+		_exhandler->raisefromcatch("", "FMTspatialschedule::postsolve", __LINE__, __FILE__);
+		}
+	}
+
 
 void FMTspatialschedule::setgraphcachebystatic(const std::vector<FMTcoordinate>& coordinates,const Core::FMToutputnode& node) const
 	{
@@ -1660,8 +1701,6 @@ std::vector<Spatial::FMTbindingspatialaction> FMTspatialschedule::getbindingacti
 				*_logger << "minimaladjacency " << minimaladjacency << "\n";
 				*_logger << "maximaladjacenc " << maximaladjacency << "\n";*/
 			//}
-
-
 			bindings.emplace_back(neighboring.at(actionid), minimalgreenup, maximalgreenup, minimaladjacency, maximaladjacency,minimalsize, maximalsize, minimalnsize, maximalnsize);
 			}
 	}catch (...)
@@ -1803,8 +1842,7 @@ std::map<std::string, double> FMTspatialschedule::referencebuild(const Core::FMT
 							const Spatial::FMTeventcontainer harvest = this->buildharvest(action_area, bindingactions.at(action_id), generator, spatialy_allowable, period, action_id, updatedcells);
 							if (harvest.size() > 0)
 							{
-								const double operatedarea = this->operate(harvest,model.actions.at(action_id), action_id, model.transitions[action_id], model.yields, model.themes);
-								this->addevents(harvest);
+								const double operatedarea = this->operateevents(harvest,model.actions.at(action_id), action_id, model.transitions[action_id], model.yields, model.themes);
 								actions_operabilities = this->getupdatedscheduling(model, actiontargets, cachedactions, scheduleoperabilities, schedulepass, actions_operabilities, updatedcells);
 								targets[action_id] -= operatedarea;
 								if (targets[action_id]<=0)//remove this index from the actiontargets!
@@ -1995,16 +2033,9 @@ Graph::FMTgraphstats FMTspatialschedule::randombuild(const Models::FMTmodel& mod
 			Graph::FMTlinegraph* local_graph = &graphit->second;
 			size_t maxsize = 0;
 			const std::vector<int>actionids = local_graph->randombuildperiod(model, generator, operability);
-			for (const int& actionid : actionids)
-			{
-				if (bindings.at(actionid).getmaximalsize() > maxsize)
-				{
-					maxsize = bindings.at(actionid).getmaximalsize();
-				}
-			}
 			if (!actionids.empty())
 			{
-				events.addactions(graphit->first, period, actionids, maxsize);
+				events.addactions(graphit->first, period, actionids, bindings);
 			}
 			periodstats += local_graph->getstats();
 			}
@@ -2063,18 +2094,10 @@ void FMTspatialschedule::perturbgraph(const FMTcoordinate& coordinate,const int&
 		{
 			size_t maxsize = 0;
 			const std::vector<int>actionids = newgraph.randombuildperiod(model, generator, operability, dontbuildgrowth);
-			for (const int& actionid : actionids)
-				{
-				if (bindings.at(period - 1).at(actionid).getmaximalsize()>maxsize)
-					{
-					maxsize = bindings.at(period - 1).at(actionid).getmaximalsize();
-					}
-				}
 			if (!actionids.empty())
 				{
-				events.addactions(coordinate, localperiod, actionids, maxsize);
+				events.addactions(coordinate, localperiod, actionids, bindings.at(period - 1));
 				}
-			
 			++localperiod;
 		}
 		setgraphfromcache(newgraph, model,period, false);

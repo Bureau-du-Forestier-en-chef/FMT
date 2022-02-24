@@ -156,6 +156,11 @@ class FMTEXPORT FMTconstraint: public FMToutput,public FMTspec
 		return a new constraints set with the model type value.
 		*/
 		Core::FMTconstraint setfrom(const std::string& modeltype,const double& value) const;
+		// DocString: FMTconstraint::getscheduleweight
+		/**
+		If you are an objective and are a local model you can have a global schedule weight in the objective function.
+		*/
+		double getscheduleweight() const;
 		// DocString: FMTconstraint::getiterationchange
 		/**
 		Based on constraint period it will set bounds to the double specified in the vector for the constraint period.
@@ -283,9 +288,9 @@ class FMTEXPORT FMTconstraint: public FMToutput,public FMTspec
 		based on a (basemask), the (originalthemes), the presolved themes, the presolved actions and presolved yields.
 		See FMToutput presolve for more information.
 		*/
-		FMTconstraint presolve(const FMTmask& basemask,
+		FMTconstraint presolve(const FMTmaskfilter& filter,
 			const std::vector<FMTtheme>& originalthemes,
-			const FMTmask& presolvedmask,
+			const std::vector<FMTtheme>& selectedthemes,
 			const std::vector<FMTtheme>& newthemes,
 			const std::vector<FMTaction>& actions, const FMTyields& yields) const;
 		// DocString: ~FMTconstraint()

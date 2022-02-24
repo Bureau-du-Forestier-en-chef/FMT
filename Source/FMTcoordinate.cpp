@@ -21,7 +21,6 @@ namespace Spatial
 
     FMTcoordinate FMTcoordinate::at(unsigned int id) const
         {
-        ///Max 12
         //7//0//4//
         //3// //1//
         //6//2//5//
@@ -66,24 +65,22 @@ namespace Spatial
 		return bestcoordinate;
 		}
 
-
-    bool FMTcoordinate::within(unsigned int ldistance,const FMTcoordinate& coord) const
+    template<class T>
+    bool FMTcoordinate::within(const T& ldistance,const FMTcoordinate& coord) const
         {
-		int distancex = 0;
-		int distancey = 0;
-		getxygap(coord, distancex, distancey);
-		return (static_cast<unsigned int>(std::abs(distancex)) <= ldistance && static_cast<unsigned int>(std::abs(distancey)) <= ldistance &&
-			std::sqrt(distancex * distancex + distancey * distancey)<= static_cast<double>(ldistance));
+            if(ldistance<0)
+            {
+                //raise
+            }
+            int distancex = 0;
+            int distancey = 0;
+            getxygap(coord, distancex, distancey);
+            return (static_cast<decltype(ldistance)>(std::abs(distancex)) <= ldistance && static_cast<decltype(ldistance)>(std::abs(distancey)) <= ldistance &&
+                std::sqrt(distancex * distancex + distancey * distancey)<= static_cast<double>(ldistance));
         }
+    template bool FMTcoordinate::within<unsigned int>(const unsigned int& ldistance, const FMTcoordinate& coord) const;
+    template bool FMTcoordinate::within<double>(const double& ldistance,const FMTcoordinate& coord) const;
 
-    bool FMTcoordinate::withinlessthan(unsigned int ldistance,const FMTcoordinate& coord) const
-        {
-		int distancex = 0;
-		int distancey = 0;
-		getxygap(coord, distancex, distancey);
-		return (static_cast<unsigned int>(std::abs(distancex)) < ldistance && static_cast<unsigned int>(std::abs(distancey)) < ldistance &&
-			std::sqrt(distancex * distancex + distancey * distancey)< static_cast<double>(ldistance));
-        }
     unsigned int FMTcoordinate::getx() const
         {
         return x;

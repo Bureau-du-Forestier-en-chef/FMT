@@ -169,9 +169,8 @@ class FMTEXPORT FMTtransition : public FMTlist<FMTfork>
 		Returns a presolved FMTtransition based on a (basemask), the actual model FMTtheme (originalthemes),
 		a (presolvedmask) and the new presolved themes list.
 		*/
-		FMTtransition presolve(const FMTmask& basemask,
+		FMTtransition presolve(const FMTmaskfilter& filter,
 			const std::vector<FMTtheme>& originalthemes,
-			const FMTmask& presolvedmask,
 			const std::vector<FMTtheme>& newthemes) const;
     };
 

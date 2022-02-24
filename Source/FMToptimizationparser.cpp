@@ -32,6 +32,7 @@ namespace Parser
 		rxpenalty("^(_PENALTY)(\\()([^\\)]*)(\\))", std::regex_constants::ECMAScript | std::regex_constants::icase),
 		rxspecialoutput("^(_AVG|_SUM)(\\()(([^,]*)(,)(([^,]*)(([\\d]*|#.+)(\\.\\.)(#.+|_LENGTH|[\\d]*))|(#.+|[\\d]*))|(.+))(\\))", std::regex_constants::ECMAScript | std::regex_constants::icase),
 		rxspatial("^(_SIZE|_ADJACENCY|_RANDOM)([\\s\\t]*)(\\()(.+)(\\))([\\s\\t]*)(>=|<=|=)([\\s\\t]*)(#[^\\s^\\t]*|[\\d]*)(.+)",std::regex_constants::ECMAScript | std::regex_constants::icase),
+		rxspecialobjective("^(.+)(_SETGLOBALSCHEDULE)(\\()([\\d]*)(\\))", std::regex_constants::ECMAScript | std::regex_constants::icase),
 		ineach()
 		{
 		setsection(Core::FMTsection::Optimize);
@@ -50,6 +51,7 @@ namespace Parser
 		rxpenalty(rhs.rxpenalty),
 		rxspecialoutput(rhs.rxspecialoutput),
 		rxspatial(rhs.rxspatial),
+		rxspecialobjective(rhs.rxspecialobjective),
 		ineach(rhs.ineach)
 		{
 		setsection(Core::FMTsection::Optimize);
@@ -70,6 +72,7 @@ namespace Parser
 			rxpenalty = rhs.rxpenalty;
 			rxspecialoutput = rhs.rxspecialoutput;
 			rxspatial = rhs.rxspatial;
+			rxspecialobjective = rhs.rxspecialobjective;
 			ineach = rhs.ineach;
 			setsection(Core::FMTsection::Optimize);
 			}
@@ -634,8 +637,23 @@ namespace Parser
 		{
 		Core::FMTconstraint objective;
 		try {
+			std::smatch specialmatch;
+			std::string subline(line);
+			if (std::regex_search(line, specialmatch, rxspecialobjective))
+				{
+				subline=std::string(specialmatch[1]);
+				boost::trim(subline);
+				const std::string keyword(specialmatch[2]);
+				if (keyword=="_SETGLOBALSCHEDULE")
+					{
+					const double scheduleweight = getnum<double>(std::string(specialmatch[4]), constants);
+					objective.addbounds(Core::FMTyldbounds(Core::FMTsection::Optimize,keyword,scheduleweight, scheduleweight));
+					}
+
+				}
+
 			std::smatch kmatch;
-			if (std::regex_search(line, kmatch, rxobjectives))
+			if (std::regex_search(subline, kmatch, rxobjectives))
 			{
 				const std::string objective_type = kmatch[1];
 				const std::string lower_period = std::string(kmatch[7]) + std::string(kmatch[10]);

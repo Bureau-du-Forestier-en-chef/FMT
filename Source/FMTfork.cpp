@@ -57,12 +57,12 @@ FMTfork::FMTfork():FMTspec(),transitions(){}
         return line;
         }
 
-	FMTfork FMTfork::presolve(const FMTmask& selectedmask, const std::vector<FMTtheme>&presolvedthemes) const
+	FMTfork FMTfork::presolve(const FMTmaskfilter& filter, const std::vector<FMTtheme>&presolvedthemes) const
 		{
 		FMTfork newfork(*this);
 		for (FMTtransitionmask& trmask : newfork.transitions)
 			{
-			trmask = trmask.presolve(selectedmask, presolvedthemes);
+			trmask = trmask.presolve(filter, presolvedthemes);
 			}
 		return newfork;
 		}

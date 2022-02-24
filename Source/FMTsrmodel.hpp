@@ -92,8 +92,13 @@ namespace Models
 		/**
 		Post solve this graph and return a presolved graph for each vertex and edges based on the original model.
 		*/
-		Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>postsolvegraph(const FMTmodel& originalbasemodel) const;
+		void postsolvegraph(const FMTmodel& originalbasemodel);
 	public:
+		// DocString: FMTsrmodel::postsolve
+		/*
+		This function is for postsolving the presolved model into the original model. In this case, the FMTgraph of the FMTsrmodel is also postsolved.
+		*/
+		virtual void postsolve(const FMTmodel& originalbasemodel);
 		// DocString: FMTsrmodel::setparallellogger
 		/**
 		Solver's logger cannot work in parallel so you need to pass a logger owned
@@ -274,6 +279,16 @@ namespace Models
 		a given period and tolerance. Perfect function to update a FMTlpmodel or get ready for replanning.
 		*/
 		bool boundsolution(int period, double tolerance = FMT_DBL_TOLERANCE);
+		// DocString: FMTsrmodel::setparameter(const FMTintmodelparameters, const int)
+		/**
+		Override setter for intmodelparameters.
+		*/
+		bool setparameter(const FMTintmodelparameters& key, const int& value) override;
+		// DocString: FMTsrmodel::setparameter(const FMTboolmodelparameters, const bool)
+		/**
+		Override setter for boolmodelparameters.
+		*/
+		bool setparameter(const FMTboolmodelparameters& key, const bool& value) override;
 	};
 
 }

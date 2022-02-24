@@ -176,7 +176,7 @@ class FMTEXPORT FMToutput: public FMTobject
 	Check if the FMToutput is linear no variable to variable multiplication or division.
 	Only Linear output can be added to a linear programming matrix.
 	*/
-	bool linear() const;
+	bool islinear() const;
 	// DocString: FMToutput::islevel
 	/**
 	Returns true if all outputsources of the FMToutput are level.
@@ -213,11 +213,9 @@ class FMTEXPORT FMToutput: public FMTobject
 	This function returns a vector of FMToutputnode generated from the outputnodesource and FMToperators for the FMTouput,
 	a multiplier can be added to multiply all the nodesource with a factor.
 	*/
-	std::vector<FMToutputnode> getnodes(/*const std::vector<FMTactualdevelopment>&area,
-										const std::vector<Core::FMTaction>&actions,
-										const FMTyields& yields,*/
-										double multiplier = 1,
-										bool orderbyoutputid = false) const;
+	std::vector<FMToutputnode> getnodes(double multiplier = 1,
+										bool orderbyoutputid = false,
+										std::vector<std::string>* equationptr = nullptr) const;
 	// DocString: FMToutput::issingleperiod
 	/**
 	Returns true if the FMToutput cover only one single period of the FMTgraph, false if 
@@ -306,9 +304,9 @@ class FMTEXPORT FMToutput: public FMTobject
 	presolved themes (newthemes) and presolved actions vector (actions)
 	and a presolved yields section (yields).
 	*/
-	FMToutput presolve(const FMTmask& basemask,
+	FMToutput presolve(const FMTmaskfilter& filter,
 		const std::vector<FMTtheme>& originalthemes,
-		const FMTmask& presolvedmask,
+		const std::vector<FMTtheme>& selectedthemes,
 		const std::vector<FMTtheme>& newthemes,
 		const std::vector<FMTaction>& actions,const FMTyields& yields) const;
 	// DocString: FMToutput::changeoutputsorigin
@@ -332,7 +330,13 @@ class FMTEXPORT FMToutput: public FMTobject
 	Returns true if contains inventory
 	*/
 	bool isinventory() const;
-
+	// DocString: FMToutput::fillfromshuntingyard
+	/**
+	If the output is non linear you need to use this function to get values.
+	*/
+	void fillfromshuntingyard(std::map<std::string,double>& results,
+		const std::vector<Core::FMToutputnode>& nodes,
+		const std::map<std::string,std::vector<std::string>>& allequations) const;
     };
 // DocString: FMToutputcomparator
 /**

@@ -649,6 +649,18 @@ namespace Models
 		//graph.passinobject(base);
 	}
 
+	void FMTsrmodel::postsolve(const FMTmodel& originalbasemodel)
+	{
+		try {
+			postsolvegraph(originalbasemodel);
+			FMTmodel::postsolve(originalbasemodel);
+		}catch (...)
+		{
+			_exhandler->printexceptions("", "FMTsrmodel::postsolve", __LINE__, __FILE__);
+		}
+
+	}
+
 	std::unique_ptr<FMTmodel>FMTsrmodel::presolve(int presolvepass, std::vector<Core::FMTactualdevelopment> optionaldevelopments) const
 	{
 		try{
@@ -880,28 +892,25 @@ namespace Models
 		return graph.getfirstactiveperiod();
 	}
 
-	Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties> FMTsrmodel::postsolvegraph(const FMTmodel& originalbasemodel) const
+	void FMTsrmodel::postsolvegraph(const FMTmodel& originalbasemodel)
 	{
 		try {
-			std::vector<Core::FMTtheme> postsolvethemes = originalbasemodel.getthemes();
-			std::vector<Core::FMTaction> postsolveactions = originalbasemodel.getactions();
-			Core::FMTmask selectedmask = this->getselectedmask(postsolvethemes);
-			std::vector<Core::FMTaction> presolveactions = this->getactions();
-			std::map<int, int>actionmapping;
-			int preactionid = 0;
+			const std::vector<Core::FMTtheme>& postsolvethemes = dynamic_cast<const FMTsrmodel*>(&originalbasemodel)->themes;
+			const std::vector<Core::FMTaction>& postsolveactions = dynamic_cast<const FMTsrmodel*>(&originalbasemodel)->actions;
+			const Core::FMTmaskfilter postsolvefilter = this->getpostsolvefilter(originalbasemodel.getthemes(),originalbasemodel.getarea().begin()->getmask());
+			const std::vector<Core::FMTaction>& presolveactions = this->actions;
+			std::vector<int>actionmapping;
+			actionmapping.reserve(presolveactions.size());
 			for (const Core::FMTaction action : presolveactions)
 			{
 				const int loc = static_cast<int>(std::distance(postsolveactions.begin(), std::find_if(postsolveactions.begin(), postsolveactions.end(), Core::FMTactioncomparator(action.getname()))));
-				actionmapping[preactionid] = loc;
-				++preactionid;
+				actionmapping.push_back(loc);
 			}
-			actionmapping[-1] = -1;
-			return this->graph.postsolve(selectedmask, postsolvethemes, actionmapping);
+			this->graph.postsolve(postsolvefilter,postsolvethemes, actionmapping);
 		}catch (...)
 		{
 			_exhandler->printexceptions("", "FMTsrmodel::postsolvegraph", __LINE__, __FILE__);
 		}
-		return Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>();
 	}
 
 
@@ -1127,6 +1136,34 @@ namespace Models
 		interfaces.push_back(Models::FMTsolverinterface::CLP);
 		interfaces.push_back(Models::FMTsolverinterface::MOSEK);
 		return interfaces;
+	}
+
+	bool FMTsrmodel::setparameter(const FMTboolmodelparameters& key, const bool& value)
+	{
+		try {
+			FMTmodel::setparameter(key, value);
+		}
+		catch (...)
+		{
+			_exhandler->raisefromcatch("", "FMTsrmodel::setparameter", __LINE__, __FILE__);
+		}
+		return true;
+	}
+
+	bool FMTsrmodel::setparameter(const FMTintmodelparameters& key, const int& value)
+	{
+		try {
+			FMTmodel::setparameter(key, value);
+			if (key == NUMBER_OF_THREADS)
+			{
+				solver.setnumberofthreads(parameters.getintparameter(NUMBER_OF_THREADS));
+			}
+		}
+		catch (...)
+		{
+			_exhandler->raisefromcatch("", "FMTsrmodel::setparameter", __LINE__, __FILE__);
+		}
+		return true;
 	}
 
 }
