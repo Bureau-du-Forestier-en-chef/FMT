@@ -14,6 +14,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <memory>
 #include "FMTaction.hpp"
 #include <algorithm>
+#include <queue>
 
 namespace Core{
 
@@ -500,131 +501,65 @@ std::vector<FMToutputnode> FMToutput::getnodes(double multiplier,bool orderbyout
 	{
 	//set a expression and get the nodes! check if the node is positive or negative accross the equation!!!
 	std::vector<FMToutputnode>nodes;
-	std::vector<std::string>equation;
-	if (equationptr)
-	{
-		equation.push_back("(");
-	}
-	
 	try {
-		size_t src_id = 0;
-		size_t op_id = 0;
-		FMToutputsource main_source;
-		FMToutputsource main_factor(FMTotar::val,1);
-		double constant = 1;
-		nodes.reserve(sources.size());
-		bool pushedlevel = false;
-		for (FMToutputsource source : sources)
-		{
-			if (source.islevel()&& source.getmask().empty())
+			size_t nodeid = 0;
+			size_t sourceid = 0;
+			std::vector<std::string>equation;
+			std::queue<FMToperator>ops;
+			ops.push(FMToperator("+"));
+			for (const FMToperator& op : operators)
 				{
-				if (equationptr)
-				{ 
-				const double value = source.getvalue(period);
-				source = FMToutputsource(FMTotar::val, value,
-											"", "", source.getoutputorigin());
-				if (src_id==0|| (op_id < operators.size() && !operators.at(op_id).isfactor()))
+				ops.push(op);
+				}
+			std::queue<FMToutputsource>srs;
+			for (const FMToutputsource& sr : sources)
 				{
-					if (op_id < operators.size() && !nodes.empty() || pushedlevel)
+				srs.push(sr);
+				}
+			bool pushednode = false;
+			while (!srs.empty())
+				{
+				if (srs.front().isvariable())
 					{
-						equation.push_back(operators.at(op_id));
-						if (src_id > 0)
-							{
-							++op_id;
-							}
-					}
-					equation.push_back(std::to_string(value));
-					equation.push_back("+");
-				}
-				}else {
-					source.settarget(Core::FMTotar::val);
-					main_factor = source;
-				}
-				pushedlevel = true;
-			}else {
-				pushedlevel = false;
-				}
-
-			/**_logger<<!((op_id < operators.size()) && operators.at(op_id).isfactor())<<"\n";
-			if(op_id < operators.size()){*_logger<<std::string(operators.at(op_id))<<"\n";}*/
-			if ((source.isvariable() || source.isvariablelevel()))
-			{
-				if (!main_source.getmask().empty() || main_source.isvariablelevel())
-				{
-					if (!((main_factor.isconstant() && main_factor.getvalue() == 0) || constant == 0))
-					{
-						if (main_source.isaverage())
-							{
-							constant *= multiplier;
-							}
-						if (equationptr)
+					double constant = 1;
+					if (srs.front().isaverage())
 						{
-							equation.push_back("O" + std::to_string(nodes.size()));
-							equation.push_back("+");
-							pushedlevel = false;
+						constant *= multiplier;
 						}
-						nodes.emplace_back(main_source, main_factor, constant);
-					}
-				}
-				main_factor = FMToutputsource(FMTotar::val, 1,"","",source.getoutputorigin());
-				main_source = source;
-				constant = 1;
-			}
-			if (src_id != 0 && (op_id < operators.size()) && !operators.at(op_id).isfactor())
-			{
-				constant *= operators.at(op_id).call(0, 1);
-			}
-			if (source.istimeyield())
-			{
-				main_factor = source;
-			}
-			else if ((op_id < operators.size()) && (operators.at(op_id).isfactor()))
-			{
-				if (source.isconstant())
-				{
-					const double value = source.getvalue();
-					constant = operators.at(op_id).call(constant, value);
-				}
-				else if (equationptr&&!nodes.empty())
+					if (!ops.front().isfactor())
+						{
+						constant *= ops.front().call(0, 1);
+						}
+					if (!pushednode)
 					{
-					equation.pop_back();
-					equation.push_back(")");
-					equation.push_back(std::string(operators.at(op_id)));
-					equation.push_back("(");
-					}
-			}
-			if (src_id > 0)
-			{
-				++op_id;
-			}
-			++src_id;
-		}
-		if (main_source.isvariablelevel() || main_source.isvariable())
-		{
-			if (!((main_factor.isconstant() && main_factor.getvalue() == 0) || constant == 0))
-			{
-				if (main_source.isaverage())
-				{
-					constant *= multiplier;
-				}
-				if (equationptr)
-				{
+						equation.push_back("+");
+					}else {
+						equation.push_back(ops.front());
+						}
 					equation.push_back("O" + std::to_string(nodes.size()));
-					equation.push_back(")");
+					ops.pop();
+					nodes.emplace_back(srs.front(),
+						FMToutputsource(FMTotar::val, 1, "", "", srs.front().getoutputorigin()),constant);
+					pushednode = true;
+				}else if(ops.front().isfactor()&& pushednode)
+					{
+					nodes.back().factor = srs.front();
+					nodes.back().factor.resetvalues(ops.front());
+					pushednode = false;
+					ops.pop();
+				}else{
+					equation.push_back(ops.front());
+					const double value = srs.front().getvalue(period);
+					equation.push_back(std::to_string(value));
+					pushednode = false;
+					ops.pop();
+					}
+				srs.pop();
 				}
-				nodes.emplace_back(main_source, main_factor, constant);
-			}
-
-
-		}
-		if (equationptr)
+			equation.erase(equation.begin());
+			if (equationptr)
 			{
-			if (FMToperator(equation.back()).valid())
-				{
-				equation.pop_back();
-				equation.push_back(")");
-				}
-			equationptr->swap(equation);
+				equationptr->swap(equation);
 			}
 		if (orderbyoutputid)
 			{

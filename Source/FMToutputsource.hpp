@@ -29,9 +29,9 @@ namespace Core
 {
 	class FMTaction;
 	class FMTyields;
-	
 	class FMTactualdevelopment;
 	class FMTdevelopmentpath;
+	class FMToperator;
 class FMTEXPORT FMToutputsource : public FMTspec
     {
 	friend class boost::serialization::access;
@@ -90,6 +90,7 @@ class FMTEXPORT FMToutputsource : public FMTspec
 		void settarget(const FMTotar& newtype);
 		void setthemetarget(const int& newttarget);
 		void setoutputorigin(const int& neworigin);
+		void resetvalues(const FMToperator& op);
 		inline const std::string& getaction() const
 			{
 			return action;
