@@ -24,6 +24,11 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 	#include <Rcpp.h>
 #endif 
 
+namespace Parser
+{
+	class FMTlandscapeparser;
+}
+
 
 
 namespace Core
@@ -39,6 +44,7 @@ FMTtheme is realy close to FMTmask class.
 class FMTEXPORT FMTtheme : public FMTobject
     {
     friend class FMTmask;
+	friend class FMTlandscapeparser;
     protected:
 		// DocString: FMTtheme::id
 		/// Id is the id of the theme first theme in the landscape section is number 1.
@@ -120,6 +126,16 @@ class FMTEXPORT FMTtheme : public FMTobject
 		Fill up the aggregates vectors, vector<int> = themeid startingfrom 1, vector<std::string> = attributes, vector<std::string> = aggregates.
 		*/
 		void fillupaggregates(std::vector<int>& themeids, std::vector<std::string>& locattributes, std::vector<std::string>& locaggregates) const;
+		// DocString: FMTtheme::push_aggregate
+		/**
+		Push a new aggregate.
+		*/
+		void push_aggregate(const std::string& aggregatename);
+		// DocString: FMTtheme::push_aggregate
+		/**
+		Push a new aggregate value.
+		*/
+		void push_aggregate_value(const std::string& aggregatename, const std::string& value);
 	public:
 		// DocString: FMTtheme()
 		/**
