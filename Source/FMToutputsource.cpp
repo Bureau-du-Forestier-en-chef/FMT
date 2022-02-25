@@ -11,6 +11,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTyields.hpp"
 #include "FMTdevelopment.hpp"
 #include "FMTactualdevelopment.hpp"
+#include "FMToperator.hpp"
 
 namespace Core{
 
@@ -229,6 +230,14 @@ void FMToutputsource::setoutputorigin(const int& neworigin)
 		outputorigin=neworigin;
 	}
 
+void FMToutputsource::resetvalues(const FMToperator& op)
+	{
+	for (double& value : values)
+		{
+		value = op.call(1, value);
+		}
+	}
+
 bool FMToutputsource::issubsetof(const FMToutputsource& rhs) const
 	{
 	if ((this->isvariable() && rhs.isvariable() &&
@@ -346,6 +355,8 @@ double FMToutputsource::getvalue(int period) const
 	double returnvalue = 0;
 	if (target == FMTotar::val||target == FMTotar::level)
 		{
+		--period;
+		period = std::max(period, 0);//Cannot get negative period
         if (period >= static_cast<int>(values.size()))
             {
             period = static_cast<int>(values.size() - 1);

@@ -1,0 +1,54 @@
+*OUTPUT oSupRec
+*SOURCE ? ? ? coupetotale _AREA
+
+*LEVEL lev1
+*SOURCE 12 15 16 18
+
+*LEVEL lev2
+*SOURCE 30
+
+*LEVEL lev3
+
+*OUTPUT testc
+*SOURCE oSupRec ; 1613.12
+
+*OUTPUT test1
+*SOURCE oSupRec * 45 ;1613.12 * 12 = 72585
+
+*OUTPUT test2
+*SOURCE oSupRec - lev2 ; 1613.12 - 30 = 1583
+
+*OUTPUT test3
+*SOURCE lev2 - oSupRec ;30 - 1613.12 = -1538
+
+*OUTPUT test4
+*SOURCE lev2 + oSupRec - lev1 ; 30 + 1613.12 - 12 = 1631
+
+*OUTPUT test5
+*SOURCE lev2 - oSupRec * lev1; 30 - 1613.12 * 12 = -19326
+
+*OUTPUT test6
+*SOURCE oSupRec * lev1 - lev2 + lev1 ; 1613.12 * 12 - 30 + 12 = 19338
+
+*OUTPUT test7
+*SOURCE lev1 * lev2 + lev1 + lev2; 12 * 30 + 12 + 30 = 402
+
+*OUTPUT test8
+*SOURCE lev2 - oSupRec * 30 - oSupRec * lev2
+
+*OUTPUT test9
+*SOURCE oSupRec * oSupRec
+
+
+*OUTPUT test10
+*SOURCE oSupRec / oSupRec
+
+*OUTPUT test11
+*SOURCE lev2
+
+
+
+
+
+
+
