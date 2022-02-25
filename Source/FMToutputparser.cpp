@@ -109,7 +109,7 @@ namespace Parser
 										}
 										outputs->push_back(Core::FMToutput(name, description, /*themetarget,*/ sources, operators));
 										
-										*/*_logger<<name<<"\n";
+										/**_logger<<name<<"\n";
 										int id = 0;
 										for(const auto& s:sources)
 										{
