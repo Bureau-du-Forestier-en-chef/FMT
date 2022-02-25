@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du QuÃ©bec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -109,7 +109,7 @@ namespace Parser
 										}
 										outputs->push_back(Core::FMToutput(name, description, /*themetarget,*/ sources, operators));
 										
-										*_logger<<name<<"\n";
+										*/*_logger<<name<<"\n";
 										int id = 0;
 										for(const auto& s:sources)
 										{
@@ -117,7 +117,7 @@ namespace Parser
 											*_logger<<std::string(s)+" "+operatorstrloop<<"\n";
 											++id;
 										}
-										*_logger<<"\n"<<std::string(outputs->back())<<"\n";
+										*_logger<<"\n"<<std::string(outputs->back())<<"\n";*/
 										//outputs->back().passinobject(*this);
 										++outputid;
 									}
@@ -694,7 +694,7 @@ namespace Parser
 								}
 							}
 							outputs->push_back(Core::FMToutput(name, description, /*themetarget,*/ sources, operators));
-							*_logger<<name<<"\n";
+							/**_logger<<name<<"\n";
 							int id = 0;
 							for(const auto& s:sources)
 							{
@@ -702,7 +702,7 @@ namespace Parser
 								*_logger<<std::string(s)+" "+operatorstrloop<<"\n";
 								++id;
 							}
-							*_logger<<"\n"<<std::string(outputs->back())<<"\n";
+							*_logger<<"\n"<<std::string(outputs->back())<<"\n";*/
 							//outputs->back().passinobject(*this);
 							++outputid;
 						}
