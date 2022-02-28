@@ -38,6 +38,10 @@ FMToutputsource::FMToutputsource(const FMTotar ltarget,double lvalue, std::strin
 	outputorigin(origin),
 	themetarget(ttarget)
     {
+	if (istimeyield())
+		{
+		values.clear();
+		}
 
     }
 
@@ -230,11 +234,19 @@ void FMToutputsource::setoutputorigin(const int& neworigin)
 		outputorigin=neworigin;
 	}
 
-void FMToutputsource::resetvalues(const FMToperator& op)
+void FMToutputsource::resetvalues(const FMToperator& op,const FMToutputsource& other)
 	{
-	for (double& value : values)
+	std::vector<double>newvalues(std::max(other.values.size(), values.size()),0);
+	for (int period = 1; period < static_cast<int>(newvalues.size()+1);++period)
 		{
-		value = op.call(1, value);
+		const double othervalue = other.getvalue(period);
+		newvalues[period-1]=op.call(getvalue(period), othervalue);
+		}
+	values.swap(newvalues);
+	if (other.istimeyield())
+		{
+		yield = other.yield;
+		target = FMTotar::timeyld;
 		}
 	}
 
@@ -353,7 +365,12 @@ bool FMToutputsource::isnull(const FMTyields& ylds) const
 double FMToutputsource::getvalue(int period) const
 	{
 	double returnvalue = 0;
-	if (target == FMTotar::val||target == FMTotar::level)
+	if (target == FMTotar::timeyld&&
+		values.empty())
+		{
+		return 1;
+		}
+	if (target == FMTotar::val||target == FMTotar::level||target==FMTotar::timeyld)
 		{
 		--period;
 		period = std::max(period, 0);//Cannot get negative period
@@ -414,11 +431,15 @@ double FMToutputsource::getcoef(const FMTdevelopment& development,
 				coef = development.getharvestcoef(*paths, *modelaction, yields, yield, graphinfo);
 			}
 			}
-		}else if (istimeyield())
+		}else{
+			if (!values.empty())
 			{
-			coef = development.getinventorycoef(yields, yield, graphinfo);
-			}else {
-			coef = getvalue(development.getperiod());
+				coef = getvalue(development.getperiod());
+			}
+			if (istimeyield())
+				{
+				coef*= development.getinventorycoef(yields, yield, graphinfo);
+				}
 			}
 	return coef;
 	}

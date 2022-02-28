@@ -325,6 +325,7 @@ bool FMToutput::isonlylevel() const
     return true;
 	}
 
+
 bool FMToutput::isconstant() const
 	{
 	for (const FMToutputsource& src : sources)
@@ -372,6 +373,42 @@ bool FMToutput::containslevel() const
 	return false;
 	}
 
+bool FMToutput::canbenodesonly() const
+	{
+	try {
+		if (islinear())
+		{
+			std::vector<Core::FMToperator>baseoperators(operators);
+			baseoperators.insert(baseoperators.begin(), Core::FMToperator("+"));
+			size_t opid = 0;
+			for (const FMToutputsource& source : sources)
+				{
+				if ((source.islevel()||
+					source.istimeyield()||
+					source.isconstant())&&
+					!baseoperators.at(opid).isfactor())
+					{
+					if (source.istimeyield())
+						{
+						_exhandler->raise(Exception::FMTexc::FMTunsupported_output,
+							"for output " + std::string(*this),
+							"FMToutput::canbenodesonly", __LINE__, __FILE__);
+						}
+					return false;
+					}
+				++opid;
+				}
+			return true;
+		}
+		
+	}catch (...)
+	{
+		_exhandler->raisefromcatch("for " + this->getname(), "FMToutput::canbenodesonly",
+			__LINE__, __FILE__, Core::FMTsection::Outputs);
+	}
+	return false;
+	}
+
 bool FMToutput::islinear() const
 	{
 	try{
@@ -399,7 +436,7 @@ bool FMToutput::islinear() const
 	catch (...)
 	{
 		_exhandler->raisefromcatch(
-			"for " + this->getname(), "FMToutput::linear", __LINE__, __FILE__, Core::FMTsection::Outputs);
+			"for " + this->getname(), "FMToutput::islinear", __LINE__, __FILE__, Core::FMTsection::Outputs);
 	}
 	return true;
 	}
@@ -497,14 +534,14 @@ FMToutput FMToutput::boundto(const std::vector<FMTtheme>& themes, const FMTperbo
 	return newoutput;
 	}
 
-std::vector<FMToutputnode> FMToutput::getnodes(double multiplier,bool orderbyoutputid,std::vector<std::string>* equationptr,int period) const
+std::vector<FMToutputnode> FMToutput::getnodes(std::vector<std::string>& equation,double multiplier,bool orderbyoutputid,int period) const
 	{
 	//set a expression and get the nodes! check if the node is positive or negative accross the equation!!!
 	std::vector<FMToutputnode>nodes;
 	try {
 			size_t nodeid = 0;
 			size_t sourceid = 0;
-			std::vector<std::string>equation;
+			equation.clear();
 			std::queue<FMToperator>ops;
 			ops.push(FMToperator("+"));
 			for (const FMToperator& op : operators)
@@ -517,6 +554,7 @@ std::vector<FMToutputnode> FMToutput::getnodes(double multiplier,bool orderbyout
 				srs.push(sr);
 				}
 			bool pushednode = false;
+			bool pushedfactor = false;
 			while (!srs.empty())
 				{
 				if (srs.front().isvariable())
@@ -541,26 +579,36 @@ std::vector<FMToutputnode> FMToutput::getnodes(double multiplier,bool orderbyout
 					nodes.emplace_back(srs.front(),
 						FMToutputsource(FMTotar::val, 1, "", "", srs.front().getoutputorigin()),constant);
 					pushednode = true;
-				}else if(ops.front().isfactor()&& pushednode)
+					pushedfactor = false;
+				}else if(ops.front().isfactor()&& (pushednode|| pushedfactor))
 					{
-					nodes.back().factor = srs.front();
-					nodes.back().factor.resetvalues(ops.front());
+					if (srs.front().isconstant())
+						{
+						nodes.back().constant = ops.front().call(nodes.back().constant, srs.front().getvalue());
+					}else {
+						if (nodes.back().factor.istimeyield()&&
+							srs.front().istimeyield())
+						{
+							_exhandler->raise(Exception::FMTexc::FMTunsupported_output,
+								"for output " + std::string(*this),
+								"FMToutput::getnodes", __LINE__, __FILE__);
+						}
+						nodes.back().factor.resetvalues(ops.front(), srs.front());
+						}
 					pushednode = false;
+					pushedfactor = true;
 					ops.pop();
 				}else{
 					equation.push_back(ops.front());
 					const double value = srs.front().getvalue(period);
 					equation.push_back(std::to_string(value));
 					pushednode = false;
+					pushedfactor = false;
 					ops.pop();
 					}
 				srs.pop();
 				}
 			equation.erase(equation.begin());
-			if (equationptr)
-			{
-				equationptr->swap(equation);
-			}
 		if (orderbyoutputid)
 			{
 			std::sort(nodes.begin(), nodes.end(), FMToutputnodeorigincomparator());

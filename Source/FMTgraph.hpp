@@ -611,9 +611,10 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 						results[attribute] = 0;
 					}
 				}
-					if (!output.islevel()&&output.islinear())
+					std::vector<std::string> equation;
+					if (output.canbenodesonly())
 					{
-						for (const Core::FMToutputnode& output_node : output.getnodes())
+						for (const Core::FMToutputnode& output_node : output.getnodes(equation))
 						{
 							const std::map<std::string, double> srcvalues = getsource(model, output_node, period, targettheme, solution, level);
 							if (level == Core::FMToutputlevel::developpement)
@@ -635,9 +636,8 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 							}
 						}
 					}else {
-						std::vector<std::string> equation;
-						std::map<std::string,std::vector<std::string>>allequations;
-						const std::vector<Core::FMToutputnode> allnodes = output.getnodes(1, false, &equation,period);
+						std::map<std::string, std::vector<std::string>>allequations;
+						const std::vector<Core::FMToutputnode> allnodes = output.getnodes(equation,1, false,period);
 						if (allnodes.empty())
 						{
 							allequations["Total"] = equation;

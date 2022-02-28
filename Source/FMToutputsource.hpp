@@ -90,7 +90,7 @@ class FMTEXPORT FMToutputsource : public FMTspec
 		void settarget(const FMTotar& newtype);
 		void setthemetarget(const int& newttarget);
 		void setoutputorigin(const int& neworigin);
-		void resetvalues(const FMToperator& op);
+		void resetvalues(const FMToperator& op,const FMToutputsource& other);
 		inline const std::string& getaction() const
 			{
 			return action;

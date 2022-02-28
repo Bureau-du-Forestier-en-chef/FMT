@@ -47,6 +47,10 @@ int main()
 		testmaps["TEST9"] = (2.60216e+06 - 3.8656);
 		testmaps["TEST10"] = 1;
 		testmaps["TEST11"] = 30;
+		testmaps["TEST12"] = 1684097.28;
+		testmaps["TEST13"] = 871.0848;
+		testmaps["TEST14"] = 3226.24;
+		testmaps["TEST15"] = 193574.4;
 		if (optimizationmodel.initialsolve())
 			{
 			for (const Core::FMToutput& output : optimizationmodel.getoutputs())

@@ -279,7 +279,8 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 					int outputid=-9999;
 					bool _area = false;
 					std::map<std::string,std::map<int,double>> node_map_theme_id;
-					for (const Core::FMToutputnode& node : outputs.at(onid).getnodes(1,true))
+					std::vector<std::string>equation;
+					for (const Core::FMToutputnode& node : outputs.at(onid).getnodes(equation,1,true))
 					{
 						const int id = node.getoutputid();
 						if (!node.source.getyield().empty())
@@ -398,6 +399,12 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 		try {
 			if (!constraint.isobjective()&&!constraint.isspatial())
 			{
+				if (!constraint.canbenodesonly())
+				{
+					_exhandler->raise(Exception::FMTexc::FMTunsupported_output,
+						"The constraint output " + std::string(constraint) + " cannot be deduct to output nodes",
+						"FMTlpmodel::setconstraint", __LINE__, __FILE__);
+				}
 				int first_period = 0;
 				int last_period = 0;
 				if (graph.constraintlenght(constraint, first_period, last_period))
@@ -408,7 +415,8 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 					{
 						averagefactor = (1 / (last_period - first_period));
 					}
-					const std::vector<Core::FMToutputnode>all_nodes = constraint.getnodes(/*area,actions,yields,*/averagefactor);
+					std::vector<std::string>equation;
+					const std::vector<Core::FMToutputnode>all_nodes = constraint.getnodes(equation,averagefactor);
 					double lowerbound = 0;
 					double upperbound = 0;
 					double coef_multiplier_lower = 1;
@@ -1143,6 +1151,12 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 	Graph::FMTgraphstats FMTlpmodel::setobjective(const Core::FMTconstraint& objective)
 		{
 		try {
+			if (!objective.canbenodesonly())
+				{
+				_exhandler->raise(Exception::FMTexc::FMTunsupported_output,
+					"The objective output "+std::string(objective)+" cannot be deduct to output nodes",
+					"FMTlpmodel::setobjective", __LINE__, __FILE__);
+				}
 			const bool strictlypositivesoutputsmatrix = getparameter(STRICTLY_POSITIVE);
 			int first_period = 0;
 			int last_period = 0;
@@ -1152,7 +1166,8 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 			{
 				averagefactor = (1 / (last_period - first_period));
 			}
-			const std::vector<Core::FMToutputnode>all_nodes = objective.getnodes(/*area,actions,yields,*/averagefactor,strictlypositivesoutputsmatrix);
+			std::vector<std::string>equation;
+			const std::vector<Core::FMToutputnode>all_nodes = objective.getnodes(equation,averagefactor,strictlypositivesoutputsmatrix);
 			std::map<int, double>all_variables;
 			if (!objective.extravariables())
 			{
