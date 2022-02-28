@@ -1,0 +1,25 @@
+*OUTPUT oSupRec
+*SOURCE ? ? ? coupetotale _AREA
+
+*LEVEL lev1
+*SOURCE 12 15 16 18
+
+*LEVEL lev2
+*SOURCE 30
+
+*LEVEL lev3
+
+*OUTPUT testc
+*SOURCE oSupRec ; 1613.12
+
+*OUTPUT test2
+*SOURCE oSupRec * 0.8 *  ytest1;
+
+*OUTPUT test3
+*SOURCE oSupRec *  lev2;
+
+
+
+
+
+
