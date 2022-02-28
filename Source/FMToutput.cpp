@@ -383,7 +383,7 @@ bool FMToutput::canbenodesonly() const
 			size_t opid = 0;
 			for (const FMToutputsource& source : sources)
 				{
-				if ((source.islevel()||
+				if (((source.islevel()&&!source.isvariablelevel())||
 					source.istimeyield()||
 					source.isconstant())&&
 					!baseoperators.at(opid).isfactor())
@@ -495,8 +495,8 @@ FMToutput FMToutput::boundto(const std::vector<FMTtheme>& themes, const FMTperbo
 				newoutput.name = name;
 			}
 		}
-		if (!newoutput.islevel())
-		{
+		//if (!newoutput.islevel())
+		//{
 			for (FMToutputsource& source : newoutput.sources)
 			{
 				if (source.isvariable())
@@ -515,9 +515,13 @@ FMToutput FMToutput::boundto(const std::vector<FMTtheme>& themes, const FMTperbo
 					{
 						source.setaverage();
 					}
-				}
+				}else if (source.isvariablelevel())
+					{
+					source = Core::FMToutputsource(Core::FMTotar::level,0, "",
+						newoutput.name, source.getoutputorigin(), source.getthemetarget());
+					}
 			}
-		}else if(newoutput.islevel())
+		/*}else if(newoutput.islevel())
 			{
 			std::vector<FMToutputsource>levelsources;
 			for (const FMToutputsource& source : newoutput.sources)
@@ -526,7 +530,7 @@ FMToutput FMToutput::boundto(const std::vector<FMTtheme>& themes, const FMTperbo
 										newoutput.name, source.getoutputorigin(),source.getthemetarget()));
 				}
 			newoutput.sources = levelsources;
-			}
+			}*/
 	}catch (...)
 		{
 		_exhandler->raisefromcatch("for "+this->getname(),"FMToutput::boundto", __LINE__, __FILE__, Core::FMTsection::Outputs);
@@ -557,7 +561,7 @@ std::vector<FMToutputnode> FMToutput::getnodes(std::vector<std::string>& equatio
 			bool pushedfactor = false;
 			while (!srs.empty())
 				{
-				if (srs.front().isvariable())
+				if (srs.front().isvariable()||srs.front().isvariablelevel())
 					{
 					double constant = 1;
 					if (srs.front().isaverage())

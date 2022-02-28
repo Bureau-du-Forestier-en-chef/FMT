@@ -1,0 +1,11 @@
+
+*OBJECTIVE
+_MAXMIN oSupRec 1.._LENGTH
+
+*CONSTRAINTS
+
+oSupRec - lev3 = 0 1.._LENGTH
+lev3 <= 1000 1.._LENGTH
+
+
+*FORMAT MOSEK
