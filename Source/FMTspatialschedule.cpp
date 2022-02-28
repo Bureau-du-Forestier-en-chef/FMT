@@ -950,7 +950,8 @@ namespace Spatial
 				values["Total"] = std::vector<double>((periodstop - periodstart) + 1,0.0);
 				}
 			const int maxperiod = actperiod();
-			for (const Core::FMToutputnode& node : output.getnodes(/*model.area, model.actions, model.yields*/))
+			std::vector<std::string>equation;
+			for (const Core::FMToutputnode& node : output.getnodes(equation))
 			{
 				if (node.source.isvariable())
 				{

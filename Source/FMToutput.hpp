@@ -171,12 +171,18 @@ class FMTEXPORT FMToutput: public FMTobject
 	Returns the number of outputsource that the output contains.
 	*/
 	size_t size() const;
-	// DocString: FMToutput::linear
+	// DocString: FMToutput::islinear
 	/**
 	Check if the FMToutput is linear no variable to variable multiplication or division.
 	Only Linear output can be added to a linear programming matrix.
 	*/
 	bool islinear() const;
+	// DocString: FMToutput::linear
+	/**
+	If the output can be used as nodes only so in LP it will return true.
+	It has to be linear and dont have -+ of level or timeyield or constant.
+	*/
+	bool canbenodesonly() const;
 	// DocString: FMToutput::islevel
 	/**
 	Returns true if one outputsources of the FMToutput is a level.
@@ -218,9 +224,9 @@ class FMTEXPORT FMToutput: public FMTobject
 	This function returns a vector of FMToutputnode generated from the outputnodesource and FMToperators for the FMTouput,
 	a multiplier can be added to multiply all the nodesource with a factor.
 	*/
-	std::vector<FMToutputnode> getnodes(double multiplier = 1,
+	std::vector<FMToutputnode> getnodes(std::vector<std::string>& equation,
+										double multiplier = 1,
 										bool orderbyoutputid = false,
-										std::vector<std::string>* equationptr = nullptr,
 										int period = 1) const;
 	// DocString: FMToutput::issingleperiod
 	/**
