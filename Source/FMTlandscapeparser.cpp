@@ -152,11 +152,12 @@ FMTlandscapeparser::FMTlandscapeparser() :
 					std::string line = FMTparser::getcleanlinewfor(landstream, themes, constants);
 					if (!line.empty())
 					{
+						
 						std::smatch kmatch;
 						std::regex_search(line, kmatch, FMTlandscapeparser::rxcleanlans);
 						const std::string theme = std::string(kmatch[4]) + std::string(kmatch[5]);
 						const std::string potentialtheme = std::string(kmatch[4]) + std::string(kmatch[5]) + std::string(kmatch[7]);
-						const std::string aggregate = std::string(kmatch[8]);
+						const std::string aggregate = std::string(kmatch[8])+std::string(kmatch[18]);
 						if (!potentialtheme.empty())
 						{
 							pasttheme = -1;
