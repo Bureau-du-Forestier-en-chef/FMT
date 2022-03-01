@@ -32,6 +32,8 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 namespace Parser{
 
+const std::regex FMTareaparser::rxcleanarea = std::regex("^((\\*A[A]*)([^|]*)(_lock)([^0-9]*)([0-9]*))|((\\*A[A]*)([^|]*)([|])([^|]*)([|])([^0-9]*)(.+))|((\\*A[A]*)(([^|]*)([|])([^|]*)([|])))|(\\*A[A]*)(.+)", std::regex_constants::ECMAScript | std::regex_constants::icase);
+
 #ifdef FMTWITHGDAL
 
 	std::vector<OGRPolygon*> FMTareaparser::getunion(const std::vector<OGRMultiPolygon>& multipartpolygons) const
@@ -1565,26 +1567,11 @@ namespace Parser{
 		#endif
 #endif
 			FMTareaparser::FMTareaparser() :
-				FMTparser(),
-				rxcleanarea("^((\\*A[A]*)([^|]*)(_lock)([^0-9]*)([0-9]*))|((\\*A[A]*)([^|]*)([|])([^|]*)([|])([^0-9]*)(.+))|((\\*A[A]*)(([^|]*)([|])([^|]*)([|])))|(\\*A[A]*)(.+)", std::regex_constants::ECMAScript | std::regex_constants::icase)
+				FMTparser()
 			{
 				_section = Core::FMTsection::Area;
 			}
 
-			FMTareaparser::FMTareaparser(const FMTareaparser& rhs) : FMTparser(rhs), rxcleanarea(rhs.rxcleanarea)
-			{
-				setsection(Core::FMTsection::Area);
-			}
-			FMTareaparser& FMTareaparser::operator = (const FMTareaparser& rhs)
-			{
-				if (this != &rhs)
-				{
-					FMTparser::operator = (rhs);
-					rxcleanarea = rhs.rxcleanarea;
-					setsection(Core::FMTsection::Area);
-				}
-				return *this;
-			}
 
 			std::vector<Core::FMTactualdevelopment>FMTareaparser::read(const std::vector<Core::FMTtheme>& themes, const Core::FMTconstants& constants,const std::string& location)
 			{

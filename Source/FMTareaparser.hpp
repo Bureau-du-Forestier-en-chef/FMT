@@ -66,7 +66,7 @@ class FMTEXPORT FMTareaparser : public FMTparser
     private:
 		// DocString: FMTareaparser::rxcleanarea
 		///This regex is used to capture the information kept in the .are section.
-        std::regex rxcleanarea;
+        const static std::regex rxcleanarea;
 		// DocString: FMTareaparser::getperiodpathname
 		/**
 		Giving a folder (location) and a (period) and a (name)
@@ -314,12 +314,12 @@ class FMTEXPORT FMTareaparser : public FMTparser
 		/**
 		Default copy constructor for FMTareaparser
 		*/
-		FMTareaparser(const FMTareaparser& rhs);
+		FMTareaparser(const FMTareaparser& rhs)=default;
 		// DocString: FMTareaparser::operator=
 		/**
 		Default copy assignment for FMTareaparser
 		*/
-		FMTareaparser& operator = (const FMTareaparser& rhs);
+		FMTareaparser& operator = (const FMTareaparser& rhs)=default;
 		// DocString: FMTareaparser::read
 		/**
 		The read function will read a regular area section (location) with a complete vector of (themes) and some (constants).

@@ -36,19 +36,19 @@ class FMTEXPORT FMTtransitionparser : public FMTparser
     {
 		// DocString: FMTtransitionparser::rxsection
 		///Regex to capture the transition section.
-		std::regex rxsection;
+		const static std::regex rxsection;
 		// DocString: FMTtransitionparser::rxlock
 		///Regex to capture the lock level of the transition mask.
-		std::regex rxlock;
+		const static std::regex rxlock;
 		// DocString: FMTtransitionparser::rxage
 		///Regex to capture the age level of the transition mask.
-		std::regex rxage;
+		const static std::regex rxage;
 		// DocString: FMTtransitionparser::rxreplace
 		///Regex to capture the age level of the transition mask.
-		std::regex rxreplace;
+		const static std::regex rxreplace;
 		// DocString: FMTtransitionparser::rxtyld
 		///Regex to capture yield bounds of the transition mask.
-		std::regex rxtyld;
+		const static std::regex rxtyld;
     public:
 		// DocString: FMTtransitionparser()
 		/**
@@ -64,12 +64,12 @@ class FMTEXPORT FMTtransitionparser : public FMTparser
 		/**
 		Copy constructor for FMTtransitionparser.
 		*/
-        FMTtransitionparser(const FMTtransitionparser& rhs);
+        FMTtransitionparser(const FMTtransitionparser& rhs)=default;
 		// DocString: FMTtransitionparser::FMTtransitionparser=
 		/**
 		Copy assignment for FMTtransitionparser.
 		*/
-        FMTtransitionparser& operator = (const FMTtransitionparser& rhs);
+        FMTtransitionparser& operator = (const FMTtransitionparser& rhs)=default;
 		// DocString: FMTtransitionparser::getsource
 		/**
 		Returns a mask for the transition mask and fill up the spec of the transition mask.

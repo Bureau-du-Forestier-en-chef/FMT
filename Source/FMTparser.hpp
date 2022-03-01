@@ -66,25 +66,25 @@ class FMTEXPORT FMTparser: public Core::FMTobject
     private:
 		// DocString: FMTparser::rxvectortheme
 		///Regex to capture theme.
-		std::regex rxvectortheme;
+		const static std::regex rxvectortheme;
 		// DocString: FMTparser::rxnumber
 		///Regex to capture constants or numeric value
-		std::regex rxnumber;
+		const static std::regex rxnumber;
 		// DocString: FMTparser::rxremovecomment
 		///Regex to capture comments 
-        std::regex rxremovecomment;
+		const static std::regex rxremovecomment;
 		// DocString: FMTparser::rxvalid
 		///Regex to validate if a string is valid for the parser.
-		std::regex rxvalid;
+		const static std::regex rxvalid;
 		// DocString: FMTparser::rxinclude
 		///Regex to catch the include keyword.
-		std::regex rxinclude;
+		const static std::regex rxinclude;
 		// DocString: FMTparser::rxfor
 		///Regex to capture for loops.
-		std::regex rxfor;
+		const static std::regex rxfor;
 		// DocString: FMTparser::rxend
 		///Regex to capture the end of forloops.
-		std::regex rxend;
+		const static std::regex rxend;
 		// DocString: FMTparser::_incomment
 		///Is true if the parser is in a bracket comment {} else false
         bool _incomment;
@@ -116,22 +116,22 @@ class FMTEXPORT FMTparser: public Core::FMTobject
 		mutable Core::FMTsection _section;
 		// DocString: FMTparser::rxayld
 		///A regex for capturing age/period/yield specification
-		std::regex rxayld;
+		const static std::regex rxayld;
 		// DocString: FMTparser::rxaage
 		///A regex for capturing age specificaiton
-		std::regex rxaage;
+		const static std::regex rxaage;
 		// DocString: FMTparser::rxayldage
 		///A regex for capturing age or yield specification
-		std::regex rxayldage;
+		const static std::regex rxayldage;
 		// DocString: FMTparser::rxbounds
 		///A regex for capturing bounds for yield or age specification
-		std::regex rxbounds;
+		const static std::regex rxbounds;
 		// DocString: FMTparser::rxoperators
 		///A regex for capturing simple operators
-		std::regex rxoperators;
+		const static std::regex rxoperators;
 		// DocString: FMTparser::rxprimary
 		///A regex for capturing the primary file
-		std::regex rxprimary;
+		const static std::regex rxprimary;
 		// DocString: FMTparser::_constreplacement
 		///Number of constant replaced by a numerical number
         mutable int _constreplacement;
@@ -263,7 +263,7 @@ class FMTEXPORT FMTparser: public Core::FMTobject
     public:
 		// DocString: FMTparser::rxseparator
 		///A regex for splitting general string.
-		std::regex rxseparator;
+		const static std::regex rxseparator;
 		// DocString: FMTparser()
 		/**
 		Default constructor for FMTparser.
@@ -313,12 +313,12 @@ class FMTEXPORT FMTparser: public Core::FMTobject
 		/**
 		Capture a forloops from a line and return the variables to loop on.
 		*/
-		std::vector<std::string>regexloop(std::regex& cutregex, std::string& str) const;
+		std::vector<std::string>regexloop(const std::regex& cutregex, std::string& str) const;
 		// DocString: FMTparser::spliter
 		/**
 		Split a string into multiple strings.
 		*/
-		std::vector<std::string>spliter(std::string strmask, std::regex& xspliter) const;
+		std::vector<std::string>spliter(std::string strmask,const std::regex& xspliter) const;
 		// DocString: FMTparser::clearcomments
 		/**
 		Clear comments from a line and fill up the _comment private value.

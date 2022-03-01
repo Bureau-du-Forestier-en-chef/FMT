@@ -25,6 +25,9 @@ It's used by the FMTmodelparser,
 */
 class FMTEXPORT FMTconstantparser : public FMTparser
     {
+	// DocString: FMTparser::rxconstant
+	///Regex to capture constant.
+	const static std::regex rxconstant;
     public:
 		// DocString: FMTconstantparser()
 		/**
@@ -40,12 +43,12 @@ class FMTEXPORT FMTconstantparser : public FMTparser
 		/**
 		Default copy constructor for FMTconstantparser
 		*/
-        FMTconstantparser(const FMTconstantparser& rhs);
+        FMTconstantparser(const FMTconstantparser& rhs)=default;
 		// DocString: FMTconstantparser::operator=
 		/**
 		Default copy assignment operator for FMTconstantparser
 		*/
-        FMTconstantparser& operator = (const FMTconstantparser& rhs);
+        FMTconstantparser& operator = (const FMTconstantparser& rhs)=default;
 		// DocString: FMTconstantparser::read
 		/**
 		This functions reads a constants file based on a given file (location).

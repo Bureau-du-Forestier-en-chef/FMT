@@ -46,19 +46,19 @@ class FMTEXPORT FMTyieldparser : public FMTparser
      private:
 		// DocString: FMTyieldparser::rxyieldtype
 		///Regex to capture the yield type.
-		std::regex rxyieldtype;
+		const static std::regex rxyieldtype;
 		// DocString: FMTyieldparser::rxcomplex
 		///Regex to capture the complex yields.
-		std::regex rxcomplex;
+		const static std::regex rxcomplex;
 		// DocString: FMTyieldparser::rxeqs
 		///Regex to capture complex yields equations.
-		std::regex rxeqs;
+		const static std::regex rxeqs;
 		// DocString: FMTyieldparser::rxdiscount
 		///regex to capturediscount factors.
-		std::regex rxdiscount;
+		const static std::regex rxdiscount;
 		// DocString: FMTyieldparser::rxpredictor
 		///regex to capture _pred keyword.
-		std::regex rxpredictor;
+		const static std::regex rxpredictor;
 		// DocString: FMTyieldparser::getyldtype
 		/**
 		Returns the yield type based on the string of the yield type.
@@ -145,12 +145,12 @@ class FMTEXPORT FMTyieldparser : public FMTparser
 		/**
 		Copy constructor for FMTyieldparser.
 		*/
-        FMTyieldparser(const FMTyieldparser& rhs);
+        FMTyieldparser(const FMTyieldparser& rhs)=default;
 		// DocString: FMTyieldparser::FMTyieldparser=
 		/**
 		Copy assignment for FMTyieldparser.
 		*/
-        FMTyieldparser& operator = (const FMTyieldparser& rhs);
+        FMTyieldparser& operator = (const FMTyieldparser& rhs)=default;
 		// DocString: FMTyieldparser::read
 		/**
 		The read function will turn a yield file into an FMTyields objectf based on (themes), (constants) and the location of the file.

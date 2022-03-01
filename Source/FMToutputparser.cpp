@@ -14,38 +14,16 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 namespace Parser
 {
+	const std::regex FMToutputparser::rxoutput=std::regex("(\\*OUTPUT|\\*LEVEL)(([\\s\\t]*)([^\\s\\t\\(]*)([\\s\\t]*)(\\()([^\\s\\t\\)]*)(\\))([\\s\\t]*)(.+))|((\\*OUTPUT|\\*LEVEL)([\\s\\t]*)([^\\s\\t]*)([\\s\\t]*)(.+))", std::regex_constants::ECMAScript | std::regex_constants::icase);
+	const std::regex FMToutputparser::rxsource = std::regex("(\\*SOURCE)([\\s\\t]*)(.+)", std::regex_constants::ECMAScript | std::regex_constants::icase);
+	const std::regex FMToutputparser::rxtar = std::regex("(([\\s\\t]*)(_INVENT)([\\s\\t]*)(\\()([\\s\\t]*)([^\\s\\t]*)([\\s\\t]*)(\\))([\\s\\t]*)((_AREA)|([^\\s\\t]*)))|(([\\s\\t]*)((_INVENT)|(_INVLOCK))([\\s\\t]*)((_AREA)|([^\\s\\t]*)))|(([\\s\\t]*)([^\\s\\t]*)([\\s\\t]*)((_AREA)|([^\\s\\t]*)))", std::regex_constants::ECMAScript | std::regex_constants::icase);
+	const std::regex FMToutputparser::rxgrp = std::regex("(\\*GROUP)([\\s\\t]*)([^\\s\\t\\(]*)(.+)", std::regex_constants::ECMAScript | std::regex_constants::icase);
+	const std::regex FMToutputparser::rxoutputconstant = std::regex("([^\\[]*)(\\[[\\s\\t]*)(\\-?[0-9])([\\s\\t]*\\])", std::regex_constants::ECMAScript | std::regex_constants::icase);
 
-       FMToutputparser::FMToutputparser():FMTparser(),
-            rxoutput("(\\*OUTPUT|\\*LEVEL)(([\\s\\t]*)([^\\s\\t\\(]*)([\\s\\t]*)(\\()([^\\s\\t\\)]*)(\\))([\\s\\t]*)(.+))|((\\*OUTPUT|\\*LEVEL)([\\s\\t]*)([^\\s\\t]*)([\\s\\t]*)(.+))", std::regex_constants::ECMAScript| std::regex_constants::icase),
-            rxsource("(\\*SOURCE)([\\s\\t]*)(.+)", std::regex_constants::ECMAScript| std::regex_constants::icase),
-            rxtar("(([\\s\\t]*)(_INVENT)([\\s\\t]*)(\\()([\\s\\t]*)([^\\s\\t]*)([\\s\\t]*)(\\))([\\s\\t]*)((_AREA)|([^\\s\\t]*)))|(([\\s\\t]*)((_INVENT)|(_INVLOCK))([\\s\\t]*)((_AREA)|([^\\s\\t]*)))|(([\\s\\t]*)([^\\s\\t]*)([\\s\\t]*)((_AREA)|([^\\s\\t]*)))", std::regex_constants::ECMAScript| std::regex_constants::icase),
-            rxgrp("(\\*GROUP)([\\s\\t]*)([^\\s\\t\\(]*)(.+)", std::regex_constants::ECMAScript| std::regex_constants::icase),
-			rxoutputconstant("([^\\[]*)(\\[[\\s\\t]*)(\\-?[0-9])([\\s\\t]*\\])", std::regex_constants::ECMAScript | std::regex_constants::icase)
+
+       FMToutputparser::FMToutputparser():FMTparser()
             {
 		    setsection(Core::FMTsection::Outputs);
-            }
-        FMToutputparser::FMToutputparser(const FMToutputparser& rhs): FMTparser(rhs),
-            rxoutput(rhs.rxoutput),
-            rxsource(rhs.rxsource),
-            rxtar(rhs.rxtar),
-            rxgrp(rhs.rxgrp),
-			rxoutputconstant(rhs.rxoutputconstant)
-            {
-			setsection(Core::FMTsection::Outputs);
-            }
-        FMToutputparser& FMToutputparser::operator = (const FMToutputparser& rhs)
-            {
-            if(this!=&rhs)
-                {
-                FMTparser::operator =(rhs);
-                rxoutput = rhs.rxoutput;
-                rxsource = rhs.rxsource;
-                rxtar = rhs.rxtar;
-                rxgrp = rhs.rxgrp;
-				rxoutputconstant = rhs.rxoutputconstant;
-				setsection(Core::FMTsection::Outputs);
-                }
-            return *this;
             }
 
 		void FMToutputparser::readnfill(std::vector<Core::FMToutput>* outputs, 

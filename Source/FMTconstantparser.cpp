@@ -10,29 +10,21 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTtheme.hpp"
 #include <boost/filesystem.hpp>
 #include <boost/filesystem/operations.hpp>
+#include <boost/range/algorithm/remove_if.hpp>
+#include <boost/algorithm/string.hpp>
+
 
 namespace Parser{
 
-FMTconstantparser::FMTconstantparser(): FMTparser()
+const std::regex FMTconstantparser::rxconstant = std::regex("^([\\s\\t]*)((([^\\)]*)(\\)))|([^\\s^\\t]*))([\\s\\t]*)(.+)", std::regex_constants::ECMAScript | std::regex_constants::icase);
+
+
+FMTconstantparser::FMTconstantparser():
+	FMTparser()
     {
 	setsection(Core::FMTsection::Constants);
     }
 
-FMTconstantparser::FMTconstantparser(const FMTconstantparser& rhs):FMTparser(rhs)
-{
-	setsection(Core::FMTsection::Constants);
-}
-
-
-FMTconstantparser& FMTconstantparser::operator = (const FMTconstantparser& rhs)
-    {
-        if (this!=&rhs)
-        {
-			setsection(Core::FMTsection::Constants);
-            FMTparser::operator=(rhs);
-        }
-    return *this;
-    }
 
 Core::FMTconstants FMTconstantparser::read(const std::string& location)
     {
@@ -50,21 +42,33 @@ Core::FMTconstants FMTconstantparser::read(const std::string& location)
 					const std::string line = FMTparser::getcleanlinewfor(CONstream, themes, constants);
 					if (!line.empty())
 					{
-						const std::vector<std::string>splited = FMTparser::spliter(line, FMTparser::rxseparator);
-						const std::string key = splited[0];
-						std::vector<double>values;
-						for (size_t id = 1; id < splited.size(); ++id)
+						std::smatch kmatch;
+						if (!std::regex_search(line,kmatch,rxconstant))
 						{
-							const int period = static_cast<int>((id - 1));
-							if (splited[id].find("#") != std::string::npos)
+							_exhandler->raise(Exception::FMTexc::FMTundefined_constant,
+								" at line " + std::to_string(_line),
+								"FMTconstantparser::read", __LINE__, __FILE__, _section);
+						}
+						std::string key = std::string(kmatch[4]) + std::string(kmatch[6]);
+						if (!std::string(kmatch[5]).empty())
 							{
-								std::string strid = splited[id];
+							key += ")";
+							}
+						key.erase(boost::remove_if(key, boost::is_any_of(FMT_STR_SEPARATOR)), key.end());
+						const std::vector<std::string>splited = FMTparser::spliter(std::string(kmatch[8]), FMTparser::rxseparator);
+						std::vector<double>values;
+						for (size_t id = 0; id < splited.size(); ++id)
+						{
+							const int period = static_cast<int>(id);
+							if (splited.at(id).find("#") != std::string::npos)
+							{
+								std::string strid = splited.at(id);
 								strid.erase(0, 1);
 								values.push_back(constants.get<double>(strid, period));
 							}
-							else if (isnum(splited[id]))
+							else if (isnum(splited.at(id)))
 							{
-								values.push_back(getnum<double>(splited[id]));
+								values.push_back(getnum<double>(splited.at(id)));
 							}
 						}
 						if (!values.empty())
