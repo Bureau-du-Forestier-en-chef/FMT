@@ -15,6 +15,7 @@ int main(int argc, char *argv[])
 	Logging::FMTlogger().logstamp();
     const std::string primarylocation = argv[1];
     const std::string scenario = argv[2];
+	const int scenario_length = std::stoi(argv[2]);
 	std::vector<Exception::FMTexc>errors;
 	errors.push_back(Exception::FMTexc::FMTmissingyield);
 	errors.push_back(Exception::FMTexc::FMToutput_missing_operator);
@@ -36,12 +37,12 @@ int main(int argc, char *argv[])
 			out = output;
 		}
 	}
-	optimizationmodel.setparameter(Models::FMTintmodelparameters::LENGTH, 5);
+	optimizationmodel.setparameter(Models::FMTintmodelparameters::LENGTH,scenario_length);
 	optimizationmodel.FMTmodel::setparameter(Models::FMTboolmodelparameters::STRICTLY_POSITIVE, true);
 	optimizationmodel.setparameter(Models::FMTintmodelparameters::PRESOLVE_ITERATIONS, 0);
 	optimizationmodel.doplanning(true);
 	Models::FMTlpmodel presolvedoptimizationmodel(models.at(0), Models::FMTsolverinterface::CLP);
-	presolvedoptimizationmodel.setparameter(Models::FMTintmodelparameters::LENGTH, 5);
+	presolvedoptimizationmodel.setparameter(Models::FMTintmodelparameters::LENGTH, scenario_length);
 	optimizationmodel.FMTmodel::setparameter(Models::FMTboolmodelparameters::POSTSOLVE, true);
 	presolvedoptimizationmodel.FMTmodel::setparameter(Models::FMTboolmodelparameters::STRICTLY_POSITIVE, true);
 	presolvedoptimizationmodel.setparameter(Models::FMTintmodelparameters::PRESOLVE_ITERATIONS, 10);
