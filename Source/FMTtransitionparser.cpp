@@ -22,39 +22,17 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 namespace Parser{
 
-FMTtransitionparser::FMTtransitionparser():FMTparser(),
-    rxsection("^(\\*CASE)([\\s\\t]*)([^\\s^\\t]*)|(\\*SOURCE)([\\s\\t]*)(.+)|(\\*TARGET)([\\s\\t]*)(.+)", std::regex_constants::ECMAScript| std::regex_constants::icase),
-    rxlock("^(.+)(_LOCK)([\\s\\t]*)([0-9]*)(.+)", std::regex_constants::ECMAScript| std::regex_constants::icase),
-    rxage("^(.+)(_AGE)([\\s\\t]*)([0-9]*)(.+)", std::regex_constants::ECMAScript| std::regex_constants::icase),
-    rxreplace("^(.+)(_REPLACE)(....)([0-9]*)([\\s\\t]*)(\\,)([\\s\\t]*)(_TH)([0-9]*)([\\s\\t]*)([\\+\\-\\*\\/])([\\s\\t]*)([0-9]*)(.+)", std::regex_constants::ECMAScript| std::regex_constants::icase),
-    rxtyld("^([\\s\\t]*)([^\\s^\\t]*)([\\s\\t]*)([^\\s^\\t]*)", std::regex_constants::ECMAScript| std::regex_constants::icase)
+const std::regex FMTtransitionparser::rxsection = std::regex("^(\\*CASE)([\\s\\t]*)([^\\s^\\t]*)|(\\*SOURCE)([\\s\\t]*)(.+)|(\\*TARGET)([\\s\\t]*)(.+)", std::regex_constants::ECMAScript | std::regex_constants::icase);
+const std::regex FMTtransitionparser::rxlock = std::regex("^(.+)(_LOCK)([\\s\\t]*)([0-9]*)(.+)", std::regex_constants::ECMAScript | std::regex_constants::icase);
+const std::regex FMTtransitionparser::rxage = std::regex("^(.+)(_AGE)([\\s\\t]*)([0-9]*)(.+)", std::regex_constants::ECMAScript | std::regex_constants::icase);
+const std::regex FMTtransitionparser::rxreplace = std::regex("^(.+)(_REPLACE)(....)([0-9]*)([\\s\\t]*)(\\,)([\\s\\t]*)(_TH)([0-9]*)([\\s\\t]*)([\\+\\-\\*\\/])([\\s\\t]*)([0-9]*)(.+)", std::regex_constants::ECMAScript | std::regex_constants::icase);
+const std::regex FMTtransitionparser::rxtyld = std::regex("^([\\s\\t]*)([^\\s^\\t]*)([\\s\\t]*)([^\\s^\\t]*)", std::regex_constants::ECMAScript | std::regex_constants::icase);
+
+FMTtransitionparser::FMTtransitionparser():FMTparser()
     {
 	setsection(Core::FMTsection::Transition);
     }
 
-FMTtransitionparser::FMTtransitionparser(const FMTtransitionparser& rhs) : FMTparser(rhs),
-    rxsection(rhs.rxsection),
-    rxlock(rhs.rxlock),
-    rxage(rhs.rxage),
-    rxreplace(rhs.rxreplace),
-    rxtyld(rhs.rxtyld)
-    {
-	setsection(Core::FMTsection::Transition);
-    }
-FMTtransitionparser& FMTtransitionparser::operator = (const FMTtransitionparser& rhs)
-    {
-    if(this!=&rhs)
-        {
-        FMTparser::operator =(rhs);
-        rxsection = rhs.rxsection;
-        rxlock = rhs.rxlock;
-        rxage = rhs.rxage;
-        rxtyld = rhs.rxtyld;
-        rxreplace = rhs.rxreplace;
-		setsection(Core::FMTsection::Transition);
-        }
-    return *this;
-    }
 
 Core::FMTmask FMTtransitionparser::getsource(std::string& line, Core::FMTspec& spec,const std::vector<Core::FMTtheme>& themes, Core::FMTsection section,const Core::FMTconstants& constants,const Core::FMTyields& ylds)
     {

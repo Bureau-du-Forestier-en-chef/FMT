@@ -34,10 +34,10 @@ class FMTEXPORT FMTactionparser : public FMTparser
     private:
 		// DocString: FMTactionparser::rxsection
 		///This the main regex used to catch all the keywords of the action section.
-        std::regex rxsection;
+        const static std::regex rxsection;
 		// DocString: FMTactionparser::rxoperator
 		///This regex catches the operators used in the action section.
-		std::regex rxoperator;
+		const static std::regex rxoperator;
 		// DocString: FMTactionparser::sameactionas
 		/**
 		Using a string containing potential action names (all_set) and a vector of (actions) this function
@@ -69,12 +69,12 @@ class FMTEXPORT FMTactionparser : public FMTparser
 		/**
 		Default copy constructor for FMTactionparser
 		*/
-        FMTactionparser(const FMTactionparser& rhs);
+        FMTactionparser(const FMTactionparser& rhs)=default;
 		// DocString: FMTactionparser::operator
 		/**
 		Default copy assignment operator for FMTactionparser
 		*/
-        FMTactionparser& operator = (const FMTactionparser& rhs);
+        FMTactionparser& operator = (const FMTactionparser& rhs)=default;
 		// DocString: FMTactionparser::read
 		/**
 		The read function will read actions from a (location) action file using a complete vector of (themes),

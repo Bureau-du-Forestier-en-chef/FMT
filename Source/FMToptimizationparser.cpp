@@ -20,64 +20,26 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 namespace Parser
 {
 
-	FMToptimizationparser::FMToptimizationparser() : FMTparser(),
-		rxsections("^(\\*)([^\\s^\\t]*)", std::regex_constants::ECMAScript | std::regex_constants::icase),
-		rxobjectives("^(_MAXMIN|_MINMAX|_MAX|_MIN|_GOAL)([\\s\\t]*)(.+)([\\s\\t])((([\\d]*|#.+)(\\.\\.)(#.+|_LENGTH|[\\d]*))|(#.+|[\\d]*))", std::regex_constants::ECMAScript | std::regex_constants::icase),
-		rxexclude("^(\\*EXCLUDE)([\\s\\t]*)([^\\s^\\t]*)([\\s\\t]*)((([\\d]*|#.+)(\\.\\.)(#.+|_LENGTH|[\\d]*))|(#.+|[\\d]*))", std::regex_constants::ECMAScript | std::regex_constants::icase),
-		rxconstraints("^(_EVEN|_NDY|_SEQ)([\\s\\t]*)(\\()((([^,]*)(,)([\\s\\t]*)([\\d\\.]*%|[\\d\\.]*)([\\s\\t]*)(,)([\\s\\t]*)([\\d\\.]*%|[\\d\\.]*))|(([^,]*)(,)([\\s\\t]*)([\\d\\.]*%|[\\d\\.]*))|([^,]*))([\\s\\t]*)(\\))([\\s\\t]*)(.+)", std::regex_constants::ECMAScript | std::regex_constants::icase),
-		rxequations("^(.+)((((<=)|(>=))(.+))|((.+)((=))(.+)))(?<=[^,])[\\s\\t](?=\\d)(.+)"),
-		rxperiods("^([\\s\\t]*)((([\\d]*|#.+)(\\.\\.)(#.+|_LENGTH|[\\d]*)|(_LENGTH))|(#.+|[\\d]*))", std::regex_constants::ECMAScript | std::regex_constants::icase),
-		rxending("^(.+)(((_GOAL)(\\()([^,]*)(,)([^\\)]*)(\\)))|(_SETFROMGLOBAL|_SETFROMLOCAL|_REIGNORE)([\\s\\t]*)(\\()([\\s\\t]*)(.+)([\\s\\t]*)(\\))|(_REPLICATE)([\\s\\t]*)(\\()([\\s\\t]*)(.+)([\\s\\t]*)(\\)))", std::regex_constants::ECMAScript | std::regex_constants::icase),
-		rxoutput("^(.+)(\\()([^)]*)(\\))(\\[)(#.+|[-\\d]*)(\\])|([^\\[]*)(\\()([^)]*)(\\))|(.+)(\\[)(#.+|[-\\d]*)(\\])|(.+)", std::regex_constants::ECMAScript | std::regex_constants::icase),
-		rxpenalty("^(_PENALTY)(\\()([^\\)]*)(\\))", std::regex_constants::ECMAScript | std::regex_constants::icase),
-		rxspecialoutput("^(_AVG|_SUM)(\\()(([^,]*)(,)(([^,]*)(([\\d]*|#.+)(\\.\\.)(#.+|_LENGTH|[\\d]*))|(#.+|[\\d]*))|(.+))(\\))", std::regex_constants::ECMAScript | std::regex_constants::icase),
-		rxspatial("^(_SIZE|_ADJACENCY|_RANDOM)([\\s\\t]*)(\\()(.+)(\\))([\\s\\t]*)(>=|<=|=)([\\s\\t]*)(#[^\\s^\\t]*|[\\d]*)(.+)",std::regex_constants::ECMAScript | std::regex_constants::icase),
-		rxspecialobjective("^(.+)(_SETGLOBALSCHEDULE)(\\()([\\d]*)(\\))", std::regex_constants::ECMAScript | std::regex_constants::icase),
+	const std::regex FMToptimizationparser::rxsections = std::regex("^(\\*)([^\\s^\\t]*)", std::regex_constants::ECMAScript | std::regex_constants::icase);
+	const std::regex FMToptimizationparser::rxobjectives = std::regex("^(_MAXMIN|_MINMAX|_MAX|_MIN|_GOAL)([\\s\\t]*)(.+)([\\s\\t])((([\\d]*|#.+)(\\.\\.)(#.+|_LENGTH|[\\d]*))|(#.+|[\\d]*))", std::regex_constants::ECMAScript | std::regex_constants::icase);
+	const std::regex FMToptimizationparser::rxexclude = std::regex("^(\\*EXCLUDE)([\\s\\t]*)([^\\s^\\t]*)([\\s\\t]*)((([\\d]*|#.+)(\\.\\.)(#.+|_LENGTH|[\\d]*))|(#.+|[\\d]*))", std::regex_constants::ECMAScript | std::regex_constants::icase);
+	const std::regex FMToptimizationparser::rxconstraints = std::regex("^(_EVEN|_NDY|_SEQ)([\\s\\t]*)(\\()((([^,]*)(,)([\\s\\t]*)([\\d\\.]*%|[\\d\\.]*)([\\s\\t]*)(,)([\\s\\t]*)([\\d\\.]*%|[\\d\\.]*))|(([^,]*)(,)([\\s\\t]*)([\\d\\.]*%|[\\d\\.]*))|([^,]*))([\\s\\t]*)(\\))([\\s\\t]*)(.+)", std::regex_constants::ECMAScript | std::regex_constants::icase);
+	const boost::regex FMToptimizationparser::rxequations = boost::regex("^(.+)((((<=)|(>=))(.+))|((.+)((=))(.+)))(?<=[^,])[\\s\\t](?=\\d)(.+)");
+	const std::regex FMToptimizationparser::rxperiods = std::regex("^([\\s\\t]*)((([\\d]*|#.+)(\\.\\.)(#.+|_LENGTH|[\\d]*)|(_LENGTH))|(#.+|[\\d]*))", std::regex_constants::ECMAScript | std::regex_constants::icase);
+	const std::regex FMToptimizationparser::rxending = std::regex("^(.+)(((_GOAL)(\\()([^,]*)(,)([^\\)]*)(\\)))|(_SETFROMGLOBAL|_SETFROMLOCAL|_REIGNORE)([\\s\\t]*)(\\()([\\s\\t]*)(.+)([\\s\\t]*)(\\))|(_REPLICATE)([\\s\\t]*)(\\()([\\s\\t]*)(.+)([\\s\\t]*)(\\)))", std::regex_constants::ECMAScript | std::regex_constants::icase);
+	const std::regex FMToptimizationparser::rxoutput = std::regex("^(.+)(\\()([^)]*)(\\))(\\[)(#.+|[-\\d]*)(\\])|([^\\[]*)(\\()([^)]*)(\\))|(.+)(\\[)(#.+|[-\\d]*)(\\])|(.+)", std::regex_constants::ECMAScript | std::regex_constants::icase);
+	const std::regex FMToptimizationparser::rxpenalty = std::regex("^(_PENALTY)(\\()([^\\)]*)(\\))", std::regex_constants::ECMAScript | std::regex_constants::icase);
+	const std::regex FMToptimizationparser::rxspecialoutput = std::regex("^(_AVG|_SUM)(\\()(([^,]*)(,)(([^,]*)(([\\d]*|#.+)(\\.\\.)(#.+|_LENGTH|[\\d]*))|(#.+|[\\d]*))|(.+))(\\))", std::regex_constants::ECMAScript | std::regex_constants::icase);
+	const std::regex FMToptimizationparser::rxspatial = std::regex("^(_SIZE|_ADJACENCY|_RANDOM)([\\s\\t]*)(\\()(.+)(\\))([\\s\\t]*)(>=|<=|=)([\\s\\t]*)(#[^\\s^\\t]*|[\\d]*)(.+)", std::regex_constants::ECMAScript | std::regex_constants::icase);
+	const std::regex FMToptimizationparser::rxspecialobjective = std::regex("^(.+)(_SETGLOBALSCHEDULE)(\\()([\\d]*)(\\))", std::regex_constants::ECMAScript | std::regex_constants::icase);
+
+	FMToptimizationparser::FMToptimizationparser() :
+		FMTparser(),
 		ineach()
 		{
 		setsection(Core::FMTsection::Optimize);
 		}
 
-	FMToptimizationparser::FMToptimizationparser(const FMToptimizationparser& rhs) :
-		FMTparser(rhs),
-		rxsections(rhs.rxsections),
-		rxobjectives(rhs.rxobjectives),
-		rxexclude(rhs.rxexclude),
-		rxconstraints(rhs.rxconstraints),
-		rxequations(rhs.rxequations),
-		rxperiods(rxperiods),
-		rxending(rhs.rxending),
-		rxoutput(rhs.rxoutput),
-		rxpenalty(rhs.rxpenalty),
-		rxspecialoutput(rhs.rxspecialoutput),
-		rxspatial(rhs.rxspatial),
-		rxspecialobjective(rhs.rxspecialobjective),
-		ineach(rhs.ineach)
-		{
-		setsection(Core::FMTsection::Optimize);
-		}
-	FMToptimizationparser& FMToptimizationparser::operator = (const FMToptimizationparser& rhs)
-		{
-		if (this!=&rhs)
-			{
-			FMTparser::operator=(rhs);
-			rxsections = rhs.rxsections;
-			rxobjectives = rhs.rxobjectives;
-			rxexclude = rhs.rxexclude;
-			rxconstraints = rhs.rxconstraints;
-			rxequations = rhs.rxequations;
-			rxperiods = rhs.rxperiods;
-			rxending = rhs.rxending;
-			rxoutput = rhs.rxoutput;
-			rxpenalty = rhs.rxpenalty;
-			rxspecialoutput = rhs.rxspecialoutput;
-			rxspatial = rhs.rxspatial;
-			rxspecialobjective = rhs.rxspecialobjective;
-			ineach = rhs.ineach;
-			setsection(Core::FMTsection::Optimize);
-			}
-		return *this;
-		}
 	bool FMToptimizationparser::setending(Core::FMTconstraint& constraint,std::string& line, const Core::FMTconstants& constants)
 		{
 		std::smatch kmatch;

@@ -33,19 +33,19 @@ class FMTEXPORT FMToutputparser : public FMTparser
     {
 	// DocString: FMToutputparser::rxoutput
 	///Regex to capture the name of the output and other informations.
-	std::regex rxoutput;
+	const static std::regex rxoutput;
 	// DocString: FMToutputparser::rxsource
 	///Regex to capture the output sources.
-	std::regex rxsource;
+	const static std::regex rxsource;
 	// DocString: FMToutputparser::rxtar
 	///Regex to capture the output source specifications target.
-	std::regex rxtar;
+	const static std::regex rxtar;
 	// DocString: FMToutputparser::rxgrp
 	///Regex to capture outputs groups
-	std::regex rxgrp;
+	const static std::regex rxgrp;
 	// DocString: FMToutputparser::rxoutputconstant
 	///Regex to capture constant output.
-	std::regex rxoutputconstant;
+	const static std::regex rxoutputconstant;
 	// DocString: FMToutputparser::readnfill
 	/**
 	Main function used by read and addoutputs to parse a file and fill a vector of outputs
@@ -70,12 +70,12 @@ class FMTEXPORT FMToutputparser : public FMTparser
 		/**
 		Default copy constructor for FMToutputparser.
 		*/
-        FMToutputparser(const FMToutputparser& rhs);
+        FMToutputparser(const FMToutputparser& rhs)=default;
 		// DocString: FMToutputparser::operator=
 		/**
 		Default copy assignment for FMToutputparser.
 		*/
-        FMToutputparser& operator = (const FMToutputparser& rhs);
+        FMToutputparser& operator = (const FMToutputparser& rhs)=default;
 		// DocString: FMToutputparser::read
 		/**
 		This function read a output file (location) based on (themes),(actions),(yields),(constants) and returns a vector of FMToutput.

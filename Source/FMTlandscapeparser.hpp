@@ -37,13 +37,13 @@ class FMTEXPORT FMTlandscapeparser : public FMTparser
     private:
 		// DocString: FMTlandscapeparser::rxcleanlans
 		///This regex is the main regex to catch themes and aggregates.
-        std::regex rxcleanlans;
+        const static std::regex rxcleanlans;
 		// DocString: FMTlandscapeparser::rxindex
 		///This regex catch the index of a given theme.
-		std::regex rxindex;
+		const static std::regex rxindex;
 		// DocString: FMTlandscapeparser::rxparameter
 		///This regex catch the parameters of a indexed theme.
-		std::regex rxparameter;
+		const static std::regex rxparameter;
 		// DocString: FMTlandscapeparser::getindexes
 		/**
 		This function is used to catch the indexed attributes of a theme in the landscape section
@@ -61,17 +61,17 @@ class FMTEXPORT FMTlandscapeparser : public FMTparser
 		/**
 		Default destructor for FMTlandscapeparser
 		*/
-		~FMTlandscapeparser() = default;
+		~FMTlandscapeparser()=default;
 		// DocString: FMTlandscapeparser::FMTlandscapeparser(const FMTlandscapeparser&)
 		/**
 		Default copy constructor for FMTlandscapeparser
 		*/
-        FMTlandscapeparser(const FMTlandscapeparser& rhs);
+        FMTlandscapeparser(const FMTlandscapeparser& rhs)=default;
 		// DocString: FMTlandscapeparser::operator=
 		/**
 		Default copy assignment for FMTlandscapeparser
 		*/
-        FMTlandscapeparser& operator = (const FMTlandscapeparser& rhs);
+        FMTlandscapeparser& operator = (const FMTlandscapeparser& rhs)=default;
 		// DocString: FMTlandscapeparser::read
 		/**
 		Using the (location) of the landscape section and some (constants) this function will read the landscape section

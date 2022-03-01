@@ -44,7 +44,7 @@ FMTtheme is realy close to FMTmask class.
 class FMTEXPORT FMTtheme : public FMTobject
     {
     friend class FMTmask;
-	friend class FMTlandscapeparser;
+	friend class Parser::FMTlandscapeparser;
     protected:
 		// DocString: FMTtheme::id
 		/// Id is the id of the theme first theme in the landscape section is number 1.

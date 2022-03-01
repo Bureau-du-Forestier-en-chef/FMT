@@ -25,35 +25,18 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 namespace Parser{
 
+const std::regex FMTyieldparser::rxyieldtype = std::regex("^(\\*Y)([^\\s^\\t]*)([\\s\\t]*)(.+)(_OVERRIDE)|^(\\*Y)([^\\s^\\t]*)([\\s\\t]*)(.+)", std::regex_constants::ECMAScript | std::regex_constants::icase);
+const std::regex FMTyieldparser::rxcomplex = std::regex("^([^\\s^\\t]*)([\\s\\t]*)((_RANGE)|(_MULTIPLY)|(_SUM)|(_SUBTRACT)|(_YTP)|(_MAI)|(_CAI)|(_DIVIDE)|(_EQUATION)|(_ENDPOINT)|(_DELTA))([\\s\\t]*)(\\()(.+)(\\))", std::regex_constants::ECMAScript | std::regex_constants::icase);
+const std::regex FMTyieldparser::rxeqs = std::regex("([\\(\\)\\-\\+\\*\\/]*)([^\\(\\)\\-\\+\\*\\/]*)");
+const std::regex FMTyieldparser::rxdiscount = std::regex("^(_DISCOUNTFACTOR)(\\()([\\s\\t]*[\\d]*)([^,]*)(,)([^,]*)(,)([\\s\\t]*(NONE|HALF|FULL)[\\s\\t]*)(\\))");
+const std::regex FMTyieldparser::rxpredictor = std::regex("^(.+)(_PRED)(\\()(.+)(\\))");
 
-FMTyieldparser::FMTyieldparser():FMTparser(),
-    rxyieldtype("^(\\*Y)([^\\s^\\t]*)([\\s\\t]*)(.+)(_OVERRIDE)|^(\\*Y)([^\\s^\\t]*)([\\s\\t]*)(.+)", std::regex_constants::ECMAScript| std::regex_constants::icase),
-    rxcomplex("^([^\\s^\\t]*)([\\s\\t]*)((_RANGE)|(_MULTIPLY)|(_SUM)|(_SUBTRACT)|(_YTP)|(_MAI)|(_CAI)|(_DIVIDE)|(_EQUATION)|(_ENDPOINT)|(_DELTA))([\\s\\t]*)(\\()(.+)(\\))", std::regex_constants::ECMAScript| std::regex_constants::icase),
-	rxeqs("([\\(\\)\\-\\+\\*\\/]*)([^\\(\\)\\-\\+\\*\\/]*)"),
-	rxdiscount("^(_DISCOUNTFACTOR)(\\()([\\s\\t]*[\\d]*)([^,]*)(,)([^,]*)(,)([\\s\\t]*(NONE|HALF|FULL)[\\s\\t]*)(\\))"),
-	rxpredictor("^(.+)(_PRED)(\\()(.+)(\\))")
+
+FMTyieldparser::FMTyieldparser():FMTparser()
         {
 		setsection(Core::FMTsection::Yield);
         }
 
-FMTyieldparser::FMTyieldparser(const FMTyieldparser& rhs) : FMTparser(rhs),rxyieldtype(rhs.rxyieldtype),rxcomplex(rhs.rxcomplex), rxeqs(rhs.rxeqs), rxdiscount(rhs.rxdiscount)
-    {
-	setsection(Core::FMTsection::Yield);
-    }
-FMTyieldparser& FMTyieldparser::operator = (const FMTyieldparser& rhs)
-    {
-    if(this!=&rhs)
-        {
-        FMTparser::operator = (rhs);
-        rxyieldtype = rhs.rxyieldtype;
-        rxcomplex = rhs.rxcomplex;
-		rxeqs = rhs.rxeqs;
-		rxdiscount = rhs.rxdiscount;
-		rxpredictor = rhs.rxpredictor;
-		setsection(Core::FMTsection::Yield);
-        }
-    return *this;
-    }
 Core::FMTyldtype FMTyieldparser::getyldtype(const std::string& value) const
     {
 	try {

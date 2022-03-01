@@ -42,18 +42,18 @@ namespace Parser
 
 	class FMTEXPORT FMToptimizationparser : public FMTparser
 	{
-		std::regex rxsections;
-		std::regex rxobjectives;
-		std::regex rxexclude;
-		std::regex rxconstraints;
-		boost::regex rxequations;
-		std::regex rxperiods;
-		std::regex rxending;
-		std::regex rxoutput;
-		std::regex rxpenalty;
-		std::regex rxspecialoutput;
-		std::regex rxspatial;
-		std::regex rxspecialobjective;
+		const static std::regex rxsections;
+		const static std::regex rxobjectives;
+		const static std::regex rxexclude;
+		const static std::regex rxconstraints;
+		const static boost::regex rxequations;
+		const static std::regex rxperiods;
+		const static std::regex rxending;
+		const static std::regex rxoutput;
+		const static std::regex rxpenalty;
+		const static std::regex rxspecialoutput;
+		const static std::regex rxspatial;
+		const static std::regex rxspecialobjective;
 		std::queue<std::string>ineach;
 		Core::FMTconstraint getobjective(const std::string& line, const Core::FMTconstants& constants,
                              const std::vector<Core::FMToutput>& outputs,
@@ -82,8 +82,8 @@ namespace Parser
 		std::vector<std::vector<double>>getreplicatechanges(const std::string& replicateargument);
 	public:
 		FMToptimizationparser();
-		FMToptimizationparser(const FMToptimizationparser& rhs);
-		FMToptimizationparser& operator = (const FMToptimizationparser& rhs);
+		FMToptimizationparser(const FMToptimizationparser& rhs)=default;
+		FMToptimizationparser& operator = (const FMToptimizationparser& rhs)=default;
 		std::vector<Core::FMTconstraint> read(const std::vector<Core::FMTtheme>& themes,
 				  const std::vector<Core::FMTaction>& actions,
 				  const Core::FMTconstants& constants,

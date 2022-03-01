@@ -37,6 +37,21 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 namespace Parser
 {
 
+	const std::regex Parser::FMTparser::rxvectortheme = std::regex("^(THEME)([\\d]*)$");
+	const std::regex Parser::FMTparser::rxnumber = std::regex("-?[\\d.]+(?:E-?[\\d.]+)?", std::regex_constants::icase);
+	const std::regex Parser::FMTparser::rxremovecomment = std::regex("^(.*?)([;]+.*)");
+	const std::regex Parser::FMTparser::rxvalid = std::regex("^(?!\\s*$).+");
+	const std::regex Parser::FMTparser::rxinclude = std::regex("^(\\*INCLUDE)([\\s\\t]*)(.+)");
+	const std::regex Parser::FMTparser::rxfor = std::regex("^(FOREACH)([\\s\\t]*)([^\\s\\t]*)([\\s\\t]*)(IN)([\\s\\t]*)((\\([\\s\\t]*)(_TH)(\\d*)([\\s\\t]*\\([\\s\\t]*)([^\\s\\t]*)([\\s\\t]*\\)[\\s\\t]*\\))|(\\([\\s\\t]*)(_TH)(\\d*)([\\s\\t]*\\))|(\\()(\\d*)(\\.\\.)(\\d*)(\\))|(\\()([^\\)]*)(\\)))|(\\bFOR\\b)([\\s\\t]*)([^\\:\\=]*)([\\:\\=\\s\\t]*)(\\d*)([\\s\\t]*)(TO)([\\s\\t]*)(\\d*)", std::regex_constants::ECMAScript | std::regex_constants::icase);
+	const std::regex Parser::FMTparser::rxend = std::regex("^(ENDFOR)", std::regex_constants::ECMAScript | std::regex_constants::icase);
+	const std::regex Parser::FMTparser::rxayld = std::regex("^(.+)(\\@YLD[\\s\\t]*\\()([\\s\\t]*)(.+)(\\,)([\\s\\t]*)((#[^\\.]*)|([-]*\\d*.[-]*\\d*))(\\.\\.)((#[^\\.]*)|([-]*\\d*.[-]*\\d*)|(_MAXAGE))(\\))(.+)|(.+)(\\@YLD[\\s\\t]*\\()([\\s\\t]*)(.+)(\\,)([\\s\\t]*)((#[^\\.]*)|([-]*\\d*)|([-]*\\d*.[-]*\\d*))(\\))(.+)", std::regex_constants::ECMAScript | std::regex_constants::icase);
+	const std::regex Parser::FMTparser::rxaage = std::regex("^(.+)(\\@AGE[\\s\\t]*\\()([\\s\\t]*)((#[^\\.]*)|(\\d*)|(\\d*.\\d*))(\\.\\.)((#[^\\.]*)|(\\d*)|(\\d*.\\d*)|(_MAXAGE))(\\))(.+)|(.+)(\\@AGE[\\s\\t]*\\()([\\s\\t]*)((#[^\\.]*)|(\\d*)|(\\d*.\\d*))(\\))(.+)", std::regex_constants::ECMAScript | std::regex_constants::icase);
+	const std::regex Parser::FMTparser::rxayldage = std::regex("^(.+)(\\@YLD[\\s\\t]*\\()([^,]*)([,])([^\\)]*)(\\))(.+)|^(.+)(\\@AGE[\\s\\t]*\\()([^\\)]*)(\\))(.+)", std::regex_constants::ECMAScript | std::regex_constants::icase);
+	const std::regex Parser::FMTparser::rxbounds = std::regex("^(.+)(\\.\\.)(.+)|(.+)");
+	const std::regex Parser::FMTparser::rxoperators = std::regex("([^\\+\\-\\/\\*]*)([\\+\\-\\/\\*]*)", std::regex_constants::icase);
+	const std::regex Parser::FMTparser::rxprimary = std::regex("^([^\\[]*)(\\[)([^\\]]*)(.+)");
+	const std::regex Parser::FMTparser::rxseparator = std::regex("([\\s\\t]*)([^\\s\\t]*)");
+
 bool FMTparser::GDALinitialization = false;
 
 Core::FMTsection FMTparser::from_extension(const std::string& ext) const
@@ -167,31 +182,18 @@ std::vector<std::string>FMTparser::getGDALrasterdriverextensions() const
 
 #endif
 
+
 FMTparser::FMTparser() : Core::FMTobject(),
-		rxvectortheme("^(THEME)([\\d]*)$"),
-		rxnumber("-?[\\d.]+(?:E-?[\\d.]+)?",std::regex_constants::icase),
-        rxremovecomment("^(.*?)([;]+.*)"),
-        rxvalid("^(?!\\s*$).+"),
-		rxinclude("^(\\*INCLUDE)([\\s\\t]*)(.+)"),
-		rxfor("^(FOREACH)([\\s\\t]*)([^\\s\\t]*)([\\s\\t]*)(IN)([\\s\\t]*)((\\([\\s\\t]*)(_TH)(\\d*)([\\s\\t]*\\([\\s\\t]*)([^\\s\\t]*)([\\s\\t]*\\)[\\s\\t]*\\))|(\\([\\s\\t]*)(_TH)(\\d*)([\\s\\t]*\\))|(\\()(\\d*)(\\.\\.)(\\d*)(\\))|(\\()([^\\)]*)(\\)))|(\\bFOR\\b)([\\s\\t]*)([^\\:\\=]*)([\\:\\=\\s\\t]*)(\\d*)([\\s\\t]*)(TO)([\\s\\t]*)(\\d*)", std::regex_constants::ECMAScript | std::regex_constants::icase),
-		rxend("^(ENDFOR)", std::regex_constants::ECMAScript| std::regex_constants::icase),
         _incomment(false),
          _forvalues(),
 		_included(),
 		mtx(),
 		_section(Core::FMTsection::Empty),
-		rxayld("^(.+)(\\@YLD[\\s\\t]*\\()([\\s\\t]*)(.+)(\\,)([\\s\\t]*)((#[^\\.]*)|([-]*\\d*.[-]*\\d*))(\\.\\.)((#[^\\.]*)|([-]*\\d*.[-]*\\d*)|(_MAXAGE))(\\))(.+)|(.+)(\\@YLD[\\s\\t]*\\()([\\s\\t]*)(.+)(\\,)([\\s\\t]*)((#[^\\.]*)|([-]*\\d*)|([-]*\\d*.[-]*\\d*))(\\))(.+)", std::regex_constants::ECMAScript | std::regex_constants::icase),
-        rxaage("^(.+)(\\@AGE[\\s\\t]*\\()([\\s\\t]*)((#[^\\.]*)|(\\d*)|(\\d*.\\d*))(\\.\\.)((#[^\\.]*)|(\\d*)|(\\d*.\\d*)|(_MAXAGE))(\\))(.+)|(.+)(\\@AGE[\\s\\t]*\\()([\\s\\t]*)((#[^\\.]*)|(\\d*)|(\\d*.\\d*))(\\))(.+)", std::regex_constants::ECMAScript| std::regex_constants::icase),
-		rxayldage("^(.+)(\\@YLD[\\s\\t]*\\()([^,]*)([,])([^\\)]*)(\\))(.+)|^(.+)(\\@AGE[\\s\\t]*\\()([^\\)]*)(\\))(.+)", std::regex_constants::ECMAScript | std::regex_constants::icase),
-		rxbounds("^(.+)(\\.\\.)(.+)|(.+)"), 
-		rxoperators("([^\\+\\-\\/\\*]*)([\\+\\-\\/\\*]*)", std::regex_constants::icase),
-		rxprimary("^([^\\[]*)(\\[)([^\\]]*)(.+)"),
 		_constreplacement(0),
         _line(0),
 		_comment(),
        _location(),
-		mostrecentfile(),
-        rxseparator("([\\s\\t]*)([^\\s\\t]*)")
+		mostrecentfile()
         {
 		#ifdef FMTWITHGDAL
 			initializeGDAL();
@@ -200,30 +202,16 @@ FMTparser::FMTparser() : Core::FMTobject(),
 
 FMTparser::FMTparser(const FMTparser& rhs):
 		Core::FMTobject(rhs),
-		rxvectortheme(rhs.rxvectortheme),
-		rxnumber(rhs.rxnumber),
-        rxremovecomment(rhs.rxremovecomment),
-        rxvalid(rhs.rxvalid),
-		rxinclude(rhs.rxinclude),
-        rxfor(rhs.rxfor),
-        rxend(rhs.rxend),
          _incomment(rhs._incomment),
         _forvalues(rhs._forvalues),
 		_included(rhs._included),
 		mtx(),
 		_section(rhs._section),
-        rxayld(rhs.rxayld),
-        rxaage(rhs.rxaage),
-		rxayldage(rhs.rxayldage),
-		rxbounds(rhs.rxbounds),
-		rxoperators(rhs.rxoperators),
-		rxprimary(rhs.rxprimary),
         _constreplacement(rhs._constreplacement),
         _line(rhs._line),
 		_comment(rhs._comment),
         _location(rhs._location),
-		mostrecentfile(rhs.mostrecentfile),
-        rxseparator(rhs.rxseparator)
+		mostrecentfile(rhs.mostrecentfile)
     {
 		boost::lock(mtx, rhs.mtx);
     }
@@ -236,23 +224,10 @@ FMTparser& FMTparser::operator = (const FMTparser& rhs)
 			boost::lock_guard<boost::recursive_mutex> self_lock(mtx, boost::adopt_lock);
 			boost::lock_guard<boost::recursive_mutex> other_lock(rhs.mtx, boost::adopt_lock);
 			Core::FMTobject::operator = (rhs);
-			rxvectortheme = rhs.rxvectortheme;
-			rxnumber = rhs.rxnumber;
-            rxremovecomment = rhs.rxremovecomment;
-            rxvalid = rhs.rxvalid;
-			rxinclude = rhs.rxinclude;
             _incomment = rhs._incomment;
             _forvalues = rhs._forvalues;
 			_included = rhs._included;
 			_section = rhs._section;
-            rxayld = rhs.rxayld;
-            rxaage = rhs.rxaage;
-			rxayldage = rhs.rxayldage;
-			rxbounds = rhs.rxbounds;
-			rxoperators = rhs.rxoperators;
-            rxfor = rhs.rxfor;
-            rxend = rhs.rxend;
-			rxprimary = rhs.rxprimary;
             _constreplacement = rhs._constreplacement;
 			_comment = rhs._comment;
             _line = rhs._line;
@@ -986,7 +961,7 @@ bool FMTparser::isnum(const std::string& value, const Core::FMTconstants& consta
 
 
 
-std::vector<std::string>FMTparser::regexloop(std::regex& cutregex, std::string& str) const
+std::vector<std::string>FMTparser::regexloop(const std::regex& cutregex, std::string& str) const
         {
 		std::vector<std::string>result;
 		try{
@@ -1040,7 +1015,7 @@ std::vector<std::string>FMTparser::regexloop(std::regex& cutregex, std::string& 
 		}
         return uppercases;
         }
-	std::vector<std::string>FMTparser::spliter(std::string strmask, std::regex& xspliter) const
+	std::vector<std::string>FMTparser::spliter(std::string strmask,const std::regex& xspliter) const
         {
 		std::smatch kmatch;
 		std::string value;
