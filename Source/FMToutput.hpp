@@ -73,6 +73,12 @@ class FMTEXPORT FMToutput: public FMTobject
 	// DocString: FMToutput::description
 	///This is description of the FMToutput has seen in the output section.
 	std::string description;
+	// DocString: FMToutput::setproportions
+	/**
+	Set equations proportions for developpements....when original entry is numeric turn it into proportion.
+	*/
+	void setproportions(std::map<std::string, std::vector<std::string>>& allequations,
+		const std::vector<std::string>& baseequation) const;
     public:
 	// DocString: FMToutput()
 	/**
@@ -208,6 +214,7 @@ class FMTEXPORT FMToutput: public FMTobject
 	Check if the FMToutput contains any one level.
 	*/
 	bool containslevel() const;
+	
 	// DocString: FMToutput::shuntingyard
 	/**
 	Call shuntingyard using a vector of value for each outputsource and a vector of operators.
@@ -346,9 +353,11 @@ class FMTEXPORT FMToutput: public FMTobject
 	/**
 	If the output is non linear you need to use this function to get values.
 	*/
-	void fillfromshuntingyard(std::map<std::string,double>& results,
+	void fillfromshuntingyard(
+		const std::vector<std::string>baseeq,
+		std::map<std::string,double>& results,
 		const std::vector<Core::FMToutputnode>& nodes,
-		const std::map<std::string,std::vector<std::string>>& allequations) const;
+		std::map<std::string,std::vector<std::string>>& allequations) const;
     };
 // DocString: FMToutputcomparator
 /**
