@@ -97,6 +97,25 @@ namespace Core
 			datavector.push_back(std::pair<FMTmask, T>(mask, maskdata));
 		}
 	protected:
+		// DocString: FMTlist::compressmasks
+		/**
+		During pressolve you can compress multiple mask into single one if you have the same
+		data. Usefull for actions and transitions. It will compress mask by generating aggregates
+		and so make changes to themes.
+		*/
+		/*void compressmasks(std::vector<FMTtheme>& newthemes)
+			{
+			try {
+				size_t aggregateid = 0;
+				while ()
+					{
+
+					}
+			}catch (...)
+					{
+				_exhandler->raisefromcatch("", "compressmasks", __LINE__, __FILE__);
+				}
+			}*/
 		// DocString: FMTlist::presolvelist
 		/**
 		Using a basemask reprensenting the whole forest landscape this function will

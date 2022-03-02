@@ -651,7 +651,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 								++outid;
 							}
 						}
-						output.fillfromshuntingyard(results, allnodes, allequations);
+						output.fillfromshuntingyard(equation,results, allnodes, allequations);
 						}
 
 			}
