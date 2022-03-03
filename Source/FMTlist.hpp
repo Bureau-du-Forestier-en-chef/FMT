@@ -103,19 +103,89 @@ namespace Core
 		data. Usefull for actions and transitions. It will compress mask by generating aggregates
 		and so make changes to themes.
 		*/
-		/*void compressmasks(std::vector<FMTtheme>& newthemes)
+		void compressmasks(std::vector<FMTtheme>& newthemes)
 			{
 			try {
-				size_t aggregateid = 0;
-				while ()
-					{
-
-					}
+				if (size()==1)
+				{
+					return;
+				}
+				unshrink(newthemes);
+				size_t thstart = 0;
+				for (FMTtheme& theme : newthemes)
+				{
+					std::vector<std::pair<FMTmask, T>>newvecdata;
+					std::list<std::pair<FMTmask, T>>newdata(data.begin(), data.end());
+					boost::dynamic_bitset<>selectedbits;
+					selectedbits.resize(data.begin()->first.size(), true);
+					for (size_t loc = thstart;loc < (theme.size()+ thstart);++loc)
+						{
+						selectedbits[loc] = false;
+						}
+					while (!newdata.empty())
+						{
+						std::list<std::pair<FMTmask, T>>::iterator baseit = newdata.begin();
+						std::list<std::pair<FMTmask, T>>::iterator datait = newdata.begin();
+						++datait;
+						std::vector<std::list<std::pair<FMTmask, T>>::iterator>toremove;
+						Core::FMTmask basemask(baseit->first);
+						const boost::dynamic_bitset<> selecinter = selectedbits & baseit->first.getbitsetreference();
+						boost::dynamic_bitset<> reverselect(selecinter);
+						for (size_t loc = thstart; loc < (theme.size() + thstart); ++loc)
+							{
+							reverselect[loc] = true;
+							}
+						/*Core::FMTmask testmask(baseit->first);
+						testmask.set(theme, "?");*/
+						while (datait!=newdata.end())
+							{
+							/*Core::FMTmask datamask(datait->first);
+							datamask.set(theme, "?");*/
+							const boost::dynamic_bitset<>&dataref = datait->first.getbitsetreference();
+							if (dataref.is_subset_of(reverselect))
+							{
+								const boost::dynamic_bitset<> datainter = selectedbits & dataref;
+								if (datainter == selecinter &&
+									baseit->second == datait->second)
+								{
+									basemask = basemask.getunion(datait->first);
+									toremove.push_back(datait);
+								}
+							}
+							++datait;
+							}
+						std::pair<FMTmask, T>newelement(basemask,baseit->second);
+						newdata.erase(newdata.begin());
+						for (std::list<std::pair<FMTmask, T>>::iterator remove : toremove)
+							{
+							newdata.erase(remove);
+							}
+						if(!toremove.empty())//aggregation done set new aggregate and refresh mask
+							{
+							std::string newmask;
+							for (const FMTtheme& subtheme : newthemes)
+								{
+								if (subtheme==theme)
+									{
+									newmask +=theme.updatefrommask(basemask) + " ";
+								}else {
+									newmask += basemask.get(subtheme) + " ";
+									}
+								}
+							newmask.pop_back();
+							newelement.first = Core::FMTmask(newmask, newthemes);
+							}
+						newvecdata.push_back(newelement);
+						}
+					thstart += theme.size();
+					data.swap(newvecdata);
+				}
+				shrink();
 			}catch (...)
 					{
 				_exhandler->raisefromcatch("", "compressmasks", __LINE__, __FILE__);
 				}
-			}*/
+			}
 		// DocString: FMTlist::presolvelist
 		/**
 		Using a basemask reprensenting the whole forest landscape this function will
@@ -467,7 +537,10 @@ namespace Core
 
 	};
 
+	template<> inline void FMTlist<std::unique_ptr<Core::FMTyieldhandler>>::compressmasks(std::vector<FMTtheme>& newthemes)
+	{
 
+	}
 	
 
 	template<> inline void FMTlist<std::unique_ptr<Core::FMTyieldhandler>>::insert(const size_t& location, const FMTmask& mask, const std::unique_ptr<Core::FMTyieldhandler>& value)

@@ -1058,11 +1058,11 @@ Core::FMTmask FMTmodel::getselectedmask(const std::vector<Core::FMTtheme>& origi
 	return newmask;
 	}
 
-FMTmodel FMTmodel::basepresolve(int presolvepass) const
+FMTmodel FMTmodel::basepresolve() const
 {
 	std::unique_ptr<FMTmodel>mdlptr;
 	try {
-		mdlptr = presolve(presolvepass, area);
+		mdlptr = presolve(area);
 
 	}catch (...)
 		{
@@ -1072,9 +1072,10 @@ FMTmodel FMTmodel::basepresolve(int presolvepass) const
 }
 
 
-std::unique_ptr<FMTmodel> FMTmodel::presolve(int presolvepass,std::vector<Core::FMTactualdevelopment> optionaldevelopments) const
+std::unique_ptr<FMTmodel> FMTmodel::presolve(std::vector<Core::FMTactualdevelopment> optionaldevelopments) const
 	{
 	std::unique_ptr<FMTmodel>presolvedmodel;
+	int presolvepass = getparameter(Models::FMTintmodelparameters::PRESOLVE_ITERATIONS);
 	try {
 		Core::FMTmaskfilter oldpresolvefilter(getbasemask(optionaldevelopments));
 		//Base data
@@ -1100,7 +1101,6 @@ std::unique_ptr<FMTmodel> FMTmodel::presolve(int presolvepass,std::vector<Core::
 			constraintsids.push_back(constraintid);
 			++constraintid;
 			}
-
 		while (presolvepass > 0)
 		{
 			//Presolved data
@@ -1176,7 +1176,7 @@ std::unique_ptr<FMTmodel> FMTmodel::presolve(int presolvepass,std::vector<Core::
 				const Core::FMTmask testedmask = action.getunion(oldthemes);
 				if (newfilter.canpresolve(testedmask,maskthemes))
 				{
-					const Core::FMTaction presolvedaction = action.presolve(newfilter, oldthemes, newthemes);
+					const Core::FMTaction presolvedaction = action.presolve(newfilter, oldthemes, newthemes,!didonepass);
 					newactions.push_back(presolvedaction);
 				}
 			}
@@ -1186,14 +1186,14 @@ std::unique_ptr<FMTmodel> FMTmodel::presolve(int presolvepass,std::vector<Core::
 			{
 				if (std::find_if(newactions.begin(), newactions.end(), Core::FMTactioncomparator(transition.getname())) != newactions.end())
 				{
-					const Core::FMTtransition presolvedtransition = transition.presolve(newfilter, oldthemes, newthemes);
+					const Core::FMTtransition presolvedtransition = transition.presolve(newfilter, oldthemes, newthemes,!didonepass);
 					newtransitions.push_back(presolvedtransition);
 				}
 			}
 			//Presolve yields
 			newyields = oldyields.presolve(newfilter, oldthemes, newthemes);
 			//Presolve lifespan data
-			newlifespans = oldlifespans.presolve(newfilter, oldthemes, newthemes);
+			newlifespans = oldlifespans.presolve(newfilter, oldthemes, newthemes,!didonepass);
 			//Outputs and data
 			std::set<int> keptoutputid;
 			int oloutputdid=0;
@@ -1503,7 +1503,7 @@ bool FMTmodel::doplanning(const bool& solve,std::vector<Core::FMTschedule> sched
 		if(presolve_iterations>0)
 		{
 			_logger->logwithlevel("Presolving " + getname() + " with " + std::to_string(presolve_iterations) + " iterations\n", 1);
-			presolved_model = this->presolve(presolve_iterations,area);
+			presolved_model = this->presolve(area);
 		}else{
 			presolved_model = this->clone();
 		}

@@ -275,12 +275,16 @@ FMTmask FMTtransition::main_target(const std::vector<FMTdevelopment>& devs,
 
  FMTtransition FMTtransition::presolve(const FMTmaskfilter& filter,
 	 const std::vector<FMTtheme>& originalthemes,
-	 const std::vector<FMTtheme>& newthemes) const
+	 std::vector<FMTtheme>& newthemes,bool compressdata) const
 	{
 	FMTtransition newtransition(*this);
 	try {
 	newtransition.presolvelist(filter, originalthemes, newthemes);
 	newtransition.update();
+	if (compressdata)
+		{
+		newtransition.compressmasks(newthemes);
+		}
 	if (!filter.emptyflipped())
 		{
 		for (auto& transitionobject : newtransition)
