@@ -222,10 +222,10 @@ namespace Models
 	}
 
 
-	std::unique_ptr<FMTmodel>FMTnssmodel::presolve(int presolvepass, std::vector<Core::FMTactualdevelopment> optionaldevelopments) const
+	std::unique_ptr<FMTmodel>FMTnssmodel::presolve(std::vector<Core::FMTactualdevelopment> optionaldevelopments) const
 		{
 		try {
-			return std::unique_ptr<FMTmodel>(new FMTnssmodel(*(dynamic_cast<FMTsrmodel*>(FMTsrmodel::presolve(presolvepass, optionaldevelopments).get())),this->getparameter(FMTintmodelparameters::SEED)));
+			return std::unique_ptr<FMTmodel>(new FMTnssmodel(*(dynamic_cast<FMTsrmodel*>(FMTsrmodel::presolve(optionaldevelopments).get())),this->getparameter(FMTintmodelparameters::SEED)));
 		}catch (...)
 			{
 			_exhandler->raisefromcatch("", "FMTnssmodel::presolve", __LINE__, __FILE__);

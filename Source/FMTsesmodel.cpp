@@ -122,7 +122,7 @@ namespace Models
 		return spschedule.getpatchstats(actions);
 	}
 
-	std::unique_ptr<FMTmodel>FMTsesmodel::presolve(int presolvepass,
+	std::unique_ptr<FMTmodel>FMTsesmodel::presolve(
 		std::vector<Core::FMTactualdevelopment> optionaldevelopments ) const
 		{
 		try {
@@ -130,7 +130,7 @@ namespace Models
 			{
 				const std::vector<Core::FMTactualdevelopment>areas = spschedule.getforestperiod(0).getarea();
 				optionaldevelopments.insert(optionaldevelopments.end(), areas.begin(), areas.end());
-				std::unique_ptr<FMTmodel>presolvedmod(new FMTsesmodel(*(FMTmodel::presolve(presolvepass, optionaldevelopments))));
+				std::unique_ptr<FMTmodel>presolvedmod(new FMTsesmodel(*(FMTmodel::presolve(optionaldevelopments))));
 				FMTsesmodel*presolvedses = dynamic_cast<FMTsesmodel*>(presolvedmod.get());
 				const Core::FMTmask presolvedmask = presolvedses->getselectedmask(themes);
 				const Core::FMTmask basemask = this->getbasemask(optionaldevelopments);

@@ -661,7 +661,7 @@ namespace Models
 
 	}
 
-	std::unique_ptr<FMTmodel>FMTsrmodel::presolve(int presolvepass, std::vector<Core::FMTactualdevelopment> optionaldevelopments) const
+	std::unique_ptr<FMTmodel>FMTsrmodel::presolve(std::vector<Core::FMTactualdevelopment> optionaldevelopments) const
 	{
 		try{
 			if (!graph.empty())
@@ -670,7 +670,7 @@ namespace Models
 					"Cannot presolve a srmodel with period(s) builded in graph.",
 					"FMTsrmodel::presolve", __LINE__, __FILE__);
 				}
-			return std::unique_ptr<FMTmodel>(new FMTsrmodel(*FMTmodel::presolve(presolvepass, optionaldevelopments),graph,solver));
+			return std::unique_ptr<FMTmodel>(new FMTsrmodel(*FMTmodel::presolve(optionaldevelopments),graph,solver));
 		}catch (...)
 		{
 			_exhandler->printexceptions("", "FMTsrmodel::presolve", __LINE__, __FILE__);

@@ -38,11 +38,15 @@ void FMTlifespans::update()
 
 FMTlifespans FMTlifespans::presolve(const FMTmaskfilter& filter,
 	const std::vector<FMTtheme>& originalthemes,
-	const std::vector<FMTtheme>& newthemes) const
+	std::vector<FMTtheme>& newthemes,bool compressdata) const
 	{
 	FMTlifespans newlifespans(*this);
 	try {
 		newlifespans.presolvelist(filter, originalthemes,newthemes);
+		if (compressdata)
+			{
+			newlifespans.compressmasks(newthemes);
+			}
 		newlifespans.update();
 	}catch (...)
 		{

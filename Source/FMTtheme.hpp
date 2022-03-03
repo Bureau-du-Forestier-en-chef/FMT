@@ -118,7 +118,8 @@ class FMTEXPORT FMTtheme : public FMTobject
 		lookiterator getattribute(const std::string& value, bool raiseifnotfound = false) const;
 		// DocString: FMTtheme::buildattributelocations
 		/**
-		For optimization build the attribute location of the theme.
+		For optimization build the attribute location of the theme. If only new aggregates added
+		specify the aggregate id to skip some process if 0 will do everything.
 		*/
 		void buildattributelocations();
 		// DocString: FMTtheme::fillupaggregates
@@ -287,6 +288,12 @@ class FMTEXPORT FMTtheme : public FMTobject
 		it gets an newid and a newstart and increment both.
 		*/
 		FMTtheme presolve(FMTmaskfilter& maskfilter, size_t& newid, size_t& newstart) const;
+		// DocString: FMTtheme::updatefrommask
+		/**
+		Base on a global mask it will update the theme with the aggregate in the mask or with newly created aggregates.
+		It will also return the new attribute value.
+		*/
+		std::string updatefrommask(const Core::FMTmask& globalmask);
 		// DocString: FMTtheme::operator std::string
 		/**
 		Return a string representation of the FMTtheme seen in a landscape file 
