@@ -1,0 +1,18 @@
+{
+  "name": "Documentation de FMT",
+  "short_name": "Documentation de FMT",
+  "lang": "fr-ca",
+  "theme_color": "#1565c0",
+  "background_color": "#1565c0",
+  "icons": [{
+    "src": "/media/icon_huc6d37a7993bbbcfd0b9a96d08d6d7557_42395_192x192_fill_lanczos_center_3.png",
+    "sizes": "192x192",
+    "type": "image/png"
+    }, {
+    "src": "/media/icon_huc6d37a7993bbbcfd0b9a96d08d6d7557_42395_512x512_fill_lanczos_center_3.png",
+    "sizes": "512x512",
+    "type": "image/png"
+     }],
+  "display": "standalone",
+  "start_url": "/fr/?utm_source=web_app_manifest"
+}

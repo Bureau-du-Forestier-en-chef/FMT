@@ -1,0 +1,1689 @@
+<!DOCTYPE html><html lang="en-us" >
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  
+  
+  
+    <meta name="generator" content="Wowchemy 5.2.0 for Hugo" />
+  
+
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+  
+  
+    
+  
+  <meta name="description" content="A quick reminder of the meaning of &ldquo;spatially explicit&rdquo; We can distinguish 3 ways that space can be taken into account in a model :
+ In a non-spatial model or spatially implicit model, entities (e." />
+
+  
+    <link rel="alternate" hreflang="fr" href="/fr/docs/basics/spatially_explicit_simulation/" />
+  
+  <link rel="alternate" hreflang="en-us" href="/docs/basics/spatially_explicit_simulation/" />
+
+  
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  
+
+  
+  
+  
+    <meta name="theme-color" content="#1565c0" />
+  
+
+  
+  
+
+  
+  
+  
+  
+    
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.14.0/css/all.min.css" integrity="sha256-FMvZuGapsJLjouA6k7Eo2lusoAX9i0ShlWFG6qt7SLc=" crossorigin="anonymous">
+
+    
+    
+
+    
+    
+    
+      
+    
+    
+      
+      
+        
+          <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.2.0/styles/github.min.css" crossorigin="anonymous" title="hl-light" media="print" onload="this.media='all'">
+          <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.2.0/styles/dracula.min.css" crossorigin="anonymous" title="hl-dark" media="print" onload="this.media='all'" disabled>
+        
+      
+    
+
+    
+    
+    
+
+    
+
+    
+    
+      
+      
+
+      
+      
+
+      
+    
+      
+      
+
+      
+      
+
+      
+    
+      
+      
+
+      
+      
+
+      
+    
+      
+      
+
+      
+      
+
+      
+    
+      
+      
+
+      
+      
+
+      
+    
+      
+      
+
+      
+      
+
+      
+    
+      
+      
+
+      
+      
+
+      
+    
+      
+      
+
+      
+      
+
+      
+    
+      
+      
+
+      
+      
+
+      
+    
+      
+      
+
+      
+      
+
+      
+    
+      
+      
+
+      
+      
+
+      
+    
+      
+      
+
+      
+      
+
+      
+    
+      
+      
+
+      
+      
+
+      
+    
+      
+      
+
+      
+      
+        
+      
+
+      
+    
+      
+      
+
+      
+      
+
+      
+    
+      
+      
+
+      
+      
+
+      
+    
+  
+
+  
+  
+  
+    
+      
+      <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Roboto+Mono&family=Roboto:wght@400;700&display=swap">
+      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Roboto+Mono&family=Roboto:wght@400;700&display=swap" media="print" onload="this.media='all'">
+    
+  
+
+  
+  
+  
+  
+  
+  <link rel="stylesheet" href="/css/wowchemy.aa936755d898fe5a4c5cf937b93bb8a2.css" />
+
+  
+
+
+
+  
+
+  
+
+  
+
+
+
+
+  
+  
+  
+
+  
+
+  
+    <link rel="manifest" href="/index.webmanifest" />
+  
+
+  <link rel="icon" type="image/png" href="/media/icon_huc6d37a7993bbbcfd0b9a96d08d6d7557_42395_32x32_fill_lanczos_center_3.png" />
+  <link rel="apple-touch-icon" type="image/png" href="/media/icon_huc6d37a7993bbbcfd0b9a96d08d6d7557_42395_180x180_fill_lanczos_center_3.png" />
+
+  <link rel="canonical" href="/docs/basics/spatially_explicit_simulation/" />
+
+  
+  
+  
+  
+  
+  
+  
+  
+    
+    
+  
+  
+  <meta property="twitter:card" content="summary" />
+  
+  <meta property="og:site_name" content="FMT Documentation" />
+  <meta property="og:url" content="/docs/basics/spatially_explicit_simulation/" />
+  <meta property="og:title" content="Spatially explicit simulation | FMT Documentation" />
+  <meta property="og:description" content="A quick reminder of the meaning of &ldquo;spatially explicit&rdquo; We can distinguish 3 ways that space can be taken into account in a model :
+ In a non-spatial model or spatially implicit model, entities (e." /><meta property="og:image" content="/media/icon_huc6d37a7993bbbcfd0b9a96d08d6d7557_42395_512x512_fill_lanczos_center_3.png" />
+    <meta property="twitter:image" content="/media/icon_huc6d37a7993bbbcfd0b9a96d08d6d7557_42395_512x512_fill_lanczos_center_3.png" /><meta property="og:locale" content="en-us" />
+  
+    
+      <meta
+        property="article:published_time"
+        content="2019-05-05T00:00:00&#43;01:00"
+      />
+    
+    <meta property="article:modified_time" content="2019-05-05T00:00:00&#43;01:00">
+  
+
+  
+
+
+
+  
+
+  
+
+  
+
+
+
+
+
+  <title>Spatially explicit simulation | FMT Documentation</title>
+</head>
+
+
+<body id="top" data-spy="scroll" data-offset="70" data-target="#TableOfContents" class="page-wrapper   " data-wc-page-id="793eb7f10f8d83f2a8f6adcc3e722198" >
+
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  <script src="/js/wowchemy-init.min.d5311fd7435c9fda4bf0768e412fb7ae.js"></script>
+
+  
+
+
+<aside class="search-modal" id="search">
+  <div class="container">
+    <section class="search-header">
+
+      <div class="row no-gutters justify-content-between mb-3">
+        <div class="col-6">
+          <h1>Search</h1>
+        </div>
+        <div class="col-6 col-search-close">
+          <a class="js-search" href="#" aria-label="Close"><i class="fas fa-times-circle text-muted" aria-hidden="true"></i></a>
+        </div>
+      </div>
+
+      <div id="search-box">
+        
+        <input name="q" id="search-query" placeholder="Search..." autocapitalize="off"
+        autocomplete="off" autocorrect="off" spellcheck="false" type="search" class="form-control"
+        aria-label="Search...">
+        
+      </div>
+
+      
+      
+
+      
+
+    </section>
+    <section class="section-search-results">
+
+      <div id="search-hits">
+        
+      </div>
+
+    </section>
+  </div>
+</aside>
+
+
+
+  <div class="page-header">
+    
+
+
+
+
+
+
+
+
+
+
+
+
+<nav class="navbar navbar-expand-lg navbar-light compensate-for-scrollbar" id="navbar-main">
+  <div class="container-xl">
+
+    
+    <div class="d-none d-lg-inline-flex">
+      <a class="navbar-brand" href="/">FMT Documentation</a>
+    </div>
+    
+
+    
+    <button type="button" class="navbar-toggler" data-toggle="collapse"
+            data-target="#navbar-content" aria-controls="navbar-content" aria-expanded="false" aria-label="Toggle navigation">
+    <span><i class="fas fa-bars"></i></span>
+    </button>
+    
+
+    
+    <div class="navbar-brand-mobile-wrapper d-inline-flex d-lg-none">
+      <a class="navbar-brand" href="/">FMT Documentation</a>
+    </div>
+    
+
+    
+    
+    <div class="navbar-collapse main-menu-item collapse justify-content-start" id="navbar-content">
+
+      
+      <ul class="navbar-nav d-md-inline-flex">
+        
+
+        
+
+        
+        
+        
+
+        
+
+        
+        
+        
+        
+
+        
+          
+          
+        
+
+        <li class="nav-item">
+          <a class="nav-link " href="/"><span>Home</span></a>
+        </li>
+
+        
+        
+
+        
+
+        
+        
+        
+          
+        
+
+        
+
+        
+        
+        
+        
+
+        
+          
+            
+            
+          
+          
+        
+
+        <li class="nav-item">
+          <a class="nav-link  active" href="/docs/"><span>Documentation</span></a>
+        </li>
+
+        
+        
+
+        
+
+        
+        
+        
+          
+        
+
+        
+
+        
+        
+        
+        
+
+        
+          
+            
+            
+          
+          
+        
+
+        <li class="nav-item">
+          <a class="nav-link " href="/../doxygen/index.html"><span>Doxygen</span></a>
+        </li>
+
+        
+        
+
+      
+
+        
+      </ul>
+    </div>
+
+    <ul class="nav-icons navbar-nav flex-row ml-auto d-flex pl-md-2">
+
+      
+      
+
+      
+      
+      <li class="nav-item">
+        <a class="nav-link js-search" href="#" aria-label="Search"><i class="fas fa-search" aria-hidden="true"></i></a>
+      </li>
+      
+
+      
+      
+      <li class="nav-item dropdown theme-dropdown">
+        <a href="#" class="nav-link" data-toggle="dropdown" aria-haspopup="true" aria-label="Display preferences">
+          <i class="fas fa-moon" aria-hidden="true"></i>
+        </a>
+        <div class="dropdown-menu">
+          <a href="#" class="dropdown-item js-set-theme-light">
+            <span>Light</span>
+          </a>
+          <a href="#" class="dropdown-item js-set-theme-dark">
+            <span>Dark</span>
+          </a>
+          <a href="#" class="dropdown-item js-set-theme-auto">
+            <span>Automatic</span>
+          </a>
+        </div>
+      </li>
+      
+
+      
+      
+      <li class="nav-item dropdown i18n-dropdown">
+        <a href="#" class="nav-link " data-toggle="dropdown"
+           aria-haspopup="true" aria-label="Languages">
+          <i class="fas fa-globe mr-1" aria-hidden="true"></i></a>
+        <div class="dropdown-menu">
+          <div class="dropdown-item dropdown-item-active">
+            <span>English</span>
+          </div>
+          
+          <a class="dropdown-item" href="/fr/docs/basics/spatially_explicit_simulation/">
+            <span>Français</span>
+          </a>
+          
+        </div>
+      </li>
+      
+
+    </ul>
+
+  </div>
+</nav>
+
+
+  </div>
+
+  <div class="page-body">
+    
+
+
+
+
+
+<div class="container-fluid docs">
+  <div class="row flex-xl-nowrap">
+    <div class="col-12 col-md-3 col-xl-2 docs-sidebar">
+      <form class="docs-search d-flex align-items-center">
+  <button class="btn docs-toggle d-md-none p-0 mr-md-3 w-100" type="button" data-toggle="collapse" data-target="#docs-nav" aria-controls="docs-nav" aria-expanded="false" aria-label="Toggle section navigation">
+    <div class="d-flex">
+      <span class="d-md-none pl-1 flex-grow-1 text-left overflow-hidden">
+        
+          The basics
+        
+      </span>
+      <span><i class="fas fa-chevron-down"></i></span>
+    </div>
+  </button>
+
+  
+  <button class="form-control sidebar-search js-search d-none d-md-flex">
+    <i class="fas fa-search pr-2"></i>
+    <span class="sidebar-search-text">Search...</span>
+    <span class="sidebar-search-shortcut">/</span>
+  </button>
+  
+</form>
+
+<nav class="collapse docs-links" id="docs-nav">
+  
+  
+  
+  
+  
+  
+
+  
+  
+    
+
+    
+      
+
+      
+
+
+  
+    
+    
+    
+    
+      
+    
+    
+
+    
+      <ul class="nav docs-sidenav">
+        <li class=""><a href="/docs/">FMT Documentation</a></li>
+    
+      
+
+
+  
+    
+    
+    
+    
+      
+    
+    
+
+    
+      <div class="docs-toc-item">
+        <a class="docs-toc-link " href="/docs/basics/"><i class="fas fa-play pr-1"></i>The basics</a>
+    
+      
+        <ul class="nav docs-sidenav">
+      
+
+
+  <li class=""><a href="/docs/basics/objects_parsing_interrogation/">Objects, model parsing and interrogation</a></li>
+
+
+
+  <li class=""><a href="/docs/basics/spatially_referenced_optimization/">Spatially referenced optimization</a></li>
+
+
+
+  <li class=""><a href="/docs/basics/exercice_1/">Exercise 1</a></li>
+
+
+
+  <li class="active"><a href="/docs/basics/spatially_explicit_simulation/">Spatially explicit simulation</a></li>
+
+      
+        </ul>
+      
+    
+
+    
+      </div>
+    
+
+
+
+  
+    
+    
+    
+    
+      
+    
+    
+
+    
+      <div class="docs-toc-item">
+        <a class="docs-toc-link " href="/docs/download_install/"><i class="fas fa-download pr-1"></i>Downloading and installing</a>
+    
+      
+        <ul class="nav docs-sidenav">
+      
+
+
+  <li class=""><a href="/docs/download_install/prerequisits/">Prerequisits</a></li>
+
+
+
+  <li class=""><a href="/docs/download_install/downloading_libraries/">Downloading the libraries</a></li>
+
+
+
+  <li class=""><a href="/docs/download_install/compiling/">Compiling</a></li>
+
+
+
+  <li class=""><a href="/docs/download_install/importing_in_python/">Importing FMT in Python</a></li>
+
+      
+        </ul>
+      
+    
+
+    
+      </div>
+    
+
+      
+    
+
+    
+      </ul>
+    
+
+  
+</nav>
+
+    </div>
+
+    
+    
+    <div class="d-none d-xl-block col-xl-2 docs-toc">
+      
+
+      <ul class="nav toc-top">
+        <li><a href="#" id="back_to_top" class="docs-toc-title">Contents</a></li>
+      </ul>
+
+      <nav id="TableOfContents">
+  <ul>
+    <li><a href="#a-quick-reminder-of-the-meaning-of-spatially-explicit">A quick reminder of the meaning of &ldquo;spatially explicit&rdquo;</a></li>
+    <li><a href="#the-fmtsesmodel">The <code>FMTsesmodel</code></a></li>
+    <li><a href="#the-spatial-framework-inside-fmt">The spatial framework inside FMT</a></li>
+    <li><a href="#the-fmtspatialschedule-class">The <code>FMTspatialschedule</code> class</a></li>
+    <li><a href="#the-fmtlinegraph">The <code>FMTlinegraph</code></a></li>
+    <li><a href="#making-transitions-with-single-outputs">Making transitions with single outputs</a></li>
+    <li><a href="#spatial-events">Spatial events</a></li>
+    <li><a href="#the-initial-forest-map">The initial forest map</a></li>
+    <li><a href="#using-new-keywords-in-woodstock-files-for-spatial-constraints">Using new keywords in Woodstock files for spatial constraints</a></li>
+    <li><a href="#making-the-simulation-with-fmtsesmodelgreedyreferencebuild">Making the simulation with <code>FMTsesmodel.Greedyreferencebuild()</code></a></li>
+    <li><a href="#analysing-the-outputs-of-fmtsesmodelgreedyreferencebuild">Analysing the outputs of <code>FMTsesmodel.Greedyreferencebuild()</code></a></li>
+  </ul>
+</nav>
+
+      
+    </div>
+    
+
+    <main class="col-12 col-md-9 col-xl-8 py-md-3 pl-md-5 docs-content" role="main">
+
+      <article class="article">
+
+        <div class="docs-article-container">
+          
+            
+  <nav class="d-none d-md-flex" aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      
+  
+  
+  
+
+  <li class="breadcrumb-item">
+    <a href="/">
+      
+        Home
+      
+    </a>
+  </li>
+
+
+  <li class="breadcrumb-item">
+    <a href="/docs/">
+      
+        FMT Documentation
+      
+    </a>
+  </li>
+
+
+  <li class="breadcrumb-item">
+    <a href="/docs/basics/">
+      
+        The basics
+      
+    </a>
+  </li>
+
+
+      <li class="breadcrumb-item active" aria-current="page">
+        Spatially explicit simulation
+      </li>
+    </ol>
+  </nav>
+
+
+          
+
+          <h1>Spatially explicit simulation</h1>
+
+          <div class="article-style">
+            <h2 id="a-quick-reminder-of-the-meaning-of-spatially-explicit">A quick reminder of the meaning of &ldquo;spatially explicit&rdquo;</h2>
+<p>We can distinguish 3 ways that space can be taken into account in a model :</p>
+<ul>
+<li>In a <strong>non-spatial model</strong> or <strong>spatially implicit model</strong>, entities (e.g., forests, animals, agents, etc.) are not directly associated with a position in space, but the relation between them in the model can imply that only some of them interact with each other in a way to mimic a spatial disposition.</li>
+<li>In a <strong>spatially referenced model</strong>, entities are associated to regions in space, but not to a precise position in those regions; those regions can be non-continuous. Woodstock models are spatially referenced in nature, as they consider <em>strata</em> that correspond to forests with the same composition and age, which can be dispersed in many places in the landscape.</li>
+<li>In a <strong>spatially explicit model</strong>, entities are associated to precise coordinates in space, like in the pixels of a raster map.</li>
+</ul>
+<h2 id="the-fmtsesmodel">The <code>FMTsesmodel</code></h2>
+<p><code>FMTsesmodel</code> is a particular model that gives the user the opportunity to <strong>spatialize</strong> solutions coming from any <code>FMTsrmodel</code> class, which are the spatially referenced models (see <a href="../objects_parsing_interrogation">objects, model parsing and interrogation</a> and <a href="../spatially_referenced_optimization">spatially referenced optimization</a>).</p>
+<p>Note that <strong>we are not talking about optimizing a spatially explicit model</strong>; this is quite a complex task that is still on the roadmap of FMT (and which is the goal of the <code>FMTsamodel</code> class).</p>
+<pre><code class="language-mermaid">classDiagram
+FMTmodel &lt;|-- FMTsamodel
+FMTmodel &lt;|-- FMTsesmodel
+FMTmodel &lt;|-- FMTsrmodel
+FMTsrmodel &lt;|-- FMTlpmodel
+FMTsrmodel &lt;|-- FMTnssmodel
+</code></pre>
+<p>Instead, the <code>FMTsesmodel</code> will try to spatialize the schedule of a <code>FMTsrmodel</code> by placing cut blocks on a map, by doing multiple iterations of simulating the placement of these blocks, and by selecting the best solution that is found.</p>
+<p>To use a metaphor, this would be like trying to find a winning position at chess if you don&rsquo;t find yourself capable of finding it by thinking carefully about the placement of your chess pieces : you could try to place your pieces randomly many, many times, and asking each time if you have won, or if you are closer to victory, and if the position of the chess pieces respect the rules of the game.</p>
+<p>Here, <code>FMTsesmodel</code> will try to place cut blocks according to the solution of a <code>FMTsrmodel</code> (which is a schedule of forest operations applied to spatially referenced <em>strata</em>). Its goal will be to find the best positioning possible, by accommodating to the constraints that are set in their placement as best as possible, and by maximizing the objective value (e.g. maximizing the harvested wood).</p>
+<p>However, this method have a low chance of finding the <strong>optimal placement</strong>, if one exists; instead, the more iterations it does in trying to place them, there higher the chance to find a solution that is as close as possible as an optimal placement of the cut blocks in space. This is why this process represents what we call a <a href="https://en.wikipedia.org/wiki/Heuristic" target="_blank" rel="noopener">heuristic</a>.</p>
+<h2 id="the-spatial-framework-inside-fmt">The spatial framework inside FMT</h2>
+<p>FMT uses <code>FMTlayers</code> to represent any spatially explicit solution.</p>
+<p>A <code>FMTlayer</code> can be compared to a regular raster file in which pixels can contain pretty much any type or class of forest stand.</p>
+<p>In the <code>FMTsesmodel</code>, we use the <code>FMTspatialschedule</code> class to represent a spatially explicit solution, which itself is a <code>FMTlayer</code> of <code>FMTlinegraph</code>.</p>
+<p>Each <code>FMTlinegraph</code> is a linear version of the <code>FMTgraph</code> described in <a href="../spatially_referenced_optimization">spatially referenced optimization</a>. What that means is that they show the evolution of the <code>FMTdevelopment</code> inside the pixel from the beginning to end of the periods that we want to take into account.</p>
+<h2 id="the-fmtspatialschedule-class">The <code>FMTspatialschedule</code> class</h2>
+<p>The <code>FMTspatialschedule</code> class contains a spatially explicit solution under the form of a <code>FMTlayer</code>.</p>
+<p>It contains an important function, <code>FMTspatialschedule.getsolutionstatus()</code>, which prints important information about how much the solution contained in the <code>FMTspatialschedule</code> achieves the objective function of the model.</p>
+<p>This function also gives a value of the <em>primal infeasibility</em>, which gives an idea of how much the current solution does not respect all of the constraints of the model at once.</p>
+<p>Note that unlike the <code>FMTschedule</code> object which only concern one periods of time (which is why the code shown in the section about <a href="../spatially_referenced_optimization">spatially referenced optimization</a> contained a <code>for</code> loop around the number of period of interest when dealing with the <code>FMTschedule</code> class), <code>FMTspatialschedule</code> contains a solution for multiple periods of time at once.</p>
+<h2 id="the-fmtlinegraph">The <code>FMTlinegraph</code></h2>
+<p>As said earlier, the spatial structure of a <code>FMTsesmodel</code> is like a raster map made of pixels, with each pixels being a <code>FMTlinegraph</code>.</p>
+<p>In a <code>FMTlinegraph</code>, each node stands for the state of the strata inside the pixel and each edge stands for an action (e.g. cleartcut) or natural growth, as shown of this image :</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<figure  >
+  <div class="d-flex justify-content-center">
+    <div class="w-100" >
+        <img alt="" srcset="
+               /media/docs/FMTlinegraph_visual_hu6a72dfba074b860a159c45c28a83a8f9_9527_aab03734b8bf770b8987e0d24c13d780.png 400w,
+               /media/docs/FMTlinegraph_visual_hu6a72dfba074b860a159c45c28a83a8f9_9527_50f6afe23186059441fe678514ba6398.png 760w,
+               /media/docs/FMTlinegraph_visual_hu6a72dfba074b860a159c45c28a83a8f9_9527_1200x1200_fit_lanczos_3.png 1200w"
+               src="/media/docs/FMTlinegraph_visual_hu6a72dfba074b860a159c45c28a83a8f9_9527_aab03734b8bf770b8987e0d24c13d780.png"
+               width="626"
+               height="106"
+               loading="lazy" data-zoomable /></div>
+  </div></figure>
+<p>However, on the contrary of the <code>FMTgraph</code> object described in the section about <a href="../spatially_referenced_optimization">spatially referenced optimization</a>, the <code>FMTlinegraph</code> does not contain a complete enumeration of all possible actions and states possible for the strata in the pixel : instead, it only contains one solution, or one evolution possible for the strata.</p>
+<h2 id="making-transitions-with-single-outputs">Making transitions with single outputs</h2>
+<p>A limitation of the <code>FMTlinegraph</code> class is that one cannot use multiple output transitions, meaning transitions that results in two different strata or other outputs, as illustrated below :</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<figure  >
+  <div class="d-flex justify-content-center">
+    <div class="w-100" >
+        <img alt="" srcset="
+               /media/docs/single_transitions_hua5870f2ffbf0fb1fcfccb13d6e2733f9_20425_745f190eb07a2b2ae13a45dfad418807.png 400w,
+               /media/docs/single_transitions_hua5870f2ffbf0fb1fcfccb13d6e2733f9_20425_45afc81c335a218a7a25b073e17ef5b2.png 760w,
+               /media/docs/single_transitions_hua5870f2ffbf0fb1fcfccb13d6e2733f9_20425_1200x1200_fit_lanczos_3.png 1200w"
+               src="/media/docs/single_transitions_hua5870f2ffbf0fb1fcfccb13d6e2733f9_20425_745f190eb07a2b2ae13a45dfad418807.png"
+               width="636"
+               height="204"
+               loading="lazy" data-zoomable /></div>
+  </div></figure>
+<p>Therefore, <strong>you will need to modify the transitions of an <code>FMTmodel</code> to be able to use them in a <code>FMTsesmodel</code></strong>.</p>
+<p>To that end, you can use the <code>FMTtransition.single()</code> function, which automatically transforms multiple outputs transitions into single output transitions.</p>
+<p>Once that the transitions have been transformed as single transitions, you can use the <code>FMTsesmodel.settransitions()</code> function to set the new generated transitions into the <code>FMTsesmodel</code>.</p>
+<h2 id="spatial-events">Spatial events</h2>
+<p>The <code>FMTspatialschedule</code> also keeps tracks of the areas affected by particular actions under the form of space time events with the class <code>FMTevent</code>, as is shown here :</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<figure  >
+  <div class="d-flex justify-content-center">
+    <div class="w-100" >
+        <img alt="" srcset="
+               /media/docs/FMTevent_visual_hu3c6d6159cbe7c90146f57815d473180c_14326_b84ffbdec8c57f26383e63828fc2a2ab.png 400w,
+               /media/docs/FMTevent_visual_hu3c6d6159cbe7c90146f57815d473180c_14326_759b25f9148b37145b8804c04d950dff.png 760w,
+               /media/docs/FMTevent_visual_hu3c6d6159cbe7c90146f57815d473180c_14326_1200x1200_fit_lanczos_3.png 1200w"
+               src="/media/docs/FMTevent_visual_hu3c6d6159cbe7c90146f57815d473180c_14326_b84ffbdec8c57f26383e63828fc2a2ab.png"
+               width="760"
+               height="290"
+               loading="lazy" data-zoomable /></div>
+  </div></figure>
+<p><code>FMTevent</code> can represent any kind of spatially explicit disturbance (cut, fire, etc.). It is associated with the time period of the event, and the coordinates of the spatial event.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<figure  >
+  <div class="d-flex justify-content-center">
+    <div class="w-100" >
+        <img alt="" srcset="
+               /media/docs/FMTevent_visual2_hu1ad06f91b417535d6bf5fc14636c609e_11931_bd041ae467eb5dcb0ecd31a18f2fb39f.png 400w,
+               /media/docs/FMTevent_visual2_hu1ad06f91b417535d6bf5fc14636c609e_11931_0f2e717205eb525ac3126aa510c02207.png 760w,
+               /media/docs/FMTevent_visual2_hu1ad06f91b417535d6bf5fc14636c609e_11931_1200x1200_fit_lanczos_3.png 1200w"
+               src="/media/docs/FMTevent_visual2_hu1ad06f91b417535d6bf5fc14636c609e_11931_bd041ae467eb5dcb0ecd31a18f2fb39f.png"
+               width="474"
+               height="132"
+               loading="lazy" data-zoomable /></div>
+  </div></figure>
+<h2 id="the-initial-forest-map">The initial forest map</h2>
+<p>As a spatially explicit model, the <code>FMTsesmodel</code> requires spatially explicit informations about the forests in the landscape at the beginning of the planning horizon.</p>
+<p>To get this information from a Woodstock model (that might have served to create a <code>FMTlpmodel</code> that you optimized; see <a href="../spatially_referenced_optimization">spatially referenced optimization</a>), you will need to retrieve this information from the vector file that serves as the Woodstock model&rsquo;s map. This vector file contains information about the <em>theme</em>, <em>age</em> and <em>lock</em> attributes for each strata which will need to be transferred into multiple spatially explicit rasters.</p>
+<p>All of this information will be contained in the <code>FMTforest</code> object, which is the equivalent of the model&rsquo;s map, but that is based on a <code>FMTlayer</code>. Each pixel of a <code>FMTforest</code> object contains a <code>FMTactualdevelopment</code> object.</p>
+<p>The <code>FMTareaparser</code> class can be used to generate the <code>FMTforest</code> needed for the <code>FMTsesmodel</code>, as it contains functions to read vectorial or raster maps from a Woodstock model.</p>
+<ul>
+<li><code>FMTareaparser.vectormaptoFMTforest()</code> allows you to read an existing vector (shapefile) map</li>
+<li><code>FMTareaparser.readrasters()</code> allows you to read existing rasters maps</li>
+</ul>
+<p>Both functions require several parameters to properly identify the themes that are needed, and specify several spatial characteristics of the <code>FMTforest</code> class that you will create.</p>
+<p>Once that the <code>FMTforest</code> is created, it needs to be given to the <code>FMTsesmodel</code> by using the <code>FMTsesmodel.setinitialmapping()</code> function.</p>
+<h2 id="using-new-keywords-in-woodstock-files-for-spatial-constraints">Using new keywords in Woodstock files for spatial constraints</h2>
+<p>In a usual Woodstock model, spatial constraints are not taken into account. However, you will certainly need to use some for a spatial simulation with the <code>FMTsesmodel</code> to place the cut blocks of the optimized schedule.</p>
+<p>To that end, FMT can read two new keywords in the <em>optimize</em> section of a Woodstock model that do not exist in the original Woodstock syntax.</p>
+<p>These keywords are <code>_SIZE</code> and <code>_ADJACENCY</code>.</p>
+<p><code>_SIZE</code> is to be used with the following syntax in the <em>optimize</em> section of a Woodstock model :</p>
+<p><code>_SIZE(ACTION, NEIGHBORSIZE) &gt;= &lt;SIZE IN PIXELS&gt; &lt;PERIODS&gt;</code></p>
+<p>Note that :</p>
+<ul>
+<li><code>ACTION</code> can also be an aggregate of several actions, so that multiple actions can be subject to the same constraint</li>
+<li><code>NEIGHBORSIZE</code> describe how the spatial event spread from one pixel to another pixel, following this graph :
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<figure  >
+  <div class="d-flex justify-content-center">
+    <div class="w-100" >
+        <img alt="" srcset="
+               /media/docs/neighborsize_hufd564ece1fb23ccf3e6345e22009ccb5_9067_3e6933ac2fa98c96c072dd91b68488de.png 400w,
+               /media/docs/neighborsize_hufd564ece1fb23ccf3e6345e22009ccb5_9067_bc77a4a0b0397412666a6f4a1d914de8.png 760w,
+               /media/docs/neighborsize_hufd564ece1fb23ccf3e6345e22009ccb5_9067_1200x1200_fit_lanczos_3.png 1200w"
+               src="/media/docs/neighborsize_hufd564ece1fb23ccf3e6345e22009ccb5_9067_3e6933ac2fa98c96c072dd91b68488de.png"
+               width="760"
+               height="219"
+               loading="lazy" data-zoomable /></div>
+  </div></figure></li>
+<li><code>&lt;PERIODS&gt;</code> correspond to the period of time for which to set the constraint</li>
+</ul>
+<p>As such, the <code>_SIZE</code> constraint can give a minimal or maximal size for the event of specified actions, in number of contiguous pixels. It will result in the creation of spatial <em>blocks</em> of pixels where the action has been applied.</p>
+<p>Meanwhile, <code>_ADJACENCY</code> is used with the following syntax :</p>
+<p><code>_ADJACENCY(ACTION, GREENUP) &gt;= &lt;DISTANCE&gt; &lt;PERIODS&gt;</code></p>
+<p>With :</p>
+<ul>
+<li><code>ACTION</code> can again be an aggregate of several actions, so that multiple actions can be subject to the same constraint.</li>
+<li><code>&lt;PERIODS&gt;</code> again correspond to the period of time for which to set the constraint.</li>
+<li><code>DISTANCE</code> corresponds to the minimal or maximal adjacency distance between two spatial blocks of one or several actions (whose size was defined by <code>_SIZE</code>). Hence, for a <code>DISTANCE</code> &gt;= 3, we will have the following :
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<figure  >
+  <div class="d-flex justify-content-center">
+    <div class="w-100" >
+        <img alt="" srcset="
+               /media/docs/adjacencyDistance_huaed1bffac12c52e3ea8dad246d4d5c9d_17871_2c554344f22e57a9fbe2cc4e80ca2f4f.png 400w,
+               /media/docs/adjacencyDistance_huaed1bffac12c52e3ea8dad246d4d5c9d_17871_7ebfac83c25700cecbed2e79dbb19362.png 760w,
+               /media/docs/adjacencyDistance_huaed1bffac12c52e3ea8dad246d4d5c9d_17871_1200x1200_fit_lanczos_3.png 1200w"
+               src="/media/docs/adjacencyDistance_huaed1bffac12c52e3ea8dad246d4d5c9d_17871_2c554344f22e57a9fbe2cc4e80ca2f4f.png"
+               width="760"
+               height="246"
+               loading="lazy" data-zoomable /></div>
+  </div></figure></li>
+<li><code>GREENUP</code> correspond to the number of time periods for which we consider two events to be neighbours. For example, if <code>GREENUP</code> is equal to 3, two spatial blocks of actions that are under the maximal distance indicated by <code>DISTANCE</code> but which are separated temporally by 4 periods will not be considered spatially adjacent; however, if they were separated by 3, 2 or 1 period, or are in the same period, they will be considered spatially adjacent.</li>
+</ul>
+<h2 id="making-the-simulation-with-fmtsesmodelgreedyreferencebuild">Making the simulation with <code>FMTsesmodel.Greedyreferencebuild()</code></h2>
+<p>Once that you have a spatially-referenced solution/schedule (see <a href="../spatially_referenced_optimization">spatially referenced optimization</a>) and that you have set the initial landscape for the <code>FMTsesmodel</code> (see previous sections), you can use <code>FMTsesmodel.Greedyreferencebuild()</code> to make the simulation proper, and obtain a spatially-explicit schedule based on the spatially-referenced schedule.</p>
+<p><code>FMTsesmodel.Greedyreferencebuild()</code> needs a the spatially-referenced solution of a <code>FMTlpmodel</code> (or a <code>FMTnssmodel</code>), in the form of a <code>FMTschedule</code> object. This solution describes which development (or strata) get harvested for one period, with which action, and at which surface/area.</p>
+<p>The <code>FMTschedule</code> from a solutioned <code>FMTlpmodel</code> or <code>FMTnssmodel</code> can be retrieved using their function <code>getsolution()</code>. However, the function will retrieve the solution for one period; we will have to loop around the periods to get the solutions for every period of interest, and to indicate if we want the solution to take into account locked developments.</p>
+<p><code>FMTsesmodel.Greedyreferencebuild()</code> will build a spatially explicit solution from a spatially-referenced one for a given period. Along with the <code>FMTschedule</code> for the period, the function will need a <code>randomiterations</code> argument which is the maximal number of iterations done by the algorithm before it stops when no increase in the objective function value (maximization) or decrease in the primal infeasibility value was found. This is because the simulation consist of iterations where the model will try to place cutblocks in space according to the spatially-referenced schedule in order to increase the objective function of the model (e.g., volume harvested) while respecting the linear and spatial constraints that was given (whose deviation from is represented by the primal infeasibility value).</p>
+<p>A last input is a seed number that will be used to generate random numbers used for creating the cut blocks at each iteration. This system of seed allows FMT to use random numbers that are &ldquo;replicable&rdquo;; that means, if you keep the same seed, FMT will get the same random numbers, and will do the exact same simulations.</p>
+<p>Here is a representation of how the simulation algorithm functions in practice :</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<figure  >
+  <div class="d-flex justify-content-center">
+    <div class="w-100" >
+        <img alt="" srcset="
+               /media/docs/greedySimulationAlgorithm_huf8c13db4ede8dbf4262661b422bcefcd_47781_5a3b9c1a5a98a1ac316b5c55aa6260ff.png 400w,
+               /media/docs/greedySimulationAlgorithm_huf8c13db4ede8dbf4262661b422bcefcd_47781_bb339e473835be21abad801a7d9f31d2.png 760w,
+               /media/docs/greedySimulationAlgorithm_huf8c13db4ede8dbf4262661b422bcefcd_47781_1200x1200_fit_lanczos_3.png 1200w"
+               src="/media/docs/greedySimulationAlgorithm_huf8c13db4ede8dbf4262661b422bcefcd_47781_5a3b9c1a5a98a1ac316b5c55aa6260ff.png"
+               width="760"
+               height="383"
+               loading="lazy" data-zoomable /></div>
+  </div></figure>
+<p>In R, the code to use <code>FMTsesmodel.Greedyreferencebuild()</code> will look like this :</p>
+<pre><code class="language-R">library(FMT) # Loads FMT into R
+if (new(FMTversion)$hasfeature(&quot;OSI&quot;)) # Checks if FMT has been compiled with OSI by creating a new FMTversion object, and using the function hasfeature().
+{
+	# We read and solve a FMTlpmodel; see the spatially referenced optimization for more details
+	newparser &lt;- new(FMTmodelparser)
+	modelslist &lt;- newmodelparser$readproject(&quot;Models/TWD_land/TWD_land.pri&quot;, c(&quot;Spatial&quot;), TRUE, TRUE, TRUE)
+	solverinterface &lt;- list(CLP=1,MOSEK=2,CPLEX=3,GUROBI=4)
+	lpmodel &lt;- new(FMTlpmodel,modelslist[[1]],solverinterface$MOSEK)
+	emptyschedule &lt;- new(FMTschedule)
+	for (period in 1:10)
+	{
+		print(lpmodel$buildperiod(emptyschedule,FALSE,1)$str())
+	}
+	allmodelconstraints &lt;- lpmodel$getconstraints()
+	modelobjective &lt;- allmodelconstraints[[1]]
+	modelconstraints &lt;- allmodelconstraints[2:length(allmodelconstraints)]
+	for (constraint in modelconstraints)
+	{
+		print(lpmodel$setconstraint(constraint)$str())
+	}
+	print(lpmodel$setobjective(modelobjective)$str())
+	# Here, by testing if the model is able to be solved, we solve the model as initialsolve() does both.
+	if (lpmodel$initialsolve())
+	{
+		# We create a new spatialy explicit simulation model, based on the content of lpmodel
+		simulationmodel &lt;- new(FMTsesmodel, lpmodel)
+		# We make sure that the transition in the model are single output, and we modify them if needed.
+		singletransition &lt;- list()
+		for (transition in simulationmodel$gettransitions())
+		{
+			# The +1 here is made to adapt to the fact that FMT have a C++ code that works in base 0; while R works in base 1 (1 is the first index number of a list)
+			singletransitions[[length(singletransitions) + 1]] &lt;- transition$single()
+		}
+		simulationmodel$settransitions(singletransitions)
+		# We prepare a parser to read the initial forest map
+		areaparser &lt;- new(FMTareaparser)
+		# We define where the raster with the information about the initial age of all forests.
+		rasterslocation &lt;- &quot;../Models/TWD_land/rasters&quot;
+		ageraster &lt;- file.path(rasterlocation,&quot;AGE.tif&quot;)
+		# We read the different rasters that contain the initial &quot;themes&quot; (attribute) of the different forests
+		# by doing a loop on all of the themes defined in the model, and by putting them in a list
+		themesrasters &lt;- list()
+		themeid &lt;- 1
+		for (theme in simulationmodel$gethemes())
+		{
+			themesrasters[[length(themesrasters) + 1]] &lt;- file.path(rasterslocation, paste(&quot;THEME&quot;, paste0(themeID), &quot;.tif&quot;, sep = &quot;&quot;))
+			themeid &lt;- themeid + 1
+		}
+		# Now that we have all of the rasters, we create a FMTforest object by reading all of theme, which will contain the initial forest data.
+		initialforestmap &lt;- areaparser$readrasters(simulationmodel$getthemes(), unlist(themerasters), ageraster, 1, 0.0001, &quot;&quot;)
+		# We give the initial forest data to the spatially explicit model
+		simulationmodel$setinitialmapping(initialforestmap)
+		# Now, we find the spatially explicit solution for each period based on the solution of the lpmodel for this period.
+		# We will stop the search of the algorithm once that it will have made no progress in increasing the optimization function
+		# or reduced the primal infeasibility since 10 iterations.
+		for (period in 1:10)
+		{
+			print(simulationmodel$greedyreferencebuild(lpmodel$getsolution(period,FALSE), 10, 0, 0.0001))
+		}
+
+	}
+
+} else { # if the model hasn't been compiled with OSI, we display an error.
+	print(&quot;FMT needs to be compiled with OSI&quot;)
+}
+</code></pre>
+<p>The equivalent in Python is :</p>
+<pre><code class="language-python">import sys
+from FMT import Models
+from FMT import Parser
+from FMT import Version
+
+if __name__ == &quot;__main__&quot;:
+	if Version.FMTversion().hasfeature(&quot;OSI&quot;):
+		# We read and solve a FMTlpmodel; see the spatially referenced optimization for more details
+		newmodelparser=  Parser.FMTmodelparser()
+		path = &quot;Models/TWD_Land/TWD_Land.pri&quot;
+		scenarios = [&quot;Spatial&quot;]
+		modelslist = newmodelparser.readproject(path, scenarios)
+		lpmodel = Models.FMTlpmodel(modelslist[0], Models.FMTsolverinterface.CLP)
+		for period in range(1, 11):
+			print(lpmodel.buildperiod())
+		constraints = lpmodel.getconstraints()
+		objective = constraints.pop(0)
+		for constraint in constraints:
+			lpmodel.setconstraint(constraint)
+		lpmodel.setobjective(objective)
+		# Here, by testing if the model is able to be solved, we solve the model as initialsolve() does both.
+		if lpmodel.initialsolve():
+			# We create a new spatialy explicit simulation model, based on the content of lpmodel
+			simulationmodel = Models.FMTsesmodel(lpmodel)
+			# We make sure that the transition in the model are single output, and we modify them if needed.
+			singletransitions = []
+			for transition in simulationmodel.gettransitions():
+				singletransitions.append(transition.single())
+			simulationmodel.settransitions(singletransitions)
+			# We prepare a parser to read the initial forest map
+			areaparser = Parser.FMTareaparser()
+			# We define where the raster with the information about the initial age of all forests.
+			rasterslocation = &quot;../Models/TWD_land/rasters/&quot;
+			ageraster = os.path.join(rasterslocation, &quot;AGE.tif&quot;)
+			# We read the different rasters that contain the initial &quot;themes&quot; (attribute) of the different forests
+			# by doing a loop on all of the themes defined in the model, and by putting them in a list
+			themesrasters = []
+			themeid = 1
+			for theme in simulationmodel.getthemes():
+				themesrasters.append(os.path.join(rasterslocation, &quot;THEME&quot; + str(themeid) + &quot;.tif&quot;))
+				themeid += 1
+			# Now that we have all of the rasters, we create a FMTforest object by reading all of theme, which will contain the initial forest data.
+			initialforestmap = areaparser.readrasters(simulationmodel.getthemes(), themesrasters, ageraster, 1, 0.0001)
+			# We give the initial forest data to the spatially explicit model
+			simulationmodel.setinitialmapping(initialforestmap)
+			# Now, we find the spatially explicit solution for each period based on the solution of the lpmodel for this period.
+			# We will stop the search of the algorithm once that it will have made no progress in increasing the optimization function
+			# or reduced the primal infeasibility since 10 iterations.
+			for period in range(1, 11):
+				print(simulationmodel.greedyreferencebuild(lpmodel.getsolution(period), 10))
+	else:
+		print(&quot;FMT needs to be compiled with OSI&quot;)
+</code></pre>
+<p>The output of both codes should be the following. There is a lot to process, but we will look at it more precisely at the next section :</p>
+<pre><code class="language-bash">Reading D:/TempCode/FMT/FMT/Examples/Models/TWD_land/TWD_Land.pri 
+FMT 0.9.1, build: Oct 22 2021 11:52:53
+Fri Feb 18 12:44:56 2022
+Reading scenario Spatial
+FMTexc(41)Ignoring: YBM_RTM_MEH at line 44 FMTsection(6)Yield
+FMTexc(39)Undefined _death action: _DEATH FMTsection(4)Action
+Done reading Fri Feb 18 12:44:56 2022
+Columns: 69 Rows: 34 Vertices: 62 Edges: 69 Transfer Rows: 34 Output Rows: 0 Output Columns: 0
+Columns: 173 Rows: 86 Vertices: 126 Edges: 173 Transfer Rows: 86 Output Rows: 0 Output Columns: 0
+Columns: 320 Rows: 156 Vertices: 208 Edges: 320 Transfer Rows: 156 Output Rows: 0 Output Columns: 0
+Columns: 510 Rows: 244 Vertices: 308 Edges: 510 Transfer Rows: 244 Output Rows: 0 Output Columns: 0
+Columns: 730 Rows: 350 Vertices: 426 Edges: 730 Transfer Rows: 350 Output Rows: 0 Output Columns: 0
+Columns: 986 Rows: 474 Vertices: 562 Edges: 986 Transfer Rows: 474 Output Rows: 0 Output Columns: 0
+Columns: 1278 Rows: 616 Vertices: 716 Edges: 1278 Transfer Rows: 616 Output Rows: 0 Output Columns: 0
+Columns: 1606 Rows: 776 Vertices: 888 Edges: 1606 Transfer Rows: 776 Output Rows: 0 Output Columns: 0
+Columns: 1992 Rows: 964 Vertices: 1088 Edges: 1992 Transfer Rows: 964 Output Rows: 0 Output Columns: 0
+Columns: 2436 Rows: 1180 Vertices: 1316 Edges: 2436 Transfer Rows: 1180 Output Rows: 0 Output Columns: 0
+Coin0506I Presolve 76 (-1143) rows, 226 (-2211) columns and 898 (-5379) elements
+Clp0035I 0 Primal 100 Dual 842632.63 Complementarity 842579 - 0 fixed, rank 76
+Clp0035I 1 Primal 225.4735 Dual 307283.38 Complementarity 318751.96 - 0 fixed, rank 76
+Clp0035I 2 Primal 7266.7264 Dual 146511.3 Complementarity 174120.63 - 0 fixed, rank 76
+Clp0035I 3 Primal 35053.074 Dual 105622.03 Complementarity 73089.174 - 0 fixed, rank 76
+Clp0035I 4 Primal 38320.846 Dual 70235.705 Complementarity 33405.695 - 0 fixed, rank 76
+Clp0035I 5 Primal 44403.19 Dual 55792.68 Complementarity 11676.178 - 0 fixed, rank 76
+Clp0035I 6 Primal 46801.335 Dual 50712.255 Complementarity 3964.085 - 0 fixed, rank 76
+Clp0035I 7 Primal 47534.239 Dual 48865.81 Complementarity 1331.5805 - 0 fixed, rank 76
+Clp0035I 8 Primal 47849.045 Dual 48152.188 Complementarity 303.14539 - 0 fixed, rank 76
+Clp0035I 9 Primal 47959.375 Dual 48049.655 Complementarity 90.456075 - 0 fixed, rank 76
+Clp0035I 10 Primal 47999.651 Dual 48009.843 Complementarity 10.204147 - 0 fixed, rank 76
+Clp0035I 11 Primal 47998.773 Dual 48000.252 Complementarity 1.4873248 - 0 fixed, rank 76
+Clp0035I 12 Primal 47999.994 Dual 48000.002 Complementarity 0.0085757189 - 0 fixed, rank 76
+Clp0035I 13 Primal 48000 Dual 48000 Complementarity 0.00011127406 - 0 fixed, rank 70
+Clp0035I 14 Primal 48000 Dual 48000 Complementarity 1.102542e-06 - 0 fixed, rank 63
+Clp0035I 15 Primal 48000 Dual 48000.074 Complementarity 8.4407744e-09 - 20 fixed, rank 68
+Clp0035I 16 Primal 48000 Dual 48000 Complementarity 6.8286544e-11 - 20 fixed, rank 65
+Clp0042I Optimal
+Clp0046I At end primal/dual infeasibilities 0.00015298276/0.10009623, complementarity gap 4.668539e-06, objective 48000
+Clp0006I 0  Obj 48000 Dual inf 0.015282 (8)
+Clp0006I 152  Obj 48000
+Clp0000I Optimal - objective value 48000
+Clp0006I 0  Obj 48000
+Clp0000I Optimal - objective value 48000
+Clp0006I 0  Obj 48000
+Clp0000I Optimal - objective value 48000
+Coin0511I After Postsolve, objective 48000, infeasibilities - dual 0 (0), primal 0 (0)
+Clp0032I Optimal objective 48000 - 16 iterations time 0.022, Presolve 0.01
+Iteration 0 Primal Inf(0.000000) Obj(40475.320000)
+Iteration 10 Primal Inf(0.000000) Obj(44085.320000)
+Stalled after 16 iterations Skipping
+{'ACARIBOU': 0.981677543988014, 'COUPETOTALE': 0.9817026645791909, 'Objective': 42453.599999999984, 'Primalinfeasibility': 0.0, 'Total': 0.9816850800303768}
+Iteration 0 Primal Inf(2310.400000) Obj(40143.200000)
+Iteration 10 Primal Inf(216.600000) Obj(42237.000000)
+Iteration 20 Primal Inf(0.000000) Obj(42453.600000)
+Solution stuck after 30 iterations Skipping
+{'ACARIBOU': 1.0278470194296387, 'COUPETOTALE': 0.9116104392588846, 'Objective': 42453.599999999984, 'PLANTATION': 0.927291117344956, 'Primalinfeasibility': 1.4551915228366852e-11, 'Total': 0.9264994202031354}
+Iteration 0 Primal Inf(2108.240000) Obj(42453.600000)
+Iteration 10 Primal Inf(2108.240000) Obj(42453.600000)
+Iteration 20 Primal Inf(635.360000) Obj(42453.600000)
+Solution stuck after 27 iterations Skipping
+{'ACARIBOU': 0.8973831819756647, 'COUPETOTALE': 0.9033560325101042, 'Objective': 42453.599999999984, 'PLANTATION': 0.911737449703183, 'Primalinfeasibility': 635.3600000000297, 'Total': 0.9025186555019942}
+Iteration 0 Primal Inf(8779.520000) Obj(42453.600000)
+Iteration 10 Primal Inf(8779.520000) Obj(42453.600000)
+Iteration 20 Primal Inf(808.640000) Obj(42453.600000)
+Solution stuck after 29 iterations Skipping
+{'ACARIBOU': 0.8771528754492212, 'COUPETOTALE': 0.889988896215573, 'Objective': 42453.599999999984, 'PLANTATION': 0.8765659747164727, 'Primalinfeasibility': 808.6400000000212, 'Total': 0.8822416209150494}
+Iteration 0 Primal Inf(6931.200000) Obj(42453.600000)
+Iteration 10 Primal Inf(6931.200000) Obj(42453.600000)
+Iteration 20 Primal Inf(1111.880000) Obj(42453.600000)
+Solution stuck after 30 iterations Skipping
+{'ACARIBOU': 0.8952525436304627, 'COUPETOTALE': 0.88445, 'Objective': 42453.599999999984, 'PLANTATION': 0.9411700993142432, 'Primalinfeasibility': 1111.8800000000338, 'Total': 0.9032996680762417}
+Iteration 0 Primal Inf(9342.680000) Obj(42453.600000)
+Iteration 10 Primal Inf(3638.880000) Obj(42453.600000)
+Iteration 20 Primal Inf(3638.880000) Obj(42453.600000)
+Iteration 30 Primal Inf(3638.880000) Obj(42453.600000)
+Solution stuck after 35 iterations Skipping
+{'ACARIBOU': 968.4932690882329, 'COUPETOTALE': 0.9397466289394396, 'Objective': 42453.599999999984, 'PLANTATION': 2367.8747068875177, 'Primalinfeasibility': 3638.8800000000047, 'Total': 1.0649491134961293}
+Iteration 0 Primal Inf(16606.000000) Obj(30309.560000)
+Stalled after 9 iterations Skipping
+{'ACARIBOU': 1.3474601235578203, 'COUPETOTALE': 0.9825519488602954, 'Objective': 32937.64000000001, 'PLANTATION': 1.0022853728788734, 'Primalinfeasibility': 13977.919999999998, 'Total': 1.0087375080393326}
+Iteration 0 Primal Inf(119576.200000) Obj(32937.640000)
+Iteration 10 Primal Inf(65859.400000) Obj(32937.640000)
+Iteration 20 Primal Inf(39247.920000) Obj(32937.640000)
+Solution stuck after 28 iterations Skipping
+{'ACARIBOU': 1054.0980891170655, 'COUPETOTALE': 0.845845565618348, 'Objective': 32937.64000000001, 'PLANTATION': 0.9266686936638757, 'Primalinfeasibility': 39247.9200000001, 'Total': 0.8969889215263215}
+Iteration 0 Primal Inf(58611.960000) Obj(27522.640000)
+Stalled after 6 iterations Skipping
+{'ACARIBOU': 536.8311084909311, 'COUPETOTALE': 0.4341194959208162, 'Objective': 27667.040000000005, 'PLANTATION': 0.9541653732993195, 'Primalinfeasibility': 58467.560000000114, 'Total': 0.7846327502399465}
+Iteration 0 Primal Inf(79145.640000) Obj(26208.600000)
+Iteration 10 Primal Inf(77340.640000) Obj(27667.040000)
+Stalled after 14 iterations Skipping
+{'ACARIBOU': 10491.125109295706, 'COUPETOTALE': 0.3982872281191633, 'Objective': 27667.040000000005, 'PLANTATION': 1.0028031096555103, 'Primalinfeasibility': 77340.64000000012, 'Total': 0.8163283360740083}
+</code></pre>
+<h2 id="analysing-the-outputs-of-fmtsesmodelgreedyreferencebuild">Analysing the outputs of <code>FMTsesmodel.Greedyreferencebuild()</code></h2>
+<p><code>FMTsesmodel.Greedyreferencebuild()</code> returns information on the best solution that have been found; which means the best spatial placement of cutblocks that the algorithm was capable of finding by optimizing the objective function, while respecting the linear and spatial constraints that were given by the user.</p>
+<p>In particular, <code>FMTsesmodel.Greedyreferencebuild()</code> indicates 4 important information :</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:center">Word</th>
+<th style="text-align:left">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">Objective</td>
+<td style="text-align:left">Value of the objective function of the spatially explicit solution.</td>
+</tr>
+<tr>
+<td style="text-align:center">Primalinfeasibilities</td>
+<td style="text-align:left">Primal infeasibility value of the spatially explicit solution, relative to the constraints that were given. A value close to 0 means that the solution is 100% feasible according to the linear and spatial constraints.</td>
+</tr>
+<tr>
+<td style="text-align:center">Total</td>
+<td style="text-align:left">Total proportion of the area of the spatially referenced schedule passed as input that has been spatialized successfully by the algorithm.</td>
+</tr>
+<tr>
+<td style="text-align:center">Actionname <em>x</em></td>
+<td style="text-align:left">Proportion of the area spatialized of a given action <em>x</em> of the original spatially referenced solution passed to the function.</td>
+</tr>
+</tbody>
+</table>
+<p>Now, <strong>let&rsquo;s look at the output of the previous section to try and understand what happened</strong>.</p>
+<p>First, we see the same usual outputs that indicates that FMT reads, and then solves the model using the CLP solver :</p>
+<pre><code class="language-bash">Reading D:/TempCode/FMT/FMT/Examples/Models/TWD_land/TWD_Land.pri 
+FMT 0.9.1, build: Oct 22 2021 11:52:53
+Fri Feb 18 12:44:56 2022
+Reading scenario Spatial
+FMTexc(41)Ignoring: YBM_RTM_MEH at line 44 FMTsection(6)Yield
+FMTexc(39)Undefined _death action: _DEATH FMTsection(4)Action
+Done reading Fri Feb 18 12:44:56 2022
+Columns: 69 Rows: 34 Vertices: 62 Edges: 69 Transfer Rows: 34 Output Rows: 0 Output Columns: 0
+Columns: 173 Rows: 86 Vertices: 126 Edges: 173 Transfer Rows: 86 Output Rows: 0 Output Columns: 0
+Columns: 320 Rows: 156 Vertices: 208 Edges: 320 Transfer Rows: 156 Output Rows: 0 Output Columns: 0
+Columns: 510 Rows: 244 Vertices: 308 Edges: 510 Transfer Rows: 244 Output Rows: 0 Output Columns: 0
+Columns: 730 Rows: 350 Vertices: 426 Edges: 730 Transfer Rows: 350 Output Rows: 0 Output Columns: 0
+Columns: 986 Rows: 474 Vertices: 562 Edges: 986 Transfer Rows: 474 Output Rows: 0 Output Columns: 0
+Columns: 1278 Rows: 616 Vertices: 716 Edges: 1278 Transfer Rows: 616 Output Rows: 0 Output Columns: 0
+Columns: 1606 Rows: 776 Vertices: 888 Edges: 1606 Transfer Rows: 776 Output Rows: 0 Output Columns: 0
+Columns: 1992 Rows: 964 Vertices: 1088 Edges: 1992 Transfer Rows: 964 Output Rows: 0 Output Columns: 0
+Columns: 2436 Rows: 1180 Vertices: 1316 Edges: 2436 Transfer Rows: 1180 Output Rows: 0 Output Columns: 0
+Coin0506I Presolve 76 (-1143) rows, 226 (-2211) columns and 898 (-5379) elements
+Clp0035I 0 Primal 100 Dual 842632.63 Complementarity 842579 - 0 fixed, rank 76
+Clp0035I 1 Primal 225.4735 Dual 307283.38 Complementarity 318751.96 - 0 fixed, rank 76
+Clp0035I 2 Primal 7266.7264 Dual 146511.3 Complementarity 174120.63 - 0 fixed, rank 76
+Clp0035I 3 Primal 35053.074 Dual 105622.03 Complementarity 73089.174 - 0 fixed, rank 76
+Clp0035I 4 Primal 38320.846 Dual 70235.705 Complementarity 33405.695 - 0 fixed, rank 76
+Clp0035I 5 Primal 44403.19 Dual 55792.68 Complementarity 11676.178 - 0 fixed, rank 76
+Clp0035I 6 Primal 46801.335 Dual 50712.255 Complementarity 3964.085 - 0 fixed, rank 76
+Clp0035I 7 Primal 47534.239 Dual 48865.81 Complementarity 1331.5805 - 0 fixed, rank 76
+Clp0035I 8 Primal 47849.045 Dual 48152.188 Complementarity 303.14539 - 0 fixed, rank 76
+Clp0035I 9 Primal 47959.375 Dual 48049.655 Complementarity 90.456075 - 0 fixed, rank 76
+Clp0035I 10 Primal 47999.651 Dual 48009.843 Complementarity 10.204147 - 0 fixed, rank 76
+Clp0035I 11 Primal 47998.773 Dual 48000.252 Complementarity 1.4873248 - 0 fixed, rank 76
+Clp0035I 12 Primal 47999.994 Dual 48000.002 Complementarity 0.0085757189 - 0 fixed, rank 76
+Clp0035I 13 Primal 48000 Dual 48000 Complementarity 0.00011127406 - 0 fixed, rank 70
+Clp0035I 14 Primal 48000 Dual 48000 Complementarity 1.102542e-06 - 0 fixed, rank 63
+Clp0035I 15 Primal 48000 Dual 48000.074 Complementarity 8.4407744e-09 - 20 fixed, rank 68
+Clp0035I 16 Primal 48000 Dual 48000 Complementarity 6.8286544e-11 - 20 fixed, rank 65
+Clp0042I Optimal
+Clp0046I At end primal/dual infeasibilities 0.00015298276/0.10009623, complementarity gap 4.668539e-06, objective 48000
+Clp0006I 0  Obj 48000 Dual inf 0.015282 (8)
+Clp0006I 152  Obj 48000
+Clp0000I Optimal - objective value 48000
+Clp0006I 0  Obj 48000
+Clp0000I Optimal - objective value 48000
+Clp0006I 0  Obj 48000
+Clp0000I Optimal - objective value 48000
+Coin0511I After Postsolve, objective 48000, infeasibilities - dual 0 (0), primal 0 (0)
+Clp0032I Optimal objective 48000 - 16 iterations time 0.022, Presolve 0.01
+</code></pre>
+<p>Then, we can see the lines that corresponds to the simulations of the function <code>FMTsesmodel.Greedyreferencebuild()</code> :</p>
+<pre><code class="language-bash">Iteration 0 Primal Inf(0.000000) Obj(40475.320000)
+Iteration 10 Primal Inf(0.000000) Obj(44085.320000)
+Stalled after 16 iterations Skipping
+{'ACARIBOU': 0.981677543988014, 'COUPETOTALE': 0.9817026645791909, 'Objective': 42453.599999999984, 'Primalinfeasibility': 0.0, 'Total': 0.9816850800303768}
+Iteration 0 Primal Inf(2310.400000) Obj(40143.200000)
+Iteration 10 Primal Inf(216.600000) Obj(42237.000000)
+Iteration 20 Primal Inf(0.000000) Obj(42453.600000)
+Solution stuck after 30 iterations Skipping
+{'ACARIBOU': 1.0278470194296387, 'COUPETOTALE': 0.9116104392588846, 'Objective': 42453.599999999984, 'PLANTATION': 0.927291117344956, 'Primalinfeasibility': 1.4551915228366852e-11, 'Total': 0.9264994202031354}
+Iteration 0 Primal Inf(2108.240000) Obj(42453.600000)
+Iteration 10 Primal Inf(2108.240000) Obj(42453.600000)
+Iteration 20 Primal Inf(635.360000) Obj(42453.600000)
+Solution stuck after 27 iterations Skipping
+{'ACARIBOU': 0.8973831819756647, 'COUPETOTALE': 0.9033560325101042, 'Objective': 42453.599999999984, 'PLANTATION': 0.911737449703183, 'Primalinfeasibility': 635.3600000000297, 'Total': 0.9025186555019942}
+Iteration 0 Primal Inf(8779.520000) Obj(42453.600000)
+Iteration 10 Primal Inf(8779.520000) Obj(42453.600000)
+Iteration 20 Primal Inf(808.640000) Obj(42453.600000)
+Solution stuck after 29 iterations Skipping
+{'ACARIBOU': 0.8771528754492212, 'COUPETOTALE': 0.889988896215573, 'Objective': 42453.599999999984, 'PLANTATION': 0.8765659747164727, 'Primalinfeasibility': 808.6400000000212, 'Total': 0.8822416209150494}
+Iteration 0 Primal Inf(6931.200000) Obj(42453.600000)
+Iteration 10 Primal Inf(6931.200000) Obj(42453.600000)
+Iteration 20 Primal Inf(1111.880000) Obj(42453.600000)
+Solution stuck after 30 iterations Skipping
+{'ACARIBOU': 0.8952525436304627, 'COUPETOTALE': 0.88445, 'Objective': 42453.599999999984, 'PLANTATION': 0.9411700993142432, 'Primalinfeasibility': 1111.8800000000338, 'Total': 0.9032996680762417}
+Iteration 0 Primal Inf(9342.680000) Obj(42453.600000)
+Iteration 10 Primal Inf(3638.880000) Obj(42453.600000)
+Iteration 20 Primal Inf(3638.880000) Obj(42453.600000)
+Iteration 30 Primal Inf(3638.880000) Obj(42453.600000)
+Solution stuck after 35 iterations Skipping
+{'ACARIBOU': 968.4932690882329, 'COUPETOTALE': 0.9397466289394396, 'Objective': 42453.599999999984, 'PLANTATION': 2367.8747068875177, 'Primalinfeasibility': 3638.8800000000047, 'Total': 1.0649491134961293}
+Iteration 0 Primal Inf(16606.000000) Obj(30309.560000)
+Stalled after 9 iterations Skipping
+{'ACARIBOU': 1.3474601235578203, 'COUPETOTALE': 0.9825519488602954, 'Objective': 32937.64000000001, 'PLANTATION': 1.0022853728788734, 'Primalinfeasibility': 13977.919999999998, 'Total': 1.0087375080393326}
+Iteration 0 Primal Inf(119576.200000) Obj(32937.640000)
+Iteration 10 Primal Inf(65859.400000) Obj(32937.640000)
+Iteration 20 Primal Inf(39247.920000) Obj(32937.640000)
+Solution stuck after 28 iterations Skipping
+{'ACARIBOU': 1054.0980891170655, 'COUPETOTALE': 0.845845565618348, 'Objective': 32937.64000000001, 'PLANTATION': 0.9266686936638757, 'Primalinfeasibility': 39247.9200000001, 'Total': 0.8969889215263215}
+Iteration 0 Primal Inf(58611.960000) Obj(27522.640000)
+Stalled after 6 iterations Skipping
+{'ACARIBOU': 536.8311084909311, 'COUPETOTALE': 0.4341194959208162, 'Objective': 27667.040000000005, 'PLANTATION': 0.9541653732993195, 'Primalinfeasibility': 58467.560000000114, 'Total': 0.7846327502399465}
+Iteration 0 Primal Inf(79145.640000) Obj(26208.600000)
+Iteration 10 Primal Inf(77340.640000) Obj(27667.040000)
+Stalled after 14 iterations Skipping
+{'ACARIBOU': 10491.125109295706, 'COUPETOTALE': 0.3982872281191633, 'Objective': 27667.040000000005, 'PLANTATION': 1.0028031096555103, 'Primalinfeasibility': 77340.64000000012, 'Total': 0.8163283360740083}
+</code></pre>
+<p>This first line tells us about the first solution found by the simulation : in this solution, the primal infeasibility value is 0, meaning that the solution is 100% feasible, and that the constraints that we put are always respected. However, we can see that the value of the objective function is lower than the one found by the solving of the spatially referenced model (which was <code>48000</code>).</p>
+<pre><code class="language-bash">Iteration 0 Primal Inf(0.000000) Obj(40475.320000)
+</code></pre>
+<p>After 10 generated solutions, we can see that the primal infeasibility is still 0, and that the value of the objective function has increased to <code>448085.32</code>.</p>
+<pre><code class="language-bash">Iteration 10 Primal Inf(0.000000) Obj(44085.320000)
+</code></pre>
+<p>Then, FMT ends the simulations for the first period by telling us why it stopped searching, and the proportion of each actions that it was able to place into space.</p>
+<p>Here, for the first period, FMT stopped searching by indicating that the algorithm <strong>stalled</strong>. Meanwhile, it was able to spatialize 98% of the <code>ACARIBOU</code> action, and 98% of the <code>COUPETOTALE</code> action.</p>
+<pre><code class="language-bash">Stalled after 16 iterations Skipping
+{'ACARIBOU': 0.981677543988014, 'COUPETOTALE': 0.9817026645791909, 'Objective': 42453.599999999984, 'Primalinfeasibility': 0.0, 'Total': 0.9816850800303768}
+</code></pre>
+<p>The process then repeats for the 9 other periods. Each time, FMT starts with a first iteration of placing the actions in space while trying to respect the constraints. Then, the algorithm ends when it either get <strong>stalled</strong>, or <strong>stuck</strong>, meaning that it can&rsquo;t improve the solution or reduce the primal infeasibility anymore. It then displays the amount of actions that it was able to place in space.</p>
+<p>Note that <strong>stalled</strong> and <strong>stuck</strong> have two different meaning :</p>
+<ul>
+<li><strong>Stalled</strong> means that the algorithm have generated the same exact solutions (the same placement of the cuts in space) as its 3 last iterations, implying that it cannot generate any new solution. This can happen when the constraints makes it so that the number of potential solutions are limited, which means that the algorithm will quickly have tried them all.</li>
+<li><strong>Stuck</strong> means that the algorithm was able to generate different solutions; but that all of these new solutions have an objective function value that is not higher than the previous ones, or that these new solutions cannot reduce the primal infeasibility. After a number of iterations corresponding to the <code>randomiterations</code> arguments provided to <code>FMTsesmodel.Greedyreferencebuild()</code> without any improvements, the algorithm will stop.</li>
+</ul>
+<p>For the second period, we can see :</p>
+<pre><code class="language-bash">Iteration 0 Primal Inf(2310.400000) Obj(40143.200000)
+Iteration 10 Primal Inf(216.600000) Obj(42237.000000)
+Iteration 20 Primal Inf(0.000000) Obj(42453.600000)
+Solution stuck after 30 iterations Skipping
+{'ACARIBOU': 1.0278470194296387, 'COUPETOTALE': 0.9116104392588846, 'Objective': 42453.599999999984, 'PLANTATION': 0.927291117344956, 'Primalinfeasibility': 1.4551915228366852e-11, 'Total': 0.9264994202031354}
+</code></pre>
+<p>For the third period, we can see :</p>
+<pre><code class="language-bash">Iteration 0 Primal Inf(2108.240000) Obj(42453.600000)
+Iteration 10 Primal Inf(2108.240000) Obj(42453.600000)
+Iteration 20 Primal Inf(635.360000) Obj(42453.600000)
+Solution stuck after 27 iterations Skipping
+{'ACARIBOU': 0.8973831819756647, 'COUPETOTALE': 0.9033560325101042, 'Objective': 42453.599999999984, 'PLANTATION': 0.911737449703183, 'Primalinfeasibility': 635.3600000000297, 'Total': 0.9025186555019942}
+</code></pre>
+<p>And so on until the 10th period.</p>
+<hr>
+<p>You should now know enough to start using FMT by yourself. If you have any remaining questions, please contact <a href="mailto:Guillaume.Cyr@fec.gouv.qc.ca">Guillaume Cyr</a> or <a href="mailto:Bruno.Forest@fec.gouv.qc.ca">Bruno Forest</a> from the BFEC. You can also install FMT on your computer by following the <a href="../../download_install/">Downloading and installing section</a>.</p>
+
+          </div>
+
+          
+
+
+
+          
+          
+          <div class="article-widget">
+            
+<div class="post-nav">
+  
+  
+  
+  <div class="post-nav-item">
+    <div class="meta-nav">Previous</div>
+    <a href="/docs/basics/exercice_1/" rel="next">Exercise 1</a>
+  </div>
+  
+  
+</div>
+
+          </div>
+          
+        </div>
+
+        <div class="body-footer">
+          <p>Last updated on May 5, 2019</p>
+
+          
+
+
+
+
+
+          
+
+
+
+
+          
+
+
+  
+  
+
+
+
+        </div>
+
+      </article>
+
+      <footer class="site-footer">
+
+  
+
+  
+
+  
+  <p class="powered-by">
+    © 2022 Bureau du Forestier en Chef du Québec
+  </p>
+  
+
+  
+  
+
+
+
+
+
+
+  <p class="powered-by">
+    
+    
+    
+      
+      
+      
+      
+      
+      
+      Published with <a href="https://wowchemy.com/?utm_campaign=poweredby" target="_blank" rel="noopener">Wowchemy</a> — the free, <a href="https://github.com/wowchemy/wowchemy-hugo-modules" target="_blank" rel="noopener">open source</a> website builder that empowers creators.
+    
+  </p>
+</footer>
+
+
+    </main>
+  </div>
+</div>
+
+  </div>
+
+  <div class="page-footer">
+    
+    
+  </div>
+
+  
+<div id="modal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Cite</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <pre><code class="tex hljs"></code></pre>
+      </div>
+      <div class="modal-footer">
+        <a class="btn btn-outline-primary my-1 js-copy-cite" href="#" target="_blank">
+          <i class="fas fa-copy"></i> Copy
+        </a>
+        <a class="btn btn-outline-primary my-1 js-download-cite" href="#" target="_blank">
+          <i class="fas fa-download"></i> Download
+        </a>
+        <div id="modal-error"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+      
+
+    
+    
+    
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/instant.page/5.1.0/instantpage.min.js" integrity="sha512-1+qUtKoh9XZW7j+6LhRMAyOrgSQKenQ4mluTR+cvxXjP1Z54RxZuzstR/H9kgPXQsVB8IW7DMDFUJpzLjvhGSQ==" crossorigin="anonymous"></script>
+
+      
+      
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.imagesloaded/4.1.4/imagesloaded.pkgd.min.js" integrity="sha256-lqvxZrPLtfffUl2G/e7szqSvPBILGbwmsGE1MKlOi0Q=" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.isotope/3.0.6/isotope.pkgd.min.js" integrity="sha256-CBrpuqrMhXwcLLUd5tvQ4euBHCdh7wGlDfNz8vbu/iI=" crossorigin="anonymous"></script>
+      
+
+      
+      
+
+      
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/8.8.4/mermaid.min.js" integrity="sha512-as1BF4+iHZ3BVO6LLDQ7zrbvTXM+c/1iZ1qII/c3c4L8Rn5tHLpFUtpaEtBNS92f+xGsCzsD7b62XP3XYap6oA==" crossorigin="anonymous" title="mermaid"></script>
+      
+
+      
+        
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.2.0/highlight.min.js" integrity="sha512-TDKKr+IvoqZnPzc3l35hdjpHD0m+b2EC2SrLEgKDRWpxf2rFCxemkgvJ5kfU48ip+Y+m2XVKyOCD85ybtlZDmw==" crossorigin="anonymous"></script>
+        
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.2.0/languages/r.min.js"></script>
+        
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.2.0/languages/python.min.js"></script>
+        
+      
+
+    
+
+    
+    
+    
+
+    
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/anchor-js/4.2.2/anchor.min.js" integrity="sha512-I7w3ZdSFzw5j3jU3ZkNikBNeIrl3i+hEuEdwNmqUJvwNcaBUNcijnP2gd9DtGlgVYDplfjGoD8vTNsID+lCjqg==" crossorigin="anonymous"></script>
+    <script>
+      anchors.add();
+    </script>
+    
+
+    
+    
+    
+      
+      <script id="search-hit-fuse-template" type="text/x-template">
+        <div class="search-hit" id="summary-{{key}}">
+          <div class="search-hit-content">
+            <div class="search-hit-name">
+              <a href="{{relpermalink}}">{{title}}</a>
+              <div class="article-metadata search-hit-type">{{type}}</div>
+              <p class="search-hit-description">{{snippet}}</p>
+            </div>
+          </div>
+        </div>
+      </script>
+      
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.1/fuse.min.js" integrity="sha256-VzgmKYmhsGNNN4Ph1kMW+BjoYJM2jV5i4IlFoeZA9XI=" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js" integrity="sha256-4HLtjeVgH0eIB3aZ9mLYF6E8oU5chNdjU6p6rrXpl9U=" crossorigin="anonymous"></script>
+      
+    
+
+    
+    
+
+    
+    
+    
+    
+
+    
+    <script src="/js/bootstrap.bundle.min.6aed84840afc03ab4d5750157f69c120.js"></script>
+
+    
+    
+      
+      
+      
+      
+      
+      
+      
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+      
+      
+    
+    
+    <script src="/en/js/wowchemy.min.d36cd9f11e81a0512fc0b62b502a165d.js"></script>
+
+    
+
+
+
+
+
+
+</body>
+</html>
