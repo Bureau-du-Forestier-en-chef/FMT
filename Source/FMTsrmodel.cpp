@@ -117,6 +117,196 @@ namespace Models
 		return false;
 	}
 
+	bool FMTsrmodel::forcesolution(int period, const Core::FMTschedule& proportionschedulewithlock, double tolerance)
+	{
+		try
+		{
+			if(!proportionschedulewithlock.douselock())
+			{
+				_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
+												"This function can only be used with schedules using lock", 
+												"FMTsrmodel::forcesolution", __LINE__, __FILE__);
+			}
+			if (static_cast<int>(graph.size()) > period && period > 0)
+			{
+				std::vector<Core::FMTaction>::const_iterator cit = std::find_if(actions.begin(), actions.end(), Core::FMTactioncomparator("_DEATH"));
+				const int deathid = static_cast<int>(std::distance(actions.cbegin(), cit));
+				const double* actual_solution = solver.getColSolution();
+				const boost::unordered_set<Core::FMTlookup<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor, Core::FMTdevelopment>> lookup = graph.getdevsset(period);
+				std::vector<double>new_solution(actual_solution, actual_solution + solver.getNumCols());
+				//Proportion par défault a 1 partout ... on va le changer plus bas pour celle qu'on a besoin
+				std::vector<double>proportions(new_solution.size(), 1);
+				Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_iterator vertex_iterator, vertex_iterator_end;
+				for (boost::tie(vertex_iterator, vertex_iterator_end) = graph.getperiodverticies(period); vertex_iterator != vertex_iterator_end; ++vertex_iterator)
+				{
+					const std::map<int, int>variables = graph.getoutvariables(*vertex_iterator);
+
+					for (std::map<int, int>::const_iterator varit = variables.begin(); varit != variables.end(); varit++)
+					{
+						new_solution[varit->second] = 0;
+					}
+				}
+				//Place les proportions d'actions dans un vecteur ... 
+				//Container pour déduire le growht à partir de ce qui est placé dans les actions par dev
+				std::map<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor,double> growthdeductor;
+				for (int actionid = 0; actionid < static_cast<int>(actions.size()); ++actionid)
+				{
+					const auto& actionit = proportionschedulewithlock.find(actions.at(actionid));
+					if (actionit != proportionschedulewithlock.end())
+					{
+						for (const auto& devit : actionit->second)
+						{
+							if(graph.containsdevelopment(devit.first, lookup))
+							{
+								const Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor vdescriptor = graph.getdevelopment(devit.first, lookup);
+								if(growthdeductor.find(vdescriptor)==growthdeductor.end())
+								{
+									growthdeductor.emplace(vdescriptor,1-devit.second.at(0))
+								}else{
+									growthdeductor[vdescriptor]-=devit.second.at(0);
+								}
+								std::map<int, int> outvariables = graph.getoutvariables(vdescriptor);
+								std::map<int, int>::const_iterator varit = outvariables.find(actionid);
+								if (varit == outvariables.cend())
+								{
+									_exhandler->raise(Exception::FMTexc::FMTinvalid_number,
+												"Developement " + std::string(devit.first) + " is not operable "
+												" for action " + actionit->first.getname(), 
+												"FMTsrmodel::setsolution", __LINE__, __FILE__);
+								}
+								const int variable = varit->second;
+								proportions[variable] = devit.second.at(0);
+							}
+						}
+					}
+				}
+				for(const auto& vdescriptor_props : growthdeductor)
+				{
+					std::map<int, int> outvariables = graph.getoutvariables(vdescriptor_props.first);
+					std::map<int, int>::const_iterator varit = outvariables.find(-1);
+					if (varit == outvariables.cend())
+					{
+						_exhandler->raise(Exception::FMTexc::FMTinvalid_number,
+									"Developement "+std::string(graph.getdevelopment(vdescriptor_props.first)+" cannot grow ...", 
+									"FMTsrmodel::setsolution", __LINE__, __FILE__);
+					}
+					const int variable = varit->second;
+					proportions[variable] = vdescriptor_props.second;
+				}
+				//setsolution en se basant sur le vecteur de proportions
+				boost::unordered_map<Core::FMTdevelopment, std::vector<int>> devoutvarprocessed;
+				boost::unordered_set<Core::FMTdevelopment> periodstartprocessed;
+				for (boost::tie(vertex_iterator, vertex_iterator_end) = graph.getperiodverticies(period); vertex_iterator != vertex_iterator_end; ++vertex_iterator)
+				{
+					//Placer tout ce qui provient du start et qui n'A que du grow ... ... pour ensuite placer le reste
+					const std::vector<int> invars = graph.getinvariables(*vertex_iterator);
+					if (graph.periodstart(*vertex_iterator) && invars.size()==1 && invars.at(0)==-1)//get inperiod
+					{
+						const double* solution = &new_solution[0];
+						const double inarea = graph.inarea(*vertex_iterator, solution);
+						std::map<int, int>variables = graph.getoutvariables(*vertex_iterator);
+						int targetaction = -1;
+						if ((variables.find(-1) == variables.end()))//process only if you have evolution
+						{
+							targetaction = deathid;
+						}
+						const int growth = variables[targetaction];
+						if (targetaction < 0)
+						{
+							variables.erase(targetaction);
+						}
+						for (std::map<int, int>::const_iterator varit = variables.begin(); varit != variables.end(); varit++)
+						{
+							std::vector<Core::FMTdevelopmentpath> paths = graph.getpaths(*vertex_iterator, varit->first);
+							for (const Core::FMTdevelopmentpath path : paths)
+							{
+								if (path.development->getperiod() == period)
+								{
+									if(devoutvarprocessed.find(*path.development) == devoutvarprocessed.end())
+									{
+										devoutvarprocessed[*path.development].push_back(varit->second);
+									}else{
+										devoutvarprocessed[*path.development] = std::vector(1,varit->second);
+									}
+								}
+							}
+							//set les out peut import l'action car on connait 100% du début
+							new_solution[varit->second] = proportions[varit->second]*inarea;
+						}
+						if (targetaction < 0)
+						{
+							new_solution[growth] = proportions[varit->second]*inarea;
+						}
+					}
+					periodstartprocessed.emplace(graph.getdevelopment(*vertex_iterator));
+				}
+				for (int actionid = 0; actionid < static_cast<int>(actions.size()); ++actionid)
+				{
+					const auto& actionit = proportionschedulewithlock.find(actions.at(actionid));
+					std::queue<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor> toprocess;
+					if (actionit != proportionschedulewithlock.end())
+					{
+						for (const auto& devit : actionit->second)
+						{
+							// if processed before, it can only be period start from grow and all out area must have been set ... 
+							if(graph.containsdevelopment(devit.first, lookup) && periodstartprocessed.find(devit.first) == periodstartprocessed.end())
+							{
+								toprocess.push(graph.getdevelopment(devit.first, lookup));
+							}
+						}
+					}
+					while(!toprocess.empty())
+					{
+						Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor first = toprocess.front();
+						std::vector<int> invars = graph.getinvariables(first);
+						std::sort(invars.begin,invars.end);	
+						std::sort(devoutvarprocessed.at(graph.getdevelopment(*vertex_iterator)).begin(),devoutvarprocessed.at(graph.getdevelopment(*vertex_iterator)).end());
+						const Core::FMTdevelopment dev = graph.getdevelopment(*vertex_iterator);
+						// si action id n'est pas dans les variable in ou si on a deja process ce developement ci et que les variaables in on toutes été sette ... 
+						if	(	std::find(invars.begin(),invars.end(),actionid) == invars.end() || 
+								(devoutvarprocessed.find(dev)!=devoutvarprocessed.end() &&  devoutvarprocessed.at(graph.getdevelopment(*vertex_iterator)) == invars)
+							)
+						{
+							const double* solution = &new_solution[0];
+							const double inarea = graph.inarea(*vertex_iterator, solution);
+							const std::map<int, int>variables = graph.getoutvariables(*vertex_iterator);
+							const std::map<int, int>::const_iterator varit = outvariables.find(actionid);
+							new_solution[varit->second] = proportions[varit->second]*inarea;
+							toprocess.pop;
+							std::vector<Core::FMTdevelopmentpath> paths = graph.getpaths(*vertex_iterator, actionid);
+							for (const Core::FMTdevelopmentpath path : paths)
+							{
+								if(devoutvarprocessed.find(*path.development) == devoutvarprocessed.end())
+								{
+									devoutvarprocessed[*path.development].push_back(varit->second);
+								}else{
+									devoutvarprocessed[*path.development] = std::vector(1,varit->second);
+								}
+							}
+						}else{
+							//handle pour ne pas avoir de boulce infini et passer ceux qui sont récursif sur la meme action genre boucle infini ... valider aussi comment on gère ça dans FMTgraph
+						}
+						
+					}
+				}
+				for (boost::tie(vertex_iterator, vertex_iterator_end) = graph.getperiodverticies(period); vertex_iterator != vertex_iterator_end; ++vertex_iterator)
+				{
+					if (graph.periodstop(*vertex_iterator) && periodstartprocessed.find(graph.getdevelopment(*vertex_iterator)) == periodstartprocessed.end())
+					{
+						//Ne pas oublier les growth sur toutes les shits qui restes genre ?!?! peut-être avec le période stop
+						//faire un invariables * inarea... on risque juste de réécrire donc pas trop grave, pourrait être optimisé en cachant ... 
+					}
+					
+				solver.setColSolution(&new_solution[0]);
+
+			}
+		}catch(...){
+			_exhandler->printexceptions("at period " + std::to_string(period), "FMTsrmodel::forcesolution", __LINE__, __FILE__);
+		}
+		return true;
+
+	}
+
 
 	bool FMTsrmodel::setsolution(int period, const Core::FMTschedule& schedule, double tolerance)
 	{
@@ -152,7 +342,7 @@ namespace Models
 						size_t allocated = 0;
 						for (const auto& devit : actionit->second)
 						{
-							if ((schedule.douselock() || actionit->first.dorespectlock()) && graph.containsdevelopment(devit.first, lookup))
+							if ( ((schedule.douselock() || actionit->first.dorespectlock()) && graph.containsdevelopment(devit.first, lookup)) )
 							{
 								//*_logger << "t1 " << actionit->first.getname() << "\n";
 								const Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor vdescriptor = graph.getdevelopment(devit.first, lookup);
@@ -688,6 +878,21 @@ namespace Models
 			const double* actual_solution = solver.getColSolution();
 			newschedule = graph.getschedule(actions, actual_solution, period, withlock);//getparameter(SHOW_LOCK_IN_SCHEDULES));
 
+		}
+		catch (...)
+		{
+			_exhandler->printexceptions("at period " + std::to_string(period), "FMTsrmodel::getsolution", __LINE__, __FILE__);
+		}
+		return newschedule;
+	}
+
+	Core::FMTschedule FMTsrmodel::getscheduleproportions(int period, bool withlock) const
+	{
+		Core::FMTschedule newschedule;
+		try
+		{
+			const double* actual_solution = solver.getColSolution();
+			newschedule = graph.getoutvariablesproportions(actions, actual_solution, period, withlock);//getparameter(SHOW_LOCK_IN_SCHEDULES));
 		}
 		catch (...)
 		{
