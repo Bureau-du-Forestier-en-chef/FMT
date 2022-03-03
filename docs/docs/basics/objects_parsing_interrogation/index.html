@@ -1,0 +1,1383 @@
+<!DOCTYPE html><html lang="en-us" >
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  
+  
+  
+    <meta name="generator" content="Wowchemy 5.2.0 for Hugo" />
+  
+
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+  
+  
+    
+  
+  <meta name="description" content="What are objects ? FMT is made with a particular structure that is called Object-Oriented Programming (OOP). If you never heard of it, here is a very quick summary of it to better understand how to use FMT later." />
+
+  
+    <link rel="alternate" hreflang="fr" href="/fr/docs/basics/objects_parsing_interrogation/" />
+  
+  <link rel="alternate" hreflang="en-us" href="/docs/basics/objects_parsing_interrogation/" />
+
+  
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  
+
+  
+  
+  
+    <meta name="theme-color" content="#1565c0" />
+  
+
+  
+  
+
+  
+  
+  
+  
+    
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.14.0/css/all.min.css" integrity="sha256-FMvZuGapsJLjouA6k7Eo2lusoAX9i0ShlWFG6qt7SLc=" crossorigin="anonymous">
+
+    
+    
+
+    
+    
+    
+      
+    
+    
+      
+      
+        
+          <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.2.0/styles/github.min.css" crossorigin="anonymous" title="hl-light" media="print" onload="this.media='all'">
+          <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.2.0/styles/dracula.min.css" crossorigin="anonymous" title="hl-dark" media="print" onload="this.media='all'" disabled>
+        
+      
+    
+
+    
+    
+    
+
+    
+
+    
+    
+      
+      
+
+      
+      
+
+      
+    
+      
+      
+
+      
+      
+
+      
+    
+      
+      
+
+      
+      
+
+      
+    
+      
+      
+
+      
+      
+
+      
+    
+      
+      
+
+      
+      
+
+      
+    
+      
+      
+
+      
+      
+
+      
+    
+      
+      
+
+      
+      
+
+      
+    
+      
+      
+
+      
+      
+
+      
+    
+      
+      
+
+      
+      
+
+      
+    
+      
+      
+
+      
+      
+
+      
+    
+      
+      
+
+      
+      
+
+      
+    
+      
+      
+
+      
+      
+
+      
+    
+      
+      
+
+      
+      
+
+      
+    
+      
+      
+
+      
+      
+        
+      
+
+      
+    
+      
+      
+
+      
+      
+
+      
+    
+      
+      
+
+      
+      
+
+      
+    
+  
+
+  
+  
+  
+    
+      
+      <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Roboto+Mono&family=Roboto:wght@400;700&display=swap">
+      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Roboto+Mono&family=Roboto:wght@400;700&display=swap" media="print" onload="this.media='all'">
+    
+  
+
+  
+  
+  
+  
+  
+  <link rel="stylesheet" href="/css/wowchemy.aa936755d898fe5a4c5cf937b93bb8a2.css" />
+
+  
+
+
+
+  
+
+  
+
+  
+
+
+
+
+  
+  
+  
+
+  
+
+  
+    <link rel="manifest" href="/index.webmanifest" />
+  
+
+  <link rel="icon" type="image/png" href="/media/icon_huc6d37a7993bbbcfd0b9a96d08d6d7557_42395_32x32_fill_lanczos_center_3.png" />
+  <link rel="apple-touch-icon" type="image/png" href="/media/icon_huc6d37a7993bbbcfd0b9a96d08d6d7557_42395_180x180_fill_lanczos_center_3.png" />
+
+  <link rel="canonical" href="/docs/basics/objects_parsing_interrogation/" />
+
+  
+  
+  
+  
+  
+  
+  
+  
+    
+    
+  
+  
+  <meta property="twitter:card" content="summary" />
+  
+  <meta property="og:site_name" content="FMT Documentation" />
+  <meta property="og:url" content="/docs/basics/objects_parsing_interrogation/" />
+  <meta property="og:title" content="Objects, model parsing and interrogation | FMT Documentation" />
+  <meta property="og:description" content="What are objects ? FMT is made with a particular structure that is called Object-Oriented Programming (OOP). If you never heard of it, here is a very quick summary of it to better understand how to use FMT later." /><meta property="og:image" content="/media/icon_huc6d37a7993bbbcfd0b9a96d08d6d7557_42395_512x512_fill_lanczos_center_3.png" />
+    <meta property="twitter:image" content="/media/icon_huc6d37a7993bbbcfd0b9a96d08d6d7557_42395_512x512_fill_lanczos_center_3.png" /><meta property="og:locale" content="en-us" />
+  
+    
+      <meta
+        property="article:published_time"
+        content="2019-05-05T00:00:00&#43;01:00"
+      />
+    
+    <meta property="article:modified_time" content="2019-05-05T00:00:00&#43;01:00">
+  
+
+  
+
+
+
+  
+
+  
+
+  
+
+
+
+
+
+  <title>Objects, model parsing and interrogation | FMT Documentation</title>
+</head>
+
+
+<body id="top" data-spy="scroll" data-offset="70" data-target="#TableOfContents" class="page-wrapper   " data-wc-page-id="28124c8adfcb86aa5fb7c74a49d23b63" >
+
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  <script src="/js/wowchemy-init.min.d5311fd7435c9fda4bf0768e412fb7ae.js"></script>
+
+  
+
+
+<aside class="search-modal" id="search">
+  <div class="container">
+    <section class="search-header">
+
+      <div class="row no-gutters justify-content-between mb-3">
+        <div class="col-6">
+          <h1>Search</h1>
+        </div>
+        <div class="col-6 col-search-close">
+          <a class="js-search" href="#" aria-label="Close"><i class="fas fa-times-circle text-muted" aria-hidden="true"></i></a>
+        </div>
+      </div>
+
+      <div id="search-box">
+        
+        <input name="q" id="search-query" placeholder="Search..." autocapitalize="off"
+        autocomplete="off" autocorrect="off" spellcheck="false" type="search" class="form-control"
+        aria-label="Search...">
+        
+      </div>
+
+      
+      
+
+      
+
+    </section>
+    <section class="section-search-results">
+
+      <div id="search-hits">
+        
+      </div>
+
+    </section>
+  </div>
+</aside>
+
+
+
+  <div class="page-header">
+    
+
+
+
+
+
+
+
+
+
+
+
+
+<nav class="navbar navbar-expand-lg navbar-light compensate-for-scrollbar" id="navbar-main">
+  <div class="container-xl">
+
+    
+    <div class="d-none d-lg-inline-flex">
+      <a class="navbar-brand" href="/">FMT Documentation</a>
+    </div>
+    
+
+    
+    <button type="button" class="navbar-toggler" data-toggle="collapse"
+            data-target="#navbar-content" aria-controls="navbar-content" aria-expanded="false" aria-label="Toggle navigation">
+    <span><i class="fas fa-bars"></i></span>
+    </button>
+    
+
+    
+    <div class="navbar-brand-mobile-wrapper d-inline-flex d-lg-none">
+      <a class="navbar-brand" href="/">FMT Documentation</a>
+    </div>
+    
+
+    
+    
+    <div class="navbar-collapse main-menu-item collapse justify-content-start" id="navbar-content">
+
+      
+      <ul class="navbar-nav d-md-inline-flex">
+        
+
+        
+
+        
+        
+        
+
+        
+
+        
+        
+        
+        
+
+        
+          
+          
+        
+
+        <li class="nav-item">
+          <a class="nav-link " href="/"><span>Home</span></a>
+        </li>
+
+        
+        
+
+        
+
+        
+        
+        
+          
+        
+
+        
+
+        
+        
+        
+        
+
+        
+          
+            
+            
+          
+          
+        
+
+        <li class="nav-item">
+          <a class="nav-link  active" href="/docs/"><span>Documentation</span></a>
+        </li>
+
+        
+        
+
+        
+
+        
+        
+        
+          
+        
+
+        
+
+        
+        
+        
+        
+
+        
+          
+            
+            
+          
+          
+        
+
+        <li class="nav-item">
+          <a class="nav-link " href="/../doxygen/index.html"><span>Doxygen</span></a>
+        </li>
+
+        
+        
+
+      
+
+        
+      </ul>
+    </div>
+
+    <ul class="nav-icons navbar-nav flex-row ml-auto d-flex pl-md-2">
+
+      
+      
+
+      
+      
+      <li class="nav-item">
+        <a class="nav-link js-search" href="#" aria-label="Search"><i class="fas fa-search" aria-hidden="true"></i></a>
+      </li>
+      
+
+      
+      
+      <li class="nav-item dropdown theme-dropdown">
+        <a href="#" class="nav-link" data-toggle="dropdown" aria-haspopup="true" aria-label="Display preferences">
+          <i class="fas fa-moon" aria-hidden="true"></i>
+        </a>
+        <div class="dropdown-menu">
+          <a href="#" class="dropdown-item js-set-theme-light">
+            <span>Light</span>
+          </a>
+          <a href="#" class="dropdown-item js-set-theme-dark">
+            <span>Dark</span>
+          </a>
+          <a href="#" class="dropdown-item js-set-theme-auto">
+            <span>Automatic</span>
+          </a>
+        </div>
+      </li>
+      
+
+      
+      
+      <li class="nav-item dropdown i18n-dropdown">
+        <a href="#" class="nav-link " data-toggle="dropdown"
+           aria-haspopup="true" aria-label="Languages">
+          <i class="fas fa-globe mr-1" aria-hidden="true"></i></a>
+        <div class="dropdown-menu">
+          <div class="dropdown-item dropdown-item-active">
+            <span>English</span>
+          </div>
+          
+          <a class="dropdown-item" href="/fr/docs/basics/objects_parsing_interrogation/">
+            <span>Français</span>
+          </a>
+          
+        </div>
+      </li>
+      
+
+    </ul>
+
+  </div>
+</nav>
+
+
+  </div>
+
+  <div class="page-body">
+    
+
+
+
+
+
+<div class="container-fluid docs">
+  <div class="row flex-xl-nowrap">
+    <div class="col-12 col-md-3 col-xl-2 docs-sidebar">
+      <form class="docs-search d-flex align-items-center">
+  <button class="btn docs-toggle d-md-none p-0 mr-md-3 w-100" type="button" data-toggle="collapse" data-target="#docs-nav" aria-controls="docs-nav" aria-expanded="false" aria-label="Toggle section navigation">
+    <div class="d-flex">
+      <span class="d-md-none pl-1 flex-grow-1 text-left overflow-hidden">
+        
+          The basics
+        
+      </span>
+      <span><i class="fas fa-chevron-down"></i></span>
+    </div>
+  </button>
+
+  
+  <button class="form-control sidebar-search js-search d-none d-md-flex">
+    <i class="fas fa-search pr-2"></i>
+    <span class="sidebar-search-text">Search...</span>
+    <span class="sidebar-search-shortcut">/</span>
+  </button>
+  
+</form>
+
+<nav class="collapse docs-links" id="docs-nav">
+  
+  
+  
+  
+  
+  
+
+  
+  
+    
+
+    
+      
+
+      
+
+
+  
+    
+    
+    
+    
+      
+    
+    
+
+    
+      <ul class="nav docs-sidenav">
+        <li class=""><a href="/docs/">FMT Documentation</a></li>
+    
+      
+
+
+  
+    
+    
+    
+    
+      
+    
+    
+
+    
+      <div class="docs-toc-item">
+        <a class="docs-toc-link " href="/docs/basics/"><i class="fas fa-play pr-1"></i>The basics</a>
+    
+      
+        <ul class="nav docs-sidenav">
+      
+
+
+  <li class="active"><a href="/docs/basics/objects_parsing_interrogation/">Objects, model parsing and interrogation</a></li>
+
+
+
+  <li class=""><a href="/docs/basics/spatially_referenced_optimization/">Spatially referenced optimization</a></li>
+
+
+
+  <li class=""><a href="/docs/basics/exercice_1/">Exercise 1</a></li>
+
+
+
+  <li class=""><a href="/docs/basics/spatially_explicit_simulation/">Spatially explicit simulation</a></li>
+
+      
+        </ul>
+      
+    
+
+    
+      </div>
+    
+
+
+
+  
+    
+    
+    
+    
+      
+    
+    
+
+    
+      <div class="docs-toc-item">
+        <a class="docs-toc-link " href="/docs/download_install/"><i class="fas fa-download pr-1"></i>Downloading and installing</a>
+    
+      
+        <ul class="nav docs-sidenav">
+      
+
+
+  <li class=""><a href="/docs/download_install/prerequisits/">Prerequisits</a></li>
+
+
+
+  <li class=""><a href="/docs/download_install/downloading_libraries/">Downloading the libraries</a></li>
+
+
+
+  <li class=""><a href="/docs/download_install/compiling/">Compiling</a></li>
+
+
+
+  <li class=""><a href="/docs/download_install/importing_in_python/">Importing FMT in Python</a></li>
+
+      
+        </ul>
+      
+    
+
+    
+      </div>
+    
+
+      
+    
+
+    
+      </ul>
+    
+
+  
+</nav>
+
+    </div>
+
+    
+    
+    <div class="d-none d-xl-block col-xl-2 docs-toc">
+      
+
+      <ul class="nav toc-top">
+        <li><a href="#" id="back_to_top" class="docs-toc-title">Contents</a></li>
+      </ul>
+
+      <nav id="TableOfContents">
+  <ul>
+    <li><a href="#what-are-objects-">What are objects ?</a></li>
+    <li><a href="#the-namespaces-of-fmt">The namespaces of FMT</a></li>
+    <li><a href="#important-classes-of-the-parser-namespace">Important classes of the <code>Parser</code> namespace</a></li>
+    <li><a href="#the-fmtmodel-class">The <code>FMTmodel</code> class</a></li>
+    <li><a href="#loading-a-simple-fmtlpmodel">Loading a simple <code>FMTlpmodel</code></a></li>
+    <li><a href="#the-core-namespace">The <code>Core</code> namespace</a></li>
+    <li><a href="#comparing-elements-in-fmt">Comparing elements in FMT</a></li>
+    <li><a href="#conversion-of-errors-to-warnings">Conversion of errors to warnings</a></li>
+  </ul>
+</nav>
+
+      
+    </div>
+    
+
+    <main class="col-12 col-md-9 col-xl-8 py-md-3 pl-md-5 docs-content" role="main">
+
+      <article class="article">
+
+        <div class="docs-article-container">
+          
+            
+  <nav class="d-none d-md-flex" aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      
+  
+  
+  
+
+  <li class="breadcrumb-item">
+    <a href="/">
+      
+        Home
+      
+    </a>
+  </li>
+
+
+  <li class="breadcrumb-item">
+    <a href="/docs/">
+      
+        FMT Documentation
+      
+    </a>
+  </li>
+
+
+  <li class="breadcrumb-item">
+    <a href="/docs/basics/">
+      
+        The basics
+      
+    </a>
+  </li>
+
+
+      <li class="breadcrumb-item active" aria-current="page">
+        Objects, model parsing and interrogation
+      </li>
+    </ol>
+  </nav>
+
+
+          
+
+          <h1>Objects, model parsing and interrogation</h1>
+
+          <div class="article-style">
+            <h2 id="what-are-objects-">What are objects ?</h2>
+<p>FMT is made with a particular structure that is called <em>Object-Oriented Programming</em> (OOP). If you never heard of it, here is a very quick summary of it to better understand how to use FMT later.</p>
+<p>In the OOP approach, the program use different &ldquo;objects&rdquo; that have a certain &ldquo;class&rdquo;, and that can have different &ldquo;functions&rdquo;.</p>
+<p>You might already know and use functions in software such as <code>R</code>. For example, in R, <code>plot()</code> is a function.</p>
+<p>You might also be used to <em>some</em> objects and classes being called in software you use. For example, in <code>R</code>, <code>data &lt;- read.csv(data.csv)</code> puts the content of the <code>data.csv</code> file into the <code>data</code> object, which has the class <code>data frame</code>.</p>
+<p>Now, imagine that every function that you use are associated to an object of a particular class. For example, a class <code>dog</code> would have the function <code>bark_at()</code>. If we have a class named <code>cat</code>, we could then :</p>
+<ul>
+<li>Create a new <code>dog</code> object from the <code>dog</code> class : <code>pluto = dog(name = Pluto, age = 8)</code></li>
+<li>Create a new <code>cat</code> object from the <code>cat</code> class : <code>felix = cat(name = Felix, age = 2)</code></li>
+<li>Make the dog bark at the cat : <code>pluto.bark_at(felix)</code></li>
+</ul>
+<p>In turn, object can have &ldquo;properties&rdquo;, which are exactly what it sounds like. For example, let say that our <code>cat</code> class has three properties : <code>name</code> (which can be a string of characters), <code>age</code> (which can be a number), and <code>scared</code> (which is a boolean, <code>true</code> or <code>false</code>).</p>
+<p>In our previous example, before using <code>pluto.bark_at(felix)</code>, the property <code>felix.scared</code> could be <code>false</code>. But now that we used <code>pluto.bark_at(felix)</code>, <code>felix.scared</code> might have changed to <code>true</code>.</p>
+<p>Lastly, a <em>parent class</em> in Object Oriented Programming means that the <em>child class</em> will automatically <em>inherit</em> all of the functions and properties of the parent function.</p>
+<p>For example, let&rsquo;s suppose that we have a <code>animal</code> parent class from which the <code>dog</code> and <code>cat</code> classes derive. If the <code>animal</code> class has a function <code>breathing</code> (<code>animal.breathing()</code>), then the <code>dog</code> and <code>cat</code> classes being its <em>child</em> classes will automatically have this function (<code>dog.breathing()</code> and <code>cat.breathing()</code>).</p>
+<p><em>Object-Oriented Programming</em> is a particular way to program, embedded in the programming language that you use, that have multiple advantages. One of them is to make things easier to represent.</p>
+<p><strong>In short</strong> : FMT uses <em>Object-Oriented Programming</em>, which makes everything an object with particular functions. The functions and properties of an object are defined by its class.</p>
+<p>To learn to use FMT, you will learn what its main classes are, so that you can create the objects you need, and make them interact to do the things you want to do. This is because wherever in Python, R or C++, using FMT means using its different objects.</p>
+<h2 id="the-namespaces-of-fmt">The namespaces of FMT</h2>
+<p>The different classes of objects in FMT are grouped into <em>namespaces</em>, which are simply different sections of its files.</p>
+<p>In FMT, the different <em>namespaces</em> are :</p>
+<ul>
+<li><strong><code>Parser</code></strong> : Classes used for reading or editing the files of the models in Woodstock format</li>
+<li><strong><code>Models</code></strong> : Manipulating and solving the models</li>
+<li><strong><code>Spatial</code></strong> : Making things spatially explicit</li>
+<li><strong><code>Heuristics</code></strong> : Contains the heuristics used for spatially aggregating the cut blocks, and planning them through time</li>
+<li><strong><code>Version</code></strong> : Contain informations about the current version of FMT, and the functions it contains (which depends on how it was compiled)</li>
+</ul>
+<div class="alert alert-note">
+  <div>
+    If you look at the <a href="../../download_install/importing_in_python/">importation of FMT in Python</a>, you&rsquo;ll see that we import the main namespaces that you will need into Python.
+  </div>
+</div>
+<h2 id="important-classes-of-the-parser-namespace">Important classes of the <code>Parser</code> namespace</h2>
+<p>The <code>Parser</code> namespace contains two important class for reading models :</p>
+<ul>
+<li><code>FMTareaparser</code> : Allows the reading and writing of the raster and vector files used in the spatial operations of FMT.
+<ul>
+<li>Some of its functions allows you to transform data between vector and raster format.</li>
+</ul>
+</li>
+<li><code>FMTmodelparser</code> : Allows the reading of a model across all of the Woodstock model files with the <code>readproject()</code> function, or to save it with the <code>write()</code> function after modifying it.
+<ul>
+<li>The class also use other classes made to read Woodstock files.</li>
+</ul>
+</li>
+</ul>
+<h2 id="the-fmtmodel-class">The <code>FMTmodel</code> class</h2>
+<p>The <code>FMTmodel</code> class is the basis of FMT.</p>
+<p>It contains informations coming from the files of the models, in Woodstock format. This can be seen by <a href="../../../doxygen/classModels_1_1FMTmodel.html#pro-attribs">looking at the properties of the <code>FMTmodel</code></a> :</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<figure  >
+  <div class="d-flex justify-content-center">
+    <div class="w-100" >
+        <img alt="" srcset="
+               /media/docs/FMTmodel_attributes_hu96941bf8bb3d4d9f259261d019ba2699_90381_aebff935e87cbb26b26f12b1700abf2b.png 400w,
+               /media/docs/FMTmodel_attributes_hu96941bf8bb3d4d9f259261d019ba2699_90381_142c22ea82ba47efe9a96c83464b2890.png 760w,
+               /media/docs/FMTmodel_attributes_hu96941bf8bb3d4d9f259261d019ba2699_90381_1200x1200_fit_lanczos_3.png 1200w"
+               src="/media/docs/FMTmodel_attributes_hu96941bf8bb3d4d9f259261d019ba2699_90381_aebff935e87cbb26b26f12b1700abf2b.png"
+               width="760"
+               height="443"
+               loading="lazy" data-zoomable /></div>
+  </div></figure>
+<p>However, these attributes are &ldquo;protected&rdquo; so that they are not edited in the wrong way. If you want to read them when using FMT, you will have to use <a href="../../../doxygen/classModels_1_1FMTmodel.html#pub-methods">the <em>getter</em> functions</a> that will get them for you :</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<figure  >
+  <div class="d-flex justify-content-center">
+    <div class="w-100" >
+        <img alt="" srcset="
+               /media/docs/FMTmodel_getter_hu559ae670a6befbc339a532835e3ef48a_177601_bb98b942d11785d6e69a626c82eccc05.png 400w,
+               /media/docs/FMTmodel_getter_hu559ae670a6befbc339a532835e3ef48a_177601_f625e31903a8b14a97b39b786a2360e8.png 760w,
+               /media/docs/FMTmodel_getter_hu559ae670a6befbc339a532835e3ef48a_177601_1200x1200_fit_lanczos_3.png 1200w"
+               src="/media/docs/FMTmodel_getter_hu559ae670a6befbc339a532835e3ef48a_177601_bb98b942d11785d6e69a626c82eccc05.png"
+               width="743"
+               height="361"
+               loading="lazy" data-zoomable /></div>
+  </div></figure>
+<p>Additionally, you can edit them in the right way by using <a href="../../../doxygen/classModels_1_1FMTmodel.html#pub-methods">the <em>setter</em> functions</a>. This allows you to edit different parts of the model.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<figure  >
+  <div class="d-flex justify-content-center">
+    <div class="w-100" >
+        <img alt="" srcset="
+               /media/docs/FMTmodel_setters_hu4c256a7577c1e3dbb7b5711a61f3bd3e_55329_05ee8f833cba6af62849c049bfad76a5.png 400w,
+               /media/docs/FMTmodel_setters_hu4c256a7577c1e3dbb7b5711a61f3bd3e_55329_269faf72b82502b4f9f4dbcdd454d8db.png 760w,
+               /media/docs/FMTmodel_setters_hu4c256a7577c1e3dbb7b5711a61f3bd3e_55329_1200x1200_fit_lanczos_3.png 1200w"
+               src="/media/docs/FMTmodel_setters_hu4c256a7577c1e3dbb7b5711a61f3bd3e_55329_05ee8f833cba6af62849c049bfad76a5.png"
+               width="640"
+               height="266"
+               loading="lazy" data-zoomable /></div>
+  </div></figure>
+<p>In the end, the <code>FMTModel</code> is what we call a <em>parent class</em> for all of the different class of models that FMT uses, such as <code>FMTlpmodel</code> (linear programming model), and <code>FMTsesmodel</code> (spatialy explicit model) according to the following diagram :</p>
+<pre><code class="language-mermaid">classDiagram
+FMTobject &lt;|-- FMTmodel
+FMTmodel &lt;|-- FMTsamodel
+FMTmodel &lt;|-- FMTsesmodel
+FMTmodel &lt;|-- FMTsrmodel
+FMTsrmodel &lt;|-- FMTlpmodel
+FMTsrmodel &lt;|-- FMTnssmodel
+</code></pre>
+<p>Observe that all of these classes ultimately inherit from the <code>FMTobject</code> class. This is the case for every object in FMT, as <code>FMTobject</code> contains useful functions and properties for debugging FMT.</p>
+<p>The <code>FMTnssmodel</code> and <code>FMTlpmodel</code> are spatially referenced models. The <code>FMTlpmodel</code> is used for <strong>optimization</strong>, while <code>FMTnssmodel</code> is used for <strong>simulation</strong>.</p>
+<p>Meanwhile, the <code>FMTsesmodel</code> and <code>FMTsamodel</code> are spatially explicit models. In the same way, <code>FMTsamodel</code> is used for <strong>optimization</strong>, while <code>FMTsesmodel</code> is used for <strong>simulation</strong>.</p>
+<p><strong>We will take a closer look at the different types of models later. For now, we will only use the simplest model that correspond to a Woodstock model structure, the <code>FMTlpmodel</code>.</strong></p>
+<h2 id="loading-a-simple-fmtlpmodel">Loading a simple <code>FMTlpmodel</code></h2>
+<p>Here is an example of how it looks like to read a linear programming model (in Woodstock format) with FMT.</p>
+<p>In R, the code to use it would be :</p>
+<pre><code class="language-R">library(FMT) # Loads FMT into R
+if (new(FMTversion)$hasfeature(&quot;OSI&quot;)) # Checks if FMT has been compiled with OSI by creating a new FMTversion object, and using the function hasfeature().
+{
+	# Creating the parser object to read the model files
+	newmodelparser &lt;- new(FMTmodelparser)
+	# Reading the project with the model parser by specifying that we want the scenario named &quot;LP&quot; (there can be different scenarios for one model)
+	modelslist &lt;- newmodelparser$readproject(&quot;Models/TWD_land/TWD_land.pri&quot;, c(&quot;LP&quot;), TRUE, TRUE, TRUE)
+	model_scenario_lp &lt;- modelslist[[1]]
+	# We get the name of the model
+	print(model_scen_lp$getname())
+} else { # if the model hasn't been compiled with OSI, we display an error.
+	print(&quot;FMT needs to be compiled with OSI&quot;)
+}
+</code></pre>
+<p>In Python, the code would look like this:</p>
+<pre><code class="language-python">import sys
+from FMT import Models
+from FMT import Parser
+from FMT import Version
+
+if __name__ == &quot;__main__&quot;:
+	if Version.FMTversion().hasfeature(&quot;OSI&quot;):
+		# Creating the parser object to read the model files
+		newmodelparser=  Parser.FMTmodelparser()
+		path = &quot;Models/TWD_Land/TWD_Land.pri&quot;
+		scenarios = [&quot;LP&quot;]
+		# Reading the project with the model parser by specifying that we want the scenario named &quot;LP&quot; (there can be different scenarios for one model)
+		modelslist = newmodelparser.readproject(path, scenarios)
+		model_scen_lp = modelslist[0]
+		print(model_scen_lp.getname())
+	else:
+		print(&quot;FMT needs to be compiled with OSI&quot;)
+</code></pre>
+<p>Wherever in the R prompt or the Python terminal, the result should give the following :</p>
+<pre><code class="language-bash">Reading Models/TWD_land/TWD_land.pri
+FMT 0.9.1, build: Sep 30 2021 12:07:49
+Tue Oct 05 10:59:57 2021
+Reading Scenario Lp
+FMTexc(39)Undefined _death action: _DEATH FMTsection(4)Action
+FMTexc(40)Undefined _death transition: _DEATH FMTsection(5)Transition
+Done reading Tue Oct 05 10:59:57 2021
+[1] &quot;LP&quot;
+</code></pre>
+<p>As you can see, FMT indicated that it has read the scenario &ldquo;LP&rdquo;, and returned its name.</p>
+<h2 id="the-core-namespace">The <code>Core</code> namespace</h2>
+<p>The <code>Core</code> namespace contains elements used by FMT &ldquo;under the hood&rdquo; to make the <code>FMTModel</code> object function.</p>
+<p>For example, it contains the objects :</p>
+<ul>
+<li><code>FMTaction</code> : Class that defines the operability of multiple strata for a given disturbance.</li>
+<li><code>FMTtransition</code> : Class that defines the transitions of multiple strata for a given disturbance.</li>
+<li><code>FMTyields</code> : Class that defines the growth and yields values for every strata.</li>
+<li><code>FMToutputs</code> : Class that defines the outputs in the model (inventory or action based), but not the outputs <em>of</em> the model (e.g., output files or others)</li>
+<li><code>FMTconstraints</code> : Class that defines the global constraints and the objective of the model (e.g., variable to optimize).</li>
+</ul>
+<p>These different objects can be called from a <code>FMTmodel</code> object with the different <em>getter</em> functions.</p>
+<p>For example, to see the list of <code>FMTaction</code> objects associated with a particular <code>FMTmodel</code>, you can use the <code>FMTModel.getactions()</code> (or <code>FMTModel$getactions()</code> in R) function, and use a <code>for</code> loop to display every action other it. <strong>The actions displayed in such way will correspond to the actions present in the <code>.act</code> file of the Woodstock files for the model</strong>.</p>
+<p>Here is an example of displaying the actions and the transitions of a <code>FMTmodel</code> in R code :</p>
+<pre><code class="language-R">library(FMT) # Loads FMT into R
+if (new(FMTversion)$hasfeature(&quot;OSI&quot;)) # Checks if FMT has been compiled with OSI by creating a new FMTversion object, and using the function hasfeature().
+{
+	# Creating the parser object to read the model files
+	newmodelparser &lt;- new(FMTmodelparser)
+	# Reading the project with the model parser by specifying that we want the scenario named &quot;LP&quot; (there can be different scenarios for one model)
+	modelslist &lt;- newmodelparser$readproject(&quot;Models/TWD_land/TWD_land.pri&quot;, c(&quot;LP&quot;), TRUE, TRUE, TRUE)
+	model &lt;- modelslist[[1]]
+	# We get the name of the actions in the model
+	print(&quot;***** Here is the name of the actions&quot;)
+	for (action in model$getactions())
+	{
+		print(action$getname())
+	}
+	print(&quot;***** Here is the name of the transitions&quot;)
+	for (transition in model$gettransitions())
+	{
+		# We concatenate the entry for the transition to make it more readable in the prompt
+		cat(transition$str())
+	}
+
+} else { # if the model hasn't been compiled with OSI, we display an error.
+	print(&quot;FMT needs to be compiled with OSI&quot;)
+}
+</code></pre>
+<p>This R code will result in the following text in the R prompt :</p>
+<pre><code class="language-bash">Reading Models/TWD_land/TWD_land.pri
+FMT 0.9.1, build: Sep 30 2021 12:07:49
+Tue Oct 05 10:59:57 2021
+Reading Scenario Lp
+FMTexc(39)Undefined _death action: _DEATH FMTsection(4)Action
+FMTexc(40)Undefined _death transition: _DEATH FMTsection(5)Transition
+Done reading Tue Oct 05 10:59:57 2021
+[1] &quot;***** Here is the name of the actions&quot;
+[1] &quot;CLEARCUT&quot;
+[1] &quot;ACARIBOU&quot;
+[1] &quot;PLANTATION&quot;
+[1] &quot;AFIRE&quot;
+[1] &quot;ARECUP&quot;
+[1] &quot;_DEATH&quot;
+[1] &quot;***** Here is the name of the transitions&quot;
+*CASE CLEARCUT
+*SOURCE ? ? ?
+*TARGET ? ? ? 100.000000
+*CASE ACARIBOU
+*SOURCE ? ? ?
+*TARGET ? ? ? 100.000000 _LOCK 1
+*CASE PLANTATION
+*SOURCE ? ? ?
+*TARGET ? STAND1 ? 100.000000
+*CASE AFIRE
+*SOURCE ? ? ?
+*TARGET ? FIRE ? 100.000000
+*CASE ARECUP
+*SOURCE ? FIRE ?
+*TARGET ? STAND1 ? 100.000000
+*CASE _DEATH
+*SOURCE ? ? ?
+*TARGET ? ? ? 100.000000
+</code></pre>
+<p>The equivalent in Python code is :</p>
+<pre><code class="language-python">import sys
+from FMT import Models
+from FMT import Parser
+from FMT import Version
+
+if __name__ == &quot;__main__&quot;:
+	if Version.FMTversion().hasfeature(&quot;OSI&quot;):
+		# Creating the parser object to read the model files
+		newmodelparser=  Parser.FMTmodelparser()
+		path = &quot;Models/TWD_Land/TWD_Land.pri&quot;
+		scenarios = [&quot;LP&quot;]
+		# Reading the project with the model parser by specifying that we want the scenario named &quot;LP&quot; (there can be different scenarios for one model)
+		modelslist = newmodelparser.readproject(path, scenarios)
+		model = modelslist[0]
+		# We get the name of the actions in the model
+		print(&quot;***** Here is the name of the actions&quot;)
+		for action in model.getactions():
+			print(action)
+		print(&quot;***** Here is the name of the transitions&quot;)
+		for transition in model.gettransitions():
+			print(transition.getname())
+	else:
+		print(&quot;FMT needs to be compiled with OSI&quot;)
+</code></pre>
+<p>Which will result in the following text in the Python terminal. Note that while the outputs between R and Python should usually be the same, there are sometimes small differences. Here, the Python version will display more information about the actions, and just the name of the transitions when compared to R; this is due to the particularities of the two languages.</p>
+<pre><code class="language-bash">Reading Models/TWD_land/TWD_land.pri
+FMT 0.9.1, build: Sep 30 2021 12:07:49
+Tue Oct 05 10:59:57 2021
+Reading Scenario Lp
+FMTexc(39)Undefined _death action: _DEATH FMTsection(4)Action
+FMTexc(40)Undefined _death transition: _DEATH FMTsection(5)Transition
+Done reading Tue Oct 05 10:59:57 2021
+***** Here is the name of the actions
+*ACTION CLEARCUT Y
+*OPERABLE COUPETOTALE
+? ? ? TOTALVOLUME &gt;= 100.000000
+
+*ACTION ACARIBOU N
+*OPERABLE ACARIBOU
+UC ? ? _AGE &gt;= 8
+
+*ACTION PLANTATION Y _LOCKEXEMPT
+*OPERABLE PLANTATION
+? ? ? _AGE &gt;= 1 AND _AGE &lt;= 3
+
+*ACTION ARECUP Y
+*OPERABLE AFIRE
+? PROD ? _AGE &gt;= 1
+
+*ACTION ARECUP Y
+*OPERABLE ARECUP
+? FEU ? _AGE = 0
+
+*ACTION _DEATH Y _LOCKEXEMPT
+*OPERABLE _DEATH
+? ? ? _AGE &gt;= 80
+
+***** Here is the name of the transitions
+CLEARCUT
+ACARIBOU
+PLANTATION
+AFIRE
+ARECUP
+_DEATH
+</code></pre>
+<h2 id="comparing-elements-in-fmt">Comparing elements in FMT</h2>
+<p>A common operation to do in your scripts will be to compare elements : for example, to compare the name of a <code>FMTaction</code> object with the name of the action that you want to select, etc.</p>
+<p>In such cases, remember that <strong>all strings read by FMT are automatically set to upper case strings</strong>. Therefore, <strong>if you want to compare elements name in FMT make sure the string is in uppercase</strong>.</p>
+<p>For example, if you have an action named <code>Clearcut</code> or <code>clearcut</code> that you want to select, you will need to compare the name of the <code>FMTactions</code> of the models with the string <code>CLEARCUT</code>, all in upper case.</p>
+<h2 id="conversion-of-errors-to-warnings">Conversion of errors to warnings</h2>
+<p>All FMT classes inherit from the class <code>FMTobject</code>, and thus share the same <code>FMTexceptionhandler</code> and <code>FMTlogger</code>.</p>
+<p>If the user want to ignore some error, he can use the function <code>seterrorstowarnings</code> of any FMT class and pass a vector of errors that the handler needs to consider warnings. This function is risky and can lead to errors. It is recommended that you investigate FMT error messages and correct the model accordingly.</p>
+<hr>
+<p>Now that you know everything about the structure of FMT and its basic elements, we will take a look at how to do spatially referenced optimization with it, which is one of the main functions of FMT.</p>
+
+          </div>
+
+          
+
+
+
+          
+          
+          <div class="article-widget">
+            
+<div class="post-nav">
+  
+  
+  
+  <div class="post-nav-item">
+    <div class="meta-nav">Next</div>
+    <a href="/docs/basics/spatially_referenced_optimization/" rel="prev">Spatially referenced optimization</a>
+  </div>
+  
+</div>
+
+          </div>
+          
+        </div>
+
+        <div class="body-footer">
+          <p>Last updated on May 5, 2019</p>
+
+          
+
+
+
+
+
+          
+
+
+
+
+          
+
+
+  
+  
+
+
+
+        </div>
+
+      </article>
+
+      <footer class="site-footer">
+
+  
+
+  
+
+  
+  <p class="powered-by">
+    © 2022 Bureau du Forestier en Chef du Québec
+  </p>
+  
+
+  
+  
+
+
+
+
+
+
+  <p class="powered-by">
+    
+    
+    
+      
+      
+      
+      
+      
+      
+      Published with <a href="https://wowchemy.com/?utm_campaign=poweredby" target="_blank" rel="noopener">Wowchemy</a> — the free, <a href="https://github.com/wowchemy/wowchemy-hugo-modules" target="_blank" rel="noopener">open source</a> website builder that empowers creators.
+    
+  </p>
+</footer>
+
+
+    </main>
+  </div>
+</div>
+
+  </div>
+
+  <div class="page-footer">
+    
+    
+  </div>
+
+  
+<div id="modal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Cite</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <pre><code class="tex hljs"></code></pre>
+      </div>
+      <div class="modal-footer">
+        <a class="btn btn-outline-primary my-1 js-copy-cite" href="#" target="_blank">
+          <i class="fas fa-copy"></i> Copy
+        </a>
+        <a class="btn btn-outline-primary my-1 js-download-cite" href="#" target="_blank">
+          <i class="fas fa-download"></i> Download
+        </a>
+        <div id="modal-error"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+      
+
+    
+    
+    
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/instant.page/5.1.0/instantpage.min.js" integrity="sha512-1+qUtKoh9XZW7j+6LhRMAyOrgSQKenQ4mluTR+cvxXjP1Z54RxZuzstR/H9kgPXQsVB8IW7DMDFUJpzLjvhGSQ==" crossorigin="anonymous"></script>
+
+      
+      
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.imagesloaded/4.1.4/imagesloaded.pkgd.min.js" integrity="sha256-lqvxZrPLtfffUl2G/e7szqSvPBILGbwmsGE1MKlOi0Q=" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.isotope/3.0.6/isotope.pkgd.min.js" integrity="sha256-CBrpuqrMhXwcLLUd5tvQ4euBHCdh7wGlDfNz8vbu/iI=" crossorigin="anonymous"></script>
+      
+
+      
+      
+
+      
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/8.8.4/mermaid.min.js" integrity="sha512-as1BF4+iHZ3BVO6LLDQ7zrbvTXM+c/1iZ1qII/c3c4L8Rn5tHLpFUtpaEtBNS92f+xGsCzsD7b62XP3XYap6oA==" crossorigin="anonymous" title="mermaid"></script>
+      
+
+      
+        
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.2.0/highlight.min.js" integrity="sha512-TDKKr+IvoqZnPzc3l35hdjpHD0m+b2EC2SrLEgKDRWpxf2rFCxemkgvJ5kfU48ip+Y+m2XVKyOCD85ybtlZDmw==" crossorigin="anonymous"></script>
+        
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.2.0/languages/r.min.js"></script>
+        
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.2.0/languages/python.min.js"></script>
+        
+      
+
+    
+
+    
+    
+    
+
+    
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/anchor-js/4.2.2/anchor.min.js" integrity="sha512-I7w3ZdSFzw5j3jU3ZkNikBNeIrl3i+hEuEdwNmqUJvwNcaBUNcijnP2gd9DtGlgVYDplfjGoD8vTNsID+lCjqg==" crossorigin="anonymous"></script>
+    <script>
+      anchors.add();
+    </script>
+    
+
+    
+    
+    
+      
+      <script id="search-hit-fuse-template" type="text/x-template">
+        <div class="search-hit" id="summary-{{key}}">
+          <div class="search-hit-content">
+            <div class="search-hit-name">
+              <a href="{{relpermalink}}">{{title}}</a>
+              <div class="article-metadata search-hit-type">{{type}}</div>
+              <p class="search-hit-description">{{snippet}}</p>
+            </div>
+          </div>
+        </div>
+      </script>
+      
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.1/fuse.min.js" integrity="sha256-VzgmKYmhsGNNN4Ph1kMW+BjoYJM2jV5i4IlFoeZA9XI=" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js" integrity="sha256-4HLtjeVgH0eIB3aZ9mLYF6E8oU5chNdjU6p6rrXpl9U=" crossorigin="anonymous"></script>
+      
+    
+
+    
+    
+
+    
+    
+    
+    
+
+    
+    <script src="/js/bootstrap.bundle.min.6aed84840afc03ab4d5750157f69c120.js"></script>
+
+    
+    
+      
+      
+      
+      
+      
+      
+      
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+      
+      
+    
+    
+    <script src="/en/js/wowchemy.min.d36cd9f11e81a0512fc0b62b502a165d.js"></script>
+
+    
+
+
+
+
+
+
+</body>
+</html>

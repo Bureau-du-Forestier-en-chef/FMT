@@ -1,0 +1,1513 @@
+<!DOCTYPE html><html lang="en-us" >
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  
+  
+  
+    <meta name="generator" content="Wowchemy 5.2.0 for Hugo" />
+  
+
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+  
+  
+    
+  
+  <meta name="description" content="In the previous section, we&rsquo;ve seen how to read a Woodstock model and load it into a FMTlpmodel object.
+FMTlpmodel will allow you to solve a spatially referenced linear programming model, giving you an optimized schedule of forest operations according to a goal and a set of constraints." />
+
+  
+    <link rel="alternate" hreflang="fr" href="/fr/docs/basics/spatially_referenced_optimization/" />
+  
+  <link rel="alternate" hreflang="en-us" href="/docs/basics/spatially_referenced_optimization/" />
+
+  
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  
+
+  
+  
+  
+    <meta name="theme-color" content="#1565c0" />
+  
+
+  
+  
+
+  
+  
+  
+  
+    
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.14.0/css/all.min.css" integrity="sha256-FMvZuGapsJLjouA6k7Eo2lusoAX9i0ShlWFG6qt7SLc=" crossorigin="anonymous">
+
+    
+    
+
+    
+    
+    
+      
+    
+    
+      
+      
+        
+          <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.2.0/styles/github.min.css" crossorigin="anonymous" title="hl-light" media="print" onload="this.media='all'">
+          <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.2.0/styles/dracula.min.css" crossorigin="anonymous" title="hl-dark" media="print" onload="this.media='all'" disabled>
+        
+      
+    
+
+    
+    
+    
+
+    
+
+    
+    
+      
+      
+
+      
+      
+
+      
+    
+      
+      
+
+      
+      
+
+      
+    
+      
+      
+
+      
+      
+
+      
+    
+      
+      
+
+      
+      
+
+      
+    
+      
+      
+
+      
+      
+
+      
+    
+      
+      
+
+      
+      
+
+      
+    
+      
+      
+
+      
+      
+
+      
+    
+      
+      
+
+      
+      
+
+      
+    
+      
+      
+
+      
+      
+
+      
+    
+      
+      
+
+      
+      
+
+      
+    
+      
+      
+
+      
+      
+
+      
+    
+      
+      
+
+      
+      
+
+      
+    
+      
+      
+
+      
+      
+
+      
+    
+      
+      
+
+      
+      
+        
+      
+
+      
+    
+      
+      
+
+      
+      
+
+      
+    
+      
+      
+
+      
+      
+
+      
+    
+  
+
+  
+  
+  
+    
+      
+      <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Roboto+Mono&family=Roboto:wght@400;700&display=swap">
+      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&family=Roboto+Mono&family=Roboto:wght@400;700&display=swap" media="print" onload="this.media='all'">
+    
+  
+
+  
+  
+  
+  
+  
+  <link rel="stylesheet" href="/css/wowchemy.aa936755d898fe5a4c5cf937b93bb8a2.css" />
+
+  
+
+
+
+  
+
+  
+
+  
+
+
+
+
+  
+  
+  
+
+  
+
+  
+    <link rel="manifest" href="/index.webmanifest" />
+  
+
+  <link rel="icon" type="image/png" href="/media/icon_huc6d37a7993bbbcfd0b9a96d08d6d7557_42395_32x32_fill_lanczos_center_3.png" />
+  <link rel="apple-touch-icon" type="image/png" href="/media/icon_huc6d37a7993bbbcfd0b9a96d08d6d7557_42395_180x180_fill_lanczos_center_3.png" />
+
+  <link rel="canonical" href="/docs/basics/spatially_referenced_optimization/" />
+
+  
+  
+  
+  
+  
+  
+  
+  
+    
+    
+  
+  
+  <meta property="twitter:card" content="summary" />
+  
+  <meta property="og:site_name" content="FMT Documentation" />
+  <meta property="og:url" content="/docs/basics/spatially_referenced_optimization/" />
+  <meta property="og:title" content="Spatially referenced optimization | FMT Documentation" />
+  <meta property="og:description" content="In the previous section, we&rsquo;ve seen how to read a Woodstock model and load it into a FMTlpmodel object.
+FMTlpmodel will allow you to solve a spatially referenced linear programming model, giving you an optimized schedule of forest operations according to a goal and a set of constraints." /><meta property="og:image" content="/media/icon_huc6d37a7993bbbcfd0b9a96d08d6d7557_42395_512x512_fill_lanczos_center_3.png" />
+    <meta property="twitter:image" content="/media/icon_huc6d37a7993bbbcfd0b9a96d08d6d7557_42395_512x512_fill_lanczos_center_3.png" /><meta property="og:locale" content="en-us" />
+  
+    
+      <meta
+        property="article:published_time"
+        content="2019-05-05T00:00:00&#43;01:00"
+      />
+    
+    <meta property="article:modified_time" content="2019-05-05T00:00:00&#43;01:00">
+  
+
+  
+
+
+
+  
+
+  
+
+  
+
+
+
+
+
+  <title>Spatially referenced optimization | FMT Documentation</title>
+</head>
+
+
+<body id="top" data-spy="scroll" data-offset="70" data-target="#TableOfContents" class="page-wrapper   " data-wc-page-id="1944b4f83faa7919c3330c50fbf3bbde" >
+
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  <script src="/js/wowchemy-init.min.d5311fd7435c9fda4bf0768e412fb7ae.js"></script>
+
+  
+
+
+<aside class="search-modal" id="search">
+  <div class="container">
+    <section class="search-header">
+
+      <div class="row no-gutters justify-content-between mb-3">
+        <div class="col-6">
+          <h1>Search</h1>
+        </div>
+        <div class="col-6 col-search-close">
+          <a class="js-search" href="#" aria-label="Close"><i class="fas fa-times-circle text-muted" aria-hidden="true"></i></a>
+        </div>
+      </div>
+
+      <div id="search-box">
+        
+        <input name="q" id="search-query" placeholder="Search..." autocapitalize="off"
+        autocomplete="off" autocorrect="off" spellcheck="false" type="search" class="form-control"
+        aria-label="Search...">
+        
+      </div>
+
+      
+      
+
+      
+
+    </section>
+    <section class="section-search-results">
+
+      <div id="search-hits">
+        
+      </div>
+
+    </section>
+  </div>
+</aside>
+
+
+
+  <div class="page-header">
+    
+
+
+
+
+
+
+
+
+
+
+
+
+<nav class="navbar navbar-expand-lg navbar-light compensate-for-scrollbar" id="navbar-main">
+  <div class="container-xl">
+
+    
+    <div class="d-none d-lg-inline-flex">
+      <a class="navbar-brand" href="/">FMT Documentation</a>
+    </div>
+    
+
+    
+    <button type="button" class="navbar-toggler" data-toggle="collapse"
+            data-target="#navbar-content" aria-controls="navbar-content" aria-expanded="false" aria-label="Toggle navigation">
+    <span><i class="fas fa-bars"></i></span>
+    </button>
+    
+
+    
+    <div class="navbar-brand-mobile-wrapper d-inline-flex d-lg-none">
+      <a class="navbar-brand" href="/">FMT Documentation</a>
+    </div>
+    
+
+    
+    
+    <div class="navbar-collapse main-menu-item collapse justify-content-start" id="navbar-content">
+
+      
+      <ul class="navbar-nav d-md-inline-flex">
+        
+
+        
+
+        
+        
+        
+
+        
+
+        
+        
+        
+        
+
+        
+          
+          
+        
+
+        <li class="nav-item">
+          <a class="nav-link " href="/"><span>Home</span></a>
+        </li>
+
+        
+        
+
+        
+
+        
+        
+        
+          
+        
+
+        
+
+        
+        
+        
+        
+
+        
+          
+            
+            
+          
+          
+        
+
+        <li class="nav-item">
+          <a class="nav-link  active" href="/docs/"><span>Documentation</span></a>
+        </li>
+
+        
+        
+
+        
+
+        
+        
+        
+          
+        
+
+        
+
+        
+        
+        
+        
+
+        
+          
+            
+            
+          
+          
+        
+
+        <li class="nav-item">
+          <a class="nav-link " href="/../doxygen/index.html"><span>Doxygen</span></a>
+        </li>
+
+        
+        
+
+      
+
+        
+      </ul>
+    </div>
+
+    <ul class="nav-icons navbar-nav flex-row ml-auto d-flex pl-md-2">
+
+      
+      
+
+      
+      
+      <li class="nav-item">
+        <a class="nav-link js-search" href="#" aria-label="Search"><i class="fas fa-search" aria-hidden="true"></i></a>
+      </li>
+      
+
+      
+      
+      <li class="nav-item dropdown theme-dropdown">
+        <a href="#" class="nav-link" data-toggle="dropdown" aria-haspopup="true" aria-label="Display preferences">
+          <i class="fas fa-moon" aria-hidden="true"></i>
+        </a>
+        <div class="dropdown-menu">
+          <a href="#" class="dropdown-item js-set-theme-light">
+            <span>Light</span>
+          </a>
+          <a href="#" class="dropdown-item js-set-theme-dark">
+            <span>Dark</span>
+          </a>
+          <a href="#" class="dropdown-item js-set-theme-auto">
+            <span>Automatic</span>
+          </a>
+        </div>
+      </li>
+      
+
+      
+      
+      <li class="nav-item dropdown i18n-dropdown">
+        <a href="#" class="nav-link " data-toggle="dropdown"
+           aria-haspopup="true" aria-label="Languages">
+          <i class="fas fa-globe mr-1" aria-hidden="true"></i></a>
+        <div class="dropdown-menu">
+          <div class="dropdown-item dropdown-item-active">
+            <span>English</span>
+          </div>
+          
+          <a class="dropdown-item" href="/fr/docs/basics/spatially_referenced_optimization/">
+            <span>Français</span>
+          </a>
+          
+        </div>
+      </li>
+      
+
+    </ul>
+
+  </div>
+</nav>
+
+
+  </div>
+
+  <div class="page-body">
+    
+
+
+
+
+
+<div class="container-fluid docs">
+  <div class="row flex-xl-nowrap">
+    <div class="col-12 col-md-3 col-xl-2 docs-sidebar">
+      <form class="docs-search d-flex align-items-center">
+  <button class="btn docs-toggle d-md-none p-0 mr-md-3 w-100" type="button" data-toggle="collapse" data-target="#docs-nav" aria-controls="docs-nav" aria-expanded="false" aria-label="Toggle section navigation">
+    <div class="d-flex">
+      <span class="d-md-none pl-1 flex-grow-1 text-left overflow-hidden">
+        
+          The basics
+        
+      </span>
+      <span><i class="fas fa-chevron-down"></i></span>
+    </div>
+  </button>
+
+  
+  <button class="form-control sidebar-search js-search d-none d-md-flex">
+    <i class="fas fa-search pr-2"></i>
+    <span class="sidebar-search-text">Search...</span>
+    <span class="sidebar-search-shortcut">/</span>
+  </button>
+  
+</form>
+
+<nav class="collapse docs-links" id="docs-nav">
+  
+  
+  
+  
+  
+  
+
+  
+  
+    
+
+    
+      
+
+      
+
+
+  
+    
+    
+    
+    
+      
+    
+    
+
+    
+      <ul class="nav docs-sidenav">
+        <li class=""><a href="/docs/">FMT Documentation</a></li>
+    
+      
+
+
+  
+    
+    
+    
+    
+      
+    
+    
+
+    
+      <div class="docs-toc-item">
+        <a class="docs-toc-link " href="/docs/basics/"><i class="fas fa-play pr-1"></i>The basics</a>
+    
+      
+        <ul class="nav docs-sidenav">
+      
+
+
+  <li class=""><a href="/docs/basics/objects_parsing_interrogation/">Objects, model parsing and interrogation</a></li>
+
+
+
+  <li class="active"><a href="/docs/basics/spatially_referenced_optimization/">Spatially referenced optimization</a></li>
+
+
+
+  <li class=""><a href="/docs/basics/exercice_1/">Exercise 1</a></li>
+
+
+
+  <li class=""><a href="/docs/basics/spatially_explicit_simulation/">Spatially explicit simulation</a></li>
+
+      
+        </ul>
+      
+    
+
+    
+      </div>
+    
+
+
+
+  
+    
+    
+    
+    
+      
+    
+    
+
+    
+      <div class="docs-toc-item">
+        <a class="docs-toc-link " href="/docs/download_install/"><i class="fas fa-download pr-1"></i>Downloading and installing</a>
+    
+      
+        <ul class="nav docs-sidenav">
+      
+
+
+  <li class=""><a href="/docs/download_install/prerequisits/">Prerequisits</a></li>
+
+
+
+  <li class=""><a href="/docs/download_install/downloading_libraries/">Downloading the libraries</a></li>
+
+
+
+  <li class=""><a href="/docs/download_install/compiling/">Compiling</a></li>
+
+
+
+  <li class=""><a href="/docs/download_install/importing_in_python/">Importing FMT in Python</a></li>
+
+      
+        </ul>
+      
+    
+
+    
+      </div>
+    
+
+      
+    
+
+    
+      </ul>
+    
+
+  
+</nav>
+
+    </div>
+
+    
+    
+    <div class="d-none d-xl-block col-xl-2 docs-toc">
+      
+
+      <ul class="nav toc-top">
+        <li><a href="#" id="back_to_top" class="docs-toc-title">Contents</a></li>
+      </ul>
+
+      <nav id="TableOfContents">
+  <ul>
+    <li><a href="#a-quick-reminder-of-the-meaning-of-spatially-referenced">A quick reminder of the meaning of &ldquo;spatially referenced&rdquo;</a></li>
+    <li><a href="#the-structure-of-the-fmtlpmodel--fmtgraph-and-fmtdevelopment">The structure of the <code>FMTlpmodel</code> : <code>FMTgraph</code> and <code>FMTdevelopment</code></a></li>
+    <li><a href="#building-the-full-graph-of-the-model">Building the full graph of the model</a></li>
+    <li><a href="#constraints-and-objective">Constraints and objective</a></li>
+    <li><a href="#solving-the-fmtlpmodel">Solving the <code>FMTlpmodel</code></a></li>
+    <li><a href="#building-the-graph-with-an-existing-solution-partial-build">Building the graph with an existing solution (partial build)</a></li>
+    <li><a href="#getting-output-values-from-the-model">Getting output values from the model</a></li>
+    <li><a href="#exporting-the-schedule-of-a-solved-model">Exporting the schedule of a solved model</a></li>
+    <li><a href="#pre-solving-a-model">Pre-solving a model</a></li>
+  </ul>
+</nav>
+
+      
+    </div>
+    
+
+    <main class="col-12 col-md-9 col-xl-8 py-md-3 pl-md-5 docs-content" role="main">
+
+      <article class="article">
+
+        <div class="docs-article-container">
+          
+            
+  <nav class="d-none d-md-flex" aria-label="breadcrumb">
+    <ol class="breadcrumb">
+      
+  
+  
+  
+
+  <li class="breadcrumb-item">
+    <a href="/">
+      
+        Home
+      
+    </a>
+  </li>
+
+
+  <li class="breadcrumb-item">
+    <a href="/docs/">
+      
+        FMT Documentation
+      
+    </a>
+  </li>
+
+
+  <li class="breadcrumb-item">
+    <a href="/docs/basics/">
+      
+        The basics
+      
+    </a>
+  </li>
+
+
+      <li class="breadcrumb-item active" aria-current="page">
+        Spatially referenced optimization
+      </li>
+    </ol>
+  </nav>
+
+
+          
+
+          <h1>Spatially referenced optimization</h1>
+
+          <div class="article-style">
+            <p>In the previous section, we&rsquo;ve seen how to read a Woodstock model and load it into a <code>FMTlpmodel</code> object.</p>
+<p><code>FMTlpmodel</code> will allow you to solve a spatially referenced linear programming model, giving you an optimized schedule of forest operations according to a goal and a set of constraints.</p>
+<p>Here, we will see how to do this optimization in practice.</p>
+<h2 id="a-quick-reminder-of-the-meaning-of-spatially-referenced">A quick reminder of the meaning of &ldquo;spatially referenced&rdquo;</h2>
+<p>We can distinguish 3 ways that space can be taken into account in a model :</p>
+<ul>
+<li>In a <strong>non-spatial model</strong> or <strong>spatially implicit model</strong>, entities (e.g., forests, animals, agents, etc.) are not directly associated with a position in space, but the relation between them in the model can imply that only some of them interact with each other in a way to mimic a spatial disposition.</li>
+<li>In a <strong>spatially referenced model</strong>, entities are associated to regions in space, but not to a precise position in those regions; those regions can be non-continuous. Woodstock models are spatially referenced in nature, as they consider <em>strata</em> that correspond to forests with the same composition and age, which can be dispersed in many places in the landscape.</li>
+<li>In a <strong>spatially explicit model</strong>, entities are associated to precise coordinates in space, like in the pixels of a raster map.</li>
+</ul>
+<h2 id="the-structure-of-the-fmtlpmodel--fmtgraph-and-fmtdevelopment">The structure of the <code>FMTlpmodel</code> : <code>FMTgraph</code> and <code>FMTdevelopment</code></h2>
+<p><code>FMTlpmodel</code>, <code>FMTgraph</code> and <code>FMTdevelopment</code> are three classes that are important to understand how a linear programming model is represented in FMT, and how to solve it.</p>
+<p><code>FMTlpmodel</code> is a <a href="https://faculty.washington.edu/toths/Publications/McDill_etal_M2.pdf" target="_blank" rel="noopener">type III linear programming forest planning model</a>, which is spatially referenced.</p>
+<p>It can solve a type III forest planning model, and get an optimal harvest schedule using constraints and objectives defined by the user.</p>
+<div class="alert alert-note">
+  <div>
+    The notion of type I, II and III of forest planning models correspond to a particular taxonomy relating to their mathematical structure, and to the way that they can be solved. Type III forest planning models are currently the most advanced type, and can be solved for large landscapes with a lot of forest area. You can learn more about them by reading <a href="https://faculty.washington.edu/toths/Publications/McDill_etal_M2.pdf" target="_blank" rel="noopener">this article</a>.
+  </div>
+</div>
+<p>The <code>FMTlpmodel</code> contains an object called the <code>FMTgraph</code>, which contains the <em>graph</em> of the model. The graph is an ensemble of nodes linked together with vertices. Each node correspond to a possible state for a particular strata (which are spatially referenced groups of forest forest stands with the same characteristics), with each vertex representing a particular way that it can evolve to another state in the same period of time and between periods.</p>
+<p>Here is a visual representation of a simple <code>FMTgraph</code>, in which a particular strata can evolve from different states (<code>FMTdevelopment</code> objects) with different transitions caused by different actions through the sme period of time. The evolution of the stands takes place between the periods and consists in increasing the age by 1 :</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<figure  >
+  <div class="d-flex justify-content-center">
+    <div class="w-100" >
+        <img alt="" srcset="
+               /media/docs/FMTgraph_visual_EN_hubebf39ce6e478c7c51c484f945c7e167_39838_47c045a9239147823506fcd6be76689e.png 400w,
+               /media/docs/FMTgraph_visual_EN_hubebf39ce6e478c7c51c484f945c7e167_39838_1a8d463c0d64639edb1a1e3c9885241b.png 760w,
+               /media/docs/FMTgraph_visual_EN_hubebf39ce6e478c7c51c484f945c7e167_39838_1200x1200_fit_lanczos_3.png 1200w"
+               src="/media/docs/FMTgraph_visual_EN_hubebf39ce6e478c7c51c484f945c7e167_39838_47c045a9239147823506fcd6be76689e.png"
+               width="760"
+               height="396"
+               loading="lazy" data-zoomable /></div>
+  </div></figure>
+<p>A <code>FMTdevelopment</code> is an important class of FMT. It represents a particular strata, which means a particular forest stand that has a given composition, age, and that exists at a particular time period.</p>
+<p>Therefore, the <code>FMTdevelopment</code> object is associated with a <code>FMTmask</code> object, which described the set of attributes (<code>FMTtheme</code>) that defines the <code>FMTdevelopment</code>. This is shown on the following visual :</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<figure  >
+  <div class="d-flex justify-content-center">
+    <div class="w-100" >
+        <img alt="" srcset="
+               /media/docs/FMTdevelopment_explain_EN_hu54407d6053c7e02642ca22ecf146c2a6_22537_53ba49c276a9c1f78cf14ee8b59eac48.png 400w,
+               /media/docs/FMTdevelopment_explain_EN_hu54407d6053c7e02642ca22ecf146c2a6_22537_64f52a257999933c026c0080f2ba023d.png 760w,
+               /media/docs/FMTdevelopment_explain_EN_hu54407d6053c7e02642ca22ecf146c2a6_22537_1200x1200_fit_lanczos_3.png 1200w"
+               src="/media/docs/FMTdevelopment_explain_EN_hu54407d6053c7e02642ca22ecf146c2a6_22537_53ba49c276a9c1f78cf14ee8b59eac48.png"
+               width="458"
+               height="473"
+               loading="lazy" data-zoomable /></div>
+  </div></figure>
+<p><code>FMTdevelopment</code> is the parent class of two classes, <code>FMTactualdevelopment</code> and <code>FMTfuturdevelopment</code>. An <code>FMTactualdevelopment</code> always represents a strata at the beginning of the planning horizon and therefore contains information about the area. The <code>FMTfuturdevelopment</code> are the possible futures and therefore no area is allocated to them when the <code>FMTgraph</code> is built. This is the result of the optimization that informs us about the future distribution of the area through the <code>FMTgraph</code>.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<figure  >
+  <div class="d-flex justify-content-center">
+    <div class="w-100" >
+        <img alt="" srcset="
+               /media/docs/FMTgraph_extended_EN_hufdd23d2fd9cfce8424683324d1066484_54083_d34ec98e40b8feaae7316bae51de6c84.png 400w,
+               /media/docs/FMTgraph_extended_EN_hufdd23d2fd9cfce8424683324d1066484_54083_7be83445e7e08d6087f39bc6811ebcb1.png 760w,
+               /media/docs/FMTgraph_extended_EN_hufdd23d2fd9cfce8424683324d1066484_54083_1200x1200_fit_lanczos_3.png 1200w"
+               src="/media/docs/FMTgraph_extended_EN_hufdd23d2fd9cfce8424683324d1066484_54083_d34ec98e40b8feaae7316bae51de6c84.png"
+               width="760"
+               height="359"
+               loading="lazy" data-zoomable /></div>
+  </div></figure>
+<p>Here are some functions of the <code>FMTdevelopment</code> class that can be important for manipulating the model for different purposes :</p>
+<ul>
+<li><code>FMTdevelopment.grow()</code> can make the stand grow to see what it will become. Returns an <code>FMTfuturdevelopment</code> identical to the <code>FMTdevelopment</code> from which the function is called but with an increased age of 1</li>
+<li><code>FMTdevelopment.operable()</code> can test if a given action can be applied to this development, based on a yield section (e.g. a particular variable)</li>
+<li><code>FMTdevelopment.operate()</code> can operate the stand, and return a vector of <code>FMTdevelopmentpath</code></li>
+</ul>
+<p>Now, we can take a look at how to build the &ldquo;full graph&rdquo; of the model, which is necessary to solve the <code>FMTlpmodel</code>.</p>
+<h2 id="building-the-full-graph-of-the-model">Building the full graph of the model</h2>
+<p>The full graph of the model can be built via a repetition of the function <code>FMTlpmodel.buildperiod()</code>. This is essential to solve the model, as FMT will navigate this graph to find the optimal solution according to the objective and the constraints that we will set (see next section).</p>
+<p>This function requires three parameters :</p>
+<ul>
+<li>A schedule of actions, on the form of a <code>FMTschedule</code> object (it can be empty to obtain the full graph for the model, containing every possibilities)</li>
+<li>An option to force a partial build (which we will not see right now)</li>
+<li>Another parameter for class operability (that we will not see either right now, and just set to 1)</li>
+</ul>
+<p>Here is the code to build the full graph in R. Pay attention to the to the <code>for</code> loop that builds the different periods.</p>
+<pre><code class="language-R">library(FMT) # Loads FMT into R
+if (new(FMTversion)$hasfeature(&quot;OSI&quot;)) # Checks if FMT has been compiled with OSI by creating a new FMTversion object, and using the function hasfeature().
+{
+	# Creating the parser object to read the model files
+	newparser &lt;- new(FMTmodelparser)
+	# Reading the project with the model parser by specifying that we want the scenario named &quot;LP&quot; (there can be different scenarios for one model)
+	modelslist &lt;- newmodelparser$readproject(&quot;Models/TWD_land/TWD_land.pri&quot;, c(&quot;LP&quot;), TRUE, TRUE, TRUE)
+	# We cast the model in the &quot;lpmodel&quot; format for linear programming model by specifying the solver that we want to use
+	solverinterface &lt;- list(CLP=1,MOSEK=2,CPLEX=3,GUROBI=4)
+	lpmodel &lt;- new(FMTlpmodel,modelslist[[1]],solverinterface$MOSEK)
+	# We create an empty schedule to create the full graph
+	emptyschedule &lt;- new(FMTschedule)
+	# We loop around the different periods to build the full graph
+	for (period in 1:10)
+	{
+		# We also want the prompt to display what is happening
+		print(lpmodel$buildperiod(emptyschedule,FALSE,1)$str())
+	}
+} else { # if the model hasn't been compiled with OSI, we display an error.
+	print(&quot;FMT needs to be compiled with OSI&quot;)
+}
+</code></pre>
+<p>The equivalent in Python code is the following (<strong>notice that in Python, we don&rsquo;t have to make an empty schedule to build the full graph</strong>) :</p>
+<pre><code class="language-python">import sys
+from FMT import Models
+from FMT import Parser
+from FMT import Version
+
+if __name__ == &quot;__main__&quot;:
+	if Version.FMTversion().hasfeature(&quot;OSI&quot;):
+		# Creating the parser object to read the model files
+		newmodelparser=  Parser.FMTmodelparser()
+		path = &quot;Models/TWD_Land/TWD_Land.pri&quot;
+		scenarios = [&quot;LP&quot;]
+		# Reading the project with the model parser by specifying that we want the scenario named &quot;LP&quot; (there can be different scenarios for one model)
+		modelslist = newmodelparser.readproject(path, scenarios)
+		# We cast the model in the &quot;lpmodel&quot; format for linear programming model by specifying the solver that we want to use
+		lpmodel = Models.FMTlpmodel(modelslist[0], Models.FMTsolverinterface.CLP)
+		# We loop around the different periods to build the full graph
+		for period in range(1, 11):
+			print(lpmodel.buildperiod())
+	else:
+		print(&quot;FMT needs to be compiled with OSI&quot;)
+</code></pre>
+<p>The output of both codes should be the following :</p>
+<pre><code class="language-bash">Reading Models/TWD_land/TWD_land.pri
+FMT 0.9.1, build: Sep 30 2021 12:07:49
+Tue Oct 05 10:59:57 2021
+Reading Scenario Lp
+FMTexc(39)Undefined _death action: _DEATH FMTsection(4)Action
+FMTexc(40)Undefined _death transition: _DEATH FMTsection(5)Transition
+Done reading Tue Oct 05 10:59:57 2021
+Columns: 58 Rows: 29 Vertices: 60 Edges: 58 Transfer Rows: 29 Output Rows: 0 Output Columns: 0
+Columns: 169 Rows: 87 Vertices: 141 Edges: 169 Transfer Rows: 87 Output Rows: 0 Output Columns: 0
+Columns: 336 Rows: 164 Vertices: 237 Edges: 336 Transfer Rows: 164 Output Rows: 0 Output Columns: 0
+Columns: 553 Rows: 259 Vertices: 350 Edges: 553 Transfer Rows: 259 Output Rows: 0 Output Columns: 0
+Columns: 805 Rows: 372 Vertices: 481 Edges: 805 Transfer Rows: 372 Output Rows: 0 Output Columns: 0
+Columns: 1088 Rows: 503 Vertices: 630 Edges: 1088 Transfer Rows: 503 Output Rows: 0 Output Columns: 0
+Columns: 1407 Rows: 652 Vertices: 797 Edges: 1407 Transfer Rows: 652 Output Rows: 0 Output Columns: 0
+Columns: 1762 Rows: 819 Vertices: 982 Edges: 1762 Transfer Rows: 819 Output Rows: 0 Output Columns: 0
+Columns: 2177 Rows: 1015 Vertices: 1196 Edges: 2177 Transfer Rows: 1015 Output Rows: 0 Output Columns: 0
+Columns: 2660 Rows: 1244 Vertices: 1443 Edges: 2660 Transfer Rows: 1244 Output Rows: 0 Output Columns: 0
+</code></pre>
+<p>As we can see, the prompt shows us the evolutions of the characteristics of the <code>FMTgraph</code> as it gets built (increasing number of columns, vertices, etc.).</p>
+<h2 id="constraints-and-objective">Constraints and objective</h2>
+<p>Linear programming models come with constraints and objectives, for which we want an optimized solution.</p>
+<p>Hence, to solve a <code>FMTlpmodel</code>, we need to set these constraints and objectives into the model before attempting to solve it.</p>
+<p>These constraints and objectives can be set manually via the <code>FMTlpmodel.setobjective()</code> and the <code>FMTlpmodel.setconstraints()</code> functions.</p>
+<p>Most of the time, you might end up doing the following :</p>
+<ul>
+<li>Getting the constraints that are already in the Woodstock files formulation of the model using the <code>FMTmodel.getconstraint()</code> function.</li>
+<li>Taking out the first constraint out of the list of constraints that <code>FMTmodel.getconstraint()</code> returns, because <strong>the first constraint of this list is actually the objective function of the model</strong>.</li>
+<li>Then, inserting this objective function and the constraints into the <code>FMTlpmodel</code> in order to solve it, by using the <code>FMTlpmodel.setobjective()</code> and <code>FMTlpmodel.setconstraint()</code> functions.</li>
+</ul>
+<p>This will result in the following code, in R :</p>
+<pre><code class="language-R">library(FMT) # Loads FMT into R
+if (new(FMTversion)$hasfeature(&quot;OSI&quot;)) # Checks if FMT has been compiled with OSI by creating a new FMTversion object, and using the function hasfeature().
+{
+	# Creating the parser object to read the model files
+	newparser &lt;- new(FMTmodelparser)
+	# Reading the project with the model parser by specifying that we want the scenario named &quot;LP&quot; (there can be different scenarios for one model)
+	modelslist &lt;- newmodelparser$readproject(&quot;Models/TWD_land/TWD_land.pri&quot;, c(&quot;LP&quot;), TRUE, TRUE, TRUE)
+	# We cast the model in the &quot;lpmodel&quot; format for linear programming model by specifying the solver that we want to use
+	solverinterface &lt;- list(CLP=1,MOSEK=2,CPLEX=3,GUROBI=4)
+	lpmodel &lt;- new(FMTlpmodel,modelslist[[1]],solverinterface$MOSEK)
+	# We create an empty schedule to create the full graph
+	emptyschedule &lt;- new(FMTschedule)
+	# We loop around the different periods to build the full graph
+	for (period in 1:10)
+	{
+		# We also want the prompt to display what is happening
+		print(lpmodel$buildperiod(emptyschedule,FALSE,1)$str())
+	}
+	# We get the constraints and objectives
+	allmodelconstraints &lt;- lpmodel$getconstraints()
+	# We define the first constraint of the list as the objective function of the model
+	modelobjective &lt;- allmodelconstraints[[1]]
+	# We define all of the other constraints of the list as constraints
+	modelconstraints &lt;- allmodelconstraints[2:length(allmodelconstraints)]
+	# We apply all of the constraints to the model
+	for (constraint in modelconstraints)
+	{
+		print(lpmodel$setconstraint(constraint)$str())
+	}
+	# We apply the objective function to the model
+	print(lpmodel$setobjective(modelobjective)$str())
+} else { # if the model hasn't been compiled with OSI, we display an error.
+	print(&quot;FMT needs to be compiled with OSI&quot;)
+}
+</code></pre>
+<p>The equivalent in Python code is the following (notice that here, we will just &ldquo;take out&rdquo; the objective function out of the list of constraints returned by <code>FMTlpmodel.getconstraints()</code> with the function <code>list.pop()</code>, which we allow us to directly loop around the remaining list for the constraints) :</p>
+<pre><code class="language-python">import sys
+from FMT import Models
+from FMT import Parser
+from FMT import Version
+
+if __name__ == &quot;__main__&quot;:
+	if Version.FMTversion().hasfeature(&quot;OSI&quot;):
+		# Creating the parser object to read the model files
+		newmodelparser=  Parser.FMTmodelparser()
+		path = &quot;Models/TWD_Land/TWD_Land.pri&quot;
+		scenarios = [&quot;LP&quot;]
+		# Reading the project with the model parser by specifying that we want the scenario named &quot;LP&quot; (there can be different scenarios for one model)
+		modelslist = newmodelparser.readproject(path, scenarios)
+		# We cast the model in the &quot;lpmodel&quot; format for linear programming model by specifying the solver that we want to use
+		lpmodel = Models.FMTlpmodel(modelslist[0], Models.FMTsolverinterface.CLP)
+		# We loop around the different periods to build the full graph
+		for period in range(1, 11):
+			print(lpmodel.buildperiod())
+		# We get the constraints and objectives
+		constraints = lpmodel.getconstraints()
+		# We define the first constraint of the list as the objective function of the model
+		objective = constraints.pop(0)
+		# We apply all of the constraints to the model
+		for constraint in constraints:
+			lpmodel.setconstraint(constraint)
+		# We apply the objective function to the model
+		lpmodel.setobjective(objective)
+	else:
+		print(&quot;FMT needs to be compiled with OSI&quot;)
+</code></pre>
+<h2 id="solving-the-fmtlpmodel">Solving the <code>FMTlpmodel</code></h2>
+<p>Once that the full graph is built, and that the constraints and objectives are set, the <code>FMTlpmodel</code> can be solved by using the <code>FMTlpmodel.initialsolve()</code> function. The function returns <code>true</code> or <code>false</code> depending on whether the model was successfully resolved. If the resolution went well, the model retains the solution and the solution can be queried in different ways (an example is shown below).</p>
+<h2 id="building-the-graph-with-an-existing-solution-partial-build">Building the graph with an existing solution (partial build)</h2>
+<p>Sometime, we might want to get some outputs of a solution/schedule that we already have (see next section) without solving the model all over again, as it was already solved previously.</p>
+<p>In that case, it is possible to read a solution that was previously found, and to build the <code>FMTgraph</code> of the model by generating only the edges and vertices used by the solution.</p>
+<p>To that end, three things must be done :</p>
+<ul>
+<li>Reading the schedule file of the scenario, and passing it to the <code>FMTlpmodel.buildperiod()</code> function.</li>
+<li>Setting the solution for each period with the <code>FMTlpmodel.setsolution()</code> function
+<ul>
+<li>If the model contains multiple <code>_LOCKEXEMPT</code> actions, then using <code>FMTlpmodel.setsolution()</code> can throw errors as locks specifications are not part of the solution. In such a case, you should use the <code>FMTlpmodel.setsolutionbylp()</code> function.</li>
+</ul>
+</li>
+</ul>
+<p>This will result in the following code, in R :</p>
+<pre><code class="language-R">library(FMT) # Loads FMT into R
+if (new(FMTversion)$hasfeature(&quot;OSI&quot;)) # Checks if FMT has been compiled with OSI by creating a new FMTversion object, and using the function hasfeature().
+{
+	# Creating the parser object to read the model files
+	newparser &lt;- new(FMTmodelparser)
+	# Indicating where the model and the existing solution are
+	primarylocation &lt;- &quot;Models/TWD_land/TWD_land.pri&quot;
+	# Reading the project with the model parser by specifying that we want the scenario named &quot;LP&quot; (there can be different scenarios for one model)
+	modelslist &lt;- newmodelparser$readproject(primarylocation, c(&quot;LP&quot;), TRUE, TRUE, TRUE)
+	# We cast the model in the &quot;lpmodel&quot; format for linear programming model by specifying the solver that we want to use
+	solverinterface &lt;- list(CLP=1,MOSEK=2,CPLEX=3,GUROBI=4)
+	lpmodel &lt;- new(FMTlpmodel,modelslist[[1]],solverinterface$MOSEK)
+	# We read the existing schedule, which is the first of the list returned by the function
+	schedules &lt;- newparser$readschedules(primarylocation,modelslist)[[1]]
+	# We create a &quot;tolerance&quot; variable that is needed for the setsolution function
+	tolerance &lt;- 0.0001
+	# We loop around the different periods to build the partial graph with the existing solution
+	for (period in 1:length(schedules))
+	{
+		print(lpmodel$buildperiod(schedules[[period]],TRUE,1)$str())
+	}
+	# We set the solution of the model at each period
+	for (period in 1:length(schedules))
+	{
+		# We make an if statement to have an indication if FMT succeeded in applying the solution at this period
+		if (lpmodel$setsolution(period, schedules[[period]], tolerance))
+		{
+			print(paste(&quot;Solution set at period &quot;, period))
+		}
+	}
+} else { # if the model hasn't been compiled with OSI, we display an error.
+	print(&quot;FMT needs to be compiled with OSI&quot;)
+}
+</code></pre>
+<p>Notice that here, we have a second parameter <code>TRUE</code> to <code>lpmodel$buildperiod()</code> to indicate that we needed to force a partial build, as indicated <a href="../../../doxygen/classModels_1_1FMTsrmodel.html#a1931d5db29f364d3d48c887873be04fa">in the documentation of the function</a> :</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<figure  >
+  <div class="d-flex justify-content-center">
+    <div class="w-100" >
+        <img alt="" srcset="
+               /media/docs/buildperiod_function_description_hufc6e5d5c3c5b229b82e00829b34878cd_15390_ac4944d2c540ef9c1673d6f5e501c098.png 400w,
+               /media/docs/buildperiod_function_description_hufc6e5d5c3c5b229b82e00829b34878cd_15390_5751490d1777fd7feacb814d1dafcfb6.png 760w,
+               /media/docs/buildperiod_function_description_hufc6e5d5c3c5b229b82e00829b34878cd_15390_1200x1200_fit_lanczos_3.png 1200w"
+               src="/media/docs/buildperiod_function_description_hufc6e5d5c3c5b229b82e00829b34878cd_15390_ac4944d2c540ef9c1673d6f5e501c098.png"
+               width="760"
+               height="19"
+               loading="lazy" data-zoomable /></div>
+  </div></figure>
+<p>Also notice that we created a variable named <code>tolerance</code>, which is needed by the <code>lpmodel$setsolution()</code> function, as indicated by <a href="../../../doxygen/classModels_1_1FMTsrmodel.html#af2b39c92f48474f4f09bc4c94c99b35b">the documentation</a> once again :</p>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<figure  >
+  <div class="d-flex justify-content-center">
+    <div class="w-100" >
+        <img alt="" srcset="
+               /media/docs/setsolution_function_description_hud7502f50d87eb36312a95407074c8c87_10134_1c5b2390f837e8d344a9cfbed30431d7.png 400w,
+               /media/docs/setsolution_function_description_hud7502f50d87eb36312a95407074c8c87_10134_92b70cc5ce247ede254cb9eb35deeec1.png 760w,
+               /media/docs/setsolution_function_description_hud7502f50d87eb36312a95407074c8c87_10134_1200x1200_fit_lanczos_3.png 1200w"
+               src="/media/docs/setsolution_function_description_hud7502f50d87eb36312a95407074c8c87_10134_1c5b2390f837e8d344a9cfbed30431d7.png"
+               width="605"
+               height="24"
+               loading="lazy" data-zoomable /></div>
+  </div></figure>
+<p>The equivalent in Python code is the following :</p>
+<pre><code class="language-python">import sys
+from FMT import Models
+from FMT import Parser
+from FMT import Version
+
+if __name__ == &quot;__main__&quot;:
+	if Version.FMTversion().hasfeature(&quot;OSI&quot;):
+		# Creating the parser object to read the model files
+		newmodelparser=  Parser.FMTmodelparser()
+		path = &quot;Models/TWD_Land/TWD_Land.pri&quot;
+		scenarios = [&quot;LP&quot;]
+		# Reading the project with the model parser by specifying that we want the scenario named &quot;LP&quot; (there can be different scenarios for one model)
+		modelslist = newmodelparser.readproject(path, scenarios)
+		# We cast the model in the &quot;lpmodel&quot; format for linear programming model by specifying the solver that we want to use
+		lpmodel = Models.FMTlpmodel(modelslist[0], Models.FMTsolverinterface.CLP)
+		# We create a &quot;tolerance&quot; variable that is needed for the setsolution function
+		tolerance = 0.0001
+		# We read the existing schedule, which is the first of the list returned by the function
+		schedules = newmodelparser.readschedules(path, modellist)[0]
+		# We loop around the different periods to build the partial graph with the existing solution
+		for periodschedule in range(len(schedules)):
+			print(lpmodel.buildperiod(schedules[periodschedule], False, 1))
+		# We set the solution of the model at each period (we use +1 as Python use a 0 based numbering)
+		for periodschedule in range(len(schedules)):
+			lpmodel.setsolution(periodschedule+1, schedules[periodschedule], tolerance)
+			print(&quot;Solution set at period&quot;, periodschedule+1) 
+	else:
+		print(&quot;FMT needs to be compiled with OSI&quot;)
+</code></pre>
+<p>The output of both codes should be the following :</p>
+<pre><code class="language-bash">Reading Models/TWD_land/TWD_land.pri
+FMT 0.9.1, build: Sep 30 2021 12:07:49
+Tue Oct 05 10:59:57 2021
+Reading Scenario Lp
+FMTexc(39)Undefined _death action: _DEATH FMTsection(4)Action
+FMTexc(40)Undefined _death transition: _DEATH FMTsection(5)Transition
+Done reading Tue Oct 05 10:59:57 2021
+Columns: 20 Rows: 10 Vertices: 28 Edges: 20 Transfer Rows: 10 Output Rows: 0 Output Columns: 0
+Columns: 40 Rows: 25 Vertices: 48 Edges: 40 Transfer Rows: 25 Output Rows: 0 Output Columns: 0
+Columns: 63 Rows: 44 Vertices: 71 Edges: 63 Transfer Rows: 44 Output Rows: 0 Output Columns: 0
+Columns: 90 Rows: 67 Vertices: 98 Edges: 90 Transfer Rows: 67 Output Rows: 0 Output Columns: 0
+Columns: 123 Rows: 95 Vertices: 131 Edges: 123 Transfer Rows: 95 Output Rows: 0 Output Columns: 0
+Columns: 157 Rows: 126 Vertices: 165 Edges: 157 Transfer Rows: 126 Output Rows: 0 Output Columns: 0
+Columns: 198 Rows: 162 Vertices: 206 Edges: 198 Transfer Rows: 162 Output Rows: 0 Output Columns: 0
+Columns: 244 Rows: 203 Vertices: 252 Edges: 244 Transfer Rows: 203 Output Rows: 0 Output Columns: 0
+Columns: 294 Rows: 248 Vertices: 301 Edges: 294 Transfer Rows: 248 Output Rows: 0 Output Columns: 0
+Columns: 351 Rows: 298 Vertices: 356 Edges: 351 Transfer Rows: 298 Output Rows: 0 Output Columns: 0
+Columns: 405 Rows: 350 Vertices: 410 Edges: 405 Transfer Rows: 350 Output Rows: 0 Output Columns: 0
+Columns: 467 Rows: 407 Vertices: 472 Edges: 467 Transfer Rows: 407 Output Rows: 0 Output Columns: 0
+Columns: 532 Rows: 468 Vertices: 537 Edges: 532 Transfer Rows: 468 Output Rows: 0 Output Columns: 0
+Columns: 599 Rows: 532 Vertices: 604 Edges: 599 Transfer Rows: 532 Output Rows: 0 Output Columns: 0
+Columns: 673 Rows: 601 Vertices: 678 Edges: 673 Transfer Rows: 601 Output Rows: 0 Output Columns: 0
+Columns: 745 Rows: 671 Vertices: 749 Edges: 745 Transfer Rows: 671 Output Rows: 0 Output Columns: 0
+Columns: 828 Rows: 747 Vertices: 831 Edges: 828 Transfer Rows: 747 Output Rows: 0 Output Columns: 0
+Columns: 912 Rows: 827 Vertices: 915 Edges: 912 Transfer Rows: 827 Output Rows: 0 Output Columns: 0
+Columns: 998 Rows: 910 Vertices: 1001 Edges: 998 Transfer Rows: 910 Output Rows: 0 Output Columns: 0
+Columns: 1091 Rows: 998 Vertices: 1094 Edges: 1091 Transfer Rows: 998 Output Rows: 0 Output Columns: 0
+Solution set at period   1
+Solution set at period   2
+Solution set at period   3
+Solution set at period   4
+Solution set at period   5
+Solution set at period   6
+Solution set at period   7
+Solution set at period   8
+Solution set at period   9
+Solution set at period   10
+Solution set at period   11
+Solution set at period   12
+Solution set at period   13
+Solution set at period   14
+Solution set at period   15
+Solution set at period   16
+Solution set at period   17
+Solution set at period   18
+Solution set at period   19
+Solution set at period   20
+</code></pre>
+<h2 id="getting-output-values-from-the-model">Getting output values from the model</h2>
+<p>There are multiple ways to read different outputs from the model.</p>
+<p>In R, there is a particular function (<strong>only available in R</strong>) called <code>getoutsdataframe()</code>; but for R, Python and C++, it is possible to use the <code>FMTmodel.getoutputs()</code> to get a list of the available outputs for a given model.</p>
+<p>It is possible to select a different <code>FMToutputlevel</code> in order to obtain an output at different scales in the model.</p>
+<p>For an example of this, see <a href="../exercice_1/">exercise 1</a>.</p>
+<h2 id="exporting-the-schedule-of-a-solved-model">Exporting the schedule of a solved model</h2>
+<p>Exporting the schedule of a solved model is done via the <code>FMTscheduleparser</code> object that we used when building the partial graph (see previous sections).</p>
+<p>The solution of a model can be put into a list by using the <code>FMTlpmodel.getsolution()</code> function for each of the period of interest.</p>
+<p>Then, the list of solution for each period must be transformed into a vector, which can then be written in a <code>.txt</code> file using the <code>FMTscheduleparser.write()</code> function.</p>
+<p>For an example, see <a href="../exercice_1/">exercise 1</a>.</p>
+<h2 id="pre-solving-a-model">Pre-solving a model</h2>
+<p>Some models can be hard to solve, because of their high number of actions, strata, and so on.</p>
+<p>In such case, the <code>FMTmodel.basepresolve()</code> function can be used to pre-solve the model.</p>
+<p>What this function does is to return a model with less themes, actions, transitions, outputs and constraints compare to the original model, but with the same amount of information. This makes it easier to solve, while giving the same answer in the end.</p>
+<p>In some situations, FMT will pre-solve the model automatically.</p>
+<hr>
+<p>Now that you know everything there is to know about spatially referenced optimization in FMT, we recommand that you try the <a href="../exercice_1/">exercise 1</a> to help you learn using FMT in practice. In this exercise, you will learn to use some of the most regularly used functions by yourself.</p>
+
+          </div>
+
+          
+
+
+
+          
+          
+          <div class="article-widget">
+            
+<div class="post-nav">
+  
+  
+  
+  <div class="post-nav-item">
+    <div class="meta-nav">Previous</div>
+    <a href="/docs/basics/objects_parsing_interrogation/" rel="next">Objects, model parsing and interrogation</a>
+  </div>
+  
+  
+  
+  <div class="post-nav-item">
+    <div class="meta-nav">Next</div>
+    <a href="/docs/basics/exercice_1/" rel="prev">Exercise 1</a>
+  </div>
+  
+</div>
+
+          </div>
+          
+        </div>
+
+        <div class="body-footer">
+          <p>Last updated on May 5, 2019</p>
+
+          
+
+
+
+
+
+          
+
+
+
+
+          
+
+
+  
+  
+
+
+
+        </div>
+
+      </article>
+
+      <footer class="site-footer">
+
+  
+
+  
+
+  
+  <p class="powered-by">
+    © 2022 Bureau du Forestier en Chef du Québec
+  </p>
+  
+
+  
+  
+
+
+
+
+
+
+  <p class="powered-by">
+    
+    
+    
+      
+      
+      
+      
+      
+      
+      Published with <a href="https://wowchemy.com/?utm_campaign=poweredby" target="_blank" rel="noopener">Wowchemy</a> — the free, <a href="https://github.com/wowchemy/wowchemy-hugo-modules" target="_blank" rel="noopener">open source</a> website builder that empowers creators.
+    
+  </p>
+</footer>
+
+
+    </main>
+  </div>
+</div>
+
+  </div>
+
+  <div class="page-footer">
+    
+    
+  </div>
+
+  
+<div id="modal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Cite</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <pre><code class="tex hljs"></code></pre>
+      </div>
+      <div class="modal-footer">
+        <a class="btn btn-outline-primary my-1 js-copy-cite" href="#" target="_blank">
+          <i class="fas fa-copy"></i> Copy
+        </a>
+        <a class="btn btn-outline-primary my-1 js-download-cite" href="#" target="_blank">
+          <i class="fas fa-download"></i> Download
+        </a>
+        <div id="modal-error"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+      
+
+    
+    
+    
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js" integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/instant.page/5.1.0/instantpage.min.js" integrity="sha512-1+qUtKoh9XZW7j+6LhRMAyOrgSQKenQ4mluTR+cvxXjP1Z54RxZuzstR/H9kgPXQsVB8IW7DMDFUJpzLjvhGSQ==" crossorigin="anonymous"></script>
+
+      
+      
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.imagesloaded/4.1.4/imagesloaded.pkgd.min.js" integrity="sha256-lqvxZrPLtfffUl2G/e7szqSvPBILGbwmsGE1MKlOi0Q=" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.isotope/3.0.6/isotope.pkgd.min.js" integrity="sha256-CBrpuqrMhXwcLLUd5tvQ4euBHCdh7wGlDfNz8vbu/iI=" crossorigin="anonymous"></script>
+      
+
+      
+      
+
+      
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/8.8.4/mermaid.min.js" integrity="sha512-as1BF4+iHZ3BVO6LLDQ7zrbvTXM+c/1iZ1qII/c3c4L8Rn5tHLpFUtpaEtBNS92f+xGsCzsD7b62XP3XYap6oA==" crossorigin="anonymous" title="mermaid"></script>
+      
+
+      
+        
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.2.0/highlight.min.js" integrity="sha512-TDKKr+IvoqZnPzc3l35hdjpHD0m+b2EC2SrLEgKDRWpxf2rFCxemkgvJ5kfU48ip+Y+m2XVKyOCD85ybtlZDmw==" crossorigin="anonymous"></script>
+        
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.2.0/languages/r.min.js"></script>
+        
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.2.0/languages/python.min.js"></script>
+        
+      
+
+    
+
+    
+    
+    
+
+    
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/anchor-js/4.2.2/anchor.min.js" integrity="sha512-I7w3ZdSFzw5j3jU3ZkNikBNeIrl3i+hEuEdwNmqUJvwNcaBUNcijnP2gd9DtGlgVYDplfjGoD8vTNsID+lCjqg==" crossorigin="anonymous"></script>
+    <script>
+      anchors.add();
+    </script>
+    
+
+    
+    
+    
+      
+      <script id="search-hit-fuse-template" type="text/x-template">
+        <div class="search-hit" id="summary-{{key}}">
+          <div class="search-hit-content">
+            <div class="search-hit-name">
+              <a href="{{relpermalink}}">{{title}}</a>
+              <div class="article-metadata search-hit-type">{{type}}</div>
+              <p class="search-hit-description">{{snippet}}</p>
+            </div>
+          </div>
+        </div>
+      </script>
+      
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.1/fuse.min.js" integrity="sha256-VzgmKYmhsGNNN4Ph1kMW+BjoYJM2jV5i4IlFoeZA9XI=" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js" integrity="sha256-4HLtjeVgH0eIB3aZ9mLYF6E8oU5chNdjU6p6rrXpl9U=" crossorigin="anonymous"></script>
+      
+    
+
+    
+    
+
+    
+    
+    
+    
+
+    
+    <script src="/js/bootstrap.bundle.min.6aed84840afc03ab4d5750157f69c120.js"></script>
+
+    
+    
+      
+      
+      
+      
+      
+      
+      
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+      
+      
+    
+    
+    <script src="/en/js/wowchemy.min.d36cd9f11e81a0512fc0b62b502a165d.js"></script>
+
+    
+
+
+
+
+
+
+</body>
+</html>
