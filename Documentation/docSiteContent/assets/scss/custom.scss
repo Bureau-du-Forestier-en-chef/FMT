@@ -1,0 +1,14 @@
+// Create custom "emoji" class to help display emojis better
+.emoji {
+  font-family: Segoe UI Emoji, Noto Color Emoji, BlinkMacSystemFont,Roboto,Helvetica Neue, Arial, sans-serif, !important;
+}
+// Help compatibility with old browsers such as internet explorer
+body {
+  font-family: Roboto !important;
+}
+h1, h2, h3, h4, h5, h6 {
+  font-family: Roboto !important;
+}
+.navbar-brand, .nav-item {
+  font-family: Roboto !important;
+}
