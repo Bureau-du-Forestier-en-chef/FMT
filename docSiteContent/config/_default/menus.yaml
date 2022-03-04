@@ -11,5 +11,5 @@ main:
     url: docs/
     weight: 20
   - name: Doxygen
-    url: "../doxygen/index.html"
+    url: "../doxygen/html/index.html"
     weight: 30
