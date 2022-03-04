@@ -283,11 +283,11 @@ if (new(FMTversion)$hasfeature("OSI")) # Checks if FMT has been compiled with OS
 }
 ```
 
-Notice that here, we have a second parameter `TRUE` to `lpmodel$buildperiod()` to indicate that we needed to force a partial build, as indicated [in the documentation of the function](../../../doxygen/classModels_1_1FMTsrmodel.html#a1931d5db29f364d3d48c887873be04fa) :
+Notice that here, we have a second parameter `TRUE` to `lpmodel$buildperiod()` to indicate that we needed to force a partial build, as indicated [in the documentation of the function](../../../doxygen/html/classModels_1_1FMTsrmodel.html#a1931d5db29f364d3d48c887873be04fa) :
 
 {{< figure src="docs/buildperiod_function_description.png" >}}
 
-Also notice that we created a variable named `tolerance`, which is needed by the `lpmodel$setsolution()` function, as indicated by [the documentation](../../../doxygen/classModels_1_1FMTsrmodel.html#af2b39c92f48474f4f09bc4c94c99b35b) once again :
+Also notice that we created a variable named `tolerance`, which is needed by the `lpmodel$setsolution()` function, as indicated by [the documentation](../../../doxygen/html/classModels_1_1FMTsrmodel.html#af2b39c92f48474f4f09bc4c94c99b35b) once again :
 
 {{< figure src="docs/setsolution_function_description.png" >}}
 

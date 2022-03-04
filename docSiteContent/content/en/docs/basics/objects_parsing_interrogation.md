@@ -66,15 +66,15 @@ The `Parser` namespace contains two important class for reading models :
 
 The `FMTmodel` class is the basis of FMT.
 
-It contains informations coming from the files of the models, in Woodstock format. This can be seen by [looking at the properties of the `FMTmodel`](../../../doxygen/classModels_1_1FMTmodel.html#pro-attribs) :
+It contains informations coming from the files of the models, in Woodstock format. This can be seen by [looking at the properties of the `FMTmodel`](../../../doxygen/html/classModels_1_1FMTmodel.html#pro-attribs) :
 
 {{< figure src="docs/FMTmodel_attributes.png" >}}
 
-However, these attributes are "protected" so that they are not edited in the wrong way. If you want to read them when using FMT, you will have to use [the *getter* functions](../../../doxygen/classModels_1_1FMTmodel.html#pub-methods) that will get them for you :
+However, these attributes are "protected" so that they are not edited in the wrong way. If you want to read them when using FMT, you will have to use [the *getter* functions](../../../doxygen/html/classModels_1_1FMTmodel.html#pub-methods) that will get them for you :
 
 {{< figure src="docs/FMTmodel_getter.png" >}}
 
-Additionally, you can edit them in the right way by using [the *setter* functions](../../../doxygen/classModels_1_1FMTmodel.html#pub-methods). This allows you to edit different parts of the model.
+Additionally, you can edit them in the right way by using [the *setter* functions](../../../doxygen/html/classModels_1_1FMTmodel.html#pub-methods). This allows you to edit different parts of the model.
 
 {{< figure src="docs/FMTmodel_setters.png" >}}
 

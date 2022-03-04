@@ -66,7 +66,7 @@
 &lt;/ul&gt;
 &lt;h2 id=&#34;the-fmtmodel-class&#34;&gt;The &lt;code&gt;FMTmodel&lt;/code&gt; class&lt;/h2&gt;
 &lt;p&gt;The &lt;code&gt;FMTmodel&lt;/code&gt; class is the basis of FMT.&lt;/p&gt;
-&lt;p&gt;It contains informations coming from the files of the models, in Woodstock format. This can be seen by &lt;a href=&#34;../../../doxygen/classModels_1_1FMTmodel.html#pro-attribs&#34;&gt;looking at the properties of the &lt;code&gt;FMTmodel&lt;/code&gt;&lt;/a&gt; :&lt;/p&gt;
+&lt;p&gt;It contains informations coming from the files of the models, in Woodstock format. This can be seen by &lt;a href=&#34;../../../doxygen/html/classModels_1_1FMTmodel.html#pro-attribs&#34;&gt;looking at the properties of the &lt;code&gt;FMTmodel&lt;/code&gt;&lt;/a&gt; :&lt;/p&gt;
 
 
 
@@ -93,7 +93,7 @@
                height=&#34;443&#34;
                loading=&#34;lazy&#34; data-zoomable /&gt;&lt;/div&gt;
   &lt;/div&gt;&lt;/figure&gt;
-&lt;p&gt;However, these attributes are &amp;ldquo;protected&amp;rdquo; so that they are not edited in the wrong way. If you want to read them when using FMT, you will have to use &lt;a href=&#34;../../../doxygen/classModels_1_1FMTmodel.html#pub-methods&#34;&gt;the &lt;em&gt;getter&lt;/em&gt; functions&lt;/a&gt; that will get them for you :&lt;/p&gt;
+&lt;p&gt;However, these attributes are &amp;ldquo;protected&amp;rdquo; so that they are not edited in the wrong way. If you want to read them when using FMT, you will have to use &lt;a href=&#34;../../../doxygen/html/classModels_1_1FMTmodel.html#pub-methods&#34;&gt;the &lt;em&gt;getter&lt;/em&gt; functions&lt;/a&gt; that will get them for you :&lt;/p&gt;
 
 
 
@@ -120,7 +120,7 @@
                height=&#34;361&#34;
                loading=&#34;lazy&#34; data-zoomable /&gt;&lt;/div&gt;
   &lt;/div&gt;&lt;/figure&gt;
-&lt;p&gt;Additionally, you can edit them in the right way by using &lt;a href=&#34;../../../doxygen/classModels_1_1FMTmodel.html#pub-methods&#34;&gt;the &lt;em&gt;setter&lt;/em&gt; functions&lt;/a&gt;. This allows you to edit different parts of the model.&lt;/p&gt;
+&lt;p&gt;Additionally, you can edit them in the right way by using &lt;a href=&#34;../../../doxygen/html/classModels_1_1FMTmodel.html#pub-methods&#34;&gt;the &lt;em&gt;setter&lt;/em&gt; functions&lt;/a&gt;. This allows you to edit different parts of the model.&lt;/p&gt;
 
 
 
@@ -671,7 +671,7 @@ if (new(FMTversion)$hasfeature(&amp;quot;OSI&amp;quot;)) # Checks if FMT has bee
 	print(&amp;quot;FMT needs to be compiled with OSI&amp;quot;)
 }
 &lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;Notice that here, we have a second parameter &lt;code&gt;TRUE&lt;/code&gt; to &lt;code&gt;lpmodel$buildperiod()&lt;/code&gt; to indicate that we needed to force a partial build, as indicated &lt;a href=&#34;../../../doxygen/classModels_1_1FMTsrmodel.html#a1931d5db29f364d3d48c887873be04fa&#34;&gt;in the documentation of the function&lt;/a&gt; :&lt;/p&gt;
+&lt;p&gt;Notice that here, we have a second parameter &lt;code&gt;TRUE&lt;/code&gt; to &lt;code&gt;lpmodel$buildperiod()&lt;/code&gt; to indicate that we needed to force a partial build, as indicated &lt;a href=&#34;../../../doxygen/html/classModels_1_1FMTsrmodel.html#a1931d5db29f364d3d48c887873be04fa&#34;&gt;in the documentation of the function&lt;/a&gt; :&lt;/p&gt;
 
 
 
@@ -698,7 +698,7 @@ if (new(FMTversion)$hasfeature(&amp;quot;OSI&amp;quot;)) # Checks if FMT has bee
                height=&#34;19&#34;
                loading=&#34;lazy&#34; data-zoomable /&gt;&lt;/div&gt;
   &lt;/div&gt;&lt;/figure&gt;
-&lt;p&gt;Also notice that we created a variable named &lt;code&gt;tolerance&lt;/code&gt;, which is needed by the &lt;code&gt;lpmodel$setsolution()&lt;/code&gt; function, as indicated by &lt;a href=&#34;../../../doxygen/classModels_1_1FMTsrmodel.html#af2b39c92f48474f4f09bc4c94c99b35b&#34;&gt;the documentation&lt;/a&gt; once again :&lt;/p&gt;
+&lt;p&gt;Also notice that we created a variable named &lt;code&gt;tolerance&lt;/code&gt;, which is needed by the &lt;code&gt;lpmodel$setsolution()&lt;/code&gt; function, as indicated by &lt;a href=&#34;../../../doxygen/html/classModels_1_1FMTsrmodel.html#af2b39c92f48474f4f09bc4c94c99b35b&#34;&gt;the documentation&lt;/a&gt; once again :&lt;/p&gt;
 
 
 
