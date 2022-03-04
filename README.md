@@ -1,5 +1,7 @@
 [🇼🇫 Click here for a french version](README.fr.md)
 
+*This page provides only an overview of the installation process and features of FMT. For more details, visit our documentation page [FMT](https://bureau-du-forestier-en-chef.github.io/FMTdocs/fr/)*
+
 # 📑 Description
 
 FMT (**F**orest **M**anagement **T**ool) is an **open source Forest Management library**.
