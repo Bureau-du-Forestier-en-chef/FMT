@@ -161,7 +161,7 @@ namespace Models
 								const Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor vdescriptor = graph.getdevelopment(devit.first, lookup);
 								if(growthdeductor.find(vdescriptor)==growthdeductor.end())
 								{
-									growthdeductor.emplace(vdescriptor,1-devit.second.at(0))
+									growthdeductor.emplace(vdescriptor,1-devit.second.at(0));
 								}else{
 									growthdeductor[vdescriptor]-=devit.second.at(0);
 								}
@@ -187,7 +187,7 @@ namespace Models
 					if (varit == outvariables.cend())
 					{
 						_exhandler->raise(Exception::FMTexc::FMTinvalid_number,
-									"Developement "+std::string(graph.getdevelopment(vdescriptor_props.first)+" cannot grow ...", 
+									"Developement "+std::string(graph.getdevelopment(vdescriptor_props.first))+" cannot grow ...", 
 									"FMTsrmodel::setsolution", __LINE__, __FILE__);
 					}
 					const int variable = varit->second;
@@ -226,7 +226,7 @@ namespace Models
 									{
 										devoutvarprocessed[*path.development].push_back(varit->second);
 									}else{
-										devoutvarprocessed[*path.development] = std::vector(1,varit->second);
+										devoutvarprocessed[*path.development] = std::vector<int>(1,varit->second);
 									}
 								}
 							}
@@ -235,7 +235,7 @@ namespace Models
 						}
 						if (targetaction < 0)
 						{
-							new_solution[growth] = proportions[varit->second]*inarea;
+							new_solution[growth] = proportions[variables.at(growth)]*inarea;
 						}
 					}
 					periodstartprocessed.emplace(graph.getdevelopment(*vertex_iterator));
@@ -259,7 +259,7 @@ namespace Models
 					{
 						Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor first = toprocess.front();
 						std::vector<int> invars = graph.getinvariables(first);
-						std::sort(invars.begin,invars.end);	
+						std::sort(invars.begin(),invars.end());	
 						std::sort(devoutvarprocessed.at(graph.getdevelopment(*vertex_iterator)).begin(),devoutvarprocessed.at(graph.getdevelopment(*vertex_iterator)).end());
 						const Core::FMTdevelopment dev = graph.getdevelopment(*vertex_iterator);
 						// si action id n'est pas dans les variable in ou si on a deja process ce developement ci et que les variaables in on toutes été sette ... 
@@ -270,9 +270,9 @@ namespace Models
 							const double* solution = &new_solution[0];
 							const double inarea = graph.inarea(*vertex_iterator, solution);
 							const std::map<int, int>variables = graph.getoutvariables(*vertex_iterator);
-							const std::map<int, int>::const_iterator varit = outvariables.find(actionid);
+							const std::map<int, int>::const_iterator varit = variables.find(actionid);
 							new_solution[varit->second] = proportions[varit->second]*inarea;
-							toprocess.pop;
+							toprocess.pop();
 							std::vector<Core::FMTdevelopmentpath> paths = graph.getpaths(*vertex_iterator, actionid);
 							for (const Core::FMTdevelopmentpath path : paths)
 							{
@@ -280,7 +280,7 @@ namespace Models
 								{
 									devoutvarprocessed[*path.development].push_back(varit->second);
 								}else{
-									devoutvarprocessed[*path.development] = std::vector(1,varit->second);
+									devoutvarprocessed[*path.development] = std::vector<int>(1,varit->second);
 								}
 							}
 						}else{
@@ -298,7 +298,7 @@ namespace Models
 					}
 					
 				solver.setColSolution(&new_solution[0]);
-
+				}
 			}
 		}catch(...){
 			_exhandler->printexceptions("at period " + std::to_string(period), "FMTsrmodel::forcesolution", __LINE__, __FILE__);
