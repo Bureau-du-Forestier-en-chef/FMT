@@ -2,21 +2,21 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Téléchargement et installation | Documentation de FMT</title>
-    <link>/fr/docs/download_install/</link>
-      <atom:link href="/fr/docs/download_install/index.xml" rel="self" type="application/rss+xml" />
+    <link>https://bureau-du-forestier-en-chef.github.io/FMT/fr/docs/download_install/</link>
+      <atom:link href="https://bureau-du-forestier-en-chef.github.io/FMT/fr/docs/download_install/index.xml" rel="self" type="application/rss+xml" />
     <description>Téléchargement et installation</description>
     <generator>Wowchemy (https://wowchemy.com)</generator><language>fr-ca</language><copyright>© 2022 Bureau du Forestier en Chef du Québec</copyright><lastBuildDate>Sun, 09 Sep 2018 00:00:00 +0000</lastBuildDate>
     <image>
-      <url>/media/icon_huc6d37a7993bbbcfd0b9a96d08d6d7557_42395_512x512_fill_lanczos_center_3.png</url>
+      <url>https://bureau-du-forestier-en-chef.github.io/FMT/media/icon_huc6d37a7993bbbcfd0b9a96d08d6d7557_42395_512x512_fill_lanczos_center_3.png</url>
       <title>Téléchargement et installation</title>
-      <link>/fr/docs/download_install/</link>
+      <link>https://bureau-du-forestier-en-chef.github.io/FMT/fr/docs/download_install/</link>
     </image>
     
     <item>
       <title>Prérequis</title>
-      <link>/fr/docs/download_install/prerequisits/</link>
+      <link>https://bureau-du-forestier-en-chef.github.io/FMT/fr/docs/download_install/prerequisits/</link>
       <pubDate>Sun, 05 May 2019 00:00:00 +0100</pubDate>
-      <guid>/fr/docs/download_install/prerequisits/</guid>
+      <guid>https://bureau-du-forestier-en-chef.github.io/FMT/fr/docs/download_install/prerequisits/</guid>
       <description>&lt;ol&gt;
 &lt;li&gt;Télécharger et installer &lt;a href=&#34;https://visualstudio.microsoft.com/vs/community/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Visual Studio Community&lt;/a&gt;&lt;/li&gt;
 &lt;/ol&gt;
@@ -62,9 +62,9 @@
     
     <item>
       <title>Télécharger les librairies</title>
-      <link>/fr/docs/download_install/downloading_libraries/</link>
+      <link>https://bureau-du-forestier-en-chef.github.io/FMT/fr/docs/download_install/downloading_libraries/</link>
       <pubDate>Sun, 05 May 2019 00:00:00 +0100</pubDate>
-      <guid>/fr/docs/download_install/downloading_libraries/</guid>
+      <guid>https://bureau-du-forestier-en-chef.github.io/FMT/fr/docs/download_install/downloading_libraries/</guid>
       <description>&lt;ol&gt;
 &lt;li&gt;Si git n&amp;rsquo;est pas installé sur votre ordinateur, installez-le depuis &lt;a href=&#34;https://git-scm.com/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;ce lien&lt;/a&gt;.&lt;/li&gt;
 &lt;/ol&gt;
@@ -79,7 +79,7 @@
 &lt;/ol&gt;
 &lt;div class=&#34;alert alert-note&#34;&gt;
   &lt;div&gt;
-    Si vous avez fermé l&amp;rsquo;invite de commande, ou si vous ne vous souvenez pas comment l&amp;rsquo;ouvrir, consultez &lt;a href=&#34;/docs/download_install/prerequisits&#34;&gt;la page précédente&lt;/a&gt;.
+    Si vous avez fermé l&amp;rsquo;invite de commande, ou si vous ne vous souvenez pas comment l&amp;rsquo;ouvrir, consultez &lt;a href=&#34;https://bureau-du-forestier-en-chef.github.io/FMT/docs/download_install/prerequisits&#34;&gt;la page précédente&lt;/a&gt;.
   &lt;/div&gt;
 &lt;/div&gt;
 &lt;ol start=&#34;3&#34;&gt;
@@ -87,7 +87,7 @@
 &lt;/ol&gt;
 &lt;div class=&#34;alert alert-note&#34;&gt;
   &lt;div&gt;
-    Si vous ne vous souvenez pas comment utiliser &lt;code&gt;cd&lt;/code&gt;, consultez &lt;a href=&#34;/docs/download_install/prerequisits&#34;&gt;la page précédente&lt;/a&gt;.
+    Si vous ne vous souvenez pas comment utiliser &lt;code&gt;cd&lt;/code&gt;, consultez &lt;a href=&#34;https://bureau-du-forestier-en-chef.github.io/FMT/docs/download_install/prerequisits&#34;&gt;la page précédente&lt;/a&gt;.
   &lt;/div&gt;
 &lt;/div&gt;
 &lt;ol start=&#34;4&#34;&gt;
@@ -108,9 +108,9 @@
     
     <item>
       <title>Compiler</title>
-      <link>/fr/docs/download_install/compiling/</link>
+      <link>https://bureau-du-forestier-en-chef.github.io/FMT/fr/docs/download_install/compiling/</link>
       <pubDate>Sun, 05 May 2019 00:00:00 +0100</pubDate>
-      <guid>/fr/docs/download_install/compiling/</guid>
+      <guid>https://bureau-du-forestier-en-chef.github.io/FMT/fr/docs/download_install/compiling/</guid>
       <description>&lt;p&gt;Maintenant que tout est prêt, il est temps de passer à l&amp;rsquo;étape de compilation proprement dite.&lt;/p&gt;
 &lt;ol&gt;
 &lt;li&gt;
@@ -156,9 +156,9 @@ cmake --install build/release --config Release
     
     <item>
       <title>Importer FMT dans Python</title>
-      <link>/fr/docs/download_install/importing_in_python/</link>
+      <link>https://bureau-du-forestier-en-chef.github.io/FMT/fr/docs/download_install/importing_in_python/</link>
       <pubDate>Sun, 05 May 2019 00:00:00 +0100</pubDate>
-      <guid>/fr/docs/download_install/importing_in_python/</guid>
+      <guid>https://bureau-du-forestier-en-chef.github.io/FMT/fr/docs/download_install/importing_in_python/</guid>
       <description>&lt;p&gt;Pour importer FMT que vous venez de compiler dans Python, vous devez avoir installé &lt;a href=&#34;https://www.python.org/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Python&lt;/a&gt; et &lt;a href=&#34;https://packaging.python.org/en/latest/tutorials/installing-packages/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;pip&lt;/a&gt; sur votre ordinateur.&lt;/p&gt;
 &lt;div class=&#34;alert alert-note&#34;&gt;
   &lt;div&gt;
