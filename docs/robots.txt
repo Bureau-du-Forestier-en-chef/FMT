@@ -1,3 +1,0 @@
-User-agent: *
-
-Sitemap: https://bureau-du-forestier-en-chef.github.io/FMT/sitemap.xml
