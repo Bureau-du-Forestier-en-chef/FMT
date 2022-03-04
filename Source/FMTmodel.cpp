@@ -925,24 +925,90 @@ void FMTmodel::clearcache()
 
 Core::FMTmask FMTmodel::getbasemask(std::vector<Core::FMTactualdevelopment> optionaldevelopments) const
 	{
-	optionaldevelopments.insert(optionaldevelopments.end(), area.begin(), area.end());
-	Core::FMTmask basemask(optionaldevelopments.begin()->getmask());
+	Core::FMTmask basemask(boost::dynamic_bitset<>(area.begin()->getmask().size(), false));
 	try {
+		for (const Core::FMTaction& action : actions)
+			{
+			for (const auto& actionobject : action)
+				{
+				const Core::FMTmask opq(std::string(actionobject.first),themes);
+				basemask = basemask.getunion(opq.removeaggregates(themes, true));
+				}
+			}
 		for (const Core::FMTtransition& transition : transitions)
 		{
 			for (const auto& transitionobject : transition)
 			{
+				const Core::FMTmask source(std::string(transitionobject.first),themes);
+				basemask = basemask.getunion(source.removeaggregates(themes,true));
 				for (const Core::FMTtransitionmask& fork : transitionobject.second.getmasktrans())
 				{
-					const Core::FMTmask maskwithoutaggregates = fork.getmask().removeaggregates(themes);
+					const Core::FMTmask maskwithoutaggregates = fork.getmask().removeaggregates(themes,true);
 					basemask = basemask.getunion(maskwithoutaggregates);
 				}
 			}
 		}
+		for (const auto& yieldobject : yields)
+			{
+			const Core::FMTmask source(std::string(yieldobject.first), themes);
+			basemask = basemask.getunion(source.removeaggregates(themes, true));
+			}
+		for (const auto& lifespanobject : lifespan)
+			{
+			const Core::FMTmask source(std::string(lifespanobject.first), themes);
+			basemask = basemask.getunion(source.removeaggregates(themes, true));
+			}
+		for (const Core::FMTconstraint& constraint : constraints)
+			{
+			for (const Core::FMToutputsource& source: constraint.getsources())
+				{
+				if (source.isvariable())
+					{
+					basemask = basemask.getunion(source.getmask().removeaggregates(themes, true));
+					}
+				}
+			}
+
+		optionaldevelopments.insert(optionaldevelopments.end(), area.begin(), area.end());
+		Core::FMTmask areamask(boost::dynamic_bitset<>(area.begin()->getmask().size(), false));
 		for (const Core::FMTactualdevelopment& developement : optionaldevelopments)
+			{
+			areamask = areamask.getunion(developement.getmask());
+			}
+		if (!getparameter(FMTboolmodelparameters::PRESOLVE_CAN_REMOVE_STATIC_THEMES))
 		{
-			basemask = basemask.getunion(developement.getmask());
-		}
+			basemask = basemask.getunion(areamask);
+		}else {
+			boost::dynamic_bitset<>bits(basemask.size(),false);
+			const boost::dynamic_bitset<>& areamaskref = areamask.getbitsetreference();
+			const boost::dynamic_bitset<>& basemaskref = basemask.getbitsetreference();
+			for (const Core::FMTtheme& theme : themes)
+				{
+				const size_t start = static_cast<size_t>(theme.getstart());
+				if (basemask.getsubsetcount(theme) == 0)
+					{ 
+					const size_t areacount = areamask.getsubsetcount(theme);
+					size_t biton = (theme.size() + start) - 1;
+					if (areacount>=1)
+						{
+						while (!areamaskref[biton])
+							{
+							--biton;
+							}
+						}
+					bits[biton] = true;
+				}else {
+					for (size_t bitid = start; bitid < (theme.size() + start); ++bitid)
+						{
+						bits[bitid] = (areamaskref[bitid]||basemaskref[bitid]);
+						}
+					}
+				}
+			basemask = basemask.getunion(Core::FMTmask(bits));
+			}
+		/*
+
+		
 		if (getparameter(FMTboolmodelparameters::PRESOLVE_CAN_REMOVE_STATIC_THEMES))
 		{
 			boost::dynamic_bitset<>bits;
@@ -963,6 +1029,7 @@ Core::FMTmask FMTmodel::getbasemask(std::vector<Core::FMTactualdevelopment> opti
 				}
 			basemask = basemask.getintersect(Core::FMTmask(bits));
 		}
+		*/
 	}catch (...)
 		{
 		_exhandler->raisefromcatch("","FMTmodel::getbasemask", __LINE__, __FILE__);
@@ -1077,6 +1144,7 @@ std::unique_ptr<FMTmodel> FMTmodel::presolve(std::vector<Core::FMTactualdevelopm
 	std::unique_ptr<FMTmodel>presolvedmodel;
 	int presolvepass = getparameter(Models::FMTintmodelparameters::PRESOLVE_ITERATIONS);
 	try {
+		_logger->logwithlevel("Presolving " + getname() + "\n", 1);
 		Core::FMTmaskfilter oldpresolvefilter(getbasemask(optionaldevelopments));
 		//Base data
 		std::vector<Core::FMTtheme>oldthemes(themes);
@@ -1087,6 +1155,17 @@ std::unique_ptr<FMTmodel> FMTmodel::presolve(std::vector<Core::FMTactualdevelopm
 		Core::FMTlifespans oldlifespans(lifespan);
 		std::vector<Core::FMToutput>oldoutputs(outputs);
 		std::vector<Core::FMTconstraint>oldconstraints(constraints);
+		size_t originalsize = themes.size() + area.size() + actions.size() + transitions.size() + lifespan.size() + outputs.size()+constraints.size()+yields.size();
+		for (const Core::FMTaction& action : actions)
+			{
+			originalsize += action.size();
+			}
+		for (const Core::FMTtransition& transition : transitions)
+			{
+			originalsize += transition.size();
+			}
+		size_t newsize = 0;
+		size_t oldsize = originalsize;
 		//Core::FMTmask oldselectedattributes;
 		//Passiterator
 		bool didonepass = false;
@@ -1101,9 +1180,10 @@ std::unique_ptr<FMTmodel> FMTmodel::presolve(std::vector<Core::FMTactualdevelopm
 			constraintsids.push_back(constraintid);
 			++constraintid;
 			}
-		while (presolvepass > 0)
+		while (presolvepass > 0 && newsize<oldsize)
 		{
 			//Presolved data
+			
 			std::vector<Core::FMTtheme>newthemes;
 			std::vector<Core::FMTactualdevelopment>newarea;
 			std::vector<Core::FMTaction>newactions;
@@ -1116,7 +1196,9 @@ std::unique_ptr<FMTmodel> FMTmodel::presolve(std::vector<Core::FMTactualdevelopm
 			if (didonepass)
 			{
 				newfilter = newfilter.presolve(oldthemes);
+				oldsize = newsize;
 			}
+			newsize = 0;
 			//Core::FMTmask selectedattributes; //selected attribute keeps the binaries used by the new attribute selection.
 			//Checkout to reduce the themes complexity
 			size_t themeid = 0;
@@ -1133,6 +1215,7 @@ std::unique_ptr<FMTmodel> FMTmodel::presolve(std::vector<Core::FMTactualdevelopm
 				}
 				++oldthemeid;
 			}
+			newsize += newthemes.size();
 			if (!newfilter.emptyflipped())
 			{
 				newarea.reserve(oldarea.size());
@@ -1169,6 +1252,7 @@ std::unique_ptr<FMTmodel> FMTmodel::presolve(std::vector<Core::FMTactualdevelopm
 			}else {
 				newarea = oldarea;
 			}
+			newsize += newarea.size();
 			//reduce the number of actions and presolve the actions
 			const std::vector<Core::FMTtheme>maskthemes = newfilter.getselectedthemes(oldthemes);
 			for (const Core::FMTaction& action : oldactions)
@@ -1178,8 +1262,11 @@ std::unique_ptr<FMTmodel> FMTmodel::presolve(std::vector<Core::FMTactualdevelopm
 				{
 					const Core::FMTaction presolvedaction = action.presolve(newfilter, oldthemes, newthemes,!didonepass);
 					newactions.push_back(presolvedaction);
+					newsize += presolvedaction.size();
 				}
+				
 			}
+			newsize += newactions.size();
 			//std::cin.get();
 			//reduce the number of transitions and presolve the transitions
 			for (const Core::FMTtransition& transition : oldtransitions)
@@ -1188,12 +1275,15 @@ std::unique_ptr<FMTmodel> FMTmodel::presolve(std::vector<Core::FMTactualdevelopm
 				{
 					const Core::FMTtransition presolvedtransition = transition.presolve(newfilter, oldthemes, newthemes,!didonepass);
 					newtransitions.push_back(presolvedtransition);
+					newsize += presolvedtransition.size();
 				}
 			}
+			newsize += newtransitions.size();
 			//Presolve yields
 			newyields = oldyields.presolve(newfilter, oldthemes, newthemes);
 			//Presolve lifespan data
 			newlifespans = oldlifespans.presolve(newfilter, oldthemes, newthemes,!didonepass);
+			newsize += newlifespans.size();
 			//Outputs and data
 			std::set<int> keptoutputid;
 			int oloutputdid=0;
@@ -1207,6 +1297,7 @@ std::unique_ptr<FMTmodel> FMTmodel::presolve(std::vector<Core::FMTactualdevelopm
 				}
 				oloutputdid+=1;
 			}
+			newsize += newoutputs.size();
 			for (Core::FMToutput& output : newoutputs)
 			{
 				output.changesourcesid(keptoutputid,keptthemeid);
@@ -1245,6 +1336,8 @@ std::unique_ptr<FMTmodel> FMTmodel::presolve(std::vector<Core::FMTactualdevelopm
 				}
 				++oriit;
 			}
+			newsize += newconstraints.size();
+			newsize += newyields.size();
 			constraintsids.swap(newconstraintsids);
 			oldthemes.swap(newthemes);
 			oldarea.swap(newarea);
@@ -1266,13 +1359,15 @@ std::unique_ptr<FMTmodel> FMTmodel::presolve(std::vector<Core::FMTactualdevelopm
 	oldtransitions.shrink_to_fit();
 	oldoutputs.shrink_to_fit();
 	oldconstraints.shrink_to_fit();
-	_logger->logwithlevel("Developments "+std::to_string(oldarea.size()) + " (" + std::to_string(static_cast<int>(oldarea.size())-static_cast<int>(area.size())) + "), "
-				+"Themes "+std::to_string(oldthemes.size())+" (" + std::to_string(static_cast<int>(oldthemes.size())-static_cast<int>(themes.size())) + "), "
-				+"Yields "+std::to_string(oldyields.size()) + " (" + std::to_string(static_cast<int>(oldyields.size())-static_cast<int>(yields.size())) + "), "
-				+"Actions "+std::to_string(oldactions.size()) + " (" + std::to_string(static_cast<int>(oldactions.size())-static_cast<int>(actions.size())) + "), "
-				+"Transitions "+std::to_string(oldtransitions.size()) + " (" + std::to_string(static_cast<int>(oldtransitions.size())-static_cast<int>(transitions.size())) + "), "
-				+"Outputs "+std::to_string(oldoutputs.size()) + " (" + std::to_string(static_cast<int>(oldoutputs.size())-static_cast<int>(outputs.size())) + ") and "
-				+"Constraints "+std::to_string(oldconstraints.size()) + " (" + std::to_string(static_cast<int>(oldconstraints.size()) - static_cast<int>(constraints.size())) + ")"+"\n",1);
+	_logger->logwithlevel("Presolve stopped after " + std::to_string(getparameter(Models::FMTintmodelparameters::PRESOLVE_ITERATIONS) - presolvepass) + " iterations\n", 1);
+	_logger->logwithlevel("Developments "+std::to_string(oldarea.size()) + "(" + std::to_string(static_cast<int>(oldarea.size())-static_cast<int>(area.size())) + "), "
+				+"Themes "+std::to_string(oldthemes.size())+"(" + std::to_string(static_cast<int>(oldthemes.size())-static_cast<int>(themes.size())) + "), "
+				+"Yields "+std::to_string(oldyields.size()) + "(" + std::to_string(static_cast<int>(oldyields.size())-static_cast<int>(yields.size())) + "), "
+				+"Actions "+std::to_string(oldactions.size()) + "(" + std::to_string(static_cast<int>(oldactions.size())-static_cast<int>(actions.size())) + "), "
+				+"Transitions "+std::to_string(oldtransitions.size()) + "(" + std::to_string(static_cast<int>(oldtransitions.size())-static_cast<int>(transitions.size())) + "), "
+				+"Outputs "+std::to_string(oldoutputs.size()) + "(" + std::to_string(static_cast<int>(oldoutputs.size())-static_cast<int>(outputs.size())) + "), "
+				+"Constraints "+std::to_string(oldconstraints.size()) + "(" + std::to_string(static_cast<int>(oldconstraints.size()) - static_cast<int>(constraints.size())) + ") and "
+				+"Elements "+ std::to_string(newsize)+"("+std::to_string(static_cast<int>(newsize)- static_cast<int>(originalsize)) +")\n",1);
 	presolvedmodel = std::unique_ptr<FMTmodel>(new FMTmodel(oldarea, oldthemes, oldactions, oldtransitions, oldyields, oldlifespans, name, oldoutputs, oldconstraints,parameters));
 	presolvedmodel->cleanactionsntransitions();
 	}catch (...)
@@ -1502,7 +1597,6 @@ bool FMTmodel::doplanning(const bool& solve,std::vector<Core::FMTschedule> sched
 		std::unique_ptr<FMTmodel> presolved_model;
 		if(presolve_iterations>0)
 		{
-			_logger->logwithlevel("Presolving " + getname() + " with " + std::to_string(presolve_iterations) + " iterations\n", 1);
 			presolved_model = this->presolve(area);
 		}else{
 			presolved_model = this->clone();
