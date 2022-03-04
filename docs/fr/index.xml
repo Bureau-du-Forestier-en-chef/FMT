@@ -2,21 +2,21 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Documentation de FMT</title>
-    <link>/fr/</link>
-      <atom:link href="/fr/index.xml" rel="self" type="application/rss+xml" />
+    <link>https://bureau-du-forestier-en-chef.github.io/FMT/fr/</link>
+      <atom:link href="https://bureau-du-forestier-en-chef.github.io/FMT/fr/index.xml" rel="self" type="application/rss+xml" />
     <description>Documentation de FMT</description>
     <generator>Wowchemy (https://wowchemy.com)</generator><language>fr-ca</language><copyright>© 2022 Bureau du Forestier en Chef du Québec</copyright><lastBuildDate>Sun, 05 May 2019 00:00:00 +0100</lastBuildDate>
     <image>
-      <url>/media/icon_huc6d37a7993bbbcfd0b9a96d08d6d7557_42395_512x512_fill_lanczos_center_3.png</url>
+      <url>https://bureau-du-forestier-en-chef.github.io/FMT/media/icon_huc6d37a7993bbbcfd0b9a96d08d6d7557_42395_512x512_fill_lanczos_center_3.png</url>
       <title>Documentation de FMT</title>
-      <link>/fr/</link>
+      <link>https://bureau-du-forestier-en-chef.github.io/FMT/fr/</link>
     </image>
     
     <item>
       <title>Objets, lecture et interrogation de modèles</title>
-      <link>/fr/docs/basics/objects_parsing_interrogation/</link>
+      <link>https://bureau-du-forestier-en-chef.github.io/FMT/fr/docs/basics/objects_parsing_interrogation/</link>
       <pubDate>Sun, 05 May 2019 00:00:00 +0100</pubDate>
-      <guid>/fr/docs/basics/objects_parsing_interrogation/</guid>
+      <guid>https://bureau-du-forestier-en-chef.github.io/FMT/fr/docs/basics/objects_parsing_interrogation/</guid>
       <description>&lt;h2 id=&#34;que-sont-les-objets-&#34;&gt;Que sont les objets ?&lt;/h2&gt;
 &lt;p&gt;FMT est fabriqué avec une structure particulière appelée &lt;em&gt;Programmation orientée objet&lt;/em&gt; (POO). Si vous n&amp;rsquo;en avez jamais entendu parler, en voici un résumé très rapide pour mieux comprendre comment utiliser FMT.&lt;/p&gt;
 &lt;p&gt;Dans l&amp;rsquo;approche OOP, le programme utilise différents &amp;ldquo;objets&amp;rdquo; qui ont une certaine &amp;ldquo;classe&amp;rdquo; et qui peuvent avoir différentes &amp;ldquo;fonctions&amp;rdquo;.&lt;/p&gt;
@@ -85,10 +85,10 @@
   &lt;div class=&#34;d-flex justify-content-center&#34;&gt;
     &lt;div class=&#34;w-100&#34; &gt;
         &lt;img alt=&#34;&#34; srcset=&#34;
-               /media/docs/FMTmodel_attributes_hu96941bf8bb3d4d9f259261d019ba2699_90381_aebff935e87cbb26b26f12b1700abf2b.png 400w,
-               /media/docs/FMTmodel_attributes_hu96941bf8bb3d4d9f259261d019ba2699_90381_142c22ea82ba47efe9a96c83464b2890.png 760w,
-               /media/docs/FMTmodel_attributes_hu96941bf8bb3d4d9f259261d019ba2699_90381_1200x1200_fit_lanczos_3.png 1200w&#34;
-               src=&#34;/media/docs/FMTmodel_attributes_hu96941bf8bb3d4d9f259261d019ba2699_90381_aebff935e87cbb26b26f12b1700abf2b.png&#34;
+               /FMT/media/docs/FMTmodel_attributes_hu96941bf8bb3d4d9f259261d019ba2699_90381_aebff935e87cbb26b26f12b1700abf2b.png 400w,
+               /FMT/media/docs/FMTmodel_attributes_hu96941bf8bb3d4d9f259261d019ba2699_90381_142c22ea82ba47efe9a96c83464b2890.png 760w,
+               /FMT/media/docs/FMTmodel_attributes_hu96941bf8bb3d4d9f259261d019ba2699_90381_1200x1200_fit_lanczos_3.png 1200w&#34;
+               src=&#34;https://bureau-du-forestier-en-chef.github.io/FMT/FMT/media/docs/FMTmodel_attributes_hu96941bf8bb3d4d9f259261d019ba2699_90381_aebff935e87cbb26b26f12b1700abf2b.png&#34;
                width=&#34;760&#34;
                height=&#34;443&#34;
                loading=&#34;lazy&#34; data-zoomable /&gt;&lt;/div&gt;
@@ -112,10 +112,10 @@
   &lt;div class=&#34;d-flex justify-content-center&#34;&gt;
     &lt;div class=&#34;w-100&#34; &gt;
         &lt;img alt=&#34;&#34; srcset=&#34;
-               /media/docs/FMTmodel_getter_hu559ae670a6befbc339a532835e3ef48a_177601_bb98b942d11785d6e69a626c82eccc05.png 400w,
-               /media/docs/FMTmodel_getter_hu559ae670a6befbc339a532835e3ef48a_177601_f625e31903a8b14a97b39b786a2360e8.png 760w,
-               /media/docs/FMTmodel_getter_hu559ae670a6befbc339a532835e3ef48a_177601_1200x1200_fit_lanczos_3.png 1200w&#34;
-               src=&#34;/media/docs/FMTmodel_getter_hu559ae670a6befbc339a532835e3ef48a_177601_bb98b942d11785d6e69a626c82eccc05.png&#34;
+               /FMT/media/docs/FMTmodel_getter_hu559ae670a6befbc339a532835e3ef48a_177601_bb98b942d11785d6e69a626c82eccc05.png 400w,
+               /FMT/media/docs/FMTmodel_getter_hu559ae670a6befbc339a532835e3ef48a_177601_f625e31903a8b14a97b39b786a2360e8.png 760w,
+               /FMT/media/docs/FMTmodel_getter_hu559ae670a6befbc339a532835e3ef48a_177601_1200x1200_fit_lanczos_3.png 1200w&#34;
+               src=&#34;https://bureau-du-forestier-en-chef.github.io/FMT/FMT/media/docs/FMTmodel_getter_hu559ae670a6befbc339a532835e3ef48a_177601_bb98b942d11785d6e69a626c82eccc05.png&#34;
                width=&#34;743&#34;
                height=&#34;361&#34;
                loading=&#34;lazy&#34; data-zoomable /&gt;&lt;/div&gt;
@@ -139,10 +139,10 @@
   &lt;div class=&#34;d-flex justify-content-center&#34;&gt;
     &lt;div class=&#34;w-100&#34; &gt;
         &lt;img alt=&#34;&#34; srcset=&#34;
-               /media/docs/FMTmodel_setters_hu4c256a7577c1e3dbb7b5711a61f3bd3e_55329_05ee8f833cba6af62849c049bfad76a5.png 400w,
-               /media/docs/FMTmodel_setters_hu4c256a7577c1e3dbb7b5711a61f3bd3e_55329_269faf72b82502b4f9f4dbcdd454d8db.png 760w,
-               /media/docs/FMTmodel_setters_hu4c256a7577c1e3dbb7b5711a61f3bd3e_55329_1200x1200_fit_lanczos_3.png 1200w&#34;
-               src=&#34;/media/docs/FMTmodel_setters_hu4c256a7577c1e3dbb7b5711a61f3bd3e_55329_05ee8f833cba6af62849c049bfad76a5.png&#34;
+               /FMT/media/docs/FMTmodel_setters_hu4c256a7577c1e3dbb7b5711a61f3bd3e_55329_05ee8f833cba6af62849c049bfad76a5.png 400w,
+               /FMT/media/docs/FMTmodel_setters_hu4c256a7577c1e3dbb7b5711a61f3bd3e_55329_269faf72b82502b4f9f4dbcdd454d8db.png 760w,
+               /FMT/media/docs/FMTmodel_setters_hu4c256a7577c1e3dbb7b5711a61f3bd3e_55329_1200x1200_fit_lanczos_3.png 1200w&#34;
+               src=&#34;https://bureau-du-forestier-en-chef.github.io/FMT/FMT/media/docs/FMTmodel_setters_hu4c256a7577c1e3dbb7b5711a61f3bd3e_55329_05ee8f833cba6af62849c049bfad76a5.png&#34;
                width=&#34;640&#34;
                height=&#34;266&#34;
                loading=&#34;lazy&#34; data-zoomable /&gt;&lt;/div&gt;
@@ -364,9 +364,9 @@ _DEATH
     
     <item>
       <title>Prérequis</title>
-      <link>/fr/docs/download_install/prerequisits/</link>
+      <link>https://bureau-du-forestier-en-chef.github.io/FMT/fr/docs/download_install/prerequisits/</link>
       <pubDate>Sun, 05 May 2019 00:00:00 +0100</pubDate>
-      <guid>/fr/docs/download_install/prerequisits/</guid>
+      <guid>https://bureau-du-forestier-en-chef.github.io/FMT/fr/docs/download_install/prerequisits/</guid>
       <description>&lt;ol&gt;
 &lt;li&gt;Télécharger et installer &lt;a href=&#34;https://visualstudio.microsoft.com/vs/community/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Visual Studio Community&lt;/a&gt;&lt;/li&gt;
 &lt;/ol&gt;
@@ -412,9 +412,9 @@ _DEATH
     
     <item>
       <title>Optimisation spatiallement référencée</title>
-      <link>/fr/docs/basics/spatially_referenced_optimization/</link>
+      <link>https://bureau-du-forestier-en-chef.github.io/FMT/fr/docs/basics/spatially_referenced_optimization/</link>
       <pubDate>Sun, 05 May 2019 00:00:00 +0100</pubDate>
-      <guid>/fr/docs/basics/spatially_referenced_optimization/</guid>
+      <guid>https://bureau-du-forestier-en-chef.github.io/FMT/fr/docs/basics/spatially_referenced_optimization/</guid>
       <description>&lt;p&gt;Dans la section précédente, nous avons vu comment lire un modèle Woodstock et le charger dans un objet &lt;code&gt;FMTlpmodel&lt;/code&gt;.&lt;/p&gt;
 &lt;p&gt;&lt;code&gt;FMTlpmodel&lt;/code&gt; vous permettra de résoudre un modèle de programmation linéaire à spatialement référencé, ce qui vous donnera un calendrier (&lt;em&gt;schedule&lt;/em&gt;) optimisé d&amp;rsquo;opérations forestières en fonction d&amp;rsquo;un objectif et d&amp;rsquo;un ensemble de contraintes.&lt;/p&gt;
 &lt;p&gt;Ici, nous allons voir comment réaliser cette optimisation en pratique.&lt;/p&gt;
@@ -454,10 +454,10 @@ _DEATH
   &lt;div class=&#34;d-flex justify-content-center&#34;&gt;
     &lt;div class=&#34;w-100&#34; &gt;
         &lt;img alt=&#34;&#34; srcset=&#34;
-               /media/docs/FMTgraph_visual_FR_hue098b42f201121f116cd085a4cbfcb7e_41089_90c2daf8549a9b756d72f35b01047f30.png 400w,
-               /media/docs/FMTgraph_visual_FR_hue098b42f201121f116cd085a4cbfcb7e_41089_f401477bc32330e98e3570da562381c5.png 760w,
-               /media/docs/FMTgraph_visual_FR_hue098b42f201121f116cd085a4cbfcb7e_41089_1200x1200_fit_lanczos_3.png 1200w&#34;
-               src=&#34;/media/docs/FMTgraph_visual_FR_hue098b42f201121f116cd085a4cbfcb7e_41089_90c2daf8549a9b756d72f35b01047f30.png&#34;
+               /FMT/media/docs/FMTgraph_visual_FR_hue098b42f201121f116cd085a4cbfcb7e_41089_90c2daf8549a9b756d72f35b01047f30.png 400w,
+               /FMT/media/docs/FMTgraph_visual_FR_hue098b42f201121f116cd085a4cbfcb7e_41089_f401477bc32330e98e3570da562381c5.png 760w,
+               /FMT/media/docs/FMTgraph_visual_FR_hue098b42f201121f116cd085a4cbfcb7e_41089_1200x1200_fit_lanczos_3.png 1200w&#34;
+               src=&#34;https://bureau-du-forestier-en-chef.github.io/FMT/FMT/media/docs/FMTgraph_visual_FR_hue098b42f201121f116cd085a4cbfcb7e_41089_90c2daf8549a9b756d72f35b01047f30.png&#34;
                width=&#34;760&#34;
                height=&#34;429&#34;
                loading=&#34;lazy&#34; data-zoomable /&gt;&lt;/div&gt;
@@ -482,10 +482,10 @@ _DEATH
   &lt;div class=&#34;d-flex justify-content-center&#34;&gt;
     &lt;div class=&#34;w-100&#34; &gt;
         &lt;img alt=&#34;&#34; srcset=&#34;
-               /media/docs/FMTdevelopment_explain_FR_hu2bded79802906567a5cbc9e10e6a27e9_23222_41952b99982be65d68c2d721329f249d.png 400w,
-               /media/docs/FMTdevelopment_explain_FR_hu2bded79802906567a5cbc9e10e6a27e9_23222_c8d400e712cb2c5d4e0f194abb10629b.png 760w,
-               /media/docs/FMTdevelopment_explain_FR_hu2bded79802906567a5cbc9e10e6a27e9_23222_1200x1200_fit_lanczos_3.png 1200w&#34;
-               src=&#34;/media/docs/FMTdevelopment_explain_FR_hu2bded79802906567a5cbc9e10e6a27e9_23222_41952b99982be65d68c2d721329f249d.png&#34;
+               /FMT/media/docs/FMTdevelopment_explain_FR_hu2bded79802906567a5cbc9e10e6a27e9_23222_41952b99982be65d68c2d721329f249d.png 400w,
+               /FMT/media/docs/FMTdevelopment_explain_FR_hu2bded79802906567a5cbc9e10e6a27e9_23222_c8d400e712cb2c5d4e0f194abb10629b.png 760w,
+               /FMT/media/docs/FMTdevelopment_explain_FR_hu2bded79802906567a5cbc9e10e6a27e9_23222_1200x1200_fit_lanczos_3.png 1200w&#34;
+               src=&#34;https://bureau-du-forestier-en-chef.github.io/FMT/FMT/media/docs/FMTdevelopment_explain_FR_hu2bded79802906567a5cbc9e10e6a27e9_23222_41952b99982be65d68c2d721329f249d.png&#34;
                width=&#34;476&#34;
                height=&#34;480&#34;
                loading=&#34;lazy&#34; data-zoomable /&gt;&lt;/div&gt;
@@ -509,10 +509,10 @@ _DEATH
   &lt;div class=&#34;d-flex justify-content-center&#34;&gt;
     &lt;div class=&#34;w-100&#34; &gt;
         &lt;img alt=&#34;&#34; srcset=&#34;
-               /media/docs/FMTgraph_extended_FR_hu17ea88b2664776f56c91e78c124ef461_55230_8a9577332cd98e3a8e3c1c4593439d3c.png 400w,
-               /media/docs/FMTgraph_extended_FR_hu17ea88b2664776f56c91e78c124ef461_55230_cd38281952b022f303a3830958722016.png 760w,
-               /media/docs/FMTgraph_extended_FR_hu17ea88b2664776f56c91e78c124ef461_55230_1200x1200_fit_lanczos_3.png 1200w&#34;
-               src=&#34;/media/docs/FMTgraph_extended_FR_hu17ea88b2664776f56c91e78c124ef461_55230_8a9577332cd98e3a8e3c1c4593439d3c.png&#34;
+               /FMT/media/docs/FMTgraph_extended_FR_hu17ea88b2664776f56c91e78c124ef461_55230_8a9577332cd98e3a8e3c1c4593439d3c.png 400w,
+               /FMT/media/docs/FMTgraph_extended_FR_hu17ea88b2664776f56c91e78c124ef461_55230_cd38281952b022f303a3830958722016.png 760w,
+               /FMT/media/docs/FMTgraph_extended_FR_hu17ea88b2664776f56c91e78c124ef461_55230_1200x1200_fit_lanczos_3.png 1200w&#34;
+               src=&#34;https://bureau-du-forestier-en-chef.github.io/FMT/FMT/media/docs/FMTgraph_extended_FR_hu17ea88b2664776f56c91e78c124ef461_55230_8a9577332cd98e3a8e3c1c4593439d3c.png&#34;
                width=&#34;760&#34;
                height=&#34;348&#34;
                loading=&#34;lazy&#34; data-zoomable /&gt;&lt;/div&gt;
@@ -742,10 +742,10 @@ if (new(FMTversion)$hasfeature(&amp;quot;OSI&amp;quot;)) # Vérifie si FMT a ét
   &lt;div class=&#34;d-flex justify-content-center&#34;&gt;
     &lt;div class=&#34;w-100&#34; &gt;
         &lt;img alt=&#34;&#34; srcset=&#34;
-               /media/docs/buildperiod_function_description_hufc6e5d5c3c5b229b82e00829b34878cd_15390_ac4944d2c540ef9c1673d6f5e501c098.png 400w,
-               /media/docs/buildperiod_function_description_hufc6e5d5c3c5b229b82e00829b34878cd_15390_5751490d1777fd7feacb814d1dafcfb6.png 760w,
-               /media/docs/buildperiod_function_description_hufc6e5d5c3c5b229b82e00829b34878cd_15390_1200x1200_fit_lanczos_3.png 1200w&#34;
-               src=&#34;/media/docs/buildperiod_function_description_hufc6e5d5c3c5b229b82e00829b34878cd_15390_ac4944d2c540ef9c1673d6f5e501c098.png&#34;
+               /FMT/media/docs/buildperiod_function_description_hufc6e5d5c3c5b229b82e00829b34878cd_15390_ac4944d2c540ef9c1673d6f5e501c098.png 400w,
+               /FMT/media/docs/buildperiod_function_description_hufc6e5d5c3c5b229b82e00829b34878cd_15390_5751490d1777fd7feacb814d1dafcfb6.png 760w,
+               /FMT/media/docs/buildperiod_function_description_hufc6e5d5c3c5b229b82e00829b34878cd_15390_1200x1200_fit_lanczos_3.png 1200w&#34;
+               src=&#34;https://bureau-du-forestier-en-chef.github.io/FMT/FMT/media/docs/buildperiod_function_description_hufc6e5d5c3c5b229b82e00829b34878cd_15390_ac4944d2c540ef9c1673d6f5e501c098.png&#34;
                width=&#34;760&#34;
                height=&#34;19&#34;
                loading=&#34;lazy&#34; data-zoomable /&gt;&lt;/div&gt;
@@ -769,10 +769,10 @@ if (new(FMTversion)$hasfeature(&amp;quot;OSI&amp;quot;)) # Vérifie si FMT a ét
   &lt;div class=&#34;d-flex justify-content-center&#34;&gt;
     &lt;div class=&#34;w-100&#34; &gt;
         &lt;img alt=&#34;&#34; srcset=&#34;
-               /media/docs/setsolution_function_description_hud7502f50d87eb36312a95407074c8c87_10134_1c5b2390f837e8d344a9cfbed30431d7.png 400w,
-               /media/docs/setsolution_function_description_hud7502f50d87eb36312a95407074c8c87_10134_92b70cc5ce247ede254cb9eb35deeec1.png 760w,
-               /media/docs/setsolution_function_description_hud7502f50d87eb36312a95407074c8c87_10134_1200x1200_fit_lanczos_3.png 1200w&#34;
-               src=&#34;/media/docs/setsolution_function_description_hud7502f50d87eb36312a95407074c8c87_10134_1c5b2390f837e8d344a9cfbed30431d7.png&#34;
+               /FMT/media/docs/setsolution_function_description_hud7502f50d87eb36312a95407074c8c87_10134_1c5b2390f837e8d344a9cfbed30431d7.png 400w,
+               /FMT/media/docs/setsolution_function_description_hud7502f50d87eb36312a95407074c8c87_10134_92b70cc5ce247ede254cb9eb35deeec1.png 760w,
+               /FMT/media/docs/setsolution_function_description_hud7502f50d87eb36312a95407074c8c87_10134_1200x1200_fit_lanczos_3.png 1200w&#34;
+               src=&#34;https://bureau-du-forestier-en-chef.github.io/FMT/FMT/media/docs/setsolution_function_description_hud7502f50d87eb36312a95407074c8c87_10134_1c5b2390f837e8d344a9cfbed30431d7.png&#34;
                width=&#34;605&#34;
                height=&#34;24&#34;
                loading=&#34;lazy&#34; data-zoomable /&gt;&lt;/div&gt;
@@ -879,9 +879,9 @@ Solution set at period   20
     
     <item>
       <title>Télécharger les librairies</title>
-      <link>/fr/docs/download_install/downloading_libraries/</link>
+      <link>https://bureau-du-forestier-en-chef.github.io/FMT/fr/docs/download_install/downloading_libraries/</link>
       <pubDate>Sun, 05 May 2019 00:00:00 +0100</pubDate>
-      <guid>/fr/docs/download_install/downloading_libraries/</guid>
+      <guid>https://bureau-du-forestier-en-chef.github.io/FMT/fr/docs/download_install/downloading_libraries/</guid>
       <description>&lt;ol&gt;
 &lt;li&gt;Si git n&amp;rsquo;est pas installé sur votre ordinateur, installez-le depuis &lt;a href=&#34;https://git-scm.com/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;ce lien&lt;/a&gt;.&lt;/li&gt;
 &lt;/ol&gt;
@@ -896,7 +896,7 @@ Solution set at period   20
 &lt;/ol&gt;
 &lt;div class=&#34;alert alert-note&#34;&gt;
   &lt;div&gt;
-    Si vous avez fermé l&amp;rsquo;invite de commande, ou si vous ne vous souvenez pas comment l&amp;rsquo;ouvrir, consultez &lt;a href=&#34;/docs/download_install/prerequisits&#34;&gt;la page précédente&lt;/a&gt;.
+    Si vous avez fermé l&amp;rsquo;invite de commande, ou si vous ne vous souvenez pas comment l&amp;rsquo;ouvrir, consultez &lt;a href=&#34;https://bureau-du-forestier-en-chef.github.io/FMT/docs/download_install/prerequisits&#34;&gt;la page précédente&lt;/a&gt;.
   &lt;/div&gt;
 &lt;/div&gt;
 &lt;ol start=&#34;3&#34;&gt;
@@ -904,7 +904,7 @@ Solution set at period   20
 &lt;/ol&gt;
 &lt;div class=&#34;alert alert-note&#34;&gt;
   &lt;div&gt;
-    Si vous ne vous souvenez pas comment utiliser &lt;code&gt;cd&lt;/code&gt;, consultez &lt;a href=&#34;/docs/download_install/prerequisits&#34;&gt;la page précédente&lt;/a&gt;.
+    Si vous ne vous souvenez pas comment utiliser &lt;code&gt;cd&lt;/code&gt;, consultez &lt;a href=&#34;https://bureau-du-forestier-en-chef.github.io/FMT/docs/download_install/prerequisits&#34;&gt;la page précédente&lt;/a&gt;.
   &lt;/div&gt;
 &lt;/div&gt;
 &lt;ol start=&#34;4&#34;&gt;
@@ -925,9 +925,9 @@ Solution set at period   20
     
     <item>
       <title>Compiler</title>
-      <link>/fr/docs/download_install/compiling/</link>
+      <link>https://bureau-du-forestier-en-chef.github.io/FMT/fr/docs/download_install/compiling/</link>
       <pubDate>Sun, 05 May 2019 00:00:00 +0100</pubDate>
-      <guid>/fr/docs/download_install/compiling/</guid>
+      <guid>https://bureau-du-forestier-en-chef.github.io/FMT/fr/docs/download_install/compiling/</guid>
       <description>&lt;p&gt;Maintenant que tout est prêt, il est temps de passer à l&amp;rsquo;étape de compilation proprement dite.&lt;/p&gt;
 &lt;ol&gt;
 &lt;li&gt;
@@ -973,9 +973,9 @@ cmake --install build/release --config Release
     
     <item>
       <title>Exercice 1</title>
-      <link>/fr/docs/basics/exercice_1/</link>
+      <link>https://bureau-du-forestier-en-chef.github.io/FMT/fr/docs/basics/exercice_1/</link>
       <pubDate>Sun, 05 May 2019 00:00:00 +0100</pubDate>
-      <guid>/fr/docs/basics/exercice_1/</guid>
+      <guid>https://bureau-du-forestier-en-chef.github.io/FMT/fr/docs/basics/exercice_1/</guid>
       <description>&lt;p&gt;Dans cet exercice, vous allez essayer d&amp;rsquo;utiliser FMT pour lire un scénario, le résoudre, lire une de ses sorties, et exporter la solution.&lt;/p&gt;
 &lt;p&gt;Pour faire cet exercice, &lt;strong&gt;vous devez avoir installé FMT sur votre ordinateur et avoir téléchargé les fichiers d&amp;rsquo;exemple depuis le dépôt GitHub de FMT&lt;/strong&gt;.&lt;/p&gt;
 &lt;ul class=&#34;cta-group&#34;&gt;
@@ -1133,9 +1133,9 @@ scheduleParser.write(modelSolution, r&amp;quot;D:/TempCode/FMT/FMT/Examples/prog
     
     <item>
       <title>Importer FMT dans Python</title>
-      <link>/fr/docs/download_install/importing_in_python/</link>
+      <link>https://bureau-du-forestier-en-chef.github.io/FMT/fr/docs/download_install/importing_in_python/</link>
       <pubDate>Sun, 05 May 2019 00:00:00 +0100</pubDate>
-      <guid>/fr/docs/download_install/importing_in_python/</guid>
+      <guid>https://bureau-du-forestier-en-chef.github.io/FMT/fr/docs/download_install/importing_in_python/</guid>
       <description>&lt;p&gt;Pour importer FMT que vous venez de compiler dans Python, vous devez avoir installé &lt;a href=&#34;https://www.python.org/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Python&lt;/a&gt; et &lt;a href=&#34;https://packaging.python.org/en/latest/tutorials/installing-packages/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;pip&lt;/a&gt; sur votre ordinateur.&lt;/p&gt;
 &lt;div class=&#34;alert alert-note&#34;&gt;
   &lt;div&gt;
@@ -1183,9 +1183,9 @@ from FMT import Version
     
     <item>
       <title>Simulation spatiallement explicite</title>
-      <link>/fr/docs/basics/spatially_explicit_simulation/</link>
+      <link>https://bureau-du-forestier-en-chef.github.io/FMT/fr/docs/basics/spatially_explicit_simulation/</link>
       <pubDate>Sun, 05 May 2019 00:00:00 +0100</pubDate>
-      <guid>/fr/docs/basics/spatially_explicit_simulation/</guid>
+      <guid>https://bureau-du-forestier-en-chef.github.io/FMT/fr/docs/basics/spatially_explicit_simulation/</guid>
       <description>&lt;h2 id=&#34;un-petit-rappel-sur-la-signification-de-spatialement-référencé&#34;&gt;Un petit rappel sur la signification de &amp;ldquo;spatialement référencé&amp;rdquo;.&lt;/h2&gt;
 &lt;p&gt;On peut distinguer 3 façons de prendre en compte l&amp;rsquo;espace dans un modèle :&lt;/p&gt;
 &lt;ul&gt;
@@ -1238,10 +1238,10 @@ FMTsrmodel &amp;lt;|-- FMTnssmodel
   &lt;div class=&#34;d-flex justify-content-center&#34;&gt;
     &lt;div class=&#34;w-100&#34; &gt;
         &lt;img alt=&#34;&#34; srcset=&#34;
-               /media/docs/FMTlinegraph_visual_hu6a72dfba074b860a159c45c28a83a8f9_9527_aab03734b8bf770b8987e0d24c13d780.png 400w,
-               /media/docs/FMTlinegraph_visual_hu6a72dfba074b860a159c45c28a83a8f9_9527_50f6afe23186059441fe678514ba6398.png 760w,
-               /media/docs/FMTlinegraph_visual_hu6a72dfba074b860a159c45c28a83a8f9_9527_1200x1200_fit_lanczos_3.png 1200w&#34;
-               src=&#34;/media/docs/FMTlinegraph_visual_hu6a72dfba074b860a159c45c28a83a8f9_9527_aab03734b8bf770b8987e0d24c13d780.png&#34;
+               /FMT/media/docs/FMTlinegraph_visual_hu6a72dfba074b860a159c45c28a83a8f9_9527_aab03734b8bf770b8987e0d24c13d780.png 400w,
+               /FMT/media/docs/FMTlinegraph_visual_hu6a72dfba074b860a159c45c28a83a8f9_9527_50f6afe23186059441fe678514ba6398.png 760w,
+               /FMT/media/docs/FMTlinegraph_visual_hu6a72dfba074b860a159c45c28a83a8f9_9527_1200x1200_fit_lanczos_3.png 1200w&#34;
+               src=&#34;https://bureau-du-forestier-en-chef.github.io/FMT/FMT/media/docs/FMTlinegraph_visual_hu6a72dfba074b860a159c45c28a83a8f9_9527_aab03734b8bf770b8987e0d24c13d780.png&#34;
                width=&#34;626&#34;
                height=&#34;106&#34;
                loading=&#34;lazy&#34; data-zoomable /&gt;&lt;/div&gt;
@@ -1267,10 +1267,10 @@ FMTsrmodel &amp;lt;|-- FMTnssmodel
   &lt;div class=&#34;d-flex justify-content-center&#34;&gt;
     &lt;div class=&#34;w-100&#34; &gt;
         &lt;img alt=&#34;&#34; srcset=&#34;
-               /media/docs/single_transitions_hua5870f2ffbf0fb1fcfccb13d6e2733f9_20425_745f190eb07a2b2ae13a45dfad418807.png 400w,
-               /media/docs/single_transitions_hua5870f2ffbf0fb1fcfccb13d6e2733f9_20425_45afc81c335a218a7a25b073e17ef5b2.png 760w,
-               /media/docs/single_transitions_hua5870f2ffbf0fb1fcfccb13d6e2733f9_20425_1200x1200_fit_lanczos_3.png 1200w&#34;
-               src=&#34;/media/docs/single_transitions_hua5870f2ffbf0fb1fcfccb13d6e2733f9_20425_745f190eb07a2b2ae13a45dfad418807.png&#34;
+               /FMT/media/docs/single_transitions_hua5870f2ffbf0fb1fcfccb13d6e2733f9_20425_745f190eb07a2b2ae13a45dfad418807.png 400w,
+               /FMT/media/docs/single_transitions_hua5870f2ffbf0fb1fcfccb13d6e2733f9_20425_45afc81c335a218a7a25b073e17ef5b2.png 760w,
+               /FMT/media/docs/single_transitions_hua5870f2ffbf0fb1fcfccb13d6e2733f9_20425_1200x1200_fit_lanczos_3.png 1200w&#34;
+               src=&#34;https://bureau-du-forestier-en-chef.github.io/FMT/FMT/media/docs/single_transitions_hua5870f2ffbf0fb1fcfccb13d6e2733f9_20425_745f190eb07a2b2ae13a45dfad418807.png&#34;
                width=&#34;636&#34;
                height=&#34;204&#34;
                loading=&#34;lazy&#34; data-zoomable /&gt;&lt;/div&gt;
@@ -1298,10 +1298,10 @@ FMTsrmodel &amp;lt;|-- FMTnssmodel
   &lt;div class=&#34;d-flex justify-content-center&#34;&gt;
     &lt;div class=&#34;w-100&#34; &gt;
         &lt;img alt=&#34;&#34; srcset=&#34;
-               /media/docs/FMTevent_visual_hu3c6d6159cbe7c90146f57815d473180c_14326_b84ffbdec8c57f26383e63828fc2a2ab.png 400w,
-               /media/docs/FMTevent_visual_hu3c6d6159cbe7c90146f57815d473180c_14326_759b25f9148b37145b8804c04d950dff.png 760w,
-               /media/docs/FMTevent_visual_hu3c6d6159cbe7c90146f57815d473180c_14326_1200x1200_fit_lanczos_3.png 1200w&#34;
-               src=&#34;/media/docs/FMTevent_visual_hu3c6d6159cbe7c90146f57815d473180c_14326_b84ffbdec8c57f26383e63828fc2a2ab.png&#34;
+               /FMT/media/docs/FMTevent_visual_hu3c6d6159cbe7c90146f57815d473180c_14326_b84ffbdec8c57f26383e63828fc2a2ab.png 400w,
+               /FMT/media/docs/FMTevent_visual_hu3c6d6159cbe7c90146f57815d473180c_14326_759b25f9148b37145b8804c04d950dff.png 760w,
+               /FMT/media/docs/FMTevent_visual_hu3c6d6159cbe7c90146f57815d473180c_14326_1200x1200_fit_lanczos_3.png 1200w&#34;
+               src=&#34;https://bureau-du-forestier-en-chef.github.io/FMT/FMT/media/docs/FMTevent_visual_hu3c6d6159cbe7c90146f57815d473180c_14326_b84ffbdec8c57f26383e63828fc2a2ab.png&#34;
                width=&#34;760&#34;
                height=&#34;290&#34;
                loading=&#34;lazy&#34; data-zoomable /&gt;&lt;/div&gt;
@@ -1325,10 +1325,10 @@ FMTsrmodel &amp;lt;|-- FMTnssmodel
   &lt;div class=&#34;d-flex justify-content-center&#34;&gt;
     &lt;div class=&#34;w-100&#34; &gt;
         &lt;img alt=&#34;&#34; srcset=&#34;
-               /media/docs/FMTevent_visual2_hu1ad06f91b417535d6bf5fc14636c609e_11931_bd041ae467eb5dcb0ecd31a18f2fb39f.png 400w,
-               /media/docs/FMTevent_visual2_hu1ad06f91b417535d6bf5fc14636c609e_11931_0f2e717205eb525ac3126aa510c02207.png 760w,
-               /media/docs/FMTevent_visual2_hu1ad06f91b417535d6bf5fc14636c609e_11931_1200x1200_fit_lanczos_3.png 1200w&#34;
-               src=&#34;/media/docs/FMTevent_visual2_hu1ad06f91b417535d6bf5fc14636c609e_11931_bd041ae467eb5dcb0ecd31a18f2fb39f.png&#34;
+               /FMT/media/docs/FMTevent_visual2_hu1ad06f91b417535d6bf5fc14636c609e_11931_bd041ae467eb5dcb0ecd31a18f2fb39f.png 400w,
+               /FMT/media/docs/FMTevent_visual2_hu1ad06f91b417535d6bf5fc14636c609e_11931_0f2e717205eb525ac3126aa510c02207.png 760w,
+               /FMT/media/docs/FMTevent_visual2_hu1ad06f91b417535d6bf5fc14636c609e_11931_1200x1200_fit_lanczos_3.png 1200w&#34;
+               src=&#34;https://bureau-du-forestier-en-chef.github.io/FMT/FMT/media/docs/FMTevent_visual2_hu1ad06f91b417535d6bf5fc14636c609e_11931_bd041ae467eb5dcb0ecd31a18f2fb39f.png&#34;
                width=&#34;474&#34;
                height=&#34;132&#34;
                loading=&#34;lazy&#34; data-zoomable /&gt;&lt;/div&gt;
@@ -1372,10 +1372,10 @@ FMTsrmodel &amp;lt;|-- FMTnssmodel
   &lt;div class=&#34;d-flex justify-content-center&#34;&gt;
     &lt;div class=&#34;w-100&#34; &gt;
         &lt;img alt=&#34;&#34; srcset=&#34;
-               /media/docs/neighborsize_hufd564ece1fb23ccf3e6345e22009ccb5_9067_3e6933ac2fa98c96c072dd91b68488de.png 400w,
-               /media/docs/neighborsize_hufd564ece1fb23ccf3e6345e22009ccb5_9067_bc77a4a0b0397412666a6f4a1d914de8.png 760w,
-               /media/docs/neighborsize_hufd564ece1fb23ccf3e6345e22009ccb5_9067_1200x1200_fit_lanczos_3.png 1200w&#34;
-               src=&#34;/media/docs/neighborsize_hufd564ece1fb23ccf3e6345e22009ccb5_9067_3e6933ac2fa98c96c072dd91b68488de.png&#34;
+               /FMT/media/docs/neighborsize_hufd564ece1fb23ccf3e6345e22009ccb5_9067_3e6933ac2fa98c96c072dd91b68488de.png 400w,
+               /FMT/media/docs/neighborsize_hufd564ece1fb23ccf3e6345e22009ccb5_9067_bc77a4a0b0397412666a6f4a1d914de8.png 760w,
+               /FMT/media/docs/neighborsize_hufd564ece1fb23ccf3e6345e22009ccb5_9067_1200x1200_fit_lanczos_3.png 1200w&#34;
+               src=&#34;https://bureau-du-forestier-en-chef.github.io/FMT/FMT/media/docs/neighborsize_hufd564ece1fb23ccf3e6345e22009ccb5_9067_3e6933ac2fa98c96c072dd91b68488de.png&#34;
                width=&#34;760&#34;
                height=&#34;219&#34;
                loading=&#34;lazy&#34; data-zoomable /&gt;&lt;/div&gt;
@@ -1408,10 +1408,10 @@ FMTsrmodel &amp;lt;|-- FMTnssmodel
   &lt;div class=&#34;d-flex justify-content-center&#34;&gt;
     &lt;div class=&#34;w-100&#34; &gt;
         &lt;img alt=&#34;&#34; srcset=&#34;
-               /media/docs/adjacencyDistance_huaed1bffac12c52e3ea8dad246d4d5c9d_17871_2c554344f22e57a9fbe2cc4e80ca2f4f.png 400w,
-               /media/docs/adjacencyDistance_huaed1bffac12c52e3ea8dad246d4d5c9d_17871_7ebfac83c25700cecbed2e79dbb19362.png 760w,
-               /media/docs/adjacencyDistance_huaed1bffac12c52e3ea8dad246d4d5c9d_17871_1200x1200_fit_lanczos_3.png 1200w&#34;
-               src=&#34;/media/docs/adjacencyDistance_huaed1bffac12c52e3ea8dad246d4d5c9d_17871_2c554344f22e57a9fbe2cc4e80ca2f4f.png&#34;
+               /FMT/media/docs/adjacencyDistance_huaed1bffac12c52e3ea8dad246d4d5c9d_17871_2c554344f22e57a9fbe2cc4e80ca2f4f.png 400w,
+               /FMT/media/docs/adjacencyDistance_huaed1bffac12c52e3ea8dad246d4d5c9d_17871_7ebfac83c25700cecbed2e79dbb19362.png 760w,
+               /FMT/media/docs/adjacencyDistance_huaed1bffac12c52e3ea8dad246d4d5c9d_17871_1200x1200_fit_lanczos_3.png 1200w&#34;
+               src=&#34;https://bureau-du-forestier-en-chef.github.io/FMT/FMT/media/docs/adjacencyDistance_huaed1bffac12c52e3ea8dad246d4d5c9d_17871_2c554344f22e57a9fbe2cc4e80ca2f4f.png&#34;
                width=&#34;760&#34;
                height=&#34;246&#34;
                loading=&#34;lazy&#34; data-zoomable /&gt;&lt;/div&gt;
@@ -1443,10 +1443,10 @@ FMTsrmodel &amp;lt;|-- FMTnssmodel
   &lt;div class=&#34;d-flex justify-content-center&#34;&gt;
     &lt;div class=&#34;w-100&#34; &gt;
         &lt;img alt=&#34;&#34; srcset=&#34;
-               /media/docs/greedySimulationAlgorithm_huf8c13db4ede8dbf4262661b422bcefcd_47781_5a3b9c1a5a98a1ac316b5c55aa6260ff.png 400w,
-               /media/docs/greedySimulationAlgorithm_huf8c13db4ede8dbf4262661b422bcefcd_47781_bb339e473835be21abad801a7d9f31d2.png 760w,
-               /media/docs/greedySimulationAlgorithm_huf8c13db4ede8dbf4262661b422bcefcd_47781_1200x1200_fit_lanczos_3.png 1200w&#34;
-               src=&#34;/media/docs/greedySimulationAlgorithm_huf8c13db4ede8dbf4262661b422bcefcd_47781_5a3b9c1a5a98a1ac316b5c55aa6260ff.png&#34;
+               /FMT/media/docs/greedySimulationAlgorithm_huf8c13db4ede8dbf4262661b422bcefcd_47781_5a3b9c1a5a98a1ac316b5c55aa6260ff.png 400w,
+               /FMT/media/docs/greedySimulationAlgorithm_huf8c13db4ede8dbf4262661b422bcefcd_47781_bb339e473835be21abad801a7d9f31d2.png 760w,
+               /FMT/media/docs/greedySimulationAlgorithm_huf8c13db4ede8dbf4262661b422bcefcd_47781_1200x1200_fit_lanczos_3.png 1200w&#34;
+               src=&#34;https://bureau-du-forestier-en-chef.github.io/FMT/FMT/media/docs/greedySimulationAlgorithm_huf8c13db4ede8dbf4262661b422bcefcd_47781_5a3b9c1a5a98a1ac316b5c55aa6260ff.png&#34;
                width=&#34;760&#34;
                height=&#34;383&#34;
                loading=&#34;lazy&#34; data-zoomable /&gt;&lt;/div&gt;

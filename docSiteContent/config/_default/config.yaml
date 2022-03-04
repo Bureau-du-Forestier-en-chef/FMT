@@ -4,7 +4,7 @@
 # This file is formatted using YAML syntax - learn more at https://learnxinyminutes.com/docs/yaml/
 
 title: 'FMT Documentation' # Website name
-baseurl: '' # Website URL
+baseurl: 'https://bureau-du-forestier-en-chef.github.io/FMT/' # Website URL
 copyright: '© {year} Bureau du Forestier en Chef du Québec' # Footer text, e.g. '© {year} Me'
 
 ############################
