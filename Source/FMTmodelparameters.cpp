@@ -26,6 +26,7 @@ namespace Models
         boolparameters[STRICTLY_POSITIVE]=false;
         boolparameters[POSTSOLVE]=true;
         boolparameters[SHOW_LOCK_IN_SCHEDULES]=false;
+		boolparameters[PRESOLVE_CAN_REMOVE_STATIC_THEMES] = false;
         //Vector for compresstime at each period
         compresstime = std::vector<int>(30,1);
     }
