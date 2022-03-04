@@ -24,7 +24,7 @@ fr:
         url: docs/
         weight: 20
       - name: Doxygen
-        url: "../doxygen/html/index.html"
+        url: "doxygen/html/index.html"
         weight: 30
 
 # Uncomment the lines below to configure your website in a second language.
