@@ -1002,6 +1002,18 @@ bool FMToutput::isactionbased() const
 	return false;
 	}
 
+bool FMToutput::isvariablesizeof(const size_t& masksize) const
+	{
+	for (const FMToutputsource& source : sources)
+		{
+			if (source.isvariable())
+			{
+				return (masksize == source.getmask().size());
+			}
+		}
+	return true;
+	}
+
 
 bool FMToutput::isinventory() const
 	{

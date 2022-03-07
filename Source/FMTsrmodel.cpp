@@ -795,6 +795,12 @@ namespace Models
 	{
 		try {
 			const double* solution = solver.getColSolution();
+			if (!output.isvariablesizeof(area.begin()->getmask().size()))
+				{
+				_exhandler->raise(Exception::FMTexc::FMTinvalid_maskrange,
+					"For output " + std::string(output.getname()),
+					"FMTsrmodel::getoutput", __LINE__, __FILE__);
+				}
 			return graph.getoutput(*this, output, period, solution, level);
 		}
 		catch (...)
