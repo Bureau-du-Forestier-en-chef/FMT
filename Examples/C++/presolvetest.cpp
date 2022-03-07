@@ -49,7 +49,7 @@ int main(int argc, char *argv[])
 	presolvedoptimizationmodel.doplanning(true);
 	const double nopresolve = presolvedoptimizationmodel.getoutput(out, 1, Core::FMToutputlevel::totalonly).at("Total");
 	const double presolve = optimizationmodel.getoutput(out, 1, Core::FMToutputlevel::totalonly).at("Total");
-	if ((nopresolve - presolve) >= FMT_DBL_TOLERANCE)
+	if (std::abs(nopresolve - presolve) >= 0.1)
 	{
 		Exception::FMTfreeexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed, "Wrong value",
 			"presolvetest", __LINE__, primarylocation);

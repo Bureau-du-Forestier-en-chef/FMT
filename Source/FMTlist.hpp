@@ -124,10 +124,10 @@ namespace Core
 						}
 					while (!newdata.empty())
 						{
-						std::list<std::pair<FMTmask, T>>::iterator baseit = newdata.begin();
-						std::list<std::pair<FMTmask, T>>::iterator datait = newdata.begin();
+						typename std::list<std::pair<FMTmask, T>>::iterator baseit = newdata.begin();
+						typename std::list<std::pair<FMTmask, T>>::iterator datait = newdata.begin();
 						++datait;
-						std::vector<std::list<std::pair<FMTmask, T>>::iterator>toremove;
+						std::vector<typename std::list<std::pair<FMTmask, T>>::iterator>toremove;
 						Core::FMTmask basemask(baseit->first);
 						const boost::dynamic_bitset<> selecinter = selectedbits & baseit->first.getbitsetreference();
 						boost::dynamic_bitset<> reverselect(selecinter);
@@ -156,7 +156,7 @@ namespace Core
 							}
 						std::pair<FMTmask, T>newelement(basemask,baseit->second);
 						newdata.erase(newdata.begin());
-						for (std::list<std::pair<FMTmask, T>>::iterator remove : toremove)
+						for (typename std::list<std::pair<FMTmask, T>>::iterator remove : toremove)
 							{
 							newdata.erase(remove);
 							}
