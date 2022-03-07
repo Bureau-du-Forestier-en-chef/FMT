@@ -42,3 +42,4 @@ compile_commands.json
 /Examples/C++/tests/BFECtests.csv
 /Examples/C++/testOAschedulerBFEC.cpp
 .vscode/*
+*html
