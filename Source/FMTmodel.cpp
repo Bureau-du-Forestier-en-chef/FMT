@@ -971,7 +971,7 @@ Core::FMTmask FMTmodel::getbasemask(std::vector<Core::FMTactualdevelopment> opti
 
 		optionaldevelopments.insert(optionaldevelopments.end(), area.begin(), area.end());
 		Core::FMTmask areamask(boost::dynamic_bitset<>(area.begin()->getmask().size(), false));
-		for (const Core::FMTactualdevelopment& developement : optionaldevelopments)
+		for (const Core::FMTactualdevelopment& developement : area)
 			{
 			areamask = areamask.getunion(developement.getmask());
 			}
@@ -1006,6 +1006,7 @@ Core::FMTmask FMTmodel::getbasemask(std::vector<Core::FMTactualdevelopment> opti
 				}
 			basemask = basemask.getunion(Core::FMTmask(bits));
 			}
+
 		/*
 
 		

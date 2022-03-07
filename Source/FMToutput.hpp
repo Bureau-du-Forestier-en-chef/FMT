@@ -344,6 +344,12 @@ class FMTEXPORT FMToutput: public FMTobject
 	Returns true if the output constaints action nodes
 	*/
 	bool isactionbased() const;
+	// DocString: FMToutput::isvariablesizeof
+	/**
+	If one source is variable and masksize == source.getmask will return true else return false.
+	Will return true if no sources are variable.
+	*/
+	bool isvariablesizeof(const size_t& masksize) const;
 	// DocString: FMToutput::isinventory
 	/**
 	Returns true if contains inventory

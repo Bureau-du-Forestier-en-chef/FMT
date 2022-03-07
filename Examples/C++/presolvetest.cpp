@@ -38,13 +38,13 @@ int main(int argc, char *argv[])
 		}
 	}
 	optimizationmodel.setparameter(Models::FMTintmodelparameters::LENGTH,scenario_length);
-	optimizationmodel.FMTmodel::setparameter(Models::FMTboolmodelparameters::STRICTLY_POSITIVE, true);
+	//optimizationmodel.FMTmodel::setparameter(Models::FMTboolmodelparameters::STRICTLY_POSITIVE, true);
 	optimizationmodel.setparameter(Models::FMTintmodelparameters::PRESOLVE_ITERATIONS, 0);
 	optimizationmodel.doplanning(true);
 	Models::FMTlpmodel presolvedoptimizationmodel(models.at(0), Models::FMTsolverinterface::CLP);
 	presolvedoptimizationmodel.setparameter(Models::FMTintmodelparameters::LENGTH, scenario_length);
-	optimizationmodel.FMTmodel::setparameter(Models::FMTboolmodelparameters::POSTSOLVE, true);
-	presolvedoptimizationmodel.FMTmodel::setparameter(Models::FMTboolmodelparameters::STRICTLY_POSITIVE, true);
+	//optimizationmodel.FMTmodel::setparameter(Models::FMTboolmodelparameters::POSTSOLVE, true);
+	//presolvedoptimizationmodel.FMTmodel::setparameter(Models::FMTboolmodelparameters::STRICTLY_POSITIVE, true);
 	presolvedoptimizationmodel.setparameter(Models::FMTintmodelparameters::PRESOLVE_ITERATIONS, 10);
 	presolvedoptimizationmodel.doplanning(true);
 	const double nopresolve = presolvedoptimizationmodel.getoutput(out, 1, Core::FMToutputlevel::totalonly).at("Total");
