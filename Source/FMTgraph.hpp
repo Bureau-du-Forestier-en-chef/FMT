@@ -638,8 +638,16 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 					}else {
 						std::map<std::string, std::vector<std::string>>allequations;
 						const std::vector<Core::FMToutputnode> allnodes = output.getnodes(equation,1, false,period);
+						
+						
 						if (allnodes.empty())
 						{
+							if (level==Core::FMToutputlevel::developpement)
+								{
+								_exhandler->raise(Exception::FMTexc::FMTunsupported_output,
+									"Cannot get level values by developement",
+									"FMTgraph::getoutput", __LINE__, __FILE__);
+								}
 							allequations["Total"] = equation;
 
 						}else {
