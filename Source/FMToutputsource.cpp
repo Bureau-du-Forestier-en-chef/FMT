@@ -362,6 +362,11 @@ bool FMToutputsource::isnull(const FMTyields& ylds) const
 	return false;
 	}
 
+void  FMToutputsource::pushvalues(const std::vector<double>& newvalues)
+	{
+	values.insert(values.end(),newvalues.begin(), newvalues.end());
+	}
+
 double FMToutputsource::getvalue(int period) const
 	{
 	double returnvalue = 0;

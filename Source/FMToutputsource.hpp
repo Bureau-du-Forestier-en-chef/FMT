@@ -23,6 +23,10 @@ namespace Graph
 	class FMTgraphvertextoyield;
 }
 
+namespace Parser
+{
+	class FMToutputparser;
+}
 
 
 namespace Core
@@ -35,6 +39,7 @@ namespace Core
 class FMTEXPORT FMToutputsource : public FMTspec
     {
 	friend class boost::serialization::access;
+	friend class Parser::FMToutputparser;
 	template<class Archive>
 	void serialize(Archive& ar, const unsigned int version)
 	{
@@ -54,6 +59,7 @@ class FMTEXPORT FMToutputsource : public FMTspec
 	int outputorigin;
 	int themetarget;
 	//target =-1 or themetarget constructor
+	void pushvalues(const std::vector<double>& newvalues);
     public:
 		FMToutputsource();
 		~FMToutputsource() = default;

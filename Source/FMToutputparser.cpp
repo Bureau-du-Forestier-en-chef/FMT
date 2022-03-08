@@ -310,7 +310,14 @@ namespace Parser
 													values.push_back(getnum<double>(number, constants));
 												}
 											}
-											sources.push_back(Core::FMToutputsource(Core::FMTotar::level, values,outputid,themetarget));//constant level!
+											if (operators.empty()&&!sources.empty()&&!sources.back().isvariablelevel())//Well push it
+												{
+												sources.back().pushvalues(values);
+											}else {
+												sources.push_back(Core::FMToutputsource(Core::FMTotar::level, values, outputid, themetarget));//constant level!
+												}
+
+											
 										}
 										else {
 											std::vector<std::string>values = spliter(strsrc, FMTparser::rxseparator);
@@ -671,6 +678,7 @@ namespace Parser
 														name +" at line "+std::to_string(lastsourcelineid) ,"FMToutputparser::read", __LINE__, __FILE__, _section);
 								}
 							}
+							
 							outputs->push_back(Core::FMToutput(name, description, /*themetarget,*/ sources, operators));
 							/**_logger<<name<<"\n";
 							int id = 0;
