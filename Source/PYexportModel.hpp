@@ -36,7 +36,6 @@ BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(boundsolution_overloads, boundsolution, 1
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(eraseperiod_overloads, eraseperiod,0,1)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(setsolution_overloads,setsolution, 2, 3)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(setsolutionbylp_overloads,setsolutionbylp, 2, 3)
-BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(basepresolve_overloads,basepresolve, 0, 1)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(addscheduletoobjective_overloads, addscheduletoobjective, 1, 2)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(getarea_overloads, getarea, 0, 2)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(doplanning_overloads,doplanning,1,2)
@@ -107,7 +106,7 @@ void exportModel()
 			.def("getpostsolvefilter",&Models::FMTmodel::getpostsolvefilter,
 				"@DocString(FMTmodel::getpostsolvefilter)")
 			.def("basepresolve",&Models::FMTmodel::basepresolve,
-				basepresolve_overloads(bp::args("presolvepass"),"@DocString(FMTmodel::basepresolve)"))
+				"@DocString(FMTmodel::basepresolve)")
 		.def("getpotentialschedule", &Models::FMTmodel::getpotentialschedule,
 			getpotentialscheduleoverloads(bp::args("toremove","selection","withlock"),"@DocString(FMTmodel::getpotentialschedule)"))
 			//The way to expose overload member functions with different args

@@ -373,6 +373,41 @@ bool FMToutput::containslevel() const
 	return false;
 	}
 
+void FMToutput::setproportions(std::map<std::string, std::vector<std::string>>& allequations,const std::vector<std::string>& baseequation) const
+{
+	try {
+		const double totalentry = static_cast<double>(allequations.size());
+		std::vector<size_t>numericalentry;
+		std::vector<std::string>newvalues;
+		size_t location = 0;
+		for (const std::string& equation : baseequation)
+			{
+			if ((*equation.begin())!='O'&&//Got numerical
+				!FMToperator(equation).valid())
+				{
+				double value = std::stod(equation);
+				value /= totalentry;
+				newvalues.push_back(std::to_string(value));
+				numericalentry.push_back(location);
+				}
+			++location;
+			}
+		for (std::map<std::string, std::vector<std::string>>::iterator eqit = allequations.begin();eqit!= allequations.end();eqit++)
+			{
+			size_t loc = 0;
+			for (const size_t& entryid : numericalentry)
+				{
+				eqit->second[entryid] = newvalues.at(loc);
+				++loc;
+				}
+			}
+	}catch (...)
+		{
+		_exhandler->raisefromcatch("for " + this->getname(),"FMToutput::setproportions",
+			__LINE__, __FILE__, Core::FMTsection::Outputs);
+		}
+}
+
 bool FMToutput::canbenodesonly() const
 	{
 	try {
@@ -967,6 +1002,18 @@ bool FMToutput::isactionbased() const
 	return false;
 	}
 
+bool FMToutput::isvariablesizeof(const size_t& masksize) const
+	{
+	for (const FMToutputsource& source : sources)
+		{
+			if (source.isvariable())
+			{
+				return (masksize == source.getmask().size());
+			}
+		}
+	return true;
+	}
+
 
 bool FMToutput::isinventory() const
 	{
@@ -980,11 +1027,13 @@ bool FMToutput::isinventory() const
 	return false;
 	}
 
-void FMToutput::fillfromshuntingyard(std::map<std::string, double>& results,
+void FMToutput::fillfromshuntingyard(const std::vector<std::string>baseeq,
+						std::map<std::string, double>& results,
 						const std::vector<Core::FMToutputnode>& nodes,
-						const std::map<std::string,std::vector<std::string>>& allequations) const
+						std::map<std::string,std::vector<std::string>>& allequations) const
 	{
 	try {
+		setproportions(allequations,baseeq);
 		for (std::map<std::string, std::vector<std::string>>::const_iterator outit = allequations.begin(); outit != allequations.end(); outit++)
 		{
 			size_t oid = 0;

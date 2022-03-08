@@ -149,7 +149,7 @@ class FMTEXPORT FMTaction : public FMTlist<FMTspec>
 		*/
 		FMTaction presolve(const FMTmaskfilter& filter,
 			const std::vector<FMTtheme>& originalthemes,
-			const std::vector<FMTtheme>& newthemes) const;
+			std::vector<FMTtheme>& newthemes,bool compressdata = false) const;
 		// DocString: FMTaction::getagelowerbound
 		/**
 		Get the age lower bound for all FMTspecs.

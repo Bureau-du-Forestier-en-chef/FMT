@@ -253,7 +253,7 @@ namespace Models
 		The function can reduce the number of global themes/actions/transitions/yields/lifespans/outputs/constraints data
 		if the model is badly formulated.
 		*/
-		FMTmodel basepresolve(int presolvepass = 10) const;
+		FMTmodel basepresolve() const;
 		// DocString: FMTmodel::getpostsolvefilter
 		/**
 		Get the postsolve filter used by the presolve (in case you want to turn presolved mask into postsolve mask).
@@ -271,7 +271,7 @@ namespace Models
 		The function can reduce the number of global themes/actions/transitions/yields/lifespans/outputs/constraints data
 		if the model is badly formulated.
 		*/
-		virtual std::unique_ptr<FMTmodel>presolve(int presolvepass = 10,std::vector<Core::FMTactualdevelopment> optionaldevelopments = std::vector<Core::FMTactualdevelopment>()) const;
+		virtual std::unique_ptr<FMTmodel>presolve(std::vector<Core::FMTactualdevelopment> optionaldevelopments = std::vector<Core::FMTactualdevelopment>()) const;
 		// DocString: FMTmodel::postsolve
 		/*
 		This function is for postsolving the presolved model into the original model.

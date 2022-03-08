@@ -317,11 +317,15 @@ std::string FMTaction::getGCBMactionname() const
 
 FMTaction FMTaction::presolve(const FMTmaskfilter& filter,
 	const std::vector<FMTtheme>& originalthemes,
-	const std::vector<FMTtheme>& newthemes) const
+	std::vector<FMTtheme>& newthemes,bool compressdata) const
 	{
 	FMTaction newaction(*this);
 	try {
 		newaction.presolvelist(filter, originalthemes, newthemes);
+		if (compressdata)
+			{
+			newaction.compressmasks(newthemes);
+			}
 		newaction.update();
 	}catch (...)
 		{

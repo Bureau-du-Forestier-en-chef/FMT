@@ -1686,10 +1686,10 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 	}
 
 
-	std::unique_ptr<FMTmodel> FMTlpmodel::presolve(int presolvepass, std::vector<Core::FMTactualdevelopment> optionaldevelopments) const
+	std::unique_ptr<FMTmodel> FMTlpmodel::presolve(std::vector<Core::FMTactualdevelopment> optionaldevelopments) const
 	{
 		try{
-			return std::unique_ptr<FMTmodel>(new FMTlpmodel(*(dynamic_cast<FMTsrmodel*>(FMTsrmodel::presolve(presolvepass, optionaldevelopments).get()))));
+			return std::unique_ptr<FMTmodel>(new FMTlpmodel(*(dynamic_cast<FMTsrmodel*>(FMTsrmodel::presolve(optionaldevelopments).get()))));
 		}catch(...)
 		{
 			_exhandler->raisefromcatch("", "FMTlpmodel::presolve", __LINE__, __FILE__);
