@@ -195,12 +195,22 @@ namespace Models
 		constraints and variables bounds so juste use it in a "Get results" context ( only valid for partial graph).
 		*/
 		bool setsolutionbylp(int period, const Core::FMTschedule& schedule, double tolerance = FMT_DBL_TOLERANCE);
+		// DocString: FMTsrmodel::forcesolution
+		/**
+		 *
+		*/
+		bool forcesolution(int period, const Core::FMTschedule& proportionschedulewithlock, double tolerance = FMT_DBL_TOLERANCE);
 		// DocString: FMTsrmodel::getsolution
 		/**
 		Get the standard solution for a given period (FMTschedule dont have natural growth solution included).
 		If with lock is true then the schedule will contain locked developement.
 		*/
 		Core::FMTschedule getsolution(int period, bool withlock = false) const final;
+		// DocString: FMTsrmodel::getscheduleproportions
+		/**
+		Same as getsolution but the schedule area represent the percentage of area of the developement.
+		*/
+		Core::FMTschedule getscheduleproportions(int period, bool withlock) const;
 		// DocString: FMTlpsrmodel::getstats
 		/**
 		Get the graph stats of the graph and matrix (number of columns/rows/edges/verticies...)

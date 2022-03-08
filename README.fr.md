@@ -1,5 +1,7 @@
 [🇨🇦 Clickez ici pour la version anglaise](README.md)
 
+*Cette page ne donne qu'un aperçu du processus d'installation et des fonctionnalités de FMT. Pour plus détails, visitez note page de documentation pour [FMT](https://bureau-du-forestier-en-chef.github.io/FMTdocs/fr/).*
+
 # 📑 Description
 
 FMT (**F**orest **M**anagement **T**ool) est une **librairie de type logiciel libre pour l'aménagement forestier**.
