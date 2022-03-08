@@ -833,6 +833,26 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 			return FMTvertex_descriptor();
 		}
 
+		std::vector<FMTvertex_descriptor> getactionsources(const FMTvertex_descriptor& out_vertex,const int& actionid) const
+		{
+			std::vector<FMTvertex_descriptor> vsources;
+			try {
+				FMTinedge_iterator inedge_iterator, inedge_end;
+				for (boost::tie(inedge_iterator, inedge_end) = boost::in_edges(out_vertex, data); inedge_iterator != inedge_end; ++inedge_iterator)
+				{
+					const FMTbaseedgeproperties& edgeprop = data[*inedge_iterator];
+					if (edgeprop.getactionID() == actionid)
+						{
+						vsources.push_back(boost::source(*inedge_iterator, data));
+						}
+				}
+			}catch (...)
+				{
+				_exhandler->raisefromcatch("", "FMTgraph::getactionsources", __LINE__, __FILE__);
+				}
+			return vsources;
+		}
+
 		double inarea(const FMTvertex_descriptor& out_vertex,
                         const double*&  solution,int actionid = -1, bool growth = false) const
 		{
@@ -2032,6 +2052,53 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 			
 			return newschedule;
 		}
+		Core::FMTschedule getoutvariablesproportions(const std::vector<Core::FMTaction>& actions, const double* actual_solution, const int& lperiod,bool withlock = false) const
+		{
+			Core::FMTschedule newschedule(lperiod,*this, withlock);
+			try {
+				if (static_cast<int>(size()) > lperiod && lperiod > 0)
+				{
+					FMTvertex_iterator vertex_iterator,vertex_iterator_end;
+				for (boost::tie(vertex_iterator, vertex_iterator_end) = getperiodverticies(lperiod); vertex_iterator != vertex_iterator_end; ++vertex_iterator)
+					{
+						const FMTvertex_descriptor vertex = *vertex_iterator;
+						std::map<int, int>variables = getoutvariables(vertex);
+						const Core::FMTdevelopment& dev = data[*vertex_iterator].get();
+						double outarea;
+						std::map<int,double>variablesarea;
+						for (const auto variable_iterator : variables)
+						{
+							const double vout = *(actual_solution + variable_iterator.second);
+							/*if(vout>0)
+							{
+								std::cout<<std::string(dev)+" Variable : "+std::to_string(variable_iterator.first)+" Outarea : "+std::to_string(vout)<<std::endl;
+							}*/
+							if (vout > FMT_DBL_TOLERANCE) //basis solution only!!!
+							{
+								if(variable_iterator.first>=0)
+								{
+									variablesarea[variable_iterator.first]=vout;
+								}
+								outarea+=vout;
+							}
+						}
+						//std::cout<<"Total area : "+std::to_string(outarea)<<std::endl;
+						for (const auto variable_iterator : variablesarea) 
+						{
+							newschedule.addevent(dev, variable_iterator.second/outarea, actions.at(variable_iterator.first));
+							//std::cout<<std::string(dev)+" Variable : "+std::to_string(variable_iterator.first)+" Proportion : "+std::to_string(variable_iterator.second/outarea)<<std::endl;
+						}
+					}
+					newschedule.clean();
+				}
+			}
+			catch (...)
+			{
+				_exhandler->raisefromcatch("at period " + std::to_string(lperiod), "FMTgraph::getproportionsschedule", __LINE__, __FILE__);
+			}
+			
+			return newschedule;
+		}
 		operator std::string() const
 		{
 			std::ostringstream stream;
@@ -2045,6 +2112,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 		}
 
     };
+
 
 template<> inline std::map<int, int> FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::getoutvariables(const FMTvertex_descriptor& out_vertex) const
 	{

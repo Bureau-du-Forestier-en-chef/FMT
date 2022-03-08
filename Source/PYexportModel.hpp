@@ -223,6 +223,7 @@ void exportModel()
 			getsolution_overloads(bp::args("period", "withlock"), "@DocString(FMTsrmodel::getsolution)"))
 		.def("setsolution", &Models::FMTsrmodel::setsolution,
 			setsolution_overloads(bp::args("period", "schedule", "tolerance"), "@DocString(FMTsrmodel::setsolution)"))
+		.def("forcesolution", &Models::FMTsrmodel::forcesolution, "@DocString(FMTsrmodel::forcesolution)")
 		.def("setsolutionbylp", &Models::FMTsrmodel::setsolutionbylp,
 			setsolutionbylp_overloads(bp::args("period", "schedule", "tolerance"), "@DocString(FMTsrmodel::setsolutionbylp)"))
 		.def("getoutput", &Models::FMTsrmodel::getoutput, getLPoutputoverloads(bp::args("output", "period", "level"), "@DocString(FMTsrmodel::getoutput)"))
