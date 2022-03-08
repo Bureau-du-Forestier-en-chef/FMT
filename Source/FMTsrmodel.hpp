@@ -282,7 +282,7 @@ namespace Models
 		/**
 		Presolve a FMTsrmodel.
 		*/
-		virtual std::unique_ptr<FMTmodel>presolve(int presolvepass = 10, std::vector<Core::FMTactualdevelopment> optionaldevelopments = std::vector<Core::FMTactualdevelopment>()) const override;
+		virtual std::unique_ptr<FMTmodel>presolve(std::vector<Core::FMTactualdevelopment> optionaldevelopments = std::vector<Core::FMTactualdevelopment>()) const override;
 		// DocString: FMTsrmodel::boundsolution
 		/**
 		This function bounds the primal variables to the primal solution present within the matrix for

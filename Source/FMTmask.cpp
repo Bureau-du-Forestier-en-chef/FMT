@@ -312,7 +312,7 @@ bool FMTmask::operator < (const FMTmask& rhs) const
     return false;
     }
 
-FMTmask FMTmask::removeaggregates(const std::vector<FMTtheme>& themes) const
+FMTmask FMTmask::removeaggregates(const std::vector<FMTtheme>& themes, bool questionmarkonly) const
 	{
 	FMTmask newmask(*this);
 	newmask.name.clear();
@@ -320,7 +320,8 @@ FMTmask FMTmask::removeaggregates(const std::vector<FMTtheme>& themes) const
 	for (const FMTtheme& theme : themes)
 		{
 		const boost::dynamic_bitset<> localtheme = newmask.subset(theme);
-		if (localtheme.count()>1 || (localtheme.count()==1 && localtheme.size() == 1))
+		if (!questionmarkonly&&(localtheme.count()>1 || (localtheme.count()==1 && localtheme.size() == 1))||
+			questionmarkonly&&localtheme.count()==localtheme.size())
 			{
 			newmask.setsubset(theme, nullmask);
 			}

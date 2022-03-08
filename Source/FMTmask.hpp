@@ -236,7 +236,7 @@ class FMTEXPORT FMTmask
 		For each FMTtheme in (themes) if the attribute is an aggregate or ? will unset all
 		bits of the given aggregate or ? and return a new FMTmask.
 		*/
-		FMTmask removeaggregates(const std::vector<FMTtheme>& themes) const;
+		FMTmask removeaggregates(const std::vector<FMTtheme>& themes,bool questionmarkonly=false) const;
 		// DocString: FMTmask::empty
 		/**
 		Returns true if the data member is empty.

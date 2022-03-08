@@ -20,7 +20,7 @@ namespace Core {
 			if (raiseifnotfound&&lookit== attribute_locations.end())
 				{
 				_exhandler->raise(Exception::FMTexc::FMTundefined_attribute,
-					value + " at theme "+getname(),
+					value + " at theme "+std::to_string(getid())+" "+getname(),
 					"FMTtheme::getattribute", __LINE__, __FILE__);
 				}
 		}catch (...)
@@ -95,6 +95,7 @@ namespace Core {
 			}
 
 	}
+
 
 
 FMTtheme::FMTtheme(const std::vector<std::string>& lattributes,
@@ -466,7 +467,7 @@ void FMTtheme::push_aggregate(const std::string& aggregatename)
 			}
 		aggregates.push_back(aggregatename);
 		aggregatenames.push_back(std::vector<std::string>());
-		buildattributelocations();
+		//buildattributelocations();
 	}catch (...)
 		{
 		_exhandler->raisefromcatch("", "FMTtheme::push_aggregate", __LINE__, __FILE__);
@@ -485,6 +486,52 @@ void FMTtheme::push_aggregate_value(const std::string& aggregatename, const std:
 		{
 		_exhandler->raisefromcatch("", "FMTtheme::push_aggregate_value", __LINE__, __FILE__);
 		}
+	}
+
+std::string FMTtheme::updatefrommask(const Core::FMTmask& globalmask)
+	{
+	try {
+		const boost::dynamic_bitset<>global = globalmask.subset(*this);
+		if ((global.count()>1)&&(global.count()<global.size()))
+			{
+			std::string lastFMTaggregate("~FMT"+std::to_string(getid())+"A_0");
+			for (const std::string& aggregate : aggregates)
+				{
+				if (strtobits(aggregate) == global)
+					{
+					return aggregate;
+					}
+				if (aggregate.find('~')!=std::string::npos)
+					{
+					lastFMTaggregate=aggregate;
+					}
+				}
+			//Ok so we need a new aggregate
+			std::vector<std::string>splittedFMTagg;
+			boost::split(splittedFMTagg,lastFMTaggregate,boost::is_any_of("_"));
+			int id = std::stoi(splittedFMTagg.at(1));
+			id += 1;
+			const std::string newaggregate = splittedFMTagg.at(0) + "_" + std::to_string(id);
+			push_aggregate(newaggregate);
+			std::vector<size_t>aggregateindex;
+			for (size_t bid = 0; bid < global.size();++bid)
+				{
+				if (global[bid])
+					{
+					push_aggregate_value(newaggregate,attributes.at(bid));
+					aggregateindex.push_back(bid);
+					}
+
+				}
+			attribute_locations[newaggregate] = aggregateindex;
+			//buildattributelocations();
+			}
+		return bitstostr(global);
+	}catch (...)
+		{
+		_exhandler->raisefromcatch("", "FMTtheme::updatefrommask", __LINE__, __FILE__);
+		}
+	return "?";
 	}
 
 

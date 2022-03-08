@@ -116,7 +116,7 @@ class FMTEXPORT FMTsesmodel final: public FMTmodel
 		Presolve the sesmodel to get a more simple model call original presolve() and presolve the
 		FMTforest map and the spatial acitons.
 		*/
-		std::unique_ptr<FMTmodel>presolve(int presolvepass = 10,
+		std::unique_ptr<FMTmodel>presolve(
 			std::vector<Core::FMTactualdevelopment> optionaldevelopments = std::vector<Core::FMTactualdevelopment>()) const;
 		// DocString: FMTsesmodel::postsolve
 		/**

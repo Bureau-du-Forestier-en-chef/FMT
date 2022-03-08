@@ -148,7 +148,7 @@ namespace Models
 			This function use a vector of developments and the actual transitions of the model and return new unique pointer to presolved FMTmodel.
 			The function can reduce the number of global themes/actions/transitions/yields/lifespans/outputs/constraints data if the model is badly formulated.
 			*/
-			virtual std::unique_ptr<FMTmodel>presolve(int presolvepass = 10, std::vector<Core::FMTactualdevelopment> optionaldevelopments = std::vector<Core::FMTactualdevelopment>()) const;
+			virtual std::unique_ptr<FMTmodel>presolve(std::vector<Core::FMTactualdevelopment> optionaldevelopments = std::vector<Core::FMTactualdevelopment>()) const;
 			// DocString: FMTnssmodel::clone
 			/**
 			Get a clone of the FMTnssmodel
