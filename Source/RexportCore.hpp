@@ -307,6 +307,8 @@ void exportCore()
 					"@DocString(FMToutput::containslevel)")
 				.method("islevel", &Core::FMToutput::islevel,
 					"@DocString(FMToutput::islevel)")
+				.method("isonlylevel", &Core::FMToutput::isonlylevel,
+					"@DocString(FMToutput::isonlylevel)")
 				//.method("getnodes",&Core::FMToutput::getnodes,
 				//	"@DocString(FMToutput::getnodes)")
 				.method("str", &Core::FMToutput::operator std::string,
