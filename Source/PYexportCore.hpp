@@ -308,6 +308,8 @@ void exportCore()
 					"@DocString(FMToutput::containslevel)")
 				.def("islevel", &Core::FMToutput::islevel,
 					"@DocString(FMToutput::islevel)")
+				.def("isonlylevel", &Core::FMToutput::isonlylevel,
+					"@DocString(FMToutput::isonlylevel)")
 				.def("getnodes",&Core::FMToutput::getnodes, getnodes_overloads(bp::args("multiplier"), "@DocString(FMToutput::getnodes)"))
 				.def("__str__", &Core::FMToutput::operator std::string,
 					"@DocString(FMToutput::operator std::string)")
