@@ -34,7 +34,7 @@ namespace Python
 
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(getattributes_overloads, getattributes, 1, 2)
 //BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(getnodes_overloads, getnodes, 3, 4)
-BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(getnodes_overloads, getnodes, 0, 1)
+BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(getnodes_overloads, getnodes, 1, 4)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(getyieldrequest_overloads, getyieldrequest, 0, 0)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(operable_overloads, operable, 2, 3)
 

@@ -1,0 +1,13 @@
+
+*EXCLUDE
+
+aCT 1.._LENGTH
+acaribou 1.._LENGTH
+aplantation 1.._LENGTH
+arecup 1.._LENGTH
+
+*CONSTRAINTS
+
+
+
+*FORMAT MOSEK
