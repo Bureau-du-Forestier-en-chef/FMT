@@ -74,6 +74,9 @@ namespace Parallel
 			global = std::move(globalm.clone());
 			stochastic = std::move(stochasticm.clone());
 			local = std::move(localm.clone());
+			global->setparameter(Models::FMTboolmodelparameters::PRESOLVE_CAN_REMOVE_STATIC_THEMES, false);
+			stochastic->setparameter(Models::FMTboolmodelparameters::PRESOLVE_CAN_REMOVE_STATIC_THEMES, false);
+			local->setparameter(Models::FMTboolmodelparameters::PRESOLVE_CAN_REMOVE_STATIC_THEMES, false);
 			std::vector<Models::FMTmodel*>modelsptr;
 			modelsptr.push_back(global.get());
 			modelsptr.push_back(stochastic.get());
@@ -307,7 +310,7 @@ namespace Parallel
 
 					
 					const std::unique_ptr<Models::FMTmodel> stochasticcopy = std::move(domodelplanning(stochastic,replanningperiod,false,false,false));
-					dynamicarea = stochasticcopy->getarea(replanningperiod + 1);
+					dynamicarea = stochasticcopy->getarea(replanningperiod + 1,true);
 					for (Core::FMTactualdevelopment& developement : dynamicarea)
 						{
 						developement.setperiod(0);
@@ -376,7 +379,7 @@ namespace Parallel
 					const double  globalsolutionweight = lpmodel->getconstraints().at(0).getscheduleweight();
 					lpmodel->addscheduletoobjective(iterationglobalschedule, globalsolutionweight);
 					solvedmodel = lpmodel->initialsolve();
-				#else
+					#else
 					solvedmodel = modelcpy->doplanning(true);
 				#endif
 				if (solvedmodel)

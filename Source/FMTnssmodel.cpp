@@ -244,6 +244,8 @@ namespace Models
 			const int actualgraphlength = static_cast<int>(getgraphsize());
 			std::vector<Core::FMTactualdevelopment> actualarea;
 			int simulatedperiod = (actualgraphlength-1);
+			//First make some noise
+			std::shuffle(area.begin(), area.end(), generator);
 			
 			if (actualgraphlength ==0)
 			{
@@ -278,7 +280,7 @@ namespace Models
 					"Simulation model has no area to simulate", "FMTnssmodel::simulate", __LINE__, __FILE__);
 				}
 			//Shuffle the area...
-			std::shuffle(actualarea.begin(), actualarea.end(), generator);
+			//std::shuffle(actualarea.begin(), actualarea.end(), generator);
 			bool allocatedarea = true;
 			bool anyallocation = false;
 			double totaloperatedarea = 0;

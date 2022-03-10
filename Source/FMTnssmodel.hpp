@@ -167,12 +167,12 @@ namespace Models
 			{
 				return true;
 			}
-			// DocString: FMTmodel::setparameter(const FMTintmodelparameters, const int)
+			// DocString: FMTnssmodel::setparameter(const FMTintmodelparameters, const int)
 			/**
 			Override setter for intmodelparameters. 
 			*/
 			bool setparameter(const FMTintmodelparameters& key, const int& value) override;
-			// DocString: FMTmodel::setparameter(const FMTboolmodelparameters, const bool)
+			// DocString: FMTnssmodel::setparameter(const FMTboolmodelparameters, const bool)
 			/**
 			Override setter for boolmodelparameters.
 			*/
