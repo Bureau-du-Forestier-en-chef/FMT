@@ -1198,29 +1198,29 @@ namespace Spatial
 		return distlayer;
 	}
 
-	std::vector<std::vector<Graph::FMTcarbonpredictor>>FMTspatialschedule::getcarbonpredictors(FMTlayer<int>& predictorids, const Models::FMTmodel& model, const std::vector<std::string>& yieldnames, const int& period,bool periodonevalues, bool withGCBMid) const
+	std::vector<std::vector<Graph::FMTpredictor>>FMTspatialschedule::getpredictors(FMTlayer<int>& predictorids, const Models::FMTmodel& model, const std::vector<std::string>& yieldnames, const int& period,bool periodonevalues, bool withGCBMid) const
 	{
-		std::vector<std::vector<Graph::FMTcarbonpredictor>>predictors;
+		std::vector<std::vector<Graph::FMTpredictor>>predictors;
 		try {
 			if (scheduletype != FMTspatialscheduletype::FMTcomplete)
 			{
 				_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
 					"Cannot use a non complete schedule ",
-					"FMTspatialschedule::getcarbonpredictors", __LINE__, __FILE__);
+					"FMTspatialschedule::getpredictors", __LINE__, __FILE__);
 			}
-			std::set<std::vector<Graph::FMTcarbonpredictor>>predictorsset;
-			std::vector<std::set<std::vector<Graph::FMTcarbonpredictor>>::iterator>predictorlocalisations;
+			std::set<std::vector<Graph::FMTpredictor>>predictorsset;
+			std::vector<std::set<std::vector<Graph::FMTpredictor>>::iterator>predictorlocalisations;
 			for (std::map<FMTcoordinate, Graph::FMTlinegraph>::const_iterator graphit = this->mapping.begin(); graphit != this->mapping.end(); ++graphit)
 			{
-				const std::vector<Graph::FMTcarbonpredictor> graphpredictors = graphit->second.getperiodcarbonpredictors(period,model, yieldnames,periodonevalues,withGCBMid);
-				std::set<std::vector<Graph::FMTcarbonpredictor>>::iterator setit = predictorsset.end();
+				const std::vector<Graph::FMTpredictor> graphpredictors = graphit->second.getperiodpredictors(period,model, yieldnames,periodonevalues,withGCBMid);
+				std::set<std::vector<Graph::FMTpredictor>>::iterator setit = predictorsset.end();
 				bool pushed=false;
 				if (!graphpredictors.empty())
 				{
 					setit = predictorsset.find(graphpredictors);
 					if (setit == predictorsset.end())
 					{
-						const std::pair<std::set<std::vector<Graph::FMTcarbonpredictor>>::iterator, bool> ret = predictorsset.insert(graphpredictors);
+						const std::pair<std::set<std::vector<Graph::FMTpredictor>>::iterator, bool> ret = predictorsset.insert(graphpredictors);
 						predictorlocalisations.push_back(ret.first);
 						pushed = true;
 					}
@@ -1246,7 +1246,7 @@ namespace Spatial
 
 		}catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTspatialschedule::getcarbonpredictors", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("", "FMTspatialschedule::getpredictors", __LINE__, __FILE__);
 		}
 		return predictors;
 	}

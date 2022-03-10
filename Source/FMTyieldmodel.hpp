@@ -23,7 +23,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 namespace Graph
 {
-	class FMTcarbonpredictor;
+	class FMTpredictor;
 }
 
 namespace Core 
@@ -62,7 +62,7 @@ namespace Core
 		virtual const std::string GetModelInfo() const = 0;
 		virtual bool Validate(const std::vector<std::string>& YieldsAvailable) const = 0;
 		virtual const std::vector<std::string>GetYieldsOutputs() const = 0;
-		virtual const std::vector<double> GetInputValues(const Graph::FMTcarbonpredictor& predictor) const = 0;
+		virtual const std::vector<double> GetInputValues(const Graph::FMTpredictor& predictor) const = 0;
 	};
 }
 

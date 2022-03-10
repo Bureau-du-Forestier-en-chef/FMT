@@ -371,7 +371,7 @@ namespace Parser{
 		return transitions;
 	}
 
-	std::vector<std::vector<Graph::FMTcarbonpredictor>> FMTareaparser::writecarbonpredictors(
+	std::vector<std::vector<Graph::FMTpredictor>> FMTareaparser::writepredictors(
 		const std::string& location,
 		const Spatial::FMTspatialschedule& spatialsolution,
 		const std::vector<std::string>& yieldnames,
@@ -380,19 +380,19 @@ namespace Parser{
 		bool periodonevalues,
 		bool withGCBMid) const
 	{
-		std::vector<std::vector<Graph::FMTcarbonpredictor>>predictors;
+		std::vector<std::vector<Graph::FMTpredictor>>predictors;
 		try {
 			Spatial::FMTlayer<int> predictorids(spatialsolution.copyextent<int>());
 			//transitions = disturbances.getGCBMtransitions(lastdistlayer, actions, themes, period);
 			if (!spatialsolution.empty())
 			{
-				predictors = spatialsolution.getcarbonpredictors(predictorids,model, yieldnames, period,periodonevalues, withGCBMid);
+				predictors = spatialsolution.getpredictors(predictorids,model, yieldnames, period,periodonevalues, withGCBMid);
 				std::map<int, std::string>mapping;
 				writelayer<int>(predictorids, getperiodpathname(location, period,"PREDID"), mapping);
 			}
 		}catch (...)
 			{
-			_exhandler->printexceptions("at " + location, "FMTareaparser::writecarbonpredictors", __LINE__, __FILE__);
+			_exhandler->printexceptions("at " + location, "FMTareaparser::writepredictors", __LINE__, __FILE__);
 			}
 		return predictors;
 	}

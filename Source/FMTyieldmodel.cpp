@@ -10,7 +10,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTgraph.hpp"
 #include "FMTlinegraph.hpp"
 #include "FMTyields.hpp"
-#include "FMTcarbonpredictor.hpp"
+#include "FMTpredictor.hpp"
 #include "FMTsrmodel.hpp"
 
 namespace Core {
@@ -92,8 +92,8 @@ namespace Core {
 			if (linegraph != nullptr)//Im a linegraph
 			{
 				const Graph::FMTgraph<Graph::FMTbasevertexproperties, Graph::FMTbaseedgeproperties>::FMTvertex_descriptor* vertex = linegraph->getvertexfromvertexinfo(graphinfo);
-				const std::vector<Graph::FMTcarbonpredictor>predictors = linegraph->getcarbonpredictors(*vertex, *modelptr, modelYields, 3);
-				const Graph::FMTcarbonpredictor& predictor = predictors.at(0);//Seulement un predictor car on est un linegraph...								  //return dopredictionson(predictor.getpredictors()) Utiliser se vecteur de double (xs du modele) pour predire
+				const std::vector<Graph::FMTpredictor>predictors = linegraph->getpredictors(*vertex, *modelptr, modelYields, 3);
+				const Graph::FMTpredictor& predictor = predictors.at(0);//Seulement un predictor car on est un linegraph...								  //return dopredictionson(predictor.getpredictors()) Utiliser se vecteur de double (xs du modele) pour predire
 				//Ta fonction doit retourner quelque chose qui ressemble a ça utilise getpredictors pour avoir tes doubles de prediction
 
 				std::vector<double> inputsDbl = GetInputValues(predictor);
@@ -111,7 +111,7 @@ namespace Core {
 			else if (fullgraph != nullptr)//Im a full graph
 			{
 				const Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor* vertex = fullgraph->getvertexfromvertexinfo(graphinfo);
-				const std::vector<Graph::FMTcarbonpredictor>predictors = fullgraph->getcarbonpredictors(*vertex, *modelptr, modelYields, 3);
+				const std::vector<Graph::FMTpredictor>predictors = fullgraph->getpredictors(*vertex, *modelptr, modelYields, 3);
 				//Dans un fullgraph il existe plusieurs predicteurs pour chaque noeud predictors.size() >= 1 <= a beaucoup
 				//On peut faire du blackmagic pour aller chercher la solution existante de chaque predictor...
 				const Models::FMTsrmodel* srmodelptr = dynamic_cast<const Models::FMTsrmodel*>(modelptr); //cast to a srmodel
@@ -136,7 +136,7 @@ namespace Core {
 				{
 					for (size_t inedgeid = 0; inedgeid < invariables.size(); ++inedgeid)
 					{
-						const Graph::FMTcarbonpredictor& predictor = predictors.at(inedgeid);
+						const Graph::FMTpredictor& predictor = predictors.at(inedgeid);
 						std::vector<double> inputsDbl = GetInputValues(predictor);
 						std::vector<float> inputs(inputsDbl.begin(), inputsDbl.end());
 						RemoveNans(inputs);

@@ -3,7 +3,7 @@
 #include "FMTgraph.hpp"
 #include "FMTlinegraph.hpp"
 #include "FMTyields.hpp"
-#include "FMTcarbonpredictor.hpp"
+#include "FMTpredictor.hpp"
 #include "FMTsrmodel.hpp"
 
 #ifdef FMTWITHONNXR
@@ -128,7 +128,7 @@ namespace Core {
 		return false;
 	}
 
-	const std::vector<double> FMTyieldmodelnep::GetInputValues(const Graph::FMTcarbonpredictor& predictor) const
+	const std::vector<double> FMTyieldmodelnep::GetInputValues(const Graph::FMTpredictor& predictor) const
 	{
 		std::vector<double> values;
 		std::vector<double> sourceYields = predictor.getSourceYields();

@@ -279,11 +279,11 @@ class FMTEXPORT FMTspatialschedule : public FMTlayer<Graph::FMTlinegraph>
 		
 		*/
 		std::vector<Core::FMTGCBMtransition> getGCBMtransitions(FMTlayer<std::string>& stackedactions, const std::vector<Core::FMTaction>& modelactions, const std::vector<Core::FMTtheme>& classifiers, const int& period) const;
-		// DocString: FMTspatialschedule::getcarbonpredictors
+		// DocString: FMTspatialschedule::getpredictors
 		/**
-			Get the carbon predictors for the whole solution and write down the predictorsids into a layer.
+			Get the predictors for the whole solution and write down the predictorsids into a layer.
 		*/
-		std::vector<std::vector<Graph::FMTcarbonpredictor>> getcarbonpredictors(FMTlayer<int>& predictorids, const Models::FMTmodel& model, const std::vector<std::string>& yieldnames, const int& period,bool periodonevalues = false,bool withGCBMid = true) const;
+		std::vector<std::vector<Graph::FMTpredictor>> getpredictors(FMTlayer<int>& predictorids, const Models::FMTmodel& model, const std::vector<std::string>& yieldnames, const int& period,bool periodonevalues = false,bool withGCBMid = true) const;
 		
 		// DocString: FMTspatialschedule::eraselastperiod
 		 /**
