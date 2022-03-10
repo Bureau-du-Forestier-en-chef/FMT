@@ -30,6 +30,11 @@ namespace Core {
 			modelYields.push_back(item.second.get_value<std::string>());
 		}
 
+		for (auto& item : jsonProps.get_child(JSON_PROP_MODEL_OUTPUTS))
+		{
+			modelOutputs.push_back(item.second.get_value<std::string>());
+		}
+
 		standardParamMeans = std::vector<float>(strMeans.size());
 		standardParamVars = std::vector<float>(strVars.size());
 		for (size_t i = 0; i < strMeans.size(); i++)
@@ -44,7 +49,8 @@ namespace Core {
 		modelType(rhs.GetModelType()),
 		standardParamMeans(rhs.GetStandardParamMeans()),
 		standardParamVars(rhs.GetStandardParamVars()),
-		modelYields(rhs.GetModelYields())
+		modelYields(rhs.GetModelYields()),
+		modelOutputs(rhs.GetModelOutputNames())
 	{
 	}
 	
@@ -84,6 +90,11 @@ namespace Core {
 	const std::vector<std::string>& FMTyieldmodelpools::GetModelYields() const
 	{
 		return modelYields;
+	}
+
+	const std::vector<std::string>& FMTyieldmodelpools::GetModelOutputNames() const
+	{
+		return modelOutputs;
 	}
 
 	const std::string FMTyieldmodelpools::GetModelInfo() const

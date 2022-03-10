@@ -13,6 +13,7 @@ namespace Core
 		std::vector<float> standardParamMeans = {};
 		std::vector<float> standardParamVars = {};
 		std::vector<std::string> modelYields = {};
+		std::vector<std::string> modelOutputs = {};
 	public:
 		FMTyieldmodelnep() = default;
 		FMTyieldmodelnep(const FMTyieldmodelnep& rhs);
@@ -25,6 +26,7 @@ namespace Core
 		const std::vector<float>& GetStandardParamMeans() const;
 		const std::vector <float>& GetStandardParamVars() const;
 		const std::vector<std::string>& GetModelYields() const;
+		const std::vector<std::string>& GetModelOutputNames() const;
 		const std::string GetModelInfo() const;
 		bool Validate(const std::vector<std::string>& YieldsAvailable) const;
 		const std::vector<std::string>GetYieldsOutputs() const;

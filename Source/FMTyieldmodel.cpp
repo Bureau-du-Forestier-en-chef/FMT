@@ -75,26 +75,26 @@ namespace Core {
 			auto memoryInfo = Ort::MemoryInfo::CreateCpu(OrtDeviceAllocator, OrtMemTypeCPU);
 			Ort::AllocatorWithDefaultOptions allocator;
 
+			std::vector<int64_t> input_shape = sessionPtr->GetInputTypeInfo(0).GetTensorTypeAndShapeInfo().GetShape();
+			char* inputName = sessionPtr->GetInputName(0, allocator);
+			std::vector<int64_t> output_shapes = sessionPtr->GetOutputTypeInfo(0).GetTensorTypeAndShapeInfo().GetShape();
+			char* outputName = sessionPtr->GetOutputName(0, allocator);
+			std::vector<const char*> inputNames{ inputName };
+			std::vector<const char*> outputNames{ outputName };
+
 			const Graph::FMTgraphvertextoyield* graphinfo = request.getvertexgraphinfo();
 			const Models::FMTmodel* modelptr = graphinfo->getmodel();
 			//const std::vector<std::string>modelinputyields(1, "VOLUMETOTAL");//Les yields inputs du modele 4 dans le cas de FORAC doit etre membre de FMTyieldmodel tu dois ajuster ca dans ta classe ici j'ai harcode nimporte quoi.
 			const Graph::FMTgraph<Graph::FMTbasevertexproperties, Graph::FMTbaseedgeproperties>* linegraph = graphinfo->getlinegraph();
 			const Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>* fullgraph = graphinfo->getfullgraph();
 
-			std::vector<double> result;
+			std::vector<double> result(GetModelOutputNames().size(), 0.0);
 			if (linegraph != nullptr)//Im a linegraph
 			{
 				const Graph::FMTgraph<Graph::FMTbasevertexproperties, Graph::FMTbaseedgeproperties>::FMTvertex_descriptor* vertex = linegraph->getvertexfromvertexinfo(graphinfo);
 				const std::vector<Graph::FMTcarbonpredictor>predictors = linegraph->getcarbonpredictors(*vertex, *modelptr, modelYields, 3);
 				const Graph::FMTcarbonpredictor& predictor = predictors.at(0);//Seulement un predictor car on est un linegraph...								  //return dopredictionson(predictor.getpredictors()) Utiliser se vecteur de double (xs du modele) pour predire
 				//Ta fonction doit retourner quelque chose qui ressemble a ça utilise getpredictors pour avoir tes doubles de prediction
-
-				std::vector<int64_t> input_shape = sessionPtr->GetInputTypeInfo(0).GetTensorTypeAndShapeInfo().GetShape();
-				char* inputName = sessionPtr->GetInputName(0, allocator);
-				std::vector<int64_t> output_shapes = sessionPtr->GetOutputTypeInfo(0).GetTensorTypeAndShapeInfo().GetShape();
-				char* outputName = sessionPtr->GetOutputName(0, allocator);
-				std::vector<const char*> inputNames{ inputName };
-				std::vector<const char*> outputNames{ outputName };
 
 				std::vector<double> inputsDbl = GetInputValues(predictor);
 				std::vector<float> inputs(inputsDbl.begin(), inputsDbl.end());
@@ -128,20 +128,32 @@ namespace Core {
 				const double* solution = solverptr->getColSolution();
 				const std::vector<int>invariables = fullgraph->getinvariables(*vertex);
 				double totalarea = 0;
-				std::vector<double>result(GetYieldsOutputs().size(), 0.0);
 				for (size_t inedgeid = 0; inedgeid < invariables.size(); ++inedgeid)
 				{
 					totalarea += *(solution + invariables.at(inedgeid));
 				}
-				for (size_t inedgeid = 0; inedgeid < invariables.size(); ++inedgeid)
+				if (totalarea > 0)
 				{
-					//const Graph::FMTcarbonpredictor& predictor = predictors.at(inedgeid)
-					//Ta fonction doit remplire ve vecteur
-					std::vector<double>edgeresults;// = dopredictionson(predictors.at(inedgeid).getpredictors());
-					const double edgevalue = (*(solution + invariables.at(inedgeid)) / totalarea);
-					for (size_t yldid = 0; yldid < result.size(); ++yldid)
+					for (size_t inedgeid = 0; inedgeid < invariables.size(); ++inedgeid)
 					{
-						result[yldid] += (edgeresults.at(yldid) * edgevalue);
+						const Graph::FMTcarbonpredictor& predictor = predictors.at(inedgeid);
+						std::vector<double> inputsDbl = GetInputValues(predictor);
+						std::vector<float> inputs(inputsDbl.begin(), inputsDbl.end());
+						RemoveNans(inputs);
+						std::vector<int64_t> inputShape = sessionPtr->GetInputTypeInfo(0).GetTensorTypeAndShapeInfo().GetShape();
+						std::vector<float> stdInput = Standardize(inputs, GetStandardParamMeans(), GetStandardParamVars());
+						const Ort::Value input_tensor = Ort::Value::CreateTensor<float>(memoryInfo, stdInput.data(), stdInput.size(), inputShape.data(), inputShape.size());
+						std::vector<Ort::Value> output_tensors = sessionPtr->Run(Ort::RunOptions{ nullptr }, inputNames.data(), &input_tensor, inputNames.size(), outputNames.data(), outputNames.size());
+						std::vector<int64_t> outputShape = output_tensors[0].GetTensorTypeAndShapeInfo().GetShape();
+						const float* outputValues = output_tensors[0].GetTensorMutableData<float>();
+						std::vector<float> result_flt(outputValues, outputValues + ((int)outputShape.data()[1]));
+						std::vector<double>edgeresults = std::vector<double>(result_flt.begin(), result_flt.end());
+
+						const double edgevalue = (*(solution + invariables.at(inedgeid)) / totalarea);
+						for (size_t yldid = 0; yldid < edgeresults.size(); ++yldid)
+						{
+							result[yldid] += (edgeresults.at(yldid) * edgevalue);
+						}
 					}
 				}
 			}
