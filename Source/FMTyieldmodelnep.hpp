@@ -31,7 +31,7 @@ namespace Core
 		bool Validate(const std::vector<std::string>& YieldsAvailable) const;
 		const std::vector<std::string>GetYieldsOutputs() const;
 		//const std::vector<double>Predict(const Core::FMTyieldrequest& request) const;
-		const std::vector<double> GetInputValues(const Graph::FMTcarbonpredictor& predictor) const;
+		const std::vector<double> GetInputValues(const Graph::FMTpredictor& predictor) const;
 	};
 }
 

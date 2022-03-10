@@ -29,7 +29,7 @@ namespace Core
 }
 namespace Graph
 {
-	class FMTcarbonpredictor;
+	class FMTpredictor;
 }
 
 namespace Spatial
@@ -217,14 +217,14 @@ class FMTEXPORT FMTareaparser : public FMTparser
 																	const std::vector<Core::FMTaction>& actions,
 																	const std::vector<Core::FMTtheme>& themes,
 																	const int& period) const;
-		// DocString: FMTareaparser::writecarbonpredictors()
+		// DocString: FMTareaparser::writepredictors()
 		/**
 		Giving a .tif file (location) and a spatialschedule (spatialsolution).
 		a complete vector of model (yieldnames) and  a yield section (yields)
-		The function will write all the carbonpredictor id in the location .tif file and it will also returns the corresponding carbonpredictors for
+		The function will write all the predictor id in the location .tif file and it will also returns the corresponding predictors for
 		this planning period.
 		*/
-		std::vector<std::vector<Graph::FMTcarbonpredictor>> writecarbonpredictors(const std::string& location,
+		std::vector<std::vector<Graph::FMTpredictor>> writepredictors(const std::string& location,
 															const Spatial::FMTspatialschedule& spatialsolution,
 															const std::vector<std::string>& yieldnames,
 															const Models::FMTmodel& model,

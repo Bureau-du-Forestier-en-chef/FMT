@@ -28,7 +28,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTconstraint.hpp"
 #include "FMToutputnodecache.hpp"
 #include <boost\unordered_set.hpp>
-#include "FMTcarbonpredictor.hpp"
+#include "FMTpredictor.hpp"
 #include "FMTgraphvertextoyield.hpp"
 
 
@@ -1884,10 +1884,10 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 
 
 
-		std::vector<FMTcarbonpredictor> getcarbonpredictors(const FMTvertex_descriptor& targetdescriptor,const Models::FMTmodel& model,
+		std::vector<FMTpredictor> getpredictors(const FMTvertex_descriptor& targetdescriptor,const Models::FMTmodel& model,
 			const std::vector<std::string>& yieldnames,const size_t& depth,bool periodonevalues= false, bool withGCBMid =true) const
 			{
-			std::vector<FMTcarbonpredictor> predictors;
+			std::vector<FMTpredictor> predictors;
 			try {
 				FMTinedge_iterator inedge_iterator, inedge_end;
 				const FMTbasevertexproperties& targetproperties = data[targetdescriptor];
@@ -1917,7 +1917,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 			predictors.shrink_to_fit();
 			}catch (...)
 				{
-				_exhandler->raisefromcatch("", "FMTgraph::getcarbonpredictors", __LINE__, __FILE__);
+				_exhandler->raisefromcatch("", "FMTgraph::getpredictors", __LINE__, __FILE__);
 				}
 			return predictors;
 			}

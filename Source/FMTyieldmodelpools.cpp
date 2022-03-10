@@ -1,5 +1,5 @@
 #include "FMTyieldmodelpools.hpp"
-#include "FMTcarbonpredictor.hpp"
+#include "FMTpredictor.hpp"
 
 #ifdef FMTWITHONNXR
 #include  <onnxruntime/core/session/onnxruntime_cxx_api.h>
@@ -123,7 +123,7 @@ namespace Core {
 		return false;
 	}
 
-	const std::vector<double> FMTyieldmodelpools::GetInputValues(const Graph::FMTcarbonpredictor& predictor) const
+	const std::vector<double> FMTyieldmodelpools::GetInputValues(const Graph::FMTpredictor& predictor) const
 	{
 		std::vector<double> values;
 		std::vector<double> sourceYields = predictor.getSourceYields();

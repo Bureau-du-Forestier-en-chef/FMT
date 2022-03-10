@@ -4,8 +4,8 @@ Copyright (c) 2019 Gouvernement du Québec
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
-#ifndef FMTCARBONPREDICTOR_H
-#define FMTCARBONPREDICTOR_H
+#ifndef FMTPREDICTOR_H
+#define FMTPREDICTOR_H
 
 
 #include <vector>
@@ -25,7 +25,7 @@ namespace Graph
 {
 	class FMTbasevertexproperties;
 	class FMTbaseedgeproperties;
-	class FMTEXPORT FMTcarbonpredictor
+	class FMTEXPORT FMTpredictor
 	{
 		const FMTbasevertexproperties* source_vertex;
 		const FMTbasevertexproperties* target_vertex;
@@ -35,14 +35,14 @@ namespace Graph
 		std::vector<int>sourceactions;
 		std::vector<double>getyields(const FMTbasevertexproperties& vertex,const Core::FMTyields& yields, const std::vector<std::string>& yieldnames) const;
 	public:
-		FMTcarbonpredictor() = default;
-		~FMTcarbonpredictor() = default;
-		FMTcarbonpredictor(const std::vector<Core::FMTaction>& actions, const std::vector<std::string>& yieldnames,const Core::FMTyields& yields,
+		FMTpredictor() = default;
+		~FMTpredictor() = default;
+		FMTpredictor(const std::vector<Core::FMTaction>& actions, const std::vector<std::string>& yieldnames,const Core::FMTyields& yields,
 			const FMTbasevertexproperties& source, const FMTbasevertexproperties& target, const std::vector<const FMTbaseedgeproperties*>& edges, const std::vector<int>& gaps,bool withGCBMid = true);
-		FMTcarbonpredictor(const FMTcarbonpredictor& rhs);
-		FMTcarbonpredictor& operator = (const FMTcarbonpredictor& rhs);
-		bool operator==(const FMTcarbonpredictor& rhs) const;
-		bool operator<(const FMTcarbonpredictor& rhs) const;
+		FMTpredictor(const FMTpredictor& rhs);
+		FMTpredictor& operator = (const FMTpredictor& rhs);
+		bool operator==(const FMTpredictor& rhs) const;
+		bool operator<(const FMTpredictor& rhs) const;
 		std::vector<double>getpredictors() const;
 		double getDistance(size_t actId) const;
 		double getDisturbance(size_t actId) const;
@@ -54,4 +54,4 @@ namespace Graph
 	};
 }
 
-#endif // carbonpredictor
+#endif // predictor
