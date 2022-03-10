@@ -45,6 +45,7 @@ namespace Core
 		const std::string JSON_PROP_MODEL_NAME = "modelFileName";
 		const std::string JSON_PROP_MODEL_TYPE = "modelType";
 		const std::string JSON_PROP_MODEL_YIELDS = "modelYields";
+		const std::string JSON_PROP_MODEL_OUTPUTS = "outputNames";
 		const std::string JSON_PROP_STAND_FILE_PATH = "csvStandardisationFile";
 	public:
 		static const std::vector<std::string> GetNextLineAndSplitIntoTokens(std::istream& str);
@@ -56,6 +57,7 @@ namespace Core
 		virtual const std::vector<float>& GetStandardParamMeans() const = 0;
 		virtual const std::vector<float>& GetStandardParamVars() const = 0;
 		virtual const std::vector<std::string>& GetModelYields() const = 0;
+		virtual const std::vector<std::string>& GetModelOutputNames() const = 0;
 		virtual std::unique_ptr<FMTyieldmodel>Clone() const = 0;
 		virtual const std::string GetModelInfo() const = 0;
 		virtual bool Validate(const std::vector<std::string>& YieldsAvailable) const = 0;

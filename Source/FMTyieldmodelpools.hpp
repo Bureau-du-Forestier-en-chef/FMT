@@ -13,6 +13,7 @@ namespace Core
 		std::vector<float> standardParamMeans = {};
 		std::vector<float> standardParamVars = {};
 		std::vector<std::string> modelYields = {};
+		std::vector<std::string> modelOutputs = {};
 	public:
 		FMTyieldmodelpools() = default;
 		FMTyieldmodelpools(const FMTyieldmodelpools& rhs);
@@ -25,10 +26,10 @@ namespace Core
 		const std::vector<float>& GetStandardParamMeans() const;
 		const std::vector<float>& GetStandardParamVars() const;
 		const std::vector<std::string>& GetModelYields() const;
+		const std::vector<std::string>& GetModelOutputNames() const;
 		const std::string GetModelInfo() const;
 		bool Validate(const std::vector<std::string>&YieldsAvailable) const;
 		const std::vector<std::string>GetYieldsOutputs() const;
-		//const std::vector<double>Predict(const Core::FMTyieldrequest & request) const;
 		const std::vector<double> GetInputValues(const Graph::FMTcarbonpredictor& predictor) const;
 	};
 }

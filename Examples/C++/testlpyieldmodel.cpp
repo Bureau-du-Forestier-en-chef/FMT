@@ -20,7 +20,7 @@ int main()
 			{
 			for (const Core::FMToutput& output : optimizationmodel.getoutputs())
 				{
-				if (output.getname() == "TEST")
+				if (output.getname().find("_") != std::string::npos)
 					{
 					for (int period = 1; period < 11; ++period)
 						{
