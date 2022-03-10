@@ -22,6 +22,15 @@ int main(int argc, char *argv[])
 	allscenarios.push_back("Localreplanning");
 	Parser::FMTmodelparser modelparser;
 	modelparser.setdefaultexceptionhandler();
+	std::vector<Exception::FMTexc>errors;
+	errors.push_back(Exception::FMTexc::FMTmissingyield);
+	errors.push_back(Exception::FMTexc::FMToutput_missing_operator);
+	errors.push_back(Exception::FMTexc::FMToutput_too_much_operator);
+	errors.push_back(Exception::FMTexc::FMTinvalidyield_number);
+	errors.push_back(Exception::FMTexc::FMTundefinedoutput_attribute);
+	errors.push_back(Exception::FMTexc::FMToveridedyield);
+	errors.push_back(Exception::FMTexc::FMTdeathwithlock);
+	modelparser.seterrorstowarnings(errors);
 	std::vector<Models::FMTmodel> models = modelparser.readproject(primlocation, allscenarios);
 	Models::FMTlpmodel global(models.at(0), Models::FMTsolverinterface::MOSEK);
 	global.setparameter(Models::FMTintmodelparameters::LENGTH, length);
