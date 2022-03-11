@@ -189,7 +189,7 @@ namespace Core
 					}
 					if (!values.empty())
 						{
-						return getiterationchange(values);
+						return getiterationchange(values,period);
 						}
 				}
 			}
@@ -201,11 +201,16 @@ namespace Core
 	}
 
 
-	Core::FMTconstraint FMTconstraint::getiterationchange(const std::vector<double>& periodchanges) const
+	Core::FMTconstraint FMTconstraint::getiterationchange(const std::vector<double>& periodchanges,const int& targetperiod) const
 	{
 		Core::FMTconstraint newconstraint(*this);
 		try {
-			const int period = newconstraint.getperiodlowerbound();
+			int period = newconstraint.getperiodlowerbound();
+			const int upperperiod = newconstraint.getperiodupperbound();
+			if (period!= upperperiod)
+				{
+				period = targetperiod;
+				}
 			double lower = 0;
 			double upper = 0;
 			getbounds(lower, upper);

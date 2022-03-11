@@ -30,6 +30,12 @@
 *OUTPUT volinvent
 *SOURCE ? ? ? _INVENT volumetotal
 
+*OUTPUT oVolRecPEUPLEMENT1
+*SOURCE ? PEUPLEMENT1 ? coupetotale volumetotal
+
+*OUTPUT oVolRecPEUPLEMENT2
+*SOURCE ? PEUPLEMENT2 ? coupetotale volumetotal
+
 
 
 

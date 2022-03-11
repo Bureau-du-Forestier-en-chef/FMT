@@ -1,0 +1,16 @@
+
+*OBJECTIVE
+_MAX ovolrec 1.._LENGTH
+
+*EXCLUDE
+aCaribou 1.._LENGTH
+afire    1.._LENGTH
+arecup    1.._LENGTH
+
+*CONSTRAINTS
+
+oVolRec<= 40272 1.._LENGTH _SETFROMGLOBAL(1)
+
+oVolRec <= 100 1 _REIGNORE(1)
+
+*FORMAT MOSEK

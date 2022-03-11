@@ -164,8 +164,9 @@ class FMTEXPORT FMTconstraint: public FMToutput,public FMTspec
 		// DocString: FMTconstraint::getiterationchange
 		/**
 		Based on constraint period it will set bounds to the double specified in the vector for the constraint period.
+		The target period is only used if the constraint does not have a specific period.
 		*/
-		Core::FMTconstraint getiterationchange(const std::vector<double>& periodchanges) const;
+		Core::FMTconstraint getiterationchange(const std::vector<double>& periodchanges,const int& targetperiod) const;
 		// DocString: FMTconstraint::getfromreplicate
 		/**
 		If the constraint is build with a replicate tables it will gives a new constraint with the corresponding replicate value
