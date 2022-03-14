@@ -1,0 +1,18 @@
+
+*OBJECTIVE
+_MAXMIN oVolRec 1.._LENGTH
+
+*EXCLUDE
+aCaribou 1.._LENGTH
+afire    1.._LENGTH
+arecup    1.._LENGTH
+
+*CONSTRAINTS
+
+osuppl <= 100 1..4
+osuppl >= 90 1..4
+
+_NDY(oVolRec) 1.._LENGTH
+
+
+*FORMAT MOSEK
