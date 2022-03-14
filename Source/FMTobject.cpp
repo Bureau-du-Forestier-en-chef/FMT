@@ -15,6 +15,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTfreeexceptionhandler.hpp"
 #include <boost/filesystem.hpp>
 #include <boost/algorithm/string.hpp>
+#include <chrono>
 
 #if defined __MINGW64__||__CYGWIN__
 	#include "windows.h"
@@ -59,7 +60,7 @@ namespace Core
 			#endif
 		}catch (...)
 			{
-				_exhandler->raisefromcatch("", "FMTobject::getratioofavailablememory", __LINE__, __FILE__);
+				_exhandler->raisefromcatch("", "FMTobject::getavailablememory", __LINE__, __FILE__);
 			}
 		return available;
 	}
@@ -302,6 +303,39 @@ namespace Core
 			_exhandler->raisefromcatch("", "FMTobject::seterrorstowarnings", __LINE__, __FILE__);
 		}
 	}
+
+	std::chrono::high_resolution_clock FMTobject::getclock() const
+		{
+		std::chrono::high_resolution_clock newclock;
+		try {
+			newclock = std::chrono::high_resolution_clock::now();
+		}catch (...)
+			{
+			_exhandler->raisefromcatch("", "FMTobject::getclock", __LINE__, __FILE__);
+			}
+		return newclock;
+		}
+
+
+	template<class chrono>
+	double FMTobject::getduration(const std::chrono::high_resolution_clock& startclock,
+		std::chrono::high_resolution_clock& stopclock) const
+	{
+		double result = 0;
+		try {
+			const std::chrono::duration<double, chrono> spent = stopclock - startclock;
+			result = spent.count();
+		}catch (...)
+		{
+			_exhandler->raisefromcatch("", "FMTobject::getduration", __LINE__, __FILE__);
+		}
+		return result;
+	}
+
+	template double FMTobject::getduration<std::chrono::milliseconds>(const std::chrono::high_resolution_clock& startclock,std::chrono::high_resolution_clock& stopclock) const;
+	template double FMTobject::getduration<std::chrono::seconds>(const std::chrono::high_resolution_clock& startclock, std::chrono::high_resolution_clock& stopclock) const;
+	template double FMTobject::getduration<std::chrono::minutes>(const std::chrono::high_resolution_clock& startclock, std::chrono::high_resolution_clock& stopclock) const;
+	template double FMTobject::getduration<std::chrono::hours>(const std::chrono::high_resolution_clock& startclock, std::chrono::high_resolution_clock& stopclock) const;
 
 }
 
