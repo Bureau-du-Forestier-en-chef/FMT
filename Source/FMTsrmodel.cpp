@@ -1179,6 +1179,7 @@ namespace Models
 				actionmapping.push_back(loc);
 			}
 			this->graph.postsolve(postsolvefilter,postsolvethemes, actionmapping);
+			
 		}catch (...)
 		{
 			_exhandler->printexceptions("", "FMTsrmodel::postsolvegraph", __LINE__, __FILE__);
@@ -1197,6 +1198,10 @@ namespace Models
 			const double* modelsolution = solver.getColSolution();
 			const int deathactionid = static_cast<int>(actions.size()-1);
 			Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_iterator vertex_iterator, vertex_iterator_end;
+			if (beforegrowanddeath)
+			{
+				--period;
+			}
 			for (boost::tie(vertex_iterator, vertex_iterator_end) = graph.getperiodverticies(period); vertex_iterator != vertex_iterator_end; ++vertex_iterator)
 			{
 				if ((!beforegrowanddeath&&graph.periodstart(*vertex_iterator)))

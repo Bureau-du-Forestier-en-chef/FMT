@@ -1,0 +1,17 @@
+
+*OBJECTIVE
+_MAX ovolrec - _Penalty(_All) 1.._LENGTH
+
+*EXCLUDE
+aCaribou 1.._LENGTH
+afire    1.._LENGTH
+arecup    1.._LENGTH
+
+*CONSTRAINTS
+
+oVolRec<= 40272 1.._LENGTH _SETFROMGLOBAL(1)
+
+osuppl <= 40272 1.._LENGTH _Goal(G3,9999) _SETFROMGLOBAL(1.0)
+osuppl >= 40272 1.._LENGTH _Goal(G4,9999) _SETFROMGLOBAL(0.95)
+
+*FORMAT MOSEK
