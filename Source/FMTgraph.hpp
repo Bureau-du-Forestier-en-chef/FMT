@@ -1241,6 +1241,25 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 			return invars;
 		}
 
+		std::map<int, int>getinidsvariables(const FMTvertex_descriptor& out_vertex) const
+		{
+			std::map<int, int> mapping;
+			try {
+				FMTinedge_iterator inedge_iterator, inedge_end;
+				for (boost::tie(inedge_iterator, inedge_end) = boost::in_edges(out_vertex, data); inedge_iterator != inedge_end; ++inedge_iterator)
+				{
+					const FMTbaseedgeproperties& edgeprop = data[*inedge_iterator];
+					int actionid = edgeprop.getactionID();
+					mapping[actionid] = edgeprop.getvariableID();
+				}
+			}
+			catch (...)
+			{
+				_exhandler->raisefromcatch("", "FMTgraph::getinidsvariables", __LINE__, __FILE__);
+			}
+			return mapping;
+		}
+
 		std::map<int, int> getoutvariables(const FMTvertex_descriptor& out_vertex) const
 		{
 			std::map<int, int> mapping;
@@ -2072,7 +2091,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 						const FMTvertex_descriptor vertex = *vertex_iterator;
 						std::map<int, int>variables = getoutvariables(vertex);
 						const Core::FMTdevelopment& dev = data[*vertex_iterator].get();
-						double outarea;
+						double outarea = 0;
 						std::map<int,double>variablesarea;
 						for (const auto variable_iterator : variables)
 						{
