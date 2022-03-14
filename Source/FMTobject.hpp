@@ -14,6 +14,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <boost/serialization/nvp.hpp>
 #include <boost/serialization/export.hpp>
 #include <memory>
+#include <chrono>
 #include <vector>
 
 #if defined _MSC_VER || __MINGW64__ || __CYGWIN__
@@ -92,6 +93,18 @@ class FMTEXPORT FMTobject
 		This function is for gdal only it pass the FMT exception handler to gdal exception handler.
 		*/
 		void setCPLhandler();
+		// DocString: FMTobject::getclock
+		/**
+		Will return a clock of "now" time.
+		*/
+		static std::chrono::high_resolution_clock getclock() const;
+		// DocString: FMTobject::getduration
+		/**
+		With two high resolution clock you can get the time it took has a double.
+		*/
+		template<class chrono>
+		static double getduration(const std::chrono::high_resolution_clock& startclock,
+										std::chrono::high_resolution_clock& stopclock)const;
 	public:
 		// DocString: FMTobject::getavailablememory
 		/**
