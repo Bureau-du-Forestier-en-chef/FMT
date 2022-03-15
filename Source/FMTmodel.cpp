@@ -1598,7 +1598,9 @@ bool FMTmodel::doplanning(const bool& solve,std::vector<Core::FMTschedule> sched
 		std::unique_ptr<FMTmodel> presolved_model;
 		if(presolve_iterations>0)
 		{
+			const std::chrono::time_point<std::chrono::steady_clock>presolvestart = getclock();
 			presolved_model = this->presolve(area);
+			_logger->logwithlevel("Presolved " + getname() + " " +getdurationinseconds(presolvestart) + "\n", 1);
 		}else{
 			presolved_model = this->clone();
 		}
@@ -1612,15 +1614,20 @@ bool FMTmodel::doplanning(const bool& solve,std::vector<Core::FMTschedule> sched
 		}else{
 			presolved_schedules = schedules;
 		}
+		const std::chrono::time_point<std::chrono::steady_clock>buildstart = getclock();
 		presolved_model->build(presolved_schedules);
+		_logger->logwithlevel("Builded " + getname() +" "+getdurationinseconds(buildstart)+ "\n", 1);
 		if(solve)
 		{
+			const std::chrono::time_point<std::chrono::steady_clock>solverstart = getclock();
 			optimal_solved = presolved_model->solve();
+			_logger->logwithlevel("Solved " + getname() + " " + getdurationinseconds(solverstart) + "\n", 1);
 		}
 		if (parameters.getboolparameter(POSTSOLVE) && presolve_iterations > 0)
 			{
-			_logger->logwithlevel("Postsolving " + getname() + "\n", 1);
+			const std::chrono::time_point<std::chrono::steady_clock>postsolvestart = getclock();
 			presolved_model->postsolve(*this);
+			_logger->logwithlevel("Postsolved " + getname() + " " + getdurationinseconds(postsolvestart) + "\n", 1);
 			}
 		this->swap_ptr(presolved_model);
 	}catch(...){

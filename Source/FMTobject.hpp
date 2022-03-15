@@ -97,20 +97,24 @@ class FMTEXPORT FMTobject
 		/**
 		Will return a clock of "now" time.
 		*/
-		static std::chrono::high_resolution_clock getclock() const;
+		static std::chrono::time_point<std::chrono::steady_clock> getclock();
 		// DocString: FMTobject::getduration
 		/**
-		With two high resolution clock you can get the time it took has a double.
+		With the high resolution clock you can get the time it took has a double.
 		*/
 		template<class chrono>
-		static double getduration(const std::chrono::high_resolution_clock& startclock,
-										std::chrono::high_resolution_clock& stopclock)const;
+		static double getduration(const std::chrono::time_point<std::chrono::steady_clock>& startclock);
+		// DocString: FMTobject::getdurationinseconds
+		/**
+		With the clock time calculate time spent in second and return a string.
+		*/
+		static std::string getdurationinseconds(const std::chrono::time_point<std::chrono::steady_clock>& startclock);
 	public:
 		// DocString: FMTobject::getavailablememory
 		/**
 		Get the available memory in bytes
 		*/
-		unsigned long long getavailablememory() const;
+		static unsigned long long getavailablememory();
 		// DocString: FMTobject()
 		/**
 		FMTobject default constructor.
