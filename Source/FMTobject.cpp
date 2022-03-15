@@ -43,7 +43,7 @@ namespace Core
 	std::shared_ptr<Logging::FMTlogger> FMTobject::_logger = std::shared_ptr<Logging::FMTlogger>(new Logging::FMTdefaultlogger);
 	std::shared_ptr<Exception::FMTexceptionhandler> FMTobject::_exhandler = std::shared_ptr<Exception::FMTexceptionhandler>(new Exception::FMTdefaultexceptionhandler(_logger));
 
-	unsigned long long FMTobject::getavailablememory() const
+	unsigned long long FMTobject::getavailablememory()
 	{
 		unsigned long long available = 0;
 		try {
@@ -304,9 +304,9 @@ namespace Core
 		}
 	}
 
-	std::chrono::high_resolution_clock FMTobject::getclock() const
+	std::chrono::time_point<std::chrono::steady_clock> FMTobject::getclock()
 		{
-		std::chrono::high_resolution_clock newclock;
+		std::chrono::time_point<std::chrono::steady_clock> newclock;
 		try {
 			newclock = std::chrono::high_resolution_clock::now();
 		}catch (...)
@@ -318,12 +318,12 @@ namespace Core
 
 
 	template<class chrono>
-	double FMTobject::getduration(const std::chrono::high_resolution_clock& startclock,
-		std::chrono::high_resolution_clock& stopclock) const
+	double FMTobject::getduration(const std::chrono::time_point<std::chrono::steady_clock>& startclock)
 	{
 		double result = 0;
 		try {
-			const std::chrono::duration<double, chrono> spent = stopclock - startclock;
+			const std::chrono::time_point<std::chrono::steady_clock> stopclock = getclock();
+			const std::chrono::duration<double, chrono>spent(stopclock - startclock);
 			result = spent.count();
 		}catch (...)
 		{
@@ -332,10 +332,24 @@ namespace Core
 		return result;
 	}
 
-	template double FMTobject::getduration<std::chrono::milliseconds>(const std::chrono::high_resolution_clock& startclock,std::chrono::high_resolution_clock& stopclock) const;
-	template double FMTobject::getduration<std::chrono::seconds>(const std::chrono::high_resolution_clock& startclock, std::chrono::high_resolution_clock& stopclock) const;
-	template double FMTobject::getduration<std::chrono::minutes>(const std::chrono::high_resolution_clock& startclock, std::chrono::high_resolution_clock& stopclock) const;
-	template double FMTobject::getduration<std::chrono::hours>(const std::chrono::high_resolution_clock& startclock, std::chrono::high_resolution_clock& stopclock) const;
+	template double FMTobject::getduration<std::chrono::milliseconds::period>(const std::chrono::time_point<std::chrono::steady_clock>& startclock);
+	template double FMTobject::getduration<std::chrono::seconds::period>(const std::chrono::time_point<std::chrono::steady_clock>& startclock);
+	template double FMTobject::getduration<std::chrono::minutes::period>(const std::chrono::time_point<std::chrono::steady_clock>& startclock);
+	template double FMTobject::getduration<std::chrono::hours::period>(const std::chrono::time_point<std::chrono::steady_clock>& startclock);
+
+	std::string FMTobject::getdurationinseconds(const std::chrono::time_point<std::chrono::steady_clock>& startclock)
+	{
+		std::string value;
+		try {
+			const double dblvalue = getduration<std::chrono::seconds::period>(startclock);
+			value = "in "+std::to_string(dblvalue)+" seconds";
+		}catch (...)
+			{
+			_exhandler->raisefromcatch("", "FMTobject::getdurationinseconds", __LINE__, __FILE__);
+			}
+		return value;
+	}
+
 
 }
 
