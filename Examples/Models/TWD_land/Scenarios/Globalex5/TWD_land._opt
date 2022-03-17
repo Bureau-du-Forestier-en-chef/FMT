@@ -8,8 +8,8 @@ arecup    1.._LENGTH
 
 *CONSTRAINTS
 
-osuppl <= 100 1..4 _REIGNORE(1)
-osuppl >= 90 1..4 _REIGNORE(1)
+osuppl <= 100 1..4 ;_REIGNORE(1)
+osuppl >= 90 1..4 ;_REIGNORE(1)
 
 _NDY(oVolRec) 1.._LENGTH
 

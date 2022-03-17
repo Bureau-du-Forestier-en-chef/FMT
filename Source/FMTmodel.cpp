@@ -1051,6 +1051,19 @@ Core::FMTmaskfilter FMTmodel::getpostsolvefilter(const std::vector<Core::FMTthem
 	return Core::FMTmaskfilter();
 }
 
+Core::FMTmaskfilter FMTmodel::getpresolvefilter(const std::vector<Core::FMTtheme>& originalthemes) const
+{
+	try {
+		const Core::FMTmask presolvemask = getselectedmask(originalthemes);
+		return Core::FMTmaskfilter(presolvemask, presolvemask);
+	}
+	catch (...)
+	{
+		_exhandler->printexceptions("for " + name, "FMTmodel::getpresolvefilter", __LINE__, __FILE__);
+	}
+	return Core::FMTmaskfilter();
+}
+
 Core::FMTmask FMTmodel::getselectedmask(const std::vector<Core::FMTtheme>& originalthemes) const
 	{
 	Core::FMTmask newmask;
@@ -1388,8 +1401,8 @@ Core::FMTschedule FMTmodel::presolveschedule(const Core::FMTschedule& originalba
 	{
 	Core::FMTschedule newschedule;
 	try {
-		const Core::FMTmask presolvedmask = this->getselectedmask(originalbasemodel.themes);
-		newschedule = originalbaseschedule.presolve(presolvedmask, this->themes, this->actions);
+		const Core::FMTmaskfilter newfilter = getpresolvefilter(originalbasemodel.getthemes());
+		newschedule = originalbaseschedule.presolve(newfilter, this->themes, this->actions);
 	}catch (...)
 		{
 		_exhandler->raisefromcatch("","FMTmodel::presolveschedule", __LINE__, __FILE__);
@@ -1590,6 +1603,47 @@ Core::FMTschedule FMTmodel::getpotentialschedule(std::vector<Core::FMTactualdeve
 	return schedule;
 }
 
+std::vector<Core::FMTschedule>FMTmodel::setupschedulesforbuild(const std::vector<Core::FMTschedule>& schedules) const
+{
+	std::vector<Core::FMTschedule>newshedules;
+try{
+	bool gotemptyschedule = true;
+	for (int period = 1; period <= parameters.getintparameter(LENGTH);++period)
+		{
+		Core::FMTschedule newschedule;
+		for (const Core::FMTschedule& schedule : schedules)
+			{
+			if (schedule.getperiod()==period)
+				{
+				newschedule = schedule;
+				gotemptyschedule = false;
+				break;
+				}
+			}
+		newshedules.push_back(newschedule);
+		}
+	if (parameters.getboolparameter(FORCE_PARTIAL_BUILD)&&gotemptyschedule)
+		{
+		_exhandler->raise(Exception::FMTexc::FMTignore,
+			"Building natural growth graph for "+getname(),
+			"FMTmodel::setupschedulesforbuild", __LINE__, __FILE__);
+		}
+
+	if (!parameters.getboolparameter(FORCE_PARTIAL_BUILD)&&!gotemptyschedule)
+		{
+		_exhandler->raise(Exception::FMTexc::FMTignore,
+			"FMTschedule will be ignored for " + getname(),
+			"FMTmodel::setupschedulesforbuild", __LINE__, __FILE__);
+		}
+
+
+}catch (...)
+	{
+	_exhandler->raisefromcatch("", "FMTmodel::setupschedulesforbuild", __LINE__, __FILE__);
+	}
+return newshedules;
+}
+
 bool FMTmodel::doplanning(const bool& solve,std::vector<Core::FMTschedule> schedules)
 	{
 	bool optimal_solved = false;
@@ -1598,7 +1652,9 @@ bool FMTmodel::doplanning(const bool& solve,std::vector<Core::FMTschedule> sched
 		std::unique_ptr<FMTmodel> presolved_model;
 		if(presolve_iterations>0)
 		{
+			const std::chrono::time_point<std::chrono::high_resolution_clock>presolvestart = getclock();
 			presolved_model = this->presolve(area);
+			_logger->logwithlevel("Presolved " + getname() + " " +getdurationinseconds(presolvestart) + "\n", 1);
 		}else{
 			presolved_model = this->clone();
 		}
@@ -1612,15 +1668,21 @@ bool FMTmodel::doplanning(const bool& solve,std::vector<Core::FMTschedule> sched
 		}else{
 			presolved_schedules = schedules;
 		}
+		presolved_schedules = setupschedulesforbuild(presolved_schedules);
+		const std::chrono::time_point<std::chrono::high_resolution_clock>buildstart = getclock();
 		presolved_model->build(presolved_schedules);
+		_logger->logwithlevel("Builded " + getname() +" "+getdurationinseconds(buildstart)+ "\n", 1);
 		if(solve)
 		{
+			const std::chrono::time_point<std::chrono::high_resolution_clock>solverstart = getclock();
 			optimal_solved = presolved_model->solve();
+			_logger->logwithlevel("Solved " + getname() + " " + getdurationinseconds(solverstart) + "\n", 1);
 		}
 		if (parameters.getboolparameter(POSTSOLVE) && presolve_iterations > 0)
 			{
-			_logger->logwithlevel("Postsolving " + getname() + "\n", 1);
+			const std::chrono::time_point<std::chrono::high_resolution_clock>postsolvestart = getclock();
 			presolved_model->postsolve(*this);
+			_logger->logwithlevel("Postsolved " + getname() + " " + getdurationinseconds(postsolvestart) + "\n", 1);
 			}
 		this->swap_ptr(presolved_model);
 	}catch(...){

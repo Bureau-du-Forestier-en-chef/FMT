@@ -1,6 +1,6 @@
 
 *OBJECTIVE
-_MAX ovolrec 1.._LENGTH
+_MAX ovolrec - _Penalty(_All) 1.._LENGTH
 
 *EXCLUDE
 aCaribou 1.._LENGTH
@@ -11,6 +11,7 @@ arecup    1.._LENGTH
 
 oVolRec<= 40272 1.._LENGTH _SETFROMGLOBAL(1)
 
-oVolRec <= 100 1 _REIGNORE(1)
+osuppl >= 90 1 _Goal(G1,9999) _REIGNORE(2)
+osuppl <= 100 1 _Goal(G2,9999) _REIGNORE(2)
 
 *FORMAT MOSEK
