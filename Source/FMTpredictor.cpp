@@ -130,7 +130,7 @@ namespace Graph
 		returned.push_back(static_cast<double>(source_vertex->get().getage()));
 		//returned.push_back(static_cast<double>(source_vertex->get().period));
 		returned.insert(returned.end(), source_yields.begin(), source_yields.end());
-		/*double gap = periodgaps.at(0);
+		double gap = periodgaps.at(0);
 		if (sourceactions.at(0)==-2)
 		{
 			gap = std::numeric_limits<double>::signaling_NaN();
@@ -138,8 +138,8 @@ namespace Graph
 		returned.push_back(static_cast<double>(gap));
 		returned.push_back(static_cast<double>(sourceactions.at(0)));
 		returned.push_back(static_cast<double>(target_vertex->get().getage()));
-		returned.push_back(static_cast<double>(target_vertex->get().period));
-		returned.insert(returned.end(), target_yields.begin(), target_yields.end());*/
+		//returned.push_back(static_cast<double>(target_vertex->get().period));
+		returned.insert(returned.end(), target_yields.begin(), target_yields.end());
 		returned.shrink_to_fit();
 		return returned;
 	}

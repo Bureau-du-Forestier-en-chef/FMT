@@ -42,6 +42,7 @@ namespace Core
 	protected:
 		static std::unique_ptr<Ort::Env> envPtr;
 		static const float UNKNOWN_DISTURBANCE_CODE;
+		std::unique_ptr<Ort::Session> sessionPtr;
 		const std::string JSON_PROP_MODEL_NAME = "modelFileName";
 		const std::string JSON_PROP_MODEL_TYPE = "modelType";
 		const std::string JSON_PROP_MODEL_YIELDS = "modelYields";
@@ -52,6 +53,7 @@ namespace Core
 		static const std::vector<float> Standardize(std::vector<float>& input, const std::vector<float>& means, const std::vector<float>& vars);
 		static const void RemoveNans(std::vector<float>& input);
 		const std::vector<double>Predict(const Core::FMTyieldrequest& request) const;
+		virtual ~FMTyieldmodel() = default;
 		virtual const std::string& GetModelName() const = 0;
 		virtual const std::string& GetModelType() const = 0;
 		virtual const std::vector<float>& GetStandardParamMeans() const = 0;

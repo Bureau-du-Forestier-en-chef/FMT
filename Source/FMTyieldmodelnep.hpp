@@ -18,7 +18,7 @@ namespace Core
 		FMTyieldmodelnep() = default;
 		FMTyieldmodelnep(const FMTyieldmodelnep& rhs);
 		FMTyieldmodelnep& operator = (const FMTyieldmodelnep& rhs) = default;
-		virtual ~FMTyieldmodelnep() = default;
+		~FMTyieldmodelnep();
 		FMTyieldmodelnep(const boost::property_tree::ptree& jsonProps);
 		std::unique_ptr<FMTyieldmodel>Clone() const;
 		const std::string& GetModelName() const;

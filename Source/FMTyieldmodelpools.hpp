@@ -18,7 +18,7 @@ namespace Core
 		FMTyieldmodelpools() = default;
 		FMTyieldmodelpools(const FMTyieldmodelpools& rhs);
 		FMTyieldmodelpools& operator = (const FMTyieldmodelpools& rhs) = default;
-		virtual ~FMTyieldmodelpools() = default;
+		~FMTyieldmodelpools();
 		FMTyieldmodelpools(const boost::property_tree::ptree & jsonProps);
 		std::unique_ptr<FMTyieldmodel>Clone() const;
 		const std::string& GetModelName() const;
