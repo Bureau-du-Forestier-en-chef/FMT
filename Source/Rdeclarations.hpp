@@ -54,7 +54,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTtask.hpp"
 #include "FMTtaskhandler.hpp"
 #include "FMTreplanningtask.hpp"
-
+#include "FMTplanningtask.hpp"
 
 #define RCPP_DECLAREVECTOR(CLASS)namespace Rcpp{\
 template <> std::vector<CLASS> as(SEXP obj);\
@@ -106,7 +106,7 @@ RCPP_DECLAREVECTOR(Models::FMTboolmodelparameters);
 RCPP_DECLAREVECTOR(Parallel::FMTtask);//For vector
 RCPP_DECLAREVECTOR(Parallel::FMTtaskhandler);//For vector
 RCPP_DECLAREVECTOR(Parallel::FMTreplanningtask);//For vector
-
+RCPP_DECLAREVECTOR(Parallel::FMTplanningtask);//For vector
 
 
 #ifdef FMTWITHOSI

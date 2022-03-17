@@ -41,7 +41,10 @@ namespace Parallel
 		#endif
 		mtx(),
 		resultsminimaldrift(minimaldrift),
-		outputslevel(outputlevel)
+		outputslevel(outputlevel),
+		alllayeroptions(layersoptions),
+		outputfirstperiod(),
+		outputlastperiod()
 
 	{
 		try {
@@ -52,26 +55,62 @@ namespace Parallel
 					"FMTparallelwriter::FMTparallelwriter()", __LINE__, __FILE__);
 			}
 			for (const Models::FMTmodel* modelptr : allmodels)
-			{
-				resultslayer[modelptr->getname()] = createresultslayer(*modelptr, resultsdataset, layersoptions);
-			}
-			driftlayer = createdriftlayer(resultsdataset, layersoptions);
+				{
+				setlayer(modelptr);
+				}
+			driftlayer = createdriftlayer(resultsdataset);
 		}catch (...)
 			{
 			_exhandler->raisefromcatch("", "FMTparallelwriter::FMTparallelwriter", __LINE__, __FILE__);
 			}
 	}
 
-	std::map<std::string, std::vector<std::vector<double>>> FMTparallelwriter::getresults(const std::unique_ptr<Models::FMTmodel>& modelptr, const int& firstperiod,
+	FMTparallelwriter::FMTparallelwriter(const std::string& location,
+		const std::string& driver,
+		Core::FMToutputlevel outputlevel,
+		std::vector<std::string>layersoptions,
+		int firstperiod,
+		int lastperiod):
+		outputstowrite(),
+		#ifdef FMTWITHGDAL
+		resultsdataset(createOGRdataset(location, driver)),
+		resultslayer(),
+		driftlayer(),
+		#endif
+		mtx(),
+		resultsminimaldrift(),
+		outputslevel(outputlevel),
+		alllayeroptions(layersoptions),
+		outputfirstperiod(firstperiod),
+		outputlastperiod(lastperiod)
+
+	{
+
+	}
+
+	void FMTparallelwriter::setlayer(const Models::FMTmodel* model)
+	{
+		try {
+			resultslayer[model->getname()] = createresultslayer(*model, resultsdataset,alllayeroptions);
+		}
+		catch (...)
+		{
+			_exhandler->raisefromcatch("", "FMTparallelwriter::setlayer", __LINE__, __FILE__);
+		}
+	}
+
+
+
+
+	std::map<std::string, std::vector<std::vector<double>>> FMTparallelwriter::getresults(const std::unique_ptr<Models::FMTmodel>& modelptr,const int& firstperiod,
 		const int& lastperiod) const
 	{
 		std::map<std::string, std::vector<std::vector<double>>>results;
 		try {
 			if (modelptr)
 			{
-				results = modelptr->getoutputsfromperiods(outputstowrite, firstperiod, lastperiod,outputslevel);
+			results = modelptr->getoutputsfromperiods(outputstowrite, firstperiod, lastperiod, outputslevel);
 			}
-			
 		}
 		catch (...)
 		{
@@ -194,6 +233,24 @@ namespace Parallel
 			_exhandler->raisefromcatch("", "FMTparallelwriter::write", __LINE__, __FILE__);
 		}
 
+	}
+
+	void FMTparallelwriter::getandwrite(const std::unique_ptr<Models::FMTmodel>& modelptr)
+	{
+		try {
+			const int firstperiod = outputfirstperiod;
+			const int lastperiod = std::min(outputlastperiod, modelptr->getparameter(Models::FMTintmodelparameters::LENGTH));
+			boost::lock_guard<boost::recursive_mutex> lock(mtx);
+			outputstowrite = modelptr->getoutputs();
+			write(modelptr->getname(),
+				getresults(modelptr, firstperiod, lastperiod),
+				firstperiod,
+				lastperiod,
+				0);
+		}catch (...)
+			{
+			_exhandler->raisefromcatch("","FMTparallelwriter::getandwrite", __LINE__, __FILE__);
+			}
 	}
 
 }

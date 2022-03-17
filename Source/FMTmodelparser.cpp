@@ -709,6 +709,7 @@ std::vector<Models::FMTmodel>FMTmodelparser::readproject(const std::string& prim
 											bool readarea, bool readoutputs, bool readoptimize)
 	{
 	std::vector<Models::FMTmodel>sortedmodels;
+	std::chrono::time_point<std::chrono::high_resolution_clock> readstart;
 	try {
 		std::vector<Models::FMTmodel>models;
 		std::map<std::string, std::vector<int>>commons;
@@ -718,6 +719,7 @@ std::vector<Models::FMTmodel>FMTmodelparser::readproject(const std::string& prim
 			_logger->logstamp();
 			_logger->logtime();
 			}
+		readstart = getclock();
 		std::map<Core::FMTsection, std::string>bases = getprimary(primary_location);
 		
 		if (!readarea)
@@ -854,7 +856,8 @@ std::vector<Models::FMTmodel>FMTmodelparser::readproject(const std::string& prim
 		{
 		_exhandler->printexceptions("at " + primary_location, "FMTmodelparser::readproject", __LINE__, __FILE__);
 		}
-	if (_logger->logwithlevel("Done reading ", 0))
+	
+	if (_logger->logwithlevel("Done reading "+ getdurationinseconds(readstart)+" ", 0))
 		{
 		_logger->logtime();
 		}
@@ -920,7 +923,6 @@ std::vector<std::vector<Core::FMTschedule>>FMTmodelparser::readschedules(const s
 			}
 		if (std::difftime(mostrecentfile, scheduleparser.getmostrecentfiletime()) > 0)
 			{
-			*_logger << mostrecentfile << " " << scheduleparser.getmostrecentfiletime() << "\n";
 			_exhandler->raise(Exception::FMTexc::FMTignore,
 				"Schedules files older than the model at " + primary_location, "FMTmodelparser::readschedules", __LINE__, __FILE__);
 			}
