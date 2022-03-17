@@ -1729,10 +1729,10 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 	bool FMTlpmodel::build(std::vector<Core::FMTschedule> schedules)
 	{
 		try{
-			const int length = parameters.getintparameter(LENGTH);
 			const bool forcepartialbuild = parameters.getboolparameter(FORCE_PARTIAL_BUILD);
+			const int length = parameters.getintparameter(LENGTH);
 			std::string addon = "";
-			if(!schedules.empty())
+			if(forcepartialbuild)
 			{
 				addon = "FMT will use schedules pass by argument for periods 1 to "+std::to_string(schedules.size());
 			}
@@ -1741,32 +1741,22 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 			//is the schedule for period 1 
 			for (int period = 0; period<length;++period)
 				{
-					if(!schedules.empty())
-					{
-						if(period<schedules.size())
-						{
-							_logger->logwithlevel(std::string(this->buildperiod(schedules.at(period),forcepartialbuild,parameters.getperiodcompresstime(period)))+"\n",1);
-						}
-						else{
-							_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
-												"The lenght to build the graph is bigger than the number of schedule passed to the function. Cannot have mix schedulebuild and fullbuild for now",
-												"FMTlpmodel::build",__LINE__,__FILE__);
-						}
-					}else{
-						_logger->logwithlevel(std::string(this->buildperiod(Core::FMTschedule(),false,parameters.getperiodcompresstime(period)))+"\n",1);
-					}
+				_logger->logwithlevel(std::string(this->buildperiod(schedules.at(period), forcepartialbuild, parameters.getperiodcompresstime(period))) + "\n", 1);
 				}
-			if(!schedules.empty())
+			if(forcepartialbuild)
 			{
 				addon = "FMT will use schedules pass by argument for periods 1 to "+std::to_string(schedules.size())+" to set the solution in the matrix.";
 			}
-			_logger->logwithlevel("Setting constraints on the "+getname()+". "+addon+"\n",1);
-			for (size_t constraintid = 1; constraintid < constraints.size();++constraintid)
+			if (!forcepartialbuild)
 				{
-				this->setconstraint(constraints.at(constraintid));
+				_logger->logwithlevel("Setting constraints on the " + getname() + ". " + addon + "\n", 1);
+				for (size_t constraintid = 1; constraintid < constraints.size(); ++constraintid)
+					{
+					this->setconstraint(constraints.at(constraintid));
+					}
+				_logger->logwithlevel("*Graph stats with all constraints : \n" + std::string(this->setobjective(constraints.at(0))) + "\n", 1);
 				}
-			_logger->logwithlevel("*Graph stats with all constraints : \n"+std::string(this->setobjective(constraints.at(0)))+"\n",1);
-			if(!schedules.empty())
+			if(forcepartialbuild)
 			{
 				return trysetsolution(schedules);
 			}
@@ -1795,20 +1785,20 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 		{
 			bool bylp = false;
 			int period = 1;
-			for (const Core::FMTschedule& schedule : schedules)
+			for (const Core::FMTschedule& schedule: schedules)
 			{
 				if(!bylp)
 				{
 					try
 					{
-						this->setsolution(period,schedule,parameters.getdblparameter(FMTdblmodelparameters::TOLERANCE));
+						this->setsolution(period, schedule,parameters.getdblparameter(FMTdblmodelparameters::TOLERANCE));
 					}catch(...)
 						{
 							bylp = true;
-							this->setsolutionbylp(period,schedule,parameters.getdblparameter(FMTdblmodelparameters::TOLERANCE));
+							this->setsolutionbylp(period, schedule,parameters.getdblparameter(FMTdblmodelparameters::TOLERANCE));
 						}
 				}else{
-					this->setsolutionbylp(period,schedule,parameters.getdblparameter(FMTdblmodelparameters::TOLERANCE));
+					this->setsolutionbylp(period, schedule,parameters.getdblparameter(FMTdblmodelparameters::TOLERANCE));
 				}
 				++period;
 			}

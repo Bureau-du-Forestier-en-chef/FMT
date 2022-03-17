@@ -11,6 +11,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTtask.hpp"
 #include "FMTtaskhandler.hpp"
 #include "FMTreplanningtask.hpp"
+#include "FMTplanningtask.hpp"
 #include "FMTmodel.hpp"
 #include "FMToutput.hpp"
 #include "FMTutility.hpp"
@@ -46,6 +47,15 @@ void exportParallel()
 					bp::args("Strategic model", "stochastic model","tactic model","selected outputs","Output folder","GDAL driver name","GDAL driver creation options","Number of replicates","Number of replanning periods","minimaldrift","output level"), "@DocString(FMTreplanningtask::FMTreplanningtask)"));
 
 	define_pylist<Parallel::FMTreplanningtask>();
+
+
+	bp::class_<Parallel::FMTplanningtask, bp::bases<Parallel::FMTtask>>("FMTplanningtask", "@DocString(FMTplanningtask)")
+		.def(bp::init<Parallel::FMTplanningtask>())
+		.def(bp::init<const int&, const int&, const std::string&, std::string,
+			std::vector<std::string>, Core::FMToutputlevel>(
+				bp::args("Min output period", "Max output period", "Output folder", "GDAL driver name", "GDAL driver creation options", "output level"), "@DocString(FMTplanningtask::FMTplanningtask)"));
+
+	define_pylist<Parallel::FMTplanningtask>();
 
 	bp::class_<Parallel::FMTtaskhandler, bp::bases<Core::FMTobject>>("FMTtaskhandler", "@DocString(FMTtaskhandler)")
 		.def(bp::init<Parallel::FMTtaskhandler>())

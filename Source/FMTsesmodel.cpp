@@ -132,10 +132,10 @@ namespace Models
 				optionaldevelopments.insert(optionaldevelopments.end(), areas.begin(), areas.end());
 				std::unique_ptr<FMTmodel>presolvedmod(new FMTsesmodel(*(FMTmodel::presolve(optionaldevelopments))));
 				FMTsesmodel*presolvedses = dynamic_cast<FMTsesmodel*>(presolvedmod.get());
-				const Core::FMTmask presolvedmask = presolvedses->getselectedmask(themes);
+				Core::FMTmaskfilter presolvefilter = presolvedses->getpresolvefilter(themes);
 				const Core::FMTmask basemask = this->getbasemask(optionaldevelopments);
 				const boost::dynamic_bitset<>&bitsets = basemask.getbitsetreference();
-				presolvedses->spschedule = Spatial::FMTspatialschedule(spschedule.getforestperiod(0).presolve(presolvedmask, presolvedses->themes));
+				presolvedses->spschedule = Spatial::FMTspatialschedule(spschedule.getforestperiod(0).presolve(presolvefilter, presolvedses->themes));
 				return presolvedmod;
 			}
 		}catch (...)

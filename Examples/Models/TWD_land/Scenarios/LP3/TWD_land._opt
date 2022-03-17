@@ -1,0 +1,10 @@
+
+*OBJECTIVE
+_MAXMIN oVolRec 1.._LENGTH
+
+*CONSTRAINTS
+
+Burnedarea = 0 1.._LENGTH
+P2area - 0.6 * P2area[0] >= 0  1.._LENGTH
+
+*FORMAT MOSEK
