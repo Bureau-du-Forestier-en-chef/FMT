@@ -17,6 +17,9 @@ namespace Core {
 		boost::property_tree::ptree::const_assoc_iterator stdParamsFileNameIt = jsonProps.find(JSON_PROP_STAND_FILE_PATH);
 		std::string stdParamsFileName = stdParamsFileNameIt->second.data();
 
+		std::wstring wideModelName = std::wstring(modelName.begin(), modelName.end());
+		sessionPtr = std::unique_ptr<Ort::Session>(new Ort::Session(*envPtr.get(), wideModelName.c_str(), Ort::SessionOptions{}));
+
 		std::ifstream file(stdParamsFileName);
 		std::vector<std::string> headers = GetNextLineAndSplitIntoTokens(file);
 		headers.erase(headers.begin());
@@ -44,6 +47,11 @@ namespace Core {
 		}
 	}
 
+	FMTyieldmodelpools::~FMTyieldmodelpools()
+	{
+		sessionPtr->release();
+	}
+
 	FMTyieldmodelpools::FMTyieldmodelpools(const FMTyieldmodelpools& rhs) :
 		modelName(rhs.GetModelName()),
 		modelType(rhs.GetModelType()),
@@ -52,6 +60,8 @@ namespace Core {
 		modelYields(rhs.GetModelYields()),
 		modelOutputs(rhs.GetModelOutputNames())
 	{
+		std::wstring wideModelName = std::wstring(modelName.begin(), modelName.end());
+		sessionPtr = std::unique_ptr<Ort::Session>(new Ort::Session(*envPtr.get(), wideModelName.c_str(), Ort::SessionOptions{}));
 	}
 	
 	std::unique_ptr<FMTyieldmodel>FMTyieldmodelpools::Clone() const

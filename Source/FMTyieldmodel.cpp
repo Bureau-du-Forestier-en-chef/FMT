@@ -69,9 +69,9 @@ namespace Core {
 	{
 		try {
 			std::string mdlName = GetModelName();
-			std::wstring wideModelName = std::wstring(mdlName.begin(), mdlName.end());
+			//std::wstring wideModelName = std::wstring(mdlName.begin(), mdlName.end());
 			const std::vector<std::string> modelYields = GetModelYields();
-			std::unique_ptr<Ort::Session> sessionPtr = std::unique_ptr<Ort::Session>(new Ort::Session(*envPtr.get(), wideModelName.c_str(), Ort::SessionOptions{}));
+			//std::unique_ptr<Ort::Session> sessionPtr = std::unique_ptr<Ort::Session>(new Ort::Session(*envPtr.get(), wideModelName.c_str(), Ort::SessionOptions{}));
 			auto memoryInfo = Ort::MemoryInfo::CreateCpu(OrtDeviceAllocator, OrtMemTypeCPU);
 			Ort::AllocatorWithDefaultOptions allocator;
 
@@ -161,8 +161,6 @@ namespace Core {
 				_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, "Cannot use " + mdlName + " yield model without graph info",
 					"FMTyieldmodel::Predict", __LINE__, __FILE__, Core::FMTsection::Yield);
 			}
-
-			sessionPtr->release();
 
 			return result;
 
