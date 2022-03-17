@@ -11,6 +11,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTtask.hpp"
 #include "FMTtaskhandler.hpp"
 #include "FMTreplanningtask.hpp"
+#include "FMTplanningtask.hpp"
 #include "FMTmodel.hpp"
 #include "FMToutput.hpp"
 #include "FMTutility.hpp"
@@ -24,6 +25,10 @@ RCPP_DEFINEVECTOR(Parallel::FMTtask);//For vector
 RCPP_EXPOSED_WRAP(Parallel::FMTreplanningtask);
 RCPP_EXPOSED_AS(Parallel::FMTreplanningtask);
 RCPP_DEFINEVECTOR(Parallel::FMTreplanningtask);//For vector
+
+RCPP_EXPOSED_WRAP(Parallel::FMTplanningtask);
+RCPP_EXPOSED_AS(Parallel::FMTplanningtask);
+RCPP_DEFINEVECTOR(Parallel::FMTplanningtask);//For vector
 
 RCPP_EXPOSED_WRAP(Parallel::FMTtaskhandler);
 RCPP_EXPOSED_AS(Parallel::FMTtaskhandler);
@@ -54,6 +59,17 @@ namespace R
 				"@DocString(FMTreplanningtask::setreplicates)")
 			.method("setreplanningperiods", &Parallel::FMTreplanningtask::setreplanningperiods,
 				"@DocString(FMTreplanningtask::setreplanningperiods)");
+
+
+		Rcpp::class_<Parallel::FMTplanningtask>("FMTplanningtask", "@DocString(FMTplanningtask)")
+			.derives<Parallel::FMTtask>("FMTtask")
+			.constructor("@DocString(FMTplanningtask())")
+			.constructor<int,
+			int,
+			std::string,
+			std::string,
+			std::vector<std::string>,
+			Core::FMToutputlevel>("@DocString(Parallel::FMTplanningtask())");
 
 		Rcpp::class_<Parallel::FMTtaskhandler>("FMTtaskhandler", "@DocString(FMTtaskhandler)")
 			.derives<Core::FMTobject>("FMTobject")

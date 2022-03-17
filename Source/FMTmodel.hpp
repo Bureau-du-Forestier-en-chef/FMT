@@ -198,6 +198,13 @@ namespace Models
 		Swap *this for the element at the end of the rhs unique_ptr.
 		*/
 		virtual void swap_ptr(const std::unique_ptr<FMTmodel>& rhs);
+		// DocString: FMTmodel::setupschedulesforbuild
+		/**
+		Base on the FORCE_PARTIAL_BUILD it will prepare the pass in schedules for building.
+		Will make sure that the length is covered with a schedule or an empty one.
+		It will always return a filled vector.
+		*/
+		std::vector<Core::FMTschedule>setupschedulesforbuild(const std::vector<Core::FMTschedule>& schedules) const;
     public:
 		// DocString: FMTmodel::setparallellogger
 		/**
@@ -254,6 +261,11 @@ namespace Models
 		if the model is badly formulated.
 		*/
 		FMTmodel basepresolve() const;
+		// DocString: FMTmodel::getpresolvefilter
+		/**
+		Get the presolve filter.
+		*/
+		Core::FMTmaskfilter getpresolvefilter(const std::vector<Core::FMTtheme>& originalthemes) const;
 		// DocString: FMTmodel::getpostsolvefilter
 		/**
 		Get the postsolve filter used by the presolve (in case you want to turn presolved mask into postsolve mask).

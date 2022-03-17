@@ -45,9 +45,18 @@ namespace Parallel
 		// DocString: FMTparallelwriter::resultsminimaldrift;
 		///Used when writing drift probability layer
 		double resultsminimaldrift;
-		// DocString: FMTparallelwriter::outputslevel;
+		// DocString: FMTparallelwriter::outputslevel
 		///The output level of detail
 		Core::FMToutputlevel outputslevel;
+		// DocString: FMTparallelwriter::alllayeroptions
+		///The layers options
+		std::vector<std::string> alllayeroptions;
+		// DocString: FMTparallelwriter::outputfirstperiod
+		///First period for the output value.
+		int outputfirstperiod;
+		// DocString: FMTparallelwriter::outputlastperiod;
+		///Lastperiod for the output value.
+		int outputlastperiod;
 	protected:
 		// DocString: FMTparallelwriter::getdriftprobability()
 		/**
@@ -89,6 +98,21 @@ namespace Parallel
 			std::vector<std::string>layersoptions = std::vector<std::string>(),
 			double minimaldrift = 0.5,
 			Core::FMToutputlevel outputlevel = Core::FMToutputlevel::totalonly);
+		// DocString: FMTparallelwriter::FMTparallelwriter(const std::string&,const std::string&,std::vector<std::string>,Core::FMToutputlevel)
+		/**
+		Constructor that will build the parser without layers and outputs.
+		*/
+		FMTparallelwriter(const std::string& location,
+			const std::string& driver,
+			Core::FMToutputlevel outputlevel = Core::FMToutputlevel::totalonly,
+			std::vector<std::string>layersoptions = std::vector<std::string>(),
+			int firstperiod=1,
+			int lastperiod=1);
+		// DocString: FMTparallelwriter::setlayer
+		/**
+		Add a new layer for a given model.
+		*/
+		void setlayer(const Models::FMTmodel* model);
 		// DocString: FMTparallelwriter::write()
 		/**
 		Write the modelptr results from the firstperiod to the lastperiod for a given iteration (replicate).
@@ -100,12 +124,18 @@ namespace Parallel
 		/**
 		Get the results of a model.
 		*/
-		std::map<std::string, std::vector<std::vector<double>>> getresults(const std::unique_ptr<Models::FMTmodel>& modelptr, const int& firstperiod,const int& lastperiod) const;
+		std::map<std::string, std::vector<std::vector<double>>> getresults(const std::unique_ptr<Models::FMTmodel>& modelptr, const int& firstperiod, const int& lastperiod) const;
 		// DocString: FMTparallelwriter::setdriftprobability()
 		/**
 		Get the results of a model With the global model and the localmodel starting from a minimum drift proportion.
 		*/
 		void setdriftprobability(const std::string& globalmodel, const std::string& localmodel) const;
-	};
+		// DocString: FMTparallelwriter::getandwrite()
+		/**
+		Get the results of a model. and write it down.
+		*/
+		void getandwrite(const std::unique_ptr<Models::FMTmodel>& modelptr);
+
+		};
 }
 #endif

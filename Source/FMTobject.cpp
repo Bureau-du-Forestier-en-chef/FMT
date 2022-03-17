@@ -304,9 +304,9 @@ namespace Core
 		}
 	}
 
-	std::chrono::time_point<std::chrono::steady_clock> FMTobject::getclock()
+	std::chrono::time_point<std::chrono::high_resolution_clock> FMTobject::getclock()
 		{
-		std::chrono::time_point<std::chrono::steady_clock> newclock;
+		std::chrono::time_point<std::chrono::high_resolution_clock> newclock;
 		try {
 			newclock = std::chrono::high_resolution_clock::now();
 		}catch (...)
@@ -318,11 +318,11 @@ namespace Core
 
 
 	template<class chrono>
-	double FMTobject::getduration(const std::chrono::time_point<std::chrono::steady_clock>& startclock)
+	double FMTobject::getduration(const std::chrono::time_point<std::chrono::high_resolution_clock>& startclock)
 	{
 		double result = 0;
 		try {
-			const std::chrono::time_point<std::chrono::steady_clock> stopclock = getclock();
+			const std::chrono::time_point<std::chrono::high_resolution_clock> stopclock = getclock();
 			const std::chrono::duration<double, chrono>spent(stopclock - startclock);
 			result = spent.count();
 		}catch (...)
@@ -332,12 +332,12 @@ namespace Core
 		return result;
 	}
 
-	template double FMTobject::getduration<std::chrono::milliseconds::period>(const std::chrono::time_point<std::chrono::steady_clock>& startclock);
-	template double FMTobject::getduration<std::chrono::seconds::period>(const std::chrono::time_point<std::chrono::steady_clock>& startclock);
-	template double FMTobject::getduration<std::chrono::minutes::period>(const std::chrono::time_point<std::chrono::steady_clock>& startclock);
-	template double FMTobject::getduration<std::chrono::hours::period>(const std::chrono::time_point<std::chrono::steady_clock>& startclock);
+	template double FMTobject::getduration<std::chrono::milliseconds::period>(const std::chrono::time_point<std::chrono::high_resolution_clock>& startclock);
+	template double FMTobject::getduration<std::chrono::seconds::period>(const std::chrono::time_point<std::chrono::high_resolution_clock>& startclock);
+	template double FMTobject::getduration<std::chrono::minutes::period>(const std::chrono::time_point<std::chrono::high_resolution_clock>& startclock);
+	template double FMTobject::getduration<std::chrono::hours::period>(const std::chrono::time_point<std::chrono::high_resolution_clock>& startclock);
 
-	std::string FMTobject::getdurationinseconds(const std::chrono::time_point<std::chrono::steady_clock>& startclock)
+	std::string FMTobject::getdurationinseconds(const std::chrono::time_point<std::chrono::high_resolution_clock>& startclock)
 	{
 		std::string value;
 		try {
