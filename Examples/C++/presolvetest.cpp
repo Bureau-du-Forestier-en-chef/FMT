@@ -15,7 +15,7 @@ int main(int argc, char *argv[])
 	Logging::FMTlogger().logstamp();
     const std::string primarylocation = argv[1];
     const std::string scenario = argv[2];
-	const int scenario_length = std::stoi(argv[2]);
+	const int scenario_length = std::stoi(argv[3]);
 	std::vector<Exception::FMTexc>errors;
 	errors.push_back(Exception::FMTexc::FMTmissingyield);
 	errors.push_back(Exception::FMTexc::FMToutput_missing_operator);

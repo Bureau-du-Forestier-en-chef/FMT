@@ -1047,6 +1047,10 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 							{
 							std::string level_name = level_names.front();
 							level_names.erase(level_names.begin());
+							if (node.ispastperiod())
+								{
+								period = (node.source.getperiodlowerbound() + period);
+								}
 							const int level_index = getsetlevel(constraint,level_name,period);
 							variables[level_index] = node.constant;
 							}

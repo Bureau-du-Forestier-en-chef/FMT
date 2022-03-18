@@ -150,13 +150,14 @@ namespace Core
 		{
 			++node_period;
 		}
+		
 		if (this->singleperiod())
 		{
 			if (this->ispastperiod())
 			{
-				node_period = period;
-				if ((this->source.getperiodlowerbound() + period) >= 0)
+				if ((this->source.getperiodlowerbound() + node_period) >= 0)
 				{
+					node_period = (this->source.getperiodlowerbound() + node_period);
 					const FMTperbounds perbound(FMTsection::Optimize, node_period, node_period);
 					this->source.setbounds(perbound);
 					this->factor.setbounds(perbound);

@@ -927,25 +927,33 @@ Core::FMTmask FMTmodel::getbasemask(std::vector<Core::FMTactualdevelopment> opti
 	{
 	Core::FMTmask basemask(boost::dynamic_bitset<>(area.begin()->getmask().size(), false));
 	try {
-		for (const Core::FMTaction& action : actions)
+		optionaldevelopments.insert(optionaldevelopments.end(), area.begin(), area.end());
+		Core::FMTmask areamask(boost::dynamic_bitset<>(area.begin()->getmask().size(), false));
+		for (const Core::FMTactualdevelopment& developement : optionaldevelopments)
 			{
-			for (const auto& actionobject : action)
-				{
-				const Core::FMTmask opq(std::string(actionobject.first),themes);
-				basemask = basemask.getunion(opq.removeaggregates(themes, true));
-				}
+			areamask = areamask.getunion(developement.getmask());
 			}
 		for (const Core::FMTtransition& transition : transitions)
 		{
 			for (const auto& transitionobject : transition)
 			{
-				const Core::FMTmask source(std::string(transitionobject.first),themes);
-				basemask = basemask.getunion(source.removeaggregates(themes,true));
+				//const Core::FMTmask source(std::string(transitionobject.first),themes);
+				//basemask = basemask.getunion(source.removeaggregates(themes,true));
 				for (const Core::FMTtransitionmask& fork : transitionobject.second.getmasktrans())
 				{
 					const Core::FMTmask maskwithoutaggregates = fork.getmask().removeaggregates(themes,true);
 					basemask = basemask.getunion(maskwithoutaggregates);
 				}
+			}
+		}
+		//those next one are optional
+		/*
+		for (const Core::FMTaction& action : actions)
+		{
+			for (const auto& actionobject : action)
+			{
+				const Core::FMTmask opq(std::string(actionobject.first), themes);
+				basemask = basemask.getunion(opq.removeaggregates(themes, true));
 			}
 		}
 		for (const auto& yieldobject : yields)
@@ -968,13 +976,7 @@ Core::FMTmask FMTmodel::getbasemask(std::vector<Core::FMTactualdevelopment> opti
 					}
 				}
 			}
-
-		optionaldevelopments.insert(optionaldevelopments.end(), area.begin(), area.end());
-		Core::FMTmask areamask(boost::dynamic_bitset<>(area.begin()->getmask().size(), false));
-		for (const Core::FMTactualdevelopment& developement : area)
-			{
-			areamask = areamask.getunion(developement.getmask());
-			}
+		*/
 		if (!getparameter(FMTboolmodelparameters::PRESOLVE_CAN_REMOVE_STATIC_THEMES))
 		{
 			basemask = basemask.getunion(areamask);
