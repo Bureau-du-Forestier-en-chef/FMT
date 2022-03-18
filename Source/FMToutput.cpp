@@ -534,8 +534,14 @@ FMToutput FMToutput::boundto(const std::vector<FMTtheme>& themes, const FMTperbo
 		//{
 			for (FMToutputsource& source : newoutput.sources)
 			{
-				if (source.isvariable())
+				
+				if (source.isvariable()||source.isvariablelevel())
 				{
+					/*if (source.isvariablelevel())
+					{
+						source = Core::FMToutputsource(Core::FMTotar::level, 0, "",
+							newoutput.name, source.getoutputorigin(), source.getthemetarget());
+					}*/
 					if (!bound.empty())
 					{
 						source.setbounds(bound);
@@ -550,11 +556,12 @@ FMToutput FMToutput::boundto(const std::vector<FMTtheme>& themes, const FMTperbo
 					{
 						source.setaverage();
 					}
-				}else if (source.isvariablelevel())
+					
+				}/*else if (source.isvariablelevel())
 					{
 					source = Core::FMToutputsource(Core::FMTotar::level,0, "",
 						newoutput.name, source.getoutputorigin(), source.getthemetarget());
-					}
+					}*/
 			}
 		/*}else if(newoutput.islevel())
 			{
