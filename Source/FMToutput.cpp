@@ -548,10 +548,15 @@ FMToutput FMToutput::boundto(const std::vector<FMTtheme>& themes, const FMTperbo
 					}
 					if (!attribute.empty())
 					{
-						FMTmask oldmask = FMTmask(source.getmask());
-						oldmask.set(themes.at(targetthemeid()), attribute);
-						source.setmask(oldmask);
-					}
+						if (source.isvariablelevel())
+						{
+							source.setaction(source.getaction() + "("+ attribute +")");
+						}else {
+							FMTmask oldmask = FMTmask(source.getmask());
+							oldmask.set(themes.at(targetthemeid()), attribute);
+							source.setmask(oldmask);
+							}
+						}
 					if (!specialbound.empty() && specialbound == "_AVG")
 					{
 						source.setaverage();

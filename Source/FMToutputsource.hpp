@@ -93,6 +93,7 @@ class FMTEXPORT FMToutputsource : public FMTspec
 			return mask;
 			}
 		void setmask(const FMTmask& newmask);
+		void setaction(const std::string& actionname);
 		void settarget(const FMTotar& newtype);
 		void setthemetarget(const int& newttarget);
 		void setoutputorigin(const int& neworigin);
