@@ -393,6 +393,11 @@ void FMToutputsource::setmask(const FMTmask& newmask)
 	mask = newmask;
 	}
 
+void FMToutputsource::setaction(const std::string& actionname)
+	{
+	action = actionname;
+	}
+
 void FMToutputsource::settarget(const FMTotar& newtype)
 	{
 	target = newtype;
