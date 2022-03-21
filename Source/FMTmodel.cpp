@@ -933,54 +933,60 @@ Core::FMTmask FMTmodel::getbasemask(std::vector<Core::FMTactualdevelopment> opti
 			{
 			areamask = areamask.getunion(developement.getmask());
 			}
+		size_t trid = 0;
 		for (const Core::FMTtransition& transition : transitions)
 		{
 			for (const auto& transitionobject : transition)
 			{
-				//const Core::FMTmask source(std::string(transitionobject.first),themes);
-				//basemask = basemask.getunion(source.removeaggregates(themes,true));
+				const Core::FMTmask source(std::string(transitionobject.first),themes);
 				for (const Core::FMTtransitionmask& fork : transitionobject.second.getmasktrans())
 				{
-					const Core::FMTmask maskwithoutaggregates = fork.getmask().removeaggregates(themes,true);
+					const Core::FMTmask maskwithoutaggregates = fork.getmask().removeaggregates(themes/*,true*/);
 					basemask = basemask.getunion(maskwithoutaggregates);
 				}
 			}
+			++trid;
 		}
-		//those next one are optional
-		/*
-		for (const Core::FMTaction& action : actions)
-		{
-			for (const auto& actionobject : action)
-			{
-				const Core::FMTmask opq(std::string(actionobject.first), themes);
-				basemask = basemask.getunion(opq.removeaggregates(themes, true));
-			}
-		}
-		for (const auto& yieldobject : yields)
-			{
-			const Core::FMTmask source(std::string(yieldobject.first), themes);
-			basemask = basemask.getunion(source.removeaggregates(themes, true));
-			}
-		for (const auto& lifespanobject : lifespan)
-			{
-			const Core::FMTmask source(std::string(lifespanobject.first), themes);
-			basemask = basemask.getunion(source.removeaggregates(themes, true));
-			}
-		for (const Core::FMTconstraint& constraint : constraints)
-			{
-			for (const Core::FMToutputsource& source: constraint.getsources())
-				{
-				if (source.isvariable())
-					{
-					basemask = basemask.getunion(source.getmask().removeaggregates(themes, true));
-					}
-				}
-			}
-		*/
 		if (!getparameter(FMTboolmodelparameters::PRESOLVE_CAN_REMOVE_STATIC_THEMES))
 		{
 			basemask = basemask.getunion(areamask);
 		}else {
+			for (const Core::FMTtransition& transition : transitions)
+			{
+				for (const auto& transitionobject : transition)
+				{
+					const Core::FMTmask source(std::string(transitionobject.first),themes);
+					basemask = basemask.getunion(source.removeaggregates(themes,true));
+				}
+			}
+			for (const Core::FMTaction& action : actions)
+			{
+				for (const auto& actionobject : action)
+				{
+					const Core::FMTmask opq(std::string(actionobject.first), themes);
+					basemask = basemask.getunion(opq.removeaggregates(themes, true));
+				}
+			}
+			for (const auto& yieldobject : yields)
+			{
+				const Core::FMTmask source(std::string(yieldobject.first), themes);
+				basemask = basemask.getunion(source.removeaggregates(themes, true));
+			}
+			for (const auto& lifespanobject : lifespan)
+			{
+				const Core::FMTmask source(std::string(lifespanobject.first), themes);
+				basemask = basemask.getunion(source.removeaggregates(themes, true));
+			}
+			for (const Core::FMTconstraint& constraint : constraints)
+			{
+				for (const Core::FMToutputsource& source : constraint.getsources())
+				{
+					if (source.isvariable())
+					{
+						basemask = basemask.getunion(source.getmask().removeaggregates(themes, true));
+					}
+				}
+			}
 			boost::dynamic_bitset<>bits(basemask.size(),false);
 			const boost::dynamic_bitset<>& areamaskref = areamask.getbitsetreference();
 			const boost::dynamic_bitset<>& basemaskref = basemask.getbitsetreference();
@@ -1008,31 +1014,6 @@ Core::FMTmask FMTmodel::getbasemask(std::vector<Core::FMTactualdevelopment> opti
 				}
 			basemask = basemask.getunion(Core::FMTmask(bits));
 			}
-
-		/*
-
-		
-		if (getparameter(FMTboolmodelparameters::PRESOLVE_CAN_REMOVE_STATIC_THEMES))
-		{
-			boost::dynamic_bitset<>bits;
-			bits.resize(basemask.size(), true);
-			for (const Core::FMTtheme& statictheme : getstaticpresolvethemes())
-				{
-					const size_t start = static_cast<size_t>(statictheme.getstart());
-					for (size_t bitid = start; bitid < (statictheme.size() + start); ++bitid)
-					{
-						if (bitid== ((statictheme.size() + start)-1))
-						{
-							bits[bitid] = true;
-						}else {
-							bits[bitid] = false;
-						}
-						
-					}
-				}
-			basemask = basemask.getintersect(Core::FMTmask(bits));
-		}
-		*/
 	}catch (...)
 		{
 		_exhandler->raisefromcatch("","FMTmodel::getbasemask", __LINE__, __FILE__);
