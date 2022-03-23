@@ -42,6 +42,11 @@ namespace Parallel
 		Change the status of the task
 		*/
 		void setstatus(bool status);
+		// DocString: FMTreplanningtask::split()
+		/**
+		Split the totalworksize in much possible equal buckets.
+		*/
+		std::vector<size_t>splitwork(int numberoftasks,const int& totalworksize) const;
 	public:
 		// DocString: FMTreplanningtask::FMTtask()
 		/**

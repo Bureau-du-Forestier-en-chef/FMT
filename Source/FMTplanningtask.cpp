@@ -94,22 +94,14 @@ namespace Parallel
 	{
 		std::vector<std::unique_ptr<FMTtask>>tasks;
 		try {
-			int modelspertask = (static_cast<int>(models.size()) / numberoftasks);
 			std::list<std::unique_ptr<Models::FMTmodel>>allmodels=copymodels(models);
-			std::list<std::vector<Core::FMTschedule>>modelschedules=allschedules;
-			for (size_t taskid = 0; taskid < numberoftasks; ++taskid)
+			std::list<std::vector<Core::FMTschedule>>modelschedules(allschedules);
+			for (const size_t tasksize : splitwork(numberoftasks, static_cast<int>(models.size())))
 				{
 				FMTplanningtask newtask(*this);
 				std::list<std::unique_ptr<Models::FMTmodel>>modelsoftask;
 				std::list<std::vector<Core::FMTschedule>>schedulesoftask;
-				for (int model = 0 ; model < modelspertask;++model)
-					{
-					modelsoftask.push_back(std::move(allmodels.front()->clone()));
-					schedulesoftask.push_back(modelschedules.front());
-					allmodels.pop_front();
-					modelschedules.pop_front();
-					}
-				if ((taskid == numberoftasks - 1) && !allmodels.empty())
+				for (int model = 0; model < tasksize; ++model)
 					{
 					modelsoftask.push_back(std::move(allmodels.front()->clone()));
 					schedulesoftask.push_back(modelschedules.front());
@@ -120,10 +112,9 @@ namespace Parallel
 				newtask.allschedules = schedulesoftask;
 				tasks.push_back(std::move(newtask.clone()));
 				}
-			
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("", "FMTplanningtask::gettasks", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("", "FMTplanningtask::split", __LINE__, __FILE__);
 			}
 		return tasks;
 	}
