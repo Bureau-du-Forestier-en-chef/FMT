@@ -75,6 +75,38 @@ namespace Parallel
 		return std::move(std::unique_ptr<FMTtask>(new FMTtask()));
 	}
 
+	std::vector<size_t>FMTtask::splitwork(int numberoftasks, const int& totalworksize) const
+		{
+		std::vector<size_t>taskssize;
+		try {
+			numberoftasks = std::min(totalworksize, numberoftasks);
+			if (numberoftasks<=0||
+				totalworksize<=0)
+				{
+				numberoftasks = totalworksize;
+				_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
+					"Cannot split task of size "+ std::to_string(totalworksize) +" in "+std::to_string(numberoftasks)
+					,"FMTtask::splitwork", __LINE__, __FILE__);
+				}
+			const int zp = numberoftasks - (totalworksize % numberoftasks);
+			const int equaltask = totalworksize / numberoftasks;
+			taskssize.reserve(numberoftasks);
+			for (int taskid = 0; taskid < numberoftasks; ++taskid)
+			{
+				size_t load = static_cast<size_t>(equaltask);
+				if (!(totalworksize % numberoftasks == 0) && taskid >= zp)
+				{
+					++load;
+				}
+				taskssize.push_back(load);
+			}
+		}catch (...)
+			{
+			_exhandler->raisefromcatch("", "FMTtask::splitwork", __LINE__, __FILE__);
+			}
+		return taskssize;
+		}
+
 	void FMTtask::work()
 	{
 		try {

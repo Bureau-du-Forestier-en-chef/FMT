@@ -148,19 +148,12 @@ namespace Parallel
 	{
 		std::vector<std::unique_ptr<FMTtask>>tasks;
 		try {
-			size_t replicate = 0;
-			int replicatepertask = (static_cast<int>(replicateids.size()) / numberoftasks);
 			std::queue<int>allreplicates=this->replicateids;
-			for (size_t taskid = 0; taskid < numberoftasks; ++taskid)
+			for (const size_t tasksize : splitwork(numberoftasks, static_cast<int>(replicateids.size())))
 				{
 				FMTreplanningtask newtask(*this);
 				std::queue<int>replicatesoftask;
-				for (int taskreplicate = 0 ; taskreplicate < replicatepertask;++taskreplicate)
-					{
-					replicatesoftask.push(allreplicates.front());
-					allreplicates.pop();
-					}
-				if ((taskid == numberoftasks - 1) && !allreplicates.empty())
+				while (replicatesoftask.size() < tasksize)
 					{
 					replicatesoftask.push(allreplicates.front());
 					allreplicates.pop();
