@@ -334,6 +334,11 @@ class FMTEXPORT FMToutput: public FMTobject
 	Every output origin in the sources must be in the set. Normally used after presolve when some output are removed. Could also be overided with map.
 	*/
 	void changesourcesid(const std::set<int>& newoutputsorigin,const std::set<int>& newthemeid);
+	// DocString: FMToutput::changeoutputsorigin
+	/**
+	Change outputorigin for the optimizationparser 
+	*/
+	void changesourcesid(const int& outid);
 	// DocString: FMToutput::setperiod
 	/**
 	Set the outputsource to one period.

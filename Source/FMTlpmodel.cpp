@@ -252,6 +252,7 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 	std::map<int, double>& variables, double multiplier) const
 	{
 	std::vector<std::map<int, double>> strictlypositivesoutputs;
+	std::unordered_set<int>test;
 	const bool strictlypositivesoutputsmatrix = getparameter(STRICTLY_POSITIVE);
 	try {
 		std::unordered_set<int> output_negvar;
@@ -264,6 +265,10 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 					{
 					variables[node_it->first] = 0;
 					}
+				//on doit seulement utiliser le outputid le plus élevé obtenue dans TOUS les noeuds lue!!!!
+				//output_negvar ne doit pas être une liste mais bien un seul élément unique.
+				//Sur cet élément unique on doit recuellir tous les verticies par attribut du output
+				//Et setter chaque attribut comme étant >= 0
 				if (strictlypositivesoutputsmatrix && node_it->second<0 && !node.source.getyield().empty())
 					{
 						output_negvar.insert(node.getoutputid());
@@ -271,6 +276,7 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 
 				variables[node_it->first] += node_it->second*multiplier;
 				}
+			test.insert(node.getoutputid());
 			}
 			if (strictlypositivesoutputsmatrix && !output_negvar.empty())
 			{
@@ -282,6 +288,7 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 					std::vector<std::string>equation;
 					for (const Core::FMToutputnode& node : outputs.at(onid).getnodes(equation,1,true))
 					{
+						
 						const int id = node.getoutputid();
 						if (!node.source.getyield().empty())
 						{

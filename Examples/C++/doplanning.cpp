@@ -37,9 +37,10 @@ int main(int argc, char *argv[])
 		const std::vector<Models::FMTmodel> models = modelparser.readproject(primarylocation, scenarios);
 		Models::FMTlpmodel optimizationmodel(models.at(0),Models::FMTsolverinterface::MOSEK);
 		optimizationmodel.setparameter(Models::FMTintmodelparameters::LENGTH,length);
+		optimizationmodel.FMTmodel::setparameter(Models::FMTboolmodelparameters::STRICTLY_POSITIVE, true);
 		optimizationmodel.setparameter(Models::FMTintmodelparameters::PRESOLVE_ITERATIONS,10);
 		optimizationmodel.doplanning(true);
-		if ((std::abs(optimizationmodel.getObjValue()-objectivevalue))>=0.1)
+		if ((std::abs(optimizationmodel.getObjValue()-objectivevalue))>=1)
 			{
 			Exception::FMTfreeexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed, "Wrong value",
 				"presolvetest", __LINE__, primarylocation);

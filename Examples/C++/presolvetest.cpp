@@ -13,8 +13,8 @@ int main(int argc, char *argv[])
 	{
 	#ifdef FMTWITHOSI
 	Logging::FMTlogger().logstamp();
-    const std::string primarylocation = argv[1];
-    const std::string scenario = argv[2];
+	const std::string primarylocation = argv[1];
+	const std::string scenario = argv[2];
 	const int scenario_length = std::stoi(argv[3]);
 	std::vector<Exception::FMTexc>errors;
 	errors.push_back(Exception::FMTexc::FMTmissingyield);
@@ -29,28 +29,20 @@ int main(int argc, char *argv[])
 	const std::vector<std::string>scenarios(1, scenario);
 	const std::vector<Models::FMTmodel> models = modelparser.readproject(primarylocation, scenarios);
 	Models::FMTlpmodel optimizationmodel(models.at(0), Models::FMTsolverinterface::CLP);
-	Core::FMToutput out;
-	for (const Core::FMToutput& output : optimizationmodel.getoutputs())
-	{
-		if (output.getname() == "OVOLTOTREC")
-		{
-			out = output;
-		}
-	}
 	optimizationmodel.setparameter(Models::FMTintmodelparameters::LENGTH,scenario_length);
-	//optimizationmodel.FMTmodel::setparameter(Models::FMTboolmodelparameters::STRICTLY_POSITIVE, true);
+	optimizationmodel.FMTmodel::setparameter(Models::FMTboolmodelparameters::STRICTLY_POSITIVE, true);
 	optimizationmodel.setparameter(Models::FMTintmodelparameters::PRESOLVE_ITERATIONS, 0);
 	optimizationmodel.doplanning(true);
 	Models::FMTlpmodel presolvedoptimizationmodel(models.at(0), Models::FMTsolverinterface::CLP);
 	presolvedoptimizationmodel.setparameter(Models::FMTintmodelparameters::LENGTH, scenario_length);
-	//optimizationmodel.FMTmodel::setparameter(Models::FMTboolmodelparameters::POSTSOLVE, true);
-	//presolvedoptimizationmodel.FMTmodel::setparameter(Models::FMTboolmodelparameters::STRICTLY_POSITIVE, true);
-	presolvedoptimizationmodel.setparameter(Models::FMTintmodelparameters::PRESOLVE_ITERATIONS, 10);
+	presolvedoptimizationmodel.FMTmodel::setparameter(Models::FMTboolmodelparameters::STRICTLY_POSITIVE, true);
+	presolvedoptimizationmodel.setparameter(Models::FMTintmodelparameters::PRESOLVE_ITERATIONS,10);
 	presolvedoptimizationmodel.doplanning(true);
-	const double nopresolve = presolvedoptimizationmodel.getoutput(out, 1, Core::FMToutputlevel::totalonly).at("Total");
-	const double presolve = optimizationmodel.getoutput(out, 1, Core::FMToutputlevel::totalonly).at("Total");
+	const double nopresolve = optimizationmodel.getObjValue();
+	const double presolve = presolvedoptimizationmodel.getObjValue();
 	if (std::abs(nopresolve - presolve) >= 0.1)
 	{
+		
 		Exception::FMTfreeexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed, "Wrong value",
 			"presolvetest", __LINE__, primarylocation);
 	}

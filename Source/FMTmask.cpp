@@ -381,9 +381,14 @@ FMTmask FMTmask::refine(const FMTmask& mask,const std::vector<FMTtheme>& themes)
 		boost::split(maskbases, basemask,boost::is_any_of(FMT_STR_SEPARATOR),boost::token_compress_on);
 		for(const FMTtheme& theme : themes)
 			{	
-				if (subset(theme).count() == theme.size())
+			const size_t thiscount = subset(theme).count();
+			const size_t targetcount = mask.subset(theme).count();
+			if (targetcount > 1)
+			{
+				//crash
+			}else if (thiscount==theme.size()||(targetcount== 1 && targetcount < thiscount))
 				{
-					bases.at(theme.id)=maskbases.at(theme.id);
+				bases.at(theme.id) = maskbases.at(theme.id);
 				}
 			}
 		return FMTmask(boost::algorithm::join(bases," "),themes);
