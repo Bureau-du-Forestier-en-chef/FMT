@@ -818,6 +818,20 @@ FMToutput FMToutput::presolve(const FMTmaskfilter& filter,
 	return newoutput;
 	}
 
+void FMToutput::changesourcesid(const int& outid)
+{
+	try {
+		for (Core::FMToutputsource& source : sources)
+			{
+			source.setoutputorigin(outid);
+			}
+	}catch (...)
+		{
+		_exhandler->raisefromcatch("for " + this->getname(),
+			"FMToutput::changesourcesid", __LINE__, __FILE__, Core::FMTsection::Outputs);
+		}
+}
+
 void FMToutput::changesourcesid(const std::set<int>& newoutputsorigin,const std::set<int>& newthemeid)
 	{
 	try{

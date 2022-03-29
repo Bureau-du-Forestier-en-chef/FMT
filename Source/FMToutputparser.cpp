@@ -695,6 +695,18 @@ namespace Parser
 					}
 				}
 			outputs->shrink_to_fit();
+			/*-----------------------------------------
+			-----------Fix for outputorigin------------
+			-------------------------------------------*/
+			int index = 0; 
+			for (Core::FMToutput& output : *outputs)
+				{
+				output.changesourcesid(index);
+				++index;
+				}
+			/*-----------------------------------------
+			-----------Fix for outputorigin------------
+			-------------------------------------------*/
 			}catch(...)
 			{
 				_exhandler->raisefromcatch("In " + _location + " at line " + std::to_string(_line),"FMToutputparser::readnfill", __LINE__, __FILE__,_section);
