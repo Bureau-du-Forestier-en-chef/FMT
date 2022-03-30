@@ -34,7 +34,7 @@ void FMTwarning::warn(const std::shared_ptr<Logging::FMTlogger>logger,boost::uno
 			}
 			else if(wcount==maxwarning+1)
 			{
-				*logger << "FMTexc("+ std::to_string(exceptiontype) +") has reached the maximum number of times it can be raise."<< "\n";
+				*logger << "FMTexc("+ std::to_string(exceptiontype) +") has reached the maximum number of times it can be raised."<< "\n";
 				wcount+=1;
 			}
 			spwit->second=wcount;

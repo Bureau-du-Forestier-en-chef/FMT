@@ -555,7 +555,7 @@ std::string FMTexceptionhandler::updatestatus(const FMTexc lexception, const std
    		++_errorcount;
    		break;
     case FMTexc::FMToutput_too_much_operator:
-   		msg += "To much operator in the output definition " + message;
+   		msg += "Too much operator in the output definition " + message;
    		_level = FMTlev::FMT_logic;
    		++_errorcount;
    		break;
