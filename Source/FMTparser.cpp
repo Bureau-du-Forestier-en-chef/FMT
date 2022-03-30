@@ -105,7 +105,7 @@ void FMTparser::initializeGDAL()
 		if (!boost::filesystem::is_directory(boost::filesystem::path(runtimelocation)))
 		{
 			_exhandler->raise(Exception::FMTexc::FMTinvalid_path,
-				"Cannot find GDAL_DATA at " + runtimelocation, "FMTparser::FMTparser()", __LINE__, __FILE__);
+				"Can not find GDAL_DATA at " + runtimelocation, "FMTparser::FMTparser()", __LINE__, __FILE__);
 		}
 		CPLSetConfigOption("GDAL_DATA", runtimelocation.c_str());
 		//No need of drivers from shared library see : https://gdal.org/api/gdaldriver_cpp.html ; https://gdal.org/api/cpl.html ; https://trac.osgeo.org/gdal/wiki/ConfigOptions
@@ -573,7 +573,7 @@ GDALDataset* FMTparser::createOGRdataset(std::string location,
 		if (newdataset == NULL)
 		{
 			_exhandler->raise(Exception::FMTexc::FMTinvaliddataset,
-				"Cannote create new dataset at " + location, "FMTparser::createOGRdataset", __LINE__, __FILE__, _section);
+				"Can not create new dataset at " + location, "FMTparser::createOGRdataset", __LINE__, __FILE__, _section);
 		}
 	}catch (...)
 		{
