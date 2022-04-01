@@ -53,6 +53,7 @@ namespace Core
 		static const std::vector<float> Standardize(std::vector<float>& input, const std::vector<float>& means, const std::vector<float>& vars);
 		static const void RemoveNans(std::vector<float>& input);
 		const std::vector<double>Predict(const Core::FMTyieldrequest& request) const;
+		void ValidateInputYields(std::vector<std::string>& expectedYields, std::vector<std::string>& inputYields) const;
 		virtual ~FMTyieldmodel() = default;
 		virtual const std::string& GetModelName() const = 0;
 		virtual const std::string& GetModelType() const = 0;
@@ -62,8 +63,6 @@ namespace Core
 		virtual const std::vector<std::string>& GetModelOutputNames() const = 0;
 		virtual std::unique_ptr<FMTyieldmodel>Clone() const = 0;
 		virtual const std::string GetModelInfo() const = 0;
-		virtual bool Validate(const std::vector<std::string>& YieldsAvailable) const = 0;
-		virtual const std::vector<std::string>GetYieldsOutputs() const = 0;
 		virtual const std::vector<double> GetInputValues(const Graph::FMTpredictor& predictor) const = 0;
 	};
 }

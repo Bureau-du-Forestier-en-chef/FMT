@@ -13,7 +13,7 @@
 namespace Core {
 	const std::string JSON_PROP_STAND_FILE_PATH = "csvStandardisationFile";
 
-	FMTyieldmodelnep::FMTyieldmodelnep(const boost::property_tree::ptree& jsonProps)
+	FMTyieldmodelnep::FMTyieldmodelnep(const boost::property_tree::ptree& jsonProps, std::vector<std::string>& inputYields)
 	{
 		boost::property_tree::ptree::const_assoc_iterator modelNameIt = jsonProps.find(JSON_PROP_MODEL_NAME);
 		modelName = modelNameIt->second.data();
@@ -33,10 +33,15 @@ namespace Core {
 		std::vector<std::string> strVars = GetNextLineAndSplitIntoTokens(file);
 		strVars.erase(strVars.begin());
 
+		std::vector<std::string> yields;
 		for (auto& item : jsonProps.get_child(JSON_PROP_MODEL_YIELDS))
 		{
-			modelYields.push_back(item.second.get_value<std::string>());
+			yields.push_back(item.second.get_value<std::string>());
 		}
+
+		ValidateInputYields(yields, inputYields);
+
+		modelYields = inputYields;
 
 		for (auto& item : jsonProps.get_child(JSON_PROP_MODEL_OUTPUTS))
 		{
@@ -125,19 +130,6 @@ namespace Core {
 		return std::string();
 	}
 
-	bool FMTyieldmodelnep::Validate(const std::vector<std::string>& YieldsAvailable) const
-	{
-		try {
-			//_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, "Calling pure virtual function ",
-			//	"FMTyieldmodel::Validate", __LINE__, __FILE__, Core::FMTsection::Yield);
-		}
-		catch (...)
-		{
-			_exhandler->raisefromcatch("", "FMTyieldmodel::Validate", __LINE__, __FILE__, Core::FMTsection::Yield);
-		}
-		return false;
-	}
-
 	const std::vector<double> FMTyieldmodelnep::GetInputValues(const Graph::FMTpredictor& predictor) const
 	{
 		std::vector<double> values;
@@ -165,18 +157,5 @@ namespace Core {
 
 
 		return values;
-	}
-
-	const std::vector<std::string>FMTyieldmodelnep::GetYieldsOutputs() const
-	{
-		try {
-			//_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, "Calling pure virtual function ",
-			//	"FMTyieldmodel::GetYieldsSources", __LINE__, __FILE__, Core::FMTsection::Yield);
-		}
-		catch (...)
-		{
-			_exhandler->raisefromcatch("", "FMTyieldmodel::GetYieldsSources", __LINE__, __FILE__, Core::FMTsection::Yield);
-		}
-		return std::vector<std::string>();
 	}
 }
