@@ -18,6 +18,7 @@ namespace Models
         intparameters[NUMBER_OF_ITERATIONS]=10000;
         intparameters[PRESOLVE_ITERATIONS]=10;
         intparameters[NUMBER_OF_THREADS]=processor_count;
+		intparameters[MATRIX_TYPE] = 2;//Default value is type II
         //DBLparameters
         dblparameters[TOLERANCE]= FMT_DBL_TOLERANCE;
         dblparameters[GOALING_SCHEDULE_WEIGHT]=10000;
