@@ -65,6 +65,23 @@ namespace Core {
 		}
 	}
 	
+	void FMTyieldmodel::ValidateInputYields(std::vector<std::string>& expectedYields, std::vector<std::string>& inputYields) const
+	{
+		size_t expectedNbYld = expectedYields.size();
+		size_t recievedNbYld = inputYields.size();
+		if (expectedNbYld != recievedNbYld)
+		{
+			std::stringstream mylds;
+			std::copy(expectedYields.begin(), expectedYields.end(), std::ostream_iterator<std::string>(mylds, ", "));
+			std::string concatMYlds = mylds.str();
+			if (concatMYlds.length() > 1)
+				concatMYlds.erase(concatMYlds.end() - 2);
+			_exhandler->raisefromcatch("Expected a different amount of yield. Expected " + std::to_string(expectedNbYld) + " yields : " + concatMYlds +
+				". Got " + std::to_string(recievedNbYld) + " yields.",
+				"FMTyieldmodel::FMTyieldmodelpools", __LINE__, __FILE__, Core::FMTsection::Yield);
+		}
+	}
+
 	const std::vector<double>FMTyieldmodel::Predict(const Core::FMTyieldrequest& request) const
 	{
 		try {

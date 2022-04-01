@@ -19,7 +19,7 @@ namespace Core
 		FMTyieldmodelpools(const FMTyieldmodelpools& rhs);
 		FMTyieldmodelpools& operator = (const FMTyieldmodelpools& rhs) = default;
 		~FMTyieldmodelpools();
-		FMTyieldmodelpools(const boost::property_tree::ptree & jsonProps);
+		FMTyieldmodelpools(const boost::property_tree::ptree & jsonProps, std::vector<std::string>& inputYields);
 		std::unique_ptr<FMTyieldmodel>Clone() const;
 		const std::string& GetModelName() const;
 		const std::string& GetModelType() const;
@@ -28,8 +28,6 @@ namespace Core
 		const std::vector<std::string>& GetModelYields() const;
 		const std::vector<std::string>& GetModelOutputNames() const;
 		const std::string GetModelInfo() const;
-		bool Validate(const std::vector<std::string>&YieldsAvailable) const;
-		const std::vector<std::string>GetYieldsOutputs() const;
 		const std::vector<double> GetInputValues(const Graph::FMTpredictor& predictor) const;
 	};
 }

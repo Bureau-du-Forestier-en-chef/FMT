@@ -112,7 +112,7 @@ namespace Core {
 			const size_t modelid = yldnames.at(yld).first;
 			const size_t yieldid = yldnames.at(yld).second;
 			const std::unique_ptr<FMTyieldmodel>&model = models.at(modelid);
-			const std::vector<std::string>sources = model->GetYieldsOutputs();
+			//const std::vector<std::string>sources = model->GetYieldsOutputs();
 			/*if (lookat.find(yld) == lookat.end())
 			{
 				lookat.insert(yld);
