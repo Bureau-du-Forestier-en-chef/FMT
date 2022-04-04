@@ -213,6 +213,7 @@ namespace Models
 					if (graph.periodstart(*vertex_iterator))//get inperiod
 					{
 						const std::map<int,int> inidsvars = graph.getinidsvariables(*vertex_iterator);
+						const bool setrest = !(typeII&&graph.isnotransfer(*vertex_iterator, 1));
 						if(inidsvars.size()>1)
 						{
 							//Because what comes from previous period must have inarea ...
@@ -240,7 +241,10 @@ namespace Models
 											}
 										}
 										const double outvararea = varproportions[varit->second]*inarea;
-										new_solution[varit->second] = outvararea;
+										if (setrest)
+										{
+											new_solution[varit->second] = outvararea;
+										}
 										outarea+=outvararea;
 									}
 									processedvariables.emplace(varit->second);
@@ -253,7 +257,10 @@ namespace Models
 									{
 										targetaction = deathid;
 									}
-									new_solution[variables.at(targetaction)] = inarea;
+									if (setrest)
+									{
+										new_solution[variables.at(targetaction)] = inarea;
+									}
 									outarea+=inarea;
 								}
 								//Valider ?! pas sur ...
@@ -294,6 +301,7 @@ namespace Models
 							canprocess = false;
 						}
 					}
+					const bool setrest = !(typeII&&graph.isnotransfer(*vertex_iterator, 1));
 					if	(canprocess)
 					{
 						passwithoutprocess=0;
@@ -318,7 +326,10 @@ namespace Models
 									}
 								}
 								const double outvararea = varproportions[varit->second]*inarea;
-								new_solution[varit->second] = outvararea;
+								if (setrest)
+								{
+									new_solution[varit->second] = outvararea;
+								}
 								outarea+=outvararea;
 							}
 							processedvariables.emplace(varit->second);
@@ -330,7 +341,10 @@ namespace Models
 							{
 								targetaction = deathid;
 							}
-							new_solution[variables.at(targetaction)] = inarea;
+							if (setrest)
+							{
+								new_solution[variables.at(targetaction)] = inarea;
+							}
 							outarea+=inarea;
 						}
 						//Valider ?! pas sur ...
