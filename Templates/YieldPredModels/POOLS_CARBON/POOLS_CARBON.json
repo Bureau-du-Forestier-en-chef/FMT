@@ -1,0 +1,9 @@
+{
+	"modelName": "20210810_20H18_LEAKYRELU_KAIMINGUNIFORM1X290DO03",
+	"modelFileName": "YieldPredModels\\POOLS_CARBON\\20210810_20h18_LeakyRelu_KaimingUniform1x290do03.onnx",
+	"modelType": "POOLS",
+	"csvStandardisationFile": "YieldPredModels\\POOLS_CARBON\\POOLS_MeanVarStandParams.csv",
+	"modelYields": ["YV_G_GFI", "YV_G_GFT", "YV_G_GR", "YV_G_GF"],
+	"inputNames": ["s1_distance", "s1_disturbance", "s2_distance", "s2_disturbance", "s3_distance", "s3_disturbance", "age", "YV_G_GFI", "YV_G_GFT", "YV_G_GR", "YV_G_GF"],
+	"outputNames": ["AG_Biomass_C", "BG_Biomass_C", "Deadwood_C", "Litter_C", "Soil_C"]
+}
