@@ -118,11 +118,11 @@ class FMTEXPORT FMTlinegraph : public FMTgraph<FMTbasevertexproperties,FMTbaseed
 		Get the action id of every action done in period in order.
 		*/
 		std::vector<int> getperiodactionids(const int& period)const;
-		// DocString: FMTlinegraph::getperiodcarbonpredictors
+		// DocString: FMTlinegraph::getperiodpredictors
 		/**
-		Returns a vector of carbon predictors for a given (period), (actionsmap), (yieldnames) and yields.
+		Returns a vector of predictors for a given (period), (actionsmap), (yieldnames) and yields.
 		*/
-		std::vector<FMTcarbonpredictor>getperiodcarbonpredictors(const int& period, const Models::FMTmodel& model, const std::vector<std::string>& yieldnames,bool periodonevalues =false,bool withGCBMid = true) const;
+		std::vector<FMTpredictor>getperiodpredictors(const int& period, const Models::FMTmodel& model, const std::vector<std::string>& yieldnames,bool periodonevalues =false,bool withGCBMid = true) const;
 		// DocString: FMTlinegraph::getinedgeactionid
 		/**
 		Get the in edge action id of a vertex.

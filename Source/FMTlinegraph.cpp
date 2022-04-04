@@ -203,9 +203,9 @@ namespace Graph
 
 	}
 
-	std::vector<FMTcarbonpredictor>FMTlinegraph::getperiodcarbonpredictors(const int& period, const Models::FMTmodel& model, const std::vector<std::string>& yieldnames,bool periodonevalues, bool withGCBMid) const
+	std::vector<FMTpredictor>FMTlinegraph::getperiodpredictors(const int& period, const Models::FMTmodel& model, const std::vector<std::string>& yieldnames,bool periodonevalues, bool withGCBMid) const
 	{
-		std::vector<FMTcarbonpredictor>allpredictors;
+		std::vector<FMTpredictor>allpredictors;
 		try {
 			FMTvertex_iterator vertexit;
 			FMTvertex_iterator vertexend;
@@ -216,14 +216,14 @@ namespace Graph
 					(data[outv].get().getperiod() != 0)
 					/*!(devit.pointerobject->period==1 && getinedgeactionid(outv)==-1)*/)
 				{
-					const std::vector<FMTcarbonpredictor>devpredictor = FMTgraph::getcarbonpredictors(outv, model, yieldnames, 3,periodonevalues,withGCBMid);
+					const std::vector<FMTpredictor>devpredictor = FMTgraph::getpredictors(outv, model, yieldnames, 3,periodonevalues,withGCBMid);
 					allpredictors.insert(allpredictors.end(), devpredictor.begin(), devpredictor.end());
 				}
 			}
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTlinegraph::getperiodcarbonpredictors", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("", "FMTlinegraph::getperiodpredictors", __LINE__, __FILE__);
 		}
 		return allpredictors;
 	}
