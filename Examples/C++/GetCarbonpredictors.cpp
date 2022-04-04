@@ -1,5 +1,5 @@
 /*
-Example to get FMTcarbonpredictors on a FMTsesmodel
+Example to get FMTpredictors on a FMTsesmodel
 */
 
 #if defined FMTWITHGDAL && defined FMTWITHOSI
@@ -10,7 +10,7 @@ Example to get FMTcarbonpredictors on a FMTsesmodel
 	#include "FMTversion.hpp"
 	#include "FMTlogger.hpp"
 	#include "FMTexception.hpp"
-	#include "FMTcarbonpredictor.hpp"
+	#include "FMTpredictor.hpp"
 	#include "FMTconstraint.hpp"
 	#include "FMTtransition.hpp"
 	#include "FMTspatialschedule.hpp"
@@ -91,7 +91,7 @@ int main()
 				for (size_t period = 1; period <= 5; ++period)
 				{
 					std::vector<std::vector<std::pair<std::string,double>>> periodpredictors;
-					std::vector<std::vector<Graph::FMTcarbonpredictor>> predictors = areaparser.writecarbonpredictors(outdir,spatialschedule,yieldsforpredictors,simulationmodel,period);
+					std::vector<std::vector<Graph::FMTpredictor>> predictors = areaparser.writepredictors(outdir,spatialschedule,yieldsforpredictors,simulationmodel,period);
 					for (const auto& predictorslist : predictors)
 					{
 						for (const auto& predict : predictorslist)

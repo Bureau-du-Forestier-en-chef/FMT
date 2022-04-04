@@ -27,10 +27,23 @@
 *OUTPUT oSuppl
 *SOURCE ? ? ? plantation _AREA
 
-*OUTPUT test
-*SOURCE ? ? ? _INVENT ytest
+*OUTPUT _AGBiomassC
+*SOURCE ? ? ? _INVENT AG_Biomass_C
 
+*OUTPUT _BGBiomassC
+*SOURCE ? ? ? _INVENT BG_Biomass_C
 
+*OUTPUT _DeadwoodC
+*SOURCE ? ? ? _INVENT Deadwood_C
 
+*OUTPUT _LitterC
+*SOURCE ? ? ? _INVENT Litter_C
 
+*OUTPUT _SoilC
+*SOURCE ? ? ? _INVENT Soil_C
 
+*OUTPUT _SoilCPerArea
+*SOURCE _SoilC
+
+*OUTPUT _NEP
+*SOURCE ? ? ? _INVENT NEP

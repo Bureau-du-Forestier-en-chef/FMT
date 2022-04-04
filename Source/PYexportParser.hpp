@@ -34,7 +34,7 @@ BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(vectormaptoFMTforest_overloads,vectormapt
 
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(writeforest_overloads,writeforest, 5, 6)
 //BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(writedisturbances_overloads,writedisturbances, 5, 6)
-BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(writecarbonpredictors_overloads,writecarbonpredictors, 5, 7)
+BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(writepredictors_overloads,writepredictors, 5, 7)
 
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(readmodel_overloads, read, 8, 9)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(getconstraintsfromstring_overloads,getconstraintsfromstring,2,3)
@@ -68,7 +68,7 @@ void exportParser()
 					.def("writeforest",&Parser::FMTareaparser::writeforest,writeforest_overloads(bp::args("for_layer", "themes", "data_rasters", "age", "lock", "mapping"), "@DocString(FMTareaparser::writeforest)"))
 					//.def("writedisturbances",&Parser::FMTareaparser::writedisturbances,writedisturbances_overloads(bp::args("location", "spatialschedule", "for_layer", "out_layer", "themes", "mapping"), "@DocString(FMTareaparser::writedisturbances)"))
 					.def("writedisturbances", &Parser::FMTareaparser::writedisturbances)
-					.def("writecarbonpredictors", &Parser::FMTareaparser::writecarbonpredictors,writecarbonpredictors_overloads(bp::args("location", "spatialsolution", "yieldnames", "model", "period", "withGCBMid"), "@DocString(FMTareaparser::writecarbonpredictors)"))
+					.def("writepredictors", &Parser::FMTareaparser::writepredictors,writepredictors_overloads(bp::args("location", "spatialsolution", "yieldnames", "model", "period", "withGCBMid"), "@DocString(FMTareaparser::writepredictors)"))
 					.def("vectormaptoFMTforest", &Parser::FMTareaparser::vectormaptoFMTforest,vectormaptoFMTforest_overloads(bp::args("data_vectors","resolution","themes","agefield","areafield","agefactor","areafactor","lockfield","minimalarea","writeforestfolder","fittoforel"),"@DocString(FMTareaparser::vectormaptoFMTforest)"))
 					#ifdef FMTWITHOSI
 						.def("getschemeneighbors",&Parser::FMTareaparser::getschemeneighbors, getschemeneighbors_overloads(bp::args("operatingareaparameters", "themes", "data_vectors", "agefield", "areafield", "agefactor","areafractor","lockfield","minimal_area","buffersize"), "@DocString(FMTareaparser::getschemeneighbors)"))
