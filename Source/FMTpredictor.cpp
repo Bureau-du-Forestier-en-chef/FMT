@@ -5,7 +5,7 @@ SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
-#include "FMTcarbonpredictor.hpp"
+#include "FMTpredictor.hpp"
 #include "FMTmodel.hpp"
 #include "FMTdevelopment.hpp"
 #include "FMTyieldrequest.hpp"
@@ -15,7 +15,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 namespace Graph
 {
 
-	std::vector<double>FMTcarbonpredictor::getyields(const FMTbasevertexproperties& vertex,const Core::FMTyields& yields, const std::vector<std::string>& yieldnames) const
+	std::vector<double>FMTpredictor::getyields(const FMTbasevertexproperties& vertex,const Core::FMTyields& yields, const std::vector<std::string>& yieldnames) const
 	{
 		std::vector<double>values;
 		values.reserve(yieldnames.size());
@@ -27,7 +27,7 @@ namespace Graph
 		return values;
 	}
 
-	FMTcarbonpredictor::FMTcarbonpredictor(const std::vector<Core::FMTaction>& actions, const std::vector<std::string>& yieldnames,const Core::FMTyields& yields,
+	FMTpredictor::FMTpredictor(const std::vector<Core::FMTaction>& actions, const std::vector<std::string>& yieldnames,const Core::FMTyields& yields,
 		const FMTbasevertexproperties& source, const FMTbasevertexproperties& target, const std::vector<const FMTbaseedgeproperties*>& edges, const std::vector<int>& gaps,bool withGCBMid):
 		source_vertex(&source),
 		target_vertex(&target),
@@ -75,7 +75,7 @@ namespace Graph
 	}
 
 
-	FMTcarbonpredictor::FMTcarbonpredictor(const FMTcarbonpredictor& rhs) :
+	FMTpredictor::FMTpredictor(const FMTpredictor& rhs) :
 		source_vertex(rhs.source_vertex),
 		target_vertex(rhs.target_vertex),
 		source_yields(rhs.source_yields),
@@ -85,7 +85,7 @@ namespace Graph
 	{
 
 	}
-	FMTcarbonpredictor& FMTcarbonpredictor::operator = (const FMTcarbonpredictor& rhs)
+	FMTpredictor& FMTpredictor::operator = (const FMTpredictor& rhs)
 	{
 		if (this!=&rhs)
 		{
@@ -100,11 +100,11 @@ namespace Graph
 	}
 
 
-	bool FMTcarbonpredictor::operator==(const FMTcarbonpredictor& rhs) const
+	bool FMTpredictor::operator==(const FMTpredictor& rhs) const
 		{
 		return (getpredictors() == rhs.getpredictors());
 		}
-	bool FMTcarbonpredictor::operator<(const FMTcarbonpredictor& rhs) const
+	bool FMTpredictor::operator<(const FMTpredictor& rhs) const
 	{
 		//strict ordering
 		if (getpredictors() < rhs.getpredictors())
@@ -113,7 +113,7 @@ namespace Graph
 			return false;
 		return false;
 	}
-	std::vector<double>FMTcarbonpredictor::getpredictors() const
+	std::vector<double>FMTpredictor::getpredictors() const
 	{
 		std::vector<double>returned;
 		for (size_t actid = 1; actid < sourceactions.size();++actid)
@@ -144,7 +144,52 @@ namespace Graph
 		return returned;
 	}
 
-	std::vector<std::string>FMTcarbonpredictor::getpredictornames(const std::vector<std::string>& yieldnames)const
+	double FMTpredictor::getDistance(size_t actId) const
+	{
+		double gap = periodgaps.at(actId);
+		if (actId == 0)
+		{
+			if (sourceactions.at(0) == -2)
+				gap = std::numeric_limits<double>::signaling_NaN();
+		}
+		else if (gap < 0)
+				gap = std::numeric_limits<double>::signaling_NaN();
+
+		return gap;
+	}
+
+	double FMTpredictor::getDisturbance(size_t actId) const
+	{
+		double dist = sourceactions.at(actId);
+		if(actId > 0 && periodgaps.at(actId) < 0)
+		{
+			dist = std::numeric_limits<double>::signaling_NaN();;
+		}
+
+		return dist;
+	}
+
+	double FMTpredictor::getSourceAge() const
+	{
+		return static_cast<double>(source_vertex->get().getage());
+	}
+
+	std::vector<double> FMTpredictor::getSourceYields() const
+	{
+		return source_yields;
+	}
+
+	double FMTpredictor::getTargetAge() const
+	{
+		return static_cast<double>(target_vertex->get().getage());
+	}
+
+	std::vector<double> FMTpredictor::getTargetYields() const
+	{
+		return target_yields;
+	}
+
+	std::vector<std::string>FMTpredictor::getpredictornames(const std::vector<std::string>& yieldnames)const
 	{
 		std::vector<std::string>predictornames;
 		const std::vector<std::string>devpredictornames = { "disturbance","age","period" };

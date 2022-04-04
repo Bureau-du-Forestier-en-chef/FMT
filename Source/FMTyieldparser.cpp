@@ -9,7 +9,8 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTconstants.hpp"
 #include "FMTtheme.hpp"
 #include "FMTdata.hpp"
-#include "FMTyieldmodel.hpp"
+#include "FMTyieldmodelpools.hpp"
+#include "FMTyieldmodelnep.hpp"
 #include "FMTyieldparser.hpp"
 #include "FMTageyieldhandler.hpp"
 #include "FMTtimeyieldhandler.hpp"
@@ -343,41 +344,61 @@ Core::FMTdata FMTyieldparser::geteq(const std::string& basestr,
 	}
 
 
-std::unique_ptr<Core::FMTyieldmodel>FMTyieldparser::readyieldmodel(const std::string& modelname) const
+std::unique_ptr<Core::FMTyieldmodel>FMTyieldparser::readyieldmodel(const std::string& modelname, std::vector<std::string>& inputYields) const
 {
-
-	try{
+	try {
 		const boost::filesystem::path modeldirectory = boost::filesystem::path(getruntimelocation()) / boost::filesystem::path("YieldPredModels") / boost::filesystem::path(modelname);
-		if (boost::filesystem::is_directory(modeldirectory))
-			{
-			const boost::filesystem::path modeljson = modeldirectory / boost::filesystem::path(modelname + ".json");
-			if (boost::filesystem::is_regular_file(modeljson))
-				{
-				std::ifstream jsonstream(modeljson.string());
-				if (FMTparser::tryopening(jsonstream, modeljson.string()))
-					{
-					//boost::property_tree::ptree root;
-					//boost::property_tree::read_json(jsonstream, root);
-					//Get the FMTyieldmodel
-					return std::unique_ptr<Core::FMTyieldmodel>(new Core::FMTyieldmodel(modelname));
-					}
-				jsonstream.close();
-
-				}
+		if (!boost::filesystem::is_directory(modeldirectory))
+		{
 			_exhandler->raise(Exception::FMTexc::FMTinvalid_path,
+							  modeldirectory.string() + " is not a valid directory ",
+							  "FMTyieldparser::readyieldmodel", __LINE__, __FILE__, _section);
+		}
+		const boost::filesystem::path modeljson = modeldirectory / boost::filesystem::path(modelname + ".json");
+		if (!boost::filesystem::is_regular_file(modeljson))
+		{
+
+			_exhandler->raise(Exception::FMTexc::FMTinvalid_path,
+							  modeljson.string(),
+							  "FMTyieldparser::readyieldmodel", __LINE__, __FILE__, _section);
+		}
+		std::ifstream jsonstream(modeljson.string());
+		if (!FMTparser::tryopening(jsonstream, modeljson.string()))
+		{
+			_exhandler->raise(Exception::FMTunhandlederror,
+							  modeljson.string(),
+							  "FMTyieldparser::readyieldmodel", __LINE__, __FILE__, _section);
+		}
+
+		boost::property_tree::ptree root;
+		boost::property_tree::read_json(jsonstream, root);
+		jsonstream.close();
+
+		//Get the FMTyieldmodel
+		boost::property_tree::ptree::const_assoc_iterator modelTypeIt = root.find("modelType"); //temporary hardcoded string
+		if (modelTypeIt == root.not_found())
+		{
+			_exhandler->raise(Exception::FMTunhandlederror,
 				modeljson.string(),
 				"FMTyieldparser::readyieldmodel", __LINE__, __FILE__, _section);
-			}
-		_exhandler->raise(Exception::FMTexc::FMTinvalid_path,
-			modeldirectory.string()+" is not a valid directory ",
-			"FMTyieldparser::readyieldmodel", __LINE__, __FILE__, _section);
-	}catch (...)
-	{
-	_exhandler->raisefromcatch("While reading model "+modelname,"FMTyieldparser::readyieldmodel", __LINE__, __FILE__, _section);
-	}
-	return std::unique_ptr<Core::FMTyieldmodel>(new Core::FMTyieldmodel(modelname));
-}
+		}
 
+		std::string modelType = modelTypeIt->second.data();
+		if(modelType == "POOLS")
+			return std::unique_ptr<Core::FMTyieldmodel>(new Core::FMTyieldmodelpools(root, inputYields));
+		if (modelType == "NEP")
+			return std::unique_ptr<Core::FMTyieldmodel>(new Core::FMTyieldmodelnep(root, inputYields));
+		else
+		{
+			_exhandler->raise(Exception::FMTunhandlederror,
+							  modeljson.string(),
+							  "FMTyieldparser::readyieldmodel", __LINE__, __FILE__, _section);
+		}
+	} catch (...)
+	{
+		_exhandler->raisefromcatch("While reading model "+modelname,"FMTyieldparser::readyieldmodel", __LINE__, __FILE__, _section);
+	}
+}
 
 Core::FMTyields FMTyieldparser::read(const std::vector<Core::FMTtheme>& themes,const Core::FMTconstants& constants,const std::string& location)
     {
@@ -727,13 +748,27 @@ Core::FMTyields FMTyieldparser::read(const std::vector<Core::FMTtheme>& themes,c
 							std::smatch predmatch;
 							if (std::regex_search(line, predmatch,rxpredictor))
 								{
-								const std::string yieldsarray = boost::trim_copy(std::string(predmatch[1]));
-								const std::string modelname = boost::trim_copy(std::string(predmatch[4]));
-								std::vector<std::string>newyields;
 								const std::string yieldseparators = FMT_STR_SEPARATOR + std::string(",");
+								const std::string yieldsarray = boost::trim_copy(std::string(predmatch[1]));
+								std::vector<std::string> modelArgs;
+								const std::string strModelArgs = boost::trim_copy(std::string(predmatch[4]));
+								boost::split(modelArgs, strModelArgs, boost::is_any_of(yieldseparators), boost::token_compress_on);
+								const std::string modelname = modelArgs[0];
+								std::vector<std::string> inputYields;
+								std::copy_if(modelArgs.begin(), modelArgs.end(), std::back_inserter(inputYields), [modelname](const std::string& v) { return v != modelname; });
+								std::vector<std::string>newyields;
 								boost::split(newyields, yieldsarray, boost::is_any_of(yieldseparators), boost::token_compress_on);
 								dump = getylduse(yields, actualyield, newyields);
 								checkpreexisting(dump);
+
+								for (auto& yld : inputYields)
+								{
+									if (!yields.isyld(yld, true))
+									{
+										_exhandler->raise(Exception::FMTexc::FMTignore,
+											yld + " at line " + std::to_string(_line), "FMTyieldparser::read", __LINE__, __FILE__, _section);
+									}
+								}
 								
 								Core::FMTmodelyieldhandler* handlerptr = dynamic_cast<Core::FMTmodelyieldhandler*>(actualyield->second.get());
 								const std::map<std::string, size_t>handlermodels = handlerptr->getmodelsnamebyindex();
@@ -743,20 +778,9 @@ Core::FMTyields FMTyieldparser::read(const std::vector<Core::FMTtheme>& themes,c
 									modelid = handlermodels.at(modelname);
 								}else {
 									modelid = handlerptr->size();
-									const std::unique_ptr<Core::FMTyieldmodel>yldmodel = readyieldmodel(modelname);
+									const std::unique_ptr<Core::FMTyieldmodel>yldmodel = readyieldmodel(modelname, inputYields);
 									const std::vector<std::string> allyields = yields.getallyieldnames();
-									if (!yldmodel->Validate(allyields))
-										{
-										//_exhandler->raise(Exception::FMTexc::FMTinvalid_yield,
-										//	"Missing source yields for " +modelname+" yield model " + std::to_string(_line),
-										//	"FMTyieldparser::read", __LINE__, __FILE__, _section);
-										}
-									if (newyields.size()!=yldmodel->GetYieldsOutputs().size())
-										{
-										//_exhandler->raise(Exception::FMTexc::FMTinvalidyield_number,
-										//	"Different size in model "+yldmodel->GetModelName()+" outputs for yields "+ yieldsarray+" " + std::to_string(_line),
-										//	"FMTyieldparser::read", __LINE__, __FILE__, _section);
-										}
+
 									handlerptr->push_backmodel(yldmodel);
 								}
 								size_t yldid = 0;

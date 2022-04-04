@@ -45,15 +45,15 @@ void exportGraph()
 		.def_readwrite("output_cols", &Graph::FMTgraphstats::output_cols,
 			"@DocString(FMTgraphstats::output_cols)");
 
-	bp::class_<Graph::FMTcarbonpredictor>("FMTcarbonpredictor", "@DocString(FMTcarbonpredictor)")
-		.def("getpredictors", &Graph::FMTcarbonpredictor::getpredictors,
-			"@DocString(FMTcarbonpredictor::getpredictors)")
-		.def("getpredictornames", &Graph::FMTcarbonpredictor::getpredictornames,
-			"@DocString(FMTcarbonpredictor::getpredictornames)");
+	bp::class_<Graph::FMTpredictor>("FMTpredictor", "@DocString(FMTpredictor)")
+		.def("getpredictors", &Graph::FMTpredictor::getpredictors,
+			"@DocString(FMTpredictor::getpredictors)")
+		.def("getpredictornames", &Graph::FMTpredictor::getpredictornames,
+			"@DocString(FMTpredictor::getpredictornames)");
 
-	define_pylist<Graph::FMTcarbonpredictor>();
+	define_pylist<Graph::FMTpredictor>();
 	define_pydict<int, int>();
-	define_pylist<std::vector<Graph::FMTcarbonpredictor>>();
+	define_pylist<std::vector<Graph::FMTpredictor>>();
 	bp::enum_<Graph::FMTgraphbuild>("FMTsolverinterface")
 		.value("schedulebuild", Graph::FMTgraphbuild::schedulebuild)
 		.value("fullbuild", Graph::FMTgraphbuild::fullbuild)
