@@ -1,3 +1,4 @@
+#ifdef FMTWITHONNXR
 #include "FMTyieldmodel.hpp"
 
 #ifndef FMTYIELDMODELNEP_H_INCLUDED
@@ -31,5 +32,7 @@ namespace Core
 		const std::vector<double> GetInputValues(const Graph::FMTpredictor& predictor) const;
 	};
 }
+
+#endif
 
 #endif

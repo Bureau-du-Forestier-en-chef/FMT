@@ -1,3 +1,4 @@
+#ifdef FMTWITHONNXR
 #include "FMTyieldmodelnep.hpp"
 #include "FMTyieldrequest.hpp"
 #include "FMTgraph.hpp"
@@ -5,10 +6,8 @@
 #include "FMTyields.hpp"
 #include "FMTpredictor.hpp"
 #include "FMTsrmodel.hpp"
-
-#ifdef FMTWITHONNXR
 #include  <onnxruntime/core/session/onnxruntime_cxx_api.h>
-#endif
+
 
 namespace Core {
 	const std::string JSON_PROP_STAND_FILE_PATH = "csvStandardisationFile";
@@ -159,3 +158,5 @@ namespace Core {
 		return values;
 	}
 }
+
+#endif

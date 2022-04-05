@@ -1,3 +1,4 @@
+#ifdef FMTWITHONNXR
 #include "FMTyieldmodel.hpp"
 
 #ifndef FMTYIELDMODELPOOLS_H_INCLUDED
@@ -32,4 +33,5 @@ namespace Core
 	};
 }
 
+#endif
 #endif
