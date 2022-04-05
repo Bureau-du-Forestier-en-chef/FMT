@@ -16,11 +16,6 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #ifndef FMTYIELDMODEL_H_INCLUDED
 #define FMTYIELDMODEL_H_INCLUDED
 
-//namespace Ort
-//{
-//	class Env;
-//}
-
 namespace Graph
 {
 	class FMTpredictor;
@@ -38,11 +33,14 @@ namespace Core
 			ar & boost::serialization::make_nvp("FMTobject", boost::serialization::base_object<FMTobject>(*this));
 			ar & modelname;
 		}
-	private:
 	protected:
+
+	#ifdef FMTWITHONNXR
 		static std::unique_ptr<Ort::Env> envPtr;
-		static const float UNKNOWN_DISTURBANCE_CODE;
 		std::unique_ptr<Ort::Session> sessionPtr;
+	#endif
+
+		static const float UNKNOWN_DISTURBANCE_CODE;
 		const std::string JSON_PROP_MODEL_NAME = "modelFileName";
 		const std::string JSON_PROP_MODEL_TYPE = "modelType";
 		const std::string JSON_PROP_MODEL_YIELDS = "modelYields";
@@ -66,6 +64,5 @@ namespace Core
 		virtual const std::vector<double> GetInputValues(const Graph::FMTpredictor& predictor) const = 0;
 	};
 }
-
 
 #endif

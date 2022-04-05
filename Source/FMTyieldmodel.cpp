@@ -12,10 +12,15 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTyields.hpp"
 #include "FMTpredictor.hpp"
 #include "FMTsrmodel.hpp"
+#include <vector>
 
 namespace Core {
+#ifdef FMTWITHONNXR
 	std::unique_ptr<Ort::Env> FMTyieldmodel::envPtr = std::unique_ptr<Ort::Env>(new Ort::Env());
+#endif	
+
 	const float FMTyieldmodel::UNKNOWN_DISTURBANCE_CODE = 17;
+
 
 	const std::vector<std::string> FMTyieldmodel::GetNextLineAndSplitIntoTokens(std::istream& str)
 	{
@@ -86,6 +91,7 @@ namespace Core {
 	{
 		try {
 			std::string mdlName = GetModelName();
+		#ifdef FMTWITHONNXR
 			//std::wstring wideModelName = std::wstring(mdlName.begin(), mdlName.end());
 			const std::vector<std::string> modelYields = GetModelYields();
 			//std::unique_ptr<Ort::Session> sessionPtr = std::unique_ptr<Ort::Session>(new Ort::Session(*envPtr.get(), wideModelName.c_str(), Ort::SessionOptions{}));
@@ -180,6 +186,7 @@ namespace Core {
 			}
 
 			return result;
+		#endif
 
 			_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, "Something went wrong in " + mdlName,
 				"FMTyieldmodel::Predict", __LINE__, __FILE__, Core::FMTsection::Yield);
