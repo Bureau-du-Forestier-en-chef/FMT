@@ -119,10 +119,11 @@ namespace Models
 		return false;
 	}
 
-	bool FMTsrmodel::forcesolution(int period, const Core::FMTschedule& proportionschedulewithlock, double tolerance)
+	bool FMTsrmodel::forcesolution(int period, const Core::FMTschedule& proportionschedulewithlock)
 	{
 		try
 		{
+			const double tolerance = getparameter(FMTdblmodelparameters::TOLERANCE);
 			if(!proportionschedulewithlock.douselock())
 			{
 				_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
@@ -175,6 +176,7 @@ namespace Models
 												" for action " + actionit->first.getname(), 
 												"FMTsrmodel::setsolution", __LINE__, __FILE__);
 								}
+								//std::cout<<std::string(devit.first)<<" "+std::to_string(devit.second.at(0))<<" "+std::to_string(actionid)<<std::endl;//" "+this->getactions().at(actionid).getname()<<std::endl;
 								varproportions.emplace(varit->second,devit.second.at(0));
 							}
 						}
@@ -194,7 +196,12 @@ namespace Models
 									"FMTsrmodel::setsolution", __LINE__, __FILE__);
 						}
 					}
-					varproportions.emplace(varit->second,vdescriptor_props.second);
+					//Pas besoin de setter de growth ou death a 0%
+					if(vdescriptor_props.second>0)
+					{
+						//std::cout<<vdescriptor_props.second<<std::endl;
+						varproportions.emplace(varit->second,vdescriptor_props.second);
+					}
 				}
 				//setsolution by proportions
 				//keep track of variables setted 
@@ -210,7 +217,7 @@ namespace Models
 						const std::map<int,int> inidsvars = graph.getinidsvariables(*vertex_iterator);
 						if(inidsvars.size()>1)
 						{
-							//Because what comes from previous period must have inarea ...
+							//Because what comes from previous period must have inarea ... will be set later 
 							processedvariables.emplace(inidsvars.at(-1));
 						}else{
 							const double* solution = &new_solution[0];
@@ -234,6 +241,7 @@ namespace Models
 												descriptors.push(graph.getdevelopment(*path.development, lookup));
 											}
 										}
+										//std::cout<<std::string(graph.getdevelopment(*vertex_iterator)) << " "+std::to_string(varproportions[varit->second])<<" "+std::to_string(inarea)<<" "+std::to_string(varit->first)<<std::endl;//<<" "+this->getactions().at(varit->first).getname()<<std::endl;
 										const double outvararea = varproportions[varit->second]*inarea;
 										new_solution[varit->second] = outvararea;
 										outarea+=outvararea;

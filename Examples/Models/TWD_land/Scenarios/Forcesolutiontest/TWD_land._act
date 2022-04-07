@@ -1,0 +1,27 @@
+*ACTION aFire N
+*OPERABLE AFire
+? prod ? _AGE >= 1
+
+*ACTION arecup Y
+*OPERABLE arecup
+? feu ? volumetotal >= 100
+
+*ACTION COUPEtotale Y CT
+*OPERABLE COUPEtotale
+? prod ? volumetotal >= 100
+
+*ACTION aCaribou N Massif protection du caribou
+*OPERABLE aCaribou
+UC prod ? _AGE >= 8
+
+*ACTION plantation Y _LOCKEXEMPT
+*OPERABLE plantation
+;c'est rendu dans chacun des scenario de replanning - > ? pourpl ? _AGE = 0 ;_AGE >= 1 AND _AGE <= 3
+? prod ? _AGE >= 1 AND _AGE <= 3
+
+*ACTION aftercoupe N test
+*OPERABLE aftercoupe
+? ? ? _AGE = 0
+
+
+
