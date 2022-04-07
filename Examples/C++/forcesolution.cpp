@@ -11,7 +11,12 @@
 	#include "FMTfreeexceptionhandler.hpp"
 #endif
 
-int main(int argc, char *argv[])
+/*bool validate(modifmodel,initialmodel,propschedules)
+{
+
+}*/
+
+int main()
 	{
 	#ifdef FMTWITHOSI
 	Logging::FMTlogger().logstamp();
@@ -19,47 +24,42 @@ int main(int argc, char *argv[])
 		{
 		const std::string modellocation = "../../../../Examples/Models/TWD_land/";
         const std::string	primarylocation = modellocation + "TWD_land.pri";
-		const std::string testfolderout = "D:/forcesolution/";
+		const std::string testfolderout = "tests/";
 		Parser::FMTmodelparser modelparser;
 		Parser::FMTareaparser areaparser;
 		Parser::FMTscheduleparser scheparser;
-		const std::vector<std::string>scenarios(1,"LP");
+		const std::vector<std::string>scenarios(1,"Forcesolutiontest");
 		const std::vector<Models::FMTmodel> models = modelparser.readproject(primarylocation, scenarios);
-		Models::FMTlpmodel optimizationmodel(models.at(0), Models::FMTsolverinterface::MOSEK);
+		Models::FMTmodel initialmodel = models.at(0);
+		const int lenght = 6;
+		initialmodel.setparameter(Models::FMTintmodelparameters::LENGTH, lenght);
+		initialmodel.setparameter(Models::FMTboolmodelparameters::POSTSOLVE, false);
+		initialmodel.setparameter(Models::FMTintmodelparameters::PRESOLVE_ITERATIONS, 0);
+		initialmodel.setparameter(Models::FMTdblmodelparameters::TOLERANCE, 0.001);
+		Models::FMTlpmodel optimizationmodel(initialmodel, Models::FMTsolverinterface::CLP);
 		const std::vector<Core::FMTschedule>schedules = modelparser.readschedules(primarylocation,models).at(0);
-		const double tolerance = 0.001;
+		optimizationmodel.doplanning(false,schedules);
         std::vector<Core::FMTschedule> lockedproportionscheduled;
-		for (size_t period = 1; period <= 6; ++period)
-			{
-			optimizationmodel.buildperiod();
-			}
-		for (size_t period = 1; period <= 6; ++period)
-			{
-			optimizationmodel.setsolution(period,schedules.at(period-1), tolerance);
-            lockedproportionscheduled.push_back(optimizationmodel.getscheduleproportions(period,true));
-			}
-		scheparser.write(lockedproportionscheduled,testfolderout+"lockedandpropos._seq");
-        Models::FMTlpmodel modifoptimizationmodel(models.at(0), Models::FMTsolverinterface::MOSEK);
-        const std::vector<Core::FMTactualdevelopment> oldarea = optimizationmodel.getarea();
-        std::vector<Core::FMTactualdevelopment> newarea(oldarea.begin(),oldarea.begin()+oldarea.size()/2);
-		areaparser.write(newarea,testfolderout+"modif._area");
+		for (size_t period = 1; period <= static_cast<size_t>(lenght); ++period)
+		{
+			lockedproportionscheduled.push_back(optimizationmodel.getscheduleproportions(period,true));
+		}
+		Models::FMTlpmodel modifoptimizationmodel(initialmodel, Models::FMTsolverinterface::CLP);
+		// ici on vient changer la section area 
+		const std::vector<Core::FMTactualdevelopment> newarea = areaparser.readvectors(	modifoptimizationmodel.getthemes(),
+																						modellocation+"Carte/TWD_LAND_forcesolution_modif.shp",
+                                   														"AGE","SUPERFICIE", 1.0, 1);
         modifoptimizationmodel.setarea(newarea);
-        for (size_t period = 1; period <= 6; ++period)
+        for (size_t period = 1; period <=  static_cast<size_t>(lenght); ++period)
 		{
-			modifoptimizationmodel.buildperiod();
+			const Core::FMTschedule periodpropschedule = lockedproportionscheduled.at(period-1);
+			modifoptimizationmodel.buildperiod(periodpropschedule,true);
+			modifoptimizationmodel.forcesolution(period,periodpropschedule);
 		}
-		std::cout<<"Forcing solution"<<std::endl;
-		for (size_t period = 1; period <= 6; ++period)
+		/*if(!validate(modifoptimizationmodel,optimizationmodel,lockedproportionscheduled))
 		{
-            modifoptimizationmodel.forcesolution(period,lockedproportionscheduled.at(period-1), tolerance);
-        }
-		std::vector<Core::FMTschedule> modifschedules;
-		for (size_t period = 1; period <= 6; ++period)
-		{
-			modifschedules.push_back(modifoptimizationmodel.getsolution(period,true));
-			std::cout<<std::string(modifoptimizationmodel.getsolution(period,true))<<std::endl;
-		}
-		scheparser.write(modifschedules,testfolderout+"modif._seq");
+			//failed
+		}*/
 	}else {
 		Logging::FMTlogger() << "FMT needs to be compiled with OSI" << "\n";
 		}

@@ -1,0 +1,34 @@
+*CASE Coupetotale
+*SOURCE  ? ? ?
+*TARGET  ? ? ?  100.0
+
+*CASE aCaribou
+*SOURCE ? ? ?
+*TARGET ? ? ? 100.00 _LOCK 1
+
+*CASE plantation
+*SOURCE  ? ? ?
+*TARGET  ? peuplement1 ?  100.00
+
+*CASE aFire
+*SOURCE ? ? ?
+*TARGET ? feu ? 100.00
+
+*CASE arecup
+*SOURCE ? feu ?
+*TARGET  ? peuplement1 ?  100.00
+
+*CASE aftercoupe
+*SOURCE ? ? ?
+*TARGET  ? ? ?  60.0 _LOCK 1 
+*TARGET  ? ? ?  30.0 _LOCK 2 
+*TARGET  ? ? ?  10.0 _LOCK 3
+
+
+
+*CASE _DEATH
+*SOURCE ? feu ?
+*TARGET  ? peuplement1 ?  100.00
+*SOURCE ? ? ?
+*TARGET  ? ? ?  100.00
+
