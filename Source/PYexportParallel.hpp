@@ -12,6 +12,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTtaskhandler.hpp"
 #include "FMTreplanningtask.hpp"
 #include "FMTplanningtask.hpp"
+#include "FMTopareaschedulertask.hpp"
 #include "FMTmodel.hpp"
 #include "FMToutput.hpp"
 #include "FMTutility.hpp"
@@ -56,6 +57,16 @@ void exportParallel()
 				bp::args("Min output period", "Max output period", "Output folder", "GDAL driver name", "GDAL driver creation options", "output level"), "@DocString(FMTplanningtask::FMTplanningtask)"));
 
 	define_pylist<Parallel::FMTplanningtask>();
+
+	bp::class_<Parallel::FMTopareaschedulertask, bp::bases<Parallel::FMTtask>>("FMTopareaschedulertask", "@DocString(FMTopareaschedulertask")
+		.def(bp::init<Parallel::FMTopareaschedulertask>())
+		.def(bp::init<const Models::FMTlpmodel&,const std::vector<Heuristics::FMToperatingareascheme>&,
+			const Core::FMToutputnode&,const std::string&,
+			const std::string&,const unsigned int&,const double&>(
+				bp::args("model", "operating areas", "node", "output location", "output yield name", "maxiterations","maxtime"), "@DocString(FMTopareaschedulertask::FMTopareaschedulertask)"));
+
+	define_pylist<Parallel::FMTopareaschedulertask>();
+
 
 	bp::class_<Parallel::FMTtaskhandler, bp::bases<Core::FMTobject>>("FMTtaskhandler", "@DocString(FMTtaskhandler)")
 		.def(bp::init<Parallel::FMTtaskhandler>())

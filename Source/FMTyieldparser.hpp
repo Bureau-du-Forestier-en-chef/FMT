@@ -31,6 +31,7 @@ namespace Core
 	class FMTdata;
 	class FMTyieldmodel;
 	class FMTyieldhandler;
+	class FMTmask;
 }
 
 
