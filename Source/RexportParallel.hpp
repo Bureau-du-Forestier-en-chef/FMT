@@ -12,6 +12,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTtaskhandler.hpp"
 #include "FMTreplanningtask.hpp"
 #include "FMTplanningtask.hpp"
+#include "FMTopareaschedulertask.hpp"
 #include "FMTmodel.hpp"
 #include "FMToutput.hpp"
 #include "FMTutility.hpp"
@@ -29,6 +30,10 @@ RCPP_DEFINEVECTOR(Parallel::FMTreplanningtask);//For vector
 RCPP_EXPOSED_WRAP(Parallel::FMTplanningtask);
 RCPP_EXPOSED_AS(Parallel::FMTplanningtask);
 RCPP_DEFINEVECTOR(Parallel::FMTplanningtask);//For vector
+
+RCPP_EXPOSED_WRAP(Parallel::FMTopareaschedulertask);
+RCPP_EXPOSED_AS(Parallel::FMTopareaschedulertask);
+RCPP_DEFINEVECTOR(Parallel::FMTopareaschedulertask);//For vector
 
 RCPP_EXPOSED_WRAP(Parallel::FMTtaskhandler);
 RCPP_EXPOSED_AS(Parallel::FMTtaskhandler);
@@ -70,6 +75,15 @@ namespace R
 			std::string,
 			std::vector<std::string>,
 			Core::FMToutputlevel>("@DocString(Parallel::FMTplanningtask())");
+
+		Rcpp::class_<Parallel::FMTopareaschedulertask>("FMTopareaschedulertask", "@DocString(FMTopareaschedulertask)")
+			.derives<Parallel::FMTtask>("FMTtask")
+			.constructor("@DocString(FMTopareaschedulertask())")
+			.constructor<Models::FMTlpmodel,
+			std::vector<Heuristics::FMToperatingareascheme>,
+			Core::FMToutputnode,std::string,
+			std::string,unsigned int,double>("@DocString(Parallel::FMTopareaschedulertask())");
+
 
 		Rcpp::class_<Parallel::FMTtaskhandler>("FMTtaskhandler", "@DocString(FMTtaskhandler)")
 			.derives<Core::FMTobject>("FMTobject")
