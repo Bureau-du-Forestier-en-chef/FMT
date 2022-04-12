@@ -1225,7 +1225,7 @@ namespace Models
 				if ((!beforegrowanddeath&&graph.periodstart(*vertex_iterator)))
 				{
 					const Core::FMTdevelopment& graphdevelopement = graph.getdevelopment(*vertex_iterator);
-					const double areaofdevelopement = graph.inarea(*vertex_iterator, modelsolution, -1,false);
+					const double areaofdevelopement = graph.inarea(*vertex_iterator, modelsolution, -1,true);
 					if (areaofdevelopement > 0)
 					{
 						returnedarea.push_back(Core::FMTactualdevelopment(graphdevelopement, areaofdevelopement));
