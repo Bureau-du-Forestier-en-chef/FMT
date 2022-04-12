@@ -197,9 +197,11 @@ namespace Models
 		bool setsolutionbylp(int period, const Core::FMTschedule& schedule, double tolerance = FMT_DBL_TOLERANCE);
 		// DocString: FMTsrmodel::forcesolution
 		/**
-		 *
+		Force a solution by using a schedule based on proportions instead of area. So if there is modifications to the model, it will
+		place only the parts of the solution that are possible considering the modifications. 
+		The schedule must be with lock indicators if locks are used in the model. 
 		*/
-		bool forcesolution(int period, const Core::FMTschedule& proportionschedulewithlock, double tolerance = FMT_DBL_TOLERANCE);
+		bool forcesolution(int period, const Core::FMTschedule& proportionschedulewithlock);
 		// DocString: FMTsrmodel::getsolution
 		/**
 		Get the standard solution for a given period (FMTschedule dont have natural growth solution included).

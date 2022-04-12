@@ -19,6 +19,9 @@ UC prod ? _AGE >= 8
 ;c'est rendu dans chacun des scenario de replanning - > ? pourpl ? _AGE = 0 ;_AGE >= 1 AND _AGE <= 3
 ? prod ? _AGE >= 1 AND _AGE <= 3
 
+*ACTION aftercoupe N test
+*OPERABLE aftercoupe
+? ? ? _AGE = 0
 
 
 

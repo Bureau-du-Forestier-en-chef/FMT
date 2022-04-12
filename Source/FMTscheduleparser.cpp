@@ -101,6 +101,12 @@ namespace Parser {
 							if (area > tolerance)
 							{
 								++id;
+								int lock = 0;
+								if(uselock)
+								{
+									lock = getnum<int>(values[id]);
+									++id;
+								}
 								const std::string actionname = values[id];
 								if (!isact(Core::FMTsection::Schedule, actions, actionname)) 
 								{
@@ -123,7 +129,7 @@ namespace Parser {
 										--gap;
 									}
 								}
-								Core::FMTdevelopment dev(Core::FMTmask(mask, themes), age, 0, period);
+								Core::FMTdevelopment dev(Core::FMTmask(mask, themes), age, lock, period);
 								//dev.passinobject(*this);
 								std::vector<Core::FMTaction>::const_iterator act = find_if(actions.begin(), actions.end(), Core::FMTactioncomparator(actionname));
 								if (act->dorespectlock())
