@@ -67,17 +67,16 @@ int main()
 		areaparser.write(aream,testfolderout+"forcemodif._area");
 		const std::vector<Core::FMToutput> outputs = optimizationmodel.getoutputs();
 		const std::vector<Core::FMToutput>::const_iterator out_it = find_if(outputs.begin(),outputs.end(),Core::FMToutputcomparator("AREAACTIONS"));
-		const std::vector<double> values = {1533.167187, 739.907647, 711.288583,	1057.974922, 604.862329, 362.301940};
-
+		const std::vector<double> values = {1533.167187, 1710.335763, 1520.664235,1807.036679, 1319.965304, 667.893761};
 		for (size_t period = 1; period <= static_cast<size_t>(lenght); ++period)
 		{
 			const double sum_actions = optimizationmodel.getoutput(*out_it,period,Core::FMToutputlevel::totalonly).at("Total");
-			std::cout<<std::to_string(period)+" "+std::to_string(sum_actions)<<std::endl;
-			/*if(std::abs(sum_actions-values.at(period-1))>0.001)
+			//std::cout<<std::to_string(period)+" "+std::to_string(sum_actions)<<std::endl;
+			if(std::abs(sum_actions-values.at(period-1))>0.001)
 			{
 				Exception::FMTfreeexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed, "Wrong value",
 					"forcesolution", __LINE__, primarylocation);
-			}*/
+			}
 			double parea=0;
 			for(const auto& actdev : optimizationmodel.getarea(period))
 			{
