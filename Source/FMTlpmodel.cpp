@@ -1740,23 +1740,43 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 	bool FMTlpmodel::build(std::vector<Core::FMTschedule> schedules)
 	{
 		try{
+			
+			const int length = parameters.getintparameter(LENGTH);
+			std::vector<Core::FMTschedule> buildschedules(schedules);
+			if(length < static_cast<int>(schedules.size()))
+			{
+				buildschedules = std::vector<Core::FMTschedule>(schedules.begin(),schedules.begin()+length);
+			}
 			const bool forcepartialbuild = parameters.getboolparameter(FORCE_PARTIAL_BUILD);
 			const int length = parameters.getintparameter(LENGTH);
 			std::string addon = "";
-			if(forcepartialbuild)
+			if(!buildschedules.empty())
 			{
-				addon = "FMT will use schedules pass by argument for periods 1 to "+std::to_string(schedules.size());
+				addon = "FMT will use schedules pass by argument for periods 1 to "+std::to_string(buildschedules.size());
 			}
 			_logger->logwithlevel("Building "+getname()+" for "+std::to_string(length)+" periods. "+addon+"\n",1);
 			//Period start at 0 but it's the period 1 that is created first. Reason is that schedules is a vector and the first elements 
 			//is the schedule for period 1 
 			for (int period = 0; period<length;++period)
 				{
-				_logger->logwithlevel(std::string(this->buildperiod(schedules.at(period), forcepartialbuild, parameters.getperiodcompresstime(period))) + "\n", 1);
+					if(!buildschedules.empty())
+					{
+						if(period<buildschedules.size())
+						{
+							_logger->logwithlevel(std::string(this->buildperiod(buildschedules.at(period),forcepartialbuild,parameters.getperiodcompresstime(period)))+"\n",1);
+						}
+						else{
+							_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
+												"The lenght to build the graph is bigger than the number of schedule passed to the function. Cannot have mix schedulebuild and fullbuild for now",
+												"FMTlpmodel::build",__LINE__,__FILE__);
+						}
+					}else{
+						_logger->logwithlevel(std::string(this->buildperiod(Core::FMTschedule(),false,parameters.getperiodcompresstime(period)))+"\n",1);
+					}
 				}
-			if(forcepartialbuild)
+			if(!buildschedules.empty())
 			{
-				addon = "FMT will use schedules pass by argument for periods 1 to "+std::to_string(schedules.size())+" to set the solution in the matrix.";
+				addon = "FMT will use schedules pass by argument for periods 1 to "+std::to_string(buildschedules.size())+" to set the solution in the matrix.";
 			}
 			if (!forcepartialbuild)
 				{
@@ -1767,9 +1787,10 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 					}
 				_logger->logwithlevel("*Graph stats with all constraints : \n" + std::string(this->setobjective(constraints.at(0))) + "\n", 1);
 				}
-			if(forcepartialbuild)
+			_logger->logwithlevel("*Graph stats with all constraints : \n"+std::string(this->setobjective(constraints.at(0)))+"\n",1);
+			if(!buildschedules.empty())
 			{
-				return trysetsolution(schedules);
+				return trysetsolution(buildschedules);
 			}
 		}catch(...)
 		{
