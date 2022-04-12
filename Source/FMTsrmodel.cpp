@@ -136,7 +136,9 @@ namespace Models
 				const int deathid = static_cast<int>(std::distance(actions.cbegin(), cit));
 				const double* actual_solution = solver.getColSolution();
 				const boost::unordered_set<Core::FMTlookup<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor, Core::FMTdevelopment>> lookup = graph.getdevsset(period);
+				//Copy de la solution donc les périodes précédents car c'est elle qu'on veut... Le reste on le scrap ?!
 				std::vector<double>new_solution(actual_solution, actual_solution + solver.getNumCols());
+				//Contient la proportion d'area qui rentre dans le vertex qui doit resortir dans la variable... Donc 200 ha dans le vertex rentre.. 222,0.1 il y a 20 ha qui ressort dans la variable 222
 				boost::unordered_map<int,double> varproportions;
 				Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_iterator vertex_iterator, vertex_iterator_end;
 				for (boost::tie(vertex_iterator, vertex_iterator_end) = graph.getperiodverticies(period); vertex_iterator != vertex_iterator_end; ++vertex_iterator)
@@ -174,10 +176,14 @@ namespace Models
 									_exhandler->raise(Exception::FMTexc::FMTinvalid_number,
 												"Developement " + std::string(devit.first) + " is not operable "
 												" for action " + actionit->first.getname(), 
-												"FMTsrmodel::setsolution", __LINE__, __FILE__);
+												"FMTsrmodel::forcesolution", __LINE__, __FILE__);
 								}
 								//std::cout<<std::string(devit.first)<<" "+std::to_string(devit.second.at(0))<<" "+std::to_string(actionid)<<std::endl;//" "+this->getactions().at(actionid).getname()<<std::endl;
 								varproportions.emplace(varit->second,devit.second.at(0));
+							}
+							else{
+								//message de warning pour les dévelopement initiaux qui n'existe plus ppour la schedule.
+								//std::cout<<std::string(devit.first)<<" "+std::to_string(devit.second.at(0))<<" missing"<<std::endl;
 							}
 						}
 					}
@@ -193,7 +199,7 @@ namespace Models
 						{
 							_exhandler->raise(Exception::FMTexc::FMTinvalid_number,
 									"Developement "+std::string(graph.getdevelopment(vdescriptor_props.first))+" cannot grow or die ...", 
-									"FMTsrmodel::setsolution", __LINE__, __FILE__);
+									"FMTsrmodel::forcesolution", __LINE__, __FILE__);
 						}
 					}
 					//Pas besoin de setter de growth ou death a 0%
@@ -219,6 +225,7 @@ namespace Models
 						{
 							//Because what comes from previous period must have inarea ... will be set later 
 							processedvariables.emplace(inidsvars.at(-1));
+							descriptors.push(*vertex_iterator);
 						}else{
 							const double* solution = &new_solution[0];
 							const double inarea = graph.inarea(*vertex_iterator, solution);
@@ -284,6 +291,8 @@ namespace Models
 				while(!descriptors.empty())
 				{
 					const Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor first = descriptors.front();
+					//Cette portion est pour valider que toutes les variables qui rentrent dans le vertex on été setter par la fonction
+					//sinon on le remet a la fin de la queue 
 					const std::vector<int>invariables = graph.getinvariables(first);
 					const std::set<int> invariablesset(invariables.begin(), invariables.end());
 					std::set<int> notprocessedvariables;
@@ -311,7 +320,7 @@ namespace Models
 							if(varproportions.find(varit->second)!=varproportions.end())
 							{
 								foundoutvar = true;
-								std::vector<Core::FMTdevelopmentpath> paths = graph.getpaths(*vertex_iterator, varit->first);
+								std::vector<Core::FMTdevelopmentpath> paths = graph.getpaths(first, varit->first);
 								for (const Core::FMTdevelopmentpath path : paths)
 								{
 									if (path.development->getperiod() == period && processed.find(*path.development) == processed.end())
@@ -320,6 +329,7 @@ namespace Models
 										descriptors.push(graph.getdevelopment(*path.development, lookup));
 									}
 								}
+								//std::cout<<std::string(graph.getdevelopment(first)) << " "+std::to_string(varproportions[varit->second])<<" "+std::to_string(inarea)<<" "+std::to_string(varit->first)<<std::endl;//<<" "+this->getactions().at(varit->first).getname()<<std::endl;
 								const double outvararea = varproportions[varit->second]*inarea;
 								new_solution[varit->second] = outvararea;
 								outarea+=outvararea;
@@ -364,7 +374,7 @@ namespace Models
 						}
 						descriptors.pop();
 						descriptors.push(first);
-						//handle pour ne pas avoir de boulce infini et passer ceux qui sont récursif sur la meme action genre boucle infini ... valider aussi comment on gère ça dans FMTgraph
+						//handle pour ne pas avoir de boucle infini et passer ceux qui sont récursif sur la meme action genre boucle infini ... valider aussi comment on gère ça dans FMTgraph
 					}
 				}
 				solver.setColSolution(&new_solution[0]);
@@ -1215,7 +1225,7 @@ namespace Models
 				if ((!beforegrowanddeath&&graph.periodstart(*vertex_iterator)))
 				{
 					const Core::FMTdevelopment& graphdevelopement = graph.getdevelopment(*vertex_iterator);
-					const double areaofdevelopement = graph.inarea(*vertex_iterator, modelsolution, true);
+					const double areaofdevelopement = graph.inarea(*vertex_iterator, modelsolution, -1,false);
 					if (areaofdevelopement > 0)
 					{
 						returnedarea.push_back(Core::FMTactualdevelopment(graphdevelopement, areaofdevelopement));
