@@ -1786,7 +1786,6 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 					}
 				_logger->logwithlevel("*Graph stats with all constraints : \n" + std::string(this->setobjective(constraints.at(0))) + "\n", 1);
 				}
-			_logger->logwithlevel("*Graph stats with all constraints : \n"+std::string(this->setobjective(constraints.at(0)))+"\n",1);
 			if(!buildschedules.empty())
 			{
 				return trysetsolution(buildschedules);
