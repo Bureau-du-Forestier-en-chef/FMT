@@ -31,7 +31,6 @@ namespace Core
 		void serialize(Archive& ar, const unsigned int version)
 		{
 			ar & boost::serialization::make_nvp("FMTobject", boost::serialization::base_object<FMTobject>(*this));
-			ar & modelname;
 		}
 	protected:
 
