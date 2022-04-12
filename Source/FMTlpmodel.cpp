@@ -1748,7 +1748,6 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 				buildschedules = std::vector<Core::FMTschedule>(schedules.begin(),schedules.begin()+length);
 			}
 			const bool forcepartialbuild = parameters.getboolparameter(FORCE_PARTIAL_BUILD);
-			const int length = parameters.getintparameter(LENGTH);
 			std::string addon = "";
 			if(!buildschedules.empty())
 			{
