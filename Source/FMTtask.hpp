@@ -10,7 +10,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTobject.hpp"
 #include <boost/thread/recursive_mutex.hpp>
 
-namespace Logger
+namespace Logging
 {
 	class FMTlogger;
 }
