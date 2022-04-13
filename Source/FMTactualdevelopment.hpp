@@ -16,9 +16,17 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 namespace Core
 {
 class FMTlifespans;
-
+// DocString: FMTactualdevelopment
+/**
+FMTactualdevelopement is the child class of FMTdevelopement. It stands for the representation of an
+actual forest stand so it holds the amount of area of this stand as a member variable.
+*/
 class FMTEXPORT FMTactualdevelopment : public FMTdevelopment
 	{
+	// DocString: FMTdevelopment::serialize
+	/**
+	Serialize function is for serialization, used to do multiprocessing across multiple cpus (pickle in Pyhton)
+	*/
 	friend class boost::serialization::access;
 	template<class Archive>
 	void serialize(Archive& ar, const unsigned int version)
@@ -32,21 +40,79 @@ class FMTEXPORT FMTactualdevelopment : public FMTdevelopment
 			_exhandler->printexceptions("", "FMTactualdevelopment::serialize", __LINE__, __FILE__);
 			}
 	}
+		// DocString: FMTactualdevelopment::area
+		///The area of the actual developement.
 		double area;
 	public:
+		// DocString: FMTactualdevelopment()
+		/**
+		Default constructor for FMTactualdevelopement
+		*/
 		FMTactualdevelopment();
+		// DocString: ~FMTactualdevelopment()
+		/**
+		Default destructor for FMTactualdevelopement.
+		*/
 		~FMTactualdevelopment()=default;
+		// DocString: FMTactualdevelopment(const FMTactualdevelopment&)
+		/**
+		FMTactualdevelopement copy constructor.
+		*/
 		FMTactualdevelopment(const FMTactualdevelopment& rhs);
+		// DocString: FMTdevelopment(const FMTmask&,const int&,const int&,const int&,const double&)
+		/**
+		FMTactualdevelopement constructor using a FMTmask the age and the lock level period  and the area of the FMTactualdevelopment.
+		*/
 		FMTactualdevelopment(const FMTmask& mask, const int& age, const int& lock, const double& area);
+		// DocString: FMTdevelopment(const FMTdevelopment&,double)
+		/**
+		FMTactualdevelopement constructor using a FMTdevelopment and an area.
+		*/
 		FMTactualdevelopment(const FMTdevelopment& rhs, double larea);
+		// DocString: FMTactualdevelopment::operator=
+		/**
+		FMTactualdevelopement copy assignment.
+		*/
 		FMTactualdevelopment& operator = (const FMTactualdevelopment& rhs);
+		// DocString: FMTactualdevelopment::operator==
+		/**
+		FMTactualdevelopement equality operator.
+		*/
 		bool operator == (const FMTactualdevelopment& rhs) const;
+		// DocString: FMTactualdevelopment::operator!=
+		/**
+		FMTactualdevelopement nonequality operator.
+		*/
 		bool operator != (const FMTactualdevelopment& rhs) const;
+		// DocString: FMTactualdevelopment::operator<
+		/**
+		FMTactualdevelopment less than operator.
+		*/
 		bool operator < (const FMTactualdevelopment& rhs) const;
+		// DocString: FMTactualdevelopment::operator std::string
+		/**
+		Returns the string reprensentation of a FMTactualdevelopment like in the area section.
+		*/
 		operator std::string() const override;
+		// DocString: FMTdevelopment::getarea
+		/**
+		Returns the area of the FMTactualdevelopement.
+		*/
 		double getarea() const override;
+		// DocString: FMTdevelopment::setarea
+		/**
+		Set the newarea has the area of the FMTactualdevelopement.
+		*/
 		void setarea(const double& newarea);
+		// DocString: FMTdevelopment::clone
+		/**
+		Return a unique_ptr of FMTdevelopment of the FMTactualdevelopement.
+		*/
 		std::unique_ptr<FMTdevelopment> Clone() const override;
+		// DocString: FMTdevelopment::presolve
+		/**
+		Will presolve the FMTactualdevelopment using the FMTdevelopement::presolve() function.
+		*/
 		FMTactualdevelopment presolve(const FMTmaskfilter& filter, const std::vector<FMTtheme>&presolvedthemes) const;
 		// DocString: FMTactualdevelopment::reducelocktodeath
 		/**
@@ -57,11 +123,25 @@ class FMTEXPORT FMTactualdevelopment : public FMTdevelopment
 		FMTactualdevelopment reducelocktodeath(const FMTlifespans& lifespans) const;
 	};
 
+// DocString: FMTactualdevelopmentcomparator
+/**
+FMTactioncomparator to check if the base FMTdevelopement is the actualdev.
+*/
 class FMTactualdevelopmentcomparator
 	{
+		// DocString: FMTactioncomparator::basedev
+		///The FMTdevelopement that we compare
 		const FMTdevelopment* basedev;
 	public:
+		// DocString: FMTactualdevelopmentcomparator(const FMTdevelopment*)
+		/**
+		FMTactualdevelopment constructor with the base FMTdevelopment.
+		*/
 		FMTactualdevelopmentcomparator(const FMTdevelopment* base);
+		// DocString: FMTactualdevelopmentcomparator::operator()(const FMTactualdevelopment&)
+		/**
+		Matching test operator for FMTactualdevelopmentcomparator.
+		*/
 		bool operator()(const FMTactualdevelopment& actualdev) const;
 
 	};
