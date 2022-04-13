@@ -82,7 +82,7 @@ int main()
 			{
 				parea+=actdev.getarea();
 			}
-			if(std::abs(parea-totarea)>0.001)
+			if(std::abs(parea-totarea)>0.01)
 			{
 				std::cout<<"period start : "+std::to_string(parea)+" initial : "+std::to_string(totarea)<<std::endl;
 				Exception::FMTfreeexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed, "Difference in area at the period begining",
