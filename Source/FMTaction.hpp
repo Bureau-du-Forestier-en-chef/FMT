@@ -89,7 +89,7 @@ class FMTEXPORT FMTaction : public FMTlist<FMTspec>
 		agelowerbound, ageupperbound,periodlowerbound,periodupperbound and sets all member data.
 		*/
 		void setbounds();
-		// DocString: FMTaction::getGCBMactiondef()
+		// DocString: FMTaction::getGCBMactiondef
 		/**
 		Returns the corresponding GCBM action definition.
 		*/
@@ -182,7 +182,7 @@ class FMTEXPORT FMTaction : public FMTlist<FMTspec>
 			{
 			return periodupperbound;
 			}
-		// DocString: FMTaction::hash()
+		// DocString: FMTaction::hash
 		/**
 		Return the hash value base on the action name.
 		*/
@@ -190,7 +190,7 @@ class FMTEXPORT FMTaction : public FMTlist<FMTspec>
 			{
 			return boost::hash<std::string>()(name);
 			}
-		// DocString: FMTaction::getname()
+		// DocString: FMTaction::getname
 		/**
 		Get action name of the FMTaction.
 		*/
@@ -198,7 +198,7 @@ class FMTEXPORT FMTaction : public FMTlist<FMTspec>
 			{
 			return name;
 			}
-		// DocString: FMTaction::dorespectlock()
+		// DocString: FMTaction::dorespectlock
 		/**
 		If True the action needs to respect the _lock stade of the developement.
 		Else the action doesn't car about the _lock of the developement.
@@ -207,7 +207,7 @@ class FMTEXPORT FMTaction : public FMTlist<FMTspec>
 			{
 			return lock;
 			}
-		// DocString: FMTaction::isresetage()
+		// DocString: FMTaction::isresetage
 		/**
 		If True When operated by this the FMTdevelopement is set to 0.
 		Else it stays the same
@@ -216,17 +216,17 @@ class FMTEXPORT FMTaction : public FMTlist<FMTspec>
 			{
 			return reset;
 			}
-		// DocString: FMTaction::useyield()
+		// DocString: FMTaction::useyield
 		/**
 		Return true if the yield is used by the action to set operability.
 		*/
 		bool useyield(const std::string& yldname) const;
-		// DocString: FMTaction::getaggregates()
+		// DocString: FMTaction::getaggregates
 		/**
 		Gets all the aggregates name of which the action is part of.
 		*/
 		std::vector<std::string>getaggregates() const;
-		// DocString: FMTaction::getpartials()
+		// DocString: FMTaction::getpartials
 		/**
 		Gets all the partial yields name of the FMTaction.
 		*/
@@ -256,12 +256,12 @@ class FMTEXPORT FMTaction : public FMTlist<FMTspec>
 		Check if the yield needs to be considered has partial for this action.
 		*/
 		bool partial(const std::string& yield) const;
-		// DocString: FMTaction::getGCBMactionid()
+		// DocString: FMTaction::getGCBMactionid
 		/**
 		Returns the corresponding GCBM action id.
 		*/
 		int getGCBMactionid() const;
-		// DocString: FMTaction::getGCBMactionname()
+		// DocString: FMTaction::getGCBMactionname
 		/**
 		Returns the corresponding GCBM action name.
 		*/

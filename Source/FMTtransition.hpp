@@ -82,7 +82,7 @@ class FMTEXPORT FMTtransition : public FMTlist<FMTfork>
 		FMTtransition assignment operator.
 		*/
         FMTtransition& operator = (const FMTtransition& rhs);
-		// DocString: FMTtransition::opeator std::string
+		// DocString: FMTtransition::operator std::string
 		/**
 		FMTtransition conversion to string value like into a transition file.
 		*/
