@@ -186,7 +186,7 @@ class FMTEXPORT FMTobject
 		Create and set a debug exception handler to the FMTobject.
 		*/
 		void setdebugexceptionhandler();
-		// DocString: FMTobject::setfreeexceptionhandle
+		// DocString: FMTobject::setfreeexceptionhandler
 		/**
 		Create and set a free exception handler to the FMTobject.
 		*/

@@ -134,17 +134,17 @@ class FMTEXPORT FMTconstraint: public FMToutput,public FMTspec
 		Returns true if the constraint have goal weight
 		*/
 		bool isgoal() const;
-		// DocString: FMTconstraint::issetfrom()
+		// DocString: FMTconstraint::issetfrom
 		/**
 		Returns true if the constraint needs to be set from a specific model.
 		*/
 		bool issetfrom(const std::string& modeltype) const;
-		// DocString: FMTconstraint::isreignore()
+		// DocString: FMTconstraint::isreignore
 		/**
 		Returns true if we need to ignore the constraint from the replanning period
 		*/
 		bool isreignore(const int& replanningperiod) const;
-		// DocString: FMTconstraint::dosupportrandom()
+		// DocString: FMTconstraint::dosupportrandom
 		/**
 		Return true if the constraint has only one source and only based on action area.
 		So the contraint will support _RANDOM keywod.
@@ -278,12 +278,12 @@ class FMTEXPORT FMTconstraint: public FMToutput,public FMTspec
 		Returns the group of the constraint (objective = 0,spatial = 1,other = 2 or userdefined)
 		*/
 		size_t getgroup() const;
-		// DocString: FMTconstraint::outputempty()
+		// DocString: FMTconstraint::outputempty
 		/**
 		Returns true if the FMTconstraint output is empty.
 		*/
 		size_t outputempty() const;
-		// DocString: FMTconstraint::presolve()
+		// DocString: FMTconstraint::presolve
 		/**
 		Like FMToutput class this function presolve the FMTconstraint and can returns an empty FMTconstraint if 
 		based on a (basemask), the (originalthemes), the presolved themes, the presolved actions and presolved yields.
@@ -299,18 +299,18 @@ class FMTEXPORT FMTconstraint: public FMToutput,public FMTspec
 		Default destructor for FMTconstraint
 		*/
 		~FMTconstraint()=default;
-		// DocString: FMTconstraint::evaluate()
+		// DocString: FMTconstraint::evaluate
 		/**
 		Given a vector of double this function will return a double value representing the quality of the solution.
 		For a real constraint the more the value is close to 0 the better it is. For an objective smaller is better (can be negative).
 		*/
 		double evaluate(const std::vector<double>& temporalvalues) const;
-		// DocString: FMTconstraint::getactionids()
+		// DocString: FMTconstraint::getactionids
 		/**
 		If the constraint is a spatial constraint it will return a vector of action ids to which the constraint apply to.
 		*/
 		std::vector<int>getactionids(const std::vector<Core::FMTaction>& actions) const;
-		// DocString: FMTconstraint::isactionsused()
+		// DocString: FMTconstraint::isactionsused
 		/**
 		If the constraint is a spatial constraint it will return a vector of action ids to which the constraint apply to.
 		*/
