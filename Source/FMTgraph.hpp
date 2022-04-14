@@ -431,11 +431,39 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 					{
 						_exhandler->raisefromcatch("", "FMTgraph::build", __LINE__, __FILE__);
 					}
-					return naturalgrowth(actives,statsdiff);
+					const bool typeIIforestmodel = (model.getparameter(Models::FMTintmodelparameters::MATRIX_TYPE) == 2);
+					return naturalgrowth(actives,statsdiff, typeIIforestmodel);
 				}
 
+		bool isnotransfer(const FMTvertex_descriptor& descriptor,size_t outcount = 0) const
+			{
+			try {
+				if (boost::in_degree(descriptor, data) == 1 &&
+					boost::out_degree(descriptor, data) == outcount)
+					{
+					if (outcount<1)
+						{
+						return true;
+					}else {
+						//No Death action please
+						const std::map<int, int>outsvar = getoutvariables(descriptor);
+						return (outsvar.find(-1) != outsvar.end());
+						}
+					}
+					
+			}catch (...)
+				{
+				_exhandler->raisefromcatch("", "FMTgraph::isnotransfer", __LINE__, __FILE__);
+				}
+			return false;
+			}
+
+		double getinproportion(const FMTvertex_descriptor& vertex_descriptor) const
+		{
+			return 1;
+		}
 		
-		FMTgraphstats naturalgrowth(std::queue<FMTvertex_descriptor> actives,FMTgraphstats statsdiff)
+		FMTgraphstats naturalgrowth(std::queue<FMTvertex_descriptor> actives, FMTgraphstats statsdiff,bool typeIImatrix = false)
 		{
 			try {
 				boost::unordered_set<Core::FMTlookup<FMTvertex_descriptor, Core::FMTdevelopment>> nextperiods;
@@ -450,9 +478,17 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 					FMTbasevertexproperties front_properties = data[front_vertex];
 					const Core::FMTdevelopment active_development = front_properties.get();
 					const Core::FMTfuturdevelopment grown_up = active_development.grow();
-					FMTvertex_descriptor next_period = this->adddevelopment(grown_up,nextperiods); //getset
-					const FMTedgeproperties newedge(-1, statsdiff.cols, 100);
-					++statsdiff.cols;
+					FMTvertex_descriptor next_period = this->adddevelopment(grown_up, nextperiods); //getset
+					int variableindex = statsdiff.cols;
+					double proportion = 100;
+					if (typeIImatrix&&isnotransfer(front_vertex))//do a type II dont need new variable
+					{
+						variableindex = getinvariables(front_vertex).at(0);
+						proportion = getinproportion(front_vertex);
+					}else{ //We need a new variable
+						++statsdiff.cols;
+						}
+					const FMTedgeproperties newedge(-1, variableindex,proportion);
 					boost::add_edge(front_vertex, next_period, newedge, data);
 					++stats.edges;
 				}
@@ -1416,7 +1452,8 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 			{
 				_exhandler->raisefromcatch("", "FMTgraph::buildschedule", __LINE__, __FILE__);
 			}
-			return naturalgrowth(actives, statsdiff);
+			const bool typeIIforestmodel = (model.getparameter(Models::FMTintmodelparameters::MATRIX_TYPE) == 2);
+			return naturalgrowth(actives, statsdiff,typeIIforestmodel);
 		}
 
 
@@ -2303,29 +2340,38 @@ template<> inline FMTgraphstats FMTgraph<Graph::FMTvertexproperties, Graph::FMTe
 			const FMTvertex_descriptor& vertex_location = *vertexit;
 			FMTinedge_iterator inedge_iterator, inedge_end;
 			bool gotinedges = false;
-			for (boost::tie(inedge_iterator, inedge_end) = boost::in_edges(vertex_location, data); inedge_iterator != inedge_end; ++inedge_iterator)
+			const bool nottransferrow = isnotransfer(vertex_location, 1);
+
+			if (!nottransferrow)
 			{
-				gotinedges = true;
-				const FMTedgeproperties& edgeproperty = data[*inedge_iterator];
-				int varvalue = edgeproperty.getvariableID();
-				if (std::find(deletedvariables.begin(), deletedvariables.end(), varvalue) == deletedvariables.end())
+				for (boost::tie(inedge_iterator, inedge_end) = boost::in_edges(vertex_location, data); inedge_iterator != inedge_end; ++inedge_iterator)
 				{
-					--stats.cols;
-					deletedvariables.push_back(varvalue);
-				}
-				--stats.edges;
-			}
-			if (!keepbounded)
-			{
-				const std::map<int, int>outvars = this->getoutvariables(vertex_location);
-				for (std::map<int, int>::const_iterator varit = outvars.begin(); varit != outvars.end(); varit++)
-				{
-					if (std::find(deletedvariables.begin(), deletedvariables.end(), varit->second) == deletedvariables.end())
+					gotinedges = true;
+					const FMTedgeproperties& edgeproperty = data[*inedge_iterator];
+					int varvalue = edgeproperty.getvariableID();
+					if (std::find(deletedvariables.begin(), deletedvariables.end(), varvalue) == deletedvariables.end())
 					{
 						--stats.cols;
-						deletedvariables.push_back(varit->second);
+						deletedvariables.push_back(varvalue);
 					}
 					--stats.edges;
+				}
+			}
+			
+			if (!keepbounded)
+			{
+				if (!nottransferrow)
+				{
+					const std::map<int, int>outvars = this->getoutvariables(vertex_location);
+					for (std::map<int, int>::const_iterator varit = outvars.begin(); varit != outvars.end(); varit++)
+					{
+						if (std::find(deletedvariables.begin(), deletedvariables.end(), varit->second) == deletedvariables.end())
+						{
+							--stats.cols;
+							deletedvariables.push_back(varit->second);
+						}
+						--stats.edges;
+					}
 				}
 				boost::clear_out_edges(vertex_location, data);
 			}
@@ -2418,6 +2464,24 @@ template<> inline bool FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproper
 		_exhandler->raisefromcatch("", "FMTgraph::gettransferrow", __LINE__, __FILE__);
 	}
 	return true;
+}
+
+template<> inline double FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::getinproportion(const FMTvertex_descriptor& vertex_descriptor) const
+{
+	try {
+		FMTinedge_iterator inedge_iterator, inedge_end;
+		FMTvertexproperties vertex_property = data[vertex_descriptor];
+		for (boost::tie(inedge_iterator, inedge_end) = boost::in_edges(vertex_descriptor, data); inedge_iterator != inedge_end; ++inedge_iterator)
+		{
+			const FMTedgeproperties& edgeprop = data[*inedge_iterator];
+			return edgeprop.getproportion();
+		}
+	}
+	catch (...)
+	{
+		_exhandler->raisefromcatch("", "FMTgraph::getinproportion", __LINE__, __FILE__);
+	}
+	return 1;
 }
 
 
