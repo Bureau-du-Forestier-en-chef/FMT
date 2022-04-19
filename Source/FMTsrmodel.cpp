@@ -185,6 +185,7 @@ namespace Models
 								}
 								//std::cout<<std::string(devit.first)<<" "+std::to_string(devit.second.at(0))<<" "+std::to_string(actionid)<<std::endl;//" "+this->getactions().at(actionid).getname()<<std::endl;
 								varproportions.emplace(varit->second,devit.second.at(0));
+								
 							}
 							else{
 								//message de warning pour les dévelopement initiaux qui n'existe plus ppour la schedule.
@@ -251,18 +252,26 @@ namespace Models
 											if (path.development->getperiod() == period && processed.find(*path.development) == processed.end())
 											{
 												processed.emplace(*path.development);
-												descriptors.push(graph.getdevelopment(*path.development, lookup));
+												Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor nextdescriptor = graph.getdevelopment(*path.development, lookup);
+												descriptors.push(nextdescriptor);
+												
 											}
 										}
 										//std::cout<<std::string(graph.getdevelopment(*vertex_iterator)) << " "+std::to_string(varproportions[varit->second])<<" "+std::to_string(inarea)<<" "+std::to_string(varit->first)<<std::endl;//<<" "+this->getactions().at(varit->first).getname()<<std::endl;
-										const double outvararea = varproportions[varit->second]*inarea;
+										double proportion = 1;
 										if (setrest)
+											{
+											proportion = varproportions[varit->second];
+											}
+										const double outvararea = proportion*inarea;
+										if (setrest||varit->first>=0)
 										{
 											new_solution[varit->second] = outvararea;
 										}
 										outarea+=outvararea;
 									}
 									processedvariables.emplace(varit->second);
+									
 								}
 								if(!foundoutvar){
 									//Check to put everythin on growth or death .. 
@@ -318,7 +327,7 @@ namespace Models
 							canprocess = false;
 						}
 					}
-					const bool setrest = !(typeII&&graph.isnotransfer(*vertex_iterator, 1));
+					const bool setrest = !(typeII&&graph.isnotransfer(first, 1));
 					if	(canprocess)
 					{
 						passwithoutprocess=0;
@@ -343,14 +352,20 @@ namespace Models
 									}
 								}
 								//std::cout<<std::string(graph.getdevelopment(first)) << " "+std::to_string(varproportions[varit->second])<<" "+std::to_string(inarea)<<" "+std::to_string(varit->first)<<std::endl;//<<" "+this->getactions().at(varit->first).getname()<<std::endl;
-								const double outvararea = varproportions[varit->second]*inarea;
+								double proportion = 1;
 								if (setrest)
+								{
+									proportion = varproportions[varit->second];
+								}
+								const double outvararea = proportion *inarea;
+								if (setrest||varit->first>=0)
 								{
 									new_solution[varit->second] = outvararea;
 								}
 								outarea+=outvararea;
 							}
 							processedvariables.emplace(varit->second);
+							
 						}
 						if(!foundoutvar){
 							//Check to put everythin on growth or death .. 
@@ -370,7 +385,7 @@ namespace Models
 						{
 							_exhandler->raise(Exception::FMTexc::FMTinvalid_number,
 								"Negative growth solution for " +
-								std::string(graph.getdevelopment(*vertex_iterator)) +" in area of " + std::to_string(inarea) + 
+								std::string(graph.getdevelopment(first)) +" in area of " + std::to_string(inarea) +
 								" and out area of " + std::to_string(outarea) ,
 								"FMTsrmodel::forcesolution", __LINE__, __FILE__);
 						}
@@ -378,7 +393,7 @@ namespace Models
 						{
 							_exhandler->raise(Exception::FMTexc::FMTinvalid_number,
 								"Positive growth solution for " +
-								std::string(graph.getdevelopment(*vertex_iterator)) +" in area of " + std::to_string(inarea) + 
+								std::string(graph.getdevelopment(first)) +" in area of " + std::to_string(inarea) +
 								" and out area of " + std::to_string(outarea) ,
 								"FMTsrmodel::forcesolution", __LINE__, __FILE__);
 						}
@@ -388,7 +403,7 @@ namespace Models
 						if(passwithoutprocess == descriptors.size())
 						{
 							_exhandler->raise(Exception::FMTexc::FMTinvalid_number,
-								"Youre fucked",
+								"Wrong variable",
 								"FMTsrmodel::forcesolution", __LINE__, __FILE__);
 						}
 						descriptors.pop();
@@ -397,6 +412,7 @@ namespace Models
 					}
 				}
 				solver.setColSolution(&new_solution[0]);
+
 			}
 		}catch(...){
 			_exhandler->printexceptions("at period " + std::to_string(period), "FMTsrmodel::forcesolution", __LINE__, __FILE__);
@@ -431,6 +447,8 @@ namespace Models
 						new_solution[varit->second] = 0;
 					}
 				}
+				
+
 				int maximallock = -1;
 				for (int actionid = 0; actionid < static_cast<int>(actions.size()); ++actionid/*const auto& actionit : schedule*/)
 				{
@@ -630,6 +648,7 @@ namespace Models
 						for (std::map<int, int>::const_iterator varit = variables.begin(); varit != variables.end(); varit++)
 						{
 							std::vector<Core::FMTdevelopmentpath> paths = graph.getpaths(*vertex_iterator, varit->first);
+							bool pushed = false;
 							for (const Core::FMTdevelopmentpath path : paths)
 							{
 								if (path.development->getperiod() == period && processed.find(*path.development) == processed.end())
@@ -637,13 +656,14 @@ namespace Models
 									processed[*path.development] = graph.getdevelopment(*path.development, lookup);
 									const Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor newdes = graph.getdevelopment(*path.development, lookup);
 									descriptors.push(newdes);
+									pushed = true;
 								}
 							}
 							//rest -= *(actual_solution + varit->second);
 							rest -= new_solution[varit->second];
 							
 						}
-
+						
 						if ((rest + tolerance) < 0)
 						{
 							std::string actionnames;
@@ -652,6 +672,7 @@ namespace Models
 								actionnames += actions.at(varit->first).getname() + ",";
 							}
 							actionnames.pop_back();
+							//*_logger << "in variables size " << graph.getinidsvariables(*vertex_iterator).size()<<" " << "\n";
 							const Core::FMTdevelopment dev(graph.getdevelopment(*vertex_iterator));
 							const double* solution = &new_solution[0];
 							const double inarea = graph.inarea(*vertex_iterator, solution);
@@ -690,6 +711,8 @@ namespace Models
 					std::map<int, int>variables = graph.getoutvariables(first);
 					const double* solution = &new_solution[0];
 					double rest = graph.inarea(first, solution);
+					this->setquietlogger();
+					this->setquietexceptionhandler();
 					int targetaction = -1;
 					if ((variables.find(-1) == variables.end()))//Dont need to fill up if you dont have natural evolution
 					{
@@ -725,16 +748,14 @@ namespace Models
 							std::string(graph.getdevelopment(first)),
 							"FMTsrmodel::setsolution", __LINE__, __FILE__);
 					}
-					const bool setrest = !(typeII&&graph.isnotransfer(*vertex_iterator, 1));
+					const bool setrest = !(typeII&&graph.isnotransfer(first, 1));
 					if (targetaction < 0 && setrest)
 					{
-
 						new_solution[growth] = rest;
 					}
 					descriptors.pop();
 				}
 				solver.setColSolution(&new_solution[0]);
-
 			}
 		}
 		catch (...)
@@ -1008,7 +1029,7 @@ namespace Models
 		}
 		catch (...)
 		{
-			_exhandler->printexceptions("at period " + std::to_string(period), "FMTsrmodel::getsolution", __LINE__, __FILE__);
+			_exhandler->printexceptions("at period " + std::to_string(period), "FMTsrmodel::getscheduleproportions", __LINE__, __FILE__);
 		}
 		return newschedule;
 	}
