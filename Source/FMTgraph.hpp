@@ -1286,6 +1286,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 				{
 					const FMTbaseedgeproperties& edgeprop = data[*inedge_iterator];
 					int actionid = edgeprop.getactionID();
+					//*_logger << actionid << " test "<< edgeprop.getvariableID() <<"\n";
 					mapping[actionid] = edgeprop.getvariableID();
 				}
 			}
