@@ -14,7 +14,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <memory>
 #include <string>
 #include <chrono>
-#include  "boost/thread/mutex.hpp"
+#include <boost/thread.hpp>
 
 namespace Core
 {

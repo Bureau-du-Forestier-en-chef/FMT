@@ -300,6 +300,8 @@ namespace Parallel
 							break;
 							}
 					}
+
+					
 					const std::unique_ptr<Models::FMTmodel> stochasticcopy = std::move(domodelplanning(stochastic,replanningperiod,false,false,false));
 					dynamicarea = stochasticcopy->getarea(replanningperiod + 1,true);
 					for (Core::FMTactualdevelopment& developement : dynamicarea)
