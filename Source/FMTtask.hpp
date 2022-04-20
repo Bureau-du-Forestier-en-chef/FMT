@@ -10,10 +10,10 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTobject.hpp"
 #include <boost/thread/recursive_mutex.hpp>
 
-namespace Logging
+/*namespace Logging
 {
 	class FMTlogger;
-}
+}*/
 
 
 /// Namespace for parallel tasking may include multithreading / multiprocessing
