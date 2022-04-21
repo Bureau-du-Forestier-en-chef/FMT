@@ -66,6 +66,12 @@ class FMTEXPORT FMTquietlogger final : public FMTlogger
 			See FMTlogger clone function.
 			*/
 			CoinMessageHandler * clone() const override;
+			// DocString: FMTquietlogger::cout
+			/**
+			See FMTlogger cout function that does nothing.
+			*/
+			void cout(const char* message) const override;
+
 	#endif
 	};
 }
