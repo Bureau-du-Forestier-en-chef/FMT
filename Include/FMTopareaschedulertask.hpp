@@ -71,39 +71,39 @@ namespace Parallel
 		// DocString: FMTopareaschedulertask::lastspawned
 		///Last thread id and seed used by the spawner.
 		int lastspawned;
-		// DocString: FMTopareaschedulertask::solveinitialmodel()
+		// DocString: FMTopareaschedulertask::solveinitialmodel
 		/**
 		Solve the initial model and return the objective value.
 		*/
 		double solveinitialmodel(Models::FMTlpmodel& model) const;
-		// DocString: FMTopareaschedulertask::setinitialscheduler()
+		// DocString: FMTopareaschedulertask::setinitialscheduler
 		/**
 		Set the initialscheduler from the lpmodel using the operating areas and the output node.
 		*/
 		void setinitialscheduler(Models::FMTlpmodel& model,
 			const std::vector<Heuristics::FMToperatingareascheme>& opareas,const Core::FMToutputnode& node);
-		// DocString: FMTopareaschedulertask::getstoppoint()
+		// DocString: FMTopareaschedulertask::getstoppoint
 		/**
 		Get the time at which the solving should stop.
 		*/
 		std::chrono::time_point<std::chrono::high_resolution_clock>getstoppoint(const double& timegap) const;
-		// DocString: FMTopareaschedulertask::writesolution()
+		// DocString: FMTopareaschedulertask::writesolution
 		/**
 		Using the solution location write down the solution.
 		*/
 		void writesolution() const;
-		// DocString: FMTopareaschedulertask::gotinitialsolution()
+		// DocString: FMTopareaschedulertask::gotinitialsolution
 		/**
 		Returns true if the bestscheduler is not empty and have an initial solution.
 		*/
 		bool gotinitialsolution() const;
-		// DocString: FMTopareaschedulertask::evaluateandcopy()
+		// DocString: FMTopareaschedulertask::evaluateandcopy
 		/**
 		Evaluate if the actualscheduler is better than the bestscheduler. If it is push the actualscheduler to the best scheduler.
 		Else take the solution from the bestscheduler.
 		*/
 		void evaluateandcopy();
-		// DocString: FMTopareaschedulertask::goodtogo()
+		// DocString: FMTopareaschedulertask::goodtogo
 		/**
 		Return true if iterations > 0 and still time left.
 		*/
@@ -147,12 +147,12 @@ namespace Parallel
 			const std::string& outputyieldname,
 			const unsigned int& maxiterations,
 			const double& maxtime);
-		// DocString: FMTopareaschedulertask::split(...)
+		// DocString: FMTopareaschedulertask::split
 		/**
 		The split fonction that split the main task into multiple tasks of operating area scheduler.
 		*/
 		virtual std::vector<std::unique_ptr<FMTtask>>split(const unsigned int& numberoftasks) const;
-		// DocString: FMTopareaschedulertask::split()
+		// DocString: FMTopareaschedulertask::spawn
 		/**
 		Will spawn a minimal task from the master task
 		*/
@@ -162,7 +162,7 @@ namespace Parallel
 		Main function that do the operating area scheduling task
 		*/
 		virtual void work();
-		// DocString: FMTopareaschedulertaskk::passinlogger()
+		// DocString: FMTopareaschedulertaskk::passinlogger
 		/**
 		Pass the logger
 		*/

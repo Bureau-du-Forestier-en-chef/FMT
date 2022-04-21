@@ -110,18 +110,18 @@ void exportModel()
 		.def("getpotentialschedule", &Models::FMTmodel::getpotentialschedule,
 			getpotentialscheduleoverloads(bp::args("toremove","selection","withlock"),"@DocString(FMTmodel::getpotentialschedule)"))
 			//The way to expose overload member functions with different args
-			.def<bool (Models::FMTmodel::*)(const Models::FMTintmodelparameters& key, const int& value)>("setparameter",&Models::FMTmodel::setparameter,
-				"@DocString(FMTmodel::setparameter)")
-			.def<bool (Models::FMTmodel::*)(const Models::FMTdblmodelparameters& key, const double& value)>("setparameter",&Models::FMTmodel::setparameter,
-				"@DocString(FMTmodel::setparameter)")
-			.def<bool (Models::FMTmodel::*)(const Models::FMTboolmodelparameters& key, const bool& value)>("setparameter",&Models::FMTmodel::setparameter,
-				"@DocString(FMTmodel::setparameter)")
-			.def<int (Models::FMTmodel::*)(const Models::FMTintmodelparameters& key)const>("getparameter",&Models::FMTmodel::getparameter,
-				"@DocString(FMTmodel::getparameter)")
-			.def<double (Models::FMTmodel::*)(const Models::FMTdblmodelparameters& key)const>("getparameter",&Models::FMTmodel::getparameter,
-				"@DocString(FMTmodel::getparameter)")
-			.def<bool (Models::FMTmodel::*)(const Models::FMTboolmodelparameters& key)const>("getparameter",&Models::FMTmodel::getparameter,
-				"@DocString(FMTmodel::getparameter)")
+		.def<bool (Models::FMTmodel::*)(const Models::FMTintmodelparameters& key, const int& value)>("setparameter", &Models::FMTmodel::setparameter,
+			"@DocString(FMTmodel::setparameter(const FMTintmodelparameters,const int&))")
+		.def<bool (Models::FMTmodel::*)(const Models::FMTdblmodelparameters& key, const double& value)>("setparameter", &Models::FMTmodel::setparameter,
+			"@DocString(FMTmodel::setparameter(const FMTdblmodelparameters,const double))")
+		.def<bool (Models::FMTmodel::*)(const Models::FMTboolmodelparameters& key, const bool& value)>("setparameter", &Models::FMTmodel::setparameter,
+			"@DocString(FMTmodel::setparameter(const FMTboolmodelparameters,const bool))")
+		.def<int (Models::FMTmodel::*)(const Models::FMTintmodelparameters& key)const>("getparameter", &Models::FMTmodel::getparameter,
+			"@DocString(FMTmodel::getparameter(const FMTintmodelparameters))")
+		.def<double (Models::FMTmodel::*)(const Models::FMTdblmodelparameters& key)const>("getparameter", &Models::FMTmodel::getparameter,
+			"@DocString(FMTmodel::getparameter(const FMTdblmodelparameters))")
+		.def<bool (Models::FMTmodel::*)(const Models::FMTboolmodelparameters& key)const>("getparameter", &Models::FMTmodel::getparameter,
+			"@DocString(FMTmodel::getparameter(const FMTboolmodelparameters))")
 			.def("setcompresstime",&Models::FMTmodel::setcompresstime,
 				"@DocString(FMTmodel::setcompresstime)")
 			.def("getcompresstime",&Models::FMTmodel::getcompresstime,
@@ -196,7 +196,7 @@ void exportModel()
 		
 	define_pylist<Models::FMTsolverinterface>();
 
-	bp::class_<Models::FMTlpsolver>("FMTlpolver", "@DocString(FMTlpolver)")
+	bp::class_<Models::FMTlpsolver>("FMTlpolver", "@DocString(FMTlpsolver)")
 		.def(bp::init<Models::FMTsolverinterface>())
 		.def("isProvenOptimal", &Models::FMTlpsolver::isProvenOptimal,
 			"@DocString(FMTlpsolver::isProvenOptimal)")
@@ -229,7 +229,7 @@ void exportModel()
 		.def("cleargraphdevelopements", &Models::FMTsrmodel::cleargraphdevelopements,
 			"@DocString(FMTsrmodel::cleargraphdevelopements)")
 		.def("getstats", &Models::FMTsrmodel::getstats,
-			"@DocString(FMTlpmodel::getstats)")
+			"@DocString(FMTsrmodel::getstats)")
 		.def("getavailablesolverinterface", &Models::FMTsrmodel::getavailablesolverinterface,
 			"@DocString(FMTsrmodel::getavailablesolverinterface)").staticmethod("getavailablesolverinterface");
 
@@ -248,9 +248,9 @@ void exportModel()
 		.def(bp::init<Models::FMTmodel, Models::FMTsolverinterface>())
 		.def(bp::init<Models::FMTlpmodel>())
 		.def_pickle(FMT_pickle_suite<Models::FMTlpmodel>())
-		.def("boundsolution", &Models::FMTlpmodel::boundsolution,
-			boundsolution_overloads(bp::args("period", "tolerance"),
-				"@DocString(FMTlpmodel::boundsolution)"))
+		//.def("boundsolution", &Models::FMTlpmodel::boundsolution,
+		//	boundsolution_overloads(bp::args("period", "tolerance"),
+		//		"@DocString(FMTlpmodel::boundsolution)"))
 		.def("setobjective", &Models::FMTlpmodel::setobjective,
 			"@DocString(FMTlpmodel::setobjective)")
 		.def("clearcache", &Models::FMTlpmodel::clearcache,

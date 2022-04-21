@@ -23,7 +23,7 @@ actual forest stand so it holds the amount of area of this stand as a member var
 */
 class FMTEXPORT FMTactualdevelopment : public FMTdevelopment
 	{
-	// DocString: FMTdevelopment::serialize
+	// DocString: FMTactualdevelopment::serialize
 	/**
 	Serialize function is for serialization, used to do multiprocessing across multiple cpus (pickle in Pyhton)
 	*/
@@ -59,12 +59,12 @@ class FMTEXPORT FMTactualdevelopment : public FMTdevelopment
 		FMTactualdevelopement copy constructor.
 		*/
 		FMTactualdevelopment(const FMTactualdevelopment& rhs);
-		// DocString: FMTdevelopment(const FMTmask&,const int&,const int&,const int&,const double&)
+		// DocString: FMTactualdevelopment(const FMTmask&,const int&,const int&,const int&,const double&)
 		/**
 		FMTactualdevelopement constructor using a FMTmask the age and the lock level period  and the area of the FMTactualdevelopment.
 		*/
 		FMTactualdevelopment(const FMTmask& mask, const int& age, const int& lock, const double& area);
-		// DocString: FMTdevelopment(const FMTdevelopment&,double)
+		// DocString: FMTactualdevelopment(const FMTdevelopment&,double)
 		/**
 		FMTactualdevelopement constructor using a FMTdevelopment and an area.
 		*/
@@ -94,22 +94,22 @@ class FMTEXPORT FMTactualdevelopment : public FMTdevelopment
 		Returns the string reprensentation of a FMTactualdevelopment like in the area section.
 		*/
 		operator std::string() const override;
-		// DocString: FMTdevelopment::getarea
+		// DocString: FMTactualdevelopment::getarea
 		/**
 		Returns the area of the FMTactualdevelopement.
 		*/
 		double getarea() const override;
-		// DocString: FMTdevelopment::setarea
+		// DocString: FMTactualdevelopment::setarea
 		/**
 		Set the newarea has the area of the FMTactualdevelopement.
 		*/
 		void setarea(const double& newarea);
-		// DocString: FMTdevelopment::clone
+		// DocString: FMTactualdevelopment::clone
 		/**
 		Return a unique_ptr of FMTdevelopment of the FMTactualdevelopement.
 		*/
 		std::unique_ptr<FMTdevelopment> Clone() const override;
-		// DocString: FMTdevelopment::presolve
+		// DocString: FMTactualdevelopment::presolve
 		/**
 		Will presolve the FMTactualdevelopment using the FMTdevelopement::presolve() function.
 		*/

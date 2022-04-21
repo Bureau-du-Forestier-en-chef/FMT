@@ -213,7 +213,7 @@ namespace Models
 		Same as getsolution but the schedule area represent the percentage of area of the developement.
 		*/
 		Core::FMTschedule getscheduleproportions(int period, bool withlock) const;
-		// DocString: FMTlpsrmodel::getstats
+		// DocString: FMTsrmodel::getstats
 		/**
 		Get the graph stats of the graph and matrix (number of columns/rows/edges/verticies...)
 		*/

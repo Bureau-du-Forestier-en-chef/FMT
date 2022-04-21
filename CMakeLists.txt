@@ -33,6 +33,7 @@ message("Generating Build file for FMT ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSIO
 
 
 set(FMTSOURCEDIR "${CMAKE_CURRENT_SOURCE_DIR}/Source/")
+set(FMTINCLUDEDIR "${CMAKE_CURRENT_SOURCE_DIR}/Include/")
 
 if (DEFINED VCPKG_TARGET_TRIPLET)
 	find_package(Clp CONFIG REQUIRED)
@@ -140,8 +141,8 @@ add_definitions("-DHAVE_SNPRINTF")
 add_definitions("-DBOOST_FILESYSTEM_NO_DEPRECATED")
 
 FILE(GLOB FMTSOURCEFILES ${FMTSOURCEDIR}FMT*.cpp)
-FILE(GLOB FMTHEADERFILES ${FMTSOURCEDIR}FMT*.hpp)
-list (APPEND FMTHEADERFILES "${FMTSOURCEDIR}/resource.hpp")
+FILE(GLOB FMTHEADERFILES ${FMTINCLUDEDIR}FMT*.hpp)
+list (APPEND FMTHEADERFILES "${FMTINCLUDEDIR}/resource.hpp")
 set(FMTPYNRSOURCEFILES "${FMTSOURCEFILES}")
 list(APPEND FMTPYNRSOURCEFILES "${FMTSOURCEDIR}/main.cpp")
 add_library(FMT SHARED ${FMTPYNRSOURCEFILES})
@@ -158,11 +159,12 @@ set( CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin )
 
 
 #Create a include directory for the lib
-file(REMOVE_RECURSE "${CMAKE_BINARY_DIR}/include")
-foreach(includedfile ${FMTHEADERFILES})
-	file(COPY "${includedfile}" DESTINATION "${CMAKE_BINARY_DIR}/include")
-endforeach()
-include_directories("${CMAKE_BINARY_DIR}/include")
+#file(REMOVE_RECURSE "${CMAKE_BINARY_DIR}/include")
+#foreach(includedfile ${FMTHEADERFILES})
+#	file(COPY "${includedfile}" DESTINATION "${CMAKE_BINARY_DIR}/include")
+#endforeach()
+#include_directories("${CMAKE_BINARY_DIR}/include")
+#include_directories("${FMTINCLUDEDIR}")
 #Create R/PY API include need to call python to do that
 if (DEFINED PYTHON_DIR OR DEFINED R_DIR)
 	message("Generating comments in R and Python API")
@@ -175,12 +177,13 @@ if (DEFINED PYTHON_DIR OR DEFINED R_DIR)
 			)
 	else()
 		message(WARNING "Cannot find Python R classes wont be documented ")
-		FILE(GLOB FMTPYNRINCLUDE ${FMTSOURCEDIR}/PY*.hpp ${FMTSOURCEDIR}/R*.hpp)
+		FILE(GLOB FMTPYNRINCLUDE ${FMTINCLUDEDIR}/PY*.hpp ${FMTINCLUDEDIR}/R*.hpp)
 		foreach(includedfile ${FMTPYNRINCLUDE})
 			file(COPY "${includedfile}" DESTINATION "${CMAKE_BINARY_DIR}/PYNRinclude")
 		endforeach()
 	endif(DEFINED PYTHON_DIR)
 	target_include_directories(FMT PRIVATE "${CMAKE_BINARY_DIR}/PYNRinclude")
+	target_include_directories(FMT PRIVATE "${FMTINCLUDEDIR}")
 endif(DEFINED PYTHON_DIR OR DEFINED R_DIR)
 
 if (NOT MSVC)
@@ -256,7 +259,7 @@ if (NOT MSVC AND DEFINED ENV{R_DIR})
 			if (DEFINED PYTHON_DIR)
 			find_program(PYTHON python PATHS ${PYTHON_DIR})
 				execute_process(
-					COMMAND "${PYTHON}" ExposeEnum.py "${FMTSOURCEDIR}" "${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}/FMT/R"
+					COMMAND "${PYTHON}" ExposeEnum.py "${FMTINCLUDEDIR}" "${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}/FMT/R"
 					WORKING_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/Templates/Rpackage"
 					)
 				else()

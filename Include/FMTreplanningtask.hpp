@@ -166,22 +166,22 @@ namespace Parallel
 			const std::string& gdaldriver,
 			const std::vector<std::string>& creationoptions,
 			Core::FMToutputlevel outputlevel);
-		// DocString: FMTreplanningtask::setreplicates()
+		// DocString: FMTreplanningtask::setreplicates
 		/**
 		Set the number of replicates to use...
 		*/
 		void setreplicates(const int& replicatesnumber);
-		// DocString: FMTreplanningtask::setreplanningperiods()
+		// DocString: FMTreplanningtask::setreplanningperiods
 		/**
 		Set the number oof replanning periods.
 		*/
 		void setreplanningperiods(const int& periodsnumber);
-		// DocString: FMTreplanningtask::split(...)
+		// DocString: FMTreplanningtask::split
 		/**
 		The split fonction that split the main task into multiple tasks of replanning.
 		*/
 		virtual std::vector<std::unique_ptr<FMTtask>>split(const unsigned int& numberoftasks) const;
-		// DocString: FMTreplanningtask::split()
+		// DocString: FMTreplanningtask::spwan
 		/**
 		Will spawn a minimal task from the master task
 		*/
@@ -191,7 +191,7 @@ namespace Parallel
 		Main function that do the replanning task
 		*/
 		virtual void work();
-		// DocString: FMTreplanningtask::passinlogger()
+		// DocString: FMTreplanningtask::passinlogger
 		/**
 		Pass the logger
 		*/

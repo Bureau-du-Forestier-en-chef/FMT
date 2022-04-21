@@ -345,7 +345,7 @@ void exportCore()
 				.method("str", &Core::FMTschedule::operator std::string,
 					"@DocString(FMTschedule::operator std::string)")
 				.method("add", &Core::FMTschedule::operator +,
-					"@DocString(FMTschedule::operator +)")
+					"@DocString(FMTschedule::operator+)")
 				.method("actionarea", &Core::FMTschedule::actionarea,
 					"@DocString(FMTschedule::actionarea)")
 				.method("getperiod", &Core::FMTschedule::getperiod,

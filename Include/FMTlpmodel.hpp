@@ -206,7 +206,15 @@ class FMTEXPORT FMTlpmodel final : public FMTsrmodel
 	*/	
 	bool trysetsolution(const std::vector<Core::FMTschedule>& schedules);
 	public:
+		// DocString: FMTlpmodel::clearcache
+		/**
+		Remove cache to release memory.
+		*/
 		void clearcache();
+		// DocString: FMTlpmodel::clearconstraintlocation
+		/**
+		Clear the localisation in the matrix...if you do that you break the relation between the FMTmodel constraints and the matrix contraints.
+		*/
 		void clearconstraintlocation();
 		// DocString: FMTlpmodel(const FMTmodel,FMTsolverinterface)
 		/**

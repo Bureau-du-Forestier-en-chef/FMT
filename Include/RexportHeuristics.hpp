@@ -63,13 +63,13 @@ void exportHeuristics()
         .constructor("@DocString(FMToperatingareacluster())")
         .constructor<Heuristics::FMToperatingareacluster,double,double>("@DocString(FMToperatingareacluster(const FMToperatingareacluster&,const double&,const double&))")
         .method("getfilteredcluster",&Heuristics::FMToperatingareacluster::getfilteredcluster,
-             "@DocString(FMToperatingareaheuristic::getfilteredcluster)")
+             "@DocString(FMToperatingareacluster::getfilteredcluster)")
         .method("getallmasks",&Heuristics::FMToperatingareacluster::getallmasks,
-             "@DocString(FMToperatingareaheuristic::getallmasks)")
+             "@DocString(FMToperatingareacluster::getallmasks)")
         .method("setminimalarea",&Heuristics::FMToperatingareacluster::setminimalarea,
-             "@DocString(FMToperatingareaheuristic::setminimalarea)")
+             "@DocString(FMToperatingareacluster::setminimalarea)")
         .method("setmaximalarea",&Heuristics::FMToperatingareacluster::setmaximalarea,
-             "@DocString(FMToperatingareaheuristic::setmaximalarea)");
+             "@DocString(FMToperatingareacluster::setmaximalarea)");
 
 	Rcpp::class_<Heuristics::FMToperatingareascheme>("FMToperatingareascheme", "@DocString(FMToperatingareascheme)")
 		.derives<Heuristics::FMToperatingarea>("FMToperatingarea")
@@ -87,9 +87,9 @@ void exportHeuristics()
 		.method("initialsolve", &Heuristics::FMToperatingareascheduler::initialsolve,
 			"@DocString(FMToperatingareascheduler::initialsolve)")
 		.method("branchnboundsolve", &Heuristics::FMToperatingareascheduler::branchnboundsolve,
-			"@DocString(FMToperatingareaheuristic::branchnboundsolve)")
+			"@DocString(FMToperatingareascheduler::branchnboundsolve)")
 		.method("getsolution", &Heuristics::FMToperatingareascheduler::getsolution,
-			"@DocString(FMToperatingareaheuristic::getsolution)");
+			"@DocString(FMToperatingareascheduler::getsolution)");
 
     Rcpp::class_<Heuristics::FMToperatingareaclusterer>("FMToperatingareaclusterer", "@DocString(FMToperatingareaclusterer)")
         .derives<Heuristics::FMTlpheuristic>("FMTlpheuristic")
