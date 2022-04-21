@@ -10,6 +10,11 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 namespace Logging
 {
 
+void FMTquietlogger::cout(const char* message) const
+	{
+
+	}
+
 FMTquietlogger::FMTquietlogger()
 	{
 	#ifdef FMTWITHOSI
