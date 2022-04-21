@@ -99,8 +99,8 @@ def gatherfiles(directory,source):
 
 if __name__=="__main__":
     pathtotarget = sys.argv[1]
-    filestomodify = gatherfiles("../Source",False)
-    headerfiles = gatherfiles("../Source",True)
+    filestomodify = gatherfiles("../Include",False)
+    headerfiles = gatherfiles("../Include",True)
     targetdirectory=pathtotarget#"../Source/include"
     os.mkdir(targetdirectory)
     commentsource=getcommentselements(headerfiles)

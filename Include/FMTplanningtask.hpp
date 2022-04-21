@@ -46,7 +46,7 @@ namespace Parallel
 		// DocString: FMTplanningtask::schedules
 		///All schedules of FMTmodel if we only want to do playback
 		std::list<std::vector<Core::FMTschedule>>allschedules;
-		// DocString: FMTplanningtask::copymodels()
+		// DocString: FMTplanningtask::copymodels
 		/**
 		Copy models for unique model...
 		*/
@@ -77,7 +77,7 @@ namespace Parallel
 		Clone function for FMTplanningtask
 		*/
 		std::unique_ptr<FMTtask>clone() const;
-		// DocString: FMTplanningtask::push_back()
+		// DocString: FMTplanningtask::push_back
 		/**
 		Push a new FMTmodel in the task queue with optional schedule.
 		Dont forget to just keep FMToutput that you want to get values in the FMTmodel.
@@ -94,12 +94,12 @@ namespace Parallel
 					std::string gdaldriver = "CSV",
 					std::vector<std::string>creationoptions= std::vector<std::string>(),
 					Core::FMToutputlevel outputlevel = Core::FMToutputlevel::standard);
-		// DocString: FMTplanningtask::split(...)
+		// DocString: FMTplanningtask::split
 		/**
 		The split fonction that split the main task into multiple tasks of planning.
 		*/
 		virtual std::vector<std::unique_ptr<FMTtask>>split(const unsigned int& numberoftasks) const;
-		// DocString: FMTplanningtask::split()
+		// DocString: FMTplanningtask::spawn
 		/**
 		Will spawn a minimal task from the master task
 		*/
@@ -109,7 +109,7 @@ namespace Parallel
 		Main function that do the planning task
 		*/
 		virtual void work();
-		// DocString: FMTplanningtask::passinlogger()
+		// DocString: FMTplanningtask::passinlogger
 		/**
 		Pass the logger
 		*/

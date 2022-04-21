@@ -79,9 +79,9 @@ namespace Spatial
 				{
 				return mapping[coordinate];
 				}
-			// DocString: FMTlayer::at()
+			// DocString: FMTlayer::at
 			/**
-			at for FMTlayer accessing std::map (mapping).
+			At for FMTlayer accessing std::map (mapping).
 			*/
 			const T& at(const FMTcoordinate& coordinate) const
 			{

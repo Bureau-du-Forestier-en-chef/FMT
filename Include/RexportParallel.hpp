@@ -52,14 +52,14 @@ namespace R
 
 		Rcpp::class_<Parallel::FMTreplanningtask>("FMTreplanningtask", "@DocString(FMTreplanningtask)")
 			.derives<Parallel::FMTtask>("FMTtask")
-			.constructor("@DocString(FMTreplanningtask())")
+			.constructor("@DocString(FMTreplanningtask::FMTreplanningtask(...))")
 			.constructor<const Models::FMTmodel&,
 			const Models::FMTmodel&,
 			const Models::FMTmodel&,
 			std::string,
 			std::string,
 			std::vector<std::string>,
-			Core::FMToutputlevel>("@DocString(Parallel::FMTreplanningtask())")
+			Core::FMToutputlevel>("@DocString(FMTreplanningtask())")
 			.method("setreplicates", &Parallel::FMTreplanningtask::setreplicates,
 				"@DocString(FMTreplanningtask::setreplicates)")
 			.method("setreplanningperiods", &Parallel::FMTreplanningtask::setreplanningperiods,
@@ -68,21 +68,21 @@ namespace R
 
 		Rcpp::class_<Parallel::FMTplanningtask>("FMTplanningtask", "@DocString(FMTplanningtask)")
 			.derives<Parallel::FMTtask>("FMTtask")
-			.constructor("@DocString(FMTplanningtask())")
+			.constructor("@DocString(FMTplanningtask::FMTplanningtask())")
 			.constructor<int,
 			int,
 			std::string,
 			std::string,
 			std::vector<std::string>,
-			Core::FMToutputlevel>("@DocString(Parallel::FMTplanningtask())");
+			Core::FMToutputlevel>("@DocString(FMTplanningtask::FMTplanningtask(...))");
 
 		Rcpp::class_<Parallel::FMTopareaschedulertask>("FMTopareaschedulertask", "@DocString(FMTopareaschedulertask)")
 			.derives<Parallel::FMTtask>("FMTtask")
-			.constructor("@DocString(FMTopareaschedulertask())")
+			.constructor("@DocString(FMTopareaschedulertask::FMTopareaschedulertask())")
 			.constructor<Models::FMTlpmodel,
 			std::vector<Heuristics::FMToperatingareascheme>,
 			Core::FMToutputnode,std::string,
-			std::string,unsigned int,double>("@DocString(Parallel::FMTopareaschedulertask())");
+			std::string,unsigned int,double>("@DocString(FMTopareaschedulertask::FMTopareaschedulertask(...))");
 
 
 		Rcpp::class_<Parallel::FMTtaskhandler>("FMTtaskhandler", "@DocString(FMTtaskhandler)")

@@ -73,15 +73,15 @@ void exportHeuristics()
 	bp::class_<Heuristics::FMToperatingareacluster>("FMToperatingareacluster", "@DocString(FMToperatingareacluster)")
         .def(bp::init<const Heuristics::FMToperatingareacluster&,const double&, const double&>())
         .def("getfilteredcluster",&Heuristics::FMToperatingareacluster::getfilteredcluster,
-             "@DocString(FMToperatingareaheuristic::getfilteredcluster)")
+             "@DocString(FMToperatingareacluster::getfilteredcluster)")
         .def("getallmasks",&Heuristics::FMToperatingareacluster::getallmasks,
-             "@DocString(FMToperatingareaheuristic::getallmasks)")
+             "@DocString(FMToperatingareacluster::getallmasks)")
 		.def("getcentroid", &Heuristics::FMToperatingareacluster::getcentroid,
-			"@DocString(FMToperatingareaheuristic::getcentroid)")
+			"@DocString(FMToperatingareacluster::getcentroid)")
         .def("setminimalarea",&Heuristics::FMToperatingareacluster::setminimalarea,
-             "@DocString(FMToperatingareaheuristic::setminimalarea)")
+             "@DocString(FMToperatingareacluster::setminimalarea)")
         .def("setmaximalarea",&Heuristics::FMToperatingareacluster::setmaximalarea,
-             "@DocString(FMToperatingareaheuristic::setmaximalarea)");
+             "@DocString(FMToperatingareacluster::setmaximalarea)");
 
 	define_pylist<Heuristics::FMToperatingareacluster>();
 
@@ -101,15 +101,15 @@ void exportHeuristics()
 
 	bp::class_<Heuristics::FMToperatingareascheduler, bp::bases<Heuristics::FMTlpheuristic>>("Heuristics::FMToperatingareascheduler", "@DocString(FMToperatingareascheduler)")
 		.def("initialsolve", &Heuristics::FMToperatingareascheduler::initialsolve,
-			"@DocString(FMToperatingareaheuristic::initialsolve)")
+			"@DocString(FMToperatingareascheduler::initialsolve)")
 		.def("branchnboundsolve", &Heuristics::FMToperatingareascheduler::branchnboundsolve,
-			"@DocString(FMToperatingareaheuristic::branchnboundsolve)")
+			"@DocString(FMToperatingareascheduler::branchnboundsolve)")
 		.def("getsolution", &Heuristics::FMToperatingareascheduler::getsolution,
-			getsolution_overload(bp::args("yldname","postsolvefiler","basethemes"),"@DocString(FMToperatingareaheuristic::getsolution)"))
+			getsolution_overload(bp::args("yldname","postsolvefiler","basethemes"),"@DocString(FMToperatingareascheduler::getsolution)"))
 		.def("setasprimal", &Heuristics::FMToperatingareascheduler::setasprimal,
-			"@DocString(FMToperatingareaheuristic::setasprimal)")
+			"@DocString(FMToperatingareascheduler::setasprimal)")
 		.def("setproportionofset", &Heuristics::FMToperatingareascheduler::setproportionofset,
-			"@DocString(FMToperatingareaheuristic::setproportionofset)");
+			"@DocString(FMToperatingareascheduler::setproportionofset)");
 
 	define_pylist<Heuristics::FMToperatingareascheduler>();
 	#endif

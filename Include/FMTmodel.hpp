@@ -212,6 +212,10 @@ namespace Models
 		by the thead to the solver to make sure it does not work in concurrency.
 		*/
 		virtual void setparallellogger(Logging::FMTlogger& logger);
+		// DocString: FMTmodel::clearcache
+		/**
+		Clear caching element to reduce memory usage.
+		*/
 		virtual void clearcache();
 		// DocString: FMTmodel(const std::vector<Core::FMTactualdevelopment>& larea, const std::vector<Core::FMTtheme>, const std::vector<Core::FMTaction>, const std::vector<Core::FMTtransition>, const Core::FMTyields, const Core::FMTlifespans, const std::string, const std::vector<Core::FMToutput>, std::vector<Core::FMTconstraint>,FMTmodelparameters)
 		/**
@@ -597,17 +601,17 @@ namespace Models
 		Get a clone of the FMTmodel
 		*/
 		virtual std::unique_ptr<FMTmodel>clone() const;
-		// DocString: FMTmodel::setparameter(const FMTintmodelparameters, const int&)
+		// DocString: FMTmodel::setparameter(const FMTintmodelparameters,const int&)
 		/**
 		Setter for int model parameters. See FMTmodelparameters.h.
 		*/
 		virtual bool setparameter(const FMTintmodelparameters& key, const int& value);
-		// DocString: FMTmodel::setparameter(const FMTdblmodelparameters, const double)
+		// DocString: FMTmodel::setparameter(const FMTdblmodelparameters,const double)
 		/**
 		Setter for double model parameters. See FMTmodelparameters.h.
 		*/
 		virtual bool setparameter(const FMTdblmodelparameters& key, const double& value);
-		// DocString: FMTmodel::setparameter(const FMTboolmodelparameters, const bool)
+		// DocString: FMTmodel::setparameter(const FMTboolmodelparameters,const bool)
 		/**
 		Setter for bool model parameters. See FMTmodelparameters.h.
 		*/

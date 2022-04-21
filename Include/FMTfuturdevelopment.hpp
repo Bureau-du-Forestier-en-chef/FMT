@@ -48,7 +48,7 @@ namespace Core
 			Default destructor for FMTfuturdevelopement.
 			*/
 			~FMTfuturdevelopment() = default;
-			// DocString: FMTdevelopment(const FMTdevelopment&)
+			// DocString: FMTfuturdevelopment(const FMTdevelopment&)
 			/**
 			FMTdevelopement constructor using a FMTdevelopment.
 			*/

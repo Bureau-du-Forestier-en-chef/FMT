@@ -94,12 +94,12 @@ namespace Heuristics
 		FMToperatingareacluster default destructor.
 		*/
 		~FMToperatingareacluster() = default;
-		// DocString: FMToperatingareacluster::getbinary()
+		// DocString: FMToperatingareacluster::getbinary
 		/**
 		Returns the corresponding binary const reference of the cluster corresponding to the given (mask).
 		*/
 		const FMToperatingareaclusterbinary& getbinary(const Core::FMTmask& mask) const;
-		// DocString: FMToperatingareacluster::getcentroid()
+		// DocString: FMToperatingareacluster::getcentroid
 		/**
 		Getter for cluster centroid binary.
 		*/
@@ -107,7 +107,7 @@ namespace Heuristics
             {
             return centroid;
             }
-		// DocString: FMToperatingareacluster::getbinaries()
+		// DocString: FMToperatingareacluster::getbinaries
 		/**
 		Getter for the binaries vector member data.
 		*/

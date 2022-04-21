@@ -43,7 +43,7 @@ namespace Parallel
 		Default destructor for FMTtaskhandler.
 		*/
 		~FMTtaskhandler()=default;
-		// DocString: FMTtaskhandler::FMTtaskhandler
+		// DocString: FMTtaskhandler::FMTtaskhandler(const Parallel::FMTtask&,unsigned int)
 		/**
 		Abstract constructor for Python and R...you need to pass a FMTtask to this constructor.
 		*/
@@ -64,24 +64,24 @@ namespace Parallel
 		Default copy assignement for FMTtaskhandler
 		*/
 		FMTtaskhandler& operator =(const FMTtaskhandler& rhs);
-		// DocString: FMTtaskhandler::gettasks()
+		// DocString: FMTtaskhandler::gettasks
 		/**
 		Return reference to the task handled by the task handler.
 		*/
 		const std::vector<std::unique_ptr<FMTtask>>& gettasks() const;
-		// DocString: FMTtaskhandler::gettasksfromdynamiccast()
+		// DocString: FMTtaskhandler::gettasksfromdynamiccast
 		/**
 		Return reference to the task already in the ptrype.
 		*/
 		template<class ptrtype>
 		const std::vector<const ptrtype*> gettasksfromdynamiccast() const;
-		// DocString: FMTtaskhandler::conccurentrun()
+		// DocString: FMTtaskhandler::conccurentrun
 		/**
 		Will use the split task virtual function to
 		generate all the tasks at the same time.
 		*/
 		void conccurentrun();
-		// DocString: FMTtaskhandler::ondemandrun()
+		// DocString: FMTtaskhandler::ondemandrun
 		/**
 		Will use the spawn task virtual function to generate task from the master task and add to a list
 		If the task is completed it will be removed from the list.

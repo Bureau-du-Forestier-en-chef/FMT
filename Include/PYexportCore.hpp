@@ -159,7 +159,7 @@ void exportCore()
                 .def("operable",&Core::FMTdevelopment::operable,operable_overloads(bp::args("action,yields,yieldrequest"),"@DocString(FMTdevelopment::operable)"))
                 .def("operate",&Core::FMTdevelopment::operate,
 					"@DocString(FMTdevelopment::operate)")
-				 .def("getyieldrequest",&Core::FMTdevelopment::getyieldrequest,getyieldrequest_overloads("@DocString(FMToutput::getyieldrequest)"))
+				 .def("getyieldrequest",&Core::FMTdevelopment::getyieldrequest,getyieldrequest_overloads("@DocString(FMTdevelopment::getyieldrequest)"))
 				.def("__str__", &Core::FMTdevelopment::operator std::string,
 					"@DocString(FMTdevelopment::operator std::string)")
                 .setattr("__hash__",&boost::pyhash<Core::FMTdevelopment>);
@@ -338,7 +338,7 @@ void exportCore()
 				.def("__str__", &Core::FMTschedule::operator std::string,
 					"@DocString(FMTschedule::operator std::string)")
 				.def("__add__", &Core::FMTschedule::operator +,
-					"@DocString(FMTschedule::operator +)")
+					"@DocString(FMTschedule::operator+)")
 				.def("actionarea", &Core::FMTschedule::actionarea,
 					"@DocString(FMTschedule::actionarea)")
 				.def("getperiod", &Core::FMTschedule::getperiod,
@@ -368,11 +368,11 @@ void exportCore()
 				.def("__eq__", &Core::FMTconstraint::operator ==,
 					"@DocString(FMTconstraint::operator==)")
 				.def("getiterationchange",&Core::FMTconstraint::getiterationchange,
-					"@DocString(FMTconstants::getiterationchange,)")
+					"@DocString(FMTconstraint::getiterationchange,)")
 				.def("isspatial",&Core::FMTconstraint::isspatial,
-					"@DocString(FMTconstants::isspatial)")
+					"@DocString(FMTconstraint::isspatial)")
 				.def("sense",&Core::FMTconstraint::sense,
-					"@DocString(FMTconstants::sense)");
+					"@DocString(FMTconstraint::sense)");
 
 			define_FMTlist<Core::FMTconstraint>();
 			define_FMTlist<Core::FMTGCBMtransition>();

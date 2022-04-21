@@ -10,11 +10,12 @@ cmake_minimum_required(VERSION 3.6)
 
 function(createexecutable executablecpplocation)
   set(newprojectsourcefiles "${executablecpplocation}")
-  list(APPEND newprojectsourcefiles "${FMTHEADERFILES}")
+  #list(APPEND newprojectsourcefiles "${FMTHEADERFILES}")
   list(APPEND newprojectsourcefiles "${FMTSOURCEFILES}")
   get_filename_component(executablename "${executablecpplocation}" NAME_WE)
   message("Generating build for ${executablename}")
   add_executable(${executablename} ${newprojectsourcefiles})
+  target_include_directories(${executablename} PRIVATE ${FMTINCLUDEDIR})
   if (NOT MSVC)
 		set_target_properties(${executablename}
 			PROPERTIES
@@ -49,6 +50,7 @@ endforeach()
 
 
 add_library(FMTlib SHARED ${FMTSOURCEFILES})
+target_include_directories(FMTlib PRIVATE "${FMTINCLUDEDIR}")
 if (NOT MSVC)
 		set_target_properties( FMTlib
 			PROPERTIES
