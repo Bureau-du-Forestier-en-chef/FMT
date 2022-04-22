@@ -89,6 +89,15 @@ namespace Spatial
         {
         return y;
         }
+
+    const std::vector<double> FMTcoordinate::getSpatialCoordinate(std::vector<double> geoTransform) const
+    {
+        double xGeo = geoTransform[0] + (x + 0.5) * geoTransform[1] + (y + 0.5) * geoTransform[2];
+        double yGeo = geoTransform[3] + (x + 0.5) * geoTransform[4] + (y + 0.5) * geoTransform[5];
+
+        return std::vector<double>({ xGeo, yGeo });
+    }
+
     FMTcoordinate& FMTcoordinate::operator = (const FMTcoordinate& rhs)
         {
         if(this!=&rhs)
