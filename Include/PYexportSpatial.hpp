@@ -43,6 +43,8 @@ void exportSpatial()
 			"@DocString(FMTcoordinate::getx)")
         .def("gety",&Spatial::FMTcoordinate::gety,
 			"@DocString(FMTcoordinate::gety)")
+        .def("getSpatialCoordinate",&Spatial::FMTcoordinate::getSpatialCoordinate,
+			"@DocString(FMTcoordinate::getSpatialCoordinate)")
         .setattr("__hash__",&boost::pyhash<Spatial::FMTcoordinate>);
 
     define_FMTlayer<Core::FMTdevelopment>();

@@ -47,6 +47,7 @@ namespace Spatial
         FMTcoordinate& operator = (const FMTcoordinate& rhs);
         unsigned int getx() const;
         unsigned int gety() const;
+        const std::vector<double> getSpatialCoordinate(std::vector<double> geoTransform) const;
         bool operator == (const FMTcoordinate& rhs) const;
         bool operator < (const FMTcoordinate& rhs) const;
 		std::set<FMTcoordinate>::const_iterator closest(const std::vector<std::set<FMTcoordinate>::const_iterator>& coordinates, double& approximation) const;
