@@ -1,6 +1,17 @@
-[🇨🇦 Clickez ici pour la version anglaise](README.md)
+<a href = "./README.fr.md"><img src = "https://img.shields.io/badge/%F0%9F%87%A8%F0%9F%87%A6-Cliquez%20ici%20pour%20la%20version%20anglaise-red?style=flat-square" height="25" /></a>
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/Bureau-du-Forestier-en-chef/FMT/master/Documentation/FMTlogo.png" />
+</p>
+<h1 align="center">FMT (Forest Management Tool)</h1>
+<br><br>
+<p align="center">
+	<a href = "https://bureau-du-forestier-en-chef.github.io/FMTdocs/fr/"><img src = "https://img.shields.io/badge/%F0%9F%93%9A-Regardez%20la%20documentation%20!-green?style=flat-square" height="45" /></a>
+</p>
+<br><br>
 
 *Cette page ne donne qu'un aperçu du processus d'installation et des fonctionnalités de FMT. Pour plus détails, visitez note page de documentation pour [FMT](https://bureau-du-forestier-en-chef.github.io/FMTdocs/fr/).*
+
 
 # 📑 Description
 
@@ -29,45 +40,11 @@ Si votre intrant principal est un modèle Woodstock, FMT est probablement un bon
 
 La manière la plus simple d'utiliser FMT est d'utiliser Cmake >= 3.15 pour génerer une librairie partagée pour R ou pour Python, ou bien directement en C++. Le script Cmake de ce *repository* permet de génerer FMT sous Windows en utilisant VS2017/2019 ou MINGW-64 sur MSYS2 ou CYGWIN.
 
-Pour creer une librairie Python de FMT sous Windows (au format `.pyd` ou `.whl`), suivez ces instructions :
-
-1. Téléchargez et installez [Visual Studio Community](https://visualstudio.microsoft.com/vs/community/)
-2. Téléchargez et installez [Mosek](https://www.mosek.com/)
-3. Créez un dossier `FMT-Installation` sur votre ordinateur. **Faites attention qu'il n'y ai pas d'espaces ou d'accents dans le chemin qui mène à ce dossier.**
-4. Ouvrez une invite de commande, et utilisez la commande `cd` pour naviguer jusqu'au dossier `FMT-Installation`.
-5. Utilisez `git clone https://github.com/microsoft/vcpkg.git` dans l'invite de commande pour télécharger [vcpkg](https://github.com/microsoft/vcpkg). Si voues n'avez pas `git` installé sur votre ordinateur, installez le depuis [cette page](https://git-scm.com/).
-6. Utilisez `cd ./vcpkg` pour naviguer jusqu'au dossier de vcpkg.
-7. Utilisez la commande suivante pour télécharger et installer toutes les librairies nécéssaires pour compiler FMT (⚠️ **Cela va prendre du temps, et va utiliser de l'espace sur votre ordinateur**): `vcpkg install boost:x64-windows boost-dll:x64-windows boost-icl:x64-windows boost-python:x64-windows gdal:x64-windows geos:x64-windows pthreads:x64-windows clp:x64-windows`
-8. Utilisez `cd ..` pour retourner dans le dossier `FMT-Installation`.
-9. Clonez ce *repository* avec la commande `git clone https://github.com/gcyr/FMT.git`
-10. Utilisez `cd ./FMT` pour naviguer dans le dossier FMT téléchargé depuis ce *repository*.
-11. Utilisez les commandes suivantes pour compiler FMT (⚠️ **Cela va prendre du temps**):
-
-```bash
-cmake CMakeLists.txt -B build/release -G "Visual Studio 16 2019" -DVCPKG_TARGET_TRIPLET=x64-windows -DCMAKE_TOOLCHAIN_FILE="../vcpkg/scripts/buildsystems/vcpkg.cmake" -DBOOST_DIR="../vcpkg/installed/x64-windows/" -DCMAKE_BUILD_TYPE=Release -DGDAL_DIR="../vcpkg/installed/x64-windows/" -DGEOS_DIR="../vcpkg/installed/x64-windows/" -DOSI_DIR="../vcpkg/installed/x64-windows/" -DPYTHON_DIR="../vcpkg/packages/python3_x64-windows/" -DMOSEK_DIR="C:/PROGRA~1/Mosek/"
-cmake --build build/release --config Release
-cmake --install build/release --config Release
-```
-> 💡 Faites bien attention que dans la première commande `cmake`, le dossier `DMOSEK_DIR` doit pointer vers le dossier où vous avez installé Mosek.
-
-12. Importez FMT dans Python avec les commandes suivantes:
-
-```python
-import sys
-sys.path.append(r"<chemin vers le dossier de FMT>/")
-sys.path.append(r"<chemin vers le dossier de FMT>/Release/")
-from FMT import Models
-from FMT import Parser
-from FMT import Core
-from FMT import Version
-```
-
-Ou bien installez FMT via `pip` et la fichier `.whl` que vous avez créé en compilant FMT.
-Le fichier `.whl` se trouve dans le dossier `FMT/build/release/bin/Release`. Pour l'installer, utilisez la commande suivante dans une invite de commande Anaconda, ou bien [après avoir installé `pip`](https://packaging.python.org/tutorials/installing-packages/):
-
-```bash
-pip install "<chemin vers le dossier de FMT>\build\release\bin\Release/FMT-0.9.1-py3-none-any.whl"
-```
+<br><br>
+<p align="center">
+	<a href = "https://bureau-du-forestier-en-chef.github.io/FMTdocs/fr/docs/download_install/"><img src = "https://img.shields.io/badge/%F0%9F%92%BD-Installation%20pas%20%C3%A0%20pas%20dans%20la%20documentation-yellow?style=flat-square" height="45" /></a>
+</p>
+<br><br>
 
 # 📦 Dépendances
 
@@ -83,9 +60,15 @@ pip install "<chemin vers le dossier de FMT>\build\release\bin\Release/FMT-0.9.1
 
 # 📖 Documentation
 
-La documentation de FMT doit être compilée avec le logiciel Doxygen (http://www.doxygen.nl).
+FMT possède une documentation écrite à la main, détaillée et avec des exercices; ainsi qu'une documentation générée par le biais de Doxygen. Les deux sont accessibles via la page web de documentation de FMT.
 
-Dans une invite de commande Powershell, allez dans le dossier FMT et utilisez :
+<br><br>
+<p align="center">
+	<a href = "https://bureau-du-forestier-en-chef.github.io/FMTdocs/fr/"><img src = "https://img.shields.io/badge/%F0%9F%93%9A-Regardez%20la%20documentation%20!-green?style=flat-square" height="45" /></a>
+</p>
+<br><br>
+
+**Si vous souhaitez compiler la documentation Doxygen par vous même**, dans une invite de commande Powershell, allez dans le dossier FMT et utilisez :
 
  ```powershell
   cd Documentation
