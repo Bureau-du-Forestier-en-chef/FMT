@@ -1,4 +1,4 @@
-<a href = "./README.fr.md"><img src = "https://img.shields.io/badge/%F0%9F%87%A8%F0%9F%87%A6-Cliquez%20ici%20pour%20la%20version%20anglaise-red?style=flat-square" height="25" /></a>
+<a href = "./README.md"><img src = "https://img.shields.io/badge/%F0%9F%87%A8%F0%9F%87%A6-Cliquez%20ici%20pour%20la%20version%20anglaise-red?style=flat-square" height="25" /></a>
 
 <p align="center">
   <img src="https://raw.githubusercontent.com/Bureau-du-Forestier-en-chef/FMT/master/Documentation/FMTlogo.png" />
