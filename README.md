@@ -1,8 +1,18 @@
-[🇼🇫 Click here for a french version](README.fr.md)
+<a href = "./README.fr.md"><img src = "https://img.shields.io/badge/%F0%9F%87%AB%F0%9F%87%B7-Click%20here%20for%20a%20french%20version-blue?style=flat-square" height="25" /></a>
+
+<p align="center">
+  <img src="https://raw.githubusercontent.com/Bureau-du-Forestier-en-chef/FMT/master/Documentation/FMTlogo.png" />
+</p>
+<h1 align="center">FMT (Forest Management Tool)</h1>
+<br><br>
+<p align="center">
+	<a href = "https://bureau-du-forestier-en-chef.github.io/FMTdocs/"><img src = "https://img.shields.io/badge/%F0%9F%93%9A-Take%20a%20look%20at%20the%20documentation%20!-green?style=flat-square" height="45" /></a>
+</p>
+<br><br>
 
 *This page provides only an overview of the installation process and features of FMT. For more details, visit our documentation page [here](https://bureau-du-forestier-en-chef.github.io/FMTdocs/).*
 
-# 📑 Description
+## 📑 Description
 
 FMT (**F**orest **M**anagement **T**ool) is an **open source Forest Management library**.
 
@@ -11,13 +21,13 @@ FMT (**F**orest **M**anagement **T**ool) is an **open source Forest Management l
 - It's generic approach to forest planning gives the opportunity to the user to manipulate forest planning models and generate forest planning solutions. 
 - It's objective is to bring all forest planning models types onto the same generic library to help the community to develop new approaches to forest planning problems or improve the one that have been there for years.
 
-# ✨ Features
+## ✨ Features
 
-## Spatially referenced forest planning
+### Spatially referenced forest planning
 
 FMT allows the user to generate and solve spatially referenced type III forest planning model problems. The tool can be used to do sensitivity analyses over multiple parameters of the forest planning model. It can also be used for analysing impacts of stochastic events such as fire or spruce budworm using Replanning.
 
-## Spatially explicit forest planning
+### Spatially explicit forest planning
 
 FMT gives a framework to construct heuristics to solve forest planning model. FMT is the perfect tool to solve user specific problems related to forest planning like operating area scheduling. It can also be used to implement simple simulation process. The library offers some tools to spatialize spatially referenced solutions or to generate spatially explicit solutions.
 
@@ -25,55 +35,21 @@ FMT is extremely usefull when it comes to implement metaheuristics such as [Simu
 
 If your main inputs are Woodstock files, FMT is probably the way to go to develop new approaches for optimization or simulation of harvest schedules or even stochastic events.
 
-# 💽 Installation
+## 💽 Installation
 
 The easiest way to use FMT is to use Cmake >= 3.15 to generate a shared library for R or Python, or directly from C++. The Cmake script of this repository supports generating FMT on Windows using VS2017/2019 or MINGW-64 on MSYS2 or CYGWIN.
 
-To create a Python library from FMT on Windows (in `.pyd` and `.whl` format), follow these instructions :
+<br><br>
+<p align="center">
+	<a href = "https://bureau-du-forestier-en-chef.github.io/FMTdocs/docs/download_install/"><img src = "https://img.shields.io/badge/%F0%9F%92%BD-See%20installation%20instructions%20in%20the%20documentation-yellow?style=flat-square" height="45" /></a>
+</p>
+<br><br>
 
-1. Download and install [Visual Studio Community](https://visualstudio.microsoft.com/vs/community/)
-2. Download and install [Mosek](https://www.mosek.com/)
-3. Create a `FMT-Installation` folder in your computer. **Make sure that there is no spaces or accents in the path leading to the folder.**
-4. Open a command prompt, and use the `cd` command to navigate to the `FMT-Installation` folder.
-5. Use `git clone https://github.com/microsoft/vcpkg.git` in the command prompt to download [vcpkg](https://github.com/microsoft/vcpkg). If you don't have git installed on your computer, install it from [here](https://git-scm.com/).
-6. Use `cd ./vcpkg` to navigate into the vcpkg folder.
-7. Use the following command to install the dependencies necessary to compile FMT (⚠️ **This will take time, and will use some space on your computer**): `vcpkg install boost:x64-windows boost-dll:x64-windows boost-icl:x64-windows boost-python:x64-windows gdal:x64-windows geos:x64-windows pthreads:x64-windows clp:x64-windows`
-8. Use `cd ..` to go back to the `FMT-Installation` folder.
-9. Clone this repository using `git clone https://github.com/gcyr/FMT.git`
-10. Use `cd ./FMT` to navigate into the FMT folder downloaded from this repository.
-11. Use the following commands to compile FMT (⚠️ **This will take time**):
+## 📦 Dependencies
 
-```bash
-cmake CMakeLists.txt -B build/release -G "Visual Studio 16 2019" -DVCPKG_TARGET_TRIPLET=x64-windows -DCMAKE_TOOLCHAIN_FILE="../vcpkg/scripts/buildsystems/vcpkg.cmake" -DBOOST_DIR="../vcpkg/installed/x64-windows/" -DCMAKE_BUILD_TYPE=Release -DGDAL_DIR="../vcpkg/installed/x64-windows/" -DGEOS_DIR="../vcpkg/installed/x64-windows/" -DOSI_DIR="../vcpkg/installed/x64-windows/" -DPYTHON_DIR="../vcpkg/packages/python3_x64-windows/" -DMOSEK_DIR="C:/PROGRA~1/Mosek/"
-cmake --build build/release --config Release
-cmake --install build/release --config Release
-```
-> 💡 Be careful that in the first `cmake` command, the `DMOSEK_DIR` parameter must point to the folder where you have installed Mosek.
-
-12. Import FMT into Python by using:
-
-```python
-import sys
-sys.path.append(r"<Path to FMT folder>/")
-sys.path.append(r"<Path to FMT folder>/Release/")
-from FMT import Models
-from FMT import Parser
-from FMT import Core
-from FMT import Version
-```
-
-Or by installing FMT via pip and the `.whl` file that you have created by compiling FMT. 
-The `.whl` file is located in the folder `FMT/build/release/bin/Release`. To install it, use the following command in an Anaconda prompt, or [after installing Pip](https://packaging.python.org/tutorials/installing-packages/):
-
-```bash
-pip install "<path to FMT folder>\build\release\bin\Release/FMT-0.9.1-py3-none-any.whl"
-```
-
-# 📦 Dependencies
-
-## Required :
+### Required :
   + Boost compiled with zlib. (http://boost.org)
-## Optional :
+### Optional :
   + GEOS library (http://trac.orgeo.org/geos/)
   + GDAL library (http://GDAL.org)
   + Mosek library (http://mosek.com)
@@ -81,11 +57,17 @@ pip install "<path to FMT folder>\build\release\bin\Release/FMT-0.9.1-py3-none-a
   + Boost Python library
   + Rcpp and cran-R with at least Rtools40 (http://cran.r-project.org)
 
-# 📖 Documentation
+## 📖 Documentation
 
-The documentation of FMT must be compiled with Doxygen (http://www.doxygen.nl).
+**FMT has a handwritten extensive documentation with exercises and examples**, along with a doxygen-generated documentation that are both available on the FMT documentation webpage.
 
-With a powershell prompt, go into the FMT folder and use:
+<br><br>
+<p align="center">
+	<a href = "https://bureau-du-forestier-en-chef.github.io/FMTdocs/"><img src = "https://img.shields.io/badge/%F0%9F%93%9A-Take%20a%20look%20at%20the%20documentation%20!-green?style=flat-square" height="45" /></a>
+</p>
+<br><br>
+
+**If you want to compile the doxygen documentation by yourself**, with a powershell prompt, go into the FMT folder and use:
 
  ```powershell
   cd Documentation
@@ -98,9 +80,7 @@ To populate comments in R and Python source files (files starting with R and PY)
   python commentsPythonandR.py
  ```
 
-You can take a look at this presentation for a short training on how to use FMT (R/Python) [FMT_R_Python_Training.pptx](Documentation/FMT_R_Python_Training.pptx) 
-
-# 👉 Examples
+## 👉 Examples
 
  Here's a short example for reading a forest planning model and solve the type III Linear programming formulation.
  + Using Python
@@ -174,7 +154,7 @@ optimizationmodel.setobjective(objective);
 optimizationmodel.initialsolve();
 ```
 
-# 🔑 License 
+## 🔑 License 
 
 FMT is a [LiLiQ-R 1.1](https://github.com/gcyr/FMT/blob/master/LICENSES/EN/LILIQ-R11EN.pdf) licensed library.
 
