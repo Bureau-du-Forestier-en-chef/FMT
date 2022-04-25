@@ -40,6 +40,5 @@ gdal/*
 compile_commands.json
 .cmake/*
 /Examples/C++/tests/BFECtests.csv
-/Examples/C++/testOAschedulerBFEC.cpp
 .vscode/*
 *html
