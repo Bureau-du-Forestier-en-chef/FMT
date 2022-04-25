@@ -1031,10 +1031,12 @@ namespace Models
 			const std::vector<double>nelements(newstats.cols, 0.0);
 			const std::vector<double>lower_bounds(newstats.cols, 0.0);
 			const std::vector<double>upper_bounds(newstats.cols, COIN_DBL_MAX);
-			solver.addCols(newstats.cols, &column_Starts[0], &targetrows[0],
-				&nelements[0], &lower_bounds[0],
-				&upper_bounds[0], &nelements[0]);
-
+			if (newstats.cols>0)
+				{
+				solver.addCols(newstats.cols, &column_Starts[0], &targetrows[0],
+					&nelements[0], &lower_bounds[0],
+					&upper_bounds[0], &nelements[0]);
+				}
 			//rows
 			std::vector<int>row_Starts;
 			//row_Starts.reserve(targets.size());
@@ -1068,8 +1070,11 @@ namespace Models
 			const std::vector<double>row_bounds(periodsize, 0.0);
 			const int nrows = (newconstraintID - solver.getNumRows());
 			row_Starts.push_back(static_cast<int>(targetcols.size()));
-			solver.addRows(nrows, &row_Starts[0], &targetcols[0],
-				&elements[0], &row_bounds[0], &row_bounds[0]);
+			if (nrows>0)
+				{
+				solver.addRows(nrows, &row_Starts[0], &targetcols[0],
+					&elements[0], &row_bounds[0], &row_bounds[0]);
+				}
 			oldstats.cols = solver.getNumCols();
 			oldstats.rows = solver.getNumRows();
 			return oldstats;

@@ -59,7 +59,7 @@ int main()
 		}
 		scheparser.write(mschedules,testfolderout+"forcemodif._seq");
 		const std::vector<Core::FMTactualdevelopment> aream = optimizationmodel.getarea();
-		double totarea;
+		double totarea=0;
 		for(const auto& actdev : aream)
 		{
 			totarea+=actdev.getarea();

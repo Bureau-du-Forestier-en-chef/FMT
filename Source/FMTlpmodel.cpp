@@ -712,7 +712,7 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 				}
 				++mskid;
 			}
-			modelwithproportion.solver.setColSetBounds(&(*colstarget.cbegin()), &(*colstarget.cend()), &newbounds[0]);
+			modelwithproportion.solver.setColSetBounds(&colstarget[0],&colstarget.back() + 1, &newbounds[0]);
 			if (!modelwithproportion.solver.resolve())
 			{
 				_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,

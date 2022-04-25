@@ -633,7 +633,10 @@ namespace Parser
 				{
 					main_equation = body.substr(0, body.find("_PENALTY"));
 					boost::trim(main_equation);
-					penalty_operator = main_equation.back();
+					if (!main_equation.empty())
+						{
+						penalty_operator = main_equation.back();
+						}
 					penalty_equation = (body.substr(body.find("_PENALTY")));
 					boost::trim(penalty_equation);
 					if (!main_equation.empty())
