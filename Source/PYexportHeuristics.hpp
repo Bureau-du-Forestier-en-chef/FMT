@@ -21,7 +21,6 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 namespace Python
 {
-BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(getsolution_overload, getsolution, 1, 3)
 void exportHeuristics()
 {
 	namespace bp = boost::python;
@@ -105,7 +104,7 @@ void exportHeuristics()
 		.def("branchnboundsolve", &Heuristics::FMToperatingareascheduler::branchnboundsolve,
 			"@DocString(FMToperatingareaheuristic::branchnboundsolve)")
 		.def("getsolution", &Heuristics::FMToperatingareascheduler::getsolution,
-			getsolution_overload(bp::args("yldname","postsolvefiler","basethemes"),"@DocString(FMToperatingareaheuristic::getsolution)"))
+			"@DocString(FMToperatingareaheuristic::getsolution)")
 		.def("setasprimal", &Heuristics::FMToperatingareascheduler::setasprimal,
 			"@DocString(FMToperatingareaheuristic::setasprimal)")
 		.def("setproportionofset", &Heuristics::FMToperatingareascheduler::setproportionofset,
