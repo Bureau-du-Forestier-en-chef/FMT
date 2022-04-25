@@ -852,7 +852,7 @@ namespace Heuristics
 			return gotschedule;
 			}
 
-	std::vector<Core::FMTtimeyieldhandler> FMToperatingareascheduler::getsolution(const std::string& yldname, Core::FMTmaskfilter filter, std::vector<Core::FMTtheme> basethemes) const
+	std::vector<Core::FMTtimeyieldhandler> FMToperatingareascheduler::getsolution(const std::string& yldname) const
 		{
 		std::vector<Core::FMTtimeyieldhandler>allhandlers;
 		try {
@@ -871,26 +871,8 @@ namespace Heuristics
                 std::vector<std::string>source;
 				Core::FMTtimeyieldhandler handler(operatingareait->getmask());
                 handler.push_data(yldname,Core::FMTdata(data, Core::FMTyieldparserop::FMTnone, source));
-				if(!filter.emptyflipped() && !basethemes.empty())
-				{
-					allhandlers.push_back(*dynamic_cast<Core::FMTtimeyieldhandler*>(handler.postsolve(filter,basethemes).get()));
-				}else if(filter.emptyflipped() || !basethemes.empty())
-				{
-					if(filter.emptyflipped())
-					{
-						_exhandler->raise(Exception::FMTexc::FMTinvalid_theme,
-						"No (basethemes) for the postsolve while (selectedmask) was pass to the function. You must pass both to the function to postsolve the yieldhandler.",
-												"FMToperatingareascheduler::getsolution", __LINE__, __FILE__);
-					}
-					else{
-						_exhandler->raise(Exception::FMTexc::FMTinvalid_maskrange,
-						"No (selectedmask) for the postsolve while (basethemes) was pass to the function. You must pass both to the function to postsolve the yieldhandler.",
-												"FMToperatingareascheduler::getsolution", __LINE__, __FILE__);
-					}
-				}
-				else{
-					allhandlers.push_back(handler);
-				} 
+				handler.push_base(0);
+				allhandlers.push_back(handler);
                 }
 		}catch (...)
 			{
