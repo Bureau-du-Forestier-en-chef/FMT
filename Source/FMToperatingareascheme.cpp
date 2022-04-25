@@ -332,23 +332,24 @@ std::vector<double>FMToperatingareascheme::fillpattern(const std::vector<double>
 			values.push_back(value);
 			}
 		}
-	if (startat>=0)
-		{
-		for (size_t period = 1; period < static_cast<size_t>(startat); ++period)
+	if(startat>=0)//if<0 no pattern... 
+	{
+		// always zero based ... 
+		size_t period = 0;
+		//fill partern with 0 before the period where the pattern start
+		while(period<static_cast<size_t>(startat))
 		{
 			values.emplace(values.begin(), 0);
+			++period;
 		}
-		values.emplace(values.begin(), 1);
-		values.emplace(values.begin(), 0);
-		for (size_t vloc = 2; vloc < (static_cast<size_t>(startat) + 2); ++vloc)
+		period = 0;
+		//For period before the starting period of the optimization fill with 1 
+		while(period < startingperiod)
 		{
-			int period = static_cast<int>(vloc - 1);
-			if (period < static_cast<int>(startingperiod))
-			{
-				values[vloc] = 1;
-			}
+			values[period] =  1;
+			++period;
 		}
-		}
+	}
 	return values;
 	}
 

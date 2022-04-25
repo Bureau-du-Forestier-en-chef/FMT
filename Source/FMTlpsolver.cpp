@@ -98,6 +98,11 @@ namespace Models
 	FMTlpsolver::FMTlpsolver(const FMTlpsolver& rhs) :Core::FMTobject(rhs), solverinterface(), usecache(rhs.usecache),matrixcache(rhs.matrixcache),solvertype(rhs.solvertype)
 		{
 		solverinterface = copysolverinterface(rhs.solverinterface, rhs.solvertype);
+		//Fix because mosek resolve in the copysolver maybe return an non optimal solution 
+		if(rhs.solverinterface->isProvenOptimal() && !solverinterface->isProvenOptimal())
+		{
+			this->resolve();
+		}
 		//passinmessagehandler(*_logger);
 		}
 
@@ -118,6 +123,11 @@ namespace Models
 			usecache = rhs.usecache;
 			solvertype = rhs.solvertype;
 			solverinterface = copysolverinterface(rhs.solverinterface,rhs.solvertype);
+			//Fix because mosek resolve in the copysolver maybe return an non optimal solution 
+			if(rhs.solverinterface->isProvenOptimal() && !solverinterface->isProvenOptimal())
+			{
+				this->resolve();
+			}
 			//passinmessagehandler(*_logger);
 			}
 		return *this;
