@@ -1,6 +1,7 @@
 TEST;primarylocation;scenario;doublevalue
 Simpleplanning;;;
 Spatialyexplicitsimulation;;;
+Spatialyexplicitsimulation_doplanning;;;
 GetCarbonpredictors;;;
 maptoFMTforest;;;
 testyieldmodel;;;

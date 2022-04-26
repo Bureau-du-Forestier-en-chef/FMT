@@ -69,7 +69,10 @@ namespace Spatial
 
 	FMTspatialnodescache::FMTspatialnodescache(const FMTspatialnodescache& rhs) : actualcache(nullptr), staticnodes(nullptr), patterncache(rhs.patterncache)
 		{
-		staticnodes = new Graph::FMToutputnodecache<FMTcoordinate, FMTcoordinate*>(*rhs.staticnodes);
+			if(rhs.staticnodes != nullptr)
+			{
+				staticnodes = new Graph::FMToutputnodecache<FMTcoordinate, FMTcoordinate*>(*rhs.staticnodes);
+			}
 		}
 
 	FMTspatialnodescache& FMTspatialnodescache::operator = (const FMTspatialnodescache& rhs)
