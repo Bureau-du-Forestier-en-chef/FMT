@@ -74,7 +74,10 @@ namespace R
 			std::string,
 			std::string,
 			std::vector<std::string>,
-			Core::FMToutputlevel>("@DocString(FMTplanningtask::FMTplanningtask(...))");
+			Core::FMToutputlevel,
+			std::string>("@DocString(FMTplanningtask::FMTplanningtask(...))")
+			.method("push_back", &Parallel::FMTplanningtask::push_back,
+				"@DocString(FMTplanningtask::push_back");
 
 		Rcpp::class_<Parallel::FMTopareaschedulertask>("FMTopareaschedulertask", "@DocString(FMTopareaschedulertask)")
 			.derives<Parallel::FMTtask>("FMTtask")

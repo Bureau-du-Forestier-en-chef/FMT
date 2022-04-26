@@ -184,7 +184,7 @@ namespace Parser {
 					{
 					++firstnonemptyschedule;
 					}
-				if (!schedules.empty() && (!firstnonemptyschedule->empty()) && (!firstnonemptyschedule->begin()->second.empty()) &&
+				if (!schedules.empty() && firstnonemptyschedule!= schedules.cend() && (!firstnonemptyschedule->empty()) && (!firstnonemptyschedule->begin()->second.empty()) &&
 					(!firstnonemptyschedule->begin()->second.begin()->second.empty()))
 				{
 					const std::string maskstr = std::string(firstnonemptyschedule->begin()->second.begin()->first.getmask());
@@ -210,8 +210,8 @@ namespace Parser {
 						}
 						
 					}
-					schedulestream.close();
 				}
+				schedulestream.close();
 			}
 		}
 		catch (...)

@@ -57,6 +57,12 @@ namespace Parallel
 		// DocString: FMTparallelwriter::outputlastperiod;
 		///Lastperiod for the output value.
 		int outputlastperiod;
+		// DocString: FMTparallelwriter::projectdirectory;
+		///The directory of the primary file.
+		std::string projectdirectory;
+		// DocString: FMTparallelwriter::projectname;
+		///The name of the project file
+		std::string projectname;
 	protected:
 		// DocString: FMTparallelwriter::getdriftprobability()
 		/**
@@ -107,7 +113,8 @@ namespace Parallel
 			Core::FMToutputlevel outputlevel = Core::FMToutputlevel::totalonly,
 			std::vector<std::string>layersoptions = std::vector<std::string>(),
 			int firstperiod=1,
-			int lastperiod=1);
+			int lastperiod=1,
+			std::string primaryfilelocation = std::string());
 		// DocString: FMTparallelwriter::setlayer
 		/**
 		Add a new layer for a given model.
