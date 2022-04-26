@@ -7,6 +7,9 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 #include "FMTparallelwriter.hpp"
 #include "FMTmodel.hpp"
+#include "FMTscheduleparser.hpp"
+#include <boost/filesystem.hpp>
+#include <boost/filesystem/operations.hpp>
 
 #ifdef FMTWITHGDAL
 	#include "gdal.h"
@@ -44,7 +47,9 @@ namespace Parallel
 		outputslevel(outputlevel),
 		alllayeroptions(layersoptions),
 		outputfirstperiod(),
-		outputlastperiod()
+		outputlastperiod(),
+		projectdirectory(),
+		projectname()
 
 	{
 		try {
@@ -70,7 +75,8 @@ namespace Parallel
 		Core::FMToutputlevel outputlevel,
 		std::vector<std::string>layersoptions,
 		int firstperiod,
-		int lastperiod):
+		int lastperiod,
+		std::string primaryfilelocation):
 		outputstowrite(),
 		#ifdef FMTWITHGDAL
 		resultsdataset(createOGRdataset(location, driver)),
@@ -82,10 +88,28 @@ namespace Parallel
 		outputslevel(outputlevel),
 		alllayeroptions(layersoptions),
 		outputfirstperiod(firstperiod),
-		outputlastperiod(lastperiod)
+		outputlastperiod(lastperiod),
+		projectdirectory(),
+		projectname()
 
 	{
-
+		if (!primaryfilelocation.empty())
+		{
+			if (!boost::filesystem::is_regular_file(boost::filesystem::path(primaryfilelocation)))
+				{
+				_exhandler->raise(Exception::FMTexc::FMTinvalid_path,
+					primaryfilelocation + " is not a valid primary file", "FMTparallelwriter::FMTparallelwriter(...)", __LINE__, __FILE__);
+				}
+			const boost::filesystem::path boutdirectory = (boost::filesystem::path(primaryfilelocation).parent_path()).string();
+			if (!boost::filesystem::is_directory(boutdirectory))
+				{
+				_exhandler->raise(Exception::FMTexc::FMTinvalid_path,
+					boutdirectory.string() + " is not a valid scenarios directory", "FMTparallelwriter::FMTparallelwriter(...)", __LINE__, __FILE__);
+				}
+			projectdirectory = boutdirectory.string();
+			projectname = boost::filesystem::path(primaryfilelocation).stem().string();
+		}
+		
 	}
 
 	void FMTparallelwriter::setlayer(const Models::FMTmodel* model)
@@ -247,6 +271,22 @@ namespace Parallel
 				firstperiod,
 				lastperiod,
 				0);
+			if (!projectdirectory.empty())
+				{
+				const std::string scenarioname = modelptr->getname();
+				std::string schedulelocation = projectdirectory+"/Scenarios/"+scenarioname+"/"+projectname+"._seq";
+				if (scenarioname=="ROOT")
+					{
+					schedulelocation = projectdirectory + "/" + projectname + ".seq";
+					}
+				Parser::FMTscheduleparser parser;
+				std::vector<Core::FMTschedule>solution;
+				for (int period = 1 ; period <= modelptr->getparameter(Models::FMTintmodelparameters::LENGTH);++period)
+					{
+					solution.push_back(modelptr->getsolution(period,true));
+					}
+				parser.write(solution, schedulelocation);
+				}
 		}catch (...)
 			{
 			_exhandler->raisefromcatch("","FMTparallelwriter::getandwrite", __LINE__, __FILE__);

@@ -58,13 +58,14 @@ namespace Parallel
 		const std::string& outputlocation,
 		std::string gdaldriver,
 		std::vector<std::string>creationoptions,
-		Core::FMToutputlevel outputlevel):
+		Core::FMToutputlevel outputlevel,
+		std::string primaryfilelocatiron):
 		resultswriter(),
 		models(),
 		allschedules()
 	{
 		try {
-			resultswriter = std::shared_ptr<FMTparallelwriter>(new FMTparallelwriter(outputlocation,gdaldriver,outputlevel, creationoptions,minoutputperiod,maxoutputperiod));
+			resultswriter = std::shared_ptr<FMTparallelwriter>(new FMTparallelwriter(outputlocation,gdaldriver,outputlevel, creationoptions,minoutputperiod,maxoutputperiod, primaryfilelocatiron));
 		}catch (...)
 			{
 			_exhandler->printexceptions("", "FMTplanningtask::FMTplanningtask", __LINE__, __FILE__);
