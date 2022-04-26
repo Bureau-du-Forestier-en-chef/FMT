@@ -119,11 +119,6 @@ int main(int argc, char *argv[])
     {   
         Logging::FMTlogger().logstamp();
         #ifdef FMTWITHOSI
-            const std::string outdir = "tests/";
-            /*const std::string folder = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/09_FMT/Modeles_test/FM/";
-            const std::string primarylocation = folder+"PC_7001892_U03772_SSP02.pri";
-            const std::vector<std::string>scenarios(1, "03_sc1a_bfecopt_bf");
-            const std::string fichierShp = folder+"/Carte/PC_7001892_U03772_SSP02.shp";*/
             const std::string primarylocation = std::string(argv[1]);
             const std::vector<std::string>scenarios(1,std::string(argv[2]));
             const std::string fichierShp = std::string(argv[3]);
@@ -159,7 +154,6 @@ int main(int argc, char *argv[])
             myields.update();
             Models::FMTlpmodel noptimizationmodel(model, Models::FMTsolverinterface::MOSEK);
             noptimizationmodel.setyields(myields);
-            modelparser.write(noptimizationmodel,outdir+"yields/");
             noptimizationmodel.setparameter(Models::FMTintmodelparameters::LENGTH, 5);
 	        noptimizationmodel.setparameter(Models::FMTboolmodelparameters::STRICTLY_POSITIVE, true);
 	        noptimizationmodel.setparameter(Models::FMTintmodelparameters::PRESOLVE_ITERATIONS, 1);
