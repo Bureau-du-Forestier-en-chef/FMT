@@ -150,8 +150,8 @@ namespace Models
 		try {
 			if (spschedule.actperiod()>=1)//just postsolve if you have a solution
 			{
-				const Core::FMTmaskfilter presolvedmask = this->getpostsolvefilter(originalbasemodel.getthemes(), area.begin()->getmask());
-				spschedule.postsolve(presolvedmask,getactions(),originalbasemodel);
+				const Core::FMTmaskfilter presolvedmask = this->getpostsolvefilter(originalbasemodel.getthemes(), originalbasemodel.getarea().begin()->getmask());
+				spschedule.postsolve(presolvedmask,this->getactions(),originalbasemodel);
 				FMTmodel::postsolve(originalbasemodel);
 			}
 		}catch (...)
