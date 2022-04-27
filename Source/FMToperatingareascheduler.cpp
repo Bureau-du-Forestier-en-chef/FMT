@@ -176,6 +176,11 @@ namespace Heuristics
 		return FMTlpsolver::getiterationcount();
 		}
 
+	bool FMToperatingareascheduler::empty() const
+		{
+		return operatingareas.empty();
+		}
+
 	bool FMToperatingareascheduler::initialsolve()
 		{
 		try {

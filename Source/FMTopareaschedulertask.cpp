@@ -79,7 +79,7 @@ namespace Parallel
 		const std::string& outputyieldname,
 		const unsigned int& maxiterations,
 		const double& maxtime):
-		bestscheduler(),
+		bestscheduler(new Heuristics::FMToperatingareascheduler()),
 		actualscheduler(),
 		lastspawned(0)
 	{
@@ -125,7 +125,7 @@ namespace Parallel
 	{
 		try {
 			const boost::lock_guard<boost::mutex>lock(generalmutex);
-			return (bestscheduler!=nullptr);
+			return (!bestscheduler->empty());
 		}
 		catch (...)
 		{
@@ -149,7 +149,7 @@ namespace Parallel
 	FMTopareaschedulertask::~FMTopareaschedulertask()
 	{
 		try {
-			if (bestscheduler && bestscheduler.use_count()==1)
+			if (gotinitialsolution()&&bestscheduler.use_count()==1)
 			{
 				if (!bestscheduler->isProvenOptimal())
 				{
@@ -178,7 +178,8 @@ namespace Parallel
 				}
 			yields.update();
 			Parser::FMTyieldparser yldparser;
-			yldparser.write(yields, solutionlocation);
+			const std::string solutionname = solutionlocation +"_"+std::to_string(static_cast<int>(bestscheduler->getObjValue())) + "_" + std::to_string(static_cast<int>(std::abs(relax_objective - bestscheduler->getObjValue())*100 / relax_objective)) + ".yld";
+			yldparser.write(yields, solutionname);
 		}catch (...)
 		{
 			_exhandler->raisefromcatch("", "FMTopareaschedulertask::writesolution", __LINE__, __FILE__);
@@ -198,9 +199,15 @@ namespace Parallel
 					"FMTopareaschedulertask::evaluateandcopy", __LINE__, __FILE__);
 				}
 				const boost::lock_guard<boost::mutex>lock(generalmutex);
-				if (!bestscheduler)
+				if (bestscheduler->empty())
 				{
 					*bestscheduler = *actualscheduler;
+					if (!bestscheduler->isProvenOptimal())
+					{
+						_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
+							"Non optimal best schedule copy",
+							"FMTopareaschedulertask::evaluateandcopy", __LINE__, __FILE__);
+					}
 				}else {
 					if (!bestscheduler->isProvenOptimal())
 					{
@@ -217,7 +224,11 @@ namespace Parallel
 					}else {
 						*actualscheduler = *bestscheduler;
 					}
-					--iterations;
+					if (iterations>0)
+					{
+						--iterations;
+					}
+					
 				}
 		}catch (...)
 			{
