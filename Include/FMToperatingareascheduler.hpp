@@ -180,6 +180,11 @@ namespace Heuristics
 		*/
 		std::vector<int> getsolutionindexes(const std::vector<std::vector<FMToperatingareascheme>::const_iterator>& opareaits) const;
 	public:
+		// DocString: FMToperatingareascheduler::empty
+		/**
+		Return true if operatingareas is empty.
+		*/
+		bool empty() const;
 		// DocString: FMToperatingareascheduler::initialsolve
 		/**
 		Solve the heuristic problem using the original heuristic resolving the problem till finding a initial solution
