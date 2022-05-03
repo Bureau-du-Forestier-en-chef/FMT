@@ -5,10 +5,7 @@ SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 ]]
 
-
 cmake_minimum_required(VERSION 3.6)
-
-
 
 project(FMT VERSION 0.9.4 LANGUAGES CXX)
 
@@ -20,9 +17,6 @@ else()
 	endif()
 endif(MSVC)
 
-
-
-
 set(FMTMAJOR "-DFMT_MAJOR=${PROJECT_VERSION_MAJOR}")
 add_definitions("${FMTMAJOR}")
 set(FMTMINOR "-DFMT_MINOR=${PROJECT_VERSION_MINOR}")
@@ -30,7 +24,6 @@ add_definitions("${FMTMINOR}")
 set(FMTPATCH "-DFMT_PATCH=${PROJECT_VERSION_PATCH}")
 add_definitions("${FMTPATCH}")
 message("Generating Build file for FMT ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH}")
-
 
 set(FMTSOURCEDIR "${CMAKE_CURRENT_SOURCE_DIR}/Source/")
 set(FMTINCLUDEDIR "${CMAKE_CURRENT_SOURCE_DIR}/Include/")
@@ -98,10 +91,6 @@ if (DEFINED GEOS_DIR)
 	endif(EXISTS "${GEOS_DIR}")
 endif(DEFINED GEOS_DIR)
 
-if (DEFINED PYTHON_INCLUDE)
-	set(ENV{PYTHON_DIR} "${PYTHON_INCLUDE}")
-endif(DEFINED PYTHON_INCLUDE)
-
 if (DEFINED PYTHON_DIR)
 	if (EXISTS "${PYTHON_DIR}")
 		set(ENV{PYTHON_DIR} "${PYTHON_DIR}")
@@ -110,7 +99,6 @@ if (DEFINED PYTHON_DIR)
 		message(WARNING "${PYTHON_DIR} is not a valid directory")
 	endif(EXISTS "${PYTHON_DIR}")
 endif(DEFINED PYTHON_DIR)
-
 
 if (DEFINED ONNXR_DIR)
 	if (EXISTS "${ONNXR_DIR}")
@@ -121,10 +109,6 @@ if (DEFINED ONNXR_DIR)
 	endif(EXISTS "${ONNXR_DIR}")
 endif(DEFINED ONNXR_DIR)
 
-
-
-
-
 if (MSVC)
 	add_definitions("-DFMT_EXPORTS")
 	add_definitions("-D_WINDOWS")
@@ -134,7 +118,6 @@ if (MSVC)
 else()
 	add_definitions("-Wa,-mbig-obj")
 endif(MSVC)
-
 
 add_definitions("-DBOOST_DYNAMIC_BITSET_DONT_USE_FRIENDS")
 add_definitions("-DHAVE_SNPRINTF")
@@ -156,7 +139,6 @@ endif(MSVC AND (${CMAKE_VERSION} VERSION_GREATER 3.8.0))
 
 set( CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin )
 set( CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin )
-
 
 #Create a include directory for the lib
 #file(REMOVE_RECURSE "${CMAKE_BINARY_DIR}/include")
@@ -202,7 +184,6 @@ set_target_properties( FMT
 )
 endif(NOT MSVC)
 
-
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_LIST_DIR}/modules)
 
 if (DEFINED ONNXR_DIR)
@@ -221,14 +202,11 @@ endif(DEFINED ONNXR_DIR)
 set_property(TARGET FMT PROPERTY CXX_STANDARD 11)
 set_property(TARGET FMT PROPERTY CXX_STANDARD_REQUIRED ON)
 
-
 if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
   if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS "4.9.0")
     message(FATAL_ERROR "Insufficient g++ version you need at least 4.9.0")
   endif()
 endif()
-
-
 
 if (NOT MSVC AND DEFINED ENV{R_DIR})
 	find_package(R REQUIRED)
@@ -269,36 +247,27 @@ if (NOT MSVC AND DEFINED ENV{R_DIR})
 	endif()
 endif()
 
-
 if ((NOT DEFINED ENV{R_DIR}) AND (DEFINED ENV{PYTHON_DIR}))
-	#if(NOT DEFINED PYTHON_INCLUDE)
-	#	FILE(GLOB_RECURSE PYTHON_INCLUDE $ENV{PYTHON_DIR}include/Python.h)
-	#	if(PYTHON_INCLUDE)
-    #        list(GET PYTHON_INCLUDE 0 FIRSTINCLUDE)
-    #        get_filename_component(PYTHON_INCLUDE_DIR ${FIRSTINCLUDE} DIRECTORY)
-    #    endif(PYTHON_INCLUDE)
-	#endif(NOT DEFINED PYTHON_INCLUDE)
-	find_package(PythonLibs)
-	if (PythonLibs_FOUND)
-		string(REGEX MATCH "^([0-9]*)(.)([0-9]*)(.)([0-9]*)" dummy ${PYTHONLIBS_VERSION_STRING})
-		set(PYTHONNAMING "python${CMAKE_MATCH_1}${CMAKE_MATCH_3}")
-		set(PYTHONMAJOR "${CMAKE_MATCH_1}")
-		set(PYTHONMINOR "${CMAKE_MATCH_3}")
+	find_package(Python COMPONENTS Interpreter Development)
+	if (Python_FOUND)
+		set(PYTHONNAMING "python${Python_VERSION_MAJOR}${Python_VERSION_MINOR}")
+		set(PYTHONMAJOR "${Python_VERSION_MAJOR}")
+		set(PYTHONMINOR "${Python_VERSION_MINOR}")
 		set(FMTWITHPYTHON "-DFMTWITHPYTHON")
 		#add_definitions("${FMTWITHPYTHON}")
 		target_compile_definitions(FMT PRIVATE "${FMTWITHPYTHON}")
-		message("Found Python include here: ${PYTHON_INCLUDE_DIRS}")
-		set(PYTHON_LIBRARIES "optimized;${PYTHON_LIBRARIES}")
+		message("Found Python include here: ${Python_INCLUDE_DIRS}")
+		set(PYTHON_LIBRARIES "optimized;${Python_LIBRARIES}")
 		if(PYTHON_DEBUG_LIBRARIES)
-			LIST(APPEND PYTHON_LIBRARIES "debug;${PYTHON_DEBUG_LIBRARIES}")
+			LIST(APPEND PYTHON_LIBRARIES "debug;${Python_DEBUG_LIBRARIES}")
 		endif(PYTHON_DEBUG_LIBRARIES)
-		message("Found Python library: ${PYTHON_LIBRARIES}")
+		message("Found Python library: ${Python_LIBRARIES}")
 		#include_directories(${PYTHON_INCLUDE_DIRS})
-		target_include_directories(FMT PRIVATE ${PYTHON_INCLUDE_DIRS})
+		target_include_directories(FMT PRIVATE ${Python_INCLUDE_DIRS})
 		if(WIN32 AND MSVC)
-			target_link_libraries(FMT ${PYTHON_LIBRARY_RELEASE})
+			target_link_libraries(FMT ${Python_LIBRARY_RELEASE})
 		else()
-			target_link_libraries(FMT ${PYTHON_LIBRARIES})
+			target_link_libraries(FMT ${Python_LIBRARIES})
 		endif()
 		if (NOT CYGWIN)
 			set_target_properties(FMT PROPERTIES SUFFIX ".pyd")
@@ -311,12 +280,8 @@ if ((NOT DEFINED ENV{R_DIR}) AND (DEFINED ENV{PYTHON_DIR}))
                 )
 	else()
 		message("Python not found")
-	endif(PythonLibs_FOUND)
+	endif(Python_FOUND)
 endif()
-
-
-
-
 
 #Try to find a dynamic boost lib
 if (DEFINED PYTHONNAMING)
