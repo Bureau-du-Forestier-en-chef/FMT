@@ -630,10 +630,10 @@ install (CODE
         endforeach()
     endif(DEPENDENCIES)
 	if (EXISTS \"${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}/setup.py\")
-        find_program(PYTHON \"python\" PATHS \"${PYTHON_DIR}\" NO_DEFAULT_PATH)
+	set (PYTHON \"${Python_EXECUTABLE}\")
 	if (NOT EXISTS \"$\{PYTHON\}\")
 		#MESSAGE ERREUR
-		messsage(FATAL_ERROR \"No Python found cannot install FMT\")
+		message(FATAL_ERROR \"No Python found cannot install FMT\")
 	else()
 		#Call pip from python and install it....
 		execute_process(
