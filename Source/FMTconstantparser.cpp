@@ -12,6 +12,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <boost/filesystem/operations.hpp>
 #include <boost/range/algorithm/remove_if.hpp>
 #include <boost/algorithm/string.hpp>
+#include "FMTexceptionhandler.hpp"
 
 
 namespace Parser{

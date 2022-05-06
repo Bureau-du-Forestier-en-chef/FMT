@@ -9,14 +9,13 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #ifndef FMTserializablematrix_H_INCLUDED
 #define FMTserializablematrix_H_INCLUDED
 
-#include <CoinPackedMatrix.hpp>
+
 #include <memory>
-#include <boost/serialization/serialization.hpp>
-#include <boost/serialization/nvp.hpp>
 #include <vector>
+#include "FMTutility.hpp"
 
 class OsiSolverInterface;
-
+class CoinPackedMatrix;
 
 namespace Models
 {
@@ -28,8 +27,11 @@ The goal of that class is to get the informations from osisolverinterface class 
 vectors (solutions,bounds,etc...) to permit the synchronization.
 Also this class is usefull when copying osisolverinterface with the FMTsolverinterface type.
 */
-class FMTserializablematrix : public CoinPackedMatrix
+class FMTserializablematrix
 	{
+	// DocString: FMTserializablematrix::matrix
+	///The matrix pointer
+	std::unique_ptr<CoinPackedMatrix> matrix;
 	// DocString: FMTserializablematrix::collb
 	///columns lower bound of the matrix
 	std::vector<double>collb;
@@ -57,53 +59,13 @@ class FMTserializablematrix : public CoinPackedMatrix
 	*/
 	friend class boost::serialization::access;
 	template<class Archive>
-	void serialize(Archive& ar, const unsigned int version)
-		{
-		ar & BOOST_SERIALIZATION_NVP(colOrdered_);
-		ar & BOOST_SERIALIZATION_NVP(extraGap_);
-		ar & BOOST_SERIALIZATION_NVP(extraMajor_);
-		ar & BOOST_SERIALIZATION_NVP(majorDim_);
-		ar & BOOST_SERIALIZATION_NVP(minorDim_);
-		ar & BOOST_SERIALIZATION_NVP(size_);
-		ar & BOOST_SERIALIZATION_NVP(maxMajorDim_);
-		ar & BOOST_SERIALIZATION_NVP(maxSize_);
-		ar & BOOST_SERIALIZATION_NVP(collb);
-		ar & BOOST_SERIALIZATION_NVP(colub);
-		ar & BOOST_SERIALIZATION_NVP(obj);
-		ar & BOOST_SERIALIZATION_NVP(rowlb);
-		ar & BOOST_SERIALIZATION_NVP(rowub);
-		ar & BOOST_SERIALIZATION_NVP(colsolution);
-		ar & BOOST_SERIALIZATION_NVP(rowprice);
-		if (Archive::is_loading::value)
-			{
-			if (maxMajorDim_ > 0)
-				{
-				length_ = new int[maxMajorDim_];
-				}
-			start_ = new CoinBigIndex[maxMajorDim_ + 1];
-			if (maxSize_ > 0)
-				{
-				element_ = new double[maxSize_];
-				index_ = new int[maxSize_];
-				}
-			}
-		for (int indexid = 0; indexid < maxSize_; ++indexid)
-			{
-			ar & boost::serialization::make_nvp(("E" + std::to_string(indexid)).c_str(), element_[indexid]);
-			ar & boost::serialization::make_nvp(("I"+ std::to_string(indexid)).c_str(), index_[indexid]);
-			}
-		for (int id = 0 ; id < maxMajorDim_; ++id)
-			{
-			ar & boost::serialization::make_nvp(("L" + std::to_string(id)).c_str(), length_[id]);
-			}
-		if(maxMajorDim_ > 0)
-			{
-			for (int id = 0; id < maxMajorDim_ + 1; ++id)
-				{
-				ar & boost::serialization::make_nvp(("S" + std::to_string(id)).c_str(), start_[id]);
-				}
-			}
-		}
+	void serialize(Archive& ar, const unsigned int version);
+	// DocString: FMTserializablematrix::gutsofserialize
+	/**
+	The real serialization is here.
+	*/
+	template<class Archive>
+	void gutsofserialize(Archive& ar, const unsigned int version);
 	public:
 		// DocString: FMTserializablematrix()
 		/**
@@ -150,7 +112,7 @@ class FMTserializablematrix : public CoinPackedMatrix
 		/**
 		Default destructor of FMTserializablematrix
 		*/
-		~FMTserializablematrix()=default;
+		~FMTserializablematrix();
 	};
 
 }

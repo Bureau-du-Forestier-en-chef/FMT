@@ -16,6 +16,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTyields.hpp"
 #include "FMTdevelopmentpath.hpp"
 #include "FMTbounds.hpp"
+#include "FMTexceptionhandler.hpp"
 
 namespace Core{
 

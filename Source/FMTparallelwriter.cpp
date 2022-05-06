@@ -10,6 +10,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTscheduleparser.hpp"
 #include <boost/filesystem.hpp>
 #include <boost/filesystem/operations.hpp>
+#include "FMTexceptionhandler.hpp"
 
 #ifdef FMTWITHGDAL
 	#include "gdal.h"

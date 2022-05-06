@@ -8,6 +8,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTfreeexceptionhandler.hpp"
 #include "FMTwarning.hpp"
 #include "FMTerror.hpp"
+#include "FMTcplhandler.hpp"
 
 #if defined FMTWITHR
 	#include <Rcpp.h>
@@ -21,7 +22,7 @@ namespace Exception
 		{
 		return this;
 		}
-	void FMTfreeexceptionhandler::handelCPLerror(CPLErr eErrClass, CPLErrorNum nError, const char * pszErrorMsg)
+	void FMTfreeexceptionhandler::handelCPLerror(int eErrClass, int nError, const char * pszErrorMsg)
 		{
 		boost::lock_guard<boost::recursive_mutex> guard(mtx);
         try{

@@ -13,8 +13,16 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTpredictor.hpp"
 #include "FMTsrmodel.hpp"
 #include <vector>
+#include "FMTexceptionhandler.hpp"
+
+#ifdef FMTWITHONNXR
+	#include  <onnxruntime/core/session/onnxruntime_cxx_api.h>
+#endif
 
 namespace Core {
+
+	FMTyieldmodel::~FMTyieldmodel() = default;
+
 #ifdef FMTWITHONNXR
 	std::unique_ptr<Ort::Env> FMTyieldmodel::envPtr = std::unique_ptr<Ort::Env>(new Ort::Env());
 #endif	

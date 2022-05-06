@@ -9,6 +9,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTactualdevelopment.hpp"
 #include "FMTfuturdevelopment.hpp"
 #include "FMTtheme.hpp"
+#include "FMTexceptionhandler.hpp"
 
 namespace Spatial
 {

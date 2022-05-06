@@ -14,6 +14,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <boost/serialization/split_member.hpp>
 #include <boost/serialization/unordered_map.hpp>
 #include <boost/serialization/vector.hpp>
+#include <limits>
 
 namespace Heuristics
 {
@@ -99,7 +100,8 @@ class FMTEXPORT FMTlpmodel final : public FMTsrmodel
 	int getsetmatrixelement(const Core::FMTconstraint& constraint,
                      const FMTmatrixelement& element_type, const std::map<int, double>& indexes,
                      int period = -1,
-                     double lowerbound = COIN_DBL_MIN,double upperbound = COIN_DBL_MAX);
+                     double lowerbound = std::numeric_limits<double>::min(),
+					 double upperbound = std::numeric_limits<double>::max());
 	// DocString: FMTlpmodel::getgoals
 	/**
 	Return goals (index) if it already exist within the other constraints (goals (goalsnames) can be used across multiple FMTconstraints.

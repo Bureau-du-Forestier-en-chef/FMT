@@ -10,13 +10,13 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #ifndef FMTmatrixbuild_H_INCLUDED
 #define FMTmatrixbuild_H_INCLUDED
 
-#include "CoinBuild.hpp"
+
 #include <vector>
 #include <string>
-
 #include <memory>
 
 class OsiSolverInterface;
+class CoinBuild;
 
 
 namespace Models
@@ -39,10 +39,10 @@ namespace Models
 		int rowscount;
 		// DocString: FMTmatrixbuild::colsbuild
 		///colsbuild keep the track of all columns to add to the matrix
-		CoinBuild colsbuild;
+		std::unique_ptr<CoinBuild>colsbuild;
 		// DocString: FMTmatrixbuild::rowsbuild
 		///rowsbuild keep the track of all rows to add to the matrix
-		CoinBuild rowsbuild;
+		std::unique_ptr<CoinBuild>rowsbuild;
 		// DocString: FMTmatrixbuild::deletedconstraints
 		///Deleted constraints used in replanning context when the constraints indexes need to be updated.
 		std::vector<int>deletedconstraints;
@@ -127,27 +127,19 @@ namespace Models
 		/**
 		Destructor of FMTmatrixbuild.
 		*/
-		~FMTmatrixbuild()=default;
+		~FMTmatrixbuild();
 		// DocString: FMTmatrixbuild::addCol
 		/**
 		Add a column to colsbuild to potentialy synchronize it with the synchronize function.
 		*/
-		inline void addCol(int numberInColumn, const int * rows, const double * elements, double columnLower = 0.0,
-			double columnUpper = COIN_DBL_MAX, double objectiveValue = 0.0)
-			{
-			colsbuild.addCol(numberInColumn, rows, elements, columnLower,
-				columnUpper, objectiveValue);
-			++colscount;
-			}
+		void addCol(int numberInColumn, const int * rows, const double * elements, double columnLower = 0.0,
+			double columnUpper = std::numeric_limits<double>::max(), double objectiveValue = 0.0);
 		// DocString: FMTmatrixbuild::addRow
 		/**
 		Add a row to rowbuild to potentialy synchronize it with the synchronize function.
 		*/
-		inline void addRow(int numberInRow, const int * columns,const double * elements, double rowLower = -COIN_DBL_MAX,double rowUpper = COIN_DBL_MAX)
-			{
-			rowsbuild.addRow(numberInRow, columns, elements, rowLower, rowUpper);
-			++rowscount;
-			}
+		void addRow(int numberInRow, const int * columns, const double * elements,
+			double rowLower = -std::numeric_limits<double>::max(), double rowUpper = std::numeric_limits<double>::max());
 		// DocString: FMTmatrixbuild::deleteRow
 		/**
 		The function delete a row (rowindex) from the matrix cache.

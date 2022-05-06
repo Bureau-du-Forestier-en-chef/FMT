@@ -14,26 +14,6 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <string>
 #include <iostream>
 #include <memory>
-#if defined FMTWITHPYTHON
-#include <boost/python.hpp>
-#endif // define FMTWITHPYTHON
-#include <boost/serialization/serialization.hpp>
-#include <boost/serialization/nvp.hpp>
-#if defined (_MSC_VER)
-	#define NOMINMAX
-	#include <comdef.h>
-	#include <windows.h>
-	EXTERN_C IMAGE_DOS_HEADER __ImageBase;
-	#include <boost/filesystem.hpp>
-#endif
-
-#if defined (__CYGWIN__)
-    #include <windows.h>
-    #include <iterator>
-    EXTERN_C IMAGE_DOS_HEADER __ImageBase;
-    #include <boost/filesystem.hpp>
-#endif
-
 #include "FMTutility.hpp"
 
 
@@ -151,14 +131,7 @@ class FMTEXPORT FMTexception : public std::exception
 	*/
 	friend class boost::serialization::access;
 	template<class Archive>
-	void serialize(Archive& ar, const unsigned int version)
-	{
-		ar & boost::serialization::make_nvp("object", boost::serialization::base_object<std::exception>(*this));
-		ar & BOOST_SERIALIZATION_NVP(holdup);
-		ar & BOOST_SERIALIZATION_NVP(_msg);
-		ar & BOOST_SERIALIZATION_NVP(exceptiontype);
-		ar & BOOST_SERIALIZATION_NVP(section);
-	}
+	void serialize(Archive& ar, const unsigned int version);
     protected:
 		// DocString: FMTexception::holdup
 		///This member is normaly set to false but for the free exception handler

@@ -55,6 +55,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <assert.h>
 #include "FMTlookup.hpp"
 #include "boost/graph/graphviz.hpp"
+#include "FMTexceptionhandler.hpp"
 
 
 /// Namespace for using/building unidirectional graphs in FMT

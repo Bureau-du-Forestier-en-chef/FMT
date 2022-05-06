@@ -8,11 +8,11 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #ifndef FMTobject_H_INCLUDED
 #define FMTobject_H_INCLUDED
 
-#include "FMTexceptionhandler.hpp"
-#include "FMTlogger.hpp"
+
 #include <boost/serialization/shared_ptr.hpp>
 #include <boost/serialization/nvp.hpp>
 #include <boost/serialization/export.hpp>
+#include "FMTexception.hpp"
 #include <memory>
 #include <chrono>
 #include <vector>
@@ -22,6 +22,16 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #else
     #include <boost/dll/runtime_symbol_info.hpp>
 #endif
+
+namespace Exception
+{
+	class FMTexceptionhandler;
+}
+
+namespace Logging
+{
+	class FMTlogger;
+}
 
 
 

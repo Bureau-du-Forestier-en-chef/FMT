@@ -29,6 +29,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <memory>
 #include "FMTyieldhandler.hpp"
 #include "FMTtheme.hpp"
+#include "FMTexceptionhandler.hpp"
 
 namespace Core
 {

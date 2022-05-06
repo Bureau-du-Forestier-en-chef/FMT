@@ -6,6 +6,8 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
 #include "FMTquietlogger.hpp"
+#include "FMTsolverlogger.hpp"
+#include <boost/thread.hpp>
 
 namespace Logging
 {
@@ -18,7 +20,7 @@ void FMTquietlogger::cout(const char* message) const
 FMTquietlogger::FMTquietlogger()
 	{
 	#ifdef FMTWITHOSI
-		this->setLogLevel(0);
+		solverref->setLogLevel(0);
 	#endif
 	}
 #ifdef FMTWITHOSI
@@ -35,7 +37,7 @@ void FMTquietlogger::checkSeverity()
 	FMTlogger::checkSeverity();
 	}
 
-CoinMessageHandler * FMTquietlogger::clone() const
+FMTlogger * FMTquietlogger::clone() const
 	{
 	boost::lock_guard<boost::recursive_mutex> guard(mtx);
 	return new FMTquietlogger(*this);

@@ -25,6 +25,9 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <set>
 #include <boost/filesystem.hpp>
 #include <boost/filesystem/operations.hpp>
+#include "FMTexceptionhandler.hpp"
+#include "FMToperator.hpp"
+#include "FMTexpression.hpp"
 
 
 

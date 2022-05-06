@@ -6,6 +6,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
 #include "FMTareaparser.hpp"
+#include "FMTexceptionhandler.hpp"
 #include <boost/algorithm/string/join.hpp>
 #include <boost/lexical_cast.hpp>
 #include "FMToperatingareaclusterbinary.hpp"
@@ -22,6 +23,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTactualdevelopment.hpp"
 #include <boost/filesystem.hpp>
 #include <boost/filesystem/operations.hpp>
+#include "FMTexceptionhandler.hpp"
 
 #ifdef FMTWITHGDAL
 	#include "gdal_alg.h"
@@ -749,11 +751,11 @@ const std::regex FMTareaparser::rxcleanarea = std::regex("^((\\*A[A]*)([^|]*)(_l
 			OGRSpatialReference* lspref = layer->GetSpatialRef();
 			GDALDataset* memds = createvectormemoryds();
 			OGRCoordinateTransformation* coordtransf = nullptr;
-			OGRSpatialReference forelspref = getFORELspatialref();
+			std::unique_ptr<OGRSpatialReference> forelspref = getFORELspatialref();
 			bool reproject = false;
-			if (fittoforel && !(lspref->IsSame(&forelspref)))
+			if (fittoforel && !(lspref->IsSame(&*forelspref)))
 			{
-				coordtransf = OGRCreateCoordinateTransformation(lspref, &forelspref);
+				coordtransf = OGRCreateCoordinateTransformation(lspref, &*forelspref);
 				if (coordtransf == NULL)
 				{
 					_exhandler->raise(Exception::FMTexc::FMTgdal_constructor_error,
@@ -767,7 +769,7 @@ const std::regex FMTareaparser::rxcleanarea = std::regex("^((\\*A[A]*)([^|]*)(_l
 			OGRLayer*  memlayer = nullptr ;
 			if (reproject)
 			{
-				memlayer = memds->CreateLayer( "Memlayer", &forelspref, lgeomtype, NULL );
+				memlayer = memds->CreateLayer( "Memlayer", &*forelspref, lgeomtype, NULL );
 			}else{
 				memlayer = memds->CreateLayer( "Memlayer", lspref, lgeomtype, NULL );
 			}
@@ -951,8 +953,8 @@ const std::regex FMTareaparser::rxcleanarea = std::regex("^((\\*A[A]*)([^|]*)(_l
 			const double y_delta = layerextent.MaxY - layerextent.MinY;
 			if (fittoforel)
 			{
-				OGRSpatialReference forelref = getFORELspatialref();
-				if(layer->GetSpatialRef()->IsSame(&forelref))
+				std::unique_ptr<OGRSpatialReference> forelref = getFORELspatialref();
+				if(layer->GetSpatialRef()->IsSame(&*forelref))
 				{
 					const double minxforel = -831600;
 					const double minyforel = 117980;

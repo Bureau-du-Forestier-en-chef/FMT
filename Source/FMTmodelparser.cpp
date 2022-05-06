@@ -22,6 +22,8 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTconstraint.hpp"
 #include "FMToutput.hpp"
 #include <map>
+#include "FMTexceptionhandler.hpp"
+#include "boost/filesystem.hpp"
 
 
 #ifdef FMTWITHGDAL

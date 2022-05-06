@@ -9,6 +9,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTtheme.hpp"
 #include "FMTaction.hpp"
 #include "FMTschedule.hpp"
+#include "FMTexceptionhandler.hpp"
 
 namespace Parser {
 
