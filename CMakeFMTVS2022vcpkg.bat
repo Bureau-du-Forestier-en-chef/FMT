@@ -1,0 +1,7 @@
+call "C:\Program Files\Microsoft Visual Studio\2022\Professional\VC\Auxiliary\Build\vcvars64.bat"
+cmake CMakeLists.txt -B build/debug -G "Visual Studio 17 2022" -DBUILD_TYPE=Debug -DPARALLEL_TESTS=8 -DVCPKG_TARGET_TRIPLET=x64-windows -DCMAKE_TOOLCHAIN_FILE="../vcpkg/scripts/buildsystems/vcpkg.cmake" -DBOOST_DIR="../vcpkg/installed/x64-windows/" -DCMAKE_BUILD_TYPE=Release -DGDAL_DIR="../vcpkg/installed/x64-windows/" -DGEOS_DIR="../vcpkg/installed/x64-windows/" -DOSI_DIR="../vcpkg/installed/x64-windows/" -DPYTHON_DIR="../vcpkg/packages/python3_x64-windows/" -DMOSEK_DIR="C:/PROGRA~1/Mosek/" -DONNXR_DIR="../../FMTproject/WindowsVS2017/onnxruntime/"
+cmake --build build/debug --config Debug -j 8
+cmake --install build/debug --config Debug
+cmake CMakeLists.txt -B build/release -G "Visual Studio 17 2022" -DBUILD_TYPE=Release -DPARALLEL_TESTS=8 -DVCPKG_TARGET_TRIPLET=x64-windows -DCMAKE_TOOLCHAIN_FILE="D:/Programation/FMTvcpackage/vcpkg/scripts/buildsystems/vcpkg.cmake" -DBOOST_DIR="D:/Programation/FMTvcpackage/vcpkg/installed/x64-windows/" -DCMAKE_BUILD_TYPE=Release -DGDAL_DIR="D:/Programation/FMTvcpackage/vcpkg/installed/x64-windows/" -DGEOS_DIR="D:/Programation/FMTvcpackage/vcpkg/installed/x64-windows/" -DOSI_DIR="D:/Programation/FMTvcpackage/vcpkg/installed/x64-windows/" -DPYTHON_DIR="D:/Programation/FMTvcpackage/vcpkg/packages/python3_x64-windows/" -DMOSEK_DIR="C:/PROGRA~1/Mosek/" -DONNXR_DIR="D:/Programation/FMTproject/WindowsVS2017/onnxruntime/"
+cmake --build build/release --config Release
+cmake --install build/release --config Release
