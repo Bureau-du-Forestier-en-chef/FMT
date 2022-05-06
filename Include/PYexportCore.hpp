@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Quï¿½bec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -78,7 +78,9 @@ void exportCore()
 		.def("redirectlogtofile", &Core::FMTobject::redirectlogtofile,
 			"@DocString(FMTobject::redirectlogtofile)")
 		.def("seterrorstowarnings", &Core::FMTobject::seterrorstowarnings,
-			"@DocString(FMTobject::seterrorstowarnings)");
+			"@DocString(FMTobject::seterrorstowarnings)")
+		.def("setmaxwarningsbeforesilenced", &Core::FMTobject::setmaxwarningsbeforesilenced,
+			"@DocString(FMTobject::setmaxwarningsbeforesilenced)");
 
 		bp::class_<Core::FMTmaskfilter>("FMTmaskfilter", "@DocString(FMTmaskfilter)");
 

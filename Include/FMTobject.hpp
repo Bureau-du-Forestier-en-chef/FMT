@@ -219,6 +219,11 @@ class FMTEXPORT FMTobject
 		set a vector of error to be cast to warnings to the exception handler...
 		*/
 		void seterrorstowarnings(const std::vector<Exception::FMTexc>& errors);
+		// DocString: FMTobject::setmaxwarningsbeforesilenced
+		/**
+		Number of time warnings are raised before silenced
+		*/
+		void setmaxwarningsbeforesilenced(const size_t& warns);
 
 	};
 }

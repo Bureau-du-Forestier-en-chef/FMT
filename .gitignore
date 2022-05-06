@@ -42,3 +42,4 @@ compile_commands.json
 /Examples/C++/tests/BFECtests.csv
 .vscode/*
 *html
+external/*

@@ -321,6 +321,17 @@ namespace Core
 		}
 	}
 
+	void FMTobject::setmaxwarningsbeforesilenced(const size_t& warns)
+	{
+		try {
+			_exhandler->setmaxwarningsbeforesilenced(warns);
+		}
+		catch (...)
+		{
+			_exhandler->raisefromcatch("", "FMTobject::setmaxwarningsbeforesilenced", __LINE__, __FILE__);
+		}
+	}
+
 	std::chrono::time_point<std::chrono::high_resolution_clock> FMTobject::getclock()
 		{
 		std::chrono::time_point<std::chrono::high_resolution_clock> newclock;
