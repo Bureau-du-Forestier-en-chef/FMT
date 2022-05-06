@@ -6,6 +6,9 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
 #include "FMTerror.hpp"
+#if defined FMTWITHOSI
+	#include <CoinError.hpp>
+#endif
 
 
 

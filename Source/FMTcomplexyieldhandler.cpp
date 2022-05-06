@@ -11,6 +11,11 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTageyieldhandler.hpp"
 #include "FMTdata.hpp"
 #include "FMTfunctioncall.hpp"
+#include "FMTexceptionhandler.hpp"
+#include "FMToperator.hpp"
+#include "FMTexception.hpp"
+#include "FMTexpression.hpp"
+
 
 namespace Core {
 	

@@ -10,6 +10,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTmodel.hpp"
 #include "FMToutput.hpp"
 #include "FMTlpmodel.hpp"
+#include "FMTexceptionhandler.hpp"
 
 
 namespace Parallel
@@ -203,6 +204,7 @@ namespace Parallel
 					modelsize = (replanningperiods - replanningperiod) + 1;
 					onlyfirstperiod = false;
 					firstperiod = replanningperiod;
+					lastperiod = replanningperiod;
 				}
 				if (!onlyfirstperiod)
 				{
@@ -212,12 +214,15 @@ namespace Parallel
 						--lastperiod;
 					}
 				}
-				
 				const std::map<std::string, std::vector<std::vector<double>>>results = resultswriter->getresults(modelptr, firstperiod, lastperiod);
 				if (modelsize == 1)
 				{
 					firstperiod = replanningperiod;
 					lastperiod = replanningperiod;
+				}
+				if (!modelptr)
+				{
+					lastperiod = replanningperiods;
 				}
 				_logger->logwithlevel("Thread:"+ getthreadid()+" Writing results for " + modelname + " first period at: " +
 					std::to_string(firstperiod)+" for iteration "+ std::to_string(getiteration()) +  +"\n", 1);
@@ -378,19 +383,17 @@ namespace Parallel
 				if (solvedmodel)
 					{
 					optimal = true;
+					dynamicconstraints = modelcpy->getreplanningconstraints("LOCAL", global->getconstraints(), modelsize);
 				}else {
 					_exhandler->raise(Exception::FMTexc::FMTignore,
 						"Infeasible model named: " + modelcpy->getname() + " at iteration " + std::to_string(getiteration()) + " at replanning period " + std::to_string(replanningperiod),
 						"FMTreplanningtask::domodelplanning", __LINE__, __FILE__);
 					modelcpy = std::move(std::unique_ptr<Models::FMTmodel>(nullptr));
 				}
-				
-			
 				if (modelsize>1)
 					{
 					writefirstperiodonly = false;
 					}
-				dynamicconstraints = modelcpy->getreplanningconstraints("LOCAL", global->getconstraints(), modelsize);
 				//lpmodel->writeLP("C:/Users/cyrgu3/Desktop/test/FMT2/FMT/build/debug/bin/Debug/tests/testlocal"+std::to_string(replanningperiod));
 			}else {
 				if (modelcpy->doplanning(true))

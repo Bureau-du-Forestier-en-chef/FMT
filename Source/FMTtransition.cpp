@@ -13,6 +13,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTyields.hpp"
 #include "FMTtheme.hpp"
 #include "FMTdevelopmentpath.hpp"
+#include "FMTexceptionhandler.hpp"
 
 namespace Core{
 FMTtransition::FMTtransition():name(){}

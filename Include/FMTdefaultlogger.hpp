@@ -66,7 +66,7 @@ namespace Logging
 			/**
 			See FMTlogger clone function.
 			*/
-			CoinMessageHandler * clone() const override;
+			FMTlogger* clone() const override;
 		#endif
 	};
 

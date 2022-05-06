@@ -17,12 +17,9 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <boost/serialization/split_member.hpp>
 #include <boost/serialization/export.hpp>
 
-#ifdef FMTWITHMOSEK
-	#include "mosek.h"
-#endif
-
 
 class OsiSolverInterface;
+class CoinPackedMatrix;
 
 namespace Models
 {
@@ -339,7 +336,8 @@ class FMTEXPORT FMTlpsolver: public Core::FMTobject
 		and a given row upper bound (rowUpper).If usecache is true then it will be only added to the matrix cache else it will
 		be added to the solverinterface.
 		*/
-		void addRow(int numberInRow, const int * columns, const double * elements, double rowLower = -COIN_DBL_MAX, double rowUpper = COIN_DBL_MAX);
+		void addRow(int numberInRow, const int * columns, const double * elements,
+			double rowLower = -std::numeric_limits<double>::max(), double rowUpper = std::numeric_limits<double>::max());
 		// DocString: FMTlpsolver::addCol
 		/**
 		Add a col, with a number of rows (numberInColumn),with rows indexes (rows), with (elements) with a given lower bound (colLower),
@@ -347,7 +345,7 @@ class FMTEXPORT FMTlpsolver: public Core::FMTobject
 		be added to the solverinterface.
 		*/
 		void addCol(int numberInColumn, const int * rows, const double * elements, double columnLower = 0.0,
-			double columnUpper = COIN_DBL_MAX, double objectiveValue = 0.0);
+			double columnUpper = std::numeric_limits<double>::max(), double objectiveValue = 0.0);
 		// DocString: FMTlpsolver::addRows
 		/**
 		Add multiple rows directly to the matrix but first will synchronize the matrix with the matrix cache.
@@ -514,7 +512,7 @@ class FMTEXPORT FMTlpsolver: public Core::FMTobject
 			/**
 			Return description of error code from Mosek.
 			*/
-			std::string getmskerrordesc(MSKrescodee error) const;
+			std::string getmskerrordesc(int error) const;
 		#endif
 	};
 }

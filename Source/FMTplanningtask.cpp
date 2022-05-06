@@ -10,6 +10,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTmodel.hpp"
 #include "FMToutput.hpp"
 #include "FMTschedule.hpp"
+#include "FMTexceptionhandler.hpp"
 
 
 namespace Parallel

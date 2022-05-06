@@ -24,6 +24,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 	#include "mosek.h"
 #endif
 #include "OsiClpSolverInterface.hpp"
+#include "FMTexceptionhandler.hpp"
 
 
 namespace Models

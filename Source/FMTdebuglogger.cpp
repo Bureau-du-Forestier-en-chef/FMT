@@ -6,13 +6,14 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
 #include "FMTdebuglogger.hpp"
+#include "FMTsolverlogger.hpp"
 
 namespace Logging
 {
 	FMTdebuglogger::FMTdebuglogger()
 		{
 		#ifdef FMTWITHOSI
-			this->setLogLevel(4);
+			solverref->setLogLevel(4);
 		#endif
 		}
 	#ifdef FMTWITHOSI
@@ -24,7 +25,7 @@ namespace Logging
 		{
 		FMTlogger::checkSeverity();
 		}
-	CoinMessageHandler* FMTdebuglogger::clone() const
+	FMTlogger* FMTdebuglogger::clone() const
 		{
 		return new FMTdebuglogger(*this);
 		}

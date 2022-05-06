@@ -18,6 +18,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTtransition.hpp"
 #include "FMTtransitionmask.hpp"
 #include "FMTyields.hpp"
+#include "FMTexceptionhandler.hpp"
 
 
 namespace Parser{

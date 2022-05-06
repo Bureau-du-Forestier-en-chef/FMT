@@ -10,6 +10,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 #include "FMTobject.hpp"
 #include <boost/serialization/export.hpp>
+#include <array>
 
 namespace Models
 {

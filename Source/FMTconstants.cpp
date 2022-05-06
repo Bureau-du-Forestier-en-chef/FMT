@@ -6,6 +6,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
 #include "FMTconstants.hpp"
+#include "FMTexceptionhandler.hpp"
 
 namespace Core{
 

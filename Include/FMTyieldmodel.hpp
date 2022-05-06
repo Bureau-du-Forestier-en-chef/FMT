@@ -7,11 +7,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTobject.hpp"
 #include <boost/serialization/serialization.hpp>
 #include <boost/serialization/nvp.hpp>
-#include <boost/property_tree/json_parser.hpp>
 
-#ifdef FMTWITHONNXR
-#include  <onnxruntime/core/session/onnxruntime_cxx_api.h>
-#endif
 
 #ifndef FMTYIELDMODEL_H_INCLUDED
 #define FMTYIELDMODEL_H_INCLUDED
@@ -19,6 +15,22 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 namespace Graph
 {
 	class FMTpredictor;
+}
+
+namespace Ort 
+{
+	struct Env;
+	struct Session;
+}
+
+namespace boost
+{
+	namespace property_tree
+	{
+		template < class Key, class Data, class KeyCompare >
+		class basic_ptree;
+		typedef basic_ptree< std::string, std::string, std::less<std::string> > ptree;
+	}
 }
 
 namespace Core 
@@ -51,7 +63,7 @@ namespace Core
 		static const void RemoveNans(std::vector<float>& input);
 		const std::vector<double>Predict(const Core::FMTyieldrequest& request) const;
 		void ValidateInputYields(std::vector<std::string>& expectedYields, std::vector<std::string>& inputYields) const;
-		virtual ~FMTyieldmodel() = default;
+		virtual ~FMTyieldmodel();
 		virtual const std::string& GetModelName() const = 0;
 		virtual const std::string& GetModelType() const = 0;
 		virtual const std::vector<float>& GetStandardParamMeans() const = 0;

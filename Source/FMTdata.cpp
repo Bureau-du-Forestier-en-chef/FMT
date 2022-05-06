@@ -12,6 +12,9 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTmask.hpp"
 #include "FMTexpression.hpp"
 #include "FMTfunctioncall.hpp"
+#include "FMTexceptionhandler.hpp"
+#include <boost/lexical_cast.hpp>
+#include "FMToperator.hpp"
 
 
 namespace Core{
