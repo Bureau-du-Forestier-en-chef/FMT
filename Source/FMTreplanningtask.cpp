@@ -189,7 +189,7 @@ namespace Parallel
 	}
 
 	void FMTreplanningtask::writeresults(const std::string& modelname, const int& modellength,
-		const std::unique_ptr<Models::FMTmodel>& modelptr,const int& replanningperiod,bool onlyfirstperiod)
+		const std::unique_ptr<Models::FMTmodel>& modelptr, const int& replanningperiod, bool onlyfirstperiod)
 	{
 		try {
 			if (replanningperiod <= replanningperiods)//Dont write outside the replanningsperiods
@@ -199,10 +199,11 @@ namespace Parallel
 				int lastperiod = firstperiod;
 				if (!modelptr)//infeasible!
 				{
-					//put NAN everywhere the size of 
+					//put NAN everywhere the size of
 					modelsize = (replanningperiods - replanningperiod) + 1;
 					onlyfirstperiod = false;
 					firstperiod = replanningperiod;
+					lastperiod = replanningperiod;
 				}
 				if (!onlyfirstperiod)
 				{
@@ -212,18 +213,22 @@ namespace Parallel
 						--lastperiod;
 					}
 				}
-				
 				const std::map<std::string, std::vector<std::vector<double>>>results = resultswriter->getresults(modelptr, firstperiod, lastperiod);
 				if (modelsize == 1)
 				{
 					firstperiod = replanningperiod;
 					lastperiod = replanningperiod;
 				}
-				_logger->logwithlevel("Thread:"+ getthreadid()+" Writing results for " + modelname + " first period at: " +
-					std::to_string(firstperiod)+" for iteration "+ std::to_string(getiteration()) +  +"\n", 1);
+				if (!modelptr)
+				{
+					lastperiod = replanningperiods;
+				}
+				_logger->logwithlevel("Thread:" + getthreadid() + " Writing results for " + modelname + " first period at: " +
+					std::to_string(firstperiod) + " for iteration " + std::to_string(getiteration()) + +"\n", 1);
 				resultswriter->write(modelname, results, firstperiod, lastperiod, getiteration());
 			}
-		}catch (...)
+		}
+		catch (...)
 		{
 			_exhandler->raisefromcatch("", "FMTreplanningtask::writeresults", __LINE__, __FILE__);
 		}
@@ -378,6 +383,7 @@ namespace Parallel
 				if (solvedmodel)
 					{
 					optimal = true;
+					dynamicconstraints = modelcpy->getreplanningconstraints("LOCAL", global->getconstraints(), modelsize);
 				}else {
 					_exhandler->raise(Exception::FMTexc::FMTignore,
 						"Infeasible model named: " + modelcpy->getname() + " at iteration " + std::to_string(getiteration()) + " at replanning period " + std::to_string(replanningperiod),
@@ -390,7 +396,6 @@ namespace Parallel
 					{
 					writefirstperiodonly = false;
 					}
-				dynamicconstraints = modelcpy->getreplanningconstraints("LOCAL", global->getconstraints(), modelsize);
 				//lpmodel->writeLP("C:/Users/cyrgu3/Desktop/test/FMT2/FMT/build/debug/bin/Debug/tests/testlocal"+std::to_string(replanningperiod));
 			}else {
 				if (modelcpy->doplanning(true))
