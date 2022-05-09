@@ -378,7 +378,7 @@ std::unique_ptr<OGRSpatialReference> FMTparser::getFORELspatialref() const
 template<typename T>
 GDALDataset* FMTparser::createdataset(const std::string& location, const Spatial::FMTlayer<T>& layer, const int datatypeid) const
 {
-	GDALDataType datatype = static_cast<GDALDataType>(datatype);
+	GDALDataType datatype = static_cast<GDALDataType>(datatypeid);
 	const char *pszFormat = "GTiff";
 	GDALDriver *poDriver = nullptr;
 	GDALDataset *poDstDS = nullptr;

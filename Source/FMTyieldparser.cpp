@@ -28,6 +28,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTexceptionhandler.hpp"
 #include "FMToperator.hpp"
 #include "FMTexpression.hpp"
+#include<boost/tokenizer.hpp>
 
 
 

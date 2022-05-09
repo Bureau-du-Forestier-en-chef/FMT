@@ -8,14 +8,8 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #ifndef FMTyieldparser_H_INCLUDED
 #define FMTyieldparser_H_INCLUDED
 
-//#include "FMTlist.hpp"
 #include "FMTparser.hpp"
-//#include "FMTyields.hpp"
 #include "FMTutility.hpp"
-//#include "FMTconstants.hpp"
-//#include "FMTtheme.hpp"
-//#include "FMTdata.hpp"
-#include <boost/tokenizer.hpp>
 #include <iterator>
 #include <regex>
 #include <string>

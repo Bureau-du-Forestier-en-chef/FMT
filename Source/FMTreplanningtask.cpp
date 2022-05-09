@@ -190,7 +190,7 @@ namespace Parallel
 	}
 
 	void FMTreplanningtask::writeresults(const std::string& modelname, const int& modellength,
-		const std::unique_ptr<Models::FMTmodel>& modelptr, const int& replanningperiod, bool onlyfirstperiod)
+		const std::unique_ptr<Models::FMTmodel>& modelptr,const int& replanningperiod,bool onlyfirstperiod)
 	{
 		try {
 			if (replanningperiod <= replanningperiods)//Dont write outside the replanningsperiods
@@ -200,7 +200,7 @@ namespace Parallel
 				int lastperiod = firstperiod;
 				if (!modelptr)//infeasible!
 				{
-					//put NAN everywhere the size of
+					//put NAN everywhere the size of 
 					modelsize = (replanningperiods - replanningperiod) + 1;
 					onlyfirstperiod = false;
 					firstperiod = replanningperiod;
@@ -228,8 +228,7 @@ namespace Parallel
 					std::to_string(firstperiod)+" for iteration "+ std::to_string(getiteration()) +  +"\n", 1);
 				resultswriter->write(modelname, results, firstperiod, lastperiod, getiteration());
 			}
-		}
-		catch (...)
+		}catch (...)
 		{
 			_exhandler->raisefromcatch("", "FMTreplanningtask::writeresults", __LINE__, __FILE__);
 		}
