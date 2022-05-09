@@ -24,10 +24,20 @@ namespace Core {
 	FMTyieldmodel::~FMTyieldmodel() = default;
 
 #ifdef FMTWITHONNXR
-	std::unique_ptr<Ort::Env> FMTyieldmodel::envPtr = std::unique_ptr<Ort::Env>(new Ort::Env());
+	std::unique_ptr<Ort::Env> FMTyieldmodel::envPtr = std::unique_ptr<Ort::Env>(nullptr);
 #endif	
 
 	const float FMTyieldmodel::UNKNOWN_DISTURBANCE_CODE = 17;
+
+	FMTyieldmodel::FMTyieldmodel():
+		sessionPtr()
+	{
+		if (!envPtr)
+			{
+			envPtr = std::unique_ptr<Ort::Env>(new Ort::Env());
+			}
+
+	}
 
 
 	const std::vector<std::string> FMTyieldmodel::GetNextLineAndSplitIntoTokens(std::istream& str)

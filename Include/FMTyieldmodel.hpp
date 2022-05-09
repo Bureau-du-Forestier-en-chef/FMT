@@ -64,6 +64,7 @@ namespace Core
 		const std::vector<double>Predict(const Core::FMTyieldrequest& request) const;
 		void ValidateInputYields(std::vector<std::string>& expectedYields, std::vector<std::string>& inputYields) const;
 		virtual ~FMTyieldmodel();
+		FMTyieldmodel();
 		virtual const std::string& GetModelName() const = 0;
 		virtual const std::string& GetModelType() const = 0;
 		virtual const std::vector<float>& GetStandardParamMeans() const = 0;
