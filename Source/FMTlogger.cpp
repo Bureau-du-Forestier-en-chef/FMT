@@ -217,7 +217,13 @@ namespace Logging
 				}
 		}else {
 			#if defined(FMTWITHPYTHON)
-					PySys_FormatStdout(message);
+					
+			#if PY_MAJOR_VERSION < 3
+			//old way maybe for python 2 ???? 
+				PySys_FormatStdout(message);
+			#else
+				std::cout << message << std::flush;
+			#endif
 			#elif defined(FMTWITHR)
 					Rcpp::Rcout << message << std::flush;
 			#else
