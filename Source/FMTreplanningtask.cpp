@@ -288,7 +288,7 @@ namespace Parallel
 			const std::vector<Core::FMTconstraint>baselocalconstraints(dynamicconstraints);
 			while (!replicateids.empty())
 			{
-				_logger->logwithlevel("Thread:" + getthreadid() + " Replanning on replicate " + std::to_string(getiteration()) + " started\n",1);
+				_logger->logwithlevel("Thread:" + getthreadid() + " Replanning on replicate " + std::to_string(getiteration()) + " started\n",0);
 				
 				for (int replanningperiod = 1; replanningperiod <= replanningperiods; ++replanningperiod)
 				{
@@ -334,7 +334,7 @@ namespace Parallel
 				dynamicarea = global->getarea();
 				dynamicconstraints = baselocalconstraints;
 				iterationglobalschedule = *baseschedule;
-				_logger->logwithlevel("Thread:" + getthreadid() + " Replanning on replicate " + std::to_string(getiteration()) + " done\n", 1);
+				_logger->logwithlevel("Thread:" + getthreadid() + " Replanning on replicate " + std::to_string(getiteration()) + " done\n", 0);
 				replicateids.pop();
 			}
 			setstatus(true);
