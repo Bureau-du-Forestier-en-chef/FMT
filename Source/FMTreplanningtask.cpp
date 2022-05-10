@@ -197,14 +197,14 @@ namespace Parallel
 				int modelsize = modellength;
 				int firstperiod = dynamicarea.begin()->getperiod() + 1;
 				int lastperiod = firstperiod;
-				if (!modelptr)//infeasible!
+				/*if (!modelptr)//infeasible!
 				{
 					//put NAN everywhere the size of
 					modelsize = (replanningperiods - replanningperiod) + 1;
 					onlyfirstperiod = false;
+					std::cout << onlyfirstperiod << std::endl;
 					firstperiod = replanningperiod;
-					lastperiod = replanningperiod;
-				}
+				}*/
 				if (!onlyfirstperiod)
 				{
 					lastperiod += modelsize;
@@ -221,6 +221,7 @@ namespace Parallel
 				}
 				if (!modelptr)
 				{
+					firstperiod = replanningperiod;
 					lastperiod = replanningperiods;
 				}
 				_logger->logwithlevel("Thread:" + getthreadid() + " Writing results for " + modelname + " first period at: " +
@@ -287,7 +288,7 @@ namespace Parallel
 			const std::vector<Core::FMTconstraint>baselocalconstraints(dynamicconstraints);
 			while (!replicateids.empty())
 			{
-				_logger->logwithlevel("Thread:" + getthreadid() + " Replanning on replicate " + std::to_string(getiteration()) + " started\n",0);
+				_logger->logwithlevel("Thread:" + getthreadid() + " Replanning on replicate " + std::to_string(getiteration()) + " started\n",1);
 				
 				for (int replanningperiod = 1; replanningperiod <= replanningperiods; ++replanningperiod)
 				{
@@ -333,7 +334,7 @@ namespace Parallel
 				dynamicarea = global->getarea();
 				dynamicconstraints = baselocalconstraints;
 				iterationglobalschedule = *baseschedule;
-				_logger->logwithlevel("Thread:" + getthreadid() + " Replanning on replicate " + std::to_string(getiteration()) + " done\n", 0);
+				_logger->logwithlevel("Thread:" + getthreadid() + " Replanning on replicate " + std::to_string(getiteration()) + " done\n", 1);
 				replicateids.pop();
 			}
 			setstatus(true);

@@ -1765,7 +1765,7 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 					{
 						if(period<schedules.size())
 						{
-							_logger->logwithlevel(std::string(this->buildperiod(schedules.at(period),forcepartialbuild,parameters.getperiodcompresstime(period)))+"\n",1);
+							_logger->logwithlevel(std::string(this->buildperiod(schedules.at(period),forcepartialbuild,parameters.getperiodcompresstime(period)))+"\n",3);
 						}
 						else{
 							_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
@@ -1773,7 +1773,7 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 												"FMTlpmodel::build",__LINE__,__FILE__);
 						}
 					}else{
-						_logger->logwithlevel(std::string(this->buildperiod(Core::FMTschedule(),false,parameters.getperiodcompresstime(period)))+"\n",1);
+						_logger->logwithlevel(std::string(this->buildperiod(Core::FMTschedule(),false,parameters.getperiodcompresstime(period)))+"\n",3);
 					}
 				}
 			if(!allempty)
