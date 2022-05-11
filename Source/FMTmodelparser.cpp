@@ -247,10 +247,8 @@ void FMTmodelparser::fillupinfeasibles(OGRLayer* layer,
 	try {
 		boost::lock_guard<boost::recursive_mutex> guard(mtx);
 		std::map<std::string,std::vector<std::vector<double>>>allvalues;
-		for (const Core::FMToutput& out: theoutputs)
-		{
-			allvalues[out.getname()] = std::vector<std::vector<double>>(theoutputs.size(), std::vector<double>((lastperiod - firstperiod) + 1, std::numeric_limits<double>::quiet_NaN()));
-		}
+		//Cannot fill up infeasible for non-total ... i guess
+		allvalues["Total"] = std::vector<std::vector<double>>(theoutputs.size(), std::vector<double>((lastperiod - firstperiod) + 1, std::numeric_limits<double>::quiet_NaN()));
 		writefeatures(layer,firstperiod,iteration, theoutputs,allvalues,true);
 	}
 	catch (...)
