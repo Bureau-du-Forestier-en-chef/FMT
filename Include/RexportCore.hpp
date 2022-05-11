@@ -132,6 +132,8 @@ void exportCore()
 			"@DocString(FMTobject::enablenestedexceptions)")
 		.method("setquietlogger", &Core::FMTobject::setquietlogger,
 			"@DocString(FMTobject::setquietlogger")
+		method("settasklogger", &Core::FMTobject::settasklogger,
+			"@DocString(FMTobject::settasklogger")
 		.method("setdefaultlogger", &Core::FMTobject::setdefaultlogger,
 			"@DocString(FMTobject::setdefaultlogger")
 		.method("setdebuglogger", &Core::FMTobject::setdebuglogger,

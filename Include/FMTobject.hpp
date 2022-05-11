@@ -166,6 +166,11 @@ class FMTEXPORT FMTobject
 		Create and set a quiet logger to the FMTobject.
 		*/
 		virtual void setquietlogger();
+		// DocString: FMTobject::settasklogger
+		/**
+		Create and set a quiet logger to the FMTobject.
+		*/
+		virtual void settasklogger();
 		// DocString: FMTobject::setdebuglogger
 		/**
 		Create and set a debug logger to the FMTobject.

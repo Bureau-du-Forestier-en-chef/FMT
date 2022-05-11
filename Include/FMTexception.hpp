@@ -136,7 +136,7 @@ enum FMTexc
 	FMToveridedyield = 74,
 	FMTmissing_parameter = 75,
 	FMTdeathwithlock = 76,
-	FMTreplanninginfeasible = 77,
+	FMTreplanningwarning = 77,
     };
 
 // DocString: FMTexception
