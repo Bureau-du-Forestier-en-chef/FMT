@@ -386,7 +386,7 @@ namespace Parallel
 					optimal = true;
 					dynamicconstraints = modelcpy->getreplanningconstraints("LOCAL", global->getconstraints(), modelsize);
 				}else {
-					_exhandler->raise(Exception::FMTexc::FMTignore,
+					_exhandler->raise(Exception::FMTexc::FMTreplanninginfeasible,
 						"Infeasible model named: " + modelcpy->getname() + " at iteration " + std::to_string(getiteration()) + " at replanning period " + std::to_string(replanningperiod),
 						"FMTreplanningtask::domodelplanning", __LINE__, __FILE__);
 					modelcpy = std::move(std::unique_ptr<Models::FMTmodel>(nullptr));
