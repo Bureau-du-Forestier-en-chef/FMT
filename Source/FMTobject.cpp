@@ -9,6 +9,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTdefaultlogger.hpp"
 #include "FMTdebuglogger.hpp"
 #include "FMTquietlogger.hpp"
+#include "FMTtasklogger.hpp"
 #include "FMTquietexceptionhandler.hpp"
 #include "FMTdefaultexceptionhandler.hpp"
 #include "FMTdebugexceptionhandler.hpp"
@@ -213,6 +214,18 @@ namespace Core
 			_exhandler->raisefromcatch("", "FMTobject::setquietlogger", __LINE__, __FILE__);
 		}
 		}
+
+	void FMTobject::settasklogger()
+	{
+		try {
+			this->checksignals();
+			this->passinlogger(std::make_shared<Logging::FMTtasklogger>());
+		}
+		catch (...)
+		{
+			_exhandler->raisefromcatch("", "FMTobject::settasklogger", __LINE__, __FILE__);
+		}
+	}
 
 	void FMTobject::setdebuglogger()
 		{

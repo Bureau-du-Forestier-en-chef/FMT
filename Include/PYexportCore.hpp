@@ -75,6 +75,8 @@ void exportCore()
 			"@DocString(FMTobject::setdebuglogger)")
 		.def("setquietlogger", &Core::FMTobject::setquietlogger,
 			"@DocString(FMTobject::setquietlogger)")
+		.def("settasklogger", &Core::FMTobject::settasklogger,
+			"@DocString(FMTobject::settasklogger")
 		.def("redirectlogtofile", &Core::FMTobject::redirectlogtofile,
 			"@DocString(FMTobject::redirectlogtofile)")
 		.def("seterrorstowarnings", &Core::FMTobject::seterrorstowarnings,
