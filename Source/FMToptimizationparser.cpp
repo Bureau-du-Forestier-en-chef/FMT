@@ -17,6 +17,8 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <boost/filesystem.hpp>
 #include <boost/filesystem/operations.hpp>
 #include "FMTexceptionhandler.hpp"
+#include <boost/regex.hpp>
+
 
 namespace Parser
 {
@@ -25,7 +27,7 @@ namespace Parser
 	const std::regex FMToptimizationparser::rxobjectives = std::regex("^(_MAXMIN|_MINMAX|_MAX|_MIN|_GOAL)([\\s\\t]*)(.+)([\\s\\t])((([\\d]*|#.+)(\\.\\.)(#.+|_LENGTH|[\\d]*))|(#.+|[\\d]*))", std::regex_constants::ECMAScript | std::regex_constants::icase);
 	const std::regex FMToptimizationparser::rxexclude = std::regex("^(\\*EXCLUDE)([\\s\\t]*)([^\\s^\\t]*)([\\s\\t]*)((([\\d]*|#.+)(\\.\\.)(#.+|_LENGTH|[\\d]*))|(#.+|[\\d]*))", std::regex_constants::ECMAScript | std::regex_constants::icase);
 	const std::regex FMToptimizationparser::rxconstraints = std::regex("^(_EVEN|_NDY|_SEQ)([\\s\\t]*)(\\()((([^,]*)(,)([\\s\\t]*)([\\d\\.]*%|[\\d\\.]*)([\\s\\t]*)(,)([\\s\\t]*)([\\d\\.]*%|[\\d\\.]*))|(([^,]*)(,)([\\s\\t]*)([\\d\\.]*%|[\\d\\.]*))|([^,]*))([\\s\\t]*)(\\))([\\s\\t]*)(.+)", std::regex_constants::ECMAScript | std::regex_constants::icase);
-	const boost::regex FMToptimizationparser::rxequations = boost::regex("^(.+)((((<=)|(>=))(.+))|((.+)((=))(.+)))(?<=[^,])[\\s\\t](?=\\d)(.+)");
+	const std::unique_ptr<boost::regex>FMToptimizationparser::rxequations = std::unique_ptr<boost::regex>(new boost::regex("^(.+)((((<=)|(>=))(.+))|((.+)((=))(.+)))(?<=[^,])[\\s\\t](?=\\d)(.+)"));
 	const std::regex FMToptimizationparser::rxperiods = std::regex("^([\\s\\t]*)((([\\d]*|#.+)(\\.\\.)(#.+|_LENGTH|[\\d]*)|(_LENGTH))|(#.+|[\\d]*))", std::regex_constants::ECMAScript | std::regex_constants::icase);
 	const std::regex FMToptimizationparser::rxending = std::regex("^(.+)(((_GOAL)(\\()([^,]*)(,)([^\\)]*)(\\)))|(_SETFROMGLOBAL|_SETFROMLOCAL|_REIGNORE)([\\s\\t]*)(\\()([\\s\\t]*)(.+)([\\s\\t]*)(\\))|(_REPLICATE)([\\s\\t]*)(\\()([\\s\\t]*)(.+)([\\s\\t]*)(\\)))", std::regex_constants::ECMAScript | std::regex_constants::icase);
 	const std::regex FMToptimizationparser::rxoutput = std::regex("^(.+)(\\()([^)]*)(\\))(\\[)(#.+|[-\\d]*)(\\])|([^\\[]*)(\\()([^)]*)(\\))|(.+)(\\[)(#.+|[-\\d]*)(\\])|(.+)", std::regex_constants::ECMAScript | std::regex_constants::icase);
@@ -426,7 +428,7 @@ namespace Parser
 		Core::FMTconstraint constraint;
 		std::vector<Core::FMTconstraint>returnedconstraints;
 		boost::match_results<std::string::const_iterator> Bmatch;
-		boost::match_flag_type flags = boost::match_default;
+		//boost::match_flag_type flags = boost::match_default;
 		try {
 			std::smatch kmatch;
 			std::string rest = line;
@@ -495,7 +497,7 @@ namespace Parser
 				returnedconstraints = getperiodsbounds(periodstring, constraint, constants);
 
 			}
-			else if (boost::regex_search(rest.cbegin(), rest.cend(), Bmatch, rxequations))
+			else if (boost::regex_search(rest.cbegin(), rest.cend(), Bmatch, *rxequations))
 			{
 				Core::FMTconstrainttype cctype = Core::FMTconstrainttype::FMTstandard;
 				const std::string periodstring = std::string(Bmatch[13]);
