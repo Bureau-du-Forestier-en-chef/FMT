@@ -225,7 +225,7 @@ namespace Parallel
 					lastperiod = replanningperiods;
 				}
 				_logger->logwithlevel("Thread:" + getthreadid() + " Writing results for " + modelname + " first period at: " +
-					std::to_string(firstperiod) + " for iteration " + std::to_string(getiteration()) + +"\n", 0);
+					std::to_string(firstperiod) + " for iteration " + std::to_string(getiteration()) + +"\n", 1);
 				resultswriter->write(modelname, results, firstperiod, lastperiod, getiteration());
 			}
 		}
