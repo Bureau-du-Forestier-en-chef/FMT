@@ -58,17 +58,6 @@ int main()
 				Logging::FMTlogger() << "period: " << period << " X: " << value.first.getx() << " Y: " << value.first.gety() << " value: " << value.second << "\n";
 				}
 		}
-	const std::vector<Core::FMTaction>actions = simulationmodel.getactions();
-	const std::vector<Core::FMTtheme>growththeme(1,simulationmodel.getthemes().at(1));
-	Parser::FMTtransitionparser transitionparser;
-	for (int period = 1; period <= 10; ++period)
-		{
-		const std::vector<Core::FMTGCBMtransition>transitions = areaparser.writedisturbances(outdir,
-			spatialsolution,
-			actions,
-			growththeme, period);
-		transitionparser.writeGCBM(transitions, outdir + "transition" + std::to_string(period) + ".xml");
-		}
 #endif
 	return 0;
 }
