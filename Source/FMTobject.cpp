@@ -21,6 +21,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <chrono>
 
 #if defined __MINGW64__||__CYGWIN__
+	#define NOMINMAX
 	#include "windows.h"
 	EXTERN_C IMAGE_DOS_HEADER __ImageBase;
 #else
@@ -34,6 +35,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTcplhandler.hpp"
 
 #if defined _WIN32
+#define NOMINMAX
 #include <windows.h>
 #endif
 

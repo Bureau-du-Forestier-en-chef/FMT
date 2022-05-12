@@ -22,6 +22,7 @@ EXTERN_C IMAGE_DOS_HEADER __ImageBase;
 #endif
 
 #if defined (__CYGWIN__)
+#define NOMINMAX
 #include <windows.h>
 #include <iterator>
 EXTERN_C IMAGE_DOS_HEADER __ImageBase;

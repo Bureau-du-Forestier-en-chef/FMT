@@ -16,8 +16,9 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <queue>
 #include "FMTutility.hpp"
 #include <regex>
-#include <boost/regex.hpp>
 #include <limits>
+#include <boost/regex/v5/regex_fwd.hpp>
+
 
 namespace Core
 {
@@ -46,7 +47,7 @@ namespace Parser
 		const static std::regex rxobjectives;
 		const static std::regex rxexclude;
 		const static std::regex rxconstraints;
-		const static boost::regex rxequations;
+		const static std::unique_ptr<boost::regex> rxequations;
 		const static std::regex rxperiods;
 		const static std::regex rxending;
 		const static std::regex rxoutput;
