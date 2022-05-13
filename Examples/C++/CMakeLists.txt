@@ -10,11 +10,12 @@ cmake_minimum_required(VERSION 3.6)
 
 function(createexecutable executablecpplocation)
   set(newprojectsourcefiles "${executablecpplocation}")
-  #list(APPEND newprojectsourcefiles "${FMTHEADERFILES}")
-  list(APPEND newprojectsourcefiles "${FMTSOURCEFILES}")
+  #list(APPEND newprojectsourcefiles "${FMTSOURCEFILES}")
   get_filename_component(executablename "${executablecpplocation}" NAME_WE)
   message("Generating build for ${executablename}")
   add_executable(${executablename} ${newprojectsourcefiles})
+  target_compile_definitions(${executablename} PRIVATE "-DFMTLIBIMPORT")
+  target_link_libraries(${executablename} PRIVATE FMTlib)
   target_include_directories(${executablename} PRIVATE ${FMTINCLUDEDIR})
   if (NOT MSVC)
 		set_target_properties(${executablename}
@@ -37,9 +38,9 @@ function(createexecutable executablecpplocation)
 	endif(MSVC AND (${CMAKE_VERSION} VERSION_GREATER 3.8.0))
 	set_property(TARGET ${executablename} PROPERTY CXX_STANDARD 11)
 	set_property(TARGET ${executablename} PROPERTY CXX_STANDARD_REQUIRED ON)
-	if (MOSEK_FOUND AND MSVC)
-		target_sources(${executablename} PRIVATE ${OSIMSK_DEFINITION})
-	endif(MOSEK_FOUND AND MSVC)
+	#if (MOSEK_FOUND AND MSVC)
+	#	target_sources(${executablename} PRIVATE ${OSIMSK_DEFINITION})
+	#endif(MOSEK_FOUND AND MSVC)
 endfunction(createexecutable executablecpplocation)
 
 FILE(GLOB FMTexecutables ${CMAKE_CURRENT_SOURCE_DIR}/Examples/C++/*.cpp)
@@ -49,32 +50,7 @@ endforeach()
 
 
 
-add_library(FMTlib SHARED ${FMTSOURCEFILES})
-target_include_directories(FMTlib PRIVATE "${FMTINCLUDEDIR}")
-if (NOT MSVC)
-		set_target_properties( FMTlib
-			PROPERTIES
-			ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}"
-			LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}"
-			RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}"
-		)
-else()
-set_target_properties( FMTlib
-    PROPERTIES
-    ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
-    LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
-    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
-)
-endif(NOT MSVC)
-set_property(TARGET FMTlib PROPERTY CXX_STANDARD 11)
-set_property(TARGET FMTlib PROPERTY CXX_STANDARD_REQUIRED ON)
-target_compile_definitions(FMTlib PRIVATE "-DFMTSHAREDLIB")
-if (MOSEK_FOUND)
-	target_sources(FMTlib PRIVATE ${OSIMSK_DEFINITION})
-endif(MOSEK_FOUND)
-if (MSVC)
-	set_target_properties(FMTlib PROPERTIES COMMON_LANGUAGE_RUNTIME "")
-endif(MSVC)
+
 
 
 #Get the tests 
