@@ -117,5 +117,5 @@ namespace Heuristics
 			return best_heuristic();
 		}
 }
-BOOST_CLASS_EXPORT_IMPLEMENT(Heuristics::FMTlpheuristicmthandler)
+//BOOST_CLASS_EXPORT_IMPLEMENT(Heuristics::FMTlpheuristicmthandler)
 #endif

@@ -14,7 +14,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <vector>
 #include <string>
 #include <memory>
-
+#include "FMTutility.hpp"
 class OsiSolverInterface;
 class CoinBuild;
 
@@ -29,7 +29,7 @@ namespace Models
 	This class keeps track of the last added columns and last added row to let the user virtualy add more stuff
 	to the matrix (row and/or columns). This class is made for efficiency. 
 	*/
-	class FMTmatrixbuild
+	class FMTEXPORT FMTmatrixbuild
 	{
 		// DocString: FMTmatrixbuild::lastcol
 		///lastcol is the matrix index's of the last column added to colsbuild object

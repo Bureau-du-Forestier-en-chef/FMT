@@ -31,6 +31,7 @@ int main(int argc, char *argv[])
 		const std::vector<Models::FMTmodel> models = modelparser.readproject(primarylocation, scenarios);
 		Models::FMTlpmodel optimizationmodel(models.at(0), Models::FMTsolverinterface::CLP);
 		const std::vector<Core::FMTschedule>schedules = modelparser.readschedules(primarylocation,models).at(0);
+		modelparser.write(optimizationmodel, "C:/Users/admlocal/Desktop/test/");
 		const double tolerance = 0.01;
 		for (size_t period = 1; period <= 6; ++period)
 			{

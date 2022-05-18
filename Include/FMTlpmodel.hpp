@@ -53,30 +53,25 @@ shrinked (by the front) using the function eraseperiod.
 The matrix is held within the solverinterface pointer.
 */
 
-class FMTEXPORT FMTlpmodel final : public FMTsrmodel
+class FMTEXPORT FMTlpmodel : public FMTsrmodel
 	{
-	// DocString: FMTlpmodel::save
+	// DocString: FMTlpmodel::serialize
 	/**
 	Save function is for serialization, used to do multiprocessing across multiple cpus (pickle in Pyhton)
 	*/
 	friend class boost::serialization::access;
 	template<class Archive>
 	void save(Archive& ar, const unsigned int version) const
-		{
-		ar & boost::serialization::make_nvp("model", boost::serialization::base_object<FMTsrmodel>(*this));
-		ar & BOOST_SERIALIZATION_NVP(elements);
-		}
-	// DocString: FMTlpmodel::load
-	/**
-	Load function is for serialization, used to do multiprocessing across multiple cpus (pickle in Pyhton)
-	*/
+	{
+		ar& boost::serialization::make_nvp("model", boost::serialization::base_object<FMTsrmodel>(*this));
+		ar& BOOST_SERIALIZATION_NVP(elements);
+	}
 	template<class Archive>
 	void load(Archive& ar, const unsigned int version)
-		{
-		ar & boost::serialization::make_nvp("model", boost::serialization::base_object<FMTsrmodel>(*this));
-		ar & BOOST_SERIALIZATION_NVP(elements);
-		}
-	BOOST_SERIALIZATION_SPLIT_MEMBER()
+	{
+		ar& boost::serialization::make_nvp("model", boost::serialization::base_object<FMTsrmodel>(*this));
+		ar& BOOST_SERIALIZATION_NVP(elements);
+	}
 	// DocString: FMTlpmodel::elements
 	///Locations of the constraints and variables in the matrix for the constraints / objective.
 	std::vector<std::unordered_map<std::string,

@@ -119,19 +119,22 @@ void FMTserializablematrix::setmatrix(std::shared_ptr<OsiSolverInterface>& solve
 	
 	}
 
-template<class Archive>
-void FMTserializablematrix::gutsofserialize(Archive& ar, const unsigned int version)
+void FMTserializablematrix::getsetmatrixelements(bool loading,
+	bool& order,
+	double& extragap,
+	double& extramajor,
+	int& sizevector,
+	int& minordim,
+	int& numelements,
+	int& majordim,
+	int& maxsize,
+	std::vector<double>& lelement,
+	std::vector<int>& lindex,
+	std::vector<int>& llength,
+	std::vector<int>& lstart)
 {
-	bool order;
-	double extragap;
-	double extramajor;
-	int sizevector;
-	int minordim;
-	CoinBigIndex numelements;
-	int majordim;
-	CoinBigIndex maxsize;
-	if (!Archive::is_loading::value)
-		{
+	if (!loading)
+	{
 		order = matrix->isColOrdered();
 		extragap = matrix->getExtraGap();
 		extramajor = matrix->getExtraMajor();
@@ -139,86 +142,80 @@ void FMTserializablematrix::gutsofserialize(Archive& ar, const unsigned int vers
 		minordim = matrix->getMinorDim();
 		numelements = matrix->getNumElements();
 		majordim = matrix->getMaxMajorDim();
-		maxsize = std::max(1,matrix->getNumElements());
-		}
-	ar & BOOST_SERIALIZATION_NVP(order);
-	ar & BOOST_SERIALIZATION_NVP(extragap);
-	ar & BOOST_SERIALIZATION_NVP(extramajor);
-	ar & BOOST_SERIALIZATION_NVP(sizevector);
-	ar & BOOST_SERIALIZATION_NVP(minordim);
-	ar & BOOST_SERIALIZATION_NVP(numelements);
-	ar & BOOST_SERIALIZATION_NVP(majordim);
-	ar & BOOST_SERIALIZATION_NVP(maxsize);
-	ar & BOOST_SERIALIZATION_NVP(collb);
-	ar & BOOST_SERIALIZATION_NVP(colub);
-	ar & BOOST_SERIALIZATION_NVP(obj);
-	ar & BOOST_SERIALIZATION_NVP(rowlb);
-	ar & BOOST_SERIALIZATION_NVP(rowub);
-	ar & BOOST_SERIALIZATION_NVP(colsolution);
-	ar & BOOST_SERIALIZATION_NVP(rowprice);
-	double* element_;
-	int *index_;
-	int * length_;
-	CoinBigIndex* start_;
-	if (Archive::is_loading::value)
-	{
-		if (majordim > 0)
+		maxsize = std::max(1, matrix->getNumElements());
+		lelement.resize(maxsize);
+		lindex.resize(maxsize);
+		llength.resize(majordim);
+		lstart.resize(majordim + 1);
+		const double* lelement_i = matrix->getMutableElements();
+		const int*  lindex_i = matrix->getMutableIndices();
+		const int*  llength_i = matrix->getMutableVectorLengths();
+		const CoinBigIndex*  lstart_i = matrix->getMutableVectorStarts();
+		size_t index = 0;
+		for (double& le :lelement)
 		{
-			length_ = new int[majordim];
+			le = *(lelement_i + index);
+			++index;
 		}
-		start_ = new CoinBigIndex[majordim + 1];
-		if (maxsize > 0)
+		index = 0;
+		for (int& li : lindex)
 		{
-			element_ = new double[maxsize];
-			index_ = new int[maxsize];
+			li = *(lindex_i + index);
+			++index;
+		}
+		index = 0;
+		for (int& ll : llength)
+		{
+			ll = *(llength_i + index);
+			++index;
+		}
+		index = 0;
+		for (int& ls : lstart)
+		{
+			ls = *(lstart_i + index);
+			++index;
 		}
 	}else {
-		element_ = matrix->getMutableElements();
-		index_ = matrix->getMutableIndices();
-		length_ = matrix->getMutableVectorLengths();
-		start_ = matrix->getMutableVectorStarts();
-	}
-	for (int indexid = 0; indexid < maxsize; ++indexid)
-	{
-		ar & boost::serialization::make_nvp(("E" + std::to_string(indexid)).c_str(), element_[indexid]);
-		ar & boost::serialization::make_nvp(("I" + std::to_string(indexid)).c_str(), index_[indexid]);
-	}
-	for (int id = 0; id < majordim; ++id)
-	{
-		ar & boost::serialization::make_nvp(("L" + std::to_string(id)).c_str(), length_[id]);
-	}
-	if (majordim > 0)
-	{
-		for (int id = 0; id < majordim + 1; ++id)
-		{
-			ar & boost::serialization::make_nvp(("S" + std::to_string(id)).c_str(), start_[id]);
-		}
-	}
-	if (Archive::is_loading::value)
-		{
 		matrix = std::unique_ptr<CoinPackedMatrix>(new CoinPackedMatrix(order,
 			minordim, majordim, numelements,
-			element_, index_,
-			start_, length_,
+			&lelement[0], &lindex[0],
+			&lstart[0], &llength[0],
 			extramajor, extragap));
-		delete length_;
-		delete start_;
-		delete element_;
-		delete index_;
-		}
+
+	}
+
 }
 
 
-template<> void FMTserializablematrix::serialize(boost::archive::binary_oarchive& ar, const unsigned int version)
+void FMTserializablematrix::getsetmemberelements(bool loading,
+	std::vector<double>& lcollb,
+	std::vector<double>& lcolub,
+	std::vector<double>& lobj,
+	std::vector<double>& lrowlb,
+	std::vector<double>& lrowub,
+	std::vector<double>& lcolsolution,
+	std::vector<double>& lrowprice)
+{
+	if (!loading)
 	{
-	gutsofserialize<boost::archive::binary_oarchive>(ar, version);
-	}
+		lcollb = collb;
+		lcolub = colub;
+		lobj = obj;
+		lrowlb = rowlb;
+		lrowub = rowub;
+		lcolsolution = colsolution;
+		lrowprice = rowprice;
+	}else {
+		collb = lcollb;
+		colub = lcolub;
+		obj = lobj;
+		rowlb =lrowlb;
+		rowub = lrowub;
+		colsolution = lcolsolution;
+		rowprice = lrowprice;
+		}
 
-template<> void FMTserializablematrix::serialize(boost::archive::binary_iarchive& ar, const unsigned int version)
-	{
-	gutsofserialize<boost::archive::binary_iarchive>(ar, version);
-	}
-
+}
 
 }
 #endif

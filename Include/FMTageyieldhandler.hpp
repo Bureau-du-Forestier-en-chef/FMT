@@ -16,14 +16,14 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 namespace Core
 {
-	class FMTEXPORT FMTageyieldhandler final : public FMTyieldhandler
+	class FMTEXPORT FMTageyieldhandler : public FMTyieldhandler
 	{
 		friend class boost::serialization::access;
 		template<class Archive>
 		void serialize(Archive& ar, const unsigned int version)
 		{
-			ar & boost::serialization::make_nvp("FMTyieldhandler", boost::serialization::base_object<FMTyieldhandler>(*this));
-			ar & BOOST_SERIALIZATION_NVP(elements);
+			ar& boost::serialization::make_nvp("FMTyieldhandler", boost::serialization::base_object<FMTyieldhandler>(*this));
+			ar& BOOST_SERIALIZATION_NVP(elements);
 		}
 		std::map<std::string, FMTdata>elements;
 		int getage(const std::string yld, const double& value, const int& starting_age) const;

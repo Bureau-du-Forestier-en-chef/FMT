@@ -9,13 +9,28 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTdevelopment.hpp"
 #include "FMTdevelopmentpath.hpp"
 #include "FMTyields.hpp"
+#include "FMTtransitionmask.hpp"
+#include <boost/archive/binary_oarchive.hpp>
+#include <boost/archive/binary_iarchive.hpp>
 
 
 namespace Core{
 
-FMTfork::FMTfork():FMTspec(),transitions(){}
-    FMTfork::FMTfork(const FMTfork& rhs):FMTspec(rhs), transitions(rhs.transitions)
+    FMTfork::~FMTfork() = default;
+
+
+
+
+FMTfork::FMTfork():FMTspec(),transitions()
+    {
+
+
+    }
+    FMTfork::FMTfork(const FMTfork& rhs):
+        FMTspec(rhs),
+        transitions(rhs.transitions)
         {
+
 
         }
     FMTfork& FMTfork::operator = (const FMTfork& rhs)
@@ -121,8 +136,9 @@ FMTfork::FMTfork():FMTspec(),transitions(){}
 
 	bool FMTfork::operator == (const FMTfork& rhs) const
 		{
-		return (FMTspec::operator == (rhs) &&
-			transitions == rhs.transitions);
+        return (FMTspec::operator == (rhs) &&
+            transitions == rhs.transitions);
+            
 		}
 }
 

@@ -28,7 +28,7 @@ class FMTyieldrequest;
 class FMTexpression;
 class FMTmask;
 
-class FMTdata
+class FMTEXPORT FMTdata
     {
 	friend class boost::serialization::access;
 	template<class Archive>

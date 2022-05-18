@@ -374,7 +374,7 @@ class FMTEXPORT FMToutput: public FMTobject
 /**
  FMToutputcomparator to check if the output_name already exist in a std container.
 */
-class FMToutputcomparator
+class FMTEXPORT FMToutputcomparator
 {
 	// DocString: FMToutputcomparator::output_name
 	///The name of the FMToutput we are looking for.
