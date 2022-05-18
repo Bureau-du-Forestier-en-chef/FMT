@@ -205,6 +205,7 @@ namespace Models
 		It will always return a filled vector.
 		*/
 		std::vector<Core::FMTschedule>setupschedulesforbuild(const std::vector<Core::FMTschedule>& schedules) const;
+		
     public:
 		// DocString: FMTmodel::setparallellogger
 		/**
@@ -406,7 +407,21 @@ namespace Models
 		to add FMTmodelyieldhandler or FMTcomplexyieldhander it must be added in the .yld file to parse with the model.
 		*/
 		template<typename T>		
-		void addyieldhandlers(const std::vector<T>& yieldhandlers);
+		void addyieldhandlers(const std::vector<T>& yieldhandlers)
+		{
+			try {
+				yields.unshrink(themes);
+				for (const auto& yldhandler : yieldhandlers)
+				{
+					std::unique_ptr<Core::FMTyieldhandler> yldhandlerptr = yldhandler.clone();
+					yields.push_back(yldhandlerptr->getmask(), yldhandlerptr);
+				}
+				yields.update();
+			}
+			catch (...) {
+				_exhandler->printexceptions("", "FMTmodel:::addyieldhandlers", __LINE__, __FILE__);
+			}
+		}
 		// DocString: FMTmodel::addyieldhandlersfromptr
 		/**
 		Add unique pointer of FMTyieldhandler from vector (yieldhandlers) to yields. 

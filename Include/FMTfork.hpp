@@ -12,8 +12,11 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTbounds.hpp"
 #include <vector>
 #include <boost/serialization/serialization.hpp>
+#include <boost/serialization/split_member.hpp>
 #include <boost/serialization/nvp.hpp>
 #include <boost/serialization/export.hpp>
+#include <boost/serialization/unique_ptr.hpp>
+#include <boost/serialization/vector.hpp>
 
 namespace Core
 {
@@ -22,21 +25,24 @@ class FMTdevelopment;
 class FMTdevelopmentpath;
 class FMTyieldrequest;
 class FMTyields;
+class FMTtheme;
+class FMTmaskfilter;
+
 
 class FMTEXPORT FMTfork : public FMTspec
     {
 	friend class boost::serialization::access;
-	template<class Archive>
-	void serialize(Archive& ar, const unsigned int version)
-		{
-		ar & boost::serialization::make_nvp("specifications", boost::serialization::base_object<FMTspec>(*this));
-		ar & BOOST_SERIALIZATION_NVP(transitions);
-		}
+    template<class Archive>
+    void serialize(Archive& ar, const unsigned int version)
+    {
+        ar& boost::serialization::make_nvp("specifications", boost::serialization::base_object<FMTspec>(*this));
+        ar& transitions;
+    }
 	std::vector<FMTtransitionmask>transitions;
     public:
         FMTfork();
         FMTfork(const FMTfork& rhs);
-		~FMTfork() = default;
+		~FMTfork();
         FMTfork& operator = (const FMTfork& rhs);
         void add(FMTtransitionmask& transition);
 		std::vector<FMTdevelopmentpath> getpaths(const Core::FMTdevelopment& base, const Core::FMTyields& ylds,

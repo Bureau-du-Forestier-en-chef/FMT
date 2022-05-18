@@ -13,6 +13,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 namespace Core {
 
+
 	FMTageyieldhandler::operator std::string() const
 	{
 		std::string value;

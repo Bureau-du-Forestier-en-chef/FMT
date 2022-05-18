@@ -14,10 +14,11 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMToperatingareaclusterer.hpp"
 #include "FMToperatingareascheme.hpp"
 #include "FMToperatingareacluster.hpp"
-#include "FMTlpheuristicmthandler.hpp"
+//#include "FMTlpheuristicmthandler.hpp"
 #include "FMTlpsolver.hpp"
 #include "PYdefinitions.hpp"
 #include "boost/python.hpp"
+#include "FMTpythonpickle.hpp"
 
 namespace Python
 {
@@ -34,14 +35,14 @@ void exportHeuristics()
 		"\n";
 	#ifdef FMTWITHOSI
 
-	bp::class_<Heuristics::FMTlpheuristicmthandler>("FMTlpheuristicmthandler", "@DocString(FMTlpheuristicmthandler)")
+	/*bp::class_<Heuristics::FMTlpheuristicmthandler>("FMTlpheuristicmthandler", "@DocString(FMTlpheuristicmthandler)")
 		//.def(bp::init<std::vector<Heuristics::FMToperatingareascheduler>&>())
 		//.def(bp::init<std::vector<Heuristics::FMToperatingareaclusterer>&>())
 		.def(bp::init<boost::python::list&,const double&>())
 		.def("initialsolve", &Heuristics::FMTlpheuristicmthandler::initialsolve,
 					"@DocString(FMTlpheuristicmthandler::initialsolve)")
 		.def("greedysolve", &Heuristics::FMTlpheuristicmthandler::greedysolve,
-					"@DocString(FMTlpheuristicmthandler::greedysolve)");
+					"@DocString(FMTlpheuristicmthandler::greedysolve)");*/
 
 	bp::class_<Heuristics::FMToperatingarea>("FMToperatingarea", "@DocString(FMToperatingarea)")
 		.def(bp::init<const Core::FMTmask&, const double&>())

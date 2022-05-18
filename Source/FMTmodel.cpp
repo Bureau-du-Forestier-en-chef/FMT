@@ -18,6 +18,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTtimeyieldhandler.hpp"
 #include "FMTmaskfilter.hpp"
 #include "FMTexceptionhandler.hpp"
+#include "FMTtransitionmask.hpp"
 
 
 namespace Models{
@@ -316,24 +317,6 @@ void FMTmodel::addoutput(const std::string& name,
 
 	}
 
-template<typename T>
-void FMTmodel::addyieldhandlers(const std::vector<T>& yieldhandlers)
-{
-	try{
-		yields.unshrink(themes);
-		for (const auto& yldhandler : yieldhandlers)
-		{
-			std::unique_ptr<Core::FMTyieldhandler> yldhandlerptr = yldhandler.clone();
-			yields.push_back(yldhandlerptr->getmask(),yldhandlerptr);
-		}
-		yields.update();
-	}catch(...){
-		_exhandler->printexceptions("", "FMTmodel::addyieldhandlers", __LINE__, __FILE__);
-	}
-
-}
-template void FMTmodel::addyieldhandlers<Core::FMTageyieldhandler>(const std::vector<Core::FMTageyieldhandler>& yieldhandlers);
-template void FMTmodel::addyieldhandlers<Core::FMTtimeyieldhandler>(const std::vector<Core::FMTtimeyieldhandler>& yieldhandlers);
 
 void FMTmodel::addyieldhandlersfromptr(const std::vector<std::unique_ptr<Core::FMTyieldhandler>>& yieldhandlers)
 {

@@ -13,6 +13,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTmaskfilter.hpp"
 #include <boost/serialization/serialization.hpp>
 #include <string>
+#include "FMTutility.hpp"
 
 
 
@@ -24,7 +25,7 @@ class FMTyields;
 class FMTyieldrequest;
 class FMTtheme;
 
-class FMTtransitionmask : public FMTmaskfilter,public FMTspec
+class FMTEXPORT FMTtransitionmask : public FMTmaskfilter,public FMTspec
     {
 	friend class boost::serialization::access;
 	template<class Archive>

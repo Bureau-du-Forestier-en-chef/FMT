@@ -12,11 +12,11 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTcoordinate.hpp"
 #include "FMTforest.hpp"
 #include "FMTspatialschedule.hpp"
-#include "FMTspatialaction.hpp"
+//#include "FMTspatialaction.hpp"
 #include "FMTsaschedule.hpp"
 #include "FMTgraph.hpp"
 #include "FMTlinegraph.hpp"
-#include "FMTsasolution.hpp"
+//#include "FMTsasolution.hpp"
 #include "Rdefinitions.hpp"
 #include "FMTevent.hpp"
 #include "FMTdevelopment.hpp"
@@ -36,22 +36,23 @@ RCPP_DEFINEVECTOR(Spatial::FMTforest);// For vector
 
 RCPP_EXPOSED_WRAP(Spatial::FMTspatialschedule);
 RCPP_EXPOSED_AS(Spatial::FMTspatialschedule);
-
+/*
 RCPP_EXPOSED_WRAP(Spatial::FMTspatialaction);
 RCPP_EXPOSED_AS(Spatial::FMTspatialaction);
 RCPP_DEFINEVECTOR(Spatial::FMTspatialaction);//For vector
-
+*/
 RCPP_EXPOSED_WRAP(Graph::FMTlinegraph);
 RCPP_EXPOSED_AS(Graph::FMTlinegraph);
 RCPP_DEFINEMAP(Spatial::FMTcoordinate,Graph::FMTlinegraph);//For FMTlayer
 
+/*
 RCPP_EXPOSED_WRAP(Spatial::FMTexponentialschedule);
 RCPP_EXPOSED_AS(Spatial::FMTexponentialschedule);
 
 RCPP_EXPOSED_WRAP(Spatial::FMTsasolution);
 RCPP_EXPOSED_AS(Spatial::FMTsasolution);
 RCPP_DEFINEVECTOR(Spatial::FMTsasolution);//For vector
-
+*/
 RCPP_EXPOSED_WRAP(Spatial::FMTevent);
 RCPP_EXPOSED_AS(Spatial::FMTevent);
 
@@ -90,7 +91,7 @@ void exportSpatial()
 	Rcpp::class_<Spatial::FMTspatialschedule>("FMTspatialschedule", "@DocString(FMTspatialschedule)")
 		.constructor("@DocString(FMTspatialschedule())");
 
-
+	/*
 	Rcpp::class_<Spatial::FMTspatialaction>("FMTspatialaction", "@DocString(FMTspatialaction)")
 		.constructor("@DocString(FMTspatialaction())")
 		.derives<Core::FMTaction> ("FMTaction")
@@ -118,11 +119,11 @@ void exportSpatial()
 	Rcpp::class_<Spatial::FMTexponentialschedule>("FMTexponentialschedule", "@DocString(FMTexponentialschedule)")
 		.constructor("@DocString(FMTexponentialschedule())")
         .constructor<double>("@DocString(FMTexponentialschedule(double))");
-
+		*/
 
 	define_FMTlayer<Graph::FMTlinegraph>("FMTgraphlayer");
 
-
+	/*
     Rcpp::class_<Spatial::FMTsasolution>("FMTsasolution", "@DocString(FMTsasolution)")
 		.constructor("@DocString(FMTsasolution())")
 		.derives<Spatial::FMTlayer<Graph::FMTlinegraph>>("FMTgraphlayer")
@@ -132,7 +133,7 @@ void exportSpatial()
 			"@DocString(FMTsasolution::getobjfvalue)")
         .method("get_forest_at_period",&Spatial::FMTsasolution::getforestperiod,
 			"@DocString(FMTsasolution::getforestperiod)");
-
+	*/
     }
 }
 

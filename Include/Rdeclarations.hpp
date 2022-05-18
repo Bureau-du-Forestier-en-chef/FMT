@@ -17,10 +17,10 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTdevelopment.hpp"
 #include "FMTdevelopmentpath.hpp"
 #include "FMTforest.hpp"
-#include "FMTspatialaction.hpp"
+//#include "FMTspatialaction.hpp"
 //#include "FMTgraph.hpp"
 #include "FMTlinegraph.hpp"
-#include "FMTsasolution.hpp"
+//#include "FMTsasolution.hpp"
 #include "FMTmodel.hpp"
 #include "FMTsesmodel.hpp"
 #include "FMTsrmodel.hpp"
@@ -90,7 +90,7 @@ RCPP_DECLAREMAP(std::string, std::string); //map of string definition
 //Spatial
 RCPP_DECLAREMAP(Spatial::FMTcoordinate,Core::FMTdevelopment);//for FMTlayer
 RCPP_DECLAREVECTOR(Spatial::FMTforest);// For vector
-RCPP_DECLAREVECTOR(Spatial::FMTspatialaction);//For vector
+//RCPP_DECLAREVECTOR(Spatial::FMTspatialaction);//For vector
 //RCPP_DECLAREMAP(Spatial::FMTcoordinate,Graph::FMTgraph);//For FMTlayer
 RCPP_DECLAREMAP(Spatial::FMTcoordinate, Graph::FMTlinegraph);
 RCPP_DECLAREVECTOR(Models::FMTsesmodel);//For vector

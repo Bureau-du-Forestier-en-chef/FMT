@@ -18,10 +18,13 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "OsiClpSolverInterface.hpp"
 #include "FMTexceptionhandler.hpp"
 #include "FMTsolverlogger.hpp"
+#include "FMTserializablematrix.hpp"
 
 
 namespace Models
 {
+
+
 	bool FMTlpsolver::canupdatesource() const
 	{
 	return (solverinterface.use_count() == 2);

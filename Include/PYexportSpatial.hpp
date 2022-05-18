@@ -13,9 +13,9 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTspatialschedule.hpp"
 #include "FMTspatialaction.hpp"
 #include "FMTeventcontainer.hpp"
-#include "FMTsaschedule.hpp"
+//#include "FMTsaschedule.hpp"
 #include "FMTgraph.hpp"
-#include "FMTsasolution.hpp"
+//#include "FMTsasolution.hpp"
 #include "boost/python.hpp"
 
 namespace Python 
@@ -73,6 +73,7 @@ void exportSpatial()
 
 	define_pylist<Spatial::FMTeventcontainer>();
 
+    /*
 	bp::class_<Spatial::FMTspatialaction, bp::bases<Core::FMTaction>>("FMTspatialaction", "@DocString(FMTspatialaction)")
         .def(bp::init<Core::FMTaction>())
         .add_property("neighbors", bp::make_getter(&Spatial::FMTspatialaction::neighbors, bp::return_value_policy<bp::return_by_value>()),
@@ -95,6 +96,7 @@ void exportSpatial()
 			"@DocString(FMTspatialaction::size_weight)");
     define_pylist<Spatial::FMTspatialaction>();
 
+    
 	bp::class_<Spatial::FMTsaschedule, boost::noncopyable>("Abstract_FMTsaschedule","@DocString(FMTsaschedule)", bp::no_init);
 
 
@@ -115,6 +117,7 @@ void exportSpatial()
 		.def("get_graphs_outputs", &Spatial::FMTsasolution::getgraphsoutputs);
 
     define_pylist<Spatial::FMTsasolution>();
+    */
 
 	bp::class_<Spatial::FMTspatialschedule, bp::bases<Spatial::FMTlayer<Graph::FMTlinegraph>>>("FMTspatialschedule", "@DocString(FMTspatialschedule)")
 		.def(bp::init<Spatial::FMTspatialschedule>())

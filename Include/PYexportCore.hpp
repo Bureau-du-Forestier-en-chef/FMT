@@ -24,7 +24,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTyields.hpp"
 #include "FMTconstants.hpp"
 #include "boost/python.hpp"
-#include "FMTdata.hpp"
+//#include "FMTdata.hpp"
 #include "FMTtimeyieldhandler.hpp"
 #include "FMTageyieldhandler.hpp"
 #include "FMTmaskfilter.hpp"

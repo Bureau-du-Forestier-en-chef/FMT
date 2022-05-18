@@ -30,6 +30,8 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 namespace Models
 {
 
+
+
 	Heuristics::FMToperatingareaclusterer FMTlpmodel::getclusterer(
 		const std::vector<Heuristics::FMToperatingareacluster>& initialcluster,
 		const Core::FMToutput& areaoutput,

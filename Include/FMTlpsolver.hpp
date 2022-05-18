@@ -9,13 +9,15 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #ifndef FMTsolve_H_INCLUDED
 #define FMTsolve_H_INCLUDED
 #include "FMTsolverinterface.hpp"
-#include "FMTserializablematrix.hpp"
 #include "FMTmatrixbuild.hpp"
 #include "FMTobject.hpp"
 #include <memory>
 #include <unordered_map>
 #include <boost/serialization/split_member.hpp>
 #include <boost/serialization/export.hpp>
+#include <boost/archive/binary_oarchive.hpp>
+#include <boost/archive/binary_iarchive.hpp>
+#include "FMTserializablematrix.hpp"
 
 
 class OsiSolverInterface;
@@ -34,21 +36,27 @@ rows or columns dont need synchronization with the cache. So those calls are goi
 */
 class FMTEXPORT FMTlpsolver: public Core::FMTobject
 	{
+	friend class boost::serialization::access;
 	// DocString: FMTlpsolver::save
 	/**
 	Save function is for serialization, used to do multiprocessing across multiple cpus (pickle in Pyhton)
 	*/
-	friend class boost::serialization::access;
 	template<class Archive>
 	void save(Archive& ar, const unsigned int version) const
-		{
-		ar & boost::serialization::make_nvp("FMTobject", boost::serialization::base_object<Core::FMTobject>(*this));
-		ar & BOOST_SERIALIZATION_NVP(usecache);
-		matrixcache.synchronize(solverinterface);
-		const FMTserializablematrix matrix(solverinterface);
-		ar & BOOST_SERIALIZATION_NVP(solvertype);
-		ar & BOOST_SERIALIZATION_NVP(matrix);
+	{
+		try {
+			ar& boost::serialization::make_nvp("FMTobject", boost::serialization::base_object<Core::FMTobject>(*this));
+			ar& BOOST_SERIALIZATION_NVP(usecache);
+			matrixcache.synchronize(solverinterface);
+			const FMTserializablematrix matrix(solverinterface);
+			ar& BOOST_SERIALIZATION_NVP(solvertype);
+			ar& BOOST_SERIALIZATION_NVP(matrix);
 		}
+		catch (...)
+		{
+			_exhandler->raisefromcatch("", "FMTlpsolver::save", __LINE__, __FILE__);
+		}
+	}
 	// DocString: FMTlpsolver::load
 	/**
 	Load function is for serialization, used to do multiprocessing across multiple cpus (pickle in Pyhton)
@@ -56,14 +64,21 @@ class FMTEXPORT FMTlpsolver: public Core::FMTobject
 	template<class Archive>
 	void load(Archive& ar, const unsigned int version)
 	{
-		ar & boost::serialization::make_nvp("FMTobject", boost::serialization::base_object<FMTobject>(*this));
-		ar & BOOST_SERIALIZATION_NVP(usecache);
-		matrixcache.synchronize(solverinterface);
-		FMTserializablematrix matrix;
-		ar & BOOST_SERIALIZATION_NVP(solvertype);
-		ar & BOOST_SERIALIZATION_NVP(matrix);
-		solverinterface = this->buildsolverinterface(solvertype);
-		matrix.setmatrix(solverinterface);
+		try {
+			ar& boost::serialization::make_nvp("FMTobject", boost::serialization::base_object<FMTobject>(*this));
+			ar& BOOST_SERIALIZATION_NVP(usecache);
+			matrixcache.synchronize(solverinterface);
+			FMTserializablematrix matrix;
+			ar& BOOST_SERIALIZATION_NVP(solvertype);
+			ar& BOOST_SERIALIZATION_NVP(matrix);
+			solverinterface = this->buildsolverinterface(solvertype);
+			matrix.setmatrix(solverinterface);
+		}
+		catch (...)
+		{
+			_exhandler->raisefromcatch("", "FMTlpsolver::load", __LINE__, __FILE__);
+		}
+
 	}
 	BOOST_SERIALIZATION_SPLIT_MEMBER()
 	// DocString: FMTlpsolver::solverinterface

@@ -13,6 +13,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <memory>
 #include <vector>
 #include "FMTutility.hpp"
+#include <boost/serialization/vector.hpp>
 
 class OsiSolverInterface;
 class CoinPackedMatrix;
@@ -27,7 +28,7 @@ The goal of that class is to get the informations from osisolverinterface class 
 vectors (solutions,bounds,etc...) to permit the synchronization.
 Also this class is usefull when copying osisolverinterface with the FMTsolverinterface type.
 */
-class FMTserializablematrix
+class FMTEXPORT FMTserializablematrix
 	{
 	// DocString: FMTserializablematrix::matrix
 	///The matrix pointer
@@ -59,13 +60,121 @@ class FMTserializablematrix
 	*/
 	friend class boost::serialization::access;
 	template<class Archive>
-	void serialize(Archive& ar, const unsigned int version);
-	// DocString: FMTserializablematrix::gutsofserialize
-	/**
-	The real serialization is here.
-	*/
-	template<class Archive>
-	void gutsofserialize(Archive& ar, const unsigned int version);
+	void serialize(Archive& ar, const unsigned int version)
+		{
+		const bool loading = Archive::is_loading::value;
+		bool order;
+		double extragap;
+		double extramajor;
+		int sizevector;
+		int minordim;
+		int numelements;
+		int majordim;
+		int maxsize;
+		std::vector<double> lelement;
+		std::vector<int> lindex;
+		std::vector<int> llength;
+		std::vector<int> lstart;
+		//members
+		std::vector<double> lcollb;
+		std::vector<double> lcolub;
+		std::vector<double> lobj;
+		std::vector<double> lrowlb;
+		std::vector<double> lrowub;
+		std::vector<double> lcolsolution;
+		std::vector<double> lrowprice;
+		if (!loading)
+		{
+			getsetmatrixelements(false,
+				order,
+				extragap,
+				extramajor,
+				sizevector,
+				minordim,
+				numelements,
+				majordim,
+				maxsize,
+				lelement,
+				lindex,
+				llength,
+				lstart);
+			getsetmemberelements(false,
+				lcollb,
+				lcolub,
+				lobj,
+				lrowlb,
+				lrowub,
+				lcolsolution,
+				lrowprice);
+		}
+		ar&order;
+		ar& extragap;
+		ar& extramajor;
+		ar& sizevector;
+		ar& minordim;
+		ar& numelements;
+		ar& majordim;
+		ar& maxsize;
+		ar& lelement;
+		ar& lindex;
+		ar& llength;
+		ar& lstart;
+		//members
+		ar& lcollb;
+		ar& lcolub;
+		ar& lobj;
+		ar& lrowlb;
+		ar& lrowub;
+		ar& lcolsolution;
+		ar& lrowprice;
+		if (loading)
+			{
+			getsetmatrixelements(true,
+				order,
+				extragap,
+				extramajor,
+				sizevector,
+				minordim,
+				numelements,
+				majordim,
+				maxsize,
+				lelement,
+				lindex,
+				llength,
+				lstart);
+			getsetmemberelements(true,
+				lcollb,
+				lcolub,
+				lobj,
+				lrowlb,
+				lrowub,
+				lcolsolution,
+				lrowprice);
+			}
+		
+
+		}
+	void getsetmatrixelements(bool loading,
+		bool& order,
+		double& extragap,
+		double& extramajor,
+		int& sizevector,
+		int& minordim,
+		int& numelements,
+		int& majordim,
+		int& maxsize,
+		std::vector<double>& lelement,
+		std::vector<int>& lindex,
+		std::vector<int>& llength,
+		std::vector<int>& lstart);
+	void getsetmemberelements(bool loading,
+		std::vector<double>&lcollb,
+		std::vector<double>&lcolub,
+		std::vector<double>&lobj,
+		std::vector<double>&lrowlb,
+		std::vector<double>&lrowub,
+		std::vector<double>&lcolsolution,
+		std::vector<double>&lrowprice);
 	public:
 		// DocString: FMTserializablematrix()
 		/**

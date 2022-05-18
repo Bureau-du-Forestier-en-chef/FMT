@@ -14,6 +14,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTtheme.hpp"
 #include "FMTdevelopmentpath.hpp"
 #include "FMTexceptionhandler.hpp"
+#include "FMTtransitionmask.hpp"
 
 namespace Core{
 FMTtransition::FMTtransition():name(){}
