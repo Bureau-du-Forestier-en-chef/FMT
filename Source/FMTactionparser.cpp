@@ -289,7 +289,7 @@ FMTactionparser::FMTactionparser() : FMTparser()
 						}else {
 							//test to int!
 							const int idofaction = getnum<int>(root.get<std::string>(action.getname() + ".id"));
-							if (idofaction== FMTGCBMGROWTHID || idofaction == FMTGCBMUNKNOWNID || idofaction == FMTGCBMDEATHID)
+							if (idofaction== FMTGCBMGROWTHID || idofaction == FMTGCBMUNKNOWNID) //|| idofaction == FMTGCBMDEATHID)
 								{
 								_exhandler->raise(Exception::FMTinvalid_number,"cannot use GCBM actions id "+std::to_string(FMTGCBMGROWTHID)+" or "+ std::to_string(FMTGCBMUNKNOWNID) + " or " + std::to_string(FMTGCBMDEATHID) + " at line " + std::to_string(_line),
 									"FMTactionparser::getactionsidsofmodelyields", __LINE__, __FILE__, _section);
@@ -311,7 +311,7 @@ FMTactionparser::FMTactionparser() : FMTparser()
 
 
     void FMTactionparser::write(const std::vector<Core::FMTaction>& actions,
-		const std::string& location) const
+		const std::string& location, bool withgcbmagg) const
         {
 		try {
 			std::ofstream actionstream;
@@ -334,10 +334,14 @@ FMTactionparser::FMTactionparser() : FMTparser()
 				actionstream << "\n";
 				for (std::map<std::string, std::vector<std::string>>::const_iterator aggit = allaggregates.begin(); aggit != allaggregates.end(); aggit++)
 				{
-					actionstream << "*AGGREGATE " + aggit->first << "\n";
-					for (const std::string& act_str : aggit->second)
+					const std::string name = aggit->first;
+					if ((name.find("~GCBM") == std::string::npos) || (withgcbmagg))
 					{
-						actionstream << act_str << "\n";
+						actionstream << "*AGGREGATE " + name << "\n";
+						for (const std::string& act_str : aggit->second)
+						{
+							actionstream << act_str << "\n";
+						}
 					}
 				}
 				actionstream << "\n";
