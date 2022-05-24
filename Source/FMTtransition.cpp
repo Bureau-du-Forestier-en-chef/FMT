@@ -150,7 +150,7 @@ std::vector<Core::FMTmask> FMTtransition::canproduce(const Core::FMTmask& testma
 					const Core::FMTmask intersect = refinedmask.getintersect(testmask);
 					if(!testmask.isnotthemessubset(intersect,themes))
 					{
-						possiblesourcesfortransitions.push_back(unshrinkedsourcemask.refine(testmask,themes));
+						possiblesourcesfortransitions.push_back(unshrinkedsourcemask.refine(testmask, themes));
 						break;
 					}
 				}
