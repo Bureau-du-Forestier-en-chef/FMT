@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du QuÃ©bec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -132,7 +132,7 @@ void exportCore()
 			"@DocString(FMTobject::enablenestedexceptions)")
 		.method("setquietlogger", &Core::FMTobject::setquietlogger,
 			"@DocString(FMTobject::setquietlogger")
-		method("settasklogger", &Core::FMTobject::settasklogger,
+		.method("settasklogger", &Core::FMTobject::settasklogger,
 			"@DocString(FMTobject::settasklogger")
 		.method("setdefaultlogger", &Core::FMTobject::setdefaultlogger,
 			"@DocString(FMTobject::setdefaultlogger")
