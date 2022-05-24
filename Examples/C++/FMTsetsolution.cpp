@@ -32,6 +32,7 @@ int main(int argc, char *argv[])
 		Models::FMTlpmodel optimizationmodel(models.at(0), Models::FMTsolverinterface::CLP);
 		const std::vector<Core::FMTschedule>schedules = modelparser.readschedules(primarylocation,models).at(0);
 		const double tolerance = 0.01;
+		//optimizationmodel.setparameter(Models::FMTintmodelparameters::PRESOLVE_ITERATIONS, 0);
 		optimizationmodel.setparameter(Models::FMTboolmodelparameters::FORCE_PARTIAL_BUILD, true);
 		optimizationmodel.FMTmodel::setparameter(Models::FMTdblmodelparameters::TOLERANCE, tolerance);
 		optimizationmodel.doplanning(false, schedules);

@@ -383,13 +383,17 @@ FMTmask FMTmask::refine(const FMTmask& mask,const std::vector<FMTtheme>& themes)
 			{	
 			const size_t thiscount = subset(theme).count();
 			const size_t targetcount = mask.subset(theme).count();
-			if (targetcount > 1)
+			if (thiscount == theme.size() ||  targetcount < thiscount)
+			{
+				bases.at(theme.id) = maskbases.at(theme.id);
+			}
+			/*if (targetcount > 1 && !allow_aggregates)
 			{
 				//crash
-			}else if (thiscount==theme.size()||(targetcount== 1 && targetcount < thiscount))
+			}else if (thiscount==theme.size()||((targetcount== 1||allow_aggregates) && targetcount < thiscount))
 				{
 				bases.at(theme.id) = maskbases.at(theme.id);
-				}
+				}*/
 			}
 		return FMTmask(boost::algorithm::join(bases," "),themes);
 	}	

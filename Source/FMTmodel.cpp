@@ -19,6 +19,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTmaskfilter.hpp"
 #include "FMTexceptionhandler.hpp"
 #include "FMTtransitionmask.hpp"
+#include "FMTmodelparser.hpp"
 
 
 namespace Models{
@@ -1302,6 +1303,7 @@ std::unique_ptr<FMTmodel> FMTmodel::presolve(std::vector<Core::FMTactualdevelopm
 						presolvedconstraint.turntoyieldsandactions(newthemes, newactions, newyields,originalid);
 					}else if(presolvedconstraint.canbeturnedtoyieldsbasedontransitions())
 					{
+						//*_logger << "Turning to " << std::string(Core::FMToutput(presolvedconstraint)) << "\n";
 						presolvedconstraint.turntoyieldsbasedontransition(newthemes, newtransitions ,newactions, newyields,originalid);
 						//Just to be sure that if there is a subset of a mask from the output in the section AREA, it's forced to change... 
 						//Because after turntoyieldsbasedontransition(), the model cannot produce those type of development
@@ -1611,6 +1613,8 @@ try{
 return newshedules;
 }
 
+
+
 bool FMTmodel::doplanning(const bool& solve,std::vector<Core::FMTschedule> schedules)
 	{
 	bool optimal_solved = false;
@@ -1621,6 +1625,8 @@ bool FMTmodel::doplanning(const bool& solve,std::vector<Core::FMTschedule> sched
 		{
 			const std::chrono::time_point<std::chrono::high_resolution_clock>presolvestart = getclock();
 			presolved_model = this->presolve(area);
+			Parser::FMTmodelparser mparser;
+			mparser.write(*presolved_model,"C:/Users/admlocal/Desktop/test/");
 			_logger->logwithlevel("Presolved " + getname() + " " +getdurationinseconds(presolvestart) + "\n", 1);
 		}else{
 			presolved_model = this->clone();
