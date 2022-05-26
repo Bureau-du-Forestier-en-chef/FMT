@@ -673,6 +673,7 @@ get_filename_component(GDAL_DATA_NAME "${GDAL_DATA}" NAME)
 
 
 include(${CMAKE_CURRENT_SOURCE_DIR}/Examples/C++/CMakeLists.txt) #will polulate tests
+include(${CMAKE_CURRENT_SOURCE_DIR}/UI/CMakeLists.txt) #will polulate tests
 
 if (NOT DEFINED PARALLEL_TESTS)
 	set(PARALLEL_TESTS 1)

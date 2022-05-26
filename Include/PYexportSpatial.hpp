@@ -10,10 +10,10 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 #include "FMTcoordinate.hpp"
 #include "FMTforest.hpp"
-#include "FMTspatialschedule.hpp"
-#include "FMTspatialaction.hpp"
+//#include "FMTspatialschedule.hpp"
+//#include "FMTspatialaction.hpp"
 #include "FMTeventcontainer.hpp"
-//#include "FMTsaschedule.hpp"
+#include "FMTsaschedule.hpp"
 #include "FMTgraph.hpp"
 //#include "FMTsasolution.hpp"
 #include "boost/python.hpp"
@@ -94,16 +94,16 @@ void exportSpatial()
 			"@DocString(FMTspatialaction::adjacency_weight)")
         .def_readwrite("size_weight",&Spatial::FMTspatialaction::size_weight,
 			"@DocString(FMTspatialaction::size_weight)");
-    define_pylist<Spatial::FMTspatialaction>();
+    define_pylist<Spatial::FMTspatialaction>();*/
 
     
-	bp::class_<Spatial::FMTsaschedule, boost::noncopyable>("Abstract_FMTsaschedule","@DocString(FMTsaschedule)", bp::no_init);
+	//bp::class_<Spatial::FMTsaschedule, boost::noncopyable>("Abstract_FMTsaschedule","@DocString(FMTsaschedule)", bp::no_init);
 
 
-	bp::class_<Spatial::FMTexponentialschedule, bp::bases<Spatial::FMTsaschedule>>("FMTexponentialschedule", "@DocString(FMTexponentialschedule)")
-        .def(bp::init<double>());
+	//bp::class_<Spatial::FMTexponentialschedule, bp::bases<Spatial::FMTsaschedule>>("FMTexponentialschedule", "@DocString(FMTexponentialschedule)")
+     //   .def(bp::init<double>());
 
-	bp::enum_<Spatial::FMTsamovetype>("FMTsamovetype")
+	/*bp::enum_<Spatial::FMTsamovetype>("FMTsamovetype")
 		.value("shotgun", Spatial::FMTsamovetype::shotgun)
 		.value("cluster", Spatial::FMTsamovetype::cluster)
 		.value("opt1", Spatial::FMTsamovetype::opt1);
