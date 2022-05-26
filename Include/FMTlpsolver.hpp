@@ -10,6 +10,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #define FMTsolve_H_INCLUDED
 #include "FMTsolverinterface.hpp"
 #include "FMTmatrixbuild.hpp"
+#include "FMTexceptionhandler.hpp"
 #include "FMTobject.hpp"
 #include <memory>
 #include <unordered_map>

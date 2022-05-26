@@ -21,7 +21,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTevent.hpp"
 #include "FMTdevelopment.hpp"
 
-RCPP_EXPOSED_ENUM_NODECL(Spatial::FMTsamovetype);
+//RCPP_EXPOSED_ENUM_NODECL(Spatial::FMTsamovetype);
 
 RCPP_EXPOSED_WRAP(Spatial::FMTcoordinate);
 RCPP_EXPOSED_AS(Spatial::FMTcoordinate);
@@ -45,10 +45,10 @@ RCPP_EXPOSED_WRAP(Graph::FMTlinegraph);
 RCPP_EXPOSED_AS(Graph::FMTlinegraph);
 RCPP_DEFINEMAP(Spatial::FMTcoordinate,Graph::FMTlinegraph);//For FMTlayer
 
-/*
+
 RCPP_EXPOSED_WRAP(Spatial::FMTexponentialschedule);
 RCPP_EXPOSED_AS(Spatial::FMTexponentialschedule);
-
+/*
 RCPP_EXPOSED_WRAP(Spatial::FMTsasolution);
 RCPP_EXPOSED_AS(Spatial::FMTsasolution);
 RCPP_DEFINEVECTOR(Spatial::FMTsasolution);//For vector
@@ -113,13 +113,13 @@ void exportSpatial()
         .field("adjacency_weight",&Spatial::FMTspatialaction::adjacency_weight,
 			"@DocString(FMTspatialaction(FMTspatialaction::adjacency_weight))")
         .field("size_weight",&Spatial::FMTspatialaction::size_weight);
-
+		*/
 
 
 	Rcpp::class_<Spatial::FMTexponentialschedule>("FMTexponentialschedule", "@DocString(FMTexponentialschedule)")
 		.constructor("@DocString(FMTexponentialschedule())")
         .constructor<double>("@DocString(FMTexponentialschedule(double))");
-		*/
+		
 
 	define_FMTlayer<Graph::FMTlinegraph>("FMTgraphlayer");
 

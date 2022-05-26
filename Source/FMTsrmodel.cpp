@@ -21,6 +21,10 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <queue>
 #include "FMTexceptionhandler.hpp"
 
+#if defined FMTWITHR
+	#include <Rcpp.h>
+#endif 
+
 namespace Models
 {
 	Graph::FMTgraphstats FMTsrmodel::initializematrix()

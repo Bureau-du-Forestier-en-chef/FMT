@@ -9,6 +9,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #ifndef FMTACT_H_INCLUDED
 #define FMTACT_H_INCLUDED
 
+#include "FMTexceptionhandler.hpp"
 #include "FMTlist.hpp"
 #include "FMTbounds.hpp"
 #include <boost/serialization/string.hpp>
