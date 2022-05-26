@@ -15,17 +15,30 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <cstring>
 #include "FMTforest.hpp"
 #include "FMTexceptionhandler.hpp"
+#include "FMTsaschedule.hpp"
 
 namespace Models
 
 {
+
+    std::string FMTsamodel::getcoolingscheduletype() const 
+        { 
+        return cooling_schedule->get_schedule_type(); 
+        }
+
+    double  FMTsamodel::cool_down(double temp)const
+        {
+        return cooling_schedule->reduce_temp(temp);
+        }
+
+    /*
     Graph::FMTgraphstats FMTsamodel::g_move_solution(const double min_ratio,const double max_ratio)
     {
         number_of_moves ++;
         new_solution = current_solution.perturb(*this,generator,movetype,min_ratio,max_ratio);
         return new_solution.getsolution_stats();
     }
-
+    
     bool FMTsamodel::comparesolutions() const
     {
         if (current_solution.getsolution_stats() == new_solution.getsolution_stats() && current_solution.getevents() == new_solution.getevents())
@@ -42,26 +55,26 @@ namespace Models
             return true;
         }
         return false;
-    }
+    }*/
 
     FMTsamodel::FMTsamodel():
         FMTmodel(),
 		solution(),
-        movetype(Spatial::FMTsamovetype::opt1),
+       // movetype(Spatial::FMTsamovetype::opt1),
         min_ratio_moves(0),
         max_ratio_moves(1),
         outputs_write_location(),
         number_of_moves(0),
         constraints_values_penalties(),
         generator(),
-        spactions(),
+        //spactions(),
         accepted_solutions(),
         mapidmodified(),
         probabs(),
-        cooling_schedule(),
-        best_solution(),
-        current_solution(),
-        new_solution()
+        cooling_schedule()//,
+        //best_solution(),
+        //current_solution(),
+       // new_solution()
     {
 
     }
@@ -69,21 +82,21 @@ namespace Models
     FMTsamodel::FMTsamodel(const FMTsamodel& rhs):
         FMTmodel(rhs),
 		solution(rhs.solution),
-        movetype(rhs.movetype),
+        //movetype(rhs.movetype),
         min_ratio_moves(rhs.min_ratio_moves),
         max_ratio_moves(rhs.max_ratio_moves),
         outputs_write_location(rhs.outputs_write_location),
         number_of_moves(0),
         constraints_values_penalties(rhs.constraints_values_penalties),
         generator(rhs.generator),
-        spactions(rhs.spactions),
+       // spactions(rhs.spactions),
         accepted_solutions(rhs.accepted_solutions),
         mapidmodified(),
         probabs(rhs.probabs),
-        cooling_schedule(rhs.cooling_schedule->Clone()),
-        best_solution(rhs.best_solution),
-        current_solution(rhs.current_solution),
-        new_solution(rhs.new_solution)
+        cooling_schedule(rhs.cooling_schedule->Clone())//,
+        //best_solution(rhs.best_solution),
+        //current_solution(rhs.current_solution),
+       // new_solution(rhs.new_solution)
     {
 
     }
@@ -91,21 +104,21 @@ namespace Models
     FMTsamodel::FMTsamodel(const FMTmodel& rhs):
         FMTmodel(rhs),
 		solution(),
-        movetype(Spatial::FMTsamovetype::opt1),
+        //movetype(Spatial::FMTsamovetype::opt1),
         min_ratio_moves(0),
         max_ratio_moves(1),
         outputs_write_location(),
         number_of_moves(0),
         constraints_values_penalties(),
         generator(),
-        spactions(),
+        //spactions(),
         accepted_solutions(),
         mapidmodified(),
         probabs(),
-        cooling_schedule(std::unique_ptr<Spatial::FMTexponentialschedule>(new Spatial::FMTexponentialschedule())),
-        best_solution(),
-        current_solution(),
-        new_solution()
+        cooling_schedule(std::unique_ptr<Spatial::FMTexponentialschedule>(new Spatial::FMTexponentialschedule()))//,
+        //best_solution(),
+        //current_solution(),
+       // new_solution()
     {
 
     }
@@ -116,21 +129,21 @@ namespace Models
             {
             FMTmodel::operator = (rhs);
 			solution = rhs.solution;
-            movetype = rhs.movetype;
+           // movetype = rhs.movetype;
             min_ratio_moves = rhs.min_ratio_moves;
             max_ratio_moves = rhs.max_ratio_moves;
             outputs_write_location = rhs.outputs_write_location;
             number_of_moves = rhs.number_of_moves;
             constraints_values_penalties = rhs.constraints_values_penalties;
             generator = rhs.generator;
-            spactions = rhs.spactions;
+            //spactions = rhs.spactions;
             accepted_solutions = rhs.accepted_solutions;
             mapidmodified = rhs.mapidmodified;
             probabs = rhs.probabs;
             cooling_schedule = rhs.cooling_schedule->Clone();
-            best_solution=rhs.best_solution;
-            current_solution = rhs.current_solution;
-            new_solution = rhs.new_solution;
+            //best_solution=rhs.best_solution;
+            //current_solution = rhs.current_solution;
+            //new_solution = rhs.new_solution;
             }
         return *this;
     }
@@ -140,7 +153,7 @@ namespace Models
 		return std::unique_ptr<FMTmodel>(new FMTsamodel(*this));
 		}
 
-    double FMTsamodel::warmup(const double initprob, const size_t iterations,bool keep_best,FMTsawarmuptype type)
+    /*double FMTsamodel::warmup(const double initprob, const size_t iterations, bool keep_best, FMTsawarmuptype type)
     {
         const Spatial::FMTsasolution first=current_solution;//Put it as current at the end
         double temp = 0;
@@ -280,7 +293,7 @@ namespace Models
         best_solution = Spatial::FMTsasolution();
         mapidmodified = std::vector<size_t>();
         return temp;
-    }
+    }*/
 
     void FMTsamodel::write_outputs_at(std::string path)
     {
@@ -302,7 +315,7 @@ namespace Models
         return true;
     }
 
-    bool FMTsamodel::setspactions(const std::vector<Spatial::FMTspatialaction>& lspactions)
+    /*bool FMTsamodel::setspactions(const std::vector<Spatial::FMTspatialaction>& lspactions)
     {
 		std::vector<Core::FMTtransition>newtransitions;
 		std::vector<Spatial::FMTspatialaction>newspatials;
@@ -334,7 +347,7 @@ namespace Models
 		actions = newbaseactions;
 		transitions = newtransitions;
 		return true;
-    }
+    }*/
 
     bool FMTsamodel::set_min_max_moves(const double min_r,const double max_r)
     {
@@ -342,7 +355,7 @@ namespace Models
         max_ratio_moves = max_r;
         return true;
     }
-
+    /*
     bool FMTsamodel::set_movetype(const Spatial::FMTsamovetype movet)
     {
         movetype = movet;
@@ -352,7 +365,7 @@ namespace Models
         }
         return false;
     }
-
+    */
     int FMTsamodel::get_number_moves()const
     {
         return number_of_moves;
@@ -398,7 +411,7 @@ namespace Models
             outputFile.close();
         }
     }
-
+    /*
     Spatial::FMTsasolution FMTsamodel::get_current_solution()const
     {
             return current_solution;
@@ -408,8 +421,8 @@ namespace Models
     {
             return new_solution;
     }
-
-    void FMTsamodel::write_solutions_events(std::string out_path)const
+    */
+    /*void FMTsamodel::write_solutions_events(std::string out_path)const
     {
         if (number_of_moves>0)
         {
@@ -421,13 +434,13 @@ namespace Models
         {
             current_solution.write_events(actions,out_path,"Current_solution");
         }
-    }
-
+    }*/
+/*
    std::vector<Spatial::FMTspatialaction> FMTsamodel::getspatialactions()const
     {
         return spactions;
     }
-
+   */
     bool FMTsamodel::setinitialmapping(Spatial::FMTforest forest)
     {
 		try {
@@ -442,11 +455,11 @@ namespace Models
 		return false;
     }
 
-    void FMTsamodel::acceptnew()
+    /*void FMTsamodel::acceptnew()
     {
 		current_solution.copyfromselected(new_solution, mapidmodified);
 		new_solution = Spatial::FMTsasolution();
-    }
+    }*/
 
     bool FMTsamodel::testprobability(const double& p) //Metropolis criterion
     {
@@ -459,7 +472,7 @@ namespace Models
         return false;
     }
 
-    bool FMTsamodel::evaluate(const double temp,bool all_data)
+    /*bool FMTsamodel::evaluate(const double temp, bool all_data)
     //Get the output, evaluate the penalties and compare solutions
     {
         if (!comparesolutions())// if compare solution return false ... which means they are different
@@ -511,18 +524,18 @@ namespace Models
             }
         }
         return false;
-    }
+    }*/
 
     Graph::FMTgraphstats FMTsamodel::buildperiod()
     {
         //return current_solution.buildperiod(*this,generator);
 		return solution.randombuild(*this,generator);
     }
-
+    /*
     Graph::FMTgraphstats FMTsamodel::move_solution()
     {
         return g_move_solution(min_ratio_moves,max_ratio_moves);
-    }
+    }*/
 
     bool FMTsamodel::setmapidmodified(const std::vector<size_t>& id)
     {

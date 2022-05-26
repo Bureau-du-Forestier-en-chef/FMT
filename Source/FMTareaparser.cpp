@@ -19,7 +19,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMToperatingareacluster.hpp"
 #include "FMTdevelopment.hpp"
 #include "FMTspatialschedule.hpp"
-#include "FMTsasolution.hpp"
+//#include "FMTsasolution.hpp"
 #include "FMTactualdevelopment.hpp"
 #include <boost/filesystem.hpp>
 #include <boost/filesystem/operations.hpp>
@@ -72,7 +72,7 @@ const std::regex FMTareaparser::rxcleanarea = std::regex("^((\\*A[A]*)([^|]*)(_l
 				"", "FMTareaparser::destroypolygons", __LINE__, __FILE__, _section);
 		}
 		}
-
+	/*
     bool FMTareaparser::writesasolution(const std::string location, const Spatial::FMTsasolution& solution,
                                         const std::vector<Core::FMTtheme>& themes, const std::vector<Core::FMTaction>& actions,
                                         const bool& writeevents, int periodstart, int periodstop) const
@@ -149,7 +149,7 @@ const std::regex FMTareaparser::rxcleanarea = std::regex("^((\\*A[A]*)([^|]*)(_l
 				"", "FMTareaparser::writesasolution", __LINE__, __FILE__, _section);
 		}
         return true;
-    }
+    }*/
 
     void FMTareaparser::validate_raster(const std::vector<std::string>&data_rasters) const
         {

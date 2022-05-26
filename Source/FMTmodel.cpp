@@ -19,7 +19,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTmaskfilter.hpp"
 #include "FMTexceptionhandler.hpp"
 #include "FMTtransitionmask.hpp"
-#include "FMTmodelparser.hpp"
+//#include "FMTmodelparser.hpp"
 
 
 namespace Models{
@@ -1625,8 +1625,8 @@ bool FMTmodel::doplanning(const bool& solve,std::vector<Core::FMTschedule> sched
 		{
 			const std::chrono::time_point<std::chrono::high_resolution_clock>presolvestart = getclock();
 			presolved_model = this->presolve(area);
-			Parser::FMTmodelparser mparser;
-			mparser.write(*presolved_model,"C:/Users/admlocal/Desktop/test/");
+			//Parser::FMTmodelparser mparser;
+			//mparser.write(*presolved_model,"C:/Users/admlocal/Desktop/test/");
 			_logger->logwithlevel("Presolved " + getname() + " " +getdurationinseconds(presolvestart) + "\n", 1);
 		}else{
 			presolved_model = this->clone();

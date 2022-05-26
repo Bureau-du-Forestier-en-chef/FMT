@@ -8,6 +8,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #ifndef FMTdebuglogger_H_INCLUDED
 #define FMTdebuglogger_H_INCLUDED
 #include "FMTlogger.hpp"
+#include <boost/serialization/nvp.hpp>
 
 namespace Logging
 {

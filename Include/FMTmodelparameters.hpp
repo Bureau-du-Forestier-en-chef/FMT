@@ -8,6 +8,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #ifndef FMTmodelparameters_H_INCLUDED
 #define FMTmodelparameters_H_INCLUDED
 
+#include "FMTexceptionhandler.hpp"
 #include "FMTobject.hpp"
 #include <boost/serialization/export.hpp>
 #include <boost/serialization/array.hpp>

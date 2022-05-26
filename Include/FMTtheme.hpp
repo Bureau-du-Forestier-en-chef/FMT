@@ -17,6 +17,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <boost/serialization/map.hpp>
 #include <boost/serialization/export.hpp>
 #include <boost/serialization/string.hpp>
+#include "FMTexceptionhandler.hpp"
 #include "FMTobject.hpp"
 #include <unordered_map>
 
@@ -28,7 +29,6 @@ namespace Parser
 {
 	class FMTlandscapeparser;
 }
-
 
 
 

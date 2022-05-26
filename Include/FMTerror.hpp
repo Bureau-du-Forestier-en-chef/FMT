@@ -17,6 +17,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #endif
 
 #include <boost/graph/exception.hpp>
+#include <boost/serialization/nvp.hpp>
 
 
 namespace Exception

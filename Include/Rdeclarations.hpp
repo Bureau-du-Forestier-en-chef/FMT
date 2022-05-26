@@ -94,7 +94,7 @@ RCPP_DECLAREVECTOR(Spatial::FMTforest);// For vector
 //RCPP_DECLAREMAP(Spatial::FMTcoordinate,Graph::FMTgraph);//For FMTlayer
 RCPP_DECLAREMAP(Spatial::FMTcoordinate, Graph::FMTlinegraph);
 RCPP_DECLAREVECTOR(Models::FMTsesmodel);//For vector
-RCPP_DECLAREVECTOR(Spatial::FMTsasolution);//For vector
+//RCPP_DECLAREVECTOR(Spatial::FMTsasolution);//For vector
 //Models
 RCPP_DECLAREVECTOR(Models::FMTmodel);//For vector
 RCPP_DECLAREMAP(std::string, double);//For map<string,double>

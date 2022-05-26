@@ -8,7 +8,10 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #ifndef FMTobject_H_INCLUDED
 #define FMTobject_H_INCLUDED
 
-#define NOMINMAX
+#ifndef NOMINMAX
+	#define NOMINMAX
+#endif // !NOMINMAX
+
 #include <boost/serialization/shared_ptr.hpp>
 #include <boost/serialization/nvp.hpp>
 #include <boost/serialization/export.hpp>

@@ -13,6 +13,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTtimeyieldhandler.hpp"
 #include <memory>
 #include "FMTexceptionhandler.hpp"
+#include <math.h>
 
 namespace Core
 

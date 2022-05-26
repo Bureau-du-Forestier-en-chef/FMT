@@ -29,14 +29,17 @@ namespace Core {
 
 	const float FMTyieldmodel::UNKNOWN_DISTURBANCE_CODE = 17;
 
-	FMTyieldmodel::FMTyieldmodel():
-		sessionPtr()
+	FMTyieldmodel::FMTyieldmodel()
+	#ifdef FMTWITHONNXR
+		:sessionPtr()
+	#endif	
 	{
+	#ifdef FMTWITHONNXR
 		if (!envPtr)
 			{
 			envPtr = std::unique_ptr<Ort::Env>(new Ort::Env());
 			}
-
+	#endif
 	}
 
 
