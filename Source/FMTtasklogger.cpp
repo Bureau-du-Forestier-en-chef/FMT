@@ -6,34 +6,36 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
 #include "FMTtasklogger.hpp"
+#include <boost/thread.hpp>
+#include "FMTsolverlogger.hpp"
 
 namespace Logging
 {
 
-FMTtasklogger::FMTtasklogger()
+	FMTtasklogger::FMTtasklogger()
 	{
-	#ifdef FMTWITHOSI
-		this->setLogLevel(0);
-	#endif
+#ifdef FMTWITHOSI
+		solverref->setLogLevel(0);
+#endif
 	}
 #ifdef FMTWITHOSI
-int FMTtasklogger::print()
+	int FMTtasklogger::print()
 	{
-	boost::lock_guard<boost::recursive_mutex> guard(mtx);
-	//return FMTlogger::print();
-	return 0;
+		boost::lock_guard<boost::recursive_mutex> guard(mtx);
+		//return FMTlogger::print();
+		return 0;
 	}
 
-void FMTtasklogger::checkSeverity()
+	void FMTtasklogger::checkSeverity()
 	{
-	boost::lock_guard<boost::recursive_mutex> guard(mtx);
-	FMTlogger::checkSeverity();
+		boost::lock_guard<boost::recursive_mutex> guard(mtx);
+		FMTlogger::checkSeverity();
 	}
 
-CoinMessageHandler * FMTtasklogger::clone() const
+	FMTlogger* FMTtasklogger::clone() const
 	{
-	boost::lock_guard<boost::recursive_mutex> guard(mtx);
-	return new FMTtasklogger(*this);
+		boost::lock_guard<boost::recursive_mutex> guard(mtx);
+		return new FMTtasklogger(*this);
 	}
 #endif
 }
