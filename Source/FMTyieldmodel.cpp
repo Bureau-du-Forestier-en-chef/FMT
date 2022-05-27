@@ -13,13 +13,34 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTpredictor.hpp"
 #include "FMTsrmodel.hpp"
 #include <vector>
+#include "FMTexceptionhandler.hpp"
+
+#ifdef FMTWITHONNXR
+	#include  <onnxruntime/core/session/onnxruntime_cxx_api.h>
+#endif
 
 namespace Core {
+
+	FMTyieldmodel::~FMTyieldmodel() = default;
+
 #ifdef FMTWITHONNXR
-	std::unique_ptr<Ort::Env> FMTyieldmodel::envPtr = std::unique_ptr<Ort::Env>(new Ort::Env());
+	std::unique_ptr<Ort::Env> FMTyieldmodel::envPtr = std::unique_ptr<Ort::Env>(nullptr);
 #endif	
 
 	const float FMTyieldmodel::UNKNOWN_DISTURBANCE_CODE = 17;
+
+	FMTyieldmodel::FMTyieldmodel()
+	#ifdef FMTWITHONNXR
+		:sessionPtr()
+	#endif	
+	{
+	#ifdef FMTWITHONNXR
+		if (!envPtr)
+			{
+			envPtr = std::unique_ptr<Ort::Env>(new Ort::Env());
+			}
+	#endif
+	}
 
 
 	const std::vector<std::string> FMTyieldmodel::GetNextLineAndSplitIntoTokens(std::istream& str)

@@ -17,6 +17,9 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTageyieldhandler.hpp"
 #include "FMTtimeyieldhandler.hpp"
 #include "FMTmaskfilter.hpp"
+#include "FMTexceptionhandler.hpp"
+#include "FMTtransitionmask.hpp"
+//#include "FMTmodelparser.hpp"
 
 
 namespace Models{
@@ -315,24 +318,6 @@ void FMTmodel::addoutput(const std::string& name,
 
 	}
 
-template<typename T>
-void FMTmodel::addyieldhandlers(const std::vector<T>& yieldhandlers)
-{
-	try{
-		yields.unshrink(themes);
-		for (const auto& yldhandler : yieldhandlers)
-		{
-			std::unique_ptr<Core::FMTyieldhandler> yldhandlerptr = yldhandler.clone();
-			yields.push_back(yldhandlerptr->getmask(),yldhandlerptr);
-		}
-		yields.update();
-	}catch(...){
-		_exhandler->printexceptions("", "FMTmodel::addyieldhandlers", __LINE__, __FILE__);
-	}
-
-}
-template void FMTmodel::addyieldhandlers<Core::FMTageyieldhandler>(const std::vector<Core::FMTageyieldhandler>& yieldhandlers);
-template void FMTmodel::addyieldhandlers<Core::FMTtimeyieldhandler>(const std::vector<Core::FMTtimeyieldhandler>& yieldhandlers);
 
 void FMTmodel::addyieldhandlersfromptr(const std::vector<std::unique_ptr<Core::FMTyieldhandler>>& yieldhandlers)
 {
@@ -1318,6 +1303,7 @@ std::unique_ptr<FMTmodel> FMTmodel::presolve(std::vector<Core::FMTactualdevelopm
 						presolvedconstraint.turntoyieldsandactions(newthemes, newactions, newyields,originalid);
 					}else if(presolvedconstraint.canbeturnedtoyieldsbasedontransitions())
 					{
+						//*_logger << "Turning to " << std::string(Core::FMToutput(presolvedconstraint)) << "\n";
 						presolvedconstraint.turntoyieldsbasedontransition(newthemes, newtransitions ,newactions, newyields,originalid);
 						//Just to be sure that if there is a subset of a mask from the output in the section AREA, it's forced to change... 
 						//Because after turntoyieldsbasedontransition(), the model cannot produce those type of development
@@ -1627,6 +1613,8 @@ try{
 return newshedules;
 }
 
+
+
 bool FMTmodel::doplanning(const bool& solve,std::vector<Core::FMTschedule> schedules)
 	{
 	bool optimal_solved = false;
@@ -1637,6 +1625,8 @@ bool FMTmodel::doplanning(const bool& solve,std::vector<Core::FMTschedule> sched
 		{
 			const std::chrono::time_point<std::chrono::high_resolution_clock>presolvestart = getclock();
 			presolved_model = this->presolve(area);
+			//Parser::FMTmodelparser mparser;
+			//mparser.write(*presolved_model,"C:/Users/admlocal/Desktop/test/");
 			_logger->logwithlevel("Presolved " + getname() + " " +getdurationinseconds(presolvestart) + "\n", 1);
 		}else{
 			presolved_model = this->clone();

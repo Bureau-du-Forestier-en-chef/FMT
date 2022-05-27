@@ -10,7 +10,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 namespace Core{
 
-FMTyldbounds::FMTyldbounds():FMTbounds<double>(),yield(){}
+//FMTyldbounds::FMTyldbounds():FMTbounds<double>(),yield(){}
 
 
 	FMTyldbounds::FMTyldbounds(const FMTsection lsection, const std::string& lyield, const double& lupper, const double& llower) : FMTbounds<double>(lsection, lupper, llower), yield(lyield)
@@ -23,10 +23,10 @@ FMTyldbounds::FMTyldbounds():FMTbounds<double>(),yield(){}
 
         }
 
-        FMTyldbounds::FMTyldbounds(const FMTyldbounds& rhs) : FMTbounds(rhs) , yield(rhs.yield)
+        /*FMTyldbounds::FMTyldbounds(const FMTyldbounds& rhs) : FMTbounds(rhs), yield(rhs.yield)
             {
 
-            }
+            }*/
 
         FMTyldbounds::FMTyldbounds(const std::string& lyield,const FMTbounds<double>& rhs) : FMTbounds(rhs) , yield(lyield)
             {

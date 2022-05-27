@@ -10,6 +10,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <map>
 #include "FMTmask.hpp"
 #include "FMToutputnode.hpp"
+#include "FMTutility.hpp"
 
 
 #ifndef FMTSPATIALNODESCACHE_H
@@ -30,7 +31,7 @@ namespace Spatial
 	class FMTcoordinate;
 	class FMTspatialnodescache
 	{
-	class FMTnodecache
+	class FMTEXPORT FMTnodecache
 		{
 		public:
 			std::unordered_map<int, double>periodicvalues;

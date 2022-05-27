@@ -8,8 +8,39 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 #include "FMTexception.hpp"
 
+#if defined FMTWITHPYTHON
+#include <boost/python.hpp>
+#endif // define FMTWITHPYTHON
+#include <boost/serialization/serialization.hpp>
+#include <boost/serialization/nvp.hpp>
+#if defined (_MSC_VER)
+#define NOMINMAX
+#include <comdef.h>
+#include <windows.h>
+EXTERN_C IMAGE_DOS_HEADER __ImageBase;
+#include <boost/filesystem.hpp>
+#endif
+
+#if defined (__CYGWIN__)
+#define NOMINMAX
+#include <windows.h>
+#include <iterator>
+EXTERN_C IMAGE_DOS_HEADER __ImageBase;
+#include <boost/filesystem.hpp>
+#endif
+
 namespace Exception
 {
+
+	template<class Archive>
+	void FMTexception::serialize(Archive& ar, const unsigned int version)
+	{
+		ar & boost::serialization::make_nvp("object", boost::serialization::base_object<std::exception>(*this));
+		ar & BOOST_SERIALIZATION_NVP(holdup);
+		ar & BOOST_SERIALIZATION_NVP(_msg);
+		ar & BOOST_SERIALIZATION_NVP(exceptiontype);
+		ar & BOOST_SERIALIZATION_NVP(section);
+	}
 
     FMTexception::FMTexception():holdup(false), _msg(), exceptiontype(), section(), method(), file(), line() {}
 

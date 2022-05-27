@@ -14,6 +14,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <boost/serialization/nvp.hpp>
 #include <vector>
 #include  <boost/functional/hash.hpp>
+#include "FMTutility.hpp"
 
 
 namespace Core
@@ -22,7 +23,7 @@ namespace Core
 	class FMTtheme;
 
 
-class FMTmaskfilter
+class FMTEXPORT FMTmaskfilter
     {
 	friend class boost::serialization::access;
 	friend class FMTtheme;

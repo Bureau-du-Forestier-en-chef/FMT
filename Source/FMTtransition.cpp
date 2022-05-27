@@ -13,6 +13,8 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTyields.hpp"
 #include "FMTtheme.hpp"
 #include "FMTdevelopmentpath.hpp"
+#include "FMTexceptionhandler.hpp"
+#include "FMTtransitionmask.hpp"
 
 namespace Core{
 FMTtransition::FMTtransition():name(){}
@@ -148,7 +150,7 @@ std::vector<Core::FMTmask> FMTtransition::canproduce(const Core::FMTmask& testma
 					const Core::FMTmask intersect = refinedmask.getintersect(testmask);
 					if(!testmask.isnotthemessubset(intersect,themes))
 					{
-						possiblesourcesfortransitions.push_back(unshrinkedsourcemask.refine(testmask,themes));
+						possiblesourcesfortransitions.push_back(unshrinkedsourcemask.refine(testmask, themes));
 						break;
 					}
 				}

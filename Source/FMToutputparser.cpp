@@ -11,6 +11,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTyields.hpp"
 #include "FMTconstants.hpp"
 #include "FMToutput.hpp"
+#include "FMTexceptionhandler.hpp"
 
 namespace Parser
 {

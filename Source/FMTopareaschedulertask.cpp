@@ -14,6 +14,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTtimeyieldhandler.hpp"
 #include <limits>
 #include <boost/thread.hpp>
+#include "FMTexceptionhandler.hpp"
 
 
 namespace Parallel

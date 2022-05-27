@@ -9,6 +9,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #define FMTquiettlogger_H_INCLUDED
 
 #include "FMTlogger.hpp"
+#include <boost/serialization/nvp.hpp>
 
 namespace Logging
 {
@@ -65,7 +66,7 @@ class FMTEXPORT FMTquietlogger final : public FMTlogger
 			/**
 			See FMTlogger clone function.
 			*/
-			CoinMessageHandler * clone() const override;
+			FMTlogger* clone() const override;
 			// DocString: FMTquietlogger::cout
 			/**
 			See FMTlogger cout function that does nothing.

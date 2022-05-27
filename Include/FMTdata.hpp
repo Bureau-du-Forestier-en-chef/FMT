@@ -12,9 +12,6 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <vector>
 #include <string>
 #include <map>
-#include "FMToperator.hpp"
-#include "FMTmask.hpp"
-#include "FMTexpression.hpp"
 #include "FMTutility.hpp"
 #include <boost/serialization/serialization.hpp>
 #include <boost/serialization/nvp.hpp>
@@ -22,6 +19,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <boost/serialization/vector.hpp>
 #include <boost/serialization/binary_object.hpp>
 #include <boost/serialization/export.hpp>
+#include <boost/unordered/unordered_map_fwd.hpp>
 
 namespace Core
 {
@@ -30,7 +28,7 @@ class FMTyieldrequest;
 class FMTexpression;
 class FMTmask;
 
-class FMTdata
+class FMTEXPORT FMTdata
     {
 	friend class boost::serialization::access;
 	template<class Archive>

@@ -13,10 +13,11 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <boost/serialization/serialization.hpp>
 
 #if defined FMTWITHOSI
-	#include <CoinError.hpp>
+	class CoinError;
 #endif
 
 #include <boost/graph/exception.hpp>
+#include <boost/serialization/nvp.hpp>
 
 
 namespace Exception

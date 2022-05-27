@@ -56,8 +56,8 @@ namespace Graph
 		void setactionID(const int& newid);
 		bool isaction(const std::vector<Core::FMTaction>& actions,
 			const Core::FMTaction& rhsaction) const;
-		virtual bool operator == (const FMTbaseedgeproperties& rhs) const;
-		virtual bool operator != (const FMTbaseedgeproperties& rhs) const;
+		/*virtual*/ bool operator == (const FMTbaseedgeproperties & rhs) const;
+		/*virtual*/ bool operator != (const FMTbaseedgeproperties& rhs) const;
 		bool operator < (const FMTbaseedgeproperties& rhs) const;
 		/*inline const short int* getactionptr() const
 			{

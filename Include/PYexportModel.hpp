@@ -302,32 +302,32 @@ void exportModel()
 
 
 	bp::class_<Models::FMTsamodel, bp::bases<Models::FMTmodel>>("FMTsamodel", "@DocString(FMTsamodel)")
-            .def(bp::init<Models::FMTmodel>())
-			.def(bp::init<Models::FMTsamodel>())	
-            .def("get_current_solution",&Models::FMTsamodel::get_current_solution,
-				"@DocString(FMTsamodel::get_current_solution)")
-            .def("get_new_solution",&Models::FMTsamodel::get_new_solution,
-				"@DocString(FMTsamodel::get_new_solution)")
-            .def("getspatialactions",&Models::FMTsamodel::getspatialactions,
-				"@DocString(FMTsamodel::getspatialactions)")
-			.def("initialsolve", &Models::FMTsamodel::initialsolve,
-				"@DocString(FMTsamodel::initialsolve)")
-            //.def("evaluate",&Models::FMTsamodel::evaluate,evaluate_overloads(bp::args("temp", "all_data"), "@DocString(FMTsamodel::evaluate)"))
-            .def("setinitialmapping",&Models::FMTsamodel::setinitialmapping,
-				"@DocString(FMTsamodel::setinitialmapping)")
-            .def("setspactions",&Models::FMTsamodel::setspactions,
-				"@DocString(FMTsamodel::setspactions)")
-            .def("set_min_max_moves",&Models::FMTsamodel::set_min_max_moves,
-				"@DocString(FMTsamodel::set_min_max_moves)")
-            .def("cool_down",&Models::FMTsamodel::cool_down,
-				"@DocString(FMTsamodel::cool_down)")
-            .def("get_cool_schedule_type",&Models::FMTsamodel::getcoolingscheduletype,
-				"@DocString(FMTsamodel::getcoolingscheduletype)")
-            .def("setschedule",&Models::FMTsamodel::setschedule,
-				"@DocString(FMTsamodel::setschedule)")
-            .def("buildperiod",&Models::FMTsamodel::buildperiod,
-				"@DocString(FMTsamodel::buildperiod)")
-            .def("move",&Models::FMTsamodel::move_solution,"@DocString(FMTsamodel::move_type)")
+		.def(bp::init<Models::FMTmodel>())
+		.def(bp::init<Models::FMTsamodel>())
+		/*.def("get_current_solution", &Models::FMTsamodel::get_current_solution,
+			"@DocString(FMTsamodel::get_current_solution)")
+		.def("get_new_solution",&Models::FMTsamodel::get_new_solution,
+			"@DocString(FMTsamodel::get_new_solution)")
+		.def("getspatialactions",&Models::FMTsamodel::getspatialactions,
+			"@DocString(FMTsamodel::getspatialactions)")*/
+		.def("initialsolve", &Models::FMTsamodel::initialsolve,
+			"@DocString(FMTsamodel::initialsolve)")
+		//.def("evaluate",&Models::FMTsamodel::evaluate,evaluate_overloads(bp::args("temp", "all_data"), "@DocString(FMTsamodel::evaluate)"))
+		.def("setinitialmapping", &Models::FMTsamodel::setinitialmapping,
+			"@DocString(FMTsamodel::setinitialmapping)")
+		/* .def("setspactions", &Models::FMTsamodel::setspactions,
+			 "@DocString(FMTsamodel::setspactions)")*/
+		.def("set_min_max_moves", &Models::FMTsamodel::set_min_max_moves,
+			"@DocString(FMTsamodel::set_min_max_moves)")
+		/*.def("cool_down", &Models::FMTsamodel::cool_down,
+			"@DocString(FMTsamodel::cool_down)")
+		.def("get_cool_schedule_type", &Models::FMTsamodel::getcoolingscheduletype,
+			"@DocString(FMTsamodel::getcoolingscheduletype)")
+		.def("setschedule", &Models::FMTsamodel::setschedule,
+			"@DocString(FMTsamodel::setschedule)")*/
+		.def("buildperiod", &Models::FMTsamodel::buildperiod,
+			"@DocString(FMTsamodel::buildperiod)");
+            /*.def("move", &Models::FMTsamodel::move_solution, "@DocString(FMTsamodel::move_type)")
             .def("acceptnew",&Models::FMTsamodel::acceptnew,
 				"@DocString(FMTsamodel::acceptnew)")
             .def("write_outputs_at",&Models::FMTsamodel::write_outputs_at,
@@ -338,7 +338,7 @@ void exportModel()
             .def("get_number_moves",&Models::FMTsamodel::get_number_moves,
 				"@DocString(FMTsamodel::get_number_moves)")
             //.def("warmup",&Models::FMTsamodel::warmup,warmup_overloads(bp::args("initprob","iterations","keep_best","type"), "@DocString(FMTsamodel::warmup)"))
-			.def("set_movetype", &Models::FMTsamodel::set_movetype, "@DocString(FMTsamodel::set_movetype)");
+			.def("set_movetype", &Models::FMTsamodel::set_movetype, "@DocString(FMTsamodel::set_movetype)");*/
 
     define_pylist<Models::FMTsamodel>();
 

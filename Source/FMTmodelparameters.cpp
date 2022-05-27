@@ -6,9 +6,12 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 #include "FMTmodelparameters.hpp"
 #include <boost/thread.hpp>
+#include "FMTexceptionhandler.hpp"
 
 namespace Models
 {
+
+
     FMTmodelparameters::FMTmodelparameters():Core::FMTobject()
     {
         const unsigned int processor_count = boost::thread::hardware_concurrency();

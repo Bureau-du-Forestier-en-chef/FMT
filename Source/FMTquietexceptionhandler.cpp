@@ -8,6 +8,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTquietexceptionhandler.hpp"
 #include "FMTerror.hpp"
 #include "FMTwarning.hpp"
+#include "FMTcplhandler.hpp"
 
 namespace Exception
 {
@@ -53,7 +54,7 @@ namespace Exception
 			{
 			return this;
 			}
-		void FMTquietexceptionhandler::handelCPLerror(CPLErr eErrClass, CPLErrorNum nError, const char * pszErrorMsg)
+		void FMTquietexceptionhandler::handelCPLerror(int eErrClass,int nError, const char * pszErrorMsg)
 			{
 			boost::lock_guard<boost::recursive_mutex> guard(mtx);
             try{

@@ -8,11 +8,12 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #ifndef FMTwarning_H_INCLUDED
 #define FMTwarning_H_INCLUDED
 
-#include <boost/unordered_map.hpp>
+#include <unordered_map>
 #include "FMTexception.hpp"
 #include <string>
 #include <memory>
 #include "FMTutility.hpp"
+#include <boost/serialization/nvp.hpp>
 
 namespace Logging
 {
@@ -81,7 +82,7 @@ namespace Exception
 		/**
 		Using a given logger the function log the warning with the logger. 
 		*/
-		void warn(const std::shared_ptr<Logging::FMTlogger>logger,boost::unordered_map<int,size_t>& specificwarningcount, const size_t& maxwarning) const;
+		void warn(const std::shared_ptr<Logging::FMTlogger>logger,std::unordered_map<int,size_t>& specificwarningcount, const size_t& maxwarning) const;
 	};
 }
 #endif

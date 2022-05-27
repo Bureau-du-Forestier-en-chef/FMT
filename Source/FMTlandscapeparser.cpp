@@ -14,6 +14,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #ifdef FMTWITHGDAL
 	#include "ogrsf_frmts.h"
 #endif
+#include "FMTexceptionhandler.hpp"
 
 namespace Parser
 {

@@ -9,20 +9,20 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #ifndef FMTsolve_H_INCLUDED
 #define FMTsolve_H_INCLUDED
 #include "FMTsolverinterface.hpp"
-#include "FMTserializablematrix.hpp"
 #include "FMTmatrixbuild.hpp"
+#include "FMTexceptionhandler.hpp"
 #include "FMTobject.hpp"
 #include <memory>
 #include <unordered_map>
 #include <boost/serialization/split_member.hpp>
 #include <boost/serialization/export.hpp>
-
-#ifdef FMTWITHMOSEK
-	#include "mosek.h"
-#endif
+#include <boost/archive/binary_oarchive.hpp>
+#include <boost/archive/binary_iarchive.hpp>
+#include "FMTserializablematrix.hpp"
 
 
 class OsiSolverInterface;
+class CoinPackedMatrix;
 
 namespace Models
 {
@@ -37,21 +37,27 @@ rows or columns dont need synchronization with the cache. So those calls are goi
 */
 class FMTEXPORT FMTlpsolver: public Core::FMTobject
 	{
+	friend class boost::serialization::access;
 	// DocString: FMTlpsolver::save
 	/**
 	Save function is for serialization, used to do multiprocessing across multiple cpus (pickle in Pyhton)
 	*/
-	friend class boost::serialization::access;
 	template<class Archive>
 	void save(Archive& ar, const unsigned int version) const
-		{
-		ar & boost::serialization::make_nvp("FMTobject", boost::serialization::base_object<Core::FMTobject>(*this));
-		ar & BOOST_SERIALIZATION_NVP(usecache);
-		matrixcache.synchronize(solverinterface);
-		const FMTserializablematrix matrix(solverinterface);
-		ar & BOOST_SERIALIZATION_NVP(solvertype);
-		ar & BOOST_SERIALIZATION_NVP(matrix);
+	{
+		try {
+			ar& boost::serialization::make_nvp("FMTobject", boost::serialization::base_object<Core::FMTobject>(*this));
+			ar& BOOST_SERIALIZATION_NVP(usecache);
+			matrixcache.synchronize(solverinterface);
+			const FMTserializablematrix matrix(solverinterface);
+			ar& BOOST_SERIALIZATION_NVP(solvertype);
+			ar& BOOST_SERIALIZATION_NVP(matrix);
 		}
+		catch (...)
+		{
+			_exhandler->raisefromcatch("", "FMTlpsolver::save", __LINE__, __FILE__);
+		}
+	}
 	// DocString: FMTlpsolver::load
 	/**
 	Load function is for serialization, used to do multiprocessing across multiple cpus (pickle in Pyhton)
@@ -59,14 +65,21 @@ class FMTEXPORT FMTlpsolver: public Core::FMTobject
 	template<class Archive>
 	void load(Archive& ar, const unsigned int version)
 	{
-		ar & boost::serialization::make_nvp("FMTobject", boost::serialization::base_object<FMTobject>(*this));
-		ar & BOOST_SERIALIZATION_NVP(usecache);
-		matrixcache.synchronize(solverinterface);
-		FMTserializablematrix matrix;
-		ar & BOOST_SERIALIZATION_NVP(solvertype);
-		ar & BOOST_SERIALIZATION_NVP(matrix);
-		solverinterface = this->buildsolverinterface(solvertype);
-		matrix.setmatrix(solverinterface);
+		try {
+			ar& boost::serialization::make_nvp("FMTobject", boost::serialization::base_object<FMTobject>(*this));
+			ar& BOOST_SERIALIZATION_NVP(usecache);
+			matrixcache.synchronize(solverinterface);
+			FMTserializablematrix matrix;
+			ar& BOOST_SERIALIZATION_NVP(solvertype);
+			ar& BOOST_SERIALIZATION_NVP(matrix);
+			solverinterface = this->buildsolverinterface(solvertype);
+			matrix.setmatrix(solverinterface);
+		}
+		catch (...)
+		{
+			_exhandler->raisefromcatch("", "FMTlpsolver::load", __LINE__, __FILE__);
+		}
+
 	}
 	BOOST_SERIALIZATION_SPLIT_MEMBER()
 	// DocString: FMTlpsolver::solverinterface
@@ -339,7 +352,8 @@ class FMTEXPORT FMTlpsolver: public Core::FMTobject
 		and a given row upper bound (rowUpper).If usecache is true then it will be only added to the matrix cache else it will
 		be added to the solverinterface.
 		*/
-		void addRow(int numberInRow, const int * columns, const double * elements, double rowLower = -COIN_DBL_MAX, double rowUpper = COIN_DBL_MAX);
+		void addRow(int numberInRow, const int * columns, const double * elements,
+			double rowLower = -std::numeric_limits<double>::max(), double rowUpper = std::numeric_limits<double>::max());
 		// DocString: FMTlpsolver::addCol
 		/**
 		Add a col, with a number of rows (numberInColumn),with rows indexes (rows), with (elements) with a given lower bound (colLower),
@@ -347,7 +361,7 @@ class FMTEXPORT FMTlpsolver: public Core::FMTobject
 		be added to the solverinterface.
 		*/
 		void addCol(int numberInColumn, const int * rows, const double * elements, double columnLower = 0.0,
-			double columnUpper = COIN_DBL_MAX, double objectiveValue = 0.0);
+			double columnUpper = std::numeric_limits<double>::max(), double objectiveValue = 0.0);
 		// DocString: FMTlpsolver::addRows
 		/**
 		Add multiple rows directly to the matrix but first will synchronize the matrix with the matrix cache.
@@ -514,7 +528,7 @@ class FMTEXPORT FMTlpsolver: public Core::FMTobject
 			/**
 			Return description of error code from Mosek.
 			*/
-			std::string getmskerrordesc(MSKrescodee error) const;
+			std::string getmskerrordesc(int error) const;
 		#endif
 	};
 }

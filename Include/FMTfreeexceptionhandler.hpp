@@ -64,7 +64,7 @@ public:
 	Used has call back in gdal.
 	See handelCPLerror of FMTexceptionhandler class.
 	*/
-	void handelCPLerror(CPLErr eErrClass, CPLErrorNum nError, const char * pszErrorMsg) override;
+	void handelCPLerror(int eErrClass, int nError, const char * pszErrorMsg) override;
 #endif
 };
 }

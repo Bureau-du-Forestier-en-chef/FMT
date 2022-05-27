@@ -12,6 +12,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTsolverinterface.hpp"
 #include <boost/filesystem.hpp>
 #include <boost/filesystem/operations.hpp>
+#include "FMTexceptionhandler.hpp"
 
 
 namespace Version

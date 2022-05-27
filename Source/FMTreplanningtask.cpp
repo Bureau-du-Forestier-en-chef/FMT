@@ -10,6 +10,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTmodel.hpp"
 #include "FMToutput.hpp"
 #include "FMTlpmodel.hpp"
+#include "FMTexceptionhandler.hpp"
 
 
 namespace Parallel
@@ -189,7 +190,7 @@ namespace Parallel
 	}
 
 	void FMTreplanningtask::writeresults(const std::string& modelname, const int& modellength,
-		const std::unique_ptr<Models::FMTmodel>& modelptr, const int& replanningperiod, bool onlyfirstperiod)
+		const std::unique_ptr<Models::FMTmodel>& modelptr,const int& replanningperiod,bool onlyfirstperiod)
 	{
 		try {
 			if (replanningperiod <= replanningperiods)//Dont write outside the replanningsperiods
@@ -199,7 +200,7 @@ namespace Parallel
 				int lastperiod = firstperiod;
 				/*if (!modelptr)//infeasible!
 				{
-					//put NAN everywhere the size of
+					//put NAN everywhere the size of 
 					modelsize = (replanningperiods - replanningperiod) + 1;
 					onlyfirstperiod = false;
 					std::cout << onlyfirstperiod << std::endl;
@@ -228,8 +229,7 @@ namespace Parallel
 					std::to_string(firstperiod) + " for replicate " + std::to_string(getiteration()) + +"\n", 1);
 				resultswriter->write(modelname, results, firstperiod, lastperiod, getiteration());
 			}
-		}
-		catch (...)
+		}catch (...)
 		{
 			_exhandler->raisefromcatch("", "FMTreplanningtask::writeresults", __LINE__, __FILE__);
 		}
@@ -391,8 +391,6 @@ namespace Parallel
 						"FMTreplanningtask::domodelplanning", __LINE__, __FILE__);
 					modelcpy = std::move(std::unique_ptr<Models::FMTmodel>(nullptr));
 				}
-				
-			
 				if (modelsize>1)
 					{
 					writefirstperiodonly = false;
