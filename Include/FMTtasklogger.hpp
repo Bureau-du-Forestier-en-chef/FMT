@@ -9,6 +9,8 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #define FMTtasklogger_H_INCLUDED
 
 #include "FMTlogger.hpp"
+#include "FMTutility.hpp"
+#include <boost/serialization/nvp.hpp>
 
 namespace Logging
 {
@@ -52,7 +54,7 @@ class FMTEXPORT FMTtasklogger final : public FMTlogger
 		#ifdef FMTWITHOSI
 			// DocString: FMTtasklogger::print
 			/**
-			FMTtasklogger print nothing with osisolverinterface.
+			FMTquietlogger print nothing with osisolverinterface.
 			See FMTlogger print function.
 			*/
 			int print() override;
@@ -65,9 +67,8 @@ class FMTEXPORT FMTtasklogger final : public FMTlogger
 			/**
 			See FMTlogger clone function.
 			*/
-			CoinMessageHandler * clone() const override;
-
-	#endif
+			FMTlogger* clone() const override;
+		#endif
 	};
 }
 
