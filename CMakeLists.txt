@@ -185,6 +185,8 @@ else()
 	target_compile_definitions(FMT PRIVATE "-DFMTLIBIMPORT")
 endif(NOT MSVC AND DEFINED ENV{R_DIR})
 
+
+
 set_target_properties(FMT PROPERTIES PREFIX "")
 if (MSVC AND (${CMAKE_VERSION} VERSION_GREATER 3.8.0))
 	set_target_properties(
@@ -456,13 +458,13 @@ endif(NOT Boost_FOUND)
 
 
 message("Found Boost include here: ${Boost_INCLUDE_DIRS}")
-include_directories(${Boost_INCLUDE_DIRS})
+#include_directories(${Boost_INCLUDE_DIRS})
 target_include_directories(FMT PRIVATE ${Boost_INCLUDE_DIRS})
 target_include_directories(FMTlib PRIVATE ${Boost_INCLUDE_DIRS})
 message("Found Boost libraries here: ${Boost_LIBRARIES}")
 target_link_libraries(FMT PRIVATE ${Boost_LIBRARIES})
 target_link_libraries(FMTlib PRIVATE ${Boost_LIBRARIES})
-link_libraries(${Boost_LIBRARIES})
+#link_libraries(${Boost_LIBRARIES})
 
 
 
@@ -673,7 +675,7 @@ get_filename_component(GDAL_DATA_NAME "${GDAL_DATA}" NAME)
 
 
 include(${CMAKE_CURRENT_SOURCE_DIR}/Examples/C++/CMakeLists.txt) #will polulate tests
-include(${CMAKE_CURRENT_SOURCE_DIR}/UI/CMakeLists.txt) #will polulate tests
+include(${CMAKE_CURRENT_SOURCE_DIR}/UI/CMakeLists.txt) #will polulate UI
 
 if (NOT DEFINED PARALLEL_TESTS)
 	set(PARALLEL_TESTS 1)
