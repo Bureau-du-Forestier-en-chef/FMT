@@ -8,6 +8,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #ifndef FMTdefaultlogger_H_INCLUDED
 #define FMTdefaultlogger_H_INCLUDED
 #include "FMTlogger.hpp"
+#include <boost/serialization/nvp.hpp>
 
 namespace Logging
 {
@@ -66,7 +67,7 @@ namespace Logging
 			/**
 			See FMTlogger clone function.
 			*/
-			CoinMessageHandler * clone() const override;
+			FMTlogger* clone() const override;
 		#endif
 	};
 

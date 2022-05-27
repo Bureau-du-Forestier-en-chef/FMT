@@ -9,6 +9,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTnssmodel.hpp"
 #include "FMTfuturdevelopment.hpp"
 #include "FMTactualdevelopment.hpp"
+#include "FMTexceptionhandler.hpp"
 
 namespace Models
 {

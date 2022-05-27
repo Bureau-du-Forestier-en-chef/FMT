@@ -9,9 +9,9 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #define FMTSAMODEL_H
 
 #include "FMTmodel.hpp"
-#include "FMTspatialaction.hpp"
-#include "FMTsaschedule.hpp"
-#include "FMTsasolution.hpp"
+//#include "FMTspatialaction.hpp"
+//#include "FMTsaschedule.hpp"
+//#include "FMTsasolution.hpp"
 #include "FMTspatialschedule.hpp"
 #include <memory>
 #include <vector>
@@ -20,6 +20,8 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 namespace Spatial
 {
 	class FMTforest;
+    class FMTsaschedule;
+    class FMTexponentialschedule;
 }
 
 
@@ -87,7 +89,7 @@ class FMTEXPORT FMTsamodel : public FMTmodel
 		
 
         ///
-        Spatial::FMTsamovetype movetype;
+       // Spatial::FMTsamovetype movetype;
         /// Range of ratio of the map to perturb at each iteration.
         double min_ratio_moves,max_ratio_moves;
         ///Path to were the outputs will be written.
@@ -101,7 +103,7 @@ class FMTEXPORT FMTsamodel : public FMTmodel
 		///Random number generator.
 		mutable std::default_random_engine generator;
 		///Spatial actions presents in the model.
-		std::vector<Spatial::FMTspatialaction> spactions;//should be FMTmodel action pointer...
+		//std::vector<Spatial::FMTspatialaction> spactions;//should be FMTmodel action pointer...
 		///Vector to track accepted solution base on the iteration number.
 		std::vector<int> accepted_solutions;
 		///Id in the map that are different between current and new solution.
@@ -111,15 +113,15 @@ class FMTEXPORT FMTsamodel : public FMTmodel
 		///Cooling schedule for simulated annealing algorithm.
 		std::unique_ptr<Spatial::FMTsaschedule> cooling_schedule;
 		///Best solution
-        Spatial::FMTsasolution best_solution;
+        //Spatial::FMTsasolution best_solution;
         ///Current solution
-		Spatial::FMTsasolution current_solution;
+		//Spatial::FMTsasolution current_solution;
 		///New solution generated from current. Empty when no moves has been done.
-		Spatial::FMTsasolution new_solution;
+		//Spatial::FMTsasolution new_solution;
         ///Overloading move operator
-		Graph::FMTgraphstats g_move_solution(const double min_ratio,const double max_ratio);
+		//Graph::FMTgraphstats g_move_solution(const double min_ratio,const double max_ratio);
         ///It's use to verify if solutions are not identical
-        bool comparesolutions() const;
+        //bool comparesolutions() const;
     public:
         ///Constructor
         FMTsamodel();
@@ -142,8 +144,8 @@ class FMTEXPORT FMTsamodel : public FMTmodel
 
         ///Warmup function to set the initial temperature base on the initialization probability defined by user.
         ///Need to think a way to have a near feasible solution at start
-        double warmup(const double initprob, const size_t iterations,
-                      bool keep_best=false, FMTsawarmuptype type = FMTsawarmuptype::bootstrapmagic);
+        //double warmup(const double initprob, const size_t iterations,
+         //             bool keep_best=false, FMTsawarmuptype type = FMTsawarmuptype::bootstrapmagic);
         ///Setter of the outputs_write_location.
         void write_outputs_at(std::string path);
         ///Setter of the cooling_schedule.
@@ -151,11 +153,11 @@ class FMTEXPORT FMTsamodel : public FMTmodel
         ///Setter of the initial_mapping base on FMTforest.
         bool setinitialmapping(Spatial::FMTforest forest);
         ///Setter of spatial actions. See FMTspatialaction for info.
-        bool setspactions(const std::vector<Spatial::FMTspatialaction>& lspactions);
+        //bool setspactions(const std::vector<Spatial::FMTspatialaction>& lspactions);
         ///Setter of min_ratio_moves and max_ratio_moves.
         bool set_min_max_moves(const double min_r,const double max_r);
         ///
-        bool set_movetype(const Spatial::FMTsamovetype movet);
+        //bool set_movetype(const Spatial::FMTsamovetype movet);
 
         /*****************************************
         Functions to get informations on the model.
@@ -166,32 +168,32 @@ class FMTEXPORT FMTsamodel : public FMTmodel
         ///Write info about the accepted solutions (iteration,probs,value,penaltie) at the output location.
         void get_outputs(std::string addon = "");
         ///Getter of the current solution
-        Spatial::FMTsasolution get_current_solution()const;
+        //Spatial::FMTsasolution get_current_solution()const;
         ///Getter of the new_solution
-        Spatial::FMTsasolution get_new_solution()const;
+       // Spatial::FMTsasolution get_new_solution()const;
         ///Getter for the cooling_schedule type
-		std::string getcoolingscheduletype()const{return cooling_schedule->get_schedule_type();};
+        std::string getcoolingscheduletype()const; 
         ///Write raster with events( of FMT actions) for every solution in the model.
-        void write_solutions_events(std::string out_path)const;//Write events
+        //void write_solutions_events(std::string out_path)const;//Write events
         ///Getter for spatial actions of the model.
-		std::vector<Spatial::FMTspatialaction> getspatialactions()const;
+		//std::vector<Spatial::FMTspatialaction> getspatialactions()const;
 
         /********************************
         Functions to manipulate the model.
         */
 
         ///Change new_solution to current and empty new_solution.
-        void acceptnew();
+        //void acceptnew();
         ///Evaluate Metropolis criterion.
         bool testprobability(const double& p);
         ///Reduce temperature according to the cooling schedule.
-        double cool_down(double temp)const{return cooling_schedule->reduce_temp(temp);};
+        double cool_down(double temp)const;
         ///Compare two solutions base on the objective function.
-        bool evaluate(const double temp,bool all_data=false);
+        //bool evaluate(const double temp,bool all_data=false);
         ///To build initial solution. Return stats for all graphs created in the map.
         Graph::FMTgraphstats buildperiod();
 		///Move operator for simulated annealing
-		Graph::FMTgraphstats move_solution();
+		//Graph::FMTgraphstats move_solution();
         ///Setter of the map id modified
         bool setmapidmodified(const std::vector<size_t>& id);
     };

@@ -11,14 +11,20 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 #ifdef FMTWITHMOSEK
 	#include "OsiMskSolverInterface.hpp"
+	#include "mosek.h"
 #endif
 
 
 #include "OsiClpSolverInterface.hpp"
+#include "FMTexceptionhandler.hpp"
+#include "FMTsolverlogger.hpp"
+#include "FMTserializablematrix.hpp"
 
 
 namespace Models
 {
+
+
 	bool FMTlpsolver::canupdatesource() const
 	{
 	return (solverinterface.use_count() == 2);
@@ -446,7 +452,7 @@ namespace Models
 	void FMTlpsolver::passinmessagehandler(Logging::FMTlogger& logger)
 		{
 		try{
-		solverinterface->passInMessageHandler(&logger);
+		solverinterface->passInMessageHandler(dynamic_cast<CoinMessageHandler*>(logger.getsolverlogger()));
 		}catch (...)
 			{
 			_exhandler->raisefromcatch("", "FMTlpsolver::passinmessagehandler", __LINE__, __FILE__);
@@ -1251,12 +1257,12 @@ namespace Models
 		}
 
 	#ifdef FMTWITHMOSEK
-		std::string FMTlpsolver::getmskerrordesc(MSKrescodee error) const
+		std::string FMTlpsolver::getmskerrordesc(int error) const
 		{
 			std::string errordescription;
 			char symname[MSK_MAX_STR_LEN];
 			char desc[MSK_MAX_STR_LEN];
-			MSK_getcodedesc(error, symname, desc);
+			MSK_getcodedesc(static_cast<MSKrescodee>(error), symname, desc);
 			errordescription+=symname;
 			errordescription+=" ";
 			errordescription+=desc;

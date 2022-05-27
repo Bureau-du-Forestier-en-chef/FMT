@@ -257,12 +257,12 @@ class FMTyldbounds: public FMTbounds<double>
 	}
     std::string yield;
     public:
-    FMTyldbounds();
+	FMTyldbounds() :FMTbounds<double>(), yield() {};
 	~FMTyldbounds() = default;
 	FMTyldbounds(const FMTsection lsection, const std::string& lyield, const double& lupper, const double& llower);
     FMTyldbounds(const FMTsection lsection,const FMTkwor key,const std::string& lyield, const double& lupper,const double& llower);
     FMTyldbounds(const std::string& lyield,const FMTbounds<double>& rhs);
-    FMTyldbounds(const FMTyldbounds& rhs);
+	FMTyldbounds(const FMTyldbounds& rhs) : FMTbounds(rhs), yield(rhs.yield) {};
     FMTyldbounds& operator = (const FMTyldbounds& rhs);
 	bool operator == (const FMTyldbounds& rhs) const;
     operator std::string() const;

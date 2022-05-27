@@ -5,6 +5,11 @@ SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
+#include <boost/serialization/serialization.hpp>
+#include <boost/serialization/nvp.hpp>
+#include <boost/serialization/split_member.hpp>
+#include <boost/lexical_cast.hpp>
+#include <boost/thread.hpp>
 #include "FMTlogger.hpp"
 #if defined FMTWITHPYTHON
 	#include <boost/python.hpp>
@@ -14,10 +19,44 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #endif
 #include <iostream>
 #include "FMTversion.hpp"
-
+#include "FMTsolverlogger.hpp"
+#if defined FMTWITHOSI
+#include "CoinMessageHandler.hpp"
+#endif
 
 namespace Logging
 {
+
+	template<class Archive>
+	void FMTlogger::save(Archive& ar, const unsigned int version) const
+	{
+	#ifdef FMTWITHOSI
+		const int logl = solverref->logLevel();
+		ar & BOOST_SERIALIZATION_NVP(logl);
+	#endif
+		ar & filepath;
+	}
+
+	template<class Archive>
+	void FMTlogger::load(Archive& ar, const unsigned int version)
+	{
+		#ifdef FMTWITHOSI
+		int coinloglevel = 0;
+		ar & BOOST_SERIALIZATION_NVP(coinloglevel);
+		solverref->setLogLevel(coinloglevel);
+		#endif
+		ar & filepath;
+		if (!filepath.empty())
+		{
+			settofile(filepath);
+		}
+	}
+
+	template<class Archive>
+	void FMTlogger::serialize(Archive &ar, const unsigned int file_version)
+	{
+		boost::serialization::split_member(ar, *this, file_version);
+	}
 
 
 
@@ -32,11 +71,10 @@ namespace Logging
 		}
 
 	FMTlogger::FMTlogger() : 
-		#ifdef FMTWITHOSI
-			CoinMessageHandler(),
-		#endif
+		solverref(new FMTsolverlogger(*this)),
 		filepath(),filestream(), mtx(),flushstream(false)
 		{
+		
 
 		}
 
@@ -55,9 +93,7 @@ namespace Logging
 	FMTlogger::FMTlogger(const FMTlogger& rhs)
 		{
 		boost::lock_guard<boost::recursive_mutex> lock(rhs.mtx);
-		#ifdef FMTWITHOSI
-			CoinMessageHandler::operator=(rhs),
-		#endif
+		solverref.reset(new FMTsolverlogger(*rhs.solverref));
 		filepath=rhs.filepath;
 		settofile(filepath);
 		flushstream=rhs.flushstream;
@@ -71,9 +107,7 @@ namespace Logging
 			boost::lock(mtx, rhs.mtx);
 			boost::lock_guard<boost::recursive_mutex> self_lock(mtx,boost::adopt_lock /*std::adopt_lock*/);
 			boost::lock_guard<boost::recursive_mutex> other_lock(rhs.mtx,boost::adopt_lock /*std::adopt_lock*/);
-			#ifdef FMTWITHOSI
-				CoinMessageHandler::operator=(rhs),
-			#endif
+			solverref.reset(new FMTsolverlogger(*rhs.solverref));
 			filepath = rhs.filepath;
 			settofile(filepath);
 			flushstream = rhs.flushstream;
@@ -174,7 +208,7 @@ namespace Logging
 	bool FMTlogger::logwithlevel(const std::string &msg, const int& messagelevel) const
 	{
 		#ifdef FMTWITHOSI
-		if (this->logLevel() < messagelevel)
+		if (solverref->logLevel() < messagelevel)
 				{
 				return false;
 				}
@@ -188,19 +222,13 @@ namespace Logging
 		void FMTlogger::checkSeverity()
 			{
 			boost::lock_guard<boost::recursive_mutex> guard(mtx);
-			CoinMessageHandler::checkSeverity();
+			solverref->checkcoinSeverity();
 			}
 	
-		CoinMessageHandler* FMTlogger::clone() const
+		FMTlogger* FMTlogger::clone() const
 			{
 			boost::lock_guard<boost::recursive_mutex> guard(mtx);
 			return new FMTlogger(*this);
-			}
-
-		CoinMessageHandler * FMTlogger::getpointer() const
-			{
-			boost::lock_guard<boost::recursive_mutex> guard(mtx);
-			return dynamic_cast<CoinMessageHandler*>(const_cast<FMTlogger*>(this));
 			}
 
 	#endif
@@ -235,20 +263,26 @@ namespace Logging
 		int FMTlogger::print()
 			{
 			boost::lock_guard<boost::recursive_mutex> guard(mtx);
-			if (messageOut_ > messageBuffer_)
+			if (solverref->messageOut_ > solverref->messageBuffer())
 				{
 				char buffer[COIN_MESSAGE_HANDLER_MAX_BUFFER_SIZE];
-				snprintf(buffer, sizeof(buffer), "%s\n", this->messageBuffer_);
+				snprintf(buffer, sizeof(buffer), "%s\n", solverref->messageBuffer());
 				this->cout(buffer);
-				if (currentMessage_.severity_ == 'S')
+				if (solverref->currentMessage().severity_ == 'S')
 					{
-					fprintf(fp_, "Stopping due to previous errors.\n");
+					fprintf(solverref->filePointer(), "Stopping due to previous errors.\n");
 					//Should do walkback
 					abort();
 					}
 				}
 			return 0;
 			}
+
+		FMTsolverlogger* FMTlogger::getsolverlogger()
+			{
+			return solverref.get();
+			}
+
 	#endif
 
 

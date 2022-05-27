@@ -8,6 +8,13 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTtheme.hpp"
 #include "FMTmask.hpp"
 #include "FMTmaskfilter.hpp"
+#include <boost/dynamic_bitset.hpp>
+#include <unordered_map>
+#include "FMTexceptionhandler.hpp"
+
+#if defined FMTWITHR
+	#include <Rcpp.h>
+#endif 
 
 namespace Core {
 

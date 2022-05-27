@@ -8,9 +8,8 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #ifndef FMTtheme_H_INCLUDED
 #define FMTtheme_H_INCLUDED
 
+#include <boost/dynamic_bitset_fwd.hpp>
 #include <boost/serialization/serialization.hpp>
-#include <boost/dynamic_bitset.hpp>
-#include <boost/unordered_map.hpp>
 #include <string>
 #include <vector>
 #include <map>
@@ -18,7 +17,9 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <boost/serialization/map.hpp>
 #include <boost/serialization/export.hpp>
 #include <boost/serialization/string.hpp>
+#include "FMTexceptionhandler.hpp"
 #include "FMTobject.hpp"
+#include <unordered_map>
 
 #if defined FMTWITHR
 	#include <Rcpp.h>
@@ -28,6 +29,7 @@ namespace Parser
 {
 	class FMTlandscapeparser;
 }
+
 
 
 
@@ -94,10 +96,10 @@ class FMTEXPORT FMTtheme : public FMTobject
 		std::vector<std::map<std::string, double>>indexes;
 		// DocString: FMTtheme::attribute_locations
 		///Attributes location used for optimization of the whole class.
-		boost::unordered_map<std::string, std::vector<size_t>>attribute_locations;
+		std::unordered_map<std::string, std::vector<size_t>>attribute_locations;
 		// DocString: FMTtheme::lookiterator
 		///Lookup iterator for the attributes.
-		typedef typename boost::unordered_map<std::string, std::vector<size_t>>::const_iterator lookiterator;
+		typedef typename std::unordered_map<std::string, std::vector<size_t>>::const_iterator lookiterator;
 		// DocString: FMTtheme::name
 		///The name of the FMTtheme if their's a name provided by the user.
 		std::string name;

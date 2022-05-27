@@ -7,6 +7,7 @@
 #include "FMTpredictor.hpp"
 #include "FMTsrmodel.hpp"
 #include  <onnxruntime/core/session/onnxruntime_cxx_api.h>
+#include <boost/property_tree/json_parser.hpp>
 
 
 namespace Core {

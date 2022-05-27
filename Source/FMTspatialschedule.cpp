@@ -19,6 +19,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMToutput.hpp"
 #include "FMTeventrelation.hpp"
 #include "FMTGCBMtransition.hpp"
+#include "FMTexceptionhandler.hpp"
 
 
 namespace Spatial

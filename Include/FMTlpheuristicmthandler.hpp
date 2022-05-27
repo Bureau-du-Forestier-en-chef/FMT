@@ -43,6 +43,6 @@ namespace Heuristics
 		size_t greedysolve(const unsigned int& iterations, const double& maxtime) const;
 	    };
 }
-BOOST_CLASS_EXPORT_KEY(Heuristics::FMTlpheuristicmthandler)
+//BOOST_CLASS_EXPORT_KEY(Heuristics::FMTlpheuristicmthandler)
 #endif
 #endif

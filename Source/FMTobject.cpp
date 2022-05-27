@@ -5,7 +5,10 @@ SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
+
 #include "FMTobject.hpp"
+#include "FMTexceptionhandler.hpp"
+#include "FMTlogger.hpp"
 #include "FMTdefaultlogger.hpp"
 #include "FMTdebuglogger.hpp"
 #include "FMTquietlogger.hpp"
@@ -19,6 +22,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <chrono>
 
 #if defined __MINGW64__||__CYGWIN__
+	#define NOMINMAX
 	#include "windows.h"
 	EXTERN_C IMAGE_DOS_HEADER __ImageBase;
 #else
@@ -29,12 +33,27 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 	#include "Rcpp.h"
 #endif
 
+#include "FMTcplhandler.hpp"
+
 #if defined _WIN32
+#define NOMINMAX
 #include <windows.h>
 #endif
 
 #if defined __unix
 #include <sys/sysinfo.h>
+#endif
+
+#if defined (_MSC_VER)
+#define NOMINMAX
+#include <comdef.h>
+#include <windows.h>
+EXTERN_C IMAGE_DOS_HEADER __ImageBase;
+#include <boost/filesystem.hpp>
+#endif
+
+#if defined FMTWITHPYTHON
+	#include <boost/python.hpp>
 #endif
 
 
@@ -314,17 +333,6 @@ namespace Core
 		catch (...)
 		{
 			_exhandler->raisefromcatch("", "FMTobject::seterrorstowarnings", __LINE__, __FILE__);
-		}
-	}
-
-	void FMTobject::setmaxwarningsbeforesilenced(const size_t& warns)
-	{
-		try {
-			_exhandler->setmaxwarningsbeforesilenced(warns);
-		}
-		catch (...)
-		{
-			_exhandler->raisefromcatch("", "FMTobject::setmaxwarningsbeforesilenced", __LINE__, __FILE__);
 		}
 	}
 

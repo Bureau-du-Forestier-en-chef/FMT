@@ -89,7 +89,16 @@ const char* FMTsection_str(FMTsection section);
 #define FMTEXPORT
 #endif
 #endif
-
 }
+
+namespace boost
+{
+	namespace serialization
+	{
+		class access;
+	}
+}
+
+
 
 #endif // FMTUTILS_H_INCLUDED

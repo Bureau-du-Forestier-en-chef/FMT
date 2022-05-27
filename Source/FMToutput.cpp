@@ -15,6 +15,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTaction.hpp"
 #include <algorithm>
 #include <queue>
+#include "FMTexceptionhandler.hpp"
 
 namespace Core{
 

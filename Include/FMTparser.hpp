@@ -21,17 +21,17 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 
 #include <boost/thread/recursive_mutex.hpp>
-#include <boost/algorithm/string/erase.hpp>
+
 
 
 #include "FMTobject.hpp"
 #if defined FMTWITHGDAL
-	#include "gdal.h"
 	class OGRSpatialReference;
 	class GDALDataset;
 	class OGRLayer;
 	class GDALRasterBand;
 	class GDALDriver;
+	class OGRSpatialReference;
 #endif
 
 
@@ -162,13 +162,13 @@ class FMTEXPORT FMTparser: public Core::FMTobject
 			/**
 			Return and OGRspatialReference corresponding to the one used for FORELs in Quebec.
 			*/
-			OGRSpatialReference getFORELspatialref() const;
+			std::unique_ptr<OGRSpatialReference> getFORELspatialref() const;
 			// DocString: FMTparser::createdataset
 			/**
 			The function create an empty GDALDataset for a given FMTlayer.
 			*/
 			template<typename T>
-			GDALDataset* createdataset(const std::string& location, const Spatial::FMTlayer<T>& layer, const GDALDataType datatype) const;
+			GDALDataset* createdataset(const std::string& location, const Spatial::FMTlayer<T>& layer, const int datatypeid) const;
 			// DocString: FMTparser::getdataset
 			/**
 			Open in readonly a GDALdataset from a given (location), will throw if anything went wrong.

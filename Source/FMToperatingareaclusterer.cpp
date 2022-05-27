@@ -9,6 +9,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 #include "FMToperatingareaclusterer.hpp"
 #include <random>
+#include "FMTexceptionhandler.hpp"
 
 
 
@@ -417,7 +418,7 @@ namespace Heuristics
 			indexesofmaxvariables.push_back(binary.getvariable());
 			indexesofmaxvariables.push_back(cluster.getmaximalobjectivevariable());
 			setrowname("MAXO_" + std::to_string(clusterid) + "_" +std::string(binary.getmask()), getNumRows());
-			this->addRow(2, &indexesofmaxvariables[0], &maxvariables[0], -COIN_DBL_MAX,0);
+			this->addRow(2, &indexesofmaxvariables[0], &maxvariables[0], -std::numeric_limits<double>::max(),0);
 			/*std::vector<double>baseminvariables;
 			baseminvariables.push_back(-binary.getstatistic());
 			baseminvariables.push_back(-1.0);
@@ -443,7 +444,7 @@ namespace Heuristics
 			minvariables.push_back(-1.0);
 			indexesofminvariables.push_back(cluster.getminimalobjectivevariable());
 			setrowname("MINO_" + std::to_string(clusterid) + "_" +std::string(binary.getmask()), getNumRows());
-			this->addRow(static_cast<int>(indexesofminvariables.size()), &indexesofminvariables[0], &minvariables[0], -COIN_DBL_MAX, 0.0);
+			this->addRow(static_cast<int>(indexesofminvariables.size()), &indexesofminvariables[0], &minvariables[0],-std::numeric_limits<double>::max(), 0.0);
 		
 		
 		}catch (...)
@@ -508,11 +509,11 @@ namespace Heuristics
                 {
 				int columnid = this->getNumCols();
 				cluster.setmaximalobjectivevariable(columnid);
-				this->addCol(0, nullptr, nullptr,0.0,COIN_DBL_MAX, 1.0);
+				this->addCol(0, nullptr, nullptr,0.0, std::numeric_limits<double>::max(), 1.0);
 				setcolname("MAX" + std::to_string(clusterid), columnid);
 				++columnid;
 				cluster.setminimalobjectivevariable(columnid);
-				this->addCol(0, nullptr, nullptr,-COIN_DBL_MAX,0, 1.0);
+				this->addCol(0, nullptr, nullptr,-std::numeric_limits<double>::max(),0, 1.0);
 				setcolname("MIN" + std::to_string(clusterid), columnid);
 				std::vector<double>variableclosed;
 				const double maxincluster = cluster.getmaximalstats();
@@ -522,7 +523,7 @@ namespace Heuristics
 				columnidclosed.push_back(cluster.getcentroid().getvariable());
 				columnidclosed.push_back(cluster.getminimalobjectivevariable());
 				setrowname("OF" + std::to_string(clusterid), getNumRows());
-				this->addRow(2, &columnidclosed[0], &variableclosed[0], -COIN_DBL_MAX,0.0);
+				this->addRow(2, &columnidclosed[0], &variableclosed[0], -std::numeric_limits<double>::max(),0.0);
 				this->addmaxminobjective(cluster, cluster.getcentroid(), choices.at(cluster.getcentroid().getmask()),clusterid);
 				for (const FMToperatingareaclusterbinary& binary : cluster.getbinaries())
 					{
@@ -595,7 +596,7 @@ namespace Heuristics
 			{
 				
 				setrowname("MAXCLUSTER", getNumRows());
-				this->addRow(static_cast<int>(centroidvariables.size()), &centroidvariables[0], &params[0],-COIN_DBL_MAX, maximalnumberofclusters);
+				this->addRow(static_cast<int>(centroidvariables.size()), &centroidvariables[0], &params[0],-std::numeric_limits<double>::max(), maximalnumberofclusters);
 			}
 			if (minimalnumberofclusters != -1)
 			{
@@ -608,7 +609,7 @@ namespace Heuristics
 						"FMToperatingareaclusterer::addareaconstraints", __LINE__, __FILE__);
 					}
 				setrowname("MINCLUSTER", getNumRows());
-				this->addRow(static_cast<int>(centroidvariables.size()), &centroidvariables[0], &params[0],minimalnumberofclusters, COIN_DBL_MAX);
+				this->addRow(static_cast<int>(centroidvariables.size()), &centroidvariables[0], &params[0],minimalnumberofclusters, std::numeric_limits<double>::max());
 			}
 
 		}
@@ -694,7 +695,7 @@ namespace Heuristics
 									"FMToperatingareaclusterer::addareaconstraints", __LINE__, __FILE__);
 							}
 					setrowname("MAXA" + std::to_string(clusterid), getNumRows());
-                    this->addRow(static_cast<int>(maxvalues.size()),&maxindexes[0],&maxvalues[0],-COIN_DBL_MAX,cluster.getrealmaximalarea());
+                    this->addRow(static_cast<int>(maxvalues.size()),&maxindexes[0],&maxvalues[0],-std::numeric_limits<double>::max(),cluster.getrealmaximalarea());
                     }
 				++clusterid;
 				}
