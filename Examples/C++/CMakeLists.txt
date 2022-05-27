@@ -14,9 +14,12 @@ function(createexecutable executablecpplocation)
   get_filename_component(executablename "${executablecpplocation}" NAME_WE)
   message("Generating build for ${executablename}")
   add_executable(${executablename} ${newprojectsourcefiles})
+  target_include_directories(${executablename} PRIVATE ${Boost_INCLUDE_DIRS})
+  target_link_libraries(${executablename} PRIVATE ${Boost_LIBRARIES})
   target_compile_definitions(${executablename} PRIVATE "-DFMTLIBIMPORT")
   target_link_libraries(${executablename} PRIVATE FMTlib)
   target_include_directories(${executablename} PRIVATE ${FMTINCLUDEDIR})
+  
   if (NOT MSVC)
 		set_target_properties(${executablename}
 			PROPERTIES
