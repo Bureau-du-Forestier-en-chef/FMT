@@ -54,21 +54,6 @@ namespace Core {
 
 		return std::vector<float>(output.begin(), output.end());
 	}
-
-	//Might go in child classes instead
-	const void FMTyieldmodel::RemoveNans(std::vector<float>& input)
-	{
-		for (int i = 0; i < input.size(); i++)
-		{
-			if (isnan(input[i]))
-			{
-				if (i == 0 || i == 2 || i == 4)
-					input[i] = 0;
-				if (i == 1 || i == 3 || i == 5)
-					input[i] = FMTyieldmodel::UNKNOWN_DISTURBANCE_CODE;
-			}
-		}
-	}
 	
 	void FMTyieldmodel::ValidateInputYields(std::vector<std::string>& expectedYields, std::vector<std::string>& inputYields) const
 	{
@@ -92,22 +77,17 @@ namespace Core {
 		try {
 			std::string mdlName = GetModelName();
 		#ifdef FMTWITHONNXR
-			//std::wstring wideModelName = std::wstring(mdlName.begin(), mdlName.end());
 			const std::vector<std::string> modelYields = GetModelYields();
-			//std::unique_ptr<Ort::Session> sessionPtr = std::unique_ptr<Ort::Session>(new Ort::Session(*envPtr.get(), wideModelName.c_str(), Ort::SessionOptions{}));
 			auto memoryInfo = Ort::MemoryInfo::CreateCpu(OrtDeviceAllocator, OrtMemTypeCPU);
 			Ort::AllocatorWithDefaultOptions allocator;
 
-			std::vector<int64_t> input_shape = sessionPtr->GetInputTypeInfo(0).GetTensorTypeAndShapeInfo().GetShape();
 			char* inputName = sessionPtr->GetInputName(0, allocator);
-			std::vector<int64_t> output_shapes = sessionPtr->GetOutputTypeInfo(0).GetTensorTypeAndShapeInfo().GetShape();
 			char* outputName = sessionPtr->GetOutputName(0, allocator);
 			std::vector<const char*> inputNames{ inputName };
 			std::vector<const char*> outputNames{ outputName };
 
 			const Graph::FMTgraphvertextoyield* graphinfo = request.getvertexgraphinfo();
 			const Models::FMTmodel* modelptr = graphinfo->getmodel();
-			//const std::vector<std::string>modelinputyields(1, "VOLUMETOTAL");//Les yields inputs du modele 4 dans le cas de FORAC doit etre membre de FMTyieldmodel tu dois ajuster ca dans ta classe ici j'ai harcode nimporte quoi.
 			const Graph::FMTgraph<Graph::FMTbasevertexproperties, Graph::FMTbaseedgeproperties>* linegraph = graphinfo->getlinegraph();
 			const Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>* fullgraph = graphinfo->getfullgraph();
 
@@ -116,8 +96,7 @@ namespace Core {
 			{
 				const Graph::FMTgraph<Graph::FMTbasevertexproperties, Graph::FMTbaseedgeproperties>::FMTvertex_descriptor* vertex = linegraph->getvertexfromvertexinfo(graphinfo);
 				const std::vector<Graph::FMTpredictor>predictors = linegraph->getpredictors(*vertex, *modelptr, modelYields, 3);
-				const Graph::FMTpredictor& predictor = predictors.at(0);//Seulement un predictor car on est un linegraph...								  //return dopredictionson(predictor.getpredictors()) Utiliser se vecteur de double (xs du modele) pour predire
-				//Ta fonction doit retourner quelque chose qui ressemble a ça utilise getpredictors pour avoir tes doubles de prediction
+				const Graph::FMTpredictor& predictor = predictors.at(0);//Seulement un predictor car on est un linegraph...
 
 				std::vector<double> inputsDbl = GetInputValues(predictor);
 				std::vector<float> inputs(inputsDbl.begin(), inputsDbl.end());
