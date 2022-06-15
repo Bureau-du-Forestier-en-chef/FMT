@@ -148,13 +148,13 @@ else()
 		LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
 		RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
 	)
-	endif(NOT MSVC)
+endif(NOT MSVC)
 	set_property(TARGET FMTlib PROPERTY CXX_STANDARD 11)
 	set_property(TARGET FMTlib PROPERTY CXX_STANDARD_REQUIRED ON)
 	target_compile_definitions(FMTlib PRIVATE "-DFMTSHAREDLIB")
-	if (MSVC)
-		set_target_properties(FMTlib PROPERTIES COMMON_LANGUAGE_RUNTIME "")
-endif(MSVC)
+#if (MSVC)
+#		set_target_properties(FMTlib PROPERTIES COMMON_LANGUAGE_RUNTIME "")
+#endif(MSVC)
 ##################################################################################################
 ##################################################################################################
 ##################################################################################################
