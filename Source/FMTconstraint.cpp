@@ -738,16 +738,16 @@ namespace Core
 				std::string opt_str = "";
 				if (lower_b == upper_b)
 				{
-					opt_str = "=";
+					opt_str = "= ";
 					opt_str += std::to_string(lower_b);
 				}
 				else if (upper_b == std::numeric_limits<double>::infinity())
 				{
-					opt_str = ">=";
+					opt_str = ">= ";
 					opt_str += std::to_string(lower_b);
 				}
 				else {
-					opt_str = "<=";
+					opt_str = "<= ";
 					opt_str += std::to_string(upper_b);
 				}
 				line += (this->name + " " + opt_str + " " + goal+" "+global);

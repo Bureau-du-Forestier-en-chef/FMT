@@ -89,7 +89,7 @@ class FMTEXPORT FMTactionparser : public FMTparser
 		to the given location.
 		*/
         void write(const std::vector<Core::FMTaction>& actions,
-			const std::string& location) const;
+			const std::string& location,bool withgcbmagg = false) const;
 		// DocString: FMTactionparser::getactionsidsofmodelyields
 		/**
 		Returns the corresponding actions ids of the vector of actions read from the .json file in YieldPredModels.

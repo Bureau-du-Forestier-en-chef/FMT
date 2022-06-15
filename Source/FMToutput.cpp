@@ -69,7 +69,7 @@ FMToutput& FMToutput::operator +=(const FMToutput& rhs)
 	try {
 		if (!this->name.empty())
 		{
-			this->name = this->name + "+" + rhs.name;
+			this->name = this->name + " + " + rhs.name;
 			this->description = this->description + "+" + rhs.description;
 		}
 		else {
@@ -135,8 +135,8 @@ FMToutput& FMToutput::operator  *= (const double& rhs)
 		{
 			if(rhs!=1)
 			{
-				this->name = this->name + "*" + std::to_string(rhs);
-				this->description = this->description + "*" + std::to_string(rhs);
+				this->name = std::to_string(rhs) + " * " + this->name;
+				this->description = std::to_string(rhs) + " * " + this->description;
 			}
 		}
 		if (!sources.empty())

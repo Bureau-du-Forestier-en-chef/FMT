@@ -338,31 +338,58 @@ void FMTmodelparser::writefeatures(OGRLayer* layer, const int& firstperiod, cons
 void FMTmodelparser::write(const Models::FMTmodel& model,const std::string& folder) const
     {
 	try {
-		FMTlandscapeparser landparser;
-		landparser.write(model.getthemes(), folder + model.getname() + ".lan");
-		const std::vector<Core::FMTactualdevelopment>devs = model.getarea();
-		if (!devs.empty())
+		//Ajout de la section pri
+		//retirer les aggrégats de BFECgcbm et écrire les contraintes sans les 
+		const std::string modelname = model.getname();
+		std::ofstream pristream;
+		pristream.open(folder+modelname + ".pri");
+		if (pristream.is_open())
 		{
-			FMTareaparser areaparser;
-			areaparser.write(devs, folder + model.getname() + ".are");
-		}
-		FMTyieldparser yldparser;
-		yldparser.write(model.getyields(), folder + model.getname() + ".yld");
-		FMTactionparser actparser;
-		actparser.write(model.getactions(), folder + model.getname() + ".act");
-		FMTtransitionparser trnparser;
-		trnparser.write(model.gettransitions(), folder + model.getname() + ".trn");
-		const std::vector<Core::FMToutput>outputs = model.getoutputs();
-		if (!outputs.empty())
-		{
-			FMToutputparser outparser;
-			outparser.write(outputs, folder + model.getname() + ".out");
-		}
-		const std::vector<Core::FMTconstraint>constraints = model.getconstraints();
-		if (!constraints.empty())
-		{
-			FMToptimizationparser optparser;
-			optparser.write(constraints, folder + model.getname() + ".opt");
+			const std::string lanfile = modelname + ".lan";
+			const std::string arefile = modelname + ".are";
+			const std::string yldfile = modelname + ".yld";
+			const std::string actfile = modelname + ".act";
+			const std::string trnfile = modelname + ".trn";
+			const std::string outfile = modelname + ".out";
+			const std::string optfile = modelname + ".opt";
+			const std::string liffile = modelname + ".lif";
+			FMTlandscapeparser landparser;
+			landparser.write(model.getthemes(), folder + lanfile);
+			pristream <<"LANDSCAPE\t\t[" + lanfile + "]\n";
+			const std::vector<Core::FMTactualdevelopment>devs = model.getarea();
+			if (!devs.empty())
+			{
+				FMTareaparser areaparser;
+				areaparser.write(devs, folder + arefile);
+				pristream << "AREAS\t[" + arefile + "]\n";
+			}
+			FMTyieldparser yldparser;
+			yldparser.write(model.getyields(), folder + yldfile);
+			pristream << "YIELDS\t[" + yldfile + "]\n";
+			FMTactionparser actparser;
+			actparser.write(model.getactions(), folder + actfile);
+			pristream << "ACTIONS\t[" + actfile + "]\n";
+			FMTtransitionparser trnparser;
+			trnparser.write(model.gettransitions(), folder + trnfile);
+			pristream << "TRANSITIONS\t\t[" + trnfile + "]\n";
+			FMTlifespanparser lifparser;
+			lifparser.write(model.getlifespan(), folder + liffile);
+			pristream << "LIFESPAN\t\t[" + liffile + "]\n";
+			const std::vector<Core::FMToutput>outputs = model.getoutputs();
+			if (!outputs.empty())
+			{
+				FMToutputparser outparser;
+				outparser.write(outputs, folder + outfile);
+				pristream << "OUTPUTS\t[" + outfile + "]\n";
+			}
+			const std::vector<Core::FMTconstraint>constraints = model.getconstraints();
+			if (!constraints.empty())
+			{
+				FMToptimizationparser optparser;
+				optparser.write(constraints, folder + optfile);
+				pristream << "OPTIMIZE\t\t[" + optfile + "]\n";
+			}
+			pristream.close();
 		}
 	}catch (...)
 	{
