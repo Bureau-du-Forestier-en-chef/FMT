@@ -15,7 +15,7 @@ int main()
         Logging::FMTlogger().logstamp();
         const std::string folder = "../../../../Examples/Models/TWD_land/";
         const std::string primarylocation = folder+"TWD_land.pri";
-        const std::string outdir = "tests/";
+        const std::string outdir = "tests/testaddmodel/";
         Parser::FMTmodelparser modelparser;
         const std::vector<std::string>scenarios(1, "LP");
         const std::vector<Models::FMTmodel> models = modelparser.readproject(primarylocation, scenarios);
