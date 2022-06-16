@@ -776,7 +776,6 @@ install (CODE
           WORKING_DIRECTORY \"${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}\"
         )
 endif (EXISTS \"${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}/FMT\")
-file(MAKE_DIRECTORY \"${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}/tests\")
  execute_process(
           COMMAND ctest -C \"${BUILD_TYPE}\" -j \"${PARALLEL_TESTS}\"
           WORKING_DIRECTORY \"${CMAKE_BINARY_DIR}\"
