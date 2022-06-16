@@ -6,8 +6,7 @@
 
 int main(int argc, char* argv[])
 {
-	//const std::string primarylocation = std::string(argv[1]);
-	const std::string primarylocation = "D:/Testing/TBEV02/tbe_R02_v01.pri";
+	const std::string primarylocation = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/09_FMT/Modeles_test/TBEV02/tbe_R02_v01.pri";//std::string(argv[1]);
 	Parser::FMTmodelparser modelparser;
 	modelparser.setdefaultexceptionhandler();
 	const std::string outdir = "tests/";
@@ -23,7 +22,7 @@ int main(int argc, char* argv[])
 	Models::FMTlpmodel optmodel(models.at(0), Models::FMTsolverinterface::MOSEK);
 	//optmodel.setparameter(Models::FMTintmodelparameters::LENGTH,std::stoi(argv[3]);
 	optmodel.setparameter(Models::FMTintmodelparameters::LENGTH, 3);
-	optmodel.setparameter(Models::FMTintmodelparameters::PRESOLVE_ITERATIONS, 0);
+	//optmodel.setparameter(Models::FMTintmodelparameters::PRESOLVE_ITERATIONS, 0);
 	//optmodel.setparameter(Models::FMTboolmodelparameters::PRESOLVE_CAN_REMOVE_STATIC_THEMES, true);
 	optmodel.setparameter(Models::FMTboolmodelparameters::STRICTLY_POSITIVE, true);
 	optmodel.setparameter(Models::FMTboolmodelparameters::POSTSOLVE, false);
@@ -35,7 +34,7 @@ int main(int argc, char* argv[])
 	const std::vector<Models::FMTmodel> rereadmodels = modelparser.readproject(outdir + optmodel.getname() + ".pri", std::vector<std::string>(1, "ROOT"));
 	optmodel = Models::FMTlpmodel(rereadmodels.at(0), Models::FMTsolverinterface::MOSEK);
 	optmodel.setparameter(Models::FMTintmodelparameters::LENGTH, 3);
-	optmodel.setparameter(Models::FMTintmodelparameters::PRESOLVE_ITERATIONS, 0);
+	//optmodel.setparameter(Models::FMTintmodelparameters::PRESOLVE_ITERATIONS, 0);
 	optmodel.setparameter(Models::FMTboolmodelparameters::STRICTLY_POSITIVE, false);
 	optmodel.doplanning(true);
 	const double finalobjvalue = optmodel.getObjValue();
