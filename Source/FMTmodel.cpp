@@ -918,11 +918,11 @@ Core::FMTmask FMTmodel::getbasemask(std::vector<Core::FMTactualdevelopment> opti
 			{
 			areamask = areamask.getunion(developement.getmask());
 			}
-		//size_t trid = 0;
-		//std::vector<bool>jumptransitions;
+		size_t trid = 0;
+		std::vector<bool>jumptransitions;
 		for (const Core::FMTtransition& transition : transitions)
 		{
-			/*if (transition.size() == 1 &&
+			if (transition.size() == 1 &&
 				actions.at(trid).size()==1&&
 				transition.begin()->second.getmasktrans().size()==1&&
 				std::string(actions.at(trid).begin()->first)==std::string(transition.begin()->first)&&
@@ -930,49 +930,49 @@ Core::FMTmask FMTmodel::getbasemask(std::vector<Core::FMTactualdevelopment> opti
 				!transition.begin()->second.getmasktrans().begin()->getmask().issubsetof(areamask))//scrap weird thing
 				{
 				jumptransitions.push_back(true);
-				continue;
-				}*/
-			for (const auto& transitionobject : transition)
-			{
-				const Core::FMTmask source(std::string(transitionobject.first),themes);
-				for (const Core::FMTtransitionmask& fork : transitionobject.second.getmasktrans())
+			}else {
+				for (const auto& transitionobject : transition)
 				{
-					const Core::FMTmask maskwithoutaggregates = fork.getmask().removeaggregates(themes/*,true*/);
-					basemask = basemask.getunion(maskwithoutaggregates);
+					const Core::FMTmask source(std::string(transitionobject.first),themes);
+					for (const Core::FMTtransitionmask& fork : transitionobject.second.getmasktrans())
+					{
+						const Core::FMTmask maskwithoutaggregates = fork.getmask().removeaggregates(themes);
+						basemask = basemask.getunion(maskwithoutaggregates);
+					}
 				}
+				jumptransitions.push_back(false);
 			}
-			//jumptransitions.push_back(false);
-			//++trid;
+			++trid;
 		}
 		if (!getparameter(FMTboolmodelparameters::PRESOLVE_CAN_REMOVE_STATIC_THEMES))
 		{
 			basemask = basemask.getunion(areamask);
 		}else {
-			//size_t trid = 0;
+			trid = 0;
 			for (const Core::FMTtransition& transition : transitions)
 			{
-				//if (!jumptransitions.at(trid))
-				//{
+				if (!jumptransitions.at(trid))
+				{
 					for (const auto& transitionobject : transition)
 					{
 						const Core::FMTmask source(std::string(transitionobject.first), themes);
 						basemask = basemask.getunion(source.removeaggregates(themes, true));
 					}
-				//}
-				//++trid;
+				}
+				++trid;
 			}
-			//size_t acid = 0;
+			size_t acid = 0;
 			for (const Core::FMTaction& action : actions)
 			{
-				//if (!jumptransitions.at(acid))
-				//{
+				if (!jumptransitions.at(acid))
+				{
 					for (const auto& actionobject : action)
 					{
 						const Core::FMTmask opq(std::string(actionobject.first), themes);
 						basemask = basemask.getunion(opq.removeaggregates(themes, true));
 					}
-				//}
-				//++acid;
+				}
+				++acid;
 			}
 			for (const auto& yieldobject : yields)
 			{
