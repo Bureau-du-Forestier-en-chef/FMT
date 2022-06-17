@@ -111,7 +111,7 @@ namespace Core {
 	const std::vector<double>FMTyieldmodel::Predict(const Core::FMTyieldrequest& request) const
 	{
 		try {
-			std::string mdlName = GetModelName();
+			const std::string mdlName = GetModelName();
 		#ifdef FMTWITHONNXR
 			//std::wstring wideModelName = std::wstring(mdlName.begin(), mdlName.end());
 			const std::vector<std::string> modelYields = GetModelYields();
@@ -160,22 +160,36 @@ namespace Core {
 				//On peut faire du blackmagic pour aller chercher la solution existante de chaque predictor...
 				const Models::FMTsrmodel* srmodelptr = dynamic_cast<const Models::FMTsrmodel*>(modelptr); //cast to a srmodel
 				const Models::FMTlpsolver* solverptr = srmodelptr->getconstsolverptr(); //getsolver
+				bool withoutsolution = false;
 				if (!solverptr->isProvenOptimal())
 				{
 					//Si le lpsolver n'est pas optimal faudrait trouver une autre solution...
 					//C'est le cas qu'on veut optimiser du carbone
 					//Peut-etre faire un "solution" avec des 1 partout pour representer chaque edge de façon equivalente?
+					withoutsolution = true;
 					//Pour l'instant on va mettre un message d'erreur
-					_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, "Cannot use " + mdlName + " without solution",
-						"FMTyieldmodel::Predict", __LINE__, __FILE__, Core::FMTsection::Yield);
+					//_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, "Cannot use " + mdlName + " without solution",
+					//	"FMTyieldmodel::Predict", __LINE__, __FILE__, Core::FMTsection::Yield);
 				}
 				const double* solution = solverptr->getColSolution();
 				const std::vector<int>invariables = fullgraph->getinvariables(*vertex);
 				double totalarea = 0;
-				for (size_t inedgeid = 0; inedgeid < invariables.size(); ++inedgeid)
+				if (!withoutsolution)
 				{
-					totalarea += *(solution + invariables.at(inedgeid));
-				}
+					for (size_t inedgeid = 0; inedgeid < invariables.size(); ++inedgeid)
+					{
+						totalarea += *(solution + invariables.at(inedgeid));
+					}
+				}else {
+					if (invariables.size()>1)//Avertissement sur les valeurs de prédite car on applique un weight équivalent
+					{
+						_exhandler->raise(Exception::FMTexc::FMTyieldmodelprediction,"using "+ mdlName+
+							" Multiple in edges for "+ std::string(request.getdevelopment()) ,
+								"FMTyieldmodel::Predict", __LINE__, __FILE__, Core::FMTsection::Yield);
+					}
+					totalarea = static_cast<double>(invariables.size()); // we consider a solution of 1 everywhere
+					}
+				
 				if (totalarea > 0)
 				{
 					for (size_t inedgeid = 0; inedgeid < invariables.size(); ++inedgeid)
@@ -192,8 +206,11 @@ namespace Core {
 						const float* outputValues = output_tensors[0].GetTensorMutableData<float>();
 						std::vector<float> result_flt(outputValues, outputValues + ((int)outputShape.data()[1]));
 						std::vector<double>edgeresults = std::vector<double>(result_flt.begin(), result_flt.end());
-
-						const double edgevalue = (*(solution + invariables.at(inedgeid)) / totalarea);
+						double edgevalue = (1 / totalarea);
+						if (!withoutsolution)
+							{
+							edgevalue = (*(solution + invariables.at(inedgeid)) / totalarea);
+							}
 						for (size_t yldid = 0; yldid < edgeresults.size(); ++yldid)
 						{
 							result[yldid] += (edgeresults.at(yldid) * edgevalue);
