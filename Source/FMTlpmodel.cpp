@@ -793,7 +793,7 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 				{
 					maxconstraint.setlength(period,period);
 					this->setobjective(maxconstraint);
-					if(!this->resolve())
+					if(!this->initialsolve())
 					{
 						_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
 							"Upper objectif unfeasable at period "+std::to_string(period),"FMTlpmodel::getvariabilities", __LINE__, __FILE__);
@@ -801,7 +801,7 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 					uppervalues.push_back(this->getoutput(output, period,Core::FMToutputlevel::totalonly).begin()->second);
 					minconstraint.setlength(period,period);
 					this->setobjective(minconstraint);
-					if (!this->resolve())
+					if (!this->initialsolve())
 					{
 						_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
 							"Lower objectif unfeasable at period "+std::to_string(period),"FMTlpmodel::getvariabilities", __LINE__, __FILE__);
