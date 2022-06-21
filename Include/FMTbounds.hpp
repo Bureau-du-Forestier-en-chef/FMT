@@ -245,7 +245,7 @@ class FMTbounds
         }
     };
 
-class FMTyldbounds: public FMTbounds<double>
+class FMTEXPORT FMTyldbounds: public FMTbounds<double>
     {
     friend class FMTspec;
 	friend class boost::serialization::access;
@@ -268,7 +268,7 @@ class FMTyldbounds: public FMTbounds<double>
     operator std::string() const;
     };
 
-class FMTagebounds: public FMTbounds<int>
+class FMTEXPORT FMTagebounds: public FMTbounds<int>
     {
     friend class FMTspec;
 	friend class boost::serialization::access;
@@ -289,7 +289,7 @@ class FMTagebounds: public FMTbounds<int>
     operator std::string() const;
     };
 
-class FMTperbounds: public FMTbounds<int>
+class FMTEXPORT FMTperbounds: public FMTbounds<int>
     {
     friend class FMTspec;
 	friend class boost::serialization::access;
@@ -310,7 +310,7 @@ class FMTperbounds: public FMTbounds<int>
     };
 
 
-class FMTlockbounds : public FMTbounds<int>
+class FMTEXPORT FMTlockbounds : public FMTbounds<int>
     {
     friend class FMTspec;
 	friend class boost::serialization::access;

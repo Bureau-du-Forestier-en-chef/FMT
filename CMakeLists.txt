@@ -706,7 +706,7 @@ install (CODE
 	if(${CMAKE_VERSION} VERSION_LESS \"3.16.0\") 
     	message(\"Please consider to switch to CMake 3.16.0\")
 	else()
-		FILE(GLOB_RECURSE FMTlibLocations \"${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}/FMTlib${CMAKE_SHARED_LIBRARY_SUFFIX}\")
+		FILE(GLOB_RECURSE FMTlibLocations \"${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}/*FMTlib${CMAKE_SHARED_LIBRARY_SUFFIX}\")
 		list(GET FMTlibLocations 0 FMTloc)
 		file(	GET_RUNTIME_DEPENDENCIES
 				RESOLVED_DEPENDENCIES_VAR DEPENDENCIESfound
