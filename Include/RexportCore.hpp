@@ -373,7 +373,7 @@ void exportCore()
 			Rcpp::class_<Core::FMTconstraint>("FMTconstraint", "@DocString(FMTconstraint)")
 				.derives<Core::FMToutput>("FMToutput")
 				.constructor("@DocString(FMTconstraint())")
-				.method("str", &Core::FMTconstraint::operator std::string,
+				.method("realconstraintstring", &Core::FMTconstraint::operator std::string,
 					"@DocString(FMTconstraint::operator std::string)")
 				.method("eq", &Core::FMTconstraint::operator ==,
 					"@DocString(FMTconstraint::operator==)");
