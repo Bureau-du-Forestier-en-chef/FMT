@@ -120,6 +120,12 @@ namespace Core{
 		}
 
 FMTlockbounds::FMTlockbounds():FMTbounds<int>(){}
+
+FMTlockbounds::FMTlockbounds(const FMTsection lsection, const int& lupper, const int& llower) : FMTbounds<int>(lsection,lupper, llower)
+{
+
+}
+
 FMTlockbounds::FMTlockbounds(const FMTsection lsection,const FMTkwor key,const int& lupper, const int& llower):FMTbounds<int>(lsection,key,lupper,llower)
     {
 
