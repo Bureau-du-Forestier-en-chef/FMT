@@ -504,7 +504,7 @@ void exportCore()
 				.constructor<Core::FMTconstrainttype,Core::FMToutput>("@DocString(FMTconstraint(FMTconstrainttype,const FMToutput&))")
 				.method("setlength", &Core::FMTconstraint::setlength,
 					"@DocString(FMTconstraint::setlength)")
-				.method("str", &Core::FMTconstraint::operator std::string,
+				.method("realconstraintstring", &Core::FMTconstraint::operator std::string,
 					"@DocString(FMTconstraint::operator std::string)")
 				.method("eq", &Core::FMTconstraint::operator ==,
 					"@DocString(FMTconstraint::operator==)");
