@@ -323,6 +323,7 @@ class FMTEXPORT FMTlockbounds : public FMTbounds<int>
     FMTlockbounds();
 	~FMTlockbounds() = default;
     FMTlockbounds(const FMTsection lsection,const FMTkwor key,const int& lupper, const int& llower);
+	FMTlockbounds(const FMTsection lsection, const int& lupper, const int& llower);
     FMTlockbounds(const FMTlockbounds& rhs);
     FMTlockbounds& operator = (const FMTlockbounds& rhs);
 	bool operator == (const FMTlockbounds& rhs) const;

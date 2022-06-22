@@ -44,7 +44,7 @@ class FMTEXPORT FMTfork : public FMTspec
         FMTfork(const FMTfork& rhs);
 		~FMTfork();
         FMTfork& operator = (const FMTfork& rhs);
-        void add(FMTtransitionmask& transition);
+        void add(const FMTtransitionmask& transition);
 		std::vector<FMTdevelopmentpath> getpaths(const Core::FMTdevelopment& base, const Core::FMTyields& ylds,
 				const std::vector<FMTtheme>& themes,const bool& reset_age) const;
         FMTdevelopment getmax(const FMTdevelopment& base,const FMTyields& ylds,const std::vector<FMTtheme>& themes, const bool& reset_age) const;

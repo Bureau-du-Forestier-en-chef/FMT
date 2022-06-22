@@ -27,6 +27,8 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 namespace Core
 {
 class FMTdevelopment;
+class FMTageyieldhandler;
+class FMTtimeyieldhandler;
 // DocString: FMTyields
 /**
 FMTyields is one FMTlist containing multiple yieldhandlers has seen in the yield section.
@@ -204,6 +206,16 @@ class FMTEXPORT FMTyields : public FMTlist<std::unique_ptr<FMTyieldhandler>>
 		looking at age,period,lock,mask etc... it returns a map of yield name (keys) and there vlues(items).
 		*/
 		double get(const FMTyieldrequest& request,const std::string& yld) const;
+		// DocString: FMTyields::push_backagehandler
+		/**
+		Push back ageyield for R
+		*/
+		void push_backagehandler(const FMTmask& mask, const FMTageyieldhandler& value);
+		// DocString: FMTyields::push_backtimehandler
+		/**
+		Push back timeyield for R
+		*/
+		void push_backtimehandler(const FMTmask& mask, const FMTtimeyieldhandler& value);
     };
 }
 BOOST_CLASS_EXPORT_KEY(Core::FMTyields)

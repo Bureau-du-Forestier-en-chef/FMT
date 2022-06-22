@@ -13,6 +13,8 @@
 #include "FMTmodelparser.hpp"
 #include "FMTlogger.hpp"
 #include "FMTlpmodel.hpp"
+#include "FMTtransitionmask.hpp"
+#include "FMTfork.hpp"
 #include <memory>
 #include <vector>
 #include <string>

@@ -128,6 +128,28 @@ FMTtheme::FMTtheme(const std::vector<std::string>& lattributes,
 }
 
 FMTtheme::FMTtheme(const std::vector<std::string>& lattributes,
+	const std::vector<std::string>& lattributenames,
+	const std::vector<std::string>& laggregates,
+	const std::vector<std::vector<std::string>>& laggregatenames,
+	const size_t& lid, const size_t& lstart, const std::string& lname) :
+	FMTobject(),
+	id(),
+	start(),
+	attributes(lattributes),
+	attributenames(),
+	aggregates(),
+	aggregatenames(),
+	indexes(),
+	attribute_locations(),
+	name()
+	
+{
+	*this = FMTtheme(lattributes, lattributenames, laggregates,
+		laggregatenames, std::vector<std::map<std::string, double>>(), lid, lstart, lname);
+}
+
+
+FMTtheme::FMTtheme(const std::vector<std::string>& lattributes,
 	const size_t& lid, const size_t& lstart, const std::string& lname):
 	FMTobject(),
 	id(lid),

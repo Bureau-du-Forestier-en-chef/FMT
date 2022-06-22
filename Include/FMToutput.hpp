@@ -97,8 +97,8 @@ class FMTEXPORT FMToutput: public FMTobject
 	*/
     FMToutput(const std::string& lname,const std::string& ldescription,
 		//const int& ltheme_target,
-		std::vector<FMToutputsource>& lsources,
-		std::vector<FMToperator>& loperators);
+		const std::vector<FMToutputsource>& lsources,
+		const std::vector<FMToperator>& loperators);
 	// DocString: FMToutput(const std::string&)
 	/**
 	Partial constructor for FMToutput with only name
