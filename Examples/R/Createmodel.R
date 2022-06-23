@@ -179,7 +179,11 @@ model$setconstraints(constraints)
 model$setintparameter(FMTintmodelparameters$LENGTH,10)
 mparser <- new(FMTmodelparser)
 #Écriture du modèle
+dir.create("tests")
 mparser$write(model,"tests/")
 #Résolution du modèle
 emptyschedules<-list()
 model$doplanning(TRUE,emptyschedules)
+#Obtenir des résultats en dataframe
+result <- model$getoutputsdataframe(outputs,1,10)
+print(result)
