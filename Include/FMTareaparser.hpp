@@ -289,6 +289,15 @@ class FMTEXPORT FMTareaparser : public FMTparser
 												double areafactor = 1, std::string lockfield = "",
 												double minimalarea = 0.0, const std::string& writeforestfolder = "",
 												const bool& fittoforel = true) const;
+		// DocString: FMTareaparser::vectormaptoFMTforest
+		/**
+		Create a raster file of a given resolution based on a the data_vectors field.
+		*/
+		void vectorfieldtoraster(const std::string& data_vectors,
+								const std::string& tifpathandname,
+								const int& resolution,
+								const std::string& field,
+								bool fittoforel = true) const;
 		// DocString: FMTareaparser::OGRlayertoRaster
 		/**
 		This function first rasterize the layer to a resolution of 20x20 in memory using gdal virtual file system.

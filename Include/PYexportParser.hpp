@@ -29,7 +29,7 @@ BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(getschemeneighbors_overloads, getschemene
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(getclusters_overloads,getclusters,6, 11)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(addoutputs_overloads,addoutputs,6, 7)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(vectormaptoFMTforest_overloads,vectormaptoFMTforest,5,11)
-
+BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(vectorfieldtoraster_overloads, vectormaptoFMTforest,4,5)
 
 
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(writeforest_overloads,writeforest, 5, 6)
@@ -70,6 +70,7 @@ void exportParser()
 					.def("writedisturbances", &Parser::FMTareaparser::writedisturbances)
 					.def("writepredictors", &Parser::FMTareaparser::writepredictors,writepredictors_overloads(bp::args("location", "spatialsolution", "yieldnames", "model", "period", "withGCBMid"), "@DocString(FMTareaparser::writepredictors)"))
 					.def("vectormaptoFMTforest", &Parser::FMTareaparser::vectormaptoFMTforest,vectormaptoFMTforest_overloads(bp::args("data_vectors","resolution","themes","agefield","areafield","agefactor","areafactor","lockfield","minimalarea","writeforestfolder","fittoforel"),"@DocString(FMTareaparser::vectormaptoFMTforest)"))
+					.def("vectorfieldtoraster", &Parser::FMTareaparser::vectorfieldtoraster, vectorfieldtoraster_overloads(bp::args("data_vectors", "tifpathandname", "resolution", "field", "fittoforel"), "@DocString(FMTareaparser::vectorfieldtoraster)"))
 					#ifdef FMTWITHOSI
 						.def("getschemeneighbors",&Parser::FMTareaparser::getschemeneighbors, getschemeneighbors_overloads(bp::args("operatingareaparameters", "themes", "data_vectors", "agefield", "areafield", "agefactor","areafractor","lockfield","minimal_area","buffersize"), "@DocString(FMTareaparser::getschemeneighbors)"))
                         .def("getclusters",&Parser::FMTareaparser::getclusters,getclusters_overloads(bp::args("operatingareaparameters", "themes", "data_vectors", "agefield", "areafield","maximaldistance","agefactor","areafractor","lockfield","minimal_area","buffersize"),"@DocString(FMTareaparser::getclusters)"))

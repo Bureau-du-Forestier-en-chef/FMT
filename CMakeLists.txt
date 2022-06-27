@@ -550,11 +550,11 @@ if (DEFINED ENV{GDAL_DIR})
             endif()
             link_directories(${GDAL_LIBRARY_DIRS})
 			FILE(GLOB_RECURSE Projdb $ENV{GDAL_DIR}proj.db)#Might be somewhere else
-			FILE(GLOB_RECURSE Projdb2 $ENV{PROJ_LIB}proj.db)#Might be somewhere else
-			list(APPEND Projdb Projdb2)
+			if (NOT Projdb)
+				FILE(GLOB_RECURSE Projdb $ENV{PROJ_LIB}proj.db)#Might be somewhere else
+			endif(NOT Projdb)
 			if(Projdb)
-				list(GET Projdb 0 projloc)
-				get_filename_component(PROJDIR "${projloc}" DIRECTORY)
+				get_filename_component(PROJDIR "${Projdb}" DIRECTORY)
 				get_filename_component(PROJDIRNAME "${PROJDIR}" NAME)
 				message("Found proj here ${PROJDIR}")
 			else()

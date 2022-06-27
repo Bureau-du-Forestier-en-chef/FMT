@@ -72,6 +72,8 @@ void exportParser()
 						"@DocString(FMTareaparser::readrasters)")
 					.method("vectormaptoFMTforest", &Parser::FMTareaparser::vectormaptoFMTforest,
 						"@DocString(FMTareaparser::vectormaptoFMTforest)")
+					.method("vectorfieldtoraster", &Parser::FMTareaparser::vectorfieldtoraster,
+						"@DocString(FMTareaparser::vectorfieldtoraster)")
 					.method("writeforest",&Parser::FMTareaparser::writeforest,
 						"@DocString(FMTareaparser::writeforest)")
 					.method("writedisturbances",&Parser::FMTareaparser::writedisturbances,
