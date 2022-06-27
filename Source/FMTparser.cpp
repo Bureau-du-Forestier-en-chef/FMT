@@ -448,19 +448,37 @@ GDALRasterBand* FMTparser::getband(GDALDataset* dataset,int bandid) const
     {
 	GDALRasterBand* band = nullptr;
 	try{
-	band = dataset->GetRasterBand(bandid);
-    if (band == nullptr)
-        {
-        _exhandler->raise(Exception::FMTexc::FMTinvalidband,
-			dataset->GetDescription(),"FMTparser::getband", __LINE__, __FILE__, _section);
-        }
-	}
-	catch (...)
-	{
+		band = dataset->GetRasterBand(bandid);
+		if (band == nullptr)
+			{
+			_exhandler->raise(Exception::FMTexc::FMTinvalidband,
+				dataset->GetDescription(),"FMTparser::getband", __LINE__, __FILE__, _section);
+			}
+	}catch (...)
+		{
 		_exhandler->raisefromcatch("", "FMTparser::getband", __LINE__, __FILE__, _section);
-	}
+		}
     return band;
     }
+
+void FMTparser::setcategories(GDALRasterBand* band,const std::vector<std::string>& categories) const
+	{
+	try {
+		if (!categories.empty())
+			{
+			CPLStringList strlist;
+			for (const std::string& value : categories)
+				{
+				strlist.AddString(value.c_str());
+				}
+			band->SetCategoryNames(strlist);
+			}
+	}catch (...)
+		{
+		_exhandler->raisefromcatch("", "FMTparser::setcategories", __LINE__, __FILE__, _section);
+		}
+
+	}
 
 GDALRasterBand* FMTparser::createband(GDALDataset* dataset,const std::vector<std::string>& categories,int bandid) const
     {
@@ -468,15 +486,7 @@ GDALRasterBand* FMTparser::createband(GDALDataset* dataset,const std::vector<std
 	try {
 		band->SetNoDataValue(-9999);
 		band->Fill(-9999);
-		if (!categories.empty())
-		{
-			CPLStringList strlist;
-			for (const std::string& value : categories)
-			{
-				strlist.AddString(value.c_str());
-			}
-			band->SetCategoryNames(strlist);
-		}
+		setcategories(band, categories);
 		band->FlushCache();
 	}catch (...)
 		{
@@ -554,6 +564,56 @@ GDALDataset* FMTparser::createvectormemoryds() const
 				_exhandler->raisefromcatch("","FMTparser::getemptymemoryds", __LINE__, __FILE__, _section);
 			}
 	return dataset;
+	}
+
+OGRCoordinateTransformation* FMTparser::getprojtransform(OGRLayer* baselayer, bool fittoforel) const
+	{
+	OGRCoordinateTransformation* coordtransf = nullptr;
+	try {
+		std::unique_ptr<OGRSpatialReference> forelspref = getFORELspatialref();
+		OGRSpatialReference* lspref = baselayer->GetSpatialRef();
+		if (fittoforel)
+			{
+			coordtransf = OGRCreateCoordinateTransformation(lspref, &*forelspref);
+		}else {
+			coordtransf = OGRCreateCoordinateTransformation(lspref,lspref);
+			}
+	}catch (...)
+		{
+		_exhandler->raisefromcatch("", "FMTparser::getprojtransform", __LINE__, __FILE__, _section);
+		}
+	return coordtransf;
+	}
+
+GDALDataset* FMTparser::gettransformmemlayercopy(OGRLayer* baselayer, OGRSpatialReference* newreference, const std::string& fieldname) const
+	{
+	GDALDataset* memds = nullptr;
+	try {
+		OGRwkbGeometryType lgeomtype = baselayer->GetGeomType();
+		if (lgeomtype != wkbMultiPolygon && lgeomtype != wkbPolygon)
+			{
+			_exhandler->raise(Exception::FMTexc::FMTinvalidlayer,
+				"Geometry type from layer is not valid, must be wkbMultiPolygon or wkbPolygon : " + std::to_string(lgeomtype),
+				"FMTparser::gettransformmemlayercopy", __LINE__, __FILE__, _section);
+			}
+		memds = createvectormemoryds();
+		OGRLayer* memlayer = memds->CreateLayer("Memlayer", newreference, lgeomtype, NULL);
+		if (memlayer == NULL)
+			{
+			_exhandler->raise(Exception::FMTexc::FMTgdal_constructor_error,
+				"Layer in memory", "FMTparser::gettransformmemlayercopy", __LINE__, __FILE__, _section);
+			}
+		OGRFieldDefn oField(fieldname.c_str(), OFTInteger);
+		if (memlayer->CreateField(&oField) != OGRERR_NONE)
+			{
+			_exhandler->raise(Exception::FMTexc::FMTgdal_constructor_error,
+				"Field definition", "FMTparser::gettransformmemlayercopy", __LINE__, __FILE__, _section);
+			}
+	}catch (...)
+		{
+		_exhandler->raisefromcatch("", "FMTparser::gettransformmemlayercopy", __LINE__, __FILE__, _section);
+		}
+	return memds;
 	}
 
 GDALDataset* FMTparser::createOGRdataset(std::string location,
