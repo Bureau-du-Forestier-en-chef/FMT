@@ -108,8 +108,6 @@ void exportSpatial()
 		.value("cluster", Spatial::FMTsamovetype::cluster)
 		.value("opt1", Spatial::FMTsamovetype::opt1);
 
-	define_FMTlayer<Graph::FMTlinegraph>();
-
     bp::class_<Spatial::FMTsasolution, bp::bases<Spatial::FMTlayer<Graph::FMTlinegraph>>>("FMTsasolution", "@DocString(FMTsasolution)")
         .def("get_stats",&Spatial::FMTsasolution::getsolution_stats, "@DocString(FMTsasolution::getsolution_stats)")
         .def("getobjfvalue",&Spatial::FMTsasolution::getobjfvalue, "@DocString(FMTsasolution::getobjfvalue)")
@@ -118,6 +116,8 @@ void exportSpatial()
 
     define_pylist<Spatial::FMTsasolution>();
     */
+
+    define_FMTlayer<Graph::FMTlinegraph>();
 
 	bp::class_<Spatial::FMTspatialschedule, bp::bases<Spatial::FMTlayer<Graph::FMTlinegraph>>>("FMTspatialschedule", "@DocString(FMTspatialschedule)")
 		.def(bp::init<Spatial::FMTspatialschedule>())
