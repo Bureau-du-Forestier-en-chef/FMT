@@ -921,6 +921,7 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 					}
 				}
 			}
+			this->updatematrixngraph(false);
 		}
 			catch (...)
 				{
@@ -979,7 +980,7 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 			}
 		}
 
-	bool FMTlpmodel::updatematrixngraph()
+	bool FMTlpmodel::updatematrixngraph(bool updategraph)
 		{
 		solver.sortdeletedcache();
 		const std::vector<int>& deletedconstraints = solver.getcachedeletedconstraints();
@@ -987,7 +988,10 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 		if (!deletedconstraints.empty() || !deletedvariables.empty())
 			{
 			try {
-				graph.updatematrixindex(deletedvariables, deletedconstraints);
+				if (updategraph)
+				{
+					graph.updatematrixindex(deletedvariables, deletedconstraints);
+				}
 				updateconstraintsmapping(deletedvariables, deletedconstraints);
 				solver.synchronize();
 			}catch (...)
@@ -1002,6 +1006,8 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 	Graph::FMTgraphstats FMTlpmodel::eraseperiod(bool constraintsonly)
 	{
 		try{
+			_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
+				"This function is need to be rewrite because updatematrixngraph is now in eraseconstraint. This function is nowhere used in FMT normally.", "FMTlpmodel::eraseperiod", __LINE__, __FILE__);
 			int firstperiod = graph.getfirstactiveperiod();
 			if (isperiodbounded(firstperiod))
 				{
