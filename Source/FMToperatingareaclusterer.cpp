@@ -262,11 +262,6 @@ namespace Heuristics
 
     bool FMToperatingareaclusterer::initialsolve()
         {
-    	std::string addon = "";
-    	if (nothread>-1)
-		{
-			addon = "Thread-"+std::to_string(nothread)+" : ";
-		}
         try{
             double passleft =  numberofsimulationpass;
 			bool gotonesolution = false;
@@ -316,9 +311,9 @@ namespace Heuristics
                             bestobjectivevalue = Models::FMTlpsolver::getObjValue();
 							if (!gotonesolution)
 								{
-								_logger->logwithlevel(addon+"Feasible solution found\n", 0);
+								_logger->logwithlevel("Feasible solution found\n", 0);
 								}
-							_logger->logwithlevel(addon+"Obj(" +
+							_logger->logwithlevel("Obj(" +
 								std::to_string(bestobjectivevalue) + ") it(" + std::to_string(iteration) + ")\n", 0);
 							gotonesolution = true;
                             }

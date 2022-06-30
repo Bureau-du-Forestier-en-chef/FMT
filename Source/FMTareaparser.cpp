@@ -799,7 +799,7 @@ const std::regex FMTareaparser::rxcleanarea = std::regex("^((\\*A[A]*)([^|]*)(_l
 				{
 					_exhandler->raise(Exception::FMTexc::FMTgdal_constructor_error,
 						"No feature were created in the memory layer, check the areafield",
-						"FMTareaparser::vectormaptoFMTforest", __LINE__, __FILE__, _section);
+						"FMTareaparser::vectorfieldtoraster", __LINE__, __FILE__, _section);
 				}
 				OGRCoordinateTransformation::DestroyCT(coordtransf);
 				GDALDataset* fieldraster = OGRlayertoRaster(memlayer, field,tifpathandname, resolution, fittoforel);

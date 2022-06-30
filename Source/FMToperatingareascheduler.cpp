@@ -189,15 +189,6 @@ namespace Heuristics
 				const double initialobjectivevalue = this->getObjValue();
 				size_t opareaprocessed = 0;
 				std::string problemsolved = "primal";
-				/*{
-				Logging::FMTlogger log;
-				log.redirectofile("D:/rowactivity1.txt");
-				const double* solution1=this->getRowActivity();
-				for (int colid = 0; colid < this->getNumRows();++colid)
-				{
-					log<<*(solution1+colid)<<"\n";
-				}
-				}*/
 				if (!useprimal)
 				{
 					this->unboundall(); //Make sure rhs are right need to be released
@@ -215,43 +206,36 @@ namespace Heuristics
 					if (!selected.empty())
 					{
 						int setratio = static_cast<int>(((static_cast<double>(opareaprocessed)) / (static_cast<double>(this->operatingareas.size()))) * 100);
-						(*_logger) << addonthreadno()+"Solution generation phase (" + std::to_string(setratio) + "%) took " + std::to_string(iterations) + " iterations on " + problemsolved +" formulation" << "\n";
+						(*_logger) << "Solution generation phase (" + std::to_string(setratio) + "%) took " + std::to_string(iterations) + " iterations on " + problemsolved + " formulation" << "\n";
 					}
-					if (!this->isProvenOptimal())
-					{
-						if (!userandomness)
-						{
-							_exhandler->raise(Exception::FMTexc::FMTschemefailed,
-												addonthreadno()+"FMToperatingareascheduler failed switching to random",
-												"FMToperatingareascheduler::initialsolve", __LINE__, __FILE__);
-							userandomness = true; //Switch to random now
-
-						}else{
-							_exhandler->raise(Exception::FMTexc::FMTschemefailed,
-												addonthreadno()+"FMToperatingareascheduler at random failed, trying another scheme",
-												"FMToperatingareascheduler::initialsolve", __LINE__, __FILE__);
-						}
-						this->unboundall(); //release everything
-						if (!useprimal)
-						{
-							this->closeprimalbounds();
-						}
-						this->resolvemodel();
-						opareaprocessed = 0;
-					}
-					if (opareaprocessed > this->operatingareas.size())
-						{
-						_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
-							addonthreadno()+"unable to bound operating areas ",
-							"FMToperatingareascheduler::initialsolve", __LINE__, __FILE__);
-						}
-				} while (!selected.empty() && this->isProvenOptimal());
+				} while (!selected.empty());
 				if (this->isProvenOptimal())
 				{
 					const double newobjective = this->getObjValue();
-					const double dblgap = (100 - (round((newobjective / initialobjectivevalue) * 1000) / 10));
-					(*_logger) << addonthreadno()+"Feasible solution found objective: " + std::to_string(round(newobjective)) + " (" + std::to_string(dblgap) + "%)" << "\n";
+					const std::string relativevalue = std::to_string(static_cast<int>(std::abs(initialobjectivevalue - newobjective) * 100 / initialobjectivevalue));
+					(*_logger) << "Feasible solution found objective: " + std::to_string(newobjective) + " (" + relativevalue + "%) " << "\n";
 					this->clearrowcache();
+				}
+				else {
+					if (!userandomness)
+					{
+						_exhandler->raise(Exception::FMTexc::FMTschemefailed,
+							"FMToperatingareascheduler failed initialsolve switching to random for next try.",
+							"FMToperatingareascheduler::initialsolve", __LINE__, __FILE__);
+						userandomness = true; //Switch to random now
+
+					}
+					else {
+						_exhandler->raise(Exception::FMTexc::FMTschemefailed,
+							"FMToperatingareascheduler initialsolve at random failed, trying another scheme.",
+							"FMToperatingareascheduler::initialsolve", __LINE__, __FILE__);
+					}
+					this->unboundall(); //release everything
+					if (!useprimal)
+					{
+						this->closeprimalbounds();
+					}
+					this->resolvemodel();
 				}
 			}else{
 				{
@@ -263,7 +247,7 @@ namespace Heuristics
 			}
 		}catch (...)
 		{
-			_exhandler->printexceptions(addonthreadno(), "FMToperatingareascheduler::initialsolve", __LINE__, __FILE__);
+			_exhandler->printexceptions("", "FMToperatingareascheduler::initialsolve", __LINE__, __FILE__);
 		}
 		return this->isProvenOptimal();
 		}
@@ -293,10 +277,6 @@ namespace Heuristics
 		try{
 			if (this->isProvenOptimal())
 			{
-				if (iteration == 0)
-				{
-					*_logger<<addonthreadno()+" Porportion of set "+std::to_string(proportionofset)<<"\n";
-				}
 				const double sens = this->getObjSense();
 				const double initialobjectivevalue = this->getObjValue();
 				std::string problemsolved = "primal";
@@ -321,18 +301,18 @@ namespace Heuristics
 				const std::vector<int> oldschemeid = getsolutionindexes(selected);
 				this->unbound(selected);
 				this->resolvemodel();
-				double newobjective =0;
-				if (this->isProvenOptimal())
+				const bool optimalsolution = this->isProvenOptimal();
+				if (optimalsolution)
 				{
 					this->setbounds(selected,oldschemeid);
 					// if selected.size()==1 tester le stockresolve avec le temps voir
 					this->resolvemodel();
-					newobjective  = this->getObjValue();
 				}
-				if (((newobjective*sens < initialobjectivevalue*sens)) && this->isProvenOptimal())
+				const double newobjective = this->getObjValue();
+				if (((newobjective*sens < initialobjectivevalue*sens)) && optimalsolution)
 				{
-					const double dblgap = (100 - (round((newobjective / initsol) * 1000) / 10));
-					(*_logger) << addonthreadno()+"Better solution found objective: " + std::to_string(newobjective) + " (" + std::to_string(dblgap) + "%) at iteration "+std::to_string(iteration) << "\n";
+					const std::string relativevalue = std::to_string(static_cast<int>(std::abs(initsol - newobjective) * 100 / initsol));
+					(*_logger) << "Better solution found objective: " + std::to_string(newobjective) + " (" + relativevalue + "%). "+std::to_string(iteration)+" iterations left." << "\n";
 					this->clearrowcache();
 				}else{
 					this->unbound(selected);
@@ -362,7 +342,7 @@ namespace Heuristics
 			}
 		}catch (...)
 		{
-			_exhandler->printexceptions(addonthreadno(), "FMToperatingareascheduler::greedypass", __LINE__, __FILE__);
+			_exhandler->printexceptions("", "FMToperatingareascheduler::greedypass", __LINE__, __FILE__);
 		}
 		return this->isProvenOptimal();
 	}
@@ -663,7 +643,7 @@ namespace Heuristics
                 }
             if (proportionofset==0)
                 {
-                _exhandler->raise(Exception::FMTexc::FMTrangeerror,addonthreadno()+"Proportion of selected operating area equal 0","FMToperatingareascheduler::setdraw",__LINE__,__FILE__);
+                _exhandler->raise(Exception::FMTexc::FMTrangeerror,"Proportion of selected operating area equal 0","FMToperatingareascheduler::setdraw",__LINE__,__FILE__);
                 }
             selected = draw(potentials);
             /*const size_t maxareatopick = static_cast<size_t>(std::ceil(static_cast<double>(operatingareas.size()) * proportionofset));
@@ -679,7 +659,7 @@ namespace Heuristics
 				}*/
         }catch(...)
             {
-                _exhandler->raisefromcatch(addonthreadno(),"FMToperatingareascheduler::setdraw", __LINE__, __FILE__);
+                _exhandler->raisefromcatch("","FMToperatingareascheduler::setdraw", __LINE__, __FILE__);
             }
 		return selected;
 		}
@@ -688,20 +668,21 @@ namespace Heuristics
 	{
 		std::vector<std::vector<FMToperatingareascheme>::const_iterator> selected;
 		try{
-			const size_t maxareatopick = static_cast<size_t>(std::ceil(static_cast<double>(operatingareas.size()) * proportionofset));
+			//Calculate the number of operating areas to pick base on the proportion of set... 5% of 50 operating areas == 3 because of the ceil
+			const size_t maxopareatopick = static_cast<size_t>(std::ceil(static_cast<double>(operatingareas.size()) * proportionofset));
 			if (userandomness)
 				{
 				std::shuffle(oparea.begin(), oparea.end(), this->generator);
 				}
 			std::vector<std::vector<FMToperatingareascheme>::const_iterator>::iterator randomit = oparea.begin();
-			while ((selected.size() < maxareatopick) && randomit != oparea.end())
+			while ((selected.size() < maxopareatopick) && randomit != oparea.end())
 				{
 				selected.push_back(*randomit);
 				++randomit;
 				}
 		}catch(...)
 			{
-				_exhandler->raisefromcatch(addonthreadno(),"FMToperatingareascheduler::draw", __LINE__, __FILE__);
+				_exhandler->raisefromcatch("", "FMToperatingareascheduler::draw", __LINE__, __FILE__);
 			}
 		return selected;
 	}
@@ -718,7 +699,7 @@ namespace Heuristics
 			}
 		}catch(...)
 		{
-			_exhandler->raisefromcatch(addonthreadno(),"FMToperatingareascheduler::selectscheme", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("","FMToperatingareascheduler::selectscheme", __LINE__, __FILE__);
 		}
 		//Return the first in the case that there is only one scheme and its the same as the one to skip
 		return *potentialschemes.begin();
@@ -750,7 +731,7 @@ namespace Heuristics
 			}
 		}catch(...)
 			{
-				_exhandler->raisefromcatch(addonthreadno(),"FMToperatingareascheduler::getbounds", __LINE__, __FILE__);
+				_exhandler->raisefromcatch("", "FMToperatingareascheduler::getbounds", __LINE__, __FILE__);
 			}
 		return false;
 	}
@@ -810,7 +791,7 @@ namespace Heuristics
 				if (!opgotschedule && schemestoskip.empty())
 				{
 					_exhandler->raise(Exception::FMTexc::FMTignore,
-					addonthreadno()+"No schedule found for Operating area "+std::string(opit->getmask()),
+					"No schedule found for Operating area "+std::string(opit->getmask()),
 					"FMToperatingareascheduler::setbounds",__LINE__, __FILE__);
 				}
 				gotschedule += opgotschedule;
@@ -831,7 +812,7 @@ namespace Heuristics
 				}
 				else {
 					_exhandler->raise(Exception::FMTexc::FMTignore,
-						addonthreadno()+"No schedule found for Operating area "+std::string(opit->getmask()),
+						"No schedule found for Operating area "+std::string(opit->getmask()),
 						"FMToperatingareascheduler::setbounds",__LINE__, __FILE__);
 					if (useprimal)
 					{
@@ -852,7 +833,7 @@ namespace Heuristics
 				}
 			}catch(...)
 	            {
-	            _exhandler->raisefromcatch(addonthreadno(),"FMToperatingareascheduler::setbounds", __LINE__, __FILE__);
+	            _exhandler->raisefromcatch("", "FMToperatingareascheduler::setbounds", __LINE__, __FILE__);
 	            }
 			return gotschedule;
 			}
