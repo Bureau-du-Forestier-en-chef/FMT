@@ -146,7 +146,7 @@ class FMTEXPORT FMTlpmodel : public FMTsrmodel
 	and also the FMTdevelopement constraints and variables of in the graph and delete those variables and constraints
 	from the solverinterface matrix.
 	*/
-	bool updatematrixngraph();
+	bool updatematrixngraph(bool updategraph = true);
 	// DocString: FMTlpmodel::getamountofpaths
 	/**
 	Get the number of possible paths if an action is commited on a development.
