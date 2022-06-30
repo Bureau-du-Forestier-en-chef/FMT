@@ -29,7 +29,7 @@ BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(getschemeneighbors_overloads, getschemene
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(getclusters_overloads,getclusters,6, 11)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(addoutputs_overloads,addoutputs,6, 7)
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(vectormaptoFMTforest_overloads,vectormaptoFMTforest,5,11)
-BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(vectorfieldtoraster_overloads, vectormaptoFMTforest,4,5)
+BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(vectorfieldtoraster_overloads, vectorfieldtoraster,4,5)
 
 
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(writeforest_overloads,writeforest, 5, 6)

@@ -1454,9 +1454,9 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 																						size_t numberofheuristics,
 																						bool copysolver)		
 		{
-		bool userandomness = false;
+		const bool userandomness = false;
 		size_t seedof = 1;
-		double proportionofset = 0.25;
+		const double proportionofset = 0.25;
 		std::vector<Heuristics::FMToperatingareascheduler>allheuristics;
 		try {
 			updatematrixnaming();

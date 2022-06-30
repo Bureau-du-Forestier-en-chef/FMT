@@ -74,19 +74,6 @@ namespace Heuristics
 		// DocString: FMTlpheuristic::usingsolvercopy
 		///If true the heuristic will work from it's own copy of solverinterface, else it's going to work on the FMTlpmodel solverinterface.
 		bool usingsolvercopy;
-		// DocString: FMTlpheuristic::nothread
-		///When you used multi-threading you can set this variable to log message with the thread number set. Default is always -1 unless it's set by the setter.
-		// If the heuristic is copied, the nothread become -1 for the copy.
-		int nothread;
-		inline std::string addonthreadno() const
-		{
-			if(nothread>=0)
-			{
-				return std::string("Thread-"+std::to_string(nothread)+" : ");
-			}else{
-				return std::string("");
-			}
-		}
 	public:
 		// DocString: FMTlpheuristic::setgeneratorseed
 		/**
@@ -139,11 +126,6 @@ namespace Heuristics
 		*/
 		virtual bool greedypass(const double& initsol,const unsigned int& iteration);
 		virtual void paralleloptimize(const double& initbestsolution, const unsigned int& iterations,const double& maxtime, const std::chrono::steady_clock::time_point& Starttime);
-		// DocString: FMTlpheuristic::setnothread
-		/**
-		Setter for nothread
-		*/
-		void setnothread(const int& lnothread);
 		// DocString: FMTlpheuristic::isfeasible
 		/**
 		Return true if the actual solution of the heuristic is feasible.

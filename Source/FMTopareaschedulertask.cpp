@@ -171,9 +171,9 @@ namespace Parallel
 	void FMTopareaschedulertask::writesolution() const
 	{
 		try {
-			const std::string bestobjvalue = std::to_string(static_cast<int>(bestscheduler->getObjValue()));
-			const std::string relativevalue = std::to_string(static_cast<int>(std::abs(relax_objective - bestscheduler->getObjValue()) * 100 / relax_objective));
-			*_logger << "Best solution found objective: "+bestobjvalue +" ("+relativevalue+"%)" << "\n";
+			const double bestobjvalue = bestscheduler->getObjValue();
+			const std::string relativevalue = std::to_string(static_cast<int>(std::abs(relax_objective - bestobjvalue) * 100 / relax_objective));
+			*_logger << "Best solution found objective: "+std::to_string(bestobjvalue) +" ("+relativevalue+"%)" << "\n";
 			Core::FMTyields yields;
 			for (const Core::FMTtimeyieldhandler& tyld : bestscheduler->getsolution(outyldname))
 				{
@@ -182,7 +182,7 @@ namespace Parallel
 				}
 			yields.update();
 			Parser::FMTyieldparser yldparser;
-			const std::string solutionname = solutionlocation +"_"+ bestobjvalue + "_" + relativevalue + ".yld";
+			const std::string solutionname = solutionlocation +"_"+ std::to_string(bestobjvalue) + "_" + relativevalue + ".yld";
 			yldparser.write(yields, solutionname);
 		}catch (...)
 		{
@@ -228,11 +228,6 @@ namespace Parallel
 					}else {
 						*actualscheduler = *bestscheduler;
 					}
-					if (iterations>0)
-					{
-						--iterations;
-					}
-					
 				}
 		}catch (...)
 			{
@@ -255,7 +250,6 @@ namespace Parallel
 				tasks.push_back(std::move(std::unique_ptr<FMTtask>(new FMTopareaschedulertask(*this))));
 				FMTopareaschedulertask* newtaskptr = dynamic_cast<FMTopareaschedulertask*>(tasks.back().get());
 				newtaskptr->actualscheduler->setnumberofthreads(1);
-				newtaskptr->actualscheduler->setnothread(static_cast<int>(taskid));
 				if (taskid>0)
 					{
 					newtaskptr->actualscheduler->setasrandom();
@@ -277,7 +271,6 @@ namespace Parallel
 				std::unique_ptr<FMTtask>newtask(new FMTopareaschedulertask(*this));
 				FMTopareaschedulertask* newtaskptr = dynamic_cast<FMTopareaschedulertask*>(newtask.get());
 				newtaskptr->actualscheduler->setnumberofthreads(1);
-				newtaskptr->actualscheduler->setnothread(lastspawned);
 				if (lastspawned > 0)
 				{
 					newtaskptr->actualscheduler->setasrandom();
@@ -312,15 +305,35 @@ namespace Parallel
 	void FMTopareaschedulertask::work()
 	{
 		try {
+			//If you dont have initialsolution, you need to do an initialsolve
+			bool needinitialsolve = !gotinitialsolution();
 			while (goodtogo())
 			{
-				if (!gotinitialsolution())
+				if (needinitialsolve)
 					{
-					actualscheduler->initialsolve();
+					//If initialsolve fail, you need to redo an initialsolve
+					needinitialsolve = !actualscheduler->initialsolve();
 				}else {
 					actualscheduler->greedypass(relax_objective,iterations);
 					}
-				evaluateandcopy();
+				if (needinitialsolve) 
+				{
+					//But if in the mean time another thread got a solution, take it and go to greedy
+					if (gotinitialsolution()) 
+					{
+						needinitialsolve = false;
+						*actualscheduler = *bestscheduler;
+					}
+				}
+				else {
+					evaluateandcopy();
+					//To only draw 1 operating area a the time
+					actualscheduler->setproportionofset(0.00000000001);
+				}
+				if (iterations > 0)
+				{
+					--iterations;
+				}
 			}
 			setstatus(true);
 		}catch (...)

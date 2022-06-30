@@ -23,7 +23,7 @@ namespace Heuristics
 
 	FMTlpheuristic::FMTlpheuristic(const FMTlpheuristic& rhs) :
 		Models::FMTlpsolver(rhs),
-		generator(rhs.generator),seed(rhs.seed),usingsolvercopy(true),nothread(-1)
+		generator(rhs.generator),seed(rhs.seed),usingsolvercopy(true)
 		{
 
 		}
@@ -35,19 +35,18 @@ namespace Heuristics
 			generator=rhs.generator;
 			seed = rhs.seed;
 			usingsolvercopy = true;
-			nothread = -1;
 			}
 		return *this;
 		}
 
     FMTlpheuristic::FMTlpheuristic(const Models::FMTsolverinterface& interfacetype,const size_t& lseed):
-       Models::FMTlpsolver(interfacetype),generator(static_cast<unsigned int>(lseed)),seed(lseed), usingsolvercopy(true/*false*/),nothread(-1)
+       Models::FMTlpsolver(interfacetype),generator(static_cast<unsigned int>(lseed)),seed(lseed), usingsolvercopy(true/*false*/)
         {
         //this->buildsolverinterface(interfacetype);
         }
 
 	FMTlpheuristic::FMTlpheuristic(Models::FMTlpsolver& basesolve, size_t lseed,bool copysolver):
-		Models::FMTlpsolver(),generator(static_cast<unsigned int>(lseed)),seed(lseed), usingsolvercopy(copysolver),nothread(-1)
+		Models::FMTlpsolver(),generator(static_cast<unsigned int>(lseed)),seed(lseed), usingsolvercopy(copysolver)
 		{
 		try {
 			if (copysolver)
@@ -112,14 +111,8 @@ namespace Heuristics
 				}
 				++pass;
 			}
-			(*_logger) << addonthreadno()+"Best solution found objective: "+std::to_string(getObjValue())+" after "+std::to_string(pass-1)+" iterations --- Waiting for other threads." << "\n";
+			(*_logger) << "Best solution found objective: "+std::to_string(getObjValue())+" after "+std::to_string(pass-1)+" iterations --- Waiting for other threads." << "\n";
 		}
-
-    void FMTlpheuristic::setnothread(const int& lnothread)
-    {
-    	nothread=lnothread;
-    }
-
 
 }
 BOOST_CLASS_EXPORT_IMPLEMENT(Heuristics::FMTlpheuristic)
