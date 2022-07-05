@@ -389,7 +389,11 @@ namespace Core
 				}
 			}
 		}
-        if (islevel())
+		/*if (!canbenodesonly())
+			{
+			this->getRHSvalue(period,lower,upper);
+			}*/
+        /*if (islevel())
             {
             size_t location = 0;
             size_t op_location = 0;
@@ -413,7 +417,7 @@ namespace Core
                 ++location;
                 }
 
-            }
+            }*/
 		}
 		catch (...)
 		{
