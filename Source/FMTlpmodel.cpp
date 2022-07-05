@@ -433,15 +433,15 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 					}
 					std::vector<std::string>equation;
 					///////////////////////////////////////////////////
-					std::vector<Core::FMToutputnode>all_nodes;
-					if (!constraint.canbenodesonly())
+					const std::vector<Core::FMToutputnode>all_nodes = constraint.getnodes(equation, averagefactor);
+					/*if (!constraint.canbenodesonly())
 					{
 						Core::FMTconstraint subconstraint(constraint);
 						subconstraint.setoutput(constraint.removeRHSvalue());
 						all_nodes = subconstraint.getnodes(equation, averagefactor);
 					}else {
 						all_nodes = constraint.getnodes(equation, averagefactor);
-						}
+						}*/
 					/////////////////////////////////////////////////////
 					double lowerbound = 0;
 					double upperbound = 0;
@@ -1188,12 +1188,18 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 	Graph::FMTgraphstats FMTlpmodel::setobjective(const Core::FMTconstraint& objective)
 		{
 		try {
-			if (!objective.canbenodesonly())
+			/*if (!objective.canbenodesonly())
 				{
 				_exhandler->raise(Exception::FMTexc::FMTunsupported_output,
 					"The objective output "+std::string(objective)+" cannot be deduct to output nodes",
 					"FMTlpmodel::setobjective", __LINE__, __FILE__);
-				}
+				}*/
+			if (!objective.islinear())
+			{
+				_exhandler->raise(Exception::FMTexc::FMTunsupported_output,
+					"The objective output " + std::string(objective) + " cannot be deduct to output nodes",
+					"FMTlpmodel::setobjective", __LINE__, __FILE__);
+			}
 			const bool strictlypositivesoutputsmatrix = getparameter(STRICTLY_POSITIVE);
 			int first_period = 0;
 			int last_period = 0;
@@ -1208,6 +1214,12 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 			std::map<int, double>all_variables;
 			if (!objective.extravariables())
 			{
+				if (!objective.canbenodesonly())
+					{
+					_exhandler->raise(Exception::FMTexc::FMTignore,
+						"The objective value " + std::string(objective) + " will be different than the output value",
+						"FMTlpmodel::setobjective", __LINE__, __FILE__);
+					}
 				for (int period = first_period; period <= last_period; ++period)
 				{
 					const std::vector<std::map<int, double>> outputvarpos = locatenodes(all_nodes, period, all_variables);
