@@ -42,7 +42,7 @@ FMTfork::FMTfork():FMTspec(),transitions()
             }
         return *this;
         }
-    void FMTfork::add(FMTtransitionmask& transition)
+    void FMTfork::add(const FMTtransitionmask& transition)
         {
         transitions.push_back(transition);
         }

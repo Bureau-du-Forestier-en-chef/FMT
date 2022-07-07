@@ -18,7 +18,7 @@ int main()
 	Logging::FMTlogger().logstamp();
 	const std::string modellocation = "../../../../Examples/Models/TWD_land/";
 	const std::string	primarylocation = modellocation + "TWD_land.pri";
-	const std::string outdir = "tests/";
+	const std::string outdir = "tests/Spatialyexplicitsimulation_doplanning/";
 	Parser::FMTmodelparser mparser;
 	const std::vector<std::string>scenarios(1, "Spatial");
 	const std::vector<Models::FMTmodel> models = mparser.readproject(primarylocation, scenarios);

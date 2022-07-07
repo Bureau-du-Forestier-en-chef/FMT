@@ -409,7 +409,13 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 		try {
 			if (!constraint.isobjective()&&!constraint.isspatial())
 			{
-				if (!constraint.canbenodesonly())
+				/*if (!constraint.canbenodesonly())
+				{
+					_exhandler->raise(Exception::FMTexc::FMTunsupported_output,
+						"The constraint output " + std::string(constraint) + " cannot be deduct to output nodes",
+						"FMTlpmodel::setconstraint", __LINE__, __FILE__);
+				}*/
+				if (!constraint.islinear()/*!constraint.canbenodesonly()*/)
 				{
 					_exhandler->raise(Exception::FMTexc::FMTunsupported_output,
 						"The constraint output " + std::string(constraint) + " cannot be deduct to output nodes",
@@ -426,7 +432,17 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 						averagefactor = (1 / (last_period - first_period));
 					}
 					std::vector<std::string>equation;
-					const std::vector<Core::FMToutputnode>all_nodes = constraint.getnodes(equation,averagefactor);
+					///////////////////////////////////////////////////
+					const std::vector<Core::FMToutputnode>all_nodes = constraint.getnodes(equation, averagefactor);
+					/*if (!constraint.canbenodesonly())
+					{
+						Core::FMTconstraint subconstraint(constraint);
+						subconstraint.setoutput(constraint.removeRHSvalue());
+						all_nodes = subconstraint.getnodes(equation, averagefactor);
+					}else {
+						all_nodes = constraint.getnodes(equation, averagefactor);
+						}*/
+					/////////////////////////////////////////////////////
 					double lowerbound = 0;
 					double upperbound = 0;
 					double coef_multiplier_lower = 1;
@@ -550,6 +566,11 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 								lowerbound = std::numeric_limits<double>::lowest();
 								upperbound = 0;
 							}
+						if (!constraint.canbenodesonly())
+							{
+							//constraint.getRHSvalue(period, lowerbound, upperbound);
+							constraint.getRHSvalue(period + 1, lowerbound, upperbound);
+							}
 						}
 
 						//level part
@@ -569,6 +590,7 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 							{
 							lowervars[goal_variable] = -1;
 							}
+						
 						const int lower_constraint_id = getsetmatrixelement(constraint, FMTmatrixelement::constraint, lowervars,
 							period, lowerbound, upperbound);
 						//ismultiple
@@ -591,6 +613,7 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 								{
 								uppervars[goal_variable] = -1;
 								}
+							
 							const int upper_constraint_id = getsetmatrixelement(constraint, FMTmatrixelement::constraint, uppervars,
 								period, lowerbound, upperbound);
 						}
@@ -921,6 +944,7 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 					}
 				}
 			}
+			this->updatematrixngraph(false);
 		}
 			catch (...)
 				{
@@ -979,7 +1003,7 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 			}
 		}
 
-	bool FMTlpmodel::updatematrixngraph()
+	bool FMTlpmodel::updatematrixngraph(bool updategraph)
 		{
 		solver.sortdeletedcache();
 		const std::vector<int>& deletedconstraints = solver.getcachedeletedconstraints();
@@ -987,7 +1011,10 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 		if (!deletedconstraints.empty() || !deletedvariables.empty())
 			{
 			try {
-				graph.updatematrixindex(deletedvariables, deletedconstraints);
+				if (updategraph)
+				{
+					graph.updatematrixindex(deletedvariables, deletedconstraints);
+				}
 				updateconstraintsmapping(deletedvariables, deletedconstraints);
 				solver.synchronize();
 			}catch (...)
@@ -1002,6 +1029,8 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 	Graph::FMTgraphstats FMTlpmodel::eraseperiod(bool constraintsonly)
 	{
 		try{
+			_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
+				"This function is need to be rewrite because updatematrixngraph is now in eraseconstraint. This function is nowhere used in FMT normally.", "FMTlpmodel::eraseperiod", __LINE__, __FILE__);
 			int firstperiod = graph.getfirstactiveperiod();
 			if (isperiodbounded(firstperiod))
 				{
@@ -1029,7 +1058,7 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 						{
 						solver.deleteCol(variableid);
 						}
-					this->updatematrixngraph();
+					this->updatematrixngraph(false);
 				}else {
 					const int badperiod = std::max(firstperiod, 1);
 					_exhandler->raise(Exception::FMTexc::FMTunboundedperiod,
@@ -1165,12 +1194,18 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 	Graph::FMTgraphstats FMTlpmodel::setobjective(const Core::FMTconstraint& objective)
 		{
 		try {
-			if (!objective.canbenodesonly())
+			/*if (!objective.canbenodesonly())
 				{
 				_exhandler->raise(Exception::FMTexc::FMTunsupported_output,
 					"The objective output "+std::string(objective)+" cannot be deduct to output nodes",
 					"FMTlpmodel::setobjective", __LINE__, __FILE__);
-				}
+				}*/
+			if (!objective.islinear())
+			{
+				_exhandler->raise(Exception::FMTexc::FMTunsupported_output,
+					"The objective output " + std::string(objective) + " cannot be deduct to output nodes",
+					"FMTlpmodel::setobjective", __LINE__, __FILE__);
+			}
 			const bool strictlypositivesoutputsmatrix = getparameter(STRICTLY_POSITIVE);
 			int first_period = 0;
 			int last_period = 0;
@@ -1185,6 +1220,12 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 			std::map<int, double>all_variables;
 			if (!objective.extravariables())
 			{
+				if (!objective.canbenodesonly())
+					{
+					_exhandler->raise(Exception::FMTexc::FMTignore,
+						"The objective value " + std::string(objective) + " will be different than the output value",
+						"FMTlpmodel::setobjective", __LINE__, __FILE__);
+					}
 				for (int period = first_period; period <= last_period; ++period)
 				{
 					const std::vector<std::map<int, double>> outputvarpos = locatenodes(all_nodes, period, all_variables);
@@ -1379,6 +1420,10 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 					return -1;
 				}else{
 					element_id = stats->rows;
+					if (!constraint.canbenodesonly()&&period!=-1)
+						{
+						constraint.getRHSvalue(period, lowerbound, upperbound);
+						}
 					solver.addRow(static_cast<int>(sumvariables.size()), &(*sumvariables.cbegin()),&(*sumcoefficiants.cbegin()), lowerbound, upperbound);
 					++stats->rows;
 					++stats->output_rows;

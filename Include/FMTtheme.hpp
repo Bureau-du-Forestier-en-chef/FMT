@@ -160,14 +160,21 @@ class FMTEXPORT FMTtheme : public FMTobject
 			const std::vector<std::vector<std::string>>& laggregatenames,
 			const std::vector<std::map<std::string, double>>& lindexes,
 			const size_t& lid, const size_t& lstart, const std::string& lname);
+		// DocString: FMTtheme(const std::vector<std::string>&,const std::vector<std::string>&,const std::vector<std::vector<std::string>>,const size_t&, const size_t&, const std::string&)
+		/**
+		FMTtheme constructor to use for FMTtheme indexing.
+		*/
+		FMTtheme(const std::vector<std::string>& lattributes,
+			const std::vector<std::string>& lattributenames,
+			const std::vector<std::string>& laggregates,
+			const std::vector<std::vector<std::string>>& laggregatenames,
+			const size_t& lid, const size_t& lstart, const std::string& lname);
 		// DocString: FMTtheme(const std::vector<std::string>& lattributes,const size_t&,const size_t&,const std::string&)
 		/**
 		A more simple constructor for FMTtheme without aggregates and indexing.
 		*/
 		FMTtheme(const std::vector<std::string>& lattributes,
 			const size_t& lid, const size_t& lstart, const std::string& lname);
-
-
 		// DocString: FMTtheme(const FMTtheme&)
 		/**
 		Copy constructor for FMTtheme.

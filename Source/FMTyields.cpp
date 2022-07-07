@@ -8,8 +8,33 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTyields.hpp"
 #include "FMTyieldrequest.hpp"
 #include "FMTexceptionhandler.hpp"
+#include "FMTageyieldhandler.hpp"
+#include "FMTtimeyieldhandler.hpp"
+#include <memory>
 
 namespace Core{
+
+	void FMTyields::push_backagehandler(const FMTmask& mask, const FMTageyieldhandler& value)
+	{
+		try {
+			std::unique_ptr<Core::FMTyieldhandler>handlerptr(new FMTageyieldhandler(value));
+			push_back(mask, handlerptr);
+		}catch (...)
+		{
+			_exhandler->raisefromcatch("", "FMTyields::push_back", __LINE__, __FILE__, FMTsection::Yield);
+		}
+	}
+
+	void FMTyields::push_backtimehandler(const FMTmask& mask, const FMTtimeyieldhandler& value)
+	{
+		try {
+			std::unique_ptr<Core::FMTyieldhandler>handlerptr(new FMTtimeyieldhandler(value));
+			push_back(mask, handlerptr);
+		}catch (...)
+		{
+			_exhandler->raisefromcatch("", "FMTyields::push_back", __LINE__, __FILE__, FMTsection::Yield);
+		}
+	}
 
 
 

@@ -21,7 +21,7 @@ namespace Core{
 
 
 FMToutput::FMToutput(const std::string& lname,const std::string& ldescription,/*const int& ltheme_target,*/
-	std::vector<FMToutputsource>& lsources, std::vector<FMToperator>& loperators):
+	const std::vector<FMToutputsource>& lsources, const std::vector<FMToperator>& loperators):
 	FMTobject(),
     sources(lsources),
     operators(loperators),
@@ -69,7 +69,7 @@ FMToutput& FMToutput::operator +=(const FMToutput& rhs)
 	try {
 		if (!this->name.empty())
 		{
-			this->name = this->name + "+" + rhs.name;
+			this->name = this->name + " + " + rhs.name;
 			this->description = this->description + "+" + rhs.description;
 		}
 		else {
@@ -135,8 +135,8 @@ FMToutput& FMToutput::operator  *= (const double& rhs)
 		{
 			if(rhs!=1)
 			{
-				this->name = this->name + "*" + std::to_string(rhs);
-				this->description = this->description + "*" + std::to_string(rhs);
+				this->name = std::to_string(rhs) + " * " + this->name;
+				this->description = std::to_string(rhs) + " * " + this->description;
 			}
 		}
 		if (!sources.empty())
@@ -832,6 +832,81 @@ void FMToutput::changesourcesid(const int& outid)
 			"FMToutput::changesourcesid", __LINE__, __FILE__, Core::FMTsection::Outputs);
 		}
 }
+
+Core::FMToutput FMToutput::removeRHSvalue() const
+	{
+	Core::FMToutput newoutput(*this);
+	double outrhs = 1;
+	try {
+		std::vector<Core::FMToperator>baseoperators(operators);
+		baseoperators.insert(baseoperators.begin(), Core::FMToperator("+"));
+		size_t opid = 0;
+		std::vector<FMToutputsource>newsources;
+		std::vector<Core::FMToperator>newoperators;
+		for (const FMToutputsource& source : sources)
+		{
+			if (((source.islevel() && !source.isvariablelevel()) ||
+				source.isconstant()) &&
+				!baseoperators.at(opid).isfactor())
+			{//get double and remove the rest
+
+			}else {
+				newsources.push_back(source);
+				if (opid>0)
+					{
+					newoperators.push_back(baseoperators.at(opid));
+					}
+			}
+			++opid;
+		}
+		newoutput.sources = newsources;
+		newoutput.operators = newoperators;
+	}catch (...)
+		{
+		_exhandler->raisefromcatch("for " + this->getname(),
+			"removeRHSvalue", __LINE__, __FILE__, Core::FMTsection::Outputs);
+		}
+	return newoutput;
+	}
+
+void FMToutput::getRHSvalue(const int& period, double& lower, double& upper) const
+{
+	double outrhs = 0;
+	try {
+		std::vector<Core::FMToperator>baseoperators(operators);
+		baseoperators.insert(baseoperators.begin(), Core::FMToperator("+"));
+		size_t opid = 0;
+		for (const FMToutputsource& source : sources)
+		{
+			if (((source.islevel() && !source.isvariablelevel()) ||
+				source.isconstant()) &&
+				!baseoperators.at(opid).isfactor())
+			{//get double and remove the rest
+				const double cvalue = source.getvalue(period);
+				outrhs = baseoperators.at(opid).call(outrhs, cvalue);
+			}
+			++opid;
+		}
+		if (outrhs!=1)
+		{
+			if (lower != std::numeric_limits<double>::lowest())
+			{
+				lower -= outrhs;
+			}
+			if (upper != std::numeric_limits<double>::max())
+			{
+				upper -= outrhs;
+			}
+		}
+		
+	}
+	catch (...)
+	{
+		_exhandler->raisefromcatch("for " + this->getname(),
+			"getRHSvalue", __LINE__, __FILE__, Core::FMTsection::Outputs);
+	}
+}
+
 
 void FMToutput::changesourcesid(const std::set<int>& newoutputsorigin,const std::set<int>& newthemeid)
 	{

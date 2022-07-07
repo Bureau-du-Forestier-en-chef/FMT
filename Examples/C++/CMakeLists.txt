@@ -58,7 +58,9 @@ endforeach()
 
 #Get the tests 
 #Grab everything in the test folder
+#Create test folders
 if (NOT WITHOUT_TESTING)
+	file(MAKE_DIRECTORY "${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}/tests")
 	FILE(GLOB FMTTESTSfiles ${CMAKE_CURRENT_SOURCE_DIR}/Examples/C++/tests/*.csv)
 	foreach(testfile ${FMTTESTSfiles})
 		file(READ ${testfile} data)
@@ -74,6 +76,7 @@ if (NOT WITHOUT_TESTING)
 				list(GET line 2 scenario)
 				list(GET line 3 dblvalue)
 				if (TARGET "${testname}")#Got the executable!
+						file(MAKE_DIRECTORY "${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}/tests/${testname}")
 						set(fullname "${testname}${primarylocation}${scenario}")
 						string(REPLACE " " "_" fullname "${fullname}")
 						add_test(

@@ -389,7 +389,11 @@ namespace Core
 				}
 			}
 		}
-        if (islevel())
+		/*if (!canbenodesonly())
+			{
+			this->getRHSvalue(period,lower,upper);
+			}*/
+        /*if (islevel())
             {
             size_t location = 0;
             size_t op_location = 0;
@@ -413,7 +417,7 @@ namespace Core
                 ++location;
                 }
 
-            }
+            }*/
 		}
 		catch (...)
 		{
@@ -738,16 +742,16 @@ namespace Core
 				std::string opt_str = "";
 				if (lower_b == upper_b)
 				{
-					opt_str = "=";
+					opt_str = "= ";
 					opt_str += std::to_string(lower_b);
 				}
 				else if (upper_b == std::numeric_limits<double>::infinity())
 				{
-					opt_str = ">=";
+					opt_str = ">= ";
 					opt_str += std::to_string(lower_b);
 				}
 				else {
-					opt_str = "<=";
+					opt_str = "<= ";
 					opt_str += std::to_string(upper_b);
 				}
 				line += (this->name + " " + opt_str + " " + goal+" "+global);

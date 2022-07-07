@@ -722,6 +722,105 @@ const std::regex FMTareaparser::rxcleanarea = std::regex("^((\\*A[A]*)([^|]*)(_l
         return devs;
         }
 
+	void FMTareaparser::vectorfieldtoraster(const std::string& data_vectors,
+											const std::string& tifpathandname,
+											const int& resolution,
+											const std::string& field,
+											bool fittoforel) const
+	{
+		try {
+				GDALDataset*  dataset = getvectordataset(data_vectors);
+				OGRLayer* layer = getlayer(dataset, 0);
+				OGRFeatureDefn* basedefinition = layer->GetLayerDefn();
+				const int fieldid = basedefinition->GetFieldIndex(field.c_str());
+				if (fieldid==-1)
+					{
+					_exhandler->raise(Exception::FMTexc::FMTmissingfield, field + " " + layer->GetDescription(),
+						"FMTareaparser::vectorfieldtoraster", __LINE__, __FILE__, _section);
+					}
+				if (basedefinition->GetFieldDefn(fieldid)->GetType() == OGRFieldType::OFTReal)
+					{
+					_exhandler->raise(Exception::FMTexc::FMTinvalidlayer, std::string(layer->GetDescription())+" with Real format for field "+ field,
+						"FMTareaparser::vectorfieldtoraster", __LINE__, __FILE__, _section);
+					}
+				bool usecategories = true;
+				if (basedefinition->GetFieldDefn(fieldid)->GetType() == OGRFieldType::OFTInteger||
+					basedefinition->GetFieldDefn(fieldid)->GetType() == OGRFieldType::OFTInteger64)
+					{
+					usecategories = false;
+					}
+				OGRCoordinateTransformation* coordtransf = getprojtransform(layer, fittoforel);
+				GDALDataset* memds = gettransformmemlayercopy(layer, coordtransf->GetTargetCS(), field);
+				OGRLayer* memlayer = getlayer(memds, 0);
+				OGRFeatureDefn* memlayerdef = memlayer->GetLayerDefn();
+				OGRFeature* feature;
+				std::set<std::string>values;
+				if (usecategories)
+				{
+					while ((feature = layer->GetNextFeature()) != NULL)
+					{
+						const std::string fieldvalue = feature->GetFieldAsString(field.c_str());
+						values.insert(fieldvalue);
+						OGRFeature::DestroyFeature(feature);
+					}
+					layer->ResetReading();
+				}
+				while ((feature = layer->GetNextFeature()) != NULL)
+					{
+					
+					int newfieldvalue = 0;
+					if (usecategories)
+					{
+						const std::string fieldvalue = feature->GetFieldAsString(field.c_str());
+						newfieldvalue = static_cast<int>(std::distance(values.begin(), values.find(fieldvalue)));
+					}else {
+						newfieldvalue = feature->GetFieldAsInteger(field.c_str());
+						}
+					OGRGeometry* geom= feature->GetGeometryRef()->clone();
+					if (!geom->IsValid())
+					{
+						_exhandler->raise(Exception::FMTexc::FMTinvalid_geometry,
+							"for feature " + std::to_string(_line), "FMTareaparser::vectorfieldtoraster", __LINE__, __FILE__, _section);
+					}else {
+						OGRFeature* memfeature;
+						memfeature = OGRFeature::CreateFeature(memlayerdef);
+						memfeature->SetGeometry(geom);
+						memfeature->SetField(field.c_str(),newfieldvalue);
+						if (memlayer->CreateFeature(memfeature) != OGRERR_NONE)
+						{
+							_exhandler->raise(Exception::FMTexc::FMTgdal_constructor_error,
+								"feature " + std::to_string(_line) + " in memory ", "FMTareaparser::vectorfieldtoraster", __LINE__, __FILE__, _section);
+						}
+						OGRFeature::DestroyFeature(memfeature);
+					}
+					OGRFeature::DestroyFeature(feature);
+					}
+				if (memlayer->GetFeatureCount() <= 0)
+				{
+					_exhandler->raise(Exception::FMTexc::FMTgdal_constructor_error,
+						"No feature were created in the memory layer, check the areafield",
+						"FMTareaparser::vectormaptoFMTforest", __LINE__, __FILE__, _section);
+				}
+				OGRCoordinateTransformation::DestroyCT(coordtransf);
+				GDALDataset* fieldraster = OGRlayertoRaster(memlayer, field,tifpathandname, resolution, fittoforel);
+				GDALClose(memds);
+				GDALRasterBand* fieldband = getband(fieldraster);
+				if (usecategories)
+					{
+					std::vector<std::string>categories(values.begin(), values.end());
+					setcategories(fieldband, categories);
+					}
+				fieldband->ComputeStatistics(FALSE, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr);
+				fieldband->FlushCache();
+				GDALClose(fieldraster);
+		}catch (...)
+			{
+			_exhandler->printexceptions("at " + data_vectors,
+				"FMTareaparser::vectorfieldtoraster", __LINE__, __FILE__, _section);
+			}
+
+	}
+
 	Spatial::FMTforest FMTareaparser::vectormaptoFMTforest( const std::string& data_vectors,
 															const int& resolution,const std::vector<Core::FMTtheme>& themes,
 															const std::string& agefield,const std::string& areafield,double agefactor,
@@ -742,7 +841,8 @@ const std::regex FMTareaparser::rxcleanarea = std::regex("^((\\*A[A]*)([^|]*)(_l
 			GDALDataset* dataset = openvectorfile(themes_fields, age_field, lock_field, area_field, data_vectors, agefield, areafield, lockfield, themes);
 			OGRLayer*  layer = getlayer(dataset, 0);
 			layer = this->subsetlayer(layer, themes, agefield, areafield);
-			OGRwkbGeometryType lgeomtype = layer->GetGeomType();
+			OGRCoordinateTransformation* coordtransf = getprojtransform(layer, fittoforel);
+			/*OGRwkbGeometryType lgeomtype = layer->GetGeomType();
 			if (lgeomtype != wkbMultiPolygon && lgeomtype != wkbPolygon )
 			{
 				_exhandler->raise(Exception::FMTexc::FMTinvalidlayer,
@@ -762,11 +862,11 @@ const std::regex FMTareaparser::rxcleanarea = std::regex("^((\\*A[A]*)([^|]*)(_l
 										"Coordinate Transformation","FMTparser::vectormaptoFMTforest", __LINE__, __FILE__, _section);
 				}
 				reproject=true;
-			}
+			}*/
 			/*
 			Here we create a layer in memory and populate the field 'devid' with the id of the development in (devs) 
 			*/
-			OGRLayer*  memlayer = nullptr ;
+			/*OGRLayer* memlayer = nullptr;
 			if (reproject)
 			{
 				memlayer = memds->CreateLayer( "Memlayer", &*forelspref, lgeomtype, NULL );
@@ -784,7 +884,10 @@ const std::regex FMTareaparser::rxcleanarea = std::regex("^((\\*A[A]*)([^|]*)(_l
 			{
 				_exhandler->raise(Exception::FMTexc::FMTgdal_constructor_error,
 										"Field definition","FMTparser::vectormaptoFMTforest", __LINE__, __FILE__, _section);
-			}
+			}*/
+			const std::string Fieldname("devid");
+			GDALDataset* memds = gettransformmemlayercopy(layer, coordtransf->GetTargetCS(), Fieldname);
+			OGRLayer* memlayer = getlayer(memds,0);
 			OGRFeatureDefn* memlayerdef = memlayer->GetLayerDefn();
 			int devid = 0;
 			OGRFeature* feature;
@@ -800,14 +903,14 @@ const std::regex FMTareaparser::rxcleanarea = std::regex("^((\\*A[A]*)([^|]*)(_l
 					//memlayer part
 					OGRGeometry* geom;
 					geom = feature->GetGeometryRef()->clone();
-					if (reproject)
-					{
+					//if (reproject)
+					//{
 						geom->transform(coordtransf);
-					}
+					//}
 					if(!geom->IsValid())
 					{
 						_exhandler->raise(Exception::FMTexc::FMTinvalid_geometry,
-										"for feature "+std::to_string(_line),"FMTparser::vectormaptoFMTforest", __LINE__, __FILE__, _section);
+										"for feature "+std::to_string(_line),"FMTareaparser::vectormaptoFMTforest", __LINE__, __FILE__, _section);
 					}else {
 						OGRFeature* memfeature;
 						memfeature = OGRFeature::CreateFeature(memlayerdef);
@@ -816,7 +919,7 @@ const std::regex FMTareaparser::rxcleanarea = std::regex("^((\\*A[A]*)([^|]*)(_l
 						if (memlayer->CreateFeature(memfeature) != OGRERR_NONE)
 						{
 							_exhandler->raise(Exception::FMTexc::FMTgdal_constructor_error,
-								"feature " + std::to_string(_line) + " in memory ", "FMTparser::vectormaptoFMTforest", __LINE__, __FILE__, _section);
+								"feature " + std::to_string(_line) + " in memory ", "FMTareaparser::vectormaptoFMTforest", __LINE__, __FILE__, _section);
 						}
 						OGRFeature::DestroyFeature(memfeature);
 					}
@@ -831,13 +934,13 @@ const std::regex FMTareaparser::rxcleanarea = std::regex("^((\\*A[A]*)([^|]*)(_l
 			{
 				_exhandler->raise(Exception::FMTexc::FMTgdal_constructor_error,
 								"No feature where create in the memory layer, check the areafield : "+areafield+" and the agefield : "+agefield+" because they are used for a subset selection on the layer.",
-								"FMTparser::vectormaptoFMTforest", __LINE__, __FILE__, _section);
+								"FMTareaparser::vectormaptoFMTforest", __LINE__, __FILE__, _section);
 			}
 			GDALClose(dataset);
-			if (reproject)
-			{
+			//if (reproject)
+			//{
 				OGRCoordinateTransformation::DestroyCT(coordtransf);
-			}
+			//}
 			basemap = getFMTforestfromlayer(memlayer,devs,Fieldname,resolution,areafactor,fittoforel);
 			GDALClose(memds);
 			if(writeforestfolder!="")
@@ -1585,15 +1688,13 @@ const std::regex FMTareaparser::rxcleanarea = std::regex("^((\\*A[A]*)([^|]*)(_l
 						bool potential_futurs = false;
 						bool got0area = false;
 						size_t futurtype = 0;
-
-						std::vector<std::string>splitted;
 						if (FMTparser::tryopening(areastream, location))
 						{
 							bool inactualdevs = false;
 							boost::unordered_map<Core::FMTdevelopment,size_t>devsindex;
 							while (areastream.is_open())
 							{
-								std::string line = FMTparser::getcleanlinewfor(areastream, themes, constants);
+								const std::string line = FMTparser::getcleanlinewfor(areastream, themes, constants);
 								if (!line.empty())
 								{
 									if (potential_futurs && inactualdevs && !_comment.empty() && got0area)
@@ -1607,34 +1708,33 @@ const std::regex FMTareaparser::rxcleanarea = std::regex("^((\\*A[A]*)([^|]*)(_l
 									std::smatch kmatch;
 									if (std::regex_search(line, kmatch, FMTareaparser::rxcleanarea))
 									{
-										std::string strlock = std::string(kmatch[6]) + std::string(kmatch[14]);
-										const std::string masknage = std::string(kmatch[3]) + std::string(kmatch[9]) + std::string(kmatch[18]) + std::string(kmatch[23]);
+										std::string masknage = std::string(kmatch[3]) + std::string(kmatch[9]) + std::string(kmatch[18]) + std::string(kmatch[23]);
 										std::string mask;
-										double area;
-										int age, lock;
-										size_t linesize;
-										splitted = FMTparser::spliter(masknage, FMTparser::rxseparator);
-										linesize = splitted.size();
+										std::vector<std::string>splitted;
+										boost::trim(masknage);
+										boost::split(splitted, masknage, boost::is_any_of(FMT_STR_SEPARATOR),boost::algorithm::token_compress_on);
+										//splitted = FMTparser::spliter(masknage, FMTparser::rxseparator);
+										const size_t linesize = splitted.size();
 										inactualdevs = true;
-
 										for (size_t themeid = 0; themeid < (linesize - 2); ++themeid)
 										{
 											mask += splitted.at(themeid) + " ";
 										}
 										mask.pop_back();
-										area = getnum<double>(splitted.at(linesize - 1), constants);
+										const double area = getnum<double>(splitted.at(linesize - 1), constants);
 										if (area > 0)
 										{
 											got0area = false;
 											if (!Core::FMTtheme::validate(themes, mask, " at line " + std::to_string(_line))) continue;
 											potential_futurs = false;
-											age = getnum<int>(splitted.at(linesize - 2), constants);
-											lock = 0;
+											const int age = getnum<int>(splitted.at(linesize - 2), constants);
+											int lock = 0;
+											const std::string strlock = std::string(kmatch[6]) + std::string(kmatch[14]);
 											if (FMTparser::isvalid(strlock))
 											{
 												lock = getnum<int>(strlock, constants);
 											}
-											Core::FMTactualdevelopment actualdevelopment(Core::FMTmask(mask, themes), age, lock, area);
+											const Core::FMTactualdevelopment actualdevelopment(Core::FMTmask(mask, themes), age, lock, area);
 											//Weird non unique area section...
 											boost::unordered_map<Core::FMTdevelopment, size_t>::const_iterator hashit = devsindex.find(actualdevelopment);
 											if (devsindex.find(actualdevelopment) == devsindex.end())

@@ -20,3 +20,6 @@ planningtest;;;
 forcesolution;;;
 coordinatetest;;;
 stdconstraints;;;
+createmodel;;;
+vectorfieldtoraster;;;
+nonspatialupdate;;;

@@ -117,6 +117,7 @@ enum FMTexc
 	FMTmissing_parameter = 75,
 	FMTdeathwithlock = 76,
 	FMTreplanningwarning = 77,
+	FMTyieldmodelprediction = 78
     };
 
 // DocString: FMTexception

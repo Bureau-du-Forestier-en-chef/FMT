@@ -97,6 +97,8 @@ void exportModel()
 				"@DocString(FMTmodel::setareaperiod)")
             .method("getlifespan",&Models::FMTmodel::getlifespan,
 				"@DocString(FMTmodel::getlifespan)")
+			.method("setlifespan", &Models::FMTmodel::setlifespan,
+				"@DocString(FMTmodel::setlifespan)")
             .method("isvalid",&Models::FMTmodel::isvalid,
 				"@DocString(FMTmodel::isvalid)")
 			.method("isvalid", &Models::FMTmodel::getpostsolvefilter,
