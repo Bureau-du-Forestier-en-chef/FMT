@@ -10,10 +10,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 
 #include "FMTlogger.hpp"
-#if defined FMTWITHGDAL
-	#include "cpl_error.h"
-#endif
-#include <boost/unordered_map.hpp>
+#include <unordered_map>
 #include <boost/serialization/serialization.hpp>
 #include <boost/serialization/nvp.hpp>
 #include <boost/serialization/export.hpp>
@@ -24,13 +21,6 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 namespace Exception
 {
 	class FMTexception;
-#if defined FMTWITHGDAL
-	// DocString: FMTCPLErrorHandler()
-	/**
-	This function is used by has a callback in GDAL for handling GDAL errors.
-	*/
-	void CPL_STDCALL FMTCPLErrorHandler(CPLErr eErrClass, CPLErrorNum nError, const char * pszErrorMsg);
-#endif
 	// DocString: FMTexceptionhandler
 	/**
 	The FMTexceptionhandler is a base class used to handel error thrown in FMT. It keeps count of the
@@ -105,7 +95,7 @@ namespace Exception
 	public:
 		// DocString: FMTexceptionhandler::_specificwarningcount
 		///Keeps count of the number of each type of warning thrown.
-		boost::unordered_map<int,size_t> _specificwarningcount;
+		std::unordered_map<int,size_t> _specificwarningcount;
 		// DocString: checksignals()
 		/**
 		Check signals in R and Python, if we are on the main thread.
@@ -148,7 +138,7 @@ namespace Exception
 			/**
 			Function called back by gdal for handling GDAL error thrown.
 			*/
-			virtual void handelCPLerror(CPLErr eErrClass, CPLErrorNum nError, const char * pszErrorMsg);
+			virtual void handelCPLerror(int eErrClass, int nError, const char * pszErrorMsg);
 		#endif
 		// DocString: FMTexceptionhandler::operator=
 		/**

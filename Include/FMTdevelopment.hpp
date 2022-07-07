@@ -16,6 +16,8 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <memory>
 #include <vector>
 #include <boost/serialization/export.hpp>
+#include "FMTexceptionhandler.hpp"
+
 namespace Graph
 {
 	class FMTgraphvertextoyield;

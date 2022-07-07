@@ -43,9 +43,13 @@ int main()
 		}
 		optimizationmodel = Models::FMTlpmodel(initialmodel, Models::FMTsolverinterface::CLP);
 		// ici on vient changer la section area 
+		#ifdef FMTWITHGDAL
 		const std::vector<Core::FMTactualdevelopment> newarea = areaparser.readvectors(	optimizationmodel.getthemes(),
 																						modellocation+"Carte/TWD_LAND_forcesolution_modif.shp",
                                    														"AGE","SUPERFICIE", 1.0, 1);
+		#else
+		const std::vector<Core::FMTactualdevelopment> newarea = areaparser.read(optimizationmodel.getthemes(), Core::FMTconstants(), modellocation + "Carte/TWD_LAND_forcesolution_modif.are")
+		#endif FMTWITHGDAL
 		areaparser.write(newarea,testfolderout+"forcemodifshp._area");
 		scheparser.write(lockedproportionscheduled,testfolderout+"lockedandpropos._seq");
         optimizationmodel.setarea(newarea);

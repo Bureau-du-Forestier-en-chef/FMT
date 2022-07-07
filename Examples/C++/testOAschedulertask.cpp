@@ -135,7 +135,7 @@ int main(int argc, char *argv[])
             const std::vector<Heuristics::FMToperatingareascheme> opeareas = ObtenirOperatingArea(fichierShp,optimizationmodel.getthemes(),14, startingperiod, "AGE", "SUPERFICIE", "STANLOCK");
 			std::unique_ptr<Parallel::FMTtask> maintaskptr(new Parallel::FMTopareaschedulertask(optimizationmodel, opeareas, nodeofoutput,"tests/"+scenarios.at(0), "YOUVERT",10000,120));
 			Parallel::FMTtaskhandler handler(maintaskptr,4);
-			//handler.setquietlogger();
+			handler.settasklogger();
 			handler.conccurentrun();
 		#endif 
         return 0;

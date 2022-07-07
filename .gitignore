@@ -43,3 +43,5 @@ compile_commands.json
 .vscode/*
 *html
 external/*
+UI/Include/*
+UI/Source/*

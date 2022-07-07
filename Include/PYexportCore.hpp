@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Quï¿½bec
+Copyright (c) 2019 Gouvernement du Québec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -24,7 +24,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTyields.hpp"
 #include "FMTconstants.hpp"
 #include "boost/python.hpp"
-#include "FMTdata.hpp"
+//#include "FMTdata.hpp"
 #include "FMTtimeyieldhandler.hpp"
 #include "FMTageyieldhandler.hpp"
 #include "FMTmaskfilter.hpp"
@@ -80,9 +80,7 @@ void exportCore()
 		.def("redirectlogtofile", &Core::FMTobject::redirectlogtofile,
 			"@DocString(FMTobject::redirectlogtofile)")
 		.def("seterrorstowarnings", &Core::FMTobject::seterrorstowarnings,
-			"@DocString(FMTobject::seterrorstowarnings)")
-		.def("setmaxwarningsbeforesilenced", &Core::FMTobject::setmaxwarningsbeforesilenced,
-			"@DocString(FMTobject::setmaxwarningsbeforesilenced)");
+			"@DocString(FMTobject::seterrorstowarnings)");
 
 		bp::class_<Core::FMTmaskfilter>("FMTmaskfilter", "@DocString(FMTmaskfilter)");
 

@@ -19,6 +19,11 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <utility>
 #include <vector>
 #include <queue>
+#include "FMTexceptionhandler.hpp"
+
+#if defined FMTWITHR
+	#include <Rcpp.h>
+#endif 
 
 namespace Models
 {

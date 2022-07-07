@@ -16,10 +16,10 @@ Example to get FMTpredictors on a FMTsesmodel
 	#include "FMTspatialschedule.hpp"
 	#include "FMTareaparser.hpp"
 	#include "FMTforest.hpp"
-	#include "ogr_srs_api.h"
-	#include "gdal.h"
-	#include "gdal_priv.h"
-	#include "ogrsf_frmts.h"
+	//#include "ogr_srs_api.h"
+	//#include "gdal.h"
+	//#include "gdal_priv.h"
+	//#include "ogrsf_frmts.h"
 #endif 
 
 
@@ -110,38 +110,20 @@ int main()
 					} 
 					allpredictors.push_back(periodpredictors);
 				}
-				GDALDataset* newdataset = areaparser.createOGRdataset(outdir+"PREDICTORS.csv", "CSV");
-				OGRLayer* newlayer = newdataset->CreateLayer(("Predictors_"+simulationmodel.getname()).c_str(), NULL, wkbNone, NULL);
-				OGRFieldDefn IdField("graphID", OFTInteger);
-				IdField.SetWidth(32);
-				newlayer->CreateField(&IdField);
-				OGRFieldDefn PeriodField("Period", OFTInteger);
-				PeriodField.SetWidth(32);
-				newlayer->CreateField(&PeriodField);
-				for(const auto& predname : allprednames)
-				{
-					OGRFieldDefn yieldField(predname.c_str(), OFTReal);
-					newlayer->CreateField(&yieldField);
-				}
 				int period=1;
 				for (const auto& periodpred : allpredictors)
 				{
 					int id=0;
 					for (const auto& graphpred:periodpred)
 					{
-						OGRFeature *newfeature = OGRFeature::CreateFeature(newlayer->GetLayerDefn());
-						newfeature->SetField("graphID", id);
-						newfeature->SetField("Period", period);
 						for(const auto& pred : graphpred)
 						{
-							newfeature->SetField(pred.first.c_str(),pred.second);
+							Logging::FMTlogger() << "ID: " << id << " Period: " << period << " " << pred.first.c_str() << " " << pred.second << "\n";
 						}
-						newlayer->CreateFeature(newfeature);
 						++id;
 					}
 					++period;
 				}
-				GDALClose(newdataset);
 			}
 	}else {
 		Logging::FMTlogger() << "FMT needs to be compiled with OSI" << "\n";

@@ -235,13 +235,13 @@ class FMTEXPORT FMTareaparser : public FMTparser
 		/**
 
 		*/
-		bool writesasolution( const std::string location,
+		/*bool writesasolution(const std::string location,
                             const Spatial::FMTsasolution& solution,
                             const std::vector<Core::FMTtheme>& themes,
                             const std::vector<Core::FMTaction>& actions,
                             const bool& writeevents = true,
                             int periodstart=-1,
-                            int periodstop=-1) const;
+                            int periodstop=-1) const;*/
 		#ifdef FMTWITHOSI
 			// DocString: FMTareaparser::getschemeneighbors
 			/**

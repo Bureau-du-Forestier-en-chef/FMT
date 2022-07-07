@@ -9,12 +9,14 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <boost/filesystem/convenience.hpp>
 #include <boost/icl/interval.hpp>
 #include <boost/icl/interval_set.hpp>
+#include <boost/algorithm/string/erase.hpp>
 #include "FMTtheme.hpp"
 #include "FMTyields.hpp"
 #include "FMTaction.hpp"
 #include "FMTbounds.hpp"
 #include "FMTconstants.hpp"
 #include "FMTlayer.hpp"
+#include "FMTexceptionhandler.hpp"
 
 #if defined FMTWITHGDAL
 	#include "gdal_version.h"
@@ -365,16 +367,18 @@ template Core::FMTbounds<int> FMTparser::bounds<int>(const Core::FMTconstants& c
 
 #ifdef FMTWITHGDAL
 
-OGRSpatialReference FMTparser::getFORELspatialref() const
+std::unique_ptr<OGRSpatialReference> FMTparser::getFORELspatialref() const
 {
-	OGRSpatialReference FMTspref(nullptr);
-	FMTspref.importFromEPSG(32198);
-	return FMTspref;
+	std::unique_ptr<OGRSpatialReference>ptr(new OGRSpatialReference());
+	ptr->importFromEPSG(32198);
+	return std::move(ptr);
 }
 
+
 template<typename T>
-GDALDataset* FMTparser::createdataset(const std::string& location, const Spatial::FMTlayer<T>& layer, const GDALDataType datatype) const
+GDALDataset* FMTparser::createdataset(const std::string& location, const Spatial::FMTlayer<T>& layer, const int datatypeid) const
 {
+	GDALDataType datatype = static_cast<GDALDataType>(datatypeid);
 	const char *pszFormat = "GTiff";
 	GDALDriver *poDriver = nullptr;
 	GDALDataset *poDstDS = nullptr;
@@ -412,9 +416,9 @@ GDALDataset* FMTparser::createdataset(const std::string& location, const Spatial
 	return poDstDS;
 }
 
-template GDALDataset* FMTparser::createdataset<int>(const std::string& location, const Spatial::FMTlayer<int>& layer, const GDALDataType datatype) const;
-template GDALDataset* FMTparser::createdataset<std::string>(const std::string& location, const Spatial::FMTlayer<std::string>& layer, const GDALDataType datatype) const;
-template GDALDataset* FMTparser::createdataset<double>(const std::string& location, const Spatial::FMTlayer<double>& layer, const GDALDataType datatype) const;
+template GDALDataset* FMTparser::createdataset<int>(const std::string& location, const Spatial::FMTlayer<int>& layer, const int datatypeid) const;
+template GDALDataset* FMTparser::createdataset<std::string>(const std::string& location, const Spatial::FMTlayer<std::string>& layer, const int datatypeid) const;
+template GDALDataset* FMTparser::createdataset<double>(const std::string& location, const Spatial::FMTlayer<double>& layer, const int datatypeid) const;
 
 
 

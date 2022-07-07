@@ -9,14 +9,14 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #ifndef FMTserializablematrix_H_INCLUDED
 #define FMTserializablematrix_H_INCLUDED
 
-#include <CoinPackedMatrix.hpp>
+
 #include <memory>
-#include <boost/serialization/serialization.hpp>
-#include <boost/serialization/nvp.hpp>
 #include <vector>
+#include "FMTutility.hpp"
+#include <boost/serialization/vector.hpp>
 
 class OsiSolverInterface;
-
+class CoinPackedMatrix;
 
 namespace Models
 {
@@ -28,8 +28,11 @@ The goal of that class is to get the informations from osisolverinterface class 
 vectors (solutions,bounds,etc...) to permit the synchronization.
 Also this class is usefull when copying osisolverinterface with the FMTsolverinterface type.
 */
-class FMTserializablematrix : public CoinPackedMatrix
+class FMTEXPORT FMTserializablematrix
 	{
+	// DocString: FMTserializablematrix::matrix
+	///The matrix pointer
+	std::unique_ptr<CoinPackedMatrix> matrix;
 	// DocString: FMTserializablematrix::collb
 	///columns lower bound of the matrix
 	std::vector<double>collb;
@@ -59,51 +62,119 @@ class FMTserializablematrix : public CoinPackedMatrix
 	template<class Archive>
 	void serialize(Archive& ar, const unsigned int version)
 		{
-		ar & BOOST_SERIALIZATION_NVP(colOrdered_);
-		ar & BOOST_SERIALIZATION_NVP(extraGap_);
-		ar & BOOST_SERIALIZATION_NVP(extraMajor_);
-		ar & BOOST_SERIALIZATION_NVP(majorDim_);
-		ar & BOOST_SERIALIZATION_NVP(minorDim_);
-		ar & BOOST_SERIALIZATION_NVP(size_);
-		ar & BOOST_SERIALIZATION_NVP(maxMajorDim_);
-		ar & BOOST_SERIALIZATION_NVP(maxSize_);
-		ar & BOOST_SERIALIZATION_NVP(collb);
-		ar & BOOST_SERIALIZATION_NVP(colub);
-		ar & BOOST_SERIALIZATION_NVP(obj);
-		ar & BOOST_SERIALIZATION_NVP(rowlb);
-		ar & BOOST_SERIALIZATION_NVP(rowub);
-		ar & BOOST_SERIALIZATION_NVP(colsolution);
-		ar & BOOST_SERIALIZATION_NVP(rowprice);
-		if (Archive::is_loading::value)
-			{
-			if (maxMajorDim_ > 0)
-				{
-				length_ = new int[maxMajorDim_];
-				}
-			start_ = new CoinBigIndex[maxMajorDim_ + 1];
-			if (maxSize_ > 0)
-				{
-				element_ = new double[maxSize_];
-				index_ = new int[maxSize_];
-				}
-			}
-		for (int indexid = 0; indexid < maxSize_; ++indexid)
-			{
-			ar & boost::serialization::make_nvp(("E" + std::to_string(indexid)).c_str(), element_[indexid]);
-			ar & boost::serialization::make_nvp(("I"+ std::to_string(indexid)).c_str(), index_[indexid]);
-			}
-		for (int id = 0 ; id < maxMajorDim_; ++id)
-			{
-			ar & boost::serialization::make_nvp(("L" + std::to_string(id)).c_str(), length_[id]);
-			}
-		if(maxMajorDim_ > 0)
-			{
-			for (int id = 0; id < maxMajorDim_ + 1; ++id)
-				{
-				ar & boost::serialization::make_nvp(("S" + std::to_string(id)).c_str(), start_[id]);
-				}
-			}
+		const bool loading = Archive::is_loading::value;
+		bool order;
+		double extragap;
+		double extramajor;
+		int sizevector;
+		int minordim;
+		int numelements;
+		int majordim;
+		int maxsize;
+		std::vector<double> lelement;
+		std::vector<int> lindex;
+		std::vector<int> llength;
+		std::vector<int> lstart;
+		//members
+		std::vector<double> lcollb;
+		std::vector<double> lcolub;
+		std::vector<double> lobj;
+		std::vector<double> lrowlb;
+		std::vector<double> lrowub;
+		std::vector<double> lcolsolution;
+		std::vector<double> lrowprice;
+		if (!loading)
+		{
+			getsetmatrixelements(false,
+				order,
+				extragap,
+				extramajor,
+				sizevector,
+				minordim,
+				numelements,
+				majordim,
+				maxsize,
+				lelement,
+				lindex,
+				llength,
+				lstart);
+			getsetmemberelements(false,
+				lcollb,
+				lcolub,
+				lobj,
+				lrowlb,
+				lrowub,
+				lcolsolution,
+				lrowprice);
 		}
+		ar&order;
+		ar& extragap;
+		ar& extramajor;
+		ar& sizevector;
+		ar& minordim;
+		ar& numelements;
+		ar& majordim;
+		ar& maxsize;
+		ar& lelement;
+		ar& lindex;
+		ar& llength;
+		ar& lstart;
+		//members
+		ar& lcollb;
+		ar& lcolub;
+		ar& lobj;
+		ar& lrowlb;
+		ar& lrowub;
+		ar& lcolsolution;
+		ar& lrowprice;
+		if (loading)
+			{
+			getsetmatrixelements(true,
+				order,
+				extragap,
+				extramajor,
+				sizevector,
+				minordim,
+				numelements,
+				majordim,
+				maxsize,
+				lelement,
+				lindex,
+				llength,
+				lstart);
+			getsetmemberelements(true,
+				lcollb,
+				lcolub,
+				lobj,
+				lrowlb,
+				lrowub,
+				lcolsolution,
+				lrowprice);
+			}
+		
+
+		}
+	void getsetmatrixelements(bool loading,
+		bool& order,
+		double& extragap,
+		double& extramajor,
+		int& sizevector,
+		int& minordim,
+		int& numelements,
+		int& majordim,
+		int& maxsize,
+		std::vector<double>& lelement,
+		std::vector<int>& lindex,
+		std::vector<int>& llength,
+		std::vector<int>& lstart);
+	void getsetmemberelements(bool loading,
+		std::vector<double>&lcollb,
+		std::vector<double>&lcolub,
+		std::vector<double>&lobj,
+		std::vector<double>&lrowlb,
+		std::vector<double>&lrowub,
+		std::vector<double>&lcolsolution,
+		std::vector<double>&lrowprice);
 	public:
 		// DocString: FMTserializablematrix()
 		/**
@@ -150,7 +221,7 @@ class FMTserializablematrix : public CoinPackedMatrix
 		/**
 		Default destructor of FMTserializablematrix
 		*/
-		~FMTserializablematrix()=default;
+		~FMTserializablematrix();
 	};
 
 }

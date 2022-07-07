@@ -14,6 +14,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTtimeyieldhandler.hpp"
 #include <limits>
 #include <boost/thread.hpp>
+#include "FMTexceptionhandler.hpp"
 
 
 namespace Parallel
@@ -170,6 +171,9 @@ namespace Parallel
 	void FMTopareaschedulertask::writesolution() const
 	{
 		try {
+			const std::string bestobjvalue = std::to_string(static_cast<int>(bestscheduler->getObjValue()));
+			const std::string relativevalue = std::to_string(static_cast<int>(std::abs(relax_objective - bestscheduler->getObjValue()) * 100 / relax_objective));
+			*_logger << "Best solution found objective: "+bestobjvalue +" ("+relativevalue+"%)" << "\n";
 			Core::FMTyields yields;
 			for (const Core::FMTtimeyieldhandler& tyld : bestscheduler->getsolution(outyldname))
 				{
@@ -178,7 +182,7 @@ namespace Parallel
 				}
 			yields.update();
 			Parser::FMTyieldparser yldparser;
-			const std::string solutionname = solutionlocation +"_"+std::to_string(static_cast<int>(bestscheduler->getObjValue())) + "_" + std::to_string(static_cast<int>(std::abs(relax_objective - bestscheduler->getObjValue())*100 / relax_objective)) + ".yld";
+			const std::string solutionname = solutionlocation +"_"+ bestobjvalue + "_" + relativevalue + ".yld";
 			yldparser.write(yields, solutionname);
 		}catch (...)
 		{

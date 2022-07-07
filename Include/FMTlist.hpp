@@ -24,11 +24,13 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <boost/serialization/vector.hpp>
 #include <boost/serialization/nvp.hpp>
 #include <boost/serialization/export.hpp>
+#include "FMTexceptionhandler.hpp"
 #include "FMTobject.hpp"
 #include <iterator>
 #include <memory>
 #include "FMTyieldhandler.hpp"
 #include "FMTtheme.hpp"
+
 
 namespace Core
 {

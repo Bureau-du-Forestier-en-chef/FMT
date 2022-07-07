@@ -21,6 +21,8 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 #if defined FMTWITHPYTHON
 
+	#include <boost/python.hpp>
+
 namespace Python {
 
 

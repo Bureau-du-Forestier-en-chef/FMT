@@ -9,7 +9,6 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #define FMTmodelparser_H_INCLUDED
 
 
-#include "boost/filesystem.hpp"
 #include <map>
 #include <string>
 #include <vector>

@@ -8,6 +8,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTwarning.hpp"
 #include "FMTdefaultlogger.hpp"
 #include "FMTlogger.hpp"
+#include <unordered_map>
 
 
 namespace Exception
@@ -21,9 +22,9 @@ FMTwarning::FMTwarning(const FMTexc lexception, const Core::FMTsection lsection,
 	const std::string& lmethod, const std::string& lfile, const int& lline):
 	FMTexception(lexception, lsection, message, lmethod, lfile, lline) {}
 
-void FMTwarning::warn(const std::shared_ptr<Logging::FMTlogger>logger,boost::unordered_map<int,size_t>& specificwarningcount, const size_t& maxwarning) const
+void FMTwarning::warn(const std::shared_ptr<Logging::FMTlogger>logger,std::unordered_map<int,size_t>& specificwarningcount, const size_t& maxwarning) const
 	{
-		boost::unordered_map<int,size_t>::iterator spwit = specificwarningcount.find(exceptiontype);
+		std::unordered_map<int,size_t>::iterator spwit = specificwarningcount.find(exceptiontype);
 		if(spwit!=specificwarningcount.end())
 		{
 			size_t wcount = spwit->second;

@@ -7,24 +7,26 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 #ifndef FMTlogger_H_INCLUDED
 #define FMTlogger_H_INCLUDED
-#include <boost/serialization/serialization.hpp>
-#include <boost/serialization/nvp.hpp>
-#include <boost/serialization/split_member.hpp>
 #include <boost/serialization/export.hpp>
-#include <boost/lexical_cast.hpp>
-//#include <mutex>
 #include <boost/thread/recursive_mutex.hpp>
-#include <boost/thread.hpp>
-#ifdef FMTWITHOSI
-	#include <CoinMessageHandler.hpp>
-#endif
 #include <fstream>
+#include <string>
 #include "FMTexception.hpp"
+
+namespace boost
+{
+	namespace serialization
+	{
+		class access;
+	}
+}
 
 
 /// Namespace for the log management, provides different log handlers.
 namespace Logging
 {
+	class FMTsolverlogger;
+	//class CoinMessageHandler;
 	// DocString: FMTlogger 
 	/**
 	FMTlogger is a base class who handle the level of stuff printed with FMT.
@@ -32,50 +34,33 @@ namespace Logging
 	the Coinmessagehandler class to help handling the log level of the solvers.
 	*/
 	class FMTEXPORT FMTlogger
-		#ifdef FMTWITHOSI
-			: public CoinMessageHandler
-		#endif
 		{
-		
 		friend class boost::serialization::access;
 		// DocString: FMTlogger::save
 		/**
 		Save function is for serialization, used to do multiprocessing across multiple cpus (pickle in Pyhton)
 		*/
 		template<class Archive>
-		void save(Archive& ar, const unsigned int version) const
-		{
-			#ifdef FMTWITHOSI
-				const int logl = this->logLevel();
-				ar & BOOST_SERIALIZATION_NVP(logl);
-			#endif
-				ar & filepath;
-		}
+		void save(Archive& ar, const unsigned int version) const;
 		// DocString: FMTlogger::load
 		/**
 		Load function is for serialization, used to do multiprocessing across multiple cpus (pickle in Pyhton)
 		*/
 		template<class Archive>
-		void load(Archive& ar, const unsigned int version)
-		{
-			#ifdef FMTWITHOSI
-				int coinloglevel = 0;
-				ar & BOOST_SERIALIZATION_NVP(coinloglevel);
-				this->setLogLevel(coinloglevel);
-			#endif
-				ar & filepath;
-				if (!filepath.empty())
-					{
-					settofile(filepath);
-					}
-		}
-		BOOST_SERIALIZATION_SPLIT_MEMBER()
+		void load(Archive& ar, const unsigned int version);
+		// DocString: FMTlogger::serialize
+		/**
+		Load function is for serialization, used to do multiprocessing across multiple cpus (pickle in Pyhton)
+		*/
+		template<class Archive>
+		void serialize(Archive &ar, const unsigned int file_version);
 		// DocString: FMTlogger::settofile
 		/**
 		Redirect the log information to a file.
 		*/
 		void settofile(const std::string& filename) const;
 		protected:
+			std::unique_ptr<FMTsolverlogger>solverref;
 			// DocString: FMTlogger::pathtostream
 			///string path the the potential filestream
 			std::string filepath;
@@ -132,22 +117,17 @@ namespace Logging
 				FMTlogger print function if we are using Osisolverinterface the coinmessagehandler
 				print function needs to be overloaded.
 				*/
-				int print() override;
+				virtual int print();
 				// DocString: FMTlogger::checkSeverity
 				/**
 				FMTlogger check the severity of the message to be print by the coinmessagehandler base class.
 				*/
-				void checkSeverity() override;
+				virtual void checkSeverity();
 				// DocString: FMTlogger::clone
 				/**
-				Clone function needed for the usage of abstract coingmessagehandler class.
+				Clone function needed for the usage of abstract 
 				*/
-				CoinMessageHandler * clone() const override;
-				// DocString: FMTlogger::getpointer
-				/**
-				Get a non const pointer from this object.
-				*/
-				CoinMessageHandler * getpointer() const;
+				virtual FMTlogger* clone() const;
 			#endif
 			// DocString: FMTlogger::logstamp
 			/**
@@ -205,7 +185,11 @@ namespace Logging
 			then it will be printed
 			*/
 			virtual bool logwithlevel(const std::string &msg, const int& messagelevel) const;
-
+			// DocString: FMTlogger::getsolverlogger
+			/**
+			Return the ABSTRACT logger used by osisolverinterface.
+			*/
+			virtual FMTsolverlogger* getsolverlogger();
 		};
 
 }

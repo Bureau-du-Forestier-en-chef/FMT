@@ -382,7 +382,7 @@ class FMTEXPORT FMTmask
 		It will return a new FMTmask where the ? are completed with the attribute for the theme from (mask).
 		If the attribute is not ? for this mask, the attribute will not change. 
 		*/
-		FMTmask refine(const FMTmask& mask,const std::vector<FMTtheme>& themes) const;
+		FMTmask refine(const FMTmask& mask, const std::vector<FMTtheme>& themes) const;
 		// DocString: FMTmask::getpostsolvemask
 		/**
 		If this is a base postsolve mask it uses mask to turn off bits for themes that are still active.

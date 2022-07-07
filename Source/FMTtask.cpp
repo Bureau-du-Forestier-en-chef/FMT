@@ -1,6 +1,8 @@
 #include "FMTtask.hpp"
 #include <functional>
 #include "FMTquietlogger.hpp"
+#include "FMTexceptionhandler.hpp"
+#include <boost/lexical_cast.hpp>
 
 namespace Parallel
 {
