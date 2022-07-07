@@ -7,6 +7,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 #include "FMTschedule.hpp"
 #include "FMTconstraint.hpp"
+#include "FMTexceptionhandler.hpp"
 
 namespace Core{
 

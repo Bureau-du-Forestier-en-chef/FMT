@@ -9,11 +9,22 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTexception.hpp"
 #include "FMTwarning.hpp"
 #include "FMTerror.hpp"
+#include "FMTcplhandler.hpp"
 #include <boost/algorithm/string/replace.hpp>
 
 #if defined FMTWITHR
 	#include "Rcpp.h"
 #endif
+
+#if defined FMTWITHPYTHON
+	#include <boost/python.hpp>
+#endif
+
+#if defined FMTWITHOSI
+	#include "CoinError.hpp"
+#endif
+
+
 
 
 namespace Exception
@@ -43,22 +54,16 @@ void FMTexceptionhandler::checksignals() const
 	}
 
 #if defined  FMTWITHGDAL
-void CPL_STDCALL FMTCPLErrorHandler(CPLErr eErrClass, CPLErrorNum nError, const char * pszErrorMsg)
-{
-	FMTexceptionhandler* handler = reinterpret_cast<FMTexceptionhandler*>(CPLGetErrorHandlerUserData());
-	if (handler)
-		{
-		handler->handelCPLerror(eErrClass, nError, pszErrorMsg);
-		}
-}
 
-void FMTexceptionhandler::handelCPLerror(CPLErr eErrClass, CPLErrorNum nError, const char * pszErrorMsg)
+void FMTexceptionhandler::handelCPLerror(int eErrClass,int nError, const char * pszErrorMsg)
 	{
+	//CPLErr eErrClass, CPLErrorNum nError, const char * pszErrorMsg
 	boost::lock_guard<boost::recursive_mutex> guard(mtx);
-    if (eErrClass == CE_Failure || eErrClass == CE_Fatal)
+	CPLErr theerrorclass = static_cast<CPLErr>(eErrClass);
+    if (theerrorclass == CE_Failure || theerrorclass == CE_Fatal)
         {
         raise(FMTexc::FMTGDALerror,std::string(pszErrorMsg),"FMTdefaultexceptionhandler::handelCPLerror",__LINE__, __FILE__);
-        }else if(eErrClass == CE_Warning)
+        }else if(theerrorclass == CE_Warning)
             {
             raise(FMTexc::FMTGDALwarning,std::string(pszErrorMsg),"FMTdefaultexceptionhandler::handelCPLerror",__LINE__, __FILE__);
             }
@@ -211,7 +216,7 @@ FMTexceptionhandler::FMTexceptionhandler(const std::shared_ptr<Logging::FMTlogge
 	_exception(FMTexc::None),
 	_errorcount(0),
 	_warningcount(0),
-	maxwarningsbeforesilenced(5),
+	maxwarningsbeforesilenced(10),
 	_logger(logger),
 	usenestedexceptions(true),
 	errorstowarnings(),
@@ -225,7 +230,7 @@ FMTexceptionhandler::FMTexceptionhandler() : _level(FMTlev::FMT_None),
 		_exception(FMTexc::None),
 		_errorcount(0),
 		_warningcount(0),
-		maxwarningsbeforesilenced(5),
+		maxwarningsbeforesilenced(10),
 		_logger(),
 		usenestedexceptions(true),
 		errorstowarnings(),

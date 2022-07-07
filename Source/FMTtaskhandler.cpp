@@ -13,6 +13,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #if defined FMTWITHPYTHON
 	#include "boost/python.hpp"
 #endif
+#include "FMTexceptionhandler.hpp"
 
 
 namespace Parallel

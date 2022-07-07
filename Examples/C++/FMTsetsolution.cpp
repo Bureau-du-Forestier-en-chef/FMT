@@ -32,16 +32,21 @@ int main(int argc, char *argv[])
 		Models::FMTlpmodel optimizationmodel(models.at(0), Models::FMTsolverinterface::CLP);
 		const std::vector<Core::FMTschedule>schedules = modelparser.readschedules(primarylocation,models).at(0);
 		const double tolerance = 0.01;
-		for (size_t period = 1; period <= 6; ++period)
+		//optimizationmodel.setparameter(Models::FMTintmodelparameters::PRESOLVE_ITERATIONS, 0);
+		optimizationmodel.setparameter(Models::FMTboolmodelparameters::FORCE_PARTIAL_BUILD, true);
+		optimizationmodel.FMTmodel::setparameter(Models::FMTdblmodelparameters::TOLERANCE, tolerance);
+		optimizationmodel.doplanning(false, schedules);
+		/*for (size_t period = 1; period <= 6; ++period)
 			{
-			optimizationmodel.buildperiod();
+			optimizationmodel.buildperiod(schedules.at(period - 1));
 			}
 		for (size_t period = 1; period <= 6; ++period)
 			{
 			optimizationmodel.setsolution(period,schedules.at(period-1), tolerance);
-			}
+			}*/
 		if (argc>3)//Got the double for validation!
 			{
+			
 			const double ovoltotrecvalue = std::stod(argv[3]);
 			bool gotovoltotrec = false;
 			for (const Core::FMToutput& output : optimizationmodel.getoutputs())
@@ -64,7 +69,6 @@ int main(int argc, char *argv[])
 					"FMTsetsolution", __LINE__, primarylocation);
 				}
 			}
-
 	}else {
 		Logging::FMTlogger() << "FMT needs to be compiled with OSI" << "\n";
 		}

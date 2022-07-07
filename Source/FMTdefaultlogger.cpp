@@ -7,13 +7,12 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 
 #include "FMTdefaultlogger.hpp"
-#ifdef FMTWITHOSI
-#include <CoinMessageHandler.hpp>
-#endif
 #if defined FMTWITHPYTHON
 #include <boost/python.hpp>
 #endif // defined FMTWITHPYTHON
 #include <iostream>
+#include "FMTsolverlogger.hpp"
+
 
 namespace Logging
 	{
@@ -21,7 +20,7 @@ namespace Logging
 	FMTdefaultlogger::FMTdefaultlogger()
 		{
 		#ifdef FMTWITHOSI
-			this->setLogLevel(1);
+			solverref->setLogLevel(1);
 		#endif
 		}
 
@@ -36,7 +35,7 @@ namespace Logging
 		FMTlogger::checkSeverity();
 		}
 
-	CoinMessageHandler * FMTdefaultlogger::clone() const
+	FMTlogger* FMTdefaultlogger::clone() const
 		{
 		return new FMTdefaultlogger(*this);
 		}

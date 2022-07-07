@@ -13,11 +13,13 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <algorithm>
 #include <boost/algorithm/string.hpp> 
 #include "OsiSolverInterface.hpp"
+#include "CoinBuild.hpp"
 
 
 namespace Models
 
 {
+	FMTmatrixbuild::~FMTmatrixbuild() = default;
 
 	std::string FMTmatrixbuild::formatformatrixname(std::string name,bool shortformat) const
 	{
@@ -47,7 +49,7 @@ namespace Models
 		{
 		const int * indicesarray;
 		const double * elementsarray;
-		int sizeofrow = rowsbuild.row(whichRow, rowLower, rowUpper, indicesarray, elementsarray);
+		int sizeofrow = rowsbuild->row(whichRow, rowLower, rowUpper, indicesarray, elementsarray);
 		indices.reserve(sizeofrow);
 		elements.reserve(sizeofrow);
 		indices.insert(indices.end(), indicesarray, indicesarray + sizeofrow);
@@ -61,7 +63,7 @@ namespace Models
 		{
 		const int * indicesarray;
 		const double * elementsarray;
-		int sizeofcol = colsbuild.column(whichCol, colLower, colUpper, objectiveValue, indicesarray, elementsarray);
+		int sizeofcol = colsbuild->column(whichCol, colLower, colUpper, objectiveValue, indicesarray, elementsarray);
 		indices.reserve(sizeofcol);
 		elements.reserve(sizeofcol);
 		indices.insert(indices.end(), indicesarray, indicesarray + sizeofcol);
@@ -136,16 +138,16 @@ namespace Models
 				solver->deleteCols(static_cast<int>(deletedvariables.size()), &deletedvariables[0]);
 				deletedvariables.clear();
 			}
-			if (colsbuild.numberColumns() > 0)
+			if (colsbuild->numberColumns() > 0)
 			{
-				solver->addCols(colsbuild);
-				colsbuild = CoinBuild(1);
+				solver->addCols(*colsbuild);
+				*colsbuild = CoinBuild(1);
 				colscount = 0;
 			}
-			if (rowsbuild.numberRows() > 0)
+			if (rowsbuild->numberRows() > 0)
 			{
-				solver->addRows(rowsbuild);
-				rowsbuild = CoinBuild(0);
+				solver->addRows(*rowsbuild);
+				*rowsbuild = CoinBuild(0);
 				rowscount = 0;
 			}
 			}catch (...)
@@ -166,14 +168,14 @@ namespace Models
 		}
 
 
-	FMTmatrixbuild::FMTmatrixbuild() : colscount(0), rowscount(0), colsbuild(1),
-		rowsbuild(0), deletedconstraints(),deletedvariables()
+	FMTmatrixbuild::FMTmatrixbuild() : colscount(0), rowscount(0), colsbuild( new CoinBuild(1)),
+		rowsbuild(new CoinBuild(0)), deletedconstraints(),deletedvariables()
 		{
 
 		}
 
-	FMTmatrixbuild::FMTmatrixbuild(const FMTmatrixbuild& rhs) : colscount(rhs.colscount), rowscount(rhs.rowscount), colsbuild(rhs.colsbuild),
-		rowsbuild(rhs.rowsbuild), deletedconstraints(rhs.deletedconstraints), deletedvariables(rhs.deletedvariables)
+	FMTmatrixbuild::FMTmatrixbuild(const FMTmatrixbuild& rhs) : colscount(rhs.colscount), rowscount(rhs.rowscount), colsbuild(new CoinBuild(*rhs.colsbuild)),
+		rowsbuild(new CoinBuild(*rhs.rowsbuild)), deletedconstraints(rhs.deletedconstraints), deletedvariables(rhs.deletedvariables)
 		{
 
 		}
@@ -182,8 +184,8 @@ namespace Models
 	{
 		colscount=rhs.colscount;
 		rowscount = rhs.rowscount;
-		colsbuild=rhs.colsbuild;
-		rowsbuild=rhs.rowsbuild;
+		colsbuild.swap(rhs.colsbuild);
+		rowsbuild.swap(rhs.rowsbuild);
 		deletedconstraints.swap(rhs.deletedconstraints);
 		deletedvariables.swap(rhs.deletedvariables);
 		columnnames.swap(rhs.columnnames);
@@ -197,8 +199,8 @@ namespace Models
 			{
 			colscount = rhs.colscount;
 			rowscount = rhs.rowscount;
-			colsbuild = rhs.colsbuild;
-			rowsbuild = rhs.rowsbuild;
+			colsbuild.reset(new CoinBuild(*rhs.colsbuild));
+			rowsbuild.reset(new CoinBuild(*rhs.rowsbuild));
 			deletedconstraints = rhs.deletedconstraints;
 			deletedvariables = rhs.deletedvariables;
 			columnnames = rhs.columnnames;
@@ -210,12 +212,12 @@ namespace Models
 	std::string FMTmatrixbuild::getrowstosynchronize() const
 		{
 		std::string rows;
-		for (int irow =0; irow< rowsbuild.numberRows();++irow)
+		for (int irow =0; irow< rowsbuild->numberRows();++irow)
 			{
 			double lowerbound,upperbound;
 			const int* columns;
 			const double* elements;
-			int numberofelements = rowsbuild.row(irow, lowerbound, upperbound, columns, elements);
+			int numberofelements = rowsbuild->row(irow, lowerbound, upperbound, columns, elements);
 			double maximumcolid = 0;
 			double minimumcolid = COIN_INT_MAX;
 			double maximumparemeter=0;
@@ -253,12 +255,12 @@ namespace Models
 	std::string FMTmatrixbuild::getcolstosynchronize() const
 		{
 		std::string cols;
-		for (int icol = 0; icol < colsbuild.numberColumns(); ++icol)
+		for (int icol = 0; icol < colsbuild->numberColumns(); ++icol)
 		{
 			double lowerbound, upperbound,objective;
 			const int* rows;
 			const double* elements;
-			int numberofelements = colsbuild.column(icol, lowerbound, upperbound,objective,rows, elements);
+			int numberofelements = colsbuild->column(icol, lowerbound, upperbound,objective,rows, elements);
 			for (int nelement = 0; nelement < numberofelements; ++nelement)
 			{
 				double maximumrowid = 0;
@@ -297,6 +299,20 @@ namespace Models
 		cols += "\n";
 		return cols;
 		}
+
+	void FMTmatrixbuild::addCol(int numberInColumn, const int * rows, const double * elements, double columnLower,
+		double columnUpper, double objectiveValue)
+	{
+		colsbuild->addCol(numberInColumn, rows, elements, columnLower,
+			columnUpper, objectiveValue);
+		++colscount;
+	}
+
+	void FMTmatrixbuild::addRow(int numberInRow, const int * columns, const double * elements, double rowLower, double rowUpper)
+	{
+		rowsbuild->addRow(numberInRow, columns, elements, rowLower, rowUpper);
+		++rowscount;
+	}
 
 
 }

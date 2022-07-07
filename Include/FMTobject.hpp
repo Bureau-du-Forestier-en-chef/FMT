@@ -8,11 +8,14 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #ifndef FMTobject_H_INCLUDED
 #define FMTobject_H_INCLUDED
 
-#include "FMTexceptionhandler.hpp"
-#include "FMTlogger.hpp"
+#ifndef NOMINMAX
+	#define NOMINMAX
+#endif // !NOMINMAX
+
 #include <boost/serialization/shared_ptr.hpp>
 #include <boost/serialization/nvp.hpp>
 #include <boost/serialization/export.hpp>
+#include "FMTexception.hpp"
 #include <memory>
 #include <chrono>
 #include <vector>
@@ -22,6 +25,16 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #else
     #include <boost/dll/runtime_symbol_info.hpp>
 #endif
+
+namespace Exception
+{
+	class FMTexceptionhandler;
+}
+
+namespace Logging
+{
+	class FMTlogger;
+}
 
 
 
@@ -214,11 +227,6 @@ class FMTEXPORT FMTobject
 		set a vector of error to be cast to warnings to the exception handler...
 		*/
 		void seterrorstowarnings(const std::vector<Exception::FMTexc>& errors);
-		// DocString: FMTobject::setmaxwarningsbeforesilenced
-		/**
-		Number of time warnings are raised before silenced
-		*/
-		void setmaxwarningsbeforesilenced(const size_t& warns);
 
 	};
 }

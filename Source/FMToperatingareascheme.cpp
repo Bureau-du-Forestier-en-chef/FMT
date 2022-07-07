@@ -268,7 +268,7 @@ size_t FMToperatingareascheme::unboundalldualschemes(std::vector<int>& targets, 
 				if (std::find(targets.begin(), targets.end(), newconstraint)== targets.end())
 					{
 					targets.push_back(newconstraint);
-					bounds.push_back(-COIN_DBL_MAX);
+					bounds.push_back(-std::numeric_limits<double>::max());
 					bounds.push_back(_area);
 					}
 				}

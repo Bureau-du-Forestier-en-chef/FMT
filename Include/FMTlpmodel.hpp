@@ -14,6 +14,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <boost/serialization/split_member.hpp>
 #include <boost/serialization/unordered_map.hpp>
 #include <boost/serialization/vector.hpp>
+#include <limits>
 
 namespace Heuristics
 {
@@ -52,30 +53,25 @@ shrinked (by the front) using the function eraseperiod.
 The matrix is held within the solverinterface pointer.
 */
 
-class FMTEXPORT FMTlpmodel final : public FMTsrmodel
+class FMTEXPORT FMTlpmodel : public FMTsrmodel
 	{
-	// DocString: FMTlpmodel::save
+	// DocString: FMTlpmodel::serialize
 	/**
 	Save function is for serialization, used to do multiprocessing across multiple cpus (pickle in Pyhton)
 	*/
 	friend class boost::serialization::access;
 	template<class Archive>
 	void save(Archive& ar, const unsigned int version) const
-		{
-		ar & boost::serialization::make_nvp("model", boost::serialization::base_object<FMTsrmodel>(*this));
-		ar & BOOST_SERIALIZATION_NVP(elements);
-		}
-	// DocString: FMTlpmodel::load
-	/**
-	Load function is for serialization, used to do multiprocessing across multiple cpus (pickle in Pyhton)
-	*/
+	{
+		ar& boost::serialization::make_nvp("model", boost::serialization::base_object<FMTsrmodel>(*this));
+		ar& BOOST_SERIALIZATION_NVP(elements);
+	}
 	template<class Archive>
 	void load(Archive& ar, const unsigned int version)
-		{
-		ar & boost::serialization::make_nvp("model", boost::serialization::base_object<FMTsrmodel>(*this));
-		ar & BOOST_SERIALIZATION_NVP(elements);
-		}
-	BOOST_SERIALIZATION_SPLIT_MEMBER()
+	{
+		ar& boost::serialization::make_nvp("model", boost::serialization::base_object<FMTsrmodel>(*this));
+		ar& BOOST_SERIALIZATION_NVP(elements);
+	}
 	// DocString: FMTlpmodel::elements
 	///Locations of the constraints and variables in the matrix for the constraints / objective.
 	std::vector<std::unordered_map<std::string,
@@ -99,7 +95,8 @@ class FMTEXPORT FMTlpmodel final : public FMTsrmodel
 	int getsetmatrixelement(const Core::FMTconstraint& constraint,
                      const FMTmatrixelement& element_type, const std::map<int, double>& indexes,
                      int period = -1,
-                     double lowerbound = COIN_DBL_MIN,double upperbound = COIN_DBL_MAX);
+                     double lowerbound = std::numeric_limits<double>::min(),
+					 double upperbound = std::numeric_limits<double>::max());
 	// DocString: FMTlpmodel::getgoals
 	/**
 	Return goals (index) if it already exist within the other constraints (goals (goalsnames) can be used across multiple FMTconstraints.

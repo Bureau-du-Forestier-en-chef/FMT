@@ -8,8 +8,12 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #ifndef FMTmodelparameters_H_INCLUDED
 #define FMTmodelparameters_H_INCLUDED
 
+#include "FMTexceptionhandler.hpp"
 #include "FMTobject.hpp"
 #include <boost/serialization/export.hpp>
+#include <boost/serialization/array.hpp>
+#include <boost/serialization/vector.hpp>
+#include <array>
 
 namespace Models
 {
@@ -67,25 +71,26 @@ namespace Models
     */
     class FMTEXPORT FMTmodelparameters : public Core::FMTobject
     {
-        // DocString: FMTmodelparameters::serialize
-        /**
-        Serialize function is for serialization, used to do multiprocessing across multiple cpus (pickle in Pyhton)
-        */
         friend class boost::serialization::access;
+        // DocString: FMTmodelparameters::serialize
+       /**
+       Serialize function is for serialization, used to do multiprocessing across multiple cpus (pickle in Pyhton)
+       */
         template<class Archive>
         void serialize(Archive& ar, const unsigned int version)
         {
-		try {
-                ar & boost::serialization::make_nvp("FMTobject", boost::serialization::base_object<FMTobject>(*this));
-                ar & BOOST_SERIALIZATION_NVP(intparameters);
-                ar & BOOST_SERIALIZATION_NVP(dblparameters);
-                ar & BOOST_SERIALIZATION_NVP(boolparameters);
-                ar & BOOST_SERIALIZATION_NVP(compresstime);
-	        }catch (...)
+            try {
+                ar& boost::serialization::make_nvp("FMTobject", boost::serialization::base_object<FMTobject>(*this));
+                ar& BOOST_SERIALIZATION_NVP(intparameters);
+                ar& BOOST_SERIALIZATION_NVP(dblparameters);
+                ar& BOOST_SERIALIZATION_NVP(boolparameters);
+                ar& BOOST_SERIALIZATION_NVP(compresstime);
+            }
+            catch (...)
             {
                 _exhandler->printexceptions("", "FMTmodelparameters::serialize", __LINE__, __FILE__);
             }
-	    }
+        }
         private:
             std::array<int, LastIntModelParam> intparameters;
             std::array<double, LastDblModelParam> dblparameters;
