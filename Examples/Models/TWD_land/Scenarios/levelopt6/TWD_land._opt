@@ -1,0 +1,11 @@
+
+*OBJECTIVE
+_MAXMIN oSupRec 1.._LENGTH
+
+*CONSTRAINTS
+
+_EVEN(test4,1%) 1.._LENGTH
+
+;test4 >= 10 1.._LENGTH
+
+*FORMAT MOSEK

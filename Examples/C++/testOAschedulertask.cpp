@@ -133,7 +133,7 @@ int main(int argc, char *argv[])
             const int startingperiod = optimizationmodel.getconstraints().at(0).getperiodlowerbound();
             const Core::FMToutputnode nodeofoutput =  createBFECoptaggregate(optimizationmodel);
             const std::vector<Heuristics::FMToperatingareascheme> opeareas = ObtenirOperatingArea(fichierShp,optimizationmodel.getthemes(),14, startingperiod, "AGE", "SUPERFICIE", "STANLOCK");
-			std::unique_ptr<Parallel::FMTtask> maintaskptr(new Parallel::FMTopareaschedulertask(optimizationmodel, opeareas, nodeofoutput,"tests/"+scenarios.at(0), "YOUVERT",10000,120));
+			std::unique_ptr<Parallel::FMTtask> maintaskptr(new Parallel::FMTopareaschedulertask(optimizationmodel, opeareas, nodeofoutput,"tests/testOAschedulertask/"+scenarios.at(0), "YOUVERT",10000,120));
 			Parallel::FMTtaskhandler handler(maintaskptr,4);
 			handler.settasklogger();
 			handler.conccurentrun();

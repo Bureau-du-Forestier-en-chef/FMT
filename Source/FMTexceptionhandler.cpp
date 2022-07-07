@@ -620,7 +620,12 @@ std::string FMTexceptionhandler::updatestatus(const FMTexc lexception, const std
 		++_errorcount;
 		break;
 	case FMTexc::FMTreplanningwarning:
-		msg += "While replanning  " + message;
+		msg += "While replanning " + message;
+		_level = FMTlev::FMT_Warning;
+		++_warningcount;
+		break;
+	case FMTexc::FMTyieldmodelprediction:
+		msg += "When predicting " + message;
 		_level = FMTlev::FMT_Warning;
 		++_warningcount;
 		break;

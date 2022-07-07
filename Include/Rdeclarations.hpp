@@ -38,6 +38,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTaction.hpp"
 #include "FMTbounds.hpp"
 #include "FMTtimeyieldhandler.hpp"
+#include "FMTageyieldhandler.hpp"
 #include "FMTfork.hpp"
 #include "FMTtransition.hpp"
 #include "FMToutputnode.hpp"
@@ -49,6 +50,9 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTcoordinate.hpp"
 #include "FMTmodelparameters.hpp"
 #include "FMTmaskfilter.hpp"
+#include "FMToutputsource.hpp"
+#include "FMToperator.hpp"
+#include "FMTtransitionmask.hpp"
 
 //Parallel
 #include "FMTtask.hpp"
@@ -132,12 +136,24 @@ RCPP_DECLAREVECTOR(Core::FMTdevelopment);//For vector
 RCPP_DECLAREVECTOR(Core::FMTdevelopmentpath);//For vector
 RCPP_DECLAREPAIR(Core::FMTmask, Core::FMTspec);//pair for FMTlist
 RCPP_DECLAREVECTOR(Core::FMTspec);//For vector
+RCPP_DECLAREPAIR(Core::FMTmask, Core::FMTperbounds);//pair for FMTlist
+RCPP_DECLAREVECTOR(Core::FMTperbounds);//For vector
+RCPP_DECLAREPAIR(Core::FMTmask, Core::FMTagebounds);//pair for FMTlist
+RCPP_DECLAREVECTOR(Core::FMTagebounds);//For vector
+RCPP_DECLAREPAIR(Core::FMTmask, Core::FMTyldbounds);//pair for FMTlist
+RCPP_DECLAREVECTOR(Core::FMTyldbounds);//For vector
+RCPP_DECLAREPAIR(Core::FMTmask, Core::FMTlockbounds);//pair for FMTlist
+RCPP_DECLAREVECTOR(Core::FMTlockbounds);//For vector
 RCPP_DECLAREVECTOR(Core::FMTactualdevelopment);//For vector
 RCPP_DECLAREVECTOR(Core::FMTfuturdevelopment);//For vector
 RCPP_DECLAREVECTOR(Core::FMTaction);//For vector
 RCPP_DECLAREPAIR(Core::FMTmask, int);//pair for FMTlist
+RCPP_DECLAREPAIR(Core::FMTmask, Core::FMTyieldhandler);//pair for FMTlist
+RCPP_DECLAREVECTOR(Core::FMTyieldhandler);//For vector
 RCPP_DECLAREPAIR(Core::FMTmask, Core::FMTtimeyieldhandler);//pair for FMTlist
 RCPP_DECLAREVECTOR(Core::FMTtimeyieldhandler);//For vector
+RCPP_DECLAREPAIR(Core::FMTmask, Core::FMTageyieldhandler);//pair for FMTlist
+RCPP_DECLAREVECTOR(Core::FMTageyieldhandler);//For vector
 RCPP_DECLAREPAIR(Core::FMTmask, Core::FMTfork);//pair for FMTlist
 RCPP_DECLAREVECTOR(Core::FMTmaskfilter);//For vector
 RCPP_DECLAREVECTOR(Core::FMTfork);//For vector
@@ -154,5 +170,13 @@ RCPP_DECLAREMAP(std::string, std::vector<double>);//For string of double map
 RCPP_DECLAREMAP(std::string, std::vector<Core::FMTdevelopment>);//For string of vector of developements
 RCPP_DECLAREMAP(Core::FMTaction , std::map<Core::FMTdevelopment RCPP_COMMA std::vector<double>>);//For action of ...
 RCPP_DECLAREMAP(std::string , std::map<std::string RCPP_COMMA std::vector<double>>);//For string of ...
+RCPP_DECLAREPAIR(Core::FMTmask, Core::FMToutputsource);//pair for FMTlist
+RCPP_DECLAREVECTOR(Core::FMToutputsource);//For vector
+RCPP_DECLAREPAIR(Core::FMTmask, Core::FMToperator);//pair for FMTlist
+RCPP_DECLAREVECTOR(Core::FMToperator);//For vector
+RCPP_DECLAREPAIR(Core::FMTtransitionmask, Core::FMTtransitionmask);//pair for FMTlist
+RCPP_DECLAREVECTOR(Core::FMTtransitionmask);//For vector
+
+
 
 #endif // RDECLARATIONS_H_INCLUDED

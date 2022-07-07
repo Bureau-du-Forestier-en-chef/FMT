@@ -32,6 +32,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 	class GDALRasterBand;
 	class GDALDriver;
 	class OGRSpatialReference;
+	class OGRCoordinateTransformation;
 #endif
 
 
@@ -158,6 +159,23 @@ class FMTEXPORT FMTparser: public Core::FMTobject
 			Return a vector of GDAL drivers for a given spatialtype (raster/vector)
 			*/
 			std::vector<GDALDriver*> getallGDALdrivers(const char* spatialtype) const;
+			// DocString: FMTparser::setcategories
+			/**
+			Write the categories in the band information
+			*/
+			void setcategories(GDALRasterBand* band, const std::vector<std::string>& categories) const;
+			// DocString: FMTareaparser::getprojtransform
+			/**
+			Create a memory layer with a new int field named fieldname based on forel.
+			Based on the baselayer.
+			*/
+			OGRCoordinateTransformation* getprojtransform(OGRLayer* baselayer,bool fittoforel =true) const;
+			// DocString: FMTareaparser::gettransformmemlayercopy
+			/**
+			Create a memory layer with a new int field named fieldname based on forel.
+			Based on the baselayer. With a new spatial reference or can be the same has baselayer.
+			*/
+			GDALDataset* gettransformmemlayercopy(OGRLayer* baselayer, OGRSpatialReference* newreference, const std::string& fieldname) const;
 			// DocString: FMTparser::getFORELspatialref
 			/**
 			Return and OGRspatialReference corresponding to the one used for FORELs in Quebec.
@@ -308,7 +326,7 @@ class FMTEXPORT FMTparser: public Core::FMTobject
 		/**
 		Check if line is valid and clean it.
 		*/
-        bool isvalid(std::string& line) const;
+        bool isvalid(const std::string& line) const;
 		// DocString: FMTparser::regexloop
 		/**
 		Capture a forloops from a line and return the variables to loop on.
@@ -375,7 +393,7 @@ class FMTEXPORT FMTparser: public Core::FMTobject
 		Template function to get a numeric value from a string (value).
 		*/
 		template<typename T>
-		T getnum(const std::string& value) const;
+		T getnum(const std::string& value,bool omitnumtest=false) const;
 		// DocString: FMTparser::tryfillnumber
 		/**
 		Try to get a number from a string (value) return false if failed.

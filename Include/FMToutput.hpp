@@ -97,8 +97,8 @@ class FMTEXPORT FMToutput: public FMTobject
 	*/
     FMToutput(const std::string& lname,const std::string& ldescription,
 		//const int& ltheme_target,
-		std::vector<FMToutputsource>& lsources,
-		std::vector<FMToperator>& loperators);
+		const std::vector<FMToutputsource>& lsources,
+		const std::vector<FMToperator>& loperators);
 	// DocString: FMToutput(const std::string&)
 	/**
 	Partial constructor for FMToutput with only name
@@ -183,7 +183,7 @@ class FMTEXPORT FMToutput: public FMTobject
 	Only Linear output can be added to a linear programming matrix.
 	*/
 	bool islinear() const;
-	// DocString: FMToutput::linear
+	// DocString: FMToutput::canbenodesonly
 	/**
 	If the output can be used as nodes only so in LP it will return true.
 	It has to be linear and dont have -+ of level or timeyield or constant.
@@ -339,6 +339,18 @@ class FMTEXPORT FMToutput: public FMTobject
 	Change outputorigin for the optimizationparser 
 	*/
 	void changesourcesid(const int& outid);
+	// DocString: FMToutput::extractRHSvalue
+	/**
+	It has to be a mix between noded output and constant level.
+	It will also produce a new output and remove the extra constants.
+	*/
+	Core::FMToutput removeRHSvalue() const;
+	// DocString: FMToutput::getRHSvalue
+	/**
+	Get the RHSvalues is mix a level with a variable node for a given period.
+	*/
+	void getRHSvalue(const int& period,double& lower, double& upper) const;
+
 	// DocString: FMToutput::setperiod
 	/**
 	Set the outputsource to one period.

@@ -431,6 +431,14 @@ namespace Core
 				object.first = FMTmask(std::string(object.first), themes);
 				}
 		}
+		// DocString: FMTlist::APIpush_back
+		/**
+		For template specification to overcome the static_cast of function
+		*/
+		void APIpush_back(const FMTmask& mask, const T& value)
+		{
+			push_back(mask,value);
+		}
 		// DocString: FMTlist::push_back
 		/**
 		Push back an element at the end of the FMTlist.

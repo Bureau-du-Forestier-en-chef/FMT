@@ -40,7 +40,7 @@ namespace Parser
 {
 
 	const std::regex Parser::FMTparser::rxvectortheme = std::regex("^(THEME)([\\d]*)$");
-	const std::regex Parser::FMTparser::rxnumber = std::regex("-?[\\d.]+(?:E-?[\\d.]+)?", std::regex_constants::icase);
+	const std::regex Parser::FMTparser::rxnumber = std::regex("-?[\\d.,]+(?:E-?[\\d.,]+)?", std::regex_constants::icase);
 	const std::regex Parser::FMTparser::rxremovecomment = std::regex("^(.*?)([;]+.*)");
 	const std::regex Parser::FMTparser::rxvalid = std::regex("^(?!\\s*$).+");
 	const std::regex Parser::FMTparser::rxinclude = std::regex("^(\\*INCLUDE)([\\s\\t]*)(.+)");
@@ -250,14 +250,14 @@ T FMTparser::getnum(const std::string& value, const Core::FMTconstants& constant
 {
 	T nvalue = 0;
 	try {
-		const std::string newvalue = boost::erase_all_copy(value, ",");
-		if (isnum(newvalue))
+		//const std::string newvalue = boost::erase_all_copy(value, ",");
+		if (isnum(value/*newvalue*/))
 		{
-			nvalue = getnum<T>(newvalue);
+			nvalue = getnum<T>(value,true/*newvalue*/);
 		}
-		else if (constant.isconstant(newvalue))
+		else if (constant.isconstant(value/*newvalue*/))
 		{
-			nvalue = constant.get<T>(newvalue, period);
+			nvalue = constant.get<T>(value/*newvalue*/, period);
 			_exhandler->raise(Exception::FMTexc::FMTconstants_replacement,
 				value + " at line " + std::to_string(_line), "FMTparser::getnum", __LINE__, __FILE__, _section);
 			++_constreplacement;
@@ -279,12 +279,12 @@ template double FMTparser::getnum<double>(const std::string& value, const Core::
 template size_t FMTparser::getnum<size_t>(const std::string& value, const Core::FMTconstants& constant, int period) const;
 
 template<typename T>
-T FMTparser::getnum(const std::string& value) const
+T FMTparser::getnum(const std::string& value, bool omitnumtest) const
 {
 	T nvalue = 0;
 	try {
 		const std::string newvalue = boost::erase_all_copy(value, ",");
-		if (isnum(newvalue))
+		if (omitnumtest||isnum(newvalue))
 		{
 			nvalue = static_cast<T>(std::stod(newvalue));
 		}
@@ -300,9 +300,9 @@ T FMTparser::getnum(const std::string& value) const
 	return nvalue;
 }
 
-template int FMTparser::getnum<int>(const std::string& value) const;
-template double FMTparser::getnum<double>(const std::string& value) const;
-template size_t FMTparser::getnum<size_t>(const std::string& value) const;
+template int FMTparser::getnum<int>(const std::string& value, bool omitnumtest) const;
+template double FMTparser::getnum<double>(const std::string& value, bool omitnumtest) const;
+template size_t FMTparser::getnum<size_t>(const std::string& value, bool omitnumtest) const;
 
 template<typename T>
 bool FMTparser::tryfillnumber(T& number, const std::string& value, const Core::FMTconstants& constant, int period) const
@@ -448,19 +448,37 @@ GDALRasterBand* FMTparser::getband(GDALDataset* dataset,int bandid) const
     {
 	GDALRasterBand* band = nullptr;
 	try{
-	band = dataset->GetRasterBand(bandid);
-    if (band == nullptr)
-        {
-        _exhandler->raise(Exception::FMTexc::FMTinvalidband,
-			dataset->GetDescription(),"FMTparser::getband", __LINE__, __FILE__, _section);
-        }
-	}
-	catch (...)
-	{
+		band = dataset->GetRasterBand(bandid);
+		if (band == nullptr)
+			{
+			_exhandler->raise(Exception::FMTexc::FMTinvalidband,
+				dataset->GetDescription(),"FMTparser::getband", __LINE__, __FILE__, _section);
+			}
+	}catch (...)
+		{
 		_exhandler->raisefromcatch("", "FMTparser::getband", __LINE__, __FILE__, _section);
-	}
+		}
     return band;
     }
+
+void FMTparser::setcategories(GDALRasterBand* band,const std::vector<std::string>& categories) const
+	{
+	try {
+		if (!categories.empty())
+			{
+			CPLStringList strlist;
+			for (const std::string& value : categories)
+				{
+				strlist.AddString(value.c_str());
+				}
+			band->SetCategoryNames(strlist);
+			}
+	}catch (...)
+		{
+		_exhandler->raisefromcatch("", "FMTparser::setcategories", __LINE__, __FILE__, _section);
+		}
+
+	}
 
 GDALRasterBand* FMTparser::createband(GDALDataset* dataset,const std::vector<std::string>& categories,int bandid) const
     {
@@ -468,15 +486,7 @@ GDALRasterBand* FMTparser::createband(GDALDataset* dataset,const std::vector<std
 	try {
 		band->SetNoDataValue(-9999);
 		band->Fill(-9999);
-		if (!categories.empty())
-		{
-			CPLStringList strlist;
-			for (const std::string& value : categories)
-			{
-				strlist.AddString(value.c_str());
-			}
-			band->SetCategoryNames(strlist);
-		}
+		setcategories(band, categories);
 		band->FlushCache();
 	}catch (...)
 		{
@@ -554,6 +564,56 @@ GDALDataset* FMTparser::createvectormemoryds() const
 				_exhandler->raisefromcatch("","FMTparser::getemptymemoryds", __LINE__, __FILE__, _section);
 			}
 	return dataset;
+	}
+
+OGRCoordinateTransformation* FMTparser::getprojtransform(OGRLayer* baselayer, bool fittoforel) const
+	{
+	OGRCoordinateTransformation* coordtransf = nullptr;
+	try {
+		std::unique_ptr<OGRSpatialReference> forelspref = getFORELspatialref();
+		OGRSpatialReference* lspref = baselayer->GetSpatialRef();
+		if (fittoforel)
+			{
+			coordtransf = OGRCreateCoordinateTransformation(lspref, &*forelspref);
+		}else {
+			coordtransf = OGRCreateCoordinateTransformation(lspref,lspref);
+			}
+	}catch (...)
+		{
+		_exhandler->raisefromcatch("", "FMTparser::getprojtransform", __LINE__, __FILE__, _section);
+		}
+	return coordtransf;
+	}
+
+GDALDataset* FMTparser::gettransformmemlayercopy(OGRLayer* baselayer, OGRSpatialReference* newreference, const std::string& fieldname) const
+	{
+	GDALDataset* memds = nullptr;
+	try {
+		OGRwkbGeometryType lgeomtype = baselayer->GetGeomType();
+		if (lgeomtype != wkbMultiPolygon && lgeomtype != wkbPolygon)
+			{
+			_exhandler->raise(Exception::FMTexc::FMTinvalidlayer,
+				"Geometry type from layer is not valid, must be wkbMultiPolygon or wkbPolygon : " + std::to_string(lgeomtype),
+				"FMTparser::gettransformmemlayercopy", __LINE__, __FILE__, _section);
+			}
+		memds = createvectormemoryds();
+		OGRLayer* memlayer = memds->CreateLayer("Memlayer", newreference, lgeomtype, NULL);
+		if (memlayer == NULL)
+			{
+			_exhandler->raise(Exception::FMTexc::FMTgdal_constructor_error,
+				"Layer in memory", "FMTparser::gettransformmemlayercopy", __LINE__, __FILE__, _section);
+			}
+		OGRFieldDefn oField(fieldname.c_str(), OFTInteger);
+		if (memlayer->CreateField(&oField) != OGRERR_NONE)
+			{
+			_exhandler->raise(Exception::FMTexc::FMTgdal_constructor_error,
+				"Field definition", "FMTparser::gettransformmemlayercopy", __LINE__, __FILE__, _section);
+			}
+	}catch (...)
+		{
+		_exhandler->raisefromcatch("", "FMTparser::gettransformmemlayercopy", __LINE__, __FILE__, _section);
+		}
+	return memds;
 	}
 
 GDALDataset* FMTparser::createOGRdataset(std::string location,
@@ -937,7 +997,7 @@ bool FMTparser::isvalidfile(const std::string& location) const
 
 bool FMTparser::isnum(std::string value) const
     {
-	boost::erase_all(value, ",");
+	//boost::erase_all(value, ",");
 	return std::regex_match(value,rxnumber);
     }
 
@@ -984,20 +1044,23 @@ std::vector<std::string>FMTparser::regexloop(const std::regex& cutregex, std::st
 		}
         return result;
         }
-    bool FMTparser::isvalid(std::string& line) const
+    bool FMTparser::isvalid(const std::string& line) const
         {
         return std::regex_match(line,rxvalid);
         }
     void FMTparser::clearcomments(std::string& line)
         {
 		try {
-			std::smatch kmatch;
-			if (std::regex_search(line, kmatch, rxremovecomment))
-			{
-				_comment = std::string(kmatch[2]);
-				boost::to_upper(_comment);
-				line = std::string(kmatch[1]);
-			}
+			if (line.find(";")!=std::string::npos)
+				{
+				std::smatch kmatch;
+				if (std::regex_search(line, kmatch, rxremovecomment))
+				{
+					_comment = std::string(kmatch[2]);
+					boost::to_upper(_comment);
+					line = std::string(kmatch[1]);
+				}
+				}
 		}catch (...)
 		{
 			_exhandler->raisefromcatch("", "FMTparser::clearcomments", __LINE__, __FILE__, _section);
@@ -1048,16 +1111,17 @@ std::vector<std::string>FMTparser::regexloop(const std::regex& cutregex, std::st
         {
         ++_line;
 		std::string newline;
+		std::string line;
 		try{
-        if (safeGetline(stream, newline))
+        if (safeGetline(stream,line))
             {
 			_comment.clear();
-            clearcomments(newline);
-			std::string fullline = newline;
-            newline = "";
-            for(int loc = 0; loc < static_cast<int>(fullline.size()); ++loc)
+            clearcomments(line);
+			//std::string fullline = newline;
+           // newline = "";
+            for(int loc = 0; loc < static_cast<int>(line.size()); ++loc)
                 {
-                char value = fullline[loc];
+                char value = line.at(loc);
                 if(_incomment)
                     {
                     if (value=='}')
@@ -1100,6 +1164,10 @@ std::vector<std::string>FMTparser::regexloop(const std::regex& cutregex, std::st
 bool FMTparser::getforloops(std::string& line,const std::vector<Core::FMTtheme>& themes, const Core::FMTconstants& cons, std::vector<std::string>& allvalues, std::string& target)
 	{
 	try{
+	if (!std::regex_match(line, rxfor))
+		{
+		return false;
+		}
 	std::smatch kmatch;
 	if (std::regex_search(line, kmatch, rxfor))
 	{
@@ -1174,7 +1242,8 @@ std::queue<std::string> FMTparser::tryinclude(const std::string& line, const std
 	std::smatch kmatch;
 	std::queue<std::string>included_lines;
 	try{
-	if (std::regex_search(line, kmatch, FMTparser::rxinclude))
+	if (std::regex_match(line, FMTparser::rxinclude)&&
+		std::regex_search(line, kmatch, FMTparser::rxinclude))
 		{
 		std::string location = kmatch[3];
 		boost::filesystem::path includedpath(location);
