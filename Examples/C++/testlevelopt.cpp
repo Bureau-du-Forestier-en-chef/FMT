@@ -24,16 +24,29 @@ int main()
 		scenarios.push_back("levelopt2");
 		scenarios.push_back("levelopt3");
 		scenarios.push_back("levelopt4");
+		scenarios.push_back("levelopt5");
+		scenarios.push_back("levelopt6");
+		scenarios.push_back("levelopt7");
+		scenarios.push_back("levelopt8");
 		std::vector<double>objectivevalues;
 		objectivevalues.push_back(15485.952);
 		objectivevalues.push_back(1000);
 		objectivevalues.push_back(2580.992);
 		objectivevalues.push_back(50);
+		objectivevalues.push_back(907.38);
+		objectivevalues.push_back(862.18);
+		objectivevalues.push_back(856.88);
+		objectivevalues.push_back(1814.76);
 		const std::vector<Models::FMTmodel> models = modelparser.readproject(primarylocation, scenarios);
 		for (size_t scnid = 0 ; scnid < models.size();++scnid)
 		{
 			Models::FMTlpmodel optimizationmodel(models.at(scnid), Models::FMTsolverinterface::CLP);
-			for (size_t period = 0; period < 1; ++period)
+			size_t scenariolength = 1;
+			if (scnid>=4)
+				{
+				scenariolength = 2;
+				}
+			for (size_t period = 0; period < scenariolength; ++period)
 			{
 				optimizationmodel.buildperiod();
 			}
@@ -50,6 +63,7 @@ int main()
 				const double value = optimizationmodel.getObjValue();
 				if (1 < std::abs(value - objectivevalues.at(scnid)))
 				{
+					
 					Exception::FMTfreeexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed, "Wrong value",
 						"FMTleveltest", __LINE__, primarylocation);
 				}

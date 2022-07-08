@@ -326,7 +326,7 @@ class FMTEXPORT FMTparser: public Core::FMTobject
 		/**
 		Check if line is valid and clean it.
 		*/
-        bool isvalid(std::string& line) const;
+        bool isvalid(const std::string& line) const;
 		// DocString: FMTparser::regexloop
 		/**
 		Capture a forloops from a line and return the variables to loop on.
@@ -393,7 +393,7 @@ class FMTEXPORT FMTparser: public Core::FMTobject
 		Template function to get a numeric value from a string (value).
 		*/
 		template<typename T>
-		T getnum(const std::string& value) const;
+		T getnum(const std::string& value,bool omitnumtest=false) const;
 		// DocString: FMTparser::tryfillnumber
 		/**
 		Try to get a number from a string (value) return false if failed.

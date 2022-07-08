@@ -40,7 +40,7 @@ namespace Parser
 {
 
 	const std::regex Parser::FMTparser::rxvectortheme = std::regex("^(THEME)([\\d]*)$");
-	const std::regex Parser::FMTparser::rxnumber = std::regex("-?[\\d.]+(?:E-?[\\d.]+)?", std::regex_constants::icase);
+	const std::regex Parser::FMTparser::rxnumber = std::regex("-?[\\d.,]+(?:E-?[\\d.,]+)?", std::regex_constants::icase);
 	const std::regex Parser::FMTparser::rxremovecomment = std::regex("^(.*?)([;]+.*)");
 	const std::regex Parser::FMTparser::rxvalid = std::regex("^(?!\\s*$).+");
 	const std::regex Parser::FMTparser::rxinclude = std::regex("^(\\*INCLUDE)([\\s\\t]*)(.+)");
@@ -250,14 +250,14 @@ T FMTparser::getnum(const std::string& value, const Core::FMTconstants& constant
 {
 	T nvalue = 0;
 	try {
-		const std::string newvalue = boost::erase_all_copy(value, ",");
-		if (isnum(newvalue))
+		//const std::string newvalue = boost::erase_all_copy(value, ",");
+		if (isnum(value/*newvalue*/))
 		{
-			nvalue = getnum<T>(newvalue);
+			nvalue = getnum<T>(value,true/*newvalue*/);
 		}
-		else if (constant.isconstant(newvalue))
+		else if (constant.isconstant(value/*newvalue*/))
 		{
-			nvalue = constant.get<T>(newvalue, period);
+			nvalue = constant.get<T>(value/*newvalue*/, period);
 			_exhandler->raise(Exception::FMTexc::FMTconstants_replacement,
 				value + " at line " + std::to_string(_line), "FMTparser::getnum", __LINE__, __FILE__, _section);
 			++_constreplacement;
@@ -279,12 +279,12 @@ template double FMTparser::getnum<double>(const std::string& value, const Core::
 template size_t FMTparser::getnum<size_t>(const std::string& value, const Core::FMTconstants& constant, int period) const;
 
 template<typename T>
-T FMTparser::getnum(const std::string& value) const
+T FMTparser::getnum(const std::string& value, bool omitnumtest) const
 {
 	T nvalue = 0;
 	try {
 		const std::string newvalue = boost::erase_all_copy(value, ",");
-		if (isnum(newvalue))
+		if (omitnumtest||isnum(newvalue))
 		{
 			nvalue = static_cast<T>(std::stod(newvalue));
 		}
@@ -300,9 +300,9 @@ T FMTparser::getnum(const std::string& value) const
 	return nvalue;
 }
 
-template int FMTparser::getnum<int>(const std::string& value) const;
-template double FMTparser::getnum<double>(const std::string& value) const;
-template size_t FMTparser::getnum<size_t>(const std::string& value) const;
+template int FMTparser::getnum<int>(const std::string& value, bool omitnumtest) const;
+template double FMTparser::getnum<double>(const std::string& value, bool omitnumtest) const;
+template size_t FMTparser::getnum<size_t>(const std::string& value, bool omitnumtest) const;
 
 template<typename T>
 bool FMTparser::tryfillnumber(T& number, const std::string& value, const Core::FMTconstants& constant, int period) const
@@ -997,7 +997,7 @@ bool FMTparser::isvalidfile(const std::string& location) const
 
 bool FMTparser::isnum(std::string value) const
     {
-	boost::erase_all(value, ",");
+	//boost::erase_all(value, ",");
 	return std::regex_match(value,rxnumber);
     }
 
@@ -1044,20 +1044,23 @@ std::vector<std::string>FMTparser::regexloop(const std::regex& cutregex, std::st
 		}
         return result;
         }
-    bool FMTparser::isvalid(std::string& line) const
+    bool FMTparser::isvalid(const std::string& line) const
         {
         return std::regex_match(line,rxvalid);
         }
     void FMTparser::clearcomments(std::string& line)
         {
 		try {
-			std::smatch kmatch;
-			if (std::regex_search(line, kmatch, rxremovecomment))
-			{
-				_comment = std::string(kmatch[2]);
-				boost::to_upper(_comment);
-				line = std::string(kmatch[1]);
-			}
+			if (line.find(";")!=std::string::npos)
+				{
+				std::smatch kmatch;
+				if (std::regex_search(line, kmatch, rxremovecomment))
+				{
+					_comment = std::string(kmatch[2]);
+					boost::to_upper(_comment);
+					line = std::string(kmatch[1]);
+				}
+				}
 		}catch (...)
 		{
 			_exhandler->raisefromcatch("", "FMTparser::clearcomments", __LINE__, __FILE__, _section);
@@ -1108,16 +1111,17 @@ std::vector<std::string>FMTparser::regexloop(const std::regex& cutregex, std::st
         {
         ++_line;
 		std::string newline;
+		std::string line;
 		try{
-        if (safeGetline(stream, newline))
+        if (safeGetline(stream,line))
             {
 			_comment.clear();
-            clearcomments(newline);
-			std::string fullline = newline;
-            newline = "";
-            for(int loc = 0; loc < static_cast<int>(fullline.size()); ++loc)
+            clearcomments(line);
+			//std::string fullline = newline;
+           // newline = "";
+            for(int loc = 0; loc < static_cast<int>(line.size()); ++loc)
                 {
-                char value = fullline[loc];
+                char value = line.at(loc);
                 if(_incomment)
                     {
                     if (value=='}')
@@ -1160,6 +1164,10 @@ std::vector<std::string>FMTparser::regexloop(const std::regex& cutregex, std::st
 bool FMTparser::getforloops(std::string& line,const std::vector<Core::FMTtheme>& themes, const Core::FMTconstants& cons, std::vector<std::string>& allvalues, std::string& target)
 	{
 	try{
+	if (!std::regex_match(line, rxfor))
+		{
+		return false;
+		}
 	std::smatch kmatch;
 	if (std::regex_search(line, kmatch, rxfor))
 	{
@@ -1234,7 +1242,8 @@ std::queue<std::string> FMTparser::tryinclude(const std::string& line, const std
 	std::smatch kmatch;
 	std::queue<std::string>included_lines;
 	try{
-	if (std::regex_search(line, kmatch, FMTparser::rxinclude))
+	if (std::regex_match(line, FMTparser::rxinclude)&&
+		std::regex_search(line, kmatch, FMTparser::rxinclude))
 		{
 		std::string location = kmatch[3];
 		boost::filesystem::path includedpath(location);

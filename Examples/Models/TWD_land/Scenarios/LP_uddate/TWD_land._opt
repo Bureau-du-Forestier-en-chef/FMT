@@ -1,0 +1,12 @@
+
+*OBJECTIVE
+_MAXMIN oVolRec 2.._LENGTH
+
+*CONSTRAINTS
+
+ovolREC >= 200 1
+ovolREC <= 202 1
+_EVEN(ovolREC) 2..6
+_NDY(ovolREC) 6.._LENGTH
+
+*FORMAT MOSEK
