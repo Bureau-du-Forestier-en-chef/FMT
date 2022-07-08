@@ -1688,15 +1688,13 @@ const std::regex FMTareaparser::rxcleanarea = std::regex("^((\\*A[A]*)([^|]*)(_l
 						bool potential_futurs = false;
 						bool got0area = false;
 						size_t futurtype = 0;
-
-						std::vector<std::string>splitted;
 						if (FMTparser::tryopening(areastream, location))
 						{
 							bool inactualdevs = false;
 							boost::unordered_map<Core::FMTdevelopment,size_t>devsindex;
 							while (areastream.is_open())
 							{
-								std::string line = FMTparser::getcleanlinewfor(areastream, themes, constants);
+								const std::string line = FMTparser::getcleanlinewfor(areastream, themes, constants);
 								if (!line.empty())
 								{
 									if (potential_futurs && inactualdevs && !_comment.empty() && got0area)
@@ -1710,34 +1708,33 @@ const std::regex FMTareaparser::rxcleanarea = std::regex("^((\\*A[A]*)([^|]*)(_l
 									std::smatch kmatch;
 									if (std::regex_search(line, kmatch, FMTareaparser::rxcleanarea))
 									{
-										std::string strlock = std::string(kmatch[6]) + std::string(kmatch[14]);
-										const std::string masknage = std::string(kmatch[3]) + std::string(kmatch[9]) + std::string(kmatch[18]) + std::string(kmatch[23]);
+										std::string masknage = std::string(kmatch[3]) + std::string(kmatch[9]) + std::string(kmatch[18]) + std::string(kmatch[23]);
 										std::string mask;
-										double area;
-										int age, lock;
-										size_t linesize;
-										splitted = FMTparser::spliter(masknage, FMTparser::rxseparator);
-										linesize = splitted.size();
+										std::vector<std::string>splitted;
+										boost::trim(masknage);
+										boost::split(splitted, masknage, boost::is_any_of(FMT_STR_SEPARATOR),boost::algorithm::token_compress_on);
+										//splitted = FMTparser::spliter(masknage, FMTparser::rxseparator);
+										const size_t linesize = splitted.size();
 										inactualdevs = true;
-
 										for (size_t themeid = 0; themeid < (linesize - 2); ++themeid)
 										{
 											mask += splitted.at(themeid) + " ";
 										}
 										mask.pop_back();
-										area = getnum<double>(splitted.at(linesize - 1), constants);
+										const double area = getnum<double>(splitted.at(linesize - 1), constants);
 										if (area > 0)
 										{
 											got0area = false;
 											if (!Core::FMTtheme::validate(themes, mask, " at line " + std::to_string(_line))) continue;
 											potential_futurs = false;
-											age = getnum<int>(splitted.at(linesize - 2), constants);
-											lock = 0;
+											const int age = getnum<int>(splitted.at(linesize - 2), constants);
+											int lock = 0;
+											const std::string strlock = std::string(kmatch[6]) + std::string(kmatch[14]);
 											if (FMTparser::isvalid(strlock))
 											{
 												lock = getnum<int>(strlock, constants);
 											}
-											Core::FMTactualdevelopment actualdevelopment(Core::FMTmask(mask, themes), age, lock, area);
+											const Core::FMTactualdevelopment actualdevelopment(Core::FMTmask(mask, themes), age, lock, area);
 											//Weird non unique area section...
 											boost::unordered_map<Core::FMTdevelopment, size_t>::const_iterator hashit = devsindex.find(actualdevelopment);
 											if (devsindex.find(actualdevelopment) == devsindex.end())

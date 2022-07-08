@@ -117,19 +117,6 @@ namespace Core {
 		return modelOutputs;
 	}
 
-	const std::string FMTyieldmodelnep::GetModelInfo() const
-	{
-		try {
-			_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, "Calling pure virtual function ",
-				"FMTyieldmodel::GetModelInfo", __LINE__, __FILE__, Core::FMTsection::Yield);
-		}
-		catch (...)
-		{
-			_exhandler->raisefromcatch("", "FMTyieldmodel::GetModelInfo", __LINE__, __FILE__, Core::FMTsection::Yield);
-		}
-		return std::string();
-	}
-
 	const std::vector<double> FMTyieldmodelnep::GetInputValues(const Graph::FMTpredictor& predictor) const
 	{
 		std::vector<double> values;
@@ -157,6 +144,20 @@ namespace Core {
 
 
 		return values;
+	}
+
+	const void FMTyieldmodelnep::RemoveNans(std::vector<float>& input) const
+	{
+		for (int i = 0; i < input.size(); i++)
+		{
+			if (isnan(input[i]))
+			{
+				if (i == 0 || i == 2 || i == 4)
+					input[i] = 0;
+				if (i == 1 || i == 3 || i == 5)
+					input[i] = FMTyieldmodel::UNKNOWN_DISTURBANCE_CODE;
+			}
+		}
 	}
 }
 
