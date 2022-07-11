@@ -227,6 +227,7 @@ namespace Parallel
 						*bestscheduler = *actualscheduler;
 					}else {
 						*actualscheduler = *bestscheduler;
+						actualscheduler->passinmessagehandler(*tasklogger.get());
 					}
 				}
 		}catch (...)
@@ -306,6 +307,7 @@ namespace Parallel
 	{
 		try {
 			//If you dont have initialsolution, you need to do an initialsolve
+			actualscheduler->passinmessagehandler(*tasklogger.get());
 			bool needinitialsolve = !gotinitialsolution();
 			while (goodtogo())
 			{
@@ -323,6 +325,7 @@ namespace Parallel
 					{
 						needinitialsolve = false;
 						*actualscheduler = *bestscheduler;
+						actualscheduler->passinmessagehandler(*tasklogger.get());
 					}
 				}
 				else {
