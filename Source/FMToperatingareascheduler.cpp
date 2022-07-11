@@ -183,6 +183,7 @@ namespace Heuristics
 
 	bool FMToperatingareascheduler::initialsolve()
 		{
+		bool foundsolution = false;
 		try {
 			if (this->isProvenOptimal())
 			{
@@ -206,28 +207,29 @@ namespace Heuristics
 					if (!selected.empty())
 					{
 						int setratio = static_cast<int>(((static_cast<double>(opareaprocessed)) / (static_cast<double>(this->operatingareas.size()))) * 100);
-						(*_logger) << "Solution generation phase (" + std::to_string(setratio) + "%) took " + std::to_string(iterations) + " iterations on " + problemsolved + " formulation" << "\n";
+						(*_logger) << "Thread : " + getthreadid() + " Solution generation phase (" + std::to_string(setratio) + "%) took " + std::to_string(iterations) + " iterations on " + problemsolved + " formulation" << "\n";
 					}
 				} while (!selected.empty());
 				if (this->isProvenOptimal())
 				{
+					foundsolution = true;
 					const double newobjective = this->getObjValue();
 					const std::string relativevalue = std::to_string(static_cast<int>(std::abs(initialobjectivevalue - newobjective) * 100 / initialobjectivevalue));
-					(*_logger) << "Feasible solution found objective: " + std::to_string(newobjective) + " (" + relativevalue + "%) " << "\n";
+					(*_logger) << "Thread : " + getthreadid() + " Feasible solution found objective: " + std::to_string(newobjective) + " (" + relativevalue + "%) " << "\n";
 					this->clearrowcache();
 				}
 				else {
 					if (!userandomness)
 					{
 						_exhandler->raise(Exception::FMTexc::FMTschemefailed,
-							"FMToperatingareascheduler failed initialsolve switching to random for next try.",
+							"Thread : " + getthreadid() + " FMToperatingareascheduler failed initialsolve switching to random for next try.",
 							"FMToperatingareascheduler::initialsolve", __LINE__, __FILE__);
 						userandomness = true; //Switch to random now
 
 					}
 					else {
 						_exhandler->raise(Exception::FMTexc::FMTschemefailed,
-							"FMToperatingareascheduler initialsolve at random failed, trying another scheme.",
+							"Thread : " + getthreadid() + " FMToperatingareascheduler initialsolve at random failed, trying another scheme.",
 							"FMToperatingareascheduler::initialsolve", __LINE__, __FILE__);
 					}
 					this->unboundall(); //release everything
@@ -240,16 +242,16 @@ namespace Heuristics
 			}else{
 				{
 					_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
-														"Model is not optimal at the beginning of initialsolve",
+						"Thread : " + getthreadid() + " Model is not optimal at the beginning of initialsolve",
 														"FMToperatingareascheduler::intialsolve", __LINE__, __FILE__);
 
 				}
 			}
 		}catch (...)
 		{
-			_exhandler->printexceptions("", "FMToperatingareascheduler::initialsolve", __LINE__, __FILE__);
+			_exhandler->printexceptions("Thread : " + getthreadid()+" ", "FMToperatingareascheduler::initialsolve", __LINE__, __FILE__);
 		}
-		return this->isProvenOptimal();
+		return foundsolution;
 		}
 
 	bool FMToperatingareascheduler::branchnboundsolve()
@@ -309,10 +311,10 @@ namespace Heuristics
 					this->resolvemodel();
 				}
 				const double newobjective = this->getObjValue();
-				if (((newobjective*sens < initialobjectivevalue*sens)) && optimalsolution)
+				if (((newobjective*sens < initialobjectivevalue*sens)) && this->isProvenOptimal())
 				{
 					const std::string relativevalue = std::to_string(static_cast<int>(std::abs(initsol - newobjective) * 100 / initsol));
-					(*_logger) << "Better solution found objective: " + std::to_string(newobjective) + " (" + relativevalue + "%). "+std::to_string(iteration)+" iterations left." << "\n";
+					(*_logger) << "Thread : " + getthreadid() + " Better solution found objective: " + std::to_string(newobjective) + " (" + relativevalue + "%). "+std::to_string(iteration)+" iterations left." << "\n";
 					this->clearrowcache();
 				}else{
 					this->unbound(selected);
@@ -342,7 +344,7 @@ namespace Heuristics
 			}
 		}catch (...)
 		{
-			_exhandler->printexceptions("", "FMToperatingareascheduler::greedypass", __LINE__, __FILE__);
+			_exhandler->printexceptions("Thread : " + getthreadid()+" ", "FMToperatingareascheduler::greedypass", __LINE__, __FILE__);
 		}
 		return this->isProvenOptimal();
 	}
@@ -926,6 +928,11 @@ namespace Heuristics
 		{
 		proportionofset=proportion;
 		}
+
+	std::string FMToperatingareascheduler::getthreadid() const
+	{
+		return boost::lexical_cast<std::string>(boost::this_thread::get_id());
+	}
 
 }
 BOOST_CLASS_EXPORT_IMPLEMENT(Heuristics::FMToperatingareascheduler)

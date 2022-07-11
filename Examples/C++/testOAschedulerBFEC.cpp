@@ -1,5 +1,6 @@
 #ifdef FMTWITHOSI
     #include "FMTareaparser.hpp"
+    #include "FMTyieldparser.hpp"
 	#include "FMTlpmodel.hpp"
 	#include "FMTmodelparser.hpp"
 	#include "FMTversion.hpp"
@@ -120,7 +121,7 @@ int main(int argc, char *argv[])
         Logging::FMTlogger().logstamp();
         #ifdef FMTWITHOSI
             const std::string primarylocation = std::string(argv[1]);
-            const std::vector<std::string>scenarios(1,std::string(argv[2]));
+            const std::vector<std::string>scenarios(1, std::string(argv[2]));
             const std::string fichierShp = std::string(argv[3]);
             Parser::FMTmodelparser modelparser;
             modelparser.setdefaultexceptionhandler();
@@ -139,10 +140,22 @@ int main(int argc, char *argv[])
             std::vector<Heuristics::FMToperatingareascheduler> opareaheuristics = optimizationmodel.getoperatingareaschedulerheuristics(opeareas, nodeofoutput);
 			Heuristics::FMTlpheuristicmthandler handler = Heuristics::FMTlpheuristicmthandler(opareaheuristics, initialobjectivevalue);
 			size_t bestpos = handler.initialsolve();
-			opareaheuristics[bestpos].setproportionofset(0.10);
+			opareaheuristics[bestpos].setproportionofset(0.00000001);
             bestpos = handler.greedysolve(5,10000000);
 			const Heuristics::FMToperatingareascheduler bestsolve = opareaheuristics[bestpos];
             const std::vector<Core::FMTtimeyieldhandler> ythandler = bestsolve.getsolution("YOUVERT");
+            //write solution
+            Core::FMTyields yields;
+            for (const Core::FMTtimeyieldhandler& tyld : ythandler)
+            {
+                std::unique_ptr<Core::FMTyieldhandler>newyield(new Core::FMTtimeyieldhandler(tyld));
+                yields.push_back(newyield->getmask(), newyield);
+            }
+            yields.update();
+            Parser::FMTyieldparser yldparser;
+            const std::string solutionname = "tests/testOAschedulerBFEC/bfecoptsol.yld";
+            yldparser.write(yields, solutionname);
+            //
             Core::FMTyields myields = model.getyields();
             myields.unshrink(model.getthemes());
             for(const auto& yth : ythandler)
@@ -152,19 +165,27 @@ int main(int argc, char *argv[])
                                     );
             }
             myields.update();
-            Models::FMTlpmodel noptimizationmodel(model, Models::FMTsolverinterface::MOSEK);
-            noptimizationmodel.setyields(myields);
-            noptimizationmodel.setparameter(Models::FMTintmodelparameters::LENGTH, 5);
-	        noptimizationmodel.setparameter(Models::FMTboolmodelparameters::STRICTLY_POSITIVE, true);
-	        noptimizationmodel.setparameter(Models::FMTintmodelparameters::PRESOLVE_ITERATIONS, 1);
-            noptimizationmodel.doplanning(true);
-            const double objectivevalue = noptimizationmodel.getObjValue();
-            const double bfecoptvalue = bestsolve.getObjValue();
-            if ((objectivevalue < (bfecoptvalue - 1))||(objectivevalue > (bfecoptvalue + 1)))
-						{
-						Exception::FMTfreeexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed, "Wrong value",
-							"testOAschedulerBFEC", __LINE__, primarylocation);
-						}
+            optimizationmodel = Models::FMTlpmodel(model, Models::FMTsolverinterface::MOSEK);
+            optimizationmodel.setyields(myields);
+            optimizationmodel.setparameter(Models::FMTintmodelparameters::LENGTH, 5);
+            optimizationmodel.setparameter(Models::FMTboolmodelparameters::STRICTLY_POSITIVE, true);
+            optimizationmodel.setparameter(Models::FMTintmodelparameters::PRESOLVE_ITERATIONS, 1);
+            if (optimizationmodel.doplanning(true)) 
+            {
+                const double objectivevalue = optimizationmodel.getObjValue();
+                const double bfecoptvalue = bestsolve.getObjValue();
+                std::cout << objectivevalue << " " << bfecoptvalue << std::endl;
+                if ((objectivevalue < (bfecoptvalue - 1)) || (objectivevalue > (bfecoptvalue + 1)))
+                {
+                    Exception::FMTfreeexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed, "Wrong value",
+                        "testOAschedulerBFEC", __LINE__, primarylocation);
+                }
+            }
+            else {
+                Exception::FMTfreeexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed, "Cannot resolve model with solution",
+                    "testOAschedulerBFEC", __LINE__, primarylocation);
+            }
+           
     #endif 
         return 0;
 	}
