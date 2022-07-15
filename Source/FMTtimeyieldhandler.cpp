@@ -28,7 +28,10 @@ namespace Core {
 				const std::vector<double>* data = &it->second.data;
 				for (const double & val : *data)
 				{
-					value += std::to_string(val) + " ";
+					std::string singlevalue = std::to_string(val);
+					singlevalue.erase(singlevalue.find_last_not_of('0') + 1, std::string::npos);
+					singlevalue.erase(singlevalue.find_last_not_of('.') + 1, std::string::npos);
+					value += singlevalue + " ";
 				}
 				value += "\n";
 			}
