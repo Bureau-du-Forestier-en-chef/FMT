@@ -164,7 +164,8 @@ void exportModel()
 		.value("SEED", Models::FMTintmodelparameters::SEED)
 		.value("NUMBER_OF_ITERATIONS", Models::FMTintmodelparameters::NUMBER_OF_ITERATIONS)
 		.value("PRESOLVE_ITERATIONS", Models::FMTintmodelparameters::PRESOLVE_ITERATIONS)
-		.value("NUMBER_OF_THREADS", Models::FMTintmodelparameters::NUMBER_OF_THREADS);
+		.value("NUMBER_OF_THREADS", Models::FMTintmodelparameters::NUMBER_OF_THREADS)
+		.value("MATRIX_TYPE", Models::FMTintmodelparameters::MATRIX_TYPE);
 	
 	define_pylist<Models::FMTintmodelparameters>();
 	
@@ -178,7 +179,9 @@ void exportModel()
 		.value("FORCE_PARTIAL_BUILD", Models::FMTboolmodelparameters::FORCE_PARTIAL_BUILD)
 		.value("STRICTLY_POSITIVE", Models::FMTboolmodelparameters::STRICTLY_POSITIVE)
 		.value("POSTSOLVE", Models::FMTboolmodelparameters::POSTSOLVE)
-		.value("SHOW_LOCK_IN_SCHEDULES", Models::FMTboolmodelparameters::SHOW_LOCK_IN_SCHEDULES);
+		.value("SHOW_LOCK_IN_SCHEDULES", Models::FMTboolmodelparameters::SHOW_LOCK_IN_SCHEDULES)
+		.value("PRESOLVE_CAN_REMOVE_STATIC_THEMES", Models::FMTboolmodelparameters::PRESOLVE_CAN_REMOVE_STATIC_THEMES)
+		.value("DEBUG_MATRIX", Models::FMTboolmodelparameters::DEBUG_MATRIX);
 
 	define_pylist<Models::FMTboolmodelparameters>();
 

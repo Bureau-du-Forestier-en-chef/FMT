@@ -25,6 +25,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #endif
 #include "OsiClpSolverInterface.hpp"
 #include "FMTexceptionhandler.hpp"
+#include "boost/filesystem.hpp"
 
 
 namespace Models
@@ -1319,6 +1320,10 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 		return solver.stockresolve();
 		 }catch (...)
 		 {
+			 if (DEBUG_MATRIX)
+			 {
+				 writeLP((boost::filesystem::current_path()+=boost::filesystem::path::preferred_separator).string());
+			 }
 			 _exhandler->printexceptions("", "FMTlpmodel::resolve", __LINE__, __FILE__);
 		 }
 
@@ -1572,6 +1577,10 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 			return solver.initialsolve();
 		}catch (...)
 		{
+			if (DEBUG_MATRIX)
+			{
+				writeLP((boost::filesystem::current_path() += boost::filesystem::path::preferred_separator).string());
+			}
 			_exhandler->printexceptions("", "FMTlpmodel::initialsolve", __LINE__, __FILE__);
 		}
 
