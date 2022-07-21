@@ -565,6 +565,11 @@ std::string FMTtheme::updatefrommask(const Core::FMTmask& globalmask)
 	return "?";
 	}
 
+std::vector<std::string>FMTtheme::getaggregates() const
+	{
+	return aggregates;
+	}
+
 
 FMTtheme FMTtheme::presolve(FMTmaskfilter& maskfilter, size_t& newid, size_t& newstart) const
 	{

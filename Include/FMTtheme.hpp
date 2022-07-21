@@ -290,6 +290,14 @@ class FMTEXPORT FMTtheme : public FMTobject
 			{
 			return attributes;
 			}
+		// DocString: FMTtheme::getattributenames
+		/**
+		Get the names of the attributes.
+		*/
+		const std::vector<std::string>& getattributenames() const
+			{
+			return attributenames;
+			}
 		// DocString: FMTtheme::presolve
 		/**
 		The function presolve the FMTtheme so it removes non used attributes base on the basemask and fill up the 
@@ -336,6 +344,11 @@ class FMTEXPORT FMTtheme : public FMTobject
 		static bool checkmask(const std::vector<Core::FMTtheme>& themes,
 			const std::vector<std::string>& values, std::string& mask,
 			const std::string& otherinformation);
+		// DocString: FMTobject::getaggregates
+		/**
+		Returns the aggregates of the theme.
+		*/
+		std::vector<std::string>getaggregates() const;
     };
 
 	// DocString: FMTthemecomparator
