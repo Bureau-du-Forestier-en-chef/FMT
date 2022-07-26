@@ -1,0 +1,13 @@
+
+*OBJECTIVE
+_MAXMIN OSUPREC 1.._LENGTH
+
+*CONSTRAINTS
+
+osuppertUCtot - lev50pourrec  = 0    1.._LENGTH
+
+lev50pourrec - inutilemaisbon - levfinrempli  = 0   1.._LENGTH
+
+olevfinrempli - 0.25 * oSuptot >= 0   1.._LENGTH
+
+*FORMAT MOSEK
