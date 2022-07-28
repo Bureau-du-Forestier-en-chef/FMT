@@ -25,6 +25,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #endif
 #include "OsiClpSolverInterface.hpp"
 #include "FMTexceptionhandler.hpp"
+#include "boost/filesystem.hpp"
 
 
 namespace Models
@@ -816,7 +817,7 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 				{
 					maxconstraint.setlength(period,period);
 					this->setobjective(maxconstraint);
-					if(!this->resolve())
+					if(!this->initialsolve())
 					{
 						_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
 							"Upper objectif unfeasable at period "+std::to_string(period),"FMTlpmodel::getvariabilities", __LINE__, __FILE__);
@@ -824,7 +825,7 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 					uppervalues.push_back(this->getoutput(output, period,Core::FMToutputlevel::totalonly).begin()->second);
 					minconstraint.setlength(period,period);
 					this->setobjective(minconstraint);
-					if (!this->resolve())
+					if (!this->initialsolve())
 					{
 						_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
 							"Lower objectif unfeasable at period "+std::to_string(period),"FMTlpmodel::getvariabilities", __LINE__, __FILE__);
@@ -1319,6 +1320,10 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 		return solver.stockresolve();
 		 }catch (...)
 		 {
+			 if (DEBUG_MATRIX)
+			 {
+				 writeLP((boost::filesystem::current_path()+=boost::filesystem::path::preferred_separator).string());
+			 }
 			 _exhandler->printexceptions("", "FMTlpmodel::resolve", __LINE__, __FILE__);
 		 }
 
@@ -1499,9 +1504,9 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 																						size_t numberofheuristics,
 																						bool copysolver)		
 		{
-		bool userandomness = false;
+		const bool userandomness = false;
 		size_t seedof = 1;
-		double proportionofset = 0.25;
+		const double proportionofset = 0.25;
 		std::vector<Heuristics::FMToperatingareascheduler>allheuristics;
 		try {
 			updatematrixnaming();
@@ -1572,6 +1577,10 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 			return solver.initialsolve();
 		}catch (...)
 		{
+			if (DEBUG_MATRIX)
+			{
+				writeLP((boost::filesystem::current_path() += boost::filesystem::path::preferred_separator).string());
+			}
 			_exhandler->printexceptions("", "FMTlpmodel::initialsolve", __LINE__, __FILE__);
 		}
 

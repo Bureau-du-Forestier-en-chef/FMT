@@ -46,7 +46,8 @@ namespace Models
         POSTSOLVE = 2,/**< Return a postsolved model for the doplanning */
         SHOW_LOCK_IN_SCHEDULES = 3,//Not needed or change parameters in fonctions ... maybe more for task
 		PRESOLVE_CAN_REMOVE_STATIC_THEMES =4,//The presolve will allow the removing of static themes even in use (it can alter the area section).
-        LastBoolModelParam = 5/**< End marker, used to allocate a fixed-sized array to store bool parameters. */
+        DEBUG_MATRIX = 5,//If true, when an error occur in lpmodel initialsolve or resolve, the matrix will be written. 
+        LastBoolModelParam = 6/**< End marker, used to allocate a fixed-sized array to store bool parameters. */
     };
 
 

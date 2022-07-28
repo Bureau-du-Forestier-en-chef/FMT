@@ -84,7 +84,6 @@ namespace Heuristics
 			{
 				FMTlpheuristic* heuristic = heuristics[i];
 				heuristic->setnumberofthreads(static_cast<size_t>(mosek_process));
-				heuristic->setnothread(static_cast<int>(i));
 				threads.push_back(boost::thread(std::bind(&FMTlpheuristic::initialsolve, heuristic)));
 			}
 			for(boost::thread& thr : threads)
@@ -106,7 +105,6 @@ namespace Heuristics
 			{
 				FMTlpheuristic* heuristic = heuristics[i];
 				heuristic->setnumberofthreads(static_cast<size_t>(mosek_process));
-				heuristic->setnothread(static_cast<int>(i));
 				threads.push_back(boost::thread(std::bind(&FMTlpheuristic::paralleloptimize, heuristic, initialsolution,iterations,maxtime,Start)));
 			}
 			for(boost::thread& thr : threads)

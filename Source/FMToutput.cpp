@@ -521,7 +521,8 @@ FMToutput FMToutput::boundto(const std::vector<FMTtheme>& themes, const FMTperbo
 			{
 				std::string name = specialbound;
 				name += "(" + newoutput.name;
-				if (!(bound.getupper() == std::numeric_limits<double>::max() && bound.getlower() == 1))
+				if (!(bound.getupper() == std::numeric_limits<double>::max() && bound.getlower() == 1) &&
+					!(bound.getupper() == std::numeric_limits<int>::max() && bound.getlower() == 1))
 				{
 					name += ",";
 					name += std::to_string(bound.getlower()) + "..";

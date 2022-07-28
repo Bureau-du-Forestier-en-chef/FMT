@@ -342,13 +342,13 @@ std::vector<double>FMToperatingareascheme::fillpattern(const std::vector<double>
 			values.emplace(values.begin(), 0);
 			++period;
 		}
-		period = 0;
-		//For period before the starting period of the optimization fill with 1 
-		while(period < startingperiod)
-		{
-			values[period] =  1;
-			++period;
-		}
+	}
+	size_t period = 0;
+	//For period before the starting period of the optimization fill with 1 
+	while (period < startingperiod)
+	{
+		values[period] = 1;
+		++period;
 	}
 	return values;
 	}

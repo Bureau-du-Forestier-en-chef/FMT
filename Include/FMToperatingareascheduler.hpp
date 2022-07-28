@@ -116,7 +116,7 @@ namespace Heuristics
 		// DocString: FMToperatingareascheduler::draw
 		/**
 		Returns a vector selected oeprating areas based on the vector passed.
-		Depending if userandomness == false the draw will select the first elements until the max area is reach.
+		Depending if userandomness == false the draw will select the first elements until the max number of operatingarea to select is reach.
 		If userrandomness == true the draw is going to be shuffled
 		*/
 		std::vector<std::vector<FMToperatingareascheme>::const_iterator> draw(std::vector<std::vector<FMToperatingareascheme>::const_iterator>& oparea);
@@ -179,6 +179,11 @@ namespace Heuristics
 		Return the scheme index which is bounded for each operatingareascheme pass to the function in the same order.
 		*/
 		std::vector<int> getsolutionindexes(const std::vector<std::vector<FMToperatingareascheme>::const_iterator>& opareaits) const;
+		// DocString: FMToperatingareascheduler::getthreadid
+		/*
+		Return thread id to log it into functions greedypass and initialsove
+		*/
+		std::string getthreadid() const;
 	public:
 		// DocString: FMToperatingareascheduler::empty
 		/**
