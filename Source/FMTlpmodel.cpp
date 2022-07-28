@@ -1120,7 +1120,7 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 						if (!levelconstelem.empty() && levelconstelem.size() > variable_location &&
 							(name_it != level_names.end())) // caught a constriant with level!
 						{
-							return levelconstelem.at(variable_location);
+							return levelconstelem.at(variable_location);						
 						}
 					}
 				}
