@@ -147,7 +147,7 @@ FMToutput& FMToutput::operator  *= (const double& rhs)
 			for (FMToutputsource& source : sources)
 			{
 				new_sources.push_back(source);
-				if (source.isvariable() || source.isvariablelevel())
+				if (source.isvariable() || source.islevel())
 				{
 					new_operators.push_back(FMToperator("*"));
 					new_sources.push_back(FMToutputsource(FMTotar::val, rhs, "", "", source.getoutputorigin(), source.getthemetarget()));
@@ -885,6 +885,11 @@ void FMToutput::getRHSvalue(const int& period, double& lower, double& upper) con
 			{//get double and remove the rest
 				const double cvalue = source.getvalue(period);
 				outrhs = baseoperators.at(opid).call(outrhs, cvalue);
+				if (opid+1<baseoperators.size()) 
+				{
+					outrhs = baseoperators.at(opid + 1).call(outrhs, sources.at(opid + 1).getvalue(period));
+				}
+				
 			}
 			++opid;
 		}
