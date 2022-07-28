@@ -17,6 +17,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <boost/serialization/export.hpp>
 #include <boost/serialization/unique_ptr.hpp>
 #include <boost/serialization/vector.hpp>
+#include "FMTobject.hpp"
 
 namespace Core
 {
@@ -29,7 +30,7 @@ class FMTtheme;
 class FMTmaskfilter;
 
 
-class FMTEXPORT FMTfork : public FMTspec
+class FMTEXPORT FMTfork : public FMTspec, public FMTobject
     {
 	friend class boost::serialization::access;
     template<class Archive>
@@ -45,6 +46,7 @@ class FMTEXPORT FMTfork : public FMTspec
 		~FMTfork();
         FMTfork& operator = (const FMTfork& rhs);
         void add(const FMTtransitionmask& transition);
+        void clear();
 		std::vector<FMTdevelopmentpath> getpaths(const Core::FMTdevelopment& base, const Core::FMTyields& ylds,
 				const std::vector<FMTtheme>& themes,const bool& reset_age) const;
         FMTdevelopment getmax(const FMTdevelopment& base,const FMTyields& ylds,const std::vector<FMTtheme>& themes, const bool& reset_age) const;

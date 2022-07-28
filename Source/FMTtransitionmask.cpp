@@ -128,6 +128,11 @@ FMTtransitionmask::FMTtransitionmask(const std::string& lmask,const std::vector<
             return mask;
         }
 
+    void FMTtransitionmask::setmask(const Core::FMTmask& mtmask)
+        {
+        mask = mtmask;
+        }
+
 	std::map<std::string, std::string>FMTtransitionmask::get(const std::vector<FMTtheme>& themes) const
         {
 		std::map<std::string, std::string>mapping;

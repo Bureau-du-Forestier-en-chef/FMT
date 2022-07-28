@@ -547,6 +547,16 @@ public:
 	Get the lower bound of the period bounds.
 	*/
 	int getperiodlowerbound() const;
+	// DocString: FMTspec::getlockupperbound
+	/**
+	Get the upper bounds of the age bounds.
+	*/
+	int getlockupperbound() const;
+	// DocString: FMTspec::getlocklowerbound
+	/**
+	Get the lower bound of the age bounds.
+	*/
+	int getlocklowerbound() const;
 	// DocString: FMTspec::issubsetof
 	/**
 	return true if this spec is the subset of the rhs spec.

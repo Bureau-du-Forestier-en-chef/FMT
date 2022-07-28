@@ -321,7 +321,7 @@ std::vector<Core::FMTtransition> FMTtransitionparser::read(const std::vector<Cor
 					}
 					else {
 						transitions.push_back(transition);
-						//transitions.back().passinobject(*this);
+						
 					}
 				}
 

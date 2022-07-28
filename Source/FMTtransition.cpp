@@ -32,9 +32,11 @@ bool FMTtransition::isleaking() const
 			{
 			return true;
 			}
+
 		}
 	return false;
 	}
+
 
 FMTtransition::FMTtransition(const FMTtransition& rhs) : FMTlist<FMTfork>(rhs),name(rhs.name)
     {
