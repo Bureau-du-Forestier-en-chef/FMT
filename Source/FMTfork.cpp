@@ -12,6 +12,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTtransitionmask.hpp"
 #include <boost/archive/binary_oarchive.hpp>
 #include <boost/archive/binary_iarchive.hpp>
+#include <boost/unordered_map.hpp>
 
 
 namespace Core{
@@ -21,13 +22,14 @@ namespace Core{
 
 
 
-FMTfork::FMTfork():FMTspec(),transitions()
+FMTfork::FMTfork():FMTspec(),FMTobject(), transitions()
     {
 
 
     }
     FMTfork::FMTfork(const FMTfork& rhs):
         FMTspec(rhs),
+        FMTobject(rhs),
         transitions(rhs.transitions)
         {
 
@@ -38,6 +40,7 @@ FMTfork::FMTfork():FMTspec(),transitions()
         if (this!=&rhs)
             {
             FMTspec::operator=(rhs);
+            FMTobject::operator=(rhs);
             transitions = rhs.transitions;
             }
         return *this;
@@ -46,6 +49,12 @@ FMTfork::FMTfork():FMTspec(),transitions()
         {
         transitions.push_back(transition);
         }
+    void FMTfork::clear()
+    {
+        transitions.clear();
+    }
+
+
      double FMTfork::sumprop() const
         {
         double total = 0;
@@ -85,13 +94,49 @@ FMTfork::FMTfork():FMTspec(),transitions()
 	std::vector<FMTdevelopmentpath> FMTfork::getpaths(const Core::FMTdevelopment& base,const Core::FMTyields& ylds,
 		const std::vector<FMTtheme>& themes, const bool& reset_age) const
 		{
-		std::vector<FMTdevelopmentpath>paths;
-		paths.reserve(transitions.size());
-		for (const FMTtransitionmask& tran : transitions)
-			{
-			paths.emplace_back(tran.disturb(base, ylds, themes, reset_age), tran.getproportion());
-			}
-		 return paths;
+        std::vector<FMTdevelopmentpath>paths;
+        try{
+        paths.reserve(transitions.size());
+        boost::unordered_map<Core::FMTdevelopment,size_t>pathmap;
+        bool keeptags = false;
+        if (size()>1)
+            {
+            keeptags = true;
+            pathmap.reserve(transitions.size());
+            }   
+        size_t pathid = 0;
+        for (const FMTtransitionmask& tran : transitions)
+        {
+           Core::FMTdevelopment newdev = tran.disturb(base, ylds, themes, reset_age);
+           if (!reset_age && base==newdev)
+                {
+                _exhandler->raise(Exception::FMTexc::FMTsourcetotarget_transition,
+                    "from "+ std::string(base) +" to "+ std::string(newdev) + "\n",
+                    "FMTfork::getpaths", __LINE__, __FILE__, Core::FMTsection::Transition);
+                newdev.setlock(newdev.getlock()+1);
+                }
+           if (keeptags)
+                {
+                   boost::unordered_map<Core::FMTdevelopment, size_t>::const_iterator mapit = pathmap.find(newdev);
+                   if (mapit != pathmap.end())
+                        {
+                       _exhandler->raise(Exception::FMTexc::FMTsame_transitiontargets,
+                           "from " + std::string(base) + " to " + std::string(newdev) + "\n",
+                           "FMTfork::getpaths", __LINE__, __FILE__, Core::FMTsection::Transition);
+                       paths[mapit->second].proportion += tran.getproportion();
+                       continue;
+                   }else {
+                       pathmap[newdev] = pathid;
+                       }
+                }
+            paths.emplace_back(newdev,tran.getproportion());
+            ++pathid;
+        }
+        }catch (...)
+            {
+            _exhandler->raisefromcatch("", "FMTfork::getpaths", __LINE__, __FILE__, Core::FMTsection::Transition);
+             }
+        return paths;
 		}
 
 	std::vector<FMTtransitionmask> FMTfork::getmasktrans() const

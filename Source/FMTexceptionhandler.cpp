@@ -629,6 +629,16 @@ std::string FMTexceptionhandler::updatestatus(const FMTexc lexception, const std
 		_level = FMTlev::FMT_Warning;
 		++_warningcount;
 		break;
+	case FMTexc::FMTsourcetotarget_transition:
+		msg += "Transition source can return target " + message;
+		_level = FMTlev::FMT_logic;
+		++_errorcount;
+		break;
+	case FMTexc::FMTsame_transitiontargets:
+		msg += "Equivalent transition target " + message;
+		_level = FMTlev::FMT_logic;
+		++_errorcount;
+		break;
 	default:
 		_exception = FMTexc::None;
 		_level = FMTlev::FMT_None;

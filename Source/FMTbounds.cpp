@@ -397,6 +397,16 @@ FMTspec::FMTspec():per(),age(),lock(), yieldnames(), yieldbounds(){}
 	{
 		return per.lower;
 	}
+	int FMTspec::getlockupperbound() const
+	{
+		return lock.upper;
+	}
+
+	int FMTspec::getlocklowerbound() const
+	{
+		return lock.lower;
+	}
+
 
 
 	int FMTspec::getageupperbound() const

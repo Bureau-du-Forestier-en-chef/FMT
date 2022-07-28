@@ -54,6 +54,7 @@ class FMTEXPORT FMTtransitionmask : public FMTmaskfilter,public FMTspec
 		bool operator == (const FMTtransitionmask& rhs) const;
         double getproportion() const;
         FMTmask getmask() const;
+        void setmask(const Core::FMTmask& mtmask);
         void setproportion(double newproportion);
 		FMTtransitionmask presolve(const FMTmaskfilter& filter, const std::vector<FMTtheme>&presolvedthemes) const;
         operator std::string() const override;

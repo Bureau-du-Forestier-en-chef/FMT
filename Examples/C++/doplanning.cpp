@@ -32,6 +32,8 @@ int main(int argc, char *argv[])
 		errors.push_back(Exception::FMTexc::FMTinvalidyield_number);
 		errors.push_back(Exception::FMTexc::FMTundefinedoutput_attribute);
 		errors.push_back(Exception::FMTexc::FMToveridedyield);
+		//errors.push_back(Exception::FMTexc::FMTsourcetotarget_transition);
+		//errors.push_back(Exception::FMTexc::FMTsame_transitiontargets);
 		modelparser.seterrorstowarnings(errors);
 		const std::vector<std::string>scenarios(1,scenario);
 		const std::vector<Models::FMTmodel> models = modelparser.readproject(primarylocation, scenarios);
