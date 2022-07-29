@@ -134,6 +134,30 @@ namespace Wrapper
 			}
 		}
 
+	System::Collections::Generic::List<int>^ FMTexcelcache::getperiods(System::String^ primaryname, System::String^ scenario)
+	{
+		System::Collections::Generic::List<int>^ list = gcnew System::Collections::Generic::List<int>();
+		try {
+			msclr::interop::marshal_context context;
+			const std::string pfile = context.marshal_as<std::string>(primaryname);
+			const std::string sfile = context.marshal_as<std::string>(scenario);
+			const std::string naming = pfile + "~" + sfile;
+			std::unordered_map<std::string, FMTmodelcache>::const_iterator mit = models->find(naming);
+			if (mit != models->end())//crash wrong definition
+			{
+				for (int period = 1 ; period < mit->second.getperiods();++period)
+					{
+					list->Add(period);
+					}
+			}
+		}
+		catch (...)
+		{
+			captureexception("FMTexcelcache::getperiods");
+		}
+		return list;
+	}
+
 	double FMTexcelcache::getvalue(System::String^ primaryname, System::String^ scenario,
 		System::String^ outputname, System::String^ themeselection, int period)
 	{

@@ -15,42 +15,60 @@
 #include "FMTexception.hpp"
 #include "FMTobject.hpp"
 #include <boost/algorithm/string.hpp>
-
+#include <boost/thread/recursive_mutex.hpp>
+#include <boost/thread.hpp>
 
 namespace Wrapper
 {
+
+	FMTmodelcache::FMTmodelcache():
+		Core::FMTobject(),
+		mtx(new boost::recursive_mutex()),
+		model(),
+		outputs(),
+		themes()
+	{
+		
+	}
 
 
 	FMTmodelcache& FMTmodelcache::operator = (const FMTmodelcache& rhs)
 	{
 		if (this!=&rhs)
 		{
+			boost::lock(*mtx, *rhs.mtx);
+			boost::lock_guard<boost::recursive_mutex> self_lock(*mtx, boost::adopt_lock);
+			boost::lock_guard<boost::recursive_mutex> other_lock(*rhs.mtx, boost::adopt_lock);
 			Core::FMTobject::operator = (rhs);
 			model = std::move(rhs.model->clone());
 			outputs = rhs.outputs;
 			themes = rhs.themes;
-
 		}
 		return *this;
 	}
 
 	FMTmodelcache::FMTmodelcache(const FMTmodelcache& rhs):
 		Core::FMTobject(rhs),
+		mtx(new boost::recursive_mutex()),
 		model(),
 		outputs(rhs.outputs),
 		themes(rhs.themes)
 	{
+		boost::lock_guard<boost::recursive_mutex> guard1(*mtx);
+		boost::lock_guard<boost::recursive_mutex> guard2(*rhs.mtx);
 		model = std::move(rhs.model->clone());
 	}
 
 
 	FMTmodelcache::FMTmodelcache(const Models::FMTmodel& lmodel, const std::vector<Core::FMTschedule>& schedules):
 		Core::FMTobject(),
+		mtx(new boost::recursive_mutex()),
 		model(),
 		outputs(),
 		themes()
 	{
 		try {
+			boost::lock_guard<boost::recursive_mutex> guard1(*mtx);
 			model = std::unique_ptr<Models::FMTmodel>( new Models::FMTlpmodel(lmodel, Models::FMTsolverinterface::MOSEK));
 			size_t outid = 0;
 			for (const Core::FMToutput& output : model->getoutputs())
@@ -73,6 +91,11 @@ namespace Wrapper
 			}
 	}
 
+	int FMTmodelcache::getperiods() const
+	{
+		return model->getparameter(Models::FMTintmodelparameters::LENGTH);
+	}
+
 
 	Core::FMTmask FMTmodelcache::themeselectiontomask(const std::string& themeselection) const
 	{
@@ -89,7 +112,7 @@ namespace Wrapper
 			}
 			mask.pop_back();
 			const std::vector<Core::FMTtheme>& themeofmodel = model->getthemes();
-			subset = Core::FMTmask(mask, themeofmodel);
+			subset =Core::FMTmask(mask, themeofmodel);
 			for (std::string& value : results)
 			{ 
 			boost::trim(value);
@@ -186,6 +209,7 @@ namespace Wrapper
 			}
 			const Core::FMTmask subset = themeselectiontomask(themeselection);
 			const Core::FMToutput theoutput = getoutput(outputname, subset);
+			boost::lock_guard<boost::recursive_mutex> guard(*mtx);
 			value = model->getoutput(theoutput, period, Core::FMToutputlevel::totalonly).at("Total");
 
 		}catch (...)
@@ -205,8 +229,9 @@ namespace Wrapper
 				return 0;
 				}
 			const Core::FMTmask subset = themeselectiontomask(themeselection);
-			const Core::FMTactualdevelopment adev(subset, age, 0, period);
+			const Core::FMTdevelopment adev(subset, age, 0, period);
 			const Core::FMTyieldrequest yieldrequest = adev.getyieldrequest();
+			boost::lock_guard<boost::recursive_mutex> guard(*mtx);
 			value = yields.get(yieldrequest, yieldname);
 		}catch (...)
 		{
@@ -325,12 +350,14 @@ namespace Wrapper
 
 	Logging::FMTexcellogger* FMTmodelcache::getlogger()
 		{
+		boost::lock_guard<boost::recursive_mutex> guard(*mtx);
 		Logging::FMTexcellogger* log = dynamic_cast<Logging::FMTexcellogger*>(this->_logger.get());
 		return log;
 		}
 
 	void FMTmodelcache::putlogger(const std::shared_ptr<Logging::FMTlogger>& log)
 		{
+		boost::lock_guard<boost::recursive_mutex> guard(*mtx);
 		this->passinlogger(log);
 		}
 

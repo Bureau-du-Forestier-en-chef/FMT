@@ -25,18 +25,24 @@ namespace Logging
 	class FMTexcellogger;
 }
 
+namespace boost
+{
+	class recursive_mutex;
+}
+
 namespace Wrapper
 {
 
 	class FMTmodelcache: public Core::FMTobject
 	{
+		std::unique_ptr<boost::recursive_mutex>mtx;
 		std::unique_ptr<Models::FMTmodel>model;
 		std::unordered_map<std::string,size_t>outputs;//output name as key
 		std::unordered_map<std::string,size_t>themes;//Themes name as key
 		Core::FMTmask themeselectiontomask(const std::string& themeselection) const;
 		Core::FMToutput getoutput(const std::string& outputname, const Core::FMTmask& subset) const;
 	public:
-		FMTmodelcache()=default;
+		FMTmodelcache();
 		FMTmodelcache(const FMTmodelcache& rhs);
 		FMTmodelcache& operator = (const FMTmodelcache& rhs);
 		~FMTmodelcache() = default;
@@ -49,6 +55,7 @@ namespace Wrapper
 		std::vector<std::string> getoutputs() const;
 		std::vector<std::string> getyields() const;
 		std::vector<std::string> getthemes() const;
+		int getperiods() const;
 		Logging::FMTexcellogger* getlogger();
 		void putlogger(const std::shared_ptr<Logging::FMTlogger>& log);
 
