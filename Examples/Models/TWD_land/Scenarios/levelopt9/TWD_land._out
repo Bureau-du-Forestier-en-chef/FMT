@@ -1,0 +1,28 @@
+*OUTPUT oSupRec
+*SOURCE ? ? ? COUPEtotale _AREA
+
+*OUTPUT oSuptot
+*SOURCE ? ? ? _INVENT _AREA
+
+*OUTPUT osuppertUCtot
+*SOURCE UC ? ? COUPEtotale _AREA   * ycordep
+
+*LEVEL lev50pourrec
+
+*level inutilemaisbon
+*SOURCE #test
+
+*level inutilemaisbon2
+*SOURCE 1 1 1 1 1
+
+*LEVEL levfinrempli
+
+*OUTPUT olevfinrempli
+*source levfinrempli - inutilemaisbon * #test2
+
+
+
+
+
+
+
