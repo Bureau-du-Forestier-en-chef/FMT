@@ -1115,11 +1115,12 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 					{
 						const std::vector<std::vector<int>>constraint_elements = getmatrixelement(model_constraint, period);
 						std::vector<std::string>::const_iterator name_it = find(level_names.begin(), level_names.end(), variable_level);
-						if (!constraint_elements.at(FMTmatrixelement::levelvariable).empty() &&
+						const std::vector<int> levelconstelem = constraint_elements.at(FMTmatrixelement::levelvariable);
+						const size_t variable_location = std::distance(level_names.cbegin(), name_it);
+						if (!levelconstelem.empty() && levelconstelem.size() > variable_location &&
 							(name_it != level_names.end())) // caught a constriant with level!
 						{
-							const size_t variable_location = std::distance(level_names.cbegin(), name_it);
-							return constraint_elements.at(FMTmatrixelement::levelvariable).at(variable_location);
+							return levelconstelem.at(variable_location);						
 						}
 					}
 				}
