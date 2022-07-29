@@ -1892,6 +1892,7 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 				}
 				++period;
 			}
+			this->setparameter(Models::FMTintmodelparameters::LENGTH, period);
 		}catch(...){
 			_exhandler->raisefromcatch("", "FMTlpmodel::trysetsolution", __LINE__, __FILE__);
 		}

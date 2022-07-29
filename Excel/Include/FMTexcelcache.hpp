@@ -39,6 +39,7 @@ namespace Wrapper
 		System::Collections::Generic::List<System::String^>^ getoutputs(System::String^ primaryname, System::String^ scenario);
 		System::Collections::Generic::List<System::String^>^ getyields(System::String^ primaryname, System::String^ scenario);
 		System::Collections::Generic::List<System::String^>^ getthemes(System::String^ primaryname, System::String^ scenario);
+		System::Collections::Generic::List<int>^ getperiods(System::String^ primaryname, System::String^ scenario);
 		int size();
 		bool gotexception();
 		void unraiseexception();

@@ -20,6 +20,8 @@ namespace Core
 	class FMTyields;
 	class FMTconstants;
 	class FMToutput;
+	class FMToutputsource;
+	class FMToperator;
 }
 
 namespace Parser
@@ -55,6 +57,20 @@ class FMTEXPORT FMToutputparser : public FMTparser
 					const std::vector<Core::FMTaction>& actions,
 					const Core::FMTyields& ylds,const Core::FMTconstants& constants,
 					const std::string& location);
+	// DocString: FMToutputparser::appendtooutput
+	/**
+	When you need to append output data to output.
+	*/
+	void appendtooutput(
+		const std::string& strvalue,
+		const int& outputid,
+		const int& themetarget,
+		const size_t& lastoutput,
+		std::string& lastoperator,
+		std::vector<std::string>& stroperators,
+		std::vector<Core::FMToutputsource>& sources,
+		std::vector<Core::FMToperator>& operators) const;
+
     public:
 		// DocString: FMToutputparser()
 		/**

@@ -27,6 +27,96 @@ namespace Parser
 		    setsection(Core::FMTsection::Outputs);
             }
 
+	   void FMToutputparser::appendtooutput(
+		   const std::string& strvalue,
+		   const int& outputid,
+		   const int& themetarget,
+		   const size_t& lastoutput,
+		   std::string& lastoperator,
+		   std::vector<std::string>& stroperators,
+		   std::vector<Core::FMToutputsource>& sources,
+		   std::vector<Core::FMToperator>& operators) const
+	   {
+		   try {
+			   double value = 0;
+			   Core::FMTotar targetof = Core::FMTotar::timeyld;
+			   bool isnumber = false;
+			   std::string yldtarget = strvalue;
+			   if (std::isdigit(value))
+			   {
+				   isnumber = true;
+				   value = std::stod(strvalue);
+				   targetof = Core::FMTotar::val;
+				   yldtarget.clear();
+			   }
+			   if (!lastoperator.empty())
+			   {
+				   std::vector<Core::FMToutputsource>newsources;
+				   std::vector<Core::FMToperator>newoperators;
+				   size_t lastop = 0;
+				   size_t id = 0;
+				   for (; id < lastoutput; ++id)
+				   {
+					   newsources.push_back(sources.at(id));
+					   if (id > 0)
+					   {
+						   newoperators.push_back(operators.at(lastop));
+						   ++lastop;
+					   }
+				   }
+				   for (; id < sources.size(); ++id)
+				   {
+					   double srcvalue = value;
+					   if (id > 0 && sources.at(id - 1).isvariable())
+					   {
+						   if (sources.at(id).isconstant())
+						   {
+							   srcvalue = Core::FMToperator(operators.at(lastop)).call(srcvalue, sources.at(id).getvalue());
+						   }
+						   else {
+							   newoperators.push_back(Core::FMToperator(lastoperator));
+						   }
+						   newsources.push_back(Core::FMToutputsource(targetof, srcvalue, yldtarget, "", sources.at(id).getoutputorigin(), sources.at(id).getthemetarget()));
+					   }
+					   if (sources.at(id).isvariable() || sources.at(id).islevel())
+					   {
+						   newsources.push_back(sources.at(id));
+					   }
+					   if (id > 0)
+					   {
+						   newoperators.push_back(operators.at(lastop));
+						   ++lastop;
+					   }
+				   }
+				   if (newsources.back().isvariable() || newsources.back().islevel())
+				   {
+					   newsources.push_back(Core::FMToutputsource(targetof, value, yldtarget, "", newsources.back().getoutputorigin(), newsources.back().getthemetarget()));
+
+					   newoperators.push_back(Core::FMToperator(lastoperator));
+				   }
+
+				   operators = newoperators;
+				   sources = newsources;
+				   lastoperator.clear();
+				   if (!stroperators.empty())
+				   {
+					   operators.push_back(Core::FMToperator(stroperators.front()));
+					   lastoperator = stroperators.front();
+					   stroperators.erase(stroperators.begin());
+				   }
+			   }
+			   else {
+				   sources.push_back(Core::FMToutputsource(targetof, value, yldtarget, "", outputid, themetarget));
+
+			   }
+		   }catch (...)
+		   {
+			   _exhandler->raisefromcatch("In " + _location + " at line " + std::to_string(_line), "FMToutputparser::readnfill", __LINE__, __FILE__, _section);
+		   }
+
+	   }
+
+
 		void FMToutputparser::readnfill(std::vector<Core::FMToutput>* outputs, 
 					const std::vector<Core::FMTtheme>& themes,
 					const std::vector<Core::FMTaction>& actions,
@@ -230,8 +320,18 @@ namespace Parser
 												_exhandler->raise(Exception::FMTexc::FMTunsupported_output,
 													name + " at line " + std::to_string(_line),"FMToutputparser::read", __LINE__, __FILE__, _section);
 											}
+
+											appendtooutput(
+												std::to_string(value),
+												outputid,
+												themetarget,
+												lastoutput,
+												lastoperator,
+												stroperators,
+												sources,
+												operators);
 											
-											if (!lastoperator.empty())
+											/*if (!lastoperator.empty())
 											{
 												std::vector<Core::FMToutputsource>newsources;
 												std::vector<Core::FMToperator>newoperators;
@@ -290,7 +390,7 @@ namespace Parser
 											else {
 												sources.push_back(Core::FMToutputsource(Core::FMTotar::val, value,"","",outputid,themetarget));
 
-											}
+											}*/
 
 										}
 										else if (processing_level)
@@ -403,8 +503,17 @@ namespace Parser
 												}
 												else if (ylds.isyld(strsrc))//isyld(ylds,strsrc,_section))
 												{
-													sources.push_back(Core::FMToutputsource(Core::FMTotar::timeyld, 0, strsrc,"",outputid,themetarget));
-
+													//sources.push_back(Core::FMToutputsource(Core::FMTotar::timeyld, 0, strsrc,"",outputid,themetarget));
+													appendtooutput(
+														strsrc,
+														outputid,
+														themetarget,
+														lastoutput,
+														lastoperator,
+														stroperators,
+														sources,
+														operators);
+												
 												}else{
 													_exhandler->raise(Exception::FMTexc::FMTundefined_output,
 															strsrc + " at line " + std::to_string(_line),"FMToutputparser::read", __LINE__, __FILE__, _section);
