@@ -28,6 +28,7 @@ int main()
 		scenarios.push_back("levelopt6");
 		scenarios.push_back("levelopt7");
 		scenarios.push_back("levelopt8");
+		scenarios.push_back("levelopt9");
 		std::vector<double>objectivevalues;
 		objectivevalues.push_back(15485.952);
 		objectivevalues.push_back(1000);
@@ -37,6 +38,7 @@ int main()
 		objectivevalues.push_back(862.18);
 		objectivevalues.push_back(856.88);
 		objectivevalues.push_back(1814.76);
+		objectivevalues.push_back(907.38);
 		const std::vector<Models::FMTmodel> models = modelparser.readproject(primarylocation, scenarios);
 		for (size_t scnid = 0 ; scnid < models.size();++scnid)
 		{
@@ -55,6 +57,7 @@ int main()
 			constraints.erase(constraints.begin());
 			for (const Core::FMTconstraint& constraint : constraints)
 			{
+				const std::string cval = std::string(constraint);
 				optimizationmodel.setconstraint(constraint);
 			}
 			optimizationmodel.setobjective(objective);
