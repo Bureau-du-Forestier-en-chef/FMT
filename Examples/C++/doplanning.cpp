@@ -2,6 +2,7 @@
 #ifdef FMTWITHOSI
 #include "FMTlpmodel.hpp"
 #include "FMTmodelparser.hpp"
+#include "FMTscheduleparser.hpp"
 #include "FMTversion.hpp"
 #include "FMTlogger.hpp"
 #include "FMTconstraint.hpp"
@@ -17,13 +18,13 @@ int main(int argc, char* argv[])
 
 	if (Version::FMTversion().hasfeature("OSI"))
 	{
-		/*const std::string vals = argv[1];
+		const std::string vals = argv[1];
 		std::vector<std::string>results;
-		boost::split(results, vals,boost::is_any_of("|"));*/
-		const std::string primarylocation = "T:/Donnees/Usagers/FORBR3/09751/Scenarios/";
-		const std::string scenario = "26_sc8a_Ame2021_massifs25_avsp_levconst";
-		const int length = 2;
-		// const double objectivevalue = std::stod(argv[3]);
+		boost::split(results, vals,boost::is_any_of("|"));
+		const std::string primarylocation = results.at(0);
+		const std::string scenario = results.at(1);
+		const int length =  std::stoi(argv[2]);
+		const double objectivevalue = std::stod(argv[3]);
 		Parser::FMTmodelparser modelparser;
 		std::vector<Exception::FMTexc>errors;
 		errors.push_back(Exception::FMTexc::FMTmissingyield);
@@ -41,14 +42,21 @@ int main(int argc, char* argv[])
 		optimizationmodel.setparameter(Models::FMTintmodelparameters::LENGTH, length);
 		optimizationmodel.FMTmodel::setparameter(Models::FMTboolmodelparameters::STRICTLY_POSITIVE, true);
 		optimizationmodel.setparameter(Models::FMTintmodelparameters::PRESOLVE_ITERATIONS, 10);
+		//modelparser.write(optimizationmodel, "D:/testb/");
 		if (optimizationmodel.doplanning(true)) {
 			std::cout << std::to_string(optimizationmodel.getObjValue()) << std::endl;
 		}
-		/*if ((std::abs(optimizationmodel.getObjValue() - objectivevalue)) >= 1)
+		/*optimizationmodel.writeLP("D:/testb/test.lp");
+		Parser::FMTscheduleparser schparser;
+		std::vector<Core::FMTschedule>returnschedule;
+		returnschedule.push_back(optimizationmodel.getsolution(1, true));
+		returnschedule.push_back( optimizationmodel.getsolution(2, true));
+		schparser.write(returnschedule, "D:/testb/schedule.seq");*/
+		if ((std::abs(optimizationmodel.getObjValue() - objectivevalue)) >= 1)
 			{
 			Exception::FMTfreeexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed, "Wrong value",
 				"presolvetest", __LINE__, primarylocation);
-			}*/
+			}
 	}
 	else {
 		Logging::FMTlogger() << "FMT needs to be compiled with OSI" << "\n";

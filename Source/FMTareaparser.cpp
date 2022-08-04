@@ -1214,7 +1214,7 @@ const std::regex FMTareaparser::rxcleanarea = std::regex("^((\\*A[A]*)([^|]*)(_l
 
 
         template<typename T>
-        bool FMTareaparser::writelayer(const Spatial::FMTlayer<T>& layer, std::string location,const std::map<T, std::string>& mapping) const
+        bool FMTareaparser::writelayer(const Spatial::FMTlayer<T>& layer, std::string location,const std::map<T, std::string>& mapping, std::string format) const
             {
 			try {
 				//GDALAllRegister();
@@ -1223,7 +1223,7 @@ const std::regex FMTareaparser::rxcleanarea = std::regex("^((\\*A[A]*)([^|]*)(_l
 				{
 					datatype = GDT_Float64;
 				}
-				GDALDataset* wdataset = createdataset(location, layer, datatype);
+				GDALDataset* wdataset = createdataset(location, layer, datatype,format);
 				std::vector<std::string>table;
 				if (!mapping.empty())
 				{
@@ -1326,6 +1326,27 @@ const std::regex FMTareaparser::rxcleanarea = std::regex("^((\\*A[A]*)([^|]*)(_l
 				}
             return true;
             }
+
+			bool FMTareaparser::writeforesttheme(
+				const Spatial::FMTforest& for_layer,
+				const Core::FMTtheme& theme,
+				const std::string& location,
+				const std::map<std::string, std::string>& mapping,
+				std::string format) const
+			{
+				try {
+					const std::vector<Core::FMTtheme>thetheme(1, theme);
+					const std::vector<Spatial::FMTlayer<std::string>> themes_layer = for_layer.getthemes(thetheme);
+					return writelayer<std::string>(themes_layer.at(0), location, mapping,format);
+				}catch (...)
+					{
+				_exhandler->raisefromcatch("at " + location, "FMTareaparser::writeforesttheme", __LINE__, __FILE__, _section);
+				}
+			return false;
+			}
+
+
+
 	#ifdef FMTWITHOSI
 			std::vector<Heuristics::FMToperatingarea> FMTareaparser::getneighborsfrompolygons(const std::vector<OGRPolygon*>& polygons,
 																						std::vector<Heuristics::FMToperatingarea> operatingareas,

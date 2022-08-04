@@ -376,10 +376,10 @@ std::unique_ptr<OGRSpatialReference> FMTparser::getFORELspatialref() const
 
 
 template<typename T>
-GDALDataset* FMTparser::createdataset(const std::string& location, const Spatial::FMTlayer<T>& layer, const int datatypeid) const
+GDALDataset* FMTparser::createdataset(const std::string& location, const Spatial::FMTlayer<T>& layer, const int datatypeid, std::string format) const
 {
 	GDALDataType datatype = static_cast<GDALDataType>(datatypeid);
-	const char *pszFormat = "GTiff";
+	const char* pszFormat = format.c_str();;
 	GDALDriver *poDriver = nullptr;
 	GDALDataset *poDstDS = nullptr;
 	try {
@@ -390,12 +390,15 @@ GDALDataset* FMTparser::createdataset(const std::string& location, const Spatial
 				std::string(pszFormat), "FMTparser::createdataset", __LINE__, __FILE__, _section);
 		}
 		char **papszOptions = NULL;
-		papszOptions = CSLSetNameValue(papszOptions, "TILED", "YES");
-		papszOptions = CSLSetNameValue(papszOptions, "BLOCKXSIZE", "128");
-		papszOptions = CSLSetNameValue(papszOptions, "BLOCKYSIZE", "128");
-		papszOptions = CSLSetNameValue(papszOptions, "COMPRESS", "LZW");
-		papszOptions = CSLSetNameValue(papszOptions, "ZLEVEL", "9");
-		papszOptions = CSLSetNameValue(papszOptions, "BIGTIFF", "YES");
+		if (format== "GTiff")
+		{
+			papszOptions = CSLSetNameValue(papszOptions, "TILED", "YES");
+			papszOptions = CSLSetNameValue(papszOptions, "BLOCKXSIZE", "128");
+			papszOptions = CSLSetNameValue(papszOptions, "BLOCKYSIZE", "128");
+			papszOptions = CSLSetNameValue(papszOptions, "COMPRESS", "LZW");
+			papszOptions = CSLSetNameValue(papszOptions, "ZLEVEL", "9");
+			papszOptions = CSLSetNameValue(papszOptions, "BIGTIFF", "YES");
+		}
 		poDstDS = poDriver->Create(location.c_str(), layer.GetXSize(), layer.GetYSize(), 1, datatype, papszOptions);
 		if (poDstDS == nullptr)
 		{
@@ -416,9 +419,9 @@ GDALDataset* FMTparser::createdataset(const std::string& location, const Spatial
 	return poDstDS;
 }
 
-template GDALDataset* FMTparser::createdataset<int>(const std::string& location, const Spatial::FMTlayer<int>& layer, const int datatypeid) const;
-template GDALDataset* FMTparser::createdataset<std::string>(const std::string& location, const Spatial::FMTlayer<std::string>& layer, const int datatypeid) const;
-template GDALDataset* FMTparser::createdataset<double>(const std::string& location, const Spatial::FMTlayer<double>& layer, const int datatypeid) const;
+template GDALDataset* FMTparser::createdataset<int>(const std::string& location, const Spatial::FMTlayer<int>& layer, const int datatypeid,std::string format) const;
+template GDALDataset* FMTparser::createdataset<std::string>(const std::string& location, const Spatial::FMTlayer<std::string>& layer, const int datatypeid, std::string format) const;
+template GDALDataset* FMTparser::createdataset<double>(const std::string& location, const Spatial::FMTlayer<double>& layer, const int datatypeid, std::string format) const;
 
 
 

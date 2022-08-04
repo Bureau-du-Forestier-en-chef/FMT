@@ -42,7 +42,7 @@ namespace Parser
 			   Core::FMTotar targetof = Core::FMTotar::timeyld;
 			   bool isnumber = false;
 			   std::string yldtarget = strvalue;
-			   if (std::isdigit(value))
+			   if (isnum(strvalue))
 			   {
 				   isnumber = true;
 				   value = std::stod(strvalue);
@@ -66,19 +66,26 @@ namespace Parser
 				   }
 				   for (; id < sources.size(); ++id)
 				   {
-					   double srcvalue = value;
-					   if (id > 0 && sources.at(id - 1).isvariable())
-					   {
-						   if (sources.at(id).isconstant())
+					   //if (isnumber)
+					   //{
+						   double srcvalue = value;
+						   if (id > 0 && sources.at(id - 1).isvariable())
 						   {
-							   srcvalue = Core::FMToperator(operators.at(lastop)).call(srcvalue, sources.at(id).getvalue());
+							   //if (isnumber)
+							   //{
+								   if (sources.at(id).isconstant()&& isnumber)
+								   {
+									   srcvalue = Core::FMToperator(operators.at(lastop)).call(srcvalue, sources.at(id).getvalue());
+								   }
+								   else {
+									   newoperators.push_back(Core::FMToperator(lastoperator));
+								   }
+								   newsources.push_back(Core::FMToutputsource(targetof, srcvalue, yldtarget, "", sources.at(id).getoutputorigin(), sources.at(id).getthemetarget()));
+							   //}
+							   
 						   }
-						   else {
-							   newoperators.push_back(Core::FMToperator(lastoperator));
-						   }
-						   newsources.push_back(Core::FMToutputsource(targetof, srcvalue, yldtarget, "", sources.at(id).getoutputorigin(), sources.at(id).getthemetarget()));
-					   }
-					   if (sources.at(id).isvariable() || sources.at(id).islevel())
+					   //}
+					   if (sources.at(id).isvariable() || sources.at(id).islevel() || sources.at(id).istimeyield() || !isnumber)
 					   {
 						   newsources.push_back(sources.at(id));
 					   }
@@ -88,7 +95,7 @@ namespace Parser
 						   ++lastop;
 					   }
 				   }
-				   if (newsources.back().isvariable() || newsources.back().islevel())
+				   if (newsources.back().isvariable() || newsources.back().islevel() /* || !isnumber*/)
 				   {
 					   newsources.push_back(Core::FMToutputsource(targetof, value, yldtarget, "", newsources.back().getoutputorigin(), newsources.back().getthemetarget()));
 
@@ -113,7 +120,7 @@ namespace Parser
 		   {
 			   _exhandler->raisefromcatch("In " + _location + " at line " + std::to_string(_line), "FMToutputparser::readnfill", __LINE__, __FILE__, _section);
 		   }
-
+	
 	   }
 
 

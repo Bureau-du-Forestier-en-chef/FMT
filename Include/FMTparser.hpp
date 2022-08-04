@@ -186,7 +186,7 @@ class FMTEXPORT FMTparser: public Core::FMTobject
 			The function create an empty GDALDataset for a given FMTlayer.
 			*/
 			template<typename T>
-			GDALDataset* createdataset(const std::string& location, const Spatial::FMTlayer<T>& layer, const int datatypeid) const;
+			GDALDataset* createdataset(const std::string& location, const Spatial::FMTlayer<T>& layer, const int datatypeid,std::string format = "GTiff") const;
 			// DocString: FMTparser::getdataset
 			/**
 			Open in readonly a GDALdataset from a given (location), will throw if anything went wrong.

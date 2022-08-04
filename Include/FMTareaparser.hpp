@@ -191,7 +191,7 @@ class FMTEXPORT FMTareaparser : public FMTparser
 		a table to the raster file when dealing with categorical variables
 		*/
 		template<typename T>
-        bool writelayer(const Spatial::FMTlayer<T>& layer,std::string location,const std::map<T,std::string>& mapping) const;
+        bool writelayer(const Spatial::FMTlayer<T>& layer,std::string location,const std::map<T,std::string>& mapping, std::string format = "GTiff") const;
 		// DocString: FMTareaparser::writeforest
 		/**
 		The function will write a complete FMTforest (for_layer) using a complete vector of (themes), in multiple (data_rasters) file paths
@@ -205,6 +205,16 @@ class FMTEXPORT FMTareaparser : public FMTparser
                          const std::string& age,
                          const std::string& lock,
 						std::vector<std::map<std::string, std::string>> mapping = std::vector<std::map<std::string, std::string>>()) const;
+		// DocString: FMTareaparser::writeforesttheme
+		/**
+		Write a forest theme based on a mapping for a FMTforest with a given file format in raster file.
+		*/
+		bool writeforesttheme(
+			const Spatial::FMTforest& for_layer,
+			const Core::FMTtheme& theme,
+			const std::string& location,
+			const std::map<std::string, std::string>& mapping,
+			std::string format = "GTiff") const;
 		// DocString: FMTareaparser::writedisturbances
 		/**
 		Giving a .tif file (location) and a disturbancesstack (disturbances) the actual forest (for_layer) and the last forest layer (out_layer).
