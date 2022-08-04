@@ -13,10 +13,10 @@
 *SOURCE oSupRec ; 1613.12
 
 *OUTPUT test2
-*SOURCE oSupRec * 0.8 *  ytest1;
+*SOURCE oSupRec * 0.8 *  ytest1
 
 *OUTPUT test3
-*SOURCE oSupRec *  lev2;
+*SOURCE oSupRec *  lev2
 
 
 

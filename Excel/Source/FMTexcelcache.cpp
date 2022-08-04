@@ -20,6 +20,8 @@
 #include "FMTexception.hpp"
 #include "FMTobject.hpp"
 #include <boost/algorithm/string.hpp>
+#include <boost/filesystem.hpp>
+
 
 
 namespace Wrapper
@@ -88,6 +90,24 @@ namespace Wrapper
 		return primaryname;
 	}
 
+	std::string FMTexcelcache::getmappath(const std::string& primarylocation)
+		{
+		std::string mappath;
+		try {
+			const boost::filesystem::path primpath(primarylocation);
+			boost::filesystem::path pridir = primpath.parent_path();
+			std::string shapename(primpath.stem().string());
+			shapename+= ".shp";
+			const boost::filesystem::path bmappath = primpath / boost::filesystem::path("Carte") / boost::filesystem::path(shapename);
+			mappath = std::string(bmappath.string());
+		}
+		catch (const std::exception& exception)
+		{
+			captureexception("FMTexcelcache::mapname");
+		}
+		return mappath;
+		}
+
 	void FMTexcelcache::add(System::String^ primarylocation, System::String^ scenario)
 	{
 		try {
@@ -109,7 +129,8 @@ namespace Wrapper
 			std::vector<std::string>scenarios(1, sfile);
 			const std::vector<Models::FMTmodel> allmodels = mparser.readproject(pfile, scenarios);
 			const std::vector<std::vector<Core::FMTschedule>>allschedule = mparser.readschedules(pfile, allmodels);
-			(*models)[naming] = FMTmodelcache(allmodels.at(0), allschedule.at(0));
+			const std::string mappath = getmappath(pfile);
+			(*models)[naming] = FMTmodelcache(allmodels.at(0), allschedule.at(0), mappath);
 		}catch (...)
 		{
 			captureexception("FMTexcelcache::add");
@@ -156,6 +177,32 @@ namespace Wrapper
 			captureexception("FMTexcelcache::getperiods");
 		}
 		return list;
+	}
+
+	bool FMTexcelcache::writejpeg(System::String^ jpeglocation,System::String^ primaryname, System::String^ scenario, int themeid, System::Collections::Generic::List<System::String^>^ attributes)
+	{
+		try {
+			msclr::interop::marshal_context context;
+			const std::string pfile = context.marshal_as<std::string>(primaryname);
+			const std::string sfile = context.marshal_as<std::string>(scenario);
+			const std::string naming = pfile + "~" + sfile;
+			std::unordered_map<std::string, FMTmodelcache>::const_iterator mit = models->find(naming);
+			if (mit != models->end())//crash wrong definition
+			{
+				std::vector<std::string>values;
+				msclr::interop::marshal_context context;
+				for each (System::String ^ attribute in attributes)
+					{
+					values.push_back(context.marshal_as<std::string>(attribute));
+					}
+				const std::string location = context.marshal_as<std::string>(jpeglocation);
+				return mit->second.writejpeg(static_cast<size_t>(themeid), values, location);
+			}
+		}catch (...)
+		{
+			captureexception("FMTexcelcache::writejpeg");
+		}
+		return false;
 	}
 
 	double FMTexcelcache::getvalue(System::String^ primaryname, System::String^ scenario,

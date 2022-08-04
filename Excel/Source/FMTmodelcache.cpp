@@ -17,6 +17,9 @@
 #include <boost/algorithm/string.hpp>
 #include <boost/thread/recursive_mutex.hpp>
 #include <boost/thread.hpp>
+#include "FMTforest.hpp"
+#include "FMTareaparser.hpp"
+#include <map>
 
 namespace Wrapper
 {
@@ -26,10 +29,14 @@ namespace Wrapper
 		mtx(new boost::recursive_mutex()),
 		model(),
 		outputs(),
-		themes()
+		themes(),
+		maplocation(),
+		map()
 	{
 		
 	}
+
+	FMTmodelcache::~FMTmodelcache() = default;
 
 
 	FMTmodelcache& FMTmodelcache::operator = (const FMTmodelcache& rhs)
@@ -43,6 +50,12 @@ namespace Wrapper
 			model = std::move(rhs.model->clone());
 			outputs = rhs.outputs;
 			themes = rhs.themes;
+			maplocation = rhs.maplocation;
+			if (rhs.map)
+				{
+				map = std::move(std::unique_ptr<Spatial::FMTforest>(new Spatial::FMTforest(*rhs.map)));
+				}
+			
 		}
 		return *this;
 	}
@@ -52,20 +65,79 @@ namespace Wrapper
 		mtx(new boost::recursive_mutex()),
 		model(),
 		outputs(rhs.outputs),
-		themes(rhs.themes)
+		themes(rhs.themes),
+		maplocation(rhs.maplocation),
+		map()
 	{
 		boost::lock_guard<boost::recursive_mutex> guard1(*mtx);
 		boost::lock_guard<boost::recursive_mutex> guard2(*rhs.mtx);
 		model = std::move(rhs.model->clone());
+		if (rhs.map)
+		{
+			map = std::move(std::unique_ptr<Spatial::FMTforest>(new Spatial::FMTforest(*rhs.map)));
+		}
+		
+	}
+
+	void FMTmodelcache::loadmap() const
+	{
+		try {
+			boost::lock_guard<boost::recursive_mutex> guard1(*mtx);
+			if (!map && !maplocation.empty())
+				{
+				Parser::FMTareaparser areaparser;
+				map = std::unique_ptr<Spatial::FMTforest>(new Spatial::FMTforest(areaparser.vectormaptoFMTforest(maplocation,250,model->getthemes(),"AGE","SUPERFICIE",1.0,1.0,"STANLOCK")));
+				}
+			_exhandler->raise(Exception::FMTexc::FMTinvalid_theme,
+				"maplocation " + maplocation, "FMTmodelcache::loadmap", __LINE__, __FILE__);
+		}catch (...)
+		{
+			_exhandler->printexceptions("", "FMTmodelcache::loadmap", __LINE__, __FILE__);
+		}
+	}
+
+	bool FMTmodelcache::writejpeg(const size_t& themeid, const std::vector<std::string>attributevalues, const std::string& jpeglocation) const
+	{
+		try {
+			loadmap();
+			if (map)
+				{
+				Parser::FMTareaparser areaparser;
+				const Core::FMTtheme& theme = model->getthemes().at(themeid);
+				const std::vector<Core::FMTtheme>thetheme(1,theme);
+				std::map<std::string, std::string> layer_map;
+				size_t attributeid = 0;
+				for (const std::string& attribute : theme.getbaseattributes())
+					{
+					layer_map[attribute] = attributevalues.at(attributeid);
+					++attributeid;
+					}
+				areaparser.writeforesttheme(
+					*map,
+					theme,
+					jpeglocation,
+					layer_map,
+					"JPEG");
+				}
+		}
+		catch (...)
+		{
+			_exhandler->printexceptions("", "FMTmodelcache::writejpeg", __LINE__, __FILE__);
+		}
+		return false;
 	}
 
 
-	FMTmodelcache::FMTmodelcache(const Models::FMTmodel& lmodel, const std::vector<Core::FMTschedule>& schedules):
+	FMTmodelcache::FMTmodelcache(const Models::FMTmodel& lmodel,
+			const std::vector<Core::FMTschedule>& schedules,
+			const std::string& lmaplocation):
 		Core::FMTobject(),
 		mtx(new boost::recursive_mutex()),
 		model(),
 		outputs(),
-		themes()
+		themes(),
+		maplocation(lmaplocation),
+		map()
 	{
 		try {
 			boost::lock_guard<boost::recursive_mutex> guard1(*mtx);

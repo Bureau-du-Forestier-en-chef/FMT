@@ -1,0 +1,16 @@
+*OUTPUT oSupRec
+*SOURCE ? ? ? coupetotale _AREA
+
+*OUTPUT test1
+*SOURCE oSupRec * ytest1
+
+*OUTPUT test2
+*SOURCE test1 * 20
+
+
+
+
+
+
+
+

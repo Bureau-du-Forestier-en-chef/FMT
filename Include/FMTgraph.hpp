@@ -184,6 +184,34 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 			}
 			return periodit;
 		}
+		bool isdependant(const FMTvertex_descriptor& descriptor,
+			const int& theactionid) const
+		{
+			try {
+				if (boost::out_degree(descriptor, data) > 0)
+					{
+					FMToutedge_iterator outit, outend;
+					for (boost::tie(outit, outend) = boost::out_edges(descriptor, data); outit != outend; ++outit)
+					{
+						const FMTbaseedgeproperties& edgeprop = data[*outit];
+						if (edgeprop.getactionID() >= 0)
+							{
+							if (edgeprop.getactionID() < theactionid)
+								{
+								return true;
+								}
+							_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
+									"Action recursivity " + std::to_string(theactionid), "FMTgraph::isdependant", __LINE__, __FILE__);
+							}
+						}
+					}
+			}
+			catch (...)
+			{
+				_exhandler->raisefromcatch("", "FMTgraph::isdependant", __LINE__, __FILE__);
+			}
+			return false;
+		}
     public:
         FMTgraph() :
 			Core::FMTobject(),
@@ -459,6 +487,8 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 			return false;
 			}
 
+		
+
 		double getinproportion(const FMTvertex_descriptor& vertex_descriptor) const
 		{
 			return 1;
@@ -519,12 +549,15 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 						{
 						std::string actionname = "EVO";
 						const int variableid = data[*outit].getvariableID();
-						const int actionid = data[*outit].getactionID();
-						if (actionid >=0)
+						if (colnames.at(variableid).empty())
 							{
-							actionname = actions.at(actionid).getname();
+							const int actionid = data[*outit].getactionID();
+							if (actionid >=0)
+								{
+								actionname = actions.at(actionid).getname();
+								}
+							colnames[variableid] = basename + actionname;
 							}
-						colnames[variableid] = basename + actionname;
 						}
 
 					}
@@ -719,10 +752,10 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 			return data[descriptor].get();
 			}
 		FMTvertex_descriptor adddevelopment(const Core::FMTfuturdevelopment& futurdevelopement,
-											boost::unordered_set<Core::FMTlookup<FMTvertex_descriptor,Core::FMTdevelopment>>& alldevs)
+											boost::unordered_set<Core::FMTlookup<FMTvertex_descriptor,Core::FMTdevelopment>>& alldevs,bool forcenewone=false)
 		{
 			try {
-				if (!this->containsdevelopment(futurdevelopement, alldevs))
+				if (!this->containsdevelopment(futurdevelopement, alldevs)||forcenewone)
 				{
 					const int constraint_id = -1;
 					const FMTvertexproperties properties(futurdevelopement, constraint_id);
@@ -786,18 +819,21 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 				std::vector<FMTvertex_descriptor>active_vertex;
 				for (const Core::FMTdevelopmentpath& devpath : paths)
 				{
-
 					const FMTedgeproperties newedge(actionID, variable_id, devpath.proportion);
-
 					FMTvertex_descriptor tovertex;
 					if (!this->containsdevelopment(*devpath.development,devsets))
 					{
+						
 						tovertex = this->adddevelopment(*devpath.development,devsets);
 						actives.push(tovertex);
 
-					}
-					else {
-						tovertex = this->adddevelopment(*devpath.development,devsets);
+					}else {
+						tovertex = this->adddevelopment(*devpath.development, devsets);
+						if (isdependant(tovertex, actionID))
+							{
+							tovertex = this->adddevelopment(*devpath.development, devsets, true);
+							actives.push(tovertex);
+							}
 					}
 					boost::add_edge(out_vertex, tovertex, newedge, data);
 					++stats.edges;
@@ -1690,7 +1726,9 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 						}
 						if (node.source.useinedges())
 						{
-							const double coef = node.source.getcoef(development, model.yields, &vertexinfo) * node.factor.getcoef(development, model.yields, &vertexinfo) * node.constant;
+							Core::FMTdevelopment newdev(development);
+							newdev.setperiod(newdev.getperiod() - 1);
+							const double coef = node.source.getcoef(newdev, model.yields, &vertexinfo) * node.factor.getcoef(newdev, model.yields, &vertexinfo) * node.constant;
 							double area = 0;
 							if (development.getperiod() == 0)
 							{
@@ -2280,7 +2318,9 @@ template<> inline std::map<int, double> FMTgraph<Graph::FMTvertexproperties, Gra
 				const Graph::FMTgraphvertextoyield vertexinfo = getvertextoyieldinfo(model,vertex);
 				if (output_node.source.useinedges())
 				{
-					const double coef = output_node.source.getcoef(development, model.yields, &vertexinfo) * output_node.factor.getcoef(development, model.yields, &vertexinfo) * output_node.constant;
+					Core::FMTdevelopment newdev(development);
+					newdev.setperiod(newdev.getperiod() - 1);
+					const double coef = output_node.source.getcoef(newdev, model.yields, &vertexinfo) * output_node.factor.getcoef(newdev, model.yields, &vertexinfo) * output_node.constant;
 					if (development.getperiod() == 0)
 					{
 						const std::map<int, int>vars = getoutvariables(vertex);

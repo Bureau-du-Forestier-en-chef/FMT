@@ -21,6 +21,7 @@ namespace Wrapper
 		std::unordered_map<std::string, FMTmodelcache>* models;
 		bool exceptionraised;
 		std::string getprimaryname(const std::string& primarylocation);
+		std::string getmappath(const std::string& primarylocation);
 		void captureexception(const std::string& method);
 	public:
 		FMTexcelcache();
@@ -40,6 +41,7 @@ namespace Wrapper
 		System::Collections::Generic::List<System::String^>^ getyields(System::String^ primaryname, System::String^ scenario);
 		System::Collections::Generic::List<System::String^>^ getthemes(System::String^ primaryname, System::String^ scenario);
 		System::Collections::Generic::List<int>^ getperiods(System::String^ primaryname, System::String^ scenario);
+		bool writejpeg(System::String^ jpeglocation, System::String^ primaryname, System::String^ scenario, int themeid, System::Collections::Generic::List<System::String^>^ attributes);
 		int size();
 		bool gotexception();
 		void unraiseexception();

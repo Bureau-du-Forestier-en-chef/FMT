@@ -448,7 +448,7 @@ double FMToutputsource::getcoef(const FMTdevelopment& development,
 			}
 			if (istimeyield())
 				{
-				coef*= development.getinventorycoef(yields, yield, graphinfo);
+				coef *= development.getinventorycoef(yields, yield, graphinfo);
 				}
 			}
 	return coef;

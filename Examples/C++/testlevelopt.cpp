@@ -67,7 +67,7 @@ int main()
 				if (1 < std::abs(value - objectivevalues.at(scnid)))
 				{
 					
-					Exception::FMTfreeexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed, "Wrong value",
+					Exception::FMTfreeexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed, "Wrong value "+std::to_string(std::abs(value - objectivevalues.at(scnid))),
 						"FMTleveltest", __LINE__, primarylocation);
 				}
 			}
