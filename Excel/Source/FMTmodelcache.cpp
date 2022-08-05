@@ -88,8 +88,6 @@ namespace Wrapper
 				Parser::FMTareaparser areaparser;
 				map = std::unique_ptr<Spatial::FMTforest>(new Spatial::FMTforest(areaparser.vectormaptoFMTforest(maplocation,250,model->getthemes(),"AGE","SUPERFICIE",1.0,1.0,"STANLOCK")));
 				}
-			_exhandler->raise(Exception::FMTexc::FMTinvalid_theme,
-				"maplocation " + maplocation, "FMTmodelcache::loadmap", __LINE__, __FILE__);
 		}catch (...)
 		{
 			_exhandler->printexceptions("", "FMTmodelcache::loadmap", __LINE__, __FILE__);
@@ -103,14 +101,21 @@ namespace Wrapper
 			if (map)
 				{
 				Parser::FMTareaparser areaparser;
+				_exhandler->raise(Exception::FMTexc::FMTinvalid_theme,
+					"THEME id " + std::to_string(themeid), "FMTmodelcache::themeselectiontomask", __LINE__, __FILE__);
 				const Core::FMTtheme& theme = model->getthemes().at(themeid);
-				const std::vector<Core::FMTtheme>thetheme(1,theme);
 				std::map<std::string, std::string> layer_map;
+				const std::vector<std::string>& allatributes = theme.getbaseattributes();
 				size_t attributeid = 0;
-				for (const std::string& attribute : theme.getbaseattributes())
+				for (const std::string& attribute : allatributes)
 					{
-					layer_map[attribute] = attributevalues.at(attributeid);
-					++attributeid;
+					if (attributeid<attributevalues.size())
+						{
+						layer_map[attribute] = attributevalues.at(attributeid);
+					}else {
+						layer_map[attribute] = attributevalues.back();
+						}
+						++attributeid;
 					}
 				areaparser.writeforesttheme(
 					*map,

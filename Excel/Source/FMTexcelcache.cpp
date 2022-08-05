@@ -21,6 +21,7 @@
 #include "FMTobject.hpp"
 #include <boost/algorithm/string.hpp>
 #include <boost/filesystem.hpp>
+#include <boost/range/iterator_range.hpp>
 
 
 
@@ -96,10 +97,20 @@ namespace Wrapper
 		try {
 			const boost::filesystem::path primpath(primarylocation);
 			boost::filesystem::path pridir = primpath.parent_path();
-			std::string shapename(primpath.stem().string());
-			shapename+= ".shp";
-			const boost::filesystem::path bmappath = primpath / boost::filesystem::path("Carte") / boost::filesystem::path(shapename);
-			mappath = std::string(bmappath.string());
+			const boost::filesystem::path mapdir = pridir / boost::filesystem::path("Carte");
+			if (boost::filesystem::is_directory(mapdir))
+				{
+				for (auto& entry : boost::make_iterator_range(boost::filesystem::directory_iterator(mapdir), {}))
+					{
+					std::string extension = entry.path().extension().string();
+					boost::to_upper(extension);
+					if (extension==".SHP")
+						{
+						mappath = std::string(entry.path().string());
+						break;
+						}
+					}
+				}
 		}
 		catch (const std::exception& exception)
 		{
@@ -125,6 +136,7 @@ namespace Wrapper
 			errors.push_back(Exception::FMTexc::FMTinvalidyield_number);
 			errors.push_back(Exception::FMTexc::FMTundefinedoutput_attribute);
 			errors.push_back(Exception::FMTexc::FMToveridedyield);
+			errors.push_back(Exception::FMTexc::FMTinvalid_geometry);
 			mparser.seterrorstowarnings(errors);
 			std::vector<std::string>scenarios(1, sfile);
 			const std::vector<Models::FMTmodel> allmodels = mparser.readproject(pfile, scenarios);

@@ -62,6 +62,8 @@ void exportException()
 		.value("FMTinvalid_geometry", Exception::FMTexc::FMTinvalid_geometry)
 		.value("FMToveridedyield", Exception::FMTexc::FMToveridedyield)
 		.value("FMTdeathwithlock", Exception::FMTexc::FMTdeathwithlock)
+		.value("FMTsourcetotarget_transition", Exception::FMTexc::FMTsourcetotarget_transition)
+		.value("FMTsame_transitiontargets", Exception::FMTexc::FMTsame_transitiontargets)
 		.export_values();
 
 	define_pylist<Exception::FMTexc>();
