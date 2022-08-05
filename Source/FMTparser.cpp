@@ -379,7 +379,7 @@ template<typename T>
 GDALDataset* FMTparser::createdataset(const std::string& location, const Spatial::FMTlayer<T>& layer, const int datatypeid, std::string format) const
 {
 	GDALDataType datatype = static_cast<GDALDataType>(datatypeid);
-	const char* pszFormat = format.c_str();;
+	const char* pszFormat = format.c_str();
 	GDALDriver *poDriver = nullptr;
 	GDALDataset *poDstDS = nullptr;
 	try {
@@ -398,7 +398,10 @@ GDALDataset* FMTparser::createdataset(const std::string& location, const Spatial
 			papszOptions = CSLSetNameValue(papszOptions, "COMPRESS", "LZW");
 			papszOptions = CSLSetNameValue(papszOptions, "ZLEVEL", "9");
 			papszOptions = CSLSetNameValue(papszOptions, "BIGTIFF", "YES");
-		}
+		}else if (format=="BMP")
+			{
+			papszOptions = CSLSetNameValue(papszOptions, "WORLDFILE", "YES");
+			}
 		poDstDS = poDriver->Create(location.c_str(), layer.GetXSize(), layer.GetYSize(), 1, datatype, papszOptions);
 		if (poDstDS == nullptr)
 		{
@@ -487,8 +490,13 @@ GDALRasterBand* FMTparser::createband(GDALDataset* dataset,const std::vector<std
     {
     GDALRasterBand* band = getband(dataset,bandid);
 	try {
-		band->SetNoDataValue(-9999);
-		band->Fill(-9999);
+		double nodatavalue = -9999;
+		if (band->GetRasterDataType()==GDALDataType::GDT_Byte)
+		{
+			nodatavalue = static_cast<double>(std::numeric_limits<uint8_t>::max());
+		}
+		band->SetNoDataValue(nodatavalue);
+		band->Fill(nodatavalue);
 		setcategories(band, categories);
 		band->FlushCache();
 	}catch (...)
