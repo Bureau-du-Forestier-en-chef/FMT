@@ -1213,16 +1213,83 @@ const std::regex FMTareaparser::rxcleanarea = std::regex("^((\\*A[A]*)([^|]*)(_l
 	#endif
 
 
+	template<typename T, typename outT>
+	void FMTareaparser::writeband(const Spatial::FMTlayer<T>& layer, GDALRasterBand* wband, const std::map<T, std::string>& mapping) const
+	{
+		double lastwriten;
+		try {
+			int nXBlockSize, nYBlockSize;
+			wband->GetBlockSize(&nXBlockSize, &nYBlockSize);
+			int nXBlocks = (wband->GetXSize() + nXBlockSize - 1) / nXBlockSize;
+			int nYBlocks = (wband->GetYSize() + nYBlockSize - 1) / nYBlockSize;
+			lastwriten = wband->GetNoDataValue();
+			const outT nodata = static_cast<outT>(wband->GetNoDataValue());
+			unsigned int ystack = 0;
+			for (int iYBlock = 0; iYBlock < nYBlocks; iYBlock++)
+			{
+				int nYValid = 0;
+				unsigned int xstack = 0;
+				for (int iXBlock = 0; iXBlock < nXBlocks; iXBlock++)
+				{
+					std::vector<outT>block(static_cast<size_t>(nXBlockSize * nYBlockSize), nodata);
+					int  nXValid;
+					wband->GetActualBlockSize(iXBlock, iYBlock, &nXValid, &nYValid);
+					bool somethinginblock = false;
+					unsigned int y = ystack;
+					for (int iY = 0; iY < nYValid; iY++)
+					{
+						unsigned int x = xstack;
+						for (int iX = 0; iX < nXValid; iX++)
+						{
+							Spatial::FMTcoordinate coordinate(x, y);
+							typename Spatial::FMTlayer<T>::const_iterator it = layer.find(coordinate);
+							if (it != layer.end())
+								{
+								somethinginblock = true;
+								if (!mapping.empty())
+									{
+									block[iX + iY * nXBlockSize] = static_cast<outT>(std::distance(mapping.begin(), mapping.find(it->second)));
+								}else {
+									block[iX + iY * nXBlockSize] = boost::lexical_cast<outT>(it->second);
+									}
+								}
+							++x;
+							}
+						++y;
+						}
+						
+					if (somethinginblock)
+						{
+						if (wband->WriteBlock(iXBlock, iYBlock, &block[0]) != CPLErr::CE_None)
+							{
+								_exhandler->raise(Exception::FMTexc::FMTinvalidrasterblock,
+								"on band id "+	std::to_string(wband->GetBand()), "FMTareaparser::writeband", __LINE__, __FILE__, _section);
+							}
+						}
+					xstack += nXValid;
+					}
+				ystack += nYValid;
+				}
+		}
+		catch (...)
+		{
+			_exhandler->raisefromcatch("last "+ std::to_string(lastwriten) + "at band id " + std::to_string(wband->GetBand()), "FMTareaparser::writelayer", __LINE__, __FILE__, _section);
+		}
+	}
+
         template<typename T>
         bool FMTareaparser::writelayer(const Spatial::FMTlayer<T>& layer, std::string location,const std::map<T, std::string>& mapping, std::string format) const
             {
 			try {
-				//GDALAllRegister();
 				GDALDataType datatype = GDT_Int32;
 				if (std::is_same<double, T>::value)
-				{
+					{
 					datatype = GDT_Float64;
-				}
+					}
+				if (format == "BMP")
+					{
+					datatype = GDALDataType::GDT_Byte;
+					}
 				GDALDataset* wdataset = createdataset(location, layer, datatype,format);
 				std::vector<std::string>table;
 				if (!mapping.empty())
@@ -1234,88 +1301,36 @@ const std::regex FMTareaparser::rxcleanarea = std::regex("^((\\*A[A]*)([^|]*)(_l
 					}
 				}
 				GDALRasterBand* wband = createband(wdataset, table);
-				//iterate on blocks fill them and write them!
-				int nXBlockSize, nYBlockSize;
-				wband->GetBlockSize(&nXBlockSize, &nYBlockSize);
-				int nXBlocks = (wband->GetXSize() + nXBlockSize - 1) / nXBlockSize;
-				int nYBlocks = (wband->GetYSize() + nYBlockSize - 1) / nYBlockSize;
-				double nodata = wband->GetNoDataValue();
-				std::vector<int>intblock;
-				std::vector<double>dblblock;
-				if (std::is_same<double, T>::value)
-				{
-					dblblock.resize(static_cast<size_t>(nXBlockSize) * static_cast<size_t>(nYBlockSize));
-				}
-				else {
-					intblock.resize(static_cast<size_t>(nXBlockSize) * static_cast<size_t>(nYBlockSize));
-				}
-
-				unsigned int ystack = 0;
-				for (int iYBlock = 0; iYBlock < nYBlocks; iYBlock++)
-				{
-					int nYValid = 0;
-					unsigned int xstack = 0;
-					for (int iXBlock = 0; iXBlock < nXBlocks; iXBlock++)
+				if (datatype == GDALDataType::GDT_Byte)
 					{
-						int  nXValid;
-						wband->GetActualBlockSize(iXBlock, iYBlock, &nXValid, &nYValid);
-						unsigned int y = ystack;
-						for (int iY = 0; iY < nYValid; iY++)
-						{
-							unsigned int x = xstack;
-							for (int iX = 0; iX < nXValid; iX++)
-							{
-								Spatial::FMTcoordinate coordinate(x, y);
-								typename Spatial::FMTlayer<T>::const_iterator it = layer.find(coordinate);
-								if (it != layer.end())
-								{
-									if (!mapping.empty())
-									{
-										intblock[iX + iY * nXBlockSize] = static_cast<int>(std::distance(mapping.begin(), mapping.find(it->second)));
-									}
-									else if (std::is_same<int, T>::value)
-									{
-										intblock[iX + iY * nXBlockSize] = boost::lexical_cast<int>(it->second);
-									}
-									else if (std::is_same<double, T>::value)
-									{
-										dblblock[iX + iY * nXBlockSize] = boost::lexical_cast<int>(it->second);
-									}
-								}
-								else {
-									if (intblock.empty())
-									{
-										dblblock[iX + iY * nXBlockSize] = nodata;
-									}
-									else {
-										intblock[iX + iY * nXBlockSize] = static_cast<int>(nodata);
-									}
-
-								}
-
-								++x;
-							}
-							++y;
-						}
-						if (intblock.empty())
-						{
-							if (wband->WriteBlock(iXBlock, iYBlock, &dblblock[0]) != CPLErr::CE_None)
-							{
-								_exhandler->raise(Exception::FMTexc::FMTinvalidrasterblock,
-									wdataset->GetDescription(),"FMTareaparser::writelayer", __LINE__, __FILE__, _section);
-							}
-						}
-						else {
-							if (wband->WriteBlock(iXBlock, iYBlock, &intblock[0]) != CPLErr::CE_None)
-							{
-								_exhandler->raise(Exception::FMTexc::FMTinvalidrasterblock,
-									 wdataset->GetDescription(),"FMTareaparser::writelayer", __LINE__, __FILE__, _section);
-							}
-						}
-						xstack += nXValid;
+					writeband<T,uint8_t>(layer, wband, mapping);
+				}else if (datatype == GDALDataType::GDT_Int32)
+					{
+					writeband<T,int>(layer, wband, mapping);
+				}else {
+					writeband<T,double>(layer, wband, mapping);
 					}
-					ystack += nYValid;
+				GDALColorTable newcolors(GPI_RGB);
+				GDALColorEntry whitekentry;
+				whitekentry.c1 = 255;
+				whitekentry.c2 = 255;
+				whitekentry.c3 = 255;
+				//set the white for nodata...
+				newcolors.SetColorEntry(wband->GetNoDataValue(), &whitekentry);
+				int id = 0;
+				const double numberofentries = static_cast<double>(table.size());
+				for (typename std::map<T, std::string>::const_iterator it = mapping.begin(); it != mapping.end(); it++)
+				{
+					const int n = (static_cast<int>((static_cast<double>(std::distance(table.begin(), std::find(table.begin(), table.end(), it->second)))/ numberofentries) * 100));
+					GDALColorEntry newentry;
+					newentry.c1 = (255 * n) / 100;
+					newentry.c2 = (255 * (100 - n)) / 100;
+					newentry.c3 = 0;
+					newcolors.SetColorEntry(id, &newentry);
+					++id;
 				}
+				wband->SetColorTable(&newcolors);
+				wband->SetColorInterpretation(GDALColorInterp::GCI_PaletteIndex);
 				wband->ComputeStatistics(FALSE, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr);
 				wband->FlushCache();
 				wdataset->FlushCache();

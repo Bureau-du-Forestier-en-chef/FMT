@@ -101,9 +101,9 @@ namespace Wrapper
 			if (map)
 				{
 				Parser::FMTareaparser areaparser;
-				_exhandler->raise(Exception::FMTexc::FMTinvalid_theme,
-					"THEME id " + std::to_string(themeid), "FMTmodelcache::themeselectiontomask", __LINE__, __FILE__);
-				const Core::FMTtheme& theme = model->getthemes().at(themeid);
+				//_exhandler->raise(Exception::FMTexc::FMTinvalid_theme,
+				//	"THEME id " + std::to_string(themeid), "FMTmodelcache::themeselectiontomask", __LINE__, __FILE__);
+				const Core::FMTtheme theme = model->getthemes().at(themeid);
 				std::map<std::string, std::string> layer_map;
 				const std::vector<std::string>& allatributes = theme.getbaseattributes();
 				size_t attributeid = 0;
@@ -122,7 +122,7 @@ namespace Wrapper
 					theme,
 					jpeglocation,
 					layer_map,
-					"JPEG");
+					"BMP");
 				}
 		}
 		catch (...)

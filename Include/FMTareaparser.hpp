@@ -84,6 +84,12 @@ class FMTEXPORT FMTareaparser : public FMTparser
 													const Spatial::FMTforest& newfor,
 													const std::vector<Core::FMTtheme>& themes) const;
 		#ifdef FMTWITHGDAL
+			// DocString: FMTareaparser::writeband
+			/**
+			Write the FMTlayer in a band.
+			*/
+			template<typename T,typename outT>
+			void writeband(const Spatial::FMTlayer<T>& layer, GDALRasterBand* wband, const std::map<T, std::string>& mapping) const;
 			// DocString: FMTareaparser::getunion
 				/**
 				Simply call a union cascaded on all multipartpolygons to create single polygon for each multipart.
