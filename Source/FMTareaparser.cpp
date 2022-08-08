@@ -1318,7 +1318,11 @@ const std::regex FMTareaparser::rxcleanarea = std::regex("^((\\*A[A]*)([^|]*)(_l
 				//set the white for nodata...
 				newcolors.SetColorEntry(wband->GetNoDataValue(), &whitekentry);
 				int id = 0;
-				const double numberofentries = static_cast<double>(table.size());
+				//CLEAN UP TABLE
+				std::sort(table.begin(), table.end());
+				auto last = std::unique(table.begin(), table.end());
+				table.erase(last, table.end());
+				const double numberofentries = static_cast<double>(table.size()-1);
 				for (typename std::map<T, std::string>::const_iterator it = mapping.begin(); it != mapping.end(); it++)
 				{
 					const int n = (static_cast<int>((static_cast<double>(std::distance(table.begin(), std::find(table.begin(), table.end(), it->second)))/ numberofentries) * 100));

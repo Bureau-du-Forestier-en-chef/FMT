@@ -137,6 +137,8 @@ namespace Wrapper
 			errors.push_back(Exception::FMTexc::FMTundefinedoutput_attribute);
 			errors.push_back(Exception::FMTexc::FMToveridedyield);
 			errors.push_back(Exception::FMTexc::FMTinvalid_geometry);
+			errors.push_back(Exception::FMTexc::FMTsourcetotarget_transition);
+			errors.push_back(Exception::FMTexc::FMTsame_transitiontargets);
 			mparser.seterrorstowarnings(errors);
 			std::vector<std::string>scenarios(1, sfile);
 			const std::vector<Models::FMTmodel> allmodels = mparser.readproject(pfile, scenarios);
