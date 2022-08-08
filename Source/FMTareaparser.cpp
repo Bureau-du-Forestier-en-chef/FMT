@@ -1310,31 +1310,35 @@ const std::regex FMTareaparser::rxcleanarea = std::regex("^((\\*A[A]*)([^|]*)(_l
 				}else {
 					writeband<T,double>(layer, wband, mapping);
 					}
-				GDALColorTable newcolors(GPI_RGB);
-				GDALColorEntry whitekentry;
-				whitekentry.c1 = 255;
-				whitekentry.c2 = 255;
-				whitekentry.c3 = 255;
-				//set the white for nodata...
-				newcolors.SetColorEntry(wband->GetNoDataValue(), &whitekentry);
-				int id = 0;
-				//CLEAN UP TABLE
-				std::sort(table.begin(), table.end());
-				auto last = std::unique(table.begin(), table.end());
-				table.erase(last, table.end());
-				const double numberofentries = static_cast<double>(table.size()-1);
-				for (typename std::map<T, std::string>::const_iterator it = mapping.begin(); it != mapping.end(); it++)
+				if (datatype == GDALDataType::GDT_Byte || datatype == GDALDataType::GDT_UInt16)
 				{
-					const int n = (static_cast<int>((static_cast<double>(std::distance(table.begin(), std::find(table.begin(), table.end(), it->second)))/ numberofentries) * 100));
-					GDALColorEntry newentry;
-					newentry.c1 = (255 * n) / 100;
-					newentry.c2 = (255 * (100 - n)) / 100;
-					newentry.c3 = 0;
-					newcolors.SetColorEntry(id, &newentry);
-					++id;
+					//Byte or Uint6 only!
+					GDALColorTable newcolors(GPI_RGB);
+					GDALColorEntry whitekentry;
+					whitekentry.c1 = 255;
+					whitekentry.c2 = 255;
+					whitekentry.c3 = 255;
+					//set the white for nodata...
+					newcolors.SetColorEntry(wband->GetNoDataValue(), &whitekentry);
+					int id = 0;
+					//CLEAN UP TABLE
+					std::sort(table.begin(), table.end());
+					auto last = std::unique(table.begin(), table.end());
+					table.erase(last, table.end());
+					const double numberofentries = static_cast<double>(table.size() - 1);
+					for (typename std::map<T, std::string>::const_iterator it = mapping.begin(); it != mapping.end(); it++)
+					{
+						const int n = (static_cast<int>((static_cast<double>(std::distance(table.begin(), std::find(table.begin(), table.end(), it->second))) / numberofentries) * 100));
+						GDALColorEntry newentry;
+						newentry.c1 = (255 * n) / 100;
+						newentry.c2 = (255 * (100 - n)) / 100;
+						newentry.c3 = 0;
+						newcolors.SetColorEntry(id, &newentry);
+						++id;
+					}
+					wband->SetColorTable(&newcolors);
+					wband->SetColorInterpretation(GDALColorInterp::GCI_PaletteIndex);
 				}
-				wband->SetColorTable(&newcolors);
-				wband->SetColorInterpretation(GDALColorInterp::GCI_PaletteIndex);
 				wband->ComputeStatistics(FALSE, nullptr, nullptr, nullptr, nullptr, nullptr, nullptr);
 				wband->FlushCache();
 				wdataset->FlushCache();
