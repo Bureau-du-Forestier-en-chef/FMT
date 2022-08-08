@@ -115,9 +115,9 @@ namespace Wrapper
 					}else {
 						layer_map[attribute] = attributevalues.back();
 						}
-						++attributeid;
+						++attributeid; 
 					}
-				areaparser.writeforesttheme(
+				return areaparser.writeforesttheme(
 					*map,
 					theme,
 					jpeglocation,
