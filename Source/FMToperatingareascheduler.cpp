@@ -846,6 +846,7 @@ namespace Heuristics
 		try {
             const double* primalsolution = this->getColSolution();
             const double* rowupperbound = this->getRowUpper();
+			const double* rowsolution = this->getRowActivity();
             for (std::vector<FMToperatingareascheme>::const_iterator operatingareait = operatingareas.begin();
                 operatingareait != operatingareas.end(); ++operatingareait)
                 {
@@ -854,7 +855,7 @@ namespace Heuristics
                     {
                     data=operatingareait->getprimalsolution(primalsolution);
                 }else {
-                    data=operatingareait->getdualsolution(rowupperbound);
+                    data=operatingareait->getdualsolution(rowupperbound, rowsolution);
                     }
                 std::vector<std::string>source;
 				Core::FMTtimeyieldhandler handler(operatingareait->getmask());
