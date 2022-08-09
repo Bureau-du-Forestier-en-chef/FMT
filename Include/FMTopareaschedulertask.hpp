@@ -68,6 +68,9 @@ namespace Parallel
 		// DocString: FMTopareaschedulertask::outyldname
 		///Name of the output yield.
 		static std::string outyldname;
+		// DocString: FMTopareaschedulertask::basemodel
+		///The non build base lpmodel copy (only use for writing the solution).
+		static std::unique_ptr<Models::FMTlpmodel>basemodel;
 		// DocString: FMTopareaschedulertask::lastspawned
 		///Last thread id and seed used by the spawner.
 		int lastspawned;
@@ -87,6 +90,12 @@ namespace Parallel
 		Get the time at which the solving should stop.
 		*/
 		std::chrono::time_point<std::chrono::high_resolution_clock>getstoppoint(const double& timegap) const;
+		// DocString: FMTopareaschedulertask::writefinalmodel
+		/**
+		Using the solution of the best heuristic just rebuild the base model without anyconstraint and apply the solution found.
+		Then get the folder of the resulting solution et write the entire model and the solution.
+		*/
+		void writefinalmodel() const;
 		// DocString: FMTopareaschedulertask::writesolution
 		/**
 		Using the solution location write down the solution.

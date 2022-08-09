@@ -514,7 +514,8 @@ namespace Parser
 					{
 					LHS += beempty;
 					}
-				const std::string RHS = std::string(Bmatch[7]) + std::string(Bmatch[12]);
+				std::string RHS = std::string(Bmatch[7]) + std::string(Bmatch[12]);
+				//boost::trim(RHS);
 				const std::string full_equation = LHS + std::string(1, ' ') + std::string(1, '+') + RHS;
 				std::map<std::string, double> nodes = getequation(full_equation, constants, outputs, LHS.size());
 				double bound = nodes["RHS"];

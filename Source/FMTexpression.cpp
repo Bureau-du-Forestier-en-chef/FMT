@@ -166,7 +166,11 @@ FMTexpression FMTexpression::simplify(std::map<std::string,double>& values) cons
             }
         shuntit->second = 0; //unset
         }
-	new_expression.pop_back();
+	if (!new_expression.empty())
+	{
+		new_expression.pop_back();
+	}
+	
     if (rest != 0)
         {
         if (rest > 0)
