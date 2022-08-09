@@ -140,6 +140,11 @@ namespace Heuristics
 		0110000110000110000
 		*/
 		std::vector<double>fillpattern(const std::vector<double>& pattern, const int& startat) const;
+		// DocString: FMToperatingareascheme::closenoactivity
+		/**
+		If no activity is detected in the opened OA then close it with no cost to the LP problem.
+		*/
+		void closenoactivity(std::vector<double>& filleduppattern, const size_t& selected, const double* dualsolution) const;
 		public:
 			// DocString: FMToperatingareascheme::empty
 			/**
@@ -285,7 +290,7 @@ namespace Heuristics
 			Gets the yield solution of the dual problem using (dualsolution) it set the selected
 			scheme solution into a vector of double.
 			*/
-			std::vector<double> getdualsolution(const double* upperbounds) const;
+			std::vector<double> getdualsolution(const double* upperbounds, const double* dualsolution) const;
 			// DocString: FMToperatingareascheme::setconstraints
 			/**
 			Main function setting up constraints and variables using a (matrixbuild) and a primal solution.

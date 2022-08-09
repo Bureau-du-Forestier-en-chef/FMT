@@ -353,7 +353,20 @@ std::vector<double>FMToperatingareascheme::fillpattern(const std::vector<double>
 	return values;
 	}
 
-std::vector<double> FMToperatingareascheme::getdualsolution(const double* upperbounds) const
+void FMToperatingareascheme::closenoactivity(std::vector<double>& filleduppattern, const size_t& selected, const double* dualsolution) const
+	{
+	size_t constraintid = 0;
+	for (const int& period : schemesperiods.at(selected))
+		{
+		if (*(dualsolution + openingconstraints.at(selected).at(constraintid)) < FMT_DBL_TOLERANCE)
+			{
+			filleduppattern[period] = 0;
+			}
+		++constraintid;
+		}
+	}
+
+std::vector<double> FMToperatingareascheme::getdualsolution(const double* upperbounds, const double* dualsolution) const
 	{
 	const size_t patternsize = (this->openingtime + this->returntime);
 	std::vector<double>pattern(patternsize,0.0);
@@ -367,7 +380,12 @@ std::vector<double> FMToperatingareascheme::getdualsolution(const double* upperb
 			pattern[opid] = 1;
 		}
 		}
-	return this->fillpattern(pattern, startingat);
+	std::vector<double> filledpattern = this->fillpattern(pattern, startingat);
+	if (startingat>0)
+	{
+		closenoactivity(filledpattern, solutionid, dualsolution);
+	}
+	return filledpattern;
 	}
 
 std::vector<double>FMToperatingareascheme::getprimalsolution(const double* primalsolution) const //Get the solution into yield
