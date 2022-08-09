@@ -15,6 +15,10 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <limits>
 #include <boost/thread.hpp>
 #include "FMTexceptionhandler.hpp"
+#include "FMTscheduleparser.hpp"
+#include "FMTmodelparser.hpp"
+#include <boost/algorithm/string/predicate.hpp>
+#include <boost/filesystem.hpp>
 
 
 namespace Parallel
@@ -25,6 +29,8 @@ namespace Parallel
 	std::chrono::time_point<std::chrono::high_resolution_clock> FMTopareaschedulertask::stoptime = std::chrono::time_point<std::chrono::high_resolution_clock>();
 	double FMTopareaschedulertask::relax_objective = 0.0;
 	std::string FMTopareaschedulertask::outyldname = std::string();
+	std::unique_ptr<Models::FMTlpmodel> FMTopareaschedulertask::basemodel(nullptr);
+
 
 	double FMTopareaschedulertask::solveinitialmodel(Models::FMTlpmodel& model) const
 	{
@@ -88,6 +94,9 @@ namespace Parallel
 			Models::FMTlpmodel modelcopy(model);
 			//Force postsolve to keep logic with the FMToperatingareascheme
 			modelcopy.FMTmodel::setparameter(Models::FMTboolmodelparameters::POSTSOLVE,true);
+			//Keep the non build modelcopy.
+			basemodel = std::move(std::unique_ptr<Models::FMTlpmodel>(new Models::FMTlpmodel(modelcopy)));
+			basemodel->getsolverptr()->passinmessagehandler(*tasklogger.get());
 			relax_objective = solveinitialmodel(modelcopy);
 			setinitialscheduler(modelcopy,opareas,node);
 			iterations = maxiterations;
@@ -159,12 +168,52 @@ namespace Parallel
 						"FMTopareaschedulertask::~FMTopareaschedulertask", __LINE__, __FILE__);
 				}
 				writesolution();
+				writefinalmodel();
 			}
 
 		}catch (...)
 		{
 			_exhandler->raisefromcatch("", "FMTopareaschedulertask::~FMTopareaschedulertask()", __LINE__, __FILE__);
 		}
+	}
+
+
+	void FMTopareaschedulertask::writefinalmodel() const
+	{
+		try {
+			const double* thesolution = bestscheduler->getColSolution();
+			Models::FMTlpmodel modelcopy(*basemodel);
+			Core::FMTyields newyields = modelcopy.getyields();
+			newyields.unshrink(modelcopy.getthemes());
+			for (const Core::FMTtimeyieldhandler& tyld : bestscheduler->getsolution(outyldname))
+				{
+				std::unique_ptr<Core::FMTyieldhandler>newyield(new Core::FMTtimeyieldhandler(tyld));
+				newyields.push_front(newyield->getmask(), newyield);
+				}
+			newyields.update();
+			modelcopy.setyields(newyields);
+			modelcopy.build();
+			Models::FMTlpsolver* solver = modelcopy.getsolverptr();
+			solver->setColSolution(thesolution);
+			const boost::filesystem::path filepath(solutionlocation + ".txt");
+			const boost::filesystem::path folderpath = filepath.parent_path();
+			const boost::filesystem::path schedulepath = folderpath / boost::filesystem::path(modelcopy.getname() + ".seq");
+			Parser::FMTmodelparser modelparser;
+			modelparser.write(modelcopy, folderpath.string()+"/");
+			Parser::FMTscheduleparser scheduleparser;
+			std::vector<Core::FMTschedule>schedules;
+			for (int period = 1; period <= modelcopy.getparameter(Models::FMTintmodelparameters::LENGTH);++period)
+				{
+				schedules.push_back(modelcopy.getsolution(period, true));
+				}
+			scheduleparser.write(schedules, schedulepath.string());
+
+		}
+		catch (...)
+		{
+			_exhandler->raisefromcatch("", "FMTopareaschedulertask::writefinalmodel", __LINE__, __FILE__);
+		}
+
 	}
 
 

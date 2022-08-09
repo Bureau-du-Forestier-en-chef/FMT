@@ -277,6 +277,7 @@ namespace Parser
 											
 											stroperators.push_back(std::string(1, letter));
 											
+											
 											if (!stacked_char.empty())
 											{
 												strsources.push_back(stacked_char);
@@ -314,6 +315,10 @@ namespace Parser
 									for (std::string& strsrc : strsources)
 									{
 										boost::algorithm::trim(strsrc);
+										if (strsrc.empty())
+										{
+											continue;
+										}
 										if (!processing_level && (isnum(strsrc) || constants.isconstant(strsrc)))
 										{
 											const double value = getnum<double>(strsrc, constants);
