@@ -120,7 +120,7 @@ int main(int argc, char *argv[])
     {   
         Logging::FMTlogger().logstamp();
         #ifdef FMTWITHOSI
-        const std::string primarylocation = std::string(argv[1]);
+        const std::string primarylocation =  std::string(argv[1]);
             const std::vector<std::string>scenarios(1,std::string(argv[2]));
             const std::string fichierShp = std::string(argv[3]);
             Parser::FMTmodelparser modelparser;

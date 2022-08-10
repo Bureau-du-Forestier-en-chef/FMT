@@ -353,6 +353,7 @@ void FMTmodelparser::write(const Models::FMTmodel& model,const std::string& fold
 			const std::string outfile = modelname + ".out";
 			const std::string optfile = modelname + ".opt";
 			const std::string liffile = modelname + ".lif";
+			const std::string seqfile = modelname + ".seq";
 			FMTlandscapeparser landparser;
 			landparser.write(model.getthemes(), folder + lanfile);
 			pristream <<"LANDSCAPE\t\t[" + lanfile + "]\n";
@@ -389,6 +390,21 @@ void FMTmodelparser::write(const Models::FMTmodel& model,const std::string& fold
 				optparser.write(constraints, folder + optfile);
 				pristream << "OPTIMIZE\t\t[" + optfile + "]\n";
 			}
+			std::vector<Core::FMTschedule>schedules;
+			for (int period = 1; period<=model.getparameter(Models::FMTintmodelparameters::LENGTH);++period)
+				{
+				const Core::FMTschedule periodschedule = model.getsolution(period);
+				if (!periodschedule.empty())
+					{
+					schedules.push_back(periodschedule);
+					}
+				}
+			if (!schedules.empty())
+				{
+				FMTscheduleparser scheduleparser;
+				scheduleparser.write(schedules, folder+seqfile);
+				pristream << "SCHEDULE\t[" + seqfile + "]\n";
+				}
 			pristream.close();
 		}
 	}catch (...)
