@@ -317,6 +317,12 @@ namespace Heuristics
 					(*_logger) << "Thread : " + getthreadid() + " Better solution found objective: " + std::to_string(newobjective) + " (" + relativevalue + "%). "+std::to_string(iteration)+" iterations left." << "\n";
 					this->clearrowcache();
 				}else{
+					if (iteration%10 == 0 && iteration>0)
+						{
+						const std::string bestgap = std::to_string(static_cast<int>(std::abs(initsol - initialobjectivevalue) * 100 / initsol));
+						(*_logger) << "Thread : " + getthreadid() +" ("+bestgap+"%) "+std::to_string(iteration) + " iterations left..." << "\n";
+						}
+
 					this->unbound(selected);
 					std::vector<int>targeteditems;
 					std::vector<double>bounds;

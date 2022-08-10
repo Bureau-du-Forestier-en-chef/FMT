@@ -23,7 +23,7 @@ int main(int argc, char* argv[])
 		boost::split(results, vals,boost::is_any_of("|"));
 		const std::string primarylocation = results.at(0);
 		const std::string scenario = results.at(1);
-		const int length =  std::stoi(argv[2]);
+		const int length = std::stoi(argv[2]);
 		const double objectivevalue = std::stod(argv[3]);
 		Parser::FMTmodelparser modelparser;
 		std::vector<Exception::FMTexc>errors;

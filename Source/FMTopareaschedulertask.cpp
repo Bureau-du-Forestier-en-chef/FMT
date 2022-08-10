@@ -185,6 +185,7 @@ namespace Parallel
 			Models::FMTlpmodel modelcopy(*basemodel);
 			Core::FMTyields newyields = modelcopy.getyields();
 			newyields.unshrink(modelcopy.getthemes());
+			modelcopy.setconstraints(std::vector<Core::FMTconstraint>(1, basemodel->getconstraints().at(0)));
 			for (const Core::FMTtimeyieldhandler& tyld : bestscheduler->getsolution(outyldname))
 				{
 				std::unique_ptr<Core::FMTyieldhandler>newyield(new Core::FMTtimeyieldhandler(tyld));
@@ -193,21 +194,13 @@ namespace Parallel
 			newyields.update();
 			modelcopy.setyields(newyields);
 			modelcopy.build();
+			modelcopy.setconstraints(basemodel->getconstraints());
 			Models::FMTlpsolver* solver = modelcopy.getsolverptr();
 			solver->setColSolution(thesolution);
 			const boost::filesystem::path filepath(solutionlocation + ".txt");
 			const boost::filesystem::path folderpath = filepath.parent_path();
-			const boost::filesystem::path schedulepath = folderpath / boost::filesystem::path(modelcopy.getname() + ".seq");
 			Parser::FMTmodelparser modelparser;
 			modelparser.write(modelcopy, folderpath.string()+"/");
-			Parser::FMTscheduleparser scheduleparser;
-			std::vector<Core::FMTschedule>schedules;
-			for (int period = 1; period <= modelcopy.getparameter(Models::FMTintmodelparameters::LENGTH);++period)
-				{
-				schedules.push_back(modelcopy.getsolution(period, true));
-				}
-			scheduleparser.write(schedules, schedulepath.string());
-
 		}
 		catch (...)
 		{
