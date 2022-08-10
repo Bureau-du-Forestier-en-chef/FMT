@@ -393,7 +393,7 @@ void FMTmodelparser::write(const Models::FMTmodel& model,const std::string& fold
 			std::vector<Core::FMTschedule>schedules;
 			for (int period = 1; period<=model.getparameter(Models::FMTintmodelparameters::LENGTH);++period)
 				{
-				const Core::FMTschedule periodschedule = model.getsolution(period);
+				const Core::FMTschedule periodschedule = model.getsolution(period,true);
 				if (!periodschedule.empty())
 					{
 					schedules.push_back(periodschedule);

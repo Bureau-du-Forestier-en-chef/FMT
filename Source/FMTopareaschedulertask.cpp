@@ -183,17 +183,16 @@ namespace Parallel
 		try {
 			const double* thesolution = bestscheduler->getColSolution();
 			Models::FMTlpmodel modelcopy(*basemodel);
+			modelcopy.doplanning(false);
 			Core::FMTyields newyields = modelcopy.getyields();
 			newyields.unshrink(modelcopy.getthemes());
-			modelcopy.setconstraints(std::vector<Core::FMTconstraint>(1, basemodel->getconstraints().at(0)));
 			for (const Core::FMTtimeyieldhandler& tyld : bestscheduler->getsolution(outyldname))
-				{
+			{
 				std::unique_ptr<Core::FMTyieldhandler>newyield(new Core::FMTtimeyieldhandler(tyld));
 				newyields.push_front(newyield->getmask(), newyield);
-				}
+			}
 			newyields.update();
 			modelcopy.setyields(newyields);
-			modelcopy.build();
 			modelcopy.setconstraints(basemodel->getconstraints());
 			Models::FMTlpsolver* solver = modelcopy.getsolverptr();
 			solver->setColSolution(thesolution);
