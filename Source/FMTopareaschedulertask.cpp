@@ -96,7 +96,7 @@ namespace Parallel
 			modelcopy.FMTmodel::setparameter(Models::FMTboolmodelparameters::POSTSOLVE,true);
 			//Keep the non build modelcopy.
 			basemodel = std::move(std::unique_ptr<Models::FMTlpmodel>(new Models::FMTlpmodel(modelcopy)));
-			basemodel->getsolverptr()->passinmessagehandler(*tasklogger.get());
+			//basemodel->getsolverptr()->passinmessagehandler(*tasklogger.get());
 			relax_objective = solveinitialmodel(modelcopy);
 			setinitialscheduler(modelcopy,opareas,node);
 			iterations = maxiterations;
@@ -181,7 +181,9 @@ namespace Parallel
 	void FMTopareaschedulertask::writefinalmodel() const
 	{
 		try {
+			
 			const double* thesolution = bestscheduler->getColSolution();
+			basemodel->getsolverptr()->passinmessagehandler(*tasklogger.get());
 			Models::FMTlpmodel modelcopy(*basemodel);
 			modelcopy.doplanning(false);
 			Core::FMTyields newyields = modelcopy.getyields();
@@ -193,13 +195,12 @@ namespace Parallel
 			}
 			newyields.update();
 			modelcopy.setyields(newyields);
-			modelcopy.setconstraints(basemodel->getconstraints());
 			Models::FMTlpsolver* solver = modelcopy.getsolverptr();
 			solver->setColSolution(thesolution);
+			Parser::FMTmodelparser modelparser;
 			const boost::filesystem::path filepath(solutionlocation + ".txt");
 			const boost::filesystem::path folderpath = filepath.parent_path();
-			Parser::FMTmodelparser modelparser;
-			modelparser.write(modelcopy, folderpath.string()+"/");
+			modelparser.write(modelcopy, folderpath.string() + "/");
 		}
 		catch (...)
 		{
