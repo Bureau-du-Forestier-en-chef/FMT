@@ -56,6 +56,20 @@ void exportCore()
 		.value("developpement", Core::FMToutputlevel::developpement)
 		.export_values();
 
+	bp::enum_<Core::FMTconstrainttype>("FMTconstrainttype")
+		.value("FMTMAXobjective", Core::FMTconstrainttype::FMTMAXobjective)
+		.value("FMTMINobjective", Core::FMTconstrainttype::FMTMINobjective)
+		.value("FMTMAXMINobjective", Core::FMTconstrainttype::FMTMAXMINobjective)
+		.value("FMTMINMAXobjective", Core::FMTconstrainttype::FMTMINMAXobjective)
+		.value("FMTevenflow", Core::FMTconstrainttype::FMTevenflow)
+		.value("FMTnondeclining", Core::FMTconstrainttype::FMTnondeclining)
+		.value("FMTsequence", Core::FMTconstrainttype::FMTsequence)
+		.value("FMTstandard", Core::FMTconstrainttype::FMTstandard)
+		.value("FMTspatialsize", Core::FMTconstrainttype::FMTspatialsize)
+		.value("FMTspatialadjacency", Core::FMTconstrainttype::FMTspatialadjacency)
+		.value("FMTspatialgreenup", Core::FMTconstrainttype::FMTspatialgreenup)
+		.export_values();
+
 	bp::class_<Core::FMTobject>("FMTobject", "@DocString(FMTobject)")
 		.def("setdefaultexceptionhandler", &Core::FMTobject::setdefaultexceptionhandler,
 			"@DocString(FMTobject::setdefaultexceptionhandler)")
@@ -168,7 +182,9 @@ void exportCore()
 
 		bp::class_<Core::FMTspec>("FMTspec", "@DocString(FMTspec)")
 			.def("getperiodlowerbound", &Core::FMTspec::getperiodlowerbound,
-				"@DocString(FMTspec::getperiodlowerbound)");
+				"@DocString(FMTspec::getperiodlowerbound)")
+			.def("getperiodupperbound", &Core::FMTspec::getperiodupperbound,
+				"@DocString(FMTspec::getperiodupperbound)");
 
 		bp::class_<Core::FMTactualdevelopment, bp::bases<Core::FMTdevelopment>>("FMTactualdevelopment", "@DocString(FMTactualdevelopment)")
 			    .def(bp::init<Core::FMTactualdevelopment>())
@@ -374,7 +390,9 @@ void exportCore()
 				.def("isspatial",&Core::FMTconstraint::isspatial,
 					"@DocString(FMTconstraint::isspatial)")
 				.def("sense",&Core::FMTconstraint::sense,
-					"@DocString(FMTconstraint::sense)");
+					"@DocString(FMTconstraint::sense)")
+				.def("getconstrainttype", &Core::FMTconstraint::getconstrainttype,
+					"@DocString(FMTconstraint::getconstrainttype)");
 
 			define_FMTlist<Core::FMTconstraint>();
 			define_FMTlist<Core::FMTGCBMtransition>();
