@@ -19,7 +19,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 namespace Graph
 {
-	class FMTbasevertexproperties
+	class FMTEXPORT FMTbasevertexproperties
 	{
 		// DocString: FMTbasevertexproperties::save
 		/**
