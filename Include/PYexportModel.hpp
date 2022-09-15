@@ -15,6 +15,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTnssmodel.hpp"
 #include "FMTsamodel.hpp"
 #include "FMTlpsolver.hpp"
+#include "FMTsaschedule.hpp"
 
 #include "boost/python.hpp"
 
