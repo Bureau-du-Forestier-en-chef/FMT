@@ -235,7 +235,9 @@ void exportModel()
 		.def("getstats", &Models::FMTsrmodel::getstats,
 			"@DocString(FMTsrmodel::getstats)")
 		.def("getavailablesolverinterface", &Models::FMTsrmodel::getavailablesolverinterface,
-			"@DocString(FMTsrmodel::getavailablesolverinterface)").staticmethod("getavailablesolverinterface");
+			"@DocString(FMTsrmodel::getavailablesolverinterface)").staticmethod("getavailablesolverinterface")
+		.def("getscheduleproportions", &Models::FMTsrmodel::getscheduleproportions,
+			"@DocString(FMTsrmodel::getscheduleproportions)");
 
 	define_pylist<Models::FMTsrmodel>();
 	
