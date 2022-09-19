@@ -258,7 +258,7 @@ FMTlandscapeparser::FMTlandscapeparser() :
 									"FMTlandscapeparser::read",__LINE__, __FILE__, _section);
 							}
 						}
-						else if(!aggregate_redefiniton) {
+						else {
 							pasttheme = -1;
 							std::vector<std::string>splited = FMTparser::spliter(line, FMTparser::rxseparator);
 							std::string name = "";
