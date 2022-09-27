@@ -135,9 +135,11 @@ void exportParser()
 				.def("getconstraintsfromstring",&Parser::FMTmodelparser::getconstraintsfromstring, getconstraintsfromstring_overloads(bp::args("constraintstr", "model", "constants"), "@DocString(FMTmodel::getconstraintsfromstring)"))
 				.def("readschedules", &Parser::FMTmodelparser::readschedules,
 					"@DocString(FMTmodelparser::readschedules)")
+				#ifdef FMTWITHGDAL
 				.def("writeresults", &Parser::FMTmodelparser::writeresults,
 					writeresults_overloads(bp::args("model", "theoutputs", "firstperiod", "lastperiod", "outlocation", "outputlevel", "gdaldrivername"),
 						"@DocString(FMTmodelparser::writeresults)"))
+				#endif
                 .def("write",&Parser::FMTmodelparser::write,
 					"@DocString(FMTmodelparser::write)");
 	bp::class_<Parser::FMTscheduleparser, bp::bases<Parser::FMTparser>>("FMTscheduleparser", "@DocString(FMTscheduleparser)")

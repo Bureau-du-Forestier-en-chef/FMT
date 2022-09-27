@@ -23,7 +23,7 @@ class FMTsaschedule
 		std::string schedule_type;
     public:
         FMTsaschedule();//Constructor
-        virtual~FMTsaschedule()=default;//Destructor
+        virtual~FMTsaschedule();//Destructor
         virtual double reduce_temp(double& temp);//
         virtual std::string get_schedule_type()const;
         virtual std::unique_ptr<FMTsaschedule> Clone()const;

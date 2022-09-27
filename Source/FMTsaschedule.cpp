@@ -24,6 +24,8 @@ namespace Spatial
 
     }
 
+    FMTsaschedule::~FMTsaschedule(){}
+
     double FMTsaschedule::reduce_temp(double& temp)
     {
         return 0.0;

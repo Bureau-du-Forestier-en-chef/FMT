@@ -105,7 +105,7 @@ namespace Parallel
 			outyldname = outputyieldname;
 		}catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTopareaschedulertask::FMTopareaschedulertask()", __LINE__, __FILE__);
+			_exhandler->printexceptions("", "FMTopareaschedulertask::FMTopareaschedulertask()", __LINE__, __FILE__);
 		}
 
 	}

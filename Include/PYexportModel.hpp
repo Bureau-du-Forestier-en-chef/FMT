@@ -15,6 +15,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTnssmodel.hpp"
 #include "FMTsamodel.hpp"
 #include "FMTlpsolver.hpp"
+#include "FMTsaschedule.hpp"
 
 #include "boost/python.hpp"
 
@@ -234,7 +235,9 @@ void exportModel()
 		.def("getstats", &Models::FMTsrmodel::getstats,
 			"@DocString(FMTsrmodel::getstats)")
 		.def("getavailablesolverinterface", &Models::FMTsrmodel::getavailablesolverinterface,
-			"@DocString(FMTsrmodel::getavailablesolverinterface)").staticmethod("getavailablesolverinterface");
+			"@DocString(FMTsrmodel::getavailablesolverinterface)").staticmethod("getavailablesolverinterface")
+		.def("getscheduleproportions", &Models::FMTsrmodel::getscheduleproportions,
+			"@DocString(FMTsrmodel::getscheduleproportions)");
 
 	define_pylist<Models::FMTsrmodel>();
 	
