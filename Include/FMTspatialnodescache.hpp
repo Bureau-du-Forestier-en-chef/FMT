@@ -29,7 +29,7 @@ namespace Models
 namespace Spatial
 {
 	class FMTcoordinate;
-	class FMTspatialnodescache
+	class FMTEXPORT FMTspatialnodescache
 	{
 	class FMTEXPORT FMTnodecache
 		{

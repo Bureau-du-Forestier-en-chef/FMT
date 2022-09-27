@@ -22,8 +22,10 @@ namespace Parallel
 	FMTparallelwriter::~FMTparallelwriter()
 		{
 		try {
-			resultslayer.clear();
-			GDALClose(resultsdataset);
+			#ifdef FMTWITHGDAL
+				resultslayer.clear();
+				GDALClose(resultsdataset);
+			#endif
 		}catch(...)
 			{
 			_exhandler->raisefromcatch("", "FMTparallelwriter::~FMTparallelwriter", __LINE__, __FILE__);
@@ -64,7 +66,9 @@ namespace Parallel
 				{
 				setlayer(modelptr);
 				}
+			#ifdef FMTWITHGDAL
 			driftlayer = createdriftlayer(resultsdataset);
+			#endif
 		}catch (...)
 			{
 			_exhandler->raisefromcatch("", "FMTparallelwriter::FMTparallelwriter", __LINE__, __FILE__);
@@ -116,7 +120,9 @@ namespace Parallel
 	void FMTparallelwriter::setlayer(const Models::FMTmodel* model)
 	{
 		try {
+			#ifdef FMTWITHGDAL
 			resultslayer[model->getname()] = createresultslayer(*model, resultsdataset,alllayeroptions);
+			#endif
 		}
 		catch (...)
 		{

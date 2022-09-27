@@ -13,8 +13,6 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 namespace Spatial
 {
-
-
 	FMTspatialnodescache::~FMTspatialnodescache()
 		{
 		if (staticnodes!=nullptr)
