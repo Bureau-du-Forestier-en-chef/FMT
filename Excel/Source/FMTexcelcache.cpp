@@ -180,7 +180,7 @@ namespace Wrapper
 			std::unordered_map<std::string, FMTmodelcache>::const_iterator mit = models->find(naming);
 			if (mit != models->end())//crash wrong definition
 			{
-				for (int period = 1 ; period < mit->second.getperiods();++period)
+				for (int period = 1 ; period <= mit->second.getperiods();++period)
 					{
 					list->Add(period);
 					}
