@@ -141,7 +141,7 @@ int main(int argc, char *argv[])
 			}
 		}
 		optimizationmodel.setyields(yields);
-		modelparser.write(optimizationmodel,"tests/nonspatialupdate/");
+		modelparser.write(optimizationmodel,"../../tests/nonspatialupdate/");
 
 
 	}else {

@@ -21,7 +21,7 @@ int main()
 		{
 		const std::string modellocation = "../../../../Examples/Models/TWD_land/";
         const std::string	primarylocation = modellocation + "TWD_land.pri";
-		const std::string testfolderout = "tests/forcesolution/";
+		const std::string testfolderout = "../../tests/forcesolution/";
 		Parser::FMTmodelparser modelparser;
 		Parser::FMTareaparser areaparser;
 		Parser::FMTscheduleparser scheparser;

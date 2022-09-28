@@ -54,7 +54,7 @@ int main()
 		}
 	}
 
-	mparser.writeresults(simulationmodel, spatialoutput, 1, 10, "results/", Core::FMToutputlevel::totalonly, "CSV");
+	mparser.writeresults(simulationmodel, spatialoutput, 1, 10, "../../tests/testyieldmodel/", Core::FMToutputlevel::totalonly, "CSV");
 
 	//simulationmodel.solve();
 	for (const Core::FMToutput& output : spatialoutput)
