@@ -153,7 +153,7 @@ int main(int argc, char *argv[])
             }
             yields.update();
             Parser::FMTyieldparser yldparser;
-            const std::string solutionname = "tests/testOAschedulerBFEC/bfecoptsol.yld";
+            const std::string solutionname = "../../tests/testOAschedulerBFEC/bfecoptsol.yld";
             yldparser.write(yields, solutionname);
             //
             Core::FMTyields myields = model.getyields();

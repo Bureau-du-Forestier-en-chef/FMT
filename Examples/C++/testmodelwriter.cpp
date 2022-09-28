@@ -9,7 +9,7 @@ int main(int argc, char* argv[])
 	const std::string primarylocation = std::string(argv[1]);
 	Parser::FMTmodelparser modelparser;
 	modelparser.setdefaultexceptionhandler();
-	const std::string outdir = "tests/testmodelwriter/";
+	const std::string outdir = "../../tests/testmodelwriter/";
 	std::vector<Exception::FMTexc>errors;
 	errors.push_back(Exception::FMTexc::FMTmissingyield);
 	errors.push_back(Exception::FMTexc::FMToutput_too_much_operator);
