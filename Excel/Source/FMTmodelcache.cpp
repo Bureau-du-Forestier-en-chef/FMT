@@ -357,13 +357,17 @@ namespace Wrapper
 
 
 
-	std::vector<std::string> FMTmodelcache::getactions() const
+	std::vector<std::string> FMTmodelcache::getactions(const std::string& filter) const
 	{
 		std::vector<std::string>actions;
 		try {
 			for (const Core::FMTaction& action : model->getactions())
 				{
-				actions.push_back(action.getname());
+				const std::vector<std::string> aggregates = action.getaggregates();
+				if (filter=="?" || std::find(aggregates.begin(), aggregates.end(), filter) != aggregates.end())
+					{
+					actions.push_back(action.getname());
+					}
 				}
 		}catch (...)
 			{

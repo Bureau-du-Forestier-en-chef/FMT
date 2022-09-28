@@ -36,7 +36,7 @@ namespace Wrapper
 		System::Collections::Generic::List<System::String^>^ getaggregates(System::String^ primaryname, System::String^ scenario, int themeid);
 		System::Collections::Generic::List<System::String^>^ getprimaries();
 		System::Collections::Generic::List<System::String^>^ getscenarios(System::String^ fichierprimaire);
-		System::Collections::Generic::List<System::String^>^ getactions(System::String^ primaryname, System::String^ scenario);
+		System::Collections::Generic::List<System::String^>^ getactions(System::String^ primaryname, System::String^ scenario, System::String^ filter);
 		System::Collections::Generic::List<System::String^>^ getoutputs(System::String^ primaryname, System::String^ scenario);
 		System::Collections::Generic::List<System::String^>^ getyields(System::String^ primaryname, System::String^ scenario);
 		System::Collections::Generic::List<System::String^>^ getthemes(System::String^ primaryname, System::String^ scenario);

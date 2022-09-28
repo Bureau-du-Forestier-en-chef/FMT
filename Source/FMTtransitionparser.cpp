@@ -359,10 +359,36 @@ void FMTtransitionparser::writeGCBM(const std::vector<Core::FMTGCBMtransition>& 
 	try{
 		std::ofstream transitionstream;
 		transitionstream.open(location);
-		if (tryopening(transitionstream, location))
+		if (tryopening(transitionstream, location)&& !transitions.empty())
 		{
-			boost::archive::text_oarchive transitionsarchive(transitionstream);
-			transitionsarchive << BOOST_SERIALIZATION_NVP(transitions);
+			transitionstream << "22 serialization::archive 17 0 0 " + std::to_string(transitions.size())+" 0 0 0 ";
+			transitionstream << std::to_string(transitions.at(0).ageafter) << " 0 0 ";
+			transitionstream << std::to_string(transitions.at(0).themes.size()) << " 0 0 0 ";
+			for (const auto& telement : transitions.at(0).themes)
+			{
+				transitionstream << std::to_string(telement.first.size()) << " " << telement.first <<" ";
+				transitionstream << std::to_string(telement.second.size()) << " " << telement.second << " ";
+			}
+			transitionstream << transitions.at(0).name.size() << " " << transitions.at(0).name;
+			if (transitions.size()>1)
+			{
+				transitionstream << " ";
+			}
+			for (size_t trid = 1; trid < transitions.size();++trid)
+				{
+				transitionstream << std::to_string(transitions.at(trid).ageafter) << " "<< std::to_string(transitions.at(trid).themes.size()) +" 0 ";
+				for (const auto& telement : transitions.at(trid).themes)
+					{
+					transitionstream << std::to_string(telement.first.size()) << " " << telement.first << " ";
+					transitionstream << std::to_string(telement.second.size()) << " " << telement.second << " ";
+					}
+				transitionstream << transitions.at(trid).name.size() << " " << transitions.at(trid).name;
+				}
+			
+			//"22 serialization::archive 17 0 0 "+vectorsize+" 0 0 0 "+ageafter+" 0 0 "+ +dictsize +" 0 0 0 "+ " keysize "+key +" elementsize "+element + " namesize " + name + ageafter + dictsize + " 0 " + ...
+
+			//boost::archive::text_oarchive transitionsarchive(transitionstream);
+			//transitionsarchive << BOOST_SERIALIZATION_NVP(transitions);
 			transitionstream.close();
 		}
 	}
