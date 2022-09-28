@@ -60,7 +60,7 @@ namespace Wrapper
 		bool writejpeg(const size_t& themeid,const std::vector<std::string>attributevalues, const std::string& jpeglocation) const;
 		std::vector<std::string> getattributes(const int& themeid, const std::string& value) const;
 		std::vector<std::string> getaggregates(const int& themeid) const;
-		std::vector<std::string> getactions() const;
+		std::vector<std::string> getactions(const std::string& filter) const;
 		std::vector<std::string> getoutputs() const;
 		std::vector<std::string> getyields() const;
 		std::vector<std::string> getthemes() const;

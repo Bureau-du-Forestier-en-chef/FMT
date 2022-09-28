@@ -68,6 +68,16 @@ namespace Core
 		FMTGCBMtransition assignment operator.
 		*/
 		FMTGCBMtransition& operator = (const FMTGCBMtransition& rhs);
+		// DocString: FMTGCBMtransition::operator==
+		/**
+		FMTGCBMtransition equality operator.
+		*/
+		bool operator == (const FMTGCBMtransition& rhs) const;
+		// DocString: FMTGCBMtransition::operator!=
+		/**
+		FMTGCBMtransition equality operator.
+		*/
+		bool operator != (const FMTGCBMtransition& rhs) const;
 		// DocString: ~FMTGCBMtransition()
 		/**
 		Default destructor for FMTGCBMtransition

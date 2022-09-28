@@ -35,6 +35,18 @@ FMTGCBMtransition& FMTGCBMtransition::operator = (const FMTGCBMtransition& rhs)
 	return *this;
 	}
 
+
+bool FMTGCBMtransition::operator == (const FMTGCBMtransition& rhs) const
+{
+	return (ageafter == rhs.ageafter && name == rhs.name && themes == rhs.themes);
+}
+
+bool FMTGCBMtransition::operator != (const FMTGCBMtransition& rhs) const
+{
+	return !(*this == rhs);
+
+}
+
 }
 
 

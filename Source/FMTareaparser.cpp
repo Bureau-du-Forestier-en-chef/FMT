@@ -24,6 +24,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <boost/filesystem.hpp>
 #include <boost/filesystem/operations.hpp>
 #include "FMTexceptionhandler.hpp"
+#include <random>
 
 #ifdef FMTWITHGDAL
 	#include "gdal_alg.h"
@@ -1326,13 +1327,21 @@ const std::regex FMTareaparser::rxcleanarea = std::regex("^((\\*A[A]*)([^|]*)(_l
 					auto last = std::unique(table.begin(), table.end());
 					table.erase(last, table.end());
 					const double numberofentries = static_cast<double>(table.size() - 1);
+					std::default_random_engine generator;
+					std::uniform_int_distribution<short>dist(0,static_cast<short>(table.size()));
+					std::uniform_real_distribution<double>rdist(0,1);
 					for (typename std::map<T, std::string>::const_iterator it = mapping.begin(); it != mapping.end(); it++)
 					{
-						const int n = (static_cast<int>((static_cast<double>(std::distance(table.begin(), std::find(table.begin(), table.end(), it->second))) / numberofentries) * 100));
+						//const int n = (static_cast<int>((static_cast<double>(std::distance(table.begin(), std::find(table.begin(), table.end(), it->second))) / numberofentries) * 100));
 						GDALColorEntry newentry;
-						newentry.c1 = (255 * n) / 100;
+						const short randomn = dist(generator);
+						newentry.c1 = randomn;
+						newentry.c3 = 90 + static_cast<short>(rdist(generator) * 10);
+						newentry.c2 = 50 + static_cast<short>(rdist(generator) * 10);
+						
+						/*newentry.c1 = (255 * n) / 100;
 						newentry.c2 = (255 * (100 - n)) / 100;
-						newentry.c3 = 0;
+						newentry.c3 = 0;*/
 						newcolors.SetColorEntry(id, &newentry);
 						++id;
 					}
