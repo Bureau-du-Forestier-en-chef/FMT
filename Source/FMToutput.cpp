@@ -511,18 +511,17 @@ FMToutput FMToutput::boundto(const std::vector<FMTtheme>& themes, const FMTperbo
 		{
 			newoutput.name = newoutput.name + "(" + attribute + ")";
 		}
-		if (!bound.empty())
+		if (specialbound.empty() && !bound.empty())
 		{
-			if (specialbound.empty() && bound.getlower() == bound.getupper())//single bounded
+			if ( bound.getlower() == bound.getupper())//single bounded
 			{
 				newoutput.name = newoutput.name + "[" + std::to_string(bound.getlower()) + "]";
 			}
-			else if (!specialbound.empty())
+			/*/else if (!specialbound.empty())
 			{
 				std::string name = specialbound;
 				name += "(" + newoutput.name;
-				if (!(bound.getupper() == std::numeric_limits<double>::max() && bound.getlower() == 1) &&
-					!(bound.getupper() == std::numeric_limits<int>::max() && bound.getlower() == 1))
+				if (!(bound.getupper() == std::numeric_limits<double>::max() && bound.getlower() == 1) )
 				{
 					name += ",";
 					name += std::to_string(bound.getlower()) + "..";
@@ -530,7 +529,20 @@ FMToutput FMToutput::boundto(const std::vector<FMTtheme>& themes, const FMTperbo
 				}
 				name += ")";
 				newoutput.name = name;
+			}*/
+		}
+		if (!specialbound.empty())
+		{
+			std::string name = specialbound;
+			name += "(" + newoutput.name;
+			if (!bound.empty())
+			{
+				name += ",";
+				name += std::to_string(bound.getlower()) + "..";
+				name += std::to_string(bound.getupper());
 			}
+			name += ")";
+			newoutput.name = name;
 		}
 		//if (!newoutput.islevel())
 		//{
@@ -559,10 +571,18 @@ FMToutput FMToutput::boundto(const std::vector<FMTtheme>& themes, const FMTperbo
 							source.setmask(oldmask);
 							}
 						}
-					if (!specialbound.empty() && specialbound == "_AVG")
+					if (!specialbound.empty())
 					{
-						source.setaverage();
+						if (specialbound == "_AVG")
+						{
+							source.setaverage();
+						}
+						else if (specialbound == "_SUM")
+						{
+							source.setsum();
+						}
 					}
+
 					
 				}/*else if (source.isvariablelevel())
 					{
@@ -613,10 +633,11 @@ std::vector<FMToutputnode> FMToutput::getnodes(std::vector<std::string>& equatio
 				if (srs.front().isvariable()||srs.front().isvariablelevel())
 					{
 					double constant = 1;
-					if (srs.front().isaverage())
+					//Its now handle in FMToutputnode settograph
+					/*if (srs.front().isaverage())
 						{
 						constant *= multiplier;
-						}
+						}8=*/
 					if (!ops.front().isfactor())
 						{
 						constant *= ops.front().call(0, 1);

@@ -56,6 +56,7 @@ class FMTEXPORT FMToutputsource : public FMTspec
 	std::string action,yield;
 	std::vector<double>values;
 	bool average;
+	bool sum;
 	int outputorigin;
 	int themetarget;
 	//target =-1 or themetarget constructor
@@ -170,6 +171,11 @@ class FMTEXPORT FMToutputsource : public FMTspec
 			{
 			return average;
 			}
+		void setsum();
+		inline bool issum() const
+		{
+			return sum;
+		}
 		bool canbededucedtoconstant() const;
 		double getconstantvalue(const std::vector<Core::FMTactualdevelopment>& area,
 								const std::vector<Core::FMTaction>&actions, const FMTyields& yields) const;

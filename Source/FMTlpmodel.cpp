@@ -427,14 +427,15 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 				if (graph.constraintlenght(constraint, first_period, last_period))
 				{
 					Core::FMTconstrainttype constraint_type = constraint.getconstrainttype();
-					double averagefactor = 1;
+					//Its now handle in FMToutputnode settograph
+					/*double averagefactor = 1;
 					if (last_period != first_period)
 					{
 						averagefactor = (1 / (last_period - first_period));
-					}
+					}*/
 					std::vector<std::string>equation;
 					///////////////////////////////////////////////////
-					const std::vector<Core::FMToutputnode>all_nodes = constraint.getnodes(equation, averagefactor);
+					const std::vector<Core::FMToutputnode>all_nodes = constraint.getnodes(equation, 1);
 					/*if (!constraint.canbenodesonly())
 					{
 						Core::FMTconstraint subconstraint(constraint);
@@ -1212,13 +1213,14 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 			int first_period = 0;
 			int last_period = 0;
 			graph.constraintlenght(objective, first_period, last_period);
-			double averagefactor = 1;
+			//Its now handle in FMToutputnode settograph
+			/*double averagefactor = 1;
 			if (last_period != first_period)
 			{
 				averagefactor = (1 / (last_period - first_period));
-			}
+			}*/
 			std::vector<std::string>equation;
-			const std::vector<Core::FMToutputnode>all_nodes = objective.getnodes(equation,averagefactor,strictlypositivesoutputsmatrix);
+			const std::vector<Core::FMToutputnode>all_nodes = objective.getnodes(equation,1,strictlypositivesoutputsmatrix);
 			std::map<int, double>all_variables;
 			if (!objective.extravariables())
 			{
