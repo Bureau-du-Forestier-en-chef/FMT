@@ -271,10 +271,6 @@ namespace Parser
 						{		
 							bounding = getperbound(lowerperiod, upperperiod, constants);
 						}
-						//When average or sum we assume 1.._length when there is no bounds between parenthese
-						else if (lowerperiod.empty() && upperperiod.empty() && !specialtype.empty()) {
-							bounding = Core::FMTperbounds(Core::FMTsection::Optimize, std::numeric_limits<int>::max(), 1);
-						}
 						output_name = std::string(special_match[4]) + std::string(special_match[13]);
 
 						//std::smatch outname_match;
