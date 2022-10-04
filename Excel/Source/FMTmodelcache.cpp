@@ -161,6 +161,12 @@ namespace Wrapper
 			}
 			model->setparameter(Models::FMTboolmodelparameters::FORCE_PARTIAL_BUILD,true);
 			model->setparameter(Models::FMTdblmodelparameters::TOLERANCE, 0.001);
+			int period = 0;
+			for (const Core::FMTschedule& schedule : schedules)
+			{
+				period = std::max(period, schedule.getperiod());
+			}
+			model->setparameter(Models::FMTintmodelparameters::LENGTH,period);
 			model->doplanning(false, schedules);
 		}catch (...)
 			{
