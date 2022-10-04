@@ -1328,17 +1328,28 @@ const std::regex FMTareaparser::rxcleanarea = std::regex("^((\\*A[A]*)([^|]*)(_l
 					table.erase(last, table.end());
 					const double numberofentries = static_cast<double>(table.size() - 1);
 					std::default_random_engine generator;
-					std::uniform_int_distribution<short>dist(0,static_cast<short>(table.size()));
-					std::uniform_real_distribution<double>rdist(0,1);
+					std::uniform_int_distribution<short>dist(0,256);
+					std::vector<short>c1;
+					std::vector<short>c2;
+					std::vector<short>c3;
+					for (size_t tsize = 0 ; tsize < table.size();++tsize)
+						{
+						c1.push_back(dist(generator));
+						c2.push_back(dist(generator));
+						c3.push_back(dist(generator));
+						}
 					for (typename std::map<T, std::string>::const_iterator it = mapping.begin(); it != mapping.end(); it++)
 					{
 						//const int n = (static_cast<int>((static_cast<double>(std::distance(table.begin(), std::find(table.begin(), table.end(), it->second))) / numberofentries) * 100));
+						const size_t locid = std::distance(table.begin(), std::find(table.begin(), table.end(), it->second));
 						GDALColorEntry newentry;
-						const short randomn = dist(generator);
-						newentry.c1 = randomn;
-						newentry.c3 = 90 + static_cast<short>(rdist(generator) * 10);
-						newentry.c2 = 50 + static_cast<short>(rdist(generator) * 10);
-						
+						//const short randomn = dist(generator);
+						/*newentry.c1 = (255 * ramdomvals.at(locid)) / 100;
+						newentry.c2 = (255 * (100 - ramdomvals.at(locid))) / 100;
+						newentry.c3 = 0;*/
+						newentry.c1 = c1.at(locid);//dist(generator);
+						newentry.c3 = c2.at(locid);//dist(generator);
+						newentry.c2 = c3.at(locid);//dist(generator);
 						/*newentry.c1 = (255 * n) / 100;
 						newentry.c2 = (255 * (100 - n)) / 100;
 						newentry.c3 = 0;*/

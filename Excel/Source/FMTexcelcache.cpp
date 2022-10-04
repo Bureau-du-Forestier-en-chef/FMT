@@ -359,6 +359,33 @@ namespace Wrapper
 		return list;
 	}
 
+	System::Collections::Generic::List<System::String^>^ FMTexcelcache::getconstraints(System::String^ primaryname, System::String^ scenario, System::String^ output)
+	{
+		System::Collections::Generic::List<System::String^>^ list = gcnew System::Collections::Generic::List<System::String^>();
+		try {
+			msclr::interop::marshal_context context;
+			const std::string pfile = context.marshal_as<std::string>(primaryname);
+			const std::string sfile = context.marshal_as<std::string>(scenario);
+			const std::string sfilter = context.marshal_as<std::string>(output);
+			const std::string naming = pfile + "~" + sfile;
+			std::unordered_map<std::string, FMTmodelcache>::const_iterator mit = models->find(naming);
+			if (mit != models->end())
+			{
+				for (const std::string& value : mit->second.getconstraints(sfilter))
+				{
+					System::String^ sysvalue = gcnew System::String(value.c_str());
+					list->Add(sysvalue);
+				}
+			}
+
+		}
+		catch (...)
+		{
+			captureexception("FMTexcelcache::getconstraints");
+		}
+		return list;
+	}
+
 	System::Collections::Generic::List<System::String^>^ FMTexcelcache::getactions(System::String^ primaryname, System::String^ scenario, System::String^ filter)
 	{
 		System::Collections::Generic::List<System::String^>^ list = gcnew System::Collections::Generic::List<System::String^>();
@@ -382,6 +409,31 @@ namespace Wrapper
 		catch (...)
 		{
 			captureexception("FMTexcelcache::getactions");
+		}
+		return list;
+	}
+
+	System::Collections::Generic::List<System::String^>^ FMTexcelcache::getactionaggregates(System::String^ primaryname, System::String^ scenario, System::String^ filter)
+	{
+		System::Collections::Generic::List<System::String^>^ list = gcnew System::Collections::Generic::List<System::String^>();
+		try {
+			msclr::interop::marshal_context context;
+			const std::string pfile = context.marshal_as<std::string>(primaryname);
+			const std::string sfile = context.marshal_as<std::string>(scenario);
+			const std::string sfilter = context.marshal_as<std::string>(filter);
+			const std::string naming = pfile + "~" + sfile;
+			std::unordered_map<std::string, FMTmodelcache>::const_iterator mit = models->find(naming);
+			if (mit != models->end())
+			{
+				for (const std::string& value : mit->second.getactionaggregates(sfilter))
+				{
+					System::String^ sysvalue = gcnew System::String(value.c_str());
+					list->Add(sysvalue);
+				}
+			}
+		}catch (...)
+		{
+			captureexception("FMTexcelcache::getactionaggregates");
 		}
 		return list;
 	}
