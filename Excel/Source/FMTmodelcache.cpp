@@ -204,8 +204,9 @@ namespace Wrapper
 					const size_t themeid = static_cast<size_t>(std::stoi(value.substr(value.find("THEME") + 5, value.size())) - 1);
 					if (!(themeid < themes.size()))
 					{
-						_exhandler->raise(Exception::FMTexc::FMTinvalid_theme,
-							"THEME id " + std::to_string(themeid), "FMTmodelcache::themeselectiontomask", __LINE__, __FILE__);
+						return Core::FMTmask();
+						//_exhandler->raise(Exception::FMTexc::FMTinvalid_theme,
+						//	"THEME id " + std::to_string(themeid), "FMTmodelcache::themeselectiontomask", __LINE__, __FILE__);
 					}
 					localtheme = &themeofmodel.at(themeid);
 
@@ -213,8 +214,9 @@ namespace Wrapper
 				else {
 					if (themes.find(themename) == themes.end())
 					{
-						_exhandler->raise(Exception::FMTexc::FMTinvalid_theme,
-							themename, "FMTmodelcache::themeselectiontomask", __LINE__, __FILE__);
+						return Core::FMTmask();
+						//_exhandler->raise(Exception::FMTexc::FMTinvalid_theme,
+						//	themename, "FMTmodelcache::themeselectiontomask", __LINE__, __FILE__);
 					}
 					localtheme = &themeofmodel.at(themes.at(themename));
 				}
@@ -230,8 +232,9 @@ namespace Wrapper
 						std::vector<std::string>::const_iterator ait = std::find(attributenames.begin(), attributenames.end(), attribute);
 						if (ait == attributenames.end())//raise
 						{
-							_exhandler->raise(Exception::FMTexc::FMTundefined_attribute,
-								attribute, "FMTmodelcache::themeselectiontomask", __LINE__, __FILE__);
+							return Core::FMTmask();
+							//_exhandler->raise(Exception::FMTexc::FMTundefined_attribute,
+							//	attribute, "FMTmodelcache::themeselectiontomask", __LINE__, __FILE__);
 						}
 						else {
 
@@ -257,18 +260,18 @@ namespace Wrapper
 		Core::FMToutput newoutput;
 		try {
 			std::unordered_map<std::string,size_t>::const_iterator outit = outputs.find(outputname);
-			if (outit== outputs.end())
-				{
-				_exhandler->raise(Exception::FMTexc::FMTundefined_output,
-					outputname, "FMTmodelcache::themeselectiontomask", __LINE__, __FILE__);
-				}
 			const std::vector<Core::FMToutput>& outputsofmodel = model->getoutputs();
-			if (subset.empty())
+			if (!outputsofmodel.empty()&&
+				outit!= outputs.end())
 				{
-				return outputsofmodel.at(outit->second);
-			}else {
-				newoutput = outputsofmodel.at(outit->second).intersectwithmask(subset, model->getthemes());
+				if (subset.empty())
+					{
+					return outputsofmodel.at(outit->second);
+					}else {
+					newoutput = outputsofmodel.at(outit->second).intersectwithmask(subset, model->getthemes());
+					}
 				}
+			
 		}catch (...)
 		{
 			_exhandler->printexceptions("", "FMTmodelcache::getoutput", __LINE__, __FILE__);
@@ -280,15 +283,15 @@ namespace Wrapper
 	{
 		double value = 0;
 		try {
-			if (outputs.find(outputname)== outputs.end())
-			{
-				return 0;
-			}
 			const Core::FMTmask subset = themeselectiontomask(themeselection);
 			const Core::FMToutput theoutput = getoutput(outputname, subset);
-			boost::lock_guard<boost::recursive_mutex> guard(*mtx);
-			value = model->getoutput(theoutput, period, Core::FMToutputlevel::totalonly).at("Total");
-
+			if (!outputs.empty()&&
+				outputs.find(outputname) != outputs.end()&&
+				!theoutput.empty())
+			{
+				boost::lock_guard<boost::recursive_mutex> guard(*mtx);
+				value = model->getoutput(theoutput, period, Core::FMToutputlevel::totalonly).at("Total");
+			}
 		}catch (...)
 		{
 			_exhandler->printexceptions("", "FMTmodelcache::getvalue", __LINE__, __FILE__);
@@ -301,15 +304,17 @@ namespace Wrapper
 		double value = 0;
 		try {
 			const Core::FMTyields& yields = model->getyields();
-			if (!yields.isyld(yieldname))
-				{
-				return 0;
-				}
 			const Core::FMTmask subset = themeselectiontomask(themeselection);
-			const Core::FMTdevelopment adev(subset, age, 0, period);
-			const Core::FMTyieldrequest yieldrequest = adev.getyieldrequest();
-			boost::lock_guard<boost::recursive_mutex> guard(*mtx);
-			value = yields.get(yieldrequest, yieldname);
+			if (!yields.empty()&&
+				yields.isyld(yieldname)&&
+				!(subset.empty() && !themeselection.empty()))
+			{
+				const Core::FMTdevelopment adev(subset, age, 0, period);
+				const Core::FMTyieldrequest yieldrequest = adev.getyieldrequest();
+				boost::lock_guard<boost::recursive_mutex> guard(*mtx);
+				value = yields.get(yieldrequest, yieldname);
+			}
+			
 		}catch (...)
 		{
 			_exhandler->printexceptions("", "FMTmodelcache::getyield", __LINE__, __FILE__);
@@ -322,12 +327,16 @@ namespace Wrapper
 		std::vector<std::string> attributes;
 		try {
 			const std::vector<Core::FMTtheme>& themes = model->getthemes();
-			if (!(static_cast<size_t>(themeid)<themes.size()))
+			if (!themes.empty() &&
+				(static_cast<size_t>(themeid) < themes.size()))
 				{
-				_exhandler->raise(Exception::FMTexc::FMTinvalid_theme,
-					"THEME"+std::to_string(themeid), "FMTmodelcache::getattribute", __LINE__, __FILE__);
+				if (themes.at(themeid).isattribute(value) || themes.at(themeid).isaggregate(value))
+					{
+					attributes = themes.at(themeid).getattributes(value);
+				}else {
+					attributes =  themes.at(themeid).getattributes("?");
+					}
 				}
-			attributes = themes.at(themeid).getattributes(value);
 		}catch (...)
 		{
 			_exhandler->printexceptions("", "FMTmodelcache::getattribute", __LINE__, __FILE__);
@@ -340,12 +349,11 @@ namespace Wrapper
 		std::vector<std::string> aggregates;
 		try {
 			const std::vector<Core::FMTtheme>& themes = model->getthemes();
-			if (!(static_cast<size_t>(themeid) < themes.size()))
+			if (!themes.empty()&&
+				(static_cast<size_t>(themeid) < themes.size()))
 			{
-				_exhandler->raise(Exception::FMTexc::FMTinvalid_theme,
-					"THEME" + std::to_string(themeid), "FMTmodelcache::getaggregates", __LINE__, __FILE__);
+				aggregates = themes.at(themeid).getaggregates();
 			}
-			aggregates = themes.at(themeid).getaggregates();
 		}
 		catch (...)
 		{
@@ -355,6 +363,25 @@ namespace Wrapper
 	
 	}
 
+	
+	std::vector<std::string> FMTmodelcache::getactionaggregates(const std::string& filter) const
+	{
+		try {
+			for (const Core::FMTaction& action : model->getactions())
+			{
+				if (action.getname()==filter)
+				{
+					return action.getaggregates();
+				}
+			}
+		}
+		catch (...)
+		{
+			_exhandler->printexceptions("", "FMTmodelcache::getactionaggregates", __LINE__, __FILE__);
+		}
+		return std::vector<std::string>();
+
+	}
 
 
 	std::vector<std::string> FMTmodelcache::getactions(const std::string& filter) const
@@ -375,6 +402,29 @@ namespace Wrapper
 			}
 		return actions;
 	}
+
+	std::vector<std::string> FMTmodelcache::getconstraints(const std::string& output) const
+	{
+		std::vector<std::string>constraints;
+		try {
+			for (const Core::FMTconstraint& constraint : model->getconstraints())
+			{
+				const std::string value = std::string(constraint);
+				if (value.find(output)!=std::string::npos)
+					{
+					constraints.push_back(value);
+					}
+			}
+		}
+		catch (...)
+		{
+			_exhandler->printexceptions("", "FMTmodelcache::getconstraints", __LINE__, __FILE__);
+		}
+		return constraints;
+
+	}
+
+
 
 	std::vector<std::string> FMTmodelcache::getoutputs() const
 	{

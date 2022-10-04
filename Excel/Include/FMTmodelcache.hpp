@@ -61,9 +61,11 @@ namespace Wrapper
 		std::vector<std::string> getattributes(const int& themeid, const std::string& value) const;
 		std::vector<std::string> getaggregates(const int& themeid) const;
 		std::vector<std::string> getactions(const std::string& filter) const;
+		std::vector<std::string> getactionaggregates(const std::string& filter) const;
 		std::vector<std::string> getoutputs() const;
 		std::vector<std::string> getyields() const;
 		std::vector<std::string> getthemes() const;
+		std::vector<std::string> getconstraints(const std::string& output) const;
 		int getperiods() const;
 		Logging::FMTexcellogger* getlogger();
 		void putlogger(const std::shared_ptr<Logging::FMTlogger>& log);
