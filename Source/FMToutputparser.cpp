@@ -18,7 +18,7 @@ namespace Parser
 	const std::regex FMToutputparser::rxoutput=std::regex("(\\*OUTPUT|\\*LEVEL)(([\\s\\t]*)([^\\s\\t\\(]*)([\\s\\t]*)(\\()([^\\s\\t\\)]*)(\\))([\\s\\t]*)(.+))|((\\*OUTPUT|\\*LEVEL)([\\s\\t]*)([^\\s\\t]*)([\\s\\t]*)(.+))", std::regex_constants::ECMAScript | std::regex_constants::icase);
 	const std::regex FMToutputparser::rxsource = std::regex("(\\*SOURCE)([\\s\\t]*)(.+)", std::regex_constants::ECMAScript | std::regex_constants::icase);
 	const std::regex FMToutputparser::rxtar = std::regex("(([\\s\\t]*)(_INVENT)([\\s\\t]*)(\\()([\\s\\t]*)([^\\s\\t]*)([\\s\\t]*)(\\))([\\s\\t]*)((_AREA)|([^\\s\\t]*)))|(([\\s\\t]*)((_INVENT)|(_INVLOCK))([\\s\\t]*)((_AREA)|([^\\s\\t]*)))|(([\\s\\t]*)([^\\s\\t]*)([\\s\\t]*)((_AREA)|([^\\s\\t]*)))", std::regex_constants::ECMAScript | std::regex_constants::icase);
-	const std::regex FMToutputparser::rxgrp = std::regex("(\\*GROUP)([\\s\\t]*)([^\\s\\t\\(]*)(.+)", std::regex_constants::ECMAScript | std::regex_constants::icase);
+	const std::regex FMToutputparser::rxgrp = std::regex("(\\*GROUP)([\\s\\t]*)(.+)", std::regex_constants::ECMAScript | std::regex_constants::icase);
 	const std::regex FMToutputparser::rxoutputconstant = std::regex("([^\\[]*)(\\[[\\s\\t]*)(\\-?[0-9])([\\s\\t]*\\])", std::regex_constants::ECMAScript | std::regex_constants::icase);
 
 
@@ -144,6 +144,7 @@ namespace Parser
 					size_t lastoutput = 0;
 					int lastsourcelineid =0;
 					int outputid = 0;
+					std::string lastgroup;
 					if (!outputs->empty())
 					{
 						outputid = static_cast<int>(outputs->size());
@@ -183,7 +184,7 @@ namespace Parser
 																	name +" at line "+std::to_string(lastsourcelineid) ,"FMToutputparser::read", __LINE__, __FILE__, _section);
 											}
 										}
-										outputs->push_back(Core::FMToutput(name, description, /*themetarget,*/ sources, operators));
+										outputs->push_back(Core::FMToutput(name, description, lastgroup, sources, operators));
 										
 										/**_logger<<name<<"\n";
 										int id = 0;
@@ -225,6 +226,9 @@ namespace Parser
 								}
 								if (std::regex_search(line, kmatch, rxgrp))
 								{
+									std::string groupname(kmatch[3]);
+									boost::trim(groupname);
+									lastgroup = groupname;
 									insource = false;
 								}
 								else if (std::regex_search(line, kmatch, rxsource) || insource)
@@ -801,7 +805,7 @@ namespace Parser
 								}
 							}
 							
-							outputs->push_back(Core::FMToutput(name, description, /*themetarget,*/ sources, operators));
+							outputs->push_back(Core::FMToutput(name, description, lastgroup, sources, operators));
 							/**_logger<<name<<"\n";
 							int id = 0;
 							for(const auto& s:sources)
@@ -901,10 +905,16 @@ namespace Parser
 			try {
 				std::ofstream outputstream;
 				outputstream.open(location);
+				std::string lastgroup;
 				if (tryopening(outputstream, location))
 				{
 					for (const Core::FMToutput& out : outputs)
 					{
+						if (lastgroup != out.getgroup())
+							{
+							outputstream << "*GROUP "+out.getgroup() << "\n";
+							lastgroup = out.getgroup();
+							}
 						outputstream << std::string(out) << "\n";
 					}
 					outputstream.close();
