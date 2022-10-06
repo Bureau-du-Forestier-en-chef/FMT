@@ -160,6 +160,44 @@ namespace Models
 		return newconstraints;
 	}
 
+	std::map<std::string, double> FMTlpmodel::getoutput(const Core::FMToutput& output,
+		int period, Core::FMToutputlevel level) const
+	{
+		try {
+			if (output.isonlylevel()&&
+				output.getsourcesreference().at(0).isvariablelevel())
+			{
+				if (level!=Core::FMToutputlevel::totalonly)
+				{
+					_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
+						"Cannot request any other outputlevel than totalonly for level "+output.getname(),
+						" FMTlpmodel::getoutputs", __LINE__, __FILE__);
+				}
+				const double* solution = solver.getColSolution();
+				for (const Core::FMTconstraint& constraint : constraints)
+				{
+					const std::vector<std::string>level_names = constraint.getvariablelevels();
+					std::vector<std::string>::const_iterator lit = std::find(level_names.begin(), level_names.end(), output.getname());
+					if (lit != level_names.end())
+						{
+						const int levelindex = getlevelfromlevelname(*lit, period);
+						std::map<std::string, double>levelmap;
+						levelmap["Total"] = *(solution + levelindex);
+						return levelmap;
+						}
+				}
+			}else {
+				return FMTsrmodel::getoutput(output, period, level);
+			}
+		}
+		catch (...)
+		{
+			_exhandler->printexceptions("", "FMTlpmodel::getoutput", __LINE__, __FILE__);
+		}
+		return std::map<std::string, double>();
+
+	}
+
 	void FMTlpmodel::addscheduletoobjective(const Core::FMTschedule& schedule, double weight)
 	{
 		try
@@ -1102,37 +1140,74 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 				}
             }
 
+	 int FMTlpmodel::getlevelfromlevelname(const std::string& variable_level, int period,Core::FMTconstraint constraint) const
+	 {
+		 try {
+			 for (const Core::FMTconstraint& model_constraint : constraints)
+			 {
+				 if (constraint.outputempty() || model_constraint != constraint)
+				 {
+					 const std::vector<std::string>level_names = model_constraint.getvariablelevels();
+					 if (!level_names.empty())
+					 {
+						 const std::vector<std::vector<int>>constraint_elements = getmatrixelement(model_constraint, period);
+						 std::vector<std::string>::const_iterator name_it = find(level_names.begin(), level_names.end(), variable_level);
+						 const std::vector<int> levelconstelem = constraint_elements.at(FMTmatrixelement::levelvariable);
+						 const size_t variable_location = std::distance(level_names.cbegin(), name_it);
+						 if (!levelconstelem.empty() && levelconstelem.size() > variable_location &&
+							 (name_it != level_names.end())) // caught a constriant with level!
+						 {
+							 return levelconstelem.at(variable_location);
+						 }
+					 }
+				 }
+			 }
+		 }catch (...)
+		 {
+			 _exhandler->raisefromcatch("for " + std::string(constraint),
+				 "FMTlpmodel::getlevelfromlevelname", __LINE__, __FILE__);
+		 }
+		 return -1;
+	 }
+
 
     int FMTlpmodel::getsetlevel(const Core::FMTconstraint& constraint,const std::string& variable_level,int period)
         {
-		try {
-			for (const Core::FMTconstraint& model_constraint : constraints)
+		/*for (const Core::FMTconstraint& model_constraint : constraints)
+		{
+			if (model_constraint != constraint)
 			{
-				if (model_constraint != constraint)
+				const std::vector<std::string>level_names = model_constraint.getvariablelevels();
+				if (!level_names.empty())
 				{
-					const std::vector<std::string>level_names = model_constraint.getvariablelevels();
-					if (!level_names.empty())
+					const std::vector<std::vector<int>>constraint_elements = getmatrixelement(model_constraint, period);
+					std::vector<std::string>::const_iterator name_it = find(level_names.begin(), level_names.end(), variable_level);
+					const std::vector<int> levelconstelem = constraint_elements.at(FMTmatrixelement::levelvariable);
+					const size_t variable_location = std::distance(level_names.cbegin(), name_it);
+					if (!levelconstelem.empty() && levelconstelem.size() > variable_location &&
+						(name_it != level_names.end())) // caught a constriant with level!
 					{
-						const std::vector<std::vector<int>>constraint_elements = getmatrixelement(model_constraint, period);
-						std::vector<std::string>::const_iterator name_it = find(level_names.begin(), level_names.end(), variable_level);
-						const std::vector<int> levelconstelem = constraint_elements.at(FMTmatrixelement::levelvariable);
-						const size_t variable_location = std::distance(level_names.cbegin(), name_it);
-						if (!levelconstelem.empty() && levelconstelem.size() > variable_location &&
-							(name_it != level_names.end())) // caught a constriant with level!
-						{
-							return levelconstelem.at(variable_location);						
-						}
+						return levelconstelem.at(variable_location);
 					}
 				}
 			}
-			std::map<int, double>no_index;
-			return getsetmatrixelement(constraint, FMTmatrixelement::levelvariable, no_index, period);
+		}
+		std::map<int, double>no_index;
+		return getsetmatrixelement(constraint, FMTmatrixelement::levelvariable, no_index, period);*/
+		int index = -1;
+		try {
+			index = getlevelfromlevelname(variable_level, period, constraint);
+			if (index==-1)
+			{
+				std::map<int, double>no_index;
+				return getsetmatrixelement(constraint, FMTmatrixelement::levelvariable, no_index, period);
+			}
 		}catch (...)
 			{
 			_exhandler->raisefromcatch("for " + std::string(constraint),
 				"FMTlpmodel::getsetlevel", __LINE__, __FILE__);
 			}
-		return -1;
+		return index;
         }
 
 	bool FMTlpmodel::ismatrixelement(const Core::FMTconstraint& constraint,

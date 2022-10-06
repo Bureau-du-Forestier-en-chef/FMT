@@ -71,17 +71,6 @@ namespace Parallel
 		return alltasks;
 		}
 
-	template<class ptrtype>
-	const std::vector<const ptrtype*> FMTtaskhandler::gettasksfromdynamiccast() const
-	{
-		std::vector<const ptrtype*>castedptr;
-		for (const std::unique_ptr<FMTtask>& task : alltasks)
-			{
-			castedptr.push_back(dynamic_cast<ptrtype>(task.get()));
-			}
-		return castedptr;
-	}
-
 	void FMTtaskhandler::splittasks()
 		{
 		try {
