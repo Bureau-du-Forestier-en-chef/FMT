@@ -35,7 +35,8 @@ namespace Parallel
 	FMTplanningtask::FMTplanningtask(const FMTplanningtask& rhs):
 		resultswriter(rhs.resultswriter),
 		models(copymodels(rhs.models)),
-		allschedules(rhs.allschedules)
+		allschedules(rhs.allschedules),
+		keepmodels(rhs.keepmodels)
 	{
 
 		
@@ -48,6 +49,7 @@ namespace Parallel
 			resultswriter = rhs.resultswriter;
 			models = copymodels(rhs.models);
 			allschedules = rhs.allschedules;
+			keepmodels = rhs.keepmodels;
 		}
 		return *this;
 	}
@@ -63,7 +65,8 @@ namespace Parallel
 		std::string primaryfilelocatiron):
 		resultswriter(),
 		models(),
-		allschedules()
+		allschedules(),
+		keepmodels(false)
 	{
 		try {
 			resultswriter = std::shared_ptr<FMTparallelwriter>(new FMTparallelwriter(outputlocation,gdaldriver,outputlevel, creationoptions,minoutputperiod,maxoutputperiod, primaryfilelocatiron));
@@ -157,10 +160,16 @@ namespace Parallel
 			}
 		}
 
+	void FMTplanningtask::setkeepmodels()
+		{
+		keepmodels = true;
+		}
+
 
 	void FMTplanningtask::work()
 	{
 		try {
+			std::list<std::unique_ptr<Models::FMTmodel>>modelskept;
 			while (!models.empty())
 			{
 				_logger->logwithlevel("Thread:" + getthreadid() + " Planning of " + models.front()->getname() + " started\n",0);
@@ -169,8 +178,19 @@ namespace Parallel
 					resultswriter->getandwrite(models.front());
 					}
 				_logger->logwithlevel("Thread:" + getthreadid() + " Planning of " + models.front()->getname() + " done\n", 0);
+				if (keepmodels)
+					{
+					modelskept.push_back(std::move(models.front()));
+					}
 				models.pop_front();
 				allschedules.pop_front();
+			}
+			if (!modelskept.empty())
+			{
+				for (std::unique_ptr<Models::FMTmodel>& model : modelskept)
+				{
+					models.push_back(std::move(model));
+				}
 			}
 			setstatus(true);
 		}catch (...)

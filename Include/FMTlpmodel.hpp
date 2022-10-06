@@ -102,6 +102,12 @@ class FMTEXPORT FMTlpmodel : public FMTsrmodel
 	Return goals (index) if it already exist within the other constraints (goals (goalsnames) can be used across multiple FMTconstraints.
 	*/
     bool getgoals(const std::vector<std::string>& goalsnames, std::map<int,double>& index,const double& sense) const;
+	// DocString: FMTlpmodel::getlevelfromlevelname
+	/**
+	Will return the level index if non empty constraint it wont check for this constraint.
+	*/
+	int getlevelfromlevelname(const std::string& variable_level, int period,
+		Core::FMTconstraint constraint = Core::FMTconstraint()) const;
 	// DocString: FMTlpmodel::getsetlevel
 	/**
 	Will check if the level (variable_level) already exist within the matrix for other constraints than the (constraint)
@@ -258,6 +264,16 @@ class FMTEXPORT FMTlpmodel : public FMTsrmodel
 		To set the model parameter STRICTLY_POSITIVE at true.
 		*/
 		void setstrictlypositivesoutputsmatrix();
+		// DocString: FMTlpmodel::getoutput
+		/**
+		Get the output value of a output for a given period using the solution of the matrix.
+		the map key returned consist of output name
+		if level == FMToutputlevel::standard || level == FMToutputlevel::totalonly,
+		or developement name if level == FMToutputlevel::developpement, this function can also return the value of
+		a variable output.
+		*/
+		virtual std::map<std::string, double> getoutput(const Core::FMToutput& output,
+			int period, Core::FMToutputlevel level = Core::FMToutputlevel::standard) const;
 		// DocString: FMTlpmodel::getreplanningconstraints
 		/**
 		During replaning some local/global constraints need to be ajusted to the global model.

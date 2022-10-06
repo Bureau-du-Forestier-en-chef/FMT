@@ -1,0 +1,9 @@
+
+*OBJECTIVE
+_MAXMIN oVolRec 1.._LENGTH
+
+*CONSTRAINTS
+sumosuprec - _SUM(oSupRec) = 0 1.._LENGTH
+avgosuprec - _AVG(oSupRec) = 0 1.._LENGTH
+
+*FORMAT MOSEK

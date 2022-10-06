@@ -226,7 +226,7 @@ namespace Models
 		or developement name if level == FMToutputlevel::developpement
 		*/
 		virtual std::map<std::string, double> getoutput(const Core::FMToutput& output,
-			int period, Core::FMToutputlevel level = Core::FMToutputlevel::standard) const final;
+			int period, Core::FMToutputlevel level = Core::FMToutputlevel::standard) const;
 		#if defined FMTWITHR
 		// DocString: FMTsrmodel::getoutputsdataframe
 		/**
