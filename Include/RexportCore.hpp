@@ -418,7 +418,7 @@ void exportCore()
 
 			Rcpp::class_<Core::FMToutput>("FMToutput", "@DocString(FMToutput)")
 				.constructor("@DocString(FMToutput())")
-				.constructor<std::string,std::string,
+				.constructor<std::string,std::string,std::string,
 					std::vector<Core::FMToutputsource>,
 					std::vector<Core::FMToperator>>("@DocString(FMToutput(const std::string&,const std::string&,const int&,std::vector<FMToutputsource>&,std::vector<FMToperator>&))")
 				.method("getname",&Core::FMToutput::getname,
