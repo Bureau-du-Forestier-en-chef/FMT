@@ -26,7 +26,7 @@ namespace Wrapper
 	public:
 		FMTexcelcache();
 		~FMTexcelcache();
-		void add(System::String^ primarylocation, System::String^ scenario);
+		bool add(System::String^ primarylocation, System::String^ scenario);
 		void remove(System::String^ primarylocation, System::String^ scenario);
 		double getvalue(System::String^ primaryname, System::String^ scenario,
 			System::String^ outputname, System::String^ themeselection,int period);
