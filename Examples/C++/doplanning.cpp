@@ -20,10 +20,10 @@ int main(int argc, char* argv[])
 	{
 		const std::string vals = argv[1];
 		std::vector<std::string>results;
-		boost::split(results, vals,boost::is_any_of("|"));
+		boost::split(results, vals, boost::is_any_of("|"));
 		const std::string primarylocation = results.at(0);
 		const std::string scenario = results.at(1);
-		const int length =  std::stoi(argv[2]);
+		const int length = std::stoi(argv[2]);
 		const double objectivevalue = std::stod(argv[3]);
 		Parser::FMTmodelparser modelparser;
 		std::vector<Exception::FMTexc>errors;
@@ -53,10 +53,10 @@ int main(int argc, char* argv[])
 		returnschedule.push_back( optimizationmodel.getsolution(2, true));
 		schparser.write(returnschedule, "D:/testb/schedule.seq");*/
 		if ((std::abs(optimizationmodel.getObjValue() - objectivevalue)) >= 1)
-			{
+		{
 			Exception::FMTfreeexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed, "Wrong value",
 				"presolvetest", __LINE__, primarylocation);
-			}
+		}
 	}
 	else {
 		Logging::FMTlogger() << "FMT needs to be compiled with OSI" << "\n";

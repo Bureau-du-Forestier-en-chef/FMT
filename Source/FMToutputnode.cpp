@@ -191,8 +191,26 @@ namespace Core
 				targetedperiods.push_back(local_period);
 			}
 		}
+		else if (this->source.emptyperiod() && (this->source.issum() || this->source.isaverage()))
+		{	
+			const int minperiod = 1;
+			const int maxperiod = period;
+			for (int periodid = minperiod; periodid <= maxperiod; ++periodid)
+			{
+				int local_period = periodid;
+				if (this->source.isnextperiod())
+				{
+					++local_period;
+				}
+				targetedperiods.push_back(local_period);
+			}
+		}
 		else {
 			targetedperiods.push_back(node_period);
+		}
+		if (this->source.isaverage())
+		{
+			constant *= 1/static_cast<double>(targetedperiods.size());//average factor = 1/sum(targeted_period)
 		}
 		return node_period;
 		}

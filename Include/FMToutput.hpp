@@ -73,6 +73,9 @@ class FMTEXPORT FMToutput: public FMTobject
 	// DocString: FMToutput::description
 	///This is description of the FMToutput has seen in the output section.
 	std::string description;
+	// DocString: FMToutput::group
+	///This is the group of the output, if empty there's no group
+	std::string group;
 	// DocString: FMToutput::setproportions
 	/**
 	Set equations proportions for developpements....when original entry is numeric turn it into proportion.
@@ -96,7 +99,7 @@ class FMTEXPORT FMToutput: public FMTobject
 	theme_target,sources and operators.
 	*/
     FMToutput(const std::string& lname,const std::string& ldescription,
-		//const int& ltheme_target,
+		const std::string& lgroup,
 		const std::vector<FMToutputsource>& lsources,
 		const std::vector<FMToperator>& loperators);
 	// DocString: FMToutput(const std::string&)
@@ -166,6 +169,14 @@ class FMTEXPORT FMToutput: public FMTobject
 	inline std::string getdescription() const
 		{
 		return description;
+		}
+	// DocString: FMToutput::getgroup
+	/**
+	Getter for the group of the output
+	*/
+	inline std::string getgroup() const
+		{
+		return group;
 		}
 	// DocString: FMToutput::empty
 	/**
