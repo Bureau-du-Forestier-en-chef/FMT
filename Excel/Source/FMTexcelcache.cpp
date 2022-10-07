@@ -156,12 +156,12 @@ namespace Wrapper
 				{
 					log->clearout();
 				}
-				return false;
 			}
 		}catch (...)
 		{
 			captureexception("FMTexcelcache::add");
 		}
+		return false;
 	}
 
 	void FMTexcelcache::remove(System::String^ primarylocation, System::String^ scenario)
