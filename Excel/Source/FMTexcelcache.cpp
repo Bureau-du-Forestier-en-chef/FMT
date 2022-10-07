@@ -119,7 +119,7 @@ namespace Wrapper
 		return mappath;
 		}
 
-	void FMTexcelcache::add(System::String^ primarylocation, System::String^ scenario)
+	bool FMTexcelcache::add(System::String^ primarylocation, System::String^ scenario)
 	{
 		try {
 			msclr::interop::marshal_context context;
@@ -128,23 +128,36 @@ namespace Wrapper
 			const std::string justprimary = getprimaryname(pfile);
 			std::string naming = justprimary + "~" + sfile;
 			boost::to_upper(naming);
-			Parser::FMTmodelparser mparser;
-			std::vector<Exception::FMTexc>errors;
-			errors.push_back(Exception::FMTexc::FMTmissingyield);
-			errors.push_back(Exception::FMTexc::FMToutput_missing_operator);
-			errors.push_back(Exception::FMTexc::FMToutput_too_much_operator);
-			errors.push_back(Exception::FMTexc::FMTinvalidyield_number);
-			errors.push_back(Exception::FMTexc::FMTundefinedoutput_attribute);
-			errors.push_back(Exception::FMTexc::FMToveridedyield);
-			errors.push_back(Exception::FMTexc::FMTinvalid_geometry);
-			errors.push_back(Exception::FMTexc::FMTsourcetotarget_transition);
-			errors.push_back(Exception::FMTexc::FMTsame_transitiontargets);
-			mparser.seterrorstowarnings(errors);
-			std::vector<std::string>scenarios(1, sfile);
-			const std::vector<Models::FMTmodel> allmodels = mparser.readproject(pfile, scenarios);
-			const std::vector<std::vector<Core::FMTschedule>>allschedule = mparser.readschedules(pfile, allmodels);
-			const std::string mappath = getmappath(pfile);
-			(*models)[naming] = FMTmodelcache(allmodels.at(0), allschedule.at(0), mappath);
+			if(models->find(naming)==models->end())
+			{
+				//Default behavior reload pas avec le même nom 
+				Parser::FMTmodelparser mparser;
+				std::vector<Exception::FMTexc>errors;
+				errors.push_back(Exception::FMTexc::FMTmissingyield);
+				errors.push_back(Exception::FMTexc::FMToutput_missing_operator);
+				errors.push_back(Exception::FMTexc::FMToutput_too_much_operator);
+				errors.push_back(Exception::FMTexc::FMTinvalidyield_number);
+				errors.push_back(Exception::FMTexc::FMTundefinedoutput_attribute);
+				errors.push_back(Exception::FMTexc::FMToveridedyield);
+				errors.push_back(Exception::FMTexc::FMTinvalid_geometry);
+				errors.push_back(Exception::FMTexc::FMTsourcetotarget_transition);
+				errors.push_back(Exception::FMTexc::FMTsame_transitiontargets);
+				mparser.seterrorstowarnings(errors);
+				std::vector<std::string>scenarios(1, sfile);
+				const std::vector<Models::FMTmodel> allmodels = mparser.readproject(pfile, scenarios);
+				const std::vector<std::vector<Core::FMTschedule>>allschedule = mparser.readschedules(pfile, allmodels);
+				const std::string mappath = getmappath(pfile);
+				(*models)[naming] = FMTmodelcache(allmodels.at(0), allschedule.at(0), mappath);
+				return true;
+			}else{
+				FMTmodelcache emptycache;
+				Logging::FMTexcellogger* log = emptycache.getlogger();
+				if (log != nullptr)
+				{
+					log->clearout();
+				}
+				return false;
+			}
 		}catch (...)
 		{
 			captureexception("FMTexcelcache::add");
