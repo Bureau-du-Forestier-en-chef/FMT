@@ -11,6 +11,11 @@
 
 int main(int argc, char *argv[])
 	{
+	argc = 4;
+	argv = new char*[4];
+	argv[1] = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/09_FMT/Modeles_test/FM/PC_7001892_U03772_SSP02.pri";
+	argv[2] = "03_sc1a_bfecopt";
+	argv[3] = "5";
 	#ifdef FMTWITHOSI
 	Logging::FMTlogger().logstamp();
 	const std::string primarylocation = argv[1];

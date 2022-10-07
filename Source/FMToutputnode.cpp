@@ -177,7 +177,7 @@ namespace Core
 				}
 			}
 		}
-		else if (this->multiperiod())
+		if (this->multiperiod())
 		{
 			const int minperiod = std::max(this->source.getperiodlowerbound(), 1);
 			const int maxperiod = std::min(this->source.getperiodupperbound(), max_period);
@@ -210,7 +210,7 @@ namespace Core
 		}
 		if (this->source.isaverage())
 		{
-			constant *= static_cast<double>(1/targetedperiods.size());//average factor = 1/sum(targeted_period)
+			constant *= 1/static_cast<double>(targetedperiods.size());//average factor = 1/sum(targeted_period)
 		}
 		return node_period;
 		}

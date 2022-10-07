@@ -1112,8 +1112,9 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 		{
 			std::map<int, double>emptyreturn;
 			try {
-				const std::vector<FMTvertex_descriptor>verticies = getnode(model, output_node, period);
-				return getvariables(model, output_node, verticies);
+				Core::FMToutputnode tempnode(output_node);
+				const std::vector<FMTvertex_descriptor>verticies = getnode(model, tempnode, period);
+				return getvariables(model, tempnode, verticies);
 			}
 			catch (...)
 			{
@@ -1159,7 +1160,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 					return variablesreturn;
 
 				}
-		std::vector<FMTvertex_descriptor> getnode(const Models::FMTmodel& model, Core::FMToutputnode output_node, int period) const
+		std::vector<FMTvertex_descriptor> getnode(const Models::FMTmodel& model, Core::FMToutputnode& output_node, int period) const
 		{
 			std::vector<FMTvertex_descriptor>locations;
 			try {
@@ -1644,8 +1645,9 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 		{
 			std::map<std::string, double>emptyreturn;
 			try{
-			const std::vector<FMTvertex_descriptor>verticies = getnode(model, node, period);
-			return getvalues(model, verticies, node, theme, solution, level);
+			Core::FMToutputnode tempnode(node);
+			const std::vector<FMTvertex_descriptor>verticies = getnode(model, tempnode, period);
+			return getvalues(model, verticies, tempnode, theme, solution, level);
 			}catch (...)
 				{
 				_exhandler->raisefromcatch("For node: "+std::string(node), "FMTgraph::getsource", __LINE__, __FILE__);
