@@ -20,7 +20,7 @@ int main()
 	const std::string	primarylocation = modellocation + "TWD_land.pri";
 	const std::string outdir = "../../tests/Spatialyexplicitsimulation/";
 	Parser::FMTmodelparser mparser;
-	const std::vector<std::string>scenarios(1, "14_Sc5_Determin_apsp");
+	const std::vector<std::string>scenarios(1, "Spatial");
 	const std::vector<Models::FMTmodel> models = mparser.readproject(primarylocation, scenarios);
 	Models::FMTsesmodel simulationmodel(models.at(0));
 	const std::vector<std::vector<Core::FMTschedule>> schedules = mparser.readschedules(primarylocation, models);
@@ -38,26 +38,8 @@ int main()
 		{
 		themesrast.push_back(rastpath + "THEME" + std::to_string(i) + ".tif");
 		}
-	Spatial::FMTforest initialforestmap = areaparser.readrasters(simulationmodel.getthemes(), themesrast, agerast, 1, 0.0001, rastpath+"STANLOCK.tif");
+	Spatial::FMTforest initialforestmap = areaparser.readrasters(simulationmodel.getthemes(), themesrast, agerast, 1, 0.0001);
 	simulationmodel.setinitialmapping(initialforestmap);
-	std::vector<Core::FMTconstraint> mconst;
-	for (const auto& constraint : simulationmodel.getconstraints())
-	{
-		if (std::string(constraint).find("_EVEN(OVOLTOTREC)") != std::string::npos)
-		{
-			mconst.push_back(constraint);
-			std::string s = std::string(constraint);
-			std::cout << s << std::endl;
-			std::cout << s.length() << std::endl;
-		}else if (std::string(constraint).find("_MAX") != std::string::npos)
-		{
-			mconst.push_back(constraint);
-			std::string s = std::string(constraint);
-			std::cout << s << std::endl;
-			std::cout << s.length() << std::endl;
-		} 
-	}
-	simulationmodel.setconstraints(std::vector<Core::FMTconstraint>());
 	const size_t greedysearch = 10;
 	for (int period = 0; period < 10; ++period)
 		{
@@ -71,13 +53,13 @@ int main()
 	Core::FMToutput spatialoutput;
 	for (const Core::FMToutput& output : simulationmodel.getoutputs())
 	{
-		if (output.getname() == "OVOLTOTREC")
+		if (output.getname() == "OSUPREC")
 		{
 			spatialoutput = output;
 		}
 	}
 	const Spatial::FMTspatialschedule spatialsolution = simulationmodel.getspschedule();
-	/*Logging::FMTlogger() << "xsize : " << spatialsolution.GetXSize() << "\n";
+	Logging::FMTlogger() << "xsize : " << spatialsolution.GetXSize() << "\n";
 	Logging::FMTlogger() << "ysize : " << spatialsolution.GetYSize() << "\n";
 	for (int period = 1; period <= 10; ++period)
 		{
@@ -96,7 +78,7 @@ int main()
 			actions,
 			growththeme, period);
 		transitionparser.writeGCBM(transitions, outdir + "transition" + std::to_string(period) + ".xml");
-		}*/
+		}
 #endif
 	return 0;
 }

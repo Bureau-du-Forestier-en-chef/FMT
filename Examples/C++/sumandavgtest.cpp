@@ -58,12 +58,12 @@ int main(int argc, char *argv[])
 	const std::vector<const Models::FMTlpmodel*> modelsresults =  tasks.at(0)->getmodelsfromdynamiccast<Models::FMTlpmodel>();
 	const double sumvalue = modelsresults.at(0)->getoutput(selectedoutputs.at(1), 5, Core::FMToutputlevel::totalonly).at("Total");
 	const double avgvalue = modelsresults.at(0)->getoutput(selectedoutputs.at(2), 5, Core::FMToutputlevel::totalonly).at("Total");
-	if (sumvalue!=1498.60684)
+	if (std::abs(sumvalue-1498.60684)>0.1)
 		{
 		Exception::FMTfreeexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed, "Wrong value for sum "+std::to_string(sumvalue),
 			"sumandavgtest", __LINE__,"");
 		}
-	if (avgvalue!=299.721368)
+	if (std::abs(avgvalue - 299.721368) > 0.1)
 		{
 		Exception::FMTfreeexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed, "Wrong value for average " + std::to_string(avgvalue),
 			"sumandavgtest", __LINE__, "");
