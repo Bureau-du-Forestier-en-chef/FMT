@@ -74,7 +74,15 @@ namespace Parallel
 		Return reference to the task already in the ptrype.
 		*/
 		template<class ptrtype>
-		const std::vector<const ptrtype*> gettasksfromdynamiccast() const;
+		const std::vector<const ptrtype*> gettasksfromdynamiccast() const
+		{
+			std::vector<const ptrtype*>castedptr;
+			for (const std::unique_ptr<FMTtask>& task : alltasks)
+			{
+				castedptr.push_back(dynamic_cast<const ptrtype*>(task.get()));
+			}
+			return castedptr;
+		}
 		// DocString: FMTtaskhandler::conccurentrun
 		/**
 		Will use the split task virtual function to

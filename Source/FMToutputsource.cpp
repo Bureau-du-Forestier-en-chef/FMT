@@ -21,6 +21,7 @@ FMToutputsource::FMToutputsource() : FMTspec(), mask(),
 		yield(),
 		values(),
 		average(),
+		sum(),
 		outputorigin(-1),
 		themetarget(-1)
 	{
@@ -35,6 +36,7 @@ FMToutputsource::FMToutputsource(const FMTotar ltarget,double lvalue, std::strin
     yield(lyield),
     values(1,lvalue),
 	average(),
+	sum(),
 	outputorigin(origin),
 	themetarget(ttarget)
     {
@@ -52,6 +54,7 @@ FMToutputsource::FMToutputsource(const FMTotar ltarget,std::vector<double>lvalue
     yield(),
     values(lvalues),
 	average(),
+	sum(),
 	outputorigin(origin),
 	themetarget(ttarget)
     {
@@ -64,14 +67,14 @@ FMToutputsource::FMToutputsource(const FMTspec& spec,const FMTmask& lmask,
                const FMTotar ltarget,std::string lyield,
 			std::string laction, int origin,int ttarget) :
                 FMTspec(spec),mask(lmask),
-                target(ltarget),action(laction),yield(lyield),values(),average(), outputorigin(origin),themetarget(ttarget)
+                target(ltarget),action(laction),yield(lyield),values(),average(), sum(), outputorigin(origin),themetarget(ttarget)
     {
 
 
     }
 
 FMToutputsource::FMToutputsource(const FMToutputsource& rhs) : FMTspec(rhs),mask(rhs.mask),target(rhs.target),
-    action(rhs.action),yield(rhs.yield),values(rhs.values), average(rhs.average),outputorigin(rhs.outputorigin),themetarget(rhs.themetarget)
+    action(rhs.action),yield(rhs.yield),values(rhs.values), average(rhs.average), sum(rhs.sum), outputorigin(rhs.outputorigin),themetarget(rhs.themetarget)
     {
 
     }
@@ -87,6 +90,7 @@ FMToutputsource& FMToutputsource::operator = (const FMToutputsource& rhs)
         FMTspec::operator=(rhs);
         mask = rhs.mask;
 		average = rhs.average;
+		sum = rhs.sum;
 		outputorigin = rhs.outputorigin;
 		themetarget=rhs.themetarget;
         }
@@ -348,6 +352,12 @@ void FMToutputsource::setaverage()
 	{
 	average = true;
 	}
+
+
+void FMToutputsource::setsum()
+{
+	sum = true;
+}
 
 bool FMToutputsource::isnull(const FMTyields& ylds) const
 	{

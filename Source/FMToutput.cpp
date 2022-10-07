@@ -20,23 +20,22 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 namespace Core{
 
 
-FMToutput::FMToutput(const std::string& lname,const std::string& ldescription,/*const int& ltheme_target,*/
+FMToutput::FMToutput(const std::string& lname,const std::string& ldescription,const std::string& lgroup,
 	const std::vector<FMToutputsource>& lsources, const std::vector<FMToperator>& loperators):
 	FMTobject(),
     sources(lsources),
     operators(loperators),
-	//theme_target(ltheme_target),
     name(lname),
-    description(ldescription)
-
+    description(ldescription),
+	group(lgroup)
     {
 
     }
-FMToutput::FMToutput(const std::string& lname) :FMTobject(), sources(),operators()/*, theme_target(-1)*/,name(lname),description()
+FMToutput::FMToutput(const std::string& lname) :FMTobject(), sources(),operators(),name(lname),description(),group()
     {
 
     }
-FMToutput::FMToutput() : FMTobject(),sources(),operators(),/* theme_target(-1),*/name(),description()
+FMToutput::FMToutput() : FMTobject(),sources(),operators(),name(),description(),group()
     {
 
     }
@@ -45,9 +44,9 @@ FMToutput::FMToutput(const FMToutput& rhs) :
 	FMTobject(rhs),
     sources(rhs.sources),
     operators(rhs.operators),
-	//theme_target(rhs.theme_target),
     name(rhs.name),
-    description(rhs.description)
+    description(rhs.description),
+	group(rhs.group)
     {
 
     }
@@ -58,7 +57,6 @@ FMToutput& FMToutput::operator = (const FMToutput& rhs)
 		FMTobject::operator=(rhs);
         name = rhs.name;
         sources = rhs.sources;
-		//theme_target =rhs.theme_target;
         operators = rhs.operators;
         description = rhs.description;
         }
@@ -71,10 +69,12 @@ FMToutput& FMToutput::operator +=(const FMToutput& rhs)
 		{
 			this->name = this->name + " + " + rhs.name;
 			this->description = this->description + "+" + rhs.description;
+			this->group = this->group + "+" + rhs.group;
 		}
 		else {
 			this->name = rhs.name;
 			this->description = rhs.description;
+			this->group = rhs.group;
 		}
 		if (!this->sources.empty())
 		{
@@ -101,9 +101,11 @@ FMToutput& FMToutput::operator -=(const FMToutput& rhs)
 		{
 		this->name = this->name + "-" + rhs.name;
 		this->description = this->description + "-" + rhs.description;
+		this->group = this->group + "-" + rhs.group;
 	}else {
 		this->name = rhs.name;
 		this->description = rhs.description;
+		this->group = rhs.group;
 		}
     if (!this->sources.empty())
 		{
@@ -137,6 +139,7 @@ FMToutput& FMToutput::operator  *= (const double& rhs)
 			{
 				this->name = std::to_string(rhs) + " * " + this->name;
 				this->description = std::to_string(rhs) + " * " + this->description;
+				this->group =this->group;
 			}
 		}
 		if (!sources.empty())
@@ -178,6 +181,7 @@ FMToutput& FMToutput::operator /=(const double& rhs)
 		{
 		this->name = this->name + "/" + std::to_string(rhs);
 		this->description = this->description + "/" + std::to_string(rhs);
+		this->group = this->group + "/" + std::to_string(rhs);
 		}
 	if (!sources.empty())
 	{
@@ -511,18 +515,17 @@ FMToutput FMToutput::boundto(const std::vector<FMTtheme>& themes, const FMTperbo
 		{
 			newoutput.name = newoutput.name + "(" + attribute + ")";
 		}
-		if (!bound.empty())
+		if (specialbound.empty() && !bound.empty())
 		{
-			if (specialbound.empty() && bound.getlower() == bound.getupper())//single bounded
+			if ( bound.getlower() == bound.getupper())//single bounded
 			{
 				newoutput.name = newoutput.name + "[" + std::to_string(bound.getlower()) + "]";
 			}
-			else if (!specialbound.empty())
+			/*/else if (!specialbound.empty())
 			{
 				std::string name = specialbound;
 				name += "(" + newoutput.name;
-				if (!(bound.getupper() == std::numeric_limits<double>::max() && bound.getlower() == 1) &&
-					!(bound.getupper() == std::numeric_limits<int>::max() && bound.getlower() == 1))
+				if (!(bound.getupper() == std::numeric_limits<double>::max() && bound.getlower() == 1) )
 				{
 					name += ",";
 					name += std::to_string(bound.getlower()) + "..";
@@ -530,7 +533,20 @@ FMToutput FMToutput::boundto(const std::vector<FMTtheme>& themes, const FMTperbo
 				}
 				name += ")";
 				newoutput.name = name;
+			}*/
+		}
+		if (!specialbound.empty())
+		{
+			std::string name = specialbound;
+			name += "(" + newoutput.name;
+			if (!bound.empty())
+			{
+				name += ",";
+				name += std::to_string(bound.getlower()) + "..";
+				name += std::to_string(bound.getupper());
 			}
+			name += ")";
+			newoutput.name = name;
 		}
 		//if (!newoutput.islevel())
 		//{
@@ -559,10 +575,18 @@ FMToutput FMToutput::boundto(const std::vector<FMTtheme>& themes, const FMTperbo
 							source.setmask(oldmask);
 							}
 						}
-					if (!specialbound.empty() && specialbound == "_AVG")
+					if (!specialbound.empty())
 					{
-						source.setaverage();
+						if (specialbound == "_AVG")
+						{
+							source.setaverage();
+						}
+						else if (specialbound == "_SUM")
+						{
+							source.setsum();
+						}
 					}
+
 					
 				}/*else if (source.isvariablelevel())
 					{
@@ -613,10 +637,11 @@ std::vector<FMToutputnode> FMToutput::getnodes(std::vector<std::string>& equatio
 				if (srs.front().isvariable()||srs.front().isvariablelevel())
 					{
 					double constant = 1;
-					if (srs.front().isaverage())
+					//Its now handle in FMToutputnode settograph
+					/*if (srs.front().isaverage())
 						{
 						constant *= multiplier;
-						}
+						}8=*/
 					if (!ops.front().isfactor())
 						{
 						constant *= ops.front().call(0, 1);

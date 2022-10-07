@@ -43,9 +43,10 @@ int main()
 	const size_t greedysearch = 10;
 	for (int period = 0; period < 10; ++period)
 		{
-		for (const auto& t : simulationmodel.greedyreferencebuild(schedules.at(0).at(period), greedysearch))
+		Core::FMTschedule sche = schedules.at(0).at(period);
+		for (const auto& t : simulationmodel.greedyreferencebuild(sche, greedysearch))
 			{
-			Logging::FMTlogger() << t.first << " " << t.second << " ";
+			Logging::FMTlogger()<< t.first << " " << t.second << " ";
 			}
 		Logging::FMTlogger() << "\n";
 		}
@@ -58,7 +59,7 @@ int main()
 		}
 	}
 	const Spatial::FMTspatialschedule spatialsolution = simulationmodel.getspschedule();
-	Logging::FMTlogger() <<"xsize : "<< spatialsolution.GetXSize() << "\n";
+	Logging::FMTlogger() << "xsize : " << spatialsolution.GetXSize() << "\n";
 	Logging::FMTlogger() << "ysize : " << spatialsolution.GetYSize() << "\n";
 	for (int period = 1; period <= 10; ++period)
 		{
@@ -81,4 +82,5 @@ int main()
 #endif
 	return 0;
 }
-        
+
+

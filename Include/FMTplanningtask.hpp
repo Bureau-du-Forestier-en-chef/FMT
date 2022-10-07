@@ -46,6 +46,9 @@ namespace Parallel
 		// DocString: FMTplanningtask::schedules
 		///All schedules of FMTmodel if we only want to do playback
 		std::list<std::vector<Core::FMTschedule>>allschedules;
+		// DocString: FMTplanningtask::keepmodels
+		///If keep models is true the models will be kept after work
+		bool keepmodels;
 		// DocString: FMTplanningtask::copymodels
 		/**
 		Copy models for unique model...
@@ -77,6 +80,11 @@ namespace Parallel
 		Clone function for FMTplanningtask
 		*/
 		std::unique_ptr<FMTtask>clone() const;
+		// DocString: FMTplanningtask::setkeepmodels
+		/**
+		This function will force the task to keep the models... may consume memory.
+		*/
+		void setkeepmodels();
 		// DocString: FMTplanningtask::push_back
 		/**
 		Push a new FMTmodel in the task queue with optional schedule.
@@ -115,6 +123,20 @@ namespace Parallel
 		Pass the logger
 		*/
 		void passinlogger(const std::shared_ptr<Logging::FMTlogger>& logger) override;
+		// DocString: FMTplanningtask::getmodelsfromdynamiccast
+		/**
+		Get the models pointer casted in a given model type.
+		*/
+		template<class ptrtype>
+		const std::vector<const ptrtype*> getmodelsfromdynamiccast() const
+		{
+			std::vector<const ptrtype*>castedptr;
+			for (const std::unique_ptr<Models::FMTmodel>& model : models)
+			{
+				castedptr.push_back(dynamic_cast<const ptrtype*>(model.get()));
+			}
+			return castedptr;
+		}
 
 	};
 

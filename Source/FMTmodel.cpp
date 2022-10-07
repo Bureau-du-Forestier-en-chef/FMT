@@ -308,7 +308,7 @@ void FMTmodel::addoutput(const std::string& name,
 		std::vector<Core::FMToutputsource>sources;
 		sources.push_back(Core::FMToutputsource(Core::FMTspec(), Core::FMTmask(maskstring, themes), outputtarget, yield, action,static_cast<int>(outputs.size()),targettheme));
 		std::vector<Core::FMToperator>operators;
-		outputs.push_back(Core::FMToutput(name, description, sources, operators));
+		outputs.push_back(Core::FMToutput(name, description,"", sources, operators));
 		outputs.shrink_to_fit();
 	}
 	catch (...)

@@ -117,7 +117,7 @@ int main()
 	std::vector<Core::FMToperator>oeprators;
 	sources.push_back(Core::FMToutputsource(Core::FMTspec(), Core::FMTmask("? ? ?", themes), Core::FMTotar::actual
 		, "YVTOT", "ACT", 0, -1));
-	outputs.push_back(Core::FMToutput("OVOLTOTREC","VOLUME RECOLTE",
+	outputs.push_back(Core::FMToutput("OVOLTOTREC","VOLUME RECOLTE","VOLUME",
 						sources,
 						oeprators));
 	//////////////////////////////////////////////////////////
