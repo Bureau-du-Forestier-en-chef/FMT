@@ -146,7 +146,7 @@ namespace Wrapper
 	{
 		try {
 			boost::lock_guard<boost::recursive_mutex> guard1(*mtx);
-			model = std::unique_ptr<Models::FMTmodel>( new Models::FMTlpmodel(lmodel, Models::FMTsolverinterface::MOSEK));
+			model = std::unique_ptr<Models::FMTmodel>( new Models::FMTlpmodel(lmodel, Models::FMTsolverinterface::CLP));
 			size_t outid = 0;
 			for (const Core::FMToutput& output : model->getoutputs())
 			{
@@ -167,11 +167,22 @@ namespace Wrapper
 				period = std::max(period, schedule.getperiod());
 			}
 			model->setparameter(Models::FMTintmodelparameters::LENGTH,period);
-			model->doplanning(false, schedules);
+			//model->doplanning(false, schedules);
 		}catch (...)
 			{
 			_exhandler->printexceptions("", "FMTmodelcache::FMTmodelcache()", __LINE__, __FILE__);
 			}
+	}
+
+	void FMTmodelcache::setsolution(const std::vector<Core::FMTschedule>& schedules) 
+	{
+		try {
+			model->doplanning(false, schedules);
+		}
+		catch (...)
+		{
+			_exhandler->printexceptions("", "FMTmodelcache::initialize", __LINE__, __FILE__);
+		}
 	}
 
 	int FMTmodelcache::getperiods() const
@@ -184,75 +195,72 @@ namespace Wrapper
 	{
 		Core::FMTmask subset;
 		try {
+		std::string mask;
+		for (size_t thid = 0; thid < themes.size(); ++thid)
+		{
+			mask += "? ";
+		}
+		mask.pop_back();
+		const std::vector<Core::FMTtheme>& themeofmodel = model->getthemes();
+		subset = Core::FMTmask(mask, themeofmodel);
 		if (themeselection.find('=')!=std::string::npos)
-			{
+		{
 			std::vector<std::string> results;
 			boost::split(results, themeselection, boost::is_any_of(";"));
-			std::string mask;
-			for (size_t thid = 0; thid < themes.size(); ++thid)
-			{
-				mask += "? ";
-			}
-			mask.pop_back();
-			const std::vector<Core::FMTtheme>& themeofmodel = model->getthemes();
-			subset =Core::FMTmask(mask, themeofmodel);
 			for (std::string& value : results)
 			{ 
-			boost::trim(value);
-			size_t stfind = value.find('=');
-			if (stfind != std::string::npos)//need to subsettheme!
-			{
-				const std::string themename = value.substr(0, stfind);
-				const std::string attribute = value.substr(stfind + 1, value.size());
-				Core::FMTtheme const* localtheme = nullptr;
-				if (themename.find("THEME") != std::string::npos)
+				boost::trim(value);
+				size_t stfind = value.find('=');
+				if (stfind != std::string::npos)//need to subsettheme!
 				{
-					const size_t themeid = static_cast<size_t>(std::stoi(value.substr(value.find("THEME") + 5, value.size())) - 1);
-					if (!(themeid < themes.size()))
+					const std::string themename = value.substr(0, stfind);
+					const std::string attribute = value.substr(stfind + 1, value.size());
+					Core::FMTtheme const* localtheme = nullptr;
+					if (themename.find("THEME") != std::string::npos)
 					{
-						return Core::FMTmask();
-						//_exhandler->raise(Exception::FMTexc::FMTinvalid_theme,
-						//	"THEME id " + std::to_string(themeid), "FMTmodelcache::themeselectiontomask", __LINE__, __FILE__);
-					}
-					localtheme = &themeofmodel.at(themeid);
-
-				}
-				else {
-					if (themes.find(themename) == themes.end())
-					{
-						return Core::FMTmask();
-						//_exhandler->raise(Exception::FMTexc::FMTinvalid_theme,
-						//	themename, "FMTmodelcache::themeselectiontomask", __LINE__, __FILE__);
-					}
-					localtheme = &themeofmodel.at(themes.at(themename));
-				}
-				if (localtheme)
-				{
-					if (localtheme->isaggregate(attribute) ||
-						localtheme->isattribute((attribute)))
-					{
-						subset.set(*localtheme, attribute);
-					}
-					else {
-						const std::vector<std::string>& attributenames = localtheme->getattributenames();
-						std::vector<std::string>::const_iterator ait = std::find(attributenames.begin(), attributenames.end(), attribute);
-						if (ait == attributenames.end())//raise
+						const size_t themeid = static_cast<size_t>(std::stoi(themename.substr(themename.find("THEME") + 5)) - 1);
+						if (!(themeid < themes.size()))
 						{
 							return Core::FMTmask();
+						//_exhandler->raise(Exception::FMTexc::FMTinvalid_theme,
+						//	"THEME id " + std::to_string(themeid), "FMTmodelcache::themeselectiontomask", __LINE__, __FILE__);
+						}
+						localtheme = &themeofmodel.at(themeid);
+					}
+					else {
+						if (themes.find(themename) == themes.end())
+						{
+							return Core::FMTmask();
+						//_exhandler->raise(Exception::FMTexc::FMTinvalid_theme,
+						//	themename, "FMTmodelcache::themeselectiontomask", __LINE__, __FILE__);
+						}
+						localtheme = &themeofmodel.at(themes.at(themename));
+					}
+					if (localtheme)
+					{
+						if (localtheme->isaggregate(attribute) ||
+							localtheme->isattribute((attribute)))
+						{
+							subset.set(*localtheme, attribute);
+						}
+						//attributes names is a vector of string that the string can be empty ... so we cannot search in it
+						else if(!attribute.empty()) {
+							const std::vector<std::string>& attributenames = localtheme->getattributenames();
+							std::vector<std::string>::const_iterator ait = std::find(attributenames.begin(), attributenames.end(), attribute);
+							if (ait == attributenames.end())//raise
+							{
+								return Core::FMTmask();
 							//_exhandler->raise(Exception::FMTexc::FMTundefined_attribute,
 							//	attribute, "FMTmodelcache::themeselectiontomask", __LINE__, __FILE__);
-						}
-						else {
-
-							subset.set(*localtheme, localtheme->getbaseattributes().at(std::distance(attributenames.begin(), ait)));
+							}
+							else {
+								const std::string attname = localtheme->getbaseattributes().at(std::distance(attributenames.begin(), ait));
+								subset.set(*localtheme, attname);
+							}
 						}
 					}
 				}
-			}
-			}
-			
-			
-			
+			}	
 		}
 		}catch (...)
 			{
@@ -270,14 +278,16 @@ namespace Wrapper
 			if (!outputsofmodel.empty()&&
 				outit!= outputs.end())
 				{
-				if (subset.empty())
+				if (subset.size() == subset.count()||subset.empty())//Only ? in mask so get the output from the model ... 
 					{
-					return outputsofmodel.at(outit->second);
+						return outputsofmodel.at(outit->second);
 					}else {
-					newoutput = outputsofmodel.at(outit->second).intersectwithmask(subset, model->getthemes());
+						newoutput = outputsofmodel.at(outit->second).intersectwithmask(subset, model->getthemes());
 					}
 				}
-			
+			else {
+				_exhandler->raise(Exception::FMTexc::FMTundefined_output,"Output not found", "FMTmodelcache::getoutput", __LINE__, __FILE__);
+			}
 		}catch (...)
 		{
 			_exhandler->printexceptions("", "FMTmodelcache::getoutput", __LINE__, __FILE__);
