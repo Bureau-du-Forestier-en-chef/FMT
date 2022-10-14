@@ -55,6 +55,7 @@ namespace Wrapper
 		FMTmodelcache& operator = (const FMTmodelcache& rhs);
 		~FMTmodelcache();
 		FMTmodelcache(const Models::FMTmodel& lmodel,const std::vector<Core::FMTschedule>& schedules,const std::string& lmaplocation);
+		void setsolution(const std::vector<Core::FMTschedule>& schedules);
 		double getvalue(const std::string& outputname, const std::string& themeselection, const int& period) const;
 		double getyield(const std::string& yieldname, const std::string& themeselection, const int& age, const int& period) const;
 		bool writejpeg(const size_t& themeid,const std::vector<std::string>attributevalues, const std::string& jpeglocation) const;
