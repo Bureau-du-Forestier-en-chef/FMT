@@ -258,6 +258,9 @@ namespace Wrapper
 								subset.set(*localtheme, attname);
 							}
 						}
+						else {
+							return Core::FMTmask();
+						}
 					}
 				}
 			}	
@@ -273,22 +276,21 @@ namespace Wrapper
 	{
 		Core::FMToutput newoutput;
 		try {
+			std::vector<Core::FMTtheme> modelthemes = model->getthemes();
 			std::unordered_map<std::string,size_t>::const_iterator outit = outputs.find(outputname);
 			const std::vector<Core::FMToutput>& outputsofmodel = model->getoutputs();
 			if (!outputsofmodel.empty()&&
 				outit!= outputs.end())
 				{
+				const Core::FMToutput modeloutput = outputsofmodel.at(outit->second);
 				if (subset.size() == subset.count()||subset.empty())//Only ? in mask so get the output from the model ... 
 					{
-						return outputsofmodel.at(outit->second);
+					return modeloutput;
 					}else {
-						newoutput = outputsofmodel.at(outit->second).intersectwithmask(subset, model->getthemes());
+						newoutput = modeloutput.intersectwithmask(subset, modelthemes);
 					}
 				}
-			else {
-				_exhandler->raise(Exception::FMTexc::FMTundefined_output,"Output not found", "FMTmodelcache::getoutput", __LINE__, __FILE__);
-			}
-		}catch (...)
+			}catch (...)
 		{
 			_exhandler->printexceptions("", "FMTmodelcache::getoutput", __LINE__, __FILE__);
 		}

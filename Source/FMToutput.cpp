@@ -982,7 +982,8 @@ std::vector<std::string> FMToutput::getdecomposition(const std::vector<FMTtheme>
 	try{
 	if (targetthemeid()!=-1)
 		{
-		int srcid = 0;
+		return getthemedecomposition(themes[targetthemeid()]);
+		/*int srcid = 0;
 		for (const FMToutputsource& source : sources)
 			{
 			if (source.isvariable())
@@ -1004,8 +1005,7 @@ std::vector<std::string> FMToutput::getdecomposition(const std::vector<FMTtheme>
 				}
 				++srcid;
 				}
-
-			}
+			}*/
 		}
 	}
 	catch (...)
@@ -1015,20 +1015,71 @@ std::vector<std::string> FMToutput::getdecomposition(const std::vector<FMTtheme>
 	return validdecomp;
 	}
 
+std::vector<std::string> FMToutput::getthemedecomposition(const FMTtheme& theme) const
+{
+	std::vector<std::string>validdecomp;
+	try {
+		int srcid = 0;
+		for (const FMToutputsource& source : sources)
+		{
+			if (source.isvariable())
+			{
+				const FMTmask srcmask = source.getmask();
+				std::vector<std::string>unique_selection;
+				for (const FMTmask& decmask : srcmask.decompose(theme))
+				{
+					unique_selection.push_back(decmask.get(theme));
+				}
+				if (srcid == 0)
+				{
+					validdecomp = unique_selection;
+				}
+				else {
+					std::vector<std::string>newvalid;
+					std::set_intersection(validdecomp.begin(), validdecomp.end(),
+						unique_selection.begin(), unique_selection.end(), back_inserter(newvalid));
+					validdecomp = newvalid;
+				}
+				++srcid;
+			}
+		}
+	}
+	catch (...)
+	{
+		_exhandler->raisefromcatch("for " + this->getname(), "FMToutput::getdecomposition", __LINE__, __FILE__, Core::FMTsection::Outputs);
+	}
+	return validdecomp;
+}
+
 FMToutput FMToutput::intersectwithmask(const Core::FMTmask& mask,
 	const std::vector<Core::FMTtheme>& themes) const
 	{
 	FMToutput newoutput(*this);
 	try{
-		for (FMToutputsource& source : newoutput.sources)
-			{
+		size_t source_id = 0;
+		size_t operator_id = 0;
+		std::vector<Core::FMToutputsource> nsources;
+		for (const FMToutputsource& source : newoutput.sources)
+		{
 			if (source.isvariable())
-				{
+			{
+				Core::FMToutputsource nsource(source);
 				Core::FMTmask newmask(source.getmask().getintersect(mask));
-				newmask.update(themes);
-				source.setmask(newmask);
+				if (newmask.getselectedthemes(themes).size() == themes.size())
+				{
+					newmask.update(themes);
+					nsource.setmask(newmask);
 				}
+				else {
+					//if the intersect gives mask with only 0 in one theme, change source for level = 0 
+					nsources.push_back(Core::FMToutputsource(Core::FMTotar::level, std::vector<double>(30,0),source.getoutputorigin(), source.getthemetarget()));//constant level!
+				}
+				nsources.push_back(nsource);
 			}
+			if (source_id > 0) { ++operator_id; }
+			++source_id;
+		}
+		newoutput.sources = nsources;
 	}catch (...)
 		{
 			_exhandler->raisefromcatch(
