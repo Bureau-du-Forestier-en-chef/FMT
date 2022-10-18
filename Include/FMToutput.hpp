@@ -308,6 +308,11 @@ class FMTEXPORT FMToutput: public FMTobject
 		}
 	// DocString: FMToutput::getdecomposition
 	/**
+	Returns all possible attribute values the FMToutput can for the specified theme based on the model (themes).
+	*/
+	std::vector<std::string>getthemedecomposition(const FMTtheme& theme) const;
+	// DocString: FMToutput::getdecomposition
+	/**
 	Returns all possible attribute values the FMToutput can have if the attribute_target != -1
 	else returns a empty vector, based on the model (themes).
 	*/
