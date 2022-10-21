@@ -31,7 +31,8 @@ namespace Wrapper
 		outputs(),
 		themes(),
 		maplocation(),
-		map()
+		map(),
+		generalcache()
 	{
 		
 	}
@@ -51,6 +52,7 @@ namespace Wrapper
 			outputs = rhs.outputs;
 			themes = rhs.themes;
 			maplocation = rhs.maplocation;
+			generalcache = rhs.generalcache;
 			if (rhs.map)
 				{
 				map = std::move(std::unique_ptr<Spatial::FMTforest>(new Spatial::FMTforest(*rhs.map)));
@@ -67,7 +69,8 @@ namespace Wrapper
 		outputs(rhs.outputs),
 		themes(rhs.themes),
 		maplocation(rhs.maplocation),
-		map()
+		map(),
+		generalcache(rhs.generalcache)
 	{
 		boost::lock_guard<boost::recursive_mutex> guard1(*mtx);
 		boost::lock_guard<boost::recursive_mutex> guard2(*rhs.mtx);
@@ -142,7 +145,8 @@ namespace Wrapper
 		outputs(),
 		themes(),
 		maplocation(lmaplocation),
-		map()
+		map(),
+		generalcache()
 	{
 		try {
 			boost::lock_guard<boost::recursive_mutex> guard1(*mtx);
@@ -301,14 +305,20 @@ namespace Wrapper
 	{
 		double value = 0;
 		try {
-			const Core::FMTmask subset = themeselectiontomask(themeselection);
-			const Core::FMToutput theoutput = getoutput(outputname, subset);
-			if (!outputs.empty()&&
-				outputs.find(outputname) != outputs.end()&&
-				!theoutput.empty())
+			const std::string cachekey = getcachekey("OUTPUT", outputname, themeselection, 0, period);
+			const bool incache = fillfromcache(value, cachekey);
+			if (!incache)
 			{
-				boost::lock_guard<boost::recursive_mutex> guard(*mtx);
-				value = model->getoutput(theoutput, period, Core::FMToutputlevel::totalonly).at("Total");
+				const Core::FMTmask subset = themeselectiontomask(themeselection);
+				const Core::FMToutput theoutput = getoutput(outputname, subset);
+				if (!outputs.empty() &&
+					outputs.find(outputname) != outputs.end() &&
+					!theoutput.empty())
+				{
+					boost::lock_guard<boost::recursive_mutex> guard(*mtx);
+					value = model->getoutput(theoutput, period, Core::FMToutputlevel::totalonly).at("Total");
+					settocache(cachekey, value);
+				}
 			}
 		}catch (...)
 		{
@@ -321,18 +331,23 @@ namespace Wrapper
 	{
 		double value = 0;
 		try {
-			const Core::FMTyields& yields = model->getyields();
-			const Core::FMTmask subset = themeselectiontomask(themeselection);
-			if (!yields.empty()&&
-				yields.isyld(yieldname)&&
-				!(subset.empty() && !themeselection.empty()))
+			const std::string cachekey = getcachekey("YIELD", yieldname, themeselection, age, period);
+			const bool incache = fillfromcache(value, cachekey);
+			if (!incache)
 			{
-				const Core::FMTdevelopment adev(subset, age, 0, period);
-				const Core::FMTyieldrequest yieldrequest = adev.getyieldrequest();
-				boost::lock_guard<boost::recursive_mutex> guard(*mtx);
-				value = yields.get(yieldrequest, yieldname);
+				const Core::FMTyields& yields = model->getyields();
+				const Core::FMTmask subset = themeselectiontomask(themeselection);
+				if (!yields.empty() &&
+					yields.isyld(yieldname) &&
+					!(subset.empty() && !themeselection.empty()))
+				{
+					const Core::FMTdevelopment adev(subset, age, 0, period);
+					const Core::FMTyieldrequest yieldrequest = adev.getyieldrequest();
+					boost::lock_guard<boost::recursive_mutex> guard(*mtx);
+					value = yields.get(yieldrequest, yieldname);
+					settocache(cachekey, value);
+				}
 			}
-			
 		}catch (...)
 		{
 			_exhandler->printexceptions("", "FMTmodelcache::getyield", __LINE__, __FILE__);
@@ -379,6 +394,49 @@ namespace Wrapper
 		}
 		return aggregates;
 	
+	}
+
+	std::string FMTmodelcache::getcachekey(const std::string& type,
+		const std::string& outputname, const std::string& themeselection,
+		const int& age, const int& period) const
+	{
+		std::string key;
+		try {
+			key = type + "_" + outputname + "_" + themeselection + "_" + std::to_string(age) + "_" + std::to_string(period);
+		}catch (...)
+		{
+			_exhandler->printexceptions("", "FMTmodelcache::getcachekey", __LINE__, __FILE__);
+		}
+		return key;
+	}
+	bool FMTmodelcache::fillfromcache(double& value, const std::string& cachekey) const
+	{
+		bool gotincash = false;
+		try {
+			std::unordered_map<std::string,double>::const_iterator cacheit = generalcache.find(cachekey);
+			if (cacheit!= generalcache.end())
+				{
+				value = cacheit->second;
+				gotincash = true;
+				}
+			
+		}
+		catch (...)
+		{
+			_exhandler->printexceptions("", "FMTmodelcache::fillfromcache", __LINE__, __FILE__);
+		}
+		return gotincash;
+
+	}
+	void FMTmodelcache::settocache(const std::string& cachekey, const double& value) const
+	{
+		try {
+			boost::lock_guard<boost::recursive_mutex> guard(*mtx);
+			generalcache[cachekey] = value;
+		}catch (...)
+		{
+			_exhandler->printexceptions("", "FMTmodelcache::settocache", __LINE__, __FILE__);
+		}
 	}
 
 	

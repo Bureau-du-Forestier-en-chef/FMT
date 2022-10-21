@@ -1056,30 +1056,38 @@ FMToutput FMToutput::intersectwithmask(const Core::FMTmask& mask,
 	{
 	FMToutput newoutput(*this);
 	try{
-		size_t source_id = 0;
-		size_t operator_id = 0;
-		std::vector<Core::FMToutputsource> nsources;
-		for (const FMToutputsource& source : newoutput.sources)
+		for (FMToutputsource& source : newoutput.sources)
 		{
 			if (source.isvariable())
 			{
-				Core::FMToutputsource nsource(source);
-				Core::FMTmask newmask(source.getmask().getintersect(mask));
-				if (newmask.getselectedthemes(themes).size() == themes.size())
+				Core::FMTmask newmask = source.getmask().getintersect(mask);
+				bool outmask = false;
+				for (const Core::FMTtheme& theme : themes)
+					{
+					if (newmask.getsubsetcount(theme)==0)
+						{
+						outmask = true;
+						break;
+						}
+					}
+				if (!outmask)
 				{
 					newmask.update(themes);
-					nsource.setmask(newmask);
-				}
-				else {
+					source.setmask(newmask);
+				}else {
 					//if the intersect gives mask with only 0 in one theme, change source for level = 0 
-					nsources.push_back(Core::FMToutputsource(Core::FMTotar::level, std::vector<double>(30,0),source.getoutputorigin(), source.getthemetarget()));//constant level!
+					source = Core::FMToutputsource(Core::FMTotar::val,
+						std::vector<double>(3,0),
+						source.getoutputorigin(), source.getthemetarget());//constant level!
 				}
-				nsources.push_back(nsource);
 			}
-			if (source_id > 0) { ++operator_id; }
-			++source_id;
 		}
-		newoutput.sources = nsources;
+		//if (getname() == "OSUPP7MREGECOCOS")
+		//{
+			//_exhandler->raise(Exception::FMTexc::FMTunsupported_output,
+			//	"for output " + std::string(newoutput),
+			//	"FMToutput::canbenodesonly", __LINE__, __FILE__);
+		//}
 	}catch (...)
 		{
 			_exhandler->raisefromcatch(

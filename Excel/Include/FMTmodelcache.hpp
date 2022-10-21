@@ -46,9 +46,15 @@ namespace Wrapper
 		std::unordered_map<std::string,size_t>themes;//Themes name as key
 		std::string maplocation;
 		mutable std::unique_ptr<Spatial::FMTforest>map;
+		mutable std::unordered_map<std::string,double>generalcache;
 		Core::FMTmask themeselectiontomask(const std::string& themeselection) const;
 		Core::FMToutput getoutput(const std::string& outputname, const Core::FMTmask& subset) const;
 		void loadmap() const;
+		std::string getcachekey(const std::string& type,
+			const std::string& outputname, const std::string& themeselection,
+			const int& age, const int& period) const;
+		bool fillfromcache(double& value,const std::string& cachekey) const;
+		void settocache(const std::string& cachekey, const double& value) const;
 	public:
 		FMTmodelcache();
 		FMTmodelcache(const FMTmodelcache& rhs);
