@@ -368,9 +368,9 @@ if (DEFINED PYTHONNAMING)
 		endif(MSVC)
     else()
 		if(MSVC)
-			find_package(Boost COMPONENTS system filesystem serialization iostreams regex thread "${BPY}" OPTIONAL_COMPONENTS zlib)
+			find_package(Boost COMPONENTS system filesystem iostreams regex serialization thread OPTIONAL_COMPONENTS zlib)
 		else()
-			find_package(Boost COMPONENTS system filesystem serialization iostreams regex thread "${BPY}" OPTIONAL_COMPONENTS zlib) 
+			find_package(Boost COMPONENTS system filesystem iostreams regex serialization thread wserialization OPTIONAL_COMPONENTS zlib) 
 		endif(MSVC)
 endif(DEFINED PYTHONNAMING)
 
@@ -397,9 +397,14 @@ if (Boost_FOUND)
 		list(APPEND DLLlookuppaths ${boost_bin})
 		LIST(APPEND FMTDEPENDENCIES ${BOOST_DLL})
 	endif(MSVC)
-		set(Boost_USE_STATIC_LIBS OFF)
-		add_definitions("-DBOOST_ALL_DYN_LINK")
-		add_definitions("-DBOOST_THREAD_DYN_LINK")
+		#New for Rtools42 
+		get_filename_component(boostext ${Boost_FILESYSTEM_LIBRARY_RELEASE} EXT)
+		if (NOT ("${CMAKE_STATIC_LIBRARY_SUFFIX}" STREQUAL "${boostext}"))
+			set(Boost_USE_STATIC_LIBS OFF)
+			add_definitions("-DBOOST_ALL_DYN_LINK")
+			add_definitions("-DBOOST_THREAD_DYN_LINK")
+		endif(NOT ("${CMAKE_STATIC_LIBRARY_SUFFIX}" STREQUAL "${boostext}"))
+		#New for Rtools42
 endif(Boost_FOUND)
 
 #If you dont have a dynamic boost lib try to find the static
@@ -697,6 +702,14 @@ if (NOT DEFINED PARALLEL_TESTS)
 endif(NOT DEFINED PARALLEL_TESTS)
 
 list( REMOVE_DUPLICATES DLLlookuppaths)
+
+###EXTRALINKERFLAGS
+if (DEFINED EXTRALINKERFLAGS)
+	target_link_libraries(FMT PRIVATE "${EXTRALINKERFLAGS}")
+	target_link_libraries(FMTlib PRIVATE "${EXTRALINKERFLAGS}")
+endif(DEFINED EXTRALINKERFLAGS)
+
+
 
 #install part
 install (CODE
