@@ -398,12 +398,11 @@ if (Boost_FOUND)
 		LIST(APPEND FMTDEPENDENCIES ${BOOST_DLL})
 	endif(MSVC)
 		#New for Rtools42 
-		get_filename_component(boostext ${Boost_FILESYSTEM_LIBRARY_RELEASE} EXT)
-		if (NOT ("${CMAKE_STATIC_LIBRARY_SUFFIX}" STREQUAL "${boostext}"))
+		if (MSVC)
 			set(Boost_USE_STATIC_LIBS OFF)
 			add_definitions("-DBOOST_ALL_DYN_LINK")
 			add_definitions("-DBOOST_THREAD_DYN_LINK")
-		endif(NOT ("${CMAKE_STATIC_LIBRARY_SUFFIX}" STREQUAL "${boostext}"))
+		endif(MSVC)
 		#New for Rtools42
 endif(Boost_FOUND)
 
