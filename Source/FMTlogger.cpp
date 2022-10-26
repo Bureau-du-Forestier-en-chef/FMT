@@ -282,6 +282,11 @@ namespace Logging
 			{
 			return solverref.get();
 			}
+		
+		void FMTlogger::setlogginglevel(const int& level)
+		{
+			solverref->setLogLevel(level);
+		}
 
 	#endif
 
