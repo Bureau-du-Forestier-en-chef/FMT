@@ -1,7 +1,6 @@
 CODEABI_1.0 {
-	global: 
-		*rcpp*;
+	global:
 		*Rcpp*;
-		*FMT*;
+		*rcpp*;
 	local: *;
 };

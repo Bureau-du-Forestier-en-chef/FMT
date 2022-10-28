@@ -208,7 +208,8 @@ FMTlandscapeparser::FMTlandscapeparser() :
 								pasttheme= (getnum<int>(targettheme, constants) - 1);
 								}
 							aggregate_redefiniton = false;
-							if (std::find(aggregates.begin(), aggregates.end(), aggregatename)!= aggregates.end()||
+
+							if ((std::find(aggregates.begin(), aggregates.end(), aggregatename) != aggregates.end()) ||
 								(pasttheme!=-1 && themes.at(pasttheme).isaggregate(aggregatename)))
 							{
 								aggregate_redefiniton = true;
@@ -229,7 +230,7 @@ FMTlandscapeparser::FMTlandscapeparser() :
 							}
 
 						}
-						else if (!aggregatename.empty() && !aggregate_redefiniton)
+						else if (!aggregatename.empty() /* && !aggregate_redefiniton*/)
 						{
 							const std::string value = line;
 							const std::vector<std::string>splited = FMTparser::spliter(value, FMTparser::rxseparator);
