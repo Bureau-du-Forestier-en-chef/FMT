@@ -80,6 +80,13 @@ namespace Logging
 			a little help to print directly into the python window.
 			*/
 			virtual void cout(const char* message) const;
+			#ifdef FMTWITHOSI
+				// DocString: FMTlogger::setlogginglevel
+				/**
+				Set the solverlogger logging level
+				*/
+				virtual void setlogginglevel(const int& level);
+			#endif // FMTWITHOSI
 		public:
 			// DocString: FMTlogger()
 			/**
@@ -190,6 +197,7 @@ namespace Logging
 			Return the ABSTRACT logger used by osisolverinterface.
 			*/
 			virtual FMTsolverlogger* getsolverlogger();
+			
 		};
 
 }
