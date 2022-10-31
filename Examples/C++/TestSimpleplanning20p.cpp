@@ -1,4 +1,5 @@
 #include <vector>
+#include <cmath>
 #ifdef FMTWITHOSI
 	#include "FMTversion.hpp"
 	#include "FMTlogger.hpp"
@@ -13,7 +14,7 @@
 
 int roundobjectivevalue(const double& value)
 {
-    return static_cast<int>((value < 0) ? floor(value) : ceil(value));
+    return static_cast<int>((value < 0) ? std::floor(value) : std::ceil(value));
 }
 
 int main(int argc, char *argv[])

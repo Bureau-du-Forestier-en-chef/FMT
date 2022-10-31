@@ -11,8 +11,9 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <boost/python.hpp>
 #endif // defined FMTWITHPYTHON
 #include <iostream>
+#ifdef FMTWITHOSI
 #include "FMTsolverlogger.hpp"
-
+#endif
 
 namespace Logging
 	{

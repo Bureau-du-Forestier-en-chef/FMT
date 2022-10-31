@@ -12,7 +12,9 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTtaskhandler.hpp"
 #include "FMTreplanningtask.hpp"
 #include "FMTplanningtask.hpp"
-#include "FMTopareaschedulertask.hpp"
+#if defined FMTWITHOSI
+	#include "FMTopareaschedulertask.hpp"
+#endif
 #include "FMTmodel.hpp"
 #include "FMToutput.hpp"
 #include "FMTutility.hpp"
@@ -30,10 +32,11 @@ RCPP_DEFINEVECTOR(Parallel::FMTreplanningtask);//For vector
 RCPP_EXPOSED_WRAP(Parallel::FMTplanningtask);
 RCPP_EXPOSED_AS(Parallel::FMTplanningtask);
 RCPP_DEFINEVECTOR(Parallel::FMTplanningtask);//For vector
-
-RCPP_EXPOSED_WRAP(Parallel::FMTopareaschedulertask);
-RCPP_EXPOSED_AS(Parallel::FMTopareaschedulertask);
-RCPP_DEFINEVECTOR(Parallel::FMTopareaschedulertask);//For vector
+#if defined FMTWITHOSI
+	RCPP_EXPOSED_WRAP(Parallel::FMTopareaschedulertask);
+	RCPP_EXPOSED_AS(Parallel::FMTopareaschedulertask);
+	RCPP_DEFINEVECTOR(Parallel::FMTopareaschedulertask);//For vector
+#endif
 
 RCPP_EXPOSED_WRAP(Parallel::FMTtaskhandler);
 RCPP_EXPOSED_AS(Parallel::FMTtaskhandler);
@@ -78,7 +81,7 @@ namespace R
 			std::string>("@DocString(FMTplanningtask::FMTplanningtask(...))")
 			.method("push_back", &Parallel::FMTplanningtask::push_back,
 				"@DocString(FMTplanningtask::push_back");
-
+#if defined FMTWITHOSI
 		Rcpp::class_<Parallel::FMTopareaschedulertask>("FMTopareaschedulertask", "@DocString(FMTopareaschedulertask)")
 			.derives<Parallel::FMTtask>("FMTtask")
 			.constructor("@DocString(FMTopareaschedulertask::FMTopareaschedulertask())")
@@ -86,7 +89,7 @@ namespace R
 			std::vector<Heuristics::FMToperatingareascheme>,
 			Core::FMToutputnode,std::string,
 			std::string,unsigned int,double>("@DocString(FMTopareaschedulertask::FMTopareaschedulertask(...))");
-
+#endif
 
 		Rcpp::class_<Parallel::FMTtaskhandler>("FMTtaskhandler", "@DocString(FMTtaskhandler)")
 			.derives<Core::FMTobject>("FMTobject")

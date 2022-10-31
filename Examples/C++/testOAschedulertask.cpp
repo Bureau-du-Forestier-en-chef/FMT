@@ -13,7 +13,7 @@
     #include "FMTtimeyieldhandler.hpp"
     #include "FMTfreeexceptionhandler.hpp"
 #endif
-
+#ifdef FMTWITHOSI
 std::vector<Heuristics::FMToperatingareascheme> ObtenirOperatingArea(   const std::string& fichierShp,const std::vector<Core::FMTtheme>& themes, const int& numeroTheme,const int& startingperiod,
                                                                         const std::string& nomChampAge,const std::string& nomChampSuperficie,const std::string& nomChampStanlock
                                                                     )
@@ -115,11 +115,12 @@ Core::FMToutputnode createBFECoptaggregate(Models::FMTmodel& model)
             Core::FMTmask fmtMask = Core::FMTmask(stringMask, themes);
             return Core::FMToutputnode(fmtMask, Agg_name);
     }
-
+#endif
 int main(int argc, char *argv[])
     {   
-        Logging::FMTlogger().logstamp();
+       
         #ifdef FMTWITHOSI
+    Logging::FMTlogger().logstamp();
         const std::string primarylocation = std::string(argv[1]);
             const std::vector<std::string>scenarios(1,std::string(argv[2]));
             const std::string fichierShp = std::string(argv[3]);

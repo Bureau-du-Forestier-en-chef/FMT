@@ -60,7 +60,9 @@ namespace Logging
 		*/
 		void settofile(const std::string& filename) const;
 		protected:
+		#if defined FMTWITHOSI
 			std::unique_ptr<FMTsolverlogger>solverref;
+		#endif
 			// DocString: FMTlogger::pathtostream
 			///string path the the potential filestream
 			std::string filepath;
@@ -192,11 +194,13 @@ namespace Logging
 			then it will be printed
 			*/
 			virtual bool logwithlevel(const std::string &msg, const int& messagelevel) const;
+			#ifdef FMTWITHOSI
 			// DocString: FMTlogger::getsolverlogger
 			/**
 			Return the ABSTRACT logger used by osisolverinterface.
 			*/
 			virtual FMTsolverlogger* getsolverlogger();
+			#endif
 			
 		};
 

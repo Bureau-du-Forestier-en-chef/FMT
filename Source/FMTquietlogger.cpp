@@ -6,7 +6,9 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
 #include "FMTquietlogger.hpp"
+#ifdef FMTWITHOSI
 #include "FMTsolverlogger.hpp"
+#endif
 #include <boost/thread.hpp>
 
 namespace Logging

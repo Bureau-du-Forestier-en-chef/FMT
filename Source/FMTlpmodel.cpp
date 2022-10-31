@@ -13,10 +13,10 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <utility>
 #include <vector>
 #include <queue>
-#include "FMToperatingareascheduler.hpp"
 #include "FMToperatingareaclusterer.hpp"
 
 #ifdef FMTWITHOSI
+#include "FMToperatingareascheduler.hpp"
 #include "OsiSolverInterface.hpp"
 #include "FMTlpmodel.hpp"
 #ifdef FMTWITHMOSEK

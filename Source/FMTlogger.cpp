@@ -19,8 +19,8 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #endif
 #include <iostream>
 #include "FMTversion.hpp"
-#include "FMTsolverlogger.hpp"
 #if defined FMTWITHOSI
+#include "FMTsolverlogger.hpp"
 #include "CoinMessageHandler.hpp"
 #endif
 
@@ -71,7 +71,9 @@ namespace Logging
 		}
 
 	FMTlogger::FMTlogger() : 
+#if defined FMTWITHOSI
 		solverref(new FMTsolverlogger(*this)),
+#endif
 		filepath(),filestream(), mtx(),flushstream(false)
 		{
 		
@@ -93,7 +95,9 @@ namespace Logging
 	FMTlogger::FMTlogger(const FMTlogger& rhs)
 		{
 		boost::lock_guard<boost::recursive_mutex> lock(rhs.mtx);
-		solverref.reset(new FMTsolverlogger(*rhs.solverref));
+		#if defined FMTWITHOSI
+			solverref.reset(new FMTsolverlogger(*rhs.solverref));
+		#endif
 		filepath=rhs.filepath;
 		settofile(filepath);
 		flushstream=rhs.flushstream;
@@ -107,7 +111,9 @@ namespace Logging
 			boost::lock(mtx, rhs.mtx);
 			boost::lock_guard<boost::recursive_mutex> self_lock(mtx,boost::adopt_lock /*std::adopt_lock*/);
 			boost::lock_guard<boost::recursive_mutex> other_lock(rhs.mtx,boost::adopt_lock /*std::adopt_lock*/);
-			solverref.reset(new FMTsolverlogger(*rhs.solverref));
+			#if defined FMTWITHOSI
+				solverref.reset(new FMTsolverlogger(*rhs.solverref));
+			#endif
 			filepath = rhs.filepath;
 			settofile(filepath);
 			flushstream = rhs.flushstream;
