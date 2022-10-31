@@ -11,7 +11,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 #ifdef FMTWITHOSI
 	#include <CoinMessageHandler.hpp>
-#endif
+
 
 /// Namespace for the log management, provides different log handlers.
 namespace Logging
@@ -89,4 +89,5 @@ namespace Logging
 			CoinMessageHandler * clone() const override;
 		};
 }
+#endif
 #endif

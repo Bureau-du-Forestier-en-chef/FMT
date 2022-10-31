@@ -12,14 +12,13 @@
 	#include "FMTconstraint.hpp"
 	#include "FMTbounds.hpp"
 	#include <boost/algorithm/string.hpp>
-#endif
 
-bool keepandupdate(Core::FMTspec& spec,const int& updateto)
-	{
+bool keepandupdate(Core::FMTspec& spec, const int& updateto)
+{
 	if (spec.emptyperiod())
-		{
+	{
 		return true;
-		}
+	}
 	const int lower_length = spec.getperiodlowerbound();
 	const int upper_length = spec.getperiodupperbound();
 	if (!(upper_length <= updateto))//Keep the constraint
@@ -34,7 +33,10 @@ bool keepandupdate(Core::FMTspec& spec,const int& updateto)
 		return true;
 	}
 	return false;
-	}
+}
+#endif
+
+
 
 
 int main(int argc, char *argv[])

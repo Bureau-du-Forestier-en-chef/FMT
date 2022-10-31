@@ -18,13 +18,13 @@ int main(int argc, char* argv[])
 
 	if (Version::FMTversion().hasfeature("OSI"))
 	{
-		const std::string vals = argv[1];
+		/*const std::string vals = argv[1];
 		std::vector<std::string>results;
-		boost::split(results, vals, boost::is_any_of("|"));
-		const std::string primarylocation = results.at(0);
-		const std::string scenario = results.at(1);
-		const int length = std::stoi(argv[2]);
-		const double objectivevalue = std::stod(argv[3]);
+		boost::split(results, vals, boost::is_any_of("|"));*/
+		const std::string primarylocation = "T:/Donnees/Usagers/FORBR3/de_prelo3/BT2022090613_COS_bfecoptFMT_PC9348_U02666/PC_9348_U02666_4_Vg2_2023_vRP1f.pri";//results.at(0);
+		const std::string scenario = "13_Sc5a_Determin_avsp_BFECopt";//results.at(1);
+		const int length = 30;//std::stoi(argv[2]);
+		const double objectivevalue = 1.34626466e+06;//std::stod(argv[3]);
 		Parser::FMTmodelparser modelparser;
 		std::vector<Exception::FMTexc>errors;
 		errors.push_back(Exception::FMTexc::FMTmissingyield);

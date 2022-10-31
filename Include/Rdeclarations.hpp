@@ -25,8 +25,10 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTsesmodel.hpp"
 #include "FMTsrmodel.hpp"
 #include "FMTnssmodel.hpp"
-#include "FMTlpsolver.hpp"
-#include "FMTlpmodel.hpp"
+#if defined FMTWITHOSI
+	#include "FMTlpsolver.hpp"
+	#include "FMTlpmodel.hpp"
+#endif
 #include "FMTsamodel.hpp"
 #include "FMToperatingarea.hpp"
 #include "FMToperatingareascheduler.hpp"
@@ -59,7 +61,9 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTtaskhandler.hpp"
 #include "FMTreplanningtask.hpp"
 #include "FMTplanningtask.hpp"
-#include "FMTopareaschedulertask.hpp"
+#if defined FMTWITHOSI
+	#include "FMTopareaschedulertask.hpp"
+#endif
 
 #define RCPP_DECLAREVECTOR(CLASS)namespace Rcpp{\
 template <> std::vector<CLASS> as(SEXP obj);\
@@ -112,9 +116,8 @@ RCPP_DECLAREVECTOR(Parallel::FMTtask);//For vector
 RCPP_DECLAREVECTOR(Parallel::FMTtaskhandler);//For vector
 RCPP_DECLAREVECTOR(Parallel::FMTreplanningtask);//For vector
 RCPP_DECLAREVECTOR(Parallel::FMTplanningtask);//For vector
-RCPP_DECLAREVECTOR(Parallel::FMTopareaschedulertask);//For vector
-
 #ifdef FMTWITHOSI
+	RCPP_DECLAREVECTOR(Parallel::FMTopareaschedulertask);//For vector
 	RCPP_DECLAREVECTOR(Models::FMTlpsolver);//For vector
 	RCPP_DECLAREVECTOR(Models::FMTsrmodel);//For vector
 	RCPP_DECLAREVECTOR(Models::FMTlpmodel);//For vector

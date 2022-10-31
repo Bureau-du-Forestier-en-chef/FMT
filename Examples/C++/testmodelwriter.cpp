@@ -6,6 +6,7 @@
 
 int main(int argc, char* argv[])
 {
+#ifdef FMTWITHOSI
 	const std::string primarylocation = std::string(argv[1]);
 	Parser::FMTmodelparser modelparser;
 	modelparser.setdefaultexceptionhandler();
@@ -45,4 +46,6 @@ int main(int argc, char* argv[])
 		Exception::FMTfreeexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed, "Wrong value",
 			"FMTsetsolution", __LINE__, primarylocation);
 	}
+#endif
+	return 0;
 }

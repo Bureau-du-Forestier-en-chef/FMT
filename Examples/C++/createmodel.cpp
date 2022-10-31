@@ -1,3 +1,4 @@
+#ifdef FMTWITHOSI
 #include "FMTmodel.hpp"
 #include "FMTtheme.hpp"
 #include "FMTmask.hpp"
@@ -18,10 +19,12 @@
 #include <memory>
 #include <vector>
 #include <string>
+#endif
 
 
 int main()
 {
+#ifdef FMTWITHOSI
 	Logging::FMTlogger().logstamp();
 
 	//Create Themes
@@ -150,4 +153,7 @@ int main()
 	//Solve model
 	model.doplanning(true);
 	return 0;
+#endif
 }
+
+

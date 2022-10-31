@@ -1,3 +1,4 @@
+#ifdef FMTWITHOSI
 #include <vector>
 #include "FMTsesmodel.hpp"
 #include "FMTmodelparser.hpp"
@@ -8,9 +9,11 @@
 #include "FMTspatialschedule.hpp"
 #include "FMToutput.hpp"
 #include "FMTyieldmodel.hpp"
+#endif
 
 int main()
 {
+#ifdef FMTWITHOSI
 	Logging::FMTlogger().logstamp();
 	const std::string modellocation = "../../../../Examples/Models/TWD_land/";
 	const std::string	primarylocation = modellocation + "TWD_land.pri";
@@ -64,6 +67,7 @@ int main()
 			Logging::FMTlogger() << "output value " << output.getname() << " " << simulationmodel.getoutput(output, period, Core::FMToutputlevel::totalonly).at("Total") << " at period " << period << "\n";
 		}
 	}
+#endif
 	return 0;
 }
 

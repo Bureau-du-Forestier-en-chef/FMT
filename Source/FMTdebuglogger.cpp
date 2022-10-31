@@ -6,7 +6,9 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
 #include "FMTdebuglogger.hpp"
-#include "FMTsolverlogger.hpp"
+#ifdef FMTWITHOSI
+	#include "FMTsolverlogger.hpp"
+#endif
 
 namespace Logging
 {
