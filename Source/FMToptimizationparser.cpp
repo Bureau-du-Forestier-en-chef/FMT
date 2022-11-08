@@ -980,12 +980,17 @@ namespace Parser
 			optimizestream.open(location);
 			if (tryopening(optimizestream, location))
 			{
-				optimizestream << "*OBJECTIVE " << "\n";
-				optimizestream << std::string(constraints.at(0));
-				if (constraints.size() - 1 > 0)
+				size_t objid = 0;
+				if (constraints.at(0).isobjective())
+				{
+					optimizestream << "*OBJECTIVE " << "\n";
+					optimizestream << std::string(constraints.at(0));
+					++objid;
+				}
+				if (constraints.size() - objid > 0)
 				{
 					optimizestream << "*CONSTRAINTS " << "\n";
-					for (size_t cid = 1; cid < constraints.size(); ++cid)
+					for (size_t cid = objid; cid < constraints.size(); ++cid)
 					{
 						optimizestream << std::string(constraints.at(cid));
 					}

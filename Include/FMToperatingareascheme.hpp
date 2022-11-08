@@ -87,6 +87,9 @@ namespace Heuristics
 		// DocString: FMToperatingareascheme::startingperiod
 		///The starting period is the period from where the heuristic needs to fin a schedule (in case of model update).
 		size_t startingperiod;
+		// DocString: FMToperatingareascheme::threshold
+		///Area threshold the proportion of area harvested need to be at least this number
+		double threshold;
 		// DocString: FMToperatingareascheme::getarea
 		/**
 			Get the area of the operating area base on a (primalsolution) 
@@ -106,8 +109,9 @@ namespace Heuristics
 			00011000011000
 			11000011000011
 			This fonction generate all potential schemes of the operating area if the "harvest stade" exist within the matrix.
+			If full enumeration is set to true then it will enumerate all possible patterns....
 		*/
-		std::vector<std::vector<std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>>> generateschemes(const std::vector<std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>>& verticies);
+		std::vector<std::vector<std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>>> generateschemes(const std::vector<std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>>& verticies,bool fullenumeration=false);
 		// DocString: FMToperatingareascheme::schemestoLP
 		/**
 		Using the generated (schemes) from the generateschemes functions, and all periodic verticies (periodics),
@@ -133,6 +137,11 @@ namespace Heuristics
 		The more activity we have on a row the more the schemes with this row is the one we need to choose.
 		*/
 		double getrowsactivitysum(const std::vector<int>& rows, const double* dualsolution) const;
+		// DocString: FMToperatingareascheme::isthresholdactivityrows
+		/**
+		Return true if the rows activities are above threshold
+		*/
+		bool isthresholdactivityrows(const std::vector<int>& rows, const double* dualsolution) const;
 		// DocString: FMToperatingareascheme::fillpattern
 		/**
 		We use this function to generate the final yield solution using a (pattern) like : 110000,
@@ -145,6 +154,12 @@ namespace Heuristics
 		If no activity is detected in the opened OA then close it with no cost to the LP problem.
 		*/
 		void closenoactivity(std::vector<double>& filleduppattern, const size_t& selected, const double* dualsolution) const;
+		// DocString: FMToperatingareascheme::getenumeration
+		/**
+		Enumerate all combinaison of inputs
+		*/
+		void getenumeration(std::vector<std::vector<size_t>>& returns, const std::vector<size_t>& arr, std::vector<size_t> data,
+							const size_t& start, const size_t& end, const size_t& index, const size_t& r) const;
 		public:
 			// DocString: FMToperatingareascheme::empty
 			/**
@@ -171,6 +186,11 @@ namespace Heuristics
 			Looking at the (dualsolution) we summarize the value of all constraints for all potential schemes.
 			*/
 			double getactivitysum(const double* dualsolution) const;
+			// DocString: FMToperatingareascheme::getthresholdactivity
+			/**
+			Will return true if every constraint has above threshold
+			*/
+			bool isthresholdactivity(const double* dualsolution) const;
 			// DocString: FMToperatingareascheme::getcommonbinairies
 			/**
 			Using the greenup data member of each operating area (neighbor and this) we get the map<>
@@ -278,7 +298,7 @@ namespace Heuristics
 			Using the constraints of a given (schemeid) push it's constraints index into (targets) and push into (bounds) (-inf and _area)
 			and for all other constraints from the other schemes push them into (targets) and push into (bounds) (0 and 0)
 			*/
-			bool unbounddualscheme(std::vector<int>& targets, std::vector<double>& bounds, const size_t& schemeid) const; 
+			bool unbounddualscheme(const double* rowactivities, std::vector<int>& targets, std::vector<double>& bounds, const size_t& schemeid, bool looseset=true) const;
 			// DocString: FMToperatingareascheme::getprimalsolution
 			/**
 			Gets the yield solution of the primal problem using (primalsolution) it sums up all binary variables
@@ -291,6 +311,11 @@ namespace Heuristics
 			scheme solution into a vector of double.
 			*/
 			std::vector<double> getdualsolution(const double* upperbounds, const double* dualsolution) const;
+			// DocString: FMToperatingareascheme::getduallowerbounds
+			/**
+			Gets the lowerbounds of the solution for bounding the minimal harvested area.
+			*/
+			std::vector<double> getduallowerbounds(const double* lowerbounds,const double* upperbounds) const;
 			// DocString: FMToperatingareascheme::setconstraints
 			/**
 			Main function setting up constraints and variables using a (matrixbuild) and a primal solution.
@@ -306,9 +331,10 @@ namespace Heuristics
 			/**
 			Main FMToperatingareascheme constructor targeting the user. Before synchronizing everything to the solverinterface,
 			the user has to provide to the heuristics all the green-up, returntime etc.... for each operating area.
+			The minimalarearatio is the minimal ratio needed to open the COS...
 			*/
 			FMToperatingareascheme(const FMToperatingarea& oparea,const size_t& lopeningtime, const size_t& lreturntime,
-				const size_t& lrepetition, const size_t& lgreenup,const size_t& lstartingperiod);
+				const size_t& lrepetition, const size_t& lgreenup,const size_t& lstartingperiod,double minimalarearatio=0.0);
 			// DocString: FMToperatingareascheme()
 			/**
 			Default FMToperatingareascheme constructor
@@ -324,6 +350,11 @@ namespace Heuristics
 			FMToperatingareascheme copy assignment
 			*/
 			FMToperatingareascheme& operator = (const FMToperatingareascheme& rhs)=default;
+			// DocString: FMToperatingareascheme::fillboundsnvariables
+			/**
+			For each scheme consttraints go take the constraints bounds of the actual model.
+			*/
+			void fillboundsnvariables(const double* lowerb, const double* upperb, std::vector<int>& constraintstargets,std::vector<double>&bounds) const;
 			// DocString: FMToperatingareascheme::operator==
 			/**
 			Comparison operator of FMToperatingareascheme

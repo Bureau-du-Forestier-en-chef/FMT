@@ -42,6 +42,7 @@ namespace Core
 {
 	class FMToutputnode;
 	class FMTtimeyieldhandler;
+	class FMToutput;
 }
 
 
@@ -126,7 +127,7 @@ namespace Heuristics
 		simply set the best known schedule to a set of operating areas (tobound).
 		If schemetoskip is not empty, for each operatingareascheme at the same index in tobound, it will try to use another schemeid.(schemestoskip) need to be the same size as (tobound) or be empty.
 		*/
-		size_t setbounds(const std::vector<std::vector<FMToperatingareascheme>::const_iterator>& tobound,const std::vector<int>& schemestoskip=std::vector<int>());
+		size_t setbounds(const std::vector<std::vector<FMToperatingareascheme>::const_iterator>& tobound,const std::vector<int>& schemestoskip=std::vector<int>(), bool keeploose=true);
 		// DocString: FMToperatingareascheduler::selectscheme
 		/**
 		Select a scheme in potentialscheme that is different from the schemeid to skip
@@ -137,7 +138,8 @@ namespace Heuristics
 		Fill targeteditems and bounds according to the scheme id. If boundall == true, no scheme id is needed.
 		If boundall == false, the default schemeid is 0, the user must pass the good one.
 		*/
-		bool getbounds(const std::vector<FMToperatingareascheme>::const_iterator& operatingareaiterator,std::vector<int>& targeteditems,std::vector<double>& bounds, const bool& boundall, const size_t& schemeid=0) const;
+		bool getbounds(const std::vector<FMToperatingareascheme>::const_iterator& operatingareaiterator,
+			std::vector<int>& targeteditems,std::vector<double>& bounds, const bool& boundall, const size_t& schemeid=0,bool keeploose=true) const;
 		// DocString: FMToperatingareascheduler::unboundall
 		/**
 		This function is like a reset button, it will unselect all schedules already selected for each management units
@@ -231,6 +233,12 @@ namespace Heuristics
 		after presolving the model. (basethemes) are the themes of the original model. 
 		*/
 		std::vector<Core::FMTtimeyieldhandler> getsolution(	const std::string& yldname) const;
+		// DocString: FMToperatingareascheduler::getlevelsolution
+		/**
+		Gets the lower bounds of the solution for each operating area get 2 outputs:
+		the first one is the level and the second one is the varaible outputs that needs to be bound to.
+		*/
+		std::vector<Core::FMToutput>getlevelsolution(const std::string& outputname,const std::string& aggregate,int outputid) const;
 		// DocString: FMToperatingareascheduler(const std::vector<FMToperatingarea>,const Graph::FMTgraph,const Models::FMTmodel,const Core::FMToutputnode,std::shared_ptr<OsiSolverInterface>,const Models::FMTsolverinterface,size_t lseed,double proportionofset,bool userandomness,bool copysolver)
 		/**
 		Main constructor used to initialize a FMToperatingareaheuristic, the constructor needs
