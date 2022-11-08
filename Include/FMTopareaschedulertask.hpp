@@ -19,6 +19,8 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 namespace Core
 {
 	class FMToutputnode;
+	class FMToutput;
+	class FMTconstraint;
 }
 
 
@@ -90,6 +92,11 @@ namespace Parallel
 		Get the time at which the solving should stop.
 		*/
 		std::chrono::time_point<std::chrono::high_resolution_clock>getstoppoint(const double& timegap) const;
+		// DocString: FMTopareaschedulertask::getconstraintssolution
+		/**
+		Get the outputs and constraints solution of the best scheduler and fill constraints and outputs.
+		*/
+		void getconstraintssolution(std::vector<Core::FMToutput>& outputs,std::vector<Core::FMTconstraint>& constraints) const;
 		// DocString: FMTopareaschedulertask::writefinalmodel
 		/**
 		Using the solution of the best heuristic just rebuild the base model without anyconstraint and apply the solution found.

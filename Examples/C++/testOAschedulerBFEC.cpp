@@ -27,8 +27,8 @@ std::vector<Heuristics::FMToperatingareascheme> ObtenirOperatingArea(   const st
             if (OA != "NA")
             {
                 const int OPT = 1;
-                const int RET = 4;
-                const int REP = 6;
+                const int RET = 3;
+                const int REP = 10;
                 const float NPE = 0;
                 const float GUP = 0;
                 std::string mask;
@@ -120,15 +120,16 @@ int main(int argc, char *argv[])
     {   
         #ifdef FMTWITHOSI
             Logging::FMTlogger().logstamp();
-            const std::string primarylocation = std::string(argv[1]);
-            const std::vector<std::string>scenarios(1, std::string(argv[2]));
+            const std::string primarylocation =  std::string(argv[1]);
+            const std::vector<std::string>scenarios(1, std::string(argv[2]));//);
             const std::string fichierShp = std::string(argv[3]);
             Parser::FMTmodelparser modelparser;
             modelparser.setdefaultexceptionhandler();
+            modelparser.settasklogger();
             const std::vector<Models::FMTmodel> models = modelparser.readproject(primarylocation, scenarios);
             Models::FMTmodel model = models.at(0);
             Models::FMTlpmodel optimizationmodel(model, Models::FMTsolverinterface::MOSEK);
-            optimizationmodel.setparameter(Models::FMTintmodelparameters::LENGTH,5);
+            optimizationmodel.setparameter(Models::FMTintmodelparameters::LENGTH,10);
 	        optimizationmodel.setparameter(Models::FMTboolmodelparameters::STRICTLY_POSITIVE, true);
 	        optimizationmodel.setparameter(Models::FMTintmodelparameters::PRESOLVE_ITERATIONS, 1);
             optimizationmodel.setparameter(Models::FMTboolmodelparameters::POSTSOLVE, true);
@@ -138,12 +139,16 @@ int main(int argc, char *argv[])
             const Core::FMToutputnode nodeofoutput =  createBFECoptaggregate(optimizationmodel);
             std::vector<Heuristics::FMToperatingareascheme> opeareas = ObtenirOperatingArea(fichierShp,optimizationmodel.getthemes(),14, startingperiod, "AGE", "SUPERFICIE", "STANLOCK");
             std::vector<Heuristics::FMToperatingareascheduler> opareaheuristics = optimizationmodel.getoperatingareaschedulerheuristics(opeareas, nodeofoutput);
+            //opareaheuristics[0].setproportionofset(0.25);
 			Heuristics::FMTlpheuristicmthandler handler = Heuristics::FMTlpheuristicmthandler(opareaheuristics, initialobjectivevalue);
 			size_t bestpos = handler.initialsolve();
-			opareaheuristics[bestpos].setproportionofset(0.00000001);
             bestpos = handler.greedysolve(5,10000000);
 			const Heuristics::FMToperatingareascheduler bestsolve = opareaheuristics[bestpos];
             const std::vector<Core::FMTtimeyieldhandler> ythandler = bestsolve.getsolution("YOUVERT");
+            /*for (const auto& out : bestsolve.getlevelsolution("COS", "BFECOPTtata", model.getoutputs().size()))
+                {
+                std::cout << std::string(out) << "\n";
+                }*/
             //write solution
             Core::FMTyields yields;
             for (const Core::FMTtimeyieldhandler& tyld : ythandler)

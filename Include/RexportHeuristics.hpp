@@ -74,7 +74,7 @@ void exportHeuristics()
 	Rcpp::class_<Heuristics::FMToperatingareascheme>("FMToperatingareascheme", "@DocString(FMToperatingareascheme)")
 		.derives<Heuristics::FMToperatingarea>("FMToperatingarea")
 		.constructor("@DocString(FMToperatingareascheme())")
-		.constructor<Heuristics::FMToperatingarea,size_t,size_t,size_t,size_t,size_t>("@DocString(FMToperatingareascheme(const Heuristics::FMToperatingarea&,const size_t&,const size_t&,const size_t&, const size_t&, const size_t&))");
+		.constructor<Heuristics::FMToperatingarea,size_t,size_t,size_t,size_t,size_t,double>("@DocString(FMToperatingareascheme(const Heuristics::FMToperatingarea&,const size_t&,const size_t&,const size_t&, const size_t&, const size_t&))");
 
 	Rcpp::class_<Heuristics::FMTlpheuristic>("FMTlpheuristic", "@DocString(FMTlpheuristic)")
 		.derives<Core::FMTobject>("FMTobject")

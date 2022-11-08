@@ -19,7 +19,10 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTmodelparser.hpp"
 #include <boost/algorithm/string/predicate.hpp>
 #include <boost/filesystem.hpp>
-
+#include "FMToutput.hpp"
+#include "FMTconstraint.hpp"
+#include "FMToutputparser.hpp"
+#include "FMToptimizationparser.hpp"
 
 namespace Parallel
 {
@@ -209,6 +212,27 @@ namespace Parallel
 
 	}
 
+	void FMTopareaschedulertask::getconstraintssolution(std::vector<Core::FMToutput>& outputs, std::vector<Core::FMTconstraint>& constraints) const
+		{
+		try {
+			//output levels...
+			const std::string bfecoptaggregates("~BFECOPTOUTPUTYOUVERT~");
+			const int lastid = static_cast<int>(basemodel->getoutputs().size());
+			outputs = bestscheduler->getlevelsolution("OPunit", bfecoptaggregates, lastid);
+			for (size_t oid = 0 ; oid < outputs.size();oid+=2)
+				{
+				Core::FMToutput constraintoutput(outputs.at(oid));
+				constraintoutput -= outputs.at(oid + 1);
+				Core::FMTconstraint newconstraint(Core::FMTconstrainttype::FMTstandard, constraintoutput);
+				newconstraint.setlength(1, basemodel->getparameter(Models::FMTintmodelparameters::LENGTH));
+				constraints.push_back(newconstraint);
+				}
+		}catch (...)
+			{
+			_exhandler->raisefromcatch("", "FMTopareaschedulertask::getconstraintssolution", __LINE__, __FILE__);
+			}
+		}
+
 
 	void FMTopareaschedulertask::writesolution() const
 	{
@@ -226,6 +250,16 @@ namespace Parallel
 			Parser::FMTyieldparser yldparser;
 			const std::string solutionname = solutionlocation +"_"+ std::to_string(bestobjvalue) + "_" + relativevalue + ".yld";
 			yldparser.write(yields, solutionname);
+			std::vector<Core::FMTconstraint>constraints;
+			std::vector<Core::FMToutput>outputs;
+			getconstraintssolution(outputs, constraints);
+			const std::string outputname = solutionlocation + "_" + std::to_string(bestobjvalue) + "_" + relativevalue + ".out";
+			const std::string constraintname = solutionlocation + "_" + std::to_string(bestobjvalue) + "_" + relativevalue + ".opt";
+			Parser::FMToutputparser outparser;
+			outparser.write(outputs, outputname);
+			Parser::FMToptimizationparser optparser;
+			optparser.write(constraints, constraintname);
+
 		}catch (...)
 		{
 			_exhandler->raisefromcatch("", "FMTopareaschedulertask::writesolution", __LINE__, __FILE__);
