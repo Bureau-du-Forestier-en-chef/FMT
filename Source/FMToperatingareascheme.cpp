@@ -533,7 +533,7 @@ std::vector<double> FMToperatingareascheme::getduallowerbounds(const double* low
 		size_t periodid = 0;
 		for (const int& constraint : openingconstraints.at(solutionid))
 			{
-			filledpattern[schemesperiods.at(solutionid).at(periodid)-1] = *(lowerbounds+ constraint);
+			filledpattern[schemesperiods.at(solutionid).at(periodid)-1] = std::max(*(lowerbounds + constraint),0.0);
 			++periodid;
 			}
 	}
