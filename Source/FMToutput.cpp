@@ -99,7 +99,7 @@ FMToutput& FMToutput::operator -=(const FMToutput& rhs)
 	try{
 	if (!this->name.empty())
 		{
-		this->name = this->name + "-" + rhs.name;
+		this->name = this->name + " - " + rhs.name;
 		this->description = this->description + "-" + rhs.description;
 		this->group = this->group + "-" + rhs.group;
 	}else {
