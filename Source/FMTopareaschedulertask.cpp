@@ -198,6 +198,11 @@ namespace Parallel
 			}
 			newyields.update();
 			modelcopy.setyields(newyields);
+			std::vector<Core::FMTconstraint>constraints=basemodel->getconstraints();
+			std::vector<Core::FMToutput>outputs=basemodel->getoutputs();
+			getconstraintssolution(outputs, constraints);
+			modelcopy.setconstraints(constraints);
+			modelcopy.setoutputs(outputs);
 			Models::FMTlpsolver* solver = modelcopy.getsolverptr();
 			solver->setColSolution(thesolution);
 			Parser::FMTmodelparser modelparser;
@@ -218,13 +223,18 @@ namespace Parallel
 			//output levels...
 			const std::string bfecoptaggregates("~BFECOPTOUTPUTYOUVERT~");
 			const int lastid = static_cast<int>(basemodel->getoutputs().size());
-			outputs = bestscheduler->getlevelsolution("OPunit", bfecoptaggregates, lastid);
-			for (size_t oid = 0 ; oid < outputs.size();oid+=2)
+			size_t outoriginalsize = outputs.size();
+			for (const Core::FMToutput& output : bestscheduler->getlevelsolution("OPunit", bfecoptaggregates, lastid))
+			{
+				outputs.push_back(output);
+			}
+			for (size_t oid = outoriginalsize; oid < outputs.size();oid+=2)
 				{
 				Core::FMToutput constraintoutput(outputs.at(oid));
 				constraintoutput -= outputs.at(oid + 1);
 				Core::FMTconstraint newconstraint(Core::FMTconstrainttype::FMTstandard, constraintoutput);
 				newconstraint.setlength(1, basemodel->getparameter(Models::FMTintmodelparameters::LENGTH));
+				newconstraint.setrhs(-std::numeric_limits<double>::max(), 0.0);
 				constraints.push_back(newconstraint);
 				}
 		}catch (...)

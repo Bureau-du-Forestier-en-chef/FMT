@@ -27,7 +27,7 @@ std::vector<Heuristics::FMToperatingareascheme> ObtenirOperatingArea(   const st
             if (OA != "NA")
             {
                 const int OPT = 1;
-                const int RET = 4;//4;
+                const int RET = 2;//4;
                 const int REP = 6;
                 const float NPE = 0;
                 const float GUP = 0;
@@ -50,7 +50,7 @@ std::vector<Heuristics::FMToperatingareascheme> ObtenirOperatingArea(   const st
                     RET,
                     REP,
                     GUP,
-                    startingperiod));
+                    startingperiod,0.05));
 
                 if (NPE > 0 || GUP > 0)
                 {
@@ -121,9 +121,11 @@ int main(int argc, char *argv[])
        
         #ifdef FMTWITHOSI
     Logging::FMTlogger().logstamp();
-        const std::string primarylocation = std::string(argv[1]);
+            const std::string primarylocation = std::string(argv[1]);
             const std::vector<std::string>scenarios(1,std::string(argv[2]));
             const std::string fichierShp = std::string(argv[3]);
+            const std::string out("../../tests/testOAschedulertask/" + scenarios.at(0));
+            //const std::string out("D:/FMT/build/release/tests/testOAschedulertask/" + scenarios.at(0));
             Parser::FMTmodelparser modelparser;
             modelparser.setdefaultexceptionhandler();
             const std::vector<Models::FMTmodel> models = modelparser.readproject(primarylocation, scenarios);
@@ -134,7 +136,8 @@ int main(int argc, char *argv[])
             const int startingperiod = optimizationmodel.getconstraints().at(0).getperiodlowerbound();
             const Core::FMToutputnode nodeofoutput =  createBFECoptaggregate(optimizationmodel);
             const std::vector<Heuristics::FMToperatingareascheme> opeareas = ObtenirOperatingArea(fichierShp,optimizationmodel.getthemes(),14, startingperiod, "AGE", "SUPERFICIE", "STANLOCK");
-			std::unique_ptr<Parallel::FMTtask> maintaskptr(new Parallel::FMTopareaschedulertask(optimizationmodel, opeareas, nodeofoutput,"../../tests/testOAschedulertask/"+scenarios.at(0), "YOUVERT",10000,120));
+			
+            std::unique_ptr<Parallel::FMTtask> maintaskptr(new Parallel::FMTopareaschedulertask(optimizationmodel, opeareas, nodeofoutput,out, "YOUVERT",10,120));
 			Parallel::FMTtaskhandler handler(maintaskptr,4);
 			handler.settasklogger();
 			handler.conccurentrun();
