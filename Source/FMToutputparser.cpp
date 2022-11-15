@@ -15,11 +15,11 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 namespace Parser
 {
-	const std::regex FMToutputparser::rxoutput=std::regex("(\\*OUTPUT|\\*LEVEL)(([\\s\\t]*)([^\\s\\t\\(]*)([\\s\\t]*)(\\()([^\\s\\t\\)]*)(\\))([\\s\\t]*)(.+))|((\\*OUTPUT|\\*LEVEL)([\\s\\t]*)([^\\s\\t]*)([\\s\\t]*)(.+))", std::regex_constants::ECMAScript | std::regex_constants::icase);
-	const std::regex FMToutputparser::rxsource = std::regex("(\\*SOURCE)([\\s\\t]*)(.+)", std::regex_constants::ECMAScript | std::regex_constants::icase);
-	const std::regex FMToutputparser::rxtar = std::regex("(([\\s\\t]*)(_INVENT)([\\s\\t]*)(\\()([\\s\\t]*)([^\\s\\t]*)([\\s\\t]*)(\\))([\\s\\t]*)((_AREA)|([^\\s\\t]*)))|(([\\s\\t]*)((_INVENT)|(_INVLOCK))([\\s\\t]*)((_AREA)|([^\\s\\t]*)))|(([\\s\\t]*)([^\\s\\t]*)([\\s\\t]*)((_AREA)|([^\\s\\t]*)))", std::regex_constants::ECMAScript | std::regex_constants::icase);
-	const std::regex FMToutputparser::rxgrp = std::regex("(\\*GROUP)([\\s\\t]*)(.+)", std::regex_constants::ECMAScript | std::regex_constants::icase);
-	const std::regex FMToutputparser::rxoutputconstant = std::regex("([^\\[]*)(\\[[\\s\\t]*)(\\-?[0-9])([\\s\\t]*\\])", std::regex_constants::ECMAScript | std::regex_constants::icase);
+	const boost::regex FMToutputparser::rxoutput=boost::regex("(\\*OUTPUT|\\*LEVEL)(([\\s\\t]*)([^\\s\\t\\(]*)([\\s\\t]*)(\\()([^\\s\\t\\)]*)(\\))([\\s\\t]*)(.+))|((\\*OUTPUT|\\*LEVEL)([\\s\\t]*)([^\\s\\t]*)([\\s\\t]*)(.+))", boost::regex_constants::ECMAScript | boost::regex_constants::icase);
+	const boost::regex FMToutputparser::rxsource = boost::regex("(\\*SOURCE)([\\s\\t]*)(.+)", boost::regex_constants::ECMAScript | boost::regex_constants::icase);
+	const boost::regex FMToutputparser::rxtar = boost::regex("(([\\s\\t]*)(_INVENT)([\\s\\t]*)(\\()([\\s\\t]*)([^\\s\\t]*)([\\s\\t]*)(\\))([\\s\\t]*)((_AREA)|([^\\s\\t]*)))|(([\\s\\t]*)((_INVENT)|(_INVLOCK))([\\s\\t]*)((_AREA)|([^\\s\\t]*)))|(([\\s\\t]*)([^\\s\\t]*)([\\s\\t]*)((_AREA)|([^\\s\\t]*)))", boost::regex_constants::ECMAScript | boost::regex_constants::icase);
+	const boost::regex FMToutputparser::rxgrp = boost::regex("(\\*GROUP)([\\s\\t]*)(.+)", boost::regex_constants::ECMAScript | boost::regex_constants::icase);
+	const boost::regex FMToutputparser::rxoutputconstant = boost::regex("([^\\[]*)(\\[[\\s\\t]*)(\\-?[0-9])([\\s\\t]*\\])", boost::regex_constants::ECMAScript | boost::regex_constants::icase);
 
 
        FMToutputparser::FMToutputparser():FMTparser()
@@ -156,9 +156,9 @@ namespace Parser
 							std::string line = getcleanlinewfor(outputstream, themes, constants);
 							if (!line.empty())
 							{
-								std::smatch kmatch;
+								boost::smatch kmatch;
 								const std::string outline = line + " ";
-								if (std::regex_search(outline, kmatch, rxoutput))
+								if (boost::regex_search(outline, kmatch, rxoutput))
 								{
 									if (!sources.empty() || (processing_level && !insource))
 									{
@@ -224,14 +224,14 @@ namespace Parser
 									boost::trim_right(description);
 									insource = false;
 								}
-								if (std::regex_search(line, kmatch, rxgrp))
+								if (boost::regex_search(line, kmatch, rxgrp))
 								{
 									std::string groupname(kmatch[3]);
 									boost::trim(groupname);
 									lastgroup = groupname;
 									insource = false;
 								}
-								else if (std::regex_search(line, kmatch, rxsource) || insource)
+								else if (boost::regex_search(line, kmatch, rxsource) || insource)
 								{
 									std::string rest;
 									if (insource && line.find("*SOURCE") == std::string::npos)
@@ -438,12 +438,12 @@ namespace Parser
 										}
 										else {
 											std::vector<std::string>values = spliter(strsrc, FMTparser::rxseparator);
-											std::smatch constantmatch;
+											boost::smatch constantmatch;
 											if (values.size() == 1)
 											{
 												//need to use get equation to simplify output!!!
 												std::vector<Core::FMToutput>::const_iterator it = std::find_if(outputs->begin(), outputs->end(), Core::FMToutputcomparator(strsrc));
-												if (it != outputs->end()||std::regex_search(strsrc, constantmatch, rxoutputconstant))
+												if (it != outputs->end()||boost::regex_search(strsrc, constantmatch, rxoutputconstant))
 												{
 													Core::FMToutput targetoutput;
 													if (it==outputs->end())
@@ -603,7 +603,7 @@ namespace Parser
 												}
 												if (isvalid(rest))
 												{
-													if (std::regex_search(rest, kmatch, rxtar))
+													if (boost::regex_search(rest, kmatch, rxtar))
 													{
 														if (!std::string(kmatch[25]).empty())
 														{

@@ -9,7 +9,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #define FMTactionparser_H_INCLUDED
 #include "FMTparser.hpp"
 #include "FMTutility.hpp"
-#include <regex>
+#include <boost/regex.hpp>
 #include <vector>
 #include <map>
 
@@ -34,10 +34,10 @@ class FMTEXPORT FMTactionparser : public FMTparser
     private:
 		// DocString: FMTactionparser::rxsection
 		///This the main regex used to catch all the keywords of the action section.
-        const static std::regex rxsection;
+        const static boost::regex rxsection;
 		// DocString: FMTactionparser::rxoperator
 		///This regex catches the operators used in the action section.
-		const static std::regex rxoperator;
+		const static boost::regex rxoperator;
 		// DocString: FMTactionparser::sameactionas
 		/**
 		Using a string containing potential action names (all_set) and a vector of (actions) this function

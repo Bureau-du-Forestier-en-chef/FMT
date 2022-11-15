@@ -35,7 +35,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 namespace Parser{
 
-const std::regex FMTareaparser::rxcleanarea = std::regex("^((\\*A[A]*)([^|]*)(_lock)([^0-9]*)([0-9]*))|((\\*A[A]*)([^|]*)([|])([^|]*)([|])([^0-9]*)(.+))|((\\*A[A]*)(([^|]*)([|])([^|]*)([|])))|(\\*A[A]*)(.+)", std::regex_constants::ECMAScript | std::regex_constants::icase);
+const boost::regex FMTareaparser::rxcleanarea = boost::regex("^((\\*A[A]*)([^|]*)(_lock)([^0-9]*)([0-9]*))|((\\*A[A]*)([^|]*)([|])([^|]*)([|])([^0-9]*)(.+))|((\\*A[A]*)(([^|]*)([|])([^|]*)([|])))|(\\*A[A]*)(.+)", boost::regex_constants::ECMAScript | boost::regex_constants::icase);
 
 #ifdef FMTWITHGDAL
 
@@ -1769,8 +1769,8 @@ const std::regex FMTareaparser::rxcleanarea = std::regex("^((\\*A[A]*)([^|]*)(_l
 											break;
 										}
 									}
-									std::smatch kmatch;
-									if (std::regex_search(line, kmatch, FMTareaparser::rxcleanarea))
+									boost::smatch kmatch;
+									if (boost::regex_search(line, kmatch, FMTareaparser::rxcleanarea))
 									{
 										std::string masknage = std::string(kmatch[3]) + std::string(kmatch[9]) + std::string(kmatch[18]) + std::string(kmatch[23]);
 										std::string mask;

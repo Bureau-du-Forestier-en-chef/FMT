@@ -11,7 +11,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTparser.hpp"
 #include "FMTutility.hpp"
 #include <iterator>
-#include <regex>
+#include <boost/regex.hpp>
 #include <string>
 #include <vector>
 #include <utility>
@@ -41,19 +41,19 @@ class FMTEXPORT FMTyieldparser : public FMTparser
      private:
 		// DocString: FMTyieldparser::rxyieldtype
 		///Regex to capture the yield type.
-		const static std::regex rxyieldtype;
+		const static boost::regex rxyieldtype;
 		// DocString: FMTyieldparser::rxcomplex
 		///Regex to capture the complex yields.
-		const static std::regex rxcomplex;
+		const static boost::regex rxcomplex;
 		// DocString: FMTyieldparser::rxeqs
 		///Regex to capture complex yields equations.
-		const static std::regex rxeqs;
+		const static boost::regex rxeqs;
 		// DocString: FMTyieldparser::rxdiscount
 		///regex to capturediscount factors.
-		const static std::regex rxdiscount;
+		const static boost::regex rxdiscount;
 		// DocString: FMTyieldparser::rxpredictor
 		///regex to capture _pred keyword.
-		const static std::regex rxpredictor;
+		const static boost::regex rxpredictor;
 		// DocString: FMTyieldparser::getyldtype
 		/**
 		Returns the yield type based on the string of the yield type.

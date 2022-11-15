@@ -18,9 +18,9 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 namespace Parser
 {
-	const std::regex FMTlandscapeparser::rxcleanlans = std::regex("^(\\*THEME)([\\s\\t]*)(([0-9]*$)|([0-9]*)([\\s\\t]*)(.+))|(\\*AGGREGATE)([\\s\\t]*)(\\()([\\s\\t]*)(_TH)(\\d*)([\\s\\t]*)(\\))([\\s\\t]*)(.+)|(\\*AGGREGATE)([\\s\\t]*)([^\\s^\\t]*)|([^\\s^\\t]*)([\\s\\t]*)(.+)", std::regex_constants::ECMAScript | std::regex_constants::icase);
-	const std::regex FMTlandscapeparser::rxindex = std::regex("^(_INDEX)(\\()([^\\)]*)(\\))", std::regex_constants::ECMAScript | std::regex_constants::icase);
-	const std::regex FMTlandscapeparser::rxparameter = std::regex("^([^=]*)(=)(#.+|[\\d.]*)", std::regex_constants::ECMAScript | std::regex_constants::icase);
+	const boost::regex FMTlandscapeparser::rxcleanlans = boost::regex("^(\\*THEME)([\\s\\t]*)(([0-9]*$)|([0-9]*)([\\s\\t]*)(.+))|(\\*AGGREGATE)([\\s\\t]*)(\\()([\\s\\t]*)(_TH)(\\d*)([\\s\\t]*)(\\))([\\s\\t]*)(.+)|(\\*AGGREGATE)([\\s\\t]*)([^\\s^\\t]*)|([^\\s^\\t]*)([\\s\\t]*)(.+)", boost::regex_constants::ECMAScript | boost::regex_constants::icase);
+	const boost::regex FMTlandscapeparser::rxindex = boost::regex("^(_INDEX)(\\()([^\\)]*)(\\))", boost::regex_constants::ECMAScript | boost::regex_constants::icase);
+	const boost::regex FMTlandscapeparser::rxparameter = boost::regex("^([^=]*)(=)(#.+|[\\d.]*)", boost::regex_constants::ECMAScript | boost::regex_constants::icase);
 
 FMTlandscapeparser::FMTlandscapeparser() :
     FMTparser()
@@ -34,15 +34,15 @@ FMTlandscapeparser::FMTlandscapeparser() :
 		std::map<std::string,double>indexes;
 		try {
 			boost::trim(index_line);
-			std::smatch kmatch;
-			if (std::regex_search(index_line, kmatch, FMTlandscapeparser::rxindex))
+			boost::smatch kmatch;
+			if (boost::regex_search(index_line, kmatch, FMTlandscapeparser::rxindex))
 			{
 				std::vector<std::string>parameters;
 				const std::string values = kmatch[3];
 				boost::split(parameters, values, boost::is_any_of(","), boost::token_compress_on);
 				for (const std::string& parameter : parameters)
 				{
-					if (std::regex_search(parameter, kmatch, FMTlandscapeparser::rxparameter))
+					if (boost::regex_search(parameter, kmatch, FMTlandscapeparser::rxparameter))
 					{
 						indexes[std::string(kmatch[1])] = getnum<double>(std::string(kmatch[3]), constants);
 					}
@@ -154,8 +154,8 @@ FMTlandscapeparser::FMTlandscapeparser() :
 					if (!line.empty())
 					{
 						
-						std::smatch kmatch;
-						std::regex_search(line, kmatch, FMTlandscapeparser::rxcleanlans);
+						boost::smatch kmatch;
+						boost::regex_search(line, kmatch, FMTlandscapeparser::rxcleanlans);
 						const std::string theme = std::string(kmatch[4]) + std::string(kmatch[5]);
 						const std::string potentialtheme = std::string(kmatch[4]) + std::string(kmatch[5]) + std::string(kmatch[7]);
 						const std::string aggregate = std::string(kmatch[8])+std::string(kmatch[18]);

@@ -10,7 +10,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 #include "FMTparser.hpp"
 #include "FMTutility.hpp"
-#include <regex>
+#include <boost/regex.hpp>
 #include <string>
 
 namespace Core
@@ -35,19 +35,19 @@ class FMTEXPORT FMToutputparser : public FMTparser
     {
 	// DocString: FMToutputparser::rxoutput
 	///Regex to capture the name of the output and other informations.
-	const static std::regex rxoutput;
+	const static boost::regex rxoutput;
 	// DocString: FMToutputparser::rxsource
 	///Regex to capture the output sources.
-	const static std::regex rxsource;
+	const static boost::regex rxsource;
 	// DocString: FMToutputparser::rxtar
 	///Regex to capture the output source specifications target.
-	const static std::regex rxtar;
+	const static boost::regex rxtar;
 	// DocString: FMToutputparser::rxgrp
 	///Regex to capture outputs groups
-	const static std::regex rxgrp;
+	const static boost::regex rxgrp;
 	// DocString: FMToutputparser::rxoutputconstant
 	///Regex to capture constant output.
-	const static std::regex rxoutputconstant;
+	const static boost::regex rxoutputconstant;
 	// DocString: FMToutputparser::readnfill
 	/**
 	Main function used by read and addoutputs to parse a file and fill a vector of outputs

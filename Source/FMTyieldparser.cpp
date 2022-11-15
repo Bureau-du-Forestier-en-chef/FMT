@@ -34,11 +34,11 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 namespace Parser{
 
-const std::regex FMTyieldparser::rxyieldtype = std::regex("^(\\*Y)([^\\s^\\t]*)([\\s\\t]*)(.+)(_OVERRIDE)|^(\\*Y)([^\\s^\\t]*)([\\s\\t]*)(.+)", std::regex_constants::ECMAScript | std::regex_constants::icase);
-const std::regex FMTyieldparser::rxcomplex = std::regex("^([^\\s^\\t]*)([\\s\\t]*)((_RANGE)|(_MULTIPLY)|(_SUM)|(_SUBTRACT)|(_YTP)|(_MAI)|(_CAI)|(_DIVIDE)|(_EQUATION)|(_ENDPOINT)|(_DELTA))([\\s\\t]*)(\\()(.+)(\\))", std::regex_constants::ECMAScript | std::regex_constants::icase);
-const std::regex FMTyieldparser::rxeqs = std::regex("([\\(\\)\\-\\+\\*\\/]*)([^\\(\\)\\-\\+\\*\\/]*)");
-const std::regex FMTyieldparser::rxdiscount = std::regex("^(_DISCOUNTFACTOR)(\\()([\\s\\t]*[\\d]*)([^,]*)(,)([^,]*)(,)([\\s\\t]*(NONE|HALF|FULL)[\\s\\t]*)(\\))");
-const std::regex FMTyieldparser::rxpredictor = std::regex("^(.+)(_PRED)(\\()(.+)(\\))");
+const boost::regex FMTyieldparser::rxyieldtype = boost::regex("^(\\*Y)([^\\s^\\t]*)([\\s\\t]*)(.+)(_OVERRIDE)|^(\\*Y)([^\\s^\\t]*)([\\s\\t]*)(.+)", boost::regex_constants::ECMAScript | boost::regex_constants::icase);
+const boost::regex FMTyieldparser::rxcomplex = boost::regex("^([^\\s^\\t]*)([\\s\\t]*)((_RANGE)|(_MULTIPLY)|(_SUM)|(_SUBTRACT)|(_YTP)|(_MAI)|(_CAI)|(_DIVIDE)|(_EQUATION)|(_ENDPOINT)|(_DELTA))([\\s\\t]*)(\\()(.+)(\\))", boost::regex_constants::ECMAScript | boost::regex_constants::icase);
+const boost::regex FMTyieldparser::rxeqs = boost::regex("([\\(\\)\\-\\+\\*\\/]*)([^\\(\\)\\-\\+\\*\\/]*)");
+const boost::regex FMTyieldparser::rxdiscount = boost::regex("^(_DISCOUNTFACTOR)(\\()([\\s\\t]*[\\d]*)([^,]*)(,)([^,]*)(,)([\\s\\t]*(NONE|HALF|FULL)[\\s\\t]*)(\\))");
+const boost::regex FMTyieldparser::rxpredictor = boost::regex("^(.+)(_PRED)(\\()(.+)(\\))");
 
 
 FMTyieldparser::FMTyieldparser():FMTparser()
@@ -298,7 +298,7 @@ Core::FMTdata FMTyieldparser::geteq(const std::string& basestr,
 		std::vector<std::string> valuesnoperators;
 		std::vector<double>numbers;
 		try {
-			std::smatch kmatch;
+			boost::smatch kmatch;
 			const boost::char_separator<char>separators("", "+-*/()^");
 			const boost::tokenizer<boost::char_separator<char>>tokens(basestr, separators);
 			for (std::string token : tokens)
@@ -436,8 +436,8 @@ Core::FMTyields FMTyieldparser::read(const std::vector<Core::FMTtheme>& themes,c
 				if (!line.empty())
 				{
 					lineerror = line;
-					std::smatch kmatch;
-					if (std::regex_search(line, kmatch, rxyieldtype))
+					boost::smatch kmatch;
+					if (boost::regex_search(line, kmatch, rxyieldtype))
 					{
 						
 						overyld = false;
@@ -626,8 +626,8 @@ Core::FMTyields FMTyieldparser::read(const std::vector<Core::FMTtheme>& themes,c
 									values.erase(values.begin());
 									//Need to check if rest of values is a _discountfactor!!!
 									const std::string joinedvalues = boost::algorithm::join(values, "");
-									std::smatch discountmatch;
-									if (std::regex_search(joinedvalues, discountmatch, rxdiscount))
+									boost::smatch discountmatch;
+									if (boost::regex_search(joinedvalues, discountmatch, rxdiscount))
 									{
 										std::vector<double>yielddata;
 										std::vector<std::string>sources;
@@ -671,9 +671,9 @@ Core::FMTyields FMTyieldparser::read(const std::vector<Core::FMTtheme>& themes,c
 
 						else if (actualyield->second->gettype() == Core::FMTyldtype::FMTcomplexyld)
 						{
-							std::smatch kmatch;
+							boost::smatch kmatch;
 							const size_t should_be_equation = line.find_first_of("+-*/");
-							bool simple_match = std::regex_search(line, kmatch, rxcomplex);
+							bool simple_match = boost::regex_search(line, kmatch, rxcomplex);
 							if (simple_match || should_be_equation > 0)
 							{
 								std::string yldname;
@@ -756,8 +756,8 @@ Core::FMTyields FMTyieldparser::read(const std::vector<Core::FMTtheme>& themes,c
 							}
 						}else if (actualyield->second->gettype() == Core::FMTyldtype::FMTmodelyld)
 							{
-							std::smatch predmatch;
-							if (std::regex_search(line, predmatch,rxpredictor))
+							boost::smatch predmatch;
+							if (boost::regex_search(line, predmatch,rxpredictor))
 								{
 								const std::string yieldseparators = FMT_STR_SEPARATOR + std::string(",");
 								const std::string yieldsarray = boost::trim_copy(std::string(predmatch[1]));
