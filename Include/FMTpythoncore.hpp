@@ -16,7 +16,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <boost/python.hpp>
 #include <boost/algorithm/string.hpp>
 #include <boost/python/stl_iterator.hpp>
-#include <regex>
+#include <boost/regex.hpp>
 #include <iterator>
 #include <iostream>
 #include <fstream>

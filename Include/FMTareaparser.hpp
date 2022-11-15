@@ -14,7 +14,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <string>
 #include <vector>
 #include "FMTutility.hpp"
-#include <regex>
+#include <boost/regex.hpp>
 
 
 class OGRPolygon;
@@ -66,7 +66,7 @@ class FMTEXPORT FMTareaparser : public FMTparser
     private:
 		// DocString: FMTareaparser::rxcleanarea
 		///This regex is used to capture the information kept in the .are section.
-        const static std::regex rxcleanarea;
+        const static boost::regex rxcleanarea;
 		// DocString: FMTareaparser::getperiodpathname
 		/**
 		Giving a folder (location) and a (period) and a (name)

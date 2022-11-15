@@ -11,7 +11,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 #include "FMTparser.hpp"
 #include "FMTutility.hpp"
-#include <regex>
+#include <boost/regex.hpp>
 #include <string>
 #include <map>
 #include <vector>
@@ -37,13 +37,13 @@ class FMTEXPORT FMTlandscapeparser : public FMTparser
     private:
 		// DocString: FMTlandscapeparser::rxcleanlans
 		///This regex is the main regex to catch themes and aggregates.
-        const static std::regex rxcleanlans;
+        const static boost::regex rxcleanlans;
 		// DocString: FMTlandscapeparser::rxindex
 		///This regex catch the index of a given theme.
-		const static std::regex rxindex;
+		const static boost::regex rxindex;
 		// DocString: FMTlandscapeparser::rxparameter
 		///This regex catch the parameters of a indexed theme.
-		const static std::regex rxparameter;
+		const static boost::regex rxparameter;
 		// DocString: FMTlandscapeparser::getindexes
 		/**
 		This function is used to catch the indexed attributes of a theme in the landscape section

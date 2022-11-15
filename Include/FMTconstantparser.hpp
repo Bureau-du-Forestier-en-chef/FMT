@@ -27,7 +27,7 @@ class FMTEXPORT FMTconstantparser : public FMTparser
     {
 	// DocString: FMTparser::rxconstant
 	///Regex to capture constant.
-	const static std::regex rxconstant;
+	const static boost::regex rxconstant;
     public:
 		// DocString: FMTconstantparser()
 		/**

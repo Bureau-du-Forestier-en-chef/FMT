@@ -39,20 +39,20 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 namespace Parser
 {
 
-	const std::regex Parser::FMTparser::rxvectortheme = std::regex("^(THEME)([\\d]*)$");
-	const std::regex Parser::FMTparser::rxnumber = std::regex("-?[\\d.,]+(?:E-?[\\d.,]+)?", std::regex_constants::icase);
-	const std::regex Parser::FMTparser::rxremovecomment = std::regex("^(.*?)([;]+.*)");
-	const std::regex Parser::FMTparser::rxvalid = std::regex("^(?!\\s*$).+");
-	const std::regex Parser::FMTparser::rxinclude = std::regex("^(\\*INCLUDE)([\\s\\t]*)(.+)");
-	const std::regex Parser::FMTparser::rxfor = std::regex("^(FOREACH)([\\s\\t]*)([^\\s\\t]*)([\\s\\t]*)(IN)([\\s\\t]*)((\\([\\s\\t]*)(_TH)(\\d*)([\\s\\t]*\\([\\s\\t]*)([^\\s\\t]*)([\\s\\t]*\\)[\\s\\t]*\\))|(\\([\\s\\t]*)(_TH)(\\d*)([\\s\\t]*\\))|(\\()(\\d*)(\\.\\.)(\\d*)(\\))|(\\()([^\\)]*)(\\)))|(\\bFOR\\b)([\\s\\t]*)([^\\:\\=]*)([\\:\\=\\s\\t]*)(\\d*)([\\s\\t]*)(TO)([\\s\\t]*)(\\d*)", std::regex_constants::ECMAScript | std::regex_constants::icase);
-	const std::regex Parser::FMTparser::rxend = std::regex("^(ENDFOR)", std::regex_constants::ECMAScript | std::regex_constants::icase);
-	const std::regex Parser::FMTparser::rxayld = std::regex("^(.+)(\\@YLD[\\s\\t]*\\()([\\s\\t]*)(.+)(\\,)([\\s\\t]*)((#[^\\.]*)|([-]*\\d*.[-]*\\d*))(\\.\\.)((#[^\\.]*)|([-]*\\d*.[-]*\\d*)|(_MAXAGE))(\\))(.+)|(.+)(\\@YLD[\\s\\t]*\\()([\\s\\t]*)(.+)(\\,)([\\s\\t]*)((#[^\\.]*)|([-]*\\d*)|([-]*\\d*.[-]*\\d*))(\\))(.+)", std::regex_constants::ECMAScript | std::regex_constants::icase);
-	const std::regex Parser::FMTparser::rxaage = std::regex("^(.+)(\\@AGE[\\s\\t]*\\()([\\s\\t]*)((#[^\\.]*)|(\\d*)|(\\d*.\\d*))(\\.\\.)((#[^\\.]*)|(\\d*)|(\\d*.\\d*)|(_MAXAGE))(\\))(.+)|(.+)(\\@AGE[\\s\\t]*\\()([\\s\\t]*)((#[^\\.]*)|(\\d*)|(\\d*.\\d*))(\\))(.+)", std::regex_constants::ECMAScript | std::regex_constants::icase);
-	const std::regex Parser::FMTparser::rxayldage = std::regex("^(.+)(\\@YLD[\\s\\t]*\\()([^,]*)([,])([^\\)]*)(\\))(.+)|^(.+)(\\@AGE[\\s\\t]*\\()([^\\)]*)(\\))(.+)", std::regex_constants::ECMAScript | std::regex_constants::icase);
-	const std::regex Parser::FMTparser::rxbounds = std::regex("^(.+)(\\.\\.)(.+)|(.+)");
-	const std::regex Parser::FMTparser::rxoperators = std::regex("([^\\+\\-\\/\\*]*)([\\+\\-\\/\\*]*)", std::regex_constants::icase);
-	const std::regex Parser::FMTparser::rxprimary = std::regex("^([^\\[]*)(\\[)([^\\]]*)(.+)");
-	const std::regex Parser::FMTparser::rxseparator = std::regex("([\\s\\t]*)([^\\s\\t]*)");
+	const boost::regex Parser::FMTparser::rxvectortheme = boost::regex("^(THEME)([\\d]*)$");
+	const boost::regex Parser::FMTparser::rxnumber = boost::regex("-?[\\d.,]+(?:E-?[\\d.,]+)?", boost::regex_constants::icase);
+	const boost::regex Parser::FMTparser::rxremovecomment = boost::regex("^(.*?)([;]+.*)");
+	const boost::regex Parser::FMTparser::rxvalid = boost::regex("^(?!\\s*$).+");
+	const boost::regex Parser::FMTparser::rxinclude = boost::regex("^(\\*INCLUDE)([\\s\\t]*)(.+)");
+	const boost::regex Parser::FMTparser::rxfor = boost::regex("^(FOREACH)([\\s\\t]*)([^\\s\\t]*)([\\s\\t]*)(IN)([\\s\\t]*)((\\([\\s\\t]*)(_TH)(\\d*)([\\s\\t]*\\([\\s\\t]*)([^\\s\\t]*)([\\s\\t]*\\)[\\s\\t]*\\))|(\\([\\s\\t]*)(_TH)(\\d*)([\\s\\t]*\\))|(\\()(\\d*)(\\.\\.)(\\d*)(\\))|(\\()([^\\)]*)(\\)))|(\\bFOR\\b)([\\s\\t]*)([^\\:\\=]*)([\\:\\=\\s\\t]*)(\\d*)([\\s\\t]*)(TO)([\\s\\t]*)(\\d*)", boost::regex_constants::ECMAScript | boost::regex_constants::icase);
+	const boost::regex Parser::FMTparser::rxend = boost::regex("^(ENDFOR)", boost::regex_constants::ECMAScript | boost::regex_constants::icase);
+	const boost::regex Parser::FMTparser::rxayld = boost::regex("^(.+)(\\@YLD[\\s\\t]*\\()([\\s\\t]*)(.+)(\\,)([\\s\\t]*)((#[^\\.]*)|([-]*\\d*.[-]*\\d*))(\\.\\.)((#[^\\.]*)|([-]*\\d*.[-]*\\d*)|(_MAXAGE))(\\))(.+)|(.+)(\\@YLD[\\s\\t]*\\()([\\s\\t]*)(.+)(\\,)([\\s\\t]*)((#[^\\.]*)|([-]*\\d*)|([-]*\\d*.[-]*\\d*))(\\))(.+)", boost::regex_constants::ECMAScript | boost::regex_constants::icase);
+	const boost::regex Parser::FMTparser::rxaage = boost::regex("^(.+)(\\@AGE[\\s\\t]*\\()([\\s\\t]*)((#[^\\.]*)|(\\d*)|(\\d*.\\d*))(\\.\\.)((#[^\\.]*)|(\\d*)|(\\d*.\\d*)|(_MAXAGE))(\\))(.+)|(.+)(\\@AGE[\\s\\t]*\\()([\\s\\t]*)((#[^\\.]*)|(\\d*)|(\\d*.\\d*))(\\))(.+)", boost::regex_constants::ECMAScript | boost::regex_constants::icase);
+	const boost::regex Parser::FMTparser::rxayldage = boost::regex("^(.+)(\\@YLD[\\s\\t]*\\()([^,]*)([,])([^\\)]*)(\\))(.+)|^(.+)(\\@AGE[\\s\\t]*\\()([^\\)]*)(\\))(.+)", boost::regex_constants::ECMAScript | boost::regex_constants::icase);
+	const boost::regex Parser::FMTparser::rxbounds = boost::regex("^(.+)(\\.\\.)(.+)|(.+)");
+	const boost::regex Parser::FMTparser::rxoperators = boost::regex("([^\\+\\-\\/\\*]*)([\\+\\-\\/\\*]*)", boost::regex_constants::icase);
+	const boost::regex Parser::FMTparser::rxprimary = boost::regex("^([^\\[]*)(\\[)([^\\]]*)(.+)");
+	const boost::regex Parser::FMTparser::rxseparator = boost::regex("([\\s\\t]*)([^\\s\\t]*)");
 
 bool FMTparser::GDALinitialization = false;
 
@@ -695,8 +695,8 @@ void FMTparser::getWSfields(OGRLayer* layer, std::map<int, int>& themes, int& ag
 				OGRFieldDefn* fielddef = fdef->GetFieldDefn(iField);
 				std::string fname = fielddef->GetNameRef();
 				boost::to_upper(fname);
-				std::smatch kmatch;
-				if (std::regex_search(fname, kmatch,rxvectortheme)/*fname.find("THEME") != std::string::npos*/)
+				boost::smatch kmatch;
+				if (boost::regex_search(fname, kmatch,rxvectortheme)/*fname.find("THEME") != std::string::npos*/)
 				{
 					//fname.erase(0, 5);
 					//themes[getnum<int>(fname) - 1] = iField;
@@ -747,9 +747,9 @@ std::string FMTparser::setspecs(Core::FMTsection section, Core::FMTkwor key,cons
     {
 	std::string rest = "";
 	try {
-			std::smatch kmatch;
+			boost::smatch kmatch;
 			
-			if (std::regex_search(line, kmatch, rxayldage))
+			if (boost::regex_search(line, kmatch, rxayldage))
 			{
 				bool pushaagebound = false;
 				std::string boundsmatch = std::string(kmatch[5])+std::string(kmatch[10]);
@@ -768,10 +768,10 @@ std::string FMTparser::setspecs(Core::FMTsection section, Core::FMTkwor key,cons
 				for (std::string& bound : strbounds)
 				{
 					boost::trim(bound);
-					std::smatch bmatch;
+					boost::smatch bmatch;
 					double upperbound = std::numeric_limits<double>::max();
 					double lowerbound = std::numeric_limits<double>::min();
-					if (std::regex_search(bound,bmatch,rxbounds))
+					if (boost::regex_search(bound,bmatch,rxbounds))
 					{
 						std::string singlebound = std::string(bmatch[4]);
 						if(singlebound.empty())
@@ -821,9 +821,9 @@ std::string FMTparser::setspec(Core::FMTsection section, Core::FMTkwor key,const
     {
 	std::string rest = "";
 	try {
-			std::smatch kmatch;
+			boost::smatch kmatch;
 			
-			if (std::regex_search(line, kmatch, FMTparser::rxayld))
+			if (boost::regex_search(line, kmatch, FMTparser::rxayld))
 			{
 				std::string yld = std::string(kmatch[4]) + std::string(kmatch[20]);
 				boost::trim(yld);
@@ -864,7 +864,7 @@ std::string FMTparser::setspec(Core::FMTsection section, Core::FMTkwor key,const
 				rest = line;
 			}
 
-			if (std::regex_search(rest, kmatch, FMTparser::rxaage))
+			if (boost::regex_search(rest, kmatch, FMTparser::rxaage))
 			{
 				std::string singlebound = std::string(kmatch[20]) + std::string(kmatch[21]) + std::string(kmatch[22]);
 				int upperbound = std::numeric_limits<int>::max();
@@ -1009,7 +1009,7 @@ bool FMTparser::isvalidfile(const std::string& location) const
 bool FMTparser::isnum(std::string value) const
     {
 	//boost::erase_all(value, ",");
-	return std::regex_match(value,rxnumber);
+	return boost::regex_match(value,rxnumber);
     }
 
 bool FMTparser::isnum(const std::string& value, const Core::FMTconstants& constant, bool throwerror) const
@@ -1036,15 +1036,15 @@ bool FMTparser::isnum(const std::string& value, const Core::FMTconstants& consta
 
 
 
-std::vector<std::string>FMTparser::regexloop(const std::regex& cutregex, std::string& str) const
+std::vector<std::string>FMTparser::regexloop(const boost::regex& cutregex, std::string& str) const
         {
 		std::vector<std::string>result;
 		try{
-        auto els_begin = std::sregex_iterator(str.begin(), str.end(), cutregex);
-        auto els_end = std::sregex_iterator();
-        for (std::sregex_iterator i = els_begin; i != els_end; ++i)
+        auto els_begin = boost::sregex_iterator(str.begin(), str.end(), cutregex);
+        auto els_end = boost::sregex_iterator();
+        for (boost::sregex_iterator i = els_begin; i != els_end; ++i)
             {
-			std::smatch match = *i;
+			boost::smatch match = *i;
 			std::string match_str = match.str();
             result.push_back(match_str);
             }
@@ -1057,15 +1057,15 @@ std::vector<std::string>FMTparser::regexloop(const std::regex& cutregex, std::st
         }
     bool FMTparser::isvalid(const std::string& line) const
         {
-        return std::regex_match(line,rxvalid);
+        return boost::regex_match(line,rxvalid);
         }
     void FMTparser::clearcomments(std::string& line)
         {
 		try {
 			if (line.find(";")!=std::string::npos)
 				{
-				std::smatch kmatch;
-				if (std::regex_search(line, kmatch, rxremovecomment))
+				boost::smatch kmatch;
+				if (boost::regex_search(line, kmatch, rxremovecomment))
 				{
 					_comment = std::string(kmatch[2]);
 					boost::to_upper(_comment);
@@ -1093,16 +1093,16 @@ std::vector<std::string>FMTparser::regexloop(const std::regex& cutregex, std::st
 		}
         return uppercases;
         }
-	std::vector<std::string>FMTparser::spliter(std::string strmask,const std::regex& xspliter) const
+	std::vector<std::string>FMTparser::spliter(std::string strmask,const boost::regex& xspliter) const
         {
-		std::smatch kmatch;
+		boost::smatch kmatch;
 		std::string value;
 		std::vector<std::string>vecmask;
 		try{
         size_t endsize;
         while(!strmask.empty())
             {
-			std::regex_search(strmask,kmatch,xspliter);
+			boost::regex_search(strmask,kmatch,xspliter);
             value = std::string(kmatch[2]);
             if (isvalid(value))
                 {
@@ -1175,12 +1175,12 @@ std::vector<std::string>FMTparser::regexloop(const std::regex& cutregex, std::st
 bool FMTparser::getforloops(std::string& line,const std::vector<Core::FMTtheme>& themes, const Core::FMTconstants& cons, std::vector<std::string>& allvalues, std::string& target)
 	{
 	try{
-	if (!std::regex_match(line, rxfor))
+	if (!boost::regex_match(line, rxfor))
 		{
 		return false;
 		}
-	std::smatch kmatch;
-	if (std::regex_search(line, kmatch, rxfor))
+	boost::smatch kmatch;
+	if (boost::regex_search(line, kmatch, rxfor))
 	{
 		target = std::string(kmatch[3]);
 		if (!std::string(kmatch[24]).empty())
@@ -1250,11 +1250,11 @@ bool FMTparser::getforloops(std::string& line,const std::vector<Core::FMTtheme>&
 
 std::queue<std::string> FMTparser::tryinclude(const std::string& line, const std::vector<Core::FMTtheme>& themes, const Core::FMTconstants& cons)
 	{
-	std::smatch kmatch;
+	boost::smatch kmatch;
 	std::queue<std::string>included_lines;
 	try{
-	if (std::regex_match(line, FMTparser::rxinclude)&&
-		std::regex_search(line, kmatch, FMTparser::rxinclude))
+	if (boost::regex_match(line, FMTparser::rxinclude)&&
+		boost::regex_search(line, kmatch, FMTparser::rxinclude))
 		{
 		std::string location = kmatch[3];
 		boost::filesystem::path includedpath(location);
@@ -1349,7 +1349,7 @@ std::string FMTparser::returninclude(const std::string& line, const std::vector<
 
 std::string FMTparser::getcleanlinewfor(std::ifstream& stream,const std::vector<Core::FMTtheme>& themes,const Core::FMTconstants& cons)
     {
-	std::smatch kmatch;
+	boost::smatch kmatch;
 	std::string line;
 	try {
 		while (!_included.empty())
@@ -1390,7 +1390,7 @@ std::string FMTparser::getcleanlinewfor(std::ifstream& stream,const std::vector<
 				{
 					return returninclude(line, themes, cons);
 				}
-				else if (std::regex_search(line, kmatch, FMTparser::rxend))
+				else if (boost::regex_search(line, kmatch, FMTparser::rxend))
 				{
 					std::string endfor = keys.top();
 					keys.pop();
@@ -1426,7 +1426,7 @@ std::string FMTparser::getcleanlinewfor(std::ifstream& stream,const std::vector<
 				{
 					for (std::pair<int, std::string> tline : process)
 					{
-						midsequence.push_back(std::pair<int, std::string>(tline.first, std::regex_replace(tline.second, std::regex(key), value)));
+						midsequence.push_back(std::pair<int, std::string>(tline.first, boost::regex_replace(tline.second, boost::regex(key), value)));
 					}
 				}
 				Sequence.clear();
@@ -1468,8 +1468,8 @@ std::map<Core::FMTsection, std::string> FMTparser::getprimary(const std::string&
 					std::string line = getcleanline(primarystream);
 					if (isvalid(line))
 					{
-						std::smatch kmatch;
-						if (std::regex_search(line, kmatch, rxprimary))
+						boost::smatch kmatch;
+						if (boost::regex_search(line, kmatch, rxprimary))
 						{
 							const std::string file_name = std::string(kmatch[3]);
 							const boost::filesystem::path file_path(file_name);
@@ -1533,7 +1533,7 @@ std::vector<std::vector<std::string>>FMTparser::readcsv(const std::string& locat
 	std::vector<std::vector<std::string>>lines;
 	try {
 		std::string regexstring = "(["+ std::string(1,separator) +"]*)([^"+ std::string(1,separator) +"]*)";
-		std::regex csvsplitregex(regexstring);
+		boost::regex csvsplitregex(regexstring);
 		if (!location.empty())
 			{
 				std::ifstream csvstream(location);

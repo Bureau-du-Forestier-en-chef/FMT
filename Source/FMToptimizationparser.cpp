@@ -23,19 +23,19 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 namespace Parser
 {
 
-	const std::regex FMToptimizationparser::rxsections = std::regex("^(\\*)([^\\s^\\t]*)", std::regex_constants::ECMAScript | std::regex_constants::icase);
-	const std::regex FMToptimizationparser::rxobjectives = std::regex("^(_MAXMIN|_MINMAX|_MAX|_MIN|_GOAL)([\\s\\t]*)(.+)([\\s\\t])((([\\d]*|#.+)(\\.\\.)(#.+|_LENGTH|[\\d]*))|(#.+|[\\d]*))", std::regex_constants::ECMAScript | std::regex_constants::icase);
-	const std::regex FMToptimizationparser::rxexclude = std::regex("^(\\*EXCLUDE)([\\s\\t]*)([^\\s^\\t]*)([\\s\\t]*)((([\\d]*|#.+)(\\.\\.)(#.+|_LENGTH|[\\d]*))|(#.+|[\\d]*))", std::regex_constants::ECMAScript | std::regex_constants::icase);
-	const std::regex FMToptimizationparser::rxconstraints = std::regex("^(_EVEN|_NDY|_SEQ)([\\s\\t]*)(\\()((([^,]*)(,)([\\s\\t]*)([\\d\\.]*%|[\\d\\.]*)([\\s\\t]*)(,)([\\s\\t]*)([\\d\\.]*%|[\\d\\.]*))|(([^,]*)(,)([\\s\\t]*)([\\d\\.]*%|[\\d\\.]*))|([^,]*))([\\s\\t]*)(\\))([\\s\\t]*)(.+)", std::regex_constants::ECMAScript | std::regex_constants::icase);
-	//const std::regex FMToptimizationparser::rxequations = std::regex("^(.+)((((<=)|(>=))(.+))|((.+)((=))(.+)))(?<=[^,])[\\s\\t](?=\\d)(.+)", std::regex_constants::ECMAScript);
-	const std::regex FMToptimizationparser::rxequations = std::regex("^(.+)((((<=)|(>=))(.+))|((.+)((=))(.+)))(?=[^,])[\\s\\t](?=\\d)(.+)", std::regex_constants::ECMAScript);
-	const std::regex FMToptimizationparser::rxperiods = std::regex("^([\\s\\t]*)((([\\d]*|#.+)(\\.\\.)(#.+|_LENGTH|[\\d]*)|(_LENGTH))|(#.+|[\\d]*))", std::regex_constants::ECMAScript | std::regex_constants::icase);
-	const std::regex FMToptimizationparser::rxending = std::regex("^(.+)(((_GOAL)(\\()([^,]*)(,)([^\\)]*)(\\)))|(_SETFROMGLOBAL|_SETFROMLOCAL|_REIGNORE)([\\s\\t]*)(\\()([\\s\\t]*)(.+)([\\s\\t]*)(\\))|(_REPLICATE)([\\s\\t]*)(\\()([\\s\\t]*)(.+)([\\s\\t]*)(\\)))", std::regex_constants::ECMAScript | std::regex_constants::icase);
-	const std::regex FMToptimizationparser::rxoutput = std::regex("^(.+)(\\()([^)]*)(\\))(\\[)(#.+|[-\\d]*)(\\])|([^\\[]*)(\\()([^)]*)(\\))|(.+)(\\[)(#.+|[-\\d]*)(\\])|(.+)", std::regex_constants::ECMAScript | std::regex_constants::icase);
-	const std::regex FMToptimizationparser::rxpenalty = std::regex("^(_PENALTY)(\\()([^\\)]*)(\\))", std::regex_constants::ECMAScript | std::regex_constants::icase);
-	const std::regex FMToptimizationparser::rxspecialoutput = std::regex("^(_AVG|_SUM)(\\()(([^,]*)(,)(([^,]*)(([\\d]*|#.+)(\\.\\.)(#.+|_LENGTH|[\\d]*))|(#.+|[\\d]*))|(.+))(\\))", std::regex_constants::ECMAScript | std::regex_constants::icase);
-	const std::regex FMToptimizationparser::rxspatial = std::regex("^(_SIZE|_ADJACENCY|_RANDOM)([\\s\\t]*)(\\()(.+)(\\))([\\s\\t]*)(>=|<=|=)([\\s\\t]*)(#[^\\s^\\t]*|[\\d]*)(.+)", std::regex_constants::ECMAScript | std::regex_constants::icase);
-	const std::regex FMToptimizationparser::rxspecialobjective = std::regex("^(.+)(_SETGLOBALSCHEDULE)(\\()([\\d]*)(\\))", std::regex_constants::ECMAScript | std::regex_constants::icase);
+	const boost::regex FMToptimizationparser::rxsections = boost::regex("^(\\*)([^\\s^\\t]*)", boost::regex_constants::ECMAScript | boost::regex_constants::icase);
+	const boost::regex FMToptimizationparser::rxobjectives = boost::regex("^(_MAXMIN|_MINMAX|_MAX|_MIN|_GOAL)([\\s\\t]*)(.+)([\\s\\t])((([\\d]*|#.+)(\\.\\.)(#.+|_LENGTH|[\\d]*))|(#.+|[\\d]*))", boost::regex_constants::ECMAScript | boost::regex_constants::icase);
+	const boost::regex FMToptimizationparser::rxexclude = boost::regex("^(\\*EXCLUDE)([\\s\\t]*)([^\\s^\\t]*)([\\s\\t]*)((([\\d]*|#.+)(\\.\\.)(#.+|_LENGTH|[\\d]*))|(#.+|[\\d]*))", boost::regex_constants::ECMAScript | boost::regex_constants::icase);
+	const boost::regex FMToptimizationparser::rxconstraints = boost::regex("^(_EVEN|_NDY|_SEQ)([\\s\\t]*)(\\()((([^,]*)(,)([\\s\\t]*)([\\d\\.]*%|[\\d\\.]*)([\\s\\t]*)(,)([\\s\\t]*)([\\d\\.]*%|[\\d\\.]*))|(([^,]*)(,)([\\s\\t]*)([\\d\\.]*%|[\\d\\.]*))|([^,]*))([\\s\\t]*)(\\))([\\s\\t]*)(.+)", boost::regex_constants::ECMAScript | boost::regex_constants::icase);
+	//const boost::regex FMToptimizationparser::rxequations = boost::regex("^(.+)((((<=)|(>=))(.+))|((.+)((=))(.+)))(?<=[^,])[\\s\\t](?=\\d)(.+)", boost::regex_constants::ECMAScript);
+	const boost::regex FMToptimizationparser::rxequations = boost::regex("^(.+)((((<=)|(>=))(.+))|((.+)((=))(.+)))(?=[^,])[\\s\\t](?=\\d)(.+)", boost::regex_constants::ECMAScript);
+	const boost::regex FMToptimizationparser::rxperiods = boost::regex("^([\\s\\t]*)((([\\d]*|#.+)(\\.\\.)(#.+|_LENGTH|[\\d]*)|(_LENGTH))|(#.+|[\\d]*))", boost::regex_constants::ECMAScript | boost::regex_constants::icase);
+	const boost::regex FMToptimizationparser::rxending = boost::regex("^(.+)(((_GOAL)(\\()([^,]*)(,)([^\\)]*)(\\)))|(_SETFROMGLOBAL|_SETFROMLOCAL|_REIGNORE)([\\s\\t]*)(\\()([\\s\\t]*)(.+)([\\s\\t]*)(\\))|(_REPLICATE)([\\s\\t]*)(\\()([\\s\\t]*)(.+)([\\s\\t]*)(\\)))", boost::regex_constants::ECMAScript | boost::regex_constants::icase);
+	const boost::regex FMToptimizationparser::rxoutput = boost::regex("^(.+)(\\()([^)]*)(\\))(\\[)(#.+|[-\\d]*)(\\])|([^\\[]*)(\\()([^)]*)(\\))|(.+)(\\[)(#.+|[-\\d]*)(\\])|(.+)", boost::regex_constants::ECMAScript | boost::regex_constants::icase);
+	const boost::regex FMToptimizationparser::rxpenalty = boost::regex("^(_PENALTY)(\\()([^\\)]*)(\\))", boost::regex_constants::ECMAScript | boost::regex_constants::icase);
+	const boost::regex FMToptimizationparser::rxspecialoutput = boost::regex("^(_AVG|_SUM)(\\()(([^,]*)(,)(([^,]*)(([\\d]*|#.+)(\\.\\.)(#.+|_LENGTH|[\\d]*))|(#.+|[\\d]*))|(.+))(\\))", boost::regex_constants::ECMAScript | boost::regex_constants::icase);
+	const boost::regex FMToptimizationparser::rxspatial = boost::regex("^(_SIZE|_ADJACENCY|_RANDOM)([\\s\\t]*)(\\()(.+)(\\))([\\s\\t]*)(>=|<=|=)([\\s\\t]*)(#[^\\s^\\t]*|[\\d]*)(.+)", boost::regex_constants::ECMAScript | boost::regex_constants::icase);
+	const boost::regex FMToptimizationparser::rxspecialobjective = boost::regex("^(.+)(_SETGLOBALSCHEDULE)(\\()([\\d]*)(\\))", boost::regex_constants::ECMAScript | boost::regex_constants::icase);
 
 	FMToptimizationparser::FMToptimizationparser() :
 		FMTparser(),
@@ -46,9 +46,9 @@ namespace Parser
 
 	bool FMToptimizationparser::setending(Core::FMTconstraint& constraint,std::string& line, const Core::FMTconstants& constants)
 		{
-		std::smatch kmatch;
+		boost::smatch kmatch;
 		try{
-		if (std::regex_search(line, kmatch, rxending))
+		if (boost::regex_search(line, kmatch, rxending))
 			{
 			const std::string target = std::string(kmatch[4]) + std::string(kmatch[10]) + std::string(kmatch[17]);
 			const std::string numvalue = std::string(kmatch[8]) + std::string(kmatch[14]);
@@ -250,18 +250,18 @@ namespace Parser
 		try {
 			for (std::map<std::string, double>::const_iterator output_it = nodes.begin(); output_it != nodes.end(); output_it++)
 			{
-				std::smatch out_match;
-				if (std::regex_search(output_it->first, out_match, rxoutput))
+				boost::smatch out_match;
+				if (boost::regex_search(output_it->first, out_match, rxoutput))
 				{
 					std::string output_name = std::string(out_match[1]) + std::string(out_match[8]) + std::string(out_match[12]) + std::string(out_match[16]);
 					boost::erase_all(output_name, " ");
-					std::smatch special_match;
+					boost::smatch special_match;
 					std::string specialtype;
 					//int minbound = 1;
 					//int maxbound = std::numeric_limits<int>::max();
 					std::string target_attribute;
 					Core::FMTperbounds bounding;
-					if (std::regex_search(output_it->first, special_match, rxspecialoutput))
+					if (boost::regex_search(output_it->first, special_match, rxspecialoutput))
 					{
 
 						specialtype = special_match[1];
@@ -273,10 +273,10 @@ namespace Parser
 						}
 						output_name = std::string(special_match[4]) + std::string(special_match[13]);
 
-						//std::smatch outname_match;
-						//out_match = std::smatch();
+						//boost::smatch outname_match;
+						//out_match = boost::smatch();
 						
-						if (!std::regex_search(output_name, out_match, rxoutput))
+						if (!boost::regex_search(output_name, out_match, rxoutput))
 						{
 							_exhandler->raise(Exception::FMTexc::FMTinvalid_constraint,
 								output_name + " at line " + std::to_string(_line),
@@ -342,7 +342,7 @@ namespace Parser
         return final_output;
         }
 
-	Core::FMTconstraint FMToptimizationparser::getspatialconstraint(const Core::FMTconstraint& baseconstraint,const std::smatch& match,const std::string& line,
+	Core::FMTconstraint FMToptimizationparser::getspatialconstraint(const Core::FMTconstraint& baseconstraint,const boost::smatch& match,const std::string& line,
 		const Core::FMTconstants& constants, const std::vector<Core::FMTaction>& actions,
 		const std::vector<Core::FMToutput>& outputs, const std::vector<Core::FMTtheme>& themes)
 	{
@@ -428,16 +428,16 @@ namespace Parser
 		{
 		Core::FMTconstraint constraint;
 		std::vector<Core::FMTconstraint>returnedconstraints;
-		std::match_results<std::string::const_iterator> Bmatch;
+		boost::match_results<std::string::const_iterator> Bmatch;
 		//boost::match_flag_type flags = boost::match_default;
 		try {
-			std::smatch kmatch;
+			boost::smatch kmatch;
 			std::string rest = line;
 			setending(constraint, rest, constants);
-			if (std::regex_search(rest, kmatch, rxspatial))
+			if (boost::regex_search(rest, kmatch, rxspatial))
 			{
 				returnedconstraints.push_back(getspatialconstraint(constraint,kmatch, line, constants, actions,outputs,themes));
-			}else if (std::regex_search(rest, kmatch, rxconstraints))
+			}else if (boost::regex_search(rest, kmatch, rxconstraints))
 				{
 				//std::string target = std::string(kmatch[6]) + std::string(kmatch[12]) + std::string(kmatch[15]);
 				std::string target = std::string(kmatch[6]) + std::string(kmatch[15]) + std::string(kmatch[19]);
@@ -498,7 +498,7 @@ namespace Parser
 				returnedconstraints = getperiodsbounds(periodstring, constraint, constants);
 
 			}
-			else if (std::regex_search(rest.cbegin(), rest.cend(), Bmatch, rxequations))
+			else if (boost::regex_search(rest.cbegin(), rest.cend(), Bmatch, rxequations))
 			{
 				Core::FMTconstrainttype cctype = Core::FMTconstrainttype::FMTstandard;
 				const std::string periodstring = std::string(Bmatch[13]);
@@ -574,8 +574,8 @@ namespace Parser
 				for (const std::string& value : splitted)
 					{
 					Core::FMTconstraint newconstraint(constraint);
-					std::smatch kmatch;
-					if (std::regex_search(value,kmatch,rxperiods))
+					boost::smatch kmatch;
+					if (boost::regex_search(value,kmatch,rxperiods))
 						{
 						const std::string justlength = std::string(kmatch[7]);
 						const std::string lower_period = std::string(kmatch[4]) + std::string(kmatch[8]) + justlength;
@@ -604,9 +604,9 @@ namespace Parser
 		{
 		Core::FMTconstraint objective;
 		try {
-			std::smatch specialmatch;
+			boost::smatch specialmatch;
 			std::string subline(line);
-			if (std::regex_search(line, specialmatch, rxspecialobjective))
+			if (boost::regex_search(line, specialmatch, rxspecialobjective))
 				{
 				subline=std::string(specialmatch[1]);
 				boost::trim(subline);
@@ -619,8 +619,8 @@ namespace Parser
 
 				}
 
-			std::smatch kmatch;
-			if (std::regex_search(subline, kmatch, rxobjectives))
+			boost::smatch kmatch;
+			if (boost::regex_search(subline, kmatch, rxobjectives))
 			{
 				const std::string objective_type = kmatch[1];
 				const std::string lower_period = std::string(kmatch[7]) + std::string(kmatch[10]);
@@ -650,8 +650,8 @@ namespace Parser
 					}
 				}
 				boost::trim(main_equation);
-				std::smatch kpenalty;
-				if (std::regex_search(penalty_equation, kpenalty, rxpenalty))
+				boost::smatch kpenalty;
+				if (boost::regex_search(penalty_equation, kpenalty, rxpenalty))
 				{
 					const std::string penalty_values = kpenalty[3];
 					std::string yldbound = "Penalty";
@@ -711,8 +711,8 @@ namespace Parser
 		{
 		FMToptimizationsection section = FMToptimizationsection::none;
 		try {
-			std::smatch kmatch;
-			if (std::regex_search(line, kmatch, rxsections))
+			boost::smatch kmatch;
+			if (boost::regex_search(line, kmatch, rxsections))
 			{
 				const std::string target = std::string(kmatch[2]);
 				if (target == "OBJECTIVE")
@@ -803,8 +803,8 @@ namespace Parser
 									{
 										line = "*EXCLUDE " + line;
 									}
-									std::smatch kmatch;
-									if (std::regex_search(line, kmatch, rxexclude))
+									boost::smatch kmatch;
+									if (boost::regex_search(line, kmatch, rxexclude))
 									{
 
 										std::string action_name = kmatch[3];

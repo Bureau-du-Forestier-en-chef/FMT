@@ -17,7 +17,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 namespace Parser{
 
-const std::regex FMTconstantparser::rxconstant = std::regex("^([\\s\\t]*)((([^\\)]*)(\\)))|([^\\s^\\t]*))([\\s\\t]*)(.+)", std::regex_constants::ECMAScript | std::regex_constants::icase);
+const boost::regex FMTconstantparser::rxconstant = boost::regex("^([\\s\\t]*)((([^\\)]*)(\\)))|([^\\s^\\t]*))([\\s\\t]*)(.+)", boost::regex_constants::ECMAScript | boost::regex_constants::icase);
 
 
 FMTconstantparser::FMTconstantparser():
@@ -43,8 +43,8 @@ Core::FMTconstants FMTconstantparser::read(const std::string& location)
 					const std::string line = FMTparser::getcleanlinewfor(CONstream, themes, constants);
 					if (!line.empty())
 					{
-						std::smatch kmatch;
-						if (!std::regex_search(line,kmatch,rxconstant))
+						boost::smatch kmatch;
+						if (!boost::regex_search(line,kmatch,rxconstant))
 						{
 							_exhandler->raise(Exception::FMTexc::FMTundefined_constant,
 								" at line " + std::to_string(_line),

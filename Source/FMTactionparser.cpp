@@ -17,8 +17,8 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 namespace Parser{
 
-	const std::regex FMTactionparser::rxsection = std::regex("^(\\*ACTION)([\\s\\t]*)([^\\s^\\t]*)([\\s\\t]*)([NY])([\\s\\t]*)(_LOCKEXEMPT)|(\\*ACTION)([\\s\\t]*)([^\\s^\\t]*)([\\s\\t]*)([NY])|(\\*OPERABLE)([\\s\\t]*)([^\\s^\\t]*)|(\\*AGGREGATE)([\\s\\t])(.+)|(\\*PARTIAL)([\\s\\t])(.+)", std::regex_constants::ECMAScript | std::regex_constants::icase);
-	const std::regex FMTactionparser::rxoperator = std::regex("((\\w+)[\\s\\t]*([<=>]*)[\\s\\t]*(\\d+))|(and)|(or)|([^\\s^\\t]*)", std::regex_constants::ECMAScript | std::regex_constants::icase);
+	const boost::regex FMTactionparser::rxsection = boost::regex("^(\\*ACTION)([\\s\\t]*)([^\\s^\\t]*)([\\s\\t]*)([NY])([\\s\\t]*)(_LOCKEXEMPT)|(\\*ACTION)([\\s\\t]*)([^\\s^\\t]*)([\\s\\t]*)([NY])|(\\*OPERABLE)([\\s\\t]*)([^\\s^\\t]*)|(\\*AGGREGATE)([\\s\\t])(.+)|(\\*PARTIAL)([\\s\\t])(.+)", boost::regex_constants::ECMAScript | boost::regex_constants::icase);
+	const boost::regex FMTactionparser::rxoperator = boost::regex("((\\w+)[\\s\\t]*([<=>]*)[\\s\\t]*(\\d+))|(and)|(or)|([^\\s^\\t]*)", boost::regex_constants::ECMAScript | boost::regex_constants::icase);
 	
 
 FMTactionparser::FMTactionparser() : FMTparser()
@@ -123,9 +123,9 @@ FMTactionparser::FMTactionparser() : FMTparser()
 					line = getcleanlinewfor(actionstream, themes, constants);
 					if (!line.empty())
 					{
-						std::smatch kmatch;
+						boost::smatch kmatch;
 						
-						if (!std::regex_search(line, kmatch, FMTactionparser::rxsection))
+						if (!boost::regex_search(line, kmatch, FMTactionparser::rxsection))
 						{
 							//crash here
 						}

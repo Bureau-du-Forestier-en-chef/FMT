@@ -15,7 +15,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <string>
 #include <queue>
 #include "FMTutility.hpp"
-#include <regex>
+#include <boost/regex.hpp>
 #include <limits>
 
 
@@ -42,18 +42,18 @@ namespace Parser
 
 	class FMTEXPORT FMToptimizationparser : public FMTparser
 	{
-		const static std::regex rxsections;
-		const static std::regex rxobjectives;
-		const static std::regex rxexclude;
-		const static std::regex rxconstraints;
-		const static std::regex rxequations;
-		const static std::regex rxperiods;
-		const static std::regex rxending;
-		const static std::regex rxoutput;
-		const static std::regex rxpenalty;
-		const static std::regex rxspecialoutput;
-		const static std::regex rxspatial;
-		const static std::regex rxspecialobjective;
+		const static boost::regex rxsections;
+		const static boost::regex rxobjectives;
+		const static boost::regex rxexclude;
+		const static boost::regex rxconstraints;
+		const static boost::regex rxequations;
+		const static boost::regex rxperiods;
+		const static boost::regex rxending;
+		const static boost::regex rxoutput;
+		const static boost::regex rxpenalty;
+		const static boost::regex rxspecialoutput;
+		const static boost::regex rxspatial;
+		const static boost::regex rxspecialobjective;
 		std::queue<std::string>ineach;
 		Core::FMTconstraint getobjective(const std::string& line, const Core::FMTconstants& constants,
                              const std::vector<Core::FMToutput>& outputs,
@@ -74,7 +74,7 @@ namespace Parser
 		std::vector<Core::FMTconstraint> getperiodsbounds(std::string periodstr,const Core::FMTconstraint& constraint, const Core::FMTconstants& constants) const;
 		void fillbounds(const std::string& operatorvalue, const double& rhs, double& lower,double& upper) const;
 		Core::FMTconstraint getspatialconstraint(const Core::FMTconstraint& baseconstraint,
-			const std::smatch& match, const std::string& line,
+			const boost::smatch& match, const std::string& line,
 			const Core::FMTconstants& constants,
 			const std::vector<Core::FMTaction>& actions,
 			const std::vector<Core::FMToutput>& outputs,

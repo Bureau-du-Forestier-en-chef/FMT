@@ -8,7 +8,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #ifndef FMTparser_H_INCLUDED
 #define FMTparser_H_INCLUDED
 
-#include <regex>
+#include <boost/regex.hpp>
 #include <iterator>
 #include <iostream>
 #include <fstream>
@@ -67,25 +67,25 @@ class FMTEXPORT FMTparser: public Core::FMTobject
     private:
 		// DocString: FMTparser::rxvectortheme
 		///Regex to capture theme.
-		const static std::regex rxvectortheme;
+		const static boost::regex rxvectortheme;
 		// DocString: FMTparser::rxnumber
 		///Regex to capture constants or numeric value
-		const static std::regex rxnumber;
+		const static boost::regex rxnumber;
 		// DocString: FMTparser::rxremovecomment
 		///Regex to capture comments 
-		const static std::regex rxremovecomment;
+		const static boost::regex rxremovecomment;
 		// DocString: FMTparser::rxvalid
 		///Regex to validate if a string is valid for the parser.
-		const static std::regex rxvalid;
+		const static boost::regex rxvalid;
 		// DocString: FMTparser::rxinclude
 		///Regex to catch the include keyword.
-		const static std::regex rxinclude;
+		const static boost::regex rxinclude;
 		// DocString: FMTparser::rxfor
 		///Regex to capture for loops.
-		const static std::regex rxfor;
+		const static boost::regex rxfor;
 		// DocString: FMTparser::rxend
 		///Regex to capture the end of forloops.
-		const static std::regex rxend;
+		const static boost::regex rxend;
 		// DocString: FMTparser::_incomment
 		///Is true if the parser is in a bracket comment {} else false
         bool _incomment;
@@ -117,22 +117,22 @@ class FMTEXPORT FMTparser: public Core::FMTobject
 		mutable Core::FMTsection _section;
 		// DocString: FMTparser::rxayld
 		///A regex for capturing age/period/yield specification
-		const static std::regex rxayld;
+		const static boost::regex rxayld;
 		// DocString: FMTparser::rxaage
 		///A regex for capturing age specificaiton
-		const static std::regex rxaage;
+		const static boost::regex rxaage;
 		// DocString: FMTparser::rxayldage
 		///A regex for capturing age or yield specification
-		const static std::regex rxayldage;
+		const static boost::regex rxayldage;
 		// DocString: FMTparser::rxbounds
 		///A regex for capturing bounds for yield or age specification
-		const static std::regex rxbounds;
+		const static boost::regex rxbounds;
 		// DocString: FMTparser::rxoperators
 		///A regex for capturing simple operators
-		const static std::regex rxoperators;
+		const static boost::regex rxoperators;
 		// DocString: FMTparser::rxprimary
 		///A regex for capturing the primary file
-		const static std::regex rxprimary;
+		const static boost::regex rxprimary;
 		// DocString: FMTparser::_constreplacement
 		///Number of constant replaced by a numerical number
         mutable int _constreplacement;
@@ -281,7 +281,7 @@ class FMTEXPORT FMTparser: public Core::FMTobject
     public:
 		// DocString: FMTparser::rxseparator
 		///A regex for splitting general string.
-		const static std::regex rxseparator;
+		const static boost::regex rxseparator;
 		// DocString: FMTparser()
 		/**
 		Default constructor for FMTparser.
@@ -331,12 +331,12 @@ class FMTEXPORT FMTparser: public Core::FMTobject
 		/**
 		Capture a forloops from a line and return the variables to loop on.
 		*/
-		std::vector<std::string>regexloop(const std::regex& cutregex, std::string& str) const;
+		std::vector<std::string>regexloop(const boost::regex& cutregex, std::string& str) const;
 		// DocString: FMTparser::spliter
 		/**
 		Split a string into multiple strings.
 		*/
-		std::vector<std::string>spliter(std::string strmask,const std::regex& xspliter) const;
+		std::vector<std::string>spliter(std::string strmask,const boost::regex& xspliter) const;
 		// DocString: FMTparser::clearcomments
 		/**
 		Clear comments from a line and fill up the _comment private value.

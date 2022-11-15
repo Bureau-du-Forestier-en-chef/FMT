@@ -9,7 +9,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #define FMTtransitionparser_H_INCLUDED
 
 #include "FMTparser.hpp"
-#include <regex>
+#include <boost/regex.hpp>
 #include "string"
 #include <vector>
 
@@ -36,19 +36,19 @@ class FMTEXPORT FMTtransitionparser : public FMTparser
     {
 		// DocString: FMTtransitionparser::rxsection
 		///Regex to capture the transition section.
-		const static std::regex rxsection;
+		const static boost::regex rxsection;
 		// DocString: FMTtransitionparser::rxlock
 		///Regex to capture the lock level of the transition mask.
-		const static std::regex rxlock;
+		const static boost::regex rxlock;
 		// DocString: FMTtransitionparser::rxage
 		///Regex to capture the age level of the transition mask.
-		const static std::regex rxage;
+		const static boost::regex rxage;
 		// DocString: FMTtransitionparser::rxreplace
 		///Regex to capture the age level of the transition mask.
-		const static std::regex rxreplace;
+		const static boost::regex rxreplace;
 		// DocString: FMTtransitionparser::rxtyld
 		///Regex to capture yield bounds of the transition mask.
-		const static std::regex rxtyld;
+		const static boost::regex rxtyld;
     public:
 		// DocString: FMTtransitionparser()
 		/**
