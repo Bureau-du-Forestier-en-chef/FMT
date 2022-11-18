@@ -89,7 +89,10 @@ namespace Heuristics
 		size_t startingperiod;
 		// DocString: FMToperatingareascheme::threshold
 		///Area threshold the proportion of area harvested need to be at least this number
-		double threshold;
+		double threshold; 
+		// DocString: FMToperatingareascheme::fullenumeration
+		///If true, for every possible opening period after the return time a scheme will be created 
+		bool fullenumeration;
 		// DocString: FMToperatingareascheme::getarea
 		/**
 			Get the area of the operating area base on a (primalsolution) 
@@ -111,7 +114,7 @@ namespace Heuristics
 			This fonction generate all potential schemes of the operating area if the "harvest stade" exist within the matrix.
 			If full enumeration is set to true then it will enumerate all possible patterns....
 		*/
-		std::vector<std::vector<std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>>> generateschemes(const std::vector<std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>>& verticies,bool fullenumeration=false);
+		std::vector<std::vector<std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>>> generateschemes(const std::vector<std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>>& verticies);
 		// DocString: FMToperatingareascheme::schemestoLP
 		/**
 		Using the generated (schemes) from the generateschemes functions, and all periodic verticies (periodics),
@@ -332,9 +335,11 @@ namespace Heuristics
 			Main FMToperatingareascheme constructor targeting the user. Before synchronizing everything to the solverinterface,
 			the user has to provide to the heuristics all the green-up, returntime etc.... for each operating area.
 			The minimalarearatio is the minimal ratio needed to open the COS...
+			The fullenum is to set the class parameter fullenumeration
 			*/
 			FMToperatingareascheme(const FMToperatingarea& oparea,const size_t& lopeningtime, const size_t& lreturntime,
-				const size_t& lrepetition, const size_t& lgreenup,const size_t& lstartingperiod,double minimalarearatio=0.0);
+				const size_t& lrepetition, const size_t& lgreenup,const size_t& lstartingperiod,double minimalarearatio=0.0,
+				bool fullenum=false);
 			// DocString: FMToperatingareascheme()
 			/**
 			Default FMToperatingareascheme constructor
