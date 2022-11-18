@@ -63,10 +63,10 @@ void FMToperatingareascheme::getenumeration(std::vector<std::vector<size_t>>& re
 		}
 	}
 
-std::vector<std::vector<std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>>> FMToperatingareascheme::generateschemes(const std::vector<std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>>& verticies, bool fullenemuration)// Generate unique schemes base on parameters
+std::vector<std::vector<std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>>> FMToperatingareascheme::generateschemes(const std::vector<std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>>& verticies)// Generate unique schemes base on parameters
 {
 	std::vector<std::vector<std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>>>schemes;
-	if (true/*fullenemuration*/)
+	if (fullenumeration)
 	{
 		std::map<std::pair<size_t, size_t>, std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>>nodes;
 		const size_t depth = std::min(std::max((verticies.size()/(returntime+openingtime))+1,size_t(1)), repetition);
@@ -595,13 +595,13 @@ const std::vector<int>& FMToperatingareascheme::getopeningbinaries() const
 	}
 
 FMToperatingareascheme::FMToperatingareascheme(const FMToperatingarea& oparea,const size_t& lopeningtime, const size_t& lreturntime,
-	const size_t& lrepetition,const size_t& lgreenup, const size_t& lstartingperiod, double minimalarearatio):FMToperatingarea(oparea),
+	const size_t& lrepetition,const size_t& lgreenup, const size_t& lstartingperiod, double minimalarearatio, bool fullenum):FMToperatingarea(oparea),
 	openingconstraints(),
 	openingbinaries(),
 	maximalschemesconstraint(),
 	schemesperiods(),
 	openingtime(lopeningtime),returntime(lreturntime),repetition(lrepetition),
-	greenup(lgreenup),startingperiod(lstartingperiod), threshold(minimalarearatio)
+	greenup(lgreenup),startingperiod(lstartingperiod), threshold(minimalarearatio), fullenumeration(fullenum)
 	{
 
 	}

@@ -60,7 +60,7 @@ void exportHeuristics()
 
 	bp::class_<Heuristics::FMToperatingareascheme,bp::bases<Heuristics::FMToperatingarea>>("FMToperatingareascheme", "@DocString(FMToperatingareascheme)")
 		.def(bp::init<const Heuristics::FMToperatingarea&,const size_t&,const size_t&,
-			const size_t&, const size_t&, const size_t&, double>())
+			const size_t&, const size_t&, const size_t&, double,bool>())
 		.def("presolve", &Heuristics::FMToperatingareascheme::presolve,
 			"@DocString(FMToperatingareascheme::presolve)");
 

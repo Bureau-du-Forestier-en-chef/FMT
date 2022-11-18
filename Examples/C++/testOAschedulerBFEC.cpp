@@ -129,7 +129,7 @@ int main(int argc, char *argv[])
             const std::vector<Models::FMTmodel> models = modelparser.readproject(primarylocation, scenarios);
             Models::FMTmodel model = models.at(0);
             Models::FMTlpmodel optimizationmodel(model, Models::FMTsolverinterface::MOSEK);
-            optimizationmodel.setparameter(Models::FMTintmodelparameters::LENGTH,10);
+            optimizationmodel.setparameter(Models::FMTintmodelparameters::LENGTH,5);
 	        optimizationmodel.setparameter(Models::FMTboolmodelparameters::STRICTLY_POSITIVE, true);
 	        optimizationmodel.setparameter(Models::FMTintmodelparameters::PRESOLVE_ITERATIONS, 1);
             optimizationmodel.setparameter(Models::FMTboolmodelparameters::POSTSOLVE, true);
