@@ -27,7 +27,7 @@ std::vector<Heuristics::FMToperatingareascheme> ObtenirOperatingArea(   const st
             if (OA != "NA")
             {
                 const int OPT = 1;
-                const int RET = 4;
+                const int RET = 3;
                 const int REP = 10;
                 const float NPE = 0;
                 const float GUP = 0;
@@ -50,7 +50,7 @@ std::vector<Heuristics::FMToperatingareascheme> ObtenirOperatingArea(   const st
                     RET,
                     REP,
                     GUP,
-                    startingperiod,0.0,true));
+                    startingperiod));
 
                 if (NPE > 0 || GUP > 0)
                 {
@@ -120,9 +120,9 @@ int main(int argc, char *argv[])
     {   
         #ifdef FMTWITHOSI
             Logging::FMTlogger().logstamp();
-            const std::string primarylocation = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/09_FMT/Modeles_test/FM/PC_7001892_U03772_SSP02.pri";// std::string(argv[1]);
-            const std::vector<std::string>scenarios(1,"03_sc1a_bfecopt" /*std::string(argv[2])*/);//);
-            const std::string fichierShp = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/09_FMT/Modeles_test/FM/Carte/PC_7001892_U03772_SSP02.shp";// std::string(argv[3]);
+            const std::string primarylocation =  std::string(argv[1]);
+            const std::vector<std::string>scenarios(1, std::string(argv[2]));//);
+            const std::string fichierShp = std::string(argv[3]);
             Parser::FMTmodelparser modelparser;
             modelparser.setdefaultexceptionhandler();
             modelparser.settasklogger();
