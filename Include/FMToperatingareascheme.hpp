@@ -163,6 +163,11 @@ namespace Heuristics
 		*/
 		void getenumeration(std::vector<std::vector<size_t>>& returns, const std::vector<size_t>& arr, std::vector<size_t> data,
 							const size_t& start, const size_t& end, const size_t& index, const size_t& r) const;
+		// DocString: FMToperatingareascheme::getmaxperiod
+		/**
+		Get the maximal period of all potential schemes
+		*/
+		int getmaxperiod() const;
 		public:
 			// DocString: FMToperatingareascheme::empty
 			/**
