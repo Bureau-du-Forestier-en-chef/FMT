@@ -163,6 +163,22 @@ std::vector<std::vector<std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, 
 	return schemes;
 	}
 
+int FMToperatingareascheme::getmaxperiod() const
+{
+	int maxperiod = 0;
+	for (const std::vector<int>& periods : schemesperiods)
+		{
+		for (const int& period : periods)
+			{
+			if (period>maxperiod)
+				{
+				maxperiod = period;
+				}
+			}
+		}
+	return maxperiod;
+}
+
 	void FMToperatingareascheme::schemestoLP(const std::vector<std::vector<std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>>>& schemes,
 		const std::vector<std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>>& periodics,
 		const std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>& totalareaverticies,
@@ -490,32 +506,74 @@ void FMToperatingareascheme::closenoactivity(std::vector<double>& filleduppatter
 
 std::vector<double> FMToperatingareascheme::getdualsolution(const double* upperbounds, const double* dualsolution) const
 	{
+	std::vector<double>filledpattern;
 	const size_t patternsize = (this->openingtime + this->returntime);
-	//std::vector<double>pattern(patternsize,0.0);
+	bool foundsolution = false;
 	size_t solutionid = 0;
-	int startingat = -1;
-	std::vector<double>filledpattern(patternsize * repetition, 0.0);
-	if (getdualsolutionindex(upperbounds, solutionid))
+	
+	if (fullenumeration)
+	{
+		filledpattern.resize(patternsize * repetition, 0.0);
+		if (getdualsolutionindex(upperbounds, solutionid))
 		{
-		//startingat = *(schemesperiods.at(solutionid).begin());
-		/*for (size_t opid = 0; opid<this->openingtime; ++opid)
-		{
-			pattern[opid] = 1;
-		}*/
-		for (const int& period : schemesperiods.at(solutionid))
+			foundsolution = true;
+			int lastperiod = 0;
+			for (const int& period : schemesperiods.at(solutionid))
 			{
-			filledpattern[period] = 1;
+				filledpattern[period] = 1;
+				lastperiod = period;
+			}
+			const int maxperiod = getmaxperiod();
+			if (maxperiod > 0)
+			{
+				int period = maxperiod + 1;
+				const int thepatternsize = static_cast<int>(filledpattern.size());
+				int backedperiod = 1;
+				while (period < thepatternsize)
+				{
+					if ((period-lastperiod)>static_cast<int>(this->returntime))//Eliminer les retours trop proche a linterieur du returntime
+						{
+						filledpattern[period] = filledpattern.at(backedperiod);
+						if (filledpattern.at(backedperiod)>0&&
+							filledpattern.at(backedperiod+1)<1)
+							{
+							lastperiod = period;
+							}
+						}
+					if (backedperiod == maxperiod)
+					{
+						backedperiod = 0;
+					}
+					else {
+						++backedperiod;
+					}
+					++period;
+				}
 			}
 		}
-	size_t period = 0;
-	//For period before the starting period of the optimization fill with 1 
-	while (period < startingperiod)
-	{
-		filledpattern[period] = 1;
-		++period;
+		size_t period = 0;
+		//For period before the starting period of the optimization fill with 1 
+		while (period < startingperiod)
+		{
+			filledpattern[period] = 1;
+			++period;
+		}
+	 } else {
+		int startingat = -1;
+		std::vector<double>pattern(patternsize, 0.0);
+		if (getdualsolutionindex(upperbounds, solutionid))
+		{
+			foundsolution = true;
+			startingat = *(schemesperiods.at(solutionid).begin());
+			for (size_t opid = 0; opid < this->openingtime; ++opid)
+			{
+				pattern[opid] = 1;
+			}
+			
+		}
+		filledpattern= this->fillpattern(pattern, startingat);
 	}
-
-	if (startingat>0)
+	if (foundsolution)
 	{
 		closenoactivity(filledpattern, solutionid, dualsolution);
 	}
@@ -996,6 +1054,7 @@ size_t FMToperatingareascheme::getstartingperiod() const
 	{
 	return startingperiod;
 	}
+
 
 bool FMToperatingareascheme::operator == (const FMToperatingareascheme& rhs) const
 	{
