@@ -27,7 +27,7 @@ std::vector<Heuristics::FMToperatingareascheme> ObtenirOperatingArea(   const st
             if (OA != "NA")
             {
                 const int OPT = 1;
-                const int RET = 3;
+                const int RET = 2;
                 const int REP = 10;
                 const float NPE = 0;
                 const float GUP = 0;
@@ -50,7 +50,7 @@ std::vector<Heuristics::FMToperatingareascheme> ObtenirOperatingArea(   const st
                     RET,
                     REP,
                     GUP,
-                    startingperiod));
+                    startingperiod,0.0,true));
 
                 if (NPE > 0 || GUP > 0)
                 {
