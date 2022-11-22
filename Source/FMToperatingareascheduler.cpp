@@ -881,7 +881,14 @@ namespace Heuristics
                     {
                     data=operatingareait->getprimalsolution(primalsolution);
                 }else {
-                    data=operatingareait->getdualsolution(rowupperbound, rowsolution);
+					bool breakneighboringextended = false;
+                    data=operatingareait->getdualsolution(rowupperbound, rowsolution, breakneighboringextended);
+					if (breakneighboringextended)
+						{
+						_exhandler->raise(Exception::FMTexc::FMTignore,
+							"Extending solution past last period can breaks neighboring constraints on "+std::string(operatingareait->getmask()),
+							"FMToperatingareascheduler::getsolution", __LINE__, __FILE__);
+						}
                     }
                 std::vector<std::string>source;
 				Core::FMTtimeyieldhandler handler(operatingareait->getmask());

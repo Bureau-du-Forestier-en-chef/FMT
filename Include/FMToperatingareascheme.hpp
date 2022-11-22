@@ -318,7 +318,7 @@ namespace Heuristics
 			Gets the yield solution of the dual problem using (dualsolution) it set the selected
 			scheme solution into a vector of double.
 			*/
-			std::vector<double> getdualsolution(const double* upperbounds, const double* dualsolution) const;
+			std::vector<double> getdualsolution(const double* upperbounds, const double* dualsolution, bool& canbreakneighboring) const;
 			// DocString: FMToperatingareascheme::getduallowerbounds
 			/**
 			Gets the lowerbounds of the solution for bounding the minimal harvested area.
