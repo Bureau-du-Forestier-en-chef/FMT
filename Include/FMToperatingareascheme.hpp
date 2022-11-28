@@ -386,6 +386,11 @@ namespace Heuristics
 			it returns a presolved FMTmask with potentialy less data.
 			*/
 			FMToperatingareascheme presolve(const Core::FMTmask& selectedmask,const std::vector<Core::FMTtheme>&presolvedthemes) const;
+			// DocString: FMToperatingareascheme::size
+			/**
+			Return the number of scheme for the OA. Can only be used if schemestoLP has been set called...
+			*/
+			size_t getnumberofscheme() const;
 
 		};
 

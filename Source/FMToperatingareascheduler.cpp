@@ -960,6 +960,12 @@ namespace Heuristics
 				}*/
 			const double baseobj = this->getObjValue();
 			this->setoperatingareasconstraints(maingraph, model, target);
+			size_t complexity=0;
+			for (const auto& oparea : operatingareas)
+			{
+				complexity+=oparea.getnumberofscheme();
+			}
+			(*_logger) <<  "Complexity calculated by scheduler : " << complexity << "\n";
 			bool adjacencyconstraintset = this->setadjacencyconstraints();
 			updaterowsandcolsnames();
 			this->resolvemodel();
