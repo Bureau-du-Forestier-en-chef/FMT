@@ -748,7 +748,7 @@ Models::FMTmodel FMTmodelparser::referenceread(std::map<std::string, std::vector
 
 		void FMTmodelparser::writeproject(const std::string& primary_location,
 			const std::vector<Models::FMTmodel>& models,
-			std::vector<std::vector<Core::FMTschedule>>schedules = std::vector<std::vector<Core::FMTschedule>>())
+			std::vector<std::vector<Core::FMTschedule>>schedules)
 		{
 			try {
 
