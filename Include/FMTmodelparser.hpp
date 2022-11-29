@@ -129,6 +129,14 @@ class FMTEXPORT FMTmodelparser : public FMTparser
 		std::vector<Models::FMTmodel>readproject(const std::string& primary_location,
 			std::vector<std::string>scenarios = std::vector<std::string>(),
 			bool readarea = true,bool readoutputs = true, bool readoptimize = true);
+		// DocString: FMTmodelparser::writeproject
+		/**
+		The writeproject function writes multiple scenarios based on a primary file location (.pri).
+		If the user gives the schedules it will also write the solution of each FMTmodel
+		*/
+		void writeproject(const std::string& primary_location,
+			const std::vector<Models::FMTmodel>& models,
+			std::vector<std::vector<Core::FMTschedule>>schedules = std::vector<std::vector<Core::FMTschedule>>());
 		// DocString: FMTmodelparser::readschedules
 		/**
 		The readschedules function read the schedule files of the specified (models) based on a primary file
