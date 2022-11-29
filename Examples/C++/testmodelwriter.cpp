@@ -32,7 +32,7 @@ int main(int argc, char* argv[])
 	optmodel = Models::FMTlpmodel(rereadmodels.at(0), Models::FMTsolverinterface::MOSEK);
 	optmodel.setparameter(Models::FMTintmodelparameters::LENGTH,3);
 	optmodel.setparameter(Models::FMTintmodelparameters::PRESOLVE_ITERATIONS, 3);
-	optmodel.setparameter(Models::FMTboolmodelparameters::STRICTLY_POSITIVE, false);
+	optmodel.setparameter(Models::FMTboolmodelparameters::STRICTLY_POSITIVE, true);
 	optmodel.doplanning(true);
 	const double finalobjvalue = optmodel.getObjValue();
 	std::cout << finalobjvalue << " " << initobjvalue << std::endl;
