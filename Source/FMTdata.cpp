@@ -191,6 +191,9 @@ FMTdata::operator std::string() const
 		case FMTyieldparserop::FMTmodelpred:
 			value += "_PRED(";
 		break;
+		case FMTyieldparserop::FMTdelta:
+			value += "_DELTA(";
+		break;
         default:
         break;
         }

@@ -36,7 +36,8 @@ namespace Parser
 	const boost::regex FMToptimizationparser::rxspecialoutput = boost::regex("^(_AVG|_SUM)(\\()(([^,]*)(,)(([^,]*)(([\\d]*|#.+)(\\.\\.)(#.+|_LENGTH|[\\d]*))|(#.+|[\\d]*))|(.+))(\\))", boost::regex_constants::ECMAScript | boost::regex_constants::icase);
 	const boost::regex FMToptimizationparser::rxspatial = boost::regex("^(_SIZE|_ADJACENCY|_RANDOM)([\\s\\t]*)(\\()(.+)(\\))([\\s\\t]*)(>=|<=|=)([\\s\\t]*)(#[^\\s^\\t]*|[\\d]*)(.+)", boost::regex_constants::ECMAScript | boost::regex_constants::icase);
 	const boost::regex FMToptimizationparser::rxspecialobjective = boost::regex("^(.+)(_SETGLOBALSCHEDULE)(\\()([\\d]*)(\\))", boost::regex_constants::ECMAScript | boost::regex_constants::icase);
-
+	const boost::regex FMToptimizationparser::rxstartwithoperator = boost::regex("([\\s\\t]*)([-+])(.+)", boost::regex_constants::ECMAScript | boost::regex_constants::icase);
+	
 	FMToptimizationparser::FMToptimizationparser() :
 		FMTparser(),
 		ineach()
@@ -143,6 +144,7 @@ namespace Parser
 			std::string simple_value;
 			std::vector<Core::FMToutput>::const_iterator constant_output;
 			bool lastcharspace = false;
+			
 			for (char strvalue : line)
 			{
 				if (lastcharspace && (strvalue == '+' || strvalue == '-' || strvalue == '/' || strvalue == '*') && (simple_value.empty() || (!simple_value.empty() && simple_value.back() != '[')))
@@ -206,6 +208,7 @@ namespace Parser
 			{
 				simplificaiton.push_back(simple_value);
 			}
+			
 			const Core::FMTexpression simplification = Core::FMTexpression(simplificaiton).simplify(nodes);
 		}catch (...)
 			{
@@ -325,9 +328,13 @@ namespace Parser
 						bounding = Core::FMTperbounds(Core::FMTsection::Optimize, inttarget_period, inttarget_period);
 					}
 					//copy the output and the specify the attribute and the periods!!!
+					
 					Core::FMToutput newoutput = target_out->boundto(themes, bounding, specialtype, target_attribute);
+					
 					newoutput *= output_it->second;
 					final_output += newoutput;
+					
+					
 				}
 				else {
 					_exhandler->raise(Exception::FMTexc::FMTinvalid_constraint,
@@ -335,6 +342,7 @@ namespace Parser
 						"FMToptimizationparser::resume_output", __LINE__, __FILE__, _section);
 				}
 			}
+			
 		}catch (...)
 			{
 			_exhandler->raisefromcatch("", "FMToptimizationparser::resume_output", __LINE__, __FILE__,_section);
@@ -429,6 +437,8 @@ namespace Parser
 		Core::FMTconstraint constraint;
 		std::vector<Core::FMTconstraint>returnedconstraints;
 		boost::match_results<std::string::const_iterator> Bmatch;
+		
+
 		//boost::match_flag_type flags = boost::match_default;
 		try {
 			boost::smatch kmatch;
@@ -510,22 +520,28 @@ namespace Parser
 					{
 					LHS += beempty;
 					}
-				std::string RHS = std::string(Bmatch[7]) + std::string(Bmatch[12]);
-				//boost::trim(RHS);
-				const std::string full_equation = LHS + std::string(1, ' ') + std::string(1, '+') + RHS;
-				std::map<std::string, double> nodes = getequation(full_equation, constants, outputs, LHS.size());
+				const std::string RHS = std::string(Bmatch[7]) + std::string(Bmatch[12]);
+				std::string rhsoperator;
+				if (!boost::regex_match(RHS, rxstartwithoperator))
+					{
+					rhsoperator = "+";
+					}
+				const std::string full_equation = std::string(1, ' ') + LHS + std::string(1, ' ') + rhsoperator + RHS;
+				std::map<std::string, double> nodes = getequation(full_equation, constants, outputs, LHS.size()+2);
 				double bound = nodes["RHS"];
 				nodes.erase("RHS");
 				double lower = 0;
 				double upper = 0;
 				fillbounds(str_operator, bound, lower, upper);
 				const Core::FMToutput final_output = resume_output(nodes, outputs, themes, constants);
+
 				for (Core::FMTconstraint baseconstraint : getperiodsbounds(periodstring, constraint, constants))
 				{
 					baseconstraint.setoutput(final_output);
 					baseconstraint.setconstrainttype(cctype);
 					baseconstraint.setrhs(lower, upper);
 					returnedconstraints.push_back(baseconstraint);
+					
 				}
 			}else{
 				_exhandler->raise(Exception::FMTexc::FMTinvalid_constraint,

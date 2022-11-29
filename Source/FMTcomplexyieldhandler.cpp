@@ -15,6 +15,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMToperator.hpp"
 #include "FMTexception.hpp"
 #include "FMTexpression.hpp"
+#include <unordered_set>
 
 
 namespace Core {
@@ -24,7 +25,14 @@ namespace Core {
 	{
 		std::string value;
 		try {
-			value += "*YC " + std::string(mask) + "\n";
+			value += "*YC " + std::string(mask);
+			if (getoverrideindex()>0)
+				{
+				value += " _OVERRIDE";
+				}
+			
+
+			value += "\n";
 			for (std::map<std::string, FMTdata>::const_iterator it = elements.begin(); it != elements.end(); ++it)
 				{
 				value += it->first + " " + std::string(it->second) + "\n";
@@ -192,6 +200,11 @@ namespace Core {
 		{
 		overridetabou.insert(index);
 		}
+
+	std::vector<size_t>FMTcomplexyieldhandler::gettabous() const
+	{
+		return std::vector<size_t>(overridetabou.begin(), overridetabou.end());
+	}
 
 	void FMTcomplexyieldhandler::settabou(const FMTcomplexyieldhandler& rhs)
 		{
@@ -524,7 +537,13 @@ namespace Core {
 	}
 
 	FMTcomplexyieldhandler::FMTcomplexyieldhandler(const FMTmask& mask):
-		FMTyieldhandler(mask)
+		FMTyieldhandler(mask), elements(), overridetabou(), overrideindex(0)
+	{
+
+	}
+
+	FMTcomplexyieldhandler::FMTcomplexyieldhandler() :
+		FMTyieldhandler(), elements(), overridetabou(), overrideindex(0)
 	{
 
 	}

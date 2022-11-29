@@ -10,6 +10,8 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTexceptionhandler.hpp"
 #include "FMTageyieldhandler.hpp"
 #include "FMTtimeyieldhandler.hpp"
+#include "FMTcomplexyieldhandler.hpp"
+#include <boost/algorithm/string.hpp> 
 #include <memory>
 
 namespace Core{
@@ -67,12 +69,53 @@ FMTyields::FMTyields():FMTlist<std::unique_ptr<FMTyieldhandler>>(), yieldpresenc
         {
 		std::vector<std::string>values;
 		try {
+			std::map<size_t, std::string>overrided;
+			std::map<size_t, size_t>positions;
+			bool inoverridesection = true;
 			for (const auto& handlerobj : *this)
 			{
 				std::string value = "";
 				value += std::string(*handlerobj.second) + "\n";
-				values.push_back(value);
+				const size_t canbeoverride = handlerobj.second->getoverrideindex();
+				std::map<size_t, std::string>::const_iterator overfind = overrided.find(canbeoverride);
+				const bool inoverridesection = (overrided.find(canbeoverride) == overrided.end());
+				if (inoverridesection&&
+					canbeoverride>0)
+					{
+					overrided[canbeoverride] = value;
+				}else {
+					const size_t position = values.size()+1;
+					for (const size_t& tab : handlerobj.second->gettabous())
+						{
+						if (positions.find(tab)== positions.end())
+							{
+							positions[tab] = 0;
+							}
+						positions[tab] = std::max(positions.at(tab), position);
+						}
+					values.push_back(value);
+				}
 			}
+			std::map<size_t,std::vector<std::string>>finaloverided;
+			for (std::map<size_t, std::string>::const_iterator oit = overrided.begin(); oit!= overrided.end();++oit)
+				{
+				size_t location = values.size();
+				if (positions.find(oit->first)!=positions.end())
+				{
+					location = positions.at(oit->first);
+				}
+				if (finaloverided.find(oit->first) == finaloverided.end())
+				{
+					finaloverided[location] = std::vector<std::string>();
+				}
+				finaloverided[location].push_back(oit->second);
+
+				}
+			for (std::map<size_t, std::vector<std::string>>::const_reverse_iterator oit = finaloverided.rbegin(); oit != finaloverided.rend(); ++oit)
+			{
+				values.insert(values.begin() + oit->first, oit->second.begin(), oit->second.end());
+			}
+			
 		}
 		catch (...)
 		{

@@ -118,7 +118,7 @@ namespace Parser
 			   }
 		   }catch (...)
 		   {
-			   _exhandler->raisefromcatch("In " + _location + " at line " + std::to_string(_line), "FMToutputparser::readnfill", __LINE__, __FILE__, _section);
+			   _exhandler->raisefromcatch("In " + _location + " at line " + std::to_string(_line), "FMToutputparser::appendtooutput", __LINE__, __FILE__, _section);
 		   }
 	
 	   }
@@ -336,7 +336,7 @@ namespace Parser
 												_exhandler->raise(Exception::FMTexc::FMTunsupported_output,
 													name + " at line " + std::to_string(_line),"FMToutputparser::read", __LINE__, __FILE__, _section);
 											}
-
+											
 											appendtooutput(
 												std::to_string(value),
 												outputid,
@@ -346,6 +346,7 @@ namespace Parser
 												stroperators,
 												sources,
 												operators);
+											//lastoutput = 0;
 											
 											/*if (!lastoperator.empty())
 											{
@@ -529,6 +530,7 @@ namespace Parser
 														stroperators,
 														sources,
 														operators);
+													//lastoutput = 0;
 												
 												}else{
 													_exhandler->raise(Exception::FMTexc::FMTundefined_output,
@@ -760,6 +762,14 @@ namespace Parser
 																}
 
 														}
+														if (!stroperators.empty())
+														{
+															lastoutput = sources.size();
+															operators.push_back(Core::FMToperator(stroperators.front()));
+															lastoperator = stroperators.front();
+															stroperators.erase(stroperators.begin());
+														}
+
 													}
 												}else {
 													
@@ -769,6 +779,7 @@ namespace Parser
 
 											}
 										}
+
 									}
 
 									for (const std::string& strope : stroperators)

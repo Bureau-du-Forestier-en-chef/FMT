@@ -248,6 +248,11 @@ FMTyieldhandler::operator std::string() const
 		return 0;
 		}
 
+	std::vector<size_t> FMTyieldhandler::gettabous() const
+	{
+		return std::vector<size_t>();
+	}
+
 	void FMTyieldhandler::setoverrideindex(const size_t& newindex)
 		{
 		

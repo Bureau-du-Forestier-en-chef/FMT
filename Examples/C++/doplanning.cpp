@@ -23,7 +23,7 @@ int main(int argc, char* argv[])
 		boost::split(results, vals, boost::is_any_of("|"));
 		const std::string primarylocation =  results.at(0);
 		const std::string scenario = results.at(1);
-		const int length = std::stoi(argv[2]);
+		const int length =  std::stoi(argv[2]);
 		const double objectivevalue = std::stod(argv[3]);
 		Parser::FMTmodelparser modelparser;
 		std::vector<Exception::FMTexc>errors;
@@ -38,6 +38,7 @@ int main(int argc, char* argv[])
 		modelparser.seterrorstowarnings(errors);
 		const std::vector<std::string>scenarios(1, scenario);
 		const std::vector<Models::FMTmodel> models = modelparser.readproject(primarylocation, scenarios);
+		//modelparser.write(models.at(0),"C:/Users/admlocal/Desktop/test2/");
 		Models::FMTlpmodel optimizationmodel(models.at(0), Models::FMTsolverinterface::MOSEK);
 		optimizationmodel.setparameter(Models::FMTintmodelparameters::LENGTH, length);
 		optimizationmodel.FMTmodel::setparameter(Models::FMTboolmodelparameters::STRICTLY_POSITIVE, true);

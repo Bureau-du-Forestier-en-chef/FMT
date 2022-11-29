@@ -60,6 +60,7 @@ namespace Parallel
 		try {
 			const std::vector<Heuristics::FMToperatingareascheduler>heuristics = model.getoperatingareaschedulerheuristics(opareas, node);
 			actualscheduler = std::move(std::unique_ptr<Heuristics::FMToperatingareascheduler>(new Heuristics::FMToperatingareascheduler(heuristics.at(0))));
+			actualscheduler->setproportionofset(0.1);
 		}catch (...)
 		{
 			_exhandler->raisefromcatch("", "FMTopareaschedulertask::setinitialscheduler", __LINE__, __FILE__);
