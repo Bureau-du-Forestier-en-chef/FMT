@@ -836,6 +836,11 @@ FMToutput FMToutput::presolve(const FMTmaskfilter& filter,
 				}
 		++operatorid;
 		}
+		if (!newoperators.empty()&&
+			newsources.size() == newoperators.size())//remove the last operator if it's the same size of the sources...
+		{
+			newoperators.erase(newoperators.end() - 1);
+		}
 		newoutput.sources.swap(newsources);
 		newoutput.operators.swap(newoperators);
 	}catch (...)

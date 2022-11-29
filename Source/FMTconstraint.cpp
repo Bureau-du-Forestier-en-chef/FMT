@@ -507,6 +507,7 @@ namespace Core
 		std::string line = "";
 		std::string period_bounds = "";
 		try{
+			
 		period_bounds += std::to_string(this->getperiodlowerbound());
 		period_bounds += "..";
 		int maxperiod = this->getperiodupperbound();
@@ -536,8 +537,8 @@ namespace Core
 				}
 			if (gotvariation)
 			{
-				if (yieldbounds.at(location).getlower() != yieldbounds.at(location).getupper()
-					&& yieldbounds.at(location).getupper() > 0)
+				if (/*yieldbounds.at(location).getlower() != yieldbounds.at(location).getupper() &&*/
+					yieldbounds.at(location).getupper() > 0)
 				{
 					variation += "," + std::to_string(static_cast<int>(yieldbounds.at(location).getlower())) + "%,";
 					variation += std::to_string(static_cast<int>(yieldbounds.at(location).getupper())) + "%";

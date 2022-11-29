@@ -46,6 +46,7 @@ protected:
 	int getmaxbase(const FMTyieldrequest& request) const;
 public:
 	virtual size_t getoverrideindex() const;
+	virtual std::vector<size_t> gettabous() const;
 	virtual void setoverrideindex(const size_t& newindex);
 	virtual ~FMTyieldhandler() = default;
 	FMTyieldhandler() = default;

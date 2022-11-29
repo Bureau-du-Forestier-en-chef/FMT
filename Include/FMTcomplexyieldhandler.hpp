@@ -40,6 +40,7 @@ namespace Core
 	public:
 		void settabou(const size_t& index);
 		void settabou(const FMTcomplexyieldhandler& rhs);
+		std::vector<size_t>gettabous() const override;
 		virtual void setoverrideindex(const size_t& newindex);
 		virtual size_t  getoverrideindex() const;
 		virtual int getlastbase() const;
@@ -47,7 +48,7 @@ namespace Core
 		bool comparesources(const std::string& yield,const FMTcomplexyieldhandler& overridedyield) const;
 		virtual  operator std::string() const;
 		~FMTcomplexyieldhandler() = default;
-		FMTcomplexyieldhandler() = default;
+		FMTcomplexyieldhandler();
 		FMTcomplexyieldhandler(const FMTcomplexyieldhandler& rhs) = default;
 		FMTcomplexyieldhandler& operator = (const FMTcomplexyieldhandler& rhs) = default;
 		FMTcomplexyieldhandler(const FMTmask& mask);

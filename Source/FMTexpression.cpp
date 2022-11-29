@@ -150,6 +150,7 @@ FMTexpression FMTexpression::simplify(std::map<std::string,double>& values) cons
         shuntit->second = 1;//set to 1
         const double factorwrest = this->shuntingyard(shuntvalues);
         const double variable_factor = (factorwrest - rest);
+
         if (variable_factor!=0)
             {
             values[shuntit->first] = variable_factor;

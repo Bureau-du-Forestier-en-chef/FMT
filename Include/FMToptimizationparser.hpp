@@ -54,6 +54,7 @@ namespace Parser
 		const static boost::regex rxspecialoutput;
 		const static boost::regex rxspatial;
 		const static boost::regex rxspecialobjective;
+		const static boost::regex rxstartwithoperator;
 		std::queue<std::string>ineach;
 		Core::FMTconstraint getobjective(const std::string& line, const Core::FMTconstants& constants,
                              const std::vector<Core::FMToutput>& outputs,
