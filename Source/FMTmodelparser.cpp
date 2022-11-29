@@ -746,6 +746,20 @@ Models::FMTmodel FMTmodelparser::referenceread(std::map<std::string, std::vector
 		return returnedmodel;
 		}
 
+		void FMTmodelparser::writeproject(const std::string& primary_location,
+			const std::vector<Models::FMTmodel>& models,
+			std::vector<std::vector<Core::FMTschedule>>schedules = std::vector<std::vector<Core::FMTschedule>>())
+		{
+			try {
+
+			}
+			catch (...)
+			{
+				_exhandler->printexceptions("at " + primary_location, "FMTmodelparser::writeproject", __LINE__, __FILE__);
+			}
+
+		}
+
 
 std::vector<Models::FMTmodel>FMTmodelparser::readproject(const std::string& primary_location,
 											std::vector<std::string>scenarios,
