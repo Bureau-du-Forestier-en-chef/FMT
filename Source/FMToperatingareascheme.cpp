@@ -12,6 +12,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTgraph.hpp"
 #include "FMTmask.hpp"
 #include "FMTlpsolver.hpp"
+#include <algorithm>
 
 namespace Heuristics
 {
@@ -79,6 +80,12 @@ std::vector<std::vector<std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, 
 		const size_t nelement = inputs.size();
 		std::vector<std::vector<size_t>> enumerations;
 		getenumeration(enumerations, inputs, data, 0, nelement - 1, 0, depth);
+		std::vector<std::vector<size_t>> reverseenumerations(enumerations);
+		for (std::vector<size_t>& returntimeof : enumerations)
+			{
+			std::reverse(returntimeof.begin(), returntimeof.end());
+			}
+		enumerations.insert(enumerations.end(), reverseenumerations.begin(), reverseenumerations.end());
 		for (const std::vector<size_t>& returntimeof : enumerations)
 		{
 			for (size_t id = 0; id < verticies.size(); ++id)
@@ -118,6 +125,7 @@ std::vector<std::vector<std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, 
 						++closing;
 					}
 				}
+				
 				if (validscheme)
 				{
 					enumdone.insert(newenum);
