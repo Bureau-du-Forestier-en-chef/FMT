@@ -1077,6 +1077,11 @@ bool FMToperatingareascheme::operator != (const FMToperatingareascheme& rhs) con
 	return (!(*this == rhs));
 	}
 
+size_t FMToperatingareascheme::getnumberofscheme() const
+	{
+		return schemesperiods.size();
+	}
+
 FMToperatingareaschemecomparator::FMToperatingareaschemecomparator(const Core::FMTmask& lmask):mask(lmask)
 	{
 
