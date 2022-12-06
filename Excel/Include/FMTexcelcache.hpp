@@ -32,7 +32,7 @@ namespace Wrapper
 			System::String^ outputname, System::String^ themeselection,int period);
 		double getyield(System::String^ primaryname, System::String^ scenario,
 			System::String^ yieldname, System::String^ themeselection, int period, int age);
-		System::Collections::Generic::List<System::String^>^ getattributes(System::String^ primaryname, System::String^ scenario,int themeid, System::String^ value);
+		System::Collections::Generic::List<System::String^>^ getattributes(System::String^ primaryname, System::String^ scenario,int themeid, System::String^ value, bool aggregates);
 		System::Collections::Generic::List<System::String^>^ getaggregates(System::String^ primaryname, System::String^ scenario, int themeid);
 		System::Collections::Generic::List<System::String^>^ getprimaries();
 		System::Collections::Generic::List<System::String^>^ getscenarios(System::String^ fichierprimaire);
