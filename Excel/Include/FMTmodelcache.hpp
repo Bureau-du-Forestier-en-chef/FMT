@@ -65,7 +65,7 @@ namespace Wrapper
 		double getvalue(const std::string& outputname, const std::string& themeselection, const int& period) const;
 		double getyield(const std::string& yieldname, const std::string& themeselection, const int& age, const int& period) const;
 		bool writejpeg(const size_t& themeid,const std::vector<std::string>attributevalues, const std::string& jpeglocation) const;
-		std::vector<std::string> getattributes(const int& themeid, const std::string& value) const;
+		std::vector<std::string> getattributes(const int& themeid, const std::string& value, const bool& aggregates) const;
 		std::vector<std::string> getaggregates(const int& themeid) const;
 		std::vector<std::string> getactions(const std::string& filter) const;
 		std::vector<std::string> getactionaggregates(const std::string& filter) const;

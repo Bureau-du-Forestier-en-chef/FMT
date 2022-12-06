@@ -284,7 +284,7 @@ namespace Wrapper
 		return value;
 	}
 
-	System::Collections::Generic::List<System::String^>^ FMTexcelcache::getattributes(System::String^ primaryname, System::String^ scenario, int themeid ,System::String^ value)
+	System::Collections::Generic::List<System::String^>^ FMTexcelcache::getattributes(System::String^ primaryname, System::String^ scenario, int themeid ,System::String^ value, bool aggregates)
 	{
 		System::Collections::Generic::List<System::String^>^ list = gcnew System::Collections::Generic::List<System::String^>();
 		try {
@@ -296,7 +296,7 @@ namespace Wrapper
 			if (mit != models->end())
 				{
 				const std::string valueof = context.marshal_as<std::string>(value);
-				for (const std::string& value : mit->second.getattributes(themeid, valueof))
+				for (const std::string& value : mit->second.getattributes(themeid, valueof,aggregates))
 					{
 					System::String^ sysvalue = gcnew System::String(value.c_str());
 					list->Add(sysvalue);
