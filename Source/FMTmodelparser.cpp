@@ -335,84 +335,121 @@ void FMTmodelparser::writefeatures(OGRLayer* layer, const int& firstperiod, cons
 #endif 
 
 
+	void FMTmodelparser::writeprimary(
+		const std::string& location,
+		const std::string& lanfile,
+		const std::string& arefile,
+		const std::string& yldfile,
+		const std::string& actfile,
+		const std::string& trnfile,
+		const std::string& outfile,
+		const std::string& optfile,
+		const std::string& liffile,
+		std::string seqfile) const
+	{
+		try {
+			std::ofstream pristream;
+			pristream.open(location);
+			if (tryopening(pristream, location))
+				{
+				pristream << "LANDSCAPE\t\t[" + lanfile + "]\n";
+				pristream << "AREAS\t[" + arefile + "]\n";
+				pristream << "YIELDS\t[" + yldfile + "]\n";
+				pristream << "ACTIONS\t[" + actfile + "]\n";
+				pristream << "TRANSITIONS\t\t[" + trnfile + "]\n";
+				pristream << "LIFESPAN\t\t[" + liffile + "]\n";
+				pristream << "OUTPUTS\t[" + outfile + "]\n";
+				pristream << "OPTIMIZE\t\t[" + optfile + "]\n";
+				if (!seqfile.empty())
+					{
+					pristream << "SCHEDULE\t[" + seqfile + "]\n";
+					}
+				}
+			pristream.close();
+		}
+		catch (...)
+		{
+			_exhandler->printexceptions(" at " + location, "FMTmodelparser::writeprimary", __LINE__, __FILE__, _section);
+		}
+	}
+
+
+
 void FMTmodelparser::write(const Models::FMTmodel& model,const std::string& folder) const
     {
 	try {
 		//Ajout de la section pri
 		//retirer les aggrégats de BFECgcbm et écrire les contraintes sans les 
 		const std::string modelname = model.getname();
-		std::ofstream pristream;
-		pristream.open(folder+modelname + ".pri");
-		if (pristream.is_open())
+		const std::string lanfile = modelname + ".lan";
+		const std::string arefile = modelname + ".are";
+		const std::string yldfile = modelname + ".yld";
+		const std::string actfile = modelname + ".act";
+		const std::string trnfile = modelname + ".trn";
+		const std::string outfile = modelname + ".out";
+		const std::string optfile = modelname + ".opt";
+		const std::string liffile = modelname + ".lif";
+		std::vector<Core::FMTschedule>schedules;
+		for (int period = 1; period <= model.getparameter(Models::FMTintmodelparameters::LENGTH); ++period)
 		{
-			const std::string lanfile = modelname + ".lan";
-			const std::string arefile = modelname + ".are";
-			const std::string yldfile = modelname + ".yld";
-			const std::string actfile = modelname + ".act";
-			const std::string trnfile = modelname + ".trn";
-			const std::string outfile = modelname + ".out";
-			const std::string optfile = modelname + ".opt";
-			const std::string liffile = modelname + ".lif";
-			const std::string seqfile = modelname + ".seq";
-			FMTlandscapeparser landparser;
-			landparser.write(model.getthemes(), folder + lanfile);
-			pristream <<"LANDSCAPE\t\t[" + lanfile + "]\n";
-			const std::vector<Core::FMTactualdevelopment>devs = model.getarea();
-			if (!devs.empty())
+			const Core::FMTschedule periodschedule = model.getsolution(period, true);
+			if (!periodschedule.empty())
 			{
-				FMTareaparser areaparser;
-				areaparser.write(devs, folder + arefile);
-				pristream << "AREAS\t[" + arefile + "]\n";
+				schedules.push_back(periodschedule);
 			}
-			FMTyieldparser yldparser;
-			yldparser.write(model.getyields(), folder + yldfile);
-			pristream << "YIELDS\t[" + yldfile + "]\n";
-			FMTactionparser actparser;
-			actparser.write(model.getactions(), folder + actfile);
-			pristream << "ACTIONS\t[" + actfile + "]\n";
-			FMTtransitionparser trnparser;
-			trnparser.write(model.gettransitions(), folder + trnfile);
-			pristream << "TRANSITIONS\t\t[" + trnfile + "]\n";
-			FMTlifespanparser lifparser;
-			lifparser.write(model.getlifespan(), folder + liffile);
-			pristream << "LIFESPAN\t\t[" + liffile + "]\n";
-			const std::vector<Core::FMToutput>outputs = model.getoutputs();
-			if (!outputs.empty())
+		}
+		std::string seqfile;
+		if (!schedules.empty())
+		{
+			seqfile = modelname + ".seq";
+		}
+			writeprimary(folder + modelname + ".pri",
+				lanfile, arefile, yldfile, actfile, trnfile, outfile, optfile, liffile, seqfile);
+		FMTlandscapeparser landparser;
+		landparser.write(model.getthemes(), folder + lanfile);
+		const std::vector<Core::FMTactualdevelopment>devs = model.getarea();
+		if (!devs.empty())
 			{
-				FMToutputparser outparser;
-				outparser.write(outputs, folder + outfile);
-				pristream << "OUTPUTS\t[" + outfile + "]\n";
+			FMTareaparser areaparser;
+			areaparser.write(devs, folder + arefile);
 			}
-			const std::vector<Core::FMTconstraint>constraints = model.getconstraints();
+		FMTyieldparser yldparser;
+		yldparser.write(model.getyields(), folder + yldfile);
+		FMTactionparser actparser;
+		actparser.write(model.getactions(), folder + actfile);
+		FMTtransitionparser trnparser;
+		trnparser.write(model.gettransitions(), folder + trnfile);
+		FMTlifespanparser lifparser;
+		lifparser.write(model.getlifespan(), folder + liffile);
+		const std::vector<Core::FMToutput>outputs = model.getoutputs();
+		if (!outputs.empty())
+			{
+			FMToutputparser outparser;
+			outparser.write(outputs, folder + outfile);
+			}
+		const std::vector<Core::FMTconstraint>constraints = model.getconstraints();
 			if (!constraints.empty())
 			{
-				FMToptimizationparser optparser;
-				optparser.write(constraints, folder + optfile);
-				pristream << "OPTIMIZE\t\t[" + optfile + "]\n";
+			FMToptimizationparser optparser;
+			optparser.write(constraints, folder + optfile);
 			}
-			std::vector<Core::FMTschedule>schedules;
-			for (int period = 1; period<=model.getparameter(Models::FMTintmodelparameters::LENGTH);++period)
+		for (int period = 1; period<=model.getparameter(Models::FMTintmodelparameters::LENGTH);++period)
+			{
+			const Core::FMTschedule periodschedule = model.getsolution(period,true);
+			if (!periodschedule.empty())
 				{
-				const Core::FMTschedule periodschedule = model.getsolution(period,true);
-				if (!periodschedule.empty())
-					{
-					schedules.push_back(periodschedule);
-					}
+				schedules.push_back(periodschedule);
 				}
-			if (!schedules.empty())
-				{
-				FMTscheduleparser scheduleparser;
-				scheduleparser.write(schedules, folder+seqfile);
-				pristream << "SCHEDULE\t[" + seqfile + "]\n";
-				}
-			pristream.close();
-		}
+			}
+		if (!schedules.empty())
+			{
+			FMTscheduleparser scheduleparser;
+			scheduleparser.write(schedules, folder+seqfile);
+			}
 	}catch (...)
-	{
+		{
 		_exhandler->printexceptions(" at " + folder, "FMTmodelparser::write", __LINE__, __FILE__, _section);
-	}
-
-	
+		}
     }
 
 Models::FMTmodel FMTmodelparser::read(const std::string& con,const std::string& lan,
@@ -751,6 +788,9 @@ Models::FMTmodel FMTmodelparser::referenceread(std::map<std::string, std::vector
 			std::vector<std::vector<Core::FMTschedule>>schedules)
 		{
 			try {
+				boost::filesystem::path primpath(primary_location);
+				const std::string filename = primpath.stem().string();
+
 
 			}
 			catch (...)

@@ -86,6 +86,21 @@ class FMTEXPORT FMTmodelparser : public FMTparser
 	void writedrift(OGRLayer* layer,const std::map<std::string,std::map<double,std::vector<double>>>& lowervalues,
 								const std::map<std::string, std::map<double, std::vector<double>>>& uppervalues) const;
 	#endif
+	// DocString: FMTmodelparser::writeprimary()
+	/**
+	Write the primary file with all the other file name.
+	*/
+	void writeprimary(
+		const std::string& location,
+		const std::string& lanfile,
+		const std::string& arefile,
+		const std::string& yldfile,
+		const std::string& actfile,
+		const std::string& trnfile,
+		const std::string& outfile,
+		const std::string& optfile,
+		const std::string& liffile,
+		std::string seqfile=std::string()) const;
     public:
 		// DocString: FMTmodelparser()
 		/**

@@ -92,7 +92,7 @@ namespace Heuristics
 		double threshold; 
 		// DocString: FMToperatingareascheme::fullenumeration
 		///If true, for every possible opening period after the return time a scheme will be created 
-		bool fullenumeration;
+		size_t maxreturntime;
 		// DocString: FMToperatingareascheme::getarea
 		/**
 			Get the area of the operating area base on a (primalsolution) 
@@ -157,12 +157,6 @@ namespace Heuristics
 		If no activity is detected in the opened OA then close it with no cost to the LP problem.
 		*/
 		void closenoactivity(std::vector<double>& filleduppattern, const size_t& selected, const double* dualsolution) const;
-		// DocString: FMToperatingareascheme::getenumeration
-		/**
-		Enumerate all combinaison of inputs
-		*/
-		void getenumeration(std::vector<std::vector<size_t>>& returns, const std::vector<size_t>& arr, std::vector<size_t> data,
-							const size_t& start, const size_t& end, const size_t& index, const size_t& r) const;
 		// DocString: FMToperatingareascheme::getmaxperiod
 		/**
 		Get the maximal period of all potential schemes
@@ -342,9 +336,8 @@ namespace Heuristics
 			The minimalarearatio is the minimal ratio needed to open the COS...
 			The fullenum is to set the class parameter fullenumeration
 			*/
-			FMToperatingareascheme(const FMToperatingarea& oparea,const size_t& lopeningtime, const size_t& lreturntime,
-				const size_t& lrepetition, const size_t& lgreenup,const size_t& lstartingperiod,double minimalarearatio=0.0,
-				bool fullenum=false);
+			FMToperatingareascheme(const FMToperatingarea& oparea,const size_t& lopeningtime, const size_t& lreturntime, const size_t& lmaxreturntime,
+				const size_t& lrepetition, const size_t& lgreenup,const size_t& lstartingperiod,double minimalarearatio=0.0);
 			// DocString: FMToperatingareascheme()
 			/**
 			Default FMToperatingareascheme constructor
@@ -386,11 +379,16 @@ namespace Heuristics
 			it returns a presolved FMTmask with potentialy less data.
 			*/
 			FMToperatingareascheme presolve(const Core::FMTmask& selectedmask,const std::vector<Core::FMTtheme>&presolvedthemes) const;
-			// DocString: FMToperatingareascheme::size
+			// DocString: FMToperatingareascheme::getnumberofscheme
 			/**
 			Return the number of scheme for the OA. Can only be used if schemestoLP has been set called...
 			*/
 			size_t getnumberofscheme() const;
+			// DocString: FMToperatingareascheme::getnumberofsimplescheme
+			/**
+			Return the number of simple scheme with fixed returntime + openingtime
+			*/
+			size_t getnumberofsimplescheme() const;
 
 		};
 

@@ -48,6 +48,7 @@ std::vector<Heuristics::FMToperatingareascheme> ObtenirOperatingArea(   const st
                     Heuristics::FMToperatingarea(FMTmask, NPE),
                     OPT,
                     RET,
+                    RET,
                     REP,
                     GUP,
                     startingperiod,0.05));

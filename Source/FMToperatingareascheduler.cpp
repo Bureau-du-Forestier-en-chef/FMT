@@ -958,6 +958,7 @@ namespace Heuristics
 			}else {
 				FMTlpsolver::passinsolver(basesolve);
 				}*/
+			updaterowsandcolsnames();
 			const double baseobj = this->getObjValue();
 			this->setoperatingareasconstraints(maingraph, model, target);
 			size_t complexity=0;
@@ -1007,10 +1008,37 @@ namespace Heuristics
 		proportionofset=proportion;
 		}
 
+	double FMToperatingareascheduler::generateinitialproportionofset() const
+	{
+		double calculatedproportion = 0.25;
+		try {
+			size_t complexity = 0;
+			size_t basecomplexity = 0;
+			for (const Heuristics::FMToperatingareascheme& oparea : operatingareas)
+			{
+				complexity += oparea.getnumberofscheme();
+				basecomplexity += oparea.getnumberofsimplescheme();
+			}
+			const double complexdif = static_cast<double>(complexity - basecomplexity);
+			const double complexprop = std::min((complexdif / static_cast<double>(basecomplexity)),1.0);
+			if (complexprop > 0.01)
+				{
+				calculatedproportion -= (complexprop * 0.05);
+				calculatedproportion = std::max(0.01, calculatedproportion);
+				}
+		}catch (...)
+		{
+			_exhandler->raisefromcatch("", "FMToperatingareascheduler::generateinitialproportionofset", __LINE__, __FILE__);
+		}
+		return calculatedproportion;
+	}
+
+
 	std::string FMToperatingareascheduler::getthreadid() const
 	{
 		return boost::lexical_cast<std::string>(boost::this_thread::get_id());
 	}
+
 
 }
 BOOST_CLASS_EXPORT_IMPLEMENT(Heuristics::FMToperatingareascheduler)
