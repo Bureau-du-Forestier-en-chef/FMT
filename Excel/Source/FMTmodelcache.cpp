@@ -355,7 +355,7 @@ namespace Wrapper
 		return value;
 	}
 
-	std::vector<std::string> FMTmodelcache::getattributes(const int& themeid, const std::string& value) const
+	std::vector<std::string> FMTmodelcache::getattributes(const int& themeid, const std::string& value,const bool& aggregates) const
 	{
 		std::vector<std::string> attributes;
 		try {
@@ -365,9 +365,9 @@ namespace Wrapper
 				{
 				if (themes.at(themeid).isattribute(value) || themes.at(themeid).isaggregate(value))
 					{
-					attributes = themes.at(themeid).getattributes(value);
+					attributes = themes.at(themeid).getattributes(value,aggregates);
 				}else {
-					attributes =  themes.at(themeid).getattributes("?");
+					attributes =  themes.at(themeid).getattributes("?",aggregates);
 					}
 				}
 		}catch (...)
