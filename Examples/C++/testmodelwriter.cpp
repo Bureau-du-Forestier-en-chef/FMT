@@ -36,7 +36,7 @@ int main(int argc, char* argv[])
 	optmodel.doplanning(true);
 	const double finalobjvalue = optmodel.getObjValue();
 	std::cout << finalobjvalue << " " << initobjvalue << std::endl;
-	modelparser.write(optmodel, outdir+"other/");
+	//modelparser.write(optmodel, outdir+"other/");
 	if ((finalobjvalue < (initobjvalue - 1)) || (finalobjvalue > (initobjvalue + 1)))
 	{
 		std::cout << "ok" << std::endl;

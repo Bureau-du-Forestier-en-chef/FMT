@@ -45,49 +45,20 @@ size_t FMToperatingareascheme::getbestschemeid(const double* primalsolution) con
 	return bestid;
 	}
 
-void FMToperatingareascheme::getenumeration(std::vector<std::vector<size_t>>& returns,const std::vector<size_t>& arr,std::vector<size_t> data,
-											const size_t& start, const size_t& end, const size_t& index, const size_t& r) const
-	{
-	if (index == r)
-	{
-		std::vector<size_t>values;
-		for (size_t j = 0; j < r; j++)
-			{
-			values.push_back(data.at(j));
-			}
-		returns.push_back(values);
-	}
-	for (size_t i = start; i<= end && end - i + 1 >= r - index && index < data.size(); i++)
-		{
-		data[index] = arr.at(i);
-		getenumeration(returns, arr, data, i + 1, end, index + 1, r);
-		}
-	}
+
 
 std::vector<std::vector<std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>>> FMToperatingareascheme::generateschemes(const std::vector<std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>>& verticies)// Generate unique schemes base on parameters
 {
 	std::vector<std::vector<std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>>>schemes;
-	if (fullenumeration)
-	{
 		std::map<std::pair<size_t, size_t>, std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>>nodes;
-		const size_t depth = std::min(std::max((verticies.size()/(returntime+openingtime))+1,size_t(1)), repetition);
-		std::vector<size_t>data(depth);
-		std::vector<size_t>inputs(1,returntime);
-		for (size_t returnid = (returntime+1); returnid< verticies.size();++returnid)
+		std::vector<size_t>returntimeof;
+		for (size_t returnid = returntime; returnid <= maxreturntime; ++returnid)
 			{
-			inputs.push_back(returnid);
+			returntimeof.push_back(returnid);
 			}
-		const size_t nelement = inputs.size();
-		std::vector<std::vector<size_t>> enumerations;
-		getenumeration(enumerations, inputs, data, 0, nelement - 1, 0, depth);
-		std::vector<std::vector<size_t>> reverseenumerations(enumerations);
-		for (std::vector<size_t>& returntimeof : enumerations)
-			{
-			std::reverse(returntimeof.begin(), returntimeof.end());
-			}
-		enumerations.insert(enumerations.end(), reverseenumerations.begin(), reverseenumerations.end());
-		for (const std::vector<size_t>& returntimeof : enumerations)
-		{
+		std::sort(returntimeof.begin(), returntimeof.end());
+		do {
+			size_t acceptedscheme = 0;
 			for (size_t id = 0; id < verticies.size(); ++id)
 			{
 				size_t returntimeid = 0;
@@ -98,25 +69,20 @@ std::vector<std::vector<std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, 
 				std::string newenum;
 				while (localid < verticies.size())
 				{
-					const size_t localreturntime = returntimeof.at(returntimeid);
+					const size_t localreturntime = returntimeof.at(std::min(returntimeof.size() - 1, returntimeid));
 					newenum += "_" + std::to_string(localreturntime);
-					if (enumdone.find(newenum)!= enumdone.end())
-					{
-						++localid;
-						validscheme = false;
-						break;
-					}
 					++returntimeid;
 					size_t opening = 0;
 					while (localid < verticies.size() && opening < openingtime && !verticies.at(localid).empty())
 					{
-						newscheme.push_back(verticies.at(localid));
-						++opening;
-						++localid;
+							newscheme.push_back(verticies.at(localid));
+							++opening;
+							++localid;
 					}
-					if (newscheme.size() < openingtime)//need a complete pattern
+					if (opening < openingtime)//need a complete pattern
 					{
 						validscheme = false;
+						break;
 					}
 					size_t closing = 0;
 					while (localid < verticies.size() && closing < localreturntime)
@@ -125,49 +91,14 @@ std::vector<std::vector<std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, 
 						++closing;
 					}
 				}
-				
-				if (validscheme)
+				if (validscheme && !newscheme.empty() && enumdone.find(newenum) == enumdone.end())
 				{
 					enumdone.insert(newenum);
 					schemes.push_back(newscheme);
-					validscheme = true;
+					++acceptedscheme;
 				}
 			}
-		}
-	}
-	else {
-		for (size_t id = 0; id < verticies.size(); ++id)
-		{
-			std::vector<std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>> newscheme;
-			size_t localid = id;
-			bool validscheme = true;
-			while (localid < verticies.size())
-			{
-				size_t opening = 0;
-				while (localid < verticies.size() && opening < openingtime && !verticies.at(localid).empty())
-				{
-					newscheme.push_back(verticies.at(localid));
-					++opening;
-					++localid;
-				}
-				if (newscheme.size() < openingtime)//need a complete pattern
-				{
-					validscheme = false;
-				}
-				size_t closing = 0;
-				while (localid < verticies.size() && closing < returntime)
-				{
-					++localid;
-					++closing;
-				}
-			}
-			if (validscheme)
-			{
-				schemes.push_back(newscheme);
-				validscheme = true;
-			}
-		}
-	}
+			}while (std::next_permutation(returntimeof.begin(), returntimeof.end()));
 	return schemes;
 	}
 
@@ -251,7 +182,7 @@ std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties
 		/////////
 		for (const std::vector<std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>>& scheme : schemes)
 		{
-			bool shemehasactions = false;
+			//bool shemehasactions = false;
 			size_t blockid = 0;
 			for (const std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>& localblock : scheme)
 			{
@@ -261,6 +192,7 @@ std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties
 					if (periodicsblocksvariables.find(period) == periodicsblocksvariables.end())
 					{
 						periodicsblocksvariables[period] = std::vector<int>();
+					}
 						for (const Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor& descriptor : localblock)
 						{
 							////////////
@@ -271,29 +203,33 @@ std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties
 							}
 							/////////
 							const std::map<int, int>actions = maingraph.getoutvariables(descriptor);
-							if (actions.size() > 1)
-							{
+							//if (actions.size() > 1)
+							//{
 								for (const int& action : actionIDS)
 								{
 									std::map<int, int>::const_iterator actit = actions.find(action);
 									if (actit != actions.end())
 									{
-										periodicsblocksvariables[period].push_back(actit->second);
-										shemehasactions = true;
+										if (std::find(periodicsblocksvariables.at(period).begin(), periodicsblocksvariables.at(period).end(), actit->second) == periodicsblocksvariables.at(period).end())
+											{
+											periodicsblocksvariables[period].push_back(actit->second);
+											}
+										//shemehasactions = true;
 									}
+									
 								}
-							}
+							//}
 						}
-					}
+					//}
 				}
 				++blockid;
 			}
-			if (shemehasactions)
-			{
+			//if (shemehasactions)
+			//{
 				openingbinaries.push_back(binaryid);
 				selectedschemes.push_back(schemeid);
 				++binaryid;
-			}
+			//}
 			++schemeid;
 		}
 		//int constraintid = matrixbuild.getlastrowindex()+1;
@@ -358,12 +294,12 @@ std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties
 			solver.setrowname("schemechoice_"+std::string(this->getmask()), constraintid);
 			}
 		//Weird fix
-		std::vector<std::vector<int>>nschemesperiods;
+		/*std::vector<std::vector<int>>nschemesperiods;
 		for (const size_t& shemeidselected : selectedschemes)
 		{
 			nschemesperiods.push_back(schemesperiods.at(shemeidselected));
 		}
-		schemesperiods=nschemesperiods;
+		schemesperiods=nschemesperiods;*/
 	}
 
 
@@ -566,7 +502,7 @@ std::vector<double> FMToperatingareascheme::getdualsolution(const double* upperb
 	bool foundsolution = false;
 	size_t solutionid = 0;
 	
-	if (fullenumeration)
+	if (returntime != maxreturntime)
 	{
 		filledpattern.resize(patternsize * repetition, 0.0);
 		std::vector<double>thepattern(patternsize, 0.0);
@@ -718,14 +654,14 @@ const std::vector<int>& FMToperatingareascheme::getopeningbinaries() const
 	return openingbinaries;
 	}
 
-FMToperatingareascheme::FMToperatingareascheme(const FMToperatingarea& oparea,const size_t& lopeningtime, const size_t& lreturntime,
-	const size_t& lrepetition,const size_t& lgreenup, const size_t& lstartingperiod, double minimalarearatio, bool fullenum):FMToperatingarea(oparea),
+FMToperatingareascheme::FMToperatingareascheme(const FMToperatingarea& oparea,const size_t& lopeningtime, const size_t& lreturntime, const size_t& lmaxreturntime,
+	const size_t& lrepetition,const size_t& lgreenup, const size_t& lstartingperiod, double minimalarearatio):FMToperatingarea(oparea),
 	openingconstraints(),
 	openingbinaries(),
 	maximalschemesconstraint(),
 	schemesperiods(),
 	openingtime(lopeningtime),returntime(lreturntime),repetition(lrepetition),
-	greenup(lgreenup),startingperiod(lstartingperiod), threshold(minimalarearatio), fullenumeration(fullenum)
+	greenup(lgreenup),startingperiod(lstartingperiod), threshold(minimalarearatio), maxreturntime(lmaxreturntime)
 	{
 
 	}
@@ -794,7 +730,43 @@ size_t FMToperatingareascheme::getprimalsolutionindex(const double* primalsoluti
 
 bool FMToperatingareascheme::getdualsolutionindex(const double* upperbound, size_t& locid) const
 	{
+	std::unordered_set<int>allopenedconstraintids;
+	for (const std::vector<int>& constraints : openingconstraints)
+	{
+		for (const int& constid : constraints)
+		{
+			if (*(upperbound + constid) > FMT_DBL_TOLERANCE)
+			{
+				allopenedconstraintids.insert(constid);
+			}
+		}
+	}
 	locid = 0;
+	for (const std::vector<int>& constraints : openingconstraints)
+	{
+		size_t localcount = 0;
+		bool good = true;
+		for (const int& constid : constraints)
+		{
+			if (*(upperbound + constid) > FMT_DBL_TOLERANCE)
+			{
+				++localcount;
+			}
+			else {
+				good = false;
+				break;
+			}
+		}
+		if (good && allopenedconstraintids.size()== localcount)
+		{
+			return true;
+		}
+		++locid;
+	}
+	return false;
+
+
+	/*locid = 0;
 	for (const std::vector<int>& constraints : openingconstraints)
 		{
 			bool goodone = false;
@@ -815,7 +787,7 @@ bool FMToperatingareascheme::getdualsolutionindex(const double* upperbound, size
 				}
 		++locid;
 		}
-	return false;
+	return false;*/
 	}
 
 bool FMToperatingareascheme::havepotentialsolution(const double* primalsolution) const
@@ -1052,6 +1024,12 @@ double FMToperatingareascheme::getactivitysum(const double* dualsolution) const
 	}
 	return total;
 }
+
+
+
+
+
+
 bool FMToperatingareascheme::isthresholdactivityrows(const std::vector<int>& rows,const double* dualsolution) const
 {
 	for (const int& constraint : rows)
@@ -1112,7 +1090,7 @@ bool FMToperatingareascheme::isdualbounded(const double* upperbounds) const
 FMToperatingareascheme FMToperatingareascheme::presolve(const Core::FMTmask& selectedmask, const std::vector<Core::FMTtheme>& presolvedthemes) const
 {
 	const FMToperatingarea presolveoparea = FMToperatingarea::presolveoperatingarea(selectedmask,presolvedthemes);
-	return FMToperatingareascheme(presolveoparea,this->openingtime, this->returntime,this->repetition, this->greenup,this->startingperiod);
+	return FMToperatingareascheme(presolveoparea,this->openingtime, this->returntime,this->maxreturntime,this->repetition,this->greenup,this->startingperiod);
 }
 
 
@@ -1135,6 +1113,20 @@ size_t FMToperatingareascheme::getnumberofscheme() const
 	{
 		return schemesperiods.size();
 	}
+
+size_t FMToperatingareascheme::getnumberofsimplescheme() const
+	{
+	std::unordered_set<int>allperiods;
+	for (const std::vector<int>& schemeperiod : schemesperiods)
+		{
+		for (const int& period : schemeperiod)
+			{
+			allperiods.insert(period);
+			}
+		}
+	return allperiods.size() - (openingtime - 1);
+	}
+
 
 FMToperatingareaschemecomparator::FMToperatingareaschemecomparator(const Core::FMTmask& lmask):mask(lmask)
 	{
