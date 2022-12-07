@@ -27,8 +27,9 @@ std::vector<Heuristics::FMToperatingareascheme> ObtenirOperatingArea(   const st
             if (OA != "NA")
             {
                 const int OPT = 1;
-                const int RET = 2;
-                const int REP = 10;
+                const int RET = 3;
+                const int MAXRET = 3;
+                const int REP = 3;
                 const float NPE = 0;
                 const float GUP = 0;
                 std::string mask;
@@ -48,9 +49,10 @@ std::vector<Heuristics::FMToperatingareascheme> ObtenirOperatingArea(   const st
                     Heuristics::FMToperatingarea(FMTmask, NPE),
                     OPT,
                     RET,
+                    MAXRET,
                     REP,
                     GUP,
-                    startingperiod,0.0,true));
+                    startingperiod,0.0));
 
                 if (NPE > 0 || GUP > 0)
                 {
@@ -120,9 +122,9 @@ int main(int argc, char *argv[])
     {   
         #ifdef FMTWITHOSI
             Logging::FMTlogger().logstamp();
-            const std::string primarylocation = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/09_FMT/Modeles_test/FM/PC_7001892_U03772_SSP02.pri";// std::string(argv[1]);
-            const std::vector<std::string>scenarios(1,"03_sc1a_bfecopt_bf");// std::string(argv[2]));//);
-            const std::string fichierShp = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/09_FMT/Modeles_test/FM/Carte/PC_7001892_U03772_SSP02.shp";//std::string(argv[3]);
+            const std::string primarylocation =  std::string(argv[1]);
+            const std::vector<std::string>scenarios(1, std::string(argv[2]));
+            const std::string fichierShp = std::string(argv[3]);
             Parser::FMTmodelparser modelparser;
             modelparser.setdefaultexceptionhandler();
             modelparser.settasklogger();
@@ -141,6 +143,9 @@ int main(int argc, char *argv[])
             std::vector<Heuristics::FMToperatingareascheduler> opareaheuristics = optimizationmodel.getoperatingareaschedulerheuristics(opeareas, nodeofoutput);
             //opareaheuristics[0].setproportionofset(0.25);
 			Heuristics::FMTlpheuristicmthandler handler = Heuristics::FMTlpheuristicmthandler(opareaheuristics, initialobjectivevalue);
+            const double calculatedpropotion = opareaheuristics[0].generateinitialproportionofset();
+            std::cout<< "Initial proportion of set of : " + std::to_string(calculatedpropotion) << "\n";
+            opareaheuristics[0].setproportionofset(calculatedpropotion);
 			size_t bestpos = handler.initialsolve();
             bestpos = handler.greedysolve(5,10000000);
 			const Heuristics::FMToperatingareascheduler bestsolve = opareaheuristics[bestpos];
@@ -172,7 +177,7 @@ int main(int argc, char *argv[])
             myields.update();
             optimizationmodel = Models::FMTlpmodel(model, Models::FMTsolverinterface::MOSEK);
             optimizationmodel.setyields(myields);
-            optimizationmodel.setparameter(Models::FMTintmodelparameters::LENGTH, 5);
+            optimizationmodel.setparameter(Models::FMTintmodelparameters::LENGTH,5);
             optimizationmodel.setparameter(Models::FMTboolmodelparameters::STRICTLY_POSITIVE, true);
             optimizationmodel.setparameter(Models::FMTintmodelparameters::PRESOLVE_ITERATIONS, 1);
             if (optimizationmodel.doplanning(true)) 

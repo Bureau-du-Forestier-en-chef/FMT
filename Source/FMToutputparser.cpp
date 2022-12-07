@@ -311,6 +311,15 @@ namespace Parser
 									}
 									if (!stacked_char.empty())
 									{
+										if (!stroperators.empty() && isnum(stacked_char))
+										{
+											if (stroperators.back()=="-")
+											{
+												stacked_char = "-"+ stacked_char;
+												stroperators.pop_back();
+											}
+
+										}
 										strsources.push_back(stacked_char);
 									}
 									replace(opstr.begin(), opstr.end(), '.', 'r');
