@@ -128,6 +128,14 @@ namespace Heuristics
 			Models::FMTlpsolver& solver,
 			const double* primalsolution,
 			const Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>& maingraph, const std::vector<int>& actionIDS);
+
+		// DocString: FMToperatingareascheme::getignoredverticies
+		/**
+		Get a vector with the verticies that are not in the schemes, they must be set to 0 in the matrix
+		*/
+		std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor> getignoredverticies(const std::vector<std::vector<std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>>>& schemes,
+			const std::vector<std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>>& targetedperiodsverticies) const;
+
 		// DocString: FMToperatingareascheme::schemestoperiods
 		/**
 		When generating the yield solution we need to keep track of the periods used in each potential scheme.
