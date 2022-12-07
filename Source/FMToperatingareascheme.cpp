@@ -187,6 +187,33 @@ int FMToperatingareascheme::getmaxperiod() const
 	return maxperiod;
 }
 
+std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor> FMToperatingareascheme::getignoredverticies(const std::vector<std::vector<std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>>>& schemes,
+	const std::vector<std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>>& targetedperiodsverticies) const
+	{
+		std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor> ignored;
+		std::unordered_set<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor> schemesverticies;
+		for (const auto& scheme : schemes)
+		{
+			for (const auto& periodv : scheme)
+			{
+				for (const auto& verticies : periodv)
+				{
+					schemesverticies.insert(verticies);
+				}
+			}
+		}
+		for (const auto& periodv : targetedperiodsverticies)
+		{
+			for (const auto& verticies : periodv)
+			{
+				if (schemesverticies.find(verticies) == schemesverticies.end())
+				{
+					ignored.push_back(verticies);
+				}
+			}
+		}
+		return ignored;
+	}
 
 	void FMToperatingareascheme::schemestoLP(const std::vector<std::vector<std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>>>& schemes,
 		const std::vector<std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>>& periodics,
@@ -210,6 +237,18 @@ int FMToperatingareascheme::getmaxperiod() const
 		std::map<int, std::vector<int>>periodicsblocksvariables;
 		std::vector<size_t>selectedschemes;
 		size_t schemeid = 0;
+		std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor> ignoredvert = getignoredverticies(schemes, periodics);
+		////////////
+		for (const auto& vert : ignoredvert)
+		{
+			const Core::FMTdevelopment dev = maingraph.getdevelopment(vert);
+			if (std::string(dev).find("C00030") != std::string::npos)
+			{
+				std::string sdev = std::string(dev);
+				std::cout << sdev << std::endl;
+			}
+		}
+		/////////
 		for (const std::vector<std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>>& scheme : schemes)
 		{
 			bool shemehasactions = false;
@@ -224,6 +263,13 @@ int FMToperatingareascheme::getmaxperiod() const
 						periodicsblocksvariables[period] = std::vector<int>();
 						for (const Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor& descriptor : localblock)
 						{
+							////////////
+							const Core::FMTdevelopment dev = maingraph.getdevelopment(descriptor);
+							if (std::string(dev).find("C00030")!=std::string::npos)
+							{
+								std::string sdev = std::string(dev);
+							}
+							/////////
 							const std::map<int, int>actions = maingraph.getoutvariables(descriptor);
 							if (actions.size() > 1)
 							{

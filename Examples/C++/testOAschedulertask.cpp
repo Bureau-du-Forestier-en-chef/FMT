@@ -26,8 +26,8 @@ std::vector<Heuristics::FMToperatingareascheme> ObtenirOperatingArea(   const st
         {
             if (OA != "NA")
             {
-                const int OPT = 1;
-                const int RET = 2;//4;
+                const int OPT = 2;
+                const int RET = 6;//4;
                 const int REP = 6;
                 const float NPE = 0;
                 const float GUP = 0;
@@ -50,7 +50,7 @@ std::vector<Heuristics::FMToperatingareascheme> ObtenirOperatingArea(   const st
                     RET,
                     REP,
                     GUP,
-                    startingperiod,0.05));
+                    startingperiod,0.0,false));
 
                 if (NPE > 0 || GUP > 0)
                 {
@@ -120,11 +120,17 @@ int main(int argc, char *argv[])
     {   
        
         #ifdef FMTWITHOSI
-    Logging::FMTlogger().logstamp();
-            const std::string primarylocation = std::string(argv[1]);
-            const std::vector<std::string>scenarios(1,std::string(argv[2]));
-            const std::string fichierShp = std::string(argv[3]);
-            const std::string out("../../tests/testOAschedulertask/" + scenarios.at(0));
+            Logging::FMTlogger().logstamp();
+            //const std::string primarylocation = std::string(argv[1]);
+            //const std::vector<std::string>scenarios(1,std::string(argv[2]));
+            //const std::string fichierShp = std::string(argv[3]);
+            //const std::string out("../../tests/testOAschedulertask/" + scenarios.at(0));
+            ///
+            const std::string primarylocation = std::string("T:/Donnees/02_Courant/08_Amelioration_continue/01_Lean/01_Chantier/03_Modelisation/4_OptimisationCOS/Modeles/PC9424_U08551_DET/PC_9424_U08551_4_Vg1_2023_vSSP03.pri");
+            const std::vector<std::string>scenarios(1, std::string("13_Sc5a_Determin_avsp_CLE_PESSIERE"));
+            const std::string fichierShp = std::string("T:/Donnees/02_Courant/08_Amelioration_continue/01_Lean/01_Chantier/03_Modelisation/4_OptimisationCOS/Modeles/PC9424_U08551_DET/Carte/PC_9424_UA_U08551.shp");
+            const std::string out("D:/dump_test/clepess/" + scenarios.at(0));
+            ///
             //const std::string out("D:/FMT/build/release/tests/testOAschedulertask/" + scenarios.at(0));
             Parser::FMTmodelparser modelparser;
             modelparser.setdefaultexceptionhandler();
@@ -136,10 +142,9 @@ int main(int argc, char *argv[])
             const int startingperiod = optimizationmodel.getconstraints().at(0).getperiodlowerbound();
             const Core::FMToutputnode nodeofoutput =  createBFECoptaggregate(optimizationmodel);
             const std::vector<Heuristics::FMToperatingareascheme> opeareas = ObtenirOperatingArea(fichierShp,optimizationmodel.getthemes(),14, startingperiod, "AGE", "SUPERFICIE", "STANLOCK");
-			
             std::unique_ptr<Parallel::FMTtask> maintaskptr(new Parallel::FMTopareaschedulertask(optimizationmodel, opeareas, nodeofoutput,out, "YOUVERT",10,120));
 			Parallel::FMTtaskhandler handler(maintaskptr,4);
-			handler.settasklogger();
+            //handler.settasklogger();
 			handler.conccurentrun();
 		#endif 
         return 0;
