@@ -187,6 +187,13 @@ namespace Heuristics
 		*/
 		std::string getthreadid() const;
 	public:
+		// DocString: FMToperatingareascheduler::generateinitialproportionofset
+		/*
+		Try to calculate a good proportion of set for the initialsolve...if anything goes wrong it will be 0.25 If more complexity is
+		detected using the FMToperatingareascheme getnumberofscheme vs the getnumberofsimplescheme it will get the difference and use a factor of 0.00025
+		to decrease in a linear fashion the propotion of set to a minimum of 0.01.
+		*/
+		double generateinitialproportionofset() const;
 		// DocString: FMToperatingareascheduler::empty
 		/**
 		Return true if operatingareas is empty.
