@@ -7,7 +7,7 @@
 int main(int argc, char* argv[])
 {
 #ifdef FMTWITHOSI
-	const std::string primarylocation =  std::string(argv[1]);
+	const std::string primarylocation = std::string(argv[1]);
 	Parser::FMTmodelparser modelparser;
 	modelparser.setdefaultexceptionhandler();
 	const std::string outdir = "../../tests/testmodelwriter/";
@@ -27,7 +27,6 @@ int main(int argc, char* argv[])
 	optmodel.doplanning(true);
 	modelparser.write(optmodel, outdir);
 	const double initobjvalue = optmodel.getObjValue();
-	std::cout << initobjvalue << std::endl;
 	const std::vector<Models::FMTmodel> rereadmodels = modelparser.readproject(outdir + optmodel.getname() + ".pri", std::vector<std::string>(1, "ROOT"));
 	optmodel = Models::FMTlpmodel(rereadmodels.at(0), Models::FMTsolverinterface::MOSEK);
 	optmodel.setparameter(Models::FMTintmodelparameters::LENGTH,3);

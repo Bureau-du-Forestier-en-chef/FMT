@@ -18,13 +18,15 @@ namespace Core {
 		std::string value;
 		try {
 			value += "*YT " + std::string(mask) + "\n";
+			size_t baseid = 0;
 			for (std::map<std::string, FMTdata>::const_iterator it = elements.begin(); it != elements.end(); ++it)
 			{
 				value += it->first + " ";
-				for (const int& base : bases)
+				/*for (const int& base : bases)
 				{
 					value += std::to_string(base) + " ";
-				}
+				}*/
+				value += std::to_string(bases.at(std::min(baseid, bases.size()-1))) + " ";
 				const std::vector<double>* data = &it->second.data;
 				for (const double & val : *data)
 				{
@@ -34,6 +36,7 @@ namespace Core {
 					value += singlevalue + " ";
 				}
 				value += "\n";
+				++baseid;
 			}
 
 		}
@@ -47,7 +50,25 @@ namespace Core {
 
 	bool FMTtimeyieldhandler::push_data(const std::string& yld, const double& value)
 	{
-		return (basepush_data(elements, yld, value));
+		try {
+			if (elements.find(yld) == elements.end())
+			{
+				elements[yld] = FMTdata();
+				if (elements.size() > 1  && bases.size() >= elements.size())//presume that the last base pushed is the base of the push data...
+				{
+					const size_t newlocation = std::distance(std::begin(elements), elements.find(yld));
+					const int lastbase = getlastbase();
+					bases.insert(bases.begin() + newlocation, lastbase);
+					bases.pop_back();
+				}
+			}
+			elements[yld].data.push_back(value);
+		}catch (...)
+		{
+			_exhandler->raisefromcatch("", "FMTtimeyieldhandler::push_data", __LINE__, __FILE__, Core::FMTsection::Yield);
+		}
+		return true;
+		//return (basepush_data(elements, yld, value));
 	}
 
 	bool FMTtimeyieldhandler::push_data(const std::string& yld, const FMTdata& data)
