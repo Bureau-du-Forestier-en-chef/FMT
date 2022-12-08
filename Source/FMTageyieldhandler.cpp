@@ -134,11 +134,11 @@ namespace Core {
 		return age;
 	}
 
-	double FMTageyieldhandler::getyieldlinearvalue(const std::string&yldname, const int& agetarget) const
+	double FMTageyieldhandler::getyieldlinearvalue(const std::string&yldname, const FMTyieldrequest& request) const
 	{
 		try {
 			const FMTdata& lvalues = this->at(yldname);
-			return getlinearvalue(lvalues.data, agetarget);
+			return getlinearvalue(lvalues.data, request.getdevelopment().getage());
 		}
 		catch (...)
 		{

@@ -27,3 +27,4 @@ testtimeyieldoutputs;;;
 testGCBMtransitionparser;;;
 sumandavgtest;;;
 landaggregatestest;;;
+testmodelwriter;../../../../Examples/Models/TWD_land/TWD_land.pri;complextoage;

@@ -276,7 +276,7 @@ FMTyieldhandler::operator std::string() const
 		return 0;
 		}
 
-double FMTyieldhandler::getyieldlinearvalue(const std::string&yldname, const int& agetarget) const
+double FMTyieldhandler::getyieldlinearvalue(const std::string&yldname, const FMTyieldrequest& request) const
 	{
 		try {
 			_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, "Calling pure virtual function ",

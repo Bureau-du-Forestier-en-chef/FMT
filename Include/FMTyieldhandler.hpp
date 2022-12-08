@@ -86,7 +86,7 @@ public:
 	virtual int getendpoint(const std::string& yld, const int& lowerstep, const double& bound, const double& value) const;
 	virtual double getpeak(const FMTyieldrequest& request,const std::string& yld, const int& targetage) const;
 	virtual int getage(const FMTyieldrequest& request, const FMTspec& spec) const;
-	virtual double getyieldlinearvalue(const std::string&yldname, const int& agetarget) const;
+	virtual double getyieldlinearvalue(const std::string&yldname, const FMTyieldrequest& request) const;
 
 	
 };
