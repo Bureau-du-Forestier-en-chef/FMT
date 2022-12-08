@@ -391,7 +391,8 @@ namespace Core {
 							year = *cdata->data.begin();
 						}
 						const std::unique_ptr<FMTyieldhandler>* ddata = srcsdata.begin()->second;
-						value = ((*ddata)->getyieldlinearvalue(sources.at(0), age) / (year*age));
+						//value = ((*ddata)->getyieldlinearvalue(sources.at(0), age) / (year*age));
+						value = ((*ddata)->getyieldlinearvalue(sources.at(0), request) / (year * age));
 						break;
 					}
 					case FMTyieldparserop::FMTcai:
@@ -402,9 +403,14 @@ namespace Core {
 							year = *cdata->data.begin();
 						}
 						const std::unique_ptr<FMTyieldhandler>* ddata = srcsdata.begin()->second;
-						const double upval = (*ddata)->getyieldlinearvalue(sources.at(0), age);
+						//const double upval = (*ddata)->getyieldlinearvalue(sources.at(0), age);
+						const double upval = (*ddata)->getyieldlinearvalue(sources.at(0), request);
 						const int newage = age - 1;
-						const double dwval = (*ddata)->getyieldlinearvalue(sources.at(0), newage);
+						Core::FMTdevelopment newdevelopement(request.getdevelopment());
+						newdevelopement.setage(newage);
+						const FMTyieldrequest newrequest(newdevelopement, request);
+						//const double dwval = (*ddata)->getyieldlinearvalue(sources.at(0), newage);
+						const double dwval = (*ddata)->getyieldlinearvalue(sources.at(0), newrequest);
 						value = ((upval - dwval) / (year));
 						break;
 					}
@@ -558,6 +564,20 @@ namespace Core {
 			_exhandler->raisefromcatch("Error in converting complexyield to ageyield for yieldhandler " + std::string(*this), "FMTyieldrequest::complexyldtoageyld", __LINE__, __FILE__);
 		}
 		return std::unique_ptr<FMTyieldhandler>();
+	}
+
+	double FMTcomplexyieldhandler::getyieldlinearvalue(const std::string& yldname, const FMTyieldrequest& request) const
+	{
+		double returned = 0;
+		try {
+			std::vector<std::string>target(1, yldname);
+			const std::unique_ptr<FMTyieldhandler> ageyield =  toageyld(request, target, 0, request.getdevelopment().getage());
+			returned = ageyield->getyieldlinearvalue(yldname, request);
+		}
+		catch (...) {
+			_exhandler->raisefromcatch("On yield " + yldname, "FMTcomplexyieldhandler::getyieldlinearvalue", __LINE__, __FILE__);
+		}
+		return returned;
 	}
 
 	double FMTcomplexyieldhandler::getpeak(const FMTyieldrequest& request, const std::string& yld, const int& targetage) const

@@ -66,7 +66,7 @@ namespace Core
 		virtual double getpeak(const FMTyieldrequest& request,const std::string& yld, const int& targetage) const;
 		virtual double getpeakfrom(const std::string& yld, double maxvalue = std::numeric_limits<double>::lowest()) const;
 		virtual int getage(const FMTyieldrequest& request, const FMTspec& spec) const;
-		virtual double getyieldlinearvalue(const std::string&yldname, const int& agetarget) const;
+		virtual double getyieldlinearvalue(const std::string&yldname, const FMTyieldrequest& request) const;
 	};
 
 }

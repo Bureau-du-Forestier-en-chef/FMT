@@ -1,0 +1,54 @@
+*Y ? peuplement1 ?
+_AGE volumetotal
+0    0
+5    100
+10   150
+15   200
+20   250
+25   300
+30   350
+
+*Y ? peuplement2 ?
+_AGE volumetotal
+0    0
+5    50
+10   100
+15   150
+20   200
+25   230
+30   150
+
+*Y ? peuplement3 ?
+_AGE volumetotal
+0    0
+5    75
+10   125
+15   175
+20   225
+25   250
+30   200
+
+*Y ? feu ?
+_AGE volumetotal
+0    0
+5    50
+10   100
+15   150
+20   200
+25   230
+30   150
+
+
+*YC ? ? ?
+YBM_RTM_BOG _EQUATION(1.2159259330000001*10^0.87191668899999997)
+YBM_RTM_F _SUM(YBM_RTM_BOG,YBM_RTM_MEH)
+YBM_RTM_MEH _EQUATION(1.1017722459999999*12^0.83493872400000002)
+
+
+*YC ? ? ?
+test    _MULTIPLY(volumetotal,5)
+
+*YC ? ? ?
+volumetotalmai _MAI(test)
+volumetotalcai _CAI(test)
+
