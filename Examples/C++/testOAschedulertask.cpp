@@ -26,8 +26,8 @@ std::vector<Heuristics::FMToperatingareascheme> ObtenirOperatingArea(   const st
         {
             if (OA != "NA")
             {
-                const int OPT = 1;
-                const int RET = 2;//4;
+                const int OPT = 2;
+                const int RET = 6;//4;
                 const int REP = 6;
                 const float NPE = 0;
                 const float GUP = 0;
@@ -51,7 +51,7 @@ std::vector<Heuristics::FMToperatingareascheme> ObtenirOperatingArea(   const st
                     RET,
                     REP,
                     GUP,
-                    startingperiod,0.05));
+                    startingperiod,0.0));
 
                 if (NPE > 0 || GUP > 0)
                 {
@@ -116,17 +116,22 @@ Core::FMToutputnode createBFECoptaggregate(Models::FMTmodel& model)
             Core::FMTmask fmtMask = Core::FMTmask(stringMask, themes);
             return Core::FMToutputnode(fmtMask, Agg_name);
     }
+void runbfecopt(const std::unique_ptr<Parallel::FMTtask>& taskptr) 
+{
+    Parallel::FMTtaskhandler handler(taskptr, 4);
+    handler.settasklogger();
+    handler.conccurentrun();
+}
 #endif
 int main(int argc, char *argv[])
     {   
        
         #ifdef FMTWITHOSI
-    Logging::FMTlogger().logstamp();
+            Logging::FMTlogger().logstamp();
             const std::string primarylocation = std::string(argv[1]);
             const std::vector<std::string>scenarios(1,std::string(argv[2]));
             const std::string fichierShp = std::string(argv[3]);
             const std::string out("../../tests/testOAschedulertask/" + scenarios.at(0));
-            //const std::string out("D:/FMT/build/release/tests/testOAschedulertask/" + scenarios.at(0));
             Parser::FMTmodelparser modelparser;
             modelparser.setdefaultexceptionhandler();
             const std::vector<Models::FMTmodel> models = modelparser.readproject(primarylocation, scenarios);
@@ -137,11 +142,21 @@ int main(int argc, char *argv[])
             const int startingperiod = optimizationmodel.getconstraints().at(0).getperiodlowerbound();
             const Core::FMToutputnode nodeofoutput =  createBFECoptaggregate(optimizationmodel);
             const std::vector<Heuristics::FMToperatingareascheme> opeareas = ObtenirOperatingArea(fichierShp,optimizationmodel.getthemes(),14, startingperiod, "AGE", "SUPERFICIE", "STANLOCK");
-			
-            std::unique_ptr<Parallel::FMTtask> maintaskptr(new Parallel::FMTopareaschedulertask(optimizationmodel, opeareas, nodeofoutput,out, "YOUVERT",10,120));
-			Parallel::FMTtaskhandler handler(maintaskptr,4);
-			handler.settasklogger();
-			handler.conccurentrun();
+            {
+                std::unique_ptr<Parallel::FMTtask> maintaskptr(new Parallel::FMTopareaschedulertask(optimizationmodel, opeareas, nodeofoutput,out, "YOUVERT",10,120));
+                Parallel::FMTtaskhandler handler(maintaskptr, 4);
+                handler.settasklogger();
+                handler.conccurentrun();
+            //runbfecopt(maintaskptr);
+            }
+            const std::vector<Models::FMTmodel> nmodels = modelparser.readproject("../../tests/testOAschedulertask/"+ std::string(argv[2])+".pri", std::vector<std::string>(1,"ROOT"));
+            Models::FMTmodel readmodel = nmodels.at(0);
+            Models::FMTlpmodel noptimizationmodel(readmodel, Models::FMTsolverinterface::CLP);
+            noptimizationmodel.setparameter(Models::FMTintmodelparameters::LENGTH, 5);
+            noptimizationmodel.setparameter(Models::FMTboolmodelparameters::STRICTLY_POSITIVE, true);
+            noptimizationmodel.Models::FMTmodel::setparameter(Models::FMTdblmodelparameters::TOLERANCE, 0.01);
+            const std::vector<Core::FMTschedule> schedules = modelparser.readschedules("../../tests/testOAschedulertask/" + std::string(argv[2]) + ".pri", nmodels).at(0);
+            noptimizationmodel.doplanning(false, schedules);
 		#endif 
         return 0;
 	}
