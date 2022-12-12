@@ -297,6 +297,11 @@ class FMTEXPORT FMTlpsolver: public Core::FMTobject
 		Returns the columns solution of the solverinterface. The function wont synchronize the solverinterface with the cache.
 		*/
 		const double* getColSolution() const;
+		// DocString: FMTlpsolver::getRowPrice
+		/**
+		Returns the rows solution of the solverinterface. The function wont synchronize the solverinterface with the cache.
+		*/
+		const double* getRowPrice() const;
 		// DocString: FMTlpsolver::getRowActivity
 		/**
 		Returns the rows solution of the solverinterface. The function wont synchronize the solverinterface with the cache.
@@ -405,6 +410,12 @@ class FMTEXPORT FMTlpsolver: public Core::FMTobject
 		it will synchronize the matrix before setting the new column solution.
 		*/
 		void setColSolution(const double* newsolution);
+		// DocString: FMTlpsolver::setRowPrice
+		/**
+		The function will set a solution for all rows of the solverinterface,
+		it will synchronize the matrix before setting the new row solution.
+		*/
+		void setRowPrice(const double* rowprice);
 		// DocString: FMTlpsolver::setColSetBounds
 		/**
 		It synchronize the matrix and then

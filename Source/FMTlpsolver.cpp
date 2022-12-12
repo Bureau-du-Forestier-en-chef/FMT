@@ -557,6 +557,12 @@ namespace Models
 		return solverinterface->getColSolution();
 	}
 
+	const double* FMTlpsolver::getRowPrice() const
+	{
+		//matrixcache.synchronize(solverinterface);
+		return solverinterface->getRowPrice();
+	}
+
 	const double* FMTlpsolver::getRowActivity() const
 	{
 		//matrixcache.synchronize(solverinterface);
@@ -649,6 +655,18 @@ namespace Models
 			_exhandler->raisefromcatch("", "FMTlpsolver::setColSolution", __LINE__, __FILE__);
 		}
 		}
+
+	void FMTlpsolver::setRowPrice(const double* rowprice)
+	{
+		try {
+			matrixcache.synchronize(solverinterface);
+			solverinterface->setRowPrice(rowprice);
+		}
+		catch (...)
+		{
+			_exhandler->raisefromcatch("", "FMTlpsolver::setRowPrice", __LINE__, __FILE__);
+		}
+	}
 
 
 	void FMTlpsolver::setColSetBounds(const int* indexFirst, const int* indexLast, const double* boundlist)
