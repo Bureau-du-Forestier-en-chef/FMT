@@ -7,7 +7,7 @@
 int main(int argc, char* argv[])
 {
 #ifdef FMTWITHOSI
-	const std::string primarylocation = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/09_FMT/Modeles_test/FM/PC_7001892_U03772_SSP02.pri";// std::string(argv[1]);
+	const std::string primarylocation =  std::string(argv[1]);
 	Parser::FMTmodelparser modelparser;
 	modelparser.setdefaultexceptionhandler();
 	const std::string outdir = "../../tests/testmodelwriter/";
@@ -17,7 +17,7 @@ int main(int argc, char* argv[])
 	errors.push_back(Exception::FMTexc::FMTinvalidyield_number);
 	errors.push_back(Exception::FMTexc::FMToveridedyield);
 	modelparser.seterrorstowarnings(errors);
-	const std::vector<std::string>scenarios(1,"03_sc1a_bfecopt_bf");// std::string(argv[2]));
+	const std::vector<std::string>scenarios(1, std::string(argv[2]));
 	const std::vector<Models::FMTmodel> models = modelparser.readproject(primarylocation, scenarios);
 	Models::FMTlpmodel optmodel(models.at(0), Models::FMTsolverinterface::MOSEK);
 	optmodel.setparameter(Models::FMTintmodelparameters::LENGTH, 3);
