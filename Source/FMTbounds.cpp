@@ -342,7 +342,7 @@ FMTspec::FMTspec():per(),age(),lock(), yieldnames(), yieldbounds(){}
 
     bool FMTspec::empty() const
         {
-        return (per.empty() && age.empty() && yieldnames.empty());
+        return (per.empty() && age.empty() && yieldnames.empty() && lock.empty());
         }
 
 	size_t FMTspec::hash() const
