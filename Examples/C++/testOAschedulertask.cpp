@@ -116,6 +116,12 @@ Core::FMToutputnode createBFECoptaggregate(Models::FMTmodel& model)
             Core::FMTmask fmtMask = Core::FMTmask(stringMask, themes);
             return Core::FMToutputnode(fmtMask, Agg_name);
     }
+void runbfecopt(const std::unique_ptr<Parallel::FMTtask>& taskptr) 
+{
+    Parallel::FMTtaskhandler handler(taskptr, 4);
+    handler.settasklogger();
+    handler.conccurentrun();
+}
 #endif
 int main(int argc, char *argv[])
     {   
@@ -136,10 +142,21 @@ int main(int argc, char *argv[])
             const int startingperiod = optimizationmodel.getconstraints().at(0).getperiodlowerbound();
             const Core::FMToutputnode nodeofoutput =  createBFECoptaggregate(optimizationmodel);
             const std::vector<Heuristics::FMToperatingareascheme> opeareas = ObtenirOperatingArea(fichierShp,optimizationmodel.getthemes(),14, startingperiod, "AGE", "SUPERFICIE", "STANLOCK");
-            std::unique_ptr<Parallel::FMTtask> maintaskptr(new Parallel::FMTopareaschedulertask(optimizationmodel, opeareas, nodeofoutput,out, "YOUVERT",10,120));
-			Parallel::FMTtaskhandler handler(maintaskptr,4);
-            handler.settasklogger();
-			handler.conccurentrun();
+            {
+                std::unique_ptr<Parallel::FMTtask> maintaskptr(new Parallel::FMTopareaschedulertask(optimizationmodel, opeareas, nodeofoutput,out, "YOUVERT",10,120));
+                Parallel::FMTtaskhandler handler(maintaskptr, 4);
+                handler.settasklogger();
+                handler.conccurentrun();
+            //runbfecopt(maintaskptr);
+            }
+            const std::vector<Models::FMTmodel> nmodels = modelparser.readproject("../../tests/testOAschedulertask/"+ std::string(argv[2])+".pri", std::vector<std::string>(1,"ROOT"));
+            Models::FMTmodel readmodel = nmodels.at(0);
+            Models::FMTlpmodel noptimizationmodel(readmodel, Models::FMTsolverinterface::CLP);
+            noptimizationmodel.setparameter(Models::FMTintmodelparameters::LENGTH, 5);
+            noptimizationmodel.setparameter(Models::FMTboolmodelparameters::STRICTLY_POSITIVE, true);
+            noptimizationmodel.Models::FMTmodel::setparameter(Models::FMTdblmodelparameters::TOLERANCE, 0.01);
+            const std::vector<Core::FMTschedule> schedules = modelparser.readschedules("../../tests/testOAschedulertask/" + std::string(argv[2]) + ".pri", nmodels).at(0);
+            noptimizationmodel.doplanning(false, schedules);
 		#endif 
         return 0;
 	}
