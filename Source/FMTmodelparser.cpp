@@ -373,22 +373,70 @@ void FMTmodelparser::writefeatures(OGRLayer* layer, const int& firstperiod, cons
 		}
 	}
 
-
-
-void FMTmodelparser::write(const Models::FMTmodel& model,const std::string& folder) const
-    {
+	void  FMTmodelparser::writemodel(const Models::FMTmodel& model,
+		const std::string& lanfile,
+		const std::string& arefile,
+		const std::string& yldfile,
+		const std::string& actfile,
+		const std::string& trnfile,
+		const std::string& outfile,
+		const std::string& optfile,
+		const std::string& liffile,
+		const std::string& seqfile) const
+	{
 	try {
-		//Ajout de la section pri
-		//retirer les aggrégats de BFECgcbm et écrire les contraintes sans les 
-		const std::string modelname = model.getname();
-		const std::string lanfile = modelname + ".lan";
-		const std::string arefile = modelname + ".are";
-		const std::string yldfile = modelname + ".yld";
-		const std::string actfile = modelname + ".act";
-		const std::string trnfile = modelname + ".trn";
-		const std::string outfile = modelname + ".out";
-		const std::string optfile = modelname + ".opt";
-		const std::string liffile = modelname + ".lif";
+		if (!lanfile.empty())
+		{
+			FMTlandscapeparser landparser;
+			landparser.write(model.getthemes(),lanfile);
+			const std::vector<Core::FMTactualdevelopment>devs = model.getarea();
+			if (!devs.empty())
+			{
+				FMTareaparser areaparser;
+				areaparser.write(devs, arefile);
+			}
+
+		}
+		if (!yldfile.empty())
+		{
+			FMTyieldparser yldparser;
+			yldparser.write(model.getyields(), yldfile);
+		}
+
+		if (!actfile.empty())
+		{
+			FMTactionparser actparser;
+			actparser.write(model.getactions(), actfile);
+		}
+		
+		if (!trnfile.empty())
+		{
+			FMTtransitionparser trnparser;
+			trnparser.write(model.gettransitions(), trnfile);
+		}
+		if (!liffile.empty())
+		{
+			FMTlifespanparser lifparser;
+			lifparser.write(model.getlifespan(), liffile);
+		}
+		if (!outfile.empty())
+		{
+			const std::vector<Core::FMToutput>outputs = model.getoutputs();
+			if (!outputs.empty())
+			{
+				FMToutputparser outparser;
+				outparser.write(outputs, outfile);
+			}
+		}
+		if (!optfile.empty())
+		{
+			const std::vector<Core::FMTconstraint>constraints = model.getconstraints();
+			if (!constraints.empty())
+			{
+				FMToptimizationparser optparser;
+				optparser.write(constraints, optfile);
+			}
+		}
 		std::vector<Core::FMTschedule>schedules;
 		for (int period = 1; period <= model.getparameter(Models::FMTintmodelparameters::LENGTH); ++period)
 		{
@@ -398,54 +446,47 @@ void FMTmodelparser::write(const Models::FMTmodel& model,const std::string& fold
 				schedules.push_back(periodschedule);
 			}
 		}
-		std::string seqfile;
-		if (!schedules.empty())
+		if (!seqfile.empty())
 		{
-			seqfile = modelname + ".seq";
-		}
-			writeprimary(folder + modelname + ".pri",
-				lanfile, arefile, yldfile, actfile, trnfile, outfile, optfile, liffile, seqfile);
-		FMTlandscapeparser landparser;
-		landparser.write(model.getthemes(), folder + lanfile);
-		const std::vector<Core::FMTactualdevelopment>devs = model.getarea();
-		if (!devs.empty())
-			{
-			FMTareaparser areaparser;
-			areaparser.write(devs, folder + arefile);
-			}
-		FMTyieldparser yldparser;
-		yldparser.write(model.getyields(), folder + yldfile);
-		FMTactionparser actparser;
-		actparser.write(model.getactions(), folder + actfile);
-		FMTtransitionparser trnparser;
-		trnparser.write(model.gettransitions(), folder + trnfile);
-		FMTlifespanparser lifparser;
-		lifparser.write(model.getlifespan(), folder + liffile);
-		const std::vector<Core::FMToutput>outputs = model.getoutputs();
-		if (!outputs.empty())
-			{
-			FMToutputparser outparser;
-			outparser.write(outputs, folder + outfile);
-			}
-		const std::vector<Core::FMTconstraint>constraints = model.getconstraints();
-			if (!constraints.empty())
-			{
-			FMToptimizationparser optparser;
-			optparser.write(constraints, folder + optfile);
-			}
-		for (int period = 1; period<=model.getparameter(Models::FMTintmodelparameters::LENGTH);++period)
-			{
-			const Core::FMTschedule periodschedule = model.getsolution(period,true);
-			if (!periodschedule.empty())
-				{
-				schedules.push_back(periodschedule);
-				}
-			}
-		if (!schedules.empty())
-			{
 			FMTscheduleparser scheduleparser;
-			scheduleparser.write(schedules, folder+seqfile);
-			}
+			scheduleparser.write(schedules, seqfile);
+		}
+	}catch (...)
+	{
+		_exhandler->printexceptions("", "FMTmodelparser::writemodel", __LINE__, __FILE__, _section);
+	}
+}
+
+
+
+void FMTmodelparser::write(const Models::FMTmodel& model,const std::string& folder) const
+    {
+	try {
+		//Ajout de la section pri
+		//retirer les aggrégats de BFECgcbm et écrire les contraintes sans les 
+		const std::string modelname = model.getname();
+		const std::string lanname = modelname + ".lan";
+		const std::string arename = modelname + ".are";
+		const std::string yldname = modelname + ".yld";
+		const std::string actname = modelname + ".act";
+		const std::string trnname = modelname + ".trn";
+		const std::string outname = modelname + ".out";
+		const std::string optname = modelname + ".opt";
+		const std::string lifname = modelname + ".lif";
+		const std::string seqname = modelname + ".seq";
+		const std::string lanfile = folder + lanname;
+		const std::string arefile = folder + arename;
+		const std::string yldfile = folder + yldname;
+		const std::string actfile = folder + actname;
+		const std::string trnfile = folder + trnname;
+		const std::string outfile = folder + outname;
+		const std::string optfile = folder + optname;
+		const std::string liffile = folder + lifname;
+		const std::string seqfile = folder + seqname;
+			writeprimary(folder + modelname + ".pri",
+				lanname, arename, yldname, actname, trnname, outname, optname, lifname, seqname);
+			writemodel(model, lanfile, arefile, yldfile, actfile, trnfile, outfile, optfile, liffile, seqfile);
+		
 	}catch (...)
 		{
 		_exhandler->printexceptions(" at " + folder, "FMTmodelparser::write", __LINE__, __FILE__, _section);
@@ -783,19 +824,112 @@ Models::FMTmodel FMTmodelparser::referenceread(std::map<std::string, std::vector
 		return returnedmodel;
 		}
 
-		void FMTmodelparser::writeproject(const std::string& primary_location,
-			const std::vector<Models::FMTmodel>& models,
-			std::vector<std::vector<Core::FMTschedule>>schedules)
+		void FMTmodelparser::writetoproject(const std::string& primary_location,
+			const Models::FMTmodel& model)
 		{
 			try {
 				boost::filesystem::path primpath(primary_location);
 				const std::string filename = primpath.stem().string();
-
-
+				const boost::filesystem::path basefolder = primpath.parent_path();
+				if (!boost::filesystem::is_directory(basefolder))
+					{
+					_exhandler->raise(Exception::FMTexc::FMTinvalid_path,
+						basefolder.string()+" is not a valid directory", "FMTmodelparser::writetoproject", __LINE__, __FILE__);
+					}
+				if (!boost::filesystem::is_regular_file(primpath))//create the primary file
+				{
+					const std::string commonlocation = basefolder.string()+"/";
+					const std::string clanname = filename + ".lan";
+					const std::string carename = filename + ".are";
+					const std::string cyldname = filename + ".yld";
+					const std::string cactname = filename + ".act";
+					const std::string ctrnname = filename + ".trn";
+					const std::string coutname = filename + ".out";
+					const std::string coptname = filename + ".opt";
+					const std::string clifname = filename + ".lif";
+					const std::string cseqname = filename + ".seq";
+					const std::string clanfile = commonlocation + clanname;
+					const std::string carefile = commonlocation + carename;
+					const std::string cyldfile = commonlocation + cyldname;
+					const std::string cactfile = commonlocation + cactname;
+					const std::string ctrnfile = commonlocation + ctrnname;
+					const std::string coutfile = commonlocation + coutname;
+					const std::string coptfile = commonlocation + coptname;
+					const std::string cliffile = commonlocation + clifname;
+					const std::string cseqfile = commonlocation + cseqname;
+					if (_logger->logwithlevel("Writing " + primary_location + " ", 0))
+					{
+						*_logger << "\n";
+						_logger->logstamp();
+						_logger->logtime();
+					}
+					writeprimary(primary_location,
+						clanname, carename, cyldname, cactname, ctrnname, coutname, coptname, clifname, cseqname);
+					writemodel(model, clanfile, carefile, cyldfile, cactfile, ctrnfile, coutfile, coptfile, cliffile, cseqfile);
+				}else {//read the existing ROOT model...
+					const std::vector<std::string>rootmodel(1,"ROOT");
+					const std::vector<Models::FMTmodel> models = readproject(primary_location, rootmodel);
+					if (models.empty())
+					{
+						_exhandler->raise(Exception::FMTexc::FMTrangeerror,
+							"No Root model for the primary "+ primary_location, "FMTmodelparser::writetoproject", __LINE__, __FILE__);
+					}
+					if (!boost::filesystem::is_directory(basefolder / "Scenarios"))
+						{
+						boost::filesystem::create_directory(basefolder / "Scenarios");
+						}
+						const boost::filesystem::path scenario = basefolder / "Scenarios" / model.getname();
+						if (!boost::filesystem::is_directory(scenario))
+							{
+							boost::filesystem::create_directory(scenario);
+							}
+						std::string lanfile;
+						if (models.begin()->getthemes() != model.getthemes())
+						{
+							lanfile = boost::filesystem::path(scenario / (filename + "._lan")).string();
+						}
+						std::string arefile;
+						if (models.begin()->getarea() != model.getarea())
+						{
+							arefile = boost::filesystem::path(scenario / (filename + "._are")).string();
+						}
+						std::string yldfile;
+						if (models.begin()->getyields() != model.getyields())
+						{
+							yldfile = boost::filesystem::path(scenario / (filename + "._yld")).string();
+						}
+						std::string actfile;
+						if (models.begin()->getactions() != model.getactions())
+						{
+							actfile = boost::filesystem::path(scenario / (filename + "._act")).string();
+						}
+						std::string trnfile;
+						if (models.begin()->gettransitions() != model.gettransitions())
+						{
+							trnfile = boost::filesystem::path(scenario / (filename + "._trn")).string();
+						}
+						std::string outfile;
+						if (models.begin()->getoutputs() != model.getoutputs())
+						{
+							outfile = boost::filesystem::path(scenario / (filename + "._out")).string();
+						}
+						std::string optfile;
+						if (models.begin()->getconstraints() != model.getconstraints())
+						{
+							optfile = boost::filesystem::path(scenario / (filename + "._opt")).string();
+						}
+						std::string liffile;
+						if (models.begin()->getlifespan() != model.getlifespan())
+						{
+							liffile = boost::filesystem::path(scenario / (filename + "._lif")).string();
+						}
+						const std::string seqfile = boost::filesystem::path(scenario / (filename + "._seq")).string();
+						writemodel(model, lanfile, arefile, yldfile, actfile, trnfile, outfile, optfile, liffile, seqfile);
+					}
 			}
 			catch (...)
 			{
-				_exhandler->printexceptions("at " + primary_location, "FMTmodelparser::writeproject", __LINE__, __FILE__);
+				_exhandler->printexceptions("at " + primary_location, "FMTmodelparser::writetoproject", __LINE__, __FILE__);
 			}
 
 		}
