@@ -147,42 +147,55 @@ std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties
 	}
 
 	void FMToperatingareascheme::schemestoLP(const std::vector<std::vector<std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>>>& schemes,
-		const std::vector<std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>>& periodics,
+		const std::vector<std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>>& periodictargetednodes,
 		const std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>& totalareaverticies,
 		Models::FMTlpsolver& solver,
 		const double* primalsolution,
 		const Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>& maingraph, const std::vector<int>& actionIDS)
 	{
-		//int binaryid = matrixbuild.getlastcolindex()+1;
 		int binaryid = solver.getNumCols();
 		_area = 0;
-		//std::vector<std::vector<Graph::FMTvertex_descriptor>>::const_iterator perit = periodics.begin();
 		if (!totalareaverticies.empty())
 			{
 			const double area = this->getprimalarea(primalsolution, maingraph, totalareaverticies);
 			//To remove the numeric instability from the multiplication in the graph inarea
 			_area = static_cast<double>((static_cast<int>(area/100)*100)+100);
+			//old code
 			//_area=this->getprimalarea(primalsolution, maingraph, totalareaverticies);
-			//_area = 1000000;
 			}
+		//map of period and variables from the graph link to the scheme 
 		std::map<int, std::vector<int>>periodicsblocksvariables;
 		std::vector<size_t>selectedschemes;
 		size_t schemeid = 0;
-		std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor> ignoredvert = getignoredverticies(schemes, periodics);
-		////////////
-		for (const auto& vert : ignoredvert)
+		//To block activity in dev that are not in schemes and fit with the targeted nodes
+		std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor> ignoredvert = getignoredverticies(schemes, periodictargetednodes);
+		if (!ignoredvert.empty())
 		{
-			const Core::FMTdevelopment dev = maingraph.getdevelopment(vert);
-			if (std::string(dev).find("C00030") != std::string::npos)
+			const int cid = solver.getNumRows();
+			std::vector<int> variablestoignore;
+			for (const Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor& descriptor : ignoredvert)
 			{
-				std::string sdev = std::string(dev);
-				std::cout << sdev << std::endl;
+				const std::map<int, int>actions = maingraph.getoutvariables(descriptor);
+				for (const int& action : actionIDS)
+				{
+					std::map<int, int>::const_iterator actit = actions.find(action);
+					if (actit != actions.end())
+					{
+						variablestoignore.push_back(actit->second);
+					}
+				}
 			}
+			if (!variablestoignore.empty()) 
+			{
+				std::vector<double>maxelements(variablestoignore.size(), 1.0);
+				solver.addRow(static_cast<int>(variablestoignore.size()), &variablestoignore[0], &maxelements[0], 0, 0);
+				solver.setrowname("rejectednodes_" + std::string(this->getmask()), cid);
+			}
+			
 		}
-		/////////
+		//Iter over schemes to fill periodblocksvariables and get binary id and schemesid
 		for (const std::vector<std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>>& scheme : schemes)
 		{
-			//bool shemehasactions = false;
 			size_t blockid = 0;
 			for (const std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>& localblock : scheme)
 			{
@@ -193,46 +206,30 @@ std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties
 					{
 						periodicsblocksvariables[period] = std::vector<int>();
 					}
-						for (const Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor& descriptor : localblock)
+					for (const Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor& descriptor : localblock)
+					{
+						const std::map<int, int>actions = maingraph.getoutvariables(descriptor);
+						for (const int& action : actionIDS)
 						{
-							////////////
-							const Core::FMTdevelopment dev = maingraph.getdevelopment(descriptor);
-							if (std::string(dev).find("C00030")!=std::string::npos)
+							std::map<int, int>::const_iterator actit = actions.find(action);
+							if (actit != actions.end())
 							{
-								std::string sdev = std::string(dev);
-							}
-							/////////
-							const std::map<int, int>actions = maingraph.getoutvariables(descriptor);
-							//if (actions.size() > 1)
-							//{
-								for (const int& action : actionIDS)
+								if (std::find(periodicsblocksvariables.at(period).begin(), periodicsblocksvariables.at(period).end(), actit->second) == periodicsblocksvariables.at(period).end())
 								{
-									std::map<int, int>::const_iterator actit = actions.find(action);
-									if (actit != actions.end())
-									{
-										if (std::find(periodicsblocksvariables.at(period).begin(), periodicsblocksvariables.at(period).end(), actit->second) == periodicsblocksvariables.at(period).end())
-											{
-											periodicsblocksvariables[period].push_back(actit->second);
-											}
-										//shemehasactions = true;
-									}
-									
+									periodicsblocksvariables[period].push_back(actit->second);
 								}
-							//}
+							}
 						}
-					//}
+					}
 				}
 				++blockid;
 			}
-			//if (shemehasactions)
-			//{
-				openingbinaries.push_back(binaryid);
-				selectedschemes.push_back(schemeid);
-				++binaryid;
-			//}
+			openingbinaries.push_back(binaryid);
+			selectedschemes.push_back(schemeid);
+			++binaryid;
 			++schemeid;
 		}
-		//int constraintid = matrixbuild.getlastrowindex()+1;
+		//Iter over periodblocksvariable 
 		int constraintid = solver.getNumRows();
 		std::map<size_t, std::vector<int>>constraintsmap;
 		for (std::map<int, std::vector<int>>::const_iterator periodics = periodicsblocksvariables.begin();
@@ -259,47 +256,35 @@ std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties
 						++validscheme;
 					}
 				if (targetedvariables.size() > periodics->second.size())
-					{
+				{
 					solver.addRow(static_cast<int>(targetedvariables.size()), &targetedvariables[0], &elements[0], std::numeric_limits<double>::lowest(), 0);
 					solver.setrowname("schemenode_"+std::string(this->getmask())+"_P"+std::to_string(periodics->first), constraintid);
-					//matrixbuild.addRow(static_cast<int>(targetedvariables.size()), &targetedvariables[0], &elements[0], std::numeric_limits<double>::lowest(), 0);
-					}
+				}
 				++constraintid;
 			}
 		}
 		openingconstraints.resize(openingbinaries.size());
 		if (!constraintsmap.empty())
-			{
+		{
 			size_t tid = 0;
 			for (const size_t& shemeidselected : selectedschemes)
-				{
+			{
 				if (constraintsmap.find(shemeidselected) != constraintsmap.end())
-					{
-					openingconstraints[tid] = constraintsmap.at(shemeidselected);
-					}
-				++tid;
-				}
-			for (size_t opid = 0; opid < openingbinaries.size();++opid)
 				{
-				//matrixbuild.addCol(0, nullptr, nullptr, 0, 1);
+					openingconstraints[tid] = constraintsmap.at(shemeidselected);
+				}
+				++tid;
+			}
+			for (size_t opid = 0; opid < openingbinaries.size();++opid)
+			{
 				solver.addCol(0, nullptr, nullptr, 0, 1);
 				solver.setcolname("schemebin_"+std::string(this->getmask())+"_binid_"+std::to_string(opid), openingbinaries.at(opid));
-				}
-			//matrixbuild.setlastcolindex(openingbinaries.back());
+			}
 			maximalschemesconstraint = constraintid;
 			std::vector<double>maxelements(openingbinaries.size(), 1.0);
-			//matrixbuild.addRow(static_cast<int>(openingbinaries.size()), &openingbinaries[0], &maxelements[0], std::numeric_limits<double>::lowest(), 1);
-			//matrixbuild.setlastrowindex(maximalschemesconstraint);
 			solver.addRow(static_cast<int>(openingbinaries.size()), &openingbinaries[0], &maxelements[0], std::numeric_limits<double>::lowest(), 1);
 			solver.setrowname("schemechoice_"+std::string(this->getmask()), constraintid);
-			}
-		//Weird fix
-		/*std::vector<std::vector<int>>nschemesperiods;
-		for (const size_t& shemeidselected : selectedschemes)
-		{
-			nschemesperiods.push_back(schemesperiods.at(shemeidselected));
 		}
-		schemesperiods=nschemesperiods;*/
 	}
 
 
