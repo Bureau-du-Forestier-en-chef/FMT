@@ -165,10 +165,11 @@ FMToutputsource::operator std::string() const
                 {
                 line+="_INVENT("+action+") ";
 				}
-				else if (this->lock.getlower() > 0)
+				/*else if (this->lock.getlower() > 0)
 				{
 				line += "_INVLOCK ";
-				}else{
+
+				}*/else if (emptylock()) {
                 line+= "_INVENT ";
                 }
             if (!yield.empty())
