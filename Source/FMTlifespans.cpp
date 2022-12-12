@@ -60,6 +60,11 @@ bool FMTlifespans::operator == (const FMTlifespans& rhs) const
 	return (FMTlist<int>::operator ==(rhs));
 	}
 
+bool FMTlifespans::operator != (const FMTlifespans& rhs) const
+{
+	return !(*this == rhs);
+}
+
 FMTlifespans::operator std::string() const
     {
 	std::string line;

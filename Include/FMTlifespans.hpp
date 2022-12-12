@@ -63,6 +63,11 @@ class FMTEXPORT FMTlifespans : public FMTlist<int>
 		Comparison operator of FMTlifespans.
 		*/
 		bool operator == (const FMTlifespans& rhs) const;
+		// DocString: FMTlifespans::operator!=
+		/**
+		Comparison !operator of FMTlifespans.
+		*/
+		bool operator != (const FMTlifespans& rhs) const;
 		// DocString: FMTlifespans::operator std::string
 		/**
 		Returns a string representation of FMTlifespans section (.lif).

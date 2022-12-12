@@ -173,6 +173,11 @@ class FMTEXPORT FMTyields : public FMTlist<std::unique_ptr<FMTyieldhandler>>
 		FMTyields equality operator check if FMTyields are the same.
 		*/
 		bool operator == (const FMTyields& rhs) const;
+		// DocString: FMTyields::operator!=
+		/**
+		FMTyields non equality operator check if FMTyields are the same.
+		*/
+		bool operator != (const FMTyields& rhs) const;
 		// DocString: FMTyields::update
 		/**
 		FMTyields being an FMTlist an update function needs to be implemented to update 

@@ -101,6 +101,20 @@ class FMTEXPORT FMTmodelparser : public FMTparser
 		const std::string& optfile,
 		const std::string& liffile,
 		std::string seqfile=std::string()) const;
+	// DocString: FMTmodelparser::writemodel
+	/**
+	Base function to write model section if string non empty then write the corresponding section of the model with the schedules also if not empty
+	*/
+	void writemodel(const Models::FMTmodel& model, 
+		const std::string& lanfile,
+		const std::string& arefile,
+		const std::string& yldfile,
+		const std::string& actfile,
+		const std::string& trnfile,
+		const std::string& outfile,
+		const std::string& optfile,
+		const std::string& liffile,
+		const std::string& seqfile) const;
     public:
 		// DocString: FMTmodelparser()
 		/**
@@ -144,14 +158,14 @@ class FMTEXPORT FMTmodelparser : public FMTparser
 		std::vector<Models::FMTmodel>readproject(const std::string& primary_location,
 			std::vector<std::string>scenarios = std::vector<std::string>(),
 			bool readarea = true,bool readoutputs = true, bool readoptimize = true);
-		// DocString: FMTmodelparser::writeproject
+		// DocString: FMTmodelparser::writetoproject
 		/**
-		The writeproject function writes multiple scenarios based on a primary file location (.pri).
-		If the user gives the schedules it will also write the solution of each FMTmodel
+		The function will create a primary file if it does not exist and write the model in has a root scenario.
+		If the primary file exist it will read the scenario writen and compare each section with the model and write the model has a 
+		new scenario...
 		*/
-		void writeproject(const std::string& primary_location,
-			const std::vector<Models::FMTmodel>& models,
-			std::vector<std::vector<Core::FMTschedule>>schedules = std::vector<std::vector<Core::FMTschedule>>());
+		void writetoproject(const std::string& primary_location,
+			const Models::FMTmodel& model);
 		// DocString: FMTmodelparser::readschedules
 		/**
 		The readschedules function read the schedule files of the specified (models) based on a primary file

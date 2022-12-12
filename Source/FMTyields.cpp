@@ -393,6 +393,11 @@ bool FMTyields::operator == (const FMTyields& rhs) const
 
 	}
 
+bool FMTyields::operator != (const FMTyields& rhs) const
+	{
+	return !(*this == rhs);
+	}
+
 std::vector<const FMTyieldhandler*> FMTyields::gethandleroftype(FMTyldtype type) const
 	{
 	std::vector<const FMTyieldhandler*>selectedhandlers;
