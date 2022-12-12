@@ -168,6 +168,7 @@ std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties
 		std::vector<size_t>selectedschemes;
 		size_t schemeid = 0;
 		//To block activity in dev that are not in schemes and fit with the targeted nodes
+		//They are remove in generateschemes because we dont keep unfinished pattern
 		std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor> ignoredvert = getignoredverticies(schemes, periodictargetednodes);
 		if (!ignoredvert.empty())
 		{
@@ -185,13 +186,13 @@ std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties
 					}
 				}
 			}
-			if (!variablestoignore.empty()) 
+			if (!variablestoignore.empty())
 			{
 				std::vector<double>maxelements(variablestoignore.size(), 1.0);
 				solver.addRow(static_cast<int>(variablestoignore.size()), &variablestoignore[0], &maxelements[0], 0, 0);
 				solver.setrowname("rejectednodes_" + std::string(this->getmask()), cid);
 			}
-			
+
 		}
 		//Iter over schemes to fill periodblocksvariables and get binary id and schemesid
 		for (const std::vector<std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>>& scheme : schemes)
