@@ -433,14 +433,14 @@ void FMTmodelparser::write(const Models::FMTmodel& model,const std::string& fold
 			FMToptimizationparser optparser;
 			optparser.write(constraints, folder + optfile);
 			}
-		for (int period = 1; period<=model.getparameter(Models::FMTintmodelparameters::LENGTH);++period)
+		/*for (int period = 1; period <= model.getparameter(Models::FMTintmodelparameters::LENGTH); ++period)
 			{
 			const Core::FMTschedule periodschedule = model.getsolution(period,true);
 			if (!periodschedule.empty())
 				{
 				schedules.push_back(periodschedule);
 				}
-			}
+			*/
 		if (!schedules.empty())
 			{
 			FMTscheduleparser scheduleparser;
