@@ -191,6 +191,7 @@ std::vector<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties
 				std::vector<double>maxelements(variablestoignore.size(), 1.0);
 				solver.addRow(static_cast<int>(variablestoignore.size()), &variablestoignore[0], &maxelements[0], 0, 0);
 				solver.setrowname("rejectednodes_" + std::string(this->getmask()), cid);
+				rejectednodescid = cid;
 			}
 
 		}
@@ -647,7 +648,7 @@ FMToperatingareascheme::FMToperatingareascheme(const FMToperatingarea& oparea,co
 	maximalschemesconstraint(),
 	schemesperiods(),
 	openingtime(lopeningtime),returntime(lreturntime),repetition(lrepetition),
-	greenup(lgreenup),startingperiod(lstartingperiod), threshold(minimalarearatio), maxreturntime(lmaxreturntime)
+	greenup(lgreenup),startingperiod(lstartingperiod), threshold(minimalarearatio), maxreturntime(lmaxreturntime),rejectednodescid(-1)
 	{
 
 	}
@@ -1112,6 +1113,21 @@ size_t FMToperatingareascheme::getnumberofsimplescheme() const
 		}
 	return allperiods.size() - (openingtime - 1);
 	}
+
+const int& FMToperatingareascheme::getrejectednodescid() const
+{
+	return rejectednodescid;
+}
+
+const std::vector<std::vector<int>>& FMToperatingareascheme::getschemesperiods() const 
+{
+	return schemesperiods;
+}
+
+const int& FMToperatingareascheme::getmaximalschemesconstraint() const 
+{
+	return maximalschemesconstraint;
+}
 
 
 FMToperatingareaschemecomparator::FMToperatingareaschemecomparator(const Core::FMTmask& lmask):mask(lmask)

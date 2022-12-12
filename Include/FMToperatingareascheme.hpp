@@ -90,9 +90,13 @@ namespace Heuristics
 		// DocString: FMToperatingareascheme::threshold
 		///Area threshold the proportion of area harvested need to be at least this number
 		double threshold; 
-		// DocString: FMToperatingareascheme::fullenumeration
-		///If true, for every possible opening period after the return time a scheme will be created 
+		// DocString: FMToperatingareascheme::maxreturntime
+		///is the maximum time the opening area wont be available for harvest after being harvested. If it's different than returntime, it will enumerate all possibilities 
+		//between return time and maxreturntime for each closing
 		size_t maxreturntime;
+		// DocString: FMToperatingareascheme::rejectednodescid
+		///In schemestolp, we create a constraint for rejectednodes, this is the id.
+		int rejectednodescid;
 		// DocString: FMToperatingareascheme::getarea
 		/**
 			Get the area of the operating area base on a (primalsolution) 
@@ -397,6 +401,21 @@ namespace Heuristics
 			Return the number of simple scheme with fixed returntime + openingtime
 			*/
 			size_t getnumberofsimplescheme() const;
+			// DocString: FMToperatingareascheme::getrejectednodescid
+			/**
+			
+			*/
+			const int& getrejectednodescid() const;
+			// DocString: FMToperatingareascheme::getschemesperiods
+			/**
+			
+			*/
+			const std::vector<std::vector<int>>& getschemesperiods() const;
+			// DocString: FMToperatingareascheme::maximalschemesconstraint
+			/**
+			
+			*/
+			const int& getmaximalschemesconstraint() const;
 
 		};
 
