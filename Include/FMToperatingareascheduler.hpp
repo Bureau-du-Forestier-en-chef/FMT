@@ -186,6 +186,14 @@ namespace Heuristics
 		Return thread id to log it into functions greedypass and initialsove
 		*/
 		std::string getthreadid() const;
+		// DocString: FMToperatingareascheduler::completeinitialsolution
+		/**
+		Iterate on each FMToperatingareascheme and get the binaries (variables) and the constraints for the operatingscheme and the adjacency.
+		Then get the old solution and complete the solution with binaries = 0 and complete the row price of each constraints added...
+		completeinitialsolution will return 0 if something is not valid then you will need to recall initialsolve ... Need to check the return from setconstraint
+		of each FMToperatingarea to know about it...After calling this function you can safely call resolve...
+		*/
+		bool completeinitialsolution();
 	public:
 		// DocString: FMToperatingareascheduler::generateinitialproportionofset
 		/*
