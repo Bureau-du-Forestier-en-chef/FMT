@@ -413,6 +413,55 @@ namespace Heuristics
 		return indexes;
 	}
 
+	bool FMToperatingareascheduler::completeinitialsolution()
+	{
+		try{
+			if (!useprimal)//set it in the right form remove it from initialsolve....
+			{
+				this->unboundall(); //Make sure rhs are right need to be released
+				this->closeprimalbounds(); //Need that to get some activities
+				const double* initialcolsolution = getColSolution();
+				const double* initialrowsolution = getRowPrice();
+				std::vector<double>newcolsolution(initialcolsolution, initialcolsolution + getNumCols() + 1);
+				std::vector<double>newrowsolution(initialrowsolution, initialrowsolution + getNumRows() + 1);
+				for (std::vector<FMToperatingareascheme>::const_iterator operatingareait = operatingareas.begin();
+					operatingareait != operatingareas.end(); ++operatingareait)
+				{
+					/*if (!operatingareait->getincomplete().empty())
+					{
+						return false;
+					}
+					for (const std::vector<int>& scheme : operatingareait->getopeningconstraints())
+					{
+						for (const int& contraintindex : scheme)
+						{
+							newrowsolution[contraintindex] = 0.0;
+						}
+					}
+					newrowsolution[operatingareait->getmaximalschemesconstraint()] = 0;*/
+					for (const int& binary : operatingareait->getopeningbinaries())
+					{
+						newcolsolution[binary] = 0.0;
+					}
+				}
+				for (std::map<std::pair<Core::FMTmask, Core::FMTmask>, std::vector<int>>::const_iterator adid = adjacencyconstraints.begin(); adid != adjacencyconstraints.end(); adid++)
+				{
+					for (const int& constraintindex : adid->second)
+					{
+						newrowsolution[constraintindex] = 0.0; //??? validate
+					}
+				}
+				this->setColSolution(&newcolsolution[0]);
+				this->setRowPrice(&newrowsolution[0]);
+			}
+		}catch (...)
+		{
+			_exhandler->raisefromcatch("", "FMToperatingareascheduler::completeinitialsolution", __LINE__, __FILE__);
+		}
+		return true;
+	}
+
+
 	void FMToperatingareascheduler::setoperatingareasconstraints(const Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>& maingraph,
 																const Models::FMTmodel& model,
 																const Core::FMToutputnode& target)
@@ -969,7 +1018,12 @@ namespace Heuristics
 			(*_logger) <<  "Complexity calculated by scheduler : " << complexity << "\n";
 			bool adjacencyconstraintset = this->setadjacencyconstraints();
 			updaterowsandcolsnames();
-			this->resolvemodel();
+			if (false)//completeinitialsolution()) // If you can complete the initial solution then you juste need a warmstart
+			{
+				this->stockresolve();
+			}else {
+				this->resolvemodel();//else just do an initialsolve...
+			}
 			if (!adjacencyconstraintset)
 			{
 				if(std::abs(this->getObjValue() - baseobj)>0.01*baseobj)
