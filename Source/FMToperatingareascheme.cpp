@@ -1119,9 +1119,9 @@ const int& FMToperatingareascheme::getrejectednodescid() const
 	return rejectednodescid;
 }
 
-const std::vector<std::vector<int>>& FMToperatingareascheme::getschemesperiods() const 
+const std::vector<std::vector<int>>& FMToperatingareascheme::getopeningconstraints() const
 {
-	return schemesperiods;
+	return openingconstraints;
 }
 
 const int& FMToperatingareascheme::getmaximalschemesconstraint() const 

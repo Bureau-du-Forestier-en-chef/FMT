@@ -26,9 +26,9 @@ std::vector<Heuristics::FMToperatingareascheme> ObtenirOperatingArea(   const st
         {
             if (OA != "NA")
             {
-                const int OPT = 1;
-                const int RET = 3;
-                const int MAXRET = 3;
+                const int OPT = 2;
+                const int RET = 6;
+                const int MAXRET = 6;
                 const int REP = 3;
                 const float NPE = 0;
                 const float GUP = 0;
@@ -122,9 +122,9 @@ int main(int argc, char *argv[])
     {   
         #ifdef FMTWITHOSI
             Logging::FMTlogger().logstamp();
-            const std::string primarylocation =  std::string(argv[1]);
+            const std::string primarylocation = std::string(argv[1]);
             const std::vector<std::string>scenarios(1, std::string(argv[2]));
-            const std::string fichierShp = std::string(argv[3]);
+            const std::string fichierShp =  std::string(argv[3]);
             Parser::FMTmodelparser modelparser;
             modelparser.setdefaultexceptionhandler();
             modelparser.settasklogger();
@@ -135,6 +135,7 @@ int main(int argc, char *argv[])
 	        optimizationmodel.setparameter(Models::FMTboolmodelparameters::STRICTLY_POSITIVE, true);
 	        optimizationmodel.setparameter(Models::FMTintmodelparameters::PRESOLVE_ITERATIONS, 1);
             optimizationmodel.setparameter(Models::FMTboolmodelparameters::POSTSOLVE, true);
+          
             const int startingperiod = optimizationmodel.getconstraints().at(0).getperiodlowerbound();
             optimizationmodel.doplanning(true);
             const double initialobjectivevalue = optimizationmodel.getObjValue();

@@ -26,9 +26,9 @@ std::vector<Heuristics::FMToperatingareascheme> ObtenirOperatingArea(   const st
         {
             if (OA != "NA")
             {
-                const int OPT = 2;
-                const int RET = 6;//4;
-                const int REP = 6;
+                const int OPT = 1;
+                const int RET = 3;//4;
+                const int REP = 3;
                 const float NPE = 0;
                 const float GUP = 0;
                 std::string mask;
