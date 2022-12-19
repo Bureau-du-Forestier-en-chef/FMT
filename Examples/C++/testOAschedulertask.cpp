@@ -116,12 +116,6 @@ Core::FMToutputnode createBFECoptaggregate(Models::FMTmodel& model)
             Core::FMTmask fmtMask = Core::FMTmask(stringMask, themes);
             return Core::FMToutputnode(fmtMask, Agg_name);
     }
-void runbfecopt(const std::unique_ptr<Parallel::FMTtask>& taskptr) 
-{
-    Parallel::FMTtaskhandler handler(taskptr, 4);
-    handler.settasklogger();
-    handler.conccurentrun();
-}
 #endif
 int main(int argc, char *argv[])
     {   
@@ -147,7 +141,6 @@ int main(int argc, char *argv[])
                 Parallel::FMTtaskhandler handler(maintaskptr, 4);
                 handler.settasklogger();
                 handler.conccurentrun();
-            //runbfecopt(maintaskptr);
             }
             const std::vector<Models::FMTmodel> nmodels = modelparser.readproject("../../tests/testOAschedulertask/"+ std::string(argv[2])+".pri", std::vector<std::string>(1,"ROOT"));
             Models::FMTmodel readmodel = nmodels.at(0);
