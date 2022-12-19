@@ -418,8 +418,8 @@ namespace Heuristics
 		try{
 			if (!useprimal)//set it in the right form remove it from initialsolve....
 			{
-				this->unboundall(); //Make sure rhs are right need to be released
-				this->closeprimalbounds(); //Need that to get some activities
+				//this->unboundall(); //Make sure rhs are right need to be released
+				//this->closeprimalbounds(); //Need that to get some activities
 				const double* initialcolsolution = getColSolution();
 				const double* initialrowsolution = getRowPrice();
 				std::vector<double>newcolsolution(initialcolsolution, initialcolsolution + getNumCols() + 1);
@@ -427,7 +427,7 @@ namespace Heuristics
 				for (std::vector<FMToperatingareascheme>::const_iterator operatingareait = operatingareas.begin();
 					operatingareait != operatingareas.end(); ++operatingareait)
 				{
-					/*if (!operatingareait->getincomplete().empty())
+					if (operatingareait->getrejectednodescid()>0)
 					{
 						return false;
 					}
@@ -438,7 +438,11 @@ namespace Heuristics
 							newrowsolution[contraintindex] = 0.0;
 						}
 					}
-					newrowsolution[operatingareait->getmaximalschemesconstraint()] = 0;*/
+					if (operatingareait->getmaximalschemesconstraint()>0)
+					{
+						newrowsolution[operatingareait->getmaximalschemesconstraint()] = 0.0;
+					}
+					
 					for (const int& binary : operatingareait->getopeningbinaries())
 					{
 						newcolsolution[binary] = 0.0;
@@ -448,17 +452,18 @@ namespace Heuristics
 				{
 					for (const int& constraintindex : adid->second)
 					{
-						newrowsolution[constraintindex] = 0.0; //??? validate
+						newrowsolution[constraintindex] = 0.0; 
 					}
 				}
 				this->setColSolution(&newcolsolution[0]);
 				this->setRowPrice(&newrowsolution[0]);
+				return true;
 			}
 		}catch (...)
 		{
 			_exhandler->raisefromcatch("", "FMToperatingareascheduler::completeinitialsolution", __LINE__, __FILE__);
 		}
-		return true;
+		return false;
 	}
 
 
@@ -1018,7 +1023,13 @@ namespace Heuristics
 			(*_logger) <<  "Complexity calculated by scheduler : " << complexity << "\n";
 			bool adjacencyconstraintset = this->setadjacencyconstraints();
 			updaterowsandcolsnames();
-			if (false)//completeinitialsolution()) // If you can complete the initial solution then you juste need a warmstart
+			//const std::chrono::time_point<std::chrono::high_resolution_clock>teststart = getclock();
+			/*if (!useprimal)//set it in the right form remove it from initialsolve....
+			{
+				this->unboundall(); //Make sure rhs are right need to be released
+				this->closeprimalbounds(); //Need that to get some activities
+			}*/
+			if (false/*completeinitialsolution()*/) // If you can complete the initial solution then you juste need a warmstart
 			{
 				this->stockresolve();
 			}else {
@@ -1041,6 +1052,7 @@ namespace Heuristics
 													"FMToperatingareascheduler::FMToperatingareascheduler", __LINE__, __FILE__);
 
 			}
+			//_logger->logwithlevel("Solved wamrstart in  " + getdurationinseconds(teststart) + "\n", 1);
 		}catch (...)
 			{
 			_exhandler->raisefromcatch("","FMToperatingareascheduler::FMToperatingareaheuristic", __LINE__, __FILE__);

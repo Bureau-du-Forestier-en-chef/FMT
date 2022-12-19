@@ -410,7 +410,7 @@ namespace Heuristics
 			/**
 			
 			*/
-			const std::vector<std::vector<int>>& getschemesperiods() const;
+			const std::vector<std::vector<int>>& getopeningconstraints() const;
 			// DocString: FMToperatingareascheme::maximalschemesconstraint
 			/**
 			
