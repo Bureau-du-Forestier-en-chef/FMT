@@ -3,7 +3,7 @@
 <p align="center">
   <img src="https://raw.githubusercontent.com/Bureau-du-Forestier-en-chef/FMT/master/Documentation/FMTlogo.png" />
 </p>
-<h1 align="center">FMT (Forest Management Tool)</h1>
+<h1 align="center">FMT (Forêt Modélisée dans le Temps)</h1>
 <br><br>
 <p align="center">
 	<a href = "https://bureau-du-forestier-en-chef.github.io/FMTdocs/fr/"><img src = "https://img.shields.io/badge/%F0%9F%93%9A-Regardez%20la%20documentation%20!-green?style=flat-square" height="45" /></a>
@@ -15,7 +15,7 @@
 
 # 📑 Description
 
-FMT (**F**orest **M**anagement **T**ool) est une **librairie de type logiciel libre pour l'aménagement forestier**.
+FMT (**F**orêt **M**odélisée dans le **T**emps) est une **librairie de type logiciel libre pour l'aménagement forestier**.
 
 - C'est une librairie C++ faite pour interpréter des modèles de planification forestière basés sur les fichiers Woodstock.
 - Elle peut être utilisé avec Python, Cran-R ou directement en C++.
