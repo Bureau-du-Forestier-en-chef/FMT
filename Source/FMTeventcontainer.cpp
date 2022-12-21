@@ -619,13 +619,14 @@ namespace Spatial
         if (!territory.empty())
         {
             const FMTcoordinate minxy = *territory.begin();
-            const FMTcoordinate maxxy = *(--territory.end());
+            const FMTcoordinate maxxy = *(territory.rbegin());
+			
             FMTeventcontainer::const_iterator lower = lower_bound(period,minxy);
             FMTeventcontainer::const_iterator upper = upper_bound(period,maxxy);
             ///Debug
             //std::cout<<"Upper "<<upper->averagecentroid().getx()<<upper->averagecentroid().gety()<<" Action : "<<upper->getactionid()<<" Period : "<<upper->getperiod()<<std::endl;
             //std::cout<<"Lower "<<lower->averagecentroid().getx()<<lower->averagecentroid().gety()<<" Action : "<<lower->getactionid()<<" Period : "<<lower->getperiod()<<std::endl;
-            do {
+            /*do {
                     if (lower!=events.end())
                     {
                         if(lower == upper)
@@ -645,7 +646,11 @@ namespace Spatial
                         lower++;
                     }
                 }
-            while(lower!=upper);
+            while(lower!=upper);*/
+			for (FMTeventcontainer::const_iterator it = lower; it != upper; ++it)
+				{
+				selectedevents.push_back(it);
+				}
         }
         return selectedevents;
     }
