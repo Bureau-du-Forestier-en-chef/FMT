@@ -74,7 +74,14 @@ Core::FMTconstants FMTconstantparser::read(const std::string& location)
 						}
 						if (!values.empty())
 						{
-							constants.set(key, values);
+							if (!constants.isconstant("#" + key))
+							{
+								constants.set(key, values);
+							}else {
+								_exhandler->raise(Exception::FMTexc::FMTconstants_replacement,
+									"Constant redefinition ignored for "+key + " at line " + std::to_string(_line), "FMTconstantparser::read", __LINE__, __FILE__, _section);
+							}
+							
 						}
 
 					}
