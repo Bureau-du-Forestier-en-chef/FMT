@@ -527,13 +527,13 @@ namespace Spatial
 	std::set<FMTcoordinate>FMTevent::getterritory(const size_t& distance) const
 	{
 		std::set<FMTcoordinate>territory;
-		const unsigned int distanceof = static_cast<unsigned int>(distance);
-		const unsigned int zeroof = 0;
+		const int distanceof = static_cast<int>(distance);
+		const int zeroof = 0;
 		const std::vector<FMTcoordinate>enveloppe = getenveloppe();
-		territory.insert(FMTcoordinate(std::max(enveloppe.at(0).getx() - distanceof, zeroof), std::max(enveloppe.at(0).gety() - distanceof, zeroof)));
-		territory.insert(FMTcoordinate(enveloppe.at(1).getx() + distanceof, std::max(enveloppe.at(1).gety() - distanceof, zeroof)));
-		territory.insert(FMTcoordinate(std::max(enveloppe.at(2).getx() - distanceof, zeroof), enveloppe.at(2).gety() + distanceof));
-		territory.insert(FMTcoordinate(enveloppe.at(3).getx() + distanceof, enveloppe.at(3).gety() + distanceof));
+		territory.insert(FMTcoordinate(std::max(static_cast<int>(enveloppe.at(0).getx()) - distanceof, zeroof), std::max(static_cast<int>(enveloppe.at(0).gety()) - distanceof, zeroof)));
+		territory.insert(FMTcoordinate(static_cast<int>(enveloppe.at(1).getx()) + distanceof, std::max(static_cast<int>(enveloppe.at(1).gety()) - distanceof, zeroof)));
+		territory.insert(FMTcoordinate(std::max(static_cast<int>(enveloppe.at(2).getx()) - distanceof, zeroof), static_cast<int>(enveloppe.at(2).gety()) + distanceof));
+		territory.insert(FMTcoordinate(static_cast<int>(enveloppe.at(3).getx()) + distanceof, static_cast<int>(enveloppe.at(3).gety()) + distanceof));
 		return territory;
 	}
 
