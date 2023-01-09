@@ -6,7 +6,7 @@ setup(
     version="@PROJECT_VERSION@",
     description="FMT",
     long_description="FMT",
-    url="",
+    url="https://github.com/Bureau-du-Forestier-en-chef/FMT",
     author="",
     author_email="",
     install_requires=[],
@@ -14,7 +14,7 @@ setup(
     include_package_data=True,
     packages=["FMT"],
     package_dir={"FMT": ""},
-    package_data={"FMT": ["*.dll", "*.lib", "*.exp", "*.pyd", "GDAL_DATA/*.*", "GDAL_DATA/html/*.*","LICENSES/*","YieldPredModels/*","proj/*"]},
+    package_data={"FMT": ["*.dll", "*.lib", "*.exp", "*.pyd", "GDAL_DATA/*.*", "GDAL_DATA/html/*.*","LICENSES/*","YieldPredModels/*","YieldPredModels/NEP_CARBON/*","YieldPredModels/POOLS_CARBON/*","YieldPredModels/TESTMODEL/*","proj/*"]},
     entry_points={},
     python_requires="==@PYTHONMAJOR@.@PYTHONMINOR@.*"
 )

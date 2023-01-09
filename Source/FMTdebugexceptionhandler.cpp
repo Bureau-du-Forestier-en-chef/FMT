@@ -35,7 +35,7 @@ namespace Exception
 			}
 		if (throwit && !needtorethrow())
 			{
-			if (_level == FMTlev::FMT_Warning)
+			if (_level == FMTlev::FMT_Warning || _level == FMTlev::FMT_Debug)
 				{
 					FMTwarning(excp).warn(_logger,_specificwarningcount,maxwarningsbeforesilenced);
 				}

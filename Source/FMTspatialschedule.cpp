@@ -664,8 +664,8 @@ namespace Spatial
 							const double periodfactor = (lowergup - (period - gupperiod));
 							for (const FMTeventcontainer::const_iterator eventof : events.getevents(gupperiod, actionused, minimalcoord, maximalcoord))
 							{
-								//if (eventit != eventof)//They will have the same address if it's the same event!
-								//{
+								if (eventit != eventof)//They will have the same address if it's the same event!
+								{
 									const FMTeventrelation ofrelation = eventof->getrelation(*eventit);
 									const FMTeventrelation itrelation = eventit->getrelation(*eventof);
 									if (relations.find(ofrelation) == relations.end()&&
@@ -683,7 +683,7 @@ namespace Spatial
 										relations.insert(itrelation);
 									}
 
-								//}
+								}
 							}
 							if (testupper)
 							{
