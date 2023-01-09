@@ -44,7 +44,6 @@ namespace Heuristics
 	class FMToperatingareascheme;
 	class FMToperatingareacluster;
 	class FMToperatingarea;
-
 }
 
 namespace Models
@@ -64,6 +63,9 @@ available to the user. This class is also used by the FMTmodelparser.
 class FMTEXPORT FMTareaparser : public FMTparser
     {
     private:
+		// DocString: FMTareaparser::splitoaparamlines
+		///Split lines for OA scheduler parameters
+		std::vector<std::string> splitoaparamlines(std::string line) const;
 		// DocString: FMTareaparser::rxcleanarea
 		///This regex is used to capture the information kept in the .are section.
         const static boost::regex rxcleanarea;
@@ -283,6 +285,13 @@ class FMTEXPORT FMTareaparser : public FMTparser
 							const std::string& agefield, const std::string& areafield,const double& maximaldistance,
 							double agefactor = 1.0,double areafactor = 1, std::string lockfield = "",
 							double minimal_area = 0.0, double buffersize = 100) const;
+			// DocString: FMTareaparser::readOAschedulerparameters
+			/**
+			Using the location for parameters file (must contain headers "OA","OPT","RET","MAXRET","REP","OPR"), the modelthemes, 
+			the themetarget corresponding to the themeid where the OA in parameters is in, and the startingperiod it return a vector 
+			of operatingareascheme, to use in operatingareascheduler.
+			*/
+			std::vector<Heuristics::FMToperatingareascheme> readOAschedulerparameters(const std::string& location, const std::vector<Core::FMTtheme>& modelthemes, const int& themetarget, const int& startingperiod) const;
 
 		#endif
 		// DocString: FMTareaparser::readvectors

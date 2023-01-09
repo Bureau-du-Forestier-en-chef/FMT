@@ -417,6 +417,8 @@ namespace Heuristics
 			*/
 			const int& getmaximalschemesconstraint() const;
 
+			const size_t& getgreenup() const { return greenup; };
+
 		};
 
 	// DocString: FMToperatingareaschemecomparator
