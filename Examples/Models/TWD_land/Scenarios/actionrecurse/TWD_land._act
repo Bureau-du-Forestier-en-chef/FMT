@@ -1,0 +1,12 @@
+
+*ACTION COUPEtotale Y CT
+*OPERABLE COUPEtotale
+? prod ? volumetotal >= 100
+
+*ACTION amagic N _LOCKEXEMPT
+*OPERABLE amagic
+? ? ? _AGE >= 0
+
+
+
+

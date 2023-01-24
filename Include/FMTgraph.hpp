@@ -185,9 +185,10 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 			return periodit;
 		}
 		bool isdependant(const FMTvertex_descriptor& descriptor,
-			const int& theactionid) const
+			const int& theactionid,bool& newedge) const
 		{
 			try {
+				newedge = true;
 				if (boost::out_degree(descriptor, data) > 0)
 					{
 					FMToutedge_iterator outit, outend;
@@ -200,8 +201,9 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 								{
 								return true;
 								}
-							_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
-									"Action recursivity " + std::to_string(theactionid), "FMTgraph::isdependant", __LINE__, __FILE__);
+							_exhandler->raise(Exception::FMTexc::FMTsourcetotarget_transition,
+									"Action recursivity " + std::to_string(theactionid)+" ", "FMTgraph::isdependant", __LINE__, __FILE__);
+							newedge = false;
 							}
 						}
 					}
@@ -814,29 +816,40 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 						boost::unordered_set<Core::FMTlookup<FMTvertex_descriptor, Core::FMTdevelopment>>& devsets)
 		{
 			try {
-				int variable_id = statsdiff.cols;
-				++statsdiff.cols;
-				std::vector<FMTvertex_descriptor>active_vertex;
+				//int variable_id = statsdiff.cols;
+				//++statsdiff.cols;
+				//std::vector<FMTvertex_descriptor>active_vertex;
+				bool newchoice = false;
 				for (const Core::FMTdevelopmentpath& devpath : paths)
 				{
-					const FMTedgeproperties newedge(actionID, variable_id, devpath.proportion);
 					FMTvertex_descriptor tovertex;
+					bool newedge = false;
 					if (!this->containsdevelopment(*devpath.development,devsets))
 					{
 						
 						tovertex = this->adddevelopment(*devpath.development,devsets);
 						actives.push(tovertex);
-
+						newedge = true;
 					}else {
 						tovertex = this->adddevelopment(*devpath.development, devsets);
-						if (isdependant(tovertex, actionID))
+						if (isdependant(tovertex, actionID, newedge))
 							{
 							tovertex = this->adddevelopment(*devpath.development, devsets, true);
 							actives.push(tovertex);
 							}
 					}
-					boost::add_edge(out_vertex, tovertex, newedge, data);
-					++stats.edges;
+					if (newedge)
+					{
+						const FMTedgeproperties newedge(actionID, statsdiff.cols, devpath.proportion);
+						boost::add_edge(out_vertex, tovertex, newedge, data);
+						++stats.edges;
+						newchoice = true;
+					}
+					
+				}
+				if (newchoice)
+				{
+					++statsdiff.cols;
 				}
 			}
 			catch (...)

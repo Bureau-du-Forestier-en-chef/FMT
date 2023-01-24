@@ -29,3 +29,4 @@ sumandavgtest;;;
 landaggregatestest;;;
 testmodelwriter;../../../../Examples/Models/TWD_land/TWD_land.pri;complextoage;
 testreadwriteproject;../../../../Examples/Models/TWD_land/TWD_land.pri;LP|LP2|LP4|LP5;
+doplanning;../../../../Examples/Models/TWD_land/TWD_land.pri|actionrecurse;5;65733
