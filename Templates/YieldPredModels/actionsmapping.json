@@ -174,5 +174,9 @@
 "ARECUP":{
 	"name":"Salvage logging after fire",
 	"id":10
-	}
+	},
+"AHEGMORT":{
+	"name":"Spruce Budworm in QC, Severe annual defoliation, 6yr cumulative defoliation 46-55%",
+	"id":13
+	}	
 }
