@@ -10,6 +10,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTdevelopment.hpp"
 #include "FMTyieldmodel.hpp"
 #include "FMTexceptionhandler.hpp"
+#include <boost\filesystem\path.hpp>
 
 namespace Core {
 
@@ -28,7 +29,16 @@ namespace Core {
 			for(std::string& line : modelslines)
 				{
 				line.pop_back();
-				value += line + " _PRED(" + models.at(modelid)->GetModelName() + ")\n";
+				const std::string completename = models.at(modelid)->GetModelName();
+				const boost::filesystem::path modelpath(completename);
+				const boost::filesystem::path dir = modelpath.parent_path();
+				const std::string shortmodelname = dir.stem().string();
+				std::string data(shortmodelname);
+				for (const std::string yield : models.at(modelid)->GetModelYields())
+					{
+					data += ("," + yield);
+					}
+				value += line + " _PRED(" + data + ")\n";
 				++modelid;
 				}
 		}

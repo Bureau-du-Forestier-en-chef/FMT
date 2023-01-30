@@ -122,12 +122,22 @@ int main(int argc, char *argv[])
     {   
         #ifdef FMTWITHOSI
             Logging::FMTlogger().logstamp();
-            const std::string primarylocation = std::string(argv[1]);
-            const std::vector<std::string>scenarios(1, std::string(argv[2]));
+            const std::string primarylocation =  std::string(argv[1]);
+            const std::vector<std::string>scenarios(1,  std::string(argv[2]));
             const std::string fichierShp =  std::string(argv[3]);
             Parser::FMTmodelparser modelparser;
             modelparser.setdefaultexceptionhandler();
             modelparser.settasklogger();
+            std::vector<Exception::FMTexc>errors;
+		    errors.push_back(Exception::FMTexc::FMTmissingyield);
+		    errors.push_back(Exception::FMTexc::FMToutput_missing_operator);
+		    errors.push_back(Exception::FMTexc::FMToutput_too_much_operator);
+		    errors.push_back(Exception::FMTexc::FMTinvalidyield_number);
+		    errors.push_back(Exception::FMTexc::FMTundefinedoutput_attribute);
+		    errors.push_back(Exception::FMTexc::FMToveridedyield);
+		    errors.push_back(Exception::FMTexc::FMTsourcetotarget_transition);
+		    errors.push_back(Exception::FMTexc::FMTsame_transitiontargets);
+		    modelparser.seterrorstowarnings(errors);
             const std::vector<Models::FMTmodel> models = modelparser.readproject(primarylocation, scenarios);
             Models::FMTmodel model = models.at(0);
             Models::FMTlpmodel optimizationmodel(model, Models::FMTsolverinterface::MOSEK);

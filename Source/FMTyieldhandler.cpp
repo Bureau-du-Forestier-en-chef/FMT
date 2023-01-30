@@ -240,7 +240,12 @@ FMTyieldhandler::operator std::string() const
 
 	int FMTyieldhandler::getlastbase() const
 		{
-		return bases.back();
+		int basevalue = 0;
+		if (!bases.empty())
+		{
+			basevalue= bases.back();
+		}
+		return basevalue;
 		}
 
 	size_t FMTyieldhandler::getoverrideindex() const
