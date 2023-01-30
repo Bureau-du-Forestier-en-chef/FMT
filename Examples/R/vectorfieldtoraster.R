@@ -13,6 +13,17 @@ raster <- "THEME1.tif"
 resolution <- 250
 #Creation du parser d'area'
 areaparser <- new(FMTareaparser)
+#Les exceptions à ignorer
+exceptions<-c(FMTexc$FMTmissingyield,
+                  FMTexc$FMToutput_missing_operator,
+                  FMTexc$FMToutput_too_much_operator,
+                  FMTexc$FMTinvalidyield_number,
+                  FMTexc$FMTundefinedoutput_attribute,
+                  FMTexc$FMToveridedyield, 
+                  FMTexc$FMTdeathwithlock,
+		  FMTexc$FMTinvalid_geometry)
+#On applique les exceptions au parser
+areaparser$seterrorstowarnings(exceptions)
 #Transformation du field theme1 en raster
 areaparser$vectorfieldtoraster(carte,
 								raster,

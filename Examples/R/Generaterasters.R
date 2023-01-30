@@ -17,10 +17,11 @@ scenarios_voulus <- c("03_sc1a_bfecopt_bf")
 exceptions<-c(FMTexc$FMTmissingyield,
                   FMTexc$FMToutput_missing_operator,
                   FMTexc$FMToutput_too_much_operator,
-                  FMTexc$FMTinvalidyield_number,..
+                  FMTexc$FMTinvalidyield_number,
                   FMTexc$FMTundefinedoutput_attribute,
                   FMTexc$FMToveridedyield, 
-                  FMTexc$FMTdeathwithlock)
+                  FMTexc$FMTdeathwithlock,
+		  FMTexc$FMTinvalid_geometry)
 #On applique les exceptions au parser
 modelparser$seterrorstowarnings(exceptions)
 #Lecture d'un scénario Woodstock
