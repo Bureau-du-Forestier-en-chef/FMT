@@ -56,7 +56,7 @@ _AGE GFI GFT GF GR
 30   30  0   60 90
 
 *YM ? ? ?
-AG_Biomass_C,BG_Biomass_C,Deadwood_C,Litter_C,Soil_C _PRED(pools_carbon,GFI,GFT,GF,GR)
+AG_Biomass_C,BG_Biomass_C,Deadwood_C,Litter_C,Soil_C _PRED(pools_carbon,GFI,GFT,GR,GF)
 
 *YM ? ? ?
-NEP _PRED(nep_carbon,GFI,GFT,GF,GR)
+NEP _PRED(nep_carbon,GFI,GFT,GR,GF)
