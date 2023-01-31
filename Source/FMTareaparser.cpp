@@ -1756,13 +1756,13 @@ std::vector<std::string> FMTareaparser::splitoaparamlines(std::string line) cons
 				std::vector<Heuristics::FMToperatingareascheme> schemes;
 				try{
 					std::ifstream oaparameterfile(location);
-					std::vector<std::string> titles = { "OA","OPT","RET","MAXRET","REP","OPR"};
+					std::vector<std::string> titles = { "OA","OPT","RET","MAXRET","REP"};
 					if (tryopening(oaparameterfile, location))
 					{
 						int lineid = 0;
 						std::string line;
 						std::map<std::string, int>columns;
-						bool useRETasMAXRET = false;
+						bool useRETasMAXRET = true;
 						while (getline(oaparameterfile, line))
 						{
 							std::vector<std::string>splittedline = splitoaparamlines(line);
@@ -1782,7 +1782,7 @@ std::vector<std::string> FMTareaparser::splitoaparamlines(std::string line) cons
 									{
 										if (columns.find(title) == columns.end())
 										{
-											if (title != "MAXRET")
+											if (title == "MAXRET")
 											{
 												//add new exception for oascheduler parsing...
 												useRETasMAXRET = true;
@@ -1820,35 +1820,45 @@ std::vector<std::string> FMTareaparser::splitoaparamlines(std::string line) cons
 									const Core::FMTmask OAmask(smask,modelthemes);
 									for (std::string title : titles)
 									{
-										if (int(splittedline.size()) <= columns[title])
+										if (columns.find(title) != columns.end() && int(splittedline.size()) <= columns[title])
 										{
 											_exhandler->raise(Exception::FMTexc::FMTmissingfield,
 												"Missing required column " + title + " for " + OA + " in parameters file",
 												"FMTareaparser::readOAschedulerparameters", __LINE__, __FILE__);
 										}
 									}
-									const int opt = stoi(splittedline[columns["OPT"]]);
-									const int ret = stoi(splittedline[columns["RET"]]);
+									const int opt = std::stoi(splittedline[columns["OPT"]]);
+									const int ret = std::stoi(splittedline[columns["RET"]]);
 									int maxret;
 									if (useRETasMAXRET)
 									{
 										maxret = ret;
 									}
 									else {
-										maxret = stoi(splittedline[columns["MAXRET"]]);
+										maxret = std::stoi(splittedline[columns["MAXRET"]]);
 									}
 									if (maxret < ret)
 									{
 										maxret = ret;
 										*_logger << "MAXRET value for "+OA+" is less than RET value. The MAXRET value will be the same as RET." << "\n";
 									}
-									const int rep = stoi(splittedline[columns["REP"]]);
-									const double opr = stod(splittedline[columns["OPR"]]);
-									if (!(opr <= 1.0 && opr >= 0.0))
+									const int rep = std::stoi(splittedline[columns["REP"]]);
+									double opr = 0.0;
+									if (columns.find("OPR") != columns.end())
 									{
-										_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
-											" for " + OA + " opr not <= 1 and >= 0 in parameters file!",
-											"FMTareaparser::readOAschedulerparameters", __LINE__, __FILE__);
+										if (int(splittedline.size()) >= 6)
+										{
+											if (!splittedline[columns["OPR"]].empty())
+											{
+												opr = std::stod(splittedline[columns["OPR"]]);
+												if (!(opr <= 1.0 && opr >= 0.0))
+												{
+													_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
+														" for " + OA + " opr not <= 1 and >= 0 in parameters file!",
+														"FMTareaparser::readOAschedulerparameters", __LINE__, __FILE__);
+												}
+											}
+										}
 									}
 									if (!(opt >= 1))
 									{
@@ -1886,7 +1896,7 @@ std::vector<std::string> FMTareaparser::splitoaparamlines(std::string line) cons
 										{
 											if (!splittedline[columns["GUP"]].empty())
 											{
-												gup = stoi(splittedline[columns["GUP"]]);
+												gup = std::stoi(splittedline[columns["GUP"]]);
 												if (!(gup >= 0))
 												{
 													_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
