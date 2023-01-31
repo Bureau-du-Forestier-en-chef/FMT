@@ -88,41 +88,42 @@ int main(int argc, char *argv[])
        
         #ifdef FMTWITHOSI
             Logging::FMTlogger().logstamp();
-            const std::string primarylocation = std::string(argv[1]);
-            const std::string vals = argv[2];
+            const std::string primarylocation = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/09_FMT/Modeles_test/ModeleCaribou/08351/PC_7229_U08351_4_2018_vPF02.pri";// std::string(argv[1]);
+            /*const std::string vals = argv[2];
             std::vector<std::string>results;
-            boost::split(results, vals, boost::is_any_of("|"));
-            const std::vector<std::string>scenarios(1, results.at(0));
+            boost::split(results, vals, boost::is_any_of("|"));*/
+            const std::vector<std::string>scenarios(1,"2022_Sc1a_Bonifie_avsp_BfecOpt");// results.at(0));
             boost::filesystem::path primpath(primarylocation);
             const std::string filename = primpath.stem().string();
             const boost::filesystem::path basefolder = primpath.parent_path();
-            const std::string lfichierParam = basefolder.string() + "/Scenarios/" + results.at(0) + "/" + results.at(1);
-            const std::string fichierShp = std::string(argv[3]);
-            const std::string out("../../tests/testOAschedulertask/" + scenarios.at(0));
+            const std::string lfichierParam = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/09_FMT/Modeles_test/ModeleCaribou/08351/parameters_FM_08351_bonifie.csv";// basefolder.string() + "/Scenarios/" + results.at(0) + "/" + results.at(1);
+            const std::string fichierShp = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/09_FMT/Modeles_test/ModeleCaribou/08351/Carte/PC_7229_UA_U08351.shp";// std::string(argv[3]);
+            ;// const std::string out("../../tests/testOAschedulertask/" + scenarios.at(0));
+            const std::string out("D:/test/");
             Parser::FMTmodelparser modelparser;
             modelparser.setdefaultexceptionhandler();
             const std::vector<Models::FMTmodel> models = modelparser.readproject(primarylocation, scenarios);
             Models::FMTmodel model = models.at(0);
             Models::FMTlpmodel optimizationmodel(model, Models::FMTsolverinterface::MOSEK);
-            optimizationmodel.setparameter(Models::FMTintmodelparameters::LENGTH,5);
+            optimizationmodel.setparameter(Models::FMTintmodelparameters::LENGTH, 20);//5);
 	        optimizationmodel.setparameter(Models::FMTboolmodelparameters::STRICTLY_POSITIVE, true);
             const int startingperiod = optimizationmodel.getconstraints().at(0).getperiodlowerbound();
             const Core::FMToutputnode nodeofoutput =  createBFECoptaggregate(optimizationmodel);
             const std::vector<Heuristics::FMToperatingareascheme> opeareas = ObtenirOperatingArea(fichierShp,optimizationmodel.getthemes(),14, startingperiod, "AGE", "SUPERFICIE", "STANLOCK", lfichierParam);
             {
                 std::unique_ptr<Parallel::FMTtask> maintaskptr(new Parallel::FMTopareaschedulertask(optimizationmodel, opeareas, nodeofoutput,out, "YOUVERT",10,120));
-                Parallel::FMTtaskhandler handler(maintaskptr, 4);
+                Parallel::FMTtaskhandler handler(maintaskptr,2);// 4);
                 handler.settasklogger();
                 handler.conccurentrun();
             }
-            const std::vector<Models::FMTmodel> nmodels = modelparser.readproject("../../tests/testOAschedulertask/"+ results[0] + ".pri", std::vector<std::string>(1, "ROOT"));
+            /*const std::vector<Models::FMTmodel> nmodels = modelparser.readproject("../../tests/testOAschedulertask/" + results[0] + ".pri", std::vector<std::string>(1, "ROOT"));
             Models::FMTmodel readmodel = nmodels.at(0);
             Models::FMTlpmodel noptimizationmodel(readmodel, Models::FMTsolverinterface::CLP);
             noptimizationmodel.setparameter(Models::FMTintmodelparameters::LENGTH, 5);
             noptimizationmodel.setparameter(Models::FMTboolmodelparameters::STRICTLY_POSITIVE, true);
             noptimizationmodel.Models::FMTmodel::setparameter(Models::FMTdblmodelparameters::TOLERANCE, 0.01);
             const std::vector<Core::FMTschedule> schedules = modelparser.readschedules("../../tests/testOAschedulertask/" + results[0] + ".pri", nmodels).at(0);
-            noptimizationmodel.doplanning(false, schedules);
+            noptimizationmodel.doplanning(false, schedules);*/
 		#endif 
         return 0;
 	}
