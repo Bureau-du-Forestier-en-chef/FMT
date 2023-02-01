@@ -194,6 +194,11 @@ namespace Heuristics
 		of each FMToperatingarea to know about it...After calling this function you can safely call resolve...
 		*/
 		bool completeinitialsolution();
+		// DocString: FMToperatingareascheduler::gotrejectednodes
+		/**
+		Validate if you have rejected nodes...
+		*/
+		bool gotrejectednodes() const;
 	public:
 		// DocString: FMToperatingareascheduler::generateinitialproportionofset
 		/*

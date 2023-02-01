@@ -395,14 +395,21 @@ bool FMToperatingareascheme::unbounddualscheme(const double* rowactivities,std::
 		{
 		if (!constraints.empty())
 			{
+			size_t constraintid = 0;
 				for (const int& cit : constraints)
 					{
 					std::vector<int>::iterator targetit = std::find(targets.begin(), targets.end(), cit);
+					double minimalcosarea = minimalopeningarea;
+					if (!(constraintid<openingtime))//seulement les premiere ouverture vont conserver le threshold...
+						{
+						minimalcosarea = std::numeric_limits<double>::lowest();
+						}
+
 					if (targetit == targets.end())
 						{
 							if (cid == schemeid)
 							{
-								double minimalcosarea = minimalopeningarea;
+								//double minimalcosarea = minimalopeningarea;
 								if (looseset)
 									{
 									minimalcosarea = std::min(minimalcosarea, *(rowactivities + cit) - FMT_DBL_TOLERANCE);
@@ -419,7 +426,7 @@ bool FMToperatingareascheme::unbounddualscheme(const double* rowactivities,std::
 						targets.push_back(cit);
 					}else if (cid == schemeid && targetit != targets.end())
 						{
-						double minimalcosarea = minimalopeningarea;
+						//double minimalcosarea = minimalopeningarea;
 						if (looseset)
 							{
 							minimalcosarea = std::min(minimalcosarea, *(rowactivities + cit) - FMT_DBL_TOLERANCE);
@@ -430,6 +437,7 @@ bool FMToperatingareascheme::unbounddualscheme(const double* rowactivities,std::
 						bounds[location * 2] = minimalcosarea;
 						bounds[location * 2 + 1] = _area;
 						}
+					++constraintid;
 					}
 			}
 		++cid;
@@ -1019,13 +1027,25 @@ double FMToperatingareascheme::getactivitysum(const double* dualsolution) const
 
 bool FMToperatingareascheme::isthresholdactivityrows(const std::vector<int>& rows,const double* dualsolution) const
 {
-	for (const int& constraint : rows)
+	/*for (const int& constraint : rows)
 	{
 		if (*(dualsolution + constraint) < ((threshold*_area) - FMT_DBL_TOLERANCE))
 		{
 			return false;
 		}
+	}*/
+	//Only first period
+	////////////////////////
+	size_t optid = 0;
+	while (optid < openingtime && optid < rows.size())
+	{
+		if (*(dualsolution + rows.at(optid)) < ((threshold * _area) - FMT_DBL_TOLERANCE))
+		{
+			return false;
+		}
+		++optid;
 	}
+	////////////////////////
 	return true;
 }
 
