@@ -413,6 +413,25 @@ namespace Heuristics
 		return indexes;
 	}
 
+	bool FMToperatingareascheduler::gotrejectednodes() const
+	{
+		try {
+			for (std::vector<FMToperatingareascheme>::const_iterator operatingareait = operatingareas.begin();
+				operatingareait != operatingareas.end(); ++operatingareait)
+			{
+				if (operatingareait->getrejectednodescid() > 0)
+				{
+					return true;
+				}
+			}
+
+		}catch (...)
+		{
+			_exhandler->raisefromcatch("", "FMToperatingareascheduler::gotrejectednodes", __LINE__, __FILE__);
+		}
+		return false;
+	}
+
 	bool FMToperatingareascheduler::completeinitialsolution()
 	{
 		try{
@@ -1029,9 +1048,13 @@ namespace Heuristics
 				this->unboundall(); //Make sure rhs are right need to be released
 				this->closeprimalbounds(); //Need that to get some activities
 			}*/
+
+
 			if (false/*completeinitialsolution()*/) // If you can complete the initial solution then you juste need a warmstart
 			{
 				this->stockresolve();
+				/*}else if(gotrejectednodes()) {
+				FMTlpsolver::initialsolve();*/
 			}else {
 				this->resolvemodel();//else just do an initialsolve...
 			}
