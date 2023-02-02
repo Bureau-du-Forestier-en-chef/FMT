@@ -799,6 +799,7 @@ std::vector<std::string> FMTareaparser::splitoaparamlines(std::string line) cons
 						newfieldvalue = feature->GetFieldAsInteger(field.c_str());
 						}
 					OGRGeometry* geom= feature->GetGeometryRef()->clone();
+					geom->transform(coordtransf);
 					if (!geom->IsValid())
 					{
 						_exhandler->raise(Exception::FMTexc::FMTinvalid_geometry,
