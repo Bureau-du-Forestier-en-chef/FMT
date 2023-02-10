@@ -24,17 +24,25 @@
 namespace Wrapper
 {
 
+
 	FMTmodelcache::FMTmodelcache():
-		Core::FMTobject(),
+		Models::FMTlpmodel(),
+		cachingswitch(false),
 		mtx(new boost::recursive_mutex()),
-		model(),
-		outputs(),
-		themes(),
+		outputsmap(),
+		themesmap(),
+		maskcache(),
+		outputcache(),
 		maplocation(),
 		map(),
-		generalcache()
+		generalcache(),
+		globalmask(),
+		maskcachemtx(new boost::recursive_mutex()),
+		outputcachemtx(new boost::recursive_mutex()),
+		generalcachemtx(new boost::recursive_mutex())
+
 	{
-		
+
 	}
 
 	FMTmodelcache::~FMTmodelcache() = default;
@@ -44,43 +52,80 @@ namespace Wrapper
 	{
 		if (this!=&rhs)
 		{
+			cachingswitch = rhs.cachingswitch;
 			boost::lock(*mtx, *rhs.mtx);
 			boost::lock_guard<boost::recursive_mutex> self_lock(*mtx, boost::adopt_lock);
 			boost::lock_guard<boost::recursive_mutex> other_lock(*rhs.mtx, boost::adopt_lock);
 			Core::FMTobject::operator = (rhs);
-			model = std::move(rhs.model->clone());
-			outputs = rhs.outputs;
-			themes = rhs.themes;
+			outputsmap = rhs.outputsmap;
+			themesmap = rhs.themesmap;
+			maskcache = rhs.maskcache;
+			outputcache = rhs.outputcache;
 			maplocation = rhs.maplocation;
 			generalcache = rhs.generalcache;
+			Models::FMTlpmodel::operator=(rhs);
+			globalmask = rhs.globalmask;
 			if (rhs.map)
 				{
 				map = std::move(std::unique_ptr<Spatial::FMTforest>(new Spatial::FMTforest(*rhs.map)));
 				}
-			
+			//allocateressource();
 		}
 		return *this;
 	}
 
 	FMTmodelcache::FMTmodelcache(const FMTmodelcache& rhs):
-		Core::FMTobject(rhs),
+		Models::FMTlpmodel(rhs),
+		cachingswitch(rhs.cachingswitch),
 		mtx(new boost::recursive_mutex()),
-		model(),
-		outputs(rhs.outputs),
-		themes(rhs.themes),
+		outputsmap(rhs.outputsmap),
+		themesmap(rhs.themesmap),
+		maskcache(rhs.maskcache),
+		outputcache(rhs.outputcache),
 		maplocation(rhs.maplocation),
 		map(),
-		generalcache(rhs.generalcache)
+		generalcache(rhs.generalcache),
+		globalmask(rhs.globalmask),
+		maskcachemtx(new boost::recursive_mutex()),
+		outputcachemtx(new boost::recursive_mutex()),
+		generalcachemtx(new boost::recursive_mutex())
 	{
 		boost::lock_guard<boost::recursive_mutex> guard1(*mtx);
 		boost::lock_guard<boost::recursive_mutex> guard2(*rhs.mtx);
-		model = std::move(rhs.model->clone());
 		if (rhs.map)
 		{
 			map = std::move(std::unique_ptr<Spatial::FMTforest>(new Spatial::FMTforest(*rhs.map)));
 		}
-		
+		//allocateressource();
 	}
+
+
+	void FMTmodelcache::allocateressource()
+		{
+		try {
+			if (cachingswitch&&
+				this->getgraphsize() > 0 &&
+				outputcache.empty()&&
+				generalcache.empty()&&
+				maskcache.empty())
+				{
+				const size_t nperiods = static_cast<size_t>(getperiods());
+				size_t maxsizet = 0;
+				for (const Core::FMTtheme& theme : themes)
+					{
+					maxsizet = std::max(maxsizet, theme.size());
+					}
+				maxsizet *= themes.size();
+				outputcache.reserve(outputs.size() * maxsizet);
+				generalcache.reserve(outputs.size() * nperiods * maxsizet);
+				maskcache.reserve(maxsizet);
+				}
+		}catch (...)
+			{
+			_exhandler->printexceptions("", "FMTmodelcache::allocateressource", __LINE__, __FILE__);
+			}
+		
+		}
 
 	void FMTmodelcache::loadmap() const
 	{
@@ -89,7 +134,7 @@ namespace Wrapper
 			if (!map && !maplocation.empty())
 				{
 				Parser::FMTareaparser areaparser;
-				map = std::unique_ptr<Spatial::FMTforest>(new Spatial::FMTforest(areaparser.vectormaptoFMTforest(maplocation,250,model->getthemes(),"AGE","SUPERFICIE",1.0,1.0,"STANLOCK")));
+				map = std::unique_ptr<Spatial::FMTforest>(new Spatial::FMTforest(areaparser.vectormaptoFMTforest(maplocation,250,themes,"AGE","SUPERFICIE",1.0,1.0,"STANLOCK")));
 				}
 		}catch (...)
 		{
@@ -106,7 +151,7 @@ namespace Wrapper
 				Parser::FMTareaparser areaparser;
 				//_exhandler->raise(Exception::FMTexc::FMTinvalid_theme,
 				//	"THEME id " + std::to_string(themeid), "FMTmodelcache::themeselectiontomask", __LINE__, __FILE__);
-				const Core::FMTtheme theme = model->getthemes().at(themeid);
+				const Core::FMTtheme& theme = themes.at(themeid);
 				std::map<std::string, std::string> layer_map;
 				const std::vector<std::string>& allatributes = theme.getbaseattributes();
 				size_t attributeid = 0;
@@ -139,38 +184,52 @@ namespace Wrapper
 	FMTmodelcache::FMTmodelcache(const Models::FMTmodel& lmodel,
 			const std::vector<Core::FMTschedule>& schedules,
 			const std::string& lmaplocation):
-		Core::FMTobject(),
+		Models::FMTlpmodel(lmodel,Models::FMTsolverinterface::CLP),
+		cachingswitch(false),
 		mtx(new boost::recursive_mutex()),
-		model(),
-		outputs(),
-		themes(),
+		outputsmap(),
+		themesmap(),
+		maskcache(),
+		outputcache(),
 		maplocation(lmaplocation),
 		map(),
-		generalcache()
+		generalcache(),
+		globalmask(),
+		maskcachemtx(new boost::recursive_mutex()),
+		outputcachemtx(new boost::recursive_mutex()),
+		generalcachemtx(new boost::recursive_mutex())
 	{
 		try {
 			boost::lock_guard<boost::recursive_mutex> guard1(*mtx);
-			model = std::unique_ptr<Models::FMTmodel>( new Models::FMTlpmodel(lmodel, Models::FMTsolverinterface::CLP));
 			size_t outid = 0;
-			for (const Core::FMToutput& output : model->getoutputs())
+			for (const Core::FMToutput& output : outputs)
 			{
-				outputs[output.getname()] = outid;
+				outputsmap[output.getname()] = outid;
 				++outid;
 			}
 			size_t theid = 0;
-			for (const Core::FMTtheme& theme : model->getthemes())
+			for (const Core::FMTtheme& theme : themes)
 			{
-				themes[theme.getname()] = theid;
+				themesmap[theme.getname()] = theid;
 				++theid;
 			}
-			model->setparameter(Models::FMTboolmodelparameters::FORCE_PARTIAL_BUILD,true);
-			model->setparameter(Models::FMTdblmodelparameters::TOLERANCE, 0.001);
+			std::string mask;
+			for (size_t thid = 0; thid < themes.size(); ++thid)
+			{
+				mask += "? ";
+			}
+			mask.pop_back();
+			globalmask = Core::FMTmask(mask, themes);
+			setparameter(Models::FMTboolmodelparameters::FORCE_PARTIAL_BUILD,true);
+			Models::FMTmodel::setparameter(Models::FMTdblmodelparameters::TOLERANCE, 0.001);
 			int period = 0;
 			for (const Core::FMTschedule& schedule : schedules)
 			{
 				period = std::max(period, schedule.getperiod());
 			}
-			model->setparameter(Models::FMTintmodelparameters::LENGTH,period);
+			setparameter(Models::FMTintmodelparameters::LENGTH,period);
+			cachingswitch = true;
+			//allocateressource();
 			//model->doplanning(false, schedules);
 		}catch (...)
 			{
@@ -181,7 +240,7 @@ namespace Wrapper
 	void FMTmodelcache::setsolution(const std::vector<Core::FMTschedule>& schedules) 
 	{
 		try {
-			model->doplanning(false, schedules);
+			doplanning(false, schedules);
 		}
 		catch (...)
 		{
@@ -191,22 +250,54 @@ namespace Wrapper
 
 	int FMTmodelcache::getperiods() const
 	{
-		return model->getparameter(Models::FMTintmodelparameters::LENGTH);
+		return getparameter(Models::FMTintmodelparameters::LENGTH);
+	}
+
+	bool FMTmodelcache::getfrommaskcache(const std::string& cachekey, Core::FMTmask& mask) const
+	{
+		try {
+			if (cachingswitch)
+				{
+					boost::lock_guard<boost::recursive_mutex> guard1(*maskcachemtx);
+					std::unordered_map<std::string, Core::FMTmask>::iterator mskit = maskcache.find(cachekey);
+					if (mskit != maskcache.end())
+					{
+						mask = mskit->second;
+						return true;
+					}
+				}
+		}
+		catch (...)
+		{
+			_exhandler->printexceptions("", "FMTmodelcache::getfrommaskcache", __LINE__, __FILE__);
+		}
+		mask= globalmask;
+		return false;
+	}
+	void FMTmodelcache::writetomaskcache(const std::string& cachekey,const Core::FMTmask& mask) const
+	{
+		try {
+			if (cachingswitch)
+				{
+				boost::lock_guard<boost::recursive_mutex> guard1(*maskcachemtx);
+				maskcache[cachekey] = mask;
+				}
+		}
+		catch (...)
+		{
+			_exhandler->printexceptions("", "FMTmodelcache::writetomaskcache", __LINE__, __FILE__);
+		}
 	}
 
 
 	Core::FMTmask FMTmodelcache::themeselectiontomask(const std::string& themeselection) const
 	{
-		Core::FMTmask subset;
 		try {
-		std::string mask;
-		for (size_t thid = 0; thid < themes.size(); ++thid)
-		{
-			mask += "? ";
-		}
-		mask.pop_back();
-		const std::vector<Core::FMTtheme>& themeofmodel = model->getthemes();
-		subset = Core::FMTmask(mask, themeofmodel);
+		Core::FMTmask subset;
+		if (getfrommaskcache(themeselection, subset))
+			{
+			return subset;
+			}
 		if (themeselection.find('=')!=std::string::npos)
 		{
 			std::vector<std::string> results;
@@ -229,21 +320,21 @@ namespace Wrapper
 						//_exhandler->raise(Exception::FMTexc::FMTinvalid_theme,
 						//	"THEME id " + std::to_string(themeid), "FMTmodelcache::themeselectiontomask", __LINE__, __FILE__);
 						}
-						localtheme = &themeofmodel.at(themeid);
+						localtheme = &themes.at(themeid);
 					}
 					else {
-						if (themes.find(themename) == themes.end())
+						if (themesmap.find(themename) == themesmap.end())
 						{
 							return Core::FMTmask();
 						//_exhandler->raise(Exception::FMTexc::FMTinvalid_theme,
 						//	themename, "FMTmodelcache::themeselectiontomask", __LINE__, __FILE__);
 						}
-						localtheme = &themeofmodel.at(themes.at(themename));
+						localtheme = &themes.at(themesmap.at(themename));
 					}
 					if (localtheme)
 					{
-						if (localtheme->isaggregate(attribute) ||
-							localtheme->isattribute((attribute)))
+						if (localtheme->isattribute(attribute) ||
+							localtheme->isaggregate(attribute))
 						{
 							subset.set(*localtheme, attribute);
 						}
@@ -268,38 +359,101 @@ namespace Wrapper
 					}
 				}
 			}	
+			writetomaskcache(themeselection, subset);
+			return subset;
+			
 		}
 		}catch (...)
 			{
 			_exhandler->printexceptions("", "FMTmodelcache::themeselectiontomask", __LINE__, __FILE__);
 			}
-		return subset;
+		return Core::FMTmask();
 	}
+
+	
+
 
 	Core::FMToutput FMTmodelcache::getoutput(const std::string& outputname, const Core::FMTmask& subset) const
 	{
-		Core::FMToutput newoutput;
 		try {
-			std::vector<Core::FMTtheme> modelthemes = model->getthemes();
-			std::unordered_map<std::string,size_t>::const_iterator outit = outputs.find(outputname);
-			const std::vector<Core::FMToutput>& outputsofmodel = model->getoutputs();
-			if (!outputsofmodel.empty()&&
-				outit!= outputs.end())
+			std::unordered_map<std::string,size_t>::const_iterator outit = outputsmap.find(outputname);
+			if (!outputs.empty()&&
+				outit!= outputsmap.end())
 				{
-				const Core::FMToutput modeloutput = outputsofmodel.at(outit->second);
 				if (subset.size() == subset.count()||subset.empty())//Only ? in mask so get the output from the model ... 
 					{
-					return modeloutput;
+					return  outputs.at(outit->second);
 					}else {
-						newoutput = modeloutput.intersectwithmask(subset, modelthemes);
+					Core::FMToutput output;
+					const std::string cachekey = outputname +"_"+ std::string(subset);
+					if (!getfromoutputcache(cachekey, output))
+						{
+						output = outputs.at(outit->second).intersectwithmask(subset, themes);
+						writetooutputcache(cachekey, output);
+						}
+					return output;
 					}
 				}
 			}catch (...)
 		{
 			_exhandler->printexceptions("", "FMTmodelcache::getoutput", __LINE__, __FILE__);
 		}
-		return newoutput;
+		return Core::FMToutput();
 	}
+	double FMTmodelcache::getvaluefrommodel(const Core::FMToutput& output, const int& period) const
+	{
+		double value = 0;
+		try {
+
+					boost::lock_guard<boost::recursive_mutex> guard(*mtx);
+					value = Models::FMTlpmodel::getoutput(output, period, Core::FMToutputlevel::totalonly).at("Total");
+					
+		}
+		catch (...)
+		{
+			_exhandler->printexceptions("", "FMTmodelcache::getvaluefrommodel", __LINE__, __FILE__);
+		}
+		return value;
+
+	}
+
+	bool FMTmodelcache::getfromoutputcache(const std::string& cachekey, Core::FMToutput& output) const
+	{
+		bool incache = false;
+		try {
+			if (cachingswitch)
+			{
+				boost::lock_guard<boost::recursive_mutex> guard(*outputcachemtx);
+				std::unordered_map<std::string, Core::FMToutput>::iterator outit = outputcache.find(cachekey);
+				if (outit != outputcache.end())
+				{
+					incache = true;
+					output = outit->second;
+				}
+			}
+		}catch (...)
+		{
+		_exhandler->printexceptions("", "FMTmodelcache::getfromoutputcache", __LINE__, __FILE__);
+		}
+		return incache;
+	}
+
+	void FMTmodelcache::writetooutputcache(const std::string& cachekey, const Core::FMToutput& output) const
+	{
+		try {
+			if (cachingswitch)
+			{
+				boost::lock_guard<boost::recursive_mutex> guard(*outputcachemtx);
+				outputcache[cachekey] = output;
+			}
+		}
+		catch (...)
+		{
+			_exhandler->printexceptions("", "FMTmodelcache::writetooutputcache", __LINE__, __FILE__);
+		}
+
+	}
+
 
 	double  FMTmodelcache::getvalue(const std::string& outputname, const std::string& themeselection, const int& period) const
 	{
@@ -312,19 +466,36 @@ namespace Wrapper
 				const Core::FMTmask subset = themeselectiontomask(themeselection);
 				const Core::FMToutput theoutput = getoutput(outputname, subset);
 				if (!outputs.empty() &&
-					outputs.find(outputname) != outputs.end() &&
+					outputsmap.find(outputname) != outputsmap.end() &&
 					!theoutput.empty())
 				{
-					boost::lock_guard<boost::recursive_mutex> guard(*mtx);
-					value = model->getoutput(theoutput, period, Core::FMToutputlevel::totalonly).at("Total");
-					settocache(cachekey, value);
+					value = getvaluefrommodel(theoutput, period);
 				}
+				settocache(cachekey, value);
+				
 			}
 		}catch (...)
 		{
 			_exhandler->printexceptions("", "FMTmodelcache::getvalue", __LINE__, __FILE__);
 		}
 		return value;
+	}
+
+	double  FMTmodelcache::getyieldfrommodel(const Core::FMTyieldrequest& request, const std::string& yieldname) const
+	{
+		double value = 0;
+		try {
+
+			boost::lock_guard<boost::recursive_mutex> guard(*mtx);
+			value = yields.get(request, yieldname);
+			
+		}
+		catch (...)
+		{
+			_exhandler->printexceptions("", "getyieldfrommodel", __LINE__, __FILE__);
+		}
+		return value;
+
 	}
 
 	double FMTmodelcache::getyield(const std::string& yieldname, const std::string& themeselection, const int& age, const int& period) const
@@ -335,7 +506,7 @@ namespace Wrapper
 			const bool incache = fillfromcache(value, cachekey);
 			if (!incache)
 			{
-				const Core::FMTyields& yields = model->getyields();
+				//const Core::FMTyields& yields = model->getyields();
 				const Core::FMTmask subset = themeselectiontomask(themeselection);
 				if (!yields.empty() &&
 					yields.isyld(yieldname) &&
@@ -343,10 +514,10 @@ namespace Wrapper
 				{
 					const Core::FMTdevelopment adev(subset, age, 0, period);
 					const Core::FMTyieldrequest yieldrequest = adev.getyieldrequest();
-					boost::lock_guard<boost::recursive_mutex> guard(*mtx);
-					value = yields.get(yieldrequest, yieldname);
-					settocache(cachekey, value);
+					value = getyieldfrommodel(yieldrequest, yieldname);
 				}
+				settocache(cachekey, value);
+				
 			}
 		}catch (...)
 		{
@@ -359,7 +530,6 @@ namespace Wrapper
 	{
 		std::vector<std::string> attributes;
 		try {
-			const std::vector<Core::FMTtheme>& themes = model->getthemes();
 			if (!themes.empty() &&
 				(static_cast<size_t>(themeid) < themes.size()))
 				{
@@ -381,7 +551,6 @@ namespace Wrapper
 	{
 		std::vector<std::string> aggregates;
 		try {
-			const std::vector<Core::FMTtheme>& themes = model->getthemes();
 			if (!themes.empty()&&
 				(static_cast<size_t>(themeid) < themes.size()))
 			{
@@ -413,11 +582,12 @@ namespace Wrapper
 	{
 		bool gotincash = false;
 		try {
-			std::unordered_map<std::string,double>::const_iterator cacheit = generalcache.find(cachekey);
-			if (cacheit!= generalcache.end())
+				boost::lock_guard<boost::recursive_mutex> guard(*generalcachemtx);
+				std::unordered_map<std::string, double>::const_iterator cacheit = generalcache.find(cachekey);
+				if (cacheit != generalcache.end())
 				{
-				value = cacheit->second;
-				gotincash = true;
+					value = cacheit->second;
+					gotincash = true;
 				}
 			
 		}
@@ -431,8 +601,11 @@ namespace Wrapper
 	void FMTmodelcache::settocache(const std::string& cachekey, const double& value) const
 	{
 		try {
-			boost::lock_guard<boost::recursive_mutex> guard(*mtx);
-			generalcache[cachekey] = value;
+			if (cachingswitch)
+				{
+				boost::lock_guard<boost::recursive_mutex> guard(*generalcachemtx);
+				generalcache[cachekey] = value;
+				}
 		}catch (...)
 		{
 			_exhandler->printexceptions("", "FMTmodelcache::settocache", __LINE__, __FILE__);
@@ -443,7 +616,7 @@ namespace Wrapper
 	std::vector<std::string> FMTmodelcache::getactionaggregates(const std::string& filter) const
 	{
 		try {
-			for (const Core::FMTaction& action : model->getactions())
+			for (const Core::FMTaction& action : actions)
 			{
 				if (action.getname()==filter)
 				{
@@ -462,33 +635,35 @@ namespace Wrapper
 
 	std::vector<std::string> FMTmodelcache::getactions(const std::string& filter) const
 	{
-		std::vector<std::string>actions;
+		std::vector<std::string>actionsname;
+		actionsname.reserve(actions.size());
 		try {
-			for (const Core::FMTaction& action : model->getactions())
+			for (const Core::FMTaction& action : actions)
 				{
 				const std::vector<std::string> aggregates = action.getaggregates();
 				if (filter=="?" || std::find(aggregates.begin(), aggregates.end(), filter) != aggregates.end())
 					{
-					actions.push_back(action.getname());
+					actionsname.push_back(action.getname());
 					}
 				}
 		}catch (...)
 			{
 			_exhandler->printexceptions("", "FMTmodelcache::getactions", __LINE__, __FILE__);
 			}
-		return actions;
+		return actionsname;
 	}
 
 	std::vector<std::string> FMTmodelcache::getconstraints(const std::string& output) const
 	{
-		std::vector<std::string>constraints;
+		std::vector<std::string>constraintsname;
+		constraintsname.reserve(constraints.size());
 		try {
-			for (const Core::FMTconstraint& constraint : model->getconstraints())
+			for (const Core::FMTconstraint& constraint : constraints)
 			{
 				const std::string value = std::string(constraint);
 				if (value.find(output)!=std::string::npos)
 					{
-					constraints.push_back(value);
+					constraintsname.push_back(value);
 					}
 			}
 		}
@@ -496,7 +671,7 @@ namespace Wrapper
 		{
 			_exhandler->printexceptions("", "FMTmodelcache::getconstraints", __LINE__, __FILE__);
 		}
-		return constraints;
+		return constraintsname;
 
 	}
 
@@ -504,43 +679,41 @@ namespace Wrapper
 
 	std::vector<std::string> FMTmodelcache::getoutputs() const
 	{
-		std::vector<std::string>outputs;
+		std::vector<std::string>outputsname;
+		outputsname.reserve(outputs.size());
 		try {
-			for (const Core::FMToutput& output : model->getoutputs())
+			for (const Core::FMToutput& output : outputs)
 			{
-				outputs.push_back(output.getname());
+				outputsname.push_back(output.getname());
 			}
 		}
 		catch (...)
 		{
 			_exhandler->printexceptions("", "FMTmodelcache::getoutputs", __LINE__, __FILE__);
 		}
-		return outputs;
+		return outputsname;
 
 	}
 
 	std::vector<std::string> FMTmodelcache::getyields() const
 	{
-		std::vector<std::string>yields;
 		try {
-			for (const std::string& name : model->getyields().getallyieldnames())
-			{
-				yields.push_back(name);
-			}
+			return yields.getallyieldnames();
 		}
 		catch (...)
 		{
 			_exhandler->printexceptions("", "FMTmodelcache::getyields", __LINE__, __FILE__);
 		}
-		return yields;
+		return std::vector<std::string>();
 
 	}
 
 	std::vector<std::string> FMTmodelcache::getthemes() const
 	{
 		std::vector<std::string>themenames;
+		themenames.reserve(themes.size());
 		try {
-			for (const Core::FMTtheme& theme : model->getthemes())
+			for (const Core::FMTtheme& theme : themes)
 			{
 				themenames.push_back(theme.getname());
 			}
@@ -565,7 +738,8 @@ namespace Wrapper
 	void FMTmodelcache::putlogger(const std::shared_ptr<Logging::FMTlogger>& log)
 		{
 		boost::lock_guard<boost::recursive_mutex> guard(*mtx);
-		this->passinlogger(log);
+		Core::FMTobject::passinlogger(log);
+		//this->passinlogger(log);
 		}
 
 }

@@ -108,7 +108,7 @@ int main(int argc, char *argv[])
             const std::vector<Models::FMTmodel> models = modelparser.readproject(primarylocation, scenarios);
             Models::FMTmodel model = models.at(0);
             Models::FMTlpmodel optimizationmodel(model, Models::FMTsolverinterface::MOSEK);
-            optimizationmodel.setparameter(Models::FMTintmodelparameters::LENGTH, 20);//5);
+            optimizationmodel.setparameter(Models::FMTintmodelparameters::LENGTH, 5);
 	        optimizationmodel.setparameter(Models::FMTboolmodelparameters::STRICTLY_POSITIVE, true);
             const int startingperiod = optimizationmodel.getconstraints().at(0).getperiodlowerbound();
             const Core::FMToutputnode nodeofoutput =  createBFECoptaggregate(optimizationmodel);
