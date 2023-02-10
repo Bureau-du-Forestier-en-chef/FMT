@@ -148,6 +148,7 @@ namespace Wrapper
 				const std::vector<std::vector<Core::FMTschedule>>allschedule = mparser.readschedules(pfile, allmodels);
 				const std::string mappath = getmappath(pfile);
 				(*models)[naming] = FMTmodelcache(allmodels.at(0), allschedule.at(0), mappath);
+				//(*models)[naming] = FMTmodelcache(allmodels.at(0), allschedule.at(0), mappath);
 				//Removed from constructor because of the copy after it's created, the solver started ....
 				models->at(naming).setsolution(allschedule.at(0));
 				return true;
