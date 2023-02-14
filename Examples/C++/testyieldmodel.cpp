@@ -64,7 +64,7 @@ int main()
 	{
 		for (int period = 1; period < 11; ++period)
 		{
-			Logging::FMTlogger() << "output value " << output.getname() << " " << simulationmodel.getoutput(output, period, Core::FMToutputlevel::totalonly).at("Total") << " at period " << period << "\n";
+			Logging::FMTlogger() << "output value " << output.getname() << " " << simulationmodel.getoutput(output, period, Core::FMToutputlevel::totalonly).at("Total")/ 1814.76 << " at period " << period << "\n";
 		}
 	}
 #endif

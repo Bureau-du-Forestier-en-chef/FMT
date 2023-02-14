@@ -24,6 +24,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #define FMTGCBMDEATHID 15
 #define FMTGCBMGROWTHID 16
 #define FMTGCBMUNKNOWNID 17
+#define FMTGCBMWILDFIREID 10
 
 
 namespace Core
