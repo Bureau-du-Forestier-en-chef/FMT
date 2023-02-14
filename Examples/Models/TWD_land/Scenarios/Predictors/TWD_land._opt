@@ -3,7 +3,7 @@
 _MAXMIN oVolRec 1.._LENGTH
 
 *CONSTRAINTS
-
+{
 Burnedarea = 0 1.._LENGTH
 oVolRec <= 48000 1.._LENGTH
 _EVEN(oVolRec) 1.._LENGTH
@@ -12,5 +12,5 @@ _EVEN(oVolRec) 1.._LENGTH
 _SIZE(coupetotale,4) >= 1 1.._LENGTH
 _SIZE(coupetotale,4) <= 1 1.._LENGTH
 _ADJACENCY(coupetotale,1) >= 1 1.._LENGTH
-
+}
 *FORMAT MOSEK

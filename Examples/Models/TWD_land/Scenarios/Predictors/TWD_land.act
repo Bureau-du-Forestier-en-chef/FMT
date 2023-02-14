@@ -1,0 +1,5 @@
+*ACTION act Y CT
+*OPERABLE act
+? prod ? volumetotal >= 100
+
+

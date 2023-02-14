@@ -1,3 +1,7 @@
+*OUTPUT oVolRec Volume récolté
+*SOURCE ? ? ? coupetotale volumetotal * 0.98
+
+{
 *OUTPUT oSupRec Superficie récolté
 *SOURCE ? ? ? coupetotale _AREA
 
@@ -26,7 +30,7 @@
 *SOURCE ? ? ? coupetotale volumetotal + ? ? ? arecup volumetotal * 100
 *OUTPUT oSuppl
 *SOURCE ? ? ? plantation _AREA
-
+}
 *OUTPUT _AGBiomassC
 *SOURCE ? ? ? _INVENT AG_Biomass_C
 
