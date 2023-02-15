@@ -275,6 +275,51 @@ namespace Heuristics
 		return this->isProvenOptimal();
 		}
 
+	void FMToperatingareascheduler::resetbasegreedysolution(const std::vector<std::vector<FMToperatingareascheme>::const_iterator>& selected,
+															const std::vector<int>& oldschemeid,
+															const std::vector<int>& oldconstraints,
+															const std::vector<double>& oldbounds)
+	{
+		try {
+			this->unbound(selected);
+			std::vector<int>targeteditems;
+			std::vector<double>bounds;
+			size_t opat = 0;
+			for (const auto& opit : selected)
+			{
+				const int schemeid = oldschemeid.at(opat);
+				if (schemeid >= 0)
+				{
+					if (!useprimal)
+					{
+						targeteditems = oldconstraints;
+						bounds = oldbounds;
+					}
+					else {
+						getbounds(opit, targeteditems, bounds, false, static_cast<size_t>(schemeid));
+					}
+				}
+				else {
+					getbounds(opit, targeteditems, bounds, true);
+				}
+				++opat;
+			}
+			if (useprimal)
+			{
+				this->setColSetBounds(&targeteditems[0], &targeteditems.back() + 1, &bounds[0]);
+			}
+			else {
+				this->setRowSetBounds(&targeteditems[0], &targeteditems.back() + 1, &bounds[0]);
+				this->clearrowcache();
+			}
+			this->resolvemodel();
+		}catch (...)
+		{
+			_exhandler->printexceptions("Thread : " + getthreadid() + " ", "FMToperatingareascheduler::resetbasegreedysolution", __LINE__, __FILE__);
+		}
+
+	}
+
 	bool FMToperatingareascheduler::greedypass(const double& initsol, const unsigned int& iteration)
 	{
 		try{
@@ -335,7 +380,8 @@ namespace Heuristics
 						const std::string bestgap = std::to_string(static_cast<int>(std::abs(initsol - initialobjectivevalue) * 100 / initsol));
 						(*_logger) << "Thread : " + getthreadid() +" ("+bestgap+"%) "+std::to_string(iteration) + " iterations left..." << "\n";
 						}
-
+					resetbasegreedysolution(selected,oldschemeid,oldconstraints,oldbounds);
+					/*
 					this->unbound(selected);
 					std::vector<int>targeteditems;
 					std::vector<double>bounds;
@@ -365,6 +411,7 @@ namespace Heuristics
 						this->clearrowcache();
 						}
 					this->resolvemodel();
+					*/
 				}
 			}
 		}catch (...)
