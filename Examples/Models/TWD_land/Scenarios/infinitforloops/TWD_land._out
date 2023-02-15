@@ -1,3 +1,8 @@
-FOREACH XX IN (1..29)
-*OUTPUT oSupRecXX Superficie récolté
+*OUTPUT oSupRec Superficie récolté
 *SOURCE ? ? ? coupetotale _AREA
+
+FOREACH XX IN (1..29)
+	FOREACH YY IN (1..29)
+		*OUTPUT oSupRecXXYY Superficie récolté
+		*SOURCE ? ? ? coupetotale _AREA
+	ENDFOR
