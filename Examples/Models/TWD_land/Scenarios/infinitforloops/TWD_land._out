@@ -1,0 +1,3 @@
+FOREACH XX IN (1..29)
+*OUTPUT oSupRecXX Superficie récolté
+*SOURCE ? ? ? coupetotale _AREA

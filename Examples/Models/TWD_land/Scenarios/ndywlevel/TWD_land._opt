@@ -1,0 +1,12 @@
+
+*OBJECTIVE
+_MAX oSupRec 1.._LENGTH
+
+*CONSTRAINTS
+
+
+osupRec - supreclevel = 0 1.._LENGTH
+
+_NDY(supreclevel) 1.._LENGTH
+
+*FORMAT MOSEK
