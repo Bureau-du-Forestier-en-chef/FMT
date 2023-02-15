@@ -18,13 +18,13 @@ int main(int argc, char* argv[])
 
 	if (Version::FMTversion().hasfeature("OSI"))
 	{
-		/*const std::string vals = argv[1];
+		const std::string vals = argv[1];
 		std::vector<std::string>results;
-		boost::split(results, vals, boost::is_any_of("|"));*/
-		const std::string primarylocation = "D:/FMT/Examples/Models/TWD_land/TWD_land.pri";// results.at(0);
-		const std::string scenario = "ndywlevel";// results.at(1);
-		const int length = 5;// std::stoi(argv[2]);
-		const double objectivevalue = 363;// std::stod(argv[3]);
+		boost::split(results, vals, boost::is_any_of("|"));
+		const std::string primarylocation =  results.at(0);
+		const std::string scenario =  results.at(1);
+		const int length =  std::stoi(argv[2]);
+		const double objectivevalue =  std::stod(argv[3]);
 		Parser::FMTmodelparser modelparser;
 		//modelparser.setdebugexceptionhandler();
 		std::vector<Exception::FMTexc>errors;
