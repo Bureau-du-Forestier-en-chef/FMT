@@ -172,9 +172,15 @@ namespace Spatial
     return FMTcoordinate(startx + plusx, starty + plusy);
     }
 
+    std::string FMTevent::getstatsheader()
+    {
+        return "Size Perimeter Height Width";
+    }
+
+
 	std::string FMTevent::getstats() const
     {
-    return (" "+ std::to_string(size()) +" "+
+    return (std::to_string(size()) +" "+
         std::to_string(perimeter()) +" "+
         std::to_string(height()) +" "+
         std::to_string(width()));
