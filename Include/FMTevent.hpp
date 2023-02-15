@@ -158,6 +158,11 @@ class FMTEXPORT FMTevent
         Return centroid based on the envelope of the event
         */
         FMTcoordinate averagecentroid() const;
+        // DocString: FMTevent::getstatsheader()
+        /**
+        Return the header of the patch stats (size, perimeter, height and width)
+        */
+        static std::string getstatsheader();
         // DocString: FMTevent::getstats()
         /**
         Return string containing size, perimeter, height and width

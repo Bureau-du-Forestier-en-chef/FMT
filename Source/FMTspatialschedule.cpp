@@ -1154,6 +1154,7 @@ namespace Spatial
 					"Cannot use a non complete schedule ",
 					"FMTspatialschedule::getpatchstats", __LINE__, __FILE__);
 			}
+			result += "Period Action "+FMTevent::getstatsheader();
 			for (int period = events.firstperiod(); period <= events.lastperiod(); ++period)
 			{
 				for (int action_id = 0; action_id < actions.size(); ++action_id)
