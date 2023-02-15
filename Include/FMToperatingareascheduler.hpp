@@ -208,6 +208,39 @@ namespace Heuristics
 									const std::vector<int>& oldschemeid,
 									const std::vector<int>& oldconstraints,
 									const std::vector<double>& oldbounds);
+		// DocString: FMToperatingareascheduler::releasegreedysolution
+		/**
+		Before the greedy move you need to get the bounds and constraints informations from the selected OA and keep it in vectors
+		if you want to get back to the original solution and release the bounds and resolve the model if optimal will return true,
+		if not will return false
+		*/
+		bool releasegreedysolution(const std::vector<std::vector<FMToperatingareascheme>::const_iterator>& selected,
+			std::vector<int>& oldconstraints,
+			std::vector<double>& oldbounds);
+		// DocString: FMToperatingareascheduler::greedymovesolution
+		/**
+		Using the selected OA (selected) and the tabou schemeid to select (oldschemeid) place a new solution and solve the model
+		return true if optimal else false.
+		*/
+		bool greedymovesolution(const std::vector<std::vector<FMToperatingareascheme>::const_iterator>& selected,
+								const std::vector<int>& oldschemeid);
+		// DocString: FMToperatingareascheduler::setfordualinitialsolve
+		/**
+		Make sure rhs are right need to be released, Need to close primal bound to get some activities and then solve to make it clean
+		for a fresh initialsolve.
+		*/
+		void setfordualinitialsolve();
+		// DocString: FMToperatingareascheduler::initialmovesolution
+		/**
+		Bounds the newly selected OAs and resolve the model and return the number of iterations took to do so.
+		*/
+		int initialmovesolution(const std::vector<std::vector<FMToperatingareascheme>::const_iterator>& selected);
+		// DocString: FMToperatingareascheduler::resetbaseinitialsolution
+		/**
+		If setting the initial solution fail then you need to get back to the base form of the formulation by releasing
+		all bounds and resolving.
+		*/
+		void resetbaseinitialsolution();
 	public:
 		// DocString: FMToperatingareascheduler::generateinitialproportionofset
 		/*
