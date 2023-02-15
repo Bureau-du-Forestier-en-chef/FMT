@@ -199,6 +199,15 @@ namespace Heuristics
 		Validate if you have rejected nodes...
 		*/
 		bool gotrejectednodes() const;
+		// DocString: FMToperatingareascheduler::resetbasegreedysolution
+		/**
+		After a greedy iteration if there's no gain replace the newly generated solution by the old one and get back to the
+		base stade of the scheduler...
+		*/
+		void resetbasegreedysolution(const std::vector<std::vector<FMToperatingareascheme>::const_iterator>& selected,
+									const std::vector<int>& oldschemeid,
+									const std::vector<int>& oldconstraints,
+									const std::vector<double>& oldbounds);
 	public:
 		// DocString: FMToperatingareascheduler::generateinitialproportionofset
 		/*
