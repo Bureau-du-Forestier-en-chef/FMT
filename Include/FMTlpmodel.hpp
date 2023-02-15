@@ -124,7 +124,7 @@ class FMTEXPORT FMTlpmodel : public FMTsrmodel
 	/**
 	For a given period lookup in the graph to fill the variables map (variables) for a given level (nodes).
 	*/
-    void locatelevels(const std::vector<Core::FMToutputnode>& nodes,int period, std::map<int, double>& variables,const Core::FMTconstraint& constraint);
+    void locatelevels(const std::vector<Core::FMToutputnode>& nodes,int period, std::map<int, double>& variables,const Core::FMTconstraint& constraint, double multiplier = 1);
 	// DocString: FMTlpmodel::locatenodes
 	/**
 	For a given period lookup in the graph to fill the variables map (variables) for a given FMTconstraints (nodes).

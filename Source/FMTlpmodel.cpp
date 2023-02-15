@@ -588,6 +588,8 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 						const std::vector<std::map<int, double>> outputvarpos = locatenodes(all_nodes, period, all_variables, 1);
 						//*_logger<<"Out size "<<all_variables.size()<<"\n";
 						setpositiveoutputsinmatrix(constraint,outputvarpos,period);
+						locatelevels(all_nodes, period, all_variables, constraint);
+
 						if ((constraint_type == Core::FMTconstrainttype::FMTsequence || constraint_type == Core::FMTconstrainttype::FMTevenflow) ||
 							(constraint_type == Core::FMTconstrainttype::FMTnondeclining && !all_variables.empty()))
 						{
@@ -595,6 +597,7 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 							//*_logger<<"Enter size second "<<all_variables.size()<<"\n";
 							const std::vector<std::map<int, double>> outputvarposloc = locatenodes(all_nodes, (period + 1), all_variables, -1);
 							//*_logger<<"Out size second "<<all_variables.size()<<"\n";
+							locatelevels(all_nodes, period+1, all_variables, constraint,-1.0);
 							setpositiveoutputsinmatrix(constraint,outputvarposloc,period+1);
 							size_t sizeaftercrossing = all_variables.size();
 							if (sizebeforecrossing == sizeaftercrossing)//dont want empty periods!
@@ -614,7 +617,7 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 						}
 
 						//level part
-						locatelevels(all_nodes, period, all_variables, constraint);
+						//locatelevels(all_nodes, period, all_variables, constraint);
 						std::map<int, double>lowervars(all_variables);
 						if (coef_multiplier_lower != 1)
 						{
@@ -1114,7 +1117,7 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 		 }
 
      void FMTlpmodel::locatelevels(const std::vector<Core::FMToutputnode>& nodes,int period,
-		 std::map<int,double>& variables,const Core::FMTconstraint& constraint)
+		 std::map<int,double>& variables,const Core::FMTconstraint& constraint, double multiplier)
             {
 			try {
 				std::vector<std::string>level_names = constraint.getvariablelevels();
@@ -1131,7 +1134,7 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 								period = (node.source.getperiodlowerbound() + period);
 								}
 							const int level_index = getsetlevel(constraint,level_name,period);
-							variables[level_index] = node.constant;
+							variables[level_index] = node.constant*multiplier;
 							}
 						}
 					}
