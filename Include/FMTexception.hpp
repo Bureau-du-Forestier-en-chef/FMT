@@ -119,7 +119,8 @@ enum FMTexc
 	FMTreplanningwarning = 77,
 	FMTyieldmodelprediction = 78,
 	FMTsourcetotarget_transition = 79,
-	FMTsame_transitiontargets = 80
+	FMTsame_transitiontargets = 80,
+	FMTunclosedforloop = 81
     };
 
 // DocString: FMTexception

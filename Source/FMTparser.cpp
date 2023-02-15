@@ -1400,7 +1400,12 @@ std::string FMTparser::getcleanlinewfor(std::ifstream& stream,const std::vector<
 				else if (isvalid(line)) {
 					Sequence.push_back(std::pair<int, std::string>(lineid, line));
 					++lineid;
-				}
+				}else if (!stream.is_open() && !keys.empty())
+					{
+						_exhandler->raise(Exception::FMTexc::FMTunclosedforloop,
+							"Missing EndFor after line " + std::to_string(_line), "FMTparser::getcleanlinewfor", __LINE__, __FILE__, _section);
+						keys = std::stack<std::string>();
+					}
 			} while (!keys.empty());
 			for (const std::string& key : ordered_keys)
 			{
