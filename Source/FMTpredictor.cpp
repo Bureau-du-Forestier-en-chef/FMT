@@ -46,7 +46,7 @@ namespace Graph
 				{
 					if(withGCBMid)
 					{
-						sourceactions.push_back(FMTGCBMWILDFIREID);// FMTGCBMGROWTHID);
+						sourceactions.push_back(FMTGCBMGROWTHID);
 					}else{
 						sourceactions.push_back(-1);
 					}
