@@ -7,6 +7,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 #include "FMTaction.hpp"
 #include "FMTexceptionhandler.hpp"
+#include <bitset>
 
 namespace Core{
 
@@ -17,7 +18,8 @@ FMTaction::FMTaction():FMTlist<FMTspec>(),
 				agelowerbound(), ageupperbound(), periodlowerbound(), periodupperbound(),
                 name(""),
                 lock(false),
-                reset(false){}
+                reset(false),
+				series() {}
 
     FMTaction::FMTaction(const std::string& lname): FMTlist<FMTspec>(),
 						aggregates(),
@@ -25,10 +27,11 @@ FMTaction::FMTaction():FMTlist<FMTspec>(),
 						agelowerbound(), ageupperbound(), periodlowerbound(), periodupperbound(),
                         name(lname),
                         lock(false),
-                        reset(false){}
+                        reset(false),
+						series() {}
     FMTaction::FMTaction(const std::string& lname, const bool& lock,const bool& reset): FMTlist<FMTspec>(), aggregates(), partials(),
 		agelowerbound(), ageupperbound(), periodlowerbound(), periodupperbound(),
-		name(lname),lock(lock),reset(reset)
+		name(lname),lock(lock),reset(reset), series()
         {
 
         }
@@ -47,7 +50,8 @@ FMTaction::FMTaction():FMTlist<FMTspec>(),
 		agelowerbound(rhs.agelowerbound), ageupperbound(rhs.ageupperbound), periodlowerbound(rhs.periodlowerbound), periodupperbound(rhs.periodupperbound),
                         name(rhs.name),
                         lock(rhs.lock),
-                        reset(rhs.reset)
+                        reset(rhs.reset),
+						series(rhs.series)
         {
 
         }
@@ -59,6 +63,7 @@ FMTaction::FMTaction():FMTlist<FMTspec>(),
             name = rhs.name;
             lock = rhs.lock;
             reset = rhs.reset;
+			series = rhs.series;
             partials = rhs.partials;
 			aggregates = rhs.aggregates;
 			agelowerbound = rhs.agelowerbound;
@@ -141,6 +146,130 @@ FMTaction::FMTaction():FMTlist<FMTspec>(),
         {
         return partials;
         }
+
+	bool FMTaction::isallowedinserie(const Core::FMTmask& seriemask) const
+	{
+		try {
+			return !series.findsets(seriemask).empty();
+		}catch (...)
+			{
+			_exhandler->raisefromcatch("for action " + this->getname(),
+				"FMTaction::isallowedinserie", __LINE__, __FILE__, Core::FMTsection::Action);
+			}
+		return false;
+	}
+
+	std::vector<std::string>FMTaction::getseriesnames() const
+	{
+		std::vector<std::string>seriesnames;
+		try {
+			for (const auto& serie : series)
+				{
+				seriesnames.push_back(serie.second);
+				}
+		}catch (...)
+			{
+			_exhandler->raisefromcatch("for action " + this->getname(),
+				"FMTaction::getseriesnames", __LINE__, __FILE__, Core::FMTsection::Action);
+			}
+		return seriesnames;
+	}
+
+	size_t FMTaction::getseriessize() const
+	{
+		size_t sizeofserie = 0;
+		try {
+			if (ispartofaserie())
+				{
+				sizeofserie = series.begin()->first.size();
+				}
+		}catch (...)
+			{
+			_exhandler->raisefromcatch("for action " + this->getname(),
+				"FMTaction::getseriessize", __LINE__, __FILE__, Core::FMTsection::Action);
+			}
+		return sizeofserie;
+	}
+
+	Core::FMTmask FMTaction::getseriemask(const std::vector<int>& serie, const size_t& maxseriesize, const std::string& name)
+	{
+		try {
+			boost::dynamic_bitset<>newserie(maxseriesize, true);
+			size_t bitloc = newserie.size() - 1;
+			std::vector<int>::const_reverse_iterator rit = serie.rbegin();
+			while (rit != serie.rend())
+			{
+				std::bitset<sizeof(int)>bits(*rit);
+				for (int itb = static_cast<int>(sizeof(int)) - 1; itb >= 0; --itb)
+				{
+					newserie[bitloc] = bits[itb];
+					--bitloc;
+				}
+				++rit;
+			}
+			return Core::FMTmask(name, newserie);
+		}catch (...)
+		{
+			_exhandler->raisefromcatch("",
+				"FMTaction::getseriemask", __LINE__, __FILE__, Core::FMTsection::Action);
+		}
+		return Core::FMTmask();
+	}
+
+	void FMTaction::setseries(const std::vector<std::vector<std::string>>& seriesnames,
+							const std::vector<std::vector<int>>& actionsid)
+	{
+		try {
+			size_t largestseriesize = 0;
+			size_t serieid = 0;
+			std::vector<std::string>serieofactionnameing;
+			std::vector<std::string>basename;
+			std::vector<std::vector<int>>beforeactions;
+			for (const std::vector<std::string>& actionsname : seriesnames)
+				{
+				std::vector<std::string>::const_iterator ait = std::find(actionsname.begin(), actionsname.end(), getname());
+				if (ait != actionsname.end())//Ok in serie
+					{
+					std::string seriename;
+					for (const std::string& name : actionsname)
+						{
+						seriename+=name+"->";
+						}
+					seriename.pop_back();
+					seriename.pop_back();
+					std::size_t  serit = seriename.find(getname());
+					std::string subname(seriename.begin(), seriename.begin() + serit);
+					if (!subname.empty())
+					{
+						subname.pop_back();
+						subname.pop_back();
+					}
+					serieofactionnameing.push_back(seriename);
+					basename.push_back(subname);
+					std::vector<int>beforeids;
+					size_t acid = 0;
+					for (std::vector<std::string>::const_iterator it = actionsname.begin();it!= ait;++it)
+						{
+						beforeids.push_back(actionsid.at(serieid).at(acid));
+						++acid;
+						}
+					beforeactions.push_back(beforeids);
+					largestseriesize = std::max(beforeids.size(), largestseriesize);
+					}
+				++serieid;
+				}
+			size_t subid = 0;
+			for (const std::string& seriename : serieofactionnameing)
+				{
+				series.push_back(getseriemask(beforeactions.at(subid), largestseriesize * sizeof(int), basename.at(subid)),seriename);
+				++subid;
+				}
+
+		}catch (...){
+			_exhandler->raisefromcatch("for action " + this->getname(),
+				"FMTaction::setseries", __LINE__, __FILE__, Core::FMTsection::Action);
+		}
+	}
 
 
     FMTaction::operator std::string() const

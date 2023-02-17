@@ -85,6 +85,9 @@ class FMTEXPORT FMTaction : public FMTlist<FMTspec>
 		// DocString: FMTaction::reset
 		///If reset is true then the action is age reset Y else the action  doen't reset age
 		bool reset;
+		// DocString: FMTaction::series
+		///The action series that the action is part of
+		Core::FMTlist<std::string>series;
 		// DocString: FMTaction::setbounds
 		/**
 		This function is for optimization it iterates on the specifications to get the 
@@ -218,6 +221,48 @@ class FMTEXPORT FMTaction : public FMTlist<FMTspec>
 			{
 			return reset;
 			}
+		// DocString: FMTaction::ispartofaserie
+		/**
+		Return true if the action is part of a serie.
+		*/
+		inline bool ispartofaserie() const
+			{
+			return !series.empty();
+			}
+		// DocString: FMTaction::makeserie
+		/**
+		Return true if the serie mask is part of one serie of the action if not
+		return false.
+		*/
+		Core::FMTmask makeserie(const std::vector<int>) const;
+		// DocString: FMTaction::isallowedinserie
+		/**
+		Return true if the serie mask is part of one serie of the action if not
+		return false.
+		*/
+		bool isallowedinserie(const Core::FMTmask& seriemask) const;
+		// DocString: FMTaction::getseriesnames
+		/**
+		Returns the series names of the action.
+		*/
+		std::vector<std::string>getseriesnames() const;
+		// DocString: FMTaction::getseriessize
+		/**
+		Returns the size of the series in bits
+		*/
+		size_t getseriessize() const;
+		// DocString: FMTaction::getseriemask
+		/**
+		Giving the maximal serie size in bits return the serie mask
+		*/
+		static Core::FMTmask getseriemask(const std::vector<int>& serie,const size_t& maxseriesize,const std::string& name);
+		// DocString: FMTaction::setseries
+		/**
+		Giving a serie complete names, and the actions id of the serie occuring before this action,
+		Will go across all series and check if part of it and build it if in.
+		*/
+		void setseries(const std::vector<std::vector<std::string>>& seriesnames,
+						const std::vector<std::vector<int>>& actionsid);
 		// DocString: FMTaction::useyield
 		/**
 		Return true if the yield is used by the action to set operability.
