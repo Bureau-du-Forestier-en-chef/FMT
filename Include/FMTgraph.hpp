@@ -2024,6 +2024,45 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 			return amount;
 		}
 
+		Core::FMTmask getactionserie(FMTvertex_descriptor targetdescriptor,const Core::FMTaction& action) const
+			{
+			try {
+				size_t inedgessize = boost::in_degree(targetdescriptor,data);
+				std::string strserie;
+				const size_t maxactions = action.getseriessize() / sizeof(int);
+				std::vector<int>theserie;
+				theserie.reserve(action.getseriessize());
+				while (inedgessize>0 && theserie.size()<maxactions)
+					{
+					if (inedgessize > 0)
+						{
+						if (inedgessize > 1)
+							{
+								const FMTbasevertexproperties& targetproperties = data[targetdescriptor];
+								_exhandler->raise(Exception::FMTexc::FMTrangeerror,
+									"Developement " + std::string(targetproperties.get()) + "has multiple sources",
+									"FMTgraph::getactionserie", __LINE__, __FILE__);
+							}
+						FMTinedge_iterator inedge_iterator, inedge_end;
+						boost::tie(inedge_iterator, inedge_end) = boost::in_edges(targetdescriptor, data);
+						const FMTbaseedgeproperties& inedgeproperties = data[*inedge_iterator];
+						const int actionid = inedgeproperties.getactionID();
+						if (actionid >=0)
+							{
+							theserie.insert(theserie.begin(),actionid);
+							strserie.insert(0, "->"+std::to_string(actionid));
+							}
+						targetdescriptor = boost::source(*inedge_iterator, data);
+						inedgessize = boost::in_degree(targetdescriptor, data);
+						}
+					}
+				return action.getseriemask(theserie, action.getseriessize(), strserie);
+			}catch (...)
+				{
+				_exhandler->printexceptions("", "FMTgraph::getactionserie", __LINE__, __FILE__);
+				}
+			return Core::FMTmask();
+			}
 
 
 		std::vector<FMTpredictor> getpredictors(const FMTvertex_descriptor& targetdescriptor,const Models::FMTmodel& model,
