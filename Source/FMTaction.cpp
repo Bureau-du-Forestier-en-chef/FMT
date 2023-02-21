@@ -191,23 +191,41 @@ FMTaction::FMTaction():FMTlist<FMTspec>(),
 		return sizeofserie;
 	}
 
-	Core::FMTmask FMTaction::getseriemask(const std::vector<int>& serie, const size_t& maxseriesize, const std::string& name)
+	std::string FMTaction::getseriestring(const std::vector<std::string>& serie)
+	{
+		std::string seriename;
+		try {
+			for (const std::string& name : serie)
+			{
+				seriename += name + "->";
+			}
+			seriename.pop_back();
+			seriename.pop_back();
+		}catch (...)
+		{
+			_exhandler->raisefromcatch("",
+				"FMTaction::getseriestring", __LINE__, __FILE__, Core::FMTsection::Action);
+		}
+		return seriename;
+	}
+
+	Core::FMTmask FMTaction::getseriemask(const std::vector<std::string>& serie, const size_t& maxseriesize)
 	{
 		try {
 			boost::dynamic_bitset<>newserie(maxseriesize, true);
 			size_t bitloc = newserie.size() - 1;
-			std::vector<int>::const_reverse_iterator rit = serie.rbegin();
+			std::vector<std::string>::const_reverse_iterator rit = serie.rbegin();
 			while (rit != serie.rend())
 			{
-				std::bitset<sizeof(int)>bits(*rit);
-				for (int itb = static_cast<int>(sizeof(int)) - 1; itb >= 0; --itb)
+				std::bitset<sizeof(std::string)>bits(*rit);
+				for (int itb = static_cast<int>(sizeof(std::string)) - 1; itb >= 0; --itb)
 				{
 					newserie[bitloc] = bits[itb];
 					--bitloc;
 				}
 				++rit;
 			}
-			return Core::FMTmask(name, newserie);
+			return Core::FMTmask(getseriestring(serie), newserie);
 		}catch (...)
 		{
 			_exhandler->raisefromcatch("",
@@ -216,27 +234,27 @@ FMTaction::FMTaction():FMTlist<FMTspec>(),
 		return Core::FMTmask();
 	}
 
-	void FMTaction::setseries(const std::vector<std::vector<std::string>>& seriesnames,
-							const std::vector<std::vector<int>>& actionsid)
+	void FMTaction::setseries(const std::vector<std::vector<std::string>>& seriesnames)
 	{
 		try {
 			size_t largestseriesize = 0;
 			size_t serieid = 0;
 			std::vector<std::string>serieofactionnameing;
-			std::vector<std::string>basename;
-			std::vector<std::vector<int>>beforeactions;
+			//std::vector<std::string>basename;
+			std::vector<std::vector<std::string>>beforeactions;
 			for (const std::vector<std::string>& actionsname : seriesnames)
 				{
 				std::vector<std::string>::const_iterator ait = std::find(actionsname.begin(), actionsname.end(), getname());
 				if (ait != actionsname.end())//Ok in serie
 					{
-					std::string seriename;
+					/*std::string seriename;
 					for (const std::string& name : actionsname)
 						{
 						seriename+=name+"->";
 						}
 					seriename.pop_back();
-					seriename.pop_back();
+					seriename.pop_back();*/
+					const std::string seriename = getseriestring(actionsname);
 					std::size_t  serit = seriename.find(getname());
 					std::string subname(seriename.begin(), seriename.begin() + serit);
 					if (!subname.empty())
@@ -245,12 +263,12 @@ FMTaction::FMTaction():FMTlist<FMTspec>(),
 						subname.pop_back();
 					}
 					serieofactionnameing.push_back(seriename);
-					basename.push_back(subname);
-					std::vector<int>beforeids;
+					//basename.push_back(subname);
+					std::vector<std::string>beforeids;
 					size_t acid = 0;
 					for (std::vector<std::string>::const_iterator it = actionsname.begin();it!= ait;++it)
 						{
-						beforeids.push_back(actionsid.at(serieid).at(acid));
+						beforeids.push_back(*it);
 						++acid;
 						}
 					beforeactions.push_back(beforeids);
@@ -261,7 +279,7 @@ FMTaction::FMTaction():FMTlist<FMTspec>(),
 			size_t subid = 0;
 			for (const std::string& seriename : serieofactionnameing)
 				{
-				series.push_back(getseriemask(beforeactions.at(subid), largestseriesize * sizeof(int), basename.at(subid)),seriename);
+				series.push_back(getseriemask(beforeactions.at(subid), largestseriesize * sizeof(std::string)),seriename);
 				++subid;
 				}
 

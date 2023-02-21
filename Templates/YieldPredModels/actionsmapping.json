@@ -45,67 +45,67 @@
 	},
 "ACPPTM":{
 	"name":"94% clearcut",
-	"id":1
+	"id":3
 	},
 "ACRS":{
 	"name":"75% Commercial thinning",
-	"id":3
+	"id":4
 	},
 "ACRV":{
 	"name":"75% Commercial thinning",
-	"id":3
+	"id":4
 	},
 "ACA":{
 	"name":"30% Commercial thinning",
-	"id":4
+	"id":5
 	},
 "ACA2":{
 	"name":"30% Commercial thinning",
-	"id":4
+	"id":5
 	},
 "ACJ":{
 	"name":"30% Commercial thinning",
-	"id":4
+	"id":5
 	},
 "ACPJ":{
 	"name":"30% Commercial thinning",
-	"id":4
+	"id":5
 	},
 "ACPIL":{
 	"name":"45% Commercial thinning",
-	"id":5
+	"id":6
 	},
 "ACPIP":{
 	"name":"35% Commercial thinning",
-	"id":6
+	"id":7
 	},
 "ACPROG":{
 	"name":"40% Commercial thinning",
-	"id":7
+	"id":8
 	},
 "ACP":{
 	"name":"30% Commercial thinning",
-	"id":4
+	"id":5
 	},
 "ACPFORT":{
 	"name":"45% Commercial thinning",
-	"id":5
+	"id":6
 	},
 "ACPFAIBL":{
 	"name":"35% Commercial thinning",
-	"id":6
+	"id":7
 	},
 "AEC":{
 	"name":"30% Commercial thinning",
-	"id":4
+	"id":5
 	},
 "AEC2":{
 	"name":"30% Commercial thinning",
-	"id":4
+	"id":5
 	},
 "AEC3":{
 	"name":"30% Commercial thinning",
-	"id":4
+	"id":5
 	},
 "ANET":{
 	"name":"85% precommercial thinning",
@@ -113,35 +113,35 @@
 	},
 "ASNAT":{
 	"name":"Stand Replacing Natural Succession",
-	"id":8
+	"id":9
 	},
 "AFEUX":{
 	"name":"Wild Fire",
-	"id":9
+	"id":10
 	},
 "AFEUXRECUP":{
 	"name":"Salvage logging after fire",
-	"id":10
+	"id":11
 	},
 "ATBEL":{
 	"name":"Spruce Budworm in QC, Light annual defoliation, 6yr cumulative defoliation 46-55%",
-	"id":11
+	"id":12
 	},
 "ATBES":{
-	"name":"SBW for old fir stands  - Impact Type 27",
-	"id":12
+	"name":"SBW for old fir stands  - Impact Type 27",
+	"id":13
 	},
 "ATBERETARD":{
 	"name":"Spruce Budworm in QC, Light annual defoliation, 6yr cumulative defoliation 46-55%",
-	"id":11
+	"id":14
 	},
 "ATBEMORT":{
 	"name":"Spruce Budworm in QC, Severe annual defoliation, 6yr cumulative defoliation 46-55%",
-	"id":13
+	"id":14
 	},
 "CHABLIS":{
 	"name":"generic 95% mortality",
-	"id":14
+	"id":15
 	},
 "_DEATH":{
 	"name":"Stand Replacing Natural Succession",
@@ -169,14 +169,14 @@
 	},
 "AFIRE":{
 	"name":"Wild Fire",
-	"id":9
+	"id":10
 	},
 "ARECUP":{
 	"name":"Salvage logging after fire",
-	"id":10
+	"id":11
 	},
 "AHEGMORT":{
 	"name":"Spruce Budworm in QC, Severe annual defoliation, 6yr cumulative defoliation 46-55%",
-	"id":13
-	}	
+	"id":14
+	}
 }

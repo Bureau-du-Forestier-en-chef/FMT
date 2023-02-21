@@ -16,8 +16,19 @@ int main()
 #ifdef FMTWITHOSI
 	Logging::FMTlogger().logstamp();
 	const std::string modellocation = "../../../../Examples/Models/TWD_land/";
-	const std::string	primarylocation = modellocation + "TWD_land.pri";
+	const std::string	primarylocation =  modellocation + "TWD_land.pri";
 	Parser::FMTmodelparser mparser;
+	std::vector<Exception::FMTexc>errors;
+	errors.push_back(Exception::FMTexc::FMTmissingyield);
+	errors.push_back(Exception::FMTexc::FMToutput_missing_operator);
+	errors.push_back(Exception::FMTexc::FMToutput_too_much_operator);
+	errors.push_back(Exception::FMTexc::FMTinvalidyield_number);
+	errors.push_back(Exception::FMTexc::FMTundefinedoutput_attribute);
+	errors.push_back(Exception::FMTexc::FMToveridedyield);
+	errors.push_back(Exception::FMTexc::FMTsourcetotarget_transition);
+	errors.push_back(Exception::FMTexc::FMTsame_transitiontargets);
+	errors.push_back(Exception::FMTexc::FMTunclosedforloop);
+	mparser.seterrorstowarnings(errors);
 	const std::vector<std::string>scenarios(1, "Predictors");
 	const std::vector<Models::FMTmodel> models = mparser.readproject(primarylocation, scenarios);
 	//mparser.write(models.at(0), "E:/Projects/BFEC_MachineLearning/test/");
@@ -29,8 +40,19 @@ int main()
 		strans.push_back(tran.single());
 	}
 	simulationmodel.settransitions(strans);
+	std::vector<Core::FMTconstraint>newconstraints;
+	size_t id = 0;
+	for (const Core::FMTconstraint& cnt : simulationmodel.getconstraints())
+	{
+		if (id<2)
+		{
+			newconstraints.push_back(cnt);
+		}
+		++id;
+	}
+	simulationmodel.setconstraints(newconstraints);
 	Parser::FMTareaparser areaparser;
-	const std::string rastpath = modellocation + "rasters/";
+	const std::string rastpath =  modellocation + "rasters/";
 	const std::string agerast = rastpath + "AGE.tif";
 	std::vector<std::string> themesrast;
 	for (int i = 1; i <= simulationmodel.getthemes().size(); i++)
@@ -64,7 +86,7 @@ int main()
 	{
 		for (int period = 1; period < 11; ++period)
 		{
-			Logging::FMTlogger() << "output value " << output.getname() << " " << simulationmodel.getoutput(output, period, Core::FMToutputlevel::totalonly).at("Total")/ 1814.76 << " at period " << period << "\n";
+			Logging::FMTlogger() << "output value " << output.getname() << " " << simulationmodel.getoutput(output, period, Core::FMToutputlevel::totalonly).at("Total")/ 1814 << " at period " << period << "\n";
 		}
 	}
 #endif

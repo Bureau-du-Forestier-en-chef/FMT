@@ -272,15 +272,19 @@ FMTactionparser::FMTactionparser() : FMTparser()
 		std::vector<Core::FMTaction>FMTactionparser::getGCBMactionsaggregate(const std::vector<Core::FMTaction>& actions) const
 		{
 			std::vector<Core::FMTaction>actionswithgcbmaggregate(actions);
+			std::string onaction;
+			std::string location;
 			try {
 				const boost::filesystem::path filelocation = boost::filesystem::path(getruntimelocation()) / boost::filesystem::path("YieldPredModels") / boost::filesystem::path("actionsmapping.json");
 				std::ifstream jsonstream(filelocation.string());
+				location = filelocation.string();
 				if (FMTparser::tryopening(jsonstream, filelocation.string()))
 				{
 					boost::property_tree::ptree root;
 					boost::property_tree::read_json(jsonstream, root);
 					for (Core::FMTaction& action : actionswithgcbmaggregate)
 						{
+						onaction = action.getname();
 						if (root.find(action.getname())==root.not_found()||
 							root.get_child(action.getname()).find("id") == root.get_child(action.getname()).not_found()||
 							root.get_child(action.getname()).find("name") == root.get_child(action.getname()).not_found())
@@ -305,7 +309,7 @@ FMTactionparser::FMTactionparser() : FMTparser()
 			catch (...)
 			{
 				_exhandler->raisefromcatch(
-					"", "FMTactionparser::getGCBMactionsaggregates", __LINE__, __FILE__, _section);
+					"In "+ location +" On action "+ onaction, "FMTactionparser::getGCBMactionsaggregates", __LINE__, __FILE__, _section);
 			}
 			return actionswithgcbmaggregate;
 		}
@@ -320,6 +324,7 @@ FMTactionparser::FMTactionparser() : FMTparser()
 			std::map<std::string, std::vector<std::string>>allaggregates;
 			if (tryopening(actionstream, location))
 			{
+				std::set<std::string>series;
 				for (const Core::FMTaction& act : actions)
 				{
 					actionstream << std::string(act) << "\n";
@@ -331,6 +336,16 @@ FMTactionparser::FMTactionparser() : FMTparser()
 						}
 						allaggregates[aggregate].push_back(act.getname());
 					}
+					if (act.ispartofaserie())
+						{
+						for (const std::string& actstr : act.getseriesnames())
+							{
+							if (series.find(actstr)==series.end())
+								{
+								series.insert(actstr);
+								}
+							}
+						}
 				}
 				actionstream << "\n";
 				for (std::map<std::string, std::vector<std::string>>::const_iterator aggit = allaggregates.begin(); aggit != allaggregates.end(); aggit++)
@@ -345,6 +360,14 @@ FMTactionparser::FMTactionparser() : FMTparser()
 						}
 					}
 				}
+				if (!series.empty())
+					{
+					actionstream << "*ACTIONSERIES\n";
+					for (const auto& serie : series)
+						{
+						actionstream << serie << "\n";
+						}
+					}
 				actionstream << "\n";
 				actionstream.close();
 			}
