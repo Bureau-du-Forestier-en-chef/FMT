@@ -188,7 +188,7 @@ namespace Models
 		}
 		catch (...)
 		{
-			_exhandler->printexceptions("", "FMTsesmodel::doplanning", __LINE__, __FILE__);
+			_exhandler->printexceptions("", "FMTsesmodel::build", __LINE__, __FILE__);
 		}
 	return true;
 	}

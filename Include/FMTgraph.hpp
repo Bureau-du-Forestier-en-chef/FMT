@@ -436,18 +436,19 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 								const Graph::FMTgraphvertextoyield vertexinfo = getvertextoyieldinfo(model,front_vertex);
 								const FMTbasevertexproperties& front_properties = data[front_vertex];
 								const Core::FMTdevelopment& active_development = front_properties.get();					
-								bool death = false;
+								bool doesnotgrow = false;
 								if (active_development.operable(action,model.yields,&vertexinfo) &&
 									active_development.getage()%compressageoperability==0)
 								{
-									if (action.getname() == "_DEATH")
+									if (/*isoperablebyseries(front_vertex, action, model) ||*/
+										action.getname() == "_DEATH")
 									{
-										death = true;
+										doesnotgrow = true;
 									}
 									const std::vector<Core::FMTdevelopmentpath> paths = active_development.operate(action, model.transitions[action_id], model.yields, model.themes);
-									addaction(action_id, statsdiff, new_actives, front_vertex, paths, actualdevs);
+									addaction(action_id, statsdiff, new_actives, front_vertex, paths, actualdevs,action.ispartofaserie());
 								}
-								if (!death)
+								if (!doesnotgrow)
 								{
 									new_actives.push(front_vertex);
 								}
@@ -809,11 +810,12 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 
 		}
 		void addaction(const int& actionID,
-                        FMTgraphstats& statsdiff,
-                        std::queue<FMTvertex_descriptor>& actives,
-                        const FMTvertex_descriptor& out_vertex,
-                        const std::vector<Core::FMTdevelopmentpath>& paths,
-						boost::unordered_set<Core::FMTlookup<FMTvertex_descriptor, Core::FMTdevelopment>>& devsets)
+			FMTgraphstats& statsdiff,
+			std::queue<FMTvertex_descriptor>& actives,
+			const FMTvertex_descriptor& out_vertex,
+			const std::vector<Core::FMTdevelopmentpath>& paths,
+			boost::unordered_set<Core::FMTlookup<FMTvertex_descriptor, Core::FMTdevelopment>>& devsets,
+			bool inserie = false)
 		{
 			try {
 				//int variable_id = statsdiff.cols;
@@ -832,7 +834,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 						newedge = true;
 					}else {
 						tovertex = this->adddevelopment(*devpath.development, devsets);
-						if (isdependant(tovertex, actionID, newedge))
+						if (inserie||isdependant(tovertex, actionID, newedge))
 							{
 							tovertex = this->adddevelopment(*devpath.development, devsets, true);
 							actives.push(tovertex);
@@ -2023,14 +2025,30 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 			}
 			return amount;
 		}
+		bool isoperablebyseries(const FMTvertex_descriptor& targetdescriptor, const Core::FMTaction& action, const Models::FMTmodel& model) const
+		{
+			try {
+				if (action.ispartofaserie())
+					{
+					const Core::FMTmask targetserie = getactionserie(targetdescriptor, action, model);
+					return action.isallowedinserie(targetserie);
+					}
+			}
+			catch (...)
+			{
+				_exhandler->printexceptions("", "FMTgraph::isallowedbyseries", __LINE__, __FILE__);
+			}
+			return true;
+		}
 
-		Core::FMTmask getactionserie(FMTvertex_descriptor targetdescriptor,const Core::FMTaction& action) const
+
+		Core::FMTmask getactionserie(FMTvertex_descriptor targetdescriptor,const Core::FMTaction& action, const Models::FMTmodel& model) const
 			{
 			try {
 				size_t inedgessize = boost::in_degree(targetdescriptor,data);
-				std::string strserie;
-				const size_t maxactions = action.getseriessize() / sizeof(int);
-				std::vector<int>theserie;
+				//std::string strserie;
+				const size_t maxactions = action.getseriessize() / sizeof(std::string);
+				std::vector<std::string>theserie;
 				theserie.reserve(action.getseriessize());
 				while (inedgessize>0 && theserie.size()<maxactions)
 					{
@@ -2049,14 +2067,14 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 						const int actionid = inedgeproperties.getactionID();
 						if (actionid >=0)
 							{
-							theserie.insert(theserie.begin(),actionid);
-							strserie.insert(0, "->"+std::to_string(actionid));
+							theserie.insert(theserie.begin(), model.actions.at(actionid).getname());
+							//strserie.insert(0, "->"+model.actions.at(actionid).getname());
 							}
 						targetdescriptor = boost::source(*inedge_iterator, data);
 						inedgessize = boost::in_degree(targetdescriptor, data);
 						}
 					}
-				return action.getseriemask(theserie, action.getseriessize(), strserie);
+				return action.getseriemask(theserie, action.getseriessize());
 			}catch (...)
 				{
 				_exhandler->printexceptions("", "FMTgraph::getactionserie", __LINE__, __FILE__);
