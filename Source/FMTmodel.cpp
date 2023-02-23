@@ -242,6 +242,26 @@ void FMTmodel::cleanactionsntransitions()
 	}
 
 
+bool FMTmodel::useactionserie() const
+{
+	bool gotseries = false;
+	try {
+		for (const Core::FMTaction& action : actions)
+		{
+			if (action.ispartofaserie())
+			{
+				gotseries = true;
+				break;
+			}
+		}
+	}catch (...)
+	{
+		_exhandler->raisefromcatch("", "FMTmodel::useactionseries", __LINE__, __FILE__);
+	}
+
+	return gotseries;
+}
+
 
 
 

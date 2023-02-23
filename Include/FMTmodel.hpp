@@ -205,7 +205,11 @@ namespace Models
 		It will always return a filled vector.
 		*/
 		std::vector<Core::FMTschedule>setupschedulesforbuild(const std::vector<Core::FMTschedule>& schedules) const;
-		
+		// DocString: FMTmodel::useactionserie
+		/**
+		Returns true if the model make use of action series.
+		*/
+		bool useactionserie() const;
     public:
 		// DocString: FMTmodel::setparallellogger
 		/**

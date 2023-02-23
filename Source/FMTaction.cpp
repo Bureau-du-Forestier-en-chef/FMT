@@ -8,6 +8,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTaction.hpp"
 #include "FMTexceptionhandler.hpp"
 #include <bitset>
+#include <boost/algorithm/string/split.hpp> 
 
 namespace Core{
 
@@ -147,10 +148,21 @@ FMTaction::FMTaction():FMTlist<FMTspec>(),
         return partials;
         }
 
-	bool FMTaction::isallowedinserie(const Core::FMTmask& seriemask) const
+	bool FMTaction::isallowedinserie(const std::vector<std::string>& seriemask) const
 	{
 		try {
-			return !series.findsets(seriemask).empty();
+			if (!seriemask.empty())
+			{
+				for (const std::vector<std::string>& serie : series)
+				{
+					if (std::equal(seriemask.begin(), seriemask.end(), serie.begin()))
+					{
+						return true;
+					}
+				}
+			}
+			
+
 		}catch (...)
 			{
 			_exhandler->raisefromcatch("for action " + this->getname(),
@@ -163,9 +175,18 @@ FMTaction::FMTaction():FMTlist<FMTspec>(),
 	{
 		std::vector<std::string>seriesnames;
 		try {
-			for (const auto& serie : series)
+			for (const std::vector<std::string>& serie : series)
 				{
-				seriesnames.push_back(serie.second);
+				std::string seriename;
+				for (const std::string& val : serie)
+					{
+					seriename += val + "<-";
+					}
+				if (!seriename.empty())
+					{
+					seriename += getname();
+					}
+				seriesnames.push_back(seriename);
 				}
 		}catch (...)
 			{
@@ -175,112 +196,45 @@ FMTaction::FMTaction():FMTlist<FMTspec>(),
 		return seriesnames;
 	}
 
-	size_t FMTaction::getseriessize() const
+	size_t FMTaction::getlargestseriesize() const
 	{
 		size_t sizeofserie = 0;
 		try {
 			if (ispartofaserie())
 				{
-				sizeofserie = series.begin()->first.size();
+				for (const std::vector<std::string>& serie : series)
+					{
+					sizeofserie = std::max(sizeofserie, serie.size());
+					}
 				}
 		}catch (...)
 			{
 			_exhandler->raisefromcatch("for action " + this->getname(),
-				"FMTaction::getseriessize", __LINE__, __FILE__, Core::FMTsection::Action);
+				"FMTaction::getlargestseriesize", __LINE__, __FILE__, Core::FMTsection::Action);
 			}
 		return sizeofserie;
 	}
 
-	std::string FMTaction::getseriestring(const std::vector<std::string>& serie)
-	{
-		std::string seriename;
-		try {
-			for (const std::string& name : serie)
-			{
-				seriename += name + "->";
-			}
-			seriename.pop_back();
-			seriename.pop_back();
-		}catch (...)
-		{
-			_exhandler->raisefromcatch("",
-				"FMTaction::getseriestring", __LINE__, __FILE__, Core::FMTsection::Action);
-		}
-		return seriename;
-	}
 
-	Core::FMTmask FMTaction::getseriemask(const std::vector<std::string>& serie, const size_t& maxseriesize)
+	void FMTaction::setseries(std::vector<std::vector<std::string>> seriesnames)
 	{
 		try {
-			boost::dynamic_bitset<>newserie(maxseriesize, true);
-			size_t bitloc = newserie.size() - 1;
-			std::vector<std::string>::const_reverse_iterator rit = serie.rbegin();
-			while (rit != serie.rend())
-			{
-				std::bitset<sizeof(std::string)>bits(*rit);
-				for (int itb = static_cast<int>(sizeof(std::string)) - 1; itb >= 0; --itb)
+			series.clear();
+			for (std::vector<std::string> actionsname : seriesnames)
 				{
-					newserie[bitloc] = bits[itb];
-					--bitloc;
-				}
-				++rit;
-			}
-			return Core::FMTmask(getseriestring(serie), newserie);
-		}catch (...)
-		{
-			_exhandler->raisefromcatch("",
-				"FMTaction::getseriemask", __LINE__, __FILE__, Core::FMTsection::Action);
-		}
-		return Core::FMTmask();
-	}
-
-	void FMTaction::setseries(const std::vector<std::vector<std::string>>& seriesnames)
-	{
-		try {
-			size_t largestseriesize = 0;
-			size_t serieid = 0;
-			std::vector<std::string>serieofactionnameing;
-			//std::vector<std::string>basename;
-			std::vector<std::vector<std::string>>beforeactions;
-			for (const std::vector<std::string>& actionsname : seriesnames)
-				{
-				std::vector<std::string>::const_iterator ait = std::find(actionsname.begin(), actionsname.end(), getname());
-				if (ait != actionsname.end())//Ok in serie
+				std::vector<std::string>::iterator ait = actionsname.end();
+				do {
+				ait = std::find(actionsname.begin(), actionsname.end(), getname());
+				if (ait != actionsname.end()&&std::distance(actionsname.begin(), ait+1)>1)//Ok in serie
 					{
-					/*std::string seriename;
-					for (const std::string& name : actionsname)
-						{
-						seriename+=name+"->";
-						}
-					seriename.pop_back();
-					seriename.pop_back();*/
-					const std::string seriename = getseriestring(actionsname);
-					std::size_t  serit = seriename.find(getname());
-					std::string subname(seriename.begin(), seriename.begin() + serit);
-					if (!subname.empty())
-					{
-						subname.pop_back();
-						subname.pop_back();
+					series.push_back(std::vector<std::string>(actionsname.begin(), ait+1));
 					}
-					serieofactionnameing.push_back(seriename);
-					//basename.push_back(subname);
-					std::vector<std::string>beforeids;
-					size_t acid = 0;
-					for (std::vector<std::string>::const_iterator it = actionsname.begin();it!= ait;++it)
-						{
-						beforeids.push_back(*it);
-						++acid;
-						}
-					beforeactions.push_back(beforeids);
-					largestseriesize = std::max(beforeids.size(), largestseriesize);
-					}
-				++serieid;
-				}
-			size_t subid = 0;
-			for (const std::string& seriename : serieofactionnameing)
+				if (!actionsname.empty())
 				{
-				series.push_back(getseriemask(beforeactions.at(subid), largestseriesize * sizeof(std::string)),seriename);
-				++subid;
+					actionsname.erase(actionsname.begin(), ait + 1);
+				}
+				
+				} while (ait!=actionsname.end());
 				}
 
 		}catch (...){

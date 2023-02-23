@@ -87,7 +87,7 @@ class FMTEXPORT FMTaction : public FMTlist<FMTspec>
 		bool reset;
 		// DocString: FMTaction::series
 		///The action series that the action is part of
-		Core::FMTlist<std::string>series;
+		std::vector<std::vector<std::string>>series;
 		// DocString: FMTaction::setbounds
 		/**
 		This function is for optimization it iterates on the specifications to get the 
@@ -234,33 +234,23 @@ class FMTEXPORT FMTaction : public FMTlist<FMTspec>
 		Return true if the serie mask is part of one serie of the action if not
 		return false.
 		*/
-		bool isallowedinserie(const Core::FMTmask& seriemask) const;
+		bool isallowedinserie(const std::vector<std::string>& serie) const;
 		// DocString: FMTaction::getseriesnames
 		/**
 		Returns the series names of the action.
 		*/
 		std::vector<std::string>getseriesnames() const;
-		// DocString: FMTaction::getseriessize
+		// DocString: FMTaction::getlargestseriesize
 		/**
-		Returns the size of the series in bits
+		Returns the size of the largest serie.
 		*/
-		size_t getseriessize() const;
-		// DocString: FMTaction::getseriestring
-		/**
-		Returns the concatanated serie string
-		*/
-		static std::string getseriestring(const std::vector<std::string>& serie);
-		// DocString: FMTaction::getseriemask
-		/**
-		Giving the maximal serie size in bits return the serie mask
-		*/
-		static Core::FMTmask getseriemask(const std::vector<std::string>& serie,const size_t& maxseriesize);
+		size_t getlargestseriesize() const;
 		// DocString: FMTaction::setseries
 		/**
 		Giving a serie complete names, and the actions id of the serie occuring before this action,
 		Will go across all series and check if part of it and build it if in.
 		*/
-		void setseries(const std::vector<std::vector<std::string>>& seriesnames);
+		void setseries(std::vector<std::vector<std::string>> seriesnames);
 		// DocString: FMTaction::useyield
 		/**
 		Return true if the yield is used by the action to set operability.
