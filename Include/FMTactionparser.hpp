@@ -54,6 +54,11 @@ class FMTEXPORT FMTactionparser : public FMTparser
 		This functions turns aggregates of aggregates into simple aggregates of action map.
 		*/
 		std::map<std::string, std::vector<std::string>>valagg(std::vector<Core::FMTaction>& actions, std::map<std::string, std::vector<std::string>>& aggregates);
+		// DocString: FMTactionparser::cleanactionseries
+		/**
+		Remove action series that are already part of other series and returns the new series.
+		*/
+		std::vector<std::vector<std::string>> cleanactionseries(const std::vector<std::vector<std::string>>& series) const;
 	public:
 		// DocString: FMTactionparser()
 		/**
