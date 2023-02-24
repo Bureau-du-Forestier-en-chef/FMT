@@ -440,9 +440,16 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 								if (active_development.operable(action,model.yields,&vertexinfo) &&
 									active_development.getage()%compressageoperability==0)
 								{
-									if ((gotseries && stayonserie(front_vertex, action, model)) ||
-										action.getname() == "_DEATH")
+									const bool gotaserie = (gotseries && stayonserie(front_vertex, action, model));
+									if (gotaserie||action.getname() == "_DEATH")
 									{
+										if (gotaserie && boost::out_degree(front_vertex, data) > 0) // If you are on a serie and you can be operated by other action just throw...
+											{
+											_exhandler->raise(Exception::FMTexc::FMTinvalid_action,
+												std::string(front_properties.get())+
+												" is on a serie for action "+action.getname() + " and have been already operated",
+												"FMTgraph::build", __LINE__, __FILE__);
+											}
 										doesnotgrow = true;
 									}
 									const std::vector<Core::FMTdevelopmentpath> paths = active_development.operate(action, model.transitions[action_id], model.yields, model.themes);
