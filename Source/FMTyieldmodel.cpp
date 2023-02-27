@@ -118,7 +118,6 @@ namespace Core {
 				const Graph::FMTgraph<Graph::FMTbasevertexproperties, Graph::FMTbaseedgeproperties>::FMTvertex_descriptor* vertex = linegraph->getvertexfromvertexinfo(graphinfo);
 				const std::vector<Graph::FMTpredictor>predictors = linegraph->getpredictors(*vertex, *modelptr, modelYields, 3);
 				const Graph::FMTpredictor& predictor = predictors.at(0);//Seulement un predictor car on est un linegraph...
-
 				std::vector<double> inputsDbl = GetInputValues(predictor);
 				std::vector<float> inputs(inputsDbl.begin(), inputsDbl.end());
 				RemoveNans(inputs);
@@ -130,6 +129,7 @@ namespace Core {
 				const float* outputValues = output_tensors[0].GetTensorMutableData<float>();
 				std::vector<float> result_flt(outputValues, outputValues + ((int)outputShape.data()[1]));
 				result = std::vector<double>(result_flt.begin(), result_flt.end());
+				
 			}
 			else if (fullgraph != nullptr)//Im a full graph
 			{
