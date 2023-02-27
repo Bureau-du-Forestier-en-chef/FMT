@@ -16,10 +16,21 @@ int main()
 {
 #ifdef FMTWITHGDAL
 	Logging::FMTlogger().logstamp();
-	const std::string modellocation = "../../../../Examples/Models/TWD_land/";
+	const std::string modellocation =  "../../../../Examples/Models/TWD_land/";
 	const std::string	primarylocation = modellocation + "TWD_land.pri";
 	const std::string outdir = "../../tests/Spatialyexplicitsimulation/";
 	Parser::FMTmodelparser mparser;
+	std::vector<Exception::FMTexc>errors;
+	errors.push_back(Exception::FMTexc::FMTmissingyield);
+	errors.push_back(Exception::FMTexc::FMToutput_missing_operator);
+	errors.push_back(Exception::FMTexc::FMToutput_too_much_operator);
+	errors.push_back(Exception::FMTexc::FMTinvalidyield_number);
+	errors.push_back(Exception::FMTexc::FMTundefinedoutput_attribute);
+	errors.push_back(Exception::FMTexc::FMToveridedyield);
+	errors.push_back(Exception::FMTexc::FMTsourcetotarget_transition);
+	errors.push_back(Exception::FMTexc::FMTsame_transitiontargets);
+	errors.push_back(Exception::FMTexc::FMTunclosedforloop);
+	mparser.seterrorstowarnings(errors);
 	const std::vector<std::string>scenarios(1, "Spatial");
 	const std::vector<Models::FMTmodel> models = mparser.readproject(primarylocation, scenarios);
 	Models::FMTsesmodel simulationmodel(models.at(0));
@@ -61,12 +72,13 @@ int main()
 	const Spatial::FMTspatialschedule spatialsolution = simulationmodel.getspschedule();
 	Logging::FMTlogger() << "xsize : " << spatialsolution.GetXSize() << "\n";
 	Logging::FMTlogger() << "ysize : " << spatialsolution.GetYSize() << "\n";
-	for (int period = 1; period <= 10; ++period)
+	for (int period = 1; period <=30; ++period)
 		{
-		for (const std::pair<Spatial::FMTcoordinate,double>& value : spatialsolution.getoutputbycoordinate(simulationmodel, spatialoutput, period))
+		for (const std::pair<Spatial::FMTcoordinate, double>& value : spatialsolution.getoutputbycoordinate(simulationmodel, spatialoutput, period))
 				{
 				Logging::FMTlogger() << "period: " << period << " X: " << value.first.getx() << " Y: " << value.first.gety() << " value: " << value.second << "\n";
 				}
+		//Logging::FMTlogger() << std::to_string(period) << " "<<simulationmodel.getoutput(spatialoutput, period, Core::FMToutputlevel::totalonly).at("Total") / 239184.16 <<"\n";
 		}
 	const std::vector<Core::FMTaction>actions = simulationmodel.getactions();
 	const std::vector<Core::FMTtheme>growththeme(1,simulationmodel.getthemes().at(1));
