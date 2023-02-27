@@ -222,21 +222,23 @@ FMTaction::FMTaction():FMTlist<FMTspec>(),
 			series.clear();
 			for (std::vector<std::string> actionsname : seriesnames)
 				{
-				std::vector<std::string>::iterator ait = actionsname.end();
-				do {
-				ait = std::find(actionsname.begin(), actionsname.end(), getname());
-				if (ait != actionsname.end()&&std::distance(actionsname.begin(), ait+1)>1)//Ok in serie
+				std::vector<std::string>::iterator ait = std::find(actionsname.begin(), actionsname.end(), getname());
+				if (ait!= actionsname.end())
 					{
-					series.push_back(std::vector<std::string>(actionsname.begin(), ait+1));
+					while (ait != actionsname.end())
+						{
+							if (ait != actionsname.end() && std::distance(actionsname.begin(), ait + 1) > 1)//Ok in serie
+								{
+								series.push_back(std::vector<std::string>(actionsname.begin(), ait + 1));
+								}
+							if (!actionsname.empty())
+								{
+								actionsname.erase(actionsname.begin(), ait + 1);
+								}
+						ait = std::find(actionsname.begin(), actionsname.end(), getname());
+						}
 					}
-				if (!actionsname.empty())
-				{
-					actionsname.erase(actionsname.begin(), ait + 1);
 				}
-				
-				} while (ait!=actionsname.end());
-				}
-
 		}catch (...){
 			_exhandler->raisefromcatch("for action " + this->getname(),
 				"FMTaction::setseries", __LINE__, __FILE__, Core::FMTsection::Action);

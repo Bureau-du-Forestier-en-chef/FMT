@@ -123,7 +123,7 @@ FMTactionparser::FMTactionparser() : FMTparser()
 					bool alreadyin = false;
 					for (size_t sid = serieid; sid < simpleseries.size(); ++sid)
 					{
-						if (simpleseries.at(sid).find(serie) != std::string::npos)
+						if (simpleseries.at(sid)==serie)
 						{
 							alreadyin = true;
 							break;
