@@ -1,0 +1,44 @@
+*OUTPUT oSupRec Superficie récolté
+*SOURCE ? ? ? coupetotale _AREA
+
+FOREACH ID IN (carbon,carbon_PESSIERE,carbon_SAPINIERE,carbon_ERABLIERE)
+	*OUTPUT _NEPID
+	*SOURCE ? ? ? _INVENT NEPID
+	*OUTPUT _AGBiomassCID
+	*SOURCE ? ? ? _INVENT AG_Biomass_CID
+
+	*OUTPUT _BGBiomassCID
+	*SOURCE ? ? ? _INVENT BG_Biomass_CID
+
+	*OUTPUT _DeadwoodCID
+	*SOURCE ? ? ? _INVENT Deadwood_CID
+
+	*OUTPUT _LitterCID
+	*SOURCE ? ? ? _INVENT Litter_CID
+
+	*OUTPUT _SoilCID
+	*SOURCE ? ? ? _INVENT Soil_CID
+ENDFOR
+
+;turn off stricly positive to optimize nep
+*OUTPUT allbasecarbon
+*SOURCE  _AGBiomassCcarbon + _BGBiomassCcarbon + _DeadwoodCcarbon + _LitterCcarbon + _SoilCcarbon ;+ _NEPcarbon
+
+*OUTPUT allpessierecarbon
+*SOURCE  _AGBiomassCcarbon_PESSIERE + _BGBiomassCcarbon_PESSIERE + _DeadwoodCcarbon_PESSIERE + _LitterCcarbon_PESSIERE + _SoilCcarbon_PESSIERE ;+ _NEPcarbon_PESSIERE
+
+*OUTPUT allsapinierecarbon
+*SOURCE  _AGBiomassCcarbon_SAPINIERE + _BGBiomassCcarbon_SAPINIERE + _DeadwoodCcarbon_SAPINIERE + _LitterCcarbon_SAPINIERE + _SoilCcarbon_SAPINIERE; + _NEPcarbon_SAPINIERE
+
+*OUTPUT allerablierecarbon
+*SOURCE  _AGBiomassCcarbon_ERABLIERE + _BGBiomassCcarbon_ERABLIERE + _DeadwoodCcarbon_ERABLIERE + _LitterCcarbon_ERABLIERE + _SoilCcarbon_ERABLIERE; + _NEPcarbon_ERABLIERE
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,10 @@
+{
+	"modelName": "20230222_09h03_NEP",
+	"modelFileName": "YieldPredModels\\NEP_CARBON_SAPINIERE\\20230222_09h03_NEP.onnx",
+	"modelType": "NEP",
+	"csvStandardisationFile": "YieldPredModels\\NEP_CARBON_SAPINIERE\\NEP_MeanVarStandParams.csv",
+	"modelYields": ["YV_G_GFI", "YV_G_GFT", "YV_G_GR", "YV_G_GF"],
+	"inputNames": ["s1_distance", "s1_disturbance", "s2_distance", "s2_disturbance", "s3_distance", "s3_disturbance", "source_age", "source_YV_G_GFI", "source_YV_G_GFT", 
+				   "source_YV_G_GR", "source_YV_G_GF", "target_distance", "target_disturbance", "target_age", "target_YV_G_GFI", "target_YV_G_GFT", "target_YV_G_GR", "target_YV_G_GF"],
+	"outputNames": ["NEP"]
+}

@@ -450,12 +450,12 @@ class FMTEXPORT FMTlpsolver: public Core::FMTobject
 		/**
 		set column name.
 		*/
-		void setcolname(const std::string& name, const int& columnid);
+		void setcolname(const std::string& name, const int& columnid) const;
 		// DocString: FMTlpsolver::setrowname
 		/**
 		set row name.
 		*/
-		void setrowname(const std::string& name, const int& rowid);
+		void setrowname(const std::string& name, const int& rowid) const;
 		// DocString: FMTlpsolver::writeLP
 		/**
 		Write the solverinterface matrix to a file (location) using the lp formulation.

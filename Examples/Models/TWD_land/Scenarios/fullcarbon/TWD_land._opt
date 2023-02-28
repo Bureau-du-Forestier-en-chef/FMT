@@ -1,0 +1,7 @@
+
+*OBJECTIVE
+_MAX allbasecarbon + allpessierecarbon + allsapinierecarbon + allerablierecarbon 1.._LENGTH
+
+*CONSTRAINTS
+
+*FORMAT MOSEK
