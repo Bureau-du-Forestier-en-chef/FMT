@@ -77,7 +77,6 @@ int main(int argc, char* argv[])
 		returnschedule.push_back(optimizationmodel.getsolution(1, true));
 		returnschedule.push_back( optimizationmodel.getsolution(2, true));
 		schparser.write(returnschedule, "D:/testb/schedule.seq");*/
-		
 		if ((std::abs(optimizationmodel.getObjValue() - objectivevalue)) >= 1)
 		{
 			Exception::FMTfreeexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed, "Wrong value",

@@ -918,7 +918,7 @@ namespace Models
 		}
 	}
 
-	void FMTlpsolver::setcolname(const std::string& name, const int& columnid)
+	void FMTlpsolver::setcolname(const std::string& name, const int& columnid) const
 	{
 		try {
 			matrixcache.setcolname(name, columnid);
@@ -929,7 +929,7 @@ namespace Models
 		}
 	}
 	
-	void FMTlpsolver::setrowname(const std::string& name, const int& rowid)
+	void FMTlpsolver::setrowname(const std::string& name, const int& rowid) const
 	{
 		try {
 			matrixcache.setrowname(name, rowid);
