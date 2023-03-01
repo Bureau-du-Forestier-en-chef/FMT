@@ -79,6 +79,11 @@ class FMTEXPORT FMTsamodel : public FMTmodel
 			const std::vector<Spatial::FMTcoordinate>*movable = nullptr,
 			boost::unordered_map<Core::FMTdevelopment, bool>*operability = nullptr,
 			double initprobability = 0.5,size_t iterations=10);
+        // DocString: FMTsamodel::initialgrow
+        /**
+        Do an initial grow till you reach the length of the model with the actual solution
+        */
+        void initialgrow();
 	public:
 		// DocString: FMTsamodel::initialsolve
 		/**
@@ -126,7 +131,7 @@ class FMTEXPORT FMTsamodel : public FMTmodel
         ///Constructor
         FMTsamodel();
         ///Destructor
-        ~FMTsamodel()=default;
+        ~FMTsamodel();
         ///Copy constructor
         FMTsamodel(const FMTsamodel& rhs);
         ///Copy constructor to use parent as argument in constructor
