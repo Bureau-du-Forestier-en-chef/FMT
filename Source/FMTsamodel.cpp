@@ -57,6 +57,8 @@ namespace Models
         return false;
     }*/
 
+    FMTsamodel::~FMTsamodel() = default;
+
     FMTsamodel::FMTsamodel():
         FMTmodel(),
 		solution(),
@@ -609,6 +611,22 @@ namespace Models
 		return actual;
 		}
 
+    void FMTsamodel::initialgrow()
+    {
+        try {
+            int modellength = getparameter(Models::FMTintmodelparameters::LENGTH);
+            while (modellength>0)
+                {
+                solution.grow();
+                --modellength;
+                }
+        }catch (...)
+        {
+            _exhandler->raisefromcatch("", "FMTsamodel::initialgrow", __LINE__, __FILE__);
+        }
+
+    }
+
 	double FMTsamodel::warmup(const Spatial::FMTspatialschedule& actual,
 		const Spatial::FMTspatialschedule::actionbindings& bindings,
 		const std::vector<Spatial::FMTcoordinate>*movable,
@@ -670,17 +688,19 @@ namespace Models
 		try {
 			double primalinf = 0;
 			double objective = 0;
+            initialgrow();
 			const std::vector<Spatial::FMTcoordinate>movables = solution.getstaticsmovablecoordinates(*this);
 			const Spatial::FMTspatialschedule::actionbindings actionsbinding = solution.getbindingactionsbyperiod(*this);
 			boost::unordered_map<Core::FMTdevelopment, bool>operability;
 			double temperature = warmup(solution, actionsbinding,&movables,&operability);
 			_logger->logwithlevel("Annealer Temp("+std::to_string(temperature)+")\n", 1);
+            const size_t alliterations = static_cast<size_t>(getparameter(Models::FMTintmodelparameters::NUMBER_OF_ITERATIONS));
 			//solution.getsolutionstatus(objective, primalinf, *this);
 			//solution.logsolutionstatus(0, objective, primalinf);
 			size_t notaccepted = 0;
 			size_t temperaturelevel = 0;
 			size_t totaliteration = 0;
-			while (notaccepted<100)
+			while (notaccepted<100 && totaliteration<alliterations)
 				{
 				size_t iteration = 0;
 				size_t accepted = 0;

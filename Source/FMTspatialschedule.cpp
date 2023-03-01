@@ -1459,23 +1459,21 @@ std::map<std::string,double> FMTspatialschedule::getoutputfromgraph(const Graph:
 	try{
 	if (!(node.isactionbased()&&linegraph.isonlygrow(period)))
 	{
-		bool complete = false;
 		boost::unordered_map<Core::FMTmask,double>::const_iterator cashit = nodecache.find(nodemask);
 		if (cashit != nodecache.end() && level == Core::FMToutputlevel::totalonly)//get it from cashing
 		{
 			values["Total"] = cashit->second;
-			//*_logger << "period cash" << period << " " << cashit->second << "\n";
 		}else {//get it and add to cashing
-			const int themeid = node.source.getthemetarget();
 			Core::FMTtheme targettheme;
-			if(themeid<0)
+			if (level == Core::FMToutputlevel::standard)//Only feel the target theme
 			{
-				targettheme = Core::FMTtheme();
-			}else{
-				targettheme = model.getthemes().at(themeid);
+				const int themeid = node.source.getthemetarget();
+				if (themeid >= 0)
+					{
+					targettheme = model.themes.at(themeid);
+					}
 			}
 			values = linegraph.getsource(model, node, period, targettheme, solution,level);
-			//*_logger << "period s" << period << " " << values.at("Total") << "\n";
 			if(level != Core::FMToutputlevel::developpement)//No caching for developpement
 			{
 				nodecache[nodemask] = values.at("Total");
