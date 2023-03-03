@@ -131,8 +131,8 @@ namespace Spatial
 
     int FMTspatialschedule::actperiod() const
     {
-        Graph::FMTlinegraph flgraph = mapping.begin()->second;
-        return flgraph.getperiod();
+        //Graph::FMTlinegraph flgraph = mapping.begin()->second;
+        return mapping.begin()->second.getperiod();
     }
 
     bool FMTspatialschedule::copyfromselected(const FMTspatialschedule& rhs, const std::vector<size_t>& selected)
@@ -787,15 +787,15 @@ namespace Spatial
 		return allvalues;
 	}
 
-	double FMTspatialschedule::getprimalinfeasibility(const std::vector<Core::FMTconstraint>& constraints, const Models::FMTmodel& model,
+	double FMTspatialschedule::getprimalinfeasibility(const std::vector<const Core::FMTconstraint*>& constraints, const Models::FMTmodel& model,
 		const FMTspatialschedule*	friendlysolution, bool withfactorization) const
 	{
 		double value = 0;
 		try {
 			size_t fid = 1;
-			for (const Core::FMTconstraint& constraint: constraints)
+			for (const Core::FMTconstraint* constraint: constraints)
 				{
-				double cntvalue = getconstraintevaluation(constraint, model,friendlysolution);
+				double cntvalue = getconstraintevaluation(*constraint, model,friendlysolution);
 				if (withfactorization && !constraintsfactor.empty())
 					{
 					cntvalue *= constraintsfactor.at(fid);
@@ -894,13 +894,13 @@ namespace Spatial
 		const FMTspatialschedule*	friendlysolution, bool withsense,bool withfactorization, bool withspatial) const
 	{
 		try {
-			std::vector<Core::FMTconstraint>constraints = model.getconstraints();
-			objective = this->getobjectivevalue(constraints.at(0), model,friendlysolution, withsense);
+			//std::vector<Core::FMTconstraint>constraints = model.getconstraints();
+			objective = this->getobjectivevalue(model.constraints.at(0), model, friendlysolution, withsense);
 			if (withfactorization&&!constraintsfactor.empty())
 				{
 				objective = (objective*constraintsfactor.at(0));
 				}
-			constraints.erase(constraints.begin());
+			/*constraints.erase(constraints.begin());
 			std::vector<Core::FMTconstraint>constraintssubset;
 			for (const Core::FMTconstraint& constraint : constraints)
 				{
@@ -909,7 +909,16 @@ namespace Spatial
 					constraintssubset.push_back(constraint);
 					}
 
+				}*/
+			std::vector<const Core::FMTconstraint*>constraintssubset;
+			constraintssubset.reserve(model.constraints.size());
+			for (size_t cid = 1;cid < model.constraints.size();++cid)
+			{
+				if (withspatial || !model.constraints.at(cid).isspatial())
+				{
+					constraintssubset.push_back(&model.constraints.at(cid));
 				}
+			}
 			primalinfeasibility = this->getprimalinfeasibility(constraintssubset, model,friendlysolution, withfactorization);
 		}
 		catch (...)
@@ -1105,7 +1114,7 @@ namespace Spatial
 	std::vector<double> FMTspatialschedule::getgraphsoutputs(const Models::FMTmodel & model, const Core::FMTconstraint & constraint,
 															const FMTspatialschedule*	friendlysolution) const
 	{
-		std::vector<double>periods_values;
+		//std::vector<double>periods_values;
 		try {
 			int periodstart = 0;
 			int periodstop = 0;
@@ -1125,24 +1134,27 @@ namespace Spatial
 					{
 					++periodstop;
 					}
-				periods_values = std::vector<double>(periodstop - periodstart + 1, 0);
+				std::vector<double>periods_values;
 				//const int constraintupperbound = constraint.getperiodupperbound();
 				//const std::vector<double> solutions(1, this->getcellsize());
 				if (!(periodstart == periodstop && constraint.acrossperiod()))
 				{
 					periods_values = getoutput(model, constraint, periodstart, periodstop).at("Total");
+				}else {
+					periods_values = std::vector<double>(periodstop - periodstart + 1, 0);
 				}
 			if (friendlysolution != nullptr &&
 				oldcachesize!=cache.size())
 				{
 				friendlysolution->cache.insert(cache);
 				}
+			return periods_values;
 			}
 		}catch (...)
 			{
 			_exhandler->raisefromcatch("", "FMTspatialschedule::getgraphsoutputs", __LINE__, __FILE__);
 			}
-		return periods_values;
+		return std::vector<double>();
 	}
 	std::string FMTspatialschedule::getpatchstats(const std::vector<Core::FMTaction>& actions) const
 	{

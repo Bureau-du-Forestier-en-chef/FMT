@@ -25,7 +25,7 @@ int main(int argc, char* argv[])
 		const std::string primarylocation =  results.at(0);
 		const std::string scenario =  results.at(1);
 		const int length =  std::stoi(argv[2]);
-		const double objectivevalue = std::stod(argv[3]);
+		const double objectivevalue =  std::stod(argv[3]);
 		Parser::FMTmodelparser modelparser;
 		std::vector<Exception::FMTexc>errors;
 		errors.push_back(Exception::FMTexc::FMTmissingyield);
@@ -41,16 +41,16 @@ int main(int argc, char* argv[])
 		modelparser.seterrorstowarnings(errors);
 		const std::vector<std::string>scenarios(1, scenario);
 		const std::vector<Models::FMTmodel> models = modelparser.readproject(primarylocation, scenarios);
-		Models::FMTsamodel optimizationmodel(models.at(0));
-		optimizationmodel.setparameter(Models::FMTintmodelparameters::LENGTH, length);
-		optimizationmodel.setparameter(Models::FMTintmodelparameters::NUMBER_OF_ITERATIONS,4000);
+		
 		boost::filesystem::path pripath(primarylocation);
 		boost::filesystem::path basefolder = pripath.parent_path();
 		boost::filesystem::path maplocation = basefolder / boost::filesystem::path("Carte") / boost::filesystem::path(pripath.stem().string() + ".shp");
 		Parser::FMTareaparser areaparser;
-		Spatial::FMTforest forest = areaparser.vectormaptoFMTforest(maplocation.string(), 1420, optimizationmodel.getthemes(), "AGE", "SUPERFICIE", 1, 0.0001);
-		optimizationmodel.setinitialmapping(forest);
-		optimizationmodel.initialsolve();
+		const Spatial::FMTforest forest = areaparser.vectormaptoFMTforest(maplocation.string(), 1420, models.at(0).getthemes(), "AGE", "SUPERFICIE", 1, 0.0001);
+		Models::FMTsamodel optimizationmodel(models.at(0),forest);
+		optimizationmodel.setparameter(Models::FMTintmodelparameters::LENGTH, length);
+		//optimizationmodel.setparameter(Models::FMTintmodelparameters::NUMBER_OF_ITERATIONS,10000000);
+		optimizationmodel.doplanning(true);
 		/*if ((std::abs(optimizationmodel.getObjValue() - objectivevalue)) >= 1)
 		{
 			Exception::FMTfreeexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed, "Wrong value",

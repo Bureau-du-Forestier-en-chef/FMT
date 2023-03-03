@@ -232,7 +232,7 @@ class FMTEXPORT FMTspatialschedule : public FMTlayer<Graph::FMTlinegraph>
 		/**
 			Returns dual infeasibility of a set of constraints.
 		*/
-		double getprimalinfeasibility(const std::vector<Core::FMTconstraint>& constraints,
+		double getprimalinfeasibility(const std::vector<const Core::FMTconstraint*>& constraints,
 			const Models::FMTmodel& model,const FMTspatialschedule*	friendlysolution = nullptr, bool withfactorization = false) const;
 		// DocString: FMTspatialschedule::logsolutionstatus
 		/**

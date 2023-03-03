@@ -619,17 +619,19 @@ std::vector<FMToutputnode> FMToutput::getnodes(std::vector<std::string>& equatio
 			size_t nodeid = 0;
 			size_t sourceid = 0;
 			equation.clear();
-			std::queue<FMToperator>ops;
-			ops.push(FMToperator("+"));
-			for (const FMToperator& op : operators)
+			//std::queue<FMToperator>ops;
+			//ops.push(FMToperator("+"));
+			std::deque<FMToperator>ops(operators.begin(), operators.end());
+			ops.push_front(FMToperator("+"));
+			/*for (const FMToperator& op : operators)
 				{
 				ops.push(op);
-				}
-			std::queue<FMToutputsource>srs;
-			for (const FMToutputsource& sr : sources)
+				}*/
+			std::deque<FMToutputsource>srs(sources.begin(),sources.end());
+			/*for (const FMToutputsource& sr : sources)
 				{
 				srs.push(sr);
-				}
+				}*/
 			bool pushednode = false;
 			bool pushedfactor = false;
 			while (!srs.empty())
@@ -653,7 +655,7 @@ std::vector<FMToutputnode> FMToutput::getnodes(std::vector<std::string>& equatio
 						equation.push_back(ops.front());
 						}
 					equation.push_back("O" + std::to_string(nodes.size()));
-					ops.pop();
+					ops.pop_front();
 					nodes.emplace_back(srs.front(),
 						FMToutputsource(FMTotar::val, 1, "", "", srs.front().getoutputorigin()),constant);
 					pushednode = true;
@@ -675,16 +677,16 @@ std::vector<FMToutputnode> FMToutput::getnodes(std::vector<std::string>& equatio
 						}
 					pushednode = false;
 					pushedfactor = true;
-					ops.pop();
+					ops.pop_front();
 				}else{
 					equation.push_back(ops.front());
 					const double value = srs.front().getvalue(period);
 					equation.push_back(std::to_string(value));
 					pushednode = false;
 					pushedfactor = false;
-					ops.pop();
+					ops.pop_front();
 					}
-				srs.pop();
+				srs.pop_front();
 				}
 			equation.erase(equation.begin());
 		if (orderbyoutputid)
