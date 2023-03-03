@@ -8,14 +8,14 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #ifndef FMTSAMODEL_H
 #define FMTSAMODEL_H
 
-#include "FMTmodel.hpp"
-//#include "FMTspatialaction.hpp"
-//#include "FMTsaschedule.hpp"
-//#include "FMTsasolution.hpp"
-#include "FMTspatialschedule.hpp"
+#include "FMTsemodel.hpp"
 #include <memory>
 #include <vector>
 #include <random>
+#include <boost/serialization/vector.hpp>
+#include <boost/serialization/serialization.hpp>
+#include <boost/serialization/nvp.hpp>
+#include <boost/serialization/export.hpp>
 
 namespace Spatial
 {
@@ -51,11 +51,24 @@ An FMTforest is needed to set the initial map. An FMTsaschedule is needed as
 cooling schedule and FMTspatialaction must be set for the model.
 */
 
-class FMTEXPORT FMTsamodel : public FMTmodel
+class FMTEXPORT FMTsamodel final: public FMTsemodel
     {
+    // DocString: FMTsamodel::Serialize
+    /**
+    Serialize function is for serialization, used to do multiprocessing across multiple cpus (pickle in Pyhton)
+    */
+    friend class boost::serialization::access;
+    template<class Archive>
+    void serialize(Archive& ar, const unsigned int version)
+    {
+        ar& boost::serialization::make_nvp("semodel", boost::serialization::base_object<FMTsemodel>(*this));
+    }
+    // DocString: FMTsamodel()
+    /**
+    Constructor for presolve use
+    */
+    FMTsamodel(const FMTsemodel& rhs);
     protected:
-		///Best schedule
-		Spatial::FMTspatialschedule solution;
 		// DocString: FMTsamodel::evaluate
 		/**
 		Evaluate the actual and a candidat solution and return true if the candidat solution is choose to replace
@@ -84,15 +97,45 @@ class FMTEXPORT FMTsamodel : public FMTmodel
         Do an initial grow till you reach the length of the model with the actual solution
         */
         void initialgrow();
+        // DocString: FMTsamodel::initialbuild
+        /**
+        Call a random build if there's no solution
+        */
+        void randombuild();
+        // DocString: FMTsamodel::schedulesbuild
+        /**
+        Call schedules if there's no solution
+        */
+        void schedulesbuild(const std::vector<Core::FMTschedule>&schedules);
+        // DocString: FMTsamodel::swap_ptr
+        /**
+        Swap with an abstract FMTmodel
+        */
+        virtual void swap_ptr(const std::unique_ptr<FMTmodel>& rhs);
 	public:
 		// DocString: FMTsamodel::initialsolve
 		/**
 		Try to solve the model from a coldstart.
 		*/
-		void initialsolve();
+		bool initialsolve();
+        // DocString: FMTsamodel::build
+        /**
+        This function TRY to build the solution FMTschedule to spatialschedule if there's a schedule if not it will
+        randomly build the model to be ready to solve.
+        */
+        virtual bool build(std::vector<Core::FMTschedule> schedules = std::vector<Core::FMTschedule>());
+        // DocString: FMTsamodel::solve
+        /**
+        This function call initialsolve on the solver.
+        */
+        virtual bool solve();
+        // DocString: FMTsamodel::presolve
+        /**
+        This function use a vector of developments and the actual transitions of the model and return new unique pointer to presolved FMTmodel.
+        The function can reduce the number of global themes/actions/transitions/yields/lifespans/outputs/constraints data if the model is badly formulated.
+        */
+        virtual std::unique_ptr<FMTmodel>presolve(std::vector<Core::FMTactualdevelopment> optionaldevelopments = std::vector<Core::FMTactualdevelopment>()) const;
 	private:
-		
-
         ///
        // Spatial::FMTsamovetype movetype;
         /// Range of ratio of the map to perturb at each iteration.
@@ -136,6 +179,8 @@ class FMTEXPORT FMTsamodel : public FMTmodel
         FMTsamodel(const FMTsamodel& rhs);
         ///Copy constructor to use parent as argument in constructor
         FMTsamodel(const FMTmodel& rhs);
+        ///Copy constructor to use parent as argument in constructor
+        FMTsamodel(const FMTmodel& rhs,const Spatial::FMTforest& forest);
         ///Copy assignment operator
         FMTsamodel& operator = (const FMTsamodel& rhs);
 		// DocString: FMTsamodel::clone
@@ -155,8 +200,6 @@ class FMTEXPORT FMTsamodel : public FMTmodel
         void write_outputs_at(std::string path);
         ///Setter of the cooling_schedule.
         bool setschedule(const Spatial::FMTexponentialschedule& schedule);
-        ///Setter of the initial_mapping base on FMTforest.
-        bool setinitialmapping(Spatial::FMTforest forest);
         ///Setter of spatial actions. See FMTspatialaction for info.
         //bool setspactions(const std::vector<Spatial::FMTspatialaction>& lspactions);
         ///Setter of min_ratio_moves and max_ratio_moves.
@@ -203,5 +246,7 @@ class FMTEXPORT FMTsamodel : public FMTmodel
         bool setmapidmodified(const std::vector<size_t>& id);
     };
 }
+
+BOOST_CLASS_EXPORT_KEY(Models::FMTsamodel)
 
 #endif // FMTSAMODEL_H

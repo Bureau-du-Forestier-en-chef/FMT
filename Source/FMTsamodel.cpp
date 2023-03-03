@@ -60,8 +60,7 @@ namespace Models
     FMTsamodel::~FMTsamodel() = default;
 
     FMTsamodel::FMTsamodel():
-        FMTmodel(),
-		solution(),
+        FMTsemodel(),
        // movetype(Spatial::FMTsamovetype::opt1),
         min_ratio_moves(0),
         max_ratio_moves(1),
@@ -82,8 +81,7 @@ namespace Models
     }
 
     FMTsamodel::FMTsamodel(const FMTsamodel& rhs):
-        FMTmodel(rhs),
-		solution(rhs.solution),
+        FMTsemodel(rhs),
         //movetype(rhs.movetype),
         min_ratio_moves(rhs.min_ratio_moves),
         max_ratio_moves(rhs.max_ratio_moves),
@@ -104,8 +102,7 @@ namespace Models
     }
 
     FMTsamodel::FMTsamodel(const FMTmodel& rhs):
-        FMTmodel(rhs),
-		solution(),
+        FMTsemodel(rhs),
         //movetype(Spatial::FMTsamovetype::opt1),
         min_ratio_moves(0),
         max_ratio_moves(1),
@@ -125,11 +122,48 @@ namespace Models
 
     }
 
+    FMTsamodel::FMTsamodel(const FMTmodel& rhs, const Spatial::FMTforest& forest):
+        FMTsemodel(rhs,forest),
+        //movetype(Spatial::FMTsamovetype::opt1),
+        min_ratio_moves(0),
+        max_ratio_moves(1),
+        outputs_write_location(),
+        number_of_moves(0),
+        constraints_values_penalties(),
+        generator(),
+        //spactions(),
+        accepted_solutions(),
+        mapidmodified(),
+        probabs(),
+        cooling_schedule(std::unique_ptr<Spatial::FMTexponentialschedule>(new Spatial::FMTexponentialschedule()))//,
+    {
+
+    }
+
+    FMTsamodel::FMTsamodel(const FMTsemodel& rhs):
+        FMTsemodel(rhs),
+        //movetype(Spatial::FMTsamovetype::opt1),
+        min_ratio_moves(0),
+        max_ratio_moves(1),
+        outputs_write_location(),
+        number_of_moves(0),
+        constraints_values_penalties(),
+        generator(),
+        //spactions(),
+        accepted_solutions(),
+        mapidmodified(),
+        probabs(),
+        cooling_schedule(std::unique_ptr<Spatial::FMTexponentialschedule>(new Spatial::FMTexponentialschedule()))//,
+    {
+
+    }
+
+
     FMTsamodel& FMTsamodel::operator = (const FMTsamodel& rhs)
     {
         if (this!=&rhs)
             {
-            FMTmodel::operator = (rhs);
+            FMTsemodel::operator = (rhs);
 			solution = rhs.solution;
            // movetype = rhs.movetype;
             min_ratio_moves = rhs.min_ratio_moves;
@@ -148,6 +182,11 @@ namespace Models
             //new_solution = rhs.new_solution;
             }
         return *this;
+    }
+
+    void FMTsamodel::swap_ptr(const std::unique_ptr<FMTmodel>& rhs)
+    {
+        *this = std::move(*dynamic_cast<FMTsamodel*>(rhs.get()));
     }
 
 	std::unique_ptr<FMTmodel>FMTsamodel::clone() const
@@ -443,19 +482,6 @@ namespace Models
         return spactions;
     }
    */
-    bool FMTsamodel::setinitialmapping(Spatial::FMTforest forest)
-    {
-		try {
-			//forest.passinobject(*this);
-			solution = Spatial::FMTspatialschedule(forest);
-			return true;
-		}
-		catch (...)
-			{
-			_exhandler->raisefromcatch("", "FMTsamodel::setinitialmapping", __LINE__, __FILE__);
-			}
-		return false;
-    }
 
     /*void FMTsamodel::acceptnew()
     {
@@ -624,8 +650,41 @@ namespace Models
         {
             _exhandler->raisefromcatch("", "FMTsamodel::initialgrow", __LINE__, __FILE__);
         }
+    }
+
+    void FMTsamodel::randombuild()
+    {
+        try {
+            int modellength = getparameter(Models::FMTintmodelparameters::LENGTH);
+            while (modellength > 0)
+            {
+                solution.randombuild(*this, generator);
+                --modellength;
+            }
+        }
+        catch (...)
+        {
+            _exhandler->raisefromcatch("", "FMTsamodel::randombuild", __LINE__, __FILE__);
+        }
+    }
+
+    void FMTsamodel::schedulesbuild(const std::vector<Core::FMTschedule>& schedules)
+    {
+        try {
+            const size_t alliterations = static_cast<size_t>(getparameter(Models::FMTintmodelparameters::NUMBER_OF_ITERATIONS));
+            for (const Core::FMTschedule& schedule : schedules)
+                {
+                solution.greedyreferencebuild(schedule,*this, alliterations);
+                }
+        }
+        catch (...)
+        {
+            _exhandler->raisefromcatch("", "FMTsamodel::schedulesbuild", __LINE__, __FILE__);
+        }
 
     }
+
+
 
 	double FMTsamodel::warmup(const Spatial::FMTspatialschedule& actual,
 		const Spatial::FMTspatialschedule::actionbindings& bindings,
@@ -683,12 +742,11 @@ namespace Models
 		return temperature;
 		}
 
-	void FMTsamodel::initialsolve()
+	bool FMTsamodel::initialsolve()
 		{
 		try {
 			double primalinf = 0;
 			double objective = 0;
-            initialgrow();
 			const std::vector<Spatial::FMTcoordinate>movables = solution.getstaticsmovablecoordinates(*this);
 			const Spatial::FMTspatialschedule::actionbindings actionsbinding = solution.getbindingactionsbyperiod(*this);
 			boost::unordered_map<Core::FMTdevelopment, bool>operability;
@@ -740,6 +798,57 @@ namespace Models
 			{
 			_exhandler->printexceptions("", "FMTsamodel::initialsolve", __LINE__, __FILE__);
 			}
+        return true;
 		}
 
+    bool FMTsamodel::build(std::vector<Core::FMTschedule> schedules)
+    {
+        try {
+            if (schedules.empty()) //From no solution
+            {
+                const bool forcepartialbuild = parameters.getboolparameter(FORCE_PARTIAL_BUILD);
+                if (forcepartialbuild)
+                {
+                    initialgrow();
+                }else {
+                    randombuild();
+                }
+            }else {
+                schedulesbuild(schedules);
+                }
+        }catch (...)
+        {
+            _exhandler->printexceptions("", "FMTsamodel::build", __LINE__, __FILE__);
+        }
+        return true;
+    }
+
+ 
+    bool FMTsamodel::solve()
+    {
+        try {
+            return initialsolve();
+        }catch (...)
+        {
+            _exhandler->printexceptions("", "FMTsamodel::solve", __LINE__, __FILE__);
+        }
+        return false;
+    }
+
+    std::unique_ptr<FMTmodel>FMTsamodel::presolve(std::vector<Core::FMTactualdevelopment> optionaldevelopments) const
+    {
+        try {
+            return std::unique_ptr<FMTmodel>(new FMTsamodel(*(dynamic_cast<FMTsemodel*>(FMTsemodel::presolve(optionaldevelopments).get()))));
+        }
+        catch (...)
+        {
+            _exhandler->printexceptions("", "FMTsamodel::presolve", __LINE__, __FILE__);
+        }
+        return std::unique_ptr<FMTmodel>(nullptr);
+    }
+
+
+
 }
+
+BOOST_CLASS_EXPORT_IMPLEMENT(Models::FMTsamodel)
