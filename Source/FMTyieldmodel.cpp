@@ -117,6 +117,12 @@ namespace Core {
 			{
 				const Graph::FMTgraph<Graph::FMTbasevertexproperties, Graph::FMTbaseedgeproperties>::FMTvertex_descriptor* vertex = linegraph->getvertexfromvertexinfo(graphinfo);
 				const std::vector<Graph::FMTpredictor>predictors = linegraph->getpredictors(*vertex, *modelptr, modelYields, 3);
+				if (predictors.empty())
+				{
+					_exhandler->raise(Exception::FMTexc::FMTrangeerror, "Empty predictors",
+						"FMTyieldmodel::Predict", __LINE__, __FILE__);
+
+				}
 				const Graph::FMTpredictor& predictor = predictors.at(0);//Seulement un predictor car on est un linegraph...
 				std::vector<double> inputsDbl = GetInputValues(predictor);
 				std::vector<float> inputs(inputsDbl.begin(), inputsDbl.end());
@@ -135,12 +141,18 @@ namespace Core {
 			{
 				const Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor* vertex = fullgraph->getvertexfromvertexinfo(graphinfo);
 				const std::vector<Graph::FMTpredictor>predictors = fullgraph->getpredictors(*vertex, *modelptr, modelYields, 3);
+				if (predictors.empty())
+					{
+					_exhandler->raise(Exception::FMTexc::FMTrangeerror, "Empty predictors",
+						"FMTyieldmodel::Predict", __LINE__, __FILE__);
+					}
 				//Dans un fullgraph il existe plusieurs predicteurs pour chaque noeud predictors.size() >= 1 <= a beaucoup
 				//On peut faire du blackmagic pour aller chercher la solution existante de chaque predictor...
 				const Models::FMTsrmodel* srmodelptr = dynamic_cast<const Models::FMTsrmodel*>(modelptr); //cast to a srmodel
 				const Models::FMTlpsolver* solverptr = srmodelptr->getconstsolverptr(); //getsolver
 				bool withoutsolution = false;
-				if (!solverptr->isProvenOptimal())
+				if ((fullgraph->getbuildtype() == Graph::FMTgraphbuild::fullbuild) &&
+					(!solverptr->isProvenOptimal()))
 				{
 					//Si le lpsolver n'est pas optimal faudrait trouver une autre solution...
 					//C'est le cas qu'on veut optimiser du carbone
@@ -152,13 +164,15 @@ namespace Core {
 				}
 				const double* solution = solverptr->getColSolution();
 				const std::vector<int>invariables = fullgraph->getinvariables(*vertex);
+				const std::vector<double>inproportions = fullgraph->getinproportions(*vertex);
 				double totalarea = 0;
 				if (!withoutsolution)
 				{
-					for (size_t inedgeid = 0; inedgeid < invariables.size(); ++inedgeid)
+					totalarea = fullgraph->inarea(*vertex, solution);
+					/*for (size_t inedgeid = 0; inedgeid < invariables.size(); ++inedgeid)
 					{
 						totalarea += *(solution + invariables.at(inedgeid));
-					}
+					}*/
 				}else {
 					if (invariables.size()>1)//Avertissement sur les valeurs de prédite car on applique un weight équivalent
 					{
@@ -188,11 +202,12 @@ namespace Core {
 						double edgevalue = (1 / totalarea);
 						if (!withoutsolution)
 							{
-							edgevalue = (*(solution + invariables.at(inedgeid)) / totalarea);
+							edgevalue = ((* (solution + invariables.at(inedgeid)) * (inproportions.at(inedgeid)/100)) / totalarea);
 							}
 						for (size_t yldid = 0; yldid < edgeresults.size(); ++yldid)
 						{
 							result[yldid] += (edgeresults.at(yldid) * edgevalue);
+							
 						}
 					}
 				}
