@@ -1338,6 +1338,25 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 			return invars;
 		}
 
+		std::vector<double>getinproportions(const FMTvertex_descriptor& out_vertex) const
+		{
+			std::vector<double>inprops;
+			try {
+				FMTinedge_iterator inedge_iterator, inedge_end;
+				for (boost::tie(inedge_iterator, inedge_end) = boost::in_edges(out_vertex, data); inedge_iterator != inedge_end; ++inedge_iterator)
+				{
+					const FMTbaseedgeproperties& edgeprop = data[*inedge_iterator];
+					inprops.push_back(edgeprop.getproportion());
+
+				}
+			}
+			catch (...)
+			{
+				_exhandler->raisefromcatch("", "FMTgraph::getinproportions", __LINE__, __FILE__);
+			}
+			return inprops;
+		}
+
 		std::map<int, int>getinidsvariables(const FMTvertex_descriptor& out_vertex) const
 		{
 			std::map<int, int> mapping;

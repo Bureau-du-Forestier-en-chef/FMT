@@ -16,7 +16,7 @@ int main(int argc, char *argv[])
 	Logging::FMTlogger().logstamp();
 	if (Version::FMTversion().hasfeature("OSI"))
 		{
-		const std::string primarylocation = std::string(argv[1]);
+		const std::string primarylocation =  std::string(argv[1]);
 		Parser::FMTmodelparser modelparser;
 		modelparser.setdefaultexceptionhandler();
 		std::vector<Exception::FMTexc>errors;
@@ -27,7 +27,7 @@ int main(int argc, char *argv[])
 		errors.push_back(Exception::FMTexc::FMTundefinedoutput_attribute);
 		errors.push_back(Exception::FMTexc::FMToveridedyield);
 		modelparser.seterrorstowarnings(errors);
-		const std::vector<std::string>scenarios(1,std::string(argv[2]));
+		const std::vector<std::string>scenarios(1, std::string(argv[2]));
 		const std::vector<Models::FMTmodel> models = modelparser.readproject(primarylocation, scenarios);
 		Models::FMTlpmodel optimizationmodel(models.at(0), Models::FMTsolverinterface::CLP);
 		const std::vector<Core::FMTschedule>schedules = modelparser.readschedules(primarylocation,models).at(0);
@@ -47,7 +47,7 @@ int main(int argc, char *argv[])
 		if (argc>3)//Got the double for validation!
 			{
 			
-			const double ovoltotrecvalue = std::stod(argv[3]);
+			const double ovoltotrecvalue =  std::stod(argv[3]);
 			bool gotovoltotrec = false;
 			for (const Core::FMToutput& output : optimizationmodel.getoutputs())
 				{
@@ -55,7 +55,7 @@ int main(int argc, char *argv[])
 					{
 					gotovoltotrec = true;
 					const double returnedvalue = optimizationmodel.getoutput(output, 2, Core::FMToutputlevel::totalonly).at("Total");
-					if ((returnedvalue < (ovoltotrecvalue - tolerance))||(returnedvalue > (ovoltotrecvalue + tolerance)))
+					if ((returnedvalue < (ovoltotrecvalue - tolerance)) || (returnedvalue >(ovoltotrecvalue + tolerance)))
 						{
 						Exception::FMTfreeexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed, "Wrong value",
 							"FMTsetsolution", __LINE__, primarylocation);
