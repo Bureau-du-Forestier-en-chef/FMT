@@ -9,9 +9,9 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 #include "FMTlayer.hpp"
 #include "FMTlinegraph.hpp"
-#include "FMTspatialnodescache.hpp"
 #include "FMTeventcontainer.hpp"
 #include "FMTbindingspatialaction.hpp"
+#include "FMTspatialnodescache.hpp"
 
 namespace Core {
 	class FMTGCBMtransition;
@@ -28,7 +28,6 @@ namespace Core {
 namespace Spatial
 {
 class FMTforest;
-
 enum  FMTspatialscheduletype
 	{
 		FMTcomplete = 1,

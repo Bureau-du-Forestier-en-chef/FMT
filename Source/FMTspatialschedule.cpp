@@ -1513,11 +1513,14 @@ void FMTspatialschedule::postsolve(const Core::FMTmaskfilter&  filter,
 			const int loc = static_cast<int>(std::distance(postsolveactions.begin(), std::find_if(postsolveactions.begin(), postsolveactions.end(), Core::FMTactioncomparator(action.getname()))));
 			actionmapping.push_back(loc);
 		}
-		cache = FMTspatialnodescache();
+		
+		std::vector<FMTcoordinate>coordinates;
 		for (std::map<FMTcoordinate, Graph::FMTlinegraph>::iterator graphit = this->mapping.begin(); graphit != this->mapping.end(); ++graphit)
 			{
 			graphit->second.postsolve(filter, postsolvethemes, actionmapping);
+			coordinates.push_back(graphit->first);
 			}
+		cache = FMTspatialnodescache(coordinates);
 		FMTeventcontainer newevents;
 		for (FMTeventcontainer::iterator eventit= events.begin(); eventit!=events.end();eventit++)
 			{
@@ -2215,7 +2218,7 @@ void FMTspatialschedule::copyfrompartial(FMTspatialschedule& rhs)
 		}
 		for (std::map<FMTcoordinate, Graph::FMTlinegraph>::iterator graphit = rhs.mapping.begin(); graphit != rhs.mapping.end(); ++graphit)
 		{
-			mapping[graphit->first].swap(graphit->second);
+			mapping[graphit->first]=graphit->second;
 		}
 		cache.swap(rhs.cache);
 		events.swap(rhs.events);

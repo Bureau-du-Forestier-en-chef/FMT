@@ -40,13 +40,16 @@ int main()
 	simulationmodel.setparameter(Models::FMTboolmodelparameters::POSTSOLVE, true);
 	simulationmodel.doplanning(false,schedules.at(0));
 	Core::FMToutput spatialoutput;
+	std::vector<Core::FMToutput>outputs;
 	for (const Core::FMToutput& output : simulationmodel.getoutputs())
 	{
 		if (output.getname() == "OSUPREC")
 		{
 			spatialoutput = output;
+			outputs.push_back(output);
 		}
 	}
+	mparser.writeresults(simulationmodel, outputs, 1, 10, outdir + "test.csv", Core::FMToutputlevel::totalonly);
 	const Spatial::FMTspatialschedule spatialsolution = simulationmodel.getspschedule();
 	std::cout<<"sp"<<std::endl;
 	Logging::FMTlogger() <<"xsize : "<< spatialsolution.GetXSize() << "\n";
