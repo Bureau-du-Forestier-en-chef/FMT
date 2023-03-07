@@ -2196,8 +2196,38 @@ void FMTspatialschedule::copyfrompartial(const FMTspatialschedule& rhs)
 		{
 		_exhandler->printexceptions("", "FMTspatialschedule::copyfrompartial", __LINE__, __FILE__);
 		}
+}
+
+void FMTspatialschedule::copyfrompartial(FMTspatialschedule& rhs)
+{
+	try {
+		if (scheduletype != FMTspatialscheduletype::FMTcomplete)
+		{
+			_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
+				"Cannot use a non complete schedule ",
+				"FMTspatialschedule::copyfrompartial", __LINE__, __FILE__);
+		}
+		if (rhs.scheduletype != FMTspatialscheduletype::FMTpartial)
+		{
+			_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
+				"Cannot copy from complete solution ",
+				"FMTspatialschedule::copyfrompartial", __LINE__, __FILE__);
+		}
+		for (std::map<FMTcoordinate, Graph::FMTlinegraph>::iterator graphit = rhs.mapping.begin(); graphit != rhs.mapping.end(); ++graphit)
+		{
+			mapping[graphit->first].swap(graphit->second);
+		}
+		cache.swap(rhs.cache);
+		events.swap(rhs.events);
+		constraintsfactor.swap(rhs.constraintsfactor);
+	}
+	catch (...)
+	{
+		_exhandler->printexceptions("", "FMTspatialschedule::copyfrompartial", __LINE__, __FILE__);
+	}
 
 }
+
 
 void FMTspatialschedule::dorefactortorization(const Models::FMTmodel& model)
 {

@@ -256,7 +256,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 			std::swap(stats,rhs.stats);
 			data.swap(rhs.data);
 			std::swap(developments, rhs.developments);
-			//generatedevelopments();
+			generatedevelopments();
 		}
 
 

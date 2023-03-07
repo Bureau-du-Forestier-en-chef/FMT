@@ -370,6 +370,11 @@ class FMTEXPORT FMTspatialschedule : public FMTlayer<Graph::FMTlinegraph>
 		Copy elements from a partial solution.
 		*/
 		void copyfrompartial(const FMTspatialschedule& rhs);
+		// DocString: FMTspatialschedule::copyfrompartial
+		/**
+		Copy elements from a partial solution but also allow swap.
+		*/
+		void copyfrompartial(FMTspatialschedule& rhs);
 		// DocString: FMTspatialschedule::setconstraintsfactor
 		/**
 		Set the constraints factors for nomalization
