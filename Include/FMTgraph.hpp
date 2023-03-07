@@ -255,8 +255,8 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 			nodescache.swap(rhs.nodescache);
 			std::swap(stats,rhs.stats);
 			data.swap(rhs.data);
-			std::swap(developments, rhs.developments);
-			generatedevelopments();
+			developments.swap(rhs.developments);
+			//std::swap(developments, rhs.developments);
 		}
 
 
