@@ -764,14 +764,14 @@ namespace Models
 				size_t accepted = 0;
 				while (notaccepted < 100 && iteration <1000)
 					{
-					const Spatial::FMTspatialschedule newsolution = move(solution, actionsbinding,&movables,&operability);
+					Spatial::FMTspatialschedule newsolution = move(solution, actionsbinding,&movables,&operability);
 					if (evaluate(temperature,solution,newsolution))
 						{
 						if (newsolution.ispartial())
 							{
 							solution.copyfrompartial(newsolution);
 						}else {
-							solution = newsolution;
+							solution.swap(newsolution);
 							}
 						++accepted;
 						notaccepted = 0;
