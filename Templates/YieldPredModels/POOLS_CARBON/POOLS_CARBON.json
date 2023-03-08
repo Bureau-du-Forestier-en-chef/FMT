@@ -1,6 +1,6 @@
 {
-	"modelName": "20210810_20H18_LEAKYRELU_KAIMINGUNIFORM1X290DO03",
-	"modelFileName": "YieldPredModels\\POOLS_CARBON\\20210810_20h18_LeakyRelu_KaimingUniform1x290do03.onnx",
+	"modelName": "20230307_08h29_Pools",
+	"modelFileName": "YieldPredModels\\POOLS_CARBON\\20230307_08h29_Pools.onnx",
 	"modelType": "POOLS",
 	"csvStandardisationFile": "YieldPredModels\\POOLS_CARBON\\POOLS_MeanVarStandParams.csv",
 	"modelYields": ["YV_G_GFI", "YV_G_GFT", "YV_G_GR", "YV_G_GF"],
