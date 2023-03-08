@@ -179,20 +179,22 @@ endfunction(target_include  includetotarget)
 if (NOT MSVC AND DEFINED ENV{R_DIR})
 	list (APPEND FMTPYNRSOURCEFILES ${FMTSOURCEFILES})
 	add_library(FMT SHARED ${FMTPYNRSOURCEFILES})
-else()
+elseif(NOT DEFINED WITHOUT_PYTHONLIB)
 	add_library(FMT SHARED ${FMTPYNRSOURCEFILES})
 	target_link_libraries(FMT PRIVATE FMTlib)
 	target_compile_definitions(FMT PRIVATE "-DFMTLIBIMPORT")
 endif(NOT MSVC AND DEFINED ENV{R_DIR})
 
 
+if (NOT DEFINED WITHOUT_PYTHONLIB)
+	set_target_properties(FMT PROPERTIES PREFIX "")
+endif(NOT DEFINED WITHOUT_PYTHONLIB)
 
-set_target_properties(FMT PROPERTIES PREFIX "")
-if (MSVC AND (${CMAKE_VERSION} VERSION_GREATER 3.8.0))
+if (MSVC AND (${CMAKE_VERSION} VERSION_GREATER 3.8.0) AND NOT DEFINED WITHOUT_PYTHONLIB)
 	set_target_properties(
    		FMT PROPERTIES
     		VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}")
-endif(MSVC AND (${CMAKE_VERSION} VERSION_GREATER 3.8.0))
+endif(MSVC AND (${CMAKE_VERSION} VERSION_GREATER 3.8.0) AND NOT DEFINED WITHOUT_PYTHONLIB)
 
 set( CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin )
 set( CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin )
@@ -221,7 +223,9 @@ if (DEFINED PYTHON_DIR OR DEFINED R_DIR)
 			file(COPY "${includedfile}" DESTINATION "${CMAKE_BINARY_DIR}/PYNRinclude")
 		endforeach()
 	endif(DEFINED PYTHON_DIR)
-	target_include_directories(FMT PRIVATE "${CMAKE_BINARY_DIR}/PYNRinclude")
+	if (NOT DEFINED WITHOUT_PYTHONLIB)
+		target_include_directories(FMT PRIVATE "${CMAKE_BINARY_DIR}/PYNRinclude")
+	endif(NOT DEFINED WITHOUT_PYTHONLIB)
 endif(DEFINED PYTHON_DIR OR DEFINED R_DIR)
 
 if (NOT MSVC)
@@ -231,7 +235,7 @@ set_target_properties( FMT
     LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}"
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}"
 )
-else()
+elseif(NOT DEFINED WITHOUT_PYTHONLIB)
 set_target_properties( FMT
     PROPERTIES
     ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
@@ -264,8 +268,10 @@ if (onnxruntime_FOUND)
 endif(onnxruntime_FOUND)
 endif(DEFINED ONNXR_DIR)
 
-set_property(TARGET FMT PROPERTY CXX_STANDARD 11)
-set_property(TARGET FMT PROPERTY CXX_STANDARD_REQUIRED ON)
+if (NOT DEFINED WITHOUT_PYTHONLIB)
+	set_property(TARGET FMT PROPERTY CXX_STANDARD 11)
+	set_property(TARGET FMT PROPERTY CXX_STANDARD_REQUIRED ON)
+endif(NOT DEFINED WITHOUT_PYTHONLIB)
 
 if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
   if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS "4.9.0")
@@ -320,7 +326,7 @@ if (NOT MSVC AND DEFINED ENV{R_DIR})
 	endif()
 endif()
 
-if ((NOT DEFINED ENV{R_DIR}) AND (DEFINED ENV{PYTHON_DIR}))
+if ((NOT DEFINED ENV{R_DIR}) AND (DEFINED ENV{PYTHON_DIR}) AND NOT DEFINED WITHOUT_PYTHONLIB)
 	#Check if python dir fit with found python.... in case of python2...
 	exec_program("$ENV{PYTHON_DIR}python.exe" ARGS "--version"
           		 WORKING_DIRECTORY "$ENV{PYTHON_DIR}"
@@ -484,12 +490,15 @@ endif(NOT Boost_FOUND)
 
 message("Found Boost include here: ${Boost_INCLUDE_DIRS}")
 #include_directories(${Boost_INCLUDE_DIRS})
-target_include_directories(FMT PRIVATE ${Boost_INCLUDE_DIRS})
 target_include_directories(FMTlib PRIVATE ${Boost_INCLUDE_DIRS})
 message("Found Boost libraries here: ${Boost_LIBRARIES}")
-target_link_libraries(FMT PRIVATE ${Boost_LIBRARIES})
 target_link_libraries(FMTlib PRIVATE ${Boost_LIBRARIES})
 #link_libraries(${Boost_LIBRARIES})
+
+if (NOT DEFINED WITHOUT_PYTHONLIB)
+	target_include_directories(FMT PRIVATE ${Boost_INCLUDE_DIRS})
+	target_link_libraries(FMT PRIVATE ${Boost_LIBRARIES})
+endif(NOT DEFINED WITHOUT_PYTHONLIB)
 
 
 
@@ -705,9 +714,10 @@ endif(DEFINED CMAKE_TOOLCHAIN_FILE)
 
 get_filename_component(GDAL_DATA_NAME "${GDAL_DATA}" NAME)
 
-
-
-include(${CMAKE_CURRENT_SOURCE_DIR}/Examples/C++/CMakeLists.txt) #will polulate tests
+set(ignoreMe "${WITHOUT_TESTS}${WITHOUT_PYTHONLIB}")
+if (NOT DEFINED WITHOUT_TESTS)
+	include(${CMAKE_CURRENT_SOURCE_DIR}/Examples/C++/CMakeLists.txt) #will polulate tests
+endif (NOT DEFINED WITHOUT_TESTS)
 include(${CMAKE_CURRENT_SOURCE_DIR}/UI/CMakeLists.txt) #will polulate UI
 include(${CMAKE_CURRENT_SOURCE_DIR}/Excel/CMakeLists.txt) #will polulate Excel wrapper
 
