@@ -1,6 +1,6 @@
 {
-	"modelName": "20210802_15H20_TANH_XAVIERNORMAL1X80DO03",
-	"modelFileName": "YieldPredModels\\NEP_CARBON\\20210802_15h20_Tanh_XavierNormal1x80do03.onnx",
+	"modelName": "20230306_11h55_NEP",
+	"modelFileName": "YieldPredModels\\NEP_CARBON\\20230306_11h55_NEP.onnx",
 	"modelType": "NEP",
 	"csvStandardisationFile": "YieldPredModels\\NEP_CARBON\\NEP_MeanVarStandParams.csv",
 	"modelYields": ["YV_G_GFI", "YV_G_GFT", "YV_G_GR", "YV_G_GF"],

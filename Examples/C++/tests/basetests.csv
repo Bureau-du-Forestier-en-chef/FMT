@@ -3,7 +3,7 @@ Simpleplanning;;;
 Spatialyexplicitsimulation;;;
 Spatialyexplicitsimulation_doplanning;;;
 GetCarbonpredictors;;;
-maptoFMTforest;;;
+maptoFMTforest;../../../../Examples/Models/TWD_land/TWD_land.pri|ROOT|1420;../../../../Examples/Models/TWD_land/Carte/TWD_land.shp;../../tests/maptoFMTforest/
 testyieldmodel;;;
 testOPAreaclustering;;;
 testareavariabilities;;;
@@ -33,4 +33,4 @@ doplanning;../../../../Examples/Models/TWD_land/TWD_land.pri|infinitforloops;5;3
 doplanning;../../../../Examples/Models/TWD_land/TWD_land.pri|ndywlevel;5;363
 doplanning;../../../../Examples/Models/TWD_land/TWD_land.pri|actionseries;5;1613
 doplanning;../../../../Examples/Models/TWD_land/TWD_land.pri|peak;5;0
-doplanning;../../../../Examples/Models/TWD_land/TWD_land.pri|fullcarbon;5;8744163
+doplanning;../../../../Examples/Models/TWD_land/TWD_land.pri|fullcarbon;5;8276831
