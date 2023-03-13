@@ -149,13 +149,13 @@ namespace Exception
 		/**
 		This function is not used by FMT seems to be usefull for nested exception thrown.
 		*/
-		void throw_nested(const std::exception& texception, int level = 0,bool rethrow=true);
+		virtual void throw_nested(const std::exception& texception, int level = 0,bool rethrow=true);
 
 		// DocString: FMTexceptionhandler::printexceptions
 		/**
 		Print all nested exception starting with the first provided by the parameters.
 		*/
-		void printexceptions(std::string text,
+		virtual void printexceptions(std::string text,
 			const std::string& method, const int& line, const std::string& fil,
 			Core::FMTsection lsection = Core::FMTsection::Empty);
 		// DocString: FMTexceptionhandler::raise

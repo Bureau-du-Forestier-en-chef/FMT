@@ -96,11 +96,6 @@ class FMTEXPORT FMTobject
 		This function only check if the user has sent a ctrl-c signal using boost::python to FMT.
 		*/
 		void checksignals() const;
-		// DocString: FMTobject::getruntimelocation
-		/**
-		This function return the location of the FMT shared library location.
-		*/
-		static std::string getruntimelocation();
 		// DocString: FMTobject::setCPLhandler
 		/**
 		This function is for gdal only it pass the FMT exception handler to gdal exception handler.
@@ -123,6 +118,11 @@ class FMTEXPORT FMTobject
 		*/
 		static std::string getdurationinseconds(const std::chrono::time_point<std::chrono::high_resolution_clock>& startclock);
 	public:
+		// DocString: FMTobject::getruntimelocation
+		/**
+		This function return the location of the FMT shared library location.
+		*/
+		static std::string getruntimelocation();
 		// DocString: FMTobject::getavailablememory
 		/**
 		Get the available memory in bytes
