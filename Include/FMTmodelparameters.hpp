@@ -14,6 +14,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <boost/serialization/array.hpp>
 #include <boost/serialization/vector.hpp>
 #include <array>
+#include <vector>
 
 namespace Models
 {
@@ -138,10 +139,7 @@ namespace Models
             double getdblparameter(const FMTdblmodelparameters& key) const;
             bool getboolparameter(const FMTboolmodelparameters& key) const;
             int getperiodcompresstime(const int& period)const;
-            std::vector<int> getcompresstime()const
-            {
-                return compresstime;
-            }
+            std::vector<int> getcompresstime() const;
     };
 }
 BOOST_CLASS_EXPORT_KEY(Models::FMTmodelparameters)
