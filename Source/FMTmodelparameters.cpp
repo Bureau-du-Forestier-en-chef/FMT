@@ -183,6 +183,11 @@ namespace Models
 
     }
 
+    std::vector<int> FMTmodelparameters::getcompresstime() const
+    {
+        return compresstime;
+    }
+
 
 }
 

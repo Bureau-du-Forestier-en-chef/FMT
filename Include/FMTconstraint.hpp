@@ -254,10 +254,7 @@ class FMTEXPORT FMTconstraint: public FMToutput,public FMTspec
 		/**
 		Getter for the constrainttype.
 		*/
-		inline FMTconstrainttype getconstrainttype() const
-			{
-			return type;
-			}
+		FMTconstrainttype getconstrainttype() const;
 		// DocString: FMTconstraint::operator std::string
 		/**
 		Get the string reprensentation like in the optimization section  of a FMTconstraint.
