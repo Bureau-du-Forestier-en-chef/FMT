@@ -22,13 +22,14 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTlinegraph.hpp"
 //#include "FMTsasolution.hpp"
 #include "FMTmodel.hpp"
-#include "FMTsesmodel.hpp"
+#include "FMTsemodel.hpp"
 #include "FMTsrmodel.hpp"
 #include "FMTnssmodel.hpp"
 #if defined FMTWITHOSI
 	#include "FMTlpsolver.hpp"
 	#include "FMTlpmodel.hpp"
 #endif
+#include "FMTsesmodel.hpp"
 #include "FMTsamodel.hpp"
 #include "FMToperatingarea.hpp"
 #include "FMToperatingareascheduler.hpp"
@@ -102,6 +103,7 @@ RCPP_DECLAREVECTOR(Spatial::FMTforest);// For vector
 //RCPP_DECLAREMAP(Spatial::FMTcoordinate,Graph::FMTgraph);//For FMTlayer
 RCPP_DECLAREMAP(Spatial::FMTcoordinate, Graph::FMTlinegraph);
 RCPP_DECLAREVECTOR(Models::FMTsesmodel);//For vector
+RCPP_DECLAREVECTOR(Models::FMTsemodel);//For vector
 //RCPP_DECLAREVECTOR(Spatial::FMTsasolution);//For vector
 //Models
 RCPP_DECLAREVECTOR(Models::FMTmodel);//For vector
