@@ -136,6 +136,14 @@ namespace Spatial
 			{
 				return mapping.find(coordinate);
 			}
+			// DocString: FMTlayer::find
+			/**
+			Find the layer element at a given coordinate.
+			*/
+			iterator find(const FMTcoordinate& coordinate)
+			{
+				return mapping.find(coordinate);
+			}
 			// DocString: FMTlayer()
 			/**
 			Default constructor for FMTlayer.

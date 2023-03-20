@@ -69,6 +69,7 @@ namespace Spatial
 		const std::vector<FMTcoordinate>& getnode(const Core::FMToutputnode& node, const Models::FMTmodel& model,bool& exactnode);
 		void setnode(const Core::FMToutputnode& node, const std::vector<FMTcoordinate>& coordinates);
 		void removeperiod(const int& period);
+		void set(const Core::FMToutputnode& node);
 		FMTnodecache* getactualnodecache();
 		void setnodecache(ucaching::iterator cashit);
 		void swap(FMTspatialnodescache& rhs);
