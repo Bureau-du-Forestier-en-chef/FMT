@@ -1088,6 +1088,115 @@ namespace Spatial
 		return values;
 	}
 
+	std::vector<FMTlayer<Graph::FMTlinegraph>::const_iterator> FMTspatialschedule::getoutputfromnode(const Models::FMTmodel& model, const Core::FMToutputnode& node, const int& period) const
+		{
+		std::vector<FMTlayer<Graph::FMTlinegraph>::const_iterator>graphsvalues;
+		try {
+			bool cachenotused = true;
+			bool exactnode = false;
+			if (node.source.isvariable())
+				{
+				const std::vector<FMTcoordinate>& nodescoordinates = cache.getnode(node, model, exactnode);//starting point to simplification
+						if (!exactnode && cache.getactualnodecache()->worthintersecting)
+						{
+							setgraphcachebystatic(nodescoordinates, node); //Needs to be fixed !!!
+						}
+						const std::vector<FMTcoordinate>& staticcoordinates = cache.getnode(node, model, exactnode);//Will possibility return the whole map...
+						if (node.isactionbased() && !node.source.isinventory())
+						{
+								const std::vector<FMTcoordinate>eventscoordinate = getfromevents(node, model.actions,period);
+								std::vector<FMTcoordinate>selection;
+								if (cache.getactualnodecache()->worthintersecting)
+								{
+									std::set_intersection(staticcoordinates.begin(), staticcoordinates.end(),
+										eventscoordinate.begin(), eventscoordinate.end(),
+										std::back_inserter(selection));//filter from the static selection and the events selected....
+								}
+								else {
+									selection = eventscoordinate;
+								}
+								if (cache.getactualnodecache()->worthintersecting &&
+									selection.size() == eventscoordinate.size())//Then the intersection was useless...say it to the cache
+								{
+									cache.getactualnodecache()->worthintersecting = false;
+								}
+								for (const FMTcoordinate& coordinate : selection)
+								{
+									FMTlayer<Graph::FMTlinegraph>::const_iterator itofgraph = mapping.find(coordinate);
+									graphsvalues.push_back(itofgraph);
+								}
+						}
+						else {
+							for (const FMTcoordinate& coordinate : staticcoordinates)
+							{
+								FMTlayer<Graph::FMTlinegraph>::const_iterator itofgraph = mapping.find(coordinate);
+								graphsvalues.push_back(itofgraph);
+							}
+						}
+			}else {
+				_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
+					"Not handled output node "+std::string(node),
+					"FMTspatialschedule::getoutputfromnode", __LINE__, __FILE__);
+			}
+			if (!cachenotused && scheduletype != FMTspatialscheduletype::FMTcomplete)
+			{
+				_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
+					"Cannot use a non complete schedule ",
+					"FMTspatialschedule::getoutputfromnode", __LINE__, __FILE__);
+			}
+
+		}catch (...)
+			{
+			_exhandler->raisefromcatch("", "FMTspatialschedule::getoutputfromnode", __LINE__, __FILE__);
+			}
+		return graphsvalues;
+		}
+
+	FMTlayer<double> FMTspatialschedule::getoutput(const Models::FMTmodel& model, const Core::FMToutput& output, const int& period) const
+	{
+		FMTlayer<double>outputlayer = copyextent<double>();
+		try {
+			const double cellsize = this->getcellsize();
+			if (output.canbenodesonly())
+			{
+				std::vector<std::string>equation;
+				for (const Core::FMToutputnode& node : output.getnodes(equation))
+				{
+					const std::vector<FMTlayer<Graph::FMTlinegraph>::const_iterator> values = getoutputfromnode(model, node, period);
+					cache.set(node);
+					const Core::FMTmask dynamicmask = cache.getactualnodecache()->dynamicmask;
+					for (const FMTlayer<Graph::FMTlinegraph>::const_iterator& element : values)
+					{
+						Core::FMTmask nodemask = element->second.getbasemask(dynamicmask);
+						element->second.filledgesmask(nodemask, period);
+						const double graphvalue = getoutputfromgraph(element->second, model, node, &cellsize, period, nodemask, cache.getactualnodecache()->patternvalues, Core::FMToutputlevel::totalonly).at("Total");
+						if ((std::abs(graphvalue) - FMT_DBL_TOLERANCE) > 0)
+							{
+								outputlayer[element->first] = graphvalue;
+							}
+					}
+				}
+			}else {
+				for (std::map<FMTcoordinate, Graph::FMTlinegraph>::const_iterator graphit = this->mapping.begin(); graphit != this->mapping.end(); ++graphit)
+				{
+					const double graphvalue = graphit->second.getoutput(model, output, period, &cellsize, Core::FMToutputlevel::totalonly).at("Total");
+					if ((std::abs(graphvalue) - FMT_DBL_TOLERANCE) > 0)
+					{
+						outputlayer[graphit->first] = graphvalue;
+					}
+				}
+			
+			}
+			
+		}
+		catch (...)
+		{
+			_exhandler->raisefromcatch("", "FMTspatialschedule::getoutput", __LINE__, __FILE__);
+		}
+		return outputlayer;
+	}
+
+
 	std::vector<std::pair<FMTcoordinate, double>>FMTspatialschedule::getoutputbycoordinate(const Models::FMTmodel & model, const Core::FMToutput& output, const int& period) const
 	{
 		std::vector<std::pair<FMTcoordinate, double>>allvalues;

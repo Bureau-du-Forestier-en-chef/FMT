@@ -200,6 +200,12 @@ class FMTEXPORT FMTareaparser : public FMTparser
 		*/
 		template<typename T>
         bool writelayer(const Spatial::FMTlayer<T>& layer,std::string location,const std::map<T,std::string>& mapping, std::string format = "GTiff") const;
+		// DocString: FMTareaparser::writelayer
+		/**
+		Using a layer of a given type double the function will write this (layer) into a raster file (location). the mapping add
+		a table to the raster file when dealing with categorical variables
+		*/
+		bool writelayer(const Spatial::FMTlayer<double>& layer, std::string location,std::string format = "GTiff") const;
 		// DocString: FMTareaparser::writeforest
 		/**
 		The function will write a complete FMTforest (for_layer) using a complete vector of (themes), in multiple (data_rasters) file paths

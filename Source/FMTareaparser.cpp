@@ -1392,6 +1392,20 @@ std::vector<std::string> FMTareaparser::splitoaparamlines(std::string line) cons
             return true;
             }
 
+
+		bool FMTareaparser::writelayer(const Spatial::FMTlayer<double>& layer, std::string location, std::string format) const
+		{
+			try {
+				std::map<double, std::string>naming;
+				return writelayer<double>(layer, location, naming, format);
+			}
+			catch (...)
+			{
+				_exhandler->raisefromcatch("at " + location, "FMTareaparser::writelayer", __LINE__, __FILE__, _section);
+			}
+			return false;
+		}
+
 			bool FMTareaparser::writeforesttheme(
 				const Spatial::FMTforest& for_layer,
 				const Core::FMTtheme& theme,

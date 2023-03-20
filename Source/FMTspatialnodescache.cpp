@@ -96,6 +96,11 @@ namespace Spatial
 			}
 		return *this;
 		}
+	void FMTspatialnodescache::set(const Core::FMToutputnode& node)
+		{
+		ucaching::iterator nodecacheit = patterncache.find(node);
+		actualcache = &nodecacheit->second;
+		}
 
 	const std::vector<FMTcoordinate>& FMTspatialnodescache::getnode(const Core::FMToutputnode& node, const Models::FMTmodel& model, bool& exactnode)
 		{

@@ -8,6 +8,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTsemodel.hpp"
 #include "FMTforest.hpp"
 #include "FMTexceptionhandler.hpp"
+#include "FMTlayer.hpp"
 
 
 namespace Models
@@ -85,6 +86,18 @@ namespace Models
 			}
 		return values;
 	}
+
+	Spatial::FMTlayer<double> FMTsemodel::getspatialoutput(const Core::FMToutput& output, int period) const
+	{
+		try {
+			return solution.getoutput(*this, output, period);
+		}catch (...)
+		{
+			_exhandler->printexceptions("", "FMTsemodel::getoutput", __LINE__, __FILE__);
+		}
+		return Spatial::FMTlayer<double>();
+	}
+
 
 	Core::FMTschedule FMTsemodel::getsolution(int period, bool withlock) const
 	{

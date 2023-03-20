@@ -15,6 +15,12 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <boost/serialization/nvp.hpp>
 #include <boost/serialization/export.hpp>
 
+namespace Spatial
+{
+	template <typename T>
+	class FMTlayer;
+}
+
 namespace Models
 {
 // DocString: FMTsemodel
@@ -145,6 +151,11 @@ class FMTEXPORT FMTsemodel : public FMTmodel
 		*/
 		virtual std::map<std::string, double> getoutput(const Core::FMToutput& output,
 			int period, Core::FMToutputlevel level = Core::FMToutputlevel::standard) const;
+		// DocString: FMTsemodel::getoutput
+		/**
+		Get the spatial output value based on the spatial solution.
+		*/
+		virtual Spatial::FMTlayer<double> getspatialoutput(const Core::FMToutput& output,int period) const;
 		// DocString: FMTsemodel::getsolution
 		/**
 		Get the standard solution for a given period (FMTschedule dont have natural growth solution included).
