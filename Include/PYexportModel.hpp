@@ -11,6 +11,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTmodel.hpp"
 #include "FMTsrmodel.hpp"
 #include "FMTlpmodel.hpp"
+#include "FMTsemodel.hpp"
 #include "FMTsesmodel.hpp"
 #include "FMTnssmodel.hpp"
 #include "FMTsamodel.hpp"
@@ -138,25 +139,36 @@ void exportModel()
 
 	bp::to_python_converter<std::map<std::string, double>, MapToDict<std::string, double>>();
 
-	bp::class_<Models::FMTsesmodel, bp::bases<Models::FMTmodel>>("FMTsesmodel", "@DocString(FMTsesmodel)")
-            .def(bp::init<Models::FMTmodel>())
-			.def_pickle(FMT_pickle_suite<Models::FMTsesmodel>())
-            .def("getmapping",&Models::FMTsesmodel::getmapping,
-				"@DocString(FMTsesmodel::getmapping)")
-			.def("getschedule", &Models::FMTsesmodel::getschedule,
-				"@DocString(FMTsesmodel::getschedule)")
-            .def("setinitialmapping",&Models::FMTsesmodel::setinitialmapping,
-				"@DocString(FMTsesmodel::setinitialmapping)")
-			.def("getschedule",&Models::FMTsesmodel::getschedule,
-				getschedulesoverloads(bp::args("withlock"), "@DocString(FMTsesmodel::getschedule)"))
-			.def("getdisturbancestats", &Models::FMTsesmodel::getdisturbancestats,
-				"@DocString(FMTsesmodel::getdisturbancestats)")
-			.def("getoutput", &Models::FMTsesmodel::getoutput,
-				getLPoutputoverloads(bp::args("output", "period", "level"), "@DocString(FMTsesmodel::getoutput)"))
-			.def("greedyreferencebuild", &Models::FMTsesmodel::greedyreferencebuild,
-				greedyreferencebuild_overloads(bp::args("schedule", "numberofiterations", "seed", "tolerance"), "@DocString(FMTsesmodel::greedyreferencebuild)"))
-			.def("getspschedule", &Models::FMTsesmodel::getspschedule,
-				"@DocString(FMTsesmodel::getdisturbances)");
+	bp::class_<Models::FMTsemodel, bp::bases<Models::FMTmodel>>("FMTsemodel", "@DocString(FMTsemodel)")
+		.def(bp::init<Models::FMTmodel>())
+		.def_pickle(FMT_pickle_suite<Models::FMTsemodel>())
+		.def("getmapping", &Models::FMTsemodel::getmapping,
+			"@DocString(FMTsemodel::getmapping)")
+		.def("setinitialmapping", &Models::FMTsemodel::setinitialmapping,
+			"@DocString(FMTsemodel::setinitialmapping)")
+		.def("getschedule", &Models::FMTsemodel::getschedule,
+			getschedulesoverloads(bp::args("withlock"), "@DocString(FMTsemodel::getschedule)"))
+		.def("getdisturbancestats", &Models::FMTsemodel::getdisturbancestats,
+			"@DocString(FMTsemodel::getdisturbancestats)")
+		.def("getspatialoutput", &Models::FMTsemodel::getspatialoutput,
+			"@DocString(FMTsemodel::getspatialoutput)")
+		/*.def("getsolution", &Models::FMTsemodel::getsolution,
+			getsolution_overloads(bp::args("period", "withlock"),"@DocString(FMTsemodel::getsolution)"))
+		.def("getarea", &Models::FMTsemodel::getarea,
+			getarea_overloads(bp::args("period", "beforegrowanddeath"), "@DocString(FMTsemodel::getarea)"))
+		.def("getoutput", &Models::FMTsemodel::getoutput,
+			getLPoutputoverloads(bp::args("output", "period", "level"), "@DocString(FMTsemodel::getoutput)"))*/
+		.def("getspschedule", &Models::FMTsemodel::getspschedule,
+			"@DocString(FMTsemodel::getdisturbances)");
+
+	define_pylist<Models::FMTsemodel>();
+
+
+	bp::class_<Models::FMTsesmodel, bp::bases<Models::FMTsemodel>>("FMTsesmodel", "@DocString(FMTsesmodel)")
+		.def(bp::init<Models::FMTmodel>())
+		.def_pickle(FMT_pickle_suite<Models::FMTsesmodel>())
+		.def("greedyreferencebuild", &Models::FMTsesmodel::greedyreferencebuild,
+			greedyreferencebuild_overloads(bp::args("schedule", "numberofiterations", "seed", "tolerance"), "@DocString(FMTsesmodel::greedyreferencebuild)"));
 
     define_pylist<Models::FMTsesmodel>();
 
@@ -307,7 +319,7 @@ void exportModel()
 
 
 
-	bp::class_<Models::FMTsamodel, bp::bases<Models::FMTmodel>>("FMTsamodel", "@DocString(FMTsamodel)")
+	bp::class_<Models::FMTsamodel, bp::bases<Models::FMTsemodel>>("FMTsamodel", "@DocString(FMTsamodel)")
 		.def(bp::init<Models::FMTmodel>())
 		.def(bp::init<Models::FMTsamodel>())
 		/*.def("get_current_solution", &Models::FMTsamodel::get_current_solution,
@@ -319,8 +331,6 @@ void exportModel()
 		.def("initialsolve", &Models::FMTsamodel::initialsolve,
 			"@DocString(FMTsamodel::initialsolve)")
 		//.def("evaluate",&Models::FMTsamodel::evaluate,evaluate_overloads(bp::args("temp", "all_data"), "@DocString(FMTsamodel::evaluate)"))
-		.def("setinitialmapping", &Models::FMTsamodel::setinitialmapping,
-			"@DocString(FMTsamodel::setinitialmapping)")
 		/* .def("setspactions", &Models::FMTsamodel::setspactions,
 			 "@DocString(FMTsamodel::setspactions)")*/
 		.def("set_min_max_moves", &Models::FMTsamodel::set_min_max_moves,

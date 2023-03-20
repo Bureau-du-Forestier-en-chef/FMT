@@ -11,6 +11,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTmodel.hpp"
 #include "FMTsrmodel.hpp"
 #include "FMTlpmodel.hpp"
+#include "FMTsemodel.hpp"
 #include "FMTsesmodel.hpp"
 #include "FMTnssmodel.hpp"
 #include "FMTsamodel.hpp"
@@ -24,6 +25,9 @@ RCPP_EXPOSED_WRAP(Models::FMTmodel);
 RCPP_EXPOSED_AS(Models::FMTmodel);
 RCPP_DEFINEVECTOR(Models::FMTmodel);//For vector
 RCPP_DEFINEMAP(std::string,double);//For map<string,double>
+RCPP_EXPOSED_WRAP(Models::FMTsemodel);
+RCPP_EXPOSED_AS(Models::FMTsemodel);
+RCPP_DEFINEVECTOR(Models::FMTsemodel);//For vector
 RCPP_EXPOSED_WRAP(Models::FMTsesmodel);
 RCPP_EXPOSED_AS(Models::FMTsesmodel);
 RCPP_DEFINEVECTOR(Models::FMTsesmodel);//For vector
@@ -117,25 +121,30 @@ void exportModel()
 			.method("doplanning",&Models::FMTmodel::doplanning,
 				"@DocString(FMTmodel::doplanning)");
 
+	Rcpp::class_<Models::FMTsemodel>("FMTsemodel", "@DocString(FMTsemodel)")
+		.derives<Models::FMTmodel>("FMTmodel")
+		.constructor("@DocString(FMTsemodel())")
+		.constructor<Models::FMTmodel>("@DocString(FMTsemodel(Models::FMTmodel))")
+		.method("getmapping", &Models::FMTsemodel::getmapping,
+			"@DocString(FMTsemodel::getmapping)")
+		.method("getschedule", &Models::FMTsemodel::getschedule,
+			"@DocString(FMTsemodel::getschedule)")
+		.method("getspschedule", &Models::FMTsemodel::getspschedule,
+			"@DocString(FMTsemodel::getdisturbances)")
+		.method("setinitialmapping", &Models::FMTsemodel::setinitialmapping,
+			"@DocString(FMTsemodel::setinitialmapping)")
+		.method("getspatialoutput", &Models::FMTsemodel::getspatialoutput,
+			"@DocString(FMTsemodel::getschedule)")
+		.method("getdisturbancestats", &Models::FMTsemodel::getdisturbancestats,
+			"@DocString(FMTsemodel::getdisturbancestats)");
+
 
 	Rcpp::class_<Models::FMTsesmodel>("FMTsesmodel", "@DocString(FMTsesmodel)")
-		.derives<Models::FMTmodel>("FMTmodel")
+		.derives<Models::FMTsemodel>("FMTsemodel")
 		.constructor("@DocString(FMTsesmodel())")
 		.constructor<Models::FMTmodel>("@DocString(FMTsesmodel(Models::FMTmodel))")
-			.method("getmapping",&Models::FMTsesmodel::getmapping,
-				"@DocString(FMTsesmodel::getmapping)")
-			.method("getschedule", &Models::FMTsesmodel::getschedule,
-				"@DocString(FMTsesmodel::getschedule)")
-            .method("getspschedule",&Models::FMTsesmodel::getspschedule,
-				"@DocString(FMTsesmodel::getdisturbances)")
-            .method("setinitialmapping",&Models::FMTsesmodel::setinitialmapping,
-				"@DocString(FMTsesmodel::setinitialmapping)")
-			.method("getschedule",&Models::FMTsesmodel::getschedule,
-				"@DocString(FMTsesmodel::getschedule)")
-			.method("getdisturbancestats", &Models::FMTsesmodel::getdisturbancestats,
-				"@DocString(FMTsesmodel::getdisturbancestats)")
-			.method("greedyreferencebuild", &Models::FMTsesmodel::greedyreferencebuild,
-				"@DocString(FMTsesmodel::montecarlosimulate)");
+		.method("greedyreferencebuild", &Models::FMTsesmodel::greedyreferencebuild,
+			"@DocString(FMTsesmodel:::greedyreferencebuild)");
 
 	#ifdef FMTWITHOSI
 	Rcpp::class_<Models::FMTlpsolver>("FMTlpsolver", "@DocString(FMTlpsolver)")
@@ -233,8 +242,8 @@ void exportModel()
 		//	"@DocString(FMTsamodel::evaluate)")
 		.method("initialsolve", &Models::FMTsamodel::initialsolve,
 			"@DocString(FMTsamodel::initialsolve)")
-		.method("setinitialmapping", &Models::FMTsamodel::setinitialmapping,
-			"@DocString(FMTsamodel::setinitial_mapping)")
+		//.method("setinitialmapping", &Models::FMTsamodel::setinitialmapping,
+		//	"@DocString(FMTsamodel::setinitial_mapping)")
 		/*.method("setspactions", &Models::FMTsamodel::setspactions,
 			"@DocString(FMTsamodel::setspactions)")*/
 		.method("set_min_max_moves", &Models::FMTsamodel::set_min_max_moves,
