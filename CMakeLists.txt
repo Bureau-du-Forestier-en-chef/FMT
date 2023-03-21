@@ -9,6 +9,8 @@ cmake_minimum_required(VERSION 3.6)
 
 project(FMT VERSION 0.9.4 LANGUAGES CXX)
 
+
+
 if (MSVC)
 	SET(CMAKE_CONFIGURATION_TYPES ${BUILD_TYPE} CACHE STRING "" FORCE)
 else()
@@ -733,8 +735,6 @@ if (DEFINED EXTRALINKERFLAGS)
 	target_link_libraries(FMTlib PRIVATE "${EXTRALINKERFLAGS}")
 endif(DEFINED EXTRALINKERFLAGS)
 
-
-
 #install part
 install (CODE
     "set (PATHS_DEPS \"${DLLlookuppaths}\")
@@ -839,10 +839,16 @@ endif (EXISTS \"${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}/FMT\")
         )
 ")
 
-
-
-
-
-
-
-
+if (GENERATE_RELEASE_PACKAGE)
+	install (CODE 
+		"set(FMTpackagename \"FMT-${BUILD_TYPE}-${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH}-w64-${CMAKE_CXX_COMPILER_ID}-${CMAKE_CXX_COMPILER_VERSION}.zip\")
+		message(\"Building ${FMTpackagename} release package\")
+		FIND_PROGRAM(ZIP_EXECUTABLE 7z PATHS \"C:/Program Files/7-Zip/\")
+		IF(ZIP_EXECUTABLE)
+			execute_process(
+				COMMAND \"$\{ZIP_EXECUTABLE\}\" a -tzip \${FMTpackagename}\ \"./${BUILD_TYPE}/*\"
+				WORKING_DIRECTORY \"${CMAKE_BINARY_DIR}/bin\"
+				)
+		ENDIF(ZIP_EXECUTABLE)
+		")
+endif(GENERATE_RELEASE_PACKAGE)
