@@ -9,7 +9,9 @@ cmake_minimum_required(VERSION 3.6)
 
 project(FMT VERSION 0.9.4 LANGUAGES CXX)
 
-
+string(TIMESTAMP DATE "%Y-%m-%d")
+string(TIMESTAMP TIME "%H:%M:%S")
+message("On ${DATE} at ${TIME}")
 
 if (MSVC)
 	SET(CMAKE_CONFIGURATION_TYPES ${BUILD_TYPE} CACHE STRING "" FORCE)
@@ -315,6 +317,9 @@ if (NOT MSVC AND DEFINED ENV{R_DIR})
 			set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,--allow-multiple-definition")
 			set(CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} -Wl,--allow-multiple-definition")
 			file(COPY "${CMAKE_CURRENT_SOURCE_DIR}/Templates/Rpackage/FMT" DESTINATION "${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}")
+			configure_file("${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}/FMT/DESCRIPTION"
+                    "${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}/FMT/DESCRIPTION" @ONLY
+                )
 			if (DEFINED PYTHON_DIR)
 			find_program(PYTHON python PATHS ${PYTHON_DIR})
 				execute_process(
