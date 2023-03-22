@@ -137,7 +137,8 @@ set(FMTPYNRSOURCEFILES "${FMTSOURCEDIR}/main.cpp")
 ####################################THE LIB######################################################
 #################################################################################################
 add_library(FMTlib SHARED ${FMTSOURCEFILES})
-include_directories("${FMTINCLUDEDIR}")
+target_include_directories(FMTlib PRIVATE "${FMTINCLUDEDIR}")
+#include_directories("${FMTINCLUDEDIR}")
 if (NOT MSVC)
 		set_target_properties( FMTlib
 			PROPERTIES
@@ -229,6 +230,7 @@ if (DEFINED PYTHON_DIR OR DEFINED R_DIR)
 	endif(DEFINED PYTHON_DIR)
 	if (NOT DEFINED WITHOUT_PYTHONLIB)
 		target_include_directories(FMT PRIVATE "${CMAKE_BINARY_DIR}/PYNRinclude")
+		target_include_directories(FMT PRIVATE "${FMTINCLUDEDIR}")
 	endif(NOT DEFINED WITHOUT_PYTHONLIB)
 endif(DEFINED PYTHON_DIR OR DEFINED R_DIR)
 
