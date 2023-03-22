@@ -50,11 +50,10 @@ namespace Graph
 			{
 				return parent->second;
 			}
+
 			//std::vector<tvdescriptor> cleaned(basenode);
 			std::vector<tvdescriptor> cleaned;
 			pushtovector(cleaned);
-			
-
 			//
 			if (parent != searchtree.end())
 			{

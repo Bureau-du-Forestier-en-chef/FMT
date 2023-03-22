@@ -9,6 +9,7 @@
 #include "FMTspatialschedule.hpp"
 #include "FMTtransitionparser.hpp"
 #include "FMTGCBMtransition.hpp"
+#include "FMTfreeexceptionhandler.hpp"
 #include "FMToutput.hpp"
 #endif
 
@@ -40,6 +41,7 @@ int main()
 	simulationmodel.setparameter(Models::FMTboolmodelparameters::POSTSOLVE, true);
 	simulationmodel.doplanning(false,schedules.at(0));
 	Core::FMToutput spatialoutput;
+	Core::FMToutput sumoutputs;
 	std::vector<Core::FMToutput>outputs;
 	for (const Core::FMToutput& output : simulationmodel.getoutputs())
 	{
@@ -47,11 +49,20 @@ int main()
 		{
 			spatialoutput = output;
 			outputs.push_back(output);
+		}else if (output.getname() =="COUPE2PEU")
+		{
+			sumoutputs = output;
 		}
+	}
+	const double thevalue = simulationmodel.getoutput(sumoutputs,1, Core::FMToutputlevel::totalonly).at("Total");
+	Logging::FMTlogger() << "outvalues " << thevalue << "\n";
+	if (thevalue < 220)
+	{
+		Exception::FMTfreeexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed, "Wrong value",
+			"presolvetest", __LINE__, primarylocation);
 	}
 	mparser.writeresults(simulationmodel, outputs, 1, 10, outdir + "test.csv", Core::FMToutputlevel::totalonly);
 	const Spatial::FMTspatialschedule spatialsolution = simulationmodel.getspschedule();
-	std::cout<<"sp"<<std::endl;
 	Logging::FMTlogger() <<"xsize : "<< spatialsolution.GetXSize() << "\n";
 	Logging::FMTlogger() << "ysize : " << spatialsolution.GetYSize() << "\n";
 	for (int period = 1; period <= 10; ++period)
@@ -61,6 +72,8 @@ int main()
 				Logging::FMTlogger() << "period: " << period << " X: " << value.first.getx() << " Y: " << value.first.gety() << " value: " << value.second << "\n";
 				}
 		}
+	
+
 #endif
 	return 0;
 }
