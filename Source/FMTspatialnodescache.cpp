@@ -119,6 +119,18 @@ namespace Spatial
 		staticnodes->setvalidverticies(node, coordinates);
 		}
 
+	bool FMTspatialnodescache::isworthy(const Core::FMToutputnode& node) const
+	{
+		const size_t ucount = actualcache->staticmask.count();
+		const size_t uwnode = node.source.getmask().getunion(actualcache->staticmask).count();
+		return (uwnode > ucount);
+	}
+
+	void FMTspatialnodescache::erasenode(const Core::FMToutputnode& node)
+		{
+		staticnodes->erasenode(node);
+		}
+
 	void FMTspatialnodescache::swap(FMTspatialnodescache& rhs)
 		{
 		std::swap(actualcache,rhs.actualcache);

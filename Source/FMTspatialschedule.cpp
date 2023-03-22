@@ -984,7 +984,38 @@ namespace Spatial
 					}
 					if (!periodstolookfor.empty())
 					{
-						if (!exactnode&&cache.getactualnodecache()->worthintersecting)
+						const Core::FMTmask dynamicmask = cache.getactualnodecache()->dynamicmask;
+						for (const std::pair<size_t, int>& periodpair : periodstolookfor)
+						{
+							for (FMTlayer<Graph::FMTlinegraph>::const_iterator graphit : getoutputfromnode(model, node, periodpair.second))
+							{
+								Core::FMTmask nodemask = graphit->second.getbasemask(dynamicmask);
+								graphit->second.filledgesmask(nodemask, periodpair.second);
+								const std::map<std::string, double> graphreturn = getoutputfromgraph(graphit->second, model, node, &cellsize, periodpair.second, nodemask, cache.getactualnodecache()->patternvalues, level);
+								if (!graphreturn.empty() && level == Core::FMToutputlevel::totalonly)
+								{
+									values["Total"][periodpair.first] += graphreturn.at("Total");
+								}
+								else {
+									for (std::map<std::string, double>::const_iterator returnit = graphreturn.begin(); returnit != graphreturn.end(); ++returnit)
+									{
+										if (values.find(returnit->first) == values.end())
+										{
+											values[returnit->first] = std::vector<double>((periodstart - periodstop) + 1, 0.0);
+										}
+										values[returnit->first][periodpair.first] += returnit->second;
+									}
+								}
+							}
+							if (level != Core::FMToutputlevel::developpement)//No caching for developpement because getsource dont return a total for developpement
+							{
+								cache.getactualnodecache()->setvalue(periodpair.second, values.at("Total").at(periodpair.first));
+							}
+						}
+					}
+
+
+						/*if (!exactnode && cache.getactualnodecache()->worthintersecting)
 						{
 							setgraphcachebystatic(nodescoordinates, node); //Needs to be fixed !!!
 						}
@@ -1064,6 +1095,10 @@ namespace Spatial
 								}
 							}
 						}
+						if (!cache.isworthy(node))
+							{
+							cache.erasenode(node);
+						}
 					}
 					if(level != Core::FMToutputlevel::developpement)//No caching for developpement because getsource dont return a total for developpement
 					{
@@ -1071,7 +1106,7 @@ namespace Spatial
 						{
 							cache.getactualnodecache()->setvalue(periodpair.second, values.at("Total").at(periodpair.first));
 						}
-					}
+					}*/
 				}
 
 			}
@@ -1097,7 +1132,7 @@ namespace Spatial
 			if (node.source.isvariable())
 				{
 				const std::vector<FMTcoordinate>& nodescoordinates = cache.getnode(node, model, exactnode);//starting point to simplification
-						if (!exactnode && cache.getactualnodecache()->worthintersecting)
+					if (!exactnode && cache.getactualnodecache()->worthintersecting)
 						{
 							setgraphcachebystatic(nodescoordinates, node); //Needs to be fixed !!!
 						}
@@ -1132,6 +1167,10 @@ namespace Spatial
 								FMTlayer<Graph::FMTlinegraph>::const_iterator itofgraph = mapping.find(coordinate);
 								graphsvalues.push_back(itofgraph);
 							}
+						}
+					if (!cache.isworthy(node))
+						{
+						cache.erasenode(node);
 						}
 			}else {
 				_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
@@ -1650,18 +1689,31 @@ void FMTspatialschedule::setgraphcachebystatic(const std::vector<FMTcoordinate>&
 	//we should use a static  output node cache here
 	std::vector<FMTcoordinate>goodcoordinates;
 	try {
-			//double totalsize = static_cast<double>(this->mapping.size());
-			for (const FMTcoordinate& coordinate : coordinates)
+			//First validate that you dont have a complete union between the static theme and the node
+			//const size_t ucount = cache.getactualnodecache()->staticmask.count();
+			//const size_t uwnode = node.source.getmask().getunion(cache.getactualnodecache()->staticmask).count();
+		if (cache.isworthy(node))
+			{
+				//if (uwnode> ucount)
+					//{
+					//double totalsize = static_cast<double>(this->mapping.size());
+				for (const FMTcoordinate& coordinate : coordinates)
 				{
-				const Graph::FMTlinegraph* linegraph = &mapping.at(coordinate);
-				if (linegraph->getbasedevelopment().getmask().issubsetof(cache.getactualnodecache()->staticmask))
+					const Graph::FMTlinegraph* linegraph = &mapping.at(coordinate);
+					if (linegraph->getbasedevelopment().getmask().issubsetof(cache.getactualnodecache()->staticmask))
 					{
-					goodcoordinates.push_back(coordinate);
+						goodcoordinates.push_back(coordinate);
 					}
 				}
-			cache.setnode(node, goodcoordinates);
-			//const double efficiency = (1 - (static_cast<double>(graphs.size()) / totalsize)) * 100;
-			//*_logger << "Efficiency of " << efficiency << "\n";
+				cache.setnode(node, goodcoordinates);
+			}
+				//const double efficiency = (1 - (static_cast<double>(graphs.size()) / totalsize)) * 100;
+				//*_logger << "Efficiency of " << efficiency << "\n";
+			//}else{
+				////cache.erasenode(node);
+			//}
+
+			
 	}catch (...)
 		{
 		_exhandler->raisefromcatch("For node "+std::string(node), "FMTspatialschedule::setgraphcachebystatic", __LINE__, __FILE__);

@@ -73,6 +73,8 @@ namespace Spatial
 		FMTnodecache* getactualnodecache();
 		void setnodecache(ucaching::iterator cashit);
 		void swap(FMTspatialnodescache& rhs);
+		void erasenode(const Core::FMToutputnode& node);
+		bool isworthy(const Core::FMToutputnode& node) const;
 		bool empty() const;
 		size_t size() const;
 		void insert(const FMTspatialnodescache& rhs);
