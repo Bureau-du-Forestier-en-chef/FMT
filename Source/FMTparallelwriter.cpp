@@ -300,7 +300,7 @@ namespace Parallel
 				firstperiod,
 				lastperiod,
 				0);
-			if (!projectdirectory.empty())
+			if (!(projectdirectory.empty()) && !(modelptr->getparameter(Models::FMTboolmodelparameters::FORCE_PARTIAL_BUILD)))
 				{
 				const std::string scenarioname = modelptr->getname();
 				std::string schedulelocation = projectdirectory+"/Scenarios/"+scenarioname+"/"+projectname+"._seq";
