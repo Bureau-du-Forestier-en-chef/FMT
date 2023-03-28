@@ -162,26 +162,31 @@ namespace Parallel
 		return false;
 	}
 
-	FMTopareaschedulertask::~FMTopareaschedulertask()
-	{
+	void FMTopareaschedulertask::finalize()
+		{
 		try {
-			if (gotinitialsolution()&&bestscheduler.use_count()==1)
+			if (gotinitialsolution())
 			{
 				if (!bestscheduler->isProvenOptimal())
 				{
 					_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
 						"Non optimal best scheduler",
-						"FMTopareaschedulertask::~FMTopareaschedulertask", __LINE__, __FILE__);
+						"FMTopareaschedulertask::finalize", __LINE__, __FILE__);
 				}
-				writesolution();
-				writefinalmodel();
+				else {
+					writesolution();
+					writefinalmodel();
+				}
+				bestscheduler = std::shared_ptr<Heuristics::FMToperatingareascheduler>(nullptr);
 			}
 
-		}catch (...)
-		{
-			_exhandler->raisefromcatch("", "FMTopareaschedulertask::~FMTopareaschedulertask()", __LINE__, __FILE__);
 		}
-	}
+		catch (...)
+		{
+			_exhandler->raisefromcatch("", "FMTopareaschedulertask::finalize", __LINE__, __FILE__);
+		}
+		}
+
 
 
 	void FMTopareaschedulertask::writefinalmodel() const
@@ -430,7 +435,7 @@ namespace Parallel
 			setstatus(true);
 		}catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTopareaschedulertask::work", __LINE__, __FILE__);
+			_exhandler->raisefromthreadcatch("","FMTopareaschedulertask::work", __LINE__, __FILE__);
 		}
 
 	}

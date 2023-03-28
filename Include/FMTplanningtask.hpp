@@ -118,6 +118,11 @@ namespace Parallel
 		Main function that do the planning task
 		*/
 		virtual void work();
+		// DocString: FMTplanningtask::finalize
+		/**
+		Do nothing...
+		*/
+		virtual void finalize();
 		// DocString: FMTplanningtask::passinlogger
 		/**
 		Pass the logger

@@ -120,7 +120,8 @@ enum FMTexc
 	FMTyieldmodelprediction = 78,
 	FMTsourcetotarget_transition = 79,
 	FMTsame_transitiontargets = 80,
-	FMTunclosedforloop = 81
+	FMTunclosedforloop = 81,
+	FMTthreadcrash = 82
     };
 
 // DocString: FMTexception
@@ -171,6 +172,12 @@ class FMTEXPORT FMTexception : public std::exception
 	FMTexception default virtual destructor.
 	*/
     virtual ~FMTexception() = default;
+
+	// DocString: FMTexception()
+	/**
+	FMTexception with std exception
+	*/
+	FMTexception(const std::exception& baseexception);
 	// DocString: FMTexception(const FMTexc,const std::string)
 	/**
 	FMTexception constructor taking a exception type and a message.

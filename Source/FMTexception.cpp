@@ -44,6 +44,13 @@ namespace Exception
 
     FMTexception::FMTexception():holdup(false), _msg(), exceptiontype(), section(), method(), file(), line() {}
 
+	FMTexception::FMTexception(const std::exception& baseexception) : holdup(false), _msg(), exceptiontype(FMTexc::FMTunhandlederror), section()
+		, method(), file(), line()
+	{
+		_msg = "FMTexc(" + std::to_string(FMTexc::FMTunhandlederror) + ")" + baseexception.what();
+
+	}
+
     FMTexception::FMTexception(const FMTexc lexception,const std::string message): holdup(false),_msg(), exceptiontype(lexception), section()
 		, method(), file(), line()
         {

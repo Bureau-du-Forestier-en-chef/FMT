@@ -1128,7 +1128,8 @@ namespace Heuristics
 			{
 				complexity+=oparea.getnumberofscheme();
 			}
-			(*_logger) <<  "Complexity calculated by scheduler : " << complexity << "\n";
+			const std::string logof = "Complexity calculated by scheduler : " + std::to_string(complexity) + "\n";
+			(*_logger) << logof;
 			bool adjacencyconstraintset = this->setadjacencyconstraints();
 			updaterowsandcolsnames();
 			//const std::chrono::time_point<std::chrono::high_resolution_clock>teststart = getclock();

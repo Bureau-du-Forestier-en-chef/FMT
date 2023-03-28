@@ -31,6 +31,11 @@ namespace Parallel
 	Will split all task in alltasks and replace it with new splitted tasks
 	*/
 	void splittasks();
+	// DocString: FMTtaskhandler::finalize
+	/**
+	This function will call the FMTtask::finalize function when the last task is done.
+	*/
+	void finalize(std::unique_ptr<FMTtask>& lasttask);
 	public:
 		// DocString: FMTtaskhandler::FMTtaskhandler(const std::unique_ptr<FMTtask>&,unsigned int)
 		/**

@@ -642,7 +642,11 @@ GDALDataset* FMTparser::createOGRdataset(std::string location,
 		const boost::filesystem::path pathObj(location);
 		if (boost::filesystem::exists(pathObj))
 			{
-			newdriver->Delete(location.c_str());
+			if (newdriver->Delete(location.c_str()) != 0)
+				{
+				_exhandler->raise(Exception::FMTexc::FMTinvaliddataset,
+					"Cannot delete " + location, "FMTparser::createOGRdataset", __LINE__, __FILE__, _section);
+				}
 			}
 		newdataset = newdriver->Create(location.c_str(), 0, 0, 0, GDT_Unknown,NULL);
 		if (newdataset == NULL)
