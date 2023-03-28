@@ -195,9 +195,19 @@ namespace Parallel
 			setstatus(true);
 		}catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTplanningtask::work", __LINE__, __FILE__);
+			_exhandler->raisefromthreadcatch("","FMTplanningtask::work", __LINE__, __FILE__);
 		}
+	}
 
+	void FMTplanningtask::finalize()
+	{
+		try {
+		
+		}
+		catch (...)
+		{
+			_exhandler->raisefromcatch("", "FMTplanningtask::finalize", __LINE__, __FILE__);
+		}
 	}
 
 }

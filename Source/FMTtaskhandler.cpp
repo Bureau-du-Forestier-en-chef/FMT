@@ -15,7 +15,6 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #endif
 #include "FMTexceptionhandler.hpp"
 
-
 namespace Parallel
 {
 
@@ -61,6 +60,7 @@ namespace Parallel
 			for (const std::unique_ptr<FMTtask>& task : rhs.alltasks)
 				{
 				alltasks.push_back(std::move(task->clone()));
+				alltasks.push_back(std::move(task->clone()));
 				}
 			}
 		return *this;
@@ -87,6 +87,18 @@ namespace Parallel
 			}
 		}
 
+	void FMTtaskhandler::finalize(std::unique_ptr<FMTtask>& lasttask)
+	{
+		try {
+			lasttask->finalize();
+		}
+		catch (...)
+		{
+			_exhandler->raisefromcatch("", "FMTtaskhandler::finalize", __LINE__, __FILE__);
+		}
+
+	}
+
 	void FMTtaskhandler::conccurentrun()
 		{
 		try {
@@ -100,7 +112,14 @@ namespace Parallel
 				{
 				worker.join();
 				}
-
+			/*_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
+				"Infeasible Global model",
+				"FMTreplanningtask::FMTreplanningtask", __LINE__, __FILE__);*/
+			checksignals();
+			if (!alltasks.empty())
+			{
+				finalize(alltasks.back());
+			}
 		}catch (...)
 			{
 				_exhandler->printexceptions("", "FMTtaskhandler::conccurentrun", __LINE__, __FILE__);
@@ -137,12 +156,16 @@ namespace Parallel
 			}
 			while (!tasks.empty())
 			{
-				std::list<std::unique_ptr<FMTtask>>::const_iterator taskit = tasks.begin();
+				std::list<std::unique_ptr<FMTtask>>::iterator taskit = tasks.begin();
 				std::list<boost::thread>::const_iterator threadit = workers.begin();
 				for (size_t taskid = 0; taskid < tasks.size(); ++taskid)
 				{
 					if ((*taskit)->isdone())
 					{
+						if (!newtask)//Finalize 
+						{
+							finalize(*taskit);
+						}
 						tasks.erase(taskit);
 						workers.erase(threadit);
 						if (newtask)
@@ -153,6 +176,7 @@ namespace Parallel
 						}
 						break;
 					}
+					checksignals();
 					++taskit;
 					++threadit;
 				}

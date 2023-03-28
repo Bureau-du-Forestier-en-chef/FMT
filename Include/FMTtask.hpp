@@ -26,7 +26,7 @@ namespace Parallel
 	*/
 	class FMTEXPORT FMTtask : public Core::FMTobject
 	{
-		// DocString: FMTtaskhandler::alltasks
+		// DocString: FMTtaskhandler::done
 		///If the task is done true else false
 		bool done;
 		protected:
@@ -88,6 +88,12 @@ namespace Parallel
 		This function is the main job executed by the thread.
 		*/
 		virtual void work();
+		// DocString: FMTreplanningtask::finalize
+		/**
+		If this function is overrided it will be called right after the last task
+		is done
+		*/
+		virtual void finalize();
 		// DocString: FMTreplanningtask::isdone()
 		/**
 		Returns true if the job is all done.
@@ -98,6 +104,7 @@ namespace Parallel
 		Get the thread id of the task.
 		*/
 		std::string getthreadid() const;
+		
 	};
 
 }

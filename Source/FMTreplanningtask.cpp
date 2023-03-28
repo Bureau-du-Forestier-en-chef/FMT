@@ -124,21 +124,24 @@ namespace Parallel
 		return std::unique_ptr<Models::FMTmodel>(nullptr);
 		}
 
-	FMTreplanningtask::~FMTreplanningtask()
+
+	void FMTreplanningtask::finalize()
 	{
 		try {
-			if (resultswriter&&
-				resultswriter.use_count()==1)
-				{
+			if (resultswriter)
+			{
 				/////
 				resultswriter->setdriftprobability(global->getname(), local->getname());///testt
 				////
-				}
-		}catch (...)
+				resultswriter = std::shared_ptr<FMTparallelwriter>(nullptr);
+			}
+		}
+		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTreplanningtask::~FMTreplanningtask", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("", "FMTreplanningtask::finalize", __LINE__, __FILE__);
 		}
 	}
+
 
 	std::unique_ptr<FMTtask> FMTreplanningtask::clone() const
 		{
@@ -292,6 +295,7 @@ namespace Parallel
 				
 				for (int replanningperiod = 1; replanningperiod <= replanningperiods; ++replanningperiod)
 				{
+					
 					if (replanningperiod != 1)
 					{
 						const std::unique_ptr<Models::FMTmodel>globalcopy = std::move(domodelplanning(global,replanningperiod,true));
@@ -340,7 +344,7 @@ namespace Parallel
 			setstatus(true);
 		}catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTreplanningtask::work", __LINE__, __FILE__);
+			_exhandler->raisefromthreadcatch("","FMTreplanningtask::work", __LINE__, __FILE__);
 		}
 
 	}

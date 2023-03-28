@@ -133,7 +133,10 @@ namespace Core
 	#if defined FMTWITHR
 		Rcpp::checkUserInterrupt();
 	#endif
-
+		if (_exhandler)
+		{
+			_exhandler->reraiseifthreadcrash();
+		}
 	}
 
 		void FMTobject::setCPLhandler()
@@ -159,7 +162,7 @@ namespace Core
 
 	FMTobject::~FMTobject()
 	{
-		this->checksignals();
+		//this->checksignals();
 
 	}
 

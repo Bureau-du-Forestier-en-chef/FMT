@@ -144,7 +144,7 @@ namespace Parallel
 		/**
 		We need to define a destructor to take care of writing the  solution.
 		*/
-		virtual ~FMTopareaschedulertask();
+		virtual ~FMTopareaschedulertask()=default;
 		// DocString: FMTopareaschedulertask::clone
 		/**
 		Clone function for FMTopareaschedulertask
@@ -178,6 +178,11 @@ namespace Parallel
 		Main function that do the operating area scheduling task
 		*/
 		virtual void work();
+		// DocString: FMTopareaschedulertask::finalize
+		/**
+		Write the solution...
+		*/
+		virtual void finalize();
 		// DocString: FMTopareaschedulertaskk::passinlogger
 		/**
 		Pass the logger

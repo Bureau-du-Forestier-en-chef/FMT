@@ -128,9 +128,9 @@ namespace Parallel
 		FMTreplanningtask& operator = (const FMTreplanningtask& rhs) = default;
 		// DocString: FMTreplanningtask::~FMTreplanningtask()
 		/**
-		We need to define a destructor to take care of writing drift probabilities.
+		Default destructor
 		*/
-		virtual ~FMTreplanningtask();
+		virtual ~FMTreplanningtask() = default;
 		// DocString: FMTreplanningtask::clone
 		/**
 		Clone function for FMTreplanningtask
@@ -191,6 +191,11 @@ namespace Parallel
 		Main function that do the replanning task
 		*/
 		virtual void work();
+		// DocString: FMTreplanningtask::finalize
+		/**
+		We need to take care of writing drift probabilities.
+		*/
+		virtual void finalize();
 		// DocString: FMTreplanningtask::passinlogger
 		/**
 		Pass the logger

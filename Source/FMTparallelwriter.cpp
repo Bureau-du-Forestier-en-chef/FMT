@@ -21,15 +21,10 @@ namespace Parallel
 
 	FMTparallelwriter::~FMTparallelwriter()
 		{
-		try {
 			#ifdef FMTWITHGDAL
 				resultslayer.clear();
 				GDALClose(resultsdataset);
 			#endif
-		}catch(...)
-			{
-			_exhandler->raisefromcatch("", "FMTparallelwriter::~FMTparallelwriter", __LINE__, __FILE__);
-			}
 		}
 
 	FMTparallelwriter::FMTparallelwriter(const std::string& location,
@@ -41,7 +36,7 @@ namespace Parallel
 		Core::FMToutputlevel outputlevel) :
 		outputstowrite(outputs),
 		#ifdef FMTWITHGDAL
-			resultsdataset(createOGRdataset(location, driver)),
+			resultsdataset(),
 			resultslayer(),
 			driftlayer(),
 		#endif
@@ -56,6 +51,7 @@ namespace Parallel
 
 	{
 		try {
+			resultsdataset = createOGRdataset(location, driver);
 			if (outputs.empty())
 			{
 				_exhandler->raise(Exception::FMTexc::FMTrangeerror,
@@ -167,6 +163,12 @@ namespace Parallel
 				for (double drift = resultsminimaldrift; drift >= 0; drift -= 0.05)
 				{
 					driftprob = drift;
+					if (localvalues.find(globaloutput.first)== localvalues.end())
+					{
+						_exhandler->raise(Exception::FMTexc::FMTrangeerror,
+							"No output "+ globaloutput.first +" in local",
+							"FMTparallelwriter::getdriftprobability", __LINE__, __FILE__);
+					}
 					std::vector<bool>passedlastiteration((*localvalues.at(globaloutput.first).begin()).size(), true);
 					drifts[globaloutput.first][drift] = std::vector<double>();
 					int periodid = 0;
@@ -174,6 +176,13 @@ namespace Parallel
 					{
 						periodof = periodid;
 						const double total = static_cast<double>(iterationvalues.size());
+						if (static_cast<size_t>(periodid)>=globaloutput.second.size())
+						{
+							_exhandler->raise(Exception::FMTexc::FMTrangeerror,
+								"No iteration " + std::to_string(periodid) + " in global",
+								"FMTparallelwriter::getdriftprobability", __LINE__, __FILE__);
+							return drifts;
+						}
 						const double globalvalue = globaloutput.second.at(periodid).at(0);
 						double count = 0;
 						if (!std::isnan(globalvalue))
@@ -231,9 +240,22 @@ namespace Parallel
 			{
 				const std::map<std::string, std::vector<std::vector<double>>> globalvalues = getiterationsvalues(resultslayer.at(globalmodel));
 				const std::map<std::string, std::vector<std::vector<double>>> localvalues = getiterationsvalues(resultslayer.at(localmodel));
-				const std::map<std::string, std::map<double, std::vector<double>>>lowerdrifts = getdriftprobability(globalvalues, localvalues);
-				const std::map<std::string, std::map<double, std::vector<double>>>upperdrifts = getdriftprobability(globalvalues, localvalues,false);
-				writedrift(driftlayer, lowerdrifts, upperdrifts);
+				if (!globalvalues.empty() && !localvalues.empty())
+				{
+					const std::map<std::string, std::map<double, std::vector<double>>>lowerdrifts = getdriftprobability(globalvalues, localvalues);
+					const std::map<std::string, std::map<double, std::vector<double>>>upperdrifts = getdriftprobability(globalvalues, localvalues, false);
+					writedrift(driftlayer, lowerdrifts, upperdrifts);
+				}
+				else {
+					_exhandler->raise(Exception::FMTexc::FMTrangeerror,
+						"Empty result layers",
+						"FMTparallelwriter::setdriftprobability", __LINE__, __FILE__);
+				}
+			}
+			else {
+				_exhandler->raise(Exception::FMTexc::FMTrangeerror,
+					"No layers to get",
+					"FMTparallelwriter::setdriftprobability", __LINE__, __FILE__);
 			}
 		#endif
 		}catch (...)

@@ -11,6 +11,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTerror.hpp"
 #include "FMTcplhandler.hpp"
 #include <boost/algorithm/string/replace.hpp>
+#include <boost/lexical_cast.hpp>
 
 #if defined FMTWITHR
 	#include "Rcpp.h"
@@ -32,9 +33,21 @@ namespace Exception
 {
 boost::thread::id FMTexceptionhandler::mainthreadid = boost::this_thread::get_id();
 
+boost::thread::id FMTexceptionhandler::crashedthreadid = boost::this_thread::get_id();
+
 bool FMTexceptionhandler::ismainthread() const
 	{
 	return (boost::this_thread::get_id() == mainthreadid);
+	}
+
+bool FMTexceptionhandler::isthrowedonthread() const
+	{
+	return (crashedthreadid != mainthreadid);
+	}
+
+bool FMTexceptionhandler::isthisthreadthrowed() const
+	{
+	return (!ismainthread() && boost::this_thread::get_id() == crashedthreadid);
 	}
 
 void FMTexceptionhandler::checksignals() const
@@ -97,18 +110,22 @@ FMTexceptionhandler& FMTexceptionhandler::operator = (const FMTexceptionhandler&
 		usenestedexceptions = rhs.usenestedexceptions;
 		errorstowarnings = rhs.errorstowarnings;
 		_specificwarningcount = rhs._specificwarningcount;
+		registered_threads = rhs.registered_threads;
+		threadcrashexception = rhs.threadcrashexception;
 	}
 	return *this;
 }
 
 
-void FMTexceptionhandler::throw_nested(const  std::exception& texception, int level,bool rethrow)
+void FMTexceptionhandler::throw_nested(const std::exception& texception, int& level,bool rethrow)
 {
 		boost::lock_guard<boost::recursive_mutex> guard(mtx);
-		const std::string linereplacement = "\n" + std::string(level, ' ');
-		std::string message = texception.what();
-		boost::replace_all(message, "\n", linereplacement);
-		*_logger << std::string(level, ' ') << message << "\n";
+		//const bool keepit = (!ismainthread() && isthisthreadthrowed());
+		//if (!keepit)
+		//{
+			gutsofexceptionlog(texception, level);
+		//}
+		
 			#if defined FMTWITHR
 				const std::nested_exception * nested = dynamic_cast<const std::nested_exception *>(&texception);
 				const std::exception_ptr  excp = nested->nested_ptr();
@@ -118,11 +135,18 @@ void FMTexceptionhandler::throw_nested(const  std::exception& texception, int le
 					}
 			#endif
 		try {
+				//std::rethrow_if_nested(texception);
+			const auto _Nested = dynamic_cast<const std::nested_exception*>(&texception);
+			if (_Nested->nested_ptr())
+			{
 				std::rethrow_if_nested(texception);
+				
+			}
 		}
 		catch (const  std::exception& texception)
 		{
-				throw_nested(texception, level + 1, false);
+			++level;
+			throw_nested(texception, level, false);
 		}
 		catch (...)
 		{
@@ -136,7 +160,12 @@ void FMTexceptionhandler::throw_nested(const  std::exception& texception, int le
 		{
 		#if defined FMTWITHR
 		#else
-				throw;
+		const std::exception_ptr expointer = std::current_exception();
+		if (expointer)
+		{
+			throw;
+		}
+				
 		#endif
 		}
 }
@@ -209,6 +238,8 @@ FMTexceptionhandler::FMTexceptionhandler(const FMTexceptionhandler& rhs)
 		usenestedexceptions=rhs.usenestedexceptions;
 		errorstowarnings = rhs.errorstowarnings;
 		_specificwarningcount = rhs._specificwarningcount;
+		registered_threads = rhs.registered_threads;
+		threadcrashexception = rhs.threadcrashexception;
 	}
 
 FMTexceptionhandler::FMTexceptionhandler(const std::shared_ptr<Logging::FMTlogger>& logger) : 
@@ -220,6 +251,8 @@ FMTexceptionhandler::FMTexceptionhandler(const std::shared_ptr<Logging::FMTlogge
 	_logger(logger),
 	usenestedexceptions(true),
 	errorstowarnings(),
+	registered_threads(),
+	threadcrashexception(),
 	_specificwarningcount()
 {
 
@@ -234,6 +267,8 @@ FMTexceptionhandler::FMTexceptionhandler() : _level(FMTlev::FMT_None),
 		_logger(),
 		usenestedexceptions(true),
 		errorstowarnings(),
+		registered_threads(),
+		threadcrashexception(),
 		_specificwarningcount()
 		{
 
@@ -251,6 +286,7 @@ void FMTexceptionhandler::setmaxwarningsbeforesilenced(const size_t& maxwarningc
 		boost::lock_guard<boost::recursive_mutex> guard(mtx);
 		maxwarningsbeforesilenced = maxwarningcount;
 	}
+
 
 std::string FMTexceptionhandler::updatestatus(const FMTexc lexception, const std::string message)
 {
@@ -644,6 +680,11 @@ std::string FMTexceptionhandler::updatestatus(const FMTexc lexception, const std
 		_level = FMTlev::FMT_logic;
 		++_errorcount;
 		break;
+	case FMTexc::FMTthreadcrash:
+		msg += "Crash on thread " + message;
+		_level = FMTlev::FMT_logic;
+		++_errorcount;
+		break;
 	default:
 		_exception = FMTexc::None;
 		_level = FMTlev::FMT_None;
@@ -657,7 +698,56 @@ std::string FMTexceptionhandler::updatestatus(const FMTexc lexception, const std
 		++_warningcount;
 		--_errorcount;
 		}
+	if (_errorcount>0 && !ismainthread() && !isthrowedonthread())
+		{
+		crashedthreadid = boost::this_thread::get_id();
+		}
 	return msg;
+}
+
+void FMTexceptionhandler::raisefromthreadcatch(std::string text,
+	const std::string& method, const int& line, const std::string& file,
+	Core::FMTsection lsection)
+{
+	if (isthisthreadthrowed())
+	{
+		try {
+			//int levelofprint = 0;
+			//gutsofprintexceptions(text, method, line, file, levelofprint,Core::FMTsection::Empty);
+			raisefromcatch(text, method, line, file, lsection);
+		}catch (...)
+		{
+			threadcrashexception = std::current_exception();
+		}
+	}else if (ismainthread())
+	{
+		raisefromcatch(text, method, line, file, lsection);
+	}
+	//Do nothing if you are a thread an you have not thrown...all your exceptions are lost
+}
+
+void FMTexceptionhandler::registerworkerthread()
+{
+	boost::lock_guard<boost::recursive_mutex> guard(mtx);
+	registered_threads.insert(boost::this_thread::get_id());
+}
+
+bool FMTexceptionhandler::isthreadregistered() const
+{
+return (registered_threads.find(boost::this_thread::get_id()) != registered_threads.end());
+}
+
+
+
+void FMTexceptionhandler::reraiseifthreadcrash()
+{
+	if (isthrowedonthread() && !isthisthreadthrowed() && !isthreadregistered())
+	{
+		registerworkerthread();
+		//registered_threads.insert(boost::this_thread::get_id());
+		//Raise a dumy exception to make sure the main thread and the slave thread are aware of crash
+		raise(Exception::FMTexc::FMTthreadcrash,"","FMTexceptionhandler::reraiseifthreadcrash",__LINE__,__FILE__);
+	}
 }
 
 FMTexception FMTexceptionhandler::raisefromcatch(std::string text,
@@ -709,75 +799,135 @@ FMTexception FMTexceptionhandler::raisefromcatch(std::string text,
 	return this->raise(lexception,text, method, line, file, lsection);
 }
 
-
-void FMTexceptionhandler::printexceptions(std::string text,
-	const std::string& method, const int& line, const std::string& fil,
-	Core::FMTsection lsection)
-	{
+void FMTexceptionhandler::gutsofprintexceptions(std::string text,
+	const std::string& method, const int& line, const std::string& fil,int& levelreference,
+	Core::FMTsection lsection, bool logfirstlevel)
+{
 	boost::lock_guard<boost::recursive_mutex> guard(mtx);
 	FMTexc lexception = FMTexc::FMTfunctionfailed;
 	const std::exception_ptr expointer = std::current_exception();
 	bool rethrowing = false;
-	#if defined FMTWITHR
-		if (_errorcount == 0)
-			{
-			rethrowing = true;
-			}
-	#endif
+#if defined FMTWITHR
+	if (_errorcount == 0)
+	{
+		rethrowing = true;
+	}
+#endif
 	const FMTexception newexception = this->raise(lexception, text, method, line, fil, lsection, rethrowing);
 	if (_logger)
 	{
 		_logger->setstreamflush(true);
 	}
+	const bool keepit =  ((!ismainthread() && isthisthreadthrowed()));// && !print);
+	//Keep it est a vrai sur le main mais devrait être à faux...
+	bool needtolog = logfirstlevel;
+
+	/*if (keepit || (levelreference > 0))
+	{
+		needtolog = false;
+	}*/
 	
 	if (expointer)
-		{
-		int nestedlevel = 0;
+	
+	{
+		//levelreference = 0;
 		try {
+
 			std::rethrow_exception(expointer);
+			
 		}
 		catch (const FMTexception& tcexception)
 		{
 			if (usenestedexceptions)
 			{
-				*_logger << newexception.what() << "\n";
-				nestedlevel = 1;
-			}
-			this->throw_nested(tcexception, nestedlevel);
-		}
-		#if defined FMTWITHOSI
-			catch (const CoinError& coinexception)
-			{
-				if (usenestedexceptions)
+				if (needtolog)
 				{
 					*_logger << newexception.what() << "\n";
-					nestedlevel = 1;
+
 				}
-				this->throw_nested(Exception::FMTerror(coinexception), nestedlevel);
+				++levelreference;
+				//levelreference = 1;
 			}
-		#endif
-		catch (const boost::bad_graph& grapherror)
-			{
+			this->throw_nested(tcexception, levelreference);
+		}
+#if defined FMTWITHOSI
+		catch (const CoinError& coinexception)
+		{
 			if (usenestedexceptions)
+			{
+				if (needtolog)
 				{
-				*_logger << newexception.what() << "\n";
-				nestedlevel = 1;
+					*_logger << newexception.what() << "\n";
+
 				}
-			this->throw_nested(Exception::FMTerror(grapherror), nestedlevel);
+				++levelreference;
+				//levelreference = 1;
 			}
+			this->throw_nested(Exception::FMTerror(coinexception), levelreference);
+		}
+#endif
+		catch (const boost::bad_graph& grapherror)
+		{
+			if (usenestedexceptions)
+			{
+				if (needtolog)
+				{
+					*_logger << newexception.what() << "\n";
+
+				}
+				++levelreference;
+				//levelreference = 1;
+			}
+			this->throw_nested(Exception::FMTerror(grapherror), levelreference);
+		}
 		catch (...)
 		{
 			lexception = FMTexc::FMTunhandlederror;
 			const FMTexception newexception = this->raise(lexception, text, method, line, fil, lsection, false);
-			this->throw_nested(newexception, 0);
-		}
-	}else {
-		this->throw_nested(newexception, 1);
+			this->throw_nested(newexception, levelreference );//0);
 		}
 	}
-
-
+	else {
+		++levelreference;
+		this->throw_nested(newexception, levelreference);//1);
+	}
 }
+
+void FMTexceptionhandler::gutsofexceptionlog(const std::exception& texception, const int& level)
+{
+	const std::string linereplacement = "\n" + std::string(level, ' ');
+	std::string message = texception.what();
+	boost::replace_all(message, "\n", linereplacement);
+	*_logger << std::string(level, ' ') << message << "\n";
+}
+
+
+void FMTexceptionhandler::printexceptions(std::string text,
+	const std::string& method, const int& line, const std::string& fil,
+	Core::FMTsection lsection)
+{
+	int levelofprint = 0;
+	try {
+		gutsofprintexceptions(text, method, line, fil, levelofprint,lsection);
+	}catch (...)
+	{
+		if (threadcrashexception)
+		{
+			*_logger << std::string(levelofprint,' ') + "Crash on thread " << boost::lexical_cast<std::string>(crashedthreadid) << "\n";
+			try {
+				std::rethrow_exception(threadcrashexception);
+			}
+			catch (...)
+			{
+				
+				gutsofprintexceptions(text, method, line, fil, levelofprint, lsection,false);
+			}
+		}
+		throw;
+	}
+}
+}
+
 
 
 BOOST_CLASS_EXPORT_IMPLEMENT(Exception::FMTexceptionhandler)

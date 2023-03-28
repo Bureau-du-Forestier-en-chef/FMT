@@ -9,6 +9,7 @@ namespace Parallel
 
 	boost::recursive_mutex FMTtask::taskmutex;
 
+
 	FMTtask::FMTtask() :
 		Core::FMTobject(),
 		done(false),
@@ -116,25 +117,41 @@ namespace Parallel
 				"FMTtask::work", __LINE__, __FILE__);
 		}catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTtask::work", __LINE__, __FILE__);
+			_exhandler->raisefromthreadcatch("", "FMTtask::work", __LINE__, __FILE__);
+		}
+	}
+
+	void FMTtask::finalize()
+	{
+		try {
+			_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, "Calling pure virtual function ",
+				"FMTtask::finalize", __LINE__, __FILE__);
+		}
+		catch (...)
+		{
+			_exhandler->raisefromthreadcatch("", "FMTtask::finalize", __LINE__, __FILE__);
 		}
 	}
 
 	void FMTtask::setstatus(bool status)
 	{
+		checksignals();
 		boost::lock_guard<boost::recursive_mutex> guard(taskmutex);
 		done = status;
 	}
 
 	bool FMTtask::isdone() const
 	{
+		checksignals();
 		boost::lock_guard<boost::recursive_mutex> guard(taskmutex);
-		const bool isdone = done;
+		const bool isdone = (done );
 		return done;
 	}
 
+
 	std::string FMTtask::getthreadid() const
 	{
+		checksignals();
 		return boost::lexical_cast<std::string>(boost::this_thread::get_id());
 	}
 

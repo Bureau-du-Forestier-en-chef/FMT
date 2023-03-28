@@ -15,6 +15,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <boost/serialization/nvp.hpp>
 #include <boost/serialization/export.hpp>
 #include <memory>
+#include <set>
 
 #include <boost/thread.hpp>
 
@@ -73,9 +74,18 @@ namespace Exception
 		// DocString: FMTexceptionhandler::errorstowarnings
 		///If an error is in this list it's going to processed like a warning.
 		std::vector<Exception::FMTexc>errorstowarnings;
+		// DocString: FMTexceptionhandler::registred_threads
+		///This is the level of the last FMTexception thrown by the FMTexceptionhandler.
+		std::set<boost::thread::id> registered_threads;
 		// DocString: FMTexceptionhandler::mainthreadid
 		///Main thread id
 		static boost::thread::id mainthreadid;
+		// DocString: FMTexceptionhandler::crashedthreadid
+		///The thread id of the crashed thread
+		static boost::thread::id crashedthreadid;
+		// DocString: FMTexceptionhandler::threadcrashexceptions
+		///The exception throwed by the faulty thread...
+		std::exception_ptr threadcrashexception;
 		// DocString: FMTexceptionhandler::updatestatus
 		/**
 		This functions updates the status of the handler adding up to the warning or the error counts.
@@ -92,6 +102,39 @@ namespace Exception
 		Return true if we are on the main thread.
 		*/
 		bool ismainthread() const;
+		// DocString: FMTexceptionhandler::isthrowedonthread()
+		/**
+		Return true if an exception been thrown on a thread.
+		*/
+		bool isthrowedonthread() const;
+		// DocString: FMTexceptionhandler::isthisthreadthrowed()
+		/**
+		Return true if this thread throwed
+		*/
+		bool isthisthreadthrowed() const;
+		// DocString: FMTexceptionhandler::registerthread
+		/**
+		Register a thread so that way the exceptionhandler knows that he is dealing with
+		a slave thread that is not the main one.
+		*/
+		void registerworkerthread();
+		// DocString: FMTexceptionhandler::isregistered
+		/**
+		Return true if the thread is registered.
+		*/
+		bool isthreadregistered() const;
+		// DocString: FMTexceptionhandler::gutsofprintexceptions
+		/**
+		The guts of printexceptions.
+		*/
+		void gutsofprintexceptions(std::string text,
+			const std::string& method, const int& line, const std::string& fil,
+			int& levelreference,Core::FMTsection lsection = Core::FMTsection::Empty,bool logfirstlevel = true);
+		// DocString: FMTexceptionhandler::gutsofexceptionlog
+		/**
+		The guts of logging exceptions...
+		*/
+		void gutsofexceptionlog(const std::exception& texception,const int& level);
 	public:
 		// DocString: FMTexceptionhandler::_specificwarningcount
 		///Keeps count of the number of each type of warning thrown.
@@ -149,8 +192,7 @@ namespace Exception
 		/**
 		This function is not used by FMT seems to be usefull for nested exception thrown.
 		*/
-		virtual void throw_nested(const std::exception& texception, int level = 0,bool rethrow=true);
-
+		void throw_nested(const std::exception& texception, int& level,bool rethrow=true);
 		// DocString: FMTexceptionhandler::printexceptions
 		/**
 		Print all nested exception starting with the first provided by the parameters.
@@ -170,10 +212,24 @@ namespace Exception
 		/**
 		Raise an exception from the catch body it will determine if the exception is unenhdled.
 		*/
-		FMTexception raisefromcatch(std::string text,
+		virtual FMTexception raisefromcatch(std::string text,
 			const std::string& method, const int& line, const std::string& file,
 			Core::FMTsection lsection = Core::FMTsection::Empty);
-
+		// DocString: FMTexceptionhandler::raisefromthreadcatch
+		/**
+		Raise an exception from the catch body it will determine if the exception is unenhdled.
+		Also catch all the exception to make sure their's no exceptions alive in the thread if not on the main thread.
+		Then printalltheexceptions and return without throwing.
+		*/
+		void raisefromthreadcatch(std::string text,
+			const std::string& method, const int& line, const std::string& file,
+			Core::FMTsection lsection = Core::FMTsection::Empty);
+		// DocString: FMTexceptionhandler::reraiseifthreadcrash
+		/**
+		If you have used threads make sure to use this to validate that there's no exception raised by any thread...
+		if there's one it will raise a multithread error.
+		*/
+		void reraiseifthreadcrash();
 		// DocString: FMTexceptionhandler::enablenestedexceptions
 		/**
 		Enable the nested exception throw.
@@ -195,8 +251,6 @@ namespace Exception
 		Settter for maxwarningsbeforesilenced.
 		*/
 		void setmaxwarningsbeforesilenced(const size_t& maxwarningcount);
-
-		
 	};
 
 }
