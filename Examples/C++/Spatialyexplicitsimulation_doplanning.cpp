@@ -17,11 +17,25 @@ int main()
 {
 #ifdef FMTWITHGDAL
 	Logging::FMTlogger().logstamp();
+	//const std::string modellocation = "../../../../Examples/Models/TWD_land/";
+	//const std::string	primarylocation = modellocation + "TWD_land.pri";
 	const std::string modellocation = "../../../../Examples/Models/TWD_land/";
-	const std::string	primarylocation = modellocation + "TWD_land.pri";
+	const std::string	primarylocation = "D:/08665/PC_9427_U08665_4_Vg1_2023_vSSP03.pri";// modellocation + "TWD_land.pri";
 	const std::string outdir = "../../tests/Spatialyexplicitsimulation_doplanning/";
 	Parser::FMTmodelparser mparser;
-	const std::vector<std::string>scenarios(1, "Spatial");
+	std::vector<Exception::FMTexc>errors;
+	errors.push_back(Exception::FMTexc::FMTmissingyield);
+	errors.push_back(Exception::FMTexc::FMToutput_missing_operator);
+	errors.push_back(Exception::FMTexc::FMToutput_too_much_operator);
+	errors.push_back(Exception::FMTexc::FMTinvalidyield_number);
+	errors.push_back(Exception::FMTexc::FMTundefinedoutput_attribute);
+	errors.push_back(Exception::FMTexc::FMToveridedyield);
+	errors.push_back(Exception::FMTexc::FMTsourcetotarget_transition);
+	errors.push_back(Exception::FMTexc::FMTsame_transitiontargets);
+	errors.push_back(Exception::FMTexc::FMTunclosedforloop);
+	errors.push_back(Exception::FMTexc::FMTinvalid_geometry);
+	mparser.seterrorstowarnings(errors);
+	const std::vector<std::string>scenarios(1,"14_Sc5_Determin_apsp_carbone_3");// "Spatial");
 	const std::vector<Models::FMTmodel> models = mparser.readproject(primarylocation, scenarios);
 	Models::FMTsesmodel simulationmodel(models.at(0));
 	const std::vector<std::vector<Core::FMTschedule>> schedules = mparser.readschedules(primarylocation, models);
@@ -32,7 +46,8 @@ int main()
 		}
 	simulationmodel.settransitions(strans);
 	Parser::FMTareaparser areaparser;
-	const std::string shpfile = modellocation + "Carte/TWD_land.shp";
+	//const std::string shpfile = modellocation + "Carte/TWD_land.shp";
+	const std::string shpfile = "D:/08665/Carte/PC_9427_UA_U08665.shp";
 	Spatial::FMTforest initialforestmap = areaparser.vectormaptoFMTforest(shpfile,380,simulationmodel.getthemes(),"AGE","SUPERFICIE", 1, 0.0001);
 	simulationmodel.setinitialmapping(initialforestmap);
 	simulationmodel.setparameter(Models::FMTintmodelparameters::LENGTH,10);
@@ -50,6 +65,10 @@ int main()
 			spatialoutput = output;
 			outputs.push_back(output);
 		}else if (output.getname() =="COUPE2PEU")
+		{
+			sumoutputs = output;
+		}
+		else if (output.getname() == "NEP_GLOBAL")
 		{
 			sumoutputs = output;
 		}
