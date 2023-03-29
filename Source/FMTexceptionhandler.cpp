@@ -126,14 +126,14 @@ void FMTexceptionhandler::throw_nested(const std::exception& texception, int& le
 			gutsofexceptionlog(texception, level);
 		//}
 		
-			#if defined FMTWITHR
+			/*#if defined FMTWITHR
 				const std::nested_exception * nested = dynamic_cast<const std::nested_exception *>(&texception);
 				const std::exception_ptr  excp = nested->nested_ptr();
 				if (excp == nullptr||(message.find("FMTexc(56)") != std::string::npos))//If last element just get out of c++ and get back to R
 					{
 					throw(Rcpp::exception(message.c_str()));
 					}
-			#endif
+			#endif*/
 		try {
 				//std::rethrow_if_nested(texception);
 			const auto _Nested = dynamic_cast<const std::nested_exception*>(&texception);
@@ -899,6 +899,14 @@ void FMTexceptionhandler::gutsofexceptionlog(const std::exception& texception, c
 	std::string message = texception.what();
 	boost::replace_all(message, "\n", linereplacement);
 	*_logger << std::string(level, ' ') << message << "\n";
+	#if defined FMTWITHR
+		const std::nested_exception* nested = dynamic_cast<const std::nested_exception*>(&texception);
+		const std::exception_ptr  excp = nested->nested_ptr();
+		if (excp == nullptr || (message.find("FMTexc(56)") != std::string::npos))//If last element just get out of c++ and get back to R
+		{
+			throw(Rcpp::exception(message.c_str()));
+		}
+	#endif
 }
 
 
