@@ -8,6 +8,7 @@
 #include "FMTsrmodel.hpp"
 #include  <onnxruntime/core/session/onnxruntime_cxx_api.h>
 #include <boost/property_tree/json_parser.hpp>
+#include <boost/filesystem.hpp>
 
 
 namespace Core {
@@ -15,12 +16,18 @@ namespace Core {
 
 	FMTyieldmodelnep::FMTyieldmodelnep(const boost::property_tree::ptree& jsonProps, std::vector<std::string>& inputYields)
 	{
+		try{
+		boost::filesystem::path fmtdll(getruntimelocation());
 		boost::property_tree::ptree::const_assoc_iterator modelNameIt = jsonProps.find(JSON_PROP_MODEL_NAME);
-		modelName = modelNameIt->second.data();
+		boost::filesystem::path filenamepath(modelNameIt->second.data());
+		modelName = (fmtdll / filenamepath).string();
+
 		boost::property_tree::ptree::const_assoc_iterator modelTypeIt = jsonProps.find(JSON_PROP_MODEL_TYPE);
 		modelType = modelTypeIt->second.data();
 		boost::property_tree::ptree::const_assoc_iterator stdParamsFileNameIt = jsonProps.find(JSON_PROP_STAND_FILE_PATH);
-		std::string stdParamsFileName = stdParamsFileNameIt->second.data();
+		
+		boost::filesystem::path parampath(stdParamsFileNameIt->second.data());
+		std::string stdParamsFileName = (fmtdll / parampath).string();
 
 		std::wstring wideModelName = std::wstring(modelName.begin(), modelName.end());
 		sessionPtr = std::unique_ptr<Ort::Session>(new Ort::Session(*envPtr.get(), wideModelName.c_str(), Ort::SessionOptions{}));
@@ -54,6 +61,12 @@ namespace Core {
 		{
 			standardParamMeans[i] = std::stof(strMeans[i]);
 			standardParamVars[i] = std::stof(strVars[i]);
+		}
+		}
+		catch (...)
+		{
+			_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, "",
+				"FMTyieldmodelnep::FMTyieldmodelnep", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 	}
 

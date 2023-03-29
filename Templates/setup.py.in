@@ -14,7 +14,7 @@ setup(
     include_package_data=True,
     packages=["FMT"],
     package_dir={"FMT": ""},
-    package_data={"FMT": ["*.dll", "*.lib", "*.exp", "*.pyd", "GDAL_DATA/*.*", "GDAL_DATA/html/*.*","LICENSES/*","YieldPredModels/*","YieldPredModels/NEP_CARBON/*","YieldPredModels/POOLS_CARBON/*","YieldPredModels/NEP_ERABLIERE/*","YieldPredModels/POOLS_ERABLIERE/*","YieldPredModels/NEP_PESSIERE/*","YieldPredModels/POOLS_PESSIERE/*","YieldPredModels/NEP_SAPINIERE/*","YieldPredModels/POOLS_SAPINIERE/*","YieldPredModels/TESTMODEL/*","proj/*"]},
+    package_data={"FMT": ["*.dll", "*.lib", "*.exp", "*.pyd", "GDAL_DATA/*.*", "GDAL_DATA/html/*.*","LICENSES/*","YieldPredModels/*","YieldPredModels/NEP_CARBON/*","YieldPredModels/POOLS_CARBON/*","YieldPredModels/NEP_CARBON_ERABLIERE/*","YieldPredModels/POOLS_CARBON_ERABLIERE/*","YieldPredModels/NEP_CARBON_PESSIERE/*","YieldPredModels/POOLS_CARBON_PESSIERE/*","YieldPredModels/NEP_CARBON_SAPINIERE/*","YieldPredModels/POOLS_CARBON_SAPINIERE/*","YieldPredModels/TESTMODEL/*","proj/*"]},
     entry_points={},
     python_requires="==@PYTHONMAJOR@.@PYTHONMINOR@.*"
 )
