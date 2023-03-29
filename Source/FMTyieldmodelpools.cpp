@@ -4,51 +4,62 @@
 #include  <onnxruntime/core/session/onnxruntime_cxx_api.h>
 #include "FMTexceptionhandler.hpp"
 #include <boost/property_tree/json_parser.hpp>
+#include <boost/filesystem.hpp>
 
 namespace Core {
 	const std::string JSON_PROP_STAND_FILE_PATH = "csvStandardisationFile";
 
 	FMTyieldmodelpools::FMTyieldmodelpools(const boost::property_tree::ptree& jsonProps, std::vector<std::string>& inputYields)
 	{
-		boost::property_tree::ptree::const_assoc_iterator modelNameIt = jsonProps.find(JSON_PROP_MODEL_NAME);
-		modelName = modelNameIt->second.data();
-		boost::property_tree::ptree::const_assoc_iterator modelTypeIt = jsonProps.find(JSON_PROP_MODEL_TYPE);
-		modelType = modelTypeIt->second.data();
-		boost::property_tree::ptree::const_assoc_iterator stdParamsFileNameIt = jsonProps.find(JSON_PROP_STAND_FILE_PATH);
-		std::string stdParamsFileName = stdParamsFileNameIt->second.data();
+		try {
+			boost::filesystem::path fmtdll(getruntimelocation());
+			boost::property_tree::ptree::const_assoc_iterator modelNameIt = jsonProps.find(JSON_PROP_MODEL_NAME);
+			boost::filesystem::path filenamepath(modelNameIt->second.data());
+			modelName = (fmtdll / filenamepath).string();
 
-		std::wstring wideModelName = std::wstring(modelName.begin(), modelName.end());
-		sessionPtr = std::unique_ptr<Ort::Session>(new Ort::Session(*envPtr.get(), wideModelName.c_str(), Ort::SessionOptions{}));
+			boost::property_tree::ptree::const_assoc_iterator modelTypeIt = jsonProps.find(JSON_PROP_MODEL_TYPE);
+			modelType = modelTypeIt->second.data();
+			boost::property_tree::ptree::const_assoc_iterator stdParamsFileNameIt = jsonProps.find(JSON_PROP_STAND_FILE_PATH);
+			boost::filesystem::path parampath(stdParamsFileNameIt->second.data());
+			std::string stdParamsFileName = (fmtdll / parampath).string();
 
-		std::ifstream file(stdParamsFileName);
-		std::vector<std::string> headers = GetNextLineAndSplitIntoTokens(file);
-		headers.erase(headers.begin());
-		std::vector<std::string> strMeans = GetNextLineAndSplitIntoTokens(file);
-		strMeans.erase(strMeans.begin());
-		std::vector<std::string> strVars = GetNextLineAndSplitIntoTokens(file);
-		strVars.erase(strVars.begin());
+			std::wstring wideModelName = std::wstring(modelName.begin(), modelName.end());
+			sessionPtr = std::unique_ptr<Ort::Session>(new Ort::Session(*envPtr.get(), wideModelName.c_str(), Ort::SessionOptions{}));
 
-		std::vector<std::string> yields;
-		for (auto& item : jsonProps.get_child(JSON_PROP_MODEL_YIELDS))
+			std::ifstream file(stdParamsFileName);
+			std::vector<std::string> headers = GetNextLineAndSplitIntoTokens(file);
+			headers.erase(headers.begin());
+			std::vector<std::string> strMeans = GetNextLineAndSplitIntoTokens(file);
+			strMeans.erase(strMeans.begin());
+			std::vector<std::string> strVars = GetNextLineAndSplitIntoTokens(file);
+			strVars.erase(strVars.begin());
+
+			std::vector<std::string> yields;
+			for (auto& item : jsonProps.get_child(JSON_PROP_MODEL_YIELDS))
+			{
+				yields.push_back(item.second.get_value<std::string>());
+			}
+
+			ValidateInputYields(yields, inputYields);
+
+			modelYields = inputYields;
+
+			for (auto& item : jsonProps.get_child(JSON_PROP_MODEL_OUTPUTS))
+			{
+				modelOutputs.push_back(item.second.get_value<std::string>());
+			}
+
+			standardParamMeans = std::vector<float>(strMeans.size());
+			standardParamVars = std::vector<float>(strVars.size());
+			for (size_t i = 0; i < strMeans.size(); i++)
+			{
+				standardParamMeans[i] = std::stof(strMeans[i]);
+				standardParamVars[i] = std::stof(strVars[i]);
+			}
+		}catch (...)
 		{
-			yields.push_back(item.second.get_value<std::string>());
-		}
-
-		ValidateInputYields(yields, inputYields);
-
-		modelYields = inputYields;
-
-		for (auto& item : jsonProps.get_child(JSON_PROP_MODEL_OUTPUTS))
-		{
-			modelOutputs.push_back(item.second.get_value<std::string>());
-		}
-
-		standardParamMeans = std::vector<float>(strMeans.size());
-		standardParamVars = std::vector<float>(strVars.size());
-		for (size_t i = 0; i < strMeans.size(); i++)
-		{
-			standardParamMeans[i] = std::stof(strMeans[i]);
-			standardParamVars[i] = std::stof(strVars[i]);
+			_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,"",
+				"FMTyieldmodelpools::FMTyieldmodelpools", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 	}
 
