@@ -1,7 +1,7 @@
 #importation de FMT
 library(FMT)
 #Creation du model
-model<-new(FMTlpmodel,new(FMTmodel),FMTsolverinterface$MOSEK)
+model<-new(FMTlpmodel,new(FMTmodel),FMTsolverinterface$CLP)
 #Établir une gestion des erreurs faite par l'utilisateur R
 model$setfreeexceptionhandler()
 #Tous les strings doivent êtres en majuscule
@@ -142,7 +142,7 @@ tryCatch(
 	sources<-list()
 	operators<-list()
 	sources[[1]]<-new(FMToutputsource,new(FMTspec),new(FMTmask,"? ? ?", themes),FMTotar$actual,"YVTOT", "ACT", 0, -1)
-	outputs[[1]]<-new(FMToutput,"OVOLTOTREC","VOLUME RECOLTE",sources,operators)
+	outputs[[1]]<-new(FMToutput,"OVOLTOTREC","VOLUME RECOLTE","GROUPX",sources,operators)
 	},
 	error = function(e){ 
 			print("Problème suivant lors de la création de la section output")

@@ -836,7 +836,7 @@ install (CODE
           WORKING_DIRECTORY \"${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}\"
         )
 		execute_process(
-          COMMAND \"$\{RLOCATION\}\" CMD INSTALL --no-multiarch \"FMT_${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.tar.gz\"
+          COMMAND \"$\{RLOCATION\}\" CMD INSTALL --no-multiarch \"FMT_${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH}.tar.gz\"
           WORKING_DIRECTORY \"${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}\"
         )
 endif (EXISTS \"${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}/FMT\")
