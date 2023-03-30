@@ -425,7 +425,20 @@ if (Boost_FOUND)
 		endif(BUILD_TYPE MATCHES Release)
 		FILE(GLOB_RECURSE BOOST_DLL ${boost_bin}/*.dll)
 		list(APPEND DLLlookuppaths ${boost_bin})
-		LIST(APPEND FMTDEPENDENCIES ${BOOST_DLL})
+		foreach(boostdll ${BOOST_DLL})
+			if("${boostdll}" MATCHES "x64")
+				if(BUILD_TYPE MATCHES Debug)
+					if ("${boostdll}" MATCHES "gd-x64")
+						LIST(APPEND FMTDEPENDENCIES "${boostdll}")
+					endif("${boostdll}" MATCHES "gd-x64")
+				elseif(BUILD_TYPE MATCHES Release)
+					if (NOT "${boostdll}" MATCHES "gd-x64")
+						LIST(APPEND FMTDEPENDENCIES "${boostdll}")
+					endif(NOT "${boostdll}" MATCHES "gd-x64")
+				endif(BUILD_TYPE MATCHES Debug)
+			endif("${boostdll}" MATCHES "x64")
+		endforeach()
+		#LIST(APPEND FMTDEPENDENCIES ${BOOST_DLL})
 	endif(MSVC)
 		#New for Rtools42 
 		if (MSVC)
@@ -848,12 +861,12 @@ endif (EXISTS \"${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}/FMT\")
 
 if (GENERATE_RELEASE_PACKAGE)
 	install (CODE 
-		"set(FMTpackagename \"FMT-${BUILD_TYPE}-${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH}-w64-${CMAKE_CXX_COMPILER_ID}-${CMAKE_CXX_COMPILER_VERSION}.zip\")
+		"set(FMTpackagename \"FMT-${BUILD_TYPE}-${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH}-w64-${CMAKE_CXX_COMPILER_ID}-${CMAKE_CXX_COMPILER_VERSION}.7z\")
 		message(\"Building ${FMTpackagename} release package\")
 		FIND_PROGRAM(ZIP_EXECUTABLE 7z PATHS \"C:/Program Files/7-Zip/\")
 		IF(ZIP_EXECUTABLE)
 			execute_process(
-				COMMAND \"$\{ZIP_EXECUTABLE\}\" a -tzip \${FMTpackagename}\ \"./${BUILD_TYPE}/*\"
+				COMMAND \"$\{ZIP_EXECUTABLE\}\" a -t7z \${FMTpackagename}\ \"./${BUILD_TYPE}/*\"
 				WORKING_DIRECTORY \"${CMAKE_BINARY_DIR}/bin\"
 				)
 		ENDIF(ZIP_EXECUTABLE)
