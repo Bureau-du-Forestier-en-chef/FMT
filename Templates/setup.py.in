@@ -1,6 +1,15 @@
 from setuptools import setup, find_packages
 from glob import glob
 
+try:
+    from wheel.bdist_wheel import bdist_wheel as _bdist_wheel
+    class bdist_wheel(_bdist_wheel):
+        def finalize_options(self):
+            _bdist_wheel.finalize_options(self)
+            self.root_is_pure = False
+except ImportError:
+    bdist_wheel = None
+
 setup(
     name="FMT",
     version="@PROJECT_VERSION@",
@@ -16,5 +25,6 @@ setup(
     package_dir={"FMT": ""},
     package_data={"FMT": ["*.dll", "*.lib", "*.exp", "*.pyd", "GDAL_DATA/*.*", "GDAL_DATA/html/*.*","LICENSES/*","YieldPredModels/*","YieldPredModels/NEP_CARBON/*","YieldPredModels/POOLS_CARBON/*","YieldPredModels/NEP_CARBON_ERABLIERE/*","YieldPredModels/POOLS_CARBON_ERABLIERE/*","YieldPredModels/NEP_CARBON_PESSIERE/*","YieldPredModels/POOLS_CARBON_PESSIERE/*","YieldPredModels/NEP_CARBON_SAPINIERE/*","YieldPredModels/POOLS_CARBON_SAPINIERE/*","YieldPredModels/TESTMODEL/*","proj/*"]},
     entry_points={},
-    python_requires="==@PYTHONMAJOR@.@PYTHONMINOR@.*"
+    python_requires="==@PYTHONMAJOR@.@PYTHONMINOR@.*",
+    cmdclass={'bdist_wheel': bdist_wheel}
 )

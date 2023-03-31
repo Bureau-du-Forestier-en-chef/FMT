@@ -129,7 +129,7 @@ add_definitions("-DBOOST_FILESYSTEM_NO_DEPRECATED")
 
 FILE(GLOB FMTSOURCEFILES ${FMTSOURCEDIR}FMT*.cpp)
 FILE(GLOB FMTHEADERFILES ${FMTINCLUDEDIR}FMT*.hpp)
-list (APPEND FMTHEADERFILES "${FMTINCLUDEDIR}/resource.hpp")
+#list (APPEND FMTHEADERFILES "${FMTINCLUDEDIR}/resource.hpp")
 #set(FMTPYNRSOURCEFILES "${FMTSOURCEFILES}")
 #list(APPEND FMTPYNRSOURCEFILES "${FMTSOURCEDIR}/main.cpp")
 set(FMTPYNRSOURCEFILES "${FMTSOURCEDIR}/main.cpp")
@@ -297,6 +297,11 @@ if (NOT MSVC AND DEFINED ENV{R_DIR})
 		target_include_directories(FMT PRIVATE ${R_INCLUDE_DIR})
 		#target_include_directories(FMTlib PRIVATE ${R_INCLUDE_DIR})
 		set(ENV{RCPP_DIR} "$ENV{R_DIR}")
+		find_program(REXEC R PATHS "${R_DIR}/bin/x64")
+		exec_program(${REXEC} ARGS "--version" OUTPUT_VARIABLE RFULL_VERSION)
+		string(REGEX MATCH "([0-9].[0-9].[0-9])" _ "${RFULL_VERSION}")
+		set(RVERSION  "${CMAKE_MATCH_1}")
+		message ("R version is ${RVERSION}")
 		find_package(RCPP REQUIRED)
 		if (RCPP_FOUND)
 			message("Found Rcpp include here: ${RCPP_INCLUDE_DIR}")
@@ -816,7 +821,7 @@ install (CODE
        		 )
 	endif(NOT EXISTS \"$\{PYTHON\}\")
         execute_process(
-          COMMAND \"$\{PYTHON\}\" -m pip wheel .
+          COMMAND \"$\{PYTHON\}\" -m pip wheel . 
           WORKING_DIRECTORY \"${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}\"
         )
 		FILE(GLOB_RECURSE wheelfiles \"${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}/FMT*.whl\")
@@ -848,8 +853,9 @@ install (CODE
           COMMAND \"$\{RLOCATION\}\" CMD build FMT
           WORKING_DIRECTORY \"${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}\"
         )
+		set(R_package \"FMT_${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH}.tar.gz\")
 		execute_process(
-          COMMAND \"$\{RLOCATION\}\" CMD INSTALL --no-multiarch \"FMT_${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH}.tar.gz\"
+          COMMAND \"$\{RLOCATION\}\" CMD INSTALL --no-multiarch \"\${R_package\}\"
           WORKING_DIRECTORY \"${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}\"
         )
 endif (EXISTS \"${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}/FMT\")
@@ -860,15 +866,62 @@ endif (EXISTS \"${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}/FMT\")
 ")
 
 if (GENERATE_RELEASE_PACKAGE)
+	add_custom_command(
+	OUTPUT FMTlibname
+	COMMAND myProcessor --input $<TARGET_FILE_NAME:FMTlib> --output FMTlibname
+	# ...
+	)
 	install (CODE 
-		"set(FMTpackagename \"FMT-${BUILD_TYPE}-${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH}-w64-${CMAKE_CXX_COMPILER_ID}-${CMAKE_CXX_COMPILER_VERSION}.7z\")
-		message(\"Building ${FMTpackagename} release package\")
+		"set(FMTpackageloc \"FMT-${BUILD_TYPE}-${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH}-w64-${CMAKE_CXX_COMPILER_ID}-${CMAKE_CXX_COMPILER_VERSION}\")
+		set(FMTdir \"${CMAKE_BINARY_DIR}/\${FMTpackageloc\}\")
+		message(\"Building \${FMTdir\}\")
+		file(MAKE_DIRECTORY \"\${FMTdir\}\")
+		file(MAKE_DIRECTORY \"\${FMTdir\}/Include\")
+		set(headers \"${FMTHEADERFILES}\")
+		foreach(headerfile \${headers}\)
+			file(COPY \"\${headerfile}\" DESTINATION \"\${FMTdir\}/Include\")
+		endforeach()
+		FILE(GLOB FMTlibfiles \"${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}\${FMTlibname\}*\")
+		set (FMTlibdir \"\${FMTdir\}/lib\")
+		#Copy data
+		if (GDAL_FOUND)
+			file(COPY \"${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}/GDAL_DATA\" DESTINATION \"\${FMTlibdir\}\")
+			file(COPY \"${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}/proj\" DESTINATION \"\${FMTlibdir\}\")
+		endif(GDAL_FOUND)
+		file(COPY \"${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}/LICENSES\" DESTINATION \"\${FMTlibdir\}\")
+		file(COPY \"${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}/YieldPredModels\" DESTINATION \"\${FMTlibdir\}\")
+		#Copy the lib
+		foreach(FMTlibof \${FMTlibfiles}\)
+			file(COPY \"\${FMTlibof}\" DESTINATION \"\${FMTlibdir\}\")
+		endforeach()
+		#Copy the dependencies
+		if (DEPENDENCIES)
+			#Copy dependencies
+			foreach(FMTdep \${DEPENDENCIES}\)
+				file(COPY \"\${FMTdep}\" DESTINATION \"\${FMTlibdir\}\")
+			endforeach()
+		endif(DEPENDENCIES)
+		#Compress the C++ lib
+		message(\"Compressing \${FMTdir\}\")
 		FIND_PROGRAM(ZIP_EXECUTABLE 7z PATHS \"C:/Program Files/7-Zip/\")
 		IF(ZIP_EXECUTABLE)
 			execute_process(
-				COMMAND \"$\{ZIP_EXECUTABLE\}\" a -t7z \${FMTpackagename}\ \"./${BUILD_TYPE}/*\"
-				WORKING_DIRECTORY \"${CMAKE_BINARY_DIR}/bin\"
+				COMMAND \"$\{ZIP_EXECUTABLE\}\" a -t7z \"\${FMTpackageloc\}.7z\" \"\${FMTpackageloc\}\"
+				WORKING_DIRECTORY \"${CMAKE_BINARY_DIR}\"
 				)
 		ENDIF(ZIP_EXECUTABLE)
+		set(PYTHON_FOUND \"${PYTHONNAMING}\")
+		if (DEFINED PYTHON_FOUND)
+			file(COPY \"${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}/\${wheelname\}\" DESTINATION \"${CMAKE_BINARY_DIR}\")
+			message(\"Python package is here ${CMAKE_BINARY_DIR}/\${wheelname\}\")
+		endif(DEFINED PYTHON_FOUND)
+		set(R_FOUND \"${R_FOUND}\")
+		if (R_FOUND)
+			file(COPY \"${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}/\${R_package\}\" DESTINATION \"${CMAKE_BINARY_DIR}\")
+			message(\"R package is here ${CMAKE_BINARY_DIR}/\${R_package\}\")
+		endif(R_FOUND)
+		
+		message(\"Release done\")
 		")
+		
 endif(GENERATE_RELEASE_PACKAGE)

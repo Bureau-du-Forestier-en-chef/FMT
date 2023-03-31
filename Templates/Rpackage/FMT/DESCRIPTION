@@ -13,3 +13,4 @@ Encoding: UTF-8
 LazyData: yes
 NeedsCompilation: no
 Archs: x64
+Depends: R (>= @RVERSION@)
