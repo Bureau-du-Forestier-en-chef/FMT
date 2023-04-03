@@ -81,6 +81,7 @@ namespace Parallel
 	{
 		try {
 			models.push_back(std::move(model.clone()));
+			models.back()->setparallellogger(*tasklogger.get());
 			allschedules.push_back(schedules);
 			resultswriter->setlayer(&model);
 		}catch (...)
