@@ -866,11 +866,6 @@ endif (EXISTS \"${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}/FMT\")
 ")
 
 if (GENERATE_RELEASE_PACKAGE)
-	add_custom_command(
-	OUTPUT FMTlibname
-	COMMAND myProcessor --input $<TARGET_FILE_NAME:FMTlib> --output FMTlibname
-	# ...
-	)
 	install (CODE 
 		"set(FMTpackageloc \"FMT-${BUILD_TYPE}-${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}.${PROJECT_VERSION_PATCH}-w64-${CMAKE_CXX_COMPILER_ID}-${CMAKE_CXX_COMPILER_VERSION}\")
 		set(FMTdir \"${CMAKE_BINARY_DIR}/\${FMTpackageloc\}\")
@@ -881,7 +876,12 @@ if (GENERATE_RELEASE_PACKAGE)
 		foreach(headerfile \${headers}\)
 			file(COPY \"\${headerfile}\" DESTINATION \"\${FMTdir\}/Include\")
 		endforeach()
-		FILE(GLOB FMTlibfiles \"${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}\${FMTlibname\}*\")
+		set(MSVC \"${MSVC}\")
+		if (MSVC)
+			FILE(GLOB FMTlibfiles \"${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}/FMTlib*\")
+		else()
+			FILE(GLOB FMTlibfiles \"${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}/libFMTlib*\")
+		endif(MSVC)
 		set (FMTlibdir \"\${FMTdir\}/lib\")
 		#Copy data
 		if (GDAL_FOUND)
