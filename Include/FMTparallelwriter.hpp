@@ -141,7 +141,7 @@ namespace Parallel
 		/**
 		Get the results of a model. and write it down.
 		*/
-		void getandwrite(const std::unique_ptr<Models::FMTmodel>& modelptr);
+		void getandwrite(const std::unique_ptr<Models::FMTmodel>& modelptr, const std::vector<Core::FMToutput>& loutputs);
 		};
 }
 #endif

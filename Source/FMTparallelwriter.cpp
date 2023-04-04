@@ -288,18 +288,21 @@ namespace Parallel
 
 	}
 
-	void FMTparallelwriter::getandwrite(const std::unique_ptr<Models::FMTmodel>& modelptr)
+	void FMTparallelwriter::getandwrite(const std::unique_ptr<Models::FMTmodel>& modelptr, const std::vector<Core::FMToutput>& loutputs)
 	{
 		try {
 			const int firstperiod = outputfirstperiod;
 			const int lastperiod = std::min(outputlastperiod, modelptr->getparameter(Models::FMTintmodelparameters::LENGTH));
 			boost::lock_guard<boost::recursive_mutex> lock(mtx);
-			outputstowrite = modelptr->getoutputs();
-			write(modelptr->getname(),
-				getresults(modelptr, firstperiod, lastperiod),
-				firstperiod,
-				lastperiod,
-				0);
+			outputstowrite = loutputs;
+			if (!outputstowrite.empty())
+			{
+				write(modelptr->getname(),
+					getresults(modelptr, firstperiod, lastperiod),
+					firstperiod,
+					lastperiod,
+					0);
+			}
 			if (!(projectdirectory.empty()) && !(modelptr->getparameter(Models::FMTboolmodelparameters::FORCE_PARTIAL_BUILD)))
 				{
 				const std::string scenarioname = modelptr->getname();
