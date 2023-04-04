@@ -46,6 +46,9 @@ namespace Parallel
 		// DocString: FMTplanningtask::schedules
 		///All schedules of FMTmodel if we only want to do playback
 		std::list<std::vector<Core::FMTschedule>>allschedules;
+		// DocString: FMTplanningtask::outputs
+		///Abstracts outputs that the results need to be write by the task.
+		std::list<std::vector<Core::FMToutput>>outputs;
 		// DocString: FMTplanningtask::keepmodels
 		///If keep models is true the models will be kept after work
 		bool keepmodels;
@@ -91,7 +94,8 @@ namespace Parallel
 		Dont forget to just keep FMToutput that you want to get values in the FMTmodel.
 		*/
 		void push_back(const Models::FMTmodel& model,
-			std::vector<Core::FMTschedule>schedules = std::vector<Core::FMTschedule>());
+			std::vector<Core::FMTschedule>schedules = std::vector<Core::FMTschedule>(),
+			std::vector<Core::FMToutput>louputs = std::vector<Core::FMToutput>());
 		// DocString: FMTplanningtask::FMTplanningtask(...)
 		/**
 		You need to initialize the task mainly with the output parser parameters.
