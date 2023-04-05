@@ -190,6 +190,8 @@ namespace Parallel
 				if (models.front()->doplanning(true, allschedules.front()))
 					{
 					resultswriter->getandwrite(models.front(),outputs.front());
+				}else {
+					_logger->logwithlevel("Thread:" + getthreadid() + " infeasible scenario " + models.front()->getname() + "\n", 0);
 					}
 				_logger->logwithlevel("Thread:" + getthreadid() + " Planning of " + models.front()->getname() + " done\n", 0);
 				if (keepmodels)

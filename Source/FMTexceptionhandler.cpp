@@ -741,6 +741,7 @@ return (registered_threads.find(boost::this_thread::get_id()) != registered_thre
 
 void FMTexceptionhandler::reraiseifthreadcrash()
 {
+	
 	if (isthrowedonthread() && !isthisthreadthrowed() && !isthreadregistered())
 	{
 		registerworkerthread();

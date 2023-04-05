@@ -21,11 +21,8 @@ if (new(FMTversion)$hasfeature("OSI"))
     replanningtask$setreplicates(10)
     replanningtask$setreplanningperiods(10)
     handler <- new(FMTtaskhandler,replanningtask, 2)
-    rm(replanningtask)
-    handler$setquietlogger()
+    #handler$setquietlogger()
     handler$conccurentrun()
-    rm(handler)
-    gc()
 	}else{
 	print("FMT needs to be compiled with OSI")
 	}
