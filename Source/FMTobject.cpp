@@ -123,18 +123,9 @@ namespace Core
 
 	void FMTobject::checksignals() const
 	{
-	#if defined FMTWITHPYTHON
-		if (PyErr_CheckSignals() == -1)
-		{
-			exit(1);
-		}
-	#endif
-
-	#if defined FMTWITHR
-		Rcpp::checkUserInterrupt();
-	#endif
 		if (_exhandler)
 		{
+			_exhandler->checksignals();
 			_exhandler->reraiseifthreadcrash();
 		}
 	}
