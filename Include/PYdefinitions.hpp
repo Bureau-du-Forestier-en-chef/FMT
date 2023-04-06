@@ -26,7 +26,12 @@ void define_FMTlist()
 	 py_pair<Core::FMTmask, T>();
 	 py_pair<Core::FMTmask const, T>();
 	 boost::python::class_<Core::FMTlist<T>>("FMTlist", "@DocString(FMTlist)")
-		 .def("__iter__", boost::python::iterator<Core::FMTlist<T>>());
+		 .def("__iter__", boost::python::iterator<Core::FMTlist<T>>())
+         .def("update", &Core::FMTlist<T>::update,
+             "@DocString(FMTlist::update)")
+         .def("push_back",
+             &Core::FMTlist<T>::APIpush_back,
+             "@DocString(FMTyieldhandler::APIpush_back)");
 	define_pylist<T>();
     }
 

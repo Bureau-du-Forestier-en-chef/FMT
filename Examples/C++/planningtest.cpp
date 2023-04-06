@@ -48,8 +48,8 @@ int main(int argc, char *argv[])
 			}
 		}
 		lpmodel.setparameter(Models::FMTboolmodelparameters::FORCE_PARTIAL_BUILD, playback.at(modelid));
-		lpmodel.setoutputs(selectedoutputs);
-		newplanningtask.push_back(lpmodel,schedules.at(modelid));
+		//lpmodel.setoutputs(selectedoutputs);
+		newplanningtask.push_back(lpmodel,schedules.at(modelid), selectedoutputs);
 		}
 	Parallel::FMTtaskhandler handler(newplanningtask,3);
 	handler.setquietlogger();
