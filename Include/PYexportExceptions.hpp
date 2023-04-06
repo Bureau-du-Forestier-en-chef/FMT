@@ -68,20 +68,6 @@ void exportException()
 
 	define_pylist<Exception::FMTexc>();
 
-	bp::enum_<Core::FMTsection>("FMTsection")
-		.value("Control", Core::FMTsection::Control)
-		.value("Landscape", Core::FMTsection::Landscape)
-		.value("Area", Core::FMTsection::Area)
-		.value("Action", Core::FMTsection::Action)
-		.value("Transition", Core::FMTsection::Transition)
-		.value("Yield", Core::FMTsection::Yield)
-		.value("Outputs", Core::FMTsection::Outputs)
-		.value("Optimize", Core::FMTsection::Optimize)
-		.value("Constants", Core::FMTsection::Constants)
-		.value("Schedule", Core::FMTsection::Schedule)
-		.value("Empty", Core::FMTsection::Empty)
-		.export_values();
-
 	bp::class_<Exception::FMTexception>Exceptionclass("FMTexception", "@DocString(FMTexception)");
 	Exceptionclass.def("gettype", &Exception::FMTexception::gettype,
 		"@DocString(FMTexception::gettype)");

@@ -64,6 +64,8 @@ void exportModel()
 				"@DocString(FMTmodel::getyields)")
 			.def("setyields", &Models::FMTmodel::setyields,
 				"@DocString(FMTmodel::setyields)")
+			.def("setlifespan", &Models::FMTmodel::setlifespan,
+				"@DocString(FMTmodel::setlifespan)")
 			.def("addageyieldhandlers", &Models::FMTmodel::addyieldhandlers<Core::FMTageyieldhandler>,
 				"@DocString(FMTmodel::addyieldhandlers)")
 			.def("addtimeyieldhandlers", &Models::FMTmodel::addyieldhandlers<Core::FMTtimeyieldhandler>,
