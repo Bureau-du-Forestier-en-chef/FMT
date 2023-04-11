@@ -354,6 +354,12 @@ class FMTEXPORT FMTspatialschedule : public FMTlayer<Graph::FMTlinegraph>
 		std::vector<Spatial::FMTcoordinate>getmovablecoordinates(const Models::FMTmodel& model,const int& period,
 																					const std::vector<Spatial::FMTcoordinate>* statics,
 																					boost::unordered_map<Core::FMTdevelopment, bool>*operability = nullptr) const;
+
+		// DocString: FMTspatialschedule::getareaconflictcoordinates
+		/**
+		Returns the coordinates of events that does not have the right area
+		*/
+		std::vector<Spatial::FMTcoordinate>getareaconflictcoordinates(const std::vector<Spatial::FMTbindingspatialaction>& bindingactions, const int& period) const;
 		// DocString: FMTspatialschedule::getstaticsmovablecoordinates
 		/**
 		Returns a vector of coordinate that are considered movable

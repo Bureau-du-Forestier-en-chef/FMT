@@ -571,6 +571,29 @@ namespace Models
         return true;
     }
 
+    std::vector<Spatial::FMTcoordinate> FMTsamodel::getcoordinatestomove(const Spatial::FMTspatialschedule& actual, 
+        const Spatial::FMTspatialschedule::actionbindings& bindings,const int& period, const std::vector<Spatial::FMTcoordinate>* movable,
+        boost::unordered_map<Core::FMTdevelopment, bool>* operability) const
+    {
+        std::vector<Spatial::FMTcoordinate>selectionpool;
+        try {
+            std::uniform_int_distribution<int> selectiontypedist(0,1);
+            const int selectiontype = selectiontypedist(generator);
+            if (selectiontype == 0)//default
+                {
+                    selectionpool = actual.getmovablecoordinates(*this, period, movable, operability);
+                }else if (selectiontype == 1)
+                {
+                    selectionpool = actual.getareaconflictcoordinates(bindings.at(period-1), period);
+                }
+        }
+        catch (...)
+        {
+            _exhandler->raisefromcatch("", "FMTsamodel::getcoordinatestomove", __LINE__, __FILE__);
+        }
+        return selectionpool;
+    }
+
 
 	bool FMTsamodel::evaluate(const double& temp, const Spatial::FMTspatialschedule& actual,const Spatial::FMTspatialschedule& candidat) const
 		{
@@ -610,8 +633,9 @@ namespace Models
 			while (selectionpool.empty())
 				{
 				period = perioddistribution(generator);
-				selectionpool = actual.getmovablecoordinates(*this, period, movable,operability);
-				}
+				//selectionpool = actual.getmovablecoordinates(*this, period, movable,operability);
+                selectionpool = getcoordinatestomove(actual, bindings, period, movable, operability);
+                }
 			if (selectionpool.empty())
 				{
 				_exhandler->raise(Exception::FMTexc::FMTrangeerror,

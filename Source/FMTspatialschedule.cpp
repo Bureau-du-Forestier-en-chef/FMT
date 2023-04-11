@@ -2285,6 +2285,51 @@ void FMTspatialschedule::perturbgraph(const FMTcoordinate& coordinate,const int&
 		}
 	}
 
+
+std::vector<Spatial::FMTcoordinate>FMTspatialschedule::getareaconflictcoordinates(const std::vector<Spatial::FMTbindingspatialaction>& bindingactions, const int& period) const
+{
+	std::vector<Spatial::FMTcoordinate>coordinates;
+	try {
+		int actionid = 0;
+		boost::unordered_set<Spatial::FMTcoordinate>hashsets;
+		for (const Spatial::FMTbindingspatialaction& actionbind : bindingactions)
+		{
+			if (actionbind.isspatialyareabinding())
+			{
+				for (const FMTeventcontainer::const_iterator eventit : events.getevents(period, actionid))
+				{
+					size_t eventsize = eventit->size();
+					if (eventsize < actionbind.getminimalsize())
+					{
+						for (const Spatial::FMTcoordinate& coordinate : eventit->elements)
+						{
+							hashsets.insert(coordinate);
+						}
+					}else if (eventsize > actionbind.getmaximalsize())
+						{
+						std::vector<std::set<FMTcoordinate>::const_iterator>borders = eventit->getborders();
+						while (eventsize> actionbind.getmaximalsize()&&
+							!borders.empty())
+							{
+							hashsets.insert(*borders.back());
+							borders.pop_back();
+							--eventsize;
+							}
+						}
+				}
+			}
+			++actionid;
+		}
+		coordinates.insert(coordinates.end(), hashsets.begin(),hashsets.end());
+
+	}
+	catch (...)
+	{
+		_exhandler->printexceptions("", "FMTspatialschedule::getbindingcoordinatesfromevents", __LINE__, __FILE__);
+	}
+	return coordinates;
+}
+
 std::vector<Spatial::FMTcoordinate>FMTspatialschedule::getmovablecoordinates(const Models::FMTmodel& model, const int& period,
 																			const std::vector<Spatial::FMTcoordinate>* statics,
 																			boost::unordered_map<Core::FMTdevelopment, bool>*operability) const

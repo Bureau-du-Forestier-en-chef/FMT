@@ -34,4 +34,11 @@ namespace Spatial
 			minimal_adjacency > 0 ||
 			maximal_adjacency != std::numeric_limits<size_t>::max()));
 	}
+
+	bool FMTbindingspatialaction::isspatialyareabinding() const
+		{
+		return (minimal_size > 0 ||
+				maximal_size != std::numeric_limits<size_t>::max());
+		}
+
 }

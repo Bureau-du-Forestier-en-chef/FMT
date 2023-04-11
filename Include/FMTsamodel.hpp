@@ -69,6 +69,13 @@ class FMTEXPORT FMTsamodel final: public FMTsemodel
     */
     FMTsamodel(const FMTsemodel& rhs);
     protected:
+        // DocString: FMTsamodel::getcoordinatestomove
+        /**
+        Will return coordinates that might be good candidat to disturb
+        */
+        std::vector<Spatial::FMTcoordinate>getcoordinatestomove(const Spatial::FMTspatialschedule& actual, 
+            const Spatial::FMTspatialschedule::actionbindings& bindings,
+            const int& period, const std::vector<Spatial::FMTcoordinate>* movable,boost::unordered_map<Core::FMTdevelopment, bool>* operability) const;
 		// DocString: FMTsamodel::evaluate
 		/**
 		Evaluate the actual and a candidat solution and return true if the candidat solution is choose to replace

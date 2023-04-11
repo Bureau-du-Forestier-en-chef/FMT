@@ -1357,6 +1357,10 @@ std::unique_ptr<FMTmodel> FMTmodel::presolve(std::vector<Core::FMTactualdevelopm
 						newconstraintsids.push_back(originalid);
 						newconstraints.push_back(presolvedconstraint);
 					}
+				}else if (presolvedconstraint.isspatial())
+				{
+					newconstraintsids.push_back(originalid);
+					newconstraints.push_back(presolvedconstraint);
 				}
 				++oriit;
 			}
