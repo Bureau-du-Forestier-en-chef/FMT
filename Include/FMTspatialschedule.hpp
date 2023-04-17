@@ -324,7 +324,8 @@ class FMTEXPORT FMTspatialschedule : public FMTlayer<Graph::FMTlinegraph>
 		std::map<std::string, double> greedyreferencebuild(const Core::FMTschedule& schedule, const Models::FMTmodel& model,
 										const size_t& randomiterations,
 										unsigned int seed = 0,
-										double tolerance = FMT_DBL_TOLERANCE);
+										double tolerance = FMT_DBL_TOLERANCE,
+										bool log = true);
 		// DocString: FMTspatialschedule::randombuild
 		/**
 		With a generator randomly create a solution for one period.
@@ -357,9 +358,9 @@ class FMTEXPORT FMTspatialschedule : public FMTlayer<Graph::FMTlinegraph>
 
 		// DocString: FMTspatialschedule::getareaconflictcoordinates
 		/**
-		Returns the coordinates of events that does not have the right area
+		Returns the coordinates of events that does not have the right area in the worst period... and set the worst period
 		*/
-		std::vector<Spatial::FMTcoordinate>getareaconflictcoordinates(const std::vector<Spatial::FMTbindingspatialaction>& bindingactions, const int& period) const;
+		std::vector<std::vector<Spatial::FMTcoordinate>>getareaconflictcoordinates(const actionbindings& bindingactions,int& period,bool conflictonly=true) const;
 		// DocString: FMTspatialschedule::getstaticsmovablecoordinates
 		/**
 		Returns a vector of coordinate that are considered movable
@@ -370,6 +371,11 @@ class FMTEXPORT FMTspatialschedule : public FMTlayer<Graph::FMTlinegraph>
 		return true if solution is partial.
 		*/
 		bool ispartial() const;
+		// DocString: FMTspatialschedule::emptyevents
+		/**
+		Return true if there's no events
+		*/
+		bool emptyevents() const;
 		// DocString: FMTspatialschedule::copyfrompartial
 		/**
 		Copy elements from a partial solution.

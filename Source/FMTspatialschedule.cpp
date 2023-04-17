@@ -91,8 +91,9 @@ namespace Spatial
 		try {
 			FMTlayer<Graph::FMTlinegraph>::swap(rhs);
 			std::swap(scheduletype, rhs.scheduletype);
-			this->events.swap(rhs.events);
+			events.swap(rhs.events);
 			cache.swap(rhs.cache);
+			constraintsfactor.swap(rhs.constraintsfactor);
 		}catch (...)
 			{
 			_exhandler->raisefromcatch("", "FMTspatialschedule::swap", __LINE__, __FILE__);
@@ -661,7 +662,7 @@ namespace Spatial
 						double totalwithincount = 0;
 						for (int gupperiod = std::max(1,period- lowergup);gupperiod<=period;++gupperiod)
 							{
-							const double periodfactor = (lowergup - (period - gupperiod));
+							const double periodfactor = static_cast<double>((lowergup - (period - gupperiod)))+1;
 							for (const FMTeventcontainer::const_iterator eventof : events.getevents(gupperiod, actionused, minimalcoord, maximalcoord))
 							{
 								if (eventit != eventof)//They will have the same address if it's the same event!
@@ -2079,7 +2080,8 @@ std::map<std::string, double> FMTspatialschedule::referencebuild(const Core::FMT
 std::map<std::string, double> FMTspatialschedule::greedyreferencebuild(const Core::FMTschedule& schedule, const Models::FMTmodel& model,
 	const size_t& randomiterations,
 	unsigned int seed,
-	double tolerance)
+	double tolerance,
+	bool log)
 	{
 		std::map<std::string, double>bestresults;
 		FMTspatialschedule solutioncopy(*this);
@@ -2163,7 +2165,7 @@ std::map<std::string, double> FMTspatialschedule::greedyreferencebuild(const Cor
 					mergingprimal = false;
 					failediterations = 0;
 					}
-				if ((iteration % 10) ==0)
+				if (log&&(iteration % 10) ==0)
 				{
 					this->logsolutionstatus(iteration, lastobjective, lastprimalinf);
 				}
@@ -2172,11 +2174,11 @@ std::map<std::string, double> FMTspatialschedule::greedyreferencebuild(const Cor
 				++seed;
 				++iteration;
 			}
-			if (stalcount == maxstall)
+			if (log&&stalcount == maxstall)
 			{
 				_logger->logwithlevel("Stalled after " + std::to_string(iteration) + " iterations Skipping\n", 1);
 			}
-			if (failediterations == randomiterations)
+			if (log&&failediterations == randomiterations)
 			{
 				_logger->logwithlevel("Solution stuck after " + std::to_string(iteration) + " iterations Skipping\n", 1);
 			}
@@ -2205,14 +2207,21 @@ Graph::FMTgraphstats FMTspatialschedule::randombuild(const Models::FMTmodel& mod
 		boost::unordered_map<Core::FMTdevelopment,std::vector<int>>operability;
 		const int period = this->mapping.begin()->second.getperiod();
 		const std::vector<FMTbindingspatialaction> bindings = getbindingactions(model, period);
+		std::uniform_int_distribution<int> dosomethingactions(1, model.getparameter(Models::FMTintmodelparameters::LENGTH));
 		for (std::map<FMTcoordinate, Graph::FMTlinegraph>::iterator graphit = this->mapping.begin(); graphit != this->mapping.end(); ++graphit)
 			{
 			Graph::FMTlinegraph* local_graph = &graphit->second;
-			size_t maxsize = 0;
-			const std::vector<int>actionids = local_graph->randombuildperiod(model, generator, operability);
-			if (!actionids.empty())
+			if (dosomethingactions(generator) == 1)//Do something with 1 chance on length of model!
 			{
-				events.addactions(graphit->first, period, actionids, bindings);
+				size_t maxsize = 0;
+				const std::vector<int>actionids = local_graph->randombuildperiod(model, generator, operability);
+				if (!actionids.empty())
+				{
+					events.addactions(graphit->first, period, actionids, bindings);
+				}
+			}
+			else { 
+				local_graph->grow();
 			}
 			periodstats += local_graph->getstats();
 			}
@@ -2286,24 +2295,36 @@ void FMTspatialschedule::perturbgraph(const FMTcoordinate& coordinate,const int&
 	}
 
 
-std::vector<Spatial::FMTcoordinate>FMTspatialschedule::getareaconflictcoordinates(const std::vector<Spatial::FMTbindingspatialaction>& bindingactions, const int& period) const
+std::vector<std::vector<Spatial::FMTcoordinate>>FMTspatialschedule::getareaconflictcoordinates(const actionbindings& bindingactions, int& period, bool conflictonly) const
 {
-	std::vector<Spatial::FMTcoordinate>coordinates;
+	std::vector<std::vector<Spatial::FMTcoordinate>>coordinates;
 	try {
+		size_t maxnumferofevents = 0;
+		const std::vector<bool>actionselected(bindingactions.begin()->size(), true);
+		for (int lperiod =1;lperiod< actperiod();++lperiod)
+			{
+			const size_t periodsize = events.getevents(lperiod, actionselected).size();
+			if (periodsize> maxnumferofevents)
+				{
+				maxnumferofevents = periodsize;
+				period = lperiod;
+				}
+			}
+		
 		int actionid = 0;
-		boost::unordered_set<Spatial::FMTcoordinate>hashsets;
-		for (const Spatial::FMTbindingspatialaction& actionbind : bindingactions)
+		for (const Spatial::FMTbindingspatialaction& actionbind : bindingactions.at(period-1))
 		{
-			if (actionbind.isspatialyareabinding())
+			if (actionbind.isspatialyareabinding()||!conflictonly)
 			{
 				for (const FMTeventcontainer::const_iterator eventit : events.getevents(period, actionid))
 				{
 					size_t eventsize = eventit->size();
-					if (eventsize < actionbind.getminimalsize())
+					std::vector<Spatial::FMTcoordinate>eventcoordinates;
+					if (eventsize < actionbind.getminimalsize()||!conflictonly)
 					{
 						for (const Spatial::FMTcoordinate& coordinate : eventit->elements)
 						{
-							hashsets.insert(coordinate);
+							eventcoordinates.push_back(coordinate);
 						}
 					}else if (eventsize > actionbind.getmaximalsize())
 						{
@@ -2311,16 +2332,25 @@ std::vector<Spatial::FMTcoordinate>FMTspatialschedule::getareaconflictcoordinate
 						while (eventsize> actionbind.getmaximalsize()&&
 							!borders.empty())
 							{
-							hashsets.insert(*borders.back());
+							eventcoordinates.push_back(*borders.back());
 							borders.pop_back();
 							--eventsize;
 							}
 						}
+					if (!eventcoordinates.empty())
+					{
+						coordinates.push_back(eventcoordinates);
+					}
+					
 				}
 			}
 			++actionid;
 		}
-		coordinates.insert(coordinates.end(), hashsets.begin(),hashsets.end());
+		if (coordinates.empty())
+		{
+			period = 0;
+			return getareaconflictcoordinates(bindingactions, period, false);
+		}
 
 	}
 	catch (...)
@@ -2376,6 +2406,11 @@ std::vector<Spatial::FMTcoordinate>FMTspatialschedule::getmovablecoordinates(con
 bool FMTspatialschedule::ispartial() const
 {
 	return (scheduletype == FMTspatialscheduletype::FMTpartial);
+}
+
+bool FMTspatialschedule::emptyevents() const
+{
+	return events.empty();
 }
 
 
@@ -2519,7 +2554,7 @@ void FMTspatialschedule::setconstraintsfactor(const Models::FMTmodel& model,cons
 				}
 			++cntid;
 			}
-		_logger->logwithlevel("Constraints normalization Min(" + std::to_string(minimalfactor) + ") Max(" + std::to_string(maximalfactor) + ")\n", 1);
+		_logger->logwithlevel("Constraints normalization Min(" + std::to_string(minimalfactor) + ") Max(" + std::to_string(maximalfactor) + ")\n", 2);
 	}catch (...)
 		{
 		_exhandler->printexceptions("", "FMTspatialschedule::setconstraintsfactor", __LINE__, __FILE__);

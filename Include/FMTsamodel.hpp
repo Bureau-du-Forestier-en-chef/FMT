@@ -27,17 +27,6 @@ namespace Spatial
 
 namespace Models
 {
-/**
-Different techniques to find the initial temperature of the simulated annealing, found in
-Ben-Ameur, W. 2004. Computing the Initial Temperature of Simulated Annealing. Comput. Optim. Appl. (December). doi:10.1023/B:COAP.0000044187.23143.bd.
-*/
-enum class FMTsawarmuptype
-    {
-    log = 1,
-    bigdelta =2,
-    logmax = 3,
-    bootstrapmagic = 4
-    };
 
 /**
 This model is an area restricted model (ARM) using the simulated annealing
@@ -63,30 +52,95 @@ class FMTEXPORT FMTsamodel final: public FMTsemodel
     {
         ar& boost::serialization::make_nvp("semodel", boost::serialization::base_object<FMTsemodel>(*this));
     }
+    enum FMTsamove
+    {
+        Local = 1,
+        ReBuilder = 2,
+        EventDestrutor = 3,
+        MoveCount = 4
+    };
+    class FMTmovestats
+        {
+        public:
+            FMTmovestats() = default;
+            FMTmovestats(const FMTmovestats& rhs) = default;
+            FMTmovestats& operator=(const FMTmovestats& rhs) = default;
+            // DocString: FMTsamodel::FMTmovestats::MoveType
+            //The move done
+            FMTsamove MoveType;
+            // DocString: FMTsamodel::FMTmovestats::MoveSize
+            //Number of element changed
+            size_t MoveSize;
+            // DocString: FMTsamodel::FMTmovestats::ObjectiveImpact
+            //The amount of objective change due to the move
+            double ObjectiveImpact;
+            // DocString: FMTsamodel::FMTmovestats::Accepted
+            //If the move was Accepted
+            bool Accepted;
+        };
+    // DocString: FMTsamodel::TotalMoves
+    ///Total number of moves done
+    size_t TotalMoves;
+    // DocString: FMTsamodel::CycleMoves
+    ///The move done during the last cycle
+    mutable std::vector<FMTmovestats>CycleMoves;
+    // DocString: FMTsamodel::LastGlobalObjectiveValue
+    ///The value of the last globalobjective of the last level
+    double LastGlobalObjectiveValue;
+    // DocString: FMTsamodel::Generator
+    ///Random number generator.
+    mutable std::default_random_engine Generator;
+    // DocString: FMTsamodel::CoolingSchedule
+    ///Cooling schedule for simulated annealing algorithm.
+    std::unique_ptr<Spatial::FMTsaschedule> CoolingSchedule;
     // DocString: FMTsamodel()
     /**
     Constructor for presolve use
     */
     FMTsamodel(const FMTsemodel& rhs);
     protected:
-        // DocString: FMTsamodel::getcoordinatestomove
+        // DocString: FMTsamodel::GetCycleMoves
+        /**
+        Get the total number of moves of the last cycle
+        */
+        size_t GetCycleMoves() const;
+        // DocString: FMTsamodel::GetAcceptedCycleMoves
+        /**
+        Get the number of accepted move of the last cycle
+        */
+        size_t GetAcceptedCycleMoves() const;
+        // DocString: FMTsamodel::GetAMove
         /**
         Will return coordinates that might be good candidat to disturb
         */
-        std::vector<Spatial::FMTcoordinate>getcoordinatestomove(const Spatial::FMTspatialschedule& actual, 
-            const Spatial::FMTspatialschedule::actionbindings& bindings,
-            const int& period, const std::vector<Spatial::FMTcoordinate>* movable,boost::unordered_map<Core::FMTdevelopment, bool>* operability) const;
+        FMTsamove GetAMove(const Spatial::FMTspatialschedule& actual) const;
 		// DocString: FMTsamodel::evaluate
 		/**
 		Evaluate the actual and a candidat solution and return true if the candidat solution is choose to replace
 		the actual solution.Based on a temp.
 		*/
-		bool evaluate(const double& temp,const Spatial::FMTspatialschedule& actual, const Spatial::FMTspatialschedule& candidat) const;
-		// DocString: FMTsamodel::move
+		bool IsBetter(const Spatial::FMTspatialschedule& actual, const Spatial::FMTspatialschedule& candidat) const;
+        // DocString: FMTsamodel::DoLocalMove
+        /**
+        Do a loval move and disturb a random number of graph at a random period
+        */
+        Spatial::FMTspatialschedule DoLocalMove(const Spatial::FMTspatialschedule& actual,
+            const Spatial::FMTspatialschedule::actionbindings& bindings,
+            const std::vector<Spatial::FMTcoordinate>* movable,
+            boost::unordered_map<Core::FMTdevelopment, bool>* operability) const;
+        // DocString: FMTsamodel::DoEventsDestructionMove
+       /**
+       Destroy some conflicting events
+       */
+        Spatial::FMTspatialschedule DoEventsDestructionMove(const Spatial::FMTspatialschedule& actual,
+            const Spatial::FMTspatialschedule::actionbindings& bindings,
+            const std::vector<Spatial::FMTcoordinate>* movable,
+            boost::unordered_map<Core::FMTdevelopment, bool>* operability) const;
+        // DocString: FMTsamodel::move
 		/**
 		Perturb a solution and produce a new one
 		*/
-		Spatial::FMTspatialschedule move(const Spatial::FMTspatialschedule& actual,
+		Spatial::FMTspatialschedule Move(const Spatial::FMTspatialschedule& actual,
 						const Spatial::FMTspatialschedule::actionbindings& bindings,
 						const std::vector<Spatial::FMTcoordinate>*movable = nullptr,
 						boost::unordered_map<Core::FMTdevelopment, bool>*operability= nullptr) const;
@@ -94,7 +148,7 @@ class FMTEXPORT FMTsamodel final: public FMTsemodel
 		/**
 		Using an initprobability close to one, a base solution and a bunch of iterations get a initial temperature.
 		*/
-		double warmup(const Spatial::FMTspatialschedule& actual,
+		double Warmup(const Spatial::FMTspatialschedule& actual,
 			const Spatial::FMTspatialschedule::actionbindings& bindings,
 			const std::vector<Spatial::FMTcoordinate>*movable = nullptr,
 			boost::unordered_map<Core::FMTdevelopment, bool>*operability = nullptr,
@@ -103,23 +157,69 @@ class FMTEXPORT FMTsamodel final: public FMTsemodel
         /**
         Do an initial grow till you reach the length of the model with the actual solution
         */
-        void initialgrow();
+        void InitialGrow();
         // DocString: FMTsamodel::initialbuild
         /**
         Call a random build if there's no solution
         */
-        void randombuild();
+        void RandomBuild();
         // DocString: FMTsamodel::schedulesbuild
         /**
         Call schedules if there's no solution
         */
-        void schedulesbuild(const std::vector<Core::FMTschedule>&schedules);
+        void SchedulesBuild(const std::vector<Core::FMTschedule>&schedules);
         // DocString: FMTsamodel::swap_ptr
         /**
         Swap with an abstract FMTmodel
         */
         virtual void swap_ptr(const std::unique_ptr<FMTmodel>& rhs);
+        // DocString: FMTsamodel:GetLocalMoveSize
+        /**
+        Generate the size of the local move.
+         */
+        size_t GetLocalMoveSize() const;
+        // DocString: FMTsamodel::GetRebuild
+        /**
+        Take the actual non spatial solution of the actual solution and then
+        Rebuild the solution using greedyreferencebuild
+        */
+        Spatial::FMTspatialschedule GetRebuild(const Spatial::FMTspatialschedule& actual) const;
+        // DocString: FMTsamodel::isCycleProvenOptimal
+        /**
+        Return true if is optimal based on the termination criteria of the actual temp level
+        */
+        bool isCycleProvenOptimal() const;
+        // DocString: FMTsamodel::Dofactorization
+        /**
+        Do the constraint factorization
+        */
+        void DoFactorization();
+        // DocString: FMTsamodel::LogSolutionStatus
+        /**
+        Log the status of the best solution
+        */
+        void LogSolutionStatus() const;
+        // DocString: FMTsamodel::LogTemperatureStatus
+        /**
+        Log The temperature status and other usefull informations
+        */
+        void LogCycleStatus() const;
+        // DocString: FMTsamodel::CoolDown
+        /**
+        Cool down the annealer temp
+        */
+        void CoolDown();
 	public:
+        // DocString: FMTsemodel::LogMovesReport
+        /**
+        Log the Moves report
+        */
+        void LogMovesReport() const;
+        // DocString: FMTsamodel::isProvenOptimal
+        /**
+        Return true if is optimal based on the termination criteria
+        */
+        bool isProvenOptimal() const;
 		// DocString: FMTsamodel::initialsolve
 		/**
 		Try to solve the model from a coldstart.
@@ -142,42 +242,6 @@ class FMTEXPORT FMTsamodel final: public FMTsemodel
         The function can reduce the number of global themes/actions/transitions/yields/lifespans/outputs/constraints data if the model is badly formulated.
         */
         virtual std::unique_ptr<FMTmodel>presolve(std::vector<Core::FMTactualdevelopment> optionaldevelopments = std::vector<Core::FMTactualdevelopment>()) const;
-	private:
-        ///
-       // Spatial::FMTsamovetype movetype;
-        /// Range of ratio of the map to perturb at each iteration.
-        double min_ratio_moves,max_ratio_moves;
-        ///Path to were the outputs will be written.
-		std::string outputs_write_location;
-		///Counter for number of moves done.
-        int number_of_moves;
-        ///Container with the penalties value for each constraints.
-        ///Must think about to change it maybe implement a new class.
-        ///FMTsaeventcontainer == std::set<FMTsaevent>
-		std::vector<std::map<std::string, std::pair<std::vector<double>, std::vector<double>>>> constraints_values_penalties;
-		///Random number generator.
-		mutable std::default_random_engine generator;
-		///Spatial actions presents in the model.
-		//std::vector<Spatial::FMTspatialaction> spactions;//should be FMTmodel action pointer...
-		///Vector to track accepted solution base on the iteration number.
-		std::vector<int> accepted_solutions;
-		///Id in the map that are different between current and new solution.
-		std::vector<size_t> mapidmodified;
-		///Acceptation probability at each iterations.
-		std::vector<double> probabs;
-		///Cooling schedule for simulated annealing algorithm.
-		std::unique_ptr<Spatial::FMTsaschedule> cooling_schedule;
-		///Best solution
-        //Spatial::FMTsasolution best_solution;
-        ///Current solution
-		//Spatial::FMTsasolution current_solution;
-		///New solution generated from current. Empty when no moves has been done.
-		//Spatial::FMTsasolution new_solution;
-        ///Overloading move operator
-		//Graph::FMTgraphstats g_move_solution(const double min_ratio,const double max_ratio);
-        ///It's use to verify if solutions are not identical
-        //bool comparesolutions() const;
-    public:
         ///Constructor
         FMTsamodel();
         ///Destructor
@@ -195,62 +259,8 @@ class FMTEXPORT FMTsamodel final: public FMTsemodel
 		Get a clone of the FMTsamodel
 		*/
 		virtual std::unique_ptr<FMTmodel>clone() const final;
-        /****************************************
-        Functions to set parameters for the model.
-        */
-
-        ///Warmup function to set the initial temperature base on the initialization probability defined by user.
-        ///Need to think a way to have a near feasible solution at start
-        //double warmup(const double initprob, const size_t iterations,
-         //             bool keep_best=false, FMTsawarmuptype type = FMTsawarmuptype::bootstrapmagic);
-        ///Setter of the outputs_write_location.
-        void write_outputs_at(std::string path);
-        ///Setter of the cooling_schedule.
-        bool setschedule(const Spatial::FMTexponentialschedule& schedule);
-        ///Setter of spatial actions. See FMTspatialaction for info.
-        //bool setspactions(const std::vector<Spatial::FMTspatialaction>& lspactions);
-        ///Setter of min_ratio_moves and max_ratio_moves.
-        bool set_min_max_moves(const double min_r,const double max_r);
-        ///
-        //bool set_movetype(const Spatial::FMTsamovetype movet);
-
-        /*****************************************
-        Functions to get informations on the model.
-        */
-
-        ///Getter of the number of moves done in the simulated annealing.
-        int get_number_moves()const;
-        ///Write info about the accepted solutions (iteration,probs,value,penaltie) at the output location.
-        void get_outputs(std::string addon = "");
-        ///Getter of the current solution
-        //Spatial::FMTsasolution get_current_solution()const;
-        ///Getter of the new_solution
-       // Spatial::FMTsasolution get_new_solution()const;
-        ///Getter for the cooling_schedule type
-        std::string getcoolingscheduletype()const; 
-        ///Write raster with events( of FMT actions) for every solution in the model.
-        //void write_solutions_events(std::string out_path)const;//Write events
-        ///Getter for spatial actions of the model.
-		//std::vector<Spatial::FMTspatialaction> getspatialactions()const;
-
-        /********************************
-        Functions to manipulate the model.
-        */
-
-        ///Change new_solution to current and empty new_solution.
-        //void acceptnew();
-        ///Evaluate Metropolis criterion.
-        bool testprobability(const double& p);
-        ///Reduce temperature according to the cooling schedule.
-        double cool_down(double temp)const;
-        ///Compare two solutions base on the objective function.
-        //bool evaluate(const double temp,bool all_data=false);
-        ///To build initial solution. Return stats for all graphs created in the map.
+        
         Graph::FMTgraphstats buildperiod();
-		///Move operator for simulated annealing
-		//Graph::FMTgraphstats move_solution();
-        ///Setter of the map id modified
-        bool setmapidmodified(const std::vector<size_t>& id);
     };
 }
 

@@ -18,22 +18,53 @@ namespace Spatial
 
 //FMTsaschedule base class
 
+    FMTsaschedule::FMTsaschedule(const std::string& typeof) :
+        ScheduleType(typeof),
+        Level(0),
+        Temperature(std::numeric_limits<double>::max()),
+        InitialTemperature(std::numeric_limits<double>::max())
+    {
 
-    FMTsaschedule::FMTsaschedule():schedule_type()
+    }
+
+
+    FMTsaschedule::FMTsaschedule():
+        ScheduleType("None"),
+        Level(0),
+        Temperature(std::numeric_limits<double>::max()),
+        InitialTemperature(std::numeric_limits<double>::max())
     {
 
     }
 
     FMTsaschedule::~FMTsaschedule(){}
 
-    double FMTsaschedule::reduce_temp(double& temp)
+    void FMTsaschedule::SetInitialTemperature(const double& Temp)
     {
-        return 0.0;
+        InitialTemperature = Temp;
+        Temperature = Temp;
     }
 
-	std::string FMTsaschedule::get_schedule_type()const
+
+    void FMTsaschedule::ReduceTemp()
     {
-        return schedule_type;
+        ++Level;
+    }
+
+    double FMTsaschedule::GetTemp() const
+    {
+        return Temperature;
+    }
+
+    size_t FMTsaschedule::GetLevel()const
+    {
+        return Level;
+    }
+   
+
+	std::string FMTsaschedule::GetScheduleType()const
+    {
+        return ScheduleType;
     }
 
 	std::unique_ptr<FMTsaschedule> FMTsaschedule::Clone()const
@@ -41,28 +72,9 @@ namespace Spatial
         return std::unique_ptr<FMTsaschedule>(new FMTsaschedule(*this));
     }
 
-
-//FMTexponentialschedule
-
-
-    FMTexponentialschedule::FMTexponentialschedule(double lalpha): FMTsaschedule(),alpha(lalpha),schedule_type("exponential")
-    {
-        //Constructor
-    }
-
-    double FMTexponentialschedule::reduce_temp(double& temp)
-    {
-        return temp*alpha;
-    }
-
-	std::string FMTexponentialschedule::get_schedule_type()const
-    {
-        return schedule_type;
-    }
-
-	std::unique_ptr<FMTsaschedule> FMTexponentialschedule::Clone()const
-    {
-        return std::unique_ptr<FMTsaschedule>(new FMTexponentialschedule(*this));
-    }
+    double FMTsaschedule::GetInitialTemp() const
+        {
+        return InitialTemperature;
+        }
 
 }

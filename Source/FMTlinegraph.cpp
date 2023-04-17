@@ -371,7 +371,8 @@ namespace Graph
 			}
 			else
 			{
-				const Core::FMTfuturdevelopment grown_up = active_development.grow();
+				grow();
+				/*const Core::FMTfuturdevelopment grown_up = active_development.grow();
 				FMTvertex_descriptor next_period = this->adddevelopment(grown_up); //getset
 				const FMTedgeproperties newedge(-1, 0, 100);
 				boost::add_edge(vertex, next_period, newedge, data);
@@ -383,7 +384,7 @@ namespace Graph
 				--first_vertex;
 				developments.back() = FMTvertex_pair(developments.back().first, first_vertex);
 				developments.push_back(FMTvertex_pair(first_vertex, vertex_iterator_end));
-				rebasecache();
+				rebasecache();*/
 				return -1;
 			}
 		}catch (...)

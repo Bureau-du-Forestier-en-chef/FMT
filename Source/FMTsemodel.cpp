@@ -65,9 +65,69 @@ namespace Models
 		{
 			_exhandler->printexceptions("", "FMTsemodel::setinitialmapping", __LINE__, __FILE__);
 		}
-
 		return true;
         }
+
+	void FMTsemodel::LogConstraintsInfeasibilities() const
+	{
+		try {
+			size_t cid = 0;
+			double brokenup = 0;
+			double total = 0;
+			*_logger << "Constraints infeasibilities report: " << "\n";
+			const std::vector<Core::FMTconstraint>constraints = getconstraints();
+			for (const double& value : solution.getconstraintsvalues(*this))
+			{
+				if (cid > 0 && !constraints.at(cid).isspatial())
+				{
+					if (value > 0)
+					{
+						std::string constraintname = std::string(constraints.at(cid));
+						std::replace(constraintname.begin(), constraintname.end(), '\n', ' ');
+						constraintname += ("(" + std::to_string(static_cast<int>(value))+")");
+						*_logger << constraintname << "\n";
+						++brokenup;
+					}
+					++total;
+				}
+				++cid;
+			}
+			double ratio = 0;
+			if (brokenup > 0)
+			{
+				ratio = (brokenup / total) * 100;
+			}
+			const std::string brisglobal = "Percentage of infeasible constraints " + std::to_string(static_cast<int>(ratio)) + " %";
+			*_logger << brisglobal << "\n";
+			*_logger << "Constraints infeasibilities report done" << "\n";
+		}catch (...)
+		{
+			_exhandler->printexceptions("", "FMTsemodel::LogConstraintsInfeasibilities", __LINE__, __FILE__);
+		}
+	}
+
+	void FMTsemodel::LogConstraintsFactors() const
+	{
+		try {
+			*_logger << "Constraints factor report" << "\n";
+			const std::vector<double>factors = solution.getconstraintsfactor();
+			size_t constraintid = 0;
+			for (const double& value : factors)
+				{
+				std::string constraintname = constraints.at(constraintid);
+				std::replace(constraintname.begin(), constraintname.end(), '\n', ' ');
+				constraintname+= " (" + std::to_string(value)+")";
+				*_logger << constraintname << "\n";
+				++constraintid;
+				}
+			*_logger << "Constraints factor report done" << "\n";
+		}
+		catch (...)
+		{
+			_exhandler->printexceptions("", "FMTsemodel::LogConstraintsFactors", __LINE__, __FILE__);
+		}
+	}
+
 
 	std::map<std::string, double> FMTsemodel::getoutput(const Core::FMToutput& output,
 		int period, Core::FMToutputlevel level) const

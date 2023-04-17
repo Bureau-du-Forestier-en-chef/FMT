@@ -20,27 +20,21 @@ class FMTsaschedule
 //Abstract class for cooling schedule
     {
     protected:
-		std::string schedule_type;
+		std::string ScheduleType;
+        size_t Level;
+        double Temperature;
+        double InitialTemperature;
     public:
+        FMTsaschedule(const std::string& typeof);//Constructor
         FMTsaschedule();//Constructor
+        std::string GetScheduleType()const;
+        size_t GetLevel()const;
+        void SetInitialTemperature(const double& Temp);
         virtual~FMTsaschedule();//Destructor
-        virtual double reduce_temp(double& temp);//
-        virtual std::string get_schedule_type()const;
+        virtual void ReduceTemp();//
+        double GetTemp() const;//
+        double GetInitialTemp() const;//
         virtual std::unique_ptr<FMTsaschedule> Clone()const;
-    };
-
-class FMTexponentialschedule : public FMTsaschedule
-    {
-    protected:
-        double alpha;
-		std::string schedule_type;
-    public:
-        FMTexponentialschedule(double lalpha = 0.9);
-        ~FMTexponentialschedule()=default;
-        double reduce_temp(double& temp);
-		std::string get_schedule_type()const;
-		std::unique_ptr<FMTsaschedule> Clone()const;
-
     };
 }
 #endif // FMTSASCHEDULE_H

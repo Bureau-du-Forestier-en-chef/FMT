@@ -119,6 +119,16 @@ class FMTEXPORT FMTsemodel : public FMTmodel
 		Has to be set before greedyreferencedbuild() is called.
 		*/
         bool setinitialmapping(Spatial::FMTforest forest);
+		// DocString: FMTsemodel::LogConstraintsInfeasibilities
+		/**
+		Log the constraints infeasibilities spatial or not spatial
+		*/
+		void LogConstraintsInfeasibilities() const;
+		// DocString: FMTsemodel::LogConstraintsFactors
+		/**
+		Log the constraints factors
+		*/
+		void LogConstraintsFactors() const;
 		// DocString: FMTsemodel::presolve
 		/**
 		Presolve the semodel to get a more simple model call original presolve() and presolve the
