@@ -532,6 +532,39 @@ namespace Wrapper
 		return list;
 	}
 
+	System::Collections::Generic::List<double>^ FMTexcelcache::Juxtaposition(System::String^ primaryname, System::String^ scenario,System::Collections::Generic::List<System::String^>^ themeselection, System::String^ yieldname, System::String^ numerateur, System::String^ denominateur, double ratio, double perimeters)
+	{
+		System::Collections::Generic::List<double>^ list = gcnew System::Collections::Generic::List<double>();
+		try {
+			msclr::interop::marshal_context context;
+			const std::string pfile = context.marshal_as<std::string>(primaryname);
+			const std::string sfile = context.marshal_as<std::string>(scenario);
+			const std::string naming = pfile + "~" + sfile;
+			std::unordered_map<std::string, FMTmodelcache>::const_iterator mit = models->find(naming);
+			if (mit != models->end())
+			{
+				std::vector<std::string>themeselections;
+				for each (System::String ^ ths in themeselection)
+					{
+					themeselections.push_back(context.marshal_as<std::string>(ths));
+					}
+				const std::string strnum = context.marshal_as<std::string>(numerateur);
+				const std::string denom = context.marshal_as<std::string>(denominateur);
+				const std::string yieldof = context.marshal_as<std::string>(yieldname);
+				for (const double& value : mit->second.Juxtaposition(themeselections, yieldof, strnum, denom, ratio, perimeters))
+					{
+					list->Add(value);
+					}
+			}
+
+		}
+		catch (...)
+		{
+			captureexception("FMTexcelcache::Juxtaposition");
+		}
+		return list;
+	}
+
 	void FMTexcelcache::unraiseexception()
 	{
 		exceptionraised = false;

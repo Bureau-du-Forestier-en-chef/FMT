@@ -19,6 +19,8 @@
 #include <boost/thread.hpp>
 #include "FMTforest.hpp"
 #include "FMTareaparser.hpp"
+#include "FMToperatingareascheme.hpp"
+#include "FMToperatingarea.hpp"
 #include <map>
 
 namespace Wrapper
@@ -39,7 +41,8 @@ namespace Wrapper
 		globalmask(),
 		maskcachemtx(new boost::recursive_mutex()),
 		outputcachemtx(new boost::recursive_mutex()),
-		generalcachemtx(new boost::recursive_mutex())
+		generalcachemtx(new boost::recursive_mutex()),
+		OAcache(new std::vector<Heuristics::FMToperatingarea>())
 
 	{
 
@@ -65,6 +68,7 @@ namespace Wrapper
 			generalcache = rhs.generalcache;
 			Models::FMTlpmodel::operator=(rhs);
 			globalmask = rhs.globalmask;
+			OAcache = std::move(std::unique_ptr<std::vector<Heuristics::FMToperatingarea>>(new std::vector<Heuristics::FMToperatingarea>(*rhs.OAcache)));
 			if (rhs.map)
 				{
 				map = std::move(std::unique_ptr<Spatial::FMTforest>(new Spatial::FMTforest(*rhs.map)));
@@ -88,7 +92,8 @@ namespace Wrapper
 		globalmask(rhs.globalmask),
 		maskcachemtx(new boost::recursive_mutex()),
 		outputcachemtx(new boost::recursive_mutex()),
-		generalcachemtx(new boost::recursive_mutex())
+		generalcachemtx(new boost::recursive_mutex()),
+		OAcache()
 	{
 		boost::lock_guard<boost::recursive_mutex> guard1(*mtx);
 		boost::lock_guard<boost::recursive_mutex> guard2(*rhs.mtx);
@@ -96,6 +101,7 @@ namespace Wrapper
 		{
 			map = std::move(std::unique_ptr<Spatial::FMTforest>(new Spatial::FMTforest(*rhs.map)));
 		}
+		OAcache = std::move(std::unique_ptr<std::vector<Heuristics::FMToperatingarea>>(new std::vector<Heuristics::FMToperatingarea>(*rhs.OAcache)));
 		//allocateressource();
 	}
 
@@ -197,7 +203,8 @@ namespace Wrapper
 		globalmask(),
 		maskcachemtx(new boost::recursive_mutex()),
 		outputcachemtx(new boost::recursive_mutex()),
-		generalcachemtx(new boost::recursive_mutex())
+		generalcachemtx(new boost::recursive_mutex()),
+		OAcache(new std::vector<Heuristics::FMToperatingarea>())
 	{
 		try {
 			boost::lock_guard<boost::recursive_mutex> guard1(*mtx);
@@ -452,6 +459,85 @@ namespace Wrapper
 			_exhandler->printexceptions("", "FMTmodelcache::writetooutputcache", __LINE__, __FILE__);
 		}
 
+	}
+
+	std::vector<double> FMTmodelcache::Juxtaposition(const std::vector<std::string>& themeselection,const std::string& yieldname, const std::string& numerateur, const std::string& denominateur, const double& ratio, const double& perimeters) const
+	{
+	std::vector<double>allratios;
+	try{
+		if (!maplocation.empty())
+		{
+			std::vector<Heuristics::FMToperatingareascheme>allscheme;
+			std::vector<Heuristics::FMToperatingareascheme> opareaswithn;
+			boost::unordered_map<Core::FMTmask,size_t>allmasks;
+			size_t idofit = 0;
+			for (const std::string& thselection : themeselection)
+			{
+				const Core::FMTmask subset = themeselectiontomask(thselection);
+				std::vector<Heuristics::FMToperatingarea>::const_iterator itof =  std::find_if(OAcache->begin(), OAcache->end(), Heuristics::FMToperatingareacomparator(subset));
+				if (itof!= OAcache->end())
+					{
+					allmasks[subset] = idofit;
+					opareaswithn.push_back(Heuristics::FMToperatingareascheme(*itof, 2, 6, 6, 1, 1, 1));
+				}else {
+					allscheme.push_back(Heuristics::FMToperatingareascheme(Heuristics::FMToperatingarea(subset, perimeters), 2, 6, 6, 1, 1, 1));
+					}
+				++idofit;
+			}
+			if (!allscheme.empty())
+				{
+				Parser::FMTareaparser areaparser;
+				const std::vector<Heuristics::FMToperatingareascheme> opareaswithn = areaparser.getschemeneighbors(allscheme, themes, maplocation, "AGE", "SUPERFICIE", 1.0, 1.0, "STANLOCK");
+				size_t idloc = opareaswithn.size();
+				for (const Heuristics::FMToperatingareascheme& scheme : opareaswithn)
+					{
+					OAcache->push_back(scheme);
+					allmasks[scheme.getmask()] = idloc;
+					++idloc;
+					}
+				}
+			
+			const double totalcos = static_cast<double>(allmasks.size());
+			for (int period = 1; period <= getperiods(); ++period)
+				{
+				size_t oaid = 0;
+				double notrespected = 0.0;
+				for (const std::string& thselection : themeselection)
+					{
+					if (getyield(yieldname, thselection, 0, period)>0)
+					{
+						for (const Core::FMTmask& neighbor : opareaswithn.at(oaid).getneighbors())
+						{
+							if (allmasks.find(neighbor)!= allmasks.end())
+							{
+								const std::string nselection = themeselection.at(allmasks.at(neighbor));
+								if (getyield(yieldname, nselection, 0, period) >0)
+								{
+									const double denvalue=getvalue(denominateur, nselection, period);
+									if (denvalue > 0)
+									{
+										const double numvalue = getvalue(numerateur, nselection, period);
+										if ((numvalue / denvalue) >= ratio)
+											{
+											++notrespected;
+											break;
+											}
+									}
+								}
+								
+							}
+						}
+					}
+					++oaid;
+					}
+				allratios.push_back(((totalcos - notrespected) / totalcos) * 100);
+				}
+		}
+	}catch (...)
+		{
+		_exhandler->printexceptions("", "FMTmodelcache::Juxtaposition", __LINE__, __FILE__);
+		}
+	return allratios;
 	}
 
 

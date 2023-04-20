@@ -48,6 +48,7 @@ namespace Wrapper
 		bool gotexception();
 		void unraiseexception();
 		System::String^ getlogoutput();
+		System::Collections::Generic::List<double>^ Juxtaposition(System::String^ primaryname, System::String^ scenario,System::Collections::Generic::List<System::String^>^ themeselection, System::String^ yieldname, System::String^ numerateur, System::String^ denominateur,double ratio,double perimeters);
 
 	};
 }

@@ -6,7 +6,6 @@
 #include "FMTlpmodel.hpp"
 #include "FMTlogger.hpp"
 
-
 namespace boost
 {
 	class recursive_mutex;
@@ -15,6 +14,11 @@ namespace boost
 namespace Spatial
 {
 	class FMTforest;
+}
+
+namespace Heuristics
+{
+	class FMToperatingarea;
 }
 
 namespace Logging
@@ -40,6 +44,7 @@ namespace Wrapper
 		std::unique_ptr<boost::recursive_mutex>maskcachemtx;
 		std::unique_ptr<boost::recursive_mutex>outputcachemtx;
 		std::unique_ptr<boost::recursive_mutex>generalcachemtx;
+		std::unique_ptr<std::vector<Heuristics::FMToperatingarea>>OAcache;
 		Core::FMTmask themeselectiontomask(const std::string& themeselection) const;
 		Core::FMToutput getoutput(const std::string& outputname, const Core::FMTmask& subset) const;
 		void loadmap() const;
@@ -76,6 +81,7 @@ namespace Wrapper
 		int getperiods() const;
 		Logging::FMTexcellogger* getlogger();
 		void putlogger(const std::shared_ptr<Logging::FMTlogger>& log);
+		std::vector<double> Juxtaposition(const std::vector<std::string>& themeselection,const std::string& yieldname,const std::string& numerateur, const std::string& denominateur, const double& ratio,const double& perimeters) const;
 
 	};
 

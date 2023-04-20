@@ -479,7 +479,7 @@ namespace Models
         bool FMTsamodel::isCycleProvenOptimal() const
         {
             try {
-                return (!((GetCycleMoves() - GetAcceptedCycleMoves()) < 1000 && GetCycleMoves() < 10000));
+                return (!((GetCycleMoves() - GetAcceptedCycleMoves()) < 500 && GetCycleMoves() < 1000));
             }
             catch (...)
             {
