@@ -123,7 +123,7 @@ void FMTparser::initializeGDAL()
 		GDALinitialization = true;
 		}
 	}
-std::vector<GDALDriver*> FMTparser::getallGDALdrivers(const char* spatialtype) const
+std::vector<GDALDriver*> FMTparser::getallGDALdrivers(const char* spatialtype,bool testcreation) const
 {
 	GDALDriverManager* manager = GetGDALDriverManager();
 	std::vector<GDALDriver*>drivers;
@@ -132,7 +132,9 @@ std::vector<GDALDriver*> FMTparser::getallGDALdrivers(const char* spatialtype) c
 		GDALDriver* driver = manager->GetDriver(driverid);
 		if (driver != nullptr&&driver->GetMetadataItem(spatialtype) &&
 			GDALGetDriverShortName(driver) != nullptr&&
-			driver->GetMetadataItem(GDAL_DMD_EXTENSION) != nullptr)
+			driver->GetMetadataItem(GDAL_DMD_EXTENSION) != nullptr&&
+			driver->GetMetadataItem(GDAL_DCAP_OPEN) != nullptr&&
+			(!testcreation || driver->GetMetadataItem(GDAL_DCAP_CREATE) != nullptr))
 		{
 			drivers.push_back(driver);
 		}
@@ -141,29 +143,29 @@ std::vector<GDALDriver*> FMTparser::getallGDALdrivers(const char* spatialtype) c
 }
 
 
-std::vector<std::string>FMTparser::getGDALvectordrivernames() const
+std::vector<std::string>FMTparser::getGDALvectordrivernames(bool testcreation) const
 {
 	std::vector<std::string>names;
-	for (GDALDriver* driver : getallGDALdrivers(GDAL_DCAP_VECTOR))
+	for (GDALDriver* driver : getallGDALdrivers(GDAL_DCAP_VECTOR, testcreation))
 	{
 		names.push_back(std::string(GDALGetDriverShortName(driver)));
 	}
 	return names;
 }
 
-std::vector<std::string>FMTparser::getGDALrasterdrivernames() const
+std::vector<std::string>FMTparser::getGDALrasterdrivernames(bool testcreation) const
 {
 	std::vector<std::string>names;
-	for (GDALDriver* driver : getallGDALdrivers(GDAL_DCAP_RASTER))
+	for (GDALDriver* driver : getallGDALdrivers(GDAL_DCAP_RASTER, testcreation))
 	{
 		names.push_back(std::string(GDALGetDriverShortName(driver)));
 	}
 	return names;
 }
-std::vector<std::string>FMTparser::getGDALvectordriverextensions() const
+std::vector<std::string>FMTparser::getGDALvectordriverextensions(bool testcreation) const
 {
 	std::vector<std::string>extensions;
-	for (GDALDriver* driver : getallGDALdrivers(GDAL_DCAP_VECTOR))
+	for (GDALDriver* driver : getallGDALdrivers(GDAL_DCAP_VECTOR, testcreation))
 	{
 		extensions.push_back(std::string(driver->GetMetadataItem(GDAL_DMD_EXTENSION)));
 	}
@@ -171,10 +173,10 @@ std::vector<std::string>FMTparser::getGDALvectordriverextensions() const
 
 }
 
-std::vector<std::string>FMTparser::getGDALrasterdriverextensions() const
+std::vector<std::string>FMTparser::getGDALrasterdriverextensions(bool testcreation) const
 {
 	std::vector<std::string>extensions;
-	for (GDALDriver* driver : getallGDALdrivers(GDAL_DCAP_RASTER))
+	for (GDALDriver* driver : getallGDALdrivers(GDAL_DCAP_RASTER, testcreation))
 	{
 		extensions.push_back(std::string(driver->GetMetadataItem(GDAL_DMD_EXTENSION)));
 	}

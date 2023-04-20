@@ -158,7 +158,7 @@ class FMTEXPORT FMTparser: public Core::FMTobject
 			/**
 			Return a vector of GDAL drivers for a given spatialtype (raster/vector)
 			*/
-			std::vector<GDALDriver*> getallGDALdrivers(const char* spatialtype) const;
+			std::vector<GDALDriver*> getallGDALdrivers(const char* spatialtype,bool testcreation=true) const;
 			// DocString: FMTparser::setcategories
 			/**
 			Write the categories in the band information
@@ -416,22 +416,22 @@ class FMTEXPORT FMTparser: public Core::FMTobject
 		/**
 		Return a vector of GDAL vector driver names
 		*/
-		std::vector<std::string>getGDALvectordrivernames() const;
+		std::vector<std::string>getGDALvectordrivernames(bool testcreation = true) const;
 		// DocString: FMTparser::getGDALrasterdrivernames
 		/**
 		Return a vector of GDAL raster driver names
 		*/
-		std::vector<std::string>getGDALrasterdrivernames() const;
+		std::vector<std::string>getGDALrasterdrivernames(bool testcreation = true) const;
 		// DocString: FMTparser::getGDALvectordriverextensions
 		/**
 		Return a vector of GDAL vector driver extensions
 		*/
-		std::vector<std::string>getGDALvectordriverextensions() const;
+		std::vector<std::string>getGDALvectordriverextensions(bool testcreation = true) const;
 		// DocString: FMTparser::getGDALrasterdriverextensions
 		/**
 		Return a vector of GDAL raster driver extensions
 		*/
-		std::vector<std::string>getGDALrasterdriverextensions() const;
+		std::vector<std::string>getGDALrasterdriverextensions(bool testcreation = true) const;
 		#endif
     };
 
