@@ -468,32 +468,38 @@ namespace Wrapper
 		if (!maplocation.empty())
 		{
 			std::vector<Heuristics::FMToperatingareascheme>allscheme;
-			std::vector<Heuristics::FMToperatingareascheme> opareaswithn;
-			boost::unordered_map<Core::FMTmask,size_t>allmasks;
+			std::vector<size_t>allmasks;
+			boost::unordered_map<Core::FMTmask, size_t>masklocation;
 			size_t idofit = 0;
+			std::vector<std::string>selected;
 			for (const std::string& thselection : themeselection)
 			{
 				const Core::FMTmask subset = themeselectiontomask(thselection);
-				std::vector<Heuristics::FMToperatingarea>::const_iterator itof =  std::find_if(OAcache->begin(), OAcache->end(), Heuristics::FMToperatingareacomparator(subset));
-				if (itof!= OAcache->end())
-					{
-					allmasks[subset] = idofit;
-					opareaswithn.push_back(Heuristics::FMToperatingareascheme(*itof, 2, 6, 6, 1, 1, 1));
-				}else {
-					allscheme.push_back(Heuristics::FMToperatingareascheme(Heuristics::FMToperatingarea(subset, perimeters), 2, 6, 6, 1, 1, 1));
+				if (!subset.empty())
+				{
+					std::vector<Heuristics::FMToperatingarea>::const_iterator itof = std::find_if(OAcache->begin(), OAcache->end(), Heuristics::FMToperatingareacomparator(subset));
+					if (itof == OAcache->end())
+						{
+						allscheme.push_back(Heuristics::FMToperatingareascheme(Heuristics::FMToperatingarea(subset, perimeters), 2, 6, 6, 1, 1, 1));
+					}else {
+						const size_t location = std::distance(OAcache->cbegin(), itof);
+						allmasks.push_back(location);
+						masklocation[subset] = location;
 					}
-				++idofit;
+					selected.push_back(thselection);
+					++idofit;
+				}
+				
 			}
 			if (!allscheme.empty())
 				{
 				Parser::FMTareaparser areaparser;
-				const std::vector<Heuristics::FMToperatingareascheme> opareaswithn = areaparser.getschemeneighbors(allscheme, themes, maplocation, "AGE", "SUPERFICIE", 1.0, 1.0, "STANLOCK");
-				size_t idloc = opareaswithn.size();
-				for (const Heuristics::FMToperatingareascheme& scheme : opareaswithn)
+				const std::vector<Heuristics::FMToperatingareascheme> Ioop = areaparser.getschemeneighbors(allscheme, themes, maplocation, "AGE", "SUPERFICIE", 1.0, 1.0, "STANLOCK");
+				for (const Heuristics::FMToperatingareascheme& scheme : Ioop)
 					{
+					allmasks.push_back(OAcache->size());
+					masklocation[scheme.getmask()] = OAcache->size();
 					OAcache->push_back(scheme);
-					allmasks[scheme.getmask()] = idloc;
-					++idloc;
 					}
 				}
 			
@@ -502,30 +508,30 @@ namespace Wrapper
 				{
 				size_t oaid = 0;
 				double notrespected = 0.0;
-				for (const std::string& thselection : themeselection)
+				for (const std::string& thselection : selected)
 					{
 					if (getyield(yieldname, thselection, 0, period)>0)
 					{
-						for (const Core::FMTmask& neighbor : opareaswithn.at(oaid).getneighbors())
+						for (const Core::FMTmask& neighbor : OAcache->at(allmasks.at(oaid)).getneighbors())
 						{
-							if (allmasks.find(neighbor)!= allmasks.end())
+							if (masklocation.find(neighbor)!= masklocation.end())
 							{
-								const std::string nselection = themeselection.at(allmasks.at(neighbor));
-								if (getyield(yieldname, nselection, 0, period) >0)
+								const std::string nselection = selected.at(masklocation.at(neighbor));
+								if (getyield(yieldname, nselection, 0, period) > 0)
 								{
-									const double denvalue=getvalue(denominateur, nselection, period);
+									const double denvalue = getvalue(denominateur, nselection, period);
 									if (denvalue > 0)
 									{
 										const double numvalue = getvalue(numerateur, nselection, period);
 										if ((numvalue / denvalue) >= ratio)
-											{
+										{
 											++notrespected;
 											break;
-											}
+										}
 									}
 								}
-								
 							}
+								
 						}
 					}
 					++oaid;
