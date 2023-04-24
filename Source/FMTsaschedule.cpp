@@ -10,6 +10,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <memory>
 #include <string>
 #include <vector>
+#include <limits>
 
 
 namespace Spatial
@@ -18,8 +19,8 @@ namespace Spatial
 
 //FMTsaschedule base class
 
-    FMTsaschedule::FMTsaschedule(const std::string& typeof) :
-        ScheduleType(typeof),
+    FMTsaschedule::FMTsaschedule(const std::string& typesc) :
+        ScheduleType(typesc),
         Level(0),
         Temperature(std::numeric_limits<double>::max()),
         InitialTemperature(std::numeric_limits<double>::max())

@@ -25,7 +25,7 @@ class FMTsaschedule
         double Temperature;
         double InitialTemperature;
     public:
-        FMTsaschedule(const std::string& typeof);//Constructor
+        FMTsaschedule(const std::string& typesc);//Constructor
         FMTsaschedule();//Constructor
         std::string GetScheduleType()const;
         size_t GetLevel()const;

@@ -313,50 +313,14 @@ void exportModel()
 	define_pylist<Models::FMTlpmodel>();
 	#endif
 
-	bp::enum_<Models::FMTsawarmuptype>("FMTsawarmuptype")
-		.value("log", Models::FMTsawarmuptype::log)
-		.value("delta", Models::FMTsawarmuptype::bigdelta)
-		.value("logmax", Models::FMTsawarmuptype::logmax)
-		.value("bootstrapmagic", Models::FMTsawarmuptype::bootstrapmagic);
 
 
 
 	bp::class_<Models::FMTsamodel, bp::bases<Models::FMTsemodel>>("FMTsamodel", "@DocString(FMTsamodel)")
 		.def(bp::init<Models::FMTmodel>())
 		.def(bp::init<Models::FMTsamodel>())
-		/*.def("get_current_solution", &Models::FMTsamodel::get_current_solution,
-			"@DocString(FMTsamodel::get_current_solution)")
-		.def("get_new_solution",&Models::FMTsamodel::get_new_solution,
-			"@DocString(FMTsamodel::get_new_solution)")
-		.def("getspatialactions",&Models::FMTsamodel::getspatialactions,
-			"@DocString(FMTsamodel::getspatialactions)")*/
 		.def("initialsolve", &Models::FMTsamodel::initialsolve,
-			"@DocString(FMTsamodel::initialsolve)")
-		//.def("evaluate",&Models::FMTsamodel::evaluate,evaluate_overloads(bp::args("temp", "all_data"), "@DocString(FMTsamodel::evaluate)"))
-		/* .def("setspactions", &Models::FMTsamodel::setspactions,
-			 "@DocString(FMTsamodel::setspactions)")*/
-		.def("set_min_max_moves", &Models::FMTsamodel::set_min_max_moves,
-			"@DocString(FMTsamodel::set_min_max_moves)")
-		/*.def("cool_down", &Models::FMTsamodel::cool_down,
-			"@DocString(FMTsamodel::cool_down)")
-		.def("get_cool_schedule_type", &Models::FMTsamodel::getcoolingscheduletype,
-			"@DocString(FMTsamodel::getcoolingscheduletype)")
-		.def("setschedule", &Models::FMTsamodel::setschedule,
-			"@DocString(FMTsamodel::setschedule)")*/
-		.def("buildperiod", &Models::FMTsamodel::buildperiod,
-			"@DocString(FMTsamodel::buildperiod)");
-            /*.def("move", &Models::FMTsamodel::move_solution, "@DocString(FMTsamodel::move_type)")
-            .def("acceptnew",&Models::FMTsamodel::acceptnew,
-				"@DocString(FMTsamodel::acceptnew)")
-            .def("write_outputs_at",&Models::FMTsamodel::write_outputs_at,
-				"@DocString(FMTsamodel::write_outputs_at)")
-            .def("get_outputs",&Models::FMTsamodel::get_outputs,get_outputs_overloads(bp::args("addon"), "@DocString(FMTsamodel::get_outputs)"))
-            .def("write_solutions_events",&Models::FMTsamodel::write_solutions_events,
-				"@DocString(FMTsamodel::write_solutions_events)")
-            .def("get_number_moves",&Models::FMTsamodel::get_number_moves,
-				"@DocString(FMTsamodel::get_number_moves)")
-            //.def("warmup",&Models::FMTsamodel::warmup,warmup_overloads(bp::args("initprob","iterations","keep_best","type"), "@DocString(FMTsamodel::warmup)"))
-			.def("set_movetype", &Models::FMTsamodel::set_movetype, "@DocString(FMTsamodel::set_movetype)");*/
+			"@DocString(FMTsamodel::initialsolve)");
 
     define_pylist<Models::FMTsamodel>();
 
