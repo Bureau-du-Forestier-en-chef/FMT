@@ -67,8 +67,10 @@ int main()
 		}
 	}
 	const double thevalue = simulationmodel.getoutput(sumoutputs,1, Core::FMToutputlevel::totalonly).at("Total");
+	const double globalvalue = simulationmodel.getoutput(spatialoutput, 1, Core::FMToutputlevel::totalonly).at("Total");
 	Logging::FMTlogger() << "outvalues " << thevalue << "\n";
-	if (thevalue < 220)
+	Logging::FMTlogger() << "outglobalvalues " << globalvalue << "\n";
+	if (thevalue < globalvalue)
 	{
 		Exception::FMTfreeexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed, "Wrong value",
 			"presolvetest", __LINE__, primarylocation);
