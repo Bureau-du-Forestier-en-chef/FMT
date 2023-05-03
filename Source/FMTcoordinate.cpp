@@ -78,6 +78,7 @@ namespace Spatial
             return (static_cast<decltype(ldistance)>(std::abs(distancex)) <= ldistance && static_cast<decltype(ldistance)>(std::abs(distancey)) <= ldistance &&
                 std::sqrt(distancex * distancex + distancey * distancey)<= static_cast<double>(ldistance));
         }
+    template bool FMTcoordinate::within<size_t>(const size_t& ldistance, const FMTcoordinate& coord) const;
     template bool FMTcoordinate::within<unsigned int>(const unsigned int& ldistance, const FMTcoordinate& coord) const;
     template bool FMTcoordinate::within<double>(const double& ldistance,const FMTcoordinate& coord) const;
 

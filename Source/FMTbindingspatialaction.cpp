@@ -28,17 +28,28 @@ namespace Spatial
 	}
 	bool FMTbindingspatialaction::isspatialybinding() const
 	{
-		return (!neighbors.empty() && (
-			minimal_size > 0 || 
-			maximal_size != std::numeric_limits<size_t>::max() ||
-			minimal_adjacency > 0 ||
+		return (isspatialyadjacencybinding()|| isspatialyareabinding());
+	}
+
+	bool FMTbindingspatialaction::isspatialyadjacencybinding() const
+	{
+		return (!neighbors.empty() && (minimal_adjacency > 0 ||
 			maximal_adjacency != std::numeric_limits<size_t>::max()));
 	}
 
 	bool FMTbindingspatialaction::isspatialyareabinding() const
 		{
-		return (minimal_size > 0 ||
-				maximal_size != std::numeric_limits<size_t>::max());
+		return (!neighbors.empty() && (minimal_size > 0 ||
+				maximal_size != std::numeric_limits<size_t>::max()));
 		}
+
+	bool FMTbindingspatialaction::testminimaladjacency() const
+	{
+		return (!neighbors.empty() &&  minimal_adjacency > 0);
+	}
+	bool FMTbindingspatialaction::testmaximaladjacency() const
+	{
+		return (!neighbors.empty() &&  maximal_adjacency != std::numeric_limits<size_t>::max());
+	}
 
 }

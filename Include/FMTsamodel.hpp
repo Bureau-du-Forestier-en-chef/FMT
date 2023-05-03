@@ -56,8 +56,9 @@ class FMTEXPORT FMTsamodel final: public FMTsemodel
     {
         Local = 1,
         ReBuilder = 2,
-        EventDestrutor = 3,
-        MoveCount = 4
+        AreaConflictDestrutor = 3,
+        AdjacencyConflictDestrutor = 4,
+        MoveCount = 5
     };
     class FMTmovestats
         {
@@ -93,12 +94,20 @@ class FMTEXPORT FMTsamodel final: public FMTsemodel
     // DocString: FMTsamodel::CoolingSchedule
     ///Cooling schedule for simulated annealing algorithm.
     std::unique_ptr<Spatial::FMTsaschedule> CoolingSchedule;
+    // DocString: FMTsamodel::NotAcceptedMovesCount
+    ///Count the number of cycle the moves gave had no acceptance
+    std::array<size_t, FMTsamove::MoveCount>NotAcceptedMovesCount;
     // DocString: FMTsamodel()
     /**
     Constructor for presolve use
     */
     FMTsamodel(const FMTsemodel& rhs);
     protected:
+        // DocString: FMTspatialschedule::GetFromBindings
+        /**
+        Get the selected action from the bindings
+        */
+        std::vector<bool> GetFromBindings(const Spatial::FMTspatialschedule::actionbindings& bindingactions) const;
         // DocString: FMTsamodel::GetCycleMoves
         /**
         Get the total number of moves of the last cycle
@@ -109,11 +118,26 @@ class FMTEXPORT FMTsamodel final: public FMTsemodel
         Get the number of accepted move of the last cycle
         */
         size_t GetAcceptedCycleMoves() const;
+        // DocString: FMTsamodel::AllowDestruction
+        /**
+        Returns true if the bindings allow to destroy some events
+       */
+        bool AllowDestruction(const Spatial::FMTspatialschedule& actual, const Spatial::FMTspatialschedule::actionbindings& bindings) const;
+        // DocString: FMTsamodel::AllowMove
+        /**
+        Check If you can allow the move 
+       */
+        bool AllowMove(const FMTsamove& move) const;
+        // DocString: FMTsamodel::AllowAnyMove
+        /**
+        Return true if you can do a move
+       */
+        bool AllowAnyMove() const;
         // DocString: FMTsamodel::GetAMove
         /**
         Will return coordinates that might be good candidat to disturb
         */
-        FMTsamove GetAMove(const Spatial::FMTspatialschedule& actual) const;
+        FMTsamove GetAMove(const Spatial::FMTspatialschedule& actual, const Spatial::FMTspatialschedule::actionbindings& bindings) const;
 		// DocString: FMTsamodel::evaluate
 		/**
 		Evaluate the actual and a candidat solution and return true if the candidat solution is choose to replace
@@ -128,14 +152,25 @@ class FMTEXPORT FMTsamodel final: public FMTsemodel
             const Spatial::FMTspatialschedule::actionbindings& bindings,
             const std::vector<Spatial::FMTcoordinate>* movable,
             boost::unordered_map<Core::FMTdevelopment, bool>* operability) const;
-        // DocString: FMTsamodel::DoEventsDestructionMove
-       /**
-       Destroy some conflicting events
-       */
-        Spatial::FMTspatialschedule DoEventsDestructionMove(const Spatial::FMTspatialschedule& actual,
+        // DocString: FMTsamodel::DoConflictDestruction
+        /**
+        Destroy the conflicts for a given periods and coordinates
+         */
+        Spatial::FMTspatialschedule DoConflictDestruction(const Spatial::FMTspatialschedule& actual,
             const Spatial::FMTspatialschedule::actionbindings& bindings,
-            const std::vector<Spatial::FMTcoordinate>* movable,
-            boost::unordered_map<Core::FMTdevelopment, bool>* operability) const;
+           std::vector<std::vector<Spatial::FMTcoordinate>> selectionpool, const int& period) const;
+       // DocString: FMTsamodel::DoEventsAreaConflictDestrutorMove
+       /**
+       Destroy events that have some area conflict
+       */
+        Spatial::FMTspatialschedule DoEventsAreaConflictDestrutorMove(const Spatial::FMTspatialschedule& actual,
+            const Spatial::FMTspatialschedule::actionbindings& bindings) const;
+        // DocString: FMTsamodel::DoEventsAdjacencyConflictDestrutorMove
+      /**
+      Destroy events that have adjacency conflict
+      */
+        Spatial::FMTspatialschedule DoEventsAdjacencyConflictDestrutorMove(const Spatial::FMTspatialschedule& actual,
+            const Spatial::FMTspatialschedule::actionbindings& bindings) const;
         // DocString: FMTsamodel::move
 		/**
 		Perturb a solution and produce a new one
@@ -209,6 +244,11 @@ class FMTEXPORT FMTsamodel final: public FMTsemodel
         Cool down the annealer temp
         */
         void CoolDown();
+        // DocString: FMTsamodel::UpdateFailedMoveCount
+        /**
+        Update failed move count using NotAcceptedMovesCount and the move stats
+        */
+        void UpdateFailedMoveCount();
 	public:
         // DocString: FMTsemodel::LogMovesReport
         /**

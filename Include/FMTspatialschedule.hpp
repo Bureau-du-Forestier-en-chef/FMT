@@ -144,7 +144,7 @@ class FMTEXPORT FMTspatialschedule : public FMTlayer<Graph::FMTlinegraph>
 		Return the constraint evaluation value of a spatial constraint. If the subset is not a nullptr the 
 		*/
 	   double evaluatespatialconstraint(const Core::FMTconstraint& spatialconstraint,
-		   const Models::FMTmodel& model,const FMTeventcontainer* subset = nullptr) const;
+		   const Models::FMTmodel& model/*, const FMTeventcontainer* subset = nullptr*/) const;
 	   // DocString: FMTspatialschedule::evaluatedistance
 		/**
 		Return the constraint evaluation value of a spatial constraint.
@@ -356,11 +356,21 @@ class FMTEXPORT FMTspatialschedule : public FMTlayer<Graph::FMTlinegraph>
 																					const std::vector<Spatial::FMTcoordinate>* statics,
 																					boost::unordered_map<Core::FMTdevelopment, bool>*operability = nullptr) const;
 
+		// DocString: FMTspatialschedule::getperiodwithmaximalevents
+		/**
+		Get the period at with you got the maximal number of  periods.
+		*/
+		int getperiodwithmaximalevents(const std::vector<bool>& actions) const;
 		// DocString: FMTspatialschedule::getareaconflictcoordinates
 		/**
 		Returns the coordinates of events that does not have the right area in the worst period... and set the worst period
 		*/
-		std::vector<std::vector<Spatial::FMTcoordinate>>getareaconflictcoordinates(const actionbindings& bindingactions,int& period,bool conflictonly=true) const;
+		std::vector<std::vector<Spatial::FMTcoordinate>>getareaconflictcoordinates(const actionbindings& bindingactions,const int& period,bool conflictonly=true) const;
+		// DocString: FMTspatialschedule::getadjacencyconflictcoordinates
+		/**
+		Returns adjacency conflicts coordinate that need to be destroyed
+		*/
+		std::vector<std::vector<Spatial::FMTcoordinate>>getadjacencyconflictcoordinates(const actionbindings& bindingactions,const int& period, bool conflictonly = true) const;
 		// DocString: FMTspatialschedule::getstaticsmovablecoordinates
 		/**
 		Returns a vector of coordinate that are considered movable
@@ -478,6 +488,21 @@ class FMTEXPORT FMTspatialschedule : public FMTlayer<Graph::FMTlinegraph>
 		 */
 		std::vector<FMTlayer<Graph::FMTlinegraph>::const_iterator> getoutputfromnode(const Models::FMTmodel& model, const Core::FMToutputnode& node, const int& period) const;
     private:
+		// DocString: FMTspatialschedule::evaluatespatialadjacency
+		 /**
+		Evaluate adjacency conflicts for each events
+		*/
+		double evaluatespatialadjacency(
+			const int& period,
+			const size_t& greenup,
+			const size_t& lowerlookup,
+			const size_t& upperlookup,
+			const bool& testlower,
+			const bool& testupper,
+			std::vector<FMTeventcontainer::const_iterator>& conflicts,
+			boost::unordered_set<FMTeventrelation>& relations,
+			const std::vector<bool>& actionused) const;
+		
 };
 }
 

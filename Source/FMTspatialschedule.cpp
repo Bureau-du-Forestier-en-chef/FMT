@@ -586,9 +586,92 @@ namespace Spatial
 	}*/
 
 
+	double FMTspatialschedule::evaluatespatialadjacency(
+		const int& period,
+		const size_t& greenup,
+		const size_t& lowerlookup,
+		const size_t& upperlookup,
+		const bool& testlower,
+		const bool& testupper,
+		std::vector<FMTeventcontainer::const_iterator>& conflicts,
+		boost::unordered_set<FMTeventrelation>& relations,
+		const std::vector<bool>& actionused) const
+	{
+		double returnvalue = 0;
+		try {
+			const int lowergup = static_cast<int>(greenup);
+			size_t baselookup = 0;
+			double lower = 0.0;
+			double upper = 0.0;
+			if (testlower)
+			{
+				baselookup = lowerlookup;
+				lower = static_cast<double>(lowerlookup);
+			}
+			if (testupper)
+			{
+				baselookup = std::max(baselookup, upperlookup);
+				upper = static_cast<double>(upperlookup);
+			}
 
-	double FMTspatialschedule::evaluatespatialconstraint(const Core::FMTconstraint& spatialconstraint, const Models::FMTmodel& model,
-		const FMTeventcontainer* subset) const
+
+			for (const FMTeventcontainer::const_iterator eventit : events.getevents(period, actionused))
+			{
+				const unsigned int containerlookup = static_cast<unsigned int>(baselookup + eventit->size());
+
+				//0//-//1//
+				//-//-//-//
+				//2//-//3//
+				const std::vector<FMTcoordinate> enveloppe = eventit->getenveloppe();
+				const unsigned int minimalx = containerlookup < enveloppe.at(0).getx() ? enveloppe.at(0).getx() - containerlookup : 0;
+				const unsigned int minimaly = containerlookup < enveloppe.at(0).gety() ? enveloppe.at(0).gety() - containerlookup : 0;
+				const unsigned int maximalx = enveloppe.at(3).getx() + containerlookup;
+				const unsigned int maximaly = enveloppe.at(3).gety() + containerlookup;
+				const FMTcoordinate minimalcoord(minimalx, minimaly);
+				const FMTcoordinate maximalcoord(maximalx, maximaly);
+				double totalwithincount = 0;
+				for (int gupperiod = std::max(1, period - lowergup); gupperiod <= period; ++gupperiod)
+				{
+					const double periodfactor = static_cast<double>((lowergup - (period - gupperiod))) + 1;
+					for (const FMTeventcontainer::const_iterator eventof : events.getevents(gupperiod, actionused, minimalcoord, maximalcoord))
+					{
+						if (eventit != eventof)//They will have the same address if it's the same event!
+						{
+							const FMTeventrelation ofrelation = eventof->getrelation(*eventit);
+							const FMTeventrelation itrelation = eventit->getrelation(*eventof);
+							if (relations.find(ofrelation) == relations.end() &&
+								relations.find(itrelation) == relations.end())
+							{
+								if (testlower&&eventit->within(lowerlookup, *eventof)) //too close
+								{
+									returnvalue += ((lower - eventit->distance(*eventof)) * periodfactor);
+									conflicts.push_back(eventof);
+								}else if (testupper && !eventit->within(upperlookup, *eventof))
+								{
+									returnvalue += ((eventit->distance(*eventof) - upper) * periodfactor);
+									conflicts.push_back(eventof);
+								}
+								relations.insert(ofrelation);
+								relations.insert(itrelation);
+							}
+
+						}
+					}
+				}
+			}
+		}
+		catch (...)
+		{
+			_exhandler->raisefromcatch("", "FMTspatialschedule::evaluatespatialadjacency", __LINE__, __FILE__);
+		}
+		return returnvalue;
+	}
+
+	
+
+
+	double FMTspatialschedule::evaluatespatialconstraint(const Core::FMTconstraint& spatialconstraint, const Models::FMTmodel& model/*,
+		const FMTeventcontainer* subset*/) const
 	{
 	double returnvalue = 0;
 	try {
@@ -598,11 +681,11 @@ namespace Spatial
 		{
 			const std::vector<bool>actionused = spatialconstraint.isactionsused(model.actions);
 			const Core::FMTconstrainttype spatialconstrainttype = spatialconstraint.getconstrainttype();
-			FMTeventcontainer const* container = &events;
+			/*FMTeventcontainer const* container = &events;
 			if (subset!=nullptr)
 				{
 				container = subset;
-				}
+				}*/
 			double lower = 0;
 			double upper = 0;
 			if (spatialconstrainttype==Core::FMTconstrainttype::FMTspatialsize)
@@ -610,7 +693,7 @@ namespace Spatial
 				for (int period = periodstart; period <= periodstop; ++period)
 					{
 					spatialconstraint.getbounds(lower, upper, period);
-					for (const FMTeventcontainer::const_iterator& eventit : container->getevents(period, actionused))
+					for (const FMTeventcontainer::const_iterator& eventit : events.getevents(period, actionused))//container->getevents(period, actionused))
 						{
 						const double event_val = static_cast<double>(eventit->size());
 						double event_objective = 0;
@@ -629,15 +712,26 @@ namespace Spatial
 				{
 				//const Core::FMTyldbounds boundsyld = spatialconstraint.getyldsbounds().at("GUP");
 				const Core::FMTyldbounds& boundsyld = spatialconstraint.getyieldbound("GUP");
-				const int lowergup = static_cast<int>(boundsyld.getlower());
+				//const int lowergup = static_cast<int>(boundsyld.getlower());
 				//std::map<int, std::vector<FMTeventcontainer::const_iterator>>allevents;
 				boost::unordered_set<FMTeventrelation>relations;
 				for (int period = periodstart; period <= periodstop; ++period)
 					{
 					spatialconstraint.getbounds(lower, upper, period);
-					const bool testlower = (lower == -std::numeric_limits<double>::infinity()) ? false : true;
+					const bool testlower = (lower == std::numeric_limits<double>::lowest()) ? false : true;
 					const bool testupper = (upper == std::numeric_limits<double>::infinity()) ? false : true;
-					const size_t baselookup = testlower ? static_cast<size_t>(lower) : static_cast<size_t>(upper);//Add up the maximal size of all the actions!
+					std::vector<FMTeventcontainer::const_iterator>badevents;
+					returnvalue += evaluatespatialadjacency(
+						period,
+						static_cast<size_t>(boundsyld.getlower()),
+						static_cast<size_t>(lower),
+						static_cast<size_t>(upper),
+						testlower,
+						testupper,
+						badevents,
+						relations,
+						actionused);
+					/*const size_t baselookup = testlower ? static_cast<size_t>(lower) : static_cast<size_t>(upper);//Add up the maximal size of all the actions!
 					const unsigned int baselookupof = static_cast<unsigned int>(baselookup);
 					std::vector<FMTeventcontainer::const_iterator> allevents = events.getevents(period, actionused);
 					const size_t eventsize = allevents.size();
@@ -691,7 +785,7 @@ namespace Spatial
 								returnvalue += ((static_cast<double>(eventsize) - totalwithincount)*upper)*periodfactor;
 							}
 							}
-					}
+					}*/
 
 					}
 
@@ -2295,22 +2389,33 @@ void FMTspatialschedule::perturbgraph(const FMTcoordinate& coordinate,const int&
 	}
 
 
-std::vector<std::vector<Spatial::FMTcoordinate>>FMTspatialschedule::getareaconflictcoordinates(const actionbindings& bindingactions, int& period, bool conflictonly) const
+
+int FMTspatialschedule::getperiodwithmaximalevents(const std::vector<bool>& actions) const
+{
+	int period = 0;
+	try {
+		size_t maxnumferofevents = 0;
+		for (int lperiod = 1; lperiod < actperiod(); ++lperiod)
+		{
+			const size_t periodsize = events.getevents(lperiod, actions).size();
+			if (periodsize > maxnumferofevents)
+			{
+				maxnumferofevents = periodsize;
+				period = lperiod;
+			}
+		}
+	}catch (...)
+	{
+	_exhandler->printexceptions("", "FMTspatialschedule::getperiodwithmaximalevents", __LINE__, __FILE__);
+	}
+	return period;
+}
+
+
+std::vector<std::vector<Spatial::FMTcoordinate>>FMTspatialschedule::getareaconflictcoordinates(const actionbindings& bindingactions,const int& period, bool conflictonly) const
 {
 	std::vector<std::vector<Spatial::FMTcoordinate>>coordinates;
 	try {
-		size_t maxnumferofevents = 0;
-		const std::vector<bool>actionselected(bindingactions.begin()->size(), true);
-		for (int lperiod =1;lperiod< actperiod();++lperiod)
-			{
-			const size_t periodsize = events.getevents(lperiod, actionselected).size();
-			if (periodsize> maxnumferofevents)
-				{
-				maxnumferofevents = periodsize;
-				period = lperiod;
-				}
-			}
-		
 		int actionid = 0;
 		for (const Spatial::FMTbindingspatialaction& actionbind : bindingactions.at(period-1))
 		{
@@ -2348,17 +2453,65 @@ std::vector<std::vector<Spatial::FMTcoordinate>>FMTspatialschedule::getareaconfl
 		}
 		if (coordinates.empty())
 		{
-			period = 0;
 			return getareaconflictcoordinates(bindingactions, period, false);
 		}
 
 	}
 	catch (...)
 	{
-		_exhandler->printexceptions("", "FMTspatialschedule::getbindingcoordinatesfromevents", __LINE__, __FILE__);
+		_exhandler->printexceptions("", "FMTspatialschedule::getareaconflictcoordinates", __LINE__, __FILE__);
 	}
 	return coordinates;
 }
+
+std::vector<std::vector<Spatial::FMTcoordinate>>FMTspatialschedule::getadjacencyconflictcoordinates(const actionbindings& bindingactions,const int& period, bool conflictonly) const
+{
+	std::vector<std::vector<Spatial::FMTcoordinate>>coordinates;
+	try {
+		
+		boost::unordered_set<FMTeventrelation> relations;
+		for (const Spatial::FMTbindingspatialaction& actionbind : bindingactions.at(period - 1))
+		{
+		if (actionbind.isspatialyadjacencybinding())
+			{
+			std::vector<bool>actionids(bindingactions.at(period - 1).size(),false);
+			for (const int& action : actionbind.getneighbors())
+				{
+				actionids[action] = true;
+				}
+			if (!conflictonly)
+			{
+				for (FMTeventcontainer::const_iterator cit : events.getevents(period, actionids))
+				{
+					const std::vector<Spatial::FMTcoordinate>eventscoords(cit->elements.begin(), cit->elements.end());
+					coordinates.push_back(eventscoords);
+				}
+				return coordinates;
+			}
+			std::vector<FMTeventcontainer::const_iterator>conflicts;
+			evaluatespatialadjacency(period, actionbind.getminimalgreenup(),
+				actionbind.getminimaladjacency(), actionbind.getmaximaladjacency(), 
+				actionbind.testminimaladjacency(), actionbind.testmaximaladjacency(), 
+				conflicts, relations, actionids);
+			for (FMTeventcontainer::const_iterator cit : conflicts)
+				{
+				const std::vector<Spatial::FMTcoordinate>eventscoords(cit->elements.begin(), cit->elements.end());
+				coordinates.push_back(eventscoords);
+				}
+			}
+		}
+		if (coordinates.empty())
+		{
+			return getadjacencyconflictcoordinates(bindingactions, period, false);
+		}
+	}catch (...)
+	{
+	_exhandler->printexceptions("", "FMTspatialschedule::getadjacencyconflictcoordinates", __LINE__, __FILE__);
+	}
+	return coordinates;
+}
+
+
 
 std::vector<Spatial::FMTcoordinate>FMTspatialschedule::getmovablecoordinates(const Models::FMTmodel& model, const int& period,
 																			const std::vector<Spatial::FMTcoordinate>* statics,

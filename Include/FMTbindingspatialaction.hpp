@@ -36,6 +36,9 @@ namespace Spatial
 			const size_t& minnsize, const size_t& maxnsize);
 		bool isspatialybinding() const;
 		bool isspatialyareabinding() const;
+		bool isspatialyadjacencybinding() const;
+		bool testminimaladjacency() const;
+		bool testmaximaladjacency() const;
 		inline const std::vector<int>& getneighbors() const
 			{
 			return neighbors;

@@ -321,7 +321,7 @@ namespace Spatial
         }
 		const std::set<FMTcoordinate>::const_iterator center = midposition();
 		const std::set<FMTcoordinate>::const_iterator rhscenter = rhs.midposition();
-		if (center->within(dist, *rhscenter))
+		if (center->within<T>(dist, *rhscenter))
 		{
 			return true;
 		}else
@@ -330,7 +330,7 @@ namespace Spatial
 			{
 				for (std::set<FMTcoordinate>::const_iterator rhscoord = rhs.elements.begin(); rhscoord != rhs.elements.end(); ++rhscoord)
 				{
-					if (coord->within(dist, *rhscoord))
+					if (coord->within<T>(dist, *rhscoord))
 					{
 						return true;
 					}
@@ -339,6 +339,7 @@ namespace Spatial
 			}
 			return false;
 		}
+    template bool FMTevent::within<size_t>(const size_t& dist, const FMTevent& rhs) const;
     template bool FMTevent::within<unsigned int>(const unsigned int& dist, const FMTevent& rhs) const;
     template bool FMTevent::within<double>(const double& dist, const FMTevent& rhs) const;
 
