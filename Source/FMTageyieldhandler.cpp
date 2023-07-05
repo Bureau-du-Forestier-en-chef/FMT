@@ -78,7 +78,7 @@ namespace Core {
 					std::map<std::string, Core::FMTdata>::const_iterator data0it = elements.find(yld);
 					if (data0it != elements.end())
 						{
-						return getlinearvalue(data0it->second.data, target);
+						return getlinearvalue(data0it->second.data, target,true);
 						}
 				}catch (...)
 					{
@@ -134,11 +134,11 @@ namespace Core {
 		return age;
 	}
 
-	double FMTageyieldhandler::getyieldlinearvalue(const std::string&yldname, const FMTyieldrequest& request) const
+	double FMTageyieldhandler::getyieldlinearvalue(const std::string&yldname, const FMTyieldrequest& request, bool allowoutofrange) const
 	{
 		try {
 			const FMTdata& lvalues = this->at(yldname);
-			return getlinearvalue(lvalues.data, request.getdevelopment().getage());
+			return getlinearvalue(lvalues.data, request.getdevelopment().getage(),allowoutofrange);
 		}
 		catch (...)
 		{

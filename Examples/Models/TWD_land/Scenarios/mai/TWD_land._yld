@@ -1,0 +1,43 @@
+*Y ? peuplement1 ?
+_AGE volumetotal
+0    0
+5    100
+10   150
+15   200
+20   250
+25   300
+30   350
+
+*Y ? peuplement2 ?
+_AGE volumetotal
+0    0
+5    50
+10   100
+15   150
+20   200
+25   230
+30   150
+
+*Y ? peuplement3 ?
+_AGE volumetotal
+0    0
+5    75
+10   125
+15   175
+20   225
+25   250
+30   200
+
+*Y ? feu ?
+_AGE volumetotal
+0    0
+5    50
+10   100
+15   150
+20   200
+25   230
+30   150
+
+
+*YC ? ? ?
+YTEST _MAI(volumetotal)

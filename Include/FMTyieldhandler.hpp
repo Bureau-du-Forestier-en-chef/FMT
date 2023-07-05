@@ -53,7 +53,7 @@ public:
 	FMTyieldhandler(const FMTyieldhandler& rhs) = default;
 	FMTyieldhandler& operator = (const FMTyieldhandler& rhs) = default;
 	FMTyieldhandler(const FMTmask& lmask);
-	double getlinearvalue(const std::vector<double>& dls, const int& agetarget) const;
+	double getlinearvalue(const std::vector<double>& dls, const int& agetarget, bool allowoutofrange) const;
 	virtual int getlastbase() const;
 	const std::vector<int>& getbases() const;
 	FMTmask getmask() const;
@@ -86,7 +86,7 @@ public:
 	virtual int getendpoint(const std::string& yld, const int& lowerstep, const double& bound, const double& value) const;
 	virtual double getpeak(const FMTyieldrequest& request,const std::string& yld, const int& targetage) const;
 	virtual int getage(const FMTyieldrequest& request, const FMTspec& spec) const;
-	virtual double getyieldlinearvalue(const std::string&yldname, const FMTyieldrequest& request) const;
+	virtual double getyieldlinearvalue(const std::string&yldname, const FMTyieldrequest& request, bool allowoutofrange=true) const;
 
 	
 };

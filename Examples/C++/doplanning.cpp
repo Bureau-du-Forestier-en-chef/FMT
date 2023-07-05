@@ -21,10 +21,13 @@ int main(int argc, char* argv[])
 		/*const std::string vals = argv[1];
 		std::vector<std::string>results;
 		boost::split(results, vals, boost::is_any_of("|"));*/
-		const std::string primarylocation = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/09_FMT/Modeles_test/actionseries/PC_9509_U02751_4_Vg2_2023_vRp2.pri";// results.at(0);
-		const std::string scenario = "14_sc5_determin_apsp_ref_aam_ratioplct_action_series_3";// results.at(1);
+		//const std::string primarylocation = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/09_FMT/Modeles_test/actionseries/PC_9509_U02751_4_Vg2_2023_vRp2.pri";// results.at(0);
+		//const std::string scenario = "14_sc5_determin_apsp_ref_aam_ratioplct_action_series_3";// results.at(1);
+		//const int length = 1;// std::stoi(argv[2]);
+		const std::string primarylocation = "D:/FMT/Examples/Models/TWD_land/TWD_land.pri";// results.at(0);
+		const std::string scenario = "mai";// results.at(1);
 		const int length = 1;// std::stoi(argv[2]);
-		const double objectivevalue = 100;// std::stod(argv[3]);
+		const double objectivevalue = 0;// std::stod(argv[3]);
 		Parser::FMTmodelparser modelparser;
 		//modelparser.setdebugexceptionhandler();
 		std::vector<Exception::FMTexc>errors;
@@ -37,6 +40,7 @@ int main(int argc, char* argv[])
 		errors.push_back(Exception::FMTexc::FMTsourcetotarget_transition);
 		errors.push_back(Exception::FMTexc::FMTsame_transitiontargets);
 		errors.push_back(Exception::FMTexc::FMTunclosedforloop);
+		errors.push_back(Exception::FMTexc::FMToutofrangeyield);
 		modelparser.seterrorstowarnings(errors);
 		const std::vector<std::string>scenarios(1, scenario);
 		const std::vector<Models::FMTmodel> models = modelparser.readproject(primarylocation, scenarios);
@@ -57,7 +61,7 @@ int main(int argc, char* argv[])
 				if (output.getname().find("OAAMINC")!=std::string::npos)
 				{
 					std::cout << output.getname() << " ";
-					for (int period =1 ; period <= 1; ++period)
+					for (int period =0 ; period <= 1; ++period)
 						{
 						const std::map<std::string, double>outs = optimizationmodel.getoutput(output, period, Core::FMToutputlevel::totalonly);
 						if (!outs.empty())
@@ -74,8 +78,8 @@ int main(int argc, char* argv[])
 		
 		Parser::FMTscheduleparser schparser;
 		std::vector<Core::FMTschedule>returnschedule;
-		returnschedule.push_back(optimizationmodel.getsolution(1, true));
-		returnschedule.push_back( optimizationmodel.getsolution(2, true));
+		returnschedule.push_back(optimizationmodel.getsolution(1, false));
+		returnschedule.push_back( optimizationmodel.getsolution(2, false));
 		schparser.write(returnschedule, "D:/test/schedule.seq");
 		if ((std::abs(optimizationmodel.getObjValue() - objectivevalue)) >= 1)
 		{

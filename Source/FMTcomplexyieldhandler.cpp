@@ -392,7 +392,7 @@ namespace Core {
 						}
 						const std::unique_ptr<FMTyieldhandler>* ddata = srcsdata.begin()->second;
 						//value = ((*ddata)->getyieldlinearvalue(sources.at(0), age) / (year*age));
-						value = ((*ddata)->getyieldlinearvalue(sources.at(0), request) / (year * age));
+						value = ((*ddata)->getyieldlinearvalue(sources.at(0), request,false) / (year * age));
 						break;
 					}
 					case FMTyieldparserop::FMTcai:

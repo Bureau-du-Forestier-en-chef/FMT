@@ -194,13 +194,19 @@ FMTyieldhandler::operator std::string() const
 
 	
 
-	double FMTyieldhandler::getlinearvalue(const std::vector<double>& dls, const int& agetarget) const
+	double FMTyieldhandler::getlinearvalue(const std::vector<double>& dls, const int& agetarget,bool allowoutofrange) const
 		{
 		double value = 0;
 		try{
 		if (agetarget >= bases.back())
 			{
 			value = dls.back();
+			if (!allowoutofrange && agetarget > bases.back())
+			{
+				_exhandler->raise(Exception::FMTexc::FMToutofrangeyield, " at age "+std::to_string(agetarget)+" for max age of "+ std::to_string(bases.back()),
+					"FMTyieldhandler::getlinearvalue", __LINE__, __FILE__, Core::FMTsection::Yield);
+				return 0;
+			}
 		}else if(agetarget < bases.front())
 			{
 			value = (agetarget * (dls[0] / static_cast<double>(bases[0])));
@@ -281,7 +287,7 @@ FMTyieldhandler::operator std::string() const
 		return 0;
 		}
 
-double FMTyieldhandler::getyieldlinearvalue(const std::string&yldname, const FMTyieldrequest& request) const
+double FMTyieldhandler::getyieldlinearvalue(const std::string&yldname, const FMTyieldrequest& request,bool allowoutofrange) const
 	{
 		try {
 			_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, "Calling pure virtual function ",

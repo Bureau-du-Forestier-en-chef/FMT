@@ -2426,9 +2426,20 @@ template<> inline std::map<int, double> FMTgraph<Graph::FMTvertexproperties, Gra
 				const Graph::FMTgraphvertextoyield vertexinfo = getvertextoyieldinfo(model,vertex);
 				if (output_node.source.useinedges())
 				{
+					
 					Core::FMTdevelopment newdev(development);
 					newdev.setperiod(newdev.getperiod() - 1);
 					const double coef = output_node.source.getcoef(newdev, model.yields, &vertexinfo) * output_node.factor.getcoef(newdev, model.yields, &vertexinfo) * output_node.constant;
+					if (coef>= 0.308 && coef <= 0.31)
+					{
+						/**const std::string valof = std::string(development);
+						if (valof.find("GS5135 FORP 1 SR4661 FC5255 NAT O INC NA NA NA NA NA P27027 NA NA NA NA NA PA001 47") != std::string::npos)
+						{
+							
+						}*/
+						std::cout << "WEELL STF" << "\n";
+					}
+					
 					if (development.getperiod() == 0)
 					{
 						const std::map<int, int>vars = getoutvariables(vertex);
