@@ -1,0 +1,13 @@
+*OUTPUT oSupRec
+*SOURCE ? ? ? coupetotale _AREA
+
+*OUTPUT oSupinv
+*SOURCE ? ? ? _INVENT _AREA
+
+*OUTPUT oSupratio
+*SOURCE oSupRec / oSupinv
+
+
+
+
+

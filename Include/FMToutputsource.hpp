@@ -132,6 +132,10 @@ class FMTEXPORT FMToutputsource : public FMTspec
 			{
 			return yield;
 			}
+		inline const std::vector<double>& getvalues() const
+		{
+			return values;
+		}
 		bool isnull(const FMTyields& ylds) const;
 		inline bool istimeyield() const
 			{

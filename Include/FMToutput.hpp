@@ -82,6 +82,16 @@ class FMTEXPORT FMToutput: public FMTobject
 	*/
 	void setproportions(std::map<std::string, std::vector<std::string>>& allequations,
 		const std::vector<std::string>& baseequation) const;
+	// DocString: FMToutput::isdivision
+	/**
+	Return true if output contains division
+	*/
+	bool isdivision() const;
+	// DocString: FMToutput::isdivision
+	/**
+	Replace the division with the bound and reverse the denominator
+	*/
+	void replacedivision(const double& bound);
     public:
 	// DocString: FMToutput()
 	/**

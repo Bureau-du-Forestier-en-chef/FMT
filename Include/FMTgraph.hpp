@@ -423,7 +423,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 					try {
 						FMTgraphstats statsdiff(stats);
 						const int actualperiod = getperiod();
-						const bool gotseries = model.useactionserie();
+						const bool gotseries =  model.useactionserie();
 						boost::unordered_set<Core::FMTlookup<FMTvertex_descriptor, Core::FMTdevelopment>> actualdevs = getdevsset(actualperiod);
 						int action_id = 0;
 						for (const Core::FMTaction& action : model.actions)
@@ -523,7 +523,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 					FMTvertex_descriptor next_period = this->adddevelopment(grown_up, nextperiods,splitgrowth); //getset
 					int variableindex = statsdiff.cols;
 					double proportion = 100;
-					if (!splitgrowth&&(typeIImatrix && isnotransfer(front_vertex)))//do a type II dont need new variable
+					if (/*!splitgrowth &&*/ (typeIImatrix && isnotransfer(front_vertex)))//do a type II dont need new variable
 					{
 						variableindex = getinvariables(front_vertex).at(0);
 						proportion = getinproportion(front_vertex);
@@ -551,9 +551,11 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 			try {
 				FMTvertex_iterator vertex_iterator, vertex_iterator_end;
 				const std::string toremove = "+-/*";
+				size_t verticies_id = 0;
 				for (boost::tie(vertex_iterator, vertex_iterator_end) = boost::vertices(data); vertex_iterator != vertex_iterator_end;++vertex_iterator)
 					{
 					std::string basename=std::string(Core::FMTdevelopment(data[*vertex_iterator].get()));
+					const std::string vertexid = "_V"+std::to_string(verticies_id);
 					boost::remove_erase_if(basename, boost::is_any_of(toremove));
 					FMToutedge_iterator outit, outend;
 					for (boost::tie(outit, outend) = boost::out_edges(*vertex_iterator,data);outit!=outend;++outit)
@@ -567,10 +569,10 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 								{
 								actionname = actions.at(actionid).getname();
 								}
-							colnames[variableid] = basename + actionname;
+							colnames[variableid] = basename + actionname + vertexid;
 							}
 						}
-
+					++verticies_id;
 					}
 			}
 			catch (...)
@@ -625,15 +627,18 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 			try {
 				FMTvertex_iterator vertex_iterator, vertex_iterator_end;
 				const std::string toremove = "+-/*";
+				size_t verticies_id = 0;
 				for (boost::tie(vertex_iterator, vertex_iterator_end) = boost::vertices(data); vertex_iterator != vertex_iterator_end; ++vertex_iterator)
 				{
 					const int rowid = data[*vertex_iterator].getconstraintID();
 					if (rowid>=0)
 						{
+						const std::string vertexid = "_V" + std::to_string(verticies_id);
 						std::string name = std::string(Core::FMTdevelopment(data[*vertex_iterator].get()));
 						boost::remove_erase_if(name, boost::is_any_of(toremove));
-						rownames[rowid] = name;
+						rownames[rowid] = name + vertexid;
 						}
+					++verticies_id;
 				}
 			}
 			catch (...)
@@ -833,13 +838,13 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 				for (const Core::FMTdevelopmentpath& devpath : paths)
 				{
 					FMTvertex_descriptor tovertex;
-					bool newedge = false;
+					bool newedge = true;
 					if (!this->containsdevelopment(*devpath.development,devsets))
 					{
 						
 						tovertex = this->adddevelopment(*devpath.development,devsets);
 						actives.push(tovertex);
-						newedge = true;
+						//newedge = true;
 					}else {
 						tovertex = this->adddevelopment(*devpath.development, devsets);
 						if (inserie||isdependant(tovertex, actionID, newedge))
@@ -2584,11 +2589,13 @@ template<> inline bool FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproper
 		FMTinedge_iterator inedge_iterator, inedge_end;
 		FMTvertexproperties vertex_property = data[vertex_descriptor];
 		row_starts.push_back(static_cast<int>(cols.size()));
+		bool gotin = false;
 		for (boost::tie(inedge_iterator, inedge_end) = boost::in_edges(vertex_descriptor, data); inedge_iterator != inedge_end; ++inedge_iterator)
 		{
 			const FMTedgeproperties& edgeprop = data[*inedge_iterator];
 			cols.push_back(edgeprop.getvariableID());
 			cols_value.push_back((edgeprop.getproportion() / 100));
+			gotin = true;
 		}
 		std::vector<int>locals;
 		FMToutedge_iterator outedge_iterator, outedge_end;
@@ -2602,6 +2609,12 @@ template<> inline bool FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproper
 				locals.push_back(edgevar);
 				cols_value.push_back(-1);
 			}
+		}
+		if (!gotin)
+		{
+			const Core::FMTdevelopment& dev = vertex_property.get();
+			_exhandler->raise(Exception::FMTexc::FMTrangeerror,
+				"No in variables for development "+std::string(dev), "FMTgraph::gettransferrow", __LINE__, __FILE__);
 		}
 	}
 	catch (...)

@@ -18,13 +18,13 @@ int main(int argc, char* argv[])
 
 	if (Version::FMTversion().hasfeature("OSI"))
 	{
-		const std::string vals = argv[1];
+		/*const std::string vals = argv[1];
 		std::vector<std::string>results;
-		boost::split(results, vals, boost::is_any_of("|"));
-		const std::string primarylocation =  results.at(0);
-		const std::string scenario =  results.at(1);
-		const int length =  std::stoi(argv[2]);
-		const double objectivevalue =  std::stod(argv[3]);
+		boost::split(results, vals, boost::is_any_of("|"));*/
+		const std::string primarylocation = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/09_FMT/Modeles_test/actionseries/PC_9509_U02751_4_Vg2_2023_vRp2.pri";// results.at(0);
+		const std::string scenario = "14_sc5_determin_apsp_ref_aam_ratioplct_action_series_3";// results.at(1);
+		const int length = 1;// std::stoi(argv[2]);
+		const double objectivevalue = 100;// std::stod(argv[3]);
 		Parser::FMTmodelparser modelparser;
 		//modelparser.setdebugexceptionhandler();
 		std::vector<Exception::FMTexc>errors;
@@ -45,20 +45,19 @@ int main(int argc, char* argv[])
 		//modelparser.write(optimizationmodel, "D:/test/");
 		optimizationmodel.setparameter(Models::FMTintmodelparameters::LENGTH, length);
 		optimizationmodel.FMTmodel::setparameter(Models::FMTboolmodelparameters::STRICTLY_POSITIVE, true);
-		optimizationmodel.setparameter(Models::FMTintmodelparameters::PRESOLVE_ITERATIONS,10);
+		optimizationmodel.setparameter(Models::FMTintmodelparameters::PRESOLVE_ITERATIONS,0);
 		optimizationmodel.setparameter(Models::FMTintmodelparameters::NUMBER_OF_THREADS, 1);
+		
 		//modelparser.write(optimizationmodel, "D:/testb/");
 		if (optimizationmodel.doplanning(true)) {
+			
 			std::cout << std::to_string(optimizationmodel.getObjValue()) << std::endl;
-			/*for (const Core::FMToutput& output : optimizationmodel.getoutputs())
+			for (const Core::FMToutput& output : optimizationmodel.getoutputs())
 			{
-				if (output.getname().find("OSUPREALCUMREGAFIN_HARTIF25")!=std::string::npos||
-					output.getname().find("OSUPREALCUM35REGAFIN_HARTIF25") != std::string::npos||
-					output.getname().find("OSUPREALREGAFIN_HARTIF25") != std::string::npos||
-					output.getname().find("OSUPREGECOHAU740_HARTIF25") != std::string::npos)
+				if (output.getname().find("OAAMINC")!=std::string::npos)
 				{
 					std::cout << output.getname() << " ";
-					for (int period =1 ; period <= 30; ++period)
+					for (int period =1 ; period <= 1; ++period)
 						{
 						const std::map<std::string, double>outs = optimizationmodel.getoutput(output, period, Core::FMToutputlevel::totalonly);
 						if (!outs.empty())
@@ -69,14 +68,15 @@ int main(int argc, char* argv[])
 					std::cout << "\n";
 				}
 
-			}*/
+			}
 		}
-		/*optimizationmodel.writeLP("D:/testb/test.lp");
+		optimizationmodel.writeLP("D:/test/test.lp");
+		
 		Parser::FMTscheduleparser schparser;
 		std::vector<Core::FMTschedule>returnschedule;
 		returnschedule.push_back(optimizationmodel.getsolution(1, true));
 		returnschedule.push_back( optimizationmodel.getsolution(2, true));
-		schparser.write(returnschedule, "D:/testb/schedule.seq");*/
+		schparser.write(returnschedule, "D:/test/schedule.seq");
 		if ((std::abs(optimizationmodel.getObjValue() - objectivevalue)) >= 1)
 		{
 			Exception::FMTfreeexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed, "Wrong value",

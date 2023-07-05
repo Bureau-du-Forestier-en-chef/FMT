@@ -362,9 +362,26 @@ namespace Core
 		return sense;
 		}
 
-	void FMTconstraint::setrhs(const double& lower,const double& upper)
+	void FMTconstraint::setrhs(double lower,double upper)
 		{
-		this->addbounds(FMTyldbounds(FMTsection::Optimize, "RHS", upper, lower));
+		
+		if (isdivision())
+			{
+			double multilywith = 0;
+			if (lower != std::numeric_limits<double>::lowest())
+			{
+				multilywith = lower;
+				lower = 0.0;
+			}
+			if (upper != std::numeric_limits<double>::infinity())
+			{
+				multilywith = upper;
+				upper = 0.0;
+			}
+			replacedivision(multilywith);
+			}
+			this->addbounds(FMTyldbounds(FMTsection::Optimize, "RHS", upper, lower));
+
 		}
 
 	void FMTconstraint::setlength(int firstperiod, int lastperiod)

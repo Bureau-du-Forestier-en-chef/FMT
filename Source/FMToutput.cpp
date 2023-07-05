@@ -378,6 +378,60 @@ bool FMToutput::containslevel() const
 	return false;
 	}
 
+bool FMToutput::isdivision() const
+{
+	for (const FMToperator& opr : operators)
+	{
+		if (opr.isdivide())
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
+void FMToutput::replacedivision(const double& bound)
+{
+	try {
+	std::vector<Core::FMToperator>baseoperators(operators);
+	baseoperators.insert(baseoperators.begin(), Core::FMToperator("+"));
+	size_t opid = 0;
+	bool denominator = false;
+	operators.clear();
+	for (FMToutputsource& source : sources)
+	{
+		if (baseoperators.at(opid).isdivide())
+		{
+			denominator = true;
+			operators.push_back(Core::FMToperator("+"));
+		}
+		else {
+			operators.push_back(baseoperators.at(opid));
+		}
+		if (denominator)
+		{
+			if (!source.isvariable() && (source.isconstant()||source.islevel()))
+			{
+				std::vector<double>allvalues = source.getvalues();
+				for (double& value : allvalues)
+				{
+					value *= -bound;
+				}
+				source= FMToutputsource(source.gettarget(), allvalues,source.getoutputorigin(),source.getthemetarget());
+			}
+			
+		}
+		++opid;
+	}
+	operators.erase(operators.begin());
+	}
+	catch (...)
+	{
+		_exhandler->raisefromcatch("for " + this->getname(), "FMToutput::replacedivision",
+			__LINE__, __FILE__, Core::FMTsection::Outputs);
+	}
+}
+
 void FMToutput::setproportions(std::map<std::string, std::vector<std::string>>& allequations,const std::vector<std::string>& baseequation) const
 {
 	try {

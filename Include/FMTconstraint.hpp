@@ -209,7 +209,7 @@ class FMTEXPORT FMTconstraint: public FMToutput,public FMTspec
 		/**
 		This functions sets the RHS of this FMTconstraint with a row (lower) and (upper) bound.
 		*/
-		void setrhs(const double& lower, const double& upper);
+		void setrhs(double lower,double upper);
 		// DocString: FMTconstraint::setlength
 		/**
 		This functions sets the length of the FMTconstraint
