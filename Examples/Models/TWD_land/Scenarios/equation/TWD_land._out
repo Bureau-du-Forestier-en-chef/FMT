@@ -1,0 +1,13 @@
+*OUTPUT test1
+*SOURCE ? ? ? test1 _AREA
+
+*OUTPUT test2
+*SOURCE ? ? ? test2 _AREA
+
+*OUTPUT test3
+*SOURCE test1 / test2
+
+
+
+
+

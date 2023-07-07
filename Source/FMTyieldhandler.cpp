@@ -203,7 +203,7 @@ FMTyieldhandler::operator std::string() const
 			value = dls.back();
 			if (!allowoutofrange && agetarget > bases.back())
 			{
-				_exhandler->raise(Exception::FMTexc::FMToutofrangeyield, " at age "+std::to_string(agetarget)+" for max age of "+ std::to_string(bases.back()),
+				_exhandler->raise(Exception::FMTexc::FMToutofrangeyield, " at age "+std::to_string(agetarget)+" for max age of "+ std::to_string(bases.back())+" "+std::string(mask)+"\n",
 					"FMTyieldhandler::getlinearvalue", __LINE__, __FILE__, Core::FMTsection::Yield);
 				return 0;
 			}

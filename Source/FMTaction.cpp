@@ -155,14 +155,14 @@ FMTaction::FMTaction():FMTlist<FMTspec>(),
 			{
 				for (const std::vector<std::string>& serie : series)
 				{
-					if (std::equal(seriemask.begin(), seriemask.end(), serie.begin()))
+					std::vector<std::string>::const_iterator firstelement = std::find_first_of(seriemask.begin(), seriemask.end(),serie.begin(),serie.end());
+					if (firstelement!= seriemask.end()&&
+						std::equal(firstelement, seriemask.end(), serie.begin()))
 					{
 						return true;
 					}
 				}
 			}
-			
-
 		}catch (...)
 			{
 			_exhandler->raisefromcatch("for action " + this->getname(),

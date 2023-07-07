@@ -210,6 +210,11 @@ namespace Models
 		Returns true if the model make use of action series.
 		*/
 		bool useactionserie() const;
+		// DocString: FMTmodel::getseriesmaxsize
+		/**
+		Get the maximal serie size for the whole model.
+		*/
+		size_t getseriesmaxsize() const;
     public:
 		// DocString: FMTmodel::setparallellogger
 		/**

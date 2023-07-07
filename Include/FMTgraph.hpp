@@ -424,6 +424,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 						FMTgraphstats statsdiff(stats);
 						const int actualperiod = getperiod();
 						const bool gotseries =  model.useactionserie();
+						const size_t maxseriesize = model.getseriesmaxsize();
 						boost::unordered_set<Core::FMTlookup<FMTvertex_descriptor, Core::FMTdevelopment>> actualdevs = getdevsset(actualperiod);
 						int action_id = 0;
 						for (const Core::FMTaction& action : model.actions)
@@ -440,7 +441,18 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 								if (active_development.operable(action,model.yields,&vertexinfo) &&
 									active_development.getage()%compressageoperability==0)
 								{
-									const bool gotaserie = (gotseries && stayonserie(front_vertex, action, model));
+									bool gotaserie = false;
+									if (gotseries && keepforserie(front_vertex,
+											(model.actions.cbegin() + action_id),
+											maxseriesize,
+											model.actions,
+											gotaserie))//If true keep it for a next operability
+											//If dont need to keep and not on a serie do the usual thing
+											//If gotserie = true then you are on the right action of the serie...
+										{
+											new_actives.push(front_vertex);
+											continue;
+										}
 									if (gotaserie||action.getname() == "_DEATH")
 									{
 										if (gotaserie && boost::out_degree(front_vertex, data) > 0) // If you are on a serie and you can be operated by other action just throw...
@@ -546,6 +558,9 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 			return (statsdiff - stats);
 
 		}
+
+
+
 		void getvariablenames(const std::vector<Core::FMTaction>& actions, std::vector<std::string>& colnames) const
 		{
 			try {
@@ -2057,30 +2072,63 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 			}
 			return amount;
 		}
-		bool stayonserie(const FMTvertex_descriptor& targetdescriptor, const Core::FMTaction& action, const Models::FMTmodel& model) const
+		std::vector<Core::FMTaction>::const_iterator getactionoffirstserie(const FMTvertex_descriptor& targetdescriptor,
+			std::vector<Core::FMTaction>::const_iterator theaction,
+			const size_t& seriemaxsize, const std::vector<Core::FMTaction>& actions) const
 		{
 			try {
-				if (action.ispartofaserie())
+				const std::vector<std::string> targetserie = getactionserie(targetdescriptor, seriemaxsize, actions);
+				for (std::vector<Core::FMTaction>::const_iterator acit = theaction;acit!= actions.cend();++acit)
+				{
+					if (acit->ispartofaserie()&& acit->isallowedinserie(targetserie))
 					{
-					const std::vector<std::string> targetserie = getactionserie(targetdescriptor, action, model);
-					return action.isallowedinserie(targetserie);
+						return acit;
 					}
+				}
 			}
 			catch (...)
 			{
-				_exhandler->printexceptions("", "FMTgraph::stayonserie", __LINE__, __FILE__);
+				_exhandler->printexceptions("", "FMTgraph::getactionserie", __LINE__, __FILE__);
+			}
+			return actions.cend();
+		}
+
+		bool keepforserie(const FMTvertex_descriptor& targetdescriptor,
+			std::vector<Core::FMTaction>::const_iterator theaction,
+			const size_t& seriemaxsize,
+			const std::vector<Core::FMTaction>& actions,
+			bool& onserie) const
+		{
+			try {
+				std::vector<Core::FMTaction>::const_iterator acit = getactionoffirstserie(targetdescriptor, theaction, seriemaxsize,actions);
+				if (acit == actions.end())
+				{
+					onserie = false;
+				}
+				else if (acit == theaction)
+				{
+					onserie = true;
+				}
+				else {
+					return true;
+					//new_actives.push(front_vertex);
+					//continue;
+				}
+			}
+			catch (...)
+			{
+				_exhandler->printexceptions("", "FMTgraph::keepforserie", __LINE__, __FILE__);
 			}
 			return false;
 		}
 
 
-		std::vector<std::string> getactionserie(FMTvertex_descriptor targetdescriptor,const Core::FMTaction& action, const Models::FMTmodel& model) const
+		std::vector<std::string> getactionserie(FMTvertex_descriptor targetdescriptor,
+			const size_t& maxactions, const std::vector<Core::FMTaction>& actions) const
 			{
 			std::vector<std::string>theserie;
 			try {
 				size_t inedgessize = boost::in_degree(targetdescriptor,data);
-				const size_t maxactions = action.getlargestseriesize();
-				theserie.reserve(maxactions);
 				while (inedgessize>0 && theserie.size()<maxactions)
 					{
 					if (inedgessize > 0)
@@ -2096,7 +2144,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 							}
 								const FMTbasevertexproperties& targetproperties = data[targetdescriptor];
 								_exhandler->raise(Exception::FMTexc::FMTrangeerror,
-									"Developement " + std::string(targetproperties.get()) + " operated by "+action.getname() + " has " + std::to_string(inedgessize) + " in edges ("+actions+")",
+									"Developement " + std::string(targetproperties.get())  + " has " + std::to_string(inedgessize) + " in edges ("+actions+")",
 									"FMTgraph::getactionserie", __LINE__, __FILE__);
 							}
 						FMTinedge_iterator inedge_iterator, inedge_end;
@@ -2105,7 +2153,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 						const int actionid = inedgeproperties.getactionID();
 						if (actionid >=0)
 							{
-							theserie.insert(theserie.begin(), model.actions.at(actionid).getname());
+							theserie.insert(theserie.begin(), actions.at(actionid).getname());
 							}
 						targetdescriptor = boost::source(*inedge_iterator, data);
 						inedgessize = boost::in_degree(targetdescriptor, data);
@@ -2430,15 +2478,6 @@ template<> inline std::map<int, double> FMTgraph<Graph::FMTvertexproperties, Gra
 					Core::FMTdevelopment newdev(development);
 					newdev.setperiod(newdev.getperiod() - 1);
 					const double coef = output_node.source.getcoef(newdev, model.yields, &vertexinfo) * output_node.factor.getcoef(newdev, model.yields, &vertexinfo) * output_node.constant;
-					if (coef>= 0.308 && coef <= 0.31)
-					{
-						/**const std::string valof = std::string(development);
-						if (valof.find("GS5135 FORP 1 SR4661 FC5255 NAT O INC NA NA NA NA NA P27027 NA NA NA NA NA PA001 47") != std::string::npos)
-						{
-							
-						}*/
-						std::cout << "WEELL STF" << "\n";
-					}
 					
 					if (development.getperiod() == 0)
 					{

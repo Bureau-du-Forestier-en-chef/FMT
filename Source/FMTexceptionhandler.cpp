@@ -686,7 +686,7 @@ std::string FMTexceptionhandler::updatestatus(const FMTexc lexception, const std
 		++_errorcount;
 		break;
 	case FMTexc::FMToutofrangeyield:
-		msg += "Out of range " + message;
+		msg += "Out of range yield" + message;
 		_level = FMTlev::FMT_logic;
 		++_errorcount;
 		break;

@@ -16,7 +16,8 @@ int main(int argc, char *argv[])
 	Logging::FMTlogger().logstamp();
 	if (Version::FMTversion().hasfeature("OSI"))
 		{
-		const std::string primarylocation =  std::string(argv[1]);
+		//const std::string primarylocation =  std::string(argv[1]);
+		const std::string primarylocation = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/09_FMT/Modeles_test/PC9509_U02751_DET_ECON_Cout_T/PC_9509_U02751_4_Vg2_2023_vRp2.pri";
 		Parser::FMTmodelparser modelparser;
 		modelparser.setdefaultexceptionhandler();
 		std::vector<Exception::FMTexc>errors;
@@ -27,9 +28,11 @@ int main(int argc, char *argv[])
 		errors.push_back(Exception::FMTexc::FMTundefinedoutput_attribute);
 		errors.push_back(Exception::FMTexc::FMToveridedyield);
 		modelparser.seterrorstowarnings(errors);
-		const std::vector<std::string>scenarios(1, std::string(argv[2]));
+		//const std::vector<std::string>scenarios(1, std::string(argv[2]));
+		const std::vector<std::string>scenarios(1, "14_Sc5a_Determin_avsp_Cout_t5");
 		const std::vector<Models::FMTmodel> models = modelparser.readproject(primarylocation, scenarios);
-		Models::FMTlpmodel optimizationmodel(models.at(0), Models::FMTsolverinterface::CLP);
+		//Models::FMTlpmodel optimizationmodel(models.at(0), Models::FMTsolverinterface::CLP);
+		Models::FMTlpmodel optimizationmodel(models.at(0), Models::FMTsolverinterface::MOSEK);
 		const std::vector<Core::FMTschedule>schedules = modelparser.readschedules(primarylocation,models).at(0);
 		const double tolerance = 0.01;
 		//optimizationmodel.setparameter(Models::FMTintmodelparameters::PRESOLVE_ITERATIONS, 0);
@@ -44,14 +47,14 @@ int main(int argc, char *argv[])
 			{
 			optimizationmodel.setsolution(period,schedules.at(period-1), tolerance);
 			}*/
-		if (argc>3)//Got the double for validation!
+		/*if (argc>3)//Got the double for validation!
 			{
 			
-			const double ovoltotrecvalue =  std::stod(argv[3]);
+			const double ovoltotrecvalue =  std::stod(argv[3]);*/
 			bool gotovoltotrec = false;
 			for (const Core::FMToutput& output : optimizationmodel.getoutputs())
 				{
-				if (output.getname()=="OVOLTOTREC")
+				/*if (output.getname() == "OVOLTOTREC")
 					{
 					gotovoltotrec = true;
 					const double returnedvalue = optimizationmodel.getoutput(output, 2, Core::FMToutputlevel::totalonly).at("Total");
@@ -61,14 +64,20 @@ int main(int argc, char *argv[])
 							"FMTsetsolution", __LINE__, primarylocation);
 						}
 					break;
-					}
+					}*/
+				if (output.getname().find("OCOUT")!=std::string::npos)
+				{
+					gotovoltotrec = true;
+					const double returnedvalue = optimizationmodel.getoutput(output, 2, Core::FMToutputlevel::totalonly).at("Total");
+					std::cout << output.getname()<<" "<< returnedvalue << "\n";
+				}
 				}
 			if (!gotovoltotrec)
 				{
 				Exception::FMTfreeexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed, "No OVOLTOTREC OUPUT",
 					"FMTsetsolution", __LINE__, primarylocation);
 				}
-			}
+		//	}
 	}else {
 		Logging::FMTlogger() << "FMT needs to be compiled with OSI" << "\n";
 		}

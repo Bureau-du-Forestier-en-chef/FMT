@@ -262,6 +262,24 @@ bool FMTmodel::useactionserie() const
 	return gotseries;
 }
 
+size_t FMTmodel::getseriesmaxsize() const
+{
+	size_t maxsize = 0;
+	try {
+		if (useactionserie())
+			{
+			for (const Core::FMTaction& action : actions)
+				{
+				maxsize = std::max(maxsize, action.getlargestseriesize());
+				}
+			}
+	}catch (...)
+		{
+		_exhandler->raisefromcatch("", "FMTmodel::getseriesmaxsize", __LINE__, __FILE__);
+		}
+	return maxsize;
+}
+
 
 
 

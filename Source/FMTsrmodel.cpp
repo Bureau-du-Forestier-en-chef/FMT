@@ -1263,6 +1263,7 @@ namespace Models
 	}
 
 
+
 	std::vector<Core::FMTactualdevelopment>FMTsrmodel::getarea(int period, bool beforegrowanddeath) const
 	{
 		std::vector<Core::FMTactualdevelopment>returnedarea;
