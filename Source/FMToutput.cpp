@@ -958,27 +958,26 @@ Core::FMToutput FMToutput::removeRHSvalue() const
 
 void FMToutput::getRHSvalue(const int& period, double& lower, double& upper) const
 {
-	double outrhs = 0;
+	
 	try {
-		std::vector<Core::FMToperator>baseoperators(operators);
-		baseoperators.insert(baseoperators.begin(), Core::FMToperator("+"));
-		size_t opid = 0;
+		std::vector<double>toshunt;
 		for (const FMToutputsource& source : sources)
 		{
+
 			if (((source.islevel() && !source.isvariablelevel()) ||
-				source.isconstant()) &&
-				!baseoperators.at(opid).isfactor())
-			{//get double and remove the rest
-				const double cvalue = source.getvalue(period);
-				outrhs = baseoperators.at(opid).call(outrhs, cvalue);
-				if (opid+1<baseoperators.size()) 
-				{
-					outrhs = baseoperators.at(opid + 1).call(outrhs, sources.at(opid + 1).getvalue(period));
-				}
-				
+				source.isconstant()))
+			{
+				toshunt.push_back(source.getvalue(period));
+			}else
+			{
+				toshunt.push_back(0);
 			}
-			++opid;
+
 		}
+
+		const double outrhs = this->shuntingyard(toshunt, operators);
+
+
 		if (outrhs!=1)
 		{
 			if (lower != std::numeric_limits<double>::lowest())

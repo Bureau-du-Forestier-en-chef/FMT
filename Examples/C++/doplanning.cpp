@@ -51,16 +51,16 @@ int main(int argc, char* argv[])
 		optimizationmodel.setparameter(Models::FMTintmodelparameters::PRESOLVE_ITERATIONS,10);
 		optimizationmodel.setparameter(Models::FMTintmodelparameters::NUMBER_OF_THREADS, 1);
 		
-		//modelparser.write(optimizationmodel, "D:/testb/");
+		modelparser.write(optimizationmodel, "D:/test/");
 		if (optimizationmodel.doplanning(true)) {
 			
 			std::cout << std::to_string(optimizationmodel.getObjValue()) << std::endl;
-			/*for (const Core::FMToutput& output : optimizationmodel.getoutputs())
+			for (const Core::FMToutput& output : optimizationmodel.getoutputs())
 			{
-				if (output.getname().find("OCOUTM3_T_TOT")!=std::string::npos)
+				if (output.getname().find("TEST")!=std::string::npos)
 				{
 					std::cout << output.getname() << " ";
-					for (int period =1 ; period <= 5; ++period)
+					for (int period =1 ; period <= 2; ++period)
 						{
 						const std::map<std::string, double>outs = optimizationmodel.getoutput(output, period, Core::FMToutputlevel::totalonly);
 						if (!outs.empty())
@@ -71,14 +71,16 @@ int main(int argc, char* argv[])
 					std::cout << "\n";
 				}
 
-			}*/
+			}
 		}
 		optimizationmodel.writeLP("D:/test/test.lp");
 		
 		Parser::FMTscheduleparser schparser;
 		std::vector<Core::FMTschedule>returnschedule;
-		returnschedule.push_back(optimizationmodel.getsolution(1, false));
-		returnschedule.push_back( optimizationmodel.getsolution(2, false));
+		for (int id = 0; id < 10;++id)
+		{
+			returnschedule.push_back(optimizationmodel.getsolution(id+1, true));
+		}
 		schparser.write(returnschedule, "D:/test/schedule.seq");
 		if ((std::abs(optimizationmodel.getObjValue() - objectivevalue)) >= 1)
 		{

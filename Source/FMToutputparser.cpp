@@ -69,23 +69,23 @@ namespace Parser
 					   //if (isnumber)
 					   //{
 						   double srcvalue = value;
-						   if (id > 0 && sources.at(id - 1).isvariable())
+						   if (id > 0 && (sources.at(id - 1).isvariable()   || (sources.at(id - 1).islevel() && !sources.at(id - 1).isvariablelevel())))
 						   {
 							   //if (isnumber)
 							   //{
-								   if (sources.at(id).isconstant()&& isnumber)
+								   if (sources.at(id).isconstant()&&isnumber)
 								   {
 									   srcvalue = Core::FMToperator(operators.at(lastop)).call(srcvalue, sources.at(id).getvalue());
 								   }
 								   else {
 									   newoperators.push_back(Core::FMToperator(lastoperator));
 								   }
-								   newsources.push_back(Core::FMToutputsource(targetof, srcvalue, yldtarget, "", sources.at(id).getoutputorigin(), sources.at(id).getthemetarget()));
+								newsources.push_back(Core::FMToutputsource(targetof, srcvalue, yldtarget, "", sources.at(id).getoutputorigin(), sources.at(id).getthemetarget()));
 							   //}
 							   
 						   }
 					   //}
-					   if (sources.at(id).isvariable() || sources.at(id).islevel() || sources.at(id).istimeyield() || !isnumber)
+					   if (sources.at(id).isvariable()  || sources.at(id).islevel() || sources.at(id).istimeyield() || !isnumber)
 					   {
 						   newsources.push_back(sources.at(id));
 					   }
@@ -345,7 +345,6 @@ namespace Parser
 												_exhandler->raise(Exception::FMTexc::FMTunsupported_output,
 													name + " at line " + std::to_string(_line),"FMToutputparser::read", __LINE__, __FILE__, _section);
 											}
-											
 											appendtooutput(
 												std::to_string(value),
 												outputid,

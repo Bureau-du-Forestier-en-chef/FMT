@@ -84,7 +84,7 @@ FMTtransitionmask::FMTtransitionmask(const std::string& lmask,const std::vector<
         if(!lock.empty())
             {
 			const int lower_lock = lock.getlower();
-            newdev.setlock(lower_lock);
+            newdev.setlock(std::max(lower_lock, newdev.getlock()));
             }
         if(!age.empty())
             {
