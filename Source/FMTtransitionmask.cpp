@@ -81,7 +81,7 @@ FMTtransitionmask::FMTtransitionmask(const std::string& lmask,const std::vector<
 			newdev.setmask(newmask);
 		}
 		bool age_change = false;
-        if(!lock.empty())
+        if (!lock.empty())
             {
 			const int lower_lock = lock.getlower();
             newdev.setlock(std::max(lower_lock, newdev.getlock()));

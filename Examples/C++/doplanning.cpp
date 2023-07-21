@@ -55,23 +55,35 @@ int main(int argc, char* argv[])
 		if (optimizationmodel.doplanning(true)) {
 			
 			std::cout << std::to_string(optimizationmodel.getObjValue()) << std::endl;
+			std::vector<Core::FMToutput>outputs;
 			for (const Core::FMToutput& output : optimizationmodel.getoutputs())
 			{
-				if (output.getname().find("TEST")!=std::string::npos)
+				if (output.getname()=="OAAMINC")
 				{
 					std::cout << output.getname() << " ";
-					for (int period =1 ; period <= 2; ++period)
+					for (int period =1 ; period <= 10; ++period)
 						{
 						const std::map<std::string, double>outs = optimizationmodel.getoutput(output, period, Core::FMToutputlevel::totalonly);
+						for (const auto& val : outs)
+						{
+							if (val.second>0)
+							{
+								std::cout << period << " " << val.second << "\n";
+							}
+							
+						}
 						if (!outs.empty())
 							{
 							std::cout << outs.at("Total") << " ";
 							}
 						}
 					std::cout << "\n";
+					outputs.push_back(output);
 				}
 
 			}
+			modelparser.writeresults(optimizationmodel, outputs, 10, 10, "D:/test/out", Core::FMToutputlevel::developpement);
+
 		}
 		optimizationmodel.writeLP("D:/test/test.lp");
 		
@@ -79,7 +91,7 @@ int main(int argc, char* argv[])
 		std::vector<Core::FMTschedule>returnschedule;
 		for (int id = 0; id < 10;++id)
 		{
-			returnschedule.push_back(optimizationmodel.getsolution(id+1, true));
+			returnschedule.push_back(optimizationmodel.getsolution(id+1, false));
 		}
 		schparser.write(returnschedule, "D:/test/schedule.seq");
 		if ((std::abs(optimizationmodel.getObjValue() - objectivevalue)) >= 1)

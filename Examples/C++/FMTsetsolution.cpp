@@ -17,7 +17,7 @@ int main(int argc, char *argv[])
 	if (Version::FMTversion().hasfeature("OSI"))
 		{
 		//const std::string primarylocation =  std::string(argv[1]);
-		const std::string primarylocation = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/09_FMT/Modeles_test/PC9509_U02751_DET_ECON_Cout_T/PC_9509_U02751_4_Vg2_2023_vRp2.pri";
+		const std::string primarylocation = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/09_FMT/Modeles_test/actionseries/PC_9509_U02751_4_Vg2_2023_vRp2.pri";
 		Parser::FMTmodelparser modelparser;
 		modelparser.setdefaultexceptionhandler();
 		std::vector<Exception::FMTexc>errors;
@@ -27,9 +27,10 @@ int main(int argc, char *argv[])
 		errors.push_back(Exception::FMTexc::FMTinvalidyield_number);
 		errors.push_back(Exception::FMTexc::FMTundefinedoutput_attribute);
 		errors.push_back(Exception::FMTexc::FMToveridedyield);
+		errors.push_back(Exception::FMTexc::FMToutofrangeyield);
 		modelparser.seterrorstowarnings(errors);
 		//const std::vector<std::string>scenarios(1, std::string(argv[2]));
-		const std::vector<std::string>scenarios(1, "14_Sc5a_Determin_avsp_Cout_t5");
+		const std::vector<std::string>scenarios(1, "14_sc5_determin_apsp_ref_aam_ratioplct_action_series_3");
 		const std::vector<Models::FMTmodel> models = modelparser.readproject(primarylocation, scenarios);
 		//Models::FMTlpmodel optimizationmodel(models.at(0), Models::FMTsolverinterface::CLP);
 		Models::FMTlpmodel optimizationmodel(models.at(0), Models::FMTsolverinterface::MOSEK);
@@ -65,11 +66,16 @@ int main(int argc, char *argv[])
 						}
 					break;
 					}*/
-				if (output.getname().find("OCOUT")!=std::string::npos)
+				if (output.getname().find("OAAMINC")!=std::string::npos||
+					output.getname().find("TEST") != std::string::npos)
 				{
 					gotovoltotrec = true;
-					const double returnedvalue = optimizationmodel.getoutput(output, 2, Core::FMToutputlevel::totalonly).at("Total");
-					std::cout << output.getname()<<" "<< returnedvalue << "\n";
+					for (int period =0 ; period < 11; ++period)
+					{
+						const double returnedvalue = optimizationmodel.getoutput(output, period, Core::FMToutputlevel::totalonly).at("Total");
+						std::cout << output.getname() <<" "<<period << " " << returnedvalue << "\n";
+					}
+					
 				}
 				}
 			if (!gotovoltotrec)

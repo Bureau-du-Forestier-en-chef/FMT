@@ -69,7 +69,7 @@ namespace Parser
 					   //if (isnumber)
 					   //{
 						   double srcvalue = value;
-						   if (id > 0 && (sources.at(id - 1).isvariable()   || (sources.at(id - 1).islevel() && !sources.at(id - 1).isvariablelevel())))
+						   if (id > 0 && (sources.at(id - 1).isvariable()    || (sources.at(id - 1).islevel() && !sources.at(id - 1).isvariablelevel())))
 						   {
 							   //if (isnumber)
 							   //{
