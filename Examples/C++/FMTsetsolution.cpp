@@ -16,8 +16,8 @@ int main(int argc, char *argv[])
 	Logging::FMTlogger().logstamp();
 	if (Version::FMTversion().hasfeature("OSI"))
 		{
-		//const std::string primarylocation =  std::string(argv[1]);
-		const std::string primarylocation = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/09_FMT/Modeles_test/actionseries/PC_9509_U02751_4_Vg2_2023_vRp2.pri";
+		const std::string primarylocation =  std::string(argv[1]);
+		//const std::string primarylocation = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/09_FMT/Modeles_test/actionseries/PC_9509_U02751_4_Vg2_2023_vRp2.pri";
 		Parser::FMTmodelparser modelparser;
 		modelparser.setdefaultexceptionhandler();
 		std::vector<Exception::FMTexc>errors;
@@ -29,8 +29,8 @@ int main(int argc, char *argv[])
 		errors.push_back(Exception::FMTexc::FMToveridedyield);
 		errors.push_back(Exception::FMTexc::FMToutofrangeyield);
 		modelparser.seterrorstowarnings(errors);
-		//const std::vector<std::string>scenarios(1, std::string(argv[2]));
-		const std::vector<std::string>scenarios(1, "14_sc5_determin_apsp_ref_aam_ratioplct_action_series_3");
+		const std::vector<std::string>scenarios(1, std::string(argv[2]));
+		//const std::vector<std::string>scenarios(1, "14_sc5_determin_apsp_ref_aam_ratioplct_action_series_3");
 		const std::vector<Models::FMTmodel> models = modelparser.readproject(primarylocation, scenarios);
 		//Models::FMTlpmodel optimizationmodel(models.at(0), Models::FMTsolverinterface::CLP);
 		Models::FMTlpmodel optimizationmodel(models.at(0), Models::FMTsolverinterface::MOSEK);
@@ -48,14 +48,14 @@ int main(int argc, char *argv[])
 			{
 			optimizationmodel.setsolution(period,schedules.at(period-1), tolerance);
 			}*/
-		/*if (argc>3)//Got the double for validation!
+		if (argc>3)//Got the double for validation!
 			{
 			
-			const double ovoltotrecvalue =  std::stod(argv[3]);*/
+			const double ovoltotrecvalue =  std::stod(argv[3]);
 			bool gotovoltotrec = false;
 			for (const Core::FMToutput& output : optimizationmodel.getoutputs())
 				{
-				/*if (output.getname() == "OVOLTOTREC")
+				if (output.getname() == "OVOLTOTREC")
 					{
 					gotovoltotrec = true;
 					const double returnedvalue = optimizationmodel.getoutput(output, 2, Core::FMToutputlevel::totalonly).at("Total");
@@ -65,8 +65,8 @@ int main(int argc, char *argv[])
 							"FMTsetsolution", __LINE__, primarylocation);
 						}
 					break;
-					}*/
-				if (output.getname().find("OAAMINC")!=std::string::npos||
+					}
+				/*if (output.getname().find("OAAMINC") != std::string::npos ||
 					output.getname().find("TEST") != std::string::npos)
 				{
 					gotovoltotrec = true;
@@ -76,14 +76,14 @@ int main(int argc, char *argv[])
 						std::cout << output.getname() <<" "<<period << " " << returnedvalue << "\n";
 					}
 					
-				}
+				}*/
 				}
 			if (!gotovoltotrec)
 				{
 				Exception::FMTfreeexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed, "No OVOLTOTREC OUPUT",
 					"FMTsetsolution", __LINE__, primarylocation);
 				}
-		//	}
+			}
 	}else {
 		Logging::FMTlogger() << "FMT needs to be compiled with OSI" << "\n";
 		}

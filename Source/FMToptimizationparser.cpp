@@ -767,7 +767,7 @@ namespace Parser
 			if (!location.empty())
 			{
 				std::vector<boost::icl::interval_set<int>>ActionPeriods;
-				const boost::icl::discrete_interval<int> IntervalReference = boost::icl::discrete_interval<int>::closed(1, std::numeric_limits<int>::max());
+				const boost::icl::discrete_interval<int> IntervalReference = boost::icl::discrete_interval<int>::closed(-1, std::numeric_limits<int>::max());
 				std::ifstream optimizestream(location);
 				if (FMTparser::tryopening(optimizestream, location))
 				{
@@ -831,7 +831,6 @@ namespace Parser
 										const std::vector<const Core::FMTaction*>action_ptrs = Core::FMTactioncomparator(action_name).getallaggregates(excluded);
 										if (!action_ptrs.empty())
 											{
-
 											if (ActionPeriods.empty())
 												{
 												boost::icl::interval_set<int>BaseRange;
@@ -897,6 +896,7 @@ namespace Parser
 							}
 							for (const boost::icl::discrete_interval<int>& OperableInterval : ActionIntervals)
 							{
+								const bool MoreThanOne = (actions.at(ActionId).size() > 1);
 								for (const auto& ActionData : actions.at(ActionId))
 								{
 									Core::FMTspec theSpec = ActionData.second;
@@ -913,8 +913,12 @@ namespace Parser
 									{
 										--Upper;
 									}
-									theSpec.setbounds(Core::FMTperbounds(Core::FMTsection::Action, Upper, Lower));
-									NewAction.push_back(ActionData.first, theSpec);
+									if (!(MoreThanOne && (Lower == 0 && Upper == 0)))
+										{
+										theSpec.setbounds(Core::FMTperbounds(Core::FMTsection::Action, Upper, Lower));
+										NewAction.push_back(ActionData.first, theSpec);
+										}
+									
 								}
 							}
 							

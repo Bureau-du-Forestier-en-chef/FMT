@@ -676,7 +676,11 @@ std::vector<FMToutputnode> FMToutput::getnodes(std::vector<std::string>& equatio
 			//std::queue<FMToperator>ops;
 			//ops.push(FMToperator("+"));
 			std::deque<FMToperator>ops(operators.begin(), operators.end());
-			ops.push_front(FMToperator("+"));
+			//if (ops.empty() || ops.front().isfactor())
+			//{
+				ops.push_front(FMToperator("+"));
+			//}
+			
 			/*for (const FMToperator& op : operators)
 				{
 				ops.push(op);

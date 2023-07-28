@@ -69,7 +69,7 @@ namespace Core
 		virtual std::vector<std::string>getyieldnames() const;
 		virtual void clearcache();
 		virtual int getage(const FMTyieldrequest& request, const FMTspec& spec) const;
-		virtual double getyieldlinearvalue(const std::string& yldname, const FMTyieldrequest& request) const;
+		virtual double getyieldlinearvalue(const std::string& yldname, const FMTyieldrequest& request, bool allowoutofrange=true) const;
 	};
 
 }

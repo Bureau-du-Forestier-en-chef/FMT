@@ -33,6 +33,15 @@
 *OUTPUT test7
 *SOURCE lev1 * lev2 + lev1 + lev2; 12 * 30 + 12 + 30 = 402
 
+*OUTPUT  test81 
+*SOURCE oSupRec + lev1 * 3 - oSupRec * 9
+
+*OUTPUT  test82 
+*SOURCE oSupRec * 9 + oSupRec + lev1 * 3
+
+*OUTPUT  test83 
+*SOURCE lev1 * 10 - oSupRec * 3
+
 *OUTPUT test8
 *SOURCE lev2 - oSupRec * 30 - oSupRec * lev2 ; 30 - 1613.12 * 30 - 1613.12 * 30
 

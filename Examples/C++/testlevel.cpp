@@ -51,6 +51,10 @@ int main()
 		testmaps["TEST13"] = 871.0848;
 		testmaps["TEST14"] = 3226.24;
 		testmaps["TEST15"] = 193574.4;
+		testmaps["TEST81"] = -12868.96;
+		testmaps["TEST82"] = 16167.2;
+		testmaps["TEST83"] = -4719.36;
+		//modelparser.write(optimizationmodel,"D:/test/");
 		if (optimizationmodel.initialsolve())
 			{
 			for (const Core::FMToutput& output : optimizationmodel.getoutputs())

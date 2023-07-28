@@ -62,28 +62,33 @@ namespace Parser
 					   {
 						   newoperators.push_back(operators.at(lastop));
 						   ++lastop;
-					   }
+					  }
 				   }
 				   for (; id < sources.size(); ++id)
 				   {
 					   //if (isnumber)
 					   //{
 						   double srcvalue = value;
-						   if (id > 0 && (sources.at(id - 1).isvariable()    || (sources.at(id - 1).islevel() && !sources.at(id - 1).isvariablelevel())))
+						   if (id > 0 && (sources.at(id - 1).isvariable() || (sources.at(id  - 1).islevel() && !sources.at(id  - 1).isvariablelevel())) /* && operators.at(lastop).isfactor()*/)
 						   {
+							   /*if (!operators.at(lastop).isfactor()) // If it comes from same output dont multiply...
+							   {
+								   std::cout << "Test "<<id << "\n";
+							   }*/
 							   //if (isnumber)
 							   //{
 								   if (sources.at(id).isconstant()&&isnumber)
 								   {
 									   srcvalue = Core::FMToperator(operators.at(lastop)).call(srcvalue, sources.at(id).getvalue());
 								   }
-								   else {
+								   else{
 									   newoperators.push_back(Core::FMToperator(lastoperator));
 								   }
 								newsources.push_back(Core::FMToutputsource(targetof, srcvalue, yldtarget, "", sources.at(id).getoutputorigin(), sources.at(id).getthemetarget()));
 							   //}
 							   
 						   }
+						   
 					   //}
 					   if (sources.at(id).isvariable()  || sources.at(id).islevel() || sources.at(id).istimeyield() || !isnumber)
 					   {
@@ -335,8 +340,8 @@ namespace Parser
 										if (!processing_level && (isnum(strsrc) || constants.isconstant(strsrc)))
 										{
 											const double value = getnum<double>(strsrc, constants);
-											if (((!stroperators.empty() &&
-												(stroperators.at(0) == "+" || stroperators.at(0) == "-")) ||
+											if ((/*(!stroperators.empty() &&
+												(stroperators.at(0) == "+" || stroperators.at(0) == "-")) ||*/
 												(!lastoperator.empty() &&
 												(lastoperator == "+" || lastoperator == "-"))) &&
 													(std::find_if(sources.begin(), sources.end(), Core::FMToutputsourcecomparator(true)) == sources.end()))
@@ -354,68 +359,7 @@ namespace Parser
 												stroperators,
 												sources,
 												operators);
-											//lastoutput = 0;
 											
-											/*if (!lastoperator.empty())
-											{
-												std::vector<Core::FMToutputsource>newsources;
-												std::vector<Core::FMToperator>newoperators;
-												size_t lastop = 0;
-												size_t id = 0;
-												for (; id < lastoutput; ++id)
-												{
-													newsources.push_back(sources.at(id));
-													if (id > 0)
-													{
-														newoperators.push_back(operators.at(lastop));
-														++lastop;
-													}
-												}
-												for (; id < sources.size(); ++id)
-												{
-													double srcvalue = value;
-													if (id > 0 && sources.at(id - 1).isvariable())
-													{
-														if (sources.at(id).isconstant())
-														{
-															srcvalue = Core::FMToperator(operators.at(lastop)).call(srcvalue, sources.at(id).getvalue());
-														}
-														else {
-															newoperators.push_back(Core::FMToperator(lastoperator));
-														}
-														newsources.push_back(Core::FMToutputsource(Core::FMTotar::val, srcvalue,"","", sources.at(id).getoutputorigin(),sources.at(id).getthemetarget()));
-													}
-													if (sources.at(id).isvariable() || sources.at(id).islevel())
-													{
-														newsources.push_back(sources.at(id));
-													}
-													if (id > 0)
-													{
-														newoperators.push_back(operators.at(lastop));
-														++lastop;
-													}
-												}
-												if (newsources.back().isvariable() || newsources.back().islevel())
-												{
-													newsources.push_back(Core::FMToutputsource(Core::FMTotar::val, value,"","", newsources.back().getoutputorigin(),newsources.back().getthemetarget()));
-													
-													newoperators.push_back(Core::FMToperator(lastoperator));
-												}
-
-												operators = newoperators;
-												sources = newsources;
-												lastoperator.clear();
-												if (!stroperators.empty())
-												{
-													operators.push_back(Core::FMToperator(stroperators.front()));
-													lastoperator = stroperators.front();
-													stroperators.erase(stroperators.begin());
-												}
-											}
-											else {
-												sources.push_back(Core::FMToutputsource(Core::FMTotar::val, value,"","",outputid,themetarget));
-
-											}*/
 
 										}
 										else if (processing_level)
@@ -454,6 +398,7 @@ namespace Parser
 												std::vector<Core::FMToutput>::const_iterator it = std::find_if(outputs->begin(), outputs->end(), Core::FMToutputcomparator(strsrc));
 												if (it != outputs->end()||boost::regex_search(strsrc, constantmatch, rxoutputconstant))
 												{
+													lastoutput = sources.size() + 1;
 													Core::FMToutput targetoutput;
 													if (it==outputs->end())
 														{
@@ -468,7 +413,7 @@ namespace Parser
 
 													if (!targetoutput.islevel() || (targetoutput.islevel() && !targetoutput.getsources().empty()))
 													{
-														lastoutput = sources.size();
+														//lastoutput = sources.size();
 														bool themediff=false;
 														for (const Core::FMToutputsource& src : targetoutput.getsources())
 														{

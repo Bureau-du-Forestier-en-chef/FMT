@@ -11,6 +11,7 @@
 #include "FMTGCBMtransition.hpp"
 #include "FMTfreeexceptionhandler.hpp"
 #include "FMToutput.hpp"
+
 #endif
 
 int main()
@@ -77,6 +78,20 @@ int main()
 	}
 	mparser.writeresults(simulationmodel, outputs, 1, 10, outdir + "test.csv", Core::FMToutputlevel::totalonly);
 	const Spatial::FMTspatialschedule spatialsolution = simulationmodel.getspschedule();
+	const std::string stats = spatialsolution.getpatchstats(simulationmodel.getactions());
+	std::vector<std::string>results;
+	boost::split(results, stats, boost::is_any_of("\n"));
+	for (const std::string& result : results)
+	{
+		std::vector<std::string>spresults;
+		boost::split(spresults, stats, boost::is_any_of(" "));
+		if (spresults.at(1)=="COUPETOTALE" && spresults.at(1) !="2")
+			{
+			Exception::FMTfreeexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed, "Wrong Patch size",
+				"", __LINE__, primarylocation);
+			}
+	}
+
 	Logging::FMTlogger() <<"xsize : "<< spatialsolution.GetXSize() << "\n";
 	Logging::FMTlogger() << "ysize : " << spatialsolution.GetYSize() << "\n";
 	for (int period = 1; period <= 10; ++period)

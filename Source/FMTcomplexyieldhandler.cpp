@@ -566,7 +566,7 @@ namespace Core {
 		return std::unique_ptr<FMTyieldhandler>();
 	}
 
-	double FMTcomplexyieldhandler::getyieldlinearvalue(const std::string& yldname, const FMTyieldrequest& request) const
+	double FMTcomplexyieldhandler::getyieldlinearvalue(const std::string& yldname, const FMTyieldrequest& request, bool allowoutofrange) const //should allowoutofrange always false??? to get a 0 at the end of the curve
 	{
 		double returned = 0;
 		try {
