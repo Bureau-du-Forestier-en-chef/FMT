@@ -397,6 +397,7 @@ void FMToutput::replacedivision(const double& bound)
 	baseoperators.insert(baseoperators.begin(), Core::FMToperator("+"));
 	size_t opid = 0;
 	bool denominator = false;
+	bool gotonefactor = false;
 	operators.clear();
 	for (FMToutputsource& source : sources)
 	{
@@ -412,12 +413,19 @@ void FMToutput::replacedivision(const double& bound)
 		{
 			if (!source.isvariable() && (source.isconstant()||source.islevel()))
 			{
-				std::vector<double>allvalues = source.getvalues();
-				for (double& value : allvalues)
+				if (!gotonefactor)
 				{
-					value *= -bound;
+					std::vector<double>allvalues = source.getvalues();
+					for (double& value : allvalues)
+					{
+						value *= -bound;
+					}
+					source = FMToutputsource(source.gettarget(), allvalues, source.getoutputorigin(), source.getthemetarget());
 				}
-				source= FMToutputsource(source.gettarget(), allvalues,source.getoutputorigin(),source.getthemetarget());
+				gotonefactor = true;
+			}
+			else {
+				gotonefactor = false;//Multiply the other variable...
 			}
 			
 		}
@@ -442,7 +450,9 @@ void FMToutput::setproportions(std::map<std::string, std::vector<std::string>>& 
 		for (const std::string& equation : baseequation)
 			{
 			if ((*equation.begin())!='O'&&//Got numerical
-				!FMToperator(equation).valid())
+				!FMToperator(equation).valid()&&
+				(*equation.begin()) != '('&&
+				(*equation.begin()) != ')')
 				{
 				double value = std::stod(equation);
 				value /= totalentry;
@@ -470,7 +480,7 @@ void FMToutput::setproportions(std::map<std::string, std::vector<std::string>>& 
 bool FMToutput::canbenodesonly() const
 	{
 	try {
-		if (islinear())
+		if (islinear()&& !isdivision())
 		{
 			std::vector<Core::FMToperator>baseoperators(operators);
 			baseoperators.insert(baseoperators.begin(), Core::FMToperator("+"));
@@ -706,12 +716,19 @@ std::vector<FMToutputnode> FMToutput::getnodes(std::vector<std::string>& equatio
 						{
 						constant *= ops.front().call(0, 1);
 						}
-					if (!pushednode)
+					if (ops.front().isfactor())
 					{
-						equation.push_back("+");
-					}else {
+						equation.push_back(")");
 						equation.push_back(ops.front());
+						equation.push_back("(");
+					}else {
+						if (!pushednode)
+						{
+							equation.push_back("+");
+						}else {
+							equation.push_back(ops.front());
 						}
+					}
 					equation.push_back("O" + std::to_string(nodes.size()));
 					ops.pop_front();
 					nodes.emplace_back(srs.front(),
@@ -747,6 +764,8 @@ std::vector<FMToutputnode> FMToutput::getnodes(std::vector<std::string>& equatio
 				srs.pop_front();
 				}
 			equation.erase(equation.begin());
+			equation.insert(equation.begin(), "(");
+			equation.push_back(")");
 		if (orderbyoutputid)
 			{
 			std::sort(nodes.begin(), nodes.end(), FMToutputnodeorigincomparator());

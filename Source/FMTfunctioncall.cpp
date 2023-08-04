@@ -32,7 +32,7 @@ double FMTfunctioncall::call(const double& rhs) const
 	double result = 0;
 	if (FMTfkey::expo == key)
 	{
-		result = std::pow(2.71828, rhs); //precision stuff...
+		result = std::pow(2.71828182845904523536/*2.71828*/, rhs); //precision stuff...
 	}
 	else if (FMTfkey::ln == key && rhs > 0)
 	{

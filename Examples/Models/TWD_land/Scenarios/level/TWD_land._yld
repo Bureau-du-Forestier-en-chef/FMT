@@ -38,6 +38,25 @@ _AGE volumetotal
 25   230
 30   150
 
+*Y ? ? ?
+_AGE ntige
+0    2000
+5    1500
+10   1000
+15   500
+20   300
+25   200
+30   200
+
+*Y ? ? ?
+_AGE sepm
+0   0
+5    40
+10   80
+15   100
+20   200
+25   250
+30   200
 
 *YC ? ? ?
 YBM_RTM_BOG _EQUATION(1.2159259330000001*10^0.87191668899999997)
@@ -47,3 +66,19 @@ YBM_RTM_MEH _EQUATION(1.1017722459999999*12^0.83493872400000002)
 *YT ? ? ?
 Ytest1 0 1 2 3 4 5 6 7 8 9 10
 ytest2 0 1 10 20 30 40 50 60 70 80
+
+*YC ? ? ? 
+yM3tige       _DIVIDE(volumetotal,ntige) 
+
+*YC ? ? ?
+yTauxRec_Ct _EQUATION(EXP(1.970 - 0.405 * LN(yM3tige)) + 17.71) 
+
+*YC ? ? ? 
+yPctVolgSepm _DIVIDE(sepm,volumetotal)
+
+*YC ? ? ?
+yCoutExplgSepm_Cp1  _EQUATION((volumetotal * (A + C + yTauxRec_Ct + 5.95)) + (E * yPctVolgSepm)) 
+
+*YC ? ? ?
+ytest5 _EQUATION(EXP(2.597269383))
+

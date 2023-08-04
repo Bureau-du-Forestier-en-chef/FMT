@@ -1,9 +1,10 @@
 
 *OBJECTIVE
-_MAXMIN oSupRec 1.._LENGTH
+_MAX oVolRec 1.._LENGTH
 
 *CONSTRAINTS
 
-oSupratio <= 0.01 1.._LENGTH
+;oSupratio <= 1.8 1.._LENGTH
+oSupratiobase <= 200 1.._LENGTH
 
 *FORMAT MOSEK

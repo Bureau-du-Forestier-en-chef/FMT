@@ -1,11 +1,20 @@
-*OUTPUT oSupRec
-*SOURCE ? ? ? coupetotale _AREA
+*OUTPUT oVolRec
+*SOURCE ? ? ? coupetotale volumetotal * 0.99
+
+*OUTPUT oVolRec2
+*SOURCE ? ? ? coupetotale volumetotal * 2.0
+
+*OUTPUT oSupRecbase
+*SOURCE ? ? ? coupetotale _AREA * 0.99
 
 *OUTPUT oSupinv
 *SOURCE ? ? ? _INVENT _AREA
 
+*OUTPUT oSupratiobase
+*SOURCE oVolRec / oSupRecbase
+
 *OUTPUT oSupratio
-*SOURCE oSupRec / oSupinv
+*SOURCE oVolRec2 / oVolRec
 
 
 

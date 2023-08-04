@@ -1,6 +1,9 @@
 *OUTPUT oSupRec
 *SOURCE ? ? ? coupetotale _AREA
 
+*OUTPUT oVolRec
+*SOURCE ? ? ? coupetotale volumetotal ; 270601
+
 *LEVEL lev1
 *SOURCE 12 15 16 18
 
@@ -66,6 +69,43 @@
 *OUTPUT test15
 *SOURCE oSupRec * ytest2 * lev1
 
+*OUTPUT test16
+*SOURCE oVolRec / oSupRec
+
+*OUTPUT test17
+*SOURCE ? ? ? coupetotale yM3tige
+
+*OUTPUT test18
+*SOURCE ? ? ? coupetotale yTauxRec_Ct
+
+*OUTPUT test181
+*SOURCE ? ? ? coupetotale sepm
+
+*OUTPUT test19
+*SOURCE ? ? ? coupetotale yPctVolgSepm
+
+*OUTPUT test20
+*SOURCE ? ? ? coupetotale yCoutExplgSepm_Cp1
+
+*OUTPUT test21
+*SOURCE test20 / oVolRec
+
+*OUTPUT test22
+*SOURCE ? ? ? coupetotale volumetotal
+
+
+*OUTPUT OUTR1
+*SOURCE ? ? UTR1 coupetotale volumetotal * 0.5 +
+	? ? UTR2 coupetotale volumetotal * 0.5 +
+	? ? UTR3 coupetotale volumetotal * 0.5
+
+*OUTPUT OUTR2
+*SOURCE ? ? UTR1 coupetotale * 0.1 +
+	? ? UTR2 coupetotale * 0.1 +
+	? ? UTR3 coupetotale * 0.1
+
+*OUTPUT test23
+*SOURCE OUTR1 / OUTR2
 
 
 

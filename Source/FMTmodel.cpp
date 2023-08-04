@@ -1414,6 +1414,27 @@ std::unique_ptr<FMTmodel> FMTmodel::presolve(std::vector<Core::FMTactualdevelopm
 				+"Outputs "+std::to_string(oldoutputs.size()) + "(" + std::to_string(static_cast<int>(oldoutputs.size())-static_cast<int>(outputs.size())) + "), "
 				+"Constraints "+std::to_string(oldconstraints.size()) + "(" + std::to_string(static_cast<int>(oldconstraints.size()) - static_cast<int>(constraints.size())) + ") and "
 				+"Elements "+ std::to_string(newsize)+"("+std::to_string(static_cast<int>(newsize)- static_cast<int>(originalsize)) +")\n",1);
+	std::array<std::string,7>sections{"Area","Themes","Yields","Actions","Transitions","Outputs","Constraints"};
+	std::vector<size_t>sizeofsections;
+	sizeofsections.push_back(oldarea.size());
+	sizeofsections.push_back(oldthemes.size());
+	sizeofsections.push_back(oldyields.size());
+	sizeofsections.push_back(oldactions.size());
+	sizeofsections.push_back(oldtransitions.size());
+	sizeofsections.push_back(oldoutputs.size());
+	sizeofsections.push_back(oldconstraints.size());
+	size_t sectionid = 0;
+	for (const std::string& section : sections)
+	{
+		if (sizeofsections.at(sectionid)==0)
+		{
+			_exhandler->raise(Exception::FMTexc::FMTrangeerror,
+				"Empty section: " + section + " after presolve",
+				"FMTmodel::presolve", __LINE__, __FILE__);
+		}
+		++sectionid;
+	}
+	
 	presolvedmodel = std::unique_ptr<FMTmodel>(new FMTmodel(oldarea, oldthemes, oldactions, oldtransitions, oldyields, oldlifespans, name, oldoutputs, oldconstraints,parameters));
 	presolvedmodel->cleanactionsntransitions();
 	}catch (...)

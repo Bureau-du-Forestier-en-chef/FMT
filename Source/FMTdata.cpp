@@ -137,7 +137,8 @@ std::vector<std::string> FMTdata::getsource() const
 		std::vector<std::string>nsources;
 		for (const std::string& val : source)
 			{
-			if (!FMTfunctioncall(val).valid() && !FMToperator(val).valid())
+			if (!FMTfunctioncall(val).valid() && !FMToperator(val).valid() && 
+				!(val.size() == 1 && (val.at(0) == '(' || val.at(0) == ')')))
 				{
 				nsources.push_back(val);
 				}

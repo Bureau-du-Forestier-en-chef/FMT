@@ -281,6 +281,7 @@ namespace Core {
 		try {
 			const int age = request.getdevelopment().getage();
 			const int period = request.getdevelopment().getperiod();
+
 				const FMTdata* cdata = &elements.at(yld);
 				if (cdata->cachevalue(request))
 				{

@@ -54,12 +54,22 @@ int main()
 		testmaps["TEST81"] = -12868.96;
 		testmaps["TEST82"] = 16167.2;
 		testmaps["TEST83"] = -4719.36;
+		testmaps["TEST16"] = 167.75;
+		testmaps["TEST17"] = 590.73;
+		testmaps["TEST18"] = 48099.16;
+		testmaps["TEST19"] = 1182.09;
+		testmaps["TEST20"] = 16778423.81;
+		testmaps["TEST21"] = 62;
+		//testmaps["TEST22"] = 0;
+		testmaps["TEST23"] = 838.750372;
+		//testmaps["TEST23"] = 62;
+		//testmaps["TEST22"] = 0;
 		//modelparser.write(optimizationmodel,"D:/test/");
 		if (optimizationmodel.initialsolve())
 			{
 			for (const Core::FMToutput& output : optimizationmodel.getoutputs())
 				{
-				if (output.getname().find("TEST")!=std::string::npos)
+				if (testmaps.find(output.getname())!= testmaps.end())
 					{
 					const double value = optimizationmodel.getoutput(output, 1, Core::FMToutputlevel::totalonly).at("Total");
 					if (1<std::abs(value-testmaps.at(output.getname())))

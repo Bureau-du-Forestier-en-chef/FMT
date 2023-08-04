@@ -17,7 +17,6 @@ int main(int argc, char *argv[])
 	if (Version::FMTversion().hasfeature("OSI"))
 		{
 		const std::string primarylocation =  std::string(argv[1]);
-		//const std::string primarylocation = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/09_FMT/Modeles_test/actionseries/PC_9509_U02751_4_Vg2_2023_vRp2.pri";
 		Parser::FMTmodelparser modelparser;
 		modelparser.setdefaultexceptionhandler();
 		std::vector<Exception::FMTexc>errors;
@@ -30,7 +29,6 @@ int main(int argc, char *argv[])
 		errors.push_back(Exception::FMTexc::FMToutofrangeyield);
 		modelparser.seterrorstowarnings(errors);
 		const std::vector<std::string>scenarios(1, std::string(argv[2]));
-		//const std::vector<std::string>scenarios(1, "14_sc5_determin_apsp_ref_aam_ratioplct_action_series_3");
 		const std::vector<Models::FMTmodel> models = modelparser.readproject(primarylocation, scenarios);
 		//Models::FMTlpmodel optimizationmodel(models.at(0), Models::FMTsolverinterface::CLP);
 		Models::FMTlpmodel optimizationmodel(models.at(0), Models::FMTsolverinterface::MOSEK);
@@ -50,9 +48,9 @@ int main(int argc, char *argv[])
 			}*/
 		if (argc>3)//Got the double for validation!
 			{
-			
 			const double ovoltotrecvalue =  std::stod(argv[3]);
 			bool gotovoltotrec = false;
+			std::vector<Core::FMToutput>selected;
 			for (const Core::FMToutput& output : optimizationmodel.getoutputs())
 				{
 				if (output.getname() == "OVOLTOTREC")
@@ -66,24 +64,15 @@ int main(int argc, char *argv[])
 						}
 					break;
 					}
-				/*if (output.getname().find("OAAMINC") != std::string::npos ||
-					output.getname().find("TEST") != std::string::npos)
-				{
-					gotovoltotrec = true;
-					for (int period =0 ; period < 11; ++period)
-					{
-						const double returnedvalue = optimizationmodel.getoutput(output, period, Core::FMToutputlevel::totalonly).at("Total");
-						std::cout << output.getname() <<" "<<period << " " << returnedvalue << "\n";
-					}
-					
-				}*/
 				}
 			if (!gotovoltotrec)
 				{
 				Exception::FMTfreeexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed, "No OVOLTOTREC OUPUT",
 					"FMTsetsolution", __LINE__, primarylocation);
 				}
+			//modelparser.writeresults(optimizationmodel, selected, 1, 10, "D:/test/out", Core::FMToutputlevel::totalonly);
 			}
+			//modelparser.write(optimizationmodel, "D:/test/");
 	}else {
 		Logging::FMTlogger() << "FMT needs to be compiled with OSI" << "\n";
 		}

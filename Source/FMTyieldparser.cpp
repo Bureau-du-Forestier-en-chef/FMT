@@ -674,12 +674,12 @@ Core::FMTyields FMTyieldparser::read(const std::vector<Core::FMTtheme>& themes,c
 							boost::smatch kmatch;
 							const size_t should_be_equation = line.find_first_of("+-*/");
 							bool simple_match = boost::regex_search(line, kmatch, rxcomplex);
-							if (simple_match || should_be_equation > 0)
+							if (simple_match || should_be_equation != std::string::npos)
 							{
 								std::string yldname;
 								std::string cyld;
 								std::string data;
-								if (!simple_match && should_be_equation > 0)
+								if (!simple_match && should_be_equation != std::string::npos)
 								{
 									std::vector<std::string>wrong_equation;
 									boost::split(wrong_equation, line, boost::is_any_of(FMT_STR_SEPARATOR), boost::token_compress_on);
@@ -872,6 +872,7 @@ void FMTyieldparser::cleanup(Core::FMTyields& yields,const std::vector<Core::FMT
 			//delete the handler at it's yields location
 			//decompose and insert all new handlers
 			//std::vector<Core::FMTyieldhandler>::iterator handler_it = yields.databegin();
+		yields.unshrink(themes);
 		std::vector<std::pair<Core::FMTmask,std::unique_ptr<Core::FMTyieldhandler>>>::iterator handler_it = yields.begin();
 		const std::vector<std::string>yldnames = yields.getallyieldnames();
 		while (handler_it != yields.end())
