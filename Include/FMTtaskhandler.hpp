@@ -36,6 +36,11 @@ namespace Parallel
 	This function will call the FMTtask::finalize function when the last task is done.
 	*/
 	void finalize(std::unique_ptr<FMTtask>& lasttask);
+	// DocString: FMTtaskhandler::logtasktime
+	/**
+	Juste write down all the time it took to run all tasks
+	*/
+	void logtasktime(const std::chrono::time_point<std::chrono::high_resolution_clock>& startime) const;
 	public:
 		// DocString: FMTtaskhandler::FMTtaskhandler(const std::unique_ptr<FMTtask>&,unsigned int)
 		/**

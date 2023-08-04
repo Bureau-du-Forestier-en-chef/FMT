@@ -102,6 +102,7 @@ namespace Parallel
 	void FMTtaskhandler::conccurentrun()
 		{
 		try {
+			const std::chrono::time_point<std::chrono::high_resolution_clock>tasksstart = getclock();
 			splittasks();
 			std::vector<boost::thread>workers;
 			for (std::unique_ptr<FMTtask>& task : alltasks)
@@ -120,6 +121,7 @@ namespace Parallel
 			{
 				finalize(alltasks.back());
 			}
+			logtasktime(tasksstart);
 		}catch (...)
 			{
 				_exhandler->printexceptions("", "FMTtaskhandler::conccurentrun", __LINE__, __FILE__);
@@ -138,6 +140,7 @@ namespace Parallel
 	void FMTtaskhandler::ondemandrun()
 	{
 		try {
+			const std::chrono::time_point<std::chrono::high_resolution_clock>tasksstart = getclock();
 			if (alltasks.size() != 1)
 			{
 				_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, "Need to have one master task for ondemandrun",
@@ -181,10 +184,22 @@ namespace Parallel
 					++threadit;
 				}
 			}
+			logtasktime(tasksstart);
 		}catch (...)
 			{
 			_exhandler->printexceptions("", "FMTtaskhandler::ondemandrun", __LINE__, __FILE__);
 			}
+	}
+
+	void FMTtaskhandler::logtasktime(const std::chrono::time_point<std::chrono::high_resolution_clock>& startime) const
+	{
+		try {
+			_logger->logwithlevel("All tasks completed " + getdurationinseconds(startime) + "\n", 1);
+		}
+		catch (...)
+		{
+			_exhandler->printexceptions("", "FMTtaskhandler::logtasktime", __LINE__, __FILE__);
+		}
 	}
 
 }
