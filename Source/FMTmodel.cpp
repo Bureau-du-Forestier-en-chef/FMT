@@ -1414,7 +1414,7 @@ std::unique_ptr<FMTmodel> FMTmodel::presolve(std::vector<Core::FMTactualdevelopm
 				+"Outputs "+std::to_string(oldoutputs.size()) + "(" + std::to_string(static_cast<int>(oldoutputs.size())-static_cast<int>(outputs.size())) + "), "
 				+"Constraints "+std::to_string(oldconstraints.size()) + "(" + std::to_string(static_cast<int>(oldconstraints.size()) - static_cast<int>(constraints.size())) + ") and "
 				+"Elements "+ std::to_string(newsize)+"("+std::to_string(static_cast<int>(newsize)- static_cast<int>(originalsize)) +")\n",1);
-	std::array<std::string,7>sections{"Area","Themes","Yields","Actions","Transitions","Outputs" };//,"Constraints"};
+	std::array<std::string,6>sections{"Area","Themes","Yields","Actions","Transitions","Outputs" };//,"Constraints"};
 	std::vector<size_t>sizeofsections;
 	sizeofsections.push_back(oldarea.size());
 	sizeofsections.push_back(oldthemes.size());
