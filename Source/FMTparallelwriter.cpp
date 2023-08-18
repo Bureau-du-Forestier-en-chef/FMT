@@ -19,12 +19,22 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 namespace Parallel
 {
 
+	void FMTparallelwriter::close() noexcept
+	{
+	#ifdef FMTWITHGDAL
+		if (!resultslayer.empty())
+			{
+			resultslayer.clear();
+			GDALClose(resultsdataset);
+			}
+			
+	#endif
+	}
+
+
 	FMTparallelwriter::~FMTparallelwriter()
 		{
-			#ifdef FMTWITHGDAL
-				resultslayer.clear();
-				GDALClose(resultsdataset);
-			#endif
+		close();
 		}
 
 	FMTparallelwriter::FMTparallelwriter(const std::string& location,

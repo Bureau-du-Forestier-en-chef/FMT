@@ -142,6 +142,11 @@ namespace Parallel
 		Get the results of a model. and write it down.
 		*/
 		void getandwrite(const std::unique_ptr<Models::FMTmodel>& modelptr, const std::vector<Core::FMToutput>& loutputs);
+		// DocString: FMTparallelwriter::close()
+		/**
+		Close the dataset and destroy the layers after this it wont be usable
+		*/
+		void close() noexcept;
 		};
 }
 #endif

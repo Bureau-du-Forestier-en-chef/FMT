@@ -133,6 +133,7 @@ namespace Parallel
 				/////
 				resultswriter->setdriftprobability(global->getname(), local->getname());///testt
 				////
+				resultswriter->close();
 				resultswriter = std::shared_ptr<FMTparallelwriter>(nullptr);
 			}
 		}
