@@ -68,6 +68,7 @@ namespace Parser {
 			}
 			optionsstrings.push_back(nullptr);
 			char** alloptions = &optionsstrings[0];
+			deletelayer(dataset, name);
 			newlayer = dataset->CreateLayer(name.c_str(), NULL, wkbNone, alloptions);
 			if (newlayer == NULL)
 			{
@@ -82,6 +83,27 @@ namespace Parser {
 		}
 		return newlayer;
 	}
+
+	void FMTmodelparser::deletelayer(GDALDataset* dataset,const std::string& layername) const
+	{
+		try {
+			int layerid = 0;
+			for (OGRLayer* layer : dataset->GetLayers())
+			{
+				if (layer->GetName() == layername)
+					{
+					dataset->DeleteLayer(layerid);
+					return;
+					}
+				++layerid;
+			}
+		}
+		catch (...)
+		{
+			_exhandler->raisefromcatch("", "FMTmodelparser::deletelayer", __LINE__, __FILE__);
+		}
+	}
+
 
 	OGRLayer* FMTmodelparser::createdriftlayer(GDALDataset* dataset, std::vector<std::string> creationoptions) const
 	{

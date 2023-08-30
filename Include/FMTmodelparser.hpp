@@ -70,7 +70,7 @@ class FMTEXPORT FMTmodelparser : public FMTparser
 	std::map<std::string,std::vector<std::vector<double>>>getiterationsvalues(OGRLayer* layer) const;
 	// DocString: FMTmodelparser::createlayer()
 	/**
-	Create a layer with from a dataset
+	Create a layer with from a dataset, it will delete layer with the same name before creation if it exist in the dataset
 	*/
 	OGRLayer* createlayer(GDALDataset* dataset,
 		const std::string& name, std::vector<std::string> creationoptions = std::vector<std::string>()) const;
