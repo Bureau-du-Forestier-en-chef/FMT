@@ -10,7 +10,7 @@
 
 int main(int argc, char *argv[])
 	{
-	#ifdef FMTWITHOSI
+	/*#ifdef FMTWITHOSI
 	Logging::FMTlogger().logstamp();
 	const std::string folder = "../../../../Examples/Models/TWD_land/";
 	const std::string primlocation = folder + "TWD_land.pri";
@@ -46,8 +46,8 @@ int main(int argc, char *argv[])
 	//handler.setquietlogger();
 	//handler.ondemandrun();
 	handler.conccurentrun();
-	#endif
-	/*#ifdef FMTWITHOSI
+	#endif*/
+	#ifdef FMTWITHOSI
 	Logging::FMTlogger().logstamp();
 	const std::string folder = "../../../../Examples/Models/TWD_land/";
 	const std::string primlocation = "D:/08762/PC_9429_U08762_4_Vg1_2023_vSSP03.pri";
@@ -69,7 +69,7 @@ int main(int argc, char *argv[])
 	modelparser.seterrorstowarnings(errors);
 	std::vector<Models::FMTmodel> models = modelparser.readproject(primlocation, allscenarios);
 	Models::FMTlpmodel global(models.at(0), Models::FMTsolverinterface::MOSEK);
-	global.setparameter(Models::FMTintmodelparameters::LENGTH, 20);
+	global.setparameter(Models::FMTintmodelparameters::LENGTH, 30);
 	global.setparameter(Models::FMTintmodelparameters::NUMBER_OF_THREADS,2);
 	global.setparameter(Models::FMTboolmodelparameters::PRESOLVE_CAN_REMOVE_STATIC_THEMES, true);
 	Models::FMTnssmodel stochastic(models.at(1), 0);
@@ -88,12 +88,12 @@ int main(int argc, char *argv[])
 	const std::string outputlocation = "../../tests/replanningtest/replanning";
 	std::vector<std::string>layersoptions;
 	layersoptions.push_back("SEPARATOR=SEMICOLON");
-	std::unique_ptr<Parallel::FMTtask> maintaskptr(new Parallel::FMTreplanningtask(global, stochastic, local, selectedoutputs, outputlocation, "CSV", layersoptions,2,20,0.5, Core::FMToutputlevel::totalonly));
+	std::unique_ptr<Parallel::FMTtask> maintaskptr(new Parallel::FMTreplanningtask(global, stochastic, local, selectedoutputs, outputlocation, "CSV", layersoptions,10,10,0.5, Core::FMToutputlevel::totalonly));
 	Parallel::FMTtaskhandler handler(maintaskptr,2);
 	//handler.setquietlogger();
 	//handler.ondemandrun();
 	handler.conccurentrun();
-	#endif*/
+	#endif
 	return 0;
 	}
 

@@ -665,6 +665,16 @@ namespace Models
 		Return avec vector with compresstime value for each periods. First period is the index 0 in the vector. See FMTmodelparameters.h.
 		*/
 		std::vector<int> getcompresstime() const;
+		// DocString: FMTmodel::goalconstraints
+		/**
+		Return all constraints and objective with goals and penalty
+		*/
+		std::vector<Core::FMTconstraint>goalconstraints(double penalty = 999999) const;
+		// DocString: FMTmodel::gettacticalconstraints
+		/**
+		Get the constraints adapted for a tactical model.
+		*/
+		std::vector<Core::FMTconstraint>gettacticalconstraints(double penalty = 999999,double scheduleweight = 999999,double objective = 0,double objectivefactor = 1.0) const;
 		// DocString: FMTmodel::showparameters
 		/**
 		Show parameters values. If (showhelp) a brief description of each parameters will appear.

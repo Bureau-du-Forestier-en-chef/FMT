@@ -1902,6 +1902,94 @@ std::vector<int> FMTmodel::getcompresstime() const
 	return parameters.getcompresstime();
 }
 
+std::vector<Core::FMTconstraint>FMTmodel::goalconstraints(double penalty) const
+{
+	std::vector<Core::FMTconstraint>newconstraints;
+	try {
+		size_t constraintid = 0;
+		for (const Core::FMTconstraint& constraint : constraints)
+			{
+			if (constraint.isobjective())
+				{
+				Core::FMTconstraint newobjective(constraint);
+				std::vector<std::string>variables;
+				variables.push_back("_ALL");
+				std::string penop = "-";
+				if (constraint.sense()==1.0)
+					{
+					penop = "+";
+					}
+				newobjective.setpenalties(penop, variables);
+				newconstraints.push_back(newobjective);
+				}else if(constraint.getconstrainttype()==Core::FMTconstrainttype::FMTstandard) 
+					{
+					const std::string VariableName("~G"+std::to_string(constraintid));
+					Core::FMTconstraint newconstraint(constraint);
+					newconstraint.setgoal(VariableName, penalty);
+					newconstraints.push_back(newconstraint);
+					}
+				++constraintid;
+				}
+	}
+	catch (...)
+	{
+		_exhandler->raisefromcatch("", "FMTmodel::goalconstraints", __LINE__, __FILE__);
+	}
+	return newconstraints;
+}
+
+std::vector<Core::FMTconstraint>FMTmodel::gettacticalconstraints(double penalty,double scheduleweight,double objective, double objectivefactor) const
+{
+	std::vector<Core::FMTconstraint>newconstraints;
+	try {
+		const std::vector<Core::FMTconstraint> goaledconstraints = goalconstraints(penalty);
+		//_SETFROMGLOBAL|_SETFROMLOCAL|_REIGNORE
+		for (const Core::FMTconstraint& constraint : goaledconstraints)
+			{
+			if (constraint.isobjective())
+			{
+				double lowerbound = std::numeric_limits<double>::lowest();
+				double upperbound = 0.0;
+				if (constraint.sense()==1.0)
+					{
+					upperbound = std::numeric_limits<double>::max();
+					lowerbound = 0.0;
+					}
+				//Limit objective constraints
+				Core::FMTconstraint globalset(Core::FMTconstrainttype::FMTstandard,Core::FMToutput(constraint));
+				globalset.setrhs(lowerbound, upperbound);
+				globalset.setlength(1, 1);
+				globalset.addbounds(Core::FMTyldbounds(Core::FMTsection::Optimize, "_SETFROMGLOBAL", objectivefactor, objectivefactor));
+				newconstraints.push_back(globalset);
+				//Set schedule weight
+				Core::FMTconstraint newobjective(constraint);
+				if (scheduleweight > 0)
+					{
+					newobjective.addbounds(Core::FMTyldbounds(Core::FMTsection::Optimize, "_SETGLOBALSCHEDULE", scheduleweight, scheduleweight));
+					}
+				newconstraints.push_back(newobjective);
+			}else if(constraint.getconstrainttype()==Core::FMTconstrainttype::FMTstandard) 
+				{
+				Core::FMTconstraint newconstraint(constraint);
+				if (constraint.getperiodlowerbound() == 1 &&
+					constraint.getperiodupperbound() == 1)
+					{
+					newconstraint.addbounds(Core::FMTyldbounds(Core::FMTsection::Optimize, "_REIGNORE", 2,2));
+					}
+				newconstraints.push_back(newconstraint);
+				}
+			}
+
+	}catch (...)
+	{
+		_exhandler->raisefromcatch("", "FMTmodel::gettacticalconstraints", __LINE__, __FILE__);
+	}
+	return newconstraints;
+}
+
+
+
+
 void FMTmodel::showparameters(const bool& showhelp)const
 {
 	std::string message=" - Parameters for model "+getname()+"\n";

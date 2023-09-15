@@ -188,6 +188,16 @@ class FMTEXPORT FMTconstraint: public FMToutput,public FMTspec
 		If the constraint has a goal this function fill up the name of the goal and it's weight.
 		*/
 		void getgoal(std::string& name,double& value) const;
+		// DocString: FMTconstraint::setgoal
+		/**
+		If the constraint is not an objective set a goal of goalname with a value
+		*/
+		void setgoal(const std::string& goalname, const double& value);
+		// DocString: FMTconstraint::setpenalties
+		/**
+		If the constraint is an objectif it will set penalties
+		*/
+		void setpenalties(const std::string& penaltyoperator, const std::vector<std::string>& variables);
 		// DocString: FMTconstraint::isobjective
 		/**
 		Returns true if the constraint is an objective.

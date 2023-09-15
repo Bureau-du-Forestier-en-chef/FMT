@@ -70,13 +70,17 @@ namespace Parser
 					}
 				
 			}else {
-				const double variale_value = getnum<double>(numvalue, constants);;
+				const double variale_value = getnum<double>(numvalue, constants);
 				std::string yieldtarget(target);
 				if (target == "_GOAL")
 				{
-					yieldtarget = "GOAL_" + std::string(kmatch[6]);
+					constraint.setgoal(std::string(kmatch[6]), variale_value);
+					//yieldtarget = "GOAL_" + std::string(kmatch[6]);
 				}
-				constraint.addbounds(Core::FMTyldbounds(Core::FMTsection::Optimize, yieldtarget, variale_value, variale_value));
+				else {
+					constraint.addbounds(Core::FMTyldbounds(Core::FMTsection::Optimize, yieldtarget, variale_value, variale_value));
+				}
+				
 				}
 			line = line.substr(0, line.find(target));
 			boost::trim(line);
@@ -670,7 +674,15 @@ namespace Parser
 				if (boost::regex_search(penalty_equation, kpenalty, rxpenalty))
 				{
 					const std::string penalty_values = kpenalty[3];
-					std::string yldbound = "Penalty";
+					std::vector<std::string>allpenalties;
+					if (penalty_values == "_ALL")
+					{
+						allpenalties.push_back(penalty_values);
+					}else {
+						boost::split(allpenalties, penalty_values, boost::is_any_of(","));
+					}
+					objective.setpenalties(penalty_operator, allpenalties);
+					/*std::string yldbound = "Penalty";
 					double lower_penalty = 0;
 					double upper_penalty = 0;
 					if (penalty_values == "_ALL")
@@ -686,7 +698,7 @@ namespace Parser
 							const std::string yldname = yldbound + penalty_operator + "_" + penalty_var;
 							objective.addbounds(Core::FMTyldbounds(Core::FMTsection::Optimize, yldname, upper_penalty, lower_penalty));
 						}
-					}
+					}*/
 				}
 				Core::FMToutput final_output;
 				if (!main_equation.empty())

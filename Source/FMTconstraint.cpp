@@ -139,6 +139,46 @@ namespace Core
 			}
         }
 
+   void FMTconstraint::setgoal(const std::string& goalname, const double& value)
+   {
+	   try {
+		   if (!isobjective())
+				{
+			    const std::string yieldtarget = "GOAL_" + goalname;
+			    addbounds(Core::FMTyldbounds(Core::FMTsection::Optimize, yieldtarget, value, value));
+				}
+	   }
+	   catch (...)
+	   {
+		   _exhandler->printexceptions("", "FMTconstraint::setgoal", __LINE__, __FILE__, Core::FMTsection::Optimize);
+	   }
+   }
+
+   void FMTconstraint::setpenalties(const std::string& penaltyoperator, const std::vector<std::string>& variables)
+   {
+	   try {
+		   if (isobjective())
+			{
+			   const std::string yldbound = "Penalty";
+			   if (variables.size()==1 && (*variables.begin()) == "_ALL")
+			   {
+				   const std::string target = yldbound + (penaltyoperator + (*variables.begin()));
+				   addbounds(Core::FMTyldbounds(Core::FMTsection::Optimize, target,0.0,0.0));
+			   }else {
+				   for (const std::string& penalty_var : variables)
+				   {
+					   const std::string target = yldbound + penaltyoperator + "_" + penalty_var;
+					   addbounds(Core::FMTyldbounds(Core::FMTsection::Optimize, target,0.0,0.0));
+				   }
+			   }
+			}
+	   }
+	   catch (...)
+	   {
+		   _exhandler->printexceptions("", "FMTconstraint::setpenalties", __LINE__, __FILE__, Core::FMTsection::Optimize);
+	   }
+   }
+
 	bool FMTconstraint::isgoal() const
 		{
 		if (!this->emptyylds())
