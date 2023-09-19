@@ -186,8 +186,46 @@ namespace Wrapper
 		return false;
 	}
 
+	void FMTmodelcache::setbaseressources()
+	{
+		try {
+			size_t outid = 0;
+			for (const Core::FMToutput& output : outputs)
+			{
+				outputsmap[output.getname()] = outid;
+				++outid;
+			}
+			size_t theid = 0;
+			for (const Core::FMTtheme& theme : themes)
+			{
+				themesmap[theme.getname()] = theid;
+				++theid;
+			}
+			std::string mask;
+			for (size_t thid = 0; thid < themes.size(); ++thid)
+			{
+				mask += "? ";
+			}
+			mask.pop_back();
+			globalmask = Core::FMTmask(mask, themes);
+			//setparameter(Models::FMTboolmodelparameters::FORCE_PARTIAL_BUILD, true);
+			Models::FMTmodel::setparameter(Models::FMTdblmodelparameters::TOLERANCE, 0.001);
+			/*int period = 0;
+			for (const Core::FMTschedule& schedule : schedules)
+			{
+				period = std::max(period, schedule.getperiod());
+			}
+			setparameter(Models::FMTintmodelparameters::LENGTH, period);*/
+			cachingswitch = true;
+		}
+		catch (...)
+		{
+			_exhandler->printexceptions("", "FMTmodelcache::setbaseressources", __LINE__, __FILE__);
+		}
 
-	FMTmodelcache::FMTmodelcache(const Models::FMTmodel& lmodel,
+	}
+
+	/*FMTmodelcache::FMTmodelcache(const Models::FMTmodel& lmodel,
 			const std::vector<Core::FMTschedule>& schedules,
 			const std::string& lmaplocation):
 		Models::FMTlpmodel(lmodel,Models::FMTsolverinterface::CLP),
@@ -242,18 +280,74 @@ namespace Wrapper
 			{
 			_exhandler->printexceptions("", "FMTmodelcache::FMTmodelcache()", __LINE__, __FILE__);
 			}
+	}*/
+
+	FMTmodelcache::FMTmodelcache(const Models::FMTmodel& lmodel, const std::string& lmaplocation):
+		Models::FMTlpmodel(lmodel, Models::FMTsolverinterface::CLP),
+		cachingswitch(false),
+		mtx(new boost::recursive_mutex()),
+		outputsmap(),
+		themesmap(),
+		maskcache(),
+		outputcache(),
+		maplocation(lmaplocation),
+		map(),
+		generalcache(),
+		globalmask(),
+		maskcachemtx(new boost::recursive_mutex()),
+		outputcachemtx(new boost::recursive_mutex()),
+		generalcachemtx(new boost::recursive_mutex()),
+		OAcache(new std::vector<Heuristics::FMToperatingarea>())
+	{
+		try {
+			boost::lock_guard<boost::recursive_mutex> guard1(*mtx);
+			setbaseressources();
+
+
+		}catch (...)
+		{
+			_exhandler->printexceptions("", "FMTmodelcache::FMTmodelcache()", __LINE__, __FILE__);
+		}
+
 	}
+
+	void  FMTmodelcache::setlength(const int& period)
+	{
+		try {
+			setparameter(Models::FMTintmodelparameters::LENGTH, period);
+		}
+		catch (...)
+		{
+			_exhandler->printexceptions("", "FMTmodelcache::setlength", __LINE__, __FILE__);
+		}
+
+	}
+
 
 	void FMTmodelcache::setsolution(const std::vector<Core::FMTschedule>& schedules) 
 	{
 		try {
+			setparameter(Models::FMTboolmodelparameters::FORCE_PARTIAL_BUILD, true);
 			doplanning(false, schedules);
 		}
 		catch (...)
 		{
-			_exhandler->printexceptions("", "FMTmodelcache::initialize", __LINE__, __FILE__);
+			_exhandler->printexceptions("", "FMTmodelcache::setsolution", __LINE__, __FILE__);
 		}
 	}
+
+	bool FMTmodelcache::solve()
+	{
+		try {
+			return doplanning(true);
+		}
+		catch (...)
+		{
+			_exhandler->printexceptions("", "FMTmodelcache::solve", __LINE__, __FILE__);
+		}
+		return false;
+	}
+
 
 	int FMTmodelcache::getperiods() const
 	{

@@ -1925,6 +1925,12 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 					{
 					this->setconstraint(constraints.at(constraintid));
 					}
+				if (constraints.empty())
+				{
+					_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
+						"No objevtive to set",
+						"FMTlpmodel::build", __LINE__, __FILE__);
+				}
 				_logger->logwithlevel("*Graph stats with all constraints : \n" + std::string(this->setobjective(constraints.at(0))) + "\n", 1);
 				}
 			if(!allempty)

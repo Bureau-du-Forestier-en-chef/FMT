@@ -29,6 +29,7 @@ namespace Wrapper
 {
 
 	FMTexcelcache::FMTexcelcache():
+		parser(new Parser::FMTmodelparser()),
 		cachelog(),
 		models(new std::unordered_map<std::string, FMTmodelcache>()),
 		exceptionraised(false)
@@ -36,6 +37,17 @@ namespace Wrapper
 		cachelog = new std::shared_ptr<Logging::FMTlogger>(new Logging::FMTexcellogger());
 		FMTmodelcache emptycache;
 		emptycache.putlogger(*cachelog);
+		std::vector<Exception::FMTexc>errors;
+		errors.push_back(Exception::FMTexc::FMTmissingyield);
+		errors.push_back(Exception::FMTexc::FMToutput_missing_operator);
+		errors.push_back(Exception::FMTexc::FMToutput_too_much_operator);
+		errors.push_back(Exception::FMTexc::FMTinvalidyield_number);
+		errors.push_back(Exception::FMTexc::FMTundefinedoutput_attribute);
+		errors.push_back(Exception::FMTexc::FMToveridedyield);
+		errors.push_back(Exception::FMTexc::FMTinvalid_geometry);
+		errors.push_back(Exception::FMTexc::FMTsourcetotarget_transition);
+		errors.push_back(Exception::FMTexc::FMTsame_transitiontargets);
+		parser->seterrorstowarnings(errors);
 
 	}
 
@@ -61,6 +73,10 @@ namespace Wrapper
 
 	FMTexcelcache::~FMTexcelcache()
 	{
+		if (parser!=nullptr)
+			{
+			delete parser;
+			}
 		if (cachelog != nullptr)
 			{
 			delete cachelog;
@@ -75,6 +91,25 @@ namespace Wrapper
 	void FMTexcelcache::captureexception(const std::string& method)
 	{
 		exceptionraised = true;
+	}
+
+	std::string FMTexcelcache::formatforcache(System::String^ primarylocation, System::String^ scenario)
+	{
+		std::string cachename;
+		try {
+			msclr::interop::marshal_context context;
+			const std::string pfile = context.marshal_as<std::string>(primarylocation);
+			const std::string sfile = context.marshal_as<std::string>(scenario);
+			const std::string justprimary = getprimaryname(pfile);
+			cachename = justprimary + "~" + sfile;
+			boost::to_upper(cachename);
+		}
+		catch (const std::exception& exception)
+		{
+			captureexception("FMTexcelcache::formatforcache");
+		}
+		return cachename;
+
 	}
 
 	std::string FMTexcelcache::getprimaryname(const std::string& primarylocation)
@@ -119,35 +154,58 @@ namespace Wrapper
 		return mappath;
 		}
 
-	bool FMTexcelcache::add(System::String^ primarylocation, System::String^ scenario)
+	System::Collections::Generic::List<System::String^>^ FMTexcelcache::readnsolvetemplates(System::String^ primarylocation, System::String^ templatefolder, int length)
 	{
+		System::Collections::Generic::List<System::String^>^ scenarios = gcnew System::Collections::Generic::List<System::String^>();
 		try {
 			msclr::interop::marshal_context context;
 			const std::string pfile = context.marshal_as<std::string>(primarylocation);
-			const std::string sfile = context.marshal_as<std::string>(scenario);
-			const std::string justprimary = getprimaryname(pfile);
-			std::string naming = justprimary + "~" + sfile;
-			boost::to_upper(naming);
+			const std::string sfile = context.marshal_as<std::string>(templatefolder);
+			const std::vector<Models::FMTmodel> allmodels = parser->readtemplates(pfile, sfile);
+			const std::string mappath = getmappath(pfile);
+			for (const Models::FMTmodel& model :  allmodels)
+			{
+				const std::string name = model.getname();
+				if (name!="ROOT")
+				{
+					System::String^ modelname = gcnew System::String(name.c_str());
+					const std::string naming = formatforcache(primarylocation, modelname);
+					(*models)[naming] = FMTmodelcache(model, mappath);
+					(*models)[naming].setlength(length);
+					if ((*models)[naming].solve())
+					{
+						scenarios->Add(modelname);
+					}
+				}
+			}
+		}catch (...)
+		{
+			captureexception("FMTexcelcache::readnsolvetemplates");
+		}
+		return scenarios;
+	}
+
+	bool FMTexcelcache::add(System::String^ primarylocation, System::String^ scenario)
+	{
+		try {
+			const std::string naming = formatforcache(primarylocation, scenario);
 			if(models->find(naming)==models->end())
 			{
 				//Default behavior reload pas avec le même nom 
-				Parser::FMTmodelparser mparser;
-				std::vector<Exception::FMTexc>errors;
-				errors.push_back(Exception::FMTexc::FMTmissingyield);
-				errors.push_back(Exception::FMTexc::FMToutput_missing_operator);
-				errors.push_back(Exception::FMTexc::FMToutput_too_much_operator);
-				errors.push_back(Exception::FMTexc::FMTinvalidyield_number);
-				errors.push_back(Exception::FMTexc::FMTundefinedoutput_attribute);
-				errors.push_back(Exception::FMTexc::FMToveridedyield);
-				errors.push_back(Exception::FMTexc::FMTinvalid_geometry);
-				errors.push_back(Exception::FMTexc::FMTsourcetotarget_transition);
-				errors.push_back(Exception::FMTexc::FMTsame_transitiontargets);
-				mparser.seterrorstowarnings(errors);
+				msclr::interop::marshal_context context;
+				const std::string pfile = context.marshal_as<std::string>(primarylocation);
+				const std::string sfile = context.marshal_as<std::string>(scenario);
 				std::vector<std::string>scenarios(1, sfile);
-				const std::vector<Models::FMTmodel> allmodels = mparser.readproject(pfile, scenarios);
-				const std::vector<std::vector<Core::FMTschedule>>allschedule = mparser.readschedules(pfile, allmodels);
+				const std::vector<Models::FMTmodel> allmodels = parser->readproject(pfile, scenarios);
+				const std::vector<std::vector<Core::FMTschedule>>allschedule = parser->readschedules(pfile, allmodels);
 				const std::string mappath = getmappath(pfile);
-				(*models)[naming] = FMTmodelcache(allmodels.at(0), allschedule.at(0), mappath);
+				int period = 0;
+				for (const Core::FMTschedule& schedule : allschedule.at(0))
+				{
+					period = std::max(period, schedule.getperiod());
+				}
+				(*models)[naming] = FMTmodelcache(allmodels.at(0), mappath);
+				(*models)[naming].setlength(period);
 				//(*models)[naming] = FMTmodelcache(allmodels.at(0), allschedule.at(0), mappath);
 				//Removed from constructor because of the copy after it's created, the solver started ....
 				models->at(naming).setsolution(allschedule.at(0));
@@ -170,11 +228,7 @@ namespace Wrapper
 	void FMTexcelcache::remove(System::String^ primarylocation, System::String^ scenario)
 		{
 		try {
-			msclr::interop::marshal_context context;
-			const std::string pfile = context.marshal_as<std::string>(primarylocation);
-			const std::string sfile = context.marshal_as<std::string>(scenario);
-			const std::string justprimary = getprimaryname(pfile);
-			const std::string naming = justprimary + "~" + sfile;
+			const std::string naming = formatforcache(primarylocation, scenario);
 			if (models->find(naming)!= models->end())
 				{
 				models->erase(naming);
@@ -189,10 +243,7 @@ namespace Wrapper
 	{
 		System::Collections::Generic::List<int>^ list = gcnew System::Collections::Generic::List<int>();
 		try {
-			msclr::interop::marshal_context context;
-			const std::string pfile = context.marshal_as<std::string>(primaryname);
-			const std::string sfile = context.marshal_as<std::string>(scenario);
-			const std::string naming = pfile + "~" + sfile;
+			const std::string naming = formatforcache(primaryname, scenario);
 			std::unordered_map<std::string, FMTmodelcache>::const_iterator mit = models->find(naming);
 			if (mit != models->end())//crash wrong definition
 			{
@@ -212,10 +263,7 @@ namespace Wrapper
 	bool FMTexcelcache::writejpeg(System::String^ jpeglocation,System::String^ primaryname, System::String^ scenario, int themeid, System::Collections::Generic::List<System::String^>^ attributes)
 	{
 		try {
-			msclr::interop::marshal_context context;
-			const std::string pfile = context.marshal_as<std::string>(primaryname);
-			const std::string sfile = context.marshal_as<std::string>(scenario);
-			const std::string naming = pfile + "~" + sfile;
+			const std::string naming = formatforcache(primaryname, scenario);
 			std::unordered_map<std::string, FMTmodelcache>::const_iterator mit = models->find(naming);
 			if (mit != models->end())//crash wrong definition
 			{
@@ -240,13 +288,11 @@ namespace Wrapper
 	{
 		double value = 0;
 		try {
-			msclr::interop::marshal_context context;
-			const std::string pfile = context.marshal_as<std::string>(primaryname);
-			const std::string sfile = context.marshal_as<std::string>(scenario);
-			const std::string naming = pfile + "~" + sfile;
+			const std::string naming = formatforcache(primaryname, scenario);
 			std::unordered_map<std::string,FMTmodelcache>::const_iterator mit = models->find(naming);
 			if (mit!=models->end())//crash wrong definition
 				{
+				msclr::interop::marshal_context context;
 				const std::string outname = context.marshal_as<std::string>(outputname);
 				const std::string selection = context.marshal_as<std::string>(themeselection);
 				value = mit->second.getvalue(outname, selection, period);
@@ -265,13 +311,11 @@ namespace Wrapper
 	{
 		double value = 0;
 		try {
-			msclr::interop::marshal_context context;
-			const std::string pfile = context.marshal_as<std::string>(primaryname);
-			const std::string sfile = context.marshal_as<std::string>(scenario);
-			const std::string naming = pfile + "~" + sfile;
+			const std::string naming = formatforcache(primaryname, scenario);
 			std::unordered_map<std::string, FMTmodelcache>::const_iterator mit = models->find(naming);
 			if (mit != models->end())//crash wrong definition
 			{
+				msclr::interop::marshal_context context;
 				const std::string yieldnamec = context.marshal_as<std::string>(yieldname);
 				const std::string selection = context.marshal_as<std::string>(themeselection);
 				value = mit->second.getyield(yieldnamec, selection, age, period);
@@ -289,13 +333,12 @@ namespace Wrapper
 	{
 		System::Collections::Generic::List<System::String^>^ list = gcnew System::Collections::Generic::List<System::String^>();
 		try {
-			msclr::interop::marshal_context context;
-			const std::string pfile = context.marshal_as<std::string>(primaryname);
-			const std::string sfile = context.marshal_as<std::string>(scenario);
-			const std::string naming = pfile + "~" + sfile;
+			
+			const std::string naming = formatforcache(primaryname, scenario);
 			std::unordered_map<std::string, FMTmodelcache>::const_iterator mit = models->find(naming);
 			if (mit != models->end())
 				{
+				msclr::interop::marshal_context context;
 				const std::string valueof = context.marshal_as<std::string>(value);
 				for (const std::string& value : mit->second.getattributes(themeid, valueof,aggregates))
 					{
@@ -315,10 +358,7 @@ namespace Wrapper
 	{
 		System::Collections::Generic::List<System::String^>^ list = gcnew System::Collections::Generic::List<System::String^>();
 		try {
-			msclr::interop::marshal_context context;
-			const std::string pfile = context.marshal_as<std::string>(primaryname);
-			const std::string sfile = context.marshal_as<std::string>(scenario);
-			const std::string naming = pfile + "~" + sfile;
+			const std::string naming = formatforcache(primaryname, scenario);
 			std::unordered_map<std::string, FMTmodelcache>::const_iterator mit = models->find(naming);
 			if (mit != models->end())
 			{
@@ -379,14 +419,12 @@ namespace Wrapper
 	{
 		System::Collections::Generic::List<System::String^>^ list = gcnew System::Collections::Generic::List<System::String^>();
 		try {
-			msclr::interop::marshal_context context;
-			const std::string pfile = context.marshal_as<std::string>(primaryname);
-			const std::string sfile = context.marshal_as<std::string>(scenario);
-			const std::string sfilter = context.marshal_as<std::string>(output);
-			const std::string naming = pfile + "~" + sfile;
+			const std::string naming = formatforcache(primaryname, scenario);
 			std::unordered_map<std::string, FMTmodelcache>::const_iterator mit = models->find(naming);
 			if (mit != models->end())
 			{
+				msclr::interop::marshal_context context;
+				const std::string sfilter = context.marshal_as<std::string>(output);
 				for (const std::string& value : mit->second.getconstraints(sfilter))
 				{
 					System::String^ sysvalue = gcnew System::String(value.c_str());
@@ -406,14 +444,12 @@ namespace Wrapper
 	{
 		System::Collections::Generic::List<System::String^>^ list = gcnew System::Collections::Generic::List<System::String^>();
 		try {
-			msclr::interop::marshal_context context;
-			const std::string pfile = context.marshal_as<std::string>(primaryname);
-			const std::string sfile = context.marshal_as<std::string>(scenario);
-			const std::string sfilter = context.marshal_as<std::string>(filter);
-			const std::string naming = pfile + "~" + sfile;
+			const std::string naming = formatforcache(primaryname, scenario);
 			std::unordered_map<std::string, FMTmodelcache>::const_iterator mit = models->find(naming);
 			if (mit != models->end())
 			{
+				msclr::interop::marshal_context context;
+				const std::string sfilter = context.marshal_as<std::string>(filter);
 				for (const std::string& value : mit->second.getactions(sfilter))
 				{
 					System::String^ sysvalue = gcnew System::String(value.c_str());
@@ -433,14 +469,12 @@ namespace Wrapper
 	{
 		System::Collections::Generic::List<System::String^>^ list = gcnew System::Collections::Generic::List<System::String^>();
 		try {
-			msclr::interop::marshal_context context;
-			const std::string pfile = context.marshal_as<std::string>(primaryname);
-			const std::string sfile = context.marshal_as<std::string>(scenario);
-			const std::string sfilter = context.marshal_as<std::string>(filter);
-			const std::string naming = pfile + "~" + sfile;
+			const std::string naming = formatforcache(primaryname, scenario);
 			std::unordered_map<std::string, FMTmodelcache>::const_iterator mit = models->find(naming);
 			if (mit != models->end())
 			{
+				msclr::interop::marshal_context context;
+				const std::string sfilter = context.marshal_as<std::string>(filter);
 				for (const std::string& value : mit->second.getactionaggregates(sfilter))
 				{
 					System::String^ sysvalue = gcnew System::String(value.c_str());
@@ -458,10 +492,7 @@ namespace Wrapper
 	{
 		System::Collections::Generic::List<System::String^>^ list = gcnew System::Collections::Generic::List<System::String^>();
 		try {
-			msclr::interop::marshal_context context;
-			const std::string pfile = context.marshal_as<std::string>(primaryname);
-			const std::string sfile = context.marshal_as<std::string>(scenario);
-			const std::string naming = pfile + "~" + sfile;
+			const std::string naming = formatforcache(primaryname, scenario);
 			std::unordered_map<std::string, FMTmodelcache>::const_iterator mit = models->find(naming);
 			if (mit != models->end())
 			{
@@ -484,10 +515,7 @@ namespace Wrapper
 	{
 		System::Collections::Generic::List<System::String^>^ list = gcnew System::Collections::Generic::List<System::String^>();
 		try {
-			msclr::interop::marshal_context context;
-			const std::string pfile = context.marshal_as<std::string>(primaryname);
-			const std::string sfile = context.marshal_as<std::string>(scenario);
-			const std::string naming = pfile + "~" + sfile;
+			const std::string naming = formatforcache(primaryname, scenario);
 			std::unordered_map<std::string, FMTmodelcache>::const_iterator mit = models->find(naming);
 			if (mit != models->end())
 			{
@@ -510,10 +538,7 @@ namespace Wrapper
 	{
 		System::Collections::Generic::List<System::String^>^ list = gcnew System::Collections::Generic::List<System::String^>();
 		try {
-			msclr::interop::marshal_context context;
-			const std::string pfile = context.marshal_as<std::string>(primaryname);
-			const std::string sfile = context.marshal_as<std::string>(scenario);
-			const std::string naming = pfile + "~" + sfile;
+			const std::string naming = formatforcache(primaryname, scenario);
 			std::unordered_map<std::string, FMTmodelcache>::const_iterator mit = models->find(naming);
 			if (mit != models->end())
 			{
@@ -536,14 +561,12 @@ namespace Wrapper
 	{
 		System::Collections::Generic::List<double>^ list = gcnew System::Collections::Generic::List<double>();
 		try {
-			msclr::interop::marshal_context context;
-			const std::string pfile = context.marshal_as<std::string>(primaryname);
-			const std::string sfile = context.marshal_as<std::string>(scenario);
-			const std::string naming = pfile + "~" + sfile;
+			const std::string naming = formatforcache(primaryname, scenario);
 			std::unordered_map<std::string, FMTmodelcache>::const_iterator mit = models->find(naming);
 			if (mit != models->end())
 			{
 				std::vector<std::string>themeselections;
+				msclr::interop::marshal_context context;
 				for each (System::String ^ ths in themeselection)
 					{
 					themeselections.push_back(context.marshal_as<std::string>(ths));

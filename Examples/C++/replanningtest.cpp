@@ -10,7 +10,7 @@
 
 int main(int argc, char *argv[])
 	{
-	/*#ifdef FMTWITHOSI
+	#ifdef FMTWITHOSI
 	Logging::FMTlogger().logstamp();
 	const std::string folder = "../../../../Examples/Models/TWD_land/";
 	const std::string primlocation = folder + "TWD_land.pri";
@@ -46,8 +46,8 @@ int main(int argc, char *argv[])
 	//handler.setquietlogger();
 	//handler.ondemandrun();
 	handler.conccurentrun();
-	#endif*/
-	#ifdef FMTWITHOSI
+	#endif
+	/*#ifdef FMTWITHOSI
 	Logging::FMTlogger().logstamp();
 	const std::string folder = "../../../../Examples/Models/TWD_land/";
 	const std::string primlocation = "D:/08762/PC_9429_U08762_4_Vg1_2023_vSSP03.pri";
@@ -93,7 +93,7 @@ int main(int argc, char *argv[])
 	//handler.setquietlogger();
 	//handler.ondemandrun();
 	handler.conccurentrun();
-	#endif
+	#endif*/
 	return 0;
 	}
 

@@ -11,21 +11,29 @@ namespace Logging
 	class FMTlogger;
 }
 
+namespace Parser
+{
+	class FMTmodelparser;
+}
+
 
 namespace Wrapper
 {
 
 	public ref class FMTexcelcache 
 	{
+		Parser::FMTmodelparser* parser;
 		std::shared_ptr<Logging::FMTlogger>* cachelog;
 		std::unordered_map<std::string, FMTmodelcache>* models;
 		bool exceptionraised;
 		std::string getprimaryname(const std::string& primarylocation);
 		std::string getmappath(const std::string& primarylocation);
 		void captureexception(const std::string& method);
+		std::string formatforcache(System::String^ primarylocation, System::String^ scenario);
 	public:
 		FMTexcelcache();
 		~FMTexcelcache();
+		System::Collections::Generic::List<System::String^>^ readnsolvetemplates(System::String^ primarylocation, System::String^ templatefolder, int length);
 		bool add(System::String^ primarylocation, System::String^ scenario);
 		void remove(System::String^ primarylocation, System::String^ scenario);
 		double getvalue(System::String^ primaryname, System::String^ scenario,

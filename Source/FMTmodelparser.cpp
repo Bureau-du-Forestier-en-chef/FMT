@@ -943,9 +943,12 @@ void FMTmodelparser::write(const Models::FMTmodel& model,const std::string& fold
 
 	}
 
+	
 
-	std::vector<Models::FMTmodel>FMTmodelparser::readproject(const std::string& primary_location,
+	std::vector<Models::FMTmodel>FMTmodelparser::readfromfolder(const std::string& primary_location,
+		const std::string& folder,
 		std::vector<std::string>scenarios,
+		bool validatescenarioname,
 		bool readarea, bool readoutputs, bool readoptimize)
 	{
 		std::vector<Models::FMTmodel>sortedmodels;
@@ -995,7 +998,7 @@ void FMTmodelparser::write(const Models::FMTmodel& model,const std::string& fold
 			const boost::filesystem::path primary_path(primary_location);
 			std::string main_name = primary_path.stem().string();
 			boost::to_lower(main_name);
-			const boost::filesystem::path scenarios_path = (primary_path.parent_path() / boost::filesystem::path("Scenarios"));
+			const boost::filesystem::path scenarios_path = boost::filesystem::path(folder);// (primary_path.parent_path() / boost::filesystem::path("Scenarios"));
 			if (boost::filesystem::is_directory(scenarios_path))
 			{
 				boost::filesystem::directory_iterator end_itr;
@@ -1017,7 +1020,7 @@ void FMTmodelparser::write(const Models::FMTmodel& model,const std::string& fold
 									Core::FMTsection section = from_extension(extension);
 									std::string file_name = fileitr->path().stem().string();
 									boost::to_lower(file_name);
-									if (section != Core::FMTsection::Empty && file_name == main_name)
+									if (section != Core::FMTsection::Empty && (!validatescenarioname || file_name == main_name))
 									{
 										scenario_files[section] = fileitr->path().string();
 
@@ -1058,9 +1061,14 @@ void FMTmodelparser::write(const Models::FMTmodel& model,const std::string& fold
 
 			if (scenarios.empty())
 			{
+				for (Models::FMTmodel& model : models)
+				{
+					model.cleanactionsntransitions();
+					sortedmodels.push_back(model);
+				}
 
-				models.begin()->cleanactionsntransitions();
-				sortedmodels.push_back(*models.begin());
+				//models.begin()->cleanactionsntransitions();
+				//sortedmodels.push_back(*models.begin());
 			}
 			else {
 				for (const std::string& scenario : scenarios)
@@ -1091,12 +1099,12 @@ void FMTmodelparser::write(const Models::FMTmodel& model,const std::string& fold
 					}
 				}
 				_exhandler->raise(Exception::FMTexc::FMTmissing_scenarios,
-					boost::algorithm::join(missing_scenarios, " ") + " for " + primary_location, "FMTmodelparser::readproject", __LINE__, __FILE__);
+					boost::algorithm::join(missing_scenarios, " ") + " for " + primary_location, "FMTmodelparser::readfromfolder", __LINE__, __FILE__);
 			}
 		}
 		catch (...)
 		{
-			_exhandler->printexceptions("at " + primary_location, "FMTmodelparser::readproject", __LINE__, __FILE__);
+			_exhandler->printexceptions("at " + primary_location, "FMTmodelparser::readfromfolder", __LINE__, __FILE__);
 		}
 
 		if (_logger->logwithlevel("Done reading " + getdurationinseconds(readstart) + " ", 0))
@@ -1104,6 +1112,36 @@ void FMTmodelparser::write(const Models::FMTmodel& model,const std::string& fold
 			_logger->logtime();
 		}
 		return sortedmodels;
+
+	}
+
+	std::vector<Models::FMTmodel>FMTmodelparser::readtemplates(const std::string& primary_location, const std::string& templatefolder)
+	{
+		try {
+			return readfromfolder(primary_location, templatefolder, std::vector<std::string>(), false);
+		}
+		catch (...)
+		{
+			_exhandler->printexceptions("at " + primary_location, "FMTmodelparser::readtemplate", __LINE__, __FILE__);
+		}
+		return std::vector<Models::FMTmodel>();
+	}
+
+	std::vector<Models::FMTmodel>FMTmodelparser::readproject(const std::string& primary_location,
+		std::vector<std::string>scenarios,
+		bool readarea, bool readoutputs, bool readoptimize)
+	{
+		try {
+			const boost::filesystem::path primary_path(primary_location);
+			const boost::filesystem::path scenarios_path = (primary_path.parent_path() / boost::filesystem::path("Scenarios"));
+			const std::string scenariofolder = scenarios_path.string();
+			return readfromfolder(primary_location, scenariofolder, scenarios, true,readarea,readoutputs,readoptimize);
+		}
+		catch (...)
+		{
+			_exhandler->printexceptions("at " + primary_location, "FMTmodelparser::readproject", __LINE__, __FILE__);
+		}
+		return std::vector<Models::FMTmodel>();
 	}
 
 	std::vector<std::vector<Core::FMTschedule>>FMTmodelparser::readschedules(const std::string& primary_location,

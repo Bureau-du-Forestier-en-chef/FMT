@@ -61,6 +61,16 @@ class FMTEXPORT FMTmodelparser : public FMTparser
 					const std::string& lif, const std::string& are, const std::string& yld,
 					const std::string& act, const std::string& tr, const std::string& out,
 					std::string opt = std::string(),bool allow_mapping=false);
+	// DocString: FMTmodelparser::readfromfolder
+	/**
+	Read models from a folder (can be scenarios), based on a primary_location, if scenarios is empty it will read all models in the 
+	folder, if validatescenarioname is true it will only read model's section with name matching the primary name else it will read anything.
+	*/
+	std::vector<Models::FMTmodel>readfromfolder(const std::string& primary_location,
+									const std::string& folder,
+									std::vector<std::string>scenarios,
+									bool validatescenarioname,
+									bool readarea=true, bool readoutputs=true, bool readoptimize=true);
 	protected:
 	#ifdef FMTWITHGDAL
 	// DocString: FMTmodelparser::getiterationsvalues()
@@ -146,6 +156,13 @@ class FMTEXPORT FMTmodelparser : public FMTparser
                       const std::string& lif,const std::string& are,const std::string& yld,
                       const std::string& act,const std::string& tr,const std::string& out,
 						std::string opt = std::string());
+		// DocString: FMTmodelparser::readtemplate
+		/**
+		The readtemplate function read the base model from primary_location and then load all everything from templatefolder and 
+		use each folder in templatefolder has scenarios of the base model. Each folders within the templatefolder will will gave their names
+		to the FMTmodel. So within a given subfolder it will read *._act, *._yld and so on...
+		*/
+		std::vector<Models::FMTmodel>readtemplates(const std::string& primary_location,const std::string& templatefolder);
 		// DocString: FMTmodelparser::readproject
 		/**
 		The readproject function reads multiple scenarios based on a primary file location (.pri).

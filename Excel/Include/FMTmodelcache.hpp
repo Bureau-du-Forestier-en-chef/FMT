@@ -60,13 +60,16 @@ namespace Wrapper
 		double getvaluefrommodel(const Core::FMToutput& output, const int& period) const;
 		double getyieldfrommodel(const Core::FMTyieldrequest& request, const std::string& yieldname) const;
 		void allocateressource();
+		void setbaseressources();
 	public:
 		FMTmodelcache();
 		FMTmodelcache(const FMTmodelcache& rhs);
 		FMTmodelcache& operator = (const FMTmodelcache& rhs);
 		virtual ~FMTmodelcache();
-		FMTmodelcache(const Models::FMTmodel& lmodel,const std::vector<Core::FMTschedule>& schedules,const std::string& lmaplocation);
+		FMTmodelcache(const Models::FMTmodel& lmodel, const std::string& lmaplocation);
+		void setlength(const int& period);
 		void setsolution(const std::vector<Core::FMTschedule>& schedules);
+		bool solve();
 		double getvalue(const std::string& outputname, const std::string& themeselection, const int& period) const;
 		double getyield(const std::string& yieldname, const std::string& themeselection, const int& age, const int& period) const;
 		bool writejpeg(const size_t& themeid,const std::vector<std::string>attributevalues, const std::string& jpeglocation) const;
