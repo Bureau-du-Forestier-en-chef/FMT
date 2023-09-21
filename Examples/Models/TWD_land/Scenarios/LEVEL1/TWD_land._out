@@ -1,0 +1,17 @@
+*OUTPUT oSupRec Superficie récolté
+*SOURCE ? ? ? coupetotale _AREA
+
+*LEVEL lPerturbationEN_reguc
+*SOURCE #Creguc
+
+*LEVEL lDelta_reguc
+
+*OUTPUT OSUPregCAR_PertCorr_reguc
+*SOURCE lPerturbationEN_reguc + lDelta_reguc * #CorCour
+
+
+
+
+
+
+

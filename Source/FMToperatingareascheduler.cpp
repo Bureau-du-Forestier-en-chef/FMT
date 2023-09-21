@@ -1086,9 +1086,10 @@ namespace Heuristics
 				++outputid;
 				const Core::FMToutput variableoutput(outputname + std::to_string(cid), "OPAREA " + std::to_string(cid), "BFECOPT",sources,operators);
 				sources.clear();
-				sources.push_back(Core::FMToutputsource(Core::FMTotar::level, data, outputid));
+				const std::string levelname = outputname + "bound" + std::to_string(cid);
+				sources.push_back(Core::FMToutputsource(Core::FMTotar::level, data, outputid,-1, levelname));
 				++outputid;
-				const Core::FMToutput leveloutput(outputname + "bound" + std::to_string(cid), "OPAREABOUND" + std::to_string(cid), "BFECOPT", sources, operators);
+				const Core::FMToutput leveloutput(levelname, "OPAREABOUND" + std::to_string(cid), "BFECOPT", sources, operators);
 				alloutputs.push_back(variableoutput);
 				alloutputs.push_back(leveloutput);
 				++cid;

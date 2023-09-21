@@ -19,6 +19,7 @@ FMToutputsource::FMToutputsource() : FMTspec(), mask(),
 		target(FMTotar::val),
 		action(),
 		yield(),
+		levelname(),
 		values(),
 		average(),
 		sum(),
@@ -34,6 +35,7 @@ FMToutputsource::FMToutputsource(const FMTotar ltarget,double lvalue, std::strin
     target(ltarget),
     action(laction),
     yield(lyield),
+	levelname(),
     values(1,lvalue),
 	average(),
 	sum(),
@@ -48,10 +50,11 @@ FMToutputsource::FMToutputsource(const FMTotar ltarget,double lvalue, std::strin
     }
 
 
-FMToutputsource::FMToutputsource(const FMTotar ltarget,std::vector<double>lvalues, int origin, int ttarget): FMTspec(),mask(),
+FMToutputsource::FMToutputsource(const FMTotar ltarget,std::vector<double>lvalues, int origin, int ttarget, std::string llevelname): FMTspec(),mask(),
     target(ltarget),
     action(),
     yield(),
+	levelname(llevelname),
     values(lvalues),
 	average(),
 	sum(),
@@ -67,14 +70,14 @@ FMToutputsource::FMToutputsource(const FMTspec& spec,const FMTmask& lmask,
                const FMTotar ltarget,std::string lyield,
 			std::string laction, int origin,int ttarget) :
                 FMTspec(spec),mask(lmask),
-                target(ltarget),action(laction),yield(lyield),values(),average(), sum(), outputorigin(origin),themetarget(ttarget)
+                target(ltarget),action(laction),yield(lyield), levelname(), values(), average(), sum(), outputorigin(origin), themetarget(ttarget)
     {
 
 
     }
 
 FMToutputsource::FMToutputsource(const FMToutputsource& rhs) : FMTspec(rhs),mask(rhs.mask),target(rhs.target),
-    action(rhs.action),yield(rhs.yield),values(rhs.values), average(rhs.average), sum(rhs.sum), outputorigin(rhs.outputorigin),themetarget(rhs.themetarget)
+    action(rhs.action),yield(rhs.yield), levelname(rhs.levelname), values(rhs.values), average(rhs.average), sum(rhs.sum), outputorigin(rhs.outputorigin), themetarget(rhs.themetarget)
     {
 
     }
@@ -87,6 +90,7 @@ FMToutputsource& FMToutputsource::operator = (const FMToutputsource& rhs)
         values = rhs.values;
         action = rhs.action;
         yield = rhs.yield;
+		levelname = rhs.levelname;
         FMTspec::operator=(rhs);
         mask = rhs.mask;
 		average = rhs.average;
@@ -180,9 +184,10 @@ FMToutputsource::operator std::string() const
                 }
         break;
         case FMTotar::level:
-            if (!action.empty())
+			line += (action + levelname);
+			/*if (!action.empty())
                 {
-                 line += action;
+                line += action;
                 }else{
                 for (const double lvalue : values)
                     {
@@ -192,7 +197,7 @@ FMToutputsource::operator std::string() const
                     {
                     line.pop_back();
                     }
-                }
+                }*/
         break;
         default:
             line+="";

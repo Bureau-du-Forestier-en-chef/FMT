@@ -8,6 +8,7 @@ int main(int argc, char* argv[])
 {
 #ifdef FMTWITHOSI
 	const std::string primarylocation =  std::string(argv[1]);
+	//const std::string primarylocation = "D:/FMT/Examples/Models/TWD_land/TWD_land.pri";
 	Parser::FMTmodelparser modelparser;
 	modelparser.setdefaultexceptionhandler();
 	const std::string outdir = "../../tests/testmodelwriter/";
@@ -18,6 +19,7 @@ int main(int argc, char* argv[])
 	errors.push_back(Exception::FMTexc::FMToveridedyield);
 	modelparser.seterrorstowarnings(errors);
 	const std::vector<std::string>scenarios(1, std::string(argv[2]));
+	//const std::vector<std::string>scenarios(1, "LEVEL1");
 	const std::vector<Models::FMTmodel> models = modelparser.readproject(primarylocation, scenarios);
 	Models::FMTlpmodel optmodel(models.at(0), Models::FMTsolverinterface::MOSEK);
 	optmodel.setparameter(Models::FMTintmodelparameters::LENGTH, 3);

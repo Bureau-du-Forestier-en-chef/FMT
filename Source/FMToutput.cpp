@@ -220,10 +220,10 @@ FMToutput::operator std::string() const
 		std::string line;
 	try{
 		//Works for normal outputs, level and levels with operators
-		if(!islevel() || isonlylevel())
-		{
+		//if(!islevel() || isonlylevel())
+		//{
 			line = "*OUTPUT ";
-			if (islevel())
+			if (isonlylevel())
 			{
 				line = "*LEVEL ";
 			}
@@ -233,19 +233,45 @@ FMToutput::operator std::string() const
 				line += " (_TH" + std::to_string(targetthemeid() + 1) + ")";
 			}
 			line+=" " + description + "\n";
-			if (!sources.empty() && ((islevel() && sources.at(0).getaction().empty()) || (!islevel())))
+			if (isconstantlevel())
 			{
 				line += "*SOURCE ";
-				for (size_t id = 0; id < sources.size(); ++id)
+				for (const double& value : sources.begin()->getvalues())
 				{
-					line += std::string(sources[id]) + " ";
-					if (id < operators.size())
+					line += std::string(std::to_string(value))+" ";
+				}
+				line.pop_back();
+				line += "\n";
+				
+			}else if(!isonlylevel()) 
+				{
+				line += "*SOURCE ";
+				for (size_t id = 0; id < sources.size(); ++id)
 					{
-						line += std::string(operators[id]) + " ";
+						line += std::string(sources[id]) + " ";
+						if (id < operators.size())
+						{
+							line += std::string(operators[id]) + " ";
+						}
+					}
+				line += "\n";
+				}
+			/*if (!sources.empty() && ((islevel() && sources.at(0).getaction().empty()) || (!islevel())))
+			{
+			if (!isonlylevel()||isconstantlevel())
+				{
+					
+					for (size_t id = 0; id < sources.size(); ++id)
+					{
+						line += std::string(sources[id]) + " ";
+						if (id < operators.size())
+						{
+							line += std::string(operators[id]) + " ";
+						}
 					}
 				}
-			}
-		}
+			}*/
+		/* }
 		//When a output is a mix between level and output 
 		else
 		{
@@ -292,8 +318,8 @@ FMToutput::operator std::string() const
 					line += std::string(operators[id]) + " ";
 				}
 			}
-		}	
-		line+="\n";
+		}*/	
+		
 	}
 	catch (...)
 	{
@@ -317,6 +343,18 @@ bool FMToutput::islevel() const
 		}
     return false;
 	}
+
+bool FMToutput::isconstantlevel() const
+{
+	for (const FMToutputsource& src : sources)
+	{
+		if (src.gettarget() != FMTotar::level || src.isvariablelevel())
+		{
+			return false;
+		}
+	}
+	return true;
+}
 
 bool FMToutput::isonlylevel() const
 	{

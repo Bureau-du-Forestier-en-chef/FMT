@@ -220,6 +220,11 @@ class FMTEXPORT FMToutput: public FMTobject
 	Returns true if all outputsources of the FMToutput are level.
 	*/
 	bool isonlylevel() const;
+	// DocString: FMToutput::isconstantlevel
+	/**
+	Returns true if all outputsources of the FMToutput are constant level
+	*/
+	bool isconstantlevel() const;
 	// DocString: FMToutput::isconstant
 	/**
 	Returns true if all outputsources of the FMToutput are constants.

@@ -384,7 +384,7 @@ namespace Parser
 												{
 												sources.back().pushvalues(values);
 											}else {
-												sources.push_back(Core::FMToutputsource(Core::FMTotar::level, values, outputid, themetarget));//constant level!
+												sources.push_back(Core::FMToutputsource(Core::FMTotar::level, values, outputid, themetarget,name));//constant level!
 												}
 
 											

@@ -53,7 +53,7 @@ class FMTEXPORT FMToutputsource : public FMTspec
 	}
     FMTmask mask;
     FMTotar target;
-	std::string action,yield;
+	std::string action,yield,levelname;//levelname is only for constant level...(for parsing)
 	std::vector<double>values;
 	bool average;
 	bool sum;
@@ -67,7 +67,7 @@ class FMTEXPORT FMToutputsource : public FMTspec
         FMToutputsource(const FMTotar ltarget,double lvalue = 0,
 			std::string lyield= "", std::string laction = "",int origin=-1, int ttarget=-1);
         FMToutputsource(const FMTotar ltarget,
-			std::vector<double>lvalues, int origin = -1, int ttarget=-1);
+			std::vector<double>lvalues, int origin = -1, int ttarget=-1, std::string llevelname = "");
         FMToutputsource(const FMTspec& spec,const FMTmask& lmask,
                const FMTotar ltarget, std::string lyield= "",
                std::string laction = "", int origin = -1, int ttarget=-1);
