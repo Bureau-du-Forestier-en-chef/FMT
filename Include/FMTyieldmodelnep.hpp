@@ -1,5 +1,5 @@
 #ifdef FMTWITHONNXR
-#include "FMTyieldmodel.hpp"
+#include "FMTyieldmodelnn.hpp"
 
 #ifndef FMTYIELDMODELNEP_H_INCLUDED
 #define FMTYIELDMODELNEP_H_INCLUDED
@@ -10,15 +10,8 @@ namespace Core
 	/**
 	FMTyieldmodelpools is a machine learning model to predict carbon NEP.
 	*/
-	class FMTyieldmodelnep : public FMTyieldmodel
+	class FMTyieldmodelnep : public FMTyieldmodelnn
 	{
-	private:
-		std::string modelName;
-		std::string modelType;
-		std::vector<float> standardParamMeans = {};
-		std::vector<float> standardParamVars = {};
-		std::vector<std::string> modelYields = {};
-		std::vector<std::string> modelOutputs = {};
 	public:
 		// DocString: FMTyieldmodelnep::FMTyieldmodelnep()
 		/**
@@ -29,7 +22,7 @@ namespace Core
 		/**
 		Copy constructor.
 		*/
-		FMTyieldmodelnep(const FMTyieldmodelnep& rhs);
+		FMTyieldmodelnep(const FMTyieldmodelnep& rhs)=default;
 		// DocString: FMTyieldmodelnep::operator = (const FMTyieldmodelnep& rhs)
 		/**
 		Default equality operator.
@@ -50,46 +43,11 @@ namespace Core
 		Implements FMTyieldmodel::Clone().
 		*/
 		std::unique_ptr<FMTyieldmodel>Clone() const;
-		// DocString: FMTyieldmodelnep::GetModelName()
-		/**
-		Implements FMTyieldmodel::GetModelType().
-		*/
-		const std::string& GetModelName() const;
-		// DocString: FMTyieldmodelnep::GetModelType()
-		/**
-		Implements FMTyieldmodel::GetModelType().
-		*/
-		const std::string& GetModelType() const;
-		// DocString: FMTyieldmodelnep::GetStandardParamMeans()
-		/**
-		Implements FMTyieldmodel::GetStandardParamMeans().
-		*/
-		const std::vector<float>& GetStandardParamMeans() const;
-		// DocString: FMTyieldmodelnep::GetStandardParamVars()
-		/**
-		Implements FMTyieldmodel::GetStandardParamVars().
-		*/
-		const std::vector <float>& GetStandardParamVars() const;
-		// DocString: FMTyieldmodelnep::GetModelYields()
-		/**
-		Implements FMTyieldmodel::GetModelYields().
-		*/
-		const std::vector<std::string>& GetModelYields() const;
-		// DocString: FMTyieldmodelnep::GetModelOutputNames()
-		/**
-		Implements FMTyieldmodel::GetModelOutputNames().
-		*/
-		const std::vector<std::string>& GetModelOutputNames() const;
 		// DocString: FMTyieldmodelnep::GetModelOutputNames()
 		/**
 		Implements FMTyieldmodel::GetInputValues(const Graph::FMTpredictor& predictor).
 		*/
 		const std::vector<double> GetInputValues(const Graph::FMTpredictor& predictor) const;
-		// DocString: FMTyieldmodelnep::RemoveNans()
-		/**
-		Implements FMTyieldmodel::RemoveNans().
-		*/
-		const void RemoveNans(std::vector<float>& input) const;
 	};
 }
 

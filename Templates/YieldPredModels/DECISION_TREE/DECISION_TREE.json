@@ -1,0 +1,35 @@
+{
+	"modelName": "DECISIONTREE",
+	"Outputs_file": [ "File.out" ],
+	"Tree": {
+		"Régénération et Mature>70%": {
+			"Output": 0,
+			"Bounds": [ 70, 100 ],
+			"Branches": [ "Régénération>15%", "Mature>40%" ]
+		},
+		"Régénération>15%": {
+			"Output": 1,
+			"Bounds": [ 15, 100 ],
+			"Branches": [ "Mature>30%", "Récolter" ]
+		},
+		"Mature>40%": {
+			"Output": 2,
+			"Bounds": [ 40, 100 ],
+			"Branches": [ "Attendre", "Prémature>55%" ]
+		},
+		"Mature>30%": {
+			"Output": 2,
+			"Bounds": [ 30, 100 ],
+			"Branches": [ "Récolter", "Attendre" ]
+		},
+		"Prémature>55%": {
+			"Output": 3,
+			"Bounds": [ 55, 100 ],
+			"Branches": [ "Récolter", "Attendre" ]
+		}
+	},
+	"Decisions": {
+		"Attendre": 0,
+		"Récolter": 1
+	}
+}

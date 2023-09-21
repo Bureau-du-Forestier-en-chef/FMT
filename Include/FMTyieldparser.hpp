@@ -124,7 +124,7 @@ class FMTEXPORT FMTyieldparser : public FMTparser
 		/**
 		Given a modelname read a yield model in the YieldPredModels folder.
 		*/
-		std::unique_ptr<Core::FMTyieldmodel>readyieldmodel(const std::string& modelname, std::vector<std::string>& modelYields) const;
+		std::unique_ptr<Core::FMTyieldmodel>readyieldmodel(const std::string& modelname, std::vector<std::string>& modelYields,const Core::FMTmask& mainmask) const;
     public:
 		// DocString: FMTyieldparser()
 		/**

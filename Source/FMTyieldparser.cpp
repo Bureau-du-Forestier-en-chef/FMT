@@ -14,6 +14,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 	#include "FMTyieldmodelpools.hpp"
 	#include "FMTyieldmodelnep.hpp"
 #endif
+#include "FMTyieldmodeldecisiontree.hpp"
 #include "FMTyieldparser.hpp"
 #include "FMTageyieldhandler.hpp"
 #include "FMTtimeyieldhandler.hpp"
@@ -352,7 +353,7 @@ Core::FMTdata FMTyieldparser::geteq(const std::string& basestr,
 	}
 
 
-std::unique_ptr<Core::FMTyieldmodel>FMTyieldparser::readyieldmodel(const std::string& modelname, std::vector<std::string>& inputYields) const
+std::unique_ptr<Core::FMTyieldmodel>FMTyieldparser::readyieldmodel(const std::string& modelname, std::vector<std::string>& inputYields, const Core::FMTmask& mainmask) const
 {
 	try {
 		const boost::filesystem::path modeldirectory = boost::filesystem::path(getruntimelocation()) / boost::filesystem::path("YieldPredModels") / boost::filesystem::path(modelname);
@@ -397,6 +398,8 @@ std::unique_ptr<Core::FMTyieldmodel>FMTyieldparser::readyieldmodel(const std::st
 			return std::unique_ptr<Core::FMTyieldmodel>(new Core::FMTyieldmodelpools(root, inputYields));
 		if (modelType == "NEP")
 			return std::unique_ptr<Core::FMTyieldmodel>(new Core::FMTyieldmodelnep(root, inputYields));
+		if (modelType == "DECISION_TREE")
+			return std::unique_ptr<Core::FMTyieldmodel>(new Core::FMTyieldmodeldecisiontree(root, inputYields,mainmask));
 		else
 		#endif
 		{
@@ -789,7 +792,7 @@ Core::FMTyields FMTyieldparser::read(const std::vector<Core::FMTtheme>& themes,c
 									modelid = handlermodels.at(modelname);
 								}else {
 									modelid = handlerptr->size();
-									const std::unique_ptr<Core::FMTyieldmodel>yldmodel = readyieldmodel(modelname, inputYields);
+									const std::unique_ptr<Core::FMTyieldmodel>yldmodel = readyieldmodel(modelname, inputYields,handlerptr->getmask());
 									const std::vector<std::string> allyields = yields.getallyieldnames();
 
 									handlerptr->push_backmodel(yldmodel);
