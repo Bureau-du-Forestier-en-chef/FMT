@@ -825,6 +825,18 @@ namespace Models
         return std::unique_ptr<FMTmodel>(nullptr);
     }
 
+    std::unique_ptr<FMTmodel>FMTsamodel::getcopy(int period) const
+    {
+        try {
+            return std::unique_ptr<FMTmodel>(new FMTsamodel(*dynamic_cast<FMTsemodel*>(FMTsemodel::getcopy(period).get())));
+        }
+        catch (...)
+        {
+            _exhandler->printexceptions("", "FMTsamodel::getcopy", __LINE__, __FILE__);
+        }
+        return std::unique_ptr<FMTmodel>(nullptr);
+    }
+
 
 
 }

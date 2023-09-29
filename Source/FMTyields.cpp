@@ -254,6 +254,7 @@ FMTyields FMTyields::presolve(const FMTmaskfilter& filter,
 	return newyields;
 	}
 
+
 FMTyields FMTyields::getfromfactor(const double& factor,
 	std::vector<std::string>yieldnames) const
 	{

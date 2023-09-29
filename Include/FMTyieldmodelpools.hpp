@@ -48,6 +48,11 @@ namespace Core
 		Implements FMTyieldmodel::GetInputValues().
 		*/
 		const std::vector<double> GetInputValues(const Graph::FMTpredictor& predictor) const;
+		// DocString: FMTyieldmodelpools::GetModelType()
+		/**
+		Return the modeltype of the FMTyieldmodel.
+		*/
+		static std::string GetModelType();
 	};
 }
 

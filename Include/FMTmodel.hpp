@@ -267,7 +267,7 @@ namespace Models
 		This function returns a copy of the FMTmodel of the selected period.
 		The function is going to clean the FMTconstraints and keep the objective.
 		*/
-		virtual FMTmodel getcopy(int period = 0) const;
+		virtual std::unique_ptr<FMTmodel> getcopy(int period = 0) const;
 		// DocString: FMTmodel::basepresolve
 		/**
 		This function use the existin area and call the presolve function

@@ -46,6 +46,12 @@ namespace Core {
 		
 		return values;
 	}
+
+	std::string FMTyieldmodelpools::GetModelType()
+	{
+		return "POOLS";
+	}
+
 }
 
 #endif

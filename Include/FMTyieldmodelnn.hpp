@@ -41,7 +41,6 @@ namespace Core
 		std::unique_ptr<Ort::Session> sessionPtr;
 	#endif
 		static const float UNKNOWN_DISTURBANCE_CODE;
-		const std::string JSON_PROP_MODEL_NAME = "modelFileName";
 		const std::string JSON_PROP_MODEL_TYPE = "modelType";
 		const std::string JSON_PROP_MODEL_YIELDS = "modelYields";
 		const std::string JSON_PROP_MODEL_OUTPUTS = "outputNames";
@@ -111,7 +110,7 @@ namespace Core
 		/**
 		Constructor for FMTyieldmodelnn.
 		*/
-		FMTyieldmodelnn();
+		FMTyieldmodelnn()=default;
 		// DocString: FMTyieldmodelnn::FMTyieldmodelnn()
 		/**
 		Copy constructor for FMTyieldmodelnn.
@@ -122,6 +121,11 @@ namespace Core
 		Runs the machine learning model to predict its outputs.
 		*/
 		const std::vector<double>Predict(const Core::FMTyieldrequest& request) const;
+		// DocString: FMTyieldmodelnn::std::string()
+		/**
+		When it comes to write down in a string the yield model.
+		*/
+		virtual  operator std::string() const;
 	};
 }
 

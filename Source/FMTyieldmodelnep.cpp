@@ -25,6 +25,11 @@ namespace Core {
 		return std::unique_ptr<FMTyieldmodel>(nullptr);
 	}
 
+	std::string FMTyieldmodelnep::GetModelType()
+	{
+		return "NEP";
+	}
+
 
 	
 

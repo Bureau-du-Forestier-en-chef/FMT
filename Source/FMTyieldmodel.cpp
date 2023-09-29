@@ -27,6 +27,7 @@ namespace Core {
 
 	}
 
+
 	const std::vector<std::string>& FMTyieldmodel::GetModelYields() const
 	{
 		return modelYields;
@@ -36,4 +37,24 @@ namespace Core {
 	{
 		return modelName;
 	}
+
+	std::unique_ptr<FMTyieldmodel> FMTyieldmodel::presolve(const FMTmaskfilter& filter,
+		const std::vector<FMTtheme>& newthemes) const
+	{
+	
+		return Clone();
+	}
+
+	std::unique_ptr<FMTyieldmodel> FMTyieldmodel::postsolve(const FMTmaskfilter& filter,
+		const std::vector<FMTtheme>& basethemes) const
+	{
+		return Clone();
+	}
+
+	std::vector<std::vector<double>>FMTyieldmodel::getperiodicvalues() const
+	{
+		return  std::vector<std::vector<double>>();
+	}
+
+
 }

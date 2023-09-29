@@ -31,7 +31,8 @@ namespace boost
 namespace Core 
 {
 	class FMTyieldrequest;
-
+	class FMTtheme;
+	class FMTmaskfilter;
 	// DocString: FMTyieldmodel
 	/**
 	FMTyieldmodel is an abstract class to be implemented as a machine learning model.
@@ -47,12 +48,8 @@ namespace Core
 	protected:
 		std::string modelName;
 		std::vector<std::string> modelYields = {};
+		const std::string JSON_PROP_MODEL_NAME = "modelFileName";
 	public:
-		// DocString: FMTyieldmodel::Predict
-		/**
-		Runs the machine learning model to predict its outputs.
-		*/
-		const std::vector<double>Predict(const Core::FMTyieldrequest& request) const;
 		// DocString: FMTyieldmodel::~FMTyieldmodel()
 		/**
 		Destructor for FMTyieldmodel.
@@ -68,6 +65,11 @@ namespace Core
 		Copy constructor for FMTyieldmodel.
 		*/
 		FMTyieldmodel(const FMTyieldmodel& rhs)=default;
+		// DocString: FMTyieldmodel::operator = (const FMTyieldmodel& rhs)
+		/**
+		Default equality operator.
+		*/
+		FMTyieldmodel& operator = (const FMTyieldmodel& rhs)=default;
 		// DocString: FMTyieldmodel::GetModelName()
 		/**
 		Returns the model name.
@@ -88,6 +90,30 @@ namespace Core
 		Predict the yield
 		*/
 		virtual const std::vector<double>Predict(const Core::FMTyieldrequest& request) const = 0;
+		// DocString: FMTyieldmodel::presolve
+		/**
+		If the FMTyieldmodel contains Core classes it also need to be presolved when presolved is called on the FMTmodel.
+		By default it will return the same FMTyieldmodel.
+		*/
+		virtual std::unique_ptr<FMTyieldmodel> presolve(const FMTmaskfilter& filter,
+				const std::vector<FMTtheme>& newthemes) const;
+		// DocString: FMTyieldmodel::postsolve
+		/**
+		Postsolve the yieldmodel by default it will return a clone.
+		*/
+		virtual std::unique_ptr<FMTyieldmodel> postsolve(const FMTmaskfilter& filter,
+			const std::vector<FMTtheme>& basethemes) const;
+		// DocString: FMTyieldmodel::std::string()
+		/**
+		When it comes to write down in a string the yield model.
+		*/
+		virtual  operator std::string() const=0;
+		// DocString: FMTyieldmodel::getperiodicvalues
+		/**
+		Try to turn the FMTyieldmodel into periodic constant values. if returns an non empty vector then
+		each first dimension is the yield id and each second dimension are the periodic value calculated by the yield.
+		*/
+		virtual std::vector<std::vector<double>>getperiodicvalues() const;
 	};
 }
 

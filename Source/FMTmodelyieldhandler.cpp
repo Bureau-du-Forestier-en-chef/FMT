@@ -11,6 +11,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTyieldmodel.hpp"
 #include "FMTexceptionhandler.hpp"
 #include <boost\filesystem\path.hpp>
+#include "FMTtimeyieldhandler.hpp"
 
 namespace Core {
 
@@ -19,28 +20,26 @@ namespace Core {
 	{
 		std::string value;
 		try {
-			value += "*YM " + std::string(mask) + "\n";
-			std::vector<std::string>modelslines(models.size());
-			for (const auto& data : yldnames)
+			FMTtimeyieldhandler potentialtime = totimehandler();
+			if (!potentialtime.empty())
 				{
-				modelslines[data.second.first] += data.first + ",";
-				}
-			size_t modelid = 0;
-			for(std::string& line : modelslines)
+				return std::string(potentialtime);
+			}
+			else {
+				value += "*YM " + std::string(mask) + "\n";
+				std::vector<std::string>modelslines(models.size());
+				for (const auto& data : yldnames)
 				{
-				line.pop_back();
-				const std::string completename = models.at(modelid)->GetModelName();
-				const boost::filesystem::path modelpath(completename);
-				const boost::filesystem::path dir = modelpath.parent_path();
-				const std::string shortmodelname = dir.stem().string();
-				std::string data(shortmodelname);
-				for (const std::string yield : models.at(modelid)->GetModelYields())
-					{
-					data += ("," + yield);
-					}
-				value += line + " _PRED(" + data + ")\n";
-				++modelid;
+					modelslines[data.second.first] += data.first + ",";
 				}
+				size_t modelid = 0;
+				for (const std::unique_ptr<FMTyieldmodel>& model : models)
+				{
+					modelslines[modelid].pop_back();
+					value += modelslines[modelid] + std::string(*model) + "\n";
+					++modelid;
+				}
+			}
 		}
 		catch (...)
 		{
@@ -48,6 +47,50 @@ namespace Core {
 		}
 		return value;
 	}
+
+
+	FMTtimeyieldhandler FMTmodelyieldhandler::totimehandler() const
+		{
+		try {
+			FMTtimeyieldhandler newhandler(getmask());
+			bool gotallmodel = true;
+			size_t modelid = 0;
+			for (const std::unique_ptr<FMTyieldmodel>& model : models)
+				{
+				std::vector<std::vector<double>> values = model->getperiodicvalues();
+				if (values.empty())
+				{
+					gotallmodel = false;
+					break;
+				}else {
+					std::map<size_t, std::string>modelmapping;
+					for (const auto& data : yldnames)
+					{
+						if (modelid == data.second.first)
+						{
+							modelmapping[data.second.second] = data.first;
+						}
+					}
+					size_t yieldid = 0;
+					for (const std::vector<double>& yield_values : values)
+						{
+						newhandler.setyieldvalues(modelmapping.at(yieldid), 0, yield_values);
+						++yieldid;
+						}
+					}
+				++modelid;
+				}
+			if (gotallmodel)
+			{
+				return newhandler;
+			}
+		
+		}catch (...)
+			{
+			_exhandler->raisefromcatch("", "FMTmodelyieldhandler::totimehandler", __LINE__, __FILE__, Core::FMTsection::Yield);
+			}
+		return FMTtimeyieldhandler(getmask());
+		}
 
 
 	
@@ -188,6 +231,42 @@ namespace Core {
 	std::unique_ptr<FMTyieldhandler>FMTmodelyieldhandler::clone() const
 	{
 		return std::unique_ptr<FMTyieldhandler>(new FMTmodelyieldhandler(*this));
+	}
+
+
+	std::unique_ptr<FMTyieldhandler> FMTmodelyieldhandler::presolve(const FMTmaskfilter& filter, const std::vector<FMTtheme>& newthemes) const
+	{
+		try {
+			FMTmodelyieldhandler newhandler(*this);
+			newhandler.models.clear();
+			for (const std::unique_ptr<FMTyieldmodel>& yieldmodelptr : models)
+				{
+				newhandler.models.push_back(yieldmodelptr->presolve(filter, newthemes));
+				}
+			return std::unique_ptr<FMTyieldhandler>(new FMTmodelyieldhandler(newhandler));
+		}
+		catch (...)
+		{
+			_exhandler->raisefromcatch("", "FMTmodelyieldhandler::presolve", __LINE__, __FILE__, Core::FMTsection::Yield);
+		}
+		return std::unique_ptr<FMTyieldhandler>(nullptr);
+	}
+	std::unique_ptr<FMTyieldhandler> FMTmodelyieldhandler::postsolve(const FMTmaskfilter& filter, const std::vector<FMTtheme>& basethemes) const
+	{
+		try {
+			FMTmodelyieldhandler newhandler(*this);
+			newhandler.models.clear();
+			for (const std::unique_ptr<FMTyieldmodel>& yieldmodelptr : models)
+			{
+				newhandler.models.push_back(yieldmodelptr->postsolve(filter, basethemes));
+			}
+			return newhandler.FMTyieldhandler::postsolve(filter, basethemes);
+		}
+		catch (...)
+		{
+			_exhandler->raisefromcatch("", "FMTmodelyieldhandler::postsolve", __LINE__, __FILE__, Core::FMTsection::Yield);
+		}
+		return std::unique_ptr<FMTyieldhandler>(nullptr);
 	}
 
 

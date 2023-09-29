@@ -21,11 +21,29 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 	#include  <onnxruntime/core/session/onnxruntime_cxx_api.h>
 #endif
 
+
+
 namespace Core {
 
+	#ifdef FMTWITHONNXR
+		std::unique_ptr<Ort::Env> FMTyieldmodelnn::envPtr = std::unique_ptr<Ort::Env>(nullptr);
+	#endif	
+
+		const float FMTyieldmodelnn::UNKNOWN_DISTURBANCE_CODE = 17;
+
+
 	FMTyieldmodelnn::FMTyieldmodelnn(const boost::property_tree::ptree& jsonProps, std::vector<std::string>& inputYields)
+	#ifdef FMTWITHONNXR
+			:sessionPtr()
+	#endif	
 	{
 		try {
+			#ifdef FMTWITHONNXR
+						if (!envPtr)
+						{
+							envPtr = std::unique_ptr<Ort::Env>(new Ort::Env());
+						}
+			#endif
 			boost::filesystem::path fmtdll(getruntimelocation());
 			boost::property_tree::ptree::const_assoc_iterator modelNameIt = jsonProps.find(JSON_PROP_MODEL_NAME);
 			boost::filesystem::path filenamepath(modelNameIt->second.data());
@@ -80,31 +98,13 @@ namespace Core {
 	}
 
 
-#ifdef FMTWITHONNXR
-	std::unique_ptr<Ort::Env> FMTyieldmodel::envPtr = std::unique_ptr<Ort::Env>(nullptr);
-#endif	
 
-	const float FMTyieldmodelnn::UNKNOWN_DISTURBANCE_CODE = 17;
-
-	FMTyieldmodelnn::FMTyieldmodelnn()
-	#ifdef FMTWITHONNXR
-		:sessionPtr()
-	#endif	
-	{
-	#ifdef FMTWITHONNXR
-		if (!envPtr)
-			{
-			envPtr = std::unique_ptr<Ort::Env>(new Ort::Env());
-			}
-	#endif
-	}
 
 	FMTyieldmodelnn::FMTyieldmodelnn(const FMTyieldmodelnn& rhs):
 		FMTyieldmodel(rhs),
 		modelType(rhs.GetModelType()),
 		standardParamMeans(rhs.GetStandardParamMeans()),
 		standardParamVars(rhs.GetStandardParamVars()),
-		modelYields(rhs.GetModelYields()),
 		modelOutputs(rhs.GetModelOutputNames())
 	{
 	#ifdef FMTWITHONNXR
@@ -170,6 +170,28 @@ namespace Core {
 				"FMTyieldmodel::FMTyieldmodelpools", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 	}
+
+	FMTyieldmodelnn::operator std::string() const
+	{
+		std::string value = "";
+		try {
+			const std::string completename = GetModelName();
+			const boost::filesystem::path modelpath(completename);
+			const boost::filesystem::path dir = modelpath.parent_path();
+			const std::string shortmodelname = dir.stem().string();
+			std::string data(shortmodelname);
+			for (const std::string yield : GetModelYields())
+				{
+				data += ("," + yield);
+				}
+			value  = " _PRED(" + data + ")\n";
+		}catch (...)
+		{
+			_exhandler->raisefromcatch("", "FMTyieldmodelnn::operator std::string()", __LINE__, __FILE__, Core::FMTsection::Yield);
+		}
+		return value;
+	}
+
 
 	const std::vector<double>FMTyieldmodelnn::Predict(const Core::FMTyieldrequest& request) const
 	{

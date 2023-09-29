@@ -122,6 +122,14 @@ class FMTEXPORT FMTsesmodel final: public FMTsemodel
 		The function can reduce the number of global themes/actions/transitions/yields/lifespans/outputs/constraints data if the model is badly formulated.
 		*/
 		virtual std::unique_ptr<FMTmodel>presolve(std::vector<Core::FMTactualdevelopment> optionaldevelopments = std::vector<Core::FMTactualdevelopment>()) const;
+		// DocString: FMTsesmodel::getcopy
+		/**
+		This function returns a copy of the FMTmodel of the selected period.
+		If period = 0 it returns the FMTmodel::getcopy if period > 0 then it returns
+		a copy of the FMTmodel based on the developements of the FMTgraph of the FMTlpmodel.
+		Need to have a builded graph with a solution to use this function.
+		*/
+		virtual std::unique_ptr<FMTmodel> getcopy(int period = 0) const;
     };
 
 }

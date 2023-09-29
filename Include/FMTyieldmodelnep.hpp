@@ -32,7 +32,7 @@ namespace Core
 		/**
 		Default destructor.
 		*/
-		~FMTyieldmodelnep();
+		~FMTyieldmodelnep()=default;
 		// DocString: FMTyieldmodelnep::FMTyieldmodelnep(const boost::property_tree::ptree& jsonProps, std::vector<std::string>& inputYields)
 		/**
 		Construct a FMTyieldmodelnep based on a JSON file and an input yield name list.
@@ -48,6 +48,11 @@ namespace Core
 		Implements FMTyieldmodel::GetInputValues(const Graph::FMTpredictor& predictor).
 		*/
 		const std::vector<double> GetInputValues(const Graph::FMTpredictor& predictor) const;
+		// DocString: FMTyieldmodelnep::GetModelType()
+		/**
+		Return the modeltype of the FMTyieldmodel.
+		*/
+		static std::string GetModelType();
 	};
 }
 
