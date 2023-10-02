@@ -16,6 +16,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTexceptionhandler.hpp"
 #include <boost/property_tree/json_parser.hpp>
 #include <boost/filesystem.hpp>
+#include <cmath>
 
 #ifdef FMTWITHONNXR
 	#include  <onnxruntime/core/session/onnxruntime_cxx_api.h>
@@ -57,8 +58,9 @@ namespace Core {
 			std::string stdParamsFileName = (fmtdll / parampath).string();
 
 			std::wstring wideModelName = std::wstring(modelName.begin(), modelName.end());
+			#ifdef FMTWITHONNXR
 			sessionPtr = std::unique_ptr<Ort::Session>(new Ort::Session(*envPtr.get(), wideModelName.c_str(), Ort::SessionOptions{}));
-
+			#endif
 			std::ifstream file(stdParamsFileName);
 			std::vector<std::string> headers = GetNextLineAndSplitIntoTokens(file);
 			headers.erase(headers.begin());
@@ -354,7 +356,7 @@ namespace Core {
 	{
 		for (int i = 0; i < input.size(); i++)
 		{
-			if (isnan(input[i]))
+			if (std::isnan(input[i]))
 			{
 				if (i == 0 || i == 2 || i == 4)
 					input[i] = 0;
