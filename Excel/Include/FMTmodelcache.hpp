@@ -84,7 +84,7 @@ namespace Wrapper
 		int getperiods() const;
 		Logging::FMTexcellogger* getlogger();
 		void putlogger(const std::shared_ptr<Logging::FMTlogger>& log);
-		std::vector<double> Juxtaposition(const std::vector<std::string>& themeselection,const std::string& yieldname,const std::string& numerateur, const std::string& denominateur, const double& ratio,const double& perimeters) const;
+		std::vector<double> Juxtaposition(const std::vector<std::string>& themeselection,const std::string& yieldname,const std::string& output, const double& ratio,const double& perimeters) const;
 
 	};
 

@@ -557,7 +557,7 @@ namespace Wrapper
 		return list;
 	}
 
-	System::Collections::Generic::List<double>^ FMTexcelcache::Juxtaposition(System::String^ primaryname, System::String^ scenario,System::Collections::Generic::List<System::String^>^ themeselection, System::String^ yieldname, System::String^ numerateur, System::String^ denominateur, double ratio, double perimeters)
+	System::Collections::Generic::List<double>^ FMTexcelcache::Juxtaposition(System::String^ primaryname, System::String^ scenario,System::Collections::Generic::List<System::String^>^ themeselection, System::String^ yieldname, System::String^ output, double ratio, double perimeters)
 	{
 		System::Collections::Generic::List<double>^ list = gcnew System::Collections::Generic::List<double>();
 		try {
@@ -571,10 +571,9 @@ namespace Wrapper
 					{
 					themeselections.push_back(context.marshal_as<std::string>(ths));
 					}
-				const std::string strnum = context.marshal_as<std::string>(numerateur);
-				const std::string denom = context.marshal_as<std::string>(denominateur);
+				const std::string stroutput = context.marshal_as<std::string>(output);
 				const std::string yieldof = context.marshal_as<std::string>(yieldname);
-				for (const double& value : mit->second.Juxtaposition(themeselections, yieldof, strnum, denom, ratio, perimeters))
+				for (const double& value : mit->second.Juxtaposition(themeselections, yieldof, stroutput, ratio, perimeters))
 					{
 					list->Add(value);
 					}

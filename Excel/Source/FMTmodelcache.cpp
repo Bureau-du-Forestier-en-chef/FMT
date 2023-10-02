@@ -555,7 +555,7 @@ namespace Wrapper
 
 	}
 
-	std::vector<double> FMTmodelcache::Juxtaposition(const std::vector<std::string>& themeselection,const std::string& yieldname, const std::string& numerateur, const std::string& denominateur, const double& ratio, const double& perimeters) const
+	std::vector<double> FMTmodelcache::Juxtaposition(const std::vector<std::string>& themeselection,const std::string& yieldname, const std::string& output, const double& ratio, const double& perimeters) const
 	{
 	std::vector<double>allratios;
 	try{
@@ -611,18 +611,11 @@ namespace Wrapper
 							if (masklocation.find(neighbor)!= masklocation.end())
 							{
 								const std::string nselection = selected.at(masklocation.at(neighbor));
-								if (getyield(yieldname, nselection, 0, period) > 0)
+								if ((getyield(yieldname, nselection, 0, period) > 0) && 
+									(getvalue(output, nselection, period) >= ratio))
 								{
-									const double denvalue = getvalue(denominateur, nselection, period);
-									if (denvalue > 0)
-									{
-										const double numvalue = getvalue(numerateur, nselection, period);
-										if ((numvalue / denvalue) >= ratio)
-										{
-											++notrespected;
-											break;
-										}
-									}
+									++notrespected;
+									break;
 								}
 							}
 								
