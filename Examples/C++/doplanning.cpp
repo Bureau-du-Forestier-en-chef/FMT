@@ -25,6 +25,10 @@ int main(int argc, char* argv[])
 		const std::string scenario = results.at(1);
 		const int length =  std::stoi(argv[2]);
 		const double objectivevalue =  std::stod(argv[3]);
+		/*const std::string primarylocation = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/09_FMT/Modeles_test/actionseries/PC_9509_U02751_4_Vg2_2023_vRp2.pri";
+		const std::string scenario = "14_sc5_determin_apsp_ref_aam_ratioplct_action_series_3";
+		const int length = 5;
+		const double objectivevalue = 0.0;*/
 		//const int length =  std::stoi(argv[2]);
 		//const double objectivevalue =  std::stod(argv[3]);
 		Parser::FMTmodelparser modelparser;
@@ -43,7 +47,7 @@ int main(int argc, char* argv[])
 		modelparser.seterrorstowarnings(errors);
 		const std::vector<std::string>scenarios(1, scenario);
 		const std::vector<Models::FMTmodel> models = modelparser.readproject(primarylocation, scenarios);
-		//modelparser.write(models.at(0),"C:/Users/admlocal/Desktop/test2/");
+		
 		Models::FMTlpmodel optimizationmodel(models.at(0), Models::FMTsolverinterface::MOSEK);
 		//modelparser.write(optimizationmodel, "D:/test/");
 		optimizationmodel.setparameter(Models::FMTintmodelparameters::LENGTH, length);
@@ -53,7 +57,7 @@ int main(int argc, char* argv[])
 		
 		//modelparser.write(optimizationmodel, "D:/test/");
 		if (optimizationmodel.doplanning(true)) {
-			
+			//modelparser.write(optimizationmodel, "D:/ttt/");
 			/*std::cout << std::to_string(optimizationmodel.getObjValue()) << std::endl;
 			std::vector<Core::FMToutput>outputs;
 			for (const Core::FMToutput& output : optimizationmodel.getoutputs())

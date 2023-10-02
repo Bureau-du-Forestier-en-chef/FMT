@@ -177,7 +177,7 @@ class FMTEXPORT FMTsemodel : public FMTmodel
 		This function returns a copy of the FMTmodel of the selected period.
 		The function is going to clean the FMTconstraints and keep the objective.
 		*/
-		virtual FMTmodel getcopy(int period = 0) const;
+		virtual std::unique_ptr<FMTmodel> getcopy(int period = 0) const;
     };
 
 }

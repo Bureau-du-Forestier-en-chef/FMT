@@ -14,6 +14,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 	#include "FMTyieldmodelpools.hpp"
 	#include "FMTyieldmodelnep.hpp"
 #endif
+#include "FMTyieldmodeldecisiontree.hpp"
 #include "FMTyieldparser.hpp"
 #include "FMTageyieldhandler.hpp"
 #include "FMTtimeyieldhandler.hpp"
@@ -29,6 +30,9 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMToperator.hpp"
 #include "FMTexpression.hpp"
 #include<boost/tokenizer.hpp>
+#include "FMToutput.hpp"
+#include "FMToutputparser.hpp"
+
 
 
 
@@ -351,8 +355,20 @@ Core::FMTdata FMTyieldparser::geteq(const std::string& basestr,
 		return Core::FMTdata(numbers, Core::FMTyieldparserop::FMTequation,valuesnoperators);
 	}
 
+void FMTyieldparser::cleanall(Core::FMTyields& ylds, const std::vector<Core::FMTtheme>& themes, const Core::FMTconstants& constants) const
+{
+	try{
+		ylds.update();
+		cleanup(ylds, themes, constants);
+	}
+	catch (...)
+	{
+		_exhandler->raisefromcatch("", "FMTyieldparser::cleanall", __LINE__, __FILE__, _section);
+	}
+}
 
-std::unique_ptr<Core::FMTyieldmodel>FMTyieldparser::readyieldmodel(const std::string& modelname, std::vector<std::string>& inputYields) const
+
+std::unique_ptr<Core::FMTyieldmodel>FMTyieldparser::readyieldmodel(const std::string& modelname, std::vector<std::string>& inputYields, const Core::FMTmask& mainmask) const
 {
 	try {
 		const boost::filesystem::path modeldirectory = boost::filesystem::path(getruntimelocation()) / boost::filesystem::path("YieldPredModels") / boost::filesystem::path(modelname);
@@ -386,24 +402,29 @@ std::unique_ptr<Core::FMTyieldmodel>FMTyieldparser::readyieldmodel(const std::st
 		boost::property_tree::ptree::const_assoc_iterator modelTypeIt = root.find("modelType"); //temporary hardcoded string
 		if (modelTypeIt == root.not_found())
 		{
-			_exhandler->raise(Exception::FMTunhandlederror,
-				modeljson.string(),
+			_exhandler->raise(Exception::FMTfunctionfailed,
+				"No valid model type for "+modeljson.string(),
 				"FMTyieldparser::readyieldmodel", __LINE__, __FILE__, _section);
 		}
 
-		std::string modelType = modelTypeIt->second.data();
+		const std::string modelType = modelTypeIt->second.data();
 		#ifdef FMTWITHONNXR
-		if(modelType == "POOLS")
-			return std::unique_ptr<Core::FMTyieldmodel>(new Core::FMTyieldmodelpools(root, inputYields));
-		if (modelType == "NEP")
-			return std::unique_ptr<Core::FMTyieldmodel>(new Core::FMTyieldmodelnep(root, inputYields));
-		else
+			if (modelType == Core::FMTyieldmodelpools::GetModelType())
+			{
+				return std::unique_ptr<Core::FMTyieldmodel>(new Core::FMTyieldmodelpools(root, inputYields));
+			}
+			if (modelType == Core::FMTyieldmodelnep::GetModelType())
+			{
+				return std::unique_ptr<Core::FMTyieldmodel>(new Core::FMTyieldmodelnep(root, inputYields));
+			}
 		#endif
-		{
-			_exhandler->raise(Exception::FMTunhandlederror,
-							  modeljson.string(),
+			if (modelType == Core::FMTyieldmodeldecisiontree::GetModelType())
+			{
+				return std::unique_ptr<Core::FMTyieldmodel>(new Core::FMTyieldmodeldecisiontree(root, inputYields, mainmask));
+			}
+		_exhandler->raise(Exception::FMTfunctionfailed,
+			"No valid model type for " + modeljson.string(),
 							  "FMTyieldparser::readyieldmodel", __LINE__, __FILE__, _section);
-		}
 	} catch (...)
 	{
 		_exhandler->raisefromcatch("While reading model "+modelname,"FMTyieldparser::readyieldmodel", __LINE__, __FILE__, _section);
@@ -789,7 +810,7 @@ Core::FMTyields FMTyieldparser::read(const std::vector<Core::FMTtheme>& themes,c
 									modelid = handlermodels.at(modelname);
 								}else {
 									modelid = handlerptr->size();
-									const std::unique_ptr<Core::FMTyieldmodel>yldmodel = readyieldmodel(modelname, inputYields);
+									const std::unique_ptr<Core::FMTyieldmodel>yldmodel = readyieldmodel(modelname, inputYields,handlerptr->getmask());
 									const std::vector<std::string> allyields = yields.getallyieldnames();
 
 									handlerptr->push_backmodel(yldmodel);
@@ -816,8 +837,7 @@ Core::FMTyields FMTyieldparser::read(const std::vector<Core::FMTtheme>& themes,c
 				}
 			}
 		}
-		yields.update();
-		cleanup(yields, themes,constants);
+		cleanall(yields, themes, constants);
 	}catch(...)
 		{
 		_exhandler->raisefromcatch(

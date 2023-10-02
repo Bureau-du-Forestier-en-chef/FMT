@@ -17,11 +17,6 @@ namespace Graph
 	class FMTpredictor;
 }
 
-namespace Ort 
-{
-	struct Env;
-	struct Session;
-}
 
 namespace boost
 {
@@ -36,7 +31,8 @@ namespace boost
 namespace Core 
 {
 	class FMTyieldrequest;
-
+	class FMTtheme;
+	class FMTmaskfilter;
 	// DocString: FMTyieldmodel
 	/**
 	FMTyieldmodel is an abstract class to be implemented as a machine learning model.
@@ -50,39 +46,10 @@ namespace Core
 			ar & boost::serialization::make_nvp("FMTobject", boost::serialization::base_object<FMTobject>(*this));
 		}
 	protected:
-
-	#ifdef FMTWITHONNXR
-		static std::unique_ptr<Ort::Env> envPtr;
-		std::unique_ptr<Ort::Session> sessionPtr;
-	#endif
-
-		static const float UNKNOWN_DISTURBANCE_CODE;
+		std::string modelName;
+		std::vector<std::string> modelYields = {};
 		const std::string JSON_PROP_MODEL_NAME = "modelFileName";
-		const std::string JSON_PROP_MODEL_TYPE = "modelType";
-		const std::string JSON_PROP_MODEL_YIELDS = "modelYields";
-		const std::string JSON_PROP_MODEL_OUTPUTS = "outputNames";
-		const std::string JSON_PROP_STAND_FILE_PATH = "csvStandardisationFile";
 	public:
-		// DocString: FMTyieldmodel::GetNextLineAndSplitIntoTokens
-		/**
-		Utility function used to read a csv file line by line.
-		*/
-		static const std::vector<std::string> GetNextLineAndSplitIntoTokens(std::istream& str);
-		// DocString: FMTyieldmodel::Standardize
-		/**
-		Utility function that applies the standardization formula, a feature scaling technique, on the inputs of a machine learning model.
-		*/
-		static const std::vector<float> Standardize(std::vector<float>& input, const std::vector<float>& means, const std::vector<float>& vars);
-		// DocString: FMTyieldmodel::Predict
-		/**
-		Runs the machine learning model to predict its outputs.
-		*/
-		const std::vector<double>Predict(const Core::FMTyieldrequest& request) const;
-		// DocString: FMTyieldmodel::ValidateInputYields
-		/**
-		Validates that there is the expected number of inputs in the model.
-		*/
-		void ValidateInputYields(std::vector<std::string>& expectedYields, std::vector<std::string>& inputYields) const;
 		// DocString: FMTyieldmodel::~FMTyieldmodel()
 		/**
 		Destructor for FMTyieldmodel.
@@ -93,51 +60,60 @@ namespace Core
 		Constructor for FMTyieldmodel.
 		*/
 		FMTyieldmodel();
+		// DocString: FMTyieldmodel::FMTyieldmodel()
+		/**
+		Copy constructor for FMTyieldmodel.
+		*/
+		FMTyieldmodel(const FMTyieldmodel& rhs)=default;
+		// DocString: FMTyieldmodel::operator = (const FMTyieldmodel& rhs)
+		/**
+		Default equality operator.
+		*/
+		FMTyieldmodel& operator = (const FMTyieldmodel& rhs)=default;
 		// DocString: FMTyieldmodel::GetModelName()
 		/**
 		Returns the model name.
 		*/
-		virtual const std::string& GetModelName() const = 0;
-		// DocString: FMTyieldmodel::GetModelType()
-		/**
-		Returns the model type.
-		*/
-		virtual const std::string& GetModelType() const = 0;
-		// DocString: FMTyieldmodel::GetStandardParamMeans()
-		/**
-		Returns input variables' means used in the standartization process when predicting.
-		*/
-		virtual const std::vector<float>& GetStandardParamMeans() const = 0;
-		// DocString: FMTyieldmodel::GetStandardParamVars()
-		/**
-		Returns input variables' variances used in the standartization process when predicting.
-		*/
-		virtual const std::vector<float>& GetStandardParamVars() const = 0;
-		// DocString: FMTyieldmodel::GetModelYields()
+		const std::string& GetModelName() const;
+		// DocString: FMTyieldmodelnn::GetModelYields()
 		/**
 		Return model yields' names.
 		*/
-		virtual const std::vector<std::string>& GetModelYields() const = 0;
-		// DocString: FMTyieldmodel::GetModelOutputNames()
-		/**
-		Return model outputs' names.
-		*/
-		virtual const std::vector<std::string>& GetModelOutputNames() const = 0;
+		const std::vector<std::string>& GetModelYields() const;
 		// DocString: FMTyieldmodel::Clone()
 		/**
-		Creates and returns a copy of the FMTyieldmodel. Calls the copy constructor.
+		Implements FMTyieldmodel::Clone().
 		*/
 		virtual std::unique_ptr<FMTyieldmodel>Clone() const = 0;
-		// DocString: FMTyieldmodel::GetInputValues()
+		// DocString: FMTyieldmodel::Predict
 		/**
-		Returns inputs values based on a predictor passed as parameter.
+		Predict the yield
 		*/
-		virtual const std::vector<double> GetInputValues(const Graph::FMTpredictor& predictor) const = 0;
-		// DocString: FMTyieldmodel::RemoveNans
+		virtual const std::vector<double>Predict(const Core::FMTyieldrequest& request) const = 0;
+		// DocString: FMTyieldmodel::presolve
 		/**
-		Replaces nan values with default values.
+		If the FMTyieldmodel contains Core classes it also need to be presolved when presolved is called on the FMTmodel.
+		By default it will return the same FMTyieldmodel.
 		*/
-		virtual const void RemoveNans(std::vector<float>& input) const = 0;
+		virtual std::unique_ptr<FMTyieldmodel> presolve(const FMTmaskfilter& filter,
+				const std::vector<FMTtheme>& newthemes) const;
+		// DocString: FMTyieldmodel::postsolve
+		/**
+		Postsolve the yieldmodel by default it will return a clone.
+		*/
+		virtual std::unique_ptr<FMTyieldmodel> postsolve(const FMTmaskfilter& filter,
+			const std::vector<FMTtheme>& basethemes) const;
+		// DocString: FMTyieldmodel::std::string()
+		/**
+		When it comes to write down in a string the yield model.
+		*/
+		virtual  operator std::string() const=0;
+		// DocString: FMTyieldmodel::getperiodicvalues
+		/**
+		Try to turn the FMTyieldmodel into periodic constant values. if returns an non empty vector then
+		each first dimension is the yield id and each second dimension are the periodic value calculated by the yield.
+		*/
+		virtual std::vector<std::vector<double>>getperiodicvalues() const;
 	};
 }
 

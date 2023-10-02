@@ -18,7 +18,7 @@ namespace Core
 {
 	class FMTdata;
 	class FMTyieldmodel;
-
+	class FMTtimeyieldhandler;
 	class FMTEXPORT FMTmodelyieldhandler final : public FMTyieldhandler
 	{
 		friend class boost::serialization::access;
@@ -50,6 +50,13 @@ namespace Core
 		virtual bool isnullyield(const std::string& yldname) const;
 		virtual std::vector<std::string>getyieldnames() const;
 		virtual void clearcache();
+		virtual std::unique_ptr<FMTyieldhandler> presolve(const FMTmaskfilter& filter, const std::vector<FMTtheme>& newthemes) const;
+		virtual std::unique_ptr<FMTyieldhandler> postsolve(const FMTmaskfilter& filter, const std::vector<FMTtheme>& basethemes) const;
+		// DocString: FMTyieldmodeldecisiontreel::totimehandler
+		/**
+		If you can turn all your yieldmodel to time then you can return a timeyieldhandler.
+		*/
+		FMTtimeyieldhandler totimehandler() const;
 	};
 
 }

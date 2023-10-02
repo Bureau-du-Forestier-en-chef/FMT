@@ -124,6 +124,19 @@ namespace Models
 		return false;
 	}
 
+	std::unique_ptr<FMTmodel>FMTsrmodel::getcopy(int period) const
+	{
+		try {
+			return std::unique_ptr<FMTmodel>(new FMTsrmodel(*this, solver.getsolvertype()));
+		}
+		catch (...)
+		{
+			_exhandler->printexceptions("", "FMTsrmodel::getcopy", __LINE__, __FILE__);
+		}
+		return std::unique_ptr<FMTmodel>(nullptr);
+	}
+
+
 	bool FMTsrmodel::forcesolution(int period, const Core::FMTschedule& proportionschedulewithlock)
 	{
 		try

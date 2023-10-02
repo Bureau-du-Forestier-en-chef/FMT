@@ -1,134 +1,37 @@
 #ifdef FMTWITHONNXR
 #include "FMTyieldmodelnep.hpp"
-#include "FMTyieldrequest.hpp"
-#include "FMTgraph.hpp"
-#include "FMTlinegraph.hpp"
-#include "FMTyields.hpp"
 #include "FMTpredictor.hpp"
-#include "FMTsrmodel.hpp"
-#include  <onnxruntime/core/session/onnxruntime_cxx_api.h>
-#include <boost/property_tree/json_parser.hpp>
-#include <boost/filesystem.hpp>
+#include "FMTexceptionhandler.hpp"
 
 
 namespace Core {
-	const std::string JSON_PROP_STAND_FILE_PATH = "csvStandardisationFile";
 
-	FMTyieldmodelnep::FMTyieldmodelnep(const boost::property_tree::ptree& jsonProps, std::vector<std::string>& inputYields)
+	FMTyieldmodelnep::FMTyieldmodelnep(const boost::property_tree::ptree& jsonProps, std::vector<std::string>& inputYields):
+		FMTyieldmodelnn(jsonProps, inputYields)
 	{
-		try{
-		boost::filesystem::path fmtdll(getruntimelocation());
-		boost::property_tree::ptree::const_assoc_iterator modelNameIt = jsonProps.find(JSON_PROP_MODEL_NAME);
-		boost::filesystem::path filenamepath(modelNameIt->second.data());
-		modelName = (fmtdll / filenamepath).string();
-
-		boost::property_tree::ptree::const_assoc_iterator modelTypeIt = jsonProps.find(JSON_PROP_MODEL_TYPE);
-		modelType = modelTypeIt->second.data();
-		boost::property_tree::ptree::const_assoc_iterator stdParamsFileNameIt = jsonProps.find(JSON_PROP_STAND_FILE_PATH);
 		
-		boost::filesystem::path parampath(stdParamsFileNameIt->second.data());
-		std::string stdParamsFileName = (fmtdll / parampath).string();
-
-		std::wstring wideModelName = std::wstring(modelName.begin(), modelName.end());
-		sessionPtr = std::unique_ptr<Ort::Session>(new Ort::Session(*envPtr.get(), wideModelName.c_str(), Ort::SessionOptions{}));
-
-		std::ifstream file(stdParamsFileName);
-		std::vector<std::string> headers = GetNextLineAndSplitIntoTokens(file);
-		headers.erase(headers.begin());
-		std::vector<std::string> strMeans = GetNextLineAndSplitIntoTokens(file);
-		strMeans.erase(strMeans.begin());
-		std::vector<std::string> strVars = GetNextLineAndSplitIntoTokens(file);
-		strVars.erase(strVars.begin());
-
-		std::vector<std::string> yields;
-		for (auto& item : jsonProps.get_child(JSON_PROP_MODEL_YIELDS))
-		{
-			yields.push_back(item.second.get_value<std::string>());
-		}
-
-		ValidateInputYields(yields, inputYields);
-
-		modelYields = inputYields;
-
-		for (auto& item : jsonProps.get_child(JSON_PROP_MODEL_OUTPUTS))
-		{
-			modelOutputs.push_back(item.second.get_value<std::string>());
-		}
-
-		standardParamMeans = std::vector<float>(strMeans.size());
-		standardParamVars = std::vector<float>(strVars.size());
-		for (size_t i = 0; i < strMeans.size(); i++)
-		{
-			standardParamMeans[i] = std::stof(strMeans[i]);
-			standardParamVars[i] = std::stof(strVars[i]);
-		}
-		}
-		catch (...)
-		{
-			_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, "",
-				"FMTyieldmodelnep::FMTyieldmodelnep", __LINE__, __FILE__, Core::FMTsection::Yield);
-		}
 	}
 
-	FMTyieldmodelnep::~FMTyieldmodelnep()
-	{
-		sessionPtr->release();
-	}
-
-	FMTyieldmodelnep::FMTyieldmodelnep(const FMTyieldmodelnep& rhs) :
-		modelName(rhs.GetModelName()),
-		modelType(rhs.GetModelType()),
-		standardParamMeans(rhs.GetStandardParamMeans()),
-		standardParamVars(rhs.GetStandardParamVars()),
-		modelYields(rhs.GetModelYields()),
-		modelOutputs(rhs.GetModelOutputNames())
-	{
-		std::wstring wideModelName = std::wstring(modelName.begin(), modelName.end());
-		sessionPtr = std::unique_ptr<Ort::Session>(new Ort::Session(*envPtr.get(), wideModelName.c_str(), Ort::SessionOptions{}));
-	}
 
 	std::unique_ptr<FMTyieldmodel>FMTyieldmodelnep::Clone() const
 	{
 		try {
-			//_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, "Calling pure virtual function ",
-			//	"FMTyieldmodel::Clone", __LINE__, __FILE__, Core::FMTsection::Yield);
+			return std::unique_ptr<FMTyieldmodel>(new FMTyieldmodelnep(*this));
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTyieldmodel::Clone", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raisefromcatch("", "FMTyieldmodelnep::Clone", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
-		return std::unique_ptr<FMTyieldmodel>(new FMTyieldmodelnep(*this));
+		return std::unique_ptr<FMTyieldmodel>(nullptr);
 	}
 
-	const std::string& FMTyieldmodelnep::GetModelName() const
+	std::string FMTyieldmodelnep::GetModelType()
 	{
-		return modelName;
+		return "NEP";
 	}
 
-	const std::string& FMTyieldmodelnep::GetModelType() const
-	{
-		return modelType;
-	}
 
-	const std::vector<float>& FMTyieldmodelnep::GetStandardParamMeans() const
-	{
-		return standardParamMeans;
-	}
-
-	const std::vector<float>& FMTyieldmodelnep::GetStandardParamVars() const
-	{
-		return standardParamVars;
-	}
-
-	const std::vector<std::string>& FMTyieldmodelnep::GetModelYields() const
-	{
-		return modelYields;
-	}
-
-	const std::vector<std::string>& FMTyieldmodelnep::GetModelOutputNames() const
-	{
-		return modelOutputs;
-	}
+	
 
 	const std::vector<double> FMTyieldmodelnep::GetInputValues(const Graph::FMTpredictor& predictor) const
 	{
@@ -157,20 +60,6 @@ namespace Core {
 
 
 		return values;
-	}
-
-	const void FMTyieldmodelnep::RemoveNans(std::vector<float>& input) const
-	{
-		for (int i = 0; i < input.size(); i++)
-		{
-			if (isnan(input[i]))
-			{
-				if (i == 0 || i == 2 || i == 4)
-					input[i] = 0;
-				if (i == 1 || i == 3 || i == 5)
-					input[i] = FMTyieldmodel::UNKNOWN_DISTURBANCE_CODE;
-			}
-		}
 	}
 }
 

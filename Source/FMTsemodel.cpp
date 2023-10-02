@@ -259,17 +259,16 @@ namespace Models
 	return std::vector<Core::FMTactualdevelopment>();
 	}
 
-	FMTmodel FMTsemodel::getcopy(int period) const
+	std::unique_ptr<FMTmodel> FMTsemodel::getcopy(int period) const
 	{
 		try {
-			_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
-				"Not implemented", "FMTsemodel::getcopy", __LINE__, __FILE__);
+			return std::unique_ptr<FMTmodel>(new FMTsemodel(*this, solution.getforestperiod(period)));
 		}
 		catch (...)
 		{
 			_exhandler->printexceptions("", "FMTsemodel::getcopy", __LINE__, __FILE__);
 		}
-		return FMTmodel();
+		return std::unique_ptr<FMTmodel>(nullptr);
 	}
 
     }

@@ -183,34 +183,9 @@ std::vector<Core::FMTactualdevelopment>FMTmodel::getarea(int period,bool beforeg
     return area;
     }
 
-FMTmodel FMTmodel::getcopy(int period) const
+std::unique_ptr<FMTmodel> FMTmodel::getcopy(int period) const
 	{
-	FMTmodel newmodel(*this);
-	/*if (period > 0)
-		{
-		std::vector<Core::FMTaction>actionssubset;
-		for (const Core::FMTaction& action : actions)
-			{
-			if (period<=action.getperiodupperbound())
-				{
-				actionssubset.push_back(action);
-				}
-			}
-		newmodel.setactions(actionssubset);
-		std::vector<Core::FMTconstraint>cleanedconstraint;
-		std::vector<Core::FMTconstraint> modelconstraints = this->getconstraints();
-		cleanedconstraint.push_back(*modelconstraints.begin());
-		modelconstraints.erase(modelconstraints.begin());
-		for (const Core::FMTconstraint& constraint : constraints)
-			{
-			if (period<=constraint.getageupperbound())
-				{
-				cleanedconstraint.push_back(constraint);
-				}
-			}
-		newmodel.setconstraints(cleanedconstraint);
-		}*/
-	return newmodel;
+	return std::unique_ptr<FMTmodel>(new FMTmodel(*this));
 	}
 
 void FMTmodel::cleanactionsntransitions()
@@ -1446,7 +1421,12 @@ std::unique_ptr<FMTmodel> FMTmodel::presolve(std::vector<Core::FMTactualdevelopm
 
 void FMTmodel::postsolve(const FMTmodel& originalbasemodel)
 	{
-	*this = FMTmodel(originalbasemodel);
+	try {
+		*this = FMTmodel(originalbasemodel);
+	}catch (...)
+		{
+		_exhandler->raisefromcatch("", "FMTmodel::postsolve", __LINE__, __FILE__);
+		}
 	}
 
 Core::FMTschedule FMTmodel::presolveschedule(const Core::FMTschedule& originalbaseschedule,
@@ -1986,7 +1966,6 @@ std::vector<Core::FMTconstraint>FMTmodel::gettacticalconstraints(double penalty,
 	}
 	return newconstraints;
 }
-
 
 
 

@@ -1668,12 +1668,6 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 		return false;
 		}
 
-	FMTmodel FMTlpmodel::getcopy(int period) const
-		{
-		FMTmodel newmodel = FMTmodel::getcopy(period);
-		newmodel.setarea(FMTlpmodel::getarea(period));
-		return newmodel;
-		}
 
 	FMTlpmodel FMTlpmodel::getlocalmodel(FMTmodel localmodel, int period) const
 		{
@@ -1955,6 +1949,19 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 		}
 		return optimal;
 	}
+
+	std::unique_ptr<FMTmodel> FMTlpmodel::getcopy(int period) const
+	{
+		try {
+			return std::unique_ptr<FMTmodel>(new FMTlpmodel(*dynamic_cast<FMTsrmodel*>(FMTsrmodel::getcopy(period).get())));
+		}
+		catch (...)
+		{
+			_exhandler->raisefromcatch("", "FMTlpmodel::getcopy", __LINE__, __FILE__);
+		}
+		return std::unique_ptr<FMTmodel>(nullptr);
+	}
+
 
 	bool FMTlpmodel::trysetsolution(const std::vector<Core::FMTschedule>& schedules)
 	{
