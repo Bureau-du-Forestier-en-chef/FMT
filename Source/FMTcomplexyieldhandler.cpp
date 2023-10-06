@@ -470,6 +470,51 @@ namespace Core {
 						value = std::abs(source_values.begin()->second - periodic_source_values.begin()->second);
 						break;
 					}
+					case FMTyieldparserop::FMTdistance:
+					{
+						/*The distance function calculate the distance in age between a minimal yield value and a maximal yield value when you start from age 0,
+						if the peak of the curve is reached before finding the maximal yield it will return infinity,so it only works with the yield value
+						before the yield peak*/
+						const double lower_bound = cdata->data.at(0);
+						const double upper_bound = cdata->data.at(1);
+						double localvalue = 0;
+						int localage = 0;
+						double minage = 0.0;
+						double maxage = 0.0;
+						double dblage = 0.0;
+						Core::FMTdevelopment newdevelopement(request.getdevelopment());
+						newdevelopement.setage(1);
+						FMTyieldrequest newrequest(newdevelopement, request);
+						const std::unique_ptr<FMTyieldhandler>* ddata = srcsdata.begin()->second;
+						const double peakage = (*ddata)->getpeak(newrequest, srcsdata.begin()->first, 0);
+						bool gotminage = false;
+						bool gotmaxage = false;
+						while (localvalue < upper_bound && dblage <= peakage)
+							{
+							newdevelopement.setage(localage);
+							dblage = static_cast<double>(localage);
+							const FMTyieldrequest localrequest(newdevelopement, request);
+							const std::vector<double>values = getsourcesarray(srcsdata, localrequest, age_only);
+							localvalue = values.at(0);
+							if ((minage< dblage) && (localvalue >= lower_bound) && !gotminage)
+								{
+								minage = dblage;
+								gotminage = true;
+								}else if ((localvalue >= upper_bound) && !gotmaxage)
+									{
+									maxage = dblage;
+									gotmaxage = true;
+									}
+							++localage;
+							}
+						value = maxage - minage;
+						if (value < 0 ||!(gotmaxage && gotminage))
+							{
+							_exhandler->raise(Exception::FMTexc::FMTrangeerror,
+								"Invalid yield value calculated for yield " +yld +" on development "+std::string(request.getdevelopment()), "FMTyieldhandler::getdata", __LINE__, __FILE__);
+							}
+						break;
+					}
 					default:
 						break;
 					}

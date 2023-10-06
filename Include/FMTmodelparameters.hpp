@@ -28,7 +28,8 @@ namespace Models
         PRESOLVE_ITERATIONS = 3,/**< The number of iterations to do in FMTmodel::presolve */
         NUMBER_OF_THREADS = 4,/**< Number of thread use by solver for optimisation */
 		MATRIX_TYPE = 5,/**< matrix forest model TYPE I,II,III (1,2,3) */
-        LastIntModelParam = 6/**< End marker, used to allocate a fixed-sized array to store int parameters. */
+        UPDATE = 6,/**< At which period the model update period stop (excluded) if stops at 2 (2 is part of optimization) but 1 in update */
+        LastIntModelParam = 7/**< End marker, used to allocate a fixed-sized array to store int parameters. */
     };
     //DocString: FMTdblmodelparameters
     //
