@@ -64,7 +64,8 @@ enum class FMTyieldparserop
 	FMTendpoint = 10,
 	FMTdiscountfactor = 11,
 	FMTdelta = 12,
-	FMTmodelpred = 13
+	FMTmodelpred = 13,
+    FMTdistance = 14
     };
 
 enum FMTotar

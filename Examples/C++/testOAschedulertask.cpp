@@ -110,7 +110,8 @@ int main(int argc, char *argv[])
             Models::FMTlpmodel optimizationmodel(model, Models::FMTsolverinterface::MOSEK);
             optimizationmodel.setparameter(Models::FMTintmodelparameters::LENGTH, 5);
 	        optimizationmodel.setparameter(Models::FMTboolmodelparameters::STRICTLY_POSITIVE, true);
-            const int startingperiod = optimizationmodel.getconstraints().at(0).getperiodlowerbound();
+            //const int startingperiod = optimizationmodel.getconstraints().at(0).getperiodlowerbound();
+            const int startingperiod = optimizationmodel.getparameter(Models::FMTintmodelparameters::UPDATE);
             const Core::FMToutputnode nodeofoutput =  createBFECoptaggregate(optimizationmodel);
             const std::vector<Heuristics::FMToperatingareascheme> opeareas = ObtenirOperatingArea(fichierShp,optimizationmodel.getthemes(),14, startingperiod, "AGE", "SUPERFICIE", "STANLOCK", lfichierParam);
             {
