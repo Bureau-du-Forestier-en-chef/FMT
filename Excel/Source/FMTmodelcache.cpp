@@ -21,6 +21,7 @@
 #include "FMTareaparser.hpp"
 #include "FMToperatingareascheme.hpp"
 #include "FMToperatingarea.hpp"
+#include "FMTgraphstats.hpp"
 #include <map>
 
 namespace Wrapper
@@ -336,10 +337,10 @@ namespace Wrapper
 		}
 	}
 
-	bool FMTmodelcache::solve()
+	bool FMTmodelcache::buildnsolve(bool solve)
 	{
 		try {
-			return doplanning(true);
+			return doplanning(solve);
 		}
 		catch (...)
 		{
@@ -726,6 +727,38 @@ namespace Wrapper
 		return attributes;
 	}
 
+	std::vector<std::string> FMTmodelcache::getattributesdescription(const int& themeid, const std::string& value) const
+	{
+		std::vector<std::string> attributes;
+		try {
+			if (!themes.empty() &&
+				(static_cast<size_t>(themeid) < themes.size()))
+			{
+				std::vector<std::string>basenames = themes.at(themeid).getattributenames();
+				std::vector<std::string>references;
+				if (themes.at(themeid).isattribute(value))
+				{
+					references = themes.at(themeid).getattributes(value);
+				}
+				else {
+					references = themes.at(themeid).getattributes("?");
+				}
+				for (const std::string& refvalue : references)
+					{
+					size_t ref_id = std::distance(references.begin(),std::find(references.begin(), references.end(), refvalue));
+					attributes.push_back(basenames.at(ref_id));
+					}
+
+			}
+		}
+		catch (...)
+		{
+			_exhandler->printexceptions("", "FMTmodelcache::getattributesdescription", __LINE__, __FILE__);
+		}
+		return attributes;
+	}
+
+
 	std::vector<std::string> FMTmodelcache::getaggregates(const int& themeid) const
 	{
 		std::vector<std::string> aggregates;
@@ -851,7 +884,44 @@ namespace Wrapper
 			_exhandler->printexceptions("", "FMTmodelcache::getconstraints", __LINE__, __FILE__);
 		}
 		return constraintsname;
+	}
 
+	std::set<std::pair<std::string, int>> FMTmodelcache::getrotations(const std::string& themeselection, const std::string& aggregate) const
+	{
+		std::set<std::pair<std::string, int>> rotations;
+		try {
+				const Core::FMTmask subset = themeselectiontomask(themeselection);
+				if (!aggregate.empty() && !subset.empty())
+				{
+				rotations = FMTsrmodel::getrorations(subset, aggregate);
+				}
+			
+		}
+		catch (...)
+		{
+			_exhandler->printexceptions("", "FMTmodelcache::getrotations", __LINE__, __FILE__);
+		}
+		return rotations;
+	}
+
+
+	std::vector<int> FMTmodelcache::getgraphstats() const
+	{
+		std::vector<int>stats;
+		try {
+			Graph::FMTgraphstats graphstats = FMTsrmodel::getgraphstats();
+			stats.push_back(graphstats.cols);
+			stats.push_back(graphstats.rows);
+			stats.push_back(graphstats.vertices);
+			stats.push_back(graphstats.edges);
+			stats.push_back(graphstats.transfer_rows);
+			stats.push_back(graphstats.output_rows);
+			stats.push_back(graphstats.output_cols);
+		}catch (...)
+		{
+			_exhandler->printexceptions("", "FMTmodelcache::getgraphstats", __LINE__, __FILE__);
+		}
+		return stats;
 	}
 
 

@@ -1533,6 +1533,25 @@ namespace Models
 		return true;
 	}
 
+	Graph::FMTgraphstats FMTsrmodel::getgraphstats() const
+	{
+		return graph.getstats();
+	}
+
+	std::set<std::pair<std::string, int>>FMTsrmodel::getrorations(const Core::FMTmask& mask, const std::string& aggregate) const
+	{
+		std::set<std::pair<std::string, int>>rotations;
+		try {
+			rotations =  graph.getrorations(*this, mask, aggregate);
+		}
+		catch (...)
+		{
+			_exhandler->raisefromcatch("", "FMTsrmodel::getrorations", __LINE__, __FILE__);
+		}
+		return rotations;
+	}
+
+
 }
 
 

@@ -154,7 +154,7 @@ namespace Wrapper
 		return mappath;
 		}
 
-	System::Collections::Generic::List<System::String^>^ FMTexcelcache::readnsolvetemplates(System::String^ primarylocation, System::String^ templatefolder, int length)
+	System::Collections::Generic::List<System::String^>^ FMTexcelcache::readnsolvetemplates(System::String^ primarylocation, System::String^ templatefolder, int length,bool solve)
 	{
 		System::Collections::Generic::List<System::String^>^ scenarios = gcnew System::Collections::Generic::List<System::String^>();
 		try {
@@ -172,7 +172,7 @@ namespace Wrapper
 					const std::string naming = formatforcache(primarylocation, modelname);
 					(*models)[naming] = FMTmodelcache(model, mappath);
 					(*models)[naming].setlength(length);
-					if ((*models)[naming].solve())
+					if ((*models)[naming].buildnsolve(solve))
 					{
 						scenarios->Add(modelname);
 					}
@@ -354,6 +354,33 @@ namespace Wrapper
 		return list;
 	}
 
+
+	System::Collections::Generic::List<System::String^>^ FMTexcelcache::getattributesdescription(System::String^ primaryname, System::String^ scenario, int themeid, System::String^ value)
+	{
+		System::Collections::Generic::List<System::String^>^ list = gcnew System::Collections::Generic::List<System::String^>();
+		try {
+
+			const std::string naming = formatforcache(primaryname, scenario);
+			std::unordered_map<std::string, FMTmodelcache>::const_iterator mit = models->find(naming);
+			if (mit != models->end())
+			{
+				msclr::interop::marshal_context context;
+				const std::string valueof = context.marshal_as<std::string>(value);
+				for (const std::string& value : mit->second.getattributesdescription(themeid, valueof))
+				{
+					System::String^ sysvalue = gcnew System::String(value.c_str());
+					list->Add(sysvalue);
+				}
+			}
+		}
+		catch (...)
+		{
+			captureexception("FMTexcelcache::getattributesdescription");
+		}
+		return list;
+
+	}
+
 	System::Collections::Generic::List<System::String^>^ FMTexcelcache::getaggregates(System::String^ primaryname, System::String^ scenario, int themeid)
 	{
 		System::Collections::Generic::List<System::String^>^ list = gcnew System::Collections::Generic::List<System::String^>();
@@ -439,6 +466,30 @@ namespace Wrapper
 		}
 		return list;
 	}
+
+	System::Collections::Generic::List<int>^ FMTexcelcache::getgraphstats(System::String^ primaryname, System::String^ scenario)
+	{
+		System::Collections::Generic::List<int>^ list = gcnew System::Collections::Generic::List<int>();
+		try {
+			const std::string naming = formatforcache(primaryname, scenario);
+			std::unordered_map<std::string, FMTmodelcache>::const_iterator mit = models->find(naming);
+			if (mit != models->end())
+			{
+				for (const int& value : mit->second.getgraphstats())
+				{
+					list->Add(value);
+				}
+			}
+
+		}
+		catch (...)
+		{
+			captureexception("FMTexcelcache::getgraphstats");
+		}
+		return list;
+	}
+
+
 
 	System::Collections::Generic::List<System::String^>^ FMTexcelcache::getactions(System::String^ primaryname, System::String^ scenario, System::String^ filter)
 	{
@@ -556,6 +607,37 @@ namespace Wrapper
 		}
 		return list;
 	}
+
+	System::Collections::Generic::Dictionary<System::String^, System::Collections::Generic::List<int>^>^ FMTexcelcache::getrotations(System::String^ primaryname, System::String^ scenario, System::String^ themeselection, System::String^ aggregate)
+	{
+		System::Collections::Generic::Dictionary < System::String^, System::Collections::Generic::List<int>^>^ values = gcnew System::Collections::Generic::Dictionary<System::String^,System::Collections::Generic::List<int>^>();
+		try {
+			const std::string naming = formatforcache(primaryname, scenario);
+			std::unordered_map<std::string, FMTmodelcache>::const_iterator mit = models->find(naming);
+			if (mit != models->end())
+				{
+				msclr::interop::marshal_context context;
+				const std::string sfilter = context.marshal_as<std::string>(themeselection);
+				const std::string saggregate= context.marshal_as<std::string>(aggregate);
+				for (const std::pair<std::string, int>& rotations : mit->second.getrotations(sfilter, saggregate))
+					{
+					System::String^ key = gcnew System::String(rotations.first.c_str());
+					if (!values->ContainsKey(key))
+						{
+						values[key] = gcnew System::Collections::Generic::List<int>();
+						}
+					values[key]->Add(rotations.second);
+					}
+
+				}
+		}
+		catch (...)
+		{
+			captureexception("FMTexcelcache::getrotations");
+		}
+		return values;
+	}
+
 
 	System::Collections::Generic::List<double>^ FMTexcelcache::Juxtaposition(System::String^ primaryname, System::String^ scenario,System::Collections::Generic::List<System::String^>^ themeselection, System::String^ yieldname, System::String^ output, double ratio, double perimeters)
 	{

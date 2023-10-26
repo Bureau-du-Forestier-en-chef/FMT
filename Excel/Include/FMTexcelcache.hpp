@@ -33,7 +33,7 @@ namespace Wrapper
 	public:
 		FMTexcelcache();
 		~FMTexcelcache();
-		System::Collections::Generic::List<System::String^>^ readnsolvetemplates(System::String^ primarylocation, System::String^ templatefolder, int length);
+		System::Collections::Generic::List<System::String^>^ readnsolvetemplates(System::String^ primarylocation, System::String^ templatefolder, int length, bool solve);
 		bool add(System::String^ primarylocation, System::String^ scenario);
 		void remove(System::String^ primarylocation, System::String^ scenario);
 		double getvalue(System::String^ primaryname, System::String^ scenario,
@@ -41,6 +41,7 @@ namespace Wrapper
 		double getyield(System::String^ primaryname, System::String^ scenario,
 			System::String^ yieldname, System::String^ themeselection, int period, int age);
 		System::Collections::Generic::List<System::String^>^ getattributes(System::String^ primaryname, System::String^ scenario,int themeid, System::String^ value, bool aggregates);
+		System::Collections::Generic::List<System::String^>^ getattributesdescription(System::String^ primaryname, System::String^ scenario, int themeid, System::String^ value);
 		System::Collections::Generic::List<System::String^>^ getaggregates(System::String^ primaryname, System::String^ scenario, int themeid);
 		System::Collections::Generic::List<System::String^>^ getprimaries();
 		System::Collections::Generic::List<System::String^>^ getscenarios(System::String^ fichierprimaire);
@@ -49,8 +50,10 @@ namespace Wrapper
 		System::Collections::Generic::List<System::String^>^ getoutputs(System::String^ primaryname, System::String^ scenario);
 		System::Collections::Generic::List<System::String^>^ getyields(System::String^ primaryname, System::String^ scenario);
 		System::Collections::Generic::List<System::String^>^ getthemes(System::String^ primaryname, System::String^ scenario);
+		System::Collections::Generic::Dictionary<System::String^,System::Collections::Generic::List<int>^>^ getrotations(System::String^ primaryname, System::String^ scenario, System::String^ themeselection, System::String^ aggregate);
 		System::Collections::Generic::List<int>^ getperiods(System::String^ primaryname, System::String^ scenario);
 		System::Collections::Generic::List<System::String^>^ getconstraints(System::String^ primaryname, System::String^ scenario, System::String^ output);
+		System::Collections::Generic::List<int>^ getgraphstats(System::String^ primaryname, System::String^ scenario);
 		bool writejpeg(System::String^ jpeglocation, System::String^ primaryname, System::String^ scenario, int themeid, System::Collections::Generic::List<System::String^>^ attributes);
 		int size();
 		bool gotexception();

@@ -309,6 +309,21 @@ namespace Models
 		Override setter for boolmodelparameters.
 		*/
 		bool setparameter(const FMTboolmodelparameters& key, const bool& value) override;
+		// DocString: FMTsrmodel::getgraphstats
+		/**
+		Return the statistics of the actual graph (number of cols,rows,edges,verticies)
+		*/
+		Graph::FMTgraphstats getgraphstats() const;
+		// DocString: FMTsrmodel::getrorations
+		/**
+		Based on a mask and an action get all the unique rotations (in period) taken to complete a serie of action. A serie can contain a subserie for an
+		aggregate of actions. It will only keep series that actions are part of the aggregate.
+		Args:
+			mask : the FMTmask of the rotations
+			aggregate : std::string on which the last action is considered to be in
+		Returns: Unique rotations periods taken per series (where the serie is in string action1-action2-action3... string is the serie and int is the number of periods taken to complete the serie.
+		*/
+		std::set<std::pair<std::string, int>>getrorations(const Core::FMTmask& mask, const std::string& aggregate) const;
 	};
 
 }

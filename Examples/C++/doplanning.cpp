@@ -8,6 +8,7 @@
 #include "FMTconstraint.hpp"
 #include "FMTfreeexceptionhandler.hpp"
 #include <boost/algorithm/string.hpp>
+#include "FMTareaparser.hpp"
 #endif
 
 
@@ -25,8 +26,8 @@ int main(int argc, char* argv[])
 		const std::string scenario = results.at(1);
 		const int length =  std::stoi(argv[2]);
 		const double objectivevalue =  std::stod(argv[3]);
-		/*const std::string primarylocation = "D:/FMT/Examples/Models/TWD_land/TWD_land.pri";
-		const std::string scenario = "COS";
+		/*const std::string primarylocation = "T:/Donnees/Usagers/BISBE2/a_Guillaume/PC9509_02751_DET/PC_9509_U02751_4_Vg2_2023_vRp2.pri";
+		const std::string scenario = "13_sc5b_determin_avsp_test";
 		const int length = 3;
 		const double objectivevalue = 0.0;*/
 		//const int length =  std::stoi(argv[2]);
@@ -58,21 +59,36 @@ int main(int argc, char* argv[])
 		//modelparser.write(optimizationmodel, "D:/test/");
 		if (optimizationmodel.doplanning(true)) {
 			//modelparser.write(optimizationmodel, "D:/ttt/");
-			/*std::cout << std::to_string(optimizationmodel.getObjValue()) << std::endl;
+			std::cout << std::to_string(optimizationmodel.getObjValue()) << std::endl;
+			//Parser::FMTareaparser arepars;
+			//arepars.write(optimizationmodel.getarea(1), "D:/test/test.are");
+			
 			std::vector<Core::FMToutput>outputs;
-			for (const Core::FMToutput& output : optimizationmodel.getoutputs())
+			/*for (const auto& solution : optimizationmodel.getsolution(1))
 			{
-				if (output.getname()=="OCOUTM3_T_TOT")
+				for (const auto& val : solution.second)
+				{
+					std::cout << solution.first.getname() << " " << std::string(val.first) << "\n";
+				}
+				
+			}*/
+			/*for (const Core::FMToutput& output : optimizationmodel.getoutputs())
+			{
+				if (output.getname()=="OSUPREGECOP27091")
 				{
 					std::cout << output.getname() << " ";
-					for (int period =1 ; period <= 10; ++period)
+					for (int period =0 ; period <=1; ++period)
 						{
 						const std::map<std::string, double>outs = optimizationmodel.getoutput(output, period, Core::FMToutputlevel::totalonly);
 						for (const auto& val : outs)
 						{
 							if (val.second>0)
 							{
-								std::cout << period << " " << val.second << "\n";
+								//if (val.first=="P27091")
+								//{
+									std::cout << period << " " << val.first << " " << val.second << "\n";
+								//}
+								
 							}
 							
 						}
