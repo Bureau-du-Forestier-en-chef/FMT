@@ -340,7 +340,8 @@ namespace Wrapper
 	bool FMTmodelcache::buildnsolve(bool solve)
 	{
 		try {
-			return doplanning(solve);
+			const bool optimal = doplanning(solve);
+			return (!solve || optimal);
 		}
 		catch (...)
 		{

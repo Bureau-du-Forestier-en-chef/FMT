@@ -54,6 +54,9 @@ namespace Parser
 	const boost::regex Parser::FMTparser::rxprimary = boost::regex("^([^\\[]*)(\\[)([^\\]]*)(.+)");
 	const boost::regex Parser::FMTparser::rxseparator = boost::regex("([\\s\\t]*)([^\\s\\t]*)");
 
+
+	std::map<Core::FMTsection, std::string>FMTparser::primary_sections = std::map<Core::FMTsection, std::string>();
+
 bool FMTparser::GDALinitialization = false;
 
 Core::FMTsection FMTparser::from_extension(const std::string& ext) const
@@ -1264,21 +1267,26 @@ std::queue<std::string> FMTparser::tryinclude(const std::string& line, const std
 		{
 		std::string location = kmatch[3];
 		boost::filesystem::path includedpath(location);
-		boost::filesystem::path basepath;
-		if (includedpath.is_absolute())
+		if (location.find("_PRIMARY")!=std::string::npos)
 			{
-			const boost::filesystem::path l_ppath(_location);
-			const boost::filesystem::path parent_path = l_ppath.parent_path();
-			location = boost::filesystem::canonical(includedpath, parent_path).string();
-			}else if (boost::starts_with(location, "."))
+			if (primary_sections.find(_section)!= primary_sections.end())
+				{
+				location = primary_sections[_section];
+				}
+			}else if (includedpath.is_absolute())
 				{
 				const boost::filesystem::path l_ppath(_location);
 				const boost::filesystem::path parent_path = l_ppath.parent_path();
-				location.erase(0, 1);
-				const boost::filesystem::path full_path = parent_path / location;
-				location = full_path.string();
-				}
-			basepath = boost::filesystem::path(location);
+				location = boost::filesystem::canonical(includedpath, parent_path).string();
+				}else if (boost::starts_with(location, "."))
+					{
+					const boost::filesystem::path l_ppath(_location);
+					const boost::filesystem::path parent_path = l_ppath.parent_path();
+					location.erase(0, 1);
+					const boost::filesystem::path full_path = parent_path / location;
+					location = full_path.string();
+					}
+			const boost::filesystem::path basepath = boost::filesystem::path(location);
 		if (!boost::filesystem::exists(location))//If does not exist then try with the _ type path.
 			{
 			const boost::filesystem::path llpath(_location);
@@ -1496,6 +1504,7 @@ std::map<Core::FMTsection, std::string> FMTparser::getprimary(const std::string&
 			{
 				targets[Core::FMTsection::Constants] = "";
 			}
+		primary_sections = targets;
 		}catch (...)
 			{
 			_exhandler->raisefromcatch("at "+ primarylocation,"FMTparser::getprimary", __LINE__, __FILE__, _section);

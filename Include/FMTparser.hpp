@@ -86,6 +86,9 @@ class FMTEXPORT FMTparser: public Core::FMTobject
 		// DocString: FMTparser::rxend
 		///Regex to capture the end of forloops.
 		const static boost::regex rxend;
+		// DocString: FMTparser::primary_sections
+		///When the modelparser is used this value is saved each time calling FMTparser::getprimary() allow use to use _PRIMARY key word in include files.
+		static std::map<Core::FMTsection, std::string>primary_sections;
 		// DocString: FMTparser::_incomment
 		///Is true if the parser is in a bracket comment {} else false
         bool _incomment;
