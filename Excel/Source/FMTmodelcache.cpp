@@ -22,6 +22,7 @@
 #include "FMToperatingareascheme.hpp"
 #include "FMToperatingarea.hpp"
 #include "FMTgraphstats.hpp"
+#include "FMTexcelexceptionhandler.hpp"
 #include <map>
 
 namespace Wrapper
@@ -43,7 +44,8 @@ namespace Wrapper
 		maskcachemtx(new boost::recursive_mutex()),
 		outputcachemtx(new boost::recursive_mutex()),
 		generalcachemtx(new boost::recursive_mutex()),
-		OAcache(new std::vector<Heuristics::FMToperatingarea>())
+		OAcache(new std::vector<Heuristics::FMToperatingarea>()),
+		all_exceptions()
 
 	{
 
@@ -70,6 +72,7 @@ namespace Wrapper
 			Models::FMTlpmodel::operator=(rhs);
 			globalmask = rhs.globalmask;
 			OAcache = std::move(std::unique_ptr<std::vector<Heuristics::FMToperatingarea>>(new std::vector<Heuristics::FMToperatingarea>(*rhs.OAcache)));
+			all_exceptions = rhs.all_exceptions;
 			if (rhs.map)
 				{
 				map = std::move(std::unique_ptr<Spatial::FMTforest>(new Spatial::FMTforest(*rhs.map)));
@@ -94,7 +97,8 @@ namespace Wrapper
 		maskcachemtx(new boost::recursive_mutex()),
 		outputcachemtx(new boost::recursive_mutex()),
 		generalcachemtx(new boost::recursive_mutex()),
-		OAcache()
+		OAcache(),
+		all_exceptions(rhs.all_exceptions)
 	{
 		boost::lock_guard<boost::recursive_mutex> guard1(*mtx);
 		boost::lock_guard<boost::recursive_mutex> guard2(*rhs.mtx);
@@ -298,7 +302,8 @@ namespace Wrapper
 		maskcachemtx(new boost::recursive_mutex()),
 		outputcachemtx(new boost::recursive_mutex()),
 		generalcachemtx(new boost::recursive_mutex()),
-		OAcache(new std::vector<Heuristics::FMToperatingarea>())
+		OAcache(new std::vector<Heuristics::FMToperatingarea>()),
+		all_exceptions()
 	{
 		try {
 			boost::lock_guard<boost::recursive_mutex> guard1(*mtx);
@@ -329,7 +334,10 @@ namespace Wrapper
 	{
 		try {
 			setparameter(Models::FMTboolmodelparameters::FORCE_PARTIAL_BUILD, true);
+			Exception::FMTexcelexceptionhandler* excelhandler = dynamic_cast<Exception::FMTexcelexceptionhandler*>(_exhandler.get());
+			excelhandler->resetbuildexceptions();//Reset the exceptions
 			doplanning(false, schedules);
+			all_exceptions = excelhandler->getbuildexceptions();//get the exceptions generated
 		}
 		catch (...)
 		{
@@ -340,7 +348,10 @@ namespace Wrapper
 	bool FMTmodelcache::buildnsolve(bool solve)
 	{
 		try {
+			Exception::FMTexcelexceptionhandler* excelhandler = dynamic_cast<Exception::FMTexcelexceptionhandler*>(_exhandler.get());
+			excelhandler->resetbuildexceptions();//Reset the exceptions
 			const bool optimal = doplanning(solve);
+			all_exceptions = excelhandler->getbuildexceptions();//get the exceptions generated
 			return (!solve || optimal);
 		}
 		catch (...)
@@ -886,6 +897,22 @@ namespace Wrapper
 		}
 		return constraintsname;
 	}
+
+	std::vector<std::string>FMTmodelcache::getbuildexceptions(const int& exceptionid) const
+		{
+		std::vector<std::string>values;
+		try {
+			if (all_exceptions.find(exceptionid)!= all_exceptions.end())
+			{
+				values = all_exceptions.at(exceptionid);
+			}
+			
+		}catch (...)
+			{
+			_exhandler->printexceptions("", "FMTmodelcache::getbuildexceptions", __LINE__, __FILE__);
+			}
+		return values;
+		}
 
 	std::set<std::pair<std::string, int>> FMTmodelcache::getrotations(const std::string& themeselection, const std::string& aggregate) const
 	{

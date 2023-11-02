@@ -22,6 +22,7 @@
 #include <boost/algorithm/string.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/range/iterator_range.hpp>
+#include "FMTexcelexceptionhandler.hpp"
 
 
 
@@ -31,23 +32,17 @@ namespace Wrapper
 	FMTexcelcache::FMTexcelcache():
 		parser(new Parser::FMTmodelparser()),
 		cachelog(),
+		cacheexceptionhandler(),
 		models(new std::unordered_map<std::string, FMTmodelcache>()),
 		exceptionraised(false)
 	{
 		cachelog = new std::shared_ptr<Logging::FMTlogger>(new Logging::FMTexcellogger());
-		FMTmodelcache emptycache;
-		emptycache.putlogger(*cachelog);
-		std::vector<Exception::FMTexc>errors;
-		errors.push_back(Exception::FMTexc::FMTmissingyield);
-		errors.push_back(Exception::FMTexc::FMToutput_missing_operator);
-		errors.push_back(Exception::FMTexc::FMToutput_too_much_operator);
-		errors.push_back(Exception::FMTexc::FMTinvalidyield_number);
-		errors.push_back(Exception::FMTexc::FMTundefinedoutput_attribute);
-		errors.push_back(Exception::FMTexc::FMToveridedyield);
-		errors.push_back(Exception::FMTexc::FMTinvalid_geometry);
-		errors.push_back(Exception::FMTexc::FMTsourcetotarget_transition);
-		errors.push_back(Exception::FMTexc::FMTsame_transitiontargets);
-		parser->seterrorstowarnings(errors);
+		cacheexceptionhandler = new std::shared_ptr<Exception::FMTexcelexceptionhandler>(new Exception::FMTexcelexceptionhandler());
+		parser->passinlogger(*cachelog);
+		parser->passinexceptionhandler(*cacheexceptionhandler);
+		//FMTmodelcache emptycache;
+		//emptycache.putlogger(*cachelog);
+		
 
 	}
 
@@ -81,6 +76,10 @@ namespace Wrapper
 			{
 			delete cachelog;
 			}
+		if (cacheexceptionhandler != nullptr)
+		{
+			delete cacheexceptionhandler;
+		}
 		if (models!=nullptr)
 			{
 			delete models;
@@ -350,6 +349,27 @@ namespace Wrapper
 		catch (...)
 		{
 			captureexception("FMTexcelcache::getattributes");
+		}
+		return list;
+	}
+
+	System::Collections::Generic::List<System::String^>^ FMTexcelcache::getbuildexceptions(System::String^ primaryname, System::String^ scenario, int exception)
+	{
+		System::Collections::Generic::List<System::String^>^ list = gcnew System::Collections::Generic::List<System::String^>();
+		try {
+			std::unordered_map<std::string, FMTmodelcache>::const_iterator mit = models->find(formatforcache(primaryname, scenario));
+			if (mit != models->end())
+			{
+				for (const std::string& value : mit->second.getbuildexceptions(exception))
+				{
+					System::String^ sysvalue = gcnew System::String(value.c_str());
+					list->Add(sysvalue);
+				}
+			}
+		}
+		catch (...)
+		{
+			captureexception("FMTexcelcache::getbuildexceptions");
 		}
 		return list;
 	}

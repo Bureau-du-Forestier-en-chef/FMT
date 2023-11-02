@@ -45,6 +45,7 @@ namespace Wrapper
 		std::unique_ptr<boost::recursive_mutex>outputcachemtx;
 		std::unique_ptr<boost::recursive_mutex>generalcachemtx;
 		std::unique_ptr<std::vector<Heuristics::FMToperatingarea>>OAcache;
+		std::unordered_map<int,std::vector<std::string>>all_exceptions;
 		Core::FMTmask themeselectiontomask(const std::string& themeselection) const;
 		Core::FMToutput getoutput(const std::string& outputname, const Core::FMTmask& subset) const;
 		void loadmap() const;
@@ -82,6 +83,7 @@ namespace Wrapper
 		std::vector<std::string> getyields() const;
 		std::vector<std::string> getthemes() const;
 		std::vector<std::string> getconstraints(const std::string& output) const;
+		std::vector<std::string> getbuildexceptions(const int& exceptionid) const;
 		std::set<std::pair<std::string, int>> getrotations(const std::string& themeselection, const std::string& aggregate) const;
 		std::vector<int> getgraphstats() const;
 		int getperiods() const;

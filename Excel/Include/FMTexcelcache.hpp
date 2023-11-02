@@ -16,6 +16,11 @@ namespace Parser
 	class FMTmodelparser;
 }
 
+namespace Exception
+{
+	class FMTexcelexceptionhandler;
+}
+
 
 namespace Wrapper
 {
@@ -24,6 +29,7 @@ namespace Wrapper
 	{
 		Parser::FMTmodelparser* parser;
 		std::shared_ptr<Logging::FMTlogger>* cachelog;
+		std::shared_ptr<Exception::FMTexcelexceptionhandler>* cacheexceptionhandler;
 		std::unordered_map<std::string, FMTmodelcache>* models;
 		bool exceptionraised;
 		std::string getprimaryname(const std::string& primarylocation);
@@ -50,6 +56,7 @@ namespace Wrapper
 		System::Collections::Generic::List<System::String^>^ getoutputs(System::String^ primaryname, System::String^ scenario);
 		System::Collections::Generic::List<System::String^>^ getyields(System::String^ primaryname, System::String^ scenario);
 		System::Collections::Generic::List<System::String^>^ getthemes(System::String^ primaryname, System::String^ scenario);
+		System::Collections::Generic::List<System::String^>^ getbuildexceptions(System::String^ primaryname, System::String^ scenario, int exception);
 		System::Collections::Generic::Dictionary<System::String^,System::Collections::Generic::List<int>^>^ getrotations(System::String^ primaryname, System::String^ scenario, System::String^ themeselection, System::String^ aggregate);
 		System::Collections::Generic::List<int>^ getperiods(System::String^ primaryname, System::String^ scenario);
 		System::Collections::Generic::List<System::String^>^ getconstraints(System::String^ primaryname, System::String^ scenario, System::String^ output);
