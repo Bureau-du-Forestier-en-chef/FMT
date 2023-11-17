@@ -25,13 +25,13 @@
 			"Yield": 2,
 			"Time":0,
 			"Bounds": [ 30, 100 ],
-			"Branches": [ "Amorcer", "Attendre Régénération et Mature>70%" ]
+			"Branches": [ "Amorcer", "Attendre" ]
 		},
 		"Prémature>55%": {
 			"Yield": 3,
 			"Time":0,
 			"Bounds": [ 55, 100 ],
-			"Branches": [ "Amorcer", "Attendre Régénération et Mature>70%" ]
+			"Branches": [ "Amorcer", "Attendre" ]
 		},
 		"Attendre1er Régénération et Mature>70%": {
 			"Yield": 0,
@@ -43,47 +43,20 @@
 			"Yield": 2,
 			"Time":-1,
 			"Bounds": [ 40, 100 ],
-			"Branches": [ "Attendre Régénération et Mature>70%", "Amorcer" ]
-		},
-		"Attendre Régénération et Mature>70%": {
-			"Yield": 0,
-			"Time":-1,
-			"Bounds": [ 70, 100 ],
-			"Branches": [ "Attendre Régénération>15%", "Attendre Mature>40%" ]
-		},
-		"Attendre Régénération>15%": {
-			"Yield": 1,
-			"Time":-1,
-			"Bounds": [ 15, 100 ],
-			"Branches": [ "Attendre Mature>30%", "Amorcer" ]
-		},
-		"Attendre Mature>40%": {
-			"Yield": 2,
-			"Time":-1,
-			"Bounds": [ 40, 100 ],
-			"Branches": [ "Attendre", "Attendre Prémature>55%" ]
-		},
-		"Attendre Mature>30%": {
-			"Yield": 2,
-			"Time":-1,
-			"Bounds": [ 30, 100 ],
-			"Branches": [ "Amorcer", "Attendre" ]
-		},
-		"Attendre Prémature>55%": {
-			"Yield": 3,
-			"Time":-1,
-			"Bounds": [ 55, 100 ],
-			"Branches": [ "Amorcer", "Attendre" ]
+			"Branches": [ "Attendre", "Amorcer" ]
 		}
+		
 	},
 	"Decisions": 
 	{
 	"Attendre": 
 		{"Value":0,
-		"Yield":0},
+		"Yield":0,
+		"Rest":false},
 	"Amorcer": 
 		{"Value":1,
-		"Yield":0}
+		"Yield":0,
+		"Rest":true}
 	},
 	"Default":[1],
 	"Reference":4

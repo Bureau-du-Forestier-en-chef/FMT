@@ -26,9 +26,9 @@ int main(int argc, char* argv[])
 		const std::string scenario = results.at(1);
 		const int length =  std::stoi(argv[2]);
 		const double objectivevalue =  std::stod(argv[3]);
-		/*const std::string primarylocation = "T:/Donnees/Usagers/BISBE2/a_Guillaume/PC9509_02751_DET/PC_9509_U02751_4_Vg2_2023_vRp2.pri";
-		const std::string scenario = "13_sc5b_determin_avsp_test";
-		const int length = 3;
+		/*const std::string primarylocation = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/09_FMT/Modeles_test/PC9301_U02651_DET/PC_9301_U02651_4_Vg2_2023_vRP1f.pri";
+		const std::string scenario = "01_sc0_ev_nat_a_maj";
+		const int length = 5;
 		const double objectivevalue = 0.0;*/
 		//const int length =  std::stoi(argv[2]);
 		//const double objectivevalue =  std::stod(argv[3]);
@@ -74,26 +74,40 @@ int main(int argc, char* argv[])
 			}*/
 			/*for (const Core::FMToutput& output : optimizationmodel.getoutputs())
 			{
-				if (output.getname()=="OSUPREGECOP27091")
+				if (output.getname()=="OYOUVERT")
 				{
 					std::cout << output.getname() << " ";
-					for (int period =0 ; period <=1; ++period)
+					std::map<std::string, std::vector<double>>alls;
+					for (int period =1 ; period <=5; ++period)
 						{
-						const std::map<std::string, double>outs = optimizationmodel.getoutput(output, period, Core::FMToutputlevel::totalonly);
+						const std::map<std::string, double>outs = optimizationmodel.getoutput(output, period, Core::FMToutputlevel::standard);
 						for (const auto& val : outs)
 						{
-							if (val.second>0)
+							if (alls.find(val.first)== alls.end())
 							{
-								//if (val.first=="P27091")
-								//{
-									std::cout << period << " " << val.first << " " << val.second << "\n";
-								//}
-								
+								alls[val.first] = std::vector<double>();
 							}
+							alls[val.first].push_back(val.second);
 							
 						}
 						}
-					std::cout << "\n";
+					for (const auto& val : alls)
+					{
+						std::cout << val.first << " ";
+						for (const auto& out : val.second) 
+						{
+							if (out > 0)
+							{
+								std::cout << 1 << " ";
+							}
+							else {
+								std::cout << 0 << " ";
+							}
+							
+						}
+						std::cout << "\n";
+					}
+					//std::cout << "\n";
 					outputs.push_back(output);
 				}
 

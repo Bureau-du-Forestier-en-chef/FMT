@@ -158,8 +158,14 @@ namespace Core {
 				const std::string decision_name = decision.first;
 				const double value = decision.second.get<double>("Value");
 				const double yieldid = decision.second.get<double>("Yield");
+				const bool for_rest_of_period = decision.second.get<bool>("Rest");
+				double lag_value = 0;
+				if (for_rest_of_period)
+					{
+					lag_value = 1.0;
+					}
 				locations[decision_name] = nodes.size();
-				nodes.push_back(BuildConstraint(decision_name, "", Core::FMTmask(), value, yieldid,0));
+				nodes.push_back(BuildConstraint(decision_name, "", Core::FMTmask(), value, yieldid, lag_value));
 				}
 			size_t constraint_id = 0;
 			for (Core::FMTconstraint& constraint : nodes)
@@ -236,9 +242,9 @@ namespace Core {
 			std::unique_ptr<Models::FMTmodel>naturalgrowth = modelptr->getcopy(0);
 			naturalgrowth->setarea(newareas);//Will only work with lp model going to get big with semodel...
 			naturalgrowth->setname(std::string(reference->getsources().begin()->getmask()));
-			std::vector<Core::FMTaction> newactions = naturalgrowth->getactions();
+			//std::vector<Core::FMTaction> newactions = naturalgrowth->getactions();
 			const int updatestopat = modelptr->getparameter(Models::FMTintmodelparameters::UPDATE);
-			for (Core::FMTaction& action : newactions)
+			/*for (Core::FMTaction& action : newactions)
 			{
 				if (action.getname() != "_DEATH")
 					{
@@ -251,15 +257,16 @@ namespace Core {
 					action.update();
 					}
 			}
-			naturalgrowth->setactions(newactions);
+			naturalgrowth->setactions(newactions);*/
 			std::vector<Core::FMTconstraint>newconstraints;
-			size_t constraintid = 0;
+
+			/*size_t constraintid = 0;
 			for (const Core::FMTconstraint& constraint : naturalgrowth->getconstraints())
 			{
 				if (constraintid>0)
 				{
 					newconstraints.push_back(constraint);
-				}else {
+				}else {*/
 					std::vector<Core::FMToutputsource>sources;
 					FMToutputsource source(Core::FMTspec(), mask,Core::FMTotar::inventory);
 					sources.push_back(source);
@@ -267,11 +274,13 @@ namespace Core {
 					Core::FMTconstraint newobjective(FMTconstrainttype::FMTMINobjective, newoutput);
 					newobjective.setlength(1);
 					newconstraints.push_back(newobjective);
-				}
+			/* }
 
 				++constraintid;
-			}
+			}*/
 			naturalgrowth->setconstraints(newconstraints);
+			naturalgrowth->setactions(std::vector<Core::FMTaction>());
+			//naturalgrowth->setconstraints(naturalgrowth->goalconstraints());
 			if (!naturalgrowth->doplanning(true))
 				{
 
@@ -286,15 +295,17 @@ namespace Core {
 	return std::unique_ptr<Models::FMTmodel>(nullptr);
 	}
 
-	size_t FMTyieldmodeldecisiontree::GetADecision(const std::unique_ptr<Models::FMTmodel>& naturalgrowth, const size_t& constraint_id, const int& period) const
+	size_t FMTyieldmodeldecisiontree::GetADecision(const std::unique_ptr<Models::FMTmodel>& naturalgrowth, const size_t& constraint_id, const int& period/*, std::string& decision_stack*/) const
 		{
 		size_t target = 0;
 		try {
 			const int time_lag = static_cast<int>(nodes.at(constraint_id).getyieldbound("LAG").getlower());
-			const int targeted_period = std::max(period + time_lag,1);
+			const int update_period = naturalgrowth->getparameter(Models::FMTintmodelparameters::UPDATE);
+			const int targeted_period = std::max(period + time_lag, update_period);
 			const double reference_value = naturalgrowth->getoutput(*reference, targeted_period, Core::FMToutputlevel::totalonly).at("Total");
 			const double value = naturalgrowth->getoutput(nodes.at(constraint_id), targeted_period, Core::FMToutputlevel::totalonly).at("Total");
 			const double percentage_value = (value/reference_value) * 100;
+			//decision_stack += ("("+std::to_string(percentage_value)+")");
 			std::vector<double>evaluates;
 			evaluates.push_back(percentage_value);
 			if (nodes.at(constraint_id).evaluate(evaluates)>0)
@@ -331,19 +342,50 @@ namespace Core {
 						}
 					boost::lock_guard<boost::recursive_mutex> guard(mtx);
 					const std::unique_ptr<Models::FMTmodel>naturalgrowthmodel = GetNaturalGrowth(request);
+					/*std::ofstream decisionfile;
+					decisionfile.open("D:/test/"+ std::string(request.getdevelopment()) +".txt");*/
 					for (int period = update_period; period <= naturalgrowthmodel->getparameter(Models::FMTintmodelparameters::LENGTH); ++period)
 					{
-						size_t target_node = GetADecision(naturalgrowthmodel, 0, period);
+						//std::string decision_stack(std::string(request.getdevelopment())+std::to_string(period));
+						//size_t decisionid = 0;
+						//decision_stack += "\nfrom " + std::string(decisionid, ' ') + nodes.at(0).getname();
+						size_t target_node = GetADecision(naturalgrowthmodel, 0, period);// , decision_stack);
+						//decision_stack += "\n";
+						//++decisionid;
+						//decision_stack += std::string(decisionid, ' ') + " to " + nodes.at(target_node).getname() + "\n";
+						//++decisionid;
 						while (!nodes.at(target_node).FMToutput::empty())//If you get and empty output then you make a decision!
 						{
-							target_node = GetADecision(naturalgrowthmodel, target_node, period);
+							//decision_stack += std::string(decisionid, ' ') + " from " + nodes.at(target_node).getname();
+							target_node = GetADecision(naturalgrowthmodel, target_node, period);// , decision_stack);
+							//decision_stack += "\n" + std::string(decisionid, ' ')+" to " + nodes.at(target_node).getname() + "\n";
+							//++decisionid;
 						}
 						double lowerbound = 0;//value
 						double upperbound = 0;//target yield
 						nodes.at(target_node).getbounds(lowerbound, upperbound, 1);
 						const size_t yieldid = static_cast<size_t>(upperbound);
-						values[yieldid].push_back(lowerbound);
+						const int rest_of_period = static_cast<int>(nodes.at(target_node).getyieldbound("LAG").getlower());
+						if (rest_of_period)
+						{
+							for (; period <= naturalgrowthmodel->getparameter(Models::FMTintmodelparameters::LENGTH); ++period)
+							{
+								values[yieldid].push_back(lowerbound);
+							}
+						}
+						else {
+							values[yieldid].push_back(lowerbound);
+						}
+
+						
+						/*const std::string dev = std::string(request.getdevelopment());
+						if (lowerbound<1)
+						{
+							decisionfile << decision_stack << "\n";
+						}*/
 					}
+					//decisionfile.close();
+					
 				}
 				//unlock
 			}

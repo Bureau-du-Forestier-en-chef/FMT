@@ -71,7 +71,7 @@ namespace Core
 	/**
 	From de constraint id return a new constraint id based on the naturalgrowth and the period with the decision tree
 	*/
-	size_t GetADecision(const std::unique_ptr<Models::FMTmodel>& naturalgrowth,const size_t& constraint_id, const int& period) const;
+	size_t GetADecision(const std::unique_ptr<Models::FMTmodel>& naturalgrowth,const size_t& constraint_id, const int& period/*, std::string& decision_stack*/) const;
 	// DocString: FMTyieldmodeldecisiontree::getnaturalgrowth
 	/**
 	Build the natural growth model with a request (original model) to be able to call getadecision on the growthmodel
