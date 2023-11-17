@@ -988,6 +988,35 @@ namespace Models
 
 	}
 
+	bool FMTsrmodel::isoptimal() const
+	{
+		try {
+			if (graph.getbuildtype() == Graph::FMTgraphbuild::fullbuild)//Only global Graph
+			{
+				return solver.isProvenOptimal();
+			}
+		}
+		catch (...)
+		{
+			_exhandler->printexceptions("", "FMTsrmodel::isoptimal", __LINE__, __FILE__);
+		}
+		return false;
+	}
+	
+	double FMTsrmodel::getobjectivevalue() const
+	{
+		double value = std::numeric_limits<double>::quiet_NaN();
+		try {
+			value = solver.getObjValue();
+		}catch (...)
+			{
+			_exhandler->printexceptions("", "FMTsrmodel::getobjectivevalue", __LINE__, __FILE__);
+			}
+		return value;
+	}
+
+
+
 	std::unique_ptr<FMTmodel>FMTsrmodel::presolve(std::vector<Core::FMTactualdevelopment> optionaldevelopments) const
 	{
 		try{

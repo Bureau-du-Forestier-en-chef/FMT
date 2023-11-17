@@ -111,6 +111,10 @@ void exportModel()
 				"@DocString(FMTmodel::getpostsolvefilter)")
 			.def("basepresolve",&Models::FMTmodel::basepresolve,
 				"@DocString(FMTmodel::basepresolve)")
+			.def("isoptimal", &Models::FMTmodel::isoptimal,
+				"@DocString(FMTmodel::isoptimal)")
+			.def("getobjectivevalue", &Models::FMTmodel::getobjectivevalue,
+				"@DocString(FMTmodel::getobjectivevalue)")
 		.def("getpotentialschedule", &Models::FMTmodel::getpotentialschedule,
 			getpotentialscheduleoverloads(bp::args("toremove","selection","withlock"),"@DocString(FMTmodel::getpotentialschedule)"))
 			//The way to expose overload member functions with different args

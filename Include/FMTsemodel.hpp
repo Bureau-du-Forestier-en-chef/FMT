@@ -178,6 +178,11 @@ class FMTEXPORT FMTsemodel : public FMTmodel
 		The function is going to clean the FMTconstraints and keep the objective.
 		*/
 		virtual std::unique_ptr<FMTmodel> getcopy(int period = 0) const;
+		// DocString: FMTmodel::getobjectivevalue
+		/**
+		Return the value of the globalobjective of the actual solution
+		*/
+		virtual double getobjectivevalue() const;
     };
 
 }

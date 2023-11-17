@@ -138,6 +138,11 @@ namespace Logging
 				*/
 				virtual FMTlogger* clone() const;
 			#endif
+			// DocString: FMTlogger::getlogstamp
+			/**
+			Return the basic logstamp has a string.
+			*/
+			virtual std::string getlogstamp() const;
 			// DocString: FMTlogger::logstamp
 			/**
 			The logstramp function log information about the version of FMT and it's buildate.

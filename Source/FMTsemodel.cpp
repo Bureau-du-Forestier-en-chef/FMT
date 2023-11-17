@@ -271,6 +271,19 @@ namespace Models
 		return std::unique_ptr<FMTmodel>(nullptr);
 	}
 
+	double FMTsemodel::getobjectivevalue() const
+	{
+		double value = std::numeric_limits<double>::quiet_NaN();
+		try {
+			value = solution.getglobalobjective(*this);
+		}
+		catch (...)
+		{
+			_exhandler->printexceptions("", "FMTsemodel::getobjectivevalue", __LINE__, __FILE__);
+		}
+		return value;
+	}
+
     }
 
 BOOST_CLASS_EXPORT_IMPLEMENT(Models::FMTsemodel)

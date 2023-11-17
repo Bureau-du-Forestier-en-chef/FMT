@@ -310,6 +310,12 @@ class FMTEXPORT FMTparser: public Core::FMTobject
 		Get the most recentfiletime of the files read by ther parser.
 		*/
 		std::time_t getmostrecentfiletime() const;
+		// DocString: FMTparser::setheader
+		/**
+		Taking a string has argument set this string has an header in write mode
+		when the file is opened. It will replace the _comment attribute with the header string.
+		*/
+		void setheader(const std::string& header);
 		// DocString: FMTparser::tryopening
 		/**
 		Open a input stream at a given location.
@@ -319,7 +325,7 @@ class FMTEXPORT FMTparser: public Core::FMTobject
 		/**
 		Open a output stream at a given location.
 		*/
-        bool tryopening(const std::ofstream& stream, const std::string& location) const;
+        bool tryopening(std::ofstream& stream, const std::string& location) const;
 		// DocString: FMTparser::isvalidfile
 		/**
 		Check if a file location is valid.

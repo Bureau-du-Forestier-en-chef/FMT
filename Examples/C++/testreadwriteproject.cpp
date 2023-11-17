@@ -12,6 +12,7 @@ int main(int argc, char* argv[])
 	Parser::FMTmodelparser modelparser;
 	modelparser.setdefaultexceptionhandler();
 	const std::string outdir = "../../tests/testreadwriteproject/";
+	//const std::string outdir = "D:/FMT/build/release/tests/testreadwriteproject/";
 	std::vector<Exception::FMTexc>errors;
 	errors.push_back(Exception::FMTexc::FMTmissingyield);
 	errors.push_back(Exception::FMTexc::FMToutput_too_much_operator);
@@ -19,7 +20,7 @@ int main(int argc, char* argv[])
 	errors.push_back(Exception::FMTexc::FMToveridedyield);
 	modelparser.seterrorstowarnings(errors);
 	std::vector<std::string>scenarios;
-	const std::string scenariostr = std::string(argv[2]);
+	const std::string scenariostr =  std::string(argv[2]);
 	boost::split(scenarios, scenariostr,boost::is_any_of("|"));
 	for (const Models::FMTmodel& model : modelparser.readproject(primarylocation, scenarios))
 	{

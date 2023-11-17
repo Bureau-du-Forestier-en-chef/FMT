@@ -312,6 +312,25 @@ void FMTmodel::setparallellogger(Logging::FMTlogger& logger)
 	}
 
 
+bool FMTmodel::isoptimal() const
+{
+	return false;
+}
+
+double FMTmodel::getobjectivevalue() const
+{
+	try {
+		_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, "Calling pure virtual function ",
+			"FMTmodel::getobjectivevalue", __LINE__, __FILE__);
+	}
+	catch (...)
+	{
+		_exhandler->printexceptions("", "FMTmodel::setparallellogger", __LINE__, __FILE__);
+	}
+	return 0.0;
+}
+
+
 
 void FMTmodel::addoutput(const std::string& name,
 	const std::string& maskstring, Core::FMTotar outputtarget,

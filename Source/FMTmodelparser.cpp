@@ -399,6 +399,13 @@ namespace Parser {
 			if (!devs.empty())
 			{
 				FMTareaparser areaparser;
+				double sumarea = 0;
+				for (const Core::FMTactualdevelopment& dev : devs)
+				{
+					sumarea += dev.getarea();
+				}
+				const std::string header = "Total area: " + std::to_string(sumarea) + "\n";
+				areaparser.setheader(header);
 				areaparser.write(devs, arefile);
 			}
 
@@ -455,6 +462,14 @@ namespace Parser {
 		if (!seqfile.empty())
 		{
 			FMTscheduleparser scheduleparser;
+			std::string status = "Non Optimal";
+			if (model.isoptimal())
+				{
+				status = "Optimal";
+				}
+			const std::string modelobjective = "Objective value: " + std::to_string(model.getobjectivevalue()) + "\n";
+			const std::string modelstatus = "Status: " + status + "\n";
+			scheduleparser.setheader(modelstatus+ modelobjective);
 			scheduleparser.write(schedules, seqfile);
 		}
 	}catch (...)

@@ -145,12 +145,17 @@ namespace Logging
 			}
 		}
 
+	std::string FMTlogger::getlogstamp() const
+	{
+		const std::string message = "FMT " + Version::FMTversion().getversion() +
+			", build: " + Version::FMTversion().getbuilddate();
+		return message;
+	}
+
 	void FMTlogger::logstamp()
 		{
 		boost::lock_guard<boost::recursive_mutex> guard(mtx);
-		const std::string message = "FMT " + Version::FMTversion().getversion() +
-			", build: "+ Version::FMTversion().getbuilddate();
-		*this<<(message)<< "\n";
+		*this<< FMTlogger::getlogstamp() << "\n";
 		}
 
 	void FMTlogger::logtime()

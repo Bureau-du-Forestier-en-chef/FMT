@@ -244,6 +244,11 @@ FMTparser& FMTparser::operator = (const FMTparser& rhs)
     return *this;
     }
 
+void FMTparser::setheader(const std::string& header)
+{
+	_comment = header;
+}
+
 void FMTparser::setsection(const Core::FMTsection& section) const
 {
 	_section = section;
@@ -979,7 +984,7 @@ bool FMTparser::tryopening(const std::ifstream& stream, const std::string& locat
         return true;
         }
 
-bool FMTparser::tryopening(const std::ofstream& stream, const std::string& location) const
+bool FMTparser::tryopening(std::ofstream& stream, const std::string& location) const
         {
 		try{
         _location = location;
@@ -989,6 +994,23 @@ bool FMTparser::tryopening(const std::ofstream& stream, const std::string& locat
 				"FMTparser::tryopening", __LINE__, __FILE__, _section);
             return false;
             }
+		if (!_comment.empty())//If you find an header write it down
+			{
+			const std::string seperator = ";" + std::string(100, '-');
+			stream << seperator << "\n";
+			stream << ";" << _logger->getlogstamp() << "\n";
+			std::vector<std::string>lines;
+			boost::split(lines,_comment, boost::is_any_of("\n"), boost::token_compress_on);
+			for (const std::string& line : lines)
+				{
+				if (!line.empty())
+					{
+					stream << ";" << line << "\n";
+					}
+				}
+			stream << seperator << "\n";
+			}
+		
 		}catch (...)
 			{
 			_exhandler->raisefromcatch("", "FMTparser::tryopening", __LINE__, __FILE__, _section);

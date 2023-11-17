@@ -324,6 +324,17 @@ namespace Models
 		Returns: Unique rotations periods taken per series (where the serie is in string action1-action2-action3... string is the serie and int is the number of periods taken to complete the serie.
 		*/
 		std::set<std::pair<std::string, int>>getrorations(const Core::FMTmask& mask, const std::string& aggregate) const;
+		// DocString: FMTsrmodel::isoptimal
+		/**
+		Return true if the solver consider the solution optimal.
+		*/
+		virtual bool isoptimal() const;
+		// DocString: FMTsrmodel::getobjectivevalue
+		/**
+		Return the value of the solver objective.
+		*/
+		virtual double getobjectivevalue() const;
+
 	};
 
 }

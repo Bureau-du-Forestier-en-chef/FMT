@@ -2043,14 +2043,8 @@ std::vector<std::string> FMTareaparser::splitoaparamlines(std::string line) cons
 				try {
 					std::ofstream areastream;
 					areastream.open(location);
-					double sumarea = 0;
-					for (const Core::FMTactualdevelopment& dev : areas)
-					{
-						sumarea += dev.getarea();
-					}
 					if (tryopening(areastream, location))
 					{
-						areastream << ";Total area: " << std::to_string(sumarea) << "\n";
 						const std::string maskstr(areas.at(0).getmask());
 						std::vector<std::string>splitted_mask;
 						boost::split(splitted_mask, maskstr, boost::is_any_of(" /t"), boost::token_compress_on);

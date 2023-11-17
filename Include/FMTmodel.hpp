@@ -698,6 +698,16 @@ namespace Models
 			//Mettre message warning
 			return false;
 		}
+		// DocString: FMTmodel::isoptimal
+		/**
+		Return true if the FMTmodel is optimal
+		*/
+		virtual bool isoptimal() const;
+		// DocString: FMTmodel::getobjectivevalue
+		/**
+		Return the value of the globalobjective
+		*/
+		virtual double getobjectivevalue() const;
 
     };
 // DocString: FMTmodelcomparator

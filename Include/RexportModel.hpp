@@ -104,8 +104,12 @@ void exportModel()
 				"@DocString(FMTmodel::setlifespan)")
             .method("isvalid",&Models::FMTmodel::isvalid,
 				"@DocString(FMTmodel::isvalid)")
-			.method("isvalid", &Models::FMTmodel::getpostsolvefilter,
+			.method("getpostsolvefilter", &Models::FMTmodel::getpostsolvefilter,
 				"@DocString(FMTmodel::getpostsolvefilter)")
+			.method("isoptimal", &Models::FMTmodel::isoptimal,
+				"@DocString(FMTmodel::isoptimal)")
+			.method("getobjectivevalue", &Models::FMTmodel::getobjectivevalue,
+				"@DocString(FMTmodel::getobjectivevalue)")
 			.method("setboolparameter",
 				static_cast<bool(Models::FMTmodel::*)(const Models::FMTboolmodelparameters&, const bool&)>(&Models::FMTmodel::setparameter),
 				"@DocString(Models::FMTmodel::setparameter(const FMTboolmodelparameters,const bool))")
