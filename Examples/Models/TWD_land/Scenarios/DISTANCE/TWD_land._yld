@@ -39,4 +39,4 @@ _AGE volumetotal
 30   150
 
 *YC ? ? ?
-yage _DISTANCE(volumetotal,0,50) ; return the difference in age where volumetotal =<= 0 and volumetotal >= 100
+yage _DISTANCE(volumetotal,0,100) ; return the difference in age where volumetotal =<= 0 and volumetotal >= 100
