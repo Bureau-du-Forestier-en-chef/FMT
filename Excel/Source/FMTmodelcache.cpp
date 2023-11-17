@@ -611,6 +611,7 @@ namespace Wrapper
 				}
 			
 			const double totalcos = static_cast<double>(allmasks.size());
+			const bool got_output = (outputsmap.find(output) != outputsmap.end());
 			for (int period = 1; period <= getperiods(); ++period)
 				{
 				size_t oaid = 0;
@@ -624,8 +625,8 @@ namespace Wrapper
 							if (masklocation.find(neighbor)!= masklocation.end())
 							{
 								const std::string nselection = selected.at(masklocation.at(neighbor));
-								if ((getyield(yieldname, nselection, 0, period) > 0) && 
-									(getvalue(output, nselection, period) >= ratio))
+								if (!got_output || ((getyield(yieldname, nselection, 0, period) > 0) &&
+									(getvalue(output, nselection, period) >= ratio)))
 								{
 									++notrespected;
 									break;
