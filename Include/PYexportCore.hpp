@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Quï¿½bec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -490,10 +490,18 @@ void exportCore()
 					"@DocString(FMTconstraint::isspatial)")
 				.def("setlength", &Core::FMTconstraint::setlength,
 					"@DocString(FMTconstraint::setlength)")
+				.def("issetfrom", &Core::FMTconstraint::issetfrom,
+					"@DocString(FMTconstraint::issetfrom)")
+				.def("setfrom", &Core::FMTconstraint::setfrom,
+					"@DocString(FMTconstraint::setfrom)")
 				.def("sense",&Core::FMTconstraint::sense,
 					"@DocString(FMTconstraint::sense)")
 				.def("getconstrainttype", &Core::FMTconstraint::getconstrainttype,
-					"@DocString(FMTconstraint::getconstrainttype)");
+					"@DocString(FMTconstraint::getconstrainttype)")
+				.def("getfromreplicate", &Core::FMTconstraint::getfromreplicate,
+					"@DocString(FMTconstraint::getfromreplicate)")
+				.def("getscheduleweight", &Core::FMTconstraint::getscheduleweight,
+					"@DocString(FMTconstraint::getscheduleweight)");
 
 			define_FMTlist<Core::FMTconstraint>();
 			define_FMTlist<Core::FMTGCBMtransition>();

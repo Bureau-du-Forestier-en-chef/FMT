@@ -115,29 +115,33 @@ void exportModel()
 				"@DocString(FMTmodel::isoptimal)")
 			.def("getobjectivevalue", &Models::FMTmodel::getobjectivevalue,
 				"@DocString(FMTmodel::getobjectivevalue)")
-		.def("getpotentialschedule", &Models::FMTmodel::getpotentialschedule,
-			getpotentialscheduleoverloads(bp::args("toremove","selection","withlock"),"@DocString(FMTmodel::getpotentialschedule)"))
-			//The way to expose overload member functions with different args
-		.def<bool (Models::FMTmodel::*)(const Models::FMTintmodelparameters& key, const int& value)>("setparameter", &Models::FMTmodel::setparameter,
-			"@DocString(FMTmodel::setparameter(const FMTintmodelparameters,const int&))")
-		.def<bool (Models::FMTmodel::*)(const Models::FMTdblmodelparameters& key, const double& value)>("setparameter", &Models::FMTmodel::setparameter,
-			"@DocString(FMTmodel::setparameter(const FMTdblmodelparameters,const double))")
-		.def<bool (Models::FMTmodel::*)(const Models::FMTboolmodelparameters& key, const bool& value)>("setparameter", &Models::FMTmodel::setparameter,
-			"@DocString(FMTmodel::setparameter(const FMTboolmodelparameters,const bool))")
-		.def<int (Models::FMTmodel::*)(const Models::FMTintmodelparameters& key)const>("getparameter", &Models::FMTmodel::getparameter,
-			"@DocString(FMTmodel::getparameter(const FMTintmodelparameters))")
-		.def<double (Models::FMTmodel::*)(const Models::FMTdblmodelparameters& key)const>("getparameter", &Models::FMTmodel::getparameter,
-			"@DocString(FMTmodel::getparameter(const FMTdblmodelparameters))")
-		.def<bool (Models::FMTmodel::*)(const Models::FMTboolmodelparameters& key)const>("getparameter", &Models::FMTmodel::getparameter,
-			"@DocString(FMTmodel::getparameter(const FMTboolmodelparameters))")
+			.def("getpotentialschedule", &Models::FMTmodel::getpotentialschedule,
+				getpotentialscheduleoverloads(bp::args("toremove","selection","withlock"),"@DocString(FMTmodel::getpotentialschedule)"))
+				//The way to expose overload member functions with different args
+			.def<bool (Models::FMTmodel::*)(const Models::FMTintmodelparameters& key, const int& value)>("setparameter", &Models::FMTmodel::setparameter,
+				"@DocString(FMTmodel::setparameter(const FMTintmodelparameters,const int&))")
+			.def<bool (Models::FMTmodel::*)(const Models::FMTdblmodelparameters& key, const double& value)>("setparameter", &Models::FMTmodel::setparameter,
+				"@DocString(FMTmodel::setparameter(const FMTdblmodelparameters,const double))")
+			.def<bool (Models::FMTmodel::*)(const Models::FMTboolmodelparameters& key, const bool& value)>("setparameter", &Models::FMTmodel::setparameter,
+				"@DocString(FMTmodel::setparameter(const FMTboolmodelparameters,const bool))")
+			.def<int (Models::FMTmodel::*)(const Models::FMTintmodelparameters& key)const>("getparameter", &Models::FMTmodel::getparameter,
+				"@DocString(FMTmodel::getparameter(const FMTintmodelparameters))")
+			.def<double (Models::FMTmodel::*)(const Models::FMTdblmodelparameters& key)const>("getparameter", &Models::FMTmodel::getparameter,
+				"@DocString(FMTmodel::getparameter(const FMTdblmodelparameters))")
+			.def<bool (Models::FMTmodel::*)(const Models::FMTboolmodelparameters& key)const>("getparameter", &Models::FMTmodel::getparameter,
+				"@DocString(FMTmodel::getparameter(const FMTboolmodelparameters))")
 			.def("setcompresstime",&Models::FMTmodel::setcompresstime,
-				"@DocString(FMTmodel::setcompresstime)")
+					"@DocString(FMTmodel::setcompresstime)")
 			.def("getcompresstime",&Models::FMTmodel::getcompresstime,
-				"@DocString(FMTmodel::getcompresstime)")
+					"@DocString(FMTmodel::getcompresstime)")
 			.def("showparameters",&Models::FMTmodel::showparameters,
-				showparameters_overloads(bp::args("showhelp"),"@DocString(FMTmodel::showparameters)"))
+					showparameters_overloads(bp::args("showhelp"),"@DocString(FMTmodel::showparameters)"))
 			.def("doplanning",&Models::FMTmodel::doplanning,
-				doplanning_overloads(bp::args("solve"),"@DocString(FMTmodel::doplanning)"));
+					doplanning_overloads(bp::args("solve"),"@DocString(FMTmodel::doplanning)"))
+			.def("getsolution", &Models::FMTmodel::getsolution,
+				getsolution_overloads(bp::args("period", "withlock"), "@DocString(FMTmodel::getsolution)"))
+			.def("getoutput", &Models::FMTmodel::getoutput,
+				getLPoutputoverloads(bp::args("output", "period", "level"), "@DocString(FMTsemodel::getoutput)"));
 
     define_pylist<Models::FMTmodel>();
 
@@ -165,7 +169,7 @@ void exportModel()
 		.def("getoutput", &Models::FMTsemodel::getoutput,
 			getLPoutputoverloads(bp::args("output", "period", "level"), "@DocString(FMTsemodel::getoutput)"))*/
 		.def("getspschedule", &Models::FMTsemodel::getspschedule,
-			"@DocString(FMTsemodel::getdisturbances)");
+			"@DocString(FMTsemodel::getspschedule)");
 
 	define_pylist<Models::FMTsemodel>();
 
@@ -240,14 +244,13 @@ void exportModel()
 	bp::class_<Models::FMTsrmodel, bp::bases<Models::FMTmodel>>("FMTsrmodel", "@DocString(FMTsrmodel)")
 		.def_pickle(FMT_pickle_suite<Models::FMTsrmodel>())
 		.def("buildperiod", &Models::FMTsrmodel::buildperiod, buildperiod_overloads(bp::args("schedule", "forcepartialbuild", "compressageclass"), "@DocString(FMTsrmodel::buildperiod)"))
-		.def("getsolution", &Models::FMTsrmodel::getsolution,
-			getsolution_overloads(bp::args("period", "withlock"), "@DocString(FMTsrmodel::getsolution)"))
+		
 		.def("setsolution", &Models::FMTsrmodel::setsolution,
 			setsolution_overloads(bp::args("period", "schedule", "tolerance"), "@DocString(FMTsrmodel::setsolution)"))
 		.def("forcesolution", &Models::FMTsrmodel::forcesolution, "@DocString(FMTsrmodel::forcesolution)")
 		.def("setsolutionbylp", &Models::FMTsrmodel::setsolutionbylp,
 			setsolutionbylp_overloads(bp::args("period", "schedule", "tolerance"), "@DocString(FMTsrmodel::setsolutionbylp)"))
-		.def("getoutput", &Models::FMTsrmodel::getoutput, getLPoutputoverloads(bp::args("output", "period", "level"), "@DocString(FMTsrmodel::getoutput)"))
+		//.def("getoutput", &Models::FMTsrmodel::getoutput, getLPoutputoverloads(bp::args("output", "period", "level"), "@DocString(FMTsrmodel::getoutput)"))
 		.def("cleargraphdevelopements", &Models::FMTsrmodel::cleargraphdevelopements,
 			"@DocString(FMTsrmodel::cleargraphdevelopements)")
 		.def("getstats", &Models::FMTsrmodel::getstats,

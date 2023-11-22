@@ -1,22 +1,19 @@
 
 *OBJECTIVE
-_MAX ovolrec - _Penalty(_All) 1.._LENGTH _SETGLOBALSCHEDULE(1000)
+;_MAX oVolRec - _Penalty(_All) 1.._LENGTH _SETGLOBALSCHEDULE(1000)
+_MAX oVolRec 1.._LENGTH _SETGLOBALSCHEDULE(1000)
+
 
 *EXCLUDE
 aCaribou 1.._LENGTH
 afire    1.._LENGTH
-arecup    1.._LENGTH
+;arecup    1.._LENGTH
 
 *CONSTRAINTS
 
-oVolRec<= 40272 1.._LENGTH _SETFROMGLOBAL(1)
+oVolRec <= 40272 1.._LENGTH _SETFROMGLOBAL(1)
+recuparea >= operablerecuparea * 0.5 1.._LENGTH ;At least 10 ha of salvaged volume
 
-;osuppl >= 0 1.._LENGTH _Goal(G1,9999) _SETFROMGLOBAL(1)
 
-;oSupRec >= 0 1.._LENGTH _Goal(G2,9999) _SETFROMGLOBAL(1)
-
-;ovolrec >= 10000000000 1.._LENGTH
-
-;ovolrec >= 300 1.._LENGTH
 
 *FORMAT MOSEK

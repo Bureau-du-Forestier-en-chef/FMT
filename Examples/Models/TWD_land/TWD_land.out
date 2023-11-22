@@ -16,6 +16,9 @@
 *OUTPUT recuparea
 *SOURCE ? ? ? arecup _AREA
 
+*OUTPUT operablerecuparea
+*SOURCE ? ? ? _INVENT(arecup) _AREA
+
 *OUTPUT totalarea
 *SOURCE ? ? ? _INVENT _AREA
 

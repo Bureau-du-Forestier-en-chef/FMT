@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Quï¿½bec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -63,7 +63,9 @@ void exportSpatial()
         .def("grow",&Spatial::FMTforest::grow,
 			"@DocString(FMTforest::grow)")
         .def("getage",&Spatial::FMTforest::getage,
-			"@DocString(FMTforest::getage)");
+			"@DocString(FMTforest::getage)")
+         .def("setperiod",&Spatial::FMTforest::setperiod,
+			"@DocString(FMTforest::setperiod)");
 
 
      define_pylist<Spatial::FMTforest>();
