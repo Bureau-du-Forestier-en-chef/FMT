@@ -15,11 +15,11 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <string>
 #include <chrono>
 #include <boost/thread.hpp>
+#include "FMToutput.hpp"
 
 namespace Core
 {
 	class FMToutputnode;
-	class FMToutput;
 	class FMTconstraint;
 }
 
@@ -124,6 +124,14 @@ namespace Parallel
 		Return true if iterations > 0 and still time left.
 		*/
 		bool goodtogo() const;
+		// DocString: FMTopareaschedulertask::getreturntimefromoutput
+		/**
+		Will return a new vector of FMToperatingareascheme with new return_time value based on the output calculed
+		in the model for each operaging area.
+		*/
+		std::vector<Heuristics::FMToperatingareascheme> getreturntimefromoutput(Models::FMTlpmodel& model,
+			const std::vector<Heuristics::FMToperatingareascheme>& opareas,
+			const Core::FMToutput& output) const;
 	public:
 		// DocString: FMTopareaschedulertask::FMTopareaschedulertask()
 		/**
@@ -154,7 +162,8 @@ namespace Parallel
 		/**
 		Using a model the constructor will call doplanning of the model.
 		So you have to set the length and other parameters before. Then the task will obtain the operatingareascheme
-		from the FMTlpmodel and setup everything else.
+		from the FMTlpmodel and setup everything else. If the returntime_output is non empty then it will use it to get the result
+		for each FMToperatingareascheme and set the value to the returntime using the initial solution.
 		*/
 		FMTopareaschedulertask(const Models::FMTlpmodel& model,
 			const std::vector<Heuristics::FMToperatingareascheme>& opareas,
@@ -162,7 +171,8 @@ namespace Parallel
 			const std::string& outputlocation,
 			const std::string& outputyieldname,
 			const unsigned int& maxiterations,
-			const double& maxtime);
+			const double& maxtime,
+			Core::FMToutput returntime_output = Core::FMToutput());
 		// DocString: FMTopareaschedulertask::split
 		/**
 		The split fonction that split the main task into multiple tasks of operating area scheduler.

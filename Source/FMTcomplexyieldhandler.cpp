@@ -510,8 +510,9 @@ namespace Core {
 						value = maxage - minage;
 						if (value < 0 ||!(gotmaxage && gotminage))
 							{
-							_exhandler->raise(Exception::FMTexc::FMTrangeerror,
-								"Invalid yield value calculated for yield " +yld +" on development "+std::string(request.getdevelopment()), "FMTyieldhandler::getdata", __LINE__, __FILE__);
+							value = 0;
+							_exhandler->raise(Exception::FMTexc::FMTignore,
+								"Cannot reach distance bounds for " +yld +" on development "+std::string(request.getdevelopment()), "FMTyieldhandler::getdata", __LINE__, __FILE__);
 							}
 						break;
 					}

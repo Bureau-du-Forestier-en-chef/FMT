@@ -54,6 +54,43 @@ namespace Parallel
 		return 0;
 	}
 
+	std::vector<Heuristics::FMToperatingareascheme> FMTopareaschedulertask::getreturntimefromoutput(
+		Models::FMTlpmodel& model,
+		const std::vector<Heuristics::FMToperatingareascheme>& opareas,
+		const Core::FMToutput& output) const
+	{
+		std::vector<Heuristics::FMToperatingareascheme>newschemes;
+		try {
+			const std::vector<Core::FMTtheme>themes = model.getthemes();
+			const int model_length = model.getparameter(Models::FMTintmodelparameters::LENGTH);
+			for (const Heuristics::FMToperatingareascheme& opscheduler : opareas)
+				{
+				double total_value = 0;
+				const Core::FMToutput local_output = output.intersectwithmask(opscheduler.getmask(), themes);
+				double non_zero = 0;
+				for (int period = 0; period < model_length; ++period)
+					{
+					const double output_value = model.getoutput(local_output, period, Core::FMToutputlevel::totalonly).at("Total");
+					if (output_value > FMT_DBL_TOLERANCE)
+						{
+						total_value += output_value;
+						non_zero += 1;
+						}
+					}
+				const size_t return_time = static_cast<size_t>(std::round(total_value/non_zero));
+				Heuristics::FMToperatingareascheme new_scheme(opscheduler);
+				const size_t diff = (new_scheme.getminimalreturntime() - new_scheme.getmaximalreturntime()) / 2;
+				new_scheme.setreturntime(return_time - diff, return_time + diff);
+				//*_logger << return_time << "\n";
+				newschemes.push_back(new_scheme);
+				}
+		}catch (...)
+		{
+			_exhandler->raisefromcatch("", "FMTopareaschedulertask::getreturntimefromoutput", __LINE__, __FILE__);
+		}
+		return newschemes;
+	}
+
 	void FMTopareaschedulertask::setinitialscheduler(Models::FMTlpmodel& model,
 		const std::vector<Heuristics::FMToperatingareascheme>& opareas, const Core::FMToutputnode& node)
 	{
@@ -91,7 +128,8 @@ namespace Parallel
 		const std::string& outputlocation,
 		const std::string& outputyieldname,
 		const unsigned int& maxiterations,
-		const double& maxtime):
+		const double& maxtime,
+		Core::FMToutput returntime_output):
 		bestscheduler(new Heuristics::FMToperatingareascheduler()),
 		actualscheduler(),
 		lastspawned(0)
@@ -102,9 +140,14 @@ namespace Parallel
 			modelcopy.FMTmodel::setparameter(Models::FMTboolmodelparameters::POSTSOLVE,true);
 			//Keep the non build modelcopy.
 			basemodel = std::move(std::unique_ptr<Models::FMTlpmodel>(new Models::FMTlpmodel(modelcopy)));
-			//basemodel->getsolverptr()->passinmessagehandler(*tasklogger.get());
 			relax_objective = solveinitialmodel(modelcopy);
-			setinitialscheduler(modelcopy,opareas,node);
+			if (!returntime_output.empty())
+				{
+				const std::vector<Heuristics::FMToperatingareascheme> newschemes = getreturntimefromoutput(modelcopy, opareas, returntime_output);
+				setinitialscheduler(modelcopy, newschemes, node);
+				}else {
+				setinitialscheduler(modelcopy, opareas, node);
+				}
 			iterations = maxiterations;
 			solutionlocation = outputlocation;
 			stoptime = getstoppoint(maxtime);

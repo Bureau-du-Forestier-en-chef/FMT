@@ -651,7 +651,7 @@ namespace Heuristics
 					}*/
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("","FMToperatingareascheduler::setoperatingareasconstraints", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("", "FMToperatingareascheduler::setoperatingareasconstraints", __LINE__, __FILE__);
 			}
 		}
 

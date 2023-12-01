@@ -64,8 +64,9 @@ void exportParallel()
 		.def(bp::init<Parallel::FMTopareaschedulertask>())
 		.def(bp::init<const Models::FMTlpmodel&,const std::vector<Heuristics::FMToperatingareascheme>&,
 			const Core::FMToutputnode&,const std::string&,
-			const std::string&,const unsigned int&,const double&>(
-				bp::args("model", "operating areas", "node", "output location", "output yield name", "maxiterations","maxtime"), "@DocString(FMTopareaschedulertask::FMTopareaschedulertask(...))"));
+			const std::string&,const unsigned int&,
+			const double&,Core::FMToutput>(
+				bp::args("model", "operating areas", "node", "output location", "output yield name", "maxiterations","maxtime","returntime_output"), "@DocString(FMTopareaschedulertask::FMTopareaschedulertask(...))"));
 
 	define_pylist<Parallel::FMTopareaschedulertask>();
 

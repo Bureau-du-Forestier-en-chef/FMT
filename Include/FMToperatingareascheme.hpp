@@ -175,6 +175,21 @@ namespace Heuristics
 		*/
 		int getmaxperiod() const;
 		public:
+			// DocString: FMToperatingareascheme::setreturntime
+			/**
+			Set the minimal and maximal return time. 
+			*/
+			void setreturntime(const size_t& minimalreturntime,const size_t& maximalreturntime);
+			// DocString: FMToperatingareascheme::getminimalreturntime
+			/**
+			Get the minimal return time.
+			*/
+			size_t getminimalreturntime() const;
+			// DocString: FMToperatingareascheme::getmaximalreturntime
+			/**
+			Get the maximal return time.
+			*/
+			size_t getmaximalreturntime() const;
 			// DocString: FMToperatingareascheme::empty
 			/**
 			Check if the operating area is empty can be possible if there's no potential developpement to operate.

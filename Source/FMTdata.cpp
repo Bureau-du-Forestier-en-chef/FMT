@@ -195,6 +195,9 @@ FMTdata::operator std::string() const
 		case FMTyieldparserop::FMTdelta:
 			value += "_DELTA(";
 		break;
+		case FMTyieldparserop::FMTdistance:
+			value += "_DISTANCE(";
+		break;
         default:
         break;
         }

@@ -639,6 +639,24 @@ std::vector<std::vector<int>> FMToperatingareascheme::schemestoperiods(const std
 	return periods;
 	}
 
+void  FMToperatingareascheme::setreturntime(const size_t& minimalreturntime, const size_t& maximalreturntime)
+	{
+	returntime = minimalreturntime;
+	maxreturntime = maximalreturntime;
+	}
+
+size_t FMToperatingareascheme::getminimalreturntime() const
+	{
+	return returntime;
+	}
+
+size_t FMToperatingareascheme::getmaximalreturntime() const
+	{
+	return maxreturntime;
+	}
+
+
+	
 bool FMToperatingareascheme::empty() const
 	{
 	return (schemesperiods.empty() || openingbinaries.empty() || openingconstraints.empty());
