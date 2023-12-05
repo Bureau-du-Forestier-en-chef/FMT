@@ -88,8 +88,8 @@ int main(int argc, char *argv[])
        
         #ifdef FMTWITHOSI
             Logging::FMTlogger().logstamp();
-            const std::string primarylocation = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/09_FMT/Modeles_test/08551_det/PC_9424_U08551_4_Vg1_2023_vSSP03.pri";// = std::string(argv[1]);
-            const std::string vals = "13_Sc5a_Determin_avsp_CLE_PESSIERE_rand_7m|parameters8551_flex_random.csv";// argv[2];
+            const std::string primarylocation = std::string(argv[1]);
+            const std::string vals =  argv[2];
             std::vector<std::string>results;
             boost::split(results, vals, boost::is_any_of("|"));
             const std::vector<std::string>scenarios(1, results.at(0));
@@ -97,7 +97,7 @@ int main(int argc, char *argv[])
             const std::string filename = primpath.stem().string();
             const boost::filesystem::path basefolder = primpath.parent_path();
             const std::string lfichierParam =  basefolder.string() + "/Scenarios/" + results.at(0) + "/" + results.at(1);
-            const std::string fichierShp = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/09_FMT/Modeles_test/08551_det/Carte/PC_9424_UA_U08551.shp";// std::string(argv[3]);
+            const std::string fichierShp = std::string(argv[3]);
             const std::string out("../../tests/testOAschedulertask/" + scenarios.at(0));
             Parser::FMTmodelparser modelparser;
             modelparser.setdefaultexceptionhandler();

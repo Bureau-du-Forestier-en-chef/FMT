@@ -1765,6 +1765,83 @@ std::vector<std::string> FMTareaparser::splitoaparamlines(std::string line) cons
 				}
 				return finalclusters;
 			}
+			
+		#ifdef FMTWITHGDAL
+			void FMTareaparser::writeOAschedulerparameters(const std::string& location, const std::vector<Heuristics::FMToperatingareascheme>& OAschemes,
+															std::vector<std::string> creationoptions) const
+			{
+				try {
+					const boost::filesystem::path path(location);
+					GDALDataset* new_dataset = createOGRdataset(path.parent_path().string());
+					OGRLayer* newlayer = createlayer(new_dataset, path.stem().string(), creationoptions);
+					//"OA","OPT","RET","MAXRET","REP","OPR"
+					OGRFieldDefn OAField("OA",OFTString);
+					OAField.SetWidth(254);
+					OGRFieldDefn OPTField("OPT", OFTInteger);
+					OPTField.SetWidth(5);
+					OGRFieldDefn RETField("RET", OFTInteger);
+					RETField.SetWidth(5);
+					OGRFieldDefn MAXRETField("MAXRET", OFTInteger);
+					MAXRETField.SetWidth(5);
+					OGRFieldDefn REPField("REP", OFTInteger);
+					REPField.SetWidth(5);
+					OGRFieldDefn OPRField("OPR", OFTReal);
+					OPRField.SetPrecision(5);
+					OPRField.SetWidth(32);
+					OGRFieldDefn NEPField("NEP", OFTReal);
+					NEPField.SetPrecision(5);
+					NEPField.SetWidth(32);
+					OGRFieldDefn GUPField("GUP", OFTInteger);
+					GUPField.SetWidth(5);
+
+
+					if (newlayer->CreateField(&OAField) != OGRERR_NONE ||
+						newlayer->CreateField(&OPTField) != OGRERR_NONE ||
+						newlayer->CreateField(&RETField) != OGRERR_NONE ||
+						newlayer->CreateField(&MAXRETField) != OGRERR_NONE ||
+						newlayer->CreateField(&REPField) != OGRERR_NONE ||
+						newlayer->CreateField(&OPRField) != OGRERR_NONE ||
+						newlayer->CreateField(&NEPField) != OGRERR_NONE ||
+						newlayer->CreateField(&GUPField) != OGRERR_NONE)
+					{
+						_exhandler->raise(Exception::FMTexc::FMTgdal_constructor_error,
+							"Cannote create new fields outputsdrift", "FMTareaparser::writeOAschedulerparameters", __LINE__, __FILE__, _section);
+					}
+					for (const Heuristics::FMToperatingareascheme& scheme : OAschemes)
+						{
+						OGRFeature* newfeature = OGRFeature::CreateFeature(newlayer->GetLayerDefn());
+						if (newfeature == NULL)
+						{
+							_exhandler->raise(Exception::FMTexc::FMTgdal_constructor_error,
+								"Cannote generate new feature ", "FMTareaparser::writeOAschedulerparameters", __LINE__, __FILE__, _section);
+							//Failed to generate feature
+						}
+						newfeature->SetField("OA",std::string(scheme.getmask()).c_str());
+						newfeature->SetField("OPT", static_cast<int>(scheme.getopeningtime()));
+						newfeature->SetField("RET", static_cast<int>(scheme.getminimalreturntime()));
+						newfeature->SetField("MAXRET", static_cast<int>(scheme.getmaximalreturntime()));
+						newfeature->SetField("REP", static_cast<int>(scheme.getrepetition()));
+						newfeature->SetField("OPR", static_cast<int>(scheme.getthreshold()));
+						newfeature->SetField("NEP", static_cast<double>(scheme.getneihgborsperimeter()));
+						newfeature->SetField("GUP", static_cast<int>(scheme.getgreenup()));
+						if (newlayer->CreateFeature(newfeature) != OGRERR_NONE)
+						{
+							_exhandler->raise(Exception::FMTexc::FMTgdal_constructor_error,
+								"Cannote create new feature id " + std::to_string(newlayer->GetFeatureCount()), "FMTareaparser::writeOAschedulerparameters", __LINE__, __FILE__, _section);
+							//Failed to generate feature
+						}
+						OGRFeature::DestroyFeature(newfeature);
+
+						}
+
+				}
+				catch (...)
+				{
+					_exhandler->printexceptions("", "FMTareaparser::writeOAschedulerparameters", __LINE__, __FILE__);
+				}
+			}
+		#endif
+
 
 			std::vector<Heuristics::FMToperatingareascheme> FMTareaparser::readOAschedulerparameters(const std::string& location, const std::vector<Core::FMTtheme>& modelthemes, const int& themetarget,const int& startingperiod) const
 			{

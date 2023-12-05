@@ -671,6 +671,34 @@ GDALDataset* FMTparser::createOGRdataset(std::string location,
 	return newdataset;
 }
 
+OGRLayer* FMTparser::createlayer(GDALDataset* dataset,
+	const std::string& name, std::vector<std::string> creationoptions) const
+{
+	OGRLayer* newlayer = nullptr;
+	try {
+		std::vector<char*>optionsstrings;
+		optionsstrings.reserve(creationoptions.size());
+		for (const std::string& value : creationoptions)
+		{
+			optionsstrings.push_back(const_cast<char*>(value.c_str()));
+		}
+		optionsstrings.push_back(nullptr);
+		char** alloptions = &optionsstrings[0];
+		newlayer = dataset->CreateLayer(name.c_str(), NULL, wkbNone, alloptions);
+		if (newlayer == NULL)
+		{
+			_exhandler->raise(Exception::FMTexc::FMTgdal_constructor_error,
+				"Cannote create new layer FMTresults for " + name, "FMTparser::createresultslayers", __LINE__, __FILE__, _section);
+			//Non Valid Layer
+		}
+	}
+	catch (...)
+	{
+		_exhandler->raisefromcatch("", "FMTparser::createprobabilitylayer", __LINE__, __FILE__);
+	}
+	return newlayer;
+}
+
 
 OGRLayer* FMTparser::getlayer(GDALDataset* dataset,int id) const
     {

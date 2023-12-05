@@ -180,11 +180,26 @@ namespace Heuristics
 			Set the minimal and maximal return time. 
 			*/
 			void setreturntime(const size_t& minimalreturntime,const size_t& maximalreturntime);
+			// DocString: FMToperatingareascheme::getthreshold
+			/**
+			Get the threshold
+			*/
+			double getthreshold() const;
+			// DocString: FMToperatingareascheme::getopeningtime
+			/**
+			Get the opening time
+			*/
+			size_t getopeningtime() const;
 			// DocString: FMToperatingareascheme::getminimalreturntime
 			/**
 			Get the minimal return time.
 			*/
 			size_t getminimalreturntime() const;
+			// DocString: FMToperatingareascheme::getrepetition
+			/**
+			Get the repetition of the pattern.
+			*/
+			size_t getrepetition() const;
 			// DocString: FMToperatingareascheme::getmaximalreturntime
 			/**
 			Get the maximal return time.

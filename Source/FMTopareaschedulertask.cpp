@@ -17,6 +17,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTexceptionhandler.hpp"
 #include "FMTscheduleparser.hpp"
 #include "FMTmodelparser.hpp"
+#include "FMTareaparser.hpp"
 #include <boost/algorithm/string/predicate.hpp>
 #include <boost/filesystem.hpp>
 #include "FMToutput.hpp"
@@ -144,6 +145,12 @@ namespace Parallel
 			if (!returntime_output.empty())
 				{
 				const std::vector<Heuristics::FMToperatingareascheme> newschemes = getreturntimefromoutput(modelcopy, opareas, returntime_output);
+				Parser::FMTareaparser area_parser;
+				const std::string location = (outputlocation +"/"+returntime_output.getname() + ".csv");
+				std::vector<std::string>layersoptions;
+				layersoptions.push_back("SEPARATOR=SEMICOLON");
+				layersoptions.push_back("STRING_QUOTING=IF_NEEDED");
+				area_parser.writeOAschedulerparameters(location, newschemes, layersoptions);
 				setinitialscheduler(modelcopy, newschemes, node);
 				}else {
 				setinitialscheduler(modelcopy, opareas, node);

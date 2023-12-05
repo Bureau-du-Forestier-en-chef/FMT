@@ -645,6 +645,11 @@ void  FMToperatingareascheme::setreturntime(const size_t& minimalreturntime, con
 	maxreturntime = maximalreturntime;
 	}
 
+size_t FMToperatingareascheme::getopeningtime() const
+	{
+	return openingtime;
+	}
+
 size_t FMToperatingareascheme::getminimalreturntime() const
 	{
 	return returntime;
@@ -653,6 +658,16 @@ size_t FMToperatingareascheme::getminimalreturntime() const
 size_t FMToperatingareascheme::getmaximalreturntime() const
 	{
 	return maxreturntime;
+	}
+
+size_t FMToperatingareascheme::getrepetition() const
+	{
+	return repetition;
+	}
+
+double FMToperatingareascheme::getthreshold() const
+	{
+	return threshold;
 	}
 
 

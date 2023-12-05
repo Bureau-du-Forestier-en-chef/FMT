@@ -298,7 +298,15 @@ class FMTEXPORT FMTareaparser : public FMTparser
 			of operatingareascheme, to use in operatingareascheduler.
 			*/
 			std::vector<Heuristics::FMToperatingareascheme> readOAschedulerparameters(const std::string& location, const std::vector<Core::FMTtheme>& modelthemes, const int& themetarget, const int& startingperiod) const;
-
+			#ifdef FMTWITHGDAL
+			// DocString: FMTareaparser::writeOAschedulerparameters
+			/**
+			Write down a parameters files on the form ("OA","OPT","RET","MAXRET","REP","OPR") but the column OA is gona contains the full mask not just the
+			selected theme into a regular csv files.
+			*/
+			void writeOAschedulerparameters(const std::string& location, const std::vector<Heuristics::FMToperatingareascheme>& OAschemes,
+												std::vector<std::string> creationoptions = std::vector<std::string>()) const;
+			#endif
 		#endif
 		// DocString: FMTareaparser::readvectors
 		/**
