@@ -7,7 +7,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 cmake_minimum_required(VERSION 3.6)
 
-project(FMT VERSION 0.9.8 LANGUAGES CXX)
+project(FMT VERSION 0.9.7 LANGUAGES CXX)
 
 string(TIMESTAMP DATE "%Y-%m-%d")
 string(TIMESTAMP TIME "%H:%M:%S")
@@ -32,20 +32,10 @@ message("Generating Build file for FMT ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSIO
 set(FMTSOURCEDIR "${CMAKE_CURRENT_SOURCE_DIR}/Source/")
 set(FMTINCLUDEDIR "${CMAKE_CURRENT_SOURCE_DIR}/Include/")
 
-
-
-find_package(osi-cbc)
-
-message("Hello")
-
 if (DEFINED VCPKG_TARGET_TRIPLET)
-	#find_package(Clp CONFIG REQUIRED)
-	message("Hello")
-	
+	find_package(Clp CONFIG REQUIRED)
 endif(DEFINED VCPKG_TARGET_TRIPLET)
 
-
-#[[
 set(DLLlookuppaths "${CMAKE_SYSTEM_LIBRARY_PATH}")
 if (DEFINED ENV{PATH})
 	list(APPEND DLLlookuppaths $ENV{PATH})
@@ -935,4 +925,3 @@ if (GENERATE_RELEASE_PACKAGE)
 		")
 		
 endif(GENERATE_RELEASE_PACKAGE)
-]]
