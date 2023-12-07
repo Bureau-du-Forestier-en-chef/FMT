@@ -32,10 +32,20 @@ message("Generating Build file for FMT ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSIO
 set(FMTSOURCEDIR "${CMAKE_CURRENT_SOURCE_DIR}/Source/")
 set(FMTINCLUDEDIR "${CMAKE_CURRENT_SOURCE_DIR}/Include/")
 
+
+
+find_package(osi-cbc)
+
+message("Hello")
+
 if (DEFINED VCPKG_TARGET_TRIPLET)
-	find_package(Clp CONFIG REQUIRED)
+	#find_package(Clp CONFIG REQUIRED)
+	message("Hello")
+	
 endif(DEFINED VCPKG_TARGET_TRIPLET)
 
+
+#[[
 set(DLLlookuppaths "${CMAKE_SYSTEM_LIBRARY_PATH}")
 if (DEFINED ENV{PATH})
 	list(APPEND DLLlookuppaths $ENV{PATH})
@@ -925,3 +935,4 @@ if (GENERATE_RELEASE_PACKAGE)
 		")
 		
 endif(GENERATE_RELEASE_PACKAGE)
+]]

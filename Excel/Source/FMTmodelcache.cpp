@@ -288,7 +288,7 @@ namespace Wrapper
 	}*/
 
 	FMTmodelcache::FMTmodelcache(const Models::FMTmodel& lmodel, const std::string& lmaplocation):
-		Models::FMTlpmodel(lmodel, Models::FMTsolverinterface::CLP),
+		Models::FMTlpmodel(lmodel, Models::FMTsolverinterface::MOSEK),
 		cachingswitch(false),
 		mtx(new boost::recursive_mutex()),
 		outputsmap(),
