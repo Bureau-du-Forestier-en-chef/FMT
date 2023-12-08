@@ -178,7 +178,7 @@ class FMTEXPORT FMTparser: public Core::FMTobject
 			Create a memory layer with a new int field named fieldname based on forel.
 			Based on the baselayer. With a new spatial reference or can be the same has baselayer.
 			*/
-			GDALDataset* gettransformmemlayercopy(OGRLayer* baselayer, OGRSpatialReference* newreference, const std::string& fieldname) const;
+			GDALDataset* gettransformmemlayercopy(OGRLayer* baselayer,const OGRSpatialReference* newreference, const std::string& fieldname) const;
 			// DocString: FMTparser::getFORELspatialref
 			/**
 			Return and OGRspatialReference corresponding to the one used for FORELs in Quebec.

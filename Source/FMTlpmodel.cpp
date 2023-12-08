@@ -17,13 +17,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 #ifdef FMTWITHOSI
 #include "FMToperatingareascheduler.hpp"
-#include "OsiSolverInterface.hpp"
 #include "FMTlpmodel.hpp"
-#ifdef FMTWITHMOSEK
-	#include "OsiMskSolverInterface.hpp"
-	#include "mosek.h"
-#endif
-#include "OsiClpSolverInterface.hpp"
 #include "FMTexceptionhandler.hpp"
 #include "boost/filesystem.hpp"
 
@@ -42,7 +36,7 @@ namespace Models
 		Heuristics::FMToperatingareaclusterer newclusterer;
 		try {
 			std::vector<Heuristics::FMToperatingareacluster>newclusters;
-			double minimalstatistic, minimalarea = COIN_DBL_MAX;
+			double minimalstatistic, minimalarea = std::numeric_limits<double>::max();
 			double maximalstatistic, maximalarea = 0;
 			const double minimalstatisticvalue = FMT_DBL_TOLERANCE*10000;
 			std::map<Core::FMTmask,std::pair<double,double>>outputcaching;
@@ -743,7 +737,7 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 					if (dev.getmask().issubsetof(globalmask))
 					{
 						const int varindex = graph.getoutvariables(*vertex_iterator).at(-1);
-						if (*(colupperbounds + varindex) == COIN_DBL_MAX)
+						if (*(colupperbounds + varindex) == std::numeric_limits<double>::max())
 						{
 							_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
 								"Changing a bound on a non initial variable for developmenets" + std::string(dev),

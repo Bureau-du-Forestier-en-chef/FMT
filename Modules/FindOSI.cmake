@@ -77,14 +77,15 @@ find_library( OSI_LIBRARY_RELEASE
               PATHS ${POTOSI_LIB_DIR}
               )
 
-if (NOT "${POTOSI_LIB_DIR}" MATCHES "vcpkg")
+#if (NOT "${POTOSI_LIB_DIR}" MATCHES "vcpkg")
 	find_library( OSI_CLP_LIBRARY_RELEASE
               	NAMES OsiClp libOsiClp
               	PATHS  ${POTOSI_LIB_DIR}
               	)
-else()
-	set(OSI_CLP_LIBRARY_RELEASE "${OSI_LIBRARY_RELEASE}")
-endif(NOT "${POTOSI_LIB_DIR}" MATCHES "vcpkg")
+#else()
+#	set(OSI_CLP_LIBRARY_RELEASE "${OSI_LIBRARY_RELEASE}")
+#endif(NOT "${POTOSI_LIB_DIR}" MATCHES "vcpkg")
+
 
 
 

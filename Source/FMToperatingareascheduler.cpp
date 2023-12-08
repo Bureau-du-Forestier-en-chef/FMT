@@ -10,11 +10,6 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMToperatingareascheduler.hpp"
 #include <algorithm>
 #include <random>
-#include "OsiClpSolverInterface.hpp"
-#ifdef  FMTWITHMOSEK
-	#include "OsiMskSolverInterface.hpp"
-	#include "mosek.h"
-#endif
 //#include "FMTmatrixbuild.hpp"
 #include "FMTtimeyieldhandler.hpp"
 #include "FMTdata.hpp"

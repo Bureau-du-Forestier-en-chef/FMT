@@ -203,11 +203,23 @@ namespace Core {
 			const std::vector<std::string> modelYields = GetModelYields();
 			auto memoryInfo = Ort::MemoryInfo::CreateCpu(OrtDeviceAllocator, OrtMemTypeCPU);
 			Ort::AllocatorWithDefaultOptions allocator;
-
+			#if ORT_API_VERSION <= 4
 			char* inputName = sessionPtr->GetInputName(0, allocator);
 			char* outputName = sessionPtr->GetOutputName(0, allocator);
 			std::vector<const char*> inputNames{ inputName };
 			std::vector<const char*> outputNames{ outputName };
+			#else
+			std::vector<Ort::AllocatedStringPtr> inputNodeNameAllocatedStrings;
+			std::vector<Ort::AllocatedStringPtr> outputNodeNameAllocatedStrings;
+			std::vector<const char*> inputNames;
+			std::vector<const char*> outputNames;
+			auto inputName = sessionPtr->GetInputNameAllocated(0, allocator);
+			inputNodeNameAllocatedStrings.push_back(std::move(inputName));
+			inputNames.push_back(inputNodeNameAllocatedStrings.back().get());
+			auto outputName = sessionPtr->GetOutputNameAllocated(0, allocator);
+			outputNodeNameAllocatedStrings.push_back(std::move(outputName));
+			outputNames.push_back(outputNodeNameAllocatedStrings.back().get());
+			#endif
 
 			const Graph::FMTgraphvertextoyield* graphinfo = request.getvertexgraphinfo();
 			const Models::FMTmodel* modelptr = graphinfo->getmodel();

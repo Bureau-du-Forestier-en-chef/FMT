@@ -33,8 +33,11 @@ set(FMTSOURCEDIR "${CMAKE_CURRENT_SOURCE_DIR}/Source/")
 set(FMTINCLUDEDIR "${CMAKE_CURRENT_SOURCE_DIR}/Include/")
 
 if (DEFINED VCPKG_TARGET_TRIPLET)
-	#find_package(Clp CONFIG REQUIRED)
-	find_package(Boost CONFIG REQUIRED)
+	set(OSI_DIR "${VCPKG_ROOT}/installed/${VCPKG_TARGET_TRIPLET}/") #Cbc and osi doest not have a .cmake files.
+	set(PYTHON_DIR "${VCPKG_ROOT}/installed/${VCPKG_TARGET_TRIPLET}/tools/python3") #Presume Python3
+	set(GDAL_DIR "${VCPKG_ROOT}/installed/${VCPKG_TARGET_TRIPLET}/")
+	set(GEOS_DIR "${VCPKG_ROOT}/installed/${VCPKG_TARGET_TRIPLET}/")
+	set(Boost_NO_WARN_NEW_VERSIONS 1) #Silence Boost
 endif(DEFINED VCPKG_TARGET_TRIPLET)
 
 set(DLLlookuppaths "${CMAKE_SYSTEM_LIBRARY_PATH}")
@@ -815,6 +818,11 @@ install (CODE
 		#MESSAGE ERREUR
 		message(FATAL_ERROR \"No Python found cannot install FMT\")
 	else()
+		#Ensure pip 
+		execute_process(
+          	COMMAND \"$\{PYTHON\}\" -m ensurepip
+         	 WORKING_DIRECTORY \"${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}\"
+       		 )
 		#Call pip from python and install it....
 		execute_process(
           	COMMAND \"$\{PYTHON\}\" -m pip install wheel
