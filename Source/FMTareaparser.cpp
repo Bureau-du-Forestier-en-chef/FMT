@@ -1833,7 +1833,7 @@ std::vector<std::string> FMTareaparser::splitoaparamlines(std::string line) cons
 						OGRFeature::DestroyFeature(newfeature);
 
 						}
-
+				GDALClose(new_dataset);
 				}
 				catch (...)
 				{
