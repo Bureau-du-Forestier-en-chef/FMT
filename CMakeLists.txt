@@ -5,6 +5,7 @@ SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 ]]
 
+
 cmake_minimum_required(VERSION 3.6)
 
 project(FMT VERSION 0.9.8 LANGUAGES CXX)
@@ -39,6 +40,14 @@ if (DEFINED VCPKG_TARGET_TRIPLET)
 	set(GEOS_DIR "${VCPKG_ROOT}/installed/${VCPKG_TARGET_TRIPLET}/")
 	set(Boost_NO_WARN_NEW_VERSIONS 1) #Silence Boost
 endif(DEFINED VCPKG_TARGET_TRIPLET)
+
+if (DEFINED ENV_PREFIX)
+	set(sub_path  "${CMAKE_CURRENT_SOURCE_DIR}/../../${ENV_PREFIX}/")
+	cmake_path(ABSOLUTE_PATH sub_path NORMALIZE)
+	set(GDAL_DIR "${sub_path}")
+	set(GEOS_DIR "${sub_path}")
+	set(OSI_DIR "${sub_path}")
+endif(DEFINED ENV_PREFIX)
 
 set(DLLlookuppaths "${CMAKE_SYSTEM_LIBRARY_PATH}")
 if (DEFINED ENV{PATH})
@@ -170,10 +179,12 @@ endif(NOT MSVC)
 
 
 function(target_lib libtotarget)
-	target_link_libraries(FMTlib PRIVATE ${libtotarget})
-	if (NOT MSVC AND DEFINED ENV{R_DIR})
-		target_link_libraries(FMT PRIVATE ${libtotarget})
-	endif(NOT MSVC AND DEFINED ENV{R_DIR})
+	if("${libtotarget}" STREQUAL "")
+		target_link_libraries(FMTlib PRIVATE ${libtotarget})
+		if (NOT MSVC AND DEFINED ENV{R_DIR})
+			target_link_libraries(FMT PRIVATE ${libtotarget})
+		endif(NOT MSVC AND DEFINED ENV{R_DIR})
+	endif("${libtotarget}" STREQUAL "")
 endfunction(target_lib libtotarget)
 
 function(target_include includetotarget)
@@ -677,7 +688,7 @@ if (DEFINED ENV{OSI_DIR})
 				#link_libraries(${linkerflags})
 			endforeach()
 		endif(NOT MSVC)
-		if (DEFINED ENV{MOSEK_DIR} AND (MSVC OR OSI_MSK_LIBRARY_RELEASE))
+		if (DEFINED ENV{MOSEK_DIR})#AND (MSVC OR OSI_MSK_LIBRARY_RELEASE)
             find_package(MOSEK)
 			if (MOSEK_FOUND)
 				set(FMTWITHMOSEK "-DFMTWITHMOSEK")
@@ -713,7 +724,7 @@ if (DEFINED ENV{OSI_DIR})
 					list(APPEND DLLlookuppaths ${MOSEK_DLL_LOCATION})
 				endif(NOT CYGWIN AND DEFINED MOSEK_DLL)
 			endif(MOSEK_FOUND)
-		endif(DEFINED ENV{MOSEK_DIR} AND (MSVC OR OSI_MSK_LIBRARY_RELEASE))
+		endif(DEFINED ENV{MOSEK_DIR})# AND (MSVC OR OSI_MSK_LIBRARY_RELEASE))
 	else()
 		message("Get OSI and CLP throught CBC project: (https://github.com/coin-or/Cbc)")
 	endif(OSI_FOUND)

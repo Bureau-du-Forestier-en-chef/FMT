@@ -14,7 +14,7 @@ def getelementstocomment(filelist):
     matchlist = []
     for filename in filelist:
         tomatch={}
-        with open(filename) as filestream:
+        with open(filename,encoding='windows-1251') as filestream:
             for line in filestream:
                 matches=re.match(doctringregex,line)
                 if matches:
@@ -27,7 +27,7 @@ def getelementstocomment(filelist):
 def getcommentselements(headerfiles):
     commentsmatch={}
     for filename in headerfiles:
-        with open(filename) as filestream:
+        with open(filename,encoding='windows-1251') as filestream:
             docstring=""
             commentstring=""
             incomment=False
@@ -73,8 +73,8 @@ def buildcommentsreplacement(commentsource,commentstoreplace):
 def generatecomments(targetdirectory,originalfiles,generalmatches):
     for filepath,comments in zip(originalfiles,generalmatches):
         filename=os.path.basename(filepath)
-        newfile = open(os.path.join(targetdirectory,filename),"w")
-        with open(filepath) as filestream:
+        newfile = open(os.path.join(targetdirectory,filename),"w",encoding='windows-1251')
+        with open(filepath,encoding='windows-1251') as filestream:
             for line in filestream:
                 newline=line
                 matches=re.match(doctringregex,line)
