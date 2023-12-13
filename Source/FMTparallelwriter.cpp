@@ -61,7 +61,9 @@ namespace Parallel
 
 	{
 		try {
+		#ifdef FMTWITHGDAL
 			resultsdataset = createOGRdataset(location, driver);
+		#endif
 			if (outputs.empty())
 			{
 				_exhandler->raise(Exception::FMTexc::FMTrangeerror,

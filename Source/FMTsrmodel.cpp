@@ -7,11 +7,6 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 #ifdef FMTWITHOSI
 #include "FMTsrmodel.hpp"
-#ifdef FMTWITHMOSEK
-	#include "OsiMskSolverInterface.hpp"
-	#include "mosek.h"
-#endif
-#include "OsiClpSolverInterface.hpp"
 #include <unordered_map>
 #include <map>
 #include <set>
@@ -106,8 +101,8 @@ namespace Models
 						if (std::find(variable_index.begin(), variable_index.end(), varit->second) == variable_index.end())
 						{
 							variable_index.push_back(varit->second);
-							bounds.push_back(-COIN_DBL_MAX);
-							bounds.push_back(COIN_DBL_MAX);
+							bounds.push_back(-std::numeric_limits< double >::max());
+							bounds.push_back(std::numeric_limits< double >::max());
 						}
 					}
 				}
@@ -1077,7 +1072,7 @@ namespace Models
 			const std::vector<int>targetrows(newstats.cols, 0);
 			const std::vector<double>nelements(newstats.cols, 0.0);
 			const std::vector<double>lower_bounds(newstats.cols, 0.0);
-			const std::vector<double>upper_bounds(newstats.cols, COIN_DBL_MAX);
+			const std::vector<double>upper_bounds(newstats.cols, std::numeric_limits< double >::max());
 			if (newstats.cols>0)
 				{
 				solver.addCols(newstats.cols, &column_Starts[0], &targetrows[0],

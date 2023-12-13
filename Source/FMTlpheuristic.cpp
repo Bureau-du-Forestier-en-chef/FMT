@@ -10,11 +10,6 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTlpheuristic.hpp"
 #include <algorithm>
 #include <random>
-#include "OsiClpSolverInterface.hpp"
-#ifdef  FMTWITHMOSEK
-	#include "OsiMskSolverInterface.hpp"
-	#include "mosek.h"
-#endif
 #include "FMTsolverinterface.hpp"
 #include "FMTexceptionhandler.hpp"
 

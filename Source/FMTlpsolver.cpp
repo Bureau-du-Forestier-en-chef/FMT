@@ -10,8 +10,8 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "OsiSolverInterface.hpp"
 
 #ifdef FMTWITHMOSEK
-	#include "OsiMskSolverInterface.hpp"
 	#include "mosek.h"
+	#include "OsiMskSolverInterface.hpp"
 #endif
 
 

@@ -606,7 +606,7 @@ OGRCoordinateTransformation* FMTparser::getprojtransform(OGRLayer* baselayer, bo
 	return coordtransf;
 	}
 
-GDALDataset* FMTparser::gettransformmemlayercopy(OGRLayer* baselayer, OGRSpatialReference* newreference, const std::string& fieldname) const
+GDALDataset* FMTparser::gettransformmemlayercopy(OGRLayer* baselayer, const OGRSpatialReference* newreference, const std::string& fieldname) const
 	{
 	GDALDataset* memds = nullptr;
 	try {
@@ -618,7 +618,8 @@ GDALDataset* FMTparser::gettransformmemlayercopy(OGRLayer* baselayer, OGRSpatial
 				"FMTparser::gettransformmemlayercopy", __LINE__, __FILE__, _section);
 			}
 		memds = createvectormemoryds();
-		OGRLayer* memlayer = memds->CreateLayer("Memlayer", newreference, lgeomtype, NULL);
+		std::unique_ptr<OGRSpatialReference>nonconstreference(new OGRSpatialReference(*newreference));
+		OGRLayer* memlayer = memds->CreateLayer("Memlayer", nonconstreference.get(), lgeomtype, NULL);
 		if (memlayer == NULL)
 			{
 			_exhandler->raise(Exception::FMTexc::FMTgdal_constructor_error,

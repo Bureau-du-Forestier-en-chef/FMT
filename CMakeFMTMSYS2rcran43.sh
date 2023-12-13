@@ -1,3 +1,16 @@
+<<<<<<< HEAD
+=======
+#Install R
+#Install Rtools that fits with R
+#Install Rcpp on R install.packages("Rcpp")
+#Change rtools43/etc/profile
+#In profile set MINGW_MOUNT_POINT="x86_64-w64-mingw32.static.posix"
+#cd /home
+#git clone https://github.com/Bureau-du-Forestier-en-chef/FMT.git
+#cd FMT
+#Now compile FMT
+
+>>>>>>> tomosek10
 cd /home/FMT
 
 #in debug
@@ -5,6 +18,7 @@ cmake CMakeLists.txt \
  -B build/debug \
  -G "MSYS Makefiles" \
  -DCMAKE_BUILD_TYPE=Debug \
+<<<<<<< HEAD
  -DEXTRALINKERFLAGS="-lharfbuzz -lfreetype -lpoppler" \
  -DPYTHON_DIR="C:/logiciels/Anaconda3/" \
  -DCMAKE_BUILD_TYPE=Release \
@@ -15,6 +29,13 @@ cmake CMakeLists.txt \
  -DGDAL_DIR="/x86_64-w64-mingw32.static.posix/" \
  -DR_DIR="C:/logiciels/R-4.2.1/" \
  -DGEOS_DIR="/x86_64-w64-mingw32.static.posix/"
+=======
+ -DPYTHON_DIR=C:/logiciels/Anaconda3/ \
+ -DR_DIR=C:/Logiciels/R-4.3.2/ \
+ -DPARALLEL_TESTS=8 \
+ -DMOSEK_DIR="C:/PROGRA~1/Mosek/10.1/" \
+ -DENV_PREFIX="x86_64-w64-mingw32.static.posix"
+>>>>>>> tomosek10
 
 cmake --build build/debug --config Debug -j 8
 cmake --install build/debug --config Debug
@@ -25,11 +46,19 @@ cmake CMakeLists.txt \
  -B build/release \
  -G "MSYS Makefiles" \
  -DPYTHON_DIR=C:/logiciels/Anaconda3/ \
+<<<<<<< HEAD
  -DCMAKE_BUILD_TYPE=Release \
  -DPARALLEL_TESTS=8 \
  -DMOSEK_DIR="C:/PROGRA~1/Mosek/10.1/" \
  -DR_DIR=C:/Logiciels/R-4.3.2/ \
  -DCMAKE_FIND_ROOT_PATH=/x86_64-w64-mingw32.static.posix/
+=======
+ -DR_DIR=C:/Logiciels/R-4.3.2/ \
+ -DCMAKE_BUILD_TYPE=Release \
+ -DPARALLEL_TESTS=8 \
+ -DMOSEK_DIR="C:/PROGRA~1/Mosek/10.1/" \
+ -DENV_PREFIX="x86_64-w64-mingw32.static.posix"
+>>>>>>> tomosek10
 
 
 	

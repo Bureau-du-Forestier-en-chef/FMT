@@ -150,7 +150,9 @@ namespace Parallel
 				std::vector<std::string>layersoptions;
 				layersoptions.push_back("SEPARATOR=SEMICOLON");
 				layersoptions.push_back("STRING_QUOTING=IF_NEEDED");
-				area_parser.writeOAschedulerparameters(location, newschemes, layersoptions);
+				#ifdef FMTWITHGDAL
+					area_parser.writeOAschedulerparameters(location, newschemes, layersoptions);
+				#endif
 				setinitialscheduler(modelcopy, newschemes, node);
 				}else {
 				setinitialscheduler(modelcopy, opareas, node);

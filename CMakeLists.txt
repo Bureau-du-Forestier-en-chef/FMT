@@ -5,6 +5,7 @@ SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 ]]
 
+
 cmake_minimum_required(VERSION 3.6)
 
 project(FMT VERSION 0.9.7 LANGUAGES CXX)
@@ -33,8 +34,20 @@ set(FMTSOURCEDIR "${CMAKE_CURRENT_SOURCE_DIR}/Source/")
 set(FMTINCLUDEDIR "${CMAKE_CURRENT_SOURCE_DIR}/Include/")
 
 if (DEFINED VCPKG_TARGET_TRIPLET)
-	find_package(Clp CONFIG REQUIRED)
+	set(OSI_DIR "${VCPKG_ROOT}/installed/${VCPKG_TARGET_TRIPLET}/") #Cbc and osi doest not have a .cmake files.
+	set(PYTHON_DIR "${VCPKG_ROOT}/installed/${VCPKG_TARGET_TRIPLET}/tools/python3") #Presume Python3
+	set(GDAL_DIR "${VCPKG_ROOT}/installed/${VCPKG_TARGET_TRIPLET}/")
+	set(GEOS_DIR "${VCPKG_ROOT}/installed/${VCPKG_TARGET_TRIPLET}/")
+	set(Boost_NO_WARN_NEW_VERSIONS 1) #Silence Boost
 endif(DEFINED VCPKG_TARGET_TRIPLET)
+
+if (DEFINED ENV_PREFIX)
+	set(sub_path  "${CMAKE_CURRENT_SOURCE_DIR}/../../${ENV_PREFIX}/")
+	cmake_path(ABSOLUTE_PATH sub_path NORMALIZE)
+	set(GDAL_DIR "${sub_path}")
+	set(GEOS_DIR "${sub_path}")
+	set(OSI_DIR "${sub_path}")
+endif(DEFINED ENV_PREFIX)
 
 set(DLLlookuppaths "${CMAKE_SYSTEM_LIBRARY_PATH}")
 if (DEFINED ENV{PATH})
@@ -166,10 +179,11 @@ endif(NOT MSVC)
 
 
 function(target_lib libtotarget)
-	target_link_libraries(FMTlib PRIVATE ${libtotarget})
-	if (NOT MSVC AND DEFINED ENV{R_DIR})
-		target_link_libraries(FMT PRIVATE ${libtotarget})
-	endif(NOT MSVC AND DEFINED ENV{R_DIR})
+	string(STRIP "${libtotarget}" libtotarget)
+		target_link_libraries(FMTlib PRIVATE ${libtotarget})
+		if (NOT MSVC AND DEFINED ENV{R_DIR})
+			target_link_libraries(FMT PRIVATE ${libtotarget})
+		endif(NOT MSVC AND DEFINED ENV{R_DIR})
 endfunction(target_lib libtotarget)
 
 function(target_include includetotarget)
@@ -389,7 +403,7 @@ if ((NOT DEFINED ENV{R_DIR}) AND (DEFINED ENV{PYTHON_DIR}) AND NOT DEFINED WITHO
 endif()
 
 #Try to find a dynamic boost lib
-if (DEFINED PYTHONNAMING)
+if (DEFINED PYTHONNAMING AND NOT ENV_PREFIX)
 		
         #if("${PYTHONMAJOR}" STREQUAL "2")
         #    set(BPY "python27")
@@ -407,7 +421,7 @@ if (DEFINED PYTHONNAMING)
 		else()
 			find_package(Boost COMPONENTS system filesystem iostreams regex serialization thread wserialization OPTIONAL_COMPONENTS zlib) 
 		endif(MSVC)
-endif(DEFINED PYTHONNAMING)
+endif(DEFINED PYTHONNAMING AND NOT ENV_PREFIX)
 
 #If you have a dynamic boost lib then go take the .dll
 if (Boost_FOUND)
@@ -550,14 +564,15 @@ if (DEFINED ENV{GDAL_DIR})
 				exec_program(${GDAL_CONFIG} ARGS "${gdaldeparg}" OUTPUT_VARIABLE GDAL_LINKER_FLAGS) #Cygwin does not like linker flags ?
 				exec_program(${GDAL_CONFIG} ARGS "${gdalliarg}" OUTPUT_VARIABLE GDAL_LIBRARIES) #Cygwin does not like gdallibrary 
 			endif(NOT CYGWIN)
+			
 			exec_program(${GDAL_CONFIG} ARGS "${gdalverarg}" OUTPUT_VARIABLE GDAL_FULLVERSION)
 			#exec_program(${GDAL_CONFIG} ARGS "${gdaldataarg}" OUTPUT_VARIABLE GDAL_DATA)
-
 			if ("${GDAL_FULLVERSION}" VERSION_LESS "2.3")
 				 message(WARNING "You need at least GDAL 2.3 to get GDAL functionalities")
 				 unset(GDAL_FOUND)
 			endif()
 		endif(NOT MSVC AND DEFINED ENV{R_DIR})
+		
 		if(GDAL_FOUND)
 			set(potdata "/usr/share/gdal/")
 			FILE(GLOB_RECURSE GDAL_POTDLL ${potdata}gt_ellips.csv)
@@ -592,20 +607,24 @@ if (DEFINED ENV{GDAL_DIR})
 			if (GDAL_LIBRARIES)
 				foreach(linkerflags ${GDAL_LIBRARIES})
 					if ((MSVC AND "${linkerflags}" MATCHES "::") OR NOT MSVC)
-						#target_link_libraries(FMT ${linkerflags})
-						#target_link_libraries(FMTlib PRIVATE ${linkerflags})
 						target_lib("${linkerflags}")
-						#link_libraries(${linkerflags})
 					endif((MSVC AND "${linkerflags}" MATCHES "::") OR NOT MSVC)
                 endforeach()
 			endif(GDAL_LIBRARIES)
             if (NOT MSVC AND GDAL_LINKER_FLAGS)
                 foreach(linkerflags ${GDAL_LINKER_FLAGS})
-					#target_link_libraries(FMTlib PRIVATE ${linkerflags})
 					target_lib("${linkerflags}")
-                    #target_link_libraries(FMT ${linkerflags})
-					#link_libraries(${linkerflags})
                 endforeach()
+				FILE(GLOB_RECURSE CURL_config_locations $ENV{GDAL_DIR}curl-config)
+				if (CURL_config_locations)
+					list(GET CURL_config_locations 0 CURL_CONFIG)
+					set(curlarg "${CURL_CONFIG} --libs")
+					set(CURL_CONFIG "sh")
+					exec_program(${CURL_CONFIG} ARGS "${curlarg}" OUTPUT_VARIABLE CURL_LIBRARIES)
+					foreach(linkerflags ${CURL_LIBRARIES})
+						target_lib("${linkerflags}")
+					endforeach()
+				endif(CURL_config_locations)
             endif(NOT MSVC AND GDAL_LINKER_FLAGS)
             if (WIN32 AND DEFINED GDAL_DLL)
 				get_filename_component(GDAL_DLL_LOCATION "${GDAL_DLL}" DIRECTORY)
@@ -673,7 +692,7 @@ if (DEFINED ENV{OSI_DIR})
 				#link_libraries(${linkerflags})
 			endforeach()
 		endif(NOT MSVC)
-		if (DEFINED ENV{MOSEK_DIR} AND (MSVC OR OSI_MSK_LIBRARY_RELEASE))
+		if (DEFINED ENV{MOSEK_DIR})#AND (MSVC OR OSI_MSK_LIBRARY_RELEASE)
             find_package(MOSEK)
 			if (MOSEK_FOUND)
 				set(FMTWITHMOSEK "-DFMTWITHMOSEK")
@@ -697,11 +716,10 @@ if (DEFINED ENV{OSI_DIR})
 						#target_link_libraries(FMT ${linkerflags})
 						#link_libraries(${linkerflags})
 					endforeach()
-				else()
-					#target_sources(FMT PRIVATE ${OSIMSK_DEFINITION})
-					target_sources(FMTlib PRIVATE ${OSIMSK_DEFINITION})
-					list(APPEND sourcefile "${OSIMSK_DEFINITION}")
+					target_sources(FMT PRIVATE ${OSIMSK_DEFINITION})
 				endif(NOT MSVC)
+				target_sources(FMTlib PRIVATE ${OSIMSK_DEFINITION})
+				list(APPEND sourcefile "${OSIMSK_DEFINITION}")
 				if (NOT CYGWIN AND DEFINED MOSEK_DLL)
 					message("MOSEK DLL found here: ${MOSEK_DLL}")
 					LIST(APPEND FMTDEPENDENCIES ${MOSEK_DLL})
@@ -709,7 +727,7 @@ if (DEFINED ENV{OSI_DIR})
 					list(APPEND DLLlookuppaths ${MOSEK_DLL_LOCATION})
 				endif(NOT CYGWIN AND DEFINED MOSEK_DLL)
 			endif(MOSEK_FOUND)
-		endif(DEFINED ENV{MOSEK_DIR} AND (MSVC OR OSI_MSK_LIBRARY_RELEASE))
+		endif(DEFINED ENV{MOSEK_DIR})# AND (MSVC OR OSI_MSK_LIBRARY_RELEASE))
 	else()
 		message("Get OSI and CLP throught CBC project: (https://github.com/coin-or/Cbc)")
 	endif(OSI_FOUND)
@@ -808,12 +826,17 @@ install (CODE
             file(COPY \"\${FMTdep}\" DESTINATION \"${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}\")
         endforeach()
     endif(DEPENDENCIES)
-	if (EXISTS \"${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}/setup.py\")
+	if (EXISTS \"${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}/setup.py\" AND NOT EXISTS \"${R_DIR}\")
 	set (PYTHON \"${Python_EXECUTABLE}\")
 	if (NOT EXISTS \"$\{PYTHON\}\")
 		#MESSAGE ERREUR
 		message(FATAL_ERROR \"No Python found cannot install FMT\")
 	else()
+		#Ensure pip 
+		execute_process(
+          	COMMAND \"$\{PYTHON\}\" -m ensurepip
+         	 WORKING_DIRECTORY \"${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}\"
+       		 )
 		#Call pip from python and install it....
 		execute_process(
           	COMMAND \"$\{PYTHON\}\" -m pip install wheel
@@ -831,7 +854,7 @@ install (CODE
           COMMAND \"$\{PYTHON\}\" -m pip install \"\${wheelname}\" --force-reinstall
           WORKING_DIRECTORY \"${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}\"
         )
-    endif (EXISTS \"${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}/setup.py\")
+    endif (EXISTS \"${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}/setup.py\" AND NOT EXISTS \"${R_DIR}\")
 	if (EXISTS \"${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}/FMT\")
 		file(COPY \"${CMAKE_CURRENT_SOURCE_DIR}/Templates/YieldPredModels\" DESTINATION \"${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}/FMT/inst/libs/x64/\")
 		if (GDAL_FOUND)
