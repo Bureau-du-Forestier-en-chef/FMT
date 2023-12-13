@@ -34,6 +34,7 @@ namespace Core {
 		{
 			_exhandler->raisefromcatch("", "FMTyieldmodeldecisiontree::GetMask", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
+		return mask;
 	}
 
 
