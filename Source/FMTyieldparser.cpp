@@ -39,7 +39,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 namespace Parser{
 
 const boost::regex FMTyieldparser::rxyieldtype = boost::regex("^(\\*Y)([^\\s^\\t]*)([\\s\\t]*)(.+)(_OVERRIDE)|^(\\*Y)([^\\s^\\t]*)([\\s\\t]*)(.+)", boost::regex_constants::ECMAScript | boost::regex_constants::icase);
-const boost::regex FMTyieldparser::rxcomplex = boost::regex("^([^\\s^\\t]*)([\\s\\t]*)((_RANGE)|(_MULTIPLY)|(_SUM)|(_SUBTRACT)|(_YTP)|(_MAI)|(_CAI)|(_DIVIDE)|(_EQUATION)|(_ENDPOINT)|(_DELTA)|(_DISTANCE))([\\s\\t]*)(\\()(.+)(\\))", boost::regex_constants::ECMAScript | boost::regex_constants::icase);
+const boost::regex FMTyieldparser::rxcomplex = boost::regex("^([^\\s^\\t]*)([\\s\\t]*)((_RANGE)|(_MULTIPLY)|(_SUM)|(_SUBTRACT)|(_YTP)|(_MAI)|(_CAI)|(_DIVIDE)|(_EQUATION)|(_ENDPOINT)|(_DELTA)|(_DISTANCE)|(_MAX)|(_MIN))([\\s\\t]*)(\\()(.+)(\\))", boost::regex_constants::ECMAScript | boost::regex_constants::icase);
 const boost::regex FMTyieldparser::rxeqs = boost::regex("([\\(\\)\\-\\+\\*\\/]*)([^\\(\\)\\-\\+\\*\\/]*)");
 const boost::regex FMTyieldparser::rxdiscount = boost::regex("^(_DISCOUNTFACTOR)(\\()([\\s\\t]*[\\d]*)([^,]*)(,)([^,]*)(,)([\\s\\t]*(NONE|HALF|FULL)[\\s\\t]*)(\\))");
 const boost::regex FMTyieldparser::rxpredictor = boost::regex("^(.+)(_PRED)(\\()(.+)(\\))");
@@ -166,6 +166,13 @@ Core::FMTyieldparserop FMTyieldparser::getyldctype(const std::string& value) con
 		else if (value == "_DISTANCE")
 		{
 			return Core::FMTyieldparserop::FMTdistance;
+		}
+		else if (value == "_MAX")
+		{
+			return Core::FMTyieldparserop::FMTmax;
+		}else if (value == "_MIN")
+		{
+			return Core::FMTyieldparserop::FMTmin;
 		}else {
 			_exhandler->raise(Exception::FMTexc::FMTinvalid_yield," at line " + std::to_string(_line),"FMTyieldparser::getyldctype", __LINE__, __FILE__, _section);
 		}
@@ -718,11 +725,11 @@ Core::FMTyields FMTyieldparser::read(const std::vector<Core::FMTtheme>& themes,c
 								}
 								else {
 									yldname = kmatch[1];
-									for (int id = 4; id < 16; ++id) //12 - > 13
+									for (int id = 4; id < 18; ++id) //12 - > 13 -> 16
 									{
 										cyld += std::string(kmatch[id]);
 									}
-									data = kmatch[18];
+									data = kmatch[20];//18
 								}
 								dump.clear();
 								const std::vector<std::string>theylds = { yldname };

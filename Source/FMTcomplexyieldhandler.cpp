@@ -512,10 +512,44 @@ namespace Core {
 							{
 							value = 0;
 							_exhandler->raise(Exception::FMTexc::FMTignore,
-								"Cannot reach distance bounds for " +yld +" on development "+std::string(request.getdevelopment()), "FMTyieldhandler::getdata", __LINE__, __FILE__);
+								"Cannot reach distance bounds for " +yld +" on development "+std::string(request.getdevelopment()), "FMTyieldhandler::get", __LINE__, __FILE__);
 							}
 						break;
 					}
+					case FMTyieldparserop::FMTmax:
+					{
+						double maxvalue = 0;
+						for (const double& sourcevalue : getsourcesarray(srcsdata, request, age_only))
+							{
+							if (sourcevalue > maxvalue)
+								{
+								maxvalue = sourcevalue;
+								}
+							}
+						value = maxvalue;
+						break;
+					}
+					case FMTyieldparserop::FMTmin:
+					{
+						double minvalue = std::numeric_limits<double>::max();
+						for (const double& sourcevalue : getsourcesarray(srcsdata, request, age_only))
+						{
+							if (sourcevalue < minvalue)
+							{
+								minvalue = sourcevalue;
+							}
+						}
+						if (minvalue!= std::numeric_limits<double>::max())
+						{
+							value = minvalue;
+						}
+						else {
+							_exhandler->raise(Exception::FMTexc::FMTrangeerror,
+								"Cannot find minimum for " + yld + " on development " + std::string(request.getdevelopment()), "FMTyieldhandler::get", __LINE__, __FILE__);
+						}
+						break;
+					}
+
 					default:
 						break;
 					}

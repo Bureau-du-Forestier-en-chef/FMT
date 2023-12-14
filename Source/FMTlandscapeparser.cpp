@@ -20,7 +20,7 @@ namespace Parser
 {
 	const boost::regex FMTlandscapeparser::rxcleanlans = boost::regex("^(\\*THEME)([\\s\\t]*)(([0-9]*$)|([0-9]*)([\\s\\t]*)(.+))|(\\*AGGREGATE)([\\s\\t]*)(\\()([\\s\\t]*)(_TH)(\\d*)([\\s\\t]*)(\\))([\\s\\t]*)(.+)|(\\*AGGREGATE)([\\s\\t]*)([^\\s^\\t]*)|([^\\s^\\t]*)([\\s\\t]*)(.+)", boost::regex_constants::ECMAScript | boost::regex_constants::icase);
 	const boost::regex FMTlandscapeparser::rxindex = boost::regex("^(_INDEX)(\\()([^\\)]*)(\\))", boost::regex_constants::ECMAScript | boost::regex_constants::icase);
-	const boost::regex FMTlandscapeparser::rxparameter = boost::regex("^([^=]*)(=)(#.+|[\\d.]*)", boost::regex_constants::ECMAScript | boost::regex_constants::icase);
+	const boost::regex FMTlandscapeparser::rxparameter = boost::regex("^([^=]*)(=)(#.+|[-\\s\\t\\d.]*)", boost::regex_constants::ECMAScript | boost::regex_constants::icase);
 
 FMTlandscapeparser::FMTlandscapeparser() :
     FMTparser()
@@ -44,7 +44,9 @@ FMTlandscapeparser::FMTlandscapeparser() :
 				{
 					if (boost::regex_search(parameter, kmatch, FMTlandscapeparser::rxparameter))
 					{
-						indexes[std::string(kmatch[1])] = getnum<double>(std::string(kmatch[3]), constants);
+						std::string index_value = std::string(kmatch[3]);
+						boost::trim(index_value);
+						indexes[std::string(kmatch[1])] = getnum<double>(index_value, constants);
 					}
 				}
 			}

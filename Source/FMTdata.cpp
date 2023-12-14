@@ -198,6 +198,12 @@ FMTdata::operator std::string() const
 		case FMTyieldparserop::FMTdistance:
 			value += "_DISTANCE(";
 		break;
+		case FMTyieldparserop::FMTmax:
+			value += "_MAX(";
+		break;
+		case FMTyieldparserop::FMTmin:
+			value += "_MIN(";
+		break;
         default:
         break;
         }
