@@ -334,6 +334,12 @@ namespace Models
 		Return the value of the solver objective.
 		*/
 		virtual double getobjectivevalue() const;
+		// DocString: FMTsrmodel::getnochoice
+		/**
+		Giving a base_mask returns period 0 developpements that have no actions assigned for the whole planning horizon.
+		The developpements mask have to be a subset of the base_mask.
+		*/
+		std::vector<const Core::FMTdevelopment*> getnochoice(const Core::FMTmask& base_mask) const;
 
 	};
 

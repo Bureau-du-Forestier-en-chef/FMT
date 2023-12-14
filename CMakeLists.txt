@@ -8,7 +8,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 cmake_minimum_required(VERSION 3.6)
 
-project(FMT VERSION 0.9.7 LANGUAGES CXX)
+project(FMT VERSION 0.9.8 LANGUAGES CXX)
 
 string(TIMESTAMP DATE "%Y-%m-%d")
 string(TIMESTAMP TIME "%H:%M:%S")

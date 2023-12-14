@@ -531,6 +531,8 @@ namespace Wrapper
 
 	}
 
+
+
 	bool FMTmodelcache::getfromoutputcache(const std::string& cachekey, Core::FMToutput& output) const
 	{
 		bool incache = false;
@@ -566,6 +568,25 @@ namespace Wrapper
 			_exhandler->printexceptions("", "FMTmodelcache::writetooutputcache", __LINE__, __FILE__);
 		}
 
+	}
+
+	std::vector<std::string> FMTmodelcache::getnoaction(const std::string& filter) const
+	{
+		std::vector<std::string>masks;
+		try {
+			const Core::FMTmask mask_filter = themeselectiontomask(filter);
+			if (!mask_filter.empty())
+				{
+				for (const Core::FMTdevelopment* dev : this->getnochoice(mask_filter))
+					{
+					masks.push_back(std::string(*dev));
+					}
+				}
+		}catch (...)
+		{
+			_exhandler->printexceptions("", "FMTmodelcache::getnoaction", __LINE__, __FILE__);
+		}
+		return masks;
 	}
 
 	std::vector<double> FMTmodelcache::Juxtaposition(const std::vector<std::string>& themeselection,const std::string& yieldname, const std::string& output, const double& ratio, const double& perimeters) const

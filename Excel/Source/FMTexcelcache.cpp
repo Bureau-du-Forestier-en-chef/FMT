@@ -374,6 +374,31 @@ namespace Wrapper
 		return list;
 	}
 
+	System::Collections::Generic::List<System::String^>^ FMTexcelcache::getnochoice(System::String^ primaryname, System::String^ scenario, System::String^ filter)
+	{
+		System::Collections::Generic::List<System::String^>^ list = gcnew System::Collections::Generic::List<System::String^>();
+		try {
+
+			const std::string naming = formatforcache(primaryname, scenario);
+			std::unordered_map<std::string, FMTmodelcache>::const_iterator mit = models->find(naming);
+			if (mit != models->end())
+			{
+				msclr::interop::marshal_context context;
+				const std::string sfilter = context.marshal_as<std::string>(filter);
+				for (const std::string& value : mit->second.getnoaction(sfilter))
+				{
+					System::String^ sysvalue = gcnew System::String(value.c_str());
+					list->Add(sysvalue);
+				}
+			}
+		}
+		catch (...)
+		{
+			captureexception("FMTexcelcache::getattributesdescription");
+		}
+		return list;
+	}
+
 
 	System::Collections::Generic::List<System::String^>^ FMTexcelcache::getattributesdescription(System::String^ primaryname, System::String^ scenario, int themeid, System::String^ value)
 	{

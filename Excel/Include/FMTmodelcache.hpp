@@ -84,6 +84,7 @@ namespace Wrapper
 		std::vector<std::string> getthemes() const;
 		std::vector<std::string> getconstraints(const std::string& output) const;
 		std::vector<std::string> getbuildexceptions(const int& exceptionid) const;
+		std::vector<std::string> getnoaction(const std::string& filter) const;
 		std::set<std::pair<std::string, int>> getrotations(const std::string& themeselection, const std::string& aggregate) const;
 		std::vector<int> getgraphstats() const;
 		int getperiods() const;

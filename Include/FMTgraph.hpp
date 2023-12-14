@@ -559,6 +559,57 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 
 		}
 
+		std::vector<const Core::FMTdevelopment*> nochoice(const Core::FMTmask& basemask, const int& death_id) const
+		{
+			std::vector<const Core::FMTdevelopment*>noactions;
+			try {
+				FMTvertex_iterator vertexit, vertexend;
+				for (boost::tie(vertexit, vertexend) = developments.at(getfirstperiod()); vertexit != vertexend; ++vertexit)
+				{
+					const Core::FMTdevelopment& base_dev = data[*vertexit].get();
+					if (base_dev.getmask().issubsetof(basemask))
+					{
+						std::queue<FMTvertex_descriptor>tocheck;
+						FMToutedge_pair edge_pair;
+						for (edge_pair = boost::out_edges(*vertexit, data); edge_pair.first != edge_pair.second; ++edge_pair.first)
+						{
+							const FMTvertex_descriptor descriptor = boost::target(*edge_pair.first, data);
+							tocheck.push(descriptor);
+						}
+						bool got_choice = false;
+						while (!tocheck.empty() && !got_choice)
+						{
+							const FMTvertex_descriptor& source_descritor = tocheck.front();
+							for (edge_pair = boost::out_edges(source_descritor, data); edge_pair.first != edge_pair.second; ++edge_pair.first)
+							{
+								const FMTbaseedgeproperties& edgeprop = data[*edge_pair.first];
+								const int action_id = edgeprop.getactionID();
+								if (action_id != -1 && action_id != death_id)
+								{
+									got_choice = true;
+								}
+								else {
+									const FMTvertex_descriptor target_descriptor = boost::target(*edge_pair.first, data);
+									tocheck.push(target_descriptor);
+								}
+							}
+							tocheck.pop();
+						}
+						if (!got_choice)
+						{
+							noactions.push_back(&base_dev);
+						}
+					}
+				}
+			}
+			catch (...)
+			{
+				_exhandler->raisefromcatch("", "FMTgraph::nochoice", __LINE__, __FILE__);
+			}
+			return noactions;
+
+		}
+
 
 
 		void getvariablenames(const std::vector<Core::FMTaction>& actions, std::vector<std::string>& colnames) const

@@ -1,0 +1,14 @@
+*OUTPUT slow
+*SOURCE ? ? ? _INVENT yage
+
+*OUTPUT total
+*SOURCE ? ? ? _INVENT _AREA
+
+*OUTPUT ratio
+*SOURCE slow / total
+
+
+
+
+
+

@@ -1575,6 +1575,19 @@ namespace Models
 		return rotations;
 	}
 
+	std::vector<const Core::FMTdevelopment*> FMTsrmodel::getnochoice(const Core::FMTmask& base_mask) const
+	{
+		std::vector<const Core::FMTdevelopment*>devs;
+		try {
+			const int death_id = static_cast<int>(actions.size() - 1);
+			devs = graph.nochoice(base_mask, death_id);
+		}catch (...)
+			{
+			_exhandler->raisefromcatch("", "FMTsrmodel::getnochoice", __LINE__, __FILE__);
+			}
+		return devs;
+	}
+
 
 }
 
