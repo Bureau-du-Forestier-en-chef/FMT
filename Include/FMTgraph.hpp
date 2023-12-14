@@ -2289,6 +2289,36 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 			return theseries;
 		}
 
+		size_t timesincelastaction(const FMTvertex_descriptor& targetdescriptor) const
+		{
+			try {
+				std::queue<std::pair<FMTvertex_descriptor,size_t>>verticies_n_depth;
+				verticies_n_depth.push(std::pair<FMTvertex_descriptor, size_t>(targetdescriptor, 0));
+				while (!verticies_n_depth.empty())
+				{
+					const std::pair<FMTvertex_descriptor, size_t> descriptor_n_depth = verticies_n_depth.front();
+					FMTinedge_iterator inedge_iterator, inedge_end;
+					for (boost::tie(inedge_iterator, inedge_end) = boost::in_edges(descriptor_n_depth.first, data); inedge_iterator != inedge_end; ++inedge_iterator)
+					{
+						const FMTbaseedgeproperties& edgeprop = data[*inedge_iterator];
+						if (edgeprop.getactionID() != -1)
+							{
+							return descriptor_n_depth.second;
+							}else{
+								const FMTvertex_descriptor sourcevertex = boost::source(*inedge_iterator, data);
+								verticies_n_depth.push(std::pair<FMTvertex_descriptor, size_t>(sourcevertex,descriptor_n_depth.second+1));
+								}
+					}
+					verticies_n_depth.pop();
+				}
+
+			}catch (...)
+			{
+				_exhandler->raisefromcatch("", "FMTgraph::timesincelastaction", __LINE__, __FILE__);
+			}
+			return std::numeric_limits<size_t>::max();
+		}
+
 
 		std::vector<FMTpredictor> getpredictors(const FMTvertex_descriptor& targetdescriptor,const Models::FMTmodel& model,
 			const std::vector<std::string>& yieldnames,const size_t& depth,bool periodonevalues= false, bool withGCBMid =true) const

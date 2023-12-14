@@ -196,13 +196,13 @@ class FMTbounds
                         }
                 }else if(section == FMTsection::Transition || section == FMTsection::Outputs)
                     {
-                    if (name=="_AGE")
-                       {
+                    //if (name=="_AGE")
+                       //{
                         if(upper== std::numeric_limits<T>::max())
                             {
                             supper = "_MAXAGE";
                             }
-                       }
+                       //}
                     if (keytype == FMTkwor::Source)
                         {
                         if (name=="_AGE")
@@ -214,10 +214,10 @@ class FMTbounds
                         if(upper==lower)
                             {
                             line+=slower+")";
-                            }else if(upper== std::numeric_limits<T>::max() && name!="_AGE")
+                            }/*else if (upper == std::numeric_limits<T>::max() && name != "_AGE")
                                 {
                                 line+=slower+")";
-                                }else{
+                                }*/else{
                                 line+=slower+".."+supper+")";
                                 }
 						if (section == FMTsection::Outputs)

@@ -26,6 +26,7 @@ namespace Core {
 				return std::string(potentialtime);
 			}
 			else {
+				bool dont_write = true;
 				value += "*YM " + std::string(mask) + "\n";
 				std::vector<std::string>modelslines(models.size());
 				for (const auto& data : yldnames)
@@ -35,10 +36,20 @@ namespace Core {
 				size_t modelid = 0;
 				for (const std::unique_ptr<FMTyieldmodel>& model : models)
 				{
-					modelslines[modelid].pop_back();
-					value += modelslines[modelid] + std::string(*model) + "\n";
+					const std::string model_data = std::string(*model);
+					if (!model_data.empty())
+					{
+						modelslines[modelid].pop_back();
+						value += modelslines[modelid] + model_data + "\n";
+						dont_write = false;
+					}
+					
 					++modelid;
 				}
+				if (dont_write)
+					{
+					value.clear();
+					}
 			}
 		}
 		catch (...)

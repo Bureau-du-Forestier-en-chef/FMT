@@ -1,0 +1,16 @@
+
+*OBJECTIVE
+_MAX total 1.._LENGTH
+
+*EXCLUDE
+
+aFire 1.._LENGTH
+arecup 1.._LENGTH
+aCaribou 1.._LENGTH
+plantation 1.._LENGTH
+
+*CONSTRAINTS
+
+
+
+*FORMAT MOSEK

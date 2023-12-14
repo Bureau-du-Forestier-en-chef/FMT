@@ -42,3 +42,4 @@ testmodelwriter;../../../../Examples/Models/TWD_land/TWD_land.pri;LEVEL1;
 doplanning;../../../../Examples/Models/TWD_land/TWD_land.pri|COS;3;302
 testoutput;../../../../Examples/Models/TWD_land/TWD_land.pri|DISTANCE;RATIO;6.58
 nochoice;../../../../Examples/Models/TWD_land/TWD_land.pri|NOCHOICE;RATIO;8
+doplanning;../../../../Examples/Models/TWD_land/TWD_land.pri|TSLA;10;302

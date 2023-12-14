@@ -11,6 +11,8 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTageyieldhandler.hpp"
 #include "FMTtimeyieldhandler.hpp"
 #include "FMTcomplexyieldhandler.hpp"
+#include "FMTmodelyieldhandler.hpp"
+#include "FMTyieldmodelTSLA.hpp"
 #include <boost/algorithm/string.hpp> 
 #include <memory>
 
@@ -65,6 +67,30 @@ FMTyields::FMTyields():FMTlist<std::unique_ptr<FMTyieldhandler>>(), yieldpresenc
             }
         return *this;
         }
+
+	void FMTyields::generatedefaultyields(const std::vector<Core::FMTtheme>& themes)
+	{
+		try {
+			std::string general_mask;
+			for (const Core::FMTtheme& theme : themes)
+				{
+				general_mask += "? ";
+				}
+			general_mask.pop_back();
+			const Core::FMTmask base_mask(general_mask, themes);
+			FMTmodelyieldhandler newhandler(base_mask);
+			const std::unique_ptr<Core::FMTyieldmodel>TSLA(new FMTyieldmodelTSLA());
+			newhandler.push_backmodel(TSLA);
+			newhandler.setyield(0, 0, TSLA->GetModelName());
+			const std::unique_ptr<Core::FMTyieldhandler>TSLAhandler(new FMTmodelyieldhandler(newhandler));
+			push_back(base_mask,TSLAhandler);
+		}catch (...)
+			{
+				_exhandler->raisefromcatch("", "FMTyields::generatedefaultyields", __LINE__, __FILE__, FMTsection::Yield);
+			}
+	}
+
+
 	std::vector<std::string>FMTyields::getstacked() const
         {
 		std::vector<std::string>values;
@@ -74,8 +100,12 @@ FMTyields::FMTyields():FMTlist<std::unique_ptr<FMTyieldhandler>>(), yieldpresenc
 			bool inoverridesection = true;
 			for (const auto& handlerobj : *this)
 			{
-				std::string value = "";
-				value += std::string(*handlerobj.second) + "\n";
+				std::string value = std::string(*handlerobj.second);
+				if (value.empty())
+					{
+					continue;
+					}
+				value += "\n";
 				const size_t canbeoverride = handlerobj.second->getoverrideindex();
 				std::map<size_t, std::string>::const_iterator overfind = overrided.find(canbeoverride);
 				const bool inoverridesection = (overrided.find(canbeoverride) == overrided.end());

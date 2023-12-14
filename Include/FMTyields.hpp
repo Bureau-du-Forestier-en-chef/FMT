@@ -82,6 +82,11 @@ class FMTEXPORT FMTyields : public FMTlist<std::unique_ptr<FMTyieldhandler>>
 	*/
 	void updateyieldpresence();
     public:
+		// DocString: FMTyields::generatedefaultyields
+		/**
+		Generate the default yields like _TSLA in the yield class.
+		*/
+		void generatedefaultyields(const std::vector<Core::FMTtheme>& themes);
 		// DocString: FMTyields::swap
 		/**
 		Swap FMTyield.
