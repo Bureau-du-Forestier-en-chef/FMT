@@ -19,6 +19,7 @@ namespace Exception
 		errors.push_back(Exception::FMTexc::FMTinvalid_geometry);
 		errors.push_back(Exception::FMTexc::FMTsourcetotarget_transition);
 		errors.push_back(Exception::FMTexc::FMTsame_transitiontargets);
+		errors.push_back(Exception::FMTexc::FMTdeathwithlock);
 		seterrorstowarnings(errors);
 		}
 

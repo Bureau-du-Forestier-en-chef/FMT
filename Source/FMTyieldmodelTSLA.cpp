@@ -75,7 +75,7 @@ namespace Core {
 			if (tsla != std::numeric_limits<size_t>::max())
 				{
 				returned[0] = static_cast<double>(tsla);
-				}
+			}
 
 		}catch (...)
 			{

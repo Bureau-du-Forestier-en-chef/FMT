@@ -369,6 +369,7 @@ Core::FMTdata FMTyieldparser::geteq(const std::string& basestr,
 void FMTyieldparser::cleanall(Core::FMTyields& ylds, const std::vector<Core::FMTtheme>& themes, const Core::FMTconstants& constants) const
 {
 	try{
+		ylds.generatedefaultyields(themes);
 		ylds.update();
 		cleanup(ylds, themes, constants);
 	}
@@ -448,7 +449,6 @@ Core::FMTyields FMTyieldparser::read(const std::vector<Core::FMTtheme>& themes,c
 	Core::FMTyields yields;
 	std::string lineerror;
 	try {
-		yields.generatedefaultyields(themes);
 		std::ifstream yieldstream(location);
 		std::vector<std::string>yldsnames;
 		std::vector<std::string>dump;

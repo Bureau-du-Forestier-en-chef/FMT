@@ -8,7 +8,7 @@
 
 *ACTION COUPEtotale Y CT
 *OPERABLE COUPEtotale
-? prod ? volumetotal >= 100
+? prod ? volumetotal >= 100 and volumetotal <= 150  and _TSLA >= 15
 
 *ACTION aCaribou N Massif protection du caribou
 *OPERABLE aCaribou
