@@ -1,6 +1,4 @@
-::Installer vcpkg à partir d'ici : https://github.com/microsoft/vcpkg
-::Ensuite aller dans le répertoire vcpkg et faire la commande "vcpkg install https://github.com/microsoft/vcpkg"
-::Ensuite on peut pointer sur le répertoir de vcpkg avec le cmake
+::Set the dependencies with MSVC_dependencies_setup.bat
 call "C:\Program Files\Microsoft Visual Studio\2022\Professional\VC\Auxiliary\Build\vcvars64.bat"
 
 cmake CMakeLists.txt ^

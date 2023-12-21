@@ -2,7 +2,7 @@ call "C:\Program Files\Microsoft Visual Studio\2022\Professional\VC\Auxiliary\Bu
 :::vcpkg for boost and coin-or-cbc
 git clone https://github.com/Microsoft/vcpkg.git
 cd vcpkg
-.\vcpkg\bootstrap-vcpkg.bat
+call bootstrap-vcpkg.bat
 .\vcpkg install boost
 .\vcpkg install coin-or-cbc
 .\vcpkg install gdal

@@ -965,7 +965,7 @@ void FMTmodelparser::write(const Models::FMTmodel& model,const std::string& fold
 				bases.at(Core::FMTsection::Optimize) = "";
 			}
 			bool tookroot = (std::find(scenarios.begin(), scenarios.end(), "ROOT") != scenarios.end());
-			if (tookroot || scenarios.empty()) //load the modelroot!
+			if (tookroot || (validatescenarioname && scenarios.empty())) //load the modelroot!
 			{
 				_logger->logwithlevel("Reading scenario ROOT\n", 0);
 				Models::FMTmodel scenario = referenceread(commons,
@@ -994,7 +994,7 @@ void FMTmodelparser::write(const Models::FMTmodel& model,const std::string& fold
 					if (boost::filesystem::is_directory(itr->path()))
 					{
 						model_name = itr->path().stem().string();
-						if (scenarios.empty() || std::find(scenarios.begin(), scenarios.end(), model_name) != scenarios.end())
+						if (!validatescenarioname || std::find(scenarios.begin(), scenarios.end(), model_name) != scenarios.end())
 						{
 							std::map<Core::FMTsection, std::string>scenario_files = bases;
 							boost::filesystem::directory_iterator end_fileitr;

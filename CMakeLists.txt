@@ -10,6 +10,7 @@ cmake_minimum_required(VERSION 3.6)
 
 project(FMT VERSION 0.9.8 LANGUAGES CXX)
 
+
 string(TIMESTAMP DATE "%Y-%m-%d")
 string(TIMESTAMP TIME "%H:%M:%S")
 message("On ${DATE} at ${TIME}")
@@ -150,6 +151,7 @@ set(FMTPYNRSOURCEFILES "${FMTSOURCEDIR}/main.cpp")
 ####################################THE LIB######################################################
 #################################################################################################
 add_library(FMTlib SHARED ${FMTSOURCEFILES})
+
 target_include_directories(FMTlib PRIVATE "${FMTINCLUDEDIR}")
 #include_directories("${FMTINCLUDEDIR}")
 if (NOT MSVC)
@@ -759,10 +761,22 @@ endif(DEFINED CMAKE_TOOLCHAIN_FILE)
 
 get_filename_component(GDAL_DATA_NAME "${GDAL_DATA}" NAME)
 
-set(ignoreMe "${WITHOUT_TESTS}${WITHOUT_PYTHONLIB}")
+set(ignoreMe "${WITHOUT_TESTS}${WITHOUT_PYTHONLIB}${COVERAGE}")
+
+
+
+
 if (NOT DEFINED WITHOUT_TESTS)
+	if(DEFINED COVERAGE AND CMAKE_COMPILER_IS_GNUCXX)
+		SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fprofile-arcs -ftest-coverage")
+		SET(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fprofile-arcs -ftest-coverage")
+		SET(TEST_COVERAGE "-T Coverage")
+		include(CTest)
+	endif(DEFINED COVERAGE AND CMAKE_COMPILER_IS_GNUCXX)
 	include(${CMAKE_CURRENT_SOURCE_DIR}/Examples/C++/CMakeLists.txt) #will polulate tests
 endif (NOT DEFINED WITHOUT_TESTS)
+
+
 include(${CMAKE_CURRENT_SOURCE_DIR}/UI/CMakeLists.txt) #will polulate UI
 include(${CMAKE_CURRENT_SOURCE_DIR}/Excel/CMakeLists.txt) #will polulate Excel wrapper
 
@@ -777,6 +791,9 @@ if (DEFINED EXTRALINKERFLAGS)
 	target_link_libraries(FMT PRIVATE "${EXTRALINKERFLAGS}")
 	target_link_libraries(FMTlib PRIVATE "${EXTRALINKERFLAGS}")
 endif(DEFINED EXTRALINKERFLAGS)
+
+
+
 
 #install part
 install (CODE
@@ -882,10 +899,70 @@ install (CODE
           WORKING_DIRECTORY \"${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}\"
         )
 endif (EXISTS \"${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}/FMT\")
- execute_process(
-          COMMAND ctest -C \"${BUILD_TYPE}\" -j \"${PARALLEL_TESTS}\"
-          WORKING_DIRECTORY \"${CMAKE_BINARY_DIR}\"
-        )
+	set (WITHOUT_TESTS \"${WITHOUT_TESTS}\")
+	if (NOT WITHOUT_TESTS)
+		execute_process(
+					  COMMAND ctest -C \"${BUILD_TYPE}\" -j \"${PARALLEL_TESTS}\"
+					  WORKING_DIRECTORY \"${CMAKE_BINARY_DIR}\"
+					)
+		set (DO_COVERAGE \"${COVERAGE}\")
+		set(MSVC \"${MSVC}\")
+		if (DO_COVERAGE AND NOT MSVC)
+			 execute_process(
+					  COMMAND ctest -C \"${BUILD_TYPE}\" -j \"${PARALLEL_TESTS}\" -T Coverage
+					  WORKING_DIRECTORY \"${CMAKE_BINARY_DIR}\"
+					)
+			FILE(GLOB_RECURSE config_files \"${CMAKE_BINARY_DIR}/Testing/*Coverage.xml\")
+			list(GET config_files 0 config_file)
+			file(STRINGS \"\${config_file}\" config_lines)
+			while(config_lines)
+				list(POP_FRONT config_lines LINE)
+				string(REGEX MATCH \"(<LOCTested>)([0-9]*)(<\/LOCTested>)\" _ \"\${LINE}\")
+				if (CMAKE_MATCH_2)
+					set(SUCCESS \"\${CMAKE_MATCH_2}\")
+				else()
+					string(REGEX MATCH \"(<LOC>)([0-9]*)(<\/LOC>)\" _ \"\${LINE}\")
+					if (CMAKE_MATCH_2)
+						set(TESTED \"\${CMAKE_MATCH_2}\")
+					endif(CMAKE_MATCH_2)
+				endif(CMAKE_MATCH_2)
+			endwhile()
+			math(EXPR total_coverage \"((\${SUCCESS} * 100) / \${TESTED})\")
+			set (coverage_badge \"${CMAKE_CXX_COMPILER_ID} ![](https://img.shields.io/badge/coverage-\${total_coverage}\%25-red)\")
+			if (total_coverage GREATER_EQUAL 80)
+				set (coverage_badge \"${CMAKE_CXX_COMPILER_ID} ![](https://img.shields.io/badge/coverage-\${total_coverage}\%25-brightgreen)\")
+			elseif(total_coverage GREATER_EQUAL 50)
+				set (coverage_badge \"${CMAKE_CXX_COMPILER_ID} ![](https://img.shields.io/badge/coverage-\${total_coverage}\%25-orange)\")
+			endif(total_coverage GREATER_EQUAL 80)
+		#Replace in readme the coverage
+		set (readme \"${CMAKE_CURRENT_SOURCE_DIR}/README.md\")
+		set (frreadme \"${CMAKE_CURRENT_SOURCE_DIR}/README.fr.md\")
+		set (coverage_regex \"${CMAKE_CXX_COMPILER_ID}[^\\n]*coverage[^\\n]*\")
+		#English
+		file(READ \"\${readme}\" filedata)
+		string(REGEX REPLACE \"\${coverage_regex}\" \"\${coverage_badge}\"  filedata \"\${filedata}\")
+		file(WRITE \"\${readme}\" \"\${filedata}\")
+		#French
+		file(READ \"\${frreadme}\" filedata)
+		string(REGEX REPLACE \"\${coverage_regex}\" \"\${coverage_badge}\"  filedata \"\${filedata}\")
+		file(WRITE \"\${frreadme}\" \"\${filedata}\")
+		endif(DO_COVERAGE AND NOT MSVC)
+	file(STRINGS \"${CMAKE_BINARY_DIR}/Testing/Temporary/LastTestsFailed.log\" TESTS_FILE)
+	list(LENGTH TESTS_FILE FAILED_TESTS)
+	set (build_badge \"${CMAKE_CXX_COMPILER_ID} ![](https://img.shields.io/badge/build-broken-red)\")
+	if (FAILED_TESTS LESS 10)#Not Broken
+		set (build_badge \"${CMAKE_CXX_COMPILER_ID} ![](https://img.shields.io/badge/build-pass-brightgreen)\")
+	endif(FAILED_TESTS LESS 10)
+	set (build_regex \"${CMAKE_CXX_COMPILER_ID}[^\\n^c]*build[^\\n]*\")
+	#English
+	file(READ \"\${readme}\" filedata)
+	string(REGEX REPLACE \"\${build_regex}\" \"\${build_badge}\"  filedata \"\${filedata}\")
+	file(WRITE \"\${readme}\" \"\${filedata}\")
+	#French
+	file(READ \"\${frreadme}\" filedata)
+	string(REGEX REPLACE \"\${build_regex}\" \"\${build_badge}\"  filedata \"\${filedata}\")
+	file(WRITE \"\${frreadme}\" \"\${filedata}\")
+	endif(NOT WITHOUT_TESTS)
 ")
 
 if (GENERATE_RELEASE_PACKAGE)
