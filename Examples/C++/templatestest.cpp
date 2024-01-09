@@ -17,7 +17,7 @@ int main(int argc, char *argv[])
 		const std::string primlocation = folder + "TWD_land.pri";
 		Parser::FMTmodelparser modelparser;
 		const std::vector<Models::FMTmodel> models = modelparser.readtemplates(primlocation, templatefolder);
-		if (models.size() < 3)
+		if (models.size() < 2)
 			{
 			Exception::FMTfreeexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed, "Wrong number of models loaded from tempalte folder","", __LINE__, "");
 			}

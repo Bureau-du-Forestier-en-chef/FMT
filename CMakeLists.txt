@@ -907,6 +907,9 @@ endif (EXISTS \"${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}/FMT\")
 					)
 		set (DO_COVERAGE \"${COVERAGE}\")
 		set(MSVC \"${MSVC}\")
+		#Replace in readme the coverage
+		set (readme \"${CMAKE_CURRENT_SOURCE_DIR}/README.md\")
+		set (frreadme \"${CMAKE_CURRENT_SOURCE_DIR}/README.fr.md\")
 		if (DO_COVERAGE AND NOT MSVC)
 			 execute_process(
 					  COMMAND ctest -C \"${BUILD_TYPE}\" -j \"${PARALLEL_TESTS}\" -T Coverage
@@ -934,9 +937,6 @@ endif (EXISTS \"${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}/FMT\")
 			elseif(total_coverage GREATER_EQUAL 50)
 				set (coverage_badge \"${CMAKE_CXX_COMPILER_ID} ![](https://img.shields.io/badge/coverage-\${total_coverage}\%25-orange)\")
 			endif(total_coverage GREATER_EQUAL 80)
-		#Replace in readme the coverage
-		set (readme \"${CMAKE_CURRENT_SOURCE_DIR}/README.md\")
-		set (frreadme \"${CMAKE_CURRENT_SOURCE_DIR}/README.fr.md\")
 		set (coverage_regex \"${CMAKE_CXX_COMPILER_ID}[^\\n]*coverage[^\\n]*\")
 		#English
 		file(READ \"\${readme}\" filedata)
