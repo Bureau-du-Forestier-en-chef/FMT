@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
-import re,os,sys
+import re,os,sys,io
+
 
 doctringregex="(.+)(\"\@DocString)([\s\t]*\()(.+)(\")"
                 
@@ -14,7 +15,7 @@ def getelementstocomment(filelist):
     matchlist = []
     for filename in filelist:
         tomatch={}
-        with open(filename,encoding='windows-1251') as filestream:
+        with io.open(filename,encoding='windows-1251') as filestream:
             for line in filestream:
                 matches=re.match(doctringregex,line)
                 if matches:
@@ -27,7 +28,7 @@ def getelementstocomment(filelist):
 def getcommentselements(headerfiles):
     commentsmatch={}
     for filename in headerfiles:
-        with open(filename,encoding='windows-1251') as filestream:
+        with io.open(filename,encoding='windows-1251') as filestream:
             docstring=""
             commentstring=""
             incomment=False
@@ -67,14 +68,14 @@ def buildcommentsreplacement(commentsource,commentstoreplace):
                 commentsfound+=1
             totalcomments+=1
         successfullreplacement.append(successfullreplacementdict)
-    print("Found replacement for "+str(round((commentsfound/totalcomments)*100))+" % of targeted objects")
+    print("Found replacement for "+str(round((float(commentsfound)/float(totalcomments))*100))+" % of targeted objects")
     return successfullreplacement
 
 def generatecomments(targetdirectory,originalfiles,generalmatches):
     for filepath,comments in zip(originalfiles,generalmatches):
         filename=os.path.basename(filepath)
-        newfile = open(os.path.join(targetdirectory,filename),"w",encoding='windows-1251')
-        with open(filepath,encoding='windows-1251') as filestream:
+        newfile = io.open(os.path.join(targetdirectory,filename),"w",encoding='windows-1251')
+        with io.open(filepath,encoding='windows-1251') as filestream:
             for line in filestream:
                 newline=line
                 matches=re.match(doctringregex,line)

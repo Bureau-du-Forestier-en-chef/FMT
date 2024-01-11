@@ -6,7 +6,12 @@ call bootstrap-vcpkg.bat
 .\vcpkg install boost
 .\vcpkg install coin-or-cbc
 .\vcpkg install gdal
-:::
+:::If you also need boost with python2
+:::-------Just for Python2------------
+.\vcpkg install vcpkg-tool-python2
+.\vcpkg install python2
+.\vcpkg install boost-python[core,python2,python3] --recurse
+:::-------Just for Python-------------
 :::onnxruntime
 git clone https://github.com/microsoft/onnxruntime.git
 cd onnxruntime

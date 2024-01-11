@@ -36,7 +36,12 @@ set(FMTINCLUDEDIR "${CMAKE_CURRENT_SOURCE_DIR}/Include/")
 
 if (DEFINED VCPKG_TARGET_TRIPLET)
 	set(OSI_DIR "${VCPKG_ROOT}/installed/${VCPKG_TARGET_TRIPLET}/") #Cbc and osi doest not have a .cmake files.
-	set(PYTHON_DIR "${VCPKG_ROOT}/installed/${VCPKG_TARGET_TRIPLET}/tools/python3") #Presume Python3
+	if (NOT DEFINED PYTHON_DIR)
+		set(PYTHON_DIR "${VCPKG_ROOT}/installed/${VCPKG_TARGET_TRIPLET}/tools/python3") #Presume Python3
+	else()
+		set(Python_INCLUDE_DIR "${PYTHON_DIR}include")
+		set(PYTHON "${PYTHON_DIR}python.exe")
+	endif(NOT DEFINED PYTHON_DIR)
 	set(GDAL_DIR "${VCPKG_ROOT}/installed/${VCPKG_TARGET_TRIPLET}/")
 	set(GEOS_DIR "${VCPKG_ROOT}/installed/${VCPKG_TARGET_TRIPLET}/")
 	set(Boost_NO_WARN_NEW_VERSIONS 1) #Silence Boost
@@ -369,6 +374,7 @@ if ((NOT DEFINED ENV{R_DIR}) AND (DEFINED ENV{PYTHON_DIR}) AND NOT DEFINED WITHO
 	else()
 		set(PYMAJ 3)
 	endif("${PYVER}" MATCHES "Python 2.")
+	
 	find_package(Python "${PYMAJ}" EXACT COMPONENTS Interpreter Development)
 	if (Python_FOUND)
 		set(PYTHONNAMING "python${Python_VERSION_MAJOR}${Python_VERSION_MINOR}")
