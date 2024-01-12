@@ -162,6 +162,11 @@ class FMTEXPORT FMTparser: public Core::FMTobject
 			Return a vector of GDAL drivers for a given spatialtype (raster/vector)
 			*/
 			std::vector<GDALDriver*> getallGDALdrivers(const char* spatialtype,bool testcreation=true) const;
+			// DocString: FMTparser::getGDALextensions
+			/**
+			Return a vector of GDAL extensions accepted for the given spatialtype.
+			*/
+			std::vector<std::string>getGDALextensions(const char* spatialtype,bool testcreation = true) const;
 			// DocString: FMTparser::setcategories
 			/**
 			Write the categories in the band information

@@ -135,7 +135,7 @@ std::vector<GDALDriver*> FMTparser::getallGDALdrivers(const char* spatialtype,bo
 		GDALDriver* driver = manager->GetDriver(driverid);
 		if (driver != nullptr&&driver->GetMetadataItem(spatialtype) &&
 			GDALGetDriverShortName(driver) != nullptr&&
-			driver->GetMetadataItem(GDAL_DMD_EXTENSION) != nullptr&&
+			driver->GetMetadataItem(GDAL_DMD_EXTENSIONS) != nullptr&&
 			driver->GetMetadataItem(GDAL_DCAP_OPEN) != nullptr&&
 			(!testcreation || driver->GetMetadataItem(GDAL_DCAP_CREATE) != nullptr))
 		{
@@ -144,6 +144,23 @@ std::vector<GDALDriver*> FMTparser::getallGDALdrivers(const char* spatialtype,bo
 	}
 	return drivers;
 }
+
+std::vector<std::string>FMTparser::getGDALextensions(const char* spatialtype, bool testcreation) const
+{
+	std::vector<std::string>extensions;
+	for (GDALDriver* driver : getallGDALdrivers(spatialtype, testcreation))
+	{
+		const std::string extension(driver->GetMetadataItem(GDAL_DMD_EXTENSIONS));
+		std::vector<std::string> extensionsOf;
+		boost::split(extensionsOf, extension, boost::is_any_of(" "), boost::algorithm::token_compress_on);
+		for (const std::string& value : extensionsOf)
+		{
+			extensions.push_back(value);
+		}
+	}
+	return extensions;
+}
+
 
 
 std::vector<std::string>FMTparser::getGDALvectordrivernames(bool testcreation) const
@@ -167,24 +184,12 @@ std::vector<std::string>FMTparser::getGDALrasterdrivernames(bool testcreation) c
 }
 std::vector<std::string>FMTparser::getGDALvectordriverextensions(bool testcreation) const
 {
-	std::vector<std::string>extensions;
-	for (GDALDriver* driver : getallGDALdrivers(GDAL_DCAP_VECTOR, testcreation))
-	{
-		extensions.push_back(std::string(driver->GetMetadataItem(GDAL_DMD_EXTENSION)));
-	}
-	return extensions;
-
+	return getGDALextensions(GDAL_DCAP_VECTOR, testcreation);
 }
 
 std::vector<std::string>FMTparser::getGDALrasterdriverextensions(bool testcreation) const
 {
-	std::vector<std::string>extensions;
-	for (GDALDriver* driver : getallGDALdrivers(GDAL_DCAP_RASTER, testcreation))
-	{
-		extensions.push_back(std::string(driver->GetMetadataItem(GDAL_DMD_EXTENSION)));
-	}
-	return extensions;
-
+	return getGDALextensions(GDAL_DCAP_RASTER, testcreation);
 }
 
 #endif

@@ -43,3 +43,6 @@ doplanning;../../../../Examples/Models/TWD_land/TWD_land.pri|COS;3;302
 testoutput;../../../../Examples/Models/TWD_land/TWD_land.pri|DISTANCE;RATIO;6.58
 nochoice;../../../../Examples/Models/TWD_land/TWD_land.pri|NOCHOICE;RATIO;8
 doplanning;../../../../Examples/Models/TWD_land/TWD_land.pri|TSLA;25;1411.48
+testgdaldrivers;vector;CSV;csv
+testgdaldrivers;vector;ESRI Shapefile;shp
+testgdaldrivers;raster;GTiff;tiff
