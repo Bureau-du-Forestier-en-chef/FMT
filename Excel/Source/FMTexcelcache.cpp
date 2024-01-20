@@ -103,7 +103,7 @@ namespace Wrapper
 			cachename = justprimary + "~" + sfile;
 			boost::to_upper(cachename);
 		}
-		catch (const std::exception& exception)
+		catch (...)
 		{
 			captureexception("FMTexcelcache::formatforcache");
 		}
@@ -118,7 +118,7 @@ namespace Wrapper
 			std::string base_filename = primarylocation.substr(primarylocation.find_last_of("/\\") + 1);
 			std::string::size_type const fit(base_filename.find_last_of('.'));
 			primaryname = base_filename.substr(0, fit);
-		}catch (const std::exception& exception)
+		}catch (...)
 		{
 			captureexception("FMTexcelcache::getprimaryname");
 		}
@@ -146,7 +146,7 @@ namespace Wrapper
 					}
 				}
 		}
-		catch (const std::exception& exception)
+		catch (...)
 		{
 			captureexception("FMTexcelcache::mapname");
 		}
@@ -232,7 +232,7 @@ namespace Wrapper
 				{
 				models->erase(naming);
 				}
-		}catch (const std::exception& exception)
+		}catch (...)
 			{
 			captureexception("FMTexcelcache::remove");
 			}

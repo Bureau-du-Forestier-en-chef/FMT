@@ -13,6 +13,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMToutput.hpp"
 #include "FMTconstraint.hpp"
 #include "FMTgraphvertextoyield.hpp"
+#include "FMTquietlogger.hpp"
 #include "FMTmodel.hpp"
 
 
@@ -282,9 +283,9 @@ namespace Core {
 			naturalgrowth->setconstraints(newconstraints);
 			naturalgrowth->setactions(std::vector<Core::FMTaction>());
 			//naturalgrowth->setconstraints(naturalgrowth->goalconstraints());
+			//naturalgrowth->setparallellogger(Logging::FMTquietlogger());
 			if (!naturalgrowth->doplanning(true))
 				{
-
 				_exhandler->raise(Exception::FMTexc::FMTinfeasibleconstraint,
 					"Infeasible natural growth for "+std::string(mask) , "FMTyieldmodeldecisiontree::GetNaturalGrowth", __LINE__, __FILE__, Core::FMTsection::Yield);
 				}
@@ -327,10 +328,12 @@ namespace Core {
 	{
 		std::vector<double>returned;
 		try {
+			const Graph::FMTgraphvertextoyield* graphinfo = request.getvertexgraphinfo();
+			const Models::FMTmodel* modelptr = graphinfo->getmodel();
+			const int modelLength = modelptr->getparameter(Models::FMTintmodelparameters::LENGTH);
 			if (values.empty())
 			{
-				const Graph::FMTgraphvertextoyield* graphinfo = request.getvertexgraphinfo();
-				const Models::FMTmodel* modelptr = graphinfo->getmodel();
+				
 				const int update_period = modelptr->getparameter(Models::FMTintmodelparameters::UPDATE);
 				if (request.getdevelopment().getperiod()<update_period)
 					{
@@ -345,7 +348,7 @@ namespace Core {
 					const std::unique_ptr<Models::FMTmodel>naturalgrowthmodel = GetNaturalGrowth(request);
 					/*std::ofstream decisionfile;
 					decisionfile.open("D:/test/"+ std::string(request.getdevelopment()) +".txt");*/
-					for (int period = update_period; period <= naturalgrowthmodel->getparameter(Models::FMTintmodelparameters::LENGTH); ++period)
+					for (int period = update_period; period <= modelLength; ++period)
 					{
 						//std::string decision_stack(std::string(request.getdevelopment())+std::to_string(period));
 						//size_t decisionid = 0;
@@ -391,10 +394,10 @@ namespace Core {
 				//unlock
 			}
 			
-
+			
 			for (std::map<size_t,std::vector<double>>::const_iterator valuesit = values.begin(); valuesit!=values.end(); ++valuesit)
 			{
-				returned.push_back(valuesit->second.at(request.getdevelopment().getperiod()));
+				returned.push_back(valuesit->second.at(std::min(request.getdevelopment().getperiod(), modelLength)));
 			}
 			
 

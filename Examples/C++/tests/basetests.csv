@@ -46,3 +46,5 @@ doplanning;../../../../Examples/Models/TWD_land/TWD_land.pri|TSLA;25;1411.48
 testgdaldrivers;vector;CSV;csv
 testgdaldrivers;vector;ESRI Shapefile;shp
 testgdaldrivers;raster;GTiff;tiff
+testoutput;../../../../Examples/Models/TWD_land/TWD_land.pri|order;OSUPRATIO;20.202
+testoutput;../../../../Examples/Models/TWD_land/TWD_land.pri|order;OSUPRATIO2;0.20202

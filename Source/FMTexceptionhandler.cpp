@@ -137,7 +137,7 @@ void FMTexceptionhandler::throw_nested(const std::exception& texception, int& le
 		try {
 				//std::rethrow_if_nested(texception);
 			const auto _Nested = dynamic_cast<const std::nested_exception*>(&texception);
-			if (_Nested->nested_ptr())
+			if (_Nested && _Nested->nested_ptr())
 			{
 				std::rethrow_if_nested(texception);
 				

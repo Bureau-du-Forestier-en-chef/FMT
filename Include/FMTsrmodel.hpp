@@ -21,7 +21,12 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 #if defined FMTWITHR
 	#include <Rcpp.h>
-#endif 
+#endif
+
+namespace Graph
+{
+	class FMTgraphvertextoyield;
+}
 
 namespace Models 
 	{
@@ -31,69 +36,14 @@ namespace Models
 	*/
 	class FMTEXPORT FMTsrmodel : public FMTmodel
 	{
-		// DocString: FMTsrmodel::save
-		/**
-		Save function is for serialization, used to do multiprocessing across multiple cpus (pickle in Pyhton)
-		*/
-		friend class boost::serialization::access;
-		template<class Archive>
-		void save(Archive& ar, const unsigned int version) const
-		{
-			ar & boost::serialization::make_nvp("model", boost::serialization::base_object<FMTmodel>(*this));
-			ar & BOOST_SERIALIZATION_NVP(solver);
-			ar & BOOST_SERIALIZATION_NVP(graph);
-		}
-		// DocString: FMTsrmodel::load
-		/**
-		Load function is for serialization, used to do multiprocessing across multiple cpus (pickle in Pyhton)
-		*/
-		template<class Archive>
-		void load(Archive& ar, const unsigned int version)
-		{
-			ar & boost::serialization::make_nvp("model", boost::serialization::base_object<FMTmodel>(*this));
-			ar & BOOST_SERIALIZATION_NVP(solver);
-			ar & BOOST_SERIALIZATION_NVP(graph);
-			solver.passinmessagehandler(*_logger);
-		}
-		BOOST_SERIALIZATION_SPLIT_MEMBER()
-	protected:
-		// DocString: FMTsrmodel::graph
-		///graph holding the FMTdevelopments for all the periods.
-		Graph::FMTgraph<Graph::FMTvertexproperties,Graph::FMTedgeproperties>graph;
-		// DocString: FMTsrmodel::solver
-		///The lpsolver
-		FMTlpsolver solver;
-		// DocString: FMTsrmodel::summarize
-		/**
-		Simple function to summarize constraints that are un a map structure key = variables, element = coefficiant
-		to a array structure (vector) for osisolverinterface. map structure is easier to deal with thant two vectors.
-		*/
-		bool summarize(const std::map<int, double>& variables,
-			std::vector<int>& sumvariables, std::vector<double>& sumcoefficiants) const;
-		// DocString: FMTsrmodel::initializematrix
-		/**
-		Initialize the solverinterface called once when the FMTgraph was empty after the first call of buildperiod.
-		*/
-		Graph::FMTgraphstats initializematrix();
-		// DocString: FMTsrmodel::updatematrix
-		/**
-		During a call to build period after the graph has been updated with nes developments type the solverinterface matrix
-		need to be updated. Variables and constraints related to each of those new developements will be added to the matrix.
-		So area transfer row and natural growth plus action variables.
-		*/
-		Graph::FMTgraphstats updatematrix(const Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_pair& targets,
-			const Graph::FMTgraphstats& newstats);
-		// DocString: FMTsrmodel::getgraphlength
-		/**
-		Return the size of the graph.
-		*/
-		size_t getgraphsize() const;
-		// DocString: FMTsrmodel::postsolvegraph
-		/**
-		Post solve this graph and return a presolved graph for each vertex and edges based on the original model.
-		*/
-		void postsolvegraph(const FMTmodel& originalbasemodel);
 	public:
+		// DocString: FMTsrmodel::getGraphVertexToYield
+		/*
+		If you want to do a generic yieldrequest for the model you may need to have a graphvertextoyield to deal with yields
+		that depand on the full graph and model (like FMTyieldmodel).
+		the function return a filled Graphvertexyoyield without a specific vertex selected.
+		*/
+		Graph::FMTgraphvertextoyield getGraphVertexToYield() const;
 		// DocString: FMTsrmodel::postsolve
 		/*
 		This function is for postsolving the presolved model into the original model. In this case, the FMTgraph of the FMTsrmodel is also postsolved.
@@ -340,6 +290,69 @@ namespace Models
 		The developpements mask have to be a subset of the base_mask.
 		*/
 		std::vector<const Core::FMTdevelopment*> getnochoice(const Core::FMTmask& base_mask) const;
+	protected:
+		// DocString: FMTsrmodel::graph
+		///graph holding the FMTdevelopments for all the periods.
+		Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>graph;
+		// DocString: FMTsrmodel::solver
+		///The lpsolver
+		FMTlpsolver solver;
+		// DocString: FMTsrmodel::summarize
+		/**
+		Simple function to summarize constraints that are un a map structure key = variables, element = coefficiant
+		to a array structure (vector) for osisolverinterface. map structure is easier to deal with thant two vectors.
+		*/
+		bool summarize(const std::map<int, double>& variables,
+			std::vector<int>& sumvariables, std::vector<double>& sumcoefficiants) const;
+		// DocString: FMTsrmodel::initializematrix
+		/**
+		Initialize the solverinterface called once when the FMTgraph was empty after the first call of buildperiod.
+		*/
+		Graph::FMTgraphstats initializematrix();
+		// DocString: FMTsrmodel::updatematrix
+		/**
+		During a call to build period after the graph has been updated with nes developments type the solverinterface matrix
+		need to be updated. Variables and constraints related to each of those new developements will be added to the matrix.
+		So area transfer row and natural growth plus action variables.
+		*/
+		Graph::FMTgraphstats updatematrix(const Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_pair& targets,
+			const Graph::FMTgraphstats& newstats);
+		// DocString: FMTsrmodel::getgraphlength
+		/**
+		Return the size of the graph.
+		*/
+		size_t getgraphsize() const;
+		// DocString: FMTsrmodel::postsolvegraph
+		/**
+		Post solve this graph and return a presolved graph for each vertex and edges based on the original model.
+		*/
+		void postsolvegraph(const FMTmodel& originalbasemodel);
+	private:
+		// DocString: FMTsrmodel::save
+		/**
+		Save function is for serialization, used to do multiprocessing across multiple cpus (pickle in Pyhton)
+		*/
+		friend class boost::serialization::access;
+		template<class Archive>
+		void save(Archive& ar, const unsigned int version) const
+		{
+			ar& boost::serialization::make_nvp("model", boost::serialization::base_object<FMTmodel>(*this));
+			ar& BOOST_SERIALIZATION_NVP(solver);
+			ar& BOOST_SERIALIZATION_NVP(graph);
+		}
+		// DocString: FMTsrmodel::load
+		/**
+		Load function is for serialization, used to do multiprocessing across multiple cpus (pickle in Pyhton)
+		*/
+		template<class Archive>
+		void load(Archive& ar, const unsigned int version)
+		{
+			ar& boost::serialization::make_nvp("model", boost::serialization::base_object<FMTmodel>(*this));
+			ar& BOOST_SERIALIZATION_NVP(solver);
+			ar& BOOST_SERIALIZATION_NVP(graph);
+			solver.passinmessagehandler(*_logger);
+		}
+		BOOST_SERIALIZATION_SPLIT_MEMBER()
 
 	};
 

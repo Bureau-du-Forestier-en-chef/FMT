@@ -15,6 +15,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <vector>
 #include <queue>
 #include "FMTexceptionhandler.hpp"
+#include "FMTgraphvertextoyield.hpp"
 
 #if defined FMTWITHR
 	#include <Rcpp.h>
@@ -22,6 +23,19 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 namespace Models
 {
+
+	Graph::FMTgraphvertextoyield FMTsrmodel::getGraphVertexToYield() const
+	{
+		try {
+			return Graph::FMTgraphvertextoyield(*this,graph,nullptr);
+		}catch (...)
+			{
+			_exhandler->raisefromcatch("", "FMTsrmodel::getGraphVertexToYield", __LINE__, __FILE__);
+			}
+		return Graph::FMTgraphvertextoyield();
+	}
+
+
 	Graph::FMTgraphstats FMTsrmodel::initializematrix()
 	{
 		Graph::FMTgraphstats stats;

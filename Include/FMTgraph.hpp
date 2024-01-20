@@ -1187,7 +1187,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 					if (node.source.useinedges())
 					{
 						return ((development.getperiod() == 0 || node.source.isaction() || periodstart(vertex_descriptor)) && ((selected.empty() && (node.source.isnextperiod() || !node.source.emptylock())) ||
-							(((buildtype == FMTgraphbuild::schedulebuild) && development.anyoperable(selected, model.yields)) ||
+							(((buildtype == FMTgraphbuild::schedulebuild) && development.anyoperable(selected, model.yields, &getvertextoyieldinfo(model, vertex_descriptor))) ||
 								isanyoperables(vertex_descriptor, development.isanyworthtestingoperability(selected, model.actions)))));
 					}
 					else //out edges

@@ -44,9 +44,29 @@ namespace Parser
 			   std::string yldtarget = strvalue;
 			   if (isnum(strvalue))
 			   {
-				   isnumber = true;
 				   value = std::stod(strvalue);
+				   isnumber = true;
 				   targetof = Core::FMTotar::val;
+				   Core::FMToperator lastopof(lastoperator);
+				   if (lastopof.isfactor())
+						{
+					    for (size_t factorId = 0; factorId < operators.size() - 1; ++factorId)
+							{
+							if (operators.at(factorId).isdivide())
+								{
+								if (lastopof.isdivide())
+								{
+									value = 1.0 * value;
+								}else {
+									value = 1 / value;
+								}
+								break;
+								}
+	
+							}
+						}
+
+				   
 				   yldtarget.clear();
 			   }
 			   if (!lastoperator.empty())

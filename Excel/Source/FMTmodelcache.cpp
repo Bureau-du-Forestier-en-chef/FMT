@@ -727,7 +727,8 @@ namespace Wrapper
 					!(subset.empty() && !themeselection.empty()))
 				{
 					const Core::FMTdevelopment adev(subset, age, 0, period);
-					const Core::FMTyieldrequest yieldrequest = adev.getyieldrequest();
+					const Graph::FMTgraphvertextoyield graph_info = getGraphVertexToYield();
+					const Core::FMTyieldrequest yieldrequest = adev.getyieldrequest(&graph_info);
 					value = getyieldfrommodel(yieldrequest, yieldname);
 				}
 				settocache(cachekey, value);
