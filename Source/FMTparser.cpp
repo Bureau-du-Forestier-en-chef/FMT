@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du QuÃ©bec 
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -145,11 +145,12 @@ std::vector<GDALDriver*> FMTparser::getallGDALdrivers(const char* spatialtype,bo
 	return drivers;
 }
 
-std::vector<std::string>FMTparser::getGDALextensions(const char* spatialtype, bool testcreation) const
+std::vector< std::vector<std::string>>FMTparser::getGDALextensions(const char* spatialtype, bool testcreation) const
 {
-	std::vector<std::string>extensions;
+	std::vector< std::vector<std::string>>driversExtensions;
 	for (GDALDriver* driver : getallGDALdrivers(spatialtype, testcreation))
 	{
+		std::vector<std::string>extensions;
 		const std::string extension(driver->GetMetadataItem(GDAL_DMD_EXTENSIONS));
 		std::vector<std::string> extensionsOf;
 		boost::split(extensionsOf, extension, boost::is_any_of(" "), boost::algorithm::token_compress_on);
@@ -157,11 +158,11 @@ std::vector<std::string>FMTparser::getGDALextensions(const char* spatialtype, bo
 		{
 			extensions.push_back(value);
 		}
+
+		driversExtensions.push_back(extensions);
 	}
-	return extensions;
+	return driversExtensions;
 }
-
-
 
 std::vector<std::string>FMTparser::getGDALvectordrivernames(bool testcreation) const
 {
@@ -182,12 +183,12 @@ std::vector<std::string>FMTparser::getGDALrasterdrivernames(bool testcreation) c
 	}
 	return names;
 }
-std::vector<std::string>FMTparser::getGDALvectordriverextensions(bool testcreation) const
+std::vector<std::vector<std::string>>FMTparser::getGDALvectordriverextensions(bool testcreation) const
 {
 	return getGDALextensions(GDAL_DCAP_VECTOR, testcreation);
 }
 
-std::vector<std::string>FMTparser::getGDALrasterdriverextensions(bool testcreation) const
+std::vector<std::vector<std::string>>FMTparser::getGDALrasterdriverextensions(bool testcreation) const
 {
 	return getGDALextensions(GDAL_DCAP_RASTER, testcreation);
 }

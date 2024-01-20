@@ -1,6 +1,6 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
-
+Copyright (c) 2019 Gouvernement du QuÃ©bec
+ 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
@@ -164,9 +164,9 @@ class FMTEXPORT FMTparser: public Core::FMTobject
 			std::vector<GDALDriver*> getallGDALdrivers(const char* spatialtype,bool testcreation=true) const;
 			// DocString: FMTparser::getGDALextensions
 			/**
-			Return a vector of GDAL extensions accepted for the given spatialtype.
+			Return a vector(organize the extentions by drivers) of vector of GDAL extensions accepted for the given spatialtype.
 			*/
-			std::vector<std::string>getGDALextensions(const char* spatialtype,bool testcreation = true) const;
+			std::vector<std::vector<std::string>>getGDALextensions(const char* spatialtype,bool testcreation = true) const;
 			// DocString: FMTparser::setcategories
 			/**
 			Write the categories in the band information
@@ -444,14 +444,14 @@ class FMTEXPORT FMTparser: public Core::FMTobject
 		std::vector<std::string>getGDALrasterdrivernames(bool testcreation = true) const;
 		// DocString: FMTparser::getGDALvectordriverextensions
 		/**
-		Return a vector of GDAL vector driver extensions
+		Return a vector(organize the extentions by drivers) of vector of GDAL vector driver extensions
 		*/
-		std::vector<std::string>getGDALvectordriverextensions(bool testcreation = true) const;
+		std::vector<std::vector<std::string>>getGDALvectordriverextensions(bool testcreation = true) const;
 		// DocString: FMTparser::getGDALrasterdriverextensions
 		/**
-		Return a vector of GDAL raster driver extensions
+		Return a vector(organize the extentions by drivers) of vector of GDAL raster driver extensions
 		*/
-		std::vector<std::string>getGDALrasterdriverextensions(bool testcreation = true) const;
+		std::vector<std::vector<std::string>>getGDALrasterdriverextensions(bool testcreation = true) const;
 		#endif
     };
 
