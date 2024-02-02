@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du QuÃ©bec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -1842,6 +1842,21 @@ std::vector<std::string> FMTareaparser::splitoaparamlines(std::string line) cons
 			}
 		#endif
 
+			std::vector<Heuristics::FMToperatingareascheme> FMTareaparser::getOperatingArea(const std::string& fichierShp, const std::vector<Core::FMTtheme>& themes, const int& numeroTheme, const int& startingperiod, const std::string& nomChampAge, const std::string& nomChampSuperficie, const std::string& nomChampStanlock, const std::string& fichierParam) const
+			{
+				Parser::FMTareaparser areaParser;
+				std::vector<Heuristics::FMToperatingareascheme> opeareas = areaParser.readOAschedulerparameters(fichierParam, themes, numeroTheme, startingperiod);
+				for (const auto& op : opeareas)
+				{
+					if (op.getneihgborsperimeter() > 0 || op.getgreenup() > 0)
+					{
+						Logging::FMTlogger() << "Lecture des blocs voisins." << "\n";
+						opeareas = areaParser.getschemeneighbors(opeareas, themes, fichierShp, nomChampAge, nomChampSuperficie, 1.0, 1, nomChampStanlock);
+						return opeareas;
+					}
+				}
+				return opeareas;
+			}
 
 			std::vector<Heuristics::FMToperatingareascheme> FMTareaparser::readOAschedulerparameters(const std::string& location, const std::vector<Core::FMTtheme>& modelthemes, const int& themetarget,const int& startingperiod) const
 			{
