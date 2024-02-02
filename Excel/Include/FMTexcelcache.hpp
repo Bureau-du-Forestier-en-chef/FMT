@@ -39,7 +39,7 @@ namespace Wrapper
 	public:
 		FMTexcelcache();
 		~FMTexcelcache();
-		System::Collections::Generic::List<System::String^>^ readnsolvetemplates(System::String^ primarylocation, System::String^ templatefolder, int length, bool solve);
+		System::Collections::Generic::List<System::String^>^ readnsolveTemplates(System::String^ primarylocation, System::String^ templatefolder, int length, bool solve);
 		bool add(System::String^ primarylocation, System::String^ scenario);
 		void remove(System::String^ primarylocation, System::String^ scenario);
 		double getvalue(System::String^ primaryname, System::String^ scenario,

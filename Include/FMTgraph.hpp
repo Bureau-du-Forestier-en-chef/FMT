@@ -2245,17 +2245,32 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 							if (targetproperties.get().getmask().issubsetof(mask))//natural growth or action in the aggregate
 							{
 								const int perioddiff = startperiod - targetproperties.get().getperiod();
-								if (actionid >= 0 && actionselected.find(actionid) != actionselected.end())
+								bool digMore = true;
+								if (actionid >= 0)
 								{
-									subserie =  actions.at(actionid).getname()+"-"+subserie;
-									theseries.insert(std::make_pair(subserie, perioddiff));//Always add the subserie
+									if (actionselected.find(actionid) != actionselected.end())
+									{
+										subserie = actions.at(actionid).getname() + "-" + subserie;
+										if (subserie == "APL-APL")
+										{
+											*_logger << "WHAHAH" << "\n";
+										}
+										theseries.insert(std::make_pair(subserie, perioddiff));//Always add the subserie
+									}else {
+										digMore = false;
+									}
+									
 								}
-								for (const std::pair<std::string, int>& subofserie : getallseries(subdescriptor, subserie, actions, actionselected, mask))
+								if (digMore)
 								{
-									//const std::string fullserie = subofserie.first +"-" + subserie;
-									const int perioddepth = subofserie.second + perioddiff;
-									theseries.insert(std::make_pair(subofserie.first, perioddepth));
+									for (const std::pair<std::string, int>& subofserie : getallseries(subdescriptor, subserie, actions, actionselected, mask))
+									{
+										//const std::string fullserie = subofserie.first +"-" + subserie;
+										const int perioddepth = subofserie.second + perioddiff;
+										theseries.insert(std::make_pair(subofserie.first, perioddepth));
+									}
 								}
+								
 							}
 						}
 
@@ -2485,7 +2500,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 				const Core::FMToutputnode basenode(basesource, basefactor, 1.0);
 				const int minperiod = 1;
 				const int maxperiod = static_cast<int>(developments.size() - 2);
-				const std::unordered_set<int> actionsets = Core::FMTactioncomparator(aggregate).getallaggregatesset(model.actions,true);
+				const std::unordered_set<int> actionsets = Core::FMTactioncomparator(aggregate).getallaggregatesset(model.actions, true);
 				for (int period = minperiod; period <= maxperiod;++period)
 					{
 					Core::FMToutputnode periodnode(basenode);

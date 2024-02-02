@@ -153,7 +153,7 @@ namespace Wrapper
 		return mappath;
 		}
 
-	System::Collections::Generic::List<System::String^>^ FMTexcelcache::readnsolvetemplates(System::String^ primarylocation, System::String^ templatefolder, int length,bool solve)
+	System::Collections::Generic::List<System::String^>^ FMTexcelcache::readnsolveTemplates(System::String^ primarylocation, System::String^ templatefolder, int length,bool solve)
 	{
 		System::Collections::Generic::List<System::String^>^ scenarios = gcnew System::Collections::Generic::List<System::String^>();
 		try {
@@ -179,7 +179,7 @@ namespace Wrapper
 			}
 		}catch (...)
 		{
-			captureexception("FMTexcelcache::readnsolvetemplates");
+			captureexception("FMTexcelcache::readnsolveTemplates");
 		}
 		return scenarios;
 	}
