@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du QuÃ©bec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -291,6 +291,7 @@ class FMTEXPORT FMTareaparser : public FMTparser
 							const std::string& agefield, const std::string& areafield,const double& maximaldistance,
 							double agefactor = 1.0,double areafactor = 1, std::string lockfield = "",
 							double minimal_area = 0.0, double buffersize = 100) const;
+			std::vector<Heuristics::FMToperatingareascheme> getOperatingArea(const std::string& fichierShp, const std::vector<Core::FMTtheme>& themes, const int& numeroTheme, const int& startingperiod, const std::string& nomChampAge, const std::string& nomChampSuperficie, const std::string& nomChampStanlock, const std::string& fichierParam) const;
 			// DocString: FMTareaparser::readOAschedulerparameters
 			/**
 			Using the location for parameters file (must contain headers "OA","OPT","RET","MAXRET","REP","OPR"), the modelthemes, 
