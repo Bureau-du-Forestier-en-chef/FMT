@@ -19,17 +19,17 @@ int main(int argc, char* argv[])
 
 	if (Version::FMTversion().hasfeature("OSI"))
 	{
-		/*const std::string vals = argv[1];
+		const std::string vals = argv[1];
 		std::vector<std::string>results;
 		boost::split(results, vals, boost::is_any_of("|"));
 		const std::string primarylocation =  results.at(0);
 		const std::string scenario = results.at(1);
 		const int length =  std::stoi(argv[2]);
-		const int rotation_length =  std::stoi(argv[3]);*/
-		const std::string primarylocation = "T:/Donnees/02_Courant/07_Outil_moyen_methode/03_Modele_de_base/09_Prototypes_2023/08_ModWS/08152/prototype_81-52/PC_7002071_UA08152_FINAL.pri";
-		const std::string scenario = "02_Sc0_Rend_sout";
+		const int rotation_length =  std::stoi(argv[3]);
+		/*const std::string primarylocation = "T:/Donnees/02_Courant/07_Outil_moyen_methode/03_Modele_de_base/09_Prototypes_2023/08_ModWS/08152/prototype_81-52/PC_7002071_UA08152_FINAL.pri";
+		const std::string scenario = "test";
 		const int length = 20;
-		const int rotation_length = 100;
+		const int rotation_length = 100;*/
 		Parser::FMTmodelparser modelparser;
 		std::vector<Exception::FMTexc>errors;
 		errors.push_back(Exception::FMTexc::FMTmissingyield);
@@ -58,7 +58,7 @@ int main(int argc, char* argv[])
 		}
 		fullmask.pop_back();
 		const Core::FMTmask mainmask(fullmask, optimizationmodel.getthemes());
-		const std::set<std::pair<std::string, int>>rotations = optimizationmodel.getrorations(mainmask,"REGAREG");// "REGAPRE");
+		const std::set<std::pair<std::string, int>>rotations = optimizationmodel.getrorations(mainmask, "REGAPRE");
 			if (static_cast<int>(rotations.size()) != rotation_length)
 			{
 				Exception::FMTfreeexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed, "Wrong value",

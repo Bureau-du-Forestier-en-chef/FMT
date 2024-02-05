@@ -9,19 +9,33 @@ int main(int argc, char* argv[])
 {
 	#ifdef FMTWITHGDAL
 		Logging::FMTlogger().logstamp();
-		const std::string DriverType = "vector";// argv[1];
-		const std::string DriverName = "CSV";// argv[2];
-		const std::string DriverExtension = "csv";// argv[3];
+		const std::string DriverType =  argv[1];
+		const std::string DriverName =  argv[2];
+		const std::string DriverExtension =  argv[3];
 		Parser::FMTareaparser AreaParser;
 		std::vector<std::string>Drivers;
 		std::vector<std::string>Extensions;
 		if (DriverType == "vector")
 			{
 				Drivers = AreaParser.getGDALvectordrivernames();
-				Extensions = AreaParser.getGDALvectordriverextensions();
+				std::vector<std::vector<std::string>> LocalExtensions = AreaParser.getGDALvectordriverextensions();
+				for (const std::vector<std::string>& ExtV : LocalExtensions)
+				{
+					for (const std::string& Ext : ExtV)
+					{
+						Extensions.push_back(Ext);
+					}
+				}
 			}else{
 				Drivers = AreaParser.getGDALrasterdrivernames();
-				Extensions = AreaParser.getGDALrasterdriverextensions();
+				std::vector<std::vector<std::string>> LocalExtensions = AreaParser.getGDALrasterdriverextensions();
+				for (const std::vector<std::string>& ExtV : LocalExtensions)
+				{
+					for (const std::string& Ext : ExtV)
+					{
+						Extensions.push_back(Ext);
+					}
+				}
 			}
 		if (std::find(Drivers.begin(),Drivers.end(),DriverName)==Drivers.end())
 			{
