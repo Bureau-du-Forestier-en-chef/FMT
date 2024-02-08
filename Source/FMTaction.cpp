@@ -12,6 +12,26 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 namespace Core{
 
+	FMTaction& FMTaction::operator+=(const FMTaction& OtherAction)
+		{
+		try {
+			if (this->reset!= OtherAction.reset ||
+				this->lock != OtherAction.lock ||
+				this->partials.empty() != OtherAction.partials.empty())
+				{
+				_exhandler->raise(Exception::FMTexc::FMTinvalid_action, "Cant append action "+ OtherAction.getname() +" to "+this->getname(),
+					"FMTaction::operator+=", __LINE__, __FILE__, Core::FMTsection::Action);
+				}
+			FMTlist<FMTspec>::operator+=(OtherAction);
+
+		}catch (...)
+			{
+			_exhandler->raisefromcatch("for action " + this->getname(),
+				"FMTaction::operator+=", __LINE__, __FILE__, Core::FMTsection::Action);
+			}
+		return *this;
+		}
+
 
 FMTaction::FMTaction():FMTlist<FMTspec>(),
 				aggregates(),

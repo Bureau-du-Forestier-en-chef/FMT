@@ -78,12 +78,24 @@ namespace Parallel
 						non_zero += 1;
 						}
 					}
-				const size_t return_time = static_cast<size_t>(std::round(total_value/non_zero));
 				Heuristics::FMToperatingareascheme new_scheme(opscheduler);
-				const size_t diff = (new_scheme.getminimalreturntime() - new_scheme.getmaximalreturntime()) / 2;
-				new_scheme.setreturntime(return_time - diff, return_time + diff);
-				//*_logger << return_time << "\n";
-				newschemes.push_back(new_scheme);
+				if (non_zero>0)
+				{
+					const size_t return_time = static_cast<size_t>(std::round(total_value/non_zero));
+					const size_t diff = (new_scheme.getminimalreturntime() - new_scheme.getmaximalreturntime()) / 2;
+					const size_t LowerReturn = return_time - diff;
+					const size_t UpperReturn = return_time + diff;
+					if (LowerReturn == 0 ||
+						UpperReturn > std::numeric_limits<short>::max())
+						{
+						_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
+							"Wrong returntime value for "+ std::string(opscheduler.getmask())+" values "+
+							std::to_string(LowerReturn)+","+ std::to_string(UpperReturn),
+							"FMTopareaschedulertask::getreturntimefromoutput", __LINE__, __FILE__);
+						}
+					new_scheme.setreturntime(return_time - diff, return_time + diff);
+					}
+					newschemes.push_back(new_scheme);
 				}
 		}catch (...)
 		{
@@ -141,7 +153,7 @@ namespace Parallel
 			modelcopy.FMTmodel::setparameter(Models::FMTboolmodelparameters::POSTSOLVE,true);
 			//Keep the non build modelcopy.
 			basemodel = std::move(std::unique_ptr<Models::FMTlpmodel>(new Models::FMTlpmodel(modelcopy)));
-			relax_objective = solveinitialmodel(modelcopy);
+			solveinitialmodel(modelcopy);
 			if (!returntime_output.empty())
 				{
 				const std::vector<Heuristics::FMToperatingareascheme> newschemes = getreturntimefromoutput(modelcopy, opareas, returntime_output);
@@ -157,6 +169,7 @@ namespace Parallel
 				}else {
 				setinitialscheduler(modelcopy, opareas, node);
 				}
+			relax_objective = actualscheduler->getObjValue();
 			iterations = maxiterations;
 			solutionlocation = outputlocation;
 			stoptime = getstoppoint(maxtime);

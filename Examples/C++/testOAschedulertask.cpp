@@ -98,6 +98,17 @@ int main(int argc, char *argv[])
             const boost::filesystem::path basefolder = primpath.parent_path();
             const std::string lfichierParam =  basefolder.string() + "/Scenarios/" + results.at(0) + "/" + results.at(1);
             const std::string fichierShp = std::string(argv[3]);
+
+            /*const std::string primarylocation = "T:/Donnees/Usagers/CYRGU3/DeBruno/PC9424_U08551_DET/PC_9424_U08551_4_Vg1_2023_vSSP03.pri";
+            const std::vector<std::string>scenarios(1, "15_Sc5a_Determin_avsp_TypeRec_test");
+            boost::filesystem::path primpath(primarylocation);
+            const std::string filename = primpath.stem().string();
+            const boost::filesystem::path basefolder = primpath.parent_path();
+            const std::string lfichierParam = "T:/Donnees/Usagers/CYRGU3/DeBruno/PC9424_U08551_DET/parameters8551.csv";
+            const std::string fichierShp = "T:/Donnees/Usagers/CYRGU3/DeBruno/PC9424_U08551_DET/Carte/PC_9424_UA_U08551.shp";
+            std::vector<std::string>results(1,"15_Sc5a_Determin_avsp_TypeRec_test");*/
+
+
             const std::string out("../../tests/testOAschedulertask/" + scenarios.at(0));
             Parser::FMTmodelparser modelparser;
             modelparser.setdefaultexceptionhandler();
@@ -107,6 +118,7 @@ int main(int argc, char *argv[])
             modelparser.seterrorstowarnings(allexceopts);
             const std::vector<Models::FMTmodel> models = modelparser.readproject(primarylocation, scenarios);
             Models::FMTmodel model = models.at(0);
+            //Models::FMTlpmodel optimizationmodel(model, Models::FMTsolverinterface::CLP);
             Models::FMTlpmodel optimizationmodel(model, Models::FMTsolverinterface::MOSEK);
             optimizationmodel.setparameter(Models::FMTintmodelparameters::LENGTH, 5);
 	        optimizationmodel.setparameter(Models::FMTboolmodelparameters::STRICTLY_POSITIVE, true);

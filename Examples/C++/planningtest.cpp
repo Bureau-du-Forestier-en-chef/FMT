@@ -22,6 +22,8 @@ int main(int argc, char *argv[])
 	allscenarios.push_back("LP4");
 	playback.push_back(false);
 	allscenarios.push_back("LP5");
+	std::vector<bool>playback;
+
 	Parser::FMTmodelparser modelparser;
 	modelparser.setdefaultexceptionhandler();
 	std::vector<Exception::FMTexc>errors;
@@ -36,7 +38,7 @@ int main(int argc, char *argv[])
 	const std::vector<std::vector<Core::FMTschedule>> schedules = modelparser.readschedules(primlocation, models);
 	for (size_t modelid = 0;modelid<models.size();++modelid)
 		{
-		Models::FMTlpmodel lpmodel(models.at(modelid), Models::FMTsolverinterface::CLP);
+		Models::FMTlpmodel lpmodel(models.at(modelid), Models::FMTsolverinterface::MOSEK);
 		lpmodel.setparameter(Models::FMTintmodelparameters::LENGTH,7);
 		lpmodel.setparameter(Models::FMTintmodelparameters::NUMBER_OF_THREADS, 1);
 		std::vector<Core::FMToutput>selectedoutputs;

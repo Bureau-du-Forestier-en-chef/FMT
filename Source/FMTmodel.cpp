@@ -25,6 +25,29 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 namespace Models{
 
 
+	Models::FMTmodel FMTmodel::aggregateActions(const std::map<std::string, std::string>& ActionsMapping) const
+	{
+		Models::FMTmodel newModel(*this);
+		try {
+			std::map<std::string, Core::FMTaction>newActions;
+			for (const auto& Map : ActionsMapping)
+				{
+				newActions[Map.second] = Core::FMTaction(Map.second);
+				}
+			for (const Core::FMTaction& Action : actions)
+				{
+				newActions[ActionsMapping.at(Action.getname())] += Action;
+				}
+
+
+		}catch (...)
+		{
+			_exhandler->raisefromcatch("", "FMTmodel::aggregateActions", __LINE__, __FILE__);
+		}
+		return newModel;
+	}
+
+
 void FMTmodel::setdefaultobjects()
 	{
 	try {
