@@ -22,8 +22,6 @@ int main(int argc, char *argv[])
 	allscenarios.push_back("LP4");
 	playback.push_back(false);
 	allscenarios.push_back("LP5");
-	std::vector<bool>playback;
-
 	Parser::FMTmodelparser modelparser;
 	modelparser.setdefaultexceptionhandler();
 	std::vector<Exception::FMTexc>errors;
