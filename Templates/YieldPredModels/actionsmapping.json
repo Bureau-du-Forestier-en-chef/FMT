@@ -178,5 +178,25 @@
 "AHEGMORT":{
 	"name":"Spruce Budworm in QC, Severe annual defoliation, 6yr cumulative defoliation 46-55%",
 	"id":14
+	},
+"AEDUNAT":{ 
+	"name":"85% precommercial thinning",
+	"id":2
+	},
+"AEDUPL":{ 
+	"name":"85% precommercial thinning",
+	"id":2
+	},	
+"ACTPL":{ 
+	"name":"97% clearcut with plantation",
+	"id":0
+	},
+"APLCC":{ 
+	"name":"97% clearcut with plantation",
+	"id":0
+	},
+"AECHEC":{ 
+	"name":"Stand Replacing Natural Succession",
+	"id":15
 	}
 }

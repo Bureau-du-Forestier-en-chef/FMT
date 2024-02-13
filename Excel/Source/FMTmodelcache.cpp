@@ -448,7 +448,8 @@ namespace Wrapper
 					if (localtheme)
 					{
 						if (localtheme->isattribute(attribute) ||
-							localtheme->isaggregate(attribute))
+							localtheme->isaggregate(attribute) ||
+							attribute == "?")
 						{
 							subset.set(*localtheme, attribute);
 						}

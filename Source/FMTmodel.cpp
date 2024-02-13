@@ -34,7 +34,7 @@ namespace Models{
 				{
 				newActions[Map.second] = Core::FMTaction(Map.second);
 				}
-			for (const Core::FMTaction& Action : actions)
+			for (const Core::FMTaction& Action : newModel.actions)
 				{
 				newActions[ActionsMapping.at(Action.getname())] += Action;
 				}

@@ -54,7 +54,7 @@ namespace Core
 		Core::FMTlist<T>& operator+= (const Core::FMTlist<T>& OtherList)
 		{
 			try {
-				if (!this->canshrink() ||!OtherList.canshrink())
+				if (!this->canshrink()||!OtherList.canshrink())
 					{
 					_exhandler->raise(Exception::FMTexc::FMTinvalid_action, "Cant append list together",
 						"FMTlist::operator::+=", __LINE__, __FILE__);
