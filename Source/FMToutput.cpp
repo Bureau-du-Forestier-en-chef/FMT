@@ -1097,6 +1097,11 @@ void FMToutput::changesourcesid(const std::set<int>& newoutputsorigin,const std:
 		}
 	}
 
+void FMToutput::setsources(const std::vector<FMToutputsource>& p_sources)
+	{
+	sources = p_sources;
+	}
+
 std::vector<std::string> FMToutput::getdecomposition(const std::vector<FMTtheme>& themes) const
 	{
 	std::vector<std::string>validdecomp;

@@ -35,28 +35,14 @@ Each fork is a transition source and its linked targets. FMTaction test for oper
 */
 class FMTEXPORT FMTtransition : public FMTlist<FMTfork>
     {
-	// DocString: FMTtransition::serialize
-	/**
-	serialize function is for serialization, used to do multiprocessing across multiple cpus (pickle in Pyhton)
-	*/
-	friend class boost::serialization::access;
-	template<class Archive>
-	void serialize(Archive& ar, const unsigned int version)
-	{
-		try{
-			ar & boost::serialization::make_nvp("data", boost::serialization::base_object<FMTlist<FMTfork>>(*this));
-			ar & BOOST_SERIALIZATION_NVP(name);
-		}
-		catch (...)
-		{
-			_exhandler->printexceptions("", "FMTtransition::serialize", __LINE__, __FILE__);
-		}
-	}
-	protected:
-		// DocString: FMTtransition::name
-		/// name of the FMTtranstion same name seen in FMTaction
-		std::string name;
     public:
+		// DocString: FMTtransition::operator+=
+		/**
+		 * @brief append OtherTransition to this transition needs to be unskrink or it will throw an exception.
+		 * @param OtherTransition the other transition to append to this one.
+		 * @returns A reference the the newly appended transition.
+		 */
+		FMTtransition& operator+=(const FMTtransition& OtherTransition);
 		// DocString: FMTtransition()
 		/**
 		Default constructor for FMTtransition
@@ -172,6 +158,28 @@ class FMTEXPORT FMTtransition : public FMTlist<FMTfork>
 		FMTtransition presolve(const FMTmaskfilter& filter,
 			const std::vector<FMTtheme>& originalthemes,
 			std::vector<FMTtheme>& newthemes,bool compressdata=false) const;
+	protected:
+		// DocString: FMTtransition::name
+		/// name of the FMTtranstion same name seen in FMTaction
+		std::string name;
+	private:
+		// DocString: FMTtransition::serialize
+		/**
+		serialize function is for serialization, used to do multiprocessing across multiple cpus (pickle in Pyhton)
+		*/
+		friend class boost::serialization::access;
+		template<class Archive>
+		void serialize(Archive& ar, const unsigned int version)
+			{
+				try {
+					ar& boost::serialization::make_nvp("data", boost::serialization::base_object<FMTlist<FMTfork>>(*this));
+					ar& BOOST_SERIALIZATION_NVP(name);
+				}
+				catch (...)
+				{
+					_exhandler->printexceptions("", "FMTtransition::serialize", __LINE__, __FILE__);
+				}
+			}
     };
 
 // DocString: FMTtransitioncomparator

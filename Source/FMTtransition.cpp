@@ -37,6 +37,17 @@ bool FMTtransition::isleaking() const
 	return false;
 	}
 
+FMTtransition& FMTtransition::operator+=(const FMTtransition& OtherTransition)
+{
+	try {
+		FMTlist<FMTfork>::operator+=(OtherTransition);
+	}catch (...)
+	{
+		_exhandler->raisefromcatch("for transition " + this->getname(), "FMTtransition::operator+=", __LINE__, __FILE__, Core::FMTsection::Transition);
+	}
+return *this;
+}
+
 
 FMTtransition::FMTtransition(const FMTtransition& rhs) : FMTlist<FMTfork>(rhs),name(rhs.name)
     {

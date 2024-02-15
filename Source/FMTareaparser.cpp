@@ -37,26 +37,6 @@ namespace Parser{
 
 const boost::regex FMTareaparser::rxcleanarea = boost::regex("^((\\*A[A]*)([^|]*)(_lock)([^0-9]*)([0-9]*))|((\\*A[A]*)([^|]*)([|])([^|]*)([|])([^0-9]*)(.+))|((\\*A[A]*)(([^|]*)([|])([^|]*)([|])))|(\\*A[A]*)(.+)", boost::regex_constants::ECMAScript | boost::regex_constants::icase);
 
-std::vector<std::string> FMTareaparser::splitoaparamlines(std::string line) const
-{
-	boost::regex xspliter = boost::regex("([\\s\\t,;]*)([^\\s\\t,;]*)");
-	boost::smatch kmatch;
-	std::string value;
-	std::vector<std::string>vecmask;
-	int endsize;
-	while (!line.empty())
-	{
-		boost::regex_search(line, kmatch, xspliter);
-		value = std::string(kmatch[2]);
-		if (boost::regex_match(value, boost::regex("^(?!\\s*$).+")))
-		{
-			vecmask.push_back(value);
-		}
-		endsize = (std::string(kmatch[0]).size());
-		line.erase(line.begin(), line.begin() + endsize);
-	}
-	return vecmask;
-}
 
 #ifdef FMTWITHGDAL
 
@@ -1872,7 +1852,10 @@ std::vector<std::string> FMTareaparser::splitoaparamlines(std::string line) cons
 						bool useRETasMAXRET = true;
 						while (getline(oaparameterfile, line))
 						{
-							std::vector<std::string>splittedline = splitoaparamlines(line);
+							//std::vector<std::string>splittedline = splitoaparamlines(line);
+							std::vector<std::string>splittedline;
+							line.erase(std::remove_if(line.begin(), line.end(), isspace), line.end());
+							boost::split(splittedline,line,boost::is_any_of(";"));
 							if (splittedline.size() > 0)
 							{
 								if (lineid == 0)
@@ -1927,7 +1910,7 @@ std::vector<std::string> FMTareaparser::splitoaparamlines(std::string line) cons
 									const Core::FMTmask OAmask(smask,modelthemes);
 									for (std::string title : titles)
 									{
-										if (columns.find(title) != columns.end() && int(splittedline.size()) <= columns[title])
+										if (columns.find(title) != columns.end() && static_cast<int>(splittedline.size()) <= columns[title])
 										{
 											_exhandler->raise(Exception::FMTexc::FMTmissingfield,
 												"Missing required column " + title + " for " + OA + " in parameters file",
@@ -1953,8 +1936,8 @@ std::vector<std::string> FMTareaparser::splitoaparamlines(std::string line) cons
 									double opr = 0.0;
 									if (columns.find("OPR") != columns.end())
 									{
-										if (int(splittedline.size()) >= 6)
-										{
+										//if (int(splittedline.size()) >= 6)
+										//{
 											if (!splittedline[columns["OPR"]].empty())
 											{
 												opr = std::stod(splittedline[columns["OPR"]]);
@@ -1965,7 +1948,7 @@ std::vector<std::string> FMTareaparser::splitoaparamlines(std::string line) cons
 														"FMTareaparser::readOAschedulerparameters", __LINE__, __FILE__);
 												}
 											}
-										}
+										//}
 									}
 									if (!(opt >= 1))
 									{
@@ -1983,8 +1966,8 @@ std::vector<std::string> FMTareaparser::splitoaparamlines(std::string line) cons
 									double npe = 0;
 									if (columns.find("NPE") != columns.end())
 									{
-										if (int(splittedline.size()) >= 6)
-										{
+										//if (int(splittedline.size()) >= 6)
+										//{
 											if (!splittedline[columns["NPE"]].empty())
 											{
 												npe = std::stod(splittedline[columns["NPE"]]);
@@ -1995,12 +1978,12 @@ std::vector<std::string> FMTareaparser::splitoaparamlines(std::string line) cons
 														"FMTareaparser::readOAschedulerparameters", __LINE__, __FILE__);
 												}
 											}
-										}
+										//}
 									}
 									if (columns.find("GUP") != columns.end())
 									{
-										if (int(splittedline.size()) >= 7)
-										{
+										//if (int(splittedline.size()) >= 7)
+										//{
 											if (!splittedline[columns["GUP"]].empty())
 											{
 												gup = std::stoi(splittedline[columns["GUP"]]);
@@ -2011,7 +1994,7 @@ std::vector<std::string> FMTareaparser::splitoaparamlines(std::string line) cons
 														"FMTareaparser::readOAschedulerparameters", __LINE__, __FILE__);
 												}
 											}
-										}
+										//}
 									}
 									schemes.push_back(Heuristics::FMToperatingareascheme(Heuristics::FMToperatingarea(OAmask, npe),opt,ret,maxret,rep,gup,startingperiod,opr));
 								}

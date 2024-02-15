@@ -98,24 +98,33 @@ int main(int argc, char *argv[])
             const boost::filesystem::path basefolder = primpath.parent_path();
             const std::string lfichierParam =  basefolder.string() + "/Scenarios/" + results.at(0) + "/" + results.at(1);
             const std::string fichierShp = std::string(argv[3]);
-
-            /*const std::string primarylocation = "T:/Donnees/Usagers/CYRGU3/DeBruno/PC9424_U08551_DET/PC_9424_U08551_4_Vg1_2023_vSSP03.pri";
-            const std::vector<std::string>scenarios(1, "15_Sc5a_Determin_avsp_TypeRec_test");
+            
+           
+            /*
+            const std::string primarylocation = "T:/Donnees/Usagers/CARMI5/2023_19_ModificationsCahierCOS/PC9509_U02751_DET/PC_9509_U02751_4_Vg2_2023_vRp2.pri";
+            const std::vector<std::string>scenarios(1, "13_Sc5a_Determin_avsp");
             boost::filesystem::path primpath(primarylocation);
             const std::string filename = primpath.stem().string();
             const boost::filesystem::path basefolder = primpath.parent_path();
-            const std::string lfichierParam = "T:/Donnees/Usagers/CYRGU3/DeBruno/PC9424_U08551_DET/parameters8551.csv";
-            const std::string fichierShp = "T:/Donnees/Usagers/CYRGU3/DeBruno/PC9424_U08551_DET/Carte/PC_9424_UA_U08551.shp";
-            std::vector<std::string>results(1,"15_Sc5a_Determin_avsp_TypeRec_test");*/
-
+            const std::string lfichierParam = "T:/Donnees/Usagers/CARMI5/2023_19_ModificationsCahierCOS/parameters_2751.csv";
+            const std::string fichierShp = "T:/Donnees/Usagers/CARMI5/2023_19_ModificationsCahierCOS/PC9509_U02751_DET/Carte/PC_9509_UA_U02751.shp";
+            std::vector<std::string>results(1,"15_Sc5a_Determin_avsp_TypeRec_test");
+            */
 
             const std::string out("../../tests/testOAschedulertask/" + scenarios.at(0));
             Parser::FMTmodelparser modelparser;
             modelparser.setdefaultexceptionhandler();
-            std::vector<Exception::FMTexc>allexceopts;
-            allexceopts.push_back(Exception::FMTexc::FMTsame_transitiontargets);
-            allexceopts.push_back(Exception::FMTexc::FMTmissingyield);
-            modelparser.seterrorstowarnings(allexceopts);
+            std::vector<Exception::FMTexc>errors;
+            errors.push_back(Exception::FMTexc::FMTmissingyield);
+            errors.push_back(Exception::FMTexc::FMToutput_missing_operator);
+            errors.push_back(Exception::FMTexc::FMToutput_too_much_operator);
+            errors.push_back(Exception::FMTexc::FMTinvalidyield_number);
+            errors.push_back(Exception::FMTexc::FMTundefinedoutput_attribute);
+            errors.push_back(Exception::FMTexc::FMToveridedyield);
+            errors.push_back(Exception::FMTexc::FMToutofrangeyield);
+            errors.push_back(Exception::FMTexc::FMTsame_transitiontargets);
+            errors.push_back(Exception::FMTexc::FMTmissingyield);
+            modelparser.seterrorstowarnings(errors);
             const std::vector<Models::FMTmodel> models = modelparser.readproject(primarylocation, scenarios);
             Models::FMTmodel model = models.at(0);
             //Models::FMTlpmodel optimizationmodel(model, Models::FMTsolverinterface::CLP);

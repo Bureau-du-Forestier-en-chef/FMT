@@ -23,6 +23,14 @@ namespace Core{
 					"FMTaction::operator+=", __LINE__, __FILE__, Core::FMTsection::Action);
 				}
 			FMTlist<FMTspec>::operator+=(OtherAction);
+			for (const std::string& Aggregate : OtherAction.aggregates)
+				{
+				if (std::find(aggregates.begin(),aggregates.end(), Aggregate)== aggregates.end())
+					{
+					aggregates.push_back(Aggregate);
+					}
+
+				}
 
 		}catch (...)
 			{
