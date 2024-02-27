@@ -5,7 +5,7 @@ cd vcpkg
 call bootstrap-vcpkg.bat
 .\vcpkg install boost
 .\vcpkg install coin-or-cbc
-.\vcpkg install gdal
+.\vcpkg install gdal --recurse
 :::If you also need boost with python2
 :::-------Just for Python2------------
 .\vcpkg install vcpkg-tool-python2
