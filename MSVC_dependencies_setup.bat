@@ -10,6 +10,7 @@ call bootstrap-vcpkg.bat
 :::-------Just for Python2------------
 .\vcpkg install vcpkg-tool-python2
 .\vcpkg install python2
+# TODO python2 doit être listé dans le registre de windows pour fonctionner
 .\vcpkg install boost-python[core,python2,python3] --recurse
 :::-------Just for Python-------------
 :::onnxruntime
