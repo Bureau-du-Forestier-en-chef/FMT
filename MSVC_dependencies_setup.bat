@@ -13,6 +13,7 @@ call bootstrap-vcpkg.bat
 .\vcpkg install boost-python[core,python2,python3] --recurse
 :::-------Just for Python-------------
 :::onnxruntime
+cd ..
 git clone https://github.com/microsoft/onnxruntime.git
 cd onnxruntime
 .\build.bat --config RelWithDebInfo --build_shared_lib --parallel --compile_no_warning_as_error --skip_submodule_sync
