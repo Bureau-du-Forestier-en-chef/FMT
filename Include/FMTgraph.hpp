@@ -1187,9 +1187,26 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 				{
 					if (node.source.useinedges())
 					{
-						return ((development.getperiod() == 0 || node.source.isaction() || periodstart(vertex_descriptor)) && ((selected.empty() && (node.source.isnextperiod() || !node.source.emptylock())) ||
-							(((buildtype == FMTgraphbuild::schedulebuild) && development.anyoperable(selected, model.yields, &getvertextoyieldinfo(model, vertex_descriptor))) ||
-								isanyoperables(vertex_descriptor, development.isanyworthtestingoperability(selected, model.actions)))));
+						bool returnedValue = false;
+						if ((development.getperiod() == 0 || node.source.isaction() || periodstart(vertex_descriptor)))
+						{
+							if (selected.empty() && (node.source.isnextperiod() || !node.source.emptylock()))
+							{
+								returnedValue = true;
+							}else if(buildtype == FMTgraphbuild::schedulebuild)
+							{
+								const Graph::FMTgraphvertextoyield YIELD_INFO = getvertextoyieldinfo(model, vertex_descriptor);
+								returnedValue = development.anyoperable(selected, model.yields,&YIELD_INFO);
+							}else if(isanyoperables(vertex_descriptor, development.isanyworthtestingoperability(selected, model.actions)))
+							{
+								returnedValue = true;
+							}
+						}
+						return returnedValue;
+						
+						//return ((development.getperiod() == 0 || node.source.isaction() || periodstart(vertex_descriptor)) && ((selected.empty() && (node.source.isnextperiod() || !node.source.emptylock())) ||
+						//	(((buildtype == FMTgraphbuild::schedulebuild) && development.anyoperable(selected, model.yields, &getvertextoyieldinfo(model, vertex_descriptor))) ||
+						//		isanyoperables(vertex_descriptor, development.isanyworthtestingoperability(selected, model.actions)))));
 					}
 					else //out edges
 					{
