@@ -16,6 +16,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <queue>
 #include "FMTexceptionhandler.hpp"
 #include "FMTgraphvertextoyield.hpp"
+#include "FMTSerie.hpp"
 
 #if defined FMTWITHR
 	#include <Rcpp.h>
@@ -1576,11 +1577,11 @@ namespace Models
 		return graph.getstats();
 	}
 
-	std::set<std::pair<std::string, int>>FMTsrmodel::getrorations(const Core::FMTmask& mask, const std::string& aggregate) const
+	std::set<Core::FMTSerie>FMTsrmodel::getRotations(const Core::FMTmask& mask, const std::string& aggregate) const
 	{
-		std::set<std::pair<std::string, int>>rotations;
+		std::set<Core::FMTSerie>rotations;
 		try {
-			rotations =  graph.getrorations(*this, mask, aggregate);
+			rotations =  graph.getRotations(*this, mask, aggregate);
 		}
 		catch (...)
 		{

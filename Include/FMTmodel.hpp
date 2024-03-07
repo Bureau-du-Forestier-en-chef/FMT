@@ -66,7 +66,7 @@ namespace Models
 		friend class Parser::FMTmodelparser;
 		friend class Graph::FMTgraphvertextoyield;
 	public:
-		// DocString: FMTmodel::aggregateOutputs
+		// DocString: FMTmodel::aggregateAllActions
 		/**
 		 * @brief Aggregate actions together and create en enterly new model with new
 		 *	-actions,transitions,outputs,constraints,yields,lifespan
@@ -74,6 +74,13 @@ namespace Models
 		 * @return newly created model with aggregated actions.
 		 */
 		Models::FMTmodel aggregateAllActions(const std::vector<std::string>& p_Aggregates) const;
+		// DocString: FMTmodel::aggregateSchedules
+		/**
+		 * @brief Build new schedule based on p_schedules with the corresponding aggregated actions
+		 * @param p_schedules the schedules of the original model.
+		 * @return newly created schedules with aggregated actions.
+		 */
+		std::vector<Core::FMTschedule> aggregateSchedules(const std::vector<Core::FMTschedule>& p_schedules) const;
 		// DocString: FMTmodel::setparallellogger
 		/**
 		Solver's logger cannot work in parallel so you need to pass a logger owned
@@ -749,6 +756,7 @@ namespace Models
 		 * @return A valid mask with the right name with the newly created aggregates.
 		 */
 		Core::FMTmask addNewMask(const Core::FMTmask& p_incompleteMask);
+		
 		
 
     };

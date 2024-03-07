@@ -24,6 +24,7 @@
 #include "FMTgraphstats.hpp"
 #include "FMTexcelexceptionhandler.hpp"
 #include <map>
+#include "FMTSerie.hpp"
 
 namespace Wrapper
 {
@@ -40,10 +41,12 @@ namespace Wrapper
 		maplocation(),
 		map(),
 		generalcache(),
+		SerieCache(),
 		globalmask(),
 		maskcachemtx(new boost::recursive_mutex()),
 		outputcachemtx(new boost::recursive_mutex()),
 		generalcachemtx(new boost::recursive_mutex()),
+		SerieCachemtx(new boost::recursive_mutex()),
 		OAcache(new std::vector<Heuristics::FMToperatingarea>()),
 		all_exceptions()
 
@@ -69,6 +72,7 @@ namespace Wrapper
 			outputcache = rhs.outputcache;
 			maplocation = rhs.maplocation;
 			generalcache = rhs.generalcache;
+			SerieCache = rhs.SerieCache;
 			Models::FMTlpmodel::operator=(rhs);
 			globalmask = rhs.globalmask;
 			OAcache = std::move(std::unique_ptr<std::vector<Heuristics::FMToperatingarea>>(new std::vector<Heuristics::FMToperatingarea>(*rhs.OAcache)));
@@ -93,10 +97,12 @@ namespace Wrapper
 		maplocation(rhs.maplocation),
 		map(),
 		generalcache(rhs.generalcache),
+		SerieCache(rhs.SerieCache),
 		globalmask(rhs.globalmask),
 		maskcachemtx(new boost::recursive_mutex()),
 		outputcachemtx(new boost::recursive_mutex()),
 		generalcachemtx(new boost::recursive_mutex()),
+		SerieCachemtx(new boost::recursive_mutex()),
 		OAcache(),
 		all_exceptions(rhs.all_exceptions)
 	{
@@ -230,62 +236,6 @@ namespace Wrapper
 
 	}
 
-	/*FMTmodelcache::FMTmodelcache(const Models::FMTmodel& lmodel,
-			const std::vector<Core::FMTschedule>& schedules,
-			const std::string& lmaplocation):
-		Models::FMTlpmodel(lmodel,Models::FMTsolverinterface::CLP),
-		cachingswitch(false),
-		mtx(new boost::recursive_mutex()),
-		outputsmap(),
-		themesmap(),
-		maskcache(),
-		outputcache(),
-		maplocation(lmaplocation),
-		map(),
-		generalcache(),
-		globalmask(),
-		maskcachemtx(new boost::recursive_mutex()),
-		outputcachemtx(new boost::recursive_mutex()),
-		generalcachemtx(new boost::recursive_mutex()),
-		OAcache(new std::vector<Heuristics::FMToperatingarea>())
-	{
-		try {
-			boost::lock_guard<boost::recursive_mutex> guard1(*mtx);
-			size_t outid = 0;
-			for (const Core::FMToutput& output : outputs)
-			{
-				outputsmap[output.getname()] = outid;
-				++outid;
-			}
-			size_t theid = 0;
-			for (const Core::FMTtheme& theme : themes)
-			{
-				themesmap[theme.getname()] = theid;
-				++theid;
-			}
-			std::string mask;
-			for (size_t thid = 0; thid < themes.size(); ++thid)
-			{
-				mask += "? ";
-			}
-			mask.pop_back();
-			globalmask = Core::FMTmask(mask, themes);
-			setparameter(Models::FMTboolmodelparameters::FORCE_PARTIAL_BUILD,true);
-			Models::FMTmodel::setparameter(Models::FMTdblmodelparameters::TOLERANCE, 0.001);
-			int period = 0;
-			for (const Core::FMTschedule& schedule : schedules)
-			{
-				period = std::max(period, schedule.getperiod());
-			}
-			setparameter(Models::FMTintmodelparameters::LENGTH,period);
-			cachingswitch = true;
-			//allocateressource();
-			//model->doplanning(false, schedules);
-		}catch (...)
-			{
-			_exhandler->printexceptions("", "FMTmodelcache::FMTmodelcache()", __LINE__, __FILE__);
-			}
-	}*/
 
 	FMTmodelcache::FMTmodelcache(const Models::FMTmodel& lmodel, const std::string& lmaplocation):
 		Models::FMTlpmodel(lmodel, Models::FMTsolverinterface::MOSEK),
@@ -298,10 +248,12 @@ namespace Wrapper
 		maplocation(lmaplocation),
 		map(),
 		generalcache(),
+		SerieCache(),
 		globalmask(),
 		maskcachemtx(new boost::recursive_mutex()),
 		outputcachemtx(new boost::recursive_mutex()),
 		generalcachemtx(new boost::recursive_mutex()),
+		SerieCachemtx(new boost::recursive_mutex()),
 		OAcache(new std::vector<Heuristics::FMToperatingarea>()),
 		all_exceptions()
 	{
@@ -846,6 +798,29 @@ namespace Wrapper
 		return gotincash;
 
 	}
+	bool FMTmodelcache::getSeriesFromCache(std::set<Core::FMTSerie>& value, const std::string& cachekey) const
+	{
+		bool gotincash = false;
+		try {
+			boost::lock_guard<boost::recursive_mutex> guard(*SerieCachemtx);
+			std::unordered_map<std::string, std::set<Core::FMTSerie>>::const_iterator cacheit = SerieCache.find(cachekey);
+			if (cacheit != SerieCache.end())
+			{
+				value = cacheit->second;
+				gotincash = true;
+			}
+
+		}
+		catch (...)
+		{
+			_exhandler->printexceptions("", " FMTmodelcache::getSeriesFromCache", __LINE__, __FILE__);
+		}
+		return gotincash;
+
+	}
+
+
+
 	void FMTmodelcache::settocache(const std::string& cachekey, const double& value) const
 	{
 		try {
@@ -857,6 +832,21 @@ namespace Wrapper
 		}catch (...)
 		{
 			_exhandler->printexceptions("", "FMTmodelcache::settocache", __LINE__, __FILE__);
+		}
+	}
+
+	void FMTmodelcache::setSeriesToCache(const std::string& cachekey, const std::set<Core::FMTSerie>& value) const
+	{
+		try {
+			if (cachingswitch)
+			{
+				boost::lock_guard<boost::recursive_mutex> guard(*SerieCachemtx);
+				SerieCache[cachekey] = value;
+			}
+		}
+		catch (...)
+		{
+			_exhandler->printexceptions("", "FMTmodelcache::setSeriesToCache", __LINE__, __FILE__);
 		}
 	}
 
@@ -938,22 +928,65 @@ namespace Wrapper
 		return values;
 		}
 
-	std::set<std::pair<std::string, int>> FMTmodelcache::getrotations(const std::string& themeselection, const std::string& aggregate) const
+	std::set<Core::FMTSerie> FMTmodelcache::getRotations(const std::string& themeselection, const std::string& aggregate) const
 	{
-		std::set<std::pair<std::string, int>> rotations;
+		std::set<Core::FMTSerie> series;
 		try {
+			const std::string CacheKey = getcachekey("SERIE", aggregate, themeselection, 0,0);
+			const bool gotSeries = getSeriesFromCache(series, CacheKey);
+			if (!gotSeries)
+			{
 				const Core::FMTmask subset = themeselectiontomask(themeselection);
 				if (!aggregate.empty() && !subset.empty())
 				{
-				rotations = FMTsrmodel::getrorations(subset, aggregate);
+					series = FMTsrmodel::getRotations(subset, aggregate);
 				}
-			
+				setSeriesToCache(CacheKey, series);
+			}
 		}
 		catch (...)
 		{
 			_exhandler->printexceptions("", "FMTmodelcache::getrotations", __LINE__, __FILE__);
 		}
-		return rotations;
+		return series;
+	}
+
+	bool FMTmodelcache::haveSerie(const std::string& p_serie, const std::string& themeselection, const std::string& aggregate) const
+	{
+		bool gotIt = false;
+		try {
+			const Core::FMTmask subset = themeselectiontomask(themeselection);
+			if (!aggregate.empty() && !subset.empty())
+			{
+				const std::string CacheKey = getcachekey("SERIE", aggregate, themeselection, 0, 0);
+				std::set<Core::FMTSerie>AllSeries;
+				const bool gotSeries = getSeriesFromCache(AllSeries, CacheKey);
+				if (!gotSeries)
+				{
+					AllSeries = FMTsrmodel::getRotations(subset, aggregate);
+					setSeriesToCache(CacheKey, AllSeries);
+				}
+				const int length = getparameter(Models::FMTintmodelparameters::LENGTH);
+				Core::FMTSerie lowerBound(p_serie, 0);
+				Core::FMTSerie upperBound(p_serie, length+1);
+				std::set<Core::FMTSerie>::const_iterator it = AllSeries.lower_bound(lowerBound);
+				std::set<Core::FMTSerie>::const_iterator itUpper = AllSeries.upper_bound(upperBound);
+				for (; it != itUpper;++it)
+					{
+					if (it->getSerie() == p_serie)
+						{
+						gotIt = true;
+						break;
+						}
+					}				
+				
+			}
+
+		}catch (...)
+			{
+				_exhandler->printexceptions("", "FMTmodelcache::haveSerie", __LINE__, __FILE__);
+			}
+		return gotIt;
 	}
 
 

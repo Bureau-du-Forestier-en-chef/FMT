@@ -333,6 +333,11 @@ std::vector<std::string>FMTaction::getaggregates() const
 	return aggregates;
 	}
 
+void FMTaction::setaggregates(const std::vector<std::string>& p_aggregates)
+	{
+	aggregates = p_aggregates;
+	}
+
 
 bool FMTaction::operator < (const FMTaction& rhs) const
     {

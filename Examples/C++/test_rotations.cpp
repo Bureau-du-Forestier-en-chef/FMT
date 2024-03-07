@@ -9,6 +9,7 @@
 #include "FMTfreeexceptionhandler.hpp"
 #include <boost/algorithm/string.hpp>
 #include "FMTmask.hpp"
+#include "FMTSerie.hpp"
 #endif
 
 
@@ -58,7 +59,7 @@ int main(int argc, char* argv[])
 		}
 		fullmask.pop_back();
 		const Core::FMTmask mainmask(fullmask, optimizationmodel.getthemes());
-		const std::set<std::pair<std::string, int>>rotations = optimizationmodel.getrorations(mainmask, "REGAPRE");
+		const std::set<Core::FMTSerie>rotations = optimizationmodel.getRotations(mainmask, "REGAPRE");
 			if (static_cast<int>(rotations.size()) != rotation_length)
 			{
 				Exception::FMTfreeexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed, "Wrong value",

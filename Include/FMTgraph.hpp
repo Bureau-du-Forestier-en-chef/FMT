@@ -56,6 +56,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTlookup.hpp"
 #include "boost/graph/graphviz.hpp"
 #include "FMTexceptionhandler.hpp"
+#include "FMTSerie.hpp"
 
 
 /// Namespace for using/building unidirectional graphs in FMT
@@ -2219,13 +2220,13 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 			return theserie;
 			}
 
-		std::set<std::pair<std::string,int>>getallseries(FMTvertex_descriptor targetdescriptor,const std::string& seriestarter,const std::vector<Core::FMTaction>& actions, const std::unordered_set<int>& actionselected,const Core::FMTmask& mask) const
+		std::set<Core::FMTSerie>getallseries(FMTvertex_descriptor targetdescriptor,const std::string& seriestarter,const std::vector<Core::FMTaction>& actions, const std::unordered_set<int>& actionselected,const Core::FMTmask& mask) const
 
 		{
-			std::set<std::pair<std::string, int>>theseries;
+			std::set<Core::FMTSerie>theseries;
 			try {
 				size_t inedgessize = boost::in_degree(targetdescriptor, data);
-				const FMTbasevertexproperties mainproperties = data[targetdescriptor];
+				const FMTbasevertexproperties& mainproperties = data[targetdescriptor];
 				const int startperiod = mainproperties.get().getperiod();
 				std::string actualserie(seriestarter);
 				//The actual serie end up with the out_degree...
@@ -2240,20 +2241,19 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 						{
 							std::string subserie(actualserie);
 							FMTvertex_descriptor subdescriptor = boost::source(*inedge_iterator, data);
-							const FMTbasevertexproperties targetproperties = data[subdescriptor];
-							const FMTbaseedgeproperties& inedgeproperties = data[*inedge_iterator];
-							//*_logger << "in for " << std::string(targetproperties.get()) << " in degree " << inedgessize << "\n";
-							const int actionid = inedgeproperties.getactionID();
+							const FMTbasevertexproperties& targetproperties = data[subdescriptor];
 							if (targetproperties.get().getmask().issubsetof(mask))//natural growth or action in the aggregate
 							{
+								const FMTbaseedgeproperties& inedgeproperties = data[*inedge_iterator];
+								const int actionid = inedgeproperties.getactionID();
 								const int perioddiff = startperiod - targetproperties.get().getperiod();
 								//bool digMore = true;
-								if (actionid >= 0 && actionselected.find(actionid) != actionselected.end())
+								if (/*actionid >= 0 &&*/ actionselected.find(actionid) != actionselected.end())
 								{
 									//if ()
 									//{
 										subserie = actions.at(actionid).getname() + "-" + subserie;
-										theseries.insert(std::make_pair(subserie, perioddiff));//Always add the subserie
+										theseries.insert(Core::FMTSerie(subserie, perioddiff));//Always add the subserie
 									//}else {
 									//	digMore = false;
 									//}
@@ -2261,11 +2261,11 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 								}
 								//if (digMore)
 								//{
-									for (const std::pair<std::string, int>& subofserie : getallseries(subdescriptor, subserie, actions, actionselected, mask))
+									for (const Core::FMTSerie& subofserie : getallseries(subdescriptor, subserie, actions, actionselected, mask))
 									{
 										//const std::string fullserie = subofserie.first +"-" + subserie;
-										const int perioddepth = subofserie.second + perioddiff;
-										theseries.insert(std::make_pair(subofserie.first, perioddepth));
+										const int perioddepth = subofserie.getLength() + perioddiff;
+										theseries.insert(Core::FMTSerie(subofserie.getSerie(), perioddepth));
 									}
 								//}
 								
@@ -2278,16 +2278,16 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 						if (inedge_iterator != inedge_end)
 							{
 							targetdescriptor = boost::source(*inedge_iterator, data);
-							const FMTbasevertexproperties targetproperties = data[targetdescriptor];
-							const FMTbaseedgeproperties& inedgeproperties = data[*inedge_iterator];
-							const int actionid = inedgeproperties.getactionID();
+							const FMTbasevertexproperties& targetproperties = data[targetdescriptor];
 							//*_logger << "in for out " << std::string(targetproperties.get()) << " in degree " << inedgessize << "\n";
 							if (targetproperties.get().getmask().issubsetof(mask))//natural growth or action in the aggregate
 								{
-								if (actionid >= 0 && actionselected.find(actionid) != actionselected.end())
+								const FMTbaseedgeproperties& inedgeproperties = data[*inedge_iterator];
+								const int actionid = inedgeproperties.getactionID();
+								if (/*actionid >= 0 &&*/ actionselected.find(actionid) != actionselected.end())
 									{
 									actualserie = actions.at(actionid).getname() + "-" + actualserie;
-									theseries.insert(std::make_pair(actualserie, startperiod - targetproperties.get().getperiod()));//Always add the subserie
+									theseries.insert(Core::FMTSerie(actualserie, startperiod - targetproperties.get().getperiod()));//Always add the subserie
 									}
 								inedgessize = boost::in_degree(targetdescriptor, data);
 								}
@@ -2479,7 +2479,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 			
 			return newschedule;
 		}
-		// DocString: FMTgraph::getrorations
+		// DocString: FMTgraph::getRotations
 		/**
 		Based on a mask and an action get the distribution of the rotations (in period) taken to complete a serie of action. A serie can contain a subserie for an
 		aggregate of actions.
@@ -2489,9 +2489,9 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 			aggregate : std::string on which the last action is considered to be in
 		Returns: Distribution of rotation period taken per series (where the serie is in string action1-action2-action3... string is the serie and int is the number of periods taken
 		*/
-		std::set<std::pair<std::string,int>>getrorations(const Models::FMTmodel& model,const Core::FMTmask& mask,const std::string& aggregate) const
+		std::set<Core::FMTSerie>getRotations(const Models::FMTmodel& model,const Core::FMTmask& mask,const std::string& aggregate) const
 			{
-			std::set<std::pair<std::string, int>>theseries;
+			std::set<Core::FMTSerie>theseries;
 			try {
 				const Core::FMToutputsource basesource(Core::FMTspec(), mask,
 					Core::FMTotar::actual,"", aggregate);
@@ -2510,11 +2510,11 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 							{
 							const FMTbaseedgeproperties& edgeprop = data[*edge_pair.first];
 							int actionid = edgeprop.getactionID();
-							if (actionid >= 0 && actionsets.find(actionid)!= actionsets.end())
+							if (/*actionid >= 0 &&*/ actionsets.find(actionid) != actionsets.end())
 								{
 								const std::string startup = model.actions.at(actionid).getname();
-								std::set<std::pair<std::string, int>>subset;
-								const std::set<std::pair<std::string, int>>periodseries = getallseries(targetdescriptor,startup,model.actions, actionsets, mask);
+								std::set<Core::FMTSerie>subset;
+								const std::set<Core::FMTSerie>periodseries = getallseries(targetdescriptor,startup,model.actions, actionsets, mask);
 								if (!periodseries.empty())
 									{
 									std::set_union(periodseries.begin(), periodseries.end(),

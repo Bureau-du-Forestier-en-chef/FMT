@@ -434,11 +434,13 @@ namespace Parser {
 		{
 			FMTscheduleparser scheduleparser;
 			std::string status = "Non Optimal";
+			std::string ObjectiveValue = "NA";
 			if (model.isoptimal())
 				{
 				status = "Optimal";
+				ObjectiveValue =  std::to_string(model.getobjectivevalue());
 				}
-			const std::string modelobjective = "Objective value: " + std::to_string(model.getobjectivevalue()) + "\n";
+			const std::string modelobjective = "Objective value: " + ObjectiveValue + "\n";
 			const std::string modelstatus = "Status: " + status + "\n";
 			scheduleparser.setheader(modelstatus+ modelobjective);
 			scheduleparser.write(schedules, seqfile);

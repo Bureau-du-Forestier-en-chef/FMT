@@ -49,18 +49,90 @@ namespace Models{
 		return newModel;
 	}
 
+	std::vector<Core::FMTschedule> FMTmodel::aggregateSchedules(const std::vector<Core::FMTschedule>& p_schedules) const
+		{
+		std::vector<Core::FMTschedule>newSchedules;
+		try {
+			for (const Core::FMTschedule& SCHEDULE : p_schedules)
+				{
+				std::map<Core::FMTaction, std::map<Core::FMTdevelopment, std::vector<double>>> mapping;
+				for (const auto& ACTION_ELEMENTS : SCHEDULE)
+					{
+					const Core::FMTaction* NewAction = nullptr;
+					const std::string ACTION_NAME = ACTION_ELEMENTS.first.getname();
+					std::vector<Core::FMTaction>::const_iterator ACTION_IT = std::find_if(actions.begin(), actions.end(), Core::FMTactioncomparator(ACTION_NAME));
+					if (ACTION_IT==actions.end())//Need to change the action!
+						{
+						const std::vector<std::string>AGGREGATES = ACTION_ELEMENTS.first.getaggregates();
+						for (const Core::FMTaction& action : actions)
+							{
+							if (std::find(AGGREGATES.begin(), AGGREGATES.end(),action.getname())!= AGGREGATES.end())
+								{
+								NewAction = &action;
+								}
+							}
+					}else {
+						NewAction = &*ACTION_IT;
+						}
+					if (!NewAction)
+						{
+						_exhandler->raise(Exception::FMTexc::FMTinvalidAandT, "Cant find aggregate for action "+ ACTION_NAME,
+							"FMTmodel::aggregateSchedules", __LINE__, __FILE__);
+						}
+					if (mapping.find(*NewAction)==mapping.end())
+						{
+							mapping[*NewAction] = ACTION_ELEMENTS.second;
+						}else {
+							for (const auto& DEV_ELEMENTS : ACTION_ELEMENTS.second)
+								{
+								if (mapping.at(*NewAction).find(DEV_ELEMENTS.first) == mapping.at(*NewAction).end())
+									{
+									mapping[*NewAction][DEV_ELEMENTS.first] = DEV_ELEMENTS.second;
+								}else {
+									mapping[*NewAction][DEV_ELEMENTS.first][0] += DEV_ELEMENTS.second.at(0);
+									}
+
+								}
+						}
+					}
+				newSchedules.push_back(Core::FMTschedule(SCHEDULE.getperiod(), mapping));
+				}
+
+		}catch (...)
+			{
+			_exhandler->raisefromcatch("", "FMTmodel::aggregateSchedules", __LINE__, __FILE__);
+			}
+		return newSchedules;
+		}
+
 
 	std::map<std::string, std::pair<std::string, Core::FMTmask>> FMTmodel::aggregateActions(const std::vector<std::string>& p_ActionsMapping)
 	{
 		std::map<std::string, std::pair<std::string, Core::FMTmask>>ActionFilters;
 		try {
 			std::vector<Core::FMTaction>NewActions;
+			std::set<std::string>ActionCover;
 			for (const std::string& Aggregate : p_ActionsMapping)
 				{
 				Core::FMTaction NewAction(Aggregate);
-				for (const Core::FMTaction* Action : Core::FMTactioncomparator(Aggregate, true).getallaggregates(actions, true))
+				for (const Core::FMTaction* Action : Core::FMTactioncomparator(Aggregate, true).getallaggregates(actions))
 					{
 					Core::FMTaction NoCompress(*Action);
+					std::vector<std::string>aggregates;
+					for (const std::string& AGGREGATE : NoCompress.getaggregates())
+						{
+						if (std::find(p_ActionsMapping.begin(), p_ActionsMapping.end(), AGGREGATE)== p_ActionsMapping.end())
+							{
+							aggregates.push_back(AGGREGATE);
+							}
+						}
+					NoCompress.setaggregates(aggregates);
+					if (ActionCover.find(Action->getname()) != ActionCover.end())
+						{
+						_exhandler->raise(Exception::FMTexc::FMTinvalidAandT, "Action " + Action->getname() +" already in aggregate",
+							"FMTmodel::aggregateActions", __LINE__, __FILE__);
+						}
+					ActionCover.insert(Action->getname());
 					NoCompress.unshrink(themes);
 					const Core::FMTmask Filter = NoCompress.getunion(themes);
 					ActionFilters[Action->getname()] = std::pair<std::string, Core::FMTmask>(Aggregate, Filter);
@@ -72,14 +144,57 @@ namespace Models{
 					NewActions.push_back(NewAction);
 					}
 				}
+			NewActions.push_back(actions.back());//Push the _DEATH
+			ActionCover.insert("_DEATH");
+			if (ActionCover.size() != actions.size())
+				{
+				std::string missingActions;
+				for (const Core::FMTaction Action : actions)
+					{
+					if (ActionCover.find(Action.getname())== ActionCover.end())
+						{
+						missingActions += Action.getname() + ",";
+						}
+					}
+				missingActions.pop_back();
+				_exhandler->raise(Exception::FMTexc::FMTinvalidAandT, "Missing aggregate for actions "+ missingActions,
+					"FMTmodel::aggregateActions", __LINE__, __FILE__);
+				}
+
+			//Handle aggregate of the action
+			for (const Core::FMTaction ACTION : actions)
+			{
+				for (const std::string& AGGREGATE : ACTION.getaggregates())
+				{
+					if (std::find(p_ActionsMapping.begin(), p_ActionsMapping.end(), AGGREGATE)== p_ActionsMapping.end())
+						{
+						if (ActionFilters.find(AGGREGATE) != ActionFilters.end())
+						{
+							ActionFilters[AGGREGATE].second = ActionFilters[AGGREGATE].second.getunion(ActionFilters[ACTION.getname()].second);
+						}else {
+							if (ActionFilters.find(ACTION.getname()) != ActionFilters.end())
+								{
+								ActionFilters[AGGREGATE] = std::pair<std::string, Core::FMTmask>("", ActionFilters[ACTION.getname()].second);
+								}
+							
+							}
+						
+						}
+
+				}
+			}
+			
+
+
 			for (auto& Filter : ActionFilters)
 			{
 				Filter.second.second = addNewMask(Filter.second.second);
 			}
-			setactions(NewActions);
+			//setactions(NewActions);
+			actions = NewActions;
 		}catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTmodel::aggregateActions", __LINE__, __FILE__);
+			_exhandler->printexceptions("", "FMTmodel::aggregateActions", __LINE__, __FILE__);
 		}
 		return ActionFilters;
 	}
@@ -91,21 +206,39 @@ void FMTmodel::aggregateTransitions(const std::map<std::string, std::pair<std::s
 		std::vector<Core::FMTtransition>NewTransitions;
 		for (const Core::FMTaction& action : actions)
 			{
-			NewTransitions.push_back(Core::FMTtransition(action.getname()));
-			}
-		for (const Core::FMTtransition& transition : transitions)
-			{
-			if (p_Filters.find(transition.getname())!= p_Filters.end())
+			if (action.getname() != "_DEATH")
 				{
-				Core::FMTtransition NewTransition(transition);
-				NewTransition.unshrink(themes);
-				for (auto& element : NewTransition)
-					{
+				NewTransitions.push_back(Core::FMTtransition(action.getname()));
+				}
+			}
+		NewTransitions.push_back(transitions.back());
+		for (Core::FMTtransition& transition : transitions)
+			{
+			if (p_Filters.find(transition.getname()) != p_Filters.end())
+			{
+				Core::FMTtransition NewTransition(transition.getname());
+				//NewTransition.unshrink(themes);
+				transition.unshrink(themes);
+				for (const auto& element : transition)
+				{
 					const Core::FMTmask Intersection = p_Filters.at(transition.getname()).second.getintersect(element.first);
-					element.first = addNewMask(Intersection);
-					}
+					if (!Intersection.isnotthemessubset(element.first,themes))
+						{
+						const Core::FMTmask NEW_MASK = addNewMask(Intersection);
+						NewTransition.push_back(NEW_MASK, element.second);
+						}
+					
+				}
 				//NewTransition.update();
+				
+				
+
 				std::vector< Core::FMTtransition>::iterator transitionIterator = std::find_if(NewTransitions.begin(), NewTransitions.end(), Core::FMTtransitioncomparator(p_Filters.at(transition.getname()).first));
+				if (transitionIterator == NewTransitions.end())
+					{
+					_exhandler->raise(Exception::FMTexc::FMTinvalidAandT,
+						"Cannot find transition "+ transition.getname(), "FMTmodel::aggregateTransitions", __LINE__, __FILE__, Core::FMTsection::Transition);
+					}
 				*transitionIterator += NewTransition;
 				}
 			}
@@ -132,11 +265,20 @@ void FMTmodel::aggregateOutputs(const std::map<std::string, std::pair<std::strin
 				Core::FMToutputsource NewSource(source);
 				if (source.isaction())
 					{
+					
 					if (p_Filters.find(source.getaction())!= p_Filters.end())
 						{
-						const Core::FMTmask sourceMask = source.getmask();
-						const Core::FMTmask IntersectMask = sourceMask.getintersect(p_Filters.at(source.getaction()).second);
-						NewSource.setmask(addNewMask(IntersectMask));
+						const Core::FMTmask SOURCE_MASK = source.getmask();
+						if (!SOURCE_MASK.isnotthemessubset(p_Filters.at(source.getaction()).second, themes))
+							{
+							const Core::FMTmask INTERSECT_MASK = SOURCE_MASK.getintersect(p_Filters.at(source.getaction()).second);
+							NewSource.setmask(addNewMask(INTERSECT_MASK));
+							}
+						if (!p_Filters.at(source.getaction()).first.empty())
+							{
+							NewSource.setaction(p_Filters.at(source.getaction()).first);
+							}
+						
 					}else{
 						//Maybe got the same action aggregate here? or not?
 						//Should log warning or raise?

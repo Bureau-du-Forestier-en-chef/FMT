@@ -1,10 +1,13 @@
 #include "FMTareaparser.hpp"
 #include "FMTmodelparser.hpp"
 #include "FMTmodel.hpp"
-#include "FMToperatingareascheme.hpp"
+#ifdef FMTWITHOSI
+    #include "FMToperatingareascheme.hpp"
+#endif
 
 int main(int argc, char *argv[])
     {   
+#ifdef FMTWITHOSI
     Logging::FMTlogger().logstamp();
     const std::string primarylocation = std::string(argv[2]);
     const std::string scenario = std::string(argv[3]);
@@ -26,6 +29,7 @@ int main(int argc, char *argv[])
     const std::vector<Models::FMTmodel> models = modelparser.readproject(primarylocation, scenarios);
     Parser::FMTareaparser areaParser;
     const std::vector<Heuristics::FMToperatingareascheme> opeareas = areaParser.readOAschedulerparameters(fichierParam, models.at(0).getthemes(), 13, 1);
+#endif
     return 0;
 	}
 

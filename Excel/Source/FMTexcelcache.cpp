@@ -23,6 +23,7 @@
 #include <boost/filesystem.hpp>
 #include <boost/range/iterator_range.hpp>
 #include "FMTexcelexceptionhandler.hpp"
+#include "FMTSerie.hpp"
 
 
 
@@ -653,9 +654,59 @@ namespace Wrapper
 		return list;
 	}
 
-	System::Collections::Generic::Dictionary<System::String^, System::Collections::Generic::List<int>^>^ FMTexcelcache::getrotations(System::String^ primaryname, System::String^ scenario, System::String^ themeselection, System::String^ aggregate)
+	System::Collections::Generic::List<System::String^>^ FMTexcelcache::getRotationsKeys(System::String^ primaryname, System::String^ scenario, System::String^ themeselection, System::String^ aggregate)
 	{
-		System::Collections::Generic::Dictionary < System::String^, System::Collections::Generic::List<int>^>^ values = gcnew System::Collections::Generic::Dictionary<System::String^,System::Collections::Generic::List<int>^>();
+		System::Collections::Generic::List<System::String^>^ values = gcnew System::Collections::Generic::List<System::String^>();
+		try {
+			const std::string naming = formatforcache(primaryname, scenario);
+			std::unordered_map<std::string, FMTmodelcache>::const_iterator mit = models->find(naming);
+			if (mit != models->end())
+			{
+				msclr::interop::marshal_context context;
+				const std::string sfilter = context.marshal_as<std::string>(themeselection);
+				const std::string saggregate = context.marshal_as<std::string>(aggregate);
+				for (const Core::FMTSerie& rotation : mit->second.getRotations(sfilter, saggregate))
+				{
+					System::String^ rotationName = gcnew System::String(rotation.getSerie().c_str());
+					values->Add(rotationName);
+				}
+
+			}
+		}
+		catch (...)
+		{
+			captureexception("FMTexcelcache::getRotationsKeys");
+		}
+		return values;
+	}
+
+	bool FMTexcelcache::containsRotations(System::String^ primaryname, System::String^ scenario, System::String^ serie, System::String^ themeselection, System::String^ aggregate)
+	{
+		bool answer = false;
+		try {
+			const std::string naming = formatforcache(primaryname, scenario);
+			std::unordered_map<std::string, FMTmodelcache>::const_iterator mit = models->find(naming);
+			if (mit != models->end())
+			{
+				msclr::interop::marshal_context context;
+				const std::string sfilter = context.marshal_as<std::string>(themeselection);
+				const std::string saggregate = context.marshal_as<std::string>(aggregate);
+				const std::string theSerie = context.marshal_as<std::string>(serie);
+				answer = mit->second.haveSerie(theSerie,sfilter, saggregate);
+			}
+		}
+		catch (...)
+		{
+			captureexception("FMTexcelcache::containsRotations");
+		}
+		return answer;
+	}
+
+
+	
+	System::Collections::Generic::List<System::Collections::Generic::KeyValuePair< System::String^, int>>^ FMTexcelcache::getRotations(System::String^ primaryname, System::String^ scenario, System::String^ themeselection, System::String^ aggregate)
+	{
+		System::Collections::Generic::List<System::Collections::Generic::KeyValuePair< System::String^, int>>^ values = gcnew System::Collections::Generic::List<System::Collections::Generic::KeyValuePair< System::String^, int>>();
 		try {
 			const std::string naming = formatforcache(primaryname, scenario);
 			std::unordered_map<std::string, FMTmodelcache>::const_iterator mit = models->find(naming);
@@ -664,21 +715,17 @@ namespace Wrapper
 				msclr::interop::marshal_context context;
 				const std::string sfilter = context.marshal_as<std::string>(themeselection);
 				const std::string saggregate= context.marshal_as<std::string>(aggregate);
-				for (const std::pair<std::string, int>& rotations : mit->second.getrotations(sfilter, saggregate))
+				for (const Core::FMTSerie& rotation : mit->second.getRotations(sfilter, saggregate))
 					{
-					System::String^ key = gcnew System::String(rotations.first.c_str());
-					if (!values->ContainsKey(key))
-						{
-						values[key] = gcnew System::Collections::Generic::List<int>();
-						}
-					values[key]->Add(rotations.second);
+					System::String^ rotationName = gcnew System::String(rotation.getSerie().c_str());
+					values->Add(System::Collections::Generic::KeyValuePair<System::String^, int>(rotationName, rotation.getLength()));
 					}
 
 				}
 		}
 		catch (...)
 		{
-			captureexception("FMTexcelcache::getrotations");
+			captureexception("FMTexcelcache::getRotations");
 		}
 		return values;
 	}

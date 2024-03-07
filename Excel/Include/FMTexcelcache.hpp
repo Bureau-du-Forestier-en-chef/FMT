@@ -58,7 +58,9 @@ namespace Wrapper
 		System::Collections::Generic::List<System::String^>^ getthemes(System::String^ primaryname, System::String^ scenario);
 		System::Collections::Generic::List<System::String^>^ getbuildexceptions(System::String^ primaryname, System::String^ scenario, int exception);
 		System::Collections::Generic::List<System::String^>^ getnochoice(System::String^ primaryname, System::String^ scenario, System::String^ filter);
-		System::Collections::Generic::Dictionary<System::String^,System::Collections::Generic::List<int>^>^ getrotations(System::String^ primaryname, System::String^ scenario, System::String^ themeselection, System::String^ aggregate);
+		System::Collections::Generic::List<System::Collections::Generic::KeyValuePair< System::String^, int>>^ getRotations(System::String^ primaryname, System::String^ scenario, System::String^ themeselection, System::String^ aggregate);
+		System::Collections::Generic::List<System::String^>^ getRotationsKeys(System::String^ primaryname, System::String^ scenario, System::String^ themeselection, System::String^ aggregate);
+		bool containsRotations(System::String^ primaryname, System::String^ scenario, System::String^ serie, System::String^ themeselection, System::String^ aggregate);
 		System::Collections::Generic::List<int>^ getperiods(System::String^ primaryname, System::String^ scenario);
 		System::Collections::Generic::List<System::String^>^ getconstraints(System::String^ primaryname, System::String^ scenario, System::String^ output);
 		System::Collections::Generic::List<int>^ getgraphstats(System::String^ primaryname, System::String^ scenario);

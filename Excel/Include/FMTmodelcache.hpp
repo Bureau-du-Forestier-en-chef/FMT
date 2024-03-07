@@ -40,10 +40,12 @@ namespace Wrapper
 		std::string maplocation;
 		mutable std::unique_ptr<Spatial::FMTforest>map;
 		mutable std::unordered_map<std::string,double>generalcache;
+		mutable std::unordered_map<std::string,std::set<Core::FMTSerie>>SerieCache;
 		Core::FMTmask globalmask;
 		std::unique_ptr<boost::recursive_mutex>maskcachemtx;
 		std::unique_ptr<boost::recursive_mutex>outputcachemtx;
 		std::unique_ptr<boost::recursive_mutex>generalcachemtx;
+		std::unique_ptr<boost::recursive_mutex>SerieCachemtx;
 		std::unique_ptr<std::vector<Heuristics::FMToperatingarea>>OAcache;
 		std::unordered_map<int,std::vector<std::string>>all_exceptions;
 		Core::FMTmask themeselectiontomask(const std::string& themeselection) const;
@@ -53,6 +55,8 @@ namespace Wrapper
 			const std::string& outputname, const std::string& themeselection,
 			const int& age, const int& period) const;
 		bool fillfromcache(double& value,const std::string& cachekey) const;
+		bool getSeriesFromCache(std::set<Core::FMTSerie>& value, const std::string& cachekey) const;
+		void setSeriesToCache(const std::string& cachekey, const std::set<Core::FMTSerie>& value) const;
 		void settocache(const std::string& cachekey, const double& value) const;
 		bool getfrommaskcache(const std::string& cachekey,Core::FMTmask& mask) const;
 		void writetomaskcache(const std::string& cachekey,const Core::FMTmask& mask) const;
@@ -85,7 +89,8 @@ namespace Wrapper
 		std::vector<std::string> getconstraints(const std::string& output) const;
 		std::vector<std::string> getbuildexceptions(const int& exceptionid) const;
 		std::vector<std::string> getnoaction(const std::string& filter) const;
-		std::set<std::pair<std::string, int>> getrotations(const std::string& themeselection, const std::string& aggregate) const;
+		std::set<Core::FMTSerie> getRotations(const std::string& themeselection, const std::string& aggregate) const;
+		bool haveSerie(const std::string& p_serie,const std::string& themeselection, const std::string& aggregate) const;
 		std::vector<int> getgraphstats() const;
 		int getperiods() const;
 		Logging::FMTexcellogger* getlogger();

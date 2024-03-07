@@ -210,6 +210,12 @@ class FMTEXPORT FMTaction : public FMTlist<FMTspec>
 		Gets all the aggregates name of which the action is part of.
 		*/
 		std::vector<std::string>getaggregates() const;
+		// DocString: FMTaction::setaggregates
+		/**
+		@brief Set a new vector of aggregates
+		@param[in] p_aggregates the vector of aggregates to set.
+		*/
+		void setaggregates(const std::vector<std::string>& p_aggregates);
 		// DocString: FMTaction::getpartials
 		/**
 		Gets all the partial yields name of the FMTaction.
