@@ -729,7 +729,7 @@ Rcpp::DataFrame FMTtheme::getaggregatesasdataframe() const
 			std::vector<int>themeids;
 			std::vector<std::string>locattributes;
 			std::vector<std::string>locaggregates;
-			this->fillupaggregates(themeids, locattributes, locaggregates);
+			this->fillupAggregates(themeids, locattributes, locaggregates);
 			Rcpp::IntegerVector rids(themeids.begin(), themeids.end());
 			Rcpp::StringVector rattributes(locattributes.begin(), locattributes.end());
 			Rcpp::StringVector raggregates(locaggregates.begin(), locaggregates.end());
@@ -764,14 +764,14 @@ Rcpp::DataFrame FMTtheme::getattributesasdataframe() const
 			}
 			if (gotnames)
 			{
-				std::vector<int>ids(m_attributes.size(), id + 1);
-				Rcpp::IntegerVector rids(m_ids.begin(), m_ids.end());
+				std::vector<int>ids(m_attributes.size(), m_id + 1);
+				Rcpp::IntegerVector rids(ids.begin(), ids.end());
 				Rcpp::StringVector rattributes(m_attributes.begin(), m_attributes.end());
 				Rcpp::StringVector rnames(m_attributenames.begin(), m_attributenames.end());
 				data.push_back(rids, "THEMES");
 				data.push_back(rattributes, "ATTRIBUTES");
 				data.push_back(rnames, "NAMES");
-				data.attr("row.names") = Rcpp::seq(1, m_ids.size());
+				data.attr("row.names") = Rcpp::seq(1, ids.size());
 			}
 		}
 		data.attr("class") = "data.frame";
