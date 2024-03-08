@@ -517,7 +517,7 @@ namespace Parser
 													{
 													size_t themeid = 0;
 													while (themeid < themes.size() && 
-														themes.at(themeid).isvalid(values.at(themeid)))
+														themes.at(themeid).isValid(values.at(themeid)))
 														{
 														mask += values.at(themeid) + " ";
 														++themeid;

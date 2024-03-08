@@ -310,7 +310,7 @@ FMTlandscapeparser::FMTlandscapeparser() :
 			themes.shrink_to_fit();
 			for (Core::FMTtheme& theme : themes)
 				{
-				theme.buildattributelocations();
+				theme.buildAttributeLocations();
 				}
 			}catch(...)
 				{

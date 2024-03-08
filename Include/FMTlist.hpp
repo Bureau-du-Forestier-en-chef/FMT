@@ -452,7 +452,7 @@ namespace Core
 								{
 								if (subtheme==theme)
 									{
-									newmask +=theme.updatefrommask(basemask) + " ";
+									newmask +=theme.updateFromMask(basemask) + " ";
 								}else {
 									newmask += basemask.get(subtheme) + " ";
 									}

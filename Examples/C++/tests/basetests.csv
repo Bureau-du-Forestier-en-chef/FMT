@@ -48,3 +48,7 @@ testgdaldrivers;vector;ESRI Shapefile;shp
 testgdaldrivers;raster;GTiff;tiff
 testoutput;../../../../Examples/Models/TWD_land/TWD_land.pri|order;OSUPRATIO;20.202
 testoutput;../../../../Examples/Models/TWD_land/TWD_land.pri|order;OSUPRATIO2;0.20202
+doplanning;../../../../Examples/Models/TWD_land/TWD_land.pri|NOT_MASK;5;90738
+testreadwriteproject;../../../../Examples/Models/TWD_land/TWD_land.pri;NOT_MASK;
+presolvetest;../../../../Examples/Models/TWD_land/TWD_land.pri;NOT_MASK;5
+testmodelwriter;../../../../Examples/Models/TWD_land/TWD_land.pri;NOT_MASK;

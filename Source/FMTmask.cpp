@@ -76,7 +76,7 @@ boost::dynamic_bitset<> FMTmask::subset(const FMTtheme& theme) const
     {
     boost::dynamic_bitset<> sub(theme.size(),false);
     int locit = 0;
-    for(size_t id = theme.start; id < (theme.start + theme.size()); ++id)
+    for(size_t id = theme.m_start; id < (theme.m_start + theme.size()); ++id)
         {
 		sub[locit] = data[id];
         ++locit;
@@ -106,7 +106,7 @@ size_t FMTmask::getsubsetcount(const FMTtheme& theme) const
 void FMTmask::setsubset(const FMTtheme& theme,const boost::dynamic_bitset<>& subset)
     {
     int locit = 0;
-    for(size_t id = theme.start; id < (theme.start+theme.size()); ++id)
+    for(size_t id = theme.m_start; id < (theme.m_start+theme.size()); ++id)
         {
         data[id] = subset[locit];
         ++locit;
@@ -119,7 +119,7 @@ std::string FMTmask::get(const std::vector<FMTtheme>& themes) const
     for(const FMTtheme& theme : themes)
         {
         const boost::dynamic_bitset<>bits = this->subset(theme);
-        value += theme.bitstostr(bits) + " ";
+        value += theme.bitsToStr(bits) + " ";
         }
     value = value.substr(0, value.size()-1);
     return value;
@@ -137,7 +137,7 @@ void FMTmask::set(const std::vector<FMTtheme>& themes,const std::string& value)
     data.resize(fullsize,false);
     for(const FMTtheme& theme : themes)
         {
-        const boost::dynamic_bitset<>bits = theme.strtobits(bases[theme.id]);
+        const boost::dynamic_bitset<>bits = theme.strToBits(bases[theme.m_id]);
 		this->setsubset(theme, bits);
         }
 	//name.shrink_to_fit();
@@ -145,7 +145,7 @@ void FMTmask::set(const std::vector<FMTtheme>& themes,const std::string& value)
 std::string FMTmask::get(const FMTtheme& theme) const
     {
     const boost::dynamic_bitset<>bits =  this->subset(theme);
-    return theme.bitstostr(bits);
+    return theme.bitsToStr(bits);
     }
 
 bool FMTmask::empty() const
@@ -183,10 +183,10 @@ std::vector<FMTtheme> FMTmask::getselectedthemes(const  std::vector<FMTtheme>& t
 
 void FMTmask::set(const FMTtheme& theme,const std::string& value)
     {
-    const boost::dynamic_bitset<>sub=theme.strtobits(value);
+    const boost::dynamic_bitset<>sub=theme.strToBits(value);
     std::vector<std::string>bases;
     boost::split(bases,name,boost::is_any_of(FMT_STR_SEPARATOR), boost::token_compress_on);
-    bases[theme.id] = value;
+    bases[theme.m_id] = value;
     name = boost::algorithm::join(bases," ");
     this->setsubset(theme,sub);
 	//name.shrink_to_fit();
@@ -211,7 +211,7 @@ void FMTmask::update(const std::vector<FMTtheme>& themes)
     for(const FMTtheme& the : themes)
         {
         const boost::dynamic_bitset<>sub = subset(the);
-        name+=the.bitstostr(sub)+" ";
+        name+=the.bitsToStr(sub)+" ";
         }
     name = name.substr(0, name.size()-1);
 	//name.shrink_to_fit();
@@ -385,7 +385,7 @@ FMTmask FMTmask::refine(const FMTmask& mask,const std::vector<FMTtheme>& themes)
 			const size_t targetcount = mask.subset(theme).count();
 			if (thiscount == theme.size() ||  targetcount < thiscount)
 			{
-				bases.at(theme.id) = maskbases.at(theme.id);
+				bases.at(theme.m_id) = maskbases.at(theme.m_id);
 			}
 			/*if (targetcount > 1 && !allow_aggregates)
 			{
@@ -415,7 +415,7 @@ FMTmask FMTmask::presolve(const FMTmaskfilter& filter, const std::vector<FMTthem
 		{
 		for (const FMTtheme& theme : presolvedthemes)
 			{
-			newmask.name += theme.bitstostr(newmask.subset(theme)) + " ";
+			newmask.name += theme.bitsToStr(newmask.subset(theme)) + " ";
 			}
 		newmask.name.pop_back();
 		//newmask.name.shrink_to_fit();
@@ -438,7 +438,7 @@ FMTmask FMTmask::postsolve(const FMTmaskfilter& filter,
 		}
 	for (const FMTtheme& theme: basethemes)
 		{
-		newmask.name += theme.bitstostr(newmask.subset(theme)) + " ";
+		newmask.name += theme.bitsToStr(newmask.subset(theme)) + " ";
 		}
 	newmask.name.pop_back();
 	//newmask.name.shrink_to_fit();

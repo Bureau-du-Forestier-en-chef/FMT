@@ -19,55 +19,55 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 namespace Core {
 
 
-	FMTtheme::lookiterator FMTtheme::getattribute(const std::string& value,bool raiseifnotfound) const
+	FMTtheme::lookiterator FMTtheme::getAttribute(const std::string& p_value,bool p_raiseifnotfound) const
 		{
-		FMTtheme::lookiterator lookit = attribute_locations.end();
+		FMTtheme::lookiterator lookit = m_attribute_locations.end();
 		try {
-			lookit = attribute_locations.find(value);
-			if (raiseifnotfound&&lookit== attribute_locations.end())
+			lookit = m_attribute_locations.find(p_value);
+			if (p_raiseifnotfound &&lookit== m_attribute_locations.end())
 				{
 				_exhandler->raise(Exception::FMTexc::FMTundefined_attribute,
-					value + " at theme "+std::to_string(getid())+" "+getname(),
-					"FMTtheme::getattribute", __LINE__, __FILE__);
+					p_value + " at theme "+std::to_string(getid())+" "+getname(),
+					"FMTtheme::getAttribute", __LINE__, __FILE__);
 				}
 		}catch (...)
 			{
-				_exhandler->raisefromcatch("", "FMTtheme::getattribute", __LINE__, __FILE__, Core::FMTsection::Landscape);
+				_exhandler->raisefromcatch("", "FMTtheme::getAttribute", __LINE__, __FILE__, Core::FMTsection::Landscape);
 			}
 		return lookit;
 		}
 
 
-	void FMTtheme::buildattributelocations()
+	void FMTtheme::buildAttributeLocations()
 	{
 		try {
-			attribute_locations.clear();
+			m_attribute_locations.clear();
 			size_t location = 0;
-			for (const std::string& attribute : attributes)
+			for (const std::string& attribute : m_attributes)
 				{
-				attribute_locations[attribute] = std::vector<size_t>(1, location);
+				m_attribute_locations[attribute] = std::vector<size_t>(1, location);
 				++location;
 				}
 			bool processdone = false;
-			std::vector<std::vector<std::string>>newaggregates = aggregatenames;
+			std::vector<std::vector<std::string>>newaggregates = m_aggregatenames;
 			while (!processdone)
 			{
 				processdone = true;
 				size_t aggregatelocation = 0;
-				for (const std::string& key : aggregates)
+				for (const std::string& key : m_aggregates)
 				{
 					const std::vector<std::string>aggvalues = newaggregates.at(aggregatelocation);
 					std::vector<std::string>newvalues;
 					for (const std::string& value : aggvalues)
 					{
-						if (std::find(attributes.begin(), attributes.end(), value) == attributes.end())
+						if (std::find(m_attributes.begin(), m_attributes.end(), value) == m_attributes.end())
 						{
-							const size_t baselocation = std::distance(aggregates.begin(), std::find(aggregates.begin(), aggregates.end(), value));
+							const size_t baselocation = std::distance(m_aggregates.begin(), std::find(m_aggregates.begin(), m_aggregates.end(), value));
 							for (const std::string& newvalue : newaggregates.at(baselocation))
 							{
 								if (std::find(newvalues.begin(), newvalues.end(), newvalue) == newvalues.end())
 								{
-									if (std::find(attributes.begin(), attributes.end(), newvalue) == attributes.end())
+									if (std::find(m_attributes.begin(), m_attributes.end(), newvalue) == m_attributes.end())
 									{
 										processdone = false;
 									}
@@ -91,14 +91,14 @@ namespace Core {
 				locationofagg.reserve(aggvalues.size());
 				for (const std::string& val : aggvalues)
 					{
-					locationofagg.push_back(std::distance(attributes.begin(), std::find(attributes.begin(), attributes.end(), val)));
+					locationofagg.push_back(std::distance(m_attributes.begin(), std::find(m_attributes.begin(), m_attributes.end(), val)));
 					}
-				attribute_locations[aggregates.at(agglocation)] = locationofagg;
+				m_attribute_locations[m_aggregates.at(agglocation)] = locationofagg;
 				++agglocation;
 				}
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("", "FMTtheme::buildattributelocations", __LINE__, __FILE__, Core::FMTsection::Landscape);
+			_exhandler->raisefromcatch("", "FMTtheme::buildAttributeLocations", __LINE__, __FILE__, Core::FMTsection::Landscape);
 			}
 
 	}
@@ -107,108 +107,112 @@ namespace Core {
 
 
 
-FMTtheme::FMTtheme(const std::vector<std::string>& lattributes,
-				const std::vector<std::string>& lattributenames,
-				const std::vector<std::string>& laggregates,
-				const std::vector<std::vector<std::string>>& laggregatenames,
-				const std::vector<std::map<std::string, double>>& lindexes ,
-				const size_t& lid, const size_t& lstart, const std::string& lname) :
+FMTtheme::FMTtheme(const std::vector<std::string>& p_attributes,
+				const std::vector<std::string>& p_attributenames,
+				const std::vector<std::string>& p_aggregates,
+				const std::vector<std::vector<std::string>>& p_aggregatenames,
+				const std::vector<std::map<std::string, double>>& p_indexes ,
+				const size_t& p_id, const size_t& p_start, const std::string& p_name) :
 	FMTobject(),
-	id(lid),
-	start(lstart),
-	attributes(lattributes),
-	attributenames(lattributenames),
-	aggregates(laggregates),
-	aggregatenames(laggregatenames),
-	indexes(lindexes),
-	attribute_locations(),
-	name(lname)
-{
-	buildattributelocations();
-}
-
-FMTtheme::FMTtheme(const std::vector<std::string>& lattributes,
-	const std::vector<std::string>& lattributenames,
-	const std::vector<std::string>& laggregates,
-	const std::vector<std::vector<std::string>>& laggregatenames,
-	const size_t& lid, const size_t& lstart, const std::string& lname) :
-	FMTobject(),
-	id(),
-	start(),
-	attributes(lattributes),
-	attributenames(),
-	aggregates(),
-	aggregatenames(),
-	indexes(),
-	attribute_locations(),
-	name()
+	m_id(p_id),
+	m_start(p_start),
+	m_attributes(p_attributes),
+	m_attributenames(p_attributenames),
+	m_aggregates(p_aggregates),
+	m_aggregatenames(p_aggregatenames),
+	m_indexes(p_indexes),
+	m_attribute_locations(),
+	m_name(p_name)
 	
 {
-	*this = FMTtheme(lattributes, lattributenames, laggregates,
-		laggregatenames, std::vector<std::map<std::string, double>>(), lid, lstart, lname);
+	buildAttributeLocations();
 }
 
-
-FMTtheme::FMTtheme(const std::vector<std::string>& lattributes,
-	const size_t& lid, const size_t& lstart, const std::string& lname):
+FMTtheme::FMTtheme(const std::vector<std::string>& p_attributes,
+	const std::vector<std::string>& p_attributenames,
+	const std::vector<std::string>& p_aggregates,
+	const std::vector<std::vector<std::string>>& p_aggregatenames,
+	const size_t& p_id, const size_t& p_start, const std::string& p_name) :
 	FMTobject(),
-	id(lid),
-	start(lstart),
-	attributes(lattributes),
-	attributenames(),
-	aggregates(),
-	aggregatenames(),
-	indexes(),
-	attribute_locations(),
-	name(lname)
+	m_id(p_id),
+	m_start(p_start),
+	m_attributes(p_attributes),
+	m_attributenames(),
+	m_aggregates(),
+	m_aggregatenames(),
+	m_indexes(),
+	m_attribute_locations(),
+	m_name()
+	
+	
 {
-	buildattributelocations();
+	*this = FMTtheme(p_attributes, p_attributenames, p_aggregates,
+		p_aggregatenames, std::vector<std::map<std::string, double>>(), p_id, p_start, p_name);
 }
 
 
-FMTtheme::FMTtheme(const FMTtheme& rhs) :
-	FMTobject(rhs),
-	id(rhs.id),
-	start(rhs.start),
-	attributes(rhs.attributes),
-	attributenames(rhs.attributenames),
-	aggregates(rhs.aggregates),
-	aggregatenames(rhs.aggregatenames),
-	indexes(rhs.indexes),
-	attribute_locations(rhs.attribute_locations),
-	name(rhs.name)
+FMTtheme::FMTtheme(const std::vector<std::string>& p_attributes,
+	const size_t& p_id, const size_t& p_start, const std::string& p_name):
+	FMTobject(),
+	m_id(p_id),
+	m_start(p_start),
+	m_attributes(p_attributes),
+	m_attributenames(),
+	m_aggregates(),
+	m_aggregatenames(),
+	m_indexes(),
+	m_attribute_locations(),
+	m_name(p_name)
+	
+{
+	buildAttributeLocations();
+}
+
+
+FMTtheme::FMTtheme(const FMTtheme& p_rhs) :
+	FMTobject(p_rhs),
+	m_id(p_rhs.m_id),
+	m_start(p_rhs.m_start),
+	m_attributes(p_rhs.m_attributes),
+	m_attributenames(p_rhs.m_attributenames),
+	m_aggregates(p_rhs.m_aggregates),
+	m_aggregatenames(p_rhs.m_aggregatenames),
+	m_indexes(p_rhs.m_indexes),
+	m_attribute_locations(p_rhs.m_attribute_locations),
+	m_name(p_rhs.m_name)
+	
 {
 	
 }
 
-FMTtheme& FMTtheme::operator = (const FMTtheme& rhs)
+FMTtheme& FMTtheme::operator = (const FMTtheme& p_rhs)
 	{
-	if (this!=&rhs)
+	if (this!=&p_rhs)
 		{
-		FMTobject::operator=(rhs);
-		id = rhs.id;
-		start = rhs.start;
-		attributes = rhs.attributes;
-		attributenames = rhs.attributenames;
-		aggregates = rhs.aggregates;
-		aggregatenames = rhs.aggregatenames;
-		indexes = rhs.indexes;
-		name = rhs.name;
-		attribute_locations = rhs.attribute_locations;
+		FMTobject::operator=(p_rhs);
+		m_id = p_rhs.m_id;
+		m_start = p_rhs.m_start;
+		m_attributes = p_rhs.m_attributes;
+		m_attributenames = p_rhs.m_attributenames;
+		m_aggregates = p_rhs.m_aggregates;
+		m_aggregatenames = p_rhs.m_aggregatenames;
+		m_indexes = p_rhs.m_indexes;
+		m_name = p_rhs.m_name;
+		m_attribute_locations = p_rhs.m_attribute_locations;
 		}
 	return *this;
 	}
 
 
-bool FMTtheme::inaggregate(const std::string& value, const std::string& aggregate)
+bool FMTtheme::inAggregate(const std::string& p_value, const std::string& p_aggregate)
 {
 	try {
-		lookiterator lookit = getattribute(aggregate);
-		if (lookit != attribute_locations.end())
+		lookiterator lookit = getAttribute(p_aggregate);
+		if (lookit != m_attribute_locations.end())
 		{
 			for (const size_t& location : lookit->second)
 			{
-				if (attributes.at(location) == value)
+				if (m_attributes.at(location) == p_value)
 				{
 					return true;
 				}
@@ -218,51 +222,51 @@ bool FMTtheme::inaggregate(const std::string& value, const std::string& aggregat
 	}
 	catch (...)
 	{
-		_exhandler->raisefromcatch("For aggregate: " + aggregate + " at value " + value, "FMTtheme::inaggregate", __LINE__, __FILE__, Core::FMTsection::Landscape);
+		_exhandler->raisefromcatch("For aggregate: " + p_aggregate + " at value " + p_value, "FMTtheme::inAggregate", __LINE__, __FILE__, Core::FMTsection::Landscape);
 	}
 	return false;
 }
 
-bool FMTtheme::isvalid(const std::string& value) const
+bool FMTtheme::isValid(const std::string& p_value) const
 	{
 	try {
-		return (value == "?" || isattribute(value));
+		return (p_value == "?" || isattribute(p_value) || (p_value.at(0) == '!' && isattribute(p_value.substr(1, p_value.size()))));
 	}
 	catch (...)
 	{
-		_exhandler->raisefromcatch("For value: " + value, "FMTtheme::isvalid", __LINE__, __FILE__, Core::FMTsection::Landscape);
+		_exhandler->raisefromcatch("For value: " + p_value, "FMTtheme::isValid", __LINE__, __FILE__, Core::FMTsection::Landscape);
 	}
 	return false;
 	}
 
 
-bool FMTtheme::isindex(const std::string& value) const
+bool FMTtheme::isindex(const std::string& p_value) const
 {
 	try{
-		for (const std::map<std::string, double>& indexer : indexes)
+		for (const std::map<std::string, double>& indexer : m_indexes)
 			{
-			if (indexer.find(value)!=indexer.end())
+			if (indexer.find(p_value)!=indexer.end())
 				{
 				return true;
 				}
 			}
 	}catch (...)
 		{
-		_exhandler->raisefromcatch("For value: " + value, "FMTtheme::isindex", __LINE__, __FILE__, Core::FMTsection::Landscape);
+		_exhandler->raisefromcatch("For value: " + p_value, "FMTtheme::isindex", __LINE__, __FILE__, Core::FMTsection::Landscape);
 		}
 	return false;
 
 }
 
-bool FMTtheme::isindex(const std::string& attribute, const std::string& value) const
+bool FMTtheme::isindex(const std::string& p_attribute, const std::string& p_value) const
 {
 	try {
-		lookiterator lookit = getattribute(attribute);
-		if (lookit!=attribute_locations.end())
+		lookiterator lookit = getAttribute(p_attribute);
+		if (lookit!=m_attribute_locations.end())
 			{
 			for (const size_t& location : lookit->second)
 				{
-				if (indexes.at(location).find(value)!= indexes.at(location).end())
+				if (m_indexes.at(location).find(p_value)!= m_indexes.at(location).end())
 					{
 					return true;
 					}
@@ -271,90 +275,98 @@ bool FMTtheme::isindex(const std::string& attribute, const std::string& value) c
 			}
 	}catch (...)
 		{
-		_exhandler->raisefromcatch("For attribute: " +attribute+" at value "+value, "FMTtheme::isindex", __LINE__, __FILE__, Core::FMTsection::Landscape);
+		_exhandler->raisefromcatch("For attribute: " + p_attribute+" at value "+ p_value, "FMTtheme::isindex", __LINE__, __FILE__, Core::FMTsection::Landscape);
 		}
 	return false;
 }
 
 bool FMTtheme::useindex() const
     {
-    if(!indexes.empty())
+    if(!m_indexes.empty())
         {
         return true;
         }
     return false;
     }
 
- double FMTtheme::getindex(const std::string& attribute,const std::string& value) const
+ double FMTtheme::getindex(const std::string& p_attribute,const std::string& p_value) const
     {
 	 try {
-		 lookiterator lookit = getattribute(attribute,true);
-		 if (lookit != attribute_locations.end())
+		 lookiterator lookit = getAttribute(p_attribute,true);
+		 if (lookit != m_attribute_locations.end())
 			{
 			for (const size_t& location : lookit->second)
 				{
-				 if (indexes.at(location).find(value) != indexes.at(location).end())
+				 if (m_indexes.at(location).find(p_value) != m_indexes.at(location).end())
 					{
-					return indexes.at(location).at(value);
+					return m_indexes.at(location).at(p_value);
 					}
 				}
 			}
 	 }catch (...)
 		{
-		 _exhandler->raisefromcatch("For attribute: " + attribute + " at value " + value, "FMTtheme::getindex", __LINE__, __FILE__, Core::FMTsection::Landscape);
+		 _exhandler->raisefromcatch("For attribute: " + p_attribute + " at value " + p_value, "FMTtheme::getindex", __LINE__, __FILE__, Core::FMTsection::Landscape);
 		}
 	return 0;
     }
 
-bool FMTtheme::operator == (const FMTtheme& rhs) const
+bool FMTtheme::operator == (const FMTtheme& p_rhs) const
 	{
-	return (id == rhs.id &&
-		start == rhs.start &&
-		attributes == rhs.attributes &&
-		attributenames == rhs.attributenames &&
-		aggregates == rhs.aggregates &&
-		aggregatenames == rhs.aggregatenames &&
-		indexes == rhs.indexes && 
-		name == rhs.name);
+	return (m_id == p_rhs.m_id &&
+		m_start == p_rhs.m_start &&
+		m_attributes == p_rhs.m_attributes &&
+		m_attributenames == p_rhs.m_attributenames &&
+		m_aggregates == p_rhs.m_aggregates &&
+		m_aggregatenames == p_rhs.m_aggregatenames &&
+		m_indexes == p_rhs.m_indexes &&
+		m_name == p_rhs.m_name);
 	}
 
 
 
-boost::dynamic_bitset<> FMTtheme::strtobits(const std::string& value) const
+boost::dynamic_bitset<> FMTtheme::strToBits(const std::string& p_value) const
         {
         boost::dynamic_bitset<> bits;
 		try{
-			if (value == "?")
+			if (p_value == "?")
 			{
-				bits.resize(attributes.size(), true);
+				bits.resize(m_attributes.size(), true);
 			}else {
-				bits.resize(attributes.size(),false);
-				lookiterator lookit = getattribute(value,true);
-				if (lookit != attribute_locations.end())
+				bool sense = true;
+				lookiterator lookit = m_attribute_locations.end();
+				if (p_value.at(0)=='!')
+					{
+					sense = false;
+					lookit = getAttribute(p_value.substr(1, p_value.size()), true);
+				}else {
+					lookit = getAttribute(p_value, true);
+					}
+				bits.resize(m_attributes.size(),!sense);
+				if (lookit != m_attribute_locations.end())
 					{
 					for (const size_t& location : lookit->second)
 						{
-						bits[location] = true;
+						bits[location] = sense;
 						}
 
 				}else {
 					_exhandler->raise(Exception::FMTexc::FMTundefined_attribute,
-						std::string(value) + " for theme " + std::to_string(id), "FMTtheme::strtobits", __LINE__, __FILE__,Core::FMTsection::Landscape);
+						std::string(p_value) + " for theme " + std::to_string(m_id), "FMTtheme::strToBits", __LINE__, __FILE__,Core::FMTsection::Landscape);
 					}
 
 				}
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("For value: " + value, "FMTtheme::strtobits", __LINE__, __FILE__, Core::FMTsection::Landscape);
+			_exhandler->raisefromcatch("For value: " + p_value, "FMTtheme::strToBits", __LINE__, __FILE__, Core::FMTsection::Landscape);
 			}
         return bits;
         }
 
-std::string FMTtheme::bitstostr(const boost::dynamic_bitset<>& bits) const
+std::string FMTtheme::bitsToStr(const boost::dynamic_bitset<>& p_bits) const
         {
 		try {
-			const size_t bitcounts = bits.count();
-			const size_t themesize = bits.size();
+			const size_t bitcounts = p_bits.count();
+			const size_t themesize = p_bits.size();
 			if (themesize>1 && bitcounts == themesize)
 			{
 				return "?";
@@ -362,62 +374,97 @@ std::string FMTtheme::bitstostr(const boost::dynamic_bitset<>& bits) const
 			else {
 				if (bitcounts == 1)
 				{
-					const size_t firsttrue = bits.find_first();
-					if (firsttrue < attributes.size())
+					const size_t firsttrue = p_bits.find_first();
+					if (firsttrue < m_attributes.size())
 					{
-						return attributes.at(firsttrue);
+						return m_attributes.at(firsttrue);
 					}
 				}
 				else {
-					for (const std::string& aggregate : aggregates)
+					for (const std::string& aggregate : m_aggregates)
 					{
-						const boost::dynamic_bitset<>totest = strtobits(aggregate);
-						if (totest == bits)
+						boost::dynamic_bitset<>totest = strToBits(aggregate);
+						if (totest == p_bits)
 						{
 							return aggregate;
+						}else if (totest.flip() == p_bits)
+							{
+							return "!" + aggregate;
+							}
+					}
+					boost::dynamic_bitset<> flipped(p_bits);
+					flipped.flip();
+					if (flipped.count()==1)
+					{
+						const size_t firstTrue = flipped.find_first();
+						if (firstTrue < m_attributes.size())
+						{
+							return "!" + m_attributes.at(firstTrue);
 						}
 					}
-
 				}
 				_exhandler->raise(Exception::FMTexc::FMTundefined_attribute,
-					"for bitset count of " + std::to_string(bitcounts) + " in theme " + std::to_string(id), "FMTtheme::bitstostr", __LINE__, __FILE__, Core::FMTsection::Landscape);
+					"for bitset count of " + std::to_string(bitcounts) + " in theme " + std::to_string(m_id), "FMTtheme:::bitsToStr", __LINE__, __FILE__, Core::FMTsection::Landscape);
 			}
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("", "FMTtheme::bitstostr", __LINE__, __FILE__, Core::FMTsection::Landscape);
+			_exhandler->raisefromcatch("", "FMTtheme:::bitsToStr", __LINE__, __FILE__, Core::FMTsection::Landscape);
 			}
 		return "";
         }
 
-std::vector<std::string>FMTtheme::getattributes(const std::string& value, bool aggregate_source) const
+std::vector<std::string>FMTtheme::getattributes(const std::string& p_value, bool p_aggregate_source) const
         {
 		std::vector<std::string>result;
 		try {
-			if (value == "?")
+			if (p_value == "?")
 			{
-				result = attributes;
-			}
-			else {
-				lookiterator lookit = getattribute(value, true);
-				if (isaggregate(value) && lookit != attribute_locations.end())
+				result = m_attributes;
+			}else if(p_value.at(0)=='!')
+			{ 
+				const std::string TARGET = p_value.substr(1, p_value.size());
+				lookiterator lookit = getAttribute(TARGET, true);
+				std::vector<std::string>BANNED;
+				if (isaggregate(TARGET) && lookit != m_attribute_locations.end())
 				{
-					if (aggregate_source)
+					BANNED.reserve(lookit->second.size());
+					for (const size_t& location : lookit->second)
 					{
-						std::vector<std::string>::const_iterator cntit = std::find(aggregates.begin(), aggregates.end(), value);
-						result = aggregatenames.at(std::distance(aggregates.begin(), cntit));
+						BANNED.push_back(m_attributes.at(location));
+					}
+				}else if (lookit != m_attribute_locations.end())
+				{
+					BANNED.push_back(m_attributes.at(*lookit->second.begin()));
+				}
+				for (const std::string& ATTRIBUTE : m_attributes)
+					{
+					if (std::find(BANNED.begin(), BANNED.end(), ATTRIBUTE)== BANNED.end())
+						{
+						result.push_back(ATTRIBUTE);
+						}
+					}
+			
+			}else {
+				lookiterator lookit = getAttribute(p_value, true);
+				if (isaggregate(p_value) && lookit != m_attribute_locations.end())
+				{
+					if (p_aggregate_source)
+					{
+						std::vector<std::string>::const_iterator cntit = std::find(m_aggregates.begin(), m_aggregates.end(), p_value);
+						result = m_aggregatenames.at(std::distance(m_aggregates.begin(), cntit));
 					}
 					else {
 						result.reserve(lookit->second.size());
 						for (const size_t& location : lookit->second)
 						{
-							result.push_back(attributes.at(location));
+							result.push_back(m_attributes.at(location));
 						}
 					}
 
 				}
-				else if (lookit != attribute_locations.end())
+				else if (lookit != m_attribute_locations.end())
 				{
-					result.push_back(attributes.at(*lookit->second.begin()));
+					result.push_back(m_attributes.at(*lookit->second.begin()));
 				}
 			}
 		}catch (...)
@@ -429,21 +476,21 @@ std::vector<std::string>FMTtheme::getattributes(const std::string& value, bool a
 
 FMTtheme::operator std::string() const
         {
-		std::string fulltheme = "*THEME "+ std::to_string(id+1)+" "+name +"\n";
+		std::string fulltheme = "*THEME "+ std::to_string(m_id+1)+" "+ m_name +"\n";
 		try {
-			for (size_t location = 0; location < attributes.size(); ++location)
+			for (size_t location = 0; location < m_attributes.size(); ++location)
 				{
-				fulltheme += " " + attributes.at(location);
-				if (!attributenames.empty())
+				fulltheme += " " + m_attributes.at(location);
+				if (!m_attributenames.empty())
 					{
-					fulltheme += " " + attributenames.at(location);
+					fulltheme += " " + m_attributenames.at(location);
 					}
-				if (!indexes.empty())
+				if (!m_indexes.empty())
 					{
-					if (!indexes.at(location).empty())
+					if (!m_indexes.at(location).empty())
 						{
 						fulltheme += " _INDEX(";
-						for (std::map<std::string, double>::const_iterator mit = indexes.at(location).begin(); mit != indexes.at(location).end(); mit++)
+						for (std::map<std::string, double>::const_iterator mit = m_indexes.at(location).begin(); mit != m_indexes.at(location).end(); mit++)
 						{
 							fulltheme += (mit->first + "=" + std::to_string(mit->second) + ",");
 						}
@@ -453,10 +500,10 @@ FMTtheme::operator std::string() const
 					}
 				fulltheme +="\n";
 				}
-			for (size_t location = 0; location < aggregates.size(); ++location)
+			for (size_t location = 0; location < m_aggregates.size(); ++location)
 			{
-				fulltheme += "*AGGREGATE " + aggregates.at(location) + "\n";
-				for (const std::string& aggregatename : aggregatenames.at(location))
+				fulltheme += "*AGGREGATE " + m_aggregates.at(location) + "\n";
+				for (const std::string& aggregatename : m_aggregatenames.at(location))
 				{
 					fulltheme += " " + aggregatename + "\n";
 				}
@@ -468,36 +515,36 @@ FMTtheme::operator std::string() const
         return fulltheme;
         }
 
-void FMTtheme::fillupaggregates(std::vector<int>& themeids, std::vector<std::string>& locattributes, std::vector<std::string>& locaggregates) const
+void FMTtheme::fillupAggregates(std::vector<int>& p_themeids, std::vector<std::string>& p_locattributes, std::vector<std::string>& p_locaggregates) const
 {
 	try {
-		for (const std::string& aggregate : aggregates)
+		for (const std::string& aggregate : m_aggregates)
 			{
 			for (const std::string& attribute : getattributes(aggregate))
 				{
-				themeids.push_back(static_cast<int>(id)+1);
-				locattributes.push_back(attribute);
-				locaggregates.push_back(aggregate);
+				p_themeids.push_back(static_cast<int>(m_id)+1);
+				p_locattributes.push_back(attribute);
+				p_locaggregates.push_back(aggregate);
 				}
 			}
 	}catch (...)
 	{
-		_exhandler->raisefromcatch("for theme " + std::to_string(id), "FMTtheme::fillupaggregates", __LINE__, __FILE__, Core::FMTsection::Landscape);
+		_exhandler->raisefromcatch("for theme " + std::to_string(m_id), "FMTtheme::fillupAggregates", __LINE__, __FILE__, Core::FMTsection::Landscape);
 	}
 
 }
 
 
-void FMTtheme::push_aggregate(const std::string& aggregatename)
+void FMTtheme::push_aggregate(const std::string& p_aggregatename)
 	{
 	try {
-		if (isaggregate(aggregatename))
+		if (isaggregate(p_aggregatename))
 			{
 			_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
-				aggregatename+" is already an aggregate", "FMTtheme::presolve", __LINE__, __FILE__);
+				p_aggregatename+" is already an aggregate", "FMTtheme::presolve", __LINE__, __FILE__);
 			}
-		aggregates.push_back(aggregatename);
-		aggregatenames.push_back(std::vector<std::string>());
+		m_aggregates.push_back(p_aggregatename);
+		m_aggregatenames.push_back(std::vector<std::string>());
 		//buildattributelocations();
 	}catch (...)
 		{
@@ -506,12 +553,12 @@ void FMTtheme::push_aggregate(const std::string& aggregatename)
 	}
 
 
-void FMTtheme::push_aggregate_value(const std::string& aggregatename, const std::string& value)
+void FMTtheme::push_aggregate_value(const std::string& p_aggregatename, const std::string& p_value)
 	{
 	try {
-		if (isaggregate(aggregatename))
+		if (isaggregate(p_aggregatename))
 			{
-			aggregatenames[std::distance(aggregates.begin(), std::find(aggregates.begin(), aggregates.end(), aggregatename))].push_back(value);
+			m_aggregatenames[std::distance(m_aggregates.begin(), std::find(m_aggregates.begin(), m_aggregates.end(), p_aggregatename))].push_back(p_value);
 			}
 	}catch (...)
 		{
@@ -519,16 +566,16 @@ void FMTtheme::push_aggregate_value(const std::string& aggregatename, const std:
 		}
 	}
 
-std::string FMTtheme::updatefrommask(const Core::FMTmask& globalmask)
+std::string FMTtheme::updateFromMask(const Core::FMTmask& p_globalmask)
 	{
 	try {
-		const boost::dynamic_bitset<>global = globalmask.subset(*this);
+		const boost::dynamic_bitset<>global = p_globalmask.subset(*this);
 		if ((global.count()>1)&&(global.count()<global.size()))
 			{
 			std::string lastFMTaggregate("~FMT"+std::to_string(getid())+"A_0");
-			for (const std::string& aggregate : aggregates)
+			for (const std::string& aggregate : m_aggregates)
 				{
-				if (strtobits(aggregate) == global)
+				if (strToBits(aggregate) == global)
 					{
 					return aggregate;
 					}
@@ -549,60 +596,60 @@ std::string FMTtheme::updatefrommask(const Core::FMTmask& globalmask)
 				{
 				if (global[bid])
 					{
-					push_aggregate_value(newaggregate,attributes.at(bid));
+					push_aggregate_value(newaggregate,m_attributes.at(bid));
 					aggregateindex.push_back(bid);
 					}
 
 				}
-			attribute_locations[newaggregate] = aggregateindex;
+			m_attribute_locations[newaggregate] = aggregateindex;
 			//buildattributelocations();
 			}
-		return bitstostr(global);
+		return bitsToStr(global);
 	}catch (...)
 		{
-		_exhandler->raisefromcatch("", "FMTtheme::updatefrommask", __LINE__, __FILE__);
+		_exhandler->raisefromcatch("", "FMTtheme::updateFromMask", __LINE__, __FILE__);
 		}
 	return "?";
 	}
 
 std::vector<std::string>FMTtheme::getaggregates() const
 	{
-	return aggregates;
+	return m_aggregates;
 	}
 
 
-FMTtheme FMTtheme::presolve(FMTmaskfilter& maskfilter, size_t& newid, size_t& newstart) const
+FMTtheme FMTtheme::presolve(FMTmaskfilter& p_maskfilter, size_t& p_newid, size_t& p_newstart) const
 	{
 	try {
-		if (maskfilter.empty())
+		if (p_maskfilter.empty())
 		{
 			_exhandler->raise(Exception::FMTexc::FMTinvalid_maskrange,
 				"Empty selection", "FMTtheme::presolve", __LINE__, __FILE__);
 		}
-		if (maskfilter.flippedselection.empty())
+		if (p_maskfilter.flippedselection.empty())
 		{
-			maskfilter.flippedselection = boost::dynamic_bitset<>(maskfilter.selection.size(), false);
+			p_maskfilter.flippedselection = boost::dynamic_bitset<>(p_maskfilter.selection.size(), false);
 		}
 		FMTtheme newtheme(*this);
-		newtheme.attributes.clear();
-		newtheme.attributenames.clear();
-		newtheme.aggregates.clear();
-		newtheme.aggregatenames.clear();
-		newtheme.indexes.clear();
-		newtheme.attribute_locations.clear();
+		newtheme.m_attributes.clear();
+		newtheme.m_attributenames.clear();
+		newtheme.m_aggregates.clear();
+		newtheme.m_aggregatenames.clear();
+		newtheme.m_indexes.clear();
+		newtheme.m_attribute_locations.clear();
 
 		std::vector<std::string>newattributes;
 		std::vector<std::string>newattributenames;
 		size_t location = 0;
-		for (size_t binlocation = start; binlocation < (start + this->size()); ++binlocation)
+		for (size_t binlocation = m_start; binlocation < (m_start + this->size()); ++binlocation)
 			{
-				if (maskfilter.selection[binlocation])
+				if (p_maskfilter.selection[binlocation])
 				{
-					maskfilter.flippedselection[binlocation] = true;
-					newattributes.push_back(attributes.at(location));
-					if (!attributenames.empty())
+					p_maskfilter.flippedselection[binlocation] = true;
+					newattributes.push_back(m_attributes.at(location));
+					if (!m_attributenames.empty())
 						{
-						newattributenames.push_back(attributenames.at(location));
+						newattributenames.push_back(m_attributenames.at(location));
 						}
 					
 				}
@@ -611,58 +658,59 @@ FMTtheme FMTtheme::presolve(FMTmaskfilter& maskfilter, size_t& newid, size_t& ne
 
 		if (newattributes.size() > 1)
 		{
-			newtheme.attributes = newattributes;
-			newtheme.attributenames = newattributenames;
-			newtheme.id = newid;
-			++newid;
-			newtheme.start = newstart;
-			newstart += newtheme.size();
-			for (const std::string& aggregate : aggregates)
+			newtheme.m_attributes = newattributes;
+			newtheme.m_attributenames = newattributenames;
+			newtheme.m_id = p_newid;
+			++p_newid;
+			newtheme.m_start = p_newstart;
+			p_newstart += newtheme.size();
+			for (const std::string& aggregate : m_aggregates)
 				{
 				std::vector<std::string>aggvalues;
-				for (const size_t& baselocation : getattribute(aggregate)->second)
+				for (const size_t& baselocation : getAttribute(aggregate)->second)
 					{
-					if (std::find(newattributes.begin(),newattributes.end(),attributes.at(baselocation))!= newattributes.end())
+					if (std::find(newattributes.begin(),newattributes.end(), m_attributes.at(baselocation))!= newattributes.end())
 						{
-						aggvalues.push_back(attributes.at(baselocation));
+						aggvalues.push_back(m_attributes.at(baselocation));
 						}
 					}
 				if (!aggvalues.empty())
 					{
-					newtheme.aggregates.push_back(aggregate);
-					newtheme.aggregatenames.push_back(aggvalues);
+					newtheme.m_aggregates.push_back(aggregate);
+					newtheme.m_aggregatenames.push_back(aggvalues);
 					}
 				}
 		}else {
-			for (size_t binlocation = start; binlocation < (start + this->size()); ++binlocation)
+			for (size_t binlocation = m_start; binlocation < (m_start + this->size()); ++binlocation)
 			{
-				maskfilter.flippedselection[binlocation] = false;
+				p_maskfilter.flippedselection[binlocation] = false;
 			}
 		}
-		newtheme.buildattributelocations();
+		newtheme.buildAttributeLocations();
 		return newtheme;
 	}catch (...)
 		{
-		_exhandler->raisefromcatch("for theme "+std::to_string(id),"FMTtheme::presolve", __LINE__, __FILE__, Core::FMTsection::Landscape);
+		_exhandler->raisefromcatch("for theme "+std::to_string(m_id),"FMTtheme::presolve", __LINE__, __FILE__, Core::FMTsection::Landscape);
 		}
 	return FMTtheme();
 	}
 
 
-FMTthemecomparator::FMTthemecomparator(const FMTtheme& lbase_theme, const bool& lcomparedwithpresolved): base_theme(lbase_theme),comparedwithpresolved(lcomparedwithpresolved)
+FMTthemecomparator::FMTthemecomparator(const FMTtheme& p_lbase_theme, const bool& p_lcomparedwithpresolved): 
+	m_base_theme(p_lbase_theme),m_comparedwithpresolved(p_lcomparedwithpresolved)
 	{
 
 	}
 
-bool FMTthemecomparator::operator()(const FMTtheme& theme) const
+bool FMTthemecomparator::operator()(const FMTtheme& p_theme) const
 	{
-	if (!comparedwithpresolved)
+	if (!m_comparedwithpresolved)
 	{
-		return (theme == base_theme);
+		return (p_theme == m_base_theme);
 	}else{
-		for (const std::string& attribute : theme.getbaseattributes())
+		for (const std::string& attribute : p_theme.getbaseattributes())
 		{
-			if (!base_theme.isattribute(attribute))
+			if (!m_base_theme.isattribute(attribute))
 			{
 				return false;
 			}
@@ -676,7 +724,7 @@ Rcpp::DataFrame FMTtheme::getaggregatesasdataframe() const
 {
 	Rcpp::DataFrame data = Rcpp::DataFrame();
 	try {
-		if (!aggregates.empty())
+		if (!m_aggregates.empty())
 			{
 			std::vector<int>themeids;
 			std::vector<std::string>locattributes;
@@ -703,10 +751,10 @@ Rcpp::DataFrame FMTtheme::getattributesasdataframe() const
 {
 	Rcpp::DataFrame data = Rcpp::DataFrame();
 	try {
-		if (!attributenames.empty())
+		if (!m_attributenames.empty())
 		{
 			bool gotnames = false;
-			for (const std::string& name : attributenames)
+			for (const std::string& name : m_attributenames)
 			{
 				if (!name.empty())
 				{
@@ -716,14 +764,14 @@ Rcpp::DataFrame FMTtheme::getattributesasdataframe() const
 			}
 			if (gotnames)
 			{
-				std::vector<int>ids(attributes.size(), id + 1);
-				Rcpp::IntegerVector rids(ids.begin(), ids.end());
-				Rcpp::StringVector rattributes(attributes.begin(), attributes.end());
-				Rcpp::StringVector rnames(attributenames.begin(), attributenames.end());
+				std::vector<int>ids(m_attributes.size(), id + 1);
+				Rcpp::IntegerVector rids(m_ids.begin(), m_ids.end());
+				Rcpp::StringVector rattributes(m_attributes.begin(), m_attributes.end());
+				Rcpp::StringVector rnames(m_attributenames.begin(), m_attributenames.end());
 				data.push_back(rids, "THEMES");
 				data.push_back(rattributes, "ATTRIBUTES");
 				data.push_back(rnames, "NAMES");
-				data.attr("row.names") = Rcpp::seq(1, ids.size());
+				data.attr("row.names") = Rcpp::seq(1, m_ids.size());
 			}
 		}
 		data.attr("class") = "data.frame";
@@ -736,66 +784,66 @@ Rcpp::DataFrame FMTtheme::getattributesasdataframe() const
 
 #endif
 
-bool FMTtheme::checkmask(const std::vector<Core::FMTtheme>& themes,
-	const std::vector<std::string>& values, std::string& mask, const std::string& otherinformation)
+bool FMTtheme::checkMask(const std::vector<Core::FMTtheme>& p_themes,
+	const std::vector<std::string>& p_values, std::string& p_mask, const std::string& p_otherinformation)
 {
 	//otherinformation = " at line " + std::to_string(_line);
 	bool returnvalue = true;
-	if (themes.size() > values.size())
+	if (p_themes.size() > p_values.size())
 	{
 		//_exhandler->raise(Exception::FMTexc::FMTinvalid_maskrange, mask + otherinformation,"FMTobject::checkmask", __LINE__, __FILE__, _section);
-		const std::string original(mask);
-		mask.clear();
-		for (const std::string& value : values)
+		const std::string original(p_mask);
+		p_mask.clear();
+		for (const std::string& value : p_values)
 		{
-			mask += value + " ";
+			p_mask += value + " ";
 		}
-		for (size_t id = values.size(); id < themes.size(); ++id)
+		for (size_t id = p_values.size(); id < p_themes.size(); ++id)
 		{
-			mask += "? ";
+			p_mask += "? ";
 		}
-		mask.pop_back();
+		p_mask.pop_back();
 		_exhandler->raise(Exception::FMTexc::FMTignore,
-			"Extended mask " + original + " to " + mask, "FMTobject::checkmask", __LINE__, __FILE__);
+			"Extended mask " + original + " to " + p_mask, "FMTobject::checkmask", __LINE__, __FILE__);
 		returnvalue = true;
 	}
 	else {
 		size_t id = 0;
-		const std::string original(mask);
-		mask.clear();
-		for (const Core::FMTtheme& theme : themes)
+		const std::string original(p_mask);
+		p_mask.clear();
+		for (const Core::FMTtheme& theme : p_themes)
 		{
-			if (id < values.size() && !theme.isvalid(values[id]))
+			if (id < p_values.size() && !theme.isValid(p_values[id]))
 			{
-				const std::string message = values[id] + " at theme " + std::to_string(theme.getid() + 1) + otherinformation;
+				const std::string message = p_values[id] + " at theme " + std::to_string(theme.getid() + 1) + p_otherinformation;
 				_exhandler->raise(Exception::FMTexc::FMTundefined_attribute, message,
-					"FMTobject::checkmask", __LINE__, __FILE__);
+					"FMTthem::checkmask", __LINE__, __FILE__);
 				returnvalue = false;
 			}
 			std::string value = "?";
-			if (id < values.size())
+			if (id < p_values.size())
 			{
-				value = values[id];
+				value = p_values[id];
 			}
-			mask += value + " ";
+			p_mask += value + " ";
 			++id;
 		}
-		mask.pop_back();
-		if (values.size() != themes.size())
+		p_mask.pop_back();
+		if (p_values.size() != p_themes.size())
 		{
 			_exhandler->raise(Exception::FMTexc::FMTignore,
-				"Subset mask " + original + " to " + mask, "FMTobject::checkmask", __LINE__, __FILE__);
+				"Subset mask " + original + " to " + p_mask, "FMTtheme::checkmask", __LINE__, __FILE__);
 		}
 
 	}
 	return  returnvalue;
 }
 
-bool FMTtheme::validate(const std::vector<Core::FMTtheme>& themes, std::string& mask, std::string otherinformation)
+bool FMTtheme::validate(const std::vector<Core::FMTtheme>& p_themes, std::string& p_mask, std::string p_otherinformation)
 {
 	std::vector<std::string>values;
-	boost::split(values, mask, boost::is_any_of(" \t"), boost::token_compress_on);
-	return checkmask(themes, values, mask, otherinformation);
+	boost::split(values, p_mask, boost::is_any_of(" \t"), boost::token_compress_on);
+	return checkMask(p_themes, values, p_mask, p_otherinformation);
 }
 
 

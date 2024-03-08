@@ -303,7 +303,7 @@ Core::FMTmask FMTmodel::addNewMask(const Core::FMTmask& p_incompleteMask)
 		std::string NewMask;
 		for (Core::FMTtheme& theme : themes)
 		{
-			NewMask += theme.updatefrommask(p_incompleteMask) + " ";
+			NewMask += theme.updateFromMask(p_incompleteMask) + " ";
 		}
 		NewMask.pop_back();
 		baseMask = Core::FMTmask(NewMask, themes);
