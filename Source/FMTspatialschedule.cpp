@@ -50,7 +50,8 @@ namespace Spatial
 			coordinates[id] = devit->first;
 			++id;
         }
-		cache.swap(FMTspatialnodescache(coordinates));
+		FMTspatialnodescache newCache(coordinates);
+		cache.swap(newCache);
     }
 
 	FMTspatialschedule::FMTspatialschedule(FMTspatialschedule&& rhs) noexcept:
@@ -1862,7 +1863,8 @@ FMTspatialschedule FMTspatialschedule::presolve(const Core::FMTmaskfilter& p_fil
 			coordinates[id] = graphIt->first;
 			++id;
 			}
-		presolvedSchedule.cache.swap(FMTspatialnodescache(coordinates));
+		FMTspatialnodescache newCache(coordinates);
+		presolvedSchedule.cache.swap(newCache);
 		}catch (...)
 		{
 			_exhandler->raisefromcatch("", "FMTspatialschedule::presolve", __LINE__, __FILE__);
