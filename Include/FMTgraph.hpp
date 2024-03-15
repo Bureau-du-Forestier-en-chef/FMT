@@ -98,7 +98,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 	}
 	BOOST_SERIALIZATION_SPLIT_MEMBER()
 	protected:
-		typedef boost::adjacency_list< boost::listS,
+		typedef boost::adjacency_list<boost::listS,
 			boost::listS,
 			boost::bidirectionalS,
 			tvertexproperties,

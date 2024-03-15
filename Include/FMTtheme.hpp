@@ -317,12 +317,12 @@ class FMTEXPORT FMTtheme : public FMTobject
 		/**
 		Convert an attribute|aggregate|? (value) to a bitset for the entire theme size.
 		*/
-		boost::dynamic_bitset<> strToBits(const std::string& p_value) const;
+		 boost::dynamic_bitset<uint8_t> strToBits(const std::string& p_value) const;
 		// DocString: FMTtheme::bitsToStr
 		/**
 		Convert a bitset to an attribute|aggregate|? (value) for the entire theme size.
 		*/
-		std::string bitsToStr(const boost::dynamic_bitset<>& p_bits) const;
+		std::string bitsToStr(const boost::dynamic_bitset<uint8_t>& p_bits) const;
 		// DocString: FMTtheme::getAttribute
 		/**
 		Get the attribute iterator, will raise if not found.

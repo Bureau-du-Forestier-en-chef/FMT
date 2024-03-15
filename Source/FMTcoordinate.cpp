@@ -14,10 +14,10 @@ namespace Spatial
     //Implementation for Rcpp .. Normally should be static member
 	constexpr std::array<int,8> x_n = { 0,1,0,-1,1,1,-1,-1 };
 	constexpr std::array<int,8> y_n = { -1,0,1,0,-1,1,1,-1 };
-    FMTcoordinate::FMTcoordinate():x(),y(){}
-    FMTcoordinate::FMTcoordinate(unsigned int lx, unsigned int ly):
-        x(lx),y(ly){}
-    FMTcoordinate::FMTcoordinate(const FMTcoordinate& rhs):x(rhs.x),y(rhs.y){}
+    FMTcoordinate::FMTcoordinate():m_x(), m_y(){}
+    FMTcoordinate::FMTcoordinate(uint16_t p_x, uint16_t p_y):
+        m_x(p_x),m_y(p_y){}
+    FMTcoordinate::FMTcoordinate(const FMTcoordinate& rhs):m_x(rhs.m_x), m_y(rhs.m_y){}
 
     FMTcoordinate FMTcoordinate::at(unsigned int id) const
         {
@@ -27,13 +27,13 @@ namespace Spatial
         /// Factor is a floor
         const int factor = ((id / 8) + 1);
         id = (id - (factor-1) * 8);
-        return FMTcoordinate(x+(x_n[id]*factor),y+(y_n[id]*factor));
+        return FMTcoordinate(m_x+(x_n[id]*factor), m_y+(y_n[id]*factor));
         }
 
 	void FMTcoordinate::getxygap(const FMTcoordinate& rhs, int& xgap, int& y_gap) const
 		{
-		xgap = (static_cast<int>(x) - static_cast<int>(rhs.x));
-		y_gap = (static_cast<int>(y) - static_cast<int>(rhs.y));
+		xgap = (static_cast<int>(m_x) - static_cast<int>(rhs.m_x));
+		y_gap = (static_cast<int>(m_y) - static_cast<int>(rhs.m_y));
 		}
 
     double FMTcoordinate::distance(const FMTcoordinate& coord) const
@@ -81,20 +81,75 @@ namespace Spatial
     template bool FMTcoordinate::within<size_t>(const size_t& ldistance, const FMTcoordinate& coord) const;
     template bool FMTcoordinate::within<unsigned int>(const unsigned int& ldistance, const FMTcoordinate& coord) const;
     template bool FMTcoordinate::within<double>(const double& ldistance,const FMTcoordinate& coord) const;
+    template bool FMTcoordinate::within<uint16_t>(const uint16_t& ldistance, const FMTcoordinate& coord) const;
 
-    unsigned int FMTcoordinate::getx() const
+
+
+    FMTcoordinate FMTcoordinate::getAverageCentroid(const std::vector<FMTcoordinate>& p_enveloppe)
+    {
+        const uint16_t startx = p_enveloppe.at(0).m_x;
+        const uint16_t starty = p_enveloppe.at(0).m_y;
+        const uint16_t plusx = ((p_enveloppe.at(1).m_x) - startx) / 2;
+        const uint16_t plusy = ((p_enveloppe.at(2).m_y) - starty) / 2;
+        return FMTcoordinate(startx + plusx, starty + plusy);
+    }
+
+    std::set<FMTcoordinate> FMTcoordinate::getTerritory(const std::vector<FMTcoordinate>& p_enveloppe, const size_t& p_distance)
+    {
+        std::set<FMTcoordinate>territory;
+        const int distanceof = static_cast<int>(p_distance);
+        const int zeroof = 0;
+        territory.insert(FMTcoordinate(std::max(static_cast<int>(p_enveloppe.at(0).m_x) - distanceof, zeroof), std::max(static_cast<int>(p_enveloppe.at(0).m_y) - distanceof, zeroof)));
+        territory.insert(FMTcoordinate(static_cast<int>(p_enveloppe.at(1).m_x) + distanceof, std::max(static_cast<int>(p_enveloppe.at(1).m_y) - distanceof, zeroof)));
+        territory.insert(FMTcoordinate(std::max(static_cast<int>(p_enveloppe.at(2).m_x) - distanceof, zeroof), static_cast<int>(p_enveloppe.at(2).m_y) + distanceof));
+        territory.insert(FMTcoordinate(static_cast<int>(p_enveloppe.at(3).m_x) + distanceof, static_cast<int>(p_enveloppe.at(3).m_y) + distanceof));
+        return territory;
+    }
+
+    size_t FMTcoordinate::getHeight(const std::vector<FMTcoordinate>& p_enveloppe)
+    {
+        size_t height = 0;
+        if (p_enveloppe.at(0).m_y > p_enveloppe.at(2).m_y)
+        {
+            height = static_cast<size_t>(p_enveloppe.at(0).m_y - p_enveloppe.at(2).m_y);
+        }
+        else {
+            height = static_cast<size_t>(p_enveloppe.at(2).m_y - p_enveloppe.at(0).m_y);
+        }
+        return height + 1;
+
+    }
+
+    size_t FMTcoordinate::getWidth(const std::vector<FMTcoordinate>& p_enveloppe)
+    {
+        //const std::vector<FMTcoordinate>enveloppe = getenveloppe();
+        //return static_cast<size_t>(enveloppe.at(1).getXDistance(enveloppe.at(0))) + 1;
+        size_t width = 0;
+        if (p_enveloppe.at(0).m_x > p_enveloppe.at(1).m_x)
+        {
+            width = static_cast<size_t>(p_enveloppe.at(0).m_x - p_enveloppe.at(1).m_x);
+        }
+        else {
+            width = static_cast<size_t>(p_enveloppe.at(1).m_x - p_enveloppe.at(0).m_x);
+        }
+        return width + 1;
+
+    }
+
+
+    /*unsigned int FMTcoordinate::getx() const
         {
         return x;
         }
     unsigned int FMTcoordinate::gety() const
         {
         return y;
-        }
+        }*/
 
     const std::vector<double> FMTcoordinate::getSpatialCoordinate(std::vector<double> geoTransform) const
     {
-        double xGeo = geoTransform[0] + (x + 0.5) * geoTransform[1] + (y + 0.5) * geoTransform[2];
-        double yGeo = geoTransform[3] + (x + 0.5) * geoTransform[4] + (y + 0.5) * geoTransform[5];
+        double xGeo = geoTransform[0] + (m_x + 0.5) * geoTransform[1] + (m_y + 0.5) * geoTransform[2];
+        double yGeo = geoTransform[3] + (m_x + 0.5) * geoTransform[4] + (m_y + 0.5) * geoTransform[5];
 
         return std::vector<double>({ xGeo, yGeo });
     }
@@ -103,25 +158,25 @@ namespace Spatial
         {
         if(this!=&rhs)
             {
-            x = rhs.x;
-            y = rhs.y;
+            m_x = rhs.m_x;
+            m_y = rhs.m_y;
             }
         return *this;
         }
     bool FMTcoordinate::operator == (const FMTcoordinate& rhs) const
         {
-        return (x == rhs.x && y == rhs.y);
+        return (m_x == rhs.m_x && m_y == rhs.m_y);
         }
      bool FMTcoordinate::operator < (const FMTcoordinate& rhs) const
         {
-        return ((y<rhs.y)||((y==rhs.y)&&(x<rhs.x)));
+        return ((m_y<rhs.m_y)||((m_y==rhs.m_y)&&(m_x<rhs.m_x)));
         }
 
 	 size_t FMTcoordinate::hash() const
 		{
 		 size_t hash = 0;
-		 boost::hash_combine(hash, x);
-		 boost::hash_combine(hash, y);
+		 boost::hash_combine(hash, m_x);
+		 boost::hash_combine(hash, m_y);
 		 return hash;
 		}
 
@@ -130,44 +185,54 @@ namespace Spatial
 		//0//-//1//
 		//-//-//-//
 		//2//-//3//
-		int minx = std::min(enveloppe[0].x,x);
-		int maxx = std::max(enveloppe[1].x,x);
-		int miny = std::min(enveloppe[0].y,y);
-		int maxy = std::max(enveloppe[2].y,y);
-		enveloppe[0].x = minx;
-		enveloppe[0].y = miny;
-		enveloppe[1].x = maxx;
-		enveloppe[1].y = miny;
-		enveloppe[2].x = minx;
-		enveloppe[2].y = maxy;
-		enveloppe[3].x = maxx;
-		enveloppe[3].y = maxy;
+		const uint16_t minx = std::min(enveloppe[0].m_x, m_x);
+		const uint16_t maxx = std::max(enveloppe[1].m_x, m_x);
+		const uint16_t miny = std::min(enveloppe[0].m_y, m_y);
+		const uint16_t maxy = std::max(enveloppe[2].m_y, m_y);
+		enveloppe[0].m_x = minx;
+		enveloppe[0].m_y = miny;
+		enveloppe[1].m_x = maxx;
+		enveloppe[1].m_y = miny;
+		enveloppe[2].m_x = minx;
+		enveloppe[2].m_y = maxy;
+		enveloppe[3].m_x = maxx;
+		enveloppe[3].m_y = maxy;
         }
     FMTcoordinate::operator std::string() const
         {
-		return "X"+std::to_string(x)+" Y"+std::to_string(y);
+		return "X"+std::to_string(m_x)+" Y"+std::to_string(m_y);
         }
-    std::set<FMTcoordinate> FMTcoordinate::getneighbors(const unsigned int& nsize,const bool& circle) const
+
+    uint16_t FMTcoordinate::getx() const
+    {
+        return m_x;
+    }
+    uint16_t FMTcoordinate::gety() const
+    {
+        return m_y;
+    }
+
+    std::set<FMTcoordinate> FMTcoordinate::getneighbors(const uint16_t& nsize,const bool& circle) const
         {   ///nsize must be odd number
             ///https://grass.osgeo.org/grass78/manuals/r.neighbors.html
             std::set<FMTcoordinate> n;
             if (circle)
             {
-                const unsigned int radius = (nsize-1)/2;
-                const int ymax = y+radius;
-                int ly = y-radius;
+                const int radius = (static_cast<int>(nsize)-1)/2;
+                const int ymax = m_y+radius;
+                int ly = static_cast<int>(m_y)- radius;
                 while (ly<=ymax)
                 {
-					const int diffint = (ly - y);
+					const int diffint = (ly - static_cast<int>(m_y));
                     const int lydistance = std::abs(diffint);
-                    const int lxdistance = static_cast<unsigned int>(sqrt((radius*radius)-(lydistance*lydistance)));
-                    int lx = x-lxdistance;
-                    const int xmax = x+lxdistance;
+                    const int lxdistance = static_cast<uint16_t>(sqrt((radius*radius)-(lydistance*lydistance)));
+                    int lx = static_cast<int>(m_x)-lxdistance;
+                    const int xmax = static_cast<int>(m_x)+lxdistance;
                     while(lx<=xmax)
                     {
-                        if ((lx>=0 && ly>=0) && !(static_cast<unsigned int>(lx)==x && static_cast<unsigned int>(lx)==y))
+                        if ((lx>=0 && ly>=0) && !(static_cast<uint16_t>(lx)==m_x && static_cast<uint16_t>(lx)==m_y))
                         {
-                            n.emplace(static_cast<unsigned int>(lx),static_cast<unsigned int>(ly));
+                            n.emplace(static_cast<uint16_t>(lx),static_cast<uint16_t>(ly));
                         }
                         lx+=1;
                     }
@@ -176,20 +241,20 @@ namespace Spatial
             }
             else
             {
-                const unsigned int d = (nsize-1)/2;
-                const int xmin = x-d;
-                const int ymin = y-d;
-                const int xmax = x+d;
-                const int ymax = y+d;
+                const int d = (static_cast<int>(nsize)-1)/2;
+                const int xmin = static_cast<int>(m_x)-d;
+                const int ymin = static_cast<int>(m_y) -d;
+                const int xmax = static_cast<int>(m_x) +d;
+                const int ymax = static_cast<int>(m_y) +d;
                 int lx = xmin;
                 int ly = ymin;
                 while(ly<=ymax)
                 {
                     while(lx<=xmax)
                     {
-                        if ((lx>=0 && ly>=0) && !(static_cast<unsigned int>(lx)==x && static_cast<unsigned int>(lx)==y))
+                        if ((lx>=0 && ly>=0) && !(static_cast<uint16_t>(lx)==m_x && static_cast<uint16_t>(lx)==m_y))
                         {
-                            n.emplace(static_cast<unsigned int>(lx),static_cast<unsigned int>(ly));
+                            n.emplace(static_cast<uint16_t>(lx),static_cast<uint16_t>(ly));
                         }
                         lx+=1;
                     }

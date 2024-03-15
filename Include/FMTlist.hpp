@@ -401,7 +401,7 @@ namespace Core
 				{
 					std::vector<std::pair<FMTmask, T>>newvecdata;
 					std::list<std::pair<FMTmask, T>>newdata(data.begin(), data.end());
-					boost::dynamic_bitset<>selectedbits;
+					boost::dynamic_bitset<uint8_t>selectedbits;
 					selectedbits.resize(data.begin()->first.size(), true);
 					for (size_t loc = thstart;loc < (theme.size()+ thstart);++loc)
 						{
@@ -414,8 +414,8 @@ namespace Core
 						++datait;
 						std::vector<typename std::list<std::pair<FMTmask, T>>::iterator>toremove;
 						Core::FMTmask basemask(baseit->first);
-						const boost::dynamic_bitset<> selecinter = selectedbits & baseit->first.getbitsetreference();
-						boost::dynamic_bitset<> reverselect(selecinter);
+						const boost::dynamic_bitset<uint8_t> selecinter = selectedbits & baseit->first.getbitsetreference();
+						boost::dynamic_bitset<uint8_t> reverselect(selecinter);
 						for (size_t loc = thstart; loc < (theme.size() + thstart); ++loc)
 							{
 							reverselect[loc] = true;
@@ -426,10 +426,10 @@ namespace Core
 							{
 							/*Core::FMTmask datamask(datait->first);
 							datamask.set(theme, "?");*/
-							const boost::dynamic_bitset<>&dataref = datait->first.getbitsetreference();
+							const boost::dynamic_bitset<uint8_t>&dataref = datait->first.getbitsetreference();
 							if (dataref.is_subset_of(reverselect))
 							{
-								const boost::dynamic_bitset<> datainter = selectedbits & dataref;
+								const boost::dynamic_bitset<uint8_t> datainter = selectedbits & dataref;
 								if (datainter == selecinter &&
 									baseit->second == datait->second)
 								{

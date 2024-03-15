@@ -442,6 +442,22 @@ class FMTEXPORT FMTspatialschedule : public FMTlayer<Graph::FMTlinegraph>
 		postsolve the spatial solution.
 		*/
 		void postsolve(const Core::FMTmaskfilter&  filter,const std::vector<Core::FMTaction>& presolveactions,const Models::FMTmodel& originalbasemodel);
+		// DocString: FMTspatialschedule::presolve
+		/**
+		@brief Returned a presolved solution of the original solution.
+		@param[in] p_filter filter to keep mask
+		@param[in] p_presolvedThemes The themes of the presolved model.
+		@return A presolved FMTspatialschedule.
+		*/
+		FMTspatialschedule presolve(const Core::FMTmaskfilter& p_filter, const std::vector<Core::FMTtheme>& p_presolvedThemes) const;
+		// DocString: FMTsemodel::getarea
+		/**
+		@brief Get the area of a given period based on the solution of the model.
+		@param[in] period the period selected
+		@param[in] beforegrowanddeath true if we want before the growth (true) or after (false)
+		@return the vector of actualdevelopment...
+		*/
+		std::vector<Core::FMTactualdevelopment>getarea(int period = 0, bool beforegrowanddeath = false) const;
 	protected:
 		// DocString: FMTspatialschedule::events
 		/**

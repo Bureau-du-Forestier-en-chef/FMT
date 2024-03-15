@@ -29,7 +29,8 @@ namespace Models
         NUMBER_OF_THREADS = 4,/**< Number of thread use by solver for optimisation */
 		MATRIX_TYPE = 5,/**< matrix forest model TYPE I,II,III (1,2,3) */
         UPDATE = 6,/**< At which period the model update period stop (excluded) if stops at 2 (2 is part of optimization) but 1 in update */
-        LastIntModelParam = 7/**< End marker, used to allocate a fixed-sized array to store int parameters. */
+        MAX_MOVES = 7,/**< Maximal number of moves allowed by SA */
+        LastIntModelParam = 8/**< End marker, used to allocate a fixed-sized array to store int parameters. */
     };
     //DocString: FMTdblmodelparameters
     //

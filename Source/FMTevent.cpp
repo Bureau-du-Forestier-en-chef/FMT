@@ -152,24 +152,21 @@ namespace Spatial
 
 	size_t FMTevent::height() const
     {
-	const std::vector<FMTcoordinate>enveloppe = getenveloppe();
-    return ((static_cast<size_t>(enveloppe.at(2).gety()) - static_cast<size_t>(enveloppe.at(0).gety()))+1);
+	//const std::vector<FMTcoordinate>enveloppe = getenveloppe();
+    //return static_cast<size_t>(enveloppe.at(2).getYDistance(enveloppe.at(0))) + 1;
+    return FMTcoordinate::getHeight(getenveloppe());
     }
 
 	size_t FMTevent::width() const
     {
-	const std::vector<FMTcoordinate>enveloppe = getenveloppe();
-    return ((static_cast<size_t>(enveloppe.at(1).getx()) - static_cast<size_t>(enveloppe.at(0).getx()))+1);
+	//const std::vector<FMTcoordinate>enveloppe = getenveloppe();
+    //return static_cast<size_t>(enveloppe.at(1).getXDistance(enveloppe.at(0)))+1;
+     return FMTcoordinate::getWidth(getenveloppe());
     }
 
 	FMTcoordinate FMTevent::averagecentroid() const
     {
-	const std::vector<FMTcoordinate>enveloppe = getenveloppe();
-    const unsigned int startx = enveloppe.at(0).getx();
-    const unsigned int starty = enveloppe.at(0).gety();
-    const unsigned int plusx = (enveloppe.at(1).getx() - startx)/2;
-    const unsigned int plusy = (enveloppe.at(2).gety() - starty)/2;
-    return FMTcoordinate(startx + plusx, starty + plusy);
+    return FMTcoordinate::getAverageCentroid(getenveloppe());
     }
 
     std::string FMTevent::getstatsheader()
@@ -342,6 +339,7 @@ namespace Spatial
     template bool FMTevent::within<size_t>(const size_t& dist, const FMTevent& rhs) const;
     template bool FMTevent::within<unsigned int>(const unsigned int& dist, const FMTevent& rhs) const;
     template bool FMTevent::within<double>(const double& dist, const FMTevent& rhs) const;
+    template bool FMTevent::within<uint16_t>(const uint16_t& dist, const FMTevent& rhs) const;
 
     template<typename T>
     bool FMTevent::within(const T& dist, const FMTcoordinate& location) const
@@ -367,6 +365,7 @@ namespace Spatial
     }
     template bool FMTevent::within<unsigned int>(const unsigned int& dist, const FMTcoordinate& location) const;
     template bool FMTevent::within<double>(const double& dist, const FMTcoordinate& location) const;
+    template bool FMTevent::within<uint16_t>(const uint16_t& dist, const FMTcoordinate& location) const;
 
     bool FMTevent::contain(const FMTcoordinate& coord)const
     {
@@ -533,15 +532,7 @@ namespace Spatial
 
 	std::set<FMTcoordinate>FMTevent::getterritory(const size_t& distance) const
 	{
-		std::set<FMTcoordinate>territory;
-		const int distanceof = static_cast<int>(distance);
-		const int zeroof = 0;
-		const std::vector<FMTcoordinate>enveloppe = getenveloppe();
-		territory.insert(FMTcoordinate(std::max(static_cast<int>(enveloppe.at(0).getx()) - distanceof, zeroof), std::max(static_cast<int>(enveloppe.at(0).gety()) - distanceof, zeroof)));
-		territory.insert(FMTcoordinate(static_cast<int>(enveloppe.at(1).getx()) + distanceof, std::max(static_cast<int>(enveloppe.at(1).gety()) - distanceof, zeroof)));
-		territory.insert(FMTcoordinate(std::max(static_cast<int>(enveloppe.at(2).getx()) - distanceof, zeroof), static_cast<int>(enveloppe.at(2).gety()) + distanceof));
-		territory.insert(FMTcoordinate(static_cast<int>(enveloppe.at(3).getx()) + distanceof, static_cast<int>(enveloppe.at(3).gety()) + distanceof));
-		return territory;
+        return FMTcoordinate::getTerritory(getenveloppe(), distance);
 	}
 
     bool FMTevent::splitevent(const unsigned int& ldistance, std::vector<FMTevent>& splittedevents) const

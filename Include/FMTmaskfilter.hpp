@@ -38,8 +38,8 @@ class FMTEXPORT FMTmaskfilter
 		}
     protected:
 		/*boost::dynamic_bitset<> fullset;*/
-        boost::dynamic_bitset<> selection;
-        boost::dynamic_bitset<> flippedselection;
+        boost::dynamic_bitset<uint8_t> selection;
+        boost::dynamic_bitset<uint8_t> flippedselection;
 		//std::vector<size_t>index;
     public:
         FMTmaskfilter();
@@ -65,7 +65,7 @@ class FMTEXPORT FMTmaskfilter
 			}
 		inline size_t hash() const
 			{
-			return (boost::hash<boost::dynamic_bitset<>>()(selection) ^ boost::hash<boost::dynamic_bitset<>>()(flippedselection));
+			return (boost::hash<boost::dynamic_bitset<uint8_t>>()(selection) ^ boost::hash<boost::dynamic_bitset<uint8_t>>()(flippedselection));
 			}
     };
 

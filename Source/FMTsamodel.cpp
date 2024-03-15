@@ -598,13 +598,9 @@ namespace Models
         bool FMTsamodel::isProvenOptimal() const
         {
             try {
-                return (CoolingSchedule->GetTemp() < FMT_DBL_TOLERANCE && TotalMoves > 0 && !AllowAnyMove());
-                /*if (CoolingSchedule->GetTemp() < FMT_DBL_TOLERANCE && TotalMoves > 0 && GetAcceptedCycleMoves() == 0)
-                {
-                    const double globalobjective = solution.getglobalobjective(*this);
-                    const double gap = std::abs(globalobjective - LastGlobalObjectiveValue);
-                    return (gap < FMT_DBL_TOLERANCE);
-                }*/
+               
+                return ((TotalMoves >= getparameter(FMTintmodelparameters::MAX_MOVES)) || 
+                             (CoolingSchedule->GetTemp() < FMT_DBL_TOLERANCE && TotalMoves > 0 && !AllowAnyMove()));
             }
             catch (...)
             {

@@ -1005,7 +1005,7 @@ Core::FMTmask FMTmodel::getdynamicmask(const Core::FMToutput& output, bool ignor
 		
 		basename.pop_back();
 		const Core::FMTmask submask(basename,themes);
-		boost::dynamic_bitset<>bits = submask.getbitsetreference();
+		 boost::dynamic_bitset<uint8_t>bits = submask.getbitsetreference();
 		for (const Core::FMTtheme& theme : staticcthemes)
 			{
 			const size_t start = static_cast<size_t>(theme.getstart());
@@ -1040,7 +1040,7 @@ Core::FMTmask FMTmodel::getdynamicmask(const Core::FMToutputnode& node, bool ign
 		
 		
 		const Core::FMTmask submask(basename, themes);
-		boost::dynamic_bitset<>bits = submask.getbitsetreference();
+		 boost::dynamic_bitset<uint8_t>bits = submask.getbitsetreference();
 		for (const Core::FMTtheme& theme : staticcthemes)
 		{
 			
@@ -1232,10 +1232,10 @@ void FMTmodel::clearcache()
 
 Core::FMTmask FMTmodel::getbasemask(std::vector<Core::FMTactualdevelopment> optionaldevelopments) const
 	{
-	Core::FMTmask basemask(boost::dynamic_bitset<>(area.begin()->getmask().size(), false));
+	Core::FMTmask basemask( boost::dynamic_bitset<uint8_t>(area.begin()->getmask().size(), false));
 	try {
 		optionaldevelopments.insert(optionaldevelopments.end(), area.begin(), area.end());
-		Core::FMTmask areamask(boost::dynamic_bitset<>(area.begin()->getmask().size(), false));
+		Core::FMTmask areamask( boost::dynamic_bitset<uint8_t>(area.begin()->getmask().size(), false));
 		for (const Core::FMTactualdevelopment& developement : optionaldevelopments)
 			{
 			areamask = areamask.getunion(developement.getmask());
@@ -1316,9 +1316,9 @@ Core::FMTmask FMTmodel::getbasemask(std::vector<Core::FMTactualdevelopment> opti
 					}
 				}
 			}
-			boost::dynamic_bitset<>bits(basemask.size(),false);
-			const boost::dynamic_bitset<>& areamaskref = areamask.getbitsetreference();
-			const boost::dynamic_bitset<>& basemaskref = basemask.getbitsetreference();
+			 boost::dynamic_bitset<uint8_t>bits(basemask.size(),false);
+			const boost::dynamic_bitset<uint8_t>& areamaskref = areamask.getbitsetreference();
+			const boost::dynamic_bitset<uint8_t>& basemaskref = basemask.getbitsetreference();
 			for (const Core::FMTtheme& theme : themes)
 				{
 				const size_t start = static_cast<size_t>(theme.getstart());
@@ -1384,9 +1384,9 @@ Core::FMTmask FMTmodel::getselectedmask(const std::vector<Core::FMTtheme>& origi
 		{
 		newmasksize += theme.size();
 		}
-	//const boost::dynamic_bitset<>& basewithoutpresolve = basedevelopment.getmask().getbitsetreference();
-	boost::dynamic_bitset<>selection(newmasksize, false);
-	//boost::dynamic_bitset<> selection(basewithoutpresolve);
+	//const boost::dynamic_bitset<uint8_t>& basewithoutpresolve = basedevelopment.getmask().getbitsetreference();
+	 boost::dynamic_bitset<uint8_t>selection(newmasksize, false);
+	// boost::dynamic_bitset<uint8_t> selection(basewithoutpresolve);
 	try {
 		size_t bitselection = 0;
 		size_t presolvedthemeid = 0;

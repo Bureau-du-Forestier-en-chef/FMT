@@ -25,6 +25,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <boost/filesystem/operations.hpp>
 #include "FMTexceptionhandler.hpp"
 #include <random>
+#include <unordered_map>
 
 #ifdef FMTWITHGDAL
 	#include "gdal_alg.h"
@@ -459,7 +460,11 @@ const boost::regex FMTareaparser::rxcleanarea = boost::regex("^((\\*A[A]*)([^|]*
 				bands.push_back(band);
 				attributes.push_back(getcat(dataset));
 			}
-			std::map<Spatial::FMTcoordinate, Core::FMTdevelopment>mapping;
+			//std::map<Spatial::FMTcoordinate, Core::FMTdevelopment>mapping;
+			const std::string projection = agedataset->GetProjectionRef();
+			const unsigned int xsize = ageband->GetXSize();
+			const unsigned int ysize = ageband->GetYSize();
+			Spatial::FMTlayer<Core::FMTdevelopment>mapping(pad, xsize, ysize, projection, cellsize);
 			int missing = 0;
 			unsigned int ystack = 0;
 			for (int iYBlock = 0; iYBlock < nYBlocks; iYBlock++)
@@ -485,8 +490,9 @@ const boost::regex FMTareaparser::rxcleanarea = boost::regex("^((\\*A[A]*)([^|]*
 						}
 					}
 					ageband->GetActualBlockSize(iXBlock, iYBlock, &nXValid, &nYValid);
-					std::map<int, std::string>mapattributes;
+					std::unordered_map<int, std::string>mapattributes;
 					boost::unordered_map<int, Spatial::FMTcoordinate>coordinates;
+					std::vector<int>indexes;
 					std::vector<int>counts(static_cast<size_t>(nXBlockSize) * static_cast<size_t>(nYBlockSize), 0);
 					for (size_t themeid = 0; themeid < data_rasters.size(); ++themeid)
 					{
@@ -505,7 +511,7 @@ const boost::regex FMTareaparser::rxcleanarea = boost::regex("^((\\*A[A]*)([^|]*
 								int intattribute = attributedata[baselocation];
 								if (intattribute != nodata)
 								{
-									const std::string attribute = attributes[themeid][intattribute];
+									const std::string& attribute = attributes[themeid][intattribute];
 									if (mapattributes.find(baselocation) == mapattributes.end())
 									{
 										mapattributes[baselocation] = "";
@@ -513,7 +519,17 @@ const boost::regex FMTareaparser::rxcleanarea = boost::regex("^((\\*A[A]*)([^|]*
 									mapattributes[baselocation] += (attribute + " ");
 									if (themeid == 0)
 									{
-										coordinates[baselocation] = Spatial::FMTcoordinate(x, y);
+										if (x>static_cast<size_t>(std::numeric_limits<uint16_t>::max())||
+											y>static_cast<size_t>(std::numeric_limits<uint16_t>::max()))
+										{
+											_exhandler->raise(Exception::FMTexc::FMTrangeerror,
+												"Coordinate out of bounds "+std::to_string(x)+" "+std::to_string(y),
+												"FMTareaparser::readrasters", __LINE__, __FILE__, _section);
+										}
+										const uint16_t xValue = static_cast<uint16_t>(x);
+										const uint16_t yValue = static_cast<uint16_t>(y);
+										coordinates[baselocation] = Spatial::FMTcoordinate(xValue, yValue);
+										indexes.push_back(baselocation);
 									}
 									counts[baselocation] += 1;
 								}
@@ -525,15 +541,25 @@ const boost::regex FMTareaparser::rxcleanarea = boost::regex("^((\\*A[A]*)([^|]*
 					const size_t attcounts = themes.size();
 					if (!mapattributes.empty())
 					{
-						for (std::map<int, std::string>::iterator att = mapattributes.begin(); att != mapattributes.end(); ++att)
+						std::unordered_map<std::string, Core::FMTmask>cacheMask;
+						for (const int& location : indexes)
 						{
-							std::string st = att->second;
-							const int location = att->first;
+							//std::string st = att->second;
+							//const int location = att->first;
+							const std::string& st = mapattributes.at(location);
 							if (counts[location] == attcounts && agedata[location] != nodata)
 							{
 								std::string maskvalue = st.substr(0, st.size() - 1);
-								if (!Core::FMTtheme::validate(themes, maskvalue, " at line " + std::to_string(_line))) continue;
-								const Core::FMTmask mask(maskvalue, themes);
+								Core::FMTmask mask;
+								if (cacheMask.find(maskvalue) == cacheMask.end())
+									{
+									const std::string originalMask = maskvalue;
+									if (!Core::FMTtheme::validate(themes, maskvalue, " at line " + std::to_string(_line))) continue;
+									mask = Core::FMTmask(maskvalue, themes);
+									cacheMask[originalMask] = mask;
+								}else {
+									mask = cacheMask.at(maskvalue);
+								}
 								int lock = 0;
 								if (!lockdata.empty())
 								{
@@ -561,9 +587,7 @@ const boost::regex FMTareaparser::rxcleanarea = boost::regex("^((\\*A[A]*)([^|]*
 				_exhandler->raise(Exception::FMTexc::FMTmissingrasterattribute, message,
 					"FMTareaparser::readrasters", __LINE__, __FILE__, _section);
 			}
-			const std::string projection = agedataset->GetProjectionRef();
-			const unsigned int xsize = ageband->GetXSize();
-			const unsigned int ysize = ageband->GetYSize();
+			
 			GDALClose(agedataset);
 			for (GDALDataset* dataset : datasets)
 				{
@@ -573,7 +597,7 @@ const boost::regex FMTareaparser::rxcleanarea = boost::regex("^((\\*A[A]*)([^|]*
 				{
 				GDALClose(lockdataset);
 				}
-			return Spatial::FMTlayer<Core::FMTdevelopment>(mapping, pad, xsize, ysize, projection, cellsize);
+			return mapping;
 		}catch (...)
 			{
 				_exhandler->printexceptions("", "FMTareaparser::readrasters", __LINE__, __FILE__, _section);
@@ -1011,7 +1035,16 @@ const boost::regex FMTareaparser::rxcleanarea = boost::regex("^((\\*A[A]*)([^|]*
 							int ldevid = iddata[baselocation];
 							if (ldevid != nodata)
 							{
-								mapping.emplace(Spatial::FMTcoordinate(x,y),actualdevs.at(ldevid));
+								if (x > static_cast<size_t>(std::numeric_limits<uint16_t>::max()) ||
+									y > static_cast<size_t>(std::numeric_limits<uint16_t>::max()))
+								{
+									_exhandler->raise(Exception::FMTexc::FMTrangeerror,
+										"Coordinate out of bounds " + std::to_string(x) + " " + std::to_string(y),
+										"FMTareaparser::readrasters", __LINE__, __FILE__, _section);
+								}
+								const uint16_t xValue = static_cast<uint16_t>(x);
+								const uint16_t yValue = static_cast<uint16_t>(y);
+								mapping.emplace(Spatial::FMTcoordinate(xValue, yValue),actualdevs.at(ldevid));
 							}
 							++x;
 						}
@@ -2106,7 +2139,7 @@ const boost::regex FMTareaparser::rxcleanarea = boost::regex("^((\\*A[A]*)([^|]*
 							}
 						}
 					}
-				areas.shrink_to_fit();
+				//areas.shrink_to_fit();
 				}catch (...)
 					{
 					_exhandler->raisefromcatch("In " + _location + " at line " + std::to_string(_line),"FMTareaparser::read", __LINE__, __FILE__, _section);

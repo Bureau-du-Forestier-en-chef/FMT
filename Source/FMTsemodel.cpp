@@ -57,10 +57,11 @@ namespace Models
 		}
 		return std::vector<Core::FMTschedule>();
 	}
-	bool FMTsemodel::setinitialmapping(Spatial::FMTforest forest)
+	bool FMTsemodel::setinitialmapping(const Spatial::FMTforest& forest)
         {
 		try {
-			solution = Spatial::FMTspatialschedule(forest);
+			Spatial::FMTspatialschedule newSolution(forest);
+			solution.swap(newSolution);
 		}catch (...)
 		{
 			_exhandler->printexceptions("", "FMTsemodel::setinitialmapping", __LINE__, __FILE__);
@@ -193,14 +194,17 @@ namespace Models
 		try {
 			if (solution.actperiod() == 1)//just presolve if no solution
 			{
-				const std::vector<Core::FMTactualdevelopment>areas = solution.getforestperiod(0).getarea();
+				//const std::vector<Core::FMTactualdevelopment>areas = solution.getforestperiod(0).getarea();
+				const std::vector<Core::FMTactualdevelopment>areas = solution.getarea();
 				optionaldevelopments.insert(optionaldevelopments.end(), areas.begin(), areas.end());
 				std::unique_ptr<FMTmodel>presolvedmod(new FMTsemodel(*(FMTmodel::presolve(optionaldevelopments))));
 				FMTsemodel*presolvedses = dynamic_cast<FMTsemodel*>(presolvedmod.get());
-				Core::FMTmaskfilter presolvefilter = presolvedses->getpresolvefilter(themes);
-				const Core::FMTmask basemask = this->getbasemask(optionaldevelopments);
-				const boost::dynamic_bitset<>&bitsets = basemask.getbitsetreference();
-				presolvedses->solution = Spatial::FMTspatialschedule(solution.getforestperiod(0).presolve(presolvefilter, presolvedses->themes));
+				Core::FMTmaskfilter presolveFilter = presolvedses->getpresolvefilter(themes);
+				const Core::FMTmask baseMask = this->getbasemask(optionaldevelopments);
+				const boost::dynamic_bitset<uint8_t>&bitsets = baseMask.getbitsetreference();
+				//presolvedses->solution = Spatial::FMTspatialschedule(solution.getforestperiod(0).presolve(presolvefilter, presolvedses->themes));
+				Spatial::FMTspatialschedule presolvedSolution = solution.presolve(presolveFilter, presolvedses->themes);
+				presolvedses->solution.swap(presolvedSolution);
 				return presolvedmod;
 			}
 		}catch (...)
@@ -251,7 +255,7 @@ namespace Models
 	std::vector<Core::FMTactualdevelopment>FMTsemodel::getarea(int period, bool beforegrowanddeath) const
 	{
 		try {
-			return solution.getforestperiod(period, beforegrowanddeath).getarea();
+			return solution.getarea(period, beforegrowanddeath);
 		}catch (...)
 		{
 			_exhandler->printexceptions("", "FMTsemodel::getarea", __LINE__, __FILE__);

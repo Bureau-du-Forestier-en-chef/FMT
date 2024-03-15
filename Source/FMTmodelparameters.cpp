@@ -23,6 +23,7 @@ namespace Models
         intparameters[NUMBER_OF_THREADS]=processor_count;
 		intparameters[MATRIX_TYPE] = 2;//Default value is type II
         intparameters[UPDATE] = 2;//Default is that model period update stop at 2
+        intparameters[MAX_MOVES] = 80000;
         //DBLparameters
         dblparameters[TOLERANCE]= FMT_DBL_TOLERANCE;
         dblparameters[GOALING_SCHEDULE_WEIGHT]=10000;

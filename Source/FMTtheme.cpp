@@ -324,9 +324,9 @@ bool FMTtheme::operator == (const FMTtheme& p_rhs) const
 
 
 
-boost::dynamic_bitset<> FMTtheme::strToBits(const std::string& p_value) const
+ boost::dynamic_bitset<uint8_t> FMTtheme::strToBits(const std::string& p_value) const
         {
-        boost::dynamic_bitset<> bits;
+        boost::dynamic_bitset<uint8_t> bits;
 		try{
 			if (p_value == "?")
 			{
@@ -362,7 +362,7 @@ boost::dynamic_bitset<> FMTtheme::strToBits(const std::string& p_value) const
         return bits;
         }
 
-std::string FMTtheme::bitsToStr(const boost::dynamic_bitset<>& p_bits) const
+std::string FMTtheme::bitsToStr(const boost::dynamic_bitset<uint8_t>& p_bits) const
         {
 		try {
 			const size_t bitcounts = p_bits.count();
@@ -383,7 +383,7 @@ std::string FMTtheme::bitsToStr(const boost::dynamic_bitset<>& p_bits) const
 				else {
 					for (const std::string& aggregate : m_aggregates)
 					{
-						boost::dynamic_bitset<>totest = strToBits(aggregate);
+						 boost::dynamic_bitset<uint8_t>totest = strToBits(aggregate);
 						if (totest == p_bits)
 						{
 							return aggregate;
@@ -392,7 +392,7 @@ std::string FMTtheme::bitsToStr(const boost::dynamic_bitset<>& p_bits) const
 							return "!" + aggregate;
 							}
 					}
-					boost::dynamic_bitset<> flipped(p_bits);
+					 boost::dynamic_bitset<uint8_t> flipped(p_bits);
 					flipped.flip();
 					if (flipped.count()==1)
 					{
@@ -569,7 +569,7 @@ void FMTtheme::push_aggregate_value(const std::string& p_aggregatename, const st
 std::string FMTtheme::updateFromMask(const Core::FMTmask& p_globalmask)
 	{
 	try {
-		const boost::dynamic_bitset<>global = p_globalmask.subset(*this);
+		const boost::dynamic_bitset<uint8_t>global = p_globalmask.subset(*this);
 		if ((global.count()>1)&&(global.count()<global.size()))
 			{
 			std::string lastFMTaggregate("~FMT"+std::to_string(getid())+"A_0");
@@ -628,7 +628,7 @@ FMTtheme FMTtheme::presolve(FMTmaskfilter& p_maskfilter, size_t& p_newid, size_t
 		}
 		if (p_maskfilter.flippedselection.empty())
 		{
-			p_maskfilter.flippedselection = boost::dynamic_bitset<>(p_maskfilter.selection.size(), false);
+			p_maskfilter.flippedselection = boost::dynamic_bitset<uint8_t>(p_maskfilter.selection.size(), false);
 		}
 		FMTtheme newtheme(*this);
 		newtheme.m_attributes.clear();

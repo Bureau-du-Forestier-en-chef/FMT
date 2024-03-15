@@ -30,9 +30,9 @@ int main(int argc, char* argv[])
 		/*const std::string primarylocation = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/09_FMT/Modeles_test/02662/PC_9309_U02662_4_Vg2_2023_vRP1f.pri";
 		const std::string scenario = "spatial2";*/
 		const std::string outputlocation = "../../tests/sasolve";
-		/*const std::string outputlocation = "D:/test/SA/";
-		const int length = 5;
-		const double objectivevalue = 1000;*/
+		//const std::string outputlocation = "D:/test/SA/";
+		//const int length = 5;
+		//const double objectivevalue = 1000;
 		Parser::FMTmodelparser modelparser;
 		std::vector<Exception::FMTexc>errors;
 		errors.push_back(Exception::FMTexc::FMTmissingyield);
@@ -63,6 +63,7 @@ int main(int argc, char* argv[])
 			}
 		optimizationmodel.settransitions(singletransitions);
 		optimizationmodel.setparameter(Models::FMTintmodelparameters::LENGTH, length);
+		optimizationmodel.setparameter(Models::FMTintmodelparameters::MAX_MOVES, 10000);
 		optimizationmodel.doplanning(true);
 		std::vector<Core::FMToutput>outputs;
 		for (const Core::FMToutput& out : optimizationmodel.getoutputs())

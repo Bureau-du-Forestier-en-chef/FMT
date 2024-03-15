@@ -47,7 +47,7 @@ FMTmaskfilter::FMTmaskfilter(const FMTmask& presolveselection, const FMTmask& bu
 
 FMTmaskfilter::FMTmaskfilter(const FMTmask& presolveselection) :
 	selection(presolveselection.getbitsetreference()),
-	flippedselection(boost::dynamic_bitset<>(presolveselection.getbitsetreference().size(), false))
+	flippedselection( boost::dynamic_bitset<uint8_t>(presolveselection.getbitsetreference().size(), false))
 {
 
 }
@@ -79,8 +79,8 @@ FMTmaskfilter::FMTmaskfilter(std::vector<FMTmask>& masks): /*fullset(),*/selecti
         selection.flip();
         if(!selection.any())
         {
-            flippedselection = boost::dynamic_bitset<>(flippedselection.size(),false);
-            selection = boost::dynamic_bitset<>(flippedselection.size(),true);
+            flippedselection = boost::dynamic_bitset<uint8_t>(flippedselection.size(),false);
+            selection = boost::dynamic_bitset<uint8_t>(flippedselection.size(),true);
 			
         }
 		/*int indexloc = 0;
@@ -139,7 +139,7 @@ FMTmask FMTmaskfilter::filter(const FMTmask& devmask) const
         {
         if (!selection.empty())
             {
-            const boost::dynamic_bitset<> newkey = ((devmask.getbitsetreference() & selection) | flippedselection);
+            const boost::dynamic_bitset<uint8_t> newkey = ((devmask.getbitsetreference() & selection) | flippedselection);
             return FMTmask(devmask.getstringreference(),newkey);
 			//return newmask.resume(index);
             }

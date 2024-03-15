@@ -29,7 +29,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 
 /**
-Function part of boost and serialization needed to serialize boost::dynamic_bitset<>.
+Function part of boost and serialization needed to serialize boost::dynamic_bitset<uint8_t>.
 */
 namespace boost {
 	namespace serialization {
@@ -64,7 +64,7 @@ namespace boost {
 	}
 }
 /**
-The boost::dynamic_bitset<> hashing was missing the boost version older thant 1.71
+The boost::dynamic_bitset<uint8_t> hashing was missing the boost version older thant 1.71
 */
 #if (BOOST_VERSION / 100 % 1000) < 71
 namespace boost {
@@ -94,35 +94,7 @@ contains a aggregate or a ?.
 */
 class FMTEXPORT FMTmask
     {
-    friend class FMTtheme;
-	// DocString: FMTmask::serialize
-	/**
-	Serialize function is for serialization, used to do multiprocessing across multiple cpus (pickle in Pyhton)
-	*/
-	friend class boost::serialization::access;
-	template<class Archive>
-	void serialize(Archive& ar, const unsigned int version)
-		{
-		ar & BOOST_SERIALIZATION_NVP(data);
-		ar & BOOST_SERIALIZATION_NVP(name);
-		}
-		// DocString: FMTmask::subset
-		/**
-		Get the data subset bits for a given (theme) on the mask.
-		The subset is the length of the FMTtheme.
-		*/
-        boost::dynamic_bitset<> subset(const FMTtheme& theme) const;
-		// DocString: FMTmask::setsubset
-		/**
-		Set a given (subset) (theme size) for the FMTtheme (theme) to the mask
-		*/
-        void setsubset(const FMTtheme& theme,const boost::dynamic_bitset<>& subset);
-		// DocString: FMTmask::name
-		///name of the FMTmask attributes or aggregates splitted by a space
-		std::string name;
-		// DocString: FMTmask::data
-		///dynamic bitset holding the attributes information member.
-		boost::dynamic_bitset<> data;
+
     public:
 		// DocString: swap()
 		/**
@@ -144,21 +116,21 @@ class FMTEXPORT FMTmask
 		Default destructor for FMTmask.
 		*/
         virtual ~FMTmask()=default;
-		// DocString: FMTmask(const boost::dynamic_bitset<>&)
+		// DocString: FMTmask(const boost::dynamic_bitset<uint8_t>&)
 		/**
 		Simple constructor for FMTmask that only sets the bitsets data member.
 		*/
-        FMTmask(const boost::dynamic_bitset<>& bits);
+        FMTmask(const boost::dynamic_bitset<uint8_t>& bits);
 		// DocString: FMTmask::operator bool
 		/**
 		Returns true if the FMTmask is not empty by looking at the data bitset.
 		*/
 		explicit operator bool() const;
-		// DocString: FMTmask(const std::string&,const boost::dynamic_bitset<>&)
+		// DocString: FMTmask(const std::string&,const boost::dynamic_bitset<uint8_t>&)
 		/**
 		FMTmask constructor using a already sets bitset (bits) and a string mask to set as name.
 		*/
-        FMTmask(const std::string& mask,const boost::dynamic_bitset<>& bits);
+        FMTmask(const std::string& mask,const boost::dynamic_bitset<uint8_t>& bits);
 		// DocString: FMTmask(const std::string&,const std::vector<FMTtheme>&)
 		/**
 		FMTmask constructor using a string (mask) and sorted themes to generate a complete FMTmask.
@@ -257,7 +229,7 @@ class FMTEXPORT FMTmask
 		/**
 		Append a bitsets to the bitset data member of the FMTmask.
 		*/
-        void append(const boost::dynamic_bitset<> &bits);
+        void append(const boost::dynamic_bitset<uint8_t> &bits);
 		// DocString: FMTmask::binarizedappend
 		/**
 		Binarize any class and append it to the mask.
@@ -293,7 +265,7 @@ class FMTEXPORT FMTmask
 		Do a intersection operation on the dynamic bitset of the FMTmask and the given FMTmask (rhs)
 		but return the bitset.
 		*/
-		boost::dynamic_bitset<> getbitsetintersect(const FMTmask& rhs) const;
+		boost::dynamic_bitset<uint8_t> getbitsetintersect(const FMTmask& rhs) const;
 		// DocString: FMTmask::operator=
 		/**
 		FMTmask copy assignment operator.
@@ -318,7 +290,7 @@ class FMTEXPORT FMTmask
 		/**
 		Using a mask (rhs) fix the corresponding resulting FMTmask with the selected name and data.
 		*/
-		FMTmask resume(const boost::dynamic_bitset<>& rhs) const;
+		FMTmask resume(const boost::dynamic_bitset<uint8_t>& rhs) const;
 		// DocString: FMTmask::resume
 		/**
 		Using a mask indexes (indexes) fix the corresponding resulting FMTmask with the selected name and data.
@@ -330,7 +302,7 @@ class FMTEXPORT FMTmask
 		*/
 		inline size_t hash() const
 			{
-			return boost::hash<boost::dynamic_bitset<>>()(data);
+			return boost::hash<boost::dynamic_bitset<uint8_t>>()(data);
 			}
 		// DocString: FMTmask::getbitsstring
 		/**
@@ -349,7 +321,7 @@ class FMTEXPORT FMTmask
 		/**
 		Check if the bitset is a subset of the rhs bitset
 		*/
-		inline bool issubsetof(const boost::dynamic_bitset<>& rhs) const
+		inline bool issubsetof(const boost::dynamic_bitset<uint8_t>& rhs) const
 			{
 			return data.is_subset_of(rhs);
 			}
@@ -365,7 +337,7 @@ class FMTEXPORT FMTmask
 		/**
 		Get a const referencer ot the boost::dynamic_bitset data member.
 		*/
-		inline const boost::dynamic_bitset<>& getbitsetreference() const
+		inline const boost::dynamic_bitset<uint8_t>& getbitsetreference() const
 			{
 			return data;
 			}
@@ -399,6 +371,36 @@ class FMTEXPORT FMTmask
 		Using aFMTmaskfilter (filter) and the original FMTthemes it returns a postsolved FMTmask.
 		*/
 		FMTmask postsolve(const FMTmaskfilter& filter, const std::vector<FMTtheme>&basethemes) const;
+	private:
+		friend class FMTtheme;
+		// DocString: FMTmask::serialize
+		/**
+		Serialize function is for serialization, used to do multiprocessing across multiple cpus (pickle in Pyhton)
+		*/
+		friend class boost::serialization::access;
+		template<class Archive>
+		void serialize(Archive& ar, const unsigned int version)
+		{
+			ar& BOOST_SERIALIZATION_NVP(data);
+			ar& BOOST_SERIALIZATION_NVP(name);
+		}
+		// DocString: FMTmask::subset
+		/**
+		Get the data subset bits for a given (theme) on the mask.
+		The subset is the length of the FMTtheme.
+		*/
+		boost::dynamic_bitset<uint8_t> subset(const FMTtheme& theme) const;
+		// DocString: FMTmask::setsubset
+		/**
+		Set a given (subset) (theme size) for the FMTtheme (theme) to the mask
+		*/
+		void setsubset(const FMTtheme& theme, const boost::dynamic_bitset<uint8_t>& subset);
+		// DocString: FMTmask::name
+		///name of the FMTmask attributes or aggregates splitted by a space
+		std::string name;
+		// DocString: FMTmask::data
+		///dynamic bitset holding the attributes information member.
+		boost::dynamic_bitset<uint8_t> data;
     };
 
 

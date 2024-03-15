@@ -118,7 +118,7 @@ class FMTEXPORT FMTsemodel : public FMTmodel
 		Setter of the initial forest state (spatial map of FMTdevelopment)
 		Has to be set before greedyreferencedbuild() is called.
 		*/
-        bool setinitialmapping(Spatial::FMTforest forest);
+        bool setinitialmapping(const Spatial::FMTforest& forest);
 		// DocString: FMTsemodel::LogConstraintsInfeasibilities
 		/**
 		Log the constraints infeasibilities spatial or not spatial
@@ -169,7 +169,10 @@ class FMTEXPORT FMTsemodel : public FMTmodel
 		virtual std::unique_ptr<FMTmodel>clone() const;
 		// DocString: FMTsemodel::getarea
 		/**
-		Get area with spatialschedule
+		@brief Get the area of a given period based on the solution of the model.
+		@param[in] period the period selected
+		@param[in] beforegrowanddeath true if we want before the growth (true) or after (false)
+		@return the vector of actualdevelopment...
 		*/
 		virtual std::vector<Core::FMTactualdevelopment>getarea(int period = 0, bool beforegrowanddeath = false) const;
 		// DocString: FMTsemodel::getcopy
