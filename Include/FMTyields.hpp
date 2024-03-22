@@ -23,6 +23,12 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <boost/serialization/export.hpp>
 #include "FMTyieldrequest.hpp"
 
+namespace Models
+{
+	class FMTmodel;
+	class FMTnssmodel;
+}
+
 
 namespace Core
 {
@@ -38,49 +44,8 @@ constraints and disturb a forest stand in a FMTtransition.
 */
 class FMTEXPORT FMTyields : public FMTlist<std::unique_ptr<FMTyieldhandler>>
     {
-	// DocString: FMTyields::serialize
-	/**
-	serialize function is for serialization, used to do multiprocessing across multiple cpus (pickle in Pyhton)
-	*/
-	friend class boost::serialization::access;
-	friend class FMTyieldrequest;
-	template<class Archive>
-	void serialize(Archive& ar, const unsigned int version)
-	{
-		try{
-			ar & boost::serialization::make_nvp("handlers", boost::serialization::base_object<FMTlist<std::unique_ptr<FMTyieldhandler>>>(*this));
-			updateyieldpresence();
-		}catch (...)
-			{
-			_exhandler->printexceptions("", "FMTyields::serialize", __LINE__, __FILE__);
-			}
-	}
-	// DocString: FMTyields::yieldpresence
-	///If yields section as yield = true else false.
-	std::unordered_map<std::string,bool>yieldpresence;
-	// DocString: FMTyields::gethandleroftype
-	/**
-	The function returns a vector of pointer to all yieldhandler of a given (type).
-	(Can returns all handler related to time/age/complex ...)
-	*/
-	std::vector<const FMTyieldhandler*> gethandleroftype(FMTyldtype type) const;
-	// DocString: FMTyields::gethandleroftype
-	/**
-	The function returns a vector of pointer to all yieldhandler of a given (type).
-	(Can returns all handler related to time/age/complex ...)
-	*/
-	std::vector<FMTyieldhandler*> gethandlers(FMTyldtype type);
-	// DocString: FMTyields::getmaxbase
-	/**
-	Each yields can have different size in a yield section. Looking at all yieldhandler (handlers) this function
-	returns the maximum age seen in thos yieldhandler.
-	*/
-	int getmaxbase(const std::vector<const FMTyieldhandler*>& handlers) const;
-	// DocString: FMTyields::updateyieldpresence
-	/**
-	Update the yields presence true or false.
-	*/
-	void updateyieldpresence();
+	friend class Models::FMTmodel;
+	friend class Models::FMTnssmodel;
     public:
 		// DocString: FMTyields::generatedefaultyields
 		/**
@@ -226,6 +191,57 @@ class FMTEXPORT FMTyields : public FMTlist<std::unique_ptr<FMTyieldhandler>>
 		Push back timeyield for R
 		*/
 		void push_backtimehandler(const FMTmask& mask, const FMTtimeyieldhandler& value);
+	private:
+		// DocString: FMTyields::serialize
+		/**
+		serialize function is for serialization, used to do multiprocessing across multiple cpus (pickle in Pyhton)
+		*/
+		friend class boost::serialization::access;
+		friend class FMTyieldrequest;
+		template<class Archive>
+		void serialize(Archive& ar, const unsigned int version)
+		{
+			try {
+				ar& boost::serialization::make_nvp("handlers", boost::serialization::base_object<FMTlist<std::unique_ptr<FMTyieldhandler>>>(*this));
+				updateyieldpresence();
+			}
+			catch (...)
+			{
+				_exhandler->printexceptions("", "FMTyields::serialize", __LINE__, __FILE__);
+			}
+		}
+		// DocString: FMTyields::yieldpresence
+		///If yields section as yield = true else false.
+		std::unordered_map<std::string, bool>yieldpresence;
+		// DocString: FMTyields::gethandleroftype
+		/**
+		The function returns a vector of pointer to all yieldhandler of a given (type).
+		(Can returns all handler related to time/age/complex ...)
+		*/
+		std::vector<const FMTyieldhandler*> gethandleroftype(FMTyldtype type) const;
+		// DocString: FMTyields::gethandleroftype
+		/**
+		The function returns a vector of pointer to all yieldhandler of a given (type).
+		(Can returns all handler related to time/age/complex ...)
+		*/
+		std::vector<FMTyieldhandler*> gethandlers(FMTyldtype type);
+		// DocString: FMTyields::getmaxbase
+		/**
+		Each yields can have different size in a yield section. Looking at all yieldhandler (handlers) this function
+		returns the maximum age seen in thos yieldhandler.
+		*/
+		int getmaxbase(const std::vector<const FMTyieldhandler*>& handlers) const;
+		// DocString: FMTyields::updateyieldpresence
+		/**
+		Update the yields presence true or false.
+		*/
+		void updateyieldpresence();
+		// DocString: FMTyields::setModel
+		/**
+		@brief set the model to the FMTyieldmodelhandler.
+		@param[in] the model that we want to link to the yieldhandler.
+		*/
+		void setModel(Models::FMTmodel* p_modelPtr);
     };
 }
 BOOST_CLASS_EXPORT_KEY(Core::FMTyields)

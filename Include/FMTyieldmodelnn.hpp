@@ -121,11 +121,6 @@ namespace Core
 		Runs the machine learning model to predict its outputs.
 		*/
 		const std::vector<double>Predict(const Core::FMTyieldrequest& request) const;
-		// DocString: FMTyieldmodelnn::std::string()
-		/**
-		When it comes to write down in a string the yield model.
-		*/
-		virtual  operator std::string() const;
 	};
 }
 

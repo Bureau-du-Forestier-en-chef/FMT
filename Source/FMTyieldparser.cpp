@@ -15,6 +15,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 	#include "FMTyieldmodelnep.hpp"
 #endif
 #include "FMTyieldmodeldecisiontree.hpp"
+#include "FMTyieldmodelRandom.hpp"
 #include "FMTyieldparser.hpp"
 #include "FMTageyieldhandler.hpp"
 #include "FMTtimeyieldhandler.hpp"
@@ -433,6 +434,10 @@ std::unique_ptr<Core::FMTyieldmodel>FMTyieldparser::readyieldmodel(const std::st
 			if (modelType == Core::FMTyieldmodeldecisiontree::GetModelType())
 			{
 				return std::unique_ptr<Core::FMTyieldmodel>(new Core::FMTyieldmodeldecisiontree(root, inputYields, mainmask));
+			}
+			if (modelType == Core::FMTyieldmodelRandom::GetModelType())
+			{
+				return std::unique_ptr<Core::FMTyieldmodel>(new Core::FMTyieldmodelRandom(root,inputYields));
 			}
 		_exhandler->raise(Exception::FMTfunctionfailed,
 			"No valid model type for " + modeljson.string(),

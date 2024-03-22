@@ -173,27 +173,6 @@ namespace Core {
 		}
 	}
 
-	FMTyieldmodelnn::operator std::string() const
-	{
-		std::string value = "";
-		try {
-			const std::string completename = GetModelName();
-			const boost::filesystem::path modelpath(completename);
-			const boost::filesystem::path dir = modelpath.parent_path();
-			const std::string shortmodelname = dir.stem().string();
-			std::string data(shortmodelname);
-			for (const std::string yield : GetModelYields())
-				{
-				data += ("," + yield);
-				}
-			value  = " _PRED(" + data + ")\n";
-		}catch (...)
-		{
-			_exhandler->raisefromcatch("", "FMTyieldmodelnn::operator std::string()", __LINE__, __FILE__, Core::FMTsection::Yield);
-		}
-		return value;
-	}
-
 
 	const std::vector<double>FMTyieldmodelnn::Predict(const Core::FMTyieldrequest& request) const
 	{

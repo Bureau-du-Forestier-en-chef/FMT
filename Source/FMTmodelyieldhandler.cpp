@@ -59,6 +59,14 @@ namespace Core {
 		return value;
 	}
 
+	void FMTmodelyieldhandler::setModel(Models::FMTmodel* p_modelPtr)
+	{
+		for (const std::unique_ptr<FMTyieldmodel>& model : models)
+		{
+			model->setModel(p_modelPtr);
+		}
+	}
+
 
 	FMTtimeyieldhandler FMTmodelyieldhandler::totimehandler() const
 		{
@@ -102,8 +110,6 @@ namespace Core {
 			}
 		return FMTtimeyieldhandler(getmask());
 		}
-
-
 	
 	FMTyldtype FMTmodelyieldhandler::gettype() const
 	{

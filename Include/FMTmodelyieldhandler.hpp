@@ -14,6 +14,11 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <boost/serialization/nvp.hpp>
 #include <memory>
 
+namespace Models
+{
+	class FMTmodel;
+};
+
 namespace Core
 {
 	class FMTdata;
@@ -21,15 +26,6 @@ namespace Core
 	class FMTtimeyieldhandler;
 	class FMTEXPORT FMTmodelyieldhandler final : public FMTyieldhandler
 	{
-		friend class boost::serialization::access;
-		template<class Archive>
-		void serialize(Archive& ar, const unsigned int version)
-		{
-			ar & boost::serialization::make_nvp("FMTyieldhandler", boost::serialization::base_object<FMTyieldhandler>(*this));
-			ar & yldnames;
-		}
-		std::vector<std::unique_ptr<FMTyieldmodel>>models;
-		std::map<std::string,std::pair<size_t,size_t>>yldnames;
 	public:
 		virtual double get(const std::string& yld, const FMTyieldrequest& request) const;
 		virtual  operator std::string() const;
@@ -52,11 +48,27 @@ namespace Core
 		virtual void clearcache();
 		virtual std::unique_ptr<FMTyieldhandler> presolve(const FMTmaskfilter& filter, const std::vector<FMTtheme>& newthemes) const;
 		virtual std::unique_ptr<FMTyieldhandler> postsolve(const FMTmaskfilter& filter, const std::vector<FMTtheme>& basethemes) const;
-		// DocString: FMTyieldmodeldecisiontreel::totimehandler
+		// DocString: FMTmodelyieldhandler::totimehandler
 		/**
 		If you can turn all your yieldmodel to time then you can return a timeyieldhandler.
 		*/
 		FMTtimeyieldhandler totimehandler() const;
+		// DocString: FMTmodelyieldhandler::setModel
+		/**
+		@brief set The model to the yielmodel.
+		@param[in] p_modelPtr the pointer to the actual model. This can be cast to different type of model...
+		*/
+		void setModel(Models::FMTmodel* p_modelPtr);
+	private:
+		friend class boost::serialization::access;
+		template<class Archive>
+		void serialize(Archive& ar, const unsigned int version)
+		{
+			ar& boost::serialization::make_nvp("FMTyieldhandler", boost::serialization::base_object<FMTyieldhandler>(*this));
+			ar& yldnames;
+		}
+		std::vector<std::unique_ptr<FMTyieldmodel>>models;
+		std::map<std::string, std::pair<size_t, size_t>>yldnames;
 	};
 
 }

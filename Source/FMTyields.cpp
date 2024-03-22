@@ -448,6 +448,16 @@ std::vector<const FMTyieldhandler*> FMTyields::gethandleroftype(FMTyldtype type)
 	return selectedhandlers;
 	}
 
+void FMTyields::setModel(Models::FMTmodel* p_modelPtr)
+{
+	const std::vector<FMTyieldhandler*> HANDLERS = gethandlers(FMTyldtype::FMTmodelyld);
+	for (FMTyieldhandler* handler : HANDLERS)
+		{
+		FMTmodelyieldhandler* ModelHandler = dynamic_cast<FMTmodelyieldhandler*>(handler);
+		ModelHandler->setModel(p_modelPtr);
+		}
+}
+
 std::vector<FMTyieldhandler*> FMTyields::gethandlers(FMTyldtype type)
 	{
 	std::vector<FMTyieldhandler*>selectedhandlers;

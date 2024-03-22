@@ -138,11 +138,6 @@ namespace Core
 		*/
 		virtual std::unique_ptr<FMTyieldmodel> postsolve(const FMTmaskfilter& filter,
 			const std::vector<FMTtheme>& basethemes) const;
-		// DocString: FMTyieldmodeldecisiontreel::std::string()
-		/**
-		When it comes to write down in a string the yield model.
-		*/
-		virtual  operator std::string() const;
 		// DocString: FMTyieldmodeldecisiontreel::getperiodicvalues
 		/**
 		Try to turn the FMTyieldmodel into periodic constant values. if returns an non empty vector then

@@ -438,6 +438,7 @@ FMTmodel::FMTmodel(const std::vector<Core::FMTactualdevelopment>& larea, const s
 	setarea(larea);
 	setdefaultobjects();
 	cleanactionsntransitions();
+	yields.setModel(this);
 	
 	}
 
@@ -446,7 +447,7 @@ FMTmodel::FMTmodel(const FMTmodel& rhs):Core::FMTobject(rhs),parameters(rhs.para
 		statictransitionthemes(rhs.statictransitionthemes)
 
 	{
-	
+	yields.setModel(this);
 	}
 
 FMTmodel& FMTmodel::operator = (const FMTmodel& rhs)
@@ -465,6 +466,7 @@ FMTmodel& FMTmodel::operator = (const FMTmodel& rhs)
 		constraints = rhs.constraints;
         name = rhs.name;
 		statictransitionthemes = rhs.statictransitionthemes;
+		yields.setModel(this);
         }
     return *this;
     }
@@ -2105,7 +2107,10 @@ std::map<std::string, double> FMTmodel::getoutput(const Core::FMToutput& output,
 bool FMTmodel::setparameter(const FMTintmodelparameters& key, const int& value)
 {
 	try{
-		if (parameters.setintparameter(key,value)) return (true);
+		if (parameters.setintparameter(key, value))
+		{
+			return (true);
+		}
 	}catch(...){
 		_exhandler->printexceptions("", "FMTmodel::setparameter", __LINE__, __FILE__);
 	}

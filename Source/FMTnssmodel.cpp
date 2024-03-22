@@ -247,6 +247,7 @@ namespace Models
 	}
 
 
+
 	void FMTnssmodel::simulate()
 	{
 		try {
@@ -388,6 +389,7 @@ namespace Models
 			if(key==SEED)
 			{
 				generator=std::default_random_engine(value);
+				yields.setModel(this);
 			}
 			parametersetted=true;
 		}catch(...)

@@ -29,78 +29,6 @@ namespace Models
 	*/
 	class FMTEXPORT FMTnssmodel : public FMTsrmodel
 	{
-		// DocString: FMTnssmodel::save
-		/**
-		Save function is for serialization, used to do multiprocessing across multiple cpus (pickle in Pyhton)
-		*/
-		friend class boost::serialization::access;
-		template<class Archive>
-		void save(Archive& ar, const unsigned int version) const
-		{
-			ar & boost::serialization::make_nvp("model", boost::serialization::base_object<FMTsrmodel>(*this));
-			std::stringstream basegenerator;
-			basegenerator << generator;
-			const std::string basegeneratorstring(basegenerator.str());
-			ar & BOOST_SERIALIZATION_NVP(basegeneratorstring);
-
-		}
-		// DocString: FMTnssmodel::load
-		/**
-		Load function is for serialization, used to do multiprocessing across multiple cpus (pickle in Pyhton)
-		*/
-		template<class Archive>
-		void load(Archive& ar, const unsigned int version)
-		{
-			ar & boost::serialization::make_nvp("model", boost::serialization::base_object<FMTsrmodel>(*this));
-			std::string basegeneratorstring;
-			ar & BOOST_SERIALIZATION_NVP(basegeneratorstring);
-			std::stringstream(basegeneratorstring) >> generator;
-			
-		}
-		BOOST_SERIALIZATION_SPLIT_MEMBER()
-		// DocString: FMTnssmodel::generator
-		///This simulation model need to have it's own random number generator
-		std::default_random_engine generator;
-		// DocString: FMTnssmodel::constraintstotarget
-		/**
-		Using the constraints generate random level or determinist level of output to generate
-		*/
-		std::vector<const Core::FMToutput*> constraintstotarget(std::vector<double>& targets,const int& period);
-		// DocString: FMTnssmodel::getoperabilities
-		/**
-		Get potential operabilities of an actualdevelopment
-		*/
-		std::vector<std::pair<size_t, const Core::FMTaction*>> getoperabilities(const Core::FMTactualdevelopment& development,
-			std::vector<std::vector<const Core::FMTaction*>> targets,
-			const std::vector<const Core::FMToutput*>& alloutputs) const;
-		// DocString: FMTnssmodel::etactionstargets
-		/**
-		Get the potential actions of each output.
-		*/
-		std::vector<std::vector<const Core::FMTaction*>> getactionstargets(const std::vector<const Core::FMToutput*>& alloutputs) const;
-		// DocString: FMTnssmodel::operate
-		/**
-		Operate and fill FMTschedule
-		*/
-		std::vector<Core::FMTdevelopmentpath> operate(const Core::FMTactualdevelopment& development,const double& areatarget,const Core::FMTaction* target,Core::FMTschedule& schedule) const;
-		// DocString: FMTnssmodel::updatearea
-		/**
-		update the actual developments in the area vector.
-		*/
-		void updatearea(std::vector<Core::FMTactualdevelopment>& basearea, std::vector<Core::FMTactualdevelopment>::iterator developmentit,const std::vector<Core::FMTdevelopmentpath>& paths, const double& operatedarea);
-		// DocString: FMTnssmodel::updateareatargets
-		/**
-		Update all the stuff related to the targeted area, knowing that an area has been operated on a given location.
-		*/
-		void updateareatargets(const double& areaoperated,const size_t& outtarget,
-			std::vector<const Core::FMToutput*>& alloutputs,std::vector<double>& targets,
-			std::vector<std::vector<const Core::FMTaction*>>& actiontargets) const;
-		virtual void swap_ptr(const std::unique_ptr<FMTmodel>& rhs);
-		// DocString: FMTnssmodel(const FMTsrmodel&,unsigned int)
-		/**
-		Constructor for FMTnssmodel taking a FMTsrmodel and a seed to initialize the random number generator.
-		*/
-		FMTnssmodel(const FMTsrmodel& rhs, unsigned int seed);
 		public:
 			// DocString: FMTnssmodel()
 			/**
@@ -138,6 +66,14 @@ namespace Models
 			Default move assignment for FMTnssmodel.
 			*/
 			FMTnssmodel& operator =(FMTnssmodel&& rhs) =default;
+			// DocString: FMTnssmodel::setparameter(const FMTintmodelparameters,const int&)
+			/**
+			@brief set int parameters to nss model.
+			@param[in] p_key the int key to change.
+			@param[in] p_value to set to the p_key.
+			@return true if the parameter is set.
+			*/
+			virtual bool setparameter(const FMTintmodelparameters& p_key, const int& p_value);
 			// DocString: FMTnssmodel::simulate
 			/**
 			This function do a non spatial simulation based on the area constraints in the optimize section.
@@ -167,11 +103,6 @@ namespace Models
 			{
 				return true;
 			}
-			// DocString: FMTnssmodel::setparameter(const FMTintmodelparameters, const int)
-			/**
-			Override setter for intmodelparameters. 
-			*/
-			bool setparameter(const FMTintmodelparameters& key, const int& value) override;
 			// DocString: FMTnssmodel::setparameter(const FMTboolmodelparameters, const bool)
 			/**
 			Override setter for boolmodelparameters.
@@ -185,6 +116,80 @@ namespace Models
 			Need to have a builded graph with a solution to use this function.
 			*/
 			virtual std::unique_ptr<FMTmodel> getcopy(int period = 0) const;
+		private:
+			// DocString: FMTnssmodel::save
+			/**
+			Save function is for serialization, used to do multiprocessing across multiple cpus (pickle in Pyhton)
+			*/
+			friend class boost::serialization::access;
+			template<class Archive>
+			void save(Archive& ar, const unsigned int version) const
+			{
+				ar& boost::serialization::make_nvp("model", boost::serialization::base_object<FMTsrmodel>(*this));
+				std::stringstream basegenerator;
+				basegenerator << generator;
+				const std::string basegeneratorstring(basegenerator.str());
+				ar& BOOST_SERIALIZATION_NVP(basegeneratorstring);
+
+			}
+			// DocString: FMTnssmodel::load
+			/**
+			Load function is for serialization, used to do multiprocessing across multiple cpus (pickle in Pyhton)
+			*/
+			template<class Archive>
+			void load(Archive& ar, const unsigned int version)
+			{
+				ar& boost::serialization::make_nvp("model", boost::serialization::base_object<FMTsrmodel>(*this));
+				std::string basegeneratorstring;
+				ar& BOOST_SERIALIZATION_NVP(basegeneratorstring);
+				std::stringstream(basegeneratorstring) >> generator;
+
+			}
+			BOOST_SERIALIZATION_SPLIT_MEMBER()
+				// DocString: FMTnssmodel::generator
+				///This simulation model need to have it's own random number generator
+				std::default_random_engine generator;
+			// DocString: FMTnssmodel::constraintstotarget
+			/**
+			Using the constraints generate random level or determinist level of output to generate
+			*/
+			std::vector<const Core::FMToutput*> constraintstotarget(std::vector<double>& targets, const int& period);
+			// DocString: FMTnssmodel::getoperabilities
+			/**
+			Get potential operabilities of an actualdevelopment
+			*/
+			std::vector<std::pair<size_t, const Core::FMTaction*>> getoperabilities(const Core::FMTactualdevelopment& development,
+				std::vector<std::vector<const Core::FMTaction*>> targets,
+				const std::vector<const Core::FMToutput*>& alloutputs) const;
+			// DocString: FMTnssmodel::etactionstargets
+			/**
+			Get the potential actions of each output.
+			*/
+			std::vector<std::vector<const Core::FMTaction*>> getactionstargets(const std::vector<const Core::FMToutput*>& alloutputs) const;
+			// DocString: FMTnssmodel::operate
+			/**
+			Operate and fill FMTschedule
+			*/
+			std::vector<Core::FMTdevelopmentpath> operate(const Core::FMTactualdevelopment& development, const double& areatarget, const Core::FMTaction* target, Core::FMTschedule& schedule) const;
+			// DocString: FMTnssmodel::updatearea
+			/**
+			update the actual developments in the area vector.
+			*/
+			void updatearea(std::vector<Core::FMTactualdevelopment>& basearea, std::vector<Core::FMTactualdevelopment>::iterator developmentit, const std::vector<Core::FMTdevelopmentpath>& paths, const double& operatedarea);
+			// DocString: FMTnssmodel::updateareatargets
+			/**
+			Update all the stuff related to the targeted area, knowing that an area has been operated on a given location.
+			*/
+			void updateareatargets(const double& areaoperated, const size_t& outtarget,
+				std::vector<const Core::FMToutput*>& alloutputs, std::vector<double>& targets,
+				std::vector<std::vector<const Core::FMTaction*>>& actiontargets) const;
+			virtual void swap_ptr(const std::unique_ptr<FMTmodel>& rhs);
+			// DocString: FMTnssmodel(const FMTsrmodel&,unsigned int)
+			/**
+			Constructor for FMTnssmodel taking a FMTsrmodel and a seed to initialize the random number generator.
+			*/
+			FMTnssmodel(const FMTsrmodel& rhs, unsigned int seed);
+
 	};
 }
 

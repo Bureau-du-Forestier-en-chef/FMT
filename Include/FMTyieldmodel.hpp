@@ -17,6 +17,10 @@ namespace Graph
 	class FMTpredictor;
 }
 
+namespace Models
+{
+	class FMTmodel;
+}
 
 namespace boost
 {
@@ -39,17 +43,13 @@ namespace Core
 	*/
 	class FMTyieldmodel : public FMTobject
 	{
-		friend class boost::serialization::access;
-		template<class Archive>
-		void serialize(Archive& ar, const unsigned int version)
-		{
-			ar & boost::serialization::make_nvp("FMTobject", boost::serialization::base_object<FMTobject>(*this));
-		}
-	protected:
-		std::string modelName;
-		std::vector<std::string> modelYields = {};
-		const std::string JSON_PROP_MODEL_NAME = "modelFileName";
 	public:
+		// DocString: FMTyieldmodel::setModel
+		/**
+		@brief set The model to the yielmodel.
+		@param[in] p_modelPtr the pointer to the actual model. This can be cast to different type of model...
+		*/
+		virtual void setModel(Models::FMTmodel* p_modelPtr);
 		// DocString: FMTyieldmodel::~FMTyieldmodel()
 		/**
 		Destructor for FMTyieldmodel.
@@ -107,13 +107,25 @@ namespace Core
 		/**
 		When it comes to write down in a string the yield model.
 		*/
-		virtual  operator std::string() const=0;
+		virtual  operator std::string() const;
 		// DocString: FMTyieldmodel::getperiodicvalues
 		/**
 		Try to turn the FMTyieldmodel into periodic constant values. if returns an non empty vector then
 		each first dimension is the yield id and each second dimension are the periodic value calculated by the yield.
 		*/
 		virtual std::vector<std::vector<double>>getperiodicvalues() const;
+	protected:
+		std::string modelName;
+		std::vector<std::string> modelYields = {};
+		const std::string JSON_PROP_MODEL_NAME = "modelFileName";
+		Models::FMTmodel* m_modelPtr=nullptr;
+	private:
+		friend class boost::serialization::access;
+		template<class Archive>
+		void serialize(Archive& ar, const unsigned int version)
+		{
+			ar& boost::serialization::make_nvp("FMTobject", boost::serialization::base_object<FMTobject>(*this));
+		}
 	};
 }
 

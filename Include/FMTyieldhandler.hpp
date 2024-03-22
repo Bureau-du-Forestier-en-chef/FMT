@@ -29,21 +29,6 @@ class FMTdata;
 
 class FMTEXPORT FMTyieldhandler : public FMTobject
 {
-	friend class boost::serialization::access;
-	template<class Archive>
-	void serialize(Archive& ar, const unsigned int version)
-	{
-		ar & BOOST_SERIALIZATION_NVP(mask);
-		ar & BOOST_SERIALIZATION_NVP(bases);
-	}
-protected:
-	FMTmask mask;
-	std::vector<int>bases;
-	mutable std::unordered_set<std::string>lookat;
-	bool basepush_data(std::map<std::string, FMTdata>& elements,const std::string& yld, const double& value);
-	bool basepush_data(std::map<std::string, FMTdata>& elements,const std::string& yld, const FMTdata& data);
-	double getchangesfrom(const int& targetage, const int& peakstep) const;
-	int getmaxbase(const FMTyieldrequest& request) const;
 public:
 	virtual size_t getoverrideindex() const;
 	virtual std::vector<size_t> gettabous() const;
@@ -87,6 +72,22 @@ public:
 	virtual double getpeak(const FMTyieldrequest& request,const std::string& yld, const int& targetage) const;
 	virtual int getage(const FMTyieldrequest& request, const FMTspec& spec) const;
 	virtual double getyieldlinearvalue(const std::string&yldname, const FMTyieldrequest& request, bool allowoutofrange=true) const;
+protected:
+	FMTmask mask;
+	std::vector<int>bases;
+	mutable std::unordered_set<std::string>lookat;
+	bool basepush_data(std::map<std::string, FMTdata>& elements, const std::string& yld, const double& value);
+	bool basepush_data(std::map<std::string, FMTdata>& elements, const std::string& yld, const FMTdata& data);
+	double getchangesfrom(const int& targetage, const int& peakstep) const;
+	int getmaxbase(const FMTyieldrequest& request) const;
+private:
+	friend class boost::serialization::access;
+	template<class Archive>
+	void serialize(Archive& ar, const unsigned int version)
+	{
+		ar& BOOST_SERIALIZATION_NVP(mask);
+		ar& BOOST_SERIALIZATION_NVP(bases);
+	}
 
 	
 };

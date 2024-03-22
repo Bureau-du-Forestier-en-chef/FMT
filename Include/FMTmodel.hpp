@@ -491,10 +491,14 @@ namespace Models
 		*/
 		virtual std::unique_ptr<FMTmodel>clone() const;
 		// DocString: FMTmodel::setparameter(const FMTintmodelparameters,const int&)
+		// DocString: FMTnssmodel::setparameter
 		/**
-		Setter for int model parameters. See FMTmodelparameters.h.
+		@brief set int parameters to nss model.
+		@param[in] p_key the int key to change.
+		@param[in] p_value to set to the p_key.
+		@return true if the parameter is set.
 		*/
-		virtual bool setparameter(const FMTintmodelparameters& key, const int& value);
+		virtual bool setparameter(const FMTintmodelparameters& p_key, const int& p_value);
 		// DocString: FMTmodel::setparameter(const FMTdblmodelparameters,const double)
 		/**
 		Setter for double model parameters. See FMTmodelparameters.h.
