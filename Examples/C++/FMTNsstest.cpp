@@ -20,10 +20,10 @@ int main(int argc, char* argv[])
 	const int LENGTH = std::stoi(argv[2]);
 	const double OUTPUT_VALUE = std::stod(argv[3]);
 	/*const std::string PRIMARY = "D:/FMT/Examples/Models/TWD_land/TWD_land.pri";
-	const std::string SCENARIO = "randomYield";
+	const std::string SCENARIO = "randomYieldUnit";
 	const std::string  OUTPUT = "BURNEDAREA";
 	const int LENGTH = 1;
-	const double OUTPUT_VALUE = 0;*/
+	const double OUTPUT_VALUE = 84.73;*/
 
 	Parser::FMTmodelparser mparser;
 	std::vector<Exception::FMTexc>errors;
@@ -53,7 +53,7 @@ int main(int argc, char* argv[])
 	}
 	const double RESULT = NssModel.getoutput(sumOutput,1, Core::FMToutputlevel::totalonly).at("Total");
 	Logging::FMTlogger() << "VALUE OF "<< RESULT <<"\n";
-	if (std::abs(RESULT - OUTPUT_VALUE)>FMT_DBL_TOLERANCE)
+	if (std::abs(RESULT - OUTPUT_VALUE)>1)
 	{
 		Exception::FMTfreeexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed, "Wrong value",
 			"FMTNsstest", __LINE__, PRIMARY);

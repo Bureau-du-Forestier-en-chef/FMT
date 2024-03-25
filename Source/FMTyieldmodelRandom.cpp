@@ -86,7 +86,7 @@ namespace Core
 		std::vector<double>result;
 		try {
 			double value = 0;
-			if (m_useCache && m_cache.find(p_request.getdevelopment().getperiod())!=m_cache.end())
+			if (m_useCache && m_cache.find(p_request.getdevelopment().getperiod()) != m_cache.end())
 			{
 				value = m_cache.at(p_request.getdevelopment().getperiod());
 			}else {

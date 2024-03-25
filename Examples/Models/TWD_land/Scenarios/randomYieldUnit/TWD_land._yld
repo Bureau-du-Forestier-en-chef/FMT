@@ -44,14 +44,21 @@ YBM_RTM_BOG _EQUATION(1.2159259330000001*10^0.87191668899999997)
 YBM_RTM_F _SUM(YBM_RTM_BOG,YBM_RTM_MEH)
 YBM_RTM_MEH _EQUATION(1.1017722459999999*12^0.83493872400000002)
 
-*Y ? ? ? 
-yprob0 0 0.33
+*YT ? peuplement1 ? 
+yprob0 0 1 0.1
+yprob1 0 1 0.9
 
-*Y ? ? ? 
-yprob1 0 0.33
+*YT ? peuplement2 ? 
+yprob0 0 1 0.5
+yprob1 0 1 0.5
 
-*Y ? ? ? 
-yprob2 0 0.33
+*YT ? peuplement3 ? 
+yprob0 0 1 0.9
+yprob1 0 1 0.1
 
-*YM ? ? ?
-yrandom_choice _PRED(RANDOM,yprob0,yprob1,yprob2)
+
+FOREACH x IN (1..3)
+	*YM ? peuplementx ?
+	yrandom_choice _PRED(RANDOM_UNIT,yprob0,yprob1)
+ENDFOR
+
