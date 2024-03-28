@@ -30,6 +30,7 @@ namespace Core
 		// DocString: FMTyieldmodelRandom::FMTyieldmodelRandom(const boost::property_tree::ptree&,const std::string&)
 		/**
 		@brief Main constructor for the random yield model.
+		@param[in] p_jsonProps the json file
 		@param[in]p_distribution the probability distribution of the yield.
 		*/
 		FMTyieldmodelRandom(const boost::property_tree::ptree& p_jsonProps, const std::vector<std::string>& p_distribution);

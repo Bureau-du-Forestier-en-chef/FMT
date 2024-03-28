@@ -428,6 +428,35 @@ FMTmodel::FMTmodel() : Core::FMTobject(),parameters(),area(),themes(),actions(),
 	
 }
 
+
+FMTmodel::FMTmodel(FMTmodel&& rhs) : Core::FMTobject(), parameters(), area(), themes(), actions(), transitions(), yields(), lifespan(), outputs(), constraints(), name(), statictransitionthemes()
+{
+	*this = std::move(rhs);
+}
+
+FMTmodel& FMTmodel::operator =(FMTmodel&& rhs)
+{
+	if (this != &rhs)
+	{
+		Core::FMTobject::operator = (rhs);
+		parameters = std::move(rhs.parameters);
+		area = std::move(rhs.area);
+		themes = std::move(rhs.themes);
+		actions = std::move(rhs.actions);
+		transitions = std::move(rhs.transitions);
+		yields = std::move(rhs.yields);
+		lifespan = std::move(rhs.lifespan);
+		outputs = std::move(rhs.outputs);
+		constraints = std::move(rhs.constraints);
+		name = std::move(rhs.name);
+		statictransitionthemes = std::move(rhs.statictransitionthemes);
+		yields.setModel(this);
+
+	}
+	return *this;
+}
+
+
 FMTmodel::FMTmodel(const std::vector<Core::FMTactualdevelopment>& larea, const std::vector<Core::FMTtheme>& lthemes,
 	const std::vector<Core::FMTaction>& lactions,
 	const std::vector<Core::FMTtransition>& ltransitions, const Core::FMTyields& lyields, const Core::FMTlifespans& llifespan,
@@ -468,6 +497,7 @@ FMTmodel& FMTmodel::operator = (const FMTmodel& rhs)
 		statictransitionthemes = rhs.statictransitionthemes;
 		yields.setModel(this);
         }
+	
     return *this;
     }
 std::vector<Core::FMTactualdevelopment>FMTmodel::getarea(int period,bool beforegrowanddeath) const
@@ -824,6 +854,7 @@ void FMTmodel::setyields(const Core::FMTyields& lylds)
 	try {
 		yields = lylds;
 		yields.update();
+		yields.setModel(this);
 	}catch (...)
 		{
 			_exhandler->printexceptions("", "FMTmodel::setyields", __LINE__, __FILE__);

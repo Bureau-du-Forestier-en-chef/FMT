@@ -10,6 +10,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <boost/serialization/split_member.hpp>
 #include <boost/lexical_cast.hpp>
 #include <boost/thread.hpp>
+#include <sstream>
 #include "FMTlogger.hpp"
 #if defined FMTWITHPYTHON
 	#include <boost/python.hpp>
@@ -212,6 +213,15 @@ namespace Logging
 	FMTlogger& FMTlogger::operator<<(const unsigned int& msg)
 	{
 		const std::string value = std::to_string(msg);
+		this->cout(value.c_str());
+		return *this;
+	}
+
+	FMTlogger& FMTlogger::operator<<(const void*& msg)
+	{
+		std::ostringstream ons;
+		ons << std::hex << msg;
+		const std::string value = ons.str();
 		this->cout(value.c_str());
 		return *this;
 	}

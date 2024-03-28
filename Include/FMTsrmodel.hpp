@@ -333,6 +333,12 @@ namespace Models
 		Post solve this graph and return a presolved graph for each vertex and edges based on the original model.
 		*/
 		void postsolvegraph(const FMTmodel& originalbasemodel);
+		// DocString: FMTsrmodel::getActives
+		/**
+		@brief If the graph is not initialize then initialise the graph based on the area else return the actives verticies.
+		@return a queue of actives vertices of the graph.
+		*/
+		std::queue<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor> getActives();
 	private:
 		// DocString: FMTsrmodel::save
 		/**

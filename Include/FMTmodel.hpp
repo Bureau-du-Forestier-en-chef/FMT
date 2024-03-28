@@ -116,12 +116,12 @@ namespace Models
 		/**
 		Default move constructor for FMTmodel.
 		*/
-		FMTmodel(FMTmodel&& rhs) = default;
+		FMTmodel(FMTmodel&& rhs);
 		// DocString: FMTmodel::operator=(FMTmodel&&) 
 		/**
 		Default move assignment for FMTmodel.
 		*/
-		FMTmodel& operator =(FMTmodel&& rhs) = default;
+		FMTmodel& operator =(FMTmodel&& rhs);
 		// DocString: FMTmodel::getarea
 		/**
 			Virtual function to get the area of a given period into actualdevelopement. If before grow = true it will returns the developement before it grow and death to the next period.

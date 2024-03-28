@@ -1205,22 +1205,33 @@ namespace Models
 		return std::map<std::string, double>();
 	}
 
+	std::queue<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor> FMTsrmodel::getActives()
+	{
+		std::queue<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor> actives;
+		try {
+			if (graph.empty())
+			{
+				actives = graph.initialize(area);
+				Graph::FMTgraphstats BUILD_STATS = initializematrix();
+				graph.setstats(BUILD_STATS);
+			}
+			else {
+				actives = graph.getactiveverticies();
+			}
+		}catch (...)
+		{
+			_exhandler->printexceptions("", "FMTsrmodel::getActives", __LINE__, __FILE__);
+		}
+		return actives;
+	}
+
 
 
 	Graph::FMTgraphstats FMTsrmodel::buildperiod(Core::FMTschedule schedule, bool forcepartialbuild, int compressageclassoperability)
 	{
 		try {
-			std::queue<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor> actives;
+			std::queue<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor> actives = getActives();
 			Graph::FMTgraphstats buildstats;
-			if (graph.empty())
-			{
-				actives = graph.initialize(area);
-				buildstats = initializematrix();
-				graph.setstats(buildstats);
-			}
-			else {
-				actives = graph.getactiveverticies();
-			}
 			if (!forcepartialbuild && schedule.empty()) // full build
 			{
 				buildstats = graph.build(*this, actives, compressageclassoperability);

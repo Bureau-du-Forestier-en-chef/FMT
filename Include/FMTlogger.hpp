@@ -193,6 +193,11 @@ namespace Logging
 			This function is the main function to add up unsigned int.
 			*/
 			virtual FMTlogger& operator<<(const unsigned int& msg);
+			// DocString: FMTlogger::operator<<(const void*& msg)
+			/**
+			This function is the main function to add up a void pointer to get its address
+			*/
+			virtual FMTlogger& operator<<(const void*& msg);
 			// DocString: FMTlogger::logwithlevel
 			/**
 			Log a message with a given message level if message level is greater of equal to the logger level

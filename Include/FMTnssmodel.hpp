@@ -156,16 +156,43 @@ namespace Models
 			std::vector<const Core::FMToutput*> constraintstotarget(std::vector<double>& targets, const int& period);
 			// DocString: FMTnssmodel::getoperabilities
 			/**
-			Get potential operabilities of an actualdevelopment
+			Get potential operabilities of an development
 			*/
-			std::vector<std::pair<size_t, const Core::FMTaction*>> getoperabilities(const Core::FMTactualdevelopment& development,
+			std::vector<std::pair<size_t, const Core::FMTaction*>> getoperabilities(const Core::FMTdevelopment& development,
 				std::vector<std::vector<const Core::FMTaction*>> targets,
 				const std::vector<const Core::FMToutput*>& alloutputs) const;
-			// DocString: FMTnssmodel::etactionstargets
+			// DocString: FMTnssmodel::getFirstOperable
 			/**
-			Get the potential actions of each output.
+			@brief Get the first operable action for the developement
+			@param[in] development the development to test operability
+			@param[in] targest the targeted actions.
+			@param[in] the outputs values.
+			@return a pair with output index and pointer to action nullptr returned if no operables.
 			*/
-			std::vector<std::vector<const Core::FMTaction*>> getactionstargets(const std::vector<const Core::FMToutput*>& alloutputs) const;
+			std::pair<size_t, const Core::FMTaction*> getFirstOperable(const Core::FMTdevelopment& development,
+				std::vector<std::vector<const Core::FMTaction*>> targets,
+				const std::vector<const Core::FMToutput*>& alloutputs) const;
+			// DocString: FMTnssmodel::getActionsTargets
+			/**
+			@brief takea vector of pointer to outputs and buildup a vector of actions length containing nullptr and pointer to outputs.
+			to action related to each outputs.
+			@param[in] vectors of outputs ptr
+			@return a vector of pair of action / outputs.
+			*/
+			std::vector<std::set<size_t>> getActionsTargets(const std::vector<const Core::FMToutput*>& p_allOutputs) const;
+			// DocString: FMTnssmodel::UpdateArea
+			/**
+			@brief Update the targeted Area and the outputs index remove the p_index from p_actionsoutputs and remove the 
+			p_devArea from p_targetedArea
+			@param[in] p_index the index of the output to update.
+			@param[in] p_action the action index
+			@param[in] p_devArea the area of the development harvested
+			@param[in] p_targetedArea the area targets for each outputs
+			@param[in] p_actionsoutputs the outputs index for each acitons
+			@return the harvested area of the dev.
+			*/
+			static double UpdateArea(const int& p_action, const double& p_devArea,
+									std::vector<double>& p_targetedArea, std::vector<std::set<size_t>>& p_actionsoutputs);
 			// DocString: FMTnssmodel::operate
 			/**
 			Operate and fill FMTschedule

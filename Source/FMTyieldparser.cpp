@@ -33,6 +33,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include<boost/tokenizer.hpp>
 #include "FMToutput.hpp"
 #include "FMToutputparser.hpp"
+#include "FMTyieldmodelUnitCoverage.hpp"
 
 
 
@@ -438,6 +439,10 @@ std::unique_ptr<Core::FMTyieldmodel>FMTyieldparser::readyieldmodel(const std::st
 			if (modelType == Core::FMTyieldmodelRandom::GetModelType())
 			{
 				return std::unique_ptr<Core::FMTyieldmodel>(new Core::FMTyieldmodelRandom(root,inputYields));
+			}
+			if (modelType == Core::FMTyieldmodelUnitCoverage::GetModelType())
+			{
+				return std::unique_ptr<Core::FMTyieldmodel>(new Core::FMTyieldmodelUnitCoverage(root, inputYields, mainmask));
 			}
 		_exhandler->raise(Exception::FMTfunctionfailed,
 			"No valid model type for " + modeljson.string(),
