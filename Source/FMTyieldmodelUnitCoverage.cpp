@@ -103,7 +103,6 @@ namespace Core
 			for (const FMToutput& OUTPUT : p_outputs)
 			{
 				returnedValues[outId] = m_modelPtr->getoutput(OUTPUT, 0, Core::FMToutputlevel::totalonly).at("Total");
-				*_logger << OUTPUT<<" "<< returnedValues[outId] << "\n";
 				outId += 1;
 			}
 		}

@@ -11,19 +11,19 @@
 int main(int argc, char* argv[])
 {
 	Logging::FMTlogger().logstamp();
-	/*const std::string vals = argv[1];
+	const std::string vals = argv[1];
 	std::vector<std::string>results;
 	boost::split(results, vals, boost::is_any_of("|"));
 	const std::string PRIMARY = results.at(0);
 	const std::string SCENARIO = results.at(1);
 	const std::string  OUTPUT = results.at(2);
 	const int LENGTH = std::stoi(argv[2]);
-	const double OUTPUT_VALUE = std::stod(argv[3]);*/
-	const std::string PRIMARY = "D:/FMT/Examples/Models/TWD_land/TWD_land.pri";
+	const double OUTPUT_VALUE = std::stod(argv[3]);
+	/*const std::string PRIMARY = "D:/FMT/Examples/Models/TWD_land/TWD_land.pri";
 	const std::string SCENARIO = "UNIT_COVERAGE";
 	const std::string  OUTPUT = "UNIT_VOLUME";
 	const int LENGTH = 1;
-	const double OUTPUT_VALUE = 84.73;
+	const double OUTPUT_VALUE = 84.73;*/
 
 	Parser::FMTmodelparser mparser;
 	std::vector<Exception::FMTexc>errors;
