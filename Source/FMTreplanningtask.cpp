@@ -78,6 +78,9 @@ namespace Parallel
 			global->setparameter(Models::FMTboolmodelparameters::PRESOLVE_CAN_REMOVE_STATIC_THEMES, false);
 			stochastic->setparameter(Models::FMTboolmodelparameters::PRESOLVE_CAN_REMOVE_STATIC_THEMES, false);
 			local->setparameter(Models::FMTboolmodelparameters::PRESOLVE_CAN_REMOVE_STATIC_THEMES, false);
+			global->setparameter(Models::FMTintmodelparameters::UPDATE,1);
+			stochastic->setparameter(Models::FMTintmodelparameters::UPDATE, 1);
+			local->setparameter(Models::FMTintmodelparameters::UPDATE, 1);
 			std::vector<Models::FMTmodel*>modelsptr;
 			modelsptr.push_back(global.get());
 			modelsptr.push_back(stochastic.get());
