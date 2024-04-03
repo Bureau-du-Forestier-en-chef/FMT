@@ -21,8 +21,8 @@ int main(int argc, char* argv[])
 	const int LENGTH = std::stoi(argv[2]);
 	const double OUTPUT_VALUE = std::stod(argv[3]);
 	/*const std::string PRIMARY = "D:/FMT/Examples/Models/TWD_land/TWD_land.pri";
-	const std::string SCENARIO = "UNIT_COVERAGE";
-	const std::string  OUTPUT = "UNIT_VOLUME";
+	const std::string SCENARIO = "DECISION";
+	const std::string  OUTPUT = "OSUPREC";
 	const int LENGTH = 1;
 	const double OUTPUT_VALUE = 84.73;
 	const int PERIOD = 1;*/
@@ -42,6 +42,7 @@ int main(int argc, char* argv[])
 	const std::vector<std::string>SCENARIOS(1, SCENARIO);
 	const std::vector<Models::FMTmodel> MODELS = mparser.readproject(PRIMARY, SCENARIOS);
 	Models::FMTnssmodel NssModel(MODELS.at(0),0);
+	NssModel.setparameter(Models::FMTintmodelparameters::UPDATE, 1);
 	std::vector<Core::FMTactualdevelopment>newDevs;
 	for (Core::FMTactualdevelopment dev : NssModel.getarea())
 		{

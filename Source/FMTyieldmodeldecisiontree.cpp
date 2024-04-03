@@ -209,21 +209,21 @@ namespace Core {
 	{
 		try {
 			const Graph::FMTgraphvertextoyield* graphinfo = request.getvertexgraphinfo();
-			const Models::FMTmodel* modelptr = graphinfo->getmodel();
+			//const Models::FMTmodel* modelptr = graphinfo->getmodel();
 			std::vector<Core::FMTactualdevelopment>newareas;
 			const Core::FMTmask mask = reference->getsources().begin()->getmask();
-			for (const Core::FMTactualdevelopment& developement : modelptr->getarea())
+			for (const Core::FMTactualdevelopment& developement : m_modelPtr->getarea())
 				{
 				if (developement.getmask().issubsetof(mask))
 					{
 					newareas.push_back(developement);
 					}
 				}
-			std::unique_ptr<Models::FMTmodel>naturalgrowth = modelptr->getcopy(0);
+			std::unique_ptr<Models::FMTmodel>naturalgrowth = m_modelPtr->getcopy(0);
 			naturalgrowth->setarea(newareas);//Will only work with lp model going to get big with semodel...
 			naturalgrowth->setname(std::string(reference->getsources().begin()->getmask()));
 			//std::vector<Core::FMTaction> newactions = naturalgrowth->getactions();
-			const int updatestopat = modelptr->getparameter(Models::FMTintmodelparameters::UPDATE);
+			const int updatestopat = m_modelPtr->getparameter(Models::FMTintmodelparameters::UPDATE);
 			/*for (Core::FMTaction& action : newactions)
 			{
 				if (action.getname() != "_DEATH")
@@ -306,13 +306,13 @@ namespace Core {
 	{
 		std::vector<double>returned;
 		try {
-			const Graph::FMTgraphvertextoyield* graphinfo = request.getvertexgraphinfo();
-			const Models::FMTmodel* modelptr = graphinfo->getmodel();
-			const int modelLength = modelptr->getparameter(Models::FMTintmodelparameters::LENGTH);
+			//const Graph::FMTgraphvertextoyield* graphinfo = request.getvertexgraphinfo();
+			//const Models::FMTmodel* modelptr = graphinfo->getmodel();
+			const int modelLength = m_modelPtr->getparameter(Models::FMTintmodelparameters::LENGTH);
 			if (values.empty())
 			{
 				
-				const int update_period = modelptr->getparameter(Models::FMTintmodelparameters::UPDATE);
+				const int update_period = m_modelPtr->getparameter(Models::FMTintmodelparameters::UPDATE);
 				if (request.getdevelopment().getperiod()<update_period)
 					{
 					return default_values;

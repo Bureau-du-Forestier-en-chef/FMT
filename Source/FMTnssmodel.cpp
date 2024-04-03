@@ -298,7 +298,7 @@ namespace Models
 	std::unique_ptr<FMTmodel> FMTnssmodel::getcopy(int period) const
 	{
 		try {
-			return std::unique_ptr<FMTmodel>(new FMTnssmodel(*dynamic_cast<FMTnssmodel*>(FMTsrmodel::getcopy(period).get())));
+			return std::unique_ptr<FMTmodel>(new FMTnssmodel(*FMTsrmodel::getcopy(period).get(),getparameter(FMTintmodelparameters::SEED)));
 		}
 		catch (...)
 		{
@@ -356,19 +356,19 @@ namespace Models
 			if (targetedArea.empty())
 			{
 				_exhandler->raise(Exception::FMTexc::FMTignore,
-					"No area to simulate at period " + std::to_string(period), "FMTnssmodel::simulate", __LINE__, __FILE__);
+					"No area to simulate at period " + std::to_string(period)+" for "+getname(), "FMTnssmodel::simulate", __LINE__, __FILE__);
 			}
 
 			if (targetedArea.size() != TARGETED_OUTPUTS.size() ||
 				actionsOutputs.size() != actions.size())
 			{
 				_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
-					"Area target not the same size has output or actions target", "FMTnssmodel::simulate", __LINE__, __FILE__);
+					"Area target not the same size has output or actions target for " + getname(), "FMTnssmodel::simulate", __LINE__, __FILE__);
 			}
 			if (area.empty())
 			{
 				_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
-					"Simulation model has no area to simulate", "FMTnssmodel::simulate", __LINE__, __FILE__);
+					"Simulation model has no area to simulate for " + getname(), "FMTnssmodel::simulate", __LINE__, __FILE__);
 			}
 			graph.setbuildtype(Graph::FMTgraphbuild::schedulebuild);
 			setparameter(Models::FMTintmodelparameters::MATRIX_TYPE, 3);

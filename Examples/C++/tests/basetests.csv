@@ -56,3 +56,4 @@ FMTNsstest;../../../../Examples/Models/TWD_land/TWD_land.pri|randomYield|BURNEDA
 FMTNsstest;../../../../Examples/Models/TWD_land/TWD_land.pri|randomYieldUnit|BURNEDAREA|1;1;84.73
 FMTNsstest;../../../../Examples/Models/TWD_land/TWD_land.pri|UNIT_COVERAGE|UNIT_VOLUME|1;1;322.624
 FMTNsstest;../../../../Examples/Models/TWD_land/TWD_land.pri|UNIT_COVERAGE|BURNEDAREA|3;1;30
+FMTNsstest;../../../../Examples/Models/TWD_land/TWD_land.pri|DECISION|OSUPREC|1;1;20

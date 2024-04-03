@@ -1,0 +1,27 @@
+
+
+*CONSTRAINTS
+
+_RANDOM(oSupRec) >= 20 1 
+_RANDOM(oSupRec) <= 20 1
+_RANDOM(oSupRec) >= 10 2 
+_RANDOM(oSupRec) <= 10 2 
+_RANDOM(oSupRec) >= 30 3 
+_RANDOM(oSupRec) <= 30 3 
+_RANDOM(oSupRec) >= 40 4 
+_RANDOM(oSupRec) <= 40 4 
+_RANDOM(oSupRec) >= 60 5 
+_RANDOM(oSupRec) <= 60 5 
+_RANDOM(oSupRec) >= 70 6 
+_RANDOM(oSupRec) <= 70 6 
+_RANDOM(oSupRec) >= 5 7 
+_RANDOM(oSupRec) <= 5 7 
+_RANDOM(oSupRec) >= 15 8 
+_RANDOM(oSupRec) <= 15 8
+_RANDOM(oSupRec) >= 25 9
+_RANDOM(oSupRec) <= 25 9 
+_RANDOM(oSupRec) >= 35 10 
+_RANDOM(oSupRec) <= 35 10 
+
+
+*FORMAT MOSEK
