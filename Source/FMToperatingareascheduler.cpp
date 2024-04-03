@@ -614,10 +614,30 @@ namespace Heuristics
 				}
 				if (!descriptors.empty())
 				{
-					//*_logger<<std::string(operatingareait->getmask())<<"\n";
-					//*_logger<<"Area before setconstraints "+std::to_string(operatingareait->getarea())<<"\n";
+					bool choiceOnDescriptors = false;
+					for (const auto& DESCRIPTORS : descriptors)
+					{
+						for (const auto& DESCRIPTOR : DESCRIPTORS)
+						{
+							if (!maingraph.getoutactions(DESCRIPTOR).empty())
+								{
+								choiceOnDescriptors = true;
+								break;
+								}
+						}
+						if (choiceOnDescriptors)
+						{
+							break;
+						}
+					}
+					if (!choiceOnDescriptors)
+						{
+						_exhandler->raise(Exception::FMTexc::FMTrangeerror,
+							"No actions found in graph for " +
+							std::string(operatingareait->getmask()),
+							"FMToperatingareascheduler::setoperatingareasconstraints", __LINE__, __FILE__);
+						}
 					operatingareait->setconstraints(descriptors, totalareadescriptors, maingraph, *this, primalsolution, actionids);
-					//*_logger<<"Area after setconstraints "+std::to_string(operatingareait->getarea())<<"\n";
 				}else{
 					_exhandler->raise(Exception::FMTexc::FMTignore,
 											"No nodes found in graph for "+

@@ -101,14 +101,14 @@ int main(int argc, char *argv[])
             
            
             /*
-            const std::string primarylocation = "T:/Donnees/Usagers/CARMI5/2023_19_ModificationsCahierCOS/PC9509_U02751_DET/PC_9509_U02751_4_Vg2_2023_vRp2.pri";
-            const std::vector<std::string>scenarios(1, "13_Sc5a_Determin_avsp");
+            const std::string primarylocation = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/09_FMT/Modeles_test/08152/PC_7002071_UA08152_FINAL.pri";
+            const std::vector<std::string>scenarios(1, "2_Sc1_Region_FMT");
             boost::filesystem::path primpath(primarylocation);
             const std::string filename = primpath.stem().string();
             const boost::filesystem::path basefolder = primpath.parent_path();
-            const std::string lfichierParam = "T:/Donnees/Usagers/CARMI5/2023_19_ModificationsCahierCOS/parameters_2751.csv";
-            const std::string fichierShp = "T:/Donnees/Usagers/CARMI5/2023_19_ModificationsCahierCOS/PC9509_U02751_DET/Carte/PC_9509_UA_U02751.shp";
-            std::vector<std::string>results(1,"15_Sc5a_Determin_avsp_TypeRec_test");
+            const std::string lfichierParam = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/09_FMT/Modeles_test/08152/Scenarios/2_Sc1_Region_FMT/08152.csv";
+            const std::string fichierShp = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/09_FMT/Modeles_test/08152/Carte/PC_7002071_UA_U08152.shp";
+            std::vector<std::string>results(1,"2_Sc1_Region_FMT_test");
             */
 
             const std::string out("../../tests/testOAschedulertask/" + scenarios.at(0));
