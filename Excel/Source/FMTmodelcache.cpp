@@ -26,6 +26,7 @@
 #include <map>
 #include "FMTSerie.hpp"
 
+
 namespace Wrapper
 {
 
@@ -356,18 +357,25 @@ namespace Wrapper
 	}
 
 
-	Core::FMTmask FMTmodelcache::themeselectiontomask(const std::string& themeselection) const
+	Core::FMTmask FMTmodelcache::themeSelectionToMask(const std::string& p_themeSelection) const
 	{
 		try {
 		Core::FMTmask subset;
-		if (getfrommaskcache(themeselection, subset))
+		if (getfrommaskcache(p_themeSelection, subset))
 			{
 			return subset;
 			}
-		if (themeselection.find('=')!=std::string::npos)
+		if (p_themeSelection.find('=')!=std::string::npos)
 		{
 			std::vector<std::string> results;
-			boost::split(results, themeselection, boost::is_any_of(";"));
+			boost::split(results, p_themeSelection, boost::is_any_of(";"));
+			std::string emptyMask;
+			for (const Core::FMTtheme& theme : themes)
+			{
+				emptyMask += "? ";
+			}
+			emptyMask.pop_back();
+			subset = Core::FMTmask(emptyMask, themes);
 			for (std::string& value : results)
 			{ 
 				boost::trim(value);
@@ -375,7 +383,8 @@ namespace Wrapper
 				if (stfind != std::string::npos)//need to subsettheme!
 				{
 					const std::string themename = value.substr(0, stfind);
-					const std::string attribute = value.substr(stfind + 1, value.size());
+
+
 					Core::FMTtheme const* localtheme = nullptr;
 					if (themename.find("THEME") != std::string::npos)
 					{
@@ -383,8 +392,6 @@ namespace Wrapper
 						if (!(themeid < themes.size()))
 						{
 							return Core::FMTmask();
-						//_exhandler->raise(Exception::FMTexc::FMTinvalid_theme,
-						//	"THEME id " + std::to_string(themeid), "FMTmodelcache::themeselectiontomask", __LINE__, __FILE__);
 						}
 						localtheme = &themes.at(themeid);
 					}
@@ -392,41 +399,62 @@ namespace Wrapper
 						if (themesmap.find(themename) == themesmap.end())
 						{
 							return Core::FMTmask();
-						//_exhandler->raise(Exception::FMTexc::FMTinvalid_theme,
-						//	themename, "FMTmodelcache::themeselectiontomask", __LINE__, __FILE__);
 						}
 						localtheme = &themes.at(themesmap.at(themename));
 					}
-					if (localtheme)
+					std::string data = value.substr(stfind + 1, value.size());
+					boost::trim(data);
+					std::vector<std::string>attributes;
+					if (!data.empty() && data.at(0) == '{' && data.back() == '}')
 					{
-						if (localtheme->isattribute(attribute) ||
-							localtheme->isaggregate(attribute) ||
-							attribute == "?")
+						data.pop_back();
+						data.erase(data.begin());
+						boost::split(attributes, data, boost::is_any_of(","));
+					}
+					else {
+						attributes.push_back(data);
+					}
+					
+					for (std::string& attribute : attributes)
+					{
+						boost::trim(attribute);
+						Core::FMTmask localMask(subset);
+						if (localtheme)
 						{
-							subset.set(*localtheme, attribute);
-						}
-						//attributes names is a vector of string that the string can be empty ... so we cannot search in it
-						else if(!attribute.empty()) {
-							const std::vector<std::string>& attributenames = localtheme->getattributenames();
-							std::vector<std::string>::const_iterator ait = std::find(attributenames.begin(), attributenames.end(), attribute);
-							if (ait == attributenames.end())//raise
+							if (localtheme->isattribute(attribute) ||
+								localtheme->isaggregate(attribute) ||
+								attribute == "?")
 							{
-								return Core::FMTmask();
-							//_exhandler->raise(Exception::FMTexc::FMTundefined_attribute,
-							//	attribute, "FMTmodelcache::themeselectiontomask", __LINE__, __FILE__);
+								localMask.set(*localtheme, attribute);
+							}
+							//attributes names is a vector of string that the string can be empty ... so we cannot search in it
+							else if (!attribute.empty()) {
+								const std::vector<std::string>& attributenames = localtheme->getattributenames();
+								std::vector<std::string>::const_iterator ait = std::find(attributenames.begin(), attributenames.end(), attribute);
+								if (ait == attributenames.end())//raise
+								{
+									return Core::FMTmask();
+								}
+								else {
+									const std::string attname = localtheme->getbaseattributes().at(std::distance(attributenames.begin(), ait));
+									localMask.set(*localtheme, attname);
+								}
 							}
 							else {
-								const std::string attname = localtheme->getbaseattributes().at(std::distance(attributenames.begin(), ait));
-								subset.set(*localtheme, attname);
+								return Core::FMTmask();
 							}
 						}
-						else {
-							return Core::FMTmask();
+					if (attributes.size()==1)
+						{
+						subset = localMask;
+						}else {
+						subset = subset.getunion(localMask);
 						}
+					
 					}
 				}
 			}	
-			writetomaskcache(themeselection, subset);
+			writetomaskcache(p_themeSelection, subset);
 			return subset;
 			
 		}
@@ -527,7 +555,7 @@ namespace Wrapper
 	{
 		std::vector<std::string>masks;
 		try {
-			const Core::FMTmask mask_filter = themeselectiontomask(filter);
+			const Core::FMTmask mask_filter = themeSelectionToMask(filter);
 			if (!mask_filter.empty())
 				{
 				for (const Core::FMTdevelopment* dev : this->getnochoice(mask_filter))
@@ -555,7 +583,7 @@ namespace Wrapper
 			std::vector<std::string>selected;
 			for (const std::string& thselection : themeselection)
 			{
-				const Core::FMTmask subset = themeselectiontomask(thselection);
+				const Core::FMTmask subset = themeSelectionToMask(thselection);
 				if (!subset.empty())
 				{
 					std::vector<Heuristics::FMToperatingarea>::const_iterator itof = std::find_if(OAcache->begin(), OAcache->end(), Heuristics::FMToperatingareacomparator(subset));
@@ -630,7 +658,7 @@ namespace Wrapper
 			const bool incache = fillfromcache(value, cachekey);
 			if (!incache)
 			{
-				const Core::FMTmask subset = themeselectiontomask(themeselection);
+				const Core::FMTmask subset = themeSelectionToMask(themeselection);
 				const Core::FMToutput theoutput = getoutput(outputname, subset);
 				if (!outputs.empty() &&
 					outputsmap.find(outputname) != outputsmap.end() &&
@@ -674,7 +702,7 @@ namespace Wrapper
 			if (!incache)
 			{
 				//const Core::FMTyields& yields = model->getyields();
-				const Core::FMTmask subset = themeselectiontomask(themeselection);
+				const Core::FMTmask subset = themeSelectionToMask(themeselection);
 				if (!yields.empty() &&
 					yields.isyld(yieldname) &&
 					!(subset.empty() && !themeselection.empty()))
@@ -936,7 +964,7 @@ namespace Wrapper
 			const bool gotSeries = getSeriesFromCache(series, CacheKey);
 			if (!gotSeries)
 			{
-				const Core::FMTmask subset = themeselectiontomask(themeselection);
+				const Core::FMTmask subset = themeSelectionToMask(themeselection);
 				if (!aggregate.empty() && !subset.empty())
 				{
 					series = FMTsrmodel::getRotations(subset, aggregate);
@@ -955,7 +983,7 @@ namespace Wrapper
 	{
 		bool gotIt = false;
 		try {
-			const Core::FMTmask subset = themeselectiontomask(themeselection);
+			const Core::FMTmask subset = themeSelectionToMask(themeselection);
 			if (!aggregate.empty() && !subset.empty())
 			{
 				const std::string CacheKey = getcachekey("SERIE", aggregate, themeselection, 0, 0);

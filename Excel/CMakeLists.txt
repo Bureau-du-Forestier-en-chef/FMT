@@ -26,7 +26,21 @@ if (MSVC AND ExcelWrapperSOURCES)
     		"System.Xml"
 		)
 	set_target_properties(FMTExcelWrapper PROPERTIES COMMON_LANGUAGE_RUNTIME "")
+	set_target_properties( FMTExcelWrapper
+		PROPERTIES
+		ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
+		LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
+		RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
+	)
 	message("Generating build for FMTExcelWrapper")
+	if (NOT WITHOUT_TESTING)
+		FILE(GLOB FMTexecutables ${CMAKE_CURRENT_SOURCE_DIR}/Excel/tests/*.cpp)
+		foreach(pathtosource ${FMTexecutables})
+			createexecutable("${pathtosource}" executablename)
+			target_link_libraries(${executablename} PRIVATE FMTExcelWrapper)
+			target_include_directories(${executablename} PRIVATE ${ExcelWrapperINCLUDEDIR})
+		endforeach()
+	endif(NOT WITHOUT_TESTING)
 else()
 	message("No files found in ${CMAKE_CURRENT_SOURCE_DIR}/UI/Source/ the wrapper wont be compiled headers need to be in UI/Include and sources in UI/Source")
 endif(MSVC AND ExcelWrapperSOURCES)

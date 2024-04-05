@@ -8,11 +8,12 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 cmake_minimum_required(VERSION 3.6)
 
-function(createexecutable executablecpplocation)
+function(createexecutable executablecpplocation executablename)
   set(newprojectsourcefiles "${executablecpplocation}")
   #list(APPEND newprojectsourcefiles "${FMTSOURCEFILES}")
   get_filename_component(executablename "${executablecpplocation}" NAME_WE)
   message("Generating build for ${executablename}")
+  SET(executablename "${executablename}" PARENT_SCOPE)
   add_executable(${executablename} ${newprojectsourcefiles})
   target_include_directories(${executablename} PRIVATE ${Boost_INCLUDE_DIRS})
   target_link_libraries(${executablename} PRIVATE ${Boost_LIBRARIES})
@@ -48,7 +49,7 @@ endfunction(createexecutable executablecpplocation)
 
 FILE(GLOB FMTexecutables ${CMAKE_CURRENT_SOURCE_DIR}/Examples/C++/*.cpp)
 foreach(pathtosource ${FMTexecutables})
-	createexecutable("${pathtosource}")
+	createexecutable("${pathtosource}" executablename)
 endforeach()
 
 

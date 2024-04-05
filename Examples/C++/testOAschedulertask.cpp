@@ -98,17 +98,16 @@ int main(int argc, char *argv[])
             const boost::filesystem::path basefolder = primpath.parent_path();
             const std::string lfichierParam =  basefolder.string() + "/Scenarios/" + results.at(0) + "/" + results.at(1);
             const std::string fichierShp = std::string(argv[3]);
-            
            
             /*
-            const std::string primarylocation = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/09_FMT/Modeles_test/08152/PC_7002071_UA08152_FINAL.pri";
-            const std::vector<std::string>scenarios(1, "2_Sc1_Region_FMT");
+            const std::string primarylocation = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/09_FMT/Modeles_test/08551_det/PC_9424_U08551_4_Vg1_2023_vSSP03.pri";
+            const std::vector<std::string>scenarios(1, "13_Sc5a_Determin_avsp_CLE_PESSIERE");
             boost::filesystem::path primpath(primarylocation);
             const std::string filename = primpath.stem().string();
             const boost::filesystem::path basefolder = primpath.parent_path();
-            const std::string lfichierParam = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/09_FMT/Modeles_test/08152/Scenarios/2_Sc1_Region_FMT/08152.csv";
-            const std::string fichierShp = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/09_FMT/Modeles_test/08152/Carte/PC_7002071_UA_U08152.shp";
-            std::vector<std::string>results(1,"2_Sc1_Region_FMT_test");
+            const std::string lfichierParam = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/09_FMT/Modeles_test/08551_det/Scenarios/13_Sc5a_Determin_avsp_CLE_PESSIERE/parameters8551_rigide.csv";
+            const std::string fichierShp = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/09_FMT/Modeles_test/08551_det/Carte/PC_9424_UA_U08551.shp";
+            std::vector<std::string>results(1,"13_Sc5a_Determin_avsp_CLE_PESSIERE");
             */
 
             const std::string out("../../tests/testOAschedulertask/" + scenarios.at(0));
@@ -124,6 +123,7 @@ int main(int argc, char *argv[])
             errors.push_back(Exception::FMTexc::FMToutofrangeyield);
             errors.push_back(Exception::FMTexc::FMTsame_transitiontargets);
             errors.push_back(Exception::FMTexc::FMTmissingyield);
+            errors.push_back(Exception::FMTexc::FMTEmptyOA);
             modelparser.seterrorstowarnings(errors);
             const std::vector<Models::FMTmodel> models = modelparser.readproject(primarylocation, scenarios);
             Models::FMTmodel model = models.at(0);

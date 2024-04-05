@@ -122,7 +122,8 @@ enum FMTexc
 	FMTsame_transitiontargets = 80,
 	FMTunclosedforloop = 81,
 	FMTthreadcrash = 82,
-	FMToutofrangeyield = 83
+	FMToutofrangeyield = 83,
+	FMTEmptyOA = 84
     };
 
 // DocString: FMTexception
