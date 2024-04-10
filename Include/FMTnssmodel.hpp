@@ -149,18 +149,25 @@ namespace Models
 				// DocString: FMTnssmodel::generator
 				///This simulation model need to have it's own random number generator
 				std::default_random_engine generator;
-			// DocString: FMTnssmodel::constraintstotarget
+			// DocString: FMTnssmodel::constraintsToTarget
 			/**
-			Using the constraints generate random level or determinist level of output to generate
+			@brief Using the constraints generate random level or determinist level of output values in targets
+			@param[out] p_targets the targeted values 1 per outputs.
+			@param[in] p_period the targeted period
+			@return a vector of output pointers.
 			*/
-			std::vector<const Core::FMToutput*> constraintstotarget(std::vector<double>& targets, const int& period);
-			// DocString: FMTnssmodel::getoperabilities
+			std::vector<const Core::FMToutput*> constraintsToTarget(std::vector<double>& p_targets, const int& p_period);
+			// DocString: FMTnssmodel::gotOutputForDev
 			/**
-			Get potential operabilities of an development
+			@brief Return true if a output is found for the development
+			@param[in] p_development the development from which we want to find an output.
+			@param[in] p_outputs the vector of outputs we look in for the action.
+			@param[in] p_outputIds the output ids that we can test 
+			@return true if found else false.
 			*/
-			std::vector<std::pair<size_t, const Core::FMTaction*>> getoperabilities(const Core::FMTdevelopment& development,
-				std::vector<std::vector<const Core::FMTaction*>> targets,
-				const std::vector<const Core::FMToutput*>& alloutputs) const;
+			bool gotOutputForDev(const Core::FMTdevelopment& p_development,
+								const std::vector<const Core::FMToutput*>& p_outputs,
+								const std::set<size_t>& p_outputIds) const;
 			// DocString: FMTnssmodel::getFirstOperable
 			/**
 			@brief Get the first operable action for the developement
@@ -180,42 +187,35 @@ namespace Models
 			@return a vector of pair of action / outputs.
 			*/
 			std::vector<std::set<size_t>> getActionsTargets(const std::vector<const Core::FMToutput*>& p_allOutputs) const;
-			// DocString: FMTnssmodel::UpdateArea
+			// DocString: FMTnssmodel::UpdateOutputs
 			/**
-			@brief Update the targeted Area and the outputs index remove the p_index from p_actionsoutputs and remove the 
-			p_devArea from p_targetedArea
-			@param[in] p_index the index of the output to update.
+			@brief Update the targeted output value and the outputs index remove the p_index from p_actionsoutputs and remove dev 
+			valculated value from p_targets
+			@param[in] p_development the development that we update the value with
+			@param[in] p_paths Path to newly generated devs.
 			@param[in] p_action the action index
 			@param[in] p_devArea the area of the development harvested
-			@param[in] p_targetedArea the area targets for each outputs
+			@param[in] p_targets the targeted values
 			@param[in] p_actionsoutputs the outputs index for each acitons
+			@param[in] p_allOutputs the outputs to update.
 			@return the harvested area of the dev.
 			*/
-			static double UpdateArea(const int& p_action, const double& p_devArea,
-									std::vector<double>& p_targetedArea, std::vector<std::set<size_t>>& p_actionsoutputs);
-			// DocString: FMTnssmodel::operate
-			/**
-			Operate and fill FMTschedule
-			*/
-			std::vector<Core::FMTdevelopmentpath> operate(const Core::FMTactualdevelopment& development, const double& areatarget, const Core::FMTaction* target, Core::FMTschedule& schedule) const;
-			// DocString: FMTnssmodel::updatearea
-			/**
-			update the actual developments in the area vector.
-			*/
-			void updatearea(std::vector<Core::FMTactualdevelopment>& basearea, std::vector<Core::FMTactualdevelopment>::iterator developmentit, const std::vector<Core::FMTdevelopmentpath>& paths, const double& operatedarea);
-			// DocString: FMTnssmodel::updateareatargets
-			/**
-			Update all the stuff related to the targeted area, knowing that an area has been operated on a given location.
-			*/
-			void updateareatargets(const double& areaoperated, const size_t& outtarget,
-				std::vector<const Core::FMToutput*>& alloutputs, std::vector<double>& targets,
-				std::vector<std::vector<const Core::FMTaction*>>& actiontargets) const;
-			virtual void swap_ptr(const std::unique_ptr<FMTmodel>& rhs);
+			double UpdateOutputs(const Core::FMTdevelopment& p_development,
+								const std::vector<Core::FMTdevelopmentpath>& p_paths,
+								const int& p_action, const double& p_devArea,
+								std::vector<double>& p_targets, std::vector<std::set<size_t>>& p_actionsoutputs,
+								const std::vector<const Core::FMToutput*>& p_allOutput) const;
 			// DocString: FMTnssmodel(const FMTsrmodel&,unsigned int)
 			/**
 			Constructor for FMTnssmodel taking a FMTsrmodel and a seed to initialize the random number generator.
 			*/
 			FMTnssmodel(const FMTsrmodel& rhs, unsigned int seed);
+			// DocString: FMTnssmodel::swap_ptr
+			/**
+			@brief swap from unique_ptr of model
+			@param[in] a unique pointer to a FMTmodel.
+			*/
+			virtual void swap_ptr(const std::unique_ptr<FMTmodel>& rhs);
 
 	};
 }

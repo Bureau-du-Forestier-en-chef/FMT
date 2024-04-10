@@ -1,18 +1,21 @@
-#ifdef FMTWITHOSI
-#include <vector>
-#include "FMTsesmodel.hpp"
-#include "FMTmodelparser.hpp"
-#include "FMTareaparser.hpp"
-#include "FMTversion.hpp"
-#include "FMTlogger.hpp"
-#include "FMTforest.hpp"
-#include "FMTspatialschedule.hpp"
-#include "FMToutput.hpp"
-#include "FMTyieldmodel.hpp"
+#ifdef FMTWITHONNXR
+	#ifdef FMTWITHOSI
+		#include <vector>
+		#include "FMTsesmodel.hpp"
+		#include "FMTmodelparser.hpp"
+		#include "FMTareaparser.hpp"
+		#include "FMTversion.hpp"
+		#include "FMTlogger.hpp"
+		#include "FMTforest.hpp"
+		#include "FMTspatialschedule.hpp"
+		#include "FMToutput.hpp"
+		#include "FMTyieldmodel.hpp"
+	#endif
 #endif
 
 int main()
 {
+#ifdef FMTWITHONNXR
 #ifdef FMTWITHOSI
 	Logging::FMTlogger().logstamp();
 	const std::string modellocation = "../../../../Examples/Models/TWD_land/";
@@ -89,6 +92,7 @@ int main()
 			Logging::FMTlogger() << "output value " << output.getname() << " " << simulationmodel.getoutput(output, period, Core::FMToutputlevel::totalonly).at("Total")/ 1814 << " at period " << period << "\n";
 		}
 	}
+#endif
 #endif
 	return 0;
 }

@@ -34,29 +34,29 @@ namespace Models
 		FMTmodel::setparameter(SEED,seed);
 	}
 
-	std::vector<const Core::FMToutput*> FMTnssmodel::constraintstotarget(std::vector<double>& targets, const int& period)
+	std::vector<const Core::FMToutput*> FMTnssmodel::constraintsToTarget(std::vector<double>& p_targets, const int& p_period)
 		{
 		std::vector<const Core::FMToutput*>targetedoutputs;
 		try {
-			targets.clear();
+			p_targets.clear();
 			std::vector<double>lowers;
 			std::vector<double>uppers;
 			for (const Core::FMTconstraint& constraint : constraints)
 				{
 				if (constraint.israndomaction() &&
-					period>=constraint.getperiodlowerbound() &&
-					period<=constraint.getperiodupperbound())
+					p_period>=constraint.getperiodlowerbound() &&
+					p_period<=constraint.getperiodupperbound())
 					{
 				
 					if (!constraint.dosupportrandom())
 						{
 						_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
-							"Constraint "+std::string(constraint)+" does not support _RANDOM keyword", "FMTnssmodel::constraintstotarget", __LINE__, __FILE__);
+							"Constraint "+std::string(constraint)+" does not support _RANDOM keyword", "FMTnssmodel::constraintsToTarget", __LINE__, __FILE__);
 						}
 					
 					double lower = 0;
 					double upper = 0;
-					constraint.getbounds(lower, upper,period);
+					constraint.getbounds(lower, upper, p_period);
 					size_t location = 0;
 					bool added = false;
 					for (const Core::FMToutput* doneit : targetedoutputs)
@@ -95,11 +95,11 @@ namespace Models
 					value = udist(generator);
 					}
 				
-				targets.push_back(value);
+				p_targets.push_back(value);
 				}
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("", "FMTnssmodel::constraintstotarget", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("", "FMTnssmodel::constraintsToTarget", __LINE__, __FILE__);
 			}
 		return targetedoutputs;
 		}
@@ -124,35 +124,7 @@ namespace Models
 		}
 		return outputActions;
 	}
-	/*std::vector<std::vector<const Core::FMTaction*>> FMTnssmodel::getactionstargets(const std::vector<const Core::FMToutput*>& alloutputs) const
-		{
-		std::vector<std::vector<const Core::FMTaction*>>outputactions;
-		try {
-			for (const Core::FMToutput* output : alloutputs)
-			{
-				outputactions.push_back(output->getsourcesreference().begin()->targets(actions));
-			}
-		}
-		catch (...)
-		{
-			_exhandler->raisefromcatch("", "FMTnssmodel::getactionstargets", __LINE__, __FILE__);
-		}
-		return outputactions;
-		}*/
 
-	std::vector<Core::FMTdevelopmentpath> FMTnssmodel::operate(const Core::FMTactualdevelopment& development, const double& areatarget,const Core::FMTaction* target, Core::FMTschedule& schedule) const
-	{
-	std::vector<Core::FMTdevelopmentpath>paths;
-	try {
-			const size_t location = std::distance(&*actions.begin(), target);
-			paths = development.operate(actions.at(location), transitions.at(location), yields, themes);
-			schedule.addevent(development, areatarget, *target);
-		}catch (...)
-			{
-			_exhandler->raisefromcatch("", "FMTnssmodel::operate", __LINE__, __FILE__);
-			}
-		return paths;
-	}
 
 	std::pair<size_t, const Core::FMTaction*> FMTnssmodel::getFirstOperable(const Core::FMTdevelopment& development,
 		std::vector<std::vector<const Core::FMTaction*>> targets,
@@ -195,79 +167,23 @@ namespace Models
 	return result;
 	}
 
-	std::vector<std::pair<size_t, const Core::FMTaction*>> FMTnssmodel::getoperabilities(const Core::FMTdevelopment& development,
-		std::vector<std::vector<const Core::FMTaction*>> targets,
-		const std::vector<const Core::FMToutput*>& alloutputs) const
+	bool FMTnssmodel::gotOutputForDev(const Core::FMTdevelopment& p_development,
+		const std::vector<const Core::FMToutput*>& p_outputs,
+		const std::set<size_t>& p_outputIds) const
 	{
-		std::vector<std::pair<size_t, const Core::FMTaction*>>selection;
 		try {
-			size_t location = 0;
-			for (const Core::FMToutput* output : alloutputs)
+			for (const size_t& ID : p_outputIds)
 				{
-				if (output->getsourcesreference().begin()->use(development,yields))
+				if (p_outputs.at(ID)->getsourcesreference().begin()->use(p_development, yields))
 					{
-					std::vector<const Core::FMTaction*>::const_iterator actit = targets.at(location).begin();
-					while (actit!= targets.at(location).end() && !development.operable(**actit,yields))
-						{
-						++actit;
-						}
-					if (actit != targets.at(location).end())
-						{
-						selection.push_back(std::pair<size_t, const Core::FMTaction*>(location, *actit));
-						}
-					}
-				++location;
-				}
-		}catch (...)
-			{
-			_exhandler->raisefromcatch("", "FMTnssmodel::getoperabilities", __LINE__, __FILE__);
-			}
-		return selection;
-	}
-
-	void FMTnssmodel::updatearea(std::vector<Core::FMTactualdevelopment>& basearea, std::vector<Core::FMTactualdevelopment>::iterator developmentit, const std::vector<Core::FMTdevelopmentpath>& paths, const double& operatedarea)
-	{
-		try {
-			if (operatedarea>= developmentit->getarea())
-				{
-				basearea.erase(developmentit);
-			}else {
-				developmentit->setarea(developmentit->getarea() - operatedarea);
-				}
-			for (const Core::FMTdevelopmentpath& path : paths)
-				{
-				const double newareavalue = operatedarea * (path.proportion / 100);
-				std::vector<Core::FMTactualdevelopment>::iterator restdev = std::find_if(basearea.begin(), basearea.end(), Core::FMTactualdevelopmentcomparator(&(*path.development)));
-				if (restdev != basearea.end())
-				{
-					restdev->setarea(restdev->getarea() + newareavalue);
-				}else {
-					basearea.emplace_back(*path.development, newareavalue);
+					return true;
 					}
 				}
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("", "FMTnssmodel::updatearea", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("", "FMTnssmodel::gotOutputForDev", __LINE__, __FILE__);
 			}
-	}
-
-	void FMTnssmodel::updateareatargets(const double& areaoperated, const size_t& outtarget,
-		std::vector<const Core::FMToutput*>& alloutputs, std::vector<double>& targets,
-		std::vector<std::vector<const Core::FMTaction*>>& actiontargets) const
-	{
-		try {
-			if (targets.at(outtarget)<= areaoperated)
-				{
-				alloutputs.erase(alloutputs.begin()+ outtarget);
-				targets.erase(targets.begin() + outtarget);
-				actiontargets.erase(actiontargets.begin() + outtarget);
-			}else {
-				targets[outtarget] -= areaoperated;
-				}
-		}catch (...)
-			{
-			_exhandler->raisefromcatch("", "FMTnssmodel::updateareatargets", __LINE__, __FILE__);
-			}
+		return false;
 	}
 
 
@@ -307,21 +223,38 @@ namespace Models
 		return std::unique_ptr<FMTmodel>(nullptr);
 	}
 
-	double FMTnssmodel::UpdateArea(const int& p_action, const double& p_devArea,
-		std::vector<double>& p_targetedArea, std::vector<std::set<size_t>>& p_actionsoutputs)
+	double FMTnssmodel::UpdateOutputs(const Core::FMTdevelopment& p_development, 
+								    const std::vector<Core::FMTdevelopmentpath>& p_paths,
+									const int& p_action, const double& p_devArea,
+									std::vector<double>& p_targets, std::vector<std::set<size_t>>& p_actionsoutputs,
+									const std::vector<const Core::FMToutput*>& p_allOutput) const
 	{
 		double harvestedArea = 0;
 		try {
-			double areaToGet = 0;
+			double valueToGet = 0;
+			double devValue = 0;
+			std::vector<double>COEFFICIENTS(p_targets.size());
+			double maxArea = 0;
 			for (const size_t& OUTPUT_ID : p_actionsoutputs.at(p_action))
 			{
-				areaToGet += p_targetedArea.at(OUTPUT_ID);
+				const Core::FMToutputsource& SOURCE = *p_allOutput.at(OUTPUT_ID)->getsourcesreference().begin();
+				if (SOURCE.use(p_development, yields))//Only select the output for this dev.
+				{
+					const std::string& YIELD = SOURCE.getyield();
+					double COEFFICIENT = 1;
+					if (!YIELD.empty())
+						{
+						COEFFICIENT = p_development.getharvestcoef(p_paths, actions.at(p_action), yields, YIELD);
+						}
+					maxArea = std::max(p_targets.at(OUTPUT_ID) / COEFFICIENT, maxArea);
+					COEFFICIENTS[OUTPUT_ID] = COEFFICIENT;
+				}
 			}
-			harvestedArea = std::min(areaToGet, p_devArea);
+			harvestedArea =  std::min(maxArea, p_devArea);
 			for (const size_t& OUTPUT_ID : p_actionsoutputs.at(p_action))
 			{
-				p_targetedArea.at(OUTPUT_ID) = std::max(p_targetedArea.at(OUTPUT_ID) - harvestedArea, 0.0);
-				if (p_targetedArea.at(OUTPUT_ID) <= FMT_DBL_TOLERANCE)
+				p_targets.at(OUTPUT_ID) = std::max(p_targets.at(OUTPUT_ID) - harvestedArea * COEFFICIENTS.at(OUTPUT_ID), 0.0);
+				if (p_targets.at(OUTPUT_ID) <= FMT_DBL_TOLERANCE)
 				{
 					for (std::set<size_t>& Ids : p_actionsoutputs)
 					{
@@ -344,22 +277,22 @@ namespace Models
 			//First make some noise
 			std::shuffle(area.begin(), area.end(), generator);
 			std::queue<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor> actives = getActives();
-			const int GRAPH_SIZE = getgraphsize();
+			const int GRAPH_SIZE = static_cast<int>(getgraphsize());
 			int period = static_cast<int>(GRAPH_SIZE -1);
 			if (GRAPH_SIZE == 0)
 			{
 				period = area.begin()->getperiod() + 1;
 			}
-			std::vector<double>targetedArea;
-			const std::vector<const Core::FMToutput*> TARGETED_OUTPUTS = constraintstotarget(targetedArea, period);
+			std::vector<double>targetedValues;
+			const std::vector<const Core::FMToutput*> TARGETED_OUTPUTS = constraintsToTarget(targetedValues, period);
 			std::vector<std::set<size_t>> actionsOutputs = getActionsTargets(TARGETED_OUTPUTS);
-			if (targetedArea.empty())
+			if (targetedValues.empty())
 			{
 				_exhandler->raise(Exception::FMTexc::FMTignore,
 					"No area to simulate at period " + std::to_string(period)+" for "+getname(), "FMTnssmodel::simulate", __LINE__, __FILE__);
 			}
 
-			if (targetedArea.size() != TARGETED_OUTPUTS.size() ||
+			if (targetedValues.size() != TARGETED_OUTPUTS.size() ||
 				actionsOutputs.size() != actions.size())
 			{
 				_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
@@ -380,43 +313,69 @@ namespace Models
 			int actionId = 0;
 			for (const Core::FMTaction& ACTION : actions)
 			{
-				if (!actionsOutputs.at(actionId).empty())
+				const bool DOES_NOT_GROW = (ACTION.getname() == "_DEATH");
+				std::queue< Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>toGrow;
+				const size_t MAX_SPIN = area.size() * 2;
+				size_t visit = 0;
+				while (!actionsOutputs.at(actionId).empty() && visit < MAX_SPIN)//Keep on spinning if you havent reach the target?
 				{
-					std::queue< Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>newActives;
+					std::queue< Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>revisitedActives;
 					while (!actives.empty())
 					{
-						bool doesNotGrow = false;
 						Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor& frontVertex = actives.front();
+						bool inOutput = false;
 						if (!actionsOutputs.at(actionId).empty())
 						{
 							const Core::FMTdevelopment& DEVELOPPEMENT = graph.getdevelopment(frontVertex);
-							if (DEVELOPPEMENT.operable(ACTION, yields))
+							const bool GOT_OUTPUT = gotOutputForDev(DEVELOPPEMENT, TARGETED_OUTPUTS, actionsOutputs.at(actionId));
+							if (GOT_OUTPUT)
 							{
-								const double* actualSolution = &newSolution[0];
-								double DEV_AREA = graph.inarea(frontVertex, actualSolution);
-								for (const int& actionId : graph.getoutactions(frontVertex))
-								{
-									DEV_AREA -= graph.outarea(frontVertex, actionId, actualSolution);
-								}
-								if (ACTION.getname() == "_DEATH")
-								{
-									doesNotGrow = true;
-								}
-								const std::vector<Core::FMTdevelopmentpath> PATHS = DEVELOPPEMENT.operate(ACTION, transitions[actionId], yields, themes);
-								graph.addaction(actionId, GraphStats, newActives, frontVertex, PATHS);
-								const double OPERATED_AREA = UpdateArea(actionId, DEV_AREA, targetedArea, actionsOutputs);
-								newSolution.push_back(OPERATED_AREA);
-								totalOperatedArea += OPERATED_AREA;
+								inOutput = true;
+								if (DEVELOPPEMENT.operable(ACTION, yields))
+									{
+									const double* actualSolution = &newSolution[0];
+									double DEV_AREA = graph.inarea(frontVertex, actualSolution);
+									for (const int& actionId : graph.getoutactions(frontVertex))
+										{
+										DEV_AREA -= graph.outarea(frontVertex, actionId, actualSolution);
+										}
+									const std::vector<Core::FMTdevelopmentpath> PATHS = DEVELOPPEMENT.operate(ACTION, transitions[actionId], yields, themes);
+									graph.addaction(actionId, GraphStats, toGrow, frontVertex, PATHS);
+									const double OPERATED_AREA = UpdateOutputs(DEVELOPPEMENT, PATHS, actionId, DEV_AREA,
+										targetedValues, actionsOutputs,
+										TARGETED_OUTPUTS);
+									newSolution.push_back(OPERATED_AREA);
+									totalOperatedArea += OPERATED_AREA;
+									if (!DOES_NOT_GROW)
+										{
+										toGrow.push(frontVertex);
+										}
+									}else if (!DOES_NOT_GROW)
+										{
+										revisitedActives.push(frontVertex);
+										}
 							}
 						}
-						if (!doesNotGrow)
+						if (!inOutput && !DOES_NOT_GROW)
 							{
-							newActives.push(frontVertex);
+							toGrow.push(frontVertex);
 							}
 						actives.pop();
 					}
-					actives = newActives;
+					actives = revisitedActives;
+					++visit;
 				}
+				if (visit == MAX_SPIN)
+				{
+					_exhandler->raise(Exception::FMTexc::FMTignore,
+						"For action "+ ACTION.getname()+" at period " + std::to_string(period) + " reached max spin ",
+						"FMTnssmodel::simulate", __LINE__, __FILE__);
+				}
+				while (!toGrow.empty())
+					{
+					actives.push(toGrow.front());
+					toGrow.pop();
+					}
 				++actionId;
 			}
 			std::queue<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>toGrowWithSolution(actives);

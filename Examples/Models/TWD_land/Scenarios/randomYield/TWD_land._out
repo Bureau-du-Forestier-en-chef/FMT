@@ -13,6 +13,9 @@
 *OUTPUT Burnedarea
 *SOURCE ? ? ? aFire _AREA
 
+*OUTPUT Burnedoparea
+*SOURCE ? ? ? _INVENT(aFire) _AREA
+
 *OUTPUT recuparea
 *SOURCE ? ? ? arecup _AREA
 

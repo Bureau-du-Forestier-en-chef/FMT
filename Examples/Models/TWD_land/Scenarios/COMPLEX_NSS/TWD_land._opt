@@ -1,0 +1,12 @@
+
+*CONSTRAINTS
+
+_RANDOM(afire_ajust_p1) >= 1 1.._LENGTH
+_RANDOM(afire_ajust_p1) <= 1 1.._LENGTH
+_RANDOM(afire_ajust_p2) >= 1 1.._LENGTH
+_RANDOM(afire_ajust_p2) <= 1 1.._LENGTH
+_RANDOM(atbe_ajust_p2) >= 1 1.._LENGTH
+_RANDOM(atbe_ajust_p2) <= 1 1.._LENGTH
+
+
+*FORMAT MOSEK

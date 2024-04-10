@@ -38,6 +38,14 @@ int main(int argc, char *argv[])
 		const int period = std::stoi(results.at(4));
 		const std::string yieldname = std::string(argv[2]);
 		const double yieldvalue = std::stod(argv[3]);
+		/*const std::string primarylocation = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/09_FMT/Modeles_test/CahierCOS_SPAT_P10_IT1_V/13_Sc5a_Determin_avsp.pri";
+		const std::string scenario = "ROOT";
+		const std::string  maskstr = "? ? ? ? ? ? ? INC ? ? ? ? ? P27037 ? ? ? ? ? ?";
+		const std::string  yieldname = "YOUVERT";
+		const double yieldvalue = 1;
+		const int age = 0;
+		const int period = 17;*/
+
 		const std::vector<std::string>scenarios(1, scenario);
 		const std::vector<Models::FMTmodel> models = modelparser.readproject(primarylocation, scenarios);
 		Models::FMTlpmodel optimizationmodel(models.at(0), Models::FMTsolverinterface::MOSEK);

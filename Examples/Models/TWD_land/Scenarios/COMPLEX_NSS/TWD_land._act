@@ -1,0 +1,7 @@
+*ACTION afire Y
+*OPERABLE afire
+? ? ? _AGE >= 1 AND yrandom_choice >= 1.0
+
+*ACTION atbe Y
+*OPERABLE atbe
+? ? ? _AGE >= 1 AND yrandom_choice >= 1.0

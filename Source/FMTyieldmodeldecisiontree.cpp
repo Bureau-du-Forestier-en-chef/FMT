@@ -306,42 +306,32 @@ namespace Core {
 	{
 		std::vector<double>returned;
 		try {
-			//const Graph::FMTgraphvertextoyield* graphinfo = request.getvertexgraphinfo();
-			//const Models::FMTmodel* modelptr = graphinfo->getmodel();
-			const int modelLength = m_modelPtr->getparameter(Models::FMTintmodelparameters::LENGTH);
+			const int MODEL_LENGTH = m_modelPtr->getparameter(Models::FMTintmodelparameters::LENGTH);
 			if (values.empty())
 			{
+				const int DEV_PERIOD = request.getdevelopment().getperiod();
 				
-				const int update_period = m_modelPtr->getparameter(Models::FMTintmodelparameters::UPDATE);
-				if (request.getdevelopment().getperiod()<update_period)
+				const int UPDATE_PERIOD = m_modelPtr->getparameter(Models::FMTintmodelparameters::UPDATE);
+				if (DEV_PERIOD< UPDATE_PERIOD)
 					{
 					return default_values;
 				}else {
+					const int FIRST_PERIOD = m_modelPtr->getarea().cbegin()->getperiod();
+					const int FILL_IN = std::max(UPDATE_PERIOD, FIRST_PERIOD+1);
 					for (size_t yieldid = 0; yieldid < default_values.size(); ++yieldid)
 						{
-						std::vector<double>base_values(update_period, default_values.at(yieldid));//Dont forget period 0!
+						std::vector<double>base_values(FILL_IN, default_values.at(yieldid));//Dont forget period 0!
 						values[yieldid] = base_values;
 						}
 					boost::lock_guard<boost::recursive_mutex> guard(mtx);
 					const std::unique_ptr<Models::FMTmodel>naturalgrowthmodel = GetNaturalGrowth(request);
-					/*std::ofstream decisionfile;
-					decisionfile.open("D:/test/"+ std::string(request.getdevelopment()) +".txt");*/
-					for (int period = update_period; period <= modelLength; ++period)
+					const int MAX_PERIOD = (FIRST_PERIOD + MODEL_LENGTH);
+					for (int period = FILL_IN; period <= MAX_PERIOD; ++period)
 					{
-						//std::string decision_stack(std::string(request.getdevelopment())+std::to_string(period));
-						//size_t decisionid = 0;
-						//decision_stack += "\nfrom " + std::string(decisionid, ' ') + nodes.at(0).getname();
 						size_t target_node = GetADecision(naturalgrowthmodel, 0, period);// , decision_stack);
-						//decision_stack += "\n";
-						//++decisionid;
-						//decision_stack += std::string(decisionid, ' ') + " to " + nodes.at(target_node).getname() + "\n";
-						//++decisionid;
 						while (!nodes.at(target_node).FMToutput::empty())//If you get and empty output then you make a decision!
 						{
-							//decision_stack += std::string(decisionid, ' ') + " from " + nodes.at(target_node).getname();
 							target_node = GetADecision(naturalgrowthmodel, target_node, period);// , decision_stack);
-							//decision_stack += "\n" + std::string(decisionid, ' ')+" to " + nodes.at(target_node).getname() + "\n";
-							//++decisionid;
 						}
 						double lowerbound = 0;//value
 						double upperbound = 0;//target yield
@@ -350,7 +340,7 @@ namespace Core {
 						const int rest_of_period = static_cast<int>(nodes.at(target_node).getyieldbound("LAG").getlower());
 						if (rest_of_period)
 						{
-							for (; period <= naturalgrowthmodel->getparameter(Models::FMTintmodelparameters::LENGTH); ++period)
+							for (; period <= MAX_PERIOD; ++period)
 							{
 								values[yieldid].push_back(lowerbound);
 							}
@@ -358,15 +348,7 @@ namespace Core {
 						else {
 							values[yieldid].push_back(lowerbound);
 						}
-
-						
-						/*const std::string dev = std::string(request.getdevelopment());
-						if (lowerbound<1)
-						{
-							decisionfile << decision_stack << "\n";
-						}*/
 					}
-					//decisionfile.close();
 					
 				}
 				//unlock
@@ -375,7 +357,8 @@ namespace Core {
 			
 			for (std::map<size_t,std::vector<double>>::const_iterator valuesit = values.begin(); valuesit!=values.end(); ++valuesit)
 			{
-				returned.push_back(valuesit->second.at(std::min(request.getdevelopment().getperiod(), modelLength)));
+				const size_t INDEX = std::min(static_cast<size_t>(request.getdevelopment().getperiod()), valuesit->second.size() - 1);
+				returned.push_back(valuesit->second.at(INDEX));
 			}
 			
 

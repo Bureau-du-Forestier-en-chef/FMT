@@ -1,0 +1,14 @@
+*OUTPUT afire_ajust_p1
+*SOURCE ? peuplement1 ? aFire yp
+
+*OUTPUT afire_ajust_p2
+*SOURCE ? peuplement2 ? aFire yp2
+
+*OUTPUT atbe_ajust_p2
+*SOURCE ? ? ? atbe yp2
+
+*OUTPUT atbe_area
+*SOURCE ? ? ? atbe _AREA
+
+*OUTPUT afire_area
+*SOURCE ? ? ? afire _AREA

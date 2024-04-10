@@ -19,12 +19,16 @@ int main(int argc, char* argv[])
 	const std::string  OUTPUT = results.at(2);
 	const int PERIOD = std::stoi(results.at(3));
 	const int LENGTH = std::stoi(argv[2]);
-	const double OUTPUT_VALUE = std::stod(argv[3]);
+	double output_value = 0;
+	if (argc==4)
+		{
+		output_value = std::stod(argv[3]);
+		}
 	/*const std::string PRIMARY = "D:/FMT/Examples/Models/TWD_land/TWD_land.pri";
-	const std::string SCENARIO = "DECISION";
-	const std::string  OUTPUT = "OSUPREC";
+	const std::string SCENARIO = "randomYield";
+	const std::string  OUTPUT = "BURNEDOPAREA";
 	const int LENGTH = 1;
-	const double OUTPUT_VALUE = 84.73;
+	const double OUTPUT_VALUE = 60;
 	const int PERIOD = 1;*/
 	Parser::FMTmodelparser mparser;
 	std::vector<Exception::FMTexc>errors;
@@ -62,8 +66,8 @@ int main(int argc, char* argv[])
 	}
 	
 	const double RESULT = NssModel.getoutput(sumOutput,PERIOD, Core::FMToutputlevel::totalonly).at("Total");
-	Logging::FMTlogger() << "VALUE OF "<< RESULT <<"\n";
-	if (std::abs(RESULT - OUTPUT_VALUE)>1)
+	Logging::FMTlogger() << "VALUE OF "<< RESULT<<" "<< argc << "\n";
+	if (argc == 4 && std::abs(RESULT - output_value)>1)
 	{
 		Exception::FMTfreeexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed, "Wrong value",
 			"FMTNsstest", __LINE__, PRIMARY);

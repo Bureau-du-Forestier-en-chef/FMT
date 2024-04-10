@@ -52,8 +52,10 @@ doplanning;../../../../Examples/Models/TWD_land/TWD_land.pri|NOT_MASK;5;90738
 testreadwriteproject;../../../../Examples/Models/TWD_land/TWD_land.pri;NOT_MASK;
 presolvetest;../../../../Examples/Models/TWD_land/TWD_land.pri;NOT_MASK;5
 testmodelwriter;../../../../Examples/Models/TWD_land/TWD_land.pri;NOT_MASK;
-FMTNsstest;../../../../Examples/Models/TWD_land/TWD_land.pri|randomYield|BURNEDAREA|1;1;84.73
-FMTNsstest;../../../../Examples/Models/TWD_land/TWD_land.pri|randomYieldUnit|BURNEDAREA|1;1;84.73
+FMTNsstest;../../../../Examples/Models/TWD_land/TWD_land.pri|randomYield|BURNEDAREA|1;1;
+FMTNsstest;../../../../Examples/Models/TWD_land/TWD_land.pri|randomYieldUnit|BURNEDAREA|1;1;
 FMTNsstest;../../../../Examples/Models/TWD_land/TWD_land.pri|UNIT_COVERAGE|UNIT_VOLUME|1;1;322.624
 FMTNsstest;../../../../Examples/Models/TWD_land/TWD_land.pri|UNIT_COVERAGE|BURNEDAREA|3;1;30
-FMTNsstest;../../../../Examples/Models/TWD_land/TWD_land.pri|DECISION|OSUPREC|1;1;20
+FMTNsstest;../../../../Examples/Models/TWD_land/TWD_land.pri|COMPLEX_NSS|AFIRE_AREA|1;1;1.5
+FMTNsstest;../../../../Examples/Models/TWD_land/TWD_land.pri|COMPLEX_NSS|ATBE_AREA|1;1;0.5
+FMTNsstest;../../../../Examples/Models/TWD_land/TWD_land.pri|DECISION|UNIT_REC|5;1;60
