@@ -38,6 +38,11 @@ namespace Testing
 					Exception::FMTfreeexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed, "Selection mask",
 						"UnitTestFMTmodelcache::testThemeSelectionToMask", __LINE__, __FILE__);
 				}
+				if (std::string(FIRST_MASK) != "UNITE1 ? ?")
+				{
+					Exception::FMTfreeexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed, "Selection mask",
+						"UnitTestFMTmodelcache::testThemeSelectionToMask", __LINE__, __FILE__);
+				}
 				const std::string COMPOSED_FILTER = "THEME1=UNITE1;THEME2=PEUPLEMENT1";
 				const Core::FMTmask  COMPOSED_MASK = m_cache.themeSelectionToMask(COMPOSED_FILTER);
 				if ((COMPOSED_MASK.size() - COMPOSED_MASK.count()) == 
@@ -46,17 +51,32 @@ namespace Testing
 					Exception::FMTfreeexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed, "Selection mask",
 						"UnitTestFMTmodelcache::testThemeSelectionToMask", __LINE__, __FILE__);
 				}
-				const std::string MULTIPLE_FILTER = "THEME1={UNITE1;UNITE2}";
+				if (std::string(COMPOSED_MASK) != "UNITE1 PEUPLEMENT1 ?")
+				{
+					Exception::FMTfreeexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed, "Selection mask",
+						"UnitTestFMTmodelcache::testThemeSelectionToMask", __LINE__, __FILE__);
+				}
+				const std::string MULTIPLE_FILTER = "THEME1={UNITE1,UNITE2}";
 				const Core::FMTmask MULTIPLE_MASK = m_cache.themeSelectionToMask(MULTIPLE_FILTER);
 				if ((MULTIPLE_MASK.size() - MULTIPLE_MASK.count()) == (m_cache.getthemes().at(0).size() - 2))
 				{
 					Exception::FMTfreeexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed, "Selection mask",
 						"UnitTestFMTmodelcache::testThemeSelectionToMask", __LINE__, __FILE__);
 				}
-				const std::string MULTIPLE_FILTER2 = "THEME1={UNITE1;UNITE2};THEME2={PEUPLEMENT1,PEUPLEMENT2}";
+				if (std::string(MULTIPLE_MASK) != "UNITE1,UNITE2 ? ?")
+				{
+					Exception::FMTfreeexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed, "Selection mask",
+						"UnitTestFMTmodelcache::testThemeSelectionToMask", __LINE__, __FILE__);
+				}
+				const std::string MULTIPLE_FILTER2 = "THEME1={UNITE1,UNITE2};THEME2={PEUPLEMENT1,PEUPLEMENT2}";
 				const Core::FMTmask MULTIPLE2_MASK = m_cache.themeSelectionToMask(MULTIPLE_FILTER2);
 				if ((MULTIPLE2_MASK.size() - MULTIPLE2_MASK.count()) ==
 					((m_cache.getthemes().at(0).size() - 2) + (m_cache.getthemes().at(1).size() - 2)))
+				{
+					Exception::FMTfreeexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed, "Selection mask",
+						"UnitTestFMTmodelcache::testThemeSelectionToMask", __LINE__, __FILE__);
+				}
+				if (std::string(MULTIPLE2_MASK) != "UNITE1,UNITE2 PEUPLEMENT1,PEUPLEMENT2 ?")
 				{
 					Exception::FMTfreeexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed, "Selection mask",
 						"UnitTestFMTmodelcache::testThemeSelectionToMask", __LINE__, __FILE__);

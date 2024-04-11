@@ -367,15 +367,19 @@ namespace Wrapper
 			}
 		if (p_themeSelection.find('=')!=std::string::npos)
 		{
+			
 			std::vector<std::string> results;
 			boost::split(results, p_themeSelection, boost::is_any_of(";"));
 			std::string emptyMask;
+			std::vector<std::string>composition;
 			for (const Core::FMTtheme& theme : themes)
 			{
 				emptyMask += "? ";
+				composition.push_back("?");
 			}
 			emptyMask.pop_back();
 			subset = Core::FMTmask(emptyMask, themes);
+			
 			for (std::string& value : results)
 			{ 
 				boost::trim(value);
@@ -383,8 +387,6 @@ namespace Wrapper
 				if (stfind != std::string::npos)//need to subsettheme!
 				{
 					const std::string themename = value.substr(0, stfind);
-
-
 					Core::FMTtheme const* localtheme = nullptr;
 					if (themename.find("THEME") != std::string::npos)
 					{
@@ -414,6 +416,7 @@ namespace Wrapper
 					else {
 						attributes.push_back(data);
 					}
+					composition[std::distance(&*themes.begin(), localtheme)] = data;
 					
 					for (std::string& attribute : attributes)
 					{
@@ -449,11 +452,19 @@ namespace Wrapper
 						subset = localMask;
 						}else {
 						subset = subset.getunion(localMask);
+						std::string final_value;
+						for (const std::string& VAL : composition)
+							{
+							final_value += VAL + " ";
+							}
+						final_value.pop_back();
+						subset = Core::FMTmask(final_value, subset.getbitsetreference());
 						}
 					
 					}
 				}
 			}	
+			
 			writetomaskcache(p_themeSelection, subset);
 			return subset;
 			
