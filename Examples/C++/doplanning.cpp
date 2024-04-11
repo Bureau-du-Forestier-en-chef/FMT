@@ -114,9 +114,9 @@ int main(int argc, char* argv[])
 
 			}*/
 			//modelparser.writeresults(optimizationmodel, outputs, 10, 10, "D:/test/out", Core::FMToutputlevel::totalonly);
-
+			//optimizationmodel.writeLP("D:/test/"+ scenario+".lp");
 		}
-		//optimizationmodel.writeLP("D:/test/test.lp");
+		
 		
 		/*Parser::FMTscheduleparser schparser;
 		std::vector<Core::FMTschedule>returnschedule;

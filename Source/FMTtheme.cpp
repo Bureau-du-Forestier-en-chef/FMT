@@ -342,12 +342,14 @@ bool FMTtheme::operator == (const FMTtheme& p_rhs) const
 					lookit = getAttribute(p_value, true);
 					}
 				bits.resize(m_attributes.size(),!sense);
+				
 				if (lookit != m_attribute_locations.end())
 					{
 					for (const size_t& location : lookit->second)
 						{
 						bits[location] = sense;
 						}
+					
 
 				}else {
 					_exhandler->raise(Exception::FMTexc::FMTundefined_attribute,

@@ -416,12 +416,14 @@ namespace Wrapper
 					else {
 						attributes.push_back(data);
 					}
+
 					composition[std::distance(&*themes.begin(), localtheme)] = data;
 					
 					for (std::string& attribute : attributes)
 					{
 						boost::trim(attribute);
 						Core::FMTmask localMask(subset);
+						
 						if (localtheme)
 						{
 							if (localtheme->isattribute(attribute) ||
@@ -441,13 +443,15 @@ namespace Wrapper
 								else {
 									const std::string attname = localtheme->getbaseattributes().at(std::distance(attributenames.begin(), ait));
 									localMask.set(*localtheme, attname);
+
 								}
 							}
 							else {
 								return Core::FMTmask();
 							}
 						}
-					if (attributes.size()==1)
+					if (attributes.size()==1 ||
+						*attributes.begin() == attribute)
 						{
 						subset = localMask;
 						}else {

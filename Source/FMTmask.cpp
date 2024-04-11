@@ -188,7 +188,9 @@ void FMTmask::set(const FMTtheme& theme,const std::string& value)
     boost::split(bases,name,boost::is_any_of(FMT_STR_SEPARATOR), boost::token_compress_on);
     bases[theme.m_id] = value;
     name = boost::algorithm::join(bases," ");
+	
     this->setsubset(theme,sub);
+
 	//name.shrink_to_fit();
     }
 
