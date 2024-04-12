@@ -46,3 +46,17 @@ compile_commands.json
 external/*
 UI/Include/*
 UI/Source/*
+
+### vscode ###
+.vs/
+
+### vcpkg ###
+vcpkg/
+vcpkg-manifest-install.log
+
+## Manifest Mode
+vcpkg_installed/
+
+### out et ui ###
+out/
+UI/

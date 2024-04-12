@@ -3,18 +3,20 @@ call "C:\Program Files\Microsoft Visual Studio\2022\Professional\VC\Auxiliary\Bu
 git clone https://github.com/Microsoft/vcpkg.git
 cd vcpkg
 call bootstrap-vcpkg.bat
+
+D:\FMT\FMT\vcpkg\vcpkg install 
+
+vcpkg install
 .\vcpkg install boost
 .\vcpkg install coin-or-cbc
-.\vcpkg install gdal --recurse
+.\vcpkg install gdal
 :::If you also need boost with python2
 :::-------Just for Python2------------
 .\vcpkg install vcpkg-tool-python2
 .\vcpkg install python2
-::: TODO python2 doit être listé dans le registre de windows pour fonctionner
 .\vcpkg install boost-python[core,python2,python3] --recurse
 :::-------Just for Python-------------
 :::onnxruntime
-cd ..
 git clone https://github.com/microsoft/onnxruntime.git
 cd onnxruntime
 .\build.bat --config RelWithDebInfo --build_shared_lib --parallel --compile_no_warning_as_error --skip_submodule_sync
