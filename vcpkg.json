@@ -1,0 +1,18 @@
+{
+    "name": "fmt",
+    "version": "0.9.9",
+    "dependencies": [
+          {
+          "name":"python3",
+          "version>=":"3.10.7"
+          },
+          "boost",
+          "coin-or-cbc",
+          "gdal"
+    ],
+    "builtin-baseline": "13766fcd1292a973fea53fba731a0fb90c7ee310",
+    "overrides": [
+        { "name": "python3", "version": "3.10.7" },
+        { "name":"libffi", "version": "3.4.4#2"}
+    ]
+}

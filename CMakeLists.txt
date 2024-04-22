@@ -34,16 +34,21 @@ message("Generating Build file for FMT ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSIO
 set(FMTSOURCEDIR "${CMAKE_CURRENT_SOURCE_DIR}/Source/")
 set(FMTINCLUDEDIR "${CMAKE_CURRENT_SOURCE_DIR}/Include/")
 
+
+if (DEFINED CMAKE_TOOLCHAIN_FILE)
+	include("${CMAKE_TOOLCHAIN_FILE}")
+endif(DEFINED CMAKE_TOOLCHAIN_FILE)
+
 if (DEFINED VCPKG_TARGET_TRIPLET)
-	set(OSI_DIR "${VCPKG_ROOT}/installed/${VCPKG_TARGET_TRIPLET}/") #Cbc and osi doest not have a .cmake files.
+	set(OSI_DIR "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/") #Cbc and osi doest not have a .cmake files.
 	if (NOT DEFINED PYTHON_DIR)
-		set(PYTHON_DIR "${VCPKG_ROOT}/installed/${VCPKG_TARGET_TRIPLET}/tools/python3") #Presume Python3
+		set(PYTHON_DIR "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/tools/python3") #Presume Python3
 	else()
 		set(Python_INCLUDE_DIR "${PYTHON_DIR}include")
 		set(PYTHON "${PYTHON_DIR}python.exe")
 	endif(NOT DEFINED PYTHON_DIR)
-	set(GDAL_DIR "${VCPKG_ROOT}/installed/${VCPKG_TARGET_TRIPLET}/")
-	set(GEOS_DIR "${VCPKG_ROOT}/installed/${VCPKG_TARGET_TRIPLET}/")
+	set(GDAL_DIR "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/")
+	set(GEOS_DIR "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/")
 	set(Boost_NO_WARN_NEW_VERSIONS 1) #Silence Boost
 endif(DEFINED VCPKG_TARGET_TRIPLET)
 
