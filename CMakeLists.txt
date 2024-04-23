@@ -300,6 +300,8 @@ if (onnxruntime_FOUND)
 endif(onnxruntime_FOUND)
 endif(DEFINED ONNXR_DIR)
 
+
+
 if (NOT DEFINED WITHOUT_PYTHONLIB)
 	set_property(TARGET FMT PROPERTY CXX_STANDARD 11)
 	set_property(TARGET FMT PROPERTY CXX_STANDARD_REQUIRED ON)
@@ -481,6 +483,8 @@ if (Boost_FOUND)
 		#New for Rtools42
 endif(Boost_FOUND)
 
+
+
 #If you dont have a dynamic boost lib try to find the static
 if (NOT Boost_FOUND)#here try to find a dynamic boost llib
 	set(Boost_USE_STATIC_LIBS ON) #By default try to find a static lib
@@ -646,11 +650,12 @@ if (DEFINED ENV{GDAL_DIR})
                 LIST(APPEND FMTDEPENDENCIES ${GDAL_DLL})
             endif()
             link_directories(${GDAL_LIBRARY_DIRS})
-			FILE(GLOB_RECURSE Projdb $ENV{GDAL_DIR}proj.db)#Might be somewhere else
-			if (NOT Projdb)
-				FILE(GLOB_RECURSE Projdb $ENV{PROJ_LIB}proj.db)#Might be somewhere else
-			endif(NOT Projdb)
-			if(Projdb)
+			FILE(GLOB_RECURSE Projdbs $ENV{GDAL_DIR}proj.db)#Might be somewhere else
+			if (NOT Projdbs)
+				FILE(GLOB_RECURSE Projdbs $ENV{PROJ_LIB}proj.db)#Might be somewhere else
+			endif(NOT Projdbs)
+			if(Projdbs)
+				list(GET Projdbs 0 Projdb)
 				get_filename_component(PROJDIR "${Projdb}" DIRECTORY)
 				get_filename_component(PROJDIRNAME "${PROJDIR}" NAME)
 				message("Found proj here ${PROJDIR}")
@@ -683,6 +688,8 @@ if (DEFINED ENV{GDAL_DIR})
 endif(DEFINED ENV{GDAL_DIR})
 
 
+
+
 if (DEFINED ENV{OSI_DIR})
 	find_package(OSI)
 	if (OSI_FOUND)
@@ -705,6 +712,7 @@ if (DEFINED ENV{OSI_DIR})
 				#link_libraries(${linkerflags})
 			endforeach()
 		endif(NOT MSVC)
+		
 		if (DEFINED ENV{MOSEK_DIR})#AND (MSVC OR OSI_MSK_LIBRARY_RELEASE)
             find_package(MOSEK)
 			if (MOSEK_FOUND)
@@ -760,13 +768,10 @@ ENDIF(NOT MSVC)
 
 
 if (DEFINED CMAKE_TOOLCHAIN_FILE)
-	get_filename_component(PARENT_DIR ${CMAKE_TOOLCHAIN_FILE} DIRECTORY)
-	get_filename_component(PARENT_DIR1 ${PARENT_DIR} DIRECTORY)
-	get_filename_component(PARENT_DIR2 ${PARENT_DIR1} DIRECTORY)
-	FILE(GLOB_RECURSE VCPKG_DLL ${PARENT_DIR2}/installed/${VCPKG_TARGET_TRIPLET}/bin/*.dll)
+	FILE(GLOB_RECURSE VCPKG_DLL ${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/bin/*.dll)
 	list (APPEND FMTDEPENDENCIES ${VCPKG_DLL})
 	list( REMOVE_DUPLICATES FMTDEPENDENCIES)
-	list(APPEND DLLlookuppaths "${PARENT_DIR2}/installed/${VCPKG_TARGET_TRIPLET}/bin/")
+	list(APPEND DLLlookuppaths "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/bin/")
 endif(DEFINED CMAKE_TOOLCHAIN_FILE)
 
 
@@ -802,6 +807,8 @@ if (DEFINED EXTRALINKERFLAGS)
 	target_link_libraries(FMT PRIVATE "${EXTRALINKERFLAGS}")
 	target_link_libraries(FMTlib PRIVATE "${EXTRALINKERFLAGS}")
 endif(DEFINED EXTRALINKERFLAGS)
+
+
 
 
 

@@ -695,13 +695,13 @@ OGRLayer* FMTparser::createlayer(GDALDataset* dataset,
 		if (newlayer == NULL)
 		{
 			_exhandler->raise(Exception::FMTexc::FMTgdal_constructor_error,
-				"Cannote create new layer FMTresults for " + name, "FMTparser::createresultslayers", __LINE__, __FILE__, _section);
+				"Cannote create new layer FMTresults for " + name, "FMTparser::createlayer", __LINE__, __FILE__, _section);
 			//Non Valid Layer
 		}
 	}
 	catch (...)
 	{
-		_exhandler->raisefromcatch("", "FMTparser::createprobabilitylayer", __LINE__, __FILE__);
+		_exhandler->raisefromcatch("", "FMTparser::createlayer", __LINE__, __FILE__);
 	}
 	return newlayer;
 }

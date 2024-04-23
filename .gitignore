@@ -48,7 +48,7 @@ UI/Include/*
 UI/Source/*
 
 ### vscode ###
-.vs/
+.vs/*
 
 ### vcpkg ###
 vcpkg/

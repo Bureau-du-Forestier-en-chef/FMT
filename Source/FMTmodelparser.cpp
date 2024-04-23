@@ -24,6 +24,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <map>
 #include "FMTexceptionhandler.hpp"
 #include "boost/filesystem.hpp"
+#include <array>
 
 
 #ifdef FMTWITHGDAL
@@ -200,16 +201,16 @@ namespace Parser {
 			OGRFieldDefn ValueField("Value", OFTReal);
 			ValueField.SetPrecision(5);
 			ValueField.SetWidth(32);
-			if (newlayer->CreateField(&IterationField) != OGRERR_NONE ||
-				newlayer->CreateField(&PeriodField) != OGRERR_NONE ||
-				newlayer->CreateField(&OutputField) != OGRERR_NONE ||
-				newlayer->CreateField(&ValueField) != OGRERR_NONE ||
-				newlayer->CreateField(&TypeField) != OGRERR_NONE)
-			{
-				_exhandler->raise(Exception::FMTexc::FMTgdal_constructor_error,
-					"Cannote create new fields " + model.getname(), "FMTmodelparser::writeresults", __LINE__, __FILE__, _section);
-				//Cannot create field
-			}
+			std::array<OGRFieldDefn*, 5>FieldDefinitions = { &IterationField ,&PeriodField ,&OutputField ,&TypeField, &ValueField };
+			for (OGRFieldDefn* ValidDefinition : FieldDefinitions)
+				{
+				if (newlayer->CreateField(ValidDefinition) != OGRERR_NONE) 
+					{
+					_exhandler->raise(Exception::FMTexc::FMTgdal_constructor_error, 
+						"Cannote create new field " + std::string(ValidDefinition->GetNameRef()), "FMTmodelparser::writeresults", __LINE__, __FILE__, _section);
+					}
+
+				}
 		}
 		catch (...)
 		{
