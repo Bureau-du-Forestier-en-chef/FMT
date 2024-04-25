@@ -31,7 +31,7 @@ cmake CMakeLists.txt ^
 	-DPARALLEL_TESTS=8 ^
 	-DCMAKE_TOOLCHAIN_FILE=D:/dependencies/vcpkg/scripts/buildsystems/vcpkg.cmake ^
 	-DVCPKG_TARGET_TRIPLET=x64-windows ^
-	-DVCPKG_MANIFEST_MODE=OFF ^
+	-DVCPKG_MANIFEST_MODE=ON ^
 	-DONNXR_DIR=D:/dependencies/onnxruntime/ ^
 	-DMOSEK_DIR="C:/PROGRA~1/Mosek/10.1/"
 	

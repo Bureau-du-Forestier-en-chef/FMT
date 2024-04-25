@@ -661,7 +661,7 @@ if (DEFINED ENV{GDAL_DIR})
 				message("Found proj here ${PROJDIR}")
 			else()
 				message(WARNING "No proj directory found")
-			endif(Projdb)
+			endif(Projdbs)
 
 
 
