@@ -205,6 +205,11 @@ FMTactionparser::FMTactionparser() : FMTparser()
 								_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,"Empty operable for "+actions.back().getname() + " at line " + std::to_string(_line),
 														"FMTactionparser::read", __LINE__, __FILE__, _section);
 								}
+							if (operablename == "_DEATH" &&
+								std::find_if(actions.begin(), actions.end(), Core::FMTactioncomparator("_DEATH"))== actions.end())
+								{
+								actions.push_back(Core::FMTaction("_DEATH", false, true));
+								}
 							const std::vector<Core::FMTaction*>pactions = sameactionas(operablename, actions);
 							theaction = pactions.at(0);
 							operablename = theaction->getname();
@@ -321,7 +326,6 @@ FMTactionparser::FMTactionparser() : FMTparser()
 						}
 					}
 				}
-				
 				const std::vector<std::vector<std::string>>cleanedseries = cleanactionseries(allseries);
 				for (Core::FMTaction& action : actions)
 				{
