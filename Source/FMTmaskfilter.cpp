@@ -6,9 +6,9 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
 
-#include "FMTmaskfilter.hpp"
-#include "FMTtheme.hpp"
-#include "FMTmask.hpp"
+#include "FMTmaskfilter.h"
+#include "FMTtheme.h"
+#include "FMTmask.h"
 
 namespace Core{
 

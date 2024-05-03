@@ -14,7 +14,7 @@ def findenum(directory):
     catchenum = "^\s*(enum(.|\n)*?;)"
     enums = [] #List to store enum definitions
     for file in os.listdir(directory):
-        if (file.endswith(".hpp") and not (file.startswith("PY") or file.startswith("R"))):
+        if (file.endswith(".h") and not (file.startswith("PY") or file.startswith("R"))):
             filetext = open(os.path.join(directory,file), "r",encoding='windows-1251').read()
             filetext = re.sub(stripcomments,"", filetext)
             for r in re.findall(catchenum,filetext,re.M):

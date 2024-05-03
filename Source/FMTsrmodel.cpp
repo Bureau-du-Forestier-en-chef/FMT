@@ -6,7 +6,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
 #ifdef FMTWITHOSI
-#include "FMTsrmodel.hpp"
+#include "FMTsrmodel.h"
 #include <unordered_map>
 #include <map>
 #include <set>
@@ -14,9 +14,9 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <utility>
 #include <vector>
 #include <queue>
-#include "FMTexceptionhandler.hpp"
-#include "FMTgraphvertextoyield.hpp"
-#include "FMTSerie.hpp"
+#include "FMTexceptionhandler.h"
+#include "FMTgraphvertextoyield.h"
+#include "FMTSerie.h"
 
 #if defined FMTWITHR
 	#include <Rcpp.h>

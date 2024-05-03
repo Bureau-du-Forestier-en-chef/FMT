@@ -1,10 +1,10 @@
 #include <vector>
 #ifdef FMTWITHONNXR
 	#ifdef FMTWITHGDAL
-		#include "FMTlpmodel.hpp"
-		#include "FMTmodelparser.hpp"
-		#include "FMTversion.hpp"
-		#include "FMToutput.hpp"
+		#include "FMTlpmodel.h"
+		#include "FMTmodelparser.h"
+		#include "FMTversion.h"
+		#include "FMToutput.h"
 	#endif
 #endif
 

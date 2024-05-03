@@ -5,12 +5,12 @@ SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
-#include "FMTyieldmodelUnitCoverage.hpp"
+#include "FMTyieldmodelUnitCoverage.h"
 #include <vector>
 #include <unordered_map>
-#include "FMTtheme.hpp"
-#include "FMToutput.hpp"
-#include "FMTmodel.hpp"
+#include "FMTtheme.h"
+#include "FMToutput.h"
+#include "FMTmodel.h"
 #include <boost/property_tree/json_parser.hpp>
 #include <memory>
 

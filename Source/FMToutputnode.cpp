@@ -5,8 +5,8 @@ SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
-#include "FMToutputnode.hpp"
-#include "FMTaction.hpp"
+#include "FMToutputnode.h"
+#include "FMTaction.h"
 #include <algorithm>
 
 namespace Core

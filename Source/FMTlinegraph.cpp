@@ -5,13 +5,13 @@ SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
-#include "FMTlinegraph.hpp"
-#include "FMTexceptionhandler.hpp"
-#include "FMTmodel.hpp"
-#include "FMTlogger.hpp"
+#include "FMTlinegraph.h"
+#include "FMTexceptionhandler.h"
+#include "FMTmodel.h"
+#include "FMTlogger.h"
 #include <boost/iostreams/stream.hpp>
 #include <boost/archive/binary_oarchive.hpp>
-#include "FMTeventcontainer.hpp"
+#include "FMTeventcontainer.h"
 
 
 namespace Graph

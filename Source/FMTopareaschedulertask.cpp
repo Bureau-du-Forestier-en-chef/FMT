@@ -5,25 +5,25 @@ SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 #ifdef FMTWITHOSI
-#include "FMTopareaschedulertask.hpp"
-#include "FMTyieldparser.hpp"
-#include "FMTlpmodel.hpp"
-#include "FMToutputnode.hpp"
-#include "FMToperatingareascheme.hpp"
-#include "FMToperatingareascheduler.hpp"
-#include "FMTtimeyieldhandler.hpp"
+#include "FMTopareaschedulertask.h"
+#include "FMTyieldparser.h"
+#include "FMTlpmodel.h"
+#include "FMToutputnode.h"
+#include "FMToperatingareascheme.h"
+#include "FMToperatingareascheduler.h"
+#include "FMTtimeyieldhandler.h"
 #include <limits>
 #include <boost/thread.hpp>
-#include "FMTexceptionhandler.hpp"
-#include "FMTscheduleparser.hpp"
-#include "FMTmodelparser.hpp"
-#include "FMTareaparser.hpp"
+#include "FMTexceptionhandler.h"
+#include "FMTscheduleparser.h"
+#include "FMTmodelparser.h"
+#include "FMTareaparser.h"
 #include <boost/algorithm/string/predicate.hpp>
 #include <boost/filesystem.hpp>
-#include "FMToutput.hpp"
-#include "FMTconstraint.hpp"
-#include "FMToutputparser.hpp"
-#include "FMToptimizationparser.hpp"
+#include "FMToutput.h"
+#include "FMTconstraint.h"
+#include "FMToutputparser.h"
+#include "FMToptimizationparser.h"
 
 namespace Parallel
 {

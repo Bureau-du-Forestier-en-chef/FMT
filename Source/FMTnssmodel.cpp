@@ -6,10 +6,10 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
 #ifdef FMTWITHOSI
-#include "FMTnssmodel.hpp"
-#include "FMTfuturdevelopment.hpp"
-#include "FMTactualdevelopment.hpp"
-#include "FMTexceptionhandler.hpp"
+#include "FMTnssmodel.h"
+#include "FMTfuturdevelopment.h"
+#include "FMTactualdevelopment.h"
+#include "FMTexceptionhandler.h"
 
 namespace Models
 {

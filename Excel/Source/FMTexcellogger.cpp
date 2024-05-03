@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include <string>
-#include "FMTexcellogger.hpp"
+#include "FMTexcellogger.h"
 
 namespace Logging
 {

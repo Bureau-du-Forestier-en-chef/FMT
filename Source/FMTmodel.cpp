@@ -7,19 +7,19 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 #include <boost/algorithm/string.hpp>
 
-#include "FMTmodel.hpp"
+#include "FMTmodel.h"
 #include <chrono>
 #include <memory>
-#include "FMTschedule.hpp"
-#include "FMTmodelstats.hpp"
-#include "FMTaction.hpp"
-#include "FMTdevelopmentpath.hpp"
-#include "FMTageyieldhandler.hpp"
-#include "FMTtimeyieldhandler.hpp"
-#include "FMTmaskfilter.hpp"
-#include "FMTexceptionhandler.hpp"
-#include "FMTtransitionmask.hpp"
-//#include "FMTmodelparser.hpp"
+#include "FMTschedule.h"
+#include "FMTmodelstats.h"
+#include "FMTaction.h"
+#include "FMTdevelopmentpath.h"
+#include "FMTageyieldhandler.h"
+#include "FMTtimeyieldhandler.h"
+#include "FMTmaskfilter.h"
+#include "FMTexceptionhandler.h"
+#include "FMTtransitionmask.h"
+//#include "FMTmodelparser.h"
 
 
 namespace Models{

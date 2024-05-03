@@ -1,15 +1,15 @@
 #include <vector>
 #ifdef FMTWITHOSI
-	#include "FMTlpmodel.hpp"
-	#include "FMTmodelparser.hpp"
-	#include "FMTversion.hpp"
-	#include "FMTlogger.hpp"
-	#include "FMTconstraint.hpp"
-	#include "FMTfreeexceptionhandler.hpp"
-	#include "FMTactualdevelopment.hpp"
-	#include "FMTtimeyieldhandler.hpp"
-	#include "FMTdata.hpp"
-	#include "FMTconstraint.hpp"
+	#include "FMTlpmodel.h"
+	#include "FMTmodelparser.h"
+	#include "FMTversion.h"
+	#include "FMTlogger.h"
+	#include "FMTconstraint.h"
+	#include "FMTfreeexceptionhandler.h"
+	#include "FMTactualdevelopment.h"
+	#include "FMTtimeyieldhandler.h"
+	#include "FMTdata.h"
+	#include "FMTconstraint.h"
 	#include "FMTbounds.hpp"
 	#include <boost/algorithm/string.hpp>
 

@@ -1,11 +1,11 @@
 #include <vector>
 #ifdef FMTWITHGDAL
-	#include "FMTsesmodel.hpp"
-	#include "FMTmodelparser.hpp"
-	#include "FMTareaparser.hpp"
-	#include "FMTlogger.hpp"
-	#include "FMTforest.hpp"
-	#include "FMToutput.hpp"
+	#include "FMTsesmodel.h"
+	#include "FMTmodelparser.h"
+	#include "FMTareaparser.h"
+	#include "FMTlogger.h"
+	#include "FMTforest.h"
+	#include "FMToutput.h"
 #endif
 
 void setMapping(const std::string& rastpath, Models::FMTsesmodel& model)

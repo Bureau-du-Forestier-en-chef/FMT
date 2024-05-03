@@ -11,7 +11,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <boost/lexical_cast.hpp>
 #include <boost/thread.hpp>
 #include <sstream>
-#include "FMTlogger.hpp"
+#include "FMTlogger.h"
 #if defined FMTWITHPYTHON
 	#include <boost/python.hpp>
 #endif // defined FMTWITHPYTHON
@@ -19,9 +19,9 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 	#include <Rcpp.h>
 #endif
 #include <iostream>
-#include "FMTversion.hpp"
+#include "FMTversion.h"
 #if defined FMTWITHOSI
-#include "FMTsolverlogger.hpp"
+#include "FMTsolverlogger.h"
 #include "CoinMessageHandler.hpp"
 #endif
 

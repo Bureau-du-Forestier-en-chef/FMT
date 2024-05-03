@@ -5,7 +5,7 @@ SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
-#include "FMTSerie.hpp"
+#include "FMTSerie.h"
 #include <string>
 #include <algorithm>
 

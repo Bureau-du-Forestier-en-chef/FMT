@@ -1,7 +1,7 @@
 ﻿
-#include "FMTtransitionparser.hpp"
-#include "FMTGCBMtransition.hpp"
-#include "FMTfreeexceptionhandler.hpp"
+#include "FMTtransitionparser.h"
+#include "FMTGCBMtransition.h"
+#include "FMTfreeexceptionhandler.h"
 #include <string>
 #include <vector>
 #include <fstream>

@@ -1,7 +1,7 @@
 #include "stdafx.h"
-#include "FMTexcelexceptionhandler.hpp"
-#include "FMTwarning.hpp"
-#include "FMTerror.hpp"
+#include "FMTexcelexceptionhandler.h"
+#include "FMTwarning.h"
+#include "FMTerror.h"
 #include <boost/thread.hpp>
 
 namespace Exception

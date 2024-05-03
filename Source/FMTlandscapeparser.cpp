@@ -6,15 +6,15 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
 
-#include "FMTlandscapeparser.hpp"
-#include "FMTtheme.hpp"
-#include "FMTconstants.hpp"
+#include "FMTlandscapeparser.h"
+#include "FMTtheme.h"
+#include "FMTconstants.h"
 #include <boost/algorithm/string/trim.hpp>
 #include <boost/algorithm/string.hpp>
 #ifdef FMTWITHGDAL
 	#include "ogrsf_frmts.h"
 #endif
-#include "FMTexceptionhandler.hpp"
+#include "FMTexceptionhandler.h"
 
 namespace Parser
 {

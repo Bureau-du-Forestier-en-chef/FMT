@@ -1,7 +1,7 @@
 #ifdef FMTWITHONNXR
-#include "FMTyieldmodelpools.hpp"
-#include "FMTpredictor.hpp"
-#include "FMTexceptionhandler.hpp"
+#include "FMTyieldmodelpools.h"
+#include "FMTpredictor.h"
+#include "FMTexceptionhandler.h"
 
 namespace Core {
 	const std::string JSON_PROP_STAND_FILE_PATH = "csvStandardisationFile";

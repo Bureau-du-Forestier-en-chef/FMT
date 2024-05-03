@@ -5,12 +5,12 @@ SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
-#include "FMTreplanningtask.hpp"
-#include "FMTparallelwriter.hpp"
-#include "FMTmodel.hpp"
-#include "FMToutput.hpp"
-#include "FMTlpmodel.hpp"
-#include "FMTexceptionhandler.hpp"
+#include "FMTreplanningtask.h"
+#include "FMTparallelwriter.h"
+#include "FMTmodel.h"
+#include "FMToutput.h"
+#include "FMTlpmodel.h"
+#include "FMTexceptionhandler.h"
 
 
 namespace Parallel

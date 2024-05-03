@@ -1,11 +1,11 @@
 #include <vector>
 #ifdef FMTWITHOSI
-	#include "FMTmodel.hpp"
-	#include "FMTlpmodel.hpp"
-	#include "FMTmodelparser.hpp"
-	#include "FMTscheduleparser.hpp"
+	#include "FMTmodel.h"
+	#include "FMTlpmodel.h"
+	#include "FMTmodelparser.h"
+	#include "FMTscheduleparser.h"
 	#include <boost/algorithm/string.hpp>
-	#include "FMTversion.hpp"
+	#include "FMTversion.h"
 #endif
 
 

@@ -5,25 +5,25 @@ SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
-#include "FMTareaparser.hpp"
-#include "FMTexceptionhandler.hpp"
+#include "FMTareaparser.h"
+#include "FMTexceptionhandler.h"
 #include <boost/algorithm/string/join.hpp>
 #include <boost/lexical_cast.hpp>
-#include "FMToperatingareaclusterbinary.hpp"
+#include "FMToperatingareaclusterbinary.h"
 #include "FMTlayer.hpp"
-#include "FMTforest.hpp"
-#include "FMTGCBMtransition.hpp"
-#include "FMTconstants.hpp"
-#include "FMTtheme.hpp"
-#include "FMToperatingareascheme.hpp"
-#include "FMToperatingareacluster.hpp"
-#include "FMTdevelopment.hpp"
-#include "FMTspatialschedule.hpp"
-//#include "FMTsasolution.hpp"
-#include "FMTactualdevelopment.hpp"
+#include "FMTforest.h"
+#include "FMTGCBMtransition.h"
+#include "FMTconstants.h"
+#include "FMTtheme.h"
+#include "FMToperatingareascheme.h"
+#include "FMToperatingareacluster.h"
+#include "FMTdevelopment.h"
+#include "FMTspatialschedule.h"
+//#include "FMTsasolution.h"
+#include "FMTactualdevelopment.h"
 #include <boost/filesystem.hpp>
 #include <boost/filesystem/operations.hpp>
-#include "FMTexceptionhandler.hpp"
+#include "FMTexceptionhandler.h"
 #include <random>
 #include <unordered_map>
 

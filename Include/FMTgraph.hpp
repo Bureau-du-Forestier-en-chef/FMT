@@ -15,21 +15,21 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <boost/graph/graph_utility.hpp>
 #include <boost/graph/adj_list_serialize.hpp>
 
-#include "FMTvertexproperties.hpp"
-#include "FMTedgeproperties.hpp"
-#include "FMTgraphstats.hpp"
+#include "FMTvertexproperties.h"
+#include "FMTedgeproperties.h"
+#include "FMTgraphstats.h"
 
-#include "FMToutputnode.hpp"
-#include "FMTdevelopment.hpp"
-#include "FMTactualdevelopment.hpp"
-#include "FMTfuturdevelopment.hpp"
-#include "FMTdevelopmentpath.hpp"
-#include "FMTschedule.hpp"
-#include "FMTconstraint.hpp"
-#include "FMToutputnodecache.hpp"
+#include "FMToutputnode.h"
+#include "FMTdevelopment.h"
+#include "FMTactualdevelopment.h"
+#include "FMTfuturdevelopment.h"
+#include "FMTdevelopmentpath.h"
+#include "FMTschedule.h"
+#include "FMTconstraint.h"
+#include "FMToutputnodecache.h"
 #include <boost\unordered_set.hpp>
-#include "FMTpredictor.hpp"
-#include "FMTgraphvertextoyield.hpp"
+#include "FMTpredictor.h"
+#include "FMTgraphvertextoyield.h"
 
 
 
@@ -47,16 +47,16 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <queue>
 #include <random>
 
-#include "FMTmodel.hpp"
-#include "FMTaction.hpp"
-#include "FMTtheme.hpp"
-#include "FMTobject.hpp"
+#include "FMTmodel.h"
+#include "FMTaction.h"
+#include "FMTtheme.h"
+#include "FMTobject.h"
 #include <tuple>
 #include <assert.h>
-#include "FMTlookup.hpp"
+#include "FMTlookup.h"
 #include "boost/graph/graphviz.hpp"
-#include "FMTexceptionhandler.hpp"
-#include "FMTSerie.hpp"
+#include "FMTexceptionhandler.h"
+#include "FMTSerie.h"
 
 
 /// Namespace for using/building unidirectional graphs in FMT

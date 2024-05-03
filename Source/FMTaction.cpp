@@ -5,8 +5,8 @@ SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
-#include "FMTaction.hpp"
-#include "FMTexceptionhandler.hpp"
+#include "FMTaction.h"
+#include "FMTexceptionhandler.h"
 #include <bitset>
 #include <boost/algorithm/string/split.hpp> 
 

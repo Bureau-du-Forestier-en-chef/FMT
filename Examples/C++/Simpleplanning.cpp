@@ -1,11 +1,11 @@
 #include <vector>
 #ifdef FMTWITHOSI
-#include "FMTlpmodel.hpp"
-#include "FMTmodelparser.hpp"
-#include "FMTversion.hpp"
-#include "FMTlogger.hpp"
-#include "FMTconstraint.hpp"
-#include "FMTscheduleparser.hpp"
+#include "FMTlpmodel.h"
+#include "FMTmodelparser.h"
+#include "FMTversion.h"
+#include "FMTlogger.h"
+#include "FMTconstraint.h"
+#include "FMTscheduleparser.h"
 #endif
 
 

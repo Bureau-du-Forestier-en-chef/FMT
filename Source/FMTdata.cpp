@@ -5,16 +5,16 @@ SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
-#include "FMTdata.hpp"
+#include "FMTdata.h"
 #include <algorithm>
-#include "FMTdevelopment.hpp"
-#include "FMTyieldrequest.hpp"
-#include "FMTmask.hpp"
-#include "FMTexpression.hpp"
-#include "FMTfunctioncall.hpp"
-#include "FMTexceptionhandler.hpp"
+#include "FMTdevelopment.h"
+#include "FMTyieldrequest.h"
+#include "FMTmask.h"
+#include "FMTexpression.h"
+#include "FMTfunctioncall.h"
+#include "FMTexceptionhandler.h"
 #include <boost/lexical_cast.hpp>
-#include "FMToperator.hpp"
+#include "FMToperator.h"
 
 
 namespace Core{

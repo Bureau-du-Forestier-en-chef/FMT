@@ -5,7 +5,7 @@ SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
-#include "FMTerror.hpp"
+#include "FMTerror.h"
 #if defined FMTWITHOSI
 	#include <CoinError.hpp>
 #endif

@@ -5,18 +5,18 @@ SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
-#include "FMTdevelopment.hpp"
-#include "FMTfuturdevelopment.hpp"
-#include "FMTyieldrequest.hpp"
-#include "FMTgraphvertextoyield.hpp"
-#include "FMTlifespans.hpp"
-#include "FMTtransition.hpp"
-#include "FMTaction.hpp"
-#include "FMTtransitionmask.hpp"
-#include "FMTyields.hpp"
-#include "FMTdevelopmentpath.hpp"
+#include "FMTdevelopment.h"
+#include "FMTfuturdevelopment.h"
+#include "FMTyieldrequest.h"
+#include "FMTgraphvertextoyield.h"
+#include "FMTlifespans.h"
+#include "FMTtransition.h"
+#include "FMTaction.h"
+#include "FMTtransitionmask.h"
+#include "FMTyields.h"
+#include "FMTdevelopmentpath.h"
 #include "FMTbounds.hpp"
-#include "FMTexceptionhandler.hpp"
+#include "FMTexceptionhandler.h"
 
 namespace Core{
 

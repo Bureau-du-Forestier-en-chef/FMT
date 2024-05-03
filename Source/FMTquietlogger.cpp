@@ -5,9 +5,9 @@ SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
-#include "FMTquietlogger.hpp"
+#include "FMTquietlogger.h"
 #ifdef FMTWITHOSI
-#include "FMTsolverlogger.hpp"
+#include "FMTsolverlogger.h"
 #endif
 #include <boost/thread.hpp>
 

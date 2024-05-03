@@ -6,17 +6,17 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
 
-#include "FMTobject.hpp"
-#include "FMTexceptionhandler.hpp"
-#include "FMTlogger.hpp"
-#include "FMTdefaultlogger.hpp"
-#include "FMTdebuglogger.hpp"
-#include "FMTquietlogger.hpp"
-#include "FMTtasklogger.hpp"
-#include "FMTquietexceptionhandler.hpp"
-#include "FMTdefaultexceptionhandler.hpp"
-#include "FMTdebugexceptionhandler.hpp"
-#include "FMTfreeexceptionhandler.hpp"
+#include "FMTobject.h"
+#include "FMTexceptionhandler.h"
+#include "FMTlogger.h"
+#include "FMTdefaultlogger.h"
+#include "FMTdebuglogger.h"
+#include "FMTquietlogger.h"
+#include "FMTtasklogger.h"
+#include "FMTquietexceptionhandler.h"
+#include "FMTdefaultexceptionhandler.h"
+#include "FMTdebugexceptionhandler.h"
+#include "FMTfreeexceptionhandler.h"
 #include <boost/filesystem.hpp>
 #include <boost/algorithm/string.hpp>
 #include <chrono>
@@ -33,7 +33,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 	#include "Rcpp.h"
 #endif
 
-#include "FMTcplhandler.hpp"
+#include "FMTcplhandler.h"
 
 #if defined _WIN32
 #define NOMINMAX
@@ -53,7 +53,7 @@ EXTERN_C IMAGE_DOS_HEADER __ImageBase;
 #endif
 
 #if defined FMTWITHPYTHON
-	#include <boost/python.hpp>
+	#include <boost/python.h>
 #endif
 
 

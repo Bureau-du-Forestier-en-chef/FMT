@@ -5,12 +5,12 @@ SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
-#include "FMTtheme.hpp"
-#include "FMTmask.hpp"
-#include "FMTmaskfilter.hpp"
+#include "FMTtheme.h"
+#include "FMTmask.h"
+#include "FMTmaskfilter.h"
 #include <boost/dynamic_bitset.hpp>
 #include <unordered_map>
-#include "FMTexceptionhandler.hpp"
+#include "FMTexceptionhandler.h"
 
 #if defined FMTWITHR
 	#include <Rcpp.h>

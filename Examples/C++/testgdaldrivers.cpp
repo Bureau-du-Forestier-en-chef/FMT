@@ -1,8 +1,8 @@
 #include <vector>
 #include <algorithm>
 #ifdef FMTWITHGDAL
-	#include "FMTareaparser.hpp"
-	#include "FMTfreeexceptionhandler.hpp"
+	#include "FMTareaparser.h"
+	#include "FMTfreeexceptionhandler.h"
 #endif
 
 int main(int argc, char* argv[])

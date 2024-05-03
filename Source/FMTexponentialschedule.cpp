@@ -5,8 +5,8 @@ SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
-#include "FMTexponentialschedule.hpp"
-#include "FMTsaschedule.hpp"
+#include "FMTexponentialschedule.h"
+#include "FMTsaschedule.h"
 
 #include <memory>
 #include <string>

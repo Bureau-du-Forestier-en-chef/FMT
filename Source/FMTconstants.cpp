@@ -5,8 +5,8 @@ SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
-#include "FMTconstants.hpp"
-#include "FMTexceptionhandler.hpp"
+#include "FMTconstants.h"
+#include "FMTexceptionhandler.h"
 
 namespace Core{
 

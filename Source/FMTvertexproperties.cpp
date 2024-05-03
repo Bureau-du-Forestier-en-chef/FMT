@@ -5,9 +5,9 @@ SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
-#include "FMTvertexproperties.hpp"
-#include "FMTfuturdevelopment.hpp"
-#include "FMTactualdevelopment.hpp"
+#include "FMTvertexproperties.h"
+#include "FMTfuturdevelopment.h"
+#include "FMTactualdevelopment.h"
 
 namespace Graph
 {

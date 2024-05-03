@@ -5,16 +5,16 @@ SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
-#include "FMTyieldmodeldecisiontree.hpp"
+#include "FMTyieldmodeldecisiontree.h"
 #include <boost/property_tree/json_parser.hpp>
 #include <boost/filesystem.hpp>
-#include "FMTyieldrequest.hpp"
-#include "FMTexceptionhandler.hpp"
-#include "FMToutput.hpp"
-#include "FMTconstraint.hpp"
-#include "FMTgraphvertextoyield.hpp"
-#include "FMTquietlogger.hpp"
-#include "FMTmodel.hpp"
+#include "FMTyieldrequest.h"
+#include "FMTexceptionhandler.h"
+#include "FMToutput.h"
+#include "FMTconstraint.h"
+#include "FMTgraphvertextoyield.h"
+#include "FMTquietlogger.h"
+#include "FMTmodel.h"
 
 
 

@@ -6,7 +6,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
 #ifdef FMTWITHOSI
-#include "FMToperatingareacluster.hpp"
+#include "FMToperatingareacluster.h"
 #include <algorithm>
 namespace Heuristics
 

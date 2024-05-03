@@ -7,17 +7,17 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 #ifdef FMTWITHOSI
 
-#include "FMToperatingareascheduler.hpp"
+#include "FMToperatingareascheduler.h"
 #include <algorithm>
 #include <random>
-//#include "FMTmatrixbuild.hpp"
-#include "FMTtimeyieldhandler.hpp"
-#include "FMTdata.hpp"
+//#include "FMTmatrixbuild.h"
+#include "FMTtimeyieldhandler.h"
+#include "FMTdata.h"
 #include "FMTgraph.hpp"
-#include "FMTmodel.hpp"
-#include "FMToutputnode.hpp"
-#include "FMTtimeyieldhandler.hpp"
-#include "FMToutput.hpp"
+#include "FMTmodel.h"
+#include "FMToutputnode.h"
+#include "FMTtimeyieldhandler.h"
+#include "FMToutput.h"
 
 namespace Heuristics
 {

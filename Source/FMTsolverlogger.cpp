@@ -6,8 +6,8 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
 #ifdef FMTWITHOSI
-#include "FMTsolverlogger.hpp"
-#include "FMTlogger.hpp"
+#include "FMTsolverlogger.h"
+#include "FMTlogger.h"
 
 /// Namespace for the log management, provides different log handlers.
 namespace Logging

@@ -1,13 +1,13 @@
 #ifdef FMTWITHOSI
 	#include <vector>
-	#include "FMTlpmodel.hpp"
-	#include "FMTmodelparser.hpp"
-	#include "FMTversion.hpp"
-	#include "FMTlogger.hpp"
-	#include "FMTscheduleparser.hpp"
-	#include "FMTschedule.hpp"
-	#include "FMToutputnode.hpp"
-	#include "FMTfreeexceptionhandler.hpp"
+	#include "FMTlpmodel.h"
+	#include "FMTmodelparser.h"
+	#include "FMTversion.h"
+	#include "FMTlogger.h"
+	#include "FMTscheduleparser.h"
+	#include "FMTschedule.h"
+	#include "FMToutputnode.h"
+	#include "FMTfreeexceptionhandler.h"
 #endif
 
 int main(int argc, char *argv[])

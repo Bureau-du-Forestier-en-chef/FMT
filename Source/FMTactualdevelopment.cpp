@@ -5,9 +5,9 @@ SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
-#include "FMTactualdevelopment.hpp"
-#include "FMTlifespans.hpp"
-#include "FMTexceptionhandler.hpp"
+#include "FMTactualdevelopment.h"
+#include "FMTlifespans.h"
+#include "FMTexceptionhandler.h"
 
 
 

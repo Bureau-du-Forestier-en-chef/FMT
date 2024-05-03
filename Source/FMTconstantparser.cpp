@@ -5,14 +5,14 @@ SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
-#include "FMTconstantparser.hpp"
-#include "FMTconstants.hpp"
-#include "FMTtheme.hpp"
+#include "FMTconstantparser.h"
+#include "FMTconstants.h"
+#include "FMTtheme.h"
 #include <boost/filesystem.hpp>
 #include <boost/filesystem/operations.hpp>
 #include <boost/range/algorithm/remove_if.hpp>
 #include <boost/algorithm/string.hpp>
-#include "FMTexceptionhandler.hpp"
+#include "FMTexceptionhandler.h"
 
 
 namespace Parser{

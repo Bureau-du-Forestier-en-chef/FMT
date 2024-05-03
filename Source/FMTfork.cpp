@@ -5,11 +5,11 @@ SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
-#include "FMTfork.hpp"
-#include "FMTdevelopment.hpp"
-#include "FMTdevelopmentpath.hpp"
-#include "FMTyields.hpp"
-#include "FMTtransitionmask.hpp"
+#include "FMTfork.h"
+#include "FMTdevelopment.h"
+#include "FMTdevelopmentpath.h"
+#include "FMTyields.h"
+#include "FMTtransitionmask.h"
 #include <boost/archive/binary_oarchive.hpp>
 #include <boost/archive/binary_iarchive.hpp>
 #include <boost/unordered_map.hpp>

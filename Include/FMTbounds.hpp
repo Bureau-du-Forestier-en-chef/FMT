@@ -9,8 +9,8 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #define FMTbounds_H_INCLUDED
 #include <limits>
 #include <map>
-#include "FMTexception.hpp"
-#include "FMTutility.hpp"
+#include "FMTexception.h"
+#include "FMTutility.h"
 #include <vector>
 #include <boost/functional/hash.hpp>
 #include <boost/serialization/serialization.hpp>

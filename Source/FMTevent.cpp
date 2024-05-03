@@ -5,8 +5,8 @@ SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
-#include "FMTevent.hpp"
-#include "FMTeventrelation.hpp"
+#include "FMTevent.h"
+#include "FMTeventrelation.h"
 #include <queue>
 
 namespace Spatial

@@ -1,15 +1,15 @@
 #ifdef FMTWITHONNXR
 	#ifdef FMTWITHOSI
 		#include <vector>
-		#include "FMTsesmodel.hpp"
-		#include "FMTmodelparser.hpp"
-		#include "FMTareaparser.hpp"
-		#include "FMTversion.hpp"
-		#include "FMTlogger.hpp"
-		#include "FMTforest.hpp"
-		#include "FMTspatialschedule.hpp"
-		#include "FMToutput.hpp"
-		#include "FMTyieldmodel.hpp"
+		#include "FMTsesmodel.h"
+		#include "FMTmodelparser.h"
+		#include "FMTareaparser.h"
+		#include "FMTversion.h"
+		#include "FMTlogger.h"
+		#include "FMTforest.h"
+		#include "FMTspatialschedule.h"
+		#include "FMToutput.h"
+		#include "FMTyieldmodel.h"
 	#endif
 #endif
 

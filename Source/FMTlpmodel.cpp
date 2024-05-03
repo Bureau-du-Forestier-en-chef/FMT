@@ -13,12 +13,12 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <utility>
 #include <vector>
 #include <queue>
-#include "FMToperatingareaclusterer.hpp"
+#include "FMToperatingareaclusterer.h"
 
 #ifdef FMTWITHOSI
-#include "FMToperatingareascheduler.hpp"
-#include "FMTlpmodel.hpp"
-#include "FMTexceptionhandler.hpp"
+#include "FMToperatingareascheduler.h"
+#include "FMTlpmodel.h"
+#include "FMTexceptionhandler.h"
 #include "boost/filesystem.hpp"
 
 

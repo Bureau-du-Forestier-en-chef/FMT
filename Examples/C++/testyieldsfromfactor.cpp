@@ -1,12 +1,12 @@
 #include <vector>
 #ifdef FMTWITHOSI
-	#include "FMTversion.hpp"
-	#include "FMTlogger.hpp"
-	#include "FMTmodelparser.hpp"
-    #include "FMTlpmodel.hpp"
-    #include "FMTconstraint.hpp"
-    #include "FMTfreeexceptionhandler.hpp"
-    #include "FMTexception.hpp"
+	#include "FMTversion.h"
+	#include "FMTlogger.h"
+	#include "FMTmodelparser.h"
+    #include "FMTlpmodel.h"
+    #include "FMTconstraint.h"
+    #include "FMTfreeexceptionhandler.h"
+    #include "FMTexception.h"
 #endif
 
 int main()

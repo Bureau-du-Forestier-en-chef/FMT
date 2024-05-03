@@ -5,10 +5,10 @@ SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
-#include "FMTlifespanparser.hpp"
-#include "FMTlifespans.hpp"
-#include "FMTtheme.hpp"
-#include "FMTconstants.hpp"
+#include "FMTlifespanparser.h"
+#include "FMTlifespans.h"
+#include "FMTtheme.h"
+#include "FMTconstants.h"
 
 namespace Parser{
 

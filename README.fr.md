@@ -135,8 +135,8 @@ optimizationmodel$initialsolve()
 + En utilisant C++
 ``` C++
 #include <vector>
-#include "FMTlpmodel.hpp"
-#include "FMTmodelparser.hpp"
+#include "FMTlpmodel.h"
+#include "FMTmodelparser.h"
 
 Parser::FMTmodelparser modelparser;
 const std::vector<std::string>scenarios(1, "scenariox");

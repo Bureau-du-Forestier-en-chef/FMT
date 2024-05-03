@@ -10,10 +10,10 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <memory>
 #include <map>
 #include <vector>
-#include "FMTcoordinate.hpp"
-#include "FMTobject.hpp"
+#include "FMTcoordinate.h"
+#include "FMTobject.h"
 #include <boost/serialization/nvp.hpp>
-#include "FMTexceptionhandler.hpp"
+#include "FMTexceptionhandler.h"
 
 /// The spatial namespace provides classes for spatialy explicit simulation/optimization based on raster files.
 namespace Spatial

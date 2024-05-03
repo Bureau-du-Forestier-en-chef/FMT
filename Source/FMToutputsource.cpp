@@ -5,13 +5,13 @@ SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
-#include "FMToutputsource.hpp"
-#include "FMTgraphvertextoyield.hpp"
-#include "FMTaction.hpp"
-#include "FMTyields.hpp"
-#include "FMTdevelopment.hpp"
-#include "FMTactualdevelopment.hpp"
-#include "FMToperator.hpp"
+#include "FMToutputsource.h"
+#include "FMTgraphvertextoyield.h"
+#include "FMTaction.h"
+#include "FMTyields.h"
+#include "FMTdevelopment.h"
+#include "FMTactualdevelopment.h"
+#include "FMToperator.h"
 
 namespace Core{
 

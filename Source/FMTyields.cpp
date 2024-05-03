@@ -5,14 +5,14 @@ SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
-#include "FMTyields.hpp"
-#include "FMTyieldrequest.hpp"
-#include "FMTexceptionhandler.hpp"
-#include "FMTageyieldhandler.hpp"
-#include "FMTtimeyieldhandler.hpp"
-#include "FMTcomplexyieldhandler.hpp"
-#include "FMTmodelyieldhandler.hpp"
-#include "FMTyieldmodelTSLA.hpp"
+#include "FMTyields.h"
+#include "FMTyieldrequest.h"
+#include "FMTexceptionhandler.h"
+#include "FMTageyieldhandler.h"
+#include "FMTtimeyieldhandler.h"
+#include "FMTcomplexyieldhandler.h"
+#include "FMTmodelyieldhandler.h"
+#include "FMTyieldmodelTSLA.h"
 #include <boost/algorithm/string.hpp> 
 #include <memory>
 
@@ -525,7 +525,7 @@ int FMTyields::getmaxbase(const std::vector<const FMTyieldhandler*>& handlers) c
 	return maxbase;
 	}
 
-#include "FMTlogger.hpp"
+#include "FMTlogger.h"
 
 std::map<std::string, std::map<std::string, std::vector<double>>>FMTyields::getallyields(const FMTtheme& target,FMTyldtype type) const
 	{

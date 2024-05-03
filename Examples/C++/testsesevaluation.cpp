@@ -1,13 +1,13 @@
 #include <vector>
 #ifdef FMTWITHGDAL
-#include "FMTlpmodel.hpp"
-#include "FMTsesmodel.hpp"
-#include "FMTmodelparser.hpp"
-#include "FMTareaparser.hpp"
-#include "FMTforest.hpp"
-#include "FMTversion.hpp"
-#include "FMToutput.hpp"
-#include "FMTfreeexceptionhandler.hpp"
+#include "FMTlpmodel.h"
+#include "FMTsesmodel.h"
+#include "FMTmodelparser.h"
+#include "FMTareaparser.h"
+#include "FMTforest.h"
+#include "FMTversion.h"
+#include "FMToutput.h"
+#include "FMTfreeexceptionhandler.h"
 #endif
 
 int main(int argc, char* argv[])

@@ -1,9 +1,9 @@
 
 #ifdef FMTWITHGDAL
-#include "FMTareaparser.hpp"
-#include "FMTversion.hpp"
-#include "FMTlogger.hpp"
-#include "FMTareaparser.hpp"
+#include "FMTareaparser.h"
+#include "FMTversion.h"
+#include "FMTlogger.h"
+#include "FMTareaparser.h"
 #endif
 
 int main()

@@ -5,15 +5,15 @@ SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
-#include "FMTactionparser.hpp"
-#include "FMTconstants.hpp"
-#include "FMTtheme.hpp"
-#include "FMTaction.hpp"
-#include "FMTyields.hpp"
+#include "FMTactionparser.h"
+#include "FMTconstants.h"
+#include "FMTtheme.h"
+#include "FMTaction.h"
+#include "FMTyields.h"
 #include <boost/property_tree/json_parser.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/filesystem/operations.hpp>
-#include "FMTexceptionhandler.hpp"
+#include "FMTexceptionhandler.h"
 
 namespace Parser{
 

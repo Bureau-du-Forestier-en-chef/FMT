@@ -5,11 +5,11 @@ SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
-#include "FMTforest.hpp"
-#include "FMTactualdevelopment.hpp"
-#include "FMTfuturdevelopment.hpp"
-#include "FMTtheme.hpp"
-#include "FMTexceptionhandler.hpp"
+#include "FMTforest.h"
+#include "FMTactualdevelopment.h"
+#include "FMTfuturdevelopment.h"
+#include "FMTtheme.h"
+#include "FMTexceptionhandler.h"
 
 namespace Spatial
 {

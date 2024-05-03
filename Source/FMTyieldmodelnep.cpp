@@ -1,7 +1,7 @@
 #ifdef FMTWITHONNXR
-#include "FMTyieldmodelnep.hpp"
-#include "FMTpredictor.hpp"
-#include "FMTexceptionhandler.hpp"
+#include "FMTyieldmodelnep.h"
+#include "FMTpredictor.h"
+#include "FMTexceptionhandler.h"
 
 
 namespace Core {

@@ -5,10 +5,10 @@ SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
-#include "FMTquietexceptionhandler.hpp"
-#include "FMTerror.hpp"
-#include "FMTwarning.hpp"
-#include "FMTcplhandler.hpp"
+#include "FMTquietexceptionhandler.h"
+#include "FMTerror.h"
+#include "FMTwarning.h"
+#include "FMTcplhandler.h"
 
 namespace Exception
 {

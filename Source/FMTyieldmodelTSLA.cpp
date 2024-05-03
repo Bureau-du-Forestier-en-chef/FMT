@@ -5,12 +5,12 @@ SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
-#include "FMTyieldmodelTSLA.hpp"
+#include "FMTyieldmodelTSLA.h"
 #include "FMTgraph.hpp"
-#include "FMTlinegraph.hpp"
-#include "FMTyieldrequest.hpp"
-#include "FMTexceptionhandler.hpp"
-#include "FMTgraphvertextoyield.hpp"
+#include "FMTlinegraph.h"
+#include "FMTyieldrequest.h"
+#include "FMTexceptionhandler.h"
+#include "FMTgraphvertextoyield.h"
 
 
 

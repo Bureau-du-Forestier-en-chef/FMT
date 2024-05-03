@@ -1,8 +1,8 @@
-#include "FMTareaparser.hpp"
-#include "FMTmodelparser.hpp"
-#include "FMTmodel.hpp"
+#include "FMTareaparser.h"
+#include "FMTmodelparser.h"
+#include "FMTmodel.h"
 #ifdef FMTWITHOSI
-    #include "FMToperatingareascheme.hpp"
+    #include "FMToperatingareascheme.h"
 #endif
 
 int main(int argc, char *argv[])

@@ -7,11 +7,11 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 #ifdef FMTWITHOSI
 
-#include "FMTlpheuristic.hpp"
+#include "FMTlpheuristic.h"
 #include <algorithm>
 #include <random>
-#include "FMTsolverinterface.hpp"
-#include "FMTexceptionhandler.hpp"
+#include "FMTsolverinterface.h"
+#include "FMTexceptionhandler.h"
 
 namespace Heuristics
 {

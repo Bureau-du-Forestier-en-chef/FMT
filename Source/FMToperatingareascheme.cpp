@@ -6,12 +6,12 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
 #ifdef FMTWITHOSI
-#include "FMToperatingareascheme.hpp"
+#include "FMToperatingareascheme.h"
 #include "CoinPackedVector.hpp"
-#include "FMTmatrixbuild.hpp"
+#include "FMTmatrixbuild.h"
 #include "FMTgraph.hpp"
-#include "FMTmask.hpp"
-#include "FMTlpsolver.hpp"
+#include "FMTmask.h"
+#include "FMTlpsolver.h"
 #include <algorithm>
 
 namespace Heuristics

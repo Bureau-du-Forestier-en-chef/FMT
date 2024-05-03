@@ -5,13 +5,13 @@ SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
-#include "FMToutputparser.hpp"
-#include "FMTtheme.hpp"
-#include "FMTaction.hpp"
-#include "FMTyields.hpp"
-#include "FMTconstants.hpp"
-#include "FMToutput.hpp"
-#include "FMTexceptionhandler.hpp"
+#include "FMToutputparser.h"
+#include "FMTtheme.h"
+#include "FMTaction.h"
+#include "FMTyields.h"
+#include "FMTconstants.h"
+#include "FMToutput.h"
+#include "FMTexceptionhandler.h"
 
 namespace Parser
 {

@@ -7,19 +7,19 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 
 
-#include "FMTspatialschedule.hpp"
-#include "FMTmodel.hpp"
-#include "FMTforest.hpp"
+#include "FMTspatialschedule.h"
+#include "FMTmodel.h"
+#include "FMTforest.h"
 #include <numeric>
 #include <algorithm>
 #include <set>
 #include <iterator>
-#include "FMTspatialnodescache.hpp"
-#include "FMTbindingspatialaction.hpp"
-#include "FMToutput.hpp"
-#include "FMTeventrelation.hpp"
-#include "FMTGCBMtransition.hpp"
-#include "FMTexceptionhandler.hpp"
+#include "FMTspatialnodescache.h"
+#include "FMTbindingspatialaction.h"
+#include "FMToutput.h"
+#include "FMTeventrelation.h"
+#include "FMTGCBMtransition.h"
+#include "FMTexceptionhandler.h"
 
 
 namespace Spatial

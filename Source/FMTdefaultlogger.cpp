@@ -6,13 +6,13 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
 
-#include "FMTdefaultlogger.hpp"
+#include "FMTdefaultlogger.h"
 #if defined FMTWITHPYTHON
-#include <boost/python.hpp>
+#include <boost/python.h>
 #endif // defined FMTWITHPYTHON
 #include <iostream>
 #ifdef FMTWITHOSI
-#include "FMTsolverlogger.hpp"
+#include "FMTsolverlogger.h"
 #endif
 
 namespace Logging

@@ -1,11 +1,11 @@
 #include <vector>
 #ifdef FMTWITHOSI
-	#include "FMTtaskhandler.hpp"
-	#include "FMTreplanningtask.hpp"
-	#include "FMTlpmodel.hpp"
-	#include "FMTnssmodel.hpp"
-	#include "FMTfreeexceptionhandler.hpp"
-	#include "FMTmodelparser.hpp"
+	#include "FMTtaskhandler.h"
+	#include "FMTreplanningtask.h"
+	#include "FMTlpmodel.h"
+	#include "FMTnssmodel.h"
+	#include "FMTfreeexceptionhandler.h"
+	#include "FMTmodelparser.h"
 #endif
 
 int main(int argc, char *argv[])

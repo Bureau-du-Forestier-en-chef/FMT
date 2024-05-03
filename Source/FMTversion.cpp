@@ -5,14 +5,14 @@ SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
-#include "FMTversion.hpp"
-#include "FMTparser.hpp"
+#include "FMTversion.h"
+#include "FMTparser.h"
 #include <chrono>
 #include <ctime>
-#include "FMTsolverinterface.hpp"
+#include "FMTsolverinterface.h"
 #include <boost/filesystem.hpp>
 #include <boost/filesystem/operations.hpp>
-#include "FMTexceptionhandler.hpp"
+#include "FMTexceptionhandler.h"
 
 
 namespace Version

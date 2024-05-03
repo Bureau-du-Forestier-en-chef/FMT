@@ -5,35 +5,35 @@ SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
-#include "FMTyields.hpp"
-#include "FMTconstants.hpp"
-#include "FMTtheme.hpp"
-#include "FMTdata.hpp"
-#include "FMTyieldmodel.hpp"
+#include "FMTyields.h"
+#include "FMTconstants.h"
+#include "FMTtheme.h"
+#include "FMTdata.h"
+#include "FMTyieldmodel.h"
 #ifdef FMTWITHONNXR
-	#include "FMTyieldmodelpools.hpp"
-	#include "FMTyieldmodelnep.hpp"
+	#include "FMTyieldmodelpools.h"
+	#include "FMTyieldmodelnep.h"
 #endif
-#include "FMTyieldmodeldecisiontree.hpp"
-#include "FMTyieldmodelRandom.hpp"
-#include "FMTyieldparser.hpp"
-#include "FMTageyieldhandler.hpp"
-#include "FMTtimeyieldhandler.hpp"
-#include "FMTcomplexyieldhandler.hpp"
-#include "FMTmodelyieldhandler.hpp"
+#include "FMTyieldmodeldecisiontree.h"
+#include "FMTyieldmodelRandom.h"
+#include "FMTyieldparser.h"
+#include "FMTageyieldhandler.h"
+#include "FMTtimeyieldhandler.h"
+#include "FMTcomplexyieldhandler.h"
+#include "FMTmodelyieldhandler.h"
 #include <boost/property_tree/json_parser.hpp>
 #include <memory>
-#include "FMTfunctioncall.hpp"
+#include "FMTfunctioncall.h"
 #include <set>
 #include <boost/filesystem.hpp>
 #include <boost/filesystem/operations.hpp>
-#include "FMTexceptionhandler.hpp"
-#include "FMToperator.hpp"
-#include "FMTexpression.hpp"
+#include "FMTexceptionhandler.h"
+#include "FMToperator.h"
+#include "FMTexpression.h"
 #include<boost/tokenizer.hpp>
-#include "FMToutput.hpp"
-#include "FMToutputparser.hpp"
-#include "FMTyieldmodelUnitCoverage.hpp"
+#include "FMToutput.h"
+#include "FMToutputparser.h"
+#include "FMTyieldmodelUnitCoverage.h"
 
 
 

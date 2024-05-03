@@ -5,15 +5,15 @@ SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
-#include "FMTtaskhandler.hpp"
-#include "FMTtask.hpp"
+#include "FMTtaskhandler.h"
+#include "FMTtask.h"
 #include <boost/thread.hpp>
 #include <functional>
 #include <list>
 #if defined FMTWITHPYTHON
-	#include "boost/python.hpp"
+	#include "boost/python.h"
 #endif
-#include "FMTexceptionhandler.hpp"
+#include "FMTexceptionhandler.h"
 
 namespace Parallel
 {

@@ -5,12 +5,12 @@ SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
-#include "FMTparallelwriter.hpp"
-#include "FMTmodel.hpp"
-#include "FMTscheduleparser.hpp"
+#include "FMTparallelwriter.h"
+#include "FMTmodel.h"
+#include "FMTscheduleparser.h"
 #include <boost/filesystem.hpp>
 #include <boost/filesystem/operations.hpp>
-#include "FMTexceptionhandler.hpp"
+#include "FMTexceptionhandler.h"
 
 #ifdef FMTWITHGDAL
 	#include "gdal.h"

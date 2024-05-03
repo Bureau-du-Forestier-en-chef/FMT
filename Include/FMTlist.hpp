@@ -13,8 +13,8 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <vector>
 #include <utility>
 
-#include "FMTmask.hpp"
-#include "FMTmaskfilter.hpp"
+#include "FMTmask.h"
+#include "FMTmaskfilter.h"
 #include <boost/serialization/version.hpp>
 #include <boost/serialization/serialization.hpp>
 #include <boost/serialization/hash_collections_save_imp.hpp>
@@ -24,12 +24,12 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <boost/serialization/vector.hpp>
 #include <boost/serialization/nvp.hpp>
 #include <boost/serialization/export.hpp>
-#include "FMTexceptionhandler.hpp"
-#include "FMTobject.hpp"
+#include "FMTexceptionhandler.h"
+#include "FMTobject.h"
 #include <iterator>
 #include <memory>
-#include "FMTyieldhandler.hpp"
-#include "FMTtheme.hpp"
+#include "FMTyieldhandler.h"
+#include "FMTtheme.h"
 
 
 namespace Core

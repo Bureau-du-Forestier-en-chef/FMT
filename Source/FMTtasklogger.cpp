@@ -5,9 +5,9 @@ SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
-#include "FMTtasklogger.hpp"
+#include "FMTtasklogger.h"
 #include <boost/thread.hpp>
-#include "FMTsolverlogger.hpp"
+#include "FMTsolverlogger.h"
 
 namespace Logging
 {

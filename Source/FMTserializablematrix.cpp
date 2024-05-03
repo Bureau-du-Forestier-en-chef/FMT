@@ -6,7 +6,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
 #ifdef FMTWITHOSI
-#include "FMTserializablematrix.hpp"
+#include "FMTserializablematrix.h"
 #include <OsiSolverInterface.hpp>
 #include <CoinPackedMatrix.hpp>
 #include <boost/serialization/serialization.hpp>
