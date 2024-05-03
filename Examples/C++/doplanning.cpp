@@ -26,10 +26,12 @@ int main(int argc, char* argv[])
 		const std::string scenario = results.at(1);
 		const int length =  std::stoi(argv[2]);
 		const double objectivevalue =  std::stod(argv[3]);
-		/*const std::string primarylocation = "../../../../Examples/Models/TWD_land/TWD_land.pri";
-		const std::string scenario = "NOT_MASK";
-		const int length = 5;
+		/*const std::string primarylocation = "D:/ReplaningStrat2024_04_30/Feux_2023_ouest_V01.pri";
+		const std::string scenario = "01_modstrat";
+		const int length = 20;
 		const double objectivevalue = 0.0;*/
+
+
 		Parser::FMTmodelparser modelparser;
 		//modelparser.setdebugexceptionhandler();
 		std::vector<Exception::FMTexc>errors;
@@ -56,6 +58,8 @@ int main(int argc, char* argv[])
 		optimizationmodel.FMTmodel::setparameter(Models::FMTboolmodelparameters::STRICTLY_POSITIVE,true);
 		optimizationmodel.setparameter(Models::FMTintmodelparameters::PRESOLVE_ITERATIONS,10);
 		optimizationmodel.setparameter(Models::FMTintmodelparameters::NUMBER_OF_THREADS, 1);
+
+		optimizationmodel.FMTmodel::setparameter(Models::FMTboolmodelparameters::DEBUG_MATRIX,true);
 		
 		//modelparser.write(optimizationmodel, "D:/test/");
 		if (optimizationmodel.doplanning(true)) {

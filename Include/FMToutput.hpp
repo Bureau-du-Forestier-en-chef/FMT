@@ -94,16 +94,18 @@ class FMTEXPORT FMToutput: public FMTobject
 		FMToutput& operator -=(const FMToutput& rhs);
 		// DocString: FMToutput::operator*=
 		/**
-		FMToutput multiplication assignment with a simple double to multiply the
-		FMToutputsource factors with a double.
+		@brief FMToutput multiplication assignment with a simple double to multiply the FMToutputsource.
+		@param[in] p_source an output source of type value or time yield.
+		@return a valid FMToutput
 		*/
-		FMToutput& operator *=(const double& rhs);
+		FMToutput& operator *=(const FMToutputsource& p_source);
 		// DocString: FMToutput::operator/=
 		/**
-		FMToutput division assignment with a simple double to divise the
-		FMToutputsource factors with a double.
+		@brief FMToutput division assignment with a source.
+		@param[in] p_source an output source of type value or time yield.
+		@return a valid FMToutput
 		*/
-		FMToutput& operator /=(const double& rhs);
+		FMToutput& operator /=(const FMToutputsource& p_source);
 		// DocString: FMToutput::operator std::string
 		/**
 		Convert the FMToutput into a readable string like in a output section.

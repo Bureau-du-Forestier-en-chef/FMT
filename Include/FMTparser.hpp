@@ -258,9 +258,15 @@ class FMTEXPORT FMTparser: public Core::FMTobject
 		std::map<Core::FMTsection, std::string> getprimary(const std::string& primarylocation);
 		// DocString: FMTparser::isyld
 		/**
-		Test if a value is actualy a yield.
+		@brief valid if the value is a valid yield.
+		@param[in] p_ylds the yield section
+		@param[in] p_value the input value
+		@param[in] p_section the section
+		@param[in] p_trhowError if true will throw if it is not a yield.
+		@return true if it is a yield.
 		*/
-		bool isyld(const Core::FMTyields& ylds,const std::string& value, Core::FMTsection section) const;
+		bool isyld(const Core::FMTyields& p_ylds,const std::string& p_value,
+			Core::FMTsection p_section, bool p_throwError = true) const;
 		// DocString: FMTparser::isact
 		/**
 		Test if a value (action) is actualy an action.

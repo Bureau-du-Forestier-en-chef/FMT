@@ -130,30 +130,36 @@ FMToutput& FMToutput::operator -=(const FMToutput& rhs)
 	return *this;
 	}
 
-FMToutput& FMToutput::operator  *= (const double& rhs)
+FMToutput& FMToutput::operator  *= (const FMToutputsource& p_source)
 	{
 	try {
-		if (!this->name.empty())
+		if (!this->name.empty() && (!p_source.isconstant() || p_source.getvalue() != 1.0))
 		{
-			if(rhs!=1)
+			if (p_source.istimeyield())
 			{
-				this->name = std::to_string(rhs) + " * " + this->name;
-				this->description = std::to_string(rhs) + " * " + this->description;
-				this->group =this->group;
+				this->name = this->name + " * " + std::string(p_source);
+				this->description = this->description + " * " + std::string(p_source);
+			}else {
+				this->name = std::string(p_source) + " * " + this->name;
+				this->description = std::string(p_source) + " * " + this->description;
 			}
+			this->group =this->group;
 		}
 		if (!sources.empty())
 		{
+			FMToutputsource LocalSource(p_source);
 			std::vector<FMToutputsource>new_sources;
 			std::vector<FMToperator>new_operators;
 			size_t location = 0;
-			for (FMToutputsource& source : sources)
+			for (const FMToutputsource& source : sources)
 			{
 				new_sources.push_back(source);
 				if (source.isvariable() || source.islevel())
 				{
+					LocalSource.setthemetarget(source.getthemetarget());
+					LocalSource.setoutputorigin(source.getoutputorigin());
 					new_operators.push_back(FMToperator("*"));
-					new_sources.push_back(FMToutputsource(FMTotar::val, rhs, "", "", source.getoutputorigin(), source.getthemetarget()));
+					new_sources.push_back(LocalSource);
 				}
 				if (location < operators.size())
 				{
@@ -174,21 +180,22 @@ FMToutput& FMToutput::operator  *= (const double& rhs)
 	return *this;
 	}
 
-FMToutput& FMToutput::operator /=(const double& rhs)
+FMToutput& FMToutput::operator /=(const FMToutputsource& p_source)
 	{
 	try{
-	if (!this->name.empty())
+	if (!this->name.empty() && (!p_source.isconstant() || p_source.getvalue() != 1.0))
 		{
-		this->name = this->name + "/" + std::to_string(rhs);
-		this->description = this->description + "/" + std::to_string(rhs);
-		this->group = this->group + "/" + std::to_string(rhs);
+		this->name = this->name + "/" + std::string(p_source);
+		this->description = this->description + "/" + std::string(p_source);
+		this->group = this->group + "/" + std::string(p_source);
 		}
 	if (!sources.empty())
 	{
+		FMToutputsource LocalSource(p_source);
 		std::vector<FMToutputsource>new_sources;
 		std::vector<FMToperator>new_operators;
 		size_t location = 0;
-		for (FMToutputsource& source : sources)
+		for (const FMToutputsource& source : sources)
 		{
 			new_sources.push_back(source);
 			if (location < operators.size())
@@ -197,7 +204,9 @@ FMToutput& FMToutput::operator /=(const double& rhs)
 			}
 			if (source.isvariable() || source.isvariablelevel())
 			{
-				new_sources.push_back(FMToutputsource(FMTotar::val, rhs,"","",source.getoutputorigin(),source.getthemetarget()));
+				LocalSource.setthemetarget(source.getthemetarget());
+				LocalSource.setoutputorigin(source.getoutputorigin());
+				new_sources.push_back(LocalSource);
 				new_operators.push_back(FMToperator("/"));
 			}
 			++location;

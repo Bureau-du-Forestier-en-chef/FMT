@@ -139,6 +139,7 @@ FMTexpression FMTexpression::simplify(std::map<std::string,double>& values) cons
         if(!is_number(value) && !FMToperator(value).valid() && !value.empty()) //assign 0 to all variables!
             {
             shuntvalues[value] = 0;
+			
             }
         }
     double rest = this->shuntingyard(shuntvalues);

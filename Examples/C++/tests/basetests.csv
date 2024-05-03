@@ -59,3 +59,4 @@ FMTNsstest;../../../../Examples/Models/TWD_land/TWD_land.pri|UNIT_COVERAGE|BURNE
 FMTNsstest;../../../../Examples/Models/TWD_land/TWD_land.pri|COMPLEX_NSS|AFIRE_AREA|1;1;1.5
 FMTNsstest;../../../../Examples/Models/TWD_land/TWD_land.pri|COMPLEX_NSS|ATBE_AREA|1;1;0.5
 FMTNsstest;../../../../Examples/Models/TWD_land/TWD_land.pri|DECISION|UNIT_REC|5;1;60
+testmodelwriter;../../../../Examples/Models/TWD_land/TWD_land.pri;ACT_DEATH;

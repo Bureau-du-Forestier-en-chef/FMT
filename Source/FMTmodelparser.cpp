@@ -511,7 +511,8 @@ void FMTmodelparser::write(const Models::FMTmodel& model,const std::string& fold
 		try {
 			FMToptimizationparser optparser;
 			boost::to_upper(constraintstr);
-			for (Core::FMTconstraint constraint : optparser.getconstraints(constraintstr, constants, model.outputs, model.themes, model.actions))
+			for (Core::FMTconstraint constraint : optparser.getConstraints(constraintstr, constants,model.yields,
+																			model.outputs, model.themes, model.actions))
 			{
 				//constraint.passinobject(model);
 				constraints.push_back(constraint);
@@ -775,7 +776,7 @@ void FMTmodelparser::write(const Models::FMTmodel& model,const std::string& fold
 				FMToptimizationparser optzparser;
 				std::vector<Core::FMTaction>excluded(actions); //should we realy use? excluded is actualy the same actions but with more period specification...
 				//optzparser.passinobject(*this);
-				constraints = optzparser.read(themes, actions, constants, outputs, excluded, opt);
+				constraints = optzparser.read(themes, actions, constants, outputs,yields, excluded, opt);
 				mostrecentfile = std::max(optzparser.getmostrecentfiletime(), mostrecentfile);
 				bool shouldcrapreference = (actions.size() != excluded.size());
 				if (!shouldcrapreference)

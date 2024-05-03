@@ -964,15 +964,20 @@ bool FMTparser::isact(Core::FMTsection section,const std::vector<Core::FMTaction
 
 
 
-bool FMTparser::isyld(const Core::FMTyields& ylds,const std::string& value, Core::FMTsection section) const
+bool FMTparser::isyld(const Core::FMTyields& p_ylds,
+				const std::string& p_value, Core::FMTsection p_section,
+				bool p_throwError) const
     {
 	try{
-    if (ylds.isyld(value))
+    if (p_ylds.isyld(p_value))
         {
         return true;
         }
-     _exhandler->raise(Exception::FMTexc::FMTinvalid_yield,value+" at line " + std::to_string(_line),
-		 "FMTparser::isyld",__LINE__, __FILE__,section);
+	if (p_throwError)
+		{
+		_exhandler->raise(Exception::FMTexc::FMTinvalid_yield, p_value + " at line " + std::to_string(_line),
+			"FMTparser::isyld", __LINE__, __FILE__, p_section);
+		}
 	}catch (...)
 		{
 		_exhandler->raisefromcatch("", "FMTparser::isyld", __LINE__, __FILE__, _section);
@@ -1342,7 +1347,14 @@ std::queue<std::string> FMTparser::tryinclude(const std::string& line, const std
 					location.erase(0, 1);
 					const boost::filesystem::path full_path = parent_path / location;
 					location = full_path.string();
-					}
+					}else if(location.find('/')==std::string::npos&&
+						location.find('\\') == std::string::npos)
+						{
+						const boost::filesystem::path L_PPATH(_location);
+						const boost::filesystem::path PARENT_PATH = L_PPATH.parent_path();
+						const boost::filesystem::path FULL_PATH = PARENT_PATH / location;
+						location = FULL_PATH.string();
+						}
 			const boost::filesystem::path basepath = boost::filesystem::path(location);
 		if (!boost::filesystem::exists(location))//If does not exist then try with the _ type path.
 			{

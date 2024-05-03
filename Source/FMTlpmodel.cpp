@@ -1649,6 +1649,7 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 	bool FMTlpmodel::initialsolve()
 		{
 		try {
+			//throw;
 			return solver.initialsolve();
 		}catch (...)
 		{
