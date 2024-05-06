@@ -14,6 +14,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <boost/serialization/export.hpp>
 #include <vector>
 #include <string>
+#include <cstdint>
 
 namespace Core
 {
