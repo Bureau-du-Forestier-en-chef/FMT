@@ -15,6 +15,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <boost/serialization/vector.hpp>
 #include <array>
 #include <vector>
+#include <string>
 
 namespace Models
 {
@@ -52,6 +53,14 @@ namespace Models
         DEBUG_MATRIX = 5,//If true, when an error occur in lpmodel initialsolve or resolve, the matrix will be written. 
         LastBoolModelParam = 6/**< End marker, used to allocate a fixed-sized array to store bool parameters. */
     };
+    //DocString: FMTstrmodelparameters
+    //
+    enum FMTstrmodelparameters
+    {
+        SOLVER_COLD_START = 0,/*Cold start parameters located in scenario folder*<  */
+        SOLVER_WARM_START = 1,/*Warm start parameters location in scenario folder*<  */
+        LastStrModelParam = 2/**< End marker, used to allocate a fixed-sized array to store bool parameters. */
+    };
 
 
     // DocString: FMTmodelparameters
@@ -72,34 +81,10 @@ namespace Models
         STRICTLY_POSITIVE = true
         POSTSOLVE = true
         SHOW_LOCK_IN_SCHEDULES = false
+    Default str parameters are:
     */
     class FMTEXPORT FMTmodelparameters : public Core::FMTobject
     {
-        friend class boost::serialization::access;
-        // DocString: FMTmodelparameters::serialize
-       /**
-       Serialize function is for serialization, used to do multiprocessing across multiple cpus (pickle in Pyhton)
-       */
-        template<class Archive>
-        void serialize(Archive& ar, const unsigned int version)
-        {
-            try {
-                ar& boost::serialization::make_nvp("FMTobject", boost::serialization::base_object<FMTobject>(*this));
-                ar& BOOST_SERIALIZATION_NVP(intparameters);
-                ar& BOOST_SERIALIZATION_NVP(dblparameters);
-                ar& BOOST_SERIALIZATION_NVP(boolparameters);
-                ar& BOOST_SERIALIZATION_NVP(compresstime);
-            }
-            catch (...)
-            {
-                _exhandler->printexceptions("", "FMTmodelparameters::serialize", __LINE__, __FILE__);
-            }
-        }
-        private:
-            std::array<int, LastIntModelParam> intparameters;
-            std::array<double, LastDblModelParam> dblparameters;
-            std::array<bool, LastBoolModelParam> boolparameters;
-            std::vector<int> compresstime;
         public:
             // DocString: FMTmodelparameters()
             /**
@@ -135,13 +120,41 @@ namespace Models
             bool setintparameter(const FMTintmodelparameters& key,const int& value);
             bool setdblparameter(const FMTdblmodelparameters& key,const double& value);
             bool setboolparameter(const FMTboolmodelparameters& key,const bool& value);
+            bool setstrparameter(const FMTstrmodelparameters& p_key, const std::string& p_value);
             bool setperiodcompresstime(const int& period, const int& value);
             //###Getter
             int getintparameter(const FMTintmodelparameters& key) const;
             double getdblparameter(const FMTdblmodelparameters& key) const;
             bool getboolparameter(const FMTboolmodelparameters& key) const;
+            const std::string& getstrparameter(const FMTstrmodelparameters& p_key) const;
             int getperiodcompresstime(const int& period)const;
             std::vector<int> getcompresstime() const;
+        private:
+            friend class boost::serialization::access;
+            // DocString: FMTmodelparameters::serialize
+           /**
+           Serialize function is for serialization, used to do multiprocessing across multiple cpus (pickle in Pyhton)
+           */
+            template<class Archive>
+            void serialize(Archive& ar, const unsigned int version)
+            {
+                try {
+                    ar& boost::serialization::make_nvp("FMTobject", boost::serialization::base_object<FMTobject>(*this));
+                    ar& BOOST_SERIALIZATION_NVP(m_intparameters);
+                    ar& BOOST_SERIALIZATION_NVP(m_dblparameters);
+                    ar& BOOST_SERIALIZATION_NVP(m_boolparameters);
+                    ar& BOOST_SERIALIZATION_NVP(m_compresstime);
+                }
+                catch (...)
+                {
+                    _exhandler->printexceptions("", "FMTmodelparameters::serialize", __LINE__, __FILE__);
+                }
+            }
+            std::array<int, LastIntModelParam> m_intparameters;
+            std::array<double, LastDblModelParam> m_dblparameters;
+            std::array<bool, LastBoolModelParam> m_boolparameters;
+            std::array<std::string, LastStrModelParam> m_strparameters;
+            std::vector<int> m_compresstime;
     };
 }
 BOOST_CLASS_EXPORT_KEY(Models::FMTmodelparameters)

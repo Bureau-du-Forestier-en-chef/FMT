@@ -509,6 +509,14 @@ namespace Models
 		Setter for bool model parameters. See FMTmodelparameters.h.
 		*/
 		virtual bool setparameter(const FMTboolmodelparameters& key, const bool& value);
+		// DocString: FMTmodel::setparameter(const FMTboolstrparameters,const std::string)
+		/**
+		@brief Setter forstr model parameters. See FMTmodelparameters.h.
+		@param[in] p_key the enum key of the parameter.
+		@param[in] p_value the value of the parameter.
+		@return true if parameter set else false.
+		*/
+		virtual bool setparameter(const FMTstrmodelparameters& p_key, const std::string& p_value);
 		// DocString: FMTmodel::getparameter(const FMTintmodelparameters)
 		/**
 		Getter for int model parameters. Return the parameters value. See FMTmodelparameters.h.
@@ -524,6 +532,12 @@ namespace Models
 		Getter for bool model parameters. Return the parameters value. See FMTmodelparameters.h.
 		*/
 		bool getparameter(const FMTboolmodelparameters& key) const;
+		// DocString: FMTmodel::getparameter(const FMTstrmodelparameters)
+		/**
+		@brief Getter for str model parameters. Return the parameters value. See FMTmodelparameters.h.
+		@param[in] p_key the param enum key.
+		*/
+		const std::string& getparameter(const FMTstrmodelparameters& p_key) const;
 		// DocString: FMTmodel::setcompresstime
 		/**
 		Set compresstime value for a range of periods (periodstart,periodstop). See FMTmodelparameters.h.

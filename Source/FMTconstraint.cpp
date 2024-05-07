@@ -817,8 +817,8 @@ namespace Core
 					opt_str = "<= ";
 					opt_str += std::to_string(upper_b);
 				}
-				line += (this->name + " " + opt_str + " " + goal+" "+global);
-				line += " " + period_bounds + "\n";
+				line += (this->name + " " + opt_str + " "+ period_bounds+" " + goal + " " + global+"\n");
+				//line += " " + period_bounds + "\n";
 		}
 		catch (...)
 		{

@@ -1,0 +1,22 @@
+*ACTION aFire N
+*OPERABLE AFire
+? prod ? _AGE >= 1
+
+*ACTION arecup Y
+*OPERABLE arecup
+? feu ? volumetotal >= 100
+
+*ACTION COUPEtotale Y CT
+*OPERABLE COUPEtotale
+? prod ? volumetotal >= 100
+
+*ACTION aCaribou N Massif protection du caribou
+*OPERABLE aCaribou
+UC prod ? _AGE >= 8
+
+*OPERABLE _DEATH
+? ? ? _AGE >= 100
+
+
+
+

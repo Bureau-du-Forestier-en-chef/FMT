@@ -19,6 +19,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTexceptionhandler.h"
 #include "FMTsolverlogger.h"
 #include "FMTserializablematrix.h"
+#include <sstream>
 
 
 namespace Models
@@ -101,7 +102,9 @@ namespace Models
 		return newsolverinterface;
 	}
 
-	FMTlpsolver::FMTlpsolver(const FMTlpsolver& rhs) :Core::FMTobject(rhs), solverinterface(), usecache(rhs.usecache),matrixcache(rhs.matrixcache),solvertype(rhs.solvertype)
+	FMTlpsolver::FMTlpsolver(const FMTlpsolver& rhs) :Core::FMTobject(rhs), solverinterface(), 
+		matrixcache(rhs.matrixcache),solvertype(rhs.solvertype), usecache(rhs.usecache),
+		m_ColdStartParameters(rhs.m_ColdStartParameters),m_WarmStartParameters(rhs.m_WarmStartParameters)
 		{
 		solverinterface = copysolverinterface(rhs.solverinterface, rhs.solvertype);
 		//Fix because mosek resolve in the copysolver maybe return an non optimal solution 
@@ -115,9 +118,11 @@ namespace Models
 	void FMTlpsolver::swap(FMTlpsolver& rhs)
 	{
 		matrixcache.swap(rhs.matrixcache);
-		usecache=rhs.usecache;
 		solvertype = rhs.solvertype;
+		usecache = rhs.usecache;
 		solverinterface.swap(rhs.solverinterface);
+		m_ColdStartParameters.swap(rhs.m_ColdStartParameters);
+		m_WarmStartParameters.swap(rhs.m_WarmStartParameters);
 	}
 
 	FMTlpsolver& FMTlpsolver::operator =(const FMTlpsolver& rhs)
@@ -129,7 +134,8 @@ namespace Models
 			usecache = rhs.usecache;
 			solvertype = rhs.solvertype;
 			solverinterface = copysolverinterface(rhs.solverinterface,rhs.solvertype);
-			//Fix because mosek resolve in the copysolver maybe return an non optimal solution 
+			m_ColdStartParameters=rhs.m_ColdStartParameters;
+			m_WarmStartParameters=rhs.m_WarmStartParameters;
 			if(rhs.solverinterface->isProvenOptimal() && !solverinterface->isProvenOptimal())
 			{
 				this->resolve();
@@ -138,7 +144,12 @@ namespace Models
 			}
 		return *this;
 		}
-	FMTlpsolver::FMTlpsolver(FMTsolverinterface lsolvertype/*, Logging::FMTlogger& logger*/):Core::FMTobject(),solverinterface(), usecache(true),matrixcache(), solvertype(lsolvertype)
+	FMTlpsolver::FMTlpsolver(FMTsolverinterface lsolvertype,
+		const std::string& p_ColdStartParameters,
+		const std::string& p_WarmStartParameters):
+		Core::FMTobject(),solverinterface(),matrixcache(), solvertype(lsolvertype), usecache(true),
+		m_ColdStartParameters(strtoParams(p_ColdStartParameters)),
+		m_WarmStartParameters(strtoParams(p_WarmStartParameters))
 		{
 		solverinterface = buildsolverinterface(lsolvertype);
 		passinmessagehandler(*_logger);
@@ -163,20 +174,28 @@ namespace Models
 			{
 				OsiMskSolverInterface* msksolver = dynamic_cast<OsiMskSolverInterface*>(solverinterface.get());
 				msksolver->freeCachedData();
-				//msksolver->initialSolve();
 				MSKtask_t task = msksolver->getMutableLpPtr();
-				MSK_putintparam(task, MSK_IPAR_OPTIMIZER, MSK_OPTIMIZER_INTPNT);
-				MSK_putintparam(task, MSK_IPAR_INTPNT_BASIS, MSK_BI_IF_FEASIBLE);
-				MSK_putintparam(task, MSK_IPAR_SIM_HOTSTART, MSK_SIM_HOTSTART_NONE);
-				//MSK_putintparam(task, MSK_IPAR_INTPNT_HOTSTART, MSK_INTPNT_HOTSTART_NONE);
-				MSK_putintparam(task, MSK_IPAR_PRESOLVE_USE, MSK_ON);
-				MSK_putintparam(task, MSK_IPAR_INTPNT_STARTING_POINT, MSK_STARTING_POINT_CONSTANT);
-				MSK_putintparam(task, MSK_IPAR_BI_CLEAN_OPTIMIZER, MSK_OPTIMIZER_PRIMAL_SIMPLEX);
-				MSK_putintparam(task, MSK_IPAR_BI_MAX_ITERATIONS, 100000000);
-				MSK_putdouparam(task, MSK_DPAR_INTPNT_TOL_PSAFE, 100.0);
-				MSK_putdouparam(task, MSK_DPAR_INTPNT_TOL_PATH, 1.0e-2);
-				MSK_putintparam(task, MSK_IPAR_LOG, 10);
-				MSK_putintparam(task, MSK_IPAR_LOG_INTPNT, 4);
+				if (!m_WarmStartParameters.empty())
+				{
+					*_logger << "Using user defined warm start solver parameters" << "\n";
+					for (const std::pair<std::string, std::string>& PARAMETER : m_WarmStartParameters)
+					{
+						MSK_putparam(task, PARAMETER.first.c_str(), PARAMETER.second.c_str());
+					}
+				}else {
+					MSK_putintparam(task, MSK_IPAR_OPTIMIZER, MSK_OPTIMIZER_INTPNT);
+					MSK_putintparam(task, MSK_IPAR_INTPNT_BASIS, MSK_BI_IF_FEASIBLE);
+					MSK_putintparam(task, MSK_IPAR_SIM_HOTSTART, MSK_SIM_HOTSTART_NONE);
+					//MSK_putintparam(task, MSK_IPAR_INTPNT_HOTSTART, MSK_INTPNT_HOTSTART_NONE);
+					MSK_putintparam(task, MSK_IPAR_PRESOLVE_USE, MSK_ON);
+					MSK_putintparam(task, MSK_IPAR_INTPNT_STARTING_POINT, MSK_STARTING_POINT_CONSTANT);
+					MSK_putintparam(task, MSK_IPAR_BI_CLEAN_OPTIMIZER, MSK_OPTIMIZER_PRIMAL_SIMPLEX);
+					MSK_putintparam(task, MSK_IPAR_BI_MAX_ITERATIONS, 100000000);
+					MSK_putdouparam(task, MSK_DPAR_INTPNT_TOL_PSAFE, 100.0);
+					MSK_putdouparam(task, MSK_DPAR_INTPNT_TOL_PATH, 1.0e-2);
+					MSK_putintparam(task, MSK_IPAR_LOG, 10);
+					MSK_putintparam(task, MSK_IPAR_LOG_INTPNT, 4);
+					}
 				MSKrescodee error = MSK_optimize(task);
 				if (error > 0)
 					{
@@ -400,15 +419,24 @@ namespace Models
 			OsiMskSolverInterface* msksolver = dynamic_cast<OsiMskSolverInterface*>(solverinterface.get());
 			msksolver->freeCachedData();
 			MSKtask_t task = msksolver->getMutableLpPtr();
-			MSK_putintparam(task, MSK_IPAR_OPTIMIZER, MSK_OPTIMIZER_INTPNT);
-			MSK_putintparam(task, MSK_IPAR_INTPNT_BASIS, MSK_BI_IF_FEASIBLE);
-			MSK_putintparam(task, MSK_IPAR_SIM_HOTSTART, MSK_SIM_HOTSTART_NONE);
-			MSK_putintparam(task, MSK_IPAR_PRESOLVE_USE, MSK_ON);
-			MSK_putintparam(task, MSK_IPAR_INTPNT_STARTING_POINT, MSK_STARTING_POINT_CONSTANT);
-			MSK_putintparam(task, MSK_IPAR_BI_CLEAN_OPTIMIZER, MSK_OPTIMIZER_PRIMAL_SIMPLEX);
-			MSK_putdouparam(task, MSK_DPAR_INTPNT_TOL_PSAFE, 100.0);
-			MSK_putdouparam(task, MSK_DPAR_INTPNT_TOL_PATH, 1.0e-2);
-			MSK_putintparam(task, MSK_IPAR_BI_MAX_ITERATIONS, 100000000);
+			if (!m_ColdStartParameters.empty())
+			{
+				*_logger << "Using user defined cold start solver parameters" << "\n";
+				for (const std::pair<std::string, std::string>& PARAMETER : m_ColdStartParameters)
+					{
+					MSK_putparam(task, PARAMETER.first.c_str(), PARAMETER.second.c_str());
+					}
+			}else {
+				MSK_putintparam(task, MSK_IPAR_OPTIMIZER, MSK_OPTIMIZER_INTPNT);
+				MSK_putintparam(task, MSK_IPAR_INTPNT_BASIS, MSK_BI_IF_FEASIBLE);
+				MSK_putintparam(task, MSK_IPAR_SIM_HOTSTART, MSK_SIM_HOTSTART_NONE);
+				MSK_putintparam(task, MSK_IPAR_PRESOLVE_USE, MSK_ON);
+				MSK_putintparam(task, MSK_IPAR_INTPNT_STARTING_POINT, MSK_STARTING_POINT_CONSTANT);
+				MSK_putintparam(task, MSK_IPAR_BI_CLEAN_OPTIMIZER, MSK_OPTIMIZER_PRIMAL_SIMPLEX);
+				MSK_putdouparam(task, MSK_DPAR_INTPNT_TOL_PSAFE, 100.0);
+				MSK_putdouparam(task, MSK_DPAR_INTPNT_TOL_PATH, 1.0e-2);
+				MSK_putintparam(task, MSK_IPAR_BI_MAX_ITERATIONS, 100000000);
+				}
 			MSKrescodee error = MSK_optimize(task);
 			if (error > 0)
 				{
@@ -1285,6 +1313,31 @@ namespace Models
 			return errordescription;
 		}
 	#endif
+
+	std::vector<std::pair<std::string, std::string>>FMTlpsolver::strtoParams(const std::string& p_params)
+		{
+		std::vector<std::pair<std::string, std::string>>parameters;
+		try {
+			if (!p_params.empty())
+			{
+				std::stringstream ss(p_params);
+				std::string line;
+				while (std::getline(ss, line, '\n'))
+				{
+					const size_t SPACE = line.find(' ');
+					const std::string PARAMETER_NAME = line.substr(0, SPACE);
+					const std::string PARAMETER_VALUE = line.substr(SPACE + 1, line.size());
+					parameters.push_back(std::pair<std::string, std::string>(PARAMETER_NAME, PARAMETER_VALUE));
+				}
+
+			}
+			
+		}catch (...)
+			{
+			_exhandler->raisefromcatch("", "FMTlpsolver::strtoParams", __LINE__, __FILE__);
+			}
+		return parameters;
+		}
 
 }
 BOOST_CLASS_EXPORT_IMPLEMENT(Models::FMTlpsolver)

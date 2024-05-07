@@ -2168,6 +2168,17 @@ bool FMTmodel::setparameter(const FMTboolmodelparameters& key, const bool& value
 	return false;
 }
 
+bool FMTmodel::setparameter(const FMTstrmodelparameters& p_key, const std::string& p_value)
+{
+	try {
+		if (parameters.setstrparameter(p_key, p_value)) return (true);
+	}
+	catch (...) {
+		_exhandler->printexceptions("", "FMTmodel::setparameter", __LINE__, __FILE__);
+	}
+	return false;
+}
+
 int FMTmodel::getparameter(const FMTintmodelparameters& key)const
 {
 	int value;
@@ -2202,6 +2213,18 @@ bool FMTmodel::getparameter(const FMTboolmodelparameters& key) const
 		_exhandler->raisefromcatch("", "FMTmodel::getparameter", __LINE__, __FILE__);
 	}
 	return value;
+}
+
+const std::string& FMTmodel::getparameter(const FMTstrmodelparameters& p_key) const
+{
+	try {
+		return parameters.getstrparameter(p_key);
+	}
+	catch (...)
+	{
+		_exhandler->raisefromcatch("", "FMTmodel::getparameter", __LINE__, __FILE__);
+	}
+	return nullptr;
 }
 
 bool FMTmodel::setcompresstime(const int& periodstart, const int& periodstop, const int& value)

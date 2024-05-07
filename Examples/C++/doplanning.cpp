@@ -26,12 +26,10 @@ int main(int argc, char* argv[])
 		const std::string scenario = results.at(1);
 		const int length =  std::stoi(argv[2]);
 		const double objectivevalue =  std::stod(argv[3]);
-		/*const std::string primarylocation = "D:/ReplaningStrat2024_04_30/Feux_2023_ouest_V01.pri";
-		const std::string scenario = "01_modstrat";
-		const int length = 20;
-		const double objectivevalue = 0.0;*/
-
-
+		/*const std::string primarylocation = "D:/FMT/Examples/Models/TWD_land/TWD_land.pri";
+		const std::string scenario = "Parameters";
+		const int length = 5;
+		const double objectivevalue = 65733;*/
 		Parser::FMTmodelparser modelparser;
 		//modelparser.setdebugexceptionhandler();
 		std::vector<Exception::FMTexc>errors;

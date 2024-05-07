@@ -37,94 +37,6 @@ rows or columns dont need synchronization with the cache. So those calls are goi
 */
 class FMTEXPORT FMTlpsolver: public Core::FMTobject
 	{
-	friend class boost::serialization::access;
-	// DocString: FMTlpsolver::save
-	/**
-	Save function is for serialization, used to do multiprocessing across multiple cpus (pickle in Pyhton)
-	*/
-	template<class Archive>
-	void save(Archive& ar, const unsigned int version) const
-	{
-		try {
-			ar& boost::serialization::make_nvp("FMTobject", boost::serialization::base_object<Core::FMTobject>(*this));
-			ar& BOOST_SERIALIZATION_NVP(usecache);
-			matrixcache.synchronize(solverinterface);
-			const FMTserializablematrix matrix(solverinterface);
-			ar& BOOST_SERIALIZATION_NVP(solvertype);
-			ar& BOOST_SERIALIZATION_NVP(matrix);
-		}
-		catch (...)
-		{
-			_exhandler->raisefromcatch("", "FMTlpsolver::save", __LINE__, __FILE__);
-		}
-	}
-	// DocString: FMTlpsolver::load
-	/**
-	Load function is for serialization, used to do multiprocessing across multiple cpus (pickle in Pyhton)
-	*/
-	template<class Archive>
-	void load(Archive& ar, const unsigned int version)
-	{
-		try {
-			ar& boost::serialization::make_nvp("FMTobject", boost::serialization::base_object<FMTobject>(*this));
-			ar& BOOST_SERIALIZATION_NVP(usecache);
-			matrixcache.synchronize(solverinterface);
-			FMTserializablematrix matrix;
-			ar& BOOST_SERIALIZATION_NVP(solvertype);
-			ar& BOOST_SERIALIZATION_NVP(matrix);
-			solverinterface = this->buildsolverinterface(solvertype);
-			matrix.setmatrix(solverinterface);
-		}
-		catch (...)
-		{
-			_exhandler->raisefromcatch("", "FMTlpsolver::load", __LINE__, __FILE__);
-		}
-
-	}
-	BOOST_SERIALIZATION_SPLIT_MEMBER()
-	// DocString: FMTlpsolver::solverinterface
-	///The osisolverinterface Abstract class (constraints/objectives/matrix ....LP) can be shared with an heuristic!
-	std::shared_ptr<OsiSolverInterface>solverinterface;
-	// DocString: FMTlpsolver::usecache
-	///If usecache is true then the matrix cache will be used by the FMTlpsolver to reduce the number of calls made to the solver.
-	bool usecache;
-	protected:
-	// DocString: FMTlpsolver::matrixcache
-	///The matrix cache follow the constraints or variables that need to be added or removed to the problem.
-	mutable FMTmatrixbuild matrixcache;
-	// DocString: FMTlpsolver::solvertype
-	///Solver type used maybe usefull for initialsolve or resolve to know what solver we are using to speed-up the process.
-	FMTsolverinterface solvertype;
-	// DocString: FMTlpsolver::canupdatesource
-	/**
-
-	*/
-	bool canupdatesource() const;
-	// DocString: FMTlpsolver::buildsolverinterface
-	/**
-	Function used to build a shared pointer of a solverinterface passing the message handler to the pointer.
-	*/
-	std::shared_ptr<OsiSolverInterface> buildsolverinterface(const FMTsolverinterface& lsolvertype) const;
-	// DocString: FMTlpsolver::copysolverinterface
-	/**
-	Function used to copy a shared pointer of a solverinterface passing the message handler to the pointer to a other shared pointer.
-	*/
-	std::shared_ptr<OsiSolverInterface> copysolverinterface(const std::shared_ptr<OsiSolverInterface>& solver_ptr, const FMTsolverinterface& lsolvertype) const;
-	// DocString: FMTlpsolver::clearrowcache
-		/**
-		Clears the row caching of the osisolverinterface if Mosek is used.
-		*/
-	void clearrowcache();
-	// DocString: FMTlpsolver::getMatrixByRow
-	/**
-	Returns a Coinpackedmatrix by row of the problem. A synchronization will be done when calling this function.
-	*/
-	const CoinPackedMatrix* getMatrixByRow() const;
-	// DocString: FMTlpsolver::getMatrixByCol
-	/**
-	Returns a Coinpackedmatrix by column of the problem. A synchronization will be done when calling this function.
-	*/
-	const CoinPackedMatrix* getMatrixByCol() const;
 	public:
 		// DocString: FMTlpsolver::swap
 		/**
@@ -177,11 +89,15 @@ class FMTEXPORT FMTlpsolver: public Core::FMTobject
 		Default move assignment for FMTlpsolver.
 		*/
 		FMTlpsolver& operator =(FMTlpsolver&& rhs) =default;
-		// DocString: FMTlpsolver(FMTsolverinterface,Logging::FMTlogger&)
+		// DocString: FMTlpsolver(FMTsolverinterface,const std::string,const std::string)
 		/**
-		Constructor for FMTlpsolver with a (lsolvertype) and a (logger). It's the main constructor used.
+		@brief Constructor for FMTlpsolver with a (lsolvertype) and a (logger). It's the main constructor used.
+		@param[in] p_ColdStartParameters the cold starts parameters on the form: param_name param_value /n
+		@param[in] p_WarmStartParameterss the warm starts parameters on the form: param_name param_value /n
 		*/
-		FMTlpsolver(FMTsolverinterface lsolvertype/*,Logging::FMTlogger& logger*/);
+		FMTlpsolver(FMTsolverinterface lsolvertype,
+			const std::string& p_ColdStartParameters,
+			const std::string& p_WarmStartParameters);
 		// DocString: FMTlpsolver::operator==
 		/**
 		Comparison operator of FMTlpsolver
@@ -541,6 +457,109 @@ class FMTEXPORT FMTlpsolver: public Core::FMTobject
 			*/
 			std::string getmskerrordesc(int error) const;
 		#endif
+	protected:
+		// DocString: FMTlpsolver::matrixcache
+		///The matrix cache follow the constraints or variables that need to be added or removed to the problem.
+		mutable FMTmatrixbuild matrixcache;
+		// DocString: FMTlpsolver::solvertype
+		///Solver type used maybe usefull for initialsolve or resolve to know what solver we are using to speed-up the process.
+		FMTsolverinterface solvertype;
+		// DocString: FMTlpsolver::canupdatesource
+		/**
+
+		*/
+		bool canupdatesource() const;
+		// DocString: FMTlpsolver::buildsolverinterface
+		/**
+		Function used to build a shared pointer of a solverinterface passing the message handler to the pointer.
+		*/
+		std::shared_ptr<OsiSolverInterface> buildsolverinterface(const FMTsolverinterface& lsolvertype) const;
+		// DocString: FMTlpsolver::copysolverinterface
+		/**
+		Function used to copy a shared pointer of a solverinterface passing the message handler to the pointer to a other shared pointer.
+		*/
+		std::shared_ptr<OsiSolverInterface> copysolverinterface(const std::shared_ptr<OsiSolverInterface>& solver_ptr, const FMTsolverinterface& lsolvertype) const;
+		// DocString: FMTlpsolver::clearrowcache
+			/**
+			Clears the row caching of the osisolverinterface if Mosek is used.
+			*/
+		void clearrowcache();
+		// DocString: FMTlpsolver::getMatrixByRow
+		/**
+		Returns a Coinpackedmatrix by row of the problem. A synchronization will be done when calling this function.
+		*/
+		const CoinPackedMatrix* getMatrixByRow() const;
+		// DocString: FMTlpsolver::getMatrixByCol
+		/**
+		Returns a Coinpackedmatrix by column of the problem. A synchronization will be done when calling this function.
+		*/
+		const CoinPackedMatrix* getMatrixByCol() const;
+	private:
+		// DocString: FMTlpsolver::strtoParams
+		/**
+		@brief transform a string to a vector of parameters.
+		@param[in] the parameters in string
+		@return a vector of parameters on the form of param_name param_value.
+		*/
+		static std::vector<std::pair<std::string, std::string>>strtoParams(const std::string& p_params);
+		friend class boost::serialization::access;
+		// DocString: FMTlpsolver::save
+		/**
+		Save function is for serialization, used to do multiprocessing across multiple cpus (pickle in Pyhton)
+		*/
+		template<class Archive>
+		void save(Archive& ar, const unsigned int version) const
+		{
+			try {
+				ar& boost::serialization::make_nvp("FMTobject", boost::serialization::base_object<Core::FMTobject>(*this));
+				ar& BOOST_SERIALIZATION_NVP(usecache);
+				matrixcache.synchronize(solverinterface);
+				const FMTserializablematrix matrix(solverinterface);
+				ar& BOOST_SERIALIZATION_NVP(solvertype);
+				ar& BOOST_SERIALIZATION_NVP(matrix);
+			}
+			catch (...)
+			{
+				_exhandler->raisefromcatch("", "FMTlpsolver::save", __LINE__, __FILE__);
+			}
+		}
+		// DocString: FMTlpsolver::load
+		/**
+		Load function is for serialization, used to do multiprocessing across multiple cpus (pickle in Pyhton)
+		*/
+		template<class Archive>
+		void load(Archive& ar, const unsigned int version)
+		{
+			try {
+				ar& boost::serialization::make_nvp("FMTobject", boost::serialization::base_object<FMTobject>(*this));
+				ar& BOOST_SERIALIZATION_NVP(usecache);
+				matrixcache.synchronize(solverinterface);
+				FMTserializablematrix matrix;
+				ar& BOOST_SERIALIZATION_NVP(solvertype);
+				ar& BOOST_SERIALIZATION_NVP(matrix);
+				solverinterface = this->buildsolverinterface(solvertype);
+				matrix.setmatrix(solverinterface);
+			}
+			catch (...)
+			{
+				_exhandler->raisefromcatch("", "FMTlpsolver::load", __LINE__, __FILE__);
+			}
+
+		}
+		BOOST_SERIALIZATION_SPLIT_MEMBER()
+		// DocString: FMTlpsolver::solverinterface
+		///The osisolverinterface Abstract class (constraints/objectives/matrix ....LP) can be shared with an heuristic!
+		std::shared_ptr<OsiSolverInterface>solverinterface;
+		// DocString: FMTlpsolver::usecache
+		///If usecache is true then the matrix cache will be used by the FMTlpsolver to reduce the number of calls made to the solver.
+		bool usecache;
+		// DocString: FMTlpsolver::>m_ColdStartParameters
+		///Parameters used by the linear programming solver. First = parameter, Seconde = parameter values.
+		std::vector<std::pair<std::string, std::string>>m_ColdStartParameters;
+		// DocString: FMTlpsolver::>m_WarmStartParameters
+		///Parameters used by the linear programming solver. First = parameter, Seconde = parameter values.
+		std::vector<std::pair<std::string, std::string>>m_WarmStartParameters;
+
 	};
 }
 BOOST_CLASS_EXPORT_KEY(Models::FMTlpsolver)

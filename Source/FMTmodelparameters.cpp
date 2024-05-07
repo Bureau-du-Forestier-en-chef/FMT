@@ -16,34 +16,37 @@ namespace Models
     {
         const unsigned int processor_count = boost::thread::hardware_concurrency();
         //INTparameters
-        intparameters[LENGTH]=30;
-        intparameters[SEED]=25;
-        intparameters[NUMBER_OF_ITERATIONS]=10000;
-        intparameters[PRESOLVE_ITERATIONS]=10;
-        intparameters[NUMBER_OF_THREADS]=processor_count;
-		intparameters[MATRIX_TYPE] = 2;//Default value is type II
-        intparameters[UPDATE] = 2;//Default is that model period update stop at 2
-        intparameters[MAX_MOVES] = 80000;
+        m_intparameters[LENGTH]=30;
+        m_intparameters[SEED]=25;
+        m_intparameters[NUMBER_OF_ITERATIONS]=10000;
+        m_intparameters[PRESOLVE_ITERATIONS]=10;
+        m_intparameters[NUMBER_OF_THREADS]=processor_count;
+        m_intparameters[MATRIX_TYPE] = 2;//Default value is type II
+        m_intparameters[UPDATE] = 2;//Default is that model period update stop at 2
+        m_intparameters[MAX_MOVES] = 80000;
         //DBLparameters
-        dblparameters[TOLERANCE]= FMT_DBL_TOLERANCE;
-        dblparameters[GOALING_SCHEDULE_WEIGHT]=10000;
+        m_dblparameters[TOLERANCE]= FMT_DBL_TOLERANCE;
+        m_dblparameters[GOALING_SCHEDULE_WEIGHT]=10000;
         //BOOLparameters
-        boolparameters[FORCE_PARTIAL_BUILD]=false;
-        boolparameters[STRICTLY_POSITIVE]=false;
-        boolparameters[POSTSOLVE]=true;
-        boolparameters[SHOW_LOCK_IN_SCHEDULES]=false;
-		boolparameters[PRESOLVE_CAN_REMOVE_STATIC_THEMES] = false;
-        boolparameters[DEBUG_MATRIX] = false;
+        m_boolparameters[FORCE_PARTIAL_BUILD]=false;
+        m_boolparameters[STRICTLY_POSITIVE]=false;
+        m_boolparameters[POSTSOLVE]=true;
+        m_boolparameters[SHOW_LOCK_IN_SCHEDULES]=false;
+        m_boolparameters[PRESOLVE_CAN_REMOVE_STATIC_THEMES] = false;
+        m_boolparameters[DEBUG_MATRIX] = false;
         //Vector for compresstime at each period
-        compresstime = std::vector<int>(30,1);
+        m_compresstime = std::vector<int>(30,1);
     }
     
-    FMTmodelparameters::FMTmodelparameters(const FMTmodelparameters& rhs):Core::FMTobject(rhs)
+    FMTmodelparameters::FMTmodelparameters(const FMTmodelparameters& rhs):
+        Core::FMTobject(rhs),
+        m_intparameters(rhs.m_intparameters),
+        m_dblparameters(rhs.m_dblparameters),
+        m_boolparameters(rhs.m_boolparameters),
+        m_strparameters(rhs.m_strparameters),
+        m_compresstime(rhs.m_compresstime)
     {
-        intparameters=rhs.intparameters;
-        dblparameters=rhs.dblparameters;
-        boolparameters=rhs.boolparameters;
-        compresstime=rhs.compresstime;
+        
     }
 
     FMTmodelparameters& FMTmodelparameters::operator = (const FMTmodelparameters& rhs)
@@ -51,10 +54,11 @@ namespace Models
         if (this!=&rhs)
             {
                 Core::FMTobject::operator = (rhs);
-                intparameters=rhs.intparameters;
-                dblparameters=rhs.dblparameters;
-                boolparameters=rhs.boolparameters;
-                compresstime=rhs.compresstime;
+                m_intparameters=rhs.m_intparameters;
+                m_dblparameters=rhs.m_dblparameters;
+                m_boolparameters=rhs.m_boolparameters;
+                m_strparameters = rhs.m_strparameters;
+                m_compresstime=rhs.m_compresstime;
             }
         return *this;
     }
@@ -66,18 +70,18 @@ namespace Models
             if (key == LastIntModelParam) return (false) ;
             if(key==LENGTH)
             {
-                int oldvalue = intparameters[key];
+                int oldvalue = m_intparameters[key];
                 if(oldvalue>value)
                 {
-                    compresstime=std::vector<int>(compresstime.begin(),compresstime.begin()+value);
+                    m_compresstime=std::vector<int>(m_compresstime.begin(), m_compresstime.begin()+value);
                 }else{
                     for(int i = 0 ; i<(value-oldvalue);++i)
                     {
-                        compresstime.push_back(compresstime.back());
+                        m_compresstime.push_back(m_compresstime.back());
                     }
                 }
             }
-            intparameters[key] = value;
+            m_intparameters[key] = value;
         }catch(...){
             _exhandler->raisefromcatch("", "FMTmodelparameters::setintparameter", __LINE__, __FILE__);
         }
@@ -88,7 +92,7 @@ namespace Models
     {
         try{
             if (key == LastDblModelParam) return (false) ;
-                dblparameters[key] = value;
+                m_dblparameters[key] = value;
         }catch(...){
             _exhandler->raisefromcatch("", "FMTmodelparameters::setdblparameter", __LINE__, __FILE__);
         }
@@ -100,9 +104,21 @@ namespace Models
     {
         try{
             if (key == LastBoolModelParam) return (false) ;
-                boolparameters[key] = value;
+                m_boolparameters[key] = value;
         }catch(...){
             _exhandler->raisefromcatch("", "FMTmodelparameters::setboolparameters", __LINE__, __FILE__);
+        }
+        return true;
+    }
+
+    bool FMTmodelparameters::setstrparameter(const FMTstrmodelparameters& p_key, const std::string& p_value)
+    {
+        try {
+            if (p_key == LastBoolModelParam) return (false);
+            m_strparameters[p_key] = p_value;
+        }
+        catch (...) {
+            _exhandler->raisefromcatch("", "FMTmodelparameters::setstrparameter", __LINE__, __FILE__);
         }
         return true;
     }
@@ -110,7 +126,7 @@ namespace Models
     bool FMTmodelparameters::setperiodcompresstime(const int& period, const int& value)
     {
         try{
-            compresstime[period]=value;
+            m_compresstime[period]=value;
         }catch(...){
             _exhandler->raisefromcatch("", "FMTmodelparameters::setcompresstime", __LINE__, __FILE__);
         }
@@ -128,7 +144,7 @@ namespace Models
 							"LastIntModelParam is not a parameter",
 							"FMTmodelparameters::getintparameter", __LINE__, __FILE__);
             }
-            value = intparameters[key];
+            value = m_intparameters[key];
         }catch(...)
         {
             _exhandler->raisefromcatch("", "FMTmodelparameters::getintparameters", __LINE__, __FILE__);
@@ -144,9 +160,9 @@ namespace Models
             {
                 _exhandler->raise(Exception::FMTexc::FMTrangeerror,
 							"LastDblModelParam is not a parameter",
-							"FMTmodelparameters::getintparameter", __LINE__, __FILE__);
+							"FMTmodelparameters::getdblparameter", __LINE__, __FILE__);
             }
-            value = dblparameters[key];
+            value = m_dblparameters[key];
         }catch(...)
         {
             _exhandler->raisefromcatch("", "FMTmodelparameters::getdblparameters", __LINE__, __FILE__);
@@ -162,9 +178,9 @@ namespace Models
             {
                 _exhandler->raise(Exception::FMTexc::FMTrangeerror,
 							"LastBoolModelParam is not a parameter",
-							"FMTmodelparameters::getintparameter", __LINE__, __FILE__);
+							"FMTmodelparameters::getboolparameter", __LINE__, __FILE__);
             }
-            value = boolparameters[key];
+            value = m_boolparameters[key];
         }catch(...)
         {
             _exhandler->raisefromcatch("", "FMTmodelparameters::getboolparameters", __LINE__, __FILE__);
@@ -172,11 +188,29 @@ namespace Models
         return value;
     }
 
+    const std::string& FMTmodelparameters::getstrparameter(const FMTstrmodelparameters& p_key) const
+    {
+        try {
+            if (p_key == LastBoolModelParam)
+            {
+                _exhandler->raise(Exception::FMTexc::FMTrangeerror,
+                    "LastStrModelParam is not a parameter",
+                    "FMTmodelparameters::getstrparameter", __LINE__, __FILE__);
+            }
+            return m_strparameters[p_key];
+        }
+        catch (...)
+        {
+            _exhandler->raisefromcatch("", "FMTmodelparameters::getstrparameters", __LINE__, __FILE__);
+        }
+        return nullptr;
+    }
+
     int FMTmodelparameters::getperiodcompresstime(const int& period) const
     {
         int value;
         try{
-            value = compresstime.at(period);
+            value = m_compresstime.at(period);
         }catch(...)
         {
             _exhandler->raisefromcatch("", "FMTmodelparameters::getcompresstime", __LINE__, __FILE__);
@@ -187,7 +221,7 @@ namespace Models
 
     std::vector<int> FMTmodelparameters::getcompresstime() const
     {
-        return compresstime;
+        return m_compresstime;
     }
 
 

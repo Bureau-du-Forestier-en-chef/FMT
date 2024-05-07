@@ -23,8 +23,10 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMToutput.h"
 #include <map>
 #include "FMTexceptionhandler.h"
-#include "boost/filesystem.hpp"
+#include <boost/filesystem.hpp>
+#include <boost/range/iterator_range.hpp>
 #include <array>
+#include <streambuf>
 
 
 #ifdef FMTWITHGDAL
@@ -809,6 +811,10 @@ void FMTmodelparser::write(const Models::FMTmodel& model,const std::string& fold
 			}
 			returnedmodel = Models::FMTmodel(areas, themes, actions,
 				transitions, yields, lifespan, modelname, outputs, constraints);
+			if (!opt.empty())
+				{
+				setSolverParameters(returnedmodel, opt);
+				}
 			//returnedmodel.passinobject(*this);
 			returnedmodel.cleanactionsntransitions();
 			if (allow_mapping)
@@ -1206,4 +1212,37 @@ void FMTmodelparser::write(const Models::FMTmodel& model,const std::string& fold
 
 		return schedules;
 	}
+
+	void FMTmodelparser::setSolverParameters(Models::FMTmodel& p_model, const std::string& p_optimize_file) const
+		{
+		const boost::filesystem::path BASE_FOLDER = boost::filesystem::path(p_optimize_file).parent_path();
+		for (const auto& FILE : boost::make_iterator_range(boost::filesystem::directory_iterator(BASE_FOLDER), {}))
+			{
+			const boost::filesystem::path PATH = FILE.path();
+			const std::string FILE_WITHOUT_EXTENSON = PATH.stem().string();
+			const std::string FULL_PATH = PATH.string();
+			Models::FMTstrmodelparameters PARAM_TYPE = Models::FMTstrmodelparameters::LastStrModelParam;
+			if (FILE_WITHOUT_EXTENSON == "ColdStart")
+			{
+				_logger->logwithlevel("Reading ColdStart parameters " + FILE.path().filename().string() + "\n", 0);
+				PARAM_TYPE = Models::FMTstrmodelparameters::SOLVER_COLD_START;
+			}else if (FILE_WITHOUT_EXTENSON == "WarmStart")
+				{
+				_logger->logwithlevel("Reading WarmStart parameters " + FILE.path().filename().string() + "\n", 0);
+				PARAM_TYPE = Models::FMTstrmodelparameters::SOLVER_WARM_START;
+				}
+			if (PARAM_TYPE!= Models::FMTstrmodelparameters::LastStrModelParam)
+				{
+				std::ifstream io(FULL_PATH);
+				if (io.is_open())
+					{
+					const std::string VALUES((std::istreambuf_iterator<char>(io)),
+												std::istreambuf_iterator<char>());
+					p_model.setparameter(PARAM_TYPE, VALUES);
+					}
+				}
+			}
+		
+		}
+
 }

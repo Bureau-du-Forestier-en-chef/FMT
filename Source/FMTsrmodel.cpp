@@ -1147,7 +1147,8 @@ namespace Models
 	FMTsrmodel::FMTsrmodel(const FMTmodel& base, FMTsolverinterface lsolvertype) :
 		FMTmodel(base),
 		graph(Graph::FMTgraphbuild::nobuild),
-		solver(lsolvertype)
+		solver(lsolvertype,
+			base.getparameter(FMTstrmodelparameters::SOLVER_COLD_START),base.getparameter(FMTstrmodelparameters::SOLVER_WARM_START))
 	{
 		//solver.passinobject(base);
 		//graph.passinobject(base);
