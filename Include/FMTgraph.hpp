@@ -1297,27 +1297,26 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 							{
 							nodescache.reserve(developments.size());
 							}
+						while (nodescache.size() != developments.size())
+							{
+							const size_t devindex = nodescache.size();
+							nodescache.emplace_back(developments.at(devindex).first, developments.at(devindex).second);
+							}
 						//cleannodecaching();
 						const bool gotstaticnode = model.isstaticnode(output_node);
 						for (const int& localnodeperiod : targetedperiods)
 						{
-							std::vector<FMTvertex_descriptor> const* descriptors = nullptr;
 							std::vector<FMTvertex_descriptor>staticdescriptors;
+							std::vector<FMTvertex_descriptor> const* descriptors = nullptr;
 							bool exactverticies = false;
-							
 							if (gotstaticnode)
 							{
-								staticdescriptors = getnodebystaticmask(model, output_node, localnodeperiod);
+								staticdescriptors = setNodeByStaticMask(model, output_node, localnodeperiod);
 								descriptors = &staticdescriptors;
 							}else {
-								while (nodescache.size() != developments.size())
-								{
-									const size_t devindex = nodescache.size();
-									nodescache.emplace_back(developments.at(devindex).first, developments.at(devindex).second);
-								}
+								
 								descriptors = &nodescache.at(localnodeperiod).getverticies(output_node, model.actions, model.themes, exactverticies);
 							}
-							//*_logger << "test? " << gotstaticnode << " " << exactverticies << "\n";
 							if (exactverticies)
 							{
 								locations.reserve(locations.size() + descriptors->size());
@@ -1711,61 +1710,97 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 			return boost::num_edges(data);
 		}
 
-		std::vector<FMTvertex_descriptor>getnodebystaticmask(
-			const Models::FMTmodel& model,
-			const Core::FMToutputnode& node, int period) const
+		/**
+		 * @brief select the verticies based on the static nodes. If p_descriptors is not empty it will presume same node but other period.
+		 * @param[in] p_model the optimization model.
+		 * @param[in] p_node the output node.
+		 * @param[in] p_period the period of the node.
+		 * @param[out] the selected descriptors.
+		 * @return vector of cached verticies
+		 */
+		std::vector<FMTvertex_descriptor> setNodeByStaticMask(
+			const Models::FMTmodel& p_model,
+			const Core::FMToutputnode& p_node, int p_period) const
 		{
-			std::vector<FMTvertex_descriptor>descriptors;
+			std::vector<FMTvertex_descriptor> p_descriptors;
 			try {
-				const Core::FMTmask staticmask = model.getstaticmask(node, true);
-				FMTvertex_iterator vertex_iterator, vertex_iterator_end;
-				for (boost::tie(vertex_iterator, vertex_iterator_end)=getperiodverticies(period); vertex_iterator != vertex_iterator_end; ++vertex_iterator)
+				int last_period = 0;
+				bool contains = false;
+				while (!contains && last_period < p_period)
+				{
+					contains = nodescache.at(last_period).contains(p_node);
+					if (!contains)
+						{
+						++last_period;
+						}
+				}
+				const int POTENTIAL_LAST_PERIOD  = last_period;
+				if (!contains)
+				{
+					//*_logger << "Node loop " << p_node<<" "<< p_period << "\n";
+					const Core::FMTmask STATIC_MASK = p_model.getstaticmask(p_node, true);
+					FMTvertex_iterator vertex_iterator, vertex_iterator_end;
+					for (boost::tie(vertex_iterator, vertex_iterator_end) = getperiodverticies(p_period); vertex_iterator != vertex_iterator_end; ++vertex_iterator)
 					{
-					const Core::FMTdevelopment& dev = data[*vertex_iterator].get();
-					if (dev.getmask().issubsetof(staticmask))
+						const Core::FMTdevelopment& DEV = data[*vertex_iterator].get();
+						if (DEV.getmask().issubsetof(STATIC_MASK))
 						{
-						descriptors.push_back(*vertex_iterator);
+							p_descriptors.push_back(*vertex_iterator);
 						}
 					}
-				/*std::queue<FMTvertex_descriptor>activedescriptors;
-				boost::unordered_set<FMTvertex_descriptor>explored;
-				FMTvertex_iterator vertex_iterator, vertex_iterator_end;
-				const typename std::vector<FMTvertex_pair>::const_iterator firstconst = getfirstconstblock();
-				vertex_iterator_end = firstconst->second;
-				for (vertex_iterator = firstconst->first; vertex_iterator != vertex_iterator_end; ++vertex_iterator)
-				{
-					const Core::FMTdevelopment& dev = data[*vertex_iterator].get();
-					if (dev.getmask().issubsetof(staticmask))
+				}else {//Go to the period asked for by traveling on the graph
+					//*_logger << "Node evo " << p_node << " " << p_period << "\n";
+					std::queue<FMTvertex_descriptor>actives;
+					bool exact = false;
+					for (const FMTvertex_descriptor& PAST_DESCRIPTOR : nodescache.at(POTENTIAL_LAST_PERIOD).getverticies(p_node, p_model.actions, p_model.themes, exact))
 						{
-						activedescriptors.push(*vertex_iterator);
-						explored.insert(*vertex_iterator);
+						actives.push(PAST_DESCRIPTOR);
 						}
-					}
-				while (!activedescriptors.empty())
-				{
-					const FMTvertex_descriptor& active = activedescriptors.front();
-					FMToutedge_iterator outit, outend;
-					for (boost::tie(outit, outend) = boost::out_edges(active, data); outit != outend; ++outit)
+					const size_t INITITAL_COUNT = actives.size();
+					nodescache.at(POTENTIAL_LAST_PERIOD).erasenode(p_node);//Dont make a mess in the cache and delete the last period...
+					std::set<FMTvertex_descriptor>right_period;
+					while(!actives.empty())
 						{
-						const FMTvertex_descriptor gtarget = boost::target(*outit, data);
-						if (explored.find(gtarget)==explored.end()&&data[gtarget].get().getperiod()<=period)
+						const FMTvertex_descriptor& DESCRIPTOR = actives.front();
+						FMToutedge_pair edge_pair;
+						for (edge_pair = boost::out_edges(DESCRIPTOR, data); edge_pair.first != edge_pair.second; ++edge_pair.first)
 							{
-							activedescriptors.push(gtarget);
-							explored.insert(gtarget);
+							const FMTvertex_descriptor NEXT_DESCRIPTOR = boost::target(*edge_pair.first, data);
+							const FMTbasevertexproperties& PROPERTY = data[NEXT_DESCRIPTOR];
+							const int TARGET_PERIOD = PROPERTY.get().getperiod();
+							if(TARGET_PERIOD <= p_period)
+								{
+								if (TARGET_PERIOD == p_period)
+									{
+									right_period.insert(NEXT_DESCRIPTOR);
+									}
+								actives.push(NEXT_DESCRIPTOR);
+								}
 							}
+						actives.pop();
 						}
-					const Core::FMTdevelopment& actdev = data[active].get();
-					if (actdev.getperiod()==period)
+					for (const auto& DESCRIPTOR : right_period)
 						{
-						descriptors.push_back(active);
+						p_descriptors.push_back(DESCRIPTOR);
 						}
-					activedescriptors.pop();
-				}*/
+					const size_t FINAL_COUNT = p_descriptors.size();
+					/*if (FINAL_COUNT < INITITAL_COUNT)//The graph grow exponentialy so we expect the next period to be larger than the last or equal
+						{
+						*_logger <<
+							"On node " + std::string(p_node) + " more verticies at period " + std::to_string(POTENTIAL_LAST_PERIOD) + " (" + std::to_string(INITITAL_COUNT) + ")" +
+							+" then at period " + std::to_string(p_period) + " (" + std::to_string(FINAL_COUNT) + ")" << "\n";
+						}*/
+					}
+				if (p_period <= p_model.getparameter(Models::FMTintmodelparameters::LENGTH))
+					{
+					std::sort(p_descriptors.begin(), p_descriptors.end());
+					nodescache.at(p_period).setvalidverticies(p_node, p_descriptors);//always cache everything with a mask matching!
+					}
 			}catch (...)
 				{
-				_exhandler->raisefromcatch("For node: " + std::string(node), "FMTgraph::getnodebystaticmask", __LINE__, __FILE__);
+				_exhandler->raisefromcatch("For node: " + std::string(p_node), "FMTgraph::getnodebystaticmask", __LINE__, __FILE__);
 				}
-			return descriptors;
+			return p_descriptors;
 		}
 
 

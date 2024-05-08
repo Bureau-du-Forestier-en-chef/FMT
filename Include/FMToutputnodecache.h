@@ -223,6 +223,11 @@ namespace Graph
 			searchtree.erase(node.source);
 			}
 
+		bool contains(const Core::FMToutputnode& node) const
+			{
+			return searchtree.find(node.source) != searchtree.end();
+			}
+
 		unsigned long long removelargest()
 		{
 			size_t largestsize = 0;
