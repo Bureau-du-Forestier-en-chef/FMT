@@ -245,6 +245,19 @@ FMTmask::FMTmask(const FMTmask& rhs) : name(rhs.name),data(rhs.data)
 
             }
 
+FMTmask::FMTmask(FMTmask&& rhs) :
+	data(std::move(rhs.data)), name(std::move(rhs.name))
+	{
+
+	}
+
+FMTmask& FMTmask::operator=(FMTmask&& rhs)
+{
+	data = std::move(rhs.data);
+	name = std::move(rhs.name);
+	return *this;
+}
+
 void FMTmask::swap(FMTmask& rhs)
 	{
 	data.swap(rhs.data);

@@ -126,10 +126,6 @@ namespace Models
 			void save(Archive& ar, const unsigned int version) const
 			{
 				ar& boost::serialization::make_nvp("model", boost::serialization::base_object<FMTsrmodel>(*this));
-				std::stringstream basegenerator;
-				basegenerator << generator;
-				const std::string basegeneratorstring(basegenerator.str());
-				ar& BOOST_SERIALIZATION_NVP(basegeneratorstring);
 
 			}
 			// DocString: FMTnssmodel::load
@@ -140,15 +136,9 @@ namespace Models
 			void load(Archive& ar, const unsigned int version)
 			{
 				ar& boost::serialization::make_nvp("model", boost::serialization::base_object<FMTsrmodel>(*this));
-				std::string basegeneratorstring;
-				ar& BOOST_SERIALIZATION_NVP(basegeneratorstring);
-				std::stringstream(basegeneratorstring) >> generator;
 
 			}
 			BOOST_SERIALIZATION_SPLIT_MEMBER()
-				// DocString: FMTnssmodel::generator
-				///This simulation model need to have it's own random number generator
-				std::default_random_engine generator;
 			// DocString: FMTnssmodel::constraintsToTarget
 			/**
 			@brief Using the constraints generate random level or determinist level of output values in targets

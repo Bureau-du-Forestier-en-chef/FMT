@@ -23,27 +23,20 @@ actual forest stand so it holds the amount of area of this stand as a member var
 */
 class FMTEXPORT FMTactualdevelopment : public FMTdevelopment
 	{
-	// DocString: FMTactualdevelopment::serialize
-	/**
-	Serialize function is for serialization, used to do multiprocessing across multiple cpus (pickle in Pyhton)
-	*/
-	friend class boost::serialization::access;
-	template<class Archive>
-	void serialize(Archive& ar, const unsigned int version)
-	{
-		try {
-
-			ar & boost::serialization::make_nvp("development", boost::serialization::base_object<FMTdevelopment>(*this));
-			ar & BOOST_SERIALIZATION_NVP(area);
-		}catch (...)
-			{
-			_exhandler->printexceptions("", "FMTactualdevelopment::serialize", __LINE__, __FILE__);
-			}
-	}
-		// DocString: FMTactualdevelopment::area
-		///The area of the actual developement.
-		double area;
+	
 	public:
+		// DocString: FMTactualdevelopment::(FMTactualdevelopment&& rhs)
+		/**
+		@brief Move copy constructor
+		@param[in] rhs development to swap
+		*/
+		FMTactualdevelopment(FMTactualdevelopment&& rhs);
+		// DocString: FMTactualdevelopment::operator=(FMTactualdevelopment&& rhs)
+		/**
+		@brief Move copy assignement
+		@param[in] rhs development to swap
+		*/
+		FMTactualdevelopment& operator=(FMTactualdevelopment&& rhs);
 		// DocString: FMTactualdevelopment()
 		/**
 		Default constructor for FMTactualdevelopement
@@ -121,6 +114,28 @@ class FMTEXPORT FMTactualdevelopment : public FMTdevelopment
 		If the lifespan is shorter than the lock, it returns a copy of itself. This is mainly use in FMTmodel::setarea.  
 		*/
 		FMTactualdevelopment reducelocktodeath(const FMTlifespans& lifespans) const;
+	private:
+		// DocString: FMTactualdevelopment::serialize
+		/**
+		Serialize function is for serialization, used to do multiprocessing across multiple cpus (pickle in Pyhton)
+		*/
+		friend class boost::serialization::access;
+		template<class Archive>
+		void serialize(Archive& ar, const unsigned int version)
+		{
+			try {
+
+				ar& boost::serialization::make_nvp("development", boost::serialization::base_object<FMTdevelopment>(*this));
+				ar& BOOST_SERIALIZATION_NVP(area);
+			}
+			catch (...)
+			{
+				_exhandler->printexceptions("", "FMTactualdevelopment::serialize", __LINE__, __FILE__);
+			}
+		}
+		// DocString: FMTactualdevelopment::area
+		///The area of the actual developement.
+		double area;
 	};
 
 // DocString: FMTactualdevelopmentcomparator

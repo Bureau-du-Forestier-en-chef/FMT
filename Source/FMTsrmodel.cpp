@@ -1349,7 +1349,7 @@ namespace Models
 				{
 					const Core::FMTdevelopment& graphdevelopement = graph.getdevelopment(*vertex_iterator);
 					const double areaofdevelopement = graph.inarea(*vertex_iterator, modelsolution,-1,true);
-					if (areaofdevelopement > 0)
+					if (areaofdevelopement > FMT_DBL_TOLERANCE)
 					{
 						returnedarea.push_back(Core::FMTactualdevelopment(graphdevelopement, areaofdevelopement));
 					}
@@ -1359,7 +1359,7 @@ namespace Models
 					const Core::FMTdevelopment& graphdevelopement = graph.getdevelopment(*vertex_iterator);
 					const double indeatharea = graph.inarea(*vertex_iterator, modelsolution, deathactionid, true);
 					const double areaofdevelopement = graph.outarea(*vertex_iterator, -1, modelsolution) +graph.outarea(*vertex_iterator, deathactionid, modelsolution) -indeatharea;
-					if (areaofdevelopement > 0)
+					if (areaofdevelopement > FMT_DBL_TOLERANCE)
 					{
 						returnedarea.push_back(Core::FMTactualdevelopment(graphdevelopement, areaofdevelopement));
 					}

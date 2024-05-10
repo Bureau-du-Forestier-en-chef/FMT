@@ -88,9 +88,6 @@ class FMTEXPORT FMTsamodel final: public FMTsemodel
     // DocString: FMTsamodel::LastGlobalObjectiveValue
     ///The value of the last globalobjective of the last level
     double LastGlobalObjectiveValue;
-    // DocString: FMTsamodel::Generator
-    ///Random number generator.
-    mutable std::default_random_engine Generator;
     // DocString: FMTsamodel::CoolingSchedule
     ///Cooling schedule for simulated annealing algorithm.
     std::unique_ptr<Spatial::FMTsaschedule> CoolingSchedule;

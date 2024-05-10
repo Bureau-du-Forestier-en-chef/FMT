@@ -100,9 +100,6 @@ namespace Core
 		@param[in] p_request a valid request.
 		*/
 		void updateGeneratorAndSeed(const Core::FMTyieldrequest& p_request) const;
-		// DocString: FMTyieldmodelRandom::m_generator
-		///the generator used by the random distribution
-		mutable std::default_random_engine m_generator;
 		// DocString: FMTyieldmodelRandom::m_cache
 		///the cache value of the random number 
 		mutable std::unordered_map<int,double>m_cache;

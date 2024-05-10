@@ -10,6 +10,18 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 namespace Core
 {
 
+	FMTfuturdevelopment::FMTfuturdevelopment(FMTfuturdevelopment&& rhs) :
+		FMTdevelopment(std::move(rhs))
+	{
+
+	}
+
+	FMTfuturdevelopment& FMTfuturdevelopment::operator=(FMTfuturdevelopment&& rhs)
+	{
+		FMTdevelopment::operator=(std::move(rhs));
+		return *this;
+	}
+
 	FMTfuturdevelopment::FMTfuturdevelopment() :FMTdevelopment() {}
 
 	FMTfuturdevelopment::FMTfuturdevelopment(const FMTfuturdevelopment& rhs) : FMTdevelopment(rhs)

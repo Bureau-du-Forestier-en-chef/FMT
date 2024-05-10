@@ -13,6 +13,13 @@ int main(int argc, char *argv[])
 	{
 	#ifdef FMTWITHOSI
 	Logging::FMTlogger().logstamp();
+	/*const std::string primlocation = "D:/CC_modele_feu/WS_CC/Feux_2023_ouest_V01.pri";
+	const int length = 5;
+	const int replicate = 20;
+	std::vector<std::string>allscenarios;
+	allscenarios.push_back("strategique");
+	allscenarios.push_back("fire");
+	allscenarios.push_back("tactique");*/
 	const std::string primlocation = argv[1];
 	const int length = std::stoi(argv[2]);
 	const int replicate = std::stoi(argv[3]);
@@ -32,19 +39,31 @@ int main(int argc, char *argv[])
 	errors.push_back(Exception::FMTexc::FMTdeathwithlock);
 	modelparser.seterrorstowarnings(errors);
 	std::vector<Models::FMTmodel> models = modelparser.readproject(primlocation, allscenarios);
-	Models::FMTlpmodel global(models.at(0), Models::FMTsolverinterface::MOSEK);
+	#ifdef FMTWITHMOSEK
+		Models::FMTlpmodel global(models.at(0), Models::FMTsolverinterface::MOSEK);
+	#else
+		Models::FMTlpmodel global(models.at(0), Models::FMTsolverinterface::CLP);
+	#endif
 	global.setparameter(Models::FMTintmodelparameters::LENGTH, length);
 	global.setparameter(Models::FMTintmodelparameters::NUMBER_OF_THREADS,1);
 	global.setparameter(Models::FMTboolmodelparameters::PRESOLVE_CAN_REMOVE_STATIC_THEMES, true);
 	Models::FMTnssmodel stochastic(models.at(1), 0);
 	stochastic.setparameter(Models::FMTintmodelparameters::LENGTH, 1);
-	Models::FMTlpmodel local(models.at(2), Models::FMTsolverinterface::MOSEK);
+	#ifdef FMTWITHMOSEK
+		Models::FMTlpmodel local(models.at(2), Models::FMTsolverinterface::MOSEK);
+	#else
+		Models::FMTlpmodel local(models.at(2), Models::FMTsolverinterface::CLP);
+	#endif
 	local.setparameter(Models::FMTintmodelparameters::LENGTH, 1);
 	local.setparameter(Models::FMTintmodelparameters::NUMBER_OF_THREADS,1);
 	std::vector<Core::FMToutput>selectedoutputs;
 	for (const Core::FMToutput& output : global.getoutputs())
 	{
-		if (output.getname() == "OVOLTOTREC"|| output.getname() == "OVOL_UA_TOTREC")
+		if (output.getname() == "OVOLTOTREC"||
+			output.getname() == "OVOL_UA_TOTREC" ||
+			output.getname() == "OSUPBRULER_CORRIGER" ||
+			output.getname() == "SUPERFICIE_RECUP_FEU" ||
+			output.getname() == "OSUPPL_FEU_POSTRECUP")
 		{
 			selectedoutputs.push_back(output);
 		}

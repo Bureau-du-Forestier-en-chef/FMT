@@ -96,6 +96,18 @@ class FMTEXPORT FMTmask
     {
 
     public:
+		// DocString: FMTmask::(FMTmask&& rhs)
+		/**
+		@brief Move copy constructor
+		@param[in] rhs development to swap
+		*/
+		FMTmask(FMTmask&& rhs);
+		// DocString: FMTmask::operator=(FMTmask&& rhs)
+		/**
+		@brief Move copy assignement
+		@param[in] rhs development to swap
+		*/
+		FMTmask& operator=(FMTmask&& rhs);
 		// DocString: swap()
 		/**
 		Swap for FMTmask.

@@ -15,6 +15,20 @@ namespace Core
 
 {
 
+	FMTactualdevelopment::FMTactualdevelopment(FMTactualdevelopment&& rhs):
+		FMTdevelopment(std::move(rhs)),area(std::move(rhs.area))
+	{
+
+	}
+
+	FMTactualdevelopment& FMTactualdevelopment::operator=(FMTactualdevelopment&& rhs)
+	{
+		FMTdevelopment::operator=(std::move(rhs));
+		area = std::move(rhs.area);
+		return *this;
+	}
+
+
 	FMTactualdevelopment::FMTactualdevelopment() :FMTdevelopment(), area() {}
 	FMTactualdevelopment::FMTactualdevelopment(const FMTmask& mask,const int& age, const int& lock, const double& area) : FMTdevelopment(mask, age, lock), area(area) {}
 	FMTactualdevelopment::FMTactualdevelopment(const FMTactualdevelopment& rhs) : FMTdevelopment(rhs), area(rhs.area) {}

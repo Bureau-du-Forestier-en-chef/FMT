@@ -50,7 +50,12 @@ namespace Core
 		const std::vector<FMTtheme>& p_newThemes) const
 	{
 		FMTyieldmodelUnitCoverage newPresolved(*this);
-		newPresolved.m_mask.presolve(p_filter, p_newThemes);
+		try {
+			newPresolved.m_mask = newPresolved.m_mask.presolve(p_filter, p_newThemes);
+		}catch (...)
+		{
+			_exhandler->raisefromcatch(GetModelName(), "FMTyieldmodelUnitCoverage::presolve", __LINE__, __FILE__, Core::FMTsection::Yield);
+		}
 		return std::unique_ptr<FMTyieldmodel>(new FMTyieldmodelUnitCoverage(newPresolved));
 	}
 
@@ -100,9 +105,10 @@ namespace Core
 					"FMTyieldmodelUnitCoverage::getOutputValuesl", __LINE__, __FILE__);
 			}
 			size_t outId = 0;
+			const int PERIOD_TARGET = m_modelPtr->getAreaPeriod();
 			for (const FMToutput& OUTPUT : p_outputs)
 			{
-				returnedValues[outId] = m_modelPtr->getoutput(OUTPUT, 0, Core::FMToutputlevel::totalonly).at("Total");
+				returnedValues[outId] = m_modelPtr->getoutput(OUTPUT, PERIOD_TARGET, Core::FMToutputlevel::totalonly).at("Total");
 				outId += 1;
 			}
 		}

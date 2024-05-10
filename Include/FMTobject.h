@@ -48,75 +48,6 @@ It also contains some usefull functions for mask validation and runtimelocation 
 */
 class FMTEXPORT FMTobject
 	{
-	// DocString: FMTobject::serialize
-	/**
-	Serialize function is for serialization, used to do multiprocessing across multiple cpus (pickle in Pyhton)
-	*/
-	friend class boost::serialization::access;
-	template<class Archive>
-	void serialize(Archive& ar, const unsigned int version)
-	{
-		//ar & BOOST_SERIALIZATION_NVP(_exhandler);
-		//ar & BOOST_SERIALIZATION_NVP(_logger);
-		//ar & BOOST_SERIALIZATION_NVP(_section);
-	}
-	protected:
-		// DocString: FMTobject::_exhandler
-		///A shared pointer to the exception handler.
-		static std::shared_ptr<Exception::FMTexceptionhandler> _exhandler;
-		// DocString: FMTobject::_logger
-		///A shared pointer to the logger.
-		static std::shared_ptr<Logging::FMTlogger> _logger;
-		// DocString: FMTobject:: forcesave
-		/**
-		By Default the serialization of a FMTobject does nothing if you want to get some usefull information use this function.
-		*/
-		template<class Archive>
-		void forcesave(Archive& ar, const unsigned int version) const
-		{
-			//ar & BOOST_SERIALIZATION_NVP(_exhandler);
-			//ar & BOOST_SERIALIZATION_NVP(_logger);
-			//ar & BOOST_SERIALIZATION_NVP(_section);
-		}
-		// DocString: FMTobject:: forceload
-		/**
-		By Default the serialization of a FMTobject does nothing if you want to get some usefull information use this function.
-		*/
-		template<class Archive>
-		void forceload(Archive& ar, const unsigned int version)
-		{
-			//ar & BOOST_SERIALIZATION_NVP(_exhandler);
-			//ar & BOOST_SERIALIZATION_NVP(_logger);
-			setdefaultlogger();
-			setdefaultexceptionhandler();
-			//ar & BOOST_SERIALIZATION_NVP(_section);
-		}
-		// DocString: FMTobject::checksignals
-		/**
-		This function only check if the user has sent a ctrl-c signal using boost::python to FMT.
-		*/
-		void checksignals() const;
-		// DocString: FMTobject::setCPLhandler
-		/**
-		This function is for gdal only it pass the FMT exception handler to gdal exception handler.
-		*/
-		void setCPLhandler();
-		// DocString: FMTobject::getclock
-		/**
-		Will return a clock of "now" time.
-		*/
-		static std::chrono::time_point<std::chrono::high_resolution_clock> getclock();
-		// DocString: FMTobject::getduration
-		/**
-		With the high resolution clock you can get the time it took has a double.
-		*/
-		template<class chrono>
-		static double getduration(const std::chrono::time_point<std::chrono::high_resolution_clock>& startclock);
-		// DocString: FMTobject::getdurationinseconds
-		/**
-		With the clock time calculate time spent in second and return a string.
-		*/
-		static std::string getdurationinseconds(const std::chrono::time_point<std::chrono::high_resolution_clock>& startclock);
 	public:
 		// DocString: FMTobject::getruntimelocation
 		/**
@@ -232,6 +163,75 @@ class FMTEXPORT FMTobject
 		Change the number of warning raise before silenced.
 		*/
 		void setmaxwarningsbeforesilenced(const size_t& maxwarningcount);
+		// DocString: FMTobject::serialize
+		/**
+		Serialize function is for serialization, used to do multiprocessing across multiple cpus (pickle in Pyhton)
+		*/
+		friend class boost::serialization::access;
+		template<class Archive>
+		void serialize(Archive& ar, const unsigned int version)
+		{
+			//ar & BOOST_SERIALIZATION_NVP(_exhandler);
+			//ar & BOOST_SERIALIZATION_NVP(_logger);
+			//ar & BOOST_SERIALIZATION_NVP(_section);
+		}
+	protected:
+		// DocString: FMTobject::_exhandler
+		///A shared pointer to the exception handler.
+		static std::shared_ptr<Exception::FMTexceptionhandler> _exhandler;
+		// DocString: FMTobject::_logger
+		///A shared pointer to the logger.
+		static std::shared_ptr<Logging::FMTlogger> _logger;
+		// DocString: FMTobject:: forcesave
+		/**
+		By Default the serialization of a FMTobject does nothing if you want to get some usefull information use this function.
+		*/
+		template<class Archive>
+		void forcesave(Archive& ar, const unsigned int version) const
+		{
+			//ar & BOOST_SERIALIZATION_NVP(_exhandler);
+			//ar & BOOST_SERIALIZATION_NVP(_logger);
+			//ar & BOOST_SERIALIZATION_NVP(_section);
+		}
+		// DocString: FMTobject:: forceload
+		/**
+		By Default the serialization of a FMTobject does nothing if you want to get some usefull information use this function.
+		*/
+		template<class Archive>
+		void forceload(Archive& ar, const unsigned int version)
+		{
+			//ar & BOOST_SERIALIZATION_NVP(_exhandler);
+			//ar & BOOST_SERIALIZATION_NVP(_logger);
+			setdefaultlogger();
+			setdefaultexceptionhandler();
+			//ar & BOOST_SERIALIZATION_NVP(_section);
+		}
+		// DocString: FMTobject::checksignals
+		/**
+		This function only check if the user has sent a ctrl-c signal using boost::python to FMT.
+		*/
+		void checksignals() const;
+		// DocString: FMTobject::setCPLhandler
+		/**
+		This function is for gdal only it pass the FMT exception handler to gdal exception handler.
+		*/
+		void setCPLhandler();
+		// DocString: FMTobject::getclock
+		/**
+		Will return a clock of "now" time.
+		*/
+		static std::chrono::time_point<std::chrono::high_resolution_clock> getclock();
+		// DocString: FMTobject::getduration
+		/**
+		With the high resolution clock you can get the time it took has a double.
+		*/
+		template<class chrono>
+		static double getduration(const std::chrono::time_point<std::chrono::high_resolution_clock>& startclock);
+		// DocString: FMTobject::getdurationinseconds
+		/**
+		With the clock time calculate time spent in second and return a string.
+		*/
+		static std::string getdurationinseconds(const std::chrono::time_point<std::chrono::high_resolution_clock>& startclock);
 
 	};
 }

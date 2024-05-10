@@ -24,6 +24,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <boost/serialization/export.hpp>
 #include "FMToutputnode.h"
 #include "FMTschedule.h"
+#include <random>
 
 
 namespace Graph
@@ -447,6 +448,12 @@ namespace Models
 		Change to initial area period to the new targeted period.
 		*/
 		void setareaperiod(const int& period);
+		// DocString: FMTmodel::getAreaPeriod
+		/**
+		@brief get the period of the area section.
+		@return the period of the first dev of the area.
+		*/
+		int getAreaPeriod() const;
 		// DocString: FMTmodel::getpotentialschedule
 		/**
 		The function will remove (toremove) developments from a selected vector (selection). Test operability of the
@@ -591,7 +598,16 @@ namespace Models
 		Return the value of the globalobjective
 		*/
 		virtual double getobjectivevalue() const;
+		// DocString: FMTmodel::getGeneratorPtr
+		/**
+		@brief Get a pointer to the generator.
+		@return a pointer to the generator or a nullptr;
+		*/
+		std::default_random_engine* getGeneratorPtr() const;
     protected:
+		// DocString: FMTmodel::m_generator
+		///Random number generator.
+		mutable std::default_random_engine m_generator;
 		// DocString: FMTmodel::parameters
 		///Parameters needed for the function doplanning by the different types of FMTmodel. 
 		///See FMTmodelparameters for detail description or use FMTmodel::showparameters(true) to see your parameters and a brief description.
@@ -626,6 +642,12 @@ namespace Models
 		// DocString: FMTmodel::statictransitionthemes
 		///The location of the themes static from transitions
 		std::vector<size_t>statictransitionthemes;
+		// DocString: FMTmodel::setSeed
+		/**
+		@brief seed the random number generator
+		@param[in] p_seed the seed.
+		*/
+		void setSeed(const int& p_seed);
 		// DocString: FMTmodel::setdefaultobjects
 		/**
 		If the user has not defined the _DEATH action and/or the _DEATH transition default _DEATH action and transition are
@@ -684,6 +706,10 @@ namespace Models
 		{
 			ar& boost::serialization::make_nvp("FMTobject", boost::serialization::base_object<FMTobject>(*this));
 			FMTobject::forcesave(ar, version);
+			std::stringstream basegenerator;
+			basegenerator << m_generator;
+			const std::string basegeneratorstring(basegenerator.str());
+			ar& BOOST_SERIALIZATION_NVP(basegeneratorstring);
 			ar& BOOST_SERIALIZATION_NVP(parameters);
 			ar& BOOST_SERIALIZATION_NVP(area);
 			ar& BOOST_SERIALIZATION_NVP(themes);
@@ -704,6 +730,9 @@ namespace Models
 		{
 			ar& boost::serialization::make_nvp("FMTobject", boost::serialization::base_object<FMTobject>(*this));
 			FMTobject::forceload(ar, version);//get the object information for the global object
+			std::string basegeneratorstring;
+			ar& BOOST_SERIALIZATION_NVP(basegeneratorstring);
+			std::stringstream(basegeneratorstring) >> m_generator;
 			ar& BOOST_SERIALIZATION_NVP(parameters);
 			ar& BOOST_SERIALIZATION_NVP(area);
 			ar& BOOST_SERIALIZATION_NVP(themes);

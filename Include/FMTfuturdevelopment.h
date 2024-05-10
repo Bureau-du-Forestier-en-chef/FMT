@@ -22,22 +22,19 @@ namespace Core
 	*/
 	class FMTEXPORT FMTfuturdevelopment : public FMTdevelopment
 		{
-		// DocString: FMTfuturdevelopment::serialize
-		/**
-		Serialize function is for serialization, used to do multiprocessing across multiple cpus (pickle in Pyhton)
-		*/
-		friend class boost::serialization::access;
-		template<class Archive>
-		void serialize(Archive& ar, const unsigned int version)
-		{
-			try {
-			ar & boost::serialization::make_nvp("development", boost::serialization::base_object<FMTdevelopment>(*this));
-			}catch (...)
-			{
-			_exhandler->printexceptions("", "FMTfuturdevelopment::serialize", __LINE__, __FILE__);
-			}
-		}
 		public:
+			// DocString: FMTfuturdevelopment::(FMTfuturdevelopment&& rhs)
+			/**
+			@brief Move copy constructor
+			@param[in] rhs development to swap
+			*/
+			FMTfuturdevelopment(FMTfuturdevelopment&& rhs);
+			// DocString: FMTfuturdevelopment::operator=(FMTfuturdevelopment&& rhs)
+			/**
+			@brief Move copy assignement
+			@param[in] rhs development to swap
+			*/
+			FMTfuturdevelopment& operator=(FMTfuturdevelopment&& rhs);
 			// DocString: FMTfuturdevelopment()
 			/**
 			Default constructor for FMTfuturdevelopement
@@ -78,6 +75,23 @@ namespace Core
 			Return the area of the futur developement 0.
 			*/
 			double getarea() const override;
+		private:
+			// DocString: FMTfuturdevelopment::serialize
+			/**
+			Serialize function is for serialization, used to do multiprocessing across multiple cpus (pickle in Pyhton)
+			*/
+			friend class boost::serialization::access;
+			template<class Archive>
+			void serialize(Archive& ar, const unsigned int version)
+			{
+				try {
+					ar& boost::serialization::make_nvp("development", boost::serialization::base_object<FMTdevelopment>(*this));
+				}
+				catch (...)
+				{
+					_exhandler->printexceptions("", "FMTfuturdevelopment::serialize", __LINE__, __FILE__);
+				}
+			}
 
 		};
 }

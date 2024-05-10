@@ -14,24 +14,22 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 namespace Models
 {
 	FMTnssmodel::FMTnssmodel():
-		FMTsrmodel(FMTmodel(), Models::FMTsolverinterface::CLP),
-		generator() 
+		FMTsrmodel(FMTmodel(), Models::FMTsolverinterface::CLP)
 	{
 	
 	}
 
 	FMTnssmodel::FMTnssmodel(const FMTnssmodel& rhs) :
-		FMTsrmodel(rhs),
-		generator(rhs.generator)
+		FMTsrmodel(rhs)
 	{
 
 	}
 
 	FMTnssmodel::FMTnssmodel(const FMTmodel& rhs, unsigned int seed):
-		FMTsrmodel(rhs,Models::FMTsolverinterface::CLP),
-		generator(seed) 
+		FMTsrmodel(rhs,Models::FMTsolverinterface::CLP)
 	{
 		FMTmodel::setparameter(SEED,seed);
+		FMTmodel::setSeed(seed);
 	}
 
 	std::vector<const Core::FMToutput*> FMTnssmodel::constraintsToTarget(std::vector<double>& p_targets, const int& p_period)
@@ -92,7 +90,7 @@ namespace Models
 					const double upperbound = uppers.at(outid);
 					std::uniform_real_distribution<double>udist(lowerbound, upperbound);
 					
-					value = udist(generator);
+					value = udist(m_generator);
 					}
 				
 				p_targets.push_back(value);
@@ -193,10 +191,9 @@ namespace Models
 		}
 
 	FMTnssmodel::FMTnssmodel(const FMTsrmodel& rhs, unsigned int seed) :
-		FMTsrmodel(rhs),
-		generator(seed)
+		FMTsrmodel(rhs)
 	{
-
+		FMTmodel::setSeed(seed);
 	}
 
 
@@ -273,15 +270,15 @@ namespace Models
 	void FMTnssmodel::simulate()
 	{
 		try {
-			generator = std::default_random_engine(getparameter(Models::FMTintmodelparameters::SEED));
+			m_generator = std::default_random_engine(getparameter(Models::FMTintmodelparameters::SEED));
 			//First make some noise
-			std::shuffle(area.begin(), area.end(), generator);
+			std::shuffle(area.begin(), area.end(), m_generator);
 			std::queue<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor> actives = getActives();
 			const int GRAPH_SIZE = static_cast<int>(getgraphsize());
 			int period = static_cast<int>(GRAPH_SIZE -1);
 			if (GRAPH_SIZE == 0)
 			{
-				period = area.begin()->getperiod() + 1;
+				period = getAreaPeriod() + 1;
 			}
 			std::vector<double>targetedValues;
 			const std::vector<const Core::FMToutput*> TARGETED_OUTPUTS = constraintsToTarget(targetedValues, period);
@@ -554,7 +551,7 @@ namespace Models
 			FMTmodel::setparameter(key,value);
 			if(key==SEED)
 			{
-				generator=std::default_random_engine(value);
+				m_generator=std::default_random_engine(value);
 				yields.setModel(this);
 			}
 			parametersetted=true;

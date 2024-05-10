@@ -70,7 +70,6 @@ namespace Models
         TotalMoves(),
         CycleMoves(),
         LastGlobalObjectiveValue(),
-        Generator(),
         CoolingSchedule(),
         NotAcceptedMovesCount()
     {
@@ -82,7 +81,6 @@ namespace Models
         TotalMoves(rhs.TotalMoves),
         CycleMoves(rhs.CycleMoves),
         LastGlobalObjectiveValue(rhs.LastGlobalObjectiveValue),
-        Generator(rhs.Generator),
         CoolingSchedule(rhs.CoolingSchedule->Clone()),
         NotAcceptedMovesCount()
     {
@@ -94,7 +92,6 @@ namespace Models
         TotalMoves(),
         CycleMoves(),
         LastGlobalObjectiveValue(),
-        Generator(),
         CoolingSchedule(std::unique_ptr<Spatial::FMTexponentialschedule>(new Spatial::FMTexponentialschedule())),
         NotAcceptedMovesCount()
     {
@@ -106,7 +103,6 @@ namespace Models
         TotalMoves(),
         CycleMoves(),
         LastGlobalObjectiveValue(),
-        Generator(rhs.getparameter(Models::FMTintmodelparameters::SEED)),
         CoolingSchedule(std::unique_ptr<Spatial::FMTexponentialschedule>(new Spatial::FMTexponentialschedule())),
         NotAcceptedMovesCount()
     {
@@ -118,7 +114,6 @@ namespace Models
         TotalMoves(),
         CycleMoves(),
         LastGlobalObjectiveValue(),
-        Generator(),
         CoolingSchedule(std::unique_ptr<Spatial::FMTexponentialschedule>(new Spatial::FMTexponentialschedule())),
         NotAcceptedMovesCount()
     {
@@ -134,7 +129,6 @@ namespace Models
             TotalMoves = rhs.TotalMoves;
             CycleMoves = rhs.CycleMoves;
             LastGlobalObjectiveValue = rhs.LastGlobalObjectiveValue;
-            Generator = rhs.Generator;
             CoolingSchedule = std::move(CoolingSchedule->Clone());
             }
         return *this;
@@ -153,7 +147,7 @@ namespace Models
 
     Graph::FMTgraphstats FMTsamodel::buildperiod()
     {
-		return solution.randombuild(*this,Generator);
+		return solution.randombuild(*this,m_generator);
     }
 
 
@@ -171,7 +165,7 @@ namespace Models
 				probability =  std::exp(objectivediff / temp);
 				}
 			std::uniform_real_distribution<double>random_distribution(0.0,1.0);
-			const double random_probability = random_distribution(Generator);
+			const double random_probability = random_distribution(m_generator);
 			return  (probability > random_probability);
 		}catch (...)
 			{
@@ -187,7 +181,7 @@ namespace Models
            const size_t maxmoves = static_cast<size_t>(static_cast<double>(solution.size()/10) * mapratio);
            const size_t movamaximalsize = std::max(size_t(1), maxmoves);//10 % of the map
            std::uniform_int_distribution<int> mosizedist(1, static_cast<int>(movamaximalsize));
-           sizeofmove = mosizedist(Generator);
+           sizeofmove = mosizedist(m_generator);
            CycleMoves.back().MoveSize = sizeofmove;
        }
        catch (...)
@@ -208,7 +202,7 @@ namespace Models
                _exhandler->raise(Exception::FMTexc::FMTrangeerror,
                    "Empty solution ", "FMTsamodel::move()", __LINE__, __FILE__);
            }
-           std::shuffle(selectionpool.begin(), selectionpool.end(), Generator);
+           std::shuffle(selectionpool.begin(), selectionpool.end(),m_generator);
            size_t totalsize = 0;
            std::vector<Spatial::FMTcoordinate>finalselection;
            std::vector<std::vector<Spatial::FMTcoordinate>>::const_iterator selected = selectionpool.begin();
@@ -225,7 +219,7 @@ namespace Models
            Spatial::FMTspatialschedule newsolution(actual, finalselection.begin(), finalselection.end());
            while (luckycoordinateit != finalselection.end())
            {
-               newsolution.perturbgraph(*luckycoordinateit, period, *this, Generator, bindings);
+               newsolution.perturbgraph(*luckycoordinateit, period, *this, m_generator, bindings);
                ++luckycoordinateit;
            }
            return newsolution;
@@ -324,7 +318,7 @@ namespace Models
             int period = 0;
             while (selectionpool.empty())
             {
-                period = perioddistribution(Generator);
+                period = perioddistribution(m_generator);
                 selectionpool = actual.getmovablecoordinates(*this, period, movable, operability);
             }
             if (selectionpool.empty())
@@ -332,7 +326,7 @@ namespace Models
                 _exhandler->raise(Exception::FMTexc::FMTrangeerror,
                     "Empty solution ", "FMTsamodel::move()", __LINE__, __FILE__);
             }
-            std::shuffle(selectionpool.begin(), selectionpool.end(), Generator);
+            std::shuffle(selectionpool.begin(), selectionpool.end(), m_generator);
             std::vector<Spatial::FMTcoordinate>::const_iterator luckycoordinateit = selectionpool.begin();
             size_t perturbationdone = 0;
             const size_t selected = std::min(movesize, selectionpool.size());
@@ -340,7 +334,7 @@ namespace Models
             //Spatial::FMTspatialschedule newsolution(actual);
             while (luckycoordinateit != selectionpool.end() && perturbationdone < movesize)
             {
-                newsolution.perturbgraph(*luckycoordinateit, period, *this, Generator, bindings);
+                newsolution.perturbgraph(*luckycoordinateit, period, *this, m_generator, bindings);
                 ++perturbationdone;
                 ++luckycoordinateit;
             }
@@ -416,7 +410,7 @@ namespace Models
             int modellength = getparameter(Models::FMTintmodelparameters::LENGTH);
             while (modellength > 0)
             {
-                solution.randombuild(*this,Generator);
+                solution.randombuild(*this, m_generator);
                 --modellength;
             }
         }
@@ -510,7 +504,7 @@ namespace Models
                     nontaboumoves.push_back(move);
                     }
             }
-            std::shuffle(nontaboumoves.begin(), nontaboumoves.end(), Generator);
+            std::shuffle(nontaboumoves.begin(), nontaboumoves.end(), m_generator);
             move = nontaboumoves.back();
         }catch (...)
         {
@@ -731,7 +725,7 @@ namespace Models
 			const std::vector<Spatial::FMTcoordinate>movables = solution.getstaticsmovablecoordinates(*this);
 			const Spatial::FMTspatialschedule::actionbindings actionsbinding = solution.getbindingactionsbyperiod(*this);
 			boost::unordered_map<Core::FMTdevelopment, bool>operability;
-            *_logger << "Generator initial state: " << Generator() << "\n";
+            *_logger << "Generator initial state: " << m_generator() << "\n";
 			const double initialtemperature = Warmup(solution, actionsbinding,&movables,&operability,0.9);
             CoolingSchedule->SetInitialTemperature(initialtemperature);
             //LogCycleStatus();
@@ -766,7 +760,7 @@ namespace Models
 				}
             LogConstraintsFactors();
             LogConstraintsInfeasibilities();
-            *_logger << "Generator final state: " << Generator() << "\n";
+            *_logger << "Generator final state: " << m_generator() << "\n";
 		}catch (...)
 			{
 			_exhandler->printexceptions("", "FMTsamodel::initialsolve", __LINE__, __FILE__);

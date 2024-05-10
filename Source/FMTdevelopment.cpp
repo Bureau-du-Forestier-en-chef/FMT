@@ -20,6 +20,26 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 namespace Core{
 
+	FMTdevelopment::FMTdevelopment(FMTdevelopment&& rhs) :
+		FMTobject(std::move(rhs)),
+		mask(std::move(rhs.mask)),
+		age(std::move(rhs.age)),
+		lock(std::move(rhs.lock)),
+		period(std::move(rhs.period))
+	{
+
+	}
+
+	FMTdevelopment& FMTdevelopment::operator=(FMTdevelopment&& rhs)
+	{
+		FMTobject::operator=(std::move(rhs));
+		mask = std::move(rhs.mask);
+		age = std::move(rhs.age);
+		lock = std::move(rhs.lock);
+		period = std::move(rhs.period);
+		return *this;
+	}
+
 	void FMTdevelopment::setage(const int& lage)
 	{
 		try {

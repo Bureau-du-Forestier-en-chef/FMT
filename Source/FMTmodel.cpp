@@ -314,6 +314,11 @@ Core::FMTmask FMTmodel::addNewMask(const Core::FMTmask& p_incompleteMask)
 	return baseMask;
 }
 
+std::default_random_engine* FMTmodel::getGeneratorPtr() const
+	{
+	return &m_generator;
+	}
+
 
 void FMTmodel::setdefaultobjects()
 	{
@@ -423,13 +428,13 @@ std::vector<Core::FMTtheme>FMTmodel::getstaticpresolvethemes() const
 	}
 
 
-FMTmodel::FMTmodel() : Core::FMTobject(),parameters(),area(),themes(),actions(), transitions(),yields(),lifespan(),outputs(), constraints(),name(), statictransitionthemes()
+FMTmodel::FMTmodel() : Core::FMTobject(), m_generator(),parameters(),area(),themes(),actions(), transitions(),yields(),lifespan(),outputs(), constraints(),name(), statictransitionthemes()
 {
 	
 }
 
 
-FMTmodel::FMTmodel(FMTmodel&& rhs) : Core::FMTobject(), parameters(), area(), themes(), actions(), transitions(), yields(), lifespan(), outputs(), constraints(), name(), statictransitionthemes()
+FMTmodel::FMTmodel(FMTmodel&& rhs) : Core::FMTobject(), m_generator(), parameters(), area(), themes(), actions(), transitions(), yields(), lifespan(), outputs(), constraints(), name(), statictransitionthemes()
 {
 	*this = std::move(rhs);
 }
@@ -439,6 +444,7 @@ FMTmodel& FMTmodel::operator =(FMTmodel&& rhs)
 	if (this != &rhs)
 	{
 		Core::FMTobject::operator = (rhs);
+		m_generator = std::move(rhs.m_generator);
 		parameters = std::move(rhs.parameters);
 		area = std::move(rhs.area);
 		themes = std::move(rhs.themes);
@@ -456,22 +462,28 @@ FMTmodel& FMTmodel::operator =(FMTmodel&& rhs)
 	return *this;
 }
 
+void FMTmodel::setSeed(const int& p_seed)
+	{
+	m_generator = std::default_random_engine(p_seed);
+	}
+
 
 FMTmodel::FMTmodel(const std::vector<Core::FMTactualdevelopment>& larea, const std::vector<Core::FMTtheme>& lthemes,
 	const std::vector<Core::FMTaction>& lactions,
 	const std::vector<Core::FMTtransition>& ltransitions, const Core::FMTyields& lyields, const Core::FMTlifespans& llifespan,
 	const std::string& lname, const std::vector<Core::FMToutput>& loutputs,std::vector<Core::FMTconstraint> lconstraints,FMTmodelparameters lparameters) :
-	Core::FMTobject(), parameters(lparameters),area(), themes(lthemes), actions(lactions), transitions(ltransitions),
+	Core::FMTobject(), m_generator(), parameters(lparameters),area(), themes(lthemes), actions(lactions), transitions(ltransitions),
 	yields(lyields), lifespan(llifespan), outputs(loutputs), constraints(lconstraints), name(lname), statictransitionthemes()
 	{
 	setarea(larea);
 	setdefaultobjects();
 	cleanactionsntransitions();
+	setSeed(getparameter(Models::FMTintmodelparameters::SEED));
 	yields.setModel(this);
 	
 	}
 
-FMTmodel::FMTmodel(const FMTmodel& rhs):Core::FMTobject(rhs),parameters(rhs.parameters),area(rhs.area),themes(rhs.themes),actions(rhs.actions),
+FMTmodel::FMTmodel(const FMTmodel& rhs):Core::FMTobject(rhs), m_generator(rhs.m_generator),parameters(rhs.parameters),area(rhs.area),themes(rhs.themes),actions(rhs.actions),
 		 transitions(rhs.transitions),yields(rhs.yields),lifespan(rhs.lifespan), outputs(rhs.outputs), constraints(rhs.constraints),name(rhs.name),
 		statictransitionthemes(rhs.statictransitionthemes)
 
@@ -484,6 +496,7 @@ FMTmodel& FMTmodel::operator = (const FMTmodel& rhs)
     if (this!=&rhs)
         {
         Core::FMTobject::operator = (rhs);
+		m_generator = rhs.m_generator;
 		parameters = rhs.parameters;
         area = rhs.area;
         themes = rhs.themes;
@@ -1938,6 +1951,16 @@ void FMTmodel::setareaperiod(const int& period)
 		{
 		basedev.setperiod(period);
 		}
+	}
+
+int FMTmodel::getAreaPeriod() const
+	{
+	int period = 0;
+	if (!area.empty())
+		{
+		period = area.cbegin()->getperiod();
+		}
+	return period;
 	}
 
 Core::FMTschedule FMTmodel::getpotentialschedule(std::vector<Core::FMTactualdevelopment> toremove,

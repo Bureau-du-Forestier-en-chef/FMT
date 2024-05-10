@@ -42,39 +42,19 @@ the mask hold a description of the growth/spatial reference/ and other potential
 */
 class FMTEXPORT FMTdevelopment : public FMTobject
     {
-	// DocString: FMTdevelopment::serialize
-	/**
-	Serialize function is for serialization, used to do multiprocessing across multiple cpus (pickle in Pyhton)
-	*/
-	friend class boost::serialization::access;
-	template<class Archive>
-	void serialize(Archive& ar, const unsigned int version)
-	{
-		try {
-			ar & boost::serialization::make_nvp("FMTobject", boost::serialization::base_object<FMTobject>(*this));
-			ar & BOOST_SERIALIZATION_NVP(mask);
-			ar & BOOST_SERIALIZATION_NVP(age);
-			ar & BOOST_SERIALIZATION_NVP(lock);
-			ar & BOOST_SERIALIZATION_NVP(period);
-		}catch (...)
-			{
-			_exhandler->printexceptions("", "FMTdevelopment::serialize", __LINE__, __FILE__);
-			}
-	}
-    private:
-		// DocString: FMTdevelopment::mask
-		///Mask of the FMTdevelopment data member
-        FMTmask mask;
-		// DocString: FMTdevelopment::age
-		///Age is the age of the FMTdevelopment in period (no unit)
-		uint8_t age;
-		// DocString: FMTdevelopment::lock
-		///Lock is the lock level of the FMTdevelopment if lock == 0 then the development is not locked
-		uint8_t lock;
-		// DocString: FMTdevelopment::period
-		///period is the period at which the development exist from 0 to ...
-		uint8_t period;
 	public:
+		// DocString: FMTdevelopment::(FMTdevelopment&& rhs)
+		/**
+		@brief Move copy constructor
+		@param[in] rhs development to swap
+		*/
+		FMTdevelopment(FMTdevelopment&& rhs);
+		// DocString: FMTdevelopment::operator=(FMTdevelopment&& rhs)
+		/**
+		@brief Move copy assignement
+		@param[in] rhs development to swap
+		*/
+		FMTdevelopment& operator=(FMTdevelopment&& rhs);
 		// DocString: FMTdevelopment::getage
 		/**
 		Get the age of the development.
@@ -285,6 +265,39 @@ class FMTEXPORT FMTdevelopment : public FMTobject
 			boost::hash_combine(seed, boost::hash<uint8_t>()(period));
 			return seed;
 			}
+		private:
+			// DocString: FMTdevelopment::serialize
+			/**
+			Serialize function is for serialization, used to do multiprocessing across multiple cpus (pickle in Pyhton)
+			*/
+			friend class boost::serialization::access;
+			template<class Archive>
+			void serialize(Archive& ar, const unsigned int version)
+			{
+				try {
+					ar& boost::serialization::make_nvp("FMTobject", boost::serialization::base_object<FMTobject>(*this));
+					ar& BOOST_SERIALIZATION_NVP(mask);
+					ar& BOOST_SERIALIZATION_NVP(age);
+					ar& BOOST_SERIALIZATION_NVP(lock);
+					ar& BOOST_SERIALIZATION_NVP(period);
+				}
+				catch (...)
+				{
+					_exhandler->printexceptions("", "FMTdevelopment::serialize", __LINE__, __FILE__);
+				}
+			}
+			// DocString: FMTdevelopment::mask
+			///Mask of the FMTdevelopment data member
+			FMTmask mask;
+			// DocString: FMTdevelopment::age
+			///Age is the age of the FMTdevelopment in period (no unit)
+			uint8_t age;
+			// DocString: FMTdevelopment::lock
+			///Lock is the lock level of the FMTdevelopment if lock == 0 then the development is not locked
+			uint8_t lock;
+			// DocString: FMTdevelopment::period
+			///period is the period at which the development exist from 0 to ...
+			uint8_t period;
     };
 
 }
