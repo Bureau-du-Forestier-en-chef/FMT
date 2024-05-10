@@ -223,7 +223,7 @@ void exportModel()
 	define_pylist<Models::FMTsolverinterface>();
 
 	bp::class_<Models::FMTlpsolver>("FMTlpolver", "@DocString(FMTlpsolver)")
-		.def(bp::init<Models::FMTsolverinterface>())
+		//.def(bp::init<Models::FMTsolverinterface>())
 		.def("isProvenOptimal", &Models::FMTlpsolver::isProvenOptimal,
 			"@DocString(FMTlpsolver::isProvenOptimal)")
 		.def("getObjValue", &Models::FMTlpsolver::getObjValue,
