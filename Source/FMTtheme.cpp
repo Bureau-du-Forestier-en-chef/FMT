@@ -42,6 +42,7 @@ namespace Core {
 	{
 		try {
 			m_attribute_locations.clear();
+			m_attribute_locations.reserve(m_attributes.size());
 			size_t location = 0;
 			for (const std::string& attribute : m_attributes)
 				{
@@ -56,8 +57,9 @@ namespace Core {
 				size_t aggregatelocation = 0;
 				for (const std::string& key : m_aggregates)
 				{
-					const std::vector<std::string>aggvalues = newaggregates.at(aggregatelocation);
+					const std::vector<std::string> &aggvalues = newaggregates.at(aggregatelocation);
 					std::vector<std::string>newvalues;
+					newvalues.reserve(m_attributes.size());
 					for (const std::string& value : aggvalues)
 					{
 						if (std::find(m_attributes.begin(), m_attributes.end(), value) == m_attributes.end())
@@ -641,7 +643,9 @@ FMTtheme FMTtheme::presolve(FMTmaskfilter& p_maskfilter, size_t& p_newid, size_t
 		newtheme.m_attribute_locations.clear();
 
 		std::vector<std::string>newattributes;
+		newattributes.reserve(m_attributes.size());
 		std::vector<std::string>newattributenames;
+		newattributenames.reserve(m_attributenames.size());
 		size_t location = 0;
 		for (size_t binlocation = m_start; binlocation < (m_start + this->size()); ++binlocation)
 			{
@@ -669,7 +673,9 @@ FMTtheme FMTtheme::presolve(FMTmaskfilter& p_maskfilter, size_t& p_newid, size_t
 			for (const std::string& aggregate : m_aggregates)
 				{
 				std::vector<std::string>aggvalues;
-				for (const size_t& baselocation : getAttribute(aggregate)->second)
+				const std::vector<size_t> & aggAttributes = getAttribute(aggregate)->second;
+				aggvalues.reserve(aggAttributes.size());
+				for (const size_t& baselocation : aggAttributes)
 					{
 					if (std::find(newattributes.begin(),newattributes.end(), m_attributes.at(baselocation))!= newattributes.end())
 						{

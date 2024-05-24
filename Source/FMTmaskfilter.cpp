@@ -52,12 +52,12 @@ FMTmaskfilter::FMTmaskfilter(const FMTmask& presolveselection) :
 
 }
 
-bool FMTmaskfilter::canpresolve(const FMTmask& mask, const std::vector<Core::FMTtheme>& themes) const
+bool FMTmaskfilter::canpresolve(const FMTmask& mask, const std::vector<const Core::FMTtheme*>& themes) const
 	{
 	return !FMTmask(selection).isnotthemessubset(mask, themes);
 	}
 
-std::vector<Core::FMTtheme> FMTmaskfilter::getselectedthemes(const std::vector<Core::FMTtheme>& themes) const
+std::vector<const Core::FMTtheme*> FMTmaskfilter::getselectedthemes(const std::vector<Core::FMTtheme>& themes) const
 	{
 	return FMTmask(selection).getselectedthemes(themes);
 	}

@@ -3,14 +3,14 @@
 #include "FMTnssmodel.h"
 #include "FMTmodelparser.h"
 #include "FMTversion.h"
-#include "FMTlogger.h"
+#include "FMTdefaultlogger.h"
 #include "FMTfreeexceptionhandler.h"
 #include "FMToutput.h"
 	
 
 int main(int argc, char* argv[])
 {
-	Logging::FMTlogger().logstamp();
+	Logging::FMTdefaultlogger().logstamp();
 	const std::string vals = argv[1];
 	std::vector<std::string>results;
 	boost::split(results, vals, boost::is_any_of("|"));
@@ -66,7 +66,7 @@ int main(int argc, char* argv[])
 	}
 	
 	const double RESULT = NssModel.getoutput(sumOutput,PERIOD, Core::FMToutputlevel::totalonly).at("Total");
-	Logging::FMTlogger() << "VALUE OF "<< RESULT<<" "<< argc << "\n";
+	Logging::FMTdefaultlogger() << "VALUE OF "<< RESULT<<" "<< argc << "\n";
 	if (argc == 4 && std::abs(RESULT - output_value)>1)
 	{
 		Exception::FMTfreeexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed, "Wrong value",

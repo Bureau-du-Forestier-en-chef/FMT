@@ -19,10 +19,49 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTmaskfilter.h"
 #include "FMTexceptionhandler.h"
 #include "FMTtransitionmask.h"
-//#include "FMTmodelparser.h"
+#include <thread>
+//#include <cvmarkersobj.h>
+#include <memory>
+
+//using namespace Concurrency::diagnostic;
 
 
 namespace Models{
+
+	bool  FMTmodel::gotReIgnore(const int& p_replanningPeriod) const
+		{
+		bool gotIt = false;
+		try {
+			size_t cId = 0;
+			while (!gotIt && cId < constraints.size())
+			{
+				gotIt = constraints.at(cId).isreignore(p_replanningPeriod);
+				++cId;
+			}
+		}catch (...)
+			{
+			_exhandler->raisefromcatch("", "FMTmodel::gotReIgnore", __LINE__, __FILE__);
+			}
+		return gotIt;
+		}
+
+	bool FMTmodel::gotReplicate(const int& p_replanningPeriod) const
+	{
+		bool gotIt = false;
+		try {
+			size_t cId = 0;
+			while (!gotIt && cId < constraints.size())
+			{
+				gotIt = constraints.at(cId).gotReplicate(p_replanningPeriod);
+				++cId;
+			}
+		}
+		catch (...)
+		{
+			_exhandler->raisefromcatch("", "FMTmodel::gotReIgnore", __LINE__, __FILE__);
+		}
+		return gotIt;
+	}
 
 	Models::FMTmodel FMTmodel::aggregateAllActions(const std::vector<std::string>& p_Aggregates) const
 	{
@@ -106,12 +145,16 @@ namespace Models{
 		}
 
 
-	std::map<std::string, std::pair<std::string, Core::FMTmask>> FMTmodel::aggregateActions(const std::vector<std::string>& p_ActionsMapping)
+	std::map<std::string, std::pair<std::string, Core::FMTmask>> FMTmodel::aggregateActions(std::vector<std::string> p_ActionsMapping)
 	{
 		std::map<std::string, std::pair<std::string, Core::FMTmask>>ActionFilters;
 		try {
 			std::vector<Core::FMTaction>NewActions;
 			std::set<std::string>ActionCover;
+			if (std::find(p_ActionsMapping.begin(), p_ActionsMapping.end(), "_DEATH") == p_ActionsMapping.end())
+			{
+				p_ActionsMapping.push_back("_DEATH");
+			}
 			for (const std::string& Aggregate : p_ActionsMapping)
 				{
 				Core::FMTaction NewAction(Aggregate);
@@ -144,8 +187,6 @@ namespace Models{
 					NewActions.push_back(NewAction);
 					}
 				}
-			NewActions.push_back(actions.back());//Push the _DEATH
-			ActionCover.insert("_DEATH");
 			if (ActionCover.size() != actions.size())
 				{
 				std::string missingActions;
@@ -353,14 +394,18 @@ std::vector<size_t>FMTmodel::getstatictransitionthemes() const
 	{
 	std::vector<size_t>statics;
 	try {
-		std::vector<Core::FMTtheme>bestthemes=themes;
+		std::vector<const Core::FMTtheme*>bestthemes;
+		for (const Core::FMTtheme& theme : themes)
+		{
+			bestthemes.push_back(&theme);
+		}
 		for (const Core::FMTtransition& transition : transitions)
 		{
 			bestthemes = transition.getstaticthemes(bestthemes);
 		}
-		for (const Core::FMTtheme& theme : bestthemes)
+		for (const Core::FMTtheme* theme : bestthemes)
 			{
-			std::vector<Core::FMTtheme>::const_iterator basit = std::find_if(themes.begin(), themes.end(), Core::FMTthemecomparator(theme));
+			std::vector<Core::FMTtheme>::const_iterator basit = std::find(themes.begin(), themes.end(), *theme);
 			if (basit!=themes.end())
 				{
 				statics.push_back(std::distance(themes.cbegin(), basit));
@@ -373,16 +418,20 @@ std::vector<size_t>FMTmodel::getstatictransitionthemes() const
 	return statics;
 	}
 
-std::vector<Core::FMTtheme>FMTmodel::getstaticpresolvethemes() const
+std::vector<const Core::FMTtheme*>FMTmodel::getstaticpresolvethemes() const
 	{
-	std::vector<Core::FMTtheme>fullstatics(themes);
+	std::vector<const Core::FMTtheme*>fullstatics;
+	for (const Core::FMTtheme& theme : themes)
+	{
+		fullstatics.push_back(&theme);
+	}
 	try {
 		for (const Core::FMTconstraint& constraint : constraints)
 			{
-			std::vector<Core::FMTtheme>newstatics;
-			for (const Core::FMTtheme& theme : locatestaticthemes(constraint))
+			std::vector<const Core::FMTtheme*>newstatics;
+			for (const Core::FMTtheme* theme : locatestaticthemes(constraint))
 				{
-				if (std::find_if(fullstatics.begin(), fullstatics.end(), Core::FMTthemecomparator(theme)) != fullstatics.end())
+				if (std::find(fullstatics.begin(), fullstatics.end(), theme) != fullstatics.end())
 					{
 					newstatics.push_back(theme);
 					}
@@ -395,10 +444,10 @@ std::vector<Core::FMTtheme>FMTmodel::getstaticpresolvethemes() const
 			action.unshrink(themes);
 			for (const auto& actit : action)
 				{
-				std::vector<Core::FMTtheme>newstatics;
-				for (const Core::FMTtheme& theme :  actit.first.getstaticthemes(fullstatics))
+				std::vector<const Core::FMTtheme*>newstatics;
+				for (const Core::FMTtheme* theme :  actit.first.getstaticthemes(fullstatics))
 					{
-					if (std::find_if(fullstatics.begin(), fullstatics.end(), Core::FMTthemecomparator(theme)) != fullstatics.end())
+					if (std::find(fullstatics.begin(), fullstatics.end(), theme) != fullstatics.end())
 						{
 						newstatics.push_back(theme);
 						}
@@ -410,10 +459,10 @@ std::vector<Core::FMTtheme>FMTmodel::getstaticpresolvethemes() const
 		uyields.unshrink(themes);
 		for (auto& yieldit : uyields)
 			{
-			std::vector<Core::FMTtheme>newstatics;
-			for (const Core::FMTtheme& theme : yieldit.first.getstaticthemes(fullstatics))
+			std::vector<const Core::FMTtheme*>newstatics;
+			for (const Core::FMTtheme* theme : yieldit.first.getstaticthemes(fullstatics))
 			{
-				if (std::find_if(fullstatics.begin(), fullstatics.end(), Core::FMTthemecomparator(theme)) != fullstatics.end())
+				if (std::find(fullstatics.begin(), fullstatics.end(),theme) != fullstatics.end())
 				{
 					newstatics.push_back(theme);
 				}
@@ -527,7 +576,9 @@ void FMTmodel::cleanactionsntransitions()
 	{
 	try {
 		std::vector<Core::FMTaction>newactions;
+		newactions.reserve(actions.size());
 		std::vector<Core::FMTtransition>newtransitions;
+		newtransitions.reserve(transitions.size());
 		//sort(actions.begin(), actions.end());
 		for (size_t id = 0; id < actions.size(); ++id)
 		{
@@ -904,16 +955,14 @@ void FMTmodel::setoutputs(const std::vector<Core::FMToutput>& newoutputs)
 	}
 
 
-std::vector<Core::FMTtheme> FMTmodel::locatestaticthemes(const Core::FMToutput& output, bool ignoreoutputvariables) const
+std::vector<const Core::FMTtheme*> FMTmodel::locatestaticthemes(const Core::FMToutput& output, bool ignoreoutputvariables) const
 {
-	std::vector<Core::FMTtheme> bestthemes;
+	std::vector<const Core::FMTtheme*> bestthemes;
 	try {
-		//bestthemes = locatestatictransitionsthemes();
-		//bestthemes = output.getstaticthemes(bestthemes, yields, ignoreoutputvariables);
-		const std::vector<Core::FMTtheme>transitionstatic = locatestatictransitionsthemes();
-		for (const Core::FMTtheme& theme : output.getstaticthemes(themes, yields, ignoreoutputvariables))
+		const std::vector<const Core::FMTtheme*>transitionstatic = locatestatictransitionsthemes();
+		for (const Core::FMTtheme* theme : output.getstaticthemes(themes, yields, ignoreoutputvariables))
 			{
-			if (std::find_if(transitionstatic.begin(), transitionstatic.end(), Core::FMTthemecomparator(theme)) != transitionstatic.end())
+			if (std::find(transitionstatic.begin(), transitionstatic.end(), theme) != transitionstatic.end())
 				{
 				bestthemes.push_back(theme);
 				}
@@ -925,13 +974,13 @@ std::vector<Core::FMTtheme> FMTmodel::locatestaticthemes(const Core::FMToutput& 
 	return bestthemes;
 }
 
-std::vector<Core::FMTtheme>FMTmodel::locatestatictransitionsthemes() const
+std::vector<const Core::FMTtheme*>FMTmodel::locatestatictransitionsthemes() const
 {
-	std::vector<Core::FMTtheme>bestthemes;
+	std::vector<const Core::FMTtheme*>bestthemes;
 	try {
 		for (const size_t& location : statictransitionthemes)
 		{
-			bestthemes.push_back(themes.at(location));
+			bestthemes.push_back(&themes.at(location));
 		}
 	}
 	catch (...)
@@ -942,17 +991,20 @@ std::vector<Core::FMTtheme>FMTmodel::locatestatictransitionsthemes() const
 
 }
 
-std::vector<Core::FMTtheme>FMTmodel::locatenodestaticthemes(const Core::FMToutputnode& node,
+std::vector<const Core::FMTtheme*>FMTmodel::locatenodestaticthemes(const Core::FMToutputnode& node,
 	bool ignoreoutputvariables,
-	std::vector<Core::FMTtheme> basethemes) const
+	std::vector<const Core::FMTtheme* > basethemes) const
 {
-	std::vector<Core::FMTtheme>statics;
+	std::vector<const Core::FMTtheme*>statics;
 	if (!basethemes.empty())
 		{
 		statics = basethemes;
 	}
 	else {
-		statics = themes;
+		for (const Core::FMTtheme& theme : themes)
+		{
+			statics.push_back(&theme);
+		}
 	}
 	try {
 		std::vector<std::string>yieldstolookat;
@@ -1002,9 +1054,9 @@ std::vector<Core::FMTtheme>FMTmodel::locatenodestaticthemes(const Core::FMToutpu
 
 
 
-std::vector<Core::FMTtheme> FMTmodel::locatestaticthemes(const Core::FMToutputnode& node, bool ignoreoutputvariables) const
+std::vector<const Core::FMTtheme*> FMTmodel::locatestaticthemes(const Core::FMToutputnode& node, bool ignoreoutputvariables) const
 {
-	std::vector<Core::FMTtheme>statics;
+	std::vector<const Core::FMTtheme*>statics;
 	try {
 		statics = locatestatictransitionsthemes();
 		statics = locatenodestaticthemes(node, ignoreoutputvariables, statics);
@@ -1017,16 +1069,16 @@ std::vector<Core::FMTtheme> FMTmodel::locatestaticthemes(const Core::FMToutputno
 
 }
 
-std::vector<Core::FMTtheme> FMTmodel::locatedynamicthemes(const Core::FMToutput& output, bool ignoreoutputvariables) const
+std::vector<const Core::FMTtheme*> FMTmodel::locatedynamicthemes(const Core::FMToutput& output, bool ignoreoutputvariables) const
 {
-	std::vector<Core::FMTtheme>dynamicthemes;
+	std::vector<const Core::FMTtheme*>dynamicthemes;
 	try {
-		const std::vector<Core::FMTtheme>staticthemes = locatestaticthemes(output, ignoreoutputvariables);
+		const std::vector<const Core::FMTtheme*>staticthemes = locatestaticthemes(output, ignoreoutputvariables);
 		for (const Core::FMTtheme& theme : themes)
 			{
-			if (std::find_if(staticthemes.begin(), staticthemes.end(), Core::FMTthemecomparator(theme))==staticthemes.end())
+			if (std::find(staticthemes.begin(), staticthemes.end(), &theme)==staticthemes.end())
 				{
-				dynamicthemes.push_back(theme);
+				dynamicthemes.push_back(&theme);
 				}
 			}
 	}catch (...)
@@ -1041,7 +1093,7 @@ Core::FMTmask FMTmodel::getdynamicmask(const Core::FMToutput& output, bool ignor
 	{
 	Core::FMTmask selection;
 	try {
-		const std::vector<Core::FMTtheme>staticcthemes = locatestaticthemes(output, ignoreoutputvariables);
+		const std::vector<const Core::FMTtheme*>staticcthemes = locatestaticthemes(output, ignoreoutputvariables);
 		std::string basename;
 		for (const Core::FMTtheme& theme : themes)
 			{
@@ -1052,10 +1104,10 @@ Core::FMTmask FMTmodel::getdynamicmask(const Core::FMToutput& output, bool ignor
 		basename.pop_back();
 		const Core::FMTmask submask(basename,themes);
 		 boost::dynamic_bitset<uint8_t>bits = submask.getbitsetreference();
-		for (const Core::FMTtheme& theme : staticcthemes)
+		for (const Core::FMTtheme* theme : staticcthemes)
 			{
-			const size_t start = static_cast<size_t>(theme.getstart());
-			for (size_t bitid = start; bitid < (theme.size() + start); ++bitid)
+			const size_t start = static_cast<size_t>(theme->getstart());
+			for (size_t bitid = start; bitid < (theme->size() + start); ++bitid)
 				{
 				bits[bitid] = false;
 				}
@@ -1072,7 +1124,7 @@ Core::FMTmask FMTmodel::getdynamicmask(const Core::FMToutputnode& node, bool ign
 {
 	Core::FMTmask selection;
 	try {
-		std::vector<Core::FMTtheme>staticcthemes = locatestatictransitionsthemes();
+		std::vector<const Core::FMTtheme*>staticcthemes = locatestatictransitionsthemes();
 		staticcthemes = locatenodestaticthemes(node, ignoreoutputvariables, staticcthemes);
 		
 		std::string basename;
@@ -1087,11 +1139,11 @@ Core::FMTmask FMTmodel::getdynamicmask(const Core::FMToutputnode& node, bool ign
 		
 		const Core::FMTmask submask(basename, themes);
 		 boost::dynamic_bitset<uint8_t>bits = submask.getbitsetreference();
-		for (const Core::FMTtheme& theme : staticcthemes)
+		for (const Core::FMTtheme* theme : staticcthemes)
 		{
 			
-			const size_t start = static_cast<size_t>(theme.getstart());
-			for (size_t bitid = start; bitid < (theme.size() + start); ++bitid)
+			const size_t start = static_cast<size_t>(theme->getstart());
+			for (size_t bitid = start; bitid < (theme->size() + start); ++bitid)
 			{
 				bits[bitid] = false;
 			}
@@ -1517,16 +1569,26 @@ std::unique_ptr<FMTmodel> FMTmodel::presolve(std::vector<Core::FMTactualdevelopm
 	int presolvepass = getparameter(Models::FMTintmodelparameters::PRESOLVE_ITERATIONS);
 	try {
 		_logger->logwithlevel("Presolving " + getname() + "\n", 1);
+		/*marker_series series;
+		span* flagSpan = new span(series, 1, _T("flag presolve"));
+		series.write_flag(_T("Here is the flag."));
+		delete flagSpan;*/
+		std::allocator<Core::FMTactualdevelopment> devAllocator;
+		std::allocator<Core::FMTtheme> themeAllocator;
+		std::allocator<Core::FMTaction> actionAllocator;
+		std::allocator<Core::FMTtransition> transitionAllocator;
+		std::allocator<Core::FMToutput> outputAllocator;
+		std::allocator<Core::FMTconstraint> constraintAllocator;
 		Core::FMTmaskfilter oldpresolvefilter(getbasemask(optionaldevelopments));
 		//Base data
-		std::vector<Core::FMTtheme>oldthemes(themes);
-		std::vector<Core::FMTactualdevelopment>oldarea(area);
-		std::vector<Core::FMTaction>oldactions(actions);
-		std::vector<Core::FMTtransition>oldtransitions(transitions);
+		std::vector<Core::FMTtheme>oldthemes(themes, themeAllocator);
+		std::vector<Core::FMTactualdevelopment>oldarea(area, devAllocator);
+		std::vector<Core::FMTaction>oldactions(actions, actionAllocator);
+		std::vector<Core::FMTtransition>oldtransitions(transitions, transitionAllocator);
 		Core::FMTyields oldyields(yields);
 		Core::FMTlifespans oldlifespans(lifespan);
-		std::vector<Core::FMToutput>oldoutputs(outputs);
-		std::vector<Core::FMTconstraint>oldconstraints(constraints);
+		std::vector<Core::FMToutput>oldoutputs(outputs, outputAllocator);
+		std::vector<Core::FMTconstraint>oldconstraints(constraints, constraintAllocator);
 		size_t originalsize = themes.size() + area.size() + actions.size() + transitions.size() + lifespan.size() + outputs.size()+constraints.size()+yields.size();
 		for (const Core::FMTaction& action : actions)
 			{
@@ -1556,14 +1618,22 @@ std::unique_ptr<FMTmodel> FMTmodel::presolve(std::vector<Core::FMTactualdevelopm
 		{
 			//Presolved data
 			
-			std::vector<Core::FMTtheme>newthemes;
-			std::vector<Core::FMTactualdevelopment>newarea;
-			std::vector<Core::FMTaction>newactions;
-			std::vector<Core::FMTtransition>newtransitions;
+			std::vector<Core::FMTtheme>newthemes(themeAllocator);
+			newthemes.reserve(themes.size());
+			std::vector<Core::FMTactualdevelopment>newarea(devAllocator);
+			newarea.reserve(area.size());
+			std::vector<Core::FMTaction>newactions(actionAllocator);
+			newactions.reserve(actions.size());
+			std::vector<Core::FMTtransition>newtransitions(transitionAllocator);
+			newtransitions.reserve(transitions.size());
 			Core::FMTyields newyields;
+			newyields.reserve(yields);
 			Core::FMTlifespans newlifespans;
-			std::vector<Core::FMToutput>newoutputs;
-			std::vector<Core::FMTconstraint>newconstraints;
+			newlifespans.reserve(lifespan);
+			std::vector<Core::FMToutput>newoutputs(outputAllocator);
+			newoutputs.reserve(outputs.size());
+			std::vector<Core::FMTconstraint>newconstraints(constraintAllocator);
+			newconstraints.reserve(constraints.size());
 			Core::FMTmaskfilter newfilter(oldpresolvefilter);
 			if (didonepass)
 			{
@@ -1592,9 +1662,10 @@ std::unique_ptr<FMTmodel> FMTmodel::presolve(std::vector<Core::FMTactualdevelopm
 			{
 				newarea.reserve(oldarea.size());
 				boost::unordered_map<Core::FMTmask,Core::FMTmask>topresolve;
+				topresolve.reserve(oldarea.size());
 				for (const Core::FMTactualdevelopment& development : oldarea)
 				{
-					const Core::FMTmask devmask = development.getmask();
+					const Core::FMTmask& devmask = development.getmask();
 					Core::FMTactualdevelopment newdev(development);
 					boost::unordered_map<Core::FMTmask, Core::FMTmask>::const_iterator mskit = topresolve.find(devmask);
 					if (mskit != topresolve.end())
@@ -1626,7 +1697,7 @@ std::unique_ptr<FMTmodel> FMTmodel::presolve(std::vector<Core::FMTactualdevelopm
 			}
 			newsize += newarea.size();
 			//reduce the number of actions and presolve the actions
-			const std::vector<Core::FMTtheme>maskthemes = newfilter.getselectedthemes(oldthemes);
+			const std::vector<const Core::FMTtheme*>maskthemes = newfilter.getselectedthemes(oldthemes);
 			for (const Core::FMTaction& action : oldactions)
 			{
 				const Core::FMTmask testedmask = action.getunion(oldthemes);
@@ -1677,6 +1748,7 @@ std::unique_ptr<FMTmodel> FMTmodel::presolve(std::vector<Core::FMTactualdevelopm
 			//Add feature to automatically interpret the output[0] as constant in sources
 			//std::set<int>newconstraintsids;
 			std::vector<int>newconstraintsids;
+			newconstraintsids.reserve(oldconstraints.size());
 			int constraintid = 0;
 			//std::set<int>::const_iterator oriit = constraintsids.begin();
 			std::vector<int>::const_iterator oriit = constraintsids.begin();
@@ -1745,13 +1817,18 @@ std::unique_ptr<FMTmodel> FMTmodel::presolve(std::vector<Core::FMTactualdevelopm
 				+"Constraints "+std::to_string(oldconstraints.size()) + "(" + std::to_string(static_cast<int>(oldconstraints.size()) - static_cast<int>(constraints.size())) + ") and "
 				+"Elements "+ std::to_string(newsize)+"("+std::to_string(static_cast<int>(newsize)- static_cast<int>(originalsize)) +")\n",1);
 	std::array<std::string,6>sections{"Area","Themes","Yields","Actions","Transitions","Outputs" };//,"Constraints"};
-	std::vector<size_t>sizeofsections;
-	sizeofsections.push_back(oldarea.size());
+	std::array<size_t, 6>sizeofsections{ oldarea.size() ,
+										oldthemes.size() ,
+										oldyields.size() ,
+										oldactions.size() ,
+										oldtransitions.size() ,
+										oldoutputs.size() };
+	/*sizeofsections.push_back(oldarea.size());
 	sizeofsections.push_back(oldthemes.size());
 	sizeofsections.push_back(oldyields.size());
 	sizeofsections.push_back(oldactions.size());
 	sizeofsections.push_back(oldtransitions.size());
-	sizeofsections.push_back(oldoutputs.size());
+	sizeofsections.push_back(oldoutputs.size());*/
 	//sizeofsections.push_back(oldconstraints.size());
 	size_t sectionid = 0;
 	for (const std::string& section : sections)
@@ -1767,6 +1844,7 @@ std::unique_ptr<FMTmodel> FMTmodel::presolve(std::vector<Core::FMTactualdevelopm
 	
 	presolvedmodel = std::unique_ptr<FMTmodel>(new FMTmodel(oldarea, oldthemes, oldactions, oldtransitions, oldyields, oldlifespans, name, oldoutputs, oldconstraints,parameters));
 	presolvedmodel->cleanactionsntransitions();
+	
 	}catch (...)
 		{
 		_exhandler->printexceptions("for "+name+"at presolve pass "+std::to_string(presolvepass),"FMTmodel::presolve", __LINE__, __FILE__);

@@ -161,7 +161,7 @@ namespace Parallel
 	return std::unique_ptr<FMTtask>(nullptr);
 	}
 
-	void FMTplanningtask::passinlogger(const std::shared_ptr<Logging::FMTlogger>& logger)
+	void FMTplanningtask::passinlogger(const std::unique_ptr<Logging::FMTlogger>& logger)
 		{
 		try {
 			for (std::unique_ptr<Models::FMTmodel>& model : models)

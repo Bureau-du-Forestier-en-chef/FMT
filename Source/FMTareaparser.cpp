@@ -26,6 +26,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTexceptionhandler.h"
 #include <random>
 #include <unordered_map>
+#include "FMTdefaultlogger.h"
 
 #ifdef FMTWITHGDAL
 	#include "gdal_alg.h"
@@ -1863,7 +1864,7 @@ const boost::regex FMTareaparser::rxcleanarea = boost::regex("^((\\*A[A]*)([^|]*
 				{
 					if (op.getneihgborsperimeter() > 0 || op.getgreenup() > 0)
 					{
-						Logging::FMTlogger() << "Lecture des blocs voisins." << "\n";
+						Logging::FMTdefaultlogger() << "Lecture des blocs voisins." << "\n";
 						opeareas = areaParser.getschemeneighbors(opeareas, themes, fichierShp, nomChampAge, nomChampSuperficie, 1.0, 1, nomChampStanlock);
 						return opeareas;
 					}

@@ -12,7 +12,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 	#define NOMINMAX
 #endif // !NOMINMAX
 
-#include <boost/serialization/shared_ptr.hpp>
+#include <boost/serialization/unique_ptr.hpp>
 #include <boost/serialization/nvp.hpp>
 #include <boost/serialization/export.hpp>
 #include "FMTexception.h"
@@ -49,6 +49,18 @@ It also contains some usefull functions for mask validation and runtimelocation 
 class FMTEXPORT FMTobject
 	{
 	public:
+		// DocString: FMTobject::getLogger
+		/**
+		@brief get a pointer to the actual logger.
+		@return the valid FMTlogger
+		*/
+		static Logging::FMTlogger* getLogger();
+		// DocString: FMTobject::getExceptionHandler
+		/**
+		@brief get a pointer to the actual exception handler.
+		@return the valid FMTexceptionhandler;
+		*/
+		static Exception::FMTexceptionhandler* getExceptionHandler();
 		// DocString: FMTobject::getruntimelocation
 		/**
 		This function return the location of the FMT shared library location.
@@ -69,12 +81,12 @@ class FMTEXPORT FMTobject
 		FMTobject default virutal destructor.
 		*/
 		virtual ~FMTobject();
-		// DocString: FMTobject(const std::shared_ptr<Exception::FMTexceptionhandler>)
+		// DocString: FMTobject(const std::unique_ptr<Exception::FMTexceptionhandler>)
 		/**
 		When constructing a new FMTobject it's sometime usefull to passin the exception handler of an
 		other FMTobject.
 		*/
-		FMTobject(const std::shared_ptr<Exception::FMTexceptionhandler> exhandler);
+		FMTobject(const std::unique_ptr<Exception::FMTexceptionhandler> exhandler);
 		// DocString: FMTobject(const FMTobject&)
 		/**
 		FMTobject default copy constructor.
@@ -89,12 +101,12 @@ class FMTEXPORT FMTobject
 		/**
 		It's sometime usefull to pass in the logger of an other FMTobject.
 		*/
-		virtual void passinlogger(const std::shared_ptr<Logging::FMTlogger>& logger);
+		virtual void passinlogger(const std::unique_ptr<Logging::FMTlogger>& logger);
 		// DocString: FMTobject::passinexceptionhandler
 		/**
 		It's sometime usefull to pass in the exception handler of an other FMTobject.
 		*/
-		void passinexceptionhandler(const std::shared_ptr<Exception::FMTexceptionhandler>& exhandler);
+		void passinexceptionhandler(const std::unique_ptr<Exception::FMTexceptionhandler>& exhandler);
 		// DocString: FMTobject::redirectlogtofile
 		/**
 		redict the log to a specific file (will append to it)
@@ -178,10 +190,10 @@ class FMTEXPORT FMTobject
 	protected:
 		// DocString: FMTobject::_exhandler
 		///A shared pointer to the exception handler.
-		static std::shared_ptr<Exception::FMTexceptionhandler> _exhandler;
+		static std::unique_ptr<Exception::FMTexceptionhandler> _exhandler;
 		// DocString: FMTobject::_logger
 		///A shared pointer to the logger.
-		static std::shared_ptr<Logging::FMTlogger> _logger;
+		static std::unique_ptr<Logging::FMTlogger> _logger;
 		// DocString: FMTobject:: forcesave
 		/**
 		By Default the serialization of a FMTobject does nothing if you want to get some usefull information use this function.
@@ -232,6 +244,7 @@ class FMTEXPORT FMTobject
 		With the clock time calculate time spent in second and return a string.
 		*/
 		static std::string getdurationinseconds(const std::chrono::time_point<std::chrono::high_resolution_clock>& startclock);
+		
 
 	};
 }

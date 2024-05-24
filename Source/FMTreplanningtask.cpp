@@ -81,6 +81,17 @@ namespace Parallel
 			global->setparameter(Models::FMTintmodelparameters::UPDATE,1);
 			stochastic->setparameter(Models::FMTintmodelparameters::UPDATE, 1);
 			local->setparameter(Models::FMTintmodelparameters::UPDATE, 1);
+			const size_t LENGTH = static_cast<size_t>(global->getparameter(Models::FMTintmodelparameters::LENGTH));
+			const size_t AREA_SIZE = global->getarea().size();
+			const size_t SCALE_FACTOR = 20;
+			const size_t GLOBAL_RESERVE = AREA_SIZE * LENGTH * LENGTH * SCALE_FACTOR;
+			const size_t BASE_RESERVE = AREA_SIZE * SCALE_FACTOR;
+			Models::FMTsrmodel* GlobalPtr = dynamic_cast<Models::FMTsrmodel*>(global.get());
+			GlobalPtr->setNodeCacheSize(GLOBAL_RESERVE);
+			Models::FMTsrmodel* LocalPtr = dynamic_cast<Models::FMTsrmodel*>(local.get());
+			LocalPtr->setNodeCacheSize(BASE_RESERVE);
+			Models::FMTsrmodel* StochasticPtr = dynamic_cast<Models::FMTsrmodel*>(stochastic.get());
+			StochasticPtr->setNodeCacheSize(BASE_RESERVE);
 			std::vector<Models::FMTmodel*>modelsptr;
 			modelsptr.push_back(global.get());
 			modelsptr.push_back(stochastic.get());
@@ -116,7 +127,7 @@ namespace Parallel
 	std::unique_ptr<Models::FMTmodel>FMTreplanningtask::copysharedmodel(const std::shared_ptr<Models::FMTmodel>model)
 		{
 		try {
-			boost::lock_guard<boost::recursive_mutex> guard(taskmutex);
+			//boost::lock_guard<boost::recursive_mutex> guard(taskmutex);
 			std::unique_ptr<Models::FMTmodel>modelcpy = std::move(model->clone());
 			modelcpy->setparallellogger(*tasklogger.get());
 			return std::move(modelcpy);
@@ -247,7 +258,7 @@ namespace Parallel
 		return replicateids.front();
 		}
 
-	void FMTreplanningtask::passinlogger(const std::shared_ptr<Logging::FMTlogger>& logger)
+	void FMTreplanningtask::passinlogger(const std::unique_ptr<Logging::FMTlogger>& logger)
 		{
 		global->passinlogger(logger);
 		stochastic->passinlogger(logger);
@@ -257,15 +268,20 @@ namespace Parallel
 	void FMTreplanningtask::setreignore(std::unique_ptr<Models::FMTmodel>& modelcpy, const int& replanningperiod) const
 	{
 		try {
-			std::vector<Core::FMTconstraint>newconstraints;
-			for (const Core::FMTconstraint& constraint : modelcpy->getconstraints())
+			if(modelcpy->gotReIgnore(replanningperiod))
+			{
+				std::vector<Core::FMTconstraint>newconstraints;
+				const std::vector<Core::FMTconstraint> MODEL_CONSTRAINTS = modelcpy->getconstraints();
+				newconstraints.reserve(MODEL_CONSTRAINTS.size());
+				for (const Core::FMTconstraint& constraint : MODEL_CONSTRAINTS)
 				{
-				if (!constraint.isreignore(replanningperiod))
+					if (!constraint.isreignore(replanningperiod))
 					{
-					newconstraints.push_back(constraint);
+						newconstraints.push_back(constraint);
 					}
 				}
-			modelcpy->setconstraints(newconstraints);
+				modelcpy->setconstraints(newconstraints);
+			}
 		}
 		catch (...)
 		{
@@ -276,12 +292,19 @@ namespace Parallel
 	void FMTreplanningtask::setreplicate(std::unique_ptr<Models::FMTmodel>& modelcpy, const int& replanningperiod) const
 	{
 		try {
-			std::vector<Core::FMTconstraint>newconstraints;
-			for (const Core::FMTconstraint& basenssconstraint : modelcpy->getconstraints())
+			if (modelcpy->gotReplicate(replanningperiod))
+			{
+				std::vector<Core::FMTconstraint>newconstraints;
+				const std::vector<Core::FMTconstraint> MODEL_CONSTRAINTS = modelcpy->getconstraints();
+				newconstraints.reserve(MODEL_CONSTRAINTS.size());
+				for (const Core::FMTconstraint& basenssconstraint : MODEL_CONSTRAINTS)
 				{
-				newconstraints.push_back(basenssconstraint.getfromreplicate(getiteration(), replanningperiod));
+					newconstraints.push_back(basenssconstraint.getfromreplicate(getiteration(), replanningperiod));
 				}
-			modelcpy->setconstraints(newconstraints);
+				modelcpy->setconstraints(newconstraints);
+				modelcpy->setconstraints(newconstraints);
+			}
+			
 		}
 		catch (...)
 		{
@@ -302,6 +325,7 @@ namespace Parallel
 					
 					if (replanningperiod != 1)
 					{
+						//boost::lock_guard<boost::recursive_mutex> guard(taskmutex);
 						const std::unique_ptr<Models::FMTmodel>globalcopy = std::move(domodelplanning(global,replanningperiod,true));
 						if (!globalcopy)//infeasible replicate end here
 							{
@@ -313,8 +337,13 @@ namespace Parallel
 								replanningperiods, nullptr, replanningperiod);
 							break;
 							}
+						
 					}
-
+					/*if (replanningperiod != 1)
+					{
+						//Make sure that we are out of scope of the unique_ptr of globalcpy.
+						checkpoint();//reduce heap contention
+					}*/
 					
 					const std::unique_ptr<Models::FMTmodel> stochasticcopy = std::move(domodelplanning(stochastic,replanningperiod,false,false,false));
 					dynamicarea = stochasticcopy->getarea(replanningperiod + 1,true);

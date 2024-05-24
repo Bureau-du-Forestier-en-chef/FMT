@@ -2,7 +2,7 @@
 #include <string>
 #include "FMTmodelparser.h"
 #include "FMTversion.h"
-#include "FMTlogger.h"
+#include "FMTdefaultlogger.h"
 #include "FMTmodel.h"
 #include "FMTfreeexceptionhandler.h"
 #include "FMTageyieldhandler.h"
@@ -12,7 +12,7 @@
 
 int main()
 	{
-        Logging::FMTlogger().logstamp();
+        Logging::FMTdefaultlogger().logstamp();
         const std::string folder = "../../../../Examples/Models/TWD_land/";
         const std::string primarylocation = folder+"TWD_land.pri";
         const std::string outdir = "../../tests/testaddmodel/";

@@ -5,7 +5,7 @@
 #include "FMTareaparser.h"
 #include "FMTforest.h"
 #include "FMTversion.h"
-#include "FMTlogger.h"
+#include "FMTdefaultlogger.h"
 #include "FMTconstraint.h"
 #include "FMTfreeexceptionhandler.h"
 #include <boost/algorithm/string.hpp>
@@ -16,7 +16,7 @@
 
 int main(int argc, char* argv[])
 {
-	Logging::FMTlogger().logstamp();
+	Logging::FMTdefaultlogger().logstamp();
 
 	if (Version::FMTversion().hasfeature("GDAL"))
 	{
@@ -87,7 +87,7 @@ int main(int argc, char* argv[])
 		}*/
 	}
 	else {
-		Logging::FMTlogger() << "FMT needs to be compiled with OSI" << "\n";
+		Logging::FMTdefaultlogger() << "FMT needs to be compiled with OSI" << "\n";
 	}
 	return 0;
 }

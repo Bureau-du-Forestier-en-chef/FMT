@@ -67,6 +67,18 @@ namespace Models
 		friend class Parser::FMTmodelparser;
 		friend class Graph::FMTgraphvertextoyield;
 	public:
+		// DocString: FMTmodel:gotReIgnore
+		/**
+		@brief check if set reignore needs to be call.
+		@return true if got ignore else false.
+		*/
+		bool gotReIgnore(const int& p_replanningPeriod) const;
+		// DocString: FMTmodel:gotReplicate
+		/**
+		@brief check if setreplicate needs to be call.
+		@return true if got replicate else false.
+		*/
+		bool gotReplicate(const int& p_replanningPeriod) const;
 		// DocString: FMTmodel::aggregateAllActions
 		/**
 		 * @brief Aggregate actions together and create en enterly new model with new
@@ -372,18 +384,18 @@ namespace Models
 		Based on the FMTmodel looks at every theme to located in the FMTtransitions and return themes
 		that are not used into the transition and in a given output (staticthemes)... will return themes based on spatial units.
 		*/
-		std::vector<Core::FMTtheme> locatestaticthemes(const Core::FMToutput& output, bool ignoreoutputvariables = false) const;
+		std::vector<const Core::FMTtheme*> locatestaticthemes(const Core::FMToutput& output, bool ignoreoutputvariables = false) const;
 		// DocString: FMTmodel::locatestaticthemes(const Core::FMToutputnode, bool ignoreoutputvariables)
 		/**
 		Based on the FMTmodel looks at every theme to located in the FMTtransitions and return themes
 		that are not used into the transition and in a given output node (staticthemes)... will return themes based on spatial units.
 		*/
-		std::vector<Core::FMTtheme> locatestaticthemes(const Core::FMToutputnode& output, bool ignoreoutputvariables = false) const;
+		std::vector<const Core::FMTtheme*> locatestaticthemes(const Core::FMToutputnode& output, bool ignoreoutputvariables = false) const;
 		// DocString: FMTmodel::locatedynamicthemes
 		/**
 		Returns themes used in the transition scheme.
 		*/
-		std::vector<Core::FMTtheme> locatedynamicthemes(const Core::FMToutput& outpu, bool ignoreoutputvariables = false) const;
+		std::vector<const Core::FMTtheme*> locatedynamicthemes(const Core::FMToutput& outpu, bool ignoreoutputvariables = false) const;
 		// DocString: FMTmodel::getdynamicmask(const Core::FMToutput, bool ignoreoutputvariables)
 		/**
 		Based on static and dynamic themes will return a mask where the static attributes will have a value of 0 and dynamic value a value of 1.
@@ -409,14 +421,14 @@ namespace Models
 		/**
 		Returns the static themes based on model transitions.
 		*/
-		std::vector<Core::FMTtheme>locatestatictransitionsthemes() const;
+		std::vector<const Core::FMTtheme*>locatestatictransitionsthemes() const;
 		// DocString: FMTmodel::locatenotestaticthemes
 		/**
 		Returns the static themes based on model transitions.
 		*/
-		std::vector<Core::FMTtheme>locatenodestaticthemes(const Core::FMToutputnode& node,
+		std::vector<const Core::FMTtheme*>locatenodestaticthemes(const Core::FMToutputnode& node,
 			bool ignoreoutputvariables = false,
-			std::vector<Core::FMTtheme> basethemes = std::vector<Core::FMTtheme>()) const;
+			std::vector<const Core::FMTtheme*> basethemes = std::vector<const Core::FMTtheme*>()) const;
 		// DocString: FMTmodel(FMTmodel)
 		/**
 		Copy constructor of FMTmodel
@@ -669,7 +681,7 @@ namespace Models
 		Using the transition themes look at constraints and actions or yields actions to return
 		only themes that are not part of the model.
 		*/
-		std::vector<Core::FMTtheme>getstaticpresolvethemes() const;
+		std::vector<const Core::FMTtheme*>getstaticpresolvethemes() const;
 		void clearactionscache();
 		void clearyieldcache();
 		void cleartransitioncache();
@@ -779,7 +791,7 @@ namespace Models
 		 * @return Return the mask filter map to apply to any output with old action name as key
 		 *		the tuple values are string for new action name and FMTmask for filter.
 		 */
-		std::map<std::string, std::pair<std::string,Core::FMTmask>> aggregateActions(const std::vector<std::string>& p_ActionsMapping);
+		std::map<std::string, std::pair<std::string,Core::FMTmask>> aggregateActions(std::vector<std::string> p_ActionsMapping);
 		// DocString: FMTmodel::aggregateTransitions
 		/**
 		 * @brief Aggregate transitions together and on this model (will call settransitions)

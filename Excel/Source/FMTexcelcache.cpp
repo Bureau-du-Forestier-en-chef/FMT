@@ -37,10 +37,14 @@ namespace Wrapper
 		models(new std::unordered_map<std::string, FMTmodelcache>()),
 		exceptionraised(false)
 	{
-		cachelog = new std::shared_ptr<Logging::FMTlogger>(new Logging::FMTexcellogger());
-		cacheexceptionhandler = new std::shared_ptr<Exception::FMTexcelexceptionhandler>(new Exception::FMTexcelexceptionhandler());
-		parser->passinlogger(*cachelog);
-		parser->passinexceptionhandler(*cacheexceptionhandler);
+		//cachelog = new std::shared_ptr<Logging::FMTlogger>(new Logging::FMTexcellogger());
+		//cacheexceptionhandler = new std::shared_ptr<Exception::FMTexcelexceptionhandler>(new Exception::FMTexcelexceptionhandler());
+		std::unique_ptr<Logging::FMTlogger>logger(new Logging::FMTexcellogger());
+		std::unique_ptr<Exception::FMTexceptionhandler>handler(new Exception::FMTexcelexceptionhandler());
+		parser->passinlogger(logger);
+		parser->passinexceptionhandler(handler);
+		cachelog = parser->getLogger();
+		cacheexceptionhandler = dynamic_cast<Exception::FMTexcelexceptionhandler*>(parser->getExceptionHandler());
 		//FMTmodelcache emptycache;
 		//emptycache.putlogger(*cachelog);
 		

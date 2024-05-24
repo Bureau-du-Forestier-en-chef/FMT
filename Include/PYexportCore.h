@@ -496,6 +496,8 @@ void exportCore()
 					"@DocString(FMTconstraint::setfrom)")
 				.def("sense",&Core::FMTconstraint::sense,
 					"@DocString(FMTconstraint::sense)")
+				.def("setrhs", &Core::FMTconstraint::setrhs,
+					"@DocString(FMTconstraint::setrhs)")
 				.def("getconstrainttype", &Core::FMTconstraint::getconstrainttype,
 					"@DocString(FMTconstraint::getconstrainttype)")
 				.def("getfromreplicate", &Core::FMTconstraint::getfromreplicate,

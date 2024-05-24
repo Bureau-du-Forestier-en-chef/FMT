@@ -68,7 +68,11 @@ namespace Logging
 			filestream->close();
 			delete filestream;
 			}
-		filestream = new std::ofstream(filename);
+		if (!filename.empty())
+			{
+			filestream = new std::ofstream(filename);
+			}
+		
 		}
 
 	FMTlogger::FMTlogger() : 
@@ -93,7 +97,7 @@ namespace Logging
 			}
 		}
 
-	FMTlogger::FMTlogger(const FMTlogger& rhs)
+	FMTlogger::FMTlogger(const FMTlogger& rhs):filepath(), filestream(), mtx(), flushstream(false)
 		{
 		boost::lock_guard<boost::recursive_mutex> lock(rhs.mtx);
 		#if defined FMTWITHOSI
@@ -155,13 +159,13 @@ namespace Logging
 
 	void FMTlogger::logstamp()
 		{
-		boost::lock_guard<boost::recursive_mutex> guard(mtx);
+		//boost::lock_guard<boost::recursive_mutex> guard(mtx);
 		*this<< FMTlogger::getlogstamp() << "\n";
 		}
 
 	void FMTlogger::logtime()
 		{
-		boost::lock_guard<boost::recursive_mutex> guard(mtx);
+		//boost::lock_guard<boost::recursive_mutex> guard(mtx);
 		const std::string message = Version::FMTversion().getdatenow();
 		*this << (message);
 		}
@@ -242,15 +246,21 @@ namespace Logging
 	#ifdef FMTWITHOSI
 		void FMTlogger::checkSeverity()
 			{
+			#ifdef FMTWITHOSI
+			if (solverref->logLevel() == 0)//
+				{
+				return;
+				}
+			#endif
 			boost::lock_guard<boost::recursive_mutex> guard(mtx);
 			solverref->checkcoinSeverity();
 			}
 	
-		FMTlogger* FMTlogger::clone() const
+		/*FMTlogger* FMTlogger::clone() const
 			{
 			boost::lock_guard<boost::recursive_mutex> guard(mtx);
 			return new FMTlogger(*this);
-			}
+			}*/
 
 	#endif
 
@@ -283,6 +293,12 @@ namespace Logging
 	#ifdef FMTWITHOSI
 		int FMTlogger::print()
 			{
+			#ifdef FMTWITHOSI
+			if (solverref->logLevel()  == 0)//
+				{
+				return 0;
+				}
+			#endif
 			boost::lock_guard<boost::recursive_mutex> guard(mtx);
 			if (solverref->messageOut_ > solverref->messageBuffer())
 				{

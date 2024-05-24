@@ -3,6 +3,7 @@
 #include <vector>
 #include <string>
 #include <memory>
+#include <map>
 #include <boost/thread/recursive_mutex.hpp>
 
 #ifndef FMTYIELDMODELDECISIONTREE_H_INCLUDED

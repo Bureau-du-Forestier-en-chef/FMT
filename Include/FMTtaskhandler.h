@@ -109,7 +109,7 @@ namespace Parallel
 		/**
 		We need to override the passinlogger for the osisolverinterface
 		*/
-		void passinlogger(const std::shared_ptr<Logging::FMTlogger>& logger) override;
+		void passinlogger(const std::unique_ptr<Logging::FMTlogger>& logger) override;
 	};
 
 }

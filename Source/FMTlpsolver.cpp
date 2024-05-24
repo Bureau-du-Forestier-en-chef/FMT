@@ -16,7 +16,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 
 #include "OsiClpSolverInterface.hpp"
-#include "FMTexceptionhandler.h"
+#include "FMTdefaultexceptionhandler.h"
 #include "FMTsolverlogger.h"
 #include "FMTserializablematrix.h"
 #include <sstream>
@@ -177,7 +177,6 @@ namespace Models
 				MSKtask_t task = msksolver->getMutableLpPtr();
 				if (!m_WarmStartParameters.empty())
 				{
-					*_logger << "Using user defined warm start solver parameters" << "\n";
 					for (const std::pair<std::string, std::string>& PARAMETER : m_WarmStartParameters)
 					{
 						MSK_putparam(task, PARAMETER.first.c_str(), PARAMETER.second.c_str());
@@ -421,7 +420,6 @@ namespace Models
 			MSKtask_t task = msksolver->getMutableLpPtr();
 			if (!m_ColdStartParameters.empty())
 			{
-				*_logger << "Using user defined cold start solver parameters" << "\n";
 				for (const std::pair<std::string, std::string>& PARAMETER : m_ColdStartParameters)
 					{
 					MSK_putparam(task, PARAMETER.first.c_str(), PARAMETER.second.c_str());
@@ -932,11 +930,11 @@ namespace Models
 		return nullptr;
 		}
 
-	void FMTlpsolver::passinlogger(const std::shared_ptr<Logging::FMTlogger>& logger)
+	void FMTlpsolver::passinlogger(const std::unique_ptr<Logging::FMTlogger>& logger)
 	{
 		try {
 			Core::FMTobject::passinlogger(logger);
-			passinmessagehandler(*logger);
+			passinmessagehandler(*getLogger());
 		}
 		catch (...)
 		{
@@ -1289,7 +1287,7 @@ namespace Models
 			return static_cast<int>(indices.size());
 		}
 		else {
-			Exception::FMTexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed,
+			Exception::FMTdefaultexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed,
 				"for column id " + std::to_string(whichCol), "FMTlpsolver::getcol", __LINE__, __FILE__);
 		}
 		}

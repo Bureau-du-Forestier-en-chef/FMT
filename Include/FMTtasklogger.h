@@ -69,6 +69,12 @@ class FMTEXPORT FMTtasklogger final : public FMTlogger
 			*/
 			FMTlogger* clone() const override;
 		#endif
+		// DocString: FMTtasklogger::Clone
+		/**
+		@brief clone the FMTtasklogger
+		@return a valid cloned FMTtasklogger
+		*/
+		virtual std::unique_ptr <FMTlogger> Clone() const;
 	};
 }
 

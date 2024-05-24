@@ -259,6 +259,12 @@ void FMTyields::update()
 		}
     }
 
+void FMTyields::reserve(const FMTyields& p_other)
+	{
+	FMTlist<std::unique_ptr<FMTyieldhandler>>::reserve(p_other);
+	yieldpresence.reserve(p_other.yieldpresence.size());
+	}
+
 
 FMTyields FMTyields::presolve(const FMTmaskfilter& filter,
 	const std::vector<FMTtheme>& originalthemes,

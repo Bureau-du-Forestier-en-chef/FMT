@@ -13,6 +13,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTquietexceptionhandler.h"
 #include "FMTerror.h"
 #include "FMTwarning.h"
+#include "FMTexception.h"
 #include "boost/python.hpp"
 
 namespace Python
@@ -30,17 +31,17 @@ void exportException()
     "   :synopsis: Module used to handel exceptions.\n"
     "\n";
 
-	bp::class_<Exception::FMTexceptionhandler>("FMTexceptionhandler", "@DocString(FMTexceptionhandler)");
+	//bp::class_<Exception::FMTexceptionhandler>("FMTexceptionhandler", "@DocString(FMTexceptionhandler)");
 
-	bp::class_<Exception::FMTdefaultexceptionhandler, bp::bases<Exception::FMTexceptionhandler>>("FMTdefaultexceptionhandler", "@DocString(FMTdefaultexceptionhandler)")
+	bp::class_<Exception::FMTdefaultexceptionhandler/*, bp::bases<Exception::FMTexceptionhandler>*/>("FMTdefaultexceptionhandler", "@DocString(FMTdefaultexceptionhandler)")
         .def("raise",&Exception::FMTdefaultexceptionhandler::raise,
 			"@DocString(FMTdefaultexceptionhandler::raise)");
 
-	bp::class_<Exception::FMTquietexceptionhandler, bp::bases<Exception::FMTexceptionhandler>>("FMTquietexceptionhandler", "@DocString(FMTquietexceptionhandler)")
+	bp::class_<Exception::FMTquietexceptionhandler/*, bp::bases<Exception::FMTexceptionhandler >*/>("FMTquietexceptionhandler", "@DocString(FMTquietexceptionhandler)")
         .def("raise",&Exception::FMTquietexceptionhandler::raise,
 			"@DocString(FMTquietexceptionhandler::raise)");
 
-	bp::class_<Exception::FMTdebugexceptionhandler, bp::bases<Exception::FMTexceptionhandler>>("FMTdebugexceptionhandler", "@DocString(FMTdebugexceptionhandler)")
+	bp::class_<Exception::FMTdebugexceptionhandler/*, bp::bases<Exception::FMTexceptionhandler >*/>("FMTdebugexceptionhandler", "@DocString(FMTdebugexceptionhandler)")
 		.def("raise", &Exception::FMTdebugexceptionhandler::raise,
 			"@DocString(FMTdebugexceptionhandler::raise)");
 

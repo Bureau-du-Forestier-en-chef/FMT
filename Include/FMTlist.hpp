@@ -115,6 +115,16 @@ namespace Core
 		{
 			copydata(rhs);
 		}
+		// DocString: FMTlist::reserve
+		/**
+		@brief Reserve memory based on a other FMTlist
+		@param[in] p_other FMTlist.
+		*/
+		void reserve(const FMTlist<T>& p_other)
+			{
+			data.reserve(p_other.data.size());
+			fastpass.reserve(p_other.data.size());
+			}
 		// DocString: FMTlist::operator=
 		/**
 		Default copy assignment for FMTlist.
@@ -235,6 +245,7 @@ namespace Core
 			try {
 				fastpass.clear();
 				std::vector<Core::FMTmask> filteredmasks;
+				filteredmasks.reserve(data.size());
 				for (const std::pair<FMTmask, T>& object : data)
 				{
 					filteredmasks.push_back(object.first);
@@ -400,6 +411,7 @@ namespace Core
 				for (FMTtheme& theme : newthemes)
 				{
 					std::vector<std::pair<FMTmask, T>>newvecdata;
+					newvecdata.reserve(data.size());
 					std::list<std::pair<FMTmask, T>>newdata(data.begin(), data.end());
 					boost::dynamic_bitset<uint8_t>selectedbits;
 					selectedbits.resize(data.begin()->first.size(), true);
@@ -413,6 +425,7 @@ namespace Core
 						typename std::list<std::pair<FMTmask, T>>::iterator datait = newdata.begin();
 						++datait;
 						std::vector<typename std::list<std::pair<FMTmask, T>>::iterator>toremove;
+						toremove.reserve(newdata.size());
 						Core::FMTmask basemask(baseit->first);
 						const boost::dynamic_bitset<uint8_t> selecinter = selectedbits & baseit->first.getbitsetreference();
 						boost::dynamic_bitset<uint8_t> reverselect(selecinter);
@@ -489,8 +502,9 @@ namespace Core
 				{
 					unshrink(originalthemes);
 				}
-				const std::vector<FMTtheme>maskthemes = filter.getselectedthemes(originalthemes);
+				const std::vector<const FMTtheme*>maskthemes = filter.getselectedthemes(originalthemes);
 				std::vector<std::pair<FMTmask, T>>newdata;
+				newdata.reserve(data.size());
 				for (const std::pair<FMTmask, T>& object : data)
 				{
 					if (filter.canpresolve(object.first,maskthemes))

@@ -4,11 +4,12 @@
 	#include "FMTareaparser.h"
 	#include "FMTfreeexceptionhandler.h"
 #endif
+#include "FMTdefaultlogger.h"
 
 int main(int argc, char* argv[])
 {
 	#ifdef FMTWITHGDAL
-		Logging::FMTlogger().logstamp();
+		Logging::FMTdefaultlogger().logstamp();
 		const std::string DriverType =  argv[1];
 		const std::string DriverName =  argv[2];
 		const std::string DriverExtension =  argv[3];

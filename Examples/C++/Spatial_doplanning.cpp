@@ -3,9 +3,10 @@
 	#include "FMTsesmodel.h"
 	#include "FMTmodelparser.h"
 	#include "FMTareaparser.h"
-	#include "FMTlogger.h"
+	#include "FMTdefaultlogger.h"
 	#include "FMTforest.h"
 	#include "FMToutput.h"
+	#include "FMTfreeexceptionhandler.h"
 #endif
 
 void setMapping(const std::string& rastpath, Models::FMTsesmodel& model)
@@ -24,18 +25,22 @@ void setMapping(const std::string& rastpath, Models::FMTsesmodel& model)
 int main(int argc, char* argv[])
 {
 #ifdef FMTWITHGDAL
-	Logging::FMTlogger().logstamp();
-	const std::string vals = argv[1];
+	Logging::FMTdefaultlogger().logstamp();
+	/*const std::string vals = argv[1];
 	std::vector<std::string>results;
 	boost::split(results, vals, boost::is_any_of("|"));
 	const std::string modellocation = results.at(0);
-	const std::string primarylocation = results.at(1);
+	const std::string primarylocation = modellocation + results.at(1);
 	const std::string scenario = results.at(2);
-	const int length = std::stoi(argv[2]);
-	/*const std::string modellocation = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/09_FMT/Modeles_test/08152/";
+	std::vector<std::string>spatialOutputs;
+	boost::split(spatialOutputs, std::string(argv[1]), boost::is_any_of("|"));
+	const int length = std::stoi(argv[3]);*/
+	const std::string modellocation = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/09_FMT/Modeles_test/Prototype_Dec2023/";
 	const std::string primarylocation = modellocation + "PC_7002071_UA08152_FINAL.pri";
-	const std::string scenario = "02_Sc0_Rend_sout";
-	const int length = 5;*/
+	const std::string scenario = "01_Regl_prov_apsp_1_4";
+	const int length = 1;
+	std::vector<std::string>spatialOutputs = { "OVOLTOTREC" };
+	const std::string outdir = "../../tests/Spatial_doplanning/";
 	Parser::FMTmodelparser mparser;
 	std::vector<Exception::FMTexc>errors;
 	errors.push_back(Exception::FMTexc::FMTmissingyield);
@@ -47,6 +52,9 @@ int main(int argc, char* argv[])
 	errors.push_back(Exception::FMTexc::FMTsourcetotarget_transition);
 	errors.push_back(Exception::FMTexc::FMTsame_transitiontargets);
 	errors.push_back(Exception::FMTexc::FMTunclosedforloop);
+	errors.push_back(Exception::FMTexc::FMToutofrangeyield);
+	errors.push_back(Exception::FMTexc::FMTdeathwithlock);
+	errors.push_back(Exception::FMTexc::FMTempty_schedules);
 	mparser.seterrorstowarnings(errors);
 	const std::vector<std::string>scenarios(1, scenario);
 	const std::vector<Models::FMTmodel> models = mparser.readproject(primarylocation, scenarios);
@@ -65,6 +73,35 @@ int main(int argc, char* argv[])
 	simulationmodel.setparameter(Models::FMTboolmodelparameters::FORCE_PARTIAL_BUILD, true);
 	simulationmodel.setparameter(Models::FMTboolmodelparameters::POSTSOLVE, true);
 	simulationmodel.doplanning(false, schedules.at(0));
+	//Parser::FMTareaparser areaParser;
+	for (const Core::FMToutput& OUTOUT : simulationmodel.getoutputs())
+		{
+		if (std::find(spatialOutputs.begin(), spatialOutputs.end(), OUTOUT.getname())!= spatialOutputs.end())
+			{
+			for (int period = 1; period < length;++period)
+				{
+				const std::string NAME = outdir + OUTOUT.getname() + "_" + std::to_string(period) + ".tif";
+				const double FULL_VALUE = simulationmodel.getoutput(OUTOUT, period, Core::FMToutputlevel::totalonly)["Total"];
+				std::cout << NAME << " " << FULL_VALUE << "\n";
+				const Spatial::FMTlayer<double> RESULT = simulationmodel.getspatialoutput(OUTOUT, period);
+				double spatialResult = 0;
+				for (const auto& CELL : RESULT)
+					{
+					spatialResult += (CELL.second);
+					}
+				if (std::abs(spatialResult - FULL_VALUE)>1)
+					{
+					Exception::FMTfreeexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed,
+						"On output "+ NAME+" "+std::to_string(FULL_VALUE)+" vs "+ std::to_string(spatialResult),
+						"Spatial_doplanning", __LINE__, primarylocation);
+					}
+				//areaParser.writelayer(RESULT, NAME);
+				}
+			
+			}
+		}
+
+
 #endif
 	return 0;
 }

@@ -136,7 +136,7 @@ namespace Logging
 				/**
 				Clone function needed for the usage of abstract 
 				*/
-				virtual FMTlogger* clone() const;
+				virtual FMTlogger* clone() const=0;
 			#endif
 			// DocString: FMTlogger::getlogstamp
 			/**
@@ -211,6 +211,12 @@ namespace Logging
 			*/
 			virtual FMTsolverlogger* getsolverlogger();
 			#endif
+			// DocString: FMTlogger::Clone
+			/**
+			@brief clone the FMTlogger
+			@return a valid cloned FMTlogger
+			*/
+			virtual std::unique_ptr <FMTlogger> Clone() const = 0;
 			
 		};
 

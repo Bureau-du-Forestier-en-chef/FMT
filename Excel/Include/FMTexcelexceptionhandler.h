@@ -4,6 +4,7 @@
 #include <unordered_map>
 #include <vector>
 #include <string>
+#include <memory>
 
 
 namespace Exception
@@ -18,6 +19,7 @@ namespace Exception
 			const std::string& method, const int& line, const std::string& file,
 			Core::FMTsection lsection = Core::FMTsection::Empty, bool throwit = true);
 		FMTexcelexceptionhandler();
+		std::unique_ptr <FMTexceptionhandler> Clone() const;
 	};
 
 }

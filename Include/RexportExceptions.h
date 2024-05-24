@@ -16,10 +16,11 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "Rdefinitions.h"
 #include "FMTerror.h"
 #include "FMTwarning.h"
+#include "FMTexception.h"
 
-
+/*
 RCPP_EXPOSED_WRAP(Exception::FMTexceptionhandler);
-RCPP_EXPOSED_AS(Exception::FMTexceptionhandler);
+RCPP_EXPOSED_AS(Exception::FMTexceptionhandler);*/
 RCPP_EXPOSED_WRAP(Exception::FMTdefaultexceptionhandler);
 RCPP_EXPOSED_AS(Exception::FMTdefaultexceptionhandler);
 RCPP_EXPOSED_WRAP(Exception::FMTquietexceptionhandler);
@@ -43,26 +44,26 @@ namespace R
 void exportException()
     {
 
-	Rcpp::class_<Exception::FMTexceptionhandler>("FMTexceptionhandler", "@DocString(FMTexceptionhandler)")
-		.constructor("@DocString(FMTexceptionhandler())");
+	/*Rcpp::class_<Exception::FMTexceptionhandler>("FMTexceptionhandler", "@DocString(FMTexceptionhandler)")
+		.constructor("@DocString(FMTexceptionhandler())");*/
 
 
 	Rcpp::class_<Exception::FMTdefaultexceptionhandler>("FMTdefaultexceptionhandler", "@DocString(FMTdefaultexceptionhandler)")
-		.derives<Exception::FMTexceptionhandler>("FMTexceptionhandler")
+		//.derives<Exception::FMTexceptionhandler>("FMTexceptionhandler")
 		.constructor("@DocString(FMTdefaultexceptionhandler())")
         .method("raise",&Exception::FMTdefaultexceptionhandler::raise,
 			"@DocString(FMTdefaultexceptionhandler::raise)");
 
 
 	Rcpp::class_<Exception::FMTquietexceptionhandler>("FMTquietexceptionhandler", "@DocString(FMTquietexceptionhandler)")
-		.derives<Exception::FMTexceptionhandler>("FMTexceptionhandler")
+		//.derives<Exception::FMTexceptionhandler>("FMTexceptionhandler")
 		.constructor("@DocString(FMTquietexceptionhandler())")
         .method("raise",&Exception::FMTquietexceptionhandler::raise,
 			"@DocString(FMTquietexceptionhandler::raise)");
 
 
 	Rcpp::class_<Exception::FMTdebugexceptionhandler>("FMTdebugexceptionhandler", "@DocString(FMTdebugexceptionhandler)")
-		.derives<Exception::FMTexceptionhandler>("FMTexceptionhandler")
+		//.derives<Exception::FMTexceptionhandler>("FMTexceptionhandler")
 		.constructor("@DocString(FMTdebugexceptionhandler())")
 		.method("raise", &Exception::FMTdebugexceptionhandler::raise,
 			"@DocString(FMTdebugexceptionhandler::raise)");

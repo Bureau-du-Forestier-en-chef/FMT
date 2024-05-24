@@ -5,7 +5,7 @@
 		#include "FMTmodelparser.h"
 		#include "FMTareaparser.h"
 		#include "FMTversion.h"
-		#include "FMTlogger.h"
+		#include "FMTdefaultlogger.h"
 		#include "FMTforest.h"
 		#include "FMTspatialschedule.h"
 		#include "FMToutput.h"
@@ -17,7 +17,7 @@ int main()
 {
 #ifdef FMTWITHONNXR
 #ifdef FMTWITHOSI
-	Logging::FMTlogger().logstamp();
+	Logging::FMTdefaultlogger().logstamp();
 	const std::string modellocation = "../../../../Examples/Models/TWD_land/";
 	const std::string	primarylocation =  modellocation + "TWD_land.pri";
 	Parser::FMTmodelparser mparser;
@@ -69,9 +69,9 @@ int main()
 	{
 		for (const auto& t : simulationmodel.greedyreferencebuild(schedules.at(0).at(period), greedysearch))
 		{
-			Logging::FMTlogger() << t.first << " " << t.second << " ";
+			Logging::FMTdefaultlogger() << t.first << " " << t.second << " ";
 		}
-		Logging::FMTlogger() << "\n";
+		Logging::FMTdefaultlogger() << "\n";
 	}
 	std::vector<Core::FMToutput> spatialoutput;
 	for (const Core::FMToutput& output : simulationmodel.getoutputs())
@@ -89,7 +89,7 @@ int main()
 	{
 		for (int period = 1; period < 11; ++period)
 		{
-			Logging::FMTlogger() << "output value " << output.getname() << " " << simulationmodel.getoutput(output, period, Core::FMToutputlevel::totalonly).at("Total")/ 1814 << " at period " << period << "\n";
+			Logging::FMTdefaultlogger() << "output value " << output.getname() << " " << simulationmodel.getoutput(output, period, Core::FMToutputlevel::totalonly).at("Total")/ 1814 << " at period " << period << "\n";
 		}
 	}
 #endif

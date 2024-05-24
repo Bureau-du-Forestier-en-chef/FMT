@@ -18,7 +18,14 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 namespace Logging
 	{
 
-	FMTdefaultlogger::FMTdefaultlogger()
+	std::unique_ptr <FMTlogger> FMTdefaultlogger::Clone() const
+	{
+		return std::unique_ptr <FMTlogger>(new FMTdefaultlogger(*this));
+	}
+
+
+	FMTdefaultlogger::FMTdefaultlogger():
+		FMTlogger()
 		{
 		#ifdef FMTWITHOSI
 			solverref->setLogLevel(1);

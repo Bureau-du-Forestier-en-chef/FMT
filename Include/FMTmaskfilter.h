@@ -53,8 +53,8 @@ class FMTEXPORT FMTmaskfilter
         FMTmask filter(const FMTmask& devmask) const;
 		void swap(FMTmaskfilter& rhs);
 		FMTmaskfilter presolve(const std::vector<FMTtheme>& themes) const;
-		bool canpresolve(const FMTmask& mask, const std::vector<Core::FMTtheme>& themes) const;
-		std::vector<Core::FMTtheme> getselectedthemes(const std::vector<Core::FMTtheme>& themes) const;
+		bool canpresolve(const FMTmask& mask, const std::vector<const Core::FMTtheme*>& themes) const;
+		std::vector<const Core::FMTtheme*> getselectedthemes(const std::vector<Core::FMTtheme>& themes) const;
 		inline bool emptyflipped() const
 			{
 			return flippedselection.empty();

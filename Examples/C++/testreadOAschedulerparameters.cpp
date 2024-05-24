@@ -1,6 +1,7 @@
 #include "FMTareaparser.h"
 #include "FMTmodelparser.h"
 #include "FMTmodel.h"
+#include "FMTdefaultlogger.h"
 #ifdef FMTWITHOSI
     #include "FMToperatingareascheme.h"
 #endif
@@ -8,7 +9,7 @@
 int main(int argc, char *argv[])
     {   
 #ifdef FMTWITHOSI
-    Logging::FMTlogger().logstamp();
+    Logging::FMTdefaultlogger().logstamp();
     const std::string primarylocation = std::string(argv[2]);
     const std::string scenario = std::string(argv[3]);
     const std::string fichierParam = std::string(argv[1]);

@@ -4,7 +4,7 @@
 #include "FMTmodelparser.h"
 #include "FMTareaparser.h"
 #include "FMTversion.h"
-#include "FMTlogger.h"
+#include "FMTdefaultlogger.h"
 #include "FMTforest.h"
 #include "FMTspatialschedule.h"
 #include "FMTtransitionparser.h"
@@ -15,7 +15,7 @@
 int main()
 {
 #ifdef FMTWITHGDAL
-	Logging::FMTlogger().logstamp();
+	Logging::FMTdefaultlogger().logstamp();
 	const std::string modellocation =  "../../../../Examples/Models/TWD_land/";
 	const std::string	primarylocation = modellocation + "TWD_land.pri";
 	const std::string outdir = "../../tests/Spatialyexplicitsimulation/";
@@ -57,9 +57,9 @@ int main()
 		Core::FMTschedule sche = schedules.at(0).at(period);
 		for (const auto& t : simulationmodel.greedyreferencebuild(sche, greedysearch))
 			{
-			Logging::FMTlogger()<< t.first << " " << t.second << " ";
+			Logging::FMTdefaultlogger()<< t.first << " " << t.second << " ";
 			}
-		Logging::FMTlogger() << "\n";
+		Logging::FMTdefaultlogger() << "\n";
 		}
 	Core::FMToutput spatialoutput;
 	for (const Core::FMToutput& output : simulationmodel.getoutputs())
@@ -70,13 +70,13 @@ int main()
 		}
 	}
 	const Spatial::FMTspatialschedule spatialsolution = simulationmodel.getspschedule();
-	Logging::FMTlogger() << "xsize : " << spatialsolution.GetXSize() << "\n";
-	Logging::FMTlogger() << "ysize : " << spatialsolution.GetYSize() << "\n";
+	Logging::FMTdefaultlogger() << "xsize : " << spatialsolution.GetXSize() << "\n";
+	Logging::FMTdefaultlogger() << "ysize : " << spatialsolution.GetYSize() << "\n";
 	for (int period = 1; period <=30; ++period)
 		{
 		for (const std::pair<Spatial::FMTcoordinate, double>& value : spatialsolution.getoutputbycoordinate(simulationmodel, spatialoutput, period))
 				{
-				Logging::FMTlogger() << "period: " << period << " X: " << value.first.getx() << " Y: " << value.first.gety() << " value: " << value.second << "\n";
+				Logging::FMTdefaultlogger() << "period: " << period << " X: " << value.first.getx() << " Y: " << value.first.gety() << " value: " << value.second << "\n";
 				}
 		//Logging::FMTlogger() << std::to_string(period) << " "<<simulationmodel.getoutput(spatialoutput, period, Core::FMToutputlevel::totalonly).at("Total") / 239184.16 <<"\n";
 		}

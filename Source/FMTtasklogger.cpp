@@ -11,6 +11,11 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 namespace Logging
 {
+	std::unique_ptr <FMTlogger> FMTtasklogger::Clone() const
+	{
+		return std::unique_ptr <FMTlogger>(new FMTtasklogger(*this));
+	}
+
 
 	FMTtasklogger::FMTtasklogger()
 	{

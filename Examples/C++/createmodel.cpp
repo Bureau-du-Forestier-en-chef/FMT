@@ -12,7 +12,7 @@
 #include "FMTactualdevelopment.h"
 #include "FMTlifespans.h"
 #include "FMTmodelparser.h"
-#include "FMTlogger.h"
+#include "FMTdefaultlogger.h"
 #include "FMTlpmodel.h"
 #include "FMTtransitionmask.h"
 #include "FMTfork.h"
@@ -25,7 +25,7 @@
 int main()
 {
 #ifdef FMTWITHOSI
-	Logging::FMTlogger().logstamp();
+	Logging::FMTdefaultlogger().logstamp();
 
 	//Create Themes
 	//////////////////////////////////////////////////

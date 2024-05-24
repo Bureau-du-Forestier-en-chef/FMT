@@ -22,10 +22,9 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "boost/filesystem.hpp"
 
 
+
 namespace Models
 {
-
-
 
 	Heuristics::FMToperatingareaclusterer FMTlpmodel::getclusterer(
 		const std::vector<Heuristics::FMToperatingareacluster>& initialcluster,

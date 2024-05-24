@@ -37,6 +37,7 @@ namespace Parallel
 		maxnumberofthread(std::min(boost::thread::hardware_concurrency(), maxthread)),
 		alltasks()
 	{
+		
 		alltasks.push_back(std::move(maintask->clone()));
 	}
 
@@ -104,6 +105,7 @@ namespace Parallel
 		try {
 			const std::chrono::time_point<std::chrono::high_resolution_clock>tasksstart = getclock();
 			splittasks();
+			FMTtask::setTotalThreads(alltasks.size());
 			std::vector<boost::thread>workers;
 			for (std::unique_ptr<FMTtask>& task : alltasks)
 				{
@@ -129,7 +131,7 @@ namespace Parallel
 
 		}
 
-	void FMTtaskhandler::passinlogger(const std::shared_ptr<Logging::FMTlogger>& logger)
+	void FMTtaskhandler::passinlogger(const std::unique_ptr<Logging::FMTlogger>& logger)
 		{
 		for (std::unique_ptr<FMTtask>& task : alltasks)
 			{
@@ -194,7 +196,7 @@ namespace Parallel
 	void FMTtaskhandler::logtasktime(const std::chrono::time_point<std::chrono::high_resolution_clock>& startime) const
 	{
 		try {
-			_logger->logwithlevel("All tasks completed " + getdurationinseconds(startime) + "\n", 1);
+			_logger->logwithlevel("All tasks completed " + getdurationinseconds(startime) + "\n", 0);
 		}
 		catch (...)
 		{

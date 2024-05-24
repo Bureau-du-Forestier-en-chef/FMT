@@ -14,12 +14,18 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 namespace Logging
 {
 
+std::unique_ptr <FMTlogger> FMTquietlogger::Clone() const
+	{
+	return std::unique_ptr <FMTlogger>(new FMTquietlogger(*this));
+	}
+
 void FMTquietlogger::cout(const char* message) const
 	{
 
 	}
 
-FMTquietlogger::FMTquietlogger()
+FMTquietlogger::FMTquietlogger():
+	FMTlogger()
 	{
 	#ifdef FMTWITHOSI
 		solverref->setLogLevel(0);
@@ -28,14 +34,14 @@ FMTquietlogger::FMTquietlogger()
 #ifdef FMTWITHOSI
 int FMTquietlogger::print()
 	{
-	boost::lock_guard<boost::recursive_mutex> guard(mtx);
+	//boost::lock_guard<boost::recursive_mutex> guard(mtx);
 	//return FMTlogger::print();
 	return 0;
 	}
 
 void FMTquietlogger::checkSeverity()
 	{
-	boost::lock_guard<boost::recursive_mutex> guard(mtx);
+	//boost::lock_guard<boost::recursive_mutex> guard(mtx);
 	FMTlogger::checkSeverity();
 	}
 

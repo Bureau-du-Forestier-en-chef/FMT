@@ -21,27 +21,17 @@ the default exception handler used in FMT.
 */
 class FMTEXPORT FMTdefaultexceptionhandler final : public FMTexceptionhandler
 	{
-	// DocString: FMTdefaultexceptionhandler::serialize
-	/**
-	Serialize function is for serialization, used to do multiprocessing across multiple cpus (pickle in Pyhton)
-	*/
-	friend class boost::serialization::access;
-	template<class Archive>
-	void serialize(Archive& ar, const unsigned int version)
-	{
-		ar &  boost::serialization::make_nvp("FMTexceptionhandler", boost::serialization::base_object<FMTexceptionhandler>(*this));
-	}
 	public:
 		// DocString: FMTdefaultexceptionhandler()
 		/**
 		Default constructor for FMTdefaultexceptionhandler.
 		*/
 		FMTdefaultexceptionhandler();
-		// DocString: FMTdefaultexceptionhandler(const std::shared_ptr<Logging::FMTlogger>&)
+		// DocString: FMTdefaultexceptionhandler(const std::unique_ptr<Logging::FMTlogger>&)
 		/**
 		Constructor with logger
 		*/
-		FMTdefaultexceptionhandler(const std::shared_ptr<Logging::FMTlogger>& logger);
+		FMTdefaultexceptionhandler(const std::unique_ptr<Logging::FMTlogger>& logger);
 		// DocString: ~FMTdefaultexceptionhandler()
 		/**
 		Default destructor for FMTdefaultexceptionhandler.
@@ -70,6 +60,23 @@ class FMTEXPORT FMTdefaultexceptionhandler final : public FMTexceptionhandler
 		*/
 		void handelCPLerror(int eErrClass, int nError, const char * pszErrorMsg) override;
 		#endif
+		// DocString: FMTdefaultexceptionhandler::Clone
+		/**
+		@brief clone the FMTdefaulexceptionhandler
+		@return a valid cloned FMTdefaulexceptionhandler
+		*/
+		virtual std::unique_ptr <FMTexceptionhandler> Clone() const;
+	private:
+		// DocString: FMTdefaultexceptionhandler::serialize
+		/**
+		Serialize function is for serialization, used to do multiprocessing across multiple cpus (pickle in Pyhton)
+		*/
+		friend class boost::serialization::access;
+		template<class Archive>
+		void serialize(Archive& ar, const unsigned int version)
+		{
+			ar& boost::serialization::make_nvp("FMTexceptionhandler", boost::serialization::base_object<FMTexceptionhandler>(*this));
+		}
 	};
 }
 

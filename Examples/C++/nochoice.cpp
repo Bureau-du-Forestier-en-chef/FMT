@@ -4,7 +4,7 @@
 #include "FMTmodelparser.h"
 #include "FMTscheduleparser.h"
 #include "FMTversion.h"
-#include "FMTlogger.h"
+#include "FMTdefaultlogger.h"
 #include "FMTconstraint.h"
 #include "FMTfreeexceptionhandler.h"
 #include <boost/algorithm/string.hpp>
@@ -15,7 +15,7 @@
 int main(int argc, char* argv[])
 {
 #ifdef FMTWITHOSI
-	Logging::FMTlogger().logstamp();
+	Logging::FMTdefaultlogger().logstamp();
 	if (Version::FMTversion().hasfeature("OSI"))
 	{
 		const std::string vals = argv[1];

@@ -215,6 +215,7 @@ namespace Core
 				if (!this->emptyylds())
 				{
 					std::vector<double>values;
+					values.reserve(yieldnames.size());
 					for (size_t id = 0; id < yieldnames.size(); ++id)
 					{
 						if (yieldnames.at(id).find("REPLICATE_") != std::string::npos)
@@ -240,6 +241,27 @@ namespace Core
 			_exhandler->printexceptions("", "FMTconstraint::getfromreplicate", __LINE__, __FILE__, Core::FMTsection::Optimize);
 		}
 	return *this;
+	}
+
+	bool FMTconstraint::gotReplicate(const int& p_period) const
+	{
+		bool gotIt = false;
+		if (p_period >= getperiodlowerbound() &&
+			p_period <= getperiodupperbound())
+		{
+			if (!this->emptyylds())
+			{
+				for (size_t id = 0; id < yieldnames.size(); ++id)
+				{
+					if (yieldnames.at(id).find("REPLICATE_") != std::string::npos)
+					{
+						gotIt = true;
+						break;
+					}
+				}
+			}
+		}
+		return gotIt;
 	}
 
 
@@ -856,7 +878,7 @@ namespace Core
 
 		FMTconstraint FMTconstraint::presolve(const FMTmaskfilter& filter,
 			const std::vector<FMTtheme>& originalthemes,
-			const std::vector<FMTtheme>& selectedthemes,
+			const std::vector<const FMTtheme*>& selectedthemes,
 			const std::vector<FMTtheme>& newthemes,
 			const std::vector<FMTaction>& actions, const FMTyields& yields) const
 			{
@@ -1134,18 +1156,20 @@ namespace Core
 		{
 			try {
 				std::vector<Core::FMToutputsource> sourcestoturnintoyield;
+				sourcestoturnintoyield.reserve(sources.size());
 				std::vector<Core::FMToperator> operatorstoturnintoyield;
+				operatorstoturnintoyield.reserve(operators.size());
 				Core::FMTotar newtarget=FMTotar::actual;
 				size_t transitionid=0;
 				for(const FMTtransition& transition : trans)
 				{
-					const Core::FMTaction trigerringaction=actions.at(transitionid);
+					const Core::FMTaction& trigerringaction=actions.at(transitionid);
 					for (const Core::FMToutputsource& source : sources)
 					{
 						if (source.isvariable())
 						{
 
-							Core::FMTmask sourcemask = source.getmask();
+							const Core::FMTmask& sourcemask = source.getmask();
 							for (const FMTmask mask : transition.canproduce(sourcemask,themes))
 							{
 								sourcestoturnintoyield.push_back(Core::FMToutputsource(Core::FMTspec(),mask,newtarget,"",trigerringaction.getname(),source.getoutputorigin(),source.getthemetarget()));
@@ -1217,6 +1241,7 @@ namespace Core
 					dorecloseof = false;
 					}
 				std::vector<double>patternvalues;
+				patternvalues.reserve(startingperiod+ stopingperiod+1);
 				//Base is 0 so the first period to iterate is 0 and at the starting period it stops.
 				for (int period = 0;period< startingperiod;++period)//open
 					{
@@ -1232,6 +1257,7 @@ namespace Core
 					}
 				const std::vector<double>defaultvalues(patternvalues.size(),1.0);
 				std::string defaultstrmask;
+				defaultstrmask.reserve(themes.size() * 2);
 				for (const Core::FMTtheme& theme : themes)
 					{
 					defaultstrmask += "? ";

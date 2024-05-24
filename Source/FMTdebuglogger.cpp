@@ -12,7 +12,13 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 namespace Logging
 {
-	FMTdebuglogger::FMTdebuglogger()
+	std::unique_ptr <FMTlogger> FMTdebuglogger::Clone() const
+	{
+		return std::unique_ptr <FMTlogger>(new FMTdebuglogger(*this));
+	}
+
+	FMTdebuglogger::FMTdebuglogger():
+		FMTlogger()
 		{
 		#ifdef FMTWITHOSI
 			solverref->setLogLevel(4);

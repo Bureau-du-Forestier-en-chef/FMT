@@ -19,6 +19,10 @@ namespace Logging
 		FMTexcellogger();
 		std::string getprintout() const;
 		void clearout();
+	#ifdef FMTWITHOSI
+		virtual FMTlogger* clone() const;
+	#endif
+	virtual std::unique_ptr <FMTlogger> Clone() const;
 	};
 
 }

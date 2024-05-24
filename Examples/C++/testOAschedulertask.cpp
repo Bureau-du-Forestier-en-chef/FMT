@@ -3,7 +3,7 @@
 	#include "FMTlpmodel.h"
 	#include "FMTmodelparser.h"
 	#include "FMTversion.h"
-	#include "FMTlogger.h"
+	#include "FMTdefaultlogger.h"
 	#include "FMTconstraint.h"
     #include "FMToutputnode.h"
     #include "FMTmask.h"
@@ -26,7 +26,7 @@ std::vector<Heuristics::FMToperatingareascheme> ObtenirOperatingArea(   const st
         {
             if (op.getneihgborsperimeter() > 0 || op.getgreenup() > 0)
             {
-                Logging::FMTlogger() << "Lecture des blocs voisins." << "\n";
+                Logging::FMTdefaultlogger() << "Lecture des blocs voisins." << "\n";
                 opeareas = areaParser.getschemeneighbors(opeareas, themes, fichierShp, nomChampAge, nomChampSuperficie, 1.0, 1, nomChampStanlock);
                 return opeareas;
             }
@@ -87,7 +87,7 @@ int main(int argc, char *argv[])
     {   
        
         #ifdef FMTWITHOSI
-            Logging::FMTlogger().logstamp();
+            Logging::FMTdefaultlogger().logstamp();
             const std::string primarylocation = std::string(argv[1]);
             const std::string vals =  argv[2];
             std::vector<std::string>results;

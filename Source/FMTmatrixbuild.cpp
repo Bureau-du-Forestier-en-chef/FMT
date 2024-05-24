@@ -8,7 +8,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #ifdef FMTWITHOSI
 
 #include "FMTmatrixbuild.h"
-#include "FMTexceptionhandler.h"
+#include "FMTdefaultexceptionhandler.h"
 #include "FMTerror.h"
 #include <algorithm>
 #include <boost/algorithm/string.hpp> 
@@ -152,7 +152,7 @@ namespace Models
 			}
 			}catch (...)
 			{
-				Exception::FMTexceptionhandler().raisefromcatch("", "FMTmatrixbuild::synchronize", __LINE__, __FILE__);
+				Exception::FMTdefaultexceptionhandler().raisefromcatch("", "FMTmatrixbuild::synchronize", __LINE__, __FILE__);
 			}
 
 

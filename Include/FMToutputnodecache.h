@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Quï¿½bec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -20,49 +20,155 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTgraph.hpp"
 
 
+
 namespace Graph
 {
 	template <class tvdescriptor,class titerator>
 	class FMToutputnodecache
 	{
+		
+	public:
+		FMToutputnodecache()=default;
+		FMToutputnodecache(const FMToutputnodecache& rhs) = default;
+		FMToutputnodecache& operator = (const FMToutputnodecache& rhs) = default;
+		~FMToutputnodecache() = default;
+		FMToutputnodecache(const std::vector<tvdescriptor>& initialnodes) :
+			inmemorynodes(initialnodes), beginit(nullptr), endit(nullptr), searchtree(), m_allocator(), m_reserve()
+		{
+			inmemorynodes.shrink_to_fit();
+			std::sort(inmemorynodes.begin(),inmemorynodes.end());
+		}
+		FMToutputnodecache(const titerator& first, const titerator& last,std::allocator<tvdescriptor>& p_allocator,const size_t& p_reserve) :
+			inmemorynodes(), beginit(&first), endit(&last), searchtree(),m_allocator(&p_allocator), m_reserve(p_reserve)
+		{
+		}
+		void erasenode(const Core::FMToutputnode& node)
+			{
+			searchtree.erase(node.source);
+			}
+
+		bool contains(const Core::FMToutputnode& node) const
+			{
+			return searchtree.find(node.source) != searchtree.end();
+			}
+
+		unsigned long long removelargest()
+		{
+			size_t largestsize = 0;
+			unsigned long long  removedmemory = 0;
+			notecacheit largestiterator = searchtree.end();
+			for (typename std::map<Core::FMToutputsource, std::vector<tvdescriptor>>::iterator mapit = searchtree.begin(); mapit != searchtree.end(); mapit++)
+			{
+				size_t sizeofvec = mapit->second.size();
+				if (sizeofvec > largestsize)
+				{
+					largestsize = mapit->second.size();
+					largestiterator = mapit;
+				}
+
+			}
+			if (largestiterator != searchtree.end())
+			{
+				removedmemory = largestsize * sizeof(tvdescriptor);
+				searchtree.erase(largestiterator);
+			}
+			return removedmemory;
+		}
+		const std::vector<tvdescriptor>& getverticies(const Core::FMToutputnode& targetnode, const std::vector<Core::FMTaction>& actions,
+			const std::vector<Core::FMTtheme>&themes, bool& exactvecticies) const
+			{
+			return this->getcleandescriptors(targetnode, actions, themes, exactvecticies);
+			}
+		void setvalidverticies(const Core::FMToutputnode& targetnode,const std::vector<tvdescriptor>& verticies) const
+			{
+			searchtree[targetnode.source] = verticies;
+			searchtree[targetnode.source].shrink_to_fit();
+			}
+		void clear()
+			{
+			beginit = nullptr;
+			endit = nullptr;
+			inmemorynodes.clear();
+			searchtree.clear();
+			}
+		void rebase(const titerator& beginofdevs, const titerator& endofdevs)
+			{
+			beginit = &beginofdevs;
+			endit = &endofdevs;
+			}
+		void insert(const FMToutputnodecache& rhs)
+			{
+			if (beginit==nullptr)
+			{
+				if (inmemorynodes.size() < rhs.inmemorynodes.size())
+				{
+					inmemorynodes = rhs.inmemorynodes;
+				}
+			}
+			
+			searchtree.insert(rhs.searchtree.begin(), rhs.searchtree.end());
+			}
+
+		void pushtovector(std::vector<tvdescriptor>& refvecs) const
+		{
+			if (beginit!=nullptr)
+			{
+				for (titerator it = *beginit; it != *endit; ++it)
+				{
+					/*if (refvecs.capacity() <= (refvecs.size() + 1))
+					{
+						std::cout << "problem! "<< refvecs.capacity() <<"\n";
+					}*/
+					refvecs.push_back(*it);
+				}
+				refvecs.shrink_to_fit();
+				std::sort(refvecs.begin(), refvecs.end());
+			}
+			else {
+				refvecs = inmemorynodes;
+			}
+		}
+	private:
 		friend class boost::serialization::access;
 		template<class Archive>
 		void serialize(Archive& ar, const unsigned int version)
 		{
 			ar & BOOST_SERIALIZATION_NVP(inmemorynodes);
-			//ar & BOOST_SERIALIZATION_NVP(basenode);
 			ar & BOOST_SERIALIZATION_NVP(searchtree);
 		}
 		std::vector<tvdescriptor>inmemorynodes;
 		titerator const * beginit;
 		titerator const * endit;
-		//boost::unordered_set<Core::FMTlookup<tvdescriptor, Core::FMTdevelopment>> const * basenode;
 		mutable std::map<Core::FMToutputsource,std::vector<tvdescriptor>>searchtree;
+		std::allocator<tvdescriptor>* m_allocator;
+		size_t m_reserve;
         typedef typename std::map<Core::FMToutputsource,std::vector<tvdescriptor>>::const_iterator notecacheit;
+		
 		const std::vector<tvdescriptor>& getcleandescriptors(const Core::FMToutputnode& targetnode,const std::vector<Core::FMTaction>& actions,
 										const std::vector<Core::FMTtheme>&themes, bool& exactnode) const
 		{
-			//bool exact = false;
+			const size_t TO_RESERVE = m_reserve;
 			exactnode = false;
 			typename std::map<Core::FMToutputsource, std::vector<tvdescriptor>>::const_iterator parent = this->getparentnode(targetnode, actions, exactnode);
-			//Logging::FMTlogger() << "exact? " << exactnode << "\n";
 			if (exactnode)
 			{
 				return parent->second;
 			}
 
 			//std::vector<tvdescriptor> cleaned(basenode);
-			std::vector<tvdescriptor> cleaned;
+			std::vector<tvdescriptor> cleaned(*m_allocator);
+			cleaned.reserve(TO_RESERVE);
 			pushtovector(cleaned);
 			//
 			if (parent != searchtree.end())
 			{
 				cleaned = parent->second;
 			}
-			getactionrebuild(targetnode, actions, cleaned, exactnode); // should be able to find also exact!!!!!!!!
+			getactionrebuild(targetnode, actions, cleaned, exactnode);// , TO_RESERVE); // should be able to find also exact!!!!!!!!
 			if (!exactnode)
 			{
-				std::vector<tvdescriptor>toremove;
+				std::vector<tvdescriptor>toremove(*m_allocator);
+				toremove.reserve(TO_RESERVE);
 				/*size_t basenodesize = inmemorynodes.size();
 				if (basenode != nullptr)
 					{
@@ -83,7 +189,8 @@ namespace Graph
 				if (!toremove.empty())
 				{
 					//std::cout << "mask size of " << unionmask.size() << " " << unionmask.count() << "\n";
-					std::vector<tvdescriptor>difference;
+					std::vector<tvdescriptor>difference(*m_allocator);
+					difference.reserve(TO_RESERVE);
 					std::sort(toremove.begin(), toremove.end());
 					std::set_difference(cleaned.begin(), cleaned.end(),
 						toremove.begin(), toremove.end(), std::inserter(difference, difference.begin()));
@@ -97,7 +204,7 @@ namespace Graph
 		void getactionrebuild(const Core::FMToutputnode& targetnode,
 			const std::vector<Core::FMTaction>& actions,
 			std::vector<tvdescriptor>& cleaned,
-			bool& exactnode) const
+			bool& exactnode/*, const size_t& p_reserve*/) const
 		{
 			const std::string actionname = targetnode.source.getaction();
 			const std::vector<const Core::FMTaction*>aggregatesptr = Core::FMTactioncomparator(actionname).getallaggregates(actions, true);
@@ -107,6 +214,7 @@ namespace Graph
 				for (const Core::FMTaction* attributeptr : aggregatesptr)
 				{
 					potentials[attributeptr->getname()] = std::vector< notecacheit>();
+					potentials[attributeptr->getname()].reserve(m_reserve);
 				}
 				for (notecacheit sit = searchtree.begin();
 					sit != searchtree.end(); sit++)
@@ -114,6 +222,10 @@ namespace Graph
 					if (sit->first.issubsetof(targetnode.source, actions))
 					{
 						const std::string nodeaction = sit->first.getaction();
+						/*if (potentials[nodeaction].capacity() <= (potentials[nodeaction].size() + 1))
+						{
+							std::cout << "problem!/n";
+						}*/
 						potentials[nodeaction].push_back(sit);
 					}
 				}
@@ -191,143 +303,10 @@ namespace Graph
 				}
 				return searchtree.end();
 			}
-	public:
-		FMToutputnodecache()=default;
-		FMToutputnodecache(const FMToutputnodecache& rhs) = default;
-		FMToutputnodecache& operator = (const FMToutputnodecache& rhs) = default;
-		~FMToutputnodecache() = default;
-		/*FMToutputnodecache(const boost::unordered_set<Core::FMTlookup<tvdescriptor,Core::FMTdevelopment>>& initialgraph) :
-			inmemorynodes(),beginit(),endit(), searchtree()
-			{
-				//this->setinitialcache(initialgraph);
-			}*/
-		FMToutputnodecache(const std::vector<tvdescriptor>& initialnodes) :
-			inmemorynodes(initialnodes), beginit(nullptr), endit(nullptr), searchtree()
-		{
-			inmemorynodes.shrink_to_fit();
-			std::sort(inmemorynodes.begin(),inmemorynodes.end());
-			//this->setinitialcache(initialnodes);
-		}
-		FMToutputnodecache(const titerator& first, const titerator& last) :
-			inmemorynodes(), beginit(&first), endit(&last), searchtree()
-		{
-			//this->setinitialcache(initialnodes);
-		}
-		/*unsigned long long getpotentialsize() const
-			{
-			return static_cast<unsigned long long>(searchtree.size()) * static_cast<unsigned long long>(basenode->size()) * sizeof(tvdescriptor);
-			}*/
-
-		void erasenode(const Core::FMToutputnode& node)
-			{
-			searchtree.erase(node.source);
-			}
-
-		bool contains(const Core::FMToutputnode& node) const
-			{
-			return searchtree.find(node.source) != searchtree.end();
-			}
-
-		unsigned long long removelargest()
-		{
-			size_t largestsize = 0;
-			unsigned long long  removedmemory = 0;
-			notecacheit largestiterator = searchtree.end();
-			for (typename std::map<Core::FMToutputsource, std::vector<tvdescriptor>>::iterator mapit = searchtree.begin(); mapit != searchtree.end(); mapit++)
-			{
-				size_t sizeofvec = mapit->second.size();
-				if (sizeofvec > largestsize)
-				{
-					largestsize = mapit->second.size();
-					largestiterator = mapit;
-				}
-
-			}
-			if (largestiterator != searchtree.end())
-			{
-				removedmemory = largestsize * sizeof(tvdescriptor);
-				//std::vector<tvdescriptor>().swap(largestiterator->second);
-				searchtree.erase(largestiterator);
-			}
-			return removedmemory;
-		}
-		const std::vector<tvdescriptor>& getverticies(const Core::FMToutputnode& targetnode, const std::vector<Core::FMTaction>& actions,
-			const std::vector<Core::FMTtheme>&themes, bool& exactvecticies) const
-			{
-			return this->getcleandescriptors(targetnode, actions, themes, exactvecticies);
-			}
-		void setvalidverticies(const Core::FMToutputnode& targetnode,const std::vector<tvdescriptor>& verticies) const
-			{
-			searchtree[targetnode.source] = verticies;
-			searchtree[targetnode.source].shrink_to_fit();
-			}
-		void clear()
-			{
-			//basenode.clear();
-			beginit = nullptr;
-			endit = nullptr;
-			inmemorynodes.clear();
-			searchtree.clear();
-			}
-		void rebase(const titerator& beginofdevs, const titerator& endofdevs)
-			{
-			beginit = &beginofdevs;
-			endit = &endofdevs;
-			}
-		void insert(const FMToutputnodecache& rhs)
-			{
-			if (beginit==nullptr)
-			{
-				if (inmemorynodes.size() < rhs.inmemorynodes.size())
-				{
-					inmemorynodes = rhs.inmemorynodes;
-				}
-			}
-			
-			searchtree.insert(rhs.searchtree.begin(), rhs.searchtree.end());
-			}
-
-		void pushtovector(std::vector<tvdescriptor>& refvecs) const
-		{
-			if (beginit!=nullptr)
-			{
-				for (titerator it = *beginit; it != *endit; ++it)
-				{
-					refvecs.push_back(*it);
-				}
-				refvecs.shrink_to_fit();
-				std::sort(refvecs.begin(), refvecs.end());
-			}
-			else {
-				refvecs = inmemorynodes;
-			}
-		}
-
 	};
 
+
 	
-	/*template<> inline void FMToutputnodecache<FMTgraph<FMTvertexproperties,FMTedgeproperties>::FMTvertex_descriptor,FMTgraph<FMTvertexproperties,FMTedgeproperties>::FMTvertex_iterator>::pushtovector(std::vector<FMTgraph<FMTvertexproperties,FMTedgeproperties>::FMTvertex_descriptor>& refvecs) const
-	{
-			for (FMTgraph<FMTvertexproperties,FMTedgeproperties>::FMTvertex_iterator it = *beginit; it != *endit; ++it)
-			{
-				refvecs.push_back(*it);
-
-			}
-			refvecs.shrink_to_fit();
-			std::sort(refvecs.begin(), refvecs.end());
-	}
-
-	template<> inline void FMToutputnodecache<FMTgraph<FMTbasevertexproperties,FMTbaseedgeproperties>::FMTvertex_descriptor,FMTgraph<FMTbasevertexproperties,FMTbaseedgeproperties>::FMTvertex_iterator>::pushtovector(std::vector<FMTgraph<FMTbasevertexproperties,FMTbaseedgeproperties>::FMTvertex_descriptor>& refvecs) const
-	{
-			for (FMTgraph<FMTbasevertexproperties,FMTbaseedgeproperties>::FMTvertex_iterator it = *beginit; it != *endit; ++it)
-			{
-				refvecs.push_back(*it);
-
-			}
-			refvecs.shrink_to_fit();
-			std::sort(refvecs.begin(), refvecs.end());
-	}*/
-
 }
 
 #endif

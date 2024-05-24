@@ -890,24 +890,26 @@ size_t FMToutput::size() const
 
 FMToutput FMToutput::presolve(const FMTmaskfilter& filter,
 	const std::vector<FMTtheme>& originalthemes,
-	const std::vector<FMTtheme>& selectedthemes,
+	const std::vector<const FMTtheme*>& selectedthemes,
 	const std::vector<FMTtheme>& newthemes,
 	const std::vector<FMTaction>& actions, const FMTyields& yields) const
 	{
 	FMToutput newoutput(*this);
 	try {
 		std::vector<FMToutputsource>newsources;
+		newsources.reserve(sources.size());
 		std::vector<FMToperator>newoperators;
+		newoperators.reserve(operators.size());
 		size_t operatorid = 0;
 		bool pushfactor = true;
 		bool turntonegative = false;
 		for (size_t sourceid = 0; sourceid < sources.size(); ++sourceid)
 		{
 			bool pushedsource = true;
-			const std::string yieldname = sources.at(sourceid).getyield();
+			const std::string& yieldname = sources.at(sourceid).getyield();
 			if (sources.at(sourceid).isvariable())
 			{
-				const std::string actionname = sources.at(sourceid).getaction();
+				const std::string& actionname = sources.at(sourceid).getaction();
 				
 				if (filter.canpresolve(sources.at(sourceid).getmask(), selectedthemes) &&
 					(actionname.empty() ||
@@ -1256,9 +1258,9 @@ FMTmask FMToutput::getvariableintersect() const
 	return mask;
 }
 
-std::vector<Core::FMTtheme>FMToutput::getstaticthemes(const std::vector<Core::FMTtheme>& themes, const Core::FMTyields& yields, bool ignoreoutputvariables) const
+std::vector<const Core::FMTtheme*>FMToutput::getstaticthemes(const std::vector<Core::FMTtheme>& themes, const Core::FMTyields& yields, bool ignoreoutputvariables) const
 {
-	std::vector<Core::FMTtheme>statics = themes;
+	std::vector<const Core::FMTtheme*>statics;
 	try {
 		std::vector<std::string>yieldstolookat;
 		for (const FMToutputsource& source : sources)
@@ -1294,7 +1296,7 @@ std::vector<Core::FMTtheme>FMToutput::getstaticthemes(const std::vector<Core::FM
 			if (yieldit != yieldstolookat.end())
 				{
 				const Core::FMTmask maskof(std::string(handlerit->first), themes);
-				const std::vector<Core::FMTtheme>newstatic = maskof.getstaticthemes(statics);
+				const std::vector<const Core::FMTtheme*>newstatic = maskof.getstaticthemes(statics);
 				statics = newstatic;
 				yieldstolookat.erase(yieldit);
 				}

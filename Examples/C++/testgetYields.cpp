@@ -8,13 +8,14 @@
 	#include "FMTyieldrequest.h"
 	#include "FMTgraphvertextoyield.h"
 	#include "FMTfreeexceptionhandler.h"
+	#include "FMTdefaultlogger.h"
 	#include <vector>
 #endif
 
 int main(int argc, char *argv[])
 	{
 	#ifdef FMTWITHOSI
-	Logging::FMTlogger().logstamp();
+	Logging::FMTdefaultlogger().logstamp();
 	if (Version::FMTversion().hasfeature("OSI"))
 		{
 		Parser::FMTmodelparser modelparser;
@@ -62,14 +63,14 @@ int main(int argc, char *argv[])
 		const Graph::FMTgraphvertextoyield graph_info = optimizationmodel.getGraphVertexToYield();
 		const Core::FMTyieldrequest yieldrequest = adev.getyieldrequest(&graph_info);
 		const double returnedvalue = optimizationmodel.getyields().get(yieldrequest,yieldname);
-		Logging::FMTlogger() << returnedvalue << "\n";
+		Logging::FMTdefaultlogger() << returnedvalue << "\n";
 		if ((returnedvalue < (yieldvalue - tolerance)) || (returnedvalue > (yieldvalue + tolerance)))
 			{
 			Exception::FMTfreeexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed, "Wrong value",
 				"FMTsetsolution", __LINE__, primarylocation);
 			}
 	}else {
-		Logging::FMTlogger() << "FMT needs to be compiled with OSI" << "\n";
+		Logging::FMTdefaultlogger() << "FMT needs to be compiled with OSI" << "\n";
 		}
 	#endif
 	return 0;

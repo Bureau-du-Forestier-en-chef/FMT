@@ -3,7 +3,7 @@
 	#include "FMTlpmodel.h"
 	#include "FMTmodelparser.h"
 	#include "FMTversion.h"
-	#include "FMTlogger.h"
+	#include "FMTdefaultlogger.h"
 	#include "FMTscheduleparser.h"
 	#include "FMTschedule.h"
 	#include "FMToutputnode.h"
@@ -13,7 +13,7 @@
 int main(int argc, char *argv[])
 	{
 	#ifdef FMTWITHOSI
-	Logging::FMTlogger().logstamp();
+	Logging::FMTdefaultlogger().logstamp();
 	if (Version::FMTversion().hasfeature("OSI"))
 		{
 		const std::string primarylocation = std::string(argv[1]);
@@ -51,7 +51,7 @@ int main(int argc, char *argv[])
 					{
 					gotovoltotrec = true;
 					const double returnedvalue = optimizationmodel.getoutput(output, 2, Core::FMToutputlevel::totalonly).at("Total");
-                    Logging::FMTlogger() << "returned value : "+std::to_string(returnedvalue)+ "\nValue : "+std::to_string(ovoltotrecvalue) << "\n";
+                    Logging::FMTdefaultlogger() << "returned value : "+std::to_string(returnedvalue)+ "\nValue : "+std::to_string(ovoltotrecvalue) << "\n";
 					if ((returnedvalue < (ovoltotrecvalue - 1))||(returnedvalue > (ovoltotrecvalue + 1)))
 						{
 						Exception::FMTfreeexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed, "Wrong value",
@@ -68,7 +68,7 @@ int main(int argc, char *argv[])
 			}
 
 	}else {
-		Logging::FMTlogger() << "FMT needs to be compiled with OSI" << "\n";
+		Logging::FMTdefaultlogger() << "FMT needs to be compiled with OSI" << "\n";
 		}
 	#endif
 	return 0;

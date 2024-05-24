@@ -73,6 +73,12 @@ class FMTEXPORT FMTquietlogger final : public FMTlogger
 			See FMTlogger cout function that does nothing.
 			*/
 			void cout(const char* message) const override;
+		// DocString: FMTquietlogger::Clone
+		/**
+		@brief clone the FMTquietlogger
+		@return a valid cloned FMTquietlogger
+		*/
+		virtual std::unique_ptr <FMTlogger> Clone() const;
 
 	
 	};

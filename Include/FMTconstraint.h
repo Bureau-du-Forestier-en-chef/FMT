@@ -52,47 +52,6 @@ The main specification used is the period bounds (1.._LENGTH), RHS and variation
 */
 class FMTEXPORT FMTconstraint: public FMToutput,public FMTspec
 	{
-	// DocString: FMTconstraint::serialize
-	/**
-	serialize function is for serialization, used to do multiprocessing across multiple cpus (pickle in Pyhton)
-	*/
-	friend class boost::serialization::access;
-	template<class Archive>
-	void serialize(Archive& ar, const unsigned int version)
-	{
-		ar & boost::serialization::make_nvp("output", boost::serialization::base_object<FMToutput>(*this));
-		ar & boost::serialization::make_nvp("specification", boost::serialization::base_object<FMTspec>(*this));
-		ar & BOOST_SERIALIZATION_NVP(type);
-	}
-	// DocString: FMTconstraint::type
-	///This enumerator sets the type of constraint of the FMTconstraint (objective/constraint/evenflow...)
-	FMTconstrainttype type;
-	// DocString: FMTconstraint::standardstring
-	/**
-	Function used for string formating for FMTconstraint in to string conversion.
-	*/
-	void standardstring(std::string& line, std::string& period_bounds, std::string& goal, std::string& global) const;
-	// DocString: FMTconstraint::getmaxandmin
-	/**
-	Returns the maximal and minimal value of a vector of double for the constraint
-	*/
-	void getmaxandmin(const std::vector<double>& values, double& min,double& max) const;
-	// DocString: FMTconstraint::getsum
-	/**
-	Returns the sum of a vector of double
-	*/
-	double getsum(const std::vector<double>& values) const;
-	// DocString: FMTconstraint::getperiodicvariationcost
-	/**
-	Returns the variation of harvest for a vector of double
-	*/
-	double getperiodicvariationcost(const std::vector<double>& values, bool evaluateupper=false) const;
-	// DocString: FMTconstraint::getvariability
-	/**
-	Returns the variability based on a double input
-	*/
-	double getvariability(const std::vector<double>& values,const double& var,const double& lowarvar) const;
-
 	public:
 		// DocString: FMTconstraint()
 		/**
@@ -173,6 +132,13 @@ class FMTEXPORT FMTconstraint: public FMToutput,public FMTspec
 		See keyword _REPLICATE in optimization seciton.
 		*/
 		Core::FMTconstraint getfromreplicate(const size_t& replicate,const int& period) const;
+		// DocString: FMTconstraint::gotReplicate
+		/**
+		@brief check if contains replicate
+		@param[in] the period.
+		@return true if contains replicate
+		*/
+		bool gotReplicate(const int& p_period) const;
 		// DocString: FMTconstraint::getpenalties
 		/**
 		If the constraint is goal then you can get the name of the penalties of the constraint. like _GOAL(penaltyname,weight)
@@ -298,7 +264,7 @@ class FMTEXPORT FMTconstraint: public FMToutput,public FMTspec
 		*/
 		FMTconstraint presolve(const FMTmaskfilter& filter,
 			const std::vector<FMTtheme>& originalthemes,
-			const std::vector<FMTtheme>& selectedthemes,
+			const std::vector<const FMTtheme*>& selectedthemes,
 			const std::vector<FMTtheme>& newthemes,
 			const std::vector<FMTaction>& actions, const FMTyields& yields) const;
 		// DocString: ~FMTconstraint()
@@ -352,6 +318,48 @@ class FMTEXPORT FMTconstraint: public FMToutput,public FMTspec
 						 std::vector<Core::FMTaction>&actions,
 						 Core::FMTyields& yields,
 						 const int& constraintid) const;
+	private:
+		// DocString: FMTconstraint::serialize
+	/**
+	serialize function is for serialization, used to do multiprocessing across multiple cpus (pickle in Pyhton)
+	*/
+		friend class boost::serialization::access;
+		template<class Archive>
+		void serialize(Archive& ar, const unsigned int version)
+		{
+			ar& boost::serialization::make_nvp("output", boost::serialization::base_object<FMToutput>(*this));
+			ar& boost::serialization::make_nvp("specification", boost::serialization::base_object<FMTspec>(*this));
+			ar& BOOST_SERIALIZATION_NVP(type);
+		}
+		// DocString: FMTconstraint::type
+		///This enumerator sets the type of constraint of the FMTconstraint (objective/constraint/evenflow...)
+		FMTconstrainttype type;
+		// DocString: FMTconstraint::standardstring
+		/**
+		Function used for string formating for FMTconstraint in to string conversion.
+		*/
+		void standardstring(std::string& line, std::string& period_bounds, std::string& goal, std::string& global) const;
+		// DocString: FMTconstraint::getmaxandmin
+		/**
+		Returns the maximal and minimal value of a vector of double for the constraint
+		*/
+		void getmaxandmin(const std::vector<double>& values, double& min, double& max) const;
+		// DocString: FMTconstraint::getsum
+		/**
+		Returns the sum of a vector of double
+		*/
+		double getsum(const std::vector<double>& values) const;
+		// DocString: FMTconstraint::getperiodicvariationcost
+		/**
+		Returns the variation of harvest for a vector of double
+		*/
+		double getperiodicvariationcost(const std::vector<double>& values, bool evaluateupper = false) const;
+		// DocString: FMTconstraint::getvariability
+		/**
+		Returns the variability based on a double input
+		*/
+		double getvariability(const std::vector<double>& values, const double& var, const double& lowarvar) const;
+
 	};
 }
 

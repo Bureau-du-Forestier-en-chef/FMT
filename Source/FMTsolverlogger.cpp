@@ -49,21 +49,28 @@ FMTsolverlogger::~FMTsolverlogger()
 	cleanup();
 	}
 
-FMTsolverlogger::FMTsolverlogger(const FMTsolverlogger& rhs):
+/*FMTsolverlogger::FMTsolverlogger(const FMTsolverlogger& rhs) :
 	baselogger(nullptr),
 	ownthelogger(true)
 	{
 	copy(rhs);
-	}
+	}*/
 
-FMTsolverlogger& FMTsolverlogger::operator = (const FMTsolverlogger& rhs)
+void FMTsolverlogger::copyFrom(const FMTsolverlogger& rhs)
+{
+	baselogger = nullptr;
+	ownthelogger = true;
+	copy(rhs);
+}
+
+/*FMTsolverlogger& FMTsolverlogger::operator = (const FMTsolverlogger& rhs)
 	{
 	if (this!=&rhs)
 		{
 		copy(rhs);
 		}
 	return *this;
-	}
+	}*/
 
 int FMTsolverlogger::print()
 	{
@@ -82,7 +89,9 @@ void FMTsolverlogger::checkcoinSeverity()
 
 CoinMessageHandler* FMTsolverlogger::clone() const
 	{
-	return new FMTsolverlogger(*this);
+	FMTsolverlogger* solverLogger = new FMTsolverlogger();
+	solverLogger->copyFrom(*this);
+	return solverLogger;
 	}
 
 }

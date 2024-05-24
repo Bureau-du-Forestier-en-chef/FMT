@@ -47,7 +47,7 @@ class FMTEXPORT FMTlpsolver: public Core::FMTobject
 		/**
 		We need to override the passinlogger for the osisolverinterface
 		*/
-		void passinlogger(const std::shared_ptr<Logging::FMTlogger>& logger) override;
+		void passinlogger(const std::unique_ptr<Logging::FMTlogger>& logger) override;
 		// DocString: FMTlpsolver::unmarkHotStart
 		/**
 		Clear all cached data in osisolverinterface.

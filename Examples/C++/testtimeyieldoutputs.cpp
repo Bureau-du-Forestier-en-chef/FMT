@@ -3,7 +3,7 @@
 	#include "FMTlpmodel.h"
 	#include "FMTmodelparser.h"
 	#include "FMTversion.h"
-	#include "FMTlogger.h"
+	#include "FMTdefaultlogger.h"
 	#include "FMTconstraint.h"
 	#include "FMTscheduleparser.h"
 	#include "FMTfreeexceptionhandler.h"
@@ -13,7 +13,7 @@
 int main()
 	{
 #ifdef FMTWITHOSI
-	Logging::FMTlogger().logstamp();
+	Logging::FMTdefaultlogger().logstamp();
 	if (Version::FMTversion().hasfeature("OSI"))
 		{
 		const std::string folder = "../../../../Examples/Models/TWD_land/";
@@ -57,7 +57,7 @@ int main()
 
 			}
 	}else {
-		Logging::FMTlogger() << "FMT needs to be compiled with OSI" << "\n";
+		Logging::FMTdefaultlogger() << "FMT needs to be compiled with OSI" << "\n";
 		}
 #endif 
 	return 0;

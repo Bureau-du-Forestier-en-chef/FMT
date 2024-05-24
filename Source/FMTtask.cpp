@@ -9,6 +9,43 @@ namespace Parallel
 
 	boost::recursive_mutex FMTtask::taskmutex;
 
+	boost::mutex FMTtask::m_checkpointMutex;
+
+	size_t FMTtask::m_workingThreads = 0;
+
+	size_t FMTtask::m_allThreads = 0;
+
+	boost::condition_variable FMTtask::m_checkpoint;
+
+	void FMTtask::setTotalThreads(const size_t& p_threads)
+	{
+		boost::mutex::scoped_lock guard(m_checkpointMutex);
+		m_allThreads = p_threads;
+		m_workingThreads = p_threads;
+	}
+
+
+	void FMTtask::decrementWorkingThread()
+	{
+		boost::mutex::scoped_lock guard(m_checkpointMutex);
+		--m_workingThreads;
+	}
+
+	void FMTtask::checkpoint()
+	{
+		decrementWorkingThread();
+		if (m_workingThreads == 0)
+			{
+			m_checkpoint.notify_all();
+			boost::mutex::scoped_lock guard(m_checkpointMutex);
+			m_workingThreads = m_allThreads;
+		}else {
+			boost::mutex::scoped_lock guard(m_checkpointMutex);
+			while (m_workingThreads != m_allThreads) m_checkpoint.wait(guard);
+			}
+		//*_logger << "out " << getthreadid() << "\n";
+	}
+
 
 	FMTtask::FMTtask() :
 		Core::FMTobject(),

@@ -128,9 +128,9 @@ unsigned int FMTtransition::age_after(const std::vector<FMTdevelopment>& devs,
     return (total_age/age_count);
     }
 
-std::vector<FMTtheme>FMTtransition::getstaticthemes(const std::vector<FMTtheme>& themes) const
+std::vector<const FMTtheme*>FMTtransition::getstaticthemes(const std::vector<const FMTtheme*>& themes) const
 	{
-	std::vector<FMTtheme>staticthemes = themes;
+	std::vector<const FMTtheme*>staticthemes = themes;
 	try {
 		std::vector<std::pair<FMTmask, FMTfork>>::const_iterator fork_it = this->begin();
 		while (fork_it != this->end() && !staticthemes.empty())

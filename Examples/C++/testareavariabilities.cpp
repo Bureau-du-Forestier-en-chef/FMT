@@ -3,7 +3,7 @@
 #include "FMTlpmodel.h"
 #include "FMTmodelparser.h"
 #include "FMTversion.h"
-#include "FMTlogger.h"
+#include "FMTdefaultlogger.h"
 #include "FMTconstraint.h"
 #include "FMTscheduleparser.h"
 #include "FMTmask.h"
@@ -16,7 +16,7 @@
 int main()
 {
 #ifdef FMTWITHOSI
-	Logging::FMTlogger().logstamp();
+	Logging::FMTdefaultlogger().logstamp();
 		const std::string folder = "../../../../Examples/Models/TWD_land/";
 		const std::string primarylocation = folder + "TWD_land.pri";
 		Parser::FMTmodelparser modelparser;
@@ -51,7 +51,7 @@ int main()
 					{
 					for (size_t period = 1; period <= 10; ++period)
 						{
-						Logging::FMTlogger() <<"At period "<<period<< " OLD value is " << newmodel.getoutput(output, 5, Core::FMToutputlevel::totalonly).at("Total") <<
+						Logging::FMTdefaultlogger() <<"At period "<<period<< " OLD value is " << newmodel.getoutput(output, 5, Core::FMToutputlevel::totalonly).at("Total") <<
 							"NEW value is " << optimizationmodel.getoutput(output,period, Core::FMToutputlevel::totalonly).at("Total") << "\n";
 						}
 					break;

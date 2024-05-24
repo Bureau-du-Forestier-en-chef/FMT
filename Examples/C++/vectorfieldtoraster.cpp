@@ -2,14 +2,14 @@
 #ifdef FMTWITHGDAL
 #include "FMTareaparser.h"
 #include "FMTversion.h"
-#include "FMTlogger.h"
+#include "FMTdefaultlogger.h"
 #include "FMTareaparser.h"
 #endif
 
 int main()
 {
     #ifdef FMTWITHGDAL
-        Logging::FMTlogger().logstamp();
+        Logging::FMTdefaultlogger().logstamp();
         const std::string modellocation = "../../../../Examples/Models/TWD_land/";
         const std::string	maplocation = modellocation + "/Carte/TWD_land.shp";
         const std::string	writelocation = "../../tests/vectorfieldtoraster/";

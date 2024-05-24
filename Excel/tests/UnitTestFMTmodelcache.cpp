@@ -4,7 +4,7 @@
 #ifdef FMTWITHMOSEK
 #include "FMTmodelparser.h"
 #include "FMTversion.h"
-#include "FMTlogger.h"
+#include "FMTdefaultlogger.h"
 #include "FMTfreeexceptionhandler.h"
 #include "FMTmodelcache.h"
 #include "FMtmask.h"
@@ -95,7 +95,7 @@ namespace Testing
 int main()
 {
 	#ifdef FMTWITHMOSEK
-		Logging::FMTlogger().logstamp();
+		Logging::FMTdefaultlogger().logstamp();
 		Testing::UnitTestFMTmodelcache test;
 		test.testThemeSelectionToMask();
 	#endif 

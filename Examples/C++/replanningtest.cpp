@@ -6,12 +6,13 @@
 	#include "FMTnssmodel.h"
 	#include "FMTfreeexceptionhandler.h"
 	#include "FMTmodelparser.h"
+#include "FMTdefaultlogger.h"
 #endif
 
 int main(int argc, char *argv[])
 	{
 	#ifdef FMTWITHOSI
-	Logging::FMTlogger().logstamp();
+	Logging::FMTdefaultlogger().logstamp();
 	const std::string folder = "../../../../Examples/Models/TWD_land/";
 	const std::string primlocation = folder + "TWD_land.pri";
 	std::vector<std::string>allscenarios;

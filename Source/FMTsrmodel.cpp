@@ -25,6 +25,12 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 namespace Models
 {
 
+	void FMTsrmodel::setNodeCacheSize(const size_t& p_size)
+	{
+		_logger->logwithlevel("Node Cache size for " + getname() + " of " + std::to_string(p_size) + "\n", 1);
+		graph.setNodeSize(p_size);
+	}
+
 	Graph::FMTgraphvertextoyield FMTsrmodel::getGraphVertexToYield() const
 	{
 		try {
@@ -1332,6 +1338,7 @@ namespace Models
 	{
 		std::vector<Core::FMTactualdevelopment>returnedarea;
 		try {
+			returnedarea.reserve(area.size());//Reserve at least the size of the initial area.
 			if (period == 0)
 			{
 				return FMTmodel::getarea();
@@ -1398,7 +1405,7 @@ namespace Models
 			}
 	}
 
-	void FMTsrmodel::passinlogger(const std::shared_ptr<Logging::FMTlogger>& logger)
+	void FMTsrmodel::passinlogger(const std::unique_ptr<Logging::FMTlogger>& logger)
 	{
 		solver.passinlogger(logger);
 	}

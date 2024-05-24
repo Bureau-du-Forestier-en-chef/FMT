@@ -3,7 +3,7 @@
 #include "FMTlpmodel.h"
 #include "FMTmodelparser.h"
 #include "FMTversion.h"
-#include "FMTlogger.h"
+#include "FMTdefaultlogger.h"
 #include "FMTconstraint.h"
 #include "FMTscheduleparser.h"
 #include "FMTmask.h"
@@ -17,7 +17,7 @@
 int main()
 {
 #ifdef FMTWITHOSI
-	Logging::FMTlogger().logstamp();
+	Logging::FMTdefaultlogger().logstamp();
 		const std::string folder = "../../../../Examples/Models/TWD_land/";
 		const std::string primarylocation = folder + "TWD_land.pri";
 		Parser::FMTmodelparser modelparser;
@@ -51,9 +51,9 @@ int main()
 			for (const Core::FMToutput& output : outputtotest)
 			{
 			const double returnedvalue = optimizationmodel.getoutput(output,1,Core::FMToutputlevel::totalonly).at("Total");
-			Logging::FMTlogger() << "Base value of " + output.getname() << " " << returnedvalue << " ";
+			Logging::FMTdefaultlogger() << "Base value of " + output.getname() << " " << returnedvalue << " ";
 			}
-		Logging::FMTlogger() << "\n";
+		Logging::FMTdefaultlogger() << "\n";
 		for (const Core::FMTconstraint& constraint : constraints)
 			{
 			optimizationmodel.eraseconstraint(constraint);
@@ -65,9 +65,9 @@ int main()
 			for (const Core::FMToutput& output : outputtotest)
 				{
 				const double returnedvalue = optimizationmodel.getoutput(output, 1, Core::FMToutputlevel::totalonly).at("Total");
-				Logging::FMTlogger() << std::string(constraint) + " value of " + output.getname() << " " << returnedvalue << " ";
+				Logging::FMTdefaultlogger() << std::string(constraint) + " value of " + output.getname() << " " << returnedvalue << " ";
 				}
-			Logging::FMTlogger() << "\n";
+			Logging::FMTdefaultlogger() << "\n";
 			optimizationmodel.setconstraint(constraint);
 			if (!optimizationmodel.resolve())
 				{

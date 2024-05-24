@@ -4,7 +4,7 @@
 	#include "FMTlpmodel.h"
 	#include "FMTmodelparser.h"
 	#include "FMTversion.h"
-	#include "FMTlogger.h"
+	#include "FMTdefaultlogger.h"
 	#include "FMTconstraint.h"
     #include "FMToutputnode.h"
     #include "FMTmask.h"
@@ -63,7 +63,7 @@ std::vector<Heuristics::FMToperatingareascheme> ObtenirOperatingArea(   const st
         if (spatialconstraints)
         {
             Parser::FMTareaparser areaParser;
-            Logging::FMTlogger()<<"Lecture des blocs voisins."<<"\n";
+            Logging::FMTdefaultlogger()<<"Lecture des blocs voisins."<<"\n";
             opeareas = areaParser.getschemeneighbors(opeareas, themes, fichierShp, nomChampAge, nomChampSuperficie, 1.0, 1,nomChampStanlock);
         }
         return opeareas;
@@ -121,7 +121,7 @@ Core::FMToutputnode createBFECoptaggregate(Models::FMTmodel& model)
 int main(int argc, char *argv[])
     {   
         #ifdef FMTWITHOSI
-            Logging::FMTlogger().logstamp();
+            Logging::FMTdefaultlogger().logstamp();
             const std::string primarylocation =  std::string(argv[1]);
             const std::vector<std::string>scenarios(1,  std::string(argv[2]));
             const std::string fichierShp =  std::string(argv[3]);

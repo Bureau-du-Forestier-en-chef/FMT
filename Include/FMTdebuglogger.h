@@ -69,6 +69,12 @@ namespace Logging
 		FMTdebuglogger default destructor.
 		*/
 		~FMTdebuglogger() = default;
+		// DocString: FMTdebuglogger::Clone
+		/**
+		@brief clone the FMTdebuglogger
+		@return a valid clonedFMTdebuglogger
+		*/
+		virtual std::unique_ptr <FMTlogger> Clone() const;
 	};
 }
 

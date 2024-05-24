@@ -42,74 +42,7 @@ namespace Parallel
 	*/
 	class FMTEXPORT FMTreplanningtask : public FMTtask
 	{
-		// DocString: FMTreplanningtask::resultswriter
-		///Concurrent results writer who writes the results of each abstract model after each call to doplanning
-		std::shared_ptr<FMTparallelwriter>resultswriter;
-		// DocString: FMTreplanningtask::baseschedule
-		///This is the schedule of the solved global model at period 1.
-		std::shared_ptr<Core::FMTschedule>baseschedule;
-		// DocString: FMTreplanningtask::global
-		///The shared global model between each task
-		std::shared_ptr<Models::FMTmodel>global;//base area is in here.
-		// DocString: FMTreplanningtask::stochastic
-		///The stochastic model used in replanning
-		std::shared_ptr<Models::FMTmodel>stochastic;
-		// DocString: FMTreplanningtask::local
-		///The local model used by the replanning
-		std::shared_ptr<Models::FMTmodel>local;
-		// DocString: FMTreplanningtask::replicateids
-		///The replicates queue that the task needs to do
-		std::queue<int>replicateids;
-		// DocString: FMTreplanningtask::dynamicarea
-		///This is the dynamic area that changes at each replanning step
-		std::vector<Core::FMTactualdevelopment>dynamicarea;
-		// DocString: FMTreplanningtask::iterationglobalschedule
-		///This is the schedule that the global model generates after a call to doplanning
-		Core::FMTschedule iterationglobalschedule;
-		// DocString: FMTreplanningtask::dynamicconstraints
-		///Local constraints set using the results obtained in the global or local model.
-		std::vector<Core::FMTconstraint>dynamicconstraints;
-		// DocString: FMTreplanningtask::replanningperiods
-		///The number of replanning periods the task needs to do.
-		int replanningperiods;
-		// DocString: FMTreplanningtask::copysharedmodel
-		/**
-		Solver logger make it not save to clone a solver with a common logger.
-		So we need to lock this function to make sure that there's no racing between threads.
-		*/
-		std::unique_ptr<Models::FMTmodel>copysharedmodel(const std::shared_ptr<Models::FMTmodel>model);
-		// DocString: FMTreplanningtask::domodelplanning
-		/**
-		The main do planning function that call doplanning on model for a given replanning period and will keep solution and constraints
-		id getsolutionandlocal = true and will apply the schedule weight if applyscheduleweight = true.
-		*/
-		std::unique_ptr<Models::FMTmodel>domodelplanning(
-			const std::shared_ptr<Models::FMTmodel>model,
-			const int& replanningperiod,
-			bool getsolutionandlocal = false,
-			bool applyscheduleweight = false,
-			bool setdynamicconstraints=true);
-		// DocString: FMTreplanningtask::writeresults
-		/**
-		Write the results from a model pointer, if onlyfirsperiod = true will only write first period else write the whole thing.
-		*/
-		void writeresults(const std::string& modelname,const int& modellength,
-			const std::unique_ptr<Models::FMTmodel>& modelptr, const int& replanningperiod,bool onlyfirstperiod = false);
-		// DocString: FMTreplanningtask::getiteration
-		/**
-		Get the actual iteration done by the task (front in the queue)
-		*/
-		const int getiteration() const;
-		// DocString: FMTreplanningtask::setreignore
-		/**
-		Remove reignore constraints based on the replanning period.
-		*/
-		void setreignore(std::unique_ptr<Models::FMTmodel>& modelcpy, const int& replanningperiod) const;
-		// DocString: FMTreplanningtask::setreplicate
-		/**
-		Ajuste constraints based on the replicate keyword
-		*/
-		void setreplicate(std::unique_ptr<Models::FMTmodel>& modelcpy, const int& replanningperiod) const;
+		
 	public:
 		// DocString: FMTreplanningtask::FMTreplanningtask()
 		/**
@@ -200,7 +133,76 @@ namespace Parallel
 		/**
 		Pass the logger
 		*/
-		void passinlogger(const std::shared_ptr<Logging::FMTlogger>& logger) override;
+		void passinlogger(const std::unique_ptr<Logging::FMTlogger>& logger) override;
+	private:
+		// DocString: FMTreplanningtask::resultswriter
+		///Concurrent results writer who writes the results of each abstract model after each call to doplanning
+		std::shared_ptr<FMTparallelwriter>resultswriter;
+		// DocString: FMTreplanningtask::baseschedule
+		///This is the schedule of the solved global model at period 1.
+		std::shared_ptr<Core::FMTschedule>baseschedule;
+		// DocString: FMTreplanningtask::global
+		///The shared global model between each task
+		std::shared_ptr<Models::FMTmodel>global;//base area is in here.
+		// DocString: FMTreplanningtask::stochastic
+		///The stochastic model used in replanning
+		std::shared_ptr<Models::FMTmodel>stochastic;
+		// DocString: FMTreplanningtask::local
+		///The local model used by the replanning
+		std::shared_ptr<Models::FMTmodel>local;
+		// DocString: FMTreplanningtask::replicateids
+		///The replicates queue that the task needs to do
+		std::queue<int>replicateids;
+		// DocString: FMTreplanningtask::dynamicarea
+		///This is the dynamic area that changes at each replanning step
+		std::vector<Core::FMTactualdevelopment>dynamicarea;
+		// DocString: FMTreplanningtask::iterationglobalschedule
+		///This is the schedule that the global model generates after a call to doplanning
+		Core::FMTschedule iterationglobalschedule;
+		// DocString: FMTreplanningtask::dynamicconstraints
+		///Local constraints set using the results obtained in the global or local model.
+		std::vector<Core::FMTconstraint>dynamicconstraints;
+		// DocString: FMTreplanningtask::replanningperiods
+		///The number of replanning periods the task needs to do.
+		int replanningperiods;
+		// DocString: FMTreplanningtask::copysharedmodel
+		/**
+		Solver logger make it not save to clone a solver with a common logger.
+		So we need to lock this function to make sure that there's no racing between threads.
+		*/
+		std::unique_ptr<Models::FMTmodel>copysharedmodel(const std::shared_ptr<Models::FMTmodel>model);
+		// DocString: FMTreplanningtask::domodelplanning
+		/**
+		The main do planning function that call doplanning on model for a given replanning period and will keep solution and constraints
+		id getsolutionandlocal = true and will apply the schedule weight if applyscheduleweight = true.
+		*/
+		std::unique_ptr<Models::FMTmodel>domodelplanning(
+			const std::shared_ptr<Models::FMTmodel>model,
+			const int& replanningperiod,
+			bool getsolutionandlocal = false,
+			bool applyscheduleweight = false,
+			bool setdynamicconstraints = true);
+		// DocString: FMTreplanningtask::writeresults
+		/**
+		Write the results from a model pointer, if onlyfirsperiod = true will only write first period else write the whole thing.
+		*/
+		void writeresults(const std::string& modelname, const int& modellength,
+			const std::unique_ptr<Models::FMTmodel>& modelptr, const int& replanningperiod, bool onlyfirstperiod = false);
+		// DocString: FMTreplanningtask::getiteration
+		/**
+		Get the actual iteration done by the task (front in the queue)
+		*/
+		const int getiteration() const;
+		// DocString: FMTreplanningtask::setreignore
+		/**
+		Remove reignore constraints based on the replanning period.
+		*/
+		void setreignore(std::unique_ptr<Models::FMTmodel>& modelcpy, const int& replanningperiod) const;
+		// DocString: FMTreplanningtask::setreplicate
+		/**
+		Ajuste constraints based on the replicate keyword
+		*/
+		void setreplicate(std::unique_ptr<Models::FMTmodel>& modelcpy, const int& replanningperiod) const;
 
 	};
 

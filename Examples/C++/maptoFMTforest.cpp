@@ -4,7 +4,7 @@
 #include "FMTmodelparser.h"
 #include "FMTareaparser.h"
 #include "FMTversion.h"
-#include "FMTlogger.h"
+#include "FMTdefaultlogger.h"
 #include "FMTareaparser.h"
 #include "FMTforest.h"
 #include "FMTmodel.h"
@@ -14,7 +14,7 @@
 int main(int argc, char* argv[])
 {
 #ifdef FMTWITHGDAL
-    Logging::FMTlogger().logstamp();
+    Logging::FMTdefaultlogger().logstamp();
     const std::string vals = argv[1];
     std::vector<std::string>results;
     boost::split(results, vals, boost::is_any_of("|"));

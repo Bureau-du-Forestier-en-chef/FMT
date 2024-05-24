@@ -25,5 +25,16 @@ namespace Logging
 		printout.clear();
 		}
 
+#ifdef FMTWITHOSI
+	FMTlogger* FMTexcellogger::clone() const
+	{
+		return new FMTexcellogger(*this);
+	}
+#endif
+	std::unique_ptr <FMTlogger> FMTexcellogger::Clone() const
+	{
+		return std::unique_ptr <FMTlogger>(new FMTexcellogger(*this));
+	}
+
 
 }

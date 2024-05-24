@@ -204,17 +204,22 @@ class FMTEXPORT FMTmask
 		/**
 		Filter FMTtheme from themes that are only using aggregates or ? for the FMTmask.
 		*/
-		std::vector<FMTtheme>getstaticthemes(const std::vector<FMTtheme>& themes) const;
+		std::vector<const Core::FMTtheme*>getstaticthemes(const std::vector<const Core::FMTtheme*>& themes) const;
 		// DocString: FMTmask::getselectedthemes
 		/**
 		Takes vector of FMTtheme and return a vector of FMTtheme from which theme have any true bits.
 		*/
-		std::vector<FMTtheme> getselectedthemes(const  std::vector<FMTtheme>& themes) const;
+		std::vector<const Core::FMTtheme*> getselectedthemes(const  std::vector<Core::FMTtheme>& themes) const;
 		// DocString: FMTmask::isnotthemessubset
 		/**
 		By looking at each FMTtheme in the FMTmask return true if *this is not part of rhs base on sorted FMTtheme (themes).
 		*/
-		bool isnotthemessubset(const FMTmask& rhs, const  std::vector<FMTtheme>& themes) const;
+		bool isnotthemessubset(const FMTmask& rhs, const  std::vector<const Core::FMTtheme*>& themes) const;
+		// DocString: FMTmask::isnotthemessubset
+		/**
+		By looking at each FMTtheme in the FMTmask return true if *this is not part of rhs base on sorted FMTtheme (themes).
+		*/
+		bool isnotthemessubset(const FMTmask& rhs, const  std::vector<Core::FMTtheme>& themes) const;
 		// DocString: FMTmask::removeaggregates
 		/**
 		For each FMTtheme in (themes) if the attribute is an aggregate or ? will unset all

@@ -14,7 +14,13 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 namespace Models
 {
 	FMTnssmodel::FMTnssmodel():
-		FMTsrmodel(FMTmodel(), Models::FMTsolverinterface::CLP)
+		FMTsrmodel(FMTmodel(),
+		#ifdef FMTWITHMOSEK
+				Models::FMTsolverinterface::MOSEK
+		#else
+				Models::FMTsolverinterface::CLP
+		#endif
+			)
 	{
 	
 	}
@@ -26,7 +32,13 @@ namespace Models
 	}
 
 	FMTnssmodel::FMTnssmodel(const FMTmodel& rhs, unsigned int seed):
-		FMTsrmodel(rhs,Models::FMTsolverinterface::CLP)
+		FMTsrmodel(rhs,
+		#ifdef FMTWITHMOSEK
+					Models::FMTsolverinterface::MOSEK
+		#else
+					Models::FMTsolverinterface::CLP
+		#endif
+		)
 	{
 		FMTmodel::setparameter(SEED,seed);
 		FMTmodel::setSeed(seed);

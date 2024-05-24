@@ -25,7 +25,8 @@ namespace Exception
 	FMTexception FMTdebugexceptionhandler::raise(FMTexc lexception, std::string text,
 		const std::string& method,const int& line, const std::string& file, Core::FMTsection lsection, bool throwit)
 	{
-		boost::lock_guard<boost::recursive_mutex> guard(mtx);
+		
+		const FMTlev LEVEL = getLevel(lexception);
 		FMTexception excp;
 		if (lsection == Core::FMTsection::Empty)
 			{
@@ -33,18 +34,20 @@ namespace Exception
 			}else {
 			excp = FMTexception(lexception, lsection, updatestatus(lexception, text),method, file,line);
 			}
-		if (throwit && !needtorethrow())
-			{
-			if (_level == FMTlev::FMT_Warning || _level == FMTlev::FMT_Debug)
-				{
-					FMTwarning(excp).warn(_logger,_specificwarningcount,maxwarningsbeforesilenced);
-				}
-			else if (_level == FMTlev::FMT_logic || _level == FMTlev::FMT_range)
-				{
-				std::throw_with_nested(FMTerror(excp));
-				}
-			}
 
+
+		if (throwit)
+			{
+			if (LEVEL == FMTlev::FMT_Warning || LEVEL == FMTlev::FMT_Debug)
+				{
+				FMTwarning(excp).warn(*_logger, _specificwarningcount, maxwarningsbeforesilenced);
+				}else if(LEVEL == FMTlev::FMT_logic || LEVEL == FMTlev::FMT_range)
+				{
+					boost::lock_guard<boost::recursive_mutex> guard(mtx);
+					std::throw_with_nested(FMTerror(excp));
+				}
+
+			}
 		return excp;
 	}
 #ifdef FMTWITHGDAL
@@ -55,7 +58,7 @@ namespace Exception
 		}
 	void FMTdebugexceptionhandler::handelCPLerror(int eErrClass, int nError, const char * pszErrorMsg)
 		{
-		boost::lock_guard<boost::recursive_mutex> guard(mtx);
+		//boost::lock_guard<boost::recursive_mutex> guard(mtx);
         try{
             FMTexceptionhandler::handelCPLerror(eErrClass, nError, pszErrorMsg);
         }catch(...)
@@ -65,6 +68,11 @@ namespace Exception
 
 		}
 #endif
+
+	std::unique_ptr <FMTexceptionhandler> FMTdebugexceptionhandler::Clone() const
+	{
+		return std::unique_ptr <FMTexceptionhandler>(new FMTdebugexceptionhandler(*this));
+	}
 
 }
 

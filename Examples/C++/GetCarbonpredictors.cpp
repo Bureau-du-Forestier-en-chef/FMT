@@ -8,7 +8,7 @@ Example to get FMTpredictors on a FMTsesmodel
 	#include "FMTsesmodel.h"
 	#include "FMTmodelparser.h"
 	#include "FMTversion.h"
-	#include "FMTlogger.h"
+	#include "FMTdefaultlogger.h"
 	#include "FMTexception.h"
 	#include "FMTpredictor.h"
 	#include "FMTconstraint.h"
@@ -28,7 +28,7 @@ Example to get FMTpredictors on a FMTsesmodel
 int main()
 	{
 #if defined FMTWITHGDAL && defined FMTWITHOSI
-	Logging::FMTlogger().logstamp();
+	Logging::FMTdefaultlogger().logstamp();
 	if (Version::FMTversion().hasfeature("OSI"))
 		{
 		#ifdef FMTWITHONNXR
@@ -81,9 +81,9 @@ int main()
 				{
 					for (const auto& t : simulationmodel.greedyreferencebuild(optimizationmodel.getsolution(period),10))
 					{
-						Logging::FMTlogger() << t.first << " " << t.second << " ";
+						Logging::FMTdefaultlogger() << t.first << " " << t.second << " ";
 					}
-					Logging::FMTlogger() << "\n";
+					Logging::FMTdefaultlogger() << "\n";
 				}
 				Spatial::FMTspatialschedule spatialschedule = simulationmodel.getspschedule();	
 				std::vector<std::vector<std::vector<std::pair<std::string,double>>>> allpredictors;
@@ -118,7 +118,7 @@ int main()
 					{
 						for(const auto& pred : graphpred)
 						{
-							Logging::FMTlogger() << "ID: " << id << " Period: " << period << " " << pred.first.c_str() << " " << pred.second << "\n";
+							Logging::FMTdefaultlogger() << "ID: " << id << " Period: " << period << " " << pred.first.c_str() << " " << pred.second << "\n";
 						}
 						++id;
 					}
@@ -126,7 +126,7 @@ int main()
 				}
 			}
 	}else {
-		Logging::FMTlogger() << "FMT needs to be compiled with OSI" << "\n";
+		Logging::FMTdefaultlogger() << "FMT needs to be compiled with OSI" << "\n";
 		}
 #endif 
 	return 0;

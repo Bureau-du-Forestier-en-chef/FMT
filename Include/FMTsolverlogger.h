@@ -24,22 +24,6 @@ namespace Logging
 	class FMTsolverlogger: public CoinMessageHandler
 		{
 		friend class FMTlogger;
-		// DocString: FMTsolverlogger::baselogger
-		///The base FMTlogger that the abstract class refer to.
-		FMTlogger* baselogger;
-		// DocString: FMTsolverlogger::ownthelogger
-		///If true the logger own the baselogger and need to delete it when destructor called.
-		bool ownthelogger;
-		// DocString: FMTsolverlogger::cleanup()
-		/**
-		Check if you can delete baselogger and delete it if so.
-		*/
-		void cleanup();
-		// DocString: FMTsolverlogger::copy()
-		/**
-		Safely copy from an other solverlogger
-		*/
-		void copy(const FMTsolverlogger& rhs);
 		public:
 			// DocString: FMTsolverlogger(const FMTlogger& baselogger)
 			/**
@@ -60,12 +44,13 @@ namespace Logging
 			/**
 			FMTsolverlogger copy constructor.
 			*/
-			FMTsolverlogger(const FMTsolverlogger& rhs);
+			FMTsolverlogger(const FMTsolverlogger& rhs)=default;
+			
 			// DocString: FMTlogger::operator=
 			/**
 			FMTsolverlogge copy assignment operator.
 			*/
-			FMTsolverlogger& operator = (const FMTsolverlogger& rhs);
+			FMTsolverlogger& operator = (const FMTsolverlogger& rhs)=default;
 			// DocString: FMTsolverlogger::print
 			/**
 			FMTsolverlogge print function if we are using Osisolverinterface the coinmessagehandler
@@ -87,6 +72,28 @@ namespace Logging
 			Clone function needed for the usage of abstract coingmessagehandler class.
 			*/
 			CoinMessageHandler * clone() const override;
+		private:
+			// DocString: FMTsolverlogger::baselogger
+			///The base FMTlogger that the abstract class refer to.
+			FMTlogger* baselogger;
+			// DocString: FMTsolverlogger::ownthelogger
+			///If true the logger own the baselogger and need to delete it when destructor called.
+			bool ownthelogger;
+			// DocString: FMTsolverlogger::cleanup()
+			/**
+			Check if you can delete baselogger and delete it if so.
+			*/
+			void cleanup();
+			// DocString: FMTsolverlogger::copy()
+			/**
+			Safely copy from an other solverlogger
+			*/
+			void copy(const FMTsolverlogger& rhs);
+			// DocString: FMTsolverlogger::copyFrom()
+			/**
+			FMTsolverlogger copy constructor.
+			*/
+			void copyFrom(const FMTsolverlogger& rhs);
 		};
 }
 #endif

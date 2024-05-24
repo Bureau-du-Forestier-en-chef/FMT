@@ -20,16 +20,6 @@ namespace Exception
 	*/
 	class FMTEXPORT FMTdebugexceptionhandler final : public FMTexceptionhandler
 	{
-		// DocString: FMTdebugexceptionhandler::serialize
-		/**
-		Serialize function is for serialization, used to do multiprocessing across multiple cpus (pickle in Pyhton)
-		*/
-		friend class boost::serialization::access;
-		template<class Archive>
-		void serialize(Archive& ar, const unsigned int version)
-		{
-			ar & boost::serialization::make_nvp("FMTexceptionhandler", boost::serialization::base_object<FMTexceptionhandler>(*this));
-		}
 	public:
 		// DocString: FMTdebugexceptionhandler()
 		/**
@@ -63,6 +53,23 @@ namespace Exception
 		*/
 		void handelCPLerror(int eErrClass, int nError, const char * pszErrorMsg) override;
 	#endif
+		// DocString: FMTdebugexceptionhandler::Clone
+		/**
+		@brief clone the FMTdebugexceptionhandler
+		@return a valid cloned FMTdebugexceptionhandler
+		*/
+		virtual std::unique_ptr <FMTexceptionhandler> Clone() const;
+	private:
+		// DocString: FMTdebugexceptionhandler::serialize
+		/**
+		Serialize function is for serialization, used to do multiprocessing across multiple cpus (pickle in Pyhton)
+		*/
+		friend class boost::serialization::access;
+		template<class Archive>
+		void serialize(Archive& ar, const unsigned int version)
+		{
+			ar& boost::serialization::make_nvp("FMTexceptionhandler", boost::serialization::base_object<FMTexceptionhandler>(*this));
+		}
 	};
 
 }

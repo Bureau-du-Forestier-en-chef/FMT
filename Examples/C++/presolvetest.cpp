@@ -1,7 +1,7 @@
 #include <vector>
 #ifdef FMTWITHOSI
 	#include "FMTversion.h"
-	#include "FMTlogger.h"
+	#include "FMTdefaultlogger.h"
 	#include "FMTmodelparser.h"
     #include "FMTlpmodel.h"
     #include "FMTconstraint.h"
@@ -12,7 +12,7 @@
 int main(int argc, char *argv[])
 	{
 	#ifdef FMTWITHOSI
-	Logging::FMTlogger().logstamp();
+	Logging::FMTdefaultlogger().logstamp();
 	const std::string primarylocation = argv[1];
 	const std::string scenario = argv[2];
 	const int scenario_length = std::stoi(argv[3]);

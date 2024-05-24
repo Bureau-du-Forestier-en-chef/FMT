@@ -9,6 +9,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <memory>
 #include "FMTobject.h"
 #include <boost/thread/recursive_mutex.hpp>
+#include <boost/thread/condition_variable.hpp>
 
 /*namespace Logging
 {
@@ -26,27 +27,6 @@ namespace Parallel
 	*/
 	class FMTEXPORT FMTtask : public Core::FMTobject
 	{
-		// DocString: FMTtaskhandler::done
-		///If the task is done true else false
-		bool done;
-		protected:
-		// DocString: FMTtaskhandler::mutex
-		///Recursive mutex for the task
-		static boost::recursive_mutex taskmutex;
-		// DocString: FMTtaskhandler::tasklogger
-		///Logger for solver in parallel...coinmessagehandler does not support concurency.
-		///This logger wont print anything so dont use it in parallel.
-		std::unique_ptr<Logging::FMTlogger>tasklogger;
-		// DocString: FMTreplanningtask::setstatus()
-		/**
-		Change the status of the task
-		*/
-		void setstatus(bool status);
-		// DocString: FMTreplanningtask::split()
-		/**
-		Split the totalworksize in much possible equal buckets.
-		*/
-		std::vector<size_t>splitwork(int numberoftasks,const int& totalworksize) const;
 	public:
 		// DocString: FMTreplanningtask::FMTtask()
 		/**
@@ -104,6 +84,57 @@ namespace Parallel
 		Get the thread id of the task.
 		*/
 		std::string getthreadid() const;
+		// DocString: FMTreplanningtask::setTotalThreads()
+		/**
+		@brief set the total amount of threads
+		@param[in] the number of threads.
+		*/
+		static void setTotalThreads(const size_t& p_threads);
+		// DocString: FMTtaskhandler::done
+		///If the task is done true else false
+		bool done;
+	protected:
+		// DocString: FMTtaskhandler::mutex
+		///Recursive mutex for the task
+		static boost::recursive_mutex taskmutex;
+		// DocString: FMTtaskhandler::tasklogger
+		///Logger for solver in parallel...coinmessagehandler does not support concurency.
+		///This logger wont print anything so dont use it in parallel.
+		std::unique_ptr<Logging::FMTlogger>tasklogger;
+		// DocString: FMTreplanningtask::setstatus()
+		/**
+		Change the status of the task
+		*/
+		void setstatus(bool status);
+		// DocString: FMTreplanningtask::split()
+		/**
+		Split the totalworksize in much possible equal buckets.
+		*/
+		std::vector<size_t>splitwork(int numberoftasks,const int& totalworksize) const;
+		// DocString: FMTreplanningtask::decrementWorkingThread()
+		/**
+		@brief decrement the number of thread working.
+		*/
+		void decrementWorkingThread();
+		// DocString: FMTreplanningtask::checkpoint()
+		/**
+		@brief wait for other thread to finish there jobs, if there job is done then continue.
+		*/
+		void checkpoint();
+	private:
+		// DocString: FMTtaskhandler::m_workingThreads
+		///The number of threads that are working
+		static size_t m_workingThreads;
+		// DocString: FMTtaskhandler::m_allThreads
+		///The total number of threads.
+		static size_t m_allThreads;
+		// DocString: FMTtaskhandler::m_checkpoint
+		///The checkpoint condition variable.
+		static boost::condition_variable m_checkpoint;
+		// DocString: FMTtaskhandler::m_checkpointMutex
+		///Mutex checkpoint
+		static boost::mutex m_checkpointMutex;
+	
 		
 	};
 

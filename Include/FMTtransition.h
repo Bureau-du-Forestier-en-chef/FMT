@@ -105,7 +105,7 @@ class FMTEXPORT FMTtransition : public FMTlist<FMTfork>
 		Using a list of (themes) this function returns a subset of the theme list for which their's no attribute change
 		in the FMTtransitionmask (what we call here static themes).
 		*/
-		std::vector<FMTtheme>getstaticthemes(const std::vector<FMTtheme>& themes) const;
+		std::vector<const FMTtheme*>getstaticthemes(const std::vector<const FMTtheme*>& themes) const;
 		// DocString: FMTtransition::canproduce
 		/**
 		The function return all the possibles masks, if pass as a source for the transition, that can produce the given(mask).

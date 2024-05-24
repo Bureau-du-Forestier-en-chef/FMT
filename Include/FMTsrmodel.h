@@ -43,6 +43,13 @@ namespace Models
 	class FMTEXPORT FMTsrmodel : public FMTmodel
 	{
 	public:
+		// DocString: FMTsrmodel::setNodeCacheSize
+		/*
+		@brief building constraints or outut sometime takes alot of memory. This is the size of reserved memory
+		taken when caching output node during build process ans output request.
+		@param[in] p_size the size to reserve 
+		*/
+		void setNodeCacheSize(const size_t& p_size);
 		// DocString: FMTsrmodel::getGraphVertexToYield
 		/*
 		If you want to do a generic yieldrequest for the model you may need to have a graphvertextoyield to deal with yields
@@ -243,7 +250,7 @@ namespace Models
 		/**
 		We need to override the passinlogger for the osisolverinterface
 		*/
-		void passinlogger(const std::shared_ptr<Logging::FMTlogger>& logger) override;
+		void passinlogger(const std::unique_ptr<Logging::FMTlogger>& logger) override;
 		// DocString: FMTsrmodel::presolve
 		/**
 		Presolve a FMTsrmodel.

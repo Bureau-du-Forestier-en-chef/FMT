@@ -69,6 +69,12 @@ namespace Logging
 			*/
 			FMTlogger* clone() const override;
 		#endif
+		// DocString: FMTdefaultlogger::Clone
+		/**
+		@brief clone the FMTdefaultlogger
+		@return a valid cloned FMTdefaultlogger
+		*/
+		virtual std::unique_ptr <FMTlogger> Clone() const;
 	};
 
 }

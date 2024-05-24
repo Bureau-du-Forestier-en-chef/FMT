@@ -14,6 +14,8 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <boost/serialization/split_member.hpp>
 #include <boost/serialization/unordered_map.hpp>
 #include <boost/serialization/vector.hpp>
+#include <boost/thread/recursive_mutex.hpp>
+#include <boost/thread/lock_guard.hpp> 
 #include <limits>
 
 namespace Heuristics
@@ -55,159 +57,7 @@ The matrix is held within the solverinterface pointer.
 
 class FMTEXPORT FMTlpmodel : public FMTsrmodel
 	{
-	// DocString: FMTlpmodel::serialize
-	/**
-	Save function is for serialization, used to do multiprocessing across multiple cpus (pickle in Pyhton)
-	*/
-	friend class boost::serialization::access;
-	template<class Archive>
-	void save(Archive& ar, const unsigned int version) const
-	{
-		ar& boost::serialization::make_nvp("model", boost::serialization::base_object<FMTsrmodel>(*this));
-		ar& BOOST_SERIALIZATION_NVP(elements);
-	}
-	template<class Archive>
-	void load(Archive& ar, const unsigned int version)
-	{
-		ar& boost::serialization::make_nvp("model", boost::serialization::base_object<FMTsrmodel>(*this));
-		ar& BOOST_SERIALIZATION_NVP(elements);
-	}
-	// DocString: FMTlpmodel::elements
-	///Locations of the constraints and variables in the matrix for the constraints / objective.
-	std::vector<std::unordered_map<std::string,
-		std::vector<std::vector<int>>>>elements;
-	// DocString: FMTlpmodel::getclusterer
-	/**
-	Using an inventory output (areaoutput) and an (statisticoutput) at (period) this function returns
-	operating area cluster filled with statistic double comming from the output for a given period.
-	*/
-	Heuristics::FMToperatingareaclusterer getclusterer(
-		const std::vector<Heuristics::FMToperatingareacluster>& initialcluster,
-		const Core::FMToutput& areaoutput,
-		const Core::FMToutput& statisticoutput,
-		const int& period,int minimalnumberofclusters = -1,int maximalnumberofclusters = -1) const;
-	// DocString: FMTlpmodel::getsetmatrixelement
-	/**
-	When the user add constraints using the setconstraint function or the setobjective function the model needs to had
-	variables and/or constraints to the matrix to satisfy the FMTconstraint. Each type a variable or constraint need to be added
-	to the matrix the function is called and return the index of the element if it exists (already in matrix) or not (new element).
-	*/
-	int getsetmatrixelement(const Core::FMTconstraint& constraint,
-                     const FMTmatrixelement& element_type, const std::map<int, double>& indexes,
-                     int period = -1,
-                     double lowerbound = std::numeric_limits<double>::min(),
-					 double upperbound = std::numeric_limits<double>::max());
-	// DocString: FMTlpmodel::getgoals
-	/**
-	Return goals (index) if it already exist within the other constraints (goals (goalsnames) can be used across multiple FMTconstraints.
-	*/
-    bool getgoals(const std::vector<std::string>& goalsnames, std::map<int,double>& index,const double& sense) const;
-	// DocString: FMTlpmodel::getlevelfromlevelname
-	/**
-	Will return the level index if non empty constraint it wont check for this constraint.
-	*/
-	int getlevelfromlevelname(const std::string& variable_level, int period,
-		Core::FMTconstraint constraint = Core::FMTconstraint()) const;
-	// DocString: FMTlpmodel::getsetlevel
-	/**
-	Will check if the level (variable_level) already exist within the matrix for other constraints than the (constraint)
-	for a given period.
-	*/
-    int getsetlevel(const Core::FMTconstraint& constraint,const std::string& variable_level,int period);
-	// DocString: FMTlpmodel::getmatrixelement
-	/**
-	Return all the elements (level / constraint / variable) related to a given (constraint) for a period
-	for a given period.
-	*/
-	std::vector<std::vector<int>>getmatrixelement(const Core::FMTconstraint& constraint,int period) const;
-	// DocString: FMTlpmodel::locatelevels
-	/**
-	For a given period lookup in the graph to fill the variables map (variables) for a given level (nodes).
-	*/
-    void locatelevels(const std::vector<Core::FMToutputnode>& nodes,int period, std::map<int, double>& variables,const Core::FMTconstraint& constraint, double multiplier = 1);
-	// DocString: FMTlpmodel::locatenodes
-	/**
-	For a given period lookup in the graph to fill the variables map (variables) for a given FMTconstraints (nodes).
-	Also apply the multiplier to coefficiants of the map the map<variableindex,coefficiants>. If there is some outputs with negative coef,
-	return a vector containing a map (variables for each outputs) if the model parameter STRICTLY_POSITIVE is true.
-	*/
-    std::vector<std::map<int, double>> locatenodes(const std::vector<Core::FMToutputnode>& nodes, int period, std::map<int, double>& variables,double multiplier = 1) const;
-	// DocString: FMTlpmodel::updatematrixelements
-	/**
-	When the eraseperiod function is called the matrix size is shrinked and the variables/constraints indexes have
-	to be updated. This function use the deletedconstraints and deletedvariables private member to update the indexes of
-	a given matrix elements.
-	*/
-	void updatematrixelements(std::vector<int>& matrixelements, const std::vector<int>& deletedelements) const;
-	// DocString: FMTlpmodel::updateconstraintsmapping
-	/**
-	When the eraseperiod function is called the matrix size is shrinked and the variables/constraints indexes have
-	to be updated. This function update the indexes of all the FMTconstraints of the elements calling updatematrixelements().
-	*/
-	void updateconstraintsmapping(const std::vector<int>& Dvariables,const std::vector<int>& Dconstraints);
-	// DocString: FMTlpmodel::updateconstraintsmapping
-	/**
-	When the eraseperiod function is called the matrix size is shrinked and the variables/constraints indexes have
-	to be updated. This function update the indexes of all the FMTconstraints of the elements
-	and also the FMTdevelopement constraints and variables of in the graph and delete those variables and constraints
-	from the solverinterface matrix.
-	*/
-	bool updatematrixngraph(bool updategraph = true);
-	// DocString: FMTlpmodel::getamountofpaths
-	/**
-	Get the number of possible paths if an action is commited on a development.
-	*/
-	//size_t getamountofpaths(const Core::FMTdevelopment& dev, const int& actionid) const;
-	// DocString: FMTlpmodel::ismatrixelement
-	/**
-	Check if the FMTconstraint had a element of (element_type) located in the matrix for a given period.
-	*/
-	bool ismatrixelement(const Core::FMTconstraint& constraint,
-			const FMTmatrixelement& element_type, int period) const;
-	// DocString: FMTlpmodel::containsmatrixelements
-	/**
-	Check if the FMTconstraint have elements related to it.
-	*/
-	bool containsmatrixelements(const Core::FMTconstraint& constraint,int period) const;
-	// DocString: FMTlpmodel::issamematrixelement
-	/**
-	Check if the requested matrix element (matrixindex) is the same as the found one (LB/UB + variables).
-	*/
-	bool issamematrixelement(const int& matrixindex, const FMTmatrixelement& element_type,
-			const double& lowerb, const double& upperb, const std::map<int, double>& variables) const;
 	
-	// DocString: FMTlpmodel::getobjectivebounds
-	/**
-	Returns constraints indexes of the lower and upper bounds of the constraints set for the objective.
-	*/
-	std::vector<int>setobjectivebounds(bool dolower = true, bool doupper = true, double tolerance = FMT_DBL_TOLERANCE);
-	// DocString: FMTlpmodel::updatematrixnaming
-	/**
-	Update the row and variables name based on graph.
-	*/
-	void updatematrixnaming();
-	// DocString: FMTlpmodel::updategeneralconstraintsnaming
-	/**
-	Update the row and variables using the general constraints of the model.
-	*/
-	void updategeneralconstraintsnaming(std::vector<std::string>& colnames,
-										std::vector<std::string>& rownames) const;
-	// DocString: FMTlpmodel::setpositiveoutputsinmatrix
-	/**
-	Set the variables in the map (strictlypositivesoutputs) to be >=0 int the matrix.
-	*/
-	bool setpositiveoutputsinmatrix(const Core::FMTconstraint& constraint, const std::vector<std::map<int, double>>& strictlypositivesoutputs,int period);
-	virtual void swap_ptr(const std::unique_ptr<FMTmodel>& rhs);
-	// DocString: FMTlpmodel::FMTlpmodel(const FMTsrmodel&)
-	/**
-	Constructor to presolve FMTlpmodel.
-	*/
-	FMTlpmodel(const FMTsrmodel& rhs);
-	// DocString: FMTlpmodel::trysetsolution(const std::vector<Core::FMTschedule>&)
-	/**
-	Try to setsolution, if not possible try setsolutionbylp
-	*/	
-	bool trysetsolution(const std::vector<Core::FMTschedule>& schedules);
 	public:
 		// DocString: FMTlpmodel::clearcache
 		/**
@@ -446,6 +296,160 @@ class FMTEXPORT FMTlpmodel : public FMTsrmodel
 		Need to have a builded graph with a solution to use this function.
 		*/
 		virtual std::unique_ptr<FMTmodel> getcopy(int period = 0) const;
+	private:
+		// DocString: FMTlpmodel::serialize
+		/**
+		Save function is for serialization, used to do multiprocessing across multiple cpus (pickle in Pyhton)
+		*/
+		friend class boost::serialization::access;
+		template<class Archive>
+		void save(Archive& ar, const unsigned int version) const
+		{
+			ar& boost::serialization::make_nvp("model", boost::serialization::base_object<FMTsrmodel>(*this));
+			ar& BOOST_SERIALIZATION_NVP(elements);
+		}
+		template<class Archive>
+		void load(Archive& ar, const unsigned int version)
+		{
+			ar& boost::serialization::make_nvp("model", boost::serialization::base_object<FMTsrmodel>(*this));
+			ar& BOOST_SERIALIZATION_NVP(elements);
+		}
+		// DocString: FMTlpmodel::elements
+		///Locations of the constraints and variables in the matrix for the constraints / objective.
+		std::vector<std::unordered_map<std::string,
+			std::vector<std::vector<int>>>>elements;
+		// DocString: FMTlpmodel::getclusterer
+		/**
+		Using an inventory output (areaoutput) and an (statisticoutput) at (period) this function returns
+		operating area cluster filled with statistic double comming from the output for a given period.
+		*/
+		Heuristics::FMToperatingareaclusterer getclusterer(
+			const std::vector<Heuristics::FMToperatingareacluster>& initialcluster,
+			const Core::FMToutput& areaoutput,
+			const Core::FMToutput& statisticoutput,
+			const int& period, int minimalnumberofclusters = -1, int maximalnumberofclusters = -1) const;
+		// DocString: FMTlpmodel::getsetmatrixelement
+		/**
+		When the user add constraints using the setconstraint function or the setobjective function the model needs to had
+		variables and/or constraints to the matrix to satisfy the FMTconstraint. Each type a variable or constraint need to be added
+		to the matrix the function is called and return the index of the element if it exists (already in matrix) or not (new element).
+		*/
+		int getsetmatrixelement(const Core::FMTconstraint& constraint,
+			const FMTmatrixelement& element_type, const std::map<int, double>& indexes,
+			int period = -1,
+			double lowerbound = std::numeric_limits<double>::min(),
+			double upperbound = std::numeric_limits<double>::max());
+		// DocString: FMTlpmodel::getgoals
+		/**
+		Return goals (index) if it already exist within the other constraints (goals (goalsnames) can be used across multiple FMTconstraints.
+		*/
+		bool getgoals(const std::vector<std::string>& goalsnames, std::map<int, double>& index, const double& sense) const;
+		// DocString: FMTlpmodel::getlevelfromlevelname
+		/**
+		Will return the level index if non empty constraint it wont check for this constraint.
+		*/
+		int getlevelfromlevelname(const std::string& variable_level, int period,
+			Core::FMTconstraint constraint = Core::FMTconstraint()) const;
+		// DocString: FMTlpmodel::getsetlevel
+		/**
+		Will check if the level (variable_level) already exist within the matrix for other constraints than the (constraint)
+		for a given period.
+		*/
+		int getsetlevel(const Core::FMTconstraint& constraint, const std::string& variable_level, int period);
+		// DocString: FMTlpmodel::getmatrixelement
+		/**
+		Return all the elements (level / constraint / variable) related to a given (constraint) for a period
+		for a given period.
+		*/
+		std::vector<std::vector<int>>getmatrixelement(const Core::FMTconstraint& constraint, int period) const;
+		// DocString: FMTlpmodel::locatelevels
+		/**
+		For a given period lookup in the graph to fill the variables map (variables) for a given level (nodes).
+		*/
+		void locatelevels(const std::vector<Core::FMToutputnode>& nodes, int period, std::map<int, double>& variables, const Core::FMTconstraint& constraint, double multiplier = 1);
+		// DocString: FMTlpmodel::locatenodes
+		/**
+		For a given period lookup in the graph to fill the variables map (variables) for a given FMTconstraints (nodes).
+		Also apply the multiplier to coefficiants of the map the map<variableindex,coefficiants>. If there is some outputs with negative coef,
+		return a vector containing a map (variables for each outputs) if the model parameter STRICTLY_POSITIVE is true.
+		*/
+		std::vector<std::map<int, double>> locatenodes(const std::vector<Core::FMToutputnode>& nodes, int period, std::map<int, double>& variables, double multiplier = 1) const;
+		// DocString: FMTlpmodel::updatematrixelements
+		/**
+		When the eraseperiod function is called the matrix size is shrinked and the variables/constraints indexes have
+		to be updated. This function use the deletedconstraints and deletedvariables private member to update the indexes of
+		a given matrix elements.
+		*/
+		void updatematrixelements(std::vector<int>& matrixelements, const std::vector<int>& deletedelements) const;
+		// DocString: FMTlpmodel::updateconstraintsmapping
+		/**
+		When the eraseperiod function is called the matrix size is shrinked and the variables/constraints indexes have
+		to be updated. This function update the indexes of all the FMTconstraints of the elements calling updatematrixelements().
+		*/
+		void updateconstraintsmapping(const std::vector<int>& Dvariables, const std::vector<int>& Dconstraints);
+		// DocString: FMTlpmodel::updateconstraintsmapping
+		/**
+		When the eraseperiod function is called the matrix size is shrinked and the variables/constraints indexes have
+		to be updated. This function update the indexes of all the FMTconstraints of the elements
+		and also the FMTdevelopement constraints and variables of in the graph and delete those variables and constraints
+		from the solverinterface matrix.
+		*/
+		bool updatematrixngraph(bool updategraph = true);
+		// DocString: FMTlpmodel::getamountofpaths
+		/**
+		Get the number of possible paths if an action is commited on a development.
+		*/
+		//size_t getamountofpaths(const Core::FMTdevelopment& dev, const int& actionid) const;
+		// DocString: FMTlpmodel::ismatrixelement
+		/**
+		Check if the FMTconstraint had a element of (element_type) located in the matrix for a given period.
+		*/
+		bool ismatrixelement(const Core::FMTconstraint& constraint,
+			const FMTmatrixelement& element_type, int period) const;
+		// DocString: FMTlpmodel::containsmatrixelements
+		/**
+		Check if the FMTconstraint have elements related to it.
+		*/
+		bool containsmatrixelements(const Core::FMTconstraint& constraint, int period) const;
+		// DocString: FMTlpmodel::issamematrixelement
+		/**
+		Check if the requested matrix element (matrixindex) is the same as the found one (LB/UB + variables).
+		*/
+		bool issamematrixelement(const int& matrixindex, const FMTmatrixelement& element_type,
+			const double& lowerb, const double& upperb, const std::map<int, double>& variables) const;
+
+		// DocString: FMTlpmodel::getobjectivebounds
+		/**
+		Returns constraints indexes of the lower and upper bounds of the constraints set for the objective.
+		*/
+		std::vector<int>setobjectivebounds(bool dolower = true, bool doupper = true, double tolerance = FMT_DBL_TOLERANCE);
+		// DocString: FMTlpmodel::updatematrixnaming
+		/**
+		Update the row and variables name based on graph.
+		*/
+		void updatematrixnaming();
+		// DocString: FMTlpmodel::updategeneralconstraintsnaming
+		/**
+		Update the row and variables using the general constraints of the model.
+		*/
+		void updategeneralconstraintsnaming(std::vector<std::string>& colnames,
+			std::vector<std::string>& rownames) const;
+		// DocString: FMTlpmodel::setpositiveoutputsinmatrix
+		/**
+		Set the variables in the map (strictlypositivesoutputs) to be >=0 int the matrix.
+		*/
+		bool setpositiveoutputsinmatrix(const Core::FMTconstraint& constraint, const std::vector<std::map<int, double>>& strictlypositivesoutputs, int period);
+		virtual void swap_ptr(const std::unique_ptr<FMTmodel>& rhs);
+		// DocString: FMTlpmodel::FMTlpmodel(const FMTsrmodel&)
+		/**
+		Constructor to presolve FMTlpmodel.
+		*/
+		FMTlpmodel(const FMTsrmodel& rhs);
+		// DocString: FMTlpmodel::trysetsolution(const std::vector<Core::FMTschedule>&)
+		/**
+		Try to setsolution, if not possible try setsolutionbylp
+		*/
+		bool trysetsolution(const std::vector<Core::FMTschedule>& schedules);
 		
 	};
 

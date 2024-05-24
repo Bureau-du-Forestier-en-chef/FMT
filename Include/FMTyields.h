@@ -154,6 +154,12 @@ class FMTEXPORT FMTyields : public FMTlist<std::unique_ptr<FMTyieldhandler>>
 		the yieldnames and nullyieldsname caching.
 		*/
         void update() override;
+		// DocString: FMTyields::reserve
+		/**
+		@brief reserve memory based on a other FMTyields
+		@param[in] p_other the other yields.
+		*/
+		void reserve(const FMTyields& p_other);
 		// DocString: FMTyields::presolve
 		/**
 		Presolving might be realy usefull for FMTyields because this class tend to get realy large and contains

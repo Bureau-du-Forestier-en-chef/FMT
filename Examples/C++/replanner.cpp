@@ -8,14 +8,15 @@
 	#include "FMTfreeexceptionhandler.h"
 	#include "FMTmodelparser.h"
 #endif
+	#include "FMTdefaultlogger.h"
 
 int main(int argc, char *argv[])
 	{
 	#ifdef FMTWITHOSI
-	Logging::FMTlogger().logstamp();
+	Logging::FMTdefaultlogger().logstamp();
 	/*const std::string primlocation = "D:/CC_modele_feu/WS_CC/Feux_2023_ouest_V01.pri";
-	const int length = 5;
-	const int replicate = 20;
+	const int length = 20;
+	const int replicate = 5;
 	std::vector<std::string>allscenarios;
 	allscenarios.push_back("strategique");
 	allscenarios.push_back("fire");
@@ -45,6 +46,10 @@ int main(int argc, char *argv[])
 		Models::FMTlpmodel global(models.at(0), Models::FMTsolverinterface::CLP);
 	#endif
 	global.setparameter(Models::FMTintmodelparameters::LENGTH, length);
+	/*global.setcompresstime(10, 12, 2);
+	global.setcompresstime(12, 14, 3);
+	global.setcompresstime(14, 16, 4);
+	global.setcompresstime(16, 30, 5);*/
 	global.setparameter(Models::FMTintmodelparameters::NUMBER_OF_THREADS,1);
 	global.setparameter(Models::FMTboolmodelparameters::PRESOLVE_CAN_REMOVE_STATIC_THEMES, true);
 	Models::FMTnssmodel stochastic(models.at(1), 0);
@@ -74,8 +79,8 @@ int main(int argc, char *argv[])
 	std::vector<std::string>layersoptions;
 	layersoptions.push_back("SEPARATOR=SEMICOLON");
 	std::unique_ptr<Parallel::FMTtask> maintaskptr(new Parallel::FMTreplanningtask(global, stochastic, local, selectedoutputs, outputlocation, "CSV", layersoptions, replicate,length,0.5, Core::FMToutputlevel::totalonly));
-	Parallel::FMTtaskhandler handler(maintaskptr,2);
-	handler.setquietlogger();
+	Parallel::FMTtaskhandler handler(maintaskptr,10);
+	//handler.setquietlogger();
 	//handler.ondemandrun();
 	handler.conccurentrun();
 	#endif

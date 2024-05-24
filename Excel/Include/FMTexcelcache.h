@@ -28,8 +28,8 @@ namespace Wrapper
 	public ref class FMTexcelcache 
 	{
 		Parser::FMTmodelparser* parser;
-		std::shared_ptr<Logging::FMTlogger>* cachelog;
-		std::shared_ptr<Exception::FMTexcelexceptionhandler>* cacheexceptionhandler;
+		Logging::FMTlogger* cachelog;
+		Exception::FMTexcelexceptionhandler* cacheexceptionhandler;
 		std::unordered_map<std::string, FMTmodelcache>* models;
 		bool exceptionraised;
 		std::string getprimaryname(const std::string& primarylocation);

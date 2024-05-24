@@ -82,7 +82,7 @@ namespace Exception
 		/**
 		Using a given logger the function log the warning with the logger. 
 		*/
-		void warn(const std::shared_ptr<Logging::FMTlogger>logger,std::unordered_map<int,size_t>& specificwarningcount, const size_t& maxwarning) const;
+		void warn(Logging::FMTlogger& logger,std::unordered_map<int,size_t>& specificwarningcount, const size_t& maxwarning) const;
 	};
 }
 #endif
