@@ -230,6 +230,7 @@ namespace Models{
 			for (auto& Filter : ActionFilters)
 			{
 				Filter.second.second = addNewMask(Filter.second.second);
+				
 			}
 			//setactions(NewActions);
 			actions = NewActions;
@@ -252,7 +253,9 @@ void FMTmodel::aggregateTransitions(const std::map<std::string, std::pair<std::s
 				NewTransitions.push_back(Core::FMTtransition(action.getname()));
 				}
 			}
-		NewTransitions.push_back(transitions.back());
+		Core::FMTtransition DEATH_TRANSITION = transitions.back();
+		DEATH_TRANSITION.unshrink(themes);
+		NewTransitions.push_back(DEATH_TRANSITION);
 		for (Core::FMTtransition& transition : transitions)
 			{
 			if (p_Filters.find(transition.getname()) != p_Filters.end())
@@ -271,9 +274,6 @@ void FMTmodel::aggregateTransitions(const std::map<std::string, std::pair<std::s
 					
 				}
 				//NewTransition.update();
-				
-				
-
 				std::vector< Core::FMTtransition>::iterator transitionIterator = std::find_if(NewTransitions.begin(), NewTransitions.end(), Core::FMTtransitioncomparator(p_Filters.at(transition.getname()).first));
 				if (transitionIterator == NewTransitions.end())
 					{

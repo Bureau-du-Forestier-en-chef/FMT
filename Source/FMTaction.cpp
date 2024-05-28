@@ -15,13 +15,37 @@ namespace Core{
 	FMTaction& FMTaction::operator+=(const FMTaction& OtherAction)
 		{
 		try {
-			if (this->reset!= OtherAction.reset ||
+			/*if (this->reset != OtherAction.reset ||
 				this->lock != OtherAction.lock ||
 				this->partials.empty() != OtherAction.partials.empty())
 				{
 				_exhandler->raise(Exception::FMTexc::FMTinvalid_action, "Cant append action "+ OtherAction.getname() +" to "+this->getname(),
 					"FMTaction::operator+=", __LINE__, __FILE__, Core::FMTsection::Action);
+				}*/
+			if (OtherAction.reset)
+				{
+				this->reset = true;
+				if (!this->partials.empty())
+					{
+					_exhandler->raise(Exception::FMTexc::FMTignore, "Losing partiel on "+getname()+" with "+OtherAction.getname(),
+						"FMTaction::operator+=", __LINE__, __FILE__, Core::FMTsection::Action);
+					this->partials.clear();
+					}
+			}else {
+				for (const std::string& partial : OtherAction.partials)
+					{
+						if (std::find(this->partials.begin(), this->partials.end(), partial) == this->partials.end())
+						{
+							this->partials.push_back(partial);
+						}
+
+					}
 				}
+			if (!OtherAction.lock)
+				{
+				this->lock = false;
+				}
+			
 			FMTlist<FMTspec>::operator+=(OtherAction);
 			for (const std::string& Aggregate : OtherAction.aggregates)
 				{

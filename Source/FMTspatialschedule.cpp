@@ -1302,6 +1302,7 @@ namespace Spatial
 								{
 									cache.getactualnodecache()->worthintersecting = false;
 								}
+								graphsvalues.reserve(selection.size());
 								for (const FMTcoordinate& coordinate : selection)
 								{
 									FMTlayer<Graph::FMTlinegraph>::const_iterator itofgraph = mapping.find(coordinate);
@@ -1309,6 +1310,7 @@ namespace Spatial
 								}
 						}
 						else {
+							graphsvalues.reserve(staticcoordinates.size());
 							for (const FMTcoordinate& coordinate : staticcoordinates)
 							{
 								FMTlayer<Graph::FMTlinegraph>::const_iterator itofgraph = mapping.find(coordinate);

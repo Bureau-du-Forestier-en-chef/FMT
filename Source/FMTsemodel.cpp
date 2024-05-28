@@ -13,25 +13,26 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 namespace Models
     {
-    FMTsemodel::FMTsemodel(): FMTmodel(),solution()
+    FMTsemodel::FMTsemodel(): FMTmodel(),solution(), m_staticMaskMemorize()
         {
 
         }
     FMTsemodel::FMTsemodel(const FMTsemodel& rhs):
         FMTmodel(rhs),
-		solution(rhs.solution)
+		solution(rhs.solution),
+		m_staticMaskMemorize(rhs.m_staticMaskMemorize)
         {
 
         }
 
 	FMTsemodel::FMTsemodel(const FMTmodel& rhs, const Spatial::FMTforest& forest) :
-		FMTmodel(rhs), solution(forest)
+		FMTmodel(rhs), solution(forest), m_staticMaskMemorize()
 	{
 
 	}
 
     FMTsemodel::FMTsemodel(const FMTmodel& rhs):
-        FMTmodel(rhs), solution()
+        FMTmodel(rhs), solution(), m_staticMaskMemorize()
         {
 
         }
@@ -41,6 +42,7 @@ namespace Models
             {
             FMTmodel::operator = (rhs);
 			solution = rhs.solution;
+			m_staticMaskMemorize = rhs.m_staticMaskMemorize;
             }
         return *this;
         }
@@ -287,6 +289,25 @@ namespace Models
 		}
 		return value;
 	}
+
+	Core::FMTmask FMTsemodel::getstaticmask(const Core::FMToutputnode& node, bool ignoreoutputvariables) const
+		{
+			Core::FMTmask staticMask;
+			try {
+				boost::unordered_map<Core::FMToutputsource, Core::FMTmask>::const_iterator lookUp = m_staticMaskMemorize.find(node.source);
+				if (lookUp!= m_staticMaskMemorize.end())
+					{
+					staticMask = lookUp->second;
+				}else {
+					staticMask = FMTmodel::getstaticmask(node, ignoreoutputvariables);
+					m_staticMaskMemorize[node.source] = staticMask;
+					}
+			}catch (...)
+			{
+				_exhandler->printexceptions("", "FMTsemodel::getstaticmask", __LINE__, __FILE__);
+			}
+			return staticMask;
+		}
 
     }
 

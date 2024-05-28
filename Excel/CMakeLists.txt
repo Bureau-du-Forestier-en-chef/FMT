@@ -42,7 +42,7 @@ if (MSVC AND ExcelWrapperSOURCES)
 		endforeach()
 	endif(NOT WITHOUT_TESTS)
 else()
-	message("No files found in ${CMAKE_CURRENT_SOURCE_DIR}/UI/Source/ the wrapper wont be compiled headers need to be in UI/Include and sources in UI/Source")
+	message("No files found in ${CMAKE_CURRENT_SOURCE_DIR}/Excel/Source/ the wrapper wont be compiled headers need to be in UI/Include and sources in UI/Source")
 endif(MSVC AND ExcelWrapperSOURCES)
 
 

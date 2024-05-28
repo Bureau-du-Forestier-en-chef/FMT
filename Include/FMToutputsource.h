@@ -201,7 +201,20 @@ class FMToutputsourcecomparator
 		bool operator()(const FMToutputsource& source) const;
 
 	};
+}
 
+namespace boost {
+	/**
+	boost hash function for FMToutputsource
+	*/
+	template <>
+	struct hash<Core::FMToutputsource>
+	{
+		std::size_t operator()(const Core::FMToutputsource& p_source) const
+		{
+			return p_source.hash(-1, true);
+		}
+	};
 
 
 }

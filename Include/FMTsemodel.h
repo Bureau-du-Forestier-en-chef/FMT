@@ -31,22 +31,6 @@ simulation.
 */
 class FMTEXPORT FMTsemodel : public FMTmodel
     {
-	// DocString: FMTsemodel::Serialize
-	/**
-	Serialize function is for serialization, used to do multiprocessing across multiple cpus (pickle in Pyhton)
-	*/
-	friend class boost::serialization::access;
-	template<class Archive>
-	void serialize(Archive& ar, const unsigned int version)
-		{
-		ar & boost::serialization::make_nvp("model", boost::serialization::base_object<FMTmodel>(*this));
-		ar & BOOST_SERIALIZATION_NVP(solution);
-		}
-	virtual void swap_ptr(const std::unique_ptr<FMTmodel>& rhs);
-    protected:
-		// DocString: FMTsemodel::spschedule
-		///Contains the builded spatialsolution latest or best one.
-		Spatial::FMTspatialschedule solution;
     public:
 		// DocString: FMTsemodel()
 		/**
@@ -186,6 +170,34 @@ class FMTEXPORT FMTsemodel : public FMTmodel
 		Return the value of the globalobjective of the actual solution
 		*/
 		virtual double getobjectivevalue() const;
+		// DocString: FMTmodel::getstaticmask
+		/**
+		@brief Get the static mask of a given node. It may use the caching.
+		@param[in] the output node
+		@param[in] ignoreoutputvariables 
+		@return A static FMTmask.
+		*/
+		virtual Core::FMTmask getstaticmask(const Core::FMToutputnode& node, bool ignoreoutputvariables = false) const;
+	protected:
+		// DocString: FMTsemodel::spschedule
+		///Contains the builded spatialsolution latest or best one.
+		Spatial::FMTspatialschedule solution;
+		// DocString: FMTsemodel::m_staticMaskMemorize
+		///Static memorization of output nodes.
+		mutable boost::unordered_map<Core::FMToutputsource, Core::FMTmask>m_staticMaskMemorize;
+	private:
+		// DocString: FMTsemodel::Serialize
+		/**
+		Serialize function is for serialization, used to do multiprocessing across multiple cpus (pickle in Pyhton)
+		*/
+		friend class boost::serialization::access;
+		template<class Archive>
+		void serialize(Archive& ar, const unsigned int version)
+		{
+			ar& boost::serialization::make_nvp("model", boost::serialization::base_object<FMTmodel>(*this));
+			ar& BOOST_SERIALIZATION_NVP(solution);
+		}
+		virtual void swap_ptr(const std::unique_ptr<FMTmodel>& rhs);
     };
 
 }

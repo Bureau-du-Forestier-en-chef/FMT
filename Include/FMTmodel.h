@@ -410,7 +410,7 @@ namespace Models
 		/**
 		Based on static and dynamic themes will return a mask where the static attributes will have a value of 1 and dynamic value a value of 0.
 		*/
-		Core::FMTmask getstaticmask(const Core::FMToutputnode& node, bool ignoreoutputvariables = false) const;
+		virtual Core::FMTmask getstaticmask(const Core::FMToutputnode& node, bool ignoreoutputvariables = false) const;
 		// DocString: FMTmodel::isstaticnode
 		/**
 		Based on static and dynamic themes will return true if the node can be used in staticmask fonctions.
