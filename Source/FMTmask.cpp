@@ -232,6 +232,11 @@ FMTmask FMTmask::getintersect(const FMTmask& rhs) const
 	newmask.data &= rhs.data;
 	return newmask;
 	}
+void FMTmask::setIntersect(const FMTmask& rhs)
+	{
+	data &= rhs.data;
+	}
+
 
  boost::dynamic_bitset<uint8_t> FMTmask::getbitsetintersect(const FMTmask& rhs) const
 	{

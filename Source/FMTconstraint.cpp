@@ -786,12 +786,12 @@ namespace Core
 				}
             case FMTconstrainttype::FMTspatialadjacency:
                 {
-                standardstring(line,period_bounds,goal, global);
+                standardstring(line,period_bounds,goal, global,true);
 				break;
 				}
             case FMTconstrainttype::FMTspatialsize :
                 {
-				standardstring(line, period_bounds, goal, global);
+				standardstring(line, period_bounds, goal, global,true);
 				break;
 				}
 			case FMTconstrainttype::FMTrandomaction:
@@ -810,7 +810,8 @@ namespace Core
 		return line;
 		}
 
-		void FMTconstraint::standardstring(std::string& line, std::string& period_bounds, std::string& goal, std::string& global) const
+		void FMTconstraint::standardstring(std::string& line, std::string& period_bounds,
+			std::string& goal, std::string& global,bool asInt) const
 		{
 			try {
 				double lower_b = 0;
@@ -824,20 +825,29 @@ namespace Core
 						break;
 					}
 				}
+				std::string lowerStr,upperStr;
+				if (asInt)
+					{
+					lowerStr = std::to_string(static_cast<int>(lower_b));
+					upperStr = std::to_string(static_cast<int>(upper_b));
+				}else {
+					lowerStr = std::to_string(lower_b);
+					upperStr = std::to_string(upper_b);
+				}
 				std::string opt_str = "";
 				if (lower_b == upper_b)
 				{
 					opt_str = "= ";
-					opt_str += std::to_string(lower_b);
+					opt_str += lowerStr;
 				}
 				else if (upper_b == std::numeric_limits<double>::infinity())
 				{
 					opt_str = ">= ";
-					opt_str += std::to_string(lower_b);
+					opt_str += lowerStr;
 				}
 				else {
 					opt_str = "<= ";
-					opt_str += std::to_string(upper_b);
+					opt_str += upperStr;
 				}
 				line += (this->name + " " + opt_str + " "+ period_bounds+" " + goal + " " + global+"\n");
 				//line += " " + period_bounds + "\n";

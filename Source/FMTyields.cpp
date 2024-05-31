@@ -18,6 +18,13 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 namespace Core{
 
+	const std::string FMTyields::m_nullYield = "~FMTNULLYIELD";
+
+	const std::string& FMTyields::getNullYield()
+		{
+		return FMTyields::m_nullYield;
+		}
+
 	void FMTyields::push_backagehandler(const FMTmask& mask, const FMTageyieldhandler& value)
 	{
 		try {
@@ -160,6 +167,7 @@ void FMTyields::updateyieldpresence()
     {
 	try {
 		yieldpresence.clear();
+		yieldpresence[getNullYield()] = true;
 		for (const auto& handlerobj : *this)
 		{
 			for (const std::string& yldname : handlerobj.second->getyieldnames())
@@ -190,6 +198,7 @@ std::vector<std::string> FMTyields::getallyieldnames() const
 {
 	std::vector<std::string>alls;
 	try {
+		alls.push_back(getNullYield());
 		for (const auto& handlerobj : *this)
 			{
 			for (const std::string& yldname : handlerobj.second->getyieldnames())

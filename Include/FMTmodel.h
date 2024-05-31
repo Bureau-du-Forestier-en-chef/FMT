@@ -87,13 +87,30 @@ namespace Models
 		 * @return newly created model with aggregated actions.
 		 */
 		Models::FMTmodel aggregateAllActions(const std::vector<std::string>& p_Aggregates) const;
+		// DocString: FMTmodel::splitActions
+		/**
+		 * @brief Split Actions using the masks provided. All new actions will have the action_mask as name
+		 * The default one will avec action_default and they will be aggregated into the original action name
+		 * @param[in] p_Actions The actions that you want to split
+		 * @param[in] p_masks the mask you want to use to split the actions
+		 * @return newly created model with splitted actions.
+		 */
+		Models::FMTmodel splitActions(const std::vector<std::string>& p_Actions,
+										const std::vector<std::string>& p_masks) const;
 		// DocString: FMTmodel::aggregateSchedules
 		/**
 		 * @brief Build new schedule based on p_schedules with the corresponding aggregated actions
-		 * @param p_schedules the schedules of the original model.
+		 * @param[in] p_schedules the schedules of the original model.
 		 * @return newly created schedules with aggregated actions.
 		 */
 		std::vector<Core::FMTschedule> aggregateSchedules(const std::vector<Core::FMTschedule>& p_schedules) const;
+		// DocString: FMTmodel::splitSchedules
+		/**
+		 * @brief Using the actions of the model change the actions of the schedule
+		 * @param[in] p_schedules the schedules of the original model.
+		 * @return newly created schedules with splitted actions.
+		 */
+		std::vector<Core::FMTschedule> splitSchedules(const std::vector<Core::FMTschedule>& p_schedules) const;
 		// DocString: FMTmodel::setparallellogger
 		/**
 		Solver's logger cannot work in parallel so you need to pass a logger owned

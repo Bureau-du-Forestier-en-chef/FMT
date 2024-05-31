@@ -1113,6 +1113,11 @@ void FMToutput::setsources(const std::vector<FMToutputsource>& p_sources)
 	sources = p_sources;
 	}
 
+void FMToutput::setOperators(const std::vector<FMToperator>& p_operators)
+	{
+	operators = p_operators;
+	}
+
 std::vector<std::string> FMToutput::getdecomposition(const std::vector<FMTtheme>& themes) const
 	{
 	std::vector<std::string>validdecomp;

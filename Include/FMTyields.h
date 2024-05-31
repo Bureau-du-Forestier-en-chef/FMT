@@ -197,6 +197,12 @@ class FMTEXPORT FMTyields : public FMTlist<std::unique_ptr<FMTyieldhandler>>
 		Push back timeyield for R
 		*/
 		void push_backtimehandler(const FMTmask& mask, const FMTtimeyieldhandler& value);
+		// DocString: FMTyields::getNullYield
+		/*
+		* @brief get a nullyield
+		* @return null yield value.
+		*/
+		static const std::string& getNullYield();
 	private:
 		// DocString: FMTyields::serialize
 		/**
@@ -219,6 +225,9 @@ class FMTEXPORT FMTyields : public FMTlist<std::unique_ptr<FMTyieldhandler>>
 		// DocString: FMTyields::yieldpresence
 		///If yields section as yield = true else false.
 		std::unordered_map<std::string, bool>yieldpresence;
+		// DocString: FMTyields::nullYield
+		///the null yields.
+		static const std::string m_nullYield;
 		// DocString: FMTyields::gethandleroftype
 		/**
 		The function returns a vector of pointer to all yieldhandler of a given (type).

@@ -191,6 +191,13 @@ class FMTEXPORT FMTlinegraph : public FMTgraph<FMTbasevertexproperties,FMTbaseed
 		Returns a filtered mask of the starting developement mask of the linegraph based on a dynamicmask filter.
 		*/
 		Core::FMTmask getbasemask(const Core::FMTmask& dynamicmask) const;
+		// DocString: FMTlinegraph::setBaseMask
+		/**
+		@brief set the base mask to the dynamic mask by intersect.
+		@param[in] p_dynamicmask the dynamic mask to intersect.
+		@param[in] p_period the period to which we want to get a dynamic mask.
+		*/
+		void setBaseMask(Core::FMTmask& p_dynamicmask,const int& p_period) const;
 		// DocString: FMTlinegraph::getbasemask
 		/**
 		Returns a filtered mask of the starting developement mask of the linegraph based on a dynamicmask filter.

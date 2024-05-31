@@ -1235,7 +1235,6 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 		}
 		std::map<int,double> locatenode(const Models::FMTmodel& model,Core::FMToutputnode output_node, int period) const
 		{
-			std::map<int, double>emptyreturn;
 			try {
 				Core::FMToutputnode tempnode(output_node);
 				const std::vector<FMTvertex_descriptor>verticies = getnode(model, tempnode, period);
@@ -1245,7 +1244,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 			{
 				_exhandler->raisefromcatch("", "FMTgraph::locatenode", __LINE__, __FILE__);
 			}
-			return emptyreturn;
+			return std::map<int, double>();
 
 		}
 		std::map<std::string,std::map<int,double>>  locatenodebytheme(const Models::FMTmodel& model,Core::FMToutputnode output_node, int period) const
@@ -1749,7 +1748,6 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 			int period, const Core::FMTtheme& theme,
 			const double* solution, Core::FMToutputlevel level = Core::FMToutputlevel::standard) const
 		{
-			std::map<std::string, double>emptyreturn;
 			try{
 			Core::FMToutputnode tempnode(node);
 			const std::vector<FMTvertex_descriptor>verticies = getnode(model, tempnode, period);
@@ -1758,7 +1756,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 				{
 				_exhandler->raisefromcatch("For node: "+std::string(node), "FMTgraph::getsource", __LINE__, __FILE__);
 				}
-			return emptyreturn;
+			return std::map<std::string, double>();
 		}
 
 		Graph::FMTgraphvertextoyield getvertextoyieldinfo(const Models::FMTmodel& model,const FMTvertex_descriptor& descriptor) const

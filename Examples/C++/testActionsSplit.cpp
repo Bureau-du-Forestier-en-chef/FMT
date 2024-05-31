@@ -27,14 +27,19 @@ int main(int argc, char* argv[])
 		const std::string PRIMARY_LOCATION =  results.at(0);
 		const std::string CARTE = results.at(1);
 		const std::string SCENARIO = results.at(2);
-		std::vector<std::string>AGGREGATES;
-		boost::split(AGGREGATES, argv[2], boost::is_any_of("|"));
+		std::vector<std::string>SPLITTED;
+		boost::split(SPLITTED, argv[2], boost::is_any_of("|"));
+		std::vector<std::string>SPLITTED_MASK;
+		boost::split(SPLITTED_MASK, argv[3], boost::is_any_of("|"));
+
 		/*const std::string PRIMARY_LOCATION = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/09_FMT/Modeles_test/Prototype_Dec2023/PC_7002071_UA08152_FINAL.pri";
 		const std::string CARTE = "Carte/PC_7002071_UA_U08152.shp";
 		const std::string SCENARIO = "01_Regl_prov_apsp_1_6";
-		const std::vector<std::string>AGGREGATES = { "REGAFIN","REGAPAR","REGAEDU","REGAREG","ATBEMORT","ATBERETARD","ASNAT","AECHEC"};*/
+		const std::vector<std::string>SPLITTED = { "ACT","AEC"};
+		const std::vector<std::string>SPLITTED_MASK = { "? ? ? ? ? ? ? ? ? ? ? ? ? UTA11 ? ? ? ? ? ?",
+														"? ? ? ? ? ? ? ? ? ? ? ? ? !UTA11 ? ? ? ? ? ?" };*/
 		//const std::string OUTPUT_DIRECTORY = "outputs/";
-		const std::string OUTPUT_DIRECTORY = "../../tests/testActionsAggregations/";
+		const std::string OUTPUT_DIRECTORY = "../../tests/testActionsSplit/";
 		Parser::FMTmodelparser ModelParser;
 		std::vector<Exception::FMTexc>errors;
 		errors.push_back(Exception::FMTexc::FMTmissingyield);
@@ -59,12 +64,12 @@ int main(int argc, char* argv[])
 		Optimization1.FMTmodel::setparameter(Models::FMTintmodelparameters::PRESOLVE_ITERATIONS, 10);
 		Optimization1.FMTmodel::setparameter(Models::FMTintmodelparameters::LENGTH, std::min(static_cast<int>(SCHEDULES.size()), 3));
 		Optimization1.doplanning(false, SCHEDULES);
-		const Models::FMTmodel AGGREGATED_MODEL = MODELS.at(0).aggregateAllActions(AGGREGATES);
-		ModelParser.writetoproject(OUTPUT_DIRECTORY + SCENARIO +".pri", AGGREGATED_MODEL);
+		const Models::FMTmodel SPLITTED_MODEL = MODELS.at(0).splitActions(SPLITTED, SPLITTED_MASK);
+		ModelParser.writetoproject(OUTPUT_DIRECTORY + SCENARIO +".pri", SPLITTED_MODEL);
 		if (!SCHEDULES.empty())
 			{
 			Parser::FMTscheduleparser SCHEDULE_PARSER;
-			const std::vector<Core::FMTschedule>NEWSCHEDULE = AGGREGATED_MODEL.aggregateSchedules(SCHEDULES);
+			const std::vector<Core::FMTschedule>NEWSCHEDULE = SPLITTED_MODEL.splitSchedules(SCHEDULES);
 			SCHEDULE_PARSER.write(NEWSCHEDULE, OUTPUT_DIRECTORY + SCENARIO + ".seq");
 			}
 		const std::vector<std::string>ROOT(1,"ROOT");

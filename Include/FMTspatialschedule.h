@@ -518,6 +518,29 @@ class FMTEXPORT FMTspatialschedule : public FMTlayer<Graph::FMTlinegraph>
 			std::vector<FMTeventcontainer::const_iterator>& conflicts,
 			boost::unordered_set<FMTeventrelation>& relations,
 			const std::vector<bool>& actionused) const;
+
+		std::vector<Core::FMTmask> getDynamicMasks(
+			const std::vector<FMTlayer<Graph::FMTlinegraph>::const_iterator>& p_Iterators,
+			const Core::FMTmask& p_dynamicMask,
+			const int& p_period) const;
+
+		void getDynamicMasksOnThread(
+			std::vector<Core::FMTmask>& p_Masks,
+			const std::vector<FMTlayer<Graph::FMTlinegraph>::const_iterator>& p_Iterators,
+			const Core::FMTmask p_dynamicMask,
+			const int p_period,
+			const size_t p_start,
+			const size_t p_stop) const;
+		const std::vector<FMTlayer<Graph::FMTlinegraph>::const_iterator> getGraphs(
+			const std::vector<FMTcoordinate>& p_coodinates) const;
+
+		void getGraphsOnThread(
+			const std::vector<FMTcoordinate>& p_coodinates,
+			std::vector<FMTlayer<Graph::FMTlinegraph>::const_iterator>& p_Iterators,
+			const size_t p_start,
+			const size_t p_stop) const;
+
+		
 		
 };
 }

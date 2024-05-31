@@ -256,6 +256,15 @@ class FMTEXPORT FMTaction : public FMTlist<FMTspec>
 		Returns the corresponding GCBM action name.
 		*/
 		std::string getGCBMactionname() const;
+		// DocString: FMTaction::split
+		/**
+		@brief split action into different action using the p_mask
+		@param[in] the masks used to split the actions.
+		@param[in] the themes to generate the masks
+		@return multiple actions resulting from the split
+		*/
+		std::vector<Core::FMTaction>split(const std::vector<Core::FMTmask>& p_mask,
+										const std::vector<Core::FMTtheme>& p_themes) const;
 	protected:
 		// DocString: FMTaction::aggregates
 		///An action can be part of a aggregate so this data member gets the name of all aggregate the action is being part of.

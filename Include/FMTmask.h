@@ -277,6 +277,12 @@ class FMTEXPORT FMTmask
 		Do a intersection operation on the dynamic bitset of the FMTmask and the given FMTmask (rhs).
 		*/
 		FMTmask getintersect(const FMTmask& rhs) const;
+		// DocString: FMTmask::setIntersect
+		/**
+		@brief set the intersect with this mask using rhs mask.
+		@param[in] rhs the mask we intersect with.
+		*/
+		void setIntersect(const FMTmask& rhs);
 		// DocString: FMTmask::getbitsetintersect
 		/**
 		Do a intersection operation on the dynamic bitset of the FMTmask and the given FMTmask (rhs)
