@@ -100,12 +100,12 @@ namespace Logging
 	FMTlogger::FMTlogger(const FMTlogger& rhs):filepath(), filestream(), mtx(), flushstream(false)
 		{
 		boost::lock_guard<boost::recursive_mutex> lock(rhs.mtx);
-		#if defined FMTWITHOSI
-			solverref.reset(new FMTsolverlogger(*rhs.solverref));
-		#endif
 		filepath=rhs.filepath;
 		settofile(filepath);
 		flushstream=rhs.flushstream;
+		#if defined FMTWITHOSI
+			solverref.reset(new FMTsolverlogger(*this));
+		#endif
 		}
 
 	FMTlogger& FMTlogger::operator = (const FMTlogger& rhs)
