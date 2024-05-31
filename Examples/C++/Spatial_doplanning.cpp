@@ -26,7 +26,7 @@ int main(int argc, char* argv[])
 {
 #ifdef FMTWITHGDAL
 	Logging::FMTdefaultlogger().logstamp();
-	/*const std::string vals = argv[1];
+	const std::string vals = argv[1];
 	std::vector<std::string>results;
 	boost::split(results, vals, boost::is_any_of("|"));
 	const std::string modellocation = results.at(0);
@@ -34,10 +34,10 @@ int main(int argc, char* argv[])
 	const std::string scenario = results.at(2);
 	std::vector<std::string>spatialOutputs;
 	boost::split(spatialOutputs, std::string(argv[1]), boost::is_any_of("|"));
-	const int length = std::stoi(argv[3]);*/
-	const std::string modellocation = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/09_FMT/Modeles_test/Prototype_Dec2023/";
+	const int length = std::stoi(argv[3]);
+	/*const std::string modellocation = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/09_FMT/Modeles_test/Prototype_Dec2023/";
 	const std::string primarylocation = modellocation + "PC_7002071_UA08152_FINAL.pri";
-	const std::string scenario = "01_Regl_prov_apsp_1_6";
+	const std::string scenario = "01_Regl_prov_apsp_1_6";*/
 	/*const std::string modellocation = "../../../../Examples/Models/TWD_land/";
 	const std::string	primarylocation = modellocation + "TWD_land.pri";
 	const std::string scenario = "Spatial";*/
