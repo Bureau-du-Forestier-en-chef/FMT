@@ -235,6 +235,12 @@ class FMTEXPORT FMToutput: public FMTobject
 		* @param p_sources is the newly sources to set.
 		*/
 		void setsources(const std::vector<FMToutputsource>& p_sources);
+		// DocString: FMToutput::setOperators
+		/**
+		* @brief set new operators to output
+		* @param p_operators is the newly oeprators to set.
+		*/
+		void setOperators(const std::vector<FMToperator>& p_operators);
 		// DocString: FMToutput::getsources
 		/**
 		Getter for the vector of FMToutputsource of the FMToutput.

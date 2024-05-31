@@ -155,13 +155,13 @@ namespace Parser
 					const Core::FMTyields& ylds,const Core::FMTconstants& constants,
 					const std::string& location)
 		{
+			std::string name, description;
 			try {
 				if (!location.empty())
 				{
 					std::ifstream outputstream(location);
 					std::vector<Core::FMToutputsource>sources;
 					std::vector<Core::FMToperator>operators;
-					std::string name, description;
 					bool insource = false;
 					bool processing_level = false;
 					int themetarget = -1;
@@ -819,7 +819,7 @@ namespace Parser
 			-------------------------------------------*/
 			}catch(...)
 			{
-				_exhandler->raisefromcatch("In " + _location + " at line " + std::to_string(_line),"FMToutputparser::readnfill", __LINE__, __FILE__,_section);
+				_exhandler->raisefromcatch("Output "+name +" In " + _location + " at line " + std::to_string(_line),"FMToutputparser::readnfill", __LINE__, __FILE__,_section);
 			}
 		}
 

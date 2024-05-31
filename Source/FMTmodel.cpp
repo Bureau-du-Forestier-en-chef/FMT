@@ -71,21 +71,118 @@ namespace Models{
 			newModel.aggregateTransitions(Filters);
 			std::vector<Core::FMToutput*>Outputs;
 			for (Core::FMToutput& output : newModel.outputs)
-				{
+			{
 				Outputs.push_back(&output);
-				}
+			}
 			newModel.aggregateOutputs(Filters, Outputs);
 			std::vector<Core::FMToutput*>Constraints;
 			for (Core::FMTconstraint& constraint : newModel.constraints)
-				{
+			{
 				Constraints.push_back(&constraint);
-				}
+			}
 			newModel.aggregateOutputs(Filters, Constraints);
-		}catch (...)
+		}
+		catch (...)
 		{
 			_exhandler->raisefromcatch("", "FMTmodel::aggregateAllActions", __LINE__, __FILE__);
 		}
 		return newModel;
+	}
+
+	Models::FMTmodel FMTmodel::splitActions(const std::vector<std::string>& p_Actions,
+									const std::vector<std::string>& p_masks) const
+	{
+		Models::FMTmodel newModel(*this);
+		try {
+			std::vector<Core::FMTmask> masks;
+			for (const std::string& mask : p_masks)
+			{
+				masks.push_back(Core::FMTmask(mask, themes));
+			}
+			std::vector<Core::FMTaction>NewActions;
+			std::vector<Core::FMTtransition>NewTransitions;
+			size_t i = 0;
+			for (const Core::FMTaction& ACTION : actions)
+				{
+				if (std::find(p_Actions.begin(), p_Actions.end(), ACTION.getname())!= p_Actions.end())
+					{
+					const std::vector<Core::FMTaction>SPLITTED = ACTION.split(masks, themes);
+					for (const Core::FMTaction& SPLITTED_ACTION : SPLITTED)
+					{
+						Core::FMTtransition NewTransition = transitions.at(i);
+						NewTransition.setName(SPLITTED_ACTION.getname());
+						NewTransitions.push_back(NewTransition);
+					}
+					NewActions.insert(NewActions.end(), SPLITTED.begin(), SPLITTED.end());
+					}else {
+						NewActions.push_back(ACTION);
+						NewTransitions.push_back(transitions.at(i));
+						}
+				++i;
+				}
+			
+			newModel.actions = NewActions;
+			newModel.transitions = NewTransitions;
+			
+		}catch (...)
+			{
+			_exhandler->raisefromcatch("", "FMTmodel::splitActions", __LINE__, __FILE__);
+			}
+		return newModel;
+	}
+
+	std::vector<Core::FMTschedule> FMTmodel::splitSchedules(const std::vector<Core::FMTschedule>& p_schedules) const
+	{
+		std::vector<Core::FMTschedule>NewSchedules;
+		try {
+			for (const Core::FMTschedule& SCHEDULE : p_schedules)
+			{
+				std::map<Core::FMTaction, std::map<Core::FMTdevelopment, std::vector<double>>> mapping;
+				for (const auto& ACTION_ELEMENTS : SCHEDULE)
+					{
+					const std::string GLOBAL_ACTION = ACTION_ELEMENTS.first.getname();
+					std::vector<Core::FMTaction>::const_iterator ActIt = std::find_if(actions.begin(), actions.end(), Core::FMTactioncomparator(GLOBAL_ACTION));
+					if (ActIt == actions.end())//Got aggregate
+						{
+						boost::unordered_set<Core::FMTdevelopment>DevelopementsSet;
+						
+						const std::vector<const Core::FMTaction*> ACTIONS = Core::FMTactioncomparator(GLOBAL_ACTION, true).getallaggregates(actions,true);
+						if (ACTIONS.empty())
+							{
+								_exhandler->raise(Exception::FMTexc::FMTinvalidAandT, "Missing aggregate " + GLOBAL_ACTION,
+									"FMTmodel::splitSchedules", __LINE__, __FILE__);
+							}
+						std::map<Core::FMTdevelopment, std::vector<double>>NewMapping;
+						for (const Core::FMTaction* ACTION_Prt : ACTIONS)
+						{
+							const Core::FMTmask ACTION_MASK = ACTION_Prt->getunion(themes);
+							for (const auto& DEV : ACTION_ELEMENTS.second)
+							{
+								if (DEV.first.getmask().issubsetof(ACTION_MASK) &&
+									DevelopementsSet.find(DEV.first) == DevelopementsSet.end())
+								{
+									NewMapping[DEV.first] = DEV.second;
+									DevelopementsSet.insert(DEV.first);
+								}
+							}
+							if (!NewMapping.empty())
+							{
+								mapping[*ACTION_Prt] = NewMapping;
+							}
+						}
+						}else {
+							mapping[ACTION_ELEMENTS.first] = ACTION_ELEMENTS.second;
+						}
+					
+					
+					}
+				NewSchedules.push_back(Core::FMTschedule(SCHEDULE.getperiod(), mapping));
+			}
+		}catch (...)
+			{
+			_exhandler->raisefromcatch("", "FMTmodel::splitSchedules", __LINE__, __FILE__);
+			}
+		return NewSchedules;
 	}
 
 	std::vector<Core::FMTschedule> FMTmodel::aggregateSchedules(const std::vector<Core::FMTschedule>& p_schedules) const
@@ -178,6 +275,7 @@ namespace Models{
 					ActionCover.insert(Action->getname());
 					NoCompress.unshrink(themes);
 					const Core::FMTmask Filter = NoCompress.getunion(themes);
+
 					ActionFilters[Action->getname()] = std::pair<std::string, Core::FMTmask>(Aggregate, Filter);
 					NewAction += NoCompress;
 					}
@@ -301,35 +399,61 @@ void FMTmodel::aggregateOutputs(const std::map<std::string, std::pair<std::strin
 		for (Core::FMToutput* output : p_Outputs)
 			{
 			std::vector<Core::FMToutputsource>NewSources;
+			bool pushBuffer = false;
 			for (const Core::FMToutputsource& source : output->getsources())
 				{
 				Core::FMToutputsource NewSource(source);
 				if (source.isaction())
 					{
-					
 					if (p_Filters.find(source.getaction())!= p_Filters.end())
 						{
 						const Core::FMTmask SOURCE_MASK = source.getmask();
+						bool eraseSource = false;
 						if (!SOURCE_MASK.isnotthemessubset(p_Filters.at(source.getaction()).second, themes))
 							{
 							const Core::FMTmask INTERSECT_MASK = SOURCE_MASK.getintersect(p_Filters.at(source.getaction()).second);
 							NewSource.setmask(addNewMask(INTERSECT_MASK));
+						}else {
+							//eraseSource = true;
+							//pushBuffer = true;
+							NewSource.setmask(addNewMask(p_Filters.at(source.getaction()).second));
 							}
 						if (!p_Filters.at(source.getaction()).first.empty())
 							{
 							NewSource.setaction(p_Filters.at(source.getaction()).first);
 							}
+						/*if (eraseSource)
+							{
+							NewSource.addbounds(Core::FMTyldbounds(Core::FMTsection::Outputs,
+								Core::FMTkwor::Source, yields.getNullYield(), 1.0, 1.0));
+							}*/
 						
 					}else{
 						//Maybe got the same action aggregate here? or not?
 						//Should log warning or raise?
 					}
-
+						/*if (replicated.find(NewSource) != replicated.end())
+							{
+							NewSource = Core::FMToutputsource(Core::FMTotar::val, std::vector<double>(1, 0));
+						}else {
+							replicated.insert(NewSource);
+							}*/
 					}
+				
 				NewSources.push_back(NewSource);
 				}
+			/*if (pushBuffer)
+			{
+				NewSources.insert(NewSources.begin(), Core::FMToutputsource(Core::FMTotar::val, std::vector<double>(1, 0)));
+				std::vector<Core::FMToperator>NewOperators(output->getopes());
+				NewOperators.insert(NewOperators.begin(), Core::FMToperator("+"));
+				output->setOperators(NewOperators);
+			}*/
 			output->setsources(NewSources);
 			}
+
+
+
 	}catch (...)
 		{
 		_exhandler->raisefromcatch("", "FMTmodel::aggregateOutputs", __LINE__, __FILE__);

@@ -649,6 +649,14 @@ namespace Graph
 		return value;
 		}
 
+	void FMTlinegraph::setBaseMask(Core::FMTmask& p_dynamicmask, const int& p_period) const
+		{
+		const Core::FMTdevelopment& development = getbasedevelopment();
+		p_dynamicmask.setIntersect(development.getmask());
+		p_dynamicmask.binarizedappend<int>(development.getage());
+		filledgesmask(p_dynamicmask, p_period);
+		}
+
 	Core::FMTmask FMTlinegraph::getbasemask(const Core::FMTmask& dynamicmask) const
 		{
 		const Core::FMTdevelopment& development = getbasedevelopment();

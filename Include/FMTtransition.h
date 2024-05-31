@@ -88,6 +88,12 @@ class FMTEXPORT FMTtransition : public FMTlist<FMTfork>
 			{
 			return name;
 			}
+		// DocString: FMTtransition::setName
+		/**
+		@brief Setter for FMTtransition name
+		@param[in] 
+		*/
+		void setName(const std::string& p_name);
 		// DocString: FMTtransition::isleaking
 		/**
 		This function checks if each FMTfork has a total proportion equal to 1 if the transition proportion != 1

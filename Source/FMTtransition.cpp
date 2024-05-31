@@ -24,6 +24,11 @@ FMTtransition::FMTtransition(const std::string& lname) : FMTlist<FMTfork>(), nam
 
 	}
 
+void FMTtransition::setName(const std::string& p_name)
+	{
+	name = p_name;
+	}
+
 bool FMTtransition::isleaking() const
 	{
 	for (const auto& forkobj : *this)

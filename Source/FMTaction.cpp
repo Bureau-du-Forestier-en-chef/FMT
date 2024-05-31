@@ -8,7 +8,8 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTaction.h"
 #include "FMTexceptionhandler.h"
 #include <bitset>
-#include <boost/algorithm/string/split.hpp> 
+#include <boost/algorithm/string/split.hpp>
+#include <algorithm>
 
 namespace Core{
 
@@ -473,6 +474,41 @@ std::string FMTaction::getGCBMactionname() const
 			"FMTaction::getGCBMactionname", __LINE__, __FILE__, Core::FMTsection::Action);
 	}
 	return std::string();
+}
+
+std::vector<Core::FMTaction>FMTaction::split(const std::vector<Core::FMTmask>& p_mask,
+											const std::vector<Core::FMTtheme>& p_themes) const
+{
+	std::vector<Core::FMTaction>Splitted;
+	try {
+		for (const Core::FMTmask& MASK : p_mask)
+			{
+			std::string NewName = std::string(MASK);
+			NewName.erase(std::remove(NewName.begin(), NewName.end(), ' '), NewName.end());
+			NewName.erase(std::remove(NewName.begin(), NewName.end(), '?'), NewName.end());
+			NewName = getname() + "_" + NewName;
+			Core::FMTaction NewAction(NewName,lock,reset);
+			for (const auto& data : *this)
+				{
+				Core::FMTmask subMAsk =  Core::FMTmask(std::string(data.first), p_themes);
+				if (!subMAsk.isnotthemessubset(MASK,p_themes))
+					{
+					subMAsk = MASK.getintersect(subMAsk);
+					subMAsk.update(p_themes);
+					NewAction.push_back(subMAsk, data.second);
+					}
+				}
+			NewAction.aggregates = aggregates;
+			NewAction.aggregates.insert(NewAction.aggregates.begin(),getname());
+			NewAction.update();
+			Splitted.push_back(NewAction);
+			}
+	}catch (...)
+		{
+		_exhandler->raise(Exception::FMTexc::FMTfunctionfailed, "for action " + this->getname(),
+			"FMTaction::split", __LINE__, __FILE__, Core::FMTsection::Action);
+		}
+	return Splitted;
 }
 
 
