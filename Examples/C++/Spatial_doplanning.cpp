@@ -69,7 +69,7 @@ int main(int argc, char* argv[])
 		strans.push_back(tran.single());
 	}
 	simulationmodel.settransitions(strans);
-	const std::string rastpath = modellocation + "rasters_fin/";
+	const std::string rastpath = modellocation + "rasters/";
 	setMapping(rastpath, simulationmodel);
 	simulationmodel.setparameter(Models::FMTintmodelparameters::LENGTH, length);
 	simulationmodel.setparameter(Models::FMTintmodelparameters::NUMBER_OF_ITERATIONS, 10);
