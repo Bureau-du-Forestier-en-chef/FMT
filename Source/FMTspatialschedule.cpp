@@ -1101,7 +1101,7 @@ namespace Spatial
 				level = Core::FMToutputlevel::totalonly;
 			}
 
-			bool cachenotused = true;
+			//bool cachenotused = true;
 			//const std::vector<Core::FMTtheme> statictransitionsthemes = model.locatestatictransitionsthemes();
 			const double cellsize = this->getcellsize();
 			if (level != Core::FMToutputlevel::developpement)
@@ -1118,17 +1118,18 @@ namespace Spatial
 					const std::vector<FMTcoordinate>& nodescoordinates = cache.getnode(node, model, exactnode);//starting point to simplification
 					size_t periodid = 0;
 					std::vector<std::pair<size_t, int>>periodstolookfor;
+					periodstolookfor.reserve((periodstop- periodstart)+1);
 					for (int period = periodstart; period <= periodstop; ++period)
 					{
-						if (!cache.getactualnodecache()->gotcachevalue(period))
-						{
+						//if (!cache.getactualnodecache()->gotcachevalue(period))
+						//{
 							periodstolookfor.push_back(std::pair<size_t, int>(periodid, period));
-							cachenotused = false;
-						}
-						else if (level == Core::FMToutputlevel::totalonly)
-						{
-							values["Total"][periodid] = cache.getactualnodecache()->getcachevalue(period);
-						}
+						//	cachenotused = false;
+						//}
+						//else if (level == Core::FMToutputlevel::totalonly)
+						//{
+						//	values["Total"][periodid] = cache.getactualnodecache()->getcachevalue(period);
+						//}
 						++periodid;
 					}
 					if (!periodstolookfor.empty())
@@ -1163,16 +1164,17 @@ namespace Spatial
 									}
 								}
 							}
-							if (level != Core::FMToutputlevel::developpement)//No caching for developpement because getsource dont return a total for developpement
+							/*if (level != Core::FMToutputlevel::developpement)//No caching for developpement because getsource dont return a total for developpement
 							{
+								
 								cache.getactualnodecache()->setvalue(periodpair.second, values.at("Total").at(periodpair.first));
-							}
+							}*/
 						}
 					}
 				}
 
 			}
-			if (!cachenotused && scheduletype != FMTspatialscheduletype::FMTcomplete)
+			if (/*!cachenotused &&*/ scheduletype != FMTspatialscheduletype::FMTcomplete)
 			{
 				_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
 					"Cannot use a non complete schedule ",
@@ -1515,7 +1517,7 @@ namespace Spatial
 			for (std::map<FMTcoordinate, Graph::FMTlinegraph>::const_iterator graphit = this->mapping.begin(); graphit != this->mapping.end(); ++graphit)
 			{
 				const int lastactid = graphit->second.getlastactionid(period);
-				if (lastactid > 0)
+				if (lastactid >= 0)
 				{
 					distlayer[graphit->first] = modelactions.at(graphit->second.getlastactionid(period)).getname();
 				}

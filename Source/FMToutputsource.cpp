@@ -76,8 +76,11 @@ FMToutputsource::FMToutputsource(const FMTspec& spec,const FMTmask& lmask,
 
     }
 
-FMToutputsource::FMToutputsource(const FMToutputsource& rhs) : FMTspec(rhs),mask(rhs.mask),target(rhs.target),
-    action(rhs.action),yield(rhs.yield), levelname(rhs.levelname), values(rhs.values), average(rhs.average), sum(rhs.sum), outputorigin(rhs.outputorigin), themetarget(rhs.themetarget)
+FMToutputsource::FMToutputsource(const FMToutputsource& rhs) : 
+	FMTspec(rhs),mask(rhs.mask),target(rhs.target),
+    action(rhs.action),yield(rhs.yield), levelname(rhs.levelname),
+	values(rhs.values), average(rhs.average),
+	sum(rhs.sum), outputorigin(rhs.outputorigin), themetarget(rhs.themetarget)
     {
 
     }
@@ -116,7 +119,9 @@ void FMToutputsource::fillhashmask(Core::FMTmask& basemask) const
 
 bool FMToutputsource::isequalbyvalue(const FMToutputsource& rhs) const
 	{
-	return (FMTspec::operator == (rhs) && mask == rhs.mask && target == rhs.target && yield == rhs.yield && action == rhs.action && values == rhs.values);
+	return (FMTspec::operator == (rhs) && mask == rhs.mask && target == rhs.target &&
+		yield == rhs.yield && action == rhs.action && values == rhs.values &&
+		levelname == rhs.levelname && average == rhs.average && sum == rhs.sum);
 	}
 
 
