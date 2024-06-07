@@ -442,6 +442,12 @@ std::unordered_set<int>FMToutputsource::targetsset(const std::vector<FMTaction>&
 	return std::unordered_set<int>();
 }
 
+bool FMToutputsource::use(const FMTdevelopment& development, const FMTyields& ylds,
+	const Graph::FMTgraphvertextoyield* graphinfo) const
+{
+	return (development.getmask().issubsetof(mask) && development.is(*this, ylds, graphinfo));
+}
+
 
 double FMToutputsource::getcoef(const FMTdevelopment& development,
 	const FMTyields& yields,

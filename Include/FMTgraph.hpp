@@ -1155,6 +1155,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 		{
 			std::vector<Core::FMTdevelopmentpath>paths;
 			try {
+				paths.reserve(boost::out_degree(out_vertex, data));
 				for (FMToutedge_pair edge_pair = boost::out_edges(out_vertex, data); edge_pair.first != edge_pair.second; ++edge_pair.first)
 				{
 					const FMTbaseedgeproperties& edgeprop = data[*edge_pair.first];
@@ -1294,9 +1295,10 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 		std::vector<FMTvertex_descriptor> getnode(const Models::FMTmodel& model, Core::FMToutputnode& output_node, int period) const
 		{
 			std::vector<FMTvertex_descriptor>locations(m_allocator);
-			locations.reserve(m_reserve);
+			//locations.reserve(m_reserve);
 			try {
-				std::vector<int>targetedperiods;
+				std::vector<int>targetedperiods(m_allocator);
+				targetedperiods.reserve(size() - 2);
 				const int maxperiod = static_cast<int>(developments.size() - 2);
 				const int node_period = output_node.settograph(targetedperiods, period, maxperiod);
 				//*_logger << "node of " << node_period<<"dev size "<< developments.size() << "\n";
@@ -1307,12 +1309,14 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 				if (!output_node.source.isvariablelevel())
 				{
 					//constexpr size_t minimalcachedrop = 25;//10 %
-					std::vector<const Core::FMTaction*> selected;
+					std::vector<const Core::FMTaction*> selected(m_allocator);
+					selected.reserve(model.actions.size());
 					bool useCache = true;
 					//const size_t TO_RESERVE = model.area.size() * node_period * node_period * 100;
-					locations.reserve(m_reserve);
+					
 					if (isvalidouputnode(model, output_node, selected, node_period))
 					{
+						locations.reserve(m_reserve);
 						if (useCache)
 						{
 							if (nodescache.empty())
@@ -1512,6 +1516,29 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 				_exhandler->raisefromcatch("", "FMTgraph::getoutvariables", __LINE__, __FILE__);
 			}
 			return mapping;
+		}
+
+		std::vector<const FMTbaseedgeproperties*> getActionEdges(const FMTvertex_descriptor& pOutVertex,
+															const size_t& p_actionSize) const
+		{
+			std::vector<const FMTbaseedgeproperties*>output(p_actionSize,nullptr);
+			try {
+				FMToutedge_pair edge_pair;
+				for (edge_pair = boost::out_edges(pOutVertex, data); edge_pair.first != edge_pair.second; ++edge_pair.first)
+				{
+					const FMTbaseedgeproperties& edgeprop = data[*edge_pair.first];
+					const int actionId = edgeprop.getactionID();
+					if (actionId>=0)
+						{
+						output[edgeprop.getactionID()] = &edgeprop;
+						}
+				}
+			}
+			catch (...)
+			{
+				_exhandler->raisefromcatch("", "FMTgraph::getoutvariables", __LINE__, __FILE__);
+			}
+			return output;
 		}
 
 
@@ -2699,14 +2726,14 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 				p_descriptors.reserve(m_reserve);
 				if (useCache)
 				{
-					int last_period = 0;
+					int last_period = p_period - 1;
 					bool contains = false;
-					while (!contains && last_period < p_period)
+					while (!contains && last_period >= 0)
 					{
 						contains = nodescache.at(last_period).contains(p_node);
 						if (!contains)
 						{
-							++last_period;
+							--last_period;
 						}
 					}
 					const int POTENTIAL_LAST_PERIOD = last_period;
@@ -2734,9 +2761,13 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 
 						for (const FMTvertex_descriptor& PAST_DESCRIPTOR : PAST_DESCRIPTORS)
 						{
-							actives.push(PAST_DESCRIPTOR);
+							if (boost::out_degree(PAST_DESCRIPTOR,data)==1)
+								{
+								actives.push(PAST_DESCRIPTOR);
+								}
+							
 						}
-						const size_t INITITAL_COUNT = actives.size();
+						//const size_t INITITAL_COUNT = actives.size();
 						nodescache.at(POTENTIAL_LAST_PERIOD).erasenode(p_node);//Dont make a mess in the cache and delete the last period...
 						//std::allocator<FMTvertex_descriptor> treeAllocator;
 						//treeAllocator.allocate(PAST_DESCRIPTORS.size() * 2);
@@ -2820,6 +2851,7 @@ template<> inline std::map<int, int> FMTgraph<Graph::FMTvertexproperties, Graph:
 template<> inline std::vector<Core::FMTdevelopmentpath> FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::getpaths(const FMTvertex_descriptor& out_vertex, const int& actionID) const
 	{
 		std::vector<Core::FMTdevelopmentpath>paths;
+		paths.reserve(boost::out_degree(out_vertex,data));
 		try {
 			for (FMToutedge_pair edge_pair = boost::out_edges(out_vertex, data); edge_pair.first != edge_pair.second; ++edge_pair.first)
 			{
@@ -2928,15 +2960,16 @@ template<> inline std::map<int, double> FMTgraph<Graph::FMTvertexproperties, Gra
 
 				}
 				else {
-					const std::map<int, int>outvars = getoutvariables(vertex);
+					//const std::map<int, int>outvars = getoutvariables(vertex);
+					const std::vector<const FMTbaseedgeproperties*> ACTION_EDGES = getActionEdges(vertex, model.actions.size());
 					for (const Core::FMTaction* act : selected)
 					{
 						const int actionID = static_cast<int>(std::distance(&(*model.actions.begin()), act));
-						if (outvars.find(actionID) != outvars.end())
+						if (ACTION_EDGES.at(actionID))
 						{
 							const std::vector<Core::FMTdevelopmentpath>paths = getpaths(vertex, actionID);
 							const double action_coef = output_node.source.getcoef(development, model.yields, &vertexinfo, &paths, act) * output_node.factor.getcoef(development, model.yields, &vertexinfo, &paths, act) * output_node.constant;
-							updatevarsmap(variables, outvars.at(actionID), action_coef);
+							updatevarsmap(variables, ACTION_EDGES.at(actionID)->getvariableID(), action_coef);
 						}
 					}
 				}

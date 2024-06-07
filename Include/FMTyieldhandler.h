@@ -76,8 +76,8 @@ protected:
 	FMTmask mask;
 	std::vector<int>bases;
 	mutable std::unordered_set<std::string>lookat;
-	bool basepush_data(std::map<std::string, FMTdata>& elements, const std::string& yld, const double& value);
-	bool basepush_data(std::map<std::string, FMTdata>& elements, const std::string& yld, const FMTdata& data);
+	static bool basepush_data(std::map<std::string, FMTdata>& elements, const std::string& yld, const double& value);
+	static bool basepush_data(std::map<std::string, FMTdata>& elements, const std::string& yld, const FMTdata& data);
 	double getchangesfrom(const int& targetage, const int& peakstep) const;
 	int getmaxbase(const FMTyieldrequest& request) const;
 private:

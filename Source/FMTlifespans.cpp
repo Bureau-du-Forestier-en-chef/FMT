@@ -42,12 +42,15 @@ FMTlifespans FMTlifespans::presolve(const FMTmaskfilter& filter,
 	{
 	FMTlifespans newlifespans(*this);
 	try {
-		newlifespans.presolvelist(filter, originalthemes,newthemes);
-		if (compressdata)
+		if (!empty())
+		{
+			newlifespans.presolvelist(filter, originalthemes, newthemes);
+			if (compressdata)
 			{
-			newlifespans.compressmasks(newthemes);
+				newlifespans.compressmasks(newthemes);
 			}
-		newlifespans.update();
+			newlifespans.update();
+		}
 	}catch (...)
 		{
 		_exhandler->raisefromcatch("","FMTlifespans::presolve", __LINE__, __FILE__, Core::FMTsection::Lifespan);

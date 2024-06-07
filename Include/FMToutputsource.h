@@ -164,11 +164,8 @@ class FMTEXPORT FMToutputsource : public FMTspec
 			const Graph::FMTgraphvertextoyield* graphinfo =nullptr,
 			std::vector<FMTdevelopmentpath> const * paths=nullptr,
 			 FMTaction const * action=nullptr) const;
-		inline bool use(const FMTdevelopment& development, const FMTyields& ylds,
-			const Graph::FMTgraphvertextoyield* graphinfo=nullptr) const
-			{
-			return (development.getmask().issubsetof(mask) && development.is(*this, ylds, graphinfo));
-			}
+		bool use(const FMTdevelopment& development, const FMTyields& ylds,
+			const Graph::FMTgraphvertextoyield* graphinfo = nullptr) const;
 		FMToutputsource presolve(const FMTmaskfilter& filter,const std::vector<FMTtheme>& newthemes) const;
 		void setaverage();
 		inline bool isaverage() const

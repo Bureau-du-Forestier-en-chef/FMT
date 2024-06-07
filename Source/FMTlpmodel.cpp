@@ -287,7 +287,7 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 	std::map<int, double>& variables, double multiplier) const
 	{
 	std::vector<std::map<int, double>> strictlypositivesoutputs;
-	std::unordered_set<int>test;
+	//std::unordered_set<int>test;
 	const bool strictlypositivesoutputsmatrix = getparameter(STRICTLY_POSITIVE);
 	try {
 		std::unordered_set<int> output_negvar;
@@ -311,7 +311,7 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 
 				variables[node_it->first] += node_it->second*multiplier;
 				}
-			test.insert(node.getoutputid());
+			//test.insert(node.getoutputid());
 			}
 			if (strictlypositivesoutputsmatrix && !output_negvar.empty())
 			{
