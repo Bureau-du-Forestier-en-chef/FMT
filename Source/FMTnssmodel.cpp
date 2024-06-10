@@ -67,6 +67,13 @@ namespace Models
 					double lower = 0;
 					double upper = 0;
 					constraint.getbounds(lower, upper, p_period);
+					Core::FMToutput inventOut(constraint);
+					std::vector<Core::FMToutputsource> sources = inventOut.getsources();
+					sources[0].settarget(Core::FMTotar::inventory);
+					sources[0].setaction("");
+					inventOut.setsources(sources);
+					const double MAXIMAL_VALUE = getoutput(inventOut, getAreaPeriod(), Core::FMToutputlevel::totalonly).at("Total");
+					upper = std::min(MAXIMAL_VALUE, upper);
 					size_t location = 0;
 					bool added = false;
 					for (const Core::FMToutput* doneit : targetedoutputs)
@@ -79,6 +86,7 @@ namespace Models
 								}
 							if (upper<uppers.at(location))
 								{
+								
 								uppers[location] = upper;
 								}
 							added = true;
@@ -287,6 +295,7 @@ namespace Models
 			m_generator = std::default_random_engine(getparameter(Models::FMTintmodelparameters::SEED));
 			//First make some noise
 			std::shuffle(area.begin(), area.end(), m_generator);
+			graph.setbuildtype(Graph::FMTgraphbuild::schedulebuild);
 			std::queue<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor> actives = getActives();
 			const int GRAPH_SIZE = static_cast<int>(getgraphsize());
 			int period = static_cast<int>(GRAPH_SIZE -1);
@@ -314,7 +323,6 @@ namespace Models
 				_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
 					"Simulation model has no area to simulate for " + getname(), "FMTnssmodel::simulate", __LINE__, __FILE__);
 			}
-			graph.setbuildtype(Graph::FMTgraphbuild::schedulebuild);
 			setparameter(Models::FMTintmodelparameters::MATRIX_TYPE, 3);
 			bool allocatedArea = false;
 			double totalOperatedArea = 0;
@@ -326,7 +334,7 @@ namespace Models
 			{
 				const bool DOES_NOT_GROW = (ACTION.getname() == "_DEATH");
 				std::queue< Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>toGrow;
-				const size_t MAX_SPIN = area.size() * 2;
+				const size_t MAX_SPIN = 10; area.size() * 2;
 				size_t visit = 0;
 				while (!actionsOutputs.at(actionId).empty() && visit < MAX_SPIN)//Keep on spinning if you havent reach the target?
 				{

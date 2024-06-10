@@ -207,7 +207,8 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 								return true;
 								}
 							_exhandler->raise(Exception::FMTexc::FMTsourcetotarget_transition,
-									"Action recursivity " + std::to_string(theactionid)+" ", "FMTgraph::isdependant", __LINE__, __FILE__);
+									"Action recursivity " + std::to_string(theactionid)+" from "+
+								std::string(data[descriptor].get()), "FMTgraph::isdependant", __LINE__, __FILE__);
 							newedge = false;
 							}
 						}
@@ -949,7 +950,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 			}
 			catch (...)
 			{
-				_exhandler->raisefromcatch("", "FMTgraph::addaction", __LINE__, __FILE__);
+				_exhandler->raisefromcatch("On action Id "+std::to_string(actionID), "FMTgraph::addaction", __LINE__, __FILE__);
 			}
 		}
 		void addaction(const int& actionID,
