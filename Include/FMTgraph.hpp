@@ -2759,14 +2759,12 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 						//std::allocator<FMTvertex_descriptor> queueAllocator;
 						//queueAllocator.allocate(PAST_DESCRIPTORS.size() * 2);
 						std::queue<FMTvertex_descriptor>actives(m_allocator);
-
 						for (const FMTvertex_descriptor& PAST_DESCRIPTOR : PAST_DESCRIPTORS)
 						{
-							if (boost::out_degree(PAST_DESCRIPTOR,data)==1)
-								{
+							//if ((boost::out_degree(PAST_DESCRIPTOR,data)==1))
+							//	{
 								actives.push(PAST_DESCRIPTOR);
-								}
-							
+							//	}
 						}
 						//const size_t INITITAL_COUNT = actives.size();
 						nodescache.at(POTENTIAL_LAST_PERIOD).erasenode(p_node);//Dont make a mess in the cache and delete the last period...
@@ -2797,7 +2795,6 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 						{
 							p_descriptors.push_back(DESCRIPTOR);
 						}
-						const size_t FINAL_COUNT = p_descriptors.size();
 					}
 					if (p_period <= p_model.getparameter(Models::FMTintmodelparameters::LENGTH))
 					{

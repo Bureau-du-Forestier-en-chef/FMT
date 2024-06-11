@@ -771,6 +771,7 @@ namespace Models
     bool FMTsamodel::build(std::vector<Core::FMTschedule> schedules)
     {
         try {
+            solution.setPeriodCache(true);
             if (schedules.empty()||
                 (!schedules.empty() && schedules.begin()->empty())) //From no solution
             {

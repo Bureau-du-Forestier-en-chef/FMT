@@ -20,15 +20,17 @@ int main(int argc, char* argv[])
 
 	if (Version::FMTversion().hasfeature("GDAL"))
 	{
-		const std::string vals = argv[1];
+		/*const std::string vals = argv[1];
 		std::vector<std::string>results;
 		boost::split(results, vals, boost::is_any_of("|"));
 		const std::string primarylocation =  results.at(0);
 		const std::string scenario =  results.at(1);
 		const int length =  std::stoi(argv[2]);
-		const double objectivevalue = std::stod(argv[3]);
-		/*const std::string primarylocation = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/09_FMT/Modeles_test/02662/PC_9309_U02662_4_Vg2_2023_vRP1f.pri";
-		const std::string scenario = "spatial2";*/
+		const double objectivevalue = std::stod(argv[3]);*/
+		const std::string primarylocation = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/09_FMT/Modeles_test/02662/PC_9309_U02662_4_Vg2_2023_vRP1f.pri";
+		const std::string scenario = "spatial";
+		const int length = 1;
+		const double objectivevalue = 1000;
 		const std::string outputlocation = "../../tests/sasolve";
 		//const std::string outputlocation = "D:/test/SA/";
 		//const int length = 5;
