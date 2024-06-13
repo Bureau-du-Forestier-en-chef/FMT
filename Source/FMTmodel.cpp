@@ -1825,7 +1825,7 @@ std::unique_ptr<FMTmodel> FMTmodel::presolve(std::vector<Core::FMTactualdevelopm
 			for (const Core::FMTaction& action : oldactions)
 			{
 				const Core::FMTmask testedmask = action.getunion(oldthemes);
-				if (newfilter.canpresolve(testedmask,maskthemes))
+				if (newfilter.canpresolve(testedmask,maskthemes) && !action.notUse())
 				{
 					const Core::FMTaction presolvedaction = action.presolve(newfilter, oldthemes, newthemes,!didonepass);
 					newactions.push_back(presolvedaction);
@@ -1978,7 +1978,7 @@ std::unique_ptr<FMTmodel> FMTmodel::presolve(std::vector<Core::FMTactualdevelopm
 
 void FMTmodel::postsolve(const FMTmodel& originalbasemodel)
 	{
-	try {
+	try{
 		*this = FMTmodel(originalbasemodel);
 	}catch (...)
 		{

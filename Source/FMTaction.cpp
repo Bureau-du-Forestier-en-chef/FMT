@@ -476,6 +476,21 @@ std::string FMTaction::getGCBMactionname() const
 	return std::string();
 }
 
+bool FMTaction::notUse() const
+	{
+	size_t count = 0;
+	for (const auto& value : *this)
+		{
+		if (!value.second.emptyperiod()&&
+			value.second.getperiodlowerbound() == 0 &&
+			value.second.getperiodupperbound() == 0)
+			{
+			++count;
+			}
+		}
+	return (size() == count);
+	}
+
 std::vector<Core::FMTaction>FMTaction::split(const std::vector<Core::FMTmask>& p_mask,
 											const std::vector<Core::FMTtheme>& p_themes) const
 {

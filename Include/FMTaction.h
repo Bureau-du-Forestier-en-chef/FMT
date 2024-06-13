@@ -265,6 +265,12 @@ class FMTEXPORT FMTaction : public FMTlist<FMTspec>
 		*/
 		std::vector<Core::FMTaction>split(const std::vector<Core::FMTmask>& p_mask,
 										const std::vector<Core::FMTtheme>& p_themes) const;
+		// DocString: FMTaction::notUse
+		/**
+		@brief Check if all specs are period lower == 0 and upper == 0
+		@return true if not use else false.
+		*/
+		bool notUse() const;
 	protected:
 		// DocString: FMTaction::aggregates
 		///An action can be part of a aggregate so this data member gets the name of all aggregate the action is being part of.

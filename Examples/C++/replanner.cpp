@@ -15,11 +15,11 @@ int main(int argc, char *argv[])
 	#ifdef FMTWITHOSI
 	Logging::FMTdefaultlogger().logstamp();
 	/*const std::string primlocation = "D:/CC_modele_feu/WS_CC/Feux_2023_ouest_V01.pri";
-	const int length = 20;
-	const int replicate = 100;
+	const int length = 10;
+	const int replicate = 5;
 	std::vector<std::string>allscenarios;
 	allscenarios.push_back("strategique");
-	allscenarios.push_back("stochastique");
+	allscenarios.push_back("stochastique");//"stochastique_Histo");
 	allscenarios.push_back("tactique");*/
 	const std::string primlocation = argv[1];
 	const int length = std::stoi(argv[2]);
@@ -61,11 +61,11 @@ int main(int argc, char *argv[])
 	#endif
 	local.setparameter(Models::FMTintmodelparameters::LENGTH, 1);
 	local.setparameter(Models::FMTintmodelparameters::NUMBER_OF_THREADS,1);
-	std::vector<std::string>OutputtoLookFor = { "OVOLTOTREC" ,"OSUPTOT","OVOL_UA_TOTREC" ,"OSUPBRULER_CORRIGER" ,
-												"SUPERFICIE_RECUP_FEU" ,"OSUPPL_FEU_POSTRECUP",
+	std::vector<std::string>OutputtoLookFor = { "OVOLTOTREC" ,/*"OSUPTOT",*/"OVOL_UA_TOTREC" ,"OSUPBRULER_CORRIGER" ,
+												"SUPERFICIE_RECUP_FEU" ,/*"OSUPPL_FEU_POSTRECUP",*/
 													"OSUPTBE" , "SUPERFICIE_RECUP_TBE",
-												"OCATTBE_C1" ,"OCATTBE_C2" ,"OCATTBE_C3",
-												"OCATTBE_C4","OCATTBE_C5","OCATTBE_C6","OTBECOMP","OSUPADMATBE"};
+												/*"OCATTBE_C1" ,"OCATTBE_C2" ,"OCATTBE_C3",
+												"OCATTBE_C4","OCATTBE_C5","OCATTBE_C6","OTBECOMP","OSUPADMATBE"*/};
 	std::vector<Core::FMToutput>selectedoutputs;
 	for (const Core::FMToutput& output : global.getoutputs())
 	{
@@ -79,7 +79,7 @@ int main(int argc, char *argv[])
 	const std::string outputlocation = "../../tests/replanner/"+ locname;
 	std::vector<std::string>layersoptions;
 	layersoptions.push_back("SEPARATOR=SEMICOLON");
-	std::unique_ptr<Parallel::FMTtask> maintaskptr(new Parallel::FMTreplanningtask(global, stochastic, local, selectedoutputs, outputlocation, "CSV", layersoptions, replicate,length,0.5, Core::FMToutputlevel::totalonly));
+	std::unique_ptr<Parallel::FMTtask> maintaskptr(new Parallel::FMTreplanningtask(global, stochastic, local, selectedoutputs, outputlocation, "CSV", layersoptions, replicate,length,0.5, Core::FMToutputlevel::standard));
 	Parallel::FMTtaskhandler handler(maintaskptr,5);
 	//handler.setquietlogger();
 	//handler.ondemandrun();

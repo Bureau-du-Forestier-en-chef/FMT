@@ -108,7 +108,8 @@ namespace Parallel
 			replicateids.push(0);
 			writeresults(global->getname(),
 				global->getparameter(Models::FMTintmodelparameters::LENGTH),modelcpy,1);
-			_logger->logwithlevel("Initial planning done\n", 0);
+			const std::string OBJ_VALUE = std::to_string(modelcpy->getobjectivevalue());
+			_logger->logwithlevel("Initial planning Obj("+ OBJ_VALUE +") done\n", 0);
 			replicateids.pop();
 			baseschedule = std::shared_ptr<Core::FMTschedule>(new Core::FMTschedule(modelcpy->getsolution(1, true)));
 			iterationglobalschedule = *baseschedule;
