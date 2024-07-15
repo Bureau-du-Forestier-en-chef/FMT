@@ -70,12 +70,12 @@ int main(int argc, char* argv[])
 		if (!SCHEDULES.empty())
 			{
 			Parser::FMTscheduleparser SCHEDULE_PARSER;
-			const std::vector<Core::FMTschedule>NEWSCHEDULE = AGGREGATED_MODEL.aggregateSchedules(SCHEDULES);
-			SCHEDULE_PARSER.write(NEWSCHEDULE, OUTPUT_DIRECTORY + SCENARIO + ".seq");
+			const std::vector<Core::FMTschedule>NEWSCHEDULE = AGGREGATED_MODEL.aggregateSchedules(SCHEDULES); // agg 2
+			SCHEDULE_PARSER.write(NEWSCHEDULE, OUTPUT_DIRECTORY + SCENARIO + ".seq"); // write 3
 			}
 		const std::vector<std::string>ROOT(1,"ROOT");
 		const std::vector<Models::FMTmodel> READMODELS = ModelParser.readproject(OUTPUT_DIRECTORY + SCENARIO + ".pri", ROOT);
-		const std::vector<Core::FMTschedule>READSCHEDULE = ModelParser.readschedules(OUTPUT_DIRECTORY + SCENARIO + ".pri", READMODELS).at(0);
+		const std::vector<Core::FMTschedule>READSCHEDULE = ModelParser.readschedules(OUTPUT_DIRECTORY + SCENARIO + ".pri", READMODELS).at(0); //read 1
 		Models::FMTsesmodel Simulation(READMODELS.at(0));
 		Parser::FMTareaparser areaParser;
 		const boost::filesystem::path BASE_PATH = boost::filesystem::path(PRIMARY_LOCATION).parent_path();
