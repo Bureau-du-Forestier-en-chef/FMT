@@ -129,6 +129,16 @@ void FMTmask::set(const std::vector<FMTtheme>& themes,const std::string& value)
 	name = value;
 	std::vector<std::string>bases;
     boost::split(bases,value,boost::is_any_of(FMT_STR_SEPARATOR),boost::token_compress_on);
+	if (bases.size()< themes.size())
+	{
+		size_t toDefault = bases.size();
+		while (bases.size() != themes.size())
+		{
+			bases.push_back(*themes.at(toDefault).getbaseattributes().begin());
+			name += " " + bases.back();
+			++toDefault;
+		}
+	}
     size_t fullsize = 0;
     for(const FMTtheme& theme : themes)
         {
