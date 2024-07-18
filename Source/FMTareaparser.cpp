@@ -646,7 +646,13 @@ const boost::regex FMTareaparser::rxcleanarea = boost::regex("^((\\*A[A]*)([^|]*
 				std::string tmask = boost::algorithm::join(masks, " ");
 				if (Core::FMTtheme::validate(themes, tmask, " at line " + std::to_string(_line)))
 				{
-					const Core::FMTmask mask(tmask, themes);
+					Core::FMTmask mask(tmask, themes);
+					size_t emptyTheme = themes_fields.size();
+					while (emptyTheme < themes.size())
+						{
+						mask.set(themes.at(emptyTheme),*themes.at(emptyTheme).getbaseattributes().begin());
+						++emptyTheme;
+						}
 					Core::FMTactualdevelopment newdev(mask, age, lock, area);
 					//newdev.passinobject(*this);
 					return newdev;
@@ -666,16 +672,16 @@ const boost::regex FMTareaparser::rxcleanarea = boost::regex("^((\\*A[A]*)([^|]*
 		{
 		GDALDataset* dataset=nullptr;
 		try {
-		//GDALAllRegister();
-		dataset = getvectordataset(data_vectors);
-		OGRLayer*  layer = getlayer(dataset, 0);
-		getWSfields(layer, themes_fields, age_field, area_field, lock_field, agefield, areafield, lockfield);
-		if (themes_fields.size() != themes.size())
-			{
-			_exhandler->raise(Exception::FMTexc::FMTinvalid_maskrange,
-				dataset->GetDescription(),"FMTareaparser::openvectorfile", __LINE__, __FILE__, _section);
-			}
-		layer->ResetReading();
+			//GDALAllRegister();
+			dataset = getvectordataset(data_vectors);
+			OGRLayer*  layer = getlayer(dataset, 0);
+			getWSfields(layer, themes_fields, age_field, area_field, lock_field, agefield, areafield, lockfield);
+			if (themes_fields.size() > themes.size())
+				{
+				_exhandler->raise(Exception::FMTexc::FMTinvalid_maskrange,
+					dataset->GetDescription(),"FMTareaparser::openvectorfile", __LINE__, __FILE__, _section);
+				}
+			layer->ResetReading();
 		}catch (...)
 			{
 			_exhandler->raisefromcatch(data_vectors,"FMTareaparser::openvectorfile", __LINE__, __FILE__, _section);
@@ -868,7 +874,8 @@ const boost::regex FMTareaparser::rxcleanarea = boost::regex("^((\\*A[A]*)([^|]*
 			int area_field = -1;
 			GDALDataset* dataset = openvectorfile(themes_fields, age_field, lock_field, area_field, data_vectors, agefield, areafield, lockfield, themes);
 			OGRLayer*  layer = getlayer(dataset, 0);
-			layer = this->subsetlayer(layer, themes, agefield, areafield);
+			const std::vector<Core::FMTtheme>THEMES_SUBSET(themes.begin(), themes.begin() + themes_fields.size());
+			layer = this->subsetlayer(layer, THEMES_SUBSET, agefield, areafield);
 			OGRCoordinateTransformation* coordtransf = getprojtransform(layer, fittoforel);
 			/*OGRwkbGeometryType lgeomtype = layer->GetGeomType();
 			if (lgeomtype != wkbMultiPolygon && lgeomtype != wkbPolygon )
