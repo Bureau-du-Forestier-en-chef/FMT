@@ -16,13 +16,11 @@ namespace Core{
 	FMTaction& FMTaction::operator+=(const FMTaction& OtherAction)
 		{
 		try {
-			/*if (this->reset != OtherAction.reset ||
-				this->lock != OtherAction.lock ||
-				this->partials.empty() != OtherAction.partials.empty())
+			if (empty())
 				{
-				_exhandler->raise(Exception::FMTexc::FMTinvalid_action, "Cant append action "+ OtherAction.getname() +" to "+this->getname(),
-					"FMTaction::operator+=", __LINE__, __FILE__, Core::FMTsection::Action);
-				}*/
+				this->reset = OtherAction.reset;
+				this->lock = OtherAction.lock;
+				}
 			if (OtherAction.reset)
 				{
 				this->reset = true;
