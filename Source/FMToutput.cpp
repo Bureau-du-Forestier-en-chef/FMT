@@ -14,7 +14,10 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <memory>
 #include "FMTaction.h"
 #include <algorithm>
+#include <cpl_port.h>
 #include <queue>
+#include <boost/regex/config.hpp>
+
 #include "FMTexceptionhandler.h"
 
 namespace Core{
@@ -231,7 +234,7 @@ FMToutput::operator std::string() const
 		//Works for normal outputs, level and levels with operators
 		//if(!islevel() || isonlylevel())
 		//{
-			line = "*OUTPUT ";
+		line = "*OUTPUT ";
 			if (isonlylevel())
 			{
 				line = "*LEVEL ";
@@ -241,13 +244,14 @@ FMToutput::operator std::string() const
 			{
 				line += " (_TH" + std::to_string(targetthemeid() + 1) + ")";
 			}
-			line+=" " + description + "\n";
+			line += " " + description + "\n";
+			
 			if (isconstantlevel())
 			{
 				line += "*SOURCE ";
 				for (const double& value : sources.begin()->getvalues())
 				{
-					line += std::string(std::to_string(value))+" ";
+					line += std::string(std::to_string(value)) + " ";
 				}
 				line.pop_back();
 				line += "\n";
@@ -257,10 +261,10 @@ FMToutput::operator std::string() const
 				line += "*SOURCE ";
 				for (size_t id = 0; id < sources.size(); ++id)
 					{
-						line += std::string(sources[id]) + " ";
-						if (id < operators.size())
+					line += std::string(sources[id]) + " ";
+					if (id < operators.size())
 						{
-							line += std::string(operators[id]) + " ";
+							line += std::string(operators[id]) + "\n";
 						}
 					}
 				line += "\n";
@@ -335,7 +339,14 @@ FMToutput::operator std::string() const
 		_exhandler->raisefromcatch(
 			"", "FMToutput::operator std::string()", __LINE__, __FILE__, Core::FMTsection::Outputs);
 	}
-    return line;
+	
+	if (sourceCounter(line))
+	{
+		return line;
+	}
+	
+	//return line;
+    
     }
 bool FMToutput::empty() const
 	{
@@ -1411,7 +1422,42 @@ bool FMToutputcomparator::operator()(const FMToutput& output) const
 	return output_name == output.getname();
 	}
 
+bool FMToutput::sourceCounter(const std::string& p_source) const
+{
+	bool passed = true;
+	const int MAXSIZE = 256;
+	int count = 0;
 
+	for (std::size_t i = 0; i < p_source.size(); ++i) {
+		try
+		{
+			if (p_source[i] == '\n')
+			{
+				count = 0;
+			}
+			else
+			{
+				count++;
+				if (count > MAXSIZE)
+				{
+					const std::string ERRORMESSAGE = "Le nombre de caratères par ligne est trop grand. Nombre de caractères : " + std::to_string(count) + " nombre max : " + std::to_string(MAXSIZE);
+					_exhandler->raise(Exception::FMTexc::FMToutput_too_much_operator,
+						 ERRORMESSAGE, "FMToutput::splitSource" ,__LINE__, __FILE__);
+					passed = false;
+				}
+
+			}
+		}
+		catch (...)
+		{
+			_exhandler->raisefromcatch("",
+				"FMToutput::splitSource",
+				__LINE__, __FILE__);
+		}
+	}
+	return passed;
+
+}
 
 
 }
