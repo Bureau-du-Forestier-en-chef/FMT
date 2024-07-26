@@ -18,6 +18,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTvertexproperties.h"
 #include "FMTedgeproperties.h"
 #include "FMTgraph.hpp"
+#include <memory>
 
 #if defined FMTWITHR
 	#include <Rcpp.h>
@@ -32,6 +33,7 @@ namespace Core
 namespace Graph
 {
 	class FMTgraphvertextoyield;
+
 }
 
 namespace Models 
@@ -99,17 +101,17 @@ namespace Models
 		/**
 		Copy assignment of FMTsrmodel
 		*/
-		FMTsrmodel& operator = (const FMTsrmodel& rhs)=default;
+		FMTsrmodel& operator = (const FMTsrmodel& rhs);
 		// DocString: FMTsrmodel(FMTsrmodel&&)
 		/**
 		Default move constructor for FMTsrmodel.
 		*/
-		FMTsrmodel(FMTsrmodel&& rhs)=default;
+		FMTsrmodel(FMTsrmodel&& rhs);
 		// DocString: FMTsrmodel::operator=(FMTsrmodel&& rhs) 
 		/**
 		Default move assignment for FMTsrmodel.
 		*/
-		FMTsrmodel& operator =(FMTsrmodel&& rhs) =default;
+		FMTsrmodel& operator =(FMTsrmodel&& rhs);
 		// DocString: ~FMTsrmodel()
 		/**
 		Default destructor of FMTsrmodel
@@ -306,7 +308,7 @@ namespace Models
 	protected:
 		// DocString: FMTsrmodel::graph
 		///graph holding the FMTdevelopments for all the periods.
-		Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>graph;
+		std::unique_ptr<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>>m_graph;
 		// DocString: FMTsrmodel::solver
 		///The lpsolver
 		FMTlpsolver solver;
@@ -357,7 +359,7 @@ namespace Models
 		{
 			ar& boost::serialization::make_nvp("model", boost::serialization::base_object<FMTmodel>(*this));
 			ar& BOOST_SERIALIZATION_NVP(solver);
-			ar& BOOST_SERIALIZATION_NVP(graph);
+			ar& BOOST_SERIALIZATION_NVP(m_graph);
 		}
 		// DocString: FMTsrmodel::load
 		/**
@@ -368,7 +370,7 @@ namespace Models
 		{
 			ar& boost::serialization::make_nvp("model", boost::serialization::base_object<FMTmodel>(*this));
 			ar& BOOST_SERIALIZATION_NVP(solver);
-			ar& BOOST_SERIALIZATION_NVP(graph);
+			ar& BOOST_SERIALIZATION_NVP(m_graph);
 			solver.passinmessagehandler(*_logger);
 		}
 		BOOST_SERIALIZATION_SPLIT_MEMBER()

@@ -36,7 +36,7 @@ class FMTEXPORT FMTsesmodel final: public FMTsemodel
 		{
 		ar & boost::serialization::make_nvp("semodel", boost::serialization::base_object<FMTsemodel>(*this));
 		}
-	virtual void swap_ptr(const std::unique_ptr<FMTmodel>& rhs);
+	virtual void swap_ptr(std::unique_ptr<FMTmodel>& rhs);
 	// DocString: FMTsesmodel()
 	/**
 	Constructor for presolve use

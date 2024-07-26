@@ -16,7 +16,7 @@ int main(int argc, char *argv[])
 	Logging::FMTdefaultlogger().logstamp();
 	/*const std::string primlocation = "D:/CC_modele_feu/WS_CC/Feux_2023_ouest_V01.pri";
 	const int length = 20;
-	const int replicate = 100;
+	const int replicate = 5;
 	std::vector<std::string>allscenarios;
 	allscenarios.push_back("strategique");
 	allscenarios.push_back("stochastique_Histo");//"stochastique");

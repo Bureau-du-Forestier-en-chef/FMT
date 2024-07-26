@@ -912,17 +912,17 @@ FMTmodel& FMTmodel::operator =(FMTmodel&& rhs)
 	{
 		Core::FMTobject::operator = (rhs);
 		m_generator = std::move(rhs.m_generator);
-		parameters = std::move(rhs.parameters);
-		area = std::move(rhs.area);
-		themes = std::move(rhs.themes);
-		actions = std::move(rhs.actions);
-		transitions = std::move(rhs.transitions);
-		yields = std::move(rhs.yields);
-		lifespan = std::move(rhs.lifespan);
-		outputs = std::move(rhs.outputs);
-		constraints = std::move(rhs.constraints);
+		parameters.swap(rhs.parameters);
+		area.swap(rhs.area);
+		themes.swap(rhs.themes);
+		actions.swap(rhs.actions);
+		transitions.swap(rhs.transitions);
+		yields.swap(rhs.yields);
+		lifespan.swap(rhs.lifespan);
+		outputs.swap(rhs.outputs);
+		constraints.swap(rhs.constraints);
 		name = std::move(rhs.name);
-		statictransitionthemes = std::move(rhs.statictransitionthemes);
+		statictransitionthemes.swap(rhs.statictransitionthemes);
 		yields.setModel(this);
 
 	}
@@ -2905,7 +2905,7 @@ void FMTmodel::showparameters(const bool& showhelp)const
 	}
 }
 
-void FMTmodel::swap_ptr(const std::unique_ptr<FMTmodel>& rhs)
+void FMTmodel::swap_ptr(std::unique_ptr<FMTmodel>& rhs)
 {
 	*this = std::move(*rhs); 
 }

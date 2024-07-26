@@ -204,7 +204,7 @@ class FMTEXPORT FMTsamodel final: public FMTsemodel
         /**
         Swap with an abstract FMTmodel
         */
-        virtual void swap_ptr(const std::unique_ptr<FMTmodel>& rhs);
+        virtual void swap_ptr(std::unique_ptr<FMTmodel>& rhs);
         // DocString: FMTsamodel:GetLocalMoveSize
         /**
         Generate the size of the local move.
