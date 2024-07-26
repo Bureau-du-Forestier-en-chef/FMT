@@ -234,7 +234,7 @@ FMToutput::operator std::string() const
 		//Works for normal outputs, level and levels with operators
 		//if(!islevel() || isonlylevel())
 		//{
-		line = "*OUTPUT ";
+			line = "*OUTPUT ";
 			if (isonlylevel())
 			{
 				line = "*LEVEL ";
@@ -251,7 +251,8 @@ FMToutput::operator std::string() const
 				line += "*SOURCE ";
 				for (const double& value : sources.begin()->getvalues())
 				{
-					line += std::string(std::to_string(value)) + " ";
+					
+					line += FMToutputsource::trimDouble(std::to_string(value)) + " ";
 				}
 				line.pop_back();
 				line += "\n";
@@ -264,7 +265,7 @@ FMToutput::operator std::string() const
 					line += std::string(sources[id]) + " ";
 					if (id < operators.size())
 						{
-							line += std::string(operators[id]) + "\n";
+						operators[id].isfactor() ? line += std::string(operators[id]) + " " : line += std::string(operators[id]) + "\n";
 						}
 					}
 				line += "\n";
@@ -1441,7 +1442,7 @@ bool FMToutput::sourceCounter(const std::string& p_source) const
 				if (count > MAXSIZE)
 				{
 					const std::string ERRORMESSAGE = "Le nombre de caratères par ligne est trop grand. Nombre de caractères : " + std::to_string(count) + " nombre max : " + std::to_string(MAXSIZE);
-					_exhandler->raise(Exception::FMTexc::FMToutput_too_much_operator,
+					_exhandler->raise(Exception::FMTexc::FMTrangeerror,
 						 ERRORMESSAGE, "FMToutput::splitSource" ,__LINE__, __FILE__);
 					passed = false;
 				}
