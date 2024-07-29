@@ -28,12 +28,6 @@ This parser is also used by the FMTmodelparser.
 */
 class FMTEXPORT FMTscheduleparser: public FMTparser
     {
-		// DocString: FMTscheduleparser::getvariable
-		/**
-		This function uses the comment present in the schedule section representing the
-		variable index of the scheduled area to harvest and return it has a int value.
-		*/
-		int getvariable() const;
     public:
 		// DocString: FMTscheduleparser()
 		/**
@@ -67,7 +61,29 @@ class FMTEXPORT FMTscheduleparser: public FMTparser
 		/**
 		This function write a vector of FMTschedules (schedules) into a (location) schedule file.
 		*/
-        void write(const  std::vector<Core::FMTschedule>& schedules, const std::string& location) const;
+        void write(const std::vector<Core::FMTschedule>& schedules, const std::string& location, bool append) const;
+
+	private:
+		// DocString: FMTscheduleparser::getvariable
+		/**
+		This function uses the comment present in the schedule section representing the
+		variable index of the scheduled area to harvest and return it has a int value.
+		*/
+		int getvariable() const;
+		// DocString: FMTscheduleparser::_writeSchedule
+		/**
+		@brief Write schedule in a FMTschedule with ofstream
+		@param[out] p_stream stream to file
+		@param[in] p_schedule vector of FMTschedule 
+		*/
+		static void _writeSchedule(std::ofstream& p_stream, const std::vector<Core::FMTschedule>& p_schedules);
+		// DocString: FMTscheduleparser::_getFirstEmptySchedule
+		/**
+		@brief Get first non empty schedule of a FMTschedule vector
+		@param[in] p_schedule vector of FMTschedule 
+		@return iterator of first schedule or iterator at N schedule
+		*/
+		static std::vector<Core::FMTschedule>::const_iterator _getFirstEmptySchedule(const std::vector<Core::FMTschedule>& p_schedules);
     };
 
 }
