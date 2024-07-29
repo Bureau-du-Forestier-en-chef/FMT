@@ -26,10 +26,10 @@ int main(int argc, char* argv[])
 		const std::string scenario = results.at(1);
 		const int length =  std::stoi(argv[2]);
 		const double objectivevalue =  std::stod(argv[3]);
-		/*const std::string primarylocation = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/09_FMT/Modeles_test/PC9509_U02751_DET_ECON_Cout_T/PC_9509_U02751_4_Vg2_2023_vRp2.pri";
-		const std::string scenario = "14_Sc5a_Determin_avsp_Cout_t5";
-		const int length = 10;
-		const double objectivevalue = 30285431.3;*/
+		/*const std::string primarylocation = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/09_FMT/Modeles_test/actionseries/PC_9509_U02751_4_Vg2_2023_vRp2.pri";
+		const std::string scenario = "14_sc5_determin_apsp_ref_aam_ratioplct_action_series_3";
+		const int length = 5;
+		const double objectivevalue = 2523996;*/
 		Parser::FMTmodelparser modelparser;
 		//modelparser.setdebugexceptionhandler();
 		std::vector<Exception::FMTexc>errors;
