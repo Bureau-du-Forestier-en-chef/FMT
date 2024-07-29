@@ -224,6 +224,15 @@ namespace Models
         return m_compresstime;
     }
 
+    void FMTmodelparameters::swap(FMTmodelparameters& rhs)
+    {
+        m_intparameters.swap(rhs.m_intparameters);
+        m_dblparameters.swap(rhs.m_dblparameters);
+        m_boolparameters.swap(rhs.m_boolparameters);
+        m_strparameters.swap(rhs.m_strparameters);
+        m_compresstime.swap(rhs.m_compresstime);
+    }
+
 
 }
 

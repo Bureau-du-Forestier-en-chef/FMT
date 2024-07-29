@@ -145,6 +145,13 @@ FMTyieldhandler::operator std::string() const
 		{
 		return mask;
 		}
+
+	void FMTyieldhandler::setMask(const FMTmask& p_mask)
+		{
+		mask = p_mask;
+		}
+
+
 	std::vector<std::string> FMTyieldhandler::compare(const std::vector<std::string>& keys) const
         {
 		try {

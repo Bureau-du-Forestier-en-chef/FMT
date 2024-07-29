@@ -57,6 +57,7 @@ int main(int argc, char *argv[])
 	handler.conccurentrun();
 	const std::vector<const Parallel::FMTplanningtask*> tasks= handler.gettasksfromdynamiccast<Parallel::FMTplanningtask>();
 	const std::vector<const Models::FMTlpmodel*> modelsresults =  tasks.at(0)->getmodelsfromdynamiccast<Models::FMTlpmodel>();
+	Logging::FMTdefaultlogger() <<"OBJECTIVE "<< modelsresults.at(0)->getObjValue() << "\n";
 	const double sumvalue = modelsresults.at(0)->getoutput(selectedoutputs.at(1), 5, Core::FMToutputlevel::totalonly).at("Total");
 	const double avgvalue = modelsresults.at(0)->getoutput(selectedoutputs.at(2), 5, Core::FMToutputlevel::totalonly).at("Total");
 	if (std::abs(sumvalue-1498.60684)>0.1)

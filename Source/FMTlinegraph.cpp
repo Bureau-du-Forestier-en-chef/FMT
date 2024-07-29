@@ -516,6 +516,7 @@ namespace Graph
 				}*/
 
 			}
+			std::sort(removed.rbegin(), removed.rend());
 			for (FMTvertex_descriptor it : removed)
 			{
 				boost::remove_vertex(it, data);

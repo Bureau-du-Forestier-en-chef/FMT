@@ -134,7 +134,7 @@ namespace Models
         return *this;
     }
 
-    void FMTsamodel::swap_ptr(const std::unique_ptr<FMTmodel>& rhs)
+    void FMTsamodel::swap_ptr(std::unique_ptr<FMTmodel>& rhs)
     {
         *this = std::move(*dynamic_cast<FMTsamodel*>(rhs.get()));
     }

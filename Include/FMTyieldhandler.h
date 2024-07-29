@@ -42,6 +42,7 @@ public:
 	virtual int getlastbase() const;
 	const std::vector<int>& getbases() const;
 	FMTmask getmask() const;
+	void setMask(const FMTmask& p_mask);
 	bool push_base(const int& base);
 	void setbase(const std::vector<int>& allvalues);
 	bool inlookat(const std::string& yld) const;

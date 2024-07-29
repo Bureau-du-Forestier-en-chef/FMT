@@ -79,6 +79,33 @@ namespace Models
 		@return true if got replicate else false.
 		*/
 		bool gotReplicate(const int& p_replanningPeriod) const;
+		// DocString: FMTmodel::BuildAction
+		/**
+		 * @brief Build an action based on the positive value of a yield
+		 * @param[in] p_actionName the name of the action to create
+		 * @param[in] p_Targetyield the yield to look for positive value.
+		 * @return a Valid FMTmodel.
+		 */
+		FMTmodel buildAction(const std::string& p_actionName,
+							const std::string& p_Targetyield) const;
+		// DocString: FMTmodel::buildSchedule
+		/**
+		 * @brief Build schedule by looking at operability of the actual devs.
+		 * @param[in] p_action the action we want to build a schedule
+		 * @param[in] p_schedules the non extended schedule we want to build on.
+		 * @return a complete schedule of length of the model with actual dev
+		 */
+		std::vector<Core::FMTschedule> buildSchedule(const Core::FMTaction& p_action,
+													const std::vector<Core::FMTschedule>& p_schedules) const;
+		
+		// DocString: FMTmodel::pushTheme
+		/**
+		 * @brief Push a new theme and update the whole model with it
+		 * @param[in] p_themeName the Name of the theme to push
+		 * @param[in] p_attributes the attributes of the theme ? will be the default of every masks.
+		 */
+		void pushTheme(const std::string& p_themeName,
+			const std::vector<std::string>& p_attributes);
 		// DocString: FMTmodel::aggregateAllActions
 		/**
 		 * @brief Aggregate actions together and create en enterly new model with new
@@ -706,7 +733,7 @@ namespace Models
 		/**
 		Swap *this for the element at the end of the rhs unique_ptr.
 		*/
-		virtual void swap_ptr(const std::unique_ptr<FMTmodel>& rhs);
+		virtual void swap_ptr(std::unique_ptr<FMTmodel>& rhs);
 		// DocString: FMTmodel::setupschedulesforbuild
 		/**
 		Base on the FORCE_PARTIAL_BUILD it will prepare the pass in schedules for building.
@@ -832,6 +859,13 @@ namespace Models
 		 * @return A valid mask with the right name with the newly created aggregates.
 		 */
 		Core::FMTmask addNewMask(const Core::FMTmask& p_incompleteMask);
+		// DocString: FMTmodel::extendSchedule
+		/**
+		 * @brief extend the schedule dev with the actual model which use more themes.
+		 * @param[in] p_schedules schedules we want to extend.
+		 * @return a complete schedule that fits the model.
+		 */
+		std::vector<Core::FMTschedule> extendSchedule(const std::vector<Core::FMTschedule>& p_schedules) const;
 		
 		
 
