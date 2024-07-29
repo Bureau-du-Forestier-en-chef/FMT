@@ -14,20 +14,21 @@ int main(int argc, char *argv[])
 	{
 	#ifdef FMTWITHOSI
 	Logging::FMTdefaultlogger().logstamp();
-	/*const std::string primlocation = "D:/CC_modele_feu/WS_CC/Feux_2023_ouest_V01.pri";
+	// soit 18 à 24 ou 25 à 31
+	const std::string primlocation = "D:/CC_modele_feu/WS_CC/Feux_2023_ouest_V01.pri";
 	const int length = 20;
 	const int replicate = 100;
 	std::vector<std::string>allscenarios;
 	allscenarios.push_back("strategique");
 	allscenarios.push_back("stochastique_Histo");//"stochastique");
-	allscenarios.push_back("tactique");*/
-	const std::string primlocation = argv[1];
+	allscenarios.push_back("tactique");
+	/* const std::string primlocation = argv[1];
 	const int length = std::stoi(argv[2]);
 	const int replicate = std::stoi(argv[3]);
 	std::vector<std::string>allscenarios;
 	allscenarios.push_back("Globalreplanning");
 	allscenarios.push_back("Globalfire");
-	allscenarios.push_back("Localreplanning");
+	allscenarios.push_back("Localreplanning"); */
 	Parser::FMTmodelparser modelparser;
 	modelparser.setdefaultexceptionhandler();
 	std::vector<Exception::FMTexc>errors;
@@ -80,7 +81,7 @@ int main(int argc, char *argv[])
 	std::vector<std::string>layersoptions;
 	layersoptions.push_back("SEPARATOR=SEMICOLON");
 	std::unique_ptr<Parallel::FMTtask> maintaskptr(new Parallel::FMTreplanningtask(global, stochastic, local, selectedoutputs, outputlocation, "CSV", layersoptions, replicate,length,0.5, Core::FMToutputlevel::standard));
-	Parallel::FMTtaskhandler handler(maintaskptr,5);
+	Parallel::FMTtaskhandler handler(maintaskptr, 1); // diminuer 5 à 1 pour le debuggage
 	//handler.setquietlogger();
 	//handler.ondemandrun();
 	handler.conccurentrun();
