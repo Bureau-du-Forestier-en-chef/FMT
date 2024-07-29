@@ -20,18 +20,19 @@ namespace Core {
 		try {
 				value += "*Y " + std::string(mask) + "\n";
 				value += "_AGE \t";
-				for (std::map<std::string, FMTdata>::const_iterator it = elements.begin(); it != elements.end(); ++it)
+				const std::vector<std::string> yieldNames = getyieldnames();
+				for (const std::string& NAME : yieldNames)
 				{
-					value += it->first + "\t";
+					value += NAME + "\t";
 				}
 				value += "\n";
 				int baseid = 0;
 				for (const int& base : bases)
 				{
 					value += std::to_string(base) + "\t";
-					for (std::map<std::string, FMTdata>::const_iterator it = elements.begin(); it != elements.end(); ++it)
+					for (const std::string& NAME : yieldNames)
 					{
-						const std::vector<double>* data = &it->second.data;
+						const std::vector<double>* data = &elements.at(NAME).data;
 						value += std::to_string(data->at(baseid)) + "\t";
 					}
 					value += "\n";
@@ -240,6 +241,7 @@ namespace Core {
 		{
 			results.push_back(data.first);
 		}
+		std::sort(results.begin(), results.end());
 		return results;
 	}
 

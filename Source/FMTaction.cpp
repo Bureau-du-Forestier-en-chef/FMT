@@ -16,13 +16,11 @@ namespace Core{
 	FMTaction& FMTaction::operator+=(const FMTaction& OtherAction)
 		{
 		try {
-			/*if (this->reset != OtherAction.reset ||
-				this->lock != OtherAction.lock ||
-				this->partials.empty() != OtherAction.partials.empty())
+			if (empty())
 				{
-				_exhandler->raise(Exception::FMTexc::FMTinvalid_action, "Cant append action "+ OtherAction.getname() +" to "+this->getname(),
-					"FMTaction::operator+=", __LINE__, __FILE__, Core::FMTsection::Action);
-				}*/
+				this->reset = OtherAction.reset;
+				this->lock = OtherAction.lock;
+				}
 			if (OtherAction.reset)
 				{
 				this->reset = true;
@@ -475,6 +473,21 @@ std::string FMTaction::getGCBMactionname() const
 	}
 	return std::string();
 }
+
+bool FMTaction::notUse() const
+	{
+	size_t count = 0;
+	for (const auto& value : *this)
+		{
+		if (!value.second.emptyperiod()&&
+			value.second.getperiodlowerbound() == 0 &&
+			value.second.getperiodupperbound() == 0)
+			{
+			++count;
+			}
+		}
+	return (size() == count);
+	}
 
 std::vector<Core::FMTaction>FMTaction::split(const std::vector<Core::FMTmask>& p_mask,
 											const std::vector<Core::FMTtheme>& p_themes) const

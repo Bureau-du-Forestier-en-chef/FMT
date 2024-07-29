@@ -19,6 +19,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTmaskfilter.h"
 #include "FMTexceptionhandler.h"
 #include "FMTtransitionmask.h"
+#include "FMTfuturdevelopment.h"
 #include <thread>
 //#include <cvmarkersobj.h>
 #include <memory>
@@ -61,6 +62,299 @@ namespace Models{
 			_exhandler->raisefromcatch("", "FMTmodel::gotReIgnore", __LINE__, __FILE__);
 		}
 		return gotIt;
+	}
+
+	std::vector<Core::FMTschedule>FMTmodel::buildSchedule(const Core::FMTaction& p_action,
+															const std::vector<Core::FMTschedule>& p_schedules) const
+	{
+		
+		std::vector<Core::FMTschedule>newSchedules;
+		try {
+			Core::FMTmask ActionMask = p_action.getunion(themes);
+			ActionMask.update(themes);
+			const std::vector<size_t>Static = statictransitionthemes;
+			for (size_t thId = 0; thId < themes.size();++thId)
+				{
+				if (std::find(Static.begin(),Static.end(), thId)== Static.end())
+					{
+					ActionMask.set(themes.at(thId), "?");
+					}
+				}
+			const int MAX_PERIOD = std::min(p_action.getperiodupperbound(),
+				getparameter(Models::FMTintmodelparameters::LENGTH));
+			const std::string POST_ATTRIBUTE = themes.back().getbaseattributes().back();
+			boost::unordered_map<Core::FMTdevelopment, double>ActToRemove;
+			for (const Core::FMTschedule& ACT_SCHEDULE : extendSchedule(p_schedules))
+			{
+				const int PERIOD = ACT_SCHEDULE.getperiod();
+				Core::FMTschedule baseSchedule(PERIOD, ACT_SCHEDULE, ACT_SCHEDULE.douselock());
+				for (const auto& ACTION : ACT_SCHEDULE)
+					{
+					for (const auto& dev : ACTION.second)
+						{
+						Core::FMTdevelopment newDev(dev.first);
+						if (dev.first.getmask().issubsetof(ActionMask))
+							{
+							if (PERIOD > MAX_PERIOD)
+								{
+								Core::FMTmask maskToChange = dev.first.getmask();
+								maskToChange.set(themes.back(), POST_ATTRIBUTE);
+								newDev.setmask(maskToChange);
+							}else{
+								double total = 0;
+								for (const double& value : dev.second)
+									{
+									total += value;
+									}
+								Core::FMTdevelopment tohash(dev.first);
+								tohash.setperiod(PERIOD);
+								tohash.setlock(0);
+								if (ActToRemove.find(tohash)==ActToRemove.end())
+									{
+									ActToRemove[tohash] = 0;
+									}
+								ActToRemove[tohash] += total;
+								}
+
+							}
+						for (const double& AREA : dev.second)
+							{
+							baseSchedule.addevent(newDev, AREA, ACTION.first);
+							}
+						}
+					}
+				newSchedules.push_back(baseSchedule);
+
+			}
+			
+			for (const Core::FMTactualdevelopment& dev : area)
+				{
+				Core::FMTfuturdevelopment futurDev(dev);
+				futurDev.setperiod(1);
+				futurDev.setlock(0);
+				for (int period = 1; period <= MAX_PERIOD;++period)
+					{
+					newSchedules[period - 1].setperiod(period);
+					newSchedules[period - 1].setuselock(false);
+					if (futurDev.operable(p_action,yields))
+						{
+						double value = dev.getarea();
+						if (ActToRemove.find(futurDev)!= ActToRemove.end())
+							{
+							value -= ActToRemove.at(futurDev);
+							}
+						newSchedules[period - 1].addevent(futurDev, value, p_action);
+						}
+					futurDev = futurDev.grow();
+					}
+				}
+
+		}catch (...)
+			{
+			_exhandler->raisefromcatch("", "FMTmodel::buildSchedule", __LINE__, __FILE__);
+			}
+		return newSchedules;
+	}
+
+	std::vector<Core::FMTschedule>FMTmodel::extendSchedule(const std::vector<Core::FMTschedule>& p_schedules) const
+	{
+		std::vector<Core::FMTschedule>newSchedules;
+		try {
+			newSchedules.reserve(p_schedules.size());
+			for (const Core::FMTschedule& SCHEDULE : p_schedules)
+				{
+				Core::FMTschedule newSchedule(SCHEDULE.getperiod(),SCHEDULE,SCHEDULE.douselock());
+				for (const auto& ACTION : SCHEDULE)
+					{
+					std::vector<Core::FMTaction>::const_iterator actPtr = std::find_if(actions.begin(), actions.end(),Core::FMTactioncomparator(ACTION.first.getname()));
+					if (actPtr != actions.end())
+						{
+						for (const auto& dev : ACTION.second)
+							{
+							const Core::FMTdevelopment TARGET(Core::FMTmask(dev.first.getmask(), themes), dev.first.getage(), dev.first.getlock());
+							for (const double& VALUE : dev.second)
+								{
+								newSchedule.addevent(TARGET, VALUE, *actPtr);
+								}
+							}
+						}
+					}
+				newSchedules.push_back(newSchedule);
+				}
+
+		}catch (...)
+			{
+			_exhandler->raisefromcatch("", "FMTmodel::extendSchedule", __LINE__, __FILE__);
+			}
+		return newSchedules;
+	}
+
+
+	FMTmodel FMTmodel::buildAction(const std::string& p_actionName,
+		const std::string& p_Targetyield) const
+	{
+		FMTmodel newModel(*this);
+		try {
+			const std::vector<std::string>ATTRIBUTES{ "PRE","POST" };
+			newModel.pushTheme("~FMT_THEME_" + p_actionName, ATTRIBUTES);
+			Core::FMTaction newAction("~FMT_" + p_actionName,false,true);
+			Core::FMTtransition newTransition("~FMT_" + p_actionName);
+			std::string BMask;
+			for (size_t themeId = 0; themeId < newModel.themes.size() - 1; ++themeId)
+			{
+				BMask += "? ";
+			}
+			BMask += ATTRIBUTES.back();
+			Core::FMTmask ActionMask;
+			boost::unordered_map<Core::FMTmask,double>YieldMasks;
+			for (const auto& yield : yields)
+				{
+				if (yield.second->containsyield(p_Targetyield)&&
+					yield.second->gettype()==Core::FMTyldtype::FMTageyld)
+					{
+					const Core::FMTageyieldhandler* AGE_HANDLER = dynamic_cast<const Core::FMTageyieldhandler*>(yield.second.get());
+					const double PEAK = AGE_HANDLER->getpeakfrom(p_Targetyield,FMT_DBL_TOLERANCE);
+					if (PEAK > 0)
+						{
+						const Core::FMTmask MASK = AGE_HANDLER->getmask();
+						YieldMasks[MASK] = PEAK;
+						const Core::FMTmask NEW_MASK(std::string(MASK) + " "+*ATTRIBUTES.begin(), newModel.themes);
+						Core::FMTspec specification;
+						specification.setbounds(Core::FMTperbounds(Core::FMTsection::Action, PEAK, PEAK));
+						if (ActionMask.empty())
+							{
+							ActionMask = NEW_MASK;
+						}else {
+							ActionMask = ActionMask.getunion(NEW_MASK);
+							}
+						newAction.push_back(NEW_MASK, specification);
+						Core::FMTfork fork;
+						const Core::FMTtransitionmask TR_MASK(std::string(BMask), newModel.themes, 100.0);
+						fork.add(TR_MASK);
+						newTransition.push_back(NEW_MASK, fork);
+						}
+					}
+				}
+			newModel.addNewMask(ActionMask);
+			Core::FMTyields newYields;
+			for (const auto& yield : yields)
+				{
+				const Core::FMTmask YIELD_MASK = yield.second.get()->getmask();
+				const Core::FMTmask NEW_MASK(std::string(YIELD_MASK) + " ?", newModel.themes);
+				std::unique_ptr<Core::FMTyieldhandler>newYield(yield.second->clone());
+				newYield->setMask(NEW_MASK);
+				if (YieldMasks.find(YIELD_MASK)!= YieldMasks.end())
+					{
+					const size_t TO_SPLIT = static_cast<size_t>(YieldMasks.at(YIELD_MASK)) + 1;
+					const Core::FMTmask NEW_SPLITTED_MASK(std::string(YIELD_MASK) + " "+ ATTRIBUTES.back(), newModel.themes);
+					std::unique_ptr<Core::FMTyieldhandler>newSplittedYield(new Core::FMTageyieldhandler(NEW_SPLITTED_MASK));
+					const std::vector<int> BASES = yield.second->getbases();
+					const int SPLIT_DISTANCE = static_cast<int>(std::distance(BASES.begin() + TO_SPLIT, BASES.end()));
+					for (int i = 1; i <= SPLIT_DISTANCE;++i)
+						{
+						newSplittedYield->push_base(i);
+						}
+					for (const std::string& YIELD_NAME : yield.second->getyieldnames())
+						{
+						const Core::FMTdata BASE_DATA = yield.second->at(YIELD_NAME);
+						const std::vector<double>NEW_DATA(BASE_DATA.data.begin() + TO_SPLIT, BASE_DATA.data.end());
+						newSplittedYield->push_data(YIELD_NAME, Core::FMTdata(NEW_DATA, BASE_DATA.getop(), BASE_DATA.getsource()));
+						}
+					newYields.push_back(NEW_SPLITTED_MASK, newSplittedYield);
+					}
+				newYields.push_back(NEW_MASK, newYield);
+				}
+			newYields.update();
+			newAction.update();
+			newTransition.update();
+			newModel.yields = newYields;
+			newModel.actions.insert(newModel.actions.begin(), newAction);
+			newModel.transitions.insert(newModel.transitions.begin(),newTransition);
+		}catch (...)
+			{
+			_exhandler->raisefromcatch("", "FMTmodel::BuildAction", __LINE__, __FILE__);
+			}
+		return newModel;
+	}
+
+	void FMTmodel::pushTheme(const std::string& p_themeName,
+		const std::vector<std::string>& p_attributes)
+	{
+		try {
+			if (p_attributes.empty())
+				{
+				_exhandler->raise(Exception::FMTexc::FMTinvalid_theme, "Missing attributes for "+ p_themeName,
+					"FMTmodel::pushTheme", __LINE__, __FILE__);
+				}
+			const size_t THEME_START = themes.back().getstart() + themes.back().size();
+			std::vector<Core::FMTtheme> Oldthemes(themes);
+			themes.emplace_back(p_attributes, themes.size(), THEME_START, p_themeName);
+			const std::string DEFAULT_ATTRIBUTE = "?";
+			const std::string DEFAULT_BASE = *p_attributes.begin();
+			for (auto& dev : area)
+				{
+				dev.setmask(Core::FMTmask(std::string(dev.getmask()) + " " + DEFAULT_BASE,themes));
+				}
+			for (auto& action : actions)
+				{
+				action.unshrink(Oldthemes);
+				for (auto& op : action)
+					{
+					op.first = Core::FMTmask(std::string(op.first) + " " + DEFAULT_ATTRIBUTE, themes);
+					}
+				action.update();
+				}
+			for (auto& transition : transitions)
+				{
+				transition.unshrink(Oldthemes);
+				for (auto& op : transition)
+					{
+					op.first = Core::FMTmask(std::string(op.first) + " " + DEFAULT_ATTRIBUTE, themes);
+					Core::FMTfork newFork(op.second);
+					newFork.clear();
+					for (Core::FMTtransitionmask trnm : op.second.getmasktrans())
+						{
+						trnm.setmask(Core::FMTmask(std::string(trnm.getmask()) + " "+ DEFAULT_ATTRIBUTE, themes));
+						newFork.add(trnm);
+						}
+					op.second = newFork;
+					}
+				transition.update();
+				}
+			for (auto& yield : yields)
+				{
+				yield.first = Core::FMTmask(std::string(yield.first) + " " + DEFAULT_ATTRIBUTE, themes);
+				yield.second->setMask(Core::FMTmask(std::string(yield.second->getmask()) + " " + DEFAULT_ATTRIBUTE, themes));
+				}
+			for (auto& output : outputs)
+				{
+				std::vector<Core::FMToutputsource> sources = output.getsources();
+				for (Core::FMToutputsource& source : sources)
+					{
+					if (source.isvariable())
+						{
+						source.setmask(Core::FMTmask(std::string(source.getmask()) + " " + DEFAULT_ATTRIBUTE, themes));
+						}
+					}
+				output.setsources(sources);
+				}
+			for (auto& output : constraints)
+				{
+				std::vector<Core::FMToutputsource> sources = output.getsources();
+				for (Core::FMToutputsource& source : sources)
+				{
+					if (source.isvariable())
+					{
+						source.setmask(Core::FMTmask(std::string(source.getmask()) + " " + DEFAULT_ATTRIBUTE, themes));
+					}
+				}
+				output.setsources(sources);
+				}
+		
+		}catch (...)
+			{
+			_exhandler->raisefromcatch("", "FMTmodel::pushTheme", __LINE__, __FILE__);
+			}
 	}
 
 	Models::FMTmodel FMTmodel::aggregateAllActions(const std::vector<std::string>& p_Aggregates) const
@@ -618,17 +912,17 @@ FMTmodel& FMTmodel::operator =(FMTmodel&& rhs)
 	{
 		Core::FMTobject::operator = (rhs);
 		m_generator = std::move(rhs.m_generator);
-		parameters = std::move(rhs.parameters);
-		area = std::move(rhs.area);
-		themes = std::move(rhs.themes);
-		actions = std::move(rhs.actions);
-		transitions = std::move(rhs.transitions);
-		yields = std::move(rhs.yields);
-		lifespan = std::move(rhs.lifespan);
-		outputs = std::move(rhs.outputs);
-		constraints = std::move(rhs.constraints);
+		parameters.swap(rhs.parameters);
+		area.swap(rhs.area);
+		themes.swap(rhs.themes);
+		actions.swap(rhs.actions);
+		transitions.swap(rhs.transitions);
+		yields.swap(rhs.yields);
+		lifespan.swap(rhs.lifespan);
+		outputs.swap(rhs.outputs);
+		constraints.swap(rhs.constraints);
 		name = std::move(rhs.name);
-		statictransitionthemes = std::move(rhs.statictransitionthemes);
+		statictransitionthemes.swap(rhs.statictransitionthemes);
 		yields.setModel(this);
 
 	}
@@ -1825,7 +2119,7 @@ std::unique_ptr<FMTmodel> FMTmodel::presolve(std::vector<Core::FMTactualdevelopm
 			for (const Core::FMTaction& action : oldactions)
 			{
 				const Core::FMTmask testedmask = action.getunion(oldthemes);
-				if (newfilter.canpresolve(testedmask,maskthemes))
+				if (newfilter.canpresolve(testedmask,maskthemes) && !action.notUse())
 				{
 					const Core::FMTaction presolvedaction = action.presolve(newfilter, oldthemes, newthemes,!didonepass);
 					newactions.push_back(presolvedaction);
@@ -1978,7 +2272,7 @@ std::unique_ptr<FMTmodel> FMTmodel::presolve(std::vector<Core::FMTactualdevelopm
 
 void FMTmodel::postsolve(const FMTmodel& originalbasemodel)
 	{
-	try {
+	try{
 		*this = FMTmodel(originalbasemodel);
 	}catch (...)
 		{
@@ -2611,7 +2905,7 @@ void FMTmodel::showparameters(const bool& showhelp)const
 	}
 }
 
-void FMTmodel::swap_ptr(const std::unique_ptr<FMTmodel>& rhs)
+void FMTmodel::swap_ptr(std::unique_ptr<FMTmodel>& rhs)
 {
 	*this = std::move(*rhs); 
 }

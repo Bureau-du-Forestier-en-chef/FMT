@@ -76,8 +76,11 @@ FMToutputsource::FMToutputsource(const FMTspec& spec,const FMTmask& lmask,
 
     }
 
-FMToutputsource::FMToutputsource(const FMToutputsource& rhs) : FMTspec(rhs),mask(rhs.mask),target(rhs.target),
-    action(rhs.action),yield(rhs.yield), levelname(rhs.levelname), values(rhs.values), average(rhs.average), sum(rhs.sum), outputorigin(rhs.outputorigin), themetarget(rhs.themetarget)
+FMToutputsource::FMToutputsource(const FMToutputsource& rhs) : 
+	FMTspec(rhs),mask(rhs.mask),target(rhs.target),
+    action(rhs.action),yield(rhs.yield), levelname(rhs.levelname),
+	values(rhs.values), average(rhs.average),
+	sum(rhs.sum), outputorigin(rhs.outputorigin), themetarget(rhs.themetarget)
     {
 
     }
@@ -116,7 +119,9 @@ void FMToutputsource::fillhashmask(Core::FMTmask& basemask) const
 
 bool FMToutputsource::isequalbyvalue(const FMToutputsource& rhs) const
 	{
-	return (FMTspec::operator == (rhs) && mask == rhs.mask && target == rhs.target && yield == rhs.yield && action == rhs.action && values == rhs.values);
+	return (FMTspec::operator == (rhs) && mask == rhs.mask && target == rhs.target &&
+		yield == rhs.yield && action == rhs.action && values == rhs.values &&
+		levelname == rhs.levelname && average == rhs.average && sum == rhs.sum);
 	}
 
 
@@ -142,7 +147,7 @@ FMToutputsource::operator std::string() const
         case FMTotar::val:
             for (const double lvalue : values)
                 {
-                line += std::to_string(lvalue) + " ";
+                line += FMToutputsource::trimDouble(std::to_string(lvalue))  + " ";
                 }
             if (!values.empty())
                 {
@@ -437,6 +442,33 @@ std::unordered_set<int>FMToutputsource::targetsset(const std::vector<FMTaction>&
 	return std::unordered_set<int>();
 }
 
+bool FMToutputsource::use(const FMTdevelopment& development, const FMTyields& ylds,
+	const Graph::FMTgraphvertextoyield* graphinfo) const
+{
+	return (development.getmask().issubsetof(mask) && development.is(*this, ylds, graphinfo));
+}
+
+std::string FMToutputsource::trimDouble(const std::string& string_number)
+{
+	std::string trimmed = string_number;
+	for (int i = string_number.size()-1; i > 0; i--)
+	{
+		if(trimmed[i] == '0')
+		{
+			trimmed.pop_back();
+		}
+		else if(trimmed[i] == '.')
+		{
+			trimmed.pop_back();
+			break;
+		}
+		else
+		{
+			break;
+		}
+	}
+	return trimmed;
+}
 
 double FMToutputsource::getcoef(const FMTdevelopment& development,
 	const FMTyields& yields,

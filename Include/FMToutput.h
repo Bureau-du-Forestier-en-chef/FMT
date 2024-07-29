@@ -363,6 +363,11 @@ class FMTEXPORT FMToutput: public FMTobject
 		bool isinventory() const;
 		// DocString: FMToutput::fillfromshuntingyard
 		/**
+		A REMPLIR ESTI DE MORRON
+		*/
+		bool sourceCounter(const std::string& p_source) const;
+		// DocString: FMToutput::fillfromshuntingyard
+		/**
 		If the output is non linear you need to use this function to get values.
 		*/
 		void fillfromshuntingyard(

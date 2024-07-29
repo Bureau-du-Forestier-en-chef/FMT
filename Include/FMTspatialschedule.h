@@ -458,6 +458,12 @@ class FMTEXPORT FMTspatialschedule : public FMTlayer<Graph::FMTlinegraph>
 		@return the vector of actualdevelopment...
 		*/
 		std::vector<Core::FMTactualdevelopment>getarea(int period = 0, bool beforegrowanddeath = false) const;
+		// DocString: FMTsemodel::setPeriodCache
+		/**
+		@Set the use of the period cache.
+		@param[in] p_value true if used else false.
+		*/
+		static void setPeriodCache(bool p_value);
 	protected:
 		// DocString: FMTspatialschedule::events
 		/**
@@ -504,6 +510,7 @@ class FMTEXPORT FMTspatialschedule : public FMTlayer<Graph::FMTlinegraph>
 		 */
 		std::vector<FMTlayer<Graph::FMTlinegraph>::const_iterator> getoutputfromnode(const Models::FMTmodel& model, const Core::FMToutputnode& node, const int& period) const;
     private:
+		static bool m_usePeriodCache;
 		// DocString: FMTspatialschedule::evaluatespatialadjacency
 		 /**
 		Evaluate adjacency conflicts for each events

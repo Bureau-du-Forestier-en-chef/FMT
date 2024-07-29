@@ -20,6 +20,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <boost/serialization/binary_object.hpp>
 #include <boost/serialization/export.hpp>
 #include <boost/unordered/unordered_map_fwd.hpp>
+#include <memory>
 
 namespace Core
 {
@@ -43,14 +44,16 @@ class FMTEXPORT FMTdata
 	std::vector<std::string>source;
 	std::vector<bool>stacking;//Stacking a string = true stacking a number = false
 	//mutable std::unique_ptr<boost::unordered_map<FMTdevelopment,double>> _cache; //hash base on (age and/or period and/or mask) //only for complex yield!!!!
-	mutable boost::unordered_map<FMTdevelopment,double>* _cache; //hash base on (age and/or period and/or mask) //only for complex yield!!!!
+	mutable std::unique_ptr<std::map<FMTdevelopment,double>> _cache; //hash base on (age and/or period and/or mask) //only for complex yield!!!!
 	mutable bool _agebase;
 	//size_t hashdata(const int& period, const int& age, const FMTmask& mask) const;
 	FMTdevelopment getsummarydevelopment(const FMTyieldrequest& request) const;
+	void allocateCache() const;
+	void deAllocateCache() const;
     public:
 		std::vector<double> data;
         FMTdata();
-		~FMTdata();
+		~FMTdata()=default;
         FMTdata(const FMTdata& rhs);
 		FMTdata(const std::vector<double>& lvalues,
 			const FMTyieldparserop& lops,

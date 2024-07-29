@@ -41,6 +41,21 @@ namespace Graph
 		FMToutputnodecache(const titerator& first, const titerator& last,std::allocator<tvdescriptor>& p_allocator,const size_t& p_reserve) :
 			inmemorynodes(), beginit(&first), endit(&last), searchtree(),m_allocator(&p_allocator), m_reserve(p_reserve)
 		{
+			if (m_reserve>0)
+				{
+				std::vector<tvdescriptor>allocated(*m_allocator);
+				allocated.reserve(m_reserve);
+				for (titerator it = *beginit; it != *endit; ++it)
+					{
+					allocated.push_back(*it);
+					}
+				beginit = nullptr;
+				endit = nullptr;
+				std::sort(allocated.begin(), allocated.end());
+				allocated.shrink_to_fit();
+				inmemorynodes.swap(allocated);
+				}
+
 		}
 		void erasenode(const Core::FMToutputnode& node)
 			{

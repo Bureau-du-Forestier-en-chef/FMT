@@ -10,6 +10,8 @@
 	#include "FMTversion.h"
 	#include <boost/filesystem.hpp>
 	#include "FMTforest.h"
+	#include "FMTtransition.h"
+	#include "FMTGCBMtransition.h"
 #endif
 #include "FMTdefaultlogger.h"
 
@@ -28,10 +30,10 @@ int main(int argc, char* argv[])
 		const std::string CARTE = results.at(1);
 		const std::string SCENARIO = results.at(2);
 		std::vector<std::string>AGGREGATES;
-		boost::split(AGGREGATES, argv[2], boost::is_any_of("|"));
-		/*const std::string PRIMARY_LOCATION = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/09_FMT/Modeles_test/Prototype_Dec2023/PC_7002071_UA08152_FINAL.pri";
+		boost::split(AGGREGATES, argv[2], boost::is_any_of("|"));/*
+		const std::string PRIMARY_LOCATION = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/09_FMT/Modeles_test/Prototype_Dec2023_TBE/PC_7002071_UA08152_FINAL.pri";
 		const std::string CARTE = "Carte/PC_7002071_UA_U08152.shp";
-		const std::string SCENARIO = "01_Regl_prov_apsp_1_6";
+		const std::string SCENARIO = "20_Regl_prov";
 		const std::vector<std::string>AGGREGATES = { "REGAFIN","REGAPAR","REGAEDU","REGAREG","ATBEMORT","ATBERETARD","ASNAT","AECHEC"};*/
 		//const std::string OUTPUT_DIRECTORY = "outputs/";
 		const std::string OUTPUT_DIRECTORY = "../../tests/testActionsAggregations/";
@@ -55,6 +57,10 @@ int main(int argc, char* argv[])
 		const std::vector<Models::FMTmodel> MODELS = ModelParser.readproject(PRIMARY_LOCATION, SCENARIOS);
 		const std::vector<Core::FMTschedule>SCHEDULES = ModelParser.readschedules(PRIMARY_LOCATION, MODELS).at(0);
 		Models::FMTlpmodel Optimization1(MODELS.at(0), Models::FMTsolverinterface::CLP);
+
+		//ModelParser.writetoproject(OUTPUT_DIRECTORY + "test.pri", Optimization1);
+
+
 		Optimization1.FMTmodel::setparameter(Models::FMTdblmodelparameters::TOLERANCE, 0.01);
 		Optimization1.FMTmodel::setparameter(Models::FMTintmodelparameters::PRESOLVE_ITERATIONS, 10);
 		Optimization1.FMTmodel::setparameter(Models::FMTintmodelparameters::LENGTH, std::min(static_cast<int>(SCHEDULES.size()), 3));
@@ -64,12 +70,12 @@ int main(int argc, char* argv[])
 		if (!SCHEDULES.empty())
 			{
 			Parser::FMTscheduleparser SCHEDULE_PARSER;
-			const std::vector<Core::FMTschedule>NEWSCHEDULE = AGGREGATED_MODEL.aggregateSchedules(SCHEDULES);
-			SCHEDULE_PARSER.write(NEWSCHEDULE, OUTPUT_DIRECTORY + SCENARIO + ".seq");
+			const std::vector<Core::FMTschedule>NEWSCHEDULE = AGGREGATED_MODEL.aggregateSchedules(SCHEDULES); // agg 2
+			SCHEDULE_PARSER.write(NEWSCHEDULE, OUTPUT_DIRECTORY + SCENARIO + ".seq"); // write 3
 			}
 		const std::vector<std::string>ROOT(1,"ROOT");
 		const std::vector<Models::FMTmodel> READMODELS = ModelParser.readproject(OUTPUT_DIRECTORY + SCENARIO + ".pri", ROOT);
-		const std::vector<Core::FMTschedule>READSCHEDULE = ModelParser.readschedules(OUTPUT_DIRECTORY + SCENARIO + ".pri", READMODELS).at(0);
+		const std::vector<Core::FMTschedule>READSCHEDULE = ModelParser.readschedules(OUTPUT_DIRECTORY + SCENARIO + ".pri", READMODELS).at(0); //read 1
 		Models::FMTsesmodel Simulation(READMODELS.at(0));
 		Parser::FMTareaparser areaParser;
 		const boost::filesystem::path BASE_PATH = boost::filesystem::path(PRIMARY_LOCATION).parent_path();
@@ -87,6 +93,10 @@ int main(int argc, char* argv[])
 		Simulation.FMTmodel::setparameter(Models::FMTintmodelparameters::NUMBER_OF_ITERATIONS, 1);
 		Simulation.FMTmodel::setparameter(Models::FMTintmodelparameters::LENGTH, std::min(static_cast<int>(READSCHEDULE.size()),3));
 		Simulation.doplanning(true, READSCHEDULE);
+		areaParser.writedisturbances(OUTPUT_DIRECTORY, Simulation.getspschedule(),
+			Simulation.getactions(), Simulation.getthemes(), 1);
+
+		
 	}else {
 		Logging::FMTdefaultlogger() << "FMT needs to be compiled with OSI" << "\n";
 	}

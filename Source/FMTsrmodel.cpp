@@ -28,13 +28,13 @@ namespace Models
 	void FMTsrmodel::setNodeCacheSize(const size_t& p_size)
 	{
 		_logger->logwithlevel("Node Cache size for " + getname() + " of " + std::to_string(p_size) + "\n", 1);
-		graph.setNodeSize(p_size);
+		m_graph->setNodeSize(p_size);
 	}
 
 	Graph::FMTgraphvertextoyield FMTsrmodel::getGraphVertexToYield() const
 	{
 		try {
-			return Graph::FMTgraphvertextoyield(*this,graph,nullptr);
+			return Graph::FMTgraphvertextoyield(*this,*m_graph,nullptr);
 		}catch (...)
 			{
 			_exhandler->raisefromcatch("", "FMTsrmodel::getGraphVertexToYield", __LINE__, __FILE__);
@@ -47,18 +47,18 @@ namespace Models
 	{
 		Graph::FMTgraphstats stats;
 		try {
-			const int ncols = static_cast<int>(graph.nedges());
+			const int ncols = static_cast<int>(m_graph->nedges());
 			const std::vector<int>column_Starts(static_cast<size_t>(ncols) + 1, 0);
 			const std::vector<int>targetrows(static_cast<size_t>(ncols), 0);
 			const std::vector<double>nelements(ncols, 0.0);
 			std::vector<double>lower_bounds(ncols, 0.0);
 			std::vector<double>upper_bounds(ncols, 0.0);
-			graph.getinitialbounds(lower_bounds, upper_bounds);
+			m_graph->getinitialbounds(lower_bounds, upper_bounds);
 			solver.addCols(ncols, &column_Starts[0], &targetrows[0],
 				&nelements[0], &lower_bounds[0],
 				&upper_bounds[0], &nelements[0]);
 			solver.setColSolution(&lower_bounds[0]);
-			stats = graph.getstats();
+			stats = m_graph->getstats();
 			stats.cols = ncols;
 		}
 		catch (...)
@@ -71,17 +71,17 @@ namespace Models
 	bool FMTsrmodel::isperiodbounded(int period) const
 	{
 		try {
-			if (static_cast<int>(graph.size()) > period)
+			if (static_cast<int>(m_graph->size()) > period)
 			{
 				size_t totaledges = 0;
 				size_t boundededges = 0;
 				const double* columnsupperbounds = solver.getColUpper();
 				const double* columnslowerbounds = solver.getColLower();
 				Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_iterator it, itend;
-				for (boost::tie(it, itend) = graph.getperiodverticies(period); it != itend; ++it)
+				for (boost::tie(it, itend) = m_graph->getperiodverticies(period); it != itend; ++it)
 				{
 					const Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor& vertex_descriptor = *it;
-					const std::map<int, int>variables = graph.getoutvariables(vertex_descriptor);
+					const std::map<int, int>variables = m_graph->getoutvariables(vertex_descriptor);
 					for (std::map<int, int>::const_iterator varit = variables.begin(); varit != variables.end(); varit++)
 					{
 						if (*(columnsupperbounds + varit->second) == *(columnslowerbounds + varit->second))
@@ -108,15 +108,15 @@ namespace Models
 	bool FMTsrmodel::unboundsolution(int period)
 	{
 		try {
-			if (static_cast<int>(graph.size()) > period && period > 0)//period >0 to not select actual developments!
+			if (static_cast<int>(m_graph->size()) > period && period > 0)//period >0 to not select actual developments!
 			{
 				std::vector<int>variable_index;
 				std::vector<double>bounds;
 				Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_iterator it, itend;
-				for (boost::tie(it, itend) = graph.getperiodverticies(period); it != itend; ++it)
+				for (boost::tie(it, itend) = m_graph->getperiodverticies(period); it != itend; ++it)
 				{
 					const Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor vertex_descriptor = *it;
-					std::map<int, int>variables = graph.getoutvariables(vertex_descriptor);
+					std::map<int, int>variables = m_graph->getoutvariables(vertex_descriptor);
 					for (std::map<int, int>::const_iterator varit = variables.begin(); varit != variables.end(); varit++)
 					{
 						if (std::find(variable_index.begin(), variable_index.end(), varit->second) == variable_index.end())
@@ -164,25 +164,25 @@ namespace Models
 												"This function can only be used with schedules using lock", 
 												"FMTsrmodel::forcesolution", __LINE__, __FILE__);
 			}
-			if (static_cast<int>(graph.size()) > period && period > 0)
+			if (static_cast<int>(m_graph->size()) > period && period > 0)
 			{
 				std::vector<Core::FMTaction>::const_iterator cit = std::find_if(actions.begin(), actions.end(), Core::FMTactioncomparator("_DEATH"));
 				const int deathid = static_cast<int>(std::distance(actions.cbegin(), cit));
 				const double* actual_solution = solver.getColSolution();
-				const boost::unordered_set<Core::FMTlookup<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor, Core::FMTdevelopment>> lookup = graph.getdevsset(period);
+				const boost::unordered_set<Core::FMTlookup<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor, Core::FMTdevelopment>> lookup = m_graph->getdevsset(period);
 				//Copy de la solution donc les périodes précédents car c'est elle qu'on veut... Le reste on le scrap ?!
 				std::vector<double>new_solution(actual_solution, actual_solution + solver.getNumCols());
 				//Contient la proportion d'area qui rentre dans le vertex qui doit resortir dans la variable... Donc 200 ha dans le vertex rentre.. 222,0.1 il y a 20 ha qui ressort dans la variable 222
 				boost::unordered_map<int,double> varproportions;
 				Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_iterator vertex_iterator, vertex_iterator_end;
 				const bool typeII = (getparameter(Models::FMTintmodelparameters::MATRIX_TYPE) == 2);
-				for (boost::tie(vertex_iterator, vertex_iterator_end) = graph.getperiodverticies(period); vertex_iterator != vertex_iterator_end; ++vertex_iterator)
+				for (boost::tie(vertex_iterator, vertex_iterator_end) = m_graph->getperiodverticies(period); vertex_iterator != vertex_iterator_end; ++vertex_iterator)
 				{
-					if (typeII&&graph.isnotransfer(*vertex_iterator, 1))//Dont need to set to 0 global growth variable.
+					if (typeII&&m_graph->isnotransfer(*vertex_iterator, 1))//Dont need to set to 0 global growth variable.
 						{
 						continue;
 						}
-					const std::map<int, int>variables = graph.getoutvariables(*vertex_iterator);
+					const std::map<int, int>variables = m_graph->getoutvariables(*vertex_iterator);
 
 					for (std::map<int, int>::const_iterator varit = variables.begin(); varit != variables.end(); varit++)
 					{
@@ -199,16 +199,16 @@ namespace Models
 					{
 						for (const auto& devit : actionit->second)
 						{
-							if(graph.containsdevelopment(devit.first, lookup))
+							if(m_graph->containsdevelopment(devit.first, lookup))
 							{
-								const Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor vdescriptor = graph.getdevelopment(devit.first, lookup);
+								const Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor vdescriptor = m_graph->getdevelopment(devit.first, lookup);
 								if(growthordeathdeductor.find(vdescriptor)==growthordeathdeductor.end())
 								{
 									growthordeathdeductor.emplace(vdescriptor,1-devit.second.at(0));
 								}else{
 									growthordeathdeductor[vdescriptor]-=devit.second.at(0);
 								}
-								std::map<int, int> outvariables = graph.getoutvariables(vdescriptor);
+								std::map<int, int> outvariables = m_graph->getoutvariables(vdescriptor);
 								std::map<int, int>::const_iterator varit = outvariables.find(actionid);
 								if (varit == outvariables.cend())
 								{
@@ -230,7 +230,7 @@ namespace Models
 				}
 				for(const auto& vdescriptor_props : growthordeathdeductor)
 				{
-					const std::map<int, int> outvariables = graph.getoutvariables(vdescriptor_props.first);
+					const std::map<int, int> outvariables = m_graph->getoutvariables(vdescriptor_props.first);
 					std::map<int, int>::const_iterator varit = outvariables.find(-1);
 					if (varit == outvariables.cend())
 					{
@@ -238,7 +238,7 @@ namespace Models
 						if(varit == outvariables.cend())
 						{
 							_exhandler->raise(Exception::FMTexc::FMTinvalid_number,
-									"Developement "+std::string(graph.getdevelopment(vdescriptor_props.first))+" cannot grow or die ...", 
+									"Developement "+std::string(m_graph->getdevelopment(vdescriptor_props.first))+" cannot grow or die ...", 
 									"FMTsrmodel::forcesolution", __LINE__, __FILE__);
 						}
 					}
@@ -255,13 +255,13 @@ namespace Models
 				boost::unordered_set<Core::FMTdevelopment> processed;
 				//store all out vertex out of variables set to process in queue
 				std::queue<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>descriptors;
-				for (boost::tie(vertex_iterator, vertex_iterator_end) = graph.getperiodverticies(period); vertex_iterator != vertex_iterator_end; ++vertex_iterator)
+				for (boost::tie(vertex_iterator, vertex_iterator_end) = m_graph->getperiodverticies(period); vertex_iterator != vertex_iterator_end; ++vertex_iterator)
 				{
 					//since it's comming from growth and nothing else we know the area
-					if (graph.periodstart(*vertex_iterator))//get inperiod
+					if (m_graph->periodstart(*vertex_iterator))//get inperiod
 					{
-						const std::map<int,int> inidsvars = graph.getinidsvariables(*vertex_iterator);
-						const bool setrest = !(typeII&&graph.isnotransfer(*vertex_iterator, 1));
+						const std::map<int,int> inidsvars = m_graph->getinidsvariables(*vertex_iterator);
+						const bool setrest = !(typeII&&m_graph->isnotransfer(*vertex_iterator, 1));
 						if(inidsvars.size()>1)
 						{
 							//Because what comes from previous period must have inarea ... will be set later 
@@ -269,29 +269,29 @@ namespace Models
 							descriptors.push(*vertex_iterator);
 						}else{
 							const double* solution = &new_solution[0];
-							const double inarea = graph.inarea(*vertex_iterator, solution);
+							const double inarea = m_graph->inarea(*vertex_iterator, solution);
 							if (inarea >0)
 							{
 								double outarea = 0;
-								std::map<int, int>variables = graph.getoutvariables(*vertex_iterator);
+								std::map<int, int>variables = m_graph->getoutvariables(*vertex_iterator);
 								bool foundoutvar = false;
 								for (std::map<int, int>::const_iterator varit = variables.begin(); varit != variables.end(); varit++)
 								{
 									if(varproportions.find(varit->second)!=varproportions.end())
 									{
 										foundoutvar = true;
-										std::vector<Core::FMTdevelopmentpath> paths = graph.getpaths(*vertex_iterator, varit->first);
+										std::vector<Core::FMTdevelopmentpath> paths = m_graph->getpaths(*vertex_iterator, varit->first);
 										for (const Core::FMTdevelopmentpath path : paths)
 										{
 											if (path.development->getperiod() == period && processed.find(*path.development) == processed.end())
 											{
 												processed.emplace(*path.development);
-												Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor nextdescriptor = graph.getdevelopment(*path.development, lookup);
+												Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor nextdescriptor = m_graph->getdevelopment(*path.development, lookup);
 												descriptors.push(nextdescriptor);
 												
 											}
 										}
-										//std::cout<<std::string(graph.getdevelopment(*vertex_iterator)) << " "+std::to_string(varproportions[varit->second])<<" "+std::to_string(inarea)<<" "+std::to_string(varit->first)<<std::endl;//<<" "+this->getactions().at(varit->first).getname()<<std::endl;
+										//std::cout<<std::string(m_graph->getdevelopment(*vertex_iterator)) << " "+std::to_string(varproportions[varit->second])<<" "+std::to_string(inarea)<<" "+std::to_string(varit->first)<<std::endl;//<<" "+this->getactions().at(varit->first).getname()<<std::endl;
 										double proportion = 1;
 										if (setrest)
 											{
@@ -326,7 +326,7 @@ namespace Models
 								{
 									_exhandler->raise(Exception::FMTexc::FMTinvalid_number,
 										"Negative growth solution for " +
-										std::string(graph.getdevelopment(*vertex_iterator)) +" in area of " + std::to_string(inarea) + 
+										std::string(m_graph->getdevelopment(*vertex_iterator)) +" in area of " + std::to_string(inarea) + 
 										" and out area of " + std::to_string(outarea) ,
 										"FMTsrmodel::forcesolution", __LINE__, __FILE__);
 								}
@@ -334,7 +334,7 @@ namespace Models
 								{
 									_exhandler->raise(Exception::FMTexc::FMTinvalid_number,
 										"Positive growth solution for " +
-										std::string(graph.getdevelopment(*vertex_iterator)) +" in area of " + std::to_string(inarea) + 
+										std::string(m_graph->getdevelopment(*vertex_iterator)) +" in area of " + std::to_string(inarea) + 
 										" and out area of " + std::to_string(outarea) ,
 										"FMTsrmodel::forcesolution", __LINE__, __FILE__);
 								}
@@ -348,7 +348,7 @@ namespace Models
 					const Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor first = descriptors.front();
 					//Cette portion est pour valider que toutes les variables qui rentrent dans le vertex on été setter par la fonction
 					//sinon on le remet a la fin de la queue 
-					const std::vector<int>invariables = graph.getinvariables(first);
+					const std::vector<int>invariables = m_graph->getinvariables(first);
 					const std::set<int> invariablesset(invariables.begin(), invariables.end());
 					std::set<int> notprocessedvariables;
 					std::set_difference(invariablesset.begin(), invariablesset.end(), processedvariables.begin(), processedvariables.end(), std::inserter(notprocessedvariables, notprocessedvariables.end()));
@@ -361,31 +361,31 @@ namespace Models
 							canprocess = false;
 						}
 					}
-					const bool setrest = !(typeII&&graph.isnotransfer(first, 1));
+					const bool setrest = !(typeII&&m_graph->isnotransfer(first, 1));
 					if	(canprocess)
 					{
 						passwithoutprocess=0;
 						//Check ce bout la ... 
 						const double* solution = &new_solution[0];
-						const double inarea = graph.inarea(first, solution);
+						const double inarea = m_graph->inarea(first, solution);
 						double outarea = 0;
-						std::map<int, int>variables = graph.getoutvariables(first);
+						std::map<int, int>variables = m_graph->getoutvariables(first);
 						bool foundoutvar = false;
 						for (std::map<int, int>::const_iterator varit = variables.begin(); varit != variables.end(); varit++)
 						{
 							if(varproportions.find(varit->second)!=varproportions.end())
 							{
 								foundoutvar = true;
-								std::vector<Core::FMTdevelopmentpath> paths = graph.getpaths(first, varit->first);
+								std::vector<Core::FMTdevelopmentpath> paths = m_graph->getpaths(first, varit->first);
 								for (const Core::FMTdevelopmentpath path : paths)
 								{
 									if (path.development->getperiod() == period && processed.find(*path.development) == processed.end())
 									{
 										processed.emplace(*path.development);
-										descriptors.push(graph.getdevelopment(*path.development, lookup));
+										descriptors.push(m_graph->getdevelopment(*path.development, lookup));
 									}
 								}
-								//std::cout<<std::string(graph.getdevelopment(first)) << " "+std::to_string(varproportions[varit->second])<<" "+std::to_string(inarea)<<" "+std::to_string(varit->first)<<std::endl;//<<" "+this->getactions().at(varit->first).getname()<<std::endl;
+								//std::cout<<std::string(m_graph->getdevelopment(first)) << " "+std::to_string(varproportions[varit->second])<<" "+std::to_string(inarea)<<" "+std::to_string(varit->first)<<std::endl;//<<" "+this->getactions().at(varit->first).getname()<<std::endl;
 								double proportion = 1;
 								if (setrest)
 								{
@@ -419,7 +419,7 @@ namespace Models
 						{
 							_exhandler->raise(Exception::FMTexc::FMTinvalid_number,
 								"Negative growth solution for " +
-								std::string(graph.getdevelopment(first)) +" in area of " + std::to_string(inarea) +
+								std::string(m_graph->getdevelopment(first)) +" in area of " + std::to_string(inarea) +
 								" and out area of " + std::to_string(outarea) ,
 								"FMTsrmodel::forcesolution", __LINE__, __FILE__);
 						}
@@ -427,7 +427,7 @@ namespace Models
 						{
 							_exhandler->raise(Exception::FMTexc::FMTinvalid_number,
 								"Positive growth solution for " +
-								std::string(graph.getdevelopment(first)) +" in area of " + std::to_string(inarea) +
+								std::string(m_graph->getdevelopment(first)) +" in area of " + std::to_string(inarea) +
 								" and out area of " + std::to_string(outarea) ,
 								"FMTsrmodel::forcesolution", __LINE__, __FILE__);
 						}
@@ -460,22 +460,22 @@ namespace Models
 	{
 		try {
 			//const double tolerance = getparameter(TOLERANCE); not ready yet
-			if (static_cast<int>(graph.size()) > period && period > 0)
+			if (static_cast<int>(m_graph->size()) > period && period > 0)
 			{
 				std::vector<Core::FMTaction>::const_iterator cit = std::find_if(actions.begin(), actions.end(), Core::FMTactioncomparator("_DEATH"));
 				const int deathid = static_cast<int>(std::distance(actions.cbegin(), cit));
 				const double* actual_solution = solver.getColSolution();
-				const boost::unordered_set<Core::FMTlookup<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor, Core::FMTdevelopment>> lookup = graph.getdevsset(period);
+				const boost::unordered_set<Core::FMTlookup<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor, Core::FMTdevelopment>> lookup = m_graph->getdevsset(period);
 				std::vector<double>new_solution(actual_solution, actual_solution + solver.getNumCols());
 				Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_iterator vertex_iterator, vertex_iterator_end;
 				const bool typeII = (getparameter(Models::FMTintmodelparameters::MATRIX_TYPE)==2);
-				for (boost::tie(vertex_iterator, vertex_iterator_end) = graph.getperiodverticies(period); vertex_iterator != vertex_iterator_end; ++vertex_iterator)
+				for (boost::tie(vertex_iterator, vertex_iterator_end) = m_graph->getperiodverticies(period); vertex_iterator != vertex_iterator_end; ++vertex_iterator)
 				{
-					if (typeII&&graph.isnotransfer(*vertex_iterator,1))//Dont need to set to 0 global growth variable.
+					if (typeII&&m_graph->isnotransfer(*vertex_iterator,1))//Dont need to set to 0 global growth variable.
 						{
 						continue;
 						}
-					const std::map<int, int>variables = graph.getoutvariables(*vertex_iterator);
+					const std::map<int, int>variables = m_graph->getoutvariables(*vertex_iterator);
 					for (std::map<int, int>::const_iterator varit = variables.begin(); varit != variables.end(); varit++)
 					{
 						new_solution[varit->second] = 0;
@@ -494,12 +494,12 @@ namespace Models
 						size_t allocated = 0;
 						for (const auto& devit : actionit->second)
 						{
-							if (((schedule.douselock() || actionit->first.dorespectlock()) && graph.containsdevelopment(devit.first, lookup)))
+							if (((schedule.douselock() || actionit->first.dorespectlock()) && m_graph->containsdevelopment(devit.first, lookup)))
 							{
 								//*_logger << "t1 " << actionit->first.getname() << "\n";
-								const Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor vdescriptor = graph.getdevelopment(devit.first, lookup);
-								//const int variable = graph.getoutvariables(vdescriptor)[actionid];
-								std::map<int, int> outvariables = graph.getoutvariables(vdescriptor);
+								const Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor vdescriptor = m_graph->getdevelopment(devit.first, lookup);
+								//const int variable = m_graph->getoutvariables(vdescriptor)[actionid];
+								std::map<int, int> outvariables = m_graph->getoutvariables(vdescriptor);
 								std::map<int, int>::const_iterator varit = outvariables.find(actionid);
 								if (varit == outvariables.cend())
 								{
@@ -517,7 +517,7 @@ namespace Models
 								//*_logger << "t2 " << actionit->first.getname() << "\n";
 								if (maximallock == -1)
 								{
-									maximallock = graph.getmaximalock(period);
+									maximallock = m_graph->getmaximalock(period);
 								}
 								std::vector<double>lockstoadress(devit.second);
 								std::vector<std::pair<Core::FMTdevelopment, double>>locksfound;
@@ -526,18 +526,18 @@ namespace Models
 								for (int lockid = 0; lockid <= maximallock; ++lockid)
 								{
 									locked.setlock(lockid);
-									if (graph.containsdevelopment(locked, lookup))
+									if (m_graph->containsdevelopment(locked, lookup))
 									{
-										const Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor vdescriptor = graph.getdevelopment(locked, lookup);
+										const Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor vdescriptor = m_graph->getdevelopment(locked, lookup);
 										const double* newsolutionptr = &new_solution[0];
-										double originalinarea = graph.inarea(vdescriptor, newsolutionptr, true);
+										double originalinarea = m_graph->inarea(vdescriptor, newsolutionptr, true);
 										if (originalinarea == 0)
 										{
 											originalinarea = std::numeric_limits<double>::max();
 										}
-										if (!(graph.onlypertiodstart(vdescriptor) && originalinarea == std::numeric_limits<double>::max()))
+										if (!(m_graph->onlypertiodstart(vdescriptor) && originalinarea == std::numeric_limits<double>::max()))
 										{
-											locksorter.push_back(std::pair<size_t, size_t>(locksfound.size(), graph.getamountofpaths(locked, -1, *this, lookup)));
+											locksorter.push_back(std::pair<size_t, size_t>(locksfound.size(), m_graph->getamountofpaths(locked, -1, *this, lookup)));
 											locksfound.push_back(std::pair<Core::FMTdevelopment, double>(locked, originalinarea));
 
 										}
@@ -596,9 +596,9 @@ namespace Models
 										}
 										if (found)
 										{
-											const Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor vdescriptor = graph.getdevelopment(locksfound.at(id).first, lookup);
-											//const int variable = graph.getoutvariables(vdescriptor)[actionid];
-											std::map<int, int> outvariables = graph.getoutvariables(vdescriptor);
+											const Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor vdescriptor = m_graph->getdevelopment(locksfound.at(id).first, lookup);
+											//const int variable = m_graph->getoutvariables(vdescriptor)[actionid];
+											std::map<int, int> outvariables = m_graph->getoutvariables(vdescriptor);
 											std::map<int, int>::const_iterator varit = outvariables.find(actionid);
 											if (varit == outvariables.cend())
 											{
@@ -655,14 +655,14 @@ namespace Models
 				boost::unordered_map<Core::FMTdevelopment, Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>processed;
 				std::queue<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>descriptors;
 				//Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_iterator vertex_iterator, vertex_iterator_end;
-				for (boost::tie(vertex_iterator, vertex_iterator_end) = graph.getperiodverticies(period); vertex_iterator != vertex_iterator_end; ++vertex_iterator)
+				for (boost::tie(vertex_iterator, vertex_iterator_end) = m_graph->getperiodverticies(period); vertex_iterator != vertex_iterator_end; ++vertex_iterator)
 				{
-					if (graph.periodstart(*vertex_iterator))//get inperiod
+					if (m_graph->periodstart(*vertex_iterator))//get inperiod
 					{
 						const double* solution = &new_solution[0];
-						double rest = graph.inarea(*vertex_iterator, solution);
-						//double rest = graph.inarea(devit->second, actual_solution);
-						std::map<int, int>variables = graph.getoutvariables(*vertex_iterator);
+						double rest = m_graph->inarea(*vertex_iterator, solution);
+						//double rest = m_graph->inarea(devit->second, actual_solution);
+						std::map<int, int>variables = m_graph->getoutvariables(*vertex_iterator);
 						int targetaction = -1;
 						if ((variables.find(-1) == variables.end()))//process only if you have evolution
 						{
@@ -673,16 +673,16 @@ namespace Models
 						{
 							variables.erase(targetaction);
 						}
-						const bool setrest = !(typeII&&graph.isnotransfer(*vertex_iterator, 1));
+						const bool setrest = !(typeII&&m_graph->isnotransfer(*vertex_iterator, 1));
 						for (std::map<int, int>::const_iterator varit = variables.begin(); varit != variables.end(); varit++)
 						{
-							std::vector<Core::FMTdevelopmentpath> paths = graph.getpaths(*vertex_iterator, varit->first);
+							std::vector<Core::FMTdevelopmentpath> paths = m_graph->getpaths(*vertex_iterator, varit->first);
 							for (const Core::FMTdevelopmentpath path : paths)
 							{
 								if (path.development->getperiod() == period && processed.find(*path.development) == processed.end())
 								{
-									processed[*path.development] = graph.getdevelopment(*path.development, lookup);
-									descriptors.push(graph.getdevelopment(*path.development, lookup));
+									processed[*path.development] = m_graph->getdevelopment(*path.development, lookup);
+									descriptors.push(m_graph->getdevelopment(*path.development, lookup));
 								}
 							}
 							//rest -= *(actual_solution + varit->second);
@@ -697,9 +697,9 @@ namespace Models
 								actionnames += actions.at(varit->first).getname() + ",";
 							}
 							actionnames.pop_back();
-							const Core::FMTdevelopment dev(graph.getdevelopment(*vertex_iterator));
+							const Core::FMTdevelopment dev(m_graph->getdevelopment(*vertex_iterator));
 							const double* solution = &new_solution[0];
-							const double inarea = graph.inarea(*vertex_iterator, solution);
+							const double inarea = m_graph->inarea(*vertex_iterator, solution);
 							std::string locking;
 							if (dev.getlock() > 0)
 							{
@@ -708,7 +708,7 @@ namespace Models
 								for (int locklevel = 0; locklevel < 30; ++locklevel)
 								{
 									locked.setlock(locklevel);
-									if (graph.containsdevelopment(locked, lookup))
+									if (m_graph->containsdevelopment(locked, lookup))
 									{
 										locking += std::to_string(locklevel) + ",";
 									}
@@ -732,9 +732,9 @@ namespace Models
 				while (!descriptors.empty())
 				{
 					Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor first = descriptors.front();
-					std::map<int, int>variables = graph.getoutvariables(first);
+					std::map<int, int>variables = m_graph->getoutvariables(first);
 					const double* solution = &new_solution[0];
-					double rest = graph.inarea(first, solution);
+					double rest = m_graph->inarea(first, solution);
 					int targetaction = -1;
 					if ((variables.find(-1) == variables.end()))//Dont need to fill up if you dont have natural evolution
 					{
@@ -747,13 +747,13 @@ namespace Models
 					}
 					for (std::map<int, int>::const_iterator varit = variables.begin(); varit != variables.end(); varit++)
 					{
-						std::vector<Core::FMTdevelopmentpath> paths = graph.getpaths(first, varit->first);
+						std::vector<Core::FMTdevelopmentpath> paths = m_graph->getpaths(first, varit->first);
 						for (const Core::FMTdevelopmentpath path : paths)
 						{
 							if (path.development->getperiod() == period && processed.find(*path.development) == processed.end())
 							{
-								processed[*path.development] = graph.getdevelopment(*path.development, lookup);
-								descriptors.push(graph.getdevelopment(*path.development, lookup));
+								processed[*path.development] = m_graph->getdevelopment(*path.development, lookup);
+								descriptors.push(m_graph->getdevelopment(*path.development, lookup));
 							}
 						}
 
@@ -763,10 +763,10 @@ namespace Models
 					{
 						_exhandler->raise(Exception::FMTexc::FMTinvalid_number,
 							std::to_string(rest) + " negative growth solution for " +
-							std::string(graph.getdevelopment(first)),
+							std::string(m_graph->getdevelopment(first)),
 							"FMTsrmodel::setsolution", __LINE__, __FILE__);
 					}
-					const bool setrest = !(typeII&&graph.isnotransfer(first, 1));
+					const bool setrest = !(typeII&&m_graph->isnotransfer(first, 1));
 					if ((targetaction < 0) && setrest)
 					{
 
@@ -791,20 +791,20 @@ namespace Models
 	bool FMTsrmodel::setsolutionbylp(int period, const Core::FMTschedule& schedule, double tolerance)
 	{
 		try {
-			if (Graph::FMTgraphbuild::schedulebuild != graph.getbuildtype())
+			if (Graph::FMTgraphbuild::schedulebuild != m_graph->getbuildtype())
 			{
 				_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
 					"Cannot set solution by lp on a non partial graph",
 					"FMTsrmodel::setsolutionbylp", __LINE__, __FILE__);
 			}
-			if (static_cast<int>(graph.size()) > period && period > 0)
+			if (static_cast<int>(m_graph->size()) > period && period > 0)
 			{
-				const boost::unordered_set<Core::FMTlookup<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor, Core::FMTdevelopment>> lookup = graph.getdevsset(period);
+				const boost::unordered_set<Core::FMTlookup<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor, Core::FMTdevelopment>> lookup = m_graph->getdevsset(period);
 				std::map<int, std::pair<double, double>>bounds;
 				Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_iterator vertex_iterator, vertex_iterator_end;
-				for (boost::tie(vertex_iterator, vertex_iterator_end) = graph.getperiodverticies(period); vertex_iterator != vertex_iterator_end; ++vertex_iterator)
+				for (boost::tie(vertex_iterator, vertex_iterator_end) = m_graph->getperiodverticies(period); vertex_iterator != vertex_iterator_end; ++vertex_iterator)
 				{
-					const std::map<int, int>variables = graph.getoutvariables(*vertex_iterator);
+					const std::map<int, int>variables = m_graph->getoutvariables(*vertex_iterator);
 					for (std::map<int, int>::const_iterator varit = variables.begin(); varit != variables.end(); varit++)
 					{
 						if (varit->first != -1)
@@ -826,11 +826,11 @@ namespace Models
 						for (const auto& devit : actionit->second)
 						{
 							//(Lock in schedule or action not LOCKEXEMPT) and dev in graph 
-							if ((schedule.douselock() || actionit->first.dorespectlock()) && graph.containsdevelopment(devit.first, lookup))
+							if ((schedule.douselock() || actionit->first.dorespectlock()) && m_graph->containsdevelopment(devit.first, lookup))
 							{
-								const Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor vdescriptor = graph.getdevelopment(devit.first, lookup);
-								//const int variable = graph.getoutvariables(vdescriptor)[actionid];
-								std::map<int, int> outvariables = graph.getoutvariables(vdescriptor);
+								const Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor vdescriptor = m_graph->getdevelopment(devit.first, lookup);
+								//const int variable = m_graph->getoutvariables(vdescriptor)[actionid];
+								std::map<int, int> outvariables = m_graph->getoutvariables(vdescriptor);
 								std::map<int, int>::const_iterator varit = outvariables.find(actionid);
 								if (varit == outvariables.cend())
 								{
@@ -859,7 +859,7 @@ namespace Models
 							{
 								if (maximallock == -1)
 								{
-									maximallock = graph.getmaximalock(period);
+									maximallock = m_graph->getmaximalock(period);
 								}
 								Core::FMTdevelopment locked(devit.first);
 								bool gotsomething = false;
@@ -873,11 +873,11 @@ namespace Models
 								for (int lockid = 0; lockid <= maximallock; ++lockid)
 								{
 									locked.setlock(lockid);
-									if (graph.containsdevelopment(locked, lookup))
+									if (m_graph->containsdevelopment(locked, lookup))
 									{
-										const Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor vdescriptor = graph.getdevelopment(locked, lookup);
-										//const int variable = graph.getoutvariables(vdescriptor)[actionid];
-										std::map<int, int> outvariables = graph.getoutvariables(vdescriptor);
+										const Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor vdescriptor = m_graph->getdevelopment(locked, lookup);
+										//const int variable = m_graph->getoutvariables(vdescriptor)[actionid];
+										std::map<int, int> outvariables = m_graph->getoutvariables(vdescriptor);
 										std::map<int, int>::const_iterator varit = outvariables.find(actionid);
 										if (varit == outvariables.cend())
 										{
@@ -941,9 +941,9 @@ namespace Models
 
 				if (!solver.isProvenOptimal())
 				{
-					/*for (boost::tie(vertex_iterator, vertex_iterator_end) = graph.getperiodverticies(period); vertex_iterator != vertex_iterator_end; ++vertex_iterator)
+					/*for (boost::tie(vertex_iterator, vertex_iterator_end) = m_graph->getperiodverticies(period); vertex_iterator != vertex_iterator_end; ++vertex_iterator)
 					{
-						const std::map<int, int>variables = graph.getoutvariables(*vertex_iterator);
+						const std::map<int, int>variables = m_graph->getoutvariables(*vertex_iterator);
 						for (std::map<int, int>::const_iterator varit = variables.begin(); varit != variables.end(); varit++)
 						{
 
@@ -985,12 +985,45 @@ namespace Models
 	FMTsrmodel::FMTsrmodel(const FMTmodel& base, const Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>& lgraph,
 		const FMTlpsolver& lsolver) :
 		FMTmodel(base),
-		graph(lgraph),
+		m_graph(new Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>(lgraph)),
 		solver(lsolver)
 	{
 		//solver.passinobject(base);
-		//graph.passinobject(base);
+		//m_graph->passinobject(base);
 	}
+
+	FMTsrmodel::FMTsrmodel(FMTsrmodel&& rhs):
+		FMTmodel(),
+		m_graph(new Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>()),
+		solver()
+	{
+		*this = std::move(rhs);
+	}
+
+	FMTsrmodel& FMTsrmodel::operator = (const FMTsrmodel& rhs)
+	{
+		if (this != &rhs)
+		{
+			FMTmodel::operator=(rhs);
+			m_graph = std::move(std::unique_ptr<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>>(new 
+								Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>(*rhs.m_graph)));
+			solver=rhs.solver;
+		}
+		return *this;
+	}
+
+	FMTsrmodel& FMTsrmodel::operator =(FMTsrmodel&& rhs)
+	{
+		if (this!=&rhs)
+		{
+			FMTmodel::operator=(std::move(rhs));
+			//graph=rhs.graph;//Boost graph does not provide real swap so...
+			m_graph.swap(rhs.m_graph);
+			solver.swap(rhs.solver);
+		}
+		return *this;
+	}
+
 
 	void FMTsrmodel::postsolve(const FMTmodel& originalbasemodel)
 	{
@@ -1007,7 +1040,7 @@ namespace Models
 	bool FMTsrmodel::isoptimal() const
 	{
 		try {
-			if (graph.getbuildtype() == Graph::FMTgraphbuild::fullbuild)//Only global Graph
+			if (m_graph->getbuildtype() == Graph::FMTgraphbuild::fullbuild)//Only global Graph
 			{
 				return solver.isProvenOptimal();
 			}
@@ -1036,13 +1069,13 @@ namespace Models
 	std::unique_ptr<FMTmodel>FMTsrmodel::presolve(std::vector<Core::FMTactualdevelopment> optionaldevelopments) const
 	{
 		try{
-			if (!graph.empty())
+			if (!m_graph->empty())
 				{
 				_exhandler->raise(Exception::FMTexc::FMTrangeerror,
-					"Cannot presolve a srmodel with period(s) builded in graph.",
+					"Cannot presolve a srmodel with period(s) builded in m_graph->",
 					"FMTsrmodel::presolve", __LINE__, __FILE__);
 				}
-			return std::unique_ptr<FMTmodel>(new FMTsrmodel(*FMTmodel::presolve(optionaldevelopments),graph,solver));
+			return std::unique_ptr<FMTmodel>(new FMTsrmodel(*FMTmodel::presolve(optionaldevelopments),*m_graph,solver));
 		}catch (...)
 		{
 			_exhandler->printexceptions("", "FMTsrmodel::presolve", __LINE__, __FILE__);
@@ -1058,7 +1091,7 @@ namespace Models
 		{
 			//setparameter(SHOW_LOCK_IN_SCHEDULES,withlock);
 			const double* actual_solution = solver.getColSolution();
-			newschedule = graph.getschedule(actions, actual_solution, period, withlock);//getparameter(SHOW_LOCK_IN_SCHEDULES));
+			newschedule = m_graph->getschedule(actions, actual_solution, period, withlock);//getparameter(SHOW_LOCK_IN_SCHEDULES));
 
 		}
 		catch (...)
@@ -1074,7 +1107,7 @@ namespace Models
 		try
 		{
 			const double* actual_solution = solver.getColSolution();
-			newschedule = graph.getoutvariablesproportions(actions, actual_solution, period, withlock);//getparameter(SHOW_LOCK_IN_SCHEDULES));
+			newschedule = m_graph->getoutvariablesproportions(actions, actual_solution, period, withlock);//getparameter(SHOW_LOCK_IN_SCHEDULES));
 		}
 		catch (...)
 		{
@@ -1107,19 +1140,19 @@ namespace Models
 			std::vector<double>elements;
 
 			//Need to reset a new constraint ID!
-			Graph::FMTgraphstats oldstats = graph.getstats();
+			Graph::FMTgraphstats oldstats = m_graph->getstats();
 			int newconstraintID = solver.getNumRows();
 			size_t periodsize = 0;
 			Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_iterator it, itend;
 			const bool typeII = (getparameter(Models::FMTintmodelparameters::MATRIX_TYPE) == 2);
 			for (boost::tie(it, itend) = targets; it != itend; ++it)
 			{
-				if (typeII&&graph.isnotransfer(*it,1))//We dont need a transfer Row here
+				if (typeII&&m_graph->isnotransfer(*it,1))//We dont need a transfer Row here
 				{
 					//Type II behavior
 				}else {//Else add a new transfer row.
-					graph.setconstraintID(*it, newconstraintID);
-					if (graph.gettransferrow(*it, row_Starts, targetcols, elements))
+					m_graph->setconstraintID(*it, newconstraintID);
+					if (m_graph->gettransferrow(*it, row_Starts, targetcols, elements))
 					{
 
 					}
@@ -1152,27 +1185,27 @@ namespace Models
 
 	FMTsrmodel::FMTsrmodel(const FMTmodel& base, FMTsolverinterface lsolvertype) :
 		FMTmodel(base),
-		graph(Graph::FMTgraphbuild::nobuild),
+		m_graph(new Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>(Graph::FMTgraphbuild::nobuild)),
 		solver(lsolvertype,
 			base.getparameter(FMTstrmodelparameters::SOLVER_COLD_START),base.getparameter(FMTstrmodelparameters::SOLVER_WARM_START))
 	{
 		//solver.passinobject(base);
-		//graph.passinobject(base);
+		//m_graph->passinobject(base);
 
 	}
 
 	FMTsrmodel::FMTsrmodel(const FMTsrmodel& rhs):
 		FMTmodel(rhs),
-		graph(rhs.graph),
+		m_graph(new Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>(*rhs.m_graph)),
 		solver(rhs.solver)
 	{
 		//solver.passinobject(rhs);
-		//graph.passinobject(rhs);
+		//m_graph->passinobject(rhs);
 	}
 
 	FMTsrmodel::FMTsrmodel() :
 		FMTmodel(),
-		graph(Graph::FMTgraphbuild::nobuild),
+		m_graph(new Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>(Graph::FMTgraphbuild::nobuild)),
 		solver()
 	{
 
@@ -1184,7 +1217,7 @@ namespace Models
 	{
 		return (FMTmodel::operator == (rhs) &&
 			solver == (rhs.solver) &&
-			graph == rhs.graph);
+			*m_graph == *rhs.m_graph);
 	}
 
 	bool FMTsrmodel::operator != (const FMTsrmodel& rhs) const
@@ -1202,7 +1235,7 @@ namespace Models
 					"For output " + std::string(output.getname()),
 					"FMTsrmodel::getoutput", __LINE__, __FILE__);
 				}
-			return graph.getoutput(*this, output, period, solution, level);
+			return m_graph->getoutput(*this, output, period, solution, level);
 		}
 		catch (...)
 		{
@@ -1216,14 +1249,14 @@ namespace Models
 	{
 		std::queue<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor> actives;
 		try {
-			if (graph.empty())
+			if (m_graph->empty())
 			{
-				actives = graph.initialize(area);
+				actives = m_graph->initialize(area);
 				Graph::FMTgraphstats BUILD_STATS = initializematrix();
-				graph.setstats(BUILD_STATS);
+				m_graph->setstats(BUILD_STATS);
 			}
 			else {
-				actives = graph.getactiveverticies();
+				actives = m_graph->getactiveverticies();
 			}
 		}catch (...)
 		{
@@ -1241,39 +1274,39 @@ namespace Models
 			Graph::FMTgraphstats buildstats;
 			if (!forcepartialbuild && schedule.empty()) // full build
 			{
-				buildstats = graph.build(*this, actives, compressageclassoperability);
-				graph.setbuildtype(Graph::FMTgraphbuild::fullbuild);
+				buildstats = m_graph->build(*this, actives, compressageclassoperability);
+				m_graph->setbuildtype(Graph::FMTgraphbuild::fullbuild);
 			}
 			else {//partial build for result
-				graph.setbuildtype(Graph::FMTgraphbuild::schedulebuild);
-				buildstats = graph.buildschedule(*this, actives, schedule);
+				m_graph->setbuildtype(Graph::FMTgraphbuild::schedulebuild);
+				buildstats = m_graph->buildschedule(*this, actives, schedule);
 			}
-			const int location = static_cast<int>(graph.size() - 2);
-			const Graph::FMTgraphstats newstats = this->updatematrix(graph.getperiodverticies(location), buildstats);
-			graph.setstats(newstats);
+			const int location = static_cast<int>(m_graph->size() - 2);
+			const Graph::FMTgraphstats newstats = this->updatematrix(m_graph->getperiodverticies(location), buildstats);
+			m_graph->setstats(newstats);
 		}
 		catch (...)
 		{
 			_exhandler->printexceptions("", "FMTsrmodel::buildperiod", __LINE__, __FILE__);
 		}
 
-		return graph.getstats();
+		return m_graph->getstats();
 	}
 
 
 
 	size_t FMTsrmodel::getgraphsize() const
 	{
-		return graph.size();
+		return m_graph->size();
 	}
 
 	void FMTsrmodel::cleargraphdevelopements()
 	{
-		graph.cleardevelopments();
+		m_graph->cleardevelopments();
 	}
 	void FMTsrmodel::cleargraphcache()
 	{
-		graph.clearcache();
+		m_graph->clearcache();
 	}
 
 
@@ -1302,12 +1335,12 @@ namespace Models
 
 	Graph::FMTgraphstats FMTsrmodel::getstats() const
 	{
-		return graph.getstats();
+		return m_graph->getstats();
 	}
 
 	int FMTsrmodel::getfirstactiveperiod() const
 	{
-		return graph.getfirstactiveperiod();
+		return m_graph->getfirstactiveperiod();
 	}
 
 	void FMTsrmodel::postsolvegraph(const FMTmodel& originalbasemodel)
@@ -1324,7 +1357,7 @@ namespace Models
 				const int loc = static_cast<int>(std::distance(postsolveactions.begin(), std::find_if(postsolveactions.begin(), postsolveactions.end(), Core::FMTactioncomparator(action.getname()))));
 				actionmapping.push_back(loc);
 			}
-			this->graph.postsolve(postsolvefilter,postsolvethemes, actionmapping);
+			this->m_graph->postsolve(postsolvefilter,postsolvethemes, actionmapping);
 			
 		}catch (...)
 		{
@@ -1350,12 +1383,12 @@ namespace Models
 			{
 				--period;
 			}
-			for (boost::tie(vertex_iterator, vertex_iterator_end) = graph.getperiodverticies(period); vertex_iterator != vertex_iterator_end; ++vertex_iterator)
+			for (boost::tie(vertex_iterator, vertex_iterator_end) = m_graph->getperiodverticies(period); vertex_iterator != vertex_iterator_end; ++vertex_iterator)
 			{
-				if ((!beforegrowanddeath&&graph.periodstart(*vertex_iterator)))
+				if ((!beforegrowanddeath&&m_graph->periodstart(*vertex_iterator)))
 				{
-					const Core::FMTdevelopment& graphdevelopement = graph.getdevelopment(*vertex_iterator);
-					const double areaofdevelopement = graph.inarea(*vertex_iterator, modelsolution,-1,true);
+					const Core::FMTdevelopment& graphdevelopement = m_graph->getdevelopment(*vertex_iterator);
+					const double areaofdevelopement = m_graph->inarea(*vertex_iterator, modelsolution,-1,true);
 					if (areaofdevelopement > FMT_DBL_TOLERANCE)
 					{
 						returnedarea.push_back(Core::FMTactualdevelopment(graphdevelopement, areaofdevelopement));
@@ -1363,9 +1396,9 @@ namespace Models
 				}
 				else if (beforegrowanddeath)
 				{
-					const Core::FMTdevelopment& graphdevelopement = graph.getdevelopment(*vertex_iterator);
-					const double indeatharea = graph.inarea(*vertex_iterator, modelsolution, deathactionid, true);
-					const double areaofdevelopement = graph.outarea(*vertex_iterator, -1, modelsolution) +graph.outarea(*vertex_iterator, deathactionid, modelsolution) -indeatharea;
+					const Core::FMTdevelopment& graphdevelopement = m_graph->getdevelopment(*vertex_iterator);
+					const double indeatharea = m_graph->inarea(*vertex_iterator, modelsolution, deathactionid, true);
+					const double areaofdevelopement = m_graph->outarea(*vertex_iterator, -1, modelsolution) +m_graph->outarea(*vertex_iterator, deathactionid, modelsolution) -indeatharea;
 					if (areaofdevelopement > FMT_DBL_TOLERANCE)
 					{
 						returnedarea.push_back(Core::FMTactualdevelopment(graphdevelopement, areaofdevelopement));
@@ -1413,17 +1446,17 @@ namespace Models
 	bool FMTsrmodel::boundsolution(int period, double tolerance)
 	{
 		try {
-			if (static_cast<int>(graph.size()) > period)
+			if (static_cast<int>(m_graph->size()) > period)
 			{
 				const double* actual_solution = solver.getColSolution();
 				std::vector<int>variable_index;
 				std::vector<double>bounds;
 				Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_iterator it, itend;
 
-				for (boost::tie(it, itend) = graph.getperiodverticies(period); it != itend; ++it)
+				for (boost::tie(it, itend) = m_graph->getperiodverticies(period); it != itend; ++it)
 				{
 					const Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor vertex_descriptor = *it;
-					const std::map<int, int>variables = graph.getoutvariables(vertex_descriptor);
+					const std::map<int, int>variables = m_graph->getoutvariables(vertex_descriptor);
 					for (std::map<int, int>::const_iterator varit = variables.begin(); varit != variables.end(); varit++)
 					{
 						if (std::find(variable_index.begin(), variable_index.end(), varit->second) == variable_index.end())
@@ -1461,7 +1494,7 @@ namespace Models
 				size_t outputid = 0;
 				for (const Core::FMToutput& output : outputsdata)
 				{
-					const std::map<std::string, double> values = graph.getoutput(*this, output, period, solution, Core::FMToutputlevel::developpement);
+					const std::map<std::string, double> values = m_graph->getoutput(*this, output, period, solution, Core::FMToutputlevel::developpement);
 					for (std::map<std::string, double>::const_iterator it = values.begin(); it != values.end(); ++it)
 					{
 						if ((it->second <= -FMT_DBL_TOLERANCE) || (it->second >= FMT_DBL_TOLERANCE))
@@ -1593,14 +1626,14 @@ namespace Models
 
 	Graph::FMTgraphstats FMTsrmodel::getgraphstats() const
 	{
-		return graph.getstats();
+		return m_graph->getstats();
 	}
 
 	std::set<Core::FMTSerie>FMTsrmodel::getRotations(const Core::FMTmask& mask, const std::string& aggregate) const
 	{
 		std::set<Core::FMTSerie>rotations;
 		try {
-			rotations =  graph.getRotations(*this, mask, aggregate);
+			rotations =  m_graph->getRotations(*this, mask, aggregate);
 		}
 		catch (...)
 		{
@@ -1614,7 +1647,7 @@ namespace Models
 		std::vector<const Core::FMTdevelopment*>devs;
 		try {
 			const int death_id = static_cast<int>(actions.size() - 1);
-			devs = graph.nochoice(base_mask, death_id);
+			devs = m_graph->nochoice(base_mask, death_id);
 		}catch (...)
 			{
 			_exhandler->raisefromcatch("", "FMTsrmodel::getnochoice", __LINE__, __FILE__);

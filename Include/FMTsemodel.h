@@ -197,7 +197,7 @@ class FMTEXPORT FMTsemodel : public FMTmodel
 			ar& boost::serialization::make_nvp("model", boost::serialization::base_object<FMTmodel>(*this));
 			ar& BOOST_SERIALIZATION_NVP(solution);
 		}
-		virtual void swap_ptr(const std::unique_ptr<FMTmodel>& rhs);
+		virtual void swap_ptr(std::unique_ptr<FMTmodel>& rhs);
     };
 
 }

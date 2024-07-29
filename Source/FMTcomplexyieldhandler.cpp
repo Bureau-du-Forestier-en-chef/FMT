@@ -33,9 +33,15 @@ namespace Core {
 			
 
 			value += "\n";
+			std::vector<std::string>YieldsNames;
 			for (std::map<std::string, FMTdata>::const_iterator it = elements.begin(); it != elements.end(); ++it)
 				{
-				value += it->first + " " + std::string(it->second) + "\n";
+				YieldsNames.push_back(it->first);
+				}
+			std::sort(YieldsNames.begin(), YieldsNames.end());
+			for (const std::string& Name : YieldsNames)
+				{
+				value += Name + " " + std::string(elements.at(Name)) + "\n";
 				}
 
 		}

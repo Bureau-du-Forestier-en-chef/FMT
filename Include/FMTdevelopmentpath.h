@@ -26,6 +26,8 @@ class FMTdevelopmentpath
 			const double& lproportion);
 		FMTdevelopmentpath& operator = (const FMTdevelopmentpath& rhs);
 		~FMTdevelopmentpath()=default;
+	private:
+		bool m_own_development;
 	};
 }
 

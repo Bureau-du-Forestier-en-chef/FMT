@@ -35,14 +35,11 @@ int main(int argc, char* argv[])
 	std::vector<std::string>spatialOutputs;
 	boost::split(spatialOutputs, std::string(argv[1]), boost::is_any_of("|"));
 	const int length = std::stoi(argv[3]);
-	/*const std::string modellocation = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/09_FMT/Modeles_test/Prototype_Dec2023/";
+	/*const std::string modellocation = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/09_FMT/Modeles_test/Prototype_Dec2023_TBE/";
 	const std::string primarylocation = modellocation + "PC_7002071_UA08152_FINAL.pri";
-	const std::string scenario = "01_Regl_prov_apsp_1_6";*/
-	/*const std::string modellocation = "../../../../Examples/Models/TWD_land/";
-	const std::string	primarylocation = modellocation + "TWD_land.pri";
-	const std::string scenario = "Spatial";*/
+	const std::string scenario = "20_Regl_prov";
 	const int length = 3;
-	std::vector<std::string>spatialOutputs = {"OVOLREC", "OSUPREALREGAPRE","OVOLTOTREC"};
+	std::vector<std::string>spatialOutputs = {"OVOLTOTREC"};*/
 	const std::string outdir = "../../tests/Spatial_doplanning/";
 	Parser::FMTmodelparser mparser;
 	std::vector<Exception::FMTexc>errors;
@@ -69,7 +66,7 @@ int main(int argc, char* argv[])
 		strans.push_back(tran.single());
 	}
 	simulationmodel.settransitions(strans);
-	const std::string rastpath = modellocation + "rasters_fin/";
+	const std::string rastpath = modellocation + "rasters/";
 	setMapping(rastpath, simulationmodel);
 	simulationmodel.setparameter(Models::FMTintmodelparameters::LENGTH, length);
 	simulationmodel.setparameter(Models::FMTintmodelparameters::NUMBER_OF_ITERATIONS, 10);

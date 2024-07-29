@@ -25,6 +25,14 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 namespace Spatial
 {
+
+	bool FMTspatialschedule::m_usePeriodCache = false;
+
+	void FMTspatialschedule::setPeriodCache(bool p_value)
+		{
+		FMTspatialschedule::m_usePeriodCache = p_value;
+		}
+
     FMTspatialschedule::FMTspatialschedule():FMTlayer<Graph::FMTlinegraph>(),cache(), scheduletype(), constraintsfactor(),events()
     {
         //ctor
@@ -1118,14 +1126,15 @@ namespace Spatial
 					const std::vector<FMTcoordinate>& nodescoordinates = cache.getnode(node, model, exactnode);//starting point to simplification
 					size_t periodid = 0;
 					std::vector<std::pair<size_t, int>>periodstolookfor;
+					periodstolookfor.reserve((periodstop- periodstart)+1);
 					for (int period = periodstart; period <= periodstop; ++period)
 					{
-						if (!cache.getactualnodecache()->gotcachevalue(period))
+						if (!m_usePeriodCache || (m_usePeriodCache && !cache.getactualnodecache()->gotcachevalue(period)))
 						{
 							periodstolookfor.push_back(std::pair<size_t, int>(periodid, period));
 							cachenotused = false;
 						}
-						else if (level == Core::FMToutputlevel::totalonly)
+						else if (m_usePeriodCache &&  level == Core::FMToutputlevel::totalonly)
 						{
 							values["Total"][periodid] = cache.getactualnodecache()->getcachevalue(period);
 						}
@@ -1163,8 +1172,9 @@ namespace Spatial
 									}
 								}
 							}
-							if (level != Core::FMToutputlevel::developpement)//No caching for developpement because getsource dont return a total for developpement
+							if (m_usePeriodCache  && level != Core::FMToutputlevel::developpement)//No caching for developpement because getsource dont return a total for developpement
 							{
+								
 								cache.getactualnodecache()->setvalue(periodpair.second, values.at("Total").at(periodpair.first));
 							}
 						}
@@ -1515,7 +1525,7 @@ namespace Spatial
 			for (std::map<FMTcoordinate, Graph::FMTlinegraph>::const_iterator graphit = this->mapping.begin(); graphit != this->mapping.end(); ++graphit)
 			{
 				const int lastactid = graphit->second.getlastactionid(period);
-				if (lastactid > 0)
+				if (lastactid >= 0)
 				{
 					distlayer[graphit->first] = modelactions.at(graphit->second.getlastactionid(period)).getname();
 				}
