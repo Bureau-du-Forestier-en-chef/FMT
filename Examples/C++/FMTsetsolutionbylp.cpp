@@ -17,6 +17,7 @@ int main(int argc, char *argv[])
 	if (Version::FMTversion().hasfeature("OSI"))
 		{
 		const std::string primarylocation = std::string(argv[1]);
+		const std::vector<std::string>scenarios(1, std::string(argv[2]));
 		Parser::FMTmodelparser modelparser;
 		modelparser.setdefaultexceptionhandler();
 		std::vector<Exception::FMTexc>errors;
@@ -28,7 +29,6 @@ int main(int argc, char *argv[])
 		errors.push_back(Exception::FMTexc::FMToveridedyield);
         errors.push_back(Exception::FMTexc::FMTdeathwithlock);
 		modelparser.seterrorstowarnings(errors);
-		const std::vector<std::string>scenarios(1,std::string(argv[2]));
 		const std::vector<Models::FMTmodel> models = modelparser.readproject(primarylocation, scenarios);
 		Models::FMTlpmodel optimizationmodel(models.at(0), Models::FMTsolverinterface::CLP);
 		const std::vector<Core::FMTschedule>schedules = modelparser.readschedules(primarylocation,models).at(0);

@@ -67,6 +67,13 @@ namespace Models
 					double lower = 0;
 					double upper = 0;
 					constraint.getbounds(lower, upper, p_period);
+					Core::FMToutput inventOut(constraint);
+					std::vector<Core::FMToutputsource> sources = inventOut.getsources();
+					sources[0].settarget(Core::FMTotar::inventory);
+					sources[0].setaction("");
+					inventOut.setsources(sources);
+					const double MAXIMAL_VALUE = getoutput(inventOut, getAreaPeriod(), Core::FMToutputlevel::totalonly).at("Total");
+					upper = std::min(MAXIMAL_VALUE, upper);
 					size_t location = 0;
 					bool added = false;
 					for (const Core::FMToutput* doneit : targetedoutputs)
@@ -79,6 +86,7 @@ namespace Models
 								}
 							if (upper<uppers.at(location))
 								{
+								
 								uppers[location] = upper;
 								}
 							added = true;
@@ -100,8 +108,10 @@ namespace Models
 				if (uppers.at(outid)!= std::numeric_limits<double>::infinity())
 					{
 					const double upperbound = uppers.at(outid);
-					std::uniform_real_distribution<double>udist(lowerbound, upperbound);
 					
+
+
+					std::uniform_real_distribution<double>udist(lowerbound, upperbound);
 					value = udist(m_generator);
 					}
 				
@@ -285,6 +295,7 @@ namespace Models
 			m_generator = std::default_random_engine(getparameter(Models::FMTintmodelparameters::SEED));
 			//First make some noise
 			std::shuffle(area.begin(), area.end(), m_generator);
+			m_graph->setbuildtype(Graph::FMTgraphbuild::schedulebuild);
 			std::queue<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor> actives = getActives();
 			const int GRAPH_SIZE = static_cast<int>(getgraphsize());
 			int period = static_cast<int>(GRAPH_SIZE -1);
@@ -312,7 +323,6 @@ namespace Models
 				_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
 					"Simulation model has no area to simulate for " + getname(), "FMTnssmodel::simulate", __LINE__, __FILE__);
 			}
-			graph.setbuildtype(Graph::FMTgraphbuild::schedulebuild);
 			setparameter(Models::FMTintmodelparameters::MATRIX_TYPE, 3);
 			bool allocatedArea = false;
 			double totalOperatedArea = 0;
@@ -324,7 +334,7 @@ namespace Models
 			{
 				const bool DOES_NOT_GROW = (ACTION.getname() == "_DEATH");
 				std::queue< Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>toGrow;
-				const size_t MAX_SPIN = area.size() * 2;
+				const size_t MAX_SPIN = 10; area.size() * 2;
 				size_t visit = 0;
 				while (!actionsOutputs.at(actionId).empty() && visit < MAX_SPIN)//Keep on spinning if you havent reach the target?
 				{
@@ -335,7 +345,7 @@ namespace Models
 						bool inOutput = false;
 						if (!actionsOutputs.at(actionId).empty())
 						{
-							const Core::FMTdevelopment& DEVELOPPEMENT = graph.getdevelopment(frontVertex);
+							const Core::FMTdevelopment& DEVELOPPEMENT = m_graph->getdevelopment(frontVertex);
 							const bool GOT_OUTPUT = gotOutputForDev(DEVELOPPEMENT, TARGETED_OUTPUTS, actionsOutputs.at(actionId));
 							if (GOT_OUTPUT)
 							{
@@ -343,13 +353,13 @@ namespace Models
 								if (DEVELOPPEMENT.operable(ACTION, yields))
 									{
 									const double* actualSolution = &newSolution[0];
-									double DEV_AREA = graph.inarea(frontVertex, actualSolution);
-									for (const int& actionId : graph.getoutactions(frontVertex))
+									double DEV_AREA = m_graph->inarea(frontVertex, actualSolution);
+									for (const int& actionId : m_graph->getoutactions(frontVertex))
 										{
-										DEV_AREA -= graph.outarea(frontVertex, actionId, actualSolution);
+										DEV_AREA -= m_graph->outarea(frontVertex, actionId, actualSolution);
 										}
 									const std::vector<Core::FMTdevelopmentpath> PATHS = DEVELOPPEMENT.operate(ACTION, transitions[actionId], yields, themes);
-									graph.addaction(actionId, GraphStats, toGrow, frontVertex, PATHS);
+									m_graph->addaction(actionId, GraphStats, toGrow, frontVertex, PATHS);
 									const double OPERATED_AREA = UpdateOutputs(DEVELOPPEMENT, PATHS, actionId, DEV_AREA,
 										targetedValues, actionsOutputs,
 										TARGETED_OUTPUTS);
@@ -388,22 +398,22 @@ namespace Models
 				++actionId;
 			}
 			std::queue<Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>toGrowWithSolution(actives);
-			GraphStats = graph.naturalgrowth(actives, GraphStats, false);
+			GraphStats = m_graph->naturalgrowth(actives, GraphStats, false);
 			while (!toGrowWithSolution.empty())
 			{
 				Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor& GrowVertex = toGrowWithSolution.front();
 				const double* actualSolution = &newSolution[0];
-				double DEV_AREA = graph.inarea(GrowVertex, actualSolution);
-				for (const int& Id : graph.getoutactions(GrowVertex))
+				double DEV_AREA = m_graph->inarea(GrowVertex, actualSolution);
+				for (const int& Id : m_graph->getoutactions(GrowVertex))
 				{
-					DEV_AREA -= graph.outarea(GrowVertex, Id, actualSolution);
+					DEV_AREA -= m_graph->outarea(GrowVertex, Id, actualSolution);
 				}
 				newSolution.push_back(DEV_AREA);
 				toGrowWithSolution.pop();
 			}
 			
-			const int location = static_cast<int>(graph.size() - 2);
-			const Graph::FMTgraphstats newStats = this->updatematrix(graph.getperiodverticies(location), GraphStats);
+			const int location = static_cast<int>(m_graph->size() - 2);
+			const Graph::FMTgraphstats newStats = this->updatematrix(m_graph->getperiodverticies(location), GraphStats);
 			if (solver.getNumCols() != static_cast<int>(newSolution.size()))
 			{
 				_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
@@ -411,7 +421,7 @@ namespace Models
 					" vs Solution cols of " + std::to_string(newSolution.size()),
 					"FMTnssmodel::simulate", __LINE__, __FILE__);
 			}
-			graph.setstats(newStats);
+			m_graph->setstats(newStats);
 			solver.setColSolution(&newSolution[0]);
 			this->boundsolution(period);
 		}catch (...)
@@ -532,8 +542,12 @@ namespace Models
 			{
 				//warning
 			}
-			const int length = getparameter(LENGTH);
-			for (int period = 0; period<length;++period)
+			const size_t LENGTH = static_cast<size_t>(getparameter(FMTintmodelparameters::LENGTH));
+			const size_t AREA = area.size();
+			const size_t ACTIONS = actions.size();
+			const size_t EXPO_FACTOR = 12;
+			m_graph->reserveVerticies(LENGTH * AREA * ACTIONS * EXPO_FACTOR);
+			for (int period = 0; period< getparameter(FMTintmodelparameters::LENGTH);++period)
 			{
 				simulate();
 			}
@@ -574,7 +588,7 @@ namespace Models
 		return parametersetted;
 	}
 
-	void FMTnssmodel::swap_ptr(const std::unique_ptr<FMTmodel>& rhs)
+	void FMTnssmodel::swap_ptr(std::unique_ptr<FMTmodel>& rhs)
 	{
 		*this = std::move(*dynamic_cast<FMTnssmodel*>(rhs.get()));
 	}

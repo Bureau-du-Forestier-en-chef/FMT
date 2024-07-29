@@ -19,7 +19,7 @@ int main(int argc, char *argv[])
 	const int replicate = 5;
 	std::vector<std::string>allscenarios;
 	allscenarios.push_back("strategique");
-	allscenarios.push_back("fire");
+	allscenarios.push_back("stochastique_Histo");//"stochastique");
 	allscenarios.push_back("tactique");*/
 	const std::string primlocation = argv[1];
 	const int length = std::stoi(argv[2]);
@@ -61,14 +61,15 @@ int main(int argc, char *argv[])
 	#endif
 	local.setparameter(Models::FMTintmodelparameters::LENGTH, 1);
 	local.setparameter(Models::FMTintmodelparameters::NUMBER_OF_THREADS,1);
+	std::vector<std::string>OutputtoLookFor = { "OVOLTOTREC" ,/*"OSUPTOT",*/"OVOL_UA_TOTREC" ,"OSUPBRULER_CORRIGER" ,
+												"SUPERFICIE_RECUP_FEU" ,/*"OSUPPL_FEU_POSTRECUP",*/
+													"OSUPTBE" , "SUPERFICIE_RECUP_TBE",
+												/*"OCATTBE_C1" ,"OCATTBE_C2" ,"OCATTBE_C3",
+												"OCATTBE_C4","OCATTBE_C5","OCATTBE_C6","OTBECOMP","OSUPADMATBE"*/};
 	std::vector<Core::FMToutput>selectedoutputs;
 	for (const Core::FMToutput& output : global.getoutputs())
 	{
-		if (output.getname() == "OVOLTOTREC"||
-			output.getname() == "OVOL_UA_TOTREC" ||
-			output.getname() == "OSUPBRULER_CORRIGER" ||
-			output.getname() == "SUPERFICIE_RECUP_FEU" ||
-			output.getname() == "OSUPPL_FEU_POSTRECUP")
+		if (std::find(OutputtoLookFor.begin(), OutputtoLookFor.end(), output.getname())!= OutputtoLookFor.end())
 		{
 			selectedoutputs.push_back(output);
 		}
@@ -78,8 +79,8 @@ int main(int argc, char *argv[])
 	const std::string outputlocation = "../../tests/replanner/"+ locname;
 	std::vector<std::string>layersoptions;
 	layersoptions.push_back("SEPARATOR=SEMICOLON");
-	std::unique_ptr<Parallel::FMTtask> maintaskptr(new Parallel::FMTreplanningtask(global, stochastic, local, selectedoutputs, outputlocation, "CSV", layersoptions, replicate,length,0.5, Core::FMToutputlevel::totalonly));
-	Parallel::FMTtaskhandler handler(maintaskptr,10);
+	std::unique_ptr<Parallel::FMTtask> maintaskptr(new Parallel::FMTreplanningtask(global, stochastic, local, selectedoutputs, outputlocation, "CSV", layersoptions, replicate,length,0.5, Core::FMToutputlevel::standard));
+	Parallel::FMTtaskhandler handler(maintaskptr,5);
 	//handler.setquietlogger();
 	//handler.ondemandrun();
 	handler.conccurentrun();

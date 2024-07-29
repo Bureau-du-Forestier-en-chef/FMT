@@ -243,23 +243,27 @@ namespace Core
 		void shrink()
 		{
 			try {
-				fastpass.clear();
-				std::vector<Core::FMTmask> filteredmasks;
-				filteredmasks.reserve(data.size());
-				for (const std::pair<FMTmask, T>& object : data)
+				if (!data.empty())
 				{
-					filteredmasks.push_back(object.first);
+					fastpass.clear();
+					std::vector<Core::FMTmask> filteredmasks;
+					filteredmasks.reserve(data.size());
+					for (const std::pair<FMTmask, T>& object : data)
+					{
+						filteredmasks.push_back(object.first);
+					}
+					if (filteredmasks.empty())
+					{
+						_exhandler->raise(Exception::FMTexc::FMTinvalid_maskrange, "Empty mask", "FMTactionparser::shrink", __LINE__, __FILE__);
+					}
+					filter = Core::FMTmaskfilter(filteredmasks);
+					for (std::pair<FMTmask, T>& object : data)
+					{
+						object.first = filter.filter(object.first);
+					}
+					data.shrink_to_fit();
 				}
-				if (filteredmasks.empty())
-				{
-					_exhandler->raise(Exception::FMTexc::FMTinvalid_maskrange, "Empty mask", "FMTactionparser::shrink", __LINE__, __FILE__);
-				}
-				filter = Core::FMTmaskfilter(filteredmasks);
-				for (std::pair<FMTmask, T>& object : data)
-				{
-					object.first = filter.filter(object.first);
-				}
-				data.shrink_to_fit();
+				
 			}
 			catch (...) {
 

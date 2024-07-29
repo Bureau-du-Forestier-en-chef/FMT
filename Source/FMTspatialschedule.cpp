@@ -25,6 +25,14 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 namespace Spatial
 {
+
+	bool FMTspatialschedule::m_usePeriodCache = false;
+
+	void FMTspatialschedule::setPeriodCache(bool p_value)
+		{
+		FMTspatialschedule::m_usePeriodCache = p_value;
+		}
+
     FMTspatialschedule::FMTspatialschedule():FMTlayer<Graph::FMTlinegraph>(),cache(), scheduletype(), constraintsfactor(),events()
     {
         //ctor
@@ -1101,7 +1109,7 @@ namespace Spatial
 				level = Core::FMToutputlevel::totalonly;
 			}
 
-			//bool cachenotused = true;
+			bool cachenotused = true;
 			//const std::vector<Core::FMTtheme> statictransitionsthemes = model.locatestatictransitionsthemes();
 			const double cellsize = this->getcellsize();
 			if (level != Core::FMToutputlevel::developpement)
@@ -1121,15 +1129,15 @@ namespace Spatial
 					periodstolookfor.reserve((periodstop- periodstart)+1);
 					for (int period = periodstart; period <= periodstop; ++period)
 					{
-						//if (!cache.getactualnodecache()->gotcachevalue(period))
-						//{
+						if (!m_usePeriodCache || (m_usePeriodCache && !cache.getactualnodecache()->gotcachevalue(period)))
+						{
 							periodstolookfor.push_back(std::pair<size_t, int>(periodid, period));
-						//	cachenotused = false;
-						//}
-						//else if (level == Core::FMToutputlevel::totalonly)
-						//{
-						//	values["Total"][periodid] = cache.getactualnodecache()->getcachevalue(period);
-						//}
+							cachenotused = false;
+						}
+						else if (m_usePeriodCache &&  level == Core::FMToutputlevel::totalonly)
+						{
+							values["Total"][periodid] = cache.getactualnodecache()->getcachevalue(period);
+						}
 						++periodid;
 					}
 					if (!periodstolookfor.empty())
@@ -1164,17 +1172,17 @@ namespace Spatial
 									}
 								}
 							}
-							/*if (level != Core::FMToutputlevel::developpement)//No caching for developpement because getsource dont return a total for developpement
+							if (m_usePeriodCache  && level != Core::FMToutputlevel::developpement)//No caching for developpement because getsource dont return a total for developpement
 							{
 								
 								cache.getactualnodecache()->setvalue(periodpair.second, values.at("Total").at(periodpair.first));
-							}*/
+							}
 						}
 					}
 				}
 
 			}
-			if (/*!cachenotused &&*/ scheduletype != FMTspatialscheduletype::FMTcomplete)
+			if (!cachenotused && scheduletype != FMTspatialscheduletype::FMTcomplete)
 			{
 				_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
 					"Cannot use a non complete schedule ",

@@ -347,7 +347,7 @@ namespace Core
 			}
 			if (upper != std::numeric_limits<double>::infinity())
 			{
-				upper = value * factor;
+				upper = std::max(value * factor,0.0);
 			}
 			newconstraint.setrhs(lower, upper);
 		}

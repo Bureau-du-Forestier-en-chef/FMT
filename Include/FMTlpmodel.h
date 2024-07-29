@@ -17,6 +17,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <boost/thread/recursive_mutex.hpp>
 #include <boost/thread/lock_guard.hpp> 
 #include <limits>
+#include <set>
 
 namespace Heuristics
 {
@@ -84,8 +85,8 @@ class FMTEXPORT FMTlpmodel : public FMTsrmodel
 		/**
 		Constructor of FMTlpmodel mainly use in postsolve to pass each attributes of the class.
 		*/
-		FMTlpmodel(	const FMTmodel& base,const Graph::FMTgraph<Graph::FMTvertexproperties,Graph::FMTedgeproperties>& lgraph,
-					const FMTlpsolver& lsolver,const std::vector<std::unordered_map<std::string,std::vector<std::vector<int>>>>& lelements);
+		/*FMTlpmodel(const FMTmodel& base, const Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>& lgraph,
+					const FMTlpsolver& lsolver,const std::vector<std::unordered_map<std::string,std::vector<std::vector<int>>>>& lelements);*/
 		// DocString: FMTlpmodel(const FMTlpmodel)
 		/**
 		Copy constructor of FMTlpmodel
@@ -103,12 +104,12 @@ class FMTEXPORT FMTlpmodel : public FMTsrmodel
 		/**
 		Default move constructor for FMTlpmodel.
 		*/
-		FMTlpmodel(FMTlpmodel&& rhs)=default;
+		FMTlpmodel(FMTlpmodel&& rhs);
 		// DocString: FMTlpmodel::operator=(FMTlpmodel&& rhs) 
 		/**
 		Default move assignment for FMTlpmodel.
 		*/
-		FMTlpmodel& operator =(FMTlpmodel&& rhs) =default;
+		FMTlpmodel& operator =(FMTlpmodel&& rhs);
 		// DocString: FMTlpmodel::setstrictlypositivesoutputsmatrix
 		/**
 		To set the model parameter STRICTLY_POSITIVE at true.
@@ -297,6 +298,66 @@ class FMTEXPORT FMTlpmodel : public FMTsrmodel
 		*/
 		virtual std::unique_ptr<FMTmodel> getcopy(int period = 0) const;
 	private:
+		class ConstraintIndex
+			{
+			public:
+				ConstraintIndex(int p_constraintId, int p_period,FMTmatrixelement p_type);
+				ConstraintIndex(int p_constraintId, int p_period,
+							FMTmatrixelement p_type,
+							std::allocator<int>& p_allocator,size_t p_allocation=0);
+				void push_back(const int& p_row);
+				bool operator < (const ConstraintIndex& p_rhs) const;
+				bool operator == (const ConstraintIndex& p_rhs) const;
+				const std::vector<int>& getRows() const;
+				std::vector<int>& getRowsRef();
+				size_t getHash() const;
+			private:
+				int m_constraintId;
+				int m_period;
+				FMTmatrixelement m_type;
+				std::vector<int>m_rows;
+			};
+		// DocString: FMTlpmodel::m_rowsAllocator
+		///The int allocator for the constraintIndex
+		mutable std::allocator<int>m_rowsAllocator;
+		// DocString: FMTlpmodel::m_indexAllocator
+		///the constraints index allocator
+		mutable std::allocator<ConstraintIndex>m_indexAllocator;
+		// DocString: FMTlpmodel::m_indexes
+		///Locations of the constraints and variables in the matrix for the constraints / objective.
+		std::set<ConstraintIndex>m_indexes;
+		// DocString: FMTlpmodel::_getConstraintIndex
+		/**
+		@brief Get the constraint index iterator of a constraint.
+		@param[in] p_constraint the constraint we want the iterator.
+		@return the const iterator of the constraint.
+		*/
+		std::vector<Core::FMTconstraint>::const_iterator _getConstraintIndex(const Core::FMTconstraint& p_constraint) const;
+		// DocString: FMTlpmodel::_getsetConstraintIndex
+		/**
+		@brief Get or set a constraint and get it's iterator
+		@param[in] p_constraint the constraint to getset
+		@return the const iterator of the constraint.
+		*/
+		std::vector<Core::FMTconstraint>::const_iterator _getsetConstraintIndex(const Core::FMTconstraint& p_constraint);
+		// DocString: FMTlpmodel::_getIndex
+		/**
+		@brief get the index of a const iterator of constraint
+		@param[in] p_it the constraint iterator.
+		@return the index of the constraint.
+		*/
+		int _getIndex(const std::vector<Core::FMTconstraint>::const_iterator& p_it) const;
+		// DocString: FMTlpmodel::_setGraphCache
+		/**
+		@brief reserve memory for verticies in the graph.
+		@param[in] p_noLength if true wont use the length of the actual model (base guess).
+		*/
+		void _setGraphCache(bool p_noLength = false);
+		// DocString: FMTlpmodel::_setConstraintsCache
+		/**
+		@brief set the size of the cache of the constraints.
+		*/
+		void _setConstraintsCache();
 		// DocString: FMTlpmodel::serialize
 		/**
 		Save function is for serialization, used to do multiprocessing across multiple cpus (pickle in Pyhton)
@@ -306,18 +367,18 @@ class FMTEXPORT FMTlpmodel : public FMTsrmodel
 		void save(Archive& ar, const unsigned int version) const
 		{
 			ar& boost::serialization::make_nvp("model", boost::serialization::base_object<FMTsrmodel>(*this));
-			ar& BOOST_SERIALIZATION_NVP(elements);
+			ar& BOOST_SERIALIZATION_NVP(m_indexes);
 		}
 		template<class Archive>
 		void load(Archive& ar, const unsigned int version)
 		{
 			ar& boost::serialization::make_nvp("model", boost::serialization::base_object<FMTsrmodel>(*this));
-			ar& BOOST_SERIALIZATION_NVP(elements);
+			ar& BOOST_SERIALIZATION_NVP(m_indexes);
 		}
 		// DocString: FMTlpmodel::elements
 		///Locations of the constraints and variables in the matrix for the constraints / objective.
-		std::vector<std::unordered_map<std::string,
-			std::vector<std::vector<int>>>>elements;
+		//std::vector<std::unordered_map<std::string,
+		//	std::vector<std::vector<int>>>>elements;
 		// DocString: FMTlpmodel::getclusterer
 		/**
 		Using an inventory output (areaoutput) and an (statisticoutput) at (period) this function returns
@@ -328,13 +389,13 @@ class FMTEXPORT FMTlpmodel : public FMTsrmodel
 			const Core::FMToutput& areaoutput,
 			const Core::FMToutput& statisticoutput,
 			const int& period, int minimalnumberofclusters = -1, int maximalnumberofclusters = -1) const;
-		// DocString: FMTlpmodel::getsetmatrixelement
+		// DocString: FMTlpmodel::getsetMatrixElement
 		/**
 		When the user add constraints using the setconstraint function or the setobjective function the model needs to had
 		variables and/or constraints to the matrix to satisfy the FMTconstraint. Each type a variable or constraint need to be added
 		to the matrix the function is called and return the index of the element if it exists (already in matrix) or not (new element).
 		*/
-		int getsetmatrixelement(const Core::FMTconstraint& constraint,
+		int getsetMatrixElement(const std::vector<Core::FMTconstraint>::const_iterator& p_constraintId,
 			const FMTmatrixelement& element_type, const std::map<int, double>& indexes,
 			int period = -1,
 			double lowerbound = std::numeric_limits<double>::min(),
@@ -343,30 +404,39 @@ class FMTEXPORT FMTlpmodel : public FMTsrmodel
 		/**
 		Return goals (index) if it already exist within the other constraints (goals (goalsnames) can be used across multiple FMTconstraints.
 		*/
-		bool getgoals(const std::vector<std::string>& goalsnames, std::map<int, double>& index, const double& sense) const;
+		bool getgoals(const std::vector<std::string>& goalsnames,
+			std::map<int, double>& index, const double& sense) const;
 		// DocString: FMTlpmodel::getlevelfromlevelname
 		/**
 		Will return the level index if non empty constraint it wont check for this constraint.
 		*/
 		int getlevelfromlevelname(const std::string& variable_level, int period,
-			Core::FMTconstraint constraint = Core::FMTconstraint()) const;
+			const std::vector<Core::FMTconstraint>::const_iterator& p_it) const;
 		// DocString: FMTlpmodel::getsetlevel
 		/**
 		Will check if the level (variable_level) already exist within the matrix for other constraints than the (constraint)
 		for a given period.
 		*/
-		int getsetlevel(const Core::FMTconstraint& constraint, const std::string& variable_level, int period);
-		// DocString: FMTlpmodel::getmatrixelement
+		int getsetlevel(const std::vector<Core::FMTconstraint>::const_iterator& p_it,
+						const std::string& variable_level, int period);
+		// DocString: FMTlpmodel::getMatrixElement
 		/**
 		Return all the elements (level / constraint / variable) related to a given (constraint) for a period
 		for a given period.
 		*/
-		std::vector<std::vector<int>>getmatrixelement(const Core::FMTconstraint& constraint, int period) const;
+		const std::vector<int> getMatrixElement(const std::vector<Core::FMTconstraint>::const_iterator& it,
+												int p_period,
+												FMTmatrixelement p_element) const;
+		std::vector<int>& getMatrixElementRef(const std::vector<Core::FMTconstraint>::const_iterator& it,
+			int p_period,
+			FMTmatrixelement p_element);
 		// DocString: FMTlpmodel::locatelevels
 		/**
 		For a given period lookup in the graph to fill the variables map (variables) for a given level (nodes).
 		*/
-		void locatelevels(const std::vector<Core::FMToutputnode>& nodes, int period, std::map<int, double>& variables, const Core::FMTconstraint& constraint, double multiplier = 1);
+		void locatelevels(const std::vector<Core::FMToutputnode>& nodes, int period,
+			std::map<int, double>& variables, const std::vector<Core::FMTconstraint>::const_iterator& p_it,
+			double multiplier = 1);
 		// DocString: FMTlpmodel::locatenodes
 		/**
 		For a given period lookup in the graph to fill the variables map (variables) for a given FMTconstraints (nodes).
@@ -400,17 +470,17 @@ class FMTEXPORT FMTlpmodel : public FMTsrmodel
 		Get the number of possible paths if an action is commited on a development.
 		*/
 		//size_t getamountofpaths(const Core::FMTdevelopment& dev, const int& actionid) const;
-		// DocString: FMTlpmodel::ismatrixelement
+		// DocString: FMTlpmodel::isMatrixElement
 		/**
 		Check if the FMTconstraint had a element of (element_type) located in the matrix for a given period.
 		*/
-		bool ismatrixelement(const Core::FMTconstraint& constraint,
+		bool isMatrixElement(const std::vector<Core::FMTconstraint>::const_iterator& p_constraintId,
 			const FMTmatrixelement& element_type, int period) const;
-		// DocString: FMTlpmodel::containsmatrixelements
+		// DocString: FMTlpmodel::containsMatrixElements
 		/**
 		Check if the FMTconstraint have elements related to it.
 		*/
-		bool containsmatrixelements(const Core::FMTconstraint& constraint, int period) const;
+		bool containsMatrixElements(const std::vector<Core::FMTconstraint>::const_iterator& p_constraintId, int period) const;
 		// DocString: FMTlpmodel::issamematrixelement
 		/**
 		Check if the requested matrix element (matrixindex) is the same as the found one (LB/UB + variables).
@@ -438,8 +508,9 @@ class FMTEXPORT FMTlpmodel : public FMTsrmodel
 		/**
 		Set the variables in the map (strictlypositivesoutputs) to be >=0 int the matrix.
 		*/
-		bool setpositiveoutputsinmatrix(const Core::FMTconstraint& constraint, const std::vector<std::map<int, double>>& strictlypositivesoutputs, int period);
-		virtual void swap_ptr(const std::unique_ptr<FMTmodel>& rhs);
+		bool setpositiveoutputsinmatrix(const std::vector<Core::FMTconstraint>::const_iterator& p_it,
+			const std::vector<std::map<int, double>>& strictlypositivesoutputs, int period);
+		virtual void swap_ptr(std::unique_ptr<FMTmodel>& rhs);
 		// DocString: FMTlpmodel::FMTlpmodel(const FMTsrmodel&)
 		/**
 		Constructor to presolve FMTlpmodel.

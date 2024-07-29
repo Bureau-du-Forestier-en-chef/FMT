@@ -147,7 +147,7 @@ FMToutputsource::operator std::string() const
         case FMTotar::val:
             for (const double lvalue : values)
                 {
-                line += std::to_string(lvalue) + " ";
+                line += FMToutputsource::trimDouble(std::to_string(lvalue))  + " ";
                 }
             if (!values.empty())
                 {
@@ -442,6 +442,33 @@ std::unordered_set<int>FMToutputsource::targetsset(const std::vector<FMTaction>&
 	return std::unordered_set<int>();
 }
 
+bool FMToutputsource::use(const FMTdevelopment& development, const FMTyields& ylds,
+	const Graph::FMTgraphvertextoyield* graphinfo) const
+{
+	return (development.getmask().issubsetof(mask) && development.is(*this, ylds, graphinfo));
+}
+
+std::string FMToutputsource::trimDouble(const std::string& string_number)
+{
+	std::string trimmed = string_number;
+	for (int i = string_number.size()-1; i > 0; i--)
+	{
+		if(trimmed[i] == '0')
+		{
+			trimmed.pop_back();
+		}
+		else if(trimmed[i] == '.')
+		{
+			trimmed.pop_back();
+			break;
+		}
+		else
+		{
+			break;
+		}
+	}
+	return trimmed;
+}
 
 double FMToutputsource::getcoef(const FMTdevelopment& development,
 	const FMTyields& yields,

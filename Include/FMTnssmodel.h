@@ -205,7 +205,7 @@ namespace Models
 			@brief swap from unique_ptr of model
 			@param[in] a unique pointer to a FMTmodel.
 			*/
-			virtual void swap_ptr(const std::unique_ptr<FMTmodel>& rhs);
+			virtual void swap_ptr(std::unique_ptr<FMTmodel>& rhs);
 
 	};
 }
