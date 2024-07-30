@@ -376,63 +376,75 @@ class FMTEXPORT FMToutput: public FMTobject
 			const std::vector<Core::FMToutputnode>& nodes,
 			std::map<std::string, std::vector<std::string>>& allequations) const;
 	protected:
-	// DocString: FMToutput::sources
-	///outputsources data used to generate outputnodes
-	std::vector<FMToutputsource>sources;
-	// DocString: FMToutput::operators
-	///vector of simple operators like +-*/
-	std::vector<FMToperator>operators;
-	// DocString: FMToutput::theme_target
-	///Sometime output can specify multiple attributes of a given themes
-	//int theme_target;
-	// DocString: FMToutput::name
-	///This is the name of the output
-	std::string name;
-	// DocString: FMToutput::description
-	///This is description of the FMToutput has seen in the output section.
-	std::string description;
-	// DocString: FMToutput::group
-	///This is the group of the output, if empty there's no group
-	std::string group;
-	// DocString: FMToutput::setproportions
-	/**
-	Set equations proportions for developpements....when original entry is numeric turn it into proportion.
-	*/
-	void setproportions(std::map<std::string, std::vector<std::string>>& allequations,
-		const std::vector<std::string>& baseequation) const;
-	// DocString: FMToutput::isdivision
-	/**
-	Return true if output contains division
-	*/
-	bool isdivision() const;
-	// DocString: FMToutput::isdivision
-	/**
-	Replace the division with the bound and reverse the denominator
-	*/
-	void replacedivision(const double& bound);
-    
-	// DocString: FMToutput::serialize
-	/**
-	serialize function is for serialization, used to do multiprocessing across multiple cpus (pickle in Pyhton)
-	*/
+		// DocString: FMToutput::sources
+		///outputsources data used to generate outputnodes
+		std::vector<FMToutputsource>sources;
+		// DocString: FMToutput::operators
+		///vector of simple operators like +-*/
+		std::vector<FMToperator>operators;
+		// DocString: FMToutput::theme_target
+		///Sometime output can specify multiple attributes of a given themes
+		//int theme_target;
+		// DocString: FMToutput::name
+		///This is the name of the output
+		std::string name;
+		// DocString: FMToutput::description
+		///This is description of the FMToutput has seen in the output section.
+		std::string description;
+		// DocString: FMToutput::group
+		///This is the group of the output, if empty there's no group
+		std::string group;
+		// DocString: FMToutput::setproportions
+		/**
+		Set equations proportions for developpements....when original entry is numeric turn it into proportion.
+		*/
+		void setproportions(std::map<std::string, std::vector<std::string>>& allequations,
+			const std::vector<std::string>& baseequation) const;
+		// DocString: FMToutput::isdivision
+		/**
+		Return true if output contains division
+		*/
+		bool isdivision() const;
+		// DocString: FMToutput::isdivision
+		/**
+		Replace the division with the bound and reverse the denominator
+		*/
+		void replacedivision(const double& bound);
 	private:
-	friend class boost::serialization::access;
-	template<class Archive>
-	void serialize(Archive& ar, const unsigned int version)
-	{
-		try {
-			ar& boost::serialization::make_nvp("FMTobject", boost::serialization::base_object<FMTobject>(*this));
-			ar& BOOST_SERIALIZATION_NVP(sources);
-			ar& BOOST_SERIALIZATION_NVP(operators);
-			//ar & BOOST_SERIALIZATION_NVP(theme_target);
-			ar& BOOST_SERIALIZATION_NVP(name);
-			ar& BOOST_SERIALIZATION_NVP(description);
-		}
-		catch (...)
+		// DocString: FMToutput::serialize
+		/**
+		serialize function is for serialization, used to do multiprocessing across multiple cpus (pickle in Pyhton)
+		*/
+		friend class boost::serialization::access;
+		template<class Archive>
+		void serialize(Archive& ar, const unsigned int version)
 		{
-			_exhandler->printexceptions("", "FMToutput::serialize", __LINE__, __FILE__);
+			try {
+				ar& boost::serialization::make_nvp("FMTobject", boost::serialization::base_object<FMTobject>(*this));
+				ar& BOOST_SERIALIZATION_NVP(sources);
+				ar& BOOST_SERIALIZATION_NVP(operators);
+				//ar & BOOST_SERIALIZATION_NVP(theme_target);
+				ar& BOOST_SERIALIZATION_NVP(name);
+				ar& BOOST_SERIALIZATION_NVP(description);
+			}
+			catch (...)
+			{
+				_exhandler->printexceptions("", "FMToutput::serialize", __LINE__, __FILE__);
+			}
 		}
-	}
+		// DocString: FMToutput::_needWsFormat
+		/**
+		@brief check if the output needs to be converted to WS format (composed of inedges vs outedges sources)
+		@return true if need to be converted else false.
+		*/
+		bool _needWsFormat() const;
+		// DocString: FMToutput::_toWsFormat
+		/**
+		@brief from a FMT output format split the outputs in multiple outputs that fit with the Woodstock Format.
+		@return the output in string format for Woodstock.
+		*/
+		std::string _toWsFormat() const;
+
     };
 // DocString: FMToutputcomparator
 /**
