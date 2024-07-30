@@ -9,7 +9,7 @@ int main(int argc, char* argv[])
 #ifdef FMTWITHOSI
 	const std::string primarylocation = std::string(argv[1]);
 	const std::vector<std::string>scenarios(1, std::string(argv[2]));
-	const size_t N_OUTPUT = static_cast<size_t>(16);
+	const size_t N_OUTPUT = static_cast<size_t>(std::stoi(std::string(argv[3])));
 	//const std::vector<std::string>scenarios(1, "output_type");
 	//const std::string primarylocation = "../../../../Examples/Models/TWD_land/TWD_land.pri";
 	//const std::string primarylocation = "D:/CC_modele_feu/WS_CC/Feux_2023_ouest_V01.pri";

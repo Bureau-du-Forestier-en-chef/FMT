@@ -235,18 +235,7 @@ FMToutput::operator std::string() const
 		{
 			line = _toWsFormat();
 		}else {
-			line = "*OUTPUT ";
-			if (isonlylevel())
-			{
-				line = "*LEVEL ";
-			}
-			line += name;
-			if (targetthemeid() != -1)
-			{
-				line += " (_TH" + std::to_string(targetthemeid() + 1) + ")";
-			}
-			line += " " + description + "\n";
-
+			line = _getFormatedOutputName();
 			if (isconstantlevel())
 			{
 				line += "*SOURCE ";
@@ -1399,6 +1388,26 @@ bool FMToutput::sourceCounter(const std::string& p_source) const
 
 }
 
+std::string FMToutput::_getFormatedOutputName() const
+{
+	std::string result("*OUTPUT ");
+	if (isonlylevel())
+	{
+		result = "*LEVEL ";
+	}
+	result += name;
+	if (targetthemeid() != -1)
+		{
+		result += " (_TH" + std::to_string(targetthemeid() + 1) + ")";
+		}
+	if (targetthemeid() != -1)
+		{
+		result += " (_TH" + std::to_string(targetthemeid() + 1) + ")";
+		}
+	result += " " + description + "\n";
+	return result;
+}
+
 bool FMToutput::_needWsFormat() const
 {
 	bool needit = false;
@@ -1431,7 +1440,7 @@ std::string FMToutput::_toWsFormat() const
 	bool isInEdge = sources.begin()->useinedges();
 	size_t outputId = 0;
 	size_t operatorId = 0;
-	std::string SumOutput("*OUTPUT " + getname()+"\n*SOURCE ");
+	std::string SumOutput(_getFormatedOutputName() +"*SOURCE ");
 	std::array<std::string,2>outTypes{"OUT","IN"};
 	for (const FMToutputsource& SOURCE : sources)
 		{

@@ -432,6 +432,12 @@ class FMTEXPORT FMToutput: public FMTobject
 				_exhandler->printexceptions("", "FMToutput::serialize", __LINE__, __FILE__);
 			}
 		}
+		// DocString: FMToutput::_getFormatedOutputName()
+		/**
+		@brief get the name of the output and attribute and description in a string
+		@return a string of the output name.
+		*/
+		std::string _getFormatedOutputName() const;
 		// DocString: FMToutput::_needWsFormat
 		/**
 		@brief check if the output needs to be converted to WS format (composed of inedges vs outedges sources)
