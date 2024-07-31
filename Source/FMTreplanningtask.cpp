@@ -209,7 +209,7 @@ namespace Parallel
 	}
 
 	void FMTreplanningtask::writeresults(const std::string& modelname, const int& modellength,
-		const std::unique_ptr<Models::FMTmodel>& modelptr,const int& replanningperiod,bool onlyfirstperiod)
+		const std::unique_ptr<Models::FMTmodel>& modelptr, const int& replanningperiod, bool onlyfirstperiod)
 	{
 		try {
 			if (replanningperiod <= replanningperiods)//Dont write outside the replanningsperiods

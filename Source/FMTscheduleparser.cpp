@@ -187,13 +187,12 @@ namespace Parser {
 		std::vector<Core::FMTschedule>::const_iterator result = p_schedules.end();
 
 		if (!p_schedules.empty() && firstnonemptyschedule != p_schedules.cend() &&
-			(!firstnonemptyschedule->empty()) &&
-			(!firstnonemptyschedule->begin()->second.empty()) &&
-			(!firstnonemptyschedule->begin()->second.begin()->second.empty()))
+			(!firstnonemptyschedule	-> empty()) &&
+			(!firstnonemptyschedule	-> begin() -> second.empty()) &&
+			(!firstnonemptyschedule	-> begin() -> second.begin() -> second.empty()))
 		{
 			result = firstnonemptyschedule;
 		}
-
 		return result;
 	}
 
@@ -218,7 +217,7 @@ namespace Parser {
 				if (firstnonemptyschedule != schedules.end())
 				{
 					if (!append) // Write header only if not appending
-					{
+					{ 
 						const std::string maskstr = std::string(
 							firstnonemptyschedule -> begin() -> second.begin() -> first.getmask());
 						std::vector<std::string> splittedmask;
@@ -237,7 +236,6 @@ namespace Parser {
 						}
 						schedulestream << "ACTION PERIOD\n";
 					}
-
 					// Only portion that write
 					_writeSchedule(schedulestream, schedules);
 				}
