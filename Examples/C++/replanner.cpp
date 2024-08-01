@@ -15,11 +15,11 @@ int main(int argc, char *argv[])
 	#ifdef FMTWITHOSI
 	Logging::FMTdefaultlogger().logstamp();
 	/*const std::string primlocation = "D:/CC_modele_feu/WS_CC/Feux_2023_ouest_V01.pri";
-	const int length = 20;
+	const int length = 5;
 	const int replicate = 5;
 	std::vector<std::string>allscenarios;
-	allscenarios.push_back("strategique");
-	allscenarios.push_back("stochastique_Histo");//"stochastique");
+	allscenarios.push_back("strategique_minimisation_Risque");
+	allscenarios.push_back("stochastique_CC");
 	allscenarios.push_back("tactique");*/
 	const std::string primlocation = argv[1];
 	const int length = std::stoi(argv[2]);

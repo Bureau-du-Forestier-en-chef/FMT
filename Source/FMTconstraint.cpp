@@ -117,6 +117,8 @@ namespace Core
 						}
 					}
 				}
+			std::sort(penalties.begin(), penalties.end());
+			penalties.erase(std::unique(penalties.begin(), penalties.end()), penalties.end());
             }
         return penalties;
         }

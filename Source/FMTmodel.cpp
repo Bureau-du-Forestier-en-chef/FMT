@@ -2174,7 +2174,8 @@ std::unique_ptr<FMTmodel> FMTmodel::presolve(std::vector<Core::FMTactualdevelopm
 			{
 				const int originalid = *oriit;
 				/*const*/Core::FMTconstraint presolvedconstraint = constraint.presolve(newfilter, oldthemes, maskthemes, newthemes, newactions, oldyields);
-				if (!presolvedconstraint.outputempty())
+				if (!presolvedconstraint.outputempty()||
+					(presolvedconstraint.isobjective() && presolvedconstraint.isgoal()))
 				{
 					presolvedconstraint.changesourcesid(keptoutputid, keptthemeid);
 					if (presolvedconstraint.canbeturnedtoyields())
