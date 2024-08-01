@@ -847,12 +847,12 @@ bool FMTtheme::checkMask(const std::vector<Core::FMTtheme>& p_themes,
 	return  returnvalue;
 }
 
-bool FMTtheme::validate(const std::vector<Core::FMTtheme>& p_themes, std::string& p_mask, std::string p_otherinformation)
-{
-	std::vector<std::string>values;
-	boost::split(values, p_mask, boost::is_any_of(" \t"), boost::token_compress_on);
-	return checkMask(p_themes, values, p_mask, p_otherinformation);
-}
+	bool FMTtheme::validate(const std::vector<Core::FMTtheme>& p_themes, std::string& p_mask, std::string p_otherinformation)
+	{
+		std::vector<std::string>values;
+		boost::split(values, p_mask, boost::is_any_of(" \t"), boost::token_compress_on);
+		return checkMask(p_themes, values, p_mask, p_otherinformation);
+	}
 
 
 }
