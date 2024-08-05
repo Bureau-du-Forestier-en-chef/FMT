@@ -363,11 +363,6 @@ class FMTEXPORT FMToutput: public FMTobject
 		bool isinventory() const;
 		// DocString: FMToutput::fillfromshuntingyard
 		/**
-		A REMPLIR ESTI DE MORRON
-		*/
-		bool sourceCounter(const std::string& p_source) const;
-		// DocString: FMToutput::fillfromshuntingyard
-		/**
 		If the output is non linear you need to use this function to get values.
 		*/
 		void fillfromshuntingyard(
@@ -450,6 +445,18 @@ class FMTEXPORT FMToutput: public FMTobject
 		@return the output in string format for Woodstock.
 		*/
 		std::string _toWsFormat() const;
+		// DocString: FMToutput::_sourceCounter
+		/**
+		 * @brief Verifies that no line in the given source string exceeds a specified maximum length.
+		 *
+		 * This function checks each line in the provided source string to ensure that it does not
+		 * exceed the maximum allowed number of characters per line. If any line exceeds this limit,
+		 * an exception is raised and the function returns false.
+		 *
+		 * @param p_source The source string to be checked.
+		 * @return `true` if all lines in the source string are within the allowed length, `false` otherwise.
+		 */
+		bool _sourceCounter(const std::string& p_source) const;
 
     };
 // DocString: FMToutputcomparator

@@ -269,7 +269,7 @@ FMToutput::operator std::string() const
 			"", "FMToutput::operator std::string()", __LINE__, __FILE__, Core::FMTsection::Outputs);
 	}
 	
-	if (sourceCounter(line))
+	if (_sourceCounter(line))
 	{
 		return line;
 	}
@@ -1351,7 +1351,7 @@ bool FMToutputcomparator::operator()(const FMToutput& output) const
 	return output_name == output.getname();
 	}
 
-bool FMToutput::sourceCounter(const std::string& p_source) const
+bool FMToutput::_sourceCounter(const std::string& p_source) const
 {
 	bool passed = true;
 	const int MAXSIZE = 256;
