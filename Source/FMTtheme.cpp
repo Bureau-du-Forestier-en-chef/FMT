@@ -813,46 +813,44 @@ bool FMTtheme::checkMask(const std::vector<Core::FMTtheme>& p_themes,
 		p_mask.pop_back();
 		_exhandler->raise(Exception::FMTexc::FMTignore,
 			"Extended mask " + original + " to " + p_mask, "FMTobject::checkmask", __LINE__, __FILE__);
-		returnvalue = true;
+		//returnvalue = true; //???
 	}
-	else {
-		size_t id = 0;
-		const std::string original(p_mask);
-		p_mask.clear();
-		for (const Core::FMTtheme& theme : p_themes)
+	size_t id = 0;
+	const std::string original(p_mask);
+	p_mask.clear();
+	for (const Core::FMTtheme& theme : p_themes)
+	{
+		if (id < p_values.size() && !theme.isValid(p_values[id]))
 		{
-			if (id < p_values.size() && !theme.isValid(p_values[id]))
-			{
-				const std::string message = p_values[id] + " at theme " + std::to_string(theme.getid() + 1) + p_otherinformation;
-				_exhandler->raise(Exception::FMTexc::FMTundefined_attribute, message,
-					"FMTthem::checkmask", __LINE__, __FILE__);
-				returnvalue = false;
-			}
-			std::string value = "?";
-			if (id < p_values.size())
-			{
-				value = p_values[id];
-			}
-			p_mask += value + " ";
-			++id;
+			const std::string message = p_values[id] + " at theme " + std::to_string(theme.getid() + 1) + p_otherinformation;
+			_exhandler->raise(Exception::FMTexc::FMTundefined_attribute, message,
+				"FMTthem::checkmask", __LINE__, __FILE__);
+			returnvalue = false;
 		}
-		p_mask.pop_back();
-		if (p_values.size() != p_themes.size())
+		std::string value = "?";
+		if (id < p_values.size())
 		{
-			_exhandler->raise(Exception::FMTexc::FMTignore,
-				"Subset mask " + original + " to " + p_mask, "FMTtheme::checkmask", __LINE__, __FILE__);
+			value = p_values[id];
 		}
+		p_mask += value + " ";
+		++id;
+	}
+	p_mask.pop_back();
+	if (p_values.size() != p_themes.size())
+	{
+		_exhandler->raise(Exception::FMTexc::FMTignore,
+			"Subset mask " + original + " to " + p_mask, "FMTtheme::checkmask", __LINE__, __FILE__);
+	}
 
-	}
 	return  returnvalue;
 }
 
-bool FMTtheme::validate(const std::vector<Core::FMTtheme>& p_themes, std::string& p_mask, std::string p_otherinformation)
-{
-	std::vector<std::string>values;
-	boost::split(values, p_mask, boost::is_any_of(" \t"), boost::token_compress_on);
-	return checkMask(p_themes, values, p_mask, p_otherinformation);
-}
+	bool FMTtheme::validate(const std::vector<Core::FMTtheme>& p_themes, std::string& p_mask, std::string p_otherinformation)
+	{
+		std::vector<std::string>values;
+		boost::split(values, p_mask, boost::is_any_of(" \t"), boost::token_compress_on);
+		return checkMask(p_themes, values, p_mask, p_otherinformation);
+	}
 
 
 }

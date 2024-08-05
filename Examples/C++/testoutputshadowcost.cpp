@@ -45,7 +45,7 @@ int main()
 		{
 			optimizationmodel.setconstraint(constraint);
 		}
-		optimizationmodel.setobjective(objective);
+		const Graph::FMTgraphstats BASE_STATS = optimizationmodel.setobjective(objective);
 		if (optimizationmodel.initialsolve())
 		{
 			for (const Core::FMToutput& output : outputtotest)
@@ -54,9 +54,11 @@ int main()
 			Logging::FMTdefaultlogger() << "Base value of " + output.getname() << " " << returnedvalue << " ";
 			}
 		Logging::FMTdefaultlogger() << "\n";
+		Logging::FMTdefaultlogger() << "BASE ROWS OF " << BASE_STATS.rows << "\n";
 		for (const Core::FMTconstraint& constraint : constraints)
 			{
-			optimizationmodel.eraseconstraint(constraint);
+			const Graph::FMTgraphstats STATS = optimizationmodel.eraseconstraint(constraint);
+			Logging::FMTdefaultlogger() << "ROWS Of "<< STATS.rows <<" "<< std::string(constraint) << "\n";
 			if (!optimizationmodel.resolve())
 				{
 				Exception::FMTfreeexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed, "Cannot resolve when erasing "+ constraint.getname(),

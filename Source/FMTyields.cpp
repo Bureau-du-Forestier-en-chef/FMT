@@ -520,7 +520,7 @@ void FMTyields::setactionsmappingtomodelhandlers(const std::vector<int>& actioni
 }
 
 
-int FMTyields::getmaxbase(const std::vector<const FMTyieldhandler*>& handlers) const
+int FMTyields::getmaxbase(const std::vector<const FMTyieldhandler*>& handlers)
 	{
 	int maxbase = 0;
 	try{

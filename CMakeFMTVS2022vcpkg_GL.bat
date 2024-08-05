@@ -24,23 +24,12 @@ cmake CMakeLists.txt ^
 	-G "Visual Studio 17 2022" ^
 	-DBUILD_TYPE=Release ^
 	-DPARALLEL_TESTS=8 ^
-	-DCMAKE_TOOLCHAIN_FILE=D:\FMT\FMT\vcpkg\scripts\buildsystems\vcpkg.cmake ^
+	-DCMAKE_TOOLCHAIN_FILE=C:/Users/Admlocal/Documents/FMT/vcpkg/scripts/buildsystems/vcpkg.cmake ^
 	-DVCPKG_TARGET_TRIPLET=x64-windows ^
 	-DVCPKG_MANIFEST_MODE=ON ^
-	-DONNXR_DIR=D:/FMT/Dependencies/onnxruntime ^
+	-DONNXR_DIR=C:/Users/Admlocal/Documents/FMT/onnxruntime ^
 	-DMOSEK_DIR="C:/PROGRA~1/Mosek/10.1/"
-::FMT2
-cmake CMakeLists.txt ^
-	-B build/release ^
-	-G "Visual Studio 17 2022" ^
-	-DBUILD_TYPE=Release ^
-	-DPARALLEL_TESTS=8 ^
-	-DCMAKE_TOOLCHAIN_FILE=D:\FMT2\FMT\vcpkg\scripts\buildsystems\vcpkg.cmake ^
-	-DVCPKG_TARGET_TRIPLET=x64-windows ^
-	-DVCPKG_MANIFEST_MODE=ON ^
-	-DONNXR_DIR=D:/FMT/Dependencies/onnxruntime ^
-	-DMOSEK_DIR="C:/PROGRA~1/Mosek/10.1/"
-	
+
 cmake --build build/release --config Release
 
 cmake --install build/release --config Release
