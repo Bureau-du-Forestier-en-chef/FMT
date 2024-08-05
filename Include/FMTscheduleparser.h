@@ -61,7 +61,7 @@ class FMTEXPORT FMTscheduleparser: public FMTparser
 		/**
 		This function write a vector of FMTschedules (schedules) into a (location) schedule file.
 		*/
-        void write(const std::vector<Core::FMTschedule>& schedules, const std::string& location, bool append) const;
+        void write(const std::vector<Core::FMTschedule>& schedules, const std::string& location, bool append = false) const;
 
 	private:
 		// DocString: FMTscheduleparser::getvariable

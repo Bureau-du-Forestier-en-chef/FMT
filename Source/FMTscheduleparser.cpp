@@ -6,6 +6,9 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 */
 
 #include "FMTscheduleparser.h"
+
+#include <CoinTime.hpp>
+
 #include "FMTtheme.h"
 #include "FMTaction.h"
 #include "FMTschedule.h"
@@ -201,10 +204,26 @@ namespace Parser {
 	{
 		try {
 			std::ofstream schedulestream;
+			bool hasHeader = false;
 			// test Gabriel 2024-07-05
 			if (append)
 			{
+				std::ifstream file;
 				schedulestream.open(location, std::ios::app);  // Open for append
+				// On vérifie s'il existe et s'il y a déja un header afin de l'écrire dans le cas contraire.
+				file.open(location);
+				if (file.is_open())
+				{
+					std::string firstLine;
+					if(std::getline(file, firstLine))
+					{
+						if(firstLine.find("TH1") != std::string::npos)
+						{
+							hasHeader = true;
+						}
+					}
+				}
+				file.close();
 			}
 			else
 			{
@@ -216,7 +235,7 @@ namespace Parser {
 				const auto firstnonemptyschedule = _getFirstEmptySchedule(schedules);
 				if (firstnonemptyschedule != schedules.end())
 				{
-					if (!append) // Write header only if not appending
+					if (!hasHeader) // Write header only if not exist, modify after new feature append
 					{ 
 						const std::string maskstr = std::string(
 							firstnonemptyschedule -> begin() -> second.begin() -> first.getmask());
@@ -247,4 +266,5 @@ namespace Parser {
 			_exhandler->printexceptions("at " + location, "FMTscheduleparser::write", __LINE__, __FILE__, _section);
 		}
 	}
+
 }
