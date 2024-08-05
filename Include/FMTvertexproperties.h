@@ -24,7 +24,7 @@ namespace Core
 
 namespace Graph
 {
-	class FMTvertexproperties : public FMTbasevertexproperties
+	class FMTEXPORT FMTvertexproperties : public FMTbasevertexproperties
 		{
 		friend class boost::serialization::access;
 		template<class Archive>

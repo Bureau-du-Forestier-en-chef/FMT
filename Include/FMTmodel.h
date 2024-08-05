@@ -733,7 +733,7 @@ namespace Models
 		/**
 		Swap *this for the element at the end of the rhs unique_ptr.
 		*/
-		virtual void swap_ptr(const std::unique_ptr<FMTmodel>& rhs);
+		virtual void swap_ptr(std::unique_ptr<FMTmodel>& rhs);
 		// DocString: FMTmodel::setupschedulesforbuild
 		/**
 		Base on the FORCE_PARTIAL_BUILD it will prepare the pass in schedules for building.

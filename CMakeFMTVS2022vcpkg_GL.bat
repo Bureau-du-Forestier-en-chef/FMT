@@ -17,7 +17,8 @@ cmake CMakeLists.txt ^
 cmake --build build/debug --config Debug -j 8
 cmake --install build/debug --config Debug
 
-::in release
+::in release 
+::FMT
 cmake CMakeLists.txt ^
 	-B build/release ^
 	-G "Visual Studio 17 2022" ^
@@ -28,7 +29,7 @@ cmake CMakeLists.txt ^
 	-DVCPKG_MANIFEST_MODE=ON ^
 	-DONNXR_DIR=C:/Users/Admlocal/Documents/FMT/onnxruntime ^
 	-DMOSEK_DIR="C:/PROGRA~1/Mosek/10.1/"
-	
+
 cmake --build build/release --config Release
 
 cmake --install build/release --config Release

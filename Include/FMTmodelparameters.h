@@ -116,6 +116,11 @@ namespace Models
             Default move assignment for FMTmodelparameters.
             */
             FMTmodelparameters& operator =(FMTmodelparameters&& rhs) =default;
+            // DocString: FMTmodelparameters::swap(FMTmodelparameters& rhs)
+            /**
+            Default move assignment for FMTmodelparameters.
+            */
+            void swap(FMTmodelparameters& rhs);
             //###Setter
             bool setintparameter(const FMTintmodelparameters& key,const int& value);
             bool setdblparameter(const FMTdblmodelparameters& key,const double& value);

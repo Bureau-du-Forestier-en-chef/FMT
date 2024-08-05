@@ -14,11 +14,11 @@ int main(int argc, char *argv[])
 	{
 	#ifdef FMTWITHOSI
 	Logging::FMTdefaultlogger().logstamp();
-	// soit 18 à 24 ou 25 à 31
+	// soit 18 ï¿½ 24 ou 25 ï¿½ 31
 	const std::string primlocation = "D:/CC_modele_feu/WS_CC/Feux_2023_ouest_V01.pri";
 	const int length = 20;
-	const int replicate = 100;
-	std::vector<std::string> allscenarios;
+	const int replicate = 5;
+	std::vector<std::string>allscenarios;
 	allscenarios.push_back("strategique");
 	allscenarios.push_back("stochastique_Histo");//"stochastique");
 	allscenarios.push_back("tactique");
@@ -81,7 +81,7 @@ int main(int argc, char *argv[])
 	std::unique_ptr<Parallel::FMTtask> maintaskptr(new Parallel::FMTreplanningtask(
 		global, stochastic, local, selectedoutputs, outputlocation, "CSV", layersoptions, 
 		replicate, length, 0.5, Core::FMToutputlevel::standard));
-	Parallel::FMTtaskhandler handler(maintaskptr, 1); // diminuer 5 à 1 pour le debuggage
+	Parallel::FMTtaskhandler handler(maintaskptr, 1); // diminuer 5 ï¿½ 1 pour le debuggage
 	//handler.setquietlogger();
 	//handler.ondemandrun();
 	handler.conccurentrun();

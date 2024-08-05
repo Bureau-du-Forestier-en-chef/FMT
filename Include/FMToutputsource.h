@@ -188,6 +188,16 @@ class FMTEXPORT FMToutputsource : public FMTspec
 			{
 			return !action.empty();
 			}
+		/**
+		* @brief Trim en string les nombres a virgule.
+		*
+		* Cette fonction supprime le superflus des nombre en string par ex: 1400.0000 en 1400 ou 14.0300 en 14.03
+		*
+		* @param number Sous format de string&
+
+		* @return Retourne la valeur trimmé en std::string
+		*/
+		static std::string trimDouble(const std::string& string_number);
     };
 
 class FMToutputsourcecomparator

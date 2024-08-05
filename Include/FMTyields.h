@@ -203,6 +203,16 @@ class FMTEXPORT FMTyields : public FMTlist<std::unique_ptr<FMTyieldhandler>>
 		* @return null yield value.
 		*/
 		static const std::string& getNullYield();
+		/**
+		 * @brief Returns the maximum age seen in the yield handlers.
+		 *
+		 * Each yield can have different sizes in a yield section. This function looks at all yield handlers
+		 * and returns the maximum age observed among them.
+		 *
+		 * @param handlers A vector of pointers to FMTyieldhandler objects.
+		 * @return The maximum age observed among the yield handlers.
+		 */
+		static int getmaxbase(const std::vector<const FMTyieldhandler*>& handlers);
 	private:
 		// DocString: FMTyields::serialize
 		/**
@@ -240,12 +250,7 @@ class FMTEXPORT FMTyields : public FMTlist<std::unique_ptr<FMTyieldhandler>>
 		(Can returns all handler related to time/age/complex ...)
 		*/
 		std::vector<FMTyieldhandler*> gethandlers(FMTyldtype type);
-		// DocString: FMTyields::getmaxbase
-		/**
-		Each yields can have different size in a yield section. Looking at all yieldhandler (handlers) this function
-		returns the maximum age seen in thos yieldhandler.
-		*/
-		int getmaxbase(const std::vector<const FMTyieldhandler*>& handlers) const;
+
 		// DocString: FMTyields::updateyieldpresence
 		/**
 		Update the yields presence true or false.

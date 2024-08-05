@@ -2,11 +2,15 @@
 *OBJECTIVE
 _MAXMIN oVolRec 1.._LENGTH
 
+*EXCLUDE
+
+arecup 1.._LENGTH
+
 *CONSTRAINTS
 
 _EVEN(oVolRec) 1..5
 _NDY(oVolRec) 6.._LENGTH
-oSupRec = 0 1
+oSupRec <= 20 1
 oSupRec >= 20 5
 
 

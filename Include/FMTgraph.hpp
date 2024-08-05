@@ -59,6 +59,8 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "boost/graph/graphviz.hpp"
 #include "FMTexceptionhandler.h"
 #include "FMTSerie.h"
+#include <memory>
+#include <type_traits>
 
 
 /// Namespace for using/building unidirectional graphs in FMT
@@ -80,34 +82,39 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
     {
 	friend class boost::serialization::access;
 	template<class Archive>
-	void save(Archive& ar, const unsigned int version) const
+	void save(Archive& ar, unsigned int version) const
 	{
 		ar & boost::serialization::make_nvp("FMTobject", boost::serialization::base_object<FMTobject>(*this));
 		FMTobject::forcesave(ar, version);
+		ar& BOOST_SERIALIZATION_NVP(m_gotDeath);
 		ar & BOOST_SERIALIZATION_NVP(data);
 		ar & BOOST_SERIALIZATION_NVP(stats);
 		ar & BOOST_SERIALIZATION_NVP(buildtype);
+		ar& BOOST_SERIALIZATION_NVP(m_reserve);
 	}
 	template<class Archive>
-	void load(Archive& ar, const unsigned int version)
+	void load(Archive& ar, unsigned int version)
 	{
 		ar & boost::serialization::make_nvp("FMTobject", boost::serialization::base_object<FMTobject>(*this));
 		FMTobject::forcesave(ar, version);
+		ar& BOOST_SERIALIZATION_NVP(m_gotDeath);
 		ar & BOOST_SERIALIZATION_NVP(data);
 		generatedevelopments();
 		ar & BOOST_SERIALIZATION_NVP(stats);
 		ar & BOOST_SERIALIZATION_NVP(buildtype);
+		ar& BOOST_SERIALIZATION_NVP(m_reserve);
 	}
 	BOOST_SERIALIZATION_SPLIT_MEMBER()
 	protected:
-		typedef boost::adjacency_list<boost::listS,
-			boost::listS,
+		typedef boost::adjacency_list<boost::vecS,
+			boost::vecS,
 			boost::bidirectionalS,
 			tvertexproperties,
 			tedgeproperties,
 			boost::no_property,
 			boost::listS>FMTadjacency_list;
 		FMTadjacency_list data;
+
 	public:
 		typedef typename boost::graph_traits<FMTadjacency_list>::vertex_descriptor FMTvertex_descriptor;
 		typedef typename boost::graph_traits<FMTadjacency_list>::edge_descriptor FMTedge_descriptor;
@@ -149,9 +156,10 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 			try {
 				if (!developments.empty())
 				{
-					FMTvertex_iterator vertex_iterator, vertex_iterator_end;
-					boost::tie(vertex_iterator, vertex_iterator_end) = boost::vertices(data);
-					while (periodit!= developments.end()&&periodit->second==vertex_iterator_end)
+					//FMTvertex_iterator vertex_iterator, vertex_iterator_end;
+					//boost::tie(vertex_iterator, vertex_iterator_end) = boost::vertices(data);
+					while (periodit!= developments.end()&&
+						periodit->first == periodit->second)
 						{
 						++periodit;
 						}
@@ -173,9 +181,10 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 			try {
 				if (!developments.empty())
 				{
-					FMTvertex_iterator vertex_iterator, vertex_iterator_end;
-					boost::tie(vertex_iterator, vertex_iterator_end) = boost::vertices(data);
-					while (periodit != developments.end() && periodit->second == vertex_iterator_end)
+					//FMTvertex_iterator vertex_iterator, vertex_iterator_end;
+					//boost::tie(vertex_iterator, vertex_iterator_end) = boost::vertices(data);
+					while (periodit != developments.end() && 
+						periodit->first == periodit->second)
 					{
 						++periodit;
 					}
@@ -267,17 +276,21 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 
 		void swap(FMTgraph& rhs)
 		{
-			std::swap(buildtype,rhs.buildtype);
+			/*std::swap(buildtype, rhs.buildtype);
 			std::swap(m_gotDeath, rhs.m_gotDeath);
 			nodescache.swap(rhs.nodescache);
 			std::swap(stats,rhs.stats);
-			data.swap(rhs.data);
+			//data.swap(rhs.data);
+			data = rhs.data;
 			developments.swap(rhs.developments);
 			std::swap(m_reserve, rhs.m_reserve);
+			m_allocator = rhs.m_allocator;*/
 			//std::swap(developments, rhs.developments);
 		}
-
-
+		void reserveVerticies(size_t p_reserve)
+			{
+			data.m_vertices.reserve(p_reserve);
+			}
 		FMTgraph& operator = (const FMTgraph& rhs)
 		{
 			if (this != &rhs)
@@ -545,8 +558,16 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 				boost::unordered_set<Core::FMTlookup<FMTvertex_descriptor, Core::FMTdevelopment>> nextperiods;
 				FMTvertex_iterator vertex_iterator, vertex_iterator_end,lastoperated;
 				boost::tie(vertex_iterator, vertex_iterator_end) = developments.back();
-				lastoperated = vertex_iterator_end;
-				--lastoperated;
+				if (!std::is_pointer<FMTvertex_descriptor>::value)
+				{
+					FMTvertex_iterator vertex_begin;
+					boost::tie(vertex_begin, lastoperated) = boost::vertices(data);
+				}else {
+					lastoperated = vertex_iterator_end;
+					--lastoperated;
+				}
+				
+				
 				while (!actives.empty())
 				{
 					const FMTvertex_descriptor front_vertex = actives.front();
@@ -568,7 +589,14 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 					boost::add_edge(front_vertex, next_period, newedge, data);
 					++stats.edges;
 				}
-				++lastoperated;
+				
+				if (!std::is_pointer<FMTvertex_descriptor>::value)
+					{ 
+					FMTvertex_iterator vertex_begin;
+					boost::tie(vertex_begin, vertex_iterator_end) = boost::vertices(data);
+				}else {
+					++lastoperated;
+					}
 				developments.back() = FMTvertex_pair(vertex_iterator, lastoperated);
 				developments.push_back(FMTvertex_pair(lastoperated, vertex_iterator_end));
 				rebasecache();
@@ -888,6 +916,24 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 				{
 					const int constraint_id = -1;
 					const FMTvertexproperties properties(futurdevelopement, constraint_id);
+					if (data.m_vertices.capacity()<data.m_vertices.size() + 1)
+						{
+						_logger->logwithlevel("Reallocation occurred for (" + std::to_string(data.m_vertices.capacity()) + ") vertices\n", 1);
+						data.m_vertices.reserve(data.m_vertices.size() * 2);
+						alldevs.clear();
+						FMTvertex_iterator base_iterator, base_iterator_end;
+						boost::tie(base_iterator, base_iterator_end) = boost::vertices(data);
+						while (base_iterator!= base_iterator_end)
+							{
+							const Core::FMTdevelopment& DEV = getdevelopment(*base_iterator);
+							if (DEV.getperiod()==futurdevelopement.getperiod())
+								{
+								alldevs.insert(Core::FMTlookup<FMTvertex_descriptor, Core::FMTdevelopment>(*base_iterator, data[*base_iterator].get()));
+								}
+							++base_iterator;
+							}
+						
+						}
 					FMTvertex_descriptor newvertex = boost::add_vertex(properties, data);
 					alldevs.insert(Core::FMTlookup<FMTvertex_descriptor,Core::FMTdevelopment>(newvertex,data[newvertex].get()));
 					++stats.vertices;
