@@ -63,6 +63,7 @@ namespace Parallel
 		// DocString: FMTparallelwriter::projectname;
 		///The name of the project file
 		std::string projectname;
+		std::string& m_outputLocationPath;
 	protected:
 		// DocString: FMTparallelwriter::getdriftprobability()
 		/**
@@ -97,7 +98,7 @@ namespace Parallel
 		/**
 		Constructor with the location and the driver of the outputs and the base model that we want to write.
 		*/
-		FMTparallelwriter(const std::string& location,
+		FMTparallelwriter(std::string& location,
 			const std::string& driver,
 			const std::vector<Core::FMToutput>& outputs,
 			const std::vector<Models::FMTmodel*>& allmodels,
@@ -108,7 +109,7 @@ namespace Parallel
 		/**
 		Constructor that will build the parser without layers and outputs.
 		*/
-		FMTparallelwriter(const std::string& location,
+		FMTparallelwriter(std::string& location,
 			const std::string& driver,
 			Core::FMToutputlevel outputlevel = Core::FMToutputlevel::totalonly,
 			std::vector<std::string>layersoptions = std::vector<std::string>(),
@@ -127,6 +128,11 @@ namespace Parallel
 		void write(const std::string& modelname,
 			const std::map<std::string, std::vector<std::vector<double>>>& results,
 			const int& firstperiod, const int& lastperiod, const int& iteration) const;
+		// DocString: FMTparallelwriter::getresults()
+		/**
+		Write a schedules.
+		*/
+		void writeSchedules(const std::string seqName, const std::vector<Core::FMTschedule> scheduleList, bool append) const;
 		// DocString: FMTparallelwriter::getresults()
 		/**
 		Get the results of a model.

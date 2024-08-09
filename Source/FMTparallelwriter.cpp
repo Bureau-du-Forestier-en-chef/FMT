@@ -37,7 +37,7 @@ namespace Parallel
 		close();
 		}
 
-	FMTparallelwriter::FMTparallelwriter(const std::string& location,
+	FMTparallelwriter::FMTparallelwriter(std::string& location,
 		const std::string& driver,
 		const std::vector<Core::FMToutput>& outputs,
 		const std::vector<Models::FMTmodel*>& allmodels,
@@ -57,7 +57,8 @@ namespace Parallel
 		outputfirstperiod(),
 		outputlastperiod(),
 		projectdirectory(),
-		projectname()
+		projectname(),
+		m_outputLocationPath(location)
 
 	{
 		try {
@@ -83,7 +84,7 @@ namespace Parallel
 			}
 	}
 
-	FMTparallelwriter::FMTparallelwriter(const std::string& location,
+	FMTparallelwriter::FMTparallelwriter(std::string& location,
 		const std::string& driver,
 		Core::FMToutputlevel outputlevel,
 		std::vector<std::string>layersoptions,
@@ -103,7 +104,8 @@ namespace Parallel
 		outputfirstperiod(firstperiod),
 		outputlastperiod(lastperiod),
 		projectdirectory(),
-		projectname()
+		projectname(),
+		m_outputLocationPath(location)
 
 	{
 		if (!primaryfilelocation.empty())
@@ -335,6 +337,20 @@ namespace Parallel
 			{
 			_exhandler->raisefromcatch("","FMTparallelwriter::getandwrite", __LINE__, __FILE__);
 			}
+	}
+	void FMTparallelwriter::writeSchedules(const std::string seqName, const std::vector<Core::FMTschedule> scheduleList, bool append) const
+	{
+		try
+		{
+			Parser::FMTscheduleparser parser;
+			boost::lock_guard<boost::recursive_mutex> lock(mtx);
+			parser.write(scheduleList, m_outputLocationPath + "\\" + seqName, append);
+		}
+		catch (...)
+		{
+			_exhandler->raisefromcatch("", "FMTparallelwriter::writeSchedules", __LINE__, __FILE__);
+		}
+
 	}
 
 }

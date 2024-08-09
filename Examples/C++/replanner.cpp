@@ -9,6 +9,7 @@
 	#include "FMTmodelparser.h"
 #endif
 	#include "FMTdefaultlogger.h"
+#include <boost/filesystem.hpp>
 
 int main(int argc, char *argv[])
 	{
@@ -20,8 +21,9 @@ int main(int argc, char *argv[])
 	const int replicate = 5;
 	std::vector<std::string>allscenarios;
 	allscenarios.push_back("strategique");
-	allscenarios.push_back("stochastique_Histo");//"stochastique");
+	allscenarios.push_back("stochastique_Histo");//"stochastique_Histo");
 	allscenarios.push_back("tactique");
+	//allscenarios.push_back("strategique"); //Pour test le lancé d'erreur
 	/* const std::string primlocation = argv[1];
 	const int length = std::stoi(argv[2]);
 	const int replicate = std::stoi(argv[3]);
@@ -74,14 +76,16 @@ int main(int argc, char *argv[])
 		}
 	}
 	std::size_t lastslash = primlocation.find_last_of("/\\");
-	const std::string locname = primlocation.substr(lastslash + 1, (primlocation.size() - lastslash) - 4);
-	const std::string outputlocation = "../../tests/replanner/"+ locname;
+	const std::string locname = primlocation.substr(lastslash + 1, (primlocation.size() - lastslash) - 5);
+	//const std::string outputlocation = "../../tests/replanner/"+ locname;
+	std::string outputlocation = "D:\\FMT\\FMT\\build\\release\\tests\\replanner\\Feux_2023_ouest_V01";
+
 	std::vector<std::string> layersoptions;
 	layersoptions.push_back("SEPARATOR=SEMICOLON");
 	std::unique_ptr<Parallel::FMTtask> maintaskptr(new Parallel::FMTreplanningtask(
 		global, stochastic, local, selectedoutputs, outputlocation, "CSV", layersoptions, 
-		replicate, length, 0.5, Core::FMToutputlevel::standard));
-	Parallel::FMTtaskhandler handler(maintaskptr, 1); // diminuer 5 � 1 pour le debuggage
+		replicate, length, 0.5, Core::FMToutputlevel::standard, true));
+	Parallel::FMTtaskhandler handler(maintaskptr, 1); // FIXME diminuer 5 � 1 pour le debuggage
 	//handler.setquietlogger();
 	//handler.ondemandrun();
 	handler.conccurentrun();

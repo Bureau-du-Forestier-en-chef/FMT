@@ -168,7 +168,7 @@ namespace Parser {
 		return schedules;
 	}
 
-	void _writeSchedule(std::ofstream& p_stream, const std::vector<Core::FMTschedule>& p_schedules)
+	void FMTscheduleparser::_writeSchedule(std::ofstream& p_stream, const std::vector<Core::FMTschedule>& p_schedules)
 	{
 		for (const Core::FMTschedule& sch : p_schedules)
 		{
@@ -179,7 +179,7 @@ namespace Parser {
 		}
 	}
 
-	std::vector<Core::FMTschedule>::const_iterator _getFirstEmptySchedule(std::vector<Core::FMTschedule>& p_schedules)
+	std::vector<Core::FMTschedule>::const_iterator FMTscheduleparser::_getFirstEmptySchedule(const std::vector<Core::FMTschedule>& p_schedules)
 	{
 		std::vector<Core::FMTschedule>::const_iterator firstnonemptyschedule = p_schedules.begin();
 		while (firstnonemptyschedule != p_schedules.end() && firstnonemptyschedule->empty())
@@ -204,26 +204,10 @@ namespace Parser {
 	{
 		try {
 			std::ofstream schedulestream;
-			bool hasHeader = false;
 			// test Gabriel 2024-07-05
 			if (append)
 			{
-				std::ifstream file;
 				schedulestream.open(location, std::ios::app);  // Open for append
-				// On vérifie s'il existe et s'il y a déja un header afin de l'écrire dans le cas contraire.
-				file.open(location);
-				if (file.is_open())
-				{
-					std::string firstLine;
-					if(std::getline(file, firstLine))
-					{
-						if(firstLine.find("TH1") != std::string::npos)
-						{
-							hasHeader = true;
-						}
-					}
-				}
-				file.close();
 			}
 			else
 			{
@@ -235,7 +219,7 @@ namespace Parser {
 				const auto firstnonemptyschedule = _getFirstEmptySchedule(schedules);
 				if (firstnonemptyschedule != schedules.end())
 				{
-					if (!hasHeader) // Write header only if not exist, modify after new feature append
+					if (!append) // Write header only if not exist, modify after new feature append
 					{ 
 						const std::string maskstr = std::string(
 							firstnonemptyschedule -> begin() -> second.begin() -> first.getmask());

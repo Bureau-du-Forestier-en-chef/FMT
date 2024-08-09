@@ -102,7 +102,7 @@ namespace Parallel
 		*/
 		FMTplanningtask(const int& minoutputperiod,
 					const int& maxoutputperiod,
-					const std::string& outputlocation,
+					std::string& outputlocation,
 					std::string gdaldriver = "CSV",
 					std::vector<std::string>creationoptions= std::vector<std::string>(),
 					Core::FMToutputlevel outputlevel = Core::FMToutputlevel::standard,
