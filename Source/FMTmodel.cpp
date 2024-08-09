@@ -23,6 +23,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <thread>
 //#include <cvmarkersobj.h>
 #include <memory>
+//#include <boost/container/flat_set.hpp>
 
 //using namespace Concurrency::diagnostic;
 
@@ -1244,7 +1245,24 @@ bool FMTmodel::operator < (const FMTmodel& rhs) const
 void FMTmodel::setarea(const std::vector<Core::FMTactualdevelopment>& ldevs)
     {
 	try {
-		area.clear();
+		std::set<Core::FMTactualdevelopment,std::less<Core::FMTdevelopment>>sortedArea;
+		for (Core::FMTactualdevelopment adev : ldevs)
+		{
+			if (adev.getlock() > 0)
+				{
+				adev = adev.reducelocktodeath(lifespan);
+				}
+			std::pair<std::set<Core::FMTactualdevelopment>::iterator, bool> inserted = sortedArea.insert(adev);
+			sortedArea.insert(adev);
+			if (!inserted.second)
+				{
+				Core::FMTactualdevelopment* theDev = const_cast<Core::FMTactualdevelopment*>(&*inserted.first);
+				theDev->setarea(theDev->getarea() + adev.getarea());
+				}
+		}
+		area.swap(std::vector<Core::FMTactualdevelopment>(sortedArea.begin(), sortedArea.end()));
+		
+		/*area.clear();
 		area.reserve(ldevs.size());
 		for(Core::FMTactualdevelopment adev: ldevs)
 		{
@@ -1260,7 +1278,7 @@ void FMTmodel::setarea(const std::vector<Core::FMTactualdevelopment>& ldevs)
 				area.push_back(adev);
 			}	
 		}
-		std::sort(area.begin(), area.end());
+		std::sort(area.begin(), area.end());*/
 	}catch (...)
 	{
 		_exhandler->printexceptions("", "FMTmodel::setarea", __LINE__, __FILE__);

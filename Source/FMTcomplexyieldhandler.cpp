@@ -183,6 +183,11 @@ namespace Core {
 		return alldata;
 	}
 
+	FMTcomplexyieldhandler::~FMTcomplexyieldhandler()
+		{
+		//_cache.clearHalf();
+		}
+	
 	bool FMTcomplexyieldhandler::comparesources(const std::string& yield, const FMTcomplexyieldhandler& overridedyield) const
 	{
 		try {
@@ -289,10 +294,14 @@ namespace Core {
 			const int period = request.getdevelopment().getperiod();
 
 				const FMTdata* cdata = &elements.at(yld);
-				if (cdata->cachevalue(request))
+				/*if (cdata->cachevalue(request))
 				{
 					return cdata->get(request);
-				}
+				}*/
+				if (_cache.inCache(request,yld))
+					{
+					return _cache.get(request, yld);
+					}
 				bool age_only = true;
 				const std::vector<std::string> sources = cdata->getsource();
 				const std::map<std::string, const std::unique_ptr<FMTyieldhandler>*> srcsdata = this->getdata(request, sources, yld);
@@ -561,7 +570,12 @@ namespace Core {
 					}
 					lookat.erase(yld);
 				value = std::round(value * 100000000) / 100000000;
-				cdata->set(value, request, age_only);
+				if (lookat.empty())//Cache only first cally
+				{
+					//cdata->set(value, request, age_only);
+					_cache.set(value, request, yld);
+				}
+				
 		}
 		catch (...)
 		{
@@ -630,13 +644,13 @@ namespace Core {
 	}
 
 	FMTcomplexyieldhandler::FMTcomplexyieldhandler(const FMTmask& mask):
-		FMTyieldhandler(mask), elements(), overridetabou(), overrideindex(0)
+		FMTyieldhandler(mask), elements(), overridetabou(), overrideindex(0), _cache()
 	{
 
 	}
 
 	FMTcomplexyieldhandler::FMTcomplexyieldhandler() :
-		FMTyieldhandler(), elements(), overridetabou(), overrideindex(0)
+		FMTyieldhandler(), elements(), overridetabou(), overrideindex(0), _cache()
 	{
 
 	}

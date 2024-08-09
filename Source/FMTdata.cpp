@@ -17,6 +17,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMToperator.h"
 
 
+
 namespace Core{
 
 
@@ -25,7 +26,7 @@ void FMTdata::allocateCache() const
 	if (ops != FMTyieldparserop::FMTnone &&
 		_cache == nullptr)
 		{
-		_cache = std::move(std::unique_ptr<std::map<Core::FMTdevelopment,double>>(new std::map<Core::FMTdevelopment, double>()));
+		_cache = std::move(std::unique_ptr<std::map<FMTdevelopment, double>>(new std::map<FMTdevelopment, double>()));
 		}
 	}
 
@@ -33,16 +34,16 @@ void FMTdata::deAllocateCache() const
 	{
 	if (_cache != nullptr)
 		{
-		_cache = std::move(std::unique_ptr<std::map<Core::FMTdevelopment, double>>(nullptr));
+		_cache = std::move(std::unique_ptr<std::map<FMTdevelopment, double>>(nullptr));
 		}
 	}
 
-FMTdata::FMTdata():ops(FMTyieldparserop::FMTnone),source(),stacking(), _cache(nullptr),_agebase(false),data()
+FMTdata::FMTdata():ops(FMTyieldparserop::FMTnone), data(),source(),stacking(), _cache(nullptr), _agebase(false)
 		{
 			//_cache = new boost::unordered_map<FMTdevelopment,double>();
 		}
 
-FMTdata::FMTdata(const FMTdata& rhs) : ops(rhs.ops),source(rhs.source), stacking(rhs.stacking), _cache(nullptr), _agebase(rhs._agebase),data(rhs.data)
+FMTdata::FMTdata(const FMTdata& rhs) :data(rhs.data),ops(rhs.ops),source(rhs.source), stacking(rhs.stacking), _cache(nullptr), _agebase(rhs._agebase)
 	{
 	//_cache = new boost::unordered_map<FMTdevelopment,double>(*rhs._cache);
 	}

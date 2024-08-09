@@ -14,20 +14,20 @@ int main(int argc, char *argv[])
 	{
 	#ifdef FMTWITHOSI
 	Logging::FMTdefaultlogger().logstamp();
-	/*const std::string primlocation = "D:/CC_modele_feu/WS_CC/Feux_2023_ouest_V01.pri";
-	const int length = 5;
+	const std::string primlocation = "D:/CC_modele_feu/WS_CC/Feux_2023_ouest_V01.pri";
+	const int length = 20;
 	const int replicate = 5;
 	std::vector<std::string>allscenarios;
 	allscenarios.push_back("strategique_minimisation_Risque");
 	allscenarios.push_back("stochastique_CC");
-	allscenarios.push_back("tactique");*/
-	const std::string primlocation = argv[1];
+	allscenarios.push_back("tactique");
+	/*const std::string primlocation = argv[1];
 	const int length = std::stoi(argv[2]);
 	const int replicate = std::stoi(argv[3]);
 	std::vector<std::string>allscenarios;
 	allscenarios.push_back("Globalreplanning");
 	allscenarios.push_back("Globalfire");
-	allscenarios.push_back("Localreplanning");
+	allscenarios.push_back("Localreplanning");*/
 	Parser::FMTmodelparser modelparser;
 	modelparser.setdefaultexceptionhandler();
 	std::vector<Exception::FMTexc>errors;
@@ -61,7 +61,7 @@ int main(int argc, char *argv[])
 	#endif
 	local.setparameter(Models::FMTintmodelparameters::LENGTH, 1);
 	local.setparameter(Models::FMTintmodelparameters::NUMBER_OF_THREADS,1);
-	std::vector<std::string>OutputtoLookFor = { "OVOLTOTREC" ,/*"OSUPTOT",*/"OVOL_UA_TOTREC" ,"OSUPBRULER_CORRIGER" ,
+	std::vector<std::string>OutputtoLookFor = { "OVOLTOTREC","ORISQUE", "OVOL_UA_TOTREC" ,"OSUPBRULER_CORRIGER" ,
 												"SUPERFICIE_RECUP_FEU" ,/*"OSUPPL_FEU_POSTRECUP",*/
 													"OSUPTBE" , "SUPERFICIE_RECUP_TBE",
 												/*"OCATTBE_C1" ,"OCATTBE_C2" ,"OCATTBE_C3",

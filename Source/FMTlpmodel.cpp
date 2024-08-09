@@ -116,7 +116,7 @@ namespace Models
 			}
 		const size_t AREA = area.size();
 		const size_t ACTIONS = actions.size();
-		const size_t EXPO_FACTOR = 12;
+		const size_t EXPO_FACTOR = 5;
 		const size_t TO_RESERVE = length * AREA * ACTIONS * EXPO_FACTOR;
 		m_graph->reserveVerticies(TO_RESERVE);
 		_logger->logwithlevel("Graph reserve of " + getname() + " (" + std::to_string(TO_RESERVE) + ") vertices\n", 1);

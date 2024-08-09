@@ -46,7 +46,7 @@ namespace Graph
             FMTvertexproperties(const Core::FMTdevelopment& ldevelopment,
                 const int& lconstraintID);
 			std::string constraintname() const;
-			inline int getconstraintID() const override
+			inline int getConstraintId() const override
 				{
 				return constraintID;
 				}
