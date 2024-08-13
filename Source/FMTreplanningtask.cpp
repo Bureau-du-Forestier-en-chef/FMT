@@ -92,7 +92,7 @@ namespace Parallel
 			m_writeSchedule = writeSchedule;
 			m_outputlocation = outputlocation;
 			//m_outputlocation.pop_back();
-			m_primaryName = (m_outputlocation.find_last_of('\\') == std::string::npos) ? m_outputlocation : m_outputlocation.substr(m_outputlocation.find_last_of('\\') + 1);
+			m_primaryName = (m_outputlocation.find_last_of('/') == std::string::npos) ? m_outputlocation : m_outputlocation.substr(m_outputlocation.find_last_of('/') + 1);
 			const size_t LENGTH = static_cast<size_t>(global->getparameter(Models::FMTintmodelparameters::LENGTH));
 			const size_t AREA_SIZE = global->getarea().size();
 			const size_t SCALE_FACTOR = 20;
@@ -232,7 +232,7 @@ namespace Parallel
 	
 				// Extraire la partie après le dernier séparateur
 				const std::string seqName = m_primaryName + "_Replicate" + std::to_string(getiteration()) + ".seq";
-				const std::string schedulePath = m_outputlocation + '\\' + seqName;
+				const std::string schedulePath = m_outputlocation + '/' + seqName;
  				std::vector<Core::FMTschedule> scheduleList;
 				bool appendExistingSchedule = true;
 				/*if (!modelptr)//infeasible!

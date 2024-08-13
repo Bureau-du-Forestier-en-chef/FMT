@@ -17,8 +17,8 @@ int main(int argc, char *argv[])
 	Logging::FMTdefaultlogger().logstamp();
 	// soit 18 � 24 ou 25 � 31
 	const std::string primlocation = "D:/CC_modele_feu/WS_CC/Feux_2023_ouest_V01.pri";
-	const int length = 20;
-	const int replicate = 5;
+	const int length = 5; //20
+	const int replicate = 2; //5
 	std::vector<std::string>allscenarios;
 	allscenarios.push_back("strategique");
 	allscenarios.push_back("stochastique_Histo");//"stochastique_Histo");
@@ -78,7 +78,7 @@ int main(int argc, char *argv[])
 	std::size_t lastslash = primlocation.find_last_of("/\\");
 	const std::string locname = primlocation.substr(lastslash + 1, (primlocation.size() - lastslash) - 5);
 	//const std::string outputlocation = "../../tests/replanner/"+ locname;
-	std::string outputlocation = "D:\\FMT\\FMT\\build\\release\\tests\\replanner\\Feux_2023_ouest_V01";
+	std::string outputlocation = "../../tests/replanner/Feux_2023_ouest_V01";
 
 	std::vector<std::string> layersoptions;
 	layersoptions.push_back("SEPARATOR=SEMICOLON");
