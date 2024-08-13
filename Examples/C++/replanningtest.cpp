@@ -51,9 +51,10 @@ int main(int argc, char *argv[])
 	handler.conccurentrun();
 
 	//On lis les schédules
+	const std::string scheduleLocation = "../../tests/replanningtest/replanning/replanning_Replicate1.seq";
 	const std::vector<Core::FMTtheme> THEMES = models.at(0).getthemes();
 	const std::vector<Core::FMTaction> ACTIONS = models.at(0).getactions();
-	scheduleParser.read(THEMES, ACTIONS, outputlocation);
+	scheduleParser.read(THEMES, ACTIONS, scheduleLocation);
 
 	#endif
 	/*#ifdef FMTWITHOSI
