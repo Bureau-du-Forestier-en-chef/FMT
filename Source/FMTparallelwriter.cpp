@@ -37,7 +37,7 @@ namespace Parallel
 		close();
 		}
 
-	FMTparallelwriter::FMTparallelwriter(std::string& location,
+	FMTparallelwriter::FMTparallelwriter(const std::string& location,
 		const std::string& driver,
 		const std::vector<Core::FMToutput>& outputs,
 		const std::vector<Models::FMTmodel*>& allmodels,
@@ -84,7 +84,7 @@ namespace Parallel
 			}
 	}
 
-	FMTparallelwriter::FMTparallelwriter(std::string& location,
+	FMTparallelwriter::FMTparallelwriter(const std::string& location,
 		const std::string& driver,
 		Core::FMToutputlevel outputlevel,
 		std::vector<std::string>layersoptions,

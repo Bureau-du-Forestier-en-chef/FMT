@@ -85,7 +85,7 @@ int main(int argc, char *argv[])
 	std::unique_ptr<Parallel::FMTtask> maintaskptr(new Parallel::FMTreplanningtask(
 		global, stochastic, local, selectedoutputs, outputlocation, "CSV", layersoptions, 
 		replicate, length, 0.5, Core::FMToutputlevel::standard, true));
-	Parallel::FMTtaskhandler handler(maintaskptr, 1); // FIXME diminuer 5 � 1 pour le debuggage
+	Parallel::FMTtaskhandler handler(maintaskptr, 3); // FIXME diminuer 5 � 1 pour le debuggage
 	//handler.setquietlogger();
 	//handler.ondemandrun();
 	handler.conccurentrun();

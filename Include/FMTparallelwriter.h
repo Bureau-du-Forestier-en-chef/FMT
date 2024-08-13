@@ -63,7 +63,9 @@ namespace Parallel
 		// DocString: FMTparallelwriter::projectname;
 		///The name of the project file
 		std::string projectname;
-		std::string& m_outputLocationPath;
+		// DocString: FMTparallelwriter::projectname;
+		///The directory output path.
+		const std::string& m_outputLocationPath;
 	protected:
 		// DocString: FMTparallelwriter::getdriftprobability()
 		/**
@@ -98,7 +100,7 @@ namespace Parallel
 		/**
 		Constructor with the location and the driver of the outputs and the base model that we want to write.
 		*/
-		FMTparallelwriter(std::string& location,
+		FMTparallelwriter(const std::string& location,
 			const std::string& driver,
 			const std::vector<Core::FMToutput>& outputs,
 			const std::vector<Models::FMTmodel*>& allmodels,
@@ -109,7 +111,7 @@ namespace Parallel
 		/**
 		Constructor that will build the parser without layers and outputs.
 		*/
-		FMTparallelwriter(std::string& location,
+		FMTparallelwriter(const std::string& location,
 			const std::string& driver,
 			Core::FMToutputlevel outputlevel = Core::FMToutputlevel::totalonly,
 			std::vector<std::string>layersoptions = std::vector<std::string>(),

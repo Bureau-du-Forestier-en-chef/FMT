@@ -20,7 +20,7 @@ namespace Parallel
 	FMTreplanningtask::FMTreplanningtask(const Models::FMTmodel& globalm,
 		const Models::FMTmodel& stochasticm,
 		const Models::FMTmodel& localm,
-		std::string& outputlocation,
+		const std::string& outputlocation,
 		const std::string& gdaldriver,
 		const std::vector<std::string>& creationoptions,
 		Core::FMToutputlevel outputlevel):
@@ -53,7 +53,7 @@ namespace Parallel
 		const Models::FMTmodel& stochasticm,
 		const Models::FMTmodel& localm,
 		const std::vector<Core::FMToutput>& outputs,
-		std::string& outputlocation,
+		const std::string& outputlocation,
 		const std::string& gdaldriver,
 		const std::vector<std::string>& creationoptions,
 		const int& replicates,

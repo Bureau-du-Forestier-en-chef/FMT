@@ -79,7 +79,7 @@ namespace Parallel
 						const Models::FMTmodel& stochasticm,
 						const Models::FMTmodel& localm,
 						const std::vector<Core::FMToutput>& outputs,
-						std::string& outputlocation,
+						const std::string& outputlocation,
 						const std::string& gdaldriver,
 						const std::vector<std::string>& creationoptions,
 						const int& replicates,
@@ -96,7 +96,7 @@ namespace Parallel
 		FMTreplanningtask(const Models::FMTmodel& globalm,
 			const Models::FMTmodel& stochasticm,
 			const Models::FMTmodel& localm,
-			std::string& outputlocation,
+			const std::string& outputlocation,
 			const std::string& gdaldriver,
 			const std::vector<std::string>& creationoptions,
 			Core::FMToutputlevel outputlevel);
@@ -137,7 +137,8 @@ namespace Parallel
 		void passinlogger(const std::unique_ptr<Logging::FMTlogger>& logger) override;
 		// DocString: FMTreplanningtask::passinlogger
 		/**
-		Set variable tu write replanning schedule
+		Set variable tu write replanning schedule.
+		Write schedule = write a schedule for each replicate.
 		*/
 		void setWriteSchedule(const bool p_write);
 	private:
@@ -172,9 +173,7 @@ namespace Parallel
 		///The number of replanning periods the task needs to do.
 		int replanningperiods;
 		// DocString: FMTreplanningtask::appendSchedule
-		/**
-		PAS BON
-		*/
+		///A boolean for write Schedule in replanning,true, = create a schedule for each replicate.
 		bool m_writeSchedule;
 		std::string m_outputlocation;
 		// DocString: FMTreplanningtask::copysharedmodel
@@ -217,7 +216,7 @@ namespace Parallel
 		void setreplicate(std::unique_ptr<Models::FMTmodel>& modelcpy, const int& replanningperiod) const;
 		// DocString: FMTreplanningtask::setreplicate
 		/**
-		Primary name extracted to the path
+		Primary name extracted to the path.
 		*/
 		std::string m_primaryName;
 	};
