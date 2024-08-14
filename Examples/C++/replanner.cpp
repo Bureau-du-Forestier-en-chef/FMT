@@ -16,21 +16,22 @@ int main(int argc, char *argv[])
 	#ifdef FMTWITHOSI
 	Logging::FMTdefaultlogger().logstamp();
 	// soit 18 � 24 ou 25 � 31
+	/*
 	const std::string primlocation = "D:/CC_modele_feu/WS_CC/Feux_2023_ouest_V01.pri";
 	const int length = 5; //20
 	const int replicate = 2; //5
 	std::vector<std::string>allscenarios;
 	allscenarios.push_back("strategique");
 	allscenarios.push_back("stochastique_Histo");//"stochastique_Histo");
-	allscenarios.push_back("tactique");
+	allscenarios.push_back("tactique");*/
 	//allscenarios.push_back("strategique"); //Pour test le lancé d'erreur
-	/* const std::string primlocation = argv[1];
+	const std::string primlocation = argv[1];
 	const int length = std::stoi(argv[2]);
 	const int replicate = std::stoi(argv[3]);
 	std::vector<std::string>allscenarios;
 	allscenarios.push_back("Globalreplanning");
 	allscenarios.push_back("Globalfire");
-	allscenarios.push_back("Localreplanning"); */
+	allscenarios.push_back("Localreplanning");
 	Parser::FMTmodelparser modelparser;
 	modelparser.setdefaultexceptionhandler();
 	std::vector<Exception::FMTexc> errors;
