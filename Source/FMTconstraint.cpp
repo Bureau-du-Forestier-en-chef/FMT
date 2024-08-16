@@ -699,49 +699,49 @@ namespace Core
 			{
 			case FMTconstrainttype::FMTMAXobjective:
 				{
-				line += "_MAX(";
+				line += "_MAX ";
 				line += this->name;
 				if (!penalty.empty())
 					{
 					line += penalty;
 					}
-				line += ") ";
+				line += " ";
 				line += period_bounds + "\n";
 				break;
 				}
 			case FMTconstrainttype::FMTMINobjective:
 				{
-				line += "_MIN(";
+				line += "_MIN ";
 				line += this->name;
 				if(!penalty.empty())
 					{
 					line += penalty;
 					}
-				line += ") ";
+				line += " ";
 				line += period_bounds + "\n";
 				break;
 				}
 			case FMTconstrainttype::FMTMAXMINobjective:
 				{
-				line += "_MAXMIN(";
+				line += "_MAXMIN ";
 				line += this->name;
 				if (!penalty.empty())
 					{
 					line += penalty;
 					}
-				line += ") ";
+				line += " ";
 				line += period_bounds + "\n";
 				break;
 				}
 			case FMTconstrainttype::FMTMINMAXobjective:
 				{
-				line += "_MINMAX(";
+				line += "_MINMAX ";
 				line += this->name;
 				if (!penalty.empty())
 				{
 					line += penalty;
 				}
-				line += ") ";
+				line += " ";
 				line += period_bounds + "\n";
 				break;
 				}
