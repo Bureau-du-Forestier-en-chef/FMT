@@ -81,14 +81,17 @@ namespace Core
 			if (VERTEX_PTR!=nullptr)
 				{
 				const Models::FMTmodel* MODEL_Ptr = VERTEX_PTR->getmodel();
-				const size_t LENGTH = static_cast<size_t>(MODEL_Ptr->getparameter(Models::FMTintparameter::LENGTH));
+				const size_t LENGTH = static_cast<size_t>(MODEL_Ptr->getparameter(Models::FMTintmodelparameters::LENGTH));
 				const FMTyields YIELDS = MODEL_Ptr->getyields();
-				for (const FMTyieldhandler* HANDLER_Ptr : YIELDS.gethandleroftype(FMTyldtype::FMTcomplexyld))
+				for (const auto& HANDLER : YIELDS)
 					{
-					toReserve += (HANDLER_Ptr->size() * NUMBER_OF_ATTRIBUTS * LENGTH);
+					if (HANDLER.second->gettype()==Core::FMTyldtype::FMTcomplexyld)
+						{
+						toReserve += (HANDLER.second->size() * NUMBER_OF_ATTRIBUTS * LENGTH * 2);
+						}
 					}
 				}
-			m_cache->reserve(toReserve);
+			m_cache->reserve(toReserve*3);
 			}
 		}
 

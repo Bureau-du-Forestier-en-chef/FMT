@@ -292,16 +292,16 @@ namespace Core {
 		try {
 			const int age = request.getdevelopment().getage();
 			const int period = request.getdevelopment().getperiod();
-
-				const FMTdata* cdata = &elements.at(yld);
-				/*if (cdata->cachevalue(request))
+			const FMTdata* cdata = &elements.at(yld);
+			if (_cache.inCache(request,yld))
 				{
-					return cdata->get(request);
-				}*/
-				if (_cache.inCache(request,yld))
-					{
-					return _cache.get(request, yld);
-					}
+				return _cache.get(request, yld);
+				}
+			std::chrono::time_point<std::chrono::high_resolution_clock>calculationStart;
+			if (lookat.empty())
+				{
+				calculationStart = getclock();
+				}
 				bool age_only = true;
 				const std::vector<std::string> sources = cdata->getsource();
 				const std::map<std::string, const std::unique_ptr<FMTyieldhandler>*> srcsdata = this->getdata(request, sources, yld);
@@ -572,8 +572,14 @@ namespace Core {
 				value = std::round(value * 100000000) / 100000000;
 				if (lookat.empty())//Cache only first cally
 				{
-					//cdata->set(value, request, age_only);
-					_cache.set(value, request, yld);
+					const double TIME_TOOK = getduration<std::chrono::milliseconds::period>(calculationStart);
+					if (TIME_TOOK>0.05)
+					{
+						_cache.set(value, request, yld);
+					}
+					
+					//_cache.reserve(request);
+					
 				}
 				
 		}
