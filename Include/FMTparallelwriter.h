@@ -63,6 +63,9 @@ namespace Parallel
 		// DocString: FMTparallelwriter::projectname;
 		///The name of the project file
 		std::string projectname;
+		// DocString: FMTparallelwriter::projectname;
+		///The directory output path.
+		const std::string& m_outputLocationPath;
 	protected:
 		// DocString: FMTparallelwriter::getdriftprobability()
 		/**
@@ -127,6 +130,11 @@ namespace Parallel
 		void write(const std::string& modelname,
 			const std::map<std::string, std::vector<std::vector<double>>>& results,
 			const int& firstperiod, const int& lastperiod, const int& iteration) const;
+		// DocString: FMTparallelwriter::getresults()
+		/**
+		Write a schedules.
+		*/
+		void writeSchedules(const std::string seqName, const std::vector<Core::FMTschedule> scheduleList, bool append) const;
 		// DocString: FMTparallelwriter::getresults()
 		/**
 		Get the results of a model.

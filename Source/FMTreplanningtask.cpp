@@ -11,6 +11,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMToutput.h"
 #include "FMTlpmodel.h"
 #include "FMTexceptionhandler.h"
+#include <boost/filesystem.hpp>
 
 
 namespace Parallel
@@ -58,7 +59,8 @@ namespace Parallel
 		const int& replicates,
 		const int& replanningperiodssize,
 		const double& minimaldrift,
-		Core::FMToutputlevel outputlevel):
+		Core::FMToutputlevel outputlevel,
+		const bool writeSchedule) :
 		resultswriter(),
 		baseschedule(),
 		global(),
@@ -72,6 +74,12 @@ namespace Parallel
 	{
 		try {
 			//passinobject(globalm);
+			if (globalm.getname() == stochasticm.getname() || globalm.getname() == localm.getname() || stochasticm.getname() == localm.getname())
+			{
+				_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
+					"Two Model name is the same in strategic, stochastic or tactic",
+					"FMTreplanningtask::FMTreplanningtask", __LINE__, __FILE__);
+			}
 			global = std::move(globalm.clone());
 			stochastic = std::move(stochasticm.clone());
 			local = std::move(localm.clone());
@@ -81,9 +89,13 @@ namespace Parallel
 			global->setparameter(Models::FMTintmodelparameters::UPDATE,1);
 			stochastic->setparameter(Models::FMTintmodelparameters::UPDATE, 1);
 			local->setparameter(Models::FMTintmodelparameters::UPDATE, 1);
+			m_writeSchedule = writeSchedule;
+			m_outputlocation = outputlocation;
+			//m_outputlocation.pop_back();
+			m_primaryName = (m_outputlocation.find_last_of('/') == std::string::npos) ? m_outputlocation : m_outputlocation.substr(m_outputlocation.find_last_of('/') + 1);
 			const size_t LENGTH = static_cast<size_t>(global->getparameter(Models::FMTintmodelparameters::LENGTH));
 			const size_t AREA_SIZE = global->getarea().size();
-			const size_t SCALE_FACTOR = 20;
+			const size_t SCALE_FACTOR = 10;
 			const size_t GLOBAL_RESERVE = AREA_SIZE * LENGTH * LENGTH * SCALE_FACTOR;
 			const size_t BASE_RESERVE = AREA_SIZE * SCALE_FACTOR;
 			Models::FMTsrmodel* GlobalPtr = dynamic_cast<Models::FMTsrmodel*>(global.get());
@@ -209,14 +221,20 @@ namespace Parallel
 	}
 
 	void FMTreplanningtask::writeresults(const std::string& modelname, const int& modellength,
-		const std::unique_ptr<Models::FMTmodel>& modelptr,const int& replanningperiod,bool onlyfirstperiod)
-	{
+		const std::unique_ptr<Models::FMTmodel>& modelptr, const int& replanningperiod, bool onlyfirstperiod)
+	{		//modelname = "trategique", modellenght = 20, modelptr ok, replanningpPeriod = 1,  onlyFirst = false
 		try {
 			if (replanningperiod <= replanningperiods)//Dont write outside the replanningsperiods
 			{
 				int modelsize = modellength;
 				int firstperiod = dynamicarea.begin()->getperiod() + 1;
 				int lastperiod = firstperiod;
+	
+				// Extraire la partie après le dernier séparateur
+				const std::string seqName = m_primaryName + "_Replicate" + std::to_string(getiteration()) + ".seq";
+				const std::string schedulePath = m_outputlocation + '/' + seqName;
+ 				std::vector<Core::FMTschedule> scheduleList;
+				bool appendExistingSchedule = true;
 				/*if (!modelptr)//infeasible!
 				{
 					//put NAN everywhere the size of 
@@ -243,7 +261,29 @@ namespace Parallel
 				{
 					firstperiod = replanningperiod;
 					lastperiod = replanningperiods;
+					if(m_writeSchedule)
+					{
+						throw std::string("No modelptr exist...");
+					}
 				}
+				if (modelname == stochastic->getname() || modelname == local->getname())
+				{
+					if (modelname == stochastic->getname() && replanningperiod == 1)
+					{
+						// On vérifie si le fichier existe déja et sinon on mets notre append a false afin de créer le fichier et le header
+						if(!boost::filesystem::exists(boost::filesystem::path(schedulePath)))
+						{
+							appendExistingSchedule = false;
+						}
+					}
+					// for loop / getSolution schedule in vector ajuster resultwriter afin de scheduleParser::write
+					for (int i = firstperiod; i <= lastperiod; ++i)
+					{
+						scheduleList.push_back(modelptr->getsolution(i, true));
+					}
+					resultswriter->writeSchedules(seqName, scheduleList, appendExistingSchedule);
+				}
+
 				_logger->logwithlevel("Thread:" + getthreadid() + " Writing results for " + modelname + " first period at: " +
 					std::to_string(firstperiod) + " for replicate " + std::to_string(getiteration()) + +"\n", 1);
 				resultswriter->write(modelname, results, firstperiod, lastperiod, getiteration());
@@ -302,7 +342,6 @@ namespace Parallel
 				{
 					newconstraints.push_back(basenssconstraint.getfromreplicate(getiteration(), replanningperiod));
 				}
-				modelcpy->setconstraints(newconstraints);
 				modelcpy->setconstraints(newconstraints);
 			}
 			
@@ -466,6 +505,11 @@ namespace Parallel
 			_exhandler->raisefromcatch("", "FMTreplanningtask::domodelplanning", __LINE__, __FILE__);
 			}
 		return std::move(std::unique_ptr<Models::FMTmodel>(nullptr));
+	}
+
+	void FMTreplanningtask::setWriteSchedule(bool p_write)
+	{
+		m_writeSchedule = p_write;
 	}
 
 }

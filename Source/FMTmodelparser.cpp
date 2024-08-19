@@ -446,7 +446,7 @@ namespace Parser {
 			const std::string modelobjective = "Objective value: " + ObjectiveValue + "\n";
 			const std::string modelstatus = "Status: " + status + "\n";
 			scheduleparser.setheader(modelstatus+ modelobjective);
-			scheduleparser.write(schedules, seqfile);
+			scheduleparser.write(schedules, seqfile, false);
 		}
 	}catch (...)
 	{

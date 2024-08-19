@@ -9,18 +9,20 @@
 	#include "FMTmodelparser.h"
 #endif
 	#include "FMTdefaultlogger.h"
+#include <boost/filesystem.hpp>
 
 int main(int argc, char *argv[])
 	{
 	#ifdef FMTWITHOSI
 	Logging::FMTdefaultlogger().logstamp();
 	/*const std::string primlocation = "D:/CC_modele_feu/WS_CC/Feux_2023_ouest_V01.pri";
-	const int length = 20;
+	const int length = 5;
 	const int replicate = 5;
 	std::vector<std::string>allscenarios;
-	allscenarios.push_back("strategique");
-	allscenarios.push_back("stochastique_Histo");//"stochastique");
+	allscenarios.push_back("strategique_minimisation_Risque");
+	allscenarios.push_back("stochastique_CC");
 	allscenarios.push_back("tactique");*/
+	//allscenarios.push_back("strategique"); //Pour test le lancé d'erreur
 	const std::string primlocation = argv[1];
 	const int length = std::stoi(argv[2]);
 	const int replicate = std::stoi(argv[3]);
@@ -30,7 +32,7 @@ int main(int argc, char *argv[])
 	allscenarios.push_back("Localreplanning");
 	Parser::FMTmodelparser modelparser;
 	modelparser.setdefaultexceptionhandler();
-	std::vector<Exception::FMTexc>errors;
+	std::vector<Exception::FMTexc> errors;
 	errors.push_back(Exception::FMTexc::FMTmissingyield);
 	errors.push_back(Exception::FMTexc::FMToutput_missing_operator);
 	errors.push_back(Exception::FMTexc::FMToutput_too_much_operator);
@@ -50,7 +52,7 @@ int main(int argc, char *argv[])
 	global.setcompresstime(12, 14, 3);
 	global.setcompresstime(14, 16, 4);
 	global.setcompresstime(16, 30, 5);*/
-	global.setparameter(Models::FMTintmodelparameters::NUMBER_OF_THREADS,1);
+	global.setparameter(Models::FMTintmodelparameters::NUMBER_OF_THREADS, 1);
 	global.setparameter(Models::FMTboolmodelparameters::PRESOLVE_CAN_REMOVE_STATIC_THEMES, true);
 	Models::FMTnssmodel stochastic(models.at(1), 0);
 	stochastic.setparameter(Models::FMTintmodelparameters::LENGTH, 1);
@@ -61,7 +63,7 @@ int main(int argc, char *argv[])
 	#endif
 	local.setparameter(Models::FMTintmodelparameters::LENGTH, 1);
 	local.setparameter(Models::FMTintmodelparameters::NUMBER_OF_THREADS,1);
-	std::vector<std::string>OutputtoLookFor = { "OVOLTOTREC" ,/*"OSUPTOT",*/"OVOL_UA_TOTREC" ,"OSUPBRULER_CORRIGER" ,
+	std::vector<std::string>OutputtoLookFor = { "OVOLTOTREC","ORISQUE", "OVOL_UA_TOTREC" ,"OSUPBRULER_CORRIGER" ,
 												"SUPERFICIE_RECUP_FEU" ,/*"OSUPPL_FEU_POSTRECUP",*/
 													"OSUPTBE" , "SUPERFICIE_RECUP_TBE",
 												/*"OCATTBE_C1" ,"OCATTBE_C2" ,"OCATTBE_C3",
@@ -69,18 +71,22 @@ int main(int argc, char *argv[])
 	std::vector<Core::FMToutput>selectedoutputs;
 	for (const Core::FMToutput& output : global.getoutputs())
 	{
-		if (std::find(OutputtoLookFor.begin(), OutputtoLookFor.end(), output.getname())!= OutputtoLookFor.end())
+		if (std::find(OutputtoLookFor.begin(), OutputtoLookFor.end(), output.getname()) != OutputtoLookFor.end())
 		{
 			selectedoutputs.push_back(output);
 		}
 	}
 	std::size_t lastslash = primlocation.find_last_of("/\\");
-	const std::string locname = primlocation.substr(lastslash+1,(primlocation.size()-lastslash)-4);
-	const std::string outputlocation = "../../tests/replanner/"+ locname;
-	std::vector<std::string>layersoptions;
+	const std::string locname = primlocation.substr(lastslash + 1, (primlocation.size() - lastslash) - 5);
+	//const std::string outputlocation = "../../tests/replanner/"+ locname;
+	std::string outputlocation = "../../tests/replanner/Feux_2023_ouest_V01";
+
+	std::vector<std::string> layersoptions;
 	layersoptions.push_back("SEPARATOR=SEMICOLON");
-	std::unique_ptr<Parallel::FMTtask> maintaskptr(new Parallel::FMTreplanningtask(global, stochastic, local, selectedoutputs, outputlocation, "CSV", layersoptions, replicate,length,0.5, Core::FMToutputlevel::standard));
-	Parallel::FMTtaskhandler handler(maintaskptr,5);
+	std::unique_ptr<Parallel::FMTtask> maintaskptr(new Parallel::FMTreplanningtask(
+		global, stochastic, local, selectedoutputs, outputlocation, "CSV", layersoptions, 
+		replicate, length, 0.5, Core::FMToutputlevel::standard, true));
+	Parallel::FMTtaskhandler handler(maintaskptr, 3); // FIXME diminuer 5 � 1 pour le debuggage
 	//handler.setquietlogger();
 	//handler.ondemandrun();
 	handler.conccurentrun();

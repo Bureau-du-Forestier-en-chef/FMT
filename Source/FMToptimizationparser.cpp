@@ -700,6 +700,24 @@ namespace Parser
 			if (boost::regex_search(subline, kmatch, m_rxobjectives))
 			{
 				const std::string objective_type = kmatch[1];
+				Core::FMTconstrainttype cctype = Core::FMTconstrainttype::FMTstandard;
+				if (objective_type == "_MAX")
+				{
+					cctype = Core::FMTconstrainttype::FMTMAXobjective;
+				}
+				else if (objective_type == "_MIN")
+				{
+					cctype = Core::FMTconstrainttype::FMTMINobjective;
+				}
+				else if (objective_type == "_MAXMIN")
+				{
+					cctype = Core::FMTconstrainttype::FMTMAXMINobjective;
+				}
+				else if (objective_type == "_MINMAX")
+				{
+					cctype = Core::FMTconstrainttype::FMTMINMAXobjective;
+				}
+				objective.setconstrainttype(cctype);
 				const std::string lower_period = std::string(kmatch[7]) + std::string(kmatch[10]);
 				const std::string upper_period = std::string(kmatch[9]);
 				std::string body = std::string(kmatch[3]);
@@ -748,24 +766,7 @@ namespace Parser
 					final_output = resume_output(nodes, p_outputs, p_themes, p_constants);
 				}
 				objective.setoutput(final_output);
-				Core::FMTconstrainttype cctype = Core::FMTconstrainttype::FMTstandard;
-				if (objective_type == "_MAX")
-				{
-					cctype = Core::FMTconstrainttype::FMTMAXobjective;
-				}
-				else if (objective_type == "_MIN")
-				{
-					cctype = Core::FMTconstrainttype::FMTMINobjective;
-				}
-				else if (objective_type == "_MAXMIN")
-				{
-					cctype = Core::FMTconstrainttype::FMTMAXMINobjective;
-				}
-				else if (objective_type == "_MINMAX")
-				{
-					cctype = Core::FMTconstrainttype::FMTMINMAXobjective;
-				}
-				objective.setconstrainttype(cctype);
+				
 				setperiods(objective, lower_period, upper_period, p_constants);
 			}
 		}catch (...)
