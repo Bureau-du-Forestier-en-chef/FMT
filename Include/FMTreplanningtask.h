@@ -85,7 +85,8 @@ namespace Parallel
 						const int& replicates,
 						const int& replanningperiodssize,
 						const double& minimaldrift,
-						Core::FMToutputlevel outputlevel);
+						Core::FMToutputlevel outputlevel,
+						const bool writeSchedule = false);
 		// DocString: FMTreplanningtask::FMTreplanningtask(const Models::FMTmodel&,const Models::FMTmodel&,const Models::FMTmodel&)
 		/**
 		Short constructor for replanning task will use the output of globalmodel as outputs.
@@ -134,6 +135,12 @@ namespace Parallel
 		Pass the logger
 		*/
 		void passinlogger(const std::unique_ptr<Logging::FMTlogger>& logger) override;
+		// DocString: FMTreplanningtask::passinlogger
+		/**
+		Set variable tu write replanning schedule.
+		Write schedule = write a schedule for each replicate.
+		*/
+		void setWriteSchedule(const bool p_write);
 	private:
 		// DocString: FMTreplanningtask::resultswriter
 		///Concurrent results writer who writes the results of each abstract model after each call to doplanning
@@ -165,6 +172,10 @@ namespace Parallel
 		// DocString: FMTreplanningtask::replanningperiods
 		///The number of replanning periods the task needs to do.
 		int replanningperiods;
+		// DocString: FMTreplanningtask::appendSchedule
+		///A boolean for write Schedule in replanning,true, = create a schedule for each replicate.
+		bool m_writeSchedule;
+		std::string m_outputlocation;
 		// DocString: FMTreplanningtask::copysharedmodel
 		/**
 		Solver logger make it not save to clone a solver with a common logger.
@@ -203,7 +214,11 @@ namespace Parallel
 		Ajuste constraints based on the replicate keyword
 		*/
 		void setreplicate(std::unique_ptr<Models::FMTmodel>& modelcpy, const int& replanningperiod) const;
-
+		// DocString: FMTreplanningtask::setreplicate
+		/**
+		Primary name extracted to the path.
+		*/
+		std::string m_primaryName;
 	};
 
 }

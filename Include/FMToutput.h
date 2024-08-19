@@ -363,11 +363,6 @@ class FMTEXPORT FMToutput: public FMTobject
 		bool isinventory() const;
 		// DocString: FMToutput::fillfromshuntingyard
 		/**
-		A REMPLIR ESTI DE MORRON
-		*/
-		bool sourceCounter(const std::string& p_source) const;
-		// DocString: FMToutput::fillfromshuntingyard
-		/**
 		If the output is non linear you need to use this function to get values.
 		*/
 		void fillfromshuntingyard(
@@ -376,63 +371,93 @@ class FMTEXPORT FMToutput: public FMTobject
 			const std::vector<Core::FMToutputnode>& nodes,
 			std::map<std::string, std::vector<std::string>>& allequations) const;
 	protected:
-	// DocString: FMToutput::sources
-	///outputsources data used to generate outputnodes
-	std::vector<FMToutputsource>sources;
-	// DocString: FMToutput::operators
-	///vector of simple operators like +-*/
-	std::vector<FMToperator>operators;
-	// DocString: FMToutput::theme_target
-	///Sometime output can specify multiple attributes of a given themes
-	//int theme_target;
-	// DocString: FMToutput::name
-	///This is the name of the output
-	std::string name;
-	// DocString: FMToutput::description
-	///This is description of the FMToutput has seen in the output section.
-	std::string description;
-	// DocString: FMToutput::group
-	///This is the group of the output, if empty there's no group
-	std::string group;
-	// DocString: FMToutput::setproportions
-	/**
-	Set equations proportions for developpements....when original entry is numeric turn it into proportion.
-	*/
-	void setproportions(std::map<std::string, std::vector<std::string>>& allequations,
-		const std::vector<std::string>& baseequation) const;
-	// DocString: FMToutput::isdivision
-	/**
-	Return true if output contains division
-	*/
-	bool isdivision() const;
-	// DocString: FMToutput::isdivision
-	/**
-	Replace the division with the bound and reverse the denominator
-	*/
-	void replacedivision(const double& bound);
-    
-	// DocString: FMToutput::serialize
-	/**
-	serialize function is for serialization, used to do multiprocessing across multiple cpus (pickle in Pyhton)
-	*/
+		// DocString: FMToutput::sources
+		///outputsources data used to generate outputnodes
+		std::vector<FMToutputsource>sources;
+		// DocString: FMToutput::operators
+		///vector of simple operators like +-*/
+		std::vector<FMToperator>operators;
+		// DocString: FMToutput::theme_target
+		///Sometime output can specify multiple attributes of a given themes
+		//int theme_target;
+		// DocString: FMToutput::name
+		///This is the name of the output
+		std::string name;
+		// DocString: FMToutput::description
+		///This is description of the FMToutput has seen in the output section.
+		std::string description;
+		// DocString: FMToutput::group
+		///This is the group of the output, if empty there's no group
+		std::string group;
+		// DocString: FMToutput::setproportions
+		/**
+		Set equations proportions for developpements....when original entry is numeric turn it into proportion.
+		*/
+		void setproportions(std::map<std::string, std::vector<std::string>>& allequations,
+			const std::vector<std::string>& baseequation) const;
+		// DocString: FMToutput::isdivision
+		/**
+		Return true if output contains division
+		*/
+		bool isdivision() const;
+		// DocString: FMToutput::isdivision
+		/**
+		Replace the division with the bound and reverse the denominator
+		*/
+		void replacedivision(const double& bound);
 	private:
-	friend class boost::serialization::access;
-	template<class Archive>
-	void serialize(Archive& ar, const unsigned int version)
-	{
-		try {
-			ar& boost::serialization::make_nvp("FMTobject", boost::serialization::base_object<FMTobject>(*this));
-			ar& BOOST_SERIALIZATION_NVP(sources);
-			ar& BOOST_SERIALIZATION_NVP(operators);
-			//ar & BOOST_SERIALIZATION_NVP(theme_target);
-			ar& BOOST_SERIALIZATION_NVP(name);
-			ar& BOOST_SERIALIZATION_NVP(description);
-		}
-		catch (...)
+		// DocString: FMToutput::serialize
+		/**
+		serialize function is for serialization, used to do multiprocessing across multiple cpus (pickle in Pyhton)
+		*/
+		friend class boost::serialization::access;
+		template<class Archive>
+		void serialize(Archive& ar, const unsigned int version)
 		{
-			_exhandler->printexceptions("", "FMToutput::serialize", __LINE__, __FILE__);
+			try {
+				ar& boost::serialization::make_nvp("FMTobject", boost::serialization::base_object<FMTobject>(*this));
+				ar& BOOST_SERIALIZATION_NVP(sources);
+				ar& BOOST_SERIALIZATION_NVP(operators);
+				//ar & BOOST_SERIALIZATION_NVP(theme_target);
+				ar& BOOST_SERIALIZATION_NVP(name);
+				ar& BOOST_SERIALIZATION_NVP(description);
+			}
+			catch (...)
+			{
+				_exhandler->printexceptions("", "FMToutput::serialize", __LINE__, __FILE__);
+			}
 		}
-	}
+		// DocString: FMToutput::_getFormatedOutputName()
+		/**
+		@brief get the name of the output and attribute and description in a string
+		@return a string of the output name.
+		*/
+		std::string _getFormatedOutputName() const;
+		// DocString: FMToutput::_needWsFormat
+		/**
+		@brief check if the output needs to be converted to WS format (composed of inedges vs outedges sources)
+		@return true if need to be converted else false.
+		*/
+		bool _needWsFormat() const;
+		// DocString: FMToutput::_toWsFormat
+		/**
+		@brief from a FMT output format split the outputs in multiple outputs that fit with the Woodstock Format.
+		@return the output in string format for Woodstock.
+		*/
+		std::string _toWsFormat() const;
+		// DocString: FMToutput::_sourceCounter
+		/**
+		 * @brief Verifies that no line in the given source string exceeds a specified maximum length.
+		 *
+		 * This function checks each line in the provided source string to ensure that it does not
+		 * exceed the maximum allowed number of characters per line. If any line exceeds this limit,
+		 * an exception is raised and the function returns false.
+		 *
+		 * @param p_source The source string to be checked.
+		 * @return `true` if all lines in the source string are within the allowed length, `false` otherwise.
+		 */
+		bool _sourceCounter(const std::string& p_source) const;
+
     };
 // DocString: FMToutputcomparator
 /**

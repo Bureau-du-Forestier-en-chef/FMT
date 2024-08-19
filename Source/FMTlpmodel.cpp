@@ -1055,6 +1055,7 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 			for (const auto& elementtype : simpleelements)
 			{
 				const std::vector<int> ELEMENTS = getMatrixElement(CONSTRAINT_IT, period, elementtype);
+				getMatrixElementRef(CONSTRAINT_IT, period, elementtype).clear();
 				if (!ELEMENTS.empty())
 				{
 					for (const int& levelid : ELEMENTS)
@@ -1154,7 +1155,7 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 			if (!Dvariables.empty() || !Dconstraints.empty())
 			{
 				const int LENGTH = getparameter(Models::FMTintmodelparameters::LENGTH);
-				for (int period = 1; period < LENGTH + 1; ++period)
+				for (int period = 0; period < LENGTH + 1; ++period)
 				{
 					for (std::vector<Core::FMTconstraint>::const_iterator it = constraints.begin();
 						it != constraints.end(); ++it)

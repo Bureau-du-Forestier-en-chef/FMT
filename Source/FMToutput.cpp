@@ -17,7 +17,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <cpl_port.h>
 #include <queue>
 #include <boost/regex/config.hpp>
-
+#include <array>
 #include "FMTexceptionhandler.h"
 
 namespace Core{
@@ -231,109 +231,37 @@ FMToutput::operator std::string() const
     {
 		std::string line;
 	try{
-		//Works for normal outputs, level and levels with operators
-		//if(!islevel() || isonlylevel())
-		//{
-			line = "*OUTPUT ";
-			if (isonlylevel())
-			{
-				line = "*LEVEL ";
-			}
-			line += name;
-			if (targetthemeid()!=-1)
-			{
-				line += " (_TH" + std::to_string(targetthemeid() + 1) + ")";
-			}
-			line += " " + description + "\n";
-			
+		if (_needWsFormat())
+		{
+			line = _toWsFormat();
+		}else {
+			line = _getFormatedOutputName();
 			if (isconstantlevel())
 			{
 				line += "*SOURCE ";
 				for (const double& value : sources.begin()->getvalues())
 				{
-					
+
 					line += FMToutputsource::trimDouble(std::to_string(value)) + " ";
 				}
 				line.pop_back();
 				line += "\n";
-				
-			}else if(!isonlylevel()) 
-				{
+
+			}
+			else if (!isonlylevel())
+			{
 				line += "*SOURCE ";
 				for (size_t id = 0; id < sources.size(); ++id)
-					{
+				{
 					line += std::string(sources[id]) + " ";
 					if (id < operators.size())
-						{
+					{
 						operators[id].isfactor() ? line += std::string(operators[id]) + " " : line += std::string(operators[id]) + "\n";
-						}
 					}
+				}
 				line += "\n";
-				}
-			/*if (!sources.empty() && ((islevel() && sources.at(0).getaction().empty()) || (!islevel())))
-			{
-			if (!isonlylevel()||isconstantlevel())
-				{
-					
-					for (size_t id = 0; id < sources.size(); ++id)
-					{
-						line += std::string(sources[id]) + " ";
-						if (id < operators.size())
-						{
-							line += std::string(operators[id]) + " ";
-						}
-					}
-				}
-			}*/
-		/* }
-		//When a output is a mix between level and output 
-		else
-		{
-			int lid = 1; 
-			for (const FMToutputsource& src : sources)
-			{
-				//Unroll and declare level before the output
-				if (src.gettarget() == FMTotar::level)
-				{
-					line += "*LEVEL ";
-					line += name+"FMTLEVEL"+std::to_string(lid);
-					if (targetthemeid()!=-1)
-					{
-						line += " (_TH" + std::to_string(targetthemeid() + 1) + ")";
-					}
-					line+=" " + description + "\n";
-					line += "*SOURCE ";
-					line += std::string(src) + "\n ";
-					line+="\n";
-					++lid;
-				}
 			}
-			line += "*OUTPUT ";
-			line += name;
-			if (targetthemeid()!=-1)
-			{
-				line += " (_TH" + std::to_string(targetthemeid() + 1) + ")";
-			}
-			line+=" " + description + "\n";
-			line += "*SOURCE ";
-			lid = 1; 
-			for (size_t id = 0; id < sources.size(); ++id)
-			{
-				const FMToutputsource& src = sources.at(id);
-				if(src.gettarget() != FMTotar::level)
-				{
-					line += std::string(src) + " ";
-				}else{
-					line += name+"FMTLEVEL"+std::to_string(lid)+" ";
-					++lid;
-				}
-				if (id < operators.size())
-				{
-					line += std::string(operators[id]) + " ";
-				}
-			}
-		}*/	
-		
+		}
 	}
 	catch (...)
 	{
@@ -341,7 +269,7 @@ FMToutput::operator std::string() const
 			"", "FMToutput::operator std::string()", __LINE__, __FILE__, Core::FMTsection::Outputs);
 	}
 	
-	if (sourceCounter(line))
+	if (_sourceCounter(line))
 	{
 		return line;
 	}
@@ -1431,7 +1359,7 @@ bool FMToutputcomparator::operator()(const FMToutput& output) const
 	return output_name == output.getname();
 	}
 
-bool FMToutput::sourceCounter(const std::string& p_source) const
+bool FMToutput::_sourceCounter(const std::string& p_source) const
 {
 	bool passed = true;
 	const int MAXSIZE = 256;
@@ -1467,6 +1395,124 @@ bool FMToutput::sourceCounter(const std::string& p_source) const
 	return passed;
 
 }
+
+std::string FMToutput::_getFormatedOutputName() const
+{
+	std::string result("*OUTPUT ");
+	if (isonlylevel())
+	{
+		result = "*LEVEL ";
+	}
+	result += name;
+	if (targetthemeid() != -1)
+		{
+		result += " (_TH" + std::to_string(targetthemeid() + 1) + ")";
+		}
+	if (targetthemeid() != -1)
+		{
+		result += " (_TH" + std::to_string(targetthemeid() + 1) + ")";
+		}
+	result += " " + description + "\n";
+	return result;
+}
+
+bool FMToutput::_needWsFormat() const
+{
+	bool needit = false;
+	if (!isconstant())
+	{
+		bool useInEdges = false;
+		bool useOutEdges = false;
+		for (const FMToutputsource& SOURCE : sources)
+		{
+			if (SOURCE.useinedges())
+			{
+				useInEdges = true;
+			}
+			else if (SOURCE.useoutedges())
+			{
+				useOutEdges = true;
+			}
+		}
+		needit = useInEdges && useOutEdges;
+	}
+	return needit;
+}
+
+std::string FMToutput::_toWsFormat() const
+	{
+	std::string result;
+	std::vector<Core::FMToperator>tempOperators;
+	std::vector<Core::FMToutputsource>tempSources;
+	std::string tempName;
+	bool isInEdge = sources.begin()->useinedges();
+	size_t outputId = 0;
+	size_t operatorId = 0;
+	std::string SumOutput(_getFormatedOutputName() +"*SOURCE ");
+	std::array<std::string,2>outTypes{"OUT","IN"};
+	for (const FMToutputsource& SOURCE : sources)
+		{
+		const bool SOURCE_TYPE = SOURCE.useinedges();
+		bool packNGo = false;
+		if (SOURCE_TYPE!=isInEdge && SOURCE.isvariable())//build an output
+			{
+			packNGo = true;
+			isInEdge = SOURCE_TYPE;
+			}else {//push into the existing output
+				tempName = "~" + getname() + std::to_string(outputId) + outTypes.at(static_cast<size_t>(SOURCE_TYPE));
+				tempSources.push_back(SOURCE);
+				if (operatorId<operators.size())
+					{
+					tempOperators.push_back(operators.at(operatorId));
+					}
+				}
+		if (packNGo)
+			{
+			Core::FMToperator outputOperator;
+			//if (operatorId < operators.size())
+			//	{
+					outputOperator = tempOperators.back();
+					tempOperators.pop_back();
+			//	}
+			const Core::FMToutput NEW_OUTPUT(tempName, "", getgroup(), tempSources, tempOperators);
+			result += std::string(NEW_OUTPUT) + "\n";
+			SumOutput += tempName +" " + std::string(outputOperator)+ " ";
+			tempOperators.clear();
+			tempSources.clear();
+			tempName.clear();
+			if (outputId != sources.size() - 1)
+				{
+					tempName = "~" + getname() + std::to_string(outputId) + outTypes.at(static_cast<size_t>(!SOURCE_TYPE));
+					tempSources.push_back(SOURCE);
+					if (operatorId < operators.size())
+					{
+						tempOperators.push_back(operators.at(operatorId));
+					}
+				}
+			}
+
+		if (outputId == sources.size() - 1)
+			{
+			if (packNGo)
+				{
+				tempSources.push_back(SOURCE);
+				}
+			tempName = "~" + getname() + std::to_string(outputId) + outTypes.at(static_cast<size_t>(isInEdge));
+			const Core::FMToutput NEW_OUTPUT(tempName, "", getgroup(), tempSources, tempOperators);
+			result += std::string(NEW_OUTPUT) + "\n";
+			SumOutput += tempName + "\n";
+			}
+		
+		/*if (outputId>1)
+			{
+			++operatorId;
+			}*/
+		++operatorId;
+		++outputId;
+		}
+	result += SumOutput;
+	return result;
+	}
 
 
 }

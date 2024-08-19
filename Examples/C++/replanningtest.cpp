@@ -6,7 +6,9 @@
 	#include "FMTnssmodel.h"
 	#include "FMTfreeexceptionhandler.h"
 	#include "FMTmodelparser.h"
+	#include "FMTscheduleparser.h"
 #include "FMTdefaultlogger.h"
+#include "boost/filesystem.hpp"
 #endif
 
 int main(int argc, char *argv[])
@@ -14,12 +16,15 @@ int main(int argc, char *argv[])
 	#ifdef FMTWITHOSI
 	Logging::FMTdefaultlogger().logstamp();
 	const std::string folder = "../../../../Examples/Models/TWD_land/";
+	const std::string outputlocation = "../../../../tests/replanningtest/replanning";
+	const std::string scheduleLocation = "../../../../tests/replanningtest/replanning/replanning_Replicate1.seq";
 	const std::string primlocation = folder + "TWD_land.pri";
 	std::vector<std::string>allscenarios;
 	allscenarios.push_back("Globalreplanning");
 	allscenarios.push_back("Globalfire");
 	allscenarios.push_back("Localreplanning");
 	Parser::FMTmodelparser modelparser;
+	Parser::FMTscheduleparser scheduleParser;
 	modelparser.setdefaultexceptionhandler();
 	std::vector<Models::FMTmodel> models = modelparser.readproject(primlocation, allscenarios);
 	Models::FMTlpmodel global(models.at(0), Models::FMTsolverinterface::CLP);
@@ -39,14 +44,19 @@ int main(int argc, char *argv[])
 			selectedoutputs.push_back(output);
 		}
 	}
-	const std::string outputlocation = "../../tests/replanningtest/replanning";
 	std::vector<std::string>layersoptions;
 	layersoptions.push_back("SEPARATOR=SEMICOLON");
-	std::unique_ptr<Parallel::FMTtask> maintaskptr(new Parallel::FMTreplanningtask(global, stochastic, local, selectedoutputs, outputlocation, "CSV", layersoptions,10,10,0.5, Core::FMToutputlevel::totalonly));
+	std::unique_ptr<Parallel::FMTtask> maintaskptr(new Parallel::FMTreplanningtask(global, stochastic, local, selectedoutputs, outputlocation, "CSV", layersoptions,10,10,0.5, Core::FMToutputlevel::totalonly, true));
 	Parallel::FMTtaskhandler handler(maintaskptr,10);
 	//handler.setquietlogger();
 	//handler.ondemandrun();
 	handler.conccurentrun();
+
+	//On lis les schédules
+	const std::vector<Core::FMTtheme> THEMES = models.at(0).getthemes();
+	const std::vector<Core::FMTaction> ACTIONS = models.at(0).getactions();
+	scheduleParser.read(THEMES, ACTIONS, scheduleLocation);
+
 	#endif
 	/*#ifdef FMTWITHOSI
 	Logging::FMTlogger().logstamp();

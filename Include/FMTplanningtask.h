@@ -102,11 +102,11 @@ namespace Parallel
 		*/
 		FMTplanningtask(const int& minoutputperiod,
 					const int& maxoutputperiod,
-					const std::string& outputlocation,
+					std::string& outputlocation,
 					std::string gdaldriver = "CSV",
 					std::vector<std::string>creationoptions= std::vector<std::string>(),
 					Core::FMToutputlevel outputlevel = Core::FMToutputlevel::standard,
-					std::string primaryfilelocatiron = std::string());
+					std::string primaryfilelocation = std::string());
 		// DocString: FMTplanningtask::split
 		/**
 		The split fonction that split the main task into multiple tasks of planning.

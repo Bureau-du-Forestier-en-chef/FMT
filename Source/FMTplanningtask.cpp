@@ -60,7 +60,7 @@ namespace Parallel
 	FMTplanningtask::FMTplanningtask(
 		const int& minoutputperiod,
 		const int& maxoutputperiod,
-		const std::string& outputlocation,
+		std::string& outputlocation,
 		std::string gdaldriver,
 		std::vector<std::string>creationoptions,
 		Core::FMToutputlevel outputlevel,
