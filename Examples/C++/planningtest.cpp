@@ -28,7 +28,7 @@ int main(int argc, char *argv[])
 	std::vector<Exception::FMTexc>errors;
 	errors.push_back(Exception::FMTexc::FMTempty_schedules);
 	modelparser.seterrorstowarnings(errors);
-	const std::string outputlocation = "../../tests/planning";
+	std::string outputlocation = "../../tests/planning";
 	std::vector<std::string>layersoptions;
 	layersoptions.push_back("SEPARATOR=SEMICOLON");
 	//Si on fournit la localisation du fichier primaire à la task il écrira la schedule pour tous les scénarios.
