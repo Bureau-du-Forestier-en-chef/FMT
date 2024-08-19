@@ -746,7 +746,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 				size_t verticies_id = 0;
 				for (boost::tie(vertex_iterator, vertex_iterator_end) = boost::vertices(data); vertex_iterator != vertex_iterator_end; ++vertex_iterator)
 				{
-					const int rowid = data[*vertex_iterator].getconstraintID();
+					const int rowid = data[*vertex_iterator].getConstraintId();
 					if (rowid>=0)
 						{
 						const std::string vertexid = "_V" + std::to_string(verticies_id);
@@ -1832,8 +1832,8 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 					const FMTvertex_descriptor descriptor = *vertex_iterator;
 					const FMTbasevertexproperties& vproperty = data[descriptor];
 					const std::map<int, int>outs = getoutvariables(descriptor);
-					lower_bounds[outs.at(-1)] = vproperty.getbaseRHS();
-					upper_bounds[outs.at(-1)] = vproperty.getbaseRHS();
+					lower_bounds[outs.at(-1)] = vproperty.getBaseRhs();
+					upper_bounds[outs.at(-1)] = vproperty.getBaseRhs();
 				}
 			}
 			catch (...)
@@ -2498,11 +2498,11 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 					boost::unordered_map<Core::FMTmask, Core::FMTmask>::const_iterator mskit = presolvetopostsolve.find(presolvemask);
 					if (mskit != presolvetopostsolve.end())
 						{
-						vertexprop.setdevlopementmask(mskit->second);
+						vertexprop.setDevlopementMask(mskit->second);
 					}else {
 						const Core::FMTmask postsolvedmask = presolvemask.postsolve(filter, originalbasethemes);
 						presolvetopostsolve[presolvemask] = postsolvedmask;
-						vertexprop.setdevlopementmask(postsolvedmask);
+						vertexprop.setDevlopementMask(postsolvedmask);
 						}
 				}
 				generatedevelopments();
@@ -3151,7 +3151,7 @@ template<> inline FMTgraphstats FMTgraph<Graph::FMTvertexproperties, Graph::FMTe
 		{
 			const FMTvertex_descriptor& vertex_location = *vertexit;
 			FMTvertexproperties& vertexproperty = data[vertex_location];
-			const int constvalue = vertexproperty.getconstraintID();
+			const int constvalue = vertexproperty.getConstraintId();
 			if (constvalue >= 0)
 			{
 				--stats.rows;
@@ -3274,7 +3274,7 @@ template<> inline void FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproper
 			for (boost::tie(vertex_iterator, vertex_iterator_end) = boost::vertices(data); vertex_iterator != vertex_iterator_end; ++vertex_iterator)
 			{
 				FMTvertexproperties& vertexproperty = data[*vertex_iterator];
-				const int actualconstraint = vertexproperty.getconstraintID();
+				const int actualconstraint = vertexproperty.getConstraintId();
 				if (actualconstraint >= 0)
 				{
 					int toremove = 0;

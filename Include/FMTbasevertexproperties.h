@@ -8,7 +8,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #ifndef FMTbasevertexproperties_H_INCLUDED
 #define FMTbasevertexproperties_H_INCLUDED
 
-#include "FMTfuturdevelopment.h"
+
 #include "FMTactualdevelopment.h"
 #include <boost/serialization/serialization.hpp>
 #include <boost/serialization/unique_ptr.hpp>
@@ -21,67 +21,107 @@ namespace Graph
 {
 	class FMTEXPORT FMTbasevertexproperties
 	{
-		// DocString: FMTbasevertexproperties::save
+	public:
+		// DocString: FMTbasevertexproperties::~FMTbasevertexproperties
 		/**
-		Save function is for serialization, used to do multiprocessing across multiple cpus (pickle in Pyhton)
+		@brief destructor of FMTbasevertexpropertie
+		*/
+		virtual ~FMTbasevertexproperties() = default;
+		// DocString: FMTbasevertexproperties::FMTbasevertexproperties()
+		/**
+		@brief Default constructor
+		*/
+		FMTbasevertexproperties()=default;
+		// DocString: FMTbasevertexproperties::FMTbasevertexproperties(const FMTbasevertexproperties&)
+		/**
+		@brief copy constructor
+		@param[in] a vertexproperties to copy.
+		*/
+		FMTbasevertexproperties(const FMTbasevertexproperties& rhs)=default;
+		// DocString: FMTbasevertexproperties::FMTbasevertexproperties(const FMTbasevertexproperties&)
+		/**
+		@brief copy constructor of vertexproperties
+		@param[in] a vertexproperties to copy.
+		@return a reference to the vertexproperties.
+		*/
+		FMTbasevertexproperties& operator = (const FMTbasevertexproperties& rhs) = default;
+		// DocString: FMTbasevertexproperties::FMTbasevertexproperties(const Core::FMTfuturdevelopment&)
+		/**
+		@brief constructor based on futur development.
+		@param[in] futur developement.
+		*/
+		FMTbasevertexproperties(const Core::FMTfuturdevelopment& p_development);
+		// DocString: FMTbasevertexproperties::FMTbasevertexproperties(const Core::FMTactualdevelopment&)
+		/**
+		@brief constructor based on actual development.
+		@param[in] actual developement.
+		*/
+		FMTbasevertexproperties(const Core::FMTactualdevelopment& p_development);
+		//FMTbasevertexproperties(const Core::FMTdevelopment& p_development);
+		// DocString: FMTbasevertexproperties::setDevlopementMask
+		/**
+		@brief set the development mask of the vertex.
+		@param[in] the mask of the FMTdevlopement.
+		*/
+		void setDevlopementMask(const Core::FMTmask& p_newMask);
+		// DocString: FMTbasevertexproperties::getBaseRhs
+		/**
+		@brief get the rhs of the constraint of the vertex.
+		@return the double value of the rhs.
+		*/
+		double getBaseRhs() const;
+		// DocString: FMTbasevertexproperties::getConstraintId
+		/**
+		@brief get the index of the constraint of the vertex
+		@return the index of the vertex
+		*/
+		virtual int getConstraintId() const;
+		// DocString: FMTbasevertexproperties::get
+		/**
+		@brief get a const reference to the development
+		@return a reference to the development.
+		*/
+		const Core::FMTdevelopment& get() const;
+		// DocString: FMTbasevertexproperties::hash
+		/**
+		@brief hash the development of the vertex.
+		@return hash of the vertex.
+		*/
+		size_t hash() const;
+		// DocString: FMTbasevertexproperties::operator<
+		/**
+		@brief less than operator
+		@return true if less than.
+		*/
+		bool operator < (const FMTbasevertexproperties& rhs) const;
+		// DocString: FMTbasevertexproperties::operator==
+		/**
+		@brief equality test operator
+		@return true if equal
+		*/
+		bool operator == (const FMTbasevertexproperties& rhs) const;
+		// DocString: FMTbasevertexproperties::operator!=
+		/**
+		@brief non equality test operator
+		@return true if non equal
+		*/
+		bool operator != (const FMTbasevertexproperties& rhs) const;
+	private:
+		// DocString: FMTbasevertexproperties::serialize
+		/**
+		@brief Serialize the vertex propertie
+		@param[out] the archive to serialize in
+		@param[in] the version of the archive
 		*/
 		friend class boost::serialization::access;
 		template<class Archive>
-		void save(Archive& ar, const unsigned int version) const
+		void serialize(Archive& ar, const unsigned int version)
 			{
-			ar & development->getarea();
-			ar & (*development); //turn it to a non virtual class
+			ar& BOOST_SERIALIZATION_NVP(m_development);
 			}
-		// DocString: FMTbasevertexproperties::load
-		/**
-		Load function is for serialization, used to do multiprocessing across multiple cpus (pickle in Pyhton)
-		*/
-		template<class Archive>
-		void load(Archive& ar, const unsigned int version)
-		{
-			double areavalue = 0;
-			ar & areavalue;
-			Core::FMTdevelopment base;
-			ar & base;
-			if (areavalue!=0)
-				{
-
-				development = std::unique_ptr<Core::FMTdevelopment>(new Core::FMTactualdevelopment(base, areavalue));
-			}else {
-				development = std::unique_ptr<Core::FMTfuturdevelopment>(new Core::FMTfuturdevelopment(base));
-				}
-		}
-		BOOST_SERIALIZATION_SPLIT_MEMBER()
-	protected:
-		std::unique_ptr<Core::FMTdevelopment>development;
-	public:
-		virtual ~FMTbasevertexproperties() = default;
-		FMTbasevertexproperties()=default;
-		FMTbasevertexproperties(const FMTbasevertexproperties& rhs);
-		virtual inline int getconstraintID() const
-			{
-			return 0;
-			}
-		inline const Core::FMTdevelopment& get() const
-		{
-			return (*development);
-		}
-		bool operator < (const FMTbasevertexproperties& rhs) const;
-		FMTbasevertexproperties& operator = (const FMTbasevertexproperties& rhs);
-		FMTbasevertexproperties(const Core::FMTfuturdevelopment& ldevelopment);
-		FMTbasevertexproperties(const Core::FMTactualdevelopment& ldevelopment);
-		FMTbasevertexproperties(const Core::FMTdevelopment& ldevelopment);
-		FMTbasevertexproperties(const Core::FMTfuturdevelopment& ldevelopment,
-			const int& lconstraintID);
-		FMTbasevertexproperties(const Core::FMTactualdevelopment& ldevelopment,
-			const int& lconstraintID);
-		FMTbasevertexproperties(const Core::FMTdevelopment& ldevelopment,
-			const int& lconstraintID);
-		void setdevlopementmask(const Core::FMTmask& newmask);
-		double getbaseRHS() const;
-		size_t hash() const;
-		bool operator == (const FMTbasevertexproperties& rhs) const;
-		bool operator != (const FMTbasevertexproperties& rhs) const;
+		// DocString: FMTbasevertexproperties::m_development
+		///The developement that hold the information about the strata.
+		Core::FMTactualdevelopment m_development;
 	};
 }
 

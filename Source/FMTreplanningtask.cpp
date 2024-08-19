@@ -95,7 +95,7 @@ namespace Parallel
 			m_primaryName = (m_outputlocation.find_last_of('/') == std::string::npos) ? m_outputlocation : m_outputlocation.substr(m_outputlocation.find_last_of('/') + 1);
 			const size_t LENGTH = static_cast<size_t>(global->getparameter(Models::FMTintmodelparameters::LENGTH));
 			const size_t AREA_SIZE = global->getarea().size();
-			const size_t SCALE_FACTOR = 20;
+			const size_t SCALE_FACTOR = 10;
 			const size_t GLOBAL_RESERVE = AREA_SIZE * LENGTH * LENGTH * SCALE_FACTOR;
 			const size_t BASE_RESERVE = AREA_SIZE * SCALE_FACTOR;
 			Models::FMTsrmodel* GlobalPtr = dynamic_cast<Models::FMTsrmodel*>(global.get());
@@ -342,7 +342,6 @@ namespace Parallel
 				{
 					newconstraints.push_back(basenssconstraint.getfromreplicate(getiteration(), replanningperiod));
 				}
-				modelcpy->setconstraints(newconstraints);
 				modelcpy->setconstraints(newconstraints);
 			}
 			

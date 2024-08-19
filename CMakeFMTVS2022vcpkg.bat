@@ -10,7 +10,7 @@ cmake CMakeLists.txt ^
 	-G "Visual Studio 17 2022" ^
 	-DBUILD_TYPE=Debug ^
 	-DPARALLEL_TESTS=8 ^
-	-DCMAKE_TOOLCHAIN_FILE=D:/dependencies/vcpkg/scripts/buildsystems/vcpkg.cmake ^
+	-DCMAKE_TOOLCHAIN_FILE="C:/Program Files/Microsoft Visual Studio/2022/Professional/VC/vcpkg/scripts/buildsystems/vcpkg.cmake" ^
 	-DVCPKG_TARGET_TRIPLET=x64-windows ^
 	-DVCPKG_MANIFEST_MODE=ON ^
 	-DONNXR_DIR=D:/dependencies/onnxruntime/ ^
@@ -29,7 +29,7 @@ cmake CMakeLists.txt ^
 	-G "Visual Studio 17 2022" ^
 	-DBUILD_TYPE=Release ^
 	-DPARALLEL_TESTS=8 ^
-	-DCMAKE_TOOLCHAIN_FILE=D:/dependencies/vcpkg/scripts/buildsystems/vcpkg.cmake ^
+	-DCMAKE_TOOLCHAIN_FILE="C:/Program Files/Microsoft Visual Studio/2022/Professional/VC/vcpkg/scripts/buildsystems/vcpkg.cmake" ^
 	-DVCPKG_TARGET_TRIPLET=x64-windows ^
 	-DVCPKG_MANIFEST_MODE=ON ^
 	-DONNXR_DIR=D:/dependencies/onnxruntime/ ^

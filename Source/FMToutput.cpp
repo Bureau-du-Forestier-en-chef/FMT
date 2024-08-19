@@ -667,6 +667,8 @@ std::vector<FMToutputnode> FMToutput::getnodes(std::vector<std::string>& equatio
 	//set a expression and get the nodes! check if the node is positive or negative accross the equation!!!
 	std::vector<FMToutputnode>nodes;
 	try {
+		if (!empty())
+		{
 			size_t nodeid = 0;
 			size_t sourceid = 0;
 			equation.clear();
@@ -675,14 +677,14 @@ std::vector<FMToutputnode> FMToutput::getnodes(std::vector<std::string>& equatio
 			std::deque<FMToperator>ops(operators.begin(), operators.end());
 			//if (ops.empty() || ops.front().isfactor())
 			//{
-				ops.push_front(FMToperator("+"));
+			ops.push_front(FMToperator("+"));
 			//}
-			
+
 			/*for (const FMToperator& op : operators)
 				{
 				ops.push(op);
 				}*/
-			std::deque<FMToutputsource>srs(sources.begin(),sources.end());
+			std::deque<FMToutputsource>srs(sources.begin(), sources.end());
 			/*for (const FMToutputsource& sr : sources)
 				{
 				srs.push(sr);
@@ -690,9 +692,9 @@ std::vector<FMToutputnode> FMToutput::getnodes(std::vector<std::string>& equatio
 			bool pushednode = false;
 			bool pushedfactor = false;
 			while (!srs.empty())
+			{
+				if (srs.front().isvariable() || srs.front().isvariablelevel())
 				{
-				if (srs.front().isvariable()||srs.front().isvariablelevel())
-					{
 					double constant = 1;
 					//Its now handle in FMToutputnode settograph
 					/*if (srs.front().isaverage())
@@ -700,35 +702,39 @@ std::vector<FMToutputnode> FMToutput::getnodes(std::vector<std::string>& equatio
 						constant *= multiplier;
 						}8=*/
 					if (!ops.front().isfactor())
-						{
+					{
 						constant *= ops.front().call(0, 1);
-						}
+					}
 					if (ops.front().isfactor())
 					{
 						equation.push_back(")");
 						equation.push_back(ops.front());
 						equation.push_back("(");
-					}else {
+					}
+					else {
 						if (!pushednode)
 						{
 							equation.push_back("+");
-						}else {
+						}
+						else {
 							equation.push_back(ops.front());
 						}
 					}
 					equation.push_back("O" + std::to_string(nodes.size()));
 					ops.pop_front();
 					nodes.emplace_back(srs.front(),
-						FMToutputsource(FMTotar::val, 1, "", "", srs.front().getoutputorigin()),constant);
+						FMToutputsource(FMTotar::val, 1, "", "", srs.front().getoutputorigin()), constant);
 					pushednode = true;
 					pushedfactor = false;
-				}else if(ops.front().isfactor()&& (pushednode|| pushedfactor))
-					{
+				}
+				else if (ops.front().isfactor() && (pushednode || pushedfactor))
+				{
 					if (srs.front().isconstant())
-						{
+					{
 						nodes.back().constant = ops.front().call(nodes.back().constant, srs.front().getvalue());
-					}else {
-						if (nodes.back().factor.istimeyield()&&
+					}
+					else {
+						if (nodes.back().factor.istimeyield() &&
 							srs.front().istimeyield())
 						{
 							_exhandler->raise(Exception::FMTexc::FMTunsupported_output,
@@ -736,27 +742,29 @@ std::vector<FMToutputnode> FMToutput::getnodes(std::vector<std::string>& equatio
 								"FMToutput::getnodes", __LINE__, __FILE__);
 						}
 						nodes.back().factor.resetvalues(ops.front(), srs.front());
-						}
+					}
 					pushednode = false;
 					pushedfactor = true;
 					ops.pop_front();
-				}else{
+				}
+				else {
 					equation.push_back(ops.front());
 					const double value = srs.front().getvalue(period);
 					equation.push_back(std::to_string(value));
 					pushednode = false;
 					pushedfactor = false;
 					ops.pop_front();
-					}
-				srs.pop_front();
 				}
+				srs.pop_front();
+			}
 			equation.erase(equation.begin());
 			equation.insert(equation.begin(), "(");
 			equation.push_back(")");
-		if (orderbyoutputid)
+			if (orderbyoutputid)
 			{
-			std::sort(nodes.begin(), nodes.end(), FMToutputnodeorigincomparator());
+				std::sort(nodes.begin(), nodes.end(), FMToutputnodeorigincomparator());
 			}
+		}
 	}catch (...)
 		{
 		_exhandler->raisefromcatch(

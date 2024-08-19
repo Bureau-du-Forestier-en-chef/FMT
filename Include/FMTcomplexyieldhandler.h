@@ -13,30 +13,13 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <string>
 #include <boost/serialization/serialization.hpp>
 #include <boost/serialization/nvp.hpp>
+#include "FMTYieldsCache.h"
 #include <memory>
 
 namespace Core
 {
 	class FMTEXPORT FMTcomplexyieldhandler final : public FMTyieldhandler
 	{
-		friend class boost::serialization::access;
-		template<class Archive>
-		void serialize(Archive& ar, const unsigned int version)
-		{
-			ar & boost::serialization::make_nvp("FMTyieldhandler", boost::serialization::base_object<FMTyieldhandler>(*this));
-			ar & BOOST_SERIALIZATION_NVP(elements);
-		}
-		std::map<std::string, FMTdata>elements;
-		std::map<std::string, double> getsources(const std::map<std::string, const std::unique_ptr<FMTyieldhandler>*>& srcdata,
-			const FMTyieldrequest& request, bool& age_only) const;
-		std::map<std::string, const std::unique_ptr<FMTyieldhandler>*> getdata(const FMTyieldrequest& request,
-			const std::vector<std::string>& names, const std::string& original) const;
-		std::vector<double>getsourcesarray(const std::map<std::string, const std::unique_ptr<FMTyieldhandler>*>& srcdata,
-			const FMTyieldrequest& request, bool& age_only) const;
-		std::unique_ptr<FMTyieldhandler>toageyld(const FMTyieldrequest& request,
-			const std::vector<std::string>& yieldnames, const int& minage, const int& maxage) const;
-		std::unordered_set<size_t>overridetabou;
-		size_t overrideindex;
 	public:
 		void settabou(const size_t& index);
 		void settabou(const FMTcomplexyieldhandler& rhs);
@@ -47,7 +30,7 @@ namespace Core
 		virtual double get(const std::string& yld, const FMTyieldrequest& request) const;
 		bool comparesources(const std::string& yield,const FMTcomplexyieldhandler& overridedyield) const;
 		virtual  operator std::string() const;
-		~FMTcomplexyieldhandler() = default;
+		~FMTcomplexyieldhandler();
 		FMTcomplexyieldhandler();
 		FMTcomplexyieldhandler(const FMTcomplexyieldhandler& rhs) = default;
 		FMTcomplexyieldhandler& operator = (const FMTcomplexyieldhandler& rhs) = default;
@@ -70,6 +53,26 @@ namespace Core
 		virtual void clearcache();
 		virtual int getage(const FMTyieldrequest& request, const FMTspec& spec) const;
 		virtual double getyieldlinearvalue(const std::string& yldname, const FMTyieldrequest& request, bool allowoutofrange=true) const;
+	private:
+		friend class boost::serialization::access;
+		template<class Archive>
+		void serialize(Archive& ar, const unsigned int version)
+		{
+			ar& boost::serialization::make_nvp("FMTyieldhandler", boost::serialization::base_object<FMTyieldhandler>(*this));
+			ar& BOOST_SERIALIZATION_NVP(elements);
+		}
+		std::map<std::string, FMTdata>elements;
+		std::map<std::string, double> getsources(const std::map<std::string, const std::unique_ptr<FMTyieldhandler>*>& srcdata,
+			const FMTyieldrequest& request, bool& age_only) const;
+		std::map<std::string, const std::unique_ptr<FMTyieldhandler>*> getdata(const FMTyieldrequest& request,
+			const std::vector<std::string>& names, const std::string& original) const;
+		std::vector<double>getsourcesarray(const std::map<std::string, const std::unique_ptr<FMTyieldhandler>*>& srcdata,
+			const FMTyieldrequest& request, bool& age_only) const;
+		std::unique_ptr<FMTyieldhandler>toageyld(const FMTyieldrequest& request,
+			const std::vector<std::string>& yieldnames, const int& minage, const int& maxage) const;
+		std::unordered_set<size_t>overridetabou;
+		size_t overrideindex;
+		mutable FMTYieldsCache _cache;
 	};
 
 }

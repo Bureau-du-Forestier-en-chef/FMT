@@ -9,7 +9,8 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 cmake_minimum_required(VERSION 3.6)
 
 project(FMT VERSION 0.9.9 LANGUAGES CXX)
-
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED True)
 
 string(TIMESTAMP DATE "%Y-%m-%d")
 string(TIMESTAMP TIME "%H:%M:%S")
@@ -144,6 +145,9 @@ if (MSVC)
 	add_definitions("/bigobj")
 	add_definitions("-D_CRT_SECURE_NO_WARNINGS")
 	add_compile_options(/GS-)
+	if (MSVC_VERSION GREATER_EQUAL 1914)
+		string(APPEND CMAKE_CXX_FLAGS " /Zc:__cplusplus")
+	endif(MSVC_VERSION GREATER_EQUAL 1914)
 else()
 	add_definitions("-Wa,-mbig-obj")
 endif(MSVC)
