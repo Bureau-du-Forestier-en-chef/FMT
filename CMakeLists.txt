@@ -798,6 +798,7 @@ if (NOT DEFINED WITHOUT_TESTS)
 endif (NOT DEFINED WITHOUT_TESTS)
 
 
+include(${CMAKE_CURRENT_SOURCE_DIR}/FMTWrapperCore/CMakeLists.txt) #will polulate FMTWrapperCore
 include(${CMAKE_CURRENT_SOURCE_DIR}/UI/CMakeLists.txt) #will polulate UI
 include(${CMAKE_CURRENT_SOURCE_DIR}/Excel/CMakeLists.txt) #will polulate Excel wrapper
 
