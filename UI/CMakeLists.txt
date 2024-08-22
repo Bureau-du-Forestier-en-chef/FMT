@@ -8,13 +8,14 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 cmake_minimum_required(VERSION 3.6)
 set(WrapperINCLUDEDIR "${CMAKE_CURRENT_SOURCE_DIR}/UI/Include/")
 set(WrapperSOURCEDIR "${CMAKE_CURRENT_SOURCE_DIR}/UI/Source/")
+set(WrapperCoreINCLUDEDIR "${CMAKE_CURRENT_SOURCE_DIR}/FMTWrapperCore/Include/")
 FILE(GLOB WrapperSOURCES ${WrapperSOURCEDIR}*.cpp)
 FILE(GLOB WrapperHEADER ${WrapperINCLUDEDIR}*.h*)
 if (MSVC AND WrapperSOURCES)
     add_library(FMTWrapper SHARED ${WrapperSOURCES} ${WrapperHEADER})
 
     # Inclure les en-têtes de FMTWrapperCore
-    target_include_directories(FMTWrapper PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/FMTWrapperCore/Include")
+    target_include_directories(FMTWrapper PRIVATE ${WrapperCoreINCLUDEDIR})
     target_include_directories(FMTWrapper PRIVATE "${FMTINCLUDEDIR}")
     target_include_directories(FMTWrapper PRIVATE ${WrapperINCLUDEDIR})
     target_include_directories(FMTWrapper PRIVATE ${Boost_INCLUDE_DIRS})

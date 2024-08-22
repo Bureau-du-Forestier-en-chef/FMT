@@ -12,13 +12,13 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # Inclure les dossiers d'en-têtes
 include_directories(
-    ${CMAKE_CURRENT_SOURCE_DIR}/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/Include
     ${FMTlib_INCLUDE_DIRS}
 )
 
 # Définir les sources du projet FMTWrapperCore
-file(GLOB FMTWRAPPERCORE_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/FMTWrapperCore/Source/*.cpp)
-file(GLOB FMTWRAPPERCORE_HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/FMTWrapperCore/Include/*.h*)
+file(GLOB FMTWRAPPERCORE_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/Source/*.cpp)
+file(GLOB FMTWRAPPERCORE_HEADERS ${CMAKE_CURRENT_SOURCE_DIR}/Include/*.h*)
 
 # Créer la bibliothèque FMTWrapperCore
 if (FMTWRAPPERCORE_SOURCES)
@@ -27,11 +27,11 @@ if (FMTWRAPPERCORE_SOURCES)
 	get_target_property(FMTliblocation FMTlib LIBRARY_OUTPUT_DIRECTORY)
 
 	if (NOT WITHOUT_TESTS)
-    		FILE(GLOB FMTWrapperCore_tests ${CMAKE_CURRENT_SOURCE_DIR}/FMTWrapperCore/tests/*.cpp)
+    		FILE(GLOB FMTWrapperCore_tests ${CMAKE_CURRENT_SOURCE_DIR}/tests/*.cpp)
     		foreach(pathtosource ${FMTWrapperCore_tests})
         		createexecutable("${pathtosource}" executablename)
         		target_link_libraries(${executablename} PRIVATE FMTWrapperCore)
-        		target_include_directories(${executablename} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/FMTWrapperCore/Include)
+        		target_include_directories(${executablename} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/Include)
     		endforeach()
 endif()
 
