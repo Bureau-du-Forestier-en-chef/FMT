@@ -1,6 +1,3 @@
-#ifndef FMTFORM_CORE_HEADER
-#define FMTFORM_CORE_HEADER
-
 #include <string>
 #include <vector>
 
@@ -10,14 +7,19 @@ namespace Core {
     class FMToutput;
 }
 
+namespace Models
+{
+	class FMTmodel;
+}
+
 namespace FMTWrapperCore
 {
-    class Transformation
+    class __declspec(dllexport) Transformation
     {
     public:
-        static bool aggregateAllActions(int p_modelIndex, const std::vector<std::string>& p_aggregates, const std::string& p_schedulePri, const std::string& p_outputDirPath, const std::string& p_scenario_name);
+        static Models::FMTmodel aggregateAllActions(const Models::FMTmodel& p_model, const std::vector<std::string>& p_aggregates, const std::string& p_schedulePri, const std::string& p_outputDirPath, const std::string& p_scenario_name);
 
-        static bool splitActions(int p_modelIndex, const std::string& p_schedulePri, const std::vector<std::string>& p_splitted, const std::vector<std::string>& p_splitted_mask, const std::string& p_outputDirPath, const std::string& p_scenario_name);
+        //static bool splitActions(Models::FMTmodel p_model, const std::string& p_schedulePri, const std::vector<std::string>& p_splitted, const std::vector<std::string>& p_splitted_mask, const std::string& p_outputDirPath, const std::string& p_scenario_name);
 
         //std::vector<std::string> getActionsNames(int p_modelIndex);
 
@@ -37,4 +39,3 @@ namespace FMTWrapperCore
     };
 }
 
-#endif

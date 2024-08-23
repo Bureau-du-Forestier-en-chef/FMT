@@ -13,22 +13,21 @@ FILE(GLOB WrapperSOURCES ${WrapperSOURCEDIR}*.cpp)
 FILE(GLOB WrapperHEADER ${WrapperINCLUDEDIR}*.h*)
 if (MSVC AND WrapperSOURCES)
     add_library(FMTWrapper SHARED ${WrapperSOURCES} ${WrapperHEADER})
+    target_include_directories(FMTWrapper PRIVATE "${FMTINCLUDEDIR}")
+	get_target_property(FMTliblocation FMTlib LIBRARY_OUTPUT_DIRECTORY)
 
     # Inclure les en-têtes de FMTWrapperCore
     target_include_directories(FMTWrapper PRIVATE ${WrapperCoreINCLUDEDIR})
-    target_include_directories(FMTWrapper PRIVATE "${FMTINCLUDEDIR}")
+    
+    # Lier FMTWrapper à FMTWrapperCore
+	target_link_libraries(FMTWrapper PRIVATE "${FMTliblocation}/${CMAKE_SHARED_LIBRARY_PREFIX}${BUILD_TYPE}/FMTlib${CMAKE_STATIC_LIBRARY_SUFFIX}")
+    target_link_libraries(FMTWrapper PRIVATE FMTWrapperCore)
+    
+    # Précompilation des en-têtes
     target_include_directories(FMTWrapper PRIVATE ${WrapperINCLUDEDIR})
     target_include_directories(FMTWrapper PRIVATE ${Boost_INCLUDE_DIRS})
-
-    # Lier FMTWrapper à FMTWrapperCore
-    target_link_libraries(FMTWrapper PRIVATE FMTWrapperCore)
-
-    # Précompilation des en-têtes
     target_precompile_headers(FMTWrapper PRIVATE "${WrapperINCLUDEDIR}/stdafx.h")
 
-	get_target_property(FMTliblocation FMTlib LIBRARY_OUTPUT_DIRECTORY)
-	target_link_libraries(FMTWrapper PRIVATE "${FMTliblocation}/${CMAKE_SHARED_LIBRARY_PREFIX}${BUILD_TYPE}/FMTlib${CMAKE_STATIC_LIBRARY_SUFFIX}")
-	target_precompile_headers(FMTWrapper PRIVATE "${WrapperINCLUDEDIR}/stdafx.h")
 	target_link_libraries(FMTWrapper PRIVATE ${Boost_LIBRARIES})
 	target_compile_definitions(FMTWrapper PRIVATE "-DFMTLIBIMPORT")
 	set_property(TARGET FMTWrapper PROPERTY VS_DOTNET_REFERENCES
@@ -46,19 +45,10 @@ if (MSVC AND WrapperSOURCES)
 			createexecutable("${pathtosource}" executablename)
 			target_link_libraries(${executablename} PRIVATE FMTWrapper)
 			target_include_directories(${executablename} PRIVATE ${WrapperINCLUDEDIR})
+            target_link_libraries(${executablename} PRIVATE FMTWrapperCore)
+            target_include_directories(${executablename} PRIVATE ${WrapperCoreINCLUDEDIR})
 		endforeach()    
 	endif(NOT WITHOUT_TESTS)    
 else()    
 	message("No files found in ${CMAKE_CURRENT_SOURCE_DIR}/UI/Source/ the wrapper wont be compiled headers need to be in UI/Include and sources in UI/Source")
 endif(MSVC AND WrapperSOURCES)    
-
-
-
-
-
-
-
-	
-
-
-
