@@ -165,7 +165,7 @@ set(FMTPYNRSOURCEFILES "${FMTSOURCEDIR}/main.cpp")
 #################################################################################################
 ####################################THE LIB######################################################
 #################################################################################################
-add_library(FMTlib SHARED ${FMTSOURCEFILES})
+add_library(FMTlib SHARED ${FMTSOURCEFILES} ${FMTHEADERFILES})
 
 target_include_directories(FMTlib PRIVATE "${FMTINCLUDEDIR}")
 #include_directories("${FMTINCLUDEDIR}")
@@ -798,6 +798,8 @@ if (NOT DEFINED WITHOUT_TESTS)
 endif (NOT DEFINED WITHOUT_TESTS)
 
 
+include(${CMAKE_CURRENT_SOURCE_DIR}/FMTWrapperCore/CMakeLists.txt) #will polulate FMTWrapperCore
+#add_subdirectory(FMTWrapperCore) # Supposed better than include but directory Header have not .h
 include(${CMAKE_CURRENT_SOURCE_DIR}/UI/CMakeLists.txt) #will polulate UI
 include(${CMAKE_CURRENT_SOURCE_DIR}/Excel/CMakeLists.txt) #will polulate Excel wrapper
 
