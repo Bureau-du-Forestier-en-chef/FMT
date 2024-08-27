@@ -4,7 +4,7 @@
 #include "FMTmodelparser.h"
 #include "FMTscheduleparser.h"
 
-Models::FMTmodel FMTWrapperCore::Transformation::aggregateAllActions(const Models::FMTmodel& p_model, const std::vector<std::string>& p_aggregates, const std::string& p_schedulePri, const std::string& p_outputDirPath, const std::string& p_scenario_name)
+Models::FMTmodel FMTWrapperCore::Transformation::aggregateAllActions(const Models::FMTmodel& p_model, const std::vector<std::string>& p_aggregates, const std::vector<std::string>& p_order, const std::string& p_schedulePri, const std::string& p_outputDirPath, const std::string& p_scenario_name)
 {
 	Models::FMTmodel aggregatedModel;
 	try
