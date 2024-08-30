@@ -31,7 +31,7 @@ namespace FMTWrapperCore
 
         //double getMaxAge(int p_modelIndex);
 
-        //bool buildAction(int p_modelIndex, const std::string& p_actionName, const std::string& p_targetYield, const std::string& p_schedulePri, const std::string& p_outputDirPath, const std::string& p_scenario_name);
+        static Models::FMTmodel buildAction(const Models::FMTmodel& p_model, const std::string& p_actionName, const std::string& p_targetYield, const std::string& p_schedulePri, const std::string& p_outputDirPath, const std::string& p_scenario_name);
 
         //std::vector<std::string> getAttributes(int p_modelIndex, int p_themeIndex);
 
