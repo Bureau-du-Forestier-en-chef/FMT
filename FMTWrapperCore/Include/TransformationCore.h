@@ -19,7 +19,7 @@ namespace FMTWrapperCore
     public:
         static Models::FMTmodel aggregateAllActions(const Models::FMTmodel& p_model, const std::vector<std::string>& p_aggregates, const std::vector<std::string>& p_order,const std::string& p_schedulePri, const std::string& p_outputDirPath, const std::string& p_scenario_name);
 
-        //static bool splitActions(Models::FMTmodel p_model, const std::string& p_schedulePri, const std::vector<std::string>& p_splitted, const std::vector<std::string>& p_splitted_mask, const std::string& p_outputDirPath, const std::string& p_scenario_name);
+        static Models::FMTmodel splitActions(Models::FMTmodel& p_model, const std::string& p_schedulePri, const std::vector<std::string>& p_splitted, const std::vector<std::string>& p_splitted_mask, const std::string& p_outputDirPath, const std::string& p_scenario_name);
 
         //std::vector<std::string> getActionsNames(int p_modelIndex);
 
