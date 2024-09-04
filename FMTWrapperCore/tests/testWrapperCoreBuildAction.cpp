@@ -11,7 +11,7 @@ int main(int argc, char* argv[])
 	const std::string PATHPRI = "D:/Inputs_Prototype/Prototype_Dec2023_MethodeTBE/PC_7002071_UA08152_FINAL.pri";
 	const std::string ACTION_NAME = "A_TBE";
 	const std::string TARGET_YIELD = "YV_S_MORT";
-	const std::string OUTPUT_DIRECTORY = "D:/Test_sortie_FMT";
+	const std::string OUTPUT_DIRECTORY = "../../tests/testWrapperCoreBuildAction";
 	const std::string SCENARIO_NAME = "30_ReglProv_avsp";
 	const std::string NEW_SCENARIO_NAME = "Output_scenario_name";
 

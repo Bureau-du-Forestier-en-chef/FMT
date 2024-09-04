@@ -6,7 +6,7 @@
 #include "FMTdefaultlogger.h"
 #include "TransformationCore.h"
 
-int main()
+int main(int argc, char* argv[])
 {
 #ifdef FMTWITHOSI
 	Logging::FMTdefaultlogger().logstamp();
@@ -15,9 +15,8 @@ int main()
 	{
 		std::vector<std::string> aggregates = { "REGAFIN", "REGAPAR", "REGAEDU", "REGAREG", "ATBEMORT", "ATBERETARD", "ASNAT", "AECHEC" };
 		std::vector<std::string> order = { "REGAFIN", "REGAPAR", "REGAEDU", "REGAREG", "ATBEMORT", "ATBERETARD", "ASNAT", "AECHEC" };
-		const int index = 0;
 		const std::string pathPri = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/09_FMT/Modeles_test/Prototype_Dec2023_TBE/PC_7002071_UA08152_FINAL.pri";
-		const std::string outputDir = "../../tests/aggregateAllActions";
+		const std::string OUTPUT_DIRECTORY = "../../tests/testWrapperCoreaggregateAllActions";
 		const std::string SCENARIO = "20_Regl_prov";
 		const std::vector<std::string>SCENARIOS(1, SCENARIO);
 		Parser::FMTmodelparser ModelParser;
@@ -39,7 +38,7 @@ int main()
 		ModelParser.seterrorstowarnings(errors);
 
 		const std::vector<Models::FMTmodel> MODELS =ModelParser.readproject(pathPri, SCENARIOS);
-		Models::FMTmodel aggregatedModel = FMTWrapperCore::Transformation::aggregateAllActions(MODELS.at(0), aggregates, order, pathPri, outputDir, SCENARIO);
+		Models::FMTmodel aggregatedModel = FMTWrapperCore::Transformation::aggregateAllActions(MODELS.at(0), aggregates, order, pathPri, OUTPUT_DIRECTORY, SCENARIO);
 
 	}
 	else {
