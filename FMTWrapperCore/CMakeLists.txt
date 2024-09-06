@@ -28,7 +28,6 @@ if (FMTWRAPPERCORE_SOURCES)
 	get_target_property(FMTliblocation FMTlib LIBRARY_OUTPUT_DIRECTORY)
 
     target_include_directories(FMTWrapperCore PRIVATE ${Boost_INCLUDE_DIRS})
-	target_precompile_headers(FMTWrapperCore PRIVATE "${WrapperCoreINCLUDEDIR}stdafx.h")
     target_link_libraries(FMTWrapperCore PRIVATE ${Boost_LIBRARIES})
     #target_compile_definitions(FMTWrapper PRIVATE "-DFMTLIBIMPORT")
     target_include_directories(FMTWrapperCore PRIVATE ${WrapperCoreINCLUDEDIR})
@@ -37,7 +36,7 @@ if (FMTWRAPPERCORE_SOURCES)
 
 
 	if (NOT WITHOUT_TESTS)
-    		FILE(GLOB FMTWrapperCore_tests ${CMAKE_CURRENT_SOURCE_DIR}/tests/*.cpp)
+    		FILE(GLOB FMTWrapperCore_tests ${CMAKE_CURRENT_SOURCE_DIR}/FMTWrapperCore/tests/*.cpp)
     		foreach(pathtosource ${FMTWrapperCore_tests})
         		createexecutable("${pathtosource}" executablename)
         		target_link_libraries(${executablename} PRIVATE FMTWrapperCore)
