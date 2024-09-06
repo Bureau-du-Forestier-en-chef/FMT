@@ -57,12 +57,13 @@ class FMTEXPORT FMTspatialschedule : public FMTlayer<Graph::FMTlinegraph>
 		Default constructor of FMTspatialschedule
 		*/
         FMTspatialschedule();
-        // DocString: FMTspatialschedule(const FMTforest)
+        // DocString: FMTspatialschedule(const FMTforest,size_t)
 		/**
-		Constructor of FMTspatialschedule based on FMTforest. It's initializing
-		every graph in the map base on developments types in each cell.
+		@brief Constructor of FMTspatialschedule based on FMTforest. It's initializing every graph in the map base on developments types in each cell.
+		@param[in] p_InitialMap the initial map of the schedule.
+		@param[in] p_LengthReserve the amount of memory to reserve for each linegraph.
 		*/
-        FMTspatialschedule(const FMTforest& initialmap);
+        FMTspatialschedule(const FMTforest& p_InitialMap,size_t p_LengthReserve);
         // DocString: ~FMTspatialschedule()
 		/**
 		Default destructor of FMTspatialschedule
@@ -439,17 +440,24 @@ class FMTEXPORT FMTspatialschedule : public FMTlayer<Graph::FMTlinegraph>
 			const Core::FMToutput& output, const int& period) const;
 		// DocString: FMTspatialschedule::postsolve
 		/**
-		postsolve the spatial solution.
+		@brief postsolve the spatial solution.
+		@param[in] p_Filter filter used for presolve
+		@param[in] p_PresolveActions the vector of presolved actions
+		@param[in] p_OriginalBaseModel the original model.
 		*/
-		void postsolve(const Core::FMTmaskfilter&  filter,const std::vector<Core::FMTaction>& presolveactions,const Models::FMTmodel& originalbasemodel);
+		void postsolve(const Core::FMTmaskfilter&  p_Filter,
+			const std::vector<Core::FMTaction>& p_PresolveActions,
+			const Models::FMTmodel& p_OriginalBaseModel);
 		// DocString: FMTspatialschedule::presolve
 		/**
 		@brief Returned a presolved solution of the original solution.
 		@param[in] p_filter filter to keep mask
 		@param[in] p_presolvedThemes The themes of the presolved model.
+		@param[in] the number of verticies to reserve per linegraph
 		@return A presolved FMTspatialschedule.
 		*/
-		FMTspatialschedule presolve(const Core::FMTmaskfilter& p_filter, const std::vector<Core::FMTtheme>& p_presolvedThemes) const;
+		FMTspatialschedule presolve(const Core::FMTmaskfilter& p_filter,
+			const std::vector<Core::FMTtheme>& p_presolvedThemes,size_t p_ReserveSize) const;
 		// DocString: FMTsemodel::getarea
 		/**
 		@brief Get the area of a given period based on the solution of the model.
@@ -534,7 +542,6 @@ class FMTEXPORT FMTspatialschedule : public FMTlayer<Graph::FMTlinegraph>
 		void getDynamicMasksOnThread(
 			std::vector<Core::FMTmask>& p_Masks,
 			const std::vector<FMTlayer<Graph::FMTlinegraph>::const_iterator>& p_Iterators,
-			const Core::FMTmask p_dynamicMask,
 			const int p_period,
 			const size_t p_start,
 			const size_t p_stop) const;

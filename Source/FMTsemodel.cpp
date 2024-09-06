@@ -26,7 +26,8 @@ namespace Models
         }
 
 	FMTsemodel::FMTsemodel(const FMTmodel& rhs, const Spatial::FMTforest& forest) :
-		FMTmodel(rhs), solution(forest), m_staticMaskMemorize()
+		FMTmodel(rhs), solution(forest, static_cast<size_t>(getparameter(FMTintmodelparameters::LENGTH)+2)),
+		m_staticMaskMemorize()
 	{
 
 	}
@@ -62,7 +63,8 @@ namespace Models
 	bool FMTsemodel::setinitialmapping(const Spatial::FMTforest& forest)
         {
 		try {
-			Spatial::FMTspatialschedule newSolution(forest);
+			const size_t LENGTH = static_cast<size_t>(getparameter(FMTintmodelparameters::LENGTH)+2);
+			Spatial::FMTspatialschedule newSolution(forest, LENGTH);
 			solution.swap(newSolution);
 		}catch (...)
 		{
@@ -205,7 +207,8 @@ namespace Models
 				const Core::FMTmask baseMask = this->getbasemask(optionaldevelopments);
 				const boost::dynamic_bitset<uint8_t>&bitsets = baseMask.getbitsetreference();
 				//presolvedses->solution = Spatial::FMTspatialschedule(solution.getforestperiod(0).presolve(presolvefilter, presolvedses->themes));
-				Spatial::FMTspatialschedule presolvedSolution = solution.presolve(presolveFilter, presolvedses->themes);
+				const size_t LENGTH = static_cast<size_t>(getparameter(FMTintmodelparameters::LENGTH) + 2);
+				Spatial::FMTspatialschedule presolvedSolution = solution.presolve(presolveFilter, presolvedses->themes, LENGTH);
 				presolvedses->solution.swap(presolvedSolution);
 				return presolvedmod;
 			}

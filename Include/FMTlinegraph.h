@@ -58,9 +58,10 @@ class FMTEXPORT FMTlinegraph : public FMTgraph<FMTbasevertexproperties,FMTbaseed
         ~FMTlinegraph()=default;
 		// DocString: FMTlinegraph(const FMTgraphbuild)
 		/**
-			Constructor for the linegraph, can be scheudle build or full build.
+		@brief Constructor for the linegraph, can be scheudle build or full build.
+		@param[in] p_LengthReserve the size to reserve
 		*/
-        FMTlinegraph(const FMTgraphbuild lbuildtype);
+        FMTlinegraph(size_t p_LengthReserve);
 		// DocString: FMTlinegraph(const FMTlinegraph&)
 		/**
 			Copy constructor of the FMTlinegraph.
