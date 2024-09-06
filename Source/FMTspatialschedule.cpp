@@ -38,18 +38,19 @@ namespace Spatial
         //ctor
     }
 
-    FMTspatialschedule::FMTspatialschedule(const FMTforest& initialmap) : FMTlayer<Graph::FMTlinegraph>(), cache(), scheduletype(FMTspatialscheduletype::FMTcomplete), constraintsfactor(), events()
+    FMTspatialschedule::FMTspatialschedule(const FMTforest& p_InitialMap, size_t p_LengthReserve) :
+		FMTlayer<Graph::FMTlinegraph>(), cache(), scheduletype(FMTspatialscheduletype::FMTcomplete), constraintsfactor(), events()
     {
-        FMTlayer<Graph::FMTlinegraph>::operator = (initialmap.copyextent<Graph::FMTlinegraph>());//Setting layer information
-		std::vector<FMTcoordinate>coordinates(initialmap.size(), FMTcoordinate());
+        FMTlayer<Graph::FMTlinegraph>::operator = (p_InitialMap.copyextent<Graph::FMTlinegraph>());//Setting layer information
+		std::vector<FMTcoordinate>coordinates(p_InitialMap.size(), FMTcoordinate());
 		boost::unordered_map<Core::FMTdevelopment, FMTcoordinate>cacheGraph;
 		size_t id = 0;
-        for(FMTlayer<Core::FMTdevelopment>::const_iterator devit = initialmap.begin(); devit != initialmap.end(); ++devit)
+        for(FMTlayer<Core::FMTdevelopment>::const_iterator devit = p_InitialMap.begin(); devit != p_InitialMap.end(); ++devit)
         {
 			if (cacheGraph.find(devit->second)==cacheGraph.end())
 				{
-				const std::vector<Core::FMTactualdevelopment> actdevelopment(1, Core::FMTactualdevelopment(devit->second, initialmap.getcellsize()));
-				Graph::FMTlinegraph local_graph(Graph::FMTgraphbuild::schedulebuild);
+				const std::vector<Core::FMTactualdevelopment> actdevelopment(1, Core::FMTactualdevelopment(devit->second, p_InitialMap.getcellsize()));
+				Graph::FMTlinegraph local_graph(p_LengthReserve);
 				std::queue<Graph::FMTgraph<Graph::FMTbasevertexproperties, Graph::FMTbaseedgeproperties>::FMTvertex_descriptor> actives = local_graph.initialize(actdevelopment);
 				mapping[devit->first] = local_graph;
 				cacheGraph[devit->second] = devit->first;
@@ -1275,12 +1276,6 @@ namespace Spatial
 								{
 									cache.getactualnodecache()->worthintersecting = false;
 								}
-								/*graphsvalues.reserve(selection.size());
-								for (const FMTcoordinate& coordinate : selection)
-								{
-									FMTlayer<Graph::FMTlinegraph>::const_iterator itofgraph = mapping.find(coordinate);
-									graphsvalues.push_back(itofgraph);
-								}*/
 								graphsvalues = getGraphs(selection);
 						}
 						else {
@@ -1336,7 +1331,6 @@ namespace Spatial
 				this,
 				std::ref(AllMasks),
 				std::ref(p_Iterators),
-				p_dynamicMask,
 				p_period,
 				start,
 				stop)));
@@ -1354,7 +1348,6 @@ namespace Spatial
 	void FMTspatialschedule::getDynamicMasksOnThread(
 		std::vector<Core::FMTmask>& p_Masks,
 		const std::vector<FMTlayer<Graph::FMTlinegraph>::const_iterator>& p_Iterators,
-		const Core::FMTmask p_dynamicMask,
 		const int p_period,
 		const size_t p_start,
 		const size_t p_stop) const
@@ -1801,7 +1794,7 @@ std::map<std::string,double> FMTspatialschedule::getoutputfromgraph(const Graph:
 		if (cashit != nodecache.end() && level == Core::FMToutputlevel::totalonly)//get it from cashing
 		{
 			values["Total"] = cashit->second;
-		}else {//get it and add to cashing
+		}else {
 			Core::FMTtheme targettheme;
 			if (level == Core::FMToutputlevel::standard)//Only feel the target theme
 			{
@@ -1812,7 +1805,7 @@ std::map<std::string,double> FMTspatialschedule::getoutputfromgraph(const Graph:
 					}
 			}
 			values = linegraph.getsource(model, node, period, targettheme, solution,level);
-			if(level != Core::FMToutputlevel::developpement)//No caching for developpement
+			if (level != Core::FMToutputlevel::developpement)//No caching for developpement
 			{
 				nodecache[nodemask] = values.at("Total");
 			}
@@ -1825,16 +1818,16 @@ std::map<std::string,double> FMTspatialschedule::getoutputfromgraph(const Graph:
 	return values;
 	}
 
-void FMTspatialschedule::postsolve(const Core::FMTmaskfilter&  filter,
-									const std::vector<Core::FMTaction>& presolveactions,
-									const Models::FMTmodel& originalbasemodel)
+void FMTspatialschedule::postsolve(const Core::FMTmaskfilter& p_Filter,
+								const std::vector<Core::FMTaction>& p_PresolveActions,
+							const Models::FMTmodel& p_OriginalBaseModel)
 	{
 	try {
-		const std::vector<Core::FMTtheme> postsolvethemes = originalbasemodel.getthemes();
-		const std::vector<Core::FMTaction> postsolveactions = originalbasemodel.getactions();
+		const std::vector<Core::FMTtheme> postsolvethemes = p_OriginalBaseModel.getthemes();
+		const std::vector<Core::FMTaction> postsolveactions = p_OriginalBaseModel.getactions();
 		std::vector<int>actionmapping;
-		actionmapping.reserve(presolveactions.size());
-		for (const Core::FMTaction action : presolveactions)
+		actionmapping.reserve(p_PresolveActions.size());
+		for (const Core::FMTaction action : p_PresolveActions)
 		{
 			const int loc = static_cast<int>(std::distance(postsolveactions.begin(), std::find_if(postsolveactions.begin(), postsolveactions.end(), Core::FMTactioncomparator(action.getname()))));
 			actionmapping.push_back(loc);
@@ -1843,7 +1836,7 @@ void FMTspatialschedule::postsolve(const Core::FMTmaskfilter&  filter,
 		std::vector<FMTcoordinate>coordinates;
 		for (std::map<FMTcoordinate, Graph::FMTlinegraph>::iterator graphit = this->mapping.begin(); graphit != this->mapping.end(); ++graphit)
 			{
-			graphit->second.postsolve(filter, postsolvethemes, actionmapping);
+			graphit->second.postsolve(p_Filter, postsolvethemes, actionmapping);
 			coordinates.push_back(graphit->first);
 			}
 		cache = FMTspatialnodescache(coordinates);
@@ -1861,7 +1854,8 @@ void FMTspatialschedule::postsolve(const Core::FMTmaskfilter&  filter,
 		}
 	}
 
-FMTspatialschedule FMTspatialschedule::presolve(const Core::FMTmaskfilter& p_filter, const std::vector<Core::FMTtheme>& p_presolvedThemes) const
+FMTspatialschedule FMTspatialschedule::presolve(const Core::FMTmaskfilter& p_filter,
+	const std::vector<Core::FMTtheme>& p_presolvedThemes, size_t p_ReserveSize) const
 	{
 	FMTspatialschedule presolvedSchedule;
 	try {
@@ -1884,7 +1878,7 @@ FMTspatialschedule FMTspatialschedule::presolve(const Core::FMTmaskfilter& p_fil
 			{
 				std::vector<Core::FMTactualdevelopment> actDevelopment;
 				actDevelopment.push_back(Core::FMTactualdevelopment(dev, getcellsize()).presolve(p_filter, p_presolvedThemes));
-				Graph::FMTlinegraph local_graph(Graph::FMTgraphbuild::schedulebuild);
+				Graph::FMTlinegraph local_graph(p_ReserveSize);
 				std::queue<Graph::FMTgraph<Graph::FMTbasevertexproperties, Graph::FMTbaseedgeproperties>::FMTvertex_descriptor> actives = local_graph.initialize(actDevelopment);
 				presolvedSchedule.mapping[graphIt->first] = local_graph;
 				cacheGraph[dev] = graphIt->first;
