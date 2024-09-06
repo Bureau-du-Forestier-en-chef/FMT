@@ -431,7 +431,8 @@ namespace Models
                     "Cannot rebuild empty solution", "FMTsamodel::GetRebuild", __LINE__, __FILE__);
             }
             const Spatial::FMTforest baseforest = actual.getforestperiod(0);
-            newsolution = Spatial::FMTspatialschedule(baseforest);
+            const size_t LENGTH = static_cast<size_t>(getparameter(FMTintmodelparameters::LENGTH));
+            newsolution = Spatial::FMTspatialschedule(baseforest, LENGTH);
             const std::vector<double>factors = actual.getconstraintsfactor();
             if (!factors.empty())
             {
