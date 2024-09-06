@@ -5,6 +5,7 @@
 #include "FMTmodelparser.h"
 #include "TransformationCore.h"
 #include <boost/algorithm/string.hpp>
+#include <boost/filesystem.hpp>
 
 int main(int argc, char* argv[])
 {
@@ -55,13 +56,13 @@ int main(int argc, char* argv[])
 	const Models::FMTmodel SPLITTED_MODEL = FMTWrapperCore::Transformation::splitActions(MODELS.at(0), pathPri, splitted, splittedMask, OUTPUT_DIRECTORY, scenarioName);
 	
 	// On vérifie si on a plus d'actions dans le nouveau model
-	int splittedCount = SPLITTED_MODEL.getactions().size();
-	int startCount = MODELS.at(0).getactions().size();
-	std::cout << "startCount: " << startCount << std::endl;
-	std::cout << "splittedCount: " << splittedCount << std::endl;
 	if (SPLITTED_MODEL.getactions().size() <= MODELS.at(0).getactions().size())
 	{
 		throw Exception::FMTexc::FMTinvalid_action;
+	}
+	if (!boost::filesystem::exists(OUTPUT_DIRECTORY + "/" + scenarioName + ".pri"))
+	{
+		throw Exception::FMTexc::FMTfunctionfailed;
 	}
 	return 0;
 }

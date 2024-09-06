@@ -3,7 +3,7 @@
 #include "FMTmodel.h"
 #include "FMTmodelparser.h"
 #include "TransformationCore.h"
-
+#include <boost/filesystem.hpp>
 
 int main(int argc, char* argv[])
 {
@@ -24,10 +24,10 @@ int main(int argc, char* argv[])
 	}
 	else 
 	{
-		pathPri = "D:/Inputs_Prototype/Prototype_Dec2023_MethodeTBE/PC_7002071_UA08152_FINAL.pri";
-		actionName = "A_TBE";
+		pathPri = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/09_FMT/Modeles_test/Prototype_Dec2023_TBE/PC_7002071_UA08152_FINAL.pri";
+		actionName = "TBE";
 		targetYield = "YV_S_MORT";
-		scenarioName = "30_ReglProv_avsp";
+		scenarioName = "20_Regl_prov";
 	}
 
 
@@ -51,6 +51,17 @@ int main(int argc, char* argv[])
 
 	const std::vector<Models::FMTmodel> MODELS = ModelParser.readproject(pathPri, { scenarioName });
 	const Models::FMTmodel BUILDED_MODEL = FMTWrapperCore::Transformation::buildAction(MODELS.at(0), actionName, targetYield, pathPri, OUTPUT_DIRECTORY, NEW_SCENARIO_NAME);
+
+	// on fait des vérifications sur le model construit
+	if (MODELS.at(0) == BUILDED_MODEL)
+	{
+		throw Exception::FMTexc::FMTfunctionfailed;
+	}
+	if (!boost::filesystem::exists(OUTPUT_DIRECTORY + "/" + NEW_SCENARIO_NAME + ".pri")) 
+	{
+		throw Exception::FMTexc::FMTfunctionfailed;
+	}
+
 	return 0;
 }
 

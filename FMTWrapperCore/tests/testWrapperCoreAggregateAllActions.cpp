@@ -5,6 +5,7 @@
 #endif
 #include "FMTdefaultlogger.h"
 #include "TransformationCore.h"
+#include <boost/filesystem.hpp>
 
 int main(int argc, char* argv[])
 {
@@ -62,6 +63,11 @@ int main(int argc, char* argv[])
 		std::vector<Core::FMTaction> actions = MODELS.at(0).getactions();
 		std::vector<Core::FMTaction> aggregatedActions = aggregatedModel.getactions();
 		if (actions.size() <= aggregatedActions.size())
+		{
+			throw Exception::FMTexc::FMTinvalid_aggregate;
+		}
+		// on vérifie s'il y a bien écrit le modèle
+		if (!boost::filesystem::exists(OUTPUT_DIRECTORY + "/" + scenarioName + ".pri"))
 		{
 			throw Exception::FMTexc::FMTinvalid_aggregate;
 		}

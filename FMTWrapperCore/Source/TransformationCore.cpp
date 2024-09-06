@@ -43,10 +43,12 @@ Models::FMTmodel FMTWrapperCore::Transformation::splitActions(const Models::FMTm
 	Models::FMTmodel SPLITTED_MODEL;
 	try
 	{
-		std::vector<std::string>splitted = {};
+		if (p_splitted.empty() || p_splitted_mask.empty()) {
+			throw Exception::FMTexc::FMTempty_action;
+		}
 		Parser::FMTmodelparser ModelParser;
 
-		SPLITTED_MODEL = p_model.splitActions(splitted, p_splitted_mask);
+		SPLITTED_MODEL = p_model.splitActions(p_splitted, p_splitted_mask);
 		SPLITTED_MODEL.setname(p_scenario_name);
 
 		std::string outputPath;
