@@ -470,6 +470,11 @@ std::string FMToutputsource::trimDouble(const std::string& string_number)
 	return trimmed;
 }
 
+void FMToutputsource::setYield(const std::string& p_Yield)
+	{
+	yield = p_Yield;
+	}
+
 double FMToutputsource::getcoef(const FMTdevelopment& development,
 	const FMTyields& yields,
 	const Graph::FMTgraphvertextoyield* graphinfo,

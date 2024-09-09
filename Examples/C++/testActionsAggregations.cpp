@@ -30,11 +30,17 @@ int main(int argc, char* argv[])
 		const std::string CARTE = results.at(1);
 		const std::string SCENARIO = results.at(2);
 		std::vector<std::string>AGGREGATES;
-		boost::split(AGGREGATES, argv[2], boost::is_any_of("|"));/*
-		const std::string PRIMARY_LOCATION = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/09_FMT/Modeles_test/Prototype_Dec2023_TBE/PC_7002071_UA08152_FINAL.pri";
+		boost::split(AGGREGATES, argv[2], boost::is_any_of("|"));
+		const std::vector<std::string>ORDERING = {};
+		/*const std::string PRIMARY_LOCATION = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/09_FMT/Modeles_test/Prototype_Dec2023_TBE/PC_7002071_UA08152_FINAL.pri";
 		const std::string CARTE = "Carte/PC_7002071_UA_U08152.shp";
 		const std::string SCENARIO = "20_Regl_prov";
-		const std::vector<std::string>AGGREGATES = { "REGAFIN","REGAPAR","REGAEDU","REGAREG","ATBEMORT","ATBERETARD","ASNAT","AECHEC"};*/
+		const std::vector<std::string>AGGREGATES = { "REGAFIN","REGAPAR","REGAEDU","REGAREG","ATBEMORT","ATBERETARD","ASNAT","AECHEC"};
+		const std::vector<std::string>ORDERING = {"ACPIP","ACT","ADEGPL","APL","ASNAT","ACPIL",
+													"ACFP","AEDUPL","APLBA","AECHEC","ACPFORT","ACTPL",
+													"ANET","APLIN","_DEATH","ACPFAIBL","ACPPTM","ADEGNAT",
+													"AREG","AEC","ACRV","AEDUNAT","ASCA","AEC2","ACRS","AEPC",
+													"APLLI","AEC3","APLCC","ACJ","ACPJ","ACPROG","ACA","ACA2","ACP"};*/
 		//const std::string OUTPUT_DIRECTORY = "outputs/";
 		const std::string OUTPUT_DIRECTORY = "../../tests/testActionsAggregations/";
 		Parser::FMTmodelparser ModelParser;
@@ -65,7 +71,7 @@ int main(int argc, char* argv[])
 		Optimization1.FMTmodel::setparameter(Models::FMTintmodelparameters::PRESOLVE_ITERATIONS, 10);
 		Optimization1.FMTmodel::setparameter(Models::FMTintmodelparameters::LENGTH, std::min(static_cast<int>(SCHEDULES.size()), 3));
 		Optimization1.doplanning(false, SCHEDULES);
-		const Models::FMTmodel AGGREGATED_MODEL = MODELS.at(0).aggregateAllActions(AGGREGATES);
+		const Models::FMTmodel AGGREGATED_MODEL = MODELS.at(0).aggregateAllActions(AGGREGATES, ORDERING);
 		ModelParser.writetoproject(OUTPUT_DIRECTORY + SCENARIO +".pri", AGGREGATED_MODEL);
 		if (!SCHEDULES.empty())
 			{

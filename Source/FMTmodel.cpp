@@ -358,10 +358,19 @@ namespace Models{
 			}
 	}
 
-	Models::FMTmodel FMTmodel::aggregateAllActions(const std::vector<std::string>& p_Aggregates) const
+	Models::FMTmodel FMTmodel::aggregateAllActions(const std::vector<std::string>& p_Aggregates,
+		std::vector<std::string> p_ActionOrdering) const
 	{
 		Models::FMTmodel newModel(*this);
 		try {
+			if (p_ActionOrdering.empty())
+				{
+				p_ActionOrdering.reserve(actions.size());
+				for (const Core::FMTaction& ACTION : actions)
+					{
+					p_ActionOrdering.push_back(ACTION.getname());
+					}
+				}
 			const std::map<std::string, std::pair<std::string, Core::FMTmask>> Filters = newModel.aggregateActions(p_Aggregates);
 			newModel.aggregateTransitions(Filters);
 			std::vector<Core::FMToutput*>Outputs;
@@ -369,13 +378,13 @@ namespace Models{
 			{
 				Outputs.push_back(&output);
 			}
-			newModel.aggregateOutputs(Filters, Outputs);
+			newModel.aggregateOutputs(Filters, Outputs, p_ActionOrdering);
 			std::vector<Core::FMToutput*>Constraints;
 			for (Core::FMTconstraint& constraint : newModel.constraints)
 			{
 				Constraints.push_back(&constraint);
 			}
-			newModel.aggregateOutputs(Filters, Constraints);
+			newModel.aggregateOutputs(Filters, Constraints, p_ActionOrdering);
 		}
 		catch (...)
 		{
@@ -688,66 +697,106 @@ void FMTmodel::aggregateTransitions(const std::map<std::string, std::pair<std::s
 	}
 
 void FMTmodel::aggregateOutputs(const std::map<std::string, std::pair<std::string, Core::FMTmask>>& p_Filters,
-	std::vector<Core::FMToutput*>& p_Outputs)
+	std::vector<Core::FMToutput*>& p_Outputs, const std::vector<std::string>& p_ActionOrdering)
 {
 	try {
 		for (Core::FMToutput* output : p_Outputs)
 			{
+			/*if (output->getname() == "OSUPREALCT")
+			{
+				*_logger << output->getname() << "\n";
+			}*/
+			std::map<std::string, std::map<Core::FMTmask,std::string>>Dominances;
+			for (const Core::FMToutputsource& source : output->getsources())
+				{
+				if (source.isaction() &&
+					p_Filters.find(source.getaction()) != p_Filters.end() &&
+					!p_Filters.at(source.getaction()).first.empty())
+					{
+					const std::string& ACTION = source.getaction();
+					const std::string& AGGREGATE = p_Filters.at(source.getaction()).first;
+					const Core::FMTmask& MASK = source.getmask();
+					if (Dominances.find(AGGREGATE) == Dominances.end())
+						{
+						Dominances[AGGREGATE] = std::map<Core::FMTmask, std::string>();
+						Dominances[AGGREGATE][MASK] = ACTION;
+					}else {
+						bool gotIntersect = false;
+						std::map<Core::FMTmask, std::string>newMap;
+						for (const auto& SOURCES : Dominances[AGGREGATE])
+							{
+							bool removeIt = false;
+							if (!SOURCES.first.isnotthemessubset(MASK, themes))
+								{
+								const std::vector<std::string>::const_iterator NEW_HIERARCHY = std::find(p_ActionOrdering.begin(), p_ActionOrdering.end(), ACTION);
+								const std::vector<std::string>::const_iterator BASE_HIERARCHY = std::find(p_ActionOrdering.begin(), p_ActionOrdering.end(), SOURCES.second);
+								if (NEW_HIERARCHY < BASE_HIERARCHY)
+									{
+									//Dominances[AGGREGATE][MASK] = ACTION;
+									newMap[MASK] = ACTION;
+									removeIt = true;
+									}
+								gotIntersect = true;
+								}
+							if (!removeIt)
+								{
+								newMap[SOURCES.first] = SOURCES.second;
+								}
+
+							}
+						if (!gotIntersect)
+						{
+							newMap[MASK] = ACTION;
+						}
+						Dominances[AGGREGATE] = newMap;
+						
+						}
+					}
+				}
+			//Now you only select the source that is dominant and have exactly the same mask!!
 			std::vector<Core::FMToutputsource>NewSources;
-			bool pushBuffer = false;
+			const std::vector<Core::FMToperator> BASE_OPERATORS = output->getopes();
+			const std::string& NULL_YIELD = yields.getNullYield();
+			std::map<std::string, std::map<Core::FMTmask, std::string>>OutputDominances(Dominances);
 			for (const Core::FMToutputsource& source : output->getsources())
 				{
 				Core::FMToutputsource NewSource(source);
 				if (source.isaction())
 					{
-					if (p_Filters.find(source.getaction())!= p_Filters.end())
+					if (p_Filters.find(source.getaction())!= p_Filters.end() &&
+						!p_Filters.at(source.getaction()).first.empty())
 						{
-						const Core::FMTmask SOURCE_MASK = source.getmask();
-						bool eraseSource = false;
-						if (!SOURCE_MASK.isnotthemessubset(p_Filters.at(source.getaction()).second, themes))
+						const Core::FMTmask& SOURCE_MASK = source.getmask();
+						const std::string& ACTION = source.getaction();
+						const std::string& AGGREGATE = p_Filters.at(source.getaction()).first;
+						if (OutputDominances.at(AGGREGATE).find(SOURCE_MASK) != OutputDominances.at(AGGREGATE).end() &&
+							OutputDominances.at(AGGREGATE).at(SOURCE_MASK)== ACTION)
+						{
+							if (!SOURCE_MASK.isnotthemessubset(p_Filters.at(source.getaction()).second, themes))
 							{
-							const Core::FMTmask INTERSECT_MASK = SOURCE_MASK.getintersect(p_Filters.at(source.getaction()).second);
-							NewSource.setmask(addNewMask(INTERSECT_MASK));
-						}else {
-							//eraseSource = true;
-							//pushBuffer = true;
-							NewSource.setmask(addNewMask(p_Filters.at(source.getaction()).second));
+								const Core::FMTmask INTERSECT_MASK = SOURCE_MASK.getintersect(p_Filters.at(source.getaction()).second);
+								NewSource.setmask(addNewMask(INTERSECT_MASK));
 							}
-						if (!p_Filters.at(source.getaction()).first.empty())
-							{
-							NewSource.setaction(p_Filters.at(source.getaction()).first);
+							else {
+								NewSource.setmask(addNewMask(p_Filters.at(source.getaction()).second));
 							}
-						/*if (eraseSource)
-							{
-							NewSource.addbounds(Core::FMTyldbounds(Core::FMTsection::Outputs,
-								Core::FMTkwor::Source, yields.getNullYield(), 1.0, 1.0));
-							}*/
-						
-					}else{
-						//Maybe got the same action aggregate here? or not?
-						//Should log warning or raise?
-					}
-						/*if (replicated.find(NewSource) != replicated.end())
-							{
-							NewSource = Core::FMToutputsource(Core::FMTotar::val, std::vector<double>(1, 0));
+							if (!p_Filters.at(source.getaction()).first.empty())
+								{
+								NewSource.setaction(p_Filters.at(source.getaction()).first);
+								}
+							OutputDominances.at(AGGREGATE).erase(SOURCE_MASK);
 						}else {
-							replicated.insert(NewSource);
-							}*/
+							NewSource.setaction(AGGREGATE);
+							NewSource.setYield(NULL_YIELD);
+						}
+						}else{
+							//NewSource.setYield(NULL_YIELD);
+						}
 					}
-				
 				NewSources.push_back(NewSource);
 				}
-			/*if (pushBuffer)
-			{
-				NewSources.insert(NewSources.begin(), Core::FMToutputsource(Core::FMTotar::val, std::vector<double>(1, 0)));
-				std::vector<Core::FMToperator>NewOperators(output->getopes());
-				NewOperators.insert(NewOperators.begin(), Core::FMToperator("+"));
-				output->setOperators(NewOperators);
-			}*/
 			output->setsources(NewSources);
 			}
-
-
 
 	}catch (...)
 		{
