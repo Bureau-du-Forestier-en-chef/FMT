@@ -7,6 +7,7 @@
 	#include "FMTforest.h"
 	#include "FMToutput.h"
 	#include "FMTfreeexceptionhandler.h"
+	#include "FMTGCBMtransition.h"
 #endif
 
 void setMapping(const std::string& rastpath, Models::FMTsesmodel& model)
@@ -42,6 +43,7 @@ int main(int argc, char* argv[])
 	std::vector<std::string>spatialOutputs = {"OVOLTOTREC"};*/
 	const std::string outdir = "../../tests/Spatial_doplanning/";
 	Parser::FMTmodelparser mparser;
+	mparser.setdebuglogger();
 	std::vector<Exception::FMTexc>errors;
 	errors.push_back(Exception::FMTexc::FMTmissingyield);
 	errors.push_back(Exception::FMTexc::FMToutput_missing_operator);
@@ -69,18 +71,32 @@ int main(int argc, char* argv[])
 	const std::string rastpath = modellocation + "rasters/";
 	setMapping(rastpath, simulationmodel);
 	simulationmodel.setparameter(Models::FMTintmodelparameters::LENGTH, length);
-	simulationmodel.setparameter(Models::FMTintmodelparameters::NUMBER_OF_ITERATIONS, 10);
+	simulationmodel.setparameter(Models::FMTintmodelparameters::NUMBER_OF_ITERATIONS, 5);
 	simulationmodel.setparameter(Models::FMTboolmodelparameters::FORCE_PARTIAL_BUILD, true);
 	simulationmodel.setparameter(Models::FMTboolmodelparameters::POSTSOLVE, true);
 	simulationmodel.doplanning(false, schedules.at(0));
-	//Parser::FMTareaparser areaParser;
+	const Spatial::FMTspatialschedule& SPATIAL_SCHEDULE = simulationmodel.getspschedule();
+	/*Parser::FMTareaparser areaParser;
+	for (int period = 1; period <= length; ++period)
+	{
+		const std::string NAME = outdir + "PERIOD_" + std::to_string(period) + "_";
+		std::vector<std::string> themesrast;
+		for (int i = 1; i <= simulationmodel.getthemes().size(); i++)
+		{
+			themesrast.push_back(NAME + "THEME" + std::to_string(i) + ".tif");
+		}
+		areaParser.writeforest(SPATIAL_SCHEDULE.getforestperiod(period), simulationmodel.getthemes(), themesrast, NAME + "AGE.tif", NAME + "LOCK.tif");
+	}*/
+	Parser::FMTareaparser areaParser;
+	std::vector<Core::FMTtheme>selected(1, simulationmodel.getthemes().at(7));
+	areaParser.writedisturbances(outdir, SPATIAL_SCHEDULE, simulationmodel.getactions(), selected, 1);
 	for (const Core::FMToutput& OUTOUT : simulationmodel.getoutputs())
 		{
 		if (std::find(spatialOutputs.begin(), spatialOutputs.end(), OUTOUT.getname())!= spatialOutputs.end())
 			{
 			for (int period = 1; period <= length;++period)
 				{
-				const std::string NAME = outdir + OUTOUT.getname() + "_" + std::to_string(period) + ".tif";
+				const std::string NAME = outdir + "PERIOD_"+std::to_string(period)+"_" + OUTOUT.getname() + ".tif";
 				const double FULL_VALUE = simulationmodel.getoutput(OUTOUT, period, Core::FMToutputlevel::totalonly)["Total"];
 				std::cout << NAME << " " << FULL_VALUE << "\n";
 				const Spatial::FMTlayer<double> RESULT = simulationmodel.getspatialoutput(OUTOUT, period);
@@ -95,7 +111,7 @@ int main(int argc, char* argv[])
 						"On output "+ NAME+" "+std::to_string(FULL_VALUE)+" vs "+ std::to_string(spatialResult),
 						"Spatial_doplanning", __LINE__, primarylocation);
 					}
-				//areaParser.writelayer(RESULT, NAME);
+				areaParser.writelayer(RESULT, NAME);
 				}
 			
 			}
