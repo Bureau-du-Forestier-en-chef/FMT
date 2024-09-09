@@ -18,11 +18,12 @@ int main(int argc, char *argv[])
 	/*const std::string primlocation = "D:/CC_modele_feu/WS_CC/Feux_2023_ouest_V01.pri";
 	const int length = 5;
 	const int replicate = 5;
+	const bool writeschedule = true;
 	std::vector<std::string>allscenarios;
 	allscenarios.push_back("strategique_minimisation_Risque");
 	allscenarios.push_back("stochastique_CC");
-	allscenarios.push_back("tactique");*/
-	//allscenarios.push_back("strategique"); //Pour test le lancé d'erreur
+	allscenarios.push_back("tactique");
+	//allscenarios.push_back("strategique"); //Pour test le lancé d'erreur */
 	const std::string primlocation = argv[1];
 	const int length = std::stoi(argv[2]);
 	const int replicate = std::stoi(argv[3]);
@@ -85,7 +86,7 @@ int main(int argc, char *argv[])
 	layersoptions.push_back("SEPARATOR=SEMICOLON");
 	std::unique_ptr<Parallel::FMTtask> maintaskptr(new Parallel::FMTreplanningtask(
 		global, stochastic, local, selectedoutputs, outputlocation, "CSV", layersoptions, 
-		replicate, length, 0.5, Core::FMToutputlevel::standard, true));
+		replicate, length, 0.5, Core::FMToutputlevel::standard, writeschedule)); //test du bool writeschedule
 	Parallel::FMTtaskhandler handler(maintaskptr, 3); // FIXME diminuer 5 � 1 pour le debuggage
 	//handler.setquietlogger();
 	//handler.ondemandrun();
