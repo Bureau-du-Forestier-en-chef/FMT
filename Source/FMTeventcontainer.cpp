@@ -582,12 +582,20 @@ namespace Spatial
 
 	std::vector<FMTeventcontainer::const_iterator> FMTeventcontainer::getevents(const int& period, const std::vector<bool>& actions_used) const
 	{
-		FMTeventcontainer::const_iterator upper = upper_bound(period);
+		/*FMTeventcontainer::const_iterator upper = upper_bound(period);
 		FMTeventcontainer::const_iterator lower = lower_bound(period);
 		std::vector<FMTeventcontainer::const_iterator> selectedevents;
 		for (FMTeventcontainer::const_iterator it = lower; it != upper; ++it)
 		{
-			if (actions_used.at(it->getactionid()) /*&& it->getperiod() == period*/)
+			if (actions_used.at(it->getactionid()))
+			{
+				selectedevents.push_back(it);
+			}
+		}*/
+		std::vector<FMTeventcontainer::const_iterator> selectedevents;
+		for (FMTeventcontainer::const_iterator it = lower_bound(period); it != upper_bound(period); ++it)
+		{
+			if (actions_used.at(it->getactionid()) && it->getperiod()==period)
 			{
 				selectedevents.push_back(it);
 			}
@@ -659,7 +667,7 @@ namespace Spatial
 
     FMTeventcontainer::const_iterator FMTeventcontainer::upper_bound(const int& period) const
     {
-		constexpr uint8_t MAX_BOUND = std::numeric_limits<uint16_t>::max();
+		constexpr uint16_t MAX_BOUND = std::numeric_limits<uint16_t>::max();
         FMTeventcontainer::const_iterator upper = events.upper_bound(FMTevent(FMTcoordinate(MAX_BOUND, MAX_BOUND),
                                                              INT_MAX,
                                                              period));

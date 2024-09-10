@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Quï¿½bec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -230,8 +230,9 @@ namespace Parallel
 				int firstperiod = dynamicarea.begin()->getperiod() + 1;
 				int lastperiod = firstperiod;
 	
-				// Extraire la partie après le dernier séparateur
-				const std::string seqName = m_primaryName + "_Replicate" + std::to_string(getiteration()) + ".seq";
+				// Extraire la partie aprï¿½s le dernier sï¿½parateur
+				std::string seqName;
+				m_writeSchedule ? seqName = m_primaryName + "_Replicate" + std::to_string(getiteration()) + ".seq" : seqName = m_primaryName + ".seq";
 				const std::string schedulePath = m_outputlocation + '/' + seqName;
  				std::vector<Core::FMTschedule> scheduleList;
 				bool appendExistingSchedule = true;
@@ -270,8 +271,8 @@ namespace Parallel
 				{
 					if (modelname == stochastic->getname() && replanningperiod == 1)
 					{
-						// On vérifie si le fichier existe déja et sinon on mets notre append a false afin de créer le fichier et le header
-						if(!boost::filesystem::exists(boost::filesystem::path(schedulePath)))
+						// On vï¿½rifie si le fichier existe dï¿½ja et sinon on mets notre append a false afin de crï¿½er le fichier et le header
+						if(!boost::filesystem::exists(boost::filesystem::path(schedulePath)) || m_writeSchedule)
 						{
 							appendExistingSchedule = false;
 						}

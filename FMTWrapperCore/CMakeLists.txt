@@ -28,7 +28,6 @@ if (FMTWRAPPERCORE_SOURCES)
 	get_target_property(FMTliblocation FMTlib LIBRARY_OUTPUT_DIRECTORY)
 
     target_include_directories(FMTWrapperCore PRIVATE ${Boost_INCLUDE_DIRS})
-	target_precompile_headers(FMTWrapperCore PRIVATE "${WrapperCoreINCLUDEDIR}stdafx.h")
     target_link_libraries(FMTWrapperCore PRIVATE ${Boost_LIBRARIES})
     #target_compile_definitions(FMTWrapper PRIVATE "-DFMTLIBIMPORT")
     target_include_directories(FMTWrapperCore PRIVATE ${WrapperCoreINCLUDEDIR})
