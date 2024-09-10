@@ -226,7 +226,6 @@ FMToutput& FMToutput::operator /=(const FMToutputsource& p_source)
 	return *this;
 	}
 
-
 FMToutput::operator std::string() const
     {
 		std::string line;
@@ -234,7 +233,12 @@ FMToutput::operator std::string() const
 		if (_needWsFormat())
 		{
 			line = _toWsFormat();
-		}else {
+		}
+		else if (_verifyOperatorOrder()){
+			line  = _operatorFormat();
+			//throw Exception::FMTexc::FMTunsupported_output;
+		}
+		else {
 			line = _getFormatedOutputName();
 			if (isconstantlevel())
 			{
@@ -1394,6 +1398,82 @@ bool FMToutput::_sourceCounter(const std::string& p_source) const
 	}
 	return passed;
 
+}
+
+bool FMToutput::_verifyOperatorOrder() const
+{
+	bool need_change = false;
+	int count = 0;
+	for (size_t i = 0; i < operators.size(); ++i) {
+		Core::FMTokey op = operators[i].getkey();
+		if (op == Core::FMTokey::multiply || op == Core::FMTokey::divide) {
+			count++;
+		}
+		else {
+			count = 0;
+		}
+		if (count > 1) 
+		{
+			need_change = true;
+			break;
+		}
+	}
+	return need_change;
+}
+
+std::string FMToutput::_operatorFormat() const
+{
+	Core::FMToutput newOutput(*this);
+	std::string newLine;
+	int op_count = 0;
+	newLine += "*OUTPUT ~" + newOutput.getname() + "\n";
+	newLine += "*SOURCE ";
+	if (newOutput.operators.size() > 2)
+	{
+		_exhandler->raise(Exception::FMTexc::FMTunsupported_output,
+			"for output " + std::string(*this),
+			"FMToutput::_operatorFormat", __LINE__, __FILE__);
+	}
+
+	for (size_t i = 0; i < newOutput.sources.size(); ++i)
+	{
+		std::vector<std::string> commands = {
+			newOutput.sources[i].getmask(),
+			newOutput.sources[i].getaction(),
+			newOutput.sources[i].getyield()
+		};
+
+		for (const auto& command : commands)
+		{
+			if (!command.empty())
+			{
+				newLine += command + " ";
+			}
+		}
+
+		if (op_count < 1)
+		{
+			std::string op_str = newOutput.operators[i];
+			newLine += op_str + " ";
+			op_count++;
+		}
+		else if (op_count == 1)
+		{
+			newLine += "\n\n";
+			newLine += "*OUTPUT " + newOutput.getname() + "\n";
+			newLine += "*SOURCE ~" + newOutput.getname() + " ";
+			std::string op_str = newOutput.operators[i];
+			newLine += op_str + " ";
+			op_count++;
+		}
+		std::string value = FMToutputsource::trimDouble(std::to_string(newOutput.sources[i].getvalue()));
+		if (value != "0" && value != "1")
+		{
+			newLine += value + " ";
+		}
+	}
+	newLine += "\n";
+	return newLine;
 }
 
 std::string FMToutput::_getFormatedOutputName() const

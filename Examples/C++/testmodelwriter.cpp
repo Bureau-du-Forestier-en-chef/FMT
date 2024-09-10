@@ -15,13 +15,20 @@ int main(int argc, char* argv[])
 	Parser::FMTmodelparser modelparser;
 	modelparser.setdefaultexceptionhandler();
 	const std::string outdir = "../../tests/testmodelwriter/";
-	std::vector<Exception::FMTexc>errors;
+
+	std::vector<Exception::FMTexc> errors;
 	errors.push_back(Exception::FMTexc::FMTmissingyield);
-	errors.push_back(Exception::FMTexc::FMToutput_too_much_operator);
-	errors.push_back(Exception::FMTexc::FMTinvalidyield_number);
+	//errors.push_back(Exception::FMTexc::FMToutput_too_much_operator); // Pour tester la relecture
+	//errors.push_back(Exception::FMTexc::FMTinvalidyield_number); // à mettre on / off
 	errors.push_back(Exception::FMTexc::FMToveridedyield);
 	errors.push_back(Exception::FMTexc::FMTdeathwithlock);
-	modelparser.seterrorstowarnings(errors);
+	//modelparser.seterrorstowarnings(errors);
+
+	std::vector<Exception::FMTexc> readErrors(errors);
+	readErrors.push_back(Exception::FMTexc::FMToutput_too_much_operator);
+	readErrors.push_back(Exception::FMTexc::FMTinvalidyield_number);
+	modelparser.seterrorstowarnings(readErrors);
+
 	const std::vector<std::string>scenarios(1, std::string(argv[2]));
 	//const std::vector<std::string>scenarios(1, "tactique");
 	//const std::vector<std::string>scenarios(1, "strategique");
