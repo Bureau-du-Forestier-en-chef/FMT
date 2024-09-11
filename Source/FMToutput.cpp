@@ -1426,7 +1426,7 @@ std::string FMToutput::_operatorFormat() const
 	Core::FMToutput newOutput(*this);
 	std::string newLine;
 	int op_count = 0;
-	newLine += "*OUTPUT ~" + newOutput.getname() + "\n";
+	newLine += "*OUTPUT ~" + newOutput.getname() + " \n";
 	newLine += "*SOURCE ";
 	if (newOutput.operators.size() > 2)
 	{
@@ -1460,7 +1460,7 @@ std::string FMToutput::_operatorFormat() const
 		else if (op_count == 1)
 		{
 			newLine += "\n\n";
-			newLine += "*OUTPUT " + newOutput.getname() + "\n";
+			newLine += "*OUTPUT " + newOutput.getname() + " \n";
 			newLine += "*SOURCE ~" + newOutput.getname() + " ";
 			std::string op_str = newOutput.operators[i];
 			newLine += op_str + " ";
@@ -1472,7 +1472,7 @@ std::string FMToutput::_operatorFormat() const
 			newLine += value + " ";
 		}
 	}
-	newLine += "\n";
+	newLine += " \n" ;
 	return newLine;
 }
 

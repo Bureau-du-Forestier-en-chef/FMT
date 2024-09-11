@@ -92,7 +92,7 @@ namespace Parallel
 			m_writeSchedule = writeSchedule;
 			m_outputlocation = outputlocation;
 			//m_outputlocation.pop_back();
-			m_primaryName = (m_outputlocation.find_last_of('/') == std::string::npos) ? m_outputlocation : m_outputlocation.substr(m_outputlocation.find_last_of('/') + 1);
+			m_primaryName = boost::filesystem::path(m_outputlocation).stem().string();
 			const size_t LENGTH = static_cast<size_t>(global->getparameter(Models::FMTintmodelparameters::LENGTH));
 			const size_t AREA_SIZE = global->getarea().size();
 			const size_t SCALE_FACTOR = 10;
