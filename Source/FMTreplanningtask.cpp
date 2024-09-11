@@ -232,8 +232,25 @@ namespace Parallel
 	
 				// Extraire la partie apr�s le dernier s�parateur
 				std::string seqName;
-				m_writeSchedule ? seqName = m_primaryName + "_Replicate" + std::to_string(getiteration()) + ".seq" : seqName = m_primaryName + ".seq";
-				const std::string schedulePath = m_outputlocation + '/' + seqName;
+				//m_writeSchedule ? seqName = m_primaryName + "_Replicate" + std::to_string(getiteration()) + ".seq" : seqName = m_primaryName + ".seq";
+				std::string schedulePath;
+				if (m_writeSchedule)
+				{
+					// Assigner le nom du fichier de sortie dans scenario/
+					seqName = m_primaryName + "._seq";
+					const std::string replicateFolder = "scenarios/replicat" + std::to_string(getiteration());
+					boost::filesystem::create_directories(m_outputlocation + '/' + replicateFolder);
+					schedulePath = m_outputlocation + '/' + replicateFolder + "/" + seqName;
+					// on crée un ._opt vide
+					const std::string optPath = m_outputlocation + "/" + replicateFolder + "/" + m_primaryName +  "._opt";
+					std::ofstream optFile(optPath);
+					optFile.close();
+				}
+				else 
+				{
+					seqName = m_primaryName + ".seq";
+					schedulePath = m_outputlocation + '/' + seqName;
+				}
  				std::vector<Core::FMTschedule> scheduleList;
 				bool appendExistingSchedule = true;
 				/*if (!modelptr)//infeasible!
@@ -282,7 +299,7 @@ namespace Parallel
 					{
 						scheduleList.push_back(modelptr->getsolution(i, true));
 					}
-					resultswriter->writeSchedules(seqName, scheduleList, appendExistingSchedule);
+					resultswriter->writeSchedules(schedulePath, scheduleList, appendExistingSchedule);
 				}
 
 				_logger->logwithlevel("Thread:" + getthreadid() + " Writing results for " + modelname + " first period at: " +
