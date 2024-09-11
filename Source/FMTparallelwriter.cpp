@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Quï¿½bec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -59,7 +59,7 @@ namespace Parallel
 		projectdirectory(),
 		projectname(),
 		m_outputLocationPath(location)
-
+		
 	{
 		try {
 		#ifdef FMTWITHGDAL
