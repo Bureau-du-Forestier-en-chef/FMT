@@ -15,10 +15,10 @@ int main(int argc, char *argv[])
 	{
 	#ifdef FMTWITHOSI
 	Logging::FMTdefaultlogger().logstamp();
+	const bool writeschedule = true;
 	/*const std::string primlocation = "D:/CC_modele_feu/WS_CC/Feux_2023_ouest_V01.pri";
 	const int length = 5;
 	const int replicate = 5;
-	const bool writeschedule = true;
 	std::vector<std::string>allscenarios;
 	allscenarios.push_back("strategique_minimisation_Risque");
 	allscenarios.push_back("stochastique_CC");
