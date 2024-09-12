@@ -8,8 +8,8 @@
 int main(int argc, char* argv[])
 {
 #ifdef FMTWITHOSI
-	//const std::string primarylocation = std::string(argv[1]); 
-	std::string primarylocation = std::string("../../../../Examples/Models/TWD_land/TWD_land.pri"); // changer ici pour pointer sur un modèle avec le bug
+	const std::string primarylocation = std::string(argv[1]); 
+	//std::string primarylocation = std::string("../../../../Examples/Models/TWD_land/TWD_land.pri"); // changer ici pour pointer sur un modèle avec le bug
 	Parser::FMTmodelparser modelparser;
 	modelparser.setdefaultexceptionhandler();
 	const std::string outdir = "../../tests/testreadwriteproject/";
@@ -28,8 +28,8 @@ int main(int argc, char* argv[])
 	modelparser.seterrorstowarnings(readErrors);
 
 	std::vector<std::string>scenarios;
-	//const std::string scenariostr =  std::string(argv[2]); 
-	const std::string scenariostr = std::string("operator_separator");// changer ici pour avoir le nom souhaité du scénario
+	const std::string scenariostr =  std::string(argv[2]); 
+	//const std::string scenariostr = std::string("operator_separator");// changer ici pour avoir le nom souhaité du scénario
 	boost::split(scenarios, scenariostr,boost::is_any_of("|"));
 	const std::vector<Models::FMTmodel> READ_MODELS = modelparser.readproject(primarylocation, scenarios);
 	for (const Models::FMTmodel& model: READ_MODELS)

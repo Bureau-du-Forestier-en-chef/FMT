@@ -7,11 +7,12 @@
 int main(int argc, char* argv[])
 {
 #ifdef FMTWITHOSI
-	//const std::string primarylocation =  std::string(argv[1]);
+	const std::string primarylocation =  std::string(argv[1]);
 	//const std::string primarylocation = "../../../../Examples/Models/TWD_land/TWD_land.pri";
 	//const std::string primarylocation = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/09_FMT/Modeles_test/ReplaningStrat2024_04_30/Feux_2023_ouest_V01.pri";
 	//const std::string primarylocation = "D:/CC_modele_feu/WS_CC/Feux_2023_ouest_V01.pri";
-	const std::string primarylocation = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/09_FMT/Modeles_test/02751/PC_9509_U02751_4_Vg2_2023_vRp2.pri";
+	//const std::string primarylocation = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/09_FMT/Modeles_test/02751/PC_9509_U02751_4_Vg2_2023_vRp2.pri";
+	//const std::string primarylocation = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/09_FMT/Modeles_test/Feux_2023_ouest/feux_2023_ouest_V01.pri";
 	Parser::FMTmodelparser modelparser;
 	modelparser.setdefaultexceptionhandler();
 	const std::string outdir = "../../tests/testmodelwriter/";
@@ -29,11 +30,11 @@ int main(int argc, char* argv[])
 	readErrors.push_back(Exception::FMTexc::FMTinvalidyield_number);
 	modelparser.seterrorstowarnings(readErrors);
 
-	//const std::vector<std::string>scenarios(1, std::string(argv[2]));
+	const std::vector<std::string>scenarios(1, std::string(argv[2]));
 	//const std::vector<std::string>scenarios(1, "tactique");
 	//const std::vector<std::string>scenarios(1, "strategique");
-	const std::vector<std::string>scenarios(1, "14_Sc5_Determin_apsp_02751_tmw");
-	//const std::vector<std::string> scenarios(1, "operator_separator"); // Test gab
+	//const std::vector<std::string>scenarios(1, "14_Sc5_Determin_apsp_02751_tmw");
+	//const std::vector<std::string>scenarios(1, "201_UG107_feu");
 	const std::vector<Models::FMTmodel> models = modelparser.readproject(primarylocation, scenarios);
 	Models::FMTlpmodel optmodel(models.at(0), Models::FMTsolverinterface::MOSEK);
 	optmodel.setparameter(Models::FMTintmodelparameters::LENGTH,  3);
