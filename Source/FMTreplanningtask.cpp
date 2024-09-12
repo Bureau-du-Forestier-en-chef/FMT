@@ -234,7 +234,7 @@ namespace Parallel
 				std::string seqName;
 				//m_writeSchedule ? seqName = m_primaryName + "_Replicate" + std::to_string(getiteration()) + ".seq" : seqName = m_primaryName + ".seq";
 				std::string schedulePath;
-				if (m_writeSchedule)
+				if (m_writeSchedule && getiteration() >= 1)
 				{
 					// Assigner le nom du fichier de sortie dans scenario/
 					seqName = m_primaryName + "._seq";
@@ -297,7 +297,9 @@ namespace Parallel
 					// for loop / getSolution schedule in vector ajuster resultwriter afin de scheduleParser::write
 					for (int i = firstperiod; i <= lastperiod; ++i)
 					{
-						scheduleList.push_back(modelptr->getsolution(i, true));
+						Core::FMTschedule schedule = modelptr->getsolution(i, true);
+						schedule.setperiod(replanningperiod);
+						scheduleList.push_back(schedule);
 					}
 					resultswriter->writeSchedules(schedulePath, scheduleList, appendExistingSchedule);
 				}
