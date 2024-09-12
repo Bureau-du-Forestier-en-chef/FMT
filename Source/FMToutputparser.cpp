@@ -899,8 +899,8 @@ namespace Parser
 							outputstream << "*GROUP "+out.getgroup() << "\n";
 							lastgroup = out.getgroup();
 							}
-						outputstream << std::string(out) << "\n";
-					}
+							outputstream << std::string(out) << "\n";
+						}
 					outputstream.close();
 				}
 			}catch (...)

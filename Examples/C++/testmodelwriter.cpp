@@ -12,20 +12,29 @@ int main(int argc, char* argv[])
 	//const std::string primarylocation = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/09_FMT/Modeles_test/ReplaningStrat2024_04_30/Feux_2023_ouest_V01.pri";
 	//const std::string primarylocation = "D:/CC_modele_feu/WS_CC/Feux_2023_ouest_V01.pri";
 	//const std::string primarylocation = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/09_FMT/Modeles_test/02751/PC_9509_U02751_4_Vg2_2023_vRp2.pri";
+	//const std::string primarylocation = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/09_FMT/Modeles_test/Feux_2023_ouest/feux_2023_ouest_V01.pri";
 	Parser::FMTmodelparser modelparser;
 	modelparser.setdefaultexceptionhandler();
 	const std::string outdir = "../../tests/testmodelwriter/";
-	std::vector<Exception::FMTexc>errors;
+
+	std::vector<Exception::FMTexc> errors;
 	errors.push_back(Exception::FMTexc::FMTmissingyield);
-	errors.push_back(Exception::FMTexc::FMToutput_too_much_operator);
-	errors.push_back(Exception::FMTexc::FMTinvalidyield_number);
+	//errors.push_back(Exception::FMTexc::FMToutput_too_much_operator); // Pour tester la relecture
+	//errors.push_back(Exception::FMTexc::FMTinvalidyield_number); // à mettre on / off
 	errors.push_back(Exception::FMTexc::FMToveridedyield);
 	errors.push_back(Exception::FMTexc::FMTdeathwithlock);
-	modelparser.seterrorstowarnings(errors);
+	//modelparser.seterrorstowarnings(errors);
+
+	std::vector<Exception::FMTexc> readErrors(errors);
+	readErrors.push_back(Exception::FMTexc::FMToutput_too_much_operator);
+	readErrors.push_back(Exception::FMTexc::FMTinvalidyield_number);
+	modelparser.seterrorstowarnings(readErrors);
+
 	const std::vector<std::string>scenarios(1, std::string(argv[2]));
 	//const std::vector<std::string>scenarios(1, "tactique");
 	//const std::vector<std::string>scenarios(1, "strategique");
 	//const std::vector<std::string>scenarios(1, "14_Sc5_Determin_apsp_02751_tmw");
+	//const std::vector<std::string>scenarios(1, "201_UG107_feu");
 	const std::vector<Models::FMTmodel> models = modelparser.readproject(primarylocation, scenarios);
 	Models::FMTlpmodel optmodel(models.at(0), Models::FMTsolverinterface::MOSEK);
 	optmodel.setparameter(Models::FMTintmodelparameters::LENGTH,  3);
