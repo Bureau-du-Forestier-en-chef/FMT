@@ -338,13 +338,13 @@ namespace Parallel
 			_exhandler->raisefromcatch("","FMTparallelwriter::getandwrite", __LINE__, __FILE__);
 			}
 	}
-	void FMTparallelwriter::writeSchedules(const std::string seqName, const std::vector<Core::FMTschedule> scheduleList, bool append) const
+	void FMTparallelwriter::writeSchedules(const std::string schedulePath, const std::vector<Core::FMTschedule> scheduleList, bool append) const
 	{
 		try
 		{
 			Parser::FMTscheduleparser parser;
 			boost::lock_guard<boost::recursive_mutex> lock(mtx);
-			parser.write(scheduleList, m_outputLocationPath + "\\" + seqName, append);
+			parser.write(scheduleList, schedulePath, append);
 		}
 		catch (...)
 		{
