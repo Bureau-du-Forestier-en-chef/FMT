@@ -17,7 +17,7 @@ int main(int argc, char *argv[])
 	Logging::FMTdefaultlogger().logstamp();
 	const std::string folder = "../../../../Examples/Models/TWD_land/";
 	const std::string outputlocation = "../../tests/replanningtest/replanning";
-	const std::string scheduleLocation = "../../tests/replanningtest/replanning/replanning_Replicate1.seq";
+	const std::string scheduleLocation = "../../tests/replanningtest/replanning/scenarios/replicat1/replanning._seq";
 	//const std::string folder = "../../Examples/Models/TWD_land/";
 	const std::string primlocation = folder + "TWD_land.pri";
 	std::vector<std::string>allscenarios;

@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Quï¿½bec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -59,7 +59,7 @@ namespace Parallel
 		projectdirectory(),
 		projectname(),
 		m_outputLocationPath(location)
-
+		
 	{
 		try {
 		#ifdef FMTWITHGDAL
@@ -338,13 +338,13 @@ namespace Parallel
 			_exhandler->raisefromcatch("","FMTparallelwriter::getandwrite", __LINE__, __FILE__);
 			}
 	}
-	void FMTparallelwriter::writeSchedules(const std::string seqName, const std::vector<Core::FMTschedule> scheduleList, bool append) const
+	void FMTparallelwriter::writeSchedules(const std::string schedulePath, const std::vector<Core::FMTschedule> scheduleList, bool append) const
 	{
 		try
 		{
 			Parser::FMTscheduleparser parser;
 			boost::lock_guard<boost::recursive_mutex> lock(mtx);
-			parser.write(scheduleList, m_outputLocationPath + "\\" + seqName, append);
+			parser.write(scheduleList, schedulePath, append);
 		}
 		catch (...)
 		{

@@ -1,5 +1,5 @@
 /*
-Copyright (c) 2019 Gouvernement du Québec
+Copyright (c) 2019 Gouvernement du Quï¿½bec
 
 SPDX-License-Identifier: LiLiQ-R-1.1
 License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
@@ -92,7 +92,7 @@ namespace Parallel
 			m_writeSchedule = writeSchedule;
 			m_outputlocation = outputlocation;
 			//m_outputlocation.pop_back();
-			m_primaryName = (m_outputlocation.find_last_of('/') == std::string::npos) ? m_outputlocation : m_outputlocation.substr(m_outputlocation.find_last_of('/') + 1);
+			m_primaryName = boost::filesystem::path(m_outputlocation).stem().string();
 			const size_t LENGTH = static_cast<size_t>(global->getparameter(Models::FMTintmodelparameters::LENGTH));
 			const size_t AREA_SIZE = global->getarea().size();
 			const size_t SCALE_FACTOR = 10;
@@ -230,9 +230,27 @@ namespace Parallel
 				int firstperiod = dynamicarea.begin()->getperiod() + 1;
 				int lastperiod = firstperiod;
 	
-				// Extraire la partie après le dernier séparateur
-				const std::string seqName = m_primaryName + "_Replicate" + std::to_string(getiteration()) + ".seq";
-				const std::string schedulePath = m_outputlocation + '/' + seqName;
+				// Extraire la partie aprï¿½s le dernier sï¿½parateur
+				std::string seqName;
+				//m_writeSchedule ? seqName = m_primaryName + "_Replicate" + std::to_string(getiteration()) + ".seq" : seqName = m_primaryName + ".seq";
+				std::string schedulePath;
+				if (m_writeSchedule && getiteration() >= 1)
+				{
+					// Assigner le nom du fichier de sortie dans scenario/
+					seqName = m_primaryName + "._seq";
+					const std::string replicateFolder = "scenarios/replicat" + std::to_string(getiteration());
+					boost::filesystem::create_directories(m_outputlocation + '/' + replicateFolder);
+					schedulePath = m_outputlocation + '/' + replicateFolder + "/" + seqName;
+					// on crÃ©e un ._opt vide
+					const std::string optPath = m_outputlocation + "/" + replicateFolder + "/" + m_primaryName +  "._opt";
+					std::ofstream optFile(optPath);
+					optFile.close();
+				}
+				else 
+				{
+					seqName = m_primaryName + ".seq";
+					schedulePath = m_outputlocation + '/' + seqName;
+				}
  				std::vector<Core::FMTschedule> scheduleList;
 				bool appendExistingSchedule = true;
 				/*if (!modelptr)//infeasible!
@@ -270,8 +288,8 @@ namespace Parallel
 				{
 					if (modelname == stochastic->getname() && replanningperiod == 1)
 					{
-						// On vérifie si le fichier existe déja et sinon on mets notre append a false afin de créer le fichier et le header
-						if(!boost::filesystem::exists(boost::filesystem::path(schedulePath)))
+						// On vï¿½rifie si le fichier existe dï¿½ja et sinon on mets notre append a false afin de crï¿½er le fichier et le header
+						if(!boost::filesystem::exists(boost::filesystem::path(schedulePath)) || m_writeSchedule)
 						{
 							appendExistingSchedule = false;
 						}
@@ -279,9 +297,11 @@ namespace Parallel
 					// for loop / getSolution schedule in vector ajuster resultwriter afin de scheduleParser::write
 					for (int i = firstperiod; i <= lastperiod; ++i)
 					{
-						scheduleList.push_back(modelptr->getsolution(i, true));
+						Core::FMTschedule schedule = modelptr->getsolution(i, true);
+						schedule.setperiod(replanningperiod);
+						scheduleList.push_back(schedule);
 					}
-					resultswriter->writeSchedules(seqName, scheduleList, appendExistingSchedule);
+					resultswriter->writeSchedules(schedulePath, scheduleList, appendExistingSchedule);
 				}
 
 				_logger->logwithlevel("Thread:" + getthreadid() + " Writing results for " + modelname + " first period at: " +

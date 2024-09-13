@@ -38,29 +38,6 @@ namespace Core
 	class FMToperator;
 class FMTEXPORT FMToutputsource : public FMTspec
     {
-	friend class boost::serialization::access;
-	friend class Parser::FMToutputparser;
-	template<class Archive>
-	void serialize(Archive& ar, const unsigned int version)
-	{
-			ar & boost::serialization::make_nvp("specification", boost::serialization::base_object<FMTspec>(*this));
-			ar & BOOST_SERIALIZATION_NVP(mask);
-			ar & BOOST_SERIALIZATION_NVP(target);
-			ar & BOOST_SERIALIZATION_NVP(action);
-			ar & BOOST_SERIALIZATION_NVP(yield);
-			ar & BOOST_SERIALIZATION_NVP(values);
-			ar & BOOST_SERIALIZATION_NVP(themetarget);
-	}
-    FMTmask mask;
-    FMTotar target;
-	std::string action,yield,levelname;//levelname is only for constant level...(for parsing)
-	std::vector<double>values;
-	bool average;
-	bool sum;
-	int outputorigin;
-	int themetarget;
-	//target =-1 or themetarget constructor
-	void pushvalues(const std::vector<double>& newvalues);
     public:
 		FMToutputsource();
 		~FMToutputsource() = default;
@@ -188,6 +165,7 @@ class FMTEXPORT FMToutputsource : public FMTspec
 			{
 			return !action.empty();
 			}
+		// DocString: FMToutputsource::trimDouble
 		/**
 		* @brief Trim en string les nombres a virgule.
 		*
@@ -198,6 +176,36 @@ class FMTEXPORT FMToutputsource : public FMTspec
 		* @return Retourne la valeur trimmé en std::string
 		*/
 		static std::string trimDouble(const std::string& string_number);
+		// DocString: FMToutputsource::setYield
+		/**
+		@brief set Yield to the output source.
+		@param[in] p_Yield the yield we want to set.
+		*/
+		void setYield(const std::string& p_Yield);
+	private:
+		friend class boost::serialization::access;
+		friend class Parser::FMToutputparser;
+		template<class Archive>
+		void serialize(Archive& ar, const unsigned int version)
+		{
+			ar& boost::serialization::make_nvp("specification", boost::serialization::base_object<FMTspec>(*this));
+			ar& BOOST_SERIALIZATION_NVP(mask);
+			ar& BOOST_SERIALIZATION_NVP(target);
+			ar& BOOST_SERIALIZATION_NVP(action);
+			ar& BOOST_SERIALIZATION_NVP(yield);
+			ar& BOOST_SERIALIZATION_NVP(values);
+			ar& BOOST_SERIALIZATION_NVP(themetarget);
+		}
+		FMTmask mask;
+		FMTotar target;
+		std::string action, yield, levelname;//levelname is only for constant level...(for parsing)
+		std::vector<double>values;
+		bool average;
+		bool sum;
+		int outputorigin;
+		int themetarget;
+		//target =-1 or themetarget constructor
+		void pushvalues(const std::vector<double>& newvalues);
     };
 
 class FMToutputsourcecomparator

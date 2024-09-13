@@ -65,7 +65,7 @@ namespace Parallel
 		std::string projectname;
 		// DocString: FMTparallelwriter::projectname;
 		///The directory output path.
-		const std::string& m_outputLocationPath;
+		std::string m_outputLocationPath;
 	protected:
 		// DocString: FMTparallelwriter::getdriftprobability()
 		/**
