@@ -32,7 +32,7 @@ Models::FMTmodel FMTWrapperCore::Transformation::aggregateAllActions(const Model
 	}
 	catch (...)
 	{
-		throw std::exception("Error in Wrapper::FMTModelWrapper::aggregateAllActions");
+		throw std::exception("Error in FMTWrapperCore::Transformation::aggregateAllActions");
 	}
 	return aggregatedModel;
 

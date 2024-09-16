@@ -64,3 +64,4 @@ FMTNsstest;../../../../Examples/Models/TWD_land/TWD_land.pri|DECISION|UNIT_REC|5
 testmodelwriter;../../../../Examples/Models/TWD_land/TWD_land.pri;ACT_DEATH;
 doplanning;../../../../Examples/Models/TWD_land/TWD_land.pri|Parameters;5;65733
 testOutputType;../../../../Examples/Models/TWD_land/TWD_land.pri;output_type;16
+testWrapperCoreGetMaxAge;../../../../Examples/Models/TWD_land/TWD_land.pri;equation;

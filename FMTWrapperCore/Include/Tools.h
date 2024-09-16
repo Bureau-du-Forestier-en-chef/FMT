@@ -1,5 +1,6 @@
 #include <string>
 #include <vector>
+#include "FMTmodel.h"
 
 namespace Core { 
     class FMTschedule;
@@ -9,9 +10,16 @@ namespace Core {
 
 namespace FMTWrapperCore
 {
-    class Tools
+    class __declspec(dllexport) Tools
     {
     public:
+		/**
+		* @brief retourne l'age max du model.
+		*
+		*@param p_model Le modèle à utiliser.
+		* @return int l'age max du model.
+		*/
+		static int getMaxAge(const Models::FMTmodel& p_model);
 
 		/**
 		* @brief retourne une listes des noms d'actions du mod�le.
