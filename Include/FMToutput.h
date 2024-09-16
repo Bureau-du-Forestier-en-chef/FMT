@@ -370,6 +370,7 @@ class FMTEXPORT FMToutput: public FMTobject
 			std::map<std::string, double>& results,
 			const std::vector<Core::FMToutputnode>& nodes,
 			std::map<std::string, std::vector<std::string>>& allequations) const;
+
 	protected:
 		// DocString: FMToutput::sources
 		///outputsources data used to generate outputnodes
@@ -457,7 +458,18 @@ class FMTEXPORT FMToutput: public FMTobject
 		 * @return `true` if all lines in the source string are within the allowed length, `false` otherwise.
 		 */
 		bool _sourceCounter(const std::string& p_source) const;
-
+		// DocString: FMToutput::_verifyOperatorOrder
+		/**
+		@brief verify that a FMT output doesn't have more than one operator (* or /).
+		@return True or false.
+		*/
+		bool _verifyOperatorOrder() const;		
+		// DocString: FMToutput::_verifyOperatorOrder
+		/**
+		@brief Split a FMT output with temporary output for operator management.
+		@return a string with more than 1 output.
+		*/
+		std::string _operatorFormat() const;
     };
 // DocString: FMToutputcomparator
 /**

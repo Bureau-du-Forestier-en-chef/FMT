@@ -50,8 +50,10 @@ testoutput;../../../../Examples/Models/TWD_land/TWD_land.pri|order;OSUPRATIO;20.
 testoutput;../../../../Examples/Models/TWD_land/TWD_land.pri|order;OSUPRATIO2;0.20202
 doplanning;../../../../Examples/Models/TWD_land/TWD_land.pri|NOT_MASK;5;90738
 testreadwriteproject;../../../../Examples/Models/TWD_land/TWD_land.pri;NOT_MASK;
+testreadwriteproject;../../../../Examples/Models/TWD_land/TWD_land.pri;operator_separator;
 presolvetest;../../../../Examples/Models/TWD_land/TWD_land.pri;NOT_MASK;5
 testmodelwriter;../../../../Examples/Models/TWD_land/TWD_land.pri;NOT_MASK;
+testmodelwriter;../../../../Examples/Models/TWD_land/TWD_land.pri;operator_separator;
 FMTNsstest;../../../../Examples/Models/TWD_land/TWD_land.pri|randomYield|BURNEDAREA|1;1;
 FMTNsstest;../../../../Examples/Models/TWD_land/TWD_land.pri|randomYieldUnit|BURNEDAREA|1;1;
 FMTNsstest;../../../../Examples/Models/TWD_land/TWD_land.pri|UNIT_COVERAGE|UNIT_VOLUME|1;1;322.624

@@ -226,7 +226,6 @@ FMToutput& FMToutput::operator /=(const FMToutputsource& p_source)
 	return *this;
 	}
 
-
 FMToutput::operator std::string() const
     {
 		std::string line;
@@ -234,7 +233,12 @@ FMToutput::operator std::string() const
 		if (_needWsFormat())
 		{
 			line = _toWsFormat();
-		}else {
+		}
+		else if (_verifyOperatorOrder()){
+			line  = _operatorFormat();
+			//throw Exception::FMTexc::FMTunsupported_output;
+		}
+		else {
 			line = _getFormatedOutputName();
 			if (isconstantlevel())
 			{
@@ -1394,6 +1398,105 @@ bool FMToutput::_sourceCounter(const std::string& p_source) const
 	}
 	return passed;
 
+}
+
+bool FMToutput::_verifyOperatorOrder() const
+{
+	bool need_change = false;
+	int count = 0;
+	for (size_t i = 0; i < operators.size(); ++i) {
+		Core::FMTokey op = operators[i].getkey();
+		if (op == Core::FMTokey::multiply || op == Core::FMTokey::divide) {
+			count++;
+		}
+		else if (op == Core::FMTokey::add || op == Core::FMTokey::sub) {
+			count = 0;
+		}
+		if (count > 1) 
+		{
+			need_change = true;
+			break;
+		}
+	}
+	return need_change;
+}
+
+std::string FMToutput::_operatorFormat() const
+{
+	// setup
+	Core::FMToutput newOutput(*this);
+	std::string newLine;
+	int op_count = 0;
+	int output_num = 1;
+	newLine += "*OUTPUT ~" + newOutput.getname() + " \n";
+	newLine += "*SOURCE ";
+	// On regarde le dernier double op * ou / pour ajuster les outputs en conséquence
+	int last_operator_position = 0;
+	for (size_t i = newOutput.operators.size(); i-- > 0; )
+	{
+		if (newOutput.operators[i].getkey() == Core::FMTokey::multiply ||
+			newOutput.operators[i].getkey() == Core::FMTokey::divide)
+		{
+			last_operator_position ++;
+		}
+		else 
+		{
+			last_operator_position = 0;
+		}
+		if (last_operator_position > 1)
+		{
+			last_operator_position = i + 1;
+			break;
+		}
+	}
+	// On réécrit les outputs
+	for (size_t i = 0; i < newOutput.sources.size(); ++i)
+	{
+		std::string source_str = std::string(newOutput.sources[i]);
+		std::string op_str = newOutput.operators[i];
+		Core::FMTokey op = operators[i].getkey();
+		std::string lastNum = "";
+		if (output_num > 1) 
+		{
+			lastNum = "_" + std::to_string(output_num - 1);
+		}
+		if (!source_str.empty())
+		{
+			newLine += source_str + " ";
+		}
+		if (op == Core::FMTokey::multiply || op == Core::FMTokey::divide) {
+			op_count++;
+		}
+		else if (op == Core::FMTokey::add || op == Core::FMTokey::sub) {
+			op_count = 0;
+		}
+		if (op_count < 2)
+		{
+			newLine += op_str + " ";
+			if (op == Core::FMTokey::add || op == Core::FMTokey::sub) {
+				newLine += "\n";
+			}
+		}
+		else if (op_count == 2 && i < last_operator_position)
+		{
+			newLine += "\n\n";
+			newLine += "*OUTPUT ~" + newOutput.getname() + "_" + std::to_string(output_num) + " \n";
+			newLine += "*SOURCE ~" + newOutput.getname() + lastNum + " ";
+			newLine += op_str + " ";
+			op_count == 1;
+			output_num++;
+		}
+		else if (op_count == 2 && i >= last_operator_position)
+		{
+			newLine += "\n\n";
+			newLine += "*OUTPUT " + newOutput.getname() + " \n";
+			newLine += "*SOURCE ~" + newOutput.getname() + lastNum + " ";
+			newLine += op_str + " ";
+			op_count == 1;
+		}
+	}
+	newLine += " \n" ;
+	return newLine;
 }
 
 std::string FMToutput::_getFormatedOutputName() const

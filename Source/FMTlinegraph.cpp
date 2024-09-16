@@ -22,10 +22,10 @@ namespace Graph
 
     }
 
-    FMTlinegraph::FMTlinegraph(const FMTgraphbuild lbuildtype):
-		FMTgraph<FMTbasevertexproperties, FMTbaseedgeproperties>(lbuildtype)
+    FMTlinegraph::FMTlinegraph(size_t p_LengthReserve):
+		FMTgraph<FMTbasevertexproperties, FMTbaseedgeproperties>(FMTgraphbuild::schedulebuild)
     {
-
+		reserveVerticies(p_LengthReserve);
     }
 
     FMTlinegraph::FMTlinegraph(const FMTlinegraph& rhs):

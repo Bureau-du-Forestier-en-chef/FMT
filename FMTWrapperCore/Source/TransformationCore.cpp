@@ -11,7 +11,7 @@ Models::FMTmodel FMTWrapperCore::Transformation::aggregateAllActions(const Model
 	{
 		Parser::FMTmodelparser ModelParser;
 
-		aggregatedModel = p_model.aggregateAllActions(p_aggregates);
+		aggregatedModel = p_model.aggregateAllActions(p_aggregates, p_order);
 		aggregatedModel.setname(p_scenario_name);
 		std::string outputPath;
 		const std::vector<Core::FMTschedule>SCHEDULES = ModelParser.readschedules(p_schedulePri, { p_model }).at(0);
