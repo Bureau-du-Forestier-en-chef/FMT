@@ -299,6 +299,27 @@ FMTyields FMTyields::presolve(const FMTmaskfilter& filter,
 	return newyields;
 	}
 
+void FMTyields::presolveRef(const FMTmaskfilter& p_filter,
+	const std::vector<FMTtheme>& p_originalThemes,
+	const std::vector<FMTtheme>& p_newThemes)
+{
+	try {
+		presolvelist(p_filter, p_originalThemes, p_newThemes);
+		if (!p_filter.emptyflipped())
+		{
+			for (auto& yieldobject : *this)
+			{
+				yieldobject.second = yieldobject.second->presolve(p_filter, p_newThemes);
+			}
+		}
+		update();
+	}
+	catch (...)
+	{
+		_exhandler->raisefromcatch("", "FMTyields::presolveRef", __LINE__, __FILE__, Core::FMTsection::Yield);
+	}
+}
+
 
 FMTyields FMTyields::getfromfactor(const double& factor,
 	std::vector<std::string>yieldnames) const
@@ -538,6 +559,12 @@ int FMTyields::getmaxbase(const std::vector<const FMTyieldhandler*>& handlers)
 		_exhandler->raisefromcatch("", "FMTyields::getmaxbase", __LINE__, __FILE__, FMTsection::Yield);
 	}
 	return maxbase;
+	}
+
+void FMTyields::clear()
+	{
+	FMTlist< std::unique_ptr<FMTyieldhandler>>::clear();
+	yieldpresence.clear();
 	}
 
 #include "FMTlogger.h"

@@ -104,6 +104,18 @@ class FMTEXPORT FMTaction : public FMTlist<FMTspec>
 		FMTaction presolve(const FMTmaskfilter& filter,
 			const std::vector<FMTtheme>& originalthemes,
 			std::vector<FMTtheme>& newthemes, bool compressdata = false) const;
+		// DocString: FMTaction::presolveRef
+		/**
+		@brief Eliminate FMTspecification and presolve all masks base on a basemask a preolved mask
+		and presolved themes. The returned action can also be empty.
+		@param[in] p_filter
+		@param[in] p_originalthemes
+		@param[in] p_newthemes
+		@param[in] p_compressdata
+		*/
+		void presolveRef(const FMTmaskfilter& p_filter,
+			const std::vector<FMTtheme>& p_originalthemes,
+			std::vector<FMTtheme>& p_newthemes, bool p_compressdata = false);
 		// DocString: FMTaction::getagelowerbound
 		/**
 		Get the age lower bound for all FMTspecs.

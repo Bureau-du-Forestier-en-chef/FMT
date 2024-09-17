@@ -162,59 +162,54 @@ namespace Graph
 		const std::vector<tvdescriptor>& getcleandescriptors(const Core::FMToutputnode& targetnode,const std::vector<Core::FMTaction>& actions,
 										const std::vector<Core::FMTtheme>&themes, bool& exactnode) const
 		{
-			const size_t TO_RESERVE = m_reserve;
 			exactnode = false;
-			typename std::map<Core::FMToutputsource, std::vector<tvdescriptor>>::const_iterator parent = this->getparentnode(targetnode, actions, exactnode);
+			bool foundSubset = false;
+			typename std::map<Core::FMToutputsource, std::vector<tvdescriptor>>::const_iterator parent = this->_getParentNode(targetnode,
+																						actions, exactnode, foundSubset);
 			if (exactnode)
 			{
 				return parent->second;
 			}
-
-			//std::vector<tvdescriptor> cleaned(basenode);
-			std::vector<tvdescriptor> cleaned(*m_allocator);
-			cleaned.reserve(TO_RESERVE);
-			pushtovector(cleaned);
-			//
-			if (parent != searchtree.end())
+			//std::vector<tvdescriptor> cleaned(*m_allocator);
+			searchtree[targetnode.source] = std::vector<tvdescriptor>(*m_allocator);
+			std::vector<tvdescriptor>& cleaned = searchtree[targetnode.source];
+			if (foundSubset)
 			{
 				cleaned = parent->second;
+			}else {
+				cleaned.reserve(m_reserve);
+				pushtovector(cleaned);
 			}
 			getactionrebuild(targetnode, actions, cleaned, exactnode);// , TO_RESERVE); // should be able to find also exact!!!!!!!!
 			if (!exactnode)
 			{
 				std::vector<tvdescriptor>toremove(*m_allocator);
-				toremove.reserve(TO_RESERVE);
-				/*size_t basenodesize = inmemorynodes.size();
-				if (basenode != nullptr)
-					{
-					basenodesize =  basenode->size();
-					}*/
+				toremove.reserve(m_reserve);
 				const Core::FMTmask& targetmask = targetnode.source.getmask();
-				//Core::FMTmask unionmask(themes);
 				for (typename std::map<Core::FMToutputsource, std::vector<tvdescriptor>>::const_reverse_iterator sit = searchtree.rbegin();
 					sit != searchtree.rend(); sit++)
 				{
 					const Core::FMTmask& nodemask = sit->first.getmask();
 					if (targetmask.isnotthemessubset(nodemask, themes))//deal only with mask
 					{
-						//unionmask = unionmask.getunion(nodemask);
 						toremove.insert(toremove.end(), sit->second.begin(), sit->second.end());
+
 					}
 				}
 				if (!toremove.empty())
 				{
-					//std::cout << "mask size of " << unionmask.size() << " " << unionmask.count() << "\n";
 					std::vector<tvdescriptor>difference(*m_allocator);
-					difference.reserve(TO_RESERVE);
+					difference.reserve(m_reserve);
 					std::sort(toremove.begin(), toremove.end());
 					std::set_difference(cleaned.begin(), cleaned.end(),
 						toremove.begin(), toremove.end(), std::inserter(difference, difference.begin()));
-					cleaned = difference;
+					cleaned.swap(difference);
 				}
 			}
-			std::pair<notecacheit, bool> returniterator;
-			returniterator = searchtree.insert(std::pair<Core::FMToutputsource, std::vector<tvdescriptor>>(targetnode.source, cleaned));
-			return (returniterator.first)->second;
+			//std::pair<notecacheit, bool> returniterator;
+			//returniterator = searchtree.insert(std::pair<Core::FMToutputsource, std::vector<tvdescriptor>>(targetnode.source, cleaned));
+			//return (returniterator.first)->second;
+			return cleaned;
 		}
 		void getactionrebuild(const Core::FMToutputnode& targetnode,
 			const std::vector<Core::FMTaction>& actions,
@@ -234,7 +229,8 @@ namespace Graph
 				for (notecacheit sit = searchtree.begin();
 					sit != searchtree.end(); sit++)
 				{
-					if (sit->first.issubsetof(targetnode.source, actions))
+					if (sit->first.issubsetof(targetnode.source, actions) && 
+						(sit->first != targetnode.source))
 					{
 						const std::string nodeaction = sit->first.getaction();
 						/*if (potentials[nodeaction].capacity() <= (potentials[nodeaction].size() + 1))
@@ -298,20 +294,24 @@ namespace Graph
 
 			}
 		}
-		notecacheit getparentnode(const Core::FMToutputnode& targetnode, const std::vector<Core::FMTaction>& actions, bool& exactnode) const
+		notecacheit _getParentNode(const Core::FMToutputnode& m_targetNode,
+							const std::vector<Core::FMTaction>& m_actions,
+						bool& m_exactNode, bool m_foundSubset) const
 			{
-				notecacheit parentit = searchtree.find(targetnode.source);
+				notecacheit parentit = searchtree.find(m_targetNode.source);
 				if (parentit != searchtree.end())
 				{
-					exactnode = true;
+					m_exactNode = true;
 					return parentit;
 				}
 				parentit = searchtree.begin();
-				exactnode = false;
+				m_exactNode = false;
+				m_foundSubset = false;
 				while (parentit != searchtree.end())
 				{
-					if (targetnode.source.issubsetof(parentit->first, actions))
+					if (m_targetNode.source.issubsetof(parentit->first, m_actions))
 					{
+						m_foundSubset = true;
 						return parentit;
 					}
 					++parentit;

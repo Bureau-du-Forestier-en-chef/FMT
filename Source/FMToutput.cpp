@@ -836,6 +836,7 @@ size_t FMToutput::size() const
 	return sources.size();
 	}
 
+
 FMToutput FMToutput::presolve(const FMTmaskfilter& filter,
 	const std::vector<FMTtheme>& originalthemes,
 	const std::vector<const FMTtheme*>& selectedthemes,

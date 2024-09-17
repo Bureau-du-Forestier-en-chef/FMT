@@ -335,14 +335,15 @@ namespace Parallel
 		try {
 			if (modelcpy->gotReplicate(replanningperiod))
 			{
-				std::vector<Core::FMTconstraint>newconstraints;
+				modelcpy->setReplicate(getiteration(), replanningperiod);
+				/*std::vector<Core::FMTconstraint>newconstraints;
 				const std::vector<Core::FMTconstraint> MODEL_CONSTRAINTS = modelcpy->getconstraints();
 				newconstraints.reserve(MODEL_CONSTRAINTS.size());
 				for (const Core::FMTconstraint& basenssconstraint : MODEL_CONSTRAINTS)
 				{
 					newconstraints.push_back(basenssconstraint.getfromreplicate(getiteration(), replanningperiod));
 				}
-				modelcpy->setconstraints(newconstraints);
+				modelcpy->setconstraints(newconstraints);*/
 			}
 			
 		}

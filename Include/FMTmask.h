@@ -389,6 +389,15 @@ class FMTEXPORT FMTmask
 		it returns a presolved FMTmask with potentialy less data.
 		*/
 		FMTmask presolve(const FMTmaskfilter& filter,const std::vector<FMTtheme>&presolvedthemes) const;
+		// DocString: FMTmask::presolveRef
+		/**
+		@brief Using a FMTmaskfilter (filter) and a subset of the original FMTthemes used to construct the FMTmask,
+		it returns a presolved FMTmask with potentialy less data.
+		@param[in] p_filter
+		@param[in] p_presolvedThemes
+		@param[in] p_allowReallocation
+		*/
+		void presolveRef(const FMTmaskfilter& p_filter, const std::vector<FMTtheme>& p_presolvedThemes,bool p_allowReallocation = true);
 		// DocString: FMTmask::postsolve
 		/**
 		Using aFMTmaskfilter (filter) and the original FMTthemes it returns a postsolved FMTmask.

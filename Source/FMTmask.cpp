@@ -446,29 +446,39 @@ FMTmask FMTmask::refine(const FMTmask& mask,const std::vector<FMTtheme>& themes)
 
 FMTmask FMTmask::presolve(const FMTmaskfilter& filter, const std::vector<FMTtheme>&presolvedthemes) const
 	{
-	FMTmask newmask;
-	newmask.data.resize(filter.flippedselection.count(), false);
-	size_t selectedloc = 0;
-	for (size_t bitid = 0; bitid < filter.flippedselection.size();++bitid)
-		{
-		if (filter.flippedselection[bitid])
-			{
-			newmask.data[selectedloc] = data[bitid];
-			++selectedloc;
-			}
-		}
-	if (!name.empty())
-		{
-		newmask.name.reserve(name.size());
-		for (const FMTtheme& theme : presolvedthemes)
-			{
-			newmask.name += theme.bitsToStr(newmask.subset(theme)) + " ";
-			}
-		newmask.name.pop_back();
-		//newmask.name.shrink_to_fit();
-		}
-	return newmask;
+	FMTmask newMask(*this);
+	newMask.presolveRef(filter, presolvedthemes);
+	return newMask;
 	}
+
+void FMTmask::presolveRef(const FMTmaskfilter& p_filter, 
+	const std::vector<FMTtheme>& p_presolvedThemes, bool p_allowReallocation)
+{
+	boost::dynamic_bitset<uint8_t>newData(p_filter.flippedselection.count(), false);
+	size_t selectedloc = 0;
+	for (size_t bitid = 0; bitid < p_filter.flippedselection.size(); ++bitid)
+	{
+		if (p_filter.flippedselection[bitid])
+		{
+			newData[selectedloc] = data[bitid];
+			++selectedloc;
+		}
+	}
+	data.swap(newData);
+	if (!name.empty())
+	{
+		name.clear();
+		for (const FMTtheme& theme : p_presolvedThemes)
+			{
+			name += theme.bitsToStr(subset(theme)) + " ";
+			}
+		name.pop_back();
+		if (p_allowReallocation)
+			{
+			name.shrink_to_fit();
+			}
+	}
+}
 
 FMTmask FMTmask::postsolve(const FMTmaskfilter& filter,
 	const std::vector<FMTtheme>&basethemes) const
