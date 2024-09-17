@@ -278,7 +278,7 @@ FMToutput::operator std::string() const
 		return line;
 	}
 	
-	//return line;
+	return std::string();
     
     }
 bool FMToutput::empty() const

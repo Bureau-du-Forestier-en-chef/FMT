@@ -1309,7 +1309,8 @@ void FMTmodel::setarea(const std::vector<Core::FMTactualdevelopment>& ldevs)
 				theDev->setarea(theDev->getarea() + adev.getarea());
 				}
 		}
-		area.swap(std::vector<Core::FMTactualdevelopment>(sortedArea.begin(), sortedArea.end()));
+		std::vector<Core::FMTactualdevelopment>newArea(sortedArea.begin(), sortedArea.end());
+		area.swap(newArea);
 		
 		/*area.clear();
 		area.reserve(ldevs.size());

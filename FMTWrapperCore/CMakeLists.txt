@@ -31,9 +31,10 @@ if (FMTWRAPPERCORE_SOURCES)
     target_link_libraries(FMTWrapperCore PRIVATE ${Boost_LIBRARIES})
     #target_compile_definitions(FMTWrapper PRIVATE "-DFMTLIBIMPORT")
     target_include_directories(FMTWrapperCore PRIVATE ${WrapperCoreINCLUDEDIR})
-    target_link_libraries(FMTWrapperCore PRIVATE "${FMTliblocation}/${CMAKE_SHARED_LIBRARY_PREFIX}${BUILD_TYPE}/FMTlib${CMAKE_STATIC_LIBRARY_SUFFIX}")
+    #target_link_libraries(FMTWrapperCore PRIVATE "${FMTliblocation}/${CMAKE_SHARED_LIBRARY_PREFIX}${BUILD_TYPE}/FMTlib${CMAKE_STATIC_LIBRARY_SUFFIX}")
     #target_include_directories(FMTWrapper PRIVATE "${FMTINCLUDEDIR}")
-
+	# Lier FMTWrapperCore à FMTlib
+	target_link_libraries(FMTWrapperCore PRIVATE FMTlib)
 
 	if (NOT WITHOUT_TESTS)
     		FILE(GLOB FMTWrapperCore_tests ${CMAKE_CURRENT_SOURCE_DIR}/FMTWrapperCore/tests/*.cpp)
@@ -47,12 +48,4 @@ endif()
 else()
     message("No source files found for FMTWrapperCore in ${CMAKE_CURRENT_SOURCE_DIR}/FMTWrapperCore/Source")
 endif()
-# Lier FMTWrapperCore à FMTlib
-target_link_libraries(FMTWrapperCore PUBLIC FMTlib)
 
-# Définir les propriétés de la cible
-set_target_properties(FMTWrapperCore PROPERTIES
-    ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
-    LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib"
-    RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
-)
