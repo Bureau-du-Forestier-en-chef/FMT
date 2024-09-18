@@ -48,11 +48,11 @@ namespace FMTWrapperCore
 		/**
 		* @brief retourne un double du yield.
 		*
-		*@param p_modelIndex Index du mod�le � utiliser.
+		*@param p_model Modele a utiliser.
 		*@param p_yield
 		*@param p_age
 		* @return Un double du yield
 		*/
-		//double getYield(int p_modelIndex, std::string p_mask, std::string p_yield, int p_age);
+		static double getYield(const Models::FMTmodel& p_model, const std::string& p_mask,const std::string& p_yield, int p_age);
     };
 }
