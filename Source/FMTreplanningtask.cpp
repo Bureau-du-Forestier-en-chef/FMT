@@ -241,10 +241,6 @@ namespace Parallel
 					const std::string replicateFolder = "scenarios/replicat" + std::to_string(getiteration());
 					boost::filesystem::create_directories(m_outputlocation + '/' + replicateFolder);
 					schedulePath = m_outputlocation + '/' + replicateFolder + "/" + seqName;
-					// on crée un ._opt vide
-					const std::string optPath = m_outputlocation + "/" + replicateFolder + "/" + m_primaryName +  "._opt";
-					std::ofstream optFile(optPath);
-					optFile.close();
 				}
 				else 
 				{

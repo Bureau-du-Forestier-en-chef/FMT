@@ -20,6 +20,7 @@ int main(int argc, char *argv[])
 	int length;
 	int replicate;
 	std::vector<std::string>allscenarios;
+	std::string outputlocation = "../../tests/replanner/Feux_2023_ouest_V01";
 	if (argc > 1) {
 		primlocation = argv[1];
 		length = std::stoi(argv[2]);
@@ -51,6 +52,7 @@ int main(int argc, char *argv[])
 	errors.push_back(Exception::FMTexc::FMTdeathwithlock);
 	modelparser.seterrorstowarnings(errors);
 	std::vector<Models::FMTmodel> models = modelparser.readproject(primlocation, allscenarios);
+	std::cout << models.at(0).getname() << std::endl;
 	#ifdef FMTWITHMOSEK
 		Models::FMTlpmodel global(models.at(0), Models::FMTsolverinterface::MOSEK);
 	#else
@@ -88,7 +90,6 @@ int main(int argc, char *argv[])
 	std::size_t lastslash = primlocation.find_last_of("/\\");
 	const std::string locname = primlocation.substr(lastslash + 1, (primlocation.size() - lastslash) - 5);
 	//const std::string outputlocation = "../../tests/replanner/"+ locname;
-	std::string outputlocation = "../../tests/replanner/Feux_2023_ouest_V01";
 
 	std::vector<std::string> layersoptions;
 	layersoptions.push_back("SEPARATOR=SEMICOLON");
