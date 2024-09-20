@@ -233,7 +233,7 @@ namespace Parallel
 				// Extraire la partie après le dernier séparateur
 				const std::string seqName = m_primaryName + "_Replicate" + std::to_string(getiteration()) + ".seq";
 				const std::string schedulePath = m_outputlocation + '/' + seqName;
- 				std::vector<Core::FMTschedule> scheduleList;
+ 				
 				bool appendExistingSchedule = true;
 				/*if (!modelptr)//infeasible!
 				{
@@ -252,21 +252,24 @@ namespace Parallel
 					}
 				}
 				const std::map<std::string, std::vector<std::vector<double>>>results = resultswriter->getresults(modelptr, firstperiod, lastperiod);
+				
+				_logger->logwithlevel("Thread:" + getthreadid() + " Writing results for " + modelname + " first period at: " +
+					std::to_string(firstperiod) + " for replicate " + std::to_string(getiteration()) + +"\n", 1);
+				
+				int reportingFirstPeriod = firstperiod;
+				int reportingLastPeriod = lastperiod;
 				if (modelsize == 1)
 				{
-					firstperiod = replanningperiod;
-					lastperiod = replanningperiod;
+					reportingFirstPeriod = replanningperiod;
+					reportingLastPeriod = replanningperiod;
 				}
 				if (!modelptr)
 				{
-					firstperiod = replanningperiod;
-					lastperiod = replanningperiods;
-					if(m_writeSchedule)
-					{
-						throw std::string("No modelptr exist...");
-					}
+					reportingFirstPeriod = replanningperiod;
+					reportingLastPeriod = replanningperiods;
 				}
-				if (modelname == stochastic->getname() || modelname == local->getname())
+
+				if (modelptr && modelname == stochastic->getname() || modelname == local->getname())
 				{
 					if (modelname == stochastic->getname() && replanningperiod == 1)
 					{
@@ -276,17 +279,21 @@ namespace Parallel
 							appendExistingSchedule = false;
 						}
 					}
+					std::vector<Core::FMTschedule> scheduleList;
+					scheduleList.reserve(1);
 					// for loop / getSolution schedule in vector ajuster resultwriter afin de scheduleParser::write
+					int schedulePeriod = reportingFirstPeriod;
 					for (int i = firstperiod; i <= lastperiod; ++i)
 					{
-						scheduleList.push_back(modelptr->getsolution(i, true));
+						Core::FMTschedule schedule = modelptr->getsolution(i, true);
+						schedule.setperiod(schedulePeriod);
+						scheduleList.push_back(schedule);
+						++schedulePeriod;
 					}
 					resultswriter->writeSchedules(seqName, scheduleList, appendExistingSchedule);
 				}
-
-				_logger->logwithlevel("Thread:" + getthreadid() + " Writing results for " + modelname + " first period at: " +
-					std::to_string(firstperiod) + " for replicate " + std::to_string(getiteration()) + +"\n", 1);
-				resultswriter->write(modelname, results, firstperiod, lastperiod, getiteration());
+				
+				resultswriter->write(modelname, results, reportingFirstPeriod, reportingLastPeriod, getiteration());
 			}
 		}catch (...)
 		{

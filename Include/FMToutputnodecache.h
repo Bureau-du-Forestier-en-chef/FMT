@@ -184,7 +184,7 @@ namespace Graph
 			if (!exactnode)
 			{
 				std::vector<tvdescriptor>toremove(*m_allocator);
-				toremove.reserve(m_reserve);
+				bool gotSomething = false;
 				const Core::FMTmask& targetmask = targetnode.source.getmask();
 				for (typename std::map<Core::FMToutputsource, std::vector<tvdescriptor>>::const_reverse_iterator sit = searchtree.rbegin();
 					sit != searchtree.rend(); sit++)
@@ -192,14 +192,19 @@ namespace Graph
 					const Core::FMTmask& nodemask = sit->first.getmask();
 					if (targetmask.isnotthemessubset(nodemask, themes))//deal only with mask
 					{
+						if (!gotSomething)
+							{
+							toremove.reserve(cleaned.size());
+							}
 						toremove.insert(toremove.end(), sit->second.begin(), sit->second.end());
+						gotSomething = true;
 
 					}
 				}
 				if (!toremove.empty())
 				{
 					std::vector<tvdescriptor>difference(*m_allocator);
-					difference.reserve(m_reserve);
+					difference.reserve(cleaned.size());
 					std::sort(toremove.begin(), toremove.end());
 					std::set_difference(cleaned.begin(), cleaned.end(),
 						toremove.begin(), toremove.end(), std::inserter(difference, difference.begin()));

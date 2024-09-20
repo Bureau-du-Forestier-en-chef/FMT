@@ -60,17 +60,14 @@ FMTmask::FMTmask(const std::vector<std::string>&values,const std::vector<FMTthem
     }
 std::vector<FMTmask> FMTmask::decompose(const FMTtheme &theme) const
     {
-	std::vector<std::string>bases;
-    const std::string value = get(theme);
-	const std::vector<std::string>atts = theme.getattributes(value);
-	std::vector<FMTmask>newmasks;
-    for(const std::string& att : atts)
-        {
-        FMTmask newmask = *this;
-        newmask.set(theme,att);
-        newmasks.push_back(newmask);
-        }
-    return newmasks;
+    const std::string VALUE = get(theme);
+	const std::vector<std::string>ATTRIBUTES = theme.getattributes(VALUE);
+	std::vector<FMTmask>NewMasks(ATTRIBUTES.size(), *this);
+	for (size_t Id = 0; Id < NewMasks.size();++Id)
+		{
+		NewMasks[Id].set(theme, ATTRIBUTES[Id]);
+		}
+    return NewMasks;
     }
  boost::dynamic_bitset<uint8_t> FMTmask::subset(const FMTtheme& theme) const
     {
@@ -83,6 +80,19 @@ std::vector<FMTmask> FMTmask::decompose(const FMTtheme &theme) const
         }
     return sub;
     }
+
+ bool FMTmask::_anyIntersect(const FMTmask& p_MASK, const FMTtheme& p_THEME) const
+	 {
+	 size_t bIt = p_THEME.m_start;
+	 bool gotIntersect = false;
+	 while (!gotIntersect &&
+		 bIt < (p_THEME.m_start + p_THEME.size()))
+		 {
+		 gotIntersect = data[bIt] && p_MASK.data[bIt];
+		 ++bIt;
+		 }
+	 return gotIntersect;
+	 }
 
 FMTmask FMTmask::getpostsolvemask(const FMTmask& mask, const std::vector<FMTtheme>& themes) const
 	{
@@ -379,11 +389,16 @@ bool FMTmask::isnotthemessubset(const FMTmask& rhs, const std::vector<const Core
 	{
 	for (const Core::FMTtheme* theme : themes)
 		{
-		const size_t themestart = theme->getstart();
+		/*const size_t themestart = theme->getstart();
 		const size_t themestop = themestart + theme->size()-1;
 		if (!(rhs.data[themestart]&this->data[themestart])&&
 			!(rhs.data[themestop]&this->data[themestop])&&
-			!((subset(*theme) & rhs.subset(*theme)).any()))
+			!((subset(*theme) & rhs.subset(*theme)).any())
+			)
+			{
+			return true;
+			}*/
+		if (!_anyIntersect(rhs, *theme))
 			{
 			return true;
 			}

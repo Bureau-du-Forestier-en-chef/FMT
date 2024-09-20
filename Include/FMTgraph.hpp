@@ -1310,7 +1310,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 						for (const int& localnodeperiod : targetedperiods)
 						{
 							std::vector<FMTvertex_descriptor>staticdescriptors(m_allocator);
-							staticdescriptors.reserve(m_reserve);
+							
 							//staticdescriptors.clear();
 							std::vector<FMTvertex_descriptor> const* descriptors = nullptr;
 							bool exactverticies = false;
@@ -1325,6 +1325,7 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 							}
 							else {
 								FMTvertex_iterator vertex_iterator, vertex_iterator_end;
+								staticdescriptors.reserve(m_reserve);
 								for (boost::tie(vertex_iterator, vertex_iterator_end) = getperiodverticies(localnodeperiod); vertex_iterator != vertex_iterator_end; ++vertex_iterator)
 								{
 									staticdescriptors.push_back(*vertex_iterator);
@@ -2452,9 +2453,9 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 							const Core::FMTdevelopment& dev = data[*vertex_iterator].get();
 							for (const auto variable_iterator : variables)
 							{
+								
 								if (*(actual_solution + variable_iterator.second) > FMT_DBL_TOLERANCE) //basis solution only!!!
 								{
-
 									/*if (schedule_solution.find(actions[variable_iterator.first]) == schedule_solution.end())
 									{
 										schedule_solution[actions[variable_iterator.first]] = std::map<Core::FMTdevelopment, std::map<int, double>>();

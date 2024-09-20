@@ -17,6 +17,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTdevelopmentpath.h"
 #include "FMTbounds.hpp"
 #include "FMTexceptionhandler.h"
+#include <array>
 
 namespace Core{
 
@@ -166,6 +167,7 @@ namespace Core{
 		 try{
 			if (worthtestingoperability(action))
 				{
+				
 				for (const FMTspec* spec : action.findsets(mask))
 					{
 					if (is(*spec, ylds,graphyieldrequest))
@@ -242,6 +244,7 @@ namespace Core{
 					 }
 				 return returnvalues;
 			 }
+
 		 }
 		 catch (...)
 		 {

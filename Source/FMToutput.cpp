@@ -1116,10 +1116,11 @@ std::vector<std::string> FMToutput::getthemedecomposition(const FMTtheme& theme)
 			if (source.isvariable())
 			{
 				const FMTmask srcmask = source.getmask();
-				std::vector<std::string>unique_selection;
-				for (const FMTmask& decmask : srcmask.decompose(theme))
+				const std::vector<FMTmask> ALL_MASKS = srcmask.decompose(theme);
+				std::vector<std::string>unique_selection(ALL_MASKS.size());
+				for (size_t Id = 0; Id < ALL_MASKS.size();++Id)
 				{
-					unique_selection.push_back(decmask.get(theme));
+					unique_selection[Id] = ALL_MASKS[Id].get(theme);
 				}
 				if (srcid == 0)
 				{
@@ -1127,6 +1128,7 @@ std::vector<std::string> FMToutput::getthemedecomposition(const FMTtheme& theme)
 				}
 				else {
 					std::vector<std::string>newvalid;
+					newvalid.reserve(validdecomp.size());
 					std::set_intersection(validdecomp.begin(), validdecomp.end(),
 						unique_selection.begin(), unique_selection.end(), back_inserter(newvalid));
 					validdecomp = newvalid;

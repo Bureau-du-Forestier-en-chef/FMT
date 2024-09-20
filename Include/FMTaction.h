@@ -19,12 +19,14 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <vector>
 #include <unordered_set>
 #include <boost/serialization/export.hpp>
+#include <limits>
 
 
 #define FMTGCBMDEATHID 15
 #define FMTGCBMGROWTHID 16
 #define FMTGCBMUNKNOWNID 17
 #define FMTGCBMWILDFIREID 10
+#define FMTMaxNumberOfActions _I8_MAX + 1
 
 
 namespace Core

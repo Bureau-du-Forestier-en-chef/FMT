@@ -344,7 +344,7 @@ namespace Parallel
 		{
 			Parser::FMTscheduleparser parser;
 			boost::lock_guard<boost::recursive_mutex> lock(mtx);
-			//parser.write(scheduleList, m_outputLocationPath + "\\" + seqName, append);
+			parser.write(scheduleList, m_outputLocationPath + "\\" + seqName, append);
 		}
 		catch (...)
 		{

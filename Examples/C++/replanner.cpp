@@ -15,21 +15,21 @@ int main(int argc, char *argv[])
 	{
 	#ifdef FMTWITHOSI
 	Logging::FMTdefaultlogger().logstamp();
-	const std::string primlocation = "D:/CC_modele_feu/WS_CC/Feux_2023_ouest_V01.pri";
+	/*const std::string primlocation = "D:/CC_modele_feu/WS_CC/Feux_2023_ouest_V01.pri";
 	const int length = 5;
-	const int replicate = 20;
+	const int replicate = 1;
 	std::vector<std::string>allscenarios;
-	allscenarios.push_back("strategique_minimisation_Risque");
-	allscenarios.push_back("stochastique_CC");
-	allscenarios.push_back("tactique");
+	allscenarios.push_back("strategique");
+	allscenarios.push_back("stochastique_Histo");
+	allscenarios.push_back("tactique");*/
 	//allscenarios.push_back("strategique"); //Pour test le lancé d'erreur
-	/*const std::string primlocation = argv[1];
+	const std::string primlocation = argv[1];
 	const int length = std::stoi(argv[2]);
 	const int replicate = std::stoi(argv[3]);
 	std::vector<std::string>allscenarios;
 	allscenarios.push_back("Globalreplanning");
 	allscenarios.push_back("Globalfire");
-	allscenarios.push_back("Localreplanning");*/
+	allscenarios.push_back("Localreplanning");
 	Parser::FMTmodelparser modelparser;
 	modelparser.setdefaultexceptionhandler();
 	std::vector<Exception::FMTexc> errors;
@@ -64,10 +64,10 @@ int main(int argc, char *argv[])
 	local.setparameter(Models::FMTintmodelparameters::LENGTH, 1);
 	local.setparameter(Models::FMTintmodelparameters::NUMBER_OF_THREADS,1);
 	std::vector<std::string>OutputtoLookFor = { "OVOLTOTREC","ORISQUE", "OVOL_UA_TOTREC" ,"OSUPBRULER_CORRIGER" ,
-												"SUPERFICIE_RECUP_FEU" ,/*"OSUPPL_FEU_POSTRECUP",*/
+												"SUPERFICIE_RECUP_FEU" ,"OSUPPLEP_FEU23_UA","OSUPPL_FEU_POSTRECUP",
 													"OSUPTBE" , "SUPERFICIE_RECUP_TBE",
-												/*"OCATTBE_C1" ,"OCATTBE_C2" ,"OCATTBE_C3",
-												"OCATTBE_C4","OCATTBE_C5","OCATTBE_C6","OTBECOMP","OSUPADMATBE"*/};
+												"OCATTBE_C1" ,"OCATTBE_C2" ,"OCATTBE_C3",
+												"OCATTBE_C4","OCATTBE_C5","OCATTBE_C6","OTBECOMP","OSUPADMATBE"};
 	std::vector<Core::FMToutput>selectedoutputs;
 	for (const Core::FMToutput& output : global.getoutputs())
 	{
@@ -86,7 +86,7 @@ int main(int argc, char *argv[])
 	std::unique_ptr<Parallel::FMTtask> maintaskptr(new Parallel::FMTreplanningtask(
 		global, stochastic, local, selectedoutputs, outputlocation, "CSV", layersoptions, 
 		replicate, length, 0.5, Core::FMToutputlevel::standard, true));
-	Parallel::FMTtaskhandler handler(maintaskptr, 20); // FIXME diminuer 5 � 1 pour le debuggage
+	Parallel::FMTtaskhandler handler(maintaskptr, 1); // FIXME diminuer 5 � 1 pour le debuggage
 	//handler.setquietlogger();
 	//handler.ondemandrun();
 	handler.conccurentrun();
