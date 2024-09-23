@@ -46,9 +46,8 @@ int main(int argc, char* argv[])
 
 	const std::vector<Models::FMTmodel> MODELS = ModelParser.readproject(pathPri, { scenarioName });
 	const double yield = FMTWrapperCore::Tools::getYield(MODELS.at(0), mask, yieldName, age);
-	std::cout << "Valeur de yield: " << yield << std::endl;
 
-	// on fait des vérifications sur le nombre renvoyer
+	// on fait des vï¿½rifications sur le nombre renvoyer
 	if (yield <= 0) {
 		throw "Error: testWrapperCoreGetYield";
 	}
