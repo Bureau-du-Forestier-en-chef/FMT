@@ -1,4 +1,5 @@
 #include  "Tools.h"
+#include "FMTmodel.h"
 
 
 int FMTWrapperCore::Tools::getMaxAge(const Models::FMTmodel& p_model)
@@ -7,7 +8,6 @@ int FMTWrapperCore::Tools::getMaxAge(const Models::FMTmodel& p_model)
 	try
 	{
 		const Core::FMTyields YIELDS = p_model.getyields();
-		const Core::FMTyields* YIELDSptr = &YIELDS;
 		std::vector<const Core::FMTyieldhandler*> handler;
 		for (const auto& DATA : YIELDS)
 		{

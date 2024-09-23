@@ -1,11 +1,15 @@
 #include <string>
 #include <vector>
-#include "FMTmodel.h"
 
 namespace Core { 
     class FMTschedule;
     class FMTconstraint;
     class FMToutput;
+}
+
+namespace Models
+{
+	class FMTmodel;
 }
 
 namespace FMTWrapperCore
