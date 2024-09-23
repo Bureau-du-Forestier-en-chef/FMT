@@ -316,7 +316,9 @@ class FMTEXPORT FMToutput: public FMTobject
 			const std::vector<FMTtheme>& originalthemes,
 			const std::vector<const FMTtheme*>& selectedthemes,
 			const std::vector<FMTtheme>& newthemes,
-			const std::vector<FMTaction>& actions, const FMTyields& yields) const;
+			const std::vector<FMTaction>& actions,
+			const std::vector<bool>& p_valideActions,
+			const FMTyields& yields) const;
 		// DocString: FMToutput::changeoutputsorigin
 		/**
 		Change outputorigin and targetthemeid of each source with the distance from the begining of the set corresponding to the old outputorigin and themeid.
@@ -405,6 +407,17 @@ class FMTEXPORT FMToutput: public FMTobject
 		Replace the division with the bound and reverse the denominator
 		*/
 		void replacedivision(const double& bound);
+		// DocString: FMToutput::isvalidAction
+		/**
+		@Valid if an action or aggregate is in p_Actions.
+		@param[in] p_actionOrAggregate name or aggregate of action
+		@param[in] p_actions the full actions vector
+		@param[in] p_validActions validity of actions.
+		@return true if it's in
+		*/
+		static bool isvalidAction(const std::string& p_actionOrAggregate,
+			const std::vector<FMTaction>& p_actions,
+			const std::vector<bool>& p_validActions);
 	private:
 		// DocString: FMToutput::serialize
 		/**
@@ -457,7 +470,6 @@ class FMTEXPORT FMToutput: public FMTobject
 		 * @return `true` if all lines in the source string are within the allowed length, `false` otherwise.
 		 */
 		bool _sourceCounter(const std::string& p_source) const;
-
     };
 // DocString: FMToutputcomparator
 /**

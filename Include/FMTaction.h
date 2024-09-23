@@ -285,6 +285,13 @@ class FMTEXPORT FMTaction : public FMTlist<FMTspec>
 		@return true if not use else false.
 		*/
 		bool notUse() const;
+		// DocString: FMTaction::isPartOf
+		/**
+		@brief Check if action is part of action name or aggregate.
+		@param[in] p_name action name or aggregate.
+		@return true if is part else false.
+		*/
+		bool isPartOf(const std::string& p_name) const;
 	protected:
 		// DocString: FMTaction::aggregates
 		///An action can be part of a aggregate so this data member gets the name of all aggregate the action is being part of.

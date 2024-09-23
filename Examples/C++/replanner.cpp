@@ -15,12 +15,14 @@ int main(int argc, char *argv[])
 	{
 	#ifdef FMTWITHOSI
 	Logging::FMTdefaultlogger().logstamp();
-	/*const std::string primlocation = "D:/CC_modele_feu/WS_CC/Feux_2023_ouest_V01.pri";
+	/*const std::string primlocation = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/09_FMT/Modeles_test/PC9509_U02751_DET_ECON_Cout_T/PC_9509_U02751_4_Vg2_2023_vRp2.pri";
 	const int length = 5;
 	const int replicate = 1;
 	std::vector<std::string>allscenarios;
-	allscenarios.push_back("strategique");
-	allscenarios.push_back("stochastique_Histo");
+	allscenarios.push_back("14_Sc5a_Determin_avsp_Cout_t5");*/
+	Parser::FMTmodelparser modelparser;
+	
+	/*allscenarios.push_back("stochastique_Histo");
 	allscenarios.push_back("tactique");*/
 	//allscenarios.push_back("strategique"); //Pour test le lancé d'erreur
 	const std::string primlocation = argv[1];
@@ -30,7 +32,6 @@ int main(int argc, char *argv[])
 	allscenarios.push_back("Globalreplanning");
 	allscenarios.push_back("Globalfire");
 	allscenarios.push_back("Localreplanning");
-	Parser::FMTmodelparser modelparser;
 	modelparser.setdefaultexceptionhandler();
 	std::vector<Exception::FMTexc> errors;
 	errors.push_back(Exception::FMTexc::FMTmissingyield);
@@ -41,6 +42,8 @@ int main(int argc, char *argv[])
 	errors.push_back(Exception::FMTexc::FMToveridedyield);
 	errors.push_back(Exception::FMTexc::FMTdeathwithlock);
 	modelparser.seterrorstowarnings(errors);
+	//std::vector<Models::FMTmodel> tests = modelparser.readproject(primlocation, allscenarios);
+	//tests[0].presolve();
 	std::vector<Models::FMTmodel> models = modelparser.readproject(primlocation, allscenarios);
 	#ifdef FMTWITHMOSEK
 		Models::FMTlpmodel global(models.at(0), Models::FMTsolverinterface::MOSEK);

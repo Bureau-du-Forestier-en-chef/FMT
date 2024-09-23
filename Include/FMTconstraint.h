@@ -269,7 +269,9 @@ class FMTEXPORT FMTconstraint: public FMToutput,public FMTspec
 			const std::vector<FMTtheme>& originalthemes,
 			const std::vector<const FMTtheme*>& selectedthemes,
 			const std::vector<FMTtheme>& newthemes,
-			const std::vector<FMTaction>& actions, const FMTyields& yields) const;
+			const std::vector<FMTaction>& actions,
+			const std::vector<bool>& p_valideActions,
+			const FMTyields& yields) const;
 		// DocString: FMTconstraint::presolveRef
 		/**
 		@brief Presolve this constraint
@@ -278,6 +280,7 @@ class FMTEXPORT FMTconstraint: public FMToutput,public FMTspec
 		@param[in] p_selectedThemes
 		@param[in] p_newThemes
 		@param[in] p_actions
+		@param[in] p_valideActions
 		@param[in] p_yields
 		*/
 		void presolveRef(const FMTmaskfilter& p_filter,
@@ -285,6 +288,7 @@ class FMTEXPORT FMTconstraint: public FMToutput,public FMTspec
 			const std::vector<const FMTtheme*>& p_selectedThemes,
 			const std::vector<FMTtheme>& p_newThemes,
 			const std::vector<FMTaction>& p_actions,
+			const std::vector<bool>& p_valideActions,
 			const FMTyields& p_yields);
 		// DocString: ~FMTconstraint()
 		/**
@@ -319,6 +323,7 @@ class FMTEXPORT FMTconstraint: public FMToutput,public FMTspec
 		void turntoyieldsbasedontransition(	const std::vector<Core::FMTtheme>& themes,
 											const std::vector<Core::FMTtransition>& trans,
 											std::vector<Core::FMTaction>&actions,
+											const std::vector<bool>& p_valideActions,
 											Core::FMTyields& yields,
 											const int& constraintid) const;
 		// DocString: FMTconstraint::canbeturnedtoyields
@@ -335,6 +340,7 @@ class FMTEXPORT FMTconstraint: public FMToutput,public FMTspec
 		*/
 		void turntoyieldsandactions(const std::vector<Core::FMTtheme>& themes,
 						 std::vector<Core::FMTaction>&actions,
+						const std::vector<bool>& p_valideActions,
 						 Core::FMTyields& yields,
 						 const int& constraintid) const;
 	private:

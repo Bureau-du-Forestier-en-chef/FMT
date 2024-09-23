@@ -489,6 +489,12 @@ bool FMTaction::notUse() const
 	return (size() == count);
 	}
 
+bool FMTaction::isPartOf(const std::string& p_name) const
+	{
+	return (name == p_name ||
+		std::find(aggregates.begin(), aggregates.end(), p_name) != aggregates.end());
+	}
+
 std::vector<Core::FMTaction>FMTaction::split(const std::vector<Core::FMTmask>& p_mask,
 											const std::vector<Core::FMTtheme>& p_themes) const
 {

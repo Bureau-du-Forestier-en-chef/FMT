@@ -427,6 +427,23 @@ void FMToutput::replacedivision(const double& bound)
 	}
 }
 
+bool FMToutput::isvalidAction(const std::string& p_actionOrAggregate,
+	const std::vector<FMTaction>& p_actions,
+	const std::vector<bool>& p_validActions)
+{
+	bool isValid = false;
+	size_t Id = 0;
+	while (!isValid && Id < p_actions.size())
+		{
+		if (p_validActions[Id] && p_actions[Id].isPartOf(p_actionOrAggregate))
+			{
+			isValid = true;
+			}
+		++Id;
+		}
+	return isValid;
+}
+
 void FMToutput::setproportions(std::map<std::string, std::vector<std::string>>& allequations,const std::vector<std::string>& baseequation) const
 {
 	try {
@@ -841,7 +858,9 @@ FMToutput FMToutput::presolve(const FMTmaskfilter& filter,
 	const std::vector<FMTtheme>& originalthemes,
 	const std::vector<const FMTtheme*>& selectedthemes,
 	const std::vector<FMTtheme>& newthemes,
-	const std::vector<FMTaction>& actions, const FMTyields& yields) const
+	const std::vector<FMTaction>& actions,
+	const std::vector<bool>& p_valideActions,
+	const FMTyields& yields) const
 	{
 	FMToutput newoutput(*this);
 	try {
@@ -859,10 +878,10 @@ FMToutput FMToutput::presolve(const FMTmaskfilter& filter,
 			if (sources.at(sourceid).isvariable())
 			{
 				const std::string& actionname = sources.at(sourceid).getaction();
-				
+				const bool IS_VALId_ACTION = isvalidAction(actionname,actions, p_valideActions);
 				if (filter.canpresolve(sources.at(sourceid).getmask(), selectedthemes) &&
 					(actionname.empty() ||
-						std::find_if(actions.begin(), actions.end(), FMTactioncomparator(actionname, true)) != actions.end()) && 
+						IS_VALId_ACTION) &&
 						(yieldname.empty() || !yields.isnullyld(yieldname)))
 				{
 					if (!filter.emptyflipped())

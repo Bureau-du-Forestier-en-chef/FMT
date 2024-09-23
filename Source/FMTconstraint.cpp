@@ -913,11 +913,12 @@ namespace Core
 			const std::vector<FMTtheme>& originalthemes,
 			const std::vector<const FMTtheme*>& selectedthemes,
 			const std::vector<FMTtheme>& newthemes,
-			const std::vector<FMTaction>& actions, const FMTyields& yields) const
+			const std::vector<FMTaction>& actions,
+			const std::vector<bool>& p_valideActions, const FMTyields& yields) const
 			{
 			FMTconstraint newconstraint(*this);
 			try {
-				newconstraint.presolveRef(filter, originalthemes, selectedthemes, newthemes, actions, yields);
+				newconstraint.presolveRef(filter, originalthemes, selectedthemes, newthemes, actions, p_valideActions, yields);
 			}catch (...)
 				{
 				_exhandler->raisefromcatch("for " + std::string(*this),"FMTconstraint::presolve", __LINE__, __FILE__, Core::FMTsection::Optimize);
@@ -930,10 +931,11 @@ namespace Core
 			const std::vector<const FMTtheme*>& p_selectedThemes,
 			const std::vector<FMTtheme>& p_newThemes,
 			const std::vector<FMTaction>& p_actions,
+			const std::vector<bool>& p_valideActions,
 			const FMTyields& p_yields)
 		{
 			try {
-				setoutput(FMToutput::presolve(p_filter, p_originalThemes, p_selectedThemes, p_newThemes, p_actions, p_yields));
+				setoutput(FMToutput::presolve(p_filter, p_originalThemes, p_selectedThemes, p_newThemes, p_actions, p_valideActions, p_yields));
 			}
 			catch (...)
 			{
@@ -1200,6 +1202,7 @@ namespace Core
 		void FMTconstraint::turntoyieldsbasedontransition(	const std::vector<Core::FMTtheme>& themes,
 															const std::vector<Core::FMTtransition>& trans,
 															std::vector<Core::FMTaction>&actions,
+															const std::vector<bool>& p_valideActions,
 															Core::FMTyields& yields,
 															const int& constraintid) const
 		{
@@ -1212,24 +1215,31 @@ namespace Core
 				size_t transitionid=0;
 				for(const FMTtransition& transition : trans)
 				{
-					const Core::FMTaction& trigerringaction=actions.at(transitionid);
-					for (const Core::FMToutputsource& source : sources)
+					if (p_valideActions[transitionid])
 					{
-						if (source.isvariable())
+						const Core::FMTaction& trigerringaction = actions.at(transitionid);
+						for (const Core::FMToutputsource& source : sources)
 						{
-
-							const Core::FMTmask& sourcemask = source.getmask();
-							for (const FMTmask mask : transition.canproduce(sourcemask,themes))
+							if (source.isvariable())
 							{
-								sourcestoturnintoyield.push_back(Core::FMToutputsource(Core::FMTspec(),mask,newtarget,"",trigerringaction.getname(),source.getoutputorigin(),source.getthemetarget()));
+
+								const Core::FMTmask& sourcemask = source.getmask();
+								for (const FMTmask mask : transition.canproduce(sourcemask,themes))
+								{
+									sourcestoturnintoyield.push_back(Core::FMToutputsource(Core::FMTspec(),mask,newtarget,"",trigerringaction.getname(),source.getoutputorigin(),source.getthemetarget()));
+								}
 							}
 						}
 					}
 					++transitionid;
 				}
-				FMTconstraint toturnintoyield(*this);
-				toturnintoyield.sources = sourcestoturnintoyield;
-				toturnintoyield.turntoyieldsandactions(themes, actions, yields,constraintid);
+				//if (!sourcestoturnintoyield.empty())
+				//{
+					FMTconstraint toturnintoyield(*this);
+					toturnintoyield.sources = sourcestoturnintoyield;
+					toturnintoyield.turntoyieldsandactions(themes, actions, p_valideActions, yields, constraintid);
+				//}
+				
 			}
 			catch (...)
 			{
@@ -1274,6 +1284,7 @@ namespace Core
 
 		void FMTconstraint::turntoyieldsandactions(const std::vector<Core::FMTtheme>& themes,
 			std::vector<Core::FMTaction>&actions,
+			const std::vector<bool>& p_valideActions,
 			Core::FMTyields& yields,
 			const int& constraintid) const
 		{
@@ -1322,26 +1333,30 @@ namespace Core
 				{
 					if (source.isvariable())
 					{
-						const std::string yieldname(baseyieldnames + "_" + std::to_string(sourceid));
-						for (const Core::FMTaction* actionptr : Core::FMTactioncomparator(source.getaction()).getallaggregates(actions, false))
-						{
-							for (auto& itvalue : actions[std::distance(&*(actions.cbegin()), actionptr)])
+					const std::string yieldname(baseyieldnames + "_" + std::to_string(sourceid));
+					const bool IS_VALId_ACTION = isvalidAction(source.getaction(), actions, p_valideActions);
+					if (IS_VALId_ACTION)
 							{
-								itvalue.second.addbounds(Core::FMTyldbounds(Core::FMTsection::Action, yieldname, 1.0, 1.0));
+								for (const Core::FMTaction* actionptr : Core::FMTactioncomparator(source.getaction()).getallaggregates(actions, false))
+								{
+									for (auto& itvalue : actions[std::distance(&*(actions.cbegin()), actionptr)])
+									{
+										itvalue.second.addbounds(Core::FMTyldbounds(Core::FMTsection::Action, yieldname, 1.0, 1.0));
+									}
+								}
 							}
-						}
-						for (const double& pattern : defaultvalues)
-						{
-							defaulthandler->push_data(yieldname, pattern);
-						}
-						std::unique_ptr<Core::FMTyieldhandler> yieldhandler(new Core::FMTtimeyieldhandler(source.getmask()));
-						yieldhandler->push_base(0);
-						//yieldhandler.push_base(1);
-						for (const double& pattern : patternvalues)
-						{
-							yieldhandler->push_data(yieldname, pattern);
-						}
-						yields.push_back(source.getmask(), yieldhandler);
+							for (const double& pattern : defaultvalues)
+							{
+								defaulthandler->push_data(yieldname, pattern);
+							}
+							std::unique_ptr<Core::FMTyieldhandler> yieldhandler(new Core::FMTtimeyieldhandler(source.getmask()));
+							yieldhandler->push_base(0);
+							//yieldhandler.push_base(1);
+							for (const double& pattern : patternvalues)
+							{
+								yieldhandler->push_data(yieldname, pattern);
+							}
+					yields.push_back(source.getmask(), yieldhandler);	
 					}
 					++sourceid;
 				}

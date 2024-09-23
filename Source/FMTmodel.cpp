@@ -2189,7 +2189,8 @@ std::unique_ptr<FMTmodel> FMTmodel::presolve(std::vector<Core::FMTactualdevelopm
 			for (const Core::FMToutput& output : presolvedModel->outputs)
 			{
 				Core::FMToutput PresolvedOutput = output.presolve(newfilter, presolvedModel->themes, maskthemes,
-																newthemes, presolvedModel->actions, presolvedModel->yields);
+																newthemes, presolvedModel->actions, validActions,
+																presolvedModel->yields);
 				if(!PresolvedOutput.empty())
 				{
 					keptoutputid.insert(oloutputdid);
@@ -2216,18 +2217,19 @@ std::unique_ptr<FMTmodel> FMTmodel::presolve(std::vector<Core::FMTactualdevelopm
 				if (validConstraints[constraintId])
 				{
 					validConstraints[constraintId] = false;
-					presolvedConstraint.presolveRef(newfilter, presolvedModel->themes, maskthemes, newthemes, presolvedModel->actions, presolvedModel->yields);
+					presolvedConstraint.presolveRef(newfilter, presolvedModel->themes, maskthemes, newthemes, presolvedModel->actions,
+													validActions, presolvedModel->yields);
 					if (!presolvedConstraint.outputempty() ||
 						(presolvedConstraint.isobjective() && presolvedConstraint.isgoal()))
 					{
 						presolvedConstraint.changesourcesid(keptoutputid, keptthemeid);
 						if (presolvedConstraint.canbeturnedtoyields())
 						{
-							presolvedConstraint.turntoyieldsandactions(newthemes, presolvedModel->actions, newyields, originalid);
+							presolvedConstraint.turntoyieldsandactions(newthemes, presolvedModel->actions,validActions, newyields, originalid);
 						}
 						else if (presolvedConstraint.canbeturnedtoyieldsbasedontransitions())
 						{
-							presolvedConstraint.turntoyieldsbasedontransition(newthemes, presolvedModel->transitions, presolvedModel->actions, newyields, originalid);
+							presolvedConstraint.turntoyieldsbasedontransition(newthemes, presolvedModel->transitions, presolvedModel->actions,validActions, newyields, originalid);
 						}
 						else {
 							newConstraintsIds.push_back(originalid);
