@@ -57,6 +57,7 @@ class FMTEXPORT FMTtransitionmask : public FMTmaskfilter,public FMTspec
         void setmask(const Core::FMTmask& mtmask);
         void setproportion(double newproportion);
 		FMTtransitionmask presolve(const FMTmaskfilter& filter, const std::vector<FMTtheme>&presolvedthemes) const;
+        void presolveRef(const FMTmaskfilter& filter, const std::vector<FMTtheme>& presolvedthemes);
         operator std::string() const override;
     };
 

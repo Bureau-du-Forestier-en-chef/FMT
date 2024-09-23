@@ -389,6 +389,15 @@ class FMTEXPORT FMTmask
 		it returns a presolved FMTmask with potentialy less data.
 		*/
 		FMTmask presolve(const FMTmaskfilter& filter,const std::vector<FMTtheme>&presolvedthemes) const;
+		// DocString: FMTmask::presolveRef
+		/**
+		@brief Using a FMTmaskfilter (filter) and a subset of the original FMTthemes used to construct the FMTmask,
+		it returns a presolved FMTmask with potentialy less data.
+		@param[in] p_filter
+		@param[in] p_presolvedThemes
+		@param[in] p_allowReallocation
+		*/
+		void presolveRef(const FMTmaskfilter& p_filter, const std::vector<FMTtheme>& p_presolvedThemes,bool p_allowReallocation = true);
 		// DocString: FMTmask::postsolve
 		/**
 		Using aFMTmaskfilter (filter) and the original FMTthemes it returns a postsolved FMTmask.
@@ -413,6 +422,14 @@ class FMTEXPORT FMTmask
 		The subset is the length of the FMTtheme.
 		*/
 		boost::dynamic_bitset<uint8_t> subset(const FMTtheme& theme) const;
+		// DocString: FMTmask::_anyIntersect
+		/**
+		@brief check if two subset of mask intersect each other.
+		@param[in] p_MASK the mask we check with
+		@param[in] p_THEME the theme we subset on
+		@return true if intersect else false.
+		*/
+		bool _anyIntersect(const FMTmask& p_MASK, const FMTtheme& p_THEME) const;
 		// DocString: FMTmask::setsubset
 		/**
 		Set a given (subset) (theme size) for the FMTtheme (theme) to the mask

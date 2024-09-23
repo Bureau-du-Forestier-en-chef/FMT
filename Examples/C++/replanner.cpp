@@ -51,6 +51,8 @@ int main(int argc, char *argv[])
 	errors.push_back(Exception::FMTexc::FMToveridedyield);
 	errors.push_back(Exception::FMTexc::FMTdeathwithlock);
 	modelparser.seterrorstowarnings(errors);
+	//std::vector<Models::FMTmodel> tests = modelparser.readproject(primlocation, allscenarios);
+	//tests[0].presolve();
 	std::vector<Models::FMTmodel> models = modelparser.readproject(primlocation, allscenarios);
 	std::cout << models.at(0).getname() << std::endl;
 	#ifdef FMTWITHMOSEK
@@ -75,10 +77,10 @@ int main(int argc, char *argv[])
 	local.setparameter(Models::FMTintmodelparameters::LENGTH, 1);
 	local.setparameter(Models::FMTintmodelparameters::NUMBER_OF_THREADS,1);
 	std::vector<std::string>OutputtoLookFor = { "OVOLTOTREC","ORISQUE", "OVOL_UA_TOTREC" ,"OSUPBRULER_CORRIGER" ,
-												"SUPERFICIE_RECUP_FEU" ,/*"OSUPPL_FEU_POSTRECUP",*/
+												"SUPERFICIE_RECUP_FEU" ,"OSUPPLEP_FEU23_UA","OSUPPL_FEU_POSTRECUP",
 													"OSUPTBE" , "SUPERFICIE_RECUP_TBE",
-												/*"OCATTBE_C1" ,"OCATTBE_C2" ,"OCATTBE_C3",
-												"OCATTBE_C4","OCATTBE_C5","OCATTBE_C6","OTBECOMP","OSUPADMATBE"*/};
+												"OCATTBE_C1" ,"OCATTBE_C2" ,"OCATTBE_C3",
+												"OCATTBE_C4","OCATTBE_C5","OCATTBE_C6","OTBECOMP","OSUPADMATBE"};
 	std::vector<Core::FMToutput>selectedoutputs;
 	for (const Core::FMToutput& output : global.getoutputs())
 	{

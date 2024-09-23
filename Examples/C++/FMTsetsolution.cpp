@@ -17,6 +17,9 @@ int main(int argc, char *argv[])
 	if (Version::FMTversion().hasfeature("OSI"))
 		{
 		const std::string primarylocation =  std::string(argv[1]);
+		const std::vector<std::string>scenarios(1, std::string(argv[2]));
+		//const std::string primarylocation = "D:/CC_modele_feu/WS_CC/Feux_2023_ouest_V01.pri";
+		//const std::vector<std::string>scenarios(1, "replicat1");
 		Parser::FMTmodelparser modelparser;
 		modelparser.setdefaultexceptionhandler();
 		std::vector<Exception::FMTexc>errors;
@@ -28,7 +31,6 @@ int main(int argc, char *argv[])
 		errors.push_back(Exception::FMTexc::FMToveridedyield);
 		errors.push_back(Exception::FMTexc::FMToutofrangeyield);
 		modelparser.seterrorstowarnings(errors);
-		const std::vector<std::string>scenarios(1, std::string(argv[2]));
 		const std::vector<Models::FMTmodel> models = modelparser.readproject(primarylocation, scenarios);
 		//Models::FMTlpmodel optimizationmodel(models.at(0), Models::FMTsolverinterface::CLP);
 		Models::FMTlpmodel optimizationmodel(models.at(0), Models::FMTsolverinterface::MOSEK);

@@ -299,25 +299,38 @@ FMTmask FMTtransition::main_target(const std::vector<FMTdevelopment>& devs,
 	{
 	FMTtransition newtransition(*this);
 	try {
-	newtransition.presolvelist(filter, originalthemes, newthemes);
-	newtransition.update();
-	if (compressdata)
-		{
-		newtransition.compressmasks(newthemes);
-		}
-	if (!filter.emptyflipped())
-		{
-		for (auto& transitionobject : newtransition)
-			{
-			transitionobject.second = transitionobject.second.presolve(filter, newthemes);
-			}
-		}
+		newtransition.presolveRef(filter, originalthemes, newthemes, compressdata);
 	}catch (...)
 		{
-		_exhandler->raisefromcatch("for transition "+this->getname(),"FMTtransition::presolve", __LINE__, __FILE__, Core::FMTsection::Transition);
-		}	
+		_exhandler->raisefromcatch("for transition " + this->getname(), "FMTtransition::presolve", __LINE__, __FILE__, Core::FMTsection::Transition);
+		}
 	return newtransition;
 	}
+
+ void FMTtransition::presolveRef(const FMTmaskfilter& p_filter,
+	 const std::vector<FMTtheme>& p_originalThemes,
+	 std::vector<FMTtheme>& p_newthemes, bool p_compressdata)
+ {
+	 try {
+		presolvelist(p_filter, p_originalThemes, p_newthemes);
+		update();
+		 if (p_compressdata)
+		 {
+			 compressmasks(p_newthemes);
+		 }
+		 if (!p_filter.emptyflipped())
+		 {
+			 for (auto& transitionobject : *this)
+			 {
+				 transitionobject.second.presolveRef(p_filter, p_newthemes);
+			 }
+		 }
+	 }
+	 catch (...)
+	 {
+		 _exhandler->raisefromcatch("for transition " + this->getname(), "FMTtransition::presolveRef", __LINE__, __FILE__, Core::FMTsection::Transition);
+	 }
+ }
 
 }
 
