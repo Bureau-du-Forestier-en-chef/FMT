@@ -134,6 +134,17 @@ std::string FMTmask::get(const std::vector<FMTtheme>& themes) const
     value = value.substr(0, value.size()-1);
     return value;
     }
+
+void  FMTmask::setExclusiveBits(const FMTmask& p_mask, const FMTtheme& p_theme)
+{
+	const boost::dynamic_bitset<uint8_t>BASE = this->subset(p_theme);
+	boost::dynamic_bitset<uint8_t>RHS = p_mask.subset(p_theme);
+	RHS.flip(); 
+	setsubset(p_theme, BASE & RHS);
+	name.clear();
+}
+
+
 void FMTmask::set(const std::vector<FMTtheme>& themes,const std::string& value)
     {
 	name = value;
@@ -410,11 +421,15 @@ bool FMTmask::isnotthemessubset(const FMTmask& rhs, const  std::vector<Core::FMT
 	{
 		for (const Core::FMTtheme& theme : themes)
 		{
-			const size_t themestart = theme.getstart();
+			/*const size_t themestart = theme.getstart();
 			const size_t themestop = themestart + theme.size() - 1;
 			if (!(rhs.data[themestart] & this->data[themestart]) &&
 				!(rhs.data[themestop] & this->data[themestop]) &&
 				!((subset(theme) & rhs.subset(theme)).any()))
+			{
+				return true;
+			}*/
+			if (!_anyIntersect(rhs,theme))
 			{
 				return true;
 			}

@@ -767,6 +767,45 @@ void FMTmodel::aggregateOutputs(const std::map<std::string, std::pair<std::strin
 			const std::vector<Core::FMToperator> BASE_OPERATORS = output->getopes();
 			const std::string& NULL_YIELD = yields.getNullYield();
 			std::map<std::string, std::map<Core::FMTmask, std::string>>OutputDominances(Dominances);
+			std::map<std::string, std::map<std::string,Core::FMTmask>>excludedByMask;
+			for (const auto& mapping : OutputDominances)
+			{
+				std::vector<std::string>OutActions;
+				for (const auto& actionMapping : mapping.second)
+					{
+					if (std::find(OutActions.begin(), OutActions.end(), actionMapping.second)==
+						OutActions.end())
+						{
+						OutActions.push_back(actionMapping.second);
+						}
+					}
+				
+				for (const std::string& theAction : OutActions)
+				{
+					Core::FMTmask fullMask;
+					for (const auto& actionMapping : mapping.second)
+					{
+						if (theAction== actionMapping.second)
+						{
+							if (fullMask.empty())
+							{
+								fullMask = actionMapping.first;
+							}else {
+								fullMask = fullMask.getunion(actionMapping.first);
+							}
+							
+						}
+					}
+					if (!fullMask.empty())
+					{
+						excludedByMask[mapping.first][theAction] = fullMask;
+					}
+					
+					
+				}
+				
+			}
+
 			for (const Core::FMToutputsource& source : output->getsources())
 				{
 				Core::FMToutputsource NewSource(source);
@@ -775,11 +814,12 @@ void FMTmodel::aggregateOutputs(const std::map<std::string, std::pair<std::strin
 					if (p_Filters.find(source.getaction())!= p_Filters.end() &&
 						!p_Filters.at(source.getaction()).first.empty())
 						{
+						
 						const Core::FMTmask& SOURCE_MASK = source.getmask();
 						const std::string& ACTION = source.getaction();
 						const std::string& AGGREGATE = p_Filters.at(source.getaction()).first;
 						if (OutputDominances.at(AGGREGATE).find(SOURCE_MASK) != OutputDominances.at(AGGREGATE).end() &&
-							OutputDominances.at(AGGREGATE).at(SOURCE_MASK)== ACTION)
+							OutputDominances.at(AGGREGATE).at(SOURCE_MASK) == ACTION)
 						{
 							if (!SOURCE_MASK.isnotthemessubset(p_Filters.at(source.getaction()).second, themes))
 							{
@@ -790,13 +830,59 @@ void FMTmodel::aggregateOutputs(const std::map<std::string, std::pair<std::strin
 								NewSource.setmask(addNewMask(p_Filters.at(source.getaction()).second));
 							}
 							if (!p_Filters.at(source.getaction()).first.empty())
-								{
+							{
 								NewSource.setaction(p_Filters.at(source.getaction()).first);
-								}
+							}
 							OutputDominances.at(AGGREGATE).erase(SOURCE_MASK);
+						}else if (OutputDominances.find(AGGREGATE)!= OutputDominances.end())
+								{
+								std::string restAction;
+								std::map<Core::FMTmask, std::string>::const_iterator mIt = Dominances.at(AGGREGATE).begin();
+								size_t bestDistance = std::numeric_limits<size_t>::max();
+								while (mIt!= Dominances.at(AGGREGATE).end())
+									{
+									const std::string Of_ACTION = mIt->second;
+									std::vector<std::string>::const_iterator Oit = std::find(p_ActionOrdering.begin(), p_ActionOrdering.end(), Of_ACTION);
+									const size_t THE_DISTANCE = std::distance(p_ActionOrdering.begin(), Oit);
+									if (THE_DISTANCE< bestDistance)
+										{
+										restAction = Of_ACTION;
+										bestDistance = THE_DISTANCE;
+										}
+									++mIt;
+									}
+								Core::FMTmask& REST = excludedByMask[AGGREGATE][restAction];
+								Core::FMTmask MaskCopy(SOURCE_MASK);
+								MaskCopy.setIntersect(REST);
+								bool gotNoIntersect = false;
+								size_t themeId = 0;
+								while (!gotNoIntersect && themeId < themes.size())
+								{
+									gotNoIntersect = MaskCopy.getsubsetcount(themes[themeId]) < SOURCE_MASK.getsubsetcount(themes[themeId]);
+									++themeId;
+								}
+								if (gotNoIntersect)
+								{
+									Core::FMTmask FinalMask(SOURCE_MASK);
+									for (const Core::FMTtheme& THEME : themes)
+									{
+										if (MaskCopy.getsubsetcount(THEME) < SOURCE_MASK.getsubsetcount(THEME))
+										{
+											FinalMask.setExclusiveBits(REST, THEME);
+										}
+									}
+									FinalMask = addNewMask(FinalMask);
+									NewSource.setmask(FinalMask);
+									REST = REST.getunion(FinalMask);
+								}
+								else {
+									NewSource.setYield(NULL_YIELD);
+								}
+								NewSource.setaction(AGGREGATE);
+								
 						}else {
-							NewSource.setaction(AGGREGATE);
 							NewSource.setYield(NULL_YIELD);
+							NewSource.setaction(AGGREGATE);	
 						}
 						}else{
 							//NewSource.setYield(NULL_YIELD);

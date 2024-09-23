@@ -195,6 +195,13 @@ class FMTEXPORT FMTmask
 		Set the bitset data for some FMTthemes (themes) for a mask string (value).
 		*/
         void set(const std::vector<FMTtheme>& themes,const std::string& value);
+		// DocString: FMTmask::setExclusiveBits
+		/**
+		@brief flip only the theme subset and clean the mask of the intersect with p_mask.
+		@param[in] p_mask
+		@param[in] p_theme
+		*/
+		void setExclusiveBits(const FMTmask& p_mask,const FMTtheme& p_theme);
 		// DocString: FMTmask::set
 		/**
 		Set the bitset data for a given FMTtheme (theme) for a attribute (value).
