@@ -64,7 +64,7 @@ namespace Models
     }
 
     //###Setter
-    bool FMTmodelparameters::setintparameter(const FMTintmodelparameters& key,const int& value)
+    bool FMTmodelparameters::setintparameter(FMTintmodelparameters key,const int& value)
     {
         try{
             if (key == LastIntModelParam) return (false) ;
@@ -88,7 +88,7 @@ namespace Models
         return true;
     }
 
-    bool FMTmodelparameters::setdblparameter(const FMTdblmodelparameters& key,const double& value)
+    bool FMTmodelparameters::setdblparameter(FMTdblmodelparameters key,const double& value)
     {
         try{
             if (key == LastDblModelParam) return (false) ;
@@ -100,7 +100,7 @@ namespace Models
 
     }
 
-    bool FMTmodelparameters::setboolparameter(const FMTboolmodelparameters& key,const bool& value)
+    bool FMTmodelparameters::setboolparameter(FMTboolmodelparameters key,const bool& value)
     {
         try{
             if (key == LastBoolModelParam) return (false) ;
@@ -111,10 +111,10 @@ namespace Models
         return true;
     }
 
-    bool FMTmodelparameters::setstrparameter(const FMTstrmodelparameters& p_key, const std::string& p_value)
+    bool FMTmodelparameters::setstrparameter(FMTstrmodelparameters p_key, const std::string& p_value)
     {
         try {
-            if (p_key == LastBoolModelParam) return (false);
+            if (p_key == LastStrModelParam) return (false);
             m_strparameters[p_key] = p_value;
         }
         catch (...) {
@@ -134,7 +134,7 @@ namespace Models
 
     }
     //###Getter
-    int FMTmodelparameters::getintparameter(const FMTintmodelparameters& key) const
+    int FMTmodelparameters::getintparameter(FMTintmodelparameters key) const
     {
         int value;
         try{
@@ -152,7 +152,7 @@ namespace Models
         return value;
     }
 
-    double FMTmodelparameters::getdblparameter(const FMTdblmodelparameters& key) const
+    double FMTmodelparameters::getdblparameter(FMTdblmodelparameters key) const
     {
         double value;
         try{
@@ -170,7 +170,7 @@ namespace Models
         return value;
     }
 
-    bool FMTmodelparameters::getboolparameter(const FMTboolmodelparameters& key) const
+    bool FMTmodelparameters::getboolparameter(FMTboolmodelparameters key) const
     {
         bool value;
         try{
@@ -188,10 +188,10 @@ namespace Models
         return value;
     }
 
-    const std::string& FMTmodelparameters::getstrparameter(const FMTstrmodelparameters& p_key) const
+    const std::string& FMTmodelparameters::getstrparameter(FMTstrmodelparameters p_key) const
     {
         try {
-            if (p_key == LastBoolModelParam)
+            if (p_key == LastStrModelParam)
             {
                 _exhandler->raise(Exception::FMTexc::FMTrangeerror,
                     "LastStrModelParam is not a parameter",

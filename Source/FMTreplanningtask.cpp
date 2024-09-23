@@ -70,7 +70,8 @@ namespace Parallel
 		dynamicarea(globalm.getarea()),
 		iterationglobalschedule(),
 		dynamicconstraints(),
-		replanningperiods(replanningperiodssize)
+		replanningperiods(replanningperiodssize),
+		m_writeSchedule(writeSchedule)
 	{
 		try {
 			//passinobject(globalm);
@@ -89,7 +90,6 @@ namespace Parallel
 			global->setparameter(Models::FMTintmodelparameters::UPDATE,1);
 			stochastic->setparameter(Models::FMTintmodelparameters::UPDATE, 1);
 			local->setparameter(Models::FMTintmodelparameters::UPDATE, 1);
-			m_writeSchedule = writeSchedule;
 			m_outputlocation = outputlocation;
 			//m_outputlocation.pop_back();
 			m_primaryName = boost::filesystem::path(m_outputlocation).stem().string();
@@ -241,10 +241,6 @@ namespace Parallel
 					const std::string replicateFolder = "scenarios/replicat" + std::to_string(getiteration());
 					boost::filesystem::create_directories(m_outputlocation + '/' + replicateFolder);
 					schedulePath = m_outputlocation + '/' + replicateFolder + "/" + seqName;
-					// on crée un ._opt vide
-					const std::string optPath = m_outputlocation + "/" + replicateFolder + "/" + m_primaryName +  "._opt";
-					std::ofstream optFile(optPath);
-					optFile.close();
 				}
 				else 
 				{

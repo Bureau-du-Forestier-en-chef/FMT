@@ -3,6 +3,7 @@
 #include "FMTschedule.h"
 #include "FMTmodelparser.h"
 #include "FMTscheduleparser.h"
+#include "FMTerror.h"
 
 Models::FMTmodel FMTWrapperCore::Transformation::aggregateAllActions(const Models::FMTmodel& p_model, const std::vector<std::string>& p_aggregates, const std::vector<std::string>& p_order, const std::string& p_schedulePri, const std::string& p_outputDirPath, const std::string& p_scenario_name)
 {
@@ -11,7 +12,7 @@ Models::FMTmodel FMTWrapperCore::Transformation::aggregateAllActions(const Model
 	{
 		Parser::FMTmodelparser ModelParser;
 
-		aggregatedModel = p_model.aggregateAllActions(p_aggregates);
+		aggregatedModel = p_model.aggregateAllActions(p_aggregates, p_order);
 		aggregatedModel.setname(p_scenario_name);
 		std::string outputPath;
 		const std::vector<Core::FMTschedule>SCHEDULES = ModelParser.readschedules(p_schedulePri, { p_model }).at(0);
@@ -32,7 +33,8 @@ Models::FMTmodel FMTWrapperCore::Transformation::aggregateAllActions(const Model
 	}
 	catch (...)
 	{
-		throw std::exception("Error in Wrapper::FMTModelWrapper::aggregateAllActions");
+		throw Exception::FMTerror(Exception::FMTexc::FMTfunctionfailed, "",
+			"FMTWrapperCore::Transformation::aggregateAllActions",__FILE__,__LINE__);
 	}
 	return aggregatedModel;
 
@@ -71,7 +73,8 @@ Models::FMTmodel FMTWrapperCore::Transformation::splitActions(const Models::FMTm
 	}
 	catch (...)
 	{
-		throw std::exception("FMTWrapperCore::Transformation::splitActions");
+		throw Exception::FMTerror(Exception::FMTexc::FMTfunctionfailed, "",
+			"FMTWrapperCore::Transformation::splitActions", __FILE__, __LINE__);
 	}
 	return SPLITTED_MODEL;
 }
@@ -101,7 +104,8 @@ Models::FMTmodel FMTWrapperCore::Transformation::buildAction(const Models::FMTmo
 		}
 	}
 	catch (...) {
-		throw std::exception("Error in FMTWrapperCore::Transformation::buildAction");
+		throw Exception::FMTerror(Exception::FMTexc::FMTfunctionfailed, "",
+			"FMTWrapperCore::Transformation::buildAction", __FILE__, __LINE__);
 	}
 	return BUILDED_MODEL;
 }

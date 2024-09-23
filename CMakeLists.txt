@@ -43,7 +43,7 @@ endif(DEFINED CMAKE_TOOLCHAIN_FILE)
 if (DEFINED VCPKG_TARGET_TRIPLET)
 	set(OSI_DIR "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/") #Cbc and osi doest not have a .cmake files.
 	if (NOT DEFINED PYTHON_DIR)
-		set(PYTHON_DIR "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/tools/python3") #Presume Python3
+		set(PYTHON_DIR "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/tools/python3/") #Presume Python3
 	else()
 		set(Python_INCLUDE_DIR "${PYTHON_DIR}include")
 		set(PYTHON "${PYTHON_DIR}python.exe")
@@ -331,7 +331,7 @@ if (NOT MSVC AND DEFINED ENV{R_DIR})
 		#target_include_directories(FMTlib PRIVATE ${R_INCLUDE_DIR})
 		set(ENV{RCPP_DIR} "$ENV{R_DIR}")
 		find_program(REXEC R PATHS "${R_DIR}/bin/x64")
-		exec_program(${REXEC} ARGS "--version" OUTPUT_VARIABLE RFULL_VERSION)
+		execute_process(COMMAND "${REXEC}" -e "version[['version.string']]"  OUTPUT_VARIABLE RFULL_VERSION)
 		string(REGEX MATCH "([0-9].[0-9].[0-9])" _ "${RFULL_VERSION}")
 		set(RVERSION  "${CMAKE_MATCH_1}")
 		message ("R version is ${RVERSION}")
@@ -375,7 +375,7 @@ endif()
 
 if ((NOT DEFINED ENV{R_DIR}) AND (DEFINED ENV{PYTHON_DIR}) AND NOT DEFINED WITHOUT_PYTHONLIB)
 	#Check if python dir fit with found python.... in case of python2...
-	exec_program("$ENV{PYTHON_DIR}python.exe" ARGS "--version"
+	execute_process(COMMAND "$ENV{PYTHON_DIR}python.exe" --version
           		 WORKING_DIRECTORY "$ENV{PYTHON_DIR}"
 			 OUTPUT_VARIABLE PYVER
        			 )
@@ -578,17 +578,10 @@ if (DEFINED ENV{GDAL_DIR})
 			set(gdalverarg "--version")
 			set(gdaldataarg "--datadir")
 			if (NOT CYGWIN)
-				set(gdaldeparg "${GDAL_CONFIG} --dep-libs")
-				set(gdalliarg "${GDAL_CONFIG} --libs")
-				set(gdalverarg "${GDAL_CONFIG} --version")
-				set(gdaldataarg "${GDAL_CONFIG} --datadir")
-				set(GDAL_CONFIG "sh")
-				exec_program(${GDAL_CONFIG} ARGS "${gdaldeparg}" OUTPUT_VARIABLE GDAL_LINKER_FLAGS) #Cygwin does not like linker flags ?
-				exec_program(${GDAL_CONFIG} ARGS "${gdalliarg}" OUTPUT_VARIABLE GDAL_LIBRARIES) #Cygwin does not like gdallibrary 
+				execute_process(COMMAND bash "${GDAL_CONFIG}" --dep-libs OUTPUT_VARIABLE GDAL_LINKER_FLAGS) #Cygwin does not like linker flags ?
+				execute_process(COMMAND bash "${GDAL_CONFIG}" --libs OUTPUT_VARIABLE GDAL_LIBRARIES) #Cygwin does not like gdallibrary 
 			endif(NOT CYGWIN)
-			
-			exec_program(${GDAL_CONFIG} ARGS "${gdalverarg}" OUTPUT_VARIABLE GDAL_FULLVERSION)
-			#exec_program(${GDAL_CONFIG} ARGS "${gdaldataarg}" OUTPUT_VARIABLE GDAL_DATA)
+			execute_process(COMMAND bash "${GDAL_CONFIG}" --version OUTPUT_VARIABLE GDAL_FULLVERSION)
 			if ("${GDAL_FULLVERSION}" VERSION_LESS "2.3")
 				 message(WARNING "You need at least GDAL 2.3 to get GDAL functionalities")
 				 unset(GDAL_FOUND)
@@ -640,9 +633,7 @@ if (DEFINED ENV{GDAL_DIR})
 				FILE(GLOB_RECURSE CURL_config_locations $ENV{GDAL_DIR}curl-config)
 				if (CURL_config_locations)
 					list(GET CURL_config_locations 0 CURL_CONFIG)
-					set(curlarg "${CURL_CONFIG} --libs")
-					set(CURL_CONFIG "sh")
-					exec_program(${CURL_CONFIG} ARGS "${curlarg}" OUTPUT_VARIABLE CURL_LIBRARIES)
+					execute_process(COMMAND bash "${CURL_CONFIG}" --libs OUTPUT_VARIABLE CURL_LIBRARIES)
 					foreach(linkerflags ${CURL_LIBRARIES})
 						target_lib("${linkerflags}")
 					endforeach()
@@ -972,7 +963,9 @@ endif (EXISTS \"${CMAKE_BINARY_DIR}/bin/${BUILD_TYPE}/FMT\")
 		string(REGEX REPLACE \"\${coverage_regex}\" \"\${coverage_badge}\"  filedata \"\${filedata}\")
 		file(WRITE \"\${frreadme}\" \"\${filedata}\")
 		endif(DO_COVERAGE AND NOT MSVC)
-	file(STRINGS \"${CMAKE_BINARY_DIR}/Testing/Temporary/LastTestsFailed.log\" TESTS_FILE)
+	if (EXISTS \"${CMAKE_BINARY_DIR}/Testing/Temporary/LastTestsFailed.log\")
+		file(STRINGS \"${CMAKE_BINARY_DIR}/Testing/Temporary/LastTestsFailed.log\" TESTS_FILE)
+	endif(EXISTS \"${CMAKE_BINARY_DIR}/Testing/Temporary/LastTestsFailed.log\")
 	list(LENGTH TESTS_FILE FAILED_TESTS)
 	set (build_badge \"${CMAKE_CXX_COMPILER_ID} ![](https://img.shields.io/badge/build-broken-red)\")
 	if (FAILED_TESTS LESS 10)#Not Broken
