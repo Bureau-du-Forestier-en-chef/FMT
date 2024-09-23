@@ -3,6 +3,7 @@
 #include "FMTschedule.h"
 #include "FMTmodelparser.h"
 #include "FMTscheduleparser.h"
+#include "FMTerror.h"
 
 Models::FMTmodel FMTWrapperCore::Transformation::aggregateAllActions(const Models::FMTmodel& p_model, const std::vector<std::string>& p_aggregates, const std::vector<std::string>& p_order, const std::string& p_schedulePri, const std::string& p_outputDirPath, const std::string& p_scenario_name)
 {
@@ -15,7 +16,7 @@ Models::FMTmodel FMTWrapperCore::Transformation::aggregateAllActions(const Model
 		aggregatedModel.setname(p_scenario_name);
 		std::string outputPath;
 		const std::vector<Core::FMTschedule>SCHEDULES = ModelParser.readschedules(p_schedulePri, { p_model }).at(0);
-		//ATTENTION il est important d'écrire le model avant la schedule car modelParser.write va écraser le fichier de schedule
+		//ATTENTION il est important d'ï¿½crire le model avant la schedule car modelParser.write va ï¿½craser le fichier de schedule
 		#ifdef _WIN32
 		outputPath = p_outputDirPath + "\\";
 		#else
@@ -32,7 +33,8 @@ Models::FMTmodel FMTWrapperCore::Transformation::aggregateAllActions(const Model
 	}
 	catch (...)
 	{
-		throw std::exception("Error in FMTWrapperCore::Transformation::aggregateAllActions");
+		throw Exception::FMTerror(Exception::FMTexc::FMTfunctionfailed, "",
+			"FMTWrapperCore::Transformation::aggregateAllActions",__FILE__,__LINE__);
 	}
 	return aggregatedModel;
 
@@ -71,7 +73,8 @@ Models::FMTmodel FMTWrapperCore::Transformation::splitActions(const Models::FMTm
 	}
 	catch (...)
 	{
-		throw std::exception("FMTWrapperCore::Transformation::splitActions");
+		throw Exception::FMTerror(Exception::FMTexc::FMTfunctionfailed, "",
+			"FMTWrapperCore::Transformation::splitActions", __FILE__, __LINE__);
 	}
 	return SPLITTED_MODEL;
 }
@@ -86,7 +89,7 @@ Models::FMTmodel FMTWrapperCore::Transformation::buildAction(const Models::FMTmo
 		const std::vector<Core::FMTschedule>SCHEDULES = ModelParser.readschedules(p_schedulePri, { p_model }).at(0);
 		BUILDED_MODEL = p_model.buildAction(p_actionName, p_targetYield);
 		BUILDED_MODEL.setname(p_scenario_name);
-		//ATTENTION il est important d'écrire le model avant la schedule car modelParser.write va écraser le fichier de schedule
+		//ATTENTION il est important d'ï¿½crire le model avant la schedule car modelParser.write va ï¿½craser le fichier de schedule
 		#ifdef _WIN32
 		outputPath = p_outputDirPath + "\\";
 		#else
@@ -101,7 +104,8 @@ Models::FMTmodel FMTWrapperCore::Transformation::buildAction(const Models::FMTmo
 		}
 	}
 	catch (...) {
-		throw std::exception("Error in FMTWrapperCore::Transformation::buildAction");
+		throw Exception::FMTerror(Exception::FMTexc::FMTfunctionfailed, "",
+			"FMTWrapperCore::Transformation::buildAction", __FILE__, __LINE__);
 	}
 	return BUILDED_MODEL;
 }

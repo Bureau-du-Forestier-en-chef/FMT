@@ -122,16 +122,16 @@ namespace Models
             */
             void swap(FMTmodelparameters& rhs);
             //###Setter
-            bool setintparameter(const FMTintmodelparameters& key,const int& value);
-            bool setdblparameter(const FMTdblmodelparameters& key,const double& value);
-            bool setboolparameter(const FMTboolmodelparameters& key,const bool& value);
-            bool setstrparameter(const FMTstrmodelparameters& p_key, const std::string& p_value);
+            bool setintparameter(FMTintmodelparameters key,const int& value);
+            bool setdblparameter(FMTdblmodelparameters key,const double& value);
+            bool setboolparameter(FMTboolmodelparameters key,const bool& value);
+            bool setstrparameter(FMTstrmodelparameters p_key, const std::string& p_value);
             bool setperiodcompresstime(const int& period, const int& value);
             //###Getter
-            int getintparameter(const FMTintmodelparameters& key) const;
-            double getdblparameter(const FMTdblmodelparameters& key) const;
-            bool getboolparameter(const FMTboolmodelparameters& key) const;
-            const std::string& getstrparameter(const FMTstrmodelparameters& p_key) const;
+            int getintparameter(FMTintmodelparameters key) const;
+            double getdblparameter(FMTdblmodelparameters key) const;
+            bool getboolparameter(FMTboolmodelparameters key) const;
+            const std::string& getstrparameter(FMTstrmodelparameters p_key) const;
             int getperiodcompresstime(const int& period)const;
             std::vector<int> getcompresstime() const;
         private:

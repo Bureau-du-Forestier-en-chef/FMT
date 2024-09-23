@@ -99,7 +99,7 @@ namespace Core
 		const std::string& p_yield) const
 		{
 		double value = 0;
-		m_cache->visit(_getKey(p_request, p_yield),[&](const auto& data)
+		m_cache->visit(_getKey(p_request, p_yield),[&](const std::pair<FMTYieldDevelopment, double>& data)
 			{
 				value = data.second;
 			});
