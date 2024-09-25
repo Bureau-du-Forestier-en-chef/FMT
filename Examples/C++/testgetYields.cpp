@@ -18,6 +18,36 @@ int main(int argc, char *argv[])
 	Logging::FMTdefaultlogger().logstamp();
 	if (Version::FMTversion().hasfeature("OSI"))
 		{
+		std::string primarylocation;
+		std::string scenario;
+		std::string maskstr;
+		int age;
+		int period;
+		std::string yieldname;
+		double yieldvalue;
+		if (argc > 1) {
+		std::vector<std::string>results;
+		const std::string vals = argv[1];
+		boost::split(results, vals, boost::is_any_of("|"));
+		primarylocation =  results.at(0);
+		scenario = results.at(1);
+		maskstr = results.at(2);
+		age = std::stoi(results.at(3));
+		period = std::stoi(results.at(4));
+		yieldname = std::string(argv[2]);
+		yieldvalue = std::stod(argv[3]);
+		}
+		else
+		{
+			primarylocation = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/09_FMT/Modeles_test/CahierCOS_SPAT_P10_IT1_V/13_Sc5a_Determin_avsp.pri";
+			scenario = "ROOT";
+			maskstr = "? ? ? ? ? ? ? INC ? ? ? ? ? P27037 ? ? ? ? ? ?";
+			yieldname = "YOUVERT";
+			yieldvalue = 1;
+			age = 0;
+			period = 17;
+
+		}
 		Parser::FMTmodelparser modelparser;
 		modelparser.setdefaultexceptionhandler();
 		std::vector<Exception::FMTexc>errors;
@@ -29,23 +59,6 @@ int main(int argc, char *argv[])
 		errors.push_back(Exception::FMTexc::FMToveridedyield);
 		errors.push_back(Exception::FMTexc::FMToutofrangeyield);
 		modelparser.seterrorstowarnings(errors);
-		const std::string vals = argv[1];
-		std::vector<std::string>results;
-		boost::split(results, vals, boost::is_any_of("|"));
-		const std::string primarylocation =  results.at(0);
-		const std::string scenario = results.at(1);
-		const std::string maskstr = results.at(2);
-		const int age = std::stoi(results.at(3));
-		const int period = std::stoi(results.at(4));
-		const std::string yieldname = std::string(argv[2]);
-		const double yieldvalue = std::stod(argv[3]);
-		/*const std::string primarylocation = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/09_FMT/Modeles_test/CahierCOS_SPAT_P10_IT1_V/13_Sc5a_Determin_avsp.pri";
-		const std::string scenario = "ROOT";
-		const std::string  maskstr = "? ? ? ? ? ? ? INC ? ? ? ? ? P27037 ? ? ? ? ? ?";
-		const std::string  yieldname = "YOUVERT";
-		const double yieldvalue = 1;
-		const int age = 0;
-		const int period = 17;*/
 
 		const std::vector<std::string>scenarios(1, scenario);
 		const std::vector<Models::FMTmodel> models = modelparser.readproject(primarylocation, scenarios);

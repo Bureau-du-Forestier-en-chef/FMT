@@ -208,42 +208,87 @@ namespace Core
 		return false;
 		}
 
+	bool FMTconstraint::_getReplicateValue(size_t p_replicate, int p_period, double& p_bound) const
+	{
+
+		if (p_period >= getperiodlowerbound() &&
+			p_period <= getperiodupperbound())
+		{
+			if (!this->emptyylds())
+			{
+				int period = getperiodlowerbound();
+				const int upperperiod = getperiodupperbound();
+				if (period != upperperiod)
+				{
+					period = p_period;
+				}
+				bool gotSomething = false;
+				for (size_t id = 0; id < yieldnames.size(); ++id)
+				{
+					if (yieldnames.at(id).find("REPLICATE_") != std::string::npos)
+					{
+						gotSomething = true;
+						const size_t RepId = std::stoi(yieldnames.at(id).substr(yieldnames.at(id).find_first_of("_")+1, yieldnames.at(id).find_last_of("_")-1));
+						const int RepPeriod = std::stoi(yieldnames.at(id).substr(yieldnames.at(id).find_last_of("_")+1, yieldnames.at(id).size()));
+						if (RepId == (p_replicate - 1) && period == RepPeriod)
+						{
+							p_bound = yieldbounds.at(id).getlower();
+							return true;
+
+						}
+					}
+				}
+				if (gotSomething)
+					{
+					_exhandler->raise(Exception::FMTexc::FMTrangeerror,
+						"Constraint " + std::string(*this) + " cannot get replicate for period " + std::to_string(period),
+						"FMTconstraint::_getReplicateValue", __LINE__, __FILE__);
+					}
+			}
+		}
+		return false;
+	}
+
+
+	void FMTconstraint::_setIterationChange(double p_bound)
+	{
+		double lower = 0;
+		double upper = 0;
+		getbounds(lower, upper);
+		if (lower != std::numeric_limits<double>::lowest())
+		{
+			lower = p_bound;
+		}
+		if (upper != std::numeric_limits<double>::infinity())
+		{
+			upper = p_bound;
+		}
+		setrhs(lower, upper);
+	}
+
 	Core::FMTconstraint FMTconstraint::getfromreplicate(const size_t& replicate, const int& period) const
 	{
 		try {
-			if (period >= getperiodlowerbound() &&
-				period <= getperiodupperbound())
-			{
-				if (!this->emptyylds())
+			double bound = 0.0;
+			if (_getReplicateValue(replicate, period, bound))
 				{
-					std::vector<double>values;
-					values.reserve(yieldnames.size());
-					for (size_t id = 0; id < yieldnames.size(); ++id)
-					{
-						if (yieldnames.at(id).find("REPLICATE_") != std::string::npos)
-						{
-							std::vector<std::string>repvalues;
-							boost::split(repvalues, yieldnames.at(id), boost::is_any_of("_"));
-							const int repperiod = std::stoi(repvalues.at(2));
-							const size_t repid = std::stoi(repvalues.at(1));
-							if (repid==( replicate-1)/*&&repperiod==period*/)
-								{
-								values.push_back(yieldbounds.at(id).getlower());
-								}
-						}
-					}
-					if (!values.empty())
-						{
-						return getiterationchange(values,period);
-						}
+				return _getIterationChange(bound);
 				}
-			}
 		}catch (...)
 		{
 			_exhandler->printexceptions("", "FMTconstraint::getfromreplicate", __LINE__, __FILE__, Core::FMTsection::Optimize);
 		}
 	return *this;
 	}
+
+	void FMTconstraint::setFromReplicate(size_t p_replicate, int p_period)
+		{
+		double bound = 0.0;
+		if (_getReplicateValue(p_replicate, p_period, bound))
+			{
+			_setIterationChange(bound);
+			}
+		}
 
 	bool FMTconstraint::gotReplicate(const int& p_period) const
 	{
@@ -267,36 +312,12 @@ namespace Core
 	}
 
 
-	Core::FMTconstraint FMTconstraint::getiterationchange(const std::vector<double>& periodchanges,const int& targetperiod) const
+	Core::FMTconstraint FMTconstraint::_getIterationChange(double p_PeriodChanges) const
 	{
 		Core::FMTconstraint newconstraint(*this);
 		try {
-			int period = newconstraint.getperiodlowerbound();
-			const int upperperiod = newconstraint.getperiodupperbound();
-			if (period!= upperperiod)
-				{
-				period = targetperiod;
-				}
-			double lower = 0;
-			double upper = 0;
-			getbounds(lower, upper);
-			if (periodchanges.size()<=(period-1))
-				{
-				_exhandler->raise(Exception::FMTexc::FMTrangeerror,
-					"Constraint " + std::string(*this) + " cannot get replicate for period "+std::to_string(period),
-					"FMTconstraint::getiterationchange", __LINE__, __FILE__);
-				}
-			if (lower!= std::numeric_limits<double>::lowest())
-			{
-				lower = periodchanges.at(period - 1);
-			}
-			if (upper!= std::numeric_limits<double>::infinity())
-			{
-				upper = periodchanges.at(period - 1);
-			}
-				newconstraint.setrhs(lower,upper);
-		}
-		catch (...)
+				newconstraint._setIterationChange(p_PeriodChanges);
+		}catch (...)
 		{
 			_exhandler->raisefromcatch("", "FMTconstraint::getiterationchange", __LINE__, __FILE__, Core::FMTsection::Optimize);
 		}
@@ -892,17 +913,35 @@ namespace Core
 			const std::vector<FMTtheme>& originalthemes,
 			const std::vector<const FMTtheme*>& selectedthemes,
 			const std::vector<FMTtheme>& newthemes,
-			const std::vector<FMTaction>& actions, const FMTyields& yields) const
+			const std::vector<FMTaction>& actions,
+			const std::vector<bool>& p_valideActions, const FMTyields& yields) const
 			{
 			FMTconstraint newconstraint(*this);
 			try {
-				newconstraint.setoutput(FMToutput::presolve(filter, originalthemes, selectedthemes, newthemes, actions, yields));
+				newconstraint.presolveRef(filter, originalthemes, selectedthemes, newthemes, actions, p_valideActions, yields);
 			}catch (...)
 				{
 				_exhandler->raisefromcatch("for " + std::string(*this),"FMTconstraint::presolve", __LINE__, __FILE__, Core::FMTsection::Optimize);
 				}
 			return newconstraint;
 			}
+
+		void FMTconstraint::presolveRef(const FMTmaskfilter& p_filter,
+			const std::vector<FMTtheme>& p_originalThemes,
+			const std::vector<const FMTtheme*>& p_selectedThemes,
+			const std::vector<FMTtheme>& p_newThemes,
+			const std::vector<FMTaction>& p_actions,
+			const std::vector<bool>& p_valideActions,
+			const FMTyields& p_yields)
+		{
+			try {
+				setoutput(FMToutput::presolve(p_filter, p_originalThemes, p_selectedThemes, p_newThemes, p_actions, p_valideActions, p_yields));
+			}
+			catch (...)
+			{
+				_exhandler->raisefromcatch("for " + std::string(*this), "FMTconstraint::presolveRef", __LINE__, __FILE__, Core::FMTsection::Optimize);
+			}
+		}
 
 		void FMTconstraint::getmaxandmin(const std::vector<double>& values, double& min, double& max) const
 			{
@@ -1163,6 +1202,7 @@ namespace Core
 		void FMTconstraint::turntoyieldsbasedontransition(	const std::vector<Core::FMTtheme>& themes,
 															const std::vector<Core::FMTtransition>& trans,
 															std::vector<Core::FMTaction>&actions,
+															const std::vector<bool>& p_valideActions,
 															Core::FMTyields& yields,
 															const int& constraintid) const
 		{
@@ -1175,24 +1215,31 @@ namespace Core
 				size_t transitionid=0;
 				for(const FMTtransition& transition : trans)
 				{
-					const Core::FMTaction& trigerringaction=actions.at(transitionid);
-					for (const Core::FMToutputsource& source : sources)
+					if (p_valideActions[transitionid])
 					{
-						if (source.isvariable())
+						const Core::FMTaction& trigerringaction = actions.at(transitionid);
+						for (const Core::FMToutputsource& source : sources)
 						{
-
-							const Core::FMTmask& sourcemask = source.getmask();
-							for (const FMTmask mask : transition.canproduce(sourcemask,themes))
+							if (source.isvariable())
 							{
-								sourcestoturnintoyield.push_back(Core::FMToutputsource(Core::FMTspec(),mask,newtarget,"",trigerringaction.getname(),source.getoutputorigin(),source.getthemetarget()));
+
+								const Core::FMTmask& sourcemask = source.getmask();
+								for (const FMTmask mask : transition.canproduce(sourcemask,themes))
+								{
+									sourcestoturnintoyield.push_back(Core::FMToutputsource(Core::FMTspec(),mask,newtarget,"",trigerringaction.getname(),source.getoutputorigin(),source.getthemetarget()));
+								}
 							}
 						}
 					}
 					++transitionid;
 				}
-				FMTconstraint toturnintoyield(*this);
-				toturnintoyield.sources = sourcestoturnintoyield;
-				toturnintoyield.turntoyieldsandactions(themes, actions, yields,constraintid);
+				//if (!sourcestoturnintoyield.empty())
+				//{
+					FMTconstraint toturnintoyield(*this);
+					toturnintoyield.sources = sourcestoturnintoyield;
+					toturnintoyield.turntoyieldsandactions(themes, actions, p_valideActions, yields, constraintid);
+				//}
+				
 			}
 			catch (...)
 			{
@@ -1237,6 +1284,7 @@ namespace Core
 
 		void FMTconstraint::turntoyieldsandactions(const std::vector<Core::FMTtheme>& themes,
 			std::vector<Core::FMTaction>&actions,
+			const std::vector<bool>& p_valideActions,
 			Core::FMTyields& yields,
 			const int& constraintid) const
 		{
@@ -1285,26 +1333,30 @@ namespace Core
 				{
 					if (source.isvariable())
 					{
-						const std::string yieldname(baseyieldnames + "_" + std::to_string(sourceid));
-						for (const Core::FMTaction* actionptr : Core::FMTactioncomparator(source.getaction()).getallaggregates(actions, false))
-						{
-							for (auto& itvalue : actions[std::distance(&*(actions.cbegin()), actionptr)])
+					const std::string yieldname(baseyieldnames + "_" + std::to_string(sourceid));
+					const bool IS_VALId_ACTION = isvalidAction(source.getaction(), actions, p_valideActions);
+					if (IS_VALId_ACTION)
 							{
-								itvalue.second.addbounds(Core::FMTyldbounds(Core::FMTsection::Action, yieldname, 1.0, 1.0));
+								for (const Core::FMTaction* actionptr : Core::FMTactioncomparator(source.getaction()).getallaggregates(actions, false))
+								{
+									for (auto& itvalue : actions[std::distance(&*(actions.cbegin()), actionptr)])
+									{
+										itvalue.second.addbounds(Core::FMTyldbounds(Core::FMTsection::Action, yieldname, 1.0, 1.0));
+									}
+								}
 							}
-						}
-						for (const double& pattern : defaultvalues)
-						{
-							defaulthandler->push_data(yieldname, pattern);
-						}
-						std::unique_ptr<Core::FMTyieldhandler> yieldhandler(new Core::FMTtimeyieldhandler(source.getmask()));
-						yieldhandler->push_base(0);
-						//yieldhandler.push_base(1);
-						for (const double& pattern : patternvalues)
-						{
-							yieldhandler->push_data(yieldname, pattern);
-						}
-						yields.push_back(source.getmask(), yieldhandler);
+							for (const double& pattern : defaultvalues)
+							{
+								defaulthandler->push_data(yieldname, pattern);
+							}
+							std::unique_ptr<Core::FMTyieldhandler> yieldhandler(new Core::FMTtimeyieldhandler(source.getmask()));
+							yieldhandler->push_base(0);
+							//yieldhandler.push_base(1);
+							for (const double& pattern : patternvalues)
+							{
+								yieldhandler->push_data(yieldname, pattern);
+							}
+					yields.push_back(source.getmask(), yieldhandler);	
 					}
 					++sourceid;
 				}

@@ -19,12 +19,14 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <vector>
 #include <unordered_set>
 #include <boost/serialization/export.hpp>
+#include <limits>
 
 
 #define FMTGCBMDEATHID 15
 #define FMTGCBMGROWTHID 16
 #define FMTGCBMUNKNOWNID 17
 #define FMTGCBMWILDFIREID 10
+#define FMTMaxNumberOfActions _I8_MAX + 1
 
 
 namespace Core
@@ -104,6 +106,18 @@ class FMTEXPORT FMTaction : public FMTlist<FMTspec>
 		FMTaction presolve(const FMTmaskfilter& filter,
 			const std::vector<FMTtheme>& originalthemes,
 			std::vector<FMTtheme>& newthemes, bool compressdata = false) const;
+		// DocString: FMTaction::presolveRef
+		/**
+		@brief Eliminate FMTspecification and presolve all masks base on a basemask a preolved mask
+		and presolved themes. The returned action can also be empty.
+		@param[in] p_filter
+		@param[in] p_originalthemes
+		@param[in] p_newthemes
+		@param[in] p_compressdata
+		*/
+		void presolveRef(const FMTmaskfilter& p_filter,
+			const std::vector<FMTtheme>& p_originalthemes,
+			std::vector<FMTtheme>& p_newthemes, bool p_compressdata = false);
 		// DocString: FMTaction::getagelowerbound
 		/**
 		Get the age lower bound for all FMTspecs.
@@ -271,6 +285,13 @@ class FMTEXPORT FMTaction : public FMTlist<FMTspec>
 		@return true if not use else false.
 		*/
 		bool notUse() const;
+		// DocString: FMTaction::isPartOf
+		/**
+		@brief Check if action is part of action name or aggregate.
+		@param[in] p_name action name or aggregate.
+		@return true if is part else false.
+		*/
+		bool isPartOf(const std::string& p_name) const;
 	protected:
 		// DocString: FMTaction::aggregates
 		///An action can be part of a aggregate so this data member gets the name of all aggregate the action is being part of.

@@ -7,11 +7,23 @@ namespace Core {
     class FMToutput;
 }
 
+namespace Models
+{
+	class FMTmodel;
+}
+
 namespace FMTWrapperCore
 {
-    class Tools
+    class __declspec(dllexport) Tools
     {
     public:
+		/**
+		* @brief retourne l'age max du model.
+		*
+		*@param p_model Le modèle à utiliser.
+		* @return int l'age max du model.
+		*/
+		static int getMaxAge(const Models::FMTmodel& p_model);
 
 		/**
 		* @brief retourne une listes des noms d'actions du mod�le.
@@ -40,11 +52,11 @@ namespace FMTWrapperCore
 		/**
 		* @brief retourne un double du yield.
 		*
-		*@param p_modelIndex Index du mod�le � utiliser.
+		*@param p_model Modele a utiliser.
 		*@param p_yield
 		*@param p_age
 		* @return Un double du yield
 		*/
-		//double getYield(int p_modelIndex, std::string p_mask, std::string p_yield, int p_age);
+		static double getYield(const Models::FMTmodel& p_model, const std::string& p_mask,const std::string& p_yield, int p_age);
     };
 }
