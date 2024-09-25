@@ -6,11 +6,11 @@ cmake CMakeLists.txt ^
 	-G "Visual Studio 17 2022" ^
 	-DBUILD_TYPE=Release ^
 	-DPARALLEL_TESTS=8 ^
-	-DVCPKG_ROOT=D:/dependencies/vcpkg ^
-	-DCMAKE_TOOLCHAIN_FILE=D:/dependencies/vcpkg/scripts/buildsystems/vcpkg.cmake ^
+	-T v143,version=14.36.17.6 ^
+	-DCMAKE_TOOLCHAIN_FILE="C:/Program Files/Microsoft Visual Studio/2022/Professional/VC/vcpkg/scripts/buildsystems/vcpkg.cmake" ^
 	-DVCPKG_TARGET_TRIPLET=x64-windows ^
+	-DVCPKG_MANIFEST_MODE=ON ^
 	-DONNXR_DIR=D:/dependencies/onnxruntime/ ^
-	-DMOSEK_DIR="C:/PROGRA~1/Mosek/10.1/" ^
 	-DWITHOUT_TESTS=true ^
 	-DGENERATE_RELEASE_PACKAGE=true
 	

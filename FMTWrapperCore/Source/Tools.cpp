@@ -1,5 +1,6 @@
 #include  "Tools.h"
 #include "FMTmodel.h"
+#include "FMTerror.h"
 
 
 int FMTWrapperCore::Tools::getMaxAge(const Models::FMTmodel& p_model)
@@ -18,14 +19,15 @@ int FMTWrapperCore::Tools::getMaxAge(const Models::FMTmodel& p_model)
 	}
 	catch (...)
 	{
-		throw std::exception("Error in FMTWrapperCore::Tools::getMaxAge");
+		throw Exception::FMTerror(Exception::FMTexc::FMTfunctionfailed, "",
+			"FMTWrapperCore::Tools::getMaxAge", __FILE__, __LINE__);
 	}
 	return result;
 }
 
 double FMTWrapperCore::Tools::getYield(const Models::FMTmodel& p_model, const std::string& p_mask, const std::string& p_yield, int p_age)
 {
-	double result = NULL;
+	double result = 0;
 	try
 	{
 		const std::vector<Core::FMTtheme> THEMES = p_model.getthemes();
@@ -37,7 +39,8 @@ double FMTWrapperCore::Tools::getYield(const Models::FMTmodel& p_model, const st
 	}
 	catch (...)
 	{
-		throw std::exception("Error in FMTWrapperCore::Tools::getYield");
+		throw Exception::FMTerror(Exception::FMTexc::FMTfunctionfailed, "",
+			"Error in FMTWrapperCore::Tools::getYield", __FILE__, __LINE__);
 	}
 	return result;
 }

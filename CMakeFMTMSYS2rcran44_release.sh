@@ -22,7 +22,6 @@ cmake CMakeLists.txt \
  -DR_DIR=C:/Logiciels/R-4.4.0/ \
  -DCMAKE_BUILD_TYPE=Release \
  -DPARALLEL_TESTS=8 \
- -DMOSEK_DIR="C:/PROGRA~1/Mosek/10.1/" \
  -DENV_PREFIX="x86_64-w64-mingw32.static.posix" \
  -DGENERATE_RELEASE_PACKAGE=true \
  -DWITHOUT_TESTS=true

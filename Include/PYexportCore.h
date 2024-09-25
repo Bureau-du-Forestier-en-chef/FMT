@@ -484,8 +484,6 @@ void exportCore()
 					"@DocString(FMTconstraint::operator std::string)")
 				.def("__eq__", &Core::FMTconstraint::operator ==,
 					"@DocString(FMTconstraint::operator==)")
-				.def("getiterationchange",&Core::FMTconstraint::getiterationchange,
-					"@DocString(FMTconstraint::getiterationchange,)")
 				.def("isspatial",&Core::FMTconstraint::isspatial,
 					"@DocString(FMTconstraint::isspatial)")
 				.def("setlength", &Core::FMTconstraint::setlength,
