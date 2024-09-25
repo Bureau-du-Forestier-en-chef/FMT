@@ -120,18 +120,21 @@ class FMTEXPORT FMTconstraint: public FMToutput,public FMTspec
 		If you are an objective and are a local model you can have a global schedule weight in the objective function.
 		*/
 		double getscheduleweight() const;
-		// DocString: FMTconstraint::getiterationchange
-		/**
-		Based on constraint period it will set bounds to the double specified in the vector for the constraint period.
-		The target period is only used if the constraint does not have a specific period.
-		*/
-		Core::FMTconstraint getiterationchange(const std::vector<double>& periodchanges,const int& targetperiod) const;
 		// DocString: FMTconstraint::getfromreplicate
 		/**
 		If the constraint is build with a replicate tables it will gives a new constraint with the corresponding replicate value
 		See keyword _REPLICATE in optimization seciton.
 		*/
 		Core::FMTconstraint getfromreplicate(const size_t& replicate,const int& period) const;
+		// DocString: FMTconstraint::setFromReplicate
+		/**
+		@brief If the constraint is build with a replicate tables it will gives a new constraint with the corresponding replicate value
+		See keyword _REPLICATE in optimization seciton.
+		@param[in] p_replicate the replanning replicate
+		@param[in] p_period the period to calculate.
+		*/
+		void setFromReplicate(size_t p_replicate,int p_period);
+		
 		// DocString: FMTconstraint::gotReplicate
 		/**
 		@brief check if contains replicate
@@ -266,7 +269,27 @@ class FMTEXPORT FMTconstraint: public FMToutput,public FMTspec
 			const std::vector<FMTtheme>& originalthemes,
 			const std::vector<const FMTtheme*>& selectedthemes,
 			const std::vector<FMTtheme>& newthemes,
-			const std::vector<FMTaction>& actions, const FMTyields& yields) const;
+			const std::vector<FMTaction>& actions,
+			const std::vector<bool>& p_valideActions,
+			const FMTyields& yields) const;
+		// DocString: FMTconstraint::presolveRef
+		/**
+		@brief Presolve this constraint
+		@param[in] p_filter
+		@param[in] p_originalThemes
+		@param[in] p_selectedThemes
+		@param[in] p_newThemes
+		@param[in] p_actions
+		@param[in] p_valideActions
+		@param[in] p_yields
+		*/
+		void presolveRef(const FMTmaskfilter& p_filter,
+			const std::vector<FMTtheme>& p_originalThemes,
+			const std::vector<const FMTtheme*>& p_selectedThemes,
+			const std::vector<FMTtheme>& p_newThemes,
+			const std::vector<FMTaction>& p_actions,
+			const std::vector<bool>& p_valideActions,
+			const FMTyields& p_yields);
 		// DocString: ~FMTconstraint()
 		/**
 		Default destructor for FMTconstraint
@@ -300,6 +323,7 @@ class FMTEXPORT FMTconstraint: public FMToutput,public FMTspec
 		void turntoyieldsbasedontransition(	const std::vector<Core::FMTtheme>& themes,
 											const std::vector<Core::FMTtransition>& trans,
 											std::vector<Core::FMTaction>&actions,
+											const std::vector<bool>& p_valideActions,
 											Core::FMTyields& yields,
 											const int& constraintid) const;
 		// DocString: FMTconstraint::canbeturnedtoyields
@@ -316,6 +340,7 @@ class FMTEXPORT FMTconstraint: public FMToutput,public FMTspec
 		*/
 		void turntoyieldsandactions(const std::vector<Core::FMTtheme>& themes,
 						 std::vector<Core::FMTaction>&actions,
+						const std::vector<bool>& p_valideActions,
 						 Core::FMTyields& yields,
 						 const int& constraintid) const;
 	private:
@@ -360,6 +385,29 @@ class FMTEXPORT FMTconstraint: public FMToutput,public FMTspec
 		Returns the variability based on a double input
 		*/
 		double getvariability(const std::vector<double>& values, const double& var, const double& lowarvar) const;
+		// DocString: FMTconstraint::_getReplicateValues
+		/**
+		@brief get the bound values for a specific replicate.
+		@param[in] p_replicate the targeted replicate
+		@param[in] p_period the period to select the bounds.
+		@param[out] p_bound the bound value
+		@return true if found else false
+		*/
+		bool _getReplicateValue(size_t p_replicate, int p_period, double& p_bound) const;
+		// DocString: FMTconstraint::_setIterationChange
+		/**
+		@brief Based on constraint period it will set bounds to the double specified in the vector for the constraint period.
+		The target period is only used if the constraint does not have a specific period.
+		@param[in] p_bound the bound that we want to set.
+		*/
+		void _setIterationChange(double p_bound);
+		// DocString: FMTconstraint::getiterationchange
+		/**
+		@brief Based on constraint period it will set bounds to the double specified in the vector for the constraint period.
+		The target period is only used if the constraint does not have a specific period.
+		@param[in] p_PeriodChanges the period to get the new contraint.
+		*/
+		Core::FMTconstraint _getIterationChange(double p_PeriodChanges) const;
 
 	};
 }

@@ -60,17 +60,14 @@ FMTmask::FMTmask(const std::vector<std::string>&values,const std::vector<FMTthem
     }
 std::vector<FMTmask> FMTmask::decompose(const FMTtheme &theme) const
     {
-	std::vector<std::string>bases;
-    const std::string value = get(theme);
-	const std::vector<std::string>atts = theme.getattributes(value);
-	std::vector<FMTmask>newmasks;
-    for(const std::string& att : atts)
-        {
-        FMTmask newmask = *this;
-        newmask.set(theme,att);
-        newmasks.push_back(newmask);
-        }
-    return newmasks;
+    const std::string VALUE = get(theme);
+	const std::vector<std::string>ATTRIBUTES = theme.getattributes(VALUE);
+	std::vector<FMTmask>NewMasks(ATTRIBUTES.size(), *this);
+	for (size_t Id = 0; Id < NewMasks.size();++Id)
+		{
+		NewMasks[Id].set(theme, ATTRIBUTES[Id]);
+		}
+    return NewMasks;
     }
  boost::dynamic_bitset<uint8_t> FMTmask::subset(const FMTtheme& theme) const
     {
@@ -83,6 +80,19 @@ std::vector<FMTmask> FMTmask::decompose(const FMTtheme &theme) const
         }
     return sub;
     }
+
+ bool FMTmask::_anyIntersect(const FMTmask& p_MASK, const FMTtheme& p_THEME) const
+	 {
+	 size_t bIt = p_THEME.m_start;
+	 bool gotIntersect = false;
+	 while (!gotIntersect &&
+		 bIt < (p_THEME.m_start + p_THEME.size()))
+		 {
+		 gotIntersect = data[bIt] && p_MASK.data[bIt];
+		 ++bIt;
+		 }
+	 return gotIntersect;
+	 }
 
 FMTmask FMTmask::getpostsolvemask(const FMTmask& mask, const std::vector<FMTtheme>& themes) const
 	{
@@ -124,6 +134,17 @@ std::string FMTmask::get(const std::vector<FMTtheme>& themes) const
     value = value.substr(0, value.size()-1);
     return value;
     }
+
+void  FMTmask::setExclusiveBits(const FMTmask& p_mask, const FMTtheme& p_theme)
+{
+	const boost::dynamic_bitset<uint8_t>BASE = this->subset(p_theme);
+	boost::dynamic_bitset<uint8_t>RHS = p_mask.subset(p_theme);
+	RHS.flip(); 
+	setsubset(p_theme, BASE & RHS);
+	name.clear();
+}
+
+
 void FMTmask::set(const std::vector<FMTtheme>& themes,const std::string& value)
     {
 	name = value;
@@ -379,11 +400,16 @@ bool FMTmask::isnotthemessubset(const FMTmask& rhs, const std::vector<const Core
 	{
 	for (const Core::FMTtheme* theme : themes)
 		{
-		const size_t themestart = theme->getstart();
+		/*const size_t themestart = theme->getstart();
 		const size_t themestop = themestart + theme->size()-1;
 		if (!(rhs.data[themestart]&this->data[themestart])&&
 			!(rhs.data[themestop]&this->data[themestop])&&
-			!((subset(*theme) & rhs.subset(*theme)).any()))
+			!((subset(*theme) & rhs.subset(*theme)).any())
+			)
+			{
+			return true;
+			}*/
+		if (!_anyIntersect(rhs, *theme))
 			{
 			return true;
 			}
@@ -395,11 +421,15 @@ bool FMTmask::isnotthemessubset(const FMTmask& rhs, const  std::vector<Core::FMT
 	{
 		for (const Core::FMTtheme& theme : themes)
 		{
-			const size_t themestart = theme.getstart();
+			/*const size_t themestart = theme.getstart();
 			const size_t themestop = themestart + theme.size() - 1;
 			if (!(rhs.data[themestart] & this->data[themestart]) &&
 				!(rhs.data[themestop] & this->data[themestop]) &&
 				!((subset(theme) & rhs.subset(theme)).any()))
+			{
+				return true;
+			}*/
+			if (!_anyIntersect(rhs,theme))
 			{
 				return true;
 			}
@@ -446,29 +476,39 @@ FMTmask FMTmask::refine(const FMTmask& mask,const std::vector<FMTtheme>& themes)
 
 FMTmask FMTmask::presolve(const FMTmaskfilter& filter, const std::vector<FMTtheme>&presolvedthemes) const
 	{
-	FMTmask newmask;
-	newmask.data.resize(filter.flippedselection.count(), false);
-	size_t selectedloc = 0;
-	for (size_t bitid = 0; bitid < filter.flippedselection.size();++bitid)
-		{
-		if (filter.flippedselection[bitid])
-			{
-			newmask.data[selectedloc] = data[bitid];
-			++selectedloc;
-			}
-		}
-	if (!name.empty())
-		{
-		newmask.name.reserve(name.size());
-		for (const FMTtheme& theme : presolvedthemes)
-			{
-			newmask.name += theme.bitsToStr(newmask.subset(theme)) + " ";
-			}
-		newmask.name.pop_back();
-		//newmask.name.shrink_to_fit();
-		}
-	return newmask;
+	FMTmask newMask(*this);
+	newMask.presolveRef(filter, presolvedthemes);
+	return newMask;
 	}
+
+void FMTmask::presolveRef(const FMTmaskfilter& p_filter, 
+	const std::vector<FMTtheme>& p_presolvedThemes, bool p_allowReallocation)
+{
+	boost::dynamic_bitset<uint8_t>newData(p_filter.flippedselection.count(), false);
+	size_t selectedloc = 0;
+	for (size_t bitid = 0; bitid < p_filter.flippedselection.size(); ++bitid)
+	{
+		if (p_filter.flippedselection[bitid])
+		{
+			newData[selectedloc] = data[bitid];
+			++selectedloc;
+		}
+	}
+	data.swap(newData);
+	if (!name.empty())
+	{
+		name.clear();
+		for (const FMTtheme& theme : p_presolvedThemes)
+			{
+			name += theme.bitsToStr(subset(theme)) + " ";
+			}
+		name.pop_back();
+		if (p_allowReallocation)
+			{
+			name.shrink_to_fit();
+			}
+	}
+}
 
 FMTmask FMTmask::postsolve(const FMTmaskfilter& filter,
 	const std::vector<FMTtheme>&basethemes) const

@@ -982,7 +982,7 @@ namespace Models
 		return true;
 	}
 
-	FMTsrmodel::FMTsrmodel(const FMTmodel& base, const Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>& lgraph,
+	FMTsrmodel::FMTsrmodel(FMTmodel&& base, const Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>& lgraph,
 		const FMTlpsolver& lsolver) :
 		FMTmodel(base),
 		m_graph(new Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>(lgraph)),
@@ -1075,7 +1075,7 @@ namespace Models
 					"Cannot presolve a srmodel with period(s) builded in m_graph->",
 					"FMTsrmodel::presolve", __LINE__, __FILE__);
 				}
-			return std::unique_ptr<FMTmodel>(new FMTsrmodel(*FMTmodel::presolve(optionaldevelopments),*m_graph,solver));
+			return std::unique_ptr<FMTmodel>(new FMTsrmodel(std::move(*FMTmodel::presolve(optionaldevelopments)),*m_graph,solver));
 		}catch (...)
 		{
 			_exhandler->printexceptions("", "FMTsrmodel::presolve", __LINE__, __FILE__);

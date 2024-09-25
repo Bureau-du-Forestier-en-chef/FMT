@@ -80,7 +80,7 @@ namespace Models
 	std::vector<Core::FMTconstraint>::const_iterator FMTlpmodel::_getConstraintIndex(const Core::FMTconstraint& p_constraint) const
 		{
 		std::vector<Core::FMTconstraint>::const_iterator it = constraints.begin();
-		for (const Core::FMTconstraint CONSTRAINT : constraints)
+		for (const Core::FMTconstraint& CONSTRAINT : constraints)
 			{
 			if (p_constraint==CONSTRAINT)
 				{

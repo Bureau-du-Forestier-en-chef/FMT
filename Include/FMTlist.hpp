@@ -125,6 +125,15 @@ namespace Core
 			data.reserve(p_other.data.size());
 			fastpass.reserve(p_other.data.size());
 			}
+		// DocString: FMTlist::clear
+		/**
+		@brief clear the data
+		*/
+		void clear()
+			{
+			data.clear();
+			fastpass.clear();
+			}
 		// DocString: FMTlist::operator=
 		/**
 		Default copy assignment for FMTlist.
@@ -507,6 +516,20 @@ namespace Core
 					unshrink(originalthemes);
 				}
 				const std::vector<const FMTtheme*>maskthemes = filter.getselectedthemes(originalthemes);
+				size_t dataId = data.size();
+				while (dataId!=0)
+					{
+					--dataId;
+					if (!filter.emptyflipped() && filter.canpresolve(data[dataId].first, maskthemes))
+						{
+						data[dataId].first.presolveRef(filter, newthemes,false);
+					}else {
+						data.erase(data.begin() + dataId);
+						}
+					}
+				FMTlist::update();
+				//data.shrink_to_fit();
+				/*
 				std::vector<std::pair<FMTmask, T>>newdata;
 				newdata.reserve(data.size());
 				for (const std::pair<FMTmask, T>& object : data)
@@ -521,9 +544,9 @@ namespace Core
 						pushtodata(newdata, mskkey, object.second);
 					}
 				}
-				data.swap(newdata);
+				data.swap(newdata);*/
 				FMTlist::update();
-				data.shrink_to_fit();
+				//data.shrink_to_fit();
 			}catch (...)
 				{
 				_exhandler->raisefromcatch("","FMTlist::presolvelist", __LINE__, __FILE__);

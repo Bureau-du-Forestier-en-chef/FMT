@@ -67,6 +67,13 @@ namespace Models
 		friend class Parser::FMTmodelparser;
 		friend class Graph::FMTgraphvertextoyield;
 	public:
+		// DocString: FMTmodel:setReplicate
+		/**
+		@brief Set the constraints to the specified Replanning Period.
+		@param[in] p_replicate the replicate of the replanning task
+		@param[in] p_ReplanningPeriod the replanning period.
+		*/
+		void setReplicate(size_t p_replicate,int p_ReplanningPeriod);
 		// DocString: FMTmodel:gotReIgnore
 		/**
 		@brief check if set reignore needs to be call.
@@ -869,9 +876,31 @@ namespace Models
 		 * @return a complete schedule that fits the model.
 		 */
 		std::vector<Core::FMTschedule> extendSchedule(const std::vector<Core::FMTschedule>& p_schedules) const;
-		
-		
-
+		// DocString: FMTmodel::_gutsOfConstructor
+		/**
+		 * @brief the guts of the base constructor.
+		 * @param[in] p_area the base area.
+		 */
+		void _gutsOfConstructor(const std::vector<Core::FMTactualdevelopment>& p_area);
+		// DocString: FMTmodel::_cleanVector
+		/**
+		 * @brief Clean a vector by the back to the front
+		 * @param[in] p_toClean the vector to clean
+		 * @param[in] p_whichtoKeep entries to keep
+		 */
+		template<class T>
+		static void _cleanVector(std::vector<T>& p_toClean, const std::vector<bool>& p_whichtoKeep)
+			{
+			size_t Id = p_toClean.size();
+			while (Id != 0)
+				{
+				--Id;
+				if (!p_whichtoKeep[Id])
+					{
+					p_toClean.erase(p_toClean.begin() + Id);
+					}
+				}
+			}
     };
 // DocString: FMTmodelcomparator
 /**

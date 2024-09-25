@@ -168,6 +168,17 @@ class FMTEXPORT FMTyields : public FMTlist<std::unique_ptr<FMTyieldhandler>>
 		FMTyields presolve(const FMTmaskfilter& filter,
 			const std::vector<FMTtheme>& originalthemes,
 			const std::vector<FMTtheme>& newthemes) const;
+		// DocString: FMTyields::presolveRef
+		/**
+		@brief Presolving might be realy usefull for FMTyields because this class tend to get realy large and contains
+		sometime useless stuff. So using the same presolved information it returns a presolved FMTyields section.
+		@param[in] p_filter
+		@param[in] p_originalThemes
+		@param[in] p_newThemes
+		*/
+		void presolveRef(const FMTmaskfilter& p_filter,
+			const std::vector<FMTtheme>& p_originalThemes,
+			const std::vector<FMTtheme>& p_newThemes);
 		// DocString: FMTyields::getstacked
 		/**
 		This function returns the FMTyields has a string in a vector.
@@ -203,6 +214,7 @@ class FMTEXPORT FMTyields : public FMTlist<std::unique_ptr<FMTyieldhandler>>
 		* @return null yield value.
 		*/
 		static const std::string& getNullYield();
+		// DocString: FMTyields::getmaxbase
 		/**
 		 * @brief Returns the maximum age seen in the yield handlers.
 		 *
@@ -213,6 +225,11 @@ class FMTEXPORT FMTyields : public FMTlist<std::unique_ptr<FMTyieldhandler>>
 		 * @return The maximum age observed among the yield handlers.
 		 */
 		static int getmaxbase(const std::vector<const FMTyieldhandler*>& handlers);
+		// DocString: FMTyields::clear
+		/**
+		 * @brief clear all yield data.
+		 */
+		void clear();
 	private:
 		// DocString: FMTyields::serialize
 		/**

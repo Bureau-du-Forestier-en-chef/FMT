@@ -95,7 +95,7 @@ namespace Models
 		/**
 		Constructor of FMTsrmodel mainly use in postsolve.
 		*/
-		FMTsrmodel(	const FMTmodel& base,const Graph::FMTgraph<Graph::FMTvertexproperties,Graph::FMTedgeproperties>& lgraph,
+		FMTsrmodel(FMTmodel&& base,const Graph::FMTgraph<Graph::FMTvertexproperties,Graph::FMTedgeproperties>& lgraph,
 					const FMTlpsolver& lsolver);
 		// DocString: FMTsrmodel::operator=
 		/**
