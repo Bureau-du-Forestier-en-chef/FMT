@@ -16,7 +16,7 @@ Models::FMTmodel FMTWrapperCore::Transformation::aggregateAllActions(const Model
 		aggregatedModel.setname(p_scenario_name);
 		std::string outputPath;
 		const std::vector<Core::FMTschedule>SCHEDULES = ModelParser.readschedules(p_schedulePri, { p_model }).at(0);
-		//ATTENTION il est important d'écrire le model avant la schedule car modelParser.write va écraser le fichier de schedule
+		//ATTENTION il est important d'ï¿½crire le model avant la schedule car modelParser.write va ï¿½craser le fichier de schedule
 		#ifdef _WIN32
 		outputPath = p_outputDirPath + "\\";
 		#else
@@ -89,7 +89,7 @@ Models::FMTmodel FMTWrapperCore::Transformation::buildAction(const Models::FMTmo
 		const std::vector<Core::FMTschedule>SCHEDULES = ModelParser.readschedules(p_schedulePri, { p_model }).at(0);
 		BUILDED_MODEL = p_model.buildAction(p_actionName, p_targetYield);
 		BUILDED_MODEL.setname(p_scenario_name);
-		//ATTENTION il est important d'écrire le model avant la schedule car modelParser.write va écraser le fichier de schedule
+		//ATTENTION il est important d'ï¿½crire le model avant la schedule car modelParser.write va ï¿½craser le fichier de schedule
 		#ifdef _WIN32
 		outputPath = p_outputDirPath + "\\";
 		#else
