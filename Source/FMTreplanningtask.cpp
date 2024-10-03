@@ -282,7 +282,7 @@ namespace Parallel
 					reportingLastPeriod = replanningperiods;
 				}
 
-				if (modelptr && modelname == stochastic->getname() || modelname == local->getname())
+				if (modelptr && (modelname == stochastic->getname() || modelname == local->getname()))
 				{
 					if (modelname == stochastic->getname() && replanningperiod == 1)
 					{

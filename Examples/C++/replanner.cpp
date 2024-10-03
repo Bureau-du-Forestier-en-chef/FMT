@@ -32,13 +32,13 @@ int main(int argc, char *argv[])
 	else
 	{
 		primlocation = "D:/CC_modele_feu/WS_CC/Feux_2023_ouest_V01.pri";
-		length = 20;
-		replicate = 1;
-		allscenarios.push_back("strategique_AllEnrqc"); //Pour test le lancé d'erreur
+		length = 6;
+		replicate = 6;
+		allscenarios.push_back("strategique_Minimisation_Risque_historique"); //Pour test le lancé d'erreur
 		//allscenarios.push_back("strategique");
-		allscenarios.push_back("stochastique_CC_2pics");
+		allscenarios.push_back("stochastique_Histo_3pics");
 		//allscenarios.push_back("tactique");
-		allscenarios.push_back("tactique_AllEnrqc");
+		allscenarios.push_back("tactique_Minimisation_Risque_historique");
 	}
 
 	Parser::FMTmodelparser modelparser;
