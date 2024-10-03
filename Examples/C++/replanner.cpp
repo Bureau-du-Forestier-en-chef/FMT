@@ -32,12 +32,13 @@ int main(int argc, char *argv[])
 	else
 	{
 		primlocation = "D:/CC_modele_feu/WS_CC/Feux_2023_ouest_V01.pri";
-		length = 5;
-		replicate = 5;
-		allscenarios.push_back("strategique"); //Pour test le lancé d'erreur
-		//allscenarios.push_back("strategique_minimisation_Risque");
-		allscenarios.push_back("stochastique_CC");
+		length = 20;
+		replicate = 1;
+		//allscenarios.push_back("strategique_minimisation_Risque"); //Pour test le lancé d'erreur
+		allscenarios.push_back("strategique");
+		allscenarios.push_back("stochastique_Histo");
 		allscenarios.push_back("tactique");
+		//allscenarios.push_back("tactique_minimisation_Risque");
 	}
 
 	Parser::FMTmodelparser modelparser;
@@ -80,7 +81,8 @@ int main(int argc, char *argv[])
 												"SUPERFICIE_RECUP_FEU" ,"OSUPPLEP_FEU23_UA","OSUPPL_FEU_POSTRECUP",
 													"OSUPTBE" , "SUPERFICIE_RECUP_TBE",
 												"OCATTBE_C1" ,"OCATTBE_C2" ,"OCATTBE_C3",
-												"OCATTBE_C4","OCATTBE_C5","OCATTBE_C6","OTBECOMP","OSUPADMATBE"};
+												"OCATTBE_C4","OCATTBE_C5","OCATTBE_C6","OTBECOMP","OSUPADMATBE",
+	"ORISQUE","ORISQUE_FEU","ORISQUE_TBE","ORISQUE_FEU_NOR","ORISQUE_TBE_NOR","ORISQUE_NOR","OVOLGFIREC","OVOLGFTREC","OVOLGRREC"};
 	std::vector<Core::FMToutput>selectedoutputs;
 	for (const Core::FMToutput& output : global.getoutputs())
 	{
@@ -97,8 +99,8 @@ int main(int argc, char *argv[])
 	layersoptions.push_back("SEPARATOR=SEMICOLON");
 	std::unique_ptr<Parallel::FMTtask> maintaskptr(new Parallel::FMTreplanningtask(
 		global, stochastic, local, selectedoutputs, outputlocation, "CSV", layersoptions, 
-		replicate, length, 0.5, Core::FMToutputlevel::standard, writeschedule)); //test du bool writeschedule
-	Parallel::FMTtaskhandler handler(maintaskptr, 3); // FIXME diminuer 5 � 1 pour le debuggage
+		replicate, 1, 0.5, Core::FMToutputlevel::standard, writeschedule)); //test du bool writeschedule
+	Parallel::FMTtaskhandler handler(maintaskptr, 5); // FIXME diminuer 5 � 1 pour le debuggage
 	//handler.setquietlogger();
 	//handler.ondemandrun();
 	handler.conccurentrun();

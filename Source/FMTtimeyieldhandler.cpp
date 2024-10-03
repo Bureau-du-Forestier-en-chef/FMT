@@ -19,7 +19,7 @@ namespace Core {
 		try {
 			value += "*YT " + std::string(mask) + "\n";
 			size_t baseid = 0;
-			for (std::map<std::string, FMTdata>::const_iterator it = elements.begin(); it != elements.end(); ++it)
+			for (std::map<std::string, FMTdata, cmpYieldString>::const_iterator it = m_elements.begin(); it != m_elements.end(); ++it)
 			{
 				value += it->first + " ";
 				/*for (const int& base : bases)
@@ -51,18 +51,18 @@ namespace Core {
 	bool FMTtimeyieldhandler::push_data(const std::string& yld, const double& value)
 	{
 		try {
-			if (elements.find(yld) == elements.end())
+			if (m_elements.find(yld) == m_elements.end())
 			{
-				elements[yld] = FMTdata();
-				if (elements.size() > 1  && bases.size() >= elements.size())//presume that the last base pushed is the base of the push data...
+				m_elements[yld] = FMTdata();
+				if (m_elements.size() > 1  && bases.size() >= m_elements.size())//presume that the last base pushed is the base of the push data...
 				{
-					const size_t newlocation = std::distance(std::begin(elements), elements.find(yld));
+					const size_t newlocation = std::distance(std::begin(m_elements), m_elements.find(yld));
 					const int lastbase = getlastbase();
 					bases.insert(bases.begin() + newlocation, lastbase);
 					bases.pop_back();
 				}
 			}
-			elements[yld].data.push_back(value);
+			m_elements[yld].data.push_back(value);
 		}catch (...)
 		{
 			_exhandler->raisefromcatch("", "FMTtimeyieldhandler::push_data", __LINE__, __FILE__, Core::FMTsection::Yield);
@@ -73,7 +73,7 @@ namespace Core {
 
 	bool FMTtimeyieldhandler::push_data(const std::string& yld, const FMTdata& data)
 	{
-		return (basepush_data(elements, yld, data));
+		return (basepush_data(m_elements, yld, data));
 	}
 	FMTyldtype FMTtimeyieldhandler::gettype() const
 	{
@@ -84,14 +84,14 @@ namespace Core {
 	bool FMTtimeyieldhandler::operator == (const FMTtimeyieldhandler& rhs) const
 	{
 		return (FMTyieldhandler::operator==(rhs) &&
-			elements == rhs.elements);
+			m_elements == rhs.m_elements);
 	}
 
 	double FMTtimeyieldhandler::get(const std::string& yld, const FMTyieldrequest& request) const
 	{
 		try {
-				std::map<std::string, Core::FMTdata>::const_iterator data0it = elements.find(yld);
-				if (data0it != elements.end())
+				std::map<std::string, Core::FMTdata, cmpYieldString>::const_iterator data0it = m_elements.find(yld);
+				if (data0it != m_elements.end())
 				{
 					const FMTdata* lvalues = &data0it->second;
 					const int target = request.getdevelopment().getperiod();
@@ -99,7 +99,7 @@ namespace Core {
 					{
 						const double perioddbl = static_cast<double>(target);
 						const double pertio = lvalues->data.at(1);
-						const std::string discounttype = lvalues->getsource().at(0);
+						const std::string discounttype = *lvalues->getSources().at(0);
 						const double rateofreturn = lvalues->data.at(1);
 						double exponant = perioddbl; //full
 						if (discounttype == "NONE")
@@ -130,7 +130,7 @@ namespace Core {
 
 	double FMTtimeyieldhandler::getlastvalue(const std::string yld) const
 	{
-		std::map<std::string, FMTdata>::const_iterator it = elements.find(yld);
+		std::map<std::string, FMTdata, cmpYieldString>::const_iterator it = m_elements.find(yld);
 		return it->second.data.back();
 	}
 
@@ -140,11 +140,11 @@ namespace Core {
 	{
 		FMTtimeyieldhandler newhandler(*this);
 		try {
-			std::vector<std::map<std::string, FMTdata>::iterator>iterators;
+			std::vector<std::map<std::string, FMTdata,cmpYieldString>::iterator>iterators;
 			if (yieldnames.empty())
 			{
-				for (std::map<std::string, FMTdata>::iterator it = newhandler.elements.begin();
-					it != newhandler.elements.end(); it++)
+				for (std::map<std::string, FMTdata>::iterator it = newhandler.m_elements.begin();
+					it != newhandler.m_elements.end(); it++)
 				{
 					iterators.push_back(it);
 				}
@@ -152,14 +152,14 @@ namespace Core {
 			else {
 				for (const std::string& yldname : yieldnames)
 				{
-					std::map<std::string, FMTdata>::iterator it = newhandler.elements.find(yldname);
-					if (it != newhandler.elements.end())
+					std::map<std::string, FMTdata, cmpYieldString>::iterator it = newhandler.m_elements.find(yldname);
+					if (it != newhandler.m_elements.end())
 					{
 						iterators.push_back(it);
 					}
 				}
 			}
-			for (std::map<std::string, FMTdata>::iterator datait : iterators)
+			for (std::map<std::string, FMTdata, cmpYieldString>::iterator datait : iterators)
 			{
 				datait->second = ((datait->second)*factor);
 			}
@@ -173,30 +173,30 @@ namespace Core {
 
 	bool FMTtimeyieldhandler::empty() const
 	{
-		return elements.empty();
+		return m_elements.empty();
 	}
 	size_t FMTtimeyieldhandler::size() const
 	{
-		return elements.size();
+		return m_elements.size();
 	}
 	FMTdata& FMTtimeyieldhandler::operator[](const std::string& yldname)
 	{
-		return elements[yldname];
+		return m_elements[yldname];
 	}
 	const FMTdata& FMTtimeyieldhandler::at(const std::string& yldname) const
 	{
-		return elements.at(yldname);
+		return m_elements.at(yldname);
 	}
 	bool FMTtimeyieldhandler::containsyield(const std::string& yldname) const
 	{
-		return (elements.find(yldname) != elements.end());
+		return (m_elements.find(yldname) != m_elements.end());
 	}
 
 	std::vector<std::string>FMTtimeyieldhandler::getyieldnames() const
 	{
 		std::vector<std::string>results;
-		results.reserve(elements.size());
-		for (const auto& data : elements)
+		results.reserve(m_elements.size());
+		for (const auto& data : m_elements)
 		{
 			results.push_back(data.first);
 		}
@@ -223,7 +223,7 @@ namespace Core {
 	{
 		std::map<std::string, std::vector<double>>localstuff;
 		try {
-			for (std::map<std::string, FMTdata>::const_iterator cit = elements.begin(); cit != elements.end(); cit++)
+			for (std::map<std::string, FMTdata, cmpYieldString>::const_iterator cit = m_elements.begin(); cit != m_elements.end(); cit++)
 			{
 				localstuff[cit->first] = cit->second.data;
 			}

@@ -77,7 +77,7 @@ FMTyieldhandler::operator std::string() const
 		return false;
         }
 
-	bool FMTyieldhandler::basepush_data(std::map<std::string, FMTdata>& elements, const std::string& yld, const double& value)
+	bool FMTyieldhandler::basepush_data(std::map<std::string, FMTdata, cmpYieldString>& elements, const std::string& yld, const double& value)
 	{
 		if (elements.find(yld) == elements.end())
 		{
@@ -86,7 +86,7 @@ FMTyieldhandler::operator std::string() const
 		elements[yld].data.push_back(value);
 		return true;
 	}
-	bool FMTyieldhandler::basepush_data(std::map<std::string, FMTdata>& elements, const std::string& yld, const FMTdata& data)
+	bool FMTyieldhandler::basepush_data(std::map<std::string, FMTdata, cmpYieldString>& elements, const std::string& yld, const FMTdata& data)
 	{
 		elements[yld] = FMTdata(data);
 		return true;

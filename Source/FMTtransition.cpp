@@ -270,7 +270,7 @@ FMTmask FMTtransition::main_target(const std::vector<FMTdevelopment>& devs,
 				 std::string key = this->name;
 				 for (const FMTtheme& theme : themes)
 				 {
-					 key += ("-" + dev.getmask().get(theme));
+					 key += ("-" + dev.getmask().getAttribute(theme));
 				 }
 				 if (results.find(key) == results.end())
 				 {

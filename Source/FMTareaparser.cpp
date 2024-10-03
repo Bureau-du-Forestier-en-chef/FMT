@@ -1229,7 +1229,7 @@ const boost::regex FMTareaparser::rxcleanarea = boost::regex("^((\\*A[A]*)([^|]*
 						bool foundoaunit = false;
 						for (const Heuristics::FMToperatingarea& oparea : operatingareas)
 							{
-								if (actualdev.getmask().issubsetof(oparea.getmask()))
+								if (actualdev.getmask().isSubsetOf(oparea.getmask()))
 								{
 									foundoaunit = true;
 									break;

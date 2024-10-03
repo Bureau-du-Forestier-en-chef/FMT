@@ -226,7 +226,7 @@ namespace Core
 				int location = 0;
 				for (const std::pair<FMTmask, T>& object : data)
 				{
-					if (newkey.issubsetof(object.first))
+					if (newkey.isSubsetOf(object.first))
 					{
 						fastpass[newkey].push_back(location);
 						allhits.push_back(&object.second);

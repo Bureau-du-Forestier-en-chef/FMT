@@ -265,12 +265,12 @@ void FMToutputsource::resetvalues(const FMToperator& op,const FMToutputsource& o
 		}
 	}
 
-bool FMToutputsource::issubsetof(const FMToutputsource& rhs) const
+bool FMToutputsource::isSubsetOf(const FMToutputsource& rhs) const
 	{
 	if ((this->isvariable() && rhs.isvariable() &&
-		target == rhs.target && FMTspec::issubsetof(rhs) &&
+		target == rhs.target && FMTspec::isSubsetOf(rhs) &&
 		!((!action.empty() && rhs.action.empty()) || (!rhs.action.empty() && action.empty()))) &&
-		(mask.issubsetof(rhs.mask) &&
+		(mask.isSubsetOf(rhs.mask) &&
 		((action.empty() && rhs.action.empty()) ||
 			(!action.empty() && !rhs.action.empty() &&
 			(action == rhs.action)))))
@@ -303,14 +303,14 @@ bool FMToutputsource::isinaggregate(const FMToutputsource& rhs, const std::vecto
 	}
 	
 
-bool FMToutputsource::issubsetof(const FMToutputsource& rhs,
+bool FMToutputsource::isSubsetOf(const FMToutputsource& rhs,
 	const std::vector<Core::FMTaction>& actions) const
 	{
 	
 	if ((this->isvariable() && rhs.isvariable() && 
-		target == rhs.target && FMTspec::issubsetof(rhs) && 
+		target == rhs.target && FMTspec::isSubsetOf(rhs) && 
 		!((!action.empty() && rhs.action.empty()) || (!rhs.action.empty() && action.empty()))) && 
-		(mask.issubsetof(rhs.mask) &&
+		(mask.isSubsetOf(rhs.mask) &&
 		((action.empty() && rhs.action.empty()) || 
 		(!action.empty() && !rhs.action.empty() && 
 			isinaggregate(rhs,actions)))))
@@ -445,7 +445,7 @@ std::unordered_set<int>FMToutputsource::targetsset(const std::vector<FMTaction>&
 bool FMToutputsource::use(const FMTdevelopment& development, const FMTyields& ylds,
 	const Graph::FMTgraphvertextoyield* graphinfo) const
 {
-	return (development.getmask().issubsetof(mask) && development.is(*this, ylds, graphinfo));
+	return (development.getmask().isSubsetOf(mask) && development.is(*this, ylds, graphinfo));
 }
 
 std::string FMToutputsource::trimDouble(const std::string& string_number)

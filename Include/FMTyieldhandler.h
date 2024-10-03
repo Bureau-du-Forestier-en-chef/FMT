@@ -27,6 +27,38 @@ class FMTyieldrequest;
 class FMTspec;
 class FMTdata;
 
+struct cmpYieldString 
+{
+	inline bool operator()(const std::string& p_first, const std::string& p_second) const noexcept
+		{
+		const size_t FIRST_LENGTH = p_first.length();
+		const size_t SECOND_LENGTH = p_second.length();
+		bool lessThan = false;
+		if (FIRST_LENGTH!= SECOND_LENGTH)
+			{
+			lessThan =  FIRST_LENGTH < SECOND_LENGTH;
+		}else {
+			size_t i = FIRST_LENGTH;
+			bool gotValue = false;
+			while (!gotValue && i > 0)
+				{
+				--i;
+				if (p_first[i] != p_second[i])
+					{
+					if (p_first[i] < p_second[i])
+						{
+						lessThan = true;
+					}else {
+						lessThan = false;
+						}
+					gotValue = true;
+					}
+				}
+			}
+		return lessThan;
+		}
+};
+
 class FMTEXPORT FMTyieldhandler : public FMTobject
 {
 public:
@@ -77,8 +109,8 @@ protected:
 	FMTmask mask;
 	std::vector<int>bases;
 	mutable std::unordered_set<std::string>lookat;
-	static bool basepush_data(std::map<std::string, FMTdata>& elements, const std::string& yld, const double& value);
-	static bool basepush_data(std::map<std::string, FMTdata>& elements, const std::string& yld, const FMTdata& data);
+	static bool basepush_data(std::map<std::string, FMTdata, cmpYieldString>& elements, const std::string& yld, const double& value);
+	static bool basepush_data(std::map<std::string, FMTdata, cmpYieldString>& elements, const std::string& yld, const FMTdata& data);
 	double getchangesfrom(const int& targetage, const int& peakstep) const;
 	int getmaxbase(const FMTyieldrequest& request) const;
 private:

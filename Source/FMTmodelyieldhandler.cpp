@@ -29,7 +29,7 @@ namespace Core {
 				bool dont_write = true;
 				value += "*YM " + std::string(mask) + "\n";
 				std::vector<std::string>modelslines(models.size());
-				for (const auto& data : yldnames)
+				for (const auto& data : m_yldnames)
 				{
 					modelslines[data.second.first] += data.first + ",";
 				}
@@ -83,7 +83,7 @@ namespace Core {
 					break;
 				}else {
 					std::map<size_t, std::string>modelmapping;
-					for (const auto& data : yldnames)
+					for (const auto& data : m_yldnames)
 					{
 						if (modelid == data.second.first)
 						{
@@ -117,18 +117,18 @@ namespace Core {
 	}
 
 	FMTmodelyieldhandler::FMTmodelyieldhandler(const FMTmask& mask) :
-		FMTyieldhandler(mask),models(),yldnames()
+		FMTyieldhandler(mask),models(),m_yldnames()
 	{
 
 	}
 
 	FMTmodelyieldhandler::FMTmodelyieldhandler() :
-		FMTyieldhandler(), models(), yldnames()
+		FMTyieldhandler(), models(), m_yldnames()
 	{
 
 	}
 	FMTmodelyieldhandler::FMTmodelyieldhandler(const FMTmodelyieldhandler& rhs) :
-		FMTyieldhandler(rhs), models(), yldnames(rhs.yldnames)
+		FMTyieldhandler(rhs), models(), m_yldnames(rhs.m_yldnames)
 	{
 		for (const std::unique_ptr<FMTyieldmodel>& model : rhs.models)
 		{
@@ -145,7 +145,7 @@ namespace Core {
 				{
 				models.push_back(std::move(model->Clone()));
 				}
-			yldnames = rhs.yldnames;
+			m_yldnames = rhs.m_yldnames;
 
 		}
 		return *this;
@@ -180,8 +180,8 @@ namespace Core {
 	double FMTmodelyieldhandler::get(const std::string& yld, const FMTyieldrequest& request) const
 	{
 		try {
-			const size_t modelid = yldnames.at(yld).first;
-			const size_t yieldid = yldnames.at(yld).second;
+			const size_t modelid = m_yldnames.at(yld).first;
+			const size_t yieldid = m_yldnames.at(yld).second;
 			const std::unique_ptr<FMTyieldmodel>&model = models.at(modelid);
 			//const std::vector<std::string>sources = model->GetYieldsOutputs();
 			/*if (lookat.find(yld) == lookat.end())
@@ -207,7 +207,7 @@ namespace Core {
 	}
 	size_t FMTmodelyieldhandler::size() const
 	{
-		return yldnames.size();
+		return m_yldnames.size();
 	}
 
 	void FMTmodelyieldhandler::push_backmodel(const std::unique_ptr<FMTyieldmodel>& model)
@@ -216,12 +216,12 @@ namespace Core {
 	}
 	void FMTmodelyieldhandler::setyield(const size_t& modelid, const size_t& yieldid, const std::string& yldname)
 	{
-		yldnames[yldname] = std::pair<size_t,size_t>(modelid,yieldid);
+		m_yldnames[yldname] = std::pair<size_t,size_t>(modelid,yieldid);
 	}
 	
 	bool FMTmodelyieldhandler::containsyield(const std::string& yldname) const
 	{
-		return (yldnames.find(yldname) != yldnames.end());
+		return (m_yldnames.find(yldname) != m_yldnames.end());
 	}
 
 	bool FMTmodelyieldhandler::isnullyield(const std::string& yldname) const
@@ -232,8 +232,8 @@ namespace Core {
 	std::vector<std::string>FMTmodelyieldhandler::getyieldnames() const
 	{
 		std::vector<std::string>results;
-		results.reserve(yldnames.size());
-		for (const auto& data : yldnames)
+		results.reserve(m_yldnames.size());
+		for (const auto& data : m_yldnames)
 		{
 			results.push_back(data.first);
 		}

@@ -196,8 +196,8 @@ void FMTyieldparser::setoveridedylds(Core::FMTyields& yielddata,
 		size_t location = 1;
 		while (it != yielddata.end())
 		{
-			if (it->first.issubsetof(actual_msk) ||
-				actual_msk.issubsetof(it->first) ||
+			if (it->first.isSubsetOf(actual_msk) ||
+				actual_msk.isSubsetOf(it->first) ||
 				it->first == actual_msk)
 			{
 				if (it->second->gettype()==Core::FMTyldtype::FMTcomplexyld)
@@ -240,8 +240,8 @@ std::vector<std::string> FMTyieldparser::getylduse(Core::FMTyields& yielddata,
 		const Core::FMTmask& actual_msk = actualyield->first;//(yielddata.begin() + std::distance(yielddata.begin(), actualyield))->first;
 		while (it != actualyield)
 		{
-			if (it->first.issubsetof(actual_msk) ||
-				actual_msk.issubsetof(it->first) ||
+			if (it->first.isSubsetOf(actual_msk) ||
+				actual_msk.isSubsetOf(it->first) ||
 				it->first == actual_msk)
 			{
 				const std::vector<std::string> pyld = it->second->compare(values);
@@ -959,8 +959,8 @@ void FMTyieldparser::cleanup(Core::FMTyields& yields,const std::vector<Core::FMT
 					const Core::FMTcomplexyieldhandler* oldhandlerptr = dynamic_cast<const Core::FMTcomplexyieldhandler*>(oldhandler.get());
 					Core::FMTcomplexyieldhandler* newhandlerptr = dynamic_cast<Core::FMTcomplexyieldhandler*>(newhandler.get());
 					newhandlerptr->settabou(*oldhandlerptr);
-					const std::map<std::string, Core::FMTdata>& alladata = oldhandlerptr->getdataelements();
-					for (std::map<std::string, Core::FMTdata>::const_iterator datait = alladata.begin(); datait != alladata.end(); datait++)
+					const std::map<std::string, Core::FMTdata,Core::cmpYieldString>& alladata = oldhandlerptr->getdataelements();
+					for (std::map<std::string, Core::FMTdata, Core::cmpYieldString>::const_iterator datait = alladata.begin(); datait != alladata.end(); datait++)
 					{
 						const Core::FMTexpression expression = datait->second.toexpression();
 						const std::vector<std::string>allvalues = expression.getinfix();

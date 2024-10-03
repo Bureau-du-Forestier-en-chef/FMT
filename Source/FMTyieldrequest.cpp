@@ -65,7 +65,7 @@ namespace Core
 	}
 
 
-void FMTyieldrequest::updatedata(const FMTyields& yields) const
+void FMTyieldrequest::_updateData(const FMTyields& yields) const
 {
 	try {
 		if (resume_mask.empty())
@@ -76,9 +76,12 @@ void FMTyieldrequest::updatedata(const FMTyields& yields) const
 	}
 	catch (...)
 	{
-		_exhandler->raisefromcatch("", "FMTyieldrequest::updatedata", __LINE__, __FILE__);
+		_exhandler->raisefromcatch("", "FMTyieldrequest::_updateData", __LINE__, __FILE__);
 	}
 
 }
+
+
+
 
 }

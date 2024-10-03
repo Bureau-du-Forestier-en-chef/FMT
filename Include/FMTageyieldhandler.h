@@ -18,15 +18,6 @@ namespace Core
 {
 	class FMTEXPORT FMTageyieldhandler : public FMTyieldhandler
 	{
-		friend class boost::serialization::access;
-		template<class Archive>
-		void serialize(Archive& ar, const unsigned int version)
-		{
-			ar& boost::serialization::make_nvp("FMTyieldhandler", boost::serialization::base_object<FMTyieldhandler>(*this));
-			ar& BOOST_SERIALIZATION_NVP(elements);
-		}
-		std::map<std::string, FMTdata>elements;
-		int getage(const std::string yld, const double& value, const int& starting_age) const;
 	public:
 		virtual double get(const std::string& yld, const FMTyieldrequest& request) const;
 		virtual  operator std::string() const;
@@ -67,6 +58,16 @@ namespace Core
 		virtual double getpeakfrom(const std::string& yld, double maxvalue = std::numeric_limits<double>::lowest()) const;
 		virtual int getage(const FMTyieldrequest& request, const FMTspec& spec) const;
 		virtual double getyieldlinearvalue(const std::string&yldname, const FMTyieldrequest& request, bool allowoutofrange=true) const;
+	private:
+		friend class boost::serialization::access;
+		template<class Archive>
+		void serialize(Archive& ar, const unsigned int version)
+		{
+			ar& boost::serialization::make_nvp("FMTyieldhandler", boost::serialization::base_object<FMTyieldhandler>(*this));
+			ar& BOOST_SERIALIZATION_NVP(m_elements);
+		}
+		std::map<std::string, FMTdata, cmpYieldString>m_elements;
+		int getage(const std::string yld, const double& value, const int& starting_age) const;
 	};
 
 }

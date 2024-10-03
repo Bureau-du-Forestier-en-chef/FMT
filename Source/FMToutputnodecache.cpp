@@ -43,7 +43,7 @@ namespace Graph
 		exactnode = false;
 		while (parentit != searchtree.end())
 			{
-			if (targetnode.issubsetof(parentit->first, actions))
+			if (targetnode.isSubsetOf(parentit->first, actions))
 				{
 				return parentit;
 				}
@@ -69,7 +69,7 @@ namespace Graph
 			for (std::map<Core::FMToutputnode, std::vector<FMTvertex_descriptor>>::const_iterator sit = searchtree.begin();
 					sit != searchtree.end(); sit++) 
 				{
-				if (sit->first.issubsetof(targetnode,actions))
+				if (sit->first.isSubsetOf(targetnode,actions))
 					{
 					const std::string nodeaction= sit->first.source.getaction();
 					potentials[nodeaction].push_back(sit);

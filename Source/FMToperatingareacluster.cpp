@@ -103,18 +103,18 @@ namespace Heuristics
     FMToperatingareacluster FMToperatingareacluster::getfilteredcluster(const Core::FMTmask& filtermask) const
         {
         FMToperatingareacluster newcluster(*this);
-        if (centroid.getmask().issubsetof(filtermask))
+        if (centroid.getmask().isSubsetOf(filtermask))
             {
             std::vector<FMToperatingareaclusterbinary>newbinaries;
             for (const FMToperatingareaclusterbinary& binary : binaries)
                 {
-                if (binary.getmask().issubsetof(filtermask))
+                if (binary.getmask().isSubsetOf(filtermask))
                     {
                     FMToperatingareaclusterbinary newbinary(binary);
                     std::vector<Core::FMTmask>newneighbors;
                     for (const Core::FMTmask& link : binary.getneighbors())
                         {
-                        if (link.issubsetof(filtermask))
+                        if (link.isSubsetOf(filtermask))
                             {
                             newneighbors.push_back(link);
                             }

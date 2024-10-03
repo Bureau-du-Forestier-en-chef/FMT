@@ -214,7 +214,7 @@ namespace Core {
 			const Core::FMTmask mask = reference->getsources().begin()->getmask();
 			for (const Core::FMTactualdevelopment& developement : m_modelPtr->getarea())
 				{
-				if (developement.getmask().issubsetof(mask))
+				if (developement.getmask().isSubsetOf(mask))
 					{
 					newareas.push_back(developement);
 					}

@@ -9,6 +9,8 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 #include "FMTobject.h"
 #include "FMTmask.h"
+#include <vector>
+#include <unordered_map>
 
 
 namespace Graph
@@ -53,7 +55,7 @@ namespace Core
 		mutable FMTmask resume_mask;
 		FMTdevelopment const* development;
 		Graph::FMTgraphvertextoyield const* graphvertex;
-		void updatedata(const FMTyields& yields) const;
+		void _updateData(const FMTyields& yields) const;
 	};
 	
 

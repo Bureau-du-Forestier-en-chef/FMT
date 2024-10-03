@@ -103,7 +103,7 @@ namespace Models{
 					for (const auto& dev : ACTION.second)
 						{
 						Core::FMTdevelopment newDev(dev.first);
-						if (dev.first.getmask().issubsetof(ActionMask))
+						if (dev.first.getmask().isSubsetOf(ActionMask))
 							{
 							if (PERIOD > MAX_PERIOD)
 								{
@@ -268,7 +268,7 @@ namespace Models{
 						{
 						const Core::FMTdata BASE_DATA = yield.second->at(YIELD_NAME);
 						const std::vector<double>NEW_DATA(BASE_DATA.data.begin() + TO_SPLIT, BASE_DATA.data.end());
-						newSplittedYield->push_data(YIELD_NAME, Core::FMTdata(NEW_DATA, BASE_DATA.getop(), BASE_DATA.getsource()));
+						newSplittedYield->push_data(YIELD_NAME, Core::FMTdata(NEW_DATA, BASE_DATA.getop(), BASE_DATA.getSourcesCopy()));
 						}
 					newYields.push_back(NEW_SPLITTED_MASK, newSplittedYield);
 					}
@@ -471,7 +471,7 @@ namespace Models{
 							const Core::FMTmask ACTION_MASK = ACTION_Prt->getunion(themes);
 							for (const auto& DEV : ACTION_ELEMENTS.second)
 							{
-								if (DEV.first.getmask().issubsetof(ACTION_MASK) &&
+								if (DEV.first.getmask().isSubsetOf(ACTION_MASK) &&
 									DevelopementsSet.find(DEV.first) == DevelopementsSet.end())
 								{
 									NewMapping[DEV.first] = DEV.second;
@@ -711,10 +711,6 @@ void FMTmodel::aggregateOutputs(const std::map<std::string, std::pair<std::strin
 	try {
 		for (Core::FMToutput* output : p_Outputs)
 			{
-			/*if (output->getname() == "OSUPREALCT")
-			{
-				*_logger << output->getname() << "\n";
-			}*/
 			std::map<std::string, std::map<Core::FMTmask,std::string>>Dominances;
 			for (const Core::FMToutputsource& source : output->getsources())
 				{
@@ -725,24 +721,25 @@ void FMTmodel::aggregateOutputs(const std::map<std::string, std::pair<std::strin
 					const std::string& ACTION = source.getaction();
 					const std::string& AGGREGATE = p_Filters.at(source.getaction()).first;
 					const Core::FMTmask& MASK = source.getmask();
+					const Core::FMTmask INTERSECT_MASK = MASK.getintersect(p_Filters.at(source.getaction()).second);
 					if (Dominances.find(AGGREGATE) == Dominances.end())
 						{
 						Dominances[AGGREGATE] = std::map<Core::FMTmask, std::string>();
-						Dominances[AGGREGATE][MASK] = ACTION;
+						Dominances[AGGREGATE][INTERSECT_MASK] = ACTION;
 					}else {
 						bool gotIntersect = false;
 						std::map<Core::FMTmask, std::string>newMap;
 						for (const auto& SOURCES : Dominances[AGGREGATE])
 							{
 							bool removeIt = false;
-							if (!SOURCES.first.isnotthemessubset(MASK, themes))
+							if (!SOURCES.first.isnotthemessubset(INTERSECT_MASK, themes))
 								{
 								const std::vector<std::string>::const_iterator NEW_HIERARCHY = std::find(p_ActionOrdering.begin(), p_ActionOrdering.end(), ACTION);
 								const std::vector<std::string>::const_iterator BASE_HIERARCHY = std::find(p_ActionOrdering.begin(), p_ActionOrdering.end(), SOURCES.second);
 								if (NEW_HIERARCHY < BASE_HIERARCHY)
 									{
 									//Dominances[AGGREGATE][MASK] = ACTION;
-									newMap[MASK] = ACTION;
+									newMap[INTERSECT_MASK] = ACTION;
 									removeIt = true;
 									}
 								gotIntersect = true;
@@ -755,7 +752,7 @@ void FMTmodel::aggregateOutputs(const std::map<std::string, std::pair<std::strin
 							}
 						if (!gotIntersect)
 						{
-							newMap[MASK] = ACTION;
+							newMap[INTERSECT_MASK] = ACTION;
 						}
 						Dominances[AGGREGATE] = newMap;
 						
@@ -767,20 +764,27 @@ void FMTmodel::aggregateOutputs(const std::map<std::string, std::pair<std::strin
 			const std::vector<Core::FMToperator> BASE_OPERATORS = output->getopes();
 			const std::string& NULL_YIELD = yields.getNullYield();
 			std::map<std::string, std::map<Core::FMTmask, std::string>>OutputDominances(Dominances);
-			std::map<std::string, std::map<std::string,Core::FMTmask>>excludedByMask;
+			std::map<std::string,Core::FMTmask>excludedByMask;
 			for (const auto& mapping : OutputDominances)
 			{
-				std::vector<std::string>OutActions;
+				excludedByMask[mapping.first] = Core::FMTmask();
 				for (const auto& actionMapping : mapping.second)
 					{
-					if (std::find(OutActions.begin(), OutActions.end(), actionMapping.second)==
+					if (excludedByMask[mapping.first].empty())
+						{
+						excludedByMask[mapping.first] = actionMapping.first;
+					}else {
+						excludedByMask[mapping.first] = excludedByMask[mapping.first].getunion(actionMapping.first);
+						}
+
+					/*if (std::find(OutActions.begin(), OutActions.end(), actionMapping.second) ==
 						OutActions.end())
 						{
 						OutActions.push_back(actionMapping.second);
-						}
+						}*/
 					}
 				
-				for (const std::string& theAction : OutActions)
+				/*for (const std::string& theAction : OutActions)
 				{
 					Core::FMTmask fullMask;
 					for (const auto& actionMapping : mapping.second)
@@ -802,7 +806,7 @@ void FMTmodel::aggregateOutputs(const std::map<std::string, std::pair<std::strin
 					}
 					
 					
-				}
+				}*/
 				
 			}
 
@@ -816,14 +820,15 @@ void FMTmodel::aggregateOutputs(const std::map<std::string, std::pair<std::strin
 						{
 						
 						const Core::FMTmask& SOURCE_MASK = source.getmask();
+						const Core::FMTmask INTERSECT_MASK = SOURCE_MASK.getintersect(p_Filters.at(source.getaction()).second);
 						const std::string& ACTION = source.getaction();
 						const std::string& AGGREGATE = p_Filters.at(source.getaction()).first;
-						if (OutputDominances.at(AGGREGATE).find(SOURCE_MASK) != OutputDominances.at(AGGREGATE).end() &&
-							OutputDominances.at(AGGREGATE).at(SOURCE_MASK) == ACTION)
+						if (OutputDominances.at(AGGREGATE).find(INTERSECT_MASK) != OutputDominances.at(AGGREGATE).end() &&
+							OutputDominances.at(AGGREGATE).at(INTERSECT_MASK) == ACTION)
 						{
-							if (!SOURCE_MASK.isnotthemessubset(p_Filters.at(source.getaction()).second, themes))
+							if (!INTERSECT_MASK.isnotthemessubset(p_Filters.at(source.getaction()).second, themes))
 							{
-								const Core::FMTmask INTERSECT_MASK = SOURCE_MASK.getintersect(p_Filters.at(source.getaction()).second);
+								//const Core::FMTmask INTERSECT_MASK = SOURCE_MASK.getintersect(p_Filters.at(source.getaction()).second);
 								NewSource.setmask(addNewMask(INTERSECT_MASK));
 							}
 							else {
@@ -833,40 +838,25 @@ void FMTmodel::aggregateOutputs(const std::map<std::string, std::pair<std::strin
 							{
 								NewSource.setaction(p_Filters.at(source.getaction()).first);
 							}
-							OutputDominances.at(AGGREGATE).erase(SOURCE_MASK);
+							OutputDominances.at(AGGREGATE).erase(INTERSECT_MASK);
 						}else if (OutputDominances.find(AGGREGATE)!= OutputDominances.end())
 								{
-								std::string restAction;
-								std::map<Core::FMTmask, std::string>::const_iterator mIt = Dominances.at(AGGREGATE).begin();
-								size_t bestDistance = std::numeric_limits<size_t>::max();
-								while (mIt!= Dominances.at(AGGREGATE).end())
-									{
-									const std::string Of_ACTION = mIt->second;
-									std::vector<std::string>::const_iterator Oit = std::find(p_ActionOrdering.begin(), p_ActionOrdering.end(), Of_ACTION);
-									const size_t THE_DISTANCE = std::distance(p_ActionOrdering.begin(), Oit);
-									if (THE_DISTANCE< bestDistance)
-										{
-										restAction = Of_ACTION;
-										bestDistance = THE_DISTANCE;
-										}
-									++mIt;
-									}
-								Core::FMTmask& REST = excludedByMask[AGGREGATE][restAction];
-								Core::FMTmask MaskCopy(SOURCE_MASK);
+								Core::FMTmask& REST = excludedByMask[AGGREGATE];
+								Core::FMTmask MaskCopy(INTERSECT_MASK);
 								MaskCopy.setIntersect(REST);
 								bool gotNoIntersect = false;
 								size_t themeId = 0;
 								while (!gotNoIntersect && themeId < themes.size())
 								{
-									gotNoIntersect = MaskCopy.getsubsetcount(themes[themeId]) < SOURCE_MASK.getsubsetcount(themes[themeId]);
+									gotNoIntersect = MaskCopy.getsubsetcount(themes[themeId]) < INTERSECT_MASK.getsubsetcount(themes[themeId]);
 									++themeId;
 								}
 								if (gotNoIntersect)
 								{
-									Core::FMTmask FinalMask(SOURCE_MASK);
+									Core::FMTmask FinalMask(INTERSECT_MASK);
 									for (const Core::FMTtheme& THEME : themes)
 									{
-										if (MaskCopy.getsubsetcount(THEME) < SOURCE_MASK.getsubsetcount(THEME))
+										if (MaskCopy.getsubsetcount(THEME) < INTERSECT_MASK.getsubsetcount(THEME))
 										{
 											FinalMask.setExclusiveBits(REST, THEME);
 										}
@@ -1932,7 +1922,7 @@ Core::FMTmask FMTmodel::getbasemask(std::vector<Core::FMTactualdevelopment> opti
 				transition.begin()->second.getmasktrans().size()==1&&
 				std::string(actions.at(trid).begin()->first)==std::string(transition.begin()->first)&&
 				std::string(transition.begin()->first)==std::string(transition.begin()->second.getmasktrans().begin()->getmask())&&
-				!transition.begin()->second.getmasktrans().begin()->getmask().issubsetof(areamask))//scrap weird thing
+				!transition.begin()->second.getmasktrans().begin()->getmask().isSubsetOf(areamask))//scrap weird thing
 				{
 				jumptransitions.push_back(true);
 			}else {

@@ -150,6 +150,48 @@ void FMTdata::set(const double& value, const FMTyieldrequest& request,const bool
 	_cache->operator[](this->getsummarydevelopment(request)) = value;
 	}
 
+std::vector<const std::string*> FMTdata::getSources() const
+	{
+	std::vector<std::string const*>outSources;
+	if (ops == FMTyieldparserop::FMTequation)
+	{
+		outSources.reserve(source.size());
+		for (const std::string& val : source)
+		{
+			if (!FMTfunctioncall(val).valid() && !FMToperator(val).valid() &&
+				!(val.size() == 1 && (val.at(0) == '(' || val.at(0) == ')')))
+			{
+				outSources.push_back(&val);
+			}
+		}
+	}
+	else if (ops == FMTyieldparserop::FMTmodelpred)
+	{
+		//Get sources from the model
+	}else {
+		outSources.reserve(source.size());
+		for (const std::string& value : source)
+			{
+			outSources.push_back(&value);
+			}
+		}
+	return outSources;
+	}
+
+std::vector<std::string> FMTdata::getSourcesCopy() const
+{
+	const std::vector<const std::string*> SOURCES = getSources();
+	std::vector<std::string>result(SOURCES.size());
+	size_t Id = 0;
+	for (std::string& data : result)
+		{
+		data = *SOURCES[Id];
+		++Id;
+		}
+	return result;
+}
+
+/*
 std::vector<std::string> FMTdata::getsource() const
     {
 	if (ops == FMTyieldparserop::FMTequation)
@@ -170,7 +212,7 @@ std::vector<std::string> FMTdata::getsource() const
 		}
     return source;
     }
-
+*/
 FMTdata::operator std::string() const
     {
 	std::string value = "";
@@ -261,6 +303,25 @@ FMTdata::operator std::string() const
     return value;
     }
 
+std::vector<const double*>FMTdata::getValues() const
+{
+	std::vector<const double*>values(stacking.size(),nullptr);
+	size_t numid = 0;
+	int id = 0;
+	for (const bool& isvar : stacking)
+	{
+		if (!isvar)
+		{
+			values[id] = &data.at(numid);
+			++numid;
+		}
+		++id;
+	}
+	return values;
+
+}
+
+/*
 std::vector<double>FMTdata::tovalues(const std::map<std::string, double>& sources) const
 	{
 	std::vector<double>values(stacking.size(),0.0);
@@ -282,7 +343,7 @@ std::vector<double>FMTdata::tovalues(const std::map<std::string, double>& source
 		}
 	return values;
 	}
-
+*/
 
 FMTexpression FMTdata::toexpression() const
 	{

@@ -50,8 +50,10 @@ class FMTEXPORT FMTdata
 		bool cachevalue(const FMTyieldrequest& request) const;
 		double get(const FMTyieldrequest& request) const;
 		void set(const double& value, const FMTyieldrequest& request, const bool& age_only) const;
-		std::vector<std::string> getsource() const;
-		std::vector<double>tovalues(const std::map<std::string, double>& sources) const;
+		std::vector<const std::string*> getSources() const;
+		std::vector<std::string> getSourcesCopy() const;
+		std::vector<const double*>getValues() const;
+		//std::vector<double>tovalues(const std::map<std::string, double>& sources) const;
 		FMTexpression toexpression() const;
 		bool operator == (const FMTdata& rhs) const;
         operator std::string() const;

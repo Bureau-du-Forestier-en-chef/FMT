@@ -417,6 +417,12 @@ std::string FMTtheme::bitsToStr(const boost::dynamic_bitset<uint8_t>& p_bits) co
 		return "";
         }
 
+const std::string& FMTtheme::_getAttribute(size_t p_attributeId) const
+	{
+	return m_attributes.at(p_attributeId);
+	}
+
+
 std::vector<std::string>FMTtheme::getattributes(const std::string& p_value, bool p_aggregate_source) const
         {
 		std::vector<std::string>result;

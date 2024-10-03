@@ -135,6 +135,8 @@ std::string FMTmask::get(const std::vector<FMTtheme>& themes) const
     return value;
     }
 
+
+
 void  FMTmask::setExclusiveBits(const FMTmask& p_mask, const FMTtheme& p_theme)
 {
 	const boost::dynamic_bitset<uint8_t>BASE = this->subset(p_theme);
@@ -142,6 +144,34 @@ void  FMTmask::setExclusiveBits(const FMTmask& p_mask, const FMTtheme& p_theme)
 	RHS.flip(); 
 	setsubset(p_theme, BASE & RHS);
 	name.clear();
+}
+
+std::vector<size_t>FMTmask::getNonFullBlocks() const
+{
+	std::vector<size_t>Blocks;
+	for (size_t Id = 0; Id < data.m_bits.size();++Id)
+		{
+		if (data.m_bits[Id] != 0xff)
+			{
+			Blocks.push_back(Id);
+			}
+		}
+	return Blocks;
+}
+
+bool FMTmask::isSubsetOf(const FMTmask& p_mask, const std::vector<size_t>& p_subset) const
+{
+	bool allFalse = true;
+	size_t i = 0;
+	while (allFalse && i < p_subset.size())
+		{
+		if (data.m_bits[p_subset[i]] & ~p_mask.data.m_bits[p_subset[i]])
+			{
+			allFalse = false;
+			}
+		++i;
+		}
+	return allFalse;
 }
 
 
@@ -178,6 +208,20 @@ std::string FMTmask::get(const FMTtheme& theme) const
     const boost::dynamic_bitset<uint8_t>bits =  this->subset(theme);
     return theme.bitsToStr(bits);
     }
+
+const std::string& FMTmask::getAttribute(const FMTtheme& p_theme) const
+	{
+	size_t bIt = p_theme.m_start;
+	const size_t FULL_SIZE = p_theme.m_start + p_theme.size();
+	bool gotBit = false;
+	while (!gotBit &&
+		bIt < FULL_SIZE)
+		{
+		gotBit = data[bIt];
+		++bIt;
+		}
+	return p_theme._getAttribute(bIt - p_theme.m_start - 1);
+	}
 
 bool FMTmask::empty() const
 	{
@@ -443,6 +487,11 @@ std::string FMTmask::getbitsstring() const
 			boost::to_string(data, buffer);
             return buffer;
             }
+
+bool FMTmask::isSubsetOf(const FMTmask& p_rhs) const
+	{
+	return data.is_subset_of(p_rhs.data);
+	}
 
 FMTmask FMTmask::refine(const FMTmask& mask,const std::vector<FMTtheme>& themes) const
 	{

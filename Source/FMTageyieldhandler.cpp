@@ -32,7 +32,7 @@ namespace Core {
 					value += std::to_string(base) + "\t";
 					for (const std::string& NAME : yieldNames)
 					{
-						const std::vector<double>* data = &elements.at(NAME).data;
+						const std::vector<double>* data = &m_elements.at(NAME).data;
 						value += std::to_string(data->at(baseid)) + "\t";
 					}
 					value += "\n";
@@ -50,12 +50,12 @@ namespace Core {
 
 	bool FMTageyieldhandler::push_data(const std::string& yld, const double& value)
 	{
-		return (basepush_data(elements, yld, value));
+		return (basepush_data(m_elements, yld, value));
 	}
 
 	bool FMTageyieldhandler::push_data(const std::string& yld, const FMTdata& data)
 	{
-		return (basepush_data(elements, yld,data));
+		return (basepush_data(m_elements, yld,data));
 	}
 
 	FMTageyieldhandler::FMTageyieldhandler(const FMTmask& mask) :
@@ -68,7 +68,7 @@ namespace Core {
 	bool FMTageyieldhandler::operator == (const FMTageyieldhandler& rhs) const
 	{
 		return (FMTyieldhandler::operator==(rhs)&&
-				elements==rhs.elements);
+			m_elements==rhs.m_elements);
 	}
 
 	double FMTageyieldhandler::get(const std::string& yld, const FMTyieldrequest& request) const
@@ -76,8 +76,8 @@ namespace Core {
 		try {
 				try {
 					const int target = request.getdevelopment().getage();
-					std::map<std::string, Core::FMTdata>::const_iterator data0it = elements.find(yld);
-					if (data0it != elements.end())
+					std::map<std::string, Core::FMTdata, cmpYieldString>::const_iterator data0it = m_elements.find(yld);
+					if (data0it != m_elements.end())
 						{
 						return getlinearvalue(data0it->second.data, target,true);
 						}
@@ -101,15 +101,15 @@ namespace Core {
 
 	double FMTageyieldhandler::getlastvalue(const std::string yld) const
 	{
-		std::map<std::string, FMTdata>::const_iterator it = elements.find(yld);
+		std::map<std::string, FMTdata, cmpYieldString>::const_iterator it = m_elements.find(yld);
 		return it->second.data.back();
 	}
 	int FMTageyieldhandler::getage(const std::string yld, const double& value, const int& starting_age) const
 	{
 		int age = 0;
 		try {
-			std::map<std::string, FMTdata>::const_iterator it = elements.find(yld);
-			if (it != elements.end())
+			std::map<std::string, FMTdata, cmpYieldString>::const_iterator it = m_elements.find(yld);
+			if (it != m_elements.end())
 			{
 				const FMTdata* ldata = &it->second;
 				//std::vector<double>::const_iterator dit = ldata->data.begin();
@@ -180,11 +180,11 @@ namespace Core {
 	{
 		FMTageyieldhandler newhandler(*this);
 		try {
-				std::vector<std::map<std::string, FMTdata>::iterator>iterators;
+				std::vector<std::map<std::string, FMTdata, cmpYieldString>::iterator>iterators;
 				if (yieldnames.empty())
 				{
-					for (std::map<std::string, FMTdata>::iterator it = newhandler.elements.begin();
-						it != newhandler.elements.end(); it++)
+					for (std::map<std::string, FMTdata, cmpYieldString>::iterator it = newhandler.m_elements.begin();
+						it != newhandler.m_elements.end(); it++)
 					{
 						iterators.push_back(it);
 					}
@@ -192,14 +192,14 @@ namespace Core {
 				else {
 					for (const std::string& yldname : yieldnames)
 					{
-						std::map<std::string, FMTdata>::iterator it = newhandler.elements.find(yldname);
-						if (it != newhandler.elements.end())
+						std::map<std::string, FMTdata, cmpYieldString>::iterator it = newhandler.m_elements.find(yldname);
+						if (it != newhandler.m_elements.end())
 						{
 							iterators.push_back(it);
 						}
 					}
 				}
-				for (std::map<std::string, FMTdata>::iterator datait : iterators)
+				for (std::map<std::string, FMTdata, cmpYieldString>::iterator datait : iterators)
 				{
 					datait->second = ((datait->second)*factor);
 				}
@@ -213,31 +213,31 @@ namespace Core {
 
 	bool FMTageyieldhandler::empty() const
 	{
-		return elements.empty();
+		return m_elements.empty();
 	}
 	size_t FMTageyieldhandler::size() const
 	{
-		return elements.size();
+		return m_elements.size();
 	}
 	FMTdata& FMTageyieldhandler::operator[](const std::string& yldname)
 	{
-		return elements[yldname];
+		return m_elements[yldname];
 	}
 	const FMTdata& FMTageyieldhandler::at(const std::string& yldname) const
 	{
-		return elements.at(yldname);
+		return m_elements.at(yldname);
 	}
 	bool FMTageyieldhandler::containsyield(const std::string& yldname) const
 	{
-		return (elements.find(yldname) != elements.end());
+		return (m_elements.find(yldname) != m_elements.end());
 	}
 
 
 	std::vector<std::string>FMTageyieldhandler::getyieldnames() const
 	{
 		std::vector<std::string>results;
-		results.reserve(elements.size());
-		for (const auto& data : elements)
+		results.reserve(m_elements.size());
+		for (const auto& data : m_elements)
 		{
 			results.push_back(data.first);
 		}
@@ -266,7 +266,7 @@ namespace Core {
 		try {
 			const int lastbase = getlastbase();
 			std::vector<int>bases = getbases();
-			for (std::map<std::string, FMTdata>::const_iterator cit = elements.begin(); cit != elements.end(); cit++)
+			for (std::map<std::string, FMTdata, cmpYieldString>::const_iterator cit = m_elements.begin(); cit != m_elements.end(); cit++)
 			{
 				localstuff[cit->first] = std::vector<double>();
 				for (int base = 0; base <= maxbase; ++base)
@@ -297,7 +297,7 @@ namespace Core {
 	{
 		size_t locid = 0;
 		try {
-				std::map<std::string, FMTdata>::const_iterator it = elements.find(yld);
+				std::map<std::string, FMTdata, cmpYieldString>::const_iterator it = m_elements.find(yld);
 				std::vector<double>::const_iterator location;
 				if (value < bound)
 				{
@@ -336,7 +336,7 @@ namespace Core {
 
 	double FMTageyieldhandler::getpeakfrom(const std::string& yld, double maxvalue) const
 	{
-		std::map<std::string, FMTdata>::const_iterator it = elements.find(yld);
+		std::map<std::string, FMTdata, cmpYieldString>::const_iterator it = m_elements.find(yld);
 		int location = 0;
 		int peak = -1;
 		try {

@@ -320,9 +320,18 @@ class FMTEXPORT FMTtheme : public FMTobject
 		 boost::dynamic_bitset<uint8_t> strToBits(const std::string& p_value) const;
 		// DocString: FMTtheme::bitsToStr
 		/**
-		Convert a bitset to an attribute|aggregate|? (value) for the entire theme size.
+		@brief Convert a bitset to an attribute|aggregate|? (value) for the entire theme size.
+		@param[in] just a subset of theme.
+		@return the string value;
 		*/
 		std::string bitsToStr(const boost::dynamic_bitset<uint8_t>& p_bits) const;
+		// DocString: FMTtheme::_getAttribute
+		/**
+		@brief get a string reference to the attribute targeted by attributeId
+		@param[in] p_attributeId the attribute Id
+		@return the reference to the attribute targeted;
+		*/
+		const std::string& _getAttribute(size_t p_attributeId) const;
 		// DocString: FMTtheme::getAttribute
 		/**
 		Get the attribute iterator, will raise if not found.

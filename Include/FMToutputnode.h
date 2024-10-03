@@ -40,8 +40,8 @@ class FMTEXPORT FMToutputnode
 		bool isnull() const;
 		bool operator < (const FMToutputnode& rhs) const;
 		bool operator == (const FMToutputnode& rhs) const;
-		bool issubsetof(const FMToutputnode& rhs) const;
-		bool issubsetof(const FMToutputnode& rhs,const std::vector<Core::FMTaction>& actions) const;
+		bool isSubsetOf(const FMToutputnode& rhs) const;
+		bool isSubsetOf(const FMToutputnode& rhs,const std::vector<Core::FMTaction>& actions) const;
 		bool issamebutdifferentaction(const FMToutputnode& rhs) const;
 		inline int getoutputid() const
 			{

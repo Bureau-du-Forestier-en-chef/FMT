@@ -418,7 +418,7 @@ FMTspec::FMTspec():per(),age(),lock(), yieldnames(), yieldbounds(){}
 		return age.lower;
 		}
 
-	bool FMTspec::issubsetof(const FMTspec& rhs) const
+	bool FMTspec::isSubsetOf(const FMTspec& rhs) const
 		{
 		bool persubset = true;
 		if (!per.empty() && !rhs.per.empty())

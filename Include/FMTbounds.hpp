@@ -557,11 +557,11 @@ public:
 	Get the lower bound of the age bounds.
 	*/
 	int getlocklowerbound() const;
-	// DocString: FMTspec::issubsetof
+	// DocString: FMTspec::isSubsetOf
 	/**
 	return true if this spec is the subset of the rhs spec.
 	*/
-	bool issubsetof(const FMTspec& rhs) const;
+	bool isSubsetOf(const FMTspec& rhs) const;
     };
 
 }

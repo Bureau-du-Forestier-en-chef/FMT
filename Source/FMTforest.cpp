@@ -121,7 +121,7 @@ std::vector<FMTlayer<std::string>> FMTforest::getthemes(const std::vector<Core::
                 {
                 for(size_t id = 0 ; id < newlayers.size();++id)
                     {
-					const std::string value = it->second.getmask().get(themes[id]);
+					const std::string value = it->second.getmask().getAttribute(themes[id]);
                     newlayers[id][it->first] = value;
                     }
                 }

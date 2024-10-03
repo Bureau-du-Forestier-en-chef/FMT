@@ -65,10 +65,10 @@ namespace Core
 		void serialize(Archive& ar, const unsigned int version)
 		{
 			ar& boost::serialization::make_nvp("FMTyieldhandler", boost::serialization::base_object<FMTyieldhandler>(*this));
-			ar& yldnames;
+			ar& m_yldnames;
 		}
 		std::vector<std::unique_ptr<FMTyieldmodel>>models;
-		std::map<std::string, std::pair<size_t, size_t>>yldnames;
+		std::map<std::string, std::pair<size_t, size_t>, cmpYieldString>m_yldnames;
 	};
 
 }

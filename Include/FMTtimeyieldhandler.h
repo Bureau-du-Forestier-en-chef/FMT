@@ -19,14 +19,6 @@ namespace Core
 	
 	class FMTEXPORT FMTtimeyieldhandler final : public FMTyieldhandler
 	{
-		friend class boost::serialization::access;
-		template<class Archive>
-		void serialize(Archive& ar, const unsigned int version)
-		{
-		ar & boost::serialization::make_nvp("FMTyieldhandler", boost::serialization::base_object<FMTyieldhandler>(*this));
-		ar & BOOST_SERIALIZATION_NVP(elements);
-		}
-		std::map<std::string, FMTdata>elements;
 	public:
 		virtual double get(const std::string& yld, const FMTyieldrequest& request) const;
 		virtual  operator std::string() const;
@@ -60,6 +52,15 @@ namespace Core
 		virtual std::map<std::string, std::vector<double>>getallyieldsdata(const int& maxbase)const;
 		virtual std::unique_ptr<FMTyieldhandler> getfromfactor(const double& factor,
 			std::vector<std::string>yieldnames = std::vector<std::string>()) const;
+	private:
+		friend class boost::serialization::access;
+		template<class Archive>
+		void serialize(Archive& ar, const unsigned int version)
+		{
+			ar& boost::serialization::make_nvp("FMTyieldhandler", boost::serialization::base_object<FMTyieldhandler>(*this));
+			ar& BOOST_SERIALIZATION_NVP(m_elements);
+		}
+		std::map<std::string, FMTdata, cmpYieldString>m_elements;
 	};
 
 }

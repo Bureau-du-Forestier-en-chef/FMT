@@ -234,7 +234,7 @@ namespace Graph
 				for (notecacheit sit = searchtree.begin();
 					sit != searchtree.end(); sit++)
 				{
-					if (sit->first.issubsetof(targetnode.source, actions) && 
+					if (sit->first.isSubsetOf(targetnode.source, actions) && 
 						(sit->first != targetnode.source))
 					{
 						const std::string nodeaction = sit->first.getaction();
@@ -314,7 +314,7 @@ namespace Graph
 				m_foundSubset = false;
 				while (parentit != searchtree.end())
 				{
-					if (m_targetNode.source.issubsetof(parentit->first, m_actions))
+					if (m_targetNode.source.isSubsetOf(parentit->first, m_actions))
 					{
 						m_foundSubset = true;
 						return parentit;

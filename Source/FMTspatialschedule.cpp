@@ -1914,7 +1914,7 @@ void FMTspatialschedule::setgraphcachebystatic(const std::vector<FMTcoordinate>&
 				for (const FMTcoordinate& coordinate : coordinates)
 				{
 					const Graph::FMTlinegraph* linegraph = &mapping.at(coordinate);
-					if (linegraph->getbasedevelopment().getmask().issubsetof(cache.getactualnodecache()->staticmask))
+					if (linegraph->getbasedevelopment().getmask().isSubsetOf(cache.getactualnodecache()->staticmask))
 					{
 						goodcoordinates.push_back(coordinate);
 					}
@@ -2119,7 +2119,7 @@ void FMTspatialschedule::setgraphfromcache(const Graph::FMTlinegraph& graph, con
 						(graphisonlygrowth && !(actionbased && !it->first.source.isinventory()))))
 					{
 						cache.setnodecache(it);
-						if (basegraphmask.issubsetof(cache.getactualnodecache()->staticmask))
+						if (basegraphmask.isSubsetOf(cache.getactualnodecache()->staticmask))
 						{
 							//const std::vector<int>periods = graph.anyusageof(it->first.source, model.yields, cache.getactualnodecache()->actions);
 							//const std::vector<int>periods = graph.anyusageof(it->first,model, startingperiod);

@@ -185,6 +185,13 @@ class FMTEXPORT FMTmask
 		Get the corresponding attribute of the FMTmask for a given FMTtheme.
 		*/
 		std::string get(const FMTtheme& theme) const;
+		// DocString: FMTmask::getAttribute
+		/**
+		@brief When you deal with FMTdevelopment you can directly call this to get a reference to the attribute string
+		@param[in] p_theme the theme we target
+		@return a const reference to the attribute.
+		*/
+		const std::string& getAttribute(const FMTtheme& p_theme) const;
 		// DocString: FMTmask::getsubsetcount
 		/**
 		Get the number of bits set for the given theme subset.
@@ -202,6 +209,20 @@ class FMTEXPORT FMTmask
 		@param[in] p_theme
 		*/
 		void setExclusiveBits(const FMTmask& p_mask,const FMTtheme& p_theme);
+		// DocString: FMTmask::getNonFullBlocks
+		/**
+		@brief flip only the theme subset and clean the mask of the intersect with p_mask.
+		@return a vector of index of blocks that avec 0 in it.
+		*/
+		std::vector<size_t>getNonFullBlocks() const;
+		// DocString: FMTmask::isSubsetOf
+		/**
+		@brief Check if this is subset of p_mask by locking at block subset.
+		@param[in] p_subset Block Subset.
+		@param[in] p_mask the oter mask
+		@return true if all blocks are subset of this.
+		*/
+		bool isSubsetOf(const FMTmask& p_mask,const std::vector<size_t>& p_subset) const;
 		// DocString: FMTmask::set
 		/**
 		Set the bitset data for a given FMTtheme (theme) for a attribute (value).
@@ -347,22 +368,13 @@ class FMTEXPORT FMTmask
 			{
 			return name;
 			}
-		// DocString: FMTmask::issubsetof
+		// DocString: FMTmask::isSubsetOf
 		/**
-		Check if the bitset is a subset of the rhs bitset
+		@brief Check if the FMTmask is a subset of a FMTmask (rhs).
+		@param[in] rhs the model to check if subset
+		@return true if subset or false.
 		*/
-		inline bool issubsetof(const boost::dynamic_bitset<uint8_t>& rhs) const
-			{
-			return data.is_subset_of(rhs);
-			}
-		// DocString: FMTmask::issubsetof
-		/**
-		Check if the FMTmask is a subset of a FMTmask (rhs).
-		*/
-		inline bool issubsetof(const FMTmask& rhs) const
-			{
-			return data.is_subset_of(rhs.data);
-			}
+		bool isSubsetOf(const FMTmask& p_rhs) const;
 		// DocString: FMTmask::getbitsetreference
 		/**
 		Get a const referencer ot the boost::dynamic_bitset data member.

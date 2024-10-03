@@ -111,14 +111,14 @@ namespace Core
 		return (source == rhs.source);
 		}
 
-	bool FMToutputnode::issubsetof(const FMToutputnode& rhs) const
+	bool FMToutputnode::isSubsetOf(const FMToutputnode& rhs) const
 		{
-		return source.issubsetof(rhs.source);
+		return source.isSubsetOf(rhs.source);
 		}
 
-	bool FMToutputnode::issubsetof(const FMToutputnode& rhs, const std::vector<Core::FMTaction>& actions) const
+	bool FMToutputnode::isSubsetOf(const FMToutputnode& rhs, const std::vector<Core::FMTaction>& actions) const
 		{
-		return source.issubsetof(rhs.source,actions);
+		return source.isSubsetOf(rhs.source,actions);
 		}
 
 	bool FMToutputnode::issamebutdifferentaction(const FMToutputnode& rhs) const

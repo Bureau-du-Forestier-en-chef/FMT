@@ -35,7 +35,7 @@ namespace Core
 		FMTcomplexyieldhandler(const FMTcomplexyieldhandler& rhs) = default;
 		FMTcomplexyieldhandler& operator = (const FMTcomplexyieldhandler& rhs) = default;
 		FMTcomplexyieldhandler(const FMTmask& mask);
-		const std::map<std::string, FMTdata>& getdataelements() const;
+		const std::map<std::string, FMTdata,cmpYieldString>& getdataelements() const;
 		virtual std::vector<std::string> indexes(const std::vector<std::string>& names) const;
 		virtual double getpeak(const FMTyieldrequest& request, const std::string& yld, const int& targetage) const;
 		std::unique_ptr<FMTyieldhandler>complexyldtoageyld(const FMTyieldrequest& request, const FMTspec& lspec) const;
@@ -61,11 +61,20 @@ namespace Core
 			ar& boost::serialization::make_nvp("FMTyieldhandler", boost::serialization::base_object<FMTyieldhandler>(*this));
 			ar& BOOST_SERIALIZATION_NVP(elements);
 		}
-		std::map<std::string, FMTdata>elements;
+		std::map<std::string, FMTdata, cmpYieldString>m_elements;
 		std::map<std::string, double> getsources(const std::map<std::string, const std::unique_ptr<FMTyieldhandler>*>& srcdata,
 			const FMTyieldrequest& request, bool& age_only) const;
+
 		std::map<std::string, const std::unique_ptr<FMTyieldhandler>*> getdata(const FMTyieldrequest& request,
-			const std::vector<std::string>& names, const std::string& original) const;
+			const std::vector<const std::string*>& names, const std::string& original) const;
+
+		std::vector<const std::unique_ptr<FMTyieldhandler>*>_getData(const FMTyieldrequest& request,
+			const std::vector<const std::string*>& names, const std::string& original) const;
+
+		static std::map<std::string, double>_toMap(const FMTyieldrequest& p_request,
+											const std::vector<const std::string*>& p_names,
+											const std::vector<const std::unique_ptr<FMTyieldhandler>*>& p_data);
+
 		std::vector<double>getsourcesarray(const std::map<std::string, const std::unique_ptr<FMTyieldhandler>*>& srcdata,
 			const FMTyieldrequest& request, bool& age_only) const;
 		std::unique_ptr<FMTyieldhandler>toageyld(const FMTyieldrequest& request,

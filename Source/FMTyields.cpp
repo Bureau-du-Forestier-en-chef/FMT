@@ -354,7 +354,7 @@ double FMTyields::get(const FMTyieldrequest& request, const std::string& yld) co
 {
 	try {
 		bool gotyield = false;
-		request.updatedata(*this);
+		request._updateData(*this);
 		for (const std::unique_ptr<FMTyieldhandler>* data : request.getdatas())
 		{
 			if ((*data)->containsyield(yld))
@@ -664,7 +664,7 @@ int FMTyields::getage(const FMTyieldrequest& request,const FMTspec& spec) const
     {
 	int age = request.getdevelopment().getage();
 	try {
-		request.updatedata(*this);
+		request._updateData(*this);
 		if (!request.getdatas().empty())
 		{
 			for (const std::unique_ptr<FMTyieldhandler>* data : request.getdatas())

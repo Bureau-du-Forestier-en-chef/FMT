@@ -63,8 +63,8 @@ class FMTEXPORT FMToutputsource : public FMTspec
 			return themetarget;
 			}
 		bool isinaggregate(const FMToutputsource& rhs, const std::vector<Core::FMTaction>& actions) const;
-		bool issubsetof(const FMToutputsource& rhs, const std::vector<Core::FMTaction>& actions) const;
-		bool issubsetof(const FMToutputsource& rhs) const;
+		bool isSubsetOf(const FMToutputsource& rhs, const std::vector<Core::FMTaction>& actions) const;
+		bool isSubsetOf(const FMToutputsource& rhs) const;
 		bool issamebutdifferentaction(const FMToutputsource& rhs) const;
 		inline const FMTmask& getmask() const
 			{

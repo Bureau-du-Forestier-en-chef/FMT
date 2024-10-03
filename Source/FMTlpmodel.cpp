@@ -259,7 +259,6 @@ namespace Models
 
 	std::vector<Core::FMTconstraint> FMTlpmodel::getreplanningconstraints(const std::string& modeltype, const std::vector<Core::FMTconstraint>& localconstraints, const int& period) const
 	{
-		std::vector<Core::FMTconstraint>newconstraints(localconstraints.begin(), localconstraints.end());
 		try
 		{
 			if (!solver.isProvenOptimal())
@@ -273,7 +272,7 @@ namespace Models
 		{
 			_exhandler->printexceptions("", "FMTlpmodel::getreplanningconstraints", __LINE__, __FILE__);
 		}
-		return newconstraints;
+		return std::vector<Core::FMTconstraint>();
 	}
 
 	std::map<std::string, double> FMTlpmodel::getoutput(const Core::FMToutput& output,
@@ -433,10 +432,11 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 			const std::map<int, double>node_map = m_graph->locatenode(*this, node, period);
 			for (std::map<int, double>::const_iterator node_it = node_map.begin(); node_it != node_map.end(); node_it++)
 				{
-				if (variables.find(node_it->first) == variables.end())
+				std::pair<std::map<int, double>::iterator,bool> inserted = variables.insert(std::pair<int, double>(node_it->first,0.0));
+				/*if (variables.find(node_it->first) == variables.end())
 					{
 					variables[node_it->first] = 0;
-					}
+					}*/
 				//on doit seulement utiliser le outputid le plus élevé obtenue dans TOUS les noeuds lue!!!!
 				//output_negvar ne doit pas être une liste mais bien un seul élément unique.
 				//Sur cet élément unique on doit recuellir tous les verticies par attribut du output
@@ -445,8 +445,8 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 					{
 						output_negvar.insert(node.getoutputid());
 					}
-
-				variables[node_it->first] += node_it->second*multiplier;
+				inserted.first->second += node_it->second * multiplier;
+				//variables[node_it->first] += node_it->second*multiplier;
 				}
 			//test.insert(node.getoutputid());
 			}
@@ -873,7 +873,7 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 				const Core::FMTdevelopment& dev = m_graph->getdevelopment(*vertex_iterator);
 				for (const Core::FMTmask& globalmask : globalmasks)
 				{
-					if (dev.getmask().issubsetof(globalmask))
+					if (dev.getmask().isSubsetOf(globalmask))
 					{
 						const int varindex = m_graph->getoutvariables(*vertex_iterator).at(-1);
 						if (*(colupperbounds + varindex) == std::numeric_limits<double>::max())

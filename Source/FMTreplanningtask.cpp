@@ -267,7 +267,7 @@ namespace Parallel
 				const std::map<std::string, std::vector<std::vector<double>>>results = resultswriter->getresults(modelptr, firstperiod, lastperiod);
 				
 				_logger->logwithlevel("Thread:" + getthreadid() + " Writing results for " + modelname + " first period at: " +
-					std::to_string(firstperiod) + " for replicate " + std::to_string(getiteration()) + +"\n", 1);
+					std::to_string(replanningperiod) + " for replicate " + std::to_string(getiteration()) + +"\n", 1);
 				
 				int reportingFirstPeriod = firstperiod;
 				int reportingLastPeriod = lastperiod;
