@@ -1340,7 +1340,12 @@ std::queue<std::string> FMTparser::tryinclude(const std::string& line, const std
 				const boost::filesystem::path l_ppath(_location);
 				const boost::filesystem::path parent_path = l_ppath.parent_path();
 				location = boost::filesystem::canonical(includedpath, parent_path).string();
-				}else if (boost::starts_with(location, "."))
+			}else if (boost::starts_with(location, ".\\.\\"))
+				{
+				const boost::filesystem::path FORMATED_PATH(_location);
+				const boost::filesystem::path PARENT_PATH = FORMATED_PATH.parent_path();
+				boost::replace_all(location, ".\\.\\", PARENT_PATH.string() + "\\..\\..\\");
+			}else if (boost::starts_with(location, "."))
 					{
 					const boost::filesystem::path l_ppath(_location);
 					const boost::filesystem::path parent_path = l_ppath.parent_path();
@@ -1629,17 +1634,18 @@ std::vector<std::vector<std::string>>FMTparser::readcsv(const std::string& locat
 				std::string line;
 				std::vector<std::string>splitted;
 				bool gotsomething = true;
-				if (FMTparser::tryopening(csvstream, location))
+				Parser::FMTparser newParser;
+				if (newParser.tryopening(csvstream, location))
 					{
 					//bool inactualdevs = false;
 					while (gotsomething)
 						{
-						if (FMTparser::safeGetline(csvstream, line))
+						if (newParser.safeGetline(csvstream, line))
 							{
 							boost::trim(line);
 							if (!line.empty())
 								{
-								lines.push_back(FMTparser::spliter(line, csvsplitregex));
+								lines.push_back(newParser.spliter(line, csvsplitregex));
 								}
 						}else {
 							gotsomething = false;

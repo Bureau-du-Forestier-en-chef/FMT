@@ -255,10 +255,10 @@ namespace Parser
 		std::vector<std::vector<double>>periodicvalues;
 		//_REPPLICATES(filename.txt) keyword?
 		try {
-			const boost::filesystem::path filelocation = boost::filesystem::path(_location).parent_path() / replicateargument;
-			if (boost::filesystem::is_regular_file(filelocation))
+			const boost::filesystem::path FILE_LOCATION = boost::filesystem::path(_location).parent_path() / replicateargument;
+			if (boost::filesystem::is_regular_file(FILE_LOCATION))
 				{
-				for (const std::vector<std::string>& line : readcsv(filelocation.string(), ';'))
+				for (const std::vector<std::string>& line : readcsv(FILE_LOCATION.string(), ';'))
 					{
 					std::vector<double>iterationvalues;
 					for (const std::string& itvalue : line)
@@ -267,7 +267,11 @@ namespace Parser
 						}
 					periodicvalues.push_back(iterationvalues);
 					}
-				}
+			}else {
+				_exhandler->raise(Exception::FMTexc::FMTinvalid_path,
+					FILE_LOCATION.string() + " at line " + std::to_string(_line)+" in "+_location,
+					"FMToptimizationparser::getreplicatechanges", __LINE__, __FILE__, _section);
+			}
 		}catch (...)
 			{
 			_exhandler->raisefromcatch("","FMToptimizationparser::getreplicatechanges", __LINE__, __FILE__, _section);
