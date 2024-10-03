@@ -97,7 +97,6 @@ namespace Parser
 		const static boost::regex m_rxexclude;
 		const static boost::regex m_rxconstraints;
 		const static boost::regex m_rxequations;
-		const static boost::regex m_rxperiods;
 		const static boost::regex m_rxending;
 		const static boost::regex m_rxoutput;
 		const static boost::regex m_rxpenalty;
@@ -123,8 +122,6 @@ namespace Parser
 			const std::vector<Core::FMTtheme>& p_themes);
 		FMToptimizationsection getsection(const std::string& line) const;
 		bool setending(Core::FMTconstraint& constraint, std::string& line, const Core::FMTconstants& constants);
-		Core::FMTperbounds getperbound(const std::string& lower, const std::string& upper, const Core::FMTconstants& constants) const;
-		void setperiods(Core::FMTspec& constraint, const std::string& lower, const std::string& upper, const Core::FMTconstants& constants) const;
 		Core::FMToutput resume_output(const std::map<std::string, double>& nodes,
 			const std::vector<Core::FMToutput>& outputs,
 			const std::vector<Core::FMTtheme>& themes,

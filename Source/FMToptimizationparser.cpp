@@ -30,7 +30,6 @@ namespace Parser
 	const boost::regex FMToptimizationparser::m_rxconstraints = boost::regex("^(_EVEN|_NDY|_SEQ)([\\s\\t]*)(\\()((([^,]*)(,)([\\s\\t]*)([\\d\\.]*%|[\\d\\.]*)([\\s\\t]*)(,)([\\s\\t]*)([\\d\\.]*%|[\\d\\.]*))|(([^,]*)(,)([\\s\\t]*)([\\d\\.]*%|[\\d\\.]*))|([^,]*))([\\s\\t]*)(\\))([\\s\\t]*)(.+)", boost::regex_constants::ECMAScript | boost::regex_constants::icase);
 	//const boost::regex FMToptimizationparser::rxequations = boost::regex("^(.+)((((<=)|(>=))(.+))|((.+)((=))(.+)))(?<=[^,])[\\s\\t](?=\\d)(.+)", boost::regex_constants::ECMAScript);
 	const boost::regex FMToptimizationparser::m_rxequations = boost::regex("^(.+)((((<=)|(>=))(.+))|((.+)((=))(.+)))(?=[^,])[\\s\\t](?=\\d)(.+)", boost::regex_constants::ECMAScript);
-	const boost::regex FMToptimizationparser::m_rxperiods = boost::regex("^([\\s\\t]*)((([\\d]*|#.+)(\\.\\.)(#.+|_LENGTH|[\\d]*)|(_LENGTH))|(#.+|[\\d]*))", boost::regex_constants::ECMAScript | boost::regex_constants::icase);
 	const boost::regex FMToptimizationparser::m_rxending = boost::regex("^(.+)(((_GOAL)(\\()([^,]*)(,)([^\\)]*)(\\)))|(_SETFROMGLOBAL|_SETFROMLOCAL|_REIGNORE)([\\s\\t]*)(\\()([\\s\\t]*)(.+)([\\s\\t]*)(\\))|(_REPLICATE)([\\s\\t]*)(\\()([\\s\\t]*)(.+)([\\s\\t]*)(\\)))", boost::regex_constants::ECMAScript | boost::regex_constants::icase);
 	const boost::regex FMToptimizationparser::m_rxoutput = boost::regex("^(.+)(\\()([^)]*)(\\))(\\[)(#.+|[-\\d]*)(\\])|([^\\[]*)(\\()([^)]*)(\\))|(.+)(\\[)(#.+|[-\\d]*)(\\])|(.+)", boost::regex_constants::ECMAScript | boost::regex_constants::icase);
 	const boost::regex FMToptimizationparser::m_rxpenalty = boost::regex("^(_PENALTY)(\\()([^\\)]*)(\\))", boost::regex_constants::ECMAScript | boost::regex_constants::icase);
@@ -98,46 +97,6 @@ namespace Parser
 		return false;
 		}
 
-	Core::FMTperbounds FMToptimizationparser::getperbound(const std::string& lower, const std::string& upper, const Core::FMTconstants& constants) const
-	{
-		Core::FMTperbounds bound;
-		try {
-
-			int startperiod = std::numeric_limits<int>::max();
-			if (lower != "_LENGTH")
-			{
-				startperiod = getnum<int>(lower, constants);
-			}
-			int stopperiod = startperiod;
-			if (!upper.empty() && upper != "_LENGTH")
-			{
-				stopperiod = getnum<int>(upper, constants);
-			}
-			else if (upper == "_LENGTH")
-			{
-				stopperiod = std::numeric_limits<int>::max();
-			}
-			bound = Core::FMTperbounds(Core::FMTsection::Optimize, stopperiod, startperiod);
-		}
-		catch (...)
-		{
-			_exhandler->raisefromcatch("",
-				"FMToptimizationparser::getperbound", __LINE__, __FILE__, _section);
-		}
-		return bound;
-	}
-
-	void FMToptimizationparser::setperiods(Core::FMTspec& constraint, const std::string& lower, const std::string& upper, const Core::FMTconstants& constants) const
-		{
-		try {
-			const Core::FMTperbounds periodbound = getperbound(lower, upper, constants);
-			constraint.setbounds(periodbound);
-		}catch (...)
-			{
-			_exhandler->raisefromcatch("for constraint " + std::string(constraint),
-				"FMToptimizationparser::setperiods",__LINE__, __FILE__, _section);
-			}
-		}
 
 	std::map<std::string,double>FMToptimizationparser::getEquation(const std::string& p_line, const Core::FMTconstants& p_constants,
 												const Core::FMTyields& p_yields, const std::vector<Core::FMToutput>& p_outputs,size_t p_lhssize)
@@ -323,7 +282,7 @@ namespace Parser
 						const std::string upperperiod = std::string(special_match[11]) + std::string(special_match[12]);
 						if (!lowerperiod.empty() || !upperperiod.empty())
 						{		
-							bounding = getperbound(lowerperiod, upperperiod, constants);
+							bounding = getPerBound(lowerperiod, upperperiod, constants);
 						}
 						output_name = std::string(special_match[4]) + std::string(special_match[13]);
 
@@ -654,14 +613,8 @@ namespace Parser
 				for (const std::string& value : splitted)
 					{
 					Core::FMTconstraint newconstraint(constraint);
-					boost::smatch kmatch;
-					if (boost::regex_search(value,kmatch, m_rxperiods))
+					if (!setPeriods(newconstraint, value, constants))
 						{
-						const std::string justlength = std::string(kmatch[7]);
-						const std::string lower_period = std::string(kmatch[4]) + std::string(kmatch[8]) + justlength;
-						const std::string upper_period = std::string(kmatch[6])+ justlength;
-						setperiods(newconstraint, lower_period, upper_period, constants);
-					}else {
 						_exhandler->raise(Exception::FMTexc::FMTemptybound,
 							" for " + value,
 							"FMToptimizationparser::getperiodsbounds", __LINE__, __FILE__, _section);
@@ -771,7 +724,7 @@ namespace Parser
 				}
 				objective.setoutput(final_output);
 				
-				setperiods(objective, lower_period, upper_period, p_constants);
+				setPeriodWithBounds(objective, lower_period, upper_period, p_constants);
 			}
 		}catch (...)
 			{

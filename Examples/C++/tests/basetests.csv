@@ -66,3 +66,4 @@ doplanning;../../../../Examples/Models/TWD_land/TWD_land.pri|Parameters;5;65733
 testOutputType;../../../../Examples/Models/TWD_land/TWD_land.pri;output_type;16
 testWrapperCoreGetMaxAge;../../../../Examples/Models/TWD_land/TWD_land.pri;equation;
 testWrapperCoreGetyield;../../../../Examples/Models/TWD_land/TWD_land.pri;equation;TEST1;
+doplanning;../../../../Examples/Models/TWD_land/TWD_land.pri|ExcludeArea;5;16849

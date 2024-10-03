@@ -42,6 +42,7 @@ namespace Core {
 	class FMTaction;
 	class FMTyields;
 	class FMTspec;
+	class FMTperbounds;
 	class FMTconstants;
 	template<typename T>
 	class FMTbounds;
@@ -86,6 +87,9 @@ class FMTEXPORT FMTparser: public Core::FMTobject
 		// DocString: FMTparser::rxend
 		///Regex to capture the end of forloops.
 		const static boost::regex rxend;
+		// DocString: FMTparser::m_rxperiods
+		///Regex to capture period bounds.
+		const static boost::regex m_rxperiods;
 		// DocString: FMTparser::primary_sections
 		///When the modelparser is used this value is saved each time calling FMTparser::getprimary() allow use to use _PRIMARY key word in include files.
 		static std::map<Core::FMTsection, std::string>primary_sections;
@@ -292,6 +296,41 @@ class FMTEXPORT FMTparser: public Core::FMTobject
 		Read a csv file from a (location) using a (separator) and returns a vector of vector of lines.
 		*/
 		std::vector<std::vector<std::string>>readcsv(const std::string& location,const char& separator);
+		// DocString: FMTparser::getPerBound
+		/**
+		@brief get the period bound of an inputs
+		@param[in] p_lower bound
+		@param[in] p_upper bound
+		@param[in] p_constants constants
+		@return a filled up bound.
+		*/
+		Core::FMTperbounds getPerBound(const std::string& p_lower,
+			const std::string& p_upper,
+			const Core::FMTconstants& p_constants) const;
+		// DocString: FMTparser::setPeriodWithBounds
+		/**
+		@brief set periods to a spec.
+		@param[out] The spec
+		@param[in] period lower
+		@param[in] period upper
+		@param[in] the constants
+		@return true if set else false.
+		*/
+		void setPeriodWithBounds(Core::FMTspec& p_spec,
+			const std::string& p_lower,
+			const std::string& p_upper,
+			const Core::FMTconstants& p_constants) const;
+		// DocString: FMTparser::setPeriods
+		/**
+		@brief set periods to a spec.
+		@param[out] The spec
+		@param[in] the period string parsed
+		@param[in] the constants
+		@return true if set else false.
+		*/
+		bool setPeriods(Core::FMTspec& p_spec,
+			const std::string& p_periods,
+			const Core::FMTconstants& p_constants) const;
     public:
 		// DocString: FMTparser::rxseparator
 		///A regex for splitting general string.

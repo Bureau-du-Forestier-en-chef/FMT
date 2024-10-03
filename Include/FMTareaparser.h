@@ -26,6 +26,9 @@ namespace Core
 	class FMTdevelopment;
 	class FMTactualdevelopment;
 	class FMTGCBMtransition;
+	class FMTmask;
+	template<typename T>
+	class FMTlist;
 }
 namespace Graph
 {
@@ -261,6 +264,50 @@ class FMTEXPORT FMTareaparser : public FMTparser
 		// DocString: FMTareaparser::rxcleanarea
 		///This regex is used to capture the information kept in the .are section.
         const static boost::regex rxcleanarea;
+		// DocString: FMTareaparser::m_RxExclude
+		///To capture the exclude keyword
+		const static boost::regex m_RxExclude;
+		// DocString: FMTareaparser::m_RxExcludeSpec
+		///To capture the line of the exclude
+		const static boost::regex m_RxExcludeSpec;
+		// DocString: FMTareaparser::_isExclude
+		/**
+		@brief test if we got an exclude
+		@param[in] line read
+		@return true if got exclude
+		*/
+		bool _isExclude(const std::string& p_line) const;
+		// DocString: FMTareaparser::_getExcludeValue
+		/**
+		@brief get the excluded line Value
+		@param[in] line read
+		@return a non empty line if something to exclude
+		*/
+		std::string _getExcludeValue(const std::string& p_line) const;
+		// DocString: FMTareaparser::_getExcludedSpec
+		/**
+		@brief get a mask n spec of the excluded line
+		@param[in] the themes
+		@param[in] the constants
+		@param[in] the excluded line
+		@return a mask and spec.
+		*/
+		std::pair<Core::FMTmask, Core::FMTspec> _getExcludedSpec(const std::vector<Core::FMTtheme>& p_themes,
+																const Core::FMTconstants& p_constants,
+																const std::string& p_value) const;
+		// DocString: FMTareaparser::_gotNewExclude
+		/**
+		@brief get a mask n spec of the excluded line and add it to the FMTlist
+		@param[in] the themes
+		@param[in] the constants
+		@param[in] the excluded line
+		@param[out] an FMTlist of spec...
+		@return true if added a new one or got an exclude seciton
+		*/
+		bool _gotNewExclude(const std::vector<Core::FMTtheme>& p_themes,
+			const Core::FMTconstants& p_constants,
+			const std::string& p_value,
+			Core::FMTlist<Core::FMTspec>& p_list) const;
 		// DocString: FMTareaparser::getperiodpathname
 		/**
 		Giving a folder (location) and a (period) and a (name)
@@ -376,7 +423,7 @@ class FMTEXPORT FMTareaparser : public FMTparser
 			OGRLayer* subsetlayer(OGRLayer*layer, const std::vector<Core::FMTtheme>& themes,
 								const std::string& agefield, const std::string& areafield) const;
 	#endif
-    
+			
     };
 }
 #endif // FMTareaparser_H_INCLUDED

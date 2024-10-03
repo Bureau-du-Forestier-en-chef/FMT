@@ -39,6 +39,11 @@ namespace Parser{
 
 const boost::regex FMTareaparser::rxcleanarea = boost::regex("^((\\*A[A]*)([^|]*)(_lock)([^0-9]*)([0-9]*))|((\\*A[A]*)([^|]*)([|])([^|]*)([|])([^0-9]*)(.+))|((\\*A[A]*)(([^|]*)([|])([^|]*)([|])))|(\\*A[A]*)(.+)", boost::regex_constants::ECMAScript | boost::regex_constants::icase);
 
+const boost::regex FMTareaparser::m_RxExclude = boost::regex("^(\\*EXCLUDE)((.+)|())", boost::regex_constants::ECMAScript | boost::regex_constants::icase);
+
+const boost::regex FMTareaparser::m_RxExcludeSpec = boost::regex("^(.+)([\\s\\t]*)(\\d.+)", boost::regex_constants::ECMAScript | boost::regex_constants::icase);
+
+
 
 #ifdef FMTWITHGDAL
 
@@ -2062,6 +2067,73 @@ const boost::regex FMTareaparser::rxcleanarea = boost::regex("^((\\*A[A]*)([^|]*
 			}
 
 
+			bool FMTareaparser::_isExclude(const std::string& p_line) const
+				{
+				bool gotExclude = false;
+				boost::smatch theMatch;
+				if (boost::regex_search(p_line, theMatch, m_RxExclude))
+					{
+					gotExclude = !std::string(theMatch[1]).empty();
+					}
+				return gotExclude;
+				}
+
+			std::string FMTareaparser::_getExcludeValue(const std::string& p_line) const
+				{
+				boost::smatch theMatch;
+				std::string excludeLine(p_line);
+				if (boost::regex_search(p_line, theMatch, m_RxExclude))
+					{
+					excludeLine = std::string(theMatch[3]);
+					}
+				boost::trim(excludeLine);
+				return excludeLine;
+				}
+
+			std::pair<Core::FMTmask, Core::FMTspec> FMTareaparser::_getExcludedSpec(const std::vector<Core::FMTtheme>& p_themes, 
+																					const Core::FMTconstants& p_constants,
+																					const std::string& p_value) const
+				{
+				std::pair<Core::FMTmask, Core::FMTspec>returned;
+				boost::smatch theMatch;
+				if (boost::regex_search(p_value, theMatch, m_RxExcludeSpec))
+					{
+					std::string mask = std::string(theMatch[1]);
+					boost::trim(mask);
+					Core::FMTmask NEW_MASKS(mask, p_themes);
+					Core::FMTspec newSpec;
+					const std::string PERIODS = std::string(theMatch[3]);
+					if (!setPeriods(newSpec, PERIODS, p_constants))
+						{
+						_exhandler->raise(Exception::FMTexc::FMTunboundedperiod
+							, " at line " + std::to_string(_line), "FMTareaparser::_getExcludedSpec", __LINE__, __FILE__, _section);
+						}
+					returned = std::pair<Core::FMTmask, Core::FMTspec>(NEW_MASKS, newSpec);
+					}
+				return returned;
+				}
+
+			bool FMTareaparser::_gotNewExclude(const std::vector<Core::FMTtheme>& p_themes,
+				const Core::FMTconstants& p_constants,
+				const std::string& p_value,
+				Core::FMTlist<Core::FMTspec>& p_list) const
+			{
+				bool gotSomething = false;
+				if (_isExclude(p_value))
+					{
+					gotSomething = true;
+					}
+				const std::string CLEANED_LINE = _getExcludeValue(p_value);
+				if (!CLEANED_LINE.empty())
+					{
+					const std::pair<Core::FMTmask, Core::FMTspec> NEW_SPEC = _getExcludedSpec(p_themes, p_constants, CLEANED_LINE);
+					p_list.push_back(NEW_SPEC.first, NEW_SPEC.second);
+					gotSomething = true;
+						}
+				return gotSomething;
+			}
+
+
 			std::vector<Core::FMTactualdevelopment>FMTareaparser::read(const std::vector<Core::FMTtheme>& themes, const Core::FMTconstants& constants,const std::string& location)
 			{
 				std::vector<Core::FMTactualdevelopment>areas;
@@ -2076,6 +2148,7 @@ const boost::regex FMTareaparser::rxcleanarea = boost::regex("^((\\*A[A]*)([^|]*
 						{
 							bool inactualdevs = false;
 							boost::unordered_map<Core::FMTdevelopment,size_t>devsindex;
+							Core::FMTlist<Core::FMTspec>Excluded;
 							while (areastream.is_open())
 							{
 								const std::string line = FMTparser::getcleanlinewfor(areastream, themes, constants);
@@ -2119,25 +2192,44 @@ const boost::regex FMTareaparser::rxcleanarea = boost::regex("^((\\*A[A]*)([^|]*
 												lock = getnum<int>(strlock, constants);
 											}
 											const Core::FMTactualdevelopment actualdevelopment(Core::FMTmask(mask, themes), age, lock, area);
-											//Weird non unique area section...
-											boost::unordered_map<Core::FMTdevelopment, size_t>::const_iterator hashit = devsindex.find(actualdevelopment);
-											if (devsindex.find(actualdevelopment) == devsindex.end())
+											bool excludeDev = false;
+											if (!Excluded.empty())
+												{
+												std::vector<const Core::FMTspec*> SPECIFICATIONS = Excluded.findsets(actualdevelopment.getmask());
+												size_t i = 0;
+												while (!excludeDev && i < SPECIFICATIONS.size())
+													{
+													if (SPECIFICATIONS[i]->getperiodlowerbound()<=1)
+														{
+														excludeDev = true;
+														}
+													++i;
+													}
+												}
+											if (!excludeDev)
 											{
-												devsindex[actualdevelopment] = areas.size();
-												//actualdevelopment.passinobject(*this);
-												areas.push_back(actualdevelopment);
+												//Weird non unique area section...
+												boost::unordered_map<Core::FMTdevelopment, size_t>::const_iterator hashit = devsindex.find(actualdevelopment);
+												if (devsindex.find(actualdevelopment) == devsindex.end())
+												{
+													devsindex[actualdevelopment] = areas.size();
+													//actualdevelopment.passinobject(*this);
+													areas.push_back(actualdevelopment);
+												}
+												else {
+													areas[hashit->second].setarea(areas[hashit->second].getarea() + area);
+												}
 											}
-											else {
-												areas[hashit->second].setarea(areas[hashit->second].getarea() + area);
-											}
+											
 										}
 										else {
 											got0area = true;
 										}
 
-									}else {
+									}else if(!_gotNewExclude(themes,constants, line, Excluded))
+										{ 
 										_exhandler->raise(Exception::FMTexc::FMTinvalid_maskrange
-											, " at line " + std::to_string(_line),"FMTareaparser::read", __LINE__, __FILE__, _section);
+											, " at line " + std::to_string(_line), "FMTareaparser::read", __LINE__, __FILE__, _section);
 										}
 								}
 								else if (!areas.empty() && _comment.empty())

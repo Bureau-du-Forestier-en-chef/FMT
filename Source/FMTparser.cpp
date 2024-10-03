@@ -53,6 +53,8 @@ namespace Parser
 	const boost::regex Parser::FMTparser::rxoperators = boost::regex("([^\\+\\-\\/\\*]*)([\\+\\-\\/\\*]*)", boost::regex_constants::icase);
 	const boost::regex Parser::FMTparser::rxprimary = boost::regex("^([^\\[]*)(\\[)([^\\]]*)(.+)");
 	const boost::regex Parser::FMTparser::rxseparator = boost::regex("([\\s\\t]*)([^\\s\\t]*)");
+	const boost::regex Parser::FMTparser::m_rxperiods = boost::regex("^([\\s\\t]*)((([\\d]*|#.+)(\\.\\.)(#.+|_LENGTH|[\\d]*)|(_LENGTH))|(#.+|[\\d]*))", boost::regex_constants::ECMAScript | boost::regex_constants::icase);
+
 
 
 	std::map<Core::FMTsection, std::string>FMTparser::primary_sections = std::map<Core::FMTsection, std::string>();
@@ -1082,6 +1084,70 @@ bool FMTparser::isnum(std::string value) const
 	//boost::erase_all(value, ",");
 	return boost::regex_match(value,rxnumber);
     }
+
+
+Core::FMTperbounds FMTparser::getPerBound(const std::string& p_lower,
+	const std::string& p_upper,
+	const Core::FMTconstants& p_constants) const
+{
+	Core::FMTperbounds bound;
+	try {
+
+		int startPeriod = std::numeric_limits<int>::max();
+		if (p_lower != "_LENGTH")
+		{
+			startPeriod = getnum<int>(p_lower, p_constants);
+		}
+		int stopPeriod = startPeriod;
+		if (!p_upper.empty() && p_upper != "_LENGTH")
+		{
+			stopPeriod = getnum<int>(p_upper, p_constants);
+		}
+		else if (p_upper == "_LENGTH")
+		{
+			stopPeriod = std::numeric_limits<int>::max();
+		}
+		bound = Core::FMTperbounds(Core::FMTsection::Optimize, stopPeriod, startPeriod);
+	}
+	catch (...)
+	{
+		_exhandler->raisefromcatch("",
+			"FMTparser::getPerBound", __LINE__, __FILE__, _section);
+	}
+	return bound;
+}
+
+void FMTparser::setPeriodWithBounds(Core::FMTspec& p_spec,
+	const std::string& p_lower,
+	const std::string& p_upper,
+	const Core::FMTconstants& p_constants) const
+{
+	const Core::FMTperbounds PERIOD_BOUND = getPerBound(p_lower, p_upper, p_constants);
+	p_spec.setbounds(PERIOD_BOUND);
+}
+
+bool FMTparser::setPeriods(Core::FMTspec& p_spec,
+	const std::string& p_periods,
+	const Core::FMTconstants& p_constants) const
+{
+	bool isSet = false;
+	try {
+		boost::smatch theMatch;
+		if (boost::regex_search(p_periods, theMatch, m_rxperiods))
+		{
+			const std::string JUST_LENGTH = std::string(theMatch[7]);
+			const std::string LOWER_PERIOD = std::string(theMatch[4]) + std::string(theMatch[8]) + JUST_LENGTH;
+			const std::string UPPER_PERIOD = std::string(theMatch[6]) + JUST_LENGTH;
+			setPeriodWithBounds(p_spec, LOWER_PERIOD, UPPER_PERIOD, p_constants);
+			isSet = true;
+		}
+	}catch (...)
+	{
+		_exhandler->raisefromcatch("for spec " + std::string(p_spec),
+			"FMTparser::setPeriods", __LINE__, __FILE__, _section);
+	}
+	return isSet;
+}
 
 bool FMTparser::isnum(const std::string& value, const Core::FMTconstants& constant, bool throwerror) const
 {
