@@ -220,6 +220,35 @@ namespace Parallel
 	return std::unique_ptr<FMTtask>(nullptr);
 	}
 
+	void FMTreplanningtask::_writeSchedule(const std::unique_ptr<Models::FMTmodel>& p_model,
+										int p_ReportingPeriod, int p_ModelPeriod) const
+	{
+		try {
+			const std::string SEQ_NAME = m_primaryName + "._seq";
+			const std::string replicateFolder = "scenarios/replicat" + std::to_string(getiteration());
+			boost::filesystem::create_directories(m_outputlocation + '/' + replicateFolder);
+			const std::string SCHEDULE_PATH = m_outputlocation + '/' + replicateFolder + "/" + SEQ_NAME;
+			bool appendExistingSchedule = true;
+			if (p_model->getname() == stochastic->getname() && p_ReportingPeriod == 1)
+			{
+				// On v�rifie si le fichier existe d�ja et sinon on mets notre append a false afin de cr�er le fichier et le header
+				if (!boost::filesystem::exists(boost::filesystem::path(SCHEDULE_PATH)) || m_writeSchedule)
+				{
+					appendExistingSchedule = false;
+				}
+			}
+			std::vector<Core::FMTschedule> scheduleList(1);
+			scheduleList[0] = p_model->getsolution(p_ModelPeriod, true);
+			scheduleList[0].setperiod(p_ReportingPeriod);
+			resultswriter->writeSchedules(SCHEDULE_PATH, scheduleList, appendExistingSchedule);
+
+		}catch (...)
+			{
+			_exhandler->raisefromcatch("", "FMTreplanningtask::_writeSchedule", __LINE__, __FILE__);
+			}
+
+	}
+
 	void FMTreplanningtask::writeresults(const std::string& modelname, const int& modellength,
 		const std::unique_ptr<Models::FMTmodel>& modelptr, const int& replanningperiod, bool onlyfirstperiod)
 	{		//modelname = "trategique", modellenght = 20, modelptr ok, replanningpPeriod = 1,  onlyFirst = false
@@ -229,33 +258,6 @@ namespace Parallel
 				int modelsize = modellength;
 				int firstperiod = dynamicarea.begin()->getperiod() + 1;
 				int lastperiod = firstperiod;
-				// Extraire la partie apr�s le dernier s�parateur
-				std::string seqName;
-				//m_writeSchedule ? seqName = m_primaryName + "_Replicate" + std::to_string(getiteration()) + ".seq" : seqName = m_primaryName + ".seq";
-				std::string schedulePath;
-				if (m_writeSchedule && getiteration() >= 1)
-				{
-					// Assigner le nom du fichier de sortie dans scenario/
-					seqName = m_primaryName + "._seq";
-					const std::string replicateFolder = "scenarios/replicat" + std::to_string(getiteration());
-					boost::filesystem::create_directories(m_outputlocation + '/' + replicateFolder);
-					schedulePath = m_outputlocation + '/' + replicateFolder + "/" + seqName;
-				}
-				else 
-				{
-					seqName = m_primaryName + ".seq";
-					schedulePath = m_outputlocation + '/' + seqName;
-				}
- 				std::vector<Core::FMTschedule> scheduleList;
-				bool appendExistingSchedule = true;
-				/*if (!modelptr)//infeasible!
-				{
-					//put NAN everywhere the size of 
-					modelsize = (replanningperiods - replanningperiod) + 1;
-					onlyfirstperiod = false;
-					std::cout << onlyfirstperiod << std::endl;
-					firstperiod = replanningperiod;
-				}*/
 				if (!onlyfirstperiod)
 				{
 					lastperiod += modelsize;
@@ -282,30 +284,10 @@ namespace Parallel
 					reportingLastPeriod = replanningperiods;
 				}
 
-				if (modelptr && (modelname == stochastic->getname() || modelname == local->getname()))
-				{
-					if (modelname == stochastic->getname() && replanningperiod == 1)
+				if (m_writeSchedule && modelptr && (modelname == stochastic->getname() || modelname == local->getname()))
 					{
-						// On v�rifie si le fichier existe d�ja et sinon on mets notre append a false afin de cr�er le fichier et le header
-						if(!boost::filesystem::exists(boost::filesystem::path(schedulePath)) || m_writeSchedule)
-						{
-							appendExistingSchedule = false;
-						}
+					_writeSchedule(modelptr, reportingFirstPeriod, firstperiod);
 					}
-					std::vector<Core::FMTschedule> scheduleList;
-					scheduleList.reserve(1);
-					// for loop / getSolution schedule in vector ajuster resultwriter afin de scheduleParser::write
-					int schedulePeriod = reportingFirstPeriod;
-					for (int i = firstperiod; i <= lastperiod; ++i)
-					{
-						Core::FMTschedule schedule = modelptr->getsolution(i, true);
-						schedule.setperiod(schedulePeriod);
-						scheduleList.push_back(schedule);
-						++schedulePeriod;
-					}
-					resultswriter->writeSchedules(schedulePath, scheduleList, appendExistingSchedule);
-				}
-				
 				resultswriter->write(modelname, results, reportingFirstPeriod, reportingLastPeriod, getiteration());
 			}
 		}catch (...)

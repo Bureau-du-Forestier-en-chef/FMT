@@ -199,6 +199,15 @@ namespace Parallel
 		*/
 		void writeresults(const std::string& modelname, const int& modellength,
 			const std::unique_ptr<Models::FMTmodel>& modelptr, const int& replanningperiod, bool onlyfirstperiod = false);
+		// DocString: FMTreplanningtask::_writeSchedule
+		/**
+		@biref write down the schedule for the stochastic and tactic
+		@param[in] p_model the model
+		@param[in] p_ReportingPeriod
+		@param[in] p_ModelPeriod the models period
+		*/
+		void _writeSchedule(const std::unique_ptr<Models::FMTmodel>& p_model,
+							int p_ReportingPeriod, int p_ModelPeriod) const;
 		// DocString: FMTreplanningtask::getiteration
 		/**
 		Get the actual iteration done by the task (front in the queue)

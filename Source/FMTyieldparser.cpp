@@ -401,7 +401,8 @@ std::unique_ptr<Core::FMTyieldmodel>FMTyieldparser::readyieldmodel(const std::st
 							  "FMTyieldparser::readyieldmodel", __LINE__, __FILE__, _section);
 		}
 		std::ifstream jsonstream(modeljson.string());
-		if (!FMTparser::tryopening(jsonstream, modeljson.string()))
+		Parser::FMTparser yieldsParser;
+		if (!yieldsParser.tryopening(jsonstream, modeljson.string()))
 		{
 			_exhandler->raise(Exception::FMTunhandlederror,
 							  modeljson.string(),
