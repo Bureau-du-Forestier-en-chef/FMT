@@ -2936,9 +2936,9 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 							const FMTvertex_descriptor& DESCRIPTOR = actives.front();
 							//const FMTvertex_descriptor DESCRIPTOR = actives.back();
 							//actives.pop_back();
-							if (right_period.find(DESCRIPTOR)== right_period.end())
+							std::pair<std::unordered_set<FMTvertex_descriptor>::iterator,bool>inserted = right_period.insert(DESCRIPTOR);
+							if (inserted.second)
 							{
-								right_period.insert(DESCRIPTOR);
 								p_descriptors.push_back(DESCRIPTOR);
 								if (m_gotDeath||boost::out_degree(DESCRIPTOR, data)>1)
 									{
@@ -2960,10 +2960,9 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 										}
 									}
 							}
-							
 							actives.pop();
-							
 						}
+
 					}
 					if (p_period <= p_model.getparameter(Models::FMTintmodelparameters::LENGTH))
 					{

@@ -363,22 +363,16 @@ namespace Core {
 	{
 		double value = 0;
 		try {
-			/*if (yld == "YVR_CT_TOT")
-			{
-				*_logger << "what" << "\n";
-			}*/
 			if (_cache.inCache(request,yld))
 				{
 				return _cache.get(request, yld);
 				}
-			
-			
 			const FMTdata* cdata = &m_elements.at(yld);
-			/*std::chrono::time_point<std::chrono::high_resolution_clock>calculationStart;
+			std::chrono::time_point<std::chrono::high_resolution_clock>calculationStart;
 			if (lookat.empty())
 				{
 				calculationStart = getclock();
-				}*/
+				}
 				//bool age_only = true;
 				const std::vector<const std::string*> SOURCES = cdata->getSources();
 				const std::vector<const std::unique_ptr<FMTyieldhandler>*> SOURCES_DATA = _getData(request, SOURCES, yld);
@@ -492,7 +486,7 @@ namespace Core {
 					{
 						std::vector<const double*>VALUES = cdata->getValues();
 						size_t Id = 0;
-						for (size_t valueId = 0; valueId < SOURCES.size(); ++valueId)
+						for (size_t valueId = 0; valueId < VALUES.size(); ++valueId)
 						{
 							double theValue = 0;
 							if (VALUES[valueId] != nullptr)
@@ -723,11 +717,12 @@ namespace Core {
 				value = std::round(value * 100000000) / 100000000;
 				if (lookat.empty())//Cache only first cally
 				{
-					//const double TIME_TOOK = getduration<std::chrono::milliseconds::period>(calculationStart);
-					//if (TIME_TOOK>0.05)
-					//{
+					const double TIME_TOOK = getduration<std::chrono::milliseconds::period>(calculationStart);
+					if (TIME_TOOK>0.05)
+						{
 						_cache.set(value, request, yld);
-					//}
+						}
+
 					
 					//_cache.reserve(request);
 					

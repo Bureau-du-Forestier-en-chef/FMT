@@ -10,6 +10,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 
 #define FMT_DBL_TOLERANCE 1.e-08
 #define FMT_STR_SEPARATOR "\t "
+#include <string>
 
 namespace Core
 {
@@ -80,6 +81,9 @@ enum FMTotar
     };
 
 const char* FMTsection_str(FMTsection section);
+
+bool lessThenYield(const std::string& p_first, const std::string& p_second) noexcept;
+bool equalYield(const std::string& p_first, const std::string& p_second) noexcept;
 
 #ifndef FMTEXPORT
 #if defined FMTSHAREDLIB && _MSC_VER

@@ -12,6 +12,8 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTyields.h"
 #include "FMTmodel.h"
 #include "FMTyieldhandler.h"
+#include <boost/dynamic_bitset.hpp>
+#include <boost/flyweight.hpp>
 
 
 
@@ -22,29 +24,61 @@ namespace Core
 	class FMTYieldDevelopment
 	{
 	public:
-		FMTYieldDevelopment(const FMTdevelopment& p_dev, const std::string& p_yield) :
-			m_dev(p_dev),
+		FMTYieldDevelopment(int p_age,int p_period,
+			const boost::dynamic_bitset<uint8_t>& p_mask, const std::string& p_yield) :
+			m_age(static_cast<uint8_t>(p_age)), m_period(static_cast<uint8_t>(p_period)),
+			m_resumeMask(p_mask),
 			m_yield(p_yield)
 		{
 
 		}
 		bool operator == (const FMTYieldDevelopment& p_yieldDev) const
 		{
-			return p_yieldDev.m_yield == m_yield && p_yieldDev.m_dev == m_dev;
+			return	(p_yieldDev.m_age == m_age &&
+				p_yieldDev.m_period == m_period &&
+				p_yieldDev.m_resumeMask == m_resumeMask &&
+				equalYield(m_yield,p_yieldDev.m_yield));
 		}
+
+		bool operator < (const FMTYieldDevelopment& p_yieldDev) const
+			{
+			if (m_age < p_yieldDev.m_age)
+				return true;
+			if (p_yieldDev.m_age < m_age)
+				return false;
+			if (m_period < p_yieldDev.m_period)
+				return true;
+			if (p_yieldDev.m_period < m_period)
+				return false;
+			if (m_resumeMask < p_yieldDev.m_resumeMask)
+				return true;
+			if (p_yieldDev.m_resumeMask < m_resumeMask)
+				return false;
+			if (lessThenYield(m_yield, p_yieldDev.m_yield))
+				return true;
+			if (lessThenYield(p_yieldDev.m_yield,m_yield))
+				return false;
+			return false;
+			}
+
+
 		size_t hash() const
 		{
 			size_t seed = 0;
-			boost::hash_combine(seed, m_dev.hash());
+			boost::hash_combine(seed, m_age);
+			boost::hash_combine(seed, m_period);
+			boost::hash_combine(seed, m_resumeMask);
 			boost::hash_combine(seed, boost::hash<std::string>()(m_yield));
 			return seed;
 		}
 		int getPeriod() const
 			{
-			return m_dev.getperiod();
+			return static_cast<int>(m_period);
 			}
 	private:
-		FMTdevelopment m_dev;
+		uint8_t m_age;
+		uint8_t m_period;
+		boost::dynamic_bitset<uint8_t> m_resumeMask;
 		std::string m_yield;
 
 	};
@@ -105,10 +139,19 @@ namespace Core
 			});
 		return value;
 		}
+
+	void FMTYieldsCache::_ClearIfTooBig()
+		{
+		if (((sizeof(FMTYieldDevelopment) * m_cache->size()) / 1073741824) > 10) //delete larger then 20 Go
+			{
+			m_cache->clear();
+			}
+		}
 	void FMTYieldsCache::set(double p_value,
 		const FMTyieldrequest& p_request,
 		const std::string& p_yield)
 		{
+		_ClearIfTooBig();
 		const std::pair<FMTYieldDevelopment, double> DATA(_getKey(p_request, p_yield), p_value);
 		m_cache->insert(DATA);
 		}
@@ -117,7 +160,7 @@ namespace Core
 									const std::string& p_yield) const
 		{
 		const Core::FMTdevelopment& REF_DEV = p_request.getdevelopment();
-		const FMTYieldDevelopment KEY(Core::FMTdevelopment(p_request.getresumemask(), REF_DEV.getage(), 0, REF_DEV.getperiod()), p_yield);
+		const FMTYieldDevelopment KEY(REF_DEV.getage(), REF_DEV.getperiod(),p_request.getresumemask().getbitsetreference(), p_yield);
 		return KEY;
 		}
 

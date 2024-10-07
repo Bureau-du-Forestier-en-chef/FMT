@@ -32,11 +32,11 @@ int main(int argc, char *argv[])
 	else
 	{
 		primlocation = "D:/CC_modele_feu/WS_CC/Feux_2023_ouest_V01.pri";
-		length = 6;
-		replicate = 6;
+		length = 20;
+		replicate = 5;
 		allscenarios.push_back("strategique_Minimisation_Risque_historique"); //Pour test le lancé d'erreur
 		//allscenarios.push_back("strategique");
-		allscenarios.push_back("stochastique_Histo_3pics");
+		allscenarios.push_back("stochastique_CC_2pics");
 		//allscenarios.push_back("tactique");
 		allscenarios.push_back("tactique_Minimisation_Risque_historique");
 	}
@@ -77,7 +77,7 @@ int main(int argc, char *argv[])
 	#endif
 	local.setparameter(Models::FMTintmodelparameters::LENGTH, 1);
 	local.setparameter(Models::FMTintmodelparameters::NUMBER_OF_THREADS,1);
-	std::vector<std::string>OutputtoLookFor = { "OVOLTOTREC","ORISQUE", "OVOL_UA_TOTREC" ,"OSUPBRULER_CORRIGER" ,
+	std::vector<std::string>OutputtoLookFor = { "OVOLTOTREC","ORISQUE", "OVOL_UA_TOTREC" ,"OSUPBRULER_ORI","OSUPBRULER_CORRIGER" ,
 												"SUPERFICIE_RECUP_FEU" ,"OSUPPLEP_FEU23_UA","OSUPPL_FEU_POSTRECUP",
 													"OSUPTBE" , "SUPERFICIE_RECUP_TBE",
 												"OCATTBE_C1" ,"OCATTBE_C2" ,"OCATTBE_C3",

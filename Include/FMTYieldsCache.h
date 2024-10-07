@@ -38,6 +38,7 @@ namespace Core
 			static std::unique_ptr<boost::concurrent_flat_map<FMTYieldDevelopment,double>> m_cache;
 			FMTYieldDevelopment _getKey(const FMTyieldrequest& p_request,
 										const std::string& p_yield) const;
+			void _ClearIfTooBig();
 			
 		};
 	}
