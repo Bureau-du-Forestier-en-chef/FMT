@@ -152,7 +152,7 @@ void FMTdata::set(const double& value, const FMTyieldrequest& request,const bool
 
 std::vector<const std::string*> FMTdata::getSources() const
 	{
-	std::vector<std::string const*>outSources;
+	std::vector<const std::string*>outSources;
 	if (ops == FMTyieldparserop::FMTequation)
 	{
 		outSources.reserve(source.size());

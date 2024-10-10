@@ -14,6 +14,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTyieldhandler.h"
 #include <boost/dynamic_bitset.hpp>
 #include <boost/flyweight.hpp>
+#include <FMTobject.h>
 
 
 
@@ -32,36 +33,14 @@ namespace Core
 		{
 
 		}
+		
 		bool operator == (const FMTYieldDevelopment& p_yieldDev) const
 		{
 			return	(p_yieldDev.m_age == m_age &&
 				p_yieldDev.m_period == m_period &&
 				p_yieldDev.m_resumeMask == m_resumeMask &&
-				equalYield(m_yield,p_yieldDev.m_yield));
+				_equalYield(m_yield,p_yieldDev.m_yield));
 		}
-
-		bool operator < (const FMTYieldDevelopment& p_yieldDev) const
-			{
-			if (m_age < p_yieldDev.m_age)
-				return true;
-			if (p_yieldDev.m_age < m_age)
-				return false;
-			if (m_period < p_yieldDev.m_period)
-				return true;
-			if (p_yieldDev.m_period < m_period)
-				return false;
-			if (m_resumeMask < p_yieldDev.m_resumeMask)
-				return true;
-			if (p_yieldDev.m_resumeMask < m_resumeMask)
-				return false;
-			if (lessThenYield(m_yield, p_yieldDev.m_yield))
-				return true;
-			if (lessThenYield(p_yieldDev.m_yield,m_yield))
-				return false;
-			return false;
-			}
-
-
 		size_t hash() const
 		{
 			size_t seed = 0;
@@ -80,6 +59,22 @@ namespace Core
 		uint8_t m_period;
 		boost::dynamic_bitset<uint8_t> m_resumeMask;
 		std::string m_yield;
+		bool _equalYield(const std::string& p_first, const std::string& p_second) const noexcept
+		{
+			const size_t FIRST_LENGTH = p_first.length();
+			const size_t SECOND_LENGTH = p_second.length();
+			bool equal = false;
+			if (FIRST_LENGTH == SECOND_LENGTH)
+			{
+				size_t i = FIRST_LENGTH;
+				while (!equal && i > 0)
+				{
+					--i;
+					equal = (p_first[i] == p_second[i]);
+				}
+			}
+			return equal;
+		}
 
 	};
 }
@@ -142,7 +137,8 @@ namespace Core
 
 	void FMTYieldsCache::_ClearIfTooBig()
 		{
-		if (((sizeof(FMTYieldDevelopment) * m_cache->size()) / 1073741824) > 10) //delete larger then 20 Go
+		if ((m_cache->size() % 1000) == 0 &&
+			(Core::FMTobject::getavailablememory() / 1073741824) < 10) //If less then 10 Go then delete
 			{
 			m_cache->clear();
 			}
