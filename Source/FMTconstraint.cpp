@@ -1362,6 +1362,7 @@ namespace Core
 				}
 				yields.push_back(defaultmask, defaulthandler);
 				yields.shrink();
+				yields.update();
 			}
 			catch (...)
 			{

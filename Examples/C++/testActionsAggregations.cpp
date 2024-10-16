@@ -23,15 +23,35 @@ int main(int argc, char* argv[])
 
 	if (Version::FMTversion().hasfeature("OSI"))
 	{
-		const std::string vals = argv[1];
-		std::vector<std::string>results;
-		boost::split(results, vals, boost::is_any_of("|"));
-		const std::string PRIMARY_LOCATION =  results.at(0);
-		const std::string CARTE = results.at(1);
-		const std::string SCENARIO = results.at(2);
+		std::string PRIMARY_LOCATION;
+		std::string CARTE;
+		std::string SCENARIO;
 		std::vector<std::string>AGGREGATES;
-		boost::split(AGGREGATES, argv[2], boost::is_any_of("|"));
-		const std::vector<std::string>ORDERING = {};
+		std::vector<std::string>ORDERING;
+		if (argc > 1)
+		{
+			const std::string vals = argv[1];
+			std::vector<std::string>results;
+			boost::split(results, vals, boost::is_any_of("|"));
+			PRIMARY_LOCATION = results.at(0);
+			CARTE = results.at(1);
+			SCENARIO = results.at(2);
+			boost::split(AGGREGATES, argv[2], boost::is_any_of("|"));
+			const std::vector<std::string>ORDERING = {};
+		}else {
+			PRIMARY_LOCATION = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/Interne/FMT/Entretien/Modeles_test/Prototype_Dec2023_TBE/PC_7002071_UA08152_FINAL.pri";
+			CARTE = "Carte/PC_7002071_UA_U08152.shp";
+			SCENARIO = "20_Regl_prov";
+			AGGREGATES = { "REGAFIN","REGAPAR","REGAEDU","REGAREG",
+						"ATBEMORT","ATBERETARD","ASNAT","AECHEC" };
+			ORDERING = { "ACPIP","ACT","ADEGPL","APL","ASNAT","ACPIL",
+						"ACFP","AEDUPL","APLBA","AECHEC","ACPFORT","ACTPL",
+						"ANET","APLIN","_DEATH","ACPFAIBL","ACPPTM","ADEGNAT",
+						"AREG","AEC","ACRV","AEDUNAT","ASCA","AEC2","ACRS","AEPC",
+						"APLLI","AEC3","APLCC","ACJ","ACPJ","ACPROG","ACA","ACA2","ACP" };
+			}
+
+		
 		/*const std::string PRIMARY_LOCATION = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/Interne/FMT/Entretien/Modeles_test/Prototype_Dec2023_TBE/PC_7002071_UA08152_FINAL.pri";
 		const std::string CARTE = "Carte/PC_7002071_UA_U08152.shp";
 		const std::string SCENARIO = "20_Regl_prov";

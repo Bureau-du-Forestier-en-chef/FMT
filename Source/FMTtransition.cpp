@@ -186,14 +186,14 @@ const FMTfork* FMTtransition::getfork(const Core::FMTdevelopment& developement,c
     {
 	try{
 	const Core::FMTyieldrequest& request = developement.getyieldrequest();
-    for(const FMTfork* fork : this->findsets(developement.getmask()))
+    for(const FMTtransition::const_iterator fork : this->findsets(developement.getmask()))
        {
-		if (fork->allowwithoutyield(developement.getperiod(), developement.getage(), developement.getlock()))
+		if (fork->second.allowwithoutyield(developement.getperiod(), developement.getage(), developement.getlock()))
 			{
-			const std::vector<FMTyldbounds>&bounds = fork->getyldbounds();
+			const std::vector<FMTyldbounds>&bounds = fork->second.getyldbounds();
 			size_t bid = 0;
 			bool usefork = true;
-			for (const std::string& yldname : fork->getylds())
+			for (const std::string& yldname : fork->second.getylds())
 			{
 				if (bounds.at(bid).out(ylds.get(request,yldname)))
 					{
@@ -204,7 +204,7 @@ const FMTfork* FMTtransition::getfork(const Core::FMTdevelopment& developement,c
 			}
 			if (usefork)
 				{
-				return fork;
+				return &fork->second;
 				}
 			}
         }

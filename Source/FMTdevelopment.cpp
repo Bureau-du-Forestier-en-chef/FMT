@@ -168,9 +168,9 @@ namespace Core{
 			if (worthtestingoperability(action))
 				{
 				
-				for (const FMTspec* spec : action.findsets(mask))
+				for (const FMTaction::const_iterator spec: action.findsets(mask))
 					{
-					if (is(*spec, ylds,graphyieldrequest))
+					if (is(spec->second, ylds,graphyieldrequest))
 						{
 						return true;
 						}

@@ -561,6 +561,7 @@ FMTaction FMTaction::presolve(const FMTmaskfilter& filter,
 		_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,"for action "+this->getname(),
 			"FMTaction::presolve", __LINE__, __FILE__, Core::FMTsection::Action);
 		}
+	return newaction;
 	}
 
 }

@@ -334,7 +334,7 @@ namespace Models
 			{
 				const bool DOES_NOT_GROW = (ACTION.getname() == "_DEATH");
 				std::queue< Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor>toGrow;
-				const size_t MAX_SPIN = 10; area.size() * 2;
+				const size_t MAX_SPIN = 10; //area.size() * 2;
 				size_t visit = 0;
 				while (!actionsOutputs.at(actionId).empty() && visit < MAX_SPIN)//Keep on spinning if you havent reach the target?
 				{

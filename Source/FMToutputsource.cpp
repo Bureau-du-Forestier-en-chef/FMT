@@ -451,7 +451,7 @@ bool FMToutputsource::use(const FMTdevelopment& development, const FMTyields& yl
 std::string FMToutputsource::trimDouble(const std::string& string_number)
 {
 	std::string trimmed = string_number;
-	for (int i = string_number.size()-1; i > 0; i--)
+	for (int i = static_cast<int>(string_number.size())-1; i > 0; i--)
 	{
 		if(trimmed[i] == '0')
 		{

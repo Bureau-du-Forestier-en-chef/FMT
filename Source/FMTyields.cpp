@@ -50,11 +50,11 @@ namespace Core{
 
 
 
-FMTyields::FMTyields():FMTlist<std::unique_ptr<FMTyieldhandler>>(), yieldpresence()
+FMTyields::FMTyields():FMTlist<std::unique_ptr<FMTyieldhandler>>(), m_yieldsLocations()
         {
-		updateyieldpresence();
+		_updateYieldLocations();
         }
-    FMTyields::FMTyields(const FMTyields& rhs): FMTlist<std::unique_ptr<FMTyieldhandler>>(rhs),yieldpresence(rhs.yieldpresence)
+    FMTyields::FMTyields(const FMTyields& rhs): FMTlist<std::unique_ptr<FMTyieldhandler>>(rhs), m_yieldsLocations(rhs.m_yieldsLocations)
         {
 
         }
@@ -62,7 +62,7 @@ FMTyields::FMTyields():FMTlist<std::unique_ptr<FMTyieldhandler>>(), yieldpresenc
 	void FMTyields::swap(FMTyields& rhs)
 		{
 		FMTlist<std::unique_ptr<FMTyieldhandler>>::swap(rhs);
-		yieldpresence.swap(rhs.yieldpresence);
+		m_yieldsLocations.swap(rhs.m_yieldsLocations);
 		}
 
     FMTyields& FMTyields::operator = (const FMTyields& rhs)
@@ -70,7 +70,7 @@ FMTyields::FMTyields():FMTlist<std::unique_ptr<FMTyieldhandler>>(), yieldpresenc
         if(this!=&rhs)
             {
 			FMTlist<std::unique_ptr<FMTyieldhandler>>::operator = (rhs);
-			yieldpresence = rhs.yieldpresence;
+			m_yieldsLocations = rhs.m_yieldsLocations;
             }
         return *this;
         }
@@ -163,28 +163,25 @@ FMTyields::FMTyields():FMTlist<std::unique_ptr<FMTyieldhandler>>(), yieldpresenc
         }
 
 
-void FMTyields::updateyieldpresence()
+void FMTyields::_updateYieldLocations()
     {
 	try {
-		yieldpresence.clear();
-		yieldpresence[getNullYield()] = true;
-		for (const auto& handlerobj : *this)
+		m_yieldsLocations.clear();
+		m_yieldsLocations[getNullYield()] = 0;
+		size_t SIZE_OF = FMTlist::size();
+		size_t Id = 0;
+		for (const auto& handlerObj : *this)
 		{
-			for (const std::string& yldname : handlerobj.second->getyieldnames())
+			for (const std::string& yldName : handlerObj.second->getyieldnames())
 			{
-				//const FMTdata& data = handlerobj.second->at(yldname);
-				const bool nulldata = handlerobj.second->isnullyield(yldname);
-				if (yieldpresence.find(yldname) != yieldpresence.end())
-				{
-					if (!nulldata)
+				std::pair<std::unordered_map<std::string, size_t>::iterator,bool>inserted = m_yieldsLocations.insert(std::pair<std::string, size_t>(yldName, SIZE_OF));
+				if (!handlerObj.second->isnullyield(yldName)&&
+					inserted.first->second == SIZE_OF)
 					{
-						yieldpresence[yldname] = true;
+					inserted.first->second = Id;
 					}
-				}
-				else {
-					yieldpresence[yldname] = !nulldata;
-				}
 			}
+			++Id;
 		}
 	}
 	catch (...)
@@ -232,8 +229,8 @@ bool FMTyields::isyld(const std::string& value, bool fromsource) const
 	try{
 	if (!fromsource)
 	{
-		std::unordered_map<std::string, bool>::const_iterator presenceit = yieldpresence.find(value);
-		returnvalue = (presenceit != yieldpresence.end());
+		std::unordered_map<std::string, size_t>::const_iterator presenceit = m_yieldsLocations.find(value);
+		returnvalue = (presenceit != m_yieldsLocations.end());
 	}else {
 		for (const auto& handlerobj : *this)
 		{
@@ -253,15 +250,21 @@ bool FMTyields::isyld(const std::string& value, bool fromsource) const
 
 bool FMTyields::isnullyld(const std::string& value) const
 	{
-	std::unordered_map<std::string, bool>::const_iterator presenceit = yieldpresence.find(value);
-	return (presenceit == yieldpresence.end() || (presenceit != yieldpresence.end() && !presenceit->second));
+	bool gotNull = true;
+	std::unordered_map<std::string, size_t>::const_iterator presenceIt = m_yieldsLocations.find(value);
+	if (presenceIt != m_yieldsLocations.end()&&
+		presenceIt->second<FMTlist::size())
+		{
+		gotNull = false;
+		}
+	return gotNull;
 	}
 
 void FMTyields::update()
     {
 	try {
 		FMTlist<std::unique_ptr<FMTyieldhandler>>::update();
-		updateyieldpresence();
+		_updateYieldLocations();
 	}catch (...)
 		{
 		_exhandler->raisefromcatch("","FMTyields::update", __LINE__, __FILE__, Core::FMTsection::Yield);
@@ -271,7 +274,7 @@ void FMTyields::update()
 void FMTyields::reserve(const FMTyields& p_other)
 	{
 	FMTlist<std::unique_ptr<FMTyieldhandler>>::reserve(p_other);
-	yieldpresence.reserve(p_other.yieldpresence.size());
+	m_yieldsLocations.reserve(p_other.m_yieldsLocations.size());
 	}
 
 
@@ -353,18 +356,25 @@ FMTyields FMTyields::getfromfactor(const double& factor,
 double FMTyields::get(const FMTyieldrequest& request, const std::string& yld) const
 {
 	try {
-		bool gotyield = false;
+		bool gotYield = false;
 		request._updateData(*this);
-		for (const std::unique_ptr<FMTyieldhandler>* data : request.getdatas())
+		const const_iterator FIRST_IT = _getFirstSeen(yld);
+		if (FIRST_IT == end())
 		{
-			if ((*data)->containsyield(yld))
+			gotYield = true;
+		}else {
+			for (const const_iterator IT : request.getdatas())
 			{
-				return (*data)->get(yld,request);
-				gotyield = true;
-				break;
+				if (IT >= FIRST_IT &&
+					(IT->second)->containsyield(yld))
+				{
+					return (IT->second)->get(yld, request);
+					gotYield = true;
+					break;
+				}
 			}
 		}
-		if (!gotyield)
+		if (!gotYield)
 		{
 			_exhandler->raise(Exception::FMTexc::FMTmissingyield,
 				yld + " for developement " + std::string(request.getdevelopment()),
@@ -455,7 +465,7 @@ std::vector<double>FMTyields::getylds(const FMTdevelopment& dev, const FMTspec& 
 
 bool FMTyields::operator == (const FMTyields& rhs) const
 	{
-	return (yieldpresence == rhs.yieldpresence &&
+	return (m_yieldsLocations == rhs.m_yieldsLocations &&
 		FMTlist<std::unique_ptr<FMTyieldhandler>>::operator==(rhs));
 
 	}
@@ -493,6 +503,18 @@ void FMTyields::setModel(Models::FMTmodel* p_modelPtr)
 		ModelHandler->setModel(p_modelPtr);
 		}
 }
+
+FMTyields::const_iterator  FMTyields::_getFirstSeen(const std::string& p_yield) const
+	{
+	FMTyields::const_iterator Iterator = end();
+	std::unordered_map<std::string, size_t>::const_iterator it = m_yieldsLocations.find(p_yield);
+	if (it!= m_yieldsLocations.end())
+		{
+		Iterator = begin() + it->second;
+		}
+	return Iterator;
+	}
+
 
 std::vector<FMTyieldhandler*> FMTyields::gethandlers(FMTyldtype type)
 	{
@@ -564,7 +586,7 @@ int FMTyields::getmaxbase(const std::vector<const FMTyieldhandler*>& handlers)
 void FMTyields::clear()
 	{
 	FMTlist< std::unique_ptr<FMTyieldhandler>>::clear();
-	yieldpresence.clear();
+	m_yieldsLocations.clear();
 	}
 
 #include "FMTlogger.h"
@@ -667,13 +689,13 @@ int FMTyields::getage(const FMTyieldrequest& request,const FMTspec& spec) const
 		request._updateData(*this);
 		if (!request.getdatas().empty())
 		{
-			for (const std::unique_ptr<FMTyieldhandler>* data : request.getdatas())
+			for (const const_iterator data : request.getdatas())
 			{
 				for (const std::string& yldname : spec.yieldnames)
 				{
-					if ((*data)->containsyield(yldname))
+					if ((data->second)->containsyield(yldname))
 					{
-						return (*data)->getage(request, spec);
+						return (data->second)->getage(request, spec);
 					}
 				}
 				

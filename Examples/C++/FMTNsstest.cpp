@@ -11,25 +11,36 @@
 int main(int argc, char* argv[])
 {
 	Logging::FMTdefaultlogger().logstamp();
-	const std::string vals = argv[1];
-	std::vector<std::string>results;
-	boost::split(results, vals, boost::is_any_of("|"));
-	const std::string PRIMARY = results.at(0);
-	const std::string SCENARIO = results.at(1);
-	const std::string  OUTPUT = results.at(2);
-	const int PERIOD = std::stoi(results.at(3));
-	const int LENGTH = std::stoi(argv[2]);
-	double output_value = 0;
-	if (argc==4)
+	std::string PRIMARY;
+	std::string SCENARIO;
+	std::string  OUTPUT;
+	int LENGTH;
+	double OUTPUT_VALUE;
+	int PERIOD;
+	if (argc > 1)
+	{
+		const std::string vals = argv[1];
+		std::vector<std::string>results;
+		boost::split(results, vals, boost::is_any_of("|"));
+		PRIMARY = results.at(0);
+		SCENARIO = results.at(1);
+		OUTPUT = results.at(2);
+		PERIOD = std::stoi(results.at(3));
+		LENGTH = std::stoi(argv[2]);
+		if (argc == 4)
 		{
-		output_value = std::stod(argv[3]);
+			OUTPUT_VALUE = std::stod(argv[3]);
 		}
-	/*const std::string PRIMARY = "D:/FMT/Examples/Models/TWD_land/TWD_land.pri";
-	const std::string SCENARIO = "randomYield";
-	const std::string  OUTPUT = "BURNEDOPAREA";
-	const int LENGTH = 1;
-	const double OUTPUT_VALUE = 60;
-	const int PERIOD = 1;*/
+	}
+	else {
+		argc = 4;
+		PRIMARY = "D:/FMT/Examples/Models/TWD_land/TWD_land.pri";
+		SCENARIO = "DECISION";
+		OUTPUT = "UNIT_REC";
+		LENGTH = 1;
+		OUTPUT_VALUE = 60;
+		PERIOD = 5;
+	}
 	Parser::FMTmodelparser mparser;
 	std::vector<Exception::FMTexc>errors;
 	errors.push_back(Exception::FMTexc::FMTmissingyield);
@@ -66,9 +77,10 @@ int main(int argc, char* argv[])
 	}
 	
 	const double RESULT = NssModel.getoutput(sumOutput,PERIOD, Core::FMToutputlevel::totalonly).at("Total");
-	Logging::FMTdefaultlogger() << "VALUE OF "<< RESULT<<" "<< argc << "\n";
-	if (argc == 4 && std::abs(RESULT - output_value)>1)
+	Logging::FMTdefaultlogger() << "VALUE OF "<< RESULT<<" "<< OUTPUT_VALUE << "\n";
+	if (argc == 4 && std::abs(RESULT - OUTPUT_VALUE)>1)
 	{
+		Logging::FMTdefaultlogger() << "bad" << "\n";
 		Exception::FMTfreeexceptionhandler().raise(Exception::FMTexc::FMTfunctionfailed, "Wrong value",
 			"FMTNsstest", __LINE__, PRIMARY);
 	}

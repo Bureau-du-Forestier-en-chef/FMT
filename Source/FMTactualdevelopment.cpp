@@ -88,10 +88,10 @@ namespace Core
 					const int baseage = newdev.getage();
 					if(lock>0)
 					{
-						std::vector<const int *> lifespanfound = lifespans.findsets(newdev.getmask());
+						std::vector<FMTlifespans::const_iterator> lifespanfound = lifespans.findsets(newdev.getmask());
 						if(!lifespanfound.empty())
 						{
-							const int devlifespan = *lifespanfound.at(0);
+							const int devlifespan = lifespanfound.at(0)->second;
 							const int agelock = baseage+lock;
 							if(agelock >= devlifespan)
 							{

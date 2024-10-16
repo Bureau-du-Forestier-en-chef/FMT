@@ -37,11 +37,11 @@ namespace Core
 			for (const std::string& yieldName : p_yields)
 			{
 				bool gotYield = false;
-				for (const std::unique_ptr<FMTyieldhandler>* yield : p_request.getdatas())
+				for (const FMTyieldrequest::const_iterator yield : p_request.getdatas())
 				{
-					if ((*yield)->containsyield(yieldName))
+					if ((yield->second)->containsyield(yieldName))
 					{
-						const double VALUE = std::abs((*yield)->get(yieldName, p_request));
+						const double VALUE = std::abs((yield->second)->get(yieldName, p_request));
 						totalValue += VALUE;
 						baseValues[nameId] = VALUE;
 						gotYield = true;

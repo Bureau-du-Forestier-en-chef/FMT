@@ -2195,11 +2195,11 @@ const boost::regex FMTareaparser::m_RxExcludeSpec = boost::regex("^(.+)([\\s\\t]
 											bool excludeDev = false;
 											if (!Excluded.empty())
 												{
-												std::vector<const Core::FMTspec*> SPECIFICATIONS = Excluded.findsets(actualdevelopment.getmask());
+												std::vector<Core::FMTlist<Core::FMTspec>::const_iterator> SPECIFICATIONS = Excluded.findsets(actualdevelopment.getmask());
 												size_t i = 0;
 												while (!excludeDev && i < SPECIFICATIONS.size())
 													{
-													if (SPECIFICATIONS[i]->getperiodlowerbound()<=1)
+													if (SPECIFICATIONS[i]->second.getperiodlowerbound()<=1)
 														{
 														excludeDev = true;
 														}

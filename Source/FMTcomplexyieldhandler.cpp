@@ -242,49 +242,37 @@ namespace Core {
 		const std::vector<const std::string*>& p_names, const std::string& p_original) const
 	{
 		std::vector<const std::unique_ptr<FMTyieldhandler>*>data(p_names.size(), nullptr);
-		std::vector<bool>preTest(p_names.size(), false);
-		size_t valueSet = 0;
-		try {
-			for (size_t YldId = 0; YldId< p_names.size();++YldId)
-				{
-				preTest[YldId] = inlookat(*p_names[YldId]) || (p_original == *p_names[YldId]);
-				}
-			bool foundValue = false;
+		try{
 			const bool NEED_TO_TEST_OVERRIDE = !overridetabou.empty();
-			const std::vector<const std::unique_ptr<FMTyieldhandler>*>&FULL_DATA = p_request.getdatas();
-			size_t dataId = 0;
-			while (!foundValue && dataId< FULL_DATA.size())
-			{
-				const std::unique_ptr<FMTyieldhandler>* YIELD = FULL_DATA[dataId];
-				if (!NEED_TO_TEST_OVERRIDE || 
-					overridetabou.find((*YIELD)->getoverrideindex()) == overridetabou.end())
+			const std::vector<FMTyieldrequest::const_iterator>& FULL_DATA = p_request.getdatas();
+			for (size_t YldId = 0; YldId < p_names.size(); ++YldId)
 				{
-					size_t Id = 0;
-					while (!foundValue && Id < p_names.size())
-					{
-						if (data[Id] == nullptr &&
-							(*YIELD)->containsyield(*p_names[Id]) &&
-							!(this == &(**YIELD) && preTest[Id]))
+				const bool BASE_CASE = (inlookat(*p_names[YldId]) || (p_original == *p_names[YldId]));
+				size_t dataId = 0;
+				bool foundValue = false;
+				FMTyieldrequest::const_iterator FIRST_SEEN = p_request.getFirstSeen(*p_names[YldId]);
+				while (!foundValue && dataId < FULL_DATA.size())
 						{
-							data[Id] = YIELD;
-							++valueSet;
-							if (valueSet== data.size())
+						const std::unique_ptr<FMTyieldhandler>* YIELD = &FULL_DATA[dataId]->second;
+						if (!NEED_TO_TEST_OVERRIDE ||
+							overridetabou.find((*YIELD)->getoverrideindex()) == overridetabou.end())
+							{
+							if (FULL_DATA[dataId] >= FIRST_SEEN &&
+								(*YIELD)->containsyield(*p_names[YldId]) &&
+								!(this == &(**YIELD) && BASE_CASE))
 								{
-								foundValue = true;
+									data[YldId] = YIELD;
+									foundValue = true;
 								}
+							}
+						++dataId;
 						}
-						++Id;
-					}
 				}
-				++dataId;
-			}
-		}
-		catch (...)
-		{
+		}catch (...)
+			{
 			_exhandler->raisefromcatch("", "FMTcomplexyieldhandler::_getData", __LINE__, __FILE__, Core::FMTsection::Yield);
-		}
+			}
 		return data;
-
 	}
 
 	std::map<std::string, double>FMTcomplexyieldhandler::_toMap(const FMTyieldrequest& p_request, 
@@ -304,58 +292,6 @@ namespace Core {
 			}
 		}
 		return result;
-	}
-
-
-	std::map<std::string, const std::unique_ptr<FMTyieldhandler>*> FMTcomplexyieldhandler::getdata(const FMTyieldrequest& request,
-		const std::vector<const std::string*>& names, const std::string& original) const
-	{
-		std::map<std::string, const std::unique_ptr<FMTyieldhandler>*>alldata;
-		try {
-			for (const std::unique_ptr<FMTyieldhandler>* yield : request.getdatas())
-			{
-				if (overridetabou.find((*yield)->getoverrideindex())== overridetabou.end())
-				{
-					
-					for (const std::string* name : names)
-					{
-						if ((*yield)->containsyield(*name) && alldata.find(*name) == alldata.end() &&
-							!(this == &(**yield) && original == *name) && (!inlookat(*name)))
-						{
-							alldata[*name] = yield;
-						}
-						if (alldata.size() == names.size())
-						{
-							return alldata;
-						}
-					}
-				}
-				
-				
-				
-			}
-			if (alldata.size() != names.size())
-			{
-				for (const std::string* name : names)
-				{
-					if (!name->empty() && alldata.find(*name) == alldata.end())
-					{
-						
-						alldata[*name] = nullptr;
-						/*_exhandler->raise(Exception::FMTexc::FMTignore,
-							"Missing requested yield "+name, "FMTyieldhandler::getdata", __LINE__, __FILE__);*/
-					}
-
-				}
-
-			}
-		}
-		catch (...)
-		{
-			_exhandler->raisefromcatch("", "FMTcomplexyieldhandler::getdata", __LINE__, __FILE__, Core::FMTsection::Yield);
-		}
-		return alldata;
-
 	}
 
 

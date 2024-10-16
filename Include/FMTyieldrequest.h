@@ -37,6 +37,7 @@ namespace Core
 	class FMTyieldrequest final : public FMTobject
 	{
 	public:
+		typedef typename std::vector<std::pair<FMTmask, std::unique_ptr<FMTyieldhandler>>>::const_iterator const_iterator;
 		FMTyieldrequest(const FMTdevelopment& ldevelopment,
 			const Graph::FMTgraphvertextoyield& lgraphvertex);
 		FMTyieldrequest(const FMTdevelopment& ldevelopment,
@@ -46,13 +47,15 @@ namespace Core
 		FMTyieldrequest(const FMTyieldrequest& rhs) = default;
 		FMTyieldrequest& operator = (const FMTyieldrequest& rhs)=default;
 		const FMTdevelopment& getdevelopment() const;
-		const std::vector<const std::unique_ptr<FMTyieldhandler>*>&getdatas() const;
+		const std::vector<const_iterator>&getdatas() const;
 		const Core::FMTmask& getresumemask() const;
 		const Graph::FMTgraphvertextoyield* getvertexgraphinfo() const;
+		const_iterator getFirstSeen(const std::string& p_yield) const;
 	private:
 		friend class FMTyields;
-		mutable std::vector<const std::unique_ptr<FMTyieldhandler>*> datas;
+		mutable std::vector<const_iterator>datas;
 		mutable FMTmask resume_mask;
+		mutable FMTyields const* m_yields;
 		FMTdevelopment const* development;
 		Graph::FMTgraphvertextoyield const* graphvertex;
 		void _updateData(const FMTyields& yields) const;

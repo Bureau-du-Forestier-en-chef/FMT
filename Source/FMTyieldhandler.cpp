@@ -365,7 +365,7 @@ double FMTyieldhandler::getyieldlinearvalue(const std::string&yldname, const FMT
 		try {
 			for (const auto& data : request.getdatas())
 			{
-				const int maxbase = (*data)->getlastbase();
+				const int maxbase = (data->second)->getlastbase();
 				if (maxbase> maxage)
 				{
 					maxage = maxbase;
@@ -505,7 +505,7 @@ double FMTyieldhandler::getyieldlinearvalue(const std::string&yldname, const FMT
 		}
 		catch (...)
 		{
-			_exhandler->raisefromcatch("", "FMTyieldhandler::isnullyield", __LINE__, __FILE__, Core::FMTsection::Yield);
+			_exhandler->raisefromcatch(yldname, "FMTyieldhandler::isnullyield", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
 		return false;
 	}

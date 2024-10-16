@@ -242,16 +242,16 @@ class FMTEXPORT FMTyields : public FMTlist<std::unique_ptr<FMTyieldhandler>>
 		{
 			try {
 				ar& boost::serialization::make_nvp("handlers", boost::serialization::base_object<FMTlist<std::unique_ptr<FMTyieldhandler>>>(*this));
-				updateyieldpresence();
+				_updateYieldLocations();
 			}
 			catch (...)
 			{
 				_exhandler->printexceptions("", "FMTyields::serialize", __LINE__, __FILE__);
 			}
 		}
-		// DocString: FMTyields::yieldpresence
-		///If yields section as yield = true else false.
-		std::unordered_map<std::string, bool>yieldpresence;
+		// DocString: FMTyields::m_yieldsLocations
+		///If size_t < size then presence else not
+		std::unordered_map<std::string,size_t>m_yieldsLocations;
 		// DocString: FMTyields::nullYield
 		///the null yields.
 		static const std::string m_nullYield;
@@ -268,17 +268,24 @@ class FMTEXPORT FMTyields : public FMTlist<std::unique_ptr<FMTyieldhandler>>
 		*/
 		std::vector<FMTyieldhandler*> gethandlers(FMTyldtype type);
 
-		// DocString: FMTyields::updateyieldpresence
+		// DocString: FMTyields::_updateYieldLocations
 		/**
-		Update the yields presence true or false.
+		@brief Update the yields presence true or false.
 		*/
-		void updateyieldpresence();
+		void _updateYieldLocations();
 		// DocString: FMTyields::setModel
 		/**
 		@brief set the model to the FMTyieldmodelhandler.
 		@param[in] the model that we want to link to the yieldhandler.
 		*/
 		void setModel(Models::FMTmodel* p_modelPtr);
+		// DocString: FMTyields::_getFirstSeen
+		/**
+		@brief get the first location of yield with this name,if out gonna be size()
+		@param[in] p_yield name.
+		@return the location of the first yield with this name
+		*/
+		const_iterator _getFirstSeen(const std::string& p_yield) const;
     };
 }
 BOOST_CLASS_EXPORT_KEY(Core::FMTyields)

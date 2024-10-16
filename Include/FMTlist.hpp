@@ -45,6 +45,15 @@ namespace Core
 	class FMTlist: public FMTobject
 	{
 	public:
+		// DocString: FMTlist::value_type
+		///Value typedef of the FMTlist
+		typedef typename std::vector<std::pair<FMTmask, T>>::value_type value_type;
+		// DocString: FMTlist::iterator
+		///Iterator typedef of the FMTlist
+		typedef typename std::vector<std::pair<FMTmask, T>>::iterator iterator;
+		// DocString: FMTlist::const_iterator
+		///Const_Iterator typedef of the FMTlist
+		typedef typename std::vector<std::pair<FMTmask, T>>::const_iterator const_iterator;
 		// DocString: FMTlist::operator+=
 		/**
 		 * @brief append OtherList to this list actions both list had to be non shrinked, will throw exception if shrinked.
@@ -199,41 +208,44 @@ namespace Core
 		Here is the main function used on FMTlist. Giving a global (mask) it will returns elements that are a subset of the global (mask), in the same order
 		present in the FMTlist. It will also use caching to try to get elements faster next time it's asked by the user.
 		*/
-		std::vector<const T*> findsets(const FMTmask& mask) const
+		std::vector<FMTlist::const_iterator> findsets(const FMTmask& mask) const
 		{
 			const FMTmask newkey = filter.filter(mask);
 			return findsetswithfiltered(newkey);
 		}
 		// DocString: FMTlist::findsetswithfiltered
 		/**
-		Here is the main function used on FMTlist. Giving a filtered mask (newkey) it will returns elements that are a subset of the global (mask), in the same order
+		@brief Here is the main function used on FMTlist. Giving a filtered mask (newkey) it will returns elements that are a subset of the global (mask), in the same order
 		present in the FMTlist. It will also use caching to try to get elements faster next time it's asked by the user.
+		@param[in] p_newKey the mask to select subset
+		@return a vector of const iterator on the data.
 		*/
-		std::vector<const T*> findsetswithfiltered(const FMTmask& newkey) const
+		std::vector<FMTlist::const_iterator>findsetswithfiltered(const FMTmask& p_newKey) const
 		{
-			std::vector<const T*>allhits;
-			boost::unordered_map<FMTmask, std::vector<int>>::const_iterator fast_it = fastpass.find(newkey);
+			std::vector<const_iterator>allhits;
+			const_iterator BEGINNING = begin();
+			boost::unordered_map<FMTmask, std::vector<int>>::const_iterator fast_it = fastpass.find(p_newKey);
 			if (fast_it != fastpass.end())
 			{
 				allhits.reserve(fast_it->second.size());
 				for (const int& location : fast_it->second)
 				{
-					allhits.push_back(&data.at(location).second);
+					allhits.push_back(BEGINNING + location);
 				}
 			}
 			else {
-				fastpass[newkey] = std::vector<int>();
+				fastpass[p_newKey] = std::vector<int>();
 				int location = 0;
 				for (const std::pair<FMTmask, T>& object : data)
 				{
-					if (newkey.isSubsetOf(object.first))
+					if (p_newKey.isSubsetOf(object.first))
 					{
-						fastpass[newkey].push_back(location);
-						allhits.push_back(&object.second);
+						fastpass[p_newKey].push_back(location);
+						allhits.push_back(BEGINNING + location);
 					}
 					++location;
 				}
-				fastpass[newkey].shrink_to_fit();
+				fastpass[p_newKey].shrink_to_fit();
 			}
 			return allhits;
 		}
@@ -364,15 +376,7 @@ namespace Core
 		{
 			data.insert(data.begin() + location, std::pair<FMTmask, T>(mask, value));
 		}
-		// DocString: FMTlist::value_type
-		///Value typedef of the FMTlist
-		typedef typename std::vector<std::pair<FMTmask, T>>::value_type value_type;
-		// DocString: FMTlist::iterator
-		///Iterator typedef of the FMTlist
-		typedef typename std::vector<std::pair<FMTmask, T>>::iterator iterator;
-		// DocString: FMTlist::const_iterator
-		///Const_Iterator typedef of the FMTlist
-		typedef typename std::vector<std::pair<FMTmask, T>>::const_iterator const_iterator;
+		
 		// DocString: FMTlist::begin
 		/**
 		Returns an iterator at the beginning of the FMTlist.

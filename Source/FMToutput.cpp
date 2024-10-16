@@ -1467,7 +1467,7 @@ std::string FMToutput::_operatorFormat() const
 		}
 		if (last_operator_position > 1)
 		{
-			last_operator_position = i + 1;
+			last_operator_position = static_cast<int>(i) + 1;
 			break;
 		}
 	}
@@ -1505,7 +1505,7 @@ std::string FMToutput::_operatorFormat() const
 			newLine += "*OUTPUT ~" + newOutput.getname() + "_" + std::to_string(output_num) + " \n";
 			newLine += "*SOURCE ~" + newOutput.getname() + lastNum + " ";
 			newLine += op_str + " ";
-			op_count == 1;
+			//op_count == 1;
 			output_num++;
 		}
 		else if (op_count == 2 && i >= last_operator_position)
@@ -1514,7 +1514,7 @@ std::string FMToutput::_operatorFormat() const
 			newLine += "*OUTPUT " + newOutput.getname() + " \n";
 			newLine += "*SOURCE ~" + newOutput.getname() + lastNum + " ";
 			newLine += op_str + " ";
-			op_count == 1;
+			//op_count == 1;
 		}
 	}
 	newLine += " \n" ;

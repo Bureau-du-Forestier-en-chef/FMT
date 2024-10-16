@@ -65,9 +65,6 @@ namespace Core
 		std::map<std::string, double> getsources(const std::map<std::string, const std::unique_ptr<FMTyieldhandler>*>& srcdata,
 			const FMTyieldrequest& request, bool& age_only) const;
 
-		std::map<std::string, const std::unique_ptr<FMTyieldhandler>*> getdata(const FMTyieldrequest& request,
-			const std::vector<const std::string*>& names, const std::string& original) const;
-
 		std::vector<const std::unique_ptr<FMTyieldhandler>*>_getData(const FMTyieldrequest& request,
 			const std::vector<const std::string*>& names, const std::string& original) const;
 

@@ -18,6 +18,7 @@ namespace Core
 		const Graph::FMTgraphvertextoyield& lgraphvertex) :
 		datas(),
 		resume_mask(),
+		m_yields(),
 		development(&ldevelopment),
 		graphvertex(&lgraphvertex)
 	{
@@ -28,6 +29,7 @@ namespace Core
 		const FMTyieldrequest& oldrequest):
 		datas(oldrequest.datas),
 		resume_mask(oldrequest.resume_mask),
+		m_yields(oldrequest.m_yields),
 		development(&ldevelopment),
 		graphvertex()
 	{
@@ -41,6 +43,7 @@ namespace Core
 	FMTyieldrequest::FMTyieldrequest(const Core::FMTdevelopment& ldevelopment):
 		datas(),
 		resume_mask(),
+		m_yields(),
 		development(&ldevelopment),
 		graphvertex(nullptr)
 	{
@@ -51,7 +54,7 @@ namespace Core
 	{
 		return *development;
 	}
-	const std::vector<const std::unique_ptr<FMTyieldhandler>*>&FMTyieldrequest::getdatas() const
+	const std::vector<FMTyieldrequest::const_iterator>&FMTyieldrequest::getdatas() const
 	{
 		return datas;
 	}
@@ -64,12 +67,18 @@ namespace Core
 		return graphvertex;
 	}
 
+	FMTyieldrequest::const_iterator FMTyieldrequest::getFirstSeen(const std::string& p_yield) const
+		{
+		return  m_yields->_getFirstSeen(p_yield);
+		}
+
 
 void FMTyieldrequest::_updateData(const FMTyields& yields) const
 {
 	try {
 		if (resume_mask.empty())
 		{
+			m_yields = &yields;
 			resume_mask = yields.filtermask(development->getmask());
 			datas = yields.findsetswithfiltered(resume_mask);
 		}
