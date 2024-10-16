@@ -380,8 +380,8 @@ namespace Core{
 			{
 				for (const FMTdevelopmentpath& path : topaths)
 				{
-					const double dif_value = (actual_value - path.development->getinventorycoef(ylds, target_yield, graphyieldrequest));
-					value += (dif_value * (path.proportion / 100));
+					const double dif_value = (actual_value - path.getDevelopment().getinventorycoef(ylds, target_yield, graphyieldrequest));
+					value += (dif_value * (path.getProportion() / 100));
 				}
 			}
 			else {

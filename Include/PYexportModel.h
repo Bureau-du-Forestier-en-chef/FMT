@@ -148,6 +148,7 @@ void exportModel()
 
 
 	bp::to_python_converter<std::map<std::string, double>, MapToDict<std::string, double>>();
+	
 
 	bp::class_<Models::FMTsemodel, bp::bases<Models::FMTmodel>>("FMTsemodel", "@DocString(FMTsemodel)")
 		.def(bp::init<Models::FMTmodel>())
@@ -255,6 +256,8 @@ void exportModel()
 			"@DocString(FMTsrmodel::cleargraphdevelopements)")
 		.def("getstats", &Models::FMTsrmodel::getstats,
 			"@DocString(FMTsrmodel::getstats)")
+		.def("getRotations", &Models::FMTsrmodel::getRotations,
+			"@DocString(FMTsrmodel::getRotations)")
 		.def("getavailablesolverinterface", &Models::FMTsrmodel::getavailablesolverinterface,
 			"@DocString(FMTsrmodel::getavailablesolverinterface)").staticmethod("getavailablesolverinterface")
 		.def("getscheduleproportions", &Models::FMTsrmodel::getscheduleproportions,

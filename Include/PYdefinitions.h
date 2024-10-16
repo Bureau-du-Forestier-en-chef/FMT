@@ -20,6 +20,13 @@ void define_pylist()
 	iterable_converter().from_python<std::vector<T>>();
 }
 
+template<class T>
+void define_pyset()
+{
+    boost::python::to_python_converter<std::set<T>, SetToList<T>>();
+    iterable_converter().from_python<std::set<T>>();
+}
+
 template <class T>
 void define_FMTlist()
     {

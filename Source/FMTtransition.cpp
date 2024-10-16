@@ -117,7 +117,7 @@ unsigned int FMTtransition::age_after(const std::vector<FMTdevelopment>& devs,
 				const std::vector<FMTdevelopmentpath>newpaths = dev.operate(action, *this, ylds, themes);
 				for (const FMTdevelopmentpath& path : newpaths)
 				{
-					total_age += path.development->getage();
+					total_age += path.getDevelopment().getage();
 					++age_count;
 				}
 			}

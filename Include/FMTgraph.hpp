@@ -877,24 +877,24 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 				{
 					FMTvertex_descriptor tovertex;
 					bool newedge = true;
-					if (!this->containsdevelopment(*devpath.development, devsets))
+					if (!this->containsdevelopment(devpath.getDevelopment(), devsets))
 					{
 
-						tovertex = this->adddevelopment(*devpath.development, devsets);
+						tovertex = this->adddevelopment(devpath.getDevelopment(), devsets);
 						actives.push(tovertex);
 						//newedge = true;
 					}
 					else {
-						tovertex = this->adddevelopment(*devpath.development, devsets);
+						tovertex = this->adddevelopment(devpath.getDevelopment(), devsets);
 						if (inserie || isdependant(tovertex, actionID, newedge))
 						{
-							tovertex = this->adddevelopment(*devpath.development, devsets, true);
+							tovertex = this->adddevelopment(devpath.getDevelopment(), devsets, true);
 							actives.push(tovertex);
 						}
 					}
 					if (newedge)
 					{
-						const FMTedgeproperties newedge(actionID, statsdiff.cols, devpath.proportion);
+						const FMTedgeproperties newedge(actionID, statsdiff.cols, devpath.getProportion());
 						boost::add_edge(out_vertex, tovertex, newedge, data);
 						++stats.edges;
 						newchoice = true;
@@ -923,8 +923,8 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 				std::vector<FMTvertex_descriptor>active_vertex;
 				for (const Core::FMTdevelopmentpath& devpath : paths)
 				{
-					const FMTedgeproperties newedge(actionID, variable_id, devpath.proportion);
-					const FMTvertex_descriptor tovertex = this->adddevelopment(*devpath.development);
+					const FMTedgeproperties newedge(actionID, variable_id, devpath.getProportion());
+					const FMTvertex_descriptor tovertex = this->adddevelopment(devpath.getDevelopment());
 					actives.push(tovertex);
 					boost::add_edge(out_vertex, tovertex, newedge, data);
 					++stats.edges;
@@ -2079,9 +2079,9 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 				{
 					for (const Core::FMTdevelopmentpath& path : dev.operate(model.actions.at(actionid), model.transitions.at(actionid), model.yields, model.themes))
 					{
-						if (containsdevelopment(*path.development, actualperioddevs))
+						if (containsdevelopment(path.getDevelopment(), actualperioddevs))
 						{
-							paths.push_back(getdevelopment(*path.development, actualperioddevs));
+							paths.push_back(getdevelopment(path.getDevelopment(), actualperioddevs));
 						}
 					}
 				}

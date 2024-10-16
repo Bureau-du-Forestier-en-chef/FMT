@@ -283,10 +283,10 @@ namespace Models
 										std::vector<Core::FMTdevelopmentpath> paths = m_graph->getpaths(*vertex_iterator, varit->first);
 										for (const Core::FMTdevelopmentpath path : paths)
 										{
-											if (path.development->getperiod() == period && processed.find(*path.development) == processed.end())
+											if (path.getDevelopment().getperiod() == period && processed.find(path.getDevelopment()) == processed.end())
 											{
-												processed.emplace(*path.development);
-												Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor nextdescriptor = m_graph->getdevelopment(*path.development, lookup);
+												processed.emplace(path.getDevelopment());
+												Graph::FMTgraph<Graph::FMTvertexproperties, Graph::FMTedgeproperties>::FMTvertex_descriptor nextdescriptor = m_graph->getdevelopment(path.getDevelopment(), lookup);
 												descriptors.push(nextdescriptor);
 												
 											}
@@ -379,10 +379,10 @@ namespace Models
 								std::vector<Core::FMTdevelopmentpath> paths = m_graph->getpaths(first, varit->first);
 								for (const Core::FMTdevelopmentpath path : paths)
 								{
-									if (path.development->getperiod() == period && processed.find(*path.development) == processed.end())
+									if (path.getDevelopment().getperiod() == period && processed.find(path.getDevelopment()) == processed.end())
 									{
-										processed.emplace(*path.development);
-										descriptors.push(m_graph->getdevelopment(*path.development, lookup));
+										processed.emplace(path.getDevelopment());
+										descriptors.push(m_graph->getdevelopment(path.getDevelopment(), lookup));
 									}
 								}
 								//std::cout<<std::string(m_graph->getdevelopment(first)) << " "+std::to_string(varproportions[varit->second])<<" "+std::to_string(inarea)<<" "+std::to_string(varit->first)<<std::endl;//<<" "+this->getactions().at(varit->first).getname()<<std::endl;
@@ -679,10 +679,10 @@ namespace Models
 							std::vector<Core::FMTdevelopmentpath> paths = m_graph->getpaths(*vertex_iterator, varit->first);
 							for (const Core::FMTdevelopmentpath path : paths)
 							{
-								if (path.development->getperiod() == period && processed.find(*path.development) == processed.end())
+								if (path.getDevelopment().getperiod() == period && processed.find(path.getDevelopment()) == processed.end())
 								{
-									processed[*path.development] = m_graph->getdevelopment(*path.development, lookup);
-									descriptors.push(m_graph->getdevelopment(*path.development, lookup));
+									processed[path.getDevelopment()] = m_graph->getdevelopment(path.getDevelopment(), lookup);
+									descriptors.push(m_graph->getdevelopment(path.getDevelopment(), lookup));
 								}
 							}
 							//rest -= *(actual_solution + varit->second);
@@ -750,10 +750,10 @@ namespace Models
 						std::vector<Core::FMTdevelopmentpath> paths = m_graph->getpaths(first, varit->first);
 						for (const Core::FMTdevelopmentpath path : paths)
 						{
-							if (path.development->getperiod() == period && processed.find(*path.development) == processed.end())
+							if (path.getDevelopment().getperiod() == period && processed.find(path.getDevelopment()) == processed.end())
 							{
-								processed[*path.development] = m_graph->getdevelopment(*path.development, lookup);
-								descriptors.push(m_graph->getdevelopment(*path.development, lookup));
+								processed[path.getDevelopment()] = m_graph->getdevelopment(path.getDevelopment(), lookup);
+								descriptors.push(m_graph->getdevelopment(path.getDevelopment(), lookup));
 							}
 						}
 

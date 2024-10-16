@@ -2680,7 +2680,7 @@ Core::FMTschedule FMTmodel::getpotentialschedule(std::vector<Core::FMTactualdeve
 					schedule.addevent(actdev, 1.0, action);
 					for (const Core::FMTdevelopmentpath& path : actdev.operate(action, transitions.at(actionid), yields, themes))
 						{
-						newselection.emplace_back(*path.development,1.0);
+						newselection.emplace_back(path.getDevelopment(), 1.0);
 						}
 					}
 				}

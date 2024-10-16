@@ -29,6 +29,8 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTageyieldhandler.h"
 #include "FMTmaskfilter.h"
 #include "FMTtransitionmask.h"
+#include "FMTdevelopmentpath.h"
+#include "FMTSerie.h"
 
 namespace Python
 {
@@ -113,6 +115,9 @@ void exportCore()
 
 		bp::class_<Core::FMTmaskfilter>("FMTmaskfilter", "@DocString(FMTmaskfilter)");
 
+		define_pylist<Core::FMTdevelopmentpath>();
+		define_pyset<Core::FMTSerie>();
+		define_pylist<Core::FMTSerie>();
 		define_pylist<Core::FMTmaskfilter>();
 		define_pylist<Core::FMTmask>();
         define_pylist<Core::FMTdevelopment>();
@@ -138,7 +143,7 @@ void exportCore()
 		define_FMTlist<Core::FMTspec>();
 		define_pylist<std::vector<std::string>>();
 
-		bool (Core::FMTmask::*issubsetof)(const Core::FMTmask&) const = &Core::FMTmask::issubsetof;
+		bool (Core::FMTmask::*issubsetof)(const Core::FMTmask&) const = &Core::FMTmask::isSubsetOf;
 
 		bp::class_<Core::FMTmask>("FMTmask", "@DocString(FMTmask)")
 				.def(bp::init<Core::FMTmask>())
@@ -162,6 +167,26 @@ void exportCore()
 					"@DocString(FMTmask::presolve)")
 				.def("postsolve",&Core::FMTmask::postsolve,
 					"@DocString(FMTmask::postsolve)");
+
+		bp::class_<Core::FMTdevelopmentpath>("FMTdevelopmentpath", "@DocString(FMTdevelopmentpath)")
+			.def(bp::init<Core::FMTdevelopmentpath>())
+			.def("getDevelopment", &Core::FMTdevelopmentpath::getDevelopment,
+				bp::return_value_policy<bp::return_by_value>(),
+				"@DocString(FMTdevelopmentpath::getDevelopment)")
+			.def("getProportion", &Core::FMTdevelopmentpath::getProportion,
+				bp::return_value_policy<bp::return_by_value>(),
+				"@DocString(FMTdevelopmentpath::getProportion)");
+
+		bp::class_<Core::FMTSerie>("FMTSerie", "@DocString(FMTSerie)")
+			.def(bp::init<Core::FMTSerie>())
+			.def("getLength", &Core::FMTSerie::getLength,
+				bp::return_value_policy<bp::return_by_value>(),
+				"@DocString(FMTSerie::getLength)")
+			.def("getSerie", &Core::FMTSerie::getSerie,
+				bp::return_value_policy<bp::return_by_value>(),
+				"@DocString(FMTSerie::getSerie)");
+
+		
 
 		bp::class_<Core::FMTdevelopment>("FMTdevelopment", "@DocString(FMTdevelopment)")
 				.def_pickle(FMT_pickle_suite<Core::FMTdevelopment>())

@@ -128,7 +128,7 @@ FMTfork::FMTfork():FMTspec(),FMTobject(), transitions()
                        _exhandler->raise(Exception::FMTexc::FMTsame_transitiontargets,
                            "from " + std::string(base) + " to " + std::string(newdev) + "\n",
                            "FMTfork::getpaths", __LINE__, __FILE__, Core::FMTsection::Transition);
-                       paths[mapit->second].proportion += tran.getproportion();
+                       paths[mapit->second].setProportion(paths[mapit->second].getProportion() + tran.getproportion());
                        continue;
                    }else {
                        pathmap[newdev] = pathid;

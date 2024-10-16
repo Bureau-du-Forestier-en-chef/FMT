@@ -94,9 +94,9 @@ namespace Graph
 		try {
 			for (const Core::FMTdevelopmentpath& devpath : paths)
 			{
-				const FMTedgeproperties newedge(actionID, 0, devpath.proportion);
+				const FMTedgeproperties newedge(actionID, 0, devpath.getProportion());
 				FMTvertex_descriptor tovertex;
-				tovertex = this->adddevelopment(*devpath.development);
+				tovertex = this->adddevelopment(devpath.getDevelopment());
 				boost::add_edge(active, tovertex, newedge, data);
 				++stats.edges;
 			}

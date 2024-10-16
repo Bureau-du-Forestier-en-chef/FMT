@@ -11,25 +11,40 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 namespace Core
 
 { 
-	FMTdevelopmentpath::FMTdevelopmentpath(): development(), proportion()
+	const FMTdevelopment& FMTdevelopmentpath::getDevelopment() const
+	{
+		return *m_development;
+	}
+	
+	double FMTdevelopmentpath::getProportion() const
+	{
+		return m_proportion;
+	}
+
+	void FMTdevelopmentpath::setProportion(double p_proportion)
+		{
+		m_proportion = p_proportion;
+		}
+
+	FMTdevelopmentpath::FMTdevelopmentpath(): m_development(), m_proportion()
 		{
 
 		}
-	FMTdevelopmentpath::FMTdevelopmentpath(const FMTdevelopmentpath& rhs) : development(), proportion(rhs.proportion)
+	FMTdevelopmentpath::FMTdevelopmentpath(const FMTdevelopmentpath& rhs) : m_development(), m_proportion(rhs.m_proportion)
 		{
-		development = std::unique_ptr<FMTdevelopment>(new FMTdevelopment(*rhs.development));
+		m_development = std::unique_ptr<FMTdevelopment>(new FMTdevelopment(*rhs.m_development));
 		}
 	FMTdevelopmentpath::FMTdevelopmentpath(const FMTdevelopment& ldevelopment,
-		const double& lproportion) :development(), proportion(lproportion)
+		const double& lproportion) : m_development(), m_proportion(lproportion)
 		{
-		development = std::unique_ptr<FMTdevelopment>(new FMTdevelopment(ldevelopment));
+		m_development = std::unique_ptr<FMTdevelopment>(new FMTdevelopment(ldevelopment));
 		}
 	FMTdevelopmentpath& FMTdevelopmentpath::operator = (const FMTdevelopmentpath& rhs)
 		{
 		if (this!=&rhs)
 			{
-			development = std::unique_ptr<FMTdevelopment>(new FMTdevelopment(*rhs.development));
-			proportion = rhs.proportion;
+			m_development = std::unique_ptr<FMTdevelopment>(new FMTdevelopment(*rhs.m_development));
+			m_proportion = rhs.m_proportion;
 			}
 		return *this;
 		}

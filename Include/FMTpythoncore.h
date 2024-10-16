@@ -25,6 +25,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <limits>
 #include <map>
 #include <tuple>
+#include <set>
 #include <boost/dynamic_bitset.hpp>
 #include <boost/unordered_map.hpp>
 #include "FMTexception.h"
@@ -86,6 +87,20 @@ namespace Python
 				l->append(vec[i]);
 			}
 
+			return l->ptr();
+		}
+	};
+
+	template<class T>
+	struct SetToList
+	{
+		static PyObject* convert(const std::set<T>& p_set)
+		{
+			boost::python::list* l = new boost::python::list();
+			for (const auto& i : p_set)
+			{
+				l->append(i);
+			}
 			return l->ptr();
 		}
 	};
