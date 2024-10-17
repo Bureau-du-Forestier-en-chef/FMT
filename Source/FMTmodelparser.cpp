@@ -147,7 +147,13 @@ namespace Parser {
 			{
 				const int iteration = feature->GetFieldAsInteger("Iteration");
 				const int period = feature->GetFieldAsInteger("Period");
-				const std::string output = feature->GetFieldAsString("Output");
+				std::string output = feature->GetFieldAsString("Output");
+				const std::string TYPE = feature->GetFieldAsString("Type");
+				if (!TYPE.empty() &&
+					TYPE!="Total")
+					{
+					output += "(" + TYPE + ")";
+					}
 				const double value = feature->GetFieldAsDouble("Value");
 				if (sortedresults.find(output) == sortedresults.end())
 				{

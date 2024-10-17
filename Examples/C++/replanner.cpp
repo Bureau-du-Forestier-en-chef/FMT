@@ -33,7 +33,7 @@ int main(int argc, char *argv[])
 	{
 		primlocation = "D:/CC_modele_feu/WS_CC/Feux_2023_ouest_V01.pri";
 		length = 5;
-		replicate = 100;
+		replicate = 5;
 		allscenarios.push_back("strategique_Minimisation_Risque_CC"); //Pour test le lancé d'erreur
 		//allscenarios.push_back("strategique");
 		allscenarios.push_back("stochastique_CC_2pics");
