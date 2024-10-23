@@ -44,8 +44,9 @@ compile_commands.json
 *html
 *latex
 external/*
-UI/Include/*
-UI/Source/*
+# On ajoute le ui dans Github a la demande de tommy
+# UI/Include/*
+# UI/Source/*
 
 ### vscode ###
 .vs/*
@@ -59,4 +60,4 @@ vcpkg_installed/
 
 ### out et ui ###
 out/
-UI/
+# UI/ On ajoute le ui dans Github a la demande de tommy
