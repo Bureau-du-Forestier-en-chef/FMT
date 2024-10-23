@@ -27,11 +27,11 @@ bool Wrapper::FMTForm::InitialAreaVariability(
 	{
 		FMTFormLogger* logger = Cache->getformlogger();
 		Models::FMTlpmodel optimizationmodel(Cache->getmodel(scenario), static_cast<Models::FMTsolverinterface>(solver));
-		*logger << "FMT -> Traitement pour le scénario : " + optimizationmodel.getname() << "\n";
-		*logger << "FMT Event Spatialy Explicit Simulation c++ - > Intégration des contraintes sélectionnées" << "\n";
+		*logger << "FMT -> Traitement pour le scÃ©nario : " + optimizationmodel.getname() << "\n";
+		*logger << "FMT Event Spatialy Explicit Simulation c++ - > IntÃ©gration des contraintes sÃ©lectionnÃ©es" << "\n";
 		optimizationmodel.setconstraints(ObtenirArrayContraintesSelectionnees(optimizationmodel.getconstraints(), contraintes));
 
-		//Période
+		//PÃ©riode
 		for (size_t per = 0; per < period; ++per)
 		{
 			optimizationmodel.buildperiod();
@@ -63,7 +63,7 @@ bool Wrapper::FMTForm::InitialAreaVariability(
 			for (Core::FMTactualdevelopment development : optimizationmodel.getarea()) {
 				int count = 0;
 				for (Core::FMTmask target : masktargets) {
-					if (development.getmask().issubsetof(target)) {
+					if (development.getmask().isSubsetOf(target)) {
 						count += 1;
 					}
 				}
@@ -83,7 +83,7 @@ bool Wrapper::FMTForm::InitialAreaVariability(
 						listeOutputs.push_back(fmtOutput);
 					}
 				}
-				*logger << "FMT - Démarrage de Initial Area Variability" << "\n";
+				*logger << "FMT - DÃ©marrage de Initial Area Variability" << "\n";
 				Parser::FMTmodelparser Modelparser;
 				Modelparser.writeresults(
 					optimizationmodel.getmodelfromproportions(masktargets, proportions),
@@ -94,22 +94,22 @@ bool Wrapper::FMTForm::InitialAreaVariability(
 					static_cast<Core::FMToutputlevel>(outputLevel),
 					msclr::interop::marshal_as<std::string>(providerGdal)
 				);
-				*logger << "FMT - Initial Area Variability complété." << "\n";
+				*logger << "FMT - Initial Area Variability complÃ©tÃ©." << "\n";
 			}
 			else
 			{
-				*logger << "FMT - Modèle non réalisable" << "\n";
+				*logger << "FMT - ModÃ¨le non rÃ©alisable" << "\n";
 				return false;
 			}
 		}
 		else 
 		{
 			if (!ListeInformations) {
-				*logger << "FMT - Arrêt du traitement. Le fichier de paramètres .csv est obligatoire." << "\n";
+				*logger << "FMT - ArrÃªt du traitement. Le fichier de paramÃ¨tres .csv est obligatoire." << "\n";
 				return false;
 			}
 			else {
-				*logger << "FMTErreur - Arrêt du traitement. Le fichier de paramètres .csv est vide." << "\n";
+				*logger << "FMTErreur - ArrÃªt du traitement. Le fichier de paramÃ¨tres .csv est vide." << "\n";
 				return false;
 			}
 		}		
