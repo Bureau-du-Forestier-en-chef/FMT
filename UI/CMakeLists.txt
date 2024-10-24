@@ -36,6 +36,7 @@ if (MSVC AND WrapperSOURCES)
     		"System.Xml"
 		)    
 	set_target_properties(FMTWrapper PROPERTIES COMMON_LANGUAGE_RUNTIME "")    
+	set_target_properties(FMTWrapperCore PROPERTIES VS_LINK_LIBRARY_DEPENDENCIES TRUE)
 	message("Generating build for FMTWrapper")
 	set(udflocation "${CMAKE_CURRENT_SOURCE_DIR}/UI/userDefineLang.xml")
 	list (APPEND FMTDEPENDENCIES ${udflocation})
