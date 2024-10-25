@@ -11,11 +11,12 @@ Models::FMTmodel FMTWrapperCore::Transformation::aggregateAllActions(const Model
 	try
 	{
 		Parser::FMTmodelparser ModelParser;
-
-		aggregatedModel = p_model.aggregateAllActions(p_aggregates, p_order);
+		const std::vector<Core::FMTschedule>SCHEDULES = ModelParser.readschedules(p_schedulePri, { p_model }).at(0);
+		std::vector<std::string> scheduleOrder = p_model.getSchedulesPriorities(SCHEDULES);
+		aggregatedModel = p_model.aggregateAllActions(p_aggregates, scheduleOrder);
 		aggregatedModel.setname(p_scenario_name);
 		std::string outputPath;
-		const std::vector<Core::FMTschedule>SCHEDULES = ModelParser.readschedules(p_schedulePri, { p_model }).at(0);
+		
 		//ATTENTION il est important d'�crire le model avant la schedule car modelParser.write va �craser le fichier de schedule
 		#ifdef _WIN32
 		outputPath = p_outputDirPath + "\\";
