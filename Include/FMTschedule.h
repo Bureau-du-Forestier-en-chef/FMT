@@ -29,38 +29,6 @@ The vector is a reprensentation of lock level at position 0 in the vector the lo
 */
 class FMTEXPORT FMTschedule : public FMTobject
     {
-	// DocString: FMTschedule::serialize
-	/**
-	serialize function is for serialization, used to do multiprocessing across multiple cpus (pickle in Pyhton)
-	*/
-	friend class boost::serialization::access;
-	template<class Archive>
-	void serialize(Archive& ar, const unsigned int version)
-	{
-		try {
-			ar & boost::serialization::make_nvp("FMTobject", boost::serialization::base_object<FMTobject>(*this));
-			ar & BOOST_SERIALIZATION_NVP(period);
-			ar & BOOST_SERIALIZATION_NVP(elements);
-	}catch (...)
-		{
-		_exhandler->printexceptions("", "FMTschedule::serialize", __LINE__, __FILE__);
-		}
-	}
-	// DocString: FMTschedule::period
-	///The period at which the schedule needs to be applied
-    int period;
-	// DocString: FMTschedule::uselock
-	///If true the schedule contains locked development by default it is False.
-	bool uselock;
-	// DocString: FMTschedule::elements
-	///Main FMTschedule elements action has key, followed by a map of FMTdevelopement and a vector of double
-	///The vector of double represent the _lock level.
-	std::map<FMTaction, std::map<FMTdevelopment, std::vector<double>>> elements;
-	// DocString: FMTschedule::sameelements
-	/**
-	Return true if the FMTschedule contains the same elements.
-	*/
-	bool sameelements(const FMTschedule& rhs) const;
     public:
 		// DocString: FMTschedule(const int&)
 		/**
@@ -236,6 +204,40 @@ class FMTEXPORT FMTschedule : public FMTobject
 		const_iterator begin() const;
 		iterator  end();
 		const_iterator end() const;
+	private:
+		// DocString: FMTschedule::serialize
+		/**
+		serialize function is for serialization, used to do multiprocessing across multiple cpus (pickle in Pyhton)
+		*/
+		friend class boost::serialization::access;
+		template<class Archive>
+		void serialize(Archive& ar, const unsigned int version)
+		{
+			try {
+				ar& boost::serialization::make_nvp("FMTobject", boost::serialization::base_object<FMTobject>(*this));
+				ar& BOOST_SERIALIZATION_NVP(period);
+				ar& BOOST_SERIALIZATION_NVP(elements);
+			}
+			catch (...)
+			{
+				_exhandler->printexceptions("", "FMTschedule::serialize", __LINE__, __FILE__);
+			}
+		}
+		// DocString: FMTschedule::period
+		///The period at which the schedule needs to be applied
+		int period;
+		// DocString: FMTschedule::uselock
+		///If true the schedule contains locked development by default it is False.
+		bool uselock;
+		// DocString: FMTschedule::elements
+		///Main FMTschedule elements action has key, followed by a map of FMTdevelopement and a vector of double
+		///The vector of double represent the _lock level.
+		std::map<FMTaction, std::map<FMTdevelopment, std::vector<double>>> elements;
+		// DocString: FMTschedule::sameelements
+		/**
+		Return true if the FMTschedule contains the same elements.
+		*/
+		bool sameelements(const FMTschedule& rhs) const;
     };
 
 

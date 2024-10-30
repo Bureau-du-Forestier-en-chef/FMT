@@ -20,12 +20,11 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTexceptionhandler.h"
 #include "FMTtransitionmask.h"
 #include "FMTfuturdevelopment.h"
+#include <numeric>
 #include <thread>
 //#include <cvmarkersobj.h>
 #include <memory>
 //#include <boost/container/flat_set.hpp>
-
-
 //using namespace Concurrency::diagnostic;
 
 
@@ -402,6 +401,73 @@ namespace Models{
 		return newModel;
 	}
 
+	std::vector<std::string>FMTmodel::getSchedulesPriorities(const std::vector<Core::FMTschedule>& p_schedules) const
+		{
+		std::map<std::string, double>allActions;
+		//const int MAX_PERIOD = 10;
+		for (const Core::FMTschedule& p_schedule : p_schedules)
+			{
+			//if (p_schedule.getperiod() <= MAX_PERIOD)
+				//{
+				for (const auto& ACTION : p_schedule)
+					{
+					const std::string ACTION_NAME = ACTION.first.getname();
+					const double ACTION_AREA = p_schedule.actionarea(ACTION.first);
+					if (allActions.find(ACTION_NAME) == allActions.end())
+					{
+						allActions[ACTION_NAME] = 0.0;
+					}
+					allActions[ACTION_NAME] += ACTION_AREA;
+					/*const size_t ACTION_ID = std::distance(actions.begin(), std::find_if(actions.begin(), actions.end(), Core::FMTactioncomparator(ACTION_NAME)));
+					double total = ACTION_AREA;
+					for (const auto& DEV_ACTION : ACTION.second)
+						{
+						const double AREA = std::accumulate(DEV_ACTION.second.begin(), DEV_ACTION.second.end(), 0.0);
+						if (AREA > FMT_DBL_TOLERANCE)
+							{
+							const std::vector<Core::FMTdevelopmentpath> PATHS = DEV_ACTION.first.operate(actions[ACTION_ID], transitions[ACTION_ID], yields, themes);
+							const double COEF = DEV_ACTION.first.getharvestcoef(PATHS, actions[ACTION_ID], yields, "YV_S");
+							total += AREA * COEF;
+							}
+						}
+					if (allActions.find(ACTION_NAME) == allActions.end())
+						{
+						allActions[ACTION_NAME] = 0.0;
+						}
+					allActions[ACTION_NAME] = total;*/
+					}
+				//}
+			}
+		for (const Core::FMTaction& ACTION : actions)
+		{
+			if (allActions.find(ACTION.getname()) == allActions.end())
+			{
+				allActions[ACTION.getname()] = 0.0;
+			}
+
+		}
+		std::vector<std::string>FinalOrder;
+		FinalOrder.reserve(allActions.size());
+		while (!allActions.empty())
+			{
+			std::map<std::string, double>::iterator max_it = allActions.end();
+			double maxValue = -1.0;
+			for (std::map<std::string, double>::iterator it = allActions.begin();it!= allActions.end();++it)
+				{
+				if (it->second > maxValue)
+					{
+					max_it = it;
+					maxValue = it->second;
+					}
+				}
+			FinalOrder.push_back(max_it->first);
+			allActions.erase(max_it);
+			}
+
+		return FinalOrder;
+		}
+
+
 	Models::FMTmodel FMTmodel::splitActions(const std::vector<std::string>& p_Actions,
 									const std::vector<std::string>& p_masks) const
 	{
@@ -712,52 +778,72 @@ void FMTmodel::aggregateOutputs(const std::map<std::string, std::pair<std::strin
 		for (Core::FMToutput* output : p_Outputs)
 			{
 			std::map<std::string, std::map<Core::FMTmask,std::string>>Dominances;
+			std::vector<bool>ValidMask(output->getsources().size(), false);
+			size_t sourceId = 0;
 			for (const Core::FMToutputsource& source : output->getsources())
 				{
+
 				if (source.isaction() &&
 					p_Filters.find(source.getaction()) != p_Filters.end() &&
 					!p_Filters.at(source.getaction()).first.empty())
 					{
-					const std::string& ACTION = source.getaction();
-					const std::string& AGGREGATE = p_Filters.at(source.getaction()).first;
+					
 					const Core::FMTmask& MASK = source.getmask();
 					const Core::FMTmask INTERSECT_MASK = MASK.getintersect(p_Filters.at(source.getaction()).second);
-					if (Dominances.find(AGGREGATE) == Dominances.end())
+					//Validate the MASK...
+					bool gotValidMask = true;
+					size_t themeId = 0;
+					while (gotValidMask && themeId < themes.size())
 						{
-						Dominances[AGGREGATE] = std::map<Core::FMTmask, std::string>();
-						Dominances[AGGREGATE][INTERSECT_MASK] = ACTION;
-					}else {
-						bool gotIntersect = false;
-						std::map<Core::FMTmask, std::string>newMap;
-						for (const auto& SOURCES : Dominances[AGGREGATE])
+						gotValidMask = INTERSECT_MASK.getsubsetcount(themes[themeId]) != 0;
+						++themeId;
+						}
+					if (gotValidMask)
+					{
+						ValidMask[sourceId] = true;
+						const std::string& ACTION = source.getaction();
+						const std::string& AGGREGATE = p_Filters.at(source.getaction()).first;
+						if (Dominances.find(AGGREGATE) == Dominances.end())
+						{
+							Dominances[AGGREGATE] = std::map<Core::FMTmask, std::string>();
+							Dominances[AGGREGATE][INTERSECT_MASK] = ACTION;
+						}
+						else {
+							bool gotIntersect = false;
+							std::map<Core::FMTmask, std::string>newMap;
+							for (const auto& SOURCES : Dominances[AGGREGATE])
 							{
-							bool removeIt = false;
-							if (!SOURCES.first.isnotthemessubset(INTERSECT_MASK, themes))
+								bool removeIt = false;
+								if (!SOURCES.first.isnotthemessubset(INTERSECT_MASK, themes))
 								{
-								const std::vector<std::string>::const_iterator NEW_HIERARCHY = std::find(p_ActionOrdering.begin(), p_ActionOrdering.end(), ACTION);
-								const std::vector<std::string>::const_iterator BASE_HIERARCHY = std::find(p_ActionOrdering.begin(), p_ActionOrdering.end(), SOURCES.second);
-								if (NEW_HIERARCHY < BASE_HIERARCHY)
+									const std::vector<std::string>::const_iterator NEW_HIERARCHY = std::find(p_ActionOrdering.begin(), p_ActionOrdering.end(), ACTION);
+									const std::vector<std::string>::const_iterator BASE_HIERARCHY = std::find(p_ActionOrdering.begin(), p_ActionOrdering.end(), SOURCES.second);
+									if (NEW_HIERARCHY < BASE_HIERARCHY)
 									{
-									//Dominances[AGGREGATE][MASK] = ACTION;
-									newMap[INTERSECT_MASK] = ACTION;
-									removeIt = true;
+										//Dominances[AGGREGATE][MASK] = ACTION;
+										newMap[INTERSECT_MASK] = ACTION;
+										removeIt = true;
 									}
-								gotIntersect = true;
+									gotIntersect = true;
 								}
-							if (!removeIt)
+								if (!removeIt)
 								{
-								newMap[SOURCES.first] = SOURCES.second;
+									newMap[SOURCES.first] = SOURCES.second;
 								}
 
 							}
-						if (!gotIntersect)
-						{
-							newMap[INTERSECT_MASK] = ACTION;
-						}
-						Dominances[AGGREGATE] = newMap;
-						
+							if (!gotIntersect)
+							{
+								newMap[INTERSECT_MASK] = ACTION;
+							}
+							Dominances[AGGREGATE] = newMap;
+
 						}
 					}
+
+					
+					}
+				++sourceId;
 				}
 			//Now you only select the source that is dominant and have exactly the same mask!!
 			std::vector<Core::FMToutputsource>NewSources;
@@ -770,55 +856,23 @@ void FMTmodel::aggregateOutputs(const std::map<std::string, std::pair<std::strin
 				excludedByMask[mapping.first] = Core::FMTmask();
 				for (const auto& actionMapping : mapping.second)
 					{
-					if (excludedByMask[mapping.first].empty())
+						if (excludedByMask[mapping.first].empty())
 						{
-						excludedByMask[mapping.first] = actionMapping.first;
-					}else {
-						excludedByMask[mapping.first] = excludedByMask[mapping.first].getunion(actionMapping.first);
+							excludedByMask[mapping.first] = actionMapping.first;
 						}
-
-					/*if (std::find(OutActions.begin(), OutActions.end(), actionMapping.second) ==
-						OutActions.end())
-						{
-						OutActions.push_back(actionMapping.second);
-						}*/
-					}
-				
-				/*for (const std::string& theAction : OutActions)
-				{
-					Core::FMTmask fullMask;
-					for (const auto& actionMapping : mapping.second)
-					{
-						if (theAction== actionMapping.second)
-						{
-							if (fullMask.empty())
-							{
-								fullMask = actionMapping.first;
-							}else {
-								fullMask = fullMask.getunion(actionMapping.first);
-							}
-							
+						else {
+							excludedByMask[mapping.first] = excludedByMask[mapping.first].getunion(actionMapping.first);
 						}
-					}
-					if (!fullMask.empty())
-					{
-						excludedByMask[mapping.first][theAction] = fullMask;
-					}
 					
-					
-				}*/
+					}
 				
 			}
-
+			sourceId = 0;
 			for (const Core::FMToutputsource& source : output->getsources())
 				{
 				Core::FMToutputsource NewSource(source);
-				if (source.isaction())
+				if (ValidMask[sourceId])
 					{
-					if (p_Filters.find(source.getaction())!= p_Filters.end() &&
-						!p_Filters.at(source.getaction()).first.empty())
-						{
-						
 						const Core::FMTmask& SOURCE_MASK = source.getmask();
 						const Core::FMTmask INTERSECT_MASK = SOURCE_MASK.getintersect(p_Filters.at(source.getaction()).second);
 						const std::string& ACTION = source.getaction();
@@ -844,6 +898,13 @@ void FMTmodel::aggregateOutputs(const std::map<std::string, std::pair<std::strin
 								Core::FMTmask& REST = excludedByMask[AGGREGATE];
 								Core::FMTmask MaskCopy(INTERSECT_MASK);
 								MaskCopy.setIntersect(REST);
+								/*bool gotValidMask = false;
+								size_t themeId = 0;
+								while (!gotValidMask && themeId < themes.size())
+								{
+									gotValidMask = MaskCopy.getsubsetcount(themes[themeId]) < INTERSECT_MASK.getsubsetcount(themes[themeId]);
+									++themeId;
+								}*/
 								bool gotNoIntersect = false;
 								size_t themeId = 0;
 								while (!gotNoIntersect && themeId < themes.size())
@@ -874,11 +935,9 @@ void FMTmodel::aggregateOutputs(const std::map<std::string, std::pair<std::strin
 							NewSource.setYield(NULL_YIELD);
 							NewSource.setaction(AGGREGATE);	
 						}
-						}else{
-							//NewSource.setYield(NULL_YIELD);
-						}
 					}
 				NewSources.push_back(NewSource);
+				++sourceId;
 				}
 			output->setsources(NewSources);
 			}
@@ -2767,6 +2826,9 @@ bool FMTmodel::doplanning(const bool& solve,std::vector<Core::FMTschedule> sched
 		presolved_schedules = setupschedulesforbuild(presolved_schedules);
 		const std::chrono::time_point<std::chrono::high_resolution_clock>buildstart = getclock();
 		presolved_model->build(presolved_schedules);
+		//
+		
+		//
 		_logger->logwithlevel("Builded " + getname() +" "+getdurationinseconds(buildstart)+ "\n", 1);
 		if(solve)
 		{

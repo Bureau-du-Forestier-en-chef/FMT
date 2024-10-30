@@ -466,6 +466,17 @@ void exportCore()
 					"@DocString(FMTtheme::operator std::string)")
 				.def("__eq__", &Core::FMTtheme::operator ==,
 					"@DocString(FMTtheme::operator==)")
+				.def("getaggregates", &Core::FMTtheme::getaggregates,
+					"@DocString(Core::FMTtheme::getaggregates)")
+				.def("getstart", &Core::FMTtheme::getstart,
+					bp::return_value_policy<bp::return_by_value>(),
+					"@DocString(Core::FMTtheme::getaggregates)")
+				.def("getid", &Core::FMTtheme::getid,
+					bp::return_value_policy<bp::return_by_value>(),
+					"@DocString(Core::FMTtheme::getid)")
+				.def("getattributenames", &Core::FMTtheme::getattributenames,
+					bp::return_value_policy<bp::return_by_value>(),
+					"@DocString(Core::FMTtheme::getattributenames)")
 				.def("getattributes", &Core::FMTtheme::getattributes, getattributes_overloads(bp::args("value","aggregate_source"), "@DocString(FMTtheme::getattributes)"))
 				.def("getname", &Core::FMTtheme::getname,
 					"@DocString(FMTtheme::getname)");

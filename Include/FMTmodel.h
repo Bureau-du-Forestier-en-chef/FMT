@@ -133,6 +133,12 @@ namespace Models
 		 */
 		Models::FMTmodel splitActions(const std::vector<std::string>& p_Actions,
 										const std::vector<std::string>& p_masks) const;
+		// DocString: FMTschedule::getPriorities
+		/**
+		@brief return the actions name in priority of area scheduled.
+		@return a vector of action names.
+		*/
+		std::vector<std::string>getSchedulesPriorities(const std::vector<Core::FMTschedule>& p_schedules) const;
 		// DocString: FMTmodel::aggregateSchedules
 		/**
 		 * @brief Build new schedule based on p_schedules with the corresponding aggregated actions

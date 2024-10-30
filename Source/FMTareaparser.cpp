@@ -2081,7 +2081,7 @@ const boost::regex FMTareaparser::m_RxExcludeSpec = boost::regex("^(.+)([\\s\\t]
 			std::string FMTareaparser::_getExcludeValue(const std::string& p_line) const
 				{
 				boost::smatch theMatch;
-				std::string excludeLine(p_line);
+				std::string excludeLine;
 				if (boost::regex_search(p_line, theMatch, m_RxExclude))
 					{
 					excludeLine = std::string(theMatch[3]);

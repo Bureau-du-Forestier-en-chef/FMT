@@ -39,16 +39,19 @@ int main(int argc, char* argv[])
 			boost::split(AGGREGATES, argv[2], boost::is_any_of("|"));
 			const std::vector<std::string>ORDERING = {};
 		}else {
-			PRIMARY_LOCATION = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/Interne/FMT/Entretien/Modeles_test/Prototype_Dec2023_TBE/PC_7002071_UA08152_FINAL.pri";
-			CARTE = "Carte/PC_7002071_UA_U08152.shp";
-			SCENARIO = "20_Regl_prov";
+			//PRIMARY_LOCATION = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/Interne/FMT/Entretien/Modeles_test/Prototype_Dec2023_TBE/PC_7002071_UA08152_FINAL.pri";
+			PRIMARY_LOCATION = "T:/Donnees/Usagers/PICBR1/2024/Taille_min_bloc/PC9588_U07152_DET/PC_9588_U07152_4_Vg3_2023_vSSP05.pri";
+			//CARTE = "Carte/PC_7002071_UA_U08152.shp";
+			//SCENARIO = "20_Regl_prov";
+			CARTE = "Carte/PC_9588_UA_U07152.shp";
+			SCENARIO = "15_Sc5_Determin3_apsp_FoncObj";
 			AGGREGATES = { "REGAFIN","REGAPAR","REGAEDU","REGAREG",
-						"ATBEMORT","ATBERETARD","ASNAT","AECHEC" };
-			ORDERING = { "ACPIP","ACT","ADEGPL","APL","ASNAT","ACPIL",
+						"ATBEMORT","ATBERETARD","ASNAT","AECHEC","AHEGMORT"};
+			/*ORDERING = {"ACPIP","ACT","ADEGPL","APL","ASNAT","ACPIL",
 						"ACFP","AEDUPL","APLBA","AECHEC","ACPFORT","ACTPL",
 						"ANET","APLIN","_DEATH","ACPFAIBL","ACPPTM","ADEGNAT",
 						"AREG","AEC","ACRV","AEDUNAT","ASCA","AEC2","ACRS","AEPC",
-						"APLLI","AEC3","APLCC","ACJ","ACPJ","ACPROG","ACA","ACA2","ACP" };
+						"APLLI","AEC3","APLCC","ACJ","ACPJ","ACPROG","ACA","ACA2","ACP" };*/
 			}
 
 		
@@ -91,6 +94,11 @@ int main(int argc, char* argv[])
 		Optimization1.FMTmodel::setparameter(Models::FMTintmodelparameters::PRESOLVE_ITERATIONS, 10);
 		Optimization1.FMTmodel::setparameter(Models::FMTintmodelparameters::LENGTH, std::min(static_cast<int>(SCHEDULES.size()), 3));
 		Optimization1.doplanning(false, SCHEDULES);
+
+		if (ORDERING.empty())
+			{
+			ORDERING = MODELS.at(0).getSchedulesPriorities(SCHEDULES);
+			}
 		const Models::FMTmodel AGGREGATED_MODEL = MODELS.at(0).aggregateAllActions(AGGREGATES, ORDERING);
 		ModelParser.writetoproject(OUTPUT_DIRECTORY + SCENARIO +".pri", AGGREGATED_MODEL);
 		if (!SCHEDULES.empty())
