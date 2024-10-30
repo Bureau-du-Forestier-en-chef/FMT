@@ -2124,12 +2124,17 @@ const boost::regex FMTareaparser::m_RxExcludeSpec = boost::regex("^(.+)([\\s\\t]
 					gotSomething = true;
 					}
 				const std::string CLEANED_LINE = _getExcludeValue(p_value);
-				if (!CLEANED_LINE.empty())
-					{
-					const std::pair<Core::FMTmask, Core::FMTspec> NEW_SPEC = _getExcludedSpec(p_themes, p_constants, CLEANED_LINE);
-					p_list.push_back(NEW_SPEC.first, NEW_SPEC.second);
-					gotSomething = true;
+				//if (!CLEANED_LINE.empty())
+					//{
+					const std::string TARGET = CLEANED_LINE.empty() ? p_value : CLEANED_LINE;
+					const std::pair<Core::FMTmask, Core::FMTspec> NEW_SPEC = _getExcludedSpec(p_themes, p_constants, TARGET);
+					if (!NEW_SPEC.second.empty())
+						{
+						p_list.push_back(NEW_SPEC.first, NEW_SPEC.second);
+						gotSomething = true;
 						}
+					
+					//}
 				return gotSomething;
 			}
 
@@ -2229,7 +2234,7 @@ const boost::regex FMTareaparser::m_RxExcludeSpec = boost::regex("^(.+)([\\s\\t]
 									}else if(!_gotNewExclude(themes,constants, line, Excluded))
 										{ 
 										_exhandler->raise(Exception::FMTexc::FMTinvalid_maskrange
-											, " at line " + std::to_string(_line), "FMTareaparser::read", __LINE__, __FILE__, _section);
+											, line+ " at line " + std::to_string(_line), "FMTareaparser::read", __LINE__, __FILE__, _section);
 										}
 								}
 								else if (!areas.empty() && _comment.empty())
