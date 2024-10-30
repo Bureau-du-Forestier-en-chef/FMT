@@ -44,7 +44,7 @@ int main(int argc, char* argv[])
 			//CARTE = "Carte/PC_7002071_UA_U08152.shp";
 			//SCENARIO = "20_Regl_prov";
 			CARTE = "Carte/PC_9588_UA_U07152.shp";
-			SCENARIO = "14_Sc5_Determin3_apsp";
+			SCENARIO = "15_Sc5_Determin3_apsp_FoncObj";
 			AGGREGATES = { "REGAFIN","REGAPAR","REGAEDU","REGAREG",
 						"ATBEMORT","ATBERETARD","ASNAT","AECHEC","AHEGMORT"};
 			/*ORDERING = {"ACPIP","ACT","ADEGPL","APL","ASNAT","ACPIL",

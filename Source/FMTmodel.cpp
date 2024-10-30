@@ -25,8 +25,6 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 //#include <cvmarkersobj.h>
 #include <memory>
 //#include <boost/container/flat_set.hpp>
-
-
 //using namespace Concurrency::diagnostic;
 
 
@@ -2828,6 +2826,9 @@ bool FMTmodel::doplanning(const bool& solve,std::vector<Core::FMTschedule> sched
 		presolved_schedules = setupschedulesforbuild(presolved_schedules);
 		const std::chrono::time_point<std::chrono::high_resolution_clock>buildstart = getclock();
 		presolved_model->build(presolved_schedules);
+		//
+		
+		//
 		_logger->logwithlevel("Builded " + getname() +" "+getdurationinseconds(buildstart)+ "\n", 1);
 		if(solve)
 		{

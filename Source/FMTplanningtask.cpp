@@ -187,7 +187,9 @@ namespace Parallel
 			while (!models.empty())
 			{
 				_logger->logwithlevel("Thread:" + getthreadid() + " Planning of " + models.front()->getname() + " started\n",0);
-				if (models.front()->doplanning(true, allschedules.front()))
+				const bool SOLVE = !models.front()->getparameter(Models::FMTboolmodelparameters::FORCE_PARTIAL_BUILD);
+				const bool FEASIBLE = models.front()->doplanning(SOLVE, allschedules.front());
+				if (FEASIBLE||!SOLVE)
 					{
 					resultswriter->getandwrite(models.front(),outputs.front());
 				}else {
