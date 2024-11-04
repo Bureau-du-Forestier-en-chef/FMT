@@ -2167,9 +2167,9 @@ void FMTspatialschedule::setgraphfromcache(const Graph::FMTlinegraph& graph, con
 std::map<std::string, double> FMTspatialschedule::referencebuild(const Core::FMTschedule& schedule,
 	const Models::FMTmodel& model,
 	const std::vector<boost::unordered_set<Core::FMTdevelopment>>& scheduleoperabilities,
+	std::default_random_engine& p_randomEngine,
 	bool schedule_only,
-	bool scheduleatfirstpass,
-	unsigned int seed)
+	bool scheduleatfirstpass)
 {
 	std::map<std::string, double>results;
 	try {
@@ -2181,7 +2181,7 @@ std::map<std::string, double> FMTspatialschedule::referencebuild(const Core::FMT
 		}
 		const int period = this->actperiod();
 		//this->setnewperiod();
-		std::default_random_engine generator(seed);
+		//std::default_random_engine generator(seed);
 		double total_area = 0;
 		std::vector<double>targets(model.actions.size(),0.0);
 		std::vector<double>originaltargets(model.actions.size(),0.0);
@@ -2230,7 +2230,7 @@ std::map<std::string, double> FMTspatialschedule::referencebuild(const Core::FMT
 						if (!spatialy_allowable.empty())
 						{
 							std::vector<Spatial::FMTcoordinate> updatedcells;
-							const Spatial::FMTeventcontainer harvest = this->buildharvest(action_area, bindingactions.at(action_id), generator, spatialy_allowable, period, action_id, updatedcells);
+							const Spatial::FMTeventcontainer harvest = this->buildharvest(action_area, bindingactions.at(action_id), p_randomEngine, spatialy_allowable, period, action_id, updatedcells);
 							if (harvest.size() > 0)
 							{
 								const double operatedarea = this->operateevents(harvest,model.actions.at(action_id), action_id, model.transitions[action_id], model.yields, model.themes);
@@ -2339,7 +2339,7 @@ std::map<std::string, double> FMTspatialschedule::greedyreferencebuild(const Cor
 				}
 				bool scheduleonly = false;
 				const Core::FMTschedule factoredschedule = schedule.getnewschedule(schedulefactor);
-				const std::map<std::string, double>results = solutioncopy.referencebuild(factoredschedule,model, scheduleoperabilities,false, true, seed);
+				const std::map<std::string, double>results = solutioncopy.referencebuild(factoredschedule,model, scheduleoperabilities, generator,false, true);
 				double newprimalinf = 0;
 				double newobjective = 0;
 				solutioncopy.getsolutionstatus(newobjective, newprimalinf, model,nullptr,true,false,false);

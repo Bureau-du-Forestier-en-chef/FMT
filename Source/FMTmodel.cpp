@@ -404,11 +404,11 @@ namespace Models{
 	std::vector<std::string>FMTmodel::getSchedulesPriorities(const std::vector<Core::FMTschedule>& p_schedules) const
 		{
 		std::map<std::string, double>allActions;
-		//const int MAX_PERIOD = 10;
+		const int MAX_PERIOD = 10;
 		for (const Core::FMTschedule& p_schedule : p_schedules)
 			{
-			//if (p_schedule.getperiod() <= MAX_PERIOD)
-				//{
+			if (p_schedule.getperiod() <= MAX_PERIOD)
+				{
 				for (const auto& ACTION : p_schedule)
 					{
 					const std::string ACTION_NAME = ACTION.first.getname();
@@ -436,7 +436,7 @@ namespace Models{
 						}
 					allActions[ACTION_NAME] = total;*/
 					}
-				//}
+				}
 			}
 		for (const Core::FMTaction& ACTION : actions)
 		{

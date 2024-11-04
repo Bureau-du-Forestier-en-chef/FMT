@@ -34,9 +34,9 @@ int main(int argc, char* argv[])
 			objectivevalue = std::stod(argv[3]);
 		}
 		else {
-			primarylocation = "D:/FMT/Examples/Models/TWD_land/TWD_land.pri";
-			scenario = "ExcludeArea";
-			length = 5;
+			primarylocation = "D:/CC_modele_feu/WS_CC/Feux_2023_ouest_V01.pri";
+			scenario = "PlayBack_CC";
+			length = 20;
 			objectivevalue = 16849; 
 		}
 		Parser::FMTmodelparser modelparser;
@@ -65,6 +65,7 @@ int main(int argc, char* argv[])
 		optimizationmodel.FMTmodel::setparameter(Models::FMTboolmodelparameters::STRICTLY_POSITIVE,true);
 		optimizationmodel.setparameter(Models::FMTintmodelparameters::PRESOLVE_ITERATIONS,10);
 		optimizationmodel.setparameter(Models::FMTintmodelparameters::NUMBER_OF_THREADS, 1);
+		optimizationmodel.setparameter(Models::FMTintmodelparameters::NUMBER_OF_ITERATIONS, 1);
 
 		optimizationmodel.FMTmodel::setparameter(Models::FMTboolmodelparameters::DEBUG_MATRIX,true);
 		

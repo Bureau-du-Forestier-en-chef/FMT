@@ -310,9 +310,9 @@ class FMTEXPORT FMTspatialschedule : public FMTlayer<Graph::FMTlinegraph>
 		*/
 		std::map<std::string, double> referencebuild(const Core::FMTschedule& schedule, const Models::FMTmodel& model,
 										const std::vector<boost::unordered_set<Core::FMTdevelopment>>& scheduleoperabilities,
+										std::default_random_engine& p_randomEngine,
 										bool schedule_only = true,
-										bool scheduleatfirstpass = true,
-										unsigned int seed = 0);
+										bool scheduleatfirstpass = true);
 		// DocString: FMTspatialschedule::greedyreferencebuild
 		/**
 		This function call multiple time the simulate function to find the best possible spatialisation for

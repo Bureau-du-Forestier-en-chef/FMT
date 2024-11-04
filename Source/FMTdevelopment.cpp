@@ -267,7 +267,23 @@ namespace Core{
 		
 			 }
 			 else {
-				 _exhandler->raise(Exception::FMTexc::FMTinvalid_transition_case,Transition.getname() + " for " + std::string(*this),
+				 std::string yldsStr;
+				 for (const FMTtransition::const_iterator fork : Transition.findsets(getmask()))
+				 {
+					 for (const std::string& YLD_NAME : fork->second.getylds())
+					 {
+						 if (yldsStr.find(YLD_NAME)==std::string::npos)
+						 {
+							 yldsStr += YLD_NAME + ":" + std::to_string(ylds.get(getyieldrequest(), YLD_NAME)) + "\n";
+						 }
+					 }
+				 }
+				 if (!yldsStr.empty())
+				 {
+					 yldsStr.pop_back();
+					 yldsStr.insert(0, "\n");
+				 }
+				 _exhandler->raise(Exception::FMTexc::FMTinvalid_transition_case,Transition.getname() + " for " + std::string(*this) + yldsStr,
 					 "FMTdevelopment::operate",__LINE__, __FILE__);
 			 }
 		 }catch (...)
@@ -311,9 +327,9 @@ namespace Core{
         {
 		std::string line = "";
         line+=std::string(mask)+" ";
-        line+=std::to_string(age)+" ";
-        line+=std::to_string(lock)+" ";
-        line+=std::to_string(period)+" ";
+        line+=std::to_string(getage())+" ";
+        line+=std::to_string(getlock())+" ";
+        line+=std::to_string(getperiod())+" ";
         return line;
         }
 	double FMTdevelopment::getarea() const

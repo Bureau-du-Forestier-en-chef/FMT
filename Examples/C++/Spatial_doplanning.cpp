@@ -27,20 +27,29 @@ int main(int argc, char* argv[])
 {
 #ifdef FMTWITHGDAL
 	Logging::FMTdefaultlogger().logstamp();
-	const std::string vals = argv[1];
-	std::vector<std::string>results;
-	boost::split(results, vals, boost::is_any_of("|"));
-	const std::string modellocation = results.at(0);
-	const std::string primarylocation = modellocation + results.at(1);
-	const std::string scenario = results.at(2);
+	std::string modellocation;
+	std::string primarylocation;
+	std::string scenario;
 	std::vector<std::string>spatialOutputs;
-	boost::split(spatialOutputs, std::string(argv[1]), boost::is_any_of("|"));
-	const int length = std::stoi(argv[3]);
-	/*const std::string modellocation = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/09_FMT/Modeles_test/Prototype_Dec2023_TBE/";
-	const std::string primarylocation = modellocation + "PC_7002071_UA08152_FINAL.pri";
-	const std::string scenario = "20_Regl_prov";
-	const int length = 3;
-	std::vector<std::string>spatialOutputs = {"OVOLTOTREC"};*/
+	int length;
+	if (argc>1)
+	{
+		const std::string vals = argv[1];
+		std::vector<std::string>results;
+		boost::split(results, vals, boost::is_any_of("|"));
+		modellocation = results.at(0);
+		primarylocation = modellocation + results.at(1);
+		scenario = results.at(2);
+		std::vector<std::string>spatialOutputs;
+		boost::split(spatialOutputs, std::string(argv[1]), boost::is_any_of("|"));
+		length = std::stoi(argv[3]);
+	}else {
+		modellocation = "T:/Donnees/Usagers/PICBR1/PC9424_U08551_DET/";
+		primarylocation = modellocation + "PC_9424_U08551_4_Vg1_2023_vSSP03.pri";
+		scenario = "14_Sc5_Determin_apsp";
+		length = 2;
+		spatialOutputs = { "OVOLGFIREC" };
+	}
 	const std::string outdir = "../../tests/Spatial_doplanning/";
 	Parser::FMTmodelparser mparser;
 	mparser.setdebuglogger();

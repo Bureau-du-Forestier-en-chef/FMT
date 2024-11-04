@@ -651,6 +651,7 @@ namespace Core {
 					}
 					lookat.erase(yld);
 				value = std::round(value * 100000000) / 100000000;
+				
 				if (lookat.empty())//Cache only first cally
 				{
 					const double TIME_TOOK = getduration<std::chrono::milliseconds::period>(calculationStart);

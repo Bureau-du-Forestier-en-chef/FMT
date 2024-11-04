@@ -51,10 +51,10 @@ namespace Core
 		std::string line;
 		if (getlock() > 0)
 		{
-			line = "*A " + std::string(getmask()) + " " + std::to_string(getage()) + " " + std::to_string(area) + " _lock " + std::to_string(getlock());
+			line = "*A " + std::string(getmask()) + " " + std::to_string(getage()) + " " + std::to_string(getarea()) + " _lock " + std::to_string(getlock());
 		}
 		else {
-			line = "*A " + std::string(getmask()) + " " + std::to_string(getage()) + " " + std::to_string(area);
+			line = "*A " + std::string(getmask()) + " " + std::to_string(getage()) + " " + std::to_string(getarea());
 		}
 		return line;
 	}
