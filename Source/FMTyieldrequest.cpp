@@ -72,6 +72,11 @@ namespace Core
 		return  m_yields->_getFirstSeen(p_yield);
 		}
 
+	double FMTyieldrequest::getYield(const std::string& p_yld) const
+		{
+		return m_yields->get(*this, p_yld);
+		}
+
 
 void FMTyieldrequest::_updateData(const FMTyields& yields) const
 {

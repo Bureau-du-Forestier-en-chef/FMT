@@ -51,6 +51,7 @@ namespace Core
 		const Core::FMTmask& getresumemask() const;
 		const Graph::FMTgraphvertextoyield* getvertexgraphinfo() const;
 		const_iterator getFirstSeen(const std::string& p_yield) const;
+		double getYield(const std::string& p_yld) const;
 	private:
 		friend class FMTyields;
 		mutable std::vector<const_iterator>datas;

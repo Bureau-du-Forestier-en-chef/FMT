@@ -12,35 +12,56 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMToutput.h"
 #include "FMTmodel.h"
 #include <boost/property_tree/json_parser.hpp>
+#include <boost/filesystem.hpp>
 #include <memory>
+#include "FMTparser.h"
+
+#define M_E 2.71828182845904523536
 
 namespace Core
 {
 
 	FMTyieldmodelVolToBiomass::FMTyieldmodelVolToBiomass(const boost::property_tree::ptree& p_jsonProps,
-		const std::vector<std::string>& p_yields, const Core::FMTmask& p_mask) :
-		m_cache(), m_mask(p_mask)
+		const std::vector<std::string>& p_yields) :
+		m_equation1(),
+		m_equation2(),
+		m_equation3(),
+		m_equation4To7()
+
 	{
 		boost::property_tree::ptree::const_assoc_iterator modelNameIt = p_jsonProps.find(JSON_PROP_MODEL_NAME);
 		modelName = modelNameIt->second.data();
 		modelYields = p_yields;
+		_setParametersFromCsv(p_jsonProps,m_JSON_EQ1_FILE,{"a","b","volm"}, m_equation1.data());
+		_setParametersFromCsv(p_jsonProps, m_JSON_EQ2_FILE,{ "a","b","k","cap"},m_equation2.data());
+		_setParametersFromCsv(p_jsonProps, m_JSON_EQ3_FILE,{ "a","b","k","cap" },m_equation3.data());
+		_setParametersFromCsv(p_jsonProps, m_JSON_EQ47_FILE,{ "a1","a2","a3","b1","b2","b3","c1","c2","c3" }, m_equation4To7.data());
+
 	}
 
 	const std::vector<double>FMTyieldmodelVolToBiomass::Predict(const Core::FMTyieldrequest& p_request) const
 	{
 		std::vector<double> Predictions;
 		try {
-			if (m_cache.empty())
-			{
-				const std::vector<FMToutput> OUTPUTS = getOutputs();
-				Predictions = getOutputValues(OUTPUTS);
-				m_cache = Predictions;
-			}
-			else {
-				Predictions = m_cache;
-			}
-		}
-		catch (...)
+			const double MERCHANTABLE_VOLUME = p_request.getYield(modelYields.back());
+			const double MERCHANTABLE_BIOMASS = _getMerchantableBiomass(MERCHANTABLE_VOLUME);
+			const double NON_MERCHANTABLE_BIOMASS = _getNonMerchantableBiomass(MERCHANTABLE_BIOMASS);
+			const double SAPLING_BIOMASS = _getSaplingBiomass(MERCHANTABLE_BIOMASS + NON_MERCHANTABLE_BIOMASS);
+			const double STEM_FACTOR = _getStemWoodFactor(MERCHANTABLE_VOLUME);
+			const double TOTAL_ABG_BIOMASS = (MERCHANTABLE_BIOMASS + NON_MERCHANTABLE_BIOMASS + SAPLING_BIOMASS) / STEM_FACTOR;
+			const double BARK_BIOMASS = _getBarkBiomass(MERCHANTABLE_VOLUME, TOTAL_ABG_BIOMASS);
+			const double BRANCHES_BIOMASS = _getBranchesBiomass(MERCHANTABLE_VOLUME, TOTAL_ABG_BIOMASS);
+			const double FOLIAGE_BIOMASS = _getFoliageBiomass(MERCHANTABLE_VOLUME, TOTAL_ABG_BIOMASS);
+			Predictions.reserve(7);
+			Predictions.push_back(MERCHANTABLE_BIOMASS);
+			Predictions.push_back(NON_MERCHANTABLE_BIOMASS);
+			Predictions.push_back(SAPLING_BIOMASS);
+			Predictions.push_back(TOTAL_ABG_BIOMASS);
+			Predictions.push_back(BARK_BIOMASS);
+			Predictions.push_back(BRANCHES_BIOMASS);
+			Predictions.push_back(FOLIAGE_BIOMASS);
+			
+		}catch (...)
 		{
 			_exhandler->raisefromcatch("", "FMTyieldmodelVolToBiomass::Predict", __LINE__, __FILE__, Core::FMTsection::Yield);
 		}
@@ -51,23 +72,13 @@ namespace Core
 	std::unique_ptr<FMTyieldmodel> FMTyieldmodelVolToBiomass::presolve(const FMTmaskfilter& p_filter,
 		const std::vector<FMTtheme>& p_newThemes) const
 	{
-		FMTyieldmodelVolToBiomass newPresolved(*this);
-		try {
-			newPresolved.m_mask = newPresolved.m_mask.presolve(p_filter, p_newThemes);
-		}
-		catch (...)
-		{
-			_exhandler->raisefromcatch(GetModelName(), "FMTyieldmodelVolToBiomass::presolve", __LINE__, __FILE__, Core::FMTsection::Yield);
-		}
-		return std::unique_ptr<FMTyieldmodel>(new FMTyieldmodelVolToBiomass(newPresolved));
+		return std::unique_ptr<FMTyieldmodel>(new FMTyieldmodelVolToBiomass(*this));
 	}
 
 	std::unique_ptr<FMTyieldmodel> FMTyieldmodelVolToBiomass::postsolve(const FMTmaskfilter& p_filter,
 		const std::vector<FMTtheme>& p_baseThemes) const
 	{
-		FMTyieldmodelVolToBiomass newPostsolved(*this);
-		newPostsolved.m_mask.postsolve(p_filter, p_baseThemes);
-		return std::unique_ptr<FMTyieldmodel>(new FMTyieldmodelVolToBiomass(newPostsolved));
+		return std::unique_ptr<FMTyieldmodel>(new FMTyieldmodelVolToBiomass(*this));
 	}
 
 	std::unique_ptr<FMTyieldmodel>FMTyieldmodelVolToBiomass::Clone() const
@@ -77,51 +88,119 @@ namespace Core
 
 	std::string FMTyieldmodelVolToBiomass::GetModelType()
 	{
-		return "UNIT_COVERAGE";
+		return "VOLUME_TO_BIOMASS";
 	}
 
-	std::vector<FMToutput> FMTyieldmodelVolToBiomass::getOutputs() const
+	double FMTyieldmodelVolToBiomass::_getMerchantableBiomass(const double& p_grossVolume) const
 	{
-		std::vector<FMToutput>outputs;
-		try {
-			for (const std::string& yld : modelYields)
-			{
-				std::vector<Core::FMToutputsource>sources;
-				sources.push_back(Core::FMToutputsource(Core::FMTspec(), m_mask, Core::FMTotar::inventory, yld));
-				outputs.push_back(Core::FMToutput(yld, yld, yld, sources, std::vector<Core::FMToperator>()));
-			}
-		}
-		catch (...)
-		{
-			_exhandler->raisefromcatch("", "FMTyieldmodelVolToBiomass::getOutputs", __LINE__, __FILE__, Core::FMTsection::Yield);
-		}
-		return outputs;
+		return m_equation1[0] * std::pow(std::min(p_grossVolume, m_equation1[2]), m_equation1[1]);
 	}
 
-	std::vector<double> FMTyieldmodelVolToBiomass::getOutputValues(const std::vector<FMToutput>& p_outputs) const
+	double FMTyieldmodelVolToBiomass::_getNonMerchantableBiomass(const double& p_merchantableBiomass) const
 	{
-		std::vector<double>returnedValues(p_outputs.size());
-		try {
-			if (m_modelPtr == nullptr)
-			{
-				_exhandler->raise(Exception::FMTfunctionfailed,
-					"No available model",
-					"FMTyieldmodelVolToBiomass::getOutputValuesl", __LINE__, __FILE__);
-			}
-			size_t outId = 0;
-			const int PERIOD_TARGET = m_modelPtr->getAreaPeriod();
-			for (const FMToutput& OUTPUT : p_outputs)
-			{
-				returnedValues[outId] = m_modelPtr->getoutput(OUTPUT, PERIOD_TARGET, Core::FMToutputlevel::totalonly).at("Total");
-				outId += 1;
-			}
-		}
-		catch (...)
-		{
-			_exhandler->raisefromcatch("", " FMTyieldmodelVolToBiomass::getOutputValues", __LINE__, __FILE__, Core::FMTsection::Yield);
-		}
-		return returnedValues;
+		const double NON_MERCH_FACTOR = std::min(m_equation2[2] + m_equation2[0] * 
+													std::pow(p_merchantableBiomass, m_equation2[1]), m_equation2[3]);
+		return p_merchantableBiomass * NON_MERCH_FACTOR - p_merchantableBiomass;
 	}
+
+	double FMTyieldmodelVolToBiomass::_getSaplingBiomass(const double& p_MerchAndNonMerchBiomass) const
+	{
+		const double SAPLING_FACTOR = std::min(m_equation3[2] + m_equation3[0] *
+										std::pow(p_MerchAndNonMerchBiomass, m_equation3[1]), m_equation3[3]);
+		return p_MerchAndNonMerchBiomass * SAPLING_FACTOR - p_MerchAndNonMerchBiomass;
+	}
+
+	double FMTyieldmodelVolToBiomass::_getStemWoodFactor(const double& p_MerchantableVolume) const
+	{
+		const double VOL_LOG = std::log(p_MerchantableVolume + 5);
+		const double STEM_WOOD_PROP = 1 / (1 + (std::pow(M_E,m_equation4To7[0]+ m_equation4To7[1]* p_MerchantableVolume+ m_equation4To7[2] * VOL_LOG))
+											 + (std::pow(M_E, m_equation4To7[3] + m_equation4To7[4] * p_MerchantableVolume + m_equation4To7[5] * VOL_LOG)) 
+											 + (std::pow(M_E, m_equation4To7[6] + m_equation4To7[7] * p_MerchantableVolume + m_equation4To7[8] * VOL_LOG)));
+		return STEM_WOOD_PROP;
+	}
+
+	double FMTyieldmodelVolToBiomass::_getBarkBiomass(const double& p_MerchantableVolume,
+		const double& p_totalAboveGroundBiomass) const
+	{
+		const double VOL_LOG = std::log(p_MerchantableVolume + 5);
+		const double BARK_PROP = std::pow(M_E, m_equation4To7[0] + m_equation4To7[1] * p_MerchantableVolume + m_equation4To7[2] * VOL_LOG) / 
+			(1 + (std::pow(M_E, m_equation4To7[0] + m_equation4To7[1] * p_MerchantableVolume + m_equation4To7[2] * VOL_LOG))
+			+ (std::pow(M_E, m_equation4To7[3] + m_equation4To7[4] * p_MerchantableVolume + m_equation4To7[5] * VOL_LOG))
+			+ (std::pow(M_E, m_equation4To7[6] + m_equation4To7[7] * p_MerchantableVolume + m_equation4To7[8] * VOL_LOG)));
+		return p_totalAboveGroundBiomass * BARK_PROP;
+	}
+
+	double FMTyieldmodelVolToBiomass::_getBranchesBiomass(const double& p_MerchantableVolume,
+		const double& p_totalAboveGroundBiomass) const
+	{
+		const double VOL_LOG = std::log(p_MerchantableVolume + 5);
+		const double BRANCHES_PROP = std::pow(M_E, m_equation4To7[3] + m_equation4To7[4] * p_MerchantableVolume + m_equation4To7[5] * VOL_LOG) /
+			(1 + (std::pow(M_E, m_equation4To7[0] + m_equation4To7[1] * p_MerchantableVolume + m_equation4To7[2] * VOL_LOG))
+				+ (std::pow(M_E, m_equation4To7[3] + m_equation4To7[4] * p_MerchantableVolume + m_equation4To7[5] * VOL_LOG))
+				+ (std::pow(M_E, m_equation4To7[6] + m_equation4To7[7] * p_MerchantableVolume + m_equation4To7[8] * VOL_LOG)));
+		return p_totalAboveGroundBiomass * BRANCHES_PROP;
+	}
+
+	double FMTyieldmodelVolToBiomass::_getFoliageBiomass(const double& p_MerchantableVolume,
+		const double& p_totalAboveGroundBiomass) const
+	{
+		const double VOL_LOG = std::log(p_MerchantableVolume + 5);
+		const double FOLIAGE_PROP = std::pow(M_E, m_equation4To7[6] + m_equation4To7[7] * p_MerchantableVolume + m_equation4To7[8] * VOL_LOG) /
+			(1 + (std::pow(M_E, m_equation4To7[0] + m_equation4To7[1] * p_MerchantableVolume + m_equation4To7[2] * VOL_LOG))
+				+ (std::pow(M_E, m_equation4To7[3] + m_equation4To7[4] * p_MerchantableVolume + m_equation4To7[5] * VOL_LOG))
+				+ (std::pow(M_E, m_equation4To7[6] + m_equation4To7[7] * p_MerchantableVolume + m_equation4To7[8] * VOL_LOG)));
+		return p_totalAboveGroundBiomass * FOLIAGE_PROP;
+	}
+
+	void FMTyieldmodelVolToBiomass::_setParametersFromCsv(
+		const boost::property_tree::ptree& p_json,
+		const std::string& p_fileTarget,
+		const std::vector<std::string>& p_parameters,
+		double* p_data) const
+	{
+		const boost::filesystem::path FMT_DLL(getruntimelocation());
+		boost::property_tree::ptree::const_assoc_iterator PATH_TO_EQ = p_json.find(p_fileTarget);
+		boost::filesystem::path EQ_PATH(PATH_TO_EQ->second.data());
+		const std::string EQ_STR_PATH = (FMT_DLL / EQ_PATH).string();
+		Parser::FMTparser csvParser;
+		const std::vector<std::vector<std::string>> CSV_DATA = csvParser.readcsv(EQ_STR_PATH, ',');
+		bool foundParameters = false;
+		const int FIRST_DATA = 6;
+		size_t rowIndex = 1;
+		while (!foundParameters && rowIndex < CSV_DATA.size())
+		{
+			if (std::equal(CSV_DATA[rowIndex].begin(), CSV_DATA[rowIndex].begin() + FIRST_DATA-1, modelYields.begin()))
+			{
+				size_t columnId = FIRST_DATA;
+				for (const std::string& PARAMETER : p_parameters)
+				{
+					if (PARAMETER == CSV_DATA[0][columnId])
+					{
+						*p_data = std::stod(CSV_DATA[rowIndex][columnId]);
+						++p_data;
+					}
+					++columnId;
+				}
+				foundParameters = true;
+			}
+			++rowIndex;
+		}
+		if (!foundParameters)
+			{
+			std::string key;
+			for (const std::string& KEY : modelYields)
+				{
+				key += KEY + " ";
+				}
+			key.pop_back();
+			_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
+				"Cant find parameters for "+ key,
+				"FMTyieldmodelVolToBiomass::_setParametersFromCsv", __LINE__, __FILE__);
+			}
+
+	}
+
+	
 
 }
 

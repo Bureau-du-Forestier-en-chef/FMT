@@ -34,6 +34,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMToutput.h"
 #include "FMToutputparser.h"
 #include "FMTyieldmodelUnitCoverage.h"
+#include "FMTyieldmodelVolToBiomass.h"
 
 
 
@@ -445,6 +446,11 @@ std::unique_ptr<Core::FMTyieldmodel>FMTyieldparser::readyieldmodel(const std::st
 			{
 				return std::unique_ptr<Core::FMTyieldmodel>(new Core::FMTyieldmodelUnitCoverage(root, inputYields, mainmask));
 			}
+			if (modelType == Core::FMTyieldmodelVolToBiomass::GetModelType())
+			{
+				return std::unique_ptr<Core::FMTyieldmodel>(new Core::FMTyieldmodelVolToBiomass(root, inputYields));
+			}
+
 		_exhandler->raise(Exception::FMTfunctionfailed,
 			"No valid model type for " + modeljson.string(),
 							  "FMTyieldparser::readyieldmodel", __LINE__, __FILE__, _section);

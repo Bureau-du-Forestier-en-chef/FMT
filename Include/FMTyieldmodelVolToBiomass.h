@@ -11,6 +11,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTyieldmodel.h"
 #include "FMTmask.h"
 #include <vector>
+#include <array>
 
 namespace Core
 {
@@ -71,36 +72,98 @@ namespace Core
 		*/
 		static std::string GetModelType();
 	private:
+		// DocString: FMTyieldmodelVolToBiomass::JSON_EQ1_FILE_PATH
+		///equation1 file
+		const std::string m_JSON_EQ1_FILE = "appendix2_table3";
+		// DocString: FMTyieldmodelVolToBiomass::JSON_EQ2_FILE_PATH
+		///equation2 file
+		const std::string m_JSON_EQ2_FILE = "appendix2_table4";
+		// DocString: FMTyieldmodelVolToBiomass::JSON_EQ3_FILE_PATH
+		///equation3 file
+		const std::string m_JSON_EQ3_FILE = "appendix2_table5";
+		// DocString: FMTyieldmodelVolToBiomass::JSON_EQ47_FILE_PATH
+		///equation 4 to 7 file
+		const std::string m_JSON_EQ47_FILE = "appendix2_table6";
 		// DocString: FMTyieldmodelVolToBiomass::m_equation1
-		///equation 1 a,b
-		std::array<float,2>m_equation1;
+		///equation 1 parameters a,b,volm
+		std::array<double,3>m_equation1;
 		// DocString: FMTyieldmodelVolToBiomass::m_equation2
-		///equation 2 a,b,k,cap
-		std::array<float,4>m_equation2;
+		///equation 2 parameters a,b,k,cap
+		std::array<double,4>m_equation2;
 		// DocString: FMTyieldmodelVolToBiomass::m_equation3
-		///equation 3 a,b,k,cap
-		std::array<float,4>m_equation3;
+		///equation 3 parameters a,b,k,cap
+		std::array<double,4>m_equation3;
+		// DocString: FMTyieldmodelVolToBiomass::m_equation4
+		///equation 4 to 7 parameters a1,a2,a3,b1,b2,b3,c1,c2,c3
+		std::array<double, 9>m_equation4To7;
 		// DocString: FMTyieldmodelVolToBiomass::_getMerchantableBiomass
 		/**
 		@brief Get merchantable biomass using gross merchantable volume
 		@param[in] merchantable volume.
 		@return The merchantable biomass
 		*/
-		float _getMerchantableBiomass(const float& p_grossVolume) const;
+		double _getMerchantableBiomass(const double& p_grossVolume) const;
 		// DocString: FMTyieldmodelVolToBiomass::_getNonMerchantableBiomass
 		/**
 		@brief Get merchantable biomass using merchantable biomass
 		@param[in] merchantable biomass.
 		@return The non merchantable biomass
 		*/
-		float _getNonMerchantableBiomass(const float& p_merchantableBiomass) const;
+		double _getNonMerchantableBiomass(const double& p_merchantableBiomass) const;
 		// DocString: FMTyieldmodelVolToBiomass::_getSaplingBiomass
 		/**
 		@brief Get merchantable sapling biomass using gross merchantable volume
-		@param[in] non merchantable biomass.
+		@param[in] non merchantable n merchantable biomass.
 		@return The sapling biomass
 		*/
-		float _getSaplingBiomass(const float& p_nonMerchantableBiomass) const;
+		double _getSaplingBiomass(const double& p_MerchAndNonMerchBiomass) const;
+		// DocString: FMTyieldmodelVolToBiomass::_getStemWoodFactor
+		/**
+		@brief Get the Stem wood Biomass
+		@param[in] merchantable volume
+		@return the Stem Wood biomass
+		*/
+		double _getStemWoodFactor(const double& p_MerchantableVolume) const;
+		// DocString: FMTyieldmodelVolToBiomass::_getBarkBiomass
+		/**
+		@brief Get the Bark Biomass
+		@param[in] merchantable volume
+		@param[in] Total Biomass
+		@return the Bark biomass
+		*/
+		double _getBarkBiomass(const double& p_MerchantableVolume,
+								const double& p_totalAboveGroundBiomass) const;
+		// DocString: FMTyieldmodelVolToBiomass::_getBranchesBiomass
+		/**
+		@brief Get the branches Biomass
+		@param[in] merchantable volume
+		@param[in] Total Biomass
+		@return the branches biomass
+		*/
+		double _getBranchesBiomass(const double& p_MerchantableVolume,
+			const double& p_totalAboveGroundBiomass) const;
+		// DocString: FMTyieldmodelVolToBiomass::_getFoliageBiomass
+		/**
+		@brief Get the foliage Biomass
+		@param[in] merchantable volume
+		@param[in] Total Biomass
+		@return foliage biomass
+		*/
+		double _getFoliageBiomass(const double& p_MerchantableVolume,
+			const double& p_totalAboveGroundBiomass) const;
+		// DocString: FMTyieldmodelVolToBiomass::_setParametersFromCsv
+		/**
+		@brief Load the parameters from csv files.
+		@param[in] json config file
+		@param[in] p_file to look in
+		@param[in] p_parameters parameter to grab
+		@return parameters in double format
+		*/
+		void _setParametersFromCsv(
+			const boost::property_tree::ptree& p_json,
+			const std::string& p_fileTarget,
+			const std::vector<std::string>& p_parameters,
+			double* p_data) const;
 	};
 }
 

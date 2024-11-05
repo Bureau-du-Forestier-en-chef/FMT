@@ -291,11 +291,6 @@ class FMTEXPORT FMTparser: public Core::FMTobject
 		Return the FMTsection given the extension of the file.
 		*/
 		Core::FMTsection from_extension(const std::string& ext) const;
-		// DocString: FMTparser::readcsv
-		/**
-		Read a csv file from a (location) using a (separator) and returns a vector of vector of lines.
-		*/
-		std::vector<std::vector<std::string>>readcsv(const std::string& location,const char& separator);
 		// DocString: FMTparser::getPerBound
 		/**
 		@brief get the period bound of an inputs
@@ -498,6 +493,14 @@ class FMTEXPORT FMTparser: public Core::FMTobject
 		*/
 		std::vector<std::vector<std::string>>getGDALrasterdriverextensions(bool testcreation = true) const;
 		#endif
+		// DocString: FMTparser::readcsv
+		/**
+		@brief Read a csv file from a (location) using a (separator) and returns a vector of vector of lines.
+		@param[in] file location
+		@param[in] separator to use
+		@return general vector of each line and vector for columns data.
+		*/
+		std::vector<std::vector<std::string>>readcsv(const std::string& location, const char& separator);
     };
 
 }
