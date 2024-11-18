@@ -19,6 +19,8 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTfreeexceptionhandler.h"
 #include <boost/filesystem.hpp>
 #include <boost/algorithm/string.hpp>
+#include <boost/stacktrace.hpp>
+#include <exception>
 #include <chrono>
 
 #if defined __MINGW64__||__CYGWIN__
@@ -167,6 +169,19 @@ namespace Core
 		//this->checksignals();
 
 	}
+
+	void FMTobject::setTerminateStack()
+	{
+		std::set_terminate(&FMTobject::_terminate);
+	}
+
+	void FMTobject::_terminate()
+	{
+		const std::string TRACE = boost::stacktrace::to_string(boost::stacktrace::stacktrace());
+		*_logger <<"Terminate due to error\n"<< TRACE << "\n";
+		_logger->closefilestream();
+	}
+
 
 	FMTobject::FMTobject(const std::unique_ptr<Exception::FMTexceptionhandler> exhandler)
 	{

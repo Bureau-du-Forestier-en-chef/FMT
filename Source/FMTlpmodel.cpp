@@ -1887,7 +1887,7 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 			{
 				writeLP((boost::filesystem::current_path() += boost::filesystem::path::preferred_separator).string());
 			}
-			_exhandler->printexceptions("", "FMTlpmodel::initialsolve", __LINE__, __FILE__);
+			_exhandler->printexceptions(getname(), "FMTlpmodel::initialsolve", __LINE__, __FILE__);
 		}
 
 		return false;
@@ -2255,7 +2255,7 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 			}
 		}catch(...)
 		{
-			_exhandler->raisefromcatch("", "FMTlpmodel::build", __LINE__, __FILE__);
+			_exhandler->raisefromcatch(getname(), "FMTlpmodel::build", __LINE__, __FILE__);
 		}
 		return true;
 	}
@@ -2267,7 +2267,7 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 			optimal = this->initialsolve();
 		}catch(...)
 		{
-			_exhandler->raisefromcatch("", "FMTlpmodel::solve", __LINE__, __FILE__);
+			_exhandler->raisefromcatch(getname(), "FMTlpmodel::solve", __LINE__, __FILE__);
 		}
 		return optimal;
 	}

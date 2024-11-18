@@ -101,7 +101,7 @@ Models::FMTmodel FMTWrapperCore::Transformation::buildAction(const Models::FMTmo
 		{
 			Parser::FMTscheduleparser SCHEDULE_PARSER;
 			const std::vector<Core::FMTschedule> NEW_SCHEDULE = BUILDED_MODEL.buildSchedule(*BUILDED_MODEL.getactions().begin(), SCHEDULES);
-			SCHEDULE_PARSER.write(NEW_SCHEDULE, outputPath + p_scenario_name + ".seq");
+			SCHEDULE_PARSER.write(NEW_SCHEDULE, outputPath + p_scenario_name + "._seq");
 		}
 	}
 	catch (...) {

@@ -71,7 +71,7 @@ namespace Parallel
 		{
 		return alltasks;
 		}
-
+	
 	void FMTtaskhandler::splittasks()
 		{
 		try {
@@ -100,24 +100,31 @@ namespace Parallel
 
 	}
 
+	void FMTtaskhandler::_interruptWork(boost::thread& p_thread)
+		{
+		if (p_thread.joinable())
+			{
+			try {
+				p_thread.interrupt();
+			}catch(...){};
+			}
+		}
+
 	void FMTtaskhandler::conccurentrun()
 		{
+		std::vector<boost::thread>workers;
 		try {
 			const std::chrono::time_point<std::chrono::high_resolution_clock>tasksstart = getclock();
 			splittasks();
 			FMTtask::setTotalThreads(alltasks.size());
-			std::vector<boost::thread>workers;
 			for (std::unique_ptr<FMTtask>& task : alltasks)
 				{
-				workers.push_back(boost::thread(std::bind(&FMTtask::work,task.get())));
+				workers.push_back(boost::thread(&FMTtask::work,task.get()));
 				}
 			for (boost::thread& worker : workers)
 				{
 				worker.join();
 				}
-			/*_exhandler->raise(Exception::FMTexc::FMTfunctionfailed,
-				"Infeasible Global model",
-				"FMTreplanningtask::FMTreplanningtask", __LINE__, __FILE__);*/
 			checksignals();
 			if (!alltasks.empty())
 			{
@@ -126,6 +133,10 @@ namespace Parallel
 			logtasktime(tasksstart);
 		}catch (...)
 			{
+			for (boost::thread& worker : workers)
+				{
+				_interruptWork(worker);
+				}
 				_exhandler->printexceptions("", "FMTtaskhandler::conccurentrun", __LINE__, __FILE__);
 			}
 
@@ -141,6 +152,7 @@ namespace Parallel
 
 	void FMTtaskhandler::ondemandrun()
 	{
+		std::list<boost::thread>workers;
 		try {
 			const std::chrono::time_point<std::chrono::high_resolution_clock>tasksstart = getclock();
 			if (alltasks.size() != 1)
@@ -149,13 +161,12 @@ namespace Parallel
 					"FMTtaskhandler::ondemandrun", __LINE__, __FILE__);
 			}
 			std::list<std::unique_ptr<FMTtask>>tasks;
-			std::list<boost::thread>workers;
 			unsigned int taskid = 0;
 			std::unique_ptr<FMTtask>newtask = alltasks.at(0)->spawn();
 			while (taskid < maxnumberofthread && newtask)
 			{
 				tasks.push_back(std::move(newtask));
-				workers.push_back(boost::thread(std::bind(&FMTtask::work, tasks.back().get())));
+				workers.push_back(boost::thread(&FMTtask::work, tasks.back().get()));
 				newtask = std::move(alltasks.at(0)->spawn());
 				++taskid;
 			}
@@ -176,7 +187,7 @@ namespace Parallel
 						if (newtask)
 						{
 							tasks.push_back(std::move(newtask));
-							workers.push_back(boost::thread(std::bind(&FMTtask::work, tasks.back().get())));
+							workers.push_back(boost::thread(&FMTtask::work, tasks.back().get()));
 							newtask = std::move(alltasks.at(0)->spawn());
 						}
 						break;
@@ -189,6 +200,10 @@ namespace Parallel
 			logtasktime(tasksstart);
 		}catch (...)
 			{
+			for (boost::thread& worker : workers)
+				{
+				_interruptWork(worker);
+				}
 			_exhandler->printexceptions("", "FMTtaskhandler::ondemandrun", __LINE__, __FILE__);
 			}
 	}

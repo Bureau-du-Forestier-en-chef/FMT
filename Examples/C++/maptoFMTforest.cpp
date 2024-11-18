@@ -31,10 +31,10 @@ int main(int argc, char* argv[])
         maplocation = argv[2];// modellocation + "/Carte/TWD_land.shp";
         writelocation = argv[3];// "../../tests/maptoFMTforest/";
     }else {
-        primarylocation = "T:/Donnees/Usagers/PICBR1/Prototype_Dec2023/PC_7002071_UA08152_FINAL.pri";
-        scenario = "3_RegProv_apsp";
+        primarylocation = "T:/Donnees/Usagers/PICBR1/PC9424_U08551_DET/PC_9424_U08551_4_Vg1_2023_vSSP03.pri";
+        scenario = "14_Sc5_Determin_apsp";
         side = 196;
-        maplocation = "T:/Donnees/Usagers/PICBR1/Prototype_Dec2023/Carte/PC_7002071_UA_U08152.shp";// modellocation + "/Carte/TWD_land.shp";
+        maplocation = "T:/Donnees/Usagers/PICBR1/PC9424_U08551_DET/Carte/PC_9424_UA_U08551.shp";// modellocation + "/Carte/TWD_land.shp";
         writelocation =  "../../tests/maptoFMTforest/";
     }
    

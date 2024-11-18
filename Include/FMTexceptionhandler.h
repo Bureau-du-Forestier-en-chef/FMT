@@ -256,7 +256,6 @@ namespace Exception
 			ar& BOOST_SERIALIZATION_NVP(_logger);
 			ar& BOOST_SERIALIZATION_NVP(usenestedexceptions);
 		}
-	
 	};
 
 }

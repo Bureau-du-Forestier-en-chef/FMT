@@ -36,7 +36,7 @@ int main(int argc, char* argv[])
 		else {
 			primarylocation = "D:/CC_modele_feu/WS_CC/Feux_2023_ouest_V01.pri";
 			scenario = "PlayBack_CC";
-			length = 20;
+			length = 1;
 			objectivevalue = 16849; 
 		}
 		Parser::FMTmodelparser modelparser;

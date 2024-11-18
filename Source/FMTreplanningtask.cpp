@@ -365,7 +365,6 @@ namespace Parallel
 				
 				for (int replanningperiod = 1; replanningperiod <= replanningperiods; ++replanningperiod)
 				{
-					
 					if (replanningperiod != 1)
 					{
 						//boost::lock_guard<boost::recursive_mutex> guard(taskmutex);
@@ -420,7 +419,8 @@ namespace Parallel
 			setstatus(true);
 		}catch (...)
 		{
-			_exhandler->raisefromthreadcatch("","FMTreplanningtask::work", __LINE__, __FILE__);
+			const std::string LOCATION = "On thread " + getthreadid() + " on replicate " + std::to_string(getiteration());
+			_exhandler->raisefromthreadcatch(LOCATION,"FMTreplanningtask::work", __LINE__, __FILE__);
 		}
 
 	}
@@ -505,7 +505,9 @@ namespace Parallel
 			return std::move(modelcpy);
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("", "FMTreplanningtask::domodelplanning", __LINE__, __FILE__);
+			const std::string LOCATION = "Thread:" + getthreadid() + " " + model->getname() +
+				" replanning period "+std::to_string(replanningperiod) +" replicate " + std::to_string(getiteration());
+			_exhandler->raisefromcatch(LOCATION, "FMTreplanningtask::domodelplanning", __LINE__, __FILE__);
 			}
 		return std::move(std::unique_ptr<Models::FMTmodel>(nullptr));
 	}

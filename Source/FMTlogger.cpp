@@ -25,6 +25,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "CoinMessageHandler.hpp"
 #endif
 
+
 namespace Logging
 {
 

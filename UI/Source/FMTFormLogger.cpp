@@ -23,6 +23,7 @@ Wrapper::FMTFormLogger::FMTFormLogger(const std::string& nomFichierLogger, logfu
 {
 	redirectofile(nomFichierLogger);
 	setlogginglevel(LOGLEVEL);
+	setstreamflush(true);
 }
 
 void Wrapper::FMTFormLogger::dokeepprint()

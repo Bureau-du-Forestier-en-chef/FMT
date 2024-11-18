@@ -554,7 +554,7 @@ namespace Models
 			simulationdone = true;
 		}catch(...)
 		{
-			_exhandler->raisefromcatch("", "FMTnssmodel::solve", __LINE__, __FILE__);
+			_exhandler->raisefromcatch(getname(), "FMTnssmodel::build", __LINE__, __FILE__);
 		}
 		return simulationdone;
 	}

@@ -24,7 +24,7 @@ int main(int argc, char* argv[])
 	}
 	else 
 	{
-		pathPri = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/09_FMT/Modeles_test/Prototype_Dec2023_TBE/PC_7002071_UA08152_FINAL.pri";
+		pathPri = "T:/Donnees/02_Courant/07_Outil_moyen_methode/01_Entretien_developpement/Interne/FMT/Entretien/Modeles_test/Prototype_Dec2023_TBE/PC_7002071_UA08152_FINAL.pri";
 		actionName = "TBE";
 		targetYield = "YV_S_MORT";
 		scenarioName = "20_Regl_prov";

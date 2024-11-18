@@ -175,6 +175,11 @@ class FMTEXPORT FMTobject
 		Change the number of warning raise before silenced.
 		*/
 		void setmaxwarningsbeforesilenced(const size_t& maxwarningcount);
+		// DocString: FMTexceptionhandler::setTerminateStack
+		/**
+		@brief will write the stack in the log when terminate called and raise a function failed.
+		*/
+		static void setTerminateStack();
 		// DocString: FMTobject::serialize
 		/**
 		Serialize function is for serialization, used to do multiprocessing across multiple cpus (pickle in Pyhton)
@@ -244,6 +249,11 @@ class FMTEXPORT FMTobject
 		With the clock time calculate time spent in second and return a string.
 		*/
 		static std::string getdurationinseconds(const std::chrono::time_point<std::chrono::high_resolution_clock>& startclock);
+		// DocString: FMTexceptionhandler::_terminate
+		/**
+		@brief Raise an error with the boost stacktrace.
+		*/
+		static void _terminate();
 		
 
 	};

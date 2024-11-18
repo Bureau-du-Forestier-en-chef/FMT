@@ -113,6 +113,7 @@ void Wrapper::FMTformCache::initializeexceptionhandler(const int& maxwarnings,co
 		Modelparser.passinexceptionhandler(handler);
 		ExceptHandler = Modelparser.getExceptionHandler();
 		Modelparser.seterrorstowarnings(warnings);
+		Modelparser.setTerminateStack();
 	}
 	catch (...)
 		{

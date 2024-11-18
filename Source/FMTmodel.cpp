@@ -206,8 +206,8 @@ namespace Models{
 		try {
 			const std::vector<std::string>ATTRIBUTES{ "PRE","POST" };
 			newModel.pushTheme("~FMT_THEME_" + p_actionName, ATTRIBUTES);
-			Core::FMTaction newAction("~FMT_" + p_actionName,false,true);
-			Core::FMTtransition newTransition("~FMT_" + p_actionName);
+			Core::FMTaction newAction(p_actionName,false,true);
+			Core::FMTtransition newTransition(p_actionName);
 			std::string BMask;
 			for (size_t themeId = 0; themeId < newModel.themes.size() - 1; ++themeId)
 			{
@@ -2844,7 +2844,7 @@ bool FMTmodel::doplanning(const bool& solve,std::vector<Core::FMTschedule> sched
 			}
 		this->swap_ptr(presolved_model);
 	}catch(...){
-		_exhandler->raisefromcatch("", " FMTmodel::doplanning", __LINE__, __FILE__);
+		_exhandler->raisefromcatch(getname(), " FMTmodel::doplanning", __LINE__, __FILE__);
 	}
 	return optimal_solved;
 	}

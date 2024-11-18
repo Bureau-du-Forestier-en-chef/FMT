@@ -288,9 +288,10 @@ FMTyields FMTyields::presolve(const FMTmaskfilter& filter,
 		newyields.presolvelist(filter, originalthemes, newthemes);
 		if (!filter.emptyflipped())
 		{
-			for (auto& yieldobject : newyields)
+			for (auto& yieldObject : newyields)
 			{
-				yieldobject.second = yieldobject.second->presolve(filter, newthemes);
+				yieldObject.second = yieldObject.second->presolve(filter, newthemes);
+				
 			}
 		}
 		

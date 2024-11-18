@@ -32,16 +32,17 @@ int main(int argc, char *argv[])
 	else
 	{
 		primlocation = "D:/CC_modele_feu/WS_CC/Feux_2023_ouest_V01.pri";
-		length = 5;
-		replicate = 5;
-		allscenarios.push_back("strategique_Minimisation_Risque_CC"); //Pour test le lancé d'erreur
+		length = 20;
+		replicate = 100;
+		allscenarios.push_back("strategique_AllEnrqc_CC"); //Pour test le lancé d'erreur
 		//allscenarios.push_back("strategique");
-		allscenarios.push_back("stochastique_CC_2pics");
+		allscenarios.push_back("stochastique_CC_2pics_SansFeu");
 		//allscenarios.push_back("tactique");
-		allscenarios.push_back("tactique_Minimisation_Risque_CC");
+		allscenarios.push_back("tactique_AllEnrqc_CC");
 	}
 
 	Parser::FMTmodelparser modelparser;
+	modelparser.setTerminateStack();
 	modelparser.setdefaultexceptionhandler();
 	std::vector<Exception::FMTexc> errors;
 	errors.push_back(Exception::FMTexc::FMTmissingyield);
@@ -82,7 +83,9 @@ int main(int argc, char *argv[])
 													"OSUPTBE" , "SUPERFICIE_RECUP_TBE",
 												"OCATTBE_C1" ,"OCATTBE_C2" ,"OCATTBE_C3",
 												"OCATTBE_C4","OCATTBE_C5","OCATTBE_C6","OTBECOMP","OSUPADMATBE",
-	"ORISQUE","ORISQUE_FEU","ORISQUE_TBE","ORISQUE_FEU_NOR","ORISQUE_TBE_NOR","ORISQUE_NOR","OVOLGFIREC","OVOLGFTREC","OVOLGRREC"};
+	"ORISQUE","ORISQUE_FEU","ORISQUE_TBE","ORISQUE_FEU_NOR","ORISQUE_TBE_NOR","ORISQUE_NOR","OVOLGFIREC","OVOLGFTREC","OVOLGRREC",
+	"SS_10","SS_25","SS_50","SS_100","SS_200","SS_400","SR_10","SR_25","SR_50","SR_100","SR_200","SR_400",
+	"REST_10","REST_25","REST_50","REST_100","REST_200","REST_400" };
 	std::vector<Core::FMToutput>selectedoutputs;
 	for (const Core::FMToutput& output : global.getoutputs())
 	{

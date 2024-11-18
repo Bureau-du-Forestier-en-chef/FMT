@@ -549,7 +549,7 @@ namespace Core
 					}
 				}
 				data.swap(newdata);*/
-				FMTlist::update();
+				//FMTlist::update();
 				//data.shrink_to_fit();
 			}catch (...)
 				{

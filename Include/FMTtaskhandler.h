@@ -9,6 +9,11 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <memory>
 #include "FMTobject.h"
 
+namespace boost
+	{
+	class thread;
+	}
+
 /// Namespace for parallel tasking may include multithreading / multiprocessing
 namespace Parallel
 {
@@ -20,27 +25,7 @@ namespace Parallel
 	*/
 	class FMTEXPORT FMTtaskhandler : public Core::FMTobject
 	{
-	// DocString: FMTtaskhandler::maxnumberofthread
-	///Maximal number of threads
-	unsigned int maxnumberofthread;
-	// DocString: FMTtaskhandler::alltasks
-	///All the tasks that are running
-	std::vector<std::unique_ptr<FMTtask>>alltasks;
-	// DocString: FMTtaskhandler::splittasks
-	/**
-	Will split all task in alltasks and replace it with new splitted tasks
-	*/
-	void splittasks();
-	// DocString: FMTtaskhandler::finalize
-	/**
-	This function will call the FMTtask::finalize function when the last task is done.
-	*/
-	void finalize(std::unique_ptr<FMTtask>& lasttask);
-	// DocString: FMTtaskhandler::logtasktime
-	/**
-	Juste write down all the time it took to run all tasks
-	*/
-	void logtasktime(const std::chrono::time_point<std::chrono::high_resolution_clock>& startime) const;
+	
 	public:
 		// DocString: FMTtaskhandler::FMTtaskhandler(const std::unique_ptr<FMTtask>&,unsigned int)
 		/**
@@ -110,6 +95,35 @@ namespace Parallel
 		We need to override the passinlogger for the osisolverinterface
 		*/
 		void passinlogger(const std::unique_ptr<Logging::FMTlogger>& logger) override;
+	private:
+		// DocString: FMTtaskhandler::maxnumberofthread
+		///Maximal number of threads
+		unsigned int maxnumberofthread;
+		// DocString: FMTtaskhandler::alltasks
+		///All the tasks that are running
+		std::vector<std::unique_ptr<FMTtask>>alltasks;
+		// DocString: FMTtaskhandler::splittasks
+		/**
+		Will split all task in alltasks and replace it with new splitted tasks
+		*/
+		void splittasks();
+		// DocString: FMTtaskhandler::finalize
+		/**
+		This function will call the FMTtask::finalize function when the last task is done.
+		*/
+		void finalize(std::unique_ptr<FMTtask>& lasttask);
+		// DocString: FMTtaskhandler::logtasktime
+		/**
+		Juste write down all the time it took to run all tasks
+		*/
+		void logtasktime(const std::chrono::time_point<std::chrono::high_resolution_clock>& startime) const;
+		// DocString: FMTtaskhandler::_interruptWork
+		/**
+		@brief interupt the work of a thread in case on a exception to make sure to dont get a std::terminate if joinable.
+		@p_threads the threads to interrupt
+		*/
+		static void _interruptWork(boost::thread& p_thread);
+
 	};
 
 }
