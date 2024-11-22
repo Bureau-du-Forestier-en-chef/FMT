@@ -26,15 +26,15 @@ namespace Logging
 #ifdef FMTWITHOSI
 	int FMTtasklogger::print()
 	{
-		boost::lock_guard<boost::recursive_mutex> guard(mtx);
+		//boost::lock_guard<boost::recursive_mutex> guard(mtx);
 		//return FMTlogger::print();
 		return 0;
 	}
 
 	void FMTtasklogger::checkSeverity()
 	{
-		boost::lock_guard<boost::recursive_mutex> guard(mtx);
-		FMTlogger::checkSeverity();
+		//boost::lock_guard<boost::recursive_mutex> guard(mtx);
+		//FMTlogger::checkSeverity();
 	}
 
 	FMTlogger* FMTtasklogger::clone() const

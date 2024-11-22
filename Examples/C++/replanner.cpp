@@ -34,16 +34,17 @@ int main(int argc, char *argv[])
 		primlocation = "D:/CC_modele_feu/WS_CC/Feux_2023_ouest_V01.pri";
 		length = 20;
 		replicate = 100;
-		allscenarios.push_back("strategique_AllEnrqc_CC"); //Pour test le lancé d'erreur
+		allscenarios.push_back("strategique_AllEnrqc_CC_FR30"); //Pour test le lancé d'erreur
 		//allscenarios.push_back("strategique");
-		allscenarios.push_back("stochastique_CC_2pics_SansFeu");
+		allscenarios.push_back("stochastique_CC_2pics");
 		//allscenarios.push_back("tactique");
 		allscenarios.push_back("tactique_AllEnrqc_CC");
 	}
 
 	Parser::FMTmodelparser modelparser;
-	modelparser.setTerminateStack();
 	modelparser.setdefaultexceptionhandler();
+	//modelparser.setdebuglogger();
+	modelparser.setTerminateStack();
 	std::vector<Exception::FMTexc> errors;
 	errors.push_back(Exception::FMTexc::FMTmissingyield);
 	errors.push_back(Exception::FMTexc::FMToutput_missing_operator);

@@ -1207,7 +1207,8 @@ class FMTEXPORT FMTgraph : public Core::FMTobject
 			}
 			catch (...)
 			{
-				_exhandler->raisefromcatch("", "FMTgraph::locatenode", __LINE__, __FILE__);
+				_exhandler->raisefromcatch("Getting node at period "+std::to_string(period)+" for node "+
+					std::string(output_node)+" for model "+model.getname(), "FMTgraph::locatenode", __LINE__, __FILE__);
 			}
 			return std::map<int, double>();
 

@@ -20,16 +20,6 @@ FMTtasklogger will not print any solver informations from osisolverinterface and
 */
 class FMTEXPORT FMTtasklogger final : public FMTlogger
 	{
-	// DocString: FMTtasklogger::serialize
-	/**
-	Serialize function is for serialization, used to do multiprocessing across multiple cpus (pickle in Pyhton)
-	*/
-	friend class boost::serialization::access;
-	template<class Archive>
-	void serialize(Archive& ar, const unsigned int version)
-	{
-		ar & boost::serialization::make_nvp("FMTlogger", boost::serialization::base_object<FMTlogger>(*this));
-	}
 	public:
 		// DocString: FMTtasklogger()
 		/**
@@ -60,7 +50,7 @@ class FMTEXPORT FMTtasklogger final : public FMTlogger
 			int print() override;
 			// DocString: FMTtasklogger::checkSeverity
 			/**
-			See FMTlogger checkSeverity function.
+			@brief It will do nothing because coinMessagehandler does not support multithread access.
 			*/
 			void checkSeverity() override;
 			// DocString: FMTtasklogger::clone
@@ -75,6 +65,17 @@ class FMTEXPORT FMTtasklogger final : public FMTlogger
 		@return a valid cloned FMTtasklogger
 		*/
 		virtual std::unique_ptr <FMTlogger> Clone() const;
+	private:
+		// DocString: FMTtasklogger::serialize
+		/**
+		Serialize function is for serialization, used to do multiprocessing across multiple cpus (pickle in Pyhton)
+		*/
+		friend class boost::serialization::access;
+		template<class Archive>
+		void serialize(Archive& ar, const unsigned int version)
+		{
+			ar& boost::serialization::make_nvp("FMTlogger", boost::serialization::base_object<FMTlogger>(*this));
+		}
 	};
 }
 

@@ -538,7 +538,7 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 			}
 		}catch (...)
 			{
-			_exhandler->raisefromcatch("", "FMTlpmodel::locatenodes", __LINE__, __FILE__);
+			_exhandler->raisefromcatch("at period "+std::to_string(period), "FMTlpmodel::locatenodes", __LINE__, __FILE__);
 			}
 	return strictlypositivesoutputs;
 	}
@@ -1879,7 +1879,6 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 	bool FMTlpmodel::initialsolve()
 		{
 		try {
-			//throw;
 			return solver.initialsolve();
 		}catch (...)
 		{
@@ -1923,6 +1922,10 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 		try {
 			updatematrixnaming();
 			const std::string name = location + getname();
+			if (DEBUG_MATRIX)
+				{
+				*_logger << "Writing matrix here " << name +".lp" << "\n";
+				}
 			solver.writeLP(name);
 		}
 		catch (...)
@@ -2223,7 +2226,7 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 												"FMTlpmodel::build",__LINE__,__FILE__);
 						}
 					}else{
-						_logger->logwithlevel(std::string(this->buildperiod(Core::FMTschedule(),false,parameters.getperiodcompresstime(period)))+"\n",3);
+						_logger->logwithlevel(std::string(this->buildperiod(Core::FMTschedule(), false, parameters.getperiodcompresstime(period))) + "\n", 3);
 					}
 				}
 			if(!allempty)
@@ -2236,7 +2239,10 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 				_setConstraintsCache();
 				for (size_t constraintid = 1; constraintid < constraints.size(); ++constraintid)
 					{
+					const std::string TITLE("Setting constraint on " + getname() +" "+ std::string(constraints.at(constraintid)));
+					_logger->logwithlevel(TITLE, 2);
 					this->setconstraint(constraints.at(constraintid));
+					_logger->logwithlevel("Done with "+TITLE, 2);
 					}
 				if (!constraints.empty())
 				{

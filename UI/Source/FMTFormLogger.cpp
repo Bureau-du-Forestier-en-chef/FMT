@@ -4,7 +4,7 @@
 #include "FMTlogger.h"
 #include <memory>
 
-#define LOGLEVEL 3
+#define LOGLEVEL 1
 #define TASKLOGLEVEL 0
 
 using namespace Logging;

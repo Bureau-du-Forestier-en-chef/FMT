@@ -1,6 +1,6 @@
 #include "FMTtask.h"
 #include <functional>
-#include "FMTquietlogger.h"
+#include "FMTtasklogger.h"
 #include "FMTexceptionhandler.h"
 #include <boost/lexical_cast.hpp>
 
@@ -50,7 +50,7 @@ namespace Parallel
 	FMTtask::FMTtask() :
 		Core::FMTobject(),
 		done(false),
-		tasklogger(std::unique_ptr<Logging::FMTlogger>(new Logging::FMTquietlogger()))
+		tasklogger(std::unique_ptr<Logging::FMTlogger>(new Logging::FMTtasklogger()))
 	{
 		
 	}
@@ -58,7 +58,7 @@ namespace Parallel
 	FMTtask::FMTtask(const FMTtask& rhs) :
 		Core::FMTobject(rhs),
 		done(false),
-		tasklogger(std::unique_ptr<Logging::FMTlogger>(new Logging::FMTquietlogger()))
+		tasklogger(std::unique_ptr<Logging::FMTlogger>(new Logging::FMTtasklogger()))
 	{
 		
 	}
@@ -69,7 +69,7 @@ namespace Parallel
 		{
 			Core::FMTobject::operator=(rhs);
 			done = rhs.done;
-			tasklogger = std::unique_ptr<Logging::FMTlogger>(new Logging::FMTquietlogger());
+			tasklogger = std::unique_ptr<Logging::FMTlogger>(new Logging::FMTtasklogger());
 
 		}
 		return *this;
@@ -186,9 +186,8 @@ namespace Parallel
 	}
 
 
-	std::string FMTtask::getthreadid() const
+	std::string FMTtask::getThreadId()
 	{
-		checksignals();
 		return boost::lexical_cast<std::string>(boost::this_thread::get_id());
 	}
 

@@ -81,9 +81,9 @@ namespace Parallel
 		bool isdone() const;
 		// DocString: FMTreplanningtask::getthreadid()
 		/**
-		Get the thread id of the task.
+		@brief Get the thread id of the task.
 		*/
-		std::string getthreadid() const;
+		static std::string getThreadId();
 		// DocString: FMTreplanningtask::setTotalThreads()
 		/**
 		@brief set the total amount of threads

@@ -72,14 +72,16 @@ bool Wrapper::FMTForm::Replanification(int indexScenStrategique, int indexScenSt
 		FMTFormLogger* logger = Cache->getformlogger();
 		Models::FMTlpmodel global(Cache->getmodel(indexScenStrategique), static_cast<Models::FMTsolverinterface>(solver));
 		global.setparameter(Models::FMTintmodelparameters::LENGTH, period);
+		global.setparameter(Models::FMTboolmodelparameters::DEBUG_MATRIX, true);
 		global.setparameter(Models::FMTintmodelparameters::NUMBER_OF_THREADS, 1);
 		global.setparameter(Models::FMTboolmodelparameters::PRESOLVE_CAN_REMOVE_STATIC_THEMES, true);
 		Models::FMTnssmodel stochastic(Cache->getmodel(indexScenStochastique), 0);
 		stochastic.setparameter(Models::FMTintmodelparameters::LENGTH, 1);
+		stochastic.setparameter(Models::FMTboolmodelparameters::DEBUG_MATRIX, true);
 		Models::FMTlpmodel local(Cache->getmodel(indexScenTactique), static_cast<Models::FMTsolverinterface>(solver));
 		local.setparameter(Models::FMTintmodelparameters::LENGTH, 1);
 		local.setparameter(Models::FMTintmodelparameters::NUMBER_OF_THREADS, 1);
-
+		local.setparameter(Models::FMTboolmodelparameters::DEBUG_MATRIX, true);
 		std::vector<Core::FMToutput> listeOutputs = ObtenirArrayOutputsSelectionnees(global.getoutputs(), outputs);
 
 		std::vector<std::string>layersoptions;

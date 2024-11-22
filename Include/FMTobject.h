@@ -180,6 +180,11 @@ class FMTEXPORT FMTobject
 		@brief will write the stack in the log when terminate called and raise a function failed.
 		*/
 		static void setTerminateStack();
+		// DocString: FMTexceptionhandler::setAbortStack
+		/**
+		@brief will write the stack in the log when abort called with SIGABRT and raise a function failed.
+		*/
+		static void setAbortStack();
 		// DocString: FMTobject::serialize
 		/**
 		Serialize function is for serialization, used to do multiprocessing across multiple cpus (pickle in Pyhton)
@@ -249,11 +254,22 @@ class FMTEXPORT FMTobject
 		With the clock time calculate time spent in second and return a string.
 		*/
 		static std::string getdurationinseconds(const std::chrono::time_point<std::chrono::high_resolution_clock>& startclock);
+		// DocString: FMTexceptionhandler::_logStack
+		/**
+		@brief Log the stack trace...
+		*/
+		static void _logStack();
 		// DocString: FMTexceptionhandler::_terminate
 		/**
 		@brief Raise an error with the boost stacktrace.
 		*/
 		static void _terminate();
+		// DocString: FMTexceptionhandler::_abort
+		/**
+		@brief Raise an error with the boost stacktrace.
+		@param[in] the signal for abort
+		*/
+		static void _abort(int p_signal);
 		
 
 	};

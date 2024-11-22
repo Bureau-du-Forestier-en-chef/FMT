@@ -200,10 +200,13 @@ namespace Logging
 			virtual FMTlogger& operator<<(const void*& msg);
 			// DocString: FMTlogger::logwithlevel
 			/**
-			Log a message with a given message level if message level is greater of equal to the logger level
+			@brief Log a message with a given message level if message level is greater of equal to the logger level
 			then it will be printed
+			@param[in] p_msg the message
+			@param[in] p_messageLevel message level
+			@return true if printed
 			*/
-			virtual bool logwithlevel(const std::string &msg, const int& messagelevel) const;
+			virtual bool logwithlevel(const std::string& p_msg, const int& p_messageLevel) const;
 			#ifdef FMTWITHOSI
 			// DocString: FMTlogger::getsolverlogger
 			/**

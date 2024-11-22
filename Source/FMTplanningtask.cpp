@@ -186,16 +186,16 @@ namespace Parallel
 			std::list<std::unique_ptr<Models::FMTmodel>>modelskept;
 			while (!models.empty())
 			{
-				_logger->logwithlevel("Thread:" + getthreadid() + " Planning of " + models.front()->getname() + " started\n",0);
+				_logger->logwithlevel("Thread:" + getThreadId() + " Planning of " + models.front()->getname() + " started\n",0);
 				const bool SOLVE = !models.front()->getparameter(Models::FMTboolmodelparameters::FORCE_PARTIAL_BUILD);
 				const bool FEASIBLE = models.front()->doplanning(SOLVE, allschedules.front());
 				if (FEASIBLE||!SOLVE)
 					{
 					resultswriter->getandwrite(models.front(),outputs.front());
 				}else {
-					_logger->logwithlevel("Thread:" + getthreadid() + " infeasible scenario " + models.front()->getname() + "\n", 0);
+					_logger->logwithlevel("Thread:" + getThreadId() + " infeasible scenario " + models.front()->getname() + "\n", 0);
 					}
-				_logger->logwithlevel("Thread:" + getthreadid() + " Planning of " + models.front()->getname() + " done\n", 0);
+				_logger->logwithlevel("Thread:" + getThreadId() + " Planning of " + models.front()->getname() + " done\n", 0);
 				if (keepmodels)
 					{
 					modelskept.push_back(std::move(models.front()));

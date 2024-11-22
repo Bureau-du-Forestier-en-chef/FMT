@@ -23,6 +23,8 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #if defined FMTWITHOSI
 #include "FMTsolverlogger.h"
 #include "CoinMessageHandler.hpp"
+#include "FMTerror.h"
+#include "FMTtask.h"
 #endif
 
 
@@ -106,6 +108,11 @@ namespace Logging
 		flushstream=rhs.flushstream;
 		#if defined FMTWITHOSI
 			solverref.reset(new FMTsolverlogger(*this));
+			if (rhs.solverref)
+				{
+				solverref->setLogLevel(rhs.solverref->logLevel());
+				}
+			
 		#endif
 		}
 
@@ -119,6 +126,10 @@ namespace Logging
 			boost::lock_guard<boost::recursive_mutex> other_lock(rhs.mtx,boost::adopt_lock /*std::adopt_lock*/);
 			#if defined FMTWITHOSI
 				solverref.reset(new FMTsolverlogger(*rhs.solverref));
+				if (rhs.solverref)
+					{
+					solverref->setLogLevel(rhs.solverref->logLevel());
+					}
 			#endif
 			filepath = rhs.filepath;
 			settofile(filepath);
@@ -231,15 +242,16 @@ namespace Logging
 		return *this;
 	}
 
-	bool FMTlogger::logwithlevel(const std::string &msg, const int& messagelevel) const
+	bool FMTlogger::logwithlevel(const std::string& p_msg, const int& p_messageLevel) const
 	{
 		#ifdef FMTWITHOSI
-		if (solverref->logLevel() < messagelevel)
+		if (solverref->logLevel() < p_messageLevel)
 				{
 				return false;
 				}
 		#endif
-	this->cout(msg.c_str());
+		
+	this->cout(p_msg.c_str());
 	return true;
 	}
 
@@ -268,9 +280,14 @@ namespace Logging
 	void FMTlogger::cout(const char* message) const
 		{
 		boost::lock_guard<boost::recursive_mutex> guard(mtx);
+		std::string thread = "Thread("+Parallel::FMTtask::getThreadId()+") ";
+		if (message && message[0]=='\n')
+			{
+			thread.clear();
+			}
 		if (filestream && filestream->is_open())
 			{
-			(*filestream)<<(message);
+			(*filestream)<< thread << (message);
 			if (flushstream)
 				{
 				filestream->flush();
@@ -282,12 +299,12 @@ namespace Logging
 			//old way maybe for python 2 ???? 
 				PySys_FormatStdout(message);
 			#else
-				std::cout << message << std::flush;
+				std::cout << thread << message << std::flush;
 			#endif
 			#elif defined(FMTWITHR)
-					Rcpp::Rcout << message << std::flush;
+					Rcpp::Rcout << thread << message << std::flush;
 			#else
-					std::cout << message << std::flush;
+					std::cout << thread << message << std::flush;
 			#endif
 			}
 		}
@@ -310,7 +327,10 @@ namespace Logging
 					{
 					fprintf(solverref->filePointer(), "Stopping due to previous errors.\n");
 					//Should do walkback
-					abort();
+					//abort();
+					std::throw_with_nested(Exception::FMTerror(
+						Exception::FMTexception(Exception::FMTexc::FMTcoinerror,Core::FMTsection::Empty,
+									"Stopping due to previous errors.\n","FMTlogger::print",__FILE__, __LINE__)));
 					}
 				}
 			return 0;
