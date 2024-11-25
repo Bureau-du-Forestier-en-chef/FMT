@@ -22,19 +22,28 @@ int main(int argc, char *argv[])
 	std::vector<std::string>allscenarios;
 	std::string outputlocation = "../../tests/replanner/Feux_2023_ouest_V01";
 	if (argc > 1) {
-		primlocation = argv[1];
+		const std::string vals = argv[1];
+		std::vector<std::string>results;
+		boost::split(results, vals, boost::is_any_of("|"));
+		primlocation = results[0];
+		allscenarios.push_back(results[1]);
+		allscenarios.push_back(results[2]);
+		allscenarios.push_back(results[3]);
+		outputlocation = results[4];
 		length = std::stoi(argv[2]);
 		replicate = std::stoi(argv[3]);
-		allscenarios.push_back("Globalreplanning");
+		
+		
+		/*allscenarios.push_back("Globalreplanning");
 		allscenarios.push_back("Globalfire");
-		allscenarios.push_back("Localreplanning");
+		allscenarios.push_back("Localreplanning");*/
 	}
 	else
 	{
 		primlocation = "D:/CC_modele_feu/WS_CC/Feux_2023_ouest_V01.pri";
 		length = 20;
 		replicate = 100;
-		allscenarios.push_back("strategique_AllEnrqc_CC_FR30"); //Pour test le lancé d'erreur
+		allscenarios.push_back("strategique_Maximisation_non_risqueFR30_CC"); //Pour test le lancé d'erreur
 		//allscenarios.push_back("strategique");
 		allscenarios.push_back("stochastique_CC_2pics");
 		//allscenarios.push_back("tactique");
@@ -86,7 +95,7 @@ int main(int argc, char *argv[])
 												"OCATTBE_C4","OCATTBE_C5","OCATTBE_C6","OTBECOMP","OSUPADMATBE",
 	"ORISQUE","ORISQUE_FEU","ORISQUE_TBE","ORISQUE_FEU_NOR","ORISQUE_TBE_NOR","ORISQUE_NOR","OVOLGFIREC","OVOLGFTREC","OVOLGRREC",
 	"SS_10","SS_25","SS_50","SS_100","SS_200","SS_400","SR_10","SR_25","SR_50","SR_100","SR_200","SR_400",
-	"REST_10","REST_25","REST_50","REST_100","REST_200","REST_400" };
+	"REST_10","REST_25","REST_50","REST_100","REST_200","REST_400","ORISQUEYVS"};
 	std::vector<Core::FMToutput>selectedoutputs;
 	for (const Core::FMToutput& output : global.getoutputs())
 	{
