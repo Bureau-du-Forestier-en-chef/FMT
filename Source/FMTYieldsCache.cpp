@@ -14,10 +14,9 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTyieldhandler.h"
 #include <boost/dynamic_bitset.hpp>
 #include <boost/flyweight.hpp>
+#include <boost/thread.hpp>
 #include <FMTobject.h>
-
-
-
+#include <iostream>
 
 
 namespace Core
@@ -61,6 +60,7 @@ namespace Core
 		std::string m_yield;
 		bool _equalYield(const std::string& p_first, const std::string& p_second) const noexcept
 		{
+			
 			const size_t FIRST_LENGTH = p_first.length();
 			const size_t SECOND_LENGTH = p_second.length();
 			bool equal = false;
@@ -94,6 +94,8 @@ namespace Core
 {
 	std::unique_ptr<boost::concurrent_flat_map<FMTYieldDevelopment, double>> FMTYieldsCache::m_cache =
 		static_cast<std::unique_ptr<boost::concurrent_flat_map<FMTYieldDevelopment, double>>>(new boost::concurrent_flat_map<FMTYieldDevelopment, double>());
+
+	boost::mutex FMTYieldsCache::m_memoryMutex;
 
 	bool FMTYieldsCache::inCache(const FMTyieldrequest& p_request,
 		const std::string& p_yield) const
@@ -137,11 +139,35 @@ namespace Core
 
 	void FMTYieldsCache::_ClearIfTooBig()
 		{
-		if ((m_cache->size() % 1000) == 0 &&
-			(Core::FMTobject::getavailablememory() / 1073741824) < 10) //If less then 10 Go then delete
+		const size_t TABLE_SIZE = m_cache->size();
+		bool needToClear = false;
+		if (TABLE_SIZE > 0 && //works on 128 go
+			(TABLE_SIZE % 10000) == 0) //Check each 10k yields set... maybe too much check
+			{
+			boost::lock_guard<boost::mutex> memoryGuard(m_memoryMutex);
+			//I realy dont trust GlobalMemoryStatusEx to be thread-safe even if ()
+			needToClear = (Core::FMTobject::getavailablememory() / 1073741824) < 10;
+			}
+		if (needToClear)
 			{
 			m_cache->clear();
 			}
+
+
+		/*if (TABLE_SIZE > 0 && //works on 128 go
+			(TABLE_SIZE % 100000) == 0 &&
+			(Core::FMTobject::getavailablememory() / 1073741824) < 10) //If less then 10 Go then delete
+			{
+			m_cache->clear();
+			}*/
+
+
+		/*if ((Core::FMTobject::getavailablememory() / 1073741824) < 10000) //original
+			{
+			m_cache->clear();
+			}*/
+		
+		
 		}
 	void FMTYieldsCache::set(double p_value,
 		const FMTyieldrequest& p_request,

@@ -14,6 +14,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <boost/filesystem.hpp>
 
 
+
 namespace Parallel
 {
 
@@ -335,16 +336,6 @@ namespace Parallel
 		}
 	}
 
-	void FMTreplanningtask::_setCrashHandlers() const
-	{
-		try {
-			setTerminateStack();
-			setAbortStack();
-		}catch (...)
-		{
-			_exhandler->raisefromcatch("", " FMTreplanningtask::_setCrashHandlers", __LINE__, __FILE__);
-		}
-	}
 
 	void FMTreplanningtask::setreplicate(std::unique_ptr<Models::FMTmodel>& modelcpy, const int& replanningperiod) const
 	{
@@ -372,7 +363,7 @@ namespace Parallel
 	void FMTreplanningtask::work()
 	{
 		try {
-			_setCrashHandlers();
+			Exception::FMTScopedSeTranslator test(Exception::FMTexceptionhandler::translateStructuralWIN32Exceptions);
 			const std::vector<Core::FMTconstraint>baselocalconstraints(dynamicconstraints);
 			while (!replicateids.empty())
 			{
@@ -452,7 +443,7 @@ namespace Parallel
 	{
 		bool optimal = false;
 		try {
-			_setCrashHandlers();
+		
 			_logger->logwithlevel("starting model planning on "+ model ->getname()+"\n",1);
 			std::unique_ptr<Models::FMTmodel>modelcpy = copysharedmodel(model);
 			int modelsize = modelcpy->getparameter(Models::FMTintmodelparameters::LENGTH);

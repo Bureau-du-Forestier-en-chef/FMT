@@ -223,11 +223,6 @@ namespace Parallel
 		Ajuste constraints based on the replicate keyword
 		*/
 		void setreplicate(std::unique_ptr<Models::FMTmodel>& modelcpy, const int& replanningperiod) const;
-		// DocString: FMTreplanningtask::_setCrashHandlers
-		/**
-		@brief set the terminate and abort handler before running global function in thread.
-		*/
-		void _setCrashHandlers() const;
 		// DocString: FMTreplanningtask::setreplicate
 		/**
 		Primary name extracted to the path.

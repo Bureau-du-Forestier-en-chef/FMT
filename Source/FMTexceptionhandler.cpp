@@ -26,15 +26,31 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 	#include "CoinError.hpp"
 #endif
 
+#if defined _WIN32
+	#include "FMTseException.h"
+#endif
+
 
 
 
 namespace Exception
 
 {
+	
+
+
 boost::thread::id FMTexceptionhandler::mainthreadid = boost::this_thread::get_id();
 
 boost::thread::id FMTexceptionhandler::crashedthreadid = boost::this_thread::get_id();
+
+#if defined _WIN32
+FMTScopedSeTranslator FMTexceptionhandler::m_SeTranslator = FMTScopedSeTranslator(FMTexceptionhandler::translateStructuralWIN32Exceptions);
+
+void FMTexceptionhandler::translateStructuralWIN32Exceptions(unsigned int p_u, EXCEPTION_POINTERS*)
+	{
+		throw FMTseException(p_u);
+	}
+#endif
 
 bool FMTexceptionhandler::ismainthread() const
 	{
@@ -517,6 +533,9 @@ FMTlev FMTexceptionhandler::getLevel(const FMTexc p_exception) const
 		case FMTexc::FMTEmptyOA:
 			level = FMTlev::FMT_logic;
 			break;
+		case FMTexc::FMTWIN32Error:
+			level = FMTlev::FMT_logic;
+			break;
 		default:
 			level = FMTlev::FMT_logic;
 			break;
@@ -931,6 +950,10 @@ std::string FMTexceptionhandler::updatestatus(const FMTexc lexception, const std
 		msg += "Empty Operating Area " + message;
 		gotException=true;
 		break;
+	case FMTexc::FMTWIN32Error:
+		msg += message;
+		gotException = true;
+		break;
 	default:
 		gotException = true;
 		break;
@@ -1038,6 +1061,20 @@ FMTexception FMTexceptionhandler::raisefromcatch(std::string text,
 				return this->raise(lexception,text, method, line, file, lsection);
 			}
 		}
+		#if defined _WIN32
+			catch (const FMTseException& seError)
+			{
+				const std::string CAUGHTWIN32 = "Win32 Error number " + std::to_string(seError.getSeNumber());
+				updatestatus(FMTexc::FMTWIN32Error, CAUGHTWIN32);
+				try {
+					std::throw_with_nested(FMTerror(seError));
+				}
+				catch (...)
+				{
+					return this->raise(lexception, text, method, line, file, lsection);
+				}
+			}
+		#endif
 		catch (...)
 		{
 			lexception = FMTexc::FMTunhandlederror;
@@ -1128,6 +1165,21 @@ void FMTexceptionhandler::gutsofprintexceptions(std::string text,
 			}
 			this->throw_nested(Exception::FMTerror(grapherror), levelreference);
 		}
+		#if defined _WIN32
+		catch (const FMTseException& seError)
+		{
+			if (usenestedexceptions)
+			{
+				if (needtolog)
+				{
+					*_logger << newexception.what() << "\n";
+
+				}
+				++levelreference;
+			}
+			this->throw_nested(Exception::FMTerror(seError), levelreference);
+		}
+	#endif
 		catch (...)
 		{
 			lexception = FMTexc::FMTunhandlederror;

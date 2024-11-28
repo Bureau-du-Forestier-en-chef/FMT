@@ -294,6 +294,7 @@ namespace Core {
 		return result;
 	}
 
+	
 
 	double FMTcomplexyieldhandler::get(const std::string& yld, const FMTyieldrequest& request) const
 	{

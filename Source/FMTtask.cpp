@@ -4,6 +4,8 @@
 #include "FMTexceptionhandler.h"
 #include <boost/lexical_cast.hpp>
 
+
+
 namespace Parallel
 {
 
@@ -45,12 +47,31 @@ namespace Parallel
 			}
 		//*_logger << "out " << getthreadid() << "\n";
 	}
+	
+
+
+	void FMTtask::_setCrashHandlers()
+	{
+		try {
+				setTerminateStack();
+				setAbortStack();
+				#if defined _WIN32
+					m_SeTranslator = Exception::FMTScopedSeTranslator(Exception::FMTexceptionhandler::translateStructuralWIN32Exceptions);
+				#endif
+		}catch (...)
+			{
+				_exhandler->raisefromcatch("", " FMTtask::_setCrashHandlers", __LINE__, __FILE__);
+			}
+	}
 
 
 	FMTtask::FMTtask() :
 		Core::FMTobject(),
 		done(false),
-		tasklogger(std::unique_ptr<Logging::FMTlogger>(new Logging::FMTtasklogger()))
+		tasklogger(std::unique_ptr<Logging::FMTlogger>(new Logging::FMTtasklogger())),
+		#if defined _WIN32
+			m_SeTranslator(Exception::FMTexceptionhandler::translateStructuralWIN32Exceptions)
+		#endif
 	{
 		
 	}
@@ -58,7 +79,10 @@ namespace Parallel
 	FMTtask::FMTtask(const FMTtask& rhs) :
 		Core::FMTobject(rhs),
 		done(false),
-		tasklogger(std::unique_ptr<Logging::FMTlogger>(new Logging::FMTtasklogger()))
+		tasklogger(std::unique_ptr<Logging::FMTlogger>(new Logging::FMTtasklogger())),
+		#if defined _WIN32
+			m_SeTranslator(Exception::FMTexceptionhandler::translateStructuralWIN32Exceptions)
+		#endif
 	{
 		
 	}
@@ -70,6 +94,8 @@ namespace Parallel
 			Core::FMTobject::operator=(rhs);
 			done = rhs.done;
 			tasklogger = std::unique_ptr<Logging::FMTlogger>(new Logging::FMTtasklogger());
+			#if defined _WIN32
+			#endif
 
 		}
 		return *this;
@@ -145,6 +171,17 @@ namespace Parallel
 			_exhandler->raisefromcatch("", "FMTtask::splitwork", __LINE__, __FILE__);
 			}
 		return taskssize;
+		}
+
+	void FMTtask::run()
+		{
+		try {
+			_setCrashHandlers();
+			work();
+		}catch (...)
+			{
+			_exhandler->raisefromthreadcatch("", "FMTtask::run", __LINE__, __FILE__);
+			}
 		}
 
 	void FMTtask::work()

@@ -16,8 +16,10 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include <boost/serialization/export.hpp>
 #include <memory>
 #include <set>
-
 #include <boost/thread.hpp>
+#if defined _WIN32
+	#include "FMTScopedSeTranslator.h"
+#endif
 
 namespace Exception
 {
@@ -152,6 +154,15 @@ namespace Exception
 		@return a valid cloned FMTexceptionhandler
 		*/
 		virtual std::unique_ptr <FMTexceptionhandler> Clone() const = 0;
+		#if defined _WIN32
+		// DocString: FMTexceptionhandler::translateStructuralWIN32Exceptions
+		/**
+		@brief translate win32 structural exception to c++ exception
+		@param[in] exception id
+		@param[in] exception_pointer
+		*/
+		static void translateStructuralWIN32Exceptions(unsigned int p_u, EXCEPTION_POINTERS*);
+		#endif
 	protected:
 		// DocString: FMTexceptionhandler::_exception
 		///This is the type of the last FMTexception thrown by the FMTexceptionhandler.
@@ -256,6 +267,11 @@ namespace Exception
 			ar& BOOST_SERIALIZATION_NVP(_logger);
 			ar& BOOST_SERIALIZATION_NVP(usenestedexceptions);
 		}
+		#if defined _WIN32
+		// DocString: FMTScopedSeTranslator::m_SeTranslator
+		///The structural exceptions win32 translator
+		static FMTScopedSeTranslator m_SeTranslator;
+		#endif
 	};
 
 }

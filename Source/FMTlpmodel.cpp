@@ -581,13 +581,7 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 			if (!constraint.isobjective()&&!constraint.isspatial())
 			{
 				const std::vector<Core::FMTconstraint>::const_iterator CONSTRAINT_IT = _getsetConstraintIndex(constraint);
-				/*if (!constraint.canbenodesonly())
-				{
-					_exhandler->raise(Exception::FMTexc::FMTunsupported_output,
-						"The constraint output " + std::string(constraint) + " cannot be deduct to output nodes",
-						"FMTlpmodel::setconstraint", __LINE__, __FILE__);
-				}*/
-				if (!constraint.islinear()/*!constraint.canbenodesonly()*/)
+				if (!constraint.islinear())
 				{
 					_exhandler->raise(Exception::FMTexc::FMTunsupported_output,
 						"The constraint output " + std::string(constraint) + " cannot be deduct to output nodes",
@@ -598,24 +592,9 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 				if (m_graph->constraintlenght(constraint, first_period, last_period))
 				{
 					Core::FMTconstrainttype constraint_type = constraint.getconstrainttype();
-					//Its now handle in FMToutputnode settograph
-					/*double averagefactor = 1;
-					if (last_period != first_period)
-					{
-						averagefactor = (1 / (last_period - first_period));
-					}*/
 					std::vector<std::string>equation;
 					///////////////////////////////////////////////////
 					const std::vector<Core::FMToutputnode>all_nodes = constraint.getnodes(equation, 1);
-					/*if (!constraint.canbenodesonly())
-					{
-						Core::FMTconstraint subconstraint(constraint);
-						subconstraint.setoutput(constraint.removeRHSvalue());
-						all_nodes = subconstraint.getnodes(equation, averagefactor);
-					}else {
-						all_nodes = constraint.getnodes(equation, averagefactor);
-						}*/
-					/////////////////////////////////////////////////////
 					double lowerbound = 0;
 					double upperbound = 0;
 					double coef_multiplier_lower = 1;
@@ -643,10 +622,10 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 						int goal_variable = -1;
 						if (constraint.isgoal())
 						{
+
 							goal_variable = getsetMatrixElement(CONSTRAINT_IT, FMTmatrixelement::goalvariable, all_variables, period);
 							all_variables[goal_variable] = 1;
 						}
-
 						if (constraint_type == Core::FMTconstrainttype::FMTevenflow)
 						{
 							coef_multiplier_lower = 1 - lower_variation;
@@ -715,11 +694,7 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 						else {
 							constraint.getbounds(lowerbound, upperbound, period);
 						}
-						//size_t left_location = 0;
-						//*_logger<<"Period even "<<period<<"\n";
-						//*_logger<<"Enter size "<<all_variables.size()<<"\n";
 						const std::vector<std::map<int, double>> outputvarpos = locatenodes(all_nodes, period, all_variables, 1);
-						//*_logger<<"Out size "<<all_variables.size()<<"\n";
 						setpositiveoutputsinmatrix(CONSTRAINT_IT,outputvarpos,period);
 						locatelevels(all_nodes, period, all_variables, CONSTRAINT_IT);
 
@@ -766,7 +741,6 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 							{
 							lowervars[goal_variable] = -1;
 							}
-						
 						const int lower_constraint_id = getsetMatrixElement(CONSTRAINT_IT, FMTmatrixelement::constraint, lowervars,
 							period, lowerbound, upperbound);
 						//ismultiple
@@ -789,7 +763,6 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 								{
 								uppervars[goal_variable] = -1;
 								}
-							
 							const int upper_constraint_id = getsetMatrixElement(CONSTRAINT_IT, FMTmatrixelement::constraint, uppervars,
 								period, lowerbound, upperbound);
 						}
@@ -799,13 +772,13 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 			}
 		}catch (...)
 			{
-			std::string constraintname = std::string(constraint);
-			constraintname.pop_back();
-				_exhandler->printexceptions("for " + constraintname, "FMTlpmodel::setconstraint", __LINE__, __FILE__);
+			std::string constraintName = std::string(constraint);
+			if (!constraintName.empty())
+				{
+				constraintName.pop_back();
+				}
+			_exhandler->printexceptions("for " + constraintName, "FMTlpmodel::setconstraint", __LINE__, __FILE__);
 			}
-		//elements.clear();
-		//solver.unmarkHotStart();
-		//*_logger << "setting done of " << std::string(constraint) << "\n";
 		return m_graph->getstats();
 		}
 
@@ -2239,10 +2212,7 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 				_setConstraintsCache();
 				for (size_t constraintid = 1; constraintid < constraints.size(); ++constraintid)
 					{
-					const std::string TITLE("Setting constraint on " + getname() +" "+ std::string(constraints.at(constraintid)));
-					_logger->logwithlevel(TITLE, 2);
 					this->setconstraint(constraints.at(constraintid));
-					_logger->logwithlevel("Done with "+TITLE, 2);
 					}
 				if (!constraints.empty())
 				{

@@ -119,7 +119,7 @@ namespace Parallel
 			FMTtask::setTotalThreads(alltasks.size());
 			for (std::unique_ptr<FMTtask>& task : alltasks)
 				{
-				workers.push_back(boost::thread(&FMTtask::work,task.get()));
+				workers.push_back(boost::thread(&FMTtask::run,task.get()));
 				}
 			for (boost::thread& worker : workers)
 				{
@@ -166,7 +166,7 @@ namespace Parallel
 			while (taskid < maxnumberofthread && newtask)
 			{
 				tasks.push_back(std::move(newtask));
-				workers.push_back(boost::thread(&FMTtask::work, tasks.back().get()));
+				workers.push_back(boost::thread(&FMTtask::run, tasks.back().get()));
 				newtask = std::move(alltasks.at(0)->spawn());
 				++taskid;
 			}
@@ -187,7 +187,7 @@ namespace Parallel
 						if (newtask)
 						{
 							tasks.push_back(std::move(newtask));
-							workers.push_back(boost::thread(&FMTtask::work, tasks.back().get()));
+							workers.push_back(boost::thread(&FMTtask::run, tasks.back().get()));
 							newtask = std::move(alltasks.at(0)->spawn());
 						}
 						break;
