@@ -19,7 +19,7 @@ License-Filename: LICENSES/EN/LiLiQ-R11unicode.txt
 #include "FMTfreeexceptionhandler.h"
 #include <boost/filesystem.hpp>
 #include <boost/algorithm/string.hpp>
-//#include <boost/stacktrace.hpp>
+#include <boost/stacktrace.hpp>
 #include <exception>
 #include <chrono>
 #include <csignal>
@@ -180,7 +180,7 @@ namespace Core
 		{
 		std::string baseLine;
 		std::vector<std::string>Splitted;
-		const std::string TRACE;// = boost::stacktrace::to_string(boost::stacktrace::stacktrace());
+		const std::string TRACE = boost::stacktrace::to_string(boost::stacktrace::stacktrace());
 		boost::split(Splitted, TRACE, boost::is_any_of("\n"));
 		for (const auto& TRACE_LINE : Splitted)
 			{
@@ -197,7 +197,7 @@ namespace Core
 	void FMTobject::_abort(int p_signal)
 		{
 		*_logger << "Aborted due to error " << "\n";
-		//_logStack();
+		_logStack();
 		//std::_Exit(EXIT_FAILURE);
 		_exhandler->raise(Exception::FMTexc::FMTunhandlederror,
 			"Abort called",
@@ -217,7 +217,7 @@ namespace Core
 	void FMTobject::_terminate()
 	{
 		*_logger << "Terminated due to error" << "\n";
-		//_logStack();
+		_logStack();
 		//std::_Exit(EXIT_FAILURE);
 		_exhandler->raise(Exception::FMTexc::FMTunhandlederror,
 			"Terminate called",

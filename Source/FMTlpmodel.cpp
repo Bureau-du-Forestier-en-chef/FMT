@@ -578,6 +578,10 @@ std::vector<std::map<int, double>> FMTlpmodel::locatenodes(const std::vector<Cor
 	Graph::FMTgraphstats FMTlpmodel::setconstraint(const Core::FMTconstraint& constraint)
 		{
 		try {
+			/*if (getname() == "tactique_AllEnrqc_CC")
+			{
+				std::terminate();
+			}*/
 			if (!constraint.isobjective()&&!constraint.isspatial())
 			{
 				const std::vector<Core::FMTconstraint>::const_iterator CONSTRAINT_IT = _getsetConstraintIndex(constraint);

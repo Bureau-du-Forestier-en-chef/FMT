@@ -45,7 +45,7 @@ int main(int argc, char *argv[])
 	else
 	{
 		primlocation = "D:/CC_modele_feu/WS_CC/Feux_2023_ouest_V01.pri";
-		length = 5;
+		length = 20;
 		replicate = 5;
 		allscenarios.push_back("strategique_Maximisation_non_risqueFR30_CC"); //Pour test le lancé d'erreur
 		//allscenarios.push_back("strategique");

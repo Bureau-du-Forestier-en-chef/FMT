@@ -300,7 +300,7 @@ namespace Core {
 	{
 		double value = 0;
 		try {
-			if (_cache.inCache(request,yld))
+			if (_cache.inCache(request, yld))
 				{
 				return _cache.get(request, yld);
 				}
@@ -660,10 +660,6 @@ namespace Core {
 						{
 						_cache.set(value, request, yld);
 						}
-
-					
-					//_cache.reserve(request);
-					
 				}
 				
 		}
